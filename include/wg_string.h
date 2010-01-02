@@ -1,0 +1,75 @@
+#ifndef	WG_STRING_DOT_H
+#define WG_STRING_DOT_H
+
+#ifndef	WG_TYPES_DOT_H
+#	include <wg_types.h>
+#endif
+
+#ifndef WG_CHARBUFFER_DOT_H
+#	include <wg_charbuffer.h>
+#endif
+
+#ifndef WG_CHARSEQ_DOT_H
+#	include <wg_charseq.h>
+#endif
+
+
+class WgChar;
+
+//____ WgString _____________________________________________________________
+
+class WgString
+{
+public:
+	friend class WgCharBuffer;
+
+	WgString();
+	WgString( const WgString& str );
+	WgString( const WgCharBuffer* pBuffer );
+	WgString( const WgCharSeq& seq );
+	~WgString();
+
+	const WgChar*	GetChars() const;
+	Uint32			Length() const;
+	bool			IsEmpty() const;
+
+	void			Set( const WgString& str );
+	void			Set( const WgCharBuffer* pBuffer );
+	void			Set( const WgCharSeq& seq );
+
+	void			Append( const WgString& str );
+	void			Append( const WgCharBuffer* pBuffer );
+	void			Append( const WgCharSeq& seq );
+
+	void			Prepend( const WgString& str );
+	void			Prepend( const WgCharBuffer* pBuffer );
+	void			Prepend( const WgCharSeq& seq );
+
+	void			Clear();
+
+
+	inline WgString& operator = ( const WgString& kSource )
+	{
+		Set( kSource );
+		return *this;
+	}
+	inline WgString& operator = ( const WgCharBuffer* pBuffer )
+	{
+		Set( pBuffer );
+		return *this;
+	}
+	inline WgString& operator = ( const WgCharSeq& seq )
+	{
+		Set( seq );
+		return *this;
+	}
+
+	bool operator == ( const WgString& kOther ) const	{ return (m_buffer == kOther.m_buffer); }
+
+
+private:
+
+	WgCharBuffer	m_buffer;
+};
+
+#endif //WG_STRING_DOT_H
