@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -43,7 +43,7 @@ public:
 	void	SetSelectionLasso( WgBlockSetPtr pLasso );
 	void	SetCellOverlay( WgBlockSetPtr pOverlay );
 	void	SetCellUnderlay( WgBlockSetPtr pUnderlay );
-	void	SetItemOrigo( WgOrigo& origo );
+	void	SetItemOrigo( const WgOrigo& origo );
 	void	SetItemStretch( bool bStretchToCell );
 	void	SetItemLayout( ItemLayout layout );	// implies non-fixed size
 	bool	SetFixedSize( Uint32 size );		// set fixed size according to current layout (either fixed width or fixed height)
@@ -90,7 +90,7 @@ protected:
 	void DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pCloneRoot,
 								 const WgWidget * _pBranchRoot );
 	bool DoMyOwnMarkTest( int _x, int _y );
-//	void DoMyOwnDisOrEnable( void ); 
+//	void DoMyOwnDisOrEnable( void );
 
 
 	struct GridRow

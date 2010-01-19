@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -158,7 +158,7 @@ class WgBorders
 {
 public:
 	WgBorders() { left = 0, right = 0, top = 0, bottom = 0; }
-	WgBorders( Uint8 _left, Uint8 _right, Uint8 _top, Uint8 _bottom ) 
+	WgBorders( Uint8 _left, Uint8 _right, Uint8 _top, Uint8 _bottom )
 				{ left = _left; right = _right; top = _top; bottom = _bottom; }
 	WgBorders( Uint8 _all ) { left = right = top = bottom = _all; }
 
@@ -211,8 +211,8 @@ public:
 
 	inline void operator+=(const WgBorders& k)			{ x -= k.left; y-= k.top; w += k.left + k.right; h += k.top + k.bottom; }
 	inline void operator-=(const WgBorders& k)			{ x += k.left; y+= k.top; w -= k.left + k.right; h -= k.top + k.bottom; }
-	inline WgRect operator+(const WgBorders& k) const	{ WgRect res; res.x = x - k.left; res.y = y- k.top; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; }
-	inline WgRect operator-(const WgBorders& k) const	{ WgRect res; res.x = x + k.left; res.y = y+ k.top; res.w = w - (k.left + k.right); res.h = h - (k.top + k.bottom); }
+	inline WgRect operator+(const WgBorders& k) const	{ WgRect res; res.x = x - k.left; res.y = y- k.top; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
+	inline WgRect operator-(const WgBorders& k) const	{ WgRect res; res.x = x + k.left; res.y = y+ k.top; res.w = w - (k.left + k.right); res.h = h - (k.top + k.bottom); return res; }
 
 	void SetPos( const WgCord& p ) { x = p.x; y = p.y; }
 	void SetSize( const WgSize& sz ) { w = sz.w; h = sz.h; }
@@ -231,7 +231,7 @@ public:
 
 	inline bool Contains( Sint32 x, Sint32 y ) const;
 	inline bool Contains( const WgRect& _rect ) const;
-	
+
 	inline bool IntersectsWith( const WgRect& _rect ) const;
 
 	inline Sint32 Width() const		{ return w; }
@@ -249,33 +249,33 @@ public:
 
 //_____________________________________________________________________________
 inline WgCord32::WgCord32( const WgRect& rect )
-{ 
-	x = rect.x; 
+{
+	x = rect.x;
 	y = rect.y;
 }
 
 //_____________________________________________________________________________
 inline WgCord32 WgCord32::operator=(const WgRect& r)
-{ 
-	x = r.x; 
-	y = r.y; 
-	return *this; 
-}
-
-
-//_____________________________________________________________________________
-inline WgSize::WgSize( const WgRect& rect ) 
 {
-	w = rect.w; 
-	h = rect.h; 
+	x = r.x;
+	y = r.y;
+	return *this;
+}
+
+
+//_____________________________________________________________________________
+inline WgSize::WgSize( const WgRect& rect )
+{
+	w = rect.w;
+	h = rect.h;
 }
 
 //_____________________________________________________________________________
-inline WgSize WgSize::operator=(const WgRect& k)	
-{ 
-	w = k.w; 
-	h = k.h; 
-	return *this; 
+inline WgSize WgSize::operator=(const WgRect& k)
+{
+	w = k.w;
+	h = k.h;
+	return *this;
 }
 
 //_____________________________________________________________________________

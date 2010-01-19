@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -45,16 +45,16 @@ Wdg_GridView::~Wdg_GridView()
 
 void Wdg_GridView::Init()
 {
-	m_itemOrigo		= WgOrigo::midCenter();	
+	m_itemOrigo		= WgOrigo::midCenter();
 	m_bStretchItem	= true;
-	m_bFixedSize	= 0;		
-	m_bPackCells	= false;		
-						
-	m_bOpaqueCells	= false;		
+	m_bFixedSize	= 0;
+	m_bPackCells	= false;
 
-	m_cellSize		= WgMinMax2D( 4,4, 4096,4096 );			
-	m_cellPaddingX	= 0;		
-	m_cellPaddingY	= 0;		
+	m_bOpaqueCells	= false;
+
+	m_cellSize		= WgMinMax2D( 4,4, 4096,4096 );
+	m_cellPaddingX	= 0;
+	m_cellPaddingY	= 0;
 
 	m_biggestCell	= WgSize(0,0);
 
@@ -109,7 +109,7 @@ void Wdg_GridView::SetCellUnderlay( WgBlockSetPtr pUnderlay )
 
 //____ SetItemOrigo() _________________________________________________________
 
-void Wdg_GridView::SetItemOrigo( WgOrigo& origo )
+void Wdg_GridView::SetItemOrigo( const WgOrigo& origo )
 {
 	if( origo != m_itemOrigo )
 	{
@@ -201,8 +201,8 @@ bool Wdg_GridView::SetCellSize( WgMinMax2D& minMax )
 {
 	if(IsFixedSize())
 	{
-		if(	m_layout == Vertical && m_bFixedSize < minMax.minW ||
-			m_layout == Horizontal && m_bFixedSize < minMax.minH)
+		if(	(m_layout == Vertical && m_bFixedSize < minMax.minW) ||
+			(m_layout == Horizontal && m_bFixedSize < minMax.minH) )
 			return false;
 	}
 
@@ -291,7 +291,7 @@ void Wdg_GridView::refreshItems()
 
 	WgItem * p = m_items.getFirst();
 	while( p )
-	{		
+	{
 		if( p == m_pLastMarkedItem )
 			break;
 		p = p->getNext();
@@ -384,8 +384,8 @@ void Wdg_GridView::DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGeo
 {
 	if(IsFixedSize() == false)
 	{
-		if( m_layout == Vertical && newGeo.w != oldGeo.w ||
-			m_layout == Horizontal && newGeo.h != oldGeo.h )
+		if( (m_layout == Vertical && newGeo.w != oldGeo.w) ||
+			(m_layout == Horizontal && newGeo.h != oldGeo.h) )
 			UpdateContentSize();
 	}
 }
@@ -562,7 +562,7 @@ void Wdg_GridView::CalcBiggestCell()
 
 		if( w > z.w )
 			z.w = w;
-		
+
 		if( h > z.h )
 			z.h = h;
 
@@ -606,7 +606,7 @@ bool Wdg_GridView::UpdateMaxCellSize(const WgItem * pItem)
 	WgSize z = CalcPackedCellSize(pItem);
 
 	if( z.w > m_biggestCell.w )
-	{		
+	{
 		m_biggestCell.w = z.w;
 		bUpdateNeeded = true;
 	}

@@ -185,29 +185,29 @@ Uint32 WgTableRow::AddItem( WgItem * pItem )
 	return WgItemRow::AddItem(pItem);
 }
 
-bool WgTableRow::Select() 
-{ 
+bool WgTableRow::Select()
+{
 	if( !WgItemRow::Select() )
 		return false;
 
 	WgItem * pCell = GetFirstItem();
 	while( pCell )
-	{	
+	{
 		pCell->Select();
 		pCell = pCell->GetNext();
 	}
-	
+
 	return true;
 }
 
 
-void WgTableRow::Unselect() 
-{ 
+void WgTableRow::Unselect()
+{
 	WgItemRow::Unselect();
 
 	WgItem * pCell = GetFirstItem();
 	while( pCell )
-	{	
+	{
 		pCell->Unselect();
 		pCell = pCell->GetNext();
 	}
@@ -490,7 +490,7 @@ WgTableColumn* Wdg_TableView::FindColumn(Uint32 id) const
 
 bool Wdg_TableView::GetSortColumn( Uint32 order, Uint32& columnIndex, bool& bAscend )
 {
-	if( order >= c_nSortColumns )
+	if( order >= (Uint32) c_nSortColumns )
 		return false;
 
 	if( 0xFFFF == m_sortStack[ order ].column )

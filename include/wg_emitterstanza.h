@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -39,7 +39,15 @@
 			if( m_paCallbacks[i].signal == (WgSignal::Signal) signal )					\
 				((void(*)(void*))m_paCallbacks[i].pCallback)( m_paCallbacks[i].pObj);	\
 		s_EmitRef--;																	\
-	}			
+	}																					\
+																						\
+	inline int	RemoveCallback( WgSignal::Signal signal, void(*fp)(void*), void * pObj )\
+	{																					\
+		return RemoveCallback( signal, (void*) fp, pObj );								\
+	}
+
+
+
 
 #define		METHODS_SIGNAL_1P( _sigtype_, _ptype1_ )												\
 	inline void AddCallback( _sigtype_ sig, void(*fp)(void*,_ptype1_), void * pObj )				\
@@ -54,6 +62,11 @@
 			if( m_paCallbacks[i].signal == (WgSignal::Signal) signal )								\
 				((void(*)(void*,_ptype1_))m_paCallbacks[i].pCallback)( m_paCallbacks[i].pObj, p1);	\
 		s_EmitRef--;																				\
+	}																								\
+																									\
+	inline int	RemoveCallback( WgSignal::Signal signal, void(*fp)(void*,_ptype1_), void * pObj )	\
+	{																								\
+		return RemoveCallback( signal, (void*) fp, pObj );											\
 	}
 
 
@@ -70,7 +83,13 @@
 			if( m_paCallbacks[i].signal == (WgSignal::Signal) signal )											\
 				((void(*)(void*,_ptype1_,_ptype2_))m_paCallbacks[i].pCallback)( m_paCallbacks[i].pObj, p1, p2);	\
 		s_EmitRef--;																							\
+	}																											\
+																												\
+	inline int	RemoveCallback( WgSignal::Signal signal, void(*fp)(void*,_ptype1_,_ptype2_), void * pObj )		\
+	{																											\
+		return RemoveCallback( signal, (void*) fp, pObj );														\
 	}
+
 
 #define		METHODS_SIGNAL_3P( _sigtype_, _ptype1_, _ptype2_, _ptype3_ )													\
 	inline void AddCallback( _sigtype_ sig, void(*fp)(void*,_ptype1_,_ptype2_,_ptype3_), void * pObj )						\
@@ -85,7 +104,12 @@ void Emit( _sigtype_ signal, _ptype1_ p1, _ptype2_ p2, _ptype3_ p3 )												
 			if( m_paCallbacks[i].signal == (WgSignal::Signal) signal )														\
 				((void(*)(void*,_ptype1_,_ptype2_,_ptype3_))m_paCallbacks[i].pCallback)( m_paCallbacks[i].pObj, p1, p2, p3);\
 		s_EmitRef--;																										\
-}
+}																															\
+																															\
+	inline int	RemoveCallback( WgSignal::Signal signal, void(*fp)(void*,_ptype1_,_ptype2_), void * pObj )					\
+	{																														\
+		return RemoveCallback( signal, (void*) fp, pObj );																	\
+	}
 
 
 #endif //WG_SIGNALSTANZA_DOT_H
