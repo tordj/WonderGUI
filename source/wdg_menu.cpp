@@ -110,7 +110,7 @@ const char * Wdg_Menu::GetMyType( void )
 bool Wdg_Menu::SetBgSource( const WgBlockSetPtr pBgGfx, Uint8 iconFieldWidth, Uint8 arrowFieldWidth )
 {
 	m_pBgGfx			= pBgGfx;
-	
+
 	m_iconFieldWidth	= iconFieldWidth;
 	m_arrowFieldWidth	= arrowFieldWidth;
 
@@ -502,7 +502,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 							int w = pIcon->GetWidth();
 							int h = pIcon->GetHeight();
 
-							// 
+							//
 
 							if( w > m_iconFieldWidth )
 								w = m_iconFieldWidth;
@@ -533,7 +533,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 
 							int y = yPos + (m_entryHeight - h)/2;
 							int x = xPosIcon + (m_iconFieldWidth - w)/2;
-							
+
 							WgGfx::clipBlitBlock( clip, pGfx->GetBlock(mode), WgRect(x,y,w,h) );
 						}
 					}
@@ -554,7 +554,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 
 							int y = yPos + (m_entryHeight - h)/2;
 							int x = xPosIcon + (m_iconFieldWidth - w)/2;
-							
+
 							WgGfx::clipBlitBlock( clip, pGfx->GetBlock(mode), WgRect(x,y,w,h) );
 						}
 					}
@@ -563,6 +563,8 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 					{
 
 					}
+					break;
+					default:
 					break;
 				}
 

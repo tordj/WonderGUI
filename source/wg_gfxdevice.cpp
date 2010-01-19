@@ -370,7 +370,7 @@ void WgGfxDevice::BlitBlock( const WgBlock& _block, const WgRect& _dest2 )
 {
 	if( !_block.GetSurface() )
 		return;
-	
+
 	if( _block.IsSkipable() )
 		return;
 
@@ -490,10 +490,10 @@ void WgGfxDevice::ClipBlitBlock( const WgRect& _clip, const WgBlock& _block,
 {
 	if( !_block.GetSurface() )
 		return;
-	
+
 	if( _block.IsSkipable() )
 		return;
-	
+
 	// Shortcuts & optimizations for common special cases.
 
 	if( _clip.Contains( _dest2 ) )
@@ -832,7 +832,7 @@ void WgGfxDevice::PrintTextWithCursor( const WgText * pText, const WgCursorInsta
 	Uint32		cursLine, cursCol;
 	ci.getSoftPos( cursLine, cursCol );
 
-	for( int i = 0 ; i < (int) n1 ; i++ )
+	for( Uint32 i = 0 ; i < (int) n1 ; i++ )
 	{
 		int linewidth = WgTextTool::lineWidthSoft( pDefProp, pText->mode(), p1[i].pText );
 		if( cursLine == i )
@@ -947,7 +947,7 @@ void WgGfxDevice::ClipPrintTextWithCursor( const WgRect& clip, const WgText * pT
 	ci.getSoftPos( cursLine, cursCol );
 
 
-	for( int i = 0 ; i < (int) n1 ; i++ )
+	for( Uint32 i = 0 ; i < n1 ; i++ )
 	{
 		int linewidth = WgTextTool::lineWidthSoft( pDefProp, pText->mode(), p1[i].pText );
 		if( cursLine == i )

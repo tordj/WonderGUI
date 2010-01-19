@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -78,14 +78,18 @@ bool WgResourceSerializerXML::Read( const char * pXML, int nBytes )
 
 	return m_Err.size() == 0;
 }
+#ifdef WIN32
+#	include <windows.h>
+#endif
 
-#include <windows.h>
 void WgResourceSerializerXML::Error(const std::string& err, const char* pFile, int iLine)
 {
 	m_Err += err + "\n";
 	std::stringstream ss;
 	ss << pFile << "(" << iLine << "): " << err << std::endl;
+#ifdef WIN32
 	OutputDebugStringA(ss.str().c_str());
+#endif
 }
 
 namespace
@@ -198,7 +202,7 @@ bool WgResourceSerializerXML::BuildXMLTree( const char * pXML, int nBytes )
 	XML_SetUserData( hParser, this );
 	XML_SetElementHandler( hParser, cbStartXMLTag, cbEndXMLTag );
 	XML_SetCharacterDataHandler( hParser, cbXMLText );
-	
+
 	int iRet = XML_Parse( hParser, pXML, nBytes, 1 );
 
 	if( iRet == XML_STATUS_ERROR )
@@ -398,7 +402,7 @@ bool WgXmlNode::RemoveAttribute(const std::string& name)
 }
 
 void WgXmlAttribute::Tokenize(std::vector<std::string>& tokens) const
-{	
+{
 	int i0 = 0;
 	int i1 = m_value.find(',');
 	do

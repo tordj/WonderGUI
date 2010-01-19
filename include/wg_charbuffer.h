@@ -537,7 +537,7 @@ public:
 	/// Fully replaces the content of the specified buffer section by filling it with the specified
 	/// character. If the section spans outside the buffer content it will be adjusted properly.
 
-	inline void			Fill( const WgChar& ch, Uint32 ofs, Uint32 len );
+	void			    Fill( const WgChar& ch, Uint32 ofs, Uint32 len );
 
 	/// @brief	Sets the glyph for all characters currently in the buffer.
 	///
@@ -560,7 +560,7 @@ public:
 	/// This method sets the glyph for all characters in the specified range. If the
 	/// range spans outside the buffer content it will be adjusted properly.
 
-	inline void			SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len );
+	void			    SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len );
 
 	/// @brief	Sets the properties for all characters currently in the buffer.
 	/// @param	pProp	Pointer to the new properties for the characters.

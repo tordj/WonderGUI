@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -128,12 +128,12 @@ void Wdg_TextView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 {
 	WgText * pText = &m_text;
 
-	WgRect contentRect( _window.x - ViewPixelOfsX(), _window.y - ViewPixelOfsY(), ContentWidth(), ContentHeight() ); 
+	WgRect contentRect( _window.x - ViewPixelOfsX(), _window.y - ViewPixelOfsY(), ContentWidth(), ContentHeight() );
 
 	if( m_pMyCursor )
 		WgGfx::clipPrintTextWithCursor( _clip, pText, *m_pMyCursor, contentRect );
 	else
-		WgGfx::clipPrintText( _clip, pText, contentRect );		
+		WgGfx::clipPrintText( _clip, pText, contentRect );
 
 	if( pText != &m_text )
 		delete pText;
@@ -150,7 +150,7 @@ void Wdg_TextView::DoMyOwnRefresh( void )
 void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	if( action == WgInput::BUTTON_PRESS && button_key == 1 )
-	{		
+	{
 		if( m_pMyCursor )
 		{
 			int x = info.x;
@@ -182,7 +182,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 		AdjustViewOfs();
 	}
 
-	if( m_pMyCursor && action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT )
+	if( m_pMyCursor && (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) )
 	{
 		switch( button_key )
 		{
@@ -300,7 +300,7 @@ void Wdg_TextView::DoMyOwnInputFocusChange( bool _bFocus )
 		delete m_pMyCursor;
 		m_pMyCursor = 0;
 	}
-	
+
 	RequestRender();
 }
 
@@ -348,7 +348,7 @@ Uint32 Wdg_TextView::InsertTextAtCursor( const WgCharSeq& str )
 		retVal = m_maxCharacters - m_pMyCursor->text()->nbChars();
 		m_pMyCursor->putText( str.GetUnicode().ptr, retVal );
 	}
-	
+
 	AdjustViewOfs();
 
 	return retVal;

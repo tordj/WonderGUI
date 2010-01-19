@@ -81,7 +81,7 @@ public:
 
 	/// Initializes a character to contain the glyph and properties as specified.
 
-	WgChar( Uint16 _glyph, WgTextPropPtr& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; WgTextPropManager::IncRef(properties,1); }
+	WgChar( Uint16 _glyph, const WgTextPropPtr& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; WgTextPropManager::IncRef(properties,1); }
 	~WgChar() { if( properties ) WgTextPropManager::DecRef(properties,1); };
 
 	inline WgChar & operator=(const WgChar &ref)
@@ -118,7 +118,7 @@ public:
 
 							/// Sets the properties of the character.
 
-	inline void				SetProperties( WgTextPropPtr& pProperties ) { if(properties) WgTextPropManager::DecRef(properties,1); properties = pProperties.m_hProp; WgTextPropManager::IncRef(properties,1); }
+	inline void				SetProperties( const WgTextPropPtr& pProperties ) { if(properties) WgTextPropManager::DecRef(properties,1); properties = pProperties.m_hProp; WgTextPropManager::IncRef(properties,1); }
 
 							/// Gets the characters properties as a handle.
 							///

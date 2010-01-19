@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -246,6 +246,9 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _windo
 				pDevice->ClipStretchBlit( _clip, pFrame->pSurf, src, _window );
 			}
 			break;
+
+			default:
+				break;
 		}
 
 		// Render animation
@@ -288,7 +291,7 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _windo
 	// Print text (with displacement).
 
 	WgText * pText;
-	
+
 	if( m_bRefreshing )
 		pText = &m_refreshText;
 	else
@@ -315,7 +318,7 @@ void WgGizmoRefreshButton::OnAction( WgEmitter * pEmitter, WgInput::UserAction a
 		{
 			if( button == WGKEY_RETURN )
 				StartRefresh();
-				
+
 			break;
 		}
 
@@ -379,5 +382,5 @@ void WgGizmoRefreshButton::OnCloneContent( const WgGizmo * _pOrg )
 	m_bRefreshing		= pOrg->m_bRefreshing;
 	m_animTimer			= pOrg->m_animTimer;
 	m_refreshProgress	= pOrg->m_refreshProgress;
-	m_bStopping			= pOrg->m_bStopping;	
+	m_bStopping			= pOrg->m_bStopping;
 }

@@ -36,6 +36,8 @@
 #endif
 
 
+class WgChildManager;
+
 //____ WgChildHook() __________________________________________________________
 
 class WgChildHook : public WgGizmoHook, private WgLink

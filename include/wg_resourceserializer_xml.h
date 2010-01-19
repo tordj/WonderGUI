@@ -31,8 +31,8 @@
 
 #include <wg_textprop.h>
 
-//#include <expat.h>
-#include "../../expat/lib/expat.h"
+#include <expat.h>
+//#include "../../expat/lib/expat.h"
 
 class WgResDB;
 class WgResourceXML;

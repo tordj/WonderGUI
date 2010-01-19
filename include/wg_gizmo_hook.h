@@ -26,11 +26,15 @@
 
 #ifndef	WG_GEO_DOT_H
 #	include <wg_geo.h>
-#endif 
+#endif
 
 #ifndef WG_EMITTER_DOT_H
 #	include <wg_emitter.h>
 #endif
+
+class WgGizmo;
+class WgGizmoCollection;
+class WgWidget;
 
 class WgGizmoHook
 {
@@ -69,4 +73,4 @@ protected:
 	WgGizmoCollection*	m_pCollection;
 };
 
-#endif WG_GIZMO_HOOK_DOT_H
+#endif //WG_GIZMO_HOOK_DOT_H
