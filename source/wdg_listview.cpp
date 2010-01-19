@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -88,7 +88,7 @@ void Wdg_ListView::UpdateContentSize()
 	{
 		if( p->Width() > contentWidth )
 			contentWidth = p->Width();
-		
+
 		contentHeight += p->Height() + m_itemSpacing;
 		p = p->GetNext();
 	}
@@ -101,12 +101,12 @@ void Wdg_ListView::UpdateContentSize()
 void Wdg_ListView::refreshItems()
 {
 	UpdateContentSize();
-	
+
 	// Check so we still have our m_pLastMarkedItem...
 
 	WgItem * p = m_items.getFirst();
 	while( p )
-	{		
+	{
 		if( p == m_pLastMarkedItem )
 			break;
 		p = p->getNext();
@@ -125,8 +125,8 @@ void Wdg_ListView::ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heigh
 	// this is wrong. an item's size changing doesn't necessarily mean
 	// that the content size is changing.
 	//SetContentSize( m_contentWidth+widthDiff, m_contentHeight+heightDiff );
-	//RequestRender();		//TODO: Only render what is necessary (if anything).	
-	
+	//RequestRender();		//TODO: Only render what is necessary (if anything).
+
 	// recalculate content size.
 	refreshItems();
 }
@@ -161,7 +161,7 @@ void Wdg_ListView::ScrollIntoView( WgItem* pItem )
 
 	WgItem * p = m_items.getFirst();
 	while( p && p != pItem )
-	{		
+	{
 		itemPosY += p->Height() + m_itemSpacing;
 		p = p->getNext();
 	}
@@ -251,9 +251,9 @@ void Wdg_ListView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butto
 	if( pItem )
 	{
 		// Make sure item gets a POINTER_ENTER.
-	
+
 		if( _action == WgInput::POINTER_OVER && !m_pLastMarkedItem )
-			pItem->ActionRespond( this, WgInput::POINTER_ENTER, _button_key, _info, _inputObj );		
+			pItem->ActionRespond( this, WgInput::POINTER_ENTER, _button_key, _info, _inputObj );
 
 		//
 
@@ -288,22 +288,22 @@ void Wdg_ListView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 	WgItem * p = m_items.getFirst();
 
 	// Skip Rows that are above clipping area.
-	
+
 	while( p && r.y + (Sint32) p->Height() < _clip.y )
 	{
 		r.y += p->Height() + m_itemSpacing;
 		p = p->GetNext();
 	}
-	
+
 	// Draw items that are (at least partly) visible.
-	
+
 	while( p && r.y < _clip.y + _clip.h )
 	{
 		r.h = p->Height();
 		if( p->IsSelected() )
 		{
 			WgRect	u;
-			if( u.Union( r, _clip ) )
+			if( u.Intersection( r, _clip ) )
 			{
 				WgGfx::fillRect( u, m_itemMarkColor );
 				if(HasLineMarkSource() == true)

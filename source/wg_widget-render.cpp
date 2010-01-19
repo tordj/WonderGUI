@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -54,7 +54,7 @@ void WgWidget::RequestRender( int _x, int _y, int _w, int _h, WgWidget * _pMaskB
 	{
 		int	myAbsX = 0, myAbsY = 0;
 		int	maskAbsX = -_pMaskBranch->m_geo.x, maskAbsY = -_pMaskBranch->m_geo.y;
-		
+
 		Local2abs( &myAbsX, &myAbsY );
 		_pMaskBranch->Local2abs( &maskAbsX, &maskAbsY );
 
@@ -68,7 +68,7 @@ void WgWidget::RequestRender( int _x, int _y, int _w, int _h, WgWidget * _pMaskB
 	if( m_bRendersAll )
 	{
 		// Render all of us unless rectangle is totally covered...
-		
+
 		if( dirtObj.pRectList )
 		{
 			m_dirtyRects.Add( 0, 0, m_geo.w, m_geo.h );
@@ -88,16 +88,16 @@ void WgWidget::RequestRender( int _x, int _y, int _w, int _h, WgWidget * _pMaskB
 		// _bRenderParentToo isn't set to false (true is default).
 		// Also checks m_bRenderedHere since there's no need to update what's behind
 		// if it hasn't been covered by us yet.
-		
+
 		if( _bRenderParentToo && !m_bOpaque && m_bRenderedHere && m_pParent != 0 )
-		{		
+		{
 			WgDirtyRect	* pRect = dirtObj.pRectList;
 			while( pRect )
 			{
 				m_pParent->RequestRender( m_geo.x + pRect->x, m_geo.y + pRect->y, pRect->w, pRect->h );
 				pRect = pRect->pNext;
 			}
-		}	
+		}
 
 		// Transfer these rectangles to our real list.
 
@@ -118,13 +118,13 @@ void WgWidget::MaskAgainstBranch( WgDirtyRectObj * _pDirtObj, int _ofsX, int _of
 				// We can't mask since we're not opaque, but we might have children that are...
 
   			if( m_pFirstChild )
-  				m_pFirstChild->MaskAgainstBranch( _pDirtObj, _ofsX + m_geo.x, _ofsY + m_geo.y );				
+  				m_pFirstChild->MaskAgainstBranch( _pDirtObj, _ofsX + m_geo.x, _ofsY + m_geo.y );
   		}
 	}
 
 	// Call siblings recursively, if there are dirty rectangles left.
 
-	if( m_pNextSibling && _pDirtObj->pRectList )	
+	if( m_pNextSibling && _pDirtObj->pRectList )
 		m_pNextSibling->MaskAgainstBranch( _pDirtObj, _ofsX, _ofsY );
 
 	return;
@@ -153,9 +153,9 @@ void WgWidget::RenderRecursively(Uint8 _layer)
 
 		WgDirtyRect * pDirty = m_dirtyRects.pRectList;
  		while( pDirty != 0 )
- 		{  				
+ 		{
 			DoMyOwnRender( window, *pDirty, _layer );
- 			pDirty = pDirty->pNext;			
+ 			pDirty = pDirty->pNext;
  		}
 	}
   	m_bRenderedHere = true;
@@ -183,7 +183,7 @@ void WgWidget::ClipDirtAgainstVisibleGeometry( const WgRect& visible )
 	clip.y -= m_geo.y;
 
 	if( clip.w == 0 || clip.h == 0 )
-		ClearBranchFromDirt();	
+		ClearBranchFromDirt();
 	else
 	{
 		m_dirtyRects.Clip( &clip );
@@ -216,7 +216,7 @@ void WgWidget::FreezeBranch( int _ofsX, int _ofsY )
 		pDirt->y += _ofsY;
 		pDirt = pDirt->pNext;
 	}
-	
+
 	// Call children recursively
 
 	for( WgWidget * pChi = m_pFirstChild ; pChi != 0 ; pChi = pChi->m_pNextSibling )
@@ -251,7 +251,7 @@ void	WgWidget::ClearBranchFromDirt( void )
 
 void	WgWidget::PreRenderMasking( int _ofsX, int _ofsY )
 {
-	
+
 	// Mask any dirty rectangles against our own upper siblings, parents upper
 	// siblings,grandparents upper siblings etc.
 
@@ -292,13 +292,13 @@ void	WgWidget::PreRenderMasking( int _ofsX, int _ofsY )
 				ofsX -= pTmp->m_geo.x;
 				ofsY -= pTmp->m_geo.y;
 			}
-		}	
+		}
 	}
 
 	// Call children recursively
 
 	for( WgWidget * pChi = m_pFirstChild ; pChi != 0 ; pChi = pChi->m_pNextSibling )
-	{	
+	{
 		if( !pChi->m_bHidden )
 			pChi->PreRenderMasking( _ofsX + m_geo.x, _ofsY + m_geo.y );
 	}
@@ -316,22 +316,22 @@ void WgWidget::AddDirtToNonOpaqueCovering( WgDirtyRectObj * _pDirtObj, int _ofsX
 	 	clip.y = _ofsY + m_geo.y;
 	 	clip.w = m_geo.w;
 	 	clip.h = m_geo.h;
-		
+
 		WgDirtyRect * pTmp = _pDirtObj->pRectList;
 		WgRect		clipped;
 
 		while( pTmp )
 		{
-			if( clipped.Union( *pTmp, clip ) )
+			if( clipped.Intersection( *pTmp, clip ) )
 				m_dirtyRects.Add( clipped.x, clipped.y, clipped.w, clipped.h );
 			pTmp = pTmp->pNext;
 		}
-		
+
  	}
 
 	// Call siblings recursively.
 
-	if( m_pNextSibling )	
+	if( m_pNextSibling )
 		m_pNextSibling->AddDirtToNonOpaqueCovering( _pDirtObj, _ofsX, _ofsY );
 }
 
@@ -358,7 +358,7 @@ bool WgWidget::MaskAgainstFrozenBranch( WgDirtyRectObj * _pDirtObj, int _ofsX, i
 
 			// Call siblings recursively, if there are dirty rectangles left.
 
-			if( m_pNextSibling && _pDirtObj->pRectList )	
+			if( m_pNextSibling && _pDirtObj->pRectList )
 				m_pNextSibling->MaskAgainstFrozenBranch( _pDirtObj, _ofsX, _ofsY );
 
 			return	true;
@@ -367,7 +367,7 @@ bool WgWidget::MaskAgainstFrozenBranch( WgDirtyRectObj * _pDirtObj, int _ofsX, i
 
 	// Call siblings recursively, if there are dirty rectangles left.
 
-	if( m_pNextSibling && _pDirtObj->pRectList )	
+	if( m_pNextSibling && _pDirtObj->pRectList )
 		return m_pNextSibling->MaskAgainstFrozenBranch( _pDirtObj, _ofsX, _ofsY );
 
 	return false;
@@ -518,7 +518,7 @@ void	WgWidget::PushDirtSub( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY )
 
 		while( pTmp )
 		{
-			if( clipped.Union( *pTmp, clip ) )
+			if( clipped.Intersection( *pTmp, clip ) )
 				m_dirtyRects.Add( clipped.x, clipped.y, clipped.w, clipped.h );
 			pTmp = pTmp->pNext;
 		}
