@@ -97,7 +97,7 @@ public:
 	bool				HasErrors() const				{ return m_Err.size() > 0; }
 	const std::string&	GetError() const				{ return m_Err; }
 	void				Error(const std::string& err)	{ m_Err += err + "\n"; }
-
+	void				Warning(const std::string& warn);
 	void				Error(const std::string& err, const char* pFile, int iLine);
 
 	void				BeginTag(const std::string& tagName);

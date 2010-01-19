@@ -88,6 +88,12 @@ void WgResourceSerializerXML::Error(const std::string& err, const char* pFile, i
 	OutputDebugStringA(ss.str().c_str());
 }
 
+void WgResourceSerializerXML::Warning(const std::string& warn)
+{
+	OutputDebugStringA((warn + "\n").c_str());
+	printf((warn + "\n").c_str());
+}
+
 namespace
 {
 	inline std::string GetIndent(Uint32 nstack) { return std::string(2 * nstack, ' '); }

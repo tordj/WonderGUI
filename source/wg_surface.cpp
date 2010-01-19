@@ -58,7 +58,7 @@ WgRect WgSurface::Dimensions() const
 WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& marked,
 											const WgRect& selected, const WgRect& disabled,
 											const WgRect& special, const WgBorders& gfxBorders, 
-											const WgBorders& contentBorders, Uint32 flags )
+											const WgBorders& contentBorders, Uint32 flags ) const
 {
 
 	WgBlockSet * p =new(g_pBlockSetMemPool->AllocEntry())
@@ -70,7 +70,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 
 WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& marked,
 											const WgRect& selected, const WgRect& disabled,
-											const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+											const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 
 	WgBlockSet * p =new(g_pBlockSetMemPool->AllocEntry())
@@ -82,7 +82,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 
 WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& marked,
 										const WgRect& selected, const WgBorders& gfxBorders,
-										const WgBorders& contentBorders, Uint32 flags )
+										const WgBorders& contentBorders, Uint32 flags ) const
 {
 	WgBlockSet * p = new( g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, normal, normal, gfxBorders, contentBorders, flags );
@@ -92,7 +92,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 }
 
 WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgRect& disabled,
-										const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+										const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 	WgBlockSet * p = new( g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, normal, normal, disabled, normal, gfxBorders, contentBorders, flags );
@@ -101,7 +101,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgRect& dis
 	return WgBlockSetPtr(p);
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 	WgBlockSet * p = new( g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, normal, normal, normal, normal, gfxBorders, contentBorders, flags );
@@ -110,7 +110,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgBorders& 
 	return WgBlockSetPtr(p);
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip*4) / 5;
 	int h = tile.h;
@@ -124,7 +124,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile5& tile, const WgBorder
 							gfxBorders, contentBorders, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip*3) / 4;
 	int h = tile.h;
@@ -137,7 +137,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile4& tile, const WgBorder
 							gfxBorders, contentBorders, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip*2) / 3;
 	int h = tile.h;
@@ -149,7 +149,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile3& tile, const WgBorder
 							gfxBorders, contentBorders, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip) / 2;
 	int h = tile.h;
@@ -160,7 +160,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile2& tile, const WgBorder
 							gfxBorders, contentBorders, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 	int	w = tile.w;
 	int h = (tile.h - tile.skip*4) / 5;
@@ -174,7 +174,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile5& tile, const WgBorder
 							gfxBorders, contentBorders, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 	int	w = tile.w;
 	int h = (tile.h - tile.skip*3) / 4;
@@ -187,7 +187,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile4& tile, const WgBorder
 							gfxBorders, contentBorders, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 	int	w = tile.w;
 	int h = (tile.h - tile.skip*2) / 3;
@@ -199,7 +199,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile3& tile, const WgBorder
 							gfxBorders, contentBorders, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
 {
 	int	w = tile.w;
 	int h = tile.h / 2;

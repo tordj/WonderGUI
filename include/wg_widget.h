@@ -176,7 +176,15 @@ class	WgWidget : public WgEmitter
 			POINTER_SOFT_OPAQUE,				///< Widget is opaque to the pointer, but doesn't block for underlying widgets.
 		};
 
+		/** */
 
+		enum	ChildGeoPolicy
+		{
+			CONSTRAINED,
+			CLIPPED,
+			PUSHED,
+//			FLOATING			NOT IMPLEMENTED YET!
+		};
 
 		virtual const char *Type( void ) const;
 		static const char * GetMyType();
@@ -218,6 +226,7 @@ class	WgWidget : public WgEmitter
 
 		virtual bool		SetGeometry( WgOrigo _origo, const WgRect& _geometry );
 		virtual bool		SetGeometry( WgOrigo _topLeft, Sint32 x1, Sint32 y1, WgOrigo _bottomRight, Sint32 x2, Sint32 y2 );
+		virtual bool		SetGeometry( const WgRect& _geometry );
 		inline const WgRect&	Geometry() const { return m_geo; };
 		WgRect				ScreenGeometry() const;
 
@@ -244,8 +253,11 @@ class	WgWidget : public WgEmitter
 		virtual bool	SetPosX( int _x );
 		virtual bool	SetPosY( int _y );
 
-		virtual void	SetConstrainChildren( bool bConstrain );
-		virtual bool	GetConstrainChildren() const { return m_bConstrainChildren; }
+		virtual void	SetChildGeoPolicy( ChildGeoPolicy policy );
+		virtual ChildGeoPolicy	GetChildGeoPolicy() const { return m_childGeoPolicy; }
+
+//		virtual void	SetConstrainChildren( bool bConstrain );
+//		virtual bool	GetConstrainChildren() const { return m_bConstrainChildren; }
 
 		virtual void	Enable();
 		virtual void	Disable();
@@ -356,7 +368,14 @@ class	WgWidget : public WgEmitter
 		bool		m_bEnabled;
 		bool		m_bHidden;
 
-		bool		m_bConstrainChildren;		// Forces children to stay inside.
+		ChildGeoPolicy	m_childGeoPolicy;
+
+//		bool		m_bConstrainChildren;		// Forces children to stay inside.
+		bool		m_bMoveChildren;
+
+
+
+
 
 		// To be set accordingly by derived classes. Initialised to default values.
 

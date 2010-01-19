@@ -108,7 +108,8 @@ void WgWidget::Init()
 	m_bModal 			= false;
 	m_bEnabled 			= true;
 	m_bHidden			= false;
-	m_bConstrainChildren= true;
+	m_childGeoPolicy	= CONSTRAINED;
+//	m_bConstrainChildren= true;
 //	m_origo						= WgOrigo::topLeft();  Already top-left by default.
 
 	m_actionFilterCopy	= 0;
@@ -218,6 +219,30 @@ bool WgWidget::SetGeometry( WgOrigo _origo, const WgRect& _geometry )
 	return UpdateGeometry( true );
 }
 
+//____ SetGeometry(3) _________________________________________________________
+/**
+Sets the geometry of this widget.
+
+@param	geometry	Geometry of this widget, where x and y position are relative
+to origo.
+
+If the specified geometry doesn't fit inside the parent, the size of the
+widget is first adjusted and secondly the position. 
+
+@return False if the specified geometry wasn't allowed and had to be tweaked.
+*/
+
+bool WgWidget::SetGeometry( const WgRect& _geometry )
+{
+	m_x1 = _geometry.x;
+	m_y1 = _geometry.y;
+	m_x2 = _geometry.x + _geometry.w;
+	m_y2 = _geometry.y + _geometry.h;
+
+	return UpdateGeometry( true );
+}
+
+
 //____ CloneGeometry() ________________________________________________________
 /**
 	Clones the geometry from another widget.
@@ -297,7 +322,7 @@ bool WgWidget::SetParent( WgWidget * _pNewParent, WgWidget * _pBelow )
 
 	// Check so we don't have any size constraints that would fail.
 
-	if( _pNewParent )
+	if( _pNewParent && _pNewParent->GetChildGeoPolicy() != CLIPPED )
 	{
 		if( m_sizeLimit.minW > _pNewParent->m_geo.w || m_sizeLimit.minH > _pNewParent->m_geo.h )
 		{
@@ -537,12 +562,24 @@ void	WgWidget::DisableBranch()
 
 
 //____ SetConstrainChildren() _________________________________________________
-
+/*
 void WgWidget::SetConstrainChildren( bool bConstrain )
 {
 	if( m_bConstrainChildren != bConstrain )
 	{
 		m_bConstrainChildren = bConstrain;
+		RefreshTreeSizeLimit();
+	}
+}
+*/
+
+//____ SetChildGeoPolicy() ____________________________________________________
+
+void WgWidget::SetChildGeoPolicy( ChildGeoPolicy policy )
+{
+	if( policy != m_childGeoPolicy )
+	{
+		m_childGeoPolicy = policy;
 		RefreshTreeSizeLimit();
 	}
 }
@@ -1563,7 +1600,7 @@ bool WgWidget::UpdateGeometry( bool bPreferResize, bool bMoveChildren )
 	}
 
 
-	if( m_pParent && m_pParent->m_bConstrainChildren )
+	if( m_pParent && (m_pParent->m_childGeoPolicy == CONSTRAINED || m_pParent->m_childGeoPolicy == PUSHED) )
 	{
 		// Then limit against our ancestry
 
@@ -1897,7 +1934,7 @@ void WgWidget::RefreshTreeSizeLimit( void )
 
 	// If children are free floating we don't have any tree size limit...
 
-	if( !m_bConstrainChildren )
+	if( m_childGeoPolicy != CONSTRAINED )
 	{
 		if( m_sizeLimit_tree.minW != minW || m_sizeLimit_tree.minH != minH ||
 			m_sizeLimit_tree.maxW != maxW || m_sizeLimit_tree.maxH != maxH )

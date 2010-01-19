@@ -36,6 +36,8 @@
 #	include <wg_key.h>
 #endif
 
+#include <vector>
+
 //#include "widget.h"
 
 class WgWidget;
@@ -123,6 +125,8 @@ public:
 
 	void	wheel_roll( Uint8 wheel, Sint32 distance );
 
+	void	flush_event_queue();
+
 	bool	setButtonRepeat( Uint32 delay, Uint32 rate );
 	bool	setKeyRepeat( Uint32 delay, Uint32 rate );
 	bool	setDoubleClick( Uint32 treshold );
@@ -184,6 +188,36 @@ protected:
 
 
 private:
+
+	enum WgInputEvent
+	{
+		WG_BUTTON_PRESS,
+		WG_BUTTON_RELEASE,
+		WG_KEY_PRESS,
+		WG_KEY_RELEASE,
+		WG_CHAR,
+		WG_WHEEL_ROLL,
+	};
+
+	struct WgInputEventData
+	{
+		WgInputEvent	event;
+		Uint32			timestamp;
+		WgModifierKeys	modifier;
+		Sint32			pointerX;
+		Sint32			pointerY;
+		Sint32			data0;
+		Sint32			data1;
+	};
+	std::vector<WgInputEventData> m_eventQueue;
+
+	void	button_press_( const WgInputEventData& ed );
+	void	button_release_( const WgInputEventData& ed );
+	void	key_press_( const WgInputEventData& ed );
+	void	key_release_( const WgInputEventData& ed );
+	void	character_( const WgInputEventData& ed );
+	void	wheel_roll_( const WgInputEventData& ed );
+
 	WgKey	translate_keycode( Uint16 native_keycode );
 
 	void	setRootWidget( Wdg_Root * pRootWidget );

@@ -180,10 +180,32 @@ void WgInput::begin_events( Uint32 milliseconds )
 }
 
 
+//____ flush_event_queue() ___________________________________________________________
+
+void WgInput::flush_event_queue()
+{
+	for(size_t i = 0; i < m_eventQueue.size(); i++)
+	{
+		switch(m_eventQueue[i].event)
+		{
+		case WG_BUTTON_PRESS: button_press_(m_eventQueue[i]); break;
+		case WG_BUTTON_RELEASE: button_release_(m_eventQueue[i]); break;
+		case WG_KEY_PRESS: key_press_(m_eventQueue[i]); break;
+		case WG_KEY_RELEASE: key_release_(m_eventQueue[i]); break;
+		case WG_CHAR: character_(m_eventQueue[i]); break;
+		case WG_WHEEL_ROLL: wheel_roll_(m_eventQueue[i]); break;
+		}
+	}
+	
+	m_eventQueue.clear();
+	m_eventQueue.reserve(16);
+}
+
 //____ end_events() ___________________________________________________________
 
 void WgInput::end_events()
 {
+	flush_event_queue();
 
 	// Generate new position data, wait with the widget stack...
 	m_currentPosition.x 			= m_pointerX;
@@ -466,17 +488,19 @@ void WgInput::pointer_move( Sint32 x, Sint32 y )
 
 //____ button_press() _________________________________________________________
 
-void WgInput::button_press( Uint8 button )
+void WgInput::button_press_( const WgInputEventData& ed )
 {
+	Uint8 button = ed.data0;
+
 	if( button < 1 || button > WG_MAX_BUTTONS )
 		return;
 
 	WgActionDetails	myAction;
 
-	myAction.x 			= m_pointerX;
-	myAction.y 			= m_pointerY;
-	myAction.modifier	= m_modifierKeys;
-	myAction.timestamp	= m_time;
+	myAction.x 			= ed.pointerX;
+	myAction.y 			= ed.pointerY;
+	myAction.modifier	= ed.modifier;
+	myAction.timestamp	= ed.timestamp;
 	myAction.nWidgets 	= 0;
 
 	// Update the widget stack
@@ -561,8 +585,10 @@ void WgInput::button_press( Uint8 button )
 
 //____ button_release() _______________________________________________________
 
-void WgInput::button_release( Uint8 button )
+void WgInput::button_release_( const WgInputEventData& ed )
 {
+	Uint8 button = ed.data0;
+
 	if( button < 1 || button > WG_MAX_BUTTONS )
 		return;
 
@@ -571,10 +597,10 @@ void WgInput::button_release( Uint8 button )
 
 	WgActionDetails	myAction;
 
-	myAction.x 			= m_pointerX;
-	myAction.y 			= m_pointerY;
-	myAction.timestamp	= m_time;
-	myAction.modifier	= m_modifierKeys;
+	myAction.x 			= ed.pointerX;
+	myAction.y 			= ed.pointerY;
+	myAction.timestamp	= ed.timestamp;
+	myAction.modifier	= ed.modifier;
 	myAction.nWidgets 	= 0;
 
 	// Update the widget stack
@@ -660,24 +686,26 @@ void WgInput::button_release( Uint8 button )
 
 //____ wheel_roll() ___________________________________________________________
 
-void WgInput::wheel_roll( Uint8 wheel, Sint32 distance )
+void WgInput::wheel_roll_( const WgInputEventData& ed )
 {
+	Uint8 wheel = ed.data0;
+
 	if( wheel < 1 || wheel > 3)
 		return;
 
 
 	WgActionDetails	myAction;
 
-	myAction.rolldistance = distance;
-	myAction.modifier	= m_modifierKeys;
-	myAction.timestamp	= m_time;
+	myAction.rolldistance = ed.data1;
+	myAction.modifier	= ed.modifier;
+	myAction.timestamp	= ed.timestamp;
 	myAction.nWidgets 	= 0;
 
 	// Update the widget stack
 
 
 	WgWidget * pBlockingModal = 0;
-	WgWidget * pWidget = m_pRootWidget->FindOccupant( m_pointerX, m_pointerY, true, 0, &pBlockingModal );
+	WgWidget * pWidget = m_pRootWidget->FindOccupant( ed.pointerX, ed.pointerY, true, 0, &pBlockingModal );
 	WgWidget * topMark = pWidget;
 	Sint32	blockFilter = (1 << (wheel-1)) + WgWidget::WHEEL1;
 
@@ -727,9 +755,12 @@ void WgInput::wheel_roll( Uint8 wheel, Sint32 distance )
 
 //____ character() ____________________________________________________________
 
-void WgInput::character( Uint16 character, Uint16 native_keycode_for_repeat )
+void WgInput::character_( const WgInputEventData& ed )
 {
 	// attach this character to the ActionDetails of keycode_for_repeat if valid.
+
+	Uint16 character = ed.data0;
+	Uint16 native_keycode_for_repeat = ed.data1;
 
 	if( native_keycode_for_repeat != 0 )
 	{
@@ -747,8 +778,8 @@ void WgInput::character( Uint16 character, Uint16 native_keycode_for_repeat )
 
 	WgActionDetails		myAction;
 
-	myAction.timestamp		= m_time;
-	myAction.modifier		= m_modifierKeys;
+	myAction.timestamp		= ed.timestamp;
+	myAction.modifier		= ed.modifier;
 	myAction.native_keycode	= native_keycode_for_repeat;
 	myAction.keycode		= translate_keycode( native_keycode_for_repeat );
 	myAction.character		= character;
@@ -786,8 +817,11 @@ void WgInput::character( Uint16 character, Uint16 native_keycode_for_repeat )
 
 //____ key_press() ____________________________________________________________
 
-void WgInput::key_press( Uint16 native_keycode, Uint16 character )
+void WgInput::key_press_( const WgInputEventData& ed )
 {
+	Uint16 native_keycode = ed.data0;
+	Uint16 character = ed.data1;
+
 	// Check if this key already is pressed and in that case ignore.
 
 	for( unsigned int i = 0 ; i < m_keys.nKeysDown ; i++ )
@@ -804,8 +838,8 @@ void WgInput::key_press( Uint16 native_keycode, Uint16 character )
 
 	WgActionDetails		myAction;
 
-	myAction.timestamp	= m_time;
-	myAction.modifier	= m_modifierKeys;
+	myAction.timestamp	= ed.timestamp;
+	myAction.modifier	= ed.modifier;
 	myAction.native_keycode	= native_keycode;
 	myAction.keycode	= keycode;
 	myAction.character	= character;
@@ -847,8 +881,8 @@ void WgInput::key_press( Uint16 native_keycode, Uint16 character )
 
 	// Update member structures
 
-	m_keys.aKeysDown[m_keys.nKeysDown].timestamp 		= m_time;
-	m_keys.aKeysDown[m_keys.nKeysDown].modifier			= m_modifierKeys;
+	m_keys.aKeysDown[m_keys.nKeysDown].timestamp 		= ed.timestamp;
+	m_keys.aKeysDown[m_keys.nKeysDown].modifier			= ed.modifier;
 	m_keys.aKeysDown[m_keys.nKeysDown].keycode 			= keycode;
 	m_keys.aKeysDown[m_keys.nKeysDown].native_keycode	= native_keycode;
 	m_keys.aKeysDown[m_keys.nKeysDown].character		= character;
@@ -859,8 +893,10 @@ void WgInput::key_press( Uint16 native_keycode, Uint16 character )
 
 //____ key_release() __________________________________________________________
 
-void WgInput::key_release( Uint16 native_keycode )
+void WgInput::key_release_( const WgInputEventData& ed )
 {
+	Uint16 native_keycode = ed.data0;
+
 	// Find which entry in the stack this corresponds to.
 
 	Uint32 key;
@@ -877,8 +913,8 @@ void WgInput::key_release( Uint16 native_keycode )
 
 	WgActionDetails		myAction;
 
-	myAction.timestamp		= m_time;
-	myAction.modifier		= m_modifierKeys;
+	myAction.timestamp		= ed.timestamp;
+	myAction.modifier		= ed.modifier;
 	myAction.keycode		= keycode;
 	myAction.native_keycode = native_keycode;
 	myAction.character		= m_keys.aKeysDown[key].character;
@@ -927,12 +963,91 @@ void WgInput::key_release( Uint16 native_keycode )
 	}
 }
 
+void WgInput::button_press( Uint8 button )
+{
+	WgInputEventData ed;
+	ed.event = WG_BUTTON_PRESS;
+	ed.timestamp = m_time;
+	ed.pointerX = m_pointerX;
+	ed.pointerY = m_pointerY;
+	ed.modifier = m_modifierKeys;
+	ed.data0 = button;
+	ed.data1 = 0;
+	m_eventQueue.push_back(ed);
+}
+
+void WgInput::button_release( Uint8 button )
+{
+	WgInputEventData ed;
+	ed.event = WG_BUTTON_RELEASE;
+	ed.timestamp = m_time;
+	ed.pointerX = m_pointerX;
+	ed.pointerY = m_pointerY;
+	ed.modifier = m_modifierKeys;
+	ed.data0 = button;
+	ed.data1 = 0;
+	m_eventQueue.push_back(ed);
+}
+
+void WgInput::key_press( Uint16 native_keycode, Uint16 character )
+{
+	WgInputEventData ed;
+	ed.event = WG_KEY_PRESS;
+	ed.timestamp = m_time;
+	ed.pointerX = m_pointerX;
+	ed.pointerY = m_pointerY;
+	ed.modifier = m_modifierKeys;
+	ed.data0 = native_keycode;
+	ed.data1 = character;
+	m_eventQueue.push_back(ed);
+}
+
+void WgInput::key_release( Uint16 native_keycode )
+{
+	WgInputEventData ed;
+	ed.event = WG_KEY_RELEASE;
+	ed.timestamp = m_time;
+	ed.pointerX = m_pointerX;
+	ed.pointerY = m_pointerY;
+	ed.modifier = m_modifierKeys;
+	ed.data0 = native_keycode;
+	ed.data1 = 0;
+	m_eventQueue.push_back(ed);
+}
+
+void WgInput::character( Uint16 character, Uint16 native_keycode_for_repeat )
+{
+	WgInputEventData ed;
+	ed.event = WG_CHAR;
+	ed.timestamp = m_time;
+	ed.pointerX = m_pointerX;
+	ed.pointerY = m_pointerY;
+	ed.modifier = m_modifierKeys;
+	ed.data0 = character;
+	ed.data1 = native_keycode_for_repeat;
+	m_eventQueue.push_back(ed);
+}
+
+void WgInput::wheel_roll( Uint8 wheel, Sint32 distance )
+{
+	WgInputEventData ed;
+	ed.event = WG_WHEEL_ROLL;
+	ed.timestamp = m_time;
+	ed.pointerX = m_pointerX;
+	ed.pointerY = m_pointerY;
+	ed.modifier = m_modifierKeys;
+	ed.data0 = wheel;
+	ed.data1 = distance;
+	m_eventQueue.push_back(ed);
+}
+
 //____ key_release_all() ______________________________________________________
 
 void WgInput::key_release_all()
 {
-	while( m_keys.nKeysDown > 0 )
-		key_release( m_keys.aKeysDown[0].native_keycode );
+	for(size_t iKey = 0; iKey < m_keys.nKeysDown; iKey++ )
+		key_release( m_keys.aKeysDown[iKey].native_keycode );
+	m_keys.nKeysDown = 0;
 }
 
 

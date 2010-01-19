@@ -71,7 +71,7 @@
 #ifdef _FINAL
 #	define ASSERT(expr, str) ((void)0)
 #else
-#	define ASSERT(expr, str) do { if(!(expr)) {s.Error(str, __FILE__, __LINE__); } } while(0)
+#	define ASSERT(expr, str) do { if(!(expr)) {s.Error(str, __FILE__, __LINE__); __asm { int 3 } } } while(0)
 #endif
 #define VERIFY(expr, str) do { if(!(expr)) { s.Error(str, __FILE__, __LINE__); return; } } while(0)
 
@@ -1460,7 +1460,13 @@ void WgSurfaceRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML
 {
 	std::string filename = xmlNode["file"];
 	std::string id = xmlNode["id"];
-	s.ResDb()->AddSurface(id, filename, new WgXMLMetaData(XmlNode()));
+	WgXMLMetaData* pMeta = new WgXMLMetaData(XmlNode());
+	if(!s.ResDb()->AddSurface(id, filename, pMeta))
+	{
+		delete pMeta;
+		s.Warning("Missing surface '" + filename + "'");
+		return;
+	}
 	m_pSurf = s.ResDb()->GetSurface(id);
 	ASSERT(m_pSurf, "invalid <surface>");
 }
