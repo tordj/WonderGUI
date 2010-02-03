@@ -107,6 +107,7 @@
 		<Unit filename="include/wg_gizmo_pixmap.h" />
 		<Unit filename="include/wg_gizmo_radiobutton.h" />
 		<Unit filename="include/wg_gizmo_refreshbutton.h" />
+		<Unit filename="include/wg_gizmo_row.h" />
 		<Unit filename="include/wg_gizmo_tablist.h" />
 		<Unit filename="include/wg_gizmo_text.h" />
 		<Unit filename="include/wg_gizmo_value.h" />
