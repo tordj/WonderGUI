@@ -35,22 +35,6 @@ class Wdg_Lodder:public WgWidget
 		virtual const char * Type() const;
 		static const char * GetMyType();
 
-
-		bool	AddLOD( WgWidget * pWidget, WgSize minSize );
-		bool	RemoveLOD( WgWidget * pWidget );
-		void	Clear();
-		
-
-	protected:
-		WgWidget * NewOfMyType() const;
-
-	private:	
-		void	Init();
-		bool	DoMyOwnMarkTest( int _x, int _y );
-		void	DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo );
-
-		void	SelectLod( const WgRect& r );
-		
 		class Lod : private WgLink
 		{
 			friend class WgChain<Lod>;
@@ -60,6 +44,25 @@ class Wdg_Lodder:public WgWidget
 
 			LINK_METHODS( Lod );
 		};
+
+		void		AddChildrenAsLODs();
+		const Lod*	GetLOD(Uint32 iLod) const;
+		Uint32		GetLODCount() const { return m_lodChain.size(); }
+		bool		IsLOD(WgWidget* pWidget) const;
+
+	protected:
+		WgWidget * NewOfMyType() const;
+
+		bool	AddLOD( WgWidget * pWidget );
+		bool	RemoveLOD( WgWidget * pWidget );
+		void	Clear();
+
+	private:	
+		void	Init();
+		bool	DoMyOwnMarkTest( int _x, int _y );
+		void	DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo );
+
+		void	SelectLod( const WgRect& r );
 
 		WgChain<Lod>	m_lodChain;
 

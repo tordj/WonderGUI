@@ -36,6 +36,7 @@
 #include <wdg_fill.h>
 #include <wdg_gridview.h>
 #include <wdg_listview.h>
+#include <wdg_lodder.h>
 #include <wdg_menu.h>
 #include <wdg_menubar.h>
 #include <wdg_pixmap.h>
@@ -301,7 +302,7 @@ void WgResourceXML::SetMetaData(WgResDB::MetaData* metaData)
 
 void WgResourceXML::RegisterResources()
 {
-	if(WgResourceFactoryXML::Contains("xml") == true)
+	if(WgResourceFactoryXML::Contains("xml"))
 		return;
 
 	WgResourceFactoryXML::Register<WgXmlRoot>			(WgXmlRoot::TagName());
@@ -388,7 +389,10 @@ void WgResourceXML::RegisterResources()
 
 	WgResourceFactoryXML::Register<Wdg_Pixmap_Res>		(Wdg_Pixmap_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_Pixmap_Res>		(Wdg_Pixmap::GetMyType());
-
+	
+	WgResourceFactoryXML::Register<Wdg_Lodder_Res>		(Wdg_Lodder_Res::TagName());
+	WgResourceFactoryXML::Register<Wdg_Lodder_Res>		(Wdg_Lodder::GetMyType());
+	
 	WgResourceFactoryXML::Register<Wdg_RadioButton2_Res>(Wdg_RadioButton2_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_RadioButton2_Res>(Wdg_RadioButton2::GetMyType());
 
@@ -423,6 +427,12 @@ void WgResourceXML::RegisterResources()
 	WgResourceFactoryXML::Register<WgBreakTextRes>		(WgBreakTextRes::TagName());
 
 	WgResourceFactoryXML::Register<WgConnectRes>		(WgConnectRes::TagName());
+
+}
+
+void WgResourceXML::UnregisterResources()
+{
+	WgResourceFactoryXML::Clear();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -437,7 +447,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	// references
 	for(WgResDB::ResDBRes* res = s.ResDb()->GetFirstResDBRes(); res; res = res->getNext())
 	{
-		WgReferenceRes refRes(this, res->res);
+		WgReferenceRes refRes(this, res);
 		refRes.SetMetaData(res->meta);
 		refRes.Serialize(s);
 	}
@@ -643,7 +653,7 @@ void WgConnectRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML
 //////////////////////////////////////////////////////////////////////////
 void WgReferenceRes::Serialize(WgResourceSerializerXML& s)
 {
-	WgResDB::ResDBRes* res = s.ResDb()->FindResDbRes(m_pResDb);
+	WgResDB::ResDBRes* res = m_pResDbRes;
 	VERIFY(res, "db reference does not exist in ResDb");
 	const WgXmlNode& xmlNode = XmlNode();
 
@@ -3678,6 +3688,72 @@ void Wdg_Pixmap_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerX
 
 	widget->SetSource(s.ResDb()->GetBlockSet(xmlNode["blockset"]));
 
+}
+
+//////////////////////////////////////////////////////////////////////////
+/// Wdg_Lodder_Res ///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// <lodder [widget-attribs]>
+//	 ...
+// </lodder>
+Wdg_Lodder_Res::Wdg_Lodder_Res(WgResourceXML* parent, Wdg_Lodder* widget) :
+	WgWidgetRes(parent, widget)
+{
+}
+
+void Wdg_Lodder_Res::Serialize(WgResourceSerializerXML& s)
+{
+	s.BeginTag(TagName(), XmlNode());
+
+	// Detach LODs and write them out separately
+	for(Uint32 i = 0; i < GetWidget()->GetLODCount(); i++)
+	{
+		const Wdg_Lodder::Lod* pLod = GetWidget()->GetLOD(i);
+		pLod->pWidget->SetParent(0);
+	}
+
+	// Write widget params and all non-LOD-children
+	WgWidgetRes::Serialize(s);
+
+	// Write LODs
+	for(Uint32 i = 0; i < GetWidget()->GetLODCount(); i++)
+	{
+		const Wdg_Lodder::Lod* pLod = GetWidget()->GetLOD(i);
+
+		// restore original minsize
+		pLod->pWidget->MinSize(pLod->minSize);
+
+		WgResDB::WidgetRes* widgetDb = s.ResDb()->FindResWidget(pLod->pWidget);
+		WgResourceXML* xmlRes = WgResourceFactoryXML::Create(pLod->pWidget->Type(), this);
+		WgWidgetRes* widgetRes = WgResourceXML::Cast<WgWidgetRes>(xmlRes);
+		ASSERT(widgetRes, std::string("invalid widget type: ") + pLod->pWidget->Type());
+		if(widgetRes)
+		{
+			if(widgetDb)
+				widgetRes->SetMetaData(widgetDb->meta);
+			widgetRes->SetWidget(pLod->pWidget);
+			widgetRes->Serialize(s);
+		}
+		delete xmlRes;
+
+		// Reattach LOD to lodder
+		pLod->pWidget->MinSize(0, 0);
+		pLod->pWidget->SetParent(GetWidget());
+	}
+
+	s.EndTag();
+}
+
+void Wdg_Lodder_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
+{
+	Wdg_Lodder* widget = new Wdg_Lodder();
+	m_Widget = widget;
+	WgWidgetRes::Deserialize(xmlNode, s);
+}
+
+void Wdg_Lodder_Res::Deserialized(WgResourceSerializerXML& s)
+{
+	GetWidget()->AddChildrenAsLODs();
 }
 
 //////////////////////////////////////////////////////////////////////////

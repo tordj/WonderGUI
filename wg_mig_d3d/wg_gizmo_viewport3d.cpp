@@ -1,7 +1,7 @@
 
-#include	<wg_gizmo_viewport3d.h>
+#include <wg_gizmo_viewport3d.h>
 
-#include "EObjects\\ERenderer.h"
+#include "EObjects/ERenderer.h"
 //#include "../../Intobet/Misc/Util/Util.hpp"
 
 static const char	s_type[] = {"TordJ/Viewport3D"};

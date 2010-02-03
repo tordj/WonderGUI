@@ -65,6 +65,8 @@ bool WgSurfaceMIG::IsOpaque() const
 Uint32 WgSurfaceMIG::GetPixel( Uint32 x, Uint32 y ) const
 {
 	Uint32 pixel = 0;
+	if( m_pTexture->GetPixelFormat() != EPixelFormat::eRGBA32 )
+		return pixel;	// TODO: support other formats?
 	if(x < GetWidth() && y < GetHeight())
 	{
 		if( m_pLockedSurf )
@@ -88,6 +90,8 @@ Uint32 WgSurfaceMIG::GetPixel( Uint32 x, Uint32 y ) const
 Uint8 WgSurfaceMIG::GetOpacity( Uint32 x, Uint32 y ) const
 {
 	Uint8 alpha = 255;
+	if( m_pTexture->GetPixelFormat() != EPixelFormat::eRGBA32 )
+		return alpha;	// TODO: support other formats?
 	if(x < GetWidth() && y < GetHeight())
 	{
 		if( m_pLockedSurf )

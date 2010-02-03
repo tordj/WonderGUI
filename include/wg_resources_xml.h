@@ -130,6 +130,7 @@ public:
 
 
 	static void		RegisterResources();
+	static void		UnregisterResources();
 
 	template<typename T>
 	static T* Cast(WgResourceXML* res)
@@ -206,7 +207,7 @@ public:
 class WgReferenceRes : public WgResourceXML
 {
 public:
-	WgReferenceRes(WgResourceXML* parent, WgResDB* resDb = 0) : WgResourceXML(parent), m_pResDb(resDb) {}
+	WgReferenceRes(WgResourceXML* parent, WgResDB::ResDBRes* resDbRes = 0) : WgResourceXML(parent), m_pResDbRes(resDbRes) {}
 
 	virtual void Serialize(WgResourceSerializerXML& s);
 	virtual void Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
@@ -215,7 +216,7 @@ public:
 
 	static const char* TagName() { return "include"; }
 private:
-	WgResDB*	m_pResDb;
+	WgResDB::ResDBRes* m_pResDbRes;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -846,6 +847,7 @@ public:
 	virtual void	Accept(WgResourceVisitor* visitor)	{ visitor->Visit(this); }
 
 protected:
+
 	WgWidgetRes(WgResourceXML* parent, WgWidget* widget = 0) : WgResourceXML(parent), m_Widget(widget) { }
 	virtual ~WgWidgetRes();
 
@@ -1130,6 +1132,21 @@ public:
 	virtual void		Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
 
 	static const char*	TagName() { return "pixmap"; }
+};
+
+/// Wdg_Lodder_Res ///////////////////////////////////////////////////////
+class Wdg_Lodder_Res : public WgWidgetRes
+{
+public:
+	Wdg_Lodder_Res(WgResourceXML* parent, class Wdg_Lodder* lodder = 0);
+
+	class Wdg_Lodder*	GetWidget() { return (Wdg_Lodder*)WgWidgetRes::GetWidget(); }
+
+	virtual void		Serialize(WgResourceSerializerXML& s);
+	virtual void		Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
+	virtual void 		Deserialized(WgResourceSerializerXML& s);
+
+	static const char*	TagName() { return "lodder"; }
 };
 
 /// Wdg_RadioButton2_Res /////////////////////////////////////////////////

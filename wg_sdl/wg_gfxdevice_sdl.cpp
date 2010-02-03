@@ -327,8 +327,16 @@ int SDL_SoftStretchModified( SDL_Surface *src , SDL_Rect *aSrcRect , SDL_Surface
 		c00 = csp;
 		c01 = csp;
 		c01++;
-		c10 = (tColorRGBA *) ((Uint8 *) csp + src->pitch);
-		c11 = c10;
+		if( y >= dstRect.h-1 )
+		{
+			c10 = c00;
+			c11 = c00;
+		}
+		else
+		{
+			c10 = (tColorRGBA *) ((Uint8 *) csp + src->pitch);
+			c11 = c10;
+		}
 		c11++;
 		int* csax = dxLUT;
 		for( x = 0 ; x < dstRect.w ; x++ )  
@@ -382,10 +390,14 @@ int SDL_SoftStretchModified( SDL_Surface *src , SDL_Rect *aSrcRect , SDL_Surface
 
 			csax++;
 			sstep = (*csax >> 16);
-			c00 += sstep;
-			c01 += sstep;
-			c10 += sstep;
-			c11 += sstep;
+			
+			if( x <= dstRect.w-1 )
+			{
+				c00 += sstep;
+				c01 += sstep;
+				c10 += sstep;
+				c11 += sstep;
+			}
 			
 			pDst++;
 		}
