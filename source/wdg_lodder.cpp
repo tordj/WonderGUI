@@ -55,17 +55,42 @@ const char * Wdg_Lodder::GetMyType( void )
 }
 
 //_____________________________________________________________________________
-bool Wdg_Lodder::AddLOD( WgWidget * pWidget, WgSize minSize )
+bool Wdg_Lodder::AddLOD( WgWidget * pWidget )
 {
-	pWidget->SetParent(0);
+	if(IsLOD(pWidget))
+		return true;
 
 	Lod * pNew = new Lod();
 	pNew->pWidget = pWidget;
-	pNew->minSize = minSize;
+	pNew->minSize = pWidget->GetMinSize();
 	m_lodChain.push_back(pNew);
+
+	pWidget->HideBranch();
+	pWidget->MinSize(0, 0);
+
+	if(!pWidget->SetParent(this))
+	{
+		RemoveLOD(pWidget);
+		return false;
+	}
 
 	SelectLod(m_geo);
 	return true;
+}
+
+void Wdg_Lodder::AddChildrenAsLODs()
+{
+	for( WgWidget* pChild = FirstChild(); pChild; pChild = pChild->NextSibling() )
+	{
+		AddLOD(pChild);
+	}
+}
+
+const Wdg_Lodder::Lod* Wdg_Lodder::GetLOD(Uint32 iLod) const
+{
+	if(iLod >= m_lodChain.size())
+		return 0;
+	return m_lodChain.get(iLod);
 }
 
 //_____________________________________________________________________________
@@ -77,7 +102,6 @@ bool Wdg_Lodder::RemoveLOD( WgWidget * pWidget )
 	{
 		if( p->pWidget == pWidget )
 		{
-			delete p->pWidget;
 			delete p;
 
 			if( m_pCurrentLod == pWidget )
@@ -123,10 +147,10 @@ void Wdg_Lodder::SelectLod( const WgRect& r )
 	if( pWidget != m_pCurrentLod )
 	{
 		if( m_pCurrentLod )
-			m_pCurrentLod->SetParent(0);
+			m_pCurrentLod->HideBranch();
 
 		if( pWidget )
-			pWidget->SetParent(this);
+			pWidget->ShowBranch();
 
 		m_pCurrentLod = pWidget;
 
@@ -134,6 +158,20 @@ void Wdg_Lodder::SelectLod( const WgRect& r )
 	}
 }
 
+//_____________________________________________________________________________
+bool Wdg_Lodder::IsLOD(WgWidget* pWidget) const
+{
+	Lod * p = m_lodChain.getFirst();
+
+	while( p )
+	{
+		if( p->pWidget == pWidget )
+			return true;
+
+		p = p->getNext();
+	}
+	return false;
+}
 
 //_____________________________________________________________________________
 bool Wdg_Lodder::DoMyOwnMarkTest( int _x, int _y )

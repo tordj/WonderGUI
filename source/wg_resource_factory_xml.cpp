@@ -46,3 +46,7 @@ WgResourceXML* WgResourceFactoryXML::Create(const std::string &name, WgResourceX
 	return 0;
 }
 
+void WgResourceFactoryXML::Clear()
+{
+	m_Map.clear();
+}

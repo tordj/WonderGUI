@@ -47,6 +47,7 @@ WgGizmoEditline::WgGizmoEditline()
 
 WgGizmoEditline::~WgGizmoEditline()
 {
+	delete m_pMyCursor;
 }
 
 //____ Type() _________________________________________________________________

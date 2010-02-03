@@ -42,6 +42,7 @@ public:
 	static int				Register(const std::string &name, CreateFunc func);
 	static bool				Contains(const std::string &name);
 	static WgResourceXML*	Create(const std::string &name, WgResourceXML* parent);
+	static void				Clear();
 
 	template<typename T>
 	struct AutoReg { static WgResourceXML* Create(WgResourceXML* parent) { return new T(parent); } };

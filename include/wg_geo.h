@@ -311,17 +311,10 @@ inline bool WgRect::Contains( const WgRect& _rect ) const
 //_____________________________________________________________________________
 inline bool WgRect::IntersectsWith( const WgRect& _rect ) const
 {
-	Sint32 spanW = Width() + _rect.Width();
-	if(WgAbs(Right() - _rect.Left()) >= spanW)
-		return false;
-	if(WgAbs(Left() - _rect.Right()) >= spanW)
-		return false;
-
-	Sint32 spanH = Height() + _rect.Height();
-	if(WgAbs(Top() - _rect.Bottom()) >= spanH)
-		return false;
-	if(WgAbs(Bottom() - _rect.Top()) >= spanH)
-		return false;
+	if(Left() >= _rect.Right()) return false;
+	if(Right() <= _rect.Left()) return false;
+	if(Top() >= _rect.Bottom()) return false;
+	if(Bottom() <= _rect.Top()) return false;
 
 	return true;
 }
