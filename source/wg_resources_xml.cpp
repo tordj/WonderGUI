@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -72,7 +72,11 @@
 #ifdef _FINAL
 #	define ASSERT(expr, str) ((void)0)
 #else
-#	define ASSERT(expr, str) do { if(!(expr)) {s.Error(str, __FILE__, __LINE__); __asm { int 3 } } } while(0)
+#	ifdef WIN32
+#		define ASSERT(expr, str) do { if(!(expr)) {s.Error(str, __FILE__, __LINE__); __asm { int 3 } } } while(0)
+#	else
+#		define ASSERT(expr, str) do { if(!(expr)) {s.Error(str, __FILE__, __LINE__); } } while(0)
+#	endif
 #endif
 #define VERIFY(expr, str) do { if(!(expr)) { s.Error(str, __FILE__, __LINE__); return; } } while(0)
 
@@ -238,7 +242,7 @@ namespace
 		s.AddText(pBuf);
 		delete[] pBuf;
 	}
-	
+
 	template<typename T>
 	void WriteTextAttrib(WgResourceSerializerXML& s, T* pText, const std::string& attr)
 	{
@@ -321,19 +325,19 @@ void WgResourceXML::RegisterResources()
 	WgResourceFactoryXML::Register<WgBorderRes>			(WgBorderRes::TagName());
 	WgResourceFactoryXML::Register<WgTileRes>			(WgTileRes::TagName());
 	WgResourceFactoryXML::Register<WgBlockSetRes>		(WgBlockSetRes::TagName());
-	
+
 	WgResourceFactoryXML::Register<WgItemPixmapRes>		(WgItemPixmapRes::TagName());
 	WgResourceFactoryXML::Register<WgItemPixmapRes>		(WgItemPixmap::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<WgItemRowRes>		(WgItemRowRes::TagName());
 	WgResourceFactoryXML::Register<WgItemRowRes>		(WgItemRow::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<WgItemStackRes>		(WgItemStackRes::TagName());
 	WgResourceFactoryXML::Register<WgItemStackRes>		(WgItemStack::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<WgItemTextRes>		(WgItemTextRes::TagName());
 	WgResourceFactoryXML::Register<WgItemTextRes>		(WgItemText::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<WgItemWrapTextRes>	(WgItemWrapTextRes::TagName());
 	WgResourceFactoryXML::Register<WgItemWrapTextRes>	(WgItemWrapText::GetMyType());
 
@@ -351,38 +355,38 @@ void WgResourceXML::RegisterResources()
 
 	WgResourceFactoryXML::Register<Wdg_CheckBox2_Res>	(Wdg_CheckBox2_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_CheckBox2_Res>	(Wdg_CheckBox2::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_ComboBox_Res>	(Wdg_ComboBox_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_ComboBox_Res>	(Wdg_ComboBox::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_Container_Res>	(Wdg_Container_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_Container_Res>	(Wdg_Container::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_HDrag_Res>		(Wdg_HDrag_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_HDrag_Res>		(Wdg_HDrag::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_VDrag_Res>		(Wdg_VDrag_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_VDrag_Res>		(Wdg_VDrag::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_EditValue_Res>	(Wdg_EditValue_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_EditValue_Res>	(Wdg_EditValue::GetMyType());
 
 	WgResourceFactoryXML::Register<Wdg_Fill_Res>		(Wdg_Fill_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_Fill_Res>		(Wdg_Fill::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_GridView_Res>	(Wdg_GridView_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_GridView_Res>	(Wdg_GridView::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_ListView_Res>	(Wdg_ListView_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_ListView_Res>	(Wdg_ListView::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_Menu_Res>		(Wdg_Menu_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_Menu_Res>		(Wdg_Menu::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_MenuBar_Res>		(Wdg_MenuBar_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_MenuBar_Res>		(Wdg_MenuBar::GetMyType());
 	WgResourceFactoryXML::Register<WgMenuBarItemRes>	(WgMenuBarItemRes::TagName());
-	
+
 	WgResourceFactoryXML::Register<Wdg_Pixmap_Res>		(Wdg_Pixmap_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_Pixmap_Res>		(Wdg_Pixmap::GetMyType());
 	
@@ -391,23 +395,23 @@ void WgResourceXML::RegisterResources()
 	
 	WgResourceFactoryXML::Register<Wdg_RadioButton2_Res>(Wdg_RadioButton2_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_RadioButton2_Res>(Wdg_RadioButton2::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_Root_Res>		(Wdg_Root_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_Root_Res>		(Wdg_Root::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_Shader_Res>		(Wdg_Shader_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_Shader_Res>		(Wdg_Shader::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_TableView_Res>	(Wdg_TableView_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_TableView_Res>	(Wdg_TableView::GetMyType());
 
 	WgResourceFactoryXML::Register<WgTableColumnRes>	(WgTableColumnRes::TagName());
-	
+
 	WgResourceFactoryXML::Register<Wdg_TabList_Res>		(Wdg_TabList_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_TabList_Res>		(Wdg_TabList::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<WgTabRes>			(WgTabRes::TagName());
-	
+
 	WgResourceFactoryXML::Register<Wdg_Text_Res>	(Wdg_Text_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_Text_Res>	(Wdg_Text::GetMyType());
 
@@ -827,9 +831,9 @@ void WgButtonLayoutRes::Serialize(WgResourceSerializerXML& s, const WgXmlNode& x
 		{
 		case WgGizmoDragbar::DEFAULT:		s.AddAttribute(attr, "default"); break;
 		case WgGizmoDragbar::HEADER_FWD:	s.AddAttribute(attr, "head_fwd"); break;
-		case WgGizmoDragbar::HEADER_BWD:	s.AddAttribute(attr, "head_bwd"); break;	
+		case WgGizmoDragbar::HEADER_BWD:	s.AddAttribute(attr, "head_bwd"); break;
 		case WgGizmoDragbar::FOOTER_FWD:	s.AddAttribute(attr, "foot_fwd"); break;
-		case WgGizmoDragbar::FOOTER_BWD:	s.AddAttribute(attr, "foot_bwd"); break;	
+		case WgGizmoDragbar::FOOTER_BWD:	s.AddAttribute(attr, "foot_bwd"); break;
 		case WgGizmoDragbar::WINDOWS:		s.AddAttribute(attr, "windows"); break;
 		case WgGizmoDragbar::NEXT_VERT:	s.AddAttribute(attr, "vert"); break;
 		case WgGizmoDragbar::NEXT_HORR:	s.AddAttribute(attr, "horr"); break;
@@ -914,7 +918,7 @@ void WgModePropRes::Serialize(WgResourceSerializerXML& s)
 
 	WgColor color = textProp->GetColor(m_mode);
 	if(color != textPropRes->GetColor())
-		WgColorRes::Serialize(s, XmlNode(), "col", color, WgColor(0, color.a+1)); // force write by making color != default 
+		WgColorRes::Serialize(s, XmlNode(), "col", color, WgColor(0, color.a+1)); // force write by making color != default
 
 	if(textProp->IsUnderlined(m_mode) != textPropRes->IsUnderlined())
 		s.AddAttribute("underlined", WgUtil::ToString(textProp->IsUnderlined(m_mode)));
@@ -1006,7 +1010,7 @@ void WgTextPropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 
 	m_prop.SetStyle( m_style );
 
-	if(m_bColored) 
+	if(m_bColored)
 		m_prop.SetColor(m_color);
 
 	if( m_underlined )
@@ -1039,7 +1043,7 @@ void WgValueFormatRes::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr<Uint8>(s, xmlNode, "grouping", m_format->getGrouping(), 0);
 	WriteDiffAttr<Uint16>(s, xmlNode, "separator", m_format->getSeparator(), 0xA0);
 	WriteDiffAttr<Uint16>(s, xmlNode, "period", m_format->getPeriod(), 0x2e);
-	
+
 	Uint16 pre[5] = {0};
 	Uint16 suf[5] = {0};
 
@@ -1755,7 +1759,7 @@ WgRect WgRectRes::Deserialize(const WgXmlNode& xmlNode)
 		WgUtil::FromString(xmlNode["x"], rect.x);
 		WgUtil::FromString(xmlNode["y"], rect.y);
 		WgUtil::FromString(xmlNode["w"], rect.w);
-		WgUtil::FromString(xmlNode["h"], rect.h); 
+		WgUtil::FromString(xmlNode["h"], rect.h);
 	}
 	return rect;
 }
@@ -2186,7 +2190,7 @@ void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, 
 	WgText *pTextObj = holder->TextObj();
 	const WgChar *pText = pTextObj->getText();
 	WriteTextAttrib(s, pText, "text");
-	
+
 	WriteDiffAttr(s, xmlNode, "textalign", holder->TextAlignment(), WgOrigo::topLeft());
 
 	if(xmlNode.HasAttribute("tint") || holder->TextTintMode() != TINTMODE_MULTIPLY)
@@ -2226,7 +2230,7 @@ void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, 
 			if(pCurProp == holder->GetTextDefaultProperties())
 				pCurProp = 0;
 		}
-		
+
 		textBuf[iBuf++] = pText->GetGlyph();
 	}
 	if(iBuf > 0)
@@ -2290,7 +2294,7 @@ void WgEditTextRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 void WgPropRes::Serialize(WgResourceSerializerXML& s)
 {
 	s.BeginTag(TagName());
-	
+
 	std::string id = s.ResDb()->FindTextPropId(m_pProp);
 
 	if(id.size())
@@ -2561,7 +2565,7 @@ void WgWidgetRes::Serialize(WgResourceSerializerXML& s)
 void WgWidgetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
 	assert(m_Widget);
-	
+
 	m_Widget->SetTooltipDelay(WgUtil::ToSint32(xmlNode["tooltipdelay"], 500));
 	m_Widget->SetLayer(WgUtil::ToUint8(xmlNode["layer"], WG_DEFAULT_LAYER));
 	m_Widget->SetPointerMask(WgPointerMaskRes::Deserialize(xmlNode, "pointermask"));
@@ -2589,7 +2593,7 @@ void WgWidgetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 //////////////////////////////////////////////////////////////////////////
 /// Wdg_Button_Res ///////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-// <button [widget-attribs] 
+// <button [widget-attribs]
 //		blockset=[name]
 //		text=[string]
 //		displacement=[xUp, yUp, xOver, yOver, xDown, yDown]
@@ -2669,7 +2673,7 @@ WgCharBuffer* Wdg_Button_Res::GetCharBuffer()
 //////////////////////////////////////////////////////////////////////////
 /// Wdg_RefreshButton_Res ////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-// <refreshbutton [widget-attribs] 
+// <refreshbutton [widget-attribs]
 //		blockset=[name]
 //		normal_text=[string]
 //		textborder=[left, right, up, down]
@@ -2681,7 +2685,7 @@ WgCharBuffer* Wdg_Button_Res::GetCharBuffer()
 //		refresh_text=[string]
 //		anim_target=[icon/button_centered/button_stretched]
 //		restartable=[bool]
-//		
+//
 //	/>
 Wdg_RefreshButton_Res::Wdg_RefreshButton_Res(WgResourceXML* parent, Wdg_RefreshButton* widget) :
 	WgWidgetRes(parent, widget),
@@ -2720,7 +2724,7 @@ void Wdg_RefreshButton_Res::Serialize(WgResourceSerializerXML& s)
 
 	if( widget->GetRefreshAnimation() )
 		WriteDiffAttr( s, xmlNode, "refresh_anim", s.ResDb()->FindAnimId(widget->GetRefreshAnimation()).c_str(), "" );
-	
+
 	WriteDiffAttr( s, xmlNode, "refresh_mode", widget->GetRefreshMode()==WgGizmoRefreshButton::SPINNING? "spinning":"progress", "" );
 	WriteTextAttrib(s, widget->GetRefreshText(), "refresh_text");
 
@@ -2773,7 +2777,7 @@ void Wdg_RefreshButton_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeri
 
 
 	widget->SetRefreshAnimation( (WgGfxAnim*)s.ResDb()->GetAnim( xmlNode["refresh_anim"] ) );
-	
+
 	std::string mode = xmlNode["refresh_mode"];
 	if( mode.size() > 0 )
 	{
@@ -2793,7 +2797,7 @@ void Wdg_RefreshButton_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeri
 		else if( target == "button_stretched" )
 			widget->SetAnimTarget( WgGizmoRefreshButton::BUTTON_STRETCHED );
 	}
-	
+
 	widget->SetRestartable(WgUtil::ToBool(xmlNode["restartable"]));
 
 	widget->SetRefreshText(  WgCharSeq(ReadLocalizedString(xmlNode["refresh_text"], s).c_str()));
@@ -2815,12 +2819,12 @@ WgCharBuffer* Wdg_RefreshButton_Res::GetCharBuffer()
 //////////////////////////////////////////////////////////////////////////
 /// Wdg_CheckBox2_Res ////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-// <checkbox [widget-attribs] 
+// <checkbox [widget-attribs]
 //		blockset_checked=[name]
 //		blockset_unchecked=[name]
 //		text=[string]
 //		displacement=[xUnchecked, yUnchecked, xOver, yOver, xChecked, yChecked]
-//		
+//
 //	/>
 Wdg_CheckBox2_Res::Wdg_CheckBox2_Res(WgResourceXML* parent, Wdg_CheckBox2* widget) :
 	WgWidgetRes(parent, widget),
@@ -3212,7 +3216,7 @@ void WgBaseViewRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 			WgUtil::FromString(attr.GetValue(), x, y);
 			view->SetStepSize(x, y);
 		}
-		else if(attr.GetName() == "jumpsize") 
+		else if(attr.GetName() == "jumpsize")
 		{
 			float x, y;
 			WgUtil::FromString(attr.GetValue(), x, y);
@@ -3472,7 +3476,7 @@ void Wdg_Menu_Res::Serialize(WgResourceSerializerXML& s)
 	WgButtonLayoutRes::Serialize(s, xmlNode, "slider_layout", widget->GetSliderButtonLayout());
 	WriteDiffAttr(s, xmlNode, "entryheight", widget->GetEntryHeight(), 0);
 
-	// 
+	//
 	for(WgMenuItem* item = widget->GetFirstItem(); item; item = item->getNext())
 	{
 		WgMenuItemRes* itemRes = 0;
@@ -4035,7 +4039,7 @@ void Wdg_TableView_Res::Serialize(WgResourceSerializerXML& s)
 	WgColorRes::Serialize(s, xmlNode, "linemark_col", widget->GetLineMarkColor());
 
 	WriteBlockSetAttr(s, widget->GetLineMarkSource(), "linemark_blockset");
-	
+
 	//
 
 	Uint32 nRowColors = widget->GetRowColorCount();

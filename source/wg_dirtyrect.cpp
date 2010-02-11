@@ -64,7 +64,7 @@ void WgDirtyRectObj::Clip( const WgRect * _pClip )
 				pRect->y + pRect->h > _pClip->y + _pClip->h )
 		{
 
-			if( !pRect->Union( *pRect, *_pClip ) )
+			if( !pRect->Intersection( *pRect, *_pClip ) )
 			{
 				// Delete the rectangle
 
@@ -450,7 +450,7 @@ void WgDirtyRectObj::ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pCli
 
 				// Finally, clip the dirty rectangle itself.
 
-				pRect->Union( *pRect, *_pClip );
+				pRect->Intersection( *pRect, *_pClip );
 			}
 			else																// Fully covered by our clip rectangle.
 			{

@@ -224,7 +224,7 @@ public:
 	void Grow(int left, int top, int right, int bottom);
 
 
-	bool Union( const WgRect& r1, const WgRect& r2 );
+	bool Intersection( const WgRect& r1, const WgRect& r2 );
 
 	void GrowToContain( Sint32 x, Sint32 y );
 	void GrowToContain( const WgRect& r );

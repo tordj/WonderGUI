@@ -1116,7 +1116,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 		r.h = pRow->Height() + m_cellPaddingY*2;
 
 		WgRect	u;
-		if( u.Union( r, clipView ) )
+		if( u.Intersection( r, clipView ) )
 		{
 			if( pRow->IsSelected() )
 			{
@@ -1189,7 +1189,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			r.h = m_emptyRowHeight;
 
 			WgRect	u;
-			if( u.Union( r, clipView ) )
+			if( u.Intersection( r, clipView ) )
 			{
 				if( m_nRowColors > 0 )
 				{

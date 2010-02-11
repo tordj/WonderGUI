@@ -22,6 +22,7 @@
 
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include <wg_resourceserializer_xml.h>
 
@@ -94,7 +95,9 @@ void WgResourceSerializerXML::Error(const std::string& err, const char* pFile, i
 
 void WgResourceSerializerXML::Warning(const std::string& warn)
 {
+#ifdef WIN32
 	OutputDebugStringA((warn + "\n").c_str());
+#endif
 	printf((warn + "\n").c_str());
 }
 

@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -44,7 +44,7 @@ WgRect::WgRect( const WgRect& r )
 
 WgRect::WgRect( const WgRect& r1, const WgRect& r2 )
 {
-	Union( r1, r2 );
+	Intersection( r1, r2 );
 }
 
 WgRect::WgRect( const WgCord32& p1, const WgCord32& p2 )
@@ -82,9 +82,9 @@ WgRect::WgRect( const WgCord32& p, const WgSize& sz )
 
 
 
-//____ Union() ________________________________________________________________
+//____ Intersection() ________________________________________________________________
 
-bool WgRect::Union( const WgRect& _r1, const WgRect& _r2 )
+bool WgRect::Intersection( const WgRect& _r1, const WgRect& _r2 )
 {
 	Sint32		x1, y1;						// So we can use ourself as inparameter.
 	Sint32		x2, y2;
@@ -117,7 +117,7 @@ bool WgRect::Union( const WgRect& _r1, const WgRect& _r2 )
 	if( w <= 0 || h <= 0 )
 		return	false;
 
-	return	true;	
+	return	true;
 }
 
 //____ Shrink() _____________________________________________________________

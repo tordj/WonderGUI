@@ -254,7 +254,7 @@ void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, c
 {
 	WgRect	mydest;
 
-	if( !mydest.Union(clip,dest) )
+	if( !mydest.Intersection(clip,dest) )
 		return;
 
 	float	sx = (float) src.x;
@@ -308,7 +308,7 @@ void WgGfxDevice::ClipTileBlit( const WgRect& _clip, const WgSurface* _pSrc, con
 	WgRect	myRect;
 
 	WgRect	clip;
-	if( !clip.Union( _dest, _clip ) )
+	if( !clip.Intersection( _dest, _clip ) )
 		return;
 
 	// Take care of start-offset change caused by clipping.

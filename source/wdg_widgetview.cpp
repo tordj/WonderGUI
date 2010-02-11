@@ -228,7 +228,7 @@ void Wdg_WidgetView::RenderRecursively( WgWidget * pWidget, const WgRect& parent
 	window.y += parentGeo.y;
 
 	WgRect myClip;
-	if( !myClip.Union( window, clip ) )
+	if( !myClip.Intersection( window, clip ) )
 		return;
 
 	pWidget->DoMyOwnRender( window, myClip, _layer );
