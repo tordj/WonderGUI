@@ -73,61 +73,84 @@ WgSurfaceGL::WgSurfaceGL( GLint _format, Uint32 _width, Uint32 _height, void * _
 	if( pglBufferDataARB == 0 )
 		InitGlExtensions();
 
-	int size = _width*_height;
+	m_format = _format;
+	m_width	 = _width;
+	m_height = _height;
+	m_pAlpha = 0;
+	m_pPixels = (Uint8*)_pPixels;
+	m_buffer = 0;
 
-	switch( _format )
-	{
-		case GL_RGB8:
-			m_pixelSize = 3;
-		break;
-
-		case GL_RGBA8:
-			m_pixelSize = 4;
-		break;
-
-		default:
-			m_pixelSize = 0;		// Signal unknown pixelsize.
-	}
-
-	size *= m_pixelSize;
-	if( size == 0 )
-	{
-		// TODO: Error handling. Width or height were zero or format was unsupported.
-	}
-
-	pglGenBuffersARB( 1, &m_buffer );
-	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
-	pglBufferDataARB( GL_PIXEL_UNPACK_BUFFER_ARB, size, _pPixels, GL_STATIC_DRAW_ARB );
+	SetPixelSize( _format );
 
 	glGenTextures( 1, &m_texture );
 	glBindTexture( GL_TEXTURE_2D, m_texture );
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexImage2D( GL_TEXTURE_2D, 0, _format, _width, _height, 0,
-				  GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+		GL_RGBA, GL_UNSIGNED_BYTE, _pPixels );
 
-	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
-
-
-	m_format = _format;
-	m_width	 = _width;
-	m_height = _height;
-	m_pAlpha = 0;
-	m_pPixels = 0;
+	InitBuffer();
 }
 
-WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint32 _width, Uint32 _height, Uint8 * _pAlpha )
+WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint8 * _pAlpha )
 {
 	if( pglBufferDataARB == 0 )
 		InitGlExtensions();
 
+	GLint width = 0;
+	GLint height = 0;
+	glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width );
+	glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height );
+	
 	m_texture	= _texture;
-	m_width		= _width;
-	m_height	= _height;
+	m_width = width;
+	m_height = height;
+	glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &m_format );
 	m_pAlpha	= _pAlpha;
-	m_buffer	= 0;
-	m_format	= 0;			// Marking that it's unknown.
-	m_pixelSize = 0;			// Marking that it's unknown.
+	m_pPixels	= 0;
+	m_buffer = 0;
+	
+	SetPixelSize( m_format );
+
+	InitBuffer();
+}
+
+void WgSurfaceGL::InitBuffer()
+{
+	if( m_pPixels == 0 )
+		return;
+
+	int size = m_width*m_height;
+
+	size *= m_pixelSize;
+	if( size == 0 )
+	{
+		// TODO: Error handling. Width or height were zero or format was unsupported.
+		return;
+	}
+
+	pglGenBuffersARB( 1, &m_buffer );
+	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
+	pglBufferDataARB( GL_PIXEL_UNPACK_BUFFER_ARB, size, m_pPixels, GL_STATIC_DRAW_ARB );
+
+	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
+}
+
+void WgSurfaceGL::SetPixelSize( GLint _format )
+{
+	switch( _format )
+	{
+	case GL_RGB8:
+		m_pixelSize = 3;
+		break;
+
+	case GL_RGBA8:
+		m_pixelSize = 4;
+		break;
+
+	default:
+		m_pixelSize = 0;		// Signal unknown pixelsize.
+	}
 }
 
 //____ Destructor ______________________________________________________________
@@ -136,13 +159,13 @@ WgSurfaceGL::~WgSurfaceGL()
 {
 	// Free the stuff
 
-	glDeleteTextures( 1, &m_texture );
-
 	if( m_buffer )
 		pglDeleteBuffersARB ( 1, &m_buffer );
 
 	if( m_pAlpha )
 		delete [] m_pAlpha;
+
+	glDeleteTextures( 1, &m_texture );
 }
 
 //____ GetWidth() ______________________________________________________________

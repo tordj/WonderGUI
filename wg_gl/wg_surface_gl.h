@@ -41,7 +41,7 @@ class WgSurfaceGL : public WgSurface
 {
 public:
 	WgSurfaceGL( GLint format, Uint32 width, Uint32 height, void * pPixels );
-	WgSurfaceGL( GLuint texture, Uint32 width, Uint32 height, Uint8 * pAlpha = 0 );
+	WgSurfaceGL( GLuint texture, Uint8 * pAlpha = 0 );
 	~WgSurfaceGL();
 
 	inline	GLuint	GetTexture() const { return m_texture; };
@@ -62,6 +62,9 @@ public:
 
 private:
 	static bool	InitGlExtensions();
+
+	void		SetPixelSize( GLint _format );
+	void		InitBuffer();
 
 	GLuint		m_buffer;			// Pointer at GL pixel buffer, if any.
 	GLuint 		m_texture;			// GL texture handle.
