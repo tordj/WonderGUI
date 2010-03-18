@@ -29,6 +29,7 @@
 #include	<wg_char.h>
 #include	<wg_font.h>
 #include	<wg_texttool.h>
+#include	<wg_pen.h>
 
 using namespace WgSignal;
 
@@ -175,11 +176,15 @@ bool Wdg_Menu::SetTextProperties( const WgTextPropPtr& pEntryProp, const WgTextP
 
 	if( m_pEntryProp )
 	{
-		WgChar dummy;
+		WgPen	pen;
+		pen.SetTextProp( m_pEntryProp.GetHandle(), 0, WG_MODE_NORMAL );
+		int	heightNormal	= pen.GetLineSpacing();
+		
+		pen.SetTextProp( m_pEntryProp.GetHandle(), 0, WG_MODE_MARKED );	
+		int heightMarked	= pen.GetLineSpacing();
 
-		int	heightNormal	= dummy.GetGlyphSet( m_pEntryProp, WG_MODE_NORMAL )->height();
-		int heightMarked	= dummy.GetGlyphSet( m_pEntryProp, WG_MODE_MARKED )->height();
-		int heightDisabled	= dummy.GetGlyphSet( m_pEntryProp, WG_MODE_DISABLED )->height();
+		pen.SetTextProp( m_pEntryProp.GetHandle(), 0, WG_MODE_DISABLED );	
+		int heightDisabled	= pen.GetLineSpacing();
 
 		if( m_entryHeight < heightNormal )
 			m_entryHeight = heightNormal;
@@ -374,8 +379,8 @@ void Wdg_Menu::CalcEntryMinWidth( WgMenuEntry * pEntry )
 	wNormal += WgTextTool::lineWidth( m_pEntryProp, WG_MODE_NORMAL, pEntry->GetText().GetChars() );
 	wMarked += WgTextTool::lineWidth( m_pEntryProp, WG_MODE_MARKED, pEntry->GetText().GetChars() );
 
-	wNormal += WgTextTool::lineWidth( m_pKeyAccelProp, WG_MODE_NORMAL, pEntry->GetText().GetChars() );
-	wMarked += WgTextTool::lineWidth( m_pKeyAccelProp, WG_MODE_MARKED, pEntry->GetText().GetChars() );
+	wNormal += WgTextTool::lineWidth( m_pKeyAccelProp, WG_MODE_NORMAL, pEntry->GetAccelText().GetChars() );
+	wMarked += WgTextTool::lineWidth( m_pKeyAccelProp, WG_MODE_MARKED, pEntry->GetAccelText().GetChars() );
 
 
 	if( wNormal > wMarked )
@@ -470,9 +475,10 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				const WgChar * pText = ((WgMenuEntry*)pItem)->GetText().GetChars();
 				if( * pText != 0 )
 				{
-					int fontHeight = WgTextTool::GetCombGlyphSet(m_pEntryProp.GetHandle(),0,WG_MODE_NORMAL)->height();
+					WgPen pen;
+					pen.SetTextProp( m_pEntryProp );
 
-					int y = yPos + (m_entryHeight - fontHeight)/2;
+					int y = yPos + (m_entryHeight - pen.GetLineHeight())/2 + pen.GetBaseline();
 					WgGfx::clipPrintLine( clip, m_pEntryProp, mode, xPosText, xPosText, y, pText );
 				}
 
@@ -481,9 +487,10 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				const WgChar * pAccelText = ((WgMenuEntry*)pItem)->GetAccelText().GetChars();
 				if( * pAccelText != 0 )
 				{
-	//				int fontHeight = WgTextTool::GetCombGlyphSet(m_pKeyAccelProp.GetHandle(), 0, WG_MODE_NORMAL)->height();
+					WgPen pen;
+					pen.SetTextProp( m_pKeyAccelProp );
 
-					int y = yPos;
+					int y = yPos + (m_entryHeight - pen.GetLineHeight())/2 + pen.GetBaseline();
 					int width = WgTextTool::lineWidth( m_pKeyAccelProp, mode, pAccelText );
 					int x = xPosText + textFieldLen - width;
 

@@ -57,7 +57,8 @@
 
 class WgMemPool;
 
-//____ Class WgSurface _________________________________________________________
+
+//____ WgSurface ______________________________________________________________
 
 class WgSurface
 {
@@ -96,11 +97,49 @@ public:
 		READ_WRITE
 	};
 
+	enum PixelType
+	{
+		UNSPECIFIED,				///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
+		SPECIFIED,					///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
+		RGB_8,						///< One byte of red, green and blue respectively in exactly that order. 
+		RGBA_8						///< One byte of red, green, blue and alpha respectively in exactly that order.
+	};
+
+
+	struct PixelFormat
+	{
+		Uint8	type;				///< Enum specifying the format if it exacty matches a predefined format, otherwise set to UNSPECIFIED.
+		Uint8	bits;				///< Number of bits for the pixel, includes any non-used padding bits.
+
+		Uint32	R_mask;				///< bitmask for getting the red bits out of the pixel
+		Uint32	G_mask;				///< bitmask for getting the green bits out of the pixel
+		Uint32	B_mask;				///< bitmask for getting the blue bits out of the pixel
+		Uint32	A_mask;				///< bitmask for getting the alpha bits out of the pixel
+		
+		Sint32	R_shift;			///< amount to shift the red bits to get an 8-bit representation of red. This can be negative.
+		Sint32	G_shift;			///< amount to shift the green bits to get an 8-bit representation of red. This can be negative.
+		Sint32	B_shift;			///< amount to shift the blue bits to get an 8-bit representation of red. This can be negative.
+		Sint32	A_shift;			///< amount to shift the alpha bits to get an 8-bit representation of red. This can be negative.
+
+		Uint8	R_bits;				///< number of bits for red in the pixel
+		Uint8	G_bits;				///< number of bits for green in the pixel
+		Uint8	B_bits;				///< number of bits for blue in the pixel
+		Uint8	A_bits;				///< number of bits for alpha in the pixel
+	};
+
 
 	virtual void *		Lock( LockStatus mode ) = 0;
 	virtual void		Unlock() = 0;
 	inline 	bool		IsLocked() { return (m_lockStatus != UNLOCKED); }
 	inline	LockStatus	GetLockStatus() { return m_lockStatus; }
+	inline Uint32		GetPitch() const;						// of locked surface
+	inline const PixelFormat *GetPixelFormat() const;					// of locked surface	
+
+
+	// Methods for modifying surface content
+
+	virtual bool		Fill( WgColor col );
+
 
     // Deprecated legacy methods
 
@@ -147,10 +186,25 @@ protected:
 	WgSurface();
 
 	WgDirtyRectObj 			m_dirtyRects;
+	PixelFormat				m_pixelFormat;
 	LockStatus				m_lockStatus;
+	Uint32					m_pitch;
+	Uint8 *					m_pPixels;			// Pointer at pixels when surface locked.
+
 
 	static WgMemPool *		g_pBlockSetMemPool;
 };
+
+//____ WgSurfaceFactory _______________________________________________________
+
+class WgSurfaceFactory
+{
+public:
+	virtual WgSurface * CreateSurface( const WgSize& size, WgSurface::PixelType type = WgSurface::RGBA_8 ) = 0;
+};
+
+
+
 
 //____ WgSurface::ClearDirtyRects() ____________________________________________
 
@@ -164,6 +218,28 @@ inline void WgSurface::ClearDirtyRects()
 inline void WgSurface::AddDirtyRect( const WgRect& rect )
 {
 	m_dirtyRects.Add( rect );
+}
+
+
+//____ WgSurface::GetPitch() _______________________________________________
+
+Uint32 WgSurface::GetPitch() const
+{
+	if( m_lockStatus == UNLOCKED )
+		return 0;
+
+	return m_pitch;
+}
+
+
+//____ WgSurface::GetPixelFormat() _______________________________________________
+
+const WgSurface::PixelFormat *  WgSurface::GetPixelFormat() const
+{
+	if( m_lockStatus == UNLOCKED )
+		return 0;
+
+	return &m_pixelFormat;
 }
 
 

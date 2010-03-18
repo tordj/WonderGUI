@@ -27,6 +27,7 @@
 
 #include	<wg_types.h>
 #include	<wg_char.h>
+#include	<wg_pen.h>
 
 #ifndef WG_SURFACE_DOT_H
 #	include	<wg_surface.h>
@@ -200,18 +201,28 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _window, con
 		pDevice->ClipBlitBlock( _clip, block, _window );
 	}
 
+	// Take backgrounds content borders into account
+
+	WgRect	window	= _window;
+	WgRect	clip;
+
+	if( m_pBgGfx )
+	{
+		window.Shrink( m_pBgGfx->GetContentBorders() );
+		clip.Intersection( window, _clip );
+	}
+	else
+		clip = _clip;
 
 	// Go throught the MenuBarItems and print their text and render their rectangles.
 
 	WgMenuBarItem * pI = m_items.getFirst();
-	Uint32 posX = _window.x;
-	Uint32 posY = _window.y;
+	Uint32 posX = window.x;
+	
+	WgPen pen;
+	pen.SetTextProp( m_pTextProp );
 
-	if( m_pBgGfx )										// Take backgrounds content borders into account.
-	{
-		posX += m_pBgGfx->GetContentBorders().left;
-		posY += m_pBgGfx->GetContentBorders().top;
-	}
+	Uint32 printPosY = window.y + ( window.h - pen.GetLineHeight() )/2 + pen.GetBaseline();
 
 	Uint32 itemNb = 1;
 	while( pI )
@@ -233,12 +244,12 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _window, con
 
 			if( m_pEntryGfx )
 			{
-				WgRect	dest( posX, posY, pI->m_width + b.GetWidth(), _window.h );
-				pDevice->ClipBlitBlock( _clip, m_pEntryGfx->GetBlock(mode), dest );
+				WgRect	dest( posX, window.y, pI->m_width + b.GetWidth(), window.h );
+				pDevice->ClipBlitBlock( clip, m_pEntryGfx->GetBlock(mode), dest );
 			}
 
 
-			pDevice->ClipPrintLine( _clip, m_pTextProp, mode, posX + b.left, posX + b.left, posY + b.top, pI->m_pText );
+			pDevice->ClipPrintLine( clip, m_pTextProp, mode, posX + b.left, posX + b.left, printPosY, pI->m_pText );
 
 			posX += pI->m_width + b.GetWidth();
 		}

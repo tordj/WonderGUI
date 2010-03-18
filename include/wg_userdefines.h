@@ -43,6 +43,11 @@
 								// that better handles broken unicode strings. 
 								// Ignored if WG_USE_UTF8 isn't defined.
 
+#define WG_USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
+								// dependency on freetype.
+
+
+#define	WG_MAX_FONTSIZE		256	// Max size (pixels) for font.
 
 //____ input related defines __________________________________________________
 

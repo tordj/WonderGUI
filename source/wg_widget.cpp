@@ -2256,17 +2256,19 @@ WgWidget* WgWidget::BuildCloneBranch( const WgWidget * pSrc, WgWidget * pDstPare
 
 	pClone->m_pParent = pDstParent;
 
-	if(pDstParent->m_pFirstChild == 0)
-		pDstParent->m_pFirstChild = pClone;
-
-	if(pDstParent->m_pLastChild)
+	if(pDstParent)
 	{
-		pClone->m_pPrevSibling = pDstParent->m_pLastChild;
-		pClone->m_pPrevSibling->m_pNextSibling = pClone;
+		if(pDstParent->m_pFirstChild == 0)
+			pDstParent->m_pFirstChild = pClone;
+
+		if(pDstParent->m_pLastChild)
+		{
+			pClone->m_pPrevSibling = pDstParent->m_pLastChild;
+			pClone->m_pPrevSibling->m_pNextSibling = pClone;
+		}
+
+		pDstParent->m_pLastChild = pClone;
 	}
-
-	pDstParent->m_pLastChild = pClone;
-
 
 	for(WgWidget* pSrcChild = pSrc->FirstChild(); pSrcChild; pSrcChild = pSrcChild->NextSibling())
 		BuildCloneBranch(pSrcChild, pClone);

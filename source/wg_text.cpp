@@ -136,8 +136,7 @@ void WgText::setText( const WgChar * pText, Uint32 nChar )
 	Uint32		nLines	= 0;
 	Uint32		nChars  = 0;
 
-	WgTextTool::countCharsLines( pText, nChars, nLines );
-	nChars++;		// Zero termination.
+	WgTextTool::countCharsLines( pText, nChars, nLines, nChar );
 
 	// Update text
 
@@ -269,7 +268,7 @@ Uint32 WgText::height()
 		return 0;
 
 
-	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle())->height();
+	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), m_pProp->GetSize() )->GetHeight(m_pProp->GetSize());
 
 	int h2 = fontheight+m_lineSpaceAdj;
 	if( h2 < 0 )
@@ -283,7 +282,7 @@ Uint32 WgText::softLineHeight( Uint32 line )
 	if( line >= nbSoftLines() || !m_pProp->GetFont() )
 		return 0;
 
-	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle())->height();
+	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), m_pProp->GetSize() )->GetHeight(m_pProp->GetSize());
 
 	return fontheight;								//TODO: Count right even if style changes over the text and lines.
 }

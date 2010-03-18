@@ -25,20 +25,61 @@
 #include <wg_base.h>
 
 
-WgFont * WgBase::s_pDefFont = 0;
+#ifdef WG_USE_FREETYPE
+#	include <ft2build.h>
+#	include FT_FREETYPE_H
+
+	bool		WgBase::s_bFreeTypeInitialized;
+	FT_Library	WgBase::s_freeTypeLibrary;
+#endif
+
+
+WgTextPropPtr	WgBase::s_pDefaultTextProp;
+
 
 
 //____ Init() __________________________________________________________________
 
 void WgBase::Init()
 {
+
+
+#ifdef WG_USE_FREETYPE
+	s_bFreeTypeInitialized = false;
+#endif
 }
 
 //____ Exit() __________________________________________________________________
 
 void WgBase::Exit()
 {
+#ifdef WG_USE_FREETYPE
+	if( s_bFreeTypeInitialized )
+		FT_Done_FreeType( s_freeTypeLibrary );
+#endif
+
 }
+
+
+//____ InitFreeType() _________________________________________________________
+
+#ifdef WG_USE_FREETYPE
+bool WgBase::InitFreeType()
+{
+	if( s_bFreeTypeInitialized )
+		return true;
+
+	FT_Error err = FT_Init_FreeType( &s_freeTypeLibrary );
+	if( err == 0 )
+	{
+		s_bFreeTypeInitialized = true;
+		return true;
+	}
+
+	return false;
+}
+#endif
+
 
 
 //____ SetDefaultTextManager() _________________________________________________
@@ -57,17 +98,10 @@ const WgTextMgrPtr& WgBase::GetDefaultTextManager()
 }
 */
 
-//____ SetDefaultFont() ________________________________________________________
+//____ SetDefaultTextProp() ___________________________________________________
 
-void WgBase::SetDefaultFont( WgFont * pFont )
+void WgBase::SetDefaultTextProp( const WgTextPropPtr& pProp )
 {
-	s_pDefFont = pFont;
-}
-
-//____ GetDefaultFont() ________________________________________________________
-
-WgFont * WgBase::GetDefaultFont()
-{
-	return s_pDefFont;
+	s_pDefaultTextProp = pProp;
 }
 

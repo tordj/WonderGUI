@@ -15,6 +15,8 @@
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add directory="include" />
+					<Add directory="/usr/include/freetype2" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -70,6 +72,7 @@
 		<Unit filename="include/wdg_ysplitter.h" />
 		<Unit filename="include/wg_anim.h" />
 		<Unit filename="include/wg_base.h" />
+		<Unit filename="include/wg_bitmapglyphs.h" />
 		<Unit filename="include/wg_blockset.h" />
 		<Unit filename="include/wg_chain.h" />
 		<Unit filename="include/wg_char.h" />
@@ -129,6 +132,7 @@
 		<Unit filename="include/wg_mempool.h" />
 		<Unit filename="include/wg_menuitem.h" />
 		<Unit filename="include/wg_origo.h" />
+		<Unit filename="include/wg_pen.h" />
 		<Unit filename="include/wg_pointerspy.h" />
 		<Unit filename="include/wg_refcounted.h" />
 		<Unit filename="include/wg_refcountedpooled.h" />
@@ -153,6 +157,7 @@
 		<Unit filename="include/wg_userdefines.h" />
 		<Unit filename="include/wg_util.h" />
 		<Unit filename="include/wg_valueformat.h" />
+		<Unit filename="include/wg_vectorglyphs.h" />
 		<Unit filename="include/wg_widget.h" />
 		<Unit filename="include/wondergui.h" />
 		<Unit filename="source/wdg_baseclass_view.cpp" />
@@ -170,6 +175,7 @@
 		<Unit filename="source/wdg_ysplitter.cpp" />
 		<Unit filename="source/wg_anim.cpp" />
 		<Unit filename="source/wg_base.cpp" />
+		<Unit filename="source/wg_bitmapglyphs.cpp" />
 		<Unit filename="source/wg_blockset.cpp" />
 		<Unit filename="source/wg_chain.cpp" />
 		<Unit filename="source/wg_char.cpp" />
@@ -221,6 +227,7 @@
 		<Unit filename="source/wg_mempool.cpp" />
 		<Unit filename="source/wg_menuitem.cpp" />
 		<Unit filename="source/wg_origo.cpp" />
+		<Unit filename="source/wg_pen.cpp" />
 		<Unit filename="source/wg_resdb.cpp" />
 		<Unit filename="source/wg_resource_factory_xml.cpp" />
 		<Unit filename="source/wg_resources_xml.cpp" />
@@ -234,6 +241,7 @@
 		<Unit filename="source/wg_texttool.cpp" />
 		<Unit filename="source/wg_util.cpp" />
 		<Unit filename="source/wg_valueformat.cpp" />
+		<Unit filename="source/wg_vectorglyphs.cpp" />
 		<Unit filename="source/wg_widget-render.cpp" />
 		<Unit filename="source/wg_widget.cpp" />
 		<Extensions>

@@ -25,6 +25,7 @@
 #include	<wg_key.h>
 #include	<wg_font.h>
 #include <wg_gfxdevice.h>
+#include <wg_pen.h>
 
 static const char	c_gizmoType[] = {"TordJ/Editline"};
 
@@ -232,14 +233,17 @@ void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 
 			if( m_bPasswordMode )
 			{
-				WgGlyphSet * pGlyphs = WgTextTool::GetCombGlyphSet( m_pText->getDefaultProperties().GetHandle() );
-
-				int spacing = pGlyphs->advance(m_pwGlyph);
-				int height = pGlyphs->height();
+				WgPen	pen;
+				pen.SetTextProp( m_pText->getDefaultProperties() );
+				pen.SetChar(m_pwGlyph);
+				pen.AdvancePos();
+				
+				int spacing = pen.GetPosX();
+				int height = pen.GetLineSpacing();
 
 				int line = y/height;
 				int col = (x+spacing/2)/spacing;
-				m_pMyCursor->gotoHardPos(line,col);
+				m_pMyCursor->gotoSoftPos(line,col);
 			}
 			else
 				m_pMyCursor->gotoPixel(x,y);
@@ -348,7 +352,13 @@ void WgGizmoEditline::AdjustViewOfs()
 	if( m_pMyCursor && m_pText->getFontSet() )
 	{
 		Uint32 cursCol	= m_pMyCursor->column();
-		int pwAdvance	= m_pText->getFontSet()->GetGlyphSet(WG_STYLE_NORMAL)->advance(m_pwGlyph);
+
+		WgPen	pen;
+		pen.SetTextProp( m_pText->getDefaultProperties() );
+		pen.SetChar(m_pwGlyph);
+		pen.AdvancePos();
+
+		int pwAdvance	= pen.GetPosX();
 		int cursWidth	= m_pText->getFontSet()->GetCursor()->spacing(m_pMyCursor->mode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.

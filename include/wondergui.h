@@ -140,6 +140,14 @@
 #	include <wg_anim.h>
 #endif
 
+#ifndef WG_BASE_DOT_H
+#	include <wg_base.h>
+#endif
+
+#ifndef WG_BITMAPGLYPHS_DOT_H
+#	include <wg_bitmapglyphs.h>
+#endif
+
 #ifndef WG_CHAIN_DOT_H
 #	include <wg_chain.h>
 #endif
@@ -194,6 +202,10 @@
 
 #ifndef WG_ORIGO_DOT_H
 #	include <wg_origo.h>
+#endif
+
+#ifndef WG_PEN_DOT_H
+#	include <wg_pen.h>
 #endif
 
 #ifndef WG_POINTERSPY_DOT_H
@@ -258,6 +270,10 @@
 
 #ifndef WG_VALUEFORMAT_DOT_H
 #	include <wg_valueformat.h>
+#endif
+
+#ifndef WG_VECTORGLYPHS_DOT_H
+#	include <wg_vectorglyphs.h>
 #endif
 
 

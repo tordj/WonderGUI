@@ -314,7 +314,8 @@ public:
 		m_color(0),
 		m_bColored(false),
 		m_style(WG_STYLE_NORMAL),
-		m_underlined(false)
+		m_underlined(false),
+		m_size(0)
 	{ }
 
 	virtual void Serialize(WgResourceSerializerXML& s);
@@ -327,6 +328,7 @@ public:
 
 	WgColor			GetColor() const { return m_color; }
 	WgFontStyle		GetStyle() const { return m_style; }
+	Uint32			GetSize() const { return m_size; }
 	bool			IsUnderlined() const { return m_underlined; }
 
 	static const char* TagName() { return "textprop"; }
@@ -339,6 +341,7 @@ private:
 	bool			m_bColored;
 	WgFontStyle		m_style;
 	bool			m_underlined;
+	Uint32			m_size;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -487,7 +490,9 @@ private:
 class WgGlyphSetRes : public WgResourceXML
 {
 public:
-	WgGlyphSetRes(WgResourceXML* parent, WgGlyphSet* glyphSet = 0, WgFontStyle style = WG_STYLE_NORMAL)  : WgResourceXML(parent), m_pGlyphSet(glyphSet), m_style(style) { }
+	WgGlyphSetRes(WgResourceXML* parent, WgGlyphSet* glyphSet = 0, int size = 0 )  : WgResourceXML(parent), m_pGlyphSet(glyphSet), m_bHasStyle(false), m_size(size) { }
+	WgGlyphSetRes(WgResourceXML* parent, WgGlyphSet* glyphSet, WgFontStyle style, int size = 0 )  : WgResourceXML(parent), m_pGlyphSet(glyphSet), m_style(style), m_bHasStyle(true), m_size(size) { }
+
 
 	virtual void Serialize(WgResourceSerializerXML& s);
 	virtual void Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
@@ -497,7 +502,9 @@ public:
 	static const char* TagName() { return "glyphset"; }
 private:
 	class WgGlyphSet * m_pGlyphSet;
+	bool		m_bHasStyle;
 	WgFontStyle m_style;
+	int			m_size;
 };
 
 //////////////////////////////////////////////////////////////////////////

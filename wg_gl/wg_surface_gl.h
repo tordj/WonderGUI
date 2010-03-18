@@ -63,7 +63,7 @@ public:
 private:
 	static bool	InitGlExtensions();
 
-	void		SetPixelSize( GLint _format );
+	void		SetPixelFormat( GLint _format );
 	void		InitBuffer();
 
 	GLuint		m_buffer;			// Pointer at GL pixel buffer, if any.
@@ -74,9 +74,17 @@ private:
 	Uint8 *		m_pAlpha;			// Pointer at supplementary alpha map, if any.
 	Uint32		m_pixelSize;		// Size in bytes of a pixel.
 
-	Uint8 *		m_pPixels;			// Pointer at pixels when surface locked.
-
 };
+
+//____ WgSurfaceFactoryGL _____________________________________________________
+
+class WgSurfaceFactoryGL : public WgSurfaceFactory
+{
+public:
+	WgSurface * CreateSurface( const WgSize& size, WgSurface::PixelType type = WgSurface::RGBA_8 );
+};
+
+
 
 #endif //WG_SURFACE_GL_DOT_H
 

@@ -204,7 +204,7 @@ public:
 
 
 	inline void			setFontSet( WgFont * pFont ) { setFont(pFont); }		///< DEPRECATED!!! Use setDefaultFont() instead.
-	inline WgFont *	getFontSet() const { return getDefaultFont(); }			///< DEPRECATED!!! Use getDefaultFont() instead.
+	inline WgFont *		getFontSet() const { return getDefaultFont(); }			///< DEPRECATED!!! Use getDefaultFont() instead.
 
 	inline void			setMode( WgMode mode ) { m_mode = mode; }
 	inline void			setAlignment( const WgOrigo& origo ) { m_origo = origo; }

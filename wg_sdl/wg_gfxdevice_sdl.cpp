@@ -13,14 +13,19 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
 
-#include <SDL.h>
+#ifdef WIN32
+#	include <SDL.h>
+#else
+#	include <SDL/SDL.h>
+#endif
+
 #include <wg_gfxdevice_sdl.h>
 #include <wg_surface_sdl.h>
 
@@ -83,7 +88,7 @@ bool WgGfxDeviceSDL::SetBlendMode( WgBlendMode blendMode )
 void WgGfxDeviceSDL::Fill( const WgRect& _rect, const WgColor& _col )
 {
 	if( m_pCanvas == 0 || _col.a == 0 || _rect.w < 1 || _rect.h < 1 )
-		return;	
+		return;
 
 
 	SDL_Surface * pSurf = m_pCanvas->SDL_Surf();
@@ -97,8 +102,8 @@ void WgGfxDeviceSDL::Fill( const WgRect& _rect, const WgColor& _col )
 		rect.y = _rect.y;
 		rect.w = _rect.w;
 		rect.h = _rect.h;
-		
-     
+
+
      	Sint32 a = SDL_FillRect( pSurf, &rect, col );
 
 	  	if( a == -1 )
@@ -117,7 +122,7 @@ void WgGfxDeviceSDL::Fill( const WgRect& _rect, const WgColor& _col )
 		static  Uint32 convTab[3][256];
 		static	Uint8	tableR, tableG, tableB, tableA = 255;
 		float		r, g, b;
-			
+
 		// Create conversion table if not the same as previous.
 
 		if( tableR != _col.r || tableG != _col.g || tableB != _col.b || tableA != _col.a )
@@ -228,12 +233,12 @@ void WgGfxDeviceSDL::Blit( const WgSurface* pSrc, const WgRect& src, Sint32 dx, 
 
 	SDL_Rect	drect;
 	SDL_Rect	srect;
-	
+
 	srect.x = src.x;
 	srect.y = src.y;
 	srect.w = src.w;
 	srect.h = src.h;
-	
+
 	drect.x = dx;
 	drect.y = dy;
 	drect.w = src.w;
@@ -252,12 +257,12 @@ void WgGfxDeviceSDL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, floa
 
 	SDL_Rect	drect;
 	SDL_Rect	srect;
-	
+
 	srect.x = (int)sx;
 	srect.y = (int)sy;
 	srect.w = (int)sw;
 	srect.h = (int)sh;
-	
+
 	drect.x = (int)dx;
 	drect.y = (int)dy;
 	drect.w = (int)dw;
@@ -274,7 +279,7 @@ int SDL_SoftStretchModified( SDL_Surface *src , SDL_Rect *aSrcRect , SDL_Surface
 {
 	SDL_Rect srcRect = { 0 , 0 , src->w , src->h };
 	SDL_Rect dstRect = { 0 , 0 , dst->w , dst->h };
-	
+
 	if( aSrcRect )
 		srcRect = *aSrcRect;
 	if( aDstRect )
@@ -339,7 +344,7 @@ int SDL_SoftStretchModified( SDL_Surface *src , SDL_Rect *aSrcRect , SDL_Surface
 		}
 		c11++;
 		int* csax = dxLUT;
-		for( x = 0 ; x < dstRect.w ; x++ )  
+		for( x = 0 ; x < dstRect.w ; x++ )
 		{
 			// Bilinear filtering
 			ex = (*csax & 0xffff);
@@ -347,7 +352,7 @@ int SDL_SoftStretchModified( SDL_Surface *src , SDL_Rect *aSrcRect , SDL_Surface
 			t1 = ((((c01->r - c00->r) * ex) >> 16) + c00->r) & 0xff;
 			t2 = ((((c11->r - c10->r) * ex) >> 16) + c10->r) & 0xff;
 
-			col.b = (((t2 - t1) * ey) >> 16) + t1;						// MOD: swapped r/b 
+			col.b = (((t2 - t1) * ey) >> 16) + t1;						// MOD: swapped r/b
 			t1 = ((((c01->g - c00->g) * ex) >> 16) + c00->g) & 0xff;
 			t2 = ((((c11->g - c10->g) * ex) >> 16) + c10->g) & 0xff;
 			col.g = (((t2 - t1) * ey) >> 16) + t1;
@@ -390,7 +395,7 @@ int SDL_SoftStretchModified( SDL_Surface *src , SDL_Rect *aSrcRect , SDL_Surface
 
 			csax++;
 			sstep = (*csax >> 16);
-			
+
 			if( x <= dstRect.w-1 )
 			{
 				c00 += sstep;
@@ -398,19 +403,19 @@ int SDL_SoftStretchModified( SDL_Surface *src , SDL_Rect *aSrcRect , SDL_Surface
 				c10 += sstep;
 				c11 += sstep;
 			}
-			
+
 			pDst++;
 		}
 		csay++;
 		csp = (tColorRGBA *) ((Uint8 *) csp + (*csay >> 16) * src->pitch);
-		
+
 		pDst = (tColorRGBA *) ((Uint8 *) pDst + dstSkip);
 	}
 	delete [] dxLUT;
 	delete [] dyLUT;
 
 	SDL_SetAlpha( dst , SDL_SRCALPHA , 255 );
-	
+
 	SDL_UnlockSurface( src );
 	SDL_UnlockSurface( dst );
 

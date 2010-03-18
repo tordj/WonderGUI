@@ -488,7 +488,7 @@ void WgInput::pointer_move( Sint32 x, Sint32 y )
 
 //____ button_press() _________________________________________________________
 
-void WgInput::button_press_( const WgInputEventData& ed )
+void WgInput::button_press_( WgInputEventData ed )
 {
 	Uint8 button = ed.data0;
 
@@ -585,7 +585,7 @@ void WgInput::button_press_( const WgInputEventData& ed )
 
 //____ button_release() _______________________________________________________
 
-void WgInput::button_release_( const WgInputEventData& ed )
+void WgInput::button_release_( WgInputEventData ed )
 {
 	Uint8 button = ed.data0;
 
@@ -686,7 +686,7 @@ void WgInput::button_release_( const WgInputEventData& ed )
 
 //____ wheel_roll() ___________________________________________________________
 
-void WgInput::wheel_roll_( const WgInputEventData& ed )
+void WgInput::wheel_roll_( WgInputEventData ed )
 {
 	Uint8 wheel = ed.data0;
 
@@ -755,7 +755,7 @@ void WgInput::wheel_roll_( const WgInputEventData& ed )
 
 //____ character() ____________________________________________________________
 
-void WgInput::character_( const WgInputEventData& ed )
+void WgInput::character_( WgInputEventData ed )
 {
 	// attach this character to the ActionDetails of keycode_for_repeat if valid.
 
@@ -817,7 +817,7 @@ void WgInput::character_( const WgInputEventData& ed )
 
 //____ key_press() ____________________________________________________________
 
-void WgInput::key_press_( const WgInputEventData& ed )
+void WgInput::key_press_( WgInputEventData ed )
 {
 	Uint16 native_keycode = ed.data0;
 	Uint16 character = ed.data1;
@@ -893,7 +893,7 @@ void WgInput::key_press_( const WgInputEventData& ed )
 
 //____ key_release() __________________________________________________________
 
-void WgInput::key_release_( const WgInputEventData& ed )
+void WgInput::key_release_( WgInputEventData ed )
 {
 	Uint16 native_keycode = ed.data0;
 

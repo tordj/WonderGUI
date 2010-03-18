@@ -38,6 +38,7 @@ WgGizmoRefreshButton::WgGizmoRefreshButton()
 	m_pRefreshAnim		= 0;
 	m_animTarget		= BUTTON_CENTERED;
 	m_refreshMode		= SPINNING;
+	m_bAutoRefresh		= true;
 	m_bRestartable		= false;
 
 	m_bRefreshing		= false;
@@ -99,7 +100,10 @@ void WgGizmoRefreshButton::SetRefreshText( const WgCharSeq& text )
 	//TODO: Change once WgText support WgCharSeq correctly.
 
 	WgCharSeq::WgCharBasket basket = text.GetWgChars();
-	m_refreshText.addText( basket.ptr, basket.length );
+	m_refreshText.setText( basket.ptr, basket.length );
+
+	// HACK!
+	m_refreshText.setAlignment(m_text.alignment());
 
 	if( m_bRefreshing )
 		RequestRender();
@@ -123,7 +127,7 @@ void WgGizmoRefreshButton::SetRestartable( bool bRestartable )
 //_____________________________________________________________________________
 void WgGizmoRefreshButton::StartRefresh()
 {
-	if( !m_bRefreshing || m_bRestartable )
+	if( m_pRefreshAnim && (!m_bRefreshing || m_bRestartable) )
 	{
 		m_bRefreshing = true;
 		m_bStopping = false;
@@ -138,7 +142,7 @@ void WgGizmoRefreshButton::StartRefresh()
 //_____________________________________________________________________________
 void WgGizmoRefreshButton::StopRefresh()
 {
-	if( m_pRefreshAnim )
+	if( m_pRefreshAnim && m_pRefreshAnim->durationScaled())
 	{
 		m_bStopping = true;
 		m_animTimer = m_animTimer % m_pRefreshAnim->durationScaled();	// So it doesn't stop immmediately.
@@ -254,7 +258,9 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _windo
 		// Render animation
 	}
 	else if( m_pBgGfx )
+	{
 		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode), _window );
+	}
 
 	// Get displacement offset
 
@@ -316,7 +322,7 @@ void WgGizmoRefreshButton::OnAction( WgEmitter * pEmitter, WgInput::UserAction a
 	{
 		case	WgInput::KEY_RELEASE:
 		{
-			if( button == WGKEY_RETURN )
+			if( m_bAutoRefresh && button == WGKEY_RETURN )
 				StartRefresh();
 
 			break;
@@ -324,7 +330,7 @@ void WgGizmoRefreshButton::OnAction( WgEmitter * pEmitter, WgInput::UserAction a
 
 		case WgInput::BUTTON_RELEASE:
 
-			if( m_bPressedInside[button-1] == true )
+			if( m_bAutoRefresh && m_bPressedInside[button-1] == true )
 				StartRefresh();
         default:
             break;

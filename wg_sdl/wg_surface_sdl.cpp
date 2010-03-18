@@ -28,7 +28,74 @@
 WgSurfaceSDL::WgSurfaceSDL( SDL_Surface * pSurf )
 {
 	m_pSurface = pSurf;
+
+	m_pitch = pSurf->pitch;
+
+	m_pixelFormat.type = SPECIFIED;
+	m_pixelFormat.bits = pSurf->format->BitsPerPixel;
+
+	m_pixelFormat.R_mask = pSurf->format->Rmask;
+	m_pixelFormat.G_mask = pSurf->format->Gmask;
+	m_pixelFormat.B_mask = pSurf->format->Bmask;
+	m_pixelFormat.A_mask = pSurf->format->Amask;
+
+	m_pixelFormat.R_shift = pSurf->format->Rshift - pSurf->format->Rloss;
+	m_pixelFormat.G_shift = pSurf->format->Gshift - pSurf->format->Gloss;
+	m_pixelFormat.B_shift = pSurf->format->Bshift - pSurf->format->Bloss;
+	m_pixelFormat.A_shift = pSurf->format->Ashift - pSurf->format->Aloss;
+
+	m_pixelFormat.R_bits = 8 - pSurf->format->Rloss;
+	m_pixelFormat.G_bits = 8 - pSurf->format->Gloss;
+	m_pixelFormat.B_bits = 8 - pSurf->format->Bloss;
+	m_pixelFormat.A_bits = 8 - pSurf->format->Aloss;
 }
+
+WgSurfaceSDL::WgSurfaceSDL( WgSurface::PixelType type, WgSize size )
+{
+	int flags = SDL_HWSURFACE | SDL_SRCALPHA;
+
+	SDL_Surface * pSurf;
+
+	switch( type )
+	{
+	case WgSurface::RGB_8:
+		pSurf = SDL_CreateRGBSurface( flags, size.w, size.h, 24, 0xFF, 0xFF00, 0xFF0000, 0x00 );
+		m_pixelFormat.type = WgSurface::RGB_8;
+		break;
+	case WgSurface::RGBA_8:
+		pSurf = SDL_CreateRGBSurface( flags, size.w, size.h, 32, 0xFF, 0xFF00, 0xFF0000, 0xFF000000 );
+		m_pixelFormat.type = WgSurface::RGBA_8;
+		break;
+	default:
+		pSurf = 0;
+		m_pixelFormat.type = UNSPECIFIED;
+		break;
+	}
+
+	m_pSurface = pSurf;
+
+	m_pitch = pSurf->pitch;
+
+	m_pixelFormat.bits = pSurf->format->BitsPerPixel;
+
+	m_pixelFormat.R_mask = pSurf->format->Rmask;
+	m_pixelFormat.G_mask = pSurf->format->Gmask;
+	m_pixelFormat.B_mask = pSurf->format->Bmask;
+	m_pixelFormat.A_mask = pSurf->format->Amask;
+
+	m_pixelFormat.R_shift = pSurf->format->Rshift - pSurf->format->Rloss;
+	m_pixelFormat.G_shift = pSurf->format->Gshift - pSurf->format->Gloss;
+	m_pixelFormat.B_shift = pSurf->format->Bshift - pSurf->format->Bloss;
+	m_pixelFormat.A_shift = pSurf->format->Ashift - pSurf->format->Aloss;
+
+	m_pixelFormat.R_bits = 8 - pSurf->format->Rloss;
+	m_pixelFormat.G_bits = 8 - pSurf->format->Gloss;
+	m_pixelFormat.B_bits = 8 - pSurf->format->Bloss;
+	m_pixelFormat.A_bits = 8 - pSurf->format->Aloss;
+
+}
+
+
 
 //____ Destructor ______________________________________________________________
 
@@ -79,6 +146,8 @@ void * WgSurfaceSDL::Lock( LockStatus mode )
 	SDL_LockSurface(m_pSurface);
 
 	m_lockStatus = READ_WRITE;
+
+	m_pPixels = (Uint8*) m_pSurface->pixels;
 	return m_pSurface->pixels;
 }
 
@@ -91,6 +160,7 @@ void WgSurfaceSDL::Unlock()
 
 	SDL_UnlockSurface(m_pSurface);
 	m_lockStatus = UNLOCKED;
+	m_pPixels = 0;
 }
 
 
@@ -174,3 +244,9 @@ WgColor WgSurfaceSDL::Pixel2Col( Uint32 pixel ) const
 }
 
 
+//____ WgSurfaceFactorySDL::CreateSurface() ___________________________________
+
+WgSurface * WgSurfaceFactorySDL::CreateSurface( const WgSize& size, WgSurface::PixelType type )
+{
+	return new WgSurfaceSDL( type, size );
+}

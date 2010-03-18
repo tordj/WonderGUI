@@ -43,6 +43,7 @@ WgTextProp::WgTextProp()
 		m_modeProp[i].m_bUnderlined = false;
 		m_modeProp[i].m_color		= WgColor(255,255,255,255);
 		m_modeProp[i].m_style		= WG_STYLE_NORMAL;
+		m_modeProp[i].m_size		= 0;
 	}
 }
 
@@ -58,6 +59,7 @@ WgTextProp::WgTextProp( const WgTextPropPtr& pProp )
 		m_modeProp[i].m_bUnderlined = pProp->m_modeProp[i].m_bUnderlined;
 		m_modeProp[i].m_color		= pProp->m_modeProp[i].m_color;
 		m_modeProp[i].m_style		= pProp->m_modeProp[i].m_style;
+		m_modeProp[i].m_style		= pProp->m_modeProp[i].m_size;
 	}
 }
 
@@ -83,6 +85,7 @@ void WgTextProp::ClearAll()
 		m_modeProp[i].m_color.argb = 0xFFFFFFFF;
 
 		m_modeProp[i].m_style = WG_STYLE_NORMAL;
+		m_modeProp[i].m_size = 0;
 		m_modeProp[i].m_bUnderlined = false;
 	}
 }
@@ -122,6 +125,23 @@ void WgTextProp::SetStyle( WgFontStyle style, WgMode mode )
 	else
 		m_modeProp[mode].m_style = style;
 }
+
+//____ SetSize() ______________________________________________________________
+
+void WgTextProp::SetSize( int size, WgMode mode )
+{
+	assert( size >= 0 && size < 2048 );
+
+	if( mode == WG_MODE_ALL )
+	{
+		for( int i = 0 ; i < WG_NB_MODES ; i++ )
+			m_modeProp[i].m_size = size;
+	}
+	else
+		m_modeProp[mode].m_size = size;
+}
+
+
 
 //____ SetUnderlined() ________________________________________________________
 
@@ -168,6 +188,20 @@ void WgTextProp::ClearStyle( WgMode mode )
 		m_modeProp[mode].m_style = WG_STYLE_NORMAL;
 }
 
+//____ ClearSize() ______________________________________________________________
+
+void WgTextProp::ClearSize( WgMode mode )
+{
+	if( mode == WG_MODE_ALL )
+	{
+		for( int i = 0 ; i < WG_NB_MODES ; i++ )
+			m_modeProp[i].m_size = 0;
+	}
+	else
+		m_modeProp[mode].m_size = 0;
+}
+
+
 //____ ClearUnderlined() ________________________________________________________
 
 void WgTextProp::ClearUnderlined( WgMode mode )
@@ -202,6 +236,17 @@ bool WgTextProp::IsStyleStatic() const
 }
 
 //_____________________________________________________________________________
+bool WgTextProp::IsSizeStatic() const
+{
+	for( int i = 1 ; i < WG_NB_MODES ; i++ )
+		if( m_modeProp[0].m_size != m_modeProp[i].m_size )
+			return false;
+
+	return true;
+}
+
+
+//_____________________________________________________________________________
 bool WgTextProp::IsUnderlineStatic() const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
@@ -232,6 +277,17 @@ bool WgTextProp::CompareStyleTo( const WgTextPropPtr& pProp ) const
 }
 
 //_____________________________________________________________________________
+bool WgTextProp::CompareSizeTo( const WgTextPropPtr& pProp ) const
+{
+	for( int i = 1 ; i < WG_NB_MODES ; i++ )
+		if( m_modeProp[i].m_size != pProp->m_modeProp[i].m_size )
+			return false;
+
+	return true;
+}
+
+
+//_____________________________________________________________________________
 bool WgTextProp::CompareUnderlineTo( const WgTextPropPtr& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
@@ -257,7 +313,8 @@ Uint8 WgTextProp::CalculateChecksum() const
 		chk.Add8( (Uint8) m_modeProp[i].m_bColored );
 		chk.Add8( (Uint8) m_modeProp[i].m_bUnderlined );
 		chk.Add32( m_modeProp[i].m_color.argb );
-		chk.Add8( m_modeProp[i].m_style );
+		chk.Add16( m_modeProp[i].m_style );
+		chk.Add16( m_modeProp[i].m_size );
 	}
 
 	return chk.GetChecksum();
@@ -274,6 +331,7 @@ bool WgTextProp::CompareTo( const WgTextProp * pProp ) const
 	for( int i = 0 ; i < WG_NB_MODES ; i++ )
 	{
 		if( m_modeProp[i].m_style != pProp->m_modeProp[i].m_style ||
+			m_modeProp[i].m_size != pProp->m_modeProp[i].m_size ||
 			m_modeProp[i].m_bColored != pProp->m_modeProp[i].m_bColored ||
 			m_modeProp[i].m_bUnderlined != pProp->m_modeProp[i].m_bUnderlined ||
 			m_modeProp[i].m_color.argb != pProp->m_modeProp[i].m_color.argb )
@@ -427,5 +485,6 @@ bool WgTextProp::IsEqual(WgMode mode0, WgMode mode1) const
 	return	m_modeProp[mode0].m_bColored == m_modeProp[mode1].m_bColored &&
 			m_modeProp[mode0].m_bUnderlined == m_modeProp[mode1].m_bUnderlined &&
 			m_modeProp[mode0].m_color == m_modeProp[mode1].m_color &&
-			m_modeProp[mode0].m_style == m_modeProp[mode1].m_style;			
+			m_modeProp[mode0].m_style == m_modeProp[mode1].m_style &&			
+			m_modeProp[mode0].m_size == m_modeProp[mode1].m_size;			
 }

@@ -45,7 +45,7 @@ WgGizmoCombobox::WgGizmoCombobox( void )
 	m_bEditable = false;
 	m_pMenu		= 0;
 	m_pSelectedItem = 0;
-	m_textFormat = "%s";
+	m_textFormat = "%1";
 }
 
 //____ Destructor _____________________________________________________________
@@ -306,7 +306,7 @@ void WgGizmoCombobox::EntrySelected(WgMenuItem * pItem)
 
 		buff.PushBack(m_textFormat);
 
-		int ofs = buff.FindFirst( "%s" );
+		int ofs = buff.FindFirst( "%1" );
 		if( ofs >= 0 )
 		{
 			WgTextPropPtr pProp = buff[ofs].GetProperties();

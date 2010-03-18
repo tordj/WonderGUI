@@ -22,6 +22,8 @@
 
 #include <new>
 
+#include <memory.h>
+
 #include <wg_surface.h>
 #include <wg_geo.h>
 
@@ -34,10 +36,14 @@ WgMemPool * WgSurface::g_pBlockSetMemPool = 0;
 
 WgSurface::WgSurface()
 {
-	m_lockStatus = UNLOCKED;
+	m_lockStatus	= UNLOCKED;
+	m_pPixels		= 0;
 
 	if( !g_pBlockSetMemPool )
 		g_pBlockSetMemPool = new WgMemPool( 16, sizeof(WgBlockSet) );
+
+
+	memset( &m_pixelFormat, 0, sizeof(PixelFormat) );
 }
 
 //____ ~WgSurface() ____________________________________________________________
@@ -52,6 +58,90 @@ WgRect WgSurface::Dimensions() const
 {
 	return WgRect( 0, 0, GetWidth(), GetHeight() );
 }
+
+
+//____ Fill() _________________________________________________________________
+
+bool WgSurface::Fill( WgColor col )
+{
+
+	LockStatus oldLock = m_lockStatus;
+
+	if( oldLock != READ_WRITE && oldLock != WRITE_ONLY )
+	{
+		Lock( WRITE_ONLY );
+		if( m_pPixels == 0 )
+			return false;
+	}	
+
+	//
+
+
+	Uint32 pixel = Col2Pixel( col );
+	int width = GetWidth();
+	int height = GetHeight();
+	int pitch = GetPitch();
+	Uint8 * pDest = m_pPixels;
+
+	bool ret = true;
+	switch( m_pixelFormat.bits )
+	{
+		case 8:
+			for( int y = 0 ; y < height ; y++ )
+			{
+				for( int x = 0 ; x < width ; x++ )
+					pDest[x] = (Uint8) pixel;
+				pDest += pitch;
+			}
+			break;
+		case 16:
+			for( int y = 0 ; y < height ; y++ )
+			{
+				for( int x = 0 ; x < width ; x++ )
+					((Uint16*)pDest)[x] = (Uint16) pixel;
+				pDest += pitch;
+			}
+			break;
+		case 24:
+		{
+			Uint8 one = (Uint8) pixel;
+			Uint8 two = (Uint8) (pixel>>8);
+			Uint8 three = (Uint8) (pixel>>16);
+
+			for( int y = 0 ; y < height ; y++ )
+			{
+				for( int x = 0 ; x < width ; x++ )
+				{
+					pDest[x++] = one;
+					pDest[x++] = two;
+					pDest[x++] = three;
+				}
+				pDest += pitch - width*3;
+			}
+			break;
+		}
+		case 32:
+			for( int y = 0 ; y < height ; y++ )
+			{
+				for( int x = 0 ; x < width ; x++ )
+					((Uint32*)pDest)[x] = pixel;
+				pDest += pitch;
+			}
+			break;
+		default:
+			ret = false;
+	}
+
+	//
+
+	if( oldLock == UNLOCKED )
+		Unlock();
+	else if( oldLock == READ_ONLY )
+		Lock( oldLock );
+
+	return ret;
+}
+
 
 //____ defineBlockSet() ________________________________________________________
 

@@ -193,8 +193,9 @@ public:
 	static bool				IsCombUnderlined( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
 	static const WgColor	GetCombColor( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
 	static WgFontStyle		GetCombStyle( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
+	static int				GetCombSize( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
 	static WgTextLinkPtr	GetCombLink( Uint16 hTextProp, Uint16 hCharProp = 0 );
-	static WgFont *		GetCombFont( Uint16 hTextProp, Uint16 hCharProp = 0 );
+	static WgFont *			GetCombFont( Uint16 hTextProp, Uint16 hCharProp = 0 );
 	static WgGlyphSet *		GetCombGlyphSet( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
 	static bool				GetCombCharVisibility( Uint16 character, Uint16 hTextProp, Uint16 hCharProp = 0 );
 
@@ -307,6 +308,7 @@ public:
 
 		Uint16			m_hProp;
 		WgGlyphSet *	m_pGlyphSet;
+		int				m_size;			// Fontsize
 
 		const WgGlyph *	m_pPrevGlyph;
 		Uint32			m_length;
@@ -331,6 +333,7 @@ public:
 
 		bool			m_bColorTagOpen;
 		bool			m_bStyleTagOpen;
+		bool			m_bSizeTagOpen;
 		bool			m_bUnderTagOpen;
 
 		const WgResDB *	m_pResDB;

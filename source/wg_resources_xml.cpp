@@ -27,7 +27,8 @@
 #include <wg_resourceserializer_xml.h>
 #include <wg_font.h>
 #include <wg_cursor.h>
-#include <wg_glyphset.h>
+#include <wg_vectorglyphs.h>
+#include <wg_bitmapglyphs.h>
 #include <wg_util.h>
 #include <wdg_button.h>
 #include <wdg_checkbox2.h>
@@ -902,6 +903,7 @@ WgMode WgModeRes::Deserialize(const std::string& value)
 //		id=[mode]
 //		style=[fontstyle]
 //		col=[color]
+//		size=[size]
 //		underlined=[true | false]
 void WgModePropRes::Serialize(WgResourceSerializerXML& s)
 {
@@ -912,6 +914,9 @@ void WgModePropRes::Serialize(WgResourceSerializerXML& s)
 
 	s.BeginTag(TagName());
 	s.AddAttribute("id", WgModeRes::Serialize(m_mode));
+
+	if(textProp->GetSize(m_mode) != textPropRes->GetSize())
+		s.AddAttribute("size", WgUtil::ToString(textProp->GetSize(m_mode)));
 
 	if(textProp->GetStyle(m_mode) != textPropRes->GetStyle())
 		s.AddAttribute("style", WgFontStyleRes::Serialize(textProp->GetStyle(m_mode), s));
@@ -936,6 +941,9 @@ void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 
 	m_mode = WgModeRes::Deserialize(xmlNode["id"]);
 
+	if(xmlNode.HasAttribute("size"))
+		textProp->SetSize(WgUtil::ToUint32(xmlNode["size"]), m_mode);
+
 	if(xmlNode.HasAttribute("style"))
 		textProp->SetStyle(WgFontStyleRes::Deserialize(xmlNode, s), m_mode);
 
@@ -954,6 +962,7 @@ void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 // <textprop
 //		id=[mode]
 //		font=[fontname]
+//		size=[default size]
 //		style=[default fontstyle]
 //		col=[default color]
 //		underlined=[default true | false]
@@ -968,11 +977,13 @@ void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
 	m_color = m_pProp->GetColor(WG_MODE_NORMAL);
 	m_style = m_pProp->GetStyle(WG_MODE_NORMAL);
 	m_underlined = m_pProp->IsUnderlined(WG_MODE_NORMAL);
+	m_size = m_pProp->GetSize(WG_MODE_NORMAL);
 
 	s.BeginTag(TagName());
 
 	s.AddAttribute("id", s.ResDb()->FindTextPropId(m_pProp));
 	s.AddAttribute("font", fontRes->id);
+	s.AddAttribute("size", WgUtil::ToString(m_size) );
 
 	if(m_style != WG_STYLE_NORMAL)
 		s.AddAttribute("style", WgFontStyleRes::Serialize(m_style, s));
@@ -1007,8 +1018,11 @@ void WgTextPropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		m_color = WgColorRes::Deserialize(s, xmlNode["col"]);
 	m_style = WgFontStyleRes::Deserialize(xmlNode, s);
 	m_underlined = WgUtil::ToBool(xmlNode["underlined"]);
+	m_size = WgUtil::ToUint32(xmlNode["size"]);
+	
 
 	m_prop.SetStyle( m_style );
+	m_prop.SetSize( m_size );
 
 	if(m_bColored)
 		m_prop.SetColor(m_color);
@@ -1503,11 +1517,17 @@ void WgGlyphSetRes::Serialize(WgResourceSerializerXML& s)
 	s.BeginTag(TagName());
 	s.AddAttribute("id", res->id);
 	if(WgResourceXML::Cast<WgFontRes>(Parent()))
-		s.AddAttribute("style", WgFontStyleRes::Serialize(m_style, s));
+	{
+		if( m_bHasStyle )
+			s.AddAttribute("style", WgFontStyleRes::Serialize(m_style, s));
+
+		if( m_size != 0 )
+			s.AddAttribute("size", WgUtil::ToString(m_size));
+	}
 	else
 	{
 		s.AddAttribute("file", res->file);
-
+/*
 		const WgGlyphSet * pFallback = res->res->getFallback();
 		if( pFallback )
 		{
@@ -1515,10 +1535,11 @@ void WgGlyphSetRes::Serialize(WgResourceSerializerXML& s)
 			if( fallbackId.size() > 0 )
 				s.AddAttribute("fallback", fallbackId );
 		}
-
-		Uint16 replacementGlyph = res->res->getReplacementGlyph();
+*/
+/*		Uint16 replacementGlyph = res->res->getReplacementGlyph();
 		if( replacementGlyph != 0 )
 			WriteDiffAttr( s, XmlNode(), "replacement_glyph", (int) replacementGlyph, (int) 0 );
+*/
 	}
 	s.EndTag();
 }
@@ -1528,8 +1549,9 @@ void WgGlyphSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	const std::string& id = xmlNode["id"];
 	m_pGlyphSet = s.ResDb()->GetGlyphSet(id);
 
-	const std::string& style = xmlNode["style"];
-	if(style.empty())
+
+	WgFontRes* fontRes = WgResourceXML::Cast<WgFontRes>(Parent());
+	if( fontRes == 0 )
 	{
 		ASSERT(m_pGlyphSet == 0, "glyphset already exist");
 		const std::string& filename = xmlNode["file"];
@@ -1537,7 +1559,7 @@ void WgGlyphSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		s.ResDb()->AddGlyphSet(id, filename, new WgXMLMetaData(XmlNode()));
 		m_pGlyphSet = s.ResDb()->GetGlyphSet(id);
 		VERIFY(m_pGlyphSet, "invalid <glyphset>");
-
+/*
 		const std::string& fallbackId = xmlNode["fallback"];
 		if( fallbackId.size() > 0 )
 		{
@@ -1545,20 +1567,55 @@ void WgGlyphSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 			if( pFallback )
 				m_pGlyphSet->setFallback( pFallback );
 		}
-
+*/
+/*
 		Uint16 replacementGlyph = WgUtil::ToUint16(xmlNode["replacement_glyph"]);
 		if( replacementGlyph != 0 )
 			m_pGlyphSet->setReplacementGlyph(replacementGlyph);
+*/
 	}
 	else
 	{
-		WgFontRes* fontRes = WgResourceXML::Cast<WgFontRes>(Parent());
-		VERIFY(fontRes, "invalid parent for <glyphset> with 'style' attribute. should be <font>");
+		const std::string& style = xmlNode["style"];
+		const std::string& size = xmlNode["size"];
 		VERIFY(m_pGlyphSet, "glyphset not set");
 
-		WgFontStyle style = WgFontStyleRes::Deserialize(xmlNode, s);
+		WgFontStyle styleInt	= WgFontStyleRes::Deserialize(xmlNode, s);
+		Uint32		sizeInt		= WgUtil::ToUint32(size);
+		WgFont *	pFont		= fontRes->GetFont();
 
-		fontRes->GetFont()->SetGlyphSet(style, m_pGlyphSet);
+		switch( m_pGlyphSet->GetType() )
+		{
+#ifdef WG_USE_FREETYPE
+			case WgGlyphSet::VECTOR:
+				if( style.length() == 0 )
+				{
+					VERIFY( pFont->GetDefaultVectorGlyphs() == 0, "default vector glyphs defined more than once" );
+					pFont->SetDefaultVectorGlyphs( static_cast<WgVectorGlyphs*>(m_pGlyphSet) );
+				}
+				else
+				{
+					VERIFY( pFont->GetVectorGlyphs( styleInt ) == 0, "vector glyphs defined more than once for same style" );
+					pFont->SetVectorGlyphs( static_cast<WgVectorGlyphs*>(m_pGlyphSet), styleInt );
+				}
+				break;
+#endif
+			case WgGlyphSet::BITMAP:
+				if( style.length() == 0 )
+				{
+					VERIFY( pFont->GetDefaultBitmapGlyphs( sizeInt ) == 0, "default bitmap glyphs for same size defined more than once" );
+					pFont->SetDefaultBitmapGlyphs( static_cast<WgBitmapGlyphs*>(m_pGlyphSet), sizeInt );
+				}
+				else
+				{
+					VERIFY( pFont->GetBitmapGlyphs( styleInt, sizeInt ) == 0, "bitmap glyphs defined more than once for same style and size" );
+					pFont->SetBitmapGlyphs( static_cast<WgBitmapGlyphs*>(m_pGlyphSet), styleInt, sizeInt );
+				}
+				break;
+
+			default:
+				VERIFY( false, "Unknown or unsupported glyphset subtype" );
+		}
 	}
 }
 
@@ -1577,15 +1634,39 @@ void WgFontRes::Serialize(WgResourceSerializerXML& s)
 	if(res->id.size())
 		s.AddAttribute("id", res->id);
 
-	WriteGlyphSetAttr(s, m_pFont->GetDefaultGlyphSet(), "glyphset");
 	WriteCursorAttr(s, m_pFont->GetCursor(), "cursor");
+
+	// Write default vector glyphs
+
+#ifdef WG_USE_FREETYPE
+	if( m_pFont->GetDefaultVectorGlyphs() )
+		WriteGlyphSetAttr(s, m_pFont->GetDefaultVectorGlyphs(), "glyphset");
+
+	// Write additional vector glyphs
 
 	for(int style = WG_STYLE_NORMAL; style < WG_NB_FONTSTYLES; style++)
 	{
-		WgGlyphSet* pGlyphSet = m_pFont->GetGlyphSet((WgFontStyle)style);
-		if(pGlyphSet && pGlyphSet != m_pFont->GetDefaultGlyphSet())
-		{
+		WgGlyphSet* pGlyphSet = m_pFont->GetVectorGlyphs((WgFontStyle)style);
+		if(pGlyphSet)
 			WgGlyphSetRes(this, pGlyphSet, (WgFontStyle)style).Serialize(s);
+	}
+#endif
+
+	// Write bitmap glyphs
+
+
+	for(int size = 0; size <= WG_MAX_FONTSIZE; size++)
+	{
+		WgGlyphSet* pGlyphSet = m_pFont->GetDefaultBitmapGlyphs(size);
+		if(pGlyphSet)
+			WgGlyphSetRes(this, pGlyphSet, size).Serialize(s);
+
+
+		for(int style = WG_STYLE_NORMAL; style < WG_NB_FONTSTYLES; style++)
+		{
+			WgGlyphSet* pGlyphSet = m_pFont->GetBitmapGlyphs((WgFontStyle)style, size);
+			if(pGlyphSet)
+				WgGlyphSetRes(this, pGlyphSet, (WgFontStyle)style, size).Serialize(s);
 		}
 	}
 
@@ -1595,7 +1676,26 @@ void WgFontRes::Serialize(WgResourceSerializerXML& s)
 void WgFontRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
 	m_pFont = new WgFont();
-	m_pFont->SetDefaultGlyphSet(s.ResDb()->GetGlyphSet(xmlNode["glyphset"]));
+	WgGlyphSet * p = s.ResDb()->GetGlyphSet(xmlNode["glyphset"]);
+
+	if( p )
+	{
+		switch( p->GetType() )
+		{
+#ifdef WG_USE_FREETYPE
+		case WgGlyphSet::VECTOR:
+				m_pFont->SetDefaultVectorGlyphs( (WgVectorGlyphs*) p);
+				break;
+#endif
+		case WgGlyphSet::BITMAP:
+				m_pFont->SetDefaultBitmapGlyphs( (WgBitmapGlyphs*) p);			// Default for size 0, making it default for all sizes...
+				break;
+
+		default:
+				VERIFY( false, "Unknown or unsupported glyphset subtype" );
+		}
+	}
+
 	m_pFont->SetCursor(s.ResDb()->GetCursor(xmlNode["cursor"]));
 	s.ResDb()->AddFont(xmlNode["id"], m_pFont, new WgXMLMetaData(XmlNode()));
 }
@@ -1605,11 +1705,13 @@ void WgFontRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 //////////////////////////////////////////////////////////////////////////
 void WgAnimRes::Serialize(WgResourceSerializerXML& s)
 {
+	const int legoMargin = 2;
 	s.BeginTag(TagName(), XmlNode());
-	WriteDiffAttr<Uint32>(s, XmlNode(), "width", m_pAnim->width(), 0);
-	WriteDiffAttr<Uint32>(s, XmlNode(), "height", m_pAnim->height(), 0);
+	WriteDiffAttr<Uint32>(s, XmlNode(), "state_w", m_pAnim->width() - legoMargin, 0);
+	WriteDiffAttr<Uint32>(s, XmlNode(), "state_h", m_pAnim->height(), 0);
 	WriteDiffAttr(s, XmlNode(), "playmode", FromPlayMode(m_pAnim->playMode()), FromPlayMode(WgAnim::FORWARD_ONCE));
 	WriteDiffAttr(s, XmlNode(), "timescale", m_pAnim->timeScaler(), 1.f);
+	WriteDiffAttr(s, XmlNode(), "duration", m_pAnim->duration(), (Uint32)0);
 
 	s.EndTag();
 }
@@ -1617,24 +1719,44 @@ void WgAnimRes::Serialize(WgResourceSerializerXML& s)
 void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
 	m_pAnim = new WgGfxAnim();
-	//m_pAnim->setWidth(WgUtil::ToUint32(xmlNode["width"]));
-	//m_pAnim->setHeight(WgUtil::ToUint32(xmlNode["height"]));
 	m_pAnim->setTimeScaler(WgUtil::ToFloat(xmlNode["timescale"]));
 	m_pAnim->setPlayMode(ToPlayMode(xmlNode["playmode"]));
 
-	WgResDB::LegoSource* source =  s.ResDb()->GetLegoSource(xmlNode["source"]);
-	VERIFY(source, "no source defined");
-
 	const int legoMargin = 2;
-	m_pAnim->setWidth(source->rect.w + legoMargin);
-	m_pAnim->setHeight(source->rect.h);
-
-	WgSurface* pSurf = s.ResDb()->GetSurface(source->surface);
-	VERIFY(pSurf, "surface doesn't exist");
-
 	Uint32 duration = WgUtil::ToUint32(xmlNode["duration"]);
 
-	VERIFY(m_pAnim->addHorrTiledFrames(source->nStates, pSurf, source->rect.x, source->rect.y, duration), "could not add frame to anim");
+	WgResDB::LegoSource* source =  s.ResDb()->GetLegoSource(xmlNode["source"]);
+	if(source)
+	{
+		m_pAnim->setWidth(source->rect.w + legoMargin);
+		m_pAnim->setHeight(source->rect.h);
+
+		WgSurface* pSurf = s.ResDb()->GetSurface(source->surface);
+		VERIFY(pSurf, "surface doesn't exist");
+
+		VERIFY(m_pAnim->addHorrTiledFrames(source->nStates, pSurf, source->rect.x, source->rect.y, duration), "could not add frame to anim");
+	}
+	else
+	{
+		WgSurface* pSurf = s.ResDb()->GetSurface(xmlNode["surface"]);
+		VERIFY(pSurf, "neither 'source' nor 'surface' defined in anim");
+
+		int stateW = WgUtil::ToUint32(xmlNode["state_w"]);
+		int stateH = WgUtil::ToUint32(xmlNode["state_h"]);
+		int nStates = WgUtil::ToUint32(xmlNode["state_count"]);
+
+		m_pAnim->setWidth(stateW + legoMargin);
+		m_pAnim->setHeight(stateH);
+
+		int nHorStates = pSurf->width() / (stateW + legoMargin);
+		for(int y = 0; nStates > 0; y += stateH + legoMargin, nStates -= nHorStates)
+		{
+			if(nStates > nHorStates)
+				VERIFY(m_pAnim->addHorrTiledFrames(nHorStates, pSurf, 0, y, duration), "could not add frame to anim");
+			else
+				VERIFY(m_pAnim->addHorrTiledFrames(nStates, pSurf, 0, y, duration), "could not add frame to anim");
+		}		
+	}
 
 	s.ResDb()->AddAnim(xmlNode["id"], m_pAnim, new WgXMLMetaData(xmlNode));
 }
@@ -2728,6 +2850,7 @@ void Wdg_RefreshButton_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr( s, xmlNode, "refresh_mode", widget->GetRefreshMode()==WgGizmoRefreshButton::SPINNING? "spinning":"progress", "" );
 	WriteTextAttrib(s, widget->GetRefreshText(), "refresh_text");
 
+
 	WgGizmoRefreshButton::AnimTarget	t = widget->GetAnimTarget();
 	std::string	target;
 	switch( t )
@@ -2747,6 +2870,8 @@ void Wdg_RefreshButton_Res::Serialize(WgResourceSerializerXML& s)
 	}
 	WriteDiffAttr( s, xmlNode, "anim_target", target.c_str(), "" );
 	WriteDiffAttr<bool>(s, xmlNode, "restartable", widget->IsRestartable(), false );
+
+	WriteTextPropAttr(s, widget->GetRefreshTextProperties(), "refresh_prop");
 
 	s.EndTag();
 }
@@ -2802,6 +2927,9 @@ void Wdg_RefreshButton_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeri
 
 	widget->SetRefreshText(  WgCharSeq(ReadLocalizedString(xmlNode["refresh_text"], s).c_str()));
 
+	WgTextPropPtr prop = s.ResDb()->GetTextProp(xmlNode["refresh_prop"]);
+	if(prop)
+		widget->SetRefreshTextProperties(prop);
 
 }
 
@@ -4043,16 +4171,31 @@ void Wdg_TableView_Res::Serialize(WgResourceSerializerXML& s)
 	//
 
 	Uint32 nRowColors = widget->GetRowColorCount();
+	std::vector<std::string> rowColors;
+	WgUtil::Tokenize(xmlNode["rowcolors"], rowColors);
 	if(nRowColors)
 	{
-		std::string rowColors;
+		std::string rowColor;
 		for(Uint32 i = 0; i < nRowColors; i++)
 		{
 			if( i > 0 )
-				rowColors += ",";
-			rowColors += WgColorRes::ToHexString(widget->GetRowColors()[i]);
+				rowColor += ",";
+
+			WgColor color = widget->GetRowColors()[i];
+
+			if( i < rowColors.size() && rowColors[i][0] == '#' )
+			{
+				WgColor oldCol = s.ResDb()->GetColor(rowColors[i].substr(1));
+				if(oldCol == color)
+				{
+					rowColor += rowColors[i];
+					continue;
+				}
+			}
+
+			rowColor += WgColorRes::ToHexString(color);
 		}
-		s.AddAttribute("rowcolors", rowColors);
+		s.AddAttribute("rowcolors", rowColor);
 	}
 	else
 	{

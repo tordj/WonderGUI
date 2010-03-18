@@ -383,12 +383,8 @@ void WgGizmoCheckbox::RefreshTextArea()
 	if( !pFontSet )
 		return;
 	const WgOrigo& origo	= m_pText->alignment();
-	WgGlyphSet * pFont = pFontSet->GetGlyphSet(WG_STYLE_NORMAL);
-	if( !pFont )
-		return;
 
-	int glyphheight = pFont->height();
-	int textheight = glyphheight * m_pText->nbLines();
+	int textheight = m_pText->height();
 
 	int yPos = (int) (Size().h * origo.anchorY()
 							- textheight * origo.hotspotY());
@@ -412,14 +408,15 @@ void WgGizmoCheckbox::RefreshTextArea()
 			xMin = m_textMouseOverOfsX;
 
 		int linewidth = WgTextTool::lineWidth( pProp, WG_MODE_NORMAL, p1[i].pText );
+		int lineheight = m_pText->softLineHeight(i);
 		int textStartX = (int) (textOfs + Size().w * origo.anchorX()
 								- linewidth * origo.hotspotX());
 
 		int xMax = textStartX + linewidth;
 
-		m_pTextArea[ i ] = WgRect( xMin, yPos, xMax - xMin, glyphheight );
+		m_pTextArea[ i ] = WgRect( xMin, yPos, xMax - xMin, lineheight );
 
-		yPos += glyphheight;
+		yPos += lineheight;
 	}
 }
 

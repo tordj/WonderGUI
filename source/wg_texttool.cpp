@@ -32,6 +32,8 @@
 #include <wg_charseq.h>
 #include <wg_cursorinstance.h>
 #include <wg_resdb.h>
+#include <wg_base.h>
+#include <wg_pen.h>
 
 const static char itoa_table [35+36+1]= { "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" };
 
@@ -1296,7 +1298,7 @@ void	WgTextTool::countCharsLines( const WgChar * pStr, Uint32& nChars, Uint32& n
 	nChars = 0;
 	nLines = 1;
 
-	while( pStr != pEnd )
+	while( pStr + nChars != pEnd )
 	{
 		if( pStr[nChars].IsEndOfText() )
 			break;
@@ -1749,63 +1751,106 @@ Uint32 WgTextTool::textWidth( const WgText& kTextObj )
 	return maxWidth;
 }
 
-//____ lineWidth() ____________________________________________________________
-/*
 
-This method no longer needed after the rewrite of text-subsystem and would only
-encourage bad behaviour if kept.
-
-Use lineWidth( pTextObj->fonts(), pString ) directly instead.
-
-Uint32 WgTextTool::lineWidth( const WgText& kTextObj, const char * pString )
-{
-	return lineWidth( kTextObj.fonts(), pString );
-}
-*/
 //____ lineWidth() ____________________________________________________________
 
 Uint32 WgTextTool::lineWidth( const WgTextPropPtr& pProp, const char * pString )
 {
-	const char * p = pString;
-	Ruler	ruler( pProp, WG_MODE_NORMAL );
+	WgPen pen;
+	pen.SetTextProp( pProp );
 
-	while( * p != 0 )
-		ruler.AddChar(readChar( p ));
+	while( * pString != 0 && * pString != '\n' )
+	{
+		pen.SetChar( * pString++ );
+		pen.ApplyKerning();
+		pen.AdvancePos();
+	}
 
-	return ruler.EndLine( * p );		// Adding the EOL character corrects the length.
+	// We include the terminator in case it is set to be visible.
+
+	pen.SetChar( * pString );
+	pen.ApplyKerning();
+	pen.AdvancePos();
+
+	return pen.GetPosX();
 }
 
 Uint32 WgTextTool::lineWidth( const WgTextPropPtr& pProp, const Uint16 * pString )
 {
-	Ruler	ruler( pProp, WG_MODE_NORMAL );
+	WgPen pen;
+	pen.SetTextProp( pProp );
 
-	while( * pString != 0 )
-		ruler.AddChar( * pString++ );
+	while( * pString != 0 && * pString != '\n' )
+	{
+		pen.SetChar( * pString++ );
+		pen.ApplyKerning();
+		pen.AdvancePos();
+	}
 
-	return ruler.EndLine( * pString );		// Adding the EOL character corrects the length.
+	// We include the terminator in case it is set to be visible.
+
+	pen.SetChar( * pString );
+	pen.ApplyKerning();
+	pen.AdvancePos();
+
+	return pen.GetPosX();
 }
 
 
 Uint32 WgTextTool::lineWidth( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString )
 {
-	Ruler	ruler( pDefProp, mode );
+	WgPen pen;
+	Uint16 hProp = pString->GetPropHandle();
+
+	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 	while( !pString->isHardEndOfLine() )
-		ruler.AddChar( * pString++ );
+	{
+		if( pString->GetPropHandle() != hProp )
+			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
-	return ruler.EndLine( * pString );		// Adding the EOL character corrects the length.
+		pen.SetChar( pString->GetGlyph() );
+		pen.ApplyKerning();
+		pen.AdvancePos();
+		pString++;
+	}
+
+	// We include the terminator in case it is set to be visible.
+
+	pen.SetChar( pString->GetGlyph() );
+	pen.ApplyKerning();
+	pen.AdvancePos();
+
+	return pen.GetPosX();
 }
 
 //____ lineWidthSoft() ________________________________________________________
 
 Uint32 WgTextTool::lineWidthSoft( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString )
 {
-	Ruler	ruler( pDefProp, mode );
+	WgPen pen;
+	Uint16 hProp = pString->GetPropHandle();
+
+	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 	while( !pString->IsEndOfLine() )
-		ruler.AddChar( * pString++ );
+	{
+		if( pString->GetPropHandle() != hProp )
+			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
-	return ruler.EndLine( * pString );		// Adding the EOL character corrects the length...
+		pen.SetChar( pString->GetGlyph() );
+		pen.ApplyKerning();
+		pen.AdvancePos();
+		pString++;
+	}
+
+	// We include the terminator in case it is set to be visible.
+
+	pen.SetChar( pString->GetGlyph() );
+	pen.ApplyKerning();
+	pen.AdvancePos();
+
+	return pen.GetPosX();
 }
 
 
@@ -1814,32 +1859,52 @@ Uint32 WgTextTool::lineWidthSoft( const WgTextPropPtr& pDefProp, WgMode mode, co
 
 Uint32 WgTextTool::lineWidthPart( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol )
 {
-	Ruler	ruler( pDefProp, mode );
+	WgPen pen;
+	Uint16 hProp = pString->GetPropHandle();
+
+	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 	for( int i = 0 ; i < nCol ; i++ )
 	{
 		if( pString->isHardEndOfLine() )
-			return ruler.EndLine( * pString );	// We got the complete line so let the EOL character correct the length...
+			break;
 
-		ruler.AddChar( * pString++ );
+		if( pString->GetPropHandle() != hProp )
+			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
+
+		pen.SetChar( pString->GetGlyph() );
+		pen.ApplyKerning();
+		pen.AdvancePos();
+		pString++;
 	}
-	return ruler.Length();					// We do not end the line since we are only measuring a part of it.
+
+	return pen.GetPosX();
 }
 
 //____ lineWidthPartSoft() ____________________________________________________
 
 Uint32 WgTextTool::lineWidthPartSoft( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol )
 {
-	Ruler	ruler( pDefProp, mode );
+	WgPen pen;
+	Uint16 hProp = pString->GetPropHandle();
+
+	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 	for( int i = 0 ; i < nCol ; i++ )
 	{
 		if( pString->IsEndOfLine() )
-			return ruler.EndLine( * pString );	// We got the complete line so let the EOL character correct the length...
+			break;
 
-		ruler.AddChar( * pString++ );
+		if( pString->GetPropHandle() != hProp )
+			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
+
+		pen.SetChar( pString->GetGlyph() );
+		pen.ApplyKerning();
+		pen.AdvancePos();
+		pString++;
 	}
-	return ruler.Length();					// We do not end the line since we are only measuring a part of it.
+
+	return pen.GetPosX();
 }
 
 //____ forwardCharacters() ____________________________________________________
@@ -2272,7 +2337,28 @@ void WgTextTool::ModifyProperties( const PropModifier& modif, WgChar * pChar, Ui
 
 bool WgTextTool::IsCombUnderlined( Uint16 hTextProp, Uint16 hCharProp, WgMode mode )
 {
-	return (WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_bUnderlined || WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_bUnderlined);
+	return (WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_bUnderlined || 
+			WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_bUnderlined ||
+			WgBase::GetDefaultTextProp()->m_modeProp[mode].m_bUnderlined );
+}
+
+//____ GetCombSize() __________________________________________________________
+
+int WgTextTool::GetCombSize(Uint16 hTextProp, Uint16 hCharProp, WgMode mode)
+{
+	// Prio 1: Size for character.
+
+	if( WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_size != 0 )
+		return (WgFontStyle) WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_size;
+
+	// Prio 2: Size for text.
+
+	if( WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_size != 0 )
+		return (WgFontStyle) WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_size;
+
+	// Prio 3: Size from default textprop.
+
+	return (WgFontStyle) WgBase::GetDefaultTextProp()->m_modeProp[mode].m_size;
 }
 
 
@@ -2287,7 +2373,12 @@ WgFontStyle WgTextTool::GetCombStyle(Uint16 hTextProp, Uint16 hCharProp, WgMode 
 
 	// Prio 2: Style for text.
 
-	return (WgFontStyle) WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_style;
+	if( WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_style != WG_STYLE_NORMAL )
+		return (WgFontStyle) WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_style;
+
+	// Prio 3: Style from default textprop.
+
+	return (WgFontStyle) WgBase::GetDefaultTextProp()->m_modeProp[mode].m_style;
 }
 
 
@@ -2305,7 +2396,11 @@ const WgColor WgTextTool::GetCombColor(Uint16 hTextProp, Uint16 hCharProp, WgMod
 	if( WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_bColored )
 		return WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_color;
 
-	// Prio 3: Just a white color...
+	// Prio 3: Color from default textprop
+
+	return WgBase::GetDefaultTextProp()->m_modeProp[mode].m_color;
+
+	// Prio 4: Just a white color...
 
 	return WgColor::White();
 }
@@ -2338,9 +2433,9 @@ WgFont * WgTextTool::GetCombFont(Uint16 hTextProp, Uint16 hCharProp)
 	if( WgTextPropManager::GetProp(hTextProp).m_pFont )
 		return WgTextPropManager::GetProp(hTextProp).m_pFont;
 
-	// prio 3: Defalt fontset
+	// prio 3: Default fontset
 
-	return WgFont::GetDefaultFont();
+	return WgBase::GetDefaultTextProp()->m_pFont;
 }
 
 //____ GetCombGlyphSet() ______________________________________________________
@@ -2352,28 +2447,26 @@ WgGlyphSet * WgTextTool::GetCombGlyphSet( Uint16 hTextProp, Uint16 hCharProp, Wg
 	if( !p )
 		return 0;
 
-	WgFontStyle style;
-
-	if( WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_style != WG_STYLE_NORMAL )
-		style = (WgFontStyle) WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_style;
-	else
-		style = (WgFontStyle) WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_style;
-
-	return p->GetGlyphSet( style );
+	return p->GetGlyphSet( GetCombStyle(hTextProp, hCharProp, mode), GetCombSize(hTextProp, hCharProp, mode) );
 }
 
 //____ GetCombCharVisibility() ________________________________________________
 
 bool WgTextTool::GetCombCharVisibility( Uint16 character, Uint16 hTextProp, Uint16 hCharProp )
 {
-	// Prio 1: Link set for character.
+	// Prio 1: Setting for character.
 
 	if( WgTextPropManager::GetProp(hCharProp).GetCharVisibility(character) )
 		return true;
 
-	// Prio 2: Link set for text.
+	// Prio 2: Setting for text.
 
-	return WgTextPropManager::GetProp(hTextProp).GetCharVisibility(character);
+	if( WgTextPropManager::GetProp(hTextProp).GetCharVisibility(character) )
+		return true;
+
+	// Prio 3: Default setting.
+
+	return WgBase::GetDefaultTextProp()->GetCharVisibility(character);
 }
 
 
@@ -2383,7 +2476,6 @@ WgTextTool::Ruler::Ruler( const WgTextPropPtr& pDefProp, WgMode mode )
 {
 	m_pDefProp	= pDefProp;
 	m_mode		= mode;
-
 	Reset();
 }
 
@@ -2413,7 +2505,7 @@ Sint32 WgTextTool::Ruler::MeasureChar( Uint16 ch ) const
 
 	// Increase line length, taking kerning and advance into account
 
-	const WgGlyph * pGlyph = m_pGlyphSet->glyph(ch);
+	const WgGlyph * pGlyph = m_pGlyphSet->GetGlyph(ch, m_size);
 
 	if( ch == 0 || ch == '\n' )
 	{
@@ -2422,8 +2514,8 @@ Sint32 WgTextTool::Ruler::MeasureChar( Uint16 ch ) const
 			// This is a hard EOL with properties stating that it should be displayed as
 			// a character.
 
-			pGlyph = m_pGlyphSet->glyph('\n');
-			length = m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->bearingX + pGlyph->rect.w;
+			pGlyph = m_pGlyphSet->GetGlyph('\n', m_size);
+			length = m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
 		}
 		else
 		{
@@ -2445,7 +2537,7 @@ Sint32 WgTextTool::Ruler::MeasureChar( Uint16 ch ) const
 
 				if( m_pDefProp->GetCharVisibility( WG_BREAK_PERMITTED ) )
 				{
-					length = m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->advance;
+					length = m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
 				}
 				break;
 
@@ -2456,13 +2548,13 @@ Sint32 WgTextTool::Ruler::MeasureChar( Uint16 ch ) const
 
 				if( m_pDefProp->GetCharVisibility( WG_HYPHEN_BREAK_PERMITTED ) )
 				{
-					pGlyph = m_pGlyphSet->glyph( '-' );
-					length = m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->advance;
+					pGlyph = m_pGlyphSet->GetGlyph( '-', m_size );
+					length = m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
 				}
 				break;
 
 			default:
-				length = m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->advance;
+				length = m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
 				break;
 		}
 	}
@@ -2482,7 +2574,7 @@ Uint32 WgTextTool::Ruler::AddChar( Uint16 ch )
 
 	// Increase line length, taking kerning and advance into account
 
-	const WgGlyph * pGlyph = m_pGlyphSet->glyph(ch);
+	const WgGlyph * pGlyph = m_pGlyphSet->GetGlyph(ch, m_size);
 
 	switch( ch )
 	{
@@ -2493,7 +2585,7 @@ Uint32 WgTextTool::Ruler::AddChar( Uint16 ch )
 
 			if( m_pDefProp->GetCharVisibility( WG_BREAK_PERMITTED ) )
 			{
-				m_length += m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->advance;
+				m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
 				m_pPrevGlyph = pGlyph;
 			}
 			break;
@@ -2505,8 +2597,8 @@ Uint32 WgTextTool::Ruler::AddChar( Uint16 ch )
 
 			if( m_pDefProp->GetCharVisibility( WG_HYPHEN_BREAK_PERMITTED ) )
 			{
-				pGlyph = m_pGlyphSet->glyph( '-' );
-				m_length += m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->advance;
+				pGlyph = m_pGlyphSet->GetGlyph( '-', m_size );
+				m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
 				m_pPrevGlyph = pGlyph;
 			}
 			break;
@@ -2520,7 +2612,7 @@ Uint32 WgTextTool::Ruler::AddChar( Uint16 ch )
 			break;
 		}
 		default:
-			m_length += m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->advance;
+			m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
 			m_pPrevGlyph = pGlyph;
 			break;
 	}
@@ -2538,6 +2630,7 @@ Uint32 WgTextTool::Ruler::AddChar( const WgChar& ch )
 	{
 		m_hProp = hProp;
 		m_pGlyphSet = ch.GetGlyphSet(m_pDefProp, m_mode);
+		m_size = ch.GetSize(m_pDefProp, m_mode);
 	}
 
 	// Sanity check
@@ -2550,7 +2643,7 @@ Uint32 WgTextTool::Ruler::AddChar( const WgChar& ch )
 
 	Uint16	thisChar = ch.GetGlyph();
 
-	const WgGlyph * pGlyph = m_pGlyphSet->glyph(thisChar);
+	const WgGlyph * pGlyph = m_pGlyphSet->GetGlyph(thisChar, m_size);
 
 	switch( thisChar )
 	{
@@ -2561,7 +2654,7 @@ Uint32 WgTextTool::Ruler::AddChar( const WgChar& ch )
 
 			if( GetCombCharVisibility( WG_BREAK_PERMITTED, m_pDefProp.GetHandle(), hProp ) )
 			{
-				m_length += m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->advance;
+				m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
 				m_pPrevGlyph = pGlyph;
 			}
 			break;
@@ -2573,8 +2666,8 @@ Uint32 WgTextTool::Ruler::AddChar( const WgChar& ch )
 
 			if( GetCombCharVisibility( WG_HYPHEN_BREAK_PERMITTED, m_pDefProp.GetHandle(), hProp ) )
 			{
-				pGlyph = m_pGlyphSet->glyph( '-' );
-				m_length += m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->advance;
+				pGlyph = m_pGlyphSet->GetGlyph( '-', m_size );
+				m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
 				m_pPrevGlyph = pGlyph;
 			}
 			break;
@@ -2588,7 +2681,9 @@ Uint32 WgTextTool::Ruler::AddChar( const WgChar& ch )
 			break;
 		}
 		default:
-			m_length += m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->advance;
+			m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size );
+			if( pGlyph )
+				m_length += pGlyph->advance;
 			m_pPrevGlyph = pGlyph;
 			break;
 	}
@@ -2654,7 +2749,7 @@ Uint32 WgTextTool::Ruler::EndLine( Uint16 ch )
 		return 0;
 
 
-	const WgGlyph * pGlyph = m_pGlyphSet->glyph(ch);
+	const WgGlyph * pGlyph = m_pGlyphSet->GetGlyph(ch, m_size);
 
 	// Adjust width differently depending on the EOL character.
 
@@ -2663,8 +2758,8 @@ Uint32 WgTextTool::Ruler::EndLine( Uint16 ch )
 		// This is a hard EOL with properties stating that it should be displayed as
 		// a character.
 
-		pGlyph = m_pGlyphSet->glyph('\n');
-		return m_length + m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->bearingX + pGlyph->rect.w;
+		pGlyph = m_pGlyphSet->GetGlyph('\n', m_size);
+		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
 	}
 	else if( ch == 0 || ch == '\n' || ch == WG_BREAK_PERMITTED || ch == WG_NO_BREAK_SPACE || ch == '\t' || ch == ' ' )
 	{
@@ -2679,15 +2774,15 @@ Uint32 WgTextTool::Ruler::EndLine( Uint16 ch )
 	{
 		// Add the width of the hyphen.
 
-		pGlyph = m_pGlyphSet->glyph('-');
-		return m_length + m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->bearingX + pGlyph->rect.w;
+		pGlyph = m_pGlyphSet->GetGlyph('-', m_size);
+		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
 	}
 	else
 	{
 		// We are dealing with a forced break containing a character to be displayed.
 		// The rendered width of the last glyph isn't advance, but bearingX + width.
 
-		return m_length + m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->bearingX + pGlyph->rect.w;
+		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
 	}
 
 	return m_length;
@@ -2704,6 +2799,7 @@ Uint32 WgTextTool::Ruler::EndLine( const WgChar& ch )
 	{
 		m_hProp = hProp;
 		m_pGlyphSet = ch.GetGlyphSet(m_pDefProp, m_mode);
+		m_size = ch.GetSize(m_pDefProp, m_mode);
 	}
 
 	// Sanity check
@@ -2716,30 +2812,30 @@ Uint32 WgTextTool::Ruler::EndLine( const WgChar& ch )
 
 	Uint16	thisChar = ch.GetGlyph();
 
-	const WgGlyph * pGlyph = m_pGlyphSet->glyph(thisChar);
+	const WgGlyph * pGlyph = m_pGlyphSet->GetGlyph(thisChar,m_size);
 
 	if( !ch.isHardEndOfLine() && !ch.IsBreakPermitted() )
 	{
 		// We are dealing with a forced break containing a character to be displayed.
 		// The rendered width of the last glyph isn't advance, but bearingX + width.
 
-		return m_length + m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->bearingX + pGlyph->rect.w;
+		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
 
 	}
 	else if( ch.GetGlyph() == WG_HYPHEN_BREAK_PERMITTED )
 	{
 		// Add the width of the hyphen.
 
-		pGlyph = m_pGlyphSet->glyph('-');
-		return m_length + m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->bearingX + pGlyph->rect.w;
+		pGlyph = m_pGlyphSet->GetGlyph('-', m_size);
+		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
 	}
 	else if( ch.isHardEndOfLine() && ch.GetProperties()->GetCharVisibility( '\n' ) )
 	{
 		// This is a hard EOL with properties stating that it should be displayed as
 		// a character.
 
-		pGlyph = m_pGlyphSet->glyph('\n');
-		return m_length + m_pGlyphSet->kerning( m_pPrevGlyph, pGlyph ) + pGlyph->bearingX + pGlyph->rect.w;
+		pGlyph = m_pGlyphSet->GetGlyph('\n', m_size);
+		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
 	}
 	else
 	{
@@ -2765,6 +2861,7 @@ void WgTextTool::Ruler::Reset()
 	m_hProp			= 0xFFFF;		// Force immediate update of properties.
 
 	m_pGlyphSet		= WgTextTool::GetCombGlyphSet( m_pDefProp.GetHandle(), 0, m_mode );
+	m_size			= m_pDefProp->GetSize( m_mode );
 }
 
 
@@ -2783,6 +2880,7 @@ Uint32 WgTextTool::TextPropEncoder::BeginString()
 {
 	m_bColorTagOpen = false;
 	m_bStyleTagOpen = false;
+	m_bSizeTagOpen	= false;
 	m_bUnderTagOpen = false;
 
 	m_pBaseProp = 0;
@@ -2797,11 +2895,12 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 {
 	Uint32 i = 0;
 
-	// First, see if we can do this using only current "baseprop" + style/color/underline settings.
+	// First, see if we can do this using only current "baseprop" + style/color/size/underline settings.
 
 	if( pNewProp->GetFont() == m_pBaseProp->GetFont() && pNewProp->GetLink() == m_pBaseProp->GetLink() &&
 		((pNewProp->IsColored() && pNewProp->IsColorStatic()) || pNewProp->CompareColorTo( m_pBaseProp )) &&
 		(pNewProp->IsStyleStatic() || pNewProp->CompareStyleTo( m_pBaseProp )) &&
+		(pNewProp->IsSizeStatic() || pNewProp->CompareSizeTo( m_pBaseProp )) &&
 		((pNewProp->IsUnderlined() && pNewProp->IsUnderlineStatic()) || pNewProp->CompareUnderlineTo( m_pBaseProp )) )
 	{
 		// Yes we can!
@@ -2811,10 +2910,10 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 	else if( m_pResDB )
 	{
 		// Secondly, if nullprop isn't our current baseprop we see if we can do this using only nullprop 
-		// + style/color/underline settings.
+		// + style/color/size/underline settings.
 
 		if( !m_pBaseProp && pNewProp->GetFont() == 0 && !pNewProp->GetLink() &&
-			pNewProp->IsColorStatic() && pNewProp->IsStyleStatic() && pNewProp->IsUnderlined() )
+			pNewProp->IsColorStatic() && pNewProp->IsStyleStatic() && pNewProp->IsSizeStatic() && pNewProp->IsUnderlined() )
 		{
 			// Yes we can! Switch to nullprop as our baseprop
 
@@ -2842,7 +2941,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 			}
 			else
 			{
-				// Fourthly, look for the first possible match which can be combined with style/color/underline settings
+				// Fourthly, look for the first possible match which can be combined with style/color/size/underline settings
 				// to make a perfect match.
 
 				WgResDB::TextPropRes * pRes = m_pResDB->GetFirstResTextProp();
@@ -2853,6 +2952,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 					if( pNewProp->GetFont() == pProp->GetFont() && pNewProp->GetLink() == pProp->GetLink() &&
 						((pNewProp->IsColored() && pNewProp->IsColorStatic()) || pNewProp->CompareColorTo( pProp )) &&
 						(pNewProp->IsStyleStatic() || pNewProp->CompareStyleTo( pProp )) &&
+						(pNewProp->IsSizeStatic() || pNewProp->CompareSizeTo( pProp )) &&
 						((pNewProp->IsUnderlined() && pNewProp->IsUnderlineStatic()) || pNewProp->CompareUnderlineTo( pProp )) )
 					{
 						// This one works! Switch to this prop.
@@ -2873,7 +2973,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 	}
 	else
 	{
-		// Failure! We switch to nullprop and do the best of the situation with style/color/underline-settings.
+		// Failure! We switch to nullprop and do the best of the situation with style/color/size/underline-settings.
 
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		strcpy( m_temp + i, "(null)" );
@@ -2988,6 +3088,29 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 		}
 
 		m_bStyleTagOpen = true;
+	}
+
+	// Possibly end current size and/or start new size.
+
+	if( m_bSizeTagOpen && (!pNewProp->CompareSizeTo( m_pActiveProp ) || pNewProp->CompareSizeTo( m_pBaseProp )) )
+	{
+		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
+		m_temp[i++] = ']';
+
+		m_bSizeTagOpen = false;
+	}
+
+	if( !m_bSizeTagOpen && !pNewProp->CompareSizeTo( m_pBaseProp ) && pNewProp->IsSizeStatic() )
+	{
+		int size = pNewProp->GetSize();
+		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
+		m_temp[i++] = '[';
+
+		m_temp[i++] = size/100 + '0';
+		m_temp[i++] = ((size/10) % 10) + '0';
+		m_temp[i++] = (size % 10) + '0';
+
+		m_bSizeTagOpen = true;
 	}
 
 	m_pActiveProp = pNewProp;

@@ -27,7 +27,11 @@
 #	include <wg_surface.h>
 #endif
 
-#include <SDL.h>
+#ifdef WIN32
+#	include <SDL.h>
+#else
+#	include <SDL/SDL.h>
+#endif
 
 //____ WgSurfaceSDL ___________________________________________________________
 
@@ -35,6 +39,8 @@ class WgSurfaceSDL : public WgSurface
 {
 public:
 	WgSurfaceSDL(SDL_Surface * pSurf);
+	WgSurfaceSDL( WgSurface::PixelType type, WgSize size );
+
 	~WgSurfaceSDL();
 
 	inline	SDL_Surface*	SDL_Surf() const { return m_pSurface; };
@@ -58,6 +64,17 @@ private:
 	SDL_Surface * 	m_pSurface;
 
 };
+
+
+//____ WgSurfaceFactorySDL ____________________________________________________
+
+class WgSurfaceFactorySDL : public WgSurfaceFactory
+{
+public:
+	virtual WgSurface * CreateSurface( const WgSize& size, WgSurface::PixelType type = WgSurface::RGBA_8 );
+};
+
+
 
 #endif //WG_SURFACE_SDL_DOT_H
 

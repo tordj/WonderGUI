@@ -194,6 +194,19 @@ public:
 							///
 							/// @return Font style specified for the given mode.
 
+	inline int				GetSize( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombSize(pDefProp.GetHandle(), properties, mode); }
+
+
+							/// Returns the characters font size for the given mode.
+							///
+							/// @param mode			The mode of the Widget or Item containing the text.
+							///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
+							///
+							///	Default value for all modes is WG_MODE_NORMAL which is considered "no mode specified"
+							/// by most text managers who therefore will decide the characters style themselves.
+							///
+							/// @return Characters font size for the given mode.
+
 	inline WgFontStyle		GetStyle( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombStyle(pDefProp.GetHandle(), properties, mode); }
 
 

@@ -1059,7 +1059,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 				WgGfx::clipPrintText( _clip, m_pColumns[i].GetTextObj(), rText );
 //			}
 
-			r2.x += r2.w;
+			r2.x += r2.w - 1;	// HACK: Overlap last pixel to avoid double separator graphics between two headers
 		}
 
 		r.y += m_pHeaderGfx->GetHeight();

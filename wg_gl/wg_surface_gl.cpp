@@ -22,11 +22,12 @@
 
 #include <wg_surface_gl.h>
 
-#include <glext.h>
-
-//#include <GL/glext.h>
-
-//#include <GL/glx.h>
+#ifdef WIN32
+#	include <glext.h>
+#else
+#	include <GL/glext.h>
+#	include <GL/glx.h>
+#endif
 //#include <GL/glu.h>
 
 PFNGLBUFFERDATAARBPROC				pglBufferDataARB		= 0;
@@ -73,23 +74,28 @@ WgSurfaceGL::WgSurfaceGL( GLint _format, Uint32 _width, Uint32 _height, void * _
 	if( pglBufferDataARB == 0 )
 		InitGlExtensions();
 
+	SetPixelFormat( _format );
+
 	m_format = _format;
 	m_width	 = _width;
 	m_height = _height;
 	m_pAlpha = 0;
 	m_pPixels = (Uint8*)_pPixels;
 	m_buffer = 0;
+	m_pitch = _width*m_pixelFormat.bits/8;
 
-	SetPixelSize( _format );
+	InitBuffer();
+
 
 	glGenTextures( 1, &m_texture );
 	glBindTexture( GL_TEXTURE_2D, m_texture );
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexImage2D( GL_TEXTURE_2D, 0, _format, _width, _height, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, _pPixels );
+		GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 
-	InitBuffer();
+	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
+
 }
 
 WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint8 * _pAlpha )
@@ -97,11 +103,13 @@ WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint8 * _pAlpha )
 	if( pglBufferDataARB == 0 )
 		InitGlExtensions();
 
+	SetPixelFormat( m_format );
+
 	GLint width = 0;
 	GLint height = 0;
 	glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width );
 	glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height );
-	
+
 	m_texture	= _texture;
 	m_width = width;
 	m_height = height;
@@ -109,10 +117,11 @@ WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint8 * _pAlpha )
 	m_pAlpha	= _pAlpha;
 	m_pPixels	= 0;
 	m_buffer = 0;
-	
-	SetPixelSize( m_format );
+	m_pitch = width*m_pixelFormat.bits/8;
 
 	InitBuffer();
+
+	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
 }
 
 void WgSurfaceGL::InitBuffer()
@@ -132,23 +141,77 @@ void WgSurfaceGL::InitBuffer()
 	pglGenBuffersARB( 1, &m_buffer );
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
 	pglBufferDataARB( GL_PIXEL_UNPACK_BUFFER_ARB, size, m_pPixels, GL_STATIC_DRAW_ARB );
-
-	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
 }
 
-void WgSurfaceGL::SetPixelSize( GLint _format )
+void WgSurfaceGL::SetPixelFormat( GLint _format )
 {
 	switch( _format )
 	{
 	case GL_RGB8:
 		m_pixelSize = 3;
+
+		m_pixelFormat.type = WgSurface::RGB_8;
+		m_pixelFormat.bits = 24;
+
+		m_pixelFormat.R_mask = 0xFF;
+		m_pixelFormat.G_mask = 0xFF00;
+		m_pixelFormat.B_mask = 0xFF0000;
+		m_pixelFormat.A_mask = 0x0;
+
+		m_pixelFormat.R_shift = 0;
+		m_pixelFormat.G_shift = 8;
+		m_pixelFormat.B_shift = 16;
+		m_pixelFormat.A_shift = 0;
+
+		m_pixelFormat.R_bits = 8;
+		m_pixelFormat.G_bits = 8;
+		m_pixelFormat.B_bits = 8;
+		m_pixelFormat.A_bits = 0;
+
 		break;
 
 	case GL_RGBA8:
 		m_pixelSize = 4;
+
+		m_pixelFormat.type = WgSurface::RGBA_8;
+		m_pixelFormat.bits = 32;
+
+		m_pixelFormat.R_mask = 0xFF;
+		m_pixelFormat.G_mask = 0xFF00;
+		m_pixelFormat.B_mask = 0xFF0000;
+		m_pixelFormat.A_mask = 0xFF000000;
+
+		m_pixelFormat.R_shift = 0;
+		m_pixelFormat.G_shift = 8;
+		m_pixelFormat.B_shift = 16;
+		m_pixelFormat.A_shift = 24;
+
+		m_pixelFormat.R_bits = 8;
+		m_pixelFormat.G_bits = 8;
+		m_pixelFormat.B_bits = 8;
+		m_pixelFormat.A_bits = 8;
+
 		break;
 
 	default:
+		m_pixelFormat.type = WgSurface::UNSPECIFIED;
+		m_pixelFormat.bits = 0;
+
+		m_pixelFormat.R_mask = 0;
+		m_pixelFormat.G_mask = 0;
+		m_pixelFormat.B_mask = 0;
+		m_pixelFormat.A_mask = 0;
+
+		m_pixelFormat.R_shift = 0;
+		m_pixelFormat.G_shift = 0;
+		m_pixelFormat.B_shift = 0;
+		m_pixelFormat.A_shift = 0;
+
+		m_pixelFormat.R_bits = 0;
+		m_pixelFormat.G_bits = 0;
+		m_pixelFormat.B_bits = 0;
+		m_pixelFormat.A_bits = 0;
+
 		m_pixelSize = 0;		// Signal unknown pixelsize.
 	}
 }
@@ -202,6 +265,7 @@ void * WgSurfaceGL::Lock( LockStatus mode )
 	if( m_format == 0 || m_lockStatus != UNLOCKED || mode == UNLOCKED )
 		return 0;
 
+    glBindTexture(GL_TEXTURE_2D, m_texture);
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
 
 	switch( mode )
@@ -215,6 +279,8 @@ void * WgSurfaceGL::Lock( LockStatus mode )
 		case READ_WRITE:
 			m_pPixels = (Uint8*) pglMapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, GL_READ_WRITE_ARB );
 			break;
+		default:
+			break;	// Should never happen, just here to avoid compiler warnings...
 	}
 
 	m_lockStatus = mode;
@@ -228,15 +294,15 @@ void WgSurfaceGL::Unlock()
 	if(m_lockStatus == UNLOCKED )
 		return;
 
-	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );	// In case we've been locking others inbetween...
+//	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );	// In case we've been locking others inbetween...
 	pglUnmapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB );
 
-/*	if( m_lockMode != READ_ONLY )
+	if( m_lockStatus != READ_ONLY )
 	{
-		glBindTexture( GL_TEXTURE_2D, m_texture );
+//		glBindTexture( GL_TEXTURE_2D, m_texture );
  		glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, m_format, GL_UNSIGNED_BYTE, 0 );
 	}
-	*/
+	
 
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
 	m_lockStatus = UNLOCKED;
@@ -381,3 +447,40 @@ WgColor WgSurfaceGL::Pixel2Col( Uint32 pixel ) const
 }
 
 
+//____ WgSurfaceFactoryGL::CreateSurface() ___________________________________
+
+WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgSurface::PixelType type )
+{
+
+	GLint	format;
+	int		buffSize;
+
+
+
+	switch( type )
+	{
+	case WgSurface::RGB_8:
+		format = GL_RGB8;
+		buffSize = 3*size.w*size.h;
+		break;
+
+	case WgSurface::RGBA_8:
+		format = GL_RGBA8;
+		buffSize = 4*size.w*size.h;
+		break;
+		
+	default:
+		return 0;
+
+	}
+
+	char * pBuffer = new char[buffSize];
+	memset( pBuffer, 0, buffSize );
+
+	WgSurfaceGL * p = new WgSurfaceGL( format, size.w, size.h, pBuffer );
+
+	delete pBuffer;
+	return 	p;
+
+
+}

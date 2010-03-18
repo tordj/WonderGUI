@@ -25,6 +25,7 @@
 #include	<wg_gfxdevice.h>
 #include	<wg_color.h>
 #include	<wg_char.h>
+#include	<wg_pen.h>
 
 static const char	s_type[] = {"TordJ/Fps"};
 
@@ -127,7 +128,11 @@ void WgGizmoFps::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const W
 	WgChar	temp2[40];
 	const char *	pTemp;
 
-	int height = WgTextTool::GetCombGlyphSet( m_pProp.GetHandle() )->height();
+	WgPen	pen;
+	pen.SetTextProp( m_pProp.GetHandle() );
+	int height = pen.GetLineSpacing();
+
+	
 
 	pTemp = temp;
 	sprintf( temp, "Now: %.2f", fpsCurrent );

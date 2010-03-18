@@ -57,6 +57,8 @@ class Wdg_Lodder:public WgWidget
 		bool	RemoveLOD( WgWidget * pWidget );
 		void	Clear();
 
+		void	DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pCloneRoot, const WgWidget * _pBranchRoot );
+
 	private:	
 		void	Init();
 		bool	DoMyOwnMarkTest( int _x, int _y );

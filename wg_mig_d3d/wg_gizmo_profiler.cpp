@@ -1,6 +1,6 @@
 #include	<stdio.h>
 #include	<wg_gizmo_profiler.h>
-#include	<wg_font.h>
+#include	<wg_pen.h>
 #include	<wg_texttool.h>
 #include	<wg_gfx.h>
 #include	<wg_color.h>
@@ -64,7 +64,10 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 	char *	pTemp;
 	pTemp = temp;
 
-	int height = WgTextTool::GetCombGlyphSet(m_pProp.GetHandle())->height();
+	WgPen pen;
+	pen.SetTextProp( m_pProp );
+	
+	int height = pen.GetLineSpacing();
 
 	EProfiler* pkProfiler = EProfiler::Get();
 	

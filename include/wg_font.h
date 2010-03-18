@@ -27,18 +27,26 @@
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_FONT_DOT_H
+#ifndef WG_USERDEFINES_DOT_H
+#	include <wg_userdefines.h>
+#endif
+
+#ifndef WG_GLYPHSET_DOT_H
 #	include <wg_glyphset.h>
 #endif
 
-#ifndef WG_COLOR_DOT_H
-#	include <wg_color.h>
-#endif
+
 
 #include <assert.h>
 
 class WgCursor;
 class WgCursorInstance;
+
+#ifdef	WG_USE_FREETYPE
+	class WgVectorGlyphs;
+#endif
+
+class WgBitmapGlyphs;
 
 
 //____ WgFont ______________________________________________________________
@@ -47,31 +55,65 @@ class WgFont
 {
 public:
 	WgFont();
-	WgFont( WgGlyphSet * pNormal, WgCursor * pCursor );
+#ifdef WG_USE_FREETYPE
+	WgFont( WgVectorGlyphs * pNormal, WgCursor * pCursor );
+#endif
+	WgFont( WgBitmapGlyphs * pNormal, int size, WgCursor * pCursor );
 	~WgFont();
 
+	enum GlyphProvided
+	{
+		NOT_PROVIDED			= 0,
+		EXACT_MATCH_PROVIDED	= 1,
+		DEFAULT_PROVIDED		= 2,
+		SMALLER_MATCH_PROVIDED	= 3,
+		SMALLER_DEFAULT_PROVIDED= 4
+	};
 
-	inline WgGlyphSet*	GetGlyphSet( WgFontStyle style ) const
-									{ assert( style<WG_NB_FONTSTYLES ); return m_aGlyphSets[style]; }
-	inline WgGlyphSet*	GetDefaultGlyphSet( ) const { return m_pDefault; }
 
-	bool				SetGlyphSet( WgFontStyle style, WgGlyphSet * pGlyph );
-	bool				SetDefaultGlyphSet( WgGlyphSet * pGlyph );
+
+	WgGlyphSet *		GetGlyphSet( WgFontStyle style, int size ) const;
+	const WgGlyph *		GetGlyph( Uint32 chr, WgFontStyle style, int size ) const;					
+	GlyphProvided		IsGlyphProvided( Uint32 chr, WgFontStyle style, int size ) const;					
+
+#ifdef	WG_USE_FREETYPE
+	bool				SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style  );
+	bool				SetDefaultVectorGlyphs( WgVectorGlyphs * pGlyphs );
+
+	inline WgVectorGlyphs *	GetVectorGlyphs( WgFontStyle style  ) { return m_aVectorGlyphs[style]; }
+	inline WgVectorGlyphs *	GetDefaultVectorGlyphs( ) const { return m_pDefaultVectorGlyphs; }
+#endif
+
+	bool				SetBitmapGlyphs( WgBitmapGlyphs * pGlyph, WgFontStyle style, int size );
+	bool				SetDefaultBitmapGlyphs( WgBitmapGlyphs * pGlyphs, int size = 0 );
+
+	WgBitmapGlyphs *		GetBitmapGlyphs( WgFontStyle style, int size );
+	inline WgBitmapGlyphs *	GetDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return false; }
 
 	bool				SetCursor( WgCursor * pCursor );
 	inline WgCursor * 	GetCursor() const { return m_pCursor; }
 
-	inline static void		SetDefaultFont(WgFont * pFont) { g_pDefaultFont = pFont; }
-	inline static WgFont *	GetDefaultFont() { return g_pDefaultFont; }
+	const WgUnderline *	GetUnderline( int size );
+
 
 protected:
+	void	Init();
 
-	WgGlyphSet *		m_aGlyphSets[WG_NB_FONTSTYLES];
 	WgCursor *			m_pCursor;
-	WgGlyphSet *		m_pDefault;
 
-	static WgFont *	g_pDefaultFont;
+#ifdef	WG_USE_FREETYPE
+	WgVectorGlyphs *	m_pDefaultVectorGlyphs;
+	WgVectorGlyphs *	m_aVectorGlyphs[WG_NB_FONTSTYLES];
+#endif
+
+	WgBitmapGlyphs **	m_aBitmapGlyphs[WG_MAX_FONTSIZE+1];			// Pointer at an array of WG_NB_FONTSTYLES WgBitmapGlyphs.
+	WgBitmapGlyphs *	m_aDefaultBitmapGlyphs[WG_MAX_FONTSIZE+1];
+
+	WgUnderline			m_tempUnderline;							// Holds the last requested underline.
+
 };
+
+
 
 
 #endif	// WG_FONT_DOT_H

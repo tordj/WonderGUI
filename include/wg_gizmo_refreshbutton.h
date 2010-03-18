@@ -83,6 +83,9 @@ public:
 		void			SetRestartable( bool bRestartable );
 		bool			IsRestartable() const { return m_bRestartable; }
 
+		void			SetAutoStartRefresh( bool bAuto ) { m_bAutoRefresh = bAuto; }
+		bool			IsAutoStartRefresh( ) const { return m_bAutoRefresh; }
+
 		void			StartRefresh();
 		void			StopRefresh();
 		void			StopRefreshNow();
@@ -109,6 +112,7 @@ protected:
 		bool			m_bRestartable;
 
 		bool			m_bRefreshing;
+		bool			m_bAutoRefresh;
 		Uint32			m_animTimer;
 		float			m_refreshProgress;
 		bool			m_bStopping;

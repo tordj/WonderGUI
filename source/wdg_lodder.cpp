@@ -34,6 +34,7 @@ WgWidget * Wdg_Lodder::NewOfMyType() const
 void Wdg_Lodder::Init( void )
 {
 	m_pCurrentLod = 0;
+	//SetChildGeoPolicy(CLIPPED);
 }
 
 //_____________________________________________________________________________
@@ -80,9 +81,12 @@ bool Wdg_Lodder::AddLOD( WgWidget * pWidget )
 
 void Wdg_Lodder::AddChildrenAsLODs()
 {
-	for( WgWidget* pChild = FirstChild(); pChild; pChild = pChild->NextSibling() )
+	WgWidget* pChild = FirstChild();
+	while( pChild )
 	{
+		WgWidget* pSibling = pChild->NextSibling() ;
 		AddLOD(pChild);
+		pChild = pSibling;
 	}
 }
 
@@ -135,8 +139,7 @@ void Wdg_Lodder::SelectLod( const WgRect& r )
 
 	while( p )
 	{
-		if( p->minSize.w < r.w && p->minSize.h < r.h &&
-			p->minSize.w * p->minSize.h > biggestFit )
+		if( p->minSize.w < r.w && p->minSize.h < r.h && p->minSize.w * p->minSize.h > biggestFit )
 		{
 			biggestFit = p->minSize.w * p->minSize.h;
 			pWidget = p->pWidget;
@@ -147,10 +150,16 @@ void Wdg_Lodder::SelectLod( const WgRect& r )
 	if( pWidget != m_pCurrentLod )
 	{
 		if( m_pCurrentLod )
+		{
 			m_pCurrentLod->HideBranch();
+			m_pCurrentLod->SetParent(0);
+		}
 
 		if( pWidget )
+		{
+			pWidget->SetParent(this);
 			pWidget->ShowBranch();
+		}
 
 		m_pCurrentLod = pWidget;
 
@@ -184,3 +193,26 @@ void Wdg_Lodder::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 {
 	SelectLod( newGeo );
 }
+
+//_____________________________________________________________________________
+void Wdg_Lodder::DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pCloneRoot, const WgWidget * _pBranchRoot )
+{
+	Wdg_Lodder* pClone = (Wdg_Lodder*)_pClone;
+
+	pClone->m_pCurrentLod = 0;
+
+	Lod * p = m_lodChain.getFirst();
+	while( p )
+	{
+		Lod * pNew = new Lod();
+		pNew->pWidget = p->pWidget->CloneBranch();
+		pNew->minSize = p->minSize;
+		pClone->m_lodChain.push_back(pNew);
+
+		if(m_pCurrentLod == p->pWidget)
+			pClone->m_pCurrentLod = pNew->pWidget;
+
+		p = p->getNext();
+	}
+}
+

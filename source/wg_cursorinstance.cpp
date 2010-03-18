@@ -237,15 +237,17 @@ void WgCursorInstance::gotoPixel( Sint32 x, Sint32 y )
 {
 
 //	TODO: Needs to be able to handle text which isn't left-justified.
-//  TODO: Needs to be able to handle text which varies in height.
+//  TODO: Needs to be able to handle text which varies in height (almost fixed, just isn't supported by softLineHeight() yet...)
 
-	WgGlyphSet * pFont = m_pText->getFontSet()->GetGlyphSet(WG_STYLE_NORMAL);
-	Uint32 line = y / pFont->height();								//TODO: Need a better way here...
+	Uint32 line = 0;
+	while( line < m_pText->nbSoftLines() )
+	{
+		y -= m_pText->softLineHeight(line);
+		if( y < 0 )
+			break;
 
-	if( line < 0 )
-		line = 0;
-	else if( line >= m_pText->nbSoftLines() )
-		line = m_pText->nbSoftLines()-1;
+		line++;
+	}
 
 	WgCursorInstance * pCursorOnLine = 0;
 
@@ -380,7 +382,12 @@ int WgCursorInstance::ofsY() const
 {
 	//TODO: Need a better way...
 
-	return m_pText->getFontSet()->GetGlyphSet(WG_STYLE_NORMAL)->height()*m_line;
+	int ofs = 0;
+
+	for( int i = 0 ; i < (int) m_line ; i++ )
+		ofs += m_pText->softLineHeight(i);
+
+	return ofs;
 }
 
 //____ mode() __________________________________________________________________

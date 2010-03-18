@@ -29,6 +29,23 @@
 #endif
 */
 
+
+#ifndef WG_USERDEFINES_DOT_H
+#	include <wg_userdefines.h>
+#endif
+
+#ifndef WG_TEXTPROP_DOT_H
+#	include <wg_textprop.h>
+#endif
+
+
+#ifdef WG_USE_FREETYPE
+
+typedef struct FT_LibraryRec_  *FT_Library;
+
+#endif
+
+
 class WgFont;
 
 
@@ -39,15 +56,31 @@ public:
 	static void Exit();
 
 
+#ifdef WG_USE_FREETYPE
+	static bool					InitFreeType();
+	static inline FT_Library	GetFreeTypeLibrary() { return s_freeTypeLibrary; }
+#endif
+
+
+
 //	static void SetDefaultTextManager( const WgTextMgrPtr& pManager );
 //	static const WgTextMgrPtr& GetDefaultTextManager();
 
-	static void SetDefaultFont( WgFont * pFont );
-	static WgFont * GetDefaultFont();
+	static void SetDefaultTextProp( const WgTextPropPtr& pProp );
+	static WgTextPropPtr GetDefaultTextProp() { return s_pDefaultTextProp; }
+
+
 
 private:
-	static WgFont *		s_pDefFont;
+	static WgTextPropPtr	s_pDefaultTextProp;
 //	WgTextMgrPtr	m_pDefTextMgr;
+
+
+
+#ifdef WG_USE_FREETYPE
+	static bool			s_bFreeTypeInitialized;
+	static FT_Library	s_freeTypeLibrary;
+#endif
 
 
 };

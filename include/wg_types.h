@@ -140,11 +140,11 @@ enum WgTxtAttr
 	{[rrggbbaa]		begin color
 	}				end color
 
+	[123			begin size, exactly 3 decimal digits sets the size.
+	]				end size
+
 	_				begin underlined
 	| 				end underlined
-
-	[				begin selected
-	]				end selected
 
 	-				break permitted
 	=				hyphen break permitted

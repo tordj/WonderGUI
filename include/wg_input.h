@@ -211,12 +211,12 @@ private:
 	};
 	std::vector<WgInputEventData> m_eventQueue;
 
-	void	button_press_( const WgInputEventData& ed );
-	void	button_release_( const WgInputEventData& ed );
-	void	key_press_( const WgInputEventData& ed );
-	void	key_release_( const WgInputEventData& ed );
-	void	character_( const WgInputEventData& ed );
-	void	wheel_roll_( const WgInputEventData& ed );
+	void	button_press_( WgInputEventData ed );
+	void	button_release_( WgInputEventData ed );
+	void	key_press_( WgInputEventData ed );
+	void	key_release_( WgInputEventData ed );
+	void	character_( WgInputEventData ed );
+	void	wheel_roll_( WgInputEventData ed );
 
 	WgKey	translate_keycode( Uint16 native_keycode );
 

@@ -59,11 +59,22 @@ public:
 
 
 private:
+	void		SetPixelFormat( ETextureDataPtr pTexture );
+
+
 	ETextureDataPtr m_pTexture;
-	Uint32			m_pitch;
-	Uint8 *			m_pLockedSurf;
 
 };
+
+
+//____ WgSurfaceFactoryMIG ____________________________________________________
+
+class WgSurfaceFactoryMIG : public WgSurfaceFactory
+{
+public:
+	WgSurface * CreateSurface( const WgSize& size, WgSurface::PixelType type = WgSurface::RGBA_8 );
+};
+
 
 //____ Lock() _________________________________________________________________
 
@@ -75,8 +86,12 @@ inline void * WgSurfaceMIG::Lock( LockStatus mode )
 		bModify = false;
 
 	if(m_pTexture)
-		m_pLockedSurf = m_pTexture->Lock( (int*) &m_pitch, 0, bModify );
-	return m_pLockedSurf;
+		m_pPixels = m_pTexture->Lock( (int*) &m_pitch, 0, bModify );
+
+	if( m_pPixels )
+		m_lockStatus = mode;
+
+	return m_pPixels;
 }
 
 //____ Unlock() _______________________________________________________________
@@ -85,8 +100,9 @@ inline void WgSurfaceMIG::Unlock()
 {
 	if(m_pTexture)
 		m_pTexture->Unlock();
-	m_pLockedSurf = 0;
+	m_pPixels = 0;
 	m_pitch = 0;
+	m_lockStatus = UNLOCKED;
 }
 
 

@@ -28,14 +28,86 @@ WgSurfaceMIG::WgSurfaceMIG( ETextureDataPtr pTexture )
 {
 	m_pTexture 		= pTexture;
 	m_pitch			= 0;
-	m_pLockedSurf	= 0;
+
+	SetPixelFormat( pTexture );
 }
+
+//____ SetPixelFormat() _______________________________________________________
+
+void WgSurfaceMIG::SetPixelFormat( ETextureDataPtr pTexture )
+{
+	EPixelFormat format = pTexture->GetPixelFormat();
+
+	switch( format )
+	{
+	case EPixelFormat::eRGBA32:
+
+		m_pixelFormat.type = WgSurface::RGBA_8;
+		m_pixelFormat.bits = 32;
+
+		m_pixelFormat.R_mask = 0xFF;
+		m_pixelFormat.G_mask = 0xFF00;
+		m_pixelFormat.B_mask = 0xFF0000;
+		m_pixelFormat.A_mask = 0xFF000000;
+		
+		m_pixelFormat.R_shift = 0;
+		m_pixelFormat.G_shift = 8;
+		m_pixelFormat.B_shift = 16;
+		m_pixelFormat.A_shift = 24;
+
+		m_pixelFormat.R_bits = 8;
+		m_pixelFormat.G_bits = 8;
+		m_pixelFormat.B_bits = 8;
+		m_pixelFormat.A_bits = 8;
+		break;
+
+	case EPixelFormat::eRGB24:
+		m_pixelFormat.type = WgSurface::RGB_8;
+		m_pixelFormat.bits = 24;
+
+		m_pixelFormat.R_mask = 0xFF;
+		m_pixelFormat.G_mask = 0xFF00;
+		m_pixelFormat.B_mask = 0xFF0000;
+		m_pixelFormat.A_mask = 0x0;
+		
+		m_pixelFormat.R_shift = 0;
+		m_pixelFormat.G_shift = 8;
+		m_pixelFormat.B_shift = 16;
+		m_pixelFormat.A_shift = 0;
+
+		m_pixelFormat.R_bits = 8;
+		m_pixelFormat.G_bits = 8;
+		m_pixelFormat.B_bits = 8;
+		m_pixelFormat.A_bits = 0;
+		break;
+
+	default:
+		m_pixelFormat.type = WgSurface::UNSPECIFIED;
+		m_pixelFormat.bits = 0;
+
+		m_pixelFormat.R_mask = 0;
+		m_pixelFormat.G_mask = 0;
+		m_pixelFormat.B_mask = 0;
+		m_pixelFormat.A_mask = 0;
+		
+		m_pixelFormat.R_shift = 0;
+		m_pixelFormat.G_shift = 0;
+		m_pixelFormat.B_shift = 0;
+		m_pixelFormat.A_shift = 0;
+
+		m_pixelFormat.R_bits = 0;
+		m_pixelFormat.G_bits = 0;
+		m_pixelFormat.B_bits = 0;
+		m_pixelFormat.A_bits = 0;
+	}
+}
+
 
 //____ Destructor ______________________________________________________________
 
 WgSurfaceMIG::~WgSurfaceMIG()
 {
-	if( m_pLockedSurf )
+	if( m_pPixels )
 		Unlock();
 }
 
@@ -69,8 +141,8 @@ Uint32 WgSurfaceMIG::GetPixel( Uint32 x, Uint32 y ) const
 		return pixel;	// TODO: support other formats?
 	if(x < GetWidth() && y < GetHeight())
 	{
-		if( m_pLockedSurf )
-			pixel = * ((Uint32*) &m_pLockedSurf[m_pitch*y + 4*x]);
+		if( m_pPixels )
+			pixel = * ((Uint32*) &m_pPixels[m_pitch*y + 4*x]);
 		else if(m_pTexture)
 		{
 			int iPitch = 0;
@@ -94,8 +166,8 @@ Uint8 WgSurfaceMIG::GetOpacity( Uint32 x, Uint32 y ) const
 		return alpha;	// TODO: support other formats?
 	if(x < GetWidth() && y < GetHeight())
 	{
-		if( m_pLockedSurf )
-			alpha = m_pLockedSurf[m_pitch*y + 4*x + 3];	// Tror att den ligger där, eller + 0.
+		if( m_pPixels )
+			alpha = m_pPixels[m_pitch*y + 4*x + 3];	// Tror att den ligger där, eller + 0.
 		else if(m_pTexture)
 		{
 			int iPitch = 0;
@@ -125,6 +197,33 @@ WgColor WgSurfaceMIG::Pixel2Col( Uint32 pixel ) const
 {
 	// TODO: implement
 	return WgColor(0);
+}
+
+//____ WgSurfaceFactoryMIG::CreateSurface() ___________________________________
+
+WgSurface * WgSurfaceFactoryMIG::CreateSurface( const WgSize& size, WgSurface::PixelType type )
+{
+	EPixelFormat	format;
+
+	switch( type )
+	{
+	case WgSurface::RGB_8:
+		format = EPixelFormat::eRGB24;
+		break;
+	case WgSurface::RGBA_8:
+		format = EPixelFormat::eRGBA32;
+		break;
+	default:
+		return 0;
+
+	}
+
+	ETextureDataPtr p = ETextureData::Create( size.w, size.h, format );
+
+	if( p )
+		return new WgSurfaceMIG( p );
+	else
+		return 0;
 }
 
 

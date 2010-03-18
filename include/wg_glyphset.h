@@ -23,7 +23,9 @@
 #ifndef	WG_GLYPHSET_DOT_H
 #define	WG_GLYPHSET_DOT_H
 
-#include <wg_geo.h>
+#ifndef WG_GEO_DOT_H
+#	include <wg_geo.h>
+#endif
 
 class	WgSurface;
 
@@ -34,12 +36,26 @@ struct	WgGlyph
 	WgGlyph();
 	WgGlyph(Sint32 _rectX, Sint32 _rectY, Sint32 _rectW, Sint32 _rectH, Uint8 _advance, Sint8 _bearingX, Sint8 _bearingY, Uint16 _kerningIndex, WgSurface* _pSurface);
 
+	WgSurface *		pSurf;
 	WgRect			rect;
 	Uint8			advance;		// spacing to next glyph
 	Sint8			bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
 	Sint8			bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
-	Uint16			kerningIndex;	// index into kerning table
-	WgSurface *		pSurf;
+	Uint32			kerningIndex;	// index into kerning table (WgBitmapGlyphs) or glyph_index (WgVectorGlyphs)
+};
+
+//____ WgUnderline ____________________________________________________________
+
+struct WgUnderline
+{
+	WgUnderline() { pSurf = 0; rect = WgRect(0,0,0,0); bearingX = 0; bearingY = 0; leftBorder = 0; rightBorder = 0; }
+
+	WgSurface * pSurf;
+	WgRect		rect;
+	Sint8		bearingX;
+	Sint8		bearingY;
+	Uint8		leftBorder;
+	Uint8		rightBorder;
 };
 
 //____ WgGlyphSet _____________________________________________________________
@@ -47,156 +63,37 @@ struct	WgGlyph
 class WgGlyphSet
 {
 public:
-	WgGlyphSet( WgSurface * pSurf, char * pGlyphSpec, bool binaryFile=false );
-	~WgGlyphSet();
+	WgGlyphSet() {}
+	virtual ~WgGlyphSet() {}
 
-	void			insertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool binaryFile=false );
-	void			copyGlyphs( WgGlyphSet* pOtherGlyphSet );
+	enum Type
+	{
+		VECTOR = 0,
+		BITMAP,
+	};
 
-	void			setFallback( const WgGlyphSet * pFallbackGlyphSet );
-	const WgGlyphSet * getFallback() const { return m_pFallback; }
 
-	bool			setReplacementGlyph( Uint16 glyph = 0xFFFD );
-	Uint16			getReplacementGlyph() const { return m_replacementGlyphChar; }
+	virtual	Type			GetType() const = 0;
 
-	inline Uint32	width( Uint16 _glyph ) const { return glyph(_glyph)->rect.w; }
-	
-	//inline Uint32 spacing( Uint16 _glyph ) const { return glyph(_glyph)->spacing; }
+	virtual int				GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRightGlyph, int size ) = 0;
+	virtual const WgGlyph *	GetGlyph( Uint16 chr, int size ) = 0;
+	virtual bool			HasGlyph( Uint16 chr ) = 0;
 
-	inline Sint8	kerning( Uint16 leftGlyph, Uint16 rightGlyph ) const;
-	inline Sint8	kerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRightGlyph ) const;
+	virtual int				GetHeight( int size ) = 0;
+	virtual int				GetLineSpacing( int size ) = 0;
+	virtual int				GetBaseline( int size ) = 0;	// Offset in pixels to baseline.
+	virtual int				GetNbGlyphs() = 0;
+	virtual bool			HasGlyphs() = 0;
+	virtual bool			IsMonospace() = 0;
+	virtual int				GetWhitespaceAdvance( int size ) = 0;
+	virtual int				GetMaxGlyphAdvance( int size ) = 0;
 
-	inline Uint8	advance( Uint16 _glyph ) const { return glyph( _glyph )->advance; }
-	inline Uint8	advance( const WgGlyph* pGlyph ) const { return pGlyph->advance; }
 
-	inline Sint8	bearingX( Uint16 _glyph ) const { return glyph( _glyph )->bearingX; }
-	inline Sint8	bearingX( const WgGlyph* pGlyph ) const { return pGlyph->bearingX; }
+protected:
 
-	inline Sint8	bearingY( Uint16 _glyph ) const { return glyph( _glyph )->bearingY; }
-	inline Sint8	bearingY( const WgGlyph* pGlyph ) const { return pGlyph->bearingY; }
-
-	inline Uint32		height() const { return m_height; }
-	inline bool			hasGlyphs() const { if( m_nGlyphs > 0 ) return true; return false; }
-	inline bool			isMonospace() const { return m_bMonospace; }
-	inline Uint32		nbGlyphs() const { return m_nGlyphs; }
-	inline float		avgSpacing() const { return m_avgSpacing; }
-	inline Uint32		whitespace() const { return m_spaceSpacing; }
-
-	inline const WgRect&	underlineRect() const { return m_underlineRect; }
-	inline Uint32			underlineStretchOfs() const { return m_underlineStretchBeg; }
-	inline Uint32			underlineStretchLen() const { return m_underlineStretchLen; }
-	inline Sint8			underlineBearingX() const { return m_underlineBearingX; }
-	inline Sint8			underlineBearingY() const { return m_underlineBearingY; }
-
-	inline const WgGlyph *	glyph( Uint32 chr ) const;		// Recurses through fallbacks.
-	inline bool				hasGlyph( Uint16 chr ) const;	// Do not check fallbacks.
-
-private:
-	void		DecideReplacementGlyph();
-
-	bool		m_bMonospace;
-	float		m_avgSpacing;
-	int			m_maxSpacing;
-	Uint32		m_spaceSpacing;
-	Uint32		m_nGlyphs;
-	Uint32		m_height;
-	WgGlyph * 	m_glyphTab[256];
-	WgGlyph		m_replacementGlyph;
-	Uint16		m_replacementGlyphChar;
-
-	WgRect		m_underlineRect;
-	Uint32		m_underlineStretchBeg;
-	Uint32		m_underlineStretchLen;
-	Sint8		m_underlineBearingX;
-	Sint8		m_underlineBearingY;
-
-	int			m_nKerningGlyphs;
-	Sint8*		m_pKerningTable;
-
-	const WgGlyphSet*	m_pFallback;
 };
 
 
-//____ WgGlyphSet::hasGlyph() _________________________________________________
-
-inline bool WgGlyphSet::hasGlyph( Uint16 chr ) const
-{
-	WgGlyph * pGlyph = m_glyphTab[chr >> 8];
-
-	if( pGlyph )
-	{
-		pGlyph += (chr & 0xFF);
-		if( pGlyph->pSurf != 0 )
-			return true;
-	}
-
-	return false;
-}
-
-
-//____ WgGlyphSet::glyph() _________________________________________________________
-
-inline WgGlyph const *	WgGlyphSet::glyph( Uint32 chr ) const
-{
-	WgGlyph * pGlyph = m_glyphTab[chr >> 8];
-
-	if( pGlyph )
-	{
-		pGlyph += (chr & 0xFF);
-		if( pGlyph->pSurf != 0 )
-			return pGlyph;
-	}
-
-	for( const WgGlyphSet * pFallback = m_pFallback ; pFallback != 0 ; pFallback = pFallback->m_pFallback )
-	{
-		pGlyph = pFallback->m_glyphTab[chr >> 8];
-		if( pGlyph )
-		{
-			pGlyph += (chr & 0xFF);
-			if( pGlyph->pSurf != 0 )
-				return pGlyph;
-		}
-	}
-
-	return &m_replacementGlyph;
-}
-
-
-//____ WgGlyphSet::kerning() _________________________________________________________
-
-inline Sint8 WgGlyphSet::kerning( Uint16 leftGlyph, Uint16 rightGlyph ) const
-{
-	if( leftGlyph == 0 || rightGlyph == 0 )
-		return 0;
-	
-	if( !m_pKerningTable )
-		return 0;
-
-	int indexLeft = glyph( leftGlyph )->kerningIndex;
-	int indexRight = glyph( rightGlyph )->kerningIndex;
-
-	if( indexLeft >= m_nKerningGlyphs || indexRight >= m_nKerningGlyphs )
-		return 0;
-
-	return m_pKerningTable[ (indexLeft * m_nKerningGlyphs) + indexRight ];
-}
-
-inline Sint8 WgGlyphSet::kerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRightGlyph ) const
-{
-	if( pLeftGlyph == 0 || pRightGlyph == 0 )
-		return 0;
-	
-	if( !m_pKerningTable )
-		return 0;
-
-	int indexLeft = pLeftGlyph->kerningIndex;
-	int indexRight = pRightGlyph->kerningIndex;
-
-	if( indexLeft >= m_nKerningGlyphs || indexRight >= m_nKerningGlyphs )
-		return 0;
-
-	return m_pKerningTable[ (indexLeft * m_nKerningGlyphs) + indexRight ];
-}
 
 
 #endif // WG_GLYPHSET_DOT_H
