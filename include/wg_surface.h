@@ -84,8 +84,8 @@ public:
 
 	virtual Uint32		GetPixel( Uint32 x, Uint32 y ) const = 0;
 	virtual Uint8		GetOpacity( Uint32 x, Uint32 y ) const = 0;
-	virtual	Uint32		Col2Pixel( const WgColor& col ) const = 0;
-	virtual	WgColor		Pixel2Col( Uint32 pixel ) const = 0;
+	virtual	Uint32		Col2Pixel( const WgColor& col ) const;
+	virtual	WgColor		Pixel2Col( Uint32 pixel ) const;
 
 	// Enums and methods for locking/unlocking of surface.
 

@@ -183,22 +183,6 @@ Uint8 WgSurfaceMIG::GetOpacity( Uint32 x, Uint32 y ) const
 	return alpha;
 }
 
-//____ Col2Pixel() _____________________________________________________________
-
-Uint32 WgSurfaceMIG::Col2Pixel( const WgColor& col ) const
-{
-	// TODO: implement
-	return 0;
-}
-
-//____ Pixel2Col() _____________________________________________________________
-
-WgColor WgSurfaceMIG::Pixel2Col( Uint32 pixel ) const
-{
-	// TODO: implement
-	return WgColor(0);
-}
-
 //____ WgSurfaceFactoryMIG::CreateSurface() ___________________________________
 
 WgSurface * WgSurfaceFactoryMIG::CreateSurface( const WgSize& size, WgSurface::PixelType type )

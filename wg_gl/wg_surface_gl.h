@@ -54,8 +54,6 @@ public:
 
 	Uint32		GetPixel( Uint32 x, Uint32 y ) const;
 	Uint8		GetOpacity( Uint32 x, Uint32 y ) const;
-	Uint32		Col2Pixel( const WgColor& col ) const;
-	WgColor		Pixel2Col( Uint32 pixel ) const;
 
 	void *		Lock( LockStatus mode );
 	void		Unlock();

@@ -415,37 +415,6 @@ Uint8 WgSurfaceGL::GetOpacity( Uint32 x, Uint32 y ) const
 	return 255;
 }
 
-//____ Col2Pixel() _____________________________________________________________
-
-Uint32 WgSurfaceGL::Col2Pixel( const WgColor& col ) const
-{
-	switch( m_format )
-	{
-		case GL_RGBA8:
-			return (col.a << 24) + (col.b << 16) + (col.g << 8) + (col.r);
-
-		case GL_RGB8:
-			return (col.b << 16) + (col.g << 8) + (col.r);
-	}
-	return 0;
-}
-
-//____ Pixel2Col() _____________________________________________________________
-
-WgColor WgSurfaceGL::Pixel2Col( Uint32 pixel ) const
-{
-	switch( m_format )
-	{
-		case GL_RGBA8:
-			return WgColor(pixel , pixel >> 8, pixel >> 16, pixel >> 24 );
-
-		case GL_RGB8:
-			return WgColor(pixel , pixel >> 8, pixel >> 16 );
-	}
-
-	return WgColor(0,0,0);
-}
-
 
 //____ WgSurfaceFactoryGL::CreateSurface() ___________________________________
 

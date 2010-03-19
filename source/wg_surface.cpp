@@ -59,6 +59,30 @@ WgRect WgSurface::Dimensions() const
 	return WgRect( 0, 0, GetWidth(), GetHeight() );
 }
 
+//____ Col2Pixel() ____________________________________________________________
+
+Uint32 WgSurface::Col2Pixel( const WgColor& col ) const
+{
+	Uint32 pix = ((col.r << m_pixelFormat.R_shift) & m_pixelFormat.R_mask) |
+				 ((col.g << m_pixelFormat.G_shift) & m_pixelFormat.G_mask) |
+				 ((col.b << m_pixelFormat.B_shift) & m_pixelFormat.B_mask) |
+				 ((col.a << m_pixelFormat.A_shift) & m_pixelFormat.A_mask);
+
+	return pix;
+}
+
+//____ Pixel2Col() ____________________________________________________________
+
+WgColor WgSurface::Pixel2Col( Uint32 pixel ) const
+{
+	WgColor col( (pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift,
+				 (pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift,
+				 (pixel & m_pixelFormat.B_mask) >> m_pixelFormat.B_shift,
+				 (pixel & m_pixelFormat.A_mask) >> m_pixelFormat.A_shift );
+
+	return col;
+}
+
 
 //____ Fill() _________________________________________________________________
 

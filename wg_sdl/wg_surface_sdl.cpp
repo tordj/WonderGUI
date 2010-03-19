@@ -227,22 +227,6 @@ Uint8 WgSurfaceSDL::GetOpacity( Uint32 x, Uint32 y ) const
 	return 255;
 }
 
-//____ Col2Pixel() _____________________________________________________________
-
-Uint32 WgSurfaceSDL::Col2Pixel( const WgColor& col ) const
-{
-	return SDL_MapRGB( m_pSurface->format, col.r, col.g, col.b );
-}
-
-//____ Pixel2Col() _____________________________________________________________
-
-WgColor WgSurfaceSDL::Pixel2Col( Uint32 pixel ) const
-{
-	WgColor	col = 0;
-	SDL_GetRGB( pixel, m_pSurface->format, &col.r, &col.g, &col.b );
-	return col;
-}
-
 
 //____ WgSurfaceFactorySDL::CreateSurface() ___________________________________
 
