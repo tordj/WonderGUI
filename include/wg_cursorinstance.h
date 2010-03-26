@@ -86,6 +86,7 @@ public:
 
 	WgCursor::Mode	mode() const;
 
+
 protected:		
 	void			gotoPos( Uint32 line, Uint32 col );
 		

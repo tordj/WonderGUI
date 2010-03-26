@@ -128,32 +128,38 @@ void WgGizmoFps::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const W
 	WgChar	temp2[40];
 	const char *	pTemp;
 
-	WgPen	pen;
+	WgPen	pen( pDevice, _window, _clip );
 	pen.SetTextProp( m_pProp.GetHandle() );
-	int height = pen.GetLineSpacing();
+	pen.SetPos( WgCord(_window.x, _window.y + pen.GetBaseline()) );
 
-	
+	int height = pen.GetLineSpacing();
 
 	pTemp = temp;
 	sprintf( temp, "Now: %.2f", fpsCurrent );
 	WgTextTool::readString( pTemp, temp2, 39 );
 
-	pDevice->ClipPrintLine( _clip, m_pProp, WG_MODE_NORMAL, _window.x, _window.x, _window.y, temp2 );
+	pDevice->PrintLine( &pen, m_pProp, WG_MODE_NORMAL, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Min: %.2f", fpsMin );
 	WgTextTool::readString( pTemp, temp2, 39 );
-	pDevice->ClipPrintLine( _clip, m_pProp, WG_MODE_NORMAL, _window.x, _window.x, _window.y + height, temp2 );
+	pen.SetPosX( _window.x );
+	pen.MoveY( height );
+	pDevice->PrintLine( &pen, m_pProp, WG_MODE_NORMAL, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Avg: %.2f", fpsAvg );
 	WgTextTool::readString( pTemp, temp2, 39 );
-	pDevice->ClipPrintLine( _clip, m_pProp, WG_MODE_NORMAL, _window.x, _window.x, _window.y + height*2, temp2 );
+	pen.SetPosX( _window.x );
+	pen.MoveY( height );
+	pDevice->PrintLine( &pen, m_pProp, WG_MODE_NORMAL, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Max: %.2f", fpsMax );
 	WgTextTool::readString( pTemp, temp2, 39 );
-	pDevice->ClipPrintLine( _clip, m_pProp, WG_MODE_NORMAL, _window.x, _window.x, _window.y + height*3, temp2 );
+	pen.SetPosX( _window.x );
+	pen.MoveY( height );
+	pDevice->PrintLine( &pen, m_pProp, WG_MODE_NORMAL, temp2 );
 }
 
 //____ OnUpdate() ________________________________________________________

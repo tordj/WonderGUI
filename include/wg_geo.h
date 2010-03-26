@@ -51,6 +51,22 @@ public:
 	inline WgCord32 operator+(const WgCord32& k) const	{ WgCord32 res; res.x = x + k.x; res.y = y + k.y; return res; }
 	inline WgCord32 operator-(const WgCord32& k) const	{ WgCord32 res; res.x = x - k.x; res.y = y - k.y; return res; }
 
+	inline void operator*=(double v)				{ x = (Sint32) (x*v); y = (Sint32) (y*v); }
+	inline void operator/=(double v)				{ x = (Sint32) (x/v); y = (Sint32) (y/v); }
+	inline WgCord32 operator*(double v) const	{ WgCord32 res; res.x = (Sint32) (x*v); res.y = (Sint32) (y*v); return res; }
+	inline WgCord32 operator/(double v) const	{ WgCord32 res; res.x = (Sint32) (x/v); res.y = (Sint32) (y/v); return res; }
+
+	inline void operator*=(float v)				{ x = (Sint32) (x*v); y = (Sint32) (y*v); }
+	inline void operator/=(float v)				{ x = (Sint32) (x/v); y = (Sint32) (y/v); }
+	inline WgCord32 operator*(float v) const	{ WgCord32 res; res.x = (Sint32) (x*v); res.y = (Sint32) (y*v); return res; }
+	inline WgCord32 operator/(float v) const	{ WgCord32 res; res.x = (Sint32) (x/v); res.y = (Sint32) (y/v); return res; }
+
+	inline void operator*=(int v)				{ x *= v; y *= v; }
+	inline void operator/=(int v)				{ x /= v; y /= v; }
+	inline WgCord32 operator*(int v) const	{ WgCord32 res; res.x = x * v; res.y = y * v; return res; }
+	inline WgCord32 operator/(int v) const	{ WgCord32 res; res.x = x / v; res.y = y / v; return res; }
+
+
 	Sint32	x, y;
 };
 

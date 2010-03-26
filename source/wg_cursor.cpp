@@ -1,76 +1,100 @@
 #include <wg_cursor.h>
 
 
-//____ WgCursor::WgCursor() ___________________________________________________
+//____ WgCursor() _____________________________________________________________
 
 WgCursor::WgCursor()
 {
 	for( int i = 0 ; i < N_MODES ; i++ )
 	{
 		m_pAnim[i]	= 0;
-		m_ofsX[i]	= 0;
-		m_ofsY[i]	= 0;
-		m_spacing[i] = 0;
+		m_advance[i] = 0;
 	}
+
+	m_scaleMode = FIXED_SIZE;
+	m_sizeRatio	= 1.f;
 }
 
 WgCursor::WgCursor(	WgCursor& in )
 {
 	for( int i = 0 ; i < N_MODES ; i++ )
 	{
-		m_pAnim[i]	= in.m_pAnim[i];
-		m_ofsX[i]	= in.m_ofsX[i];
-		m_ofsY[i]	= in.m_ofsY[i];
-		m_spacing[i] = in.m_spacing[i];
+		m_pAnim[i]		= in.m_pAnim[i];
+		m_bearing[i]	= in.m_bearing[i];
+		m_advance[i]	= in.m_advance[i];
 	}
+
+	m_scaleMode = in.m_scaleMode;
+	m_sizeRatio	= in.m_sizeRatio;
 }
 
 
-//____ WgCursor::setMode() ____________________________________________________
+//____ setStretchBorders() ____________________________________________________
 
-bool WgCursor::setMode( Mode _m, WgGfxAnim * _pAnim, Sint8 _ofsX, Sint8 _ofsY, Uint8 _spacing )
+void WgCursor::setStretchBorders( WgBorders borders )
 {
-	if( _m < 0 || _m >= (Mode) N_MODES )
+	m_stretchBorders = borders;
+}
+
+//____ setScaleMode() _________________________________________________________
+
+void WgCursor::setScaleMode( ScaleMode mode )
+{
+	m_scaleMode = mode;
+}
+
+//____ setSizeRatio() _________________________________________________________
+
+void WgCursor::setSizeRatio( float ratio )
+{
+	m_sizeRatio = ratio;
+}
+
+
+
+//____ setMode() ______________________________________________________________
+
+bool WgCursor::setMode( Mode m, WgGfxAnim * pAnim, WgCord bearing, int advance )
+{
+	if( m < 0 || m >= (Mode) N_MODES )
 		return false;
 
-	m_pAnim[_m]		= _pAnim;
-	m_ofsX[_m]		= _ofsX;
-	m_ofsY[_m]		= _ofsY;
-	m_spacing[_m]	= _spacing;
+	m_pAnim[m]		= pAnim;
+	m_bearing[m]	= bearing;
+	m_advance[m]	= advance;
 	
 	return true;
 }
 
-//____ WgCursor::setOfs() _____________________________________________________
+//____ setBearing() ___________________________________________________________
 
-void WgCursor::setOfs( Mode _m, Sint8 _ofsX, Sint8 _ofsY )
+void WgCursor::setBearing( Mode m, WgCord bearing )
 {
-	if( _m < 0 || _m >= (Mode) N_MODES )
+	if( m < 0 || m >= (Mode) N_MODES )
 		return;
 
-	m_ofsX[_m] = _ofsX;
-	m_ofsY[_m] = _ofsY;
+	m_bearing[m] = bearing;
 }
 
 
-//____ WgCursor::setSpacing() __________________________________________________
+//____ setAdvance() ___________________________________________________________
 
-void WgCursor::setSpacing( Mode _m, Uint8 _spacing )
+void WgCursor::setAdvance( Mode m, int advance )
 {
-	if( _m < 0 || _m >= (Mode) N_MODES )
+	if( m < 0 || m >= (Mode) N_MODES )
 		return;
 
-	m_spacing[_m] = _spacing;
+	m_advance[m] = advance;
 }
 
 
-//____ WgCursor::setAnim() ____________________________________________________
+//____ setAnim() ______________________________________________________________
 
-void WgCursor::setAnim( Mode _m, WgGfxAnim * _pAnim )
+void WgCursor::setAnim( Mode m, WgGfxAnim * pAnim )
 {
-	if( _m < 0 || _m >= (Mode) N_MODES )
+	if( m < 0 || m >= (Mode) N_MODES )
 		return;
 
-	m_pAnim[_m] = _pAnim;
+	m_pAnim[m] = pAnim;
 }
 

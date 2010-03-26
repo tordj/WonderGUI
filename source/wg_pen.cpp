@@ -23,10 +23,30 @@
 #include <wg_pen.h>
 #include <wg_texttool.h>
 #include <wg_font.h>
+#include <wg_cursorinstance.h>
+#include <wg_gfxanim.h>
+#include <wg_blockset.h>
 
 
 WgPen::WgPen()
 { 
+	Init();
+}
+
+WgPen::WgPen( WgGfxDevice * pDevice, const WgCord& origo, const WgRect& clip )
+{
+	Init();
+
+	m_pDevice	= pDevice;
+	m_origo		= origo;
+	m_pos		= origo;
+	SetClipRect( clip );
+}
+
+//____ Init() _________________________________________________________________
+
+void WgPen::Init()
+{
 	m_pDevice = 0;
 
 	m_pFont = 0; 
@@ -39,24 +59,33 @@ WgPen::WgPen()
 	m_pPrevGlyph = &m_dummyGlyph; 
 	m_color = 0xFFFFFFFF, 
 
-	m_pos.x = 0;
-	m_pos.y = 0;
-
 	m_dummyGlyph.advance = 0;
 	m_dummyGlyph.bearingX = 0;
 	m_dummyGlyph.bearingY = 0;
 	m_dummyGlyph.kerningIndex = 0;
 	m_dummyGlyph.pSurf = 0;
 
-	m_tabOrigo = 0; 
 	m_tabWidth = 80; 
+
+	m_bClip = false;
 }
+
+//____ SetClipRect() __________________________________________________________
+
+void WgPen::SetClipRect( const WgRect& clip ) 
+{ 
+	m_clipRect = clip; 
+	if( m_clipRect.x == 0 && m_clipRect.y == 0 && m_clipRect.w == 0 && m_clipRect.h == 0 )
+		m_bClip = false;
+	else
+		m_bClip = true;
+}
+
 
 //____ SetTextProp() __________________________________________________________
 
 bool WgPen::SetTextProp( Uint16 hTextProp, Uint16 hCharProp, WgMode mode )
 {
-
 	m_pFont	= WgTextTool::GetCombFont( hTextProp, hCharProp );
 	if( !m_pFont )
 		return false;
@@ -115,7 +144,7 @@ bool WgPen::SetChar( Uint32 chr )
 		{
 			int x = m_pos.x;
 			x += m_tabWidth;
-			x -= (x - m_tabOrigo) % m_tabWidth;
+			x -= (x - m_origo.x) % m_tabWidth;
 			m_dummyGlyph.advance = x;
 			return false;
 		}
@@ -175,4 +204,78 @@ bool WgPen::SetChar( Uint32 chr )
 }
 
 
+//____ BlitCursor() _______________________________________________________
 
+bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
+{
+	WgCursor * pCursor = m_pFont->GetCursor();
+	if( pCursor == 0 )
+		return false;
+
+	WgGfxAnim * pAnim	= pCursor->anim( instance.mode() );
+	if( pAnim == 0 )
+		return false;
+
+	WgGfxFrame * pFrame = pAnim->getFrame( instance.time(), 0 );
+
+	float	scaleValue = (pCursor->sizeRatio() * GetLineSpacing())/pAnim->height();
+	
+	WgSize	size = WgSize( pAnim->width(), pAnim->height() );
+	WgCord  bearing = pCursor->bearing( instance.mode() );
+
+	int blockFlags = 0;
+
+	switch( pCursor->scaleMode() )
+	{
+		case WgCursor::FIXED_SIZE:
+			break;
+
+		case WgCursor::TILE_VERTICALLY:
+			blockFlags |= WG_TILE_ALL;
+		case WgCursor::STRETCH_VERTICALLY:
+			size.h		= (int) (size.h * scaleValue);
+			bearing.y	= (int) (bearing.y * scaleValue);
+			break;
+
+		case WgCursor::TILE_SCALED:
+			blockFlags |= WG_TILE_ALL;
+		case WgCursor::STRETCH_SCALED:
+			size		*= scaleValue;
+			bearing		*= scaleValue;
+			break;
+	}
+
+	WgBlock block( pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, pAnim->width(), pAnim->height()), * pCursor->stretchBorders(), 0, blockFlags );
+
+	if( m_bClip )
+		m_pDevice->ClipBlitBlock( m_clipRect, block, WgRect(m_pos + bearing, size) );
+	else
+		m_pDevice->BlitBlock( block, WgRect(m_pos + bearing, size) );
+
+	return true;
+}
+
+
+
+//____ AdvancePosCursor() _____________________________________________________
+
+void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
+{
+	WgCursor * pCursor = m_pFont->GetCursor();
+	if( !pCursor )
+		return;
+
+	WgGfxAnim * pAnim	= pCursor->anim( instance.mode() );
+	if( !pAnim )
+		return;
+
+	int advance = pCursor->advance(instance.mode());
+
+	if( pCursor->scaleMode() == WgCursor::TILE_SCALED || pCursor->scaleMode() == WgCursor::STRETCH_SCALED )
+	{
+		float	scaleValue = (pCursor->sizeRatio() * GetLineSpacing())/pAnim->height();
+		advance = (int) (advance * scaleValue);
+	}
+
+	m_pos.x += advance;
+}

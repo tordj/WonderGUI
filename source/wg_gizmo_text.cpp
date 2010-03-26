@@ -117,9 +117,9 @@ void WgGizmoText::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const 
 	WgText * pText = &m_text;
 
 	if( m_pMyCursor )
-		pDevice->ClipPrintTextWithCursor( _clip, pText, *m_pMyCursor, _window );
+		pDevice->PrintTextWithCursor( _clip, pText, *m_pMyCursor, _window );
 	else
-		pDevice->ClipPrintText( _clip, pText, _window );		
+		pDevice->PrintText( _clip, pText, _window );		
 
 	if( pText != &m_text )
 		delete pText;

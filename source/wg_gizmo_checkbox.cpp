@@ -294,7 +294,7 @@ void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 		printWindow.x += xOfs;
 		printWindow.y += yOfs;
 		m_pText->setMode( mode );
-		pDevice->ClipPrintText( _clip, m_pText, printWindow );
+		pDevice->PrintText( _clip, m_pText, printWindow );
 	}
 }
 

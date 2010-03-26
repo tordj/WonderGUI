@@ -131,9 +131,9 @@ void Wdg_TextView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 	WgRect contentRect( _window.x - ViewPixelOfsX(), _window.y - ViewPixelOfsY(), ContentWidth(), ContentHeight() );
 
 	if( m_pMyCursor )
-		WgGfx::clipPrintTextWithCursor( _clip, pText, *m_pMyCursor, contentRect );
+		WgGfx::printTextWithCursor( _clip, pText, *m_pMyCursor, contentRect );
 	else
-		WgGfx::clipPrintText( _clip, pText, contentRect );
+		WgGfx::printText( _clip, pText, contentRect );
 
 	if( pText != &m_text )
 		delete pText;
@@ -388,7 +388,7 @@ void Wdg_TextView::AdjustViewOfs()
 		Uint32 cursCol, cursLine;
 
 		m_pMyCursor->getSoftPos(cursLine, cursCol);
-		int cursWidth	= m_pText->getFontSet()->GetCursor()->spacing(m_pMyCursor->mode() );
+		int cursWidth	= m_pText->getFontSet()->GetCursor()->advance(m_pMyCursor->mode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.

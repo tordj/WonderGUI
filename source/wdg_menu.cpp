@@ -427,6 +427,13 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 	Uint32	xPosIcon = window.x + contentBorders.left;
 	Uint32	textFieldLen = window.w - contentBorders.GetWidth() - m_iconFieldWidth - m_arrowFieldWidth;
 
+	WgPen	entryPen( WgGfx::GetDevice(), WgCord( xPosText, yPos ), clip );
+	WgPen	accelPen( WgGfx::GetDevice(), WgCord( xPosText, yPos ), clip );
+
+	entryPen.SetTextProp( m_pEntryProp );
+	accelPen.SetTextProp( m_pKeyAccelProp );
+
+
 	unsigned int	item = 1;
 	while( pItem )
 	{
@@ -475,11 +482,9 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				const WgChar * pText = ((WgMenuEntry*)pItem)->GetText().GetChars();
 				if( * pText != 0 )
 				{
-					WgPen pen;
-					pen.SetTextProp( m_pEntryProp );
-
-					int y = yPos + (m_entryHeight - pen.GetLineHeight())/2 + pen.GetBaseline();
-					WgGfx::clipPrintLine( clip, m_pEntryProp, mode, xPosText, xPosText, y, pText );
+					int y = yPos + (m_entryHeight - entryPen.GetLineHeight())/2 + entryPen.GetBaseline();
+					entryPen.SetPos( WgCord( xPosText, y ) );
+					WgGfx::printLine( &entryPen, m_pEntryProp, mode, pText );
 				}
 
 				// Print the accel text (if any)
@@ -487,14 +492,12 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				const WgChar * pAccelText = ((WgMenuEntry*)pItem)->GetAccelText().GetChars();
 				if( * pAccelText != 0 )
 				{
-					WgPen pen;
-					pen.SetTextProp( m_pKeyAccelProp );
-
-					int y = yPos + (m_entryHeight - pen.GetLineHeight())/2 + pen.GetBaseline();
+					int y = yPos + (m_entryHeight - accelPen.GetLineHeight())/2 + accelPen.GetBaseline();
 					int width = WgTextTool::lineWidth( m_pKeyAccelProp, mode, pAccelText );
 					int x = xPosText + textFieldLen - width;
 
-					WgGfx::clipPrintLine( clip, m_pKeyAccelProp, mode, x, x, y, pAccelText );
+					accelPen.SetPos( WgCord(x, y) );
+					WgGfx::printLine( &accelPen, m_pKeyAccelProp, mode, pAccelText );
 				}
 
 				// Show the icon/checkbox/radiobutton (if any)

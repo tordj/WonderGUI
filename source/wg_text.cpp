@@ -244,7 +244,7 @@ Uint32 WgText::getLineWidthPart( Uint32 _line, Uint32 startCol, Uint32 nCol ) co
 
 //____ width() ________________________________________________________________
 
-Uint32 WgText::width()
+Uint32 WgText::width() const
 {
 	int		maxWidth = 0;
 
@@ -262,7 +262,7 @@ Uint32 WgText::width()
 
 //____ height()________________________________________________________________
 
-Uint32 WgText::height()
+Uint32 WgText::height() const
 {
 	if( !m_pProp->GetFont() )
 		return 0;

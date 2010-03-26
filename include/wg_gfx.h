@@ -147,25 +147,20 @@ public:
 
 	// High-level print methods
 
-	static inline void		printText( const WgText * pText, const WgRect& dest );
-	static inline void		clipPrintText( const WgRect& clip, const WgText * pText, const WgRect& dest );
-
-	static inline void		printTextWithCursor( const WgText * pText, const WgCursorInstance& cursor, const WgRect& dest );
-	static inline void		clipPrintTextWithCursor( const WgRect& clip, const WgText * pText, const WgCursorInstance& cursor, const WgRect& dest );
+	static inline void		printText( const WgRect& clip, const WgText * pText, const WgRect& dest );
+	static inline void		printTextWithCursor( const WgRect& clip, const WgText * pText, const WgCursorInstance& cursor, const WgRect& dest );
 
 	// Low-level print methods
 
-	static inline void		printLine( const WgTextPropPtr& pTextProp, WgMode mode,
-										int tabOrigo, int x, int y, const WgChar * pString, Uint32 maxChars = 0xFFFF );
-	static inline void		clipPrintLine( const WgRect& clip, const WgTextPropPtr& pTextProp, WgMode mode,
-											int tabOrigo, int x, int y, const WgChar * pString, Uint32 maxChars = 0xFFFF );
+	static inline void		printLine( WgPen * pPen, const WgTextPropPtr& pTextProp, WgMode mode,
+									   const WgChar * pString, Uint32 maxChars = 0xFFFF );
 
 private:
 	static WgGfxDevice *	m_pDevice;
 	static WgGfxDevice *	m_pNullDevice;
 };
 
-//____ Inline methods mapping directly to device _______________________________§
+//____ Inline methods mapping directly to device _______________________________
 
 inline bool WgGfx::BeginRender()
 {
@@ -343,37 +338,22 @@ inline void	WgGfx::blitBlock(		const WgBlock& block, const WgRect& dest )
 	m_pDevice->BlitBlock( block, dest );
 }
 
-inline void WgGfx::printText( const WgText * pText, const WgRect& dest )
+inline void WgGfx::printText( const WgRect& clip, const WgText * pText, const WgRect& dest )
 {
-	m_pDevice->PrintText( pText, dest );
-}
-inline void WgGfx::clipPrintText( const WgRect& clip, const WgText * pText, const WgRect& dest )
-{
-	m_pDevice->ClipPrintText( clip, pText, dest );
+	m_pDevice->PrintText( clip, pText, dest );
 }
 
-inline void WgGfx::printTextWithCursor( const WgText * pText, const WgCursorInstance& cursor, const WgRect& dest )
-{
-	m_pDevice->PrintTextWithCursor( pText, cursor, dest );
-}
-
-inline void WgGfx::clipPrintTextWithCursor( const WgRect& clip, const WgText * pText,
+inline void WgGfx::printTextWithCursor( const WgRect& clip, const WgText * pText,
 											const WgCursorInstance& cursor, const WgRect& dest )
 {
-	m_pDevice->ClipPrintTextWithCursor( clip, pText, cursor, dest );
+	m_pDevice->PrintTextWithCursor( clip, pText, cursor, dest );
 }
 
-inline void WgGfx::printLine( 	const WgTextPropPtr& pTextProp, WgMode mode, int tabOrigo, int x, int y,
-								const WgChar * pString, Uint32 maxChars )
+inline void WgGfx::printLine( WgPen * pPen, const WgTextPropPtr& pTextProp, WgMode mode, const WgChar * pString, Uint32 maxChars )
 {
-	m_pDevice->PrintLine( pTextProp, mode, tabOrigo, x, y, pString, maxChars );
+	m_pDevice->PrintLine( pPen, pTextProp, mode, pString, maxChars );
 }
 
-inline void WgGfx::clipPrintLine(	const WgRect& clip, const WgTextPropPtr& pTextProp, WgMode mode,
-									int tabOrigo, int x, int y, const WgChar * pString, Uint32 maxChars )
-{
-	m_pDevice->ClipPrintLine( clip, pTextProp, mode, tabOrigo, x, y, pString, maxChars );
-}
 
 
 

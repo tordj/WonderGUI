@@ -889,7 +889,7 @@ void WgGizmoTablist::RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, 
 
 	WgRect clip2( clip, r );
 	tab.m_text.setMode(mode);
-	pDevice->ClipPrintText( clip2, &tab.m_text, r );
+	pDevice->PrintText( clip2, &tab.m_text, r );
 }
 
 //____ OnRefresh() _______________________________________________________

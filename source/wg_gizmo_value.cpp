@@ -127,7 +127,7 @@ void WgGizmoValue::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const
 		m_bRegenText = false;
 	}
  
-	pDevice->ClipPrintText( _clip, &m_text, _window );
+	pDevice->PrintText( _clip, &m_text, _window );
 }
 
 //____ OnCloneContent() _______________________________________________________

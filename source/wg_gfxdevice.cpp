@@ -806,130 +806,10 @@ void WgGfxDevice::BlitVertBar(	const WgSurface * _pSurf, const WgRect& _src,
 	Blit( _pSurf, r, _dx, _dy );
 }
 
-//____ PrintTextWithCursor() __________________________________________________
 
-void WgGfxDevice::PrintTextWithCursor( const WgText * pText, const WgCursorInstance& ci, const WgRect& dest )
-{
-	if( !pText || !pText->getDefaultFont() )
-		return;
+//____ PrintTextWithCursor() ______________________________________________
 
-	const WgTextPropPtr	pDefProp = pText->getDefaultProperties();
-
-	const WgOrigo& origo = pText->alignment();
-
-	WgPen	pen;
-	pen.SetTextProp( pDefProp );
-	int glyphheight = pen.GetLineSpacing();							//TODO: We need something WAY BETTER here!!!
-
-	int	linespacing = glyphheight + pText->lineSpaceAdjustment();
-	if( linespacing < 0 )
-		linespacing = 0;
-	int textheight = glyphheight + ( linespacing*(pText->nbSoftLines()-1) );
-
-	int yPos = (int) dest.y + origo.calcOfsY( dest.h, textheight ) + pen.GetBaseline();
-
-
-	const WgTextLine *	p1	= pText->getSoftLines();
-	Uint32				n1	= pText->nbSoftLines();
-
-	Uint32		cursLine, cursCol;
-	ci.getSoftPos( cursLine, cursCol );
-
-	for( Uint32 i = 0 ; i < (int) n1 ; i++ )
-	{
-		int linewidth = WgTextTool::lineWidthSoft( pDefProp, pText->mode(), p1[i].pText );
-		if( cursLine == i )
-		{
-			// Determine what cursor to use and retrieve some of its properties
-
-			int cursStyleOfs = cursCol;
-			if( cursCol > 0 )
-				cursStyleOfs--;				// Get cursor style from previous character if possible.
-			WgFont * pFont = WgTextTool::GetCombFont( pDefProp.GetHandle(), p1[i].pText[cursStyleOfs].GetPropHandle() );
-			WgCursor *		cursor		= pFont->GetCursor();
-
-			WgCursor::Mode	cursMode 	= ci.mode();
-			int				cursSpacing = cursor->spacing(cursMode);
-
-			// Calculate cordinates for of text and cursor.
-
-			linewidth += cursSpacing;
-			int xPos = (int) (dest.x + dest.w * origo.anchorX()
-								- linewidth * origo.hotspotX());
-			int 			cursX 		= xPos + WgTextTool::lineWidthPartSoft( pDefProp, pText->mode(), p1[i].pText, cursCol );
-
-			// Make sure cursor doesn't end up too much left of text so it is clipped.
-
-			if( cursCol == 0 && cursor->ofsX(cursMode) < 0 )
-				cursX -= cursor->ofsX(cursMode);
-
-			//
-
-			PrintLine( pDefProp, pText->mode(), xPos, xPos, yPos, p1[i].pText, cursCol );
-			PrintLine( pDefProp, pText->mode(), xPos, cursX + cursSpacing, yPos, p1[i].pText + cursCol  );
-
-			WgGfxAnim * pAnim	= cursor->anim(cursMode);
-			if(pAnim)
-			{
-				WgGfxFrame * pFrame = pAnim->getFrame( ci.time(), 0 );
-
-				Blit( pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, pAnim->width(), pAnim->height() ), cursX + cursor->ofsX(cursMode), yPos + cursor->ofsY(cursMode) );
-			}
-		}
-		else
-		{
-			int xPos = (int) (dest.x + (dest.w - linewidth) * origo.anchorX()
-								- linewidth * origo.hotspotX());
-
-			PrintLine( pDefProp, pText->mode(), xPos, xPos, yPos, p1[i].pText );
-		}
-
-		yPos += linespacing;
-	}
-}
-
-
-//____ PrintText() ____________________________________________________________
-
-void WgGfxDevice::PrintText( const WgText * pText, const WgRect& dest )
-{
-	if( !pText || !pText->getDefaultFont() )
-		return;
-
-	const WgTextPropPtr	pDefProp = pText->getDefaultProperties();
-
-	const WgOrigo& origo	= pText->alignment();
-
-	WgPen	pen;
-	pen.SetTextProp( pDefProp );
-	int glyphheight = pen.GetLineSpacing();							//TODO: We need something WAY BETTER here!!!
-
-	int	linespacing = glyphheight + pText->lineSpaceAdjustment();
-	if( linespacing < 0 )
-		linespacing = 0;
-	int textheight = glyphheight + ( linespacing*(pText->nbLines()-1) );
-
-	int yPos = (int) (dest.y + dest.h * origo.anchorY()
-							- textheight * origo.hotspotY()
-							+ pen.GetBaseline());
-
-	Uint32				n1 = pText->nbSoftLines();
-	const WgTextLine *	p1 = pText->getSoftLines();
-
-	for( int i = 0 ; i < (int) n1 ; i++ )
-	{
-		int linewidth = WgTextTool::lineWidthSoft( pDefProp, pText->mode(), p1[i].pText );
-		int xPos = (int) (dest.x + dest.w * origo.anchorX()
-								- linewidth * origo.hotspotX());
-
-		PrintLine( pDefProp, pText->mode(), xPos, xPos, yPos, p1[i].pText );
-		yPos += linespacing;
-	}
-}
-
-
-//____ ClipPrintTextWithCursor() ______________________________________________
-
+/*
 void WgGfxDevice::ClipPrintTextWithCursor( const WgRect& clip, const WgText * pText,
 									const WgCursorInstance& ci, const WgRect& dest )
 {
@@ -956,6 +836,9 @@ void WgGfxDevice::ClipPrintTextWithCursor( const WgRect& clip, const WgText * pT
 
 	Uint32		cursLine, cursCol;
 	ci.getSoftPos( cursLine, cursCol );
+
+
+	pen.SetClipRect( clip );
 
 
 	for( Uint32 i = 0 ; i < n1 ; i++ )
@@ -1007,171 +890,143 @@ void WgGfxDevice::ClipPrintTextWithCursor( const WgRect& clip, const WgText * pT
 
 			// printLine without clipping if we can, otherwise use clipPrintLine()
 
-/*			if( clip.x <= xPos && clip.y <= yPos
-				&& clip.x + clip.w >= xPos+linewidth
-				&& clip.y + clip.h >= yPos+glyphheight )
-				PrintLine( pDefProp, pText->mode(), xPos, xPos, yPos, p1[i].pText );
-			else*/
+//			if( clip.x <= xPos && clip.y <= yPos
+//				&& clip.x + clip.w >= xPos+linewidth
+//				&& clip.y + clip.h >= yPos+glyphheight )
+//				PrintLine( pDefProp, pText->mode(), xPos, xPos, yPos, p1[i].pText );
+//			else
 				ClipPrintLine( clip, pDefProp, pText->mode(), xPos, xPos, yPos, p1[i].pText );
 		}
 
 		yPos += linespacing;
 	}
 }
+*/
 
-
-//____ ClipPrintText() ________________________________________________________
-
-void WgGfxDevice::ClipPrintText( const WgRect& clip, const WgText * pText, const WgRect& dest )
+void WgGfxDevice::PrintTextWithCursor( const WgRect& clip, const WgText * pText, 
+									   const WgCursorInstance& ci, const WgRect& dest )
 {
 	if( !pText || !pText->getDefaultFont()  )
 		return;
 
 	const WgTextPropPtr	pDefProp = pText->getDefaultProperties();
-
 	const WgOrigo& origo	= pText->alignment();
 
-	WgPen	pen;
+
+
+	Uint32				nLines = pText->nbSoftLines();
+	const WgTextLine *	pLines = pText->getSoftLines();
+
+	WgPen	pen( this, dest, clip );
 	pen.SetTextProp( pDefProp );
-	int lineheight = pen.GetLineSpacing();							//TODO: We need something WAY BETTER here!!!
 
-	int	linespacing = lineheight + pText->lineSpaceAdjustment();
-	if( linespacing < 0 )
-		linespacing = 0;
-	int textheight = lineheight + ( linespacing*(pText->nbSoftLines()-1) );
+	WgCord	pos;
+	pos.x = dest.x;
+	pos.y = (int) dest.y + origo.calcOfsY( dest.h, pText->height() ) + pen.GetBaseline();
 
-	int yPos = (int) dest.y + origo.calcOfsY( dest.h, textheight ) + pen.GetBaseline();
+	Uint32		cursLine, cursCol;
+	ci.getSoftPos( cursLine, cursCol );
 
-	Uint32				n1 = pText->nbSoftLines();
-	const WgTextLine *	p1 = pText->getSoftLines();
-
-	for( int i = 0 ; i < (int) n1 ; i++ )
+	for( int i = 0 ; i < (int) nLines ; i++ )
 	{
-		int linewidth = WgTextTool::lineWidthSoft( pDefProp, pText->mode(), p1[i].pText );
-		int xPos = (int) (dest.x + dest.w * origo.anchorX()
-								- linewidth * origo.hotspotX());
+		if( cursLine == i )
+		{
+			pos.x = dest.x;
+			if( origo.anchorX() != 0 && origo.hotspotX() != 0 )
+			{
 
-		// printLine without clipping if we can, otherwise use clipPrintLine()
+				// TODO: should take textprop for cursors position into account...
+				int linewidth = pText->getSoftLineWidthPart(i, 0, cursCol ) /*+ pen.AdvancePosCursor( ci )*/ + pText->getSoftLineWidthPart(i, cursCol );
+				pos.x += origo.calcOfsX( dest.w, linewidth );
+				pen.SetOrigo( pos );	// So tab positions will start counting from start of line.
+			}
 
-/*		if( clip.x <= xPos && clip.y <= yPos
-			&& clip.x + clip.w >= xPos+linewidth
-			&& clip.y + clip.h >= yPos+lineheight )
-			PrintLine( pDefProp, pText->mode(), xPos, xPos, yPos, p1[i].pText );
-		else */
-			ClipPrintLine( clip, pDefProp, pText->mode(), xPos, xPos, yPos, p1[i].pText );
+			pen.SetPos( pos );
+			PrintLine( &pen, pDefProp, pText->mode(), pLines[i].pText, cursCol );
+			pen.BlitCursor( ci );
+			pen.AdvancePosCursor( ci );
+			pen.FlushChar();				// Avoid kerning against glyph before cursor.
+			PrintLine( &pen, pDefProp, pText->mode(), pLines[i].pText + cursCol  );
+			
+		}
+		else
+		{
+			pos.x = dest.x;
+			if( origo.anchorX() != 0 && origo.hotspotX() != 0 )
+			{
+				pos.x += origo.calcOfsX( dest.w, pText->getSoftLineWidth(i) );
+				pen.SetOrigo( pos );		// So tab positions will start counting from start of line.
+			}
 
-		yPos += linespacing;
+			pen.SetPos( pos );
+			PrintLine( &pen, pDefProp, pText->mode(), pLines[i].pText );
+		}
+
+
+		pos.y += pen.GetLineSpacing() + pText->lineSpaceAdjustment();
 	}
 }
 
 
-//____ PrintLine() ____________________________________________________________
 
-void WgGfxDevice::PrintLine( const WgTextPropPtr& pDefProp,
-							 WgMode mode, int _tabOrigo, int _x, int _y,
-							 const WgChar * _pLine, Uint32 nChars )
+//____ PrintText() ____________________________________________________________
+
+void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest )
 {
-	if( !_pLine )
+	if( !pText || !pText->getDefaultFont()  )
 		return;
 
+	const WgTextPropPtr	pDefProp = pText->getDefaultProperties();
+	const WgOrigo& origo	= pText->alignment();
+
+	Uint32				nLines = pText->nbSoftLines();
+	const WgTextLine *	pLines = pText->getSoftLines();
+
 	WgPen	pen;
-	pen.SetPos( WgCord( _x, _y ) );
 	pen.SetDevice( this );
+	pen.SetTextProp( pDefProp );
 
-	WgColor baseCol	= m_tintColor;
-	WgColor	color	= baseCol;
+	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.Contains( dest ) ) 
+		pen.SetClipRect( clip );
 
-	Uint16	hProp				= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
+	WgCord	pos;
+	pos.x = dest.x;
+	pos.y = (int) dest.y + origo.calcOfsY( dest.h, pText->height() ) + pen.GetBaseline();
+	pen.SetOrigo( pos );
 
-
-	// Print loop
-
- 	for( Uint32 i = 0 ; i < nChars ; i++ )
- 	{
-		// Act on possible change of character attributes.
-
-		if( _pLine[i].GetPropHandle() != hProp )
+	for( int i = 0 ; i < (int) nLines ; i++ )
+	{
+		pos.x = dest.x;
+		if( origo.anchorX() != 0 && origo.hotspotX() != 0 )
 		{
-			hProp = _pLine[i].GetPropHandle();
-
-			int success = pen.SetTextProp( hProp, pDefProp.GetHandle() );
-			if( !success )
-				return;
-
-			// Set tint colors (if changed)
-
-			if( pen.GetColor() != color )
-			{
-				color = pen.GetColor();
-				SetTintColor( baseCol * color );
-			}
-
-			// Check if this is start of underlined text with this font and in that case draw the underline.
-
-			if( _pLine[i].IsUnderlined(pDefProp, mode) && 
-				(i==0 || !(_pLine[i-1].IsUnderlined(pDefProp, mode)) || _pLine[i-1].GetFont(pDefProp) != _pLine[i].GetFont(pDefProp)) )
-				DrawUnderline( WgRect(0,0,65535,65535), pDefProp, mode, pen.GetPosX(), pen.GetPosY(), _pLine+i );
-
+			pos.x += origo.calcOfsX( dest.w, pText->getSoftLineWidth(i) );
+			pen.SetOrigo( pos );
 		}
 
-		// Calculate position and blit the glyph.
+		pen.SetPos( pos );
+		PrintLine( &pen, pDefProp, pText->mode(), pLines[i].pText );
 
-		Uint16 ch = _pLine[i].GetGlyph();
-
-		if( pen.SetChar( ch ) )
-		{
-			pen.ApplyKerning();
-			pen.Blit();
-		}
-
-		pen.AdvancePos();
-
-		// Break if we rendered a linebreak
-
-		if( _pLine[i].IsEndOfLine() )
-		{
-			// If this was a WG_HYPHEN_BREAK_PERMITTED that was not rendered we need
-			// to render a normal hyphen.
-
-			if( _pLine[i].GetGlyph() == WG_HYPHEN_BREAK_PERMITTED && !pen.SetChar( ch ) )
-			{
-				if( pen.SetChar( '-' ) )
-				{				
-					pen.ApplyKerning();
-					pen.Blit();
-				}
-			}
-			
-			break;
-		}
- 	}
-
-	// Restore tint color.
-
-	if( m_tintColor != baseCol )
-		SetTintColor(baseCol);
+		pos.y += pen.GetLineSpacing() + pText->lineSpaceAdjustment();
+	}
 }
 
 
-//____ ClipPrintLine() ________________________________________________________
 
-void WgGfxDevice::ClipPrintLine( const WgRect& clip, const WgTextPropPtr& pDefProp,
-								 WgMode mode, int _tabOrigo, int _x, int _y,
-								 const WgChar * _pLine, Uint32 nChars )
+
+//____ PrintLine() ________________________________________________________
+
+void WgGfxDevice::PrintLine( WgPen * pPen,  const WgTextPropPtr& pDefProp,
+							 WgMode mode, const WgChar * _pLine, Uint32 nChars )
 {
 	if( !_pLine )
 		return;
-
-	WgPen	pen;
-	pen.SetPos( WgCord( _x, _y ) );
-	pen.SetClipRect( clip );
-	pen.SetDevice( this );
 
 	WgColor baseCol	= m_tintColor;
 	WgColor	color	= baseCol;
 
 	Uint16	hProp				= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
 
+	pPen->FlushChar();
 
 	// Print loop
 
@@ -1183,15 +1038,15 @@ void WgGfxDevice::ClipPrintLine( const WgRect& clip, const WgTextPropPtr& pDefPr
 		{
 			hProp = _pLine[i].GetPropHandle();
 
-			int success = pen.SetTextProp( hProp, pDefProp.GetHandle() );
+			int success = pPen->SetTextProp( pDefProp.GetHandle(), hProp );
 			if( !success )
 				return;
 
 			// Set tint colors (if changed)
 
-			if( pen.GetColor() != color )
+			if( pPen->GetColor() != color )
 			{
-				color = pen.GetColor();
+				color = pPen->GetColor();
 				SetTintColor( baseCol * color );
 			}
 
@@ -1199,7 +1054,7 @@ void WgGfxDevice::ClipPrintLine( const WgRect& clip, const WgTextPropPtr& pDefPr
 
 			if( _pLine[i].IsUnderlined(pDefProp, mode) && 
 				(i==0 || !(_pLine[i-1].IsUnderlined(pDefProp, mode)) || _pLine[i-1].GetFont(pDefProp) != _pLine[i].GetFont(pDefProp)) )
-				DrawUnderline( WgRect(0,0,65535,65535), pDefProp, mode, pen.GetPosX(), pen.GetPosY(), _pLine+i );
+				DrawUnderline( WgRect(0,0,65535,65535), pDefProp, mode, pPen->GetPosX(), pPen->GetPosY(), _pLine+i );
 
 		}
 
@@ -1207,13 +1062,13 @@ void WgGfxDevice::ClipPrintLine( const WgRect& clip, const WgTextPropPtr& pDefPr
 
 		Uint16 ch = _pLine[i].GetGlyph();
 
-		if( pen.SetChar( ch ) )
+		if( pPen->SetChar( ch ) )
 		{
-			pen.ApplyKerning();
-			pen.ClipBlit();
+			pPen->ApplyKerning();
+			pPen->BlitChar();
 		}
 
-		pen.AdvancePos();
+		pPen->AdvancePos();
 
 		// Break if we rendered a linebreak
 
@@ -1222,12 +1077,12 @@ void WgGfxDevice::ClipPrintLine( const WgRect& clip, const WgTextPropPtr& pDefPr
 			// If this was a WG_HYPHEN_BREAK_PERMITTED that was not rendered we need
 			// to render a normal hyphen.
 
-			if( _pLine[i].GetGlyph() == WG_HYPHEN_BREAK_PERMITTED && !pen.SetChar( ch ) )
+			if( _pLine[i].GetGlyph() == WG_HYPHEN_BREAK_PERMITTED && !pPen->SetChar( ch ) )
 			{
-				if( pen.SetChar( '-' ) )
+				if( pPen->SetChar( '-' ) )
 				{				
-					pen.ApplyKerning();
-					pen.ClipBlit();
+					pPen->ApplyKerning();
+					pPen->BlitChar();
 				}
 			}
 			

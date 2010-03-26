@@ -310,7 +310,7 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _windo
 		WgRect printWindow( _window.x + xOfs, _window.y + yOfs, _window.w, _window.h );
 		if( m_pBgGfx )
 			printWindow.Shrink( m_pBgGfx->GetContentBorders() );
-		pDevice->ClipPrintText( _clip, pText, printWindow );
+		pDevice->PrintText( _clip, pText, printWindow );
 	}
 }
 

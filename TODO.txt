@@ -1,0 +1,35 @@
+
+
+
+FONT SYSTEM
+===========
+
+* WgBitmapGlyphs handle baseline and ascend correctly so we can mix bitmap glyphs with vector glyphs with good result.
+* Separate struct and bitmap-cache for vector glyphs so we can get glyph info without touching the cache.
+* TTF: Try to use multiple size-objects so we don't have to set size all the time.
+* Handle underline in a better way, taking TTF offset and thickness into account.
+* VectorGlyphs: Limit cache size!
+* WgBitmapGlyphs: Currently uses linespacing for height... :(
+
+
+TEXT
+====
+
+* Depricate WgTextTool::Ruler
+
+
+GFXDEVICES
+==========
+
+* Editable surfaces.
+* SDL: Correctly working tint.
+
+
+LAYOUT
+======
+* PosX()/PosY() should be renamed OfsX()/OfsY() with new PosX()/PosY() methods returning parent relative position, not origo offset?
+
+
+GFXDEVICE
+=========
+* Optimize handling of cliprectangle.

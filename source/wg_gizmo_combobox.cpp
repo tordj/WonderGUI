@@ -204,7 +204,7 @@ void WgGizmoCombobox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 	WgRect	textClip( r, _clip );
 
 	m_text.setMode( m_mode );
-	pDevice->ClipPrintText( textClip, &m_text, r );
+	pDevice->PrintText( textClip, &m_text, r );
 }
 
 //____ OnRefresh() _______________________________________________________

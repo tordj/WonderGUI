@@ -54,23 +54,37 @@ friend class WgFont;
 
 public:
 	WgPen();
+	WgPen( WgGfxDevice * pDevice, const WgCord& origo, const WgRect& clip = WgRect() );
 //	WgPen( const WgTextPropPtr& pTextProp, const WgTextPropPtr& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextProp( pTextProp, pCharProp, mode ); } 
 //	WgPen( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextProp( hTextProp, hCharProp, mode ); } 
 	~WgPen() {}
 
-	inline void				SetClipRect( const WgRect& clip ) { m_clipRect = clip; }
+	void					SetClipRect( const WgRect& clip );
 	inline void				SetDevice( WgGfxDevice * pDevice ) { m_pDevice = pDevice; }
-	
+
+	void					SetOrigo( const WgCord& pos ) { m_origo = pos; }
 
 	inline bool				SetTextProp( const WgTextPropPtr& pTextProp, const WgTextPropPtr& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { return SetTextProp( pTextProp.m_hProp, pCharProp.m_hProp, mode ); }
 	bool					SetTextProp( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
-	void					SetTab( int origo, int width ) { m_tabOrigo = origo; m_tabWidth = width; }
+
+
 	inline void				SetPos( const WgCord& pos ) { m_pos = pos; }
+	inline void				SetPosX( int x ) { m_pos.x = x; }
+	inline void				SetPosY( int y ) { m_pos.y = y; }
+
+	inline void				Move( const WgCord& pos ) { m_pos += pos; }
+	inline void				MoveX( int x ) { m_pos.x += x; }
+	inline void				MoveY( int y ) { m_pos.y += y; }
+
+
+	void					SetTab( int width ) { m_tabWidth = width; }
 	bool					SetChar( Uint32 chr );
+	void					FlushChar() { m_pGlyph = &m_dummyGlyph; m_dummyGlyph.advance = 0; }
 	void					ApplyKerning() { if( m_pPrevGlyph != &m_dummyGlyph && m_pGlyph != &m_dummyGlyph ) m_pos.x += m_pGlyphs->GetKerning( m_pPrevGlyph, m_pGlyph, m_size ); }
 
 	inline void				AdvancePos() { m_pos.x += m_pGlyph->advance; }							///< Advances position past current character.
 	inline void				AdvancePosMonospaced() { m_pos.x += m_pGlyphs->GetMaxGlyphAdvance(m_size); }	///< Advances position past current character using monospace spacing.
+	void					AdvancePosCursor( const WgCursorInstance& instance );
 
 	inline const WgGlyph *	GetGlyph() const { return m_pGlyph; }
 	inline WgCord			GetPos() const { return m_pos; }
@@ -94,11 +108,12 @@ public:
 	inline int				GetLineHeight() const { return m_pGlyphs->GetHeight(m_size); }
 	inline int				GetBaseline() const { return m_pGlyphs->GetBaseline(m_size); }
 
-	inline void				ClipBlit() const { m_pDevice->ClipBlit( m_clipRect, m_pGlyph->pSurf, m_pGlyph->rect, GetBlitPosX(), GetBlitPosY() ); }
-	inline void				Blit() const { m_pDevice->Blit( m_pGlyph->pSurf, m_pGlyph->rect, GetBlitPosX(), GetBlitPosY() ); }
+	inline void				BlitChar() const { if( m_bClip ) m_pDevice->ClipBlit( m_clipRect, m_pGlyph->pSurf, m_pGlyph->rect, GetBlitPosX(), GetBlitPosY() ); else m_pDevice->Blit( m_pGlyph->pSurf, m_pGlyph->rect, GetBlitPosX(), GetBlitPosY() ); }
 	
+	bool					BlitCursor( const WgCursorInstance& instance ) const;
 
 private:
+	void Init();
 
 	WgGlyphSet *m_pGlyphs;			// Pointer at our glyphs.
 
@@ -113,14 +128,16 @@ private:
 	bool			m_bShowSpace;	// Set if space control character should be shown (usually a dot in the middle of the cell).
 	bool			m_bShowCRLF;	// Set if the CR/LF control character should be shown.
 
+	WgCord			m_origo;		// Origo position, from where we start printing and count tab-positions.
 	WgCord			m_pos;			// Position of this pen in screen pixels.
 
 	WgGlyph			m_dummyGlyph;	// Dummy glyph used for whitespace, tab etc
 
-	int				m_tabOrigo;		// X-cordinate for where we start to count tab positions (usually beginning of textline).
 	int				m_tabWidth;		// Tab width in pixels.
 
 	WgGfxDevice *	m_pDevice;		// Device used for blitting.
+
+	bool			m_bClip;		// Set if we have a clipping rectangle.
 	WgRect			m_clipRect;		// Clipping rectangle used for ClipBlit().
 };
 

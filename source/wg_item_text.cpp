@@ -156,7 +156,7 @@ void WgItemText::Render( const WgRect& _window, const WgRect& _clip )
 	if( GetMode() != m_pText->mode() )
 		m_pText->setMode( GetMode() );
 
-	WgGfx::clipPrintText( _clip, m_pText, r );
+	WgGfx::printText( _clip, m_pText, r );
 }
 
 WgItem* WgItemText::Clone( WgItem * _pClone )

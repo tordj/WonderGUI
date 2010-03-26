@@ -369,7 +369,7 @@ void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _window,
 			textArea.Shrink(m_numberBorders);
 
 		m_text.setMode(style);
-		pDevice->ClipPrintText( _clip, &m_text, textArea );
+		pDevice->PrintText( _clip, &m_text, textArea );
 	}
 }
 

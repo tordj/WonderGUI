@@ -1828,9 +1828,9 @@ void WgCursorRes::Serialize(WgResourceSerializerXML& s)
 {
 	s.BeginTag(TagName(), XmlNode());
 
-	s.AddAttribute("eol", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::EOL)), m_pCursor->ofsX(WgCursor::EOL), m_pCursor->ofsY(WgCursor::EOL), m_pCursor->spacing(WgCursor::EOL)));
-	s.AddAttribute("ins", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::INS)), m_pCursor->ofsX(WgCursor::INS), m_pCursor->ofsY(WgCursor::INS), m_pCursor->spacing(WgCursor::INS)));
-	s.AddAttribute("ovr", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::OVR)), m_pCursor->ofsX(WgCursor::OVR), m_pCursor->ofsY(WgCursor::OVR), m_pCursor->spacing(WgCursor::OVR)));
+	s.AddAttribute("eol", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::EOL)), m_pCursor->bearingX(WgCursor::EOL), m_pCursor->bearingY(WgCursor::EOL), m_pCursor->advance(WgCursor::EOL)));
+	s.AddAttribute("ins", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::INS)), m_pCursor->bearingX(WgCursor::INS), m_pCursor->bearingY(WgCursor::INS), m_pCursor->advance(WgCursor::INS)));
+	s.AddAttribute("ovr", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::OVR)), m_pCursor->bearingX(WgCursor::OVR), m_pCursor->bearingY(WgCursor::OVR), m_pCursor->advance(WgCursor::OVR)));
 
 	s.EndTag();
 }
@@ -1839,17 +1839,18 @@ void WgCursorRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 {
 	m_pCursor = new WgCursor();
 	std::string anim;
-	Sint8 xOfs;
-	Sint8 yOfs;
-	Uint8 spacing;
-	VERIFY(WgUtil::FromString(xmlNode["eol"], anim, xOfs, yOfs, spacing) == 4, "invalid EOL spec");
-	m_pCursor->setMode(WgCursor::EOL, (WgGfxAnim*)s.ResDb()->GetAnim(anim), xOfs, yOfs, spacing);
+	
+	WgCord	bearing;
+	int		spacing;
 
-	VERIFY(WgUtil::FromString(xmlNode["ins"], anim, xOfs, yOfs, spacing) == 4, "invalid INS spec");
-	m_pCursor->setMode(WgCursor::INS, (WgGfxAnim*)s.ResDb()->GetAnim(anim), xOfs, yOfs, spacing);
+	VERIFY(WgUtil::FromString(xmlNode["eol"], anim, bearing.x, bearing.y, spacing) == 4, "invalid EOL spec");
+	m_pCursor->setMode(WgCursor::EOL, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing);
 
-	VERIFY(WgUtil::FromString(xmlNode["ovr"], anim, xOfs, yOfs, spacing) == 4, "invalid OVR spec");
-	m_pCursor->setMode(WgCursor::OVR, (WgGfxAnim*)s.ResDb()->GetAnim(anim), xOfs, yOfs, spacing);
+	VERIFY(WgUtil::FromString(xmlNode["ins"], anim, bearing.x, bearing.y, spacing) == 4, "invalid INS spec");
+	m_pCursor->setMode(WgCursor::INS, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing);
+
+	VERIFY(WgUtil::FromString(xmlNode["ovr"], anim, bearing.x, bearing.y, spacing) == 4, "invalid OVR spec");
+	m_pCursor->setMode(WgCursor::OVR, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing);
 
 	s.ResDb()->AddCursor(xmlNode["id"], m_pCursor, new WgXMLMetaData(xmlNode));
 }

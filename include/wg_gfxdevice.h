@@ -156,18 +156,14 @@ public:
 
 	// High-level print methods
 
-	virtual void		PrintText( const WgText * pText, const WgRect& dest );
-	virtual void		ClipPrintText( const WgRect& clip, const WgText * pText, const WgRect& dest );
+	virtual void		PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest );
 
-	virtual void		PrintTextWithCursor( const WgText * pText, const WgCursorInstance& cursor, const WgRect& dest );
-	virtual void		ClipPrintTextWithCursor( const WgRect& clip, const WgText * pText, const WgCursorInstance& cursor, const WgRect& dest );
+	virtual void		PrintTextWithCursor( const WgRect& clip, const WgText * pText, const WgCursorInstance& cursor, const WgRect& dest );
 
 	// Low-level print methods
 
-	virtual void		PrintLine( const WgTextPropPtr& pTextProp, WgMode mode,
-									int tabOrigo, int x, int y, const WgChar * pString, Uint32 maxChars = 0xFFFF );
-	virtual void		ClipPrintLine( const WgRect& clip, const WgTextPropPtr& pTextProp, WgMode mode,
-										int tabOrigo, int x, int y, const WgChar * pString, Uint32 maxChars = 0xFFFF );
+	virtual void		PrintLine( WgPen * pPen, const WgTextPropPtr& pTextProp, WgMode mode,
+									const WgChar * pString, Uint32 maxChars = 0xFFFF );
 
 
 protected:

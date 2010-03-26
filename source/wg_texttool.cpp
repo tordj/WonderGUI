@@ -2705,7 +2705,7 @@ Uint32 WgTextTool::Ruler::AddCursor( WgCursor::Mode mode )
 	if( !pFont || !pFont->GetCursor() )
 		return m_length;
 
-	int cursWidth = pFont->GetCursor()->spacing(mode);
+	int cursWidth = pFont->GetCursor()->advance(mode);
 
 	m_length += cursWidth;
 
@@ -2726,7 +2726,7 @@ Uint32 WgTextTool::Ruler::AddCursor( WgCursor::Mode mode, const WgChar& chAfterC
 	if( !pFont || !pFont->GetCursor() )
 		return m_length;
 
-	int cursWidth = pFont->GetCursor()->spacing(mode);
+	int cursWidth = pFont->GetCursor()->advance(mode);
 
 	m_length += cursWidth;
 

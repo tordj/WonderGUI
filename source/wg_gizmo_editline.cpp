@@ -209,9 +209,9 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 	r.w += m_viewOfs;
 
 	if( m_pMyCursor )
-		pDevice->ClipPrintTextWithCursor( _clip, pText, *m_pMyCursor, r );		
+		pDevice->PrintTextWithCursor( _clip, pText, *m_pMyCursor, r );		
 	else
-		pDevice->ClipPrintText( _clip, pText, r );		
+		pDevice->PrintText( _clip, pText, r );		
 
 	if( pText != &m_text )
 		delete pText;
@@ -359,7 +359,7 @@ void WgGizmoEditline::AdjustViewOfs()
 		pen.AdvancePos();
 
 		int pwAdvance	= pen.GetPosX();
-		int cursWidth	= m_pText->getFontSet()->GetCursor()->spacing(m_pMyCursor->mode() );
+		int cursWidth	= m_pText->getFontSet()->GetCursor()->advance(m_pMyCursor->mode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.

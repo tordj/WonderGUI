@@ -430,6 +430,9 @@ void WgBitmapGlyphs::insertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 			nRead = sscanf( pGlyphSpec, "%d %d %d", &bogus, &bogus, &ascend );
 		}
 
+		if( nRead >= 3 && ascend > m_baseline )
+			m_baseline = ascend;
+
 
 		bearingX = 0; // Clear bearingX since it is optional in the font.
 		bearingY = 0; // Clear bearingY since it is optional in the font.
@@ -460,6 +463,12 @@ void WgBitmapGlyphs::insertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 
 		while( nRead >= 6 && nRead <= 8 ) // bearingX & bearingY are optional.
 		{
+			// Fix bearing that (incorrectly) starts from top in fontfiles.
+
+			bearingY -= ascend;
+
+			//
+
 			const char * pChr = chr;
 			Uint16 c = WgTextTool::readChar( pChr );
 

@@ -81,13 +81,13 @@ public:
 	virtual WgTextLine *		getLine( Uint32 line ) const;
 	virtual WgChar * 			getLineText( Uint32 line ) const;
 	virtual Uint32				getLineWidth( Uint32 line ) const;
-	virtual Uint32				getLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol ) const;
+	virtual Uint32				getLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol = 0xFFFFFFFF ) const;
 
 	virtual const WgTextLine *	getSoftLines() const;
 	virtual WgTextLine *		getSoftLine( Uint32 line ) const;
 	virtual WgChar * 			getSoftLineText( Uint32 line ) const;
 	virtual Uint32				getSoftLineWidth( Uint32 line ) const;
-	virtual Uint32				getSoftLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol ) const;
+	virtual Uint32				getSoftLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol = 0xFFFFFFFF ) const;
 	virtual Uint32				nbSoftLines() const;
 
 	virtual	void				posSoft2Hard( Uint32 &line, Uint32 &col ) const;
@@ -191,8 +191,8 @@ public:
 	Sint32				compareTo( const WgText * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
     bool                adjustBlock( WgTextBlock * pBlock ) const;
 
-	virtual Uint32		width();
-	virtual Uint32		height();
+	virtual Uint32		width() const;
+	virtual Uint32		height() const;
 
 	virtual Uint32		softLineHeight( Uint32 line );
 

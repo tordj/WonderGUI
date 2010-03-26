@@ -235,9 +235,9 @@ void WgGizmoEditvalue::OnRender( WgGfxDevice * pDevice, const WgRect& _window, c
 	// Print the text
 
 	if( m_pMyCursor )
-		pDevice->ClipPrintTextWithCursor( _clip, &m_text, *m_pMyCursor, _window );
+		pDevice->PrintTextWithCursor( _clip, &m_text, *m_pMyCursor, _window );
 	else
-		pDevice->ClipPrintText( _clip, &m_text, _window );
+		pDevice->PrintText( _clip, &m_text, _window );
 }
 
 //____ OnAction() _____________________________________________________________

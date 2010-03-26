@@ -27,6 +27,10 @@
 #	include <wg_types.h>
 #endif
 
+#ifndef WG_GEO_DOT_H
+#	include <wg_geo.h>
+#endif
+
 class WgGfxAnim;
 class WgGlyphSet;
 
@@ -48,24 +52,45 @@ public:
 		OVR
 	};
 	
-	bool				setMode( Mode m, WgGfxAnim * pAnim, Sint8 ofsX = 0, Sint8 ofsY = 0, Uint8 spacing = 0 );
+	enum ScaleMode
+	{
+		FIXED_SIZE,					// Size ratio is ignored.
+		STRETCH_VERTICALLY,
+		STRETCH_SCALED,
+		TILE_VERTICALLY,
+		TILE_SCALED
+	};
 
-	void				setOfs( Mode m, Sint8 ofsX, Sint8 ofsY );
-	void				setSpacing( Mode m, Uint8 width );
+
+	void				setStretchBorders( WgBorders borders );
+	void				setScaleMode( ScaleMode mode );
+	void				setSizeRatio( float ratio );
+
+	bool				setMode( Mode m, WgGfxAnim * pAnim, WgCord bearing = WgCord(), int advance = 0 );
+
+	void				setBearing( Mode m, WgCord bearing );
+	void				setAdvance( Mode m, int advance );
 	void				setAnim( Mode m, WgGfxAnim * pAnim );
 	
-	Sint8				ofsX( Mode m ) const { return m_ofsX[m]; };
-	Sint8				ofsY( Mode m ) const { return m_ofsY[m]; };
-	Uint8				spacing( Mode m ) const { return m_spacing[m]; };
+	int					bearingX( Mode m ) const { return m_bearing[m].x; };
+	int					bearingY( Mode m ) const { return m_bearing[m].y; };
+	WgCord				bearing( Mode m ) const { return m_bearing[m]; }
+	int					advance( Mode m ) const { return m_advance[m]; };
 	WgGfxAnim * 		anim( Mode m ) const { return m_pAnim[m]; };
-	
+	ScaleMode			scaleMode() const { return m_scaleMode; }
+	const WgBorders *	stretchBorders() const { return &m_stretchBorders; }
+	float				sizeRatio() const { return m_sizeRatio; }
+
 private:
 	enum { N_MODES = 3 };
 
 	WgGfxAnim *			m_pAnim[N_MODES];
-	Sint8				m_ofsX[N_MODES];
-	Sint8				m_ofsY[N_MODES];
-	Uint8				m_spacing[N_MODES];
+	WgCord				m_bearing[N_MODES];
+	int					m_advance[N_MODES];
+
+	ScaleMode			m_scaleMode;
+	WgBorders			m_stretchBorders;
+	float				m_sizeRatio;			// ratio <= 1.f. Cursors height relative fonts lineheight.
 };
 
 

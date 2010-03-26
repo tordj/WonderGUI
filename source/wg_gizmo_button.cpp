@@ -232,7 +232,7 @@ void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _window, cons
 
 		if( m_pBgGfx )
 			printWindow.Shrink( m_pBgGfx->GetContentBorders() );
-		pDevice->ClipPrintText( _clip, &m_text, printWindow );
+		pDevice->PrintText( _clip, &m_text, printWindow );
 	}
 }
 

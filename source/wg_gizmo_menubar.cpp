@@ -221,6 +221,8 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _window, con
 	
 	WgPen pen;
 	pen.SetTextProp( m_pTextProp );
+	pen.SetClipRect( clip );
+	pen.SetDevice( pDevice );
 
 	Uint32 printPosY = window.y + ( window.h - pen.GetLineHeight() )/2 + pen.GetBaseline();
 
@@ -248,8 +250,8 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _window, con
 				pDevice->ClipBlitBlock( clip, m_pEntryGfx->GetBlock(mode), dest );
 			}
 
-
-			pDevice->ClipPrintLine( clip, m_pTextProp, mode, posX + b.left, posX + b.left, printPosY, pI->m_pText );
+			pen.SetPos( WgCord(posX + b.left, printPosY) );
+			pDevice->PrintLine( &pen, m_pTextProp, mode, pI->m_pText );
 
 			posX += pI->m_width + b.GetWidth();
 		}
