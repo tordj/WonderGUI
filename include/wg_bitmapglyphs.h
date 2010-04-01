@@ -59,8 +59,6 @@ public:
 	inline int				GetWhitespaceAdvance( int size ) { return m_spaceSpacing; }
 	inline int				GetMaxGlyphAdvance( int size ) { return m_maxSpacing; }
 
-
-
 private:
 
 	WgGlyph * 	m_glyphTab[256];

@@ -69,6 +69,7 @@ WgVectorGlyphs::WgVectorGlyphs( const void * pTTF_File, int bytes, int faceIndex
 		int x = 0;
 
 
+	SetRenderMode( CRISP_EDGES );
 }
 
 //____ Destructor _____________________________________________________________
@@ -84,6 +85,29 @@ WgVectorGlyphs::~WgVectorGlyphs()
 	FT_Error err = FT_Done_Face( m_ftFace );
 }
 
+//____ SetRenderMode() ________________________________________________________
+
+bool WgVectorGlyphs::SetRenderMode( RenderMode mode )
+{
+	switch( mode )
+	{
+		case MONOCHROME:
+			m_renderFlags = FT_LOAD_RENDER | FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
+			break;
+		case CRISP_EDGES:
+			m_renderFlags = FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL;
+			break;
+		case BEST_SHAPES:
+			m_renderFlags = FT_LOAD_RENDER | FT_LOAD_TARGET_LIGHT;
+			break;
+
+		default:
+			return false;
+	}
+
+	m_renderMode = mode;
+	return true;
+}
 
 //____ GetKerning() ___________________________________________________________
 
@@ -289,7 +313,7 @@ WgGlyph * WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
 
 		// Load Glyph
 
-		err = FT_Load_Char( m_ftFace, ch, FT_LOAD_RENDER );
+		err = FT_Load_Char( m_ftFace, ch, m_renderFlags );
 		if( err )
 			return 0;
 
@@ -353,28 +377,21 @@ void WgVectorGlyphs::CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 	unsigned char * pDest = pBuffer + dest_pitch*pSlot->rect.y + 4*pSlot->rect.x;
 	unsigned char * pSrc = pBitmap->buffer;
 
-	int y = 0;
-	for( ; y < pBitmap->rows ; y++ )
+
+	switch( m_renderFlags )
 	{
-		int x = 0;
-		for( ; x < pBitmap->width ; x++ )
-			pDest[x*4+3] = pSrc[x];
+		case (FT_LOAD_RENDER | FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO):
+			CopyA1ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, pDest, pSlot->rect.w, pSlot->rect.h, dest_pitch );
+			break;
+		case (FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL):
+		case (FT_LOAD_RENDER | FT_LOAD_TARGET_LIGHT):
+			CopyA8ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, pDest, pSlot->rect.w, pSlot->rect.h, dest_pitch );
+			break;
 
-		for( ; x < pSlot->rect.w ; x++ )
-			pDest[x*4+3] = 0;
-
-		pSrc  += pBitmap->pitch;
-		pDest += dest_pitch;
+		default:
+			assert( false );
 	}
 
-	for( ; y < pSlot->rect.h ; y++ )
-	{
-		int x = 0;
-		for( ; x < pSlot->rect.w ; x++ )
-			pDest[x*4+3] = 0;
-
-		pDest += dest_pitch;
-	}
 
 	// Testcode
 /*
@@ -388,6 +405,70 @@ void WgVectorGlyphs::CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 
 	pSurf->Unlock();
 }
+
+
+//____ CopyA8ToRGBA8() _____________________________________________________
+
+void WgVectorGlyphs::CopyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, 
+								    Uint8 * pDest, int dest_width, int dest_height, int dest_pitch )
+{
+
+	int y = 0;
+	for( ; y < src_height ; y++ )
+	{
+		int x = 0;
+		for( ; x < src_width ; x++ )
+			pDest[x*4+3] = pSrc[x];
+
+		for( ; x < dest_width ; x++ )
+			pDest[x*4+3] = 0;
+
+		pSrc  += src_pitch;
+		pDest += dest_pitch;
+	}
+
+	for( ; y < dest_height ; y++ )
+	{
+		for( int x = 0 ; x < dest_width ; x++ )
+			pDest[x*4+3] = 0;
+
+		pDest += dest_pitch;
+	}
+}
+
+//____ CopyA1ToRGBA8() _____________________________________________________
+
+void WgVectorGlyphs::CopyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, 
+								    Uint8 * pDest, int dest_width, int dest_height, int dest_pitch )
+{
+	Uint8 lookup[2] = { 0, 255 };
+
+	int y = 0;
+	for( ; y < src_height ; y++ )
+	{
+		
+		int x = 0;
+		for( ; x < src_width ; x++ )
+		{
+			pDest[x*4+3] = lookup[(((pSrc[x>>3])<<(x&7))&0xFF)>>7];
+		}
+
+		for( ; x < dest_width ; x++ )
+			pDest[x*4+3] = 0;
+
+		pSrc  += src_pitch;
+		pDest += dest_pitch;
+	}
+
+	for( ; y < dest_height ; y++ )
+	{
+		for( int x = 0 ; x < dest_width ; x++ )
+			pDest[x*4+3] = 0;
+
+		pDest += dest_pitch;
+	}
+}
+
 
 
 //___ AddSlotToIndex() ________________________________________________________

@@ -304,7 +304,64 @@ bool WgFont::SetDefaultVectorGlyphs( WgVectorGlyphs * pGlyphs )
 	m_pDefaultVectorGlyphs = pGlyphs;
 	return true;
 }
+
+//____ ReplaceVectorGlyphs() __________________________________________________
+
+int WgFont::ReplaceVectorGlyphs( WgVectorGlyphs * pOld, WgVectorGlyphs * pNew )
+{
+	int nbReplaced = 0;
+
+	if( m_pDefaultVectorGlyphs == pOld )
+	{
+		m_pDefaultVectorGlyphs = pNew;
+		nbReplaced++;
+	}
+
+	for( int style = 0 ; style  < WG_NB_FONTSTYLES ; style++ )
+	{
+		if( m_aVectorGlyphs[style] == pOld )
+		{
+			m_aVectorGlyphs[style] = pNew;
+			nbReplaced++;
+		}
+	}
+
+	return nbReplaced;
+}
+
 #endif
+
+//____ ReplaceBitmapGlyphs() __________________________________________________
+
+int WgFont::ReplaceBitmapGlyphs( WgBitmapGlyphs * pOld, WgBitmapGlyphs * pNew )
+{
+	int nbReplaced = 0;
+
+	for( int size = 0 ; size <= WG_MAX_FONTSIZE ; size++ )
+	{
+		if( m_aDefaultBitmapGlyphs[size] == pOld )
+		{
+			m_aDefaultBitmapGlyphs[size] = pNew;
+			nbReplaced++;
+		}
+
+		if( m_aBitmapGlyphs[size] != 0 )
+		{
+			for( int style = 0 ; style  < WG_NB_FONTSTYLES ; style++ )
+			{
+				if( m_aBitmapGlyphs[size][style] == pOld )
+				{
+					m_aBitmapGlyphs[size][style] = pNew;
+					nbReplaced++;
+				}
+
+			}
+		}
+	}
+
+	return nbReplaced;
+}
+
 
 //____ SetBitmapGlyphs() ______________________________________________________
 

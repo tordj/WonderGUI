@@ -1527,19 +1527,24 @@ void WgGlyphSetRes::Serialize(WgResourceSerializerXML& s)
 	else
 	{
 		s.AddAttribute("file", res->file);
-/*
-		const WgGlyphSet * pFallback = res->res->getFallback();
-		if( pFallback )
+
+#ifdef WG_USE_FREETYPE
+		if( res->res->GetType() == WgGlyphSet::VECTOR )
 		{
-			std::string fallbackId = s.ResDb()->FindGlyphSetId( pFallback );
-			if( fallbackId.size() > 0 )
-				s.AddAttribute("fallback", fallbackId );
+			switch( ((WgVectorGlyphs*)(res->res))->GetRenderMode() )
+			{
+				case WgVectorGlyphs::MONOCHROME:
+					s.AddAttribute("render_mode", "monochrome" );
+					break;
+				case WgVectorGlyphs::CRISP_EDGES:
+					s.AddAttribute("render_mode", "crisp_edges" );
+					break;
+				case WgVectorGlyphs::BEST_SHAPES:
+					s.AddAttribute("render_mode", "best_shapes" );
+					break;
+			}
 		}
-*/
-/*		Uint16 replacementGlyph = res->res->getReplacementGlyph();
-		if( replacementGlyph != 0 )
-			WriteDiffAttr( s, XmlNode(), "replacement_glyph", (int) replacementGlyph, (int) 0 );
-*/
+#endif
 	}
 	s.EndTag();
 }
@@ -1559,20 +1564,22 @@ void WgGlyphSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		s.ResDb()->AddGlyphSet(id, filename, new WgXMLMetaData(XmlNode()));
 		m_pGlyphSet = s.ResDb()->GetGlyphSet(id);
 		VERIFY(m_pGlyphSet, "invalid <glyphset>");
-/*
-		const std::string& fallbackId = xmlNode["fallback"];
-		if( fallbackId.size() > 0 )
+
+#ifdef WG_USE_FREETYPE
+		const std::string& mode = xmlNode["render_mode"];
+		if( mode.size() != 0 && m_pGlyphSet->GetType() == WgGlyphSet::VECTOR )
 		{
-			WgGlyphSet * pFallback = s.ResDb()->GetGlyphSet(fallbackId);
-			if( pFallback )
-				m_pGlyphSet->setFallback( pFallback );
+			if( mode == "monochrome" )
+				((WgVectorGlyphs*)m_pGlyphSet)->SetRenderMode( WgVectorGlyphs::MONOCHROME );
+			else if( mode == "crisp_edges" )
+				((WgVectorGlyphs*)m_pGlyphSet)->SetRenderMode( WgVectorGlyphs::CRISP_EDGES );
+			else if( mode == "best_shapes" )
+				((WgVectorGlyphs*)m_pGlyphSet)->SetRenderMode( WgVectorGlyphs::BEST_SHAPES );
+			else
+				s.Warning("Unknown glyphset render_mode '" + mode + "'");
+				
 		}
-*/
-/*
-		Uint16 replacementGlyph = WgUtil::ToUint16(xmlNode["replacement_glyph"]);
-		if( replacementGlyph != 0 )
-			m_pGlyphSet->setReplacementGlyph(replacementGlyph);
-*/
+#endif
 	}
 	else
 	{

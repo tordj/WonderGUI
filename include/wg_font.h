@@ -82,7 +82,12 @@ public:
 
 	inline WgVectorGlyphs *	GetVectorGlyphs( WgFontStyle style  ) { return m_aVectorGlyphs[style]; }
 	inline WgVectorGlyphs *	GetDefaultVectorGlyphs( ) const { return m_pDefaultVectorGlyphs; }
+
+	int					ReplaceVectorGlyphs( WgVectorGlyphs * pOld, WgVectorGlyphs * pNew );
 #endif
+
+	int					ReplaceBitmapGlyphs( WgBitmapGlyphs * pOld, WgBitmapGlyphs * pNew );
+
 
 	bool				SetBitmapGlyphs( WgBitmapGlyphs * pGlyph, WgFontStyle style, int size );
 	bool				SetDefaultBitmapGlyphs( WgBitmapGlyphs * pGlyphs, int size = 0 );

@@ -56,6 +56,15 @@ typedef struct  FT_Bitmap_ FT_Bitmap;
 class WgVectorGlyphs : public WgGlyphSet
 {
 public:
+
+	enum RenderMode
+	{
+		MONOCHROME,
+		CRISP_EDGES,
+		BEST_SHAPES
+	};
+
+
 	WgVectorGlyphs( const void * pTTF_File, int bytes, int faceIndex );
 	~WgVectorGlyphs();
 
@@ -74,6 +83,8 @@ public:
 	int			GetWhitespaceAdvance( int size );
 	int			GetMaxGlyphAdvance( int size );
 
+	bool		SetRenderMode( RenderMode mode );
+	inline RenderMode	GetRenderMode() const { return m_renderMode; }
 
 	static void	SetSurfaceFactory( WgSurfaceFactory * pFactory );
 	static void	ClearCache();
@@ -116,6 +127,10 @@ private:
 	};
 
 
+	void				CopyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, Uint8 * pDest, int dest_width, int dest_height, int dest_pitch );
+	void				CopyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, Uint8 * pDest, int dest_width, int dest_height, int dest_pitch );
+
+
 
 	inline void			SlotLost( const CacheSlot * pSlot ) { RemoveSlotFromIndex( pSlot ); }	// Callback, called BEFORE content of slot is lost.
 	void				CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot );
@@ -131,6 +146,9 @@ private:
 	int					m_ftCharSize;
 	CacheSlot ***		m_cachedGlyphsIndex[WG_MAX_FONTSIZE];
 	Uint32				m_accessCounter;
+	int					m_renderFlags;
+	RenderMode			m_renderMode;
+
 
 	//____ Static stuff __________________________________________________________
 

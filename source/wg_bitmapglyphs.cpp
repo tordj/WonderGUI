@@ -560,3 +560,5 @@ void WgBitmapGlyphs::insertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 	// Divide back into average
 	m_avgSpacing /= m_nGlyphs;
 }
+
+
