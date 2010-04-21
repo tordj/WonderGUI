@@ -182,7 +182,7 @@ inline int WgBitmapGlyphs::GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph*
 {
 	if( pLeftGlyph == 0 || pRightGlyph == 0 )
 		return 0;
-	
+
 	if( !m_pKerningTable )
 		return 0;
 
@@ -448,7 +448,7 @@ void WgBitmapGlyphs::insertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 
 		if(firstInsert)
 		{
-			if( m_spaceSpacing != firstSpacing )
+			if( (int) m_spaceSpacing != firstSpacing )
 				m_bMonospace = false;
 
 			m_glyphTab[0] = new WgGlyph[256];
@@ -496,7 +496,7 @@ void WgBitmapGlyphs::insertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 
 				if( advance > m_maxSpacing )
 					m_maxSpacing = advance;
- 
+
 				m_avgSpacing += advance;
 				m_nGlyphs++;
 			}

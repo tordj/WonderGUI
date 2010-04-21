@@ -63,6 +63,8 @@ public:
 	void			SetSource( const WgBlockSetPtr& pGfx ) { m_pGfx = pGfx; }
 	WgBlockSetPtr	GetSource() const			{ return m_pGfx; }
 
+	void			SetId( Sint32 id ) { m_id = id; }
+
 private:
 
 	WgText			m_text;

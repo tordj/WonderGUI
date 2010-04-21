@@ -420,7 +420,7 @@ bool WgGizmoTablist::SelectTab( Sint32 id )
 		pTab->m_bAlert = false;		// Selecting automatically stops any alert.
 		ResizeAllTabs();	// fonts have changed
 		RequestRender();
-		
+
 		if( m_pHook )
 			m_pHook->GetEmitter()->Emit( WgSignal::TabSelected(), pTab->m_id );
 		return true;
@@ -665,7 +665,7 @@ bool WgGizmoTablist::ResizeTab( WgTab * pTab )
 		}
 	}
 
-	if( width != pTab->m_width )
+	if( width != (int) pTab->m_width )
 	{
 		pTab->m_width = width;
 		retVal = true;
@@ -719,7 +719,7 @@ WgTab * WgGizmoTablist::Pos2Tab( Sint32 x, Sint32 y )
 		bool	bHit = false;
 
 		// Tab is hit if position is on a non-transparent (alpha != 0) pixel of the block
-		// or inside tabs text-area. 
+		// or inside tabs text-area.
 
 		if( ((unsigned) x) > pSrc->GetContentBorders().left && ((unsigned) x) < w - pSrc->GetContentBorders().right &&
 			((unsigned) y) > pSrc->GetContentBorders().top && y < sz.h - pSrc->GetContentBorders().bottom )

@@ -152,7 +152,7 @@ void WgUtil::Checksum8::Add( const void * pData, Uint32 nBytes )
 
 	for( Uint32 i = 0 ; i < nBytes ; i++ )
 		x = ((x << 8) + ((Uint8*)pData)[i])%dividend;
-		
+
 	remainder = x;
 }
 
@@ -162,7 +162,7 @@ void WgUtil::Checksum8::Add( const void * pData, Uint32 nBytes )
 
 Uint32 WgUtil::DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
 {
-	const static unsigned char conv[256] = 
+	const static unsigned char conv[256] =
 					{	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -205,22 +205,22 @@ Uint32 WgUtil::DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
 	{
 		Uint32	acc = 0;
 
-		unsigned char x = conv[* pSrc++];
+		unsigned char x = conv[(Uint8) * pSrc++];
 		if( x == 0xFF )	return 0;
 		acc += x;
 		acc <<= 6;
 
-		x = conv[* pSrc++];
+		x = conv[(Uint8) * pSrc++];
 		if( x == 0xFF ) return 0;
 		acc += x;
 		acc <<= 6;
 
-		x = conv[* pSrc++];
+		x = conv[(Uint8) * pSrc++];
 		if( x == 0xFF ) return 0;
 		acc += x;
 		acc <<= 6;
 
-		x = conv[* pSrc++];
+		x = conv[(Uint8) * pSrc++];
 		if( x == 0xFF ) return 0;
 		acc += x;
 

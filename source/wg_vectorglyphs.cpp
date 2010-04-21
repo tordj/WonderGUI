@@ -61,12 +61,9 @@ WgVectorGlyphs::WgVectorGlyphs( const void * pTTF_File, int bytes, int faceIndex
 
 	if( err )
 	{
-		int x = 0;
+//		int x = 0;
 		//TODO: Error handling...
 	}
-
-	if( FT_HAS_KERNING( m_ftFace ) )
-		int x = 0;
 
 
 	SetRenderMode( CRISP_EDGES );
@@ -82,7 +79,7 @@ WgVectorGlyphs::~WgVectorGlyphs()
 			delete m_cachedGlyphsIndex[i];
 	}
 
-	FT_Error err = FT_Done_Face( m_ftFace );
+	FT_Done_Face( m_ftFace );
 }
 
 //____ SetRenderMode() ________________________________________________________
@@ -174,8 +171,8 @@ int WgVectorGlyphs::GetWhitespaceAdvance( int size )
 
 //____ GetHeight() ____________________________________________________________
 
-int WgVectorGlyphs::GetHeight( int size ) 
-{ 
+int WgVectorGlyphs::GetHeight( int size )
+{
 	FT_Error err;
 
 	if( m_ftCharSize != size )
@@ -190,13 +187,13 @@ int WgVectorGlyphs::GetHeight( int size )
 		m_ftCharSize = size;
 	}
 
-	return (m_ftFace->size->metrics.ascender - m_ftFace->size->metrics.descender+32) >> 6; 
+	return (m_ftFace->size->metrics.ascender - m_ftFace->size->metrics.descender+32) >> 6;
 }
 
 //____ GetLineSpacing() ____________________________________________________________
 
-int WgVectorGlyphs::GetLineSpacing( int size ) 
-{ 
+int WgVectorGlyphs::GetLineSpacing( int size )
+{
 	FT_Error err;
 
 	if( m_ftCharSize != size )
@@ -211,14 +208,14 @@ int WgVectorGlyphs::GetLineSpacing( int size )
 		m_ftCharSize = size;
 	}
 
-	return (m_ftFace->size->metrics.height+32) >> 6; 
+	return (m_ftFace->size->metrics.height+32) >> 6;
 }
 
 
 //____ GetBaseline() ____________________________________________________________
 
-int WgVectorGlyphs::GetBaseline( int size ) 
-{ 
+int WgVectorGlyphs::GetBaseline( int size )
+{
 	FT_Error err;
 
 	if( m_ftCharSize != size )
@@ -233,36 +230,36 @@ int WgVectorGlyphs::GetBaseline( int size )
 		m_ftCharSize = size;
 	}
 
-	return (m_ftFace->size->metrics.ascender+32) >> 6; 
+	return (m_ftFace->size->metrics.ascender+32) >> 6;
 }
 
 
 //____ GetNbGlyphs() __________________________________________________________
 
-int WgVectorGlyphs::GetNbGlyphs() 
-{ 
-	return m_ftFace->num_glyphs; 
+int WgVectorGlyphs::GetNbGlyphs()
+{
+	return m_ftFace->num_glyphs;
 }
 
 //____ HasGlyphs() ____________________________________________________________
 
-bool WgVectorGlyphs::HasGlyphs() 
-{ 
-	return m_ftFace->num_glyphs?true:false; 
+bool WgVectorGlyphs::HasGlyphs()
+{
+	return m_ftFace->num_glyphs?true:false;
 }
 
 //____ IsMonospace() __________________________________________________________
 
-bool WgVectorGlyphs::IsMonospace() 
-{ 
-	return FT_IS_FIXED_WIDTH( m_ftFace )>0?true:false; 
+bool WgVectorGlyphs::IsMonospace()
+{
+	return FT_IS_FIXED_WIDTH( m_ftFace )>0?true:false;
 }
 
 //____ GetMaxGlyphAdvance() ___________________________________________________
 
-int WgVectorGlyphs::GetMaxGlyphAdvance( int size ) 
-{ 
-	return (m_ftFace->size->metrics.max_advance+32) >> 6; 
+int WgVectorGlyphs::GetMaxGlyphAdvance( int size )
+{
+	return (m_ftFace->size->metrics.max_advance+32) >> 6;
 }
 
 
@@ -479,7 +476,7 @@ void WgVectorGlyphs::AddSlotToIndex( Uint16 ch, int size, CacheSlot * pSlot )
 	{
 		CacheSlot *** p = new CacheSlot**[256];
 		memset( p, 0, 256*sizeof(CacheSlot**) );
-		
+
 		m_cachedGlyphsIndex[size] = p;
 	}
 
@@ -487,10 +484,10 @@ void WgVectorGlyphs::AddSlotToIndex( Uint16 ch, int size, CacheSlot * pSlot )
 	{
 		CacheSlot ** p = new CacheSlot*[256];
 		memset( p, 0, 256*sizeof(CacheSlot*) );
-		
+
 		m_cachedGlyphsIndex[size][ch>>8] = p;
 	}
-	
+
 	assert( m_cachedGlyphsIndex[size][ch>>8][ch&0xFF] == 0 );
 
 	m_cachedGlyphsIndex[size][ch>>8][ch&0xFF] = pSlot;
@@ -501,7 +498,7 @@ void WgVectorGlyphs::AddSlotToIndex( Uint16 ch, int size, CacheSlot * pSlot )
 
 void WgVectorGlyphs::RemoveSlotFromIndex( const CacheSlot * pSlot )
 {
-	
+
 	int	size	= pSlot->size;
 	Uint16 ch	= pSlot->character;
 
@@ -555,7 +552,7 @@ WgVectorGlyphs::CacheSlot * WgVectorGlyphs::GetCacheSlot( int width, int height 
 
 	int index = (size-MIN_GLYPH_PIXEL_SIZE) / GLYPH_PIXEL_SIZE_QUANTIZATION;
 
-	// Make sure we have 
+	// Make sure we have
 
 	CacheSlot * pSlot = s_cacheSlots[index].getLast();
 	if( pSlot == 0 || pSlot->character != 0 )
@@ -570,7 +567,7 @@ WgVectorGlyphs::CacheSlot * WgVectorGlyphs::GetCacheSlot( int width, int height 
 
 //____ AddCacheSlots() ___________________________________________________
 /*
-	Creates a new cache surface of 2^x size big enough to at least hold the 
+	Creates a new cache surface of 2^x size big enough to at least hold the
 	specified minimum amount of slots. Fills the surface with white and alpha 0.
 	Creates all slots that can fit into this surface and adds them to the specified chain.
 */
@@ -632,7 +629,7 @@ WgSize WgVectorGlyphs::CalcTextureSize( const WgSize& slotSize, int nSlots )
 			surfSize.w *= 2;
 		else
 		{
-			if( MaxSlotsInSurface( WgSize( surfSize.w, surfSize.h*2 ), slotSize ) > 
+			if( MaxSlotsInSurface( WgSize( surfSize.w, surfSize.h*2 ), slotSize ) >
 				MaxSlotsInSurface( WgSize( surfSize.w*2, surfSize.h ), slotSize ) )
 				surfSize.h *= 2;
 			else
@@ -647,8 +644,8 @@ WgSize WgVectorGlyphs::CalcTextureSize( const WgSize& slotSize, int nSlots )
 
 
 WgVectorGlyphs::CacheSurf::~CacheSurf()
-{ 
-	delete pSurf; 
+{
+	delete pSurf;
 }
 
 

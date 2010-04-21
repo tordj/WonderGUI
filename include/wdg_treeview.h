@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -50,7 +50,7 @@ public:
 	WgTreeEntry * GetPrev();
 	WgTreeEntry * GetNext();
 
-	inline Uint32	GetID() { return id; }
+	inline long 	GetID() { return id; }
 	inline bool		IsOpen() { return bOpen; }
 	inline bool		HasChildren() { return (m_children.getFirst()!=0)?true:false; }
 	inline bool		IsSelected() { return (mode == WG_MODE_SELECTED); }
@@ -59,12 +59,12 @@ public:
 	Uint32			GetLevel();
 
 protected:
-	WgTreeEntry( Uint32 _id, WgTreeEntry * _pParent, Uint16 _width, WgItem * _pItem );
+	WgTreeEntry( long _id, WgTreeEntry * _pParent, Uint16 _width, WgItem * _pItem );
 	~WgTreeEntry();
 
 	LINK_METHODS(WgTreeEntry);
 
-	Uint32			id;						// ID as set by user.
+	long 			id;						// ID as set by user.
 	WgTreeEntry *	pParent;
 
 	bool			bOpen;					// Set if this entry is opened, exposing enclosed entries.
@@ -97,11 +97,11 @@ class Wdg_TreeView : public Wdg_Baseclass_View
 		void	SetMinEntryHeight( Uint32 nPixels );
 		void	SetMultiSelect( bool bMultiSelect );
 		void	SetMultiSelectModifier( WgModifierKeys modifier );
-		void	SetEntryBackground( const WgBlockSetPtr& pGfxEntryBg, bool bNormalBg = false, 
+		void	SetEntryBackground( const WgBlockSetPtr& pGfxEntryBg, bool bNormalBg = false,
 									bool bDisabledBg = false, bool bMarkedBg = false );
 		void	SetContextMenu( int button, Wdg_Menu * pMenu );
 
-		WgTreeEntry *	AddEntry( Uint32 id, WgTreeEntry * pParent, WgTreeEntry * pBefore, WgItem * pItem );
+		WgTreeEntry *	AddEntry( long id, WgTreeEntry * pParent, WgTreeEntry * pBefore, WgItem * pItem );
 //		WgTreeEntry *	AddJustInTimeEntry( Uint32 id, WgTreeEntry * pParent, WgTreeEntry * pBefore, WgSize sz );
 //		TODO: Maybe support for JustInTimeContent as well? Usefull for display of file hierarchy...
 
@@ -133,13 +133,13 @@ class Wdg_TreeView : public Wdg_Baseclass_View
 		WgTreeEntry *	GetNextSelectedEntry( WgTreeEntry * pEntry );
 		WgTreeEntry *	GetPrevSelectedEntry( WgTreeEntry * pEntry );
 
-		WgTreeEntry *	FindEntry( Uint32 id );
+		WgTreeEntry *	FindEntry( long id );
 
 	protected:
 		WgWidget * NewOfMyType() const;
 	private:
 		void	Init();
-		void	DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer );	
+		void	DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 		void	DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pCloneRoot, const WgWidget * _pBranchRoot );
 		bool	DoMyOwnMarkTest( int _x, int _y );
 		void	DoMyOwnActionRespond( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );

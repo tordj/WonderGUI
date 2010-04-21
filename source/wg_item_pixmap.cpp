@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -65,8 +65,8 @@ WgItemPixmap::WgItemPixmap( Uint32 id, WgBorders margin ) :
 
 WgItemPixmap::WgItemPixmap( Uint32 id, WgBorders margin, WgBlockSetPtr block ) :
 	WgItem(id),
-	m_margin(margin),
 	m_block(block),
+	m_margin(margin),
 	m_forcedSize(0, 0)
 {
 	UpdateSize();
@@ -118,10 +118,10 @@ void WgItemPixmap::UpdateSize()
 
 	Sint32 widthModif = width - m_width;
 	Sint32 heightModif = height - m_height;
-	
+
 	m_width = width;
 	m_height = height;
-	
+
 	if( 0 != widthModif || 0 != heightModif )
 		Modified(widthModif, heightModif);
 }

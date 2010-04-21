@@ -20,6 +20,8 @@
 
 =========================================================================*/
 
+#include <memory.h>
+
 #include <wg_surface_gl.h>
 
 #ifdef WIN32
@@ -302,7 +304,7 @@ void WgSurfaceGL::Unlock()
 //		glBindTexture( GL_TEXTURE_2D, m_texture );
  		glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, m_format, GL_UNSIGNED_BYTE, 0 );
 	}
-	
+
 
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
 	m_lockStatus = UNLOCKED;
@@ -437,7 +439,7 @@ WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgSurface::Pi
 		format = GL_RGBA8;
 		buffSize = 4*size.w*size.h;
 		break;
-		
+
 	default:
 		return 0;
 

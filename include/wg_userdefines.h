@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -34,13 +34,13 @@
 
 //____ font & print related defines ___________________________________________
 
-#define	WG_USE_UTF8				// Set if you want to print UTF-8 (unicode) encoded 
-								// textstrings. Disable if you just want to use 
-								// simple, fast 8-bit (ascii + optionally 128 
+#define	WG_USE_UTF8				// Set if you want to print UTF-8 (unicode) encoded
+								// textstrings. Disable if you just want to use
+								// simple, fast 8-bit (ascii + optionally 128
 								// extra characters) textstrings.
 
-//#define	WG_SAFE_UTF8		// Use slower, but more robust UTF-8 decoding 
-								// that better handles broken unicode strings. 
+//#define	WG_SAFE_UTF8		// Use slower, but more robust UTF-8 decoding
+								// that better handles broken unicode strings.
 								// Ignored if WG_USE_UTF8 isn't defined.
 
 #define WG_USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
@@ -56,8 +56,8 @@
 								//(through intercept settings on parents). No overflow check!
 #define	WG_MAX_KEYS_DOWN	16	// Maximum number of keys simultaneously depressed. No overflow check!
 
-#define	WG_MAX_KEYS			128	// Number of keys that we'll let WonderGUI be aware of. 
-								// Keycode sent to WgInput may not equal or exceed this 
+#define	WG_MAX_KEYS			128	// Number of keys that we'll let WonderGUI be aware of.
+								// Keycode sent to WgInput may not equal or exceed this
 								// number!
 
 
@@ -65,13 +65,13 @@
 
 enum WgModifierKeys
 {
-	// Don't touch, needs to be first!	
-	WG_MODKEY_NONE = 0,			// = 0				
+	// Don't touch, needs to be first!
+	WG_MODKEY_NONE = 0,			// = 0
 
 	// ---- Feel free to add/remove/modify/rename combinations here between.
 	// ---- They are only used by your program, not WonderGUI itself. The
 	// ---- number of modifier keys affects memory usage though.
-	
+
 	WG_MODKEY_SHIFT = 1,
 	WG_MODKEY_ALT = 2,
 	WG_MODKEY_ALT_SHIFT = 3,
@@ -91,7 +91,7 @@ enum WgModifierKeys
 
 	// ---- End of modifiable enums.
 
-	// Don't touch, needs to be last!
+	// Needs to be last!
 	WG_MAX_MODKEYS = 16
 };
 

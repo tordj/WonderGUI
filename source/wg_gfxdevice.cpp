@@ -903,7 +903,7 @@ void WgGfxDevice::ClipPrintTextWithCursor( const WgRect& clip, const WgText * pT
 }
 */
 
-void WgGfxDevice::PrintTextWithCursor( const WgRect& clip, const WgText * pText, 
+void WgGfxDevice::PrintTextWithCursor( const WgRect& clip, const WgText * pText,
 									   const WgCursorInstance& ci, const WgRect& dest )
 {
 	if( !pText || !pText->getDefaultFont()  )
@@ -927,7 +927,7 @@ void WgGfxDevice::PrintTextWithCursor( const WgRect& clip, const WgText * pText,
 	Uint32		cursLine, cursCol;
 	ci.getSoftPos( cursLine, cursCol );
 
-	for( int i = 0 ; i < (int) nLines ; i++ )
+	for( unsigned int i = 0 ; i < nLines ; i++ )
 	{
 		if( cursLine == i )
 		{
@@ -947,7 +947,7 @@ void WgGfxDevice::PrintTextWithCursor( const WgRect& clip, const WgText * pText,
 			pen.AdvancePosCursor( ci );
 			pen.FlushChar();				// Avoid kerning against glyph before cursor.
 			PrintLine( &pen, pDefProp, pText->mode(), pLines[i].pText + cursCol  );
-			
+
 		}
 		else
 		{
@@ -986,7 +986,7 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 	pen.SetDevice( this );
 	pen.SetTextProp( pDefProp );
 
-	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.Contains( dest ) ) 
+	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.Contains( dest ) )
 		pen.SetClipRect( clip );
 
 	WgCord	pos;
@@ -1052,7 +1052,7 @@ void WgGfxDevice::PrintLine( WgPen * pPen,  const WgTextPropPtr& pDefProp,
 
 			// Check if this is start of underlined text with this font and in that case draw the underline.
 
-			if( _pLine[i].IsUnderlined(pDefProp, mode) && 
+			if( _pLine[i].IsUnderlined(pDefProp, mode) &&
 				(i==0 || !(_pLine[i-1].IsUnderlined(pDefProp, mode)) || _pLine[i-1].GetFont(pDefProp) != _pLine[i].GetFont(pDefProp)) )
 				DrawUnderline( WgRect(0,0,65535,65535), pDefProp, mode, pPen->GetPosX(), pPen->GetPosY(), _pLine+i );
 
@@ -1080,12 +1080,12 @@ void WgGfxDevice::PrintLine( WgPen * pPen,  const WgTextPropPtr& pDefProp,
 			if( _pLine[i].GetGlyph() == WG_HYPHEN_BREAK_PERMITTED && !pPen->SetChar( ch ) )
 			{
 				if( pPen->SetChar( '-' ) )
-				{				
+				{
 					pPen->ApplyKerning();
 					pPen->BlitChar();
 				}
 			}
-			
+
 			break;
 		}
  	}

@@ -122,7 +122,6 @@
 		<Unit filename="include/wg_interface_textholder.h" />
 		<Unit filename="include/wg_interface_valueholder.h" />
 		<Unit filename="include/wg_item.h" />
-		<Unit filename="include/wg_item_button.h" />
 		<Unit filename="include/wg_item_pixmap.h" />
 		<Unit filename="include/wg_item_row.h" />
 		<Unit filename="include/wg_item_stack.h" />
@@ -218,7 +217,6 @@
 		<Unit filename="source/wg_interface_textholder.cpp" />
 		<Unit filename="source/wg_interface_valueholder.cpp" />
 		<Unit filename="source/wg_item.cpp" />
-		<Unit filename="source/wg_item_button.cpp" />
 		<Unit filename="source/wg_item_pixmap.cpp" />
 		<Unit filename="source/wg_item_row.cpp" />
 		<Unit filename="source/wg_item_stack.cpp" />
@@ -232,7 +230,6 @@
 		<Unit filename="source/wg_resource_factory_xml.cpp" />
 		<Unit filename="source/wg_resources_xml.cpp" />
 		<Unit filename="source/wg_resourceserializer_xml.cpp" />
-		<Unit filename="source/wg_simpletext.cpp" />
 		<Unit filename="source/wg_string.cpp" />
 		<Unit filename="source/wg_surface.cpp" />
 		<Unit filename="source/wg_text.cpp" />

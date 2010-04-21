@@ -179,11 +179,11 @@ bool Wdg_Menu::SetTextProperties( const WgTextPropPtr& pEntryProp, const WgTextP
 		WgPen	pen;
 		pen.SetTextProp( m_pEntryProp.GetHandle(), 0, WG_MODE_NORMAL );
 		int	heightNormal	= pen.GetLineSpacing();
-		
-		pen.SetTextProp( m_pEntryProp.GetHandle(), 0, WG_MODE_MARKED );	
+
+		pen.SetTextProp( m_pEntryProp.GetHandle(), 0, WG_MODE_MARKED );
 		int heightMarked	= pen.GetLineSpacing();
 
-		pen.SetTextProp( m_pEntryProp.GetHandle(), 0, WG_MODE_DISABLED );	
+		pen.SetTextProp( m_pEntryProp.GetHandle(), 0, WG_MODE_DISABLED );
 		int heightDisabled	= pen.GetLineSpacing();
 
 		if( m_entryHeight < heightNormal )
@@ -1092,7 +1092,7 @@ void Wdg_Menu::SetViewPixels(int pos)
 	if( pos + viewHeight > (int) m_contentHeight )
 		pos = m_contentHeight - viewHeight;
 
-	if( pos != m_contentOfs )
+	if( pos != (int) m_contentOfs )
 	{
 		m_contentOfs = pos;
 		Emit( ViewPosY(), GetViewOfs() );

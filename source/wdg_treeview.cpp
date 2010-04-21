@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -41,11 +41,11 @@ WgWidget * Wdg_TreeView::NewOfMyType() const
 
 void Wdg_TreeView::Init( void )
 {
-	m_indentation			= 16;			
-	m_minEntryHeight		= 16;			
+	m_indentation			= 16;
+	m_minEntryHeight		= 16;
 	m_bMultiSelect			= false;
-	m_bDynamicItems			= false;		
-	m_multiSelectModifier	= WG_MODKEY_CTRL;	
+	m_bDynamicItems			= false;
+	m_multiSelectModifier	= WG_MODKEY_CTRL;
 
 
 	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
@@ -116,7 +116,7 @@ void Wdg_TreeView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butto
 			break;
 
 		case WgInput::BUTTON_PRESS:
-		{	
+		{
 			Sint32 ofs;
 			WgTreeEntry * pEntry = FindEntryAtViewOfs( y, &ofs );
 
@@ -219,7 +219,7 @@ WgTreeEntry * Wdg_TreeView::FindEntryAtViewOfs( Sint32 ofs, Sint32 * wpOfsInside
 	WgTreeEntry * pEntry = m_entries.getFirst();
 
 	Sint32	height = 0;
-	
+
 	if( pEntry )
 		height = GetEntryHeight(pEntry);
 
@@ -415,7 +415,7 @@ void Wdg_TreeView::SetMultiSelectModifier( WgModifierKeys modifier )
 
 //____ SetEntryBackground() ___________________________________________________
 
-void Wdg_TreeView::SetEntryBackground( const WgBlockSetPtr& pGfxEntryBg, bool bNormalBg, 
+void Wdg_TreeView::SetEntryBackground( const WgBlockSetPtr& pGfxEntryBg, bool bNormalBg,
 										bool bDisabledBg, bool bMarkedBg )
 {
 	m_pEntryBg = pGfxEntryBg;
@@ -429,7 +429,7 @@ void Wdg_TreeView::SetEntryBackground( const WgBlockSetPtr& pGfxEntryBg, bool bN
 
 //____ AddEntry() _____________________________________________________________
 
-WgTreeEntry * Wdg_TreeView::AddEntry( Uint32 id, WgTreeEntry * pParent, WgTreeEntry * pBefore, WgItem * pItem )
+WgTreeEntry * Wdg_TreeView::AddEntry( long id, WgTreeEntry * pParent, WgTreeEntry * pBefore, WgItem * pItem )
 {
 	WgTreeEntry * p = new WgTreeEntry( id, pParent, pItem->Width(), pItem );
 
@@ -511,7 +511,7 @@ bool Wdg_TreeView::DeleteEntry( WgTreeEntry * pEntry )
 {
 	if( pEntry->mode == WG_MODE_SELECTED )
 		UnselectEntry(pEntry);
-	
+
 	WgTreeEntry * pParent = pEntry->pParent;
 	delete pEntry;
 
@@ -543,7 +543,7 @@ WgSize Wdg_TreeView::CalcSize( WgChain<WgTreeEntry>& chain )
 
 		if( width > sz.w )
 			sz.w = width;
-		
+
 		if( p->bOpen )
 		{
 			sz.h += p->childrenHeight;
@@ -561,7 +561,7 @@ WgSize Wdg_TreeView::CalcSize( WgChain<WgTreeEntry>& chain )
 void Wdg_TreeView::RefreshSize( WgTreeEntry * p )
 {
 	WgSize sz;
-	
+
 	if( p == 0 )
 	{
 		sz = CalcSize( m_entries );
@@ -582,7 +582,7 @@ void Wdg_TreeView::RefreshSize( WgTreeEntry * p )
 			if( p->bOpen )
 				RefreshSize( p->pParent );
 		}
-		else if( sz.h != p->childrenHeight )
+		else if( sz.h != (int) p->childrenHeight )
 		{
 			// No changes to width so we only need to propagate the change
 			// in height through our ancestry until we reach a closed folder.
@@ -671,7 +671,7 @@ bool Wdg_TreeView::DisableEntry( WgTreeEntry * pEntry )
 		UnselectEntry(pEntry);
 
 	pEntry->mode = WG_MODE_DISABLED;
-	
+
 	RequestRender();						//TODO: Optimize, only call if necessary and for needed screensection.
 	return true;
 }
@@ -848,7 +848,7 @@ void Wdg_TreeView::GotoEntry( WgTreeEntry * pEntry )
 		SetViewPixelOfsY( ofsY + height - ViewPixelLenY() );
 
 
-	
+
 }
 
 
@@ -916,7 +916,7 @@ WgTreeEntry * Wdg_TreeView::GetPrevSelectedEntry( WgTreeEntry * pEntry )
 
 //____ () _____________________________________________________________________
 
-WgTreeEntry * Wdg_TreeView::FindEntry( Uint32 id )
+WgTreeEntry * Wdg_TreeView::FindEntry( long id )
 {
 	WgTreeEntry * p = GetFirstEntry();
 
@@ -935,7 +935,7 @@ WgTreeEntry * Wdg_TreeView::FindEntry( Uint32 id )
 
 //____ WgTreeEntry::Constructor _______________________________________________
 
-WgTreeEntry::WgTreeEntry( Uint32 _id, WgTreeEntry * _pParent, Uint16 _width, WgItem * _pItem )
+WgTreeEntry::WgTreeEntry( long _id, WgTreeEntry * _pParent, Uint16 _width, WgItem * _pItem )
 {
 	id				= _id;
 	pParent			= _pParent;

@@ -1076,7 +1076,7 @@ WgChar * WgText::parseScaledValue( Sint32 value, Uint32 scale, const WgValueForm
 
 	// Possibly put a plus or minus sign at the very start.
 
-	if( value < 0 || value == 0 && f.bZeroIsNegative )
+	if( value < 0 || (value == 0 && f.bZeroIsNegative) )
 		(--p)->SetGlyph((short) '-');
 	else if( f.bPlus )
 		(--p)->SetGlyph((short) '+');
@@ -1446,7 +1446,7 @@ Uint32 WgText::insertText( Uint32 _line, Uint32 _col, const char * pText, Uint32
 	Uint32	addChars, addLines;
 
 	WgTextTool::countCharsLines(pText, addChars, addLines, nChar);
-	addLines--;	
+	addLines--;
 
 	WgChar * dp =beginChange( _line, _col, addChars, 0, addLines, 0 );
 

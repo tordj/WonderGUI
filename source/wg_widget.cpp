@@ -227,7 +227,7 @@ Sets the geometry of this widget.
 to origo.
 
 If the specified geometry doesn't fit inside the parent, the size of the
-widget is first adjusted and secondly the position. 
+widget is first adjusted and secondly the position.
 
 @return False if the specified geometry wasn't allowed and had to be tweaked.
 */
@@ -1848,7 +1848,7 @@ bool WgWidget::Connect( WgWidget * _pNewParent, WgWidget * _pPutBefore )
 	{
 		m_pPrevSibling = _pNewParent->m_pLastChild;
 		m_pNextSibling = 0;
-	}		
+	}
 
 	// Update surrounding links
 
@@ -2083,9 +2083,6 @@ void WgWidget::RefreshTreeSizeLimit( void )
 				h = h2;
 		}
 
-		if( w > 2000 )
-			int x = 0;
-
 		if( w > minW )
 			minW = w;
 		if( h > minH )
@@ -2272,7 +2269,7 @@ WgWidget* WgWidget::BuildCloneBranch( const WgWidget * pSrc, WgWidget * pDstPare
 
 	for(WgWidget* pSrcChild = pSrc->FirstChild(); pSrcChild; pSrcChild = pSrcChild->NextSibling())
 		BuildCloneBranch(pSrcChild, pClone);
-											 
+
 	return pClone;
 }
 /*

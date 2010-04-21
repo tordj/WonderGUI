@@ -98,7 +98,7 @@ void WgResourceSerializerXML::Warning(const std::string& warn)
 #ifdef WIN32
 	OutputDebugStringA((warn + "\n").c_str());
 #endif
-	printf((warn + "\n").c_str());
+	printf( "%s\n", warn.c_str() );
 }
 
 namespace

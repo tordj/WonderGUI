@@ -390,10 +390,10 @@ void WgResourceXML::RegisterResources()
 
 	WgResourceFactoryXML::Register<Wdg_Pixmap_Res>		(Wdg_Pixmap_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_Pixmap_Res>		(Wdg_Pixmap::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_Lodder_Res>		(Wdg_Lodder_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_Lodder_Res>		(Wdg_Lodder::GetMyType());
-	
+
 	WgResourceFactoryXML::Register<Wdg_RadioButton2_Res>(Wdg_RadioButton2_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_RadioButton2_Res>(Wdg_RadioButton2::GetMyType());
 
@@ -1019,7 +1019,7 @@ void WgTextPropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	m_style = WgFontStyleRes::Deserialize(xmlNode, s);
 	m_underlined = WgUtil::ToBool(xmlNode["underlined"]);
 	m_size = WgUtil::ToUint32(xmlNode["size"]);
-	
+
 
 	m_prop.SetStyle( m_style );
 	m_prop.SetSize( m_size );
@@ -1762,7 +1762,7 @@ void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 				VERIFY(m_pAnim->addHorrTiledFrames(nHorStates, pSurf, 0, y, duration), "could not add frame to anim");
 			else
 				VERIFY(m_pAnim->addHorrTiledFrames(nStates, pSurf, 0, y, duration), "could not add frame to anim");
-		}		
+		}
 	}
 
 	s.ResDb()->AddAnim(xmlNode["id"], m_pAnim, new WgXMLMetaData(xmlNode));
@@ -1846,7 +1846,7 @@ void WgCursorRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 {
 	m_pCursor = new WgCursor();
 	std::string anim;
-	
+
 	WgCord	bearing;
 	int		spacing;
 
@@ -1972,7 +1972,7 @@ void WgTileRes::Serialize(WgResourceSerializerXML& s)
 {
 	s.BeginTag(TagName());
 
-	const WgXmlNode& xmlNode = XmlNode();
+//	const WgXmlNode& xmlNode = XmlNode();
 
 	if(m_tile == All)
 	{
@@ -2020,7 +2020,7 @@ void WgBlockRes::Serialize(WgResourceSerializerXML& s)
 {
 	s.BeginTag(TagName(), XmlNode());
 
-	const WgXmlNode& xmlNode = XmlNode();
+//	const WgXmlNode& xmlNode = XmlNode();
 
 	s.AddAttribute("mode", WgModeRes::Serialize(m_mode));
 	s.AddAttribute("x", WgUtil::ToString(m_x));
@@ -2217,7 +2217,7 @@ int WgBlockSetRes::StateFromRect(const WgRect& src, const WgRect& stateRect)
 
 void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
-	ASSERT(xmlNode.HasAttribute("lego") || xmlNode.HasAttribute("rect") || xmlNode.HasAttribute("w") && xmlNode.HasAttribute("h"), "missing rectangle in <blockset>");
+	ASSERT(xmlNode.HasAttribute("lego") || xmlNode.HasAttribute("rect") || (xmlNode.HasAttribute("w") && xmlNode.HasAttribute("h")), "missing rectangle in <blockset>");
 
 	std::string id = xmlNode["id"];
 	if(id.size() == 0)
@@ -3721,7 +3721,7 @@ void Wdg_MenuBar_Res::Serialize(WgResourceSerializerXML& s)
 	WgWidgetRes::Serialize(s);
 
 	Wdg_MenuBar* widget = GetWidget();
-	const WgXmlNode& xmlNode = XmlNode();
+//	const WgXmlNode& xmlNode = XmlNode();
 
 	WriteBlockSetAttr(s, widget->GetBgSource(), "bkg");
 	WriteBlockSetAttr(s, widget->GetEntrySource(), "entry_bkg");
@@ -3809,7 +3809,7 @@ void Wdg_Pixmap_Res::Serialize(WgResourceSerializerXML& s)
 	WgWidgetRes::Serialize(s);
 
 	Wdg_Pixmap* widget = GetWidget();
-	const WgXmlNode& xmlNode = XmlNode();
+//	const WgXmlNode& xmlNode = XmlNode();
 
 	WriteBlockSetAttr(s, widget->GetSource(), "blockset");
 
@@ -4079,7 +4079,7 @@ void WgTableColumnRes::Serialize(WgResourceSerializerXML& s)
 {
 	Wdg_TableView_Res* tableViewRes = WgResourceXML::Cast<Wdg_TableView_Res>(Parent());
 	VERIFY(tableViewRes, "Invalid parent for <column>. Should be <table>");
-	Wdg_TableView* table = tableViewRes->GetWidget();
+//	Wdg_TableView* table = tableViewRes->GetWidget();
 	const WgXmlNode& xmlNode = XmlNode();
 
 	s.BeginTag(TagName(), XmlNode());
@@ -4867,8 +4867,8 @@ WgMenuSeparatorRes::WgMenuSeparatorRes(WgResourceXML* parent, WgMenuSeparator* i
 
 void WgMenuSeparatorRes::Serialize(WgResourceSerializerXML& s)
 {
-	WgMenuSeparator* item = GetItem();
-	const WgXmlNode& xmlNode = XmlNode();
+//	WgMenuSeparator* item = GetItem();
+//	const WgXmlNode& xmlNode = XmlNode();
 
 	s.BeginTag(TagName(), XmlNode());
 	WgMenuItemRes::Serialize(s);
@@ -4923,11 +4923,23 @@ void WgMenuEntryRes::Serialize(WgResourceSerializerXML& s, bool bOpenTag)
 		std::string value;
 		switch(item->GetAccelModif())
 		{
-		case WG_MODKEY_NONE:	value = "none"; break;
-		case WG_MODKEY_SHIFT:	value = "shift"; break;
-		case WG_MODKEY_CTRL:	value = "ctrl"; break;
-		case WG_MODKEY_ALT:		value = "alt"; break;
-		case WG_MODKEY_CTRL_ALT:value = "ctrl+alt"; break;
+		case WG_MODKEY_NONE:				value = "none"; break;
+		case WG_MODKEY_SHIFT:				value = "shift"; break;
+		case WG_MODKEY_CTRL:				value = "ctrl"; break;
+		case WG_MODKEY_ALT:					value = "alt"; break;
+		case WG_MODKEY_ALT_SHIFT:			value = "alt+shift"; break;
+		case WG_MODKEY_CTRL_SHIFT:			value = "ctrl+shift"; break;
+		case WG_MODKEY_CTRL_ALT:			value = "ctrl+alt"; break;
+		case WG_MODKEY_CTRL_ALT_SHIFT:		value = "ctrl+alt+shift"; break;
+		case WG_MODKEY_GUI:					value = "gui"; break;
+		case WG_MODKEY_SUPER_SHIFT:			value = "super+shift"; break;
+		case WG_MODKEY_SUPER_CTRL:			value = "super+ctrl"; break;
+		case WG_MODKEY_SUPER_ALT:			value = "super+alt"; break;
+		case WG_MODKEY_SUPER_ALT_SHIFT:		value = "super+alt+shift"; break;
+		case WG_MODKEY_SUPER_CTRL_SHIFT:	value = "super+ctrl+shift"; break;
+		case WG_MODKEY_SUPER_CTRL_ALT:		value = "super+ctrl+alt"; break;
+		case WG_MODKEY_SUPER_CTRL_ALT_SHIFT:value = "super+ctrl+alt+shift"; break;
+		default:	s.Warning( "Unknown modifier key in menu entry skipped" ); break;
 		}
 		s.AddAttribute("accelmod", value);
 	}
@@ -4964,7 +4976,18 @@ void WgMenuEntryRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerX
 	else if(value == "shift") item->SetAccelModifier(WG_MODKEY_SHIFT);
 	else if(value == "ctrl") item->SetAccelModifier(WG_MODKEY_CTRL);
 	else if(value == "alt") item->SetAccelModifier(WG_MODKEY_ALT);
+	else if(value == "alt+shift") item->SetAccelModifier(WG_MODKEY_ALT_SHIFT);
 	else if(value == "ctrl+alt") item->SetAccelModifier(WG_MODKEY_CTRL_ALT);
+	else if(value == "ctrl+shift") item->SetAccelModifier(WG_MODKEY_CTRL_SHIFT);
+	else if(value == "ctrl+alt+shift") item->SetAccelModifier(WG_MODKEY_CTRL_ALT_SHIFT);
+	else if(value == "gui") item->SetAccelModifier(WG_MODKEY_GUI);
+	else if(value == "super+shift") item->SetAccelModifier(WG_MODKEY_SUPER_SHIFT);
+	else if(value == "super+ctrl") item->SetAccelModifier(WG_MODKEY_SUPER_CTRL);
+	else if(value == "super+alt") item->SetAccelModifier(WG_MODKEY_SUPER_ALT);
+	else if(value == "super+alt+shift") item->SetAccelModifier(WG_MODKEY_SUPER_ALT_SHIFT);
+	else if(value == "super+ctrl+alt") item->SetAccelModifier(WG_MODKEY_SUPER_CTRL_ALT);
+	else if(value == "super+ctrl+shift") item->SetAccelModifier(WG_MODKEY_SUPER_CTRL_SHIFT);
+	else if(value == "super+ctrl+alt+shift") item->SetAccelModifier(WG_MODKEY_SUPER_CTRL_ALT_SHIFT);
 	else ASSERT(0, "invallid modifier key");
 
 	item->SetAccelKey(WgUtil::ToUint16(xmlNode["accelkey"]));
@@ -5052,7 +5075,7 @@ WgMenuSubMenuRes::WgMenuSubMenuRes(WgResourceXML* parent, WgMenuSubMenu* item) :
 void WgMenuSubMenuRes::Serialize(WgResourceSerializerXML& s)
 {
 	WgMenuSubMenu* item = GetItem();
-	const WgXmlNode& xmlNode = XmlNode();
+//	const WgXmlNode& xmlNode = XmlNode();
 
 	s.BeginTag(TagName(), XmlNode());
 	WgMenuEntryRes::Serialize(s, false);

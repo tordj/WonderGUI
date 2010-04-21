@@ -16,9 +16,9 @@ const char * WgItemWrapText::GetMyType()
 }
 //____ Constructors ___________________________________________________________
 WgItemWrapText::WgItemWrapText( ) :
-	m_bgFill(0,0,0,0),
 	m_minWidth(0),
-	m_minHeight(0)
+	m_minHeight(0),
+	m_bgFill(0,0,0,0)
 {
 	Init();
 }
@@ -60,7 +60,7 @@ WgItemWrapText::WgItemWrapText( Uint32 id, const Uint16 * pStr, WgTextPropPtr pP
 
 	m_minWidth		= 0;
 	m_minHeight		= 0;
-	
+
 	m_bgFill		= bgFill;
 	Init();
 }
@@ -81,7 +81,7 @@ WgItemWrapText::WgItemWrapText( Uint32 id, const WgText * pText, Uint32 startwid
 
 	m_minWidth		= 0;
 	m_minHeight		= 0;
-	
+
 	m_bgFill		= bgFill;
 	Init();
 }
@@ -263,7 +263,7 @@ Sint32 WgItemWrapText::CompareTo( WgItem * _pOther )
 	if( pOther == 0 )
 		return 0;
 
-	return m_text.compareTo( &pOther->m_text );	
+	return m_text.compareTo( &pOther->m_text );
 }
 
 //____ AdaptToWidth() _________________________________________________________

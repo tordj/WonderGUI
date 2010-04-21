@@ -328,7 +328,7 @@ public:
 
 	WgColor			GetColor() const { return m_color; }
 	WgFontStyle		GetStyle() const { return m_style; }
-	Uint32			GetSize() const { return m_size; }
+	int				GetSize() const { return m_size; }
 	bool			IsUnderlined() const { return m_underlined; }
 
 	static const char* TagName() { return "textprop"; }
@@ -491,7 +491,7 @@ class WgGlyphSetRes : public WgResourceXML
 {
 public:
 	WgGlyphSetRes(WgResourceXML* parent, WgGlyphSet* glyphSet = 0, int size = 0 )  : WgResourceXML(parent), m_pGlyphSet(glyphSet), m_bHasStyle(false), m_size(size) { }
-	WgGlyphSetRes(WgResourceXML* parent, WgGlyphSet* glyphSet, WgFontStyle style, int size = 0 )  : WgResourceXML(parent), m_pGlyphSet(glyphSet), m_style(style), m_bHasStyle(true), m_size(size) { }
+	WgGlyphSetRes(WgResourceXML* parent, WgGlyphSet* glyphSet, WgFontStyle style, int size = 0 )  : WgResourceXML(parent), m_pGlyphSet(glyphSet), m_bHasStyle(true), m_style(style), m_size(size) { }
 
 
 	virtual void Serialize(WgResourceSerializerXML& s);
@@ -1108,8 +1108,8 @@ public:
 	WgMenuBarItemRes(WgResourceXML* parent, class WgMenuBarItem* pBarItem = 0) :
 		WgResourceXML(parent),
 		m_pBarItem(pBarItem),
-		m_navKey(0),
-		m_pMenu(0)
+		m_pMenu(0),
+		m_navKey(0)
 	{}
 
 	void				SetMenu(Wdg_Menu* pMenu) { m_pMenu = pMenu; }

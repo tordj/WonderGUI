@@ -479,7 +479,7 @@ Uint32 Wdg_TableView::AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo&
 WgTableColumn* Wdg_TableView::FindColumn(Uint32 id) const
 {
 	for( Uint32 i = 0 ; i < m_nColumns ; i++ )
-		if( m_pColumns[i].m_id == id )
+		if( m_pColumns[i].m_id == (int) id )
 			return &m_pColumns[i];
 
 	return 0;
