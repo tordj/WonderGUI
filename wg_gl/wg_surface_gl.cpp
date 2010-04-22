@@ -140,7 +140,7 @@ void WgSurfaceGL::InitBuffer()
 
 	pglGenBuffersARB( 1, &m_buffer );
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
-	pglBufferDataARB( GL_PIXEL_UNPACK_BUFFER_ARB, size, m_pPixels, GL_STATIC_DRAW_ARB );
+	pglBufferDataARB( GL_PIXEL_UNPACK_BUFFER_ARB, size, m_pPixels, GL_STREAM_DRAW_ARB );
 }
 
 void WgSurfaceGL::SetPixelFormat( GLint _format )
@@ -265,7 +265,6 @@ void * WgSurfaceGL::Lock( LockStatus mode )
 	if( m_format == 0 || m_lockStatus != UNLOCKED || mode == UNLOCKED )
 		return 0;
 
-    glBindTexture(GL_TEXTURE_2D, m_texture);
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
 
 	switch( mode )
@@ -294,16 +293,15 @@ void WgSurfaceGL::Unlock()
 	if(m_lockStatus == UNLOCKED )
 		return;
 
-//	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );	// In case we've been locking others inbetween...
+	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );	// In case we've been locking others inbetween...
 	pglUnmapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB );
 
 	if( m_lockStatus != READ_ONLY )
 	{
-//		glBindTexture( GL_TEXTURE_2D, m_texture );
- 		glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, m_format, GL_UNSIGNED_BYTE, 0 );
+		glBindTexture( GL_TEXTURE_2D, m_texture );
+		glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 	}
 	
-
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
 	m_lockStatus = UNLOCKED;
 	m_pPixels = 0;

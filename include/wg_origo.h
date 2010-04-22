@@ -49,6 +49,7 @@ public:
 	
 	static WgOrigo relative( float x, float y );
 	static WgOrigo specific( float anchX, float anchY, float hsX, float hsY );
+	static WgOrigo specificUnlimited( float anchX, float anchY, float hsX, float hsY );
 	static WgOrigo cornerTopLeft( float x, float y );
 	static WgOrigo cornerBottomRight( float x, float y );
 	

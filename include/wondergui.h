@@ -248,6 +248,10 @@
 #	include <wg_textpropmanager.h>
 #endif
 
+#ifndef WG_TEXTSCALER_DOT_H
+#	include <wg_textscaler.h>
+#endif
+
 #ifndef WG_TEXTTOOL_DOT_H
 #	include <wg_texttool.h>
 #endif

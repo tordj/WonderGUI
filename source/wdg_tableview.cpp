@@ -52,6 +52,7 @@ WgTableColumn::WgTableColumn(const WgTableColumn& column)
 	{
 		m_pText = new WgText();
 		m_pText->SetWrap(false);
+		m_pText->setHolder( this );
 		m_pText->setProperties( column.m_pText->getDefaultProperties() );
 		m_pText->setText( m_pText->getText() );
 		m_pText->setAlignment( column.m_pText->alignment() );

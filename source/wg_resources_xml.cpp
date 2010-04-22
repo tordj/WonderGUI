@@ -4334,13 +4334,11 @@ void Wdg_TabList_Res::Serialize(WgResourceSerializerXML& s)
 
 	for(WgTab*tab = widget->GetFirstTab(); tab; tab = tab->getNext())
 	{
-		WgTabRes* tabRes;
-		//WgResDB::TabRes* tabDb = s.ResDb()->FindResTab(this);
-		//if(tabDb) tabRes = (WgResourceXML*)tabDb->meta;
-		//else
-			tabRes = new WgTabRes(this, tab);
-		if(tabRes)
-			tabRes->Serialize(s);
+		WgTabRes* tabRes = new WgTabRes(this, tab);
+		WgResDB::TabRes* tabDb = s.ResDb()->FindResTab(tab);
+		if(tabDb)
+			tabRes->SetMetaData(tabDb->meta);
+		tabRes->Serialize(s);
 		delete tabRes;
 	}
 
@@ -4406,6 +4404,16 @@ void WgTabRes::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "alert", m_tab->GetAlert(), false);
 	WriteDiffAttr(s, xmlNode, "selected", tabListRes->GetWidget()->GetSelectedTabId() == m_tab->GetId(), false);
 
+	if(xmlNode.HasAttribute("icon"))
+	{
+		WgItem* pIcon = tabListRes->GetWidget()->LockTabContent(m_tab->GetId())->GetFirstItem();
+		if(pIcon && pIcon->Type() == WgItemPixmap::GetMyType())
+		{
+			WriteBlockSetAttr(s, ((WgItemPixmap*)pIcon)->GetSource(), "icon");
+		}
+		tabListRes->GetWidget()->UnlockTabContent(m_tab->GetId());
+	}
+
 	if( m_tab->GetSource() )
 		WriteBlockSetAttr(s, m_tab->GetSource(), "blockset");
 
@@ -4424,10 +4432,22 @@ void WgTabRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 	Wdg_TabList* tabList = tabListRes->GetWidget();
 	Sint32 uid = WgUtil::ToSint32(xmlNode["uid"], 1 + tabList->GetTabCount());
 	WgBlockSetPtr blockset = s.ResDb()->GetBlockSet(xmlNode["blockset"]);
-	tabList->AddTab(uid, text.c_str(), blockset);
+	tabList->AddTab(uid, text.c_str(), -1, blockset);
 	tabList->SetAlert(uid, WgUtil::ToBool(xmlNode["alert"]) );
 	if(WgUtil::ToBool(xmlNode["selected"]))
 		tabList->SelectTab(uid);
+
+	WgBlockSetPtr iconBlock = s.ResDb()->GetBlockSet(xmlNode["icon"]);
+	if(iconBlock)
+	{
+		WgItemPixmap* pIcon = new WgItemPixmap(uid, WgBorders(0), iconBlock);
+		WgItemRow* pRow = tabListRes->GetWidget()->LockTabContent(uid);
+		pRow->AddItem(pIcon);
+		tabListRes->GetWidget()->UnlockTabContent(uid);
+	}
+
+	WgTab* pTab = tabList->GetLastTab();
+	s.ResDb()->AddTab(xmlNode["id"], pTab, new WgXMLMetaData(XmlNode()));
 }
 
 WgCharBuffer* WgTabRes::GetCharBuffer()

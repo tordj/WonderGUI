@@ -35,6 +35,8 @@
 #include <wg_texttool.h>
 #include <wg_charseq.h>
 #include <wg_charbuffer.h>
+#include <wg_pen.h>
+#include <wg_interface_textholder.h>
 
 WgChar		WgText::g_emptyText = WgChar(0);
 WgTextLine	WgText::g_emptyLine = {0,&g_emptyText};
@@ -44,6 +46,8 @@ WgTextLine	WgText::g_emptyLine = {0,&g_emptyText};
 
 WgText::WgText()
 {
+	m_pManagerNode = 0;
+
 	m_origo		= WgOrigo::topLeft();
 	m_tintMode	= TINTMODE_MULTIPLY;
 	m_lineSpaceAdj	= 0;
@@ -61,6 +65,8 @@ WgText::WgText()
 
 WgText::WgText( const char * pText )
 {
+	m_pManagerNode = 0;
+
 	m_origo		= WgOrigo::topLeft();
 	m_tintMode	= TINTMODE_MULTIPLY;
 	m_lineSpaceAdj	= 0;
@@ -80,6 +86,8 @@ WgText::WgText( const char * pText )
 
 WgText::WgText( const Uint16 * pText )
 {
+	m_pManagerNode = 0;
+
 	m_origo		= WgOrigo::topLeft();
 	m_tintMode	= TINTMODE_MULTIPLY;
 	m_lineSpaceAdj	= 0;
@@ -104,11 +112,26 @@ WgText::WgText( const Uint16 * pText )
 
 WgText::~WgText()
 {
+	delete m_pManagerNode;
+
 	if( m_pSoftLines != m_pHardLines )
 		delete [] m_pSoftLines;
 
 	if( m_pHardLines != &WgText::g_emptyLine )
 		delete [] m_pHardLines;
+}
+
+//____ setManager() ___________________________________________________________
+
+void WgText::setManager( WgTextManager * pManager )
+{
+	if( m_pManagerNode )
+		delete m_pManagerNode;
+
+	if( pManager )
+		m_pManagerNode = pManager->NewNode( this );
+	else
+		m_pManagerNode = 0;
 }
 
 
@@ -1119,6 +1142,10 @@ Uint32 WgText::nbChars() const
 
 void WgText::refresh()
 {
+	regenSoftLines();
+
+	if( m_pHolder )
+		m_pHolder->TextModified( this );
 }
 
 //____ addChar() ______________________________________________________________
@@ -1861,7 +1888,7 @@ void WgText::endChange( Uint32 startline, Uint32 nLines )
 }
 
 //____ regenSoftLines() _______________________________________________________
-
+/*
 void WgText::regenSoftLines()
 {
 	//TODO: I believe we have memory leaks here...
@@ -1996,4 +2023,153 @@ void WgText::regenSoftLines()
 	}
 
 }
+*/
 
+
+void WgText::regenSoftLines()
+{
+	//TODO: I believe we have memory leaks here...
+
+	// Take care of our special case (empty text)
+
+	if( m_pHardLines == &WgText::g_emptyLine )
+	{
+		m_pSoftLines = &WgText::g_emptyLine;
+		m_nSoftLines = 1;
+		return;
+	}
+
+	// If we don't wrap, we have no softlines...
+
+	if( !m_bWrap )
+	{
+		m_pSoftLines = m_pHardLines;
+		m_nSoftLines = m_nHardLines;
+		return;
+	}
+
+
+	// Clear old softbreaks, set new ones and count number of SoftLines needed.
+
+	WgChar *		p = m_pHardLines[0].pText;
+	unsigned int	nSoftLines = 1;				// We always have at least one line...
+
+	WgPen			pen;
+	Uint16			hProp = 0xFFFF;
+
+
+	while( !p->IsEndOfText() )
+	{
+		WgChar *	pbp = 0;				// BreakPoint-pointer.
+
+		while( !p->isHardEndOfLine() )
+		{
+			p->clearSoftBreak();
+
+			// If break is permitted we can move the breakpoint up to this character unless it's
+			// a hyphen-break where the hyphen takes too much space.
+
+			if( p->IsBreakPermitted() )
+			{
+				if( p->GetGlyph() == WG_HYPHEN_BREAK_PERMITTED )
+				{
+					// Check so a hyphen will fit on the line as well, otherwise we can't break here.
+					// We don't take kerning into account here, not so important.
+
+					const WgGlyph * pHyphen = pen.GetGlyphSet()->GetGlyph( '-', pen.GetSize() );
+					if( pHyphen && pen.GetPosX() + pHyphen->advance < (int) m_lineWidth )
+						pbp = p;
+				}
+				else
+					pbp = p;					// We can put a softbreak here if necessary...
+			}
+
+			// Increase line length
+
+			Uint32 oldLen = pen.GetPosX();
+			
+			if( p->GetPropHandle() != hProp )
+			{
+				pen.SetTextProp( m_pProp, p->GetProperties(), m_mode );
+				hProp = p->GetPropHandle();
+			}
+
+			pen.SetChar( p->GetGlyph() );
+			pen.ApplyKerning();
+
+
+			// Check if we need to put a softbreak.
+
+			if( pen.GetPosX() + pen.GetGlyph()->bearingX + pen.GetGlyph()->rect.w > (int) m_lineWidth )			// No advance on last character of line, just bearingX + width
+			{
+				if( pbp != 0 )
+				{
+					pbp->setSoftBreak();
+					p = pbp;
+					break;
+				}
+				else if( oldLen != 0 )		// Can't set a softbreak on previous char if there is no previous char...
+				{
+					p--;
+					p->setSoftBreak();
+					break;
+				}
+			}
+			else
+				pen.AdvancePos();
+
+			//
+
+			p++;
+		}
+
+		if( !p->IsEndOfText() )
+		{
+			p++;			// Skip the break-point, it doesn't belong to any line.
+			nSoftLines++;	// This was not the last line...
+			pen.SetPosX(0);			// Reset position
+			pen.FlushChar();		// Flush current character so it won't affect kerning for first character of next line.
+		}
+	}
+
+
+	// If we don't have any softbreaks we can just point at
+	// the hardlines since they are the same.
+
+	if( nSoftLines == m_nHardLines )
+	{
+		if( m_pSoftLines != m_pHardLines && m_pSoftLines != &WgText::g_emptyLine )
+			delete [] m_pSoftLines;
+
+		m_pSoftLines = m_pHardLines;
+		m_nSoftLines = m_nHardLines;
+		return;
+	}
+
+	// Re-allocate if size isn't the same as before...
+
+	if( nSoftLines != m_nSoftLines )
+	{
+		if( m_pSoftLines != m_pHardLines && m_pSoftLines != &WgText::g_emptyLine )
+			delete [] m_pSoftLines;
+
+		m_pSoftLines = new WgTextLine[nSoftLines];
+		m_nSoftLines = nSoftLines;
+	}
+
+	// Fill in the softlines-array.
+
+	WgChar * rp = m_pHardLines[0].pText;
+	for( Uint32 i = 0 ; i < m_nSoftLines ; i++ )
+	{
+		m_pSoftLines[i].pText = rp;
+
+		int n = 0;
+		while( false == rp[n].IsEndOfLine() )
+			n++;
+
+		m_pSoftLines[i].nChars = n;
+		rp += n+1;
+	}
+
+}

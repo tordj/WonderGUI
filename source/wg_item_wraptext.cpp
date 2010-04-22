@@ -31,6 +31,7 @@ WgItemWrapText::WgItemWrapText( Uint32 id, const char * pStr, WgTextPropPtr pPro
 		linewidth = 1;
 	m_text.setLineWidth(linewidth);
 	m_text.setText( pStr );
+	m_text.setHolder( this );
 
 	m_margin.left	= marginLeft;
 	m_margin.right	= marginRight;

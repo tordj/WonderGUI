@@ -105,6 +105,19 @@ WgOrigo WgOrigo::specific( float anchX, float anchY, float hsX, float hsY )
 	return o;
 }
 
+//____ specificUnlimited() _____________________________________________________________
+// this is sort of needed for child geo policy CLIPPED...
+
+WgOrigo WgOrigo::specificUnlimited( float anchX, float anchY, float hsX, float hsY )
+{
+	WgOrigo o;
+	o.xa = (anchX * 1.f);
+	o.xhs = (hsX * 1.f);
+	o.ya = (anchY * 1.f);
+	o.yhs = (hsY * 1.f);
+	return o;
+}
+
 //____ cornerTopLeft() ________________________________________________________
 
 WgOrigo WgOrigo::cornerTopLeft( float x, float y )

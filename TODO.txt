@@ -23,6 +23,8 @@ GFXDEVICES
 
 * Editable surfaces.
 * SDL: Correctly working tint.
+* Support locking of only a region of a surface, could speed up WgSurfaceGL::Unlock() in combination with VectorGlyph generation quite a bit.
+* Review WgSurfaceGL for consistency.
 
 
 LAYOUT

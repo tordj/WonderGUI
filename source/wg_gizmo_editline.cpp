@@ -34,6 +34,7 @@ static const char	c_gizmoType[] = {"TordJ/Editline"};
 WgGizmoEditline::WgGizmoEditline()
 {
 	m_pText			= &m_text;
+	m_text.setHolder( this );
 	m_text.SetWrap(false);
 	m_pMyCursor		= 0;
 	m_bPasswordMode = false;

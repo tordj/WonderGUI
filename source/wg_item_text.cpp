@@ -63,6 +63,7 @@ void WgItemText::Init()
 {
 	m_bEnabled = true;
 	m_pText = &m_text;
+	m_text.setHolder( this );
 	m_text.SetWrap(false);
 
 	m_width = m_text.width() + m_margin.left + m_margin.right;

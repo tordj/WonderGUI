@@ -39,7 +39,7 @@ class WgFont;
 
 //____ Wg_Interface_TextHolder ________________________________________________
 
-class Wg_Interface_TextHolder
+class Wg_Interface_TextHolder : protected WgTextHolder
 {
 
 public:
@@ -167,6 +167,7 @@ public:
 protected:
 	Wg_Interface_TextHolder();
 
+	inline void			TextModified( WgText * pText ) { TextModified(); }
 	virtual void		TextModified() = 0;
 	void				CloneInterface( Wg_Interface_TextHolder * _pClone );
 	void				OnCloneContent( const Wg_Interface_TextHolder * pOrg );

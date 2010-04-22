@@ -42,6 +42,8 @@ WgGizmoCheckbox::WgGizmoCheckbox()
 	m_bPressed			= false;
 
 	m_pText				= &m_text;
+	m_text.setHolder( this );
+
 	m_textMouseOverOfsX = 0xFFFF;
 	m_pTextArea			= 0;
 	m_textAreaCount		= 0;
@@ -342,7 +344,7 @@ void WgGizmoCheckbox::OnCloneContent( const WgGizmo * _pOrg )
 	m_pBlockChecked		= pOrg->m_pBlockChecked;
 	m_bFixedSizeBox		= pOrg->m_bFixedSizeBox;
 
-	m_pText				= &pOrg->m_text;
+	m_text				= pOrg->m_text;
 
 	m_textMouseOverOfsX = pOrg->m_textMouseOverOfsX;
 

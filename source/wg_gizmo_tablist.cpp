@@ -24,6 +24,7 @@ WgTab::WgTab( Sint32 _id )
 	m_text.SetWrap(false);
 	m_pItemRow = NULL;
 	m_bLockedContent = false;
+	m_bVisible = true;
 }
 
 //____ WgTab::Destructor __________________________________________________________
@@ -488,6 +489,23 @@ bool WgGizmoTablist::GetAlert( Sint32 id )
 	return false;
 }
 
+//____ () ______________________________________________________________
+bool WgGizmoTablist::ShowTab( Sint32 id, bool bVisible )
+{
+	WgTab * pTab = FindTab(id);
+	if( pTab )
+	{
+		if(pTab->m_bVisible != bVisible)
+		{
+			pTab->m_bVisible = bVisible;
+			RequestRender();
+		}
+		return true;
+	}
+
+	return false;
+}
+
 //____ GetTabCount() ______________________________________________________________
 
 Uint32 WgGizmoTablist::GetTabCount( ) const
@@ -560,6 +578,27 @@ WgTab* WgGizmoTablist::GetFirstTab()
 	return m_tabs.getFirst();
 }
 
+WgTab* WgGizmoTablist::GetLastTab()
+{
+	return m_tabs.getLast();
+}
+
+WgTab* WgGizmoTablist::GetFirstVisibleTab()
+{
+	WgTab* pTab = GetFirstTab();
+	while(pTab && !pTab->m_bVisible)
+		pTab = pTab->getNext();
+	return pTab;
+}
+
+WgTab* WgGizmoTablist::GetLastVisibleTab()
+{
+	WgTab* pTab = GetLastTab();
+	while(pTab && !pTab->m_bVisible)
+		pTab = pTab->getPrev();
+	return pTab;
+}
+
 //____ FindTab() ______________________________________________________________
 
 WgTab* WgGizmoTablist::FindTab( Sint32 id )
@@ -585,10 +624,11 @@ WgBlockSetPtr WgGizmoTablist::GetTabSource( WgTab * pTab )
 	{
 		return pTab->GetSource();
 	}
-	if(pTab == m_tabs.getFirst())
+
+	if(pTab == GetFirstVisibleTab())
 		return m_sources[SourceTypeLeft];
 
-	if(pTab == m_tabs.getLast())
+	if(pTab == GetLastVisibleTab())
 		return m_sources[SourceTypeRight];
 
 	return m_sources[SourceTypeMiddle];
@@ -707,36 +747,39 @@ WgTab * WgGizmoTablist::Pos2Tab( Sint32 x, Sint32 y )
 
 	while( pTab )
 	{
-		Uint32 w = (Uint32) (pTab->m_width*scaleFactor + 0.5f);
-
-		if(m_tabWidthMode == TabWidthModeExpand && pTab->getNext() == 0)
-			w = sz.w - x;
-
-		if(pTab == m_pTabSelected)
-			bMovingUp = false;
-
-		WgBlockSetPtr pSrc = GetTabSource(pTab);
-		bool	bHit = false;
-
-		// Tab is hit if position is on a non-transparent (alpha != 0) pixel of the block
-		// or inside tabs text-area. 
-
-		if( ((unsigned) x) > pSrc->GetContentBorders().left && ((unsigned) x) < w - pSrc->GetContentBorders().right &&
-			((unsigned) y) > pSrc->GetContentBorders().top && y < sz.h - pSrc->GetContentBorders().bottom )
-			bHit = true;
-		else
-			bHit = WgUtil::MarkTestBlock( x, y, pSrc->GetBlock( GetTabMode(*pTab) ), WgRect(0,0,w,sz.h));
-
-		if( bHit )
+		if(pTab->m_bVisible)
 		{
-			// Handle overlap
-			if(bMovingUp)
-				pHit = pTab;
-			else
-				return pTab;
-		}
+			Uint32 w = (Uint32) (pTab->m_width*scaleFactor + 0.5f);
 
-		x -= w - m_overlap;
+			if(m_tabWidthMode == TabWidthModeExpand && pTab->getNext() == 0)
+				w = sz.w - x;
+
+			if(pTab == m_pTabSelected)
+				bMovingUp = false;
+
+			WgBlockSetPtr pSrc = GetTabSource(pTab);
+			bool	bHit = false;
+
+			// Tab is hit if position is on a non-transparent (alpha != 0) pixel of the block
+			// or inside tabs text-area. 
+
+			if( ((unsigned) x) > pSrc->GetContentBorders().left && ((unsigned) x) < w - pSrc->GetContentBorders().right &&
+				((unsigned) y) > pSrc->GetContentBorders().top && y < sz.h - pSrc->GetContentBorders().bottom )
+				bHit = true;
+			else
+				bHit = WgUtil::MarkTestBlock( x, y, pSrc->GetBlock( GetTabMode(*pTab) ), WgRect(0,0,w,sz.h));
+
+			if( bHit )
+			{
+				// Handle overlap
+				if(bMovingUp)
+					pHit = pTab;
+				else
+					return pTab;
+			}
+
+			x -= w - m_overlap;
+		}
 		pTab = pTab->getNext();
 	}
 
@@ -758,7 +801,7 @@ void WgGizmoTablist::OnUpdate( const WgUpdateInfo& _updateInfo )
 		WgTab * pTab = m_tabs.getFirst();
 		while( pTab )
 		{
-			if( pTab->m_bAlert )
+			if( pTab->m_bAlert && pTab->m_bVisible )
 			{
 				RequestRender();			// Somewhat stupid to render all tabs though...
 				break;
@@ -779,8 +822,11 @@ float WgGizmoTablist::CalcTabScaleFactor()
 	WgTab * pTab = m_tabs.getFirst();
 	while( pTab )
 	{
-		xLen += pTab->m_width;
-		nTabs++;
+		if(pTab->m_bVisible)
+		{
+			xLen += pTab->m_width;
+			nTabs++;
+		}
 		pTab = pTab->getNext();
 	}
 
@@ -812,21 +858,24 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& window, cons
 	WgTab * pTab = m_tabs.getFirst();
 	while( pTab )
 	{
-		width = (int)(pTab->m_width*scaleFactor + 0.5f);
-		// expand last tab to window edge
-		if(m_tabWidthMode == TabWidthModeExpand && pTab->getNext() == 0)
-			width = window.x + window.w - xOfs;
+		if(pTab->m_bVisible)
+		{
+			width = (int)(pTab->m_width*scaleFactor + 0.5f);
+			// expand last tab to window edge
+			if(m_tabWidthMode == TabWidthModeExpand && pTab == GetLastVisibleTab())
+				width = window.x + window.w - xOfs;
 
-		WgRect r( xOfs, window.y, width, window.h );
+			WgRect r( xOfs, window.y, width, window.h );
 
-//		Uint32 yOfs = window.y + window.h - GetTabSource(pTab).m_srcH;
+//			Uint32 yOfs = window.y + window.h - GetTabSource(pTab).m_srcH;
 
-		if( pTab == m_pTabSelected )
-			selectedX = xOfs;
-		else if( selectedX == 0xFFFFFFFF )
-			RenderTab( pDevice, *pTab, r, clip );
+			if( pTab == m_pTabSelected )
+				selectedX = xOfs;
+			else if( selectedX == 0xFFFFFFFF )
+				RenderTab( pDevice, *pTab, r, clip );
 
-		xOfs += width - m_overlap;
+			xOfs += width - m_overlap;
+		}
 		pTab = pTab->getNext();
 	}
 
@@ -834,18 +883,25 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& window, cons
 	{
 		// Now render all tabs to the right of the selected tab
 		WgTab * pTab = m_tabs.getLast();
-		xOfs -= width - m_overlap;
 		while( pTab )
 		{
-			WgRect r( xOfs, window.y, width, window.h );
+			if(pTab->m_bVisible)
+			{
+				width = (int)(pTab->m_width*scaleFactor + 0.5f);
+				// expand last tab to window edge
+				if(m_tabWidthMode == TabWidthModeExpand && pTab == GetLastVisibleTab())
+					width = window.x + window.w - xOfs;
 
-			RenderTab( pDevice, *pTab, r, clip );
-			if( pTab == m_pTabSelected )
-				break;
+				xOfs -= width - m_overlap;
 
+				WgRect r( xOfs, window.y, width, window.h );
+
+				RenderTab( pDevice, *pTab, r, clip );
+				if( pTab == m_pTabSelected )
+					break;
+			}
+			
 			pTab = pTab->getPrev();
-			width = (int)(pTab->m_width*scaleFactor + 0.5f);
-			xOfs -= width - m_overlap;
 		}
 	}
 
