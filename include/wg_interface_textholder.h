@@ -39,10 +39,12 @@ class WgFont;
 
 //____ Wg_Interface_TextHolder ________________________________________________
 
-class Wg_Interface_TextHolder
+class Wg_Interface_TextHolder : protected WgTextHolder
 {
 
 public:
+	inline void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); TextModified(); }
+
 	inline bool			SetFonts( WgFont * pFont ) { SetFont(pFont); return true; }		// DEPRECATED!!!
 	inline WgTextPropPtr GetTextDefaultProperties() { return m_pText->getDefaultProperties(); }
 
@@ -167,6 +169,7 @@ public:
 protected:
 	Wg_Interface_TextHolder();
 
+	inline void			TextModified( WgText * pText ) { TextModified(); }
 	virtual void		TextModified() = 0;
 	void				CloneInterface( Wg_Interface_TextHolder * _pClone );
 	void				OnCloneContent( const Wg_Interface_TextHolder * pOrg );

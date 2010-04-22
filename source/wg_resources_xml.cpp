@@ -3373,7 +3373,7 @@ void WgBaseViewRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		else if(attr.GetName() == "horr_scrollbar")
 		{
 			Wdg_HDrag* scroll = s.ResDb()->GetCastWidget<Wdg_HDrag>(attr.GetValue());
-			ASSERT(scroll, "scrollbar does not exist: " + attr.GetValue());
+		//	ASSERT(scroll, "scrollbar does not exist: " + attr.GetValue());
 			if(scroll)
 				view->SetScrollbarX(scroll);
 		}
@@ -3485,7 +3485,7 @@ void Wdg_GridView_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 	widget->SetItemOrigo( WgUtil::ToOrigo(xmlNode["itemorigo"], WgOrigo::midCenter()) );
 	widget->SetItemStretch( WgUtil::ToBool(xmlNode["itemstretch"]) );
 
-	std::string layout = xmlNode["layout"];
+	std::string layout = xmlNode["itemlayout"];
 	ASSERT(layout.empty() || layout == "vertical" || layout == "horizontal", "invald layout");
 	if(layout == "vertical")
 		widget->SetItemLayout(Wdg_GridView::Vertical);
@@ -4334,13 +4334,11 @@ void Wdg_TabList_Res::Serialize(WgResourceSerializerXML& s)
 
 	for(WgTab*tab = widget->GetFirstTab(); tab; tab = tab->getNext())
 	{
-		WgTabRes* tabRes;
-		//WgResDB::TabRes* tabDb = s.ResDb()->FindResTab(this);
-		//if(tabDb) tabRes = (WgResourceXML*)tabDb->meta;
-		//else
-			tabRes = new WgTabRes(this, tab);
-		if(tabRes)
-			tabRes->Serialize(s);
+		WgTabRes* tabRes = new WgTabRes(this, tab);
+		WgResDB::TabRes* tabDb = s.ResDb()->FindResTab(tab);
+		if(tabDb)
+			tabRes->SetMetaData(tabDb->meta);
+		tabRes->Serialize(s);
 		delete tabRes;
 	}
 
@@ -4406,6 +4404,20 @@ void WgTabRes::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "alert", m_tab->GetAlert(), false);
 	WriteDiffAttr(s, xmlNode, "selected", tabListRes->GetWidget()->GetSelectedTabId() == m_tab->GetId(), false);
 
+	if(xmlNode.HasAttribute("icon"))
+	{
+		WgItemRow *pItems = tabListRes->GetWidget()->LockTabContent(m_tab->GetId());
+		if(pItems)
+		{
+			WgItem* pItem = pItems->GetFirstItem();
+			if(pItem && pItem->Type() == WgItemPixmap::GetMyType())
+			{
+				WriteBlockSetAttr(s, ((WgItemPixmap*)pItem)->GetSource(), "icon");
+			}
+			tabListRes->GetWidget()->UnlockTabContent(m_tab->GetId());
+		}
+	}
+
 	if( m_tab->GetSource() )
 		WriteBlockSetAttr(s, m_tab->GetSource(), "blockset");
 
@@ -4424,10 +4436,24 @@ void WgTabRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 	Wdg_TabList* tabList = tabListRes->GetWidget();
 	Sint32 uid = WgUtil::ToSint32(xmlNode["uid"], 1 + tabList->GetTabCount());
 	WgBlockSetPtr blockset = s.ResDb()->GetBlockSet(xmlNode["blockset"]);
-	tabList->AddTab(uid, text.c_str(), blockset);
+	tabList->AddTab(uid, text.c_str(), -1, blockset);
 	tabList->SetAlert(uid, WgUtil::ToBool(xmlNode["alert"]) );
+	if(xmlNode.HasAttribute("icon"))
+	{
+		WgBlockSetPtr block = s.ResDb()->GetBlockSet(xmlNode["icon"]);
+		if(block)
+		{
+			WgItemRow *pItems = tabList->LockTabContent(uid);
+			pItems->AddItem(new WgItemPixmap(uid, WgBorders(0), block));
+			tabList->UnlockTabContent(uid);
+		}
+	}
+
 	if(WgUtil::ToBool(xmlNode["selected"]))
 		tabList->SelectTab(uid);
+
+	WgTab* pTab = tabList->GetLastTab();
+	s.ResDb()->AddTab(xmlNode["id"], pTab, new WgXMLMetaData(XmlNode()));
 }
 
 WgCharBuffer* WgTabRes::GetCharBuffer()
@@ -4603,6 +4629,7 @@ void WgItemRes::Serialize(WgResourceSerializerXML& s)
 	VERIFY(m_item, "item not set");
 	const WgXmlNode& xmlNode = XmlNode();
 
+	WriteDiffAttr(s, xmlNode, "uid", m_item->Id(), (Uint32)0);
 	WriteDiffAttr(s, xmlNode, "selected", m_item->IsSelected(), false);
 	WriteDiffAttr(s, xmlNode, "enabled", !m_item->IsDisabled(), true);
 }
@@ -4614,15 +4641,18 @@ void WgItemRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 	WgItemHolderRes* parentRes = WgResourceXML::Cast<WgItemHolderRes>(Parent());
 	VERIFY(parentRes, "invalid parent for item. must be an item holder");
 
+	m_item->SetId(WgUtil::ToSint32(xmlNode["uid"]));
+
 	if(WgUtil::ToBool(xmlNode["selected"]))
 		m_item->Select();
 	else
 		m_item->Unselect();
 
-	if(WgUtil::ToBool(xmlNode["enabled"]))
+	if(WgUtil::ToBool(xmlNode["enabled"], true))
 		m_item->Enable();
 	else
 		m_item->Disable();
+
 	s.ResDb()->AddItem(xmlNode["id"], m_item, new WgXMLMetaData(XmlNode()));
 }
 

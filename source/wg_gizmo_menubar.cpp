@@ -117,8 +117,8 @@ bool WgGizmoMenubar::AddMenu( const char * pTitle, Wdg_Menu * pMenu, Uint16 navK
 
 	// Calculate linewidth
 
-	Uint32 lineWidthNormal = WgTextTool::lineWidth( m_pTextProp, WG_MODE_NORMAL, pItem->m_pText );
-	Uint32 lineWidthMarked = WgTextTool::lineWidth( m_pTextProp, WG_MODE_MARKED, pItem->m_pText );
+	Uint32 lineWidthNormal = WgTextTool::lineWidth( 0, m_pTextProp, WG_MODE_NORMAL, pItem->m_pText );
+	Uint32 lineWidthMarked = WgTextTool::lineWidth( 0, m_pTextProp, WG_MODE_MARKED, pItem->m_pText );
 
 	if( lineWidthNormal > lineWidthMarked )
 		pItem->m_width = lineWidthNormal;

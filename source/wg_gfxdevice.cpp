@@ -918,6 +918,7 @@ void WgGfxDevice::PrintTextWithCursor( const WgRect& clip, const WgText * pText,
 	const WgTextLine *	pLines = pText->getSoftLines();
 
 	WgPen	pen( this, dest, clip );
+	pen.SetTextNode( pText->getNode() );
 	pen.SetTextProp( pDefProp );
 
 	WgCord	pos;
@@ -984,6 +985,7 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 
 	WgPen	pen;
 	pen.SetDevice( this );
+	pen.SetTextNode( pText->getNode() );
 	pen.SetTextProp( pDefProp );
 
 	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.Contains( dest ) )

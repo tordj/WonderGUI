@@ -373,14 +373,14 @@ void Wdg_Menu::CalcEntryMinWidth( WgMenuEntry * pEntry )
 
 
 
-	wNormal += WgTextTool::lineWidth( m_pEntryProp, "  " );
-	wMarked += WgTextTool::lineWidth( m_pEntryProp, "  " );
+	wNormal += WgTextTool::lineWidth( 0, m_pEntryProp, "  " );
+	wMarked += WgTextTool::lineWidth( 0, m_pEntryProp, "  " );
 
-	wNormal += WgTextTool::lineWidth( m_pEntryProp, WG_MODE_NORMAL, pEntry->GetText().GetChars() );
-	wMarked += WgTextTool::lineWidth( m_pEntryProp, WG_MODE_MARKED, pEntry->GetText().GetChars() );
+	wNormal += WgTextTool::lineWidth( 0, m_pEntryProp, WG_MODE_NORMAL, pEntry->GetText().GetChars() );
+	wMarked += WgTextTool::lineWidth( 0, m_pEntryProp, WG_MODE_MARKED, pEntry->GetText().GetChars() );
 
-	wNormal += WgTextTool::lineWidth( m_pKeyAccelProp, WG_MODE_NORMAL, pEntry->GetAccelText().GetChars() );
-	wMarked += WgTextTool::lineWidth( m_pKeyAccelProp, WG_MODE_MARKED, pEntry->GetAccelText().GetChars() );
+	wNormal += WgTextTool::lineWidth( 0, m_pKeyAccelProp, WG_MODE_NORMAL, pEntry->GetAccelText().GetChars() );
+	wMarked += WgTextTool::lineWidth( 0, m_pKeyAccelProp, WG_MODE_MARKED, pEntry->GetAccelText().GetChars() );
 
 
 	if( wNormal > wMarked )
@@ -493,7 +493,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				if( * pAccelText != 0 )
 				{
 					int y = yPos + (m_entryHeight - accelPen.GetLineHeight())/2 + accelPen.GetBaseline();
-					int width = WgTextTool::lineWidth( m_pKeyAccelProp, mode, pAccelText );
+					int width = WgTextTool::lineWidth( 0, m_pKeyAccelProp, mode, pAccelText );
 					int x = xPosText + textFieldLen - width;
 
 					accelPen.SetPos( WgCord(x, y) );

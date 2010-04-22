@@ -79,7 +79,7 @@ void WgCursorInstance::gotoHardLine( Uint32 line )
 		line = maxLine;
 
 	m_line = line;
-	m_column = WgTextTool::ofsX2column( m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, m_pText->getLineText(line) );
+	m_column = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, m_pText->getLineText(line) );
 }
 
 //____ gotoSoftLine() _________________________________________________________
@@ -101,7 +101,7 @@ void WgCursorInstance::gotoSoftLine( Uint32 line )
 
 	WgChar * pStr = m_pText->getSoftLineText(ln);
 	if( pStr )
-		col = WgTextTool::ofsX2column( m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, pStr );
+		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, pStr );
 
 
 	m_pText->posSoft2Hard( ln, col );
@@ -256,7 +256,7 @@ void WgCursorInstance::gotoPixel( Sint32 x, Sint32 y )
 	else
 		m_line = line;
 
-	m_column = WgTextTool::ofsX2column( m_pText->getDefaultProperties(), m_pText->mode(), x, m_pText->getSoftLineText(line), pCursorOnLine );
+	m_column = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), x, m_pText->getSoftLineText(line), pCursorOnLine );
 
 	m_pText->posSoft2Hard( m_line, m_column );	
 
@@ -477,7 +477,7 @@ void WgCursorInstance::goUp( Uint32 nLines )
 		else
 			ln -= nLines;
 		
-		col = WgTextTool::ofsX2column( m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, m_pText->getSoftLineText(ln) );
+		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, m_pText->getSoftLineText(ln) );
 
 		m_pText->posSoft2Hard(ln,col);
 		gotoPos(ln, col);
@@ -502,7 +502,7 @@ void WgCursorInstance::goDown( Uint32 nLines )
 
 	WgChar * pStr = m_pText->getSoftLineText(ln);
 	if( pStr )
-		col = WgTextTool::ofsX2column( m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, pStr );
+		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, pStr );
 
 	m_pText->posSoft2Hard(ln,col);
 	gotoPos(ln, col);

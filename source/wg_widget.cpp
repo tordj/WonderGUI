@@ -180,8 +180,8 @@ bool WgWidget::SetGeometry( WgOrigo _topLeft, Sint32 _x1, Sint32 _y1, WgOrigo _b
 	if( _topLeft.anchorX() > _bottomRight.anchorX() || _topLeft.anchorY() > _bottomRight.anchorY() )
 		return false;
 
-	m_origo1 = WgOrigo::specific(_topLeft.anchorX(), _topLeft.anchorY(), 0, 0);
-	m_origo2 = WgOrigo::specific(_bottomRight.anchorX(), _bottomRight.anchorY(), 0, 0);
+	m_origo1 = WgOrigo::specificUnlimited(_topLeft.anchorX(), _topLeft.anchorY(), 0, 0);
+	m_origo2 = WgOrigo::specificUnlimited(_bottomRight.anchorX(), _bottomRight.anchorY(), 0, 0);
 
 	m_x1 = _x1;
 	m_y1 = _y1;
@@ -632,8 +632,8 @@ bool WgWidget::SetOrigo( WgOrigo _topLeft, WgOrigo _bottomRight )
 	if( _topLeft.anchorX() > _bottomRight.anchorX() || _topLeft.anchorY() > _bottomRight.anchorY() )
 		return false;
 
-	m_origo1 = WgOrigo::specific(_topLeft.anchorX(), _topLeft.anchorY(), 0, 0);
-	m_origo2 = WgOrigo::specific(_bottomRight.anchorX(), _bottomRight.anchorY(), 0, 0);
+	m_origo1 = WgOrigo::specificUnlimited(_topLeft.anchorX(), _topLeft.anchorY(), 0, 0);
+	m_origo2 = WgOrigo::specificUnlimited(_bottomRight.anchorX(), _bottomRight.anchorY(), 0, 0);
 
 	UpdateGeometry( false );
 	return	true;

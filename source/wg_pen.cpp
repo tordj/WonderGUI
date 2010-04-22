@@ -26,6 +26,7 @@
 #include <wg_cursorinstance.h>
 #include <wg_gfxanim.h>
 #include <wg_blockset.h>
+#include <wg_textmanager.h>
 
 
 WgPen::WgPen()
@@ -48,6 +49,7 @@ WgPen::WgPen( WgGfxDevice * pDevice, const WgCord& origo, const WgRect& clip )
 void WgPen::Init()
 {
 	m_pDevice = 0;
+	m_pTextNode = 0;
 
 	m_pFont = 0; 
 	m_pGlyphs = 0; 
@@ -91,8 +93,12 @@ bool WgPen::SetTextProp( Uint16 hTextProp, Uint16 hCharProp, WgMode mode )
 		return false;
 
 	m_color = WgTextTool::GetCombColor( hTextProp, hCharProp, mode );
-	m_size	= WgTextTool::GetCombSize( hTextProp, hCharProp, mode );
 	m_style	= WgTextTool::GetCombStyle( hTextProp, hCharProp, mode );
+	m_size	= WgTextTool::GetCombSize( hTextProp, hCharProp, mode );
+
+	if( m_pTextNode )
+		m_size = (int) m_pTextNode->GetSize( m_pFont, m_style, m_size );
+
 
 	m_bShowSpace = WgTextTool::GetCombCharVisibility( ' ', hTextProp, hCharProp );
 	m_bShowCRLF = WgTextTool::GetCombCharVisibility( '\n', hTextProp, hCharProp );
@@ -158,6 +164,12 @@ bool WgPen::SetChar( Uint32 chr )
 	}
 
 	// Get the glyph from our GlyphSet.
+
+	if( !m_pGlyphs )
+	{
+		m_pGlyph = &m_dummyGlyph;
+		return false;
+	}
 
 	const WgGlyph * p = m_pGlyphs->GetGlyph( chr, m_size );
 	if( p )

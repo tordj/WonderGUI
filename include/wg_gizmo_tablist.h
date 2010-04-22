@@ -75,6 +75,7 @@ private:
 
 	WgItemRow*		m_pItemRow;
 	bool			m_bLockedContent;
+	bool			m_bVisible;
 };
 
 class WgGizmoTablist : public WgGizmo
@@ -149,6 +150,7 @@ public:
 	int GetSelectedTabPos() const;
 	bool SetAlert( Sint32 id, bool bAlertOn );
 	bool GetAlert( Sint32 id );
+	bool ShowTab( Sint32 id, bool bVisible );
 	Uint32 GetTabCount( ) const;
 
 	bool HasTab( Sint32 id );
@@ -156,7 +158,12 @@ public:
 	WgItemRow*	LockTabContent( Sint32 id );
 	void		UnlockTabContent( Sint32 id );
 
+	WgTab*			GetSelectedTab();
 	WgTab*			GetFirstTab();
+	WgTab*			GetLastTab();
+	WgTab* 			GetFirstVisibleTab();
+	WgTab* 			GetLastVisibleTab();
+
 
 protected:
 	void	OnCloneContent( const WgGizmo * _pOrg );

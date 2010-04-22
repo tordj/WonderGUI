@@ -366,6 +366,7 @@ void WgGizmoButton::OnCloneContent( const WgGizmo * _pOrg )
 
 	m_text.setText(&pOrg->m_text);
 	m_pText = &m_text;
+	m_text.setHolder( this );
 
 	m_pBgGfx		= pOrg->m_pBgGfx;
 	m_pIconGfx		= pOrg->m_pIconGfx;

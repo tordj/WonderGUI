@@ -1743,7 +1743,7 @@ Uint32 WgTextTool::textWidth( const WgText& kTextObj )
 
 	for( Uint32 i = 0 ; i < nLines ; i++ )
 	{
-		Uint32 w = lineWidth( kTextObj.getDefaultProperties(), kTextObj.mode(), kTextObj.getLineText( 0 ) );
+		Uint32 w = lineWidth( kTextObj.getNode(), kTextObj.getDefaultProperties(), kTextObj.mode(), kTextObj.getLineText( 0 ) );
 
 		if( w > maxWidth )
 			maxWidth = w;
@@ -1754,9 +1754,10 @@ Uint32 WgTextTool::textWidth( const WgText& kTextObj )
 
 //____ lineWidth() ____________________________________________________________
 
-Uint32 WgTextTool::lineWidth( const WgTextPropPtr& pProp, const char * pString )
+Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pProp, const char * pString )
 {
 	WgPen pen;
+	pen.SetTextNode( pNode );
 	pen.SetTextProp( pProp );
 
 	while( * pString != 0 && * pString != '\n' )
@@ -1775,9 +1776,10 @@ Uint32 WgTextTool::lineWidth( const WgTextPropPtr& pProp, const char * pString )
 	return pen.GetPosX();
 }
 
-Uint32 WgTextTool::lineWidth( const WgTextPropPtr& pProp, const Uint16 * pString )
+Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pProp, const Uint16 * pString )
 {
 	WgPen pen;
+	pen.SetTextNode( pNode );
 	pen.SetTextProp( pProp );
 
 	while( * pString != 0 && * pString != '\n' )
@@ -1797,11 +1799,12 @@ Uint32 WgTextTool::lineWidth( const WgTextPropPtr& pProp, const Uint16 * pString
 }
 
 
-Uint32 WgTextTool::lineWidth( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString )
+Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString )
 {
 	WgPen pen;
 	Uint16 hProp = pString->GetPropHandle();
 
+	pen.SetTextNode( pNode );
 	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 	while( !pString->isHardEndOfLine() )
@@ -1826,11 +1829,12 @@ Uint32 WgTextTool::lineWidth( const WgTextPropPtr& pDefProp, WgMode mode, const 
 
 //____ lineWidthSoft() ________________________________________________________
 
-Uint32 WgTextTool::lineWidthSoft( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString )
+Uint32 WgTextTool::lineWidthSoft( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString )
 {
 	WgPen pen;
 	Uint16 hProp = pString->GetPropHandle();
 
+	pen.SetTextNode( pNode );
 	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 	while( !pString->IsEndOfLine() )
@@ -1857,11 +1861,12 @@ Uint32 WgTextTool::lineWidthSoft( const WgTextPropPtr& pDefProp, WgMode mode, co
 
 //____ lineWidthPart() ________________________________________________________
 
-Uint32 WgTextTool::lineWidthPart( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol )
+Uint32 WgTextTool::lineWidthPart( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol )
 {
 	WgPen pen;
 	Uint16 hProp = pString->GetPropHandle();
 
+	pen.SetTextNode( pNode );
 	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 	for( int i = 0 ; i < nCol ; i++ )
@@ -1883,11 +1888,12 @@ Uint32 WgTextTool::lineWidthPart( const WgTextPropPtr& pDefProp, WgMode mode, co
 
 //____ lineWidthPartSoft() ____________________________________________________
 
-Uint32 WgTextTool::lineWidthPartSoft( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol )
+Uint32 WgTextTool::lineWidthPartSoft( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol )
 {
 	WgPen pen;
 	Uint16 hProp = pString->GetPropHandle();
 
+	pen.SetTextNode( pNode );
 	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 	for( int i = 0 ; i < nCol ; i++ )
@@ -1957,22 +1963,36 @@ void  WgTextTool::forwardColumns( const WgChar *& pPos, Uint32 nColumns )
 */
 
 
-int  WgTextTool::forwardPixels( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar *& pPos, Uint32 nPixels )
+int  WgTextTool::forwardPixels( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar *& pPos, Uint32 nPixels )
 {
-	Ruler	ruler( pDefProp, mode );
-	Uint32	length = 0;
+	WgPen	pen;
+
+	Uint16	hProp = 0xFFFF;
+	int		length = 0;
+
+	pen.SetTextNode( pNode );
 
 	while( !pPos->IsEndOfLine() )
 	{
-		Uint32 newLength = ruler.AddChar( * pPos );
+		if( hProp != pPos->GetPropHandle() )
+		{
+			hProp = pPos->GetPropHandle();
+			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
+		}
 
-		if( newLength > nPixels )
+		pen.SetChar( pPos->GetGlyph() );
+		pen.ApplyKerning();
+		pen.AdvancePos();
+
+		if( (Uint32) pen.GetPosX() > nPixels )
 			return length;
 
-		length = newLength;
+		length = pen.GetPosX();
 		pPos++;
 	}
-	return ruler.EndLine( * pPos );				// End the line to get correct length. Pointer at EOL.
+	
+	pen.SetChar( pPos->GetGlyph() );	// End the line to get correct length. Pointer at EOL.
+	return pen.GetPosX();				
 }
 
 //____ ofsX2column() ___________________________________________________________
@@ -1986,29 +2006,40 @@ int  WgTextTool::forwardPixels( const WgTextPropPtr& pDefProp, WgMode mode, cons
 	find what gap between two columns is being pointed at, not a specific column.
 */
 
-
-Uint32	WgTextTool::ofsX2column( const WgTextPropPtr& pDefProp, WgMode mode, int ofsX, const WgChar * pString, WgCursorInstance * pCursor, int * wpRemainder )
+Uint32	WgTextTool::ofsX2column( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, int ofsX, const WgChar * pString, WgCursorInstance * pCursor, int * wpRemainder )
 {
 	const WgChar * pPos = pString;
 
-	Ruler	ruler( pDefProp, mode );
+
+	WgPen	pen;
 	int		begX = 0;							// Beginning cordinate of character
 	int		endX = 0;							// End cordinate of character
-
+	Uint16	hProp = 0xFFFF;
 
 	int		cursColumn = -1;
 	if( pCursor )
 		cursColumn = pCursor->column();
 
+	pen.SetTextNode( pNode );
+
 	// Find beginning and end cordinates of character that ofs is within.
 
 	while( !pPos->IsEndOfLine() )
 	{
+		if( pPos->GetPropHandle()!= hProp )
+		{
+			hProp = pPos->GetPropHandle();
+			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
+		}
+
 		if( cursColumn == 0 )
-			ruler.AddCursor( pCursor->mode(), * pPos );
+			pen.AdvancePosCursor( * pCursor );
 		cursColumn--;
 
-		endX = (int) ruler.AddChar( * pPos );
+		pen.SetChar( pPos->GetGlyph() );
+		pen.ApplyKerning();
+		pen.AdvancePos();
+		endX = pen.GetPosX();
 
 		if( endX > ofsX )
 			break;
@@ -2016,13 +2047,6 @@ Uint32	WgTextTool::ofsX2column( const WgTextPropPtr& pDefProp, WgMode mode, int 
 		begX = endX;
 		pPos++;
 	}
-
-	// End the line to get correct length of last character.
-
-	if( pPos->IsEndOfLine() )
-		endX = (int) ruler.EndLine( * pPos );
-	else
-		endX = (int) ruler.EndLine( 0 );
 
 	// Choose column depending on what half of the character ofs is within
 	// and calculate remainder accordingly.
@@ -2469,400 +2493,6 @@ bool WgTextTool::GetCombCharVisibility( Uint16 character, Uint16 hTextProp, Uint
 	return WgBase::GetDefaultTextProp()->GetCharVisibility(character);
 }
 
-
-//____ Ruler::Constructor _____________________________________________________
-
-WgTextTool::Ruler::Ruler( const WgTextPropPtr& pDefProp, WgMode mode )
-{
-	m_pDefProp	= pDefProp;
-	m_mode		= mode;
-	Reset();
-}
-
-//____ Ruler::Destructor ______________________________________________________
-
-WgTextTool::Ruler::~Ruler()
-{
-}
-
-
-//____ Ruler::MeasureChar() ___________________________________________________
-
-/** Tells how much the lenght of the ruler would increase (or decrease)
-    if the specified character was added at the current position.
-
-*/
-
-Sint32 WgTextTool::Ruler::MeasureChar( Uint16 ch ) const
-{
-	// Sanity check
-
-	if( !m_pGlyphSet || !m_pDefProp )
-		return 0;
-
-
-	Sint32 length = 0;
-
-	// Increase line length, taking kerning and advance into account
-
-	const WgGlyph * pGlyph = m_pGlyphSet->GetGlyph(ch, m_size);
-
-	if( ch == 0 || ch == '\n' )
-	{
-		if( ch == '\n' && m_pDefProp->GetCharVisibility( '\n' ) )
-		{
-			// This is a hard EOL with properties stating that it should be displayed as
-			// a character.
-
-			pGlyph = m_pGlyphSet->GetGlyph('\n', m_size);
-			length = m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
-		}
-		else
-		{
-			// EOF or EOL without printing the character.
-			// We therefore need to correct the width of the last character since
-			// the rendered width of the last glyph isn't advance, but bearingX + width.
-
-			length = m_pPrevGlyph->bearingX + m_pPrevGlyph->rect.w - m_pPrevGlyph->advance;
-		}
-	}
-	else
-	{
-		switch( ch )
-		{
-			case WG_BREAK_PERMITTED:
-
-				// Include length if BREAK_PERMITTED is visible, otherwise length
-				// and m_pPrevGlyph should remain the same.
-
-				if( m_pDefProp->GetCharVisibility( WG_BREAK_PERMITTED ) )
-				{
-					length = m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
-				}
-				break;
-
-			case WG_HYPHEN_BREAK_PERMITTED:
-
-				// Include length of a hyphen if HYPHEN_BREAK_PERMITTED is visible,
-				// otherwise length and m_pPrevGlyph should remain the same.
-
-				if( m_pDefProp->GetCharVisibility( WG_HYPHEN_BREAK_PERMITTED ) )
-				{
-					pGlyph = m_pGlyphSet->GetGlyph( '-', m_size );
-					length = m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
-				}
-				break;
-
-			default:
-				length = m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
-				break;
-		}
-	}
-
-	return length;
-}
-
-//____ Ruler::AddChar() _______________________________________________________
-
-Uint32 WgTextTool::Ruler::AddChar( Uint16 ch )
-{
-	// Sanity check
-
-	if( !m_pGlyphSet || !m_pDefProp )
-		return 0;
-
-
-	// Increase line length, taking kerning and advance into account
-
-	const WgGlyph * pGlyph = m_pGlyphSet->GetGlyph(ch, m_size);
-
-	switch( ch )
-	{
-		case WG_BREAK_PERMITTED:
-
-			// Include length if BREAK_PERMITTED is visible, otherwise length
-			// and m_pPrevGlyph should remain the same.
-
-			if( m_pDefProp->GetCharVisibility( WG_BREAK_PERMITTED ) )
-			{
-				m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
-				m_pPrevGlyph = pGlyph;
-			}
-			break;
-
-		case WG_HYPHEN_BREAK_PERMITTED:
-
-			// Include length of a hyphen if HYPHEN_BREAK_PERMITTED is visible,
-			// otherwise length and m_pPrevGlyph should remain the same.
-
-			if( m_pDefProp->GetCharVisibility( WG_HYPHEN_BREAK_PERMITTED ) )
-			{
-				pGlyph = m_pGlyphSet->GetGlyph( '-', m_size );
-				m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
-				m_pPrevGlyph = pGlyph;
-			}
-			break;
-
-		case '\t':
-		{
-			int tabWidth = 80;
-			m_length += tabWidth;
-			m_length -= m_length % tabWidth;
-			m_pPrevGlyph = pGlyph;
-			break;
-		}
-		default:
-			m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
-			m_pPrevGlyph = pGlyph;
-			break;
-	}
-
-	return m_length;
-}
-
-Uint32 WgTextTool::Ruler::AddChar( const WgChar& ch )
-{
-
-	// Check if we have new glyphs
-
-	Uint32 hProp = ch.GetPropHandle();
-	if( hProp != m_hProp )
-	{
-		m_hProp = hProp;
-		m_pGlyphSet = ch.GetGlyphSet(m_pDefProp, m_mode);
-		m_size = ch.GetSize(m_pDefProp, m_mode);
-	}
-
-	// Sanity check
-
-	if( !m_pGlyphSet )
-		return m_length;
-
-
-	// Increase line length, taking kerning and advance into account
-
-	Uint16	thisChar = ch.GetGlyph();
-
-	const WgGlyph * pGlyph = m_pGlyphSet->GetGlyph(thisChar, m_size);
-
-	switch( thisChar )
-	{
-		case WG_BREAK_PERMITTED:
-
-			// Include length if BREAK_PERMITTED is visible, otherwise length
-			// and m_pPrevGlyph should remain the same.
-
-			if( GetCombCharVisibility( WG_BREAK_PERMITTED, m_pDefProp.GetHandle(), hProp ) )
-			{
-				m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
-				m_pPrevGlyph = pGlyph;
-			}
-			break;
-
-		case WG_HYPHEN_BREAK_PERMITTED:
-
-			// Include length of a hyphen if HYPHEN_BREAK_PERMITTED is visible,
-			// otherwise length and m_pPrevGlyph should remain the same.
-
-			if( GetCombCharVisibility( WG_HYPHEN_BREAK_PERMITTED, m_pDefProp.GetHandle(), hProp ) )
-			{
-				pGlyph = m_pGlyphSet->GetGlyph( '-', m_size );
-				m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->advance;
-				m_pPrevGlyph = pGlyph;
-			}
-			break;
-
-		case '\t':
-		{
-			int tabWidth = 80;
-			m_length += tabWidth;
-			m_length -= m_length % tabWidth;
-			m_pPrevGlyph = pGlyph;
-			break;
-		}
-		default:
-			m_length += m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size );
-			if( pGlyph )
-				m_length += pGlyph->advance;
-			m_pPrevGlyph = pGlyph;
-			break;
-	}
-
-	return m_length;
-}
-
-//____ Ruler::AddCursor() _____________________________________________________
-/**
-	Since a cursor in WonderGUI can have a width, moving characters after it,
-	we might need to take the cursor and its position into account when
-	calculating width.
-*/
-
-Uint32 WgTextTool::Ruler::AddCursor( WgCursor::Mode mode )
-{
-
-	WgFont * pFont = GetCombFont( m_pDefProp.GetHandle(), m_hProp );
-	if( !pFont || !pFont->GetCursor() )
-		return m_length;
-
-	int cursWidth = pFont->GetCursor()->advance(mode);
-
-	m_length += cursWidth;
-
-	if( cursWidth > 0 )
-		m_pPrevGlyph = 0;		// No kerning for following character
-
-	return m_length;
-}
-
-Uint32 WgTextTool::Ruler::AddCursor( WgCursor::Mode mode, const WgChar& chAfterCursor )
-{
-	Uint16 hCharProp = m_hProp;
-
-	if( m_pPrevGlyph == 0 )
-		hCharProp = chAfterCursor.GetPropHandle();		// Use font of following char since we have no previous one.
-
-	WgFont * pFont = GetCombFont( m_pDefProp.GetHandle(), hCharProp );
-	if( !pFont || !pFont->GetCursor() )
-		return m_length;
-
-	int cursWidth = pFont->GetCursor()->advance(mode);
-
-	m_length += cursWidth;
-
-	if( cursWidth > 0 )
-		m_pPrevGlyph = 0;		// No kerning for following character
-
-	return m_length;
-}
-
-
-
-
-//____ Ruler::EndLine() _______________________________________________________
-
-Uint32 WgTextTool::Ruler::EndLine( Uint16 ch )
-{
-	// Sanity check
-
-	if( !m_pGlyphSet || !m_pDefProp )
-		return 0;
-
-
-	const WgGlyph * pGlyph = m_pGlyphSet->GetGlyph(ch, m_size);
-
-	// Adjust width differently depending on the EOL character.
-
-	if( ch == '\n' && m_pDefProp->GetCharVisibility( '\n' ) )
-	{
-		// This is a hard EOL with properties stating that it should be displayed as
-		// a character.
-
-		pGlyph = m_pGlyphSet->GetGlyph('\n', m_size);
-		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
-	}
-	else if( ch == 0 || ch == '\n' || ch == WG_BREAK_PERMITTED || ch == WG_NO_BREAK_SPACE || ch == '\t' || ch == ' ' )
-	{
-		// EOL without any character to display. We therefore need to correct
-		// the width of the last character since the rendered width of the last
-		// glyph isn't advance, but bearingX + width.
-
-		if( m_pPrevGlyph )
-			return m_length + m_pPrevGlyph->bearingX + m_pPrevGlyph->rect.w - m_pPrevGlyph->advance;
-	}
-	else if( ch == WG_HYPHEN_BREAK_PERMITTED )
-	{
-		// Add the width of the hyphen.
-
-		pGlyph = m_pGlyphSet->GetGlyph('-', m_size);
-		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
-	}
-	else
-	{
-		// We are dealing with a forced break containing a character to be displayed.
-		// The rendered width of the last glyph isn't advance, but bearingX + width.
-
-		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
-	}
-
-	return m_length;
-}
-
-//____ Ruler::EndLine() _______________________________________________________
-
-Uint32 WgTextTool::Ruler::EndLine( const WgChar& ch )
-{
-	// Check if we have new glyphs
-
-	Uint32 hProp = ch.GetPropHandle();
-	if( hProp != m_hProp )
-	{
-		m_hProp = hProp;
-		m_pGlyphSet = ch.GetGlyphSet(m_pDefProp, m_mode);
-		m_size = ch.GetSize(m_pDefProp, m_mode);
-	}
-
-	// Sanity check
-
-	if( !m_pGlyphSet )
-		return m_length;
-
-
-	// Increase line width, taking kerning and glyphs bearing and width into account
-
-	Uint16	thisChar = ch.GetGlyph();
-
-	const WgGlyph * pGlyph = m_pGlyphSet->GetGlyph(thisChar,m_size);
-
-	if( !ch.isHardEndOfLine() && !ch.IsBreakPermitted() )
-	{
-		// We are dealing with a forced break containing a character to be displayed.
-		// The rendered width of the last glyph isn't advance, but bearingX + width.
-
-		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
-
-	}
-	else if( ch.GetGlyph() == WG_HYPHEN_BREAK_PERMITTED )
-	{
-		// Add the width of the hyphen.
-
-		pGlyph = m_pGlyphSet->GetGlyph('-', m_size);
-		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
-	}
-	else if( ch.isHardEndOfLine() && ch.GetProperties()->GetCharVisibility( '\n' ) )
-	{
-		// This is a hard EOL with properties stating that it should be displayed as
-		// a character.
-
-		pGlyph = m_pGlyphSet->GetGlyph('\n', m_size);
-		return m_length + m_pGlyphSet->GetKerning( m_pPrevGlyph, pGlyph, m_size ) + pGlyph->bearingX + pGlyph->rect.w;
-	}
-	else
-	{
-		// This is either a hard EOL or a normal soft-break without hyphen or anything.
-		// We therefore need to correct the width of the last character since
-		// the rendered width of the last glyph isn't advance, but bearingX + width.
-
-		if( m_pPrevGlyph )
-			return m_length + m_pPrevGlyph->bearingX + m_pPrevGlyph->rect.w - m_pPrevGlyph->advance;
-	}
-
-	return m_length;
-}
-
-
-
-//____ Ruler::Reset() _________________________________________________________
-
-void WgTextTool::Ruler::Reset()
-{
-	m_pPrevGlyph	= 0;
-	m_length		= 0;
-	m_hProp			= 0xFFFF;		// Force immediate update of properties.
-
-	m_pGlyphSet		= WgTextTool::GetCombGlyphSet( m_pDefProp.GetHandle(), 0, m_mode );
-	m_size			= m_pDefProp->GetSize( m_mode );
-}
 
 
 

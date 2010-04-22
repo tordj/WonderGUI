@@ -57,6 +57,7 @@ class WgText;
 class WgChar;
 class WgCursorInstance;
 class WgResDB;
+class WgTextNode;
 
 
 
@@ -157,19 +158,19 @@ public:
 
 	static Uint32	textWidth( const WgText& kTextObj );
 //	static Uint32	lineWidth( const WgText& kTextObj, const char * pString );
-	static Uint32	lineWidth( const WgTextPropPtr& pProp, const char * pString );
-	static Uint32	lineWidth( const WgTextPropPtr& pPropt, const Uint16 * pString );
-	static Uint32	lineWidth( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString );
-	static Uint32	lineWidthPart( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol );
-	static Uint32	lineWidthSoft( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString );
-	static Uint32	lineWidthPartSoft( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol );
+	static Uint32	lineWidth( WgTextNode * pNode, const WgTextPropPtr& pProp, const char * pString );
+	static Uint32	lineWidth( WgTextNode * pNode, const WgTextPropPtr& pPropt, const Uint16 * pString );
+	static Uint32	lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString );
+	static Uint32	lineWidthPart( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol );
+	static Uint32	lineWidthSoft( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString );
+	static Uint32	lineWidthPartSoft( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol );
 
-	static int		forwardPixels( const WgTextPropPtr& pDefProp, WgMode mode, const WgChar *& pPos, Uint32 nPixels );
+	static int		forwardPixels( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar *& pPos, Uint32 nPixels );
 //	static void		forwardColumns( TextParam& param, const Uint16 *& pPos, Uint32 nColumns );
 	static void		forwardColumns( const WgChar *& pPos, Uint32 nColumns );
 	static void		forwardCharacters( const char *& pChar, Uint32 nChars );
 
-	static Uint32	ofsX2column( const WgTextPropPtr& pDefProp, WgMode mode, int ofs, const WgChar * pString, WgCursorInstance * pCursor = 0, int * wpOfsRemainder = 0 );
+	static Uint32	ofsX2column( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, int ofs, const WgChar * pString, WgCursorInstance * pCursor = 0, int * wpOfsRemainder = 0 );
 
 
 	static void			SetGlyph( Uint16 glyph, WgChar * pChar, Uint32 nb );
@@ -276,43 +277,6 @@ public:
 	//____
 
 	static void ModifyProperties( const PropModifier& modif, WgChar * pChar, Uint32 nb );
-
-	//____
-
-
-	class Ruler
-	{
-	public:
-		Ruler( const WgTextPropPtr& pDefProp, WgMode mode );
-		~Ruler();
-
-		Uint32	AddChar( Uint16 ch );
-		Uint32	AddChar( const WgChar& ch );
-
-		Uint32	AddCursor( WgCursor::Mode mode );
-		Uint32	AddCursor( WgCursor::Mode mode, const WgChar& chAfterCursor );
-
-
-		Uint32	EndLine( Uint16 ch );
-		Uint32	EndLine( const WgChar& ch );
-
-		Sint32	MeasureChar( Uint16 ch ) const;		// Can be negative (when EOL is correcting length).
-		inline Uint32 Length() const { return m_length; };
-
-		void	Reset();
-
-	private:
-
-		WgTextPropPtr	m_pDefProp;
-		WgMode			m_mode;
-
-		Uint16			m_hProp;
-		WgGlyphSet *	m_pGlyphSet;
-		int				m_size;			// Fontsize
-
-		const WgGlyph *	m_pPrevGlyph;
-		Uint32			m_length;
-	};
 
 
 	//____

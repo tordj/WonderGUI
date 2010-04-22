@@ -58,6 +58,7 @@ void WgResDB::Clear()
 	m_mapWidgets.clear();
 	m_mapItems.clear();
 	m_mapMenuItems.clear();
+	m_mapTabs.clear();
 	m_mapConnects.clear();
 
 	// Clear the linked lists, this will also delete the ResWrapper objects
@@ -77,6 +78,7 @@ void WgResDB::Clear()
 	m_widgets.clear();
 	m_items.clear();
 	m_menuItems.clear();
+	m_tabs.clear();
 	m_connects.clear();
 }
 
@@ -448,6 +450,22 @@ bool WgResDB::AddMenuItem( const std::string& id, WgMenuItem * pItem, MetaData *
 
 //____ () _________________________________________________________
 
+bool WgResDB::AddTab( const std::string& id, WgTab * pItem, MetaData * pMetaData )
+{
+	assert(m_mapTabs.find(id) == m_mapTabs.end());
+	if(m_mapTabs.find(id) == m_mapTabs.end())
+	{
+		TabRes* p = new TabRes(id, pItem, pMetaData);
+		m_tabs.push_back(p);
+		if(id.size())
+			m_mapTabs[id] = p;
+		return true;
+	}
+	return false;
+}
+
+//____ () _________________________________________________________
+
 bool WgResDB::AddConnect( MetaData * pMetaData )
 {
 	ConnectRes* p = new ConnectRes(pMetaData);
@@ -540,6 +558,14 @@ WgItem * WgResDB::GetItem( const std::string& id ) const
 WgMenuItem * WgResDB::GetMenuItem( const std::string& id ) const
 {
 	MenuItemRes* itemRes = GetResMenuItem(id);
+	return itemRes ? itemRes->res : 0;
+}
+
+//____ () _________________________________________________________
+
+WgTab * WgResDB::GetTab( const std::string& id ) const
+{
+	TabRes* itemRes = GetResTab(id);
 	return itemRes ? itemRes->res : 0;
 }
 
@@ -765,6 +791,23 @@ WgResDB::MenuItemRes * WgResDB::GetResMenuItem( const std::string& id ) const
 
 //____ () _________________________________________________________
 
+WgResDB::TabRes * WgResDB::GetResTab( const std::string& id ) const
+{
+	TabRes* res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	{
+		if(db->res)
+		{
+			if((res = db->res->GetResTab(id)))
+				return res;
+		}
+	}
+	TabMap::const_iterator it = m_mapTabs.find(id);
+	return it == m_mapTabs.end() ? 0 : it->second;
+}
+
+//____ () _________________________________________________________
+
 WgResDB::ConnectRes * WgResDB::GetResConnect( const std::string& id ) const
 {
 	ConnectRes* res = 0;
@@ -983,6 +1026,26 @@ WgResDB::MenuItemRes* WgResDB::FindResMenuItem( const WgMenuItem* meta ) const
 		}
 	}
 	for(res = GetFirstResMenuItem(); res; res = res->getNext())
+		if(res->res == meta)
+			return res;
+	return 0;
+}
+
+
+//____ () _________________________________________________________
+
+WgResDB::TabRes* WgResDB::FindResTab( const WgTab* meta ) const
+{
+	TabRes * res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	{
+		if(db->res)
+		{
+			if((res = db->res->FindResTab(meta)))
+				return res;
+		}
+	}
+	for(res = GetFirstResTab(); res; res = res->getNext())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1364,6 +1427,37 @@ bool WgResDB::RemoveMenuItem( WgResDB::MenuItemRes * pRes )
 		MenuItemMap::iterator it = m_mapMenuItems.find( pRes->id );
 		assert( it != m_mapMenuItems.end() );
 		m_mapMenuItems.erase(it);
+	}
+	delete pRes;
+	return true;
+}
+
+//____ RemoveTab() _______________________________________________________
+
+bool WgResDB::RemoveTab( const std::string& id )
+{
+	TabMap::iterator it = m_mapTabs.find( id );
+
+	if( it == m_mapTabs.end() )
+		return false;
+
+	TabRes * pRes = it->second;
+	m_mapTabs.erase(it);
+	delete pRes;
+
+	return true;
+}
+
+bool WgResDB::RemoveTab( WgResDB::TabRes * pRes )
+{
+	if( !pRes )
+		return false;
+
+	if( pRes->id.length() > 0 )
+	{
+		TabMap::iterator it = m_mapTabs.find( pRes->id );
+		assert( it != m_mapTabs.end() );
+		m_mapTabs.erase(it);
 	}
 	delete pRes;
 	return true;

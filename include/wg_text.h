@@ -39,9 +39,21 @@
 #	include <wg_char.h>
 #endif
 
+#ifndef WG_TEXTMANAGER_DOT_H
+#	include <wg_textmanager.h>
+#endif
 
 class	WgValueFormat;
 class	WgFont;
+
+//____ WgTextHolder ___________________________________________________________
+
+struct WgTextHolder
+{
+public:
+	virtual void		TextModified( WgText * pText ) = 0;
+};
+
 
 //_____ WgTextLine _____________________________________________________________
 
@@ -63,6 +75,8 @@ struct WgTextLine
 
 class WgText
 {
+friend class WgTextNode;
+
 public:
 	WgText();
 	WgText( const char * pText );
@@ -106,6 +120,14 @@ public:
 
 	void				clear();
 	virtual void		refresh();
+
+//  --------------
+
+	void					setManager( WgTextManager * pManager );
+	inline WgTextManager *	getManager() const { return m_pManagerNode?m_pManagerNode->GetManager():0; }
+	inline WgTextNode *		getNode() const { return m_pManagerNode; }
+
+	void					setHolder( WgTextHolder * pHolder ) { m_pHolder = pHolder; }
 
 //  --------------
 
@@ -303,6 +325,10 @@ protected:
 
 	void			regenSoftLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
 
+//	WgTextScalerPtr	m_pResizer;
+
+	WgTextNode *	m_pManagerNode;
+
 	WgTintMode		m_tintMode;
 	WgOrigo			m_origo;
 	WgMode			m_mode;
@@ -320,7 +346,7 @@ protected:
 
 	bool			m_bWrap;
 
-
+	WgTextHolder *	m_pHolder;
 
 	static WgChar		g_emptyText;
 	static WgTextLine	g_emptyLine;

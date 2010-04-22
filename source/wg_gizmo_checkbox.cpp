@@ -42,6 +42,8 @@ WgGizmoCheckbox::WgGizmoCheckbox()
 	m_bPressed			= false;
 
 	m_pText				= &m_text;
+	m_text.setHolder( this );
+
 	m_textMouseOverOfsX = 0xFFFF;
 	m_pTextArea			= 0;
 	m_textAreaCount		= 0;
@@ -342,7 +344,7 @@ void WgGizmoCheckbox::OnCloneContent( const WgGizmo * _pOrg )
 	m_pBlockChecked		= pOrg->m_pBlockChecked;
 	m_bFixedSizeBox		= pOrg->m_bFixedSizeBox;
 
-	m_pText				= &pOrg->m_text;
+	m_text				= pOrg->m_text;
 
 	m_textMouseOverOfsX = pOrg->m_textMouseOverOfsX;
 
@@ -407,7 +409,7 @@ void WgGizmoCheckbox::RefreshTextArea()
 		if( m_textMouseOverOfsX != 0xFFFF )
 			xMin = m_textMouseOverOfsX;
 
-		int linewidth = WgTextTool::lineWidth( pProp, WG_MODE_NORMAL, p1[i].pText );
+		int linewidth = WgTextTool::lineWidth( m_text.getNode(), pProp, WG_MODE_NORMAL, p1[i].pText );
 		int lineheight = m_pText->softLineHeight(i);
 		int textStartX = (int) (textOfs + Size().w * origo.anchorX()
 								- linewidth * origo.hotspotX());

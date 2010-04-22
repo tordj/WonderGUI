@@ -195,8 +195,8 @@ private:
 		Uint8 m_visibilityFlags;
 	};
 
-	WgTextLinkPtr	m_pLink;			///< Hierarchally overrides.
-	WgFont *		m_pFont;			///< Hierarchally overrides.
+	WgTextLinkPtr		m_pLink;			///< Hierarchally overrides.
+	WgFont *			m_pFont;			///< Hierarchally overrides.
 
 	WgModeProp		m_modeProp[WG_NB_MODES];
 };

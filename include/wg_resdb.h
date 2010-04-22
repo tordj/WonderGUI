@@ -50,6 +50,7 @@ class WgFont;
 class WgAnim;
 class WgCursor;
 class WgResLoader;
+class WgTab;
 
 class WgResDB
 {
@@ -121,6 +122,7 @@ public:
 	typedef ResWrapper<WgWidget*>		WidgetRes;
 	typedef ResWrapper<WgItem*>			ItemRes;
 	typedef ResWrapper<WgMenuItem*>		MenuItemRes;
+	typedef ResWrapper<WgTab*>			TabRes;
 
 	//----
 
@@ -163,6 +165,7 @@ public:
 	bool				AddWidget( const std::string& id, WgWidget * pWidget, MetaData * pMetaData = 0 );
 	bool				AddItem( const std::string& id, WgItem * pItem, MetaData * pMetaData = 0 );
 	bool				AddMenuItem( const std::string& id, WgMenuItem * pMenuItem, MetaData * pMetaData = 0 );
+	bool				AddTab( const std::string& id, WgTab * pTab, MetaData * pMetaData = 0 );
 	bool				AddConnect( MetaData * pMetaData );
 
 	bool				RemoveSurface( const std::string& id );
@@ -177,6 +180,7 @@ public:
 	bool				RemoveWidget( const std::string& id );
 	bool				RemoveItem( const std::string& id );
 	bool				RemoveMenuItem( const std::string& id );
+	bool				RemoveTab( const std::string& id );
 	bool				RemoveConnect( const std::string& id );
 
 	bool				RemoveSurface( SurfaceRes * pRes );
@@ -191,6 +195,7 @@ public:
 	bool				RemoveWidget( WidgetRes * pRes );
 	bool				RemoveItem( ItemRes * pRes );
 	bool				RemoveMenuItem( MenuItemRes * pRes );
+	bool				RemoveTab( TabRes * pRes );
 	bool				RemoveConnect( ConnectRes* pRes );
 
 
@@ -206,6 +211,7 @@ public:
 	WgWidget *			GetWidget( const std::string& id ) const;
 	WgItem *			GetItem( const std::string& id ) const;
 	WgMenuItem *		GetMenuItem( const std::string& id ) const;
+	WgTab*				GetTab( const std::string& id ) const;
 
 	template<typename T> T* GetCastWidget(const std::string& id) const
 	{
@@ -231,6 +237,7 @@ public:
 	WidgetRes *			GetResWidget( const std::string& id ) const;
 	ItemRes *			GetResItem( const std::string& id ) const;
 	MenuItemRes *		GetResMenuItem( const std::string& id ) const;
+	TabRes *			GetResTab( const std::string& id ) const;
 	ConnectRes *		GetResConnect( const std::string& id ) const;
 
 	ResDBRes *			FindResDbRes( const WgResDB * data ) const;
@@ -244,6 +251,7 @@ public:
 	WidgetRes *			FindResWidget( const WgWidget* data ) const;
 	ItemRes *			FindResItem( const WgItem* data ) const;
 	MenuItemRes *		FindResMenuItem( const WgMenuItem* data ) const;
+	TabRes *			FindResTab( const WgTab* data ) const;
 
 	std::string			FindSurfaceId( const WgSurface * data ) const		{ SurfaceRes * r =	FindResSurface(data); return r ? r->id : ""; }
 	std::string			FindGlyphSetId( const WgGlyphSet * data ) const		{ GlyphSetRes * r =	FindResGlyphSet(data); return r ? r->id : ""; }
@@ -255,6 +263,7 @@ public:
 	std::string			FindWidgetId( const WgWidget* data ) const			{ WidgetRes *r =	FindResWidget(data); return r ? r->id : ""; }
 	std::string			FindItemId( const WgItem* data ) const				{ ItemRes *	r =		FindResItem(data); return r ? r->id : ""; }
 	std::string			FindMenuItemId( const WgMenuItem* data ) const		{ MenuItemRes *r =  FindResMenuItem(data); return r ? r->id : ""; }
+	std::string			FindTabId( const WgTab* data ) const				{ TabRes *r =		FindResTab(data); return r ? r->id : ""; }
 
 	inline ResDBRes *		GetFirstResDBRes() const { return m_resDbs.getFirst(); }
 	inline SurfaceRes *		GetFirstResSurface() const { return m_surfaces.getFirst(); }
@@ -268,6 +277,7 @@ public:
 	inline WidgetRes *		GetFirstResWidget() const { return m_widgets.getFirst(); }
 	inline ItemRes *		GetFirstResItem() const { return m_items.getFirst(); }
 	inline MenuItemRes *	GetFirstResMenuItem() const { return m_menuItems.getFirst(); }
+	inline TabRes *			GetFirstResTab() const { return m_tabs.getFirst(); }
 	inline ConnectRes *		GetFirstResConnect() const { return m_connects.getFirst(); }
 
 private:
@@ -285,6 +295,7 @@ private:
 	typedef std::map<std::string, WidgetRes*>		WdgMap;
 	typedef std::map<std::string, ItemRes*>			ItemMap;
 	typedef std::map<std::string, MenuItemRes*>		MenuItemMap;
+	typedef std::map<std::string, TabRes*>			TabMap;
 	typedef std::map<std::string, ConnectRes*>		ConnectMap;
 
 	WgChain<ResDBRes>		m_resDbs;
@@ -300,6 +311,7 @@ private:
 	WgChain<WidgetRes>		m_widgets;
 	WgChain<ItemRes>		m_items;
 	WgChain<MenuItemRes>	m_menuItems;
+	WgChain<TabRes>			m_tabs;
 	WgChain<ConnectRes>		m_connects;
 
 	ColMap			m_mapColors;
@@ -314,6 +326,7 @@ private:
 	WdgMap			m_mapWidgets;
 	ItemMap			m_mapItems;
 	MenuItemMap		m_mapMenuItems;
+	TabMap			m_mapTabs;
 	ConnectMap		m_mapConnects;
 
 	WgResLoader *	m_pResLoader;

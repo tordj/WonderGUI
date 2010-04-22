@@ -46,6 +46,8 @@
 #	include <wg_gfxdevice.h>
 #endif
 
+class WgTextNode;
+
 //____ WgPen _____________________________________________________________
 
 class WgPen
@@ -61,6 +63,7 @@ public:
 
 	void					SetClipRect( const WgRect& clip );
 	inline void				SetDevice( WgGfxDevice * pDevice ) { m_pDevice = pDevice; }
+	void					SetTextNode( WgTextNode * pNode ) { m_pTextNode = pNode; }
 
 	void					SetOrigo( const WgCord& pos ) { m_origo = pos; }
 
@@ -101,7 +104,7 @@ public:
 	inline int				GetSize() const { return m_size; }
 	inline int				GetStyle() const { return m_style; }
 	inline WgColor			GetColor() const { return m_color; }
-	inline const WgGlyphSet *GetGlyphSet() const { return m_pGlyphs; }
+	inline WgGlyphSet *		GetGlyphSet() const { return m_pGlyphs; }
 
 
 	inline int				GetLineSpacing() const { return m_pGlyphs->GetLineSpacing(m_size); }
@@ -136,6 +139,7 @@ private:
 	int				m_tabWidth;		// Tab width in pixels.
 
 	WgGfxDevice *	m_pDevice;		// Device used for blitting.
+	WgTextNode *	m_pTextNode;	// TextManager used for scaling/layouting the text.
 
 	bool			m_bClip;		// Set if we have a clipping rectangle.
 	WgRect			m_clipRect;		// Clipping rectangle used for ClipBlit().
