@@ -148,7 +148,7 @@ public:
 	void				SetLineSpaceAdjustment( Sint8 adjustment );
 	Sint8				GetLineSpaceAdjustment() const;
 
-	void				SetTextWrap(bool bWrap);
+	virtual bool		SetTextWrap(bool bWrap);
 	bool				GetTextWrap() const { return m_pText->IsWrap(); }
 
 

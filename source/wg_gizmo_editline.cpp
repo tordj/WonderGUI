@@ -161,6 +161,13 @@ bool WgGizmoEditline::InsertCharAtCursor( Uint16 c )
 }
 
 
+//____ SetTextWrap() __________________________________________________________
+
+bool WgGizmoEditline::SetTextWrap(bool bWrap)
+{
+	return !bWrap;
+}
+
 //____ OnUpdate() _____________________________________________________________
 
 void WgGizmoEditline::OnUpdate( const WgUpdateInfo& _updateInfo )

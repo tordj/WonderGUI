@@ -29,7 +29,7 @@
 
 WgTextManager::WgTextManager()
 {
-	m_scale = 0;
+	m_scale = 1.f;
 }
 
 //____ Destructor _____________________________________________________________

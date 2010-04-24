@@ -71,6 +71,8 @@ public:
 	void	SetEditable( bool bEditable );
 	bool	IsEditable() const { return m_bEditable; }
 
+	bool	SetTextWrap(bool bWrap);						// Overloading SetTextWrap since we don't support wrapping text.
+
 protected:
 	void	OnUpdate( const WgUpdateInfo& _updateInfo );
 	void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );

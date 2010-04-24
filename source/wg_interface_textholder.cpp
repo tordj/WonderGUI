@@ -42,13 +42,14 @@ void Wg_Interface_TextHolder::SetTextMode( WgMode _mode )
 }
 
 //____ SetTextWrap() __________________________________________________________
-void Wg_Interface_TextHolder::SetTextWrap( bool bWrap )
+bool Wg_Interface_TextHolder::SetTextWrap( bool bWrap )
 {
 	if( bWrap != m_pText->IsWrap() )
 	{
 		m_pText->SetWrap(bWrap);
 		TextModified();
 	}
+	return true;
 }
 
 //____ SetTextAlignment() _____________________________________________________
