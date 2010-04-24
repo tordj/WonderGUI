@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -44,6 +44,7 @@ class Wg_Interface_TextHolder : protected WgTextHolder
 
 public:
 	inline void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); TextModified(); }
+	inline WgTextManager * GetTextManager() const { return m_pText->getManager(); }
 
 	inline bool			SetFonts( WgFont * pFont ) { SetFont(pFont); return true; }		// DEPRECATED!!!
 	inline WgTextPropPtr GetTextDefaultProperties() { return m_pText->getDefaultProperties(); }
@@ -155,7 +156,7 @@ public:
 	void				AddText( const WgText * pText, Uint32 fromLine = 0, Uint32 nLines = 0xFFFFFFFF );
 	void				AddText( const WgCharBuffer* charBuffer );
 	void				RemoveTextLines( Uint32 start, Uint32 nLines = 0xFFFFFFFF );
-	
+
 	inline WgMode		TextMode() const { return m_pText->mode(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }
 	inline WgOrigo 		TextAlignment() const;

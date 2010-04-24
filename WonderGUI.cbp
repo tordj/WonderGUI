@@ -148,6 +148,7 @@
 		<Unit filename="include/wg_string.h" />
 		<Unit filename="include/wg_surface.h" />
 		<Unit filename="include/wg_text.h" />
+		<Unit filename="include/wg_textmanager.h" />
 		<Unit filename="include/wg_textprop.h" />
 		<Unit filename="include/wg_textpropmanager.h" />
 		<Unit filename="include/wg_texttool.h" />
@@ -233,6 +234,7 @@
 		<Unit filename="source/wg_string.cpp" />
 		<Unit filename="source/wg_surface.cpp" />
 		<Unit filename="source/wg_text.cpp" />
+		<Unit filename="source/wg_textmanager.cpp" />
 		<Unit filename="source/wg_textprop.cpp" />
 		<Unit filename="source/wg_textpropmanager.cpp" />
 		<Unit filename="source/wg_texttool.cpp" />
