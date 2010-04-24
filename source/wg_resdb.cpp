@@ -58,6 +58,7 @@ void WgResDB::Clear()
 	m_mapWidgets.clear();
 	m_mapItems.clear();
 	m_mapMenuItems.clear();
+	m_mapTextManagers.clear();
 	m_mapConnects.clear();
 
 	// Clear the linked lists, this will also delete the ResWrapper objects
@@ -77,6 +78,7 @@ void WgResDB::Clear()
 	m_widgets.clear();
 	m_items.clear();
 	m_menuItems.clear();
+	m_textManagers.clear();
 	m_connects.clear();
 }
 
@@ -162,6 +164,13 @@ std::string	WgResDB::GenerateName( const WgMenuItem* data )
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_menuitem__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
+}
+
+std::string	WgResDB::GenerateName( const WgTextManager* data )
+{
+	static int nGenerated = 0;
+	char pBuf[100];
+	return std::string("_textmanager__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
 
@@ -448,6 +457,22 @@ bool WgResDB::AddMenuItem( const std::string& id, WgMenuItem * pItem, MetaData *
 
 //____ () _________________________________________________________
 
+bool WgResDB::AddTextManager( const std::string& id, WgTextManager* pManager, MetaData * pMetaData )
+{
+	assert(m_mapTextManagers.find(id) == m_mapTextManagers.end());
+	if(m_mapTextManagers.find(id) == m_mapTextManagers.end())
+	{
+		TextManagerRes* p = new TextManagerRes(id, pManager, pMetaData);
+		m_textManagers.push_back(p);
+		if(id.size())
+			m_mapTextManagers[id] = p;
+		return true;
+	}
+	return false;
+}
+
+//____ () _________________________________________________________
+
 bool WgResDB::AddConnect( MetaData * pMetaData )
 {
 	ConnectRes* p = new ConnectRes(pMetaData);
@@ -541,6 +566,14 @@ WgMenuItem * WgResDB::GetMenuItem( const std::string& id ) const
 {
 	MenuItemRes* itemRes = GetResMenuItem(id);
 	return itemRes ? itemRes->res : 0;
+}
+
+//____ () _________________________________________________________
+
+WgTextManager * WgResDB::GetTextManager( const std::string& id ) const
+{
+	TextManagerRes* managerRes = GetResTextManager(id);
+	return managerRes ? managerRes->res : 0;
 }
 
 //____ () _________________________________________________________
@@ -761,6 +794,23 @@ WgResDB::MenuItemRes * WgResDB::GetResMenuItem( const std::string& id ) const
 	}
 	MenuItemMap::const_iterator it = m_mapMenuItems.find(id);
 	return it == m_mapMenuItems.end() ? 0 : it->second;
+}
+
+//____ () _________________________________________________________
+
+WgResDB::TextManagerRes * WgResDB::GetResTextManager( const std::string& id ) const
+{
+	TextManagerRes* res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	{
+		if(db->res)
+		{
+			if((res = db->res->GetResTextManager(id)))
+				return res;
+		}
+	}
+	TextManagerMap::const_iterator it = m_mapTextManagers.find(id);
+	return it == m_mapTextManagers.end() ? 0 : it->second;
 }
 
 //____ () _________________________________________________________
@@ -987,6 +1037,27 @@ WgResDB::MenuItemRes* WgResDB::FindResMenuItem( const WgMenuItem* meta ) const
 			return res;
 	return 0;
 }
+
+//____ () _________________________________________________________
+
+WgResDB::TextManagerRes* WgResDB::FindResTextManager( const WgTextManager* meta ) const
+{
+	TextManagerRes * res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	{
+		if(db->res)
+		{
+			if((res = db->res->FindResTextManager(meta)))
+				return res;
+		}
+	}
+	for(res = GetFirstResTextManager(); res; res = res->getNext())
+		if(res->res == meta)
+			return res;
+	return 0;
+}
+
+
 
 //____ RemoveSurface() ________________________________________________________
 
@@ -1364,6 +1435,38 @@ bool WgResDB::RemoveMenuItem( WgResDB::MenuItemRes * pRes )
 		MenuItemMap::iterator it = m_mapMenuItems.find( pRes->id );
 		assert( it != m_mapMenuItems.end() );
 		m_mapMenuItems.erase(it);
+	}
+	delete pRes;
+	return true;
+}
+
+
+//____ RemoveTextManager() _______________________________________________________
+
+bool WgResDB::RemoveTextManager( const std::string& id )
+{
+	TextManagerMap::iterator it = m_mapTextManagers.find( id );
+
+	if( it == m_mapTextManagers.end() )
+		return false;
+
+	TextManagerRes * pRes = it->second;
+	m_mapTextManagers.erase(it);
+	delete pRes;
+
+	return true;
+}
+
+bool WgResDB::RemoveTextManager( WgResDB::TextManagerRes * pRes )
+{
+	if( !pRes )
+		return false;
+
+	if( pRes->id.length() > 0 )
+	{
+		TextManagerMap::iterator it = m_mapTextManagers.find( pRes->id );
+		assert( it != m_mapTextManagers.end() );
+		m_mapTextManagers.erase(it);
 	}
 	delete pRes;
 	return true;

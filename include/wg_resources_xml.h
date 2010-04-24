@@ -593,6 +593,27 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
+/// WgTextManagerRes /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+class WgTextManagerRes : public WgResourceXML
+{
+public:
+	WgTextManagerRes(WgResourceXML* parent, WgTextManager* pTextManager = 0) : WgResourceXML(parent), m_pTextManager(pTextManager) { }
+
+	WgTextManager* GetTextManager() const { return m_pTextManager; }
+
+	virtual void Serialize(WgResourceSerializerXML& s);
+	virtual void Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
+
+	virtual void	Accept(WgResourceVisitor* visitor) { }
+
+	static const char* TagName() { return "textmanager"; }
+private:
+	WgTextManager*	m_pTextManager;
+};
+
+
+//////////////////////////////////////////////////////////////////////////
 /// WgBorderRes //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 class WgBorderRes : public WgResourceXML

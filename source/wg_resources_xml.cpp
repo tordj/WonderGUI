@@ -30,6 +30,8 @@
 #include <wg_vectorglyphs.h>
 #include <wg_bitmapglyphs.h>
 #include <wg_util.h>
+#include <wg_valueformat.h>
+#include <wg_textmanager.h>
 #include <wdg_button.h>
 #include <wdg_checkbox2.h>
 #include <wdg_combobox.h>
@@ -48,7 +50,6 @@
 #include <wdg_tablist.h>
 #include <wdg_text.h>
 #include <wdg_editline.h>
-#include <wg_valueformat.h>
 #include <wdg_value.h>
 #include <wdg_editvalue.h>
 #include <wdg_textview.h>
@@ -323,6 +324,7 @@ void WgResourceXML::RegisterResources()
 	WgResourceFactoryXML::Register<WgAnimRes>			(WgAnimRes::TagName());
 	WgResourceFactoryXML::Register<WgKeyFrameRes>		(WgKeyFrameRes::TagName());
 	WgResourceFactoryXML::Register<WgCursorRes>			(WgCursorRes::TagName());
+	WgResourceFactoryXML::Register<WgTextManagerRes>	(WgTextManagerRes::TagName());
 	WgResourceFactoryXML::Register<WgBorderRes>			(WgBorderRes::TagName());
 	WgResourceFactoryXML::Register<WgTileRes>			(WgTileRes::TagName());
 	WgResourceFactoryXML::Register<WgBlockSetRes>		(WgBlockSetRes::TagName());
@@ -544,6 +546,19 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 			textPropRes.Serialize(s);
 		}
 	}
+
+	// text managers
+	if(s.ResDb()->GetFirstResTextManager())
+	{
+		s.AddText("\n");
+		for(WgResDB::TextManagerRes* res = s.ResDb()->GetFirstResTextManager(); res; res = res->getNext())
+		{
+			WgTextManagerRes textManagerRes(this, res->res);
+			textManagerRes.SetMetaData(res->meta);
+			textManagerRes.Serialize(s);
+		}
+	}
+
 
 	// widgets
 	if(s.ResDb()->GetFirstResWidget())
@@ -1470,6 +1485,7 @@ void WgColorRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& 
 	}
 }
 
+
 //////////////////////////////////////////////////////////////////////////
 /// WgSurfaceRes /////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -1577,7 +1593,7 @@ void WgGlyphSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 				((WgVectorGlyphs*)m_pGlyphSet)->SetRenderMode( WgVectorGlyphs::BEST_SHAPES );
 			else
 				s.Warning("Unknown glyphset render_mode '" + mode + "'");
-				
+
 		}
 #endif
 	}
@@ -1861,6 +1877,24 @@ void WgCursorRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 
 	s.ResDb()->AddCursor(xmlNode["id"], m_pCursor, new WgXMLMetaData(xmlNode));
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+/// WgTextManagerRes /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+void WgTextManagerRes::Serialize(WgResourceSerializerXML& s)
+{
+	s.BeginTag(TagName(), XmlNode());
+	s.EndTag();
+}
+
+void WgTextManagerRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
+{
+	m_pTextManager = new WgTextManager();
+	s.ResDb()->AddTextManager(xmlNode["id"], m_pTextManager, new WgXMLMetaData(xmlNode));
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////
 /// WgRectRes ////////////////////////////////////////////////////////////
