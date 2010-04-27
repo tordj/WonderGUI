@@ -240,10 +240,10 @@ void WgCursorInstance::gotoPixel( Sint32 x, Sint32 y )
 //  TODO: Needs to be able to handle text which varies in height (almost fixed, just isn't supported by softLineHeight() yet...)
 
 	Uint32 line = 0;
-	while( line < m_pText->nbSoftLines() )
+	while( line < m_pText->nbSoftLines()-1 )
 	{
 		y -= m_pText->softLineHeight(line);
-		if( y < 0 )
+		if( y < 0  )
 			break;
 
 		line++;
@@ -323,6 +323,17 @@ Uint32	WgCursorInstance::putText( const Uint16 * pString, int nChar )
 	return nInserted;
 }
 
+//______________________________________________________________
+void WgCursorInstance::unputText( int nChar )
+{
+	if(nChar < 0)
+		return;
+
+	// TODO: FIX!
+	for(; nChar; nChar--)
+		delPrevChar();
+}
+
 //____ delPrevChar() __________________________________________________________
 
 bool WgCursorInstance::delPrevChar()
@@ -342,7 +353,9 @@ bool WgCursorInstance::delPrevChar()
 		return true;
 	}
 	else
+	{
  		return m_pText->removeChar( m_line, --m_column );
+	}
 }
 
 //____ delNextChar() __________________________________________________________
@@ -362,7 +375,9 @@ bool WgCursorInstance::delNextChar()
 		return true;
 	}
 	else
+	{
 		return m_pText->removeChar( m_line, m_column );
+	}
 }
 
 //____ ofsX() __________________________________________________________________

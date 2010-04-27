@@ -156,6 +156,23 @@ void Wdg_ListView::ScrollIntoView( WgItem* pItem )
 	if( !pItem )
 		return;
 
+	WgCord pos;
+
+	if(!GetItemPixelPos(pItem, pos))
+		return;
+
+	Uint32 viewOfsMin = ViewPixelOfsY();
+	Uint32 viewOfsMax = ViewPixelOfsY() + ViewPixelLenY();
+	Uint32 itemPosY = (Uint32)pos.y;
+
+	if( itemPosY < viewOfsMin )							// is the row above the view?
+		SetViewPixelOfsY( itemPosY );
+	else if( itemPosY + pItem->Height() > viewOfsMax )	// is the row below the view?
+		SetViewPixelOfsY( itemPosY + pItem->Height() - ViewPixelLenY() );
+}
+
+bool Wdg_ListView::GetItemPixelPos( WgItem * pItem, WgCord& pos )
+{
 	// calc y pos of this row
 	Uint32 itemPosY = 0;
 
@@ -166,17 +183,12 @@ void Wdg_ListView::ScrollIntoView( WgItem* pItem )
 		p = p->getNext();
 	}
 
-	if( !p )
-		return;		// item not found
+	pos = WgCord(0, itemPosY);
 
+	if(!p)
+		return false;
 
-	Uint32 viewOfsMin = ViewPixelOfsY();
-	Uint32 viewOfsMax = ViewPixelOfsY() + ViewPixelLenY();
-
-	if( itemPosY < viewOfsMin )							// is the row above the view?
-		SetViewPixelOfsY( itemPosY );
-	else if( itemPosY + pItem->Height() > viewOfsMax )	// is the row below the view?
-		SetViewPixelOfsY( itemPosY + pItem->Height() - ViewPixelLenY() );
+	return true;
 }
 
 void Wdg_ListView::SetLineMarkSource(WgSurface* pSurf, const WgRect& rect, Uint8 tileOfs, Uint8 tileLen, bool bStretch )

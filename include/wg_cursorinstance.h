@@ -72,6 +72,7 @@ public:
 	bool			putChar( Uint16 character );
 	Uint32			putText( const Uint16 * pString );
 	Uint32			putText( const Uint16 * pString, int nChar );
+	void			unputText( int nChar );
 	bool			delPrevChar();
 	bool			delNextChar();
 

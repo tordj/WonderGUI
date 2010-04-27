@@ -1884,13 +1884,133 @@ void WgCursorRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 //////////////////////////////////////////////////////////////////////////
 void WgTextManagerRes::Serialize(WgResourceSerializerXML& s)
 {
-	s.BeginTag(TagName(), XmlNode());
+	const WgXmlNode& xmlNode = XmlNode();
+
+	s.BeginTag(TagName(), xmlNode);
+
+	WriteDiffAttr<float>(s, xmlNode, "size_stepping", m_pTextManager->GetSizeStepping(), 0.f);
+
+	//
+
+	if( m_pTextManager->GetSizeRounding() != WgTextManager::ROUND_NEAREST )
+	{
+		std::string	value;
+		switch( m_pTextManager->GetSizeRounding() )
+		{
+			case WgTextManager::ROUND_NEAREST:	
+				value = "nearest";
+				break;
+			case WgTextManager::ROUND_UP:
+				value = "up";
+				break;
+			case WgTextManager::ROUND_DOWN:
+				value = "down";
+				break;
+		}
+		s.AddAttribute( "size_rounding", value );
+	}
+
+	//
+
+	if( m_pTextManager->GetAllowedSizes() )
+	{
+		float * pSizes = m_pTextManager->GetAllowedSizes();
+
+		std::string	str;
+		while( * pSizes != 0 )
+		{
+			if( !str.empty() )
+				str += ",";
+
+			str += WgUtil::ToString( * pSizes++ );
+		}
+
+		s.AddAttribute( "allowed_sizes", str );
+	}
+
+	//
+
+	WriteDiffAttr<float>(s, xmlNode, "grow_treshold", m_pTextManager->GetGrowTreshold(), 1.f);
+	WriteDiffAttr<float>(s, xmlNode, "grow_ratio", m_pTextManager->GetGrowRatio(), 1.f);
+	WriteDiffAttr<float>(s, xmlNode, "grow_limit", m_pTextManager->GetGrowLimit(), 0.f);
+	
+	//
+
+	WriteDiffAttr<float>(s, xmlNode, "shrink_treshold", m_pTextManager->GetShrinkTreshold(), 1.f);
+	WriteDiffAttr<float>(s, xmlNode, "shrink_ratio", m_pTextManager->GetShrinkRatio(), 1.f);
+	WriteDiffAttr<float>(s, xmlNode, "shrink_limit", m_pTextManager->GetShrinkLimit(), 0.f);
+
+	//
+
 	s.EndTag();
 }
 
 void WgTextManagerRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
 	m_pTextManager = new WgTextManager();
+
+	float stepping = WgUtil::ToFloat(xmlNode["size_stepping"], 0.f );
+	VERIFY( stepping >= 0.f, "size_stepping out of allowed range" );
+	m_pTextManager->SetSizeStepping( stepping );
+	
+	if( xmlNode.HasAttribute("size_rounding") )
+	{
+		WgTextManager::Rounding rounding = WgTextManager::ROUND_NEAREST;
+		std::string value = xmlNode["size_rounding"];
+
+		if( value == "nearest" )
+			rounding = WgTextManager::ROUND_NEAREST;
+		else if( value == "up" )
+			rounding = WgTextManager::ROUND_UP;
+		else if( value == "down" )
+			rounding = WgTextManager::ROUND_DOWN;
+		else
+			s.Error( "size_rounding set to unknown value '" + value + "', allowed values are 'nearest', 'up' and 'down'" );
+
+		m_pTextManager->SetSizeRounding( rounding );
+	}
+
+	if( xmlNode.HasAttribute("allowed_sizes") )
+	{
+		std::vector<std::string> tokens;
+		WgUtil::Tokenize(xmlNode["allowed_sizes"], tokens);
+		
+		float * pFloats = new float[tokens.size()];
+
+		for( unsigned int i = 0 ; i < tokens.size() ; i++ )
+			pFloats[i] = WgUtil::ToFloat( tokens[i] );
+
+		bool res = m_pTextManager->SetAllowedSizes(tokens.size(), pFloats);		
+
+		if( !res )
+			s.Error( "allowed_sizes can not be set to '" + xmlNode["allowed_sizes"] + "'" );
+	}	
+
+	float	treshold, ratio, limit;
+
+	treshold	= WgUtil::ToFloat(xmlNode["grow_treshold"], 1.f );
+	ratio		= WgUtil::ToFloat(xmlNode["grow_ratio"], 1.f );
+	limit		= WgUtil::ToFloat(xmlNode["grow_limit"], 0.f );
+
+	VERIFY( treshold >= 1.f , "grow_treshold must be >= 1.0" );
+	VERIFY( ratio >= 0.f , "grow_ratio may not be negative" );
+	VERIFY( limit == 0.f || limit >= 1.f , "grow_limit must be 0 or >= 1.0" );
+
+	m_pTextManager->SetGrowFormula( treshold, ratio, limit );
+
+
+
+	treshold	= WgUtil::ToFloat(xmlNode["shrink_treshold"], 1.f );
+	ratio		= WgUtil::ToFloat(xmlNode["shrink_ratio"], 1.f );
+	limit		= WgUtil::ToFloat(xmlNode["shrink_limit"], 0.f );
+
+	VERIFY( treshold <= 1.f , "shrink_treshold must be <= 1.0" );
+	VERIFY( ratio >= 0.f , "shrink_ratio may not be negative" );
+	VERIFY( limit <= 1.f , "shrink_limit must be <= 1.0" );
+
+	m_pTextManager->SetShrinkFormula( treshold, ratio, limit );
+
+
 	s.ResDb()->AddTextManager(xmlNode["id"], m_pTextManager, new WgXMLMetaData(xmlNode));
 }
 
@@ -4547,6 +4667,7 @@ void Wdg_Text_Res::Serialize(WgResourceSerializerXML& s)
 	WgEditTextRes::Serialize(this, xmlNode, s, widget);
 	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
 	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), (Uint16)0);
+	WriteDiffAttr(s, xmlNode, "max_rows", widget->MaxLines(), (Uint16)0);
 	s.EndTag();
 }
 
@@ -4558,6 +4679,7 @@ void Wdg_Text_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML
 	WgEditTextRes::Deserialize(xmlNode, s, widget);
 	widget->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
 	widget->SetMaxCharacters(WgUtil::ToUint32(xmlNode["max_length"]));
+	widget->SetMaxLines(WgUtil::ToUint32(xmlNode["max_rows"]));
 }
 
 WgCharBuffer* Wdg_Text_Res::GetCharBuffer()

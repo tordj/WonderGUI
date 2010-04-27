@@ -42,8 +42,9 @@ public:
 	bool	GetAutoScrollMarked()							{ return m_bAutoScrollMarked; }
 
 	void	ScrollIntoView( WgItem* pItem );
+	bool	GetItemPixelPos( WgItem * pItem, WgCord& pos );
 
-	WgItem*GetFirstSelectedItem() { return 0; }
+	WgItem*		GetFirstSelectedItem() { return 0; }
 
 	inline bool	GrabInputFocus() { return WgWidget::GrabInputFocus(); }
 	inline bool	RemoveInputFocus() { return WgWidget::GrabInputFocus(); }

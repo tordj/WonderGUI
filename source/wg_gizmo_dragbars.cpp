@@ -49,6 +49,8 @@ WgGizmoDragbar::WgGizmoDragbar()
 	m_headerLen			= 0;
 	m_footerLen			= 0;
 
+	m_lastCursorDownPos = WgCord(-4096, -4096);
+
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS; i++ )
 		m_mode[i] = WG_MODE_NORMAL;
 }
@@ -660,6 +662,7 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 				UnmarkReqRender();
 				m_mode[c] = WG_MODE_MARKED;
 			}
+
 			break;
 		}
 
@@ -685,7 +688,6 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 				pEmitter->Emit( Forward() );
-
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 				pEmitter->Emit( Back() );
 
@@ -718,6 +720,7 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 			break;
 		}
 
+		
 		case WgInput::BUTTON_DOWN:
 		{
 			if( button_key != 1 )
@@ -725,23 +728,31 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 
 			if( m_mode[C_BAR] == WG_MODE_SELECTED )
 			{
-				float	sliderPos = 0.f;
+				// Don't update the scroll position unless the cursor was moved
+				// This prevents views from scrolling if content is added while the dragbar is pressed
+				// Martin
+				WgCord cursorPos = WgCord(info.x, info.y);
+				if(cursorPos != m_lastCursorDownPos)
+				{
+					m_lastCursorDownPos = cursorPos;
 
-				if( m_sliderSize < 1.f)
-					sliderPos = ((float)(pointerOfs - m_dragBarPressOfs)) / (length - barLen);
+					float	sliderPos = 0.f;
 
-				LIMIT( sliderPos, 0.f, 1.f );
+					if( m_sliderSize < 1.f)
+						sliderPos = ((float)(pointerOfs - m_dragBarPressOfs)) / (length - barLen);
 
-  				if( sliderPos != m_sliderPos )
-  				{
-  					m_sliderPos = sliderPos;
-					RequestRender();
- 					pEmitter->Emit( SliderPos(), m_sliderPos );
+					LIMIT( sliderPos, 0.f, 1.f );
+
+  					if( sliderPos != m_sliderPos )
+  					{
+  						m_sliderPos = sliderPos;
+						RequestRender();
+ 						pEmitter->Emit( SliderPos(), m_sliderPos );
+					}
 				}
 			}
 			break;
 		}
-
         default:
             break;
 

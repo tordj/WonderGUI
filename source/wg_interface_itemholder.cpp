@@ -183,20 +183,7 @@ void Wg_Interface_ItemHolder::RemoveAllItems()
 
 bool Wg_Interface_ItemHolder::DeleteItem( Uint32 pos )
 {
-	WgItem * p = m_items.get(pos);
-	if( p )
-	{
-		if( p == m_pFocusedItem )
-			m_pFocusedItem = 0;
-
-		p->disconnect();
-		p->m_pMyHolder = 0;	// so the item doesn't remove itself in the destructor
-		delete p;
-		m_nItems--;
-		refreshItems();
-		return true;
-	}
-	return false;
+	return DeleteItem(m_items.get(pos));
 }
 
 //____ DeleteItem() ___________________________________________________________

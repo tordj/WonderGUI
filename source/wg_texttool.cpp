@@ -2008,6 +2008,8 @@ int  WgTextTool::forwardPixels( WgTextNode * pNode, const WgTextPropPtr& pDefPro
 
 Uint32	WgTextTool::ofsX2column( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, int ofsX, const WgChar * pString, WgCursorInstance * pCursor, int * wpRemainder )
 {
+	if(!pString)
+		return 0;
 	const WgChar * pPos = pString;
 
 

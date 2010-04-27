@@ -176,13 +176,13 @@ float WgTextManager::GetSize( WgTextNode * pNode, const WgFont * m_pFont, WgFont
 
 	if( scale > m_growTreshold )
 	{
-		scale += (scale - m_growTreshold)*m_growRatio;
-		if( scale > m_growLimit )
+		scale = 1.f + (scale - m_growTreshold)*m_growRatio;
+		if( m_growLimit != 0.f && scale > m_growLimit )
 			scale = m_growLimit;
 	}
 	else if( scale < m_shrinkTreshold )
 	{
-		scale -= (m_shrinkTreshold-scale)*m_shrinkRatio;
+		scale = 1.f - (m_shrinkTreshold-scale)*m_shrinkRatio;
 		if( scale < m_shrinkLimit )
 			scale = m_shrinkLimit;
 

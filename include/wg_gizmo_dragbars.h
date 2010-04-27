@@ -129,6 +129,7 @@ class	WgGizmoDragbar : public WgGizmo
 		bool			m_bHorizontal;
 		bool			m_bPressOnDragBar;
 		int				m_dragBarPressOfs;
+		WgCord			m_lastCursorDownPos;
 
 		ButtonLayout	m_btnLayout;
 		Uint8			m_headerLen;

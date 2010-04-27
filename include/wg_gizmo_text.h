@@ -61,6 +61,9 @@ public:
 	inline void SetMaxCharacters( Uint16 characters ) { m_maxCharacters = characters; }
 	inline Uint16 MaxCharacters() { return m_maxCharacters; }
 
+	inline void SetMaxLines( Uint16 nLines ) { m_maxLines = nLines; }
+	inline Uint16 MaxLines() { return m_maxLines; }
+
 	Uint32	InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
@@ -87,12 +90,14 @@ protected:
 
 private:
 	void	TextModified();
+	bool	InsertCharAtCursorInternal( Uint16 c );
 
 
 	WgText				m_text;
 
 	WgCursorInstance *	m_pMyCursor;					// Non-null when widget has input focus.
 	Uint16				m_maxCharacters;
+	Uint16				m_maxLines;
 	bool				m_bEditable;
 };
 

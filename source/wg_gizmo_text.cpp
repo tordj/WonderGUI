@@ -35,7 +35,8 @@ WgGizmoText::WgGizmoText()
 {
 	m_pText			= &m_text;
 	m_pMyCursor		= 0;
-	m_maxCharacters = 0;
+	m_maxCharacters	= 0;
+	m_maxLines		= 0;
 
 	m_text.setLineWidth( Size().w );
 	m_bEditable = false;
@@ -157,15 +158,16 @@ void WgGizmoText::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, in
 		{
 			if( button_key >= 32 )
 			{
-				// by default - no max limit
-				if( m_maxCharacters == 0 || m_maxCharacters > m_pMyCursor->text()->nbChars() )
-					m_pMyCursor->putChar( button_key );
+				InsertCharAtCursorInternal(button_key);
 			}
-			if( button_key == 13 )
-					m_pMyCursor->putChar( '\n' );
-
-			if( button_key == '\t' )
-					m_pMyCursor->putChar( '\t' );
+			else if( button_key == 13 )
+			{
+				InsertCharAtCursorInternal('\n');
+			}
+			else if( button_key == '\t' )
+			{
+				InsertCharAtCursorInternal( '\t' );
+			}
 		}
 	}
 
@@ -313,20 +315,26 @@ Uint32 WgGizmoText::InsertTextAtCursor( const WgCharSeq& str )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
-	Uint32 retVal = 0;
+	Uint32 nChars = 0;
 
 	if( m_maxCharacters == 0 || ((unsigned)str.Length()) < m_maxCharacters - m_pMyCursor->text()->nbChars() )
 	{
 		m_pMyCursor->putText( str.GetUnicode().ptr, str.Length() );
-		retVal = str.Length();
+		nChars = str.Length();
 	}
 	else
 	{
-		retVal = m_maxCharacters - m_pMyCursor->text()->nbChars();
-		m_pMyCursor->putText( str.GetUnicode().ptr, retVal );
+		nChars = m_maxCharacters - m_pMyCursor->text()->nbChars();
+		m_pMyCursor->putText( str.GetUnicode().ptr, nChars );
+	}
+
+	if( m_maxLines != 0 && m_maxLines < m_pMyCursor->text()->nbSoftLines() )
+	{
+		m_pMyCursor->unputText( nChars );
+		nChars = 0;
 	}
 	
-	return retVal;
+	return nChars;
 }
 
 //____ InsertCharAtCursor() ___________________________________________________
@@ -340,9 +348,21 @@ bool WgGizmoText::InsertCharAtCursor( Uint16 c )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
+	return InsertCharAtCursorInternal(c);
+}
+
+bool WgGizmoText::InsertCharAtCursorInternal( Uint16 c )
+{
 	if( m_maxCharacters != 0 && m_maxCharacters < m_pMyCursor->text()->nbChars() )
 		return false;
 
 	m_pMyCursor->putChar( c );
+
+	if( m_maxLines != 0 && m_maxLines < m_pMyCursor->text()->nbSoftLines() )
+	{
+		m_pMyCursor->delPrevChar();
+		return false;
+	}
+
 	return true;
 }
