@@ -68,17 +68,13 @@ enum WgModifierKeys
 	// Don't touch, needs to be first!
 	WG_MODKEY_NONE = 0,			// = 0
 
-	// ---- Feel free to add/remove/modify/rename combinations here between.
-	// ---- They are only used by your program, not WonderGUI itself. The
-	// ---- number of modifier keys affects memory usage though.
-
 	WG_MODKEY_SHIFT = 1,
 	WG_MODKEY_ALT = 2,
-	WG_MODKEY_ALT_SHIFT = 3,
+	WG_MODKEY_ALT_SHIFT = WG_MODKEY_ALT | WG_MODKEY_SHIFT,
 	WG_MODKEY_CTRL = 4,
-	WG_MODKEY_CTRL_SHIFT = 5,
-	WG_MODKEY_CTRL_ALT = 6,
-	WG_MODKEY_CTRL_ALT_SHIFT = 7,
+	WG_MODKEY_CTRL_SHIFT = WG_MODKEY_CTRL | WG_MODKEY_SHIFT,
+	WG_MODKEY_CTRL_ALT = WG_MODKEY_CTRL | WG_MODKEY_ALT,
+	WG_MODKEY_CTRL_ALT_SHIFT = WG_MODKEY_CTRL | WG_MODKEY_ALT | WG_MODKEY_SHIFT,
 	WG_MODKEY_GUI = 8,
 
 	WG_MODKEY_SUPER_SHIFT = 9,
@@ -88,8 +84,6 @@ enum WgModifierKeys
 	WG_MODKEY_SUPER_CTRL_SHIFT = 13,
 	WG_MODKEY_SUPER_CTRL_ALT = 14,
 	WG_MODKEY_SUPER_CTRL_ALT_SHIFT = 15,
-
-	// ---- End of modifiable enums.
 
 	// Needs to be last!
 	WG_MAX_MODKEYS = 16

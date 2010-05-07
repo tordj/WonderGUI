@@ -50,7 +50,7 @@ WgVectorGlyphs::WgVectorGlyphs( const void * pTTF_File, int bytes, int faceIndex
 	m_ftCharSize	= 0;
 	m_accessCounter = 0;
 
-	for( int i = 0 ; i < WG_MAX_FONTSIZE ; i++ )
+	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 		m_cachedGlyphsIndex[i] = 0;
 
 	FT_Error err = FT_New_Memory_Face(	WgBase::GetFreeTypeLibrary(),
@@ -73,7 +73,7 @@ WgVectorGlyphs::WgVectorGlyphs( const void * pTTF_File, int bytes, int faceIndex
 
 WgVectorGlyphs::~WgVectorGlyphs()
 {
-	for( int i = 0 ; i < WG_MAX_FONTSIZE ; i++ )
+	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 	{
 		if( m_cachedGlyphsIndex[i] != 0 )
 			delete m_cachedGlyphsIndex[i];
@@ -82,27 +82,58 @@ WgVectorGlyphs::~WgVectorGlyphs()
 	FT_Done_Face( m_ftFace );
 }
 
+//____ SetCharSize() __________________________________________________________
+
+bool WgVectorGlyphs::SetCharSize( int size )
+{
+		FT_Error err = FT_Set_Char_Size( m_ftFace, size*64, 0, 0,0 );
+//		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
+		if( err )
+		{
+			m_ftCharSize = 0;
+			return false;
+		}
+
+		switch( m_renderMode[size] )
+		{
+			case MONOCHROME:
+				m_renderFlags = FT_LOAD_RENDER | FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
+				break;
+			case CRISP_EDGES:
+				m_renderFlags = FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL;
+				break;
+			case BEST_SHAPES:
+				m_renderFlags = FT_LOAD_RENDER | FT_LOAD_TARGET_LIGHT;
+				break;
+
+			default:
+				break;
+		}
+
+		m_ftCharSize = size;
+		return true;
+}
+
+
+
 //____ SetRenderMode() ________________________________________________________
 
-bool WgVectorGlyphs::SetRenderMode( RenderMode mode )
+bool WgVectorGlyphs::SetRenderMode( RenderMode mode, int startSize, int endSize )
 {
-	switch( mode )
-	{
-		case MONOCHROME:
-			m_renderFlags = FT_LOAD_RENDER | FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
-			break;
-		case CRISP_EDGES:
-			m_renderFlags = FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL;
-			break;
-		case BEST_SHAPES:
-			m_renderFlags = FT_LOAD_RENDER | FT_LOAD_TARGET_LIGHT;
-			break;
+	if( startSize < 0 || startSize > endSize || startSize > WG_MAX_FONTSIZE )
+		return false;
 
-		default:
-			return false;
-	}
+	if( endSize > WG_MAX_FONTSIZE )
+		endSize = WG_MAX_FONTSIZE;
 
-	m_renderMode = mode;
+	for( int i = startSize ; i <= endSize ; i++ )
+		m_renderMode[i] =mode;
+
+	// Force update of m_renderFlags if current size is affected
+
+	if( m_ftCharSize >= startSize && m_ftCharSize <= endSize )
+		SetCharSize( m_ftCharSize );
+
 	return true;
 }
 
@@ -116,16 +147,8 @@ int WgVectorGlyphs::GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRight
 	// Set size for FreeType
 
 	if( m_ftCharSize != size )
-	{
-		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
-		if( err )
-		{
-			m_ftCharSize = 0;
+		if( !SetCharSize( size ) )
 			return 0;
-		}
-
-		m_ftCharSize = size;
-	}
 
 	// Get kerning info
 
@@ -146,16 +169,8 @@ int WgVectorGlyphs::GetWhitespaceAdvance( int size )
 	// Set size for FreeType
 
 	if( m_ftCharSize != size )
-	{
-		err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
-		if( err )
-		{
-			m_ftCharSize = 0;
+		if( !SetCharSize( size ) )
 			return 0;
-		}
-
-		m_ftCharSize = size;
-	}
 
 	// Load whitespace glyph
 
@@ -165,7 +180,7 @@ int WgVectorGlyphs::GetWhitespaceAdvance( int size )
 
 	// Get and return advance
 
-	return  (m_ftFace->glyph->linearHoriAdvance +32768) >> 16;
+	return  m_ftFace->glyph->advance.x >> 6;
 
 }
 
@@ -173,19 +188,9 @@ int WgVectorGlyphs::GetWhitespaceAdvance( int size )
 
 int WgVectorGlyphs::GetHeight( int size )
 {
-	FT_Error err;
-
 	if( m_ftCharSize != size )
-	{
-		err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
-		if( err )
-		{
-			m_ftCharSize = 0;
+		if( !SetCharSize( size ) )
 			return 0;
-		}
-
-		m_ftCharSize = size;
-	}
 
 	return (m_ftFace->size->metrics.ascender - m_ftFace->size->metrics.descender+32) >> 6;
 }
@@ -194,19 +199,9 @@ int WgVectorGlyphs::GetHeight( int size )
 
 int WgVectorGlyphs::GetLineSpacing( int size )
 {
-	FT_Error err;
-
 	if( m_ftCharSize != size )
-	{
-		err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
-		if( err )
-		{
-			m_ftCharSize = 0;
+		if( !SetCharSize( size ) )
 			return 0;
-		}
-
-		m_ftCharSize = size;
-	}
 
 	return (m_ftFace->size->metrics.height+32) >> 6;
 }
@@ -216,19 +211,9 @@ int WgVectorGlyphs::GetLineSpacing( int size )
 
 int WgVectorGlyphs::GetBaseline( int size )
 {
-	FT_Error err;
-
 	if( m_ftCharSize != size )
-	{
-		err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
-		if( err )
-		{
-			m_ftCharSize = 0;
+		if( !SetCharSize( size ) )
 			return 0;
-		}
-
-		m_ftCharSize = size;
-	}
 
 	return (m_ftFace->size->metrics.ascender+32) >> 6;
 }
@@ -297,16 +282,8 @@ WgGlyph * WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
 		// Set size for FreeType
 
 		if( m_ftCharSize != size )
-		{
-			err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
-			if( err )
-			{
-				m_ftCharSize = 0;
+			if( !SetCharSize( size ) )
 				return 0;
-			}
-
-			m_ftCharSize = size;
-		}
 
 		// Load Glyph
 
@@ -319,7 +296,7 @@ WgGlyph * WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
 		int width = m_ftFace->glyph->bitmap.width;
 		int height = m_ftFace->glyph->bitmap.rows;
 
-		int advance = (m_ftFace->glyph->linearHoriAdvance + 32768) >> 16;
+		int advance = m_ftFace->glyph->advance.x >> 6;
 		int xBearing = m_ftFace->glyph->bitmap_left;
 		int yBearing = -m_ftFace->glyph->bitmap_top;
 

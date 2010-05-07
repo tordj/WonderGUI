@@ -215,7 +215,16 @@ public:
 	{ 
 		return T::GetCursorStyle(); 
 	}
-	
+
+	virtual bool IsInputField() const
+	{
+		return T::TempIsInputField();
+	}
+
+	virtual Wg_Interface_TextHolder* GetText()
+	{
+		return T::TempGetText();
+	}
 
 
 

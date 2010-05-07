@@ -34,12 +34,13 @@ static const char	Wdg_Type[] = {"TordJ/GizmoText"};
 WgGizmoText::WgGizmoText()
 {
 	m_pText			= &m_text;
-	m_pMyCursor		= 0;
+	m_pText->CreateCursor();
+	m_bHasFocus		= false;
 	m_maxCharacters	= 0;
 	m_maxLines		= 0;
 
 	m_text.setLineWidth( Size().w );
-	m_bEditable = false;
+	m_inputMode = Static;
 }
 
 
@@ -65,48 +66,46 @@ const char * WgGizmoText::GetMyType()
 //____ goBOL() ________________________________________________________________
 void WgGizmoText::goBOL()
 {
-	if( m_pMyCursor )
-		m_pMyCursor->goBOL();
+	if( IsEditable() && m_bHasFocus )
+		m_pText->goBOL();
 }
 
 //____ goEOL() ________________________________________________________________
 void WgGizmoText::goEOL()
 {
-	if( m_pMyCursor )
-		m_pMyCursor->goEOL();
+	if( IsEditable() && m_bHasFocus )
+		m_pText->goEOL();
 }
 
 //____ goBOF() ________________________________________________________________
 void WgGizmoText::goBOF()
 {
-	if( m_pMyCursor )
-		m_pMyCursor->goBOF();
+	if( IsEditable() && m_bHasFocus )
+		m_pText->goBOF();
 }
 
 //____ goEOF() ________________________________________________________________
 void WgGizmoText::goEOF()
 {
-	if( m_pMyCursor )
-		m_pMyCursor->goEOF();
+	if( IsEditable() && m_bHasFocus )
+		m_pText->goEOF();
 }
 
 
-//____ SetEditable() __________________________________________________________
-void WgGizmoText::SetEditable(bool bEditable)
+//_______________________________________________________________
+void WgGizmoText::SetInputMode(InputMode mode)
 {
-	m_bEditable = bEditable;
+	m_inputMode = mode;
 }
-
-
 
 //____ OnUpdate() ________________________________________________________
 
 void WgGizmoText::OnUpdate( const WgUpdateInfo& _updateInfo )
 {
-	if( m_pMyCursor )
+	if( IsSelectable() && m_bHasFocus )
 	{
-		m_pMyCursor->incTime( _updateInfo.msDiff );
-		RequestRender();					//TODO: Should only render the cursor!
+		m_pText->incTime( _updateInfo.msDiff );
+		RequestRender();					//TODO: Should only render the cursor and selection!
 	}
 }
 
@@ -117,8 +116,8 @@ void WgGizmoText::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const 
 {
 	WgText * pText = &m_text;
 
-	if( m_pMyCursor )
-		pDevice->PrintTextWithCursor( _clip, pText, *m_pMyCursor, _window );
+	if( m_bHasFocus && IsEditable() )
+		pDevice->PrintTextWithCursor( _clip, pText, *m_pText->GetCursor(), _window );
 	else
 		pDevice->PrintText( _clip, pText, _window );		
 
@@ -139,24 +138,37 @@ void WgGizmoText::OnRefresh( void )
 
 void WgGizmoText::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
-	if( action == WgInput::BUTTON_PRESS && button_key == 1 )
-	{		
-		if( m_pMyCursor )
+	if( m_bHasFocus && (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
+	{
+		if( IsSelectable() && (info.modifier & WG_MODKEY_SHIFT) )
 		{
-			WgCord pos = Abs2local( WgCord(info.x, info.y) );
-
-			Sint32	x = pos.x;
-			Sint32	y = pos.y;
-			
-			m_pMyCursor->gotoPixel(x,y);
+			m_pText->setSelectionMode(true);
 		}
+
+		WgCord pos = Abs2local( WgCord(info.x, info.y) );
+
+		Sint32	x = pos.x;
+		Sint32	y = pos.y;
+		
+		m_pText->gotoPixel(x,y);
+
+		if(IsSelectable() && action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
+		{
+			m_pText->clearSelection();
+			m_pText->setSelectionMode(true);
+		}
+	}
+	else if( action == WgInput::BUTTON_RELEASE || action == WgInput::BUTTON_RELEASE_OUTSIDE )
+	{
+		if(m_bHasFocus && button_key == 1)
+			m_pText->setSelectionMode(false);
 	}
 
 	if( action == WgInput::CHARACTER )
 	{
-		if( m_pMyCursor )
+		if( IsEditable() && m_bHasFocus )
 		{
-			if( button_key >= 32 )
+			if( button_key >= 32 && button_key != 127)
 			{
 				InsertCharAtCursorInternal(button_key);
 			}
@@ -171,59 +183,94 @@ void WgGizmoText::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, in
 		}
 	}
 
-	if( action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT )
+	if( action == WgInput::KEY_RELEASE && m_bHasFocus )
 	{
-		if( m_pMyCursor )
+		switch( button_key )
 		{
-			switch( button_key )
-			{
-				case WGKEY_LEFT:
-					if( info.modifier == WG_MODKEY_CTRL )
-						m_pMyCursor->gotoPrevWord();
-					else
-						m_pMyCursor->goLeft();
-					break;
-				case WGKEY_RIGHT:
-					if( info.modifier == WG_MODKEY_CTRL )
-						m_pMyCursor->gotoNextWord();
-					else
-					m_pMyCursor->goRight();
-					break;
+			case WGKEY_SHIFT:
+				if(!inputObj.isButtonDown(1))
+					m_pText->setSelectionMode(false);
+			break;
+		}
+	}
 
-				case WGKEY_UP:
-					m_pMyCursor->goUp();
-					break;
+	if( (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) && IsEditable() && m_bHasFocus )
+	{
+		switch( button_key )
+		{
+			case WGKEY_LEFT:
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
 
-				case WGKEY_DOWN:
-					m_pMyCursor->goDown();
-					break;
+				if( info.modifier & WG_MODKEY_CTRL )
+					m_pText->gotoPrevWord();
+				else
+					m_pText->goLeft();
+				break;
+			case WGKEY_RIGHT:
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
 
-				case WGKEY_BACKSPACE:
-					m_pMyCursor->delPrevChar();
-					break;
+				if( info.modifier & WG_MODKEY_CTRL )
+					m_pText->gotoNextWord();
+				else
+					m_pText->goRight();
+				break;
 
-				case WGKEY_DELETE:
-					m_pMyCursor->delNextChar();
-					break;
+			case WGKEY_UP:
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
 
-				case WGKEY_HOME:
-					if( info.modifier == WG_MODKEY_CTRL )
-						m_pMyCursor->goBOF();
-					else
-						m_pMyCursor->goBOL();
-					break;
+				m_pText->goUp();
+				break;
 
-				case WGKEY_END:
-					if( info.modifier == WG_MODKEY_CTRL )
-						m_pMyCursor->goEOF();
-					else
-						m_pMyCursor->goEOL();
-					break;
+			case WGKEY_DOWN:
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
 
-				default:
-					break;
-			}
+				m_pText->goDown();
+				break;
 
+			case WGKEY_BACKSPACE:
+				if(m_pText->hasSelection())
+					m_pText->delSelection();
+				else if( info.modifier & WG_MODKEY_CTRL )
+					m_pText->delPrevWord();
+				else
+					m_pText->delPrevChar();
+				break;
+
+			case WGKEY_DELETE:
+				if(m_pText->hasSelection())
+					m_pText->delSelection();
+				else if( info.modifier & WG_MODKEY_CTRL )
+					m_pText->delNextWord();
+				else
+					m_pText->delNextChar();
+				break;
+
+			case WGKEY_HOME:
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( info.modifier & WG_MODKEY_CTRL )
+					m_pText->goBOF();
+				else
+					m_pText->goBOL();
+				break;
+
+			case WGKEY_END:
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( info.modifier & WG_MODKEY_CTRL )
+					m_pText->goEOF();
+				else
+					m_pText->goEOL();
+				break;
+
+			default:
+				break;
 		}
 	}
 }
@@ -270,24 +317,18 @@ void WgGizmoText::OnNewSize( const WgSize& size )
 
 void WgGizmoText::OnGotInputFocus()
 {
-	if( m_bEditable )
-	{
-		m_pMyCursor = new WgCursorInstance( m_text );
+	m_bHasFocus = true;
+	if( IsEditable() ) // render with cursor on
 		RequestRender();
-	}
 }
 
 //____ OnLostInputFocus() ______________________________________________
 
 void WgGizmoText::OnLostInputFocus()
 {
-	if( m_pMyCursor )
-	{
-		delete m_pMyCursor;
-		m_pMyCursor = 0;
-		
+	m_bHasFocus = false;
+	if( IsEditable() ) // render with cursor off
 		RequestRender();
-	}
 }
 
 
@@ -295,12 +336,7 @@ void WgGizmoText::OnLostInputFocus()
 //____ TextModified() _________________________________________________________
 
 void WgGizmoText::TextModified()
-{
-	if( m_pMyCursor )
-	{
-		m_pMyCursor->gotoHardPos( m_pMyCursor->line(), m_pMyCursor->column() );
-	}
-
+{	
 	RequestRender();
 }
 
@@ -308,29 +344,29 @@ void WgGizmoText::TextModified()
 
 Uint32 WgGizmoText::InsertTextAtCursor( const WgCharSeq& str )
 {
-	if( !m_bEditable )
+	if( !IsEditable() )
 		return 0;
 
-	if( !m_pMyCursor )
+	if( m_bHasFocus )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
 	Uint32 nChars = 0;
 
-	if( m_maxCharacters == 0 || ((unsigned)str.Length()) < m_maxCharacters - m_pMyCursor->text()->nbChars() )
+	if( m_maxCharacters == 0 || ((unsigned)str.Length()) < m_maxCharacters - m_pText->nbChars() )
 	{
-		m_pMyCursor->putText( str.GetUnicode().ptr, str.Length() );
+		m_pText->putText( str.GetUnicode().ptr, str.Length() );
 		nChars = str.Length();
 	}
 	else
 	{
-		nChars = m_maxCharacters - m_pMyCursor->text()->nbChars();
-		m_pMyCursor->putText( str.GetUnicode().ptr, nChars );
+		nChars = m_maxCharacters - m_pText->nbChars();
+		m_pText->putText( str.GetUnicode().ptr, nChars );
 	}
 
-	if( m_maxLines != 0 && m_maxLines < m_pMyCursor->text()->nbSoftLines() )
+	if( m_maxLines != 0 && m_maxLines < m_pText->nbSoftLines() )
 	{
-		m_pMyCursor->unputText( nChars );
+		m_pText->unputText( nChars );
 		nChars = 0;
 	}
 	
@@ -341,10 +377,10 @@ Uint32 WgGizmoText::InsertTextAtCursor( const WgCharSeq& str )
 
 bool WgGizmoText::InsertCharAtCursor( Uint16 c )
 {
-	if( !m_bEditable )
+	if( !IsEditable() )
 		return 0;
 
-	if( !m_pMyCursor )
+	if( m_bHasFocus )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
@@ -353,14 +389,18 @@ bool WgGizmoText::InsertCharAtCursor( Uint16 c )
 
 bool WgGizmoText::InsertCharAtCursorInternal( Uint16 c )
 {
-	if( m_maxCharacters != 0 && m_maxCharacters < m_pMyCursor->text()->nbChars() )
+	if( m_maxCharacters != 0 && m_maxCharacters < m_pText->nbChars() )
 		return false;
 
-	m_pMyCursor->putChar( c );
+	if(m_pText->hasSelection())
+		m_pText->delSelection();
+	m_pText->setSelectionMode(false);
 
-	if( m_maxLines != 0 && m_maxLines < m_pMyCursor->text()->nbSoftLines() )
+	m_pText->putChar( c );
+
+	if( m_maxLines != 0 && m_maxLines < m_pText->nbSoftLines() )
 	{
-		m_pMyCursor->delPrevChar();
+		m_pText->delPrevChar();
 		return false;
 	}
 

@@ -42,12 +42,15 @@ WgCursorInstance::WgCursorInstance( WgText& text )
 {
 	m_pText 		= &text;
 	m_bInsert		= true;
+	m_bSelectMode	= false;
 	m_wantedOfsX	= -1;
 
 	m_time 			= 0;
 
 	m_line 			= text.nbLines()-1;
 	m_column 		= text.getLine(m_line)->nChars;
+	m_selStartLine	= m_line;
+	m_selStartColumn= m_column;
 }
 
 //____ incTime() _______________________________________________________________
@@ -78,8 +81,7 @@ void WgCursorInstance::gotoHardLine( Uint32 line )
 	if( line > maxLine )
 		line = maxLine;
 
-	m_line = line;
-	m_column = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, m_pText->getLineText(line) );
+	UpdateLocation(line, WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, m_pText->getLineText(line) ));
 }
 
 //____ gotoSoftLine() _________________________________________________________
@@ -106,10 +108,7 @@ void WgCursorInstance::gotoSoftLine( Uint32 line )
 
 	m_pText->posSoft2Hard( ln, col );
 
-	// Set the result
-
-	m_line = ln;
-	m_column = col;
+	UpdateLocation(ln, col);
 }
 
 
@@ -120,51 +119,51 @@ void WgCursorInstance::gotoColumn( Sint32 col )
 	const Sint32 minLine = 0;
 	const Sint32 maxLine = m_pText->nbLines()-1;
 
-	Uint32 maxCol = m_pText->getLine(m_line)->nChars;
+	int line = m_line;
 
+	if( line > maxLine )
+		line = maxLine;
+
+	Uint32 maxCol = m_pText->getLine(line)->nChars;
 
 	// Check whether to hop down/up on lines
 	if(col < 0)
 	{
-		Sint32 line = m_line - 1;
+		line = line - 1;
 
 		// Have we reached the top?
 		if(line < minLine)
 		{
 			// Yes
-			m_line = minLine;
+			line = minLine;
 			col = 0;
 		}
 		else
 		{
 			// No, set cursor column to end of line
-			m_line = line;
-			col = m_pText->getLine(m_line)->nChars;
-
+			col = m_pText->getLine(line)->nChars;
 		}
 	}
 	else if( col > (Sint32)maxCol )
 	{
-		Sint32 line = m_line + 1;
+		line = line + 1;
 
 		// Have we reached the bottom?
 		if(line > maxLine)
 		{
 			// Yes, set cursor on end of line
-			m_line = maxLine;
-			col = m_pText->getLine(m_line)->nChars;
+			line = maxLine;
+			col = m_pText->getLine(line)->nChars;
 		}
 		else
 		{
 			// No, set cursor column to 0
-			m_line = line;
 			col = 0;
-
 		}
 	}
 
+	UpdateLocation(line, col);
 
-	m_column = col;
 	m_wantedOfsX = -1;
 }
 
@@ -172,36 +171,137 @@ void WgCursorInstance::gotoColumn( Sint32 col )
 
 void WgCursorInstance::gotoPrevWord()
 {
-	WgChar * pLine = m_pText->getLineText(m_line);
+	gotoBeginningOfWord();
+
+	if(m_line == 0 && m_column == 0)
+		return;
+
+	Uint32 line = m_line;
 	Uint32 col = m_column;
 
-	while( col > 0 && (pLine[col-1].GetGlyph() == ' ' || pLine[col-1].GetGlyph() == '\t') )
-		col--;
+	if(line > m_pText->nbLines() - 1)
+		line = m_pText->nbLines() - 1;
 
-	while( col > 0 && pLine[col-1].GetGlyph() != ' ' && pLine[col-1].GetGlyph() != '\t' && pLine[col].GetGlyph() != ',' && pLine[col].GetGlyph() != '.' && pLine[col].GetGlyph() != ')' && pLine[col].GetGlyph() != '(' )
-		col--;
+	if(col > m_pText->getLine(line)->nChars)
+		col = m_pText->getLine(line)->nChars;
 
-	m_column = col;
+	WgChar* pText = m_pText->getLineText(line) + col - 1;
+
+	while( !isspace(pText->GetGlyph()) && !ispunct(pText->GetGlyph()) )
+	{
+		if(col == 0)
+		{
+			if(line == 0)
+				break;
+			line--;
+			col = m_pText->getLine(line)->nChars;
+		}
+		else
+		{
+			col--;
+			if(line == 0 && col == 0)
+				break;
+		}
+		pText--;
+	}
+
+	UpdateLocation(line, col);
 	m_wantedOfsX = -1;
 }
 
+//_____________________________________________________________________________
+void WgCursorInstance::gotoBeginningOfWord()
+{
+	if(m_line == 0 && m_column == 0)
+		return;
+
+	Uint32 line = m_line;
+	Uint32 col = m_column;
+
+	if(line > m_pText->nbLines() - 1)
+		line = m_pText->nbLines() - 1;
+
+	if(col > m_pText->getLine(line)->nChars)
+		col = m_pText->getLine(line)->nChars;
+
+	WgChar* pText = m_pText->getLineText(line) + col - 1;
+
+	while( isspace(pText->GetGlyph()) || ispunct(pText->GetGlyph()) )
+	{
+		if(col == 0)
+		{
+			if(line == 0)
+				break;
+			line--;
+			col = m_pText->getLine(line)->nChars;
+		}
+		else
+		{
+			col--;
+			if(line == 0 && col == 0)
+				break;
+		}
+		pText--;
+	}
+
+	UpdateLocation(line, col);
+	m_wantedOfsX = -1;
+}
 
 //____ gotoNextWord() _________________________________________________________
 
 void WgCursorInstance::gotoNextWord()
 {
-	WgChar *pLine	= m_pText->getLineText(m_line);
-	Uint32	maxCol	= m_pText->getLine(m_line)->nChars;
-	Uint32	col		= m_column;
+	gotoEndOfWord();
 
+	Uint32 line = m_line;
+	Uint32 col = m_column;
 
-	while( col < maxCol && pLine[col].GetGlyph() != ' ' && pLine[col].GetGlyph() != '\t' && pLine[col].GetGlyph() != ',' && pLine[col].GetGlyph() != '.' && pLine[col].GetGlyph() != ')' && pLine[col].GetGlyph() != '(' )
-		col++;
+	if(line > m_pText->nbLines() - 1)
+		line = m_pText->nbLines() - 1;
 
-	while( col < maxCol && (pLine[col].GetGlyph() == ' ' || pLine[col].GetGlyph() == '\t') )
-		col++;
+	if(col > m_pText->getLine(line)->nChars)
+		col = m_pText->getLine(line)->nChars;
 
-	m_column = col;
+	WgChar* pText = m_pText->getLineText(line) + col;
+
+	while( !pText->IsEndOfText() && (isspace(pText->GetGlyph()) || ispunct(pText->GetGlyph())) )
+	{
+		if(pText->IsEndOfLine())
+			line++, col = 0;
+		else
+			col++;
+		pText++;
+	}
+
+	UpdateLocation(line, col);
+	m_wantedOfsX = -1;
+}
+
+//_____________________________________________________________________________
+void WgCursorInstance::gotoEndOfWord()
+{
+	Uint32 line = m_line;
+	Uint32 col = m_column;
+
+	if(line > m_pText->nbLines() - 1)
+		line = m_pText->nbLines() - 1;
+
+	if(col > m_pText->getLine(line)->nChars)
+		col = m_pText->getLine(line)->nChars;
+
+	WgChar* pText = m_pText->getLineText(line) + col;
+
+	while( !pText->IsEndOfText() && !isspace(pText->GetGlyph()) && !ispunct(pText->GetGlyph()) )
+	{
+		if(pText->IsEndOfLine())
+			line++, col = 0;
+		else
+			col++;
+		pText++;
+	}
+
+	UpdateLocation(line, col);
 	m_wantedOfsX = -1;
 }
 
@@ -222,14 +322,34 @@ void WgCursorInstance::gotoPos( Uint32 line, Uint32 col )
 	if( line > maxLine )
 		line = maxLine;
 
-	m_line = line;
-
-	Uint32 maxCol = m_pText->getLine(m_line)->nChars;
+	Uint32 maxCol = m_pText->getLine(line)->nChars;
 	if( col > maxCol )
 		col = maxCol;
 
-	m_column = col;
+	UpdateLocation(line, col);
 }
+
+//____ gotoSoftPos() __________________________________________________________
+
+void WgCursorInstance::gotoSoftPos( Uint32 line, Uint32 col )
+{
+	m_pText->posSoft2Hard( line, col );
+
+	UpdateLocation(line, col);
+
+	m_wantedOfsX = -1;
+}
+
+//____ getSoftPos() ___________________________________________________________
+
+void WgCursorInstance::getSoftPos( Uint32 &line, Uint32 &col ) const
+{
+	line	= m_line;
+	col		= m_column;
+
+	m_pText->posHard2Soft( line, col );
+}
+
 
 //____ gotoPixel() _____________________________________________________________
 
@@ -240,7 +360,7 @@ void WgCursorInstance::gotoPixel( Sint32 x, Sint32 y )
 //  TODO: Needs to be able to handle text which varies in height (almost fixed, just isn't supported by softLineHeight() yet...)
 
 	Uint32 line = 0;
-	while( line < m_pText->nbSoftLines()-1 )
+	while( line < m_pText->nbSoftLines() )
 	{
 		y -= m_pText->softLineHeight(line);
 		if( y < 0  )
@@ -253,12 +373,21 @@ void WgCursorInstance::gotoPixel( Sint32 x, Sint32 y )
 
 	if( m_line == line )
 		pCursorOnLine = this;
+
+	Uint32 column;
+	if(line == m_pText->nbSoftLines())
+	{
+		line--;
+		column = m_pText->getSoftLine(line)->nChars;
+	}
 	else
-		m_line = line;
+	{
+		column = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), x, m_pText->getSoftLineText(line), pCursorOnLine );
+	}
 
-	m_column = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), x, m_pText->getSoftLineText(line), pCursorOnLine );
+	m_pText->posSoft2Hard( line, column );	
 
-	m_pText->posSoft2Hard( m_line, m_column );	
+	UpdateLocation(line, column);
 
 	m_wantedOfsX = -1;
 }
@@ -272,16 +401,22 @@ bool WgCursorInstance::putChar( Uint16 character )
 
 	bool ret;
 
+	Uint32 line = m_line;
+	Uint32 column = m_column;
+
 	if( m_bInsert )
-		ret = m_pText->insertChar( m_line, m_column++, character );
+		ret = m_pText->insertChar( line, column++, character );
+
 	else
-		ret = m_pText->replaceChar( m_line, m_column++, character );
+		ret = m_pText->replaceChar( line, column++, character );
 
 	if( character == '\n' )
 	{
-		m_line++;
-		m_column = 0;
+		line++;
+		column = 0;
 	}
+
+	UpdateLocation(line, column);
 
 	return ret;
 }
@@ -290,22 +425,11 @@ bool WgCursorInstance::putChar( Uint16 character )
 
 Uint32	WgCursorInstance::putText( const Uint16 * pString )
 {
-	m_wantedOfsX = -1;
+	int nChar = 0;
+	while( pString[nChar] != 0 )
+		nChar++;
 
-	Uint32 nInserted;
-
-	if( m_bInsert )
-		nInserted = m_pText->insertText( m_line, m_column, pString );
-	else
-	{
-		int nChar = 0;
-		while( pString[nChar] != 0 )
-			nChar++;
-
-		nInserted = m_pText->replaceText( m_line, m_column, nChar, pString );
-	}
-	m_column += nInserted;
-	return nInserted;
+	return putText(pString, nChar);
 }
 
 Uint32	WgCursorInstance::putText( const Uint16 * pString, int nChar )
@@ -313,13 +437,17 @@ Uint32	WgCursorInstance::putText( const Uint16 * pString, int nChar )
 	m_wantedOfsX = -1;
 
 	Uint32 nInserted;
+	Uint32 nLines = m_pText->nbLines();
 
 	if( m_bInsert )
 		nInserted = m_pText->insertText( m_line, m_column, pString, nChar );
 	else
 		nInserted = m_pText->replaceText( m_line, m_column, nChar, pString );
 
-	m_column += nInserted;
+	nLines = m_pText->nbLines() - nLines;
+
+	UpdateLocation(m_line + nLines, m_column + nInserted);
+
 	return nInserted;
 }
 
@@ -334,28 +462,52 @@ void WgCursorInstance::unputText( int nChar )
 		delPrevChar();
 }
 
+//_____________________________________________________________________
+void WgCursorInstance::delPrevWord()
+{
+	int line = m_line;
+	int column = m_column;
+	gotoPrevWord();
+	m_pText->removeText(m_line, m_column, line, column);
+}
+
+//_____________________________________________________________________
+void WgCursorInstance::delNextWord()
+{
+	int line = m_line;
+	int column = m_column;
+	gotoNextWord();
+	m_pText->removeText(line, column, m_line, m_column);
+	UpdateLocation(line, column);
+}
+
 //____ delPrevChar() __________________________________________________________
 
 bool WgCursorInstance::delPrevChar()
 {
 	m_wantedOfsX = -1;
 
-	if( m_column == 0 )
+	int column= m_column;
+	int line = m_line;
+	
+	bool bRet;
+
+	if( column == 0 )
 	{
-		if( m_line == 0 )
+		if( line == 0 )
 			return false;
 
-		m_line -= 1;
-		m_column = m_pText->getLine(m_line)->nChars;
-		if( m_pText->joinLines( m_line ) == 0 )
-			return false;
-
-		return true;
+		line -= 1;
+		column = m_pText->getLine(line)->nChars;
+		bRet = m_pText->joinLines( line );
 	}
 	else
 	{
- 		return m_pText->removeChar( m_line, --m_column );
+ 		bRet = m_pText->removeChar( line, --column );
 	}
+
+	UpdateLocation(line, column);
+	return bRet;
 }
 
 //____ delNextChar() __________________________________________________________
@@ -364,7 +516,7 @@ bool WgCursorInstance::delNextChar()
 {
 	m_wantedOfsX = -1;
 
-	if( m_column == m_pText->getLine( m_line )->nChars )
+	if( m_line < m_pText->nbLines() && m_column == m_pText->getLine( m_line )->nChars )
 	{
 		if( m_line == m_pText->nbLines()-1 )
 			return false;
@@ -407,9 +559,9 @@ int WgCursorInstance::ofsY() const
 
 //____ mode() __________________________________________________________________
 
-WgCursor::Mode WgCursorInstance::mode() const
+WgCursor::Mode WgCursorInstance::cursorMode() const
 {
-	if( m_pText->getLine(m_line)->nChars == m_column )
+	if( m_line >= m_pText->nbLines() || m_pText->getLine(m_line)->nChars == m_column )
 		return WgCursor::EOL;
 
 	if( m_bInsert )
@@ -417,29 +569,6 @@ WgCursor::Mode WgCursorInstance::mode() const
 
 	return WgCursor::OVR;
 }
-
-//____ gotoSoftPos() __________________________________________________________
-
-void WgCursorInstance::gotoSoftPos( Uint32 line, Uint32 col )
-{
-	m_line = line;
-	m_column = col;
-
-	m_pText->posSoft2Hard( m_line, m_column );
-
-	m_wantedOfsX = -1;
-}
-
-//____ getSoftPos() ___________________________________________________________
-
-void WgCursorInstance::getSoftPos( Uint32 &line, Uint32 &col ) const
-{
-	line	= m_line;
-	col		= m_column;
-
-	m_pText->posHard2Soft( line, col );
-}
-
 
 //____ goBOL() ________________________________________________________________
 
@@ -523,3 +652,74 @@ void WgCursorInstance::goDown( Uint32 nLines )
 	gotoPos(ln, col);
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+void WgCursorInstance::UpdateLocation(Uint32 line, Uint32 column)
+{
+	m_line = line;
+	m_column = column;
+
+	if(m_bSelectMode)
+	{
+		m_pText->selectText(m_selStartLine, m_selStartColumn, line, column);
+	}
+	else
+	{
+		clearSelection();
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void WgCursorInstance::setSelectionMode(bool bOn)
+{
+	m_bSelectMode = bOn;
+}
+
+bool WgCursorInstance::hasSelection()
+{
+	if(m_selStartLine < 0)
+		return false;
+
+	return m_selStartLine != m_line || m_selStartLine == m_line && m_selStartColumn != m_column;
+}
+
+void WgCursorInstance::delSelection()
+{
+	if(!hasSelection())
+		return;
+
+	m_wantedOfsX = -1;
+
+	int line = m_line;
+	int column = m_column;
+	if(m_selStartLine < (int)m_line || m_selStartLine == (int)m_line && m_selStartColumn < (int)m_column)
+	{
+		std::swap(line, m_selStartLine);
+		std::swap(column, m_selStartColumn);
+	}
+
+	m_pText->removeText(line, column, m_selStartLine, m_selStartColumn);
+
+	m_selStartLine = line;
+	m_selStartColumn = column;
+
+	UpdateLocation(line, column);
+	clearSelection();
+}
+
+void WgCursorInstance::clearSelection()
+{
+	m_pText->clearSelection();
+	m_selStartLine = m_line;
+	m_selStartColumn = m_column;
+}
+
+void WgCursorInstance::selectAll()
+{
+	m_pText->clearSelection();
+	setSelectionMode(true);
+	m_selStartLine = 0;
+	m_selStartColumn = 0;
+	gotoHardPos(m_pText->nbLines(), -1);
+	setSelectionMode(false);
+}

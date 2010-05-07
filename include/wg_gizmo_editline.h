@@ -62,18 +62,24 @@ public:
 
 	void		goBOL();
 	void		goEOL();
-	void		goBOF() { goBOF(); }
+	void		goBOF() { goBOL(); }
 	void		goEOF() { goEOL(); }
 
 	Uint32	InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
-	void	SetEditable( bool bEditable );
-	bool	IsEditable() const { return m_bEditable; }
+	virtual void		SetInputMode(InputMode mode);
+	virtual InputMode	GetInputMode() const { return m_inputMode; }
+	virtual bool		TempIsInputField() const	{ return IsEditable() && TextObj()->nbChars() > 0; }
+	virtual Wg_Interface_TextHolder* TempGetText(){ return this; }
 
 	bool	SetTextWrap(bool bWrap);						// Overloading SetTextWrap since we don't support wrapping text.
 
 protected:
+
+	bool	IsEditable() const { return m_inputMode == Editable; }
+	bool	IsSelectable() const { return m_inputMode != Static; }
+
 	void	OnUpdate( const WgUpdateInfo& _updateInfo );
 	void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	void	OnGotInputFocus();
@@ -92,12 +98,12 @@ private:
 
 	WgText				m_text;
 
-	WgCursorInstance *	m_pMyCursor;					// Non-null when widget has input focus.
 	bool				m_bPasswordMode;
+	bool				m_bHasFocus;
 	Uint32				m_maxCharacters;
 	Uint16				m_pwGlyph;
 	int					m_viewOfs;
-	bool				m_bEditable;
+	InputMode			m_inputMode;
 };
 
 

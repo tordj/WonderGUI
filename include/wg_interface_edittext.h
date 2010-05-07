@@ -30,8 +30,8 @@
 class WgInterfaceEditText : public Wg_Interface_TextHolder
 {
 public:
-	virtual void	SetEditable( bool bEditable ) = 0;
-	virtual bool	IsEditable() const = 0;
+
+	virtual void	SetInputMode(InputMode mode) = 0;
 
 	virtual Uint32	InsertTextAtCursor( const WgCharSeq& str ) = 0;
 	virtual bool	InsertCharAtCursor( Uint16 c ) = 0;

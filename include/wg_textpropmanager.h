@@ -74,6 +74,8 @@ public:
 	inline static Uint32 GetPropBufferSize() { return g_nPropTotal; }
 	inline static Uint32 GetRefCnt( Uint16 hProp ) { return g_pPropBuffer[hProp].m_refCnt; }
 
+	inline static void SetMergeSimilar(bool bMerge) { g_bMergeSimilar = bMerge; }
+
 private:
 
 	static const int NB_START_PROPS = 16;
@@ -111,6 +113,7 @@ private:
 	static Uint32				g_nPropUsed;
 	static Uint32				g_nPropTotal;
 	static Sint16				g_firstFreeProp;
+	static bool					g_bMergeSimilar;
 };
 
 

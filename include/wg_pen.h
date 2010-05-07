@@ -111,7 +111,7 @@ public:
 	inline int				GetLineHeight() const { return m_pGlyphs->GetHeight(m_size); }
 	inline int				GetBaseline() const { return m_pGlyphs->GetBaseline(m_size); }
 
-	inline void				BlitChar() const { if( m_bClip ) m_pDevice->ClipBlit( m_clipRect, m_pGlyph->pSurf, m_pGlyph->rect, GetBlitPosX(), GetBlitPosY() ); else m_pDevice->Blit( m_pGlyph->pSurf, m_pGlyph->rect, GetBlitPosX(), GetBlitPosY() ); }
+	void					BlitChar() const;
 	
 	bool					BlitCursor( const WgCursorInstance& instance ) const;
 

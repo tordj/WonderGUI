@@ -42,6 +42,7 @@
 
 class	WgCursorInstance;
 class	WgFont;
+class	WgTextManager;
 
 class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 {
@@ -61,6 +62,8 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 		WgColor GetTextColor() const;
 		bool	SetTextProp( const WgTextPropPtr& _pProp );
 		WgTextPropPtr GetTextProp( ) const;
+		void	SetTextManager(WgTextManager * _pManager);
+		WgTextManager * GetTextManager() const;
 		void	SetFormat( const WgValueFormat& format );
 		const WgValueFormat& GetFormat() const { return m_format; }
 		void	Clear();									// Sets value to 0 and clears input field.

@@ -1547,7 +1547,15 @@ void WgGlyphSetRes::Serialize(WgResourceSerializerXML& s)
 #ifdef WG_USE_FREETYPE
 		if( res->res->GetType() == WgGlyphSet::VECTOR )
 		{
-			switch( ((WgVectorGlyphs*)(res->res))->GetRenderMode() )
+			// Check and add our render_mode by seeing what else we have
+			// except monochrome.
+
+			WgVectorGlyphs::RenderMode mode = WgVectorGlyphs::MONOCHROME;
+
+			for( int i = 0 ; i <= WG_MAX_FONTSIZE && mode == WgVectorGlyphs::MONOCHROME; i++ )
+				mode = ((WgVectorGlyphs*)(res->res))->GetRenderMode( i );
+
+			switch( mode )
 			{
 				case WgVectorGlyphs::MONOCHROME:
 					s.AddAttribute("render_mode", "monochrome" );
@@ -1558,6 +1566,29 @@ void WgGlyphSetRes::Serialize(WgResourceSerializerXML& s)
 				case WgVectorGlyphs::BEST_SHAPES:
 					s.AddAttribute("render_mode", "best_shapes" );
 					break;
+			}
+
+			// Write down monochrome_sizes if we have any.
+
+			if( mode != WgVectorGlyphs::MONOCHROME )
+			{
+				std::string	str;
+
+				for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
+				{
+					WgVectorGlyphs::RenderMode m = ((WgVectorGlyphs*)(res->res))->GetRenderMode( i );
+					if( m == WgVectorGlyphs::MONOCHROME )
+					{
+						if( !str.empty() )
+							str += ",";
+
+						str += WgUtil::ToString( i );
+					}
+
+				}	
+
+				if( !str.empty() )
+					s.AddAttribute( "monochrome_sizes", str );
 			}
 		}
 #endif
@@ -1582,17 +1613,34 @@ void WgGlyphSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		VERIFY(m_pGlyphSet, "invalid <glyphset>");
 
 #ifdef WG_USE_FREETYPE
-		const std::string& mode = xmlNode["render_mode"];
-		if( mode.size() != 0 && m_pGlyphSet->GetType() == WgGlyphSet::VECTOR )
+
+		if( m_pGlyphSet->GetType() == WgGlyphSet::VECTOR )
 		{
-			if( mode == "monochrome" )
-				((WgVectorGlyphs*)m_pGlyphSet)->SetRenderMode( WgVectorGlyphs::MONOCHROME );
-			else if( mode == "crisp_edges" )
-				((WgVectorGlyphs*)m_pGlyphSet)->SetRenderMode( WgVectorGlyphs::CRISP_EDGES );
-			else if( mode == "best_shapes" )
-				((WgVectorGlyphs*)m_pGlyphSet)->SetRenderMode( WgVectorGlyphs::BEST_SHAPES );
-			else
-				s.Warning("Unknown glyphset render_mode '" + mode + "'");
+			WgVectorGlyphs * pVectorGlyphs = (WgVectorGlyphs*)m_pGlyphSet;
+
+			const std::string& mode = xmlNode["render_mode"];
+			if( mode.size() != 0 )
+			{
+				if( mode == "monochrome" )
+					pVectorGlyphs->SetRenderMode( WgVectorGlyphs::MONOCHROME );
+				else if( mode == "crisp_edges" )
+					pVectorGlyphs->SetRenderMode( WgVectorGlyphs::CRISP_EDGES );
+				else if( mode == "best_shapes" )
+					pVectorGlyphs->SetRenderMode( WgVectorGlyphs::BEST_SHAPES );
+				else
+					s.Warning("Unknown glyphset render_mode '" + mode + "'");
+
+			}
+
+			const std::string& monosizes = xmlNode["monochrome_sizes"];
+			if( monosizes.size() != 0  )
+			{
+				std::vector<std::string> tokens;
+				WgUtil::Tokenize(monosizes, tokens);
+
+				for( unsigned int i = 0 ; i < tokens.size() ; i++ )
+					pVectorGlyphs->SetRenderMode( WgVectorGlyphs::MONOCHROME, WgUtil::ToSint32( tokens[i] ) );
+			}
 
 		}
 #endif
@@ -1981,6 +2029,7 @@ void WgTextManagerRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 			pFloats[i] = WgUtil::ToFloat( tokens[i] );
 
 		bool res = m_pTextManager->SetAllowedSizes(tokens.size(), pFloats);		
+		delete [] pFloats;
 
 		if( !res )
 			s.Error( "allowed_sizes can not be set to '" + xmlNode["allowed_sizes"] + "'" );
@@ -2477,6 +2526,12 @@ void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, 
 
 	WriteDiffAttr(s, xmlNode, "textalign", holder->TextAlignment(), WgOrigo::topLeft());
 
+	WgColor defSel(0);
+	WgResDB::ColorRes* colorRes = s.ResDb()->GetResColor("TextSelectionColor");
+	if(colorRes)
+		defSel = colorRes->res;
+	WgColorRes::Serialize(s, xmlNode, "selection_color", holder->GetSelectionColor(), defSel);
+
 	if(xmlNode.HasAttribute("tint") || holder->TextTintMode() != TINTMODE_MULTIPLY)
 	{
 		if(holder->TextTintMode() == TINTMODE_MULTIPLY)
@@ -2556,6 +2611,11 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 
 	holder->SetTextAlignment(WgUtil::ToOrigo(xmlNode["textalign"]));
 
+	if( xmlNode.HasAttribute("selection_color") )
+		holder->SetSelectionColor( WgColorRes::Deserialize(s, xmlNode["selection_color"]) );
+	else
+		holder->SetSelectionColor( WgColorRes::Deserialize(s, "#TextSelectionColor") );
+
 	WgTintMode tint = TINTMODE_MULTIPLY;
 	if(xmlNode["tint"] == "opaque")
 		tint = TINTMODE_OPAQUE;
@@ -2584,13 +2644,38 @@ void WgTextHolderRes::DeserializeText(const char * pChars, int len)
 void WgEditTextRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgInterfaceEditText* holder)
 {
 	WgTextHolderRes::Serialize( pThis, xmlNode, s, holder );
-	WriteDiffAttr(s, xmlNode, "edit", holder->IsEditable(), false);
+
+	WgInterfaceEditText::InputMode mode = holder->GetInputMode();
+
+	std::string defMode = "static";
+	std::string modeName;
+	switch(mode)
+	{
+	case WgInterfaceEditText::Selectable: modeName = "selectable"; break;
+	case WgInterfaceEditText::Editable: modeName = "editable"; break;
+	default: modeName = defMode;
+	}
+
+	WriteDiffAttr(s, xmlNode, "inputmode", modeName, defMode);
 }
 
 void WgEditTextRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgInterfaceEditText* holder)
 {
 	WgTextHolderRes::Deserialize( xmlNode, s, holder );
-	holder->SetEditable(WgUtil::ToBool(xmlNode["edit"], false));
+	bool bEditable = WgUtil::ToBool(xmlNode["edit"], false);
+
+	if(bEditable)
+	{
+		holder->SetInputMode(WgInterfaceEditText::Editable);
+	}
+	else
+	{
+		std::string modeName = xmlNode["inputmode"];
+		if(modeName == "selectable")
+			holder->SetInputMode(WgInterfaceEditText::Selectable);
+		else if(modeName == "editable")
+			holder->SetInputMode(WgInterfaceEditText::Editable);
+	}
 }
 
 
@@ -3169,6 +3254,11 @@ void Wdg_CheckBox2_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
 	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
 
+	WriteBlockSetAttr(s, widget->GetCheckedIcon(), "icon_checked");
+	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
+	WriteDiffAttr(s, xmlNode, "icon_fixedsize", widget->IsIconFixedSize(), false);
+	WriteDiffAttr(s, xmlNode, "icon_origo", widget->GetIconOrigo(), WgOrigo::midLeft());
+
 	s.EndTag();
 }
 
@@ -3189,10 +3279,20 @@ void Wdg_CheckBox2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 
 	WgBlockSetPtr checked = s.ResDb()->GetBlockSet(xmlNode["blockset_checked"]);
 	WgBlockSetPtr unchecked = s.ResDb()->GetBlockSet(xmlNode["blockset_unchecked"]);
-	ASSERT(checked && unchecked, "<checkbox> requires [blockset_checked] and [blockset_unchecked]");
 	widget->SetSource(unchecked, checked);
 	widget->SetState(WgUtil::ToBool(xmlNode["checked"]));
 	widget->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
+
+	WgBlockSetPtr icon_checked = s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
+	WgBlockSetPtr icon_unchecked = s.ResDb()->GetBlockSet(xmlNode["icon_unchecked"]);
+
+
+	WgOrigo	iconOrigo = WgOrigo::midLeft();
+	
+	if( xmlNode.HasAttribute( "icon_origo" ) )
+		iconOrigo = WgUtil::ToOrigo(xmlNode["icon_origo"]);
+	widget->SetIcon(icon_unchecked, icon_checked, iconOrigo, WgUtil::ToBool(xmlNode["icon_fixedsize"]) );
+
 }
 
 WgCharBuffer* Wdg_CheckBox2_Res::GetCharBuffer()
@@ -4119,6 +4219,10 @@ void Wdg_RadioButton2_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
 	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
 
+	WriteBlockSetAttr(s, widget->GetCheckedIcon(), "icon_checked");
+	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
+	WriteDiffAttr(s, xmlNode, "icon_fixedsize", widget->IsIconFixedSize(), false);
+	WriteDiffAttr(s, xmlNode, "icon_origo", widget->GetIconOrigo(), WgOrigo::midLeft());
 	s.EndTag();
 }
 
@@ -4139,11 +4243,20 @@ void Wdg_RadioButton2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeria
 
 	WgBlockSetPtr checked = s.ResDb()->GetBlockSet(xmlNode["blockset_checked"]);
 	WgBlockSetPtr unchecked = s.ResDb()->GetBlockSet(xmlNode["blockset_unchecked"]);
-	ASSERT(checked && unchecked, "<radiobutton> requires [blockset_checked] and [blockset_unchecked]");
 	widget->SetSource(unchecked, checked);
 	widget->AllowUnchecking(WgUtil::ToBool(xmlNode["allowuncheck"]));
 	widget->SetState(WgUtil::ToBool(xmlNode["checked"]));
 	widget->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
+
+	WgBlockSetPtr icon_checked = s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
+	WgBlockSetPtr icon_unchecked = s.ResDb()->GetBlockSet(xmlNode["icon_unchecked"]);
+
+
+	WgOrigo	iconOrigo = WgOrigo::midLeft();
+	
+	if( xmlNode.HasAttribute( "icon_origo" ) )
+		iconOrigo = WgUtil::ToOrigo(xmlNode["icon_origo"]);
+	widget->SetIcon(icon_unchecked, icon_checked, iconOrigo, WgUtil::ToBool(xmlNode["icon_fixedsize"]) );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -4677,7 +4790,7 @@ void Wdg_Text_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML
 	m_Widget = widget;
 	WgWidgetRes::Deserialize(xmlNode, s);
 	WgEditTextRes::Deserialize(xmlNode, s, widget);
-	widget->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
+	widget->SetTooltipString(WgCharSeq(ReadLocalizedString(xmlNode["tooltip"], s).c_str()));
 	widget->SetMaxCharacters(WgUtil::ToUint32(xmlNode["max_length"]));
 	widget->SetMaxLines(WgUtil::ToUint32(xmlNode["max_rows"]));
 }

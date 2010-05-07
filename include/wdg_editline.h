@@ -37,7 +37,6 @@ class Wdg_EditLine : public Wdg_Widget<WgGizmoEditline>
 public:
 	WIDGET_GIZMO_CONSTRUCTORS(Wdg_EditLine,WgGizmoEditline);
 	virtual ~Wdg_EditLine() {};
-	virtual bool		IsInputField() const	{ return (TextObj()->nbChars() > 0); }
 };
 
 #endif // WDG_EDITLINE_DOT_H

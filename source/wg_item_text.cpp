@@ -22,8 +22,8 @@ WgItemText::WgItemText( )
 
 WgItemText::WgItemText( Uint32 id, const char * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
-	m_text.setText( pStr );
 	m_text.setDefaultProperties(pProp);
+	m_text.setText( pStr );
 
 	m_margin.left	= marginLeft;
 	m_margin.right	= marginRight;
@@ -35,8 +35,8 @@ WgItemText::WgItemText( Uint32 id, const char * pStr, const WgTextPropPtr& pProp
 
 WgItemText::WgItemText( Uint32 id, const Uint16 * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
-	m_text.setText( pStr );
 	m_text.setDefaultProperties(pProp);
+	m_text.setText( pStr );
 
 	m_margin.left	= marginLeft;
 	m_margin.right	= marginRight;
@@ -48,8 +48,8 @@ WgItemText::WgItemText( Uint32 id, const Uint16 * pStr, const WgTextPropPtr& pPr
 
 WgItemText::WgItemText( Uint32 id, const WgText * pText, const WgTextPropPtr& pProp, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
-	m_text.setText( pText );
 	m_text.setDefaultProperties(pProp);
+	m_text.setText( pText );
 
 	m_margin.left	= marginLeft;
 	m_margin.right	= marginRight;

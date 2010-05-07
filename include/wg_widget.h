@@ -56,6 +56,7 @@ class	WgWidget;
 class	WgChar;
 class	WgGizmo;
 class	WgGizmoHook;
+class	Wg_Interface_TextHolder;
 
 //____ Callback Macros ________________________________________________________
 /*
@@ -200,8 +201,8 @@ class	WgWidget : public WgEmitter
 		inline Sint32		TooltipDelay() const { return m_tooltipDelay; }
 		inline void			SetTooltipDelay( Sint32 tooltipDelay ) { m_tooltipDelay = tooltipDelay; }
 
-		// hacked in by Viktor for now:
-		virtual bool		IsInputField() const	{ return false; }
+		virtual bool		IsInputField() const { return false; }
+		virtual Wg_Interface_TextHolder* GetText() { return 0; }
 
 		virtual WgString	GetTooltipString() const	{ return 0; }
 

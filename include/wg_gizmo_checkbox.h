@@ -57,8 +57,19 @@ public:
 	// for stretched backgrounds
 
 	bool			SetSource( const WgBlockSetPtr& _pUnchecked, const WgBlockSetPtr& _pChecked, bool bFixedSizeBox = false );
+
 	WgBlockSetPtr	GetCheckedSource() const { return m_pBlockChecked; }
 	WgBlockSetPtr	GetUncheckedSource() const { return m_pBlockUnchecked; }
+
+	void			SetIcon( const WgBlockSetPtr& _pUnchecked, const WgBlockSetPtr& _pChecked, 
+							 WgBorders _areaBorders, const WgOrigo& _origo, float _scale = 0.f, bool _bPushText = true );
+
+	WgBlockSetPtr	GetCheckedIcon() const { return m_pIconChecked; }
+	WgBlockSetPtr	GetUncheckedIcon() const { return m_pIconUnchecked; }
+	float			GetIconScale() const { return m_iconSize; }
+	WgOrigo			GetIconOrigo() const { return m_iconOrigo; }
+	WgBorders		GetIconBorders() const { return m_iconAreaBorders; }
+	bool			IsIconPushingText() const { return m_bIconPushText; }
 
     bool			SetDisplacement( Sint8 xUnchecked = 0, Sint8 yUnchecked = 0, Sint8 xOver = 0, Sint8 yOver = 0, Sint8 xChecked = 0, Sint8 yChecked = 0 );
 	void			GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sint8& yOver, Sint8& xDown, Sint8& yDown ) const;
@@ -106,6 +117,13 @@ private:
 
 	bool			m_bOver;						// Set when mouse is over.							
 	bool			m_bPressed;						// Set when mouse is pressed and over.
+
+	WgBlockSetPtr	m_pIconUnchecked;
+	WgBlockSetPtr	m_pIconChecked;
+	WgOrigo			m_iconOrigo;
+	float			m_iconScale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
+	bool			m_bIconPushText;
+	WgBorders		m_iconAreaBorders;
 
 	WgBlockSetPtr	m_pBlockUnchecked;
 	WgBlockSetPtr	m_pBlockChecked;

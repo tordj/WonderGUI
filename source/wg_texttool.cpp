@@ -1743,7 +1743,7 @@ Uint32 WgTextTool::textWidth( const WgText& kTextObj )
 
 	for( Uint32 i = 0 ; i < nLines ; i++ )
 	{
-		Uint32 w = lineWidth( kTextObj.getNode(), kTextObj.getDefaultProperties(), kTextObj.mode(), kTextObj.getLineText( 0 ) );
+		Uint32 w = lineWidth( kTextObj.getNode(), kTextObj.getDefaultProperties(), kTextObj.mode(), kTextObj.getLineText( i ) );
 
 		if( w > maxWidth )
 			maxWidth = w;

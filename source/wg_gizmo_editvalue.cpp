@@ -29,7 +29,7 @@
 #include <wg_font.h>
 #include <wg_cursorinstance.h>
 #include <wg_key.h>
-
+#include <wg_textmanager.h>
 
 static const char Wdg_Type[] = {"TordJ/EditValue"};
 
@@ -122,10 +122,30 @@ void WgGizmoEditvalue::SetTextAlignment( const WgOrigo& origo )
 	}
 }
 
+//____ GetTextAlignment() _____________________________________________________
+
 WgOrigo	WgGizmoEditvalue::GetTextAlignment( ) const
 {
 	return m_text.alignment();
 }
+
+//____ SetTextManager() _______________________________________________________
+
+void WgGizmoEditvalue::SetTextManager(WgTextManager * _pManager)
+{
+	if( m_text.getManager() != _pManager )
+	{
+		m_text.setManager( _pManager );
+	}
+}
+
+//____ GetTextManager() _______________________________________________________
+
+WgTextManager * WgGizmoEditvalue::GetTextManager() const
+{
+	return m_text.getManager();
+}
+
 
 //____ Clear() ________________________________________________________________
 

@@ -40,7 +40,6 @@
 #include <assert.h>
 
 class WgCursor;
-class WgCursorInstance;
 
 #ifdef	WG_USE_FREETYPE
 	class WgVectorGlyphs;

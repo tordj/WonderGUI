@@ -40,9 +40,8 @@ WgWidget * Wdg_TextView::NewOfMyType() const
 void Wdg_TextView::Init()
 {
 	m_pText			= &m_text;
-	m_pMyCursor		= 0;
 	m_maxCharacters = 0;
-	m_bEditable		= false;
+	m_inputMode		= Static;
 
 	m_newlineKey	= WGKEY_RETURN;
 	m_newlineModif	= WG_MODKEY_NONE;
@@ -70,41 +69,37 @@ const char * Wdg_TextView::GetMyType( void )
 	return Wdg_Type;
 }
 
-//____ SetEditable() __________________________________________________________
-void Wdg_TextView::SetEditable( bool bEditable )
+//______________________________________________________________
+void Wdg_TextView::SetInputMode(InputMode mode)
 {
-	m_bEditable = bEditable;
+	m_inputMode = mode;
 }
 
 //____ goBOL() ________________________________________________________________
 void Wdg_TextView::goBOL()
 {
-	if( m_pMyCursor )
-		m_pMyCursor->goBOL();
+	m_pText->goBOL();
 	AdjustViewOfs();
 }
 
 //____ goEOL() ________________________________________________________________
 void Wdg_TextView::goEOL()
 {
-	if( m_pMyCursor )
-		m_pMyCursor->goEOL();
+	m_pText->goEOL();
 	AdjustViewOfs();
 }
 
 //____ goBOF() ________________________________________________________________
 void Wdg_TextView::goBOF()
 {
-	if( m_pMyCursor )
-		m_pMyCursor->goBOF();
+	m_pText->goBOF();
 	AdjustViewOfs();
 }
 
 //____ goEOF() ________________________________________________________________
 void Wdg_TextView::goEOF()
 {
-	if( m_pMyCursor )
-		m_pMyCursor->goEOF();
+	m_pText->goEOF();
 	AdjustViewOfs();
 }
 
@@ -113,12 +108,8 @@ void Wdg_TextView::goEOF()
 
 void	Wdg_TextView::DoMyOwnUpdate( const WgUpdateInfo& _updateInfo )
 {
-
-	if( m_pMyCursor )
-	{
-		m_pMyCursor->incTime( _updateInfo.msDiff );
+	if(m_pText->incTime( _updateInfo.msDiff ))
 		RequestRender();					//TODO: Should only render the cursor!
-	}
 }
 
 
@@ -130,8 +121,8 @@ void Wdg_TextView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 
 	WgRect contentRect( _window.x - ViewPixelOfsX(), _window.y - ViewPixelOfsY(), ContentWidth(), ContentHeight() );
 
-	if( m_pMyCursor )
-		WgGfx::printTextWithCursor( _clip, pText, *m_pMyCursor, contentRect );
+	if( m_pText->GetCursor() )
+		WgGfx::printTextWithCursor( _clip, pText, *m_pText->GetCursor(), contentRect );
 	else
 		WgGfx::printText( _clip, pText, contentRect );
 
@@ -151,95 +142,95 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 {
 	if( action == WgInput::BUTTON_PRESS && button_key == 1 )
 	{
-		if( m_pMyCursor )
+		if( m_pText->GetCursor() )
 		{
 			int x = info.x;
 			int y = info.y;
 			Abs2local( &x, &y );
 
-			m_pMyCursor->gotoPixel(x,y);
+			m_pText->gotoPixel(x,y);
 			AdjustViewOfs();
 		}
 		else
 			GrabInputFocus();
 	}
 
-	if( m_pMyCursor && action == WgInput::CHARACTER )
+	if( m_pText->GetCursor() && action == WgInput::CHARACTER )
 	{
-		if( button_key >= 32 )
+		if( button_key >= 32  && button_key != 127 )
 		{
 			// by default - no max limit
-			if( m_maxCharacters == 0 || m_maxCharacters > m_pMyCursor->text()->nbChars() )
-				m_pMyCursor->putChar( button_key );
+			if( m_maxCharacters == 0 || m_maxCharacters > m_pText->nbChars() )
+				m_pText->putChar( button_key );
 		}
 //		if( button_key == 13 )
-//				m_pMyCursor->putChar( '\n' );
+//				m_pText->putChar( '\n' );
 
 		if( button_key == '\t' )
-				m_pMyCursor->putChar( '\t' );
+				m_pText->putChar( '\t' );
 
 		SetContentSize( m_text.width(), m_text.height() );
 		AdjustViewOfs();
 	}
 
-	if( m_pMyCursor && (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) )
+	if( m_pText->GetCursor() && (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) )
 	{
 		switch( button_key )
 		{
 			case WGKEY_LEFT:
 				if( info.modifier == WG_MODKEY_CTRL )
-					m_pMyCursor->gotoPrevWord();
+					m_pText->gotoPrevWord();
 				else
-					m_pMyCursor->goLeft();
+					m_pText->goLeft();
 				AdjustViewOfs();
 				break;
 			case WGKEY_RIGHT:
 				if( info.modifier == WG_MODKEY_CTRL )
-					m_pMyCursor->gotoNextWord();
+					m_pText->gotoNextWord();
 				else
-					m_pMyCursor->goRight();
+					m_pText->goRight();
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_UP:
-				m_pMyCursor->goUp();
+				m_pText->goUp();
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_DOWN:
-				m_pMyCursor->goDown();
+				m_pText->goDown();
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_BACKSPACE:
-				m_pMyCursor->delPrevChar();
+				m_pText->delPrevChar();
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_DELETE:
-				m_pMyCursor->delNextChar();
+				m_pText->delNextChar();
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_HOME:
 				if( info.modifier == WG_MODKEY_CTRL )
-					m_pMyCursor->goBOF();
+					m_pText->goBOF();
 				else
-					m_pMyCursor->goBOL();
+					m_pText->goBOL();
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_END:
 				if( info.modifier == WG_MODKEY_CTRL )
-					m_pMyCursor->goEOF();
+					m_pText->goEOF();
 				else
-					m_pMyCursor->goEOL();
+					m_pText->goEOL();
 				AdjustViewOfs();
 				break;
 
 			default:
 				if( button_key == m_newlineKey && info.modifier == m_newlineModif )
-					m_pMyCursor->putChar( '\n' );
+					m_pText->putChar( '\n' );
 				break;
 		}
 	}
@@ -289,16 +280,15 @@ void Wdg_TextView::DoMyOwnInputFocusChange( bool _bFocus )
 {
 	if( _bFocus )
 	{
-		if( m_bEditable )
+		if( IsEditable() )
 		{
-			m_pMyCursor = new WgCursorInstance( m_text );
+			m_pText->CreateCursor();
 			AdjustViewOfs();
 		}
 	}
 	else
 	{
-		delete m_pMyCursor;
-		m_pMyCursor = 0;
+		m_pText->DestroyCursor();
 	}
 
 	RequestRender();
@@ -308,11 +298,6 @@ void Wdg_TextView::DoMyOwnInputFocusChange( bool _bFocus )
 
 void Wdg_TextView::TextModified()
 {
-	if( m_pMyCursor )
-	{
-		m_pMyCursor->gotoHardPos( m_pMyCursor->line(), m_pMyCursor->column() );
-	}
-
 	SetContentSize( m_text.width(), m_text.height() );
 	RequestRender();
 }
@@ -329,24 +314,24 @@ void Wdg_TextView::SetNewlineCombo( WgKey key, WgModifierKeys modifiers )
 
 Uint32 Wdg_TextView::InsertTextAtCursor( const WgCharSeq& str )
 {
-	if( !m_bEditable )
+	if( !IsEditable() )
 		return 0;
 
-	if( !m_pMyCursor )
+	if( !m_pText->GetCursor() )
 		if( !GrabInputFocus() )
 			return 0;				// Couldn't get input focus...
 
 	Uint32 retVal = 0;
 
-	if( m_maxCharacters == 0 || ((unsigned) str.Length()) < m_maxCharacters - m_pMyCursor->text()->nbChars() )
+	if( m_maxCharacters == 0 || ((unsigned) str.Length()) < m_maxCharacters - m_pText->nbChars() )
 	{
-		m_pMyCursor->putText( str.GetUnicode().ptr , str.Length() );
+		m_pText->putText( str.GetUnicode().ptr , str.Length() );
 		retVal = str.Length();
 	}
 	else
 	{
-		retVal = m_maxCharacters - m_pMyCursor->text()->nbChars();
-		m_pMyCursor->putText( str.GetUnicode().ptr, retVal );
+		retVal = m_maxCharacters - m_pText->nbChars();
+		m_pText->putText( str.GetUnicode().ptr, retVal );
 	}
 
 	AdjustViewOfs();
@@ -358,17 +343,17 @@ Uint32 Wdg_TextView::InsertTextAtCursor( const WgCharSeq& str )
 
 bool Wdg_TextView::InsertCharAtCursor( Uint16 c )
 {
-	if( !m_bEditable )
+	if( !IsEditable() )
 		return 0;
 
-	if( !m_pMyCursor )
+	if( !m_pText->GetCursor() )
 		if( !GrabInputFocus() )
 			return false;				// Couldn't get input focus...
 
-	if( m_maxCharacters != 0 && m_maxCharacters < m_pMyCursor->text()->nbChars() )
+	if( m_maxCharacters != 0 && m_maxCharacters < m_pText->nbChars() )
 		return false;
 
-	m_pMyCursor->putChar( c );
+	m_pText->putChar( c );
 	AdjustViewOfs();
 	return true;
 }
@@ -383,12 +368,12 @@ void Wdg_TextView::AdjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_pMyCursor && m_pText->getFontSet() )
+	if( m_pText->GetCursor() && m_pText->getFontSet() )
 	{
 		Uint32 cursCol, cursLine;
 
-		m_pMyCursor->getSoftPos(cursLine, cursCol);
-		int cursWidth	= m_pText->getFontSet()->GetCursor()->advance(m_pMyCursor->mode() );
+		m_pText->getSoftPos(cursLine, cursCol);
+		int cursWidth	= m_pText->getFontSet()->GetCursor()->advance(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.

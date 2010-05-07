@@ -43,6 +43,14 @@ class Wg_Interface_TextHolder : protected WgTextHolder
 {
 
 public:
+	enum InputMode
+	{
+		Static,
+		Selectable,
+		Editable,
+	};
+	virtual InputMode GetInputMode() const  { return Static; }
+
 	inline void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); TextModified(); }
 	inline WgTextManager * GetTextManager() const { return m_pText->getManager(); }
 
@@ -66,6 +74,9 @@ public:
 	inline void			SetTextDefaultStyle( WgFontStyle style, WgMode mode )		{ m_pText->setDefaultStyle(style,mode); TextModified(); }
 
 	inline void			SetDefaultFont( WgFont * pFont )							{ m_pText->setDefaultFont(pFont); TextModified(); }
+
+	inline void			SetSelectionColor( WgColor color )							{ m_pText->setSelectionColor(color); }
+	inline WgColor		GetSelectionColor() const									{ return m_pText->getSelectionColor(); }
 
 // -------------
 
@@ -156,6 +167,7 @@ public:
 	void				AddText( const WgText * pText, Uint32 fromLine = 0, Uint32 nLines = 0xFFFFFFFF );
 	void				AddText( const WgCharBuffer* charBuffer );
 	void				RemoveTextLines( Uint32 start, Uint32 nLines = 0xFFFFFFFF );
+	void				RemoveSelectedText();
 
 	inline WgMode		TextMode() const { return m_pText->mode(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }

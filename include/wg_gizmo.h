@@ -53,7 +53,7 @@ class WgUpdateInfo;
 class WgEmitter;
 class WgGfxDevice;
 class WgChildManager;
-
+class Wg_Interface_TextHolder;
 
 class WgGizmo
 {
@@ -135,6 +135,9 @@ protected:
 	virtual void	OnDisable();
 	virtual void	OnGotInputFocus();
 	virtual void	OnLostInputFocus();
+	// rename when gizmos are done
+	virtual bool	TempIsInputField() const;
+	virtual Wg_Interface_TextHolder*	TempGetText();
 
 	//
 

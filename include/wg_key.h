@@ -33,6 +33,10 @@ enum WgKey
 	WGKEY_F11,
 	WGKEY_F12,
 
+	WGKEY_SHIFT,
+	WGKEY_CONTROL,
+	WGKEY_ALT,
+
 	WGKEY_UNMAPPED		// This one must always be last!
 };
 

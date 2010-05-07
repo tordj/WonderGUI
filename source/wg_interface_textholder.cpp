@@ -194,6 +194,12 @@ void Wg_Interface_TextHolder::RemoveTextLines( Uint32 start, Uint32 nLines )
 	TextModified();
 }
 
+void Wg_Interface_TextHolder::RemoveSelectedText()
+{
+	m_pText->removeSelectedText();
+	TextModified();
+}
+
 //____ CloneInterface() _______________________________________________________
 
 //DEPRECATED! To be removed once all widgets and items are gizmos.

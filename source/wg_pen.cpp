@@ -127,7 +127,10 @@ bool WgPen::SetChar( Uint32 chr )
 	{
 		if( chr == ' ' && !m_bShowSpace )
 		{
-			m_dummyGlyph.advance = m_pGlyphs->GetWhitespaceAdvance( m_size );
+			if(m_pGlyphs)
+				m_dummyGlyph.advance = m_pGlyphs->GetWhitespaceAdvance( m_size );
+			else
+				m_dummyGlyph.advance = 0;
 			m_pGlyph = &m_dummyGlyph;
 			return false;
 		}
@@ -215,6 +218,15 @@ bool WgPen::SetChar( Uint32 chr )
 	return false;
 }
 
+void WgPen::BlitChar() const
+{
+	int x = GetBlitPosX();
+	int y = GetBlitPosY();
+	if( m_bClip )
+		m_pDevice->ClipBlit( m_clipRect, m_pGlyph->pSurf, m_pGlyph->rect, x, y);
+	else
+		m_pDevice->Blit( m_pGlyph->pSurf, m_pGlyph->rect, x, y);
+}
 
 //____ BlitCursor() _______________________________________________________
 
@@ -224,7 +236,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 	if( pCursor == 0 )
 		return false;
 
-	WgGfxAnim * pAnim	= pCursor->anim( instance.mode() );
+	WgGfxAnim * pAnim	= pCursor->anim( instance.cursorMode() );
 	if( pAnim == 0 )
 		return false;
 
@@ -233,7 +245,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 	float	scaleValue = (pCursor->sizeRatio() * GetLineSpacing())/pAnim->height();
 	
 	WgSize	size = WgSize( pAnim->width(), pAnim->height() );
-	WgCord  bearing = pCursor->bearing( instance.mode() );
+	WgCord  bearing = pCursor->bearing( instance.cursorMode() );
 
 	int blockFlags = 0;
 
@@ -277,11 +289,11 @@ void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 	if( !pCursor )
 		return;
 
-	WgGfxAnim * pAnim	= pCursor->anim( instance.mode() );
+	WgGfxAnim * pAnim	= pCursor->anim( instance.cursorMode() );
 	if( !pAnim )
 		return;
 
-	int advance = pCursor->advance(instance.mode());
+	int advance = pCursor->advance(instance.cursorMode());
 
 	if( pCursor->scaleMode() == WgCursor::TILE_SCALED || pCursor->scaleMode() == WgCursor::STRETCH_SCALED )
 	{

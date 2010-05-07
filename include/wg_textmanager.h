@@ -48,6 +48,8 @@ public:
 
 	bool SetScaleValue( float scale );
 
+	bool SetScaleMultiplier( float multi );
+
 	bool SetAllowedSizes( int nSizes, float sizes[] );
 	bool SetGrowFormula( float treshold, float ratio, float limit );
 	bool SetShrinkFormula( float treshold, float ratio, float limit );
@@ -70,6 +72,8 @@ public:
 	inline float	GetShrinkRatio() const { return m_shrinkRatio; }
 	inline float	GetShrinkLimit() const { return m_shrinkLimit; }
 
+	inline float	GetScaleMultiplier() const { return m_scaleMultiplier; }
+
 	inline float	GetScaleValue() const { return m_scale; }
 	inline float	GetSizeStepping() const { return m_sizeStepping; }
 	inline Rounding	GetSizeRounding() const { return m_sizeRounding; }
@@ -85,6 +89,8 @@ private:
 	float		m_scale;
 
 	float *		m_pAllowedSizes;
+
+	float		m_scaleMultiplier;
 
 	float		m_growTreshold;
 	float		m_growRatio;

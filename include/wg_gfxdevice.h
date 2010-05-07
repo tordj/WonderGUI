@@ -163,12 +163,15 @@ public:
 
 	// Low-level print methods
 
-	virtual void		PrintLine( WgPen * pPen, const WgTextPropPtr& pTextProp, WgMode mode,
-									const WgChar * pString, Uint32 maxChars = 0xFFFF );
+	virtual void		PrintLine( WgPen * pPen, const WgTextPropPtr& pTextProp, WgMode mode, const WgChar * pString, Uint32 maxChars = 0xFFFF );
 
 
 protected:
 	WgGfxDevice();
+
+	void PrintText( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen );
+	void PrintTextSelection( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen );
+	int CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, const WgChar* pLine, Uint32 nChars);
 
 //	virtual void	FillSubPixel( float dx, float dy, float dw, float dh, const WgColor& col ) = 0;
 //

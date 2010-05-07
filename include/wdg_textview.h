@@ -57,8 +57,8 @@ public:
 	Uint32	InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
-	void	SetEditable(bool bEditable);
-	bool	IsEditable() const { return m_bEditable; }
+	virtual void		SetInputMode(InputMode mode);
+	virtual InputMode	GetInputMode() const { return m_inputMode; }
 
 	void	SetNewlineCombo( WgKey	key, WgModifierKeys modifiers );
 
@@ -72,6 +72,7 @@ public:
 protected:
 	WgWidget * NewOfMyType() const;
 private:
+	bool	IsEditable() const { return m_inputMode == Editable; }
 	void	Init();
 	
 	void	DoMyOwnUpdate( const WgUpdateInfo& _updateInfo );
@@ -90,13 +91,12 @@ private:
 
 	WgText				m_text;
 
-	WgCursorInstance *	m_pMyCursor;					// Non-null when widget has input focus.
 	Uint32				m_maxCharacters;
 
 	WgKey				m_newlineKey;
 	WgModifierKeys		m_newlineModif;
 
-	bool				m_bEditable;
+	InputMode			m_inputMode;
 };
 
 

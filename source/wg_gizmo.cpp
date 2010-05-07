@@ -212,3 +212,12 @@ void WgGizmo::OnLostInputFocus()
 {
 }
 
+bool WgGizmo::TempIsInputField() const
+{
+	return false;
+}
+
+Wg_Interface_TextHolder* WgGizmo::TempGetText()
+{
+	return 0;
+}

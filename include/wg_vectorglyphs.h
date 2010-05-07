@@ -83,8 +83,11 @@ public:
 	int			GetWhitespaceAdvance( int size );
 	int			GetMaxGlyphAdvance( int size );
 
-	bool		SetRenderMode( RenderMode mode );
-	inline RenderMode	GetRenderMode() const { return m_renderMode; }
+
+	inline bool SetRenderMode( RenderMode mode ) { return SetRenderMode( mode, 0, 0xFFFF ); }
+	inline bool SetRenderMode( RenderMode mode, int size ) { return SetRenderMode(mode,size,size); }
+	bool		SetRenderMode( RenderMode mode, int startSize, int endSize );
+	inline RenderMode	GetRenderMode( int size ) const { if( size >= 0 && size <= WG_MAX_FONTSIZE ) return m_renderMode[size]; else return MONOCHROME; }
 
 	static void	SetSurfaceFactory( WgSurfaceFactory * pFactory );
 	static void	ClearCache();
@@ -131,6 +134,7 @@ private:
 	void				CopyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, Uint8 * pDest, int dest_width, int dest_height, int dest_pitch );
 
 
+	bool				SetCharSize( int size );
 
 	inline void			SlotLost( const CacheSlot * pSlot ) { RemoveSlotFromIndex( pSlot ); }	// Callback, called BEFORE content of slot is lost.
 	void				CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot );
@@ -144,10 +148,10 @@ private:
 
 	FT_Face				m_ftFace;
 	int					m_ftCharSize;
-	CacheSlot ***		m_cachedGlyphsIndex[WG_MAX_FONTSIZE];
+	CacheSlot ***		m_cachedGlyphsIndex[WG_MAX_FONTSIZE+1];
 	Uint32				m_accessCounter;
 	int					m_renderFlags;
-	RenderMode			m_renderMode;
+	RenderMode			m_renderMode[WG_MAX_FONTSIZE+1];
 
 
 	//____ Static stuff __________________________________________________________

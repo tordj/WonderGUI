@@ -38,6 +38,7 @@ WgTextPropHolder *	WgTextPropManager::g_pPropBuffer = &g_nullProp;
 Uint32				WgTextPropManager::g_nPropUsed  = 1;
 Uint32				WgTextPropManager::g_nPropTotal = 1;
 Sint16				WgTextPropManager::g_firstFreeProp = -1;
+bool				WgTextPropManager::g_bMergeSimilar = true;
 
 WgTextPropManager	dummy;		// Used to bootstrap the system...
 
@@ -83,7 +84,7 @@ Uint16 WgTextPropManager::RegisterProp( const WgTextProp& prop )
 	{
 		WgTextPropHolder * p = &g_pPropBuffer[h];
 
-		if( prop.CompareTo( &p->m_prop ) )
+		if( g_bMergeSimilar && prop.CompareTo( &p->m_prop ) )
 			return p->m_id;
 
 		h = (Sint16) p->m_next;

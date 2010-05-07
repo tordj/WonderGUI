@@ -31,6 +31,8 @@ WgTextManager::WgTextManager()
 {
 	m_scale = 1.f;
 
+	m_scaleMultiplier = 1.f;
+
 	m_pAllowedSizes = 0;
 
 	m_growTreshold = 1.f;
@@ -74,6 +76,8 @@ bool WgTextManager::SetScaleValue( float scale )
 	if( scale <= 0.f )
 		return false;
 
+	scale *= m_scaleMultiplier;
+
 	if( scale != m_scale )
 	{
 		m_scale = scale;
@@ -86,6 +90,16 @@ bool WgTextManager::SetScaleValue( float scale )
 		}
 	}
 
+	return true;
+}
+
+//____ SetAllowedSizes() ______________________________________________________
+
+bool WgTextManager::SetScaleMultiplier( float multi )
+{
+	if( multi <= 0.f )
+		return false;
+	m_scaleMultiplier = multi;
 	return true;
 }
 

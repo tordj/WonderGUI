@@ -34,14 +34,15 @@ static const char	c_gizmoType[] = {"TordJ/Editline"};
 WgGizmoEditline::WgGizmoEditline()
 {
 	m_pText			= &m_text;
+	m_pText->CreateCursor();
 	m_text.setHolder( this );
 	m_text.SetWrap(false);
-	m_pMyCursor		= 0;
 	m_bPasswordMode = false;
 	m_pwGlyph		= '*';
+	m_bHasFocus		= false;
 	m_viewOfs		= 0;
 	m_maxCharacters = 0;
-	m_bEditable		= true;
+	m_inputMode		= Editable;
 	m_cursorStyle	= WG_CURSOR_IBEAM;
 }
 
@@ -49,7 +50,6 @@ WgGizmoEditline::WgGizmoEditline()
 
 WgGizmoEditline::~WgGizmoEditline()
 {
-	delete m_pMyCursor;
 }
 
 //____ Type() _________________________________________________________________
@@ -66,22 +66,18 @@ const char * WgGizmoEditline::GetMyType()
 	return c_gizmoType;
 }
 
-//____ SetEditable() __________________________________________________________
-
-void WgGizmoEditline::SetEditable( bool bEditable )
+//______________________________________________________________
+void WgGizmoEditline::SetInputMode(InputMode mode)
 {
-	m_bEditable = bEditable;
+	m_inputMode = mode;
 
-	if( bEditable )
+	if( IsSelectable() )
+	{
 		m_cursorStyle = WG_CURSOR_IBEAM;
+	}
 	else
 	{
 		m_cursorStyle = WG_CURSOR_DEFAULT;
-		if( m_pMyCursor )
-		{
-			delete m_pMyCursor;
-			m_pMyCursor = 0;
-		}
 	}
 }
 
@@ -89,16 +85,16 @@ void WgGizmoEditline::SetEditable( bool bEditable )
 
 void WgGizmoEditline::goBOL()
 {
-	if( m_pMyCursor )
-		m_pMyCursor->goBOL();
+	if( IsEditable() && m_bHasFocus )
+		m_pText->goBOL();
 }
 
 //____ goEOL() ________________________________________________________________
 
 void WgGizmoEditline::goEOL()
 {
-	if( m_pMyCursor )
-		m_pMyCursor->goEOL();
+	if( IsEditable() && m_bHasFocus )
+		m_pText->goEOL();
 }
 
 //____ SetPasswordGlyph() _____________________________________________________
@@ -116,24 +112,27 @@ void WgGizmoEditline::SetPasswordGlyph( Uint16 glyph )
 
 Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 {
-	if( !m_bEditable )
+	if( !IsEditable() )
 		return 0;
 
-	if( !m_pMyCursor )
+	if( !m_bHasFocus )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
 	Uint32 retVal = 0;
 
-	if( m_maxCharacters == 0 || ((unsigned) str.Length()) < m_maxCharacters - m_pMyCursor->text()->nbChars() )
+	if( m_maxCharacters == 0 || ((unsigned) str.Length()) < m_maxCharacters - m_pText->nbChars() )
 	{
-		m_pMyCursor->putText( str.GetUnicode().ptr );
+		Uint32 line = m_pText->line();
+		Uint32 column = m_pText->column();
+
+		m_pText->putText( str.GetUnicode().ptr );
 		retVal = str.Length();
 	}
 	else
 	{
-		retVal = m_maxCharacters - m_pMyCursor->text()->nbChars();
-		m_pMyCursor->putText( str.GetUnicode().ptr, retVal );
+		retVal = m_maxCharacters - m_pText->nbChars();
+		m_pText->putText( str.GetUnicode().ptr, retVal );
 	}
 	
 	AdjustViewOfs();
@@ -145,17 +144,17 @@ Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 
 bool WgGizmoEditline::InsertCharAtCursor( Uint16 c )
 {
-	if( !m_bEditable )
+	if( !IsEditable() )
 		return 0;
 
-	if( !m_pMyCursor )
+	if( !m_bHasFocus )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
-	if( m_maxCharacters != 0 && m_maxCharacters < m_pMyCursor->text()->nbChars() )
+	if( m_maxCharacters != 0 && m_maxCharacters < m_pText->nbChars() )
 		return false;
 
-	m_pMyCursor->putChar( c );
+	m_pText->putChar( c );
 	AdjustViewOfs();
 	return true;
 }
@@ -172,10 +171,10 @@ bool WgGizmoEditline::SetTextWrap(bool bWrap)
 
 void WgGizmoEditline::OnUpdate( const WgUpdateInfo& _updateInfo )
 {
-	if( m_pMyCursor )
+	if( IsSelectable() && m_bHasFocus )
 	{
-		m_pMyCursor->incTime( _updateInfo.msDiff );
-		RequestRender();					//TODO: Should only render the cursor!
+		m_pText->incTime( _updateInfo.msDiff );
+		RequestRender();					//TODO: Should only render the cursor and selection!
 	}
 }
 
@@ -209,6 +208,10 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 		pText->setAlignment(m_text.alignment());
 		pText->setDefaultProperties(m_text.getDefaultProperties());
 		pText->setMode(m_text.mode());
+		pText->setSelectionColor(m_text.getSelectionColor());
+		Uint32 sl, sc, el, ec;
+		if( m_text.getSelection(sl, sc, el, ec) )
+			pText->selectText(sl, sc, el, ec);
 		delete [] pContent;
 	}
 
@@ -216,8 +219,8 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 	r.x -= m_viewOfs;
 	r.w += m_viewOfs;
 
-	if( m_pMyCursor )
-		pDevice->PrintTextWithCursor( _clip, pText, *m_pMyCursor, r );		
+	if( m_bHasFocus && IsEditable() )
+		pDevice->PrintTextWithCursor( _clip, pText, *m_pText->GetCursor(), r );		
 	else
 		pDevice->PrintText( _clip, pText, r );		
 
@@ -230,11 +233,20 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 
 void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
-	if( action == WgInput::BUTTON_PRESS && button_key == 1 )
+	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{		
-		if( m_pMyCursor )
+		if( !m_bHasFocus )
+			GrabFocus();
+
+		if( m_bHasFocus )
 		{
+			if( IsSelectable() && (info.modifier & WG_MODKEY_SHIFT) )
+			{
+				m_pText->setSelectionMode(true);
+			}
+
 			WgCord ofs = Abs2local(WgCord(info.x,0));
+
 			int x = ofs.x;
 			int y = ofs.y;
 			x += m_viewOfs;
@@ -251,54 +263,108 @@ void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 
 				int line = y/height;
 				int col = (x+spacing/2)/spacing;
-				m_pMyCursor->gotoSoftPos(line,col);
+				m_pText->gotoSoftPos(line,col);
 			}
 			else
-				m_pMyCursor->gotoPixel(x,y);
-		}
-		else
-		{
-			GrabFocus();
+			{
+				m_pText->gotoPixel(x, 0);
+			}
+
+			if(IsSelectable() && action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
+			{
+				m_pText->clearSelection();
+				m_pText->setSelectionMode(true);
+			}
 		}
 		AdjustViewOfs();
 	}
 
+	if( action == WgInput::BUTTON_RELEASE || action == WgInput::BUTTON_RELEASE_OUTSIDE )
+	{
+		if( m_bHasFocus && button_key == 1 )
+			m_pText->setSelectionMode(false);
+	}
+
 	if( action == WgInput::CHARACTER )
 	{
-		if( m_pMyCursor && button_key >= 32 )
+		if( IsEditable() && m_bHasFocus && button_key >= 32 && button_key != 127)
 		{
 			// by default - no max limit
-			if( m_maxCharacters == 0 || m_maxCharacters > m_pMyCursor->text()->nbChars() )
+			if( m_maxCharacters == 0 || m_maxCharacters > m_pText->nbChars() )
 			{			
-				m_pMyCursor->putChar( button_key );
+				if(m_pText->hasSelection())
+					m_pText->delSelection();
+				m_pText->setSelectionMode(false);
+				m_pText->putChar( button_key );
 				AdjustViewOfs();
 			}
 		}
 	}
 
-	if( m_pMyCursor && (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) )
+	if( action == WgInput::KEY_RELEASE && m_bHasFocus )
+	{
+		switch( button_key )
+		{
+			case WGKEY_SHIFT:
+				if(!inputObj.isButtonDown(1))
+					m_pText->setSelectionMode(false);
+			break;
+		}
+	}
+
+	if( (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) && IsEditable() && m_bHasFocus )
 	{
 		switch( button_key )
 		{
 			case WGKEY_LEFT:
-				if( info.modifier == WG_MODKEY_CTRL )
-					m_pMyCursor->gotoPrevWord();
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( info.modifier & WG_MODKEY_CTRL )
+				{
+					if( m_bPasswordMode )
+						m_pText->goBOL();
+					else
+						m_pText->gotoPrevWord();
+				}
 				else
-					m_pMyCursor->goLeft();
+				{
+					m_pText->goLeft();
+				}
 				break;
 			case WGKEY_RIGHT:
-				if( info.modifier == WG_MODKEY_CTRL )
-					m_pMyCursor->gotoNextWord();
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( info.modifier & WG_MODKEY_CTRL )
+				{
+					if( m_bPasswordMode )
+						m_pText->goEOL();
+					else
+						m_pText->gotoNextWord();
+				}
 				else
-				m_pMyCursor->goRight();
+				{
+					m_pText->goRight();
+				}
 				break;
 
 			case WGKEY_BACKSPACE:
-				m_pMyCursor->delPrevChar();
+				if(m_pText->hasSelection())
+					m_pText->delSelection();
+				else if( (info.modifier & WG_MODKEY_CTRL) && !m_bPasswordMode)
+					m_pText->delPrevWord();
+				else
+					m_pText->delPrevChar();
 				break;
 
 			case WGKEY_DELETE:
-				m_pMyCursor->delNextChar();
+				if(m_pText->hasSelection())
+					m_pText->delSelection();
+				else if( (info.modifier & WG_MODKEY_CTRL) && !m_bPasswordMode)
+					m_pText->delNextWord();
+				else
+					m_pText->delNextChar();
 				break;
 
 			case WGKEY_HOME:
@@ -314,7 +380,10 @@ void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 					break;
 
 				default: // no modifier key was pressed
-					m_pMyCursor->goBOL();
+					if( info.modifier & WG_MODKEY_SHIFT )
+						m_pText->setSelectionMode(true);
+
+					m_pText->goBOL();
 					break;
 				}
 				
@@ -333,7 +402,10 @@ void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 					break;
 
 				default: // no modifier key was pressed
-					m_pMyCursor->goEOL();
+					if( info.modifier & WG_MODKEY_SHIFT )
+						m_pText->setSelectionMode(true);
+
+					m_pText->goEOL();
 					break;
 				}
 					
@@ -357,9 +429,9 @@ void WgGizmoEditline::AdjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_pMyCursor && m_pText->getFontSet() )
+	if( m_bHasFocus && m_pText->getFontSet() )
 	{
-		Uint32 cursCol	= m_pMyCursor->column();
+		Uint32 cursCol	= m_pText->column();
 
 		WgPen	pen;
 		pen.SetTextProp( m_pText->getDefaultProperties() );
@@ -367,7 +439,7 @@ void WgGizmoEditline::AdjustViewOfs()
 		pen.AdvancePos();
 
 		int pwAdvance	= pen.GetPosX();
-		int cursWidth	= m_pText->getFontSet()->GetCursor()->advance(m_pMyCursor->mode() );
+		int cursWidth	= m_pText->getFontSet()->GetCursor()->advance(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.
@@ -443,10 +515,11 @@ void WgGizmoEditline::OnDisable()
 
 void WgGizmoEditline::OnGotInputFocus()
 {
-	if( m_bEditable )
+	m_bHasFocus = true;
+
+	if( IsEditable() )
 	{
-		m_pMyCursor = new WgCursorInstance( m_text );
-		RequestRender();
+		RequestRender(); // render with cursor on
 	}
 }
 
@@ -454,10 +527,19 @@ void WgGizmoEditline::OnGotInputFocus()
 
 void WgGizmoEditline::OnLostInputFocus()
 {
-	delete m_pMyCursor;
-	m_pMyCursor = 0;
-	m_viewOfs = 0;
-	RequestRender();
+	m_bHasFocus = false;
+
+	if( IsSelectable() )
+	{
+		m_pText->clearSelection();
+		m_pText->setSelectionMode(false);
+	}
+
+	if( IsEditable() || m_viewOfs != 0 )
+	{
+		m_viewOfs = 0;
+		RequestRender();
+	}
 }
 
 //____ OnNewSize() ____________________________________________________________
@@ -473,11 +555,7 @@ void WgGizmoEditline::OnNewSize( const WgSize& size )
 
 void WgGizmoEditline::TextModified()
 {
-	if( m_pMyCursor )
-	{
-		m_pMyCursor->gotoHardPos( m_pMyCursor->line(), m_pMyCursor->column() );
-	}
-
 	RequestRender();
+	AdjustViewOfs();
 }
 

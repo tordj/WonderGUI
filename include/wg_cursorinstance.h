@@ -65,7 +65,9 @@ public:
 	void			gotoColumn( Sint32 col );
 
 	void			gotoPrevWord();
+	void			gotoBeginningOfWord();
 	void			gotoNextWord();
+	void			gotoEndOfWord();
 
 	void			getSoftPos( Uint32 &line, Uint32 &col ) const;
 
@@ -73,6 +75,8 @@ public:
 	Uint32			putText( const Uint16 * pString );
 	Uint32			putText( const Uint16 * pString, int nChar );
 	void			unputText( int nChar );
+	void 			delPrevWord();
+	void 			delNextWord();
 	bool			delPrevChar();
 	bool			delNextChar();
 
@@ -83,16 +87,25 @@ public:
 	inline Uint32	column() const;
 	inline Uint32	time() const;
 
-	inline WgText *		text() const;
+	inline WgText *	text() const;
 
-	WgCursor::Mode	mode() const;
+	WgCursor::Mode	cursorMode() const;
 
+	void			setSelectionMode(bool bOn);
+	bool			hasSelection();
+	void			delSelection();
+	void			clearSelection();
+	void			selectAll();
 
 protected:		
 	void			gotoPos( Uint32 line, Uint32 col );
-		
+	void			UpdateLocation(Uint32 line, Uint32 col);
+
 	WgText *		m_pText;
 	bool			m_bInsert;
+	bool			m_bSelectMode;
+	int				m_selStartLine;
+	int				m_selStartColumn;
 		
 	Uint32			m_time;					// For the animation
 	Uint32			m_line;					// Line of the text containing the cursor (0+)

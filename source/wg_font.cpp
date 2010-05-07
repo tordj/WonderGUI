@@ -66,7 +66,7 @@ void WgFont::Init()
 		m_aVectorGlyphs[i] = 0;
 #endif
 
-	for( int i = 0 ; i < WG_MAX_FONTSIZE+1 ; i++ )
+	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 	{
 		m_aBitmapGlyphs[i] = 0;
 		m_aDefaultBitmapGlyphs[i] = 0;

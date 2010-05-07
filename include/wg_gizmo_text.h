@@ -53,8 +53,6 @@ public:
 	virtual const char * Type() const;
 	static const char * GetMyType();
 
-	DECLARE_TOOLTIP_SUPPORT();
-
 
 	//____ Methods __________________________________________
 
@@ -72,10 +70,17 @@ public:
 	void		goBOF();
 	void		goEOF();
 
-	void		SetEditable(bool bEditable);
-	bool		IsEditable() const { return m_bEditable; }
+	virtual void		SetInputMode(InputMode mode);
+	virtual InputMode	GetInputMode() const { return m_inputMode; }
+
+	virtual bool TempIsInputField() const { return IsEditable(); }
+	virtual Wg_Interface_TextHolder* TempGetText() { return this; }
 
 protected:
+
+	bool	IsEditable() const { return m_inputMode == Editable; }
+	bool	IsSelectable() const { return m_inputMode != Static; }
+
 	void	OnCloneContent( const WgGizmo * _pOrg );
 	void	OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	OnNewSize( const WgSize& size );
@@ -94,11 +99,10 @@ private:
 
 
 	WgText				m_text;
-
-	WgCursorInstance *	m_pMyCursor;					// Non-null when widget has input focus.
+	bool				m_bHasFocus;
 	Uint16				m_maxCharacters;
 	Uint16				m_maxLines;
-	bool				m_bEditable;
+	InputMode			m_inputMode;
 };
 
 
