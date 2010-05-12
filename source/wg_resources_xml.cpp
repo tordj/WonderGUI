@@ -1899,9 +1899,9 @@ void WgCursorRes::Serialize(WgResourceSerializerXML& s)
 {
 	s.BeginTag(TagName(), XmlNode());
 
-	s.AddAttribute("eol", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::EOL)), m_pCursor->bearingX(WgCursor::EOL), m_pCursor->bearingY(WgCursor::EOL), m_pCursor->advance(WgCursor::EOL)));
-	s.AddAttribute("ins", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::INS)), m_pCursor->bearingX(WgCursor::INS), m_pCursor->bearingY(WgCursor::INS), m_pCursor->advance(WgCursor::INS)));
-	s.AddAttribute("ovr", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::OVR)), m_pCursor->bearingX(WgCursor::OVR), m_pCursor->bearingY(WgCursor::OVR), m_pCursor->advance(WgCursor::OVR)));
+	s.AddAttribute("eol", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::EOL)), m_pCursor->bearingX(WgCursor::EOL), m_pCursor->bearingY(WgCursor::EOL), m_pCursor->advance(WgCursor::EOL), ScaleModeToString(m_pCursor->scaleMode(WgCursor::EOL)) ));
+	s.AddAttribute("ins", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::INS)), m_pCursor->bearingX(WgCursor::INS), m_pCursor->bearingY(WgCursor::INS), m_pCursor->advance(WgCursor::INS), ScaleModeToString(m_pCursor->scaleMode(WgCursor::EOL)) ));
+	s.AddAttribute("ovr", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::OVR)), m_pCursor->bearingX(WgCursor::OVR), m_pCursor->bearingY(WgCursor::OVR), m_pCursor->advance(WgCursor::OVR), ScaleModeToString(m_pCursor->scaleMode(WgCursor::EOL)) ));
 
 	s.EndTag();
 }
@@ -1913,18 +1913,65 @@ void WgCursorRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 
 	WgCord	bearing;
 	int		spacing;
+	std::string scaleMode;
 
-	VERIFY(WgUtil::FromString(xmlNode["eol"], anim, bearing.x, bearing.y, spacing) == 4, "invalid EOL spec");
-	m_pCursor->setMode(WgCursor::EOL, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing);
+	VERIFY(WgUtil::FromString(xmlNode["eol"], anim, bearing.x, bearing.y, spacing, scaleMode ) == 5, "invalid EOL spec");
+	m_pCursor->setMode(WgCursor::EOL, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing, StringToScaleMode(scaleMode) );
 
-	VERIFY(WgUtil::FromString(xmlNode["ins"], anim, bearing.x, bearing.y, spacing) == 4, "invalid INS spec");
-	m_pCursor->setMode(WgCursor::INS, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing);
+	VERIFY(WgUtil::FromString(xmlNode["ins"], anim, bearing.x, bearing.y, spacing, scaleMode ) == 5, "invalid INS spec");
+	m_pCursor->setMode(WgCursor::INS, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing, StringToScaleMode(scaleMode) );
 
-	VERIFY(WgUtil::FromString(xmlNode["ovr"], anim, bearing.x, bearing.y, spacing) == 4, "invalid OVR spec");
-	m_pCursor->setMode(WgCursor::OVR, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing);
+	VERIFY(WgUtil::FromString(xmlNode["ovr"], anim, bearing.x, bearing.y, spacing, scaleMode ) == 5, "invalid OVR spec");
+	m_pCursor->setMode(WgCursor::OVR, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing, StringToScaleMode(scaleMode));
 
 	s.ResDb()->AddCursor(xmlNode["id"], m_pCursor, new WgXMLMetaData(xmlNode));
 }
+
+std::string	WgCursorRes::ScaleModeToString( WgCursor::ScaleMode mode )
+{
+	switch( mode )
+	{
+		case WgCursor::FIXED_SIZE:
+			return "fixed_size";
+		case WgCursor::STRETCH_1D:
+			return "stretch_1d";
+		case WgCursor::STRETCH_2D:
+			return "stretch_2d";
+		case WgCursor::TILE_1D:
+			return "tile_1d";
+		case WgCursor::TILE_2D:
+			return "tile_2d";
+	}
+
+	return "fixed_size";
+}
+
+WgCursor::ScaleMode	WgCursorRes::StringToScaleMode( const std::string& str )
+{
+	if( str == "fixed_size" )
+	{
+		return WgCursor::FIXED_SIZE;
+	}
+	else if( str == "stretch_1d" )
+	{
+		return WgCursor::STRETCH_1D;
+	}
+	else if( str == "stretch_2d" )
+	{
+		return WgCursor::STRETCH_2D;
+	}
+	else if( str == "tile_1d" )
+	{
+		return WgCursor::TILE_1D;
+	}
+	else if( str == "tile_2d" )
+	{
+		return WgCursor::TILE_2D;
+	}
+
+	return WgCursor::FIXED_SIZE;
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -2417,6 +2464,7 @@ int WgBlockSetRes::StateFromRect(const WgRect& src, const WgRect& stateRect)
 	const int legoMargin = 2;
 	return (stateRect.x - src.x) / (src.w + legoMargin);
 }
+
 
 void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
@@ -3256,8 +3304,12 @@ void Wdg_CheckBox2_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteBlockSetAttr(s, widget->GetCheckedIcon(), "icon_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
-	WriteDiffAttr(s, xmlNode, "icon_fixedsize", widget->IsIconFixedSize(), false);
+	WriteDiffAttr(s, xmlNode, "icon_scale", widget->GetIconScale(), 0.f );
 	WriteDiffAttr(s, xmlNode, "icon_origo", widget->GetIconOrigo(), WgOrigo::midLeft());
+	WriteDiffAttr(s, xmlNode, "icon_push_text", widget->IsIconPushingText(), false);
+
+	WgBorderRes::Serialize(s, xmlNode, "icon_borders", widget->GetIconBorders());
+
 
 	s.EndTag();
 }
@@ -3283,16 +3335,14 @@ void Wdg_CheckBox2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 	widget->SetState(WgUtil::ToBool(xmlNode["checked"]));
 	widget->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
 
-	WgBlockSetPtr icon_checked = s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
+	WgBlockSetPtr icon_checked	= s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
 	WgBlockSetPtr icon_unchecked = s.ResDb()->GetBlockSet(xmlNode["icon_unchecked"]);
+	WgOrigo	iconOrigo			= WgUtil::ToOrigo(xmlNode["icon_origo"], WgOrigo::midLeft() );	
+	WgBorders iconBorders		= WgBorderRes::Deserialize(s, xmlNode["icon_borders"]);
 
-
-	WgOrigo	iconOrigo = WgOrigo::midLeft();
-	
-	if( xmlNode.HasAttribute( "icon_origo" ) )
-		iconOrigo = WgUtil::ToOrigo(xmlNode["icon_origo"]);
-	widget->SetIcon(icon_unchecked, icon_checked, iconOrigo, WgUtil::ToBool(xmlNode["icon_fixedsize"]) );
-
+	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo, 
+					WgUtil::ToFloat(xmlNode["icon_scale"], 0.f),
+					WgUtil::ToBool(xmlNode["icon_push_text"], false) );
 }
 
 WgCharBuffer* Wdg_CheckBox2_Res::GetCharBuffer()
@@ -4221,8 +4271,11 @@ void Wdg_RadioButton2_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteBlockSetAttr(s, widget->GetCheckedIcon(), "icon_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
-	WriteDiffAttr(s, xmlNode, "icon_fixedsize", widget->IsIconFixedSize(), false);
+	WriteDiffAttr(s, xmlNode, "icon_scale", widget->GetIconScale(), 0.f );
 	WriteDiffAttr(s, xmlNode, "icon_origo", widget->GetIconOrigo(), WgOrigo::midLeft());
+	WriteDiffAttr(s, xmlNode, "icon_push_text", widget->IsIconPushingText(), false);
+	WgBorderRes::Serialize(s, xmlNode, "icon_borders", widget->GetIconBorders());
+
 	s.EndTag();
 }
 
@@ -4248,15 +4301,14 @@ void Wdg_RadioButton2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeria
 	widget->SetState(WgUtil::ToBool(xmlNode["checked"]));
 	widget->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
 
-	WgBlockSetPtr icon_checked = s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
+	WgBlockSetPtr icon_checked	= s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
 	WgBlockSetPtr icon_unchecked = s.ResDb()->GetBlockSet(xmlNode["icon_unchecked"]);
+	WgOrigo	iconOrigo			= WgUtil::ToOrigo(xmlNode["icon_origo"], WgOrigo::midLeft() );	
+	WgBorders iconBorders		= WgBorderRes::Deserialize(s, xmlNode["icon_borders"]);
 
-
-	WgOrigo	iconOrigo = WgOrigo::midLeft();
-	
-	if( xmlNode.HasAttribute( "icon_origo" ) )
-		iconOrigo = WgUtil::ToOrigo(xmlNode["icon_origo"]);
-	widget->SetIcon(icon_unchecked, icon_checked, iconOrigo, WgUtil::ToBool(xmlNode["icon_fixedsize"]) );
+	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo, 
+					WgUtil::ToFloat(xmlNode["icon_scale"], 0.f),
+					WgUtil::ToBool(xmlNode["icon_push_text"], false) );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -4618,6 +4670,7 @@ void Wdg_TabList_Res::Serialize(WgResourceSerializerXML& s)
 		std::string value = "normal";
 		if(mode == Wdg_TabList::TabWidthModeUnified) value = "unified";
 		else if(mode == Wdg_TabList::TabWidthModeExpand) value = "expand";
+		else if(mode == Wdg_TabList::TabWidthModeExpand2) value = "expand2";
 		s.AddAttribute("tabmode", value);
 	}
 
@@ -4651,6 +4704,7 @@ void Wdg_TabList_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	if(mode.empty() || mode == "normal")widget->SetTabWidthMode(Wdg_TabList::TabWidthModeNormal);
 	else if(mode == "unified")			widget->SetTabWidthMode(Wdg_TabList::TabWidthModeUnified);
 	else if(mode == "expand")			widget->SetTabWidthMode(Wdg_TabList::TabWidthModeExpand);
+	else if(mode == "expand2")			widget->SetTabWidthMode(Wdg_TabList::TabWidthModeExpand2);
 	else assert(0);
 }
 

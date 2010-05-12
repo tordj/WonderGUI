@@ -66,7 +66,7 @@ public:
 
 	WgBlockSetPtr	GetCheckedIcon() const { return m_pIconChecked; }
 	WgBlockSetPtr	GetUncheckedIcon() const { return m_pIconUnchecked; }
-	float			GetIconScale() const { return m_iconSize; }
+	float			GetIconScale() const { return m_iconScale; }
 	WgOrigo			GetIconOrigo() const { return m_iconOrigo; }
 	WgBorders		GetIconBorders() const { return m_iconAreaBorders; }
 	bool			IsIconPushingText() const { return m_bIconPushText; }
@@ -95,6 +95,11 @@ public:
 	DECLARE_TOOLTIP_SUPPORT();
 
 protected:
+	WgRect	GetIconRect( const WgSize& gizmoSize );
+	WgRect	GetContentRect( const WgSize& gizmoSize, const WgRect& iconRect );
+
+
+
 	void	OnCloneContent( const WgGizmo * _pOrg );
 	void	OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );

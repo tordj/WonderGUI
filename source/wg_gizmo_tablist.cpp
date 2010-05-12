@@ -844,6 +844,11 @@ float WgGizmoTablist::CalcTabScaleFactor()
 		pTab = pTab->getNext();
 	}
 
+	if(m_tabWidthMode == TabWidthModeExpand2)
+	{
+		m_overlap = -(Size().w - xLen) / (nTabs - 1);
+	}
+
 	int maxLen = Size().w + m_overlap*(nTabs-1);
 	if( m_tabWidthMode == TabWidthModeExpand || xLen > maxLen )
 	{
@@ -867,7 +872,7 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& window, cons
 	// Render all tabs to the left of the selected tab first
 
 
-	Uint32 xOfs = window.x;
+	Sint32 xOfs = (Sint32)window.x;
 	int width;
 	WgTab * pTab = m_tabs.getFirst();
 	while( pTab )
@@ -901,12 +906,17 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& window, cons
 		{
 			if(pTab->m_bVisible)
 			{
-				width = (int)(pTab->m_width*scaleFactor + 0.5f);
 				// expand last tab to window edge
 				if(m_tabWidthMode == TabWidthModeExpand && pTab == GetLastVisibleTab())
-					width = window.x + window.w - xOfs;
+				{
+					xOfs -= width - m_overlap;
+				}
+				else
+				{
+					width = (int)(pTab->m_width*scaleFactor + 0.5f);
+					xOfs -= width - m_overlap;
+				}
 
-				xOfs -= width - m_overlap;
 
 				WgRect r( xOfs, window.y, width, window.h );
 

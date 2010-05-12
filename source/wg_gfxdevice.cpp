@@ -105,17 +105,17 @@ void WgGfxDevice::Blit( const WgSurface* pSrc, Sint32 dx, Sint32 dy )
 
 void WgGfxDevice::StretchBlit( const WgSurface * pSrc )
 {
-	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->GetWidth(), (float) pSrc->GetHeight(), 0, 0, (float) m_canvasWidth, (float) m_canvasHeight );
+	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->GetWidth(), (float) pSrc->GetHeight(), 0, 0, (float) m_canvasWidth, (float) m_canvasHeight, false );
 }
 
 void WgGfxDevice::StretchBlit( const WgSurface * pSrc, const WgRect& dest )
 {
-	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->GetWidth(), (float) pSrc->GetHeight(), (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h );
+	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->GetWidth(), (float) pSrc->GetHeight(), (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, false );
 }
 
 void WgGfxDevice::StretchBlit( const WgSurface * pSrc, const WgRect& src, const WgRect& dest )
 {
-	StretchBlitSubPixel( pSrc, (float) src.x, (float) src.y, (float) src.w, (float) src.h, (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h );
+	StretchBlitSubPixel( pSrc, (float) src.x, (float) src.y, (float) src.w, (float) src.h, (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, false );
 }
 
 //____ TileBlit() ______________________________________________________________
@@ -252,37 +252,40 @@ void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc,
 
 void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, const WgRect& dest )
 {
-	WgRect	mydest;
+	ClipStretchBlit( clip, pSrc, (float)src.x, (float)src.y, (float)src.w, (float)src.h, (float)dest.x, (float)dest.y, (float)dest.w, (float)dest.h, false );
+}
 
-	if( !mydest.Intersection(clip,dest) )
+void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
+{
+	float cx = std::max(float(clip.x), dx);
+	float cy = std::max(float(clip.y), dy);
+	float cw = std::min(float(clip.x + clip.w), dx + dw) - cx;
+	float ch = std::min(float(clip.y + clip.h), dy + dh) - cy;
+
+	if(cw <= 0 || ch <= 0)
 		return;
 
-	float	sx = (float) src.x;
-	float	sy = (float) src.y;
-	float	sw = (float) src.w;
-	float	sh = (float) src.h;
-
-	if( dest.w > mydest.w )
+	if( dw > cw )
 	{
-		float	sdxr = src.w / (float) dest.w;			// Source/Destination X Ratio.
+		float	sdxr = sw / dw;			// Source/Destination X Ratio.
 
-		sw = sdxr * mydest.w;
+		sw = sdxr * cw;
 
-		if( dest.x < mydest.x )
-			sx += sdxr * (mydest.x - dest.x);
+		if( dx < cx )
+			sx += sdxr * (cx - dx);
 	}
 
-	if( dest.h > mydest.h )
+	if( dh > ch )
 	{
-		float	sdyr = src.h / (float) dest.h;			// Source/Destination Y Ratio.
+		float	sdyr = sh / dh;			// Source/Destination Y Ratio.
 
-		sh = sdyr * mydest.h;
+		sh = sdyr * ch;
 
-		if( dest.y < mydest.y )
-			sy += sdyr * (mydest.y - dest.y);
+		if( dy < cy )
+			sy += sdyr * (cy - dy);
 	}
 
-	StretchBlitSubPixel( pSrc, sx, sy, sw, sh, (float) mydest.x, (float) mydest.y, (float) mydest.w, (float) mydest.h );
+	StretchBlitSubPixel( pSrc, sx, sy, sw, sh, cx, cy, cw, ch, bTriLinear, mipBias );
 }
 
 //____ ClipTileBlit() __________________________________________________________
@@ -840,8 +843,8 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 				// TODO: should take textprop for cursors position into account...
 				int linewidth = pText->getSoftLineWidthPart(i, 0, cursCol ) /*+ pPen->AdvancePosCursor( *pCursor )*/ + pText->getSoftLineWidthPart(i, cursCol );
 				pos.x += origo.calcOfsX( dest.w, linewidth );
-				if( pos.x < 0 )
-					pos.x = 0;
+				if( pos.x < dest.x )
+					pos.x = dest.x;
 				pPen->SetOrigo( pos );	// So tab positions will start counting from start of line.
 			}
 
@@ -863,8 +866,8 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 			if( origo.anchorX() != 0 && origo.hotspotX() != 0 )
 			{
 				pos.x += origo.calcOfsX( dest.w, pText->getSoftLineWidth(i) );
-				if( pos.x < 0 )
-					pos.x = 0;
+				if( pos.x < dest.x )
+					pos.x = dest.x;
 				pPen->SetOrigo( pos );		// So tab positions will start counting from start of line.
 			}
 

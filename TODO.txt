@@ -12,10 +12,11 @@ FONT SYSTEM
 * WgBitmapGlyphs: Currently uses linespacing for height... :(
 
 
-TEXT
-====
+CURSOR
+======
 
-* Depricate WgTextTool::Ruler
+* Change how cursor is stretched/scaled and/or offset. Offsets are in fixed pixelsizes but needs to be relative or something to work with the scaling.
+* Make sure all parameters can be set through XML.
 
 
 GFXDEVICES

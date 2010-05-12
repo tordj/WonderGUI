@@ -9,10 +9,10 @@ WgCursor::WgCursor()
 	{
 		m_pAnim[i]	= 0;
 		m_advance[i] = 0;
+		m_scaleMode[i] = FIXED_SIZE;
+		m_sizeRatio[i]	= 1.f;
 	}
 
-	m_scaleMode = FIXED_SIZE;
-	m_sizeRatio	= 1.f;
 }
 
 WgCursor::WgCursor(	WgCursor& in )
@@ -22,47 +22,58 @@ WgCursor::WgCursor(	WgCursor& in )
 		m_pAnim[i]		= in.m_pAnim[i];
 		m_bearing[i]	= in.m_bearing[i];
 		m_advance[i]	= in.m_advance[i];
+		m_scaleMode[i]	= in.m_scaleMode[i];
+		m_sizeRatio[i]	= in.m_sizeRatio[i];
 	}
-
-	m_scaleMode = in.m_scaleMode;
-	m_sizeRatio	= in.m_sizeRatio;
 }
 
 
 //____ setStretchBorders() ____________________________________________________
 
-void WgCursor::setStretchBorders( WgBorders borders )
+void WgCursor::setStretchBorders( Mode m, WgBorders borders )
 {
-	m_stretchBorders = borders;
+	if( m < 0 || m >= (Mode) N_MODES )
+		return;
+
+	m_stretchBorders[m] = borders;
 }
 
 //____ setScaleMode() _________________________________________________________
 
-void WgCursor::setScaleMode( ScaleMode mode )
+void WgCursor::setScaleMode( Mode m, ScaleMode mode )
 {
-	m_scaleMode = mode;
+	if( m < 0 || m >= (Mode) N_MODES )
+		return;
+
+	m_scaleMode[m] = mode;
 }
 
 //____ setSizeRatio() _________________________________________________________
 
-void WgCursor::setSizeRatio( float ratio )
+void WgCursor::setSizeRatio( Mode m, float ratio )
 {
-	m_sizeRatio = ratio;
+	if( m < 0 || m >= (Mode) N_MODES )
+		return;
+
+	m_sizeRatio[m] = ratio;
 }
 
 
 
 //____ setMode() ______________________________________________________________
 
-bool WgCursor::setMode( Mode m, WgGfxAnim * pAnim, WgCord bearing, int advance )
+bool WgCursor::setMode( Mode m, WgGfxAnim * pAnim, WgCord bearing, int advance, ScaleMode mode, float size_ratio, WgBorders borders )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return false;
 
-	m_pAnim[m]		= pAnim;
-	m_bearing[m]	= bearing;
-	m_advance[m]	= advance;
-	
+	m_pAnim[m]			= pAnim;
+	m_bearing[m]		= bearing;
+	m_advance[m]		= advance;
+	m_scaleMode[m]		= mode;
+	m_sizeRatio[m]		= size_ratio;
+	m_stretchBorders[m]	= borders;
+
 	return true;
 }
 

@@ -55,31 +55,33 @@ public:
 	enum ScaleMode
 	{
 		FIXED_SIZE,					// Size ratio is ignored.
-		STRETCH_VERTICALLY,
-		STRETCH_SCALED,
-		TILE_VERTICALLY,
-		TILE_SCALED
+		STRETCH_1D,
+		STRETCH_2D,
+		TILE_1D,
+		TILE_2D
 	};
 
 
-	void				setStretchBorders( WgBorders borders );
-	void				setScaleMode( ScaleMode mode );
-	void				setSizeRatio( float ratio );
 
-	bool				setMode( Mode m, WgGfxAnim * pAnim, WgCord bearing = WgCord(), int advance = 0 );
+	bool				setMode( Mode m, WgGfxAnim * pAnim, WgCord bearing = WgCord(), int advance = 0, ScaleMode mode = FIXED_SIZE, float size_ratio = 1.f, WgBorders borders = WgBorders(0)  );
 
 	void				setBearing( Mode m, WgCord bearing );
 	void				setAdvance( Mode m, int advance );
 	void				setAnim( Mode m, WgGfxAnim * pAnim );
-	
+
+	void				setStretchBorders( Mode m, WgBorders borders );
+	void				setScaleMode( Mode m, ScaleMode mode );
+	void				setSizeRatio( Mode m, float ratio );
+
+
 	int					bearingX( Mode m ) const { return m_bearing[m].x; };
 	int					bearingY( Mode m ) const { return m_bearing[m].y; };
 	WgCord				bearing( Mode m ) const { return m_bearing[m]; }
 	int					advance( Mode m ) const { return m_advance[m]; };
 	WgGfxAnim * 		anim( Mode m ) const { return m_pAnim[m]; };
-	ScaleMode			scaleMode() const { return m_scaleMode; }
-	const WgBorders *	stretchBorders() const { return &m_stretchBorders; }
-	float				sizeRatio() const { return m_sizeRatio; }
+	ScaleMode			scaleMode( Mode m ) const { return m_scaleMode[m]; }
+	WgBorders			stretchBorders( Mode m ) const { return m_stretchBorders[m]; }
+	float				sizeRatio(Mode m ) const { return m_sizeRatio[m]; }
 
 private:
 	enum { N_MODES = 3 };
@@ -88,9 +90,9 @@ private:
 	WgCord				m_bearing[N_MODES];
 	int					m_advance[N_MODES];
 
-	ScaleMode			m_scaleMode;
-	WgBorders			m_stretchBorders;
-	float				m_sizeRatio;			// ratio <= 1.f. Cursors height relative fonts lineheight.
+	ScaleMode			m_scaleMode[N_MODES];
+	WgBorders			m_stretchBorders[N_MODES];
+	float				m_sizeRatio[N_MODES];			// ratio <= 1.f. Cursors height relative fonts lineheight.
 };
 
 

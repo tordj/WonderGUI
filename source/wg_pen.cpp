@@ -236,40 +236,42 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 	if( pCursor == 0 )
 		return false;
 
-	WgGfxAnim * pAnim	= pCursor->anim( instance.cursorMode() );
+	WgCursor::Mode mode = instance.cursorMode();
+
+	WgGfxAnim * pAnim	= pCursor->anim( mode );
 	if( pAnim == 0 )
 		return false;
 
 	WgGfxFrame * pFrame = pAnim->getFrame( instance.time(), 0 );
 
-	float	scaleValue = (pCursor->sizeRatio() * GetLineSpacing())/pAnim->height();
+	float	scaleValue = (pCursor->sizeRatio(mode) * GetLineSpacing())/pAnim->height();
 	
 	WgSize	size = WgSize( pAnim->width(), pAnim->height() );
-	WgCord  bearing = pCursor->bearing( instance.cursorMode() );
+	WgCord  bearing = pCursor->bearing( mode );
 
 	int blockFlags = 0;
 
-	switch( pCursor->scaleMode() )
+	switch( pCursor->scaleMode(mode) )
 	{
 		case WgCursor::FIXED_SIZE:
 			break;
 
-		case WgCursor::TILE_VERTICALLY:
+		case WgCursor::TILE_1D:
 			blockFlags |= WG_TILE_ALL;
-		case WgCursor::STRETCH_VERTICALLY:
+		case WgCursor::STRETCH_1D:
 			size.h		= (int) (size.h * scaleValue);
 			bearing.y	= (int) (bearing.y * scaleValue);
 			break;
 
-		case WgCursor::TILE_SCALED:
+		case WgCursor::TILE_2D:
 			blockFlags |= WG_TILE_ALL;
-		case WgCursor::STRETCH_SCALED:
+		case WgCursor::STRETCH_2D:
 			size		*= scaleValue;
 			bearing		*= scaleValue;
 			break;
 	}
 
-	WgBlock block( pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, pAnim->width(), pAnim->height()), * pCursor->stretchBorders(), 0, blockFlags );
+	WgBlock block( pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, pAnim->width(), pAnim->height()), pCursor->stretchBorders(mode), 0, blockFlags );
 
 	if( m_bClip )
 		m_pDevice->ClipBlitBlock( m_clipRect, block, WgRect(m_pos + bearing, size) );
@@ -289,15 +291,17 @@ void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 	if( !pCursor )
 		return;
 
-	WgGfxAnim * pAnim	= pCursor->anim( instance.cursorMode() );
+	WgCursor::Mode mode = instance.cursorMode();
+
+	WgGfxAnim * pAnim	= pCursor->anim( mode );
 	if( !pAnim )
 		return;
 
-	int advance = pCursor->advance(instance.cursorMode());
+	int advance = pCursor->advance(mode);
 
-	if( pCursor->scaleMode() == WgCursor::TILE_SCALED || pCursor->scaleMode() == WgCursor::STRETCH_SCALED )
+	if( pCursor->scaleMode(mode) == WgCursor::TILE_2D || pCursor->scaleMode(mode) == WgCursor::STRETCH_2D )
 	{
-		float	scaleValue = (pCursor->sizeRatio() * GetLineSpacing())/pAnim->height();
+		float	scaleValue = (pCursor->sizeRatio(mode) * GetLineSpacing())/pAnim->height();
 		advance = (int) (advance * scaleValue);
 	}
 

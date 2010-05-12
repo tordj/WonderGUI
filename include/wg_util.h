@@ -256,6 +256,19 @@ namespace WgUtil
 		return 4;
 	}
 
+	template<typename T0, typename T1, typename T2, typename T3, typename T4>
+	inline int FromString(const std::string& str, T0& a, T1& b, T2& c, T3& d, T4& e)
+	{
+		std::vector<std::string> tokens;
+		Tokenize(str, tokens); tokens.resize(5);
+		if(!FromString<T0>(tokens[0], a)) return 0;
+		if(!FromString<T1>(tokens[1], b)) return 1;
+		if(!FromString<T2>(tokens[2], c)) return 2;
+		if(!FromString<T3>(tokens[3], d)) return 3;
+		if(!FromString<T4>(tokens[4], e)) return 4;
+		return 5;
+	}
+
 	template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5>
 	inline int FromString(const std::string& str, T0& a, T1& b, T2& c, T3& d, T4& e, T5& f)
 	{

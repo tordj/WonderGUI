@@ -126,6 +126,8 @@ public:
 	static inline void		clipStretchBlit( const WgRect& clip, const WgSurface* _pSrc );
 	static inline void		clipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& dest );
 	static inline void		clipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, const WgRect& dest );
+	static inline void		clipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias);
+	static inline void		clipStretchBlit( const WgRect& clip, const WgSurface * pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias);
 
 	static inline void		tileBlit( const WgSurface* src );
 	static inline void		tileBlit( const WgSurface* src, const WgRect& dest );
@@ -265,6 +267,16 @@ inline void WgGfx::clipStretchBlit( const WgRect& clip, const WgSurface * pSrc, 
 inline void WgGfx::clipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, const WgRect& dest )
 {
 	m_pDevice->ClipStretchBlit( clip, pSrc, src, dest );
+}
+
+inline void WgGfx::clipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
+{
+	m_pDevice->ClipStretchBlit( clip, pSrc, float(src.x), float(src.y), float(src.w), float(src.h), dx, dy, dw, dh, bTriLinear, mipBias );
+}
+
+inline void WgGfx::clipStretchBlit( const WgRect& clip, const WgSurface * pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
+{
+	m_pDevice->ClipStretchBlit( clip, pSrc, sx, sy, sw, sh, dx, dy, dw, dh, bTriLinear, mipBias );
 }
 
 inline void WgGfx::tileBlit( const WgSurface* src )

@@ -96,6 +96,7 @@ public:
 		TabWidthModeNormal,	// All tabs have required width
 		TabWidthModeUnified,// All tabs have same width
 		TabWidthModeExpand,	// Tabs are stretched out to cover the entire width of the tab list
+		TabWidthModeExpand2,// Tabs are overlapped to cover the entire width of the tab list
 	};
 
 	WgGizmoTablist();
@@ -200,7 +201,7 @@ private:
 	Uint16		m_alertRate;				// Milliseconds between switching graphics.
 
 	Uint16		m_minTabWidth;
-	Uint16		m_overlap;
+	Sint16		m_overlap;
 
 	TabWidthMode m_tabWidthMode;
 	Uint16		m_widestTab;

@@ -276,7 +276,7 @@ void WgGfxDeviceGL::Blit( const WgSurface* _pSrc, const WgRect& _src, Sint32 _dx
 
 void WgGfxDeviceGL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy,
 										 float sw, float sh,
-								   		 float dx, float dy, float dw, float dh )
+								   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
 {
 	if( !pSrc )
 		return;

@@ -958,6 +958,18 @@ int Wdg_TableView::GetMarkedColumn( Uint32 x, Uint32& saveXOfs )
 
 void Wdg_TableView::ItemAdded( WgItem * pItem )
 {
+	//
+
+	WgItemRow * pRow = (WgItemRow*) pItem;
+	WgItem * pI = pRow->GetFirstItem();
+
+	for( unsigned int n = 0 ; n < m_nColumns && pI ; n++ )
+	{
+		pI->AdaptToWidth( m_pColumns[n].GetWidth() - m_cellPaddingX*2 );
+		pI = pI->getNext();
+	}
+
+
 	// Set size and request render
 
 	SetContentSize( m_contentWidth, m_contentHeight + pItem->Height() + m_cellPaddingY*2 );

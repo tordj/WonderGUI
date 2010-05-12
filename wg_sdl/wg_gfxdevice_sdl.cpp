@@ -250,7 +250,7 @@ void WgGfxDeviceSDL::Blit( const WgSurface* pSrc, const WgRect& src, Sint32 dx, 
 //____ StretchBlitSubPixel() ___________________________________________________
 
 void WgGfxDeviceSDL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
-								   		  float dx, float dy, float dw, float dh )
+								   		  float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
 {
 	if( !m_pCanvas || !pSrc )
 		return;

@@ -97,8 +97,8 @@ bool WgGizmoCheckbox::SetSource( const WgBlockSetPtr& _pUnchecked, const WgBlock
 //____ SetIcon() ______________________________________________________________
 
 void WgGizmoCheckbox::SetIcon( const WgBlockSetPtr& _pUnchecked, const WgBlockSetPtr& _pChecked, 
-								WgBorders _areaBorders, const WgOrigo& _origo, float _scale = 0.f, 
-								bool _bPushText = true );
+								WgBorders _areaBorders, const WgOrigo& _origo, float _scale, 
+								bool _bPushText )
 {
 	m_pIconUnchecked	= _pUnchecked;
 	m_pIconChecked		= _pChecked;
@@ -257,7 +257,17 @@ void WgGizmoCheckbox::OnAction( WgEmitter * pEmitter, WgInput::UserAction _actio
 	}
 }
 
-//____ GetIconRect() _____________________________________________________
+//____ GetTextAreaWidth() _____________________________________________________
+
+Uint32 WgGizmoCheckbox::GetTextAreaWidth()
+{
+	WgSize gizmoSize = Size();
+
+	return GetContentRect( gizmoSize, GetIconRect( gizmoSize ) ).w;
+}
+
+
+//____ GetIconRect() __________________________________________________________
 
 /*
 	Gets an icon-rect for the icon including borders, relative to upper left corner of widget.
@@ -280,11 +290,11 @@ WgRect WgGizmoCheckbox::GetIconRect( const WgSize& gizmoSize )
 		int w = pIcon->GetWidth();
 		int h = pIcon->GetHeight();		
 
+		int bgW = gizmoSize.w - m_iconAreaBorders.GetWidth();
+		int bgH = gizmoSize.h - m_iconAreaBorders.GetHeight();
+
 		if( m_iconScale != 0.f )
 		{
-			int bgW = gizmoSize.w - m_iconAreaBorders.GetWidth();
-			int bgH = gizmoSize.h - m_iconAreaBorders.GetHeight();
-
 			if( (w / (float) bgW) > (h / (float) bgH) )
 			{
 				h = (int) ((h * bgW * m_iconScale) / h);
@@ -293,15 +303,14 @@ WgRect WgGizmoCheckbox::GetIconRect( const WgSize& gizmoSize )
 			else
 			{
 				w = (int) ((w * bgH * m_iconScale) / h);
-				h = (int) (bgW * m_iconScale);
+				h = (int) (bgH * m_iconScale);
 			}
 		}
 
-		rect.w = w + m_iconAreaBorders.GetWidth();
-		rect.h = h + m_iconAreaBorders.GetHeight();;
 		rect.x = m_iconOrigo.calcOfsX( bgW, w );
 		rect.y = m_iconOrigo.calcOfsY( bgH, h );
-
+		rect.w = w + m_iconAreaBorders.GetWidth();
+		rect.h = h + m_iconAreaBorders.GetHeight();;
 	}
 	else
 	{
@@ -311,7 +320,7 @@ WgRect WgGizmoCheckbox::GetIconRect( const WgSize& gizmoSize )
 		rect.h = 0;
 	}
 
-	Return rect;
+	return rect;
 }
 
 
@@ -360,6 +369,8 @@ WgRect WgGizmoCheckbox::GetContentRect( const WgSize& gizmoSize, const WgRect& i
 
 void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
+	// Get correct mode
+
 	WgMode	mode = WG_MODE_NORMAL;
 	if( !m_bEnabled )
 		mode = WG_MODE_DISABLED;
@@ -369,6 +380,8 @@ void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 		if( m_bPressed )
 			mode = WG_MODE_SELECTED;
 	}
+
+	// Get blockset pointers for background and icon
 
 	WgBlockSetPtr	pBlockSet = 0;
 	WgBlockSetPtr	pIcon = 0;
@@ -383,6 +396,8 @@ void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 		pIcon		= m_pIconUnchecked;
 	}
 
+	// Blit background
+
 	if( pBlockSet )
 	{
 		if( m_bFixedSizeBox )
@@ -391,13 +406,20 @@ void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 			pDevice->ClipBlitBlock( _clip, pBlockSet->GetBlock(mode), _window );
 	}
 
-		if( 
+	// Blit icon
 
+	WgRect iconRect = GetIconRect( _window );
 
-		pDevice->ClipBlitBlock( _clip, pIcon->GetBlock(mode), iconRect );
-
+	if( pIcon && iconRect.w > 0 && iconRect.h > 0 )
+	{
+		WgRect iconBlitRect = iconRect;
+		iconBlitRect.Shrink( m_iconAreaBorders );
+		iconBlitRect.x += _window.x;
+		iconBlitRect.y += _window.y;
+		pDevice->ClipBlitBlock( _clip, pIcon->GetBlock(mode), iconBlitRect );
 	}
 
+	// Print content
 
  	if( m_text.nbLines()!= 0 )
 	{
@@ -411,27 +433,10 @@ void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 		int   yOfs = m_aDisplace[iDisplacement].y;
 
 
+		WgRect	printWindow = GetContentRect( _window, iconRect );
+		printWindow.x += _window.x;
+		printWindow.y += _window.y;
 
-		WgRect	printWindow = _window;
-
-		if( pIcon && m_bIconPushText )
-		{
-			int leftSpace = iconRect.x - printWindow.x;
-			int rightSpace = (printWindow.x + printWindow.w) - (iconRect.x + iconRect.w);
-
-			if( leftSpace < rightSpace  )
-			{
-				printWindow.x = (printWindow.x + printWindow.w) - rightSpace;
-				printWindow.w = rightSpace;
-			}
-			else
-			{
-				printWindow.w = leftSpace;
-			}
-		}
-
-		if( pBlockSet )
-			printWindow.Shrink( pBlockSet->GetContentBorders() );
 		printWindow.x += xOfs;
 		printWindow.y += yOfs;
 		m_pText->setMode( mode );
@@ -457,14 +462,7 @@ void WgGizmoCheckbox::OnRefresh( void )
 
 void WgGizmoCheckbox::OnNewSize( const WgSize& size )
 {
-	Uint32 w = size.w;
-
-	WgBlockSetPtr p = m_bChecked ? m_pBlockChecked : m_pBlockUnchecked;
-
-	if( p )
-		w -= p->GetContentBorders().GetWidth();
-
-	m_text.setLineWidth(w);
+	m_text.setLineWidth( GetTextAreaWidth() );
 	RefreshTextArea();
 }
 
@@ -486,7 +484,8 @@ void WgGizmoCheckbox::OnCloneContent( const WgGizmo * _pOrg )
 	m_pIconUnchecked	= pOrg->m_pIconUnchecked;
 	m_pIconChecked		= pOrg->m_pIconChecked;
 	m_iconOrigo			= pOrg->m_iconOrigo;
-	m_bFixedSizeIcon	= pOrg->m_bFixedSizeIcon;
+	m_iconScale			= pOrg->m_iconScale;
+	m_iconAreaBorders	= pOrg->m_iconAreaBorders;
 	m_bIconPushText		= pOrg->m_bIconPushText;
 
 	m_text				= pOrg->m_text;
@@ -603,23 +602,46 @@ bool WgGizmoCheckbox::OnMarkTest( const WgCord& ofs )
 			mode = WG_MODE_SELECTED;
 	}
 
-	WgBlock block;
-	if( m_bChecked && m_pBlockChecked )
-		block = m_pBlockChecked->GetBlock(mode);
-	else if( m_pBlockUnchecked )
-		block = m_pBlockUnchecked->GetBlock(mode);
-	else
-		return false;
+	WgBlock bgBlock;
+	WgBlock iconBlock;
 
-	WgRect a;
+	if( m_bChecked )
+	{
+		if( m_pBlockChecked )
+			bgBlock = m_pBlockChecked->GetBlock(mode);
 
-	if( m_bFixedSizeBox )
-		a = WgRect(0,0,block.GetWidth(),block.GetHeight());
+		if( m_pIconChecked )
+			iconBlock = m_pIconChecked->GetBlock(mode);
+	}
 	else
 	{
-		WgSize sz = Size();
-		a = WgRect(0,0, sz.w, sz.h);
+		if( m_pBlockUnchecked )
+			bgBlock = m_pBlockUnchecked->GetBlock(mode);
+
+		if( m_pIconUnchecked )
+			iconBlock = m_pIconUnchecked->GetBlock(mode);
+	}
+		
+	WgRect bgRect;
+	WgSize sz = Size();
+
+	if( bgBlock.IsValid() )
+	{
+		if( m_bFixedSizeBox )
+			bgRect = WgRect(0,0,bgBlock.GetWidth(), bgBlock.GetHeight() );
+		else
+			bgRect = WgRect(0,0, sz.w, sz.h);
+
+		if( WgUtil::MarkTestBlock( ofs.x, ofs.y, bgBlock, bgRect ) )
+			return true;
 	}
 
-	return WgUtil::MarkTestBlock( ofs.x, ofs.y, block, a );
+	if( iconBlock.IsValid() )
+	{
+		WgRect iconRect = GetIconRect( sz );
+		if( WgUtil::MarkTestBlock( ofs.x, ofs.y, iconBlock, iconRect ) )
+			return true;
+	}
+
+	return false;
 }

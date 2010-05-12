@@ -111,7 +111,7 @@ void WgGfxDeviceMIG::Fill( const WgRect& _rect, const WgColor& _col )
 		return;	
 
 	EColor c(_col.r/255.f * m_tintColorMIG.r, _col.g/255.f * m_tintColorMIG.g, _col.b/255.f * m_tintColorMIG.b, _col.a/255.f * m_tintColorMIG.a);
-	ERenderer::GetCurrent()->Blit( NULL, 0, 0, 0, 0, _rect.x, _rect.y, _rect.w, _rect.h, m_blendModeMIG, c );
+	ERenderer::GetCurrent()->Blit( NULL, 0, 0, 0, 0, float(_rect.x), float(_rect.y), float(_rect.w), float(_rect.h), m_blendModeMIG, c );
 	return;
 }
 
@@ -127,9 +127,8 @@ void WgGfxDeviceMIG::Blit( const WgSurface* pSrc, const WgRect& src, Sint32 dx, 
 
 //____ StretchBlitSubPixel() ___________________________________________________
 
-void WgGfxDeviceMIG::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
-								   		  float dx, float dy, float dw, float dh )
+void WgGfxDeviceMIG::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
 {
-	ERenderer::GetCurrent()->Blit(((WgSurfaceMIG*)pSrc)->MIG_Surf(), sx, sy, sw, sh, (uint) dx, (uint) dy, (uint) dw, (uint) dh, m_blendModeMIG, m_tintColorMIG, m_orient );
+	ERenderer::GetCurrent()->Blit(((WgSurfaceMIG*)pSrc)->MIG_Surf(), sx, sy, sw, sh, dx, dy, dw, dh, m_blendModeMIG, m_tintColorMIG, m_orient, bTriLinear, mipBias );
 }
 

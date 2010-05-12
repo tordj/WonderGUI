@@ -589,6 +589,11 @@ public:
 
 	static const char* TagName() { return "cursor"; }
 private:
+
+	std::string	ScaleModeToString( WgCursor::ScaleMode mode );
+	WgCursor::ScaleMode	StringToScaleMode( const std::string& str );
+
+
 	WgCursor*	m_pCursor;
 };
 

@@ -263,6 +263,11 @@ void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 
 				int line = y/height;
 				int col = (x+spacing/2)/spacing;
+				if(col < 0)
+				{
+					col = 0;
+					line = 0;
+				}
 				m_pText->gotoSoftPos(line,col);
 			}
 			else

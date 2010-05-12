@@ -53,10 +53,10 @@ public:
 	void	Fill( const WgRect& rect, const WgColor& col );
 	void	Blit( const WgSurface* src, const WgRect& srcrect, Sint32 dx, Sint32 dy  );
 
+	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
+						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 
 protected:	
-	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
-						   		 float dx, float dy, float dw, float dh );
 
 	bool	m_bRendering;
 

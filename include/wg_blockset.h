@@ -200,6 +200,8 @@ public:
 
 	inline bool					IsSkipable() const	{ return ((m_flags & WG_SKIP_NORMAL) != 0); }
 
+	inline bool					IsValid() const { return (m_pSurf && m_rect.w != 0 && m_rect.h != 0 )?true:false; }
+
 private:
 
 	const WgSurface *	m_pSurf;

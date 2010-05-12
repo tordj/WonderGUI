@@ -121,6 +121,7 @@ public:
 									 const WgRect& dest );
 	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc,
 									 const WgRect& src, const WgRect& dest );
+	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
 
 	virtual void	ClipTileBlit( const WgRect& clip, const WgSurface* src );
 	virtual void	ClipTileBlit( const WgRect& clip, const WgSurface* src,
@@ -165,6 +166,8 @@ public:
 
 	virtual void		PrintLine( WgPen * pPen, const WgTextPropPtr& pTextProp, WgMode mode, const WgChar * pString, Uint32 maxChars = 0xFFFF );
 
+	virtual void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
+								   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f ) = 0;
 
 protected:
 	WgGfxDevice();
@@ -177,8 +180,6 @@ protected:
 //
 //	virtual void	BlitSubPixel( const WgSurface * pSrc, const WgRect& srcrect,
 //								  float dx, float dy ) = 0;
-	virtual void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
-								   		 float dx, float dy, float dw, float dh ) = 0;
 	virtual void 	DrawUnderline( 	const WgRect& clip, const WgTextPropPtr& pTextProp,
 									WgMode mode, int _x, int _y, const WgChar * pLine );
 
