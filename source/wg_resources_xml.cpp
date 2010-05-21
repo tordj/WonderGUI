@@ -1666,8 +1666,12 @@ void WgGlyphSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 				}
 				else
 				{
-					VERIFY( pFont->GetVectorGlyphs( styleInt ) == 0, "vector glyphs defined more than once for same style" );
-					pFont->SetVectorGlyphs( static_cast<WgVectorGlyphs*>(m_pGlyphSet), styleInt );
+//					VERIFY( pFont->GetVectorGlyphs( styleInt, sizeInt ) == 0, "vector glyphs defined more than once for same style/size" );
+
+					if( size.empty() )
+						pFont->SetVectorGlyphs( static_cast<WgVectorGlyphs*>(m_pGlyphSet), styleInt );
+					else
+						pFont->SetVectorGlyphs( static_cast<WgVectorGlyphs*>(m_pGlyphSet), styleInt, sizeInt );
 				}
 				break;
 #endif
@@ -1717,7 +1721,7 @@ void WgFontRes::Serialize(WgResourceSerializerXML& s)
 
 	for(int style = WG_STYLE_NORMAL; style < WG_NB_FONTSTYLES; style++)
 	{
-		WgGlyphSet* pGlyphSet = m_pFont->GetVectorGlyphs((WgFontStyle)style);
+		WgGlyphSet* pGlyphSet = m_pFont->GetVectorGlyphs((WgFontStyle)style,0);
 		if(pGlyphSet)
 			WgGlyphSetRes(this, pGlyphSet, (WgFontStyle)style).Serialize(s);
 	}

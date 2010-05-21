@@ -79,6 +79,13 @@ Uint32 Wg_Interface_ItemHolder::InsertItem( WgItem * pItem, Uint32 pos )
 	return pItem->getIndex();
 }
 
+//____ HasItem() ___________________________________________________________
+
+bool Wg_Interface_ItemHolder::HasItem( WgItem * pItem ) const
+{
+	return m_items.isMember( pItem );
+}
+
 //____ GetItemPos() ___________________________________________________________
 
 Sint32 Wg_Interface_ItemHolder::GetItemPos( WgItem * pItem )

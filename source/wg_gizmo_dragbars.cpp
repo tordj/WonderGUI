@@ -42,6 +42,7 @@ WgGizmoDragbar::WgGizmoDragbar()
 	m_sliderSize 		= 1.0;
 	m_sliderPos 		= 0.0;
 
+	m_bgPressMode		= SKIP_PAGE;
 	m_bPressOnDragBar	= false;
 	m_dragBarPressOfs	= 0;
 
@@ -73,6 +74,15 @@ const char * WgGizmoDragbar::GetMyType( void )
 {
 	return Wdg_Type;
 }
+
+//____ SetBgPressMode() _______________________________________________________
+
+void WgGizmoDragbar::SetBgPressMode( BgPressMode mode )
+{
+	m_bgPressMode = mode;
+}
+
+
 
 //____ SetSlider() ____________________________________________________________
 
@@ -242,6 +252,7 @@ void WgGizmoDragbar::OnCloneContent( const WgGizmo * _pOrg )
 	m_sliderSize		= pOrg->m_sliderSize;
 
 	m_bHorizontal		= pOrg->m_bHorizontal;
+	m_bgPressMode		= pOrg->m_bgPressMode;
 
 	m_bPressOnDragBar	= 0;
 	m_dragBarPressOfs	= 0;
@@ -681,10 +692,25 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 	  			m_dragBarPressOfs = pointerOfs - barPos;
 			else if( c == C_BG )
 			{
-				if( pointerOfs - barPos < barLen/2 )
-					pEmitter->Emit( PrevPage() );
-				else
-					pEmitter->Emit( NextPage() );
+				switch( m_bgPressMode )
+				{
+				case SKIP_PAGE:
+					if( pointerOfs - barPos < barLen/2 )
+						pEmitter->Emit( PrevPage() );
+					else
+						pEmitter->Emit( NextPage() );
+					break;
+				case GOTO_POS:
+					m_mode[C_BAR] = WG_MODE_SELECTED;
+					m_mode[C_BG] = WG_MODE_NORMAL;
+					m_dragBarPressOfs = barLen/2;
+					SetSliderPosPxlOfs( pointerOfs );
+					break;
+				default:
+//					assert( false );
+					break;
+				}
+
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 				pEmitter->Emit( Forward() );
@@ -751,7 +777,6 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 					}
 				}
 			}
-			break;
 		}
         default:
             break;

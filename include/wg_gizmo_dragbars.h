@@ -67,6 +67,12 @@ class	WgGizmoDragbar : public WgGizmo
 			DEFAULT		= NONE
 		};
 
+		enum BgPressMode
+		{
+			SKIP_PAGE,
+			GOTO_POS
+		};
+		
 		//____ Methods __________________________________________
 					
 		float			GetSliderPos() const { return m_sliderPos; }
@@ -77,6 +83,9 @@ class	WgGizmoDragbar : public WgGizmo
 		WgBlockSetPtr 	GetFwdSource() const { return m_pBtnFwdGfx; }
 		ButtonLayout	GetButtonLayout() const { return m_btnLayout; }
 		
+		void	SetBgPressMode( BgPressMode mode );
+		BgPressMode GetBgPressMode() const { return m_bgPressMode; }
+
 		bool	SetSlider( float pos, float size );
 		bool	SetSliderPos( float pos );
 		bool	SetSliderPosPxlOfs( int x );
@@ -126,6 +135,7 @@ class	WgGizmoDragbar : public WgGizmo
 		float			m_sliderPos;
 		float			m_sliderSize;
   	
+		BgPressMode		m_bgPressMode;
 		bool			m_bHorizontal;
 		bool			m_bPressOnDragBar;
 		int				m_dragBarPressOfs;

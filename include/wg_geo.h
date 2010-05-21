@@ -252,6 +252,7 @@ public:
 
 	inline Sint32 Width() const		{ return w; }
 	inline Sint32 Height() const	{ return h; }
+	inline WgSize Size() const		{ return WgSize(w,h); }
 
 	inline Sint32 Left() const		{ return x; }
 	inline Sint32 Top() const		{ return y; }

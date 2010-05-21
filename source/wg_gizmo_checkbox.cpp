@@ -521,6 +521,10 @@ void WgGizmoCheckbox::RefreshTextArea()
 	}
 	m_textAreaCount = 0;
 
+	WgRect	contentRect = GetContentRect( Size(), GetIconRect( Size() ) );
+
+
+
 	// calculate mark testing area for the text
 
 	WgTextPropPtr	pProp = m_text.getDefaultProperties();
@@ -535,25 +539,21 @@ void WgGizmoCheckbox::RefreshTextArea()
 	int yPos = (int) (Size().h * origo.anchorY()
 							- textheight * origo.hotspotY());
 
-	Uint32				n1 = m_pText->nbLines();
-	const WgTextLine *	p1 = m_pText->getLines();
+	Uint32				nLines = m_pText->nbLines();
 
-	m_textAreaCount = n1;
+	m_textAreaCount = nLines;
 	m_pTextArea = new WgRect[ m_textAreaCount ];
 
-	int textOfs = 0;
-	WgBlockSetPtr	p = m_bChecked ? m_pBlockChecked : m_pBlockUnchecked;
-	if( p )
-		textOfs = p->GetContentBorders().left;
+	int	textOfs = contentRect.x;
 
-	for( int i = 0 ; i < (int) n1 ; i++ )
+	for( int i = 0 ; i < (int) nLines ; i++ )
 	{
 		// if text mouse over x offset is specified, text mark area starts there, otherwise at the regular text offset
 		int xMin = textOfs;
 		if( m_textMouseOverOfsX != 0xFFFF )
 			xMin = m_textMouseOverOfsX;
 
-		int linewidth = WgTextTool::lineWidth( m_text.getNode(), pProp, WG_MODE_NORMAL, p1[i].pText );
+		int linewidth = m_pText->getLineWidth(i);
 		int lineheight = m_pText->softLineHeight(i);
 		int textStartX = (int) (textOfs + Size().w * origo.anchorX()
 								- linewidth * origo.hotspotX());
@@ -570,15 +570,15 @@ void WgGizmoCheckbox::RefreshTextArea()
 
 bool WgGizmoCheckbox::MarkTestTextArea( int _x, int _y )
 {
-	if( m_textAreaCount != m_pText->nbLines() )
-		RefreshTextArea();
+//	if( m_textAreaCount != m_pText->nbLines() )
+//		RefreshTextArea();
+
 	for( int i = 0; i < m_textAreaCount; ++i )
 	{
-		const WgRect& kArea = m_pTextArea[ i ];
-		if( _x >= kArea.x && _x < kArea.x + kArea.w
-			&& _y >= kArea.y && _y < kArea.y + kArea.h )
+		if( m_pTextArea[i].Contains(_x,_y) )
 			return true;
 	}
+
 	return false;
 }
 

@@ -357,7 +357,7 @@ Uint32 WgText::height() const
 	if( m_pManagerNode )
 		size = (int) m_pManagerNode->GetSize( m_pProp->GetFont(), m_pProp->GetStyle(), size );
 
-	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), size )->GetHeight(size);
+	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), size )->GetLineSpacing(size);
 
 	int h2 = fontheight+m_lineSpaceAdj;
 	if( h2 < 0 )
@@ -375,7 +375,7 @@ Uint32 WgText::softLineHeight( Uint32 line )
 	if( m_pManagerNode )
 		size = (int) m_pManagerNode->GetSize( m_pProp->GetFont(), m_pProp->GetStyle(), size );
 
-	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), size )->GetHeight(size);
+	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), size )->GetLineSpacing(size);
 
 	return fontheight;								//TODO: Count right even if style changes over the text and lines.
 }

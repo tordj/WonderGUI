@@ -79,6 +79,17 @@ void WgFont::Init()
 
 WgFont::~WgFont()
 {
+	for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
+	{
+		if( m_aVectorGlyphs[i] != 0 )
+			delete [] m_aVectorGlyphs[i];
+	}
+
+	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
+	{
+		if( m_aBitmapGlyphs[i] != 0 )
+			delete [] m_aBitmapGlyphs[i];
+	}
 }
 
 
@@ -99,8 +110,8 @@ WgGlyphSet * WgFont::GetGlyphSet( WgFontStyle style, int size ) const
 	else if( m_aDefaultBitmapGlyphs[size] != 0 )
 		return m_aDefaultBitmapGlyphs[size];
 #ifdef WG_USE_FREETYPE
-	else if( m_aVectorGlyphs[style] != 0 )
-		return m_aVectorGlyphs[style];
+	else if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] != 0 )
+		return m_aVectorGlyphs[style][size];
 	else if( m_pDefaultVectorGlyphs )
 		return m_pDefaultVectorGlyphs;
 #endif
@@ -175,9 +186,9 @@ const WgGlyph * WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) cons
 #ifdef WG_USE_FREETYPE
 	// 3. VectorGlyphs of the right style.
 
-	if( m_aVectorGlyphs[style] != 0 )
+	if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] != 0 )
 	{
-		p = m_aVectorGlyphs[style]->GetGlyph( chr, size );
+		p = m_aVectorGlyphs[style][size]->GetGlyph( chr, size );
 		if( p )
 			return p;
 	}
@@ -246,9 +257,9 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 #ifdef WG_USE_FREETYPE
 	// 3. VectorGlyphs of the right style.
 
-	if( m_aVectorGlyphs[style] != 0 )
+	if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] != 0 )
 	{
-		p = m_aVectorGlyphs[style]->GetGlyph( chr, size );
+		p = m_aVectorGlyphs[style][size]->GetGlyph( chr, size );
 		if( p )
 			return EXACT_MATCH_PROVIDED;
 	}
@@ -293,9 +304,34 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 bool WgFont::SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style )
 {
-	m_aVectorGlyphs[style] = pGlyph;
+	if( m_aVectorGlyphs[style] == 0 )
+		m_aVectorGlyphs[style] = new WgVectorGlyphs*[WG_MAX_FONTSIZE+1];
+
+	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
+		m_aVectorGlyphs[style][i] = pGlyph;
+
 	return true;
 }
+
+bool WgFont::SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style, int size )
+{
+	if( size < 0 || size > WG_MAX_FONTSIZE )
+		return false;
+
+	if( m_aVectorGlyphs[style] == 0 )
+	{
+		m_aVectorGlyphs[style] = new WgVectorGlyphs*[WG_MAX_FONTSIZE+1];
+
+		for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
+			m_aVectorGlyphs[style][i] = 0;
+	}
+
+	m_aVectorGlyphs[style][size] = pGlyph;
+
+	return true;
+}
+
+
 
 //____ SetDefaultVectorGlyphs() _______________________________________________
 
@@ -319,10 +355,14 @@ int WgFont::ReplaceVectorGlyphs( WgVectorGlyphs * pOld, WgVectorGlyphs * pNew )
 
 	for( int style = 0 ; style  < WG_NB_FONTSTYLES ; style++ )
 	{
-		if( m_aVectorGlyphs[style] == pOld )
+		if( m_aVectorGlyphs[style] != 0 )
 		{
-			m_aVectorGlyphs[style] = pNew;
-			nbReplaced++;
+			for( int size = 0 ; size <= WG_MAX_FONTSIZE ; size++ )
+				if( m_aVectorGlyphs[style][size] == pOld )
+				{
+					m_aVectorGlyphs[style][size] = pNew;
+					nbReplaced++;
+				}
 		}
 	}
 

@@ -280,7 +280,8 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _windo
 		int dy = (int)( m_iconOrigo.anchorY() * _window.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
 
 		WgGfxFrame * pFrame = m_pRefreshAnim->getFrame( m_animTimer );
-		pDevice->ClipBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), _window.x + dx, _window.y + dy );
+		//pDevice->ClipBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), _window.x + dx, _window.y + dy );
+		pDevice->ClipStretchBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), _window );
 	}
 	else if( m_pIconGfx )
 	{
@@ -389,4 +390,10 @@ void WgGizmoRefreshButton::OnCloneContent( const WgGizmo * _pOrg )
 	m_animTimer			= pOrg->m_animTimer;
 	m_refreshProgress	= pOrg->m_refreshProgress;
 	m_bStopping			= pOrg->m_bStopping;
+}
+
+void WgGizmoRefreshButton::SetTextManager( WgTextManager * pManager )
+{
+	m_refreshText.setManager( pManager );
+	WgGizmoButton::SetTextManager(pManager);
 }

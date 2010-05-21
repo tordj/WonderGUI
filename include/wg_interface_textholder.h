@@ -51,7 +51,7 @@ public:
 	};
 	virtual InputMode GetInputMode() const  { return Static; }
 
-	inline void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); TextModified(); }
+	virtual void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); TextModified(); }
 	inline WgTextManager * GetTextManager() const { return m_pText->getManager(); }
 
 	inline bool			SetFonts( WgFont * pFont ) { SetFont(pFont); return true; }		// DEPRECATED!!!

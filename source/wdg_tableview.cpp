@@ -1511,15 +1511,21 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 
 	if( pItem )
 	{
+		pItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
+		
 		// HACK. Remove when message loop is implemented
 		// pItem can be deleted in the ActionResponse callback. Make sure it still exist // Martin
-		pItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
-		WgItem* p = m_items.getFirst();
-		while(p && p != pItem) p = p->GetNext();
-		if(p == pItem)
-			m_pLastMarkedItem = pItem;
-		else
-			m_pLastMarkedItem = 0;
+		m_pLastMarkedItem = 0;
+		WgTableRow* pRow = (WgTableRow*)m_items.getFirst();
+		while( pRow )
+		{
+			if( pRow->HasItem( pItem ) )
+			{
+				m_pLastMarkedItem = pItem;
+				break;
+			}
+			pRow = pRow->GetNext();
+		}
 	}
 	else
 	{

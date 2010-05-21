@@ -77,9 +77,10 @@ public:
 
 #ifdef	WG_USE_FREETYPE
 	bool				SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style  );
+	bool				SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style, int size );
 	bool				SetDefaultVectorGlyphs( WgVectorGlyphs * pGlyphs );
 
-	inline WgVectorGlyphs *	GetVectorGlyphs( WgFontStyle style  ) { return m_aVectorGlyphs[style]; }
+	inline WgVectorGlyphs *	GetVectorGlyphs( WgFontStyle style, int size  ) const { if( size <= WG_MAX_FONTSIZE && m_aVectorGlyphs[style] != 0 ) return m_aVectorGlyphs[style][size]; else return 0; }
 	inline WgVectorGlyphs *	GetDefaultVectorGlyphs( ) const { return m_pDefaultVectorGlyphs; }
 
 	int					ReplaceVectorGlyphs( WgVectorGlyphs * pOld, WgVectorGlyphs * pNew );
@@ -107,7 +108,7 @@ protected:
 
 #ifdef	WG_USE_FREETYPE
 	WgVectorGlyphs *	m_pDefaultVectorGlyphs;
-	WgVectorGlyphs *	m_aVectorGlyphs[WG_NB_FONTSTYLES];
+	WgVectorGlyphs **	m_aVectorGlyphs[WG_NB_FONTSTYLES];			// Pointer at an array of WG_MAX_FONTSIZE+1 WgVectorGlyhphs.
 #endif
 
 	WgBitmapGlyphs **	m_aBitmapGlyphs[WG_MAX_FONTSIZE+1];			// Pointer at an array of WG_NB_FONTSTYLES WgBitmapGlyphs.

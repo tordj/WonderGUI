@@ -93,6 +93,8 @@ public:
 		float			GetRefreshProgress() const { return m_refreshProgress; }
 		bool			IsRefreshing() const { return m_bRefreshing; }
 
+		virtual void	SetTextManager( WgTextManager * pManager );
+
 protected:
 
 		void		OnUpdate( const WgUpdateInfo& _updateInfo );
