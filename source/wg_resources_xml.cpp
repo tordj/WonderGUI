@@ -1803,13 +1803,13 @@ void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 	WgResDB::LegoSource* source =  s.ResDb()->GetLegoSource(xmlNode["source"]);
 	if(source)
 	{
-		m_pAnim->setWidth(source->rect.w + legoMargin);
+		m_pAnim->setWidth(source->rect.w);
 		m_pAnim->setHeight(source->rect.h);
 
 		WgSurface* pSurf = s.ResDb()->GetSurface(source->surface);
 		VERIFY(pSurf, "surface doesn't exist");
 
-		VERIFY(m_pAnim->addHorrTiledFrames(source->nStates, pSurf, source->rect.x, source->rect.y, duration), "could not add frame to anim");
+		VERIFY(m_pAnim->addHorrTiledFrames(source->nStates, pSurf, source->rect.x, source->rect.y, duration, legoMargin), "could not add frame to anim");
 	}
 	else
 	{
@@ -1820,16 +1820,16 @@ void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 		int stateH = WgUtil::ToUint32(xmlNode["state_h"]);
 		int nStates = WgUtil::ToUint32(xmlNode["state_count"]);
 
-		m_pAnim->setWidth(stateW + legoMargin);
+		m_pAnim->setWidth(stateW);
 		m_pAnim->setHeight(stateH);
 
 		int nHorStates = pSurf->width() / (stateW + legoMargin);
 		for(int y = 0; nStates > 0; y += stateH + legoMargin, nStates -= nHorStates)
 		{
 			if(nStates > nHorStates)
-				VERIFY(m_pAnim->addHorrTiledFrames(nHorStates, pSurf, 0, y, duration), "could not add frame to anim");
+				VERIFY(m_pAnim->addHorrTiledFrames(nHorStates, pSurf, 0, y, duration, legoMargin), "could not add frame to anim");
 			else
-				VERIFY(m_pAnim->addHorrTiledFrames(nStates, pSurf, 0, y, duration), "could not add frame to anim");
+				VERIFY(m_pAnim->addHorrTiledFrames(nStates, pSurf, 0, y, duration, legoMargin), "could not add frame to anim");
 		}
 	}
 
@@ -1893,7 +1893,8 @@ void WgKeyFrameRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	Uint16 yOfs = WgUtil::ToUint16(xmlNode["yofs"]);
 	Uint32 duration = WgUtil::ToUint32(xmlNode["duration"]);
 
-	VERIFY(anim->addHorrTiledFrames(source->nStates, pSurf, source->rect.x, source->rect.y, duration), "could not add frame to anim");
+	const int legoMargin = 2;
+	VERIFY(anim->addHorrTiledFrames(source->nStates, pSurf, source->rect.x, source->rect.y, duration, legoMargin), "could not add frame to anim");
 }
 
 //////////////////////////////////////////////////////////////////////////

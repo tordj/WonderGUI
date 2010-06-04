@@ -129,9 +129,11 @@ public:
 
 
 	virtual void *		Lock( LockStatus mode ) = 0;
+	virtual void *		LockRegion( LockStatus mode, const WgRect& region ) = 0;
 	virtual void		Unlock() = 0;
-	inline 	bool		IsLocked() { return (m_lockStatus != UNLOCKED); }
-	inline	LockStatus	GetLockStatus() { return m_lockStatus; }
+	inline 	bool		IsLocked() const { return (m_lockStatus != UNLOCKED); }
+	inline	LockStatus	GetLockStatus() const { return m_lockStatus; }
+	inline  WgRect		GetLockRegion() const { return m_lockRegion; }
 	inline Uint32		GetPitch() const;						// of locked surface
 	inline const PixelFormat *GetPixelFormat() const;					// of locked surface	
 
@@ -190,6 +192,7 @@ protected:
 	LockStatus				m_lockStatus;
 	Uint32					m_pitch;
 	Uint8 *					m_pPixels;			// Pointer at pixels when surface locked.
+	WgRect					m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 
 
 	static WgMemPool *		g_pBlockSetMemPool;

@@ -57,8 +57,8 @@ public:
 	bool	addFrame( WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration );
 
 
-	Uint32	addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration );
-	Uint32	addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration );
+	Uint32	addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration, int spacing = 0 );
+	Uint32	addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration, int spacing = 0 );
 
 
 	WgGfxFrame * getFrame( Uint32 tick, WgGfxFrame * pProximity = 0 ) const;

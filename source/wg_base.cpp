@@ -27,6 +27,7 @@
 
 #ifdef WG_USE_FREETYPE
 #	include <ft2build.h>
+#	include <wg_vectorglyphs.h>
 #	include FT_FREETYPE_H
 
 	bool		WgBase::s_bFreeTypeInitialized;
@@ -54,6 +55,10 @@ void WgBase::Init()
 void WgBase::Exit()
 {
 #ifdef WG_USE_FREETYPE
+
+	WgVectorGlyphs::SetSurfaceFactory(0);
+	WgVectorGlyphs::ClearCache();
+
 	if( s_bFreeTypeInitialized )
 		FT_Done_FreeType( s_freeTypeLibrary );
 #endif

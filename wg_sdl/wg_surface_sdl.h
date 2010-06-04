@@ -55,6 +55,7 @@ public:
 	Uint8		GetOpacity( Uint32 x, Uint32 y ) const;
 
 	void *		Lock( LockStatus mode );
+	void *		LockRegion( LockStatus mode, const WgRect& region );
 	void		Unlock();
 
 

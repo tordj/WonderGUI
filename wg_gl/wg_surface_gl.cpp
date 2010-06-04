@@ -284,9 +284,43 @@ void * WgSurfaceGL::Lock( LockStatus mode )
 			break;	// Should never happen, just here to avoid compiler warnings...
 	}
 
+	m_lockRegion = WgRect(0,0,m_width,m_height);
 	m_lockStatus = mode;
 	return m_pPixels;
 }
+
+//____ LockRegion() __________________________________________________________________
+
+void * WgSurfaceGL::LockRegion( LockStatus mode, const WgRect& region )
+{
+	if( m_format == 0 || m_lockStatus != UNLOCKED || mode == UNLOCKED )
+		return 0;
+
+	if( region.x + region.w > m_width || region.y + region.w > m_height || region.x < 0 || region.y < 0 )
+		return 0;
+
+	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
+
+	switch( mode )
+	{
+		case READ_ONLY:
+			m_pPixels = (Uint8*) pglMapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, GL_READ_ONLY_ARB );
+			break;
+		case WRITE_ONLY:
+			m_pPixels = (Uint8*) pglMapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB );
+			break;
+		case READ_WRITE:
+			m_pPixels = (Uint8*) pglMapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, GL_READ_WRITE_ARB );
+			break;
+		default:
+			break;	// Should never happen, just here to avoid compiler warnings...
+	}
+
+	m_lockRegion = region;
+	m_lockStatus = mode;
+	return m_pPixels += (m_width*region.y+region.x)*m_pixelSize;
+}
+
 
 //____ Unlock() ________________________________________________________________
 
@@ -301,11 +335,13 @@ void WgSurfaceGL::Unlock()
 	if( m_lockStatus != READ_ONLY )
 	{
 		glBindTexture( GL_TEXTURE_2D, m_texture );
-		glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+		glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 	}
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
 	m_lockStatus = UNLOCKED;
 	m_pPixels = 0;
+	m_lockRegion.w = 0;
+	m_lockRegion.h = 0;
 }
 
 

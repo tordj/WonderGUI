@@ -148,8 +148,34 @@ void * WgSurfaceSDL::Lock( LockStatus mode )
 	m_lockStatus = READ_WRITE;
 
 	m_pPixels = (Uint8*) m_pSurface->pixels;
+	m_lockRegion = WgRect( 0, 0, m_pSurface->w, m_pSurface->h );
 	return m_pSurface->pixels;
 }
+
+//____ LockRegion() ___________________________________________________________
+
+void * WgSurfaceSDL::LockRegion( LockStatus mode, const WgRect& region )
+{
+	if( !m_pSurface )
+		return 0;
+
+	int width = m_pSurface->w;
+	int height = m_pSurface->h;
+
+	if( region.x < 0 || region.y < 0 || region.x + region.w > width || region.y + region.h > height )
+		return 0;
+
+	Lock( mode );
+
+	if( m_pPixels )
+	{
+		m_lockRegion = region;
+		return m_pPixels + (width*region.y+region.x)*m_pSurface->format->BytesPerPixel;
+	}
+	return 0;
+
+}
+
 
 //____ Unlock() ________________________________________________________________
 
@@ -160,6 +186,8 @@ void WgSurfaceSDL::Unlock()
 
 	SDL_UnlockSurface(m_pSurface);
 	m_lockStatus = UNLOCKED;
+	m_lockRegion.w = 0;
+	m_lockRegion.h = 0;
 	m_pPixels = 0;
 }
 

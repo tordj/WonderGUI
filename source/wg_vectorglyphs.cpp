@@ -73,10 +73,33 @@ WgVectorGlyphs::WgVectorGlyphs( const void * pTTF_File, int bytes, int faceIndex
 
 WgVectorGlyphs::~WgVectorGlyphs()
 {
-	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
+	for( int size = 0 ; size <= WG_MAX_FONTSIZE ; size++ )
 	{
-		if( m_cachedGlyphsIndex[i] != 0 )
-			delete m_cachedGlyphsIndex[i];
+		if( m_cachedGlyphsIndex[size] != 0 )
+		{
+			for( int page = 0 ; page < 256 ; page++ )
+			{
+				if( m_cachedGlyphsIndex[size][page] != 0 )
+				{
+					for( int glyph = 0 ; glyph < 256 ; glyph++ )
+					{
+						CacheSlot * pSlot = m_cachedGlyphsIndex[size][page][glyph];
+						if(  pSlot != 0 )
+						{
+							pSlot->pOwner = 0;
+							pSlot->access = 0;
+							pSlot->size = 0;
+							pSlot->character = 0;
+
+							pSlot->moveLast();
+						}
+					}
+					delete [] m_cachedGlyphsIndex[size][page];
+				}
+			}
+
+			delete [] m_cachedGlyphsIndex[size];
+		}
 	}
 
 	FT_Done_Face( m_ftFace );
@@ -339,8 +362,8 @@ void WgVectorGlyphs::CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 {
 	WgSurface * pSurf = pSlot->glyph.pSurf;
 
-	unsigned char * pBuffer = (unsigned char*) pSurf->Lock( WgSurface::WRITE_ONLY );
-	assert( pBuffer != 0 );
+	unsigned char * pDest = (unsigned char*) pSurf->LockRegion( WgSurface::WRITE_ONLY, pSlot->rect );
+	assert( pDest != 0 );
 	assert( pSurf->GetPixelFormat()->type == WgSurface::RGBA_8 );
 
 	int dest_pitch = pSurf->GetPitch();
@@ -348,7 +371,6 @@ void WgVectorGlyphs::CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 	// Copy glyph bitmap into alpha channel of slot, making sure to clear any
 	// left over area of slots alpha channel.
 
-	unsigned char * pDest = pBuffer + dest_pitch*pSlot->rect.y + 4*pSlot->rect.x;
 	unsigned char * pSrc = pBitmap->buffer;
 
 
@@ -503,7 +525,8 @@ void WgVectorGlyphs::ClearCache()
 		CacheSlot * p = s_cacheSlots[i].getFirst();
 		while( p )
 		{
-			p->pOwner->SlotLost( p );
+			if( p->pOwner )
+				p->pOwner->SlotLost( p );
 			p = p->getNext();
 		}
 

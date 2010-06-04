@@ -103,12 +103,12 @@ bool WgGfxAnim::addFrame( WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 du
 
 //____ addHorrTiledFrames() ___________________________________________________
 
-Uint32 WgGfxAnim::addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration )
+Uint32 WgGfxAnim::addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration, int spacing )
 {
 	if( nFrames == 0 )
 		nFrames = (pSurf->width() - xOfs) / m_width;				// Put in as many as fits along surface width.
 
-	if( pSurf->width() < xOfs + m_width * nFrames || pSurf->height() < yOfs + m_height )
+	if( pSurf->width() < xOfs + (m_width+spacing) * nFrames || pSurf->height() < yOfs + m_height )
 		return 0;
 
 	for( Uint32 i = 0 ; i < nFrames ; i++ )
@@ -116,7 +116,7 @@ Uint32 WgGfxAnim::addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 
 		WgGfxFrame * pFrame = new WgGfxFrame;
 
 		pFrame->pSurf = pSurf;
-		pFrame->ofs.x = xOfs + i*m_width;
+		pFrame->ofs.x = xOfs + i*(m_width+spacing);
 		pFrame->ofs.y = yOfs;
 
 		bool bOk = WgAnim::addKeyFrame( pFrame, duration );
@@ -134,12 +134,12 @@ Uint32 WgGfxAnim::addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 
 
 //____ addVertTiledFrames() ___________________________________________________
 
-Uint32 WgGfxAnim::addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration )
+Uint32 WgGfxAnim::addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration, int spacing )
 {
 	if( nFrames == 0 )
 		nFrames = (pSurf->height() - yOfs) / m_height;			// Put in as many as fits along surface width.
 
-	if( pSurf->width() < xOfs + m_width || pSurf->height() < yOfs + m_height*nFrames )
+	if( pSurf->width() < xOfs + m_width || pSurf->height() < yOfs + (m_height+spacing)*nFrames )
 		return 0;
 
 	for( Uint32 i = 0 ; i < nFrames ; i++ )
@@ -148,7 +148,7 @@ Uint32 WgGfxAnim::addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 
 
 		pFrame->pSurf = pSurf;
 		pFrame->ofs.x = xOfs;
-		pFrame->ofs.y = yOfs + i*m_height;
+		pFrame->ofs.y = yOfs + i*(m_height+spacing);
 
 		bool bOk = WgAnim::addKeyFrame( pFrame, duration );
 			
