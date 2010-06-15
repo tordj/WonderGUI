@@ -61,6 +61,7 @@ void WgResDB::Clear()
 	m_mapMenuItems.clear();
 	m_mapTabs.clear();
 	m_mapTextManagers.clear();
+	m_mapSkinManagers.clear();
 	m_mapConnects.clear();
 
 	// Clear the linked lists, this will also delete the ResWrapper objects
@@ -82,6 +83,7 @@ void WgResDB::Clear()
 	m_menuItems.clear();
 	m_tabs.clear();
 	m_textManagers.clear();
+	m_skinManagers.clear();
 	m_connects.clear();
 }
 
@@ -200,6 +202,12 @@ std::string	WgResDB::GenerateName( const WgTextManager* data )
 	return std::string("_textmanager__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
+std::string	WgResDB::GenerateName( const WgSkinManager* data )
+{
+	static int nGenerated = 0;
+	char pBuf[100];
+	return std::string("_skinmanager__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
+}
 
 void WgResDB::SetResLoader( WgResLoader * pLoader )
 {
@@ -516,6 +524,23 @@ bool WgResDB::AddTextManager( const std::string& id, WgTextManager* pManager, Me
 
 //____ () _________________________________________________________
 
+bool WgResDB::AddSkinManager( const std::string& id, WgSkinManager* pManager, MetaData * pMetaData )
+{
+	assert(m_mapSkinManagers.find(id) == m_mapSkinManagers.end());
+	if(m_mapSkinManagers.find(id) == m_mapSkinManagers.end())
+	{
+		SkinManagerRes* p = new SkinManagerRes(id, pManager, pMetaData);
+		m_skinManagers.push_back(p);
+		if(id.size())
+			m_mapSkinManagers[id] = p;
+		return true;
+	}
+	return false;
+}
+
+
+//____ () _________________________________________________________
+
 bool WgResDB::AddConnect( MetaData * pMetaData )
 {
 	ConnectRes* p = new ConnectRes(pMetaData);
@@ -626,6 +651,15 @@ WgTextManager * WgResDB::GetTextManager( const std::string& id ) const
 	TextManagerRes* managerRes = GetResTextManager(id);
 	return managerRes ? managerRes->res : 0;
 }
+
+//____ () _________________________________________________________
+
+WgSkinManager * WgResDB::GetSkinManager( const std::string& id ) const
+{
+	SkinManagerRes* managerRes = GetResSkinManager(id);
+	return managerRes ? managerRes->res : 0;
+}
+
 
 //____ () _________________________________________________________
 
@@ -881,6 +915,24 @@ WgResDB::TextManagerRes * WgResDB::GetResTextManager( const std::string& id ) co
 	TextManagerMap::const_iterator it = m_mapTextManagers.find(id);
 	return it == m_mapTextManagers.end() ? 0 : it->second;
 }
+
+//____ () _________________________________________________________
+
+WgResDB::SkinManagerRes * WgResDB::GetResSkinManager( const std::string& id ) const
+{
+	SkinManagerRes* res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	{
+		if(db->res)
+		{
+			if((res = db->res->GetResSkinManager(id)))
+				return res;
+		}
+	}
+	SkinManagerMap::const_iterator it = m_mapSkinManagers.find(id);
+	return it == m_mapSkinManagers.end() ? 0 : it->second;
+}
+
 
 //____ () _________________________________________________________
 
@@ -1147,6 +1199,24 @@ WgResDB::TextManagerRes* WgResDB::FindResTextManager( const WgTextManager* meta 
 	return 0;
 }
 
+//____ () _________________________________________________________
+
+WgResDB::SkinManagerRes* WgResDB::FindResSkinManager( const WgSkinManager* meta ) const
+{
+	SkinManagerRes * res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	{
+		if(db->res)
+		{
+			if((res = db->res->FindResSkinManager(meta)))
+				return res;
+		}
+	}
+	for(res = GetFirstResSkinManager(); res; res = res->getNext())
+		if(res->res == meta)
+			return res;
+	return 0;
+}
 
 //____ RemoveSurface() ________________________________________________________
 
@@ -1590,6 +1660,38 @@ bool WgResDB::RemoveTextManager( WgResDB::TextManagerRes * pRes )
 	delete pRes;
 	return true;
 }
+
+//____ RemoveSkinManager() _______________________________________________________
+
+bool WgResDB::RemoveSkinManager( const std::string& id )
+{
+	SkinManagerMap::iterator it = m_mapSkinManagers.find( id );
+
+	if( it == m_mapSkinManagers.end() )
+		return false;
+
+	SkinManagerRes * pRes = it->second;
+	m_mapSkinManagers.erase(it);
+	delete pRes;
+
+	return true;
+}
+
+bool WgResDB::RemoveSkinManager( WgResDB::SkinManagerRes * pRes )
+{
+	if( !pRes )
+		return false;
+
+	if( pRes->id.length() > 0 )
+	{
+		SkinManagerMap::iterator it = m_mapSkinManagers.find( pRes->id );
+		assert( it != m_mapSkinManagers.end() );
+		m_mapSkinManagers.erase(it);
+	}
+	delete pRes;
+	return true;
+}
+
 
 //____ RemoveConnect() _______________________________________________________
 

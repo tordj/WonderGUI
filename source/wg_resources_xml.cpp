@@ -32,6 +32,7 @@
 #include <wg_util.h>
 #include <wg_valueformat.h>
 #include <wg_textmanager.h>
+#include <wg_skinmanager.h>
 #include <wdg_button.h>
 #include <wdg_checkbox2.h>
 #include <wdg_combobox.h>
@@ -325,6 +326,7 @@ void WgResourceXML::RegisterResources()
 	WgResourceFactoryXML::Register<WgKeyFrameRes>		(WgKeyFrameRes::TagName());
 	WgResourceFactoryXML::Register<WgCursorRes>			(WgCursorRes::TagName());
 	WgResourceFactoryXML::Register<WgTextManagerRes>	(WgTextManagerRes::TagName());
+	WgResourceFactoryXML::Register<WgSkinManagerRes>	(WgSkinManagerRes::TagName());
 	WgResourceFactoryXML::Register<WgBorderRes>			(WgBorderRes::TagName());
 	WgResourceFactoryXML::Register<WgTileRes>			(WgTileRes::TagName());
 	WgResourceFactoryXML::Register<WgBlockSetRes>		(WgBlockSetRes::TagName());
@@ -559,6 +561,17 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 		}
 	}
 
+	// skin managers
+	if(s.ResDb()->GetFirstResSkinManager())
+	{
+		s.AddText("\n");
+		for(WgResDB::TextManagerRes* res = s.ResDb()->GetFirstResSkinManager(); res; res = res->getNext())
+		{
+			WgSkinManagerRes skinManagerRes(this, res->res);
+			skinManagerRes.SetMetaData(res->meta);
+			skinManagerRes.Serialize(s);
+		}
+	}
 
 	// widgets
 	if(s.ResDb()->GetFirstResWidget())
@@ -2116,6 +2129,34 @@ void WgTextManagerRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 }
 
 
+//////////////////////////////////////////////////////////////////////////
+/// WgSkinManagerRes /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+void WgSkinManagerRes::Serialize(WgResourceSerializerXML& s)
+{
+	const WgXmlNode& xmlNode = XmlNode();
+
+	s.BeginTag(TagName(), xmlNode);
+
+	//
+
+	//
+
+	s.EndTag();
+}
+
+void WgSkinManagerRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
+{
+	m_pSkinManager = new WgSkinManager();
+
+	//
+
+	//
+
+	s.ResDb()->AddSkinManager(xmlNode["id"], m_pSkinManager, new WgXMLMetaData(xmlNode));
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////
 /// WgRectRes ////////////////////////////////////////////////////////////
@@ -2293,7 +2334,7 @@ void WgBlockRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& 
 	m_x = WgUtil::ToSint32(xmlNode["x"]);
 	m_y = WgUtil::ToSint32(xmlNode["y"]);
 
-	blockSetRes->GetBlockSet()->SetPos(m_mode, m_x, m_y);
+	blockSetRes->GetBlockSet()->SetPos(m_mode, WgCord(m_x, m_y) );
 }
 
 

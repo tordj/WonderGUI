@@ -477,7 +477,7 @@ void Wdg_GridView::RenderItem(WgItem*p, const WgRect& _clip, const WgRect& cellR
 	// Render underlay (if any)
 
 	if( m_pCellUnderlay )
-		WgGfx::clipBlitBlock( _clip, m_pCellUnderlay->GetBlock(p->GetMode()), cellRect );
+		WgGfx::clipBlitBlock( _clip, m_pCellUnderlay->GetBlock(p->GetMode(), cellRect ), cellRect );
 	// Render item
 
 	p->Render( CalcItemRect( p, cellRect ) , _clip );
@@ -485,7 +485,7 @@ void Wdg_GridView::RenderItem(WgItem*p, const WgRect& _clip, const WgRect& cellR
 	// Render overlay (if any)
 
 	if( m_pCellOverlay )
-		WgGfx::clipBlitBlock( _clip, m_pCellOverlay->GetBlock(p->GetMode()), cellRect );
+		WgGfx::clipBlitBlock( _clip, m_pCellOverlay->GetBlock(p->GetMode(), cellRect ), cellRect );
 
 	//
 }

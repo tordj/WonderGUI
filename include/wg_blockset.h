@@ -177,12 +177,12 @@ public:
 	inline const WgBorders&		GetBorders() const { return m_gfxBorders; }
 	inline const WgBorders&		GetContentBorders() const { return m_contentBorders; }
 	inline Uint32				GetFlags() const { return m_flags; }
-	inline Sint32				GetWidth() const { return m_rect.w; }
-	inline Sint32				GetHeight() const { return m_rect.h; }
+	inline int					GetWidth() const { return m_rect.w; }
+	inline int					GetHeight() const { return m_rect.h; }
 	inline WgSize				GetSize() const { return WgSize(m_rect.w, m_rect.h); }
 
-	inline Sint32				GetMinWidth() const { return m_gfxBorders.GetWidth(); }
-	inline Sint32				GetMinHeight() const { return m_gfxBorders.GetHeight(); }
+	inline int					GetMinWidth() const { return m_gfxBorders.GetWidth(); }
+	inline int					GetMinHeight() const { return m_gfxBorders.GetHeight(); }
 	inline WgSize				GetMinSize() const { return WgSize(m_gfxBorders.GetWidth(), m_gfxBorders.GetHeight()); }
 
 	inline bool					IsOpaque() const { return ((m_flags & WG_OPAQUE) != 0); }
@@ -231,104 +231,118 @@ protected:
 				const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags );
 	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags );
 
+	struct Alt_Data
+	{
+		const WgSurface *	pSurf;
+		WgBorders			gfxBorders;
+		WgBorders			contentBorders;
+
+		Uint16				x[WG_NB_MODES];
+		Uint16				y[WG_NB_MODES];
+		Uint16				w;
+		Uint16				h;
+	};
+
+	class LinkedAlt : public WgLink
+	{
+	public:
+		LINK_METHODS( LinkedAlt );
+
+		WgSize		activationSize;	// If (dest_width <= size.w) or (dest_height <= size.h) this or a smaller Alternatives will be used. Setting either size.w or size.h
+									// to 0 ignores that dimension in the comparison. Setting both to 0 is not allowed since that would result in the Alt 
+									// never being used.							
+		Alt_Data	data;
+	};
 
 public:
-	inline WgBlock				GetBlock( WgMode mode ) const;
-	inline bool					HasBlock( WgMode mode ) const;
-	inline WgRect				GetRect( WgMode mode ) const;
-	inline void					SetPos( WgMode mode, Uint32 x, Uint32 y );
+	bool				AddAlternative( WgSize activationSize, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked, 
+										const WgRect& selected, const WgRect& disabled, const WgRect& special, 
+										const WgBorders& gfxBorders, const WgBorders& contentBorders );
 
-	inline WgRect				GetSizeRect() const;
-	inline WgSize				GetSize() const { return WgSize(m_width, m_height); }
-	inline void					SetSize( Uint32 w, Uint32 h );
+	inline WgBlock		GetBlock( WgMode mode, WgSize destSize ) const { return GetBlock( mode, GetAlt(destSize) ); }
+	inline WgBlock		GetBlock( WgMode mode, int alt = 0 ) const { return GetBlock( mode, GetAlt(alt) ); }
+	inline bool			HasBlock( WgMode mode, int alt = 0 ) const;
 
-	inline Sint32				GetMinWidth() const { return m_gfxBorders.GetWidth(); }
-	inline Sint32				GetMinHeight() const { return m_gfxBorders.GetHeight(); }
-	inline WgSize				GetMinSize() const { return WgSize(m_gfxBorders.GetWidth(), m_gfxBorders.GetHeight()); }
+	int					GetNbAlternatives() const;
 
-	inline const WgSurface *	GetSurface() const { return m_pSurf; }
-	inline const WgBorders&		GetGfxBorders() const { return m_gfxBorders; }
-	inline void					SetGfxBorders(const WgBorders& borders) { m_gfxBorders = borders; }
-	inline const WgBorders&		GetContentBorders() const { return m_contentBorders; }
-	inline void					SetContentBorders(const WgBorders& borders) { m_contentBorders = borders; }
-	inline Uint32				GetFlags() const { return m_flags; }
-	inline Sint32				GetWidth() const { return m_width; }
-	inline Sint32				GetHeight() const { return m_height; }
+	bool				SetSize( WgSize size, int alt = 0 );
+	bool				SetPos( WgMode mode, WgCord pos, int alt = 0 );
 
-	inline bool					IsOpaque() const { return ((m_flags & WG_OPAQUE) != 0); }
-	inline bool					HasOpaqueCenter() const { return ((m_flags & WG_OPAQUE_CENTER) != 0); }
-	inline bool					HasBorders() const { return ((m_flags & WG_HAS_BORDERS) != 0); }
+	WgRect				GetRect( WgMode mode, int alt = 0 ) const;
+	WgSize				GetSize( int alt = 0 ) const;
+	int					GetWidth( int alt = 0 ) const;
+	int					GetHeight( int alt = 0 ) const;
 
-	inline bool					HasTiles() const { return ((m_flags & WG_TILE_ALL) != 0); }
-	inline bool					HasTiledCenter() const { return ((m_flags & WG_TILE_CENTER) != 0); }
-	inline bool					HasTiledTopBorder() const { return ((m_flags & WG_TILE_TOP) != 0); }
-	inline bool					HasTiledBottomBorder() const { return ((m_flags & WG_TILE_BOTTOM) != 0); }
-	inline bool					HasTiledLeftBorder() const { return ((m_flags & WG_TILE_LEFT) != 0); }
-	inline bool					HasTiledRightBorder() const { return ((m_flags & WG_TILE_RIGHT) != 0); }
+	int					GetMinWidth( int alt = 0 ) const;
+	int					GetMinHeight( int alt = 0 ) const;
+	WgSize				GetMinSize( int alt = 0 ) const;
 
-	bool						SetTile(Uint32 place, bool bTile);
+	const WgSurface *	GetSurface( int alt = 0 ) const;
+	WgBorders			GetGfxBorders( int alt = 0 ) const;
+	void				SetGfxBorders( const WgBorders& borders, int alt = 0 );
+	WgBorders			GetContentBorders( int alt = 0 ) const;
+	void				SetContentBorders( const WgBorders& borders, int alt = 0 );
+	inline Uint32		GetFlags() const { return m_flags; }
 
-	bool						IsScaled() const { return ((m_flags & WG_SCALE_CENTER) != 0); }
-	bool						SetScale(bool bScale);
+	inline bool			IsOpaque() const { return ((m_flags & WG_OPAQUE) != 0); }
+	inline bool			HasOpaqueCenter() const { return ((m_flags & WG_OPAQUE_CENTER) != 0); }
+	inline bool			HasBorders() const { return ((m_flags & WG_HAS_BORDERS) != 0); }
 
-	inline bool					SameBlock( WgMode one, WgMode two ) { if( m_x[one] == m_x[two] && 
-													m_y[one] == m_y[two] ) return true; return false; }
-	inline bool					IsModeSkipable( WgMode m ) const;
+	inline bool			HasTiles() const { return ((m_flags & WG_TILE_ALL) != 0); }
+	inline bool			HasTiledCenter() const { return ((m_flags & WG_TILE_CENTER) != 0); }
+	inline bool			HasTiledTopBorder() const { return ((m_flags & WG_TILE_TOP) != 0); }
+	inline bool			HasTiledBottomBorder() const { return ((m_flags & WG_TILE_BOTTOM) != 0); }
+	inline bool			HasTiledLeftBorder() const { return ((m_flags & WG_TILE_LEFT) != 0); }
+	inline bool			HasTiledRightBorder() const { return ((m_flags & WG_TILE_RIGHT) != 0); }
+
+	bool				SetTile(Uint32 place, bool bTile);
+
+	bool				IsScaled() const { return ((m_flags & WG_SCALE_CENTER) != 0); }
+	bool				SetScale(bool bScale);
+
+	bool				SameBlock( WgMode one, WgMode two, int alt = 0 );
+	inline bool			IsModeSkipable( WgMode m ) const;
 
 
 private:
-	static Uint32				VerifyFlags(Uint32 flags);
+	static Uint32	VerifyFlags(Uint32 flags);
 
-	const WgSurface *	m_pSurf;
-	WgBorders			m_gfxBorders;
-	WgBorders			m_contentBorders;
-	Uint32				m_flags;
+	Alt_Data *		GetAlt( int n );
+	Alt_Data *		GetAlt( WgSize destSize );
+	const Alt_Data*	GetAlt( int n ) const;
+	const Alt_Data*	GetAlt( WgSize destSize ) const;
 
-	Uint16				m_width;
-	Uint16				m_height;
+	inline WgBlock	GetBlock( WgMode mode, const Alt_Data * pAlt ) const;
 
-	Uint16				m_x[WG_NB_MODES];
-	Uint16				m_y[WG_NB_MODES];
+	Uint32						m_flags;
+	Alt_Data					m_base;				// Original blocks (Alt=0)
+
+	WgChain<LinkedAlt>			m_altChain;			// Blocks for Alts 1+.
+
 };
 
 
-inline WgBlock WgBlockSet::GetBlock(WgMode m) const
+inline WgBlock WgBlockSet::GetBlock(WgMode m, const Alt_Data * p) const
 {
+	if( !p )
+		return WgBlock();
+
 	const Uint32 SKIP_MASK = WG_SKIP_NORMAL | WG_SKIP_MARKED | WG_SKIP_SELECTED | WG_SKIP_DISABLED | WG_SKIP_SPECIAL;
 	Uint32 flags = m_flags & ~SKIP_MASK;
 	flags |= IsModeSkipable(m) ? WG_SKIP_NORMAL : 0;	// reuse bit
-	return WgBlock( m_pSurf, WgRect(m_x[m], m_y[m], m_width, m_height), m_gfxBorders, m_contentBorders, flags );
+	return WgBlock( p->pSurf, WgRect(p->x[m], p->y[m], p->w, p->h), p->gfxBorders, p->contentBorders, flags );
 }
 
-inline bool WgBlockSet::HasBlock(WgMode m) const
+inline bool WgBlockSet::HasBlock(WgMode m, int alt) const
 {
-	if( m_x[m] != m_x[WG_MODE_NORMAL] || m_y[m] != m_y[WG_MODE_NORMAL] )
+	const Alt_Data * p = GetAlt(alt);
+	if( !p )
+		return false;
+
+	if( p->x[m] != p->x[WG_MODE_NORMAL] || p->y[m] != p->y[WG_MODE_NORMAL] )
 		return true;
 	
 	return false;
-}
-
-
-inline WgRect WgBlockSet::GetRect(WgMode m) const
-{
-	return WgRect(m_x[m], m_y[m], m_width, m_height );
-}
-
-inline void WgBlockSet::SetPos( WgMode mode, Uint32 x, Uint32 y )
-{
-	m_x[mode] = x;
-	m_y[mode] = y;
-}
-
-inline void WgBlockSet::SetSize( Uint32 w, Uint32 h )
-{
-	m_width = w;
-	m_height = h;
-}
-
-inline WgRect WgBlockSet::GetSizeRect() const
-{
-	return WgRect(0, 0, m_width, m_height );
 }
 
 inline bool WgBlockSet::IsModeSkipable(WgMode m) const

@@ -161,7 +161,7 @@ public:
 	bool	GetAutoScaleHeaders() const { return m_bAutoScaleHeader; }
 	float	CalcHeaderScaleFactor();
 
-	Sint32	GetHeaderHeight()	{ return (m_bShowHeader && m_pHeaderGfx) ? m_pHeaderGfx->GetHeight() : 0; }
+	Sint32	GetHeaderHeight()	{ return (m_bShowHeader && m_pHeaderGfx) ? m_pHeaderGfx->GetHeight(0) : 0; }
 
 	void	SetEmptyRowHeight( Uint32 height );
 	Uint32	GetEmptyRowHeight() { return m_emptyRowHeight; }

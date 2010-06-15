@@ -57,6 +57,8 @@ class Wg_Interface_TextHolder;
 
 class WgGizmo
 {
+friend class WgSkinNode;
+
 public:
 	WgGizmo();
 	virtual ~WgGizmo();
@@ -70,7 +72,7 @@ public:
 	inline WgString		GetTooltipString() const { return m_tooltip; }
 	inline void			SetTooltipString( const WgString& str ) { m_tooltip = str; }
 
-
+	inline void			Refresh() { OnRefresh(); }
 	void				Enable();
 	void				Disable();
 	inline bool			IsEnabled() const { return m_bEnabled; }
@@ -115,6 +117,8 @@ public:
 protected:
 
 	void			SetHook( WgGizmoHook * pHook );
+	void			SetSkinNode( WgSkinNode * pNode );
+	WgSkinNode *	GetSkinNode() const { return m_pSkinNode; }
 
 	// Convenient calls to hook
 
@@ -144,6 +148,8 @@ protected:
 	WgGizmoHook *	m_pHook;
 
 	WgChildManager * m_pChildManager;
+
+	WgSkinNode *	m_pSkinNode;
 
 	WgCursorStyle	m_cursorStyle;
 

@@ -83,6 +83,7 @@ class WgXmlAttribute;
 class WgResourceSerializerXML;
 class WgAnim;
 class WgGfxFrame;
+class WgSkinManager;
 
 //////////////////////////////////////////////////////////////////////////
 /// WgXMLMetaData ////////////////////////////////////////////////////////
@@ -615,6 +616,26 @@ public:
 	static const char* TagName() { return "textmanager"; }
 private:
 	WgTextManager*	m_pTextManager;
+};
+
+//////////////////////////////////////////////////////////////////////////
+/// WgSkinManagerRes /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+class WgSkinManagerRes : public WgResourceXML
+{
+public:
+	WgSkinManagerRes(WgResourceXML* parent, WgSkinManager* pSkinManager = 0) : WgResourceXML(parent), m_pSkinManager(pSkinManager) { }
+
+	WgSkinManager* GetSkinManager() const { return m_pSkinManager; }
+
+	virtual void Serialize(WgResourceSerializerXML& s);
+	virtual void Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
+
+	virtual void	Accept(WgResourceVisitor* visitor) { }
+
+	static const char* TagName() { return "skinmanager"; }
+private:
+	WgSkinManager*	m_pSkinManager;
 };
 
 

@@ -111,6 +111,13 @@ void WgGizmo::SetHook( WgGizmoHook * pHook )
 	OnNewSize( Size() );
 }
 
+//____ SetSkinNode() __________________________________________________________
+
+void WgGizmo::SetSkinNode( WgSkinNode * pNode )
+{
+	m_pSkinNode = pNode;
+	OnRefresh();
+}
 
 
 //____ Local2abs() ____________________________________________________________

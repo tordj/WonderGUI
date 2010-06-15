@@ -198,9 +198,9 @@ WgRect Wdg_TreeView::GetExpanderRect( WgTreeEntry * pEntry )
 	WgRect r;
 
 	if( pEntry->bOpen )
-		r = m_pExpanderOpen->GetSizeRect();
+		r = m_pExpanderOpen->GetSize();
 	else
-		r = m_pExpanderClosed->GetSizeRect();
+		r = m_pExpanderClosed->GetSize();
 
 	r.x = pEntry->GetLevel() * m_indentation;
 	r.x += (m_indentation-r.w)/2;

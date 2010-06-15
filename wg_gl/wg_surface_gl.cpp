@@ -335,7 +335,7 @@ void WgSurfaceGL::Unlock()
 	{
 		glBindTexture( GL_TEXTURE_2D, m_texture );
 //		pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
-		glTexSubImage2D( GL_TEXTURE_2D, 0, 0,0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+		glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 //		glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 	}
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
