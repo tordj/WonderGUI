@@ -23,6 +23,9 @@
 
 #include <wg_texttool.h>
 #include <wg_valueformat.h>
+#include <wg_charseq.h>
+#include <wg_char.h>
+#include <assert.h>
 
 
 //____ WgValueFormat() ________________________________________________________
@@ -43,6 +46,131 @@ WgValueFormat::WgValueFormat()
 	bForceDecimals	= true;
 	noDecimalThreshold	= 0;
 }
+
+//____ WgValueFormat() ________________________________________________________
+
+WgValueFormat::WgValueFormat( const WgCharSeq& format )
+{
+	integers		= 1;
+	decimals		= 0;
+	grouping		= 0;
+	separator		= 0xA0 /*0xA0=NO_BREAK_SPACE*/;
+	period			= 0x2e;
+	prefix[0]		= 0;
+	suffix[0]		= 0;
+	bPlus			= false;
+	bZeroIsNegative = false;
+	bForcePeriod	= false;
+	bSetTextProp	= false;
+	bForceDecimals	= true;
+	noDecimalThreshold	= 0;
+
+
+	WgCharSeq::WgCharBasket basket = format.GetWgChars();
+
+	const WgChar * pBeg = basket.ptr;
+	const WgChar * pEnd = basket.ptr + basket.length;
+
+	// Copy prefix
+
+	const WgChar * p = pBeg;
+	while( p->GetGlyph() != '1' && p - pBeg < 4 )
+	{
+		assert( p->GetGlyph() < '0' || p->GetGlyph() > '9' );		// No numerics allowed in prefix.
+		p++;
+	}
+	for( int i = 0 ; i < p - pBeg ; i++ )
+		prefix[i] = pBeg[i].GetGlyph();
+
+	pBeg = p;
+
+	//
+
+	if( pBeg == pEnd )
+		return;
+
+	// Save textprops of the '1' character.
+
+	pTextProperties = pBeg->GetProperties();
+	pBeg++;
+
+	//
+
+	if( pBeg == pEnd )
+		return;
+
+	// Check for separator character
+
+	bool	bHasSeparator = false;
+
+	Uint16	glyph = pBeg->GetGlyph();
+	if( glyph < '0' || glyph > '9' )
+	{
+		separator = glyph;
+		pBeg++;
+		bHasSeparator = true;
+	}
+
+	// 
+
+	if( pBeg == pEnd )
+		return;
+
+	// Count zeroes for grouping
+
+	int nZeroes = 0;
+
+	while( pBeg->GetGlyph() == 0 && pBeg != pEnd )
+	{
+		pBeg++;
+		nZeroes++;
+	}
+
+	assert( nZeroes > 1 && nZeroes <= 6 );
+	if( bHasSeparator )
+		grouping = nZeroes;
+
+	// 
+
+	if( pBeg == pEnd )
+		return;
+
+	// Check for optional decimal delimeter with 1-6 following zeroes
+
+	if( pEnd - pBeg >= 2 )
+	{
+		Uint16 sep = pBeg->GetGlyph();
+		Uint16 after = pBeg[1].GetGlyph();
+
+		if( after == '0' )
+		{
+			period = sep;
+			pBeg+=2;
+			nZeroes = 1;
+			while( pBeg != pEnd && pBeg->GetGlyph() == '0' )
+			{
+				pBeg++;
+				nZeroes++;
+			}
+			decimals = nZeroes;
+		}
+	}
+
+	// 
+
+	if( pBeg == pEnd )
+		return;
+
+	// Copy suffix
+
+	int n = pEnd - pBeg;
+	if( n > 4 )
+		n = 4;
+
+	for( int i = 0 ; i < n ; i++ )
+		suffix[i] = pBeg[i].GetGlyph();	
+}
+
 
 //____ WgValueFormat() ________________________________________________________
 

@@ -38,6 +38,7 @@ class WgValueFormat
 {
 	public:
 		WgValueFormat();
+		WgValueFormat( const WgCharSeq& format );
 		WgValueFormat( const WgValueFormat& in );
 		WgValueFormat(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
 						Uint16 _separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 );
