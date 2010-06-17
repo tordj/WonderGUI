@@ -37,7 +37,7 @@ class	WgCord32
 {
 public:
 	WgCord32() : x(0), y(0) {}
-	WgCord32( Sint32 _x, Sint32 _y ) {x=_x;y=_y;}
+	WgCord32( int x, int y ) : x(x), y(y) {}
 	WgCord32( const WgRect& rect );
 
 	inline WgCord32 operator=(const WgCord32& k)	{ x = k.x; y = k.y; return *this; }
@@ -173,13 +173,13 @@ public:
 class WgBorders
 {
 public:
-	WgBorders() { left = 0, right = 0, top = 0, bottom = 0; }
-	WgBorders( Uint8 _left, Uint8 _right, Uint8 _top, Uint8 _bottom )
-				{ left = _left; right = _right; top = _top; bottom = _bottom; }
-	WgBorders( Uint8 _all ) { left = right = top = bottom = _all; }
+	WgBorders() : left(0), right(0), top(0), bottom(0) {}
+	WgBorders( Uint8 _left, Uint8 _right, Uint8 _top, Uint8 _bottom ) : left(_left), right(_right), top(_top), bottom(_bottom) {}
+	WgBorders( Uint8 _all ) : left(_all), right(_all), top(_all), bottom(_all) {}
 
 	inline void		Set( Uint8 _all ) { left = right = top = bottom = _all; }
 
+	inline WgSize	GetSize() const { return WgSize( ((int)left)+right, ((int)top)+bottom ); }
 	inline Uint32	GetWidth() const { return ((Uint32)left)+right; }
 	inline Uint32	GetHeight() const { return ((Uint32)top)+bottom; }
 
@@ -200,16 +200,20 @@ public:
 class WgRect
 {
 public:
-	WgRect() : x(0), y(0), w(0), h(0) {};
-	WgRect( Sint32 x, Sint32 y, Sint32 w, Sint32 h );
-	WgRect( const WgRect& r );
+	WgRect() : x(0), y(0), w(0), h(0) {}
+	WgRect( Sint32 x, Sint32 y, Sint32 w, Sint32 h ) : x(x), y(y), w(w), h(h) {}
+	WgRect( const WgRect& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}
 	WgRect( const WgRect& r1, const WgRect& r2 );
 	WgRect( const WgCord& p1, const WgCord& p2 );
-	WgRect( const WgCord& p, const WgSize& sz );
-	WgRect( const WgCord& _p, Sint32 _w, Sint32 _h ) { x = _p.x; y = _p.y; w = _w; h = _h; }
-	WgRect( Sint32 _x, Sint32 _y, const WgSize& _sz ) { x = _x; y = _y; w = _sz.w; h = _sz.h; }
+	WgRect( const WgCord& p, const WgSize& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {}
+	WgRect( const WgCord& p, Sint32 w, Sint32 h ) : x(p.x), y(p.y), w(w), h(h) {}
+	WgRect( Sint32 x, Sint32 y, const WgSize& sz ) : x(x), y(y), w(sz.w), h(sz.h) {}
+	WgRect( const WgCord& p ) : x(p.x), y(p.y), w(0), h(0) {}
+	WgRect( const WgSize& sz ) : x(0), y(0), w(sz.w), h(sz.h) {}
 
 	inline void operator=( const WgRect& );
+	inline void operator=( const WgSize& sz) { x=0; y=0; w=sz.w; h=sz.h; }
+	inline void operator=( const WgCord& c) { x=c.x; y=c.y; w=0; h=0; }
 	inline bool operator==( const WgRect& rect) { return x == rect.x && y == rect.y && w == rect.w && h == rect.h; }
 	inline bool operator!=( const WgRect& rect) { return !(*this == rect); }
 

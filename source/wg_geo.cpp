@@ -22,25 +22,10 @@
 
 
 #include <wg_geo.h>
-#include <wg_blockset.h>
+//#include <wg_blockset.h>
 
 //____ WgRect() _______________________________________________________________
 
-WgRect::WgRect( Sint32 _x, Sint32 _y, Sint32 _w, Sint32 _h )
-{
-	x = _x;
-	y = _y;
-	w = _w;
-	h = _h;
-}
-
-WgRect::WgRect( const WgRect& r )
-{
-	x = r.x;
-	y = r.y;
-	w = r.w;
-	h = r.h;
-}
 
 WgRect::WgRect( const WgRect& r1, const WgRect& r2 )
 {
@@ -71,15 +56,6 @@ WgRect::WgRect( const WgCord32& p1, const WgCord32& p2 )
 		h = p1.y - p2.y;
 	}
 }
-
-WgRect::WgRect( const WgCord32& p, const WgSize& sz )
-{
-	x = p.x;
-	y = p.y;
-	w = sz.w;
-	h = sz.h;
-}
-
 
 
 //____ Intersection() ________________________________________________________________

@@ -32,6 +32,10 @@
 #	include <wg_textprop.h>
 #endif
 
+#ifndef WG_CHARSEQ_DOT_H
+#	include <wg_charseq.h>
+#endif
+
 //____ WgValueFormat __________________________________________________________
 
 class WgValueFormat
