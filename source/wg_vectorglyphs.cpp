@@ -45,8 +45,9 @@ WgSurfaceFactory *					WgVectorGlyphs::s_pSurfaceFactory = 0;
 
 //____ Constructor ____________________________________________________________
 
-WgVectorGlyphs::WgVectorGlyphs( const void * pTTF_File, int bytes, int faceIndex )
+WgVectorGlyphs::WgVectorGlyphs( char* pTTF_File, int bytes, int faceIndex )
 {
+	m_pData = pTTF_File;
 	m_ftCharSize	= 0;
 	m_accessCounter = 0;
 
@@ -54,7 +55,7 @@ WgVectorGlyphs::WgVectorGlyphs( const void * pTTF_File, int bytes, int faceIndex
 		m_cachedGlyphsIndex[i] = 0;
 
 	FT_Error err = FT_New_Memory_Face(	WgBase::GetFreeTypeLibrary(),
-										(const FT_Byte *) pTTF_File,
+										(const FT_Byte *)pTTF_File,
 										bytes,
 										0,
 										&m_ftFace );
@@ -103,6 +104,7 @@ WgVectorGlyphs::~WgVectorGlyphs()
 	}
 
 	FT_Done_Face( m_ftFace );
+	delete[] m_pData;
 }
 
 //____ SetCharSize() __________________________________________________________

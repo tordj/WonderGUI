@@ -26,12 +26,22 @@
 WgMemPool *	WgDirtyRectObj::g_pMemPool		= 0;
 Sint32		WgDirtyRectObj::g_nDirtyRectObj	= 0;
 
+void WgDirtyRectObj::Init()
+{
+	if( g_pMemPool == 0 )
+		g_pMemPool = new WgMemPool(1024, sizeof(WgDirtyRect) );
+}
+
+void WgDirtyRectObj::Exit()
+{
+	delete g_pMemPool;
+	g_pMemPool = 0;
+}
+
 //____ WgDirtyRectObj::WgDirtyRectObj() ___________________________________________
 
 WgDirtyRectObj::WgDirtyRectObj( void )
 {
-	if( g_pMemPool == 0 )
-		g_pMemPool = new WgMemPool(1024, sizeof(WgDirtyRect) );
 	g_nDirtyRectObj++;
 	pRectList = 0;
 }
@@ -41,12 +51,6 @@ WgDirtyRectObj::WgDirtyRectObj( void )
 WgDirtyRectObj::~WgDirtyRectObj( void )
 {
 	g_nDirtyRectObj--;
-
-	if( g_nDirtyRectObj <= 0 )
-	{
-//		delete g_pMemPool;
-//		g_pMemPool = 0;
-	}
 
 	Clear();
 }

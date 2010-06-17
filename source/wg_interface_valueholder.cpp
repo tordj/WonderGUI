@@ -40,7 +40,7 @@ Wg_Interface_ValueHolder::Wg_Interface_ValueHolder()
 
 //____ SetRange() _____________________________________________________________
 
-bool Wg_Interface_ValueHolder::SetRange( Sint32 min, Sint32 max )
+bool Wg_Interface_ValueHolder::SetRange( Sint64 min, Sint64 max )
 {
 	if( min > max )
 		return false;
@@ -92,7 +92,7 @@ bool Wg_Interface_ValueHolder::SetUnitSize( Uint32 unitsize )
 
 //____ SetValue() _____________________________________________________________
 
-bool Wg_Interface_ValueHolder::SetValue( Sint32 value )
+bool Wg_Interface_ValueHolder::SetValue( Sint64 value )
 {
 	bool	retVal = true;
 

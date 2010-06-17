@@ -25,7 +25,7 @@
 #include <wg_resources_xml.h>
 #include <wg_resloader.h>
 #include <assert.h>
-
+#include <wg_font.h>
 //____ () _________________________________________________________
 
 WgResDB::WgResDB() :
@@ -37,6 +37,7 @@ WgResDB::WgResDB() :
 
 WgResDB::~WgResDB()
 {
+	DestroyTextManagers();
 	Clear();
 }
 
@@ -82,6 +83,30 @@ void WgResDB::Clear()
 	m_tabs.clear();
 	m_textManagers.clear();
 	m_connects.clear();
+}
+
+void WgResDB::DestroyFonts()
+{
+	for(FontRes* res = GetFirstResFont(); res; res = res->getNext())
+		delete res->res;
+}
+
+void WgResDB::DestroyAnims()
+{
+	for(AnimRes* res = GetFirstResAnim(); res; res = res->getNext())
+		delete res->res;
+}
+
+void WgResDB::DestroyCursors()
+{
+	for(CursorRes* res = GetFirstResCursor(); res; res = res->getNext())
+		delete res->res;
+}
+
+void WgResDB::DestroyTextManagers()
+{
+	for(TextManagerRes* res = GetFirstResTextManager(); res; res = res->getNext())
+		delete res->res;
 }
 
 void WgResDB::ClearWidgets()

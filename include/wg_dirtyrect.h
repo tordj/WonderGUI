@@ -45,6 +45,9 @@ public:
 class	WgDirtyRectObj
 {
 public:
+	static void Init();
+	static void Exit();
+
 	WgDirtyRectObj();
 	~WgDirtyRectObj();
 

@@ -38,13 +38,13 @@ public:
 	Wg_Interface_ValueHolder();
 
 	bool	SetFonts( WgFont * _pFonts );
-	bool	SetRange( Sint32 min, Sint32 max );
+	bool	SetRange( Sint64 min, Sint64 max );
 	bool	SetUnitSize( Uint32 unitSize );
 
 	virtual void					SetFormat( const WgValueFormat& format ) = 0;
 	virtual const WgValueFormat&	GetFormat() const = 0;
 
-	bool	SetValue( Sint32 value );
+	bool	SetValue( Sint64 value );
 	bool	SetFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)
 	bool	SetFractionalRounding( Uint32 nValueDigits = 0, Uint32 lastDigitModulo = 1 );
 
@@ -55,12 +55,12 @@ public:
 	bool	IncValue( Sint32 increment );					///< Increase value by parameter.
 	bool	DecValue( Sint32 decrement );					///< Decrease value by parameter.
 
-	inline Sint32	Value() {return m_value;};
+	inline Sint64	Value() {return m_value;};
 	float			FractionalValue();
 	inline Uint32	UnitSize() {return m_unitSize;}
 	inline Uint32	StepSize() { return m_stepSize;}
-	inline Sint32	MinLimit() { return m_rangeMin; }
-	inline Sint32	MaxLimit() { return m_rangeMax; }
+	inline Sint64	MinLimit() { return m_rangeMin; }
+	inline Sint64	MaxLimit() { return m_rangeMax; }
 	inline Uint32	ValueDigits() { return m_nValueDigits; }
 	inline Uint32	Modulator() { return m_modulator; }
 
@@ -71,9 +71,9 @@ protected:
 	void			CloneInterface( Wg_Interface_ValueHolder * _pClone );
 	void			OnCloneContent( const Wg_Interface_ValueHolder * pOrg );
 
-	Sint32			m_rangeMin;
-	Sint32			m_rangeMax;
-	Sint32			m_value;
+	Sint64			m_rangeMin;
+	Sint64			m_rangeMax;
+	Sint64			m_value;
 	Uint32			m_stepSize;
 	Uint32			m_unitSize;
 

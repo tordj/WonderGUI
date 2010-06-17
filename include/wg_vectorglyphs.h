@@ -65,7 +65,7 @@ public:
 	};
 
 
-	WgVectorGlyphs( const void * pTTF_File, int bytes, int faceIndex );
+	WgVectorGlyphs( char* pTTF_File, int bytes, int faceIndex );
 	~WgVectorGlyphs();
 
 	inline Type	GetType() const { return VECTOR; }
@@ -147,6 +147,7 @@ private:
 
 
 	FT_Face				m_ftFace;
+	char*				m_pData;
 	int					m_ftCharSize;
 	CacheSlot ***		m_cachedGlyphsIndex[WG_MAX_FONTSIZE+1];
 	Uint32				m_accessCounter;

@@ -23,7 +23,8 @@
 
 
 #include <wg_base.h>
-
+#include <wg_dirtyrect.h>
+#include <wg_textpropmanager.h>
 
 #ifdef WG_USE_FREETYPE
 #	include <ft2build.h>
@@ -43,8 +44,7 @@ WgTextPropPtr	WgBase::s_pDefaultTextProp;
 
 void WgBase::Init()
 {
-
-
+	WgDirtyRectObj::Init();
 #ifdef WG_USE_FREETYPE
 	s_bFreeTypeInitialized = false;
 #endif
@@ -62,7 +62,8 @@ void WgBase::Exit()
 	if( s_bFreeTypeInitialized )
 		FT_Done_FreeType( s_freeTypeLibrary );
 #endif
-
+	WgDirtyRectObj::Exit();
+	s_pDefaultTextProp = 0;
 }
 
 

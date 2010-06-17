@@ -47,7 +47,7 @@ typedef struct FT_LibraryRec_  *FT_Library;
 
 
 class WgFont;
-
+class WgTextPropManager;
 
 class WgBase
 {
@@ -74,7 +74,6 @@ public:
 private:
 	static WgTextPropPtr	s_pDefaultTextProp;
 //	WgTextMgrPtr	m_pDefTextMgr;
-
 
 
 #ifdef WG_USE_FREETYPE

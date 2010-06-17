@@ -52,6 +52,7 @@ WgGizmoCombobox::WgGizmoCombobox( void )
 
 WgGizmoCombobox::~WgGizmoCombobox()
 {
+	delete m_pMenu;
 }
 
 
@@ -88,6 +89,7 @@ void WgGizmoCombobox::SetMenu( Wdg_Menu * pMenu )
 	{
 		m_pMenu->RemoveCallback( WgSignal::MenuEntrySelected(), (void*) cbEntrySelected, this );
 		m_pMenu->RemoveCallback( WgSignal::MenuClosed(), (void*) cbMenuClosed, this );
+		delete m_pMenu;
 	}
 
 	if( pMenu )

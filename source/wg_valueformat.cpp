@@ -57,7 +57,13 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 	separator		= 0xA0 /*0xA0=NO_BREAK_SPACE*/;
 	period			= 0x2e;
 	prefix[0]		= 0;
+	prefix[1]		= 0;
+	prefix[2]		= 0;
+	prefix[3]		= 0;
 	suffix[0]		= 0;
+	suffix[1]		= 0;
+	suffix[2]		= 0;
+	suffix[3]		= 0;
 	bPlus			= false;
 	bZeroIsNegative = false;
 	bForcePeriod	= false;
@@ -79,8 +85,11 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 		assert( p->GetGlyph() < '0' || p->GetGlyph() > '9' );		// No numerics allowed in prefix.
 		p++;
 	}
+	
 	for( int i = 0 ; i < p - pBeg ; i++ )
 		prefix[i] = pBeg[i].GetGlyph();
+
+
 
 	pBeg = p;
 
@@ -120,7 +129,7 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 
 	int nZeroes = 0;
 
-	while( pBeg->GetGlyph() == 0 && pBeg != pEnd )
+	while( pBeg->GetGlyph() == '0' && pBeg != pEnd )
 	{
 		pBeg++;
 		nZeroes++;

@@ -205,6 +205,7 @@ namespace WgUtil
 	inline Sint8	ToSint8(const std::string& value, Sint8 def = 0)	{ Sint8	 v = def; FromString(value, v); return v; }
 	inline Sint16	ToSint16(const std::string& value, Sint16 def = 0)	{ Sint16 v = def; FromString(value, v); return v; }
 	inline Sint32	ToSint32(const std::string& value, Sint32 def = 0)	{ Sint32 v = def; FromString(value, v); return v; }
+	inline Sint64	ToSint64(const std::string& value, Sint64 def = 0)	{ Sint64 v = def; FromString(value, v); return v; }
 	inline Uint8	ToUint8(const std::string& value, Uint8 def = 0)	{ Uint8	 v = def; FromString(value, v); return v; }
 	inline Uint16	ToUint16(const std::string& value, Uint16 def = 0)	{ Uint16 v = def; FromString(value, v); return v; }
 	inline Uint32	ToUint32(const std::string& value, Uint32 def = 0)	{ Uint32 v = def; FromString(value, v); return v; }

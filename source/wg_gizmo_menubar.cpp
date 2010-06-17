@@ -499,6 +499,7 @@ WgMenuBarItem::~WgMenuBarItem()
 {
 	if(m_pText != 0)
 		delete [] m_pText;
+	delete m_pMenu;
 
 }
 

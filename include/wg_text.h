@@ -203,7 +203,7 @@ public:
 // -------------
 
 	void				setValue( double value, const WgValueFormat& form );
-	void				setScaledValue( Sint32 value, Uint32 scale, const WgValueFormat& form );
+	void				setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form );
 	Sint32				compareTo( const WgText * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
     bool                adjustBlock( WgTextBlock * pBlock ) const;
 
@@ -376,7 +376,7 @@ protected:
 
 	static const int	parseBufLen = 9+16+1+16+8;
 	WgChar *	parseValue( double value, const WgValueFormat& form, WgChar[parseBufLen] );
-	WgChar *	parseScaledValue( Sint32 value, Uint32 scale, const WgValueFormat& form, WgChar[parseBufLen] );
+	WgChar *	parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form, WgChar[parseBufLen] );
 
 
 	void			regenSoftLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).

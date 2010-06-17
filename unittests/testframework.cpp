@@ -1,19 +1,21 @@
 
 
 
-#include <testframework.h>
+#include "testframework.h"
 #include <stdio.h>
 #include <string.h>
 
-#include <text_test.h>
-#include <textparser_test.h>
+#include "text_test.h"
+#include "valueformat_test.h"
+//#include "textparser_test.h"
 
 //____ Constructor _____________________________________________________________
 
 TestFramework::TestFramework()
 {
-	AddTestClass( new TextTest() );
-	AddTestClass( new TextParserTest() );
+	AddTestClass( new ValueFormatTest() );
+//	AddTestClass( new TextTest() );
+//	AddTestClass( new TextParserTest() );
 }
 
 //____ Destructor ______________________________________________________________

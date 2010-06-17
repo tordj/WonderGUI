@@ -95,7 +95,7 @@ class WgGizmoCirclemeter : public WgGizmo, public Wg_Interface_ValueHolder
 		WgText			m_text;
 		int				m_renderStyle;			// 0 = up, 1 = mouse_over, 2 = down, 3 = disabled.
 		Uint32			m_fullRangeDistance;
-		Sint32			m_valueAtPress;
+		Sint64			m_valueAtPress;
 
 		WgBorders		m_numberBorders;
 

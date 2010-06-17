@@ -178,7 +178,7 @@ namespace WgSignal
 	class Forward					: public Signal_void { public: Forward() { type = (Uint16) __LINE__; data = 0; };};
 	class Back						: public Signal_void { public: Back() { type = (Uint16) __LINE__; data = 0; };};
 
-	class IntegerChanged			: public Signal_int { public: IntegerChanged() { type = (Uint16) __LINE__; data = 0; };};
+	class IntegerChanged			: public Signal_int64 { public: IntegerChanged() { type = (Uint16) __LINE__; data = 0; };};
 	class Fraction					: public Signal_float { public: Fraction() { type = (Uint16) __LINE__; data = 0; };};
 
 	class TabPressed				: public Signal_int { public: TabPressed() { type = (Uint16) __LINE__; data = 0; };};

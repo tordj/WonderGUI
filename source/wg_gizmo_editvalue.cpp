@@ -274,7 +274,7 @@ void WgGizmoEditvalue::OnAction( WgEmitter * pEmitter, WgInput::UserAction actio
 					m_useFormat.bForcePeriod = true;	// Force period if decimals are involved.
 
 
-				int value = m_value;
+				Sint64 value = m_value;
 
 				// Remove decimals, remove period, decrease value or remove minus sign.
 
@@ -293,7 +293,7 @@ void WgGizmoEditvalue::OnAction( WgEmitter * pEmitter, WgInput::UserAction actio
 				// Mask away decimals not shown.
 
 				int mask = (int) pow( 10.f, m_format.decimals - m_useFormat.decimals );
-				value -= value%mask;
+				value -= value % mask;
 
 				// Set value, possibly emit signals
 
@@ -362,7 +362,8 @@ void WgGizmoEditvalue::OnAction( WgEmitter * pEmitter, WgInput::UserAction actio
 
 				if( m_useFormat.decimals < m_format.decimals )
 				{
-					int value = abs(m_value) + number * (int) pow(10.f, m_format.decimals - m_useFormat.decimals -1 );
+					Sint64 value = m_value >= 0 ? m_value : -m_value;
+					value += number * (int) pow(10.f, m_format.decimals - m_useFormat.decimals -1 );
 
 					// Possibly make value negative
 
@@ -393,8 +394,8 @@ void WgGizmoEditvalue::OnAction( WgEmitter * pEmitter, WgInput::UserAction actio
 			else
 			{
 				// No period displayed, so we are typing integer-part.
-
-				int value = abs(m_value)*10 + number * (int) pow(10.f, m_format.decimals );
+				Sint64 value = (m_value >= 0 ? m_value : -m_value) * 10;
+				value += number * (int) pow(10.f, m_format.decimals );
 
 				// Possibly make value negative
 

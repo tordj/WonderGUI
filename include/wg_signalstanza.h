@@ -58,6 +58,7 @@ class Signal
 	class Signal_void 			: public Signal { protected: Signal_void(){}; };
 	class Signal_bool 			: public Signal { protected: Signal_bool(){}; };
 	class Signal_int  			: public Signal { protected: Signal_int(){}; };
+	class Signal_int64 			: public Signal { protected: Signal_int64(){}; };
 	class Signal_float			: public Signal { protected: Signal_float(){}; };
 	class Signal_voidptr		: public Signal { protected: Signal_voidptr(){}; };
 	class Signal_charptr		: public Signal { protected: Signal_charptr(){}; };

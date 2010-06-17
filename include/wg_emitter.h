@@ -60,6 +60,7 @@ public:
 	METHODS_SIGNAL_0P(WgSignal::Signal_void);
 	METHODS_SIGNAL_1P(WgSignal::Signal_bool,bool);
 	METHODS_SIGNAL_1P(WgSignal::Signal_int,int);
+	METHODS_SIGNAL_1P(WgSignal::Signal_int64,Sint64);
 	METHODS_SIGNAL_1P(WgSignal::Signal_float,float);
 	METHODS_SIGNAL_1P(WgSignal::Signal_voidptr,const void *);
 	METHODS_SIGNAL_1P(WgSignal::Signal_charptr,const char *);

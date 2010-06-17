@@ -927,7 +927,7 @@ void WgText::setValue( double value, const WgValueFormat& form )
 
 //____ setScaledValue() _______________________________________________________
 
-void WgText::setScaledValue( Sint32 value, Uint32 scale, const WgValueFormat& form )
+void WgText::setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form )
 {
 	WgChar	str[parseBufLen];
 	WgChar * pStr = parseScaledValue( value, scale, form, str );
@@ -1087,13 +1087,13 @@ WgChar * WgText::parseValue( double value, const WgValueFormat& f, WgChar tempst
 
 //____ parseScaledValue() _____________________________________________________
 
-WgChar * WgText::parseScaledValue( Sint32 value, Uint32 scale, const WgValueFormat& f, WgChar tempstring[parseBufLen] )
+WgChar * WgText::parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& f, WgChar tempstring[parseBufLen] )
 {
 
-	int	absVal	= abs(value);
+	Sint64 absVal = value >= 0 ? value : -value;
 
-	int intPart = absVal / scale;
-	int decPart = absVal % scale;
+	Sint64 intPart = absVal / scale;
+	Sint64 decPart = absVal % scale;
 
 	// Write period and decimal part
 

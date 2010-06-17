@@ -1,9 +1,9 @@
 #include <string.h>
 
-#include <text_test.h>
+#include "text_test.h"
 
 #include <wg_textprop.h>
-#include <wg_simpletext.h>
+#include <wg_text.h>
 
 TextTest::TextTest()
 {
@@ -21,7 +21,7 @@ TextTest::~TextTest()
 
 bool TextTest::ManipulatingSimpleTextContent()
 {
-	WgSimpleText	text1;
+	WgText	text1;
 
 	char	buffer[256];
 
@@ -159,8 +159,8 @@ bool TextTest::PropertiesOnTextObjects()
 
 	// Create a few simple text objects
 
-	WgSimpleText	text1( "This is a test text!\n" );
-	WgSimpleText	text2( "This is another one!\n" );
+	WgText	text1( "This is a test text!\n" );
+	WgText	text2( "This is another one!\n" );
 
 	// Make sure we only have 2 refs + 1 extra. Empty chars
 	// shouldn't have any refs.

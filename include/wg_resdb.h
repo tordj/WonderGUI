@@ -142,6 +142,12 @@ public:
 
 	void				SetResLoader( WgResLoader * pLoader );
 	void				Clear();
+	
+	void				DestroyFonts();
+	void				DestroyAnims();
+	void				DestroyCursors();
+	void				DestroyTextManagers();
+
 	void				ClearWidgets();// debug function
 	void				ClearConnects();// debug function
 

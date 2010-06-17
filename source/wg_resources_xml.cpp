@@ -1140,11 +1140,11 @@ void WgValueHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode,
 {
 	WgValueFormatRes format(pThis, &holder->GetFormat());
 	format.Serialize(s);
-	WriteDiffAttr(s, xmlNode, "val", holder->Value(), 0);
+	WriteDiffAttr(s, xmlNode, "val", holder->Value(), (Sint64)0);
 	WriteDiffAttr<Uint32>(s, xmlNode, "unitsize", holder->UnitSize(), 1);
 	WriteDiffAttr<Uint32>(s, xmlNode, "stepsize", holder->StepSize(), 1);
-	WriteDiffAttr(s, xmlNode, "minlimit", holder->MinLimit(), (Sint32)0xC0000000);
-	WriteDiffAttr(s, xmlNode, "maxlimit", holder->MaxLimit(), (Sint32)0x3FFFFFFF);
+	WriteDiffAttr(s, xmlNode, "minlimit", holder->MinLimit(), (Sint64)0xC0000000);
+	WriteDiffAttr(s, xmlNode, "maxlimit", holder->MaxLimit(), (Sint64)0x3FFFFFFF);
 	WriteDiffAttr<Uint32>(s, xmlNode, "valuedigits", holder->ValueDigits(), 0);
 	WriteDiffAttr<Uint32>(s, xmlNode, "modulator", holder->Modulator(), 1);
 }
@@ -1152,7 +1152,7 @@ void WgValueHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode,
 void WgValueHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s, Wg_Interface_ValueHolder* holder)
 {
 	m_holder = holder;
-	holder->SetValue(WgUtil::ToSint32(xmlNode["val"]));
+	holder->SetValue(WgUtil::ToSint64(xmlNode["val"]));
 	holder->SetFractionalRounding(WgUtil::ToUint32(xmlNode["valuedigits"], 0), WgUtil::ToUint32(xmlNode["modulator"], 1) );
 	holder->SetUnitSize(WgUtil::ToUint32(xmlNode["unitsize"], 1));
 	holder->SetStepSize(WgUtil::ToUint32(xmlNode["stepsize"], 1));

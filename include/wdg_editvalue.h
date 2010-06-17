@@ -46,7 +46,7 @@ public:
 	static void cbDecValue			(void * pWdg, Sint32 dec)	{ ((Wdg_EditValue*)pWdg)->DecValue(dec); }
 
 
-	static void cbSetValue			(void * pWdg, Sint32 value)	{ ((Wdg_EditValue*)pWdg)->SetValue(value); }
+	static void cbSetValue			(void * pWdg, Sint64 value)	{ ((Wdg_EditValue*)pWdg)->SetValue(value); }
 	static void cbSetFractionalValue(void * pWdg, float frac)	{ ((Wdg_EditValue*)pWdg)->SetFractionalValue(frac); }
 
 
