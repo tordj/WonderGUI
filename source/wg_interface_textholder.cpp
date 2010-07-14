@@ -113,26 +113,30 @@ void Wg_Interface_TextHolder::SetText( const WgText * pText )
 
 int Wg_Interface_TextHolder::AddText( const WgCharSeq& seq )
 {
-	m_pText->addText( seq );
+	int nAdded = m_pText->addText( seq );
 	TextModified();
+	return nAdded;
 }
 
 int Wg_Interface_TextHolder::InsertText( int ofs, const WgCharSeq& seq )
 {
-	m_pText->insertText( ofs, seq );
+	int nAdded = m_pText->insertText( ofs, seq );
 	TextModified();
+	return nAdded;
 }
 
 int Wg_Interface_TextHolder::ReplaceText( int ofs, int nDelete, const WgCharSeq& seq )
 {
-	m_pText->replaceText( ofs, nDelete, seq );
+	int nAdded = m_pText->replaceText( ofs, nDelete, seq );
 	TextModified();
+	return nAdded;
 }
 
 int Wg_Interface_TextHolder::DeleteText( int ofs, int len )
 {
-	m_pText->deleteText( ofs, len );
+	int nDeleted = m_pText->deleteText( ofs, len );
 	TextModified();
+	return nDeleted;
 }
 
 void Wg_Interface_TextHolder::DeleteSelectedText()
@@ -143,26 +147,30 @@ void Wg_Interface_TextHolder::DeleteSelectedText()
 
 int Wg_Interface_TextHolder::AddChar( const WgChar& character )
 {
-	m_pText->addChar( character );
+	int nAdded = m_pText->addChar( character );
 	TextModified();
+	return nAdded;
 }
 
 int Wg_Interface_TextHolder::InsertChar( int ofs, const WgChar& character )
 {
-	m_pText->insertChar( ofs, character );
+	int nAdded = m_pText->insertChar( ofs, character );
 	TextModified();
+	return nAdded;
 }
 
 int Wg_Interface_TextHolder::ReplaceChar( int ofs, const WgChar& character )
 {
-	m_pText->replaceChar( ofs, character );
+	int nAdded = m_pText->replaceChar( ofs, character );
 	TextModified();
+	return nAdded;
 }
 
 int Wg_Interface_TextHolder::DeleteChar( int ofs )
 {
-	m_pText->deleteChar( ofs );
+	int nDeleted = m_pText->deleteChar( ofs );
 	TextModified();
+	return nDeleted;
 }
 
 

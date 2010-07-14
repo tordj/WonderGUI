@@ -27,7 +27,6 @@
 #include <wg_userdefines.h>
 
 #ifdef	WG_USE_FREETYPE
-
 #include <wg_base.h>
 #include <wg_vectorglyphs.h>
 #include <wg_surface.h>
