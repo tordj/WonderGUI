@@ -57,7 +57,7 @@ class WgValueFormat
 		void setSuffix( const Uint16 * pText );
 		void setSuffix( const char * pText );
 		inline const Uint16* getSuffix() const { return suffix; }
-	
+
 		inline void setTextProperties( WgTextPropPtr& _pProperties ) { pTextProperties = _pProperties; bSetTextProp = true; }
 		inline void clearTextProperties() { bSetTextProp = false; }
 		inline WgTextPropPtr getTextProperties() const { return pTextProperties; }

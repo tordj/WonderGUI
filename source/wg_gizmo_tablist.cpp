@@ -100,7 +100,7 @@ void WgGizmoTablist::SetTextProperties( const WgTextPropPtr& pProp )
 		WgTab * pTab = m_tabs.getFirst();
 		while( pTab )
 		{
-			pTab->m_text.setDefaultProperties(m_pProp);
+			pTab->m_text.setProperties(m_pProp);
 			pTab = pTab->getNext();
 		}
 
@@ -181,7 +181,7 @@ bool WgGizmoTablist::AddTab( Sint32 id, const char * pText, Uint32 position, con
 	WgTab * pTab = new WgTab(id);
 
 	pTab->m_text.setText(pText);
-	pTab->m_text.setDefaultProperties(m_pProp);
+	pTab->m_text.setProperties(m_pProp);
 	pTab->SetSource( pGfx );
 	ResizeTab(pTab);
 
@@ -204,7 +204,7 @@ bool WgGizmoTablist::AddTab( Sint32 id, const Uint16* pText, Uint32 position, co
 	WgTab * pTab = new WgTab(id);
 
 	pTab->m_text.setText(pText);
-	pTab->m_text.setDefaultProperties(m_pProp);
+	pTab->m_text.setProperties(m_pProp);
 	pTab->SetSource( pGfx );
 	ResizeTab(pTab);
 
@@ -227,7 +227,7 @@ bool WgGizmoTablist::AddTab( Sint32 id, const WgChar* pText, Uint32 position, co
 	WgTab * pTab = new WgTab(id);
 
 	pTab->m_text.setText(pText);
-	pTab->m_text.setDefaultProperties(m_pProp);
+	pTab->m_text.setProperties(m_pProp);
 	pTab->SetSource( pGfx );
 	ResizeTab(pTab);
 
@@ -250,7 +250,7 @@ bool WgGizmoTablist::AddTab( Sint32 id, const WgText * pText, Uint32 position, c
 	WgTab * pTab = new WgTab(id);
 
 	pTab->m_text.setText(pText);
-	pTab->m_text.setDefaultProperties(m_pProp);
+	pTab->m_text.setProperties(m_pProp);
 	pTab->SetSource( pGfx );
 	ResizeTab(pTab);
 
@@ -775,7 +775,7 @@ WgTab * WgGizmoTablist::Pos2Tab( Sint32 x, Sint32 y )
 			bool	bHit = false;
 
 			// Tab is hit if position is on a non-transparent (alpha != 0) pixel of the block
-			// or inside tabs text-area. 
+			// or inside tabs text-area.
 
 			if( ((unsigned) x) > pSrc->GetContentBorders().left && ((unsigned) x) < w - pSrc->GetContentBorders().right &&
 				((unsigned) y) > pSrc->GetContentBorders().top && y < sz.h - pSrc->GetContentBorders().bottom )
@@ -924,7 +924,7 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& window, cons
 				if( pTab == m_pTabSelected )
 					break;
 			}
-			
+
 			pTab = pTab->getPrev();
 		}
 	}

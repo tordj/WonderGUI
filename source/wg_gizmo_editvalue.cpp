@@ -72,23 +72,23 @@ const char * WgGizmoEditvalue::GetMyType( void )
 
 void WgGizmoEditvalue::SetTextColor( WgColor col )
 {
-	m_text.setDefaultColor( col );
+	m_text.setColor( col );
 	m_bRegenText		= true;			// Is this necessary?
 	RequestRender();
 }
 
 WgColor WgGizmoEditvalue::GetTextColor() const
 {
-	return m_text.getDefaultColor(WG_MODE_NORMAL);
+	return m_text.getColor(WG_MODE_NORMAL);
 }
 
 //____ SetTextProp() __________________________________________________________
 
 bool WgGizmoEditvalue::SetTextProp( const WgTextPropPtr& _pProp )
 {
-	if( _pProp != m_text.getDefaultProperties() )
+	if( _pProp != m_text.getProperties() )
 	{
-		m_text.setDefaultProperties(_pProp);
+		m_text.setProperties(_pProp);
 		m_bRegenText		= true;		// Is this necessary?
 		RequestRender();
 	}
@@ -98,7 +98,7 @@ bool WgGizmoEditvalue::SetTextProp( const WgTextPropPtr& _pProp )
 
 WgTextPropPtr WgGizmoEditvalue::GetTextProp( ) const
 {
-	return m_text.getDefaultProperties();
+	return m_text.getProperties();
 }
 
 
@@ -198,7 +198,7 @@ void WgGizmoEditvalue::RangeModified()
 
 void WgGizmoEditvalue::OnRefresh( void )
 {
-	if( m_text.getFontSet() != 0 )
+	if( m_text.getFont() != 0 )
 	{
 		m_bRegenText = true;
 		RequestRender();
@@ -222,7 +222,7 @@ void WgGizmoEditvalue::OnUpdate( const WgUpdateInfo& _updateInfo )
 
 void WgGizmoEditvalue::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
-	if( m_text.getFontSet() == 0 )
+	if( m_text.getFont() == 0 )
 		return;
 
 	// Possibly regenerate the text
@@ -438,7 +438,7 @@ void WgGizmoEditvalue::OnCloneContent( const WgGizmo * _pOrg )
 
 	m_format		= pOrg->m_format;
 	m_text.setText(&pOrg->m_text);
-	m_text.setFontSet(pOrg->m_text.getFontSet());
+	m_text.setFont(pOrg->m_text.getFont());
 	m_textOrigo	= pOrg->m_textOrigo;
 }
 

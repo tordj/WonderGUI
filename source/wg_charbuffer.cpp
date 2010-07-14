@@ -693,6 +693,35 @@ bool WgCharBuffer::CompareBuffers( const BufferHead * p1, const BufferHead * p2 
 	return false;
 }
 
+//____ CompareTo() ____________________________________________________________
+
+int WgCharBuffer::CompareTo( const WgCharBuffer * pBuffer )
+{
+	if( m_pHead == pBuffer->m_pHead )
+		return 0;
+
+	return WgTextTool::strcmp( (WgChar*) GetPtr(0), (WgChar*) pBuffer->GetPtr(0) );
+}
+
+//____ CompareGlyphsTo() ______________________________________________________
+
+int WgCharBuffer::CompareGlyphsTo( const WgCharBuffer * pBuffer )
+{
+	if( m_pHead == pBuffer->m_pHead )
+		return 0;
+
+	return WgTextTool::glyphcmp( (WgChar*) GetPtr(0), (WgChar*) pBuffer->GetPtr(0) );
+}
+
+//____ CompareGlyphsIgnoreCaseTo() ____________________________________________
+
+int WgCharBuffer::CompareGlyphsIgnoreCaseTo( const WgCharBuffer * pBuffer )
+{
+	if( m_pHead == pBuffer->m_pHead )
+		return 0;
+
+	return WgTextTool::glyphcmpIgnoreCase( (WgChar*) GetPtr(0), (WgChar*) pBuffer->GetPtr(0) );
+}
 
 
 //____ Fill() __________________________________________________________________

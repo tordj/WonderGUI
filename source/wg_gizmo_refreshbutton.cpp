@@ -97,10 +97,7 @@ void WgGizmoRefreshButton::SetAnimTarget( AnimTarget target )
 //_____________________________________________________________________________
 void WgGizmoRefreshButton::SetRefreshText( const WgCharSeq& text )
 {
-	//TODO: Change once WgText support WgCharSeq correctly.
-
-	WgCharSeq::WgCharBasket basket = text.GetWgChars();
-	m_refreshText.setText( basket.ptr, basket.length );
+	m_refreshText.setText( text );
 
 	// HACK!
 	m_refreshText.setAlignment(m_text.alignment());
@@ -112,7 +109,7 @@ void WgGizmoRefreshButton::SetRefreshText( const WgCharSeq& text )
 //_____________________________________________________________________________
 void WgGizmoRefreshButton::SetRefreshTextProperties( const WgTextPropPtr& pProp )
 {
-	m_refreshText.setDefaultProperties(pProp);
+	m_refreshText.setProperties(pProp);
 
 	if( m_bRefreshing )
 		RequestRender();

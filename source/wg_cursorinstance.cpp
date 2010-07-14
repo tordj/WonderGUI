@@ -81,7 +81,7 @@ void WgCursorInstance::gotoHardLine( Uint32 line )
 	if( line > maxLine )
 		line = maxLine;
 
-	UpdateLocation(line, WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, m_pText->getLineText(line) ));
+	UpdateLocation(line, WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getProperties(), m_pText->mode(), m_wantedOfsX, m_pText->getLineText(line) ));
 }
 
 //____ gotoSoftLine() _________________________________________________________
@@ -97,13 +97,13 @@ void WgCursorInstance::gotoSoftLine( Uint32 line )
 	if( m_wantedOfsX == -1 )
 		m_wantedOfsX = m_pText->getSoftLineWidthPart( ln, 0, col );
 
-	// Set our line and convert to hard	
+	// Set our line and convert to hard
 
 	ln = line;
 
-	WgChar * pStr = m_pText->getSoftLineText(ln);
+	const WgChar * pStr = m_pText->getSoftLineText(ln);
 	if( pStr )
-		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, pStr );
+		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getProperties(), m_pText->mode(), m_wantedOfsX, pStr );
 
 
 	m_pText->posSoft2Hard( ln, col );
@@ -185,7 +185,7 @@ void WgCursorInstance::gotoPrevWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-	WgChar* pText = m_pText->getLineText(line) + col - 1;
+	const WgChar* pText = m_pText->getLineText(line) + col - 1;
 
 	while( !isspace(pText->GetGlyph()) && !ispunct(pText->GetGlyph()) )
 	{
@@ -224,7 +224,7 @@ void WgCursorInstance::gotoBeginningOfWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-	WgChar* pText = m_pText->getLineText(line) + col - 1;
+	const WgChar* pText = m_pText->getLineText(line) + col - 1;
 
 	while( isspace(pText->GetGlyph()) || ispunct(pText->GetGlyph()) )
 	{
@@ -263,7 +263,7 @@ void WgCursorInstance::gotoNextWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-	WgChar* pText = m_pText->getLineText(line) + col;
+	const WgChar* pText = m_pText->getLineText(line) + col;
 
 	while( !pText->IsEndOfText() && (isspace(pText->GetGlyph()) || ispunct(pText->GetGlyph())) )
 	{
@@ -290,7 +290,7 @@ void WgCursorInstance::gotoEndOfWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-	WgChar* pText = m_pText->getLineText(line) + col;
+	const WgChar* pText = m_pText->getLineText(line) + col;
 
 	while( !pText->IsEndOfText() && !isspace(pText->GetGlyph()) && !ispunct(pText->GetGlyph()) )
 	{
@@ -382,10 +382,10 @@ void WgCursorInstance::gotoPixel( Sint32 x, Sint32 y )
 	}
 	else
 	{
-		column = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), x, m_pText->getSoftLineText(line), pCursorOnLine );
+		column = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getProperties(), m_pText->mode(), x, m_pText->getSoftLineText(line), pCursorOnLine );
 	}
 
-	m_pText->posSoft2Hard( line, column );	
+	m_pText->posSoft2Hard( line, column );
 
 	UpdateLocation(line, column);
 
@@ -404,17 +404,23 @@ bool WgCursorInstance::putChar( Uint16 character )
 	Uint32 line = m_line;
 	Uint32 column = m_column;
 
+	int ofs = m_pText->LineColToOffset( line, column );
+
 	if( m_bInsert )
-		ret = m_pText->insertChar( line, column++, character );
+		ret = m_pText->insertChar( ofs, character );
 
 	else
-		ret = m_pText->replaceChar( line, column++, character );
+		ret = m_pText->replaceChar( ofs, character );
+
 
 	if( character == '\n' )
 	{
 		line++;
 		column = 0;
 	}
+	else
+		column++;
+
 
 	UpdateLocation(line, column);
 
@@ -423,26 +429,19 @@ bool WgCursorInstance::putChar( Uint16 character )
 
 //____ putText() ______________________________________________________________
 
-Uint32	WgCursorInstance::putText( const Uint16 * pString )
-{
-	int nChar = 0;
-	while( pString[nChar] != 0 )
-		nChar++;
-
-	return putText(pString, nChar);
-}
-
-Uint32	WgCursorInstance::putText( const Uint16 * pString, int nChar )
+Uint32	WgCursorInstance::putText( const WgCharSeq& seq )
 {
 	m_wantedOfsX = -1;
 
 	Uint32 nInserted;
 	Uint32 nLines = m_pText->nbLines();
 
+	int ofs = m_pText->LineColToOffset( m_line, m_column );
+
 	if( m_bInsert )
-		nInserted = m_pText->insertText( m_line, m_column, pString, nChar );
+		nInserted = m_pText->insertText( ofs, seq );
 	else
-		nInserted = m_pText->replaceText( m_line, m_column, nChar, pString );
+		nInserted = m_pText->replaceText( ofs, seq.Length(), seq );
 
 	nLines = m_pText->nbLines() - nLines;
 
@@ -465,19 +464,21 @@ void WgCursorInstance::unputText( int nChar )
 //_____________________________________________________________________
 void WgCursorInstance::delPrevWord()
 {
-	int line = m_line;
-	int column = m_column;
+	int	ofs1 = m_pText->LineColToOffset( m_line, m_column );
 	gotoPrevWord();
-	m_pText->removeText(m_line, m_column, line, column);
+	int ofs2 = m_pText->LineColToOffset( m_line, m_column );
+	m_pText->deleteText( ofs2, ofs1-ofs2 );
 }
 
 //_____________________________________________________________________
 void WgCursorInstance::delNextWord()
 {
+	int	ofs1 = m_pText->LineColToOffset( m_line, m_column );
 	int line = m_line;
 	int column = m_column;
 	gotoNextWord();
-	m_pText->removeText(line, column, m_line, m_column);
+	int ofs2 = m_pText->LineColToOffset( m_line, m_column );
+	m_pText->deleteText(ofs1, ofs2-ofs1);
 	UpdateLocation(line, column);
 }
 
@@ -489,7 +490,7 @@ bool WgCursorInstance::delPrevChar()
 
 	int column= m_column;
 	int line = m_line;
-	
+
 	bool bRet;
 
 	if( column == 0 )
@@ -499,13 +500,12 @@ bool WgCursorInstance::delPrevChar()
 
 		line -= 1;
 		column = m_pText->getLine(line)->nChars;
-		bRet = m_pText->joinLines( line );
 	}
 	else
-	{
- 		bRet = m_pText->removeChar( line, --column );
-	}
+		column--;
 
+
+	bRet = m_pText->deleteChar( m_pText->LineColToOffset( m_column, m_line ) -1 );
 	UpdateLocation(line, column);
 	return bRet;
 }
@@ -516,20 +516,8 @@ bool WgCursorInstance::delNextChar()
 {
 	m_wantedOfsX = -1;
 
-	if( m_line < m_pText->nbLines() && m_column == m_pText->getLine( m_line )->nChars )
-	{
-		if( m_line == m_pText->nbLines()-1 )
-			return false;
-
-		if( m_pText->joinLines( m_line ) == 0 )
-			return false;
-
-		return true;
-	}
-	else
-	{
-		return m_pText->removeChar( m_line, m_column );
-	}
+	int ofs = m_pText->LineColToOffset( m_column, m_line );
+	return m_pText->deleteChar( ofs );
 }
 
 //____ ofsX() __________________________________________________________________
@@ -620,8 +608,8 @@ void WgCursorInstance::goUp( Uint32 nLines )
 			ln = 0;
 		else
 			ln -= nLines;
-		
-		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, m_pText->getSoftLineText(ln) );
+
+		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getProperties(), m_pText->mode(), m_wantedOfsX, m_pText->getSoftLineText(ln) );
 
 		m_pText->posSoft2Hard(ln,col);
 		gotoPos(ln, col);
@@ -644,9 +632,9 @@ void WgCursorInstance::goDown( Uint32 nLines )
 	else
 		ln += nLines;
 
-	WgChar * pStr = m_pText->getSoftLineText(ln);
+	const WgChar * pStr = m_pText->getSoftLineText(ln);
 	if( pStr )
-		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getDefaultProperties(), m_pText->mode(), m_wantedOfsX, pStr );
+		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getProperties(), m_pText->mode(), m_wantedOfsX, pStr );
 
 	m_pText->posSoft2Hard(ln,col);
 	gotoPos(ln, col);
@@ -698,7 +686,9 @@ void WgCursorInstance::delSelection()
 		std::swap(column, m_selStartColumn);
 	}
 
-	m_pText->removeText(line, column, m_selStartLine, m_selStartColumn);
+	int ofs1 = m_pText->LineColToOffset(line, column);
+	int ofs2 = m_pText->LineColToOffset(m_selStartLine, m_selStartColumn );
+	m_pText->deleteText(ofs1, ofs2-ofs1);
 
 	m_selStartLine = line;
 	m_selStartColumn = column;

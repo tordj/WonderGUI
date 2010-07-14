@@ -33,21 +33,22 @@ class WgChar;
 class WgString;
 class WgCharBuffer;
 class WgText;
+class WgResDB;
 
 /*
 
 	TODO:
 
-	- CopyTo() använder sig av WgTextTool::readString() som inte rensar attributes...
+	- CopyTo() anvÃ¤nder sig av WgTextTool::readString() som inte rensar attributes...
 
-	DÄREFTER REKURSIVT ARBETA IGENOM:
+	DÃ„REFTER REKURSIVT ARBETA IGENOM:
 
 	- WgString
 	- WgChar (ta bort softbreak-flaggan).
-	- WgText (basera på WgCharBuffer).
-	- WgText (ändra metodparametrar, utnyttja WgCharSeq och WgString).
+	- WgText (basera pÃ¥ WgCharBuffer).
+	- WgText (Ã¤ndra metodparametrar, utnyttja WgCharSeq och WgString).
 	- WgText (inkludera line-variabler).
-	- WgText (stöd för varierande radhöjd).
+	- WgText (stÃ¶d fÃ¶r varierande radhÃ¶jd).
 
 */
 
@@ -141,13 +142,17 @@ public:
 	void					CopyFormattedTo( Uint16 * pDest ) const;
 
 protected:
+	WgCharSeq() {};
 
 	enum SeqType
 	{
 		EMPTY,
 		WGCHAR,
-		CHAR8,
-		CHAR16,
+		UTF8,
+		UTF16,
+		ESCAPED_UTF8,
+		ESCAPED_UTF16
+
 	};
 
 	Uint32			CalcBlockChars() const;
@@ -155,6 +160,22 @@ protected:
 	SeqType			m_type;
 	const void * 	m_pChar;
 	int				m_nbChars;	// Length of sequence in number of characters.
+};
+
+
+class WgCharSeqEscaped : public WgCharSeq
+{
+	friend class WgCharSeq;
+public:
+	WgCharSeqEscaped( WgResDB * pDB, const char * pChar );
+	WgCharSeqEscaped( WgResDB * pDB, const char * pChar, int len );
+	WgCharSeqEscaped( WgResDB * pDB, const Uint16 * pChar );
+	WgCharSeqEscaped( WgResDB * pDB, const Uint16 * pChar, int len );
+	WgCharSeqEscaped( WgResDB * pDB, const std::string& str );
+	WgCharSeqEscaped( WgResDB * pDB, const std::string& str, int ofs, int len );
+
+protected:
+	WgResDB *	m_pDB;
 };
 
 

@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -78,7 +78,7 @@ public:
 		const WgChar*	GetRefreshText() const { return m_refreshText.getText(); }
 
 		void			SetRefreshTextProperties( const WgTextPropPtr& pProp );
-		WgTextPropPtr	GetRefreshTextProperties() const { return m_refreshText.getDefaultProperties(); }
+		WgTextPropPtr	GetRefreshTextProperties() const { return m_refreshText.getProperties(); }
 
 		void			SetRestartable( bool bRestartable );
 		bool			IsRestartable() const { return m_bRestartable; }

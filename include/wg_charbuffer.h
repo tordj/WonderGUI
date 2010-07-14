@@ -812,6 +812,13 @@ public:
 	int					FindFirst( const WgCharSeq& seq, Uint32 ofs = 0 );
 
 
+
+	int					CompareTo( const WgCharBuffer * pBuffer );
+	int					CompareGlyphsTo( const WgCharBuffer * pBuffer );
+	int					CompareGlyphsIgnoreCaseTo( const WgCharBuffer * pBuffer );
+
+
+
 	// Methods mostly for debugging and profiling purposes.
 
 	/// @brief Returns number of objects referencing the same memory buffer.

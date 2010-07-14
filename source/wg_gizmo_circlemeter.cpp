@@ -179,9 +179,9 @@ void WgGizmoCirclemeter::SetFullRangeDistance(Uint32 pixels)
 
 bool WgGizmoCirclemeter::SetFonts( WgFont * _pFonts )
 {
-	if( _pFonts != m_text.getFontSet() )
+	if( _pFonts != m_text.getFont() )
 	{
-		m_text.setFontSet(_pFonts);
+		m_text.setFont(_pFonts);
 		m_bRegenText	= true;
 		RequestRender();
 	}
@@ -336,7 +336,7 @@ void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _window,
 
 	// Render the value
 
-	if( m_text.getFontSet() )
+	if( m_text.getFont() )
 	{
 		// We regenerate the text for the value at render if needed and not before,
 		// so we never end up regenerating text more than once for each render.

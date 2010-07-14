@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -119,7 +119,7 @@ void WgGizmoText::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const 
 	if( m_bHasFocus && IsEditable() )
 		pDevice->PrintTextWithCursor( _clip, pText, *m_pText->GetCursor(), _window );
 	else
-		pDevice->PrintText( _clip, pText, _window );		
+		pDevice->PrintText( _clip, pText, _window );
 
 	if( pText != &m_text )
 		delete pText;
@@ -149,7 +149,7 @@ void WgGizmoText::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, in
 
 		Sint32	x = pos.x;
 		Sint32	y = pos.y;
-		
+
 		m_pText->gotoPixel(x,y);
 
 		if(IsSelectable() && action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
@@ -336,7 +336,7 @@ void WgGizmoText::OnLostInputFocus()
 //____ TextModified() _________________________________________________________
 
 void WgGizmoText::TextModified()
-{	
+{
 	RequestRender();
 }
 
@@ -355,13 +355,13 @@ Uint32 WgGizmoText::InsertTextAtCursor( const WgCharSeq& str )
 
 	if( m_maxCharacters == 0 || ((unsigned)str.Length()) < m_maxCharacters - m_pText->nbChars() )
 	{
-		m_pText->putText( str.GetUnicode().ptr, str.Length() );
+		m_pText->putText( str );
 		nChars = str.Length();
 	}
 	else
 	{
 		nChars = m_maxCharacters - m_pText->nbChars();
-		m_pText->putText( str.GetUnicode().ptr, nChars );
+		m_pText->putText( WgCharSeq( str, 0, nChars) );
 	}
 
 	if( m_maxLines != 0 && m_maxLines < m_pText->nbSoftLines() )
@@ -369,7 +369,7 @@ Uint32 WgGizmoText::InsertTextAtCursor( const WgCharSeq& str )
 		m_pText->unputText( nChars );
 		nChars = 0;
 	}
-	
+
 	return nChars;
 }
 

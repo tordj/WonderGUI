@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -126,15 +126,15 @@ Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 		Uint32 line = m_pText->line();
 		Uint32 column = m_pText->column();
 
-		m_pText->putText( str.GetUnicode().ptr );
+		m_pText->putText( str );
 		retVal = str.Length();
 	}
 	else
 	{
 		retVal = m_maxCharacters - m_pText->nbChars();
-		m_pText->putText( str.GetUnicode().ptr, retVal );
+		m_pText->putText( WgCharSeq( str, 0, retVal ) );
 	}
-	
+
 	AdjustViewOfs();
 
 	return retVal;
@@ -206,7 +206,7 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 		pText = new WgText( pContent );
 		pText->SetWrap(false);
 		pText->setAlignment(m_text.alignment());
-		pText->setDefaultProperties(m_text.getDefaultProperties());
+		pText->setProperties(m_text.getProperties());
 		pText->setMode(m_text.mode());
 		pText->setSelectionColor(m_text.getSelectionColor());
 		Uint32 sl, sc, el, ec;
@@ -220,9 +220,9 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 	r.w += m_viewOfs;
 
 	if( m_bHasFocus && IsEditable() )
-		pDevice->PrintTextWithCursor( _clip, pText, *m_pText->GetCursor(), r );		
+		pDevice->PrintTextWithCursor( _clip, pText, *m_pText->GetCursor(), r );
 	else
-		pDevice->PrintText( _clip, pText, r );		
+		pDevice->PrintText( _clip, pText, r );
 
 	if( pText != &m_text )
 		delete pText;
@@ -234,7 +234,7 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
-	{		
+	{
 		if( !m_bHasFocus )
 			GrabFocus();
 
@@ -254,10 +254,10 @@ void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 			if( m_bPasswordMode )
 			{
 				WgPen	pen;
-				pen.SetTextProp( m_pText->getDefaultProperties() );
+				pen.SetTextProp( m_pText->getProperties() );
 				pen.SetChar(m_pwGlyph);
 				pen.AdvancePos();
-				
+
 				int spacing = pen.GetPosX();
 				int height = pen.GetLineSpacing();
 
@@ -296,7 +296,7 @@ void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 		{
 			// by default - no max limit
 			if( m_maxCharacters == 0 || m_maxCharacters > m_pText->nbChars() )
-			{			
+			{
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
 				m_pText->setSelectionMode(false);
@@ -373,7 +373,7 @@ void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 				break;
 
 			case WGKEY_HOME:
-				
+
 				/*
 				 *	I am not sure if this is the proper way to this, but in my opinion, the default
 				 *	"actions" has to be separated from any modifier key action combination
@@ -391,11 +391,11 @@ void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 					m_pText->goBOL();
 					break;
 				}
-				
+
 				break;
 
 			case WGKEY_END:
-				
+
 				/*
 			 	 *	I am not sure if this is the proper way to this, but in my opinion, the default
 		 		 *	"actions" has to be separated from any modifier key action combination
@@ -413,7 +413,7 @@ void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 					m_pText->goEOL();
 					break;
 				}
-					
+
 				break;
 
 			default:
@@ -434,17 +434,17 @@ void WgGizmoEditline::AdjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_bHasFocus && m_pText->getFontSet() )
+	if( m_bHasFocus && m_pText->getFont() )
 	{
 		Uint32 cursCol	= m_pText->column();
 
 		WgPen	pen;
-		pen.SetTextProp( m_pText->getDefaultProperties() );
+		pen.SetTextProp( m_pText->getProperties() );
 		pen.SetChar(m_pwGlyph);
 		pen.AdvancePos();
 
 		int pwAdvance	= pen.GetPosX();
-		int cursWidth	= m_pText->getFontSet()->GetCursor()->advance(m_pText->cursorMode() );
+		int cursWidth	= m_pText->getFont()->GetCursor()->advance(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.

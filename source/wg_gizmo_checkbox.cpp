@@ -54,7 +54,7 @@ WgGizmoCheckbox::WgGizmoCheckbox()
 	m_iconAreaBorders	= WgBorders(0);
 	m_iconScale			= 0.f;
 	m_bIconPushText		= true;
-	
+
 
 	m_aDisplace[0].x	= m_aDisplace[0].y = 0;
 	m_aDisplace[1]		= m_aDisplace[2] = m_aDisplace[0];
@@ -96,8 +96,8 @@ bool WgGizmoCheckbox::SetSource( const WgBlockSetPtr& _pUnchecked, const WgBlock
 
 //____ SetIcon() ______________________________________________________________
 
-void WgGizmoCheckbox::SetIcon( const WgBlockSetPtr& _pUnchecked, const WgBlockSetPtr& _pChecked, 
-								WgBorders _areaBorders, const WgOrigo& _origo, float _scale, 
+void WgGizmoCheckbox::SetIcon( const WgBlockSetPtr& _pUnchecked, const WgBlockSetPtr& _pChecked,
+								WgBorders _areaBorders, const WgOrigo& _origo, float _scale,
 								bool _bPushText )
 {
 	m_pIconUnchecked	= _pUnchecked;
@@ -203,7 +203,7 @@ void WgGizmoCheckbox::OnDisable()
 	m_bOver = false;
 	m_bPressed = false;
 
-	RequestRender();	
+	RequestRender();
 }
 
 
@@ -288,7 +288,7 @@ WgRect WgGizmoCheckbox::GetIconRect( const WgSize& gizmoSize )
 	if( pIcon )
 	{
 		int w = pIcon->GetWidth();
-		int h = pIcon->GetHeight();		
+		int h = pIcon->GetHeight();
 
 		int bgW = gizmoSize.w - m_iconAreaBorders.GetWidth();
 		int bgH = gizmoSize.h - m_iconAreaBorders.GetHeight();
@@ -327,13 +327,13 @@ WgRect WgGizmoCheckbox::GetIconRect( const WgSize& gizmoSize )
 //____ GetContentRect() _____________________________________________________
 
 WgRect WgGizmoCheckbox::GetContentRect( const WgSize& gizmoSize, const WgRect& iconRect )
-{ 
+{
 	WgRect rect( 0,0, gizmoSize.w, gizmoSize.h );
 
 	WgBlockSetPtr p = m_bChecked ? m_pBlockChecked : m_pBlockUnchecked;
 
 	if( p )
-		rect.Shrink( p->GetContentBorders() ); 
+		rect.Shrink( p->GetContentBorders() );
 
 	if( m_bIconPushText )
 	{
@@ -527,7 +527,7 @@ void WgGizmoCheckbox::RefreshTextArea()
 
 	// calculate mark testing area for the text
 
-	WgTextPropPtr	pProp = m_text.getDefaultProperties();
+	WgTextPropPtr	pProp = m_text.getProperties();
 
 	const WgFont * pFontSet = pProp->GetFont();
 	if( !pFontSet )
@@ -621,7 +621,7 @@ bool WgGizmoCheckbox::OnMarkTest( const WgCord& ofs )
 		if( m_pIconUnchecked )
 			iconBlock = m_pIconUnchecked->GetBlock(mode);
 	}
-		
+
 	WgRect bgRect;
 	WgSize sz = Size();
 

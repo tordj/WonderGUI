@@ -54,62 +54,62 @@ public:
 	virtual void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); TextModified(); }
 	inline WgTextManager * GetTextManager() const { return m_pText->getManager(); }
 
-	inline bool			SetFonts( WgFont * pFont ) { SetFont(pFont); return true; }		// DEPRECATED!!!
-	inline WgTextPropPtr GetTextDefaultProperties() { return m_pText->getDefaultProperties(); }
+//	inline bool			SetFonts( WgFont * pFont ) { SetFont(pFont); return true; }		// DEPRECATED!!!
+	inline WgTextPropPtr GetTextDefaultProperties() { return m_pText->getProperties(); }
 
 
-	inline WgColor		GetTextDefaultColor(WgMode mode) const { return m_pText->getDefaultColor(mode); }
-	inline WgFontStyle	GetTextDefaultStyle(WgMode mode) const { return m_pText->getDefaultStyle(mode); }
-	inline WgFont *	GetDefaultFont() const { return m_pText->getDefaultFont(); }
+	inline WgColor		GetTextDefaultColor(WgMode mode) const { return m_pText->getColor(mode); }
+	inline WgFontStyle	GetTextDefaultStyle(WgMode mode) const { return m_pText->getStyle(mode); }
+	inline WgFont *	GetDefaultFont() const { return m_pText->getFont(); }
 
 
 // -------------
 
-	inline void			SetTextDefaultProperties( const WgTextPropPtr& pProp )		{ m_pText->setDefaultProperties(pProp); TextModified(); }
+	inline void			SetTextDefaultProperties( const WgTextPropPtr& pProp )		{ m_pText->setProperties(pProp); TextModified(); }
 
-	inline void			SetTextDefaultColor( const WgColor color )					{ m_pText->setDefaultColor(color); TextModified(); }
-	inline void			SetTextDefaultColor( const WgColor color, WgMode mode )		{ m_pText->setDefaultColor(color,mode); TextModified(); }
+	inline void			SetTextDefaultColor( const WgColor color )					{ m_pText->setColor(color); TextModified(); }
+	inline void			SetTextDefaultColor( const WgColor color, WgMode mode )		{ m_pText->setColor(color,mode); TextModified(); }
 
-	inline void			SetTextDefaultStyle( WgFontStyle style )					{ m_pText->setDefaultStyle(style); TextModified(); }
-	inline void			SetTextDefaultStyle( WgFontStyle style, WgMode mode )		{ m_pText->setDefaultStyle(style,mode); TextModified(); }
+	inline void			SetTextDefaultStyle( WgFontStyle style )					{ m_pText->setStyle(style); TextModified(); }
+	inline void			SetTextDefaultStyle( WgFontStyle style, WgMode mode )		{ m_pText->setStyle(style,mode); TextModified(); }
 
-	inline void			SetDefaultFont( WgFont * pFont )							{ m_pText->setDefaultFont(pFont); TextModified(); }
+	inline void			SetDefaultFont( WgFont * pFont )							{ m_pText->setFont(pFont); TextModified(); }
 
 	inline void			SetSelectionColor( WgColor color )							{ m_pText->setSelectionColor(color); }
 	inline WgColor		GetSelectionColor() const									{ return m_pText->getSelectionColor(); }
 
 // -------------
 
-	inline void			ClearTextDefaultProperties()								{ m_pText->clearDefaultProperties(); TextModified(); }
+	inline void			ClearTextDefaultProperties()								{ m_pText->clearProperties(); TextModified(); }
 
-	inline void			ClearTextDefaultColor()										{ m_pText->clearDefaultColor(); TextModified(); }
-	inline void			ClearTextDefaultColor( WgMode mode )						{ m_pText->clearDefaultColor(mode); TextModified(); }
+	inline void			ClearTextDefaultColor()										{ m_pText->clearColor(); TextModified(); }
+	inline void			ClearTextDefaultColor( WgMode mode )						{ m_pText->clearColor(mode); TextModified(); }
 
-	inline void			ClearTextDefaultStyle()										{ m_pText->clearDefaultStyle(); TextModified(); }
-	inline void			ClearTextDefaultStyle( WgMode mode )						{ m_pText->clearDefaultStyle(mode); TextModified(); }
+	inline void			ClearTextDefaultStyle()										{ m_pText->clearStyle(); TextModified(); }
+	inline void			ClearTextDefaultStyle( WgMode mode )						{ m_pText->clearStyle(mode); TextModified(); }
 
-	inline void			ClearDefaultFont()											{ m_pText->clearDefaultFont(); TextModified(); }
+	inline void			ClearDefaultFont()											{ m_pText->clearFont(); TextModified(); }
 
 // -------------
 
-	inline void			SetTextProperties( const WgTextPropPtr& pProp )				{ m_pText->setProperties(pProp); TextModified(); }
+//	inline void			SetTextProperties( const WgTextPropPtr& pProp )				{ m_pText->setProperties(pProp); TextModified(); }
 //	inline void			SetTextProperties( const WgTextPropPtr& pProp, const WgTextBlock& section )	{ m_pText->setProperties(pProp,section); TextModified(); }
 
-	inline void			SetFont( WgFont * pFont )								{ m_pText->setFont(pFont); TextModified(); }
+//	inline void			SetFont( WgFont * pFont )								{ m_pText->setFont(pFont); TextModified(); }
 //	inline void			SetFont( WgFont * pFont, const WgTextBlock& section )	{ m_pText->setFont(pFont, section); TextModified(); }
 
-	inline void			SetTextColor( const WgColor color )							{ m_pText->setColor(color); TextModified(); }
-	inline void			setTextColor( const WgColor color, WgMode mode )			{ m_pText->setColor(color,mode); TextModified(); }
+//	inline void			SetTextColor( const WgColor color )							{ m_pText->setColor(color); TextModified(); }
+//	inline void			setTextColor( const WgColor color, WgMode mode )			{ m_pText->setColor(color,mode); TextModified(); }
 //	inline void			SetTextColor( const WgColor color, const WgTextBlock& section ) { m_pText->setColor(color,section); TextModified(); }
 //	inline void			SetTextColor( const WgColor color, const WgTextBlock& section, WgMode mode )	{ m_pText->setColor(color,section,mode); TextModified(); }
 
-	inline void			SetTextStyle( WgFontStyle style )							{ m_pText->setStyle(style); TextModified(); }
-	inline void			SetTextStyle( WgFontStyle style, WgMode mode )				{ m_pText->setStyle(style,mode); TextModified(); }
+//	inline void			SetTextStyle( WgFontStyle style )							{ m_pText->setStyle(style); TextModified(); }
+//	inline void			SetTextStyle( WgFontStyle style, WgMode mode )				{ m_pText->setStyle(style,mode); TextModified(); }
 //	inline void			SetTextStyle( WgFontStyle style, const WgTextBlock& section )	{ m_pText->setStyle(style,section); TextModified(); }
 //	inline void			SetTextStyle( WgFontStyle style, const WgTextBlock& section, WgMode mode )	{ m_pText->setStyle(style,section,mode); TextModified(); }
 
-	inline void			SetTextUnderlined()											{ m_pText->setUnderlined(); TextModified(); }
-	inline void			SetTextUnderlined( WgMode mode )							{ m_pText->setUnderlined(mode); TextModified(); }
+//	inline void			SetTextUnderlined()											{ m_pText->setUnderlined(); TextModified(); }
+//	inline void			SetTextUnderlined( WgMode mode )							{ m_pText->setUnderlined(mode); TextModified(); }
 //	inline void			SetTextUnderlined( const WgTextBlock& section )			{ m_pText->setUnderlined(section); TextModified(); }
 //	inline void			SetTextUnderlined( const WgTextBlock& section, WgMode mode ) { m_pText->setUnderlined(section,mode); TextModified(); }
 
@@ -117,25 +117,25 @@ public:
 
 // -------------
 
-	void				ClearProperties()											{ m_pText->clearProperties(); TextModified(); }
+//	void				ClearProperties()											{ m_pText->clearProperties(); TextModified(); }
 //	void				ClearProperties( const WgTextBlock& section )				{ m_pText->clearProperties(section); TextModified(); }
 
-	void				ClearFont()													{ m_pText->clearFont(); TextModified(); }
+//	void				ClearFont()													{ m_pText->clearFont(); TextModified(); }
 //	void				ClearFont( const WgTextBlock& section )					{ m_pText->clearFont(section); TextModified(); }
 
-	void				ClearColor()												{ m_pText->clearColor(); TextModified(); }
-	void				ClearColor( WgMode mode )									{ m_pText->clearColor(mode); TextModified(); }
+//	void				ClearColor()												{ m_pText->clearColor(); TextModified(); }
+//	void				ClearColor( WgMode mode )									{ m_pText->clearColor(mode); TextModified(); }
 //	void				ClearColor( const WgTextBlock& section )					{ m_pText->clearColor(section); TextModified(); }
 //	void				ClearColor( const WgTextBlock& section, WgMode mode )		{ m_pText->clearColor(section,mode); TextModified(); }
 
-	void				ClearStyle()												{ m_pText->clearStyle(); TextModified(); }
-	void				ClearStyle( WgMode mode )									{ m_pText->clearStyle(mode); TextModified(); }
+//	void				ClearStyle()												{ m_pText->clearStyle(); TextModified(); }
+//	void				ClearStyle( WgMode mode )									{ m_pText->clearStyle(mode); TextModified(); }
 //	void				ClearStyle( const WgTextBlock& section )					{ m_pText->clearStyle(section); TextModified(); }
 //	void				ClearStyle( const WgTextBlock& section, WgMode mode )		{ m_pText->clearStyle(section,mode); TextModified(); }
 
-	void				ClearUnderlined()											{ m_pText->clearUnderlined(); TextModified(); }
+//	void				ClearUnderlined()											{ m_pText->clearUnderlined(); TextModified(); }
 //	void				ClearUnderlined( const WgTextBlock& section )				{ m_pText->clearUnderlined(section); TextModified(); }
-	void				ClearUnderlined( WgMode mode )								{ m_pText->clearUnderlined(mode); TextModified(); }
+//	void				ClearUnderlined( WgMode mode )								{ m_pText->clearUnderlined(mode); TextModified(); }
 //	void				ClearUnderlined( const WgTextBlock& section, WgMode mode ) { m_pText->clearUnderlined(section,mode); TextModified(); }
 
 //	-----------
@@ -145,16 +145,34 @@ public:
 	void				SetTextTintMode( WgTintMode mode );
 
 	void				ClearText();
-	void				SetText( const char * _pStr );
-	void				SetText( const Uint16 * _pStr );
-	void				SetText( const WgChar * _pStr );
-	void				SetText( const WgText * _pText );
 
-	Uint32				SetFormattedText( const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
-	Uint32				SetFormattedText( const Uint16 * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
+	void		SetText( const WgCharSeq& seq );
+	void		SetText( const WgCharBuffer * buffer );
+	void		SetText( const WgString& str );
+	void		SetText( const WgText * pText );
 
-	Uint32				AddFormattedText( const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
-	Uint32				InsertFormattedText( Uint32 line, Uint32 col, const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
+	int			AddText( const WgCharSeq& seq );
+	int			InsertText( int ofs, const WgCharSeq& seq );
+	int			ReplaceText( int ofs, int nDelete, const WgCharSeq& seq );
+	int			DeleteText( int ofs, int len );
+	void		DeleteSelectedText();
+
+	int			AddChar( const WgChar& character );
+	int			InsertChar( int ofs, const WgChar& character );
+	int			ReplaceChar( int ofs, const WgChar& character );
+	int			DeleteChar( int ofs );
+
+
+//	void				SetText( const char * _pStr );
+//	void				SetText( const Uint16 * _pStr );
+//	void				SetText( const WgChar * _pStr );
+//	void				SetText( const WgText * _pText );
+
+//	Uint32				SetFormattedText( const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
+//	Uint32				SetFormattedText( const Uint16 * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
+
+//	Uint32				AddFormattedText( const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
+//	Uint32				InsertFormattedText( Uint32 line, Uint32 col, const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
 
 	void				SetLineSpaceAdjustment( Sint8 adjustment );
 	Sint8				GetLineSpaceAdjustment() const;
@@ -163,11 +181,11 @@ public:
 	bool				GetTextWrap() const { return m_pText->IsWrap(); }
 
 
-	inline void			AddText( const char * pszText ) { AddFormattedText( pszText ); }
-	void				AddText( const WgText * pText, Uint32 fromLine = 0, Uint32 nLines = 0xFFFFFFFF );
-	void				AddText( const WgCharBuffer* charBuffer );
-	void				RemoveTextLines( Uint32 start, Uint32 nLines = 0xFFFFFFFF );
-	void				RemoveSelectedText();
+//	inline void			AddText( const char * pszText ) { AddFormattedText( pszText ); }
+//	void				AddText( const WgText * pText, Uint32 fromLine = 0, Uint32 nLines = 0xFFFFFFFF );
+//	void				AddText( const WgCharBuffer* charBuffer );
+//	void				RemoveTextLines( Uint32 start, Uint32 nLines = 0xFFFFFFFF );
+//	void				RemoveSelectedText();
 
 	inline WgMode		TextMode() const { return m_pText->mode(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }

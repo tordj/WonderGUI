@@ -39,6 +39,10 @@
 #	include <wg_char.h>
 #endif
 
+#ifndef WG_CHARBUFFER_DOT_H
+#	include <wg_charbuffer.h>
+#endif
+
 #ifndef WG_TEXTMANAGER_DOT_H
 #	include <wg_textmanager.h>
 #endif
@@ -64,10 +68,8 @@ public:
 struct WgTextLine
 {
 	Uint32	nChars;			// Number of characters on this line (not including break).
-	WgChar * pText;			// May NOT be null, line terminated by glyph:
-							// zero = end of text.
-							// /n   = hard end of line (user specified).
-							// character with soft-break flag set (automatic on wrapText).
+	Uint32	ofs;			// Offset in buffer for line.
+
 	// Following characters can lead to a soft break:
 	//
 	// Whitespace, tab and BREAK_PERMITTED_HERE: Gives no hyphen.
@@ -82,135 +84,120 @@ friend class WgTextNode;
 
 public:
 	WgText();
-	WgText( const char * pText );
-	WgText( const Uint16 * pText );
+	WgText( const WgCharSeq& seq );
+	WgText( const WgCharBuffer * pBuffer );
+	WgText( const WgString& str );
 
-	virtual 			~WgText();
+	void	Init();
+
+	~WgText();
+
+	//TODO: operator= should copy the whole object, not just the text.
 
 	inline void operator=( const WgText& t) { setText(&t); }; // Fastest order to do this in.
 
-	virtual Uint32				nbChars() const;
-	virtual Uint32				nbLines() const;
+	void		setText( const WgCharSeq& seq );
+	void		setText( const WgCharBuffer * buffer );
+	void		setText( const WgString& str );
+	void		setText( const WgText * pText );
 
-	virtual const WgChar *		getText() const;
+	int			addText( const WgCharSeq& seq );
+	int			insertText( int ofs, const WgCharSeq& seq );
+	int			replaceText( int ofs, int nDelete, const WgCharSeq& seq );
+	int			deleteText( int ofs, int len );
+	void		deleteSelectedText();
 
-	virtual const WgTextLine *	getLines() const;
-	virtual WgTextLine *		getLine( Uint32 line ) const;
-	virtual WgChar * 			getLineText( Uint32 line ) const;
-	virtual Uint32				getLineWidth( Uint32 line ) const;
-	virtual Uint32				getLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol = 0xFFFFFFFF ) const;
-
-	virtual const WgTextLine *	getSoftLines() const;
-	virtual WgTextLine *		getSoftLine( Uint32 line ) const;
-	virtual WgChar * 			getSoftLineText( Uint32 line ) const;
-	virtual Uint32				getSoftLineWidth( Uint32 line ) const;
-	virtual Uint32				getSoftLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol = 0xFFFFFFFF ) const;
-	virtual Uint32				nbSoftLines() const;
-
-	virtual	void				posSoft2Hard( Uint32 &line, Uint32 &col ) const;
-	virtual void				posHard2Soft( Uint32 &line, Uint32 &col ) const;
+	int			addChar( const WgChar& character );
+	int			insertChar( int ofs, const WgChar& character );
+	int			replaceChar( int ofs, const WgChar& character );
+	int			deleteChar( int ofs );
 
 
-	inline void					setText( const char * pText, Uint32 nChar = 0xFFFFFFFF )
-										{ setFormattedText( pText, nChar ); }
-	inline void					setText( const Uint16 * pText, Uint32 nChar = 0xFFFFFFFF )
-										{ setFormattedText( pText, nChar ); }
-	void						setText( const WgChar * pText, Uint32 nChar = 0xFFFFFFFF );
-	inline void					setText( const WgText * pText ) { setText( pText->getText() ); }
+	Uint32		nbChars() const;
+	Uint32		nbLines() const;
 
-	Uint32						setFormattedText( const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
-	Uint32						setFormattedText( const Uint16 * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
+	inline const WgChar * getText() const { return m_buffer.GetChars(); }
+	inline WgCharBuffer * getBuffer() { return &m_buffer; }
+	inline const WgCharBuffer * getBuffer() const { return &m_buffer; }
 
-	void						clear();
-	virtual void				refresh();
+	const WgTextLine *	getLines() const;
+	WgTextLine *		getLine( int line ) const;
+	const WgChar * 		getLineText( int line ) const;
+	Uint32				getLineWidth( Uint32 line ) const;
+	Uint32				getLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol = 0xFFFFFFFF ) const;
 
-//  --------------
-	void						selectText( Uint32 startLine, Uint32 startCol, Uint32 endLine, Uint32 endCol );
-	bool						getSelection( Uint32& startLine, Uint32& startCol, Uint32& endLine, Uint32& endCol ) const;
-	void						clearSelection( );
-//  --------------
+	const WgTextLine *	getSoftLines() const;
+	WgTextLine *		getSoftLine( int line ) const;
+	const WgChar * 		getSoftLineText( int line ) const;
+	Uint32				getSoftLineWidth( Uint32 line ) const;
+	Uint32				getSoftLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol = 0xFFFFFFFF ) const;
+	Uint32				nbSoftLines() const;
 
-	void						setManager( WgTextManager * pManager );
-	inline WgTextManager *		getManager() const { return m_pManagerNode?m_pManagerNode->GetManager():0; }
-	inline WgTextNode *			getNode() const { return m_pManagerNode; }
+	void				posSoft2Hard( Uint32 &line, Uint32 &col ) const;
+	void				posHard2Soft( Uint32 &line, Uint32 &col ) const;
 
-	void						setHolder( WgTextHolder * pHolder ) { m_pHolder = pHolder; }
+
+	void				clear();
+	void				refresh();
 
 //  --------------
+	void				selectText( Uint32 startLine, Uint32 startCol, Uint32 endLine, Uint32 endCol );
+	bool				getSelection( Uint32& startLine, Uint32& startCol, Uint32& endLine, Uint32& endCol ) const;
+	void				clearSelection( );
+//  --------------
 
-	inline const WgTextPropPtr&	getDefaultProperties() const { return m_pProp; }
-	inline WgColor				getDefaultColor(WgMode mode) const { return m_pProp->GetColor(mode); }
-	inline WgFontStyle			getDefaultStyle(WgMode mode) const { return m_pProp->GetStyle(mode); }
-	inline WgFont *				getDefaultFont() const { return m_pProp->GetFont(); }
+	void				setManager( WgTextManager * pManager );
+	inline WgTextManager *	getManager() const { return m_pManagerNode?m_pManagerNode->GetManager():0; }
+	inline WgTextNode *	getNode() const { return m_pManagerNode; }
+
+	void				setHolder( WgTextHolder * pHolder ) { m_pHolder = pHolder; }
+
+//  --------------
+
+	inline const WgTextPropPtr&	getProperties() const { return m_pProp; }
+	inline WgColor				getColor(WgMode mode) const { return m_pProp->GetColor(mode); }
+	inline WgFontStyle			getStyle(WgMode mode) const { return m_pProp->GetStyle(mode); }
+	inline WgFont *				getFont() const { return m_pProp->GetFont(); }
 
 //	--------------
 
-	void						setDefaultProperties( const WgTextPropPtr& pProp );
+	void				setProperties( const WgTextPropPtr& pProp );
 
-	void						setDefaultColor( const WgColor color );
-	void						setDefaultColor( const WgColor color, WgMode mode );
+	void				setColor( const WgColor color );
+	void				setColor( const WgColor color, WgMode mode );
 
-	void						setDefaultStyle( WgFontStyle style );
-	void						setDefaultStyle( WgFontStyle style, WgMode mode );
+	void				setStyle( WgFontStyle style );
+	void				setStyle( WgFontStyle style, WgMode mode );
 
-	void						setDefaultFont( WgFont * pFont );
-
-// -------------
-
-	void						clearDefaultProperties();
-
-	void						clearDefaultColor();
-	void						clearDefaultColor( WgMode mode );
-
-	void						clearDefaultStyle();
-	void						clearDefaultStyle( WgMode mode );
-
-	void						clearDefaultFont();
+	void				setFont( WgFont * pFont );
 
 // -------------
 
-	void						setProperties( const WgTextPropPtr& pProp );
+	void				clearProperties();
 
-	inline void					setColor( const WgColor color ) { setDefaultColor(color); }
-	void						setColor( const WgColor color, WgMode mode );
+	void				clearColor();
+	void				clearColor( WgMode mode );
 
-	void						setStyle( WgFontStyle style );
-	void						setStyle( WgFontStyle style, WgMode mode );
+	void				clearStyle();
+	void				clearStyle( WgMode mode );
 
-	void						setFont( WgFont * pFont );
+	void				clearFont();
 
-	void						setUnderlined();
-	void						setUnderlined( WgMode mode );
-
-	void						setSelectionColor(WgColor c) { m_selColor = c; }
-	WgColor						getSelectionColor() const { return m_selColor; }
 // -------------
 
-	void						clearProperties();
-
-	void						clearColor();
-	void						clearColor( WgMode mode );
-
-	void						clearStyle();
-	void						clearStyle( WgMode mode );
-
-	void						clearFont();
-	void						clearFont( const WgTextBlock& section );
-
-	void						clearUnderlined();
-	void						clearUnderlined( WgMode mode );
+	void				setSelectionColor(WgColor c) { m_selColor = c; }
+	WgColor				getSelectionColor() const { return m_selColor; }
 
 // -------------
 
 	void				setValue( double value, const WgValueFormat& form );
 	void				setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form );
-	Sint32				compareTo( const WgText * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
-    bool                adjustBlock( WgTextBlock * pBlock ) const;
+//	Sint32				compareTo( const WgText * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
 
-	virtual Uint32		width() const;
-	virtual Uint32		height() const;
+	Uint32				width() const;
+	Uint32				height() const;
 
-	virtual Uint32		softLineHeight( Uint32 line );
+	Uint32				softLineHeight( Uint32 line );
 
 	void				setLineWidth( Uint32 width );
 	inline Uint32		getLineWidth() const { return m_lineWidth; }
@@ -219,8 +206,6 @@ public:
 	bool				IsWrap() const { return m_bWrap; }
 
 
-	inline void			setFontSet( WgFont * pFont ) { setFont(pFont); }		///< DEPRECATED!!! Use setDefaultFont() instead.
-	inline WgFont *		getFontSet() const { return getDefaultFont(); }			///< DEPRECATED!!! Use getDefaultFont() instead.
 
 	inline void			setMode( WgMode mode ) { m_mode = mode; }
 	inline void			setAlignment( const WgOrigo& origo ) { m_origo = origo; }
@@ -233,51 +218,9 @@ public:
 	inline WgTintMode	tintMode() const { return m_tintMode; }
 	inline Sint8		lineSpaceAdjustment() const { return m_lineSpaceAdj; }
 
-	virtual Uint32		addText( const char * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual Uint32		addText( const Uint16 * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual Uint32		addText( const WgChar* pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual Uint32		addText( const WgCharBuffer* pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual Uint32		addText( const WgText * pText, Uint32 fromLine = 0, Uint32 nLines = 0xFFFFFFFF );
 
-	virtual Uint32		addFormattedText( const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
-
-
-	virtual Uint32		removeText( Uint32 line, Uint32 col, Uint32 nChar = 0xFFFFFFFF);
-	virtual void		removeText( Uint32 startLine, Uint32 startCol, Uint32 endLine, Uint32 endCol);
-	virtual void		removeSelectedText();
-	virtual Uint32		replaceText( Uint32 line, Uint32 col, Uint32 nChar, const char * pNewText, Uint32 nNewChar = 0xFFFFFFFF );
-	virtual Uint32		replaceText( Uint32 line, Uint32 col, Uint32 nChar, const Uint16 * pNewText, Uint32 nNewChar = 0xFFFFFFFF );
-	virtual Uint32		replaceText( Uint32 line, Uint32 col, Uint32 nChar, const WgText * pNewText );
-
-	virtual Uint32		insertText( Uint32 line, Uint32 col, const char * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual Uint32		insertText( Uint32 line, Uint32 col, const Uint16 * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual Uint32		insertText( Uint32 line, Uint32 col, const WgChar * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual Uint32		insertText( Uint32 line, Uint32 col, const WgCharBuffer * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual Uint32		insertText( Uint32 line, Uint32 col, const WgText * pText, Uint32 fromLine = 0, Uint32 nLines = 0xFFFFFFFF );
-
-	virtual Uint32		insertFormattedText( Uint32 line, Uint32 col, const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
-
-	virtual bool		addLine( const char * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual bool		addLine( const Uint16 * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual bool		addLine( const WgChar * pText, Uint32 nChar = 0xFFFFFFFF );
-
-	virtual bool		replaceLine( Uint32 line, const char * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual bool		replaceLine( Uint32 line, const Uint16 * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual bool		replaceLine( Uint32 line, const WgChar * pText, Uint32 nChar = 0xFFFFFFFF );
-
-	virtual bool		insertLine( Uint32 line, const char * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual bool		insertLine( Uint32 line, const Uint16 * pText, Uint32 nChar = 0xFFFFFFFF );
-	virtual bool		insertLine( Uint32 line, const WgChar * pText, Uint32 nChar = 0xFFFFFFFF );
-	inline	bool		removeLine( Uint32 line ) { if( removeLines( line, 1 ) == 0) return false; return true; };
-	virtual Uint32		removeLines( Uint32 start, Uint32 nLines = 0xFFFFFFFF );
-
-	virtual bool		addChar( Uint16 character );
-	virtual bool		replaceChar( Uint32 line, Uint32 col, Uint16 character );
-	virtual bool		insertChar( Uint32 line, Uint32 col, Uint16 character );
-	virtual bool		removeChar( Uint32 line, Uint32 col );
-
-	virtual bool		joinLines( Uint32 firstLine );
-	virtual bool		splitLine( Uint32 line, Uint32 col );
+//	virtual bool		joinLines( Uint32 firstLine );
+//	virtual bool		splitLine( Uint32 line, Uint32 col );
 
 
 	// Get-methods
@@ -305,17 +248,17 @@ public:
 
 	bool			incTime( Uint32 ms ) { return m_pCursor ? m_pCursor->incTime(ms) : false; }
 	void			insertMode( bool bInsert ) { if(m_pCursor) m_pCursor->insertMode(bInsert); }
-	
+
 	void			goUp( Uint32 nLines = 1 ) { if(m_pCursor) m_pCursor->goUp(nLines); }
 	void			goDown( Uint32 nLines = 1 )	 { if(m_pCursor) m_pCursor->goDown(nLines); }
 	inline void		goLeft( Uint32 nChars = 1 ){ if(m_pCursor) m_pCursor->goLeft(nChars); }
 	inline void		goRight( Uint32 nChars = 1 ){ if(m_pCursor) m_pCursor->goRight(nChars); }
-	
+
 	inline void		goBOF(){ if(m_pCursor) m_pCursor->goBOF(); }
 	inline void		goEOF(){ if(m_pCursor) m_pCursor->goEOF(); }
 	void			goBOL(){ if(m_pCursor) m_pCursor->goBOL(); }
 	void			goEOL(){ if(m_pCursor) m_pCursor->goEOL(); }
-	
+
 	void			gotoHardLine( Uint32 line ){ if(m_pCursor) m_pCursor->gotoHardLine(line); }
 	void			gotoSoftLine( Uint32 line ){ if(m_pCursor) m_pCursor->gotoSoftLine(line); }
 
@@ -334,8 +277,7 @@ public:
 	void			getSoftPos( Uint32 &line, Uint32 &col ) const{if(m_pCursor) m_pCursor->getSoftPos( line, col );}
 
 	bool			putChar( Uint16 character ){return m_pCursor ? m_pCursor->putChar( character ):false;}
-	Uint32			putText( const Uint16 * pString ){return m_pCursor ? m_pCursor->putText( pString ):0;}
-	Uint32			putText( const Uint16 * pString, int nChar ){return m_pCursor ? m_pCursor->putText( pString, nChar ):0;}
+	Uint32			putText( const WgCharSeq& seq ){return m_pCursor ? m_pCursor->putText( seq ):0;}
 	void			unputText( int nChar ){if(m_pCursor) m_pCursor->unputText( nChar );}
 	void 			delPrevWord(){if(m_pCursor) m_pCursor->delPrevWord();}
 	void 			delNextWord(){if(m_pCursor) m_pCursor->delNextWord();}
@@ -344,7 +286,7 @@ public:
 
 	int				ofsX() const{return m_pCursor ? m_pCursor->ofsX():0;}
 	int				ofsY() const{return m_pCursor ? m_pCursor->ofsY():0;}
-	
+
 	inline Uint32	line() const{return m_pCursor ? m_pCursor->line():0;}
 	inline Uint32	column() const{return m_pCursor ? m_pCursor->column():0;}
 	inline Uint32	time() const{return m_pCursor ? m_pCursor->time():0;}
@@ -357,21 +299,9 @@ public:
 
 	void			selectAll() { if(m_pCursor) m_pCursor->selectAll(); }
 
-protected:
-
 	Uint32			LineColToOffset(int line, int col);
 
-	inline WgChar * beginChange( Uint32 line, Uint32 col, Uint32 addChar, Uint32 delChar,
-								 Uint32 addLines, Uint32 delLines )
-	{
-		return beginChange( line, col, addChar, delChar, addLines, delLines, WgChar(0x20) );
-	}
-
-
-	WgChar *		beginChange( Uint32 line, Uint32 col, Uint32 addChar, Uint32 delChar, 
-								 Uint32 addLines, Uint32 delLines, WgChar ch );
-
-	void			endChange( Uint32 startline, Uint32 nLines );
+protected:
 
 
 	static const int	parseBufLen = 9+16+1+16+8;
@@ -379,9 +309,12 @@ protected:
 	WgChar *	parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form, WgChar[parseBufLen] );
 
 
+	void			regenHardLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
 	void			regenSoftLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
 
-//	WgTextScalerPtr	m_pResizer;
+	int 			countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines, int maxWrite ); // Central algorithm of regenSoftLines().
+
+	WgCharBuffer	m_buffer;
 
 	WgCursorInstance*	m_pCursor;
 	WgTextNode *	m_pManagerNode;
@@ -401,8 +334,8 @@ protected:
 	WgTextLine*		m_pHardLines;
 	WgTextLine*		m_pSoftLines;
 
-	Uint32			m_nSoftLines;
-	Uint32			m_nHardLines;
+	int				m_nSoftLines;
+	int				m_nHardLines;
 
 	Uint32			m_lineWidth;
 
@@ -412,7 +345,6 @@ protected:
 
 	WgTextHolder *	m_pHolder;
 
-	static WgChar		g_emptyText;
 	static WgTextLine	g_emptyLine;
 };
 

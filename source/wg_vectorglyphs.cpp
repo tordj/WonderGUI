@@ -373,8 +373,6 @@ void WgVectorGlyphs::CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 	// Copy glyph bitmap into alpha channel of slot, making sure to clear any
 	// left over area of slots alpha channel.
 
-	unsigned char * pSrc = pBitmap->buffer;
-
 
 	switch( m_renderFlags )
 	{
@@ -407,7 +405,7 @@ void WgVectorGlyphs::CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 
 //____ CopyA8ToRGBA8() _____________________________________________________
 
-void WgVectorGlyphs::CopyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, 
+void WgVectorGlyphs::CopyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch,
 								    Uint8 * pDest, int dest_width, int dest_height, int dest_pitch )
 {
 
@@ -436,7 +434,7 @@ void WgVectorGlyphs::CopyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_h
 
 //____ CopyA1ToRGBA8() _____________________________________________________
 
-void WgVectorGlyphs::CopyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, 
+void WgVectorGlyphs::CopyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch,
 								    Uint8 * pDest, int dest_width, int dest_height, int dest_pitch )
 {
 	Uint8 lookup[2] = { 0, 255 };
@@ -444,7 +442,7 @@ void WgVectorGlyphs::CopyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_h
 	int y = 0;
 	for( ; y < src_height ; y++ )
 	{
-		
+
 		int x = 0;
 		for( ; x < src_width ; x++ )
 		{

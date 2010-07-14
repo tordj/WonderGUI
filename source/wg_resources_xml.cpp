@@ -1585,7 +1585,7 @@ void WgGlyphSetRes::Serialize(WgResourceSerializerXML& s)
 						str += WgUtil::ToString( i );
 					}
 
-				}	
+				}
 
 				if( !str.empty() )
 					s.AddAttribute( "monochrome_sizes", str );
@@ -1997,7 +1997,7 @@ void WgTextManagerRes::Serialize(WgResourceSerializerXML& s)
 		std::string	value;
 		switch( m_pTextManager->GetSizeRounding() )
 		{
-			case WgTextManager::ROUND_NEAREST:	
+			case WgTextManager::ROUND_NEAREST:
 				value = "nearest";
 				break;
 			case WgTextManager::ROUND_UP:
@@ -2033,7 +2033,7 @@ void WgTextManagerRes::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr<float>(s, xmlNode, "grow_treshold", m_pTextManager->GetGrowTreshold(), 1.f);
 	WriteDiffAttr<float>(s, xmlNode, "grow_ratio", m_pTextManager->GetGrowRatio(), 1.f);
 	WriteDiffAttr<float>(s, xmlNode, "grow_limit", m_pTextManager->GetGrowLimit(), 0.f);
-	
+
 	//
 
 	WriteDiffAttr<float>(s, xmlNode, "shrink_treshold", m_pTextManager->GetShrinkTreshold(), 1.f);
@@ -2052,7 +2052,7 @@ void WgTextManagerRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 	float stepping = WgUtil::ToFloat(xmlNode["size_stepping"], 0.f );
 	VERIFY( stepping >= 0.f, "size_stepping out of allowed range" );
 	m_pTextManager->SetSizeStepping( stepping );
-	
+
 	if( xmlNode.HasAttribute("size_rounding") )
 	{
 		WgTextManager::Rounding rounding = WgTextManager::ROUND_NEAREST;
@@ -2074,18 +2074,18 @@ void WgTextManagerRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 	{
 		std::vector<std::string> tokens;
 		WgUtil::Tokenize(xmlNode["allowed_sizes"], tokens);
-		
+
 		float * pFloats = new float[tokens.size()];
 
 		for( unsigned int i = 0 ; i < tokens.size() ; i++ )
 			pFloats[i] = WgUtil::ToFloat( tokens[i] );
 
-		bool res = m_pTextManager->SetAllowedSizes(tokens.size(), pFloats);		
+		bool res = m_pTextManager->SetAllowedSizes(tokens.size(), pFloats);
 		delete [] pFloats;
 
 		if( !res )
 			s.Error( "allowed_sizes can not be set to '" + xmlNode["allowed_sizes"] + "'" );
-	}	
+	}
 
 	float	treshold, ratio, limit;
 
@@ -2659,7 +2659,7 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	{
 		if(text[0] == ':')
 			text = s.ResDb()->LoadString(text.substr(1));
-		holder->SetFormattedText(text.c_str(), -1, s.ResDb() );
+		holder->SetText( WgCharSeqEscaped( s.ResDb(), text) );
 	}
 
 	holder->SetTextAlignment(WgUtil::ToOrigo(xmlNode["textalign"]));
@@ -3342,10 +3342,10 @@ void Wdg_CheckBox2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 
 	WgBlockSetPtr icon_checked	= s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
 	WgBlockSetPtr icon_unchecked = s.ResDb()->GetBlockSet(xmlNode["icon_unchecked"]);
-	WgOrigo	iconOrigo			= WgUtil::ToOrigo(xmlNode["icon_origo"], WgOrigo::midLeft() );	
+	WgOrigo	iconOrigo			= WgUtil::ToOrigo(xmlNode["icon_origo"], WgOrigo::midLeft() );
 	WgBorders iconBorders		= WgBorderRes::Deserialize(s, xmlNode["icon_borders"]);
 
-	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo, 
+	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo,
 					WgUtil::ToFloat(xmlNode["icon_scale"], 0.f),
 					WgUtil::ToBool(xmlNode["icon_push_text"], false) );
 }
@@ -4308,10 +4308,10 @@ void Wdg_RadioButton2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeria
 
 	WgBlockSetPtr icon_checked	= s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
 	WgBlockSetPtr icon_unchecked = s.ResDb()->GetBlockSet(xmlNode["icon_unchecked"]);
-	WgOrigo	iconOrigo			= WgUtil::ToOrigo(xmlNode["icon_origo"], WgOrigo::midLeft() );	
+	WgOrigo	iconOrigo			= WgUtil::ToOrigo(xmlNode["icon_origo"], WgOrigo::midLeft() );
 	WgBorders iconBorders		= WgBorderRes::Deserialize(s, xmlNode["icon_borders"]);
 
-	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo, 
+	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo,
 					WgUtil::ToFloat(xmlNode["icon_scale"], 0.f),
 					WgUtil::ToBool(xmlNode["icon_push_text"], false) );
 }

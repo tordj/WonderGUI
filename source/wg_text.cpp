@@ -38,37 +38,37 @@
 #include <wg_pen.h>
 #include <wg_interface_textholder.h>
 
-WgChar		WgText::g_emptyText = WgChar(0);
-WgTextLine	WgText::g_emptyLine = {0,&g_emptyText};
+WgTextLine		WgText::g_emptyLine = {0,0};
 
 //____ Constructor ____________________________________________________________
 
 
 WgText::WgText()
 {
-	m_pManagerNode = 0;
-	m_pHolder = 0;
-	m_pCursor = 0;
-
-	m_selColor  = WgColor(0xff, 0x30, 0x80, 0xff);
-	m_origo		= WgOrigo::topLeft();
-	m_tintMode	= TINTMODE_MULTIPLY;
-	m_lineSpaceAdj	= 0;
-	m_mode		= WG_MODE_NORMAL;
-
-	m_pHardLines = &WgText::g_emptyLine;
-	m_nHardLines = 1;
-
-	m_pSoftLines = &WgText::g_emptyLine;
-	m_nSoftLines = 1;
-
-	m_lineWidth		= 0xFFFFFFFF;
-	m_bWrap			= true;
-
-	clearSelection();
+	Init();
 }
 
-WgText::WgText( const char * pText )
+WgText::WgText( const WgCharSeq& seq )
+{
+	Init();
+	setText( seq );
+}
+
+WgText::WgText( const WgCharBuffer * pBuffer )
+{
+	Init();
+	setText( pBuffer );
+}
+
+WgText::WgText( const WgString& str )
+{
+	Init();
+	setText( str );
+}
+
+//____ Init() _________________________________________________________________
+
+void WgText::Init()
 {
 	m_pManagerNode = 0;
 	m_pHolder = 0;
@@ -90,36 +90,7 @@ WgText::WgText( const char * pText )
 	m_bWrap			= true;
 
 	clearSelection();
-
-	setText( pText );
 }
-
-WgText::WgText( const Uint16 * pText )
-{
-	m_pManagerNode = 0;
-	m_pHolder = 0;
-	m_pCursor = 0;
-
-	m_selColor  = WgColor(0xff, 0x30, 0x80, 0xff);
-	m_origo		= WgOrigo::topLeft();
-	m_tintMode	= TINTMODE_MULTIPLY;
-	m_lineSpaceAdj	= 0;
-	m_mode		= WG_MODE_NORMAL;
-
-	m_pHardLines = &WgText::g_emptyLine;
-	m_nHardLines = 1;
-
-	m_pSoftLines = &WgText::g_emptyLine;
-	m_nSoftLines = 1;
-
-	m_lineWidth		= 0xFFFFFFFF;
-	m_bWrap			= true;
-
-	clearSelection();
-
-	setText( pText );
-}
-
 
 
 
@@ -152,48 +123,123 @@ void WgText::setManager( WgTextManager * pManager )
 }
 
 
+//____ regenHardLines() _______________________________________________________
+
+void WgText::regenHardLines()
+{
+	if( m_buffer.Length() == 0 )
+	{
+		if( m_pHardLines != &WgText::g_emptyLine && m_pHardLines != m_pSoftLines )
+			delete [] m_pHardLines;
+
+		m_pHardLines = &WgText::g_emptyLine;
+		m_nHardLines = 1;
+	}
+	else
+	{
+		int nLines = WgTextTool::countLines( m_buffer.GetChars() );
+
+		if( m_pHardLines == &WgText::g_emptyLine )
+		{
+			m_pHardLines = new WgTextLine[nLines];
+			m_nHardLines = nLines;
+		}
+		else if( m_nHardLines != nLines )
+		{
+			if( m_pHardLines != m_pSoftLines )				// Only delete hardlines array if it isn't shared with softlines array.
+				delete [] m_pHardLines;
+
+			m_pHardLines = new WgTextLine[nLines];
+			m_nHardLines = nLines;
+		}
+
+		// Fill in hardlines array.
+
+		int		line = 0;
+		int		ofs = 0;
+		const WgChar * p = m_buffer.GetChars();
+
+		m_pHardLines[line].ofs = ofs;
+
+		while( p[ofs] != 0 )
+		{
+			if( p[ofs] == '\n' )
+			{
+				m_pHardLines[line].nChars = ofs - m_pHardLines[line].ofs;
+				line++;
+				m_pHardLines[line].ofs = ofs+1;					// +1 to skip linebreak character.
+			}
+			ofs++;
+		}
+		m_pHardLines[line].nChars = ofs - m_pHardLines[line].ofs;
+	}
+}
+
+
 //_____ clear() _______________________________________________________________
 
 void WgText::clear()
 {
-	beginChange( 0,0, 0, nbChars(), 0,nbLines()-1 );
-	endChange( 0, 1 );
+	m_buffer.Reset();
+
+	if( m_pSoftLines != m_pHardLines )
+		delete [] m_pSoftLines;
+
+	if( m_pHardLines != &WgText::g_emptyLine )
+		delete [] m_pHardLines;
+
+	m_pHardLines = &WgText::g_emptyLine;
+	m_nHardLines = 1;
+
+	m_pSoftLines = &WgText::g_emptyLine;
+	m_nSoftLines = 1;
+
+	clearSelection();
 }
 
 
-void WgText::setText( const WgChar * pText, Uint32 nChar )
+void WgText::setText( const WgCharSeq& seq )
 {
-	// If pText is null we should just clear the text.
-
-	if( !pText )
-	{
-		clear();
-		return;
-	}
-
-	// Count number of characters and lines
-
-	Uint32		nLines	= 0;
-	Uint32		nChars  = 0;
-
-	WgTextTool::countCharsLines( pText, nChars, nLines, nChar );
-
-	// Update text
-
-	WgChar * wp = beginChange( 0, 0, nChars, nbChars(), nLines, nbLines() );
-
-	for( Uint32 i = 0 ; i < nChars ; i++ )
-		wp[i] = pText[i];
-
-	endChange( 0, nLines );
-
-	return;
+	m_buffer.Clear();
+	m_buffer.PushBack( seq );
+	regenHardLines();
+	regenSoftLines();
+	clearSelection();
 }
+
+void WgText::setText( const WgCharBuffer * buffer )
+{
+	m_buffer = * buffer;
+	regenHardLines();
+	regenSoftLines();
+	clearSelection();
+}
+
+
+void WgText::setText( const WgString& str )
+{
+	m_buffer = str;
+	regenHardLines();
+	regenSoftLines();
+	clearSelection();
+}
+
+
+void WgText::setText( const WgText * pText )
+{
+	// TODO: Optimize, we can simply copy the hardlines array. Softlines needs to be generated though.
+
+	m_buffer = * pText->getBuffer();
+	regenHardLines();
+	regenSoftLines();
+	clearSelection();
+}
+
 
 //_________________________________________________________
 void WgText::selectText( Uint32 startLine, Uint32 startCol, Uint32 endLine, Uint32 endCol )
 {
-	if(endLine < startLine || endLine == startLine && endCol < startCol)
+	if(endLine < startLine || (endLine == startLine && endCol < startCol) )
 	{
 		std::swap(endLine, startLine);
 		std::swap(endCol, startCol);
@@ -209,7 +255,7 @@ void WgText::selectText( Uint32 startLine, Uint32 startCol, Uint32 endLine, Uint
 	m_selEndLine = endLine;
 	m_selStartCol = startCol;
 	m_selEndCol = endCol;
- 
+
 	const WgTextLine * pCurLine = &m_pHardLines[startLine];
 	const WgTextLine * pLastLine = &m_pHardLines[endLine];
 	if(endCol > pCurLine->nChars)
@@ -237,39 +283,6 @@ void WgText::clearSelection( )
 }
 
 
-//____ setFormattedText() _____________________________________________________
-
-Uint32 WgText::setFormattedText( const char * pText, Uint32 nChar, const WgResDB * pResDB )
-{
-	Uint32 len = WgTextTool::countNonFormattingChars( pText );
-
-	Uint32	nLines = WgTextTool::countLines( pText );
-
-	if( len > nChar )
-		len = nChar;
-
-	WgChar * wp = beginChange( 0, 0, len, nbChars(), nLines, nbLines() );
-	WgTextTool::readFormattedString( pText, wp, len, pResDB );
-	endChange( 0, nLines );
-
-	return len;
-}
-
-Uint32 WgText::setFormattedText( const Uint16 * pText, Uint32 nChar, const WgResDB * pResDB )
-{
-	Uint32 len = WgTextTool::countNonFormattingChars( pText );
-
-	Uint32	nLines = WgTextTool::countLines( pText );
-
-	if( len > nChar )
-		len = nChar;
-
-	WgChar * wp = beginChange( 0, 0, len, nbChars(), nLines, nbLines() );
-	WgTextTool::readFormattedString( pText, wp, len, pResDB );
-	endChange( 0, nLines );
-
-	return len;
-}
 
 
 
@@ -297,7 +310,7 @@ Uint32 WgText::getSoftLineWidthPart( Uint32 _line, Uint32 startCol, Uint32 nCol 
 	if( nCol > pLine->nChars )
 		return 0;
 
-	return WgTextTool::lineWidthPartSoft( m_pManagerNode, m_pProp, m_mode, pLine->pText, nCol );
+	return WgTextTool::lineWidthPartSoft( m_pManagerNode, m_pProp, m_mode, m_buffer.GetChars() + pLine->ofs, nCol );
 }
 
 
@@ -325,7 +338,7 @@ Uint32 WgText::getLineWidthPart( Uint32 _line, Uint32 startCol, Uint32 nCol ) co
 	if( nCol > pLine->nChars - startCol )
 		return 0;
 
-	return WgTextTool::lineWidthPart( m_pManagerNode, m_pProp, m_mode, pLine->pText, nCol );
+	return WgTextTool::lineWidthPart( m_pManagerNode, m_pProp, m_mode, m_buffer.GetChars() + pLine->ofs, nCol );
 }
 
 //____ width() ________________________________________________________________
@@ -381,265 +394,92 @@ Uint32 WgText::softLineHeight( Uint32 line )
 }
 
 
-void WgText::setDefaultProperties( const WgTextPropPtr& pProp )
-{
-	m_pProp = pProp;
-	regenSoftLines();
-}
-
-void WgText::setDefaultColor( const WgColor color )
-{
-	WgTextProp	prop = * m_pProp;
-	prop.SetColor(color);
-	m_pProp = prop.Register();
-}
-
-void WgText::setDefaultColor( const WgColor color, WgMode mode )
-{
-	WgTextProp	prop = * m_pProp;
-	prop.SetColor(color,mode);
-	m_pProp = prop.Register();
-}
-
-void WgText::setDefaultStyle( WgFontStyle style )
-{
-	WgTextProp	prop = * m_pProp;
-	prop.SetStyle(style);
-	m_pProp = prop.Register();
-	regenSoftLines();
-}
-
-void WgText::setDefaultStyle( WgFontStyle style, WgMode mode )
-{
-	WgTextProp	prop = * m_pProp;
-	prop.SetStyle(style,mode);
-	m_pProp = prop.Register();
-	regenSoftLines();
-}
-
-void WgText::setDefaultFont( WgFont * pFont )
-{
-	WgTextProp	prop = * m_pProp;
-	prop.SetFont(pFont);
-	m_pProp = prop.Register();
-	regenSoftLines();
-}
-
-void WgText::clearDefaultProperties()
-{
-	m_pProp = 0;
-}
-
-void WgText::clearDefaultColor()
-{
-	WgTextProp	prop = * m_pProp;
-	prop.ClearColor();
-	m_pProp = prop.Register();
-}
-
-void WgText::clearDefaultColor( WgMode mode )
-{
-	WgTextProp	prop = * m_pProp;
-	prop.ClearColor(mode);
-	m_pProp = prop.Register();
-}
-
-void WgText::clearDefaultStyle()
-{
-	WgTextProp	prop = * m_pProp;
-	prop.ClearStyle();
-	m_pProp = prop.Register();
-	regenSoftLines();
-}
-
-void WgText::clearDefaultStyle( WgMode mode )
-{
-	WgTextProp	prop = * m_pProp;
-	prop.ClearStyle(mode);
-	m_pProp = prop.Register();
-	regenSoftLines();
-}
-
-void WgText::clearDefaultFont()
-{
-	WgTextProp	prop = * m_pProp;
-	prop.ClearFont();
-	m_pProp = prop.Register();
-	regenSoftLines();
-}
-
-
-
-
-//____ setProperties() _________________________________________________________
-
 void WgText::setProperties( const WgTextPropPtr& pProp )
 {
 	m_pProp = pProp;
-	WgTextTool::SetProperties( 0, (WgChar *) getText(), nbChars() );
 	regenSoftLines();
 }
 
-
-//____ setColor()______________________________________________________________
-/*
 void WgText::setColor( const WgColor color )
 {
 	WgTextProp	prop = * m_pProp;
 	prop.SetColor(color);
 	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgCharSeqRW(this), WgTextTool::PropColorClearer() );
 }
-*/
 
 void WgText::setColor( const WgColor color, WgMode mode )
 {
 	WgTextProp	prop = * m_pProp;
 	prop.SetColor(color,mode);
 	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropColorClearer(mode), (WgChar*) getText(), nbChars() );
 }
-
-
-//____ clearColor() ___________________________________________________________
-
-void WgText::clearColor()
-{
-	WgTextProp	prop = * m_pProp;
-	prop.ClearColor();
-	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropColorClearer(WG_MODE_ALL), (WgChar*) getText(), nbChars() );
-}
-
-
-void WgText::clearColor( WgMode mode )
-{
-	WgTextProp	prop = * m_pProp;
-	prop.ClearColor(mode);
-	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropColorClearer(mode), (WgChar*) getText(), nbChars() );
-}
-
-
-
-//____ setFont() ______________________________________________________________
-
-void WgText::setFont( WgFont * pFont )
-{
-	WgTextProp	prop = * m_pProp;
-	prop.SetFont(pFont);
-	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropFontModifier(pFont), (WgChar*) getText(), nbChars() );
-	regenSoftLines();
-}
-
-
-//____ clearFont() ____________________________________________________________
-
-void WgText::clearFont()
-{
-	WgTextProp	prop = * m_pProp;
-	prop.ClearFont();
-	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropFontModifier(0), (WgChar*) getText(), nbChars() );
-}
-
-
-//____ setStyle() ______________________________________________________________
 
 void WgText::setStyle( WgFontStyle style )
 {
 	WgTextProp	prop = * m_pProp;
 	prop.SetStyle(style);
 	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropStyleModifier(style, WG_MODE_ALL), (WgChar*) getText(), nbChars() );
+	regenSoftLines();
 }
-
-
 
 void WgText::setStyle( WgFontStyle style, WgMode mode )
 {
 	WgTextProp	prop = * m_pProp;
 	prop.SetStyle(style,mode);
 	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropStyleModifier(style,mode), (WgChar*) getText(), nbChars() );
+	regenSoftLines();
 }
 
+void WgText::setFont( WgFont * pFont )
+{
+	WgTextProp	prop = * m_pProp;
+	prop.SetFont(pFont);
+	m_pProp = prop.Register();
+	regenSoftLines();
+}
 
+void WgText::clearProperties()
+{
+	m_pProp = 0;
+}
 
-//____ clearStyle() ____________________________________________________________
+void WgText::clearColor()
+{
+	WgTextProp	prop = * m_pProp;
+	prop.ClearColor();
+	m_pProp = prop.Register();
+}
+
+void WgText::clearColor( WgMode mode )
+{
+	WgTextProp	prop = * m_pProp;
+	prop.ClearColor(mode);
+	m_pProp = prop.Register();
+}
 
 void WgText::clearStyle()
 {
 	WgTextProp	prop = * m_pProp;
 	prop.ClearStyle();
 	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropStyleModifier(WG_STYLE_NORMAL, WG_MODE_ALL), (WgChar*) getText(), nbChars() );
+	regenSoftLines();
 }
-
 
 void WgText::clearStyle( WgMode mode )
 {
 	WgTextProp	prop = * m_pProp;
 	prop.ClearStyle(mode);
 	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropStyleModifier(WG_STYLE_NORMAL, mode), (WgChar*) getText(), nbChars() );
+	regenSoftLines();
 }
 
-
-
-//____ setUnderlined() ________________________________________________________
-
-void WgText::setUnderlined()
+void WgText::clearFont()
 {
 	WgTextProp	prop = * m_pProp;
-	prop.SetUnderlined();
+	prop.ClearFont();
 	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropUnderlinedModifier(false, WG_MODE_ALL), (WgChar*) getText(), nbChars() );
+	regenSoftLines();
 }
-
-void WgText::setUnderlined(WgMode mode)
-{
-	WgTextProp	prop = * m_pProp;
-	prop.SetUnderlined(mode);
-	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropUnderlinedModifier(false,mode), (WgChar*) getText(), nbChars() );
-}
-
-
-
-//____ clearUnderlined() ______________________________________________________
-
-void WgText::clearUnderlined()
-{
-	WgTextProp	prop = * m_pProp;
-	prop.ClearUnderlined();
-	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropUnderlinedModifier(false,WG_MODE_ALL), (WgChar*) getText(), nbChars() );
-}
-
-void WgText::clearUnderlined( WgMode mode)
-{
-	WgTextProp	prop = * m_pProp;
-	prop.ClearUnderlined(mode);
-	m_pProp = prop.Register();
-
-	WgTextTool::ModifyProperties( WgTextTool::PropUnderlinedModifier(false,mode), (WgChar*) getText(), nbChars() );
-}
-
 
 
 //____ getLineUTF8() __________________________________________________________
@@ -686,7 +526,7 @@ Uint32	WgText::getLineUTF8( Uint32 _line, char * pDest, Uint32 maxBytes ) const
 		maxBytes = bytes;
 
 	WgTextLine * pLine = getLine(_line);
-	return WgTextTool::getTextUTF8( pLine->pText, pDest, maxBytes );
+	return WgTextTool::getTextUTF8( m_buffer.GetChars() + pLine->ofs, pDest, maxBytes );
 }
 
 //____ getLineSizeUTF8() ______________________________________________________
@@ -700,7 +540,7 @@ Uint32	WgText::getLineSizeUTF8( Uint32 _line ) const
 		return 0;
 
 	WgTextLine * pLine = getLine(_line);
-	return WgTextTool::getTextSizeUTF8(pLine->pText, pLine->nChars);
+	return WgTextTool::getTextSizeUTF8( m_buffer.GetChars() + pLine->ofs, pLine->nChars);
 }
 
 //____ getTextUTF8() __________________________________________________________
@@ -803,9 +643,10 @@ char * WgText::getSelectedTextUTF8() const
 
 
 //____ compareTo() ____________________________________________________________
-
+/*
 Sint32 WgText::compareTo( const WgText * _pOther, bool bCheckCase ) const
 {
+
 	Sint32	diff = 0;
 	Uint32	line = 0;
 
@@ -867,54 +708,8 @@ Sint32 WgText::compareTo( const WgText * _pOther, bool bCheckCase ) const
 
 	return 0;
 }
+*/
 
-//____ adjustBlock() __________________________________________________________
-
-bool WgText::adjustBlock( WgTextBlock * pBlock ) const
-{
-	Uint32 lines = nbLines();
-
-	// Some sanity check...
-
-	if( pBlock->begLn > pBlock->endLn )
-		return false;
-
-	// Adjust beginning of block
-
-    if( pBlock->begLn >= lines )
-		return false;
-
-	Uint32 begLnLen = getLine(pBlock->begLn)->nChars;
-
-	if( pBlock->begCol > begLnLen )
-	{
-		if( pBlock->begLn == lines-1)
-			return false;					// This was first and last line...
-
-		pBlock->begLn = begLnLen;			// We want to keep CR-symbol...
-	}
-
-	// Adjust ending of block
-
-	if( pBlock->endLn >= lines )
-	{
-		pBlock->endLn = lines-1;
-		pBlock->endCol = getLine(pBlock->endLn)->nChars;
-		return true;
-	}
-
-	Uint32 endLnLen = getLine(pBlock->endLn)->nChars;
-
-	if( pBlock->endCol > endLnLen )
-		pBlock->endCol = endLnLen;
-
-	// A final sanity check...
-
-	if( pBlock->begLn == pBlock->endLn && pBlock->begCol >= pBlock->endCol )
-		return false;
-
-	return true;
-}
 
 //____ setValue() _____________________________________________________________
 
@@ -1210,7 +1005,7 @@ WgChar * WgText::parseScaledValue( Sint64 value, Uint32 scale, const WgValueForm
 }
 
 
-//____ chars() ________________________________________________________________
+//____ nbChars() ________________________________________________________________
 /**
 	Returns number of characters in text, including any linebreak, excluding
 	the zero terminating the string.
@@ -1250,519 +1045,105 @@ void WgText::refresh()
 
 //____ addChar() ______________________________________________________________
 
-bool WgText::addChar( Uint16 character )
+int WgText::addChar( const WgChar& character )
 {
-	WgChar * p = beginChange( nbLines()-1, getLine(nbLines()-1)->nChars, 1, 0, 0, 0 );
-	p->SetGlyph(character);
-	endChange( nbLines()-1, 1 );
-	return true;
+	int nAdded = m_buffer.PushBack( character );
+	regenSoftLines();
+	regenHardLines();
+	return nAdded;
 }
 
 
 //____ addText() ______________________________________________________________
 
-Uint32 WgText::addText( const char * pText, Uint32 nChar )
+int WgText::addText( const WgCharSeq& seq )
 {
-	return insertText( nbLines()-1, getLine(nbLines()-1)->nChars, pText, nChar );
-}
+	int nAdded = m_buffer.PushBack( seq );
+	regenSoftLines();
+	regenHardLines();
+	return nAdded;
+ }
 
-Uint32 WgText::addText( const Uint16 * pText, Uint32 nChar )
+//____ insertText() ___________________________________________________________
+
+int WgText::insertText( int ofs, const WgCharSeq& seq )
 {
-	return insertText( nbLines()-1, getLine(nbLines()-1)->nChars, pText, nChar );
-}
-
-Uint32 WgText::addText( const WgChar * pText, Uint32 nChar )
-{
-	return insertText( nbLines()-1, getLine(nbLines()-1)->nChars, pText, nChar );
-}
-
-Uint32 WgText::addText( const WgCharBuffer * pText, Uint32 nChar )
-{
-	return addText( pText->GetChars(), nChar );
-}
-
-Uint32 WgText::addText( const WgText * pText, Uint32 fromLine, Uint32 nLines )
-{
-	return insertText( nbLines()-1, getLine(nbLines()-1)->nChars, pText, fromLine, nLines );
-}
-
-//____ addFormattedText() _____________________________________________________
-
-Uint32 WgText::addFormattedText( const char * pText, Uint32 nChar,  const WgResDB * pResDB )
-{
-	return insertFormattedText( nbLines()-1, getLine(nbLines()-1)->nChars, pText, nChar, pResDB );
+	int nInserted = m_buffer.Insert( ofs, seq );
+	regenSoftLines();
+	regenHardLines();
+	return nInserted;
 }
 
 
 //____ replaceText() __________________________________________________________
 
-Uint32 WgText::replaceText( Uint32 line, Uint32 col, Uint32 nChar, const char * pNewText, Uint32 nNewChar )
+int WgText::replaceText( int ofs, int nDelete, const WgCharSeq& seq )
 {
-	removeText( line, col, nChar );
-	return insertText( line, col, pNewText, nNewChar );
+	int nInserted = m_buffer.Replace( ofs, nDelete, seq );
+	regenSoftLines();
+	regenHardLines();
+	return nInserted;
 }
 
-Uint32 WgText::replaceText( Uint32 line, Uint32 col, Uint32 nChar, const Uint16 * pNewText, Uint32 nNewChar )
+//____ deleteText() ___________________________________________________________
+
+int WgText::deleteText( int ofs, int nChars )
 {
-	removeText( line, col, nChar );
-	return insertText( line, col, pNewText, nNewChar );
-}
-
-
-Uint32 WgText::replaceText( Uint32 line, Uint32 col, Uint32 nChar, const WgText * pNewText )
-{
-	removeText( line, col, nChar );
-	return insertText( line, col, pNewText );
-}
-
-//____ addLine() ______________________________________________________________
-
-bool WgText::addLine( const char * pText, Uint32 nChar )
-{
-	return insertLine( nbLines(), pText, nChar );
-}
-
-bool WgText::addLine( const Uint16 * pText, Uint32 nChar )
-{
-	return insertLine( nbLines(), pText, nChar );
-}
-
-bool WgText::addLine( const WgChar * pText, Uint32 nChar )
-{
-	return insertLine( nbLines(), pText, nChar );
-}
-
-//____ replaceLine() __________________________________________________________
-
-bool WgText::replaceLine( Uint32 line, const char * pText, Uint32 nChar )
-{
-	removeLine( line );
-	return insertLine( line, pText, nChar );
-}
-
-bool WgText::replaceLine( Uint32 line, const Uint16 * pText, Uint32 nChar )
-{
-	removeLine( line );
-	return insertLine( line, pText, nChar );
-}
-
-bool WgText::replaceLine( Uint32 _line, const WgChar * pText, Uint32 nChar )
-{
-	if( _line >= nbLines() || pText == 0 )
-		return false;
-
-	removeLine( _line );
-	return insertLine(_line, pText, nChar );
+	int nDeleted = m_buffer.Delete( ofs, nChars );
+	regenSoftLines();
+	regenHardLines();
+	return nDeleted;
 }
 
 
 //____ replaceChar() __________________________________________________________
 
-bool WgText::replaceChar( Uint32 _line, Uint32 col, Uint16 character )
+int WgText::replaceChar( int ofs, const WgChar& character )
 {
-	WgTextLine * pLine = getLine(_line);
-
-	if( col >= pLine->nChars )
-		return false;
-
-	pLine->pText[col].SetGlyph(character);
-	return true;
+	int nReplaced = m_buffer.Replace( ofs, character );
+	regenSoftLines();
+	regenHardLines();
+	return nReplaced;
 }
 
-
-//____ splitLine() ____________________________________________________________
-
-bool WgText::splitLine( Uint32 _line, Uint32 col )
-{
-	if( _line >= nbLines() )
-		return false;
-
-	Uint32 nChars = getLine(_line)->nChars;
-	if( col > nChars )
-		col = nChars;
-
-	WgChar * wp = beginChange( _line, col, 1, 0, 1, 0 );
-	wp->SetGlyph('\n');
-	endChange( _line, 2 );
-	return true;
-}
-
-
-//____ removeLines() __________________________________________________________
-
-Uint32 WgText::removeLines( Uint32 start, Uint32 nLines )
-{
-	if( nLines == 0xFFFFFFFF || start + nLines > nbLines() )
-		nLines = nbLines() - start;
-
-	if( ((int) nLines) <= 0 )
-		return 0;
-
-	int chardiff = 0;
-	for( Uint16 i = 0 ; i < nLines ; i++ )
-		chardiff += getLine(start+i)->nChars +1;
-
-	beginChange( start, 0, 0, chardiff, 0, nLines );
-	endChange( start, 0 );
-
-	return nLines;
-}
-
-
-//____ insertLine() ___________________________________________________________
-
-bool WgText::insertLine( Uint32 line, const char * pText, Uint32 nChar )
-{
-	if( pText == 0 || nChar == 0 || line > nbLines() )
-		return false;
-
-	Uint32 n = WgTextTool::countLineChars( pText, nChar );
-
-	WgChar * wp = beginChange( line, 0, n+1, 0, 1, 0 );
-	if( !wp )
-		return false;
-
-	WgTextTool::readLine( pText, wp, n+1 );
-	wp[n].SetGlyph('\n');							// End line with \n, not zero.
-
-	endChange( line, 1 );
-
-	return true;
-}
-
-bool WgText::insertLine( Uint32 line, const Uint16 * pText, Uint32 nChar )
-{
-	if( pText == 0 || nChar == 0 || line > nbLines() )
-		return false;
-
-	Uint32 n = WgTextTool::countLineChars( pText, nChar );
-
-
-
-	WgChar * wp = beginChange( line, 0, n+1, 0, 1, 0 );
-	if( !wp )
-		return false;
-
-	for( Uint32 i = 0 ; i < n ; i++ )
-		wp[i].SetGlyph(pText[i]);
-	wp[n].SetGlyph('\n');							// End line with \n, not zero.
-
-	endChange( line, 1 );
-	return true;
-}
-
-bool WgText::insertLine( Uint32 line, const WgChar * pText, Uint32 nChar )
-{
-	if( pText == 0 || nChar == 0 || line > nbLines() )
-		return false;
-
-	Uint32 n = WgTextTool::countLineChars( pText, nChar );
-
-	WgChar * wp = beginChange( line, 0, n+1, 0, 1, 0 );
-	if( !wp )
-		return false;
-
-	for( Uint32 i = 0 ; i < n ; i++ )
-		wp[i] =  pText[i];
-	wp[n].SetGlyph('\n');							// End line with \n, not zero.
-
-	endChange( line, 1 );
-	return true;
-}
 
 //____ insertChar() ___________________________________________________________
 
-bool WgText::insertChar( Uint32 _line, Uint32 _col, Uint16 character )
+int WgText::insertChar( int ofs, const WgChar& character )
 {
-	// Sanity check
-
-	if( _line >= nbLines() )
-		return false;
-
-	WgTextLine * pLine = getLine(_line);
-	if( _col > pLine->nChars )
-		_col = pLine->nChars;
-
-	// Extra line if character is EOL
-
-	Uint32 addLines = 0;
-	if( character == '\n' )
-		addLines = 1;
-
-	// Insert the character
-
-	WgChar * wp = beginChange( _line, _col, 1, 0, addLines, 0 );
-	wp->SetGlyph(character);
-	endChange( _line, 1+addLines );
-	return true;
+	int nInserted = m_buffer.Insert( ofs, character );
+	regenSoftLines();
+	regenHardLines();
+	return nInserted;
 }
 
-//____ removeChar() ___________________________________________________________
+//____ deleteChar() ___________________________________________________________
 
-bool WgText::removeChar( Uint32 _line, Uint32 _col )
+int WgText::deleteChar( int ofs )
 {
-	// Some sanity checking
-
-	if( _line >= nbLines() )
-		return false;
-
-	WgTextLine * pLine = getLine(_line);
-	if( _col >= pLine->nChars )
-		return joinLines( _line );
-
-	// Do removal
-
-	beginChange( _line, _col, 0, 1, 0, 0 );
-	endChange( _line, 1 );
-
-	return true;
+	int nDeleted = m_buffer.Delete( ofs, 1 );
+	regenSoftLines();
+	regenHardLines();
+	return nDeleted;
 }
 
+//____ deleteSelectedText() ___________________________________________________
 
-//____ removeText() ___________________________________________________________
-
-Uint32 WgText::removeText( Uint32 _line, Uint32 _col, Uint32 nChar )
-{
-	// Some sanity checking
-
-	if( _line >= nbLines() )
-		return 0;
-
-	if( _col > getLine(_line)->nChars )
-		_col = getLine(_line)->nChars;
-
-
-	// Count number of lines we affect and check so nChar isn't too high
-	// at the same time...
-
-	getText();					// Force the text to stick together...
-
-	const WgChar * p = getLineText(_line) + _col;
-
-	int	nLines = 0;
-	for( Uint32 i = 0 ; i < nChar ; i++ )
-	{
-		if( p->IsEndOfText() )
-		{
-			nChar = i;
-			break;						// nChar was too big, corrected now...
-		}
-		else if( p->IsEndOfLine() )
-			nLines++;
-	}
-
-	beginChange( _line, _col, 0, nChar, 0, nLines );
-	endChange( _line, 1 );
-
-	return nChar;
-}
-
-void WgText::removeSelectedText()
+void WgText::deleteSelectedText()
 {
 	int line = m_selStartLine;
 	int column = m_selStartCol;
-	removeText( m_selStartLine, m_selStartCol, m_selEndLine, m_selEndCol);
+
+	int start = LineColToOffset( m_selStartLine, m_selStartCol );
+	int end = LineColToOffset( m_selEndLine, m_selEndCol );
+
+
+	deleteText( start, end-start );
 	if(m_pCursor)
 	{
 		m_pCursor->setSelectionMode(false);
 		m_pCursor->gotoHardPos(line, column);
 	}
-}
-
-void WgText::removeText( Uint32 startLine, Uint32 startCol, Uint32 endLine, Uint32 endCol)
-{
-	if( startLine >= nbLines() || startLine > endLine || startLine == endLine && startCol >= endCol )
-		return;
-
-	if(startCol > getLine(startLine)->nChars )
-		startCol = getLine(startLine)->nChars;
-
-	if(endCol > getLine(endLine)->nChars )
-		endCol = getLine(endLine)->nChars;
-
-	Uint32 nChars;
-	if(startLine == endLine)
-	{
-		nChars = endCol - startCol;
-	}
-	else
-	{
-		nChars = 1 + m_pHardLines[startLine].nChars - startCol;
-		for(Uint32 i = startLine + 1; i < endLine; i++)
-			nChars += m_pHardLines[i].nChars + 1;
-		nChars += endCol;
-	}
-
-	int	nLines = endLine - startLine;
-
-	beginChange( startLine, startCol, 0, nChars, 0, nLines );
-	endChange( startLine, 1 );
-}
-
-//____ insertText() ___________________________________________________________
-
-Uint32 WgText::insertText( Uint32 _line, Uint32 _col, const char * pText, Uint32 nChar )
-{
-	if( _line >= nbLines() )
-	{
-		_line	= nbLines()-1;
-		_col	= 0xFFFFFFFF;
-	}
-
-	if( _col > getLine(_line)->nChars )
-		_col = getLine(_line)->nChars;
-
-	Uint32	addChars, addLines;
-
-	WgTextTool::countCharsLines(pText, addChars, addLines, nChar);
-	addLines--;
-
-	WgChar * dp =beginChange( _line, _col, addChars, 0, addLines, 0 );
-
-	for( Uint32 i = 0 ; i < addChars ; i++ )
-		dp[i].SetGlyph(WgTextTool::readChar( (const char *&) pText ));
-
-	endChange(_line, addLines+1 );
-	return addChars;
-}
-
-
-Uint32 WgText::insertText( Uint32 _line, Uint32 _col, const Uint16 * pText, Uint32 nChar )
-{
-	if( _line >= nbLines() )
-	{
-		_line	= nbLines()-1;
-		_col	= 0xFFFFFFFF;
-	}
-
-	if( _col > getLine(_line)->nChars )
-		_col = getLine(_line)->nChars;
-
-	Uint32	addChars, addLines;
-
-	WgTextTool::countCharsLines(pText, addChars, addLines, nChar);
-	addLines--;
-
-	WgChar * dp =beginChange( _line, _col, addChars, 0, addLines, 0 );
-
-	for( Uint32 i = 0 ; i < addChars ; i++ )
-		dp[i].SetGlyph(pText[i]);
-
-	endChange(_line, addLines+1 );
-	return addChars;
-}
-
-Uint32 WgText::insertText( Uint32 _line, Uint32 _col, const WgChar * pText, Uint32 nChar )
-{
-	if( _line >= nbLines() )
-	{
-		_line	= nbLines()-1;
-		_col	= 0xFFFFFFFF;
-	}
-
-	if( _col > getLine(_line)->nChars )
-		_col = getLine(_line)->nChars;
-
-	Uint32	addChars, addLines;
-
-	WgTextTool::countCharsLines(pText, addChars, addLines, nChar);
-	addLines--;
-
-	WgChar * dp =beginChange( _line, _col, addChars, 0, addLines, 0 );
-
-	for( Uint32 i = 0 ; i < addChars ; i++ )
-		dp[i] = pText[i];
-
-	endChange(_line, addLines+1 );
-	return addChars;
-}
-
-
-Uint32 WgText::insertText( Uint32 _line, Uint32 _col, const WgText * pText, Uint32 fromLine, Uint32 nLines )
-{
-	if( _line >= nbLines() )
-	{
-		_line	= nbLines()-1;
-		_col	= 0xFFFFFFFF;
-	}
-
-	if( _col > getLine(_line)->nChars )
-		_col = getLine(_line)->nChars;
-
-	if( fromLine > pText->nbLines() )
-		return 0;
-
-	if( pText->nbLines() - fromLine < nLines )
-		nLines = pText->nbLines() - fromLine;
-
-	WgChar * sp = pText->getLineText(fromLine);
-	int	nChars = WgTextTool::strlen( sp );
-
-	WgChar * dp =beginChange( _line, _col, nChars, 0, nLines-1, 0 );
-
-	if( dp == 0 )
-		return 0;
-
-	for( int i = 0 ; i < nChars ; i++ )
-		* dp++ = * sp++;
-
-	endChange( _line, nLines );
-	return nChars;
-}
-
-Uint32 WgText::insertText( Uint32 line, Uint32 col, const WgCharBuffer * pText, Uint32 nChar )
-{
-	return insertText( line, col, pText->GetChars(), nChar );
-}
-
-//____ insertFormattedText() __________________________________________________
-
-Uint32 WgText::insertFormattedText( Uint32 _line, Uint32 _col, const char * pText, Uint32 nChar,  const WgResDB * pResDB )
-{
-	if( _line >= nbLines() )
-	{
-		_line	= nbLines()-1;
-		_col	= 0xFFFFFFFF;
-	}
-
-	if( _col > getLine(_line)->nChars )
-		_col = getLine(_line)->nChars;
-
-	Uint32 addChars = WgTextTool::countNonFormattingChars( pText );
-	Uint32 addLines = WgTextTool::countLines( pText )-1;
-
-	if( nChar > addChars )
-		nChar = addChars;
-
-	WgChar * dp =beginChange( _line, _col, addChars, 0, addLines, 0 );
-
-	WgTextTool::readFormattedString( pText, dp, addChars, pResDB );
-
-	endChange(_line, addLines+1 );
-	return addChars;
-}
-
-
-//____ joinLines() ____________________________________________________________
-
-bool WgText::joinLines( Uint32 firstLine )
-{
-	if( firstLine + 1 >= nbLines() )
-		return false;
-
-	Uint32 col = getLine(firstLine)->nChars;
-
-	beginChange( firstLine, col, 0, 1, 0, 1 );
-	endChange( firstLine, 1 );
-
-	return true;
-}
-
-//____ getText() ______________________________________________________________
-
-const WgChar * WgText::getText() const
-{
-	return m_pHardLines->pText;
 }
 
 //____ nbLines() ______________________________________________________________
@@ -1795,9 +1176,9 @@ const WgTextLine * WgText::getSoftLines() const
 
 //____ getLine() ______________________________________________________________
 
-WgTextLine * WgText::getLine( Uint32 line ) const
+WgTextLine * WgText::getLine( int line ) const
 {
-	if( line >= m_nHardLines )
+	if( line < 0 || line >= m_nHardLines )
 		return 0;
 
 	return m_pHardLines + line;
@@ -1805,9 +1186,9 @@ WgTextLine * WgText::getLine( Uint32 line ) const
 
 //____ getSoftLine() __________________________________________________________
 
-WgTextLine * WgText::getSoftLine( Uint32 line ) const
+WgTextLine * WgText::getSoftLine( int line ) const
 {
-	if( line >= m_nSoftLines )
+	if( line < 0 || line >= m_nSoftLines )
 		return 0;
 
 	return m_pSoftLines + line;
@@ -1815,22 +1196,22 @@ WgTextLine * WgText::getSoftLine( Uint32 line ) const
 
 //____ getLineText() __________________________________________________________
 
-WgChar * WgText::getLineText( Uint32 line ) const
+const WgChar * WgText::getLineText( int line ) const
 {
-	if( line >= m_nHardLines )
+	if( line < 0 || line >= m_nHardLines )
 		return 0;
 
-	return m_pHardLines[line].pText;
+	return m_buffer.GetChars() + m_pHardLines[line].ofs;
 }
 
 //____ getSoftLineText() ______________________________________________________
 
-WgChar * WgText::getSoftLineText( Uint32 line ) const
+const WgChar * WgText::getSoftLineText( int line ) const
 {
-	if( line >= m_nSoftLines )
+	if( line < 0 || line >= m_nSoftLines )
 		return 0;
 
-	return m_pSoftLines[line].pText;
+	return m_buffer.GetChars() + m_pSoftLines[line].ofs;
 }
 
 //____ SetWrap() ______________________________________________________________
@@ -1863,12 +1244,12 @@ void WgText::posSoft2Hard( Uint32 &line, Uint32 &col ) const
 {
 	// Get a character pointer from soft line/col
 
-	if( line >= m_nSoftLines )
+	if( line >= (Uint32) m_nSoftLines )
 		line = m_nSoftLines - 1;
 
 	WgTextLine * pLine = &m_pSoftLines[line];
 
-	WgChar * pOfs = pLine->pText;
+	const WgChar * pOfs = m_buffer.GetChars() + pLine->ofs;
 	if( col > pLine->nChars )
 		pOfs += pLine->nChars;
 	else
@@ -1877,11 +1258,11 @@ void WgText::posSoft2Hard( Uint32 &line, Uint32 &col ) const
 	// Convert character pointer to hard line/col
 
 	int ln = 0;
-	while( pOfs > m_pHardLines[ln].pText + m_pHardLines[ln].nChars )
+	while( pOfs > m_buffer.GetChars() + m_pHardLines[ln].ofs + m_pHardLines[ln].nChars )
 		ln++;
 
 	line = ln;
-	col = pOfs - m_pHardLines[ln].pText;
+	col = pOfs - (m_buffer.GetChars() + m_pHardLines[ln].ofs);
 	return;
 }
 
@@ -1891,12 +1272,12 @@ void WgText::posHard2Soft( Uint32 &line, Uint32 &col ) const
 {
 	// Get a character pointer from hard line/col
 
-	if( line >= m_nHardLines )
+	if( line >= (Uint32) m_nHardLines )
 		line = m_nHardLines - 1;
 
 	WgTextLine * pLine = &m_pHardLines[line];
 
-	WgChar * pOfs = pLine->pText;
+	const WgChar * pOfs = m_buffer.GetChars() + pLine->ofs;
 	if( col > pLine->nChars )
 		pOfs += pLine->nChars;
 	else
@@ -1905,217 +1286,41 @@ void WgText::posHard2Soft( Uint32 &line, Uint32 &col ) const
 	// Convert character pointer to soft line/col
 
 	int ln = line;							// Corresponding soft line needs to be same or higher...
-	while( pOfs > m_pSoftLines[ln].pText + m_pSoftLines[ln].nChars )
+	while( pOfs > m_buffer.GetChars() + m_pSoftLines[ln].ofs + m_pSoftLines[ln].nChars )
 		ln++;
 
 	line = ln;
-	col = pOfs - m_pSoftLines[ln].pText;
+	col = pOfs - (m_buffer.GetChars() + m_pSoftLines[ln].ofs);
 	return;
 }
 
-//____ beginChange() __________________________________________________________
-
-WgChar * WgText::beginChange( Uint32 line, Uint32 col, Uint32 addChar, Uint32 delChar, Uint32 addLines, Uint32 delLines, WgChar ch )
-{
-	if(delLines > 0 || delChar > 0)
-	{
-		if( m_pCursor )
-			m_pCursor->clearSelection();
-		else
-			clearSelection();
-	}
-
-	if(m_pCursor)
-	{
-		Uint32 cursorLine= m_pCursor->line();
-		Uint32 cursorCol = m_pCursor->column();
-		Uint32 startPos = LineColToOffset(line, col);
-		Uint32 endPos0 = startPos + delChar;
-		Uint32 endPos1 = startPos + addChar;
-		Uint32 cursorPos = LineColToOffset(cursorLine, cursorCol);
-		if(cursorPos >= startPos)
-		{
-			if(cursorPos >= endPos0)
-				cursorPos += endPos1 - endPos0;
-			else if(cursorPos > endPos1)
-				cursorPos = endPos1;				
-		}
-		m_newCursorPos = cursorPos;
-	}
-
-	// Calculate old and new size
-
-	int oldSize = sizeof(WgTextLine)*m_nHardLines;
-
-	for( int i = 0 ; i < (int) m_nHardLines ; i++ )
-		oldSize += (m_pHardLines[i].nChars+1)*sizeof(WgChar);
-
-	int newSize = oldSize + (addLines-delLines)*sizeof(WgTextLine) + (addChar-delChar)*sizeof(WgChar);
-
-	// Reallocate and copy content
-
-	int	nLines = m_nHardLines + addLines - delLines;
-
-	char * pBuffer = new char[newSize];
-	WgChar * wpContent	= (WgChar *) (pBuffer + sizeof(WgTextLine)* nLines);
-	WgTextLine * wpLine = (WgTextLine *) pBuffer;
-
-	int textReposition = wpContent - m_pHardLines[0].pText;
-
-	// Copy text preceding change
-
-	int nChars = (m_pHardLines[line].pText + col - m_pHardLines[0].pText);
-	memcpy( wpContent, m_pHardLines[0].pText, nChars * sizeof(WgChar) );
-
-	wpContent += nChars;
-
-	// Remove property references for text that will disappear.
-
-	WgTextTool::ClearProperties( m_pHardLines[0].pText+nChars, delChar );
-
-	// Fill any new empty area with the default character,
-	// empty area first so we don't dereference random WgTextProp.
-
-	memset(wpContent, 0, addChar*sizeof(WgChar));
-
-	for( Uint32 i = 0 ; i < addChar ; i++ )
-		wpContent[i] = ch;
-
-	// Copy text succeeding change
-
-	WgChar * pSource = m_pHardLines[line].pText + col + delChar;
-	nChars = (m_pHardLines[m_nHardLines-1].pText + m_pHardLines[m_nHardLines-1].nChars+1) - pSource;
-
-	memcpy( wpContent+addChar, pSource, nChars * sizeof(WgChar) );
-
-	// Copy lines preceeding change (including WgTextLine for first changed line).
-
-	wpLine = (WgTextLine *) pBuffer;
-
-	for( Uint32 i = 0 ; i < line+1 ; i++ )
-	{
-		wpLine[i].nChars = m_pHardLines[i].nChars;
-		wpLine[i].pText = m_pHardLines[i].pText + textReposition;
-	}
-
-	// Copy lines succeeding change
-
-	wpLine = ((WgTextLine *) pBuffer) + line + 1 + addLines;
-	Uint32 src = line + 1 + delLines;
-
-	while( src < m_nHardLines )
-	{
-		wpLine->nChars = m_pHardLines[src].nChars;
-		wpLine->pText = m_pHardLines[src].pText + (textReposition + addChar - delChar);
-
-		wpLine++;
-		src++;
-	}
-
-	// Finishing
-
-	if( m_pHardLines != &WgText::g_emptyLine )
-	{
-		delete [] m_pHardLines;
-
-		if( m_pSoftLines == m_pHardLines )
-		{
-			m_pSoftLines = (WgTextLine *) pBuffer;
-			m_nSoftLines = m_nHardLines + addLines - delLines;
-		}
-	}
-	m_pHardLines = (WgTextLine *) pBuffer;
-	m_nHardLines += addLines - delLines;
-
-	return wpContent;
-}
-
+//____ LineColToOffset() ______________________________________________________
 
 Uint32 WgText::LineColToOffset(int line, int col)
 {
-	return m_pHardLines[line].pText - m_pHardLines[0].pText + col;		
+	return m_pHardLines[line].ofs + col;
 }
 
-//____ endChange() ____________________________________________________________
 
-void WgText::endChange( Uint32 startline, Uint32 nLines )
+//____ countWriteSoftLines() __________________________________________________
+
+int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines, int maxWrite )
 {
-	WgChar * pChar = m_pHardLines[startline].pText;
+	const WgChar *	p = pStart;
+	int			nSoftLines = 0;
+	WgPen		pen;
+	Uint16		hProp = 0xFFFF;
 
-	for( Uint32 ln = startline ; ln < startline+nLines ; ln++ )
-	{
-		Uint32 col = 0;
-		while( pChar[col].isHardEndOfLine() == false )
-			col++;
-
-		m_pHardLines[ln].pText = pChar;
-		m_pHardLines[ln].nChars = col;
-
-		pChar += col + 1;
-	}
-
-	regenSoftLines();
-
-	if(m_pCursor)
-	{
-		Uint32 iLine = 0;
-		for(; m_newCursorPos > 0 && iLine < nbLines(); iLine++)
-			m_newCursorPos -= m_pHardLines[iLine].nChars;
-
-		iLine = iLine - 1;
-
-		Uint32 iCol = m_pHardLines[iLine].nChars + m_newCursorPos;
-
-		m_pCursor->gotoHardPos(iLine, iCol);
-
-
-
-
-
-	}
-}
-
-void WgText::regenSoftLines()
-{
-	//TODO: I believe we have memory leaks here...
-
-	// Take care of our special case (empty text)
-
-	if( m_pHardLines == &WgText::g_emptyLine )
-	{
-		m_pSoftLines = &WgText::g_emptyLine;
-		m_nSoftLines = 1;
-		return;
-	}
-
-	// If we don't wrap, we have no softlines...
-
-	if( !m_bWrap )
-	{
-		m_pSoftLines = m_pHardLines;
-		m_nSoftLines = m_nHardLines;
-		return;
-	}
-
-
-	// Clear old softbreaks, set new ones and count number of SoftLines needed.
-
-	WgChar *		p = m_pHardLines[0].pText;
-	unsigned int	nSoftLines = 1;				// We always have at least one line...
-
-	WgPen			pen;
 	pen.SetTextNode( m_pManagerNode );
-	Uint16			hProp = 0xFFFF;
-
 
 	while( !p->IsEndOfText() )
 	{
-		WgChar *	pbp = 0;				// BreakPoint-pointer.
+
+		const WgChar * 	pLineStart = p;
+		const WgChar *	pbp = 0;				// BreakPoint-pointer.
 
 		while( !p->isHardEndOfLine() )
 		{
-			p->clearSoftBreak();
-
 			// If break is permitted we can move the breakpoint up to this character unless it's
 			// a hyphen-break where the hyphen takes too much space.
 
@@ -2136,8 +1341,6 @@ void WgText::regenSoftLines()
 
 			// Increase line length
 
-			Uint32 oldLen = pen.GetPosX();
-			
 			if( p->GetPropHandle() != hProp )
 			{
 				pen.SetTextProp( m_pProp.GetHandle(), p->GetPropHandle(), m_mode );
@@ -2154,16 +1357,11 @@ void WgText::regenSoftLines()
 			{
 				if( pbp != 0 )
 				{
-					pbp->setSoftBreak();
 					p = pbp;
 					break;
 				}
-				else if( oldLen != 0 )		// Can't set a softbreak on previous char if there is no previous char...
-				{
-					p--;
-					p->setSoftBreak();
+				else if( p > pLineStart )		// We want at least one char on each line before a softbreak, otherwise we get eternal number of lines...
 					break;
-				}
 			}
 			else
 				pen.AdvancePos();
@@ -2173,22 +1371,59 @@ void WgText::regenSoftLines()
 			p++;
 		}
 
-		if( !p->IsEndOfText() )
+		if( nSoftLines < maxWrite )
 		{
-			p++;			// Skip the break-point, it doesn't belong to any line.
-			nSoftLines++;	// This was not the last line...
-			pen.SetPosX(0);			// Reset position
-			pen.FlushChar();		// Flush current character so it won't affect kerning for first character of next line.
+			pWriteLines[nSoftLines].ofs = pLineStart - pStart;
+			pWriteLines[nSoftLines].nChars = p - pLineStart;
 		}
+
+		if( p->IsBreakPermitted() )
+			p++;				// Skip the break-point, it doesn't belong to any line.
+
+		nSoftLines++;
+		pen.SetPosX(0);			// Reset position
+		pen.FlushChar();		// Flush current character so it won't affect kerning for first character of next line.
+	}
+	return nSoftLines;
+}
+
+//____ regenSoftLines() _______________________________________________________
+
+void WgText::regenSoftLines()
+{
+	// Take care of our special case (empty text)
+
+	if( m_pHardLines == &WgText::g_emptyLine )
+	{
+		m_pSoftLines = &WgText::g_emptyLine;
+		m_nSoftLines = 1;
+		return;
 	}
 
+	// If we don't wrap, we have no softlines...
+
+	if( !m_bWrap )
+	{
+		m_pSoftLines = m_pHardLines;
+		m_nSoftLines = m_nHardLines;
+		return;
+	}
+
+	bool	bHasSoftLineArray = (m_pSoftLines != m_pHardLines && m_pSoftLines != &WgText::g_emptyLine)?true:false;
+
+	int nSoftLines;
+
+	if( bHasSoftLineArray )
+		nSoftLines = countWriteSoftLines( m_buffer.GetChars(), m_pSoftLines, m_nSoftLines );
+	else
+		nSoftLines = countWriteSoftLines( m_buffer.GetChars(), 0, 0 );
 
 	// If we don't have any softbreaks we can just point at
 	// the hardlines since they are the same.
 
 	if( nSoftLines == m_nHardLines )
 	{
-		if( m_pSoftLines != m_pHardLines && m_pSoftLines != &WgText::g_emptyLine )
+		if( bHasSoftLineArray )
 			delete [] m_pSoftLines;
 
 		m_pSoftLines = m_pHardLines;
@@ -2196,11 +1431,18 @@ void WgText::regenSoftLines()
 		return;
 	}
 
+	// If number of softlines are equal to before and we already have filled in the array
+	// then we are done.
+
+	if( bHasSoftLineArray && nSoftLines == m_nSoftLines )
+		return;
+
 	// Re-allocate if size isn't the same as before...
+	//TODO: Optimize! There are still cases when we can avoid calling the expensive countWriteSoftLines() again, or just call it on parts of text.
 
 	if( nSoftLines != m_nSoftLines )
 	{
-		if( m_pSoftLines != m_pHardLines && m_pSoftLines != &WgText::g_emptyLine )
+		if( bHasSoftLineArray )
 			delete [] m_pSoftLines;
 
 		m_pSoftLines = new WgTextLine[nSoftLines];
@@ -2209,17 +1451,5 @@ void WgText::regenSoftLines()
 
 	// Fill in the softlines-array.
 
-	WgChar * rp = m_pHardLines[0].pText;
-	for( Uint32 i = 0 ; i < m_nSoftLines ; i++ )
-	{
-		m_pSoftLines[i].pText = rp;
-
-		int n = 0;
-		while( false == rp[n].IsEndOfLine() )
-			n++;
-
-		m_pSoftLines[i].nChars = n;
-		rp += n+1;
-	}
-
+	countWriteSoftLines( m_buffer.GetChars(), m_pSoftLines, m_nSoftLines );
 }

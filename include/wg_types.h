@@ -125,7 +125,7 @@ enum WgTxtAttr
 		{u4}		user defined style 4
 		{u5}		user defined style 5
 
-		{super}		superscript		// Includes top positioning 
+		{super}		superscript		// Includes top positioning
 		{sub}		subscript		// Includes bottom positioning
 		{mono}		monospaced		// Includes monospacing
 
@@ -362,22 +362,6 @@ inline bool operator!=( const WgMinMax2D& r1, const WgMinMax2D& r2 )
 		return false;
 	return true;
 }
-
-//____ WgTextBlock ____________________________________________________________
-
-class WgTextBlock
-{
-public:
-	WgTextBlock() {}
-	WgTextBlock( Uint32 _begLn, Uint32 _begCol, Uint32 _endLn, Uint32 _endCol ) 
-					{ begLn = _begLn; begCol = _begCol; endLn = _endLn; endCol = _endCol; }
-	WgTextBlock( Uint32 ln ) { begLn = ln; begCol = 0; endLn = ln; endCol = 0xFFFFFFFF; }
-
-	Uint32 begLn;
-	Uint32 begCol;
-	Uint32 endLn;
-	Uint32 endCol;
-};
 
 
 //____ WgUpdateInfo ___________________________________________________________

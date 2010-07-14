@@ -812,11 +812,12 @@ void WgGfxDevice::BlitVertBar(	const WgSurface * _pSurf, const WgRect& _src,
 
 void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen )
 {
-	const WgTextPropPtr	pDefProp = pText->getDefaultProperties();
+	const WgTextPropPtr	pDefProp = pText->getProperties();
 	const WgOrigo& origo	= pText->alignment();
 
 	Uint32				nLines = pText->nbSoftLines();
 	const WgTextLine *	pLines = pText->getSoftLines();
+	const WgChar *		pChars = pText->getText();
 
 	pPen->SetTextNode( pText->getNode() );
 	pPen->SetTextProp( pDefProp );
@@ -854,11 +855,11 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 				pos.x -= pFont->GetCursor()->bearingX(cursMode);
 
 			pPen->SetPos( pos );
-			PrintLine( pPen, pDefProp, pText->mode(), pLines[i].pText, cursCol);
+			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs, cursCol);
 			pPen->BlitCursor( *pCursor );
 			pPen->AdvancePosCursor( *pCursor );
 			pPen->FlushChar();				// Avoid kerning against glyph before cursor.
-			PrintLine( pPen, pDefProp, pText->mode(), pLines[i].pText + cursCol, -1);
+			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs + cursCol, -1);
 		}
 		else
 		{
@@ -872,7 +873,7 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 			}
 
 			pPen->SetPos( pos );
-			PrintLine( pPen, pDefProp, pText->mode(), pLines[i].pText, -1);
+			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs, -1);
 		}
 
 
@@ -882,7 +883,7 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 
 void WgGfxDevice::PrintTextWithCursor( const WgRect& clip, const WgText * pText, const WgCursorInstance& ci, const WgRect& dest )
 {
-	if( !pText || !pText->getDefaultFont()  )
+	if( !pText || !pText->getFont()  )
 		return;
 
 	WgPen	pen( this, dest, clip );
@@ -893,7 +894,7 @@ void WgGfxDevice::PrintTextWithCursor( const WgRect& clip, const WgText * pText,
 
 void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest )
 {
-	if( !pText || !pText->getDefaultFont()  )
+	if( !pText || !pText->getFont()  )
 		return;
 
 	WgPen pen;
@@ -909,11 +910,12 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 //___________________________________________________________________________________________________
 void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dstRect, WgPen* pPen )
 {
-	const WgTextPropPtr	pDefProp = pText->getDefaultProperties();
+	const WgTextPropPtr	pDefProp = pText->getProperties();
 	const WgOrigo& origo	= pText->alignment();
 
 	Uint32				nLines = pText->nbSoftLines();
 	const WgTextLine *	pLines = pText->getSoftLines();
+	const WgChar *		pChars = pText->getText();
 
 	pPen->SetTextNode( pText->getNode() );
 	pPen->SetTextProp( pDefProp );
@@ -926,10 +928,10 @@ void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, 
 	pText->posHard2Soft(iSelEndLine, iSelEndCol);
 
 	pPen->SetPos(WgCord(0, 0));
-	int xs = CalcCharOffset(pPen, pDefProp, pLines[iSelStartLine].pText, iSelStartCol);
+	int xs = CalcCharOffset(pPen, pDefProp, pChars + pLines[iSelStartLine].ofs, iSelStartCol);
 
 	pPen->SetPos(WgCord(0, 0));
-	int xe = CalcCharOffset(pPen, pDefProp, pLines[iSelEndLine].pText, iSelEndCol);
+	int xe = CalcCharOffset(pPen, pDefProp, pChars + pLines[iSelEndLine].ofs, iSelEndCol);
 
 	WgCord dstPos;
 	dstPos.x = dstRect.x;

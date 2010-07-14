@@ -329,13 +329,14 @@ void WgSurfaceGL::Unlock()
 	if(m_lockStatus == UNLOCKED )
 		return;
 
-	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );	// In case we've been locking others inbetween...
 	pglUnmapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB );
 
 	if( m_lockStatus != READ_ONLY )
 	{
 		glBindTexture( GL_TEXTURE_2D, m_texture );
-		glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+//		pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
+		glTexSubImage2D( GL_TEXTURE_2D, 0, 0,0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+//		glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 	}
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
 	m_lockStatus = UNLOCKED;

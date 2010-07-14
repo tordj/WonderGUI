@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -86,88 +86,85 @@ void Wg_Interface_TextHolder::ClearText()
 	}
 }
 
-//____ SetText() ______________________________________________________________
 
-void Wg_Interface_TextHolder::SetText( const char * _pStr )
+void Wg_Interface_TextHolder::SetText( const WgCharSeq& seq )
 {
-	m_pText->setText( _pStr );
+	m_pText->setText( seq );
 	TextModified();
 }
 
-void Wg_Interface_TextHolder::SetText( const Uint16 * _pStr )
+void Wg_Interface_TextHolder::SetText( const WgCharBuffer * pBuffer )
 {
-	m_pText->setText( _pStr );
+	m_pText->setText( pBuffer );
 	TextModified();
 }
 
-void Wg_Interface_TextHolder::SetText( const WgChar * _pStr )
+void Wg_Interface_TextHolder::SetText( const WgString& str )
 {
-	m_pText->setText( _pStr );
+	m_pText->setText( str );
 	TextModified();
 }
 
-void Wg_Interface_TextHolder::SetText( const WgText * _pText )
+void Wg_Interface_TextHolder::SetText( const WgText * pText )
 {
-	m_pText->setText( _pText );
+	m_pText->setText( pText );
 	TextModified();
 }
 
-
-//____ AddText() ______________________________________________________________
-/*
-void Wg_Interface_TextHolder::AddText( const char * pszText )
+int Wg_Interface_TextHolder::AddText( const WgCharSeq& seq )
 {
-	m_pText->addText( pszText );
-	TextModified();
-}
-*/
-void Wg_Interface_TextHolder::AddText( const WgText * pText, Uint32 fromLine, Uint32 nLines )
-{
-	m_pText->addText( pText, fromLine, nLines );
+	m_pText->addText( seq );
 	TextModified();
 }
 
-void Wg_Interface_TextHolder::AddText( const WgCharBuffer* charBuffer )
+int Wg_Interface_TextHolder::InsertText( int ofs, const WgCharSeq& seq )
 {
-	m_pText->addText(charBuffer);
+	m_pText->insertText( ofs, seq );
 	TextModified();
 }
 
-
-//____ SetFormattedText() _____________________________________________________
-
-Uint32 Wg_Interface_TextHolder::SetFormattedText( const char * pText, Uint32 nChar, const WgResDB * pResDB )
+int Wg_Interface_TextHolder::ReplaceText( int ofs, int nDelete, const WgCharSeq& seq )
 {
-	Uint32 ret = m_pText->setFormattedText( pText, nChar, pResDB );
+	m_pText->replaceText( ofs, nDelete, seq );
 	TextModified();
-	return ret;
 }
 
-Uint32 Wg_Interface_TextHolder::SetFormattedText( const Uint16 * pText, Uint32 nChar, const WgResDB * pResDB )
+int Wg_Interface_TextHolder::DeleteText( int ofs, int len )
 {
-	Uint32 ret = m_pText->setFormattedText( pText, nChar, pResDB );
+	m_pText->deleteText( ofs, len );
 	TextModified();
-	return ret;
 }
 
-
-//____ AddFormattedText() _____________________________________________________
-
-Uint32 Wg_Interface_TextHolder::AddFormattedText( const char * pText, Uint32 nChar, const WgResDB * pResDB )
+void Wg_Interface_TextHolder::DeleteSelectedText()
 {
-	Uint32 nb = m_pText->addFormattedText( pText, nChar, pResDB );
+	m_pText->deleteSelectedText();
 	TextModified();
-	return nb;
 }
 
-//____ InsertFormattedText() __________________________________________________
-
-Uint32 Wg_Interface_TextHolder::InsertFormattedText( Uint32 line, Uint32 col, const char * pText, Uint32 nChar, const WgResDB * pResDB )
+int Wg_Interface_TextHolder::AddChar( const WgChar& character )
 {
-	Uint32 nb = m_pText->insertFormattedText( line, col, pText, nChar, pResDB );
+	m_pText->addChar( character );
 	TextModified();
-	return nb;
 }
+
+int Wg_Interface_TextHolder::InsertChar( int ofs, const WgChar& character )
+{
+	m_pText->insertChar( ofs, character );
+	TextModified();
+}
+
+int Wg_Interface_TextHolder::ReplaceChar( int ofs, const WgChar& character )
+{
+	m_pText->replaceChar( ofs, character );
+	TextModified();
+}
+
+int Wg_Interface_TextHolder::DeleteChar( int ofs )
+{
+	m_pText->deleteChar( ofs );
+	TextModified();
+}
+
 
 
 //____ SetLineSpaceAdjustment() __________________________________________________
@@ -185,20 +182,6 @@ Sint8 Wg_Interface_TextHolder::GetLineSpaceAdjustment() const
 	return m_pText->lineSpaceAdjustment();
 }
 
-
-//____ RemoveTextLines() ______________________________________________________________
-
-void Wg_Interface_TextHolder::RemoveTextLines( Uint32 start, Uint32 nLines )
-{
-	m_pText->removeLines( start, nLines );
-	TextModified();
-}
-
-void Wg_Interface_TextHolder::RemoveSelectedText()
-{
-	m_pText->removeSelectedText();
-	TextModified();
-}
 
 //____ CloneInterface() _______________________________________________________
 

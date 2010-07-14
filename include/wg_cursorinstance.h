@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -32,28 +32,29 @@
 #endif
 
 class WgText;
+class WgCharSeq;
 
 //____ WgCursorInstance ________________________________________________________
 
 class WgCursorInstance
 {
 public:
-	
+
 	WgCursorInstance( WgText& text );
 
-	bool			incTime( Uint32 ms );	
+	bool			incTime( Uint32 ms );
 	void			insertMode( bool bInsert );
-	
+
 	void			goUp( Uint32 nLines = 1 );
 	void			goDown( Uint32 nLines = 1 );
 	inline void		goLeft( Uint32 nChars = 1 );
 	inline void		goRight( Uint32 nChars = 1 );
-	
+
 	inline void		goBOF();
 	inline void		goEOF();
 	void			goBOL();
 	void			goEOL();
-	
+
 	void			gotoHardLine( Uint32 line );
 	void			gotoSoftLine( Uint32 line );
 
@@ -72,8 +73,7 @@ public:
 	void			getSoftPos( Uint32 &line, Uint32 &col ) const;
 
 	bool			putChar( Uint16 character );
-	Uint32			putText( const Uint16 * pString );
-	Uint32			putText( const Uint16 * pString, int nChar );
+	Uint32			putText( const WgCharSeq& seq );
 	void			unputText( int nChar );
 	void 			delPrevWord();
 	void 			delNextWord();
@@ -82,7 +82,7 @@ public:
 
 	int				ofsX() const;				// Offset in pixels from beginning of line.
 	int				ofsY() const;				// Offset in pixels from top of text.
-	
+
 	inline Uint32	line() const;
 	inline Uint32	column() const;
 	inline Uint32	time() const;
@@ -97,7 +97,7 @@ public:
 	void			clearSelection();
 	void			selectAll();
 
-protected:		
+protected:
 	void			gotoPos( Uint32 line, Uint32 col );
 	void			UpdateLocation(Uint32 line, Uint32 col);
 
@@ -106,7 +106,7 @@ protected:
 	bool			m_bSelectMode;
 	int				m_selStartLine;
 	int				m_selStartColumn;
-		
+
 	Uint32			m_time;					// For the animation
 	Uint32			m_line;					// Line of the text containing the cursor (0+)
 	Uint32			m_column;				// Character in the line the cursor preceeds (0+)
@@ -156,7 +156,7 @@ inline void WgCursorInstance::goRight( Uint32 nChars )
 {
 	gotoColumn( m_column + nChars );
 }
-	
+
 inline void WgCursorInstance::goBOF()
 {
 	gotoHardPos( 0, 0 );

@@ -325,13 +325,13 @@ Uint32 Wdg_TextView::InsertTextAtCursor( const WgCharSeq& str )
 
 	if( m_maxCharacters == 0 || ((unsigned) str.Length()) < m_maxCharacters - m_pText->nbChars() )
 	{
-		m_pText->putText( str.GetUnicode().ptr , str.Length() );
+		m_pText->putText( str );
 		retVal = str.Length();
 	}
 	else
 	{
 		retVal = m_maxCharacters - m_pText->nbChars();
-		m_pText->putText( str.GetUnicode().ptr, retVal );
+		m_pText->putText( WgCharSeq( str, 0, retVal ) );
 	}
 
 	AdjustViewOfs();
@@ -368,12 +368,12 @@ void Wdg_TextView::AdjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_pText->GetCursor() && m_pText->getFontSet() )
+	if( m_pText->GetCursor() && m_pText->getFont() )
 	{
 		Uint32 cursCol, cursLine;
 
 		m_pText->getSoftPos(cursLine, cursCol);
-		int cursWidth	= m_pText->getFontSet()->GetCursor()->advance(m_pText->cursorMode() );
+		int cursWidth	= m_pText->getFont()->GetCursor()->advance(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.

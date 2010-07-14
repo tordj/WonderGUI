@@ -53,7 +53,7 @@ WgTableColumn::WgTableColumn(const WgTableColumn& column)
 		m_pText = new WgText();
 		m_pText->SetWrap(false);
 		m_pText->setHolder( this );
-		m_pText->setProperties( column.m_pText->getDefaultProperties() );
+		m_pText->setProperties( column.m_pText->getProperties() );
 		m_pText->setText( m_pText->getText() );
 		m_pText->setAlignment( column.m_pText->alignment() );
 		m_pText->setTintMode( column.m_pText->tintMode() );
@@ -1068,7 +1068,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 				if( m_pHeaderGfx )
 					rText.Shrink( m_pHeaderGfx->GetContentBorders() );
 
-				m_pColumns[i].GetTextObj()->setDefaultProperties( m_pHeaderProps );
+				m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
 				WgGfx::printText( _clip, m_pColumns[i].GetTextObj(), rText );
 //			}
 
@@ -1512,7 +1512,7 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 	if( pItem )
 	{
 		pItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
-		
+
 		// HACK. Remove when message loop is implemented
 		// pItem can be deleted in the ActionResponse callback. Make sure it still exist // Martin
 		m_pLastMarkedItem = 0;

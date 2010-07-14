@@ -22,6 +22,8 @@
 
 #include <assert.h>
 #include <memory.h>
+#include <wchar.h>
+#include <wctype.h>
 
 #include <string>
 
@@ -228,13 +230,14 @@ Uint32 WgTextTool::countWhitespaces( const WgChar * pStr, Uint32 len  )
 
 //____ countNonFormattingChars() ______________________________________________
 
-Uint32 WgTextTool::countNonFormattingChars( const char * pStr )
+Uint32 WgTextTool::countNonFormattingChars( const char * pStr, Uint32 strlen )
 {
 	if( !pStr )
 		return 0;
 
+	const char * pEnd = pStr + strlen;
 	Uint32 n = 0;
-	while( * pStr != 0 )
+	while( * pStr != 0 && pStr != pEnd )
 	{
 		Uint16 c = readChar(pStr);
 
@@ -255,7 +258,7 @@ Uint32 WgTextTool::countNonFormattingChars( const char * pStr )
 					pStr += 2;
 				break;
 
-				case '(':			// Set textprop				
+				case '(':			// Set textprop
 					while( * pStr != 0 && * pStr != ')' )
 						pStr++;
 					if( pStr != 0 )
@@ -273,13 +276,14 @@ Uint32 WgTextTool::countNonFormattingChars( const char * pStr )
 }
 
 
-Uint32 WgTextTool::countNonFormattingChars( const Uint16 * pStr )
+Uint32 WgTextTool::countNonFormattingChars( const Uint16 * pStr, Uint32 strlen )
 {
 	if( !pStr )
 		return 0;
 
+	const Uint16 * pEnd = pStr + strlen;
 	Uint32 n = 0;
-	while( * pStr != 0 )
+	while( * pStr != 0 && pStr != pEnd )
 	{
 		Uint16 c = * pStr++;
 
@@ -316,6 +320,205 @@ Uint32 WgTextTool::countNonFormattingChars( const Uint16 * pStr )
 	}
 	return n;
 }
+
+
+//____ getTextSizeStripped() ______________________________________________
+
+Uint32 WgTextTool::getTextSizeStripped( const char * pStr, Uint32 maxChars )
+{
+	Uint32 nChar = 0;
+
+	while( * pStr != 0 && nChar < maxChars )
+	{
+		char c = * pStr++;
+
+		if( c == WG_ESCAPE_CODE )
+		{
+			switch( * pStr )
+			{
+				case 'n':				// Newline
+					pStr++;
+					nChar++;				// Newline should be counted
+					break;
+				case '{':			// Begin color
+					pStr += 7;
+				break;
+
+				case 'h':			// Start heading
+				case 'u':			// Start user style
+					pStr += 2;
+				break;
+
+				case '(':			// Set textprop
+					while( * pStr != 0 && * pStr != ')' )
+						pStr++;
+					if( pStr != 0 )
+						pStr++;
+				break;
+
+				default:
+					pStr++;
+			}
+		}
+		else
+			nChar++;
+}
+	return nChar;
+
+
+}
+
+Uint32 WgTextTool::getTextSizeStripped( const Uint16 * pStr, Uint32 maxChars )
+{
+	Uint32 nChar = 0;
+
+	while( * pStr != 0 && nChar < maxChars )
+	{
+		Uint16 c = * pStr++;
+
+		if( c == WG_ESCAPE_CODE )
+		{
+			switch( * pStr )
+			{
+				case 'n':				// Newline
+					pStr++;
+					nChar++;				// Newline should be counted
+					break;
+				case '{':			// Begin color
+					pStr += 7;
+				break;
+
+				case 'h':			// Start heading
+				case 'u':			// Start user style
+					pStr += 2;
+				break;
+
+				case '(':			// Set textprop
+					while( * pStr != 0 && * pStr != ')' )
+						pStr++;
+					if( pStr != 0 )
+						pStr++;
+				break;
+
+				default:
+					pStr++;
+			}
+		}
+		else
+			nChar++;
+	}
+	return nChar;
+}
+
+
+//____ getTextSizeStrippedUTF8() ______________________________________________
+
+Uint32 WgTextTool::getTextSizeStrippedUTF8( const char * pStr, Uint32 maxChars )
+{
+	Uint32 nChar = 0;
+	Uint32 nBytes = 0;
+
+	while( * pStr != 0 && nChar < maxChars )
+	{
+		char c = * pStr++;
+
+		if( c == WG_ESCAPE_CODE )
+		{
+			switch( * pStr )
+			{
+				case 'n':				// Newline
+					pStr++;
+					nChar++;				// Newline should be counted
+					nBytes++;
+					break;
+				case '{':			// Begin color
+					pStr += 7;
+				break;
+
+				case 'h':			// Start heading
+				case 'u':			// Start user style
+					pStr += 2;
+				break;
+
+				case '(':			// Set textprop
+					while( * pStr != 0 && * pStr != ')' )
+						pStr++;
+					if( pStr != 0 )
+						pStr++;
+				break;
+
+				default:
+					pStr++;
+			}
+		}
+		else
+		{
+			nChar++;
+			if( (c & 0x80) == 0 )
+				nBytes++;
+			else if( (c & 0xE0) == 0xC0 )
+				nBytes += 2;
+			else
+				nBytes += 3;
+		}
+	}
+	return nBytes;
+
+
+}
+
+Uint32 WgTextTool::getTextSizeStrippedUTF8( const Uint16 * pStr, Uint32 maxChars )
+{
+	Uint32 nChar = 0;
+	Uint32 nBytes = 0;
+
+	while( * pStr != 0 && nChar < maxChars )
+	{
+		Uint16 c = * pStr++;
+
+		if( c == WG_ESCAPE_CODE )
+		{
+			switch( * pStr )
+			{
+				case 'n':				// Newline
+					pStr++;
+					nChar++;				// Newline should be counted
+					nBytes++;
+					break;
+				case '{':			// Begin color
+					pStr += 7;
+				break;
+
+				case 'h':			// Start heading
+				case 'u':			// Start user style
+					pStr += 2;
+				break;
+
+				case '(':			// Set textprop
+					while( * pStr != 0 && * pStr != ')' )
+						pStr++;
+					if( pStr != 0 )
+						pStr++;
+				break;
+
+				default:
+					pStr++;
+			}
+		}
+		else
+		{
+			nChar++;
+			if( c < 128 )
+				nBytes++;
+			else if( c < (1<<11) )
+				nBytes += 2;
+			else
+				nBytes += 3;
+		}
+	}
+	return nBytes;
+}
+
 
 //____ readFormattedString() __________________________________________________
 /**
@@ -789,7 +992,7 @@ Uint32 WgTextTool::getTextFormattedUTF8( const WgChar * pSrc, char * pDst, Uint3
 {
 	Uint32	ofs			= 0;
 	Uint16	hActiveProp = 0;
-	
+
 	TextPropEncoder	enc(pResDB);
 
 	Uint32 n = enc.BeginString();
@@ -813,7 +1016,7 @@ Uint32 WgTextTool::getTextFormattedUTF8( const WgChar * pSrc, char * pDst, Uint3
 			hActiveProp = pSrc->GetPropHandle();
 		}
 
-		
+
 		// Copy the glyph.
 
 		Uint16 glyph = pSrc->GetGlyph();
@@ -869,7 +1072,7 @@ Uint32 WgTextTool::getTextFormatted( const WgChar * pSrc, Uint16 * pDst, Uint32 
 {
 	Uint32	ofs			= 0;
 	Uint16	hActiveProp = 0;
-	
+
 	TextPropEncoder	enc(pResDB);
 	Uint32 n = enc.BeginString();
 	assert( n == 0 );						// If this has changed we need to add some code here...
@@ -1406,6 +1609,37 @@ int WgTextTool::strcmp( const WgChar * pStr1, const WgChar * pStr2 )
 }
 
 
+//____ glyphcmp() ____________________________________________________________
+int WgTextTool::glyphcmp( const WgChar * pStr1, const WgChar * pStr2 )
+{
+	while( !pStr1->IsEndOfText() && pStr1->glyph == pStr2->glyph )
+	{
+		pStr1++;
+		pStr2++;
+	}
+
+	if( pStr1->IsEndOfText() && pStr2->IsEndOfText() )
+		return 0;
+
+	return pStr1->glyph - pStr2->glyph;
+}
+
+//____ glyphcmpIgnoreCase() _______________________________________________________
+int WgTextTool::glyphcmpIgnoreCase( const WgChar * pStr1, const WgChar * pStr2 )
+{
+	while( !pStr1->IsEndOfText() && towlower(pStr1->glyph) == towlower(pStr2->glyph) )
+	{
+		pStr1++;
+		pStr2++;
+	}
+
+	if( pStr1->IsEndOfText() && pStr2->IsEndOfText() )
+		return 0;
+
+	return towlower(pStr1->glyph) - towlower(pStr2->glyph);
+}
+
+
 
 //____ NibbleToAscii() ____________________________________________________________
 inline Uint8 WgTextTool::NibbleToAscii( Uint8 nibble )
@@ -1743,7 +1977,7 @@ Uint32 WgTextTool::textWidth( const WgText& kTextObj )
 
 	for( Uint32 i = 0 ; i < nLines ; i++ )
 	{
-		Uint32 w = lineWidth( kTextObj.getNode(), kTextObj.getDefaultProperties(), kTextObj.mode(), kTextObj.getLineText( i ) );
+		Uint32 w = lineWidth( kTextObj.getNode(), kTextObj.getProperties(), kTextObj.mode(), kTextObj.getLineText( i ) );
 
 		if( w > maxWidth )
 			maxWidth = w;
@@ -1937,6 +2171,93 @@ void WgTextTool::forwardCharacters( const char *& pChar, Uint32 nChars )
 
 }
 
+//____ forwardEscapedCharacters() ____________________________________________________
+
+void WgTextTool::forwardEscapedCharacters( const char *& pStr, Uint32 nChars )
+{
+	Uint32 n = 0;
+	while( * pStr != 0 && n < nChars )
+	{
+		Uint16 c = readChar(pStr);
+
+		if( c == WG_ESCAPE_CODE )
+		{
+			switch( * pStr )
+			{
+				case 'n':				// Newline
+					pStr++;
+					n++;				// Newline should be counted
+					break;
+				case '{':				// Begin color
+					pStr += 7;
+				break;
+
+				case 'h':			// Start heading
+				case 'u':			// Start user style
+					pStr += 2;
+				break;
+
+				case '(':			// Set textprop
+					while( * pStr != 0 && * pStr != ')' )
+						pStr++;
+					if( pStr != 0 )
+						pStr++;
+				break;
+
+				default:
+					pStr++;
+			}
+		}
+		else
+			n++;
+	}
+}
+
+
+//____ forwardEscapedCharacters() ____________________________________________________
+
+void WgTextTool::forwardEscapedCharacters( const Uint16 *& pStr, Uint32 nChars )
+{
+	Uint32 n = 0;
+	while( * pStr != 0 && n < nChars )
+	{
+		Uint16 c = * pStr++;
+
+		if( c == WG_ESCAPE_CODE )
+		{
+			switch( * pStr )
+			{
+				case 'n':				// Newline
+					pStr++;
+					n++;				// Newline should be counted
+					break;
+				case '{':				// Begin color
+					pStr += 7;
+				break;
+
+				case 'h':			// Start heading
+				case 'u':			// Start user style
+					pStr += 2;
+				break;
+
+				case '(':			// Set textprop
+					while( * pStr != 0 && * pStr != ')' )
+						pStr++;
+					if( pStr != 0 )
+						pStr++;
+				break;
+
+				default:
+					pStr++;
+			}
+		}
+		else
+			n++;
+	}
+}
+
+
+
 
 //____ forwardColumns() _______________________________________________________
 
@@ -1990,9 +2311,9 @@ int  WgTextTool::forwardPixels( WgTextNode * pNode, const WgTextPropPtr& pDefPro
 		length = pen.GetPosX();
 		pPos++;
 	}
-	
+
 	pen.SetChar( pPos->GetGlyph() );	// End the line to get correct length. Pointer at EOL.
-	return pen.GetPosX();				
+	return pen.GetPosX();
 }
 
 //____ ofsX2column() ___________________________________________________________
@@ -2174,10 +2495,10 @@ int WgTextTool::stripTextColorCommands( const Uint16* pSrc, Uint16* pDest, int m
 }
 
 
-int WgTextTool::stripTextColorCommands( const char* pSrc, char* pDest, int maxChars )
+int WgTextTool::stripTextColorCommands( const char* pSrc, char* pDest, int maxBytes )
 {
 	int n = 0;
-	while( n < maxChars )
+	while( n < maxBytes )
 	{
 		Uint16 c = readChar( pSrc );
 
@@ -2197,6 +2518,85 @@ int WgTextTool::stripTextColorCommands( const char* pSrc, char* pDest, int maxCh
 
 	return n;
 }
+
+
+//____ stripTextCommandsConvert() _____________________________________________
+
+int WgTextTool::stripTextCommandsConvert( const Uint16* pSrc, char* pDest, int maxChars )
+{
+	int n = 0;
+	int ofs = 0;
+	while( n < maxChars )
+	{
+		Uint16 c = * pSrc++;
+
+		if( c == 0 )
+		{
+			pDest[ofs] = 0;
+			break;
+		}
+
+		if( c == WG_ESCAPE_CODE )
+		{
+			if( * pSrc == '(' )
+			{
+				while( * pSrc != ')' )
+					pSrc++;
+				pSrc++;
+			}
+			else if( * pSrc == 'h' || * pSrc == 'u' )
+				pSrc += 2;
+			else if( * pSrc == '{' )
+				pSrc += 9;
+			else
+				pSrc++;
+		}
+		else
+		{
+			ofs += writeUTF8( c, pDest + ofs );
+			n++;
+		}
+	}
+
+	return n;
+}
+
+
+int WgTextTool::stripTextCommandsConvert( const char* pSrc, Uint16* pDest, int maxChars )
+{
+	int n = 0;
+	while( n < maxChars )
+	{
+		Uint16 c = readChar( pSrc );
+
+		if( c == 0 )
+		{
+			pDest[n] = 0;
+			break;
+		}
+
+		if( c == WG_ESCAPE_CODE )
+		{
+			if( * pSrc == '(' )
+			{
+				while( * pSrc != ')' )
+					pSrc++;
+				pSrc++;
+			}
+			if( * pSrc == 'h' || * pSrc == 'u' )
+				pSrc += 2;
+			else if( * pSrc == '{' )
+				pSrc += 9;
+			else
+				pSrc++;
+		}
+		else
+			pDest[n++] = c;
+	}
+
+	return n;
+}
+
 
 //____ SetColor() _____________________________________________________________
 
@@ -2363,7 +2763,7 @@ void WgTextTool::ModifyProperties( const PropModifier& modif, WgChar * pChar, Ui
 
 bool WgTextTool::IsCombUnderlined( Uint16 hTextProp, Uint16 hCharProp, WgMode mode )
 {
-	return (WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_bUnderlined || 
+	return (WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_bUnderlined ||
 			WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_bUnderlined ||
 			WgBase::GetDefaultTextProp()->m_modeProp[mode].m_bUnderlined );
 }
@@ -2541,7 +2941,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 	}
 	else if( m_pResDB )
 	{
-		// Secondly, if nullprop isn't our current baseprop we see if we can do this using only nullprop 
+		// Secondly, if nullprop isn't our current baseprop we see if we can do this using only nullprop
 		// + style/color/size/underline settings.
 
 		if( !m_pBaseProp && pNewProp->GetFont() == 0 && !pNewProp->GetLink() &&
@@ -2647,8 +3047,8 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 	}
 
 	// Possibly begin/end underline
-	
-	if( (pNewProp->IsUnderlined() && pNewProp->IsUnderlineStatic()) && 
+
+	if( (pNewProp->IsUnderlined() && pNewProp->IsUnderlineStatic()) &&
 		!m_bUnderTagOpen && !pNewProp->CompareUnderlineTo( m_pBaseProp ) )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );

@@ -22,7 +22,7 @@ WgItemText::WgItemText( )
 
 WgItemText::WgItemText( Uint32 id, const char * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
-	m_text.setDefaultProperties(pProp);
+	m_text.setProperties(pProp);
 	m_text.setText( pStr );
 
 	m_margin.left	= marginLeft;
@@ -35,7 +35,7 @@ WgItemText::WgItemText( Uint32 id, const char * pStr, const WgTextPropPtr& pProp
 
 WgItemText::WgItemText( Uint32 id, const Uint16 * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
-	m_text.setDefaultProperties(pProp);
+	m_text.setProperties(pProp);
 	m_text.setText( pStr );
 
 	m_margin.left	= marginLeft;
@@ -48,7 +48,7 @@ WgItemText::WgItemText( Uint32 id, const Uint16 * pStr, const WgTextPropPtr& pPr
 
 WgItemText::WgItemText( Uint32 id, const WgText * pText, const WgTextPropPtr& pProp, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
-	m_text.setDefaultProperties(pProp);
+	m_text.setProperties(pProp);
 	m_text.setText( pText );
 
 	m_margin.left	= marginLeft;
@@ -73,7 +73,7 @@ void WgItemText::Init()
 
 	if( m_width < 1 )
 		m_width = 1;
-	
+
 	if( m_height < 1 )
 		m_height = 1;
 
@@ -124,7 +124,7 @@ void WgItemText::TextModified()
 
 	if( width < 1 )
 		width = 1;
-	
+
 	if( height < 1 )
 		height = 1;
 
@@ -139,7 +139,7 @@ void WgItemText::TextModified()
 
 void WgItemText::Render( const WgRect& _window, const WgRect& _clip )
 {
-	if( m_text.nbLines() == 0 || !m_text.getFontSet() )
+	if( m_text.nbLines() == 0 || !m_text.getFont() )
 		return;
 
 	WgRect r = _window;
@@ -168,7 +168,7 @@ WgItem* WgItemText::Clone( WgItem * _pClone )
 	WgItemText * pClone = (WgItemText*) _pClone;
 
 	if( !pClone )
-		pClone = new WgItemText( m_id, m_pText, m_pText->getDefaultProperties(), m_margin.left, m_margin.right, m_margin.top, m_margin.bottom );
+		pClone = new WgItemText( m_id, m_pText, m_pText->getProperties(), m_margin.left, m_margin.right, m_margin.top, m_margin.bottom );
 
 	Wg_Interface_TextHolder::CloneInterface( pClone );
 	return WgItem::Clone(pClone);
