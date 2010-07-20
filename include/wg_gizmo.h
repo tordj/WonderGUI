@@ -53,6 +53,7 @@ class WgUpdateInfo;
 class WgEmitter;
 class WgGfxDevice;
 class WgChildManager;
+class WgSkinManager;
 class Wg_Interface_TextHolder;
 
 class WgGizmo
@@ -71,6 +72,10 @@ public:
 
 	inline WgString		GetTooltipString() const { return m_tooltip; }
 	inline void			SetTooltipString( const WgString& str ) { m_tooltip = str; }
+
+	void				SetSkinManager( WgSkinManager * pManager );
+	WgSkinManager *		GetSkinManager() const;
+
 
 	inline void			Refresh() { OnRefresh(); }
 	void				Enable();

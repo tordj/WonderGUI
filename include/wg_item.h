@@ -50,13 +50,15 @@ class WgItem : public WgLink
 public:
 
 	WgItem();
-	WgItem( Uint32 id );
+	WgItem( Sint64 id );
 	virtual ~WgItem();
 
 	virtual	Uint32	Width() const		{ return m_width; };
 	virtual	Uint32	Height() const		{ return m_height; };
-	virtual	Uint32	Id() const			{ return m_id; };
-	virtual	void	SetId(Uint32 id)	{ m_id = id; }
+	virtual	Sint32	Id() const			{ return (Sint32)m_id; };
+	virtual	void	SetId(Sint32 id)	{ m_id = id; }
+	virtual	Sint64	Id64() const		{ return m_id; };
+	virtual	void	SetId64(Sint64 id)	{ m_id = id; }
 
 	inline	WgItem * GetNext() const	{ return (WgItem *) getNext(); };
 	inline	WgItem * GetPrev() const	{ return (WgItem *) getPrev(); };
@@ -114,7 +116,7 @@ protected:
 	Uint32			m_width;		// Width needed to properly display content.
 	Uint32			m_height;		// Height needed to properly display content.
 
-	Uint32			m_id;
+	Sint64			m_id;
 	WgMode			m_mode;
 
 	bool			m_bVisible;

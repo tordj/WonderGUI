@@ -32,9 +32,9 @@ class WgItemPixmap : public WgItem
 {
 public:
 	WgItemPixmap( );
-	WgItemPixmap( Uint32 id );
-	WgItemPixmap( Uint32 id, WgBorders margin );
-	WgItemPixmap( Uint32 id, WgBorders margin, WgBlockSetPtr source );
+	WgItemPixmap( Sint64 id );
+	WgItemPixmap( Sint64 id, WgBorders margin );
+	WgItemPixmap( Sint64 id, WgBorders margin, WgBlockSetPtr source );
 	~WgItemPixmap();
 
 	void			SetSource( WgBlockSetPtr block );

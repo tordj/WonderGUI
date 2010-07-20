@@ -22,7 +22,6 @@ CURSOR
 GFXDEVICES
 ==========
 
-* Editable surfaces.
 * SDL: Correctly working tint.
 * Support locking of only a region of a surface, could speed up WgSurfaceGL::Unlock() in combination with VectorGlyph generation quite a bit.
 * Review WgSurfaceGL for consistency.
@@ -36,3 +35,20 @@ LAYOUT
 GFXDEVICE
 =========
 * Optimize handling of cliprectangle.
+
+
+SKINMANAGER
+===========
+* Implement serialization of BlockSet alternatives ( call WgAltRes::Serialize() from WgBlockSetRes::Serialize() )
+* Allow activation_size of 0 throughout system, don't sort then... warn if combining alterantives with activation_size
+  and no activation size in same BlockSet.
+* Implement GetBlock( WgMode mode, WgSkinManager * pManager, WgSize destSize ). If skinmanager is present it decides alternative with
+  destSize as input. If not alternative is decided by destSize.
+* Use new GetBlock() from all Gizmos.
+* Implement WgSkinManager-methods/rules.
+
+
+GIZMO
+=====
+* Should not delete hook, just inform parent that it's disconnecting. Parent owns hook and it might not be a deletable object!
+

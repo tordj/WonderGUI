@@ -32,9 +32,9 @@ class WgItemText : public WgItem, public Wg_Interface_TextHolder
 {
 public:
 	WgItemText( );
-	WgItemText( Uint32 id, const char * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
-	WgItemText( Uint32 id, const Uint16 * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
-	WgItemText( Uint32 id, const WgText * pText, const WgTextPropPtr& pProp, Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
+	WgItemText( Sint64 id, const char * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
+	WgItemText( Sint64 id, const Uint16 * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
+	WgItemText( Sint64 id, const WgText * pText, const WgTextPropPtr& pProp, Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
 	~WgItemText();
 
 	void SetTextProp(const WgTextPropPtr& pProp);

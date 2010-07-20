@@ -44,13 +44,13 @@ WgItemStack::WgItemStack()
 	m_minHeight = 0;
 }
 
-WgItemStack::WgItemStack( Uint32 id ) : WgItem( id )
+WgItemStack::WgItemStack( Sint64 id ) : WgItem( id )
 {
 	m_minWidth = 0;
 	m_minHeight = 0;
 }
 
-WgItemStack::WgItemStack( Uint32 id, int minW, int minH ) : WgItem( id )
+WgItemStack::WgItemStack( Sint64 id, int minW, int minH ) : WgItem( id )
 {
 	m_minWidth = minW;
 	m_minHeight = minH;

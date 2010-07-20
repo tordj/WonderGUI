@@ -34,8 +34,8 @@ class WgItemStack : public WgItem, protected Wg_Interface_ItemHolder
 {
 public:
 	WgItemStack();
-	WgItemStack( Uint32 id );
-	WgItemStack( Uint32 id, int minW, int minH );
+	WgItemStack( Sint64 id );
+	WgItemStack( Sint64 id, int minW, int minH );
 	virtual ~WgItemStack();
 
 	DECLARE_TOOLTIP_SUPPORT();

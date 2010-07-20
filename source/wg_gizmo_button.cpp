@@ -201,7 +201,7 @@ void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _window, cons
 	// Render background
 
 	if( m_pBgGfx )
-		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode), _window );
+		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode, _window), _window );
 
 	// Get displacement offset
 

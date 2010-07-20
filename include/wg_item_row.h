@@ -34,7 +34,7 @@ class WgItemRow : public WgItem, public Wg_Interface_ItemHolder
 {
 public:
 	WgItemRow();
-	WgItemRow( Uint32 id );
+	WgItemRow( Sint64 id );
 	virtual ~WgItemRow();
 
 	DECLARE_TOOLTIP_SUPPORT();

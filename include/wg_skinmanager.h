@@ -41,6 +41,7 @@ class WgSkinManager
 {
 
 friend class WgSkinNode;
+friend class WgGizmo;
 
 public:
 	WgSkinManager();

@@ -128,7 +128,7 @@ bool WgBlockSet::AddAlternative( WgSize activationSize, const WgSurface * pSurf,
 	LinkedAlt * pOther = m_altChain.getFirst();
 	while( pOther )
 	{
-		if( pOther->activationSize.w == p->activationSize.w || pOther->activationSize.h == p->activationSize.h )
+		if( pOther->activationSize.w == p->activationSize.w && pOther->activationSize.h == p->activationSize.h )
 		{
 			delete p;
 			return false;			// Already have a Alt with this activation size.
@@ -153,7 +153,7 @@ bool WgBlockSet::AddAlternative( WgSize activationSize, const WgSurface * pSurf,
 	return true;
 }
 
-//____ GetNbAlternatives() _____________________________________________________________
+//____ GetNbAlternatives() ____________________________________________________
 
 int WgBlockSet::GetNbAlternatives() const
 {
@@ -166,6 +166,28 @@ int WgBlockSet::GetNbAlternatives() const
 	}
 	return nb;
 }
+
+//____ GetActivationSize() ____________________________________________________
+
+WgSize WgBlockSet::GetActivationSize( int alt ) const
+{
+	if( alt == 0 )
+		return WgSize(0,0);
+
+	int nb = 1;
+	LinkedAlt * p = m_altChain.getFirst();
+	while( p )
+	{
+		if( nb == alt )
+			return p->activationSize;
+
+		nb++;
+		p = p->getNext();
+	}
+
+	return WgSize(0,0);
+}
+
 
 //____ GetAlt() _______________________________________________________________
 

@@ -190,8 +190,10 @@ class	WgWidget : public WgEmitter
 		virtual const char *Type( void ) const;
 		static const char * GetMyType();
 
-		inline Sint32		Id() const { return m_id; }
-		virtual void			SetId( Sint32 id ) { m_id = id; }
+		inline Sint32		Id() const { return (Sint32)m_id; }
+		virtual void		SetId( Sint32 id ) { m_id = id; }
+		inline Sint64		Id64() const { return m_id; }
+		virtual void		SetId64( Sint64 id ) { m_id = id; }
 
 		inline Uint8		Layer() const { return m_layer; }
 		inline void			SetLayer( Uint8 layer ) { m_layer = layer; }
@@ -346,7 +348,7 @@ class	WgWidget : public WgEmitter
 
 	protected:
 
-		Sint32		m_id;
+		Sint64		m_id;
 		Sint32		m_tooltipDelay;
 		Uint8		m_layer;
 

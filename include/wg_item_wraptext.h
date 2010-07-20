@@ -11,9 +11,9 @@ class WgItemWrapText : public WgItem, public Wg_Interface_TextHolder
 {
 public:
 	WgItemWrapText(  );
-	WgItemWrapText( Uint32 id, const char * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
-	WgItemWrapText( Uint32 id, const Uint16 * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
-	WgItemWrapText( Uint32 id, const WgText * pText, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
+	WgItemWrapText( Sint64 id, const char * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
+	WgItemWrapText( Sint64 id, const Uint16 * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
+	WgItemWrapText( Sint64 id, const WgText * pText, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
 	~WgItemWrapText();
 
 	void			MinSize( Uint32 width, Uint32 height );

@@ -932,7 +932,7 @@ WgChar * WgText::parseScaledValue( Sint64 value, Uint32 scale, const WgValueForm
 
 	while( intPart > 0 )
 	{
-		temp2[n++] = (intPart % 10) + 0x30;
+		temp2[n++] = (Uint16) ((intPart % 10) + 0x30);
 		intPart /= 10;
 	}
 

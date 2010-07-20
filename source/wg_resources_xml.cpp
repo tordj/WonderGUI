@@ -330,6 +330,7 @@ void WgResourceXML::RegisterResources()
 	WgResourceFactoryXML::Register<WgBorderRes>			(WgBorderRes::TagName());
 	WgResourceFactoryXML::Register<WgTileRes>			(WgTileRes::TagName());
 	WgResourceFactoryXML::Register<WgBlockSetRes>		(WgBlockSetRes::TagName());
+	WgResourceFactoryXML::Register<WgAltRes>			(WgAltRes::TagName());
 
 	WgResourceFactoryXML::Register<WgItemPixmapRes>		(WgItemPixmapRes::TagName());
 	WgResourceFactoryXML::Register<WgItemPixmapRes>		(WgItemPixmap::GetMyType());
@@ -565,7 +566,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResSkinManager())
 	{
 		s.AddText("\n");
-		for(WgResDB::TextManagerRes* res = s.ResDb()->GetFirstResSkinManager(); res; res = res->getNext())
+		for(WgResDB::SkinManagerRes* res = s.ResDb()->GetFirstResSkinManager(); res; res = res->getNext())
 		{
 			WgSkinManagerRes skinManagerRes(this, res->res);
 			skinManagerRes.SetMetaData(res->meta);
@@ -1430,7 +1431,7 @@ WgColor WgColorRes::Deserialize(WgResourceSerializerXML& s, const std::string& v
 	if( value[0] == '#' )
 	{
 		WgResDB::ColorRes* colorRes = s.ResDb()->GetResColor(value.substr(1));
-		ASSERT(colorRes, "undefined color: " + value.substr(1));
+//		ASSERT(colorRes, "undefined color: " + value.substr(1));
 		if(colorRes)
 			return colorRes->res;
 		return def;
@@ -1581,6 +1582,12 @@ void WgGlyphSetRes::Serialize(WgResourceSerializerXML& s)
 					break;
 			}
 
+			// Write down size_offset if we have any.
+
+			int	sizeOffset = ((WgVectorGlyphs*)(res->res))->GetSizeOffset();
+			if( sizeOffset != 0 )
+				s.AddAttribute("size_offset", WgUtil::ToString( sizeOffset ) );
+
 			// Write down monochrome_sizes if we have any.
 
 			if( mode != WgVectorGlyphs::MONOCHROME )
@@ -1632,7 +1639,7 @@ void WgGlyphSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 			WgVectorGlyphs * pVectorGlyphs = (WgVectorGlyphs*)m_pGlyphSet;
 
 			const std::string& mode = xmlNode["render_mode"];
-			if( mode.size() != 0 )
+			if( !mode.empty() )
 			{
 				if( mode == "monochrome" )
 					pVectorGlyphs->SetRenderMode( WgVectorGlyphs::MONOCHROME );
@@ -1645,8 +1652,10 @@ void WgGlyphSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 
 			}
 
+			//
+
 			const std::string& monosizes = xmlNode["monochrome_sizes"];
-			if( monosizes.size() != 0  )
+			if( !monosizes.empty() )
 			{
 				std::vector<std::string> tokens;
 				WgUtil::Tokenize(monosizes, tokens);
@@ -1655,6 +1664,10 @@ void WgGlyphSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 					pVectorGlyphs->SetRenderMode( WgVectorGlyphs::MONOCHROME, WgUtil::ToSint32( tokens[i] ) );
 			}
 
+			//
+
+			int size_offset = WgUtil::ToSint32( xmlNode["size_offset"] );
+			pVectorGlyphs->SetSizeOffset( size_offset );
 		}
 #endif
 	}
@@ -2608,6 +2621,241 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	s.ResDb()->AddBlockSet( id, m_pBlockSet, new WgXMLMetaData(XmlNode()) );
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+/// WgAltRes /////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//	<alt
+//		activation_size=[w,h]
+//		activation_width=[w]
+//		activation_height=[h]
+//		surface=[name]
+//		x=[integer]
+//		y=[integer]
+//		w=[integer]
+//		h=[integer]
+//		rect=[x,y,w,h]
+//		blocks=[integer]
+//		margin=[integer]
+//		borders=[all]
+//		borders=[left,right,top,bottom]
+//		content_borders=[all]
+//		content_borders=[left,right,top,bottom]
+// />
+void WgAltRes::Serialize(WgResourceSerializerXML& s, int altNb )
+{
+	ASSERT(altNb > 0, "incorrect call to WgAltRes::Serialize()" );
+
+	WgBlockSetRes* blockSetRes = WgResourceXML::Cast<WgBlockSetRes>(Parent());
+	VERIFY(blockSetRes, "invalid parent for <alt>. should be <blockset>");
+	WgBlockSetPtr pBlockSet = blockSetRes->GetBlockSet();
+
+
+	s.BeginTag(TagName());
+
+	const WgXmlNode& xmlNode = XmlNode();
+
+	WgSize actSize = pBlockSet->GetActivationSize(altNb);
+
+	if( actSize.w !=0 && actSize.h != 0 )
+		s.AddAttribute( "activation_size", WgUtil::ToString( actSize.w, actSize.h ));
+	else if( actSize.w != 0 )
+		s.AddAttribute( "activation_width", WgUtil::ToString( actSize.w ) );
+	else if( actSize.h != 0 )
+		s.AddAttribute( "activation_height", WgUtil::ToString( actSize.h ) );
+	else
+		assert(0);		// Invalid activation size, both set to 0!
+
+	WgBorderRes::Serialize(s, xmlNode, "borders", pBlockSet->GetGfxBorders(altNb));
+	WgBorderRes::Serialize(s, xmlNode, "content_borders", pBlockSet->GetContentBorders(altNb));
+
+
+	WgRect rect[5];
+	rect[WG_MODE_NORMAL] = pBlockSet->GetRect(WG_MODE_NORMAL,altNb);
+	rect[WG_MODE_MARKED] = pBlockSet->GetRect(WG_MODE_MARKED,altNb);
+	rect[WG_MODE_SELECTED] = pBlockSet->GetRect(WG_MODE_SELECTED,altNb);
+	rect[WG_MODE_DISABLED] = pBlockSet->GetRect(WG_MODE_DISABLED,altNb);
+	rect[WG_MODE_SPECIAL] = pBlockSet->GetRect(WG_MODE_SPECIAL,altNb);
+
+	bool bUsed[5] =
+	{
+		true,
+		rect[WG_MODE_MARKED] != rect[WG_MODE_NORMAL],
+		rect[WG_MODE_SELECTED] != rect[WG_MODE_NORMAL],
+		rect[WG_MODE_DISABLED] != rect[WG_MODE_NORMAL],
+		rect[WG_MODE_SPECIAL] != rect[WG_MODE_NORMAL],
+	};
+
+	int margin = 0;
+	int nBlocks = 1;
+	int iLastUsed = 0;
+	bool bSubBlocks = false;
+	for(int i = 1; i < 5; i++)
+	{
+		if(bUsed[i])
+		{
+			iLastUsed = i;
+			nBlocks++;
+			int m = rect[i].x - rect[iLastUsed].x - rect[iLastUsed].w;
+			if(m != margin)
+				bSubBlocks = true;
+		}
+	}
+
+	if(nBlocks == 2 && bUsed[WG_MODE_DISABLED] == false)
+		bSubBlocks = true;
+	else if(nBlocks != iLastUsed + 1)
+		bSubBlocks = true;
+
+	if(xmlNode.HasAttribute("lego"))
+	{
+		WgResDB::LegoSource* source = s.ResDb()->GetLegoSource(xmlNode["lego"]);
+		WgSurface* pSurface = s.ResDb()->GetSurface(source->surface);
+
+		VERIFY(source != 0, "lego source '" + xmlNode["lego"] + "' not found");
+		VERIFY(pSurface != 0, "surface '" + source->surface +  "' not found");
+
+		s.AddAttribute("lego", source->id);
+		s.AddAttribute("surface", source->surface);
+
+		int iState[5];
+		iState[WG_MODE_NORMAL] = StateFromRect(source->rect, rect[WG_MODE_NORMAL]);
+		iState[WG_MODE_MARKED] = StateFromRect(source->rect, rect[WG_MODE_MARKED]);
+		iState[WG_MODE_SELECTED] = StateFromRect(source->rect, rect[WG_MODE_SELECTED]);
+		iState[WG_MODE_DISABLED] = StateFromRect(source->rect, rect[WG_MODE_DISABLED]);
+		iState[WG_MODE_SPECIAL] = StateFromRect(source->rect, rect[WG_MODE_SPECIAL]);
+
+		s.AddAttribute("states", WgUtil::ToString(iState[0], iState[1], iState[2], iState[3], iState[4]));
+	}
+	else
+	{
+		WriteSurfaceAttr(s, pBlockSet->GetSurface(altNb), "surface");
+
+		WgRectRes::Serialize(s, xmlNode, rect[WG_MODE_NORMAL]);
+
+		if(bSubBlocks || !xmlNode.HasAttribute("blocks"))
+		{
+			for(int i = 1; i < 5; i++)
+			{
+				if(bUsed[i])
+				{
+					WgBlockRes b(this, WgMode(i), rect[i].x, rect[i].y);
+					b.Serialize(s);
+				}
+			}
+		}
+		else
+		{
+			// compact mode
+			WriteDiffAttr(s, xmlNode, "blocks", nBlocks, 1);
+			WriteDiffAttr(s, xmlNode, "margin", margin, 2);
+		}
+	}
+	s.EndTag();
+}
+
+WgRect WgAltRes::StateRect(const WgRect& src, int iState)
+{
+	const int legoMargin = 2;
+	return WgRect(src.x + (src.w + legoMargin) * iState, src.y, src.w, src.h);
+}
+
+int WgAltRes::StateFromRect(const WgRect& src, const WgRect& stateRect)
+{
+	const int legoMargin = 2;
+	return (stateRect.x - src.x) / (src.w + legoMargin);
+}
+
+void WgAltRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
+{
+	ASSERT(xmlNode.HasAttribute("lego") || xmlNode.HasAttribute("rect") || (xmlNode.HasAttribute("w") && xmlNode.HasAttribute("h")), "missing rectangle in <alt>");
+
+	WgBlockSetRes* blockSetRes = WgResourceXML::Cast<WgBlockSetRes>(Parent());
+	VERIFY(blockSetRes, "invalid parent for <alt>. should be <blockset>");
+
+	WgBlockSetPtr pBlockSet = blockSetRes->GetBlockSet();
+
+	WgBorders gfxBorders = WgBorderRes::Deserialize(s, xmlNode["borders"]);
+	WgBorders contentBorders = WgBorderRes::Deserialize(s, xmlNode["content_borders"]);
+
+	//
+
+	WgSize activationSize = WgSize(0,0);
+
+	if( xmlNode.HasAttribute("activation_size") )
+	{
+		WgUtil::FromString(xmlNode["activation_size"], activationSize.w, activationSize.h );
+	}
+	else
+	{
+		activationSize.w = WgUtil::ToSint32(xmlNode["activation_width"]);
+		activationSize.h = WgUtil::ToSint32(xmlNode["activation_height"]);
+	}
+
+	// Fill in the surface and rectangles
+
+	WgSurface * pSurface = 0;
+	WgRect rect[5];		// normal, marked, selected, disabled, special
+	int		nRects = 0;
+
+	if(xmlNode.HasAttribute("lego"))
+	{
+		WgResDB::LegoSource* source = s.ResDb()->GetLegoSource(xmlNode["lego"]);
+		VERIFY(source != 0, "lego source '" + xmlNode["lego"] + "' not found");
+
+		pSurface = s.ResDb()->GetSurface(source->surface);
+		VERIFY(pSurface != 0, "surface '" + source->surface +  "' not found");
+
+		// Create a remap table "iStates" for what rectangle to use for which state.
+
+		int	iStates[5] = { 0,1,2,3,4 };					// normal, marked, selected, disabled, special
+		int dummy = 0;
+
+		WgRect big_rect = source->rect;
+
+		int nStates = WgUtil::FromString(xmlNode["states"], iStates[0], iStates[1], iStates[2], iStates[3], iStates[4], dummy);
+		if(nStates == 0)
+			nStates = source->nStates;
+
+		ASSERT( nStates > 0 && nStates <= 5, "invalid states definition in <alt>");
+
+		// Fill in the rectangles
+
+		for( int i = 0 ; i < nStates ; i++ )
+			rect[i] = StateRect( big_rect, iStates[i] );
+
+		nRects = nStates;
+	}
+	else
+	{
+		WgRect rect[5];
+		rect[0] = WgRectRes::Deserialize(xmlNode);
+
+		pSurface = s.ResDb()->GetSurface(xmlNode["surface"]);
+		VERIFY(pSurface != 0, "missing surface '" + xmlNode["surface"] + "' in <blockset>");
+
+		if(rect[0].w == 0 && rect[0].h == 0)
+		{
+			rect[0] = WgRect(0, 0, pSurface->width(), pSurface->height());
+		}
+
+		int nBlocks = WgUtil::ToSint32(xmlNode["blocks"]);
+		int margin = WgUtil::ToSint32(xmlNode["margin"], 2);
+
+		for(int i = 1; i < nBlocks; i++)
+			rect[i] = WgRect(rect[i-1].x + rect[i-1].w + margin, rect[0].y, rect[0].w, rect[0].h);
+
+		nRects = nBlocks;
+	}
+
+	for( int i = nRects ; i < 5 ; i++ )
+		rect[i] = rect[0];					// Fill up with normal for unspecified ones.
+
+	pBlockSet->AddAlternative( activationSize, pSurface, rect[0], rect[1], rect[2], 
+							   rect[3], rect[4], gfxBorders, contentBorders);
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 /// WgTextHolderRes //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -3016,7 +3264,7 @@ void WgWidgetRes::Serialize(WgResourceSerializerXML& s)
 	WgSizeRes::Serialize(s, xmlNode, "minsize", m_Widget->GetMinSizeUser(), WgSize(1, 1));
 	WgSizeRes::Serialize(s, xmlNode, "maxsize", m_Widget->GetMaxSizeUser(), WgSize(10000, 10000));
 	WriteDiffAttr(s, xmlNode, "enabled", m_Widget->IsEnabled(), true);
-	WriteDiffAttr(s, xmlNode, "uid", m_Widget->Id(), 0);
+	WriteDiffAttr(s, xmlNode, "uid", m_Widget->Id64(), (Sint64)0);
 	WriteDiffAttr(s, xmlNode, "modal", m_Widget->IsModal(), false);
 	WriteDiffAttr(s, xmlNode, "visible", !m_Widget->IsSetToHide(), true);
 
@@ -3027,6 +3275,20 @@ void WgWidgetRes::Serialize(WgResourceSerializerXML& s)
 		s.AddAttribute("id", id);
 	else
 		s.RemoveAttribute("id");
+
+	// Parameters that only exist for gizmos.
+
+	WgGizmo * pGizmo = m_Widget->GetGizmo();
+	if( pGizmo )
+	{
+		if( pGizmo->GetSkinManager() )
+		{
+			std::string skinManagerId = s.ResDb()->FindSkinManagerId( pGizmo->GetSkinManager() );
+			WriteDiffAttr( s, xmlNode, "skinmanager", skinManagerId, std::string("") );
+		}
+	}
+	
+	//
 
 	WgConnectRes::Serialize(s, this);
 
@@ -3070,6 +3332,18 @@ void WgWidgetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 	if(parentRes)
 	{
 		m_Widget->SetParent(parentRes->GetWidget());
+	}
+
+	std::string skinmanager = xmlNode["skinmanager"];
+	if( !skinmanager.empty() )
+	{
+		WgGizmo * pGizmo = m_Widget->GetGizmo();
+		WgSkinManager * pManager = s.ResDb()->GetSkinManager( skinmanager );
+
+		VERIFY(pGizmo, "Skinmanager set on non-gizmo widget");
+		VERIFY(pManager, "Referenced skinmanager not found");
+
+		pGizmo->SetSkinManager( pManager );
 	}
 
 	s.ResDb()->AddWidget(xmlNode["id"], m_Widget, new WgXMLMetaData(XmlNode()));
@@ -5020,7 +5294,7 @@ void WgItemRes::Serialize(WgResourceSerializerXML& s)
 	VERIFY(m_item, "item not set");
 	const WgXmlNode& xmlNode = XmlNode();
 
-	WriteDiffAttr(s, xmlNode, "uid", m_item->Id(), (Uint32)0);
+	WriteDiffAttr(s, xmlNode, "uid", m_item->Id64(), (Sint64)0);
 	WriteDiffAttr(s, xmlNode, "selected", m_item->IsSelected(), false);
 	WriteDiffAttr(s, xmlNode, "enabled", !m_item->IsDisabled(), true);
 }

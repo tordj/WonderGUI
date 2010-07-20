@@ -23,7 +23,7 @@ WgItemWrapText::WgItemWrapText( ) :
 	Init();
 }
 
-WgItemWrapText::WgItemWrapText( Uint32 id, const char * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
+WgItemWrapText::WgItemWrapText( Sint64 id, const char * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
 	m_text.setProperties( pProp );
 	Uint32 linewidth = startwidth - marginLeft - marginRight;
@@ -45,7 +45,7 @@ WgItemWrapText::WgItemWrapText( Uint32 id, const char * pStr, WgTextPropPtr pPro
 	Init();
 }
 
-WgItemWrapText::WgItemWrapText( Uint32 id, const Uint16 * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
+WgItemWrapText::WgItemWrapText( Sint64 id, const Uint16 * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
 	m_text.setProperties( pProp );
 	Uint32 linewidth = startwidth - marginLeft - marginRight;
@@ -66,7 +66,7 @@ WgItemWrapText::WgItemWrapText( Uint32 id, const Uint16 * pStr, WgTextPropPtr pP
 	Init();
 }
 
-WgItemWrapText::WgItemWrapText( Uint32 id, const WgText * pText, Uint32 startwidth, WgColor bgFill, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
+WgItemWrapText::WgItemWrapText( Sint64 id, const WgText * pText, Uint32 startwidth, WgColor bgFill, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
 	m_text.setProperties( pText->getProperties() );
 	Uint32 linewidth = startwidth - marginLeft - marginRight;

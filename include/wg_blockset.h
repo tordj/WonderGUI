@@ -248,9 +248,8 @@ protected:
 	public:
 		LINK_METHODS( LinkedAlt );
 
-		WgSize		activationSize;	// If (dest_width <= size.w) or (dest_height <= size.h) this or a smaller Alternatives will be used. Setting either size.w or size.h
-									// to 0 ignores that dimension in the comparison. Setting both to 0 is not allowed since that would result in the Alt 
-									// never being used.							
+		WgSize		activationSize;	// If (dest_width <= size.w) or (dest_height <= size.h) this or a smaller Alt will be used. Setting either size.w or size.h
+									// to 0 ignores that dimension in the comparison. Setting both to 0 makes it accessible only by other ways.							
 		Alt_Data	data;
 	};
 
@@ -264,6 +263,7 @@ public:
 	inline bool			HasBlock( WgMode mode, int alt = 0 ) const;
 
 	int					GetNbAlternatives() const;
+	WgSize				GetActivationSize( int alt ) const; 
 
 	bool				SetSize( WgSize size, int alt = 0 );
 	bool				SetPos( WgMode mode, WgCord pos, int alt = 0 );

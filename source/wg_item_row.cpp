@@ -41,7 +41,7 @@ WgItemRow::WgItemRow()
 {
 }
 
-WgItemRow::WgItemRow( Uint32 id ) : WgItem( id )
+WgItemRow::WgItemRow( Sint64 id ) : WgItem( id )
 {
 }
 

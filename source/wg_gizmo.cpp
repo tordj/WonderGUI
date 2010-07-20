@@ -22,30 +22,25 @@
 
 #include <wg_gizmo.h>
 #include <wg_types.h>
+#include <wg_skinmanager.h>
 
 static const char	s_type[] = {"Unspecified"};
 
 //____ Constructor ____________________________________________________________
 
-WgGizmo::WgGizmo()
+WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_bEnabled(true), m_bOpaque(false),
+					m_bRendersAll(false), m_bRenderOne(false), m_cursorStyle(WG_CURSOR_DEFAULT)
 {
-	m_id			= 0;
-	m_pHook			= 0;
-
-	m_bEnabled		= true;
-	m_bOpaque		= false;
-
-	m_bRendersAll	= false;
-	m_bRenderOne	= false;
-
-	m_cursorStyle	= WG_CURSOR_DEFAULT;
-
 }
 
 //____ Destructor _____________________________________________________________
 
 WgGizmo::~WgGizmo()
 {
+	delete m_pHook;
+	m_pHook = 0;
+	delete m_pSkinNode;
+	m_pSkinNode = 0;
 }
 
 
@@ -85,6 +80,30 @@ void WgGizmo::Disable()
 		OnDisable();
 	}
 }
+
+//____ SetSkinManager() _______________________________________________________
+
+void WgGizmo::SetSkinManager( WgSkinManager * pManager )
+{
+	if( m_pSkinNode )
+		delete m_pSkinNode;
+
+	if( pManager )
+		m_pSkinNode = pManager->NewNode( this );
+	else
+		m_pSkinNode = 0;
+}
+
+//____ GetSkinManager() _______________________________________________________
+
+WgSkinManager *	WgGizmo::GetSkinManager() const 
+{ 
+	if( m_pSkinNode )
+		return m_pSkinNode->GetManager();
+
+	return 0;
+}
+
 
 //____ CloneContent() _________________________________________________________
 

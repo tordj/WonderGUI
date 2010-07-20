@@ -49,6 +49,7 @@ WgVectorGlyphs::WgVectorGlyphs( char* pTTF_File, int bytes, int faceIndex )
 	m_pData = pTTF_File;
 	m_ftCharSize	= 0;
 	m_accessCounter = 0;
+	m_sizeOffset	= 0;
 
 	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 		m_cachedGlyphsIndex[i] = 0;
@@ -165,6 +166,8 @@ bool WgVectorGlyphs::SetRenderMode( RenderMode mode, int startSize, int endSize 
 
 int WgVectorGlyphs::GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRightGlyph, int size )
 {
+	size += m_sizeOffset;
+
 	if( pLeftGlyph == 0 || pRightGlyph == 0 )
 		return 0;
 
@@ -186,6 +189,8 @@ int WgVectorGlyphs::GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRight
 
 int WgVectorGlyphs::GetWhitespaceAdvance( int size )
 {
+	size += m_sizeOffset;
+
 	//TODO: We should probably cache this...
 
 	FT_Error err;
@@ -212,6 +217,8 @@ int WgVectorGlyphs::GetWhitespaceAdvance( int size )
 
 int WgVectorGlyphs::GetHeight( int size )
 {
+	size += m_sizeOffset;
+
 	if( m_ftCharSize != size )
 		if( !SetCharSize( size ) )
 			return 0;
@@ -223,6 +230,8 @@ int WgVectorGlyphs::GetHeight( int size )
 
 int WgVectorGlyphs::GetLineSpacing( int size )
 {
+	size += m_sizeOffset;
+
 	if( m_ftCharSize != size )
 		if( !SetCharSize( size ) )
 			return 0;
@@ -235,6 +244,8 @@ int WgVectorGlyphs::GetLineSpacing( int size )
 
 int WgVectorGlyphs::GetBaseline( int size )
 {
+	size += m_sizeOffset;
+
 	if( m_ftCharSize != size )
 		if( !SetCharSize( size ) )
 			return 0;
@@ -268,6 +279,8 @@ bool WgVectorGlyphs::IsMonospace()
 
 int WgVectorGlyphs::GetMaxGlyphAdvance( int size )
 {
+	size += m_sizeOffset;
+
 	return (m_ftFace->size->metrics.max_advance+32) >> 6;
 }
 
@@ -287,6 +300,8 @@ bool WgVectorGlyphs::HasGlyph( Uint16 ch )
 
 WgGlyph * WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
 {
+	size += m_sizeOffset;
+
 	// Sanity check
 
 	if( size > WG_MAX_FONTSIZE || size < 0 )
@@ -311,7 +326,11 @@ WgGlyph * WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
 
 		// Load Glyph
 
-		err = FT_Load_Char( m_ftFace, ch, m_renderFlags );
+		FT_UInt char_index = FT_Get_Char_Index( m_ftFace, ch );
+		if( char_index == 0 )
+			return 0;			// We got index for missing glyph.
+
+		err = FT_Load_Glyph( m_ftFace, char_index, m_renderFlags );
 		if( err )
 			return 0;
 
@@ -339,7 +358,7 @@ WgGlyph * WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
 		pSlot->glyph.advance = advance;
 		pSlot->glyph.bearingX = xBearing;
 		pSlot->glyph.bearingY = yBearing;
-		pSlot->glyph.kerningIndex = FT_Get_Char_Index( m_ftFace, ch );
+		pSlot->glyph.kerningIndex = char_index;
 		pSlot->glyph.pSurf = pSlot->pSurf->pSurf;
 		pSlot->glyph.rect = WgRect(pSlot->rect.x, pSlot->rect.y, width, height);
 

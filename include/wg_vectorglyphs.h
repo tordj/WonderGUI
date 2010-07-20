@@ -83,7 +83,8 @@ public:
 	int			GetWhitespaceAdvance( int size );
 	int			GetMaxGlyphAdvance( int size );
 
-
+	inline void	SetSizeOffset( int offset ) { m_sizeOffset = offset; }
+	inline int	GetSizeOffset() const { return m_sizeOffset; }
 	inline bool SetRenderMode( RenderMode mode ) { return SetRenderMode( mode, 0, 0xFFFF ); }
 	inline bool SetRenderMode( RenderMode mode, int size ) { return SetRenderMode(mode,size,size); }
 	bool		SetRenderMode( RenderMode mode, int startSize, int endSize );
@@ -153,7 +154,7 @@ private:
 	Uint32				m_accessCounter;
 	int					m_renderFlags;
 	RenderMode			m_renderMode[WG_MAX_FONTSIZE+1];
-
+	int					m_sizeOffset;								// value to add to specified size (for GetGlyph(), GetKerning() etc) before getting glyph data.
 
 	//____ Static stuff __________________________________________________________
 

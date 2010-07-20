@@ -47,7 +47,7 @@ WgItemPixmap::WgItemPixmap( ) :
 	UpdateSize();
 }
 
-WgItemPixmap::WgItemPixmap( Uint32 id ) :
+WgItemPixmap::WgItemPixmap( Sint64 id ) :
 	WgItem(id),
 	m_margin(0),
 	m_forcedSize(0, 0)
@@ -55,7 +55,7 @@ WgItemPixmap::WgItemPixmap( Uint32 id ) :
 	UpdateSize();
 }
 
-WgItemPixmap::WgItemPixmap( Uint32 id, WgBorders margin ) :
+WgItemPixmap::WgItemPixmap( Sint64 id, WgBorders margin ) :
 	WgItem(id),
 	m_margin(margin),
 	m_forcedSize(0, 0)
@@ -63,7 +63,7 @@ WgItemPixmap::WgItemPixmap( Uint32 id, WgBorders margin ) :
 	UpdateSize();
 }
 
-WgItemPixmap::WgItemPixmap( Uint32 id, WgBorders margin, WgBlockSetPtr block ) :
+WgItemPixmap::WgItemPixmap( Sint64 id, WgBorders margin, WgBlockSetPtr block ) :
 	WgItem(id),
 	m_block(block),
 	m_margin(margin),

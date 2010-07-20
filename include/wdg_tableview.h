@@ -97,7 +97,8 @@ public:
 	WgTableRow( Uint32 id ) : WgItemRow(id) {}
 	virtual ~WgTableRow() {}
 
-	Uint32	Id() const	{ return m_id; };
+	Sint32	Id() const		{ return WgItem::Id(); };
+	Sint64	Id64() const	{ return WgItem::Id64(); };
 	Uint32	Height() const { return m_height; }
 
 	bool Select();

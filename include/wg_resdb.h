@@ -198,6 +198,7 @@ public:
 	bool				RemoveTextManager( const std::string& id );
 	bool				RemoveSkinManager( const std::string& id );
 	bool				RemoveConnect( const std::string& id );
+	bool				RemoveResDB( const std::string& id );
 
 	bool				RemoveSurface( SurfaceRes * pRes );
 	bool				RemoveGlyphSet( GlyphSetRes * pRes );
@@ -215,6 +216,7 @@ public:
 	bool				RemoveTextManager( TextManagerRes * pRes );
 	bool				RemoveSkinManager( SkinManagerRes * pRes );
 	bool				RemoveConnect( ConnectRes* pRes );
+	bool				RemoveResDB( ResDBRes* pRes );
 
 
 
@@ -310,7 +312,7 @@ public:
 
 private:
 
-	typedef std::map<std::string, ResDBRes*>		DbMap;
+	typedef std::map<std::string, ResDBRes*>		ResDBMap;
 	typedef std::map<std::string, SurfaceRes*>		SurfMap;
 	typedef std::map<std::string, GlyphSetRes*>		GlyphMap;
 	typedef std::map<std::string, FontRes*>			FontMap;
@@ -346,6 +348,7 @@ private:
 	WgChain<SkinManagerRes>	m_skinManagers;
 	WgChain<ConnectRes>		m_connects;
 
+	ResDBMap		m_mapResDBs;
 	ColMap			m_mapColors;
 	SurfMap			m_mapSurfaces;
 	GlyphMap		m_mapGlyphSets;

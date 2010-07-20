@@ -63,6 +63,7 @@ void WgResDB::Clear()
 	m_mapTextManagers.clear();
 	m_mapSkinManagers.clear();
 	m_mapConnects.clear();
+	m_mapResDBs.clear();
 
 	// Clear the linked lists, this will also delete the ResWrapper objects
 	// along with their meta-data but NOT the resources themselves.
@@ -85,6 +86,7 @@ void WgResDB::Clear()
 	m_textManagers.clear();
 	m_skinManagers.clear();
 	m_connects.clear();
+	m_resDbs.clear();
 }
 
 void WgResDB::DestroyFonts()
@@ -221,10 +223,11 @@ bool WgResDB::AddResDb( const std::string& file, MetaData * pMetaData )
 
 	if(GetResDbRes(file) == 0 && m_pResLoader)
 	{
-		WgResDB * pDb = m_pResLoader->LoadDb( file );
+		WgResDB * pDb = m_pResLoader->LoadDb( file, this );
 		// store resource even if load failed. could be an optional include
 		ResDBRes* p = new ResDBRes(file, pDb, file, pMetaData);
 		m_resDbs.push_back(p);
+		m_mapResDBs[file] = p;
 		return true;
 	}
 	return false;
@@ -238,6 +241,8 @@ bool WgResDB::AddResDb( WgResDB* db, const std::string& file, MetaData * pMetaDa
 	{
 		ResDBRes* p = new ResDBRes(file, db, file, pMetaData);
 		m_resDbs.push_back(p);
+		if(file.size())
+			m_mapResDBs[file] = p;
 		return true;
 	}
 	return false;
@@ -1719,6 +1724,37 @@ bool WgResDB::RemoveConnect( WgResDB::ConnectRes * pRes )
 		ConnectMap::iterator it = m_mapConnects.find( pRes->id );
 		assert( it != m_mapConnects.end() );
 		m_mapConnects.erase(it);
+	}
+	delete pRes;
+	return true;
+}
+
+//____ RemoveResDB() _______________________________________________________
+
+bool WgResDB::RemoveResDB( const std::string& id )
+{
+	ResDBMap::iterator it = m_mapResDBs.find( id );
+
+	if( it == m_mapResDBs.end() )
+		return false;
+
+	ResDBRes * pRes = it->second;
+	m_mapResDBs.erase(it);
+	delete pRes;
+
+	return true;
+}
+
+bool WgResDB::RemoveResDB( WgResDB::ResDBRes * pRes )
+{
+	if( !pRes )
+		return false;
+
+	if( pRes->id.length() > 0 )
+	{
+		ResDBMap::iterator it = m_mapResDBs.find( pRes->id );
+		assert( it != m_mapResDBs.end() );
+		m_mapResDBs.erase(it);
 	}
 	delete pRes;
 	return true;

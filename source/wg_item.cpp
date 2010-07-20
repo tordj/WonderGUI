@@ -41,7 +41,7 @@ WgItem::WgItem()
 	m_bVisible	= true;
 }
 
-WgItem::WgItem( Uint32 id )
+WgItem::WgItem( Sint64 id )
 {
 	m_width		= 0;
 	m_height	= 0;
