@@ -73,7 +73,7 @@ public:
 
 	/// Initializes a character to contain the glyph and properties of the specified character.
 
-	WgChar( const WgChar& r ) { all = r.all; bSoftBreak = 0; if( properties) WgTextPropManager::IncRef(properties,1); }
+	WgChar( const WgChar& r ) { all = r.all; if( properties) WgTextPropManager::IncRef(properties,1); }
 
 	/// Initializes a character to contain the specified glyph and no properties.
 
@@ -89,14 +89,12 @@ public:
 		if(properties == ref.properties)		// Don't dec/inc ref if properties are same! Could be a self-assignment...
 		{										// also speeds things up...
 			all = ref.all;
-			bSoftBreak = 0;
 		}
 		else
 		{
 			if(properties)
 				WgTextPropManager::DecRef(properties,1);
 			all = ref.all;
-			bSoftBreak = 0;
 			if(properties)
 				WgTextPropManager::IncRef(properties,1);
 		}
@@ -209,38 +207,24 @@ public:
 
 	inline WgFontStyle		GetStyle( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombStyle(pDefProp.GetHandle(), properties, mode); }
 
-
-	inline bool isHardEndOfLine() const { if( glyph == '\n' || glyph == 0 ) return true; return false; }
-
 							/// Checks if the character terminates the current line.
 							/// @return True if the glyph portion of the character contains End-Of-Line (\\n) or End-of-Text (null).
 
-	inline bool 			IsEndOfLine() const { if( glyph == '\n' || glyph == 0 || bSoftBreak == 1 ) return true; return false; }
+	inline bool 			IsEndOfLine() const { if( glyph == '\n' || glyph == 0 ) return true; return false; }
 
 							/// Checks if the character terminates the text.
 							/// @return True if the glyph portion of the character is End-of-Text (null).
 
 	inline bool IsEndOfText() const { if( glyph == 0 ) return true; return false; }
-	inline bool isSoftBreak() const { return (bool) bSoftBreak; }
-	inline bool isSoftBreakWithHyphen() const { if( bSoftBreak == 1 && glyph == WG_HYPHEN_BREAK_PERMITTED ) return true; return false; }
 
 							/// Checks if the character is a whitespace.
 							/// @return True if the glyph portion of the characer contains a space or WG_NO_BREAK_SPACE.
 
 	inline bool 			IsWhitespace() const { if( glyph == ' ' || glyph == WG_NO_BREAK_SPACE ) return true; return false; }
 
-							/// Checks if a line-break is allowed at the position of this character.
-							/// @return True if the character is either a space, tab, WG_BREAK_PERMITTED or WG_HYPHEN_BREAK_PERMITTED.
-
-	inline bool 			IsBreakPermitted() const { if( glyph == ' ' || glyph == '\t' || glyph == WG_BREAK_PERMITTED || glyph == WG_HYPHEN_BREAK_PERMITTED ) return true; return false; }
-
 protected:
 
 	inline const WgTextProp&	GetPropRef() const { return WgTextPropManager::GetProp(properties); }		// Use with caution! Not safe if adding/removing
-
-	inline void setSoftBreak()	{ bSoftBreak = 1; }
-	inline void clearSoftBreak() { bSoftBreak = 0; }
-
 
 private:
 
@@ -249,9 +233,7 @@ private:
 		struct
 		{
 			Uint16	glyph;
-			Uint16	properties : 15;		// 0 = Default properties of WgText.
-			Uint16	bSoftBreak : 1;			// Set if a soft-break (for the moment) is placed here.
-											// Only to be used by WgText-object itself.
+			Uint16	properties;				// 0 = Default properties of WgText.
 		};
 		Uint32	all;						// For quickly copying all...
 	};

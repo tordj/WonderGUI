@@ -505,7 +505,7 @@ bool WgCursorInstance::delPrevChar()
 		column--;
 
 
-	bRet = m_pText->deleteChar( m_pText->LineColToOffset( m_column, m_line ) -1 );
+	bRet = m_pText->deleteChar( m_pText->LineColToOffset( m_line, m_column ) -1 );
 	UpdateLocation(line, column);
 	return bRet;
 }
@@ -516,7 +516,7 @@ bool WgCursorInstance::delNextChar()
 {
 	m_wantedOfsX = -1;
 
-	int ofs = m_pText->LineColToOffset( m_column, m_line );
+	int ofs = m_pText->LineColToOffset( m_line, m_column );
 	return m_pText->deleteChar( ofs );
 }
 

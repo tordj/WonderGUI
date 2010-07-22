@@ -947,3 +947,18 @@ int WgCharBuffer::FindFirst( const WgCharSeq& _seq, Uint32 ofs )
 
 	return -1;
 }
+
+int WgCharBuffer::FindFirst( Uint16 character, Uint32 ofs )
+{
+	WgChar *				pBuff	= (WgChar*)GetPtr(0);
+
+	while( ofs < m_pHead->m_len )
+	{
+		if( pBuff[ofs].glyph == character )
+			return ofs;
+
+		ofs++;
+	}
+
+	return -1;
+}

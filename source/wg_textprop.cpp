@@ -33,18 +33,7 @@
 
 WgTextProp::WgTextProp()
 {
-	m_pLink				= 0;
-	m_pFont				= 0;
-	m_visibilityFlags	= 0;
-
-	for( int i = 0 ; i < WG_NB_MODES ; i++ )
-	{
-		m_modeProp[i].m_bColored	= false;
-		m_modeProp[i].m_bUnderlined = false;
-		m_modeProp[i].m_color		= WgColor(255,255,255,255);
-		m_modeProp[i].m_style		= WG_STYLE_NORMAL;
-		m_modeProp[i].m_size		= 0;
-	}
+	ClearAll();
 }
 
 WgTextProp::WgTextProp( const WgTextPropPtr& pProp )
@@ -52,6 +41,7 @@ WgTextProp::WgTextProp( const WgTextPropPtr& pProp )
 	m_pLink				= pProp->m_pLink;
 	m_pFont				= pProp->m_pFont;
 	m_visibilityFlags	= pProp->m_visibilityFlags;
+	m_breakLevel	= -1;
 
 	for( int i = 0 ; i < WG_NB_MODES ; i++ )
 	{
@@ -78,6 +68,7 @@ void WgTextProp::ClearAll()
 	m_visibilityFlags = 0;
 	m_pFont = 0;
 	m_pLink = 0;
+	m_breakLevel = -1;
 
 	for( int i = 0 ; i < WG_NB_MODES ; i++ )
 	{
@@ -305,6 +296,7 @@ Uint8 WgTextProp::CalculateChecksum() const
 	WgUtil::Checksum8	chk;
 
 	chk.Add8( m_visibilityFlags );
+	chk.Add8( m_breakLevel );
 	chk.Add( &m_pLink, sizeof(WgTextLinkPtr) );
 	chk.Add( &m_pFont, sizeof(WgFont *) );
 
@@ -325,7 +317,8 @@ Uint8 WgTextProp::CalculateChecksum() const
 bool WgTextProp::CompareTo( const WgTextProp * pProp ) const
 {
 	if( m_pFont != pProp->m_pFont || m_pLink != pProp->m_pLink ||
-		m_visibilityFlags != pProp->m_visibilityFlags )
+		m_visibilityFlags != pProp->m_visibilityFlags || 
+		m_breakLevel != pProp->m_breakLevel )
 		return false;
 
 	for( int i = 0 ; i < WG_NB_MODES ; i++ )

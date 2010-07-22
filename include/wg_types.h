@@ -180,6 +180,15 @@ enum WgExtChar
 	WG_NO_BREAK_SPACE		= 0xA0,
 };
 
+//____ WgBreakRules ____________________________________________________________
+
+enum WgBreakRules
+{
+	WG_NO_BREAK		= 0,
+	WG_BREAK_BEFORE	= 16,
+	WG_BREAK_ON		= 32,
+	WG_BREAK_AFTER	= 64
+};
 
 //____ WgBlendMode ____________________________________________________________
 

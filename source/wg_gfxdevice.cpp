@@ -855,11 +855,11 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 				pos.x -= pFont->GetCursor()->bearingX(cursMode);
 
 			pPen->SetPos( pos );
-			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs, cursCol);
+			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs, cursCol, false);
 			pPen->BlitCursor( *pCursor );
 			pPen->AdvancePosCursor( *pCursor );
 			pPen->FlushChar();				// Avoid kerning against glyph before cursor.
-			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs + cursCol, -1);
+			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs + cursCol, pLines[i].nChars - cursCol, true );
 		}
 		else
 		{
@@ -873,7 +873,7 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 			}
 
 			pPen->SetPos( pos );
-			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs, -1);
+			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs, pLines[i].nChars, true );
 		}
 
 
@@ -1027,7 +1027,7 @@ int WgGfxDevice::CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, cons
 
 //____ PrintLine() ________________________________________________________
 
-void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * _pLine, Uint32 nChars)
+void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * _pLine, int maxChars, bool bLineEnding )
 {
 	if( !_pLine )
 		return;
@@ -1041,7 +1041,8 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode
 
 	// Print loop
 
- 	for( Uint32 i = 0 ; i < nChars ; i++ )
+	int i;
+	for( i = 0 ; i < maxChars && !_pLine[i].IsEndOfLine(); i++ )
  	{
 		// Act on possible change of character attributes.
 
@@ -1065,7 +1066,7 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode
 
 			if( _pLine[i].IsUnderlined(pDefProp, mode) &&
 				(i==0 || !(_pLine[i-1].IsUnderlined(pDefProp, mode)) || _pLine[i-1].GetFont(pDefProp) != _pLine[i].GetFont(pDefProp)) )
-				DrawUnderline( WgRect(0,0,65535,65535), pDefProp, mode, pPen->GetPosX(), pPen->GetPosY(), _pLine+i );
+				DrawUnderline( WgRect(0,0,65535,65535), pDefProp, mode, pPen->GetPosX(), pPen->GetPosY(), _pLine+i, maxChars-i );
 
 		}
 
@@ -1088,25 +1089,27 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode
 
 		pPen->AdvancePos();
 
-		// Break if we rendered a linebreak
-
-		if( _pLine[i].IsEndOfLine() )
-		{
-			// If this was a WG_HYPHEN_BREAK_PERMITTED that was not rendered we need
-			// to render a normal hyphen.
-
-			if( _pLine[i].GetGlyph() == WG_HYPHEN_BREAK_PERMITTED && !pPen->SetChar( ch ) )
-			{
-				if( pPen->SetChar( '-' ) )
-				{
-					pPen->ApplyKerning();
-					pPen->BlitChar();
-				}
-			}
-
-			break;
-		}
  	}
+
+	// Render line-endings.
+
+	if( bLineEnding )
+	{
+		// If character after line-end was a WG_HYPHEN_BREAK_PERMITTED we need
+		// to render a normal hyphen.
+
+		if( _pLine[i].GetGlyph() == WG_HYPHEN_BREAK_PERMITTED )
+		{
+			if( pPen->SetChar( '-' ) )
+			{
+				pPen->ApplyKerning();
+				pPen->BlitChar();
+			}
+		}
+
+		// TODO: print LF-character if there is one following and properties says it should be displayed.
+
+	}
 
 	// Restore tint color.
 
@@ -1117,21 +1120,21 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode
 
 //____ DrawUnderline() ________________________________________________________
 
-void WgGfxDevice::DrawUnderline( const WgRect& clip, const WgTextPropPtr& pDefProp, WgMode mode, int _x, int _y, const WgChar * pLine )
+void WgGfxDevice::DrawUnderline( const WgRect& clip, const WgTextPropPtr& pDefProp, WgMode mode, int _x, int _y, const WgChar * pLine, int maxChars )
 {
 	Uint32 hProp = 0xFFFF;
 
 	WgPen pen;
 
-	for( const WgChar * p = pLine ; !p->IsEndOfLine() ; p++ )
+	for( int i = 0 ; i < maxChars && !pLine[i].IsEndOfLine() ; i++ )
 	{
-		if( p->GetPropHandle() != hProp )
+		if( pLine[i].GetPropHandle() != hProp )
 		{
-			if( p->IsUnderlined(pDefProp, mode) )
+			if( pLine[i].IsUnderlined(pDefProp, mode) )
 			{
 				const WgFont * pFont = pen.GetFont();			// Save font for comparison.
 
-				hProp = p->GetPropHandle();
+				hProp = pLine[i].GetPropHandle();
 				pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 				// We need to break if font has changed.
@@ -1144,7 +1147,7 @@ void WgGfxDevice::DrawUnderline( const WgRect& clip, const WgTextPropPtr& pDefPr
 				break;
 		}
 
-		pen.SetChar( p->GetGlyph() );
+		pen.SetChar( pLine[i].GetGlyph() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 	}

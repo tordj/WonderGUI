@@ -39,6 +39,91 @@
 
 const static char itoa_table [35+36+1]= { "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" };
 
+static char	breakRulesTab[256];
+
+//____ clearBreakRules() ______________________________________________________
+
+void WgTextTool::clearBreakRules()
+{
+	for( int i = 0 ; i < 256 ; i++ )
+		breakRulesTab[i] = WG_NO_BREAK | 0xF;
+}
+
+
+//____ addBreakRule() _________________________________________________________
+
+bool WgTextTool::setBreakRule( unsigned char character, int level, WgBreakRules rule )
+{
+	if( level < 0 || level > 15 )
+		return false;
+
+	breakRulesTab[character] = rule | level;
+	return true;
+}
+
+//____ setDefaultBreakRules() _________________________________________________
+
+void WgTextTool::setDefaultBreakRules()
+{
+	clearBreakRules();
+
+	// Set level 1 breaks
+
+	breakRulesTab[WG_BREAK_PERMITTED] = WG_BREAK_ON | 0x1;
+	breakRulesTab[WG_HYPHEN_BREAK_PERMITTED] = WG_BREAK_ON | 0x1;
+
+	// Set level 2 breaks
+
+	breakRulesTab[0x20] = WG_BREAK_ON | 0x2;			// Whitespace
+	breakRulesTab[0x09] = WG_BREAK_ON | 0x2;			// Tab
+
+	// Set level 3 breaks
+
+	breakRulesTab['\\']	= WG_BREAK_AFTER | 0x3;
+	breakRulesTab['/']	= WG_BREAK_AFTER | 0x3;
+	breakRulesTab['-']	= WG_BREAK_AFTER | 0x3;
+	breakRulesTab['+']	= WG_BREAK_AFTER | 0x3;
+	breakRulesTab['*']	= WG_BREAK_AFTER | 0x3;
+	breakRulesTab['~']	= WG_BREAK_AFTER | 0x3;
+	breakRulesTab['=']	= WG_BREAK_AFTER | 0x3;
+
+	breakRulesTab[')']	= WG_BREAK_AFTER | 0x3;
+	breakRulesTab['}']	= WG_BREAK_AFTER | 0x3;
+	breakRulesTab[']']	= WG_BREAK_AFTER | 0x3;
+	breakRulesTab['>']	= WG_BREAK_AFTER | 0x3;
+
+	breakRulesTab['(']	= WG_BREAK_BEFORE | 0x3;
+	breakRulesTab['{']	= WG_BREAK_BEFORE | 0x3;
+	breakRulesTab['[']	= WG_BREAK_BEFORE | 0x3;
+	breakRulesTab['<']	= WG_BREAK_BEFORE | 0x3;
+
+	// Set level 4 breaks
+
+	breakRulesTab[0xbf]	= WG_BREAK_BEFORE | 0x5;	// inverted question mark (beginning of question).
+	breakRulesTab['?']	= WG_BREAK_AFTER | 0x5;
+	breakRulesTab[':']	= WG_BREAK_AFTER | 0x4;
+	breakRulesTab[';']	= WG_BREAK_AFTER | 0x4;
+	breakRulesTab['.']	= WG_BREAK_AFTER | 0x5;
+	breakRulesTab[',']	= WG_BREAK_AFTER | 0x5;
+	breakRulesTab['!']	= WG_BREAK_AFTER | 0x5;
+	breakRulesTab['_']	= WG_BREAK_AFTER | 0x4;
+	breakRulesTab['|']	= WG_BREAK_AFTER | 0x4;
+}
+
+
+//____ isBreakAllowed() _______________________________________________________
+
+WgBreakRules WgTextTool::isBreakAllowed( Uint16 chr, int breakLevel )
+{
+	if( chr > 255 )
+		return WG_NO_BREAK;
+
+	if( breakLevel >= (breakRulesTab[chr] & 0xF) )
+		return (WgBreakRules) (breakRulesTab[chr] & 0xF0);
+
+	return WG_NO_BREAK;
+}
+
 
 //____ itoa() _________________________________________________________________
 
@@ -2041,7 +2126,7 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp,
 	pen.SetTextNode( pNode );
 	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
-	while( !pString->isHardEndOfLine() )
+	while( !pString->IsEndOfLine() )
 	{
 		if( pString->GetPropHandle() != hProp )
 			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
@@ -2105,7 +2190,7 @@ Uint32 WgTextTool::lineWidthPart( WgTextNode * pNode, const WgTextPropPtr& pDefP
 
 	for( int i = 0 ; i < nCol ; i++ )
 	{
-		if( pString->isHardEndOfLine() )
+		if( pString->IsEndOfLine() )
 			break;
 
 		if( pString->GetPropHandle() != hProp )
@@ -2824,7 +2909,8 @@ const WgColor WgTextTool::GetCombColor(Uint16 hTextProp, Uint16 hCharProp, WgMod
 
 	// Prio 3: Color from default textprop
 
-	return WgBase::GetDefaultTextProp()->m_modeProp[mode].m_color;
+	if( WgBase::GetDefaultTextProp()->m_modeProp[mode].m_bColored )
+		return WgBase::GetDefaultTextProp()->m_modeProp[mode].m_color;
 
 	// Prio 4: Just a white color...
 
@@ -2844,6 +2930,31 @@ WgTextLinkPtr WgTextTool::GetCombLink(Uint16 hTextProp, Uint16 hCharProp)
 
 	return WgTextPropManager::GetProp(hTextProp).m_pLink;
 }
+
+//____ GetCombBreakLevel() ____________________________________________________
+
+int WgTextTool::GetCombBreakLevel( Uint16 hTextProp, Uint16 hCharProp )
+{
+	// Prio 1: Breaklevel set for character.
+
+	if( WgTextPropManager::GetProp(hCharProp).m_breakLevel != -1 )
+		return WgTextPropManager::GetProp(hCharProp).m_breakLevel;
+
+	// Prio 2: Breaklevel set for text.
+
+	if( WgTextPropManager::GetProp(hTextProp).m_breakLevel != -1 )
+		return WgTextPropManager::GetProp(hTextProp).m_breakLevel;
+
+	// Prio 3: Breaklevel from default textprop.
+
+	if( WgBase::GetDefaultTextProp()->m_breakLevel != -1 )
+		return WgBase::GetDefaultTextProp()->m_breakLevel;
+
+	// Prio 4: Use hardcoded default level...
+
+	return 3;
+}
+
 
 //____ GetCombFont() __________________________________________________________
 

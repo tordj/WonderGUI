@@ -20,27 +20,14 @@ WgItemText::WgItemText( )
 	Init();
 }
 
-WgItemText::WgItemText( Sint64 id, const char * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
+WgItemText::WgItemText( Sint64 id, const WgCharSeq& seq, const WgTextPropPtr& pProp, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
 	m_text.setProperties(pProp);
-	m_text.setText( pStr );
+	m_text.setText( seq );
 
 	m_margin.left	= marginLeft;
 	m_margin.right	= marginRight;
 	m_margin.top	= marginTop;
-	m_margin.bottom	= marginBottom;
-
-	Init();
-}
-
-WgItemText::WgItemText( Sint64 id, const Uint16 * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
-{
-	m_text.setProperties(pProp);
-	m_text.setText( pStr );
-
-	m_margin.left	= marginLeft;
-	m_margin.right	= marginRight;
-	m_margin.top		= marginTop;
 	m_margin.bottom	= marginBottom;
 
 	Init();

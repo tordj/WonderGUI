@@ -205,6 +205,8 @@ void WgText::setText( const WgCharSeq& seq )
 	regenHardLines();
 	regenSoftLines();
 	clearSelection();
+
+	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
 void WgText::setText( const WgCharBuffer * buffer )
@@ -213,6 +215,8 @@ void WgText::setText( const WgCharBuffer * buffer )
 	regenHardLines();
 	regenSoftLines();
 	clearSelection();
+
+	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
 
@@ -222,6 +226,8 @@ void WgText::setText( const WgString& str )
 	regenHardLines();
 	regenSoftLines();
 	clearSelection();
+
+	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
 
@@ -1034,6 +1040,7 @@ Uint32 WgText::nbChars() const
 
 void WgText::refresh()
 {
+	regenHardLines();
 	regenSoftLines();
 
 	if( m_pCursor )
@@ -1048,8 +1055,9 @@ void WgText::refresh()
 int WgText::addChar( const WgChar& character )
 {
 	int nAdded = m_buffer.PushBack( character );
-	regenSoftLines();
 	regenHardLines();
+	regenSoftLines();
+
 	return nAdded;
 }
 
@@ -1059,8 +1067,11 @@ int WgText::addChar( const WgChar& character )
 int WgText::addText( const WgCharSeq& seq )
 {
 	int nAdded = m_buffer.PushBack( seq );
-	regenSoftLines();
 	regenHardLines();
+	regenSoftLines();
+
+	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+
 	return nAdded;
  }
 
@@ -1069,8 +1080,11 @@ int WgText::addText( const WgCharSeq& seq )
 int WgText::insertText( int ofs, const WgCharSeq& seq )
 {
 	int nInserted = m_buffer.Insert( ofs, seq );
-	regenSoftLines();
 	regenHardLines();
+	regenSoftLines();
+
+	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+
 	return nInserted;
 }
 
@@ -1080,8 +1094,11 @@ int WgText::insertText( int ofs, const WgCharSeq& seq )
 int WgText::replaceText( int ofs, int nDelete, const WgCharSeq& seq )
 {
 	int nInserted = m_buffer.Replace( ofs, nDelete, seq );
-	regenSoftLines();
 	regenHardLines();
+	regenSoftLines();
+
+	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+
 	return nInserted;
 }
 
@@ -1090,8 +1107,8 @@ int WgText::replaceText( int ofs, int nDelete, const WgCharSeq& seq )
 int WgText::deleteText( int ofs, int nChars )
 {
 	int nDeleted = m_buffer.Delete( ofs, nChars );
-	regenSoftLines();
 	regenHardLines();
+	regenSoftLines();
 	return nDeleted;
 }
 
@@ -1101,8 +1118,8 @@ int WgText::deleteText( int ofs, int nChars )
 int WgText::replaceChar( int ofs, const WgChar& character )
 {
 	int nReplaced = m_buffer.Replace( ofs, character );
-	regenSoftLines();
 	regenHardLines();
+	regenSoftLines();
 	return nReplaced;
 }
 
@@ -1112,8 +1129,9 @@ int WgText::replaceChar( int ofs, const WgChar& character )
 int WgText::insertChar( int ofs, const WgChar& character )
 {
 	int nInserted = m_buffer.Insert( ofs, character );
-	regenSoftLines();
 	regenHardLines();
+	regenSoftLines();
+
 	return nInserted;
 }
 
@@ -1122,8 +1140,8 @@ int WgText::insertChar( int ofs, const WgChar& character )
 int WgText::deleteChar( int ofs )
 {
 	int nDeleted = m_buffer.Delete( ofs, 1 );
-	regenSoftLines();
 	regenHardLines();
+	regenSoftLines();
 	return nDeleted;
 }
 
@@ -1309,7 +1327,8 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 	const WgChar *	p = pStart;
 	int			nSoftLines = 0;
 	WgPen		pen;
-	Uint16		hProp = 0xFFFF;
+	Uint16		hProp = 0xFFFF;					// Force immediate update of textprop.
+	int			breakLevel;
 
 	pen.SetTextNode( m_pManagerNode );
 
@@ -1318,34 +1337,82 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 		const WgChar * 	pLineStart = p;
 		const WgChar *	pbp = 0;				// BreakPoint-pointer.
+		bool			bBreakSkips = false;	// Set if the character on the breakpoint should be skipped.
+		bool			bBreakAfterPrev = false;// Set if we can break here due to a WG_BREAK_BEFORE on previous character.
 
-		while( !p->isHardEndOfLine() )
+		while( true )
 		{
-			// If break is permitted we can move the breakpoint up to this character unless it's
-			// a hyphen-break where the hyphen takes too much space.
 
-			if( p->IsBreakPermitted() )
+			// Update if textproperties have changed.
+
+			if( p->GetPropHandle() != hProp )
 			{
+				pen.SetTextProp( m_pProp.GetHandle(), p->GetPropHandle(), m_mode );
+				hProp = p->GetPropHandle();
+				breakLevel = WgTextTool::GetCombBreakLevel( m_pProp.GetHandle(), p->GetPropHandle() );
+			}
+
+			// Break if this is end of line or end of text
+
+			if( p->GetGlyph() == '\n' )
+			{
+				bBreakSkips = true;
+				break;
+			}
+			else if( p->GetGlyph() == 0 )
+			{
+				bBreakSkips = false;
+				break;
+			}
+
+			// Check if we can move the breakpoint up to this character.
+
+			WgBreakRules breakStatus = WgTextTool::isBreakAllowed( p->glyph, breakLevel );
+			switch( breakStatus )
+			{
+			case WG_BREAK_BEFORE:
+				pbp = p;
+				bBreakSkips = false;
+				break;
+
+			case WG_BREAK_ON:
+
 				if( p->GetGlyph() == WG_HYPHEN_BREAK_PERMITTED )
 				{
 					// Check so a hyphen will fit on the line as well, otherwise we can't break here.
 					// We don't take kerning into account here, not so important.
 
 					const WgGlyph * pHyphen = pen.GetGlyphSet()->GetGlyph( '-', pen.GetSize() );
-					if( pHyphen && Uint32(pen.GetPosX() + pHyphen->advance) < m_lineWidth )
-						pbp = p;
+					if( !pHyphen || Uint32(pen.GetPosX() + pHyphen->advance) > m_lineWidth )
+						break;			// Can't break here, hyphen wouldn't fit on line.
 				}
-				else
-					pbp = p;					// We can put a softbreak here if necessary...
+
+				pbp = p;
+				bBreakSkips = true;
+				break;
+
+			case WG_BREAK_AFTER:
+				if( bBreakAfterPrev )
+				{
+					pbp = p;
+					bBreakSkips = false;
+				}
+				bBreakAfterPrev = true;
+				break;
+
+			default:				// WG_NO_BREAK
+
+				if( bBreakAfterPrev )
+				{
+					pbp = p;
+					bBreakSkips = false;
+					bBreakAfterPrev = false;
+				}
+				break;
+
 			}
 
 			// Increase line length
-
-			if( p->GetPropHandle() != hProp )
-			{
-				pen.SetTextProp( m_pProp.GetHandle(), p->GetPropHandle(), m_mode );
-				hProp = p->GetPropHandle();
-			}
 
 			pen.SetChar( p->GetGlyph() );
 			pen.ApplyKerning();
@@ -1361,7 +1428,12 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 					break;
 				}
 				else if( p > pLineStart )		// We want at least one char on each line before a softbreak, otherwise we get eternal number of lines...
+				{
+					// Force a break here, without a breakpoint.
+
+					bBreakSkips = false;
 					break;
+				}
 			}
 			else
 				pen.AdvancePos();
@@ -1377,8 +1449,8 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 			pWriteLines[nSoftLines].nChars = p - pLineStart;
 		}
 
-		if( p->IsBreakPermitted() )
-			p++;				// Skip the break-point, it doesn't belong to any line.
+		if( bBreakSkips )
+			p++;				// Skip the break-point or newline character, it doesn't belong to any line.
 
 		nSoftLines++;
 		pen.SetPosX(0);			// Reset position

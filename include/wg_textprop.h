@@ -122,6 +122,7 @@ public:
 	void			SetSize( int size, WgMode mode = WG_MODE_ALL );
 	void			SetUnderlined( WgMode mode = WG_MODE_ALL );
 
+	inline void		SetBreakLevel( int level ) { m_breakLevel = (char) level; }
 	inline void		SetLink( const WgTextLinkPtr& pLink ) { m_pLink = pLink; }
 	inline void		SetFont( WgFont * pFont ) { m_pFont = pFont; }
 	bool			SetCharVisibility( Uint16 specialCharacter, bool bVisible );
@@ -131,6 +132,7 @@ public:
 	void			ClearSize( WgMode mode = WG_MODE_ALL );
 	void			ClearUnderlined( WgMode mode = WG_MODE_ALL );
 
+	inline void		ClearBreakLevel() { m_breakLevel = -1; }
 	inline void		ClearLink() { m_pLink = 0; }
 	inline void		ClearFont() { m_pFont = 0; }
 
@@ -145,7 +147,8 @@ public:
 	bool					GetCharVisibility( Uint16 specialCharacter ) const;
 
 	inline WgTextLinkPtr	GetLink() const { return m_pLink; }
-	inline WgFont *		GetFont() const { return m_pFont; }
+	inline WgFont *			GetFont() const { return m_pFont; }
+	inline int				GetBreakLevel() const { return m_breakLevel; }
 
 	void					AssertIntegrity() const;
 
@@ -195,6 +198,7 @@ private:
 		Uint8 m_visibilityFlags;
 	};
 
+	char				m_breakLevel;		///< How aggressively lines should be breaked. Higher value breaks on more characters. -1 = not set.
 	WgTextLinkPtr		m_pLink;			///< Hierarchally overrides.
 	WgFont *			m_pFont;			///< Hierarchally overrides.
 

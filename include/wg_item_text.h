@@ -28,12 +28,13 @@
 #include <wg_interface_textholder.h>
 #include <wg_blockset.h>
 
+class WgCharSeq;
+
 class WgItemText : public WgItem, public Wg_Interface_TextHolder
 {
 public:
 	WgItemText( );
-	WgItemText( Sint64 id, const char * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
-	WgItemText( Sint64 id, const Uint16 * pStr, const WgTextPropPtr& pProp, Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
+	WgItemText( Sint64 id, const WgCharSeq& seq, const WgTextPropPtr& pProp, Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
 	WgItemText( Sint64 id, const WgText * pText, const WgTextPropPtr& pProp, Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
 	~WgItemText();
 

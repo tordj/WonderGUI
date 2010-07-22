@@ -23,36 +23,15 @@ WgItemWrapText::WgItemWrapText( ) :
 	Init();
 }
 
-WgItemWrapText::WgItemWrapText( Sint64 id, const char * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
+WgItemWrapText::WgItemWrapText( Sint64 id, const WgCharSeq& seq, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
 {
 	m_text.setProperties( pProp );
 	Uint32 linewidth = startwidth - marginLeft - marginRight;
 	if( linewidth > startwidth )
 		linewidth = 1;
 	m_text.setLineWidth(linewidth);
-	m_text.setText( pStr );
+	m_text.setText( seq );
 	m_text.setHolder( this );
-
-	m_margin.left	= marginLeft;
-	m_margin.right	= marginRight;
-	m_margin.top		= marginTop;
-	m_margin.bottom	= marginBottom;
-
-	m_minWidth		= 0;
-	m_minHeight		= 0;
-
-	m_bgFill		= bgFill;
-	Init();
-}
-
-WgItemWrapText::WgItemWrapText( Sint64 id, const Uint16 * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill, Uint8 marginLeft, Uint8 marginRight, Uint8 marginTop, Uint8 marginBottom ) : WgItem(id)
-{
-	m_text.setProperties( pProp );
-	Uint32 linewidth = startwidth - marginLeft - marginRight;
-	if( linewidth > startwidth )
-		linewidth = 1;
-	m_text.setLineWidth(linewidth);
-	m_text.setText( pStr );
 
 	m_margin.left	= marginLeft;
 	m_margin.right	= marginRight;
@@ -126,15 +105,9 @@ void WgItemWrapText::SetBgFill( const WgColor& bgFill )
 	Modified( 0, 0 );
 }
 
-void WgItemWrapText::SetText(const char * pStr)
+void WgItemWrapText::SetText(const WgCharSeq& seq)
 {
-	m_text.setText(pStr);
-	Modified( 0, 0 );
-}
-
-void WgItemWrapText::SetText(const Uint16 * pStr)
-{
-	m_text.setText(pStr);
+	m_text.setText(seq);
 	Modified( 0, 0 );
 }
 

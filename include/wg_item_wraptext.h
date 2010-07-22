@@ -11,16 +11,14 @@ class WgItemWrapText : public WgItem, public Wg_Interface_TextHolder
 {
 public:
 	WgItemWrapText(  );
-	WgItemWrapText( Sint64 id, const char * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
-	WgItemWrapText( Sint64 id, const Uint16 * pStr, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
+	WgItemWrapText( Sint64 id, const WgCharSeq& seq, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
 	WgItemWrapText( Sint64 id, const WgText * pText, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
 	~WgItemWrapText();
 
 	void			MinSize( Uint32 width, Uint32 height );
 
 	void			SetBgFill( const WgColor& bgFill );
-	void			SetText(const char * pStr);
-	void			SetText(const Uint16 * pStr);
+	void			SetText( const WgCharSeq& seq );
 	void			SetText(const WgText * pStr);
 	void			SetTextProp(WgTextPropPtr pProp);
 	void			SetMargin(WgBorders margin);

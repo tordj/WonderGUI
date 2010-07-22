@@ -144,6 +144,22 @@ bool WgGizmoMenubar::AddMenu( const char * pTitle, Wdg_Menu * pMenu, Uint16 navK
 	return true;
 }
 
+//____ RemoveMenu() ________________________________________________________
+bool WgGizmoMenubar::RemoveMenu( Wdg_Menu * pMenu )
+{
+	for( WgMenuBarItem * pI = m_items.getFirst(); pI; pI = pI->getNext() )
+	{
+		if(pI->m_pMenu == pMenu)
+		{
+			pI->m_pMenu = 0;
+			delete pI;
+			RequestRender();
+			return true;
+		}
+	}
+	return false;
+}
+
 //____ GetMenuTitle() ________________________________________________________
 WgChar *WgGizmoMenubar::GetMenuTitle(Wdg_Menu * pMenu) const
 {

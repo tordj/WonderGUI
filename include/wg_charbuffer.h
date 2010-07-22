@@ -811,6 +811,7 @@ public:
 
 	int					FindFirst( const WgCharSeq& seq, Uint32 ofs = 0 );
 
+	int					FindFirst( Uint16 character, Uint32 ofs = 0 );
 
 
 	int					CompareTo( const WgCharBuffer * pBuffer );

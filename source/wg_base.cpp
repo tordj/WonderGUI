@@ -25,6 +25,7 @@
 #include <wg_base.h>
 #include <wg_dirtyrect.h>
 #include <wg_textpropmanager.h>
+#include <wg_texttool.h>
 
 #ifdef WG_USE_FREETYPE
 #	include <ft2build.h>
@@ -44,6 +45,8 @@ WgTextPropPtr	WgBase::s_pDefaultTextProp;
 
 void WgBase::Init()
 {
+	WgTextTool::setDefaultBreakRules();
+
 	WgDirtyRectObj::Init();
 #ifdef WG_USE_FREETYPE
 	s_bFreeTypeInitialized = false;

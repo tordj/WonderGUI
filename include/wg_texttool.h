@@ -216,8 +216,15 @@ public:
 	static WgFont *			GetCombFont( Uint16 hTextProp, Uint16 hCharProp = 0 );
 	static WgGlyphSet *		GetCombGlyphSet( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
 	static bool				GetCombCharVisibility( Uint16 character, Uint16 hTextProp, Uint16 hCharProp = 0 );
+	static int				GetCombBreakLevel( Uint16 hTextProp, Uint16 hCharProp = 0 );
 
     static char *           itoa( int value, char * str, int base );
+
+	static WgBreakRules		isBreakAllowed( Uint16 chr, int breakLevel );
+
+	static void				clearBreakRules();
+	static bool				setBreakRule( unsigned char character, int level, WgBreakRules rule );
+	static void				setDefaultBreakRules();
 
 
 	//____

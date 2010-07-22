@@ -995,6 +995,7 @@ void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 //		style=[default fontstyle]
 //		col=[default color]
 //		underlined=[default true | false]
+//		breaklevel=[value]
 void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
 {
 	VERIFY(m_pProp, "no text prop defined");
@@ -1013,6 +1014,9 @@ void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
 	s.AddAttribute("id", s.ResDb()->FindTextPropId(m_pProp));
 	s.AddAttribute("font", fontRes->id);
 	s.AddAttribute("size", WgUtil::ToString(m_size) );
+
+	if( m_pProp->GetBreakLevel() != -1 )
+		s.AddAttribute( "breaklevel", WgUtil::ToString(m_pProp->GetBreakLevel()) );
 
 	if(m_style != WG_STYLE_NORMAL)
 		s.AddAttribute("style", WgFontStyleRes::Serialize(m_style, s));
@@ -1041,6 +1045,8 @@ void WgTextPropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	ASSERT(pFont, "font '" + xmlNode["font"] + "' doesn't exist");
 	if( pFont )
 		m_prop.SetFont( pFont );
+
+	m_prop.SetBreakLevel( WgUtil::ToSint32( xmlNode["breaklevel"], -1 ) );
 
 	m_bColored = xmlNode.HasAttribute("col");
 	if(m_bColored)
@@ -2861,7 +2867,7 @@ void WgAltRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 //////////////////////////////////////////////////////////////////////////
 void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, WgResourceSerializerXML& s, Wg_Interface_TextHolder* holder)
 {
-	WriteTextPropAttr(s, holder->GetTextDefaultProperties(), "prop");
+	WriteTextPropAttr(s, holder->GetTextProperties(), "prop");
 	WgText *pTextObj = holder->TextObj();
 	const WgChar *pText = pTextObj->getText();
 	WriteTextAttrib(s, pText, "text");
@@ -2941,14 +2947,14 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 {
 	WgTextPropPtr prop = s.ResDb()->GetTextProp(xmlNode["prop"]);
 	if(prop)
-		holder->SetTextDefaultProperties(prop);
+		holder->SetTextProperties(prop);
 
 	std::string text = ReadLocalizedString(xmlNode["text"], s);
 	if(text.length())
 	{
 		if(text[0] == ':')
 			text = s.ResDb()->LoadString(text.substr(1));
-		holder->SetText( WgCharSeqEscaped( s.ResDb(), text) );
+		holder->SetText( WgCharSeqEscaped( text, s.ResDb() ) );
 	}
 
 	holder->SetTextAlignment(WgUtil::ToOrigo(xmlNode["textalign"]));

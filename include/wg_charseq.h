@@ -167,12 +167,12 @@ class WgCharSeqEscaped : public WgCharSeq
 {
 	friend class WgCharSeq;
 public:
-	WgCharSeqEscaped( WgResDB * pDB, const char * pChar );
-	WgCharSeqEscaped( WgResDB * pDB, const char * pChar, int len );
-	WgCharSeqEscaped( WgResDB * pDB, const Uint16 * pChar );
-	WgCharSeqEscaped( WgResDB * pDB, const Uint16 * pChar, int len );
-	WgCharSeqEscaped( WgResDB * pDB, const std::string& str );
-	WgCharSeqEscaped( WgResDB * pDB, const std::string& str, int ofs, int len );
+	WgCharSeqEscaped( const char * pChar, WgResDB * pDB = 0 );
+	WgCharSeqEscaped( const char * pChar, int len, WgResDB * pDB = 0 );
+	WgCharSeqEscaped( const Uint16 * pChar, WgResDB * pDB = 0 );
+	WgCharSeqEscaped( const Uint16 * pChar, int len, WgResDB * pDB = 0 );
+	WgCharSeqEscaped( const std::string& str, WgResDB * pDB = 0 );
+	WgCharSeqEscaped( const std::string& str, int ofs, int len, WgResDB * pDB = 0 );
 
 protected:
 	WgResDB *	m_pDB;

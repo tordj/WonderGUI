@@ -11,12 +11,18 @@ FONT SYSTEM
 * VectorGlyphs: Limit cache size!
 * WgBitmapGlyphs: Currently uses linespacing for height... :(
 
+TEXTSYSTEM
+==========
+* Handle linebreaks so that cursor will fit on line if text is editable.
+* Handle linebreaks so that EOL/EOF characters will fit if displayed.
+
 
 CURSOR
 ======
 
 * Change how cursor is stretched/scaled and/or offset. Offsets are in fixed pixelsizes but needs to be relative or something to work with the scaling.
 * Make sure all parameters can be set through XML.
+* Build cursor instance into text object (or somewhere similar).
 
 
 GFXDEVICES

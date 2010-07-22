@@ -526,7 +526,7 @@ WgCharSeq::WgCharBasket::~WgCharBasket()
 
 //____ WgCharSeqEscaped::Constructors _________________________________________
 
-WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const char * pChar )
+WgCharSeqEscaped::WgCharSeqEscaped( const char * pChar, WgResDB * pDB )
 {
 	m_pDB 		= pDB;
 	m_type 		= ESCAPED_UTF8;
@@ -534,7 +534,7 @@ WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const char * pChar )
     m_nbChars	= WgTextTool::countNonFormattingChars(pChar);
 }
 
-WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const char * pChar, int len )
+WgCharSeqEscaped::WgCharSeqEscaped( const char * pChar, int len, WgResDB * pDB )
 {
 	m_pDB 		= pDB;
 	m_type 		= ESCAPED_UTF8;
@@ -542,7 +542,7 @@ WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const char * pChar, int len )
     m_nbChars	= WgTextTool::countNonFormattingChars(pChar, len);
 }
 
-WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const Uint16 * pChar )
+WgCharSeqEscaped::WgCharSeqEscaped( const Uint16 * pChar, WgResDB * pDB )
 {
 	m_pDB 		= pDB;
 	m_type 		= ESCAPED_UTF16;
@@ -550,7 +550,7 @@ WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const Uint16 * pChar )
     m_nbChars	= WgTextTool::countNonFormattingChars(pChar);
 
 }
-WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const Uint16 * pChar, int len )
+WgCharSeqEscaped::WgCharSeqEscaped( const Uint16 * pChar, int len, WgResDB * pDB )
 {
 	m_pDB 		= pDB;
 	m_type 		= ESCAPED_UTF16;
@@ -558,7 +558,7 @@ WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const Uint16 * pChar, int len
     m_nbChars	= WgTextTool::countNonFormattingChars(pChar, len);
 }
 
-WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const std::string& str )
+WgCharSeqEscaped::WgCharSeqEscaped( const std::string& str, WgResDB * pDB )
 {
 	m_pDB 		= pDB;
 	m_type 		= ESCAPED_UTF8;
@@ -566,7 +566,7 @@ WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const std::string& str )
     m_nbChars   = WgTextTool::countNonFormattingChars(str.c_str());
 }
 
-WgCharSeqEscaped::WgCharSeqEscaped( WgResDB * pDB, const std::string& str, int ofs, int len )
+WgCharSeqEscaped::WgCharSeqEscaped( const std::string& str, int ofs, int len, WgResDB * pDB )
 {
 	const char * p = str.c_str();
 	int strlen = str.length();
