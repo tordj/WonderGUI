@@ -23,6 +23,11 @@
 
 #ifndef WG_USERDEFINES_DOT_H
 #define WG_USERDEFINES_DOT_H
+
+#ifndef WG_TYPES_DOT_H
+#	include <wg_types.h>
+#endif
+
 //=============================================================================
 
 //____ systemwide defines _____________________________________________________
@@ -48,6 +53,8 @@
 
 
 #define	WG_MAX_FONTSIZE		256	// Max size (pixels) for font.
+
+#define WG_DEFAULT_CODEPAGE WG_CODEPAGE_1252
 
 //____ input related defines __________________________________________________
 

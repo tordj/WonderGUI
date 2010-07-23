@@ -28,6 +28,10 @@
 #	include <wg_types.h>
 #endif
 
+#ifndef	WG_USERDEFINES_DOT_H
+#	include <wg_userdefines.h>
+#endif
+
 
 class WgChar;
 class WgString;
@@ -148,6 +152,7 @@ protected:
 	{
 		EMPTY,
 		WGCHAR,
+		MAP8,
 		UTF8,
 		UTF16,
 		ESCAPED_UTF8,
@@ -159,7 +164,7 @@ protected:
 
 	SeqType			m_type;
 	const void * 	m_pChar;
-	int				m_nbChars;	// Length of sequence in number of characters.
+	int				m_nbChars;		// Length of sequence in number of characters.
 };
 
 
@@ -178,6 +183,21 @@ protected:
 	WgResDB *	m_pDB;
 };
 
+
+
+
+class WgCharSeq8 : public WgCharSeq
+{
+	friend class WgCharSeq;
+public:
+	WgCharSeq8( const char * pChar, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
+	WgCharSeq8( const char * pChar, int len, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
+	WgCharSeq8( const std::string& str, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
+	WgCharSeq8( const std::string& str, int ofs, int len, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
+
+protected:
+	WgCodePage	m_codepage;
+};
 
 #endif //WG_CHARSEQ_DOT_H
 

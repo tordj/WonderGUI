@@ -267,6 +267,28 @@ Uint32 WgTextTool::readString( const Uint16 *& pSrc, WgChar * pDst, Uint32 maxCh
 	return n;
 }
 
+
+Uint32 WgTextTool::readString( const char *& pSrc, WgCodePage codepage, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF )
+{
+	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
+	if( !pCP || !pSrc )
+	{
+	    if( maxChars > 0 )
+            pDst[0].SetGlyph(0);
+		return 0;
+	}
+
+	Uint32 n = 0;
+	for( unsigned char * p = (unsigned char *) pDst ; p[n] != 0 && n < maxChars ; n++ )
+		pDst[n].SetGlyph( pCP[p[n]] );
+
+	if( n != maxChars )
+		pDst[n].SetGlyph(0);
+	return n;
+}
+
+
+
 //____ CountWhitespaces() ______________________________________________________
 
 Uint32 WgTextTool::countWhitespaces( const char * pStr, Uint32 len )
@@ -2009,8 +2031,30 @@ Uint32 WgTextTool::getTextUTF8( const Uint16 * pSrc, char * pDest, Uint32 maxByt
 	return nChars;
 }
 
+//____ getTextUTF8() __________________________________________________________
 
-//____ getTextSizeUTF8() ____________________________________________________________
+static Uint32 WgTextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, Uint32 maxChars )
+{
+	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
+	if( !pCP )
+	{
+		pDest[0] = 0;
+		return 0;
+	}
+
+	unsigned char * p = (unsigned char *) pSrc;
+
+	int nBytes = 0;
+	for( int i = 0 ; i < maxChars && p[i] != 0 ; i++ )
+		nBytes += writeUTF8( pCP[p[i]], pDest + nBytes );
+	
+	pDest[nBytes] = 0;					// Yes, we do terminate destination!
+	return nBytes;
+}
+
+
+
+//____ getTextSizeUTF8() ______________________________________________________
 
 Uint32 WgTextTool::getTextSizeUTF8( const WgChar* pSrc, Uint32 len )
 {
@@ -2050,6 +2094,23 @@ Uint32 WgTextTool::getTextSizeUTF8( const Uint16* pSrc, Uint32 len )
 	}
 
 	return size;
+}
+
+//____ getTextSizeUTF8() ____________________________________________________________
+
+Uint32 WgTextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, Uint32 maxChars )
+{
+	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
+	if( !pCP )
+		return 0;
+
+	unsigned char * p = (unsigned char *) pSrc;
+
+	int nBytes = 0;
+	for( int i = 0 ; i < maxChars && p[i] != 0 ; i++ )
+		nBytes += sizeUTF8( p[i] );
+
+	return nBytes;
 }
 
 

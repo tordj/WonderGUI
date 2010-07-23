@@ -180,6 +180,25 @@ enum WgExtChar
 	WG_NO_BREAK_SPACE		= 0xA0,
 };
 
+//____ WgCodePage ______________________________________________________________
+
+enum WgCodePage
+{
+	WG_CODEPAGE_LATIN1 = 0,
+	WG_CODEPAGE_1250 = 1,		// Windows Cental Europe
+	WG_CODEPAGE_1251 = 2,		// Windows Cyrillic
+	WG_CODEPAGE_1252 = 3,		// Windows Latin-1 extended
+	WG_CODEPAGE_1253 = 4,		// Windows Greek
+	WG_CODEPAGE_1254 = 5,		// Windows Turkish
+	WG_CODEPAGE_1255 = 6,		// Windows Hebrew
+	WG_CODEPAGE_1256 = 7,		// Windows Arabic
+	WG_CODEPAGE_1257 = 8,		// Windows Baltic
+	WG_CODEPAGE_1258 = 9,		// Windows Vietnam
+	WG_CODEPAGE_874 = 10,		// Windows Thai
+};
+
+#define WG_NB_CODEPAGES 11
+
 //____ WgBreakRules ____________________________________________________________
 
 enum WgBreakRules

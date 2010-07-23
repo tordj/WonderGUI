@@ -84,6 +84,7 @@ public:
 	static Uint32	readString( const char *& pSrc, Uint16 * pDst, Uint32 maxChars = 0xFFFFFFFF );
 	static Uint32	readString( const char *& pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
 	static Uint32	readString( const Uint16 *& pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
+	static Uint32	readString( const char *& pSrc, WgCodePage codepage, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
 
 	static Uint32	countChars( const char * pStr, Uint32 strlen = 0xFFFFFFFF );
 
@@ -135,10 +136,14 @@ public:
 
 	static Uint32	Uint16ToUTF8( Uint16 value, char * pDest, Uint32 maxChars );
 
+
 	static Uint32	getTextUTF8( const WgChar * pSrc, char * pDest, Uint32 maxBytes );
 	static Uint32	getTextUTF8( const Uint16 * pSrc, char * pDest, Uint32 maxBytes );
+	static Uint32	getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, Uint32 maxChars = 0xFFFFFFFF );
+
 	static Uint32	getTextSizeUTF8( const WgChar * pSrc, Uint32 maxChars = 0xFFFFFFFF );
 	static Uint32	getTextSizeUTF8( const Uint16 * pSrc, Uint32 maxChars = 0xFFFFFFFF );
+	static Uint32	getTextSizeUTF8( const char * pSrc, WgCodePage codepage, Uint32 maxChars = 0xFFFFFFFF );
 
 	static Uint32	getTextFormatted( const WgChar * pSrc, Uint16 * pDest, Uint32 maxChars, const WgResDB * pResDB = 0 );
 	static Uint32	getTextSizeFormatted( const WgChar * pSrc, Uint32 maxChars = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
