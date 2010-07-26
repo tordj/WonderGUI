@@ -256,7 +256,7 @@ void WgGizmoCombobox::OnEnable( void )
 		newMode = WG_MODE_DISABLED;
 
 	m_mode = newMode;
-	if( !m_pTextBoxBg->SameBlock(newMode, m_mode) )
+	if( m_pTextBoxBg && !m_pTextBoxBg->SameBlock(newMode, m_mode) )
 		RequestRender();
 }
 
@@ -272,7 +272,7 @@ void WgGizmoCombobox::OnDisable( void )
 		newMode = WG_MODE_DISABLED;
 
 	m_mode = newMode;
-	if( !m_pTextBoxBg->SameBlock(newMode, m_mode) )
+	if( m_pTextBoxBg && !m_pTextBoxBg->SameBlock(newMode, m_mode) )
 		RequestRender();
 }
 

@@ -337,11 +337,12 @@ const WgCharSeq::WgCharBasket WgCharSeq::GetWgChars() const
 		{
 			int bytes = sizeof(WgChar)*m_nbChars;
 
-			basket.ptr = (WgChar *) new char[bytes];
-			memset( (void *) basket.ptr, 0, bytes);
+			WgChar * p = (WgChar *) new char[bytes];
+			memset( p, 0, bytes);
 			const char * pSrc = (char*) m_pChar;
-			WgTextTool::readString( pSrc, basket.ptr, m_nbChars );
+			WgTextTool::readString( pSrc, p, m_nbChars );
 
+			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;
 			return basket;
@@ -350,11 +351,12 @@ const WgCharSeq::WgCharBasket WgCharSeq::GetWgChars() const
 		{
 			int bytes = sizeof(WgChar)*m_nbChars;
 
-			basket.ptr = (WgChar *) new char[bytes];
-			memset( (void *) basket.ptr, 0, bytes);
+			WgChar * p = (WgChar *) new char[bytes];
+			memset( p, 0, bytes);
 			const Uint16 * pSrc = (Uint16*) m_pChar;
-			WgTextTool::readString( pSrc, basket.ptr, m_nbChars );
+			WgTextTool::readString( pSrc, p, m_nbChars );
 
+			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;
 			return basket;
@@ -363,11 +365,12 @@ const WgCharSeq::WgCharBasket WgCharSeq::GetWgChars() const
 		{
 			int bytes = sizeof(WgChar)*m_nbChars;
 
-			basket.ptr = (WgChar *) new char[bytes];
-			memset( (void *) basket.ptr, 0, bytes);
+			WgChar * p = (WgChar *) new char[bytes];
+			memset( p, 0, bytes);
 			const char * pSrc = (char*) m_pChar;
-			WgTextTool::readFormattedString( pSrc, basket.ptr, m_nbChars, ((WgCharSeqEscaped*)this)->m_pDB );
+			WgTextTool::readFormattedString( pSrc, p, m_nbChars, ((WgCharSeqEscaped*)this)->m_pDB );
 
+			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;
 			return basket;
@@ -376,11 +379,12 @@ const WgCharSeq::WgCharBasket WgCharSeq::GetWgChars() const
 		{
 			int bytes = sizeof(WgChar)*m_nbChars;
 
-			basket.ptr = (WgChar *) new char[bytes];
-			memset( (void *) basket.ptr, 0, bytes);
+			WgChar * p = (WgChar *) new char[bytes];
+			memset( p, 0, bytes);
 			const Uint16 * pSrc = (Uint16*) m_pChar;
-			WgTextTool::readFormattedString( pSrc, basket.ptr, m_nbChars, ((WgCharSeqEscaped*)this)->m_pDB );
+			WgTextTool::readFormattedString( pSrc, p, m_nbChars, ((WgCharSeqEscaped*)this)->m_pDB );
 
+			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;
 			return basket;
@@ -389,11 +393,12 @@ const WgCharSeq::WgCharBasket WgCharSeq::GetWgChars() const
 		{
 			int bytes = sizeof(WgChar)*m_nbChars;
 
-			basket.ptr = (WgChar *) new char[bytes];
-			memset( (void *) basket.ptr, 0, bytes);
+			WgChar * p = (WgChar *) new char[bytes];
+			memset( p, 0, bytes);
 			const char * pSrc = (char*) m_pChar;
-			WgTextTool::readString( pSrc, ((WgCharSeq8*)this)->m_codepage, basket.ptr, m_nbChars );
+			WgTextTool::readString( pSrc, ((WgCharSeq8*)this)->m_codepage, p, m_nbChars );
 
+			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;
 			return basket;
@@ -423,9 +428,9 @@ const WgCharSeq::UnicodeBasket WgCharSeq::GetUnicode() const
 		case WGCHAR:
 		{
 			Uint16 * p = new Uint16[m_nbChars];
-			basket.ptr = p;
 			for( int i = 0 ; i < m_nbChars ; i++ )
 				p[i] = ((WgChar*)m_pChar)[i].GetGlyph();
+			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;
 			return basket;
@@ -433,9 +438,9 @@ const WgCharSeq::UnicodeBasket WgCharSeq::GetUnicode() const
 		case UTF8:
 		{
 			Uint16 * p = new Uint16[m_nbChars];
-			basket.ptr = p;
 			const char * pSrc = (const char *) m_pChar;
 			WgTextTool::readString( pSrc, p, m_nbChars );
+			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;
 			return basket;
@@ -449,9 +454,9 @@ const WgCharSeq::UnicodeBasket WgCharSeq::GetUnicode() const
 		case ESCAPED_UTF8:
 		{
 			Uint16 * p = new Uint16[m_nbChars];
-			basket.ptr = p;
 			const char * pSrc = (const char *) m_pChar;
 			WgTextTool::stripTextCommandsConvert( pSrc, p, m_nbChars );
+			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;
 			return basket;
@@ -460,9 +465,9 @@ const WgCharSeq::UnicodeBasket WgCharSeq::GetUnicode() const
 		case ESCAPED_UTF16:
 		{
 			Uint16 * p = new Uint16[m_nbChars];
-			basket.ptr = p;
 			const Uint16 * pSrc = (const Uint16 *) m_pChar;
 			WgTextTool::stripTextCommands( pSrc, p, m_nbChars );
+			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;
 			return basket;
@@ -470,7 +475,13 @@ const WgCharSeq::UnicodeBasket WgCharSeq::GetUnicode() const
 
 		case MAP8:
 		{
-			CONTINUE HERE!
+			Uint16 * p = new Uint16[m_nbChars];
+			const char * pSrc = (const char *) m_pChar;
+			WgTextTool::readString( pSrc, ((WgCharSeq8*)this)->m_codepage, p, m_nbChars );
+			basket.ptr = p;
+			basket.length = m_nbChars;
+			basket.bIsOwner = true;
+			return basket;
 		}
 
 		default:					// EMPTY
@@ -493,8 +504,8 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 		{
 			Uint32 size = WgTextTool::getTextSizeUTF8( (WgChar*) m_pChar, m_nbChars );
 			char * p = new char[size+1];
-			basket.ptr = p;
 			WgTextTool::getTextUTF8( (WgChar*) m_pChar, p, size+1 );
+			basket.ptr = p;
 			basket.length = size;
 			basket.bIsOwner = true;
 			return basket;
@@ -512,8 +523,8 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 		{
 			Uint32 size = WgTextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
 			char * p = new char[size+1];
-			basket.ptr = p;
 			WgTextTool::getTextUTF8( (Uint16*) m_pChar, p, size+1 );
+			basket.ptr = p;
 			basket.length = size;
 			basket.bIsOwner = true;
 			return basket;
@@ -522,8 +533,8 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 		{
 			Uint32 size = WgTextTool::getTextSizeStrippedUTF8( (char *) m_pChar, m_nbChars );
 			char * p = new char[size+1];
-			basket.ptr = p;
 			WgTextTool::stripTextCommands( (char*) m_pChar, p, size+1 );
+			basket.ptr = p;
 			basket.length = size;
 			basket.bIsOwner = true;
 			return basket;
@@ -533,12 +544,24 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 		{
 			Uint32 size = WgTextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
 			char * p = new char[size+1];
-			basket.ptr = p;
 			WgTextTool::stripTextCommandsConvert( (Uint16*) m_pChar, (char*) (p + size - (m_nbChars+1)*2), m_nbChars+1 );
+			basket.ptr = p;
 			basket.length = size;
 			basket.bIsOwner = true;
 			return basket;
 		}
+
+		case MAP8:
+		{
+			Uint32 size = WgTextTool::getTextSizeUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, m_nbChars );
+			char * p = new char[size+1];
+			WgTextTool::getTextUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, p, size+1 );
+			basket.ptr = p;
+			basket.length = size;
+			basket.bIsOwner = true;
+			return basket;
+		}
+
 		default:					// EMPTY
 
 			basket.ptr = 0;

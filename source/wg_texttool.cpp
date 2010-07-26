@@ -24,6 +24,7 @@
 #include <memory.h>
 #include <wchar.h>
 #include <wctype.h>
+#include <wg_codepages.h>
 
 #include <string>
 
@@ -268,7 +269,7 @@ Uint32 WgTextTool::readString( const Uint16 *& pSrc, WgChar * pDst, Uint32 maxCh
 }
 
 
-Uint32 WgTextTool::readString( const char *& pSrc, WgCodePage codepage, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF )
+Uint32 WgTextTool::readString( const char *& pSrc, WgCodePage codepage, WgChar * pDst, Uint32 maxChars )
 {
 	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
 	if( !pCP || !pSrc )
@@ -287,6 +288,24 @@ Uint32 WgTextTool::readString( const char *& pSrc, WgCodePage codepage, WgChar *
 	return n;
 }
 
+Uint32 WgTextTool::readString( const char *& pSrc, WgCodePage codepage, Uint16 * pDst, Uint32 maxChars )
+{
+	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
+	if( !pCP || !pSrc )
+	{
+	    if( maxChars > 0 )
+            pDst[0] = 0;
+		return 0;
+	}
+
+	Uint32 n = 0;
+	for( unsigned char * p = (unsigned char *) pDst ; p[n] != 0 && n < maxChars ; n++ )
+		pDst[n] = pCP[p[n]];
+
+	if( n != maxChars )
+		pDst[n] = 0;
+	return n;
+}
 
 
 //____ CountWhitespaces() ______________________________________________________
@@ -2033,7 +2052,7 @@ Uint32 WgTextTool::getTextUTF8( const Uint16 * pSrc, char * pDest, Uint32 maxByt
 
 //____ getTextUTF8() __________________________________________________________
 
-static Uint32 WgTextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, Uint32 maxChars )
+Uint32 WgTextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, Uint32 maxChars )
 {
 	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
 	if( !pCP )

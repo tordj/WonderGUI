@@ -85,6 +85,7 @@ public:
 	static Uint32	readString( const char *& pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
 	static Uint32	readString( const Uint16 *& pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
 	static Uint32	readString( const char *& pSrc, WgCodePage codepage, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
+	static Uint32	readString( const char *& pSrc, WgCodePage codepage, Uint16 * pDst, Uint32 maxChars = 0xFFFFFFFF );
 
 	static Uint32	countChars( const char * pStr, Uint32 strlen = 0xFFFFFFFF );
 
