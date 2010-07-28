@@ -151,64 +151,6 @@ char * WgTextTool::itoa( int value, char * str, int base )
     return str;
 }
 
-//____ readLine() _____________________________________________________________
-
-Uint32 WgTextTool::readLine( const char *& pSrc, Uint16 * pDst, Uint32 maxChars )
-{
-	if( !pSrc )
-	{
-	    if( maxChars > 0 )
-			pDst[0] = 0;
-		return 0;
-	}
-
-	Uint32 n = 0;
-
-	while( * pSrc != 0 && * pSrc != '\n' && n < maxChars )
-		pDst[n++] = readChar(pSrc);
-
-	if( n != maxChars )
-		pDst[n] = 0;
-	return n;
-}
-
-Uint32 WgTextTool::readLine( const char *& pSrc, WgChar * pDst, Uint32 maxChars )
-{
-	if( !pSrc )
-	{
-	    if( maxChars > 0 )
-			pDst[0].SetGlyph(0);
-		return 0;
-	}
-
-	Uint32 n = 0;
-
-	while( * pSrc != 0 && * pSrc != '\n' && n < maxChars )
-		pDst[n++].SetGlyph( readChar(pSrc) );
-
-	if( n != maxChars )
-		pDst[n].SetGlyph(0);
-	return n;
-}
-
-Uint32 WgTextTool::readLine( const Uint16 *& pSrc, WgChar * pDst, Uint32 maxChars )
-{
-	if( !pSrc )
-	{
-	    if( maxChars > 0 )
-			pDst[0].SetGlyph(0);
-		return 0;
-	}
-
-	Uint32 n = 0;
-
-	while( * pSrc != 0 && * pSrc != '\n' && n < maxChars )
-		pDst[n++].SetGlyph( * pSrc++ );
-
-	if( n != maxChars )
-		pDst[n].SetGlyph(0);
-	return n;
-}
 
 //____ readString() ___________________________________________________________
 
@@ -2226,68 +2168,9 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp,
 	return pen.GetPosX();
 }
 
-//____ lineWidthSoft() ________________________________________________________
-
-Uint32 WgTextTool::lineWidthSoft( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString )
-{
-	WgPen pen;
-	Uint16 hProp = pString->GetPropHandle();
-
-	pen.SetTextNode( pNode );
-	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
-
-	while( !pString->IsEndOfLine() )
-	{
-		if( pString->GetPropHandle() != hProp )
-			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
-
-		pen.SetChar( pString->GetGlyph() );
-		pen.ApplyKerning();
-		pen.AdvancePos();
-		pString++;
-	}
-
-	// We include the terminator in case it is set to be visible.
-
-	pen.SetChar( pString->GetGlyph() );
-	pen.ApplyKerning();
-	pen.AdvancePos();
-
-	return pen.GetPosX();
-}
-
-
-
 //____ lineWidthPart() ________________________________________________________
 
 Uint32 WgTextTool::lineWidthPart( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol )
-{
-	WgPen pen;
-	Uint16 hProp = pString->GetPropHandle();
-
-	pen.SetTextNode( pNode );
-	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
-
-	for( int i = 0 ; i < nCol ; i++ )
-	{
-		if( pString->IsEndOfLine() )
-			break;
-
-		if( pString->GetPropHandle() != hProp )
-			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
-
-		pen.SetChar( pString->GetGlyph() );
-		pen.ApplyKerning();
-		pen.AdvancePos();
-		pString++;
-	}
-
-	return pen.GetPosX();
-}
-
-//____ lineWidthPartSoft() ____________________________________________________
-
-Uint32 WgTextTool::lineWidthPartSoft( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol )
 {
 	WgPen pen;
 	Uint16 hProp = pString->GetPropHandle();

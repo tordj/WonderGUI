@@ -77,10 +77,6 @@ public:
 
 	inline static Uint16 readChar( const char *& pStr );
 
-	static Uint32	readLine( const char *& pStr, Uint16 * pDst, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	readLine( const char *& pStr, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	readLine( const Uint16 *& pStr, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
-
 	static Uint32	readString( const char *& pSrc, Uint16 * pDst, Uint32 maxChars = 0xFFFFFFFF );
 	static Uint32	readString( const char *& pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
 	static Uint32	readString( const Uint16 *& pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
@@ -183,8 +179,6 @@ public:
 	static Uint32	lineWidth( WgTextNode * pNode, const WgTextPropPtr& pPropt, const Uint16 * pString );
 	static Uint32	lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString );
 	static Uint32	lineWidthPart( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol );
-	static Uint32	lineWidthSoft( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString );
-	static Uint32	lineWidthPartSoft( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol );
 
 	static int		forwardPixels( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar *& pPos, Uint32 nPixels );
 //	static void		forwardColumns( TextParam& param, const Uint16 *& pPos, Uint32 nColumns );

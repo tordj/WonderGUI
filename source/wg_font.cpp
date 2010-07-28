@@ -375,6 +375,9 @@ int WgFont::ReplaceVectorGlyphs( WgVectorGlyphs * pOld, WgVectorGlyphs * pNew )
 
 int WgFont::ReplaceBitmapGlyphs( WgBitmapGlyphs * pOld, WgBitmapGlyphs * pNew )
 {
+	if( pOld == 0 )
+		return 0;
+
 	int nbReplaced = 0;
 
 	for( int size = 0 ; size <= WG_MAX_FONTSIZE ; size++ )

@@ -310,6 +310,7 @@ public:
 	inline SkinManagerRes *	GetFirstResSkinManager() const { return m_skinManagers.getFirst(); }
 	inline ConnectRes *		GetFirstResConnect() const { return m_connects.getFirst(); }
 
+
 private:
 
 	typedef std::map<std::string, ResDBRes*>		ResDBMap;

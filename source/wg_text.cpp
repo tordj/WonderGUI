@@ -301,7 +301,7 @@ Uint32 WgText::getSoftLineWidth( Uint32 line ) const
 	if( line >= nbSoftLines() || !m_pProp->GetFont() )
 		return 0;
 
-	return WgTextTool::lineWidthSoft( m_pManagerNode, m_pProp, m_mode, getSoftLineText(line) );
+	return WgTextTool::lineWidthPart( m_pManagerNode, m_pProp, m_mode, getSoftLineText(line), getSoftLine(line)->nChars );
 }
 
 //____ getSoftLineWidthPart() _________________________________________________
@@ -316,7 +316,7 @@ Uint32 WgText::getSoftLineWidthPart( Uint32 _line, Uint32 startCol, Uint32 nCol 
 	if( nCol > pLine->nChars )
 		return 0;
 
-	return WgTextTool::lineWidthPartSoft( m_pManagerNode, m_pProp, m_mode, m_buffer.GetChars() + pLine->ofs, nCol );
+	return WgTextTool::lineWidthPart( m_pManagerNode, m_pProp, m_mode, m_buffer.GetChars() + pLine->ofs, nCol );
 }
 
 
@@ -1329,10 +1329,11 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 	WgPen		pen;
 	Uint16		hProp = 0xFFFF;					// Force immediate update of textprop.
 	int			breakLevel;
+	bool		bEndOfText = false;
 
 	pen.SetTextNode( m_pManagerNode );
 
-	while( !p->IsEndOfText() )
+	while( !bEndOfText )
 	{
 
 		const WgChar * 	pLineStart = p;
@@ -1361,6 +1362,7 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 			}
 			else if( p->GetGlyph() == 0 )
 			{
+				bEndOfText = true;
 				bBreakSkips = false;
 				break;
 			}
@@ -1420,9 +1422,10 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 			// Check if we need to put a softbreak.
 
-			if( Uint32(pen.GetPosX() + pen.GetGlyph()->bearingX + pen.GetGlyph()->rect.w) > m_lineWidth )			// No advance on last character of line, just bearingX + width
+			Uint32 len = pen.GetPosX() + pen.GetGlyph()->bearingX + pen.GetGlyph()->rect.w; // No advance on last character of line, just bearingX + width
+			if( len > m_lineWidth )			
 			{
-				if( pbp != 0 )
+				if( pbp != 0 && pbp != pLineStart )
 				{
 					p = pbp;
 					break;
@@ -1502,6 +1505,7 @@ void WgText::regenSoftLines()
 		m_nSoftLines = m_nHardLines;
 		return;
 	}
+
 
 	// If number of softlines are equal to before and we already have filled in the array
 	// then we are done.

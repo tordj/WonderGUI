@@ -319,7 +319,10 @@ void WgGizmoText::OnGotInputFocus()
 {
 	m_bHasFocus = true;
 	if( IsEditable() ) // render with cursor on
+	{
+		m_pText->GetCursor()->goEOF();
 		RequestRender();
+	}
 }
 
 //____ OnLostInputFocus() ______________________________________________
