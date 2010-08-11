@@ -159,12 +159,12 @@ inline void WgCursorInstance::goRight( Uint32 nChars )
 
 inline void WgCursorInstance::goBOF()
 {
-	gotoHardPos( 0, 0 );
+	gotoSoftPos( 0, 0 );
 }
 
 inline void WgCursorInstance::goEOF()
 {
-	gotoHardPos( 0xFFFFFFFF, 0xFFFFFFFF );
+	gotoSoftPos( 0xFFFFFFFF, 0xFFFFFFFF );
 }
 
 

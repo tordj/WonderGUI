@@ -83,6 +83,7 @@ public:
 private:
 	float	GetSize( WgTextNode * pNode, const WgFont * m_pFont, WgFontStyle style, int size );
 
+	void		RefreshAll();
 	virtual WgTextNode *	NewNode( WgText * pText );
 	WgChain<WgTextNode>	m_nodes;
 

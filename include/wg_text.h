@@ -219,15 +219,8 @@ public:
 	inline Sint8		lineSpaceAdjustment() const { return m_lineSpaceAdj; }
 
 
-//	virtual bool		joinLines( Uint32 firstLine );
-//	virtual bool		splitLine( Uint32 line, Uint32 col );
-
-
 	// Get-methods
 
-	char *	getLineUTF8( Uint32 line ) const;
-	Uint32	getLineUTF8( Uint32 line, char * pDest, Uint32 maxBytes ) const;
-	Uint32	getLineSizeUTF8( Uint32 line ) const;
 
 	char *	getTextUTF8() const;
 	Uint32	getTextUTF8( char * pDest, Uint32 maxBytes ) const;
@@ -263,7 +256,7 @@ public:
 	void			gotoSoftLine( Uint32 line ){ if(m_pCursor) m_pCursor->gotoSoftLine(line); }
 
 
-	void			gotoHardPos( Uint32 line, Uint32 col ){ if(m_pCursor) m_pCursor->gotoHardPos( line, col );}
+//	void			gotoHardPos( Uint32 line, Uint32 col ){ if(m_pCursor) m_pCursor->gotoHardPos( line, col );}
 	void			gotoSoftPos( Uint32 line, Uint32 col ){ if(m_pCursor) m_pCursor->gotoSoftPos( line, col );}
 
 	void			gotoPixel( Sint32 x, Sint32 y ){ if(m_pCursor) m_pCursor->gotoPixel( x, y );}

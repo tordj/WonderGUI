@@ -487,68 +487,6 @@ void WgText::clearFont()
 	regenSoftLines();
 }
 
-
-//____ getLineUTF8() __________________________________________________________
-/**
-	Counts the number of bytes needed to represent the line in UTF-format,
-	reserves a memory area just large enough, generates a zero-terminated string
-	and returns a pointer to it.
-
-	@returns	Pointer to the string in UTF8-format. Caller needs to delete[]
-				the string afterwards.
-*/
-char *	WgText::getLineUTF8( Uint32 _line ) const
-{
-	if( _line >= nbLines() )
-		return 0;
-
-	Uint32 bytes = getLineSizeUTF8(_line)+1;
-	char * pDest = new char[bytes];
-	getLineUTF8(_line, pDest, bytes);
-	return pDest;
-}
-
-//____ getLineUTF8() __________________________________________________________
-/**
-	Generates a representation of the line in UTF8-format in the specified
-	memory area.
-
-	@param		maxBytes	Maximum number of bytes for the line, including
-							zero-termination.
-
-	@returns		Length of UTF8-string written to the area (excluding
-					termination character). No incomplete multibyte characters
-					are written, so number of bytes written can be less
-					than maxChars-1 even when whole string didn't fit.
-
-*/
-Uint32	WgText::getLineUTF8( Uint32 _line, char * pDest, Uint32 maxBytes ) const
-{
-	if( _line >= nbLines() )
-		return 0;
-
-	Uint32 bytes = getLineSizeUTF8(_line)+1;
-	if( bytes < maxBytes )
-		maxBytes = bytes;
-
-	WgTextLine * pLine = getLine(_line);
-	return WgTextTool::getTextUTF8( m_buffer.GetChars() + pLine->ofs, pDest, maxBytes );
-}
-
-//____ getLineSizeUTF8() ______________________________________________________
-/**
-	@returns	The number of bytes needed to represent the line in UTF8-format.
-				String terminator not included.
-*/
-Uint32	WgText::getLineSizeUTF8( Uint32 _line ) const
-{
-	if( _line >= nbLines() )
-		return 0;
-
-	WgTextLine * pLine = getLine(_line);
-	return WgTextTool::getTextSizeUTF8( m_buffer.GetChars() + pLine->ofs, pLine->nChars);
-}
-
 //____ getTextUTF8() __________________________________________________________
 /**
 	Counts the number of bytes needed to represent the text in UTF-format,

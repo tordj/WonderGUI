@@ -55,15 +55,15 @@ public:
 
   // Methods deactivated on Wdg_Roots
 
-  bool	SetParent( WgWidget * _pParent, WgWidget * pBelow = 0 ) { return false; }
+	bool	SetParent( WgWidget * _pParent, WgWidget * pBelow = 0 ) { return false; }
 	bool	SetOrigo( int _origo ) { return false; }
 
-  bool	Modal( bool _bOnOff ) { return false; }
+	bool	Modal( bool _bOnOff ) { return false; }
 
-  bool	MinSize( int _w, int _h ) { return false; }
+	bool	MinSize( int _w, int _h ) { return false; }
 	bool	MaxSize( int _w, int _h ) { return false; }
 
-  bool	Top( void ) { return false; }
+	bool	Top( void ) { return false; }
 	bool	Bottom( void ) { return false; }
 	bool	Up( void ) { return false; }													
 	bool	Down( void ) { return false; }

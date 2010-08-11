@@ -66,7 +66,20 @@ WgTextNode * WgTextManager::NewNode( WgText * pText )
 
 	WgTextNode * p = new WgTextNode( this, pText );
 	m_nodes.push_back( p );
+	p->Refresh();
 	return p;
+}
+
+//____ RefreshAll() ___________________________________________________________
+
+void WgTextManager::RefreshAll()
+{
+	WgTextNode * p = m_nodes.getFirst();
+	while( p )
+	{
+		p->Refresh();
+		p = p->getNext();
+	}
 }
 
 //____ SetScaleValue() _________________________________________________________
@@ -81,25 +94,24 @@ bool WgTextManager::SetScaleValue( float scale )
 	if( scale != m_scale )
 	{
 		m_scale = scale;
-
-		WgTextNode * p = m_nodes.getFirst();
-		while( p )
-		{
-			p->Refresh();
-			p = p->getNext();
-		}
+		RefreshAll();
 	}
 
 	return true;
 }
 
-//____ SetAllowedSizes() ______________________________________________________
+//____ SetScaleMultiplier() ___________________________________________________
 
 bool WgTextManager::SetScaleMultiplier( float multi )
 {
 	if( multi <= 0.f )
 		return false;
-	m_scaleMultiplier = multi;
+
+	if( m_scaleMultiplier != multi )
+	{
+		m_scaleMultiplier = multi;
+		RefreshAll();
+	}
 	return true;
 }
 
@@ -134,6 +146,7 @@ bool WgTextManager::SetAllowedSizes( int nSizes, float sizes[] )
 
 		m_pAllowedSizes[nSizes] = 0;
 	}
+	RefreshAll();
 	return true;
 }
 
@@ -144,9 +157,13 @@ bool WgTextManager::SetGrowFormula( float treshold, float ratio, float limit )
 	if( treshold < 1.f || ratio < 0.f || limit < 0.f )
 		return false;
 
-	m_growTreshold = treshold;
-	m_growRatio = ratio;
-	m_growLimit = limit;
+	if( treshold != m_growTreshold || ratio != m_growRatio || limit != m_growLimit )
+	{
+		m_growTreshold = treshold;
+		m_growRatio = ratio;
+		m_growLimit = limit;
+		RefreshAll();
+	}
 	return true;
 }
 
@@ -157,9 +174,13 @@ bool WgTextManager::SetShrinkFormula( float treshold, float ratio, float limit )
 	if( treshold < 0.f || ratio < 0.f || limit < 0.f )
 		return false;
 
-	m_shrinkTreshold = treshold;
-	m_shrinkRatio = ratio;
-	m_shrinkLimit = limit;
+	if( treshold != m_shrinkTreshold || ratio != m_shrinkRatio || limit != m_shrinkLimit )
+	{
+		m_shrinkTreshold = treshold;
+		m_shrinkRatio = ratio;
+		m_shrinkLimit = limit;
+		RefreshAll();
+	}
 	return true;
 }
 
@@ -170,7 +191,11 @@ bool WgTextManager::SetSizeStepping( float stepping )
 	if( stepping < 0.f )
 		return false;
 
-	m_sizeStepping = stepping;
+	if( stepping != m_sizeStepping )
+	{
+		m_sizeStepping = stepping;
+		RefreshAll();
+	}
 	return true;
 }
 
@@ -178,7 +203,11 @@ bool WgTextManager::SetSizeStepping( float stepping )
 
 void WgTextManager::SetSizeRounding( Rounding rounding )
 {
-	m_sizeRounding = rounding;
+	if( rounding != m_sizeRounding )
+	{
+		m_sizeRounding = rounding;
+		RefreshAll();
+	}
 }
 //____ GetSize() __________________________________________________
 

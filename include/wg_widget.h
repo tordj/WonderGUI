@@ -95,7 +95,6 @@ class	WgWidget : public WgEmitter
  	friend class Wdg_Root;
 	friend class WgInput;
 	friend class Wdg_Shader;
-	friend class Wdg_WidgetView;
 	friend class WgWidgetHook;
 
 	public:
