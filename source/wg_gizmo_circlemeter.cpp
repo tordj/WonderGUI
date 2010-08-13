@@ -27,7 +27,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_surface.h>
 
-static const char	Wdg_Type[] = {"TordJ/CircleMeter"};
+static const char	c_gizmoType[] = {"TordJ/CircleMeter"};
 
 using namespace WgSignal;
 
@@ -82,7 +82,7 @@ const char * WgGizmoCirclemeter::Type( void ) const
 
 const char * WgGizmoCirclemeter::GetMyType( void )
 {
-	return Wdg_Type;
+	return c_gizmoType;
 }
 
 //____ SetBackgroundSource() __________________________________________________

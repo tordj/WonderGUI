@@ -43,7 +43,7 @@
 
 #include <wg_texttool.h>
 
-static const char	s_type[] = {"TordJ/MenuBar"};
+static const char	c_gizmoType[] = {"TordJ/MenuBar"};
 
 
 //____ WgGizmoMenubar() _________________________________________________________________
@@ -73,7 +73,7 @@ const char * WgGizmoMenubar::Type( void ) const
 
 const char * WgGizmoMenubar::GetMyType( void )
 {
-	return s_type;
+	return c_gizmoType;
 }
 
 //____ SetBgSource() __________________________________________________________

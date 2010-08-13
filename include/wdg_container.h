@@ -23,26 +23,22 @@
 #ifndef	WDG_CONTAINER_DOT_H
 #define	WDG_CONTAINER_DOT_H
 
-#ifndef	WG_WIDGET_DOT_H
-#	include <wg_widget.h>
+
+#ifndef	WG_GIZMO_WIDGET_WRAPPER_DOT_H
+#	include <wg_gizmo_widget_wrapper.h>
 #endif
 
-class Wdg_Container:public WgWidget
+#ifndef WG_GIZMO_DUMMY_DOT_H
+#	include <wg_gizmo_dummy.h>
+#endif
+
+
+class Wdg_Container : public Wdg_Widget<WgGizmoDummy>
 {
-	public:
-		WIDGET_CONSTRUCTORS(Wdg_Container,WgWidget)
-		virtual ~Wdg_Container();
-		virtual const char * Type() const;
-		static const char * GetMyType();
+public:
+	WIDGET_GIZMO_CONSTRUCTORS(Wdg_Container,WgGizmoDummy);
+	virtual ~Wdg_Container() {};
 
-	protected:
-		WgWidget * NewOfMyType() const;
-
-	private:	
-		void Init();
-		bool DoMyOwnMarkTest( int _x, int _y );
-		
-		
 };
 
 #endif //	WDG_CONTAINER_DOT_H

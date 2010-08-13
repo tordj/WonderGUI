@@ -48,6 +48,12 @@ class	WgGizmoDragbar : public WgGizmo
 		virtual const char * Type() const;
 		static const char * GetMyType();
 
+		//____ Callbacks ________________________________________
+
+		static void cbSetSlider				(void * pGizmo, float pos, float size) { ((WgGizmoDragbar*)pGizmo)->SetSlider(pos,size); }
+		static void cbSetSliderPos			(void * pGizmo, float pos) { ((WgGizmoDragbar*)pGizmo)->SetSliderPos(pos); }
+		static void cbSetSliderSize			(void * pGizmo, float size) { ((WgGizmoDragbar*)pGizmo)->SetSliderSize(size); }
+		static void cbSetSliderPosPxlOfs	(void * pGizmo, int x) { ((WgGizmoDragbar*)pGizmo)->SetSliderPosPxlOfs(x); }
 
 		//____ Enums ____________________________________________
 

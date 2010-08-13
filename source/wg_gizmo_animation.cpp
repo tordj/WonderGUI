@@ -28,7 +28,7 @@
 #include <math.h>
 
 
-static const char	Wdg_Type[] = {"TordJ/Animation"};
+static const char	c_gizmoType[] = {"TordJ/Animation"};
 
 
 
@@ -66,7 +66,7 @@ const char * WgGizmoAnimation::Type() const
 
 const char * WgGizmoAnimation::GetMyType( void )
 {
-	return Wdg_Type;
+	return c_gizmoType;
 }
 
 //____ SetSource() ____________________________________________________________

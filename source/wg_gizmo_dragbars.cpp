@@ -30,9 +30,9 @@
 using namespace WgSignal;
 using namespace WgUtil;
 
-static const char	Wdg_Type[] = {"Unspecified type derived from TordJ/DragBar"};
-static const char Wdg_TypeH[] = {"TordJ/HDrag"};
-static const char Wdg_TypeV[] = {"TordJ/VDrag"};
+static const char	c_gizmoType[] = {"Unspecified type derived from TordJ/DragBar"};
+static const char c_gizmoTypeH[] = {"TordJ/HDrag"};
+static const char c_gizmoTypeV[] = {"TordJ/VDrag"};
 
 
 //____ WgGizmoDragbar() ____________________________________________________
@@ -72,7 +72,7 @@ const char * WgGizmoDragbar::Type( void ) const
 
 const char * WgGizmoDragbar::GetMyType( void )
 {
-	return Wdg_Type;
+	return c_gizmoType;
 }
 
 //____ SetBgPressMode() _______________________________________________________
@@ -839,7 +839,7 @@ const char * WgGizmoHDragbar::Type( void ) const
 
 const char * WgGizmoHDragbar::GetMyType( void )
 {
-	return Wdg_TypeH;
+	return c_gizmoTypeH;
 }
 
 
@@ -869,6 +869,6 @@ const char * WgGizmoVDragbar::Type( void ) const
 
 const char * WgGizmoVDragbar::GetMyType( void )
 {
-	return Wdg_TypeV;
+	return c_gizmoTypeV;
 }
 

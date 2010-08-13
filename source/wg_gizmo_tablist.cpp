@@ -11,7 +11,7 @@
 #include <wg_item_row.h>
 
 
-static const char	Wdg_Type[] = {"TordJ/TabList"};
+static const char	c_gizmoType[] = {"TordJ/TabList"};
 
 //____ WgTab::Constructor __________________________________________________________
 
@@ -80,7 +80,7 @@ const char * WgGizmoTablist::Type( void ) const
 
 const char * WgGizmoTablist::GetMyType( void )
 {
-	return Wdg_Type;
+	return c_gizmoType;
 }
 
 //____ SetTextProperties() ____________________________________________________

@@ -26,7 +26,7 @@
 #include	<wg_gfxdevice.h>
 
 
-static const char Wdg_Type[] = {"TordJ/Value"};
+static const char c_gizmoType[] = {"TordJ/Value"};
 
 using namespace WgSignal;
 
@@ -56,7 +56,7 @@ const char * WgGizmoValue::Type( void ) const
 
 const char * WgGizmoValue::GetMyType( void )
 {
-	return Wdg_Type;
+	return c_gizmoType;
 }
 
 //____ SetFonts() _____________________________________________________________

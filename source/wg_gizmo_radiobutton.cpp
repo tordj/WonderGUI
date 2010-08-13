@@ -25,7 +25,7 @@
 
 using namespace WgSignal;
 
-static const char	s_type[] = {"TordJ/RadioButton2"};
+static const char	c_gizmoType[] = {"TordJ/RadioButton2"};
 
 
 
@@ -52,7 +52,7 @@ const char * WgGizmoRadiobutton::Type( void ) const
 
 const char * WgGizmoRadiobutton::GetMyType( void )
 {
-	return s_type;
+	return c_gizmoType;
 }
 
 

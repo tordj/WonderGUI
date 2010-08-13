@@ -37,14 +37,6 @@ class Wdg_VDrag : public Wdg_Widget<WgGizmoVDragbar>
 public:
 	WIDGET_GIZMO_CONSTRUCTORS(Wdg_VDrag,WgGizmoVDragbar);
 	virtual ~Wdg_VDrag() {};
-
-	//____ Callbacks ________________________________________
-
-	static void cbSetSlider				(void * pGizmo, float pos, float size) { ((Wdg_VDrag*)pGizmo)->SetSlider(pos,size); }
-	static void cbSetSliderPos			(void * pGizmo, float pos) { ((Wdg_VDrag*)pGizmo)->SetSliderPos(pos); }
-	static void cbSetSliderSize			(void * pGizmo, float size) { ((Wdg_VDrag*)pGizmo)->SetSliderSize(size); }
-	static void cbSetSliderPosPxlOfs	(void * pGizmo, int x) { ((Wdg_VDrag*)pGizmo)->SetSliderPosPxlOfs(x); }
-
 };
 
 class Wdg_HDrag : public Wdg_Widget<WgGizmoHDragbar>
@@ -52,14 +44,6 @@ class Wdg_HDrag : public Wdg_Widget<WgGizmoHDragbar>
 public:
 	WIDGET_GIZMO_CONSTRUCTORS(Wdg_HDrag,WgGizmoHDragbar);
 	virtual ~Wdg_HDrag() {};
-
-	//____ Callbacks ________________________________________
-
-	static void cbSetSlider				(void * pGizmo, float pos, float size) { ((Wdg_HDrag*)pGizmo)->SetSlider(pos,size); }
-	static void cbSetSliderPos			(void * pGizmo, float pos) { ((Wdg_HDrag*)pGizmo)->SetSliderPos(pos); }
-	static void cbSetSliderSize			(void * pGizmo, float size) { ((Wdg_HDrag*)pGizmo)->SetSliderSize(size); }
-	static void cbSetSliderPosPxlOfs	(void * pGizmo, int x) { ((Wdg_HDrag*)pGizmo)->SetSliderPosPxlOfs(x); }
-
 };
 
 /*

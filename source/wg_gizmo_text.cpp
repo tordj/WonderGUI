@@ -25,7 +25,7 @@
 #include	<wg_font.h>
 #include	<wg_gfxdevice.h>
 
-static const char	Wdg_Type[] = {"TordJ/GizmoText"};
+static const char	c_gizmoType[] = {"TordJ/GizmoText"};
 
 
 
@@ -60,7 +60,7 @@ const char * WgGizmoText::Type() const
 
 const char * WgGizmoText::GetMyType()
 {
-	return Wdg_Type;
+	return c_gizmoType;
 }
 
 //____ goBOL() ________________________________________________________________

@@ -29,7 +29,7 @@
 
 using namespace WgSignal;
 
-static const char	Wdg_Type[] = {"TordJ/CheckBox2"};
+static const char	c_gizmoType[] = {"TordJ/CheckBox2"};
 
 
 
@@ -78,7 +78,7 @@ const char * WgGizmoCheckbox::Type( void ) const
 
 const char * WgGizmoCheckbox::GetMyType( void )
 {
-	return Wdg_Type;
+	return c_gizmoType;
 }
 
 

@@ -27,7 +27,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 
-static const char	s_type[] = {"TordJ/ComboBox"};
+static const char	c_gizmoType[] = {"TordJ/ComboBox"};
 
 
 //____ WgGizmoCombobox() _________________________________________________________________
@@ -65,7 +65,7 @@ const char * WgGizmoCombobox::Type( void ) const
 
 const char * WgGizmoCombobox::GetMyType( void )
 {
-	return s_type;
+	return c_gizmoType;
 }
 
 
