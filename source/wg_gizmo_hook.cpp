@@ -13,38 +13,20 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
 
-#ifndef	WDG_DRAGBARS_DOT_H
-#define	WDG_DRAGBARS_DOT_H
-
-#ifndef	WG_GIZMO_WIDGET_WRAPPER_DOT_H
-#	include <wg_gizmo_widget_wrapper.h>
-#endif
+#include <wg_gizmo_hook.h>
+#include <wg_gizmo.h>
 
 
-#ifndef WG_GIZMO_DRAGBARS_DOT_H
-#	include <wg_gizmo_dragbars.h>
-#endif
+//____ DoRender() _____________________________________________________________
 
-class Wdg_VDrag : public Wdg_Widget<WgGizmoVDragbar>
-{
-public:
-	WIDGET_GIZMO_CONSTRUCTORS(Wdg_VDrag,WgGizmoVDragbar);
-	virtual ~Wdg_VDrag() {};
-};
-
-class Wdg_HDrag : public Wdg_Widget<WgGizmoHDragbar>
-{
-public:
-	WIDGET_GIZMO_CONSTRUCTORS(Wdg_HDrag,WgGizmoHDragbar);
-	virtual ~Wdg_HDrag() {};
-};
-
-
-#endif //	WDG_DRAGBARS_DOT_H
+void WgGizmoHook::DoRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) 
+{ 
+	m_pGizmo->OnRender( pDevice, _window, _clip, _layer ); 
+}

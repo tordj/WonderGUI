@@ -72,7 +72,7 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 				WgGizmo * pGizmo = m_pHook->Collection()->FirstGizmo();
 				while( pGizmo )
 				{
-					if( pGizmo->Type() == s_type )
+					if( pGizmo->Type() == c_gizmoType )
 					{
 						WgGizmoRadiobutton * pRB = (WgGizmoRadiobutton*) pGizmo;
 						if( pRB->m_bChecked )

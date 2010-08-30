@@ -39,8 +39,8 @@ class WgMenuItem : public WgLink
 {
 	friend class Wdg_Menu;
 public:
-	LINK_METHODS( WgMenuItem );
 	virtual ~WgMenuItem() {};
+	LINK_METHODS( WgMenuItem );
 
 	inline WgMenuItemType GetType() const { return m_type; }
 	inline void SetId(int id) { m_id = id; }

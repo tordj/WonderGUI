@@ -194,6 +194,42 @@ WgSize WgGizmo::MaxSize() const
 	return WgSize(65535,65535);
 }
 
+//____ SetMarked() ____________________________________________________________
+
+bool WgGizmo::SetMarked()
+{
+	return false;
+}
+
+//____ SetSelected() __________________________________________________________
+
+bool WgGizmo::SetSelected()
+{
+	return false;
+}
+
+//____ SetNormal() ____________________________________________________________
+
+bool WgGizmo::SetNormal()
+{
+	if( m_bEnabled )
+		return true;
+	else
+		return false;
+}
+
+//____ Mode() _________________________________________________________________
+
+WgMode WgGizmo::Mode() const
+{
+	if( m_bEnabled )
+		return WG_MODE_NORMAL;
+	else
+		return WG_MODE_DISABLED;
+}
+
+
+
 
 //____ Fillers _______________________________________________________________
 

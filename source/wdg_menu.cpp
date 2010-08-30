@@ -305,7 +305,7 @@ bool Wdg_Menu::SetEntryHeight( Uint8 height )
 
 //____ AddItem() ______________________________________________________________
 
-void Wdg_Menu::AddItem( WgMenuItem * pItem )
+int Wdg_Menu::AddItem( WgMenuItem * pItem )
 {
 	// Calculate minWidth for all derived from ENTRY
 
@@ -325,17 +325,132 @@ void Wdg_Menu::AddItem( WgMenuItem * pItem )
 
 	AdjustSize();
 	RequestRender();
+
+	return m_nItems-1;		// Position of this item.
 }
 
-//____ ClearItems() _____________________________________________________
-void Wdg_Menu::ClearItems()
+//____ InsertItem() ___________________________________________________________
+
+int Wdg_Menu::InsertItem( WgMenuItem * pEntry, int pos )
+{
+	// Calculate minWidth for all derived from ENTRY
+
+	if( pEntry->GetType() != SEPARATOR )
+		CalcEntryMinWidth( (WgMenuEntry*) pEntry );
+
+	// Let item do what it needs to
+
+	pEntry->SetMyMenu( this );
+
+	// Add the item.
+
+	WgMenuItem * pPos = m_items.get(pos);
+	if( pPos )
+		pEntry->moveBefore(pPos);
+	else
+	{
+		pos = m_nItems;
+		m_items.push_back(pEntry);
+	}
+
+	m_nItems++;
+
+	// Refresh what needs to be refreshed...
+
+	AdjustSize();
+	RequestRender();
+
+	return pos;		// Position of this item.
+
+}
+
+//____ RemoveItem() ___________________________________________________________
+
+bool Wdg_Menu::RemoveItem( WgMenuItem * pEntry )
+{
+	if( !m_items.isMember(pEntry) )
+		return false;
+
+	pEntry->disconnect();
+	m_nItems--;
+	AdjustSize();
+	RequestRender();
+	return true;
+}
+
+WgMenuItem* Wdg_Menu::RemoveItem( int pos )
+{
+	WgMenuItem * pEntry = GetItem(pos);
+	RemoveItem(pEntry);
+	return pEntry;
+}
+
+//____ RemoveAllItems() _______________________________________________________
+
+void Wdg_Menu::RemoveAllItems()
+{
+	Close();
+
+	WgMenuItem* pItem = m_items.getFirst();
+	while( pItem )
+	{
+		pItem->SetMyMenu(0);
+		pItem->disconnect();
+		pItem = m_items.getFirst();
+	}
+
+	m_nItems = 0;
+	AdjustSize();
+}
+
+//____ DeleteItem() ___________________________________________________________
+
+bool Wdg_Menu::DeleteItem( WgMenuItem * pEntry )
+{
+	if( !m_items.isMember(pEntry) )
+		return false;
+
+	delete pEntry;
+	m_nItems--;
+	AdjustSize();
+	RequestRender();
+	return true;
+}
+
+bool Wdg_Menu::DeleteItem( int pos )
+{
+	return DeleteItem(GetItem(pos));
+}
+
+//____ DeleteAllItems() _______________________________________________________
+
+void Wdg_Menu::DeleteAllItems()
 {
 	Close();
 	m_items.clear();
 	m_nItems = 0;
+	AdjustSize();
+}
+
+//____ GetItemPos() ___________________________________________________________
+
+int Wdg_Menu::GetItemPos( WgMenuItem* pEntry )
+{
+	if( m_items.isMember( pEntry ) )
+		return pEntry->getIndex();
+	else
+		return -1;
+}
+
+//____ GetItem() ______________________________________________________________
+
+WgMenuItem* Wdg_Menu::GetItem( int pos )
+{
+	return m_items.get(pos);
 }
 
 //____ FindItem() _____________________________________________________
+
 WgMenuItem* Wdg_Menu::FindItem(int id)
 {
 	WgMenuItem* pItem = m_items.getFirst();
@@ -1000,7 +1115,7 @@ void Wdg_Menu::AdjustSize()
 			m_pSlider->AddCallback( WgSignal::ButtonPress(1), cbPressOnSlider, this );
 			m_pSlider->AddCallback( WgSignal::ButtonRelease(1), cbReleasedSlider, this );
 
-			AddCallback( WgSignal::ViewPosY(), Wdg_VDrag::cbSetSliderPos, m_pSlider );
+			AddCallback( WgSignal::ViewPosY(), WgGizmoDragbar::cbSetSliderPos, (WgGizmoDragbar*) m_pSlider );
 			AddCallback(WgSignal::WheelRoll(1), cbWheelRoll, this);
 		}
 

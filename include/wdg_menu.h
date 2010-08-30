@@ -111,8 +111,20 @@ public:
 	bool	SetEntryHeight( Uint8 height );
 
 
-	void	AddItem( WgMenuItem * pEntry );
-	void	ClearItems( );
+	int			AddItem( WgMenuItem * pEntry );
+	int			InsertItem( WgMenuItem * pEntry, int pos );
+
+	bool		RemoveItem( WgMenuItem * pEntry );
+	WgMenuItem*	RemoveItem( int pos );
+	void		RemoveAllItems();
+
+	bool		DeleteItem( WgMenuItem * pEntry );
+	bool		DeleteItem( int pos );
+	void		DeleteAllItems();
+
+	int			GetItemPos( WgMenuItem* pEntry );
+	WgMenuItem*	GetItem( int pos );
+
 
 	WgMenuItem *FindItem( int id );
 	WgMenuItem *GetFirstItem() const { return m_items.getFirst(); }

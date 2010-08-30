@@ -45,6 +45,7 @@ public:
 
 	Sint32	GetItemPos( WgItem * pItem );
 	WgItem*	GetItem( Uint32 pos );
+	const WgItem*	GetItem( Uint32 pos ) const;
 	WgItem *FindItem( Uint32 id );
 	WgItem* GetFirstSelectedItem();
 

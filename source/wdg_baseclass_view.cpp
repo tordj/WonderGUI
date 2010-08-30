@@ -534,7 +534,7 @@ bool Wdg_Baseclass_View::SetScrollbarX( Wdg_HDrag * pScrollbar )
 		m_pScrollbarX->AddCallback( WgSignal::Forward(), Wdg_Baseclass_View::cbStepRight, this );
 		m_pScrollbarX->AddCallback( WgSignal::Back(), Wdg_Baseclass_View::cbStepLeft, this );
 
-		AddCallback( WgSignal::ViewPosSizeX(), Wdg_HDrag::cbSetSlider, m_pScrollbarX );
+		AddCallback( WgSignal::ViewPosSizeX(), WgGizmoDragbar::cbSetSlider, (WgGizmoDragbar*) m_pScrollbarX );
 	}
 
 	// Force a refresh of our subclass if its geometry has been affected.
@@ -586,7 +586,7 @@ bool Wdg_Baseclass_View::SetScrollbarY( Wdg_VDrag * pScrollbar )
 		m_pScrollbarY->AddCallback( WgSignal::Back(), Wdg_Baseclass_View::cbStepUp, this );
 		m_pScrollbarY->AddCallback( WgSignal::WheelRoll(1), Wdg_Baseclass_View::cbWheelRoll, this );
 
-		AddCallback( WgSignal::ViewPosSizeY(), Wdg_VDrag::cbSetSlider, m_pScrollbarY );
+		AddCallback( WgSignal::ViewPosSizeY(), WgGizmoDragbar::cbSetSlider, (WgGizmoDragbar*) m_pScrollbarY );
 		AddCallback( WgSignal::WheelRoll(1), Wdg_Baseclass_View::cbWheelRoll, this );
 	}
 

@@ -80,11 +80,9 @@ public:
 	virtual bool IsDisabled() const { if( m_mode == WG_MODE_DISABLED ) return true; return false; }
 	virtual WgMode GetMode() const { return m_mode; }
 
-	// Deprecated methods, inconsistent naming causing confusion...
-
-	//inline void Mark() { Select(); }
-	//inline void Unmark() { Unselect(); }
-	//inline bool IsMarked() const { return IsSelected(); }
+	virtual void Mark();
+	virtual void Unmark();
+	inline bool IsMarked() const { if( m_mode == WG_MODE_MARKED ) return true; return false; }
 
 	virtual WgString	GetTooltipString() const	{ return 0; }
 

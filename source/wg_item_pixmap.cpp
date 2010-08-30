@@ -140,7 +140,9 @@ void WgItemPixmap::Render( const WgRect& _window, const WgRect& _clip )
 			r.w = m_forcedSize.w;
 		if( m_forcedSize.h > 0 )
 			r.h = m_forcedSize.h;
-		WgGfx::clipBlitBlock( _clip, m_block->GetBlock(WG_MODE_NORMAL), r);
+
+
+		WgGfx::clipBlitBlock( _clip, m_block->GetBlock(m_mode), r);
 	}
 }
 

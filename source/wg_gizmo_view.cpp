@@ -496,6 +496,24 @@ bool WgGizmoView::SetViewOfsY( float y )
 	return SetViewPixelOfsY( (Uint32)((height*y)+0.5f) );
 }
 
+//____ SetContent() ___________________________________________________________
+
+void WgGizmoView::SetContent( WgGizmo * pContent )
+{
+	// Delete previous hook and gizmo by explicitly calling its destructor.
+	// Placement new for a new hook holding this gizmo.
+
+	m_elements[WINDOW].~ViewHook();
+	new (&m_elements[WINDOW])ViewHook(pContent, this, &m_elementsCollection);
+
+	//
+
+	UpdateElementGeometry( Size(), pContent->BestSize() );
+	RequestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
+	return true;
+
+}
+
 //____ SetScrollbarX() ________________________________________________________
 
 bool WgGizmoView::SetScrollbarX( WgGizmoHDragbar* pScrollbar )
@@ -562,11 +580,36 @@ bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
 	}
 
 	UpdateElementGeometry( Size(), m_contentSize );
-	RequestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
+	RequestRender( m_elements[YDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 }
 
+//____ ReleaseContent() _______________________________________________________
 
+WgGizmo* WgGizmoView::ReleaseContent()
+{
+	WgGizmo * p = m_elements[WINDOW].ReleaseGizmo();
+	UpdateElementGeometry( Size(), WgSize(0,0) );
+	return p;
+}
+
+//____ ReleaseScrollbarX() ____________________________________________________
+
+WgGizmoHDragbar* WgGizmoView::ReleaseScrollbarX()
+{
+	WgGizmoHDragbar * p = (WgGizmoHDragbar*) m_elements[XDRAG].ReleaseGizmo();
+	UpdateElementGeometry( Size(), WgSize(0,0) );
+	return p;
+}
+
+//____ ReleaseScrollbarY() ____________________________________________________
+
+WgGizmoVDragbar* WgGizmoView::ReleaseScrollbarY()
+{
+	WgGizmoVDragbar * p = (WgGizmoVDragbar*) m_elements[YDRAG].ReleaseGizmo();
+	UpdateElementGeometry( Size(), WgSize(0,0) );
+	return p;
+}
 
 //____ SetScrollbarAutoHide() _________________________________________________
 
@@ -846,13 +889,13 @@ void WgGizmoView::OnNewSize( const WgSize& size )
 void WgGizmoView::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( m_elements[WINDOW].Gizmo() )
-		m_elements[WINDOW].Gizmo()->OnRender( pDevice, m_elements[WINDOW].m_geo + _window.Pos(), _clip, _layer );
+		m_elements[WINDOW].DoRender( pDevice, m_elements[WINDOW].m_geo + _window.Pos(), _clip, _layer );
 
 	if( m_elements[XDRAG].m_bShow )
-		m_elements[XDRAG].Gizmo()->OnRender( pDevice, m_elements[XDRAG].m_geo + _window.Pos(), _clip, _layer );
+		m_elements[XDRAG].DoRender( pDevice, m_elements[XDRAG].m_geo + _window.Pos(), _clip, _layer );
 
 	if( m_elements[YDRAG].m_bShow )
-		m_elements[YDRAG].Gizmo()->OnRender( pDevice, m_elements[YDRAG].m_geo + _window.Pos(), _clip, _layer );
+		m_elements[YDRAG].DoRender( pDevice, m_elements[YDRAG].m_geo + _window.Pos(), _clip, _layer );
 
 	WgMode mode = m_bEnabled?WG_MODE_NORMAL:WG_MODE_DISABLED;
 	pDevice->BlitBlock( m_pFillerBlocks->GetBlock( mode, m_geoFiller ), m_geoFiller + _window.Pos() );
@@ -1004,6 +1047,17 @@ WgWidget* WgGizmoView::ViewHook::GetRoot()
 
 	return false;
 }
+
+//____ ViewHook::ReleaseGizmo() _______________________________________________
+
+WgGizmo* WgGizmoView::ReleaseGizmo()
+{
+	WgGizmo * p = m_pGizmo;
+	m_pGizmo = 0;
+	return p;
+}
+
+
 
 
 //____ ViewHook::RequestRender() ______________________________________________

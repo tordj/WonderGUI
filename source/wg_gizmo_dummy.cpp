@@ -67,5 +67,5 @@ void WgGizmoDummy::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const
 
 bool WgGizmoDummy::OnMarkTest( const WgCord& ofs )
 {
-	return true;
+	return false;
 }

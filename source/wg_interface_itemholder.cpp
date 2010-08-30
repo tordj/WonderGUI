@@ -135,6 +135,12 @@ WgItem* Wg_Interface_ItemHolder::GetItem( Uint32 pos )
 	return m_items.get(pos);
 }
 
+const WgItem* Wg_Interface_ItemHolder::GetItem( Uint32 pos ) const
+{
+	return m_items.get(pos);
+}
+
+
 //____ RemoveItem() ___________________________________________________________
 
 WgItem* Wg_Interface_ItemHolder::RemoveItem( Uint32 pos )

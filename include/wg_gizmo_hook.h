@@ -23,7 +23,6 @@
 #ifndef WG_GIZMO_HOOK_DOT_H
 #define WG_GIZMO_HOOK_DOT_H
 
-
 #ifndef	WG_GEO_DOT_H
 #	include <wg_geo.h>
 #endif
@@ -32,9 +31,11 @@
 #	include <wg_emitter.h>
 #endif
 
-class WgGizmo;
+
+
 class WgGizmoCollection;
 class WgWidget;
+class WgGfxDevice;
 
 class WgGizmoHook
 {
@@ -68,6 +69,8 @@ protected:
 
 	virtual bool	RequestFocus() = 0;
 	virtual bool	ReleaseFocus() = 0;
+
+	inline void		DoRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 
 	WgGizmo *			m_pGizmo;
 	WgGizmoCollection*	m_pCollection;

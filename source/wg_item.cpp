@@ -116,7 +116,11 @@ void WgItem::ActionRespond( WgEmitter * _pEmitter, WgInput::UserAction _action, 
 
 		case WgInput::POINTER_ENTER:
 			if(m_mode == WG_MODE_NORMAL)
+			{
 				m_mode = WG_MODE_MARKED;
+				if( m_pMyHolder )
+					m_pMyHolder->ItemModified(this, 0, 0 );
+			}
 			_pEmitter->Emit( ItemEnter(), this );
 			if(m_mode == WG_MODE_NORMAL)
 				m_mode = WG_MODE_MARKED;
@@ -128,7 +132,11 @@ void WgItem::ActionRespond( WgEmitter * _pEmitter, WgInput::UserAction _action, 
 
 		case WgInput::POINTER_EXIT:
 			if(m_mode == WG_MODE_MARKED)
+			{
 				m_mode = WG_MODE_NORMAL;
+				if( m_pMyHolder )
+					m_pMyHolder->ItemModified(this, 0, 0 );
+			}
 			_pEmitter->Emit( ItemExit(), this );
 			if(m_mode == WG_MODE_MARKED)
 				m_mode = WG_MODE_NORMAL;
@@ -245,6 +253,37 @@ void WgItem::Unselect()
 		}
 	}
 }
+
+//____ Mark() _________________________________________________________________
+
+void WgItem::Mark()
+{
+	if( m_mode == WG_MODE_NORMAL )
+	{
+		m_mode = WG_MODE_MARKED;
+		if( m_pMyHolder )
+		{
+			m_pMyHolder->ItemModified(this, 0, 0 );
+//			m_pMyHolder->ItemMarkChanged(this, true);
+		}
+	}
+}
+
+//____ Unmark() _________________________________________________________________
+
+void WgItem::Unmark()
+{
+	if( m_mode == WG_MODE_MARKED )
+	{
+		m_mode = WG_MODE_NORMAL;
+		if( m_pMyHolder )
+		{
+			m_pMyHolder->ItemModified(this, 0, 0 );
+//			m_pMyHolder->ItemMarkChanged(this, true);
+		}
+	}
+}
+
 
 //____ Enable() _______________________________________________________________
 

@@ -146,6 +146,14 @@ public:
 
 	bool	SetScrollbarX( WgGizmoHDragbar * pScrollbar );
 	bool	SetScrollbarY( WgGizmoVDragbar * pScrollbar );
+
+	WgGizmoHDragbar* ReleaseScrollbarX();
+	WgGizmoVDragbar* ReleaseScrollbarY();
+
+	inline void	DeleteScrollbarX() {SetScrollbarX(0);}
+	inline void	DeleteScrollbarY() {SetScrollbarY(0);}
+
+
 	WgGizmoHDragbar *GetScrollbarX() const { return (WgGizmoHDragbar*) m_elements[XDRAG].Gizmo(); }
 	WgGizmoVDragbar *GetScrollbarY() const { return (WgGizmoVDragbar*) m_elements[YDRAG].Gizmo(); }
 
@@ -161,6 +169,26 @@ public:
 	bool	ScrollbarYVisible();
 
 	void	SetFillerSource( const WgBlockSetPtr& pBlocks );
+
+	void		SetContent( WgGizmo * pContent );
+	inline void	DeleteContent() {SetContent(0); }
+	WgGizmo*	GetContent() const { return m_elements[WINDOW].Gizmo(); }
+	WgGizmo*	ReleaseContent();
+
+	//TODO: We need a ReleaseContent() or similar to remove gizmo without deleting it. Something similar for dragbars and all gizmos everywhere (already planned!)?
+
+/*
+	NEED TO BE IMPLEMENTED!!!
+
+	Uint32	HeightForWidth( Uint32 width ) const;	// 
+	Uint32	WidthForHeight( Uint32 height ) const;
+
+	WgSize	MinSize() const;				// Defined by dragbars minsize...
+	WgSize	BestSize() const;				// = size of content if dragbars autohide, otherwise content+dragbars
+	WgSize	MaxSize() const;				// Unlimited
+
+	bool	IsView() const { return true; }
+*/
 
 protected:
 
@@ -190,6 +218,7 @@ protected:
 
 	class ViewHook : public WgGizmoHook, public WgEmitter
 	{
+		friend class WgGizmoView;
 	public:
 		ViewHook() : WgGizmoHook( 0, 0 ) {};				// So we can make them members and then make placement new...
 		ViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView, WgGizmoCollection * pCollection );
@@ -216,6 +245,8 @@ protected:
 		bool	RequestFocus();
 		bool	ReleaseFocus();
 
+	protected:
+		WgGizmo* ReleaseGizmo();
 
 		ElementType		m_type;
 		WgGizmoView *	m_pView;

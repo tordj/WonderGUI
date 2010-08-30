@@ -117,10 +117,19 @@ public:
 	inline	WgItem* GetFirstItem() { return WgItemRow::GetFirstItem(); };
 	inline	WgItem* GetLastItem() { return WgItemRow::GetLastItem(); };
 
+	inline	WgItem* GetItem(int column) { return WgItemRow::GetItem(column); }
 
+	
 
 	void	SetItem( WgItem * pItem, Uint32 col );
 	Uint32	AddItem( WgItem * pItem );
+
+
+	void	SetTooltipString( const WgString& str )		{ WgItemRow::SetTooltipString( str ); }	\
+	void	SetTooltipString( const WgChar* pString )	{ WgItemRow::SetTooltipString( pString ); }	\
+	void	SetTooltipString( const Uint16* pString )	{ WgItemRow::SetTooltipString( pString ); }	\
+	void	SetTooltipString( const char* pString )		{ WgItemRow::SetTooltipString( pString ); }	\
+
 
 };
 
@@ -198,6 +207,7 @@ public:
 	inline void			InsertRowSorted( WgTableRow * pRow ) { InsertItemSorted( pRow ); }
 	inline Sint32		GetRowNb( WgTableRow * pRow ) { return GetItemPos( pRow ); }
 	inline WgTableRow *	GetRow( Uint32 pos ) { return (WgTableRow *) GetItem(pos); }
+	inline const WgTableRow *	GetRow( Uint32 pos ) const { return (WgTableRow *) GetItem(pos); }
 	WgTableRow *		RemoveRow( Uint32 pos );
 	bool				RemoveRow( WgTableRow * pRow );
 	void				RemoveAllRows();
@@ -224,7 +234,9 @@ public:
 	void	ShowHeader( bool bShow );
 	bool	ShowHeader() const { return m_bShowHeader; }
 
-//	WgItem	GetCell( Uint32 row, Uint32 column );
+	WgRect	GetCellGeo( int row, int column );
+
+	WgItem*	GetCell( Uint32 row, Uint32 column );
 
 	virtual WgString	GetTooltipString() const;
 
@@ -257,6 +269,7 @@ private:
 	int			GetMarkedRow( Uint32 y, WgTableRow*& pSaveRow, Uint32& saveYOfs );
 
 	void		UpdateContentSize();
+	void		UpdateMarkedRowColumn( int row, int column );
 
 	struct SortInfo
 	{
@@ -306,6 +319,9 @@ private:
 	WgItem *		m_pLastMarkedItem;
 	int				m_lastClickedRow;
 	int				m_lastClickedColumn;
+
+	int				m_markedRow;
+	int				m_markedColumn;
 
 	// Graphics block for the header-pieces
 
