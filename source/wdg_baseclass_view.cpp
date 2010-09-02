@@ -345,6 +345,9 @@ bool Wdg_Baseclass_View::SetViewPixelOfs( Uint32 x, Uint32 y )
 
 		Emit( ViewPosSizeX(), ofsX, ViewLenX() );
 		Emit( ViewPosSizePixelX(), m_viewPixOfsX, pixLenX );
+
+		if( m_pScrollbarX )
+			m_pScrollbarX->SetSlider( ofsX, ViewLenX() );
 	}
 
 	if( bChangedY )
@@ -354,6 +357,9 @@ bool Wdg_Baseclass_View::SetViewPixelOfs( Uint32 x, Uint32 y )
 
 		Emit( ViewPosSizeY(), ofsY, ViewLenY() );
 		Emit( ViewPosSizePixelY(), m_viewPixOfsY, pixLenY );
+
+		if( m_pScrollbarY )
+			m_pScrollbarY->SetSlider( ofsY, ViewLenY() );
 	}
 
 	if( bChangedX || bChangedY )
@@ -398,6 +404,9 @@ bool Wdg_Baseclass_View::SetViewPixelOfsX( Uint32 x )
 	Emit( ViewPosSizeX(), ofsX, ViewLenX() );
 	Emit( ViewPosSizePixelX(), m_viewPixOfsX, pixLenX );
 
+	if( m_pScrollbarX )
+		m_pScrollbarX->SetSlider( ofsX, ViewLenX() );
+
 	RequestRender();
 	return retVal;
 }
@@ -434,6 +443,9 @@ bool Wdg_Baseclass_View::SetViewPixelOfsY( Uint32 y )
 
 	Emit( ViewPosSizeY(), ofsY, ViewLenY() );
 	Emit( ViewPosSizePixelY(), m_viewPixOfsY, pixLenY );
+
+	if( m_pScrollbarY )
+		m_pScrollbarY->SetSlider( ofsY, ViewLenY() );
 
 	RequestRender();
 	return retVal;
@@ -533,8 +545,6 @@ bool Wdg_Baseclass_View::SetScrollbarX( Wdg_HDrag * pScrollbar )
 		m_pScrollbarX->AddCallback( WgSignal::NextPage(), Wdg_Baseclass_View::cbJumpRight, this );
 		m_pScrollbarX->AddCallback( WgSignal::Forward(), Wdg_Baseclass_View::cbStepRight, this );
 		m_pScrollbarX->AddCallback( WgSignal::Back(), Wdg_Baseclass_View::cbStepLeft, this );
-
-		AddCallback( WgSignal::ViewPosSizeX(), WgGizmoDragbar::cbSetSlider, (WgGizmoDragbar*) m_pScrollbarX );
 	}
 
 	// Force a refresh of our subclass if its geometry has been affected.
@@ -586,7 +596,6 @@ bool Wdg_Baseclass_View::SetScrollbarY( Wdg_VDrag * pScrollbar )
 		m_pScrollbarY->AddCallback( WgSignal::Back(), Wdg_Baseclass_View::cbStepUp, this );
 		m_pScrollbarY->AddCallback( WgSignal::WheelRoll(1), Wdg_Baseclass_View::cbWheelRoll, this );
 
-		AddCallback( WgSignal::ViewPosSizeY(), WgGizmoDragbar::cbSetSlider, (WgGizmoDragbar*) m_pScrollbarY );
 		AddCallback( WgSignal::WheelRoll(1), Wdg_Baseclass_View::cbWheelRoll, this );
 	}
 
@@ -718,6 +727,9 @@ void Wdg_Baseclass_View::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 		Emit( ViewSizePixelX(), lenPixX );
 		Emit( ViewPosSizeX(), ViewOfsX(), lenX );
 		Emit( ViewPosSizePixelX(), m_viewPixOfsX, lenPixX );
+
+		if( m_pScrollbarX )
+			m_pScrollbarX->SetSlider( ViewOfsX(), lenX );
 	}
 
 	if( oldGeo.h != newGeo.h )
@@ -757,6 +769,9 @@ void Wdg_Baseclass_View::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 		Emit( ViewSizePixelY(), lenPixY );
 		Emit( ViewPosSizeY(), ViewOfsY(), lenY );
 		Emit( ViewPosSizePixelY(), m_viewPixOfsY, lenPixY );
+
+		if( m_pScrollbarY )
+			m_pScrollbarY->SetSlider( ViewOfsY(), lenY );
 	}
 
 
@@ -929,6 +944,9 @@ void Wdg_Baseclass_View::SetContentSize( Uint32 width, Uint32 height )
 		Emit( ViewSizePixelX(), lenPixX );
 		Emit( ViewPosSizeX(), ViewOfsX(), lenX );
 		Emit( ViewPosSizePixelX(), m_viewPixOfsX, lenPixX );
+
+		if( m_pScrollbarX )
+			m_pScrollbarX->SetSlider( ViewOfsX(), lenX );
 	}
 
 	if( bHeightChanged )
@@ -948,6 +966,9 @@ void Wdg_Baseclass_View::SetContentSize( Uint32 width, Uint32 height )
 		Emit( ViewSizePixelY(), lenPixY );
 		Emit( ViewPosSizeY(), ViewOfsY(), lenY );
 		Emit( ViewPosSizePixelY(), m_viewPixOfsY, lenPixY );
+
+		if( m_pScrollbarY )
+			m_pScrollbarY->SetSlider( ViewOfsY(), lenY );
 	}
 
 }

@@ -2294,7 +2294,7 @@ void	WgWidget::BuildCloneBranch( WgWidget ** _wpAddr, WgWidget * _pCloneParent )
 
 bool WgWidget::PathFinder( const WgWidget * _goal, char * _pMapEntry ) const
 {
-	if( _goal == this )
+	if( _goal == this /*|| reinterpret_cast<const WgGizmo*>(_goal) == GetGizmo()  Can't do this yet... */ )
 	{
 		_pMapEntry[0] = 0;
 		return	true;

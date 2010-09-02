@@ -343,6 +343,7 @@ class	WgWidget : public WgEmitter
 		inline void		ForceOpaque() { m_bOpaque = true; }
 
 		virtual WgGizmo * GetGizmo() { return 0; }
+		virtual const WgGizmo * GetGizmo() const { return 0; }
 		virtual WgGizmoHook * GetHook() const { return 0; }
 
 	protected:

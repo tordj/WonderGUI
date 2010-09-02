@@ -143,6 +143,7 @@ public:
 	static const char * GetMyType() { return T::GetMyType(); }
 	
 	virtual WgGizmo * GetGizmo() { return this; }
+	virtual const WgGizmo * GetGizmo() const { return this; }
 	virtual WgGizmoHook * GetHook() const { return m_pHook; }
 
 	void	Enable()

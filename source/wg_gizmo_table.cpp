@@ -584,7 +584,7 @@ void WgGizmoTable::RemoveColumns()
 int WgGizmoTable::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrigo& headerAlign, int(*fpCompare)(WgGizmo *,WgGizmo *), 
 							 bool bInitialAscend, bool bEnabled, Sint64 id, WgGizmo * pDefaultGizmo )
 {
-	WgTableColumn * pCol = new WgTableColumn[m_nColumns+1];
+	WgTableColumn2 * pCol = new WgTableColumn2[m_nColumns+1];
 
 	for( int i = 0 ; i < m_nColumns ; i++ )
 	{
@@ -647,9 +647,9 @@ bool WgGizmoTable::GetSortColumn( int order, Uint32& columnIndex, bool& bAscend 
 
 //____ RemoveRow() ____________________________________________________________
 
-WgTableRow * WgGizmoTable::RemoveRow( int pos )
+WgTableRow2 * WgGizmoTable::RemoveRow( int pos )
 {
-	WgTableRow* pRow = m_rows.get(pos);
+	WgTableRow2* pRow = m_rows.get(pos);
 	if( pRow )
 	{
 		pRow->disconnect();
@@ -660,7 +660,7 @@ WgTableRow * WgGizmoTable::RemoveRow( int pos )
 	return pRow;
 }
 
-bool WgGizmoTable::RemoveRow( WgTableRow * pRow )
+bool WgGizmoTable::RemoveRow( WgTableRow2 * pRow )
 {
 	if( pRow && m_rows.isMember(pRow) )
 	{
@@ -688,7 +688,7 @@ void WgGizmoTable::RemoveAllRows()
 
 bool WgGizmoTable::DeleteRow( int pos )
 {
-	WgTableRow* pRow = m_rows.get(pos);
+	WgTableRow2* pRow = m_rows.get(pos);
 	if( pRow )
 	{
 		if(m_pLastMarkedRow == pRow)
@@ -701,7 +701,7 @@ bool WgGizmoTable::DeleteRow( int pos )
 	return false;
 }
 
-bool WgGizmoTable::DeleteRow( WgTableRow * pRow )
+bool WgGizmoTable::DeleteRow( WgTableRow2 * pRow )
 {
 	if( pRow && m_rows.isMember(pRow) )
 	{
@@ -769,8 +769,6 @@ bool WgGizmoTable::SortRows( int column, bool bAscend, int prio )
 		m_lastSortColumnAscendStatus	= bAscend;
 	}
 
-
-//	SetSortOrder( bAscend );
  	SortItems();
 	return true;
 }
@@ -861,7 +859,7 @@ void WgGizmoTable::UpdateContentSize()
 
 	// Calc contentHeight
 
-	WgTableRow * p = m_rows.getFirst();
+	WgTableRow2 * p = m_rows.getFirst();
 
 	while( p )
 	{
@@ -928,7 +926,7 @@ void WgGizmoTable::refreshItems()
 
 //____ RowModified() _________________________________________________________
 
-void WgGizmoTable::RowModified( WgTableRow * pRow, int widthDiff , int heightDiff )
+void WgGizmoTable::RowModified( WgTableRow2 * pRow, int widthDiff , int heightDiff )
 {
 
 	//TODO: More specialized and optimized handling.
@@ -938,7 +936,7 @@ void WgGizmoTable::RowModified( WgTableRow * pRow, int widthDiff , int heightDif
 
 //____ RowMarkChanged() ________________________________________________
 
-void WgGizmoTable::RowMarkChanged( WgTableRow * pRow, bool bMarked )
+void WgGizmoTable::RowMarkChanged( WgTableRow2 * pRow, bool bMarked )
 {
 	if( m_bAutoScrollMarked )
 	{
@@ -948,7 +946,7 @@ void WgGizmoTable::RowMarkChanged( WgTableRow * pRow, bool bMarked )
 }
 
 //____ ScrollIntoView() ________________________________________________
-void WgGizmoTable::ScrollIntoView( WgTableRow* pRow )
+void WgGizmoTable::ScrollIntoView( WgTableRow2* pRow )
 {
 	if( !pRow || pRow->IsHidden() )
 		return;
@@ -1152,28 +1150,7 @@ int WgGizmoTable::GetMarkedColumn( Uint32 x, Uint32& saveXOfs )
 }
 
 
-//____ ItemAdded() _________________________________________________________
-
-void WgGizmoTable::ItemAdded( WgItem * pItem )
-{
-	//
-
-	WgItemRow * pRow = (WgItemRow*) pItem;
-	WgItem * pI = pRow->GetFirstItem();
-
-	for( unsigned int n = 0 ; n < m_nColumns && pI ; n++ )
-	{
-		pI->AdaptToWidth( m_pColumns[n].GetWidth() - m_cellPaddingX*2 );
-		pI = pI->getNext();
-	}
-
-
-	// Set size and request render
-
-	SetContentSize( m_contentWidth, m_contentHeight + pItem->Height() + m_cellPaddingY*2 );
-	RequestRender();
-}
-
+//____ SetAutoScaleHeaders() __________________________________________________
 void WgGizmoTable::SetAutoScaleHeaders(bool autoScaleHeaders)
 {
 	if(m_bAutoScaleHeader != autoScaleHeaders)
@@ -1183,7 +1160,7 @@ void WgGizmoTable::SetAutoScaleHeaders(bool autoScaleHeaders)
 	}
 }
 
-//____ CalcHeaderScaleFactor() ________________________________________________________
+//____ CalcHeaderScaleFactor() ________________________________________________
 float WgGizmoTable::CalcHeaderScaleFactor()
 {
 	if(!m_bAutoScaleHeader)
@@ -1202,6 +1179,229 @@ float WgGizmoTable::CalcHeaderScaleFactor()
 
 	return (float)m_geo.w / (float)w;
 }
+
+
+//____ OnRender() _____________________________________________________________
+void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+{
+	WgRect	r = _canvas;
+	WgRect	clipView = _clip;
+
+	if( r.w < _window.w )
+		r.w = _window.w;
+
+	float scale = CalcHeaderScaleFactor();
+
+	// Draw header (if any)
+
+	if( m_bShowHeader && m_pHeaderGfx )
+	{
+		WgRect	headerArea( _canvas.x, _window.y, _canvas.w, _m_pHeaderGfx->GetHeight );
+		WgRect  r2 = headerArea;
+
+		for( Uint32 i = 0 ; i < m_nColumns ; i++ )
+		{
+			if( !m_pColumns[i].m_bVisible )
+				continue;
+
+            // don't draw columns that are outside of the window
+			if( r2.x >= _window.x + _window.w )
+				break;
+
+			r2.w = (int)(m_pColumns[i].m_pixelWidth * scale);
+			//if( i == m_nColumns-1 && r2.x + r2.w < _window.x + _window.w )
+			if( i == m_nColumns-1 )
+				r2.w = _window.x + _window.w - r2.x;		// Last column header stretches to end of tableview...
+
+			WgMode mode = WG_MODE_NORMAL;
+
+			if(&m_pColumns[i] == m_pMarkedHeader)
+				mode = WG_MODE_MARKED;
+			else if( i == m_lastSortColumn )
+				mode = WG_MODE_SPECIAL;
+
+			pDevice->ClipBlitBlock( _clip, m_pHeaderGfx->GetBlock(mode), r2 );
+
+			if( i == m_lastSortColumn && m_pAscendGfx && m_pDescendGfx )
+			{
+				WgBlock block;
+
+				if( m_lastSortColumnAscendStatus )
+					block = m_pAscendGfx->GetBlock(mode);
+				else
+					block = m_pDescendGfx->GetBlock(mode);
+
+				Sint32 dx = (Sint32) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.GetWidth() * m_sortMarkerOrigo.hotspotX());
+				Sint32 dy = (Sint32) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.GetHeight() * m_sortMarkerOrigo.hotspotY());
+
+				pDevice->ClipBlitBlock( _clip, block, WgRect( dx, dy, block.GetWidth(), block.GetHeight()) );
+			}
+
+			WgRect rText = r2;
+			if( m_pHeaderGfx )
+				rText.Shrink( m_pHeaderGfx->GetContentBorders() );
+
+			m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
+			pDevice->PrintText( _clip, m_pColumns[i].GetTextObj(), rText );
+
+			r2.x += r2.w - 1;	// HACK: Overlap last pixel to avoid double separator graphics between two headers
+		}
+
+		r.y += m_pHeaderGfx->GetHeight();
+
+		// Modify clipping rectangle for view content (we don't want to draw over header)
+
+		if(  _clip.y < _window.y + m_pHeaderGfx->GetHeight())
+		{
+			Sint32 diff = _window.y + m_pHeaderGfx->GetHeight() - _clip.y;
+			clipView.y += diff;
+			clipView.h -= diff;
+			if( clipView.h < 1 )
+				return;
+		}
+	}
+
+	// Start drawing cell contents.
+
+	WgTableRow2 * pRow = m_rows.getFirst();
+	int iRowColor = 0;
+
+	// Skip rows that are above clipping area.
+	r.y += m_cellPaddingY;
+	while( pRow )
+	{
+		if( pRow->IsVisible() )
+		{
+			if( r.y + (Sint32) pRow->Height() >= clipView.y )
+				 break;
+			r.y += pRow->Height() + m_cellPaddingY*2;
+			iRowColor++;
+		}
+		pRow = pRow->GetNext();
+	}
+	r.y -= m_cellPaddingY;
+
+
+	// Draw cell contents for (at least partly) visible rows.
+	while( pRow )
+	{
+		if( pRow->IsHidden() )
+		{
+			pRow = pRow->GetNext();
+			continue;
+		}
+
+		if( r.y >= clipView.y + clipView.h )
+			break;
+
+		r.h = pRow->Height() + m_cellPaddingY*2;
+
+		WgRect	u;
+		if( u.Intersection( r, clipView ) )
+		{
+			if( pRow->IsSelected() )
+			{
+				if(HasLineMarkSource() == true)
+					pDevice->ClipBlitBlock(u, m_pMarkedLineGfx->GetBlock(WG_MODE_NORMAL), r );
+				else
+					pDevice->Fill( u, m_itemMarkColor );
+			}
+			else
+			{
+				if( m_nRowColors > 0 )
+				{
+					WgColor color = m_pRowColors[ iRowColor % m_nRowColors ];
+					if( 0 != color.a )
+						pDevice->Fill( u, color );
+				}
+
+				if( m_nRowBlocks > 0 )
+				{
+					WgBlockSetPtr p = m_pRowBlocks[ iRowColor % m_nRowBlocks ];
+					if( p )
+						pDevice->ClipBlitBlock(u, p->GetBlock(WG_MODE_NORMAL), r );
+				}
+
+			}
+		}
+
+		WgRect		rc = r;
+
+		rc.x = (int)(rc.x * scale);
+		rc.y += m_cellPaddingY;
+		rc.h = pRow->Height();
+		for( Uint32 i = 0 ; i < m_nColumns ; i++ )
+		{
+			WgGizmo * pGizmo = 0;
+			if( pRow->m_nCells > i )
+				pGizmo = pRow->m_pCells[i].Gizmo();
+
+			if( pGizmo == 0 )
+				pGizmo = m_pColumns[i].m_pDefaultGizmo;
+
+			if( m_pColumns[i].m_bVisible && pGizmo != 0 )
+			{
+				// don't draw columns that are outside of the window
+				if( rc.x >= _window.x + _window.w )
+					break;
+
+				rc.w = (int)(m_pColumns[i].m_pixelWidth * scale);
+				if( i == m_nColumns-1 && rc.x + rc.w < _window.x + _window.w )
+					rc.w = _window.x + _window.w - rc.x;		// Last column stretches to end of tableview...
+
+				rc.x += m_cellPaddingX;
+				rc.w -= m_cellPaddingX*2;
+
+				WgRect clip2( rc, clipView );
+
+				//
+
+				pCell->Render( rc, clip2 );
+				rc.x += (int)(m_pColumns[i].m_pixelWidth * scale) - m_cellPaddingX;		// One cellpadding already added...
+			}
+			pCell = pCell->NextHook();
+		}
+
+		r.y += pRow->Height() + m_cellPaddingY*2;
+		pRow = (WgTableRow *) pRow->GetNext();
+		iRowColor++;
+	}
+
+	// Possibly fill with empty rows
+
+	if( m_emptyRowHeight != 0 && pRow == 0 )
+	{
+		while( r.y <= clipView.y + clipView.h )
+		{
+			r.h = m_emptyRowHeight;
+
+			WgRect	u;
+			if( u.Intersection( r, clipView ) )
+			{
+				if( m_nRowColors > 0 )
+				{
+					WgColor color = m_pRowColors[ iRowColor % m_nRowColors ];
+					if( 0 != color.a )
+						pDevice->Fill( u, color );
+				}
+
+				if( m_nRowBlocks > 0 )
+				{
+					WgBlockSetPtr p = m_pRowBlocks[ iRowColor % m_nRowBlocks ];
+					if( p )
+						pDevice->ClipBlitBlock(u, p->GetBlock(WG_MODE_NORMAL), r );
+				}
+			}
+
+			r.y += r.h;
+			iRowColor++;
+		}
+	}
+
+
+
+}
+
 
 //____ DoMyOwnRender() ________________________________________________________
 void WgGizmoTable::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer )

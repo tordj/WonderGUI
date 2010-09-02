@@ -86,7 +86,7 @@ public:
 	inline Sint64	GetID() const { return m_id; }
 
 	void			SetWidth( int pixels );
-	inline int	§GetWidth() const { return m_pixelWidth; }
+	inline int		GetWidth() const { return m_pixelWidth; }
 
 	void			Hide();
 	void			Show();
