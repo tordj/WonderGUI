@@ -39,6 +39,28 @@
 class WgGizmo;
 class WgEmitter;
 
+class WgGizmoIterator
+{
+public:
+	virtual ~WgGizmoIterator();
+	
+	virtual WgGizmo *	gizmo() const = 0;
+	virtual WgHook *	hook() const = 0;
+
+	inline bool			hasEnded() const { return hook()==0?false;true; }
+	inline bool			isValid() const { return hook()==0?false;true; }
+
+	virtual void		increase() = 0;
+	virtual void		decrease() = 0;
+
+	virtual void operator++() = 0;
+	virtual void operator--() = 0;
+
+protected:
+
+	WgGizmoIterator() {}
+};
+
 
 class WgGizmoCollection
 {
@@ -48,11 +70,9 @@ public:
 	WgGizmoCollection() {};
 	virtual ~WgGizmoCollection() {};
 
-	virtual WgGizmo *	FirstGizmo() const { WgGizmoHook * p = FirstHook(); if( p ) return p->Gizmo(); else return 0; }
-	virtual WgGizmo *	LastGizmo() const { WgGizmoHook * p = LastHook(); if( p ) return p->Gizmo(); else return 0; }
-
-	virtual WgGizmoHook *	FirstHook() const = 0;
-	virtual WgGizmoHook *	LastHook() const = 0;
+	virtual WgGizmoIterator		getFirst() const = 0;
+	virtual WgGizmoIterator		getLast() const = 0;
+	virtual bool				isEmpty() const = 0;
 
 
 //	dynamic_cast<WgGizmoStackHook*>(w->GetHook())

@@ -38,6 +38,18 @@ class Wdg_TableView;
 
 typedef int(*fpCellCmp)(WgGizmo*,WgGizmo*);
 
+
+class WgTableCellIterator : public WgGizmoIterator
+{
+public:
+	WgTableCellIterator();
+	~WgTableCellIterator();
+
+	WgGizmo *		gizmo() const;
+	WgHook *		hook() const;
+	WgTableHook *	tableHook() const;
+};
+
 //____ WgTableHook ____________________________________________________________
 
 class WgTableHook : public WgGizmoHook, public WgEmitter
@@ -82,25 +94,24 @@ public:
 	WgTableColumn2();
 	WgTableColumn2(const WgTableColumn& column);
 
-	inline void		SetID( Sint64 id ) { m_id = id; }
-	inline Sint64	GetID() const { return m_id; }
+	inline void		setID( Sint64 id ) { m_id = id; }
+	inline Sint64	getID() const { return m_id; }
 
-	void			SetWidth( int pixels );
-	inline int		GetWidth() const { return m_pixelWidth; }
+	void			setWidth( int pixels );
+	inline int		getWidth() const { return m_pixelWidth; }
 
-	void			Hide();
-	void			Show();
-	inline bool		IsHidden() const { return !m_bVisible; }
+	void			hide();
+	void			show();
+	inline bool		isHidden() const { return !m_bVisible; }
 
-	void			Enable();
-	void			Disable();
-	inline bool		IsDisabled() const { return !m_bEnabled; }
+	void			enable();
+	void			disable();
+	inline bool		ssDisabled() const { return !m_bEnabled; }
 
-	inline void		SetInitialSortOrder( bool bAscend ) { m_bInitialAscend = bAscend; }
-	inline bool		IsInitialAscend() const { return m_bInitialAscend; }
+	inline void		setInitialSortOrder( bool bAscend ) { m_bInitialAscend = bAscend; }
+	inline bool		isInitialAscend() const { return m_bInitialAscend; }
 
-	WgGizmoHook *	FirstHook() const;
-	WgGizmoHook *	LastHook() const;
+	WgCellIterator	getFirst()
 
 
 	void SetSortFunction( fpItemCmp pFunc );
