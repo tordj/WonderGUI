@@ -554,7 +554,7 @@ void WgGizmoCheckbox::RefreshTextArea()
 			xMin = m_textMouseOverOfsX;
 
 		int linewidth = m_pText->getLineWidth(i);
-		int lineheight = m_pText->softLineHeight(i);
+		int lineheight = m_pText->softLineSpacing(i);
 		int textStartX = (int) (textOfs + Size().w * origo.anchorX()
 								- linewidth * origo.hotspotX());
 

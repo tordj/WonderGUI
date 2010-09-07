@@ -27,7 +27,6 @@
 #include	<wg_surface.h>
 #include	<wg_font.h>
 #include	<wg_text.h>
-#include	<wg_cursorinstance.h>
 #include	<wg_gfxanim.h>
 #include	<wg_texttool.h>
 #include	<wg_types.h>

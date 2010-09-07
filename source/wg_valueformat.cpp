@@ -80,7 +80,7 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 	// Copy prefix
 
 	const WgChar * p = pBeg;
-	while( p->GetGlyph() != '1' && p - pBeg < 4 )
+	while( p->GetGlyph() != '1' && p - pBeg < 4 && p < pEnd )
 	{
 		assert( p->GetGlyph() < '0' || p->GetGlyph() > '9' );		// No numerics allowed in prefix.
 		p++;

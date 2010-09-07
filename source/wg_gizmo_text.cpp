@@ -119,8 +119,9 @@ void WgGizmoText::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const 
 	if( m_bHasFocus && IsEditable() )
 		pDevice->PrintTextWithCursor( _clip, pText, *m_pText->GetCursor(), _window );
 	else
+	{
 		pDevice->PrintText( _clip, pText, _window );
-
+	}
 	if( pText != &m_text )
 		delete pText;
 }

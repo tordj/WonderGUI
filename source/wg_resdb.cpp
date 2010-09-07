@@ -248,13 +248,13 @@ bool WgResDB::AddResDb( WgResDB* db, const std::string& file, MetaData * pMetaDa
 	return false;
 }
 
-bool WgResDB::AddSurface( const std::string& id, const std::string& file, MetaData * pMetaData )
+bool WgResDB::AddSurface( const std::string& id, const std::string& file, MetaData * pMetaData, bool bRequired )
 {
 	assert(m_mapSurfaces.find(id) == m_mapSurfaces.end());
 
 	if(m_mapSurfaces.find(id) == m_mapSurfaces.end() && m_pResLoader)
 	{
-		WgSurface * pSurface = m_pResLoader->LoadSurface( file );
+		WgSurface * pSurface = m_pResLoader->LoadSurface( file, bRequired );
 		if( !pSurface )
 			return false;
 

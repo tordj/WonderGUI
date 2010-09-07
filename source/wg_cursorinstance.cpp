@@ -362,7 +362,7 @@ void WgCursorInstance::gotoPixel( Sint32 x, Sint32 y )
 	Uint32 line = 0;
 	while( line < m_pText->nbSoftLines() )
 	{
-		y -= m_pText->softLineHeight(line);
+		y -= m_pText->softLineSpacing(line);
 		if( y < 0  )
 			break;
 
@@ -540,7 +540,7 @@ int WgCursorInstance::ofsY() const
 	int ofs = 0;
 
 	for( int i = 0 ; i < (int) m_line ; i++ )
-		ofs += m_pText->softLineHeight(i);
+		ofs += m_pText->softLineSpacing(i);
 
 	return ofs;
 }

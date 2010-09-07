@@ -1524,11 +1524,13 @@ void WgSurfaceRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML
 {
 	std::string filename = xmlNode["file"];
 	std::string id = xmlNode["id"];
+	bool bRequired = WgUtil::ToBool(xmlNode["required"], true);
 	WgXMLMetaData* pMeta = new WgXMLMetaData(XmlNode());
-	if(!s.ResDb()->AddSurface(id, filename, pMeta))
+	if(!s.ResDb()->AddSurface(id, filename, pMeta, bRequired))
 	{
 		delete pMeta;
-		s.Warning("Missing surface '" + filename + "'");
+		if( bRequired )
+			s.Warning("Missing surface '" + filename + "'");
 		return;
 	}
 	m_pSurf = s.ResDb()->GetSurface(id);
@@ -2540,6 +2542,8 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		id = xmlNode["lego"];
 	VERIFY(id.size() != 0, "missing id in <blockset>");
 
+	bool bRequired = WgUtil::ToBool(xmlNode["required"], true);
+
 	WgBorders gfxBorders = WgBorderRes::Deserialize(s, xmlNode["borders"]);
 	WgBorders contentBorders = WgBorderRes::Deserialize(s, xmlNode["content_borders"]);
 
@@ -2598,6 +2602,10 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		rect[0] = WgRectRes::Deserialize(xmlNode);
 
 		WgSurface* pSurface = s.ResDb()->GetSurface(xmlNode["surface"]);
+		
+		if( !bRequired && !pSurface )
+			return;
+
 		VERIFY(pSurface != 0, "missing surface '" + xmlNode["surface"] + "' in <blockset>");
 
 		if(rect[0].w == 0 && rect[0].h == 0)

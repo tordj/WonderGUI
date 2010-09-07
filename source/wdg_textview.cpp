@@ -415,7 +415,7 @@ void Wdg_TextView::AdjustViewOfs()
 		Uint32 lineBegY = 0;
 
 		for( Uint32 i = 0 ; i < cursLine ; i++ )
-			lineBegY += m_text.softLineHeight(i);
+			lineBegY += m_text.softLineSpacing(i);
 
 		Uint32 lineEndY = lineBegY + m_text.softLineHeight(cursLine);
 

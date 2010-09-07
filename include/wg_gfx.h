@@ -85,6 +85,7 @@ public:
 	// High-level blit methods
 
 	static inline void	clipBlitBlock(	const WgRect& clip, const WgBlock& block, const WgRect& dest );
+	static inline void	clipBlitBlock(	const WgRect& clip, const WgBlock& block, const WgRect& dest, bool bTriLinear, float mipmapbias );
 
 	static inline void	blitBlock(		const WgBlock& block, const WgRect& dest );
 
@@ -343,6 +344,11 @@ inline void	WgGfx::blitVertBar(		const WgSurface * _pSurf, const WgRect& _src,
 inline void	WgGfx::clipBlitBlock(	const WgRect& clip, const WgBlock& block, const WgRect& dest )
 {
 	m_pDevice->ClipBlitBlock( clip, block, dest );
+}
+
+inline void	WgGfx::clipBlitBlock(	const WgRect& clip, const WgBlock& block, const WgRect& dest, bool bTriLinear, float mipmapbias )
+{
+	m_pDevice->ClipBlitBlock( clip, block, dest, bTriLinear, mipmapbias );
 }
 
 inline void	WgGfx::blitBlock(		const WgBlock& block, const WgRect& dest )

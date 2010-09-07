@@ -100,9 +100,9 @@ public:
 	virtual void	Blit( const WgSurface* pSrc, Sint32 dx, Sint32 dy );
 	virtual void	Blit( const WgSurface* pSrc, const WgRect& src, Sint32 dx, Sint32 dy ) = 0;
 
-	virtual void	StretchBlit( const WgSurface * pSrc );
-	virtual void	StretchBlit( const WgSurface * pSrc, const WgRect& dest );
-	virtual void	StretchBlit( const WgSurface * pSrc, const WgRect& src, const WgRect& dest );
+	virtual void	StretchBlit( const WgSurface * pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
+	virtual void	StretchBlit( const WgSurface * pSrc, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
+	virtual void	StretchBlit( const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
 
 	virtual void	TileBlit( const WgSurface* pSrc );
 	virtual void	TileBlit( const WgSurface* pSrc, const WgRect& dest );
@@ -116,11 +116,9 @@ public:
 	virtual void	ClipBlit( const WgRect& clip, const WgSurface* src,
 							  const WgRect& srcrect, Sint32 dx, Sint32 dy  );
 
-	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc );
-	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc,
-									 const WgRect& dest );
-	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc,
-									 const WgRect& src, const WgRect& dest );
+	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, bool bTriLinear = false, float mipBias = 0.f );
+	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
+	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
 	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
 
 	virtual void	ClipTileBlit( const WgRect& clip, const WgSurface* src );
@@ -131,10 +129,9 @@ public:
 
 
 	// High-level draw methods
+	void			ClipBlitBlock(	const WgRect& clip, const WgBlock& block, const WgRect& dest, bool bTriLinear = false, float mipmapbias = 0.f );
 
-	virtual void	ClipBlitBlock(	const WgRect& clip, const WgBlock& block, const WgRect& dest );
-
-	virtual void	BlitBlock(		const WgBlock& block, const WgRect& dest );
+	void			BlitBlock(		const WgBlock& block, const WgRect& dest, bool bTriLinear = false, float mipmapbias = 0.f );
 
 
 	// Mid-level draw methods

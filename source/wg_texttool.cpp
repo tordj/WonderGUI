@@ -1664,7 +1664,7 @@ int WgTextTool::strcmp( const Uint16* pStr1, const Uint16* pStr2 )
 //____ strcmp() ____________________________________________________________
 int WgTextTool::strcmp( const WgChar * pStr1, const WgChar * pStr2 )
 {
-	while( !pStr1->IsEndOfText() && *pStr1 == *pStr2 )
+	while( !pStr1->IsEndOfText() && pStr1->Equals(*pStr2) )
 	{
 		pStr1++;
 		pStr2++;

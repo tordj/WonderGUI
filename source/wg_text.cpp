@@ -161,9 +161,9 @@ void WgText::regenHardLines()
 
 		m_pHardLines[line].ofs = ofs;
 
-		while( p[ofs] != 0 )
+		while( !p[ofs].IsEndOfText() )
 		{
-			if( p[ofs] == '\n' )
+			if( p[ofs].IsEndOfLine() )
 			{
 				m_pHardLines[line].nChars = ofs - m_pHardLines[line].ofs;
 				line++;
@@ -376,13 +376,15 @@ Uint32 WgText::height() const
 	if( m_pManagerNode )
 		size = (int) m_pManagerNode->GetSize( m_pProp->GetFont(), m_pProp->GetStyle(), size );
 
-	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), size )->GetLineSpacing(size);
+	Uint32 fontspacing = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), size )->GetLineSpacing(size);
 
-	int h2 = fontheight+m_lineSpaceAdj;
-	if( h2 < 0 )
-		h2 = 0;
+	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), size )->GetHeight(size);
 
-	return fontheight + h2*(nbSoftLines()-1);		//TODO: Count right even if style changes over the text and lines.
+	fontspacing +=  m_lineSpaceAdj;
+	if( fontspacing < 0 )
+		fontspacing = 0;
+
+	return fontheight + fontspacing*(nbSoftLines()-1);		//TODO: Count right even if style changes over the text and lines.
 }
 
 Uint32 WgText::softLineHeight( Uint32 line )
@@ -394,10 +396,25 @@ Uint32 WgText::softLineHeight( Uint32 line )
 	if( m_pManagerNode )
 		size = (int) m_pManagerNode->GetSize( m_pProp->GetFont(), m_pProp->GetStyle(), size );
 
-	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), size )->GetLineSpacing(size);
+	Uint32 fontheight = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), size )->GetHeight(size);
 
 	return fontheight;								//TODO: Count right even if style changes over the text and lines.
 }
+
+Uint32 WgText::softLineSpacing( Uint32 line )
+{
+	if( line >= nbSoftLines() || !m_pProp->GetFont() )
+		return 0;
+
+	int size = m_pProp->GetSize();
+	if( m_pManagerNode )
+		size = (int) m_pManagerNode->GetSize( m_pProp->GetFont(), m_pProp->GetStyle(), size );
+
+	Uint32 spacing = m_pProp->GetFont()->GetGlyphSet(m_pProp->GetStyle(), size )->GetLineSpacing(size);
+
+	return spacing;									//TODO: Count right even if style changes over the text and lines.
+}
+
 
 
 void WgText::setProperties( const WgTextPropPtr& pProp )

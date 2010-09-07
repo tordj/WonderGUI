@@ -595,7 +595,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				// Print the text (if any)
 
 				const WgChar * pText = ((WgMenuEntry*)pItem)->GetText().GetChars();
-				if( * pText != 0 )
+				if( pText->GetGlyph() != 0 )
 				{
 					int y = yPos + (m_entryHeight - entryPen.GetLineHeight())/2 + entryPen.GetBaseline();
 					entryPen.SetPos( WgCord( xPosText, y ) );
@@ -605,7 +605,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				// Print the accel text (if any)
 
 				const WgChar * pAccelText = ((WgMenuEntry*)pItem)->GetAccelText().GetChars();
-				if( * pAccelText != 0 )
+				if( pAccelText->GetGlyph() != 0 )
 				{
 					int y = yPos + (m_entryHeight - accelPen.GetLineHeight())/2 + accelPen.GetBaseline();
 					int width = WgTextTool::lineWidth( 0, m_pKeyAccelProp, mode, pAccelText );

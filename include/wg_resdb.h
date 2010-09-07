@@ -161,7 +161,7 @@ public:
 	bool				AddResDb( const std::string& file, MetaData * pMetaData = 0 );
 	bool				AddResDb( WgResDB* db, const std::string& file, MetaData * pMetaData = 0 );
 
-	bool				AddSurface( const std::string& id, const std::string& file, MetaData * pMetaData = 0 );
+	bool				AddSurface( const std::string& id, const std::string& file, MetaData * pMetaData, bool bRequired );
 	bool				AddSurface( const std::string& id, WgSurface * pSurf, const std::string& filename, MetaData * pMetaData = 0 );
 
 	bool				AddGlyphSet( const std::string& id, const std::string& file, MetaData * pMetaData = 0 );

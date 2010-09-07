@@ -101,8 +101,7 @@ public:
 		return *this;
 	}
 
-	inline bool operator==(const WgChar& other) const { return (all == other.all); }
-	inline bool operator!=(const WgChar& other) const { return !(all == other.all); }
+	inline bool				Equals(const WgChar& ch) const { return all == ch.all; }
 
 							/// Sets the glyph part of the character without affecting the display properties.
 

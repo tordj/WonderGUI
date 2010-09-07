@@ -198,6 +198,7 @@ public:
 	Uint32				height() const;
 
 	Uint32				softLineHeight( Uint32 line );
+	Uint32				softLineSpacing( Uint32 line );
 
 	void				setLineWidth( Uint32 width );
 	inline Uint32		getLineWidth() const { return m_lineWidth; }
