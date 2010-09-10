@@ -817,7 +817,7 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 	const WgChar *		pChars = pText->getText();
 
 	pPen->SetTextNode( pText->getNode() );
-	pPen->SetTextProp( pDefProp );
+	pPen->SetTextProp( pDefProp, WgTextPropPtr(), pText->mode() );
 
 	PrintTextSelection(clip, pText, pCursor, dest, pPen);
 
@@ -915,7 +915,7 @@ void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, 
 	const WgChar *		pChars = pText->getText();
 
 	pPen->SetTextNode( pText->getNode() );
-	pPen->SetTextProp( pDefProp );
+	pPen->SetTextProp( pDefProp, WgTextPropPtr(), pText->mode() );
 
 	Uint32 iSelStartLine, iSelEndLine, iSelStartCol, iSelEndCol;
 	if(!pText->getSelection(iSelStartLine, iSelStartCol, iSelEndLine, iSelEndCol))
@@ -925,10 +925,10 @@ void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, 
 	pText->posHard2Soft(iSelEndLine, iSelEndCol);
 
 	pPen->SetPos(WgCord(0, 0));
-	int xs = CalcCharOffset(pPen, pDefProp, pChars + pLines[iSelStartLine].ofs, iSelStartCol);
+	int xs = CalcCharOffset(pPen, pDefProp, pChars + pLines[iSelStartLine].ofs, iSelStartCol, pText->mode() );
 
 	pPen->SetPos(WgCord(0, 0));
-	int xe = CalcCharOffset(pPen, pDefProp, pChars + pLines[iSelEndLine].ofs, iSelEndCol);
+	int xe = CalcCharOffset(pPen, pDefProp, pChars + pLines[iSelEndLine].ofs, iSelEndCol, pText->mode() );
 
 	WgCord dstPos;
 	dstPos.x = dstRect.x;
@@ -976,7 +976,7 @@ void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, 
 
 //_________________________________________________________________________
 
-int WgGfxDevice::CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, const WgChar* pLine, Uint32 nChars)
+int WgGfxDevice::CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, const WgChar* pLine, Uint32 nChars, WgMode mode )
 {
 	if( !pLine )
 		return 0;
@@ -993,7 +993,7 @@ int WgGfxDevice::CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, cons
 		{
 			hProp = pLine[i].GetPropHandle();
 
-			int success = pPen->SetTextProp( pDefProp.GetHandle(), hProp );
+			int success = pPen->SetTextProp( pDefProp.GetHandle(), hProp, mode );
 			if( !success )
 				break;
 		}
@@ -1047,7 +1047,7 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode
 		{
 			hProp = _pLine[i].GetPropHandle();
 
-			int success = pPen->SetTextProp( pDefProp.GetHandle(), hProp );
+			int success = pPen->SetTextProp( pDefProp.GetHandle(), hProp, mode );
 			if( !success )
 				return;
 
