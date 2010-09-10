@@ -207,6 +207,10 @@ public:
 			return GetHook();	// Discards const, is ok in this case...
 	}
 
+	WgGizmoHook*	_firstHook() const { return FirstHook(); }
+	WgGizmoHook*	_lastHook() const { return LastHook(); }
+
+
 	void SetCursorStyle( WgCursorStyle style )
 	{
 		T::SetCursorStyle(style);

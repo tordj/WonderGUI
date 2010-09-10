@@ -86,15 +86,14 @@ public:
 	WgChildManager();
 	virtual ~WgChildManager();
 
-	inline WgGizmoHook *	FirstHook() const { return m_hooks.getFirst(); };
-	inline WgGizmoHook *	LastHook() const { return m_hooks.getLast(); };
-
-	inline WgChildHook *	FirstCastHook() const { return m_hooks.getFirst(); };
-	inline WgChildHook *	LastCastHook() const { return m_hooks.getLast(); };
+	inline WgChildHook *	FirstHook() const { return m_hooks.getFirst(); };
+	inline WgChildHook *	LastHook() const { return m_hooks.getLast(); };
 
 
 private:
-
+	WgGizmoHook*	_firstHook() const { return FirstHook(); }
+	WgGizmoHook*	_lastHook() const { return LastHook(); }
+	
 	WgChain<WgChildHook>	m_hooks;
 };
 
