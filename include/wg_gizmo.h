@@ -88,6 +88,7 @@ public:
 	inline void				SetCursorStyle( WgCursorStyle style )	{ m_cursorStyle = style; }
 	inline WgCursorStyle	GetCursorStyle() const					{ return m_cursorStyle; }
 
+	WgGizmoHook*		GetHook() const { return m_pHook; }
 
 	// Convenient calls to hook
 

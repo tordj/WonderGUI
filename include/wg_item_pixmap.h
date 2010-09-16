@@ -23,6 +23,7 @@
 #ifndef WG_ITEM_PIXMAP_DOT_H
 #define WG_ITEM_PIXMAP_DOT_H
 
+#include <wg_origo.h>
 #include <wg_item.h>
 #include <wg_surface.h>
 
@@ -41,6 +42,8 @@ public:
 	WgBlockSetPtr	GetSource() const { return m_block; }
 
 	void		SetMargin( WgBorders margin );
+
+	void		SetOrigo( const WgOrigo& origo );
 
 	void		ForceSize( Uint32 width, Uint32 height )	{ ForceSize(WgSize(width, height)); }
 	void		ForceSize( WgSize size );
@@ -68,6 +71,7 @@ private:
 	WgBlockSetPtr	m_block;
 	WgBorders		m_margin;
 	WgSize			m_forcedSize;
+	WgOrigo			m_origo;
 };
 
 

@@ -90,6 +90,13 @@ void WgItemPixmap::SetMargin( WgBorders margin )
 	UpdateSize();
 }
 
+//____ SetOrigo() _______________________________________________________________
+void WgItemPixmap::SetOrigo( const WgOrigo& origo )
+{
+	m_origo = origo;
+	Modified(0,0);
+}
+
 //____ ForceSize() _______________________________________________________________
 void WgItemPixmap::ForceSize( WgSize size )
 {
@@ -136,12 +143,19 @@ void WgItemPixmap::Render( const WgRect& _window, const WgRect& _clip )
 		r.y += m_margin.top;
 		r.w -= m_margin.left + m_margin.right;
 		r.h -= m_margin.top + m_margin.bottom;
+
+		WgSize contentSize( r.w, r.h );
 		if( m_forcedSize.w > 0 )
-			r.w = m_forcedSize.w;
+			contentSize.w = m_forcedSize.w;
 		if( m_forcedSize.h > 0 )
-			r.h = m_forcedSize.h;
+			contentSize.h = m_forcedSize.h;
 
-
+		r.x += m_origo.calcOfsX( r.w,contentSize.w );
+		r.y += m_origo.calcOfsY( r.h,contentSize.h );
+		
+		r.w = contentSize.w;
+		r.h = contentSize.h;
+		
 		WgGfx::clipBlitBlock( _clip, m_block->GetBlock(m_mode), r);
 	}
 }

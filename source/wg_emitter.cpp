@@ -55,21 +55,31 @@ WgEmitter::~WgEmitter()
 
 void WgEmitter::AddCallbackUnsafe( WgSignal::Signal signal, void * pCallback, void * pObj )
 {
-	WgCallback * pNew = new WgCallback[m_nCallbacks+1];
+	WgCallback cb;
+	cb.pCallback = pCallback;
+	cb.signal = signal;
+	cb.pObj = pObj;
+
+	// check if it's already in the list
+	for( int i = 0 ; i < m_nCallbacks ; i++ )
+	{
+		if( m_paCallbacks[i] == cb )
+			return;
+	}
+
+	WgCallback * pNewArray = new WgCallback[m_nCallbacks+1];
 
 	if( m_paCallbacks )
 	{
 		for( int i = 0 ; i < m_nCallbacks ; i++ )
-			pNew[i] = m_paCallbacks[i];
+			pNewArray[i] = m_paCallbacks[i];
 
 		delete [] m_paCallbacks;
 	}
 
-	pNew[m_nCallbacks].signal 		= signal;
-	pNew[m_nCallbacks].pCallback	= pCallback;
-	pNew[m_nCallbacks].pObj			= pObj;
+	pNewArray[m_nCallbacks] = cb;
 
-	m_paCallbacks = pNew;
+	m_paCallbacks = pNewArray;
 	m_nCallbacks++;
 }
 

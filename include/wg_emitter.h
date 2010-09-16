@@ -38,6 +38,17 @@ struct WgCallback
 	WgSignal::Signal	signal;			// Signal that activates callback.
 	void *				pCallback;		// Callback receiving the call.
 	void *				pObj;			// Object to send to callback.
+	
+	inline bool operator==( const WgCallback& other )
+	{
+		if( signal == other.signal && pCallback == other.pCallback && pObj == other.pObj )
+			return true;
+		return false;
+	}
+	inline bool operator!=( const WgCallback& other )
+	{
+		return !(*this == other);
+	}
 };
 
 //____ WgEmitter _______________________________________________________________

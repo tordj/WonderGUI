@@ -1279,6 +1279,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 				pCell->Render( rc, clip2 );
 				rc.x += (int)(m_pColumns[i].m_pixelWidth * scale) - m_cellPaddingX;		// One cellpadding already added...
+				rc.x -= 1;	// HACK: Overlap last pixel to avoid double separator graphics between two headers
 			}
 			pCell = pCell->GetNext();
 		}
@@ -1689,13 +1690,16 @@ bool Wdg_TableView::DoMyOwnMarkTest( int _x, int _y )
 
 WgString Wdg_TableView::GetTooltipString() const
 {
-	if( m_markedRow != -1 )
+	WgString tooltip;
+	if( m_pLastMarkedItem != 0 )
+		tooltip = m_pLastMarkedItem->GetTooltipString();
+	
+	if( tooltip.IsEmpty() && m_markedRow != -1 )
 	{
 		const WgTableRow * p = GetRow(m_markedRow);
-
 		if( p )
-		return p->GetTooltipString();
+			tooltip = p->GetTooltipString();
 	}
-	return 0;
+	return tooltip;
 }
 

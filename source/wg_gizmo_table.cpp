@@ -31,175 +31,188 @@
 static const char	c_gizmoType[] = {"TordJ/Table"};
 
 
-//____ WgTableColumn2::Iterator _______________________________________________
-/*
-void WgTableColumn2::Iterator::next()
-{
-	while( m_pRow )
-	{
-		m_pRow = m_pRow->getNext();
-		if( m_pRow->m_nCells >= m_pos && m_pRow->m_pCells[m_pos].Gizmo() )
-		{
-			m_pHook = &m_pRow->m_pCells[m_pos];
-			m_pGizmo = m_pRow->m_pCells[m_pos].Gizmo();
-			return;
-		}
-	}
-
-	m_pHook = 0;
-	m_pGizmo = 0;
-}
-
-void WgTableColumn2::Iterator::prev()
-{
-	while( m_pRow )
-	{
-		m_pRow = m_pRow->getPrev();
-		if( m_pRow->m_nCells >= m_pos && m_pRow->m_pCells[m_pos].Gizmo() )
-		{
-			m_pHook = &m_pRow->m_pCells[m_pos];
-			m_pGizmo = m_pRow->m_pCells[m_pos].Gizmo();
-			return;
-		}
-	}
-
-	m_pHook = 0;
-	m_pGizmo = 0;
-}
-
-//____ WgTableRow2::Iterator __________________________________________________
-
-void WgTableRow2::Iterator::next()
-{
-	while( m_pos < m_pRow->m_nCells )
-	{
-		m_pos++;
-		if( m_pRow->m_pCells[m_pos].Gizmo() )
-		{
-			m_pHook = &m_pRow->m_pCells[m_pos];
-			m_pGizmo = m_pRow->m_pCells[m_pos].Gizmo();
-			return;
-		}
-	}
-
-	m_pHook = 0;
-	m_pGizmo = 0;
-}
-
-void WgTableRow2::Iterator::prev()
-{
-	if( m_pHook )
-	{
-		while( m_pos >= 0 )
-		{
-			m_pos--;
-			if( m_pRow->m_pCells[m_pos].Gizmo() )
-			{
-				m_pHook = &m_pRow->m_pCells[m_pos];
-				m_pGizmo = m_pRow->m_pCells[m_pos].Gizmo();
-				return;
-			}
-		}
-
-		m_pHook = 0;
-		m_pGizmo = 0;
-	}
-}
-//____ WgGizmoTable::Iterator _________________________________________________
-
-void WgGizmoTable::Iterator::next()
-{
-	while( m_pRow )
-	{
-		while( m_pos < m_pRow->m_nCells )
-		{
-			m_pos++;
-			if( m_pRow->m_pCells[m_pos].Gizmo() )
-			{
-				m_pHook = &m_pRow->m_pCells[m_pos];
-				m_pGizmo = m_pRow->m_pCells[m_pos].Gizmo();
-				return;
-			}
-
-		}
-		m_pos = 0;
-		m_pRow = m_pRow->getNext();
-	}
-
-	m_pHook = 0;
-	m_pGizmo = 0;
-}
-
-void WgGizmoTable::Iterator::prev()
-{
-	while( m_pRow )
-	{
-		while( m_pos >= 0 )
-		{
-			m_pos--;
-			if( m_pRow->m_pCells[m_pos].Gizmo() )
-			{
-				m_pHook = &m_pRow->m_pCells[m_pos];
-				m_pGizmo = m_pRow->m_pCells[m_pos].Gizmo();
-				return;
-			}
-
-		}
-		m_pRow = m_pRow->getPrev();
-		if( m_pRow )
-			m_pos = m_pRow->m_nCells;
-	}
-
-	m_pHook = 0;
-	m_pGizmo = 0;
-}
-*/
-
-
 WgCord WgTableHook::Pos() const
 {
+	return Geo();
 }
 
 WgSize WgTableHook::Size() const
 {
+	int w = 0;
+	int h = GetRow()->Height();
+
+	WgTableColumn2* pColumn = GetColumn();
+	if( pColumn && !pColumn->isHidden() )							// Widgets in hidden columns should have 0 width.
+			w = pColumn->getWidth();
+
+	return WgSize(w,h);
 }
 
 WgRect WgTableHook::Geo() const
 {
+	WgGizmoTable * pTable = GetRow()->GetTable();
+
+	if( pTable )
+	{
+		int row = pTable->GetRowNb( GetRow() );
+		int column = GetColumnNb();
+
+		return pTable->GetCellGeo( row, column );
+	}
+	else
+		return WgRect();
 }
 
 WgCord WgTableHook::ScreenPos() const
 {
+	return Pos() + GetRow()->GetTable()->ScreenPos();
 }
 
 WgRect WgTableHook::ScreenGeo() const
 {
+	return Geo() + GetRow()->GetTable()->ScreenPos();
 }
 
 
 WgGizmoHook* WgTableHook::PrevHook() const
 {
+	return PrevInTable();
 }
 
 WgGizmoHook* WgTableHook::NextHook() const
 {
+	return NextInTable();
+}
+
+
+WgTableHook * WgTableHook::PrevInTable() const
+{
+	WgTableHook * p = PrevInRow();
+
+	if( !p )
+	{
+		WgTableRow2* pRow = GetRow()->GetPrev();
+		while( pRow && !p )
+		{
+			p = pRow->LastHook();
+			pRow = pRow->GetPrev();
+		}
+	}
+
+	return p;
+}
+
+WgTableHook * WgTableHook::NextInTable() const
+{
+	WgTableHook * p = NextInRow();
+
+	if( !p )
+	{
+		WgTableRow2* pRow = GetRow()->GetNext();
+		while( pRow && !p )
+		{
+			p = pRow->FirstHook();
+			pRow = pRow->GetNext();
+		}
+	}
+
+	return p;
+}
+
+WgTableHook * WgTableHook::PrevInRow() const
+{
+	WgTableRow2* pRow = GetRow();
+	int col = GetColumnNb()-1;
+
+	while( col >= 0 )
+	{
+		if( pRow->m_pCells[col].Gizmo() )
+			return &pRow->m_pCells[col];
+		col--;
+	}
+
+	return 0;
+}
+
+WgTableHook * WgTableHook::NextInRow() const
+{
+	WgTableRow2* pRow = GetRow();
+	int col = GetColumnNb()+1;
+
+	while( col < pRow->m_nCells )
+	{
+		if( pRow->m_pCells[col].Gizmo() )
+			return &pRow->m_pCells[col];
+		col++;
+	}
+
+	return 0;
+}
+
+
+WgTableHook * WgTableHook::PrevInColumn() const
+{
+	WgTableRow2* pRow = GetRow()->GetPrev();
+	int col = GetColumnNb();
+
+	while( pRow )
+	{
+		if( pRow->m_nCells > col && pRow->m_pCells[col].Gizmo() )
+			return &pRow->m_pCells[col];
+
+		pRow = pRow->GetPrev();
+	}
+
+	return 0;
+}
+
+WgTableHook * WgTableHook::NextInColumn() const
+{
+	WgTableRow2* pRow = GetRow()->GetNext();
+	int col = GetColumnNb();
+
+	while( pRow )
+	{
+		if( pRow->m_nCells > col && pRow->m_pCells[col].Gizmo() )
+			return &pRow->m_pCells[col];
+
+		pRow = pRow->GetNext();
+	}
+
+	return 0;
+}
+
+WgTableColumn2* WgTableHook::GetColumn() const
+{
+	WgTableRow2* pRow = GetRow();
+	int col = this - pRow->m_pCells;
+
+	if( !pRow->GetTable() )
+		return 0;
+
+	return pRow->GetTable()->GetColumn(col);
 }
 
 
 WgEmitter* WgTableHook::GetEmitter()
 {
+	return this;
 }
 
 WgWidget* WgTableHook::GetRoot()
 {
+	WgGizmoTable* pTable = GetRow()->GetTable();
+	if( pTable )
+	{
+		WgGizmoHook* pHook = pTable->GetHook();
+		if( pHook )
+			return pHook->GetRoot();
+	}
+	return 0;
 }
 
-WgTableHook::WgTableHook()
-{
-}
 
-
-WgTableHook::WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow )
+WgTableHook::WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow ) : WgGizmoHook( pGizmo, pRow )
 {
 }
 
@@ -210,27 +223,42 @@ WgTableHook::~WgTableHook()
 
 WgGizmo* WgTableHook::ReleaseGizmo()
 {
+	WgGizmo * p = m_pGizmo;
+	m_pGizmo = 0;
+	return p;
 }
 	
 void WgTableHook::RequestRender()
 {
+	WgGizmoTable* pTable = GetRow()->GetTable();
+	if( pTable )
+		pTable->RequestRender( Geo() );
 }
 
 void WgTableHook::RequestRender( const WgRect& rect )
 {
+	WgGizmoTable* pTable = GetRow()->GetTable();
+	if( pTable )
+		pTable->RequestRender( rect + Pos() );
 }
 
 void WgTableHook::RequestResize()
 {
-	// Nothing here, Gizmo in cell doesn't get to demand its own size...
+	//TODO: Recalculate height of row...
 }
 
 bool WgTableHook::RequestFocus()
 {
+	//TODO: Figure out how this should work and implement.
+
+	return false;
 }
 
 bool WgTableHook::ReleaseFocus()
 {
+	//TODO: Figure out how this should work and implement.
+
+	return false;
 }
 
 
@@ -244,7 +272,7 @@ WgTableColumn2::WgTableColumn2()
 	m_bEnabled			= true;
 	m_bInitialAscend	= true;
 	m_id				= 0;
-	m_pOwner			= 0;
+	m_pTable			= 0;
 	m_pText				= 0;
 	m_pDefaultGizmo		= 0;
 }
@@ -259,7 +287,7 @@ WgTableColumn2::WgTableColumn2( WgGizmoTable * pOwner )
 	m_bEnabled			= true;
 	m_bInitialAscend	= true;
 	m_id				= 0;
-	m_pOwner			= pOwner;
+	m_pTable			= pOwner;
 	m_pText				= 0;
 	m_pDefaultGizmo		= 0;
 }
@@ -273,7 +301,7 @@ WgTableColumn2::WgTableColumn2(const WgTableColumn2& column)
 	m_bEnabled = column.m_bEnabled;
 	m_bInitialAscend = column.m_bInitialAscend;
 	m_id = column.m_id;
-	m_pOwner = 0;
+	m_pTable = 0;
 	m_pDefaultGizmo = column.m_pDefaultGizmo;			//TODO: WRONG!!!!!!!!!!!!!
 
 	if(column.m_pText)
@@ -310,10 +338,10 @@ void WgTableColumn2::setWidth( int pixels )
 	{
 		Sint32 widthdiff = pixels - m_pixelWidth;
 		m_pixelWidth = pixels;
-		if( m_bVisible && m_pOwner )
+		if( m_bVisible && m_pTable )
 		{
-			m_pOwner->SetContentSize( m_pOwner->m_contentWidth + widthdiff, m_pOwner->m_contentHeight );
-			m_pOwner->RequestRender();
+			m_pTable->SetContentSize( m_pTable->m_contentWidth + widthdiff, m_pTable->m_contentHeight );
+			m_pTable->RequestRender();
 		}
 	}
 
@@ -325,10 +353,10 @@ void WgTableColumn2::hide()
 	{
 		m_bVisible = false;
 
-		if( m_pOwner )
+		if( m_pTable )
 		{
-			m_pOwner->SetContentSize( m_pOwner->m_contentWidth - m_pixelWidth, m_pOwner->m_contentHeight );
-			m_pOwner->RequestRender();
+			m_pTable->SetContentSize( m_pTable->m_contentWidth - m_pixelWidth, m_pTable->m_contentHeight );
+			m_pTable->RequestRender();
 		}
 	}
 }
@@ -339,10 +367,10 @@ void WgTableColumn2::show()
 	{
 		m_bVisible = true;
 
-		if( m_pOwner )
+		if( m_pTable )
 		{
-			m_pOwner->SetContentSize( m_pOwner->m_contentWidth + m_pixelWidth, m_pOwner->m_contentHeight );
-			m_pOwner->RequestRender();
+			m_pTable->SetContentSize( m_pTable->m_contentWidth + m_pixelWidth, m_pTable->m_contentHeight );
+			m_pTable->RequestRender();
 		}
 	}
 }
@@ -352,8 +380,8 @@ void WgTableColumn2::enable()
 	if( !m_bEnabled )
 	{
 		m_bEnabled = true;
-		if( m_bVisible && m_pOwner )
-			m_pOwner->RequestRender();
+		if( m_bVisible && m_pTable )
+			m_pTable->RequestRender();
 	}
 }
 
@@ -362,55 +390,91 @@ void WgTableColumn2::disable()
 	if( m_bEnabled )
 	{
 		m_bEnabled = false;
-		if( m_bVisible && m_pOwner )
-			m_pOwner->RequestRender();
+		if( m_bVisible && m_pTable )
+			m_pTable->RequestRender();
 	}
 }
 
 
-void WgTableColumn2::setSortFunction( fpItemCmp pFunc )
+void WgTableColumn2::setSortFunction( fpGizmoCmp pFunc )
 {
 	m_fpCompare = pFunc;
 }
 
 
-void WgTableColumn2::setTextObj(WgText *text)
+void WgTableColumn2::SetTextObj(WgText *text)
 {
 	m_pText = text;
 }
 
-const WgText* WgTableColumn2::getTextObj() const
+const WgText* WgTableColumn2::GetTextObj() const
 {
 	return m_pText;
 }
 
-WgText* WgTableColumn2::getTextObj()
+WgText* WgTableColumn2::GetTextObj()
 {
 	return m_pText;
 }
 
-void WgTableColumn2::textModified()
+void WgTableColumn2::TextModified()
 {
-	if( m_bVisible && m_pOwner )
-		m_pOwner->RequestRender();
+	if( m_bVisible && m_pTable )
+		m_pTable->RequestRender();
 }
 
+
+WgTableHook* WgTableColumn2::FirstHook() const
+{
+	WgTableRow2* pRow = m_pTable->GetFirstRow();
+	int column = index();
+
+	while( pRow )
+	{
+		WgTableHook* pHook = pRow->GetHook(column);
+		if( pHook )
+			return pHook;
+
+		pRow = pRow->GetNext();
+	}
+
+	return 0;
+}
+
+WgTableHook* WgTableColumn2::LastHook() const
+{
+	WgTableRow2* pRow = m_pTable->GetLastRow();
+	int column = index();
+
+	while( pRow )
+	{
+		WgTableHook* pHook = pRow->GetHook(column);
+		if( pHook )
+			return pHook;
+
+		pRow = pRow->GetPrev();
+	}
+
+	return 0;
+}
 
 WgTableRow2::WgTableRow2( Sint64 id, int nCells )
 {
 	if( nCells < 0 )
 		nCells = 0;
 
-	m_nCells = nCells;
 
 
-	if( m_nCells > 0 )
-		m_pCells = new WgTableHook[nCells];
-	else
-		m_pCells = 0;
+
+	m_nCells = 0;
+	m_pCells = 0;
+
+	if( nCells > 0 )
+		ResizeCellsArray(nCells);
 
 	m_id		= id;
 	m_height	= 0;
+	m_pTable	= 0;
 	m_mode		= WG_MODE_NORMAL;
 	m_bVisible	= true;
 }
@@ -420,15 +484,15 @@ WgTableRow2::~WgTableRow2()
 	delete [] m_pCells;
 }
 
-void WgTableRow2::SetGizmo( WgGizmo * pGizmo, int col )
+void WgTableRow2::SetGizmo( WgGizmo * pGizmo, int cell )
 {
-	if( m_nCells <= col )
-		ResizeCellsArray(col+1);
+	if( m_nCells <= cell )
+		ResizeCellsArray(cell+1);
 
-	if( m_pCells[col].Gizmo() )
-		m_pCells[col].~WgTableHook();
+	if( m_pCells[cell].Gizmo() )
+		m_pCells[cell].~WgTableHook();
 
-	new (&m_pCells[col])WgTableHook(pGizmo, this);
+	new (&m_pCells[cell])WgTableHook(pGizmo, this);
 
 	//TODO: Meddela table att rad har ändrats.
 }
@@ -439,14 +503,18 @@ int WgTableRow2::AddGizmo( WgGizmo * pGizmo )
 
 	int cell = m_nCells;
 	
-	while( cell > 0 && m_pCells[cell-1] == 0 )
+	while( cell > 0 && m_pCells[cell-1].Gizmo() == 0 )
 		cell--;
 
 	// Resize if necessary
 
 	if( m_nCells == cell )
 		ResizeCellsArray(cell+1);
-	
+
+	// Create hook
+
+	new (&m_pCells[cell])WgTableHook(pGizmo, this);
+
 	//TODO: Meddela table att rad har ändrats.
 	
 	return cell;
@@ -462,7 +530,7 @@ bool WgTableRow2::Select()
 		m_mode = WG_MODE_SELECTED;
 
 		for( int i = 0 ; i < m_nCells ; i++ )
-			m_pCell[i].Gizmo()->SetSelected();
+			m_pCells[i].Gizmo()->SetSelected();
 	}
 	return true;
 }
@@ -470,22 +538,56 @@ bool WgTableRow2::Select()
 
 void WgTableRow2::Unselect()
 {
-	if( m_mode == WG_MODE_DISABLED )
-		return false;
-
-	if( m_mode != WG_MODE_NORMAL )
+	if( m_mode != WG_MODE_NORMAL && m_mode != WG_MODE_DISABLED )
 	{
 		m_mode = WG_MODE_NORMAL;
 
 		for( int i = 0 ; i < m_nCells ; i++ )
-			m_pCell[i].Gizmo()->SetNormal();
+			m_pCells[i].Gizmo()->SetNormal();
 	}
 }
 
 
+
+WgTableHook* WgTableRow2::FirstHook() const
+{
+	for( int i = 0 ; i < m_nCells ; i++ )
+		if( m_pCells[i].Gizmo() )
+			return &m_pCells[i];
+
+	return 0;
+}
+
+WgTableHook* WgTableRow2::LastHook() const
+{
+	for( int i = m_nCells-1 ; i >= 0 ; i-- )
+		if( m_pCells[i].Gizmo() )
+			return &m_pCells[i];
+
+	return 0;
+}
+
+WgTableHook* WgTableRow2::GetHook( int cell )
+{
+	if( cell < m_nCells && m_pCells[cell].Gizmo() )
+		return &m_pCells[cell];
+
+	return 0;
+}
+
+WgGizmo* WgTableRow2::GetGizmo( int cell )
+{
+	if( cell < m_nCells && m_pCells[cell].Gizmo() )
+		return m_pCells[cell].Gizmo();
+
+	return 0;
+}
+
+
+
 //____ Constructor ____________________________________________________________
 
-void WgGizmoTable::WgGizmoTable()
+WgGizmoTable::WgGizmoTable()
 {
 	m_bShowHeader 		= true;
 	m_bAutoScaleHeader	= false;
@@ -562,9 +664,9 @@ bool WgGizmoTable::SetHeaderSource( const WgBlockSetPtr& pHeader )
 	return true;
 }
 
-//____ SetLineMarkSource() ____________________________________________________
+//____ SetSelectedRowBg() ____________________________________________________
 
-void WgGizmoTable::SetLineMarkSource( WgBlockSetPtr pGfx )
+void WgGizmoTable::SetSelectedRowBg( WgBlockSetPtr pGfx )
 {
 	m_selectedRowGfx = pGfx;
 	RequestRender();
@@ -774,7 +876,6 @@ bool WgGizmoTable::GetSortColumn( int order, Uint32& columnIndex, bool& bAscend 
 	return true;
 }
 
-
 //____ GetCellGeo() ___________________________________________________________
 
 WgRect WgGizmoTable::GetCellGeo( int row, int column )
@@ -842,34 +943,20 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 
 int WgGizmoTable::AddRow( WgTableRow2* pRow )
 {
-	m_rows.push_back(pRow);
-
 	int index = m_nRows;
-	m_nRows++;
-	RowAdded(pRow);
+	ConnectRow(pRow, 0);
 	return index;
 }
+
 
 //____ InsertRow() ____________________________________________________________
 
 int WgGizmoTable::InsertRow( WgTableRow2* pRow, int pos )
 {
 	WgTableRow2* p = m_rows.get(pos);
-	int index;
 
-	if( p )
-	{
-		pRow->moveBefore( p );
-		index = pos;
-	}
-	else
-	{
-		m_rows.push_back(pItem);
-		index = m_nRows;
-	}
-
-	m_nRows++;
-	RowAdded(pRow);
+	int index = p?pos:m_nRows;
+	ConnectRow( pRow, p );
 	return index;
 }
 
@@ -878,56 +965,95 @@ int WgGizmoTable::InsertRow( WgTableRow2* pRow, int pos )
 void WgGizmoTable::InsertRowSorted( WgTableRow2* pRow )
 {
 	if( m_nRows == 0 )
-	{
-		m_rows.push_back(pRow);
-	}
+		ConnectRow( pRow, 0 );
 	else
 	{
-
 		WgTableRow2 * pFirst = m_rows.getFirst();
 		WgTableRow2 * pLast = m_rows.getLast();
 
-		// First check if we should be put first or last in list. Equal to last should put us last.
+		int diffFirst = CompareRows( pRow, pFirst );
+		int diffLast = CompareRows( pRow, pLast );
 
-		bool bInserted = false;
-		if( m_bSortAscend )
+		if( !m_bSortAscend )
 		{
-			if( CompareRows( pRow, pFirst ) < 0 )
-		s	{
-				pRow->moveBefore( pFirst );
-				bInserted = true;
-			}
-			else if( CompareRows( pRow, pLast ) >= 0 )
-			{
-				pRow->moveAfter( pLast );
-				bInserted = true;
-			}
+			diffFirst = -diffFirst;
+			diffLast = -diffLast;
 		}
+
+		if( diffFirst < 0 )
+			ConnectRow( pRow, pFirst );
+		else if( diffLast >= 0 )
+			ConnectRow( pRow, 0 );		// If inserted row is equal to last row it should be placed last.
 		else
-		{
-			if( CompareItems( pRow, pFirst ) > 0 )
-			{
-				pRow->moveBefore( pFirst );
-				bInserted = true;
-			}
-			else if( CompareItems( pRow, pLast ) <= 0 )
-			{
-				pRow->moveAfter( pLast );
-				bInserted = true;
-			}
-		}
+			ConnectRow( pRow, FindRowInsertSpot( pFirst, pLast, pRow, m_nRows ) );
+	}
+}
 
-		// If it wasn't inserted first or last it needs to be inserted between pFirst and pLast
 
-		if( !bInserted )
-			InsertItemSortedBetween(pFirst, pLast, pRow, m_nRows );
+//____ FindRowInsertSpot() ____________________________________________________
+
+WgTableRow2* WgGizmoTable::FindRowInsertSpot( WgTableRow2* pFirst, WgTableRow2* pLast, WgTableRow2* pRow, Uint32 nRows )
+{
+	assert( nRows >= 2 && pFirst != pLast );
+
+	if( nRows <= 2 )				// Should never be less than two but we handle it as a failsafe
+									// in case we screw up some calling code in the future...
+	{								// Only two items means that we have found our position for insertion.
+		return pLast;
+	}
+	else
+	{
+		// Step to middle item
+
+		WgItem * pMiddle = pFirst;
+		int steps = nRows/2;
+		for( int i = 0 ; i < steps ; i++ )
+			pMiddle = pMiddle->GetNext();
+
+		// Compare against middle item
+
+		bool bUp = false;
+		if( CompareRows( pRow, pMiddle ) < 0 )
+			bUp = true;
+
+		if( !m_bSortAscend )
+			bUp = !bUp;
+
+		// subdivide and recurse
+
+		if ( bUp )
+			return FindRowInsertSpot( pFirst, pMiddle, pRow, steps+1);
+		else
+			return FindRowInsertSpot( pMiddle, pLast, pRow, nRows-steps);
 	}
 
-	//
-
-	m_nRows++;
-	RowAdded(pRow);
 }
+
+
+
+//____ ConnectRow() _____________________________________________________________
+
+void WgGizmoTable::ConnectRow( WgTableRow2* pRow, WgTableRow* pPlaceBefore )
+{
+	m_nRows++;
+	pRow->m_pTable = this;
+	pRow->moveBefore(pPlaceBefore);
+
+	//TODO: update stuff here!!!
+
+}
+
+//____ DisconnectRow() ___________________________________________________________
+
+void WgGizmoTable::DisconnectRow( WgTableRow* pRow )
+{
+	m_nRows--;
+	pRow->m_pTable = 0;
+	pRow->disconnect();
+
+	//TODO: update stuff here!!!
+}
+
 
 //____ GetRowNb() _____________________________________________________________
 
@@ -994,10 +1120,7 @@ WgTableRow2 * WgGizmoTable::RemoveRow( int pos )
 
 	WgTableRow2* pRow = m_rows.get(pos);
 	if( pRow )
-	{
-		pRow->disconnect();
-		m_nRows--;
-	}
+		DisconnectRow(pRow);
 	return pRow;
 }
 
@@ -1008,8 +1131,7 @@ bool WgGizmoTable::RemoveRow( WgTableRow2 * pRow )
 
 	if( pRow && m_rows.isMember(pRow) )
 	{
-		pRow->disconnect();
-		m_nRows--;
+		DisconnectRow(pRow);
 		return true;
 	}
 	return false;
@@ -1022,9 +1144,7 @@ void WgGizmoTable::RemoveAllRows()
 	UpdateMarkedRowColumn(-1,m_markedColumn);
 
 	while( m_rows.getFirst() )
-		m_rows.getFirst()->disconnect();
-
-	m_nRows = 0;
+		DisconnectRow( m_rows.getFirst() );
 }
 
 //____ DeleteRow() ____________________________________________________________
@@ -1127,7 +1247,8 @@ int WgGizmoTable::CompareRows( WgTableRow2* pRow1, WgTableRow2* pRow2 )
 
 		if( col < m_nColumns && m_pColumns[col].m_fpCompare != 0 )
 		{
-			WgGizmo* p1 = 0, p2 = 0;
+			WgGizmo* p1 = 0;
+			WgGizmo* p2 = 0;
 			int diff;
 
 			if( pRow1->m_nCells >= col )
@@ -1236,9 +1357,6 @@ void WgGizmoTable::UpdateContentSize()
 
 void WgGizmoTable::refreshItems()
 {
-	if( m_pColumns == 0 )
-		return;
-
 	UpdateContentSize();
 
 	RequestRender();
@@ -1274,7 +1392,7 @@ void WgGizmoTable::ScrollIntoView( WgTableRow2* pRow )
 	// calc y pos of this row
 	int rowPosY = 0;
 
-	WgTableRow * p = m_rows.getFirst();
+	WgTableRow2 * p = m_rows.getFirst();
 	while( p && p != pRow )
 	{
 		if(p->IsVisible())
@@ -1681,14 +1799,14 @@ void WgGizmoTable::OnCloneContent( const WgGizmo * _pOrg )
 
 	// For the moment we don't clone the content
 
-	m_rows.Clear();
+	m_rows.clear();
 	m_nRows = 0;
 
 
 	m_selectMode = pOrg->m_selectMode;
 
 	for( int i = 0 ; i < c_nSortColumns ; i++ )
-		m_sortStack[i] = pOrg->m_sortStack;
+		m_sortStack[i] = pOrg->m_sortStack[i];
 
 
 	m_clickSortPrio		= pOrg->m_clickSortPrio;
@@ -1753,7 +1871,7 @@ void WgGizmoTable::OnCloneContent( const WgGizmo * _pOrg )
 
 	m_pMarkedHeader = 0;
 
-	m_selectedRowGfx = pOrg->m_selectedRowGfx;
+	m_pSelectedRowGfx = pOrg->m_pSelectedRowGfx;
 	m_selectedRowColor = pOrg->m_selectedRowColor;
 }
 

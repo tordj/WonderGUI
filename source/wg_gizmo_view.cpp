@@ -1070,9 +1070,7 @@ void WgGizmoView::ViewHook::RequestRender()
 void WgGizmoView::ViewHook::RequestRender( const WgRect& rect )
 {
 	WgRect r = rect;
-
 	r += m_geo.Pos();
-	r.Intersection( r, rect );
 	m_pView->RequestRender( r );
 }
 
