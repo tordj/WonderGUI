@@ -122,6 +122,7 @@ public:
 	void	character( Uint16 character, Uint16 native_keycode_for_repeat = 0 );
 
 	void	key_release_all();
+	void	button_release_all();
 
 	void	wheel_roll( Uint8 wheel, Sint32 distance );
 

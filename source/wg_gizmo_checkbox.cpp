@@ -367,7 +367,7 @@ WgRect WgGizmoCheckbox::GetContentRect( const WgSize& gizmoSize, const WgRect& i
 
 //____ OnRender() ________________________________________________________
 
-void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Get correct mode
 
@@ -401,21 +401,21 @@ void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 	if( pBlockSet )
 	{
 		if( m_bFixedSizeBox )
-			pDevice->ClipBlitBlock( _clip, pBlockSet->GetBlock(mode), WgRect(_window.x, _window.y, pBlockSet->GetWidth(), pBlockSet->GetHeight()) );
+			pDevice->ClipBlitBlock( _clip, pBlockSet->GetBlock(mode), WgRect(_canvas.x, _canvas.y, pBlockSet->GetWidth(), pBlockSet->GetHeight()) );
 		else
-			pDevice->ClipBlitBlock( _clip, pBlockSet->GetBlock(mode), _window );
+			pDevice->ClipBlitBlock( _clip, pBlockSet->GetBlock(mode), _canvas );
 	}
 
 	// Blit icon
 
-	WgRect iconRect = GetIconRect( _window );
+	WgRect iconRect = GetIconRect( _canvas );
 
 	if( pIcon && iconRect.w > 0 && iconRect.h > 0 )
 	{
 		WgRect iconBlitRect = iconRect;
 		iconBlitRect.Shrink( m_iconAreaBorders );
-		iconBlitRect.x += _window.x;
-		iconBlitRect.y += _window.y;
+		iconBlitRect.x += _canvas.x;
+		iconBlitRect.y += _canvas.y;
 		pDevice->ClipBlitBlock( _clip, pIcon->GetBlock(mode), iconBlitRect );
 	}
 
@@ -433,9 +433,9 @@ void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 		int   yOfs = m_aDisplace[iDisplacement].y;
 
 
-		WgRect	printWindow = GetContentRect( _window, iconRect );
-		printWindow.x += _window.x;
-		printWindow.y += _window.y;
+		WgRect	printWindow = GetContentRect( _canvas, iconRect );
+		printWindow.x += _canvas.x;
+		printWindow.y += _canvas.y;
 
 		printWindow.x += xOfs;
 		printWindow.y += yOfs;

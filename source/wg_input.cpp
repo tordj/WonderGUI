@@ -1050,7 +1050,13 @@ void WgInput::key_release_all()
 	m_keys.nKeysDown = 0;
 }
 
+//____ button_release_all() ______________________________________________________
 
+void WgInput::button_release_all()
+{
+	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
+		button_release( i );
+}
 
 
 //____ isKeyDown() ____________________________________________________________

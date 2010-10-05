@@ -193,7 +193,7 @@ void WgGizmoEditline::OnCloneContent( const WgGizmo * _pOrg )
 
 //____ OnRender() _____________________________________________________________
 
-void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	WgText * pText = &m_text;
 	if( m_bPasswordMode )
@@ -215,7 +215,7 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 		delete [] pContent;
 	}
 
-	WgRect r = _window;
+	WgRect r = _canvas;
 	r.x -= m_viewOfs;
 	r.w += m_viewOfs;
 

@@ -109,18 +109,33 @@ void WgGizmoText::OnUpdate( const WgUpdateInfo& _updateInfo )
 	}
 }
 
+//____ HeightForWidth() _______________________________________________________
+
+int WgGizmoText::HeightForWidth( int width ) const
+{
+	return m_text.heightForWidth( width );
+}
+
+//____ BestSize() _____________________________________________________________
+
+WgSize WgGizmoText::BestSize() const
+{
+	//TODO: Fix this so we don't return current size (after wraptext is adapted to width) but size for unwrapped lines.
+
+	return WgSize( m_text.width(), m_text.height() );
+}
 
 //____ OnRender() ________________________________________________________
 
-void WgGizmoText::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoText::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	WgText * pText = &m_text;
 
 	if( m_bHasFocus && IsEditable() )
-		pDevice->PrintTextWithCursor( _clip, pText, *m_pText->GetCursor(), _window );
+		pDevice->PrintTextWithCursor( _clip, pText, *m_pText->GetCursor(), _canvas );
 	else
 	{
-		pDevice->PrintText( _clip, pText, _window );
+		pDevice->PrintText( _clip, pText, _canvas );
 	}
 	if( pText != &m_text )
 		delete pText;
@@ -368,7 +383,7 @@ Uint32 WgGizmoText::InsertTextAtCursor( const WgCharSeq& str )
 		m_pText->putText( WgCharSeq( str, 0, nChars) );
 	}
 
-	if( m_maxLines != 0 && m_maxLines < m_pText->nbSoftLines() )
+	if( m_maxLines != 0 && m_maxLines < (int) m_pText->nbSoftLines() )
 	{
 		m_pText->unputText( nChars );
 		nChars = 0;
@@ -393,7 +408,7 @@ bool WgGizmoText::InsertCharAtCursor( Uint16 c )
 
 bool WgGizmoText::InsertCharAtCursorInternal( Uint16 c )
 {
-	if( m_maxCharacters != 0 && m_maxCharacters < m_pText->nbChars() )
+	if( m_maxCharacters != 0 && m_maxCharacters < (int) m_pText->nbChars() )
 		return false;
 
 	if(m_pText->hasSelection())
@@ -402,7 +417,7 @@ bool WgGizmoText::InsertCharAtCursorInternal( Uint16 c )
 
 	m_pText->putChar( c );
 
-	if( m_maxLines != 0 && m_maxLines < m_pText->nbSoftLines() )
+	if( m_maxLines != 0 && m_maxLines < (int) m_pText->nbSoftLines() )
 	{
 		m_pText->delPrevChar();
 		return false;

@@ -196,12 +196,12 @@ void WgGizmoButton::OnNewSize( const WgSize& size )
 
 //____ OnRender() _____________________________________________________________
 
-void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Render background
 
 	if( m_pBgGfx )
-		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode, _window), _window );
+		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode, _canvas), _canvas );
 
 	// Get displacement offset
 
@@ -215,10 +215,10 @@ void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _window, cons
 		int w = m_pIconGfx->GetWidth();
 		int h = m_pIconGfx->GetHeight();
 
-		int dx = (int)( m_iconOrigo.anchorX() * _window.w - m_iconOrigo.hotspotX() * w + m_iconOfs.x + xOfs );
-		int dy = (int)( m_iconOrigo.anchorY() * _window.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
+		int dx = (int)( m_iconOrigo.anchorX() * _canvas.w - m_iconOrigo.hotspotX() * w + m_iconOfs.x + xOfs );
+		int dy = (int)( m_iconOrigo.anchorY() * _canvas.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
 
-		WgRect dest( _window.x + dx, _window.y + dy, w, h );
+		WgRect dest( _canvas.x + dx, _canvas.y + dy, w, h );
 		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode), dest );
 	}
 
@@ -228,7 +228,7 @@ void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _window, cons
 	{
 		m_text.setMode(m_mode);
 
-		WgRect printWindow( _window.x + xOfs, _window.y + yOfs, _window.w, _window.h );
+		WgRect printWindow( _canvas.x + xOfs, _canvas.y + yOfs, _canvas.w, _canvas.h );
 
 		if( m_pBgGfx )
 			printWindow.Shrink( m_pBgGfx->GetContentBorders() );

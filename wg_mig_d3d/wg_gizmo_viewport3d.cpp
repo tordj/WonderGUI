@@ -68,13 +68,13 @@ void	WgGizmoViewport3D::OnUpdate( const WgUpdateInfo& _updateInfo )
 extern bool g_bF4;
 #endif
 
-void WgGizmoViewport3D::OnRender( WgGfxDevice * pDevice, const WgRect& window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoViewport3D::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& window, const WgRect& _clip, Uint8 _layer )
 {
 	if( !m_bEnabled || m_spCamera == NULL || m_spScene == NULL )
 		return;
 
-//	assert( window.x == _clip.x && window.y == _clip.y && window.w == _clip.w && window.h == _clip.h );
-	if( window.x != _clip.x && window.y != _clip.y && window.w != _clip.w && window.h != _clip.h )
+//	assert( _canvas.x == _clip.x && _canvas.y == _clip.y && _canvas.w == _clip.w && _canvas.h == _clip.h );
+	if( _canvas.x != _clip.x && _canvas.y != _clip.y && _canvas.w != _clip.w && _canvas.h != _clip.h )
 		return;
 
 	uint w = ERenderer::GetCurrent()->GetCurrentWidth();
@@ -82,11 +82,11 @@ void WgGizmoViewport3D::OnRender( WgGfxDevice * pDevice, const WgRect& window, c
 
 #ifdef BENCHMARK
 	if( g_bF4 ) {
-		ERenderer::GetCurrent()->SetViewPort( window.x/4, window.y/4, window.w/4, window.h/4 );
+		ERenderer::GetCurrent()->SetViewPort( _canvas.x/4, _canvas.y/4, _canvas.w/4, _canvas.h/4 );
 	} else
 #endif
 	{
-		ERenderer::GetCurrent()->SetViewPort( window.x, window.y, window.w, window.h );
+		ERenderer::GetCurrent()->SetViewPort( _canvas.x, _canvas.y, _canvas.w, _canvas.h );
 	}
 	// Clear Z-buffer if this viewport has the standard 3D-layer
 	if( (_layer & 1) != 0 )
@@ -96,7 +96,7 @@ void WgGizmoViewport3D::OnRender( WgGfxDevice * pDevice, const WgRect& window, c
 	if( (_layer & 128) != 0 )
 		ERenderer::GetCurrent()->Clear(false, true);
 
-	m_spCamera->AdjustAspectRatio( float(window.w), float(window.h) );
+	m_spCamera->AdjustAspectRatio( float(_canvas.w), float(_canvas.h) );
 	m_spCamera->Render( m_spScene, _layer );
 
 	ERenderer::GetCurrent()->SetViewPort( 0, 0, w, h );

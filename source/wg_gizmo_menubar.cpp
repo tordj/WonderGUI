@@ -201,7 +201,7 @@ bool WgGizmoMenubar::HideMenu(Wdg_Menu * pMenu)
 
 //____ OnRender() ________________________________________________________
 
-void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Render background
 
@@ -214,12 +214,12 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _window, con
 		else
 			block = m_pBgGfx->GetBlock(WG_MODE_DISABLED);
 
-		pDevice->ClipBlitBlock( _clip, block, _window );
+		pDevice->ClipBlitBlock( _clip, block, _canvas );
 	}
 
 	// Take backgrounds content borders into account
 
-	WgRect	window	= _window;
+	WgRect	window	= _canvas;
 	WgRect	clip;
 
 	if( m_pBgGfx )

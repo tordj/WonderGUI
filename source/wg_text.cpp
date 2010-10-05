@@ -387,6 +387,22 @@ Uint32 WgText::height() const
 	return fontheight + fontspacing*(nbSoftLines()-1);		//TODO: Count right even if style changes over the text and lines.
 }
 
+//____ heightForWidth() _______________________________________________________
+
+int WgText::heightForWidth( int width ) const
+{
+	if( m_bWrap )
+	{
+		//TODO: Implement
+
+		return height();
+	}
+	else
+		return height();
+}
+
+//____ softLineHeight() _______________________________________________________
+
 Uint32 WgText::softLineHeight( Uint32 line )
 {
 	if( line >= nbSoftLines() || !m_pProp->GetFont() )
@@ -1131,6 +1147,17 @@ Uint32 WgText::nbLines() const
 Uint32 WgText::nbSoftLines() const
 {
 	return m_nSoftLines;
+}
+
+Uint32 WgText::getSoftLineSelectionWidth(Uint32 line) const
+{
+	Uint32 w = getSoftLineWidth(line);
+	if(w == 0)
+	{
+		// TODO: return white space width
+		w = 3;
+	}
+	return w;
 }
 
 //____ getLines() _____________________________________________________________

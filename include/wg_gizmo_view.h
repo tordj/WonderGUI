@@ -39,7 +39,7 @@
 
 //____ WgGizmoView ________________________________________________________
 
-class WgGizmoView : public WgGizmo
+class WgGizmoView : public WgGizmo /*, public WgGizmoCollection CAN NOT BE WHILE WE ARE WIDGETS!!! */
 {
 public:
 	virtual ~WgGizmoView();
@@ -170,18 +170,16 @@ public:
 
 	void	SetFillerSource( const WgBlockSetPtr& pBlocks );
 
-	void		SetContent( WgGizmo * pContent );
+	bool		SetContent( WgGizmo * pContent );
 	inline void	DeleteContent() {SetContent(0); }
 	WgGizmo*	GetContent() const { return m_elements[WINDOW].Gizmo(); }
 	WgGizmo*	ReleaseContent();
 
-	//TODO: We need a ReleaseContent() or similar to remove gizmo without deleting it. Something similar for dragbars and all gizmos everywhere (already planned!)?
-
 /*
 	NEED TO BE IMPLEMENTED!!!
 
-	Uint32	HeightForWidth( Uint32 width ) const;	// 
-	Uint32	WidthForHeight( Uint32 height ) const;
+	int		HeightForWidth( int width ) const;	// 
+	int		WidthForHeight( int height ) const;
 
 	WgSize	MinSize() const;				// Defined by dragbars minsize...
 	WgSize	BestSize() const;				// = size of content if dragbars autohide, otherwise content+dragbars
@@ -197,21 +195,6 @@ protected:
 		WINDOW = 0,
 		XDRAG,
 		YDRAG
-	};
-
-
-	//____ ViewGizmoCollection __________________________________________________
-
-	class ViewGizmoCollection : public WgGizmoCollection
-	{
-	public:
-		ViewGizmoCollection() {};				// So we can make them members and then make placement new...
-		ViewGizmoCollection( WgGizmoView * m_pView );
-
-		WgGizmoHook *	FirstHook() const { return &m_pView->m_elements[0]; }
-		WgGizmoHook *	LastHook() const { return &m_pView->m_elements[2]; }
-
-		WgGizmoView *	m_pView;
 	};
 
 	//____ ViewHook _____________________________________________________________
@@ -254,6 +237,23 @@ protected:
 		bool			m_bShow;
 	};
 
+	//____ ViewGizmoCollection __________________________________________________
+
+	class ViewGizmoCollection : public WgGizmoCollection
+	{
+	public:
+		ViewGizmoCollection() {};				// So we can make them members and then make placement new...
+		ViewGizmoCollection( WgGizmoView * pView ) {m_pView = pView;}
+
+		ViewHook *	FirstHook() const { return &m_pView->m_elements[0]; }
+		ViewHook *	LastHook() const { return &m_pView->m_elements[2]; }
+
+		WgGizmoHook*	_firstHook() const { return FirstHook(); }
+		WgGizmoHook*	_lastHook() const { return LastHook(); }
+
+		WgGizmoView *	m_pView;
+	};
+
 
 	WgGizmoView();
 	virtual void OnNewSize( const WgSize& size );
@@ -262,7 +262,7 @@ protected:
 	// Takes into account that scrollbars might decrease the visible area of the subclass.
 
 	virtual void OnNewViewSize( const WgSize& size ) {};
-	virtual void OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	virtual void OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 
 	virtual void OnCloneContent( const WgGizmo * _pOrg );
 

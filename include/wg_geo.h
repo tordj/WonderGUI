@@ -51,15 +51,15 @@ public:
 	inline WgCord32 operator+(const WgCord32& k) const	{ WgCord32 res; res.x = x + k.x; res.y = y + k.y; return res; }
 	inline WgCord32 operator-(const WgCord32& k) const	{ WgCord32 res; res.x = x - k.x; res.y = y - k.y; return res; }
 
-	inline void operator*=(double v)				{ x = (Sint32) (x*v); y = (Sint32) (y*v); }
-	inline void operator/=(double v)				{ x = (Sint32) (x/v); y = (Sint32) (y/v); }
-	inline WgCord32 operator*(double v) const	{ WgCord32 res; res.x = (Sint32) (x*v); res.y = (Sint32) (y*v); return res; }
-	inline WgCord32 operator/(double v) const	{ WgCord32 res; res.x = (Sint32) (x/v); res.y = (Sint32) (y/v); return res; }
+	inline void operator*=(double v)				{ x = (int) (x*v); y = (int) (y*v); }
+	inline void operator/=(double v)				{ x = (int) (x/v); y = (int) (y/v); }
+	inline WgCord32 operator*(double v) const	{ WgCord32 res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
+	inline WgCord32 operator/(double v) const	{ WgCord32 res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
 
-	inline void operator*=(float v)				{ x = (Sint32) (x*v); y = (Sint32) (y*v); }
-	inline void operator/=(float v)				{ x = (Sint32) (x/v); y = (Sint32) (y/v); }
-	inline WgCord32 operator*(float v) const	{ WgCord32 res; res.x = (Sint32) (x*v); res.y = (Sint32) (y*v); return res; }
-	inline WgCord32 operator/(float v) const	{ WgCord32 res; res.x = (Sint32) (x/v); res.y = (Sint32) (y/v); return res; }
+	inline void operator*=(float v)				{ x = (int) (x*v); y = (int) (y*v); }
+	inline void operator/=(float v)				{ x = (int) (x/v); y = (int) (y/v); }
+	inline WgCord32 operator*(float v) const	{ WgCord32 res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
+	inline WgCord32 operator/(float v) const	{ WgCord32 res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
 
 	inline void operator*=(int v)				{ x *= v; y *= v; }
 	inline void operator/=(int v)				{ x /= v; y /= v; }
@@ -67,7 +67,7 @@ public:
 	inline WgCord32 operator/(int v) const	{ WgCord32 res; res.x = x / v; res.y = y / v; return res; }
 
 
-	Sint32	x, y;
+	int	x, y;
 };
 
 typedef WgCord32	WgCord;
@@ -128,7 +128,7 @@ class	WgSize
 {
 public:
 	WgSize() : w(0), h(0) {}
-	WgSize( Sint32 _w, Sint32 _h ) {w=_w;h=_h;}
+	WgSize( int _w, int _h ) {w=_w;h=_h;}
 	WgSize( const WgRect& rect );
 	WgSize( const WgCord& c1, const WgCord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 	inline void ConstrainTo( const WgMinMax2D& minmax );
@@ -145,15 +145,15 @@ public:
 	inline WgSize operator+(const WgSize& k) const	{ WgSize res; res.w = w + k.w; res.h = h + k.h; return res; }
 	inline WgSize operator-(const WgSize& k) const	{ WgSize res; res.w = w - k.w; res.h = h - k.h; return res; }
 
-	inline void operator*=(double x)				{ w = (Sint32) (w*x); h = (Sint32) (h*x); }
-	inline void operator/=(double x)				{ w = (Sint32) (w/x); h = (Sint32) (h/x); }
-	inline WgSize operator*(double x) const	{ WgSize res; res.w = (Sint32) (w*x); res.h = (Sint32) (h*x); return res; }
-	inline WgSize operator/(double x) const	{ WgSize res; res.w = (Sint32) (w/x); res.h = (Sint32) (h/x); return res; }
+	inline void operator*=(double x)				{ w = (int) (w*x); h = (int) (h*x); }
+	inline void operator/=(double x)				{ w = (int) (w/x); h = (int) (h/x); }
+	inline WgSize operator*(double x) const	{ WgSize res; res.w = (int) (w*x); res.h = (int) (h*x); return res; }
+	inline WgSize operator/(double x) const	{ WgSize res; res.w = (int) (w/x); res.h = (int) (h/x); return res; }
 
-	inline void operator*=(float x)				{ w = (Sint32) (w*x); h = (Sint32) (h*x); }
-	inline void operator/=(float x)				{ w = (Sint32) (w/x); h = (Sint32) (h/x); }
-	inline WgSize operator*(float x) const	{ WgSize res; res.w = (Sint32) (w*x); res.h = (Sint32) (h*x); return res; }
-	inline WgSize operator/(float x) const	{ WgSize res; res.w = (Sint32) (w/x); res.h = (Sint32) (h/x); return res; }
+	inline void operator*=(float x)				{ w = (int) (w*x); h = (int) (h*x); }
+	inline void operator/=(float x)				{ w = (int) (w/x); h = (int) (h/x); }
+	inline WgSize operator*(float x) const	{ WgSize res; res.w = (int) (w*x); res.h = (int) (h*x); return res; }
+	inline WgSize operator/(float x) const	{ WgSize res; res.w = (int) (w/x); res.h = (int) (h/x); return res; }
 
 	inline void operator*=(int x)				{ w *= x; h *= x; }
 	inline void operator/=(int x)				{ w /= x; h /= x; }
@@ -163,7 +163,7 @@ public:
 	static inline WgSize Min( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
 	static inline WgSize Max( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
 
-	Sint32	w, h;
+	int	w, h;
 };
 
 
@@ -201,13 +201,13 @@ class WgRect
 {
 public:
 	WgRect() : x(0), y(0), w(0), h(0) {}
-	WgRect( Sint32 x, Sint32 y, Sint32 w, Sint32 h ) : x(x), y(y), w(w), h(h) {}
+	WgRect( int x, int y, int w, int h ) : x(x), y(y), w(w), h(h) {}
 	WgRect( const WgRect& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}
 	WgRect( const WgRect& r1, const WgRect& r2 );
 	WgRect( const WgCord& p1, const WgCord& p2 );
 	WgRect( const WgCord& p, const WgSize& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {}
-	WgRect( const WgCord& p, Sint32 w, Sint32 h ) : x(p.x), y(p.y), w(w), h(h) {}
-	WgRect( Sint32 x, Sint32 y, const WgSize& sz ) : x(x), y(y), w(sz.w), h(sz.h) {}
+	WgRect( const WgCord& p, int w, int h ) : x(p.x), y(p.y), w(w), h(h) {}
+	WgRect( int x, int y, const WgSize& sz ) : x(x), y(y), w(sz.w), h(sz.h) {}
 	WgRect( const WgCord& p ) : x(p.x), y(p.y), w(0), h(0) {}
 	WgRect( const WgSize& sz ) : x(0), y(0), w(sz.w), h(sz.h) {}
 
@@ -246,25 +246,25 @@ public:
 
 	bool Intersection( const WgRect& r1, const WgRect& r2 );
 
-	void GrowToContain( Sint32 x, Sint32 y );
+	void GrowToContain( int x, int y );
 	void GrowToContain( const WgRect& r );
 
-	inline bool Contains( Sint32 x, Sint32 y ) const;
+	inline bool Contains( int x, int y ) const;
 	inline bool Contains( const WgRect& _rect ) const;
 
 	inline bool IntersectsWith( const WgRect& _rect ) const;
 
-	inline Sint32 Width() const		{ return w; }
-	inline Sint32 Height() const	{ return h; }
+	inline int Width() const		{ return w; }
+	inline int Height() const	{ return h; }
 	inline WgSize Size() const		{ return WgSize(w,h); }
 	inline WgCord Pos() const		{ return WgCord(x,y); }
 
-	inline Sint32 Left() const		{ return x; }
-	inline Sint32 Top() const		{ return y; }
-	inline Sint32 Right() const		{ return x + w; }
-	inline Sint32 Bottom() const	{ return y + h; }
+	inline int Left() const		{ return x; }
+	inline int Top() const		{ return y; }
+	inline int Right() const		{ return x + w; }
+	inline int Bottom() const	{ return y + h; }
 
-	Sint32	x, y, w, h;
+	int	x, y, w, h;
 };
 
 
@@ -315,7 +315,7 @@ inline void WgSize::ConstrainTo( const WgMinMax2D& c )
 }
 
 //_____________________________________________________________________________
-inline bool WgRect::Contains( Sint32 _x, Sint32 _y ) const
+inline bool WgRect::Contains( int _x, int _y ) const
 {
 	if( _x >= x && _x < x + w && _y >= y && _y < y + h )
 		return true;

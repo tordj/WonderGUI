@@ -72,6 +72,18 @@ void WgGizmoPixmap::SetSource( const WgBlockSetPtr& pBlockSet )
 	}
 }
 
+//____ BestSize() _____________________________________________________________
+
+WgSize WgGizmoPixmap::BestSize() const
+{
+	if( m_pGfx )
+		return m_pGfx->GetSize();
+
+	return MinSize();
+}
+
+
+
 //____ OnCloneContent() _______________________________________________________
 
 void WgGizmoPixmap::OnCloneContent( const WgGizmo * _pOrg )
@@ -83,7 +95,7 @@ void WgGizmoPixmap::OnCloneContent( const WgGizmo * _pOrg )
 
 //____ OnRender() _____________________________________________________________
 
-void WgGizmoPixmap::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoPixmap::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( !m_pGfx )
 		return;
@@ -94,7 +106,7 @@ void WgGizmoPixmap::OnRender( WgGfxDevice * pDevice, const WgRect& _window, cons
 	else
 		block = m_pGfx->GetBlock(WG_MODE_DISABLED);
 		
-	pDevice->ClipBlitBlock( _clip, block, _window);
+	pDevice->ClipBlitBlock( _clip, block, _canvas);
 }
 
 //____ OnMarkTest() ___________________________________________________________

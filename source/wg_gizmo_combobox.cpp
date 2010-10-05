@@ -187,19 +187,19 @@ void WgGizmoCombobox::OnAction( WgEmitter * pEmitter, WgInput::UserAction action
 
 //____ OnRender() ________________________________________________________
 
-void WgGizmoCombobox::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoCombobox::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Render the textbox
 	if(m_pTextBoxBg)
 	{
 		const WgBlock&	block = m_pTextBoxBg->GetBlock( m_mode );
-		WgRect			dest( _window.x, _window.y, _window.w, _window.h );
+		WgRect			dest( _canvas.x, _canvas.y, _canvas.w, _canvas.h );
 		pDevice->ClipBlitBlock( _clip, block, dest );
 	}
 
 	// Print the text
 
-	WgRect r( _window );
+	WgRect r( _canvas );
 	if( m_pTextBoxBg )
 		r.Shrink( m_pTextBoxBg->GetContentBorders() );
 	

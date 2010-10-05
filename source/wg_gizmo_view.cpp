@@ -82,7 +82,7 @@ const char * WgGizmoView::GetMyType( void )
 
 bool WgGizmoView::StepUp()
 {
-	Sint32 ofs = m_viewPixOfs.y - m_stepSizeY;
+	int ofs = m_viewPixOfs.y - m_stepSizeY;
 
 	if( ofs < 0 )
 		ofs = 0;
@@ -99,7 +99,7 @@ bool WgGizmoView::StepDown()
 //____ StepLeft() _____________________________________________________________
 bool WgGizmoView::StepLeft()
 { 
-	Sint32 ofs = m_viewPixOfs.x - m_stepSizeX;
+	int ofs = m_viewPixOfs.x - m_stepSizeX;
 
 	if( ofs < 0 )
 		ofs = 0;
@@ -119,7 +119,7 @@ bool WgGizmoView::StepRight()
 
 bool WgGizmoView::JumpUp()
 {
-	Sint32 ofs = m_viewPixOfs.y - (Uint32)(ViewPixelLenY() * m_jumpSizeY);
+	int ofs = m_viewPixOfs.y - (Uint32)(ViewPixelLenY() * m_jumpSizeY);
 	if( ofs < 0 )
 		ofs = 0;
 
@@ -137,7 +137,7 @@ bool WgGizmoView::JumpDown()
 
 bool WgGizmoView::JumpLeft()
 {
-	Sint32 ofs = m_viewPixOfs.x - (Uint32)(ViewPixelLenX() * m_jumpSizeX);
+	int ofs = m_viewPixOfs.x - (Uint32)(ViewPixelLenX() * m_jumpSizeX);
 	if( ofs < 0 )
 		ofs = 0;
 
@@ -498,7 +498,7 @@ bool WgGizmoView::SetViewOfsY( float y )
 
 //____ SetContent() ___________________________________________________________
 
-void WgGizmoView::SetContent( WgGizmo * pContent )
+bool WgGizmoView::SetContent( WgGizmo * pContent )
 {
 	// Delete previous hook and gizmo by explicitly calling its destructor.
 	// Placement new for a new hook holding this gizmo.
@@ -545,6 +545,7 @@ bool WgGizmoView::SetScrollbarX( WgGizmoHDragbar* pScrollbar )
 	}
 
 	UpdateElementGeometry( Size(), m_contentSize );
+	pScrollbar->SetSlider( ViewOfsX(), ViewLenX() );
 	RequestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 }
@@ -580,6 +581,7 @@ bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
 	}
 
 	UpdateElementGeometry( Size(), m_contentSize );
+	pScrollbar->SetSlider( ViewOfsY(), ViewLenY() );
 	RequestRender( m_elements[YDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 }
@@ -598,7 +600,7 @@ WgGizmo* WgGizmoView::ReleaseContent()
 WgGizmoHDragbar* WgGizmoView::ReleaseScrollbarX()
 {
 	WgGizmoHDragbar * p = (WgGizmoHDragbar*) m_elements[XDRAG].ReleaseGizmo();
-	UpdateElementGeometry( Size(), WgSize(0,0) );
+	UpdateElementGeometry( Size(), m_contentSize );
 	return p;
 }
 
@@ -607,7 +609,7 @@ WgGizmoHDragbar* WgGizmoView::ReleaseScrollbarX()
 WgGizmoVDragbar* WgGizmoView::ReleaseScrollbarY()
 {
 	WgGizmoVDragbar * p = (WgGizmoVDragbar*) m_elements[YDRAG].ReleaseGizmo();
-	UpdateElementGeometry( Size(), WgSize(0,0) );
+	UpdateElementGeometry( Size(), m_contentSize );
 	return p;
 }
 
@@ -791,7 +793,7 @@ void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& new
 			y = 0;
 		if( y != m_viewPixOfs.y )
 		{
-			bNewOfsX = true;
+			bNewOfsY = true;
 			m_viewPixOfs.y = y;
 		}
 	}
@@ -853,7 +855,6 @@ void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& new
 
 		if( bNewOfsX || bNewWidth || bNewContentWidth )
 			pEmitter->Emit( ViewPosSizeX(), ViewOfsX(), ViewLenX() );
-
 		if( bNewOfsX || bNewWidth )
 			pEmitter->Emit( ViewPosSizePixelX(), m_viewPixOfs.x, ViewPixelLenX() );
 
@@ -886,19 +887,41 @@ void WgGizmoView::OnNewSize( const WgSize& size )
 
 //____ OnRender() _____________________________________________________________
 
-void WgGizmoView::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoView::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( m_elements[WINDOW].Gizmo() )
-		m_elements[WINDOW].DoRender( pDevice, m_elements[WINDOW].m_geo + _window.Pos(), _clip, _layer );
-
+	{
+		WgRect window = m_elements[WINDOW].m_geo + _canvas.Pos();
+		WgRect canvas( window.Pos() - m_viewPixOfs, m_contentSize );
+		WgRect clip( window, _clip );
+		
+		if( clip.w > 0 && clip.h > 0 )
+			m_elements[WINDOW].DoRender( pDevice, canvas, window, clip, _layer );
+	}
 	if( m_elements[XDRAG].m_bShow )
-		m_elements[XDRAG].DoRender( pDevice, m_elements[XDRAG].m_geo + _window.Pos(), _clip, _layer );
+	{
+		WgRect window = m_elements[XDRAG].m_geo + _canvas.Pos();
+		WgRect clip( window, _clip );
 
+		if( clip.w > 0 && clip.h > 0 )
+			m_elements[XDRAG].DoRender( pDevice, window, window, clip, _layer );
+	}
 	if( m_elements[YDRAG].m_bShow )
-		m_elements[YDRAG].DoRender( pDevice, m_elements[YDRAG].m_geo + _window.Pos(), _clip, _layer );
+	{
+		WgRect window = m_elements[YDRAG].m_geo + _canvas.Pos();
+		WgRect clip( window, _clip );
+
+		if( clip.w > 0 && clip.h > 0 )
+			m_elements[YDRAG].DoRender( pDevice, window, window, clip, _layer );
+	}
 
 	WgMode mode = m_bEnabled?WG_MODE_NORMAL:WG_MODE_DISABLED;
-	pDevice->BlitBlock( m_pFillerBlocks->GetBlock( mode, m_geoFiller ), m_geoFiller + _window.Pos() );
+	if( m_pFillerBlocks && m_geoFiller.w != 0 && m_geoFiller.h != 0 )
+	{
+		WgRect window = m_geoFiller + _canvas.Pos();
+		WgRect clip( window, _clip );
+		pDevice->ClipBlitBlock( clip, m_pFillerBlocks->GetBlock( mode, m_geoFiller ), window );
+	}
 }
 
 
@@ -963,11 +986,13 @@ bool WgGizmoView::SetAutoscroll( bool bAutoX, bool bAutoY )
 //____ ViewHook::Constructors _________________________________________________
 
 WgGizmoView::ViewHook::ViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView, WgGizmoCollection * pCollection ) 
-: WgGizmoHook( pHDragbar, pCollection ), m_type(WgGizmoView::XDRAG), m_pView(pView), m_bShow(false) {}
-WgGizmoView::ViewHook::ViewHook( WgGizmoVDragbar * pHDragbar, WgGizmoView * pView, WgGizmoCollection * pCollection ) 
-			: WgGizmoHook( pHDragbar, pCollection ), m_type(WgGizmoView::YDRAG), m_pView(pView), m_bShow(false) {}
+: WgGizmoHook( pHDragbar, pCollection ), m_type(WgGizmoView::XDRAG), m_pView(pView), m_bShow(false) { if( m_pGizmo ) DoSetGizmo(); }
+
+WgGizmoView::ViewHook::ViewHook( WgGizmoVDragbar * pVDragbar, WgGizmoView * pView, WgGizmoCollection * pCollection ) 
+			: WgGizmoHook( pVDragbar, pCollection ), m_type(WgGizmoView::YDRAG), m_pView(pView), m_bShow(false) { if( m_pGizmo ) DoSetGizmo(); }
+
 WgGizmoView::ViewHook::ViewHook( WgGizmo * pContent, WgGizmoView * pView, WgGizmoCollection * pCollection ) 
-			: WgGizmoHook( pContent, pCollection ), m_type(WgGizmoView::WINDOW), m_pView(pView), m_bShow(true) {}
+			: WgGizmoHook( pContent, pCollection ), m_type(WgGizmoView::WINDOW), m_pView(pView), m_bShow(true) { if( m_pGizmo ) DoSetGizmo(); }
 
 //____ ViewHook::Destructor ___________________________________________________
 
@@ -1050,7 +1075,7 @@ WgWidget* WgGizmoView::ViewHook::GetRoot()
 
 //____ ViewHook::ReleaseGizmo() _______________________________________________
 
-WgGizmo* WgGizmoView::ReleaseGizmo()
+WgGizmo* WgGizmoView::ViewHook::ReleaseGizmo()
 {
 	WgGizmo * p = m_pGizmo;
 	m_pGizmo = 0;

@@ -220,7 +220,7 @@ void WgGizmoEditvalue::OnUpdate( const WgUpdateInfo& _updateInfo )
 
 //____ OnRender() _____________________________________________________________
 
-void WgGizmoEditvalue::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoEditvalue::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( m_text.getFont() == 0 )
 		return;
@@ -255,9 +255,9 @@ void WgGizmoEditvalue::OnRender( WgGfxDevice * pDevice, const WgRect& _window, c
 	// Print the text
 
 	if( m_pMyCursor )
-		pDevice->PrintTextWithCursor( _clip, &m_text, *m_pMyCursor, _window );
+		pDevice->PrintTextWithCursor( _clip, &m_text, *m_pMyCursor, _canvas );
 	else
-		pDevice->PrintText( _clip, &m_text, _window );
+		pDevice->PrintText( _clip, &m_text, _canvas );
 }
 
 //____ OnAction() _____________________________________________________________

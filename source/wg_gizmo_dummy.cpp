@@ -59,7 +59,7 @@ void WgGizmoDummy::OnCloneContent( const WgGizmo * _pOrg )
 
 //____ OnRender() _____________________________________________________________
 
-void WgGizmoDummy::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoDummy::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 }
 

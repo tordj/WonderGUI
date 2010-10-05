@@ -374,16 +374,10 @@ void WgCursorInstance::gotoPixel( Sint32 x, Sint32 y )
 	if( m_line == line )
 		pCursorOnLine = this;
 
-	Uint32 column;
 	if(line == m_pText->nbSoftLines())
-	{
 		line--;
-		column = m_pText->getSoftLine(line)->nChars;
-	}
-	else
-	{
-		column = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getProperties(), m_pText->mode(), x, m_pText->getSoftLineText(line), pCursorOnLine );
-	}
+
+	Uint32 column = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->getProperties(), m_pText->mode(), x, m_pText->getSoftLineText(line), pCursorOnLine );
 
 	m_pText->posSoft2Hard( line, column );
 
@@ -399,7 +393,7 @@ bool WgCursorInstance::putChar( Uint16 character )
 {
 	m_wantedOfsX = -1;
 
-	bool ret;
+	int ret;
 
 	Uint32 line = m_line;
 	Uint32 column = m_column;
@@ -424,7 +418,7 @@ bool WgCursorInstance::putChar( Uint16 character )
 
 	UpdateLocation(line, column);
 
-	return ret;
+	return ret==1?true:false;
 }
 
 //____ putText() ______________________________________________________________
@@ -491,8 +485,6 @@ bool WgCursorInstance::delPrevChar()
 	int column= m_column;
 	int line = m_line;
 
-	bool bRet;
-
 	if( column == 0 )
 	{
 		if( line == 0 )
@@ -505,9 +497,9 @@ bool WgCursorInstance::delPrevChar()
 		column--;
 
 
-	bRet = m_pText->deleteChar( m_pText->LineColToOffset( m_line, m_column ) -1 );
+	int ret = m_pText->deleteChar( m_pText->LineColToOffset( m_line, m_column ) -1 );
 	UpdateLocation(line, column);
-	return bRet;
+	return ret==1?true:false;
 }
 
 //____ delNextChar() __________________________________________________________
@@ -517,7 +509,12 @@ bool WgCursorInstance::delNextChar()
 	m_wantedOfsX = -1;
 
 	int ofs = m_pText->LineColToOffset( m_line, m_column );
-	return m_pText->deleteChar( ofs );
+	int nDel = m_pText->deleteChar( ofs );
+
+	if( nDel )
+		return true;
+	else
+		return false;
 }
 
 //____ ofsX() __________________________________________________________________

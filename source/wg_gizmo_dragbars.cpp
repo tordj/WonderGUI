@@ -445,9 +445,9 @@ void WgGizmoDragbar::RenderButton( WgGfxDevice * pDevice, const WgRect& _clip, W
 
 //____ OnRender() ________________________________________________________
 
-void WgGizmoDragbar::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoDragbar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
-	WgRect	dest = _window;
+	WgRect	dest = _canvas;
 
 	// Render header buttons
 

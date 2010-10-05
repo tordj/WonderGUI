@@ -37,10 +37,7 @@ WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_bEnabled(true), m_bOpa
 
 WgGizmo::~WgGizmo()
 {
-	delete m_pHook;
-	m_pHook = 0;
 	delete m_pSkinNode;
-	m_pSkinNode = 0;
 }
 
 
@@ -161,14 +158,14 @@ WgCord WgGizmo::Abs2local( const WgCord& cord ) const
 
 //____ HeightForWidth() _______________________________________________________
 
-Uint32 WgGizmo::HeightForWidth( Uint32 width ) const
+int WgGizmo::HeightForWidth( int width ) const
 {
 	return 0;		// No recommendation.
 }
 
 //____ WidthForHeight() _______________________________________________________
 
-Uint32 WgGizmo::WidthForHeight( Uint32 height ) const
+int WgGizmo::WidthForHeight( int height ) const
 {
 	return 0;		// No recommendation.
 }

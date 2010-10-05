@@ -1994,7 +1994,7 @@ Uint32 WgTextTool::getTextUTF8( const Uint16 * pSrc, char * pDest, Uint32 maxByt
 
 //____ getTextUTF8() __________________________________________________________
 
-Uint32 WgTextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, Uint32 maxChars )
+Uint32 WgTextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars )
 {
 	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
 	if( !pCP )
@@ -2059,7 +2059,7 @@ Uint32 WgTextTool::getTextSizeUTF8( const Uint16* pSrc, Uint32 len )
 
 //____ getTextSizeUTF8() ____________________________________________________________
 
-Uint32 WgTextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, Uint32 maxChars )
+Uint32 WgTextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars )
 {
 	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
 	if( !pCP )

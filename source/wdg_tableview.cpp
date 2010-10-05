@@ -186,31 +186,36 @@ Uint32 WgTableRow::AddItem( WgItem * pItem )
 	return WgItemRow::AddItem(pItem);
 }
 
-bool WgTableRow::Select()
+bool WgTableRow::Select( bool bSelectItems )
 {
 	if( !WgItemRow::Select() )
 		return false;
 
-	WgItem * pCell = GetFirstItem();
-	while( pCell )
+	if( bSelectItems )
 	{
-		pCell->Select();
-		pCell = pCell->GetNext();
+		WgItem * pCell = GetFirstItem();
+		while( pCell )
+		{
+			pCell->Select();
+			pCell = pCell->GetNext();
+		}
 	}
-
 	return true;
 }
 
 
-void WgTableRow::Unselect()
+void WgTableRow::Unselect( bool bUnselectItems )
 {
 	WgItemRow::Unselect();
 
-	WgItem * pCell = GetFirstItem();
-	while( pCell )
+	if( bUnselectItems )
 	{
-		pCell->Unselect();
-		pCell = pCell->GetNext();
+		WgItem * pCell = GetFirstItem();
+		while( pCell )
+		{
+			pCell->Unselect();
+			pCell = pCell->GetNext();
+		}
 	}
 }
 
@@ -1041,7 +1046,7 @@ int Wdg_TableView::GetMarkedColumn( Uint32 x, Uint32& saveXOfs )
 				return col;
 			}
 
-			x -= scaledW;
+			x -= scaledW - 1;
 		}
 	}
 
@@ -1408,7 +1413,7 @@ WgTableColumn *Wdg_TableView::GetHeaderColumnAt(int x, int y)
 				int scaledW = (int)(m_pColumns[col].m_pixelWidth * scale);
 				if( xOfs < scaledW || col == m_nColumns-1 )	// Last column header stretches to end of tableview...
 					return &m_pColumns[col];
-				xOfs -= scaledW;
+				xOfs -= scaledW - 1;
 			}
 		}
 	}
@@ -1461,7 +1466,7 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 						}
 						break;
 					}
-					xOfs -= scaledW;
+					xOfs -= scaledW - 1;
 				}
 				break;
 			}
@@ -1538,6 +1543,8 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 		case WgInput::POINTER_OVER:
 		{
 			WgTableColumn *col = GetHeaderColumnAt(x, y);
+			if( col && col->IsDisabled() )
+				col = NULL;
 			if( m_pMarkedHeader != col )
 			{
 				m_pMarkedHeader = col;

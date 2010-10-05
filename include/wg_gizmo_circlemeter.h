@@ -76,7 +76,7 @@ class WgGizmoCirclemeter : public WgGizmo, public Wg_Interface_ValueHolder
 	protected:
 
 		void	OnCloneContent( const WgGizmo * _pOrg );
-		void	OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+		void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 		void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 		bool	OnMarkTest( const WgCord& ofs );
 		void	OnEnable();

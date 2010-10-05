@@ -74,8 +74,8 @@ public:
 
 protected:
 /*
-	virtual Uint32	HeightForWidth( Uint32 width );
-	virtual Uint32	WidthForHeight( Uint32 height );
+	virtual int		HeightForWidth( int width );
+	virtual int		WidthForHeight( int height );
 
 	virtual WgSize	MinSize();
 	virtual WgSize	BestSize();
@@ -84,7 +84,7 @@ protected:
 
 
 	virtual void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	virtual void	OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	virtual void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			OnRefresh();
 	virtual void	OnCloneContent( const WgGizmo * _pOrg );
 	bool			OnMarkTest( const WgCord& ofs );

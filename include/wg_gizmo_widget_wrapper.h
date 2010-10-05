@@ -137,7 +137,7 @@ public:
 	Wdg_Widget( const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget(geometry, pParent) {  m_pHook = new WgWidgetHook(this,this,this); T::SetHook(m_pHook); }
 	Wdg_Widget( WgOrigo origo, const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget( origo, geometry, pParent ) {  m_pHook = new WgWidgetHook(this,this,this); T::SetHook(m_pHook); }
 	Wdg_Widget( WgOrigo upperLeft, Sint32 x1, Sint32 y1, WgOrigo lowerRight, Sint32 x2, Sint32 y2, WgWidget * pParent = 0 ) : WgWidget(upperLeft,x1, y1, lowerRight, x2, y2, pParent) {  m_pHook = new WgWidgetHook(this,this,this); T::SetHook(m_pHook); }
-	virtual ~Wdg_Widget() { };
+	virtual ~Wdg_Widget() { T::m_pHook = 0; delete m_pHook; };
 
 	virtual const char * Type() const { return T::Type(); }
 	static const char * GetMyType() { return T::GetMyType(); }
@@ -247,7 +247,7 @@ private:
 
 	void DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer ) 
 	{ 
-		T::OnRender( WgGfx::GetDevice(), _window, _clip, _layer ); 
+		T::OnRender( WgGfx::GetDevice(), _window, _window, _clip, _layer ); 
 	}
 
 	void DoMyOwnActionRespond( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )

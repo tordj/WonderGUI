@@ -951,16 +951,17 @@ void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, 
 	{
 		r.x = dstPos.x + xs;
 		r.y = dstPos.y + iSelStartLine * lineH;
-		r.w = pText->width() - xs;
+		r.w = pText->getSoftLineSelectionWidth(iSelStartLine) - xs;
 		r.h = lineH;
 		ClipFill(clip, r, col);
 
-		if(iSelEndLine - iSelStartLine >= 2)
+		++iSelStartLine;
+		for(; iSelStartLine < iSelEndLine; ++iSelStartLine)
 		{
 			r.x = dstPos.x;
-			r.y = r.y + r.h;
-			r.w = pText->width();
-			r.h = (iSelEndLine - iSelStartLine - 1) * lineH;
+			r.y += lineH;
+			r.w = pText->getSoftLineSelectionWidth(iSelStartLine);
+			r.h = lineH;
 			ClipFill(clip, r, col);
 		}
 

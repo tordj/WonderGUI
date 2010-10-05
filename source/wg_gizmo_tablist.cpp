@@ -861,7 +861,7 @@ float WgGizmoTablist::CalcTabScaleFactor()
 
 //____ OnRender() ________________________________________________________
 
-void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& window, const WgRect& clip, Uint8 _layer )
+void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& clip, Uint8 _layer )
 {
 	Uint32	selectedX	= 0xFFFFFFFF;			// X-offset for selected tab.
 
@@ -872,7 +872,7 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& window, cons
 	// Render all tabs to the left of the selected tab first
 
 
-	Sint32 xOfs = (Sint32)window.x;
+	Sint32 xOfs = (Sint32)_canvas.x;
 	int width;
 	WgTab * pTab = m_tabs.getFirst();
 	while( pTab )
@@ -880,11 +880,11 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& window, cons
 		if(pTab->m_bVisible)
 		{
 			width = (int)(pTab->m_width*scaleFactor + 0.5f);
-			// expand last tab to window edge
+			// expand last tab to canvas edge
 			if(m_tabWidthMode == TabWidthModeExpand && pTab == GetLastVisibleTab())
-				width = window.x + window.w - xOfs;
+				width = _canvas.x + _canvas.w - xOfs;
 
-			WgRect r( xOfs, window.y, width, window.h );
+			WgRect r( xOfs, _canvas.y, width, _canvas.h );
 
 //			Uint32 yOfs = window.y + window.h - GetTabSource(pTab).m_srcH;
 
@@ -918,7 +918,7 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& window, cons
 				}
 
 
-				WgRect r( xOfs, window.y, width, window.h );
+				WgRect r( xOfs, _canvas.y, width, _canvas.h );
 
 				RenderTab( pDevice, *pTab, r, clip );
 				if( pTab == m_pTabSelected )

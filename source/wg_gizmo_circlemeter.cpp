@@ -260,7 +260,7 @@ void WgGizmoCirclemeter::OnAction( WgEmitter * pEmitter, WgInput::UserAction act
 
 //____ OnRender() ________________________________________________________
 
-void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 
 	// Render the background
@@ -282,7 +282,7 @@ void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _window,
 
 	if( m_pSurfBg )
 	{
-		pDevice->ClipBlit( _clip, m_pSurfBg, WgRect(pTopLeft->x, pTopLeft->y, _window.w, _window.h), _window.x, _window.y );
+		pDevice->ClipBlit( _clip, m_pSurfBg, WgRect(pTopLeft->x, pTopLeft->y, _canvas.w, _canvas.h), _canvas.x, _canvas.y );
 	}
 
 	// Render the slices
@@ -290,8 +290,8 @@ void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _window,
 	float		frac		= FractionalValue();
 	int			slice		= (int)(frac*4);								// What slice is fractional.
 	int			block		= (int)(((frac*4)-slice)*m_nBlocksPerSlice);
-	int			sliceWidth	= _window.w / 2;
-	int			sliceHeight	= _window.w / 2;
+	int			sliceWidth	= _canvas.w / 2;
+	int			sliceHeight	= _canvas.w / 2;
 	WgUCord16	ofs;
 
 
@@ -323,14 +323,14 @@ void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _window,
 
 		ofs.x += xOfs*m_slicePitch;
 
-		pDevice->ClipBlit(_clip,m_pSurfSlices, WgRect(ofs.x, ofs.y, sliceWidth, sliceHeight), _window.x + slicePlacement[i][0]*sliceWidth, _window.y + slicePlacement[i][1]*sliceHeight );
+		pDevice->ClipBlit(_clip,m_pSurfSlices, WgRect(ofs.x, ofs.y, sliceWidth, sliceHeight), _canvas.x + slicePlacement[i][0]*sliceWidth, _canvas.y + slicePlacement[i][1]*sliceHeight );
 	}
 
 	// Render the foreground (if any)
 
 	if( m_pSurfFg )
 	{
-		pDevice->ClipBlit( _clip, m_pSurfFg, m_srcFg, _window.x + m_destOfsFg.x, _window.y + m_destOfsFg.y );
+		pDevice->ClipBlit( _clip, m_pSurfFg, m_srcFg, _canvas.x + m_destOfsFg.x, _canvas.y + m_destOfsFg.y );
 	}
 
 
@@ -365,7 +365,7 @@ void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _window,
 
 		// Print the text
 
-		WgRect	textArea = _window;
+		WgRect	textArea = _canvas;
 			textArea.Shrink(m_numberBorders);
 
 		m_text.setMode(style);

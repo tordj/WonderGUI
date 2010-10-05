@@ -61,7 +61,11 @@ public:
 	virtual WgWidget*	GetRoot() = 0;			// Should in the future not return a widget, but a gizmo.
 
 protected:
+	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
+
 	WgGizmoHook( WgGizmo * pGizmo, WgGizmoCollection * pCollection ) : m_pGizmo(pGizmo), m_pCollection(pCollection) {}
+
+	void			RelinkGizmo();				// Make sure Gizmo links us. Call when hook has been relocated.
 
 	virtual void	RequestRender() = 0;
 	virtual void	RequestRender( const WgRect& rect ) = 0;
@@ -70,7 +74,9 @@ protected:
 	virtual bool	RequestFocus() = 0;
 	virtual bool	ReleaseFocus() = 0;
 
-	inline void		DoRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void			DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void			DoSetNewSize( const WgSize& size );
+	void			DoSetGizmo();
 
 	WgGizmo *			m_pGizmo;
 	WgGizmoCollection*	m_pCollection;

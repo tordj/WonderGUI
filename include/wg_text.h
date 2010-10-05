@@ -69,7 +69,12 @@ struct WgTextLine
 {
 	Uint32	nChars;			// Number of characters on this line (not including break).
 	Uint32	ofs;			// Offset in buffer for line.
-
+/*
+	int		width;			// Width in pixels of line
+	short	height;			// Height in pixels of line
+	short	lineSpacing;	// Spacing from this line to next in pixels.
+	short	baseline;		// Offset in pixels to the baseline.
+*/
 	// Following characters can lead to a soft break:
 	//
 	// Whitespace, tab and BREAK_PERMITTED_HERE: Gives no hyphen.
@@ -132,6 +137,7 @@ public:
 	Uint32				getSoftLineWidth( Uint32 line ) const;
 	Uint32				getSoftLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol = 0xFFFFFFFF ) const;
 	Uint32				nbSoftLines() const;
+	Uint32				getSoftLineSelectionWidth( Uint32 line ) const;
 
 	void				posSoft2Hard( Uint32 &line, Uint32 &col ) const;
 	void				posHard2Soft( Uint32 &line, Uint32 &col ) const;
@@ -196,6 +202,8 @@ public:
 
 	Uint32				width() const;
 	Uint32				height() const;
+
+	int					heightForWidth( int width ) const;
 
 	Uint32				softLineHeight( Uint32 line );
 	Uint32				softLineSpacing( Uint32 line );

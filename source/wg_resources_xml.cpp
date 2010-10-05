@@ -2535,7 +2535,7 @@ int WgBlockSetRes::StateFromRect(const WgRect& src, const WgRect& stateRect)
 
 void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
-	ASSERT(xmlNode.HasAttribute("lego") || xmlNode.HasAttribute("rect") || (xmlNode.HasAttribute("w") && xmlNode.HasAttribute("h")), "missing rectangle in <blockset>");
+	ASSERT(xmlNode.HasAttribute("lego") || xmlNode.HasAttribute("surface"), "no surface or lego tag in <blockset>");
 
 	std::string id = xmlNode["id"];
 	if(id.size() == 0)
@@ -2612,6 +2612,7 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		{
 			rect[0] = WgRect(0, 0, pSurface->width(), pSurface->height());
 		}
+
 
 		int nBlocks = WgUtil::ToSint32(xmlNode["blocks"]);
 		int margin = WgUtil::ToSint32(xmlNode["margin"], 2);
@@ -5167,8 +5168,8 @@ void Wdg_Text_Res::Serialize(WgResourceSerializerXML& s)
 	WgWidgetRes::Serialize(s);
 	WgEditTextRes::Serialize(this, xmlNode, s, widget);
 	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
-	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), (Uint16)0);
-	WriteDiffAttr(s, xmlNode, "max_rows", widget->MaxLines(), (Uint16)0);
+	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), 0);
+	WriteDiffAttr(s, xmlNode, "max_rows", widget->MaxLines(), 0);
 	s.EndTag();
 }
 

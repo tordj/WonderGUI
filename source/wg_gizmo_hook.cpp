@@ -26,7 +26,28 @@
 
 //____ DoRender() _____________________________________________________________
 
-void WgGizmoHook::DoRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) 
+void WgGizmoHook::DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) 
 { 
-	m_pGizmo->OnRender( pDevice, _window, _clip, _layer ); 
+	m_pGizmo->OnRender( pDevice, _canvas, _window, _clip, _layer );
+}
+
+//____ DoSetNewSize() _________________________________________________________
+
+void WgGizmoHook::DoSetNewSize( const WgSize& size )
+{
+	m_pGizmo->OnNewSize( size );
+}
+
+//____ DoSetGizmo() ___________________________________________________________
+
+void WgGizmoHook::DoSetGizmo()
+{
+	m_pGizmo->SetHook(this);
+}
+
+//____ RelinkGizmo() __________________________________________________________
+
+void WgGizmoHook::RelinkGizmo()
+{
+	m_pGizmo->m_pHook = this;
 }

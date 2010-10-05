@@ -101,8 +101,8 @@ public:
 	Sint64	Id64() const	{ return WgItem::Id64(); };
 	Uint32	Height() const { return m_height; }
 
-	bool Select();
-	void Unselect();
+	bool Select( bool bSelectItems = true );
+	void Unselect( bool bUnselectItems = true );
 	inline bool IsSelected() const { if( m_mode == WG_MODE_SELECTED ) return true; return false; }
 
 	inline	WgTableRow* GetNext() const	{ return (WgTableRow*)WgItemRow::getNext(); };

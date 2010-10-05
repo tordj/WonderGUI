@@ -19,33 +19,25 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_GIZMO_DUMMY_DOT_H
-#define WG_GIZMO_DUMMY_DOT_H
 
+#ifndef	WDG_GIZMOVIEW_DOT_H
+#define	WDG_GIZMOVIEW_DOT_H
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_GIZMO_WIDGET_WRAPPER_DOT_H
+#	include <wg_gizmo_widget_wrapper.h>
+#endif
+
+#ifndef WG_GIZMO_VIEW_DOT_H
+#	include <wg_gizmo_view.h>
 #endif
 
 
-//____ WgGizmoDummy ____________________________________________________________
-
-class WgGizmoDummy : public WgGizmo
+class Wdg_GizmoView : public Wdg_Widget<WgGizmoView>
 {
 public:
-	WgGizmoDummy();
-	virtual ~WgGizmoDummy();
-
-	virtual const char *Type( void ) const;
-	static const char * GetMyType();
-
-protected:
-
-	void	OnCloneContent( const WgGizmo * _pOrg );
-	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool	OnMarkTest( const WgCord& ofs );
+	WIDGET_GIZMO_CONSTRUCTORS(Wdg_GizmoView,WgGizmoView);
+	virtual ~Wdg_GizmoView() {};
 
 };
 
-
-#endif //WG_GIZMO_DUMMY_DOT_H
+#endif //	WDG_GIZMOVIEW_DOT_H

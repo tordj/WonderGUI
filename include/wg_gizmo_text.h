@@ -56,11 +56,11 @@ public:
 
 	//____ Methods __________________________________________
 
-	inline void SetMaxCharacters( Uint16 characters ) { m_maxCharacters = characters; }
-	inline Uint16 MaxCharacters() { return m_maxCharacters; }
+	inline void		SetMaxCharacters( int characters ) { m_maxCharacters = characters; }
+	inline int		MaxCharacters() { return m_maxCharacters; }
 
-	inline void SetMaxLines( Uint16 nLines ) { m_maxLines = nLines; }
-	inline Uint16 MaxLines() { return m_maxLines; }
+	inline void		SetMaxLines( int nLines ) { m_maxLines = nLines; }
+	inline int		MaxLines() { return m_maxLines; }
 
 	Uint32	InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
@@ -76,13 +76,17 @@ public:
 	virtual bool TempIsInputField() const { return IsEditable(); }
 	virtual Wg_Interface_TextHolder* TempGetText() { return this; }
 
+
+	int		HeightForWidth( int width ) const;
+	WgSize	BestSize() const;
+
 protected:
 
 	bool	IsEditable() const { return m_inputMode == Editable; }
 	bool	IsSelectable() const { return m_inputMode != Static; }
 
 	void	OnCloneContent( const WgGizmo * _pOrg );
-	void	OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	OnNewSize( const WgSize& size );
 	void	OnRefresh();
 	void	OnUpdate( const WgUpdateInfo& _updateInfo );
@@ -100,8 +104,8 @@ private:
 
 	WgText				m_text;
 	bool				m_bHasFocus;
-	Uint16				m_maxCharacters;
-	Uint16				m_maxLines;
+	int					m_maxCharacters;
+	int					m_maxLines;
 	InputMode			m_inputMode;
 };
 

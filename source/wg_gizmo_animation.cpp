@@ -289,15 +289,15 @@ void WgGizmoAnimation::OnUpdate( const WgUpdateInfo& _updateInfo )
 
 //____ OnRender() ________________________________________________________
 
-void WgGizmoAnimation::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoAnimation::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( !m_bEnabled && m_pDisableSurf )
 	{
-   		pDevice->ClipTileBlit( _clip, m_pDisableSurf, m_dis_src, _window );
+   		pDevice->ClipTileBlit( _clip, m_pDisableSurf, m_dis_src, _canvas );
 	}
 	else if( m_pSurf != 0 )
 	{
-		pDevice->ClipTileBlit( _clip, m_pSurf, m_src, _window );
+		pDevice->ClipTileBlit( _clip, m_pSurf, m_src, _canvas );
 	}
 }
 

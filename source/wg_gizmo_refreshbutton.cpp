@@ -222,7 +222,7 @@ void WgGizmoRefreshButton::OnUpdate( const WgUpdateInfo& _updateInfo )
 
 //____ OnRender() _____________________________________________________________
 
-void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Render background
 
@@ -235,16 +235,16 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _windo
 		{
 			case BUTTON_CENTERED:
 			{
-				int dx = (_window.w - src.w)/2;
-				int dy = (_window.h - src.h)/2;
+				int dx = (_canvas.w - src.w)/2;
+				int dy = (_canvas.h - src.h)/2;
 
-				pDevice->ClipBlit( _clip, pFrame->pSurf, src, _window.x + dx, _window.y + dy );
+				pDevice->ClipBlit( _clip, pFrame->pSurf, src, _canvas.x + dx, _canvas.y + dy );
 			}
 			break;
 
 			case BUTTON_STRETCHED:
 			{
-				pDevice->ClipStretchBlit( _clip, pFrame->pSurf, src, _window );
+				pDevice->ClipStretchBlit( _clip, pFrame->pSurf, src, _canvas );
 			}
 			break;
 
@@ -256,7 +256,7 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _windo
 	}
 	else if( m_pBgGfx )
 	{
-		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode), _window );
+		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode), _canvas );
 	}
 
 	// Get displacement offset
@@ -273,22 +273,22 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _windo
 		int w = m_pRefreshAnim->width();;
 		int h = m_pRefreshAnim->height();
 
-		int dx = (int)( m_iconOrigo.anchorX() * _window.w - m_iconOrigo.hotspotX() * w + m_iconOfs.x + xOfs );
-		int dy = (int)( m_iconOrigo.anchorY() * _window.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
+		int dx = (int)( m_iconOrigo.anchorX() * _canvas.w - m_iconOrigo.hotspotX() * w + m_iconOfs.x + xOfs );
+		int dy = (int)( m_iconOrigo.anchorY() * _canvas.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
 
 		WgGfxFrame * pFrame = m_pRefreshAnim->getFrame( m_animTimer );
-		//pDevice->ClipBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), _window.x + dx, _window.y + dy );
-		pDevice->ClipStretchBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), _window );
+		//pDevice->ClipBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), _canvas.x + dx, _canvas.y + dy );
+		pDevice->ClipStretchBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), _canvas );
 	}
 	else if( m_pIconGfx )
 	{
 		int w = m_pIconGfx->GetWidth();
 		int h = m_pIconGfx->GetHeight();
 
-		int dx = (int)( m_iconOrigo.anchorX() * _window.w - m_iconOrigo.hotspotX() * w + m_iconOfs.x + xOfs );
-		int dy = (int)( m_iconOrigo.anchorY() * _window.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
+		int dx = (int)( m_iconOrigo.anchorX() * _canvas.w - m_iconOrigo.hotspotX() * w + m_iconOfs.x + xOfs );
+		int dy = (int)( m_iconOrigo.anchorY() * _canvas.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
 
-		WgRect dest( _window.x + dx, _window.y + dy, w, h );
+		WgRect dest( _canvas.x + dx, _canvas.y + dy, w, h );
 		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode), dest );
 	}
 
@@ -305,7 +305,7 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _windo
 	{
 		pText->setMode(m_mode);
 
-		WgRect printWindow( _window.x + xOfs, _window.y + yOfs, _window.w, _window.h );
+		WgRect printWindow( _canvas.x + xOfs, _canvas.y + yOfs, _canvas.w, _canvas.h );
 		if( m_pBgGfx )
 			printWindow.Shrink( m_pBgGfx->GetContentBorders() );
 		pDevice->PrintText( _clip, pText, printWindow );

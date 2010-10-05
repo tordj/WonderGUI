@@ -127,7 +127,7 @@ protected:
 
  	void Render( const WgRect& _window, const WgRect& _clip )
 	{
-		T::OnRender( WgGfx::GetDevice(), _window, _clip, 0 );
+		T::OnRender( WgGfx::GetDevice(), _window, _window, _clip, 0 );
 	}
 
 	void Refresh( void )

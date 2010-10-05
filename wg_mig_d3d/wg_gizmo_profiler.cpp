@@ -54,7 +54,7 @@ void WgGizmoProfiler::SetTextProperties( WgTextPropPtr& pProp )
 
 //____ OnRender() ________________________________________________________
 
-void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	//____
 
@@ -64,7 +64,7 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 	char *	pTemp;
 	pTemp = temp;
 
-	WgPen pen( pDevice, _window, _clip );
+	WgPen pen( pDevice, _canvas, _clip );
 	pen.SetTextProp( m_pProp );
 	
 	int height = pen.GetLineSpacing();
@@ -146,7 +146,7 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 		float pixelsPerMs = Size().w/fTimeScale;
 		Uint32 width = Uint32( fTime*pixelsPerMs );
 
-		WgRect bar(_window.x, _window.y + height*i, width, height );
+		WgRect bar(_canvas.x, _canvas.y + height*i, width, height );
 
 		pDevice->ClipFill( _clip, bar, aColors[i%6] );
 
@@ -168,7 +168,7 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 		pTemp = temp;
 		sprintf( pTemp, "%.4f ms", fLine );
 		WgTextTool::readString( (const char *&)pTemp, temp2, 39 );
-		int x = _window.x + int(Size().w*fLine/fTimeScale);
+		int x = _canvas.x + int(Size().w*fLine/fTimeScale);
 		pDevice->PrintLine( &pen, m_pProp, WG_MODE_NORMAL, temp2 );
 		pen.MoveY( height );	
 		fLine += fSpace;
@@ -178,12 +178,12 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _window, co
 	sprintf( pTemp, "n00b" );
 	WgTextTool::readString( pTemp, temp2, 39 );
 	WgTextTool::TextParam param( * m_pFonts, WG_MODE_NORMAL, 3 );
-	WgGfx::clipPrintLine( _clip, param, _window.x, _window.y, temp2 );
+	WgGfx::clipPrintLine( _clip, param, _canvas.x, _canvas.y, temp2 );
 
 	pTemp = temp;
 	sprintf( pTemp, "r374rd" );
 	WgTextTool::readString( pTemp, temp2, 39 );
-	WgGfx::clipPrintLine( _clip, param, _window.x, _window.y + height, temp2 );
+	WgGfx::clipPrintLine( _clip, param, _canvas.x, _canvas.y + height, temp2 );
 */
 }
 

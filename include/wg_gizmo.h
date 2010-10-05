@@ -108,8 +108,8 @@ public:
 
 	// To be overloaded by Gizmo
 
-	virtual Uint32	HeightForWidth( Uint32 width ) const;
-	virtual Uint32	WidthForHeight( Uint32 height ) const;
+	virtual int		HeightForWidth( int width ) const;
+	virtual int		WidthForHeight( int height ) const;
 
 	virtual WgSize	MinSize() const;
 	virtual WgSize	BestSize() const;
@@ -141,7 +141,7 @@ protected:
 	// To be overloaded by Gizmo
 
 	virtual void	OnCloneContent( const WgGizmo * _pOrg ) = 0;
-	virtual void	OnRender( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) = 0;
+	virtual void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) = 0;
 	virtual void	OnNewSize( const WgSize& size );
 	virtual void	OnRefresh();
 	virtual void	OnUpdate( const WgUpdateInfo& _updateInfo );
