@@ -171,8 +171,8 @@ protected:
 	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	OnRefresh();
 	void	OnUpdate( const WgUpdateInfo& _updateInfo );
-	void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool	OnMarkTest( const WgCord& ofs );
+	void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	bool	OnAlphaTest( const WgCord& ofs );
 
 private:
 

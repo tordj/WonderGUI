@@ -422,8 +422,7 @@ bool WgGizmoTablist::SelectTab( Sint32 id )
 		ResizeAllTabs();	// fonts have changed
 		RequestRender();
 
-		if( m_pHook )
-			m_pHook->GetEmitter()->Emit( WgSignal::TabSelected(), pTab->m_id );
+		Emit( WgSignal::TabSelected(), pTab->m_id );
 		return true;
 	}
 
@@ -781,7 +780,7 @@ WgTab * WgGizmoTablist::Pos2Tab( Sint32 x, Sint32 y )
 				((unsigned) y) > pSrc->GetContentBorders().top && y < sz.h - pSrc->GetContentBorders().bottom )
 				bHit = true;
 			else
-				bHit = WgUtil::MarkTestBlock( x, y, pSrc->GetBlock( GetTabMode(*pTab) ), WgRect(0,0,w,sz.h));
+				bHit = WgUtil::MarkTestBlock( WgCord(x, y), pSrc->GetBlock( GetTabMode(*pTab) ), WgRect(0,0,w,sz.h));
 
 			if( bHit )
 			{
@@ -982,7 +981,7 @@ void WgGizmoTablist::OnRefresh( void )
 
 //____ OnAction() _____________________________________________________________
 
-void WgGizmoTablist::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoTablist::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	switch( action )
 	{
@@ -999,7 +998,7 @@ void WgGizmoTablist::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 				if( button_key == 1 )
 					SelectTab(pTab->m_id);
 
-				pEmitter->Emit( WgSignal::TabPressed(), pTab->m_id );
+				Emit( WgSignal::TabPressed(), pTab->m_id );
 			}
 		}
 		break;
@@ -1062,9 +1061,9 @@ void WgGizmoTablist::OnCloneContent( const WgGizmo * _pOrg )
 }
 
 
-//____ OnMarkTest() ________________________________________
+//____ OnAlphaTest() ________________________________________
 
-bool WgGizmoTablist::OnMarkTest( const WgCord& ofs )
+bool WgGizmoTablist::OnAlphaTest( const WgCord& ofs )
 {
 	return Pos2Tab(ofs.x, ofs.y) != NULL;
 }

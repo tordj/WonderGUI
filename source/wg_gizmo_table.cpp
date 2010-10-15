@@ -193,12 +193,6 @@ WgTableColumn2* WgTableHook::GetColumn() const
 	return pRow->GetTable()->GetColumn(col);
 }
 
-
-WgEmitter* WgTableHook::GetEmitter()
-{
-	return this;
-}
-
 WgWidget* WgTableHook::GetRoot()
 {
 	WgGizmoTable* pTable = GetRow()->GetTable();
@@ -212,9 +206,10 @@ WgWidget* WgTableHook::GetRoot()
 }
 
 
-WgTableHook::WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow ) : WgGizmoHook( pGizmo, pRow ) 
+WgTableHook::WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow ) : WgGizmoHook( pGizmo ) 
 {
 	m_height = pGizmo->BestSize().h;
+	m_pRow	 = pRow;
 }
 
 WgTableHook::~WgTableHook()
@@ -642,9 +637,6 @@ WgGizmoTable::WgGizmoTable()
 	m_sortMarkerOfs.y	= 0;
 	m_clickSortPrio		= 0;
 
-	m_cellPaddingX		= 0;
-	m_cellPaddingY		= 0;
-
 	m_lastClickedRow = -1;
 	m_lastClickedColumn = -1;
 
@@ -750,10 +742,11 @@ void WgGizmoTable::SetArrowOrigo( WgOrigo origo )
 
 //____ SetCellPadding() _______________________________________________________
 
-void WgGizmoTable::SetCellPadding( int x, int y )
+void WgGizmoTable::SetCellPadding( WgBorders padding )
 {
-	m_cellPaddingX = x;
-	m_cellPaddingY = y;
+	m_cellPadding = padding;
+
+	//TODO: This affects geometry of gizmos in cells!!!
 
 	RequestRender();
 }
@@ -1049,11 +1042,11 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 			return WgRect();							// Invalid row.
 
 		if( pRow->IsVisible() )
-			r.y += pRow->Height() + m_cellPaddingY*2;
+			r.y += pRow->Height() + m_cellPadding.GetHeight();
 
 		pRow = pRow->GetNext();
 	}
-	r.y += m_cellPaddingY;
+	r.y += m_cellPadding.top;
 
 
 	// Set cell height
@@ -1067,7 +1060,7 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 	for( int i = 0 ; i < column ; i++ )
 	{
 		if( m_pColumns[i].m_bVisible )
-			r.x += m_pColumns[i].m_realWidth;		// One cellpadding already added...
+			r.x += m_pColumns[i].m_realWidth;
 	}
 
 	// Determine width
@@ -1079,8 +1072,8 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 
 	// Apply padding
 
-	r.x += m_cellPaddingX;
-	r.w -= m_cellPaddingX*2;
+	r.x += m_cellPadding.left;
+	r.w -= m_cellPadding.GetWidth();
 
 	if( r.w < 0 )
 		r.w = 0;
@@ -1534,7 +1527,7 @@ void WgGizmoTable::UpdateContentSize()
 	while( p )
 	{
 		if( p->IsVisible() )
-			size.h += p->Height() + m_cellPaddingY*2;
+			size.h += p->Height() + m_cellPadding.GetHeight();
 		p = p->getNext();
 	}
 
@@ -1692,7 +1685,7 @@ int WgGizmoTable::GetMarkedRow( int y, WgTableRow2*& pSaveRow, int& saveYOfs )
 	{
 		if( p->IsVisible() )
 		{
-			if( y < p->Height() +  m_cellPaddingY*2 )
+			if( y < p->Height() +  m_cellPadding.GetHeight() )
 			{
 				pSaveRow	= p;
 				saveYOfs	= y;
@@ -1700,7 +1693,7 @@ int WgGizmoTable::GetMarkedRow( int y, WgTableRow2*& pSaveRow, int& saveYOfs )
 				return row;
 			}
 
-			y -= p->Height() +  m_cellPaddingY*2;
+			y -= p->Height() +  m_cellPadding.GetHeight();
 		}
 		p = p->getNext();
 		row++;
@@ -1760,6 +1753,40 @@ float WgGizmoTable::CalcHeaderScaleFactor() const
 		return 1.f;
 
 	return (float)m_gizmoSize.w / (float)m_contentSize.w;
+}
+
+//____ FindGizmo() ____________________________________________________________
+
+WgGizmo * WgGizmoTable::FindGizmo( const WgCord& ofs, WgSearchMode mode )
+{
+	// Check cell content
+
+	int	xOfs;
+	int yOfs;
+	WgTableRow2* pRow;
+
+	int col = GetMarkedColumn( ofs.x, xOfs );
+	int	row = GetMarkedRow( ofs.y, pRow, yOfs );
+
+	WgGizmo * pGizmo = 0;
+
+	if( col != -1 && row != -1 )
+	{
+		if( xOfs < m_cellPadding.left || xOfs >= m_pColumns[col].m_realWidth - m_cellPadding.right ||
+			yOfs < m_cellPadding.top || yOfs >= pRow->Height() - m_cellPadding.bottom )
+		{	
+			pGizmo = pRow->GetGizmo(col);
+			if( mode != WG_SEARCH_MARKPOLICY || pGizmo->MarkTest( WgCord( xOfs-m_cellPadding.left, yOfs-m_cellPadding.top) )  )
+				return pGizmo;
+		}
+	}
+
+	// Check ourselves
+
+	if( mode != WG_SEARCH_MARKPOLICY || MarkTest( ofs ) )
+		return this;
+	else
+		return 0;
 }
 
 
@@ -1847,19 +1874,19 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 	int iRowColor = 0;
 
 	// Skip rows that are above clipping area.
-	r.y += m_cellPaddingY;
+	r.y += m_cellPadding.top;
 	while( pRow )
 	{
 		if( pRow->IsVisible() )
 		{
 			if( r.y + (Sint32) pRow->Height() >= clipView.y )
 				 break;
-			r.y += pRow->Height() + m_cellPaddingY*2;
+			r.y += pRow->Height() + m_cellPadding.GetHeight();
 			iRowColor++;
 		}
 		pRow = pRow->GetNext();
 	}
-	r.y -= m_cellPaddingY;
+	r.y -= m_cellPadding.top;
 
 
 	// Draw cell contents for (at least partly) visible rows.
@@ -1874,7 +1901,7 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		if( r.y >= clipView.y + clipView.h )
 			break;
 
-		r.h = pRow->Height() + m_cellPaddingY*2;
+		r.h = pRow->Height() + m_cellPadding.GetHeight();
 
 		WgRect	u;
 		if( u.Intersection( r, clipView ) )
@@ -1907,7 +1934,7 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 		WgRect		rc = r;
 
-		rc.y += m_cellPaddingY;
+		rc.y += m_cellPadding.top;
 		rc.h = pRow->Height();
 		for( int i = 0 ; i < m_nColumns ; i++ )
 		{
@@ -1928,19 +1955,19 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 				if( i == m_nColumns-1 && rc.x + rc.w < _window.x + _window.w )
 					rc.w = _window.x + _window.w - rc.x;		// Last column stretches to end of tableview...
 
-				rc.x += m_cellPaddingX;
-				rc.w -= m_cellPaddingX*2;
+				rc.x += m_cellPadding.left;
+				rc.w -= m_cellPadding.GetWidth();
 
 				WgRect clip2( rc, clipView );
 
 				//
 
 				pHook->DoRender( pDevice, rc, rc, clip2, _layer );
-				rc.x += m_pColumns[i].m_realWidth - m_cellPaddingX;		// One cellpadding already added...
+				rc.x += m_pColumns[i].m_realWidth - m_cellPadding.left;		// Left cellpadding already added...
 			}
 		}
 
-		r.y += pRow->Height() + m_cellPaddingY*2;
+		r.y += pRow->Height() + m_cellPadding.GetHeight();
 		pRow = (WgTableRow2 *) pRow->GetNext();
 		iRowColor++;
 	}
@@ -2044,8 +2071,7 @@ void WgGizmoTable::OnCloneContent( const WgGizmo * _pOrg )
 	m_sortMarkerOrigo	= pOrg->m_sortMarkerOrigo;
 	m_sortMarkerOfs		= pOrg->m_sortMarkerOfs;
 
-	m_cellPaddingX		= pOrg->m_cellPaddingX;
-	m_cellPaddingY		= pOrg->m_cellPaddingY;
+	m_cellPadding		= pOrg->m_cellPadding;
 
 	m_pAscendGfx		= pOrg->m_pAscendGfx;
 	m_pDescendGfx		= pOrg->m_pDescendGfx;
@@ -2105,7 +2131,7 @@ WgTableColumn2 *WgGizmoTable::GetHeaderColumnAt( const WgCord& pos )
 
 //____ OnAction() _____________________________________________________________
 
-void WgGizmoTable::OnAction( WgEmitter * pEmitter, WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
+void WgGizmoTable::OnAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
 {
 	WgCord pos = Abs2local( WgCord(_info.x, _info.y) );
 
@@ -2150,26 +2176,22 @@ void WgGizmoTable::OnAction( WgEmitter * pEmitter, WgInput::UserAction _action, 
 				break;
 			}
 
-			if( m_pHook )
-			{
-				int saveOfs;
-				WgTableRow2 * pSaveRow;
-				int row = GetMarkedRow(pos.y, pSaveRow, saveOfs );
-				if( row != -1 )
-				{
-					m_pHook->GetEmitter()->Emit( WgSignal::TableRowPress(_button_key), row );
-				}
+			//
 
-				int column = GetMarkedColumn(pos.x, saveOfs);
-				if( column != -1 )
-				{
-					m_pHook->GetEmitter()->Emit( WgSignal::TableColumnPress(_button_key), column );
-					if( row != -1 )
-					{
-						m_pHook->GetEmitter()->Emit( WgSignal::TableCellPress(_button_key), row, column );
-					}
-				}
+			int saveOfs;
+			WgTableRow2 * pSaveRow;
+			int row = GetMarkedRow(pos.y, pSaveRow, saveOfs );
+			if( row != -1 )
+				Emit( WgSignal::TableRowPress(_button_key), row );
+
+			int column = GetMarkedColumn(pos.x, saveOfs);
+			if( column != -1 )
+			{
+				Emit( WgSignal::TableColumnPress(_button_key), column );
+				if( row != -1 )
+					Emit( WgSignal::TableCellPress(_button_key), row, column );
 			}
+
 		}
 		break;
 
@@ -2184,19 +2206,14 @@ void WgGizmoTable::OnAction( WgEmitter * pEmitter, WgInput::UserAction _action, 
 			m_lastClickedRow = row;
 			m_lastClickedColumn = column;
 
-			if( m_pHook )
-			{
-				if( row != -1 )
-				{
-					m_pHook->GetEmitter()->Emit( WgSignal::TableRowClick(_button_key), row );
-				}
+			if( row != -1 )
+				Emit( WgSignal::TableRowClick(_button_key), row );
 
-				if( column != -1 )
-				{
-					m_pHook->GetEmitter()->Emit( WgSignal::TableColumnClick(_button_key), column );
-					if( row != -1 )
-						m_pHook->GetEmitter()->Emit( WgSignal::TableCellClick(_button_key), row, column );
-				}
+			if( column != -1 )
+			{
+				Emit( WgSignal::TableColumnClick(_button_key), column );
+				if( row != -1 )
+					Emit( WgSignal::TableCellClick(_button_key), row, column );
 			}
 
 		}
@@ -2210,22 +2227,19 @@ void WgGizmoTable::OnAction( WgEmitter * pEmitter, WgInput::UserAction _action, 
 			int row = GetMarkedRow(pos.y, pSaveRow, saveOfs );
 			int column = GetMarkedColumn(pos.x, saveOfs);
 
-			if( m_pHook )
+			if( row != -1 )
 			{
-				if( row != -1 )
-				{
-					if(row == m_lastClickedRow)
-						m_pHook->GetEmitter()->Emit( WgSignal::TableRowDoubleClick(_button_key), row );
-				}
+				if(row == m_lastClickedRow)
+					Emit( WgSignal::TableRowDoubleClick(_button_key), row );
+			}
 
-				if( column != -1 )
+			if( column != -1 )
+			{
+				if( column == m_lastClickedColumn )
 				{
-					if( column == m_lastClickedColumn )
-					{
-						m_pHook->GetEmitter()->Emit( WgSignal::TableColumnDoubleClick(_button_key), column );
-						if( row != -1 )
-							m_pHook->GetEmitter()->Emit( WgSignal::TableCellDoubleClick(_button_key), row, column );
-					}
+					Emit( WgSignal::TableColumnDoubleClick(_button_key), column );
+					if( row != -1 )
+						Emit( WgSignal::TableCellDoubleClick(_button_key), row, column );
 				}
 			}
 
@@ -2279,41 +2293,36 @@ void WgGizmoTable::UpdateMarkedRowColumn( int row, int column )
 
 	//
 
-	if( m_pHook )
+	if( row != oldRow )
 	{
-		WgEmitter* pEmitter = m_pHook->GetEmitter();
+		if( oldRow != -1 )
+			Emit( WgSignal::TableRowUnmarked(), oldRow );
+		if( row != -1 )
+			Emit( WgSignal::TableRowMarked(), row );
+	}
 
-		if( row != oldRow )
-		{
-			if( oldRow != -1 )
-				pEmitter->Emit( WgSignal::TableRowUnmarked(), oldRow );
-			if( row != -1 )
-				pEmitter->Emit( WgSignal::TableRowMarked(), row );
-		}
+	if( column != oldColumn )
+	{
+		if( oldColumn != -1 )
+			Emit( WgSignal::TableColumnUnmarked(), oldColumn );
+		if( column != -1 )
+			Emit( WgSignal::TableColumnMarked(), column );
+	}
 
-		if( column != oldColumn )
-		{
-			if( oldColumn != -1 )
-				pEmitter->Emit( WgSignal::TableColumnUnmarked(), oldColumn );
-			if( column != -1 )
-				pEmitter->Emit( WgSignal::TableColumnMarked(), column );
-		}
+	if( column != oldColumn || row != oldRow )
+	{
+		if( oldRow != -1 && oldColumn != -1 )
+			Emit( WgSignal::TableCellUnmarked(), oldRow, oldColumn );
 
-		if( column != oldColumn || row != oldRow )
-		{
-			if( oldRow != -1 && oldColumn != -1 )
-				pEmitter->Emit( WgSignal::TableCellUnmarked(), oldRow, oldColumn );
-
-			if( row != -1 && column != -1 )
-				pEmitter->Emit( WgSignal::TableCellMarked(), row, column );
-		}
+		if( row != -1 && column != -1 )
+			Emit( WgSignal::TableCellMarked(), row, column );
 	}
 }
 
 
-//____ OnMarkTest() ___________________________________________________
+//____ OnAlphaTest() ___________________________________________________
 
-bool WgGizmoTable::OnMarkTest( const WgCord& ofs )
+bool WgGizmoTable::OnAlphaTest( const WgCord& ofs )
 {
 	return true;
 }

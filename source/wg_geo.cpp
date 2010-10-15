@@ -169,6 +169,30 @@ void WgRect::GrowToContain( Sint32 _x, Sint32 _y )
 	}
 }
 
+void WgRect::GrowToContain( const WgCord& _coord )
+{
+	if( _coord.x < x )
+	{
+		w += x - _coord.x;
+		x = _coord.x;
+	}
+	else if( _coord.x > x + w )
+	{
+		w = _coord.x - x;
+	}
+
+	if( _coord.y < y )
+	{
+		h += y - _coord.y;
+		y = _coord.y;
+	}
+	else if( _coord.y > y + h )
+	{
+		h = _coord.y - y;
+	}
+}
+
+
 void WgRect::GrowToContain( const WgRect& r )
 {
 	if( r.x < x )

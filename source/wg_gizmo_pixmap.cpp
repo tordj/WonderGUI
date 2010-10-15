@@ -109,9 +109,9 @@ void WgGizmoPixmap::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	pDevice->ClipBlitBlock( _clip, block, _canvas);
 }
 
-//____ OnMarkTest() ___________________________________________________________
+//____ OnAlphaTest() ___________________________________________________________
 
-bool WgGizmoPixmap::OnMarkTest( const WgCord& ofs )
+bool WgGizmoPixmap::OnAlphaTest( const WgCord& ofs )
 {
 	if( !m_pGfx )
 		return	false;												// No visible pixel, so don't accept the mark...
@@ -122,7 +122,7 @@ bool WgGizmoPixmap::OnMarkTest( const WgCord& ofs )
 
 	WgSize sz = Size();
 
-	return WgUtil::MarkTestBlock( ofs.x, ofs.y, m_pGfx->GetBlock(mode), WgRect(0,0,sz.w,sz.h) );
+	return WgUtil::MarkTestBlock( ofs, m_pGfx->GetBlock(mode), WgRect(0,0,sz.w,sz.h) );
 }
 
 //____ OnEnable() _____________________________________________________________

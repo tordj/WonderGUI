@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_gizmo_radiobutton.h>
-#include <wg_gizmo_collection.h>
+#include <wg_gizmo_container.h>
 
 using namespace WgSignal;
 
@@ -69,7 +69,7 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 
 			if( m_pHook )
 			{
-				WgGizmo * pGizmo = m_pHook->Collection()->FirstGizmo();
+				WgGizmo * pGizmo = m_pHook->Parent()->FirstGizmo();
 				while( pGizmo )
 				{
 					if( pGizmo->Type() == c_gizmoType )
@@ -78,8 +78,8 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 						if( pRB->m_bChecked )
 						{
 							pRB->m_bChecked = false;
-							pRB->m_pHook->GetEmitter()->Emit( Unset() );
-							pRB->m_pHook->GetEmitter()->Emit( Flipped(), false );
+							pRB->Emit( Unset() );
+							pRB->Emit( Flipped(), false );
 							pRB->RequestRender();
 						}
 					}
@@ -90,8 +90,7 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 			// Set and emit
 
 			m_bChecked = true;
-			if( m_pHook )
-				m_pHook->GetEmitter()->Emit( Set() );
+			Emit( Set() );
 		}
 		else
 		{
@@ -99,12 +98,10 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 				return false;
 
 			m_bChecked = false;
-			if( m_pHook )
-				m_pHook->GetEmitter()->Emit( Unset() );
+			Emit( Unset() );
 		}
 
-		if( m_pHook )
-			m_pHook->GetEmitter()->Emit( Flipped(), m_bChecked );
+		Emit( Flipped(), m_bChecked );
 		RequestRender();
 	}
 	return true;

@@ -25,6 +25,7 @@
 #include <assert.h>
 #include <wg_input.h>
 #include <wg_widget.h>
+#include <wg_gizmo.h>
 #include <wg_pointerspy.h>
 #include <wdg_root.h>
 
@@ -36,6 +37,7 @@ WgInput::WgInput()
 {
 	m_pRootWidget			= 0;
 	m_pFocusedWidget		= 0;
+	m_pFocusedGizmo			= 0;
 
 	m_time					= 0;
 	m_doubleClickTreshold	= 250;
@@ -223,9 +225,14 @@ void WgInput::end_events()
 	{
 		if( m_bButtonDown[btn] == true )
 		{
-			for( Uint32 wdg = 0 ; wdg < m_pressed[btn].nWidgets ; wdg++ )
+			WgActionDetails * p = &m_pressed[btn];
+
+			for( Uint32 wdg = 0 ; wdg < p->nWidgets ; wdg++ )
 			{
-				m_pressed[btn].aWidgets[wdg]->ActionRespond( BUTTON_DOWN, btn+1, m_currentPosition, *this );
+				if( p->aWidgets[wdg] )
+					p->aWidgets[wdg]->ActionRespond( BUTTON_DOWN, btn+1, m_currentPosition, *this );
+				else if( p->aGizmos[wdg] )
+					p->aGizmos[wdg]->OnAction( BUTTON_DOWN, btn+1, m_currentPosition, *this );
 			}
 			// reset hover time if a button is down
 			m_hoverStartTime = m_time;

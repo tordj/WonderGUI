@@ -340,11 +340,11 @@ bool Wdg_Baseclass_View::SetViewPixelOfs( Uint32 x, Uint32 y )
 
 	if( bChangedX )
 	{
-		Emit( ViewPosX(), ofsX );
-		Emit( ViewPosPixelX(), m_viewPixOfsX );
+		WgEmitter::Emit( ViewPosX(), ofsX );
+		WgEmitter::Emit( ViewPosPixelX(), m_viewPixOfsX );
 
-		Emit( ViewPosSizeX(), ofsX, ViewLenX() );
-		Emit( ViewPosSizePixelX(), m_viewPixOfsX, pixLenX );
+		WgEmitter::Emit( ViewPosSizeX(), ofsX, ViewLenX() );
+		WgEmitter::Emit( ViewPosSizePixelX(), m_viewPixOfsX, pixLenX );
 
 		if( m_pScrollbarX )
 			m_pScrollbarX->SetSlider( ofsX, ViewLenX() );
@@ -352,11 +352,11 @@ bool Wdg_Baseclass_View::SetViewPixelOfs( Uint32 x, Uint32 y )
 
 	if( bChangedY )
 	{
-		Emit( ViewPosY(), ofsY );
-		Emit( ViewPosPixelY(), m_viewPixOfsY );
+		WgEmitter::Emit( ViewPosY(), ofsY );
+		WgEmitter::Emit( ViewPosPixelY(), m_viewPixOfsY );
 
-		Emit( ViewPosSizeY(), ofsY, ViewLenY() );
-		Emit( ViewPosSizePixelY(), m_viewPixOfsY, pixLenY );
+		WgEmitter::Emit( ViewPosSizeY(), ofsY, ViewLenY() );
+		WgEmitter::Emit( ViewPosSizePixelY(), m_viewPixOfsY, pixLenY );
 
 		if( m_pScrollbarY )
 			m_pScrollbarY->SetSlider( ofsY, ViewLenY() );
@@ -364,8 +364,8 @@ bool Wdg_Baseclass_View::SetViewPixelOfs( Uint32 x, Uint32 y )
 
 	if( bChangedX || bChangedY )
 	{
-		Emit( ViewPos(), ofsX, ViewOfsY() );
-		Emit( ViewPosPixel(), m_viewPixOfsX, m_viewPixOfsY );
+		WgEmitter::Emit( ViewPos(), ofsX, ViewOfsY() );
+		WgEmitter::Emit( ViewPosPixel(), m_viewPixOfsX, m_viewPixOfsY );
 	}
 
 	RequestRender();
@@ -395,14 +395,14 @@ bool Wdg_Baseclass_View::SetViewPixelOfsX( Uint32 x )
 
 	float	ofsX = ViewOfsX();
 
-	Emit( ViewPosX(), ofsX );
-	Emit( ViewPosPixelX(), m_viewPixOfsX );
+	WgEmitter::Emit( ViewPosX(), ofsX );
+	WgEmitter::Emit( ViewPosPixelX(), m_viewPixOfsX );
 
-	Emit( ViewPos(), ofsX, ViewOfsY() );
-	Emit( ViewPosPixel(), m_viewPixOfsX, m_viewPixOfsY );
+	WgEmitter::Emit( ViewPos(), ofsX, ViewOfsY() );
+	WgEmitter::Emit( ViewPosPixel(), m_viewPixOfsX, m_viewPixOfsY );
 
-	Emit( ViewPosSizeX(), ofsX, ViewLenX() );
-	Emit( ViewPosSizePixelX(), m_viewPixOfsX, pixLenX );
+	WgEmitter::Emit( ViewPosSizeX(), ofsX, ViewLenX() );
+	WgEmitter::Emit( ViewPosSizePixelX(), m_viewPixOfsX, pixLenX );
 
 	if( m_pScrollbarX )
 		m_pScrollbarX->SetSlider( ofsX, ViewLenX() );
@@ -435,14 +435,14 @@ bool Wdg_Baseclass_View::SetViewPixelOfsY( Uint32 y )
 
 	float	ofsY = ViewOfsY();
 
-	Emit( ViewPosY(), ofsY );
-	Emit( ViewPosPixelY(), m_viewPixOfsY );
+	WgEmitter::Emit( ViewPosY(), ofsY );
+	WgEmitter::Emit( ViewPosPixelY(), m_viewPixOfsY );
 
-	Emit( ViewPos(), ViewOfsX(), ofsY );
-	Emit( ViewPosPixel(), m_viewPixOfsX, m_viewPixOfsY );
+	WgEmitter::Emit( ViewPos(), ViewOfsX(), ofsY );
+	WgEmitter::Emit( ViewPosPixel(), m_viewPixOfsX, m_viewPixOfsY );
 
-	Emit( ViewPosSizeY(), ofsY, ViewLenY() );
-	Emit( ViewPosSizePixelY(), m_viewPixOfsY, pixLenY );
+	WgEmitter::Emit( ViewPosSizeY(), ofsY, ViewLenY() );
+	WgEmitter::Emit( ViewPosSizePixelY(), m_viewPixOfsY, pixLenY );
 
 	if( m_pScrollbarY )
 		m_pScrollbarY->SetSlider( ofsY, ViewLenY() );
@@ -519,7 +519,7 @@ bool Wdg_Baseclass_View::SetScrollbarX( Wdg_HDrag * pScrollbar )
 	if( m_pScrollbarX )
 	{
 		m_pScrollbarX->RemoveCallbacks(this);
-		RemoveCallbacks(m_pScrollbarX);
+		WgEmitter::RemoveCallbacks(m_pScrollbarX);
 	}
 
 	//
@@ -687,8 +687,8 @@ void Wdg_Baseclass_View::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 	Uint32	lenPixX = ViewPixelLenX();
 	Uint32	lenPixY = ViewPixelLenY();
 
-	Emit( ViewSize(), lenX, lenY );
-	Emit( ViewSizePixel(), lenPixX, lenPixY );
+	WgEmitter::Emit( ViewSize(), lenX, lenY );
+	WgEmitter::Emit( ViewSizePixel(), lenPixX, lenPixY );
 
 	bool	bViewPosChanged = false;
 
@@ -707,8 +707,8 @@ void Wdg_Baseclass_View::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 				m_viewPixOfsX = m_contentWidth - lenPixX;
 				bViewPosChanged = true;
 
-				Emit( ViewPosX(), ViewOfsX() );
-				Emit( ViewPosPixelX(), m_viewPixOfsX );
+				WgEmitter::Emit( ViewPosX(), ViewOfsX() );
+				WgEmitter::Emit( ViewPosPixelX(), m_viewPixOfsX );
 			}
 		}
 
@@ -719,14 +719,14 @@ void Wdg_Baseclass_View::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 			m_viewPixOfsX = 0;
 			bViewPosChanged = true;
 
-			Emit( ViewPosX(), ViewOfsX() );
-			Emit( ViewPosPixelX(), m_viewPixOfsX );
+			WgEmitter::Emit( ViewPosX(), ViewOfsX() );
+			WgEmitter::Emit( ViewPosPixelX(), m_viewPixOfsX );
 		}
 
-		Emit( ViewSizeX(), lenX );
-		Emit( ViewSizePixelX(), lenPixX );
-		Emit( ViewPosSizeX(), ViewOfsX(), lenX );
-		Emit( ViewPosSizePixelX(), m_viewPixOfsX, lenPixX );
+		WgEmitter::Emit( ViewSizeX(), lenX );
+		WgEmitter::Emit( ViewSizePixelX(), lenPixX );
+		WgEmitter::Emit( ViewPosSizeX(), ViewOfsX(), lenX );
+		WgEmitter::Emit( ViewPosSizePixelX(), m_viewPixOfsX, lenPixX );
 
 		if( m_pScrollbarX )
 			m_pScrollbarX->SetSlider( ViewOfsX(), lenX );
@@ -747,8 +747,8 @@ void Wdg_Baseclass_View::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 				m_viewPixOfsY = m_contentHeight - lenPixY;
 				bViewPosChanged = true;
 
-				Emit( ViewPosY(), ViewOfsY() );
-				Emit( ViewPosPixelY(), m_viewPixOfsY );
+				WgEmitter::Emit( ViewPosY(), ViewOfsY() );
+				WgEmitter::Emit( ViewPosPixelY(), m_viewPixOfsY );
 			}
 		}
 
@@ -759,16 +759,16 @@ void Wdg_Baseclass_View::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 			m_viewPixOfsY = 0;
 			bViewPosChanged = true;
 
-			Emit( ViewPosY(), ViewOfsY() );
-			Emit( ViewPosPixelY(), m_viewPixOfsY );
+			WgEmitter::Emit( ViewPosY(), ViewOfsY() );
+			WgEmitter::Emit( ViewPosPixelY(), m_viewPixOfsY );
 		}
 
 		//
 
-		Emit( ViewSizeY(), lenY );
-		Emit( ViewSizePixelY(), lenPixY );
-		Emit( ViewPosSizeY(), ViewOfsY(), lenY );
-		Emit( ViewPosSizePixelY(), m_viewPixOfsY, lenPixY );
+		WgEmitter::Emit( ViewSizeY(), lenY );
+		WgEmitter::Emit( ViewSizePixelY(), lenPixY );
+		WgEmitter::Emit( ViewPosSizeY(), ViewOfsY(), lenY );
+		WgEmitter::Emit( ViewPosSizePixelY(), m_viewPixOfsY, lenPixY );
 
 		if( m_pScrollbarY )
 			m_pScrollbarY->SetSlider( ViewOfsY(), lenY );
@@ -777,8 +777,8 @@ void Wdg_Baseclass_View::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 
 	if( bViewPosChanged )
 	{
-		Emit( ViewPos(), ViewOfsX(), ViewOfsY() );
-		Emit( ViewPosPixel(), m_viewPixOfsX, m_viewPixOfsY );
+		WgEmitter::Emit( ViewPos(), ViewOfsX(), ViewOfsY() );
+		WgEmitter::Emit( ViewPosPixel(), m_viewPixOfsX, m_viewPixOfsY );
 	}
 
 	WgRect subclassNewGeo = WgRect(newGeo.x, newGeo.y, lenPixX, lenPixY );
@@ -924,8 +924,8 @@ void Wdg_Baseclass_View::SetContentSize( Uint32 width, Uint32 height )
 	Uint32	lenPixX = ViewPixelLenX();
 	Uint32	lenPixY = ViewPixelLenY();
 
-	Emit( ViewSize(), lenX, lenY );
-	Emit( ViewSizePixel(), lenPixX, lenPixY );
+	WgEmitter::Emit( ViewSize(), lenX, lenY );
+	WgEmitter::Emit( ViewSizePixel(), lenPixX, lenPixY );
 
 	if( bWidthChanged )
 	{
@@ -936,14 +936,14 @@ void Wdg_Baseclass_View::SetContentSize( Uint32 width, Uint32 height )
 				x = 0;
 			m_viewPixOfsX = (Uint32) x;
 
-			Emit( ViewPosX(), ViewOfsX() );
-			Emit( ViewPosPixelX(), m_viewPixOfsX );
+			WgEmitter::Emit( ViewPosX(), ViewOfsX() );
+			WgEmitter::Emit( ViewPosPixelX(), m_viewPixOfsX );
 		}
 
-		Emit( ViewSizeX(), lenX );
-		Emit( ViewSizePixelX(), lenPixX );
-		Emit( ViewPosSizeX(), ViewOfsX(), lenX );
-		Emit( ViewPosSizePixelX(), m_viewPixOfsX, lenPixX );
+		WgEmitter::Emit( ViewSizeX(), lenX );
+		WgEmitter::Emit( ViewSizePixelX(), lenPixX );
+		WgEmitter::Emit( ViewPosSizeX(), ViewOfsX(), lenX );
+		WgEmitter::Emit( ViewPosSizePixelX(), m_viewPixOfsX, lenPixX );
 
 		if( m_pScrollbarX )
 			m_pScrollbarX->SetSlider( ViewOfsX(), lenX );
@@ -958,14 +958,14 @@ void Wdg_Baseclass_View::SetContentSize( Uint32 width, Uint32 height )
 				y = 0;
 			m_viewPixOfsY = (Uint32) y;
 
-			Emit( ViewPosY(), ViewOfsY() );
-			Emit( ViewPosPixelY(), m_viewPixOfsY );
+			WgEmitter::Emit( ViewPosY(), ViewOfsY() );
+			WgEmitter::Emit( ViewPosPixelY(), m_viewPixOfsY );
 		}
 
-		Emit( ViewSizeY(), lenY );
-		Emit( ViewSizePixelY(), lenPixY );
-		Emit( ViewPosSizeY(), ViewOfsY(), lenY );
-		Emit( ViewPosSizePixelY(), m_viewPixOfsY, lenPixY );
+		WgEmitter::Emit( ViewSizeY(), lenY );
+		WgEmitter::Emit( ViewSizePixelY(), lenPixY );
+		WgEmitter::Emit( ViewPosSizeY(), ViewOfsY(), lenY );
+		WgEmitter::Emit( ViewPosSizePixelY(), m_viewPixOfsY, lenPixY );
 
 		if( m_pScrollbarY )
 			m_pScrollbarY->SetSlider( ViewOfsY(), lenY );

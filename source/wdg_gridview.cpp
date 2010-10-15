@@ -424,13 +424,13 @@ void Wdg_GridView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butto
 		RequestRender();
 
 		if(m_pLastMarkedItem)
-			m_pLastMarkedItem->ActionRespond( this, WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
+			m_pLastMarkedItem->ActionRespond( GetEmitter(), WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
 
 		if( pCursorItem )
-			pCursorItem->ActionRespond( this, WgInput::POINTER_ENTER, _button_key, _info, _inputObj );
+			pCursorItem->ActionRespond( GetEmitter(), WgInput::POINTER_ENTER, _button_key, _info, _inputObj );
 	}
 	else if( pCursorItem )
-		pCursorItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
+		pCursorItem->ActionRespond( GetEmitter(), _action, _button_key, _info, _inputObj );
 
 	m_pLastMarkedItem = pCursorItem;
 }

@@ -202,7 +202,7 @@ void WgGizmoCirclemeter::SetFormat( const WgValueFormat& format )
 
 //____ OnAction() _________________________________________________
 
-void WgGizmoCirclemeter::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoCirclemeter::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	int newRenderStyle = m_renderStyle;
 
@@ -380,9 +380,9 @@ void WgGizmoCirclemeter::OnCloneContent( const WgGizmo * _pOrg )
 	//TODO: Implement!
 }
 
-//____ OnMarkTest() ______________________________________________________
+//____ OnAlphaTest() ______________________________________________________
 
-bool WgGizmoCirclemeter::OnMarkTest( const WgCord& ofs )
+bool WgGizmoCirclemeter::OnAlphaTest( const WgCord& ofs )
 {
 	//TODO: Implement!
 
@@ -410,11 +410,8 @@ void WgGizmoCirclemeter::OnDisable( void )
 
 void WgGizmoCirclemeter::ValueModified()
 {
-	if( m_pHook )
-	{
-		m_pHook->GetEmitter()->Emit( IntegerChanged(), m_value );
-		m_pHook->GetEmitter()->Emit( Fraction(), FractionalValue() );
-	}
+	Emit( IntegerChanged(), m_value );
+	Emit( Fraction(), FractionalValue() );
 
 	m_bRegenText = true;
 	RequestRender();
@@ -424,8 +421,7 @@ void WgGizmoCirclemeter::ValueModified()
 
 void WgGizmoCirclemeter::RangeModified()
 {
-	if( m_pHook )
-		m_pHook->GetEmitter()->Emit( Fraction(), FractionalValue() );
+	Emit( Fraction(), FractionalValue() );
 	RequestRender();		// Since the indicator will move when range is modified...
 }
 

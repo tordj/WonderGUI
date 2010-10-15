@@ -33,14 +33,14 @@
 
 
 
-class WgGizmoCollection;
+class WgGizmoContainer;
 class WgWidget;
 class WgGfxDevice;
 
 class WgGizmoHook
 {
 	friend class WgGizmo;
-	friend class WgGizmoCollection;
+	friend class WgGizmoContainer;
 
 public:
 	virtual WgCord	Pos() const = 0;
@@ -49,21 +49,18 @@ public:
 	virtual WgCord	ScreenPos() const = 0;
 	virtual WgRect	ScreenGeo() const = 0;
 
-	virtual WgGizmoHook * PrevHook() const = 0;
-	virtual WgGizmoHook * NextHook() const = 0;
+	virtual WgGizmoHook *	PrevHook() const = 0;
+	virtual WgGizmoHook *	NextHook() const = 0;
 
 	inline	WgGizmo *		Gizmo() const { return m_pGizmo; }
-	inline	WgGizmoCollection* Collection() const { return m_pCollection; }
+	virtual	WgGizmoContainer* Parent() const = 0;
 
-	// Needs to be here for now since Emitters are inherrited by Widgets. Shouldn't be hooks business in the future...
-
-	virtual WgEmitter* 	GetEmitter() = 0;
 	virtual WgWidget*	GetRoot() = 0;			// Should in the future not return a widget, but a gizmo.
 
 protected:
 	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
 
-	WgGizmoHook( WgGizmo * pGizmo, WgGizmoCollection * pCollection ) : m_pGizmo(pGizmo), m_pCollection(pCollection) {}
+	WgGizmoHook( WgGizmo * pGizmo ) : m_pGizmo(pGizmo) {}
 
 	void			RelinkGizmo();				// Make sure Gizmo links us. Call when hook has been relocated.
 
@@ -78,8 +75,7 @@ protected:
 	void			DoSetNewSize( const WgSize& size );
 	void			DoSetGizmo();
 
-	WgGizmo *			m_pGizmo;
-	WgGizmoCollection*	m_pCollection;
+	WgGizmo *		m_pGizmo;
 };
 
 #endif //WG_GIZMO_HOOK_DOT_H

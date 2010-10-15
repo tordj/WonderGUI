@@ -55,11 +55,13 @@ class WgGfxDevice;
 class WgChildManager;
 class WgSkinManager;
 class Wg_Interface_TextHolder;
+class WgGizmoContainer;
 
-class WgGizmo
+class WgGizmo : public WgEmitter
 {
 friend class WgSkinNode;
 friend class WgGizmoHook;
+friend class WgInput;
 
 public:
 	WgGizmo();
@@ -88,6 +90,11 @@ public:
 	inline void				SetCursorStyle( WgCursorStyle style )	{ m_cursorStyle = style; }
 	inline WgCursorStyle	GetCursorStyle() const					{ return m_cursorStyle; }
 
+
+	inline void			SetMarkPolicy( WgMarkPolicy policy ) { m_markPolicy = policy; }
+	inline WgMarkPolicy	GetMarkPolicy() const { return m_markPolicy; }
+	bool				MarkTest( const WgCord& ofs );
+
 	WgGizmoHook*		GetHook() const { return m_pHook; }
 
 	// Convenient calls to hook
@@ -98,6 +105,7 @@ public:
 	inline WgRect		ScreenGeometry() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
 	inline bool			GrabFocus() { if( m_pHook ) return m_pHook->RequestFocus(); return false; }
 	inline bool			ReleaseFocus() { if( m_pHook ) return m_pHook->ReleaseFocus(); return false; }
+//	inline WgGizmoContainer * Parent() { if( m_pHook ) return m_pHook->Parent(); return 0; }		// Currently conflicts with WgWidget;
 
 	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->NextHook(); if( p ) return p->Gizmo(); } return 0; }
 	inline WgGizmo *	PrevSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->PrevHook(); if( p ) return p->Gizmo(); } return 0; }
@@ -117,6 +125,9 @@ public:
 
 	virtual bool	IsView() const { return false; }
 	virtual bool	IsContainer() const { return false; }
+	virtual WgGizmoContainer * CastToContainer() { return 0; }
+	virtual const WgGizmoContainer * CastToContainer() const { return 0; }
+
 
 	virtual bool	SetMarked();					// Switch to WG_MODE_MARKED unless we are disabled or widget controls mode itself.
 	virtual bool	SetSelected();					// Switch to WG_MODE_SELECTED unless we are disabled or widget controls mode itself.
@@ -145,8 +156,8 @@ protected:
 	virtual void	OnNewSize( const WgSize& size );
 	virtual void	OnRefresh();
 	virtual void	OnUpdate( const WgUpdateInfo& _updateInfo );
-	virtual void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	virtual	bool	OnMarkTest( const WgCord& ofs );
+	virtual void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	virtual	bool	OnAlphaTest( const WgCord& ofs );
 	virtual void	OnEnable();
 	virtual void	OnDisable();
 	virtual void	OnGotInputFocus();
@@ -167,6 +178,7 @@ protected:
 
 	Uint32			m_id;
 	WgString		m_tooltip;
+	WgMarkPolicy	m_markPolicy;
 
 	bool			m_bEnabled;
 	bool			m_bOpaque;

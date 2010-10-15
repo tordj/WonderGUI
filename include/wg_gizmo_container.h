@@ -19,48 +19,30 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_GIZMO_FILL_DOT_H
-#define WG_GIZMO_FILL_DOT_H
 
+#ifndef	WG_GIZMO_CONTAINER_DOT_H
+#define	WG_GIZMO_CONTAINER_DOT_H
 
 #ifndef WG_GIZMO_DOT_H
 #	include <wg_gizmo.h>
 #endif
 
-#ifndef WG_COLOR_DOT_H
-#	include <wg_color.h>
+#ifndef WG_GIZMO_COLLECTION_DOT_H
+#	include <wg_gizmo_collection.h>
 #endif
 
-//____ WgGizmoFill ____________________________________________________________
-
-class WgGizmoFill : public WgGizmo
+class WgGizmoContainer : /* public WgGizmo CAN NOT BE WHILE WE ARE WIDGETS!!!,*/ public WgGizmoCollection
 {
 public:
-	WgGizmoFill();
-	virtual ~WgGizmoFill();
 
-	virtual const char *Type( void ) const;
-	static const char * GetMyType();
+	virtual WgGizmo * FindGizmo( const WgCord& ofs, WgSearchMode mode ) = 0;
 
-	void	SetColor( const WgColor& col );
-	void	SetColor( const WgColor& enabled, const WgColor& disabled );
-	const WgColor&	GetEnabledColor() const		{ return m_colEnabled; }
-	const WgColor&	GetDisabledColor() const	{ return m_colDisabled; }
+	WgGizmoContainer * CastToContainer() { return this; }
+	const WgGizmoContainer * CastToContainer() const { return this; }
 
-protected:
-
-	void	OnCloneContent( const WgGizmo * _pOrg );
-	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool	OnAlphaTest( const WgCord& ofs );
-	void	OnEnable();
-	void	OnDisable();
-
-private:
-
-	WgColor	m_colEnabled;
-	WgColor	m_colDisabled;
 
 };
 
 
-#endif //WG_GIZMO_FILL_DOT_H
+
+#endif //WG_GIZMO_CONTAINER_DOT_H

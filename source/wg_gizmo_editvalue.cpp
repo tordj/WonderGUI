@@ -167,11 +167,8 @@ void WgGizmoEditvalue::Clear()
 
 void WgGizmoEditvalue::ValueModified()
 {
-	if( m_pHook )
-	{
-		m_pHook->GetEmitter()->Emit( IntegerChanged(), m_value );
-		m_pHook->GetEmitter()->Emit( Fraction(), FractionalValue() );
-	}
+	Emit( IntegerChanged(), m_value );
+	Emit( Fraction(), FractionalValue() );
 
 	m_useFormat	= m_format;
 
@@ -189,8 +186,7 @@ void WgGizmoEditvalue::ValueModified()
 
 void WgGizmoEditvalue::RangeModified()
 {
-	if( m_pHook )
-		m_pHook->GetEmitter()->Emit( Fraction(), FractionalValue() );
+	Emit( Fraction(), FractionalValue() );
 }
 
 
@@ -262,7 +258,7 @@ void WgGizmoEditvalue::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 //____ OnAction() _____________________________________________________________
 
-void WgGizmoEditvalue::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	if( action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT )
 	{
@@ -300,8 +296,8 @@ void WgGizmoEditvalue::OnAction( WgEmitter * pEmitter, WgInput::UserAction actio
 				if( value != m_value )
 				{
 					m_value = value;
-					pEmitter->Emit( IntegerChanged(), m_value );
-					pEmitter->Emit( Fraction(), FractionalValue() );
+					Emit( IntegerChanged(), m_value );
+					Emit( Fraction(), FractionalValue() );
 				}
 
 				// Force render
@@ -380,8 +376,8 @@ void WgGizmoEditvalue::OnAction( WgEmitter * pEmitter, WgInput::UserAction actio
 						if( value != m_value )
 						{
 							m_value = value;
-							pEmitter->Emit( IntegerChanged(), m_value );
-							pEmitter->Emit( Fraction(), FractionalValue() );
+							Emit( IntegerChanged(), m_value );
+							Emit( Fraction(), FractionalValue() );
 						}
 
 						// Force render
@@ -413,8 +409,8 @@ void WgGizmoEditvalue::OnAction( WgEmitter * pEmitter, WgInput::UserAction actio
 					if( value != m_value )
 					{
 						m_value = value;
-						pEmitter->Emit( IntegerChanged(), m_value );
-						pEmitter->Emit( Fraction(), FractionalValue() );
+						Emit( IntegerChanged(), m_value );
+						Emit( Fraction(), FractionalValue() );
 					}
 
 					// Force render

@@ -97,8 +97,8 @@ bool WgGizmoDragbar::SetSlider( float _pos, float _size )
 	m_sliderPos		= _pos;
 	m_sliderSize 	= _size;
 
-	if( m_pHook )
-		m_pHook->GetEmitter()->Emit( SliderPos(), m_sliderPos );
+
+	Emit( SliderPos(), m_sliderPos );
 
 	RequestRender();
 	return	true;
@@ -115,8 +115,7 @@ bool WgGizmoDragbar::SetSliderPos( float pos )
 
 	m_sliderPos = pos;
 
-	if( m_pHook )
-		m_pHook->GetEmitter()->Emit( SliderPos(), m_sliderPos );
+	Emit( SliderPos(), m_sliderPos );
 
 	RequestRender();
 	return	true;
@@ -498,11 +497,11 @@ void WgGizmoDragbar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		RenderButton( pDevice, _clip, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_FOOTER_FWD]) );
 }
 
-//____ OnMarkTest() ______________________________________________________
+//____ OnAlphaTest() ______________________________________________________
 
-bool WgGizmoDragbar::OnMarkTest( const WgCord& ofs )
+bool WgGizmoDragbar::OnAlphaTest( const WgCord& ofs )
 {
-	if( FindMarkedComponent( ofs.x, ofs.y) == C_NONE )
+	if( FindMarkedComponent( ofs ) == C_NONE )
 		return false;
 
 	return true;
@@ -510,14 +509,14 @@ bool WgGizmoDragbar::OnMarkTest( const WgCord& ofs )
 
 //____ MarkTestButton() _______________________________________________________
 
-bool WgGizmoDragbar::MarkTestButton( int _x, int _y, WgRect& _dest, const WgBlock& _block )
+bool WgGizmoDragbar::MarkTestButton( WgCord ofs, WgRect& _dest, const WgBlock& _block )
 {
 		if( m_bHorizontal )
 			_dest.w = _block.GetWidth();
 		else
 			_dest.h = _block.GetHeight();
 
-		bool retVal = WgUtil::MarkTestBlock( _x, _y, _block, _dest );
+		bool retVal = WgUtil::MarkTestBlock( ofs, _block, _dest );
 
 		if( m_bHorizontal )
 			_dest.x += _dest.w;
@@ -529,7 +528,7 @@ bool WgGizmoDragbar::MarkTestButton( int _x, int _y, WgRect& _dest, const WgBloc
 
 //____ FindMarkedComponent() __________________________________________________
 
-WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( int _x, int _y )
+WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( WgCord ofs )
 {
 	// First of all, do a mark test against the header buttons...
 
@@ -539,13 +538,13 @@ WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( int _x, int _y )
 
 	if( m_pBtnBwdGfx && (m_btnLayout & HEADER_BWD) )
 	{
-		if( MarkTestButton(_x,_y, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_HEADER_BWD])) )
+		if( MarkTestButton( ofs, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_HEADER_BWD])) )
 			return C_HEADER_BWD;
 	}
 
 	if( m_pBtnFwdGfx && (m_btnLayout & HEADER_FWD) )
 	{
-		if( MarkTestButton(_x,_y, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_HEADER_FWD])) )
+		if( MarkTestButton( ofs, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_HEADER_FWD])) )
 			return C_HEADER_FWD;
 	}
 
@@ -558,19 +557,19 @@ WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( int _x, int _y )
 
 	if( m_pBtnBwdGfx && (m_btnLayout & FOOTER_BWD) )
 	{
-		if( MarkTestButton(_x,_y, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_FOOTER_BWD])) )
+		if( MarkTestButton( ofs, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_FOOTER_BWD])) )
 			return C_FOOTER_BWD;
 	}
 
 	if( m_pBtnFwdGfx && (m_btnLayout & FOOTER_FWD) )
 	{
-		if( MarkTestButton(_x,_y, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_FOOTER_FWD])) )
+		if( MarkTestButton( ofs, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_FOOTER_FWD])) )
 			return C_FOOTER_FWD;
 	}
 
 	// Then, do a mark test against the dragbar...
 
-	if( MarkTestSlider(_x, _y) == true )
+	if( MarkTestSlider( ofs ) == true )
 		return C_BAR;
 
 	// Finally, do a mark test against the background.
@@ -588,7 +587,7 @@ WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( int _x, int _y )
 		r.h -= m_headerLen + m_footerLen;
 	}
 
-	if( m_pBgGfx && WgUtil::MarkTestBlock( _x, _y, m_pBgGfx->GetBlock(m_mode[C_BG]), r ) )
+	if( m_pBgGfx && WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode[C_BG]), r ) )
 		return C_BG;
 
 	return C_NONE;
@@ -607,7 +606,7 @@ void WgGizmoDragbar::UnmarkReqRender()
 
 //____ OnAction() _________________________________________________
 
-void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoDragbar::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	int		barPos, barLen;
 	ViewToPosLen( &barPos, &barLen );
@@ -666,7 +665,7 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 			if( m_mode[C_BAR] == WG_MODE_SELECTED )
 				return;
 
-			Component c = FindMarkedComponent(x,y);
+			Component c = FindMarkedComponent(pos);
 
 			if( c != C_NONE && m_mode[c] == WG_MODE_NORMAL )
 			{
@@ -682,7 +681,7 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 			if( button_key != 1 )
 				return;
 
-			Component c = FindMarkedComponent(x,y);
+			Component c = FindMarkedComponent(pos);
 
 			UnmarkReqRender();
 			m_mode[c] = WG_MODE_SELECTED;
@@ -696,9 +695,9 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 				{
 				case SKIP_PAGE:
 					if( pointerOfs - barPos < barLen/2 )
-						pEmitter->Emit( PrevPage() );
+						Emit( PrevPage() );
 					else
-						pEmitter->Emit( NextPage() );
+						Emit( NextPage() );
 					break;
 				case GOTO_POS:
 					m_mode[C_BAR] = WG_MODE_SELECTED;
@@ -713,9 +712,9 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
-				pEmitter->Emit( Forward() );
+				Emit( Forward() );
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
-				pEmitter->Emit( Back() );
+				Emit( Back() );
 
 			break;
 		}
@@ -728,20 +727,20 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 			if( m_mode[C_BAR] == WG_MODE_SELECTED )
 				return;
 
-			Component c = FindMarkedComponent(x,y);
+			Component c = FindMarkedComponent(pos);
 
 			if( c == C_BG )
 			{
 				if( pointerOfs - barPos < barLen/2 )
-					pEmitter->Emit( PrevPage() );
+					Emit( PrevPage() );
 				else
-					pEmitter->Emit( NextPage() );
+					Emit( NextPage() );
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
-				pEmitter->Emit( Forward() );
+				Emit( Forward() );
 
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
-				pEmitter->Emit( Back() );
+				Emit( Back() );
 
 			break;
 		}
@@ -773,7 +772,7 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
   					{
   						m_sliderPos = sliderPos;
 						RequestRender();
- 						pEmitter->Emit( SliderPos(), m_sliderPos );
+ 						Emit( SliderPos(), m_sliderPos );
 					}
 				}
 			}
@@ -786,7 +785,7 @@ void WgGizmoDragbar::OnAction( WgEmitter * pEmitter, WgInput::UserAction action,
 
 //____ MarkTestSlider() _______________________________________________________
 
-bool WgGizmoDragbar::MarkTestSlider( int _x, int _y )
+bool WgGizmoDragbar::MarkTestSlider( WgCord ofs )
 {
 	if( !m_pBarGfx )
 		return false;
@@ -809,7 +808,7 @@ bool WgGizmoDragbar::MarkTestSlider( int _x, int _y )
 		area.h = barLen;
 	}
 
-	return WgUtil::MarkTestBlock( _x, _y, m_pBarGfx->GetBlock(m_mode[C_BAR]), area );
+	return WgUtil::MarkTestBlock( ofs, m_pBarGfx->GetBlock(m_mode[C_BAR]), area );
 }
 
 

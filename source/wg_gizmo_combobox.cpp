@@ -127,7 +127,7 @@ void WgGizmoCombobox::SetTextFormat( const WgCharSeq& str )
 
 //____ OnAction() _____________________________________________________________
 
-void WgGizmoCombobox::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoCombobox::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	WgMode	newMode = m_mode;
 
@@ -221,14 +221,14 @@ void WgGizmoCombobox::OnCloneContent( const WgGizmo * _pOrg )
 {
 }
 
-//____ OnMarkTest() ______________________________________________________
+//____ OnAlphaTest() ______________________________________________________
 
-bool WgGizmoCombobox::OnMarkTest( const WgCord& ofs )
+bool WgGizmoCombobox::OnAlphaTest( const WgCord& ofs )
 {
 	if( !m_pTextBoxBg )
 		return false;
 
-	return WgUtil::MarkTestBlock( ofs.x, ofs.y, m_pTextBoxBg->GetBlock(m_mode), WgRect( WgCord(0,0), Size() ) );
+	return WgUtil::MarkTestBlock( ofs, m_pTextBoxBg->GetBlock(m_mode), WgRect( WgCord(0,0), Size() ) );
 }
 
 //____ OnGotInputFocus() ______________________________________________

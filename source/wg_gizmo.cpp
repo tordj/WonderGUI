@@ -29,7 +29,8 @@ static const char	s_type[] = {"Unspecified"};
 //____ Constructor ____________________________________________________________
 
 WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_bEnabled(true), m_bOpaque(false),
-					m_bRendersAll(false), m_bRenderOne(false), m_cursorStyle(WG_CURSOR_DEFAULT)
+					m_bRendersAll(false), m_bRenderOne(false), m_cursorStyle(WG_CURSOR_DEFAULT),
+					m_markPolicy( WG_MARKPOLICY_ALPHA )
 {
 }
 
@@ -101,6 +102,20 @@ WgSkinManager *	WgGizmo::GetSkinManager() const
 	return 0;
 }
 
+//____ MarkTest() _____________________________________________________________
+
+bool WgGizmo::MarkTest( const WgCord& ofs )
+{
+	switch( m_markPolicy )
+	{
+	case WG_MARKPOLICY_ALPHA:
+		return OnAlphaTest(ofs);
+	case WG_MARKPOLICY_TRANSPARENT:
+		return false;
+	default:						//WG_MARKPOLICY_OPAQUE:
+		return true;
+	}
+}
 
 //____ CloneContent() _________________________________________________________
 
@@ -111,6 +126,7 @@ void WgGizmo::CloneContent( const WgGizmo * _pOrg )
 
 	m_bEnabled		= _pOrg->m_bEnabled;
 	m_bOpaque		= _pOrg->m_bOpaque;
+	m_markPolicy	= _pOrg->m_markPolicy;
 
 	m_bRendersAll	= _pOrg->m_bRendersAll;
 	m_bRenderOne	= _pOrg->m_bRenderOne;
@@ -244,11 +260,11 @@ void WgGizmo::OnUpdate( const WgUpdateInfo& _updateInfo )
 {
 }
 
-void WgGizmo::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmo::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 }
 
-bool WgGizmo::OnMarkTest( const WgCord& ofs )
+bool WgGizmo::OnAlphaTest( const WgCord& ofs )
 {
 	return true;
 }

@@ -205,9 +205,9 @@ void WgGizmoProfiler::OnCloneContent( const WgGizmo * _pOrg )
 }
 
 
-//____ OnMarkTest() ___________________________________________________
+//____ OnAlphaTest() ___________________________________________________
 
-bool WgGizmoProfiler::OnMarkTest( const WgCord& ofs )
+bool WgGizmoProfiler::OnAlphaTest( const WgCord& ofs )
 {
 	return false;
 }

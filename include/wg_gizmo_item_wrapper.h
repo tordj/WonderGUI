@@ -122,7 +122,7 @@ protected:
 		if( action == WgInput::KEY_PRESS )
 			int x = 0;
 
-		T::OnAction( pEmitter, action, button_key, info, inputObj );
+		T::OnAction( action, button_key, info, inputObj );
 	}
 
  	void Render( const WgRect& _window, const WgRect& _clip )
@@ -147,7 +147,7 @@ protected:
 
 	WgItem*	GetMarkedItem( Uint32 _x, Uint32 _y )
 	{
-		if( T::OnMarkTest( WgCord( _x, _y ) ) )
+		if( T::OnAlphaTest( WgCord( _x, _y ) ) )
 			return this;
 			 
 		return 0;

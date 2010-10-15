@@ -98,7 +98,7 @@ public:
 protected:
 
 		void		OnUpdate( const WgUpdateInfo& _updateInfo );
-		void		OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+		void		OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 		void		OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 		void		OnCloneContent( const WgGizmo * _pOrg );
 		virtual void OnNewSize( const WgSize& size );

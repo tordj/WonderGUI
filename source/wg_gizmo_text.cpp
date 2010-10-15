@@ -152,7 +152,7 @@ void WgGizmoText::OnRefresh( void )
 
 //____ OnAction() _________________________________________________
 
-void WgGizmoText::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	if( m_bHasFocus && (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
@@ -298,9 +298,9 @@ void WgGizmoText::OnCloneContent( const WgGizmo * _pOrg )
 	//TODO: Implement!
 }
 
-//____ OnMarkTest() ______________________________________________________
+//____ OnAlphaTest() ______________________________________________________
 
-bool WgGizmoText::OnMarkTest( const WgCord& ofs )
+bool WgGizmoText::OnAlphaTest( const WgCord& ofs )
 {
 	return true;																				// Accept all at least for now...
 }

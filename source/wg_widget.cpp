@@ -39,21 +39,21 @@ WgWidget::WgWidget( WgWidget* pParent )
 	Init();
 	SetParent( pParent );
 	if( pParent )
-		SetGeometry( WgOrigo::topLeft(), 0, 0, WgOrigo::bottomRight(), 0, 0 );
+		SetGeometry( WgOrigo::topLeft(), 0, 0, WgOrigo::bottomRight(), 0, 0, false );
 }
 
 WgWidget::WgWidget( const WgRect& geometry, WgWidget * pParent )
 {
 	Init();
 	SetParent( pParent );
-	SetGeometry( WgOrigo::topLeft(), geometry );
+	SetGeometry( WgOrigo::topLeft(), geometry, false );
 }
 
 WgWidget::WgWidget( WgOrigo origo, const WgRect& geometry, WgWidget * pParent )
 {
 	Init();
 	SetParent( pParent );
-	SetGeometry( origo, geometry );
+	SetGeometry( origo, geometry, false );
 }
 
 WgWidget::WgWidget( WgOrigo topLeft, Sint32 x1, Sint32 y1, WgOrigo bottomRight,
@@ -61,7 +61,7 @@ WgWidget::WgWidget( WgOrigo topLeft, Sint32 x1, Sint32 y1, WgOrigo bottomRight,
 {
 	Init();
 	SetParent( pParent );
-	SetGeometry( topLeft, x1, y1, bottomRight, x2, y2 );
+	SetGeometry( topLeft, x1, y1, bottomRight, x2, y2, false );
 }
 
 
@@ -69,6 +69,8 @@ WgWidget::WgWidget( WgOrigo topLeft, Sint32 x1, Sint32 y1, WgOrigo bottomRight,
 
 WgWidget::~WgWidget( void )
 {
+	m_bDestroyed = true;				// So we won't call methods from multiple-inheritance-siblings that might already have been destroyed...
+
 	WgWidget * pChild = m_pFirstChild;
 	while( pChild != 0 )
 	{
@@ -77,8 +79,28 @@ WgWidget::~WgWidget( void )
 		delete pTmp;
 	}
 
+	// Handle input focus
 
-	SetParent( 0 );
+	AdoptionFocusUpdate( 0 );
+
+	// Temporarily save old data
+
+	WgWidget *	pOldSibling = m_pNextSibling;
+
+	// Disconnect/Connect
+
+	Disconnect();
+
+	// Update graphics, anchor/position, minTreeSize
+
+	if( m_pParent )
+	{
+		m_pParent->RefreshTreeSizeLimit();
+
+		if( m_bRenderedHere )
+			m_pParent->RequestRender( m_geo.x, m_geo.y, m_geo.w, m_geo.h, pOldSibling, true );
+
+	}
 }
 
 //____ Init() _________________________________________________________________
@@ -130,6 +152,7 @@ void WgWidget::Init()
 	m_tooltipDelay		= 500; // default 500 msec tooltip delay
 
 	m_cursorStyle		= WG_CURSOR_DEFAULT;
+	m_bDestroyed		= false;
 }
 
 //____ Type() _________________________________________________________________
@@ -175,7 +198,7 @@ const char * WgWidget::GetMyType()
 
 */
 
-bool WgWidget::SetGeometry( WgOrigo _topLeft, Sint32 _x1, Sint32 _y1, WgOrigo _bottomRight, Sint32 _x2, Sint32 _y2 )
+bool WgWidget::SetGeometry( WgOrigo _topLeft, Sint32 _x1, Sint32 _y1, WgOrigo _bottomRight, Sint32 _x2, Sint32 _y2, bool bEmit )
 {
 	if( _topLeft.anchorX() > _bottomRight.anchorX() || _topLeft.anchorY() > _bottomRight.anchorY() )
 		return false;
@@ -188,7 +211,7 @@ bool WgWidget::SetGeometry( WgOrigo _topLeft, Sint32 _x1, Sint32 _y1, WgOrigo _b
 	m_x2 = _x2;
 	m_y2 = _y2;
 
-	return UpdateGeometry( true );
+	return UpdateGeometry( true, false, bEmit );
 }
 
 //____ SetGeometry(2) _________________________________________________________
@@ -206,7 +229,7 @@ bool WgWidget::SetGeometry( WgOrigo _topLeft, Sint32 _x1, Sint32 _y1, WgOrigo _b
 	@return False if the specified geometry wasn't allowed and had to be tweaked.
 */
 
-bool WgWidget::SetGeometry( WgOrigo _origo, const WgRect& _geometry )
+bool WgWidget::SetGeometry( WgOrigo _origo, const WgRect& _geometry, bool bEmit )
 {
 	m_origo1	= _origo;
 	m_origo2	= _origo;
@@ -216,7 +239,7 @@ bool WgWidget::SetGeometry( WgOrigo _origo, const WgRect& _geometry )
 	m_x2 = _geometry.x + _geometry.w;
 	m_y2 = _geometry.y + _geometry.h;
 
-	return UpdateGeometry( true );
+	return UpdateGeometry( true, false, bEmit );
 }
 
 //____ SetGeometry(3) _________________________________________________________
@@ -232,14 +255,14 @@ widget is first adjusted and secondly the position.
 @return False if the specified geometry wasn't allowed and had to be tweaked.
 */
 
-bool WgWidget::SetGeometry( const WgRect& _geometry )
+bool WgWidget::SetGeometry( const WgRect& _geometry, bool bEmit )
 {
 	m_x1 = _geometry.x;
 	m_y1 = _geometry.y;
 	m_x2 = _geometry.x + _geometry.w;
 	m_y2 = _geometry.y + _geometry.h;
 
-	return UpdateGeometry( true );
+	return UpdateGeometry( true, false, bEmit );
 }
 
 
@@ -1255,209 +1278,209 @@ void WgWidget::ActionRespond( WgInput::UserAction _action, int _button, const Wg
 	switch( _action )
 	{
 		case WgInput::POINTER_ENTER:
-			Emit( PointerEnter() );
+			EmitW( PointerEnter() );
 			break;
 
 		case WgInput::POINTER_OVER:
 		{
-			Emit( PointerOver() );
+			EmitW( PointerOver() );
 			int x = _info.x;
 			int y = _info.y;
-			Emit( PointerOverPos(), x, y );
-			Emit( PointerOverPosX(), x );
-			Emit( PointerOverPosY(), y );
+			EmitW( PointerOverPos(), x, y );
+			EmitW( PointerOverPosX(), x );
+			EmitW( PointerOverPosY(), y );
 			Abs2local( &x, &y );
-			Emit( PointerOverOfs(), x, y );
-			Emit( PointerOverOfsX(), x );
-			Emit( PointerOverOfsY(), y );
+			EmitW( PointerOverOfs(), x, y );
+			EmitW( PointerOverOfsX(), x );
+			EmitW( PointerOverOfsY(), y );
 			break;
 		}
 
 		case WgInput::POINTER_OUTSIDE_MODAL:
 		{
-			Emit( PointerOutsideModal() );
+			EmitW( PointerOutsideModal() );
 			int x = _info.x;
 			int y = _info.y;
-			Emit( PointerOutsideModalPos(), x, y );
-			Emit( PointerOutsideModalPosX(), x );
-			Emit( PointerOutsideModalPosY(), y );
+			EmitW( PointerOutsideModalPos(), x, y );
+			EmitW( PointerOutsideModalPosX(), x );
+			EmitW( PointerOutsideModalPosY(), y );
 			Abs2local( &x, &y );
-			Emit( PointerOutsideModalOfs(), x, y );
-			Emit( PointerOutsideModalOfsX(), x );
-			Emit( PointerOutsideModalOfsY(), y );
+			EmitW( PointerOutsideModalOfs(), x, y );
+			EmitW( PointerOutsideModalOfsX(), x );
+			EmitW( PointerOutsideModalOfsY(), y );
 			break;
 		}
 
 
 		case WgInput::POINTER_EXIT:
-			Emit( PointerExit() );
+			EmitW( PointerExit() );
 			break;
 
 		case WgInput::BUTTON_PRESS:
 		{
-			Emit( ButtonPress(_button) );
+			EmitW( ButtonPress(_button) );
 			int x = _info.x;
 			int y = _info.y;
-     		Emit( ButtonPressPos(_button), x, y );
-     		Emit( ButtonPressPosX(_button), x );
-     		Emit( ButtonPressPosY(_button), y );
+     		EmitW( ButtonPressPos(_button), x, y );
+     		EmitW( ButtonPressPosX(_button), x );
+     		EmitW( ButtonPressPosY(_button), y );
 			Abs2local( &x, &y );
-			Emit( ButtonPressOfs(_button), x, y );
-			Emit( ButtonPressOfsX(_button), x );
-			Emit( ButtonPressOfsY(_button), y );
+			EmitW( ButtonPressOfs(_button), x, y );
+			EmitW( ButtonPressOfsX(_button), x );
+			EmitW( ButtonPressOfsY(_button), y );
 			break;
 		}
 
 		case WgInput::BUTTON_DOWN:
 		{
-			Emit( ButtonDown(_button) );
+			EmitW( ButtonDown(_button) );
 			int x = _info.x;
 			int y = _info.y;
-			Emit( ButtonDownPos(_button), x, y );
-			Emit( ButtonDownPosX(_button), x );
-			Emit( ButtonDownPosY(_button), y );
+			EmitW( ButtonDownPos(_button), x, y );
+			EmitW( ButtonDownPosX(_button), x );
+			EmitW( ButtonDownPosY(_button), y );
 			Abs2local( &x, &y );
-			Emit( ButtonDownOfs(_button), x, y );
-			Emit( ButtonDownOfsX(_button), x );
-			Emit( ButtonDownOfsY(_button), y );
+			EmitW( ButtonDownOfs(_button), x, y );
+			EmitW( ButtonDownOfsX(_button), x );
+			EmitW( ButtonDownOfsY(_button), y );
 
 			const WgActionDetails * pDetails = _inputObj.getPressDetails(_button);
-			Emit( ButtonDragTotal(_button), _info.x - pDetails->x, _info.y - pDetails->y );
-			Emit( ButtonDragTotalX(_button), _info.x - pDetails->x );
-			Emit( ButtonDragTotalY(_button), _info.y - pDetails->y );
+			EmitW( ButtonDragTotal(_button), _info.x - pDetails->x, _info.y - pDetails->y );
+			EmitW( ButtonDragTotalX(_button), _info.x - pDetails->x );
+			EmitW( ButtonDragTotalY(_button), _info.y - pDetails->y );
 
 			pDetails = _inputObj.getMouseOverDetails();
-			Emit( ButtonDragSinceLast(_button), _info.x - pDetails->x, _info.y - pDetails->y );
-			Emit( ButtonDragSinceLastX(_button), _info.x - pDetails->x );
-			Emit( ButtonDragSinceLastY(_button), _info.y - pDetails->y );
+			EmitW( ButtonDragSinceLast(_button), _info.x - pDetails->x, _info.y - pDetails->y );
+			EmitW( ButtonDragSinceLastX(_button), _info.x - pDetails->x );
+			EmitW( ButtonDragSinceLastY(_button), _info.y - pDetails->y );
 			break;
 		}
 
 		case WgInput::BUTTON_REPEAT:
 		{
-			Emit( ButtonRepeat(_button) );
+			EmitW( ButtonRepeat(_button) );
 			int x = _info.x;
 			int y = _info.y;
-			Emit( ButtonRepeatPos(_button), x, y );
-			Emit( ButtonRepeatPosX(_button), x );
-			Emit( ButtonRepeatPosY(_button), y );
+			EmitW( ButtonRepeatPos(_button), x, y );
+			EmitW( ButtonRepeatPosX(_button), x );
+			EmitW( ButtonRepeatPosY(_button), y );
 			Abs2local( &x, &y );
-			Emit( ButtonRepeatOfs(_button), x, y );
-			Emit( ButtonRepeatOfsX(_button), x );
-			Emit( ButtonRepeatOfsY(_button), y );
+			EmitW( ButtonRepeatOfs(_button), x, y );
+			EmitW( ButtonRepeatOfsX(_button), x );
+			EmitW( ButtonRepeatOfsY(_button), y );
 			break;
         }
 
 		case WgInput::BUTTON_RELEASE:
 		{
-     		Emit( ButtonRelease(_button) );
+     		EmitW( ButtonRelease(_button) );
 			int x = _info.x;
 			int y = _info.y;
-			Emit( ButtonReleasePos(_button), x, y );
-			Emit( ButtonReleasePosX(_button), x );
-			Emit( ButtonReleasePosY(_button), y );
+			EmitW( ButtonReleasePos(_button), x, y );
+			EmitW( ButtonReleasePosX(_button), x );
+			EmitW( ButtonReleasePosY(_button), y );
 			Abs2local( &x, &y );
-			Emit( ButtonReleaseOfs(_button), x, y );
-			Emit( ButtonReleaseOfsX(_button), x );
-			Emit( ButtonReleaseOfsY(_button), y );
+			EmitW( ButtonReleaseOfs(_button), x, y );
+			EmitW( ButtonReleaseOfsX(_button), x );
+			EmitW( ButtonReleaseOfsY(_button), y );
 			break;
 		}
 
 		case WgInput::BUTTON_RELEASE_OUTSIDE:
 		{
-     		Emit( ButtonReleaseOutside(_button) );
+     		EmitW( ButtonReleaseOutside(_button) );
 			int x = _info.x;
 			int y = _info.y;
-			Emit( ButtonReleaseOutsidePos(_button), x, y );
-			Emit( ButtonReleaseOutsidePosX(_button), x );
-			Emit( ButtonReleaseOutsidePosY(_button), y );
+			EmitW( ButtonReleaseOutsidePos(_button), x, y );
+			EmitW( ButtonReleaseOutsidePosX(_button), x );
+			EmitW( ButtonReleaseOutsidePosY(_button), y );
 			Abs2local( &x, &y );
-			Emit( ButtonReleaseOutsideOfs(_button), x, y );
-			Emit( ButtonReleaseOutsideOfsX(_button), x );
-			Emit( ButtonReleaseOutsideOfsY(_button), y );
+			EmitW( ButtonReleaseOutsideOfs(_button), x, y );
+			EmitW( ButtonReleaseOutsideOfsX(_button), x );
+			EmitW( ButtonReleaseOutsideOfsY(_button), y );
 			break;
 		}
 
 
 		case WgInput::BUTTON_CLICK:
 		{
-     		Emit( ButtonClick(_button) );
+     		EmitW( ButtonClick(_button) );
 			int x = _info.x;
 			int y = _info.y;
-			Emit( ButtonClickPos(_button), x, y );
-			Emit( ButtonClickPosX(_button), x );
-			Emit( ButtonClickPosY(_button), y );
+			EmitW( ButtonClickPos(_button), x, y );
+			EmitW( ButtonClickPosX(_button), x );
+			EmitW( ButtonClickPosY(_button), y );
 			Abs2local( &x, &y );
-			Emit( ButtonClickOfs(_button), x, y );
-			Emit( ButtonClickOfsX(_button), x );
-			Emit( ButtonClickOfsY(_button), y );
+			EmitW( ButtonClickOfs(_button), x, y );
+			EmitW( ButtonClickOfsX(_button), x );
+			EmitW( ButtonClickOfsY(_button), y );
 			break;
 		}
 
 		case WgInput::BUTTON_DOUBLECLICK:
 		{
-     		Emit( ButtonDoubleClick(_button) );
+     		EmitW( ButtonDoubleClick(_button) );
 			int x = _info.x;
 			int y = _info.y;
-			Emit( ButtonDoubleClickPos(_button), x, y );
-			Emit( ButtonDoubleClickPosX(_button), x );
-			Emit( ButtonDoubleClickPosY(_button), y );
+			EmitW( ButtonDoubleClickPos(_button), x, y );
+			EmitW( ButtonDoubleClickPosX(_button), x );
+			EmitW( ButtonDoubleClickPosY(_button), y );
 			Abs2local( &x, &y );
-			Emit( ButtonDoubleClickOfs(_button), x, y );
-			Emit( ButtonDoubleClickOfsX(_button), x );
-			Emit( ButtonDoubleClickOfsY(_button), y );
+			EmitW( ButtonDoubleClickOfs(_button), x, y );
+			EmitW( ButtonDoubleClickOfsX(_button), x );
+			EmitW( ButtonDoubleClickOfsY(_button), y );
 			break;
 		}
 
 		case WgInput::WHEEL_ROLL:
 		{
-			Emit( WheelRoll( _button), _info.rolldistance );
+			EmitW( WheelRoll( _button), _info.rolldistance );
 			break;
 		}
 
 		case WgInput::BUTTON_PRESS_OUTSIDE_MODAL:
 		{
-			Emit( ButtonPressOutsideModal(_button) );
+			EmitW( ButtonPressOutsideModal(_button) );
 			break;
 		}
 
 		case WgInput::BUTTON_RELEASE_OUTSIDE_MODAL:
 		{
-			Emit( ButtonReleaseOutsideModal(_button) );
+			EmitW( ButtonReleaseOutsideModal(_button) );
 			break;
 		}
 
 		case WgInput::WHEEL_ROLL_OUTSIDE_MODAL:
 		{
-			Emit( WheelRollOutsideModal( _button), _info.rolldistance );
+			EmitW( WheelRollOutsideModal( _button), _info.rolldistance );
 			break;
 		}
 
 		case WgInput::KEY_PRESS:
 		{
-			Emit( KeyPress(_button, _info.modifier) );
-//			Emit( sig_keyPressAnyModifier[_button] );
+			EmitW( KeyPress(_button, _info.modifier) );
+//			EmitW( sig_keyPressAnyModifier[_button] );
 			break;
 		}
 
 		case WgInput::KEY_DOWN:
 		{
-			Emit( KeyDown(_button, _info.modifier) );
-//			Emit( sig_keyDownAnyModifier[_button] );
+			EmitW( KeyDown(_button, _info.modifier) );
+//			EmitW( sig_keyDownAnyModifier[_button] );
 			break;
 		}
 
 		case WgInput::KEY_REPEAT:
 		{
-			Emit( KeyRepeat(_button, _info.modifier) );
-//			Emit( sig_keyRepeatAnyModifier[_button] );
+			EmitW( KeyRepeat(_button, _info.modifier) );
+//			EmitW( sig_keyRepeatAnyModifier[_button] );
 			break;
 		}
 
 		case WgInput::KEY_RELEASE:
 		{
-			Emit( KeyRelease(_button, _info.modifier) );
-//			Emit( sig_keyReleaseAnyModifier[_button] );
+			EmitW( KeyRelease(_button, _info.modifier) );
+//			EmitW( sig_keyReleaseAnyModifier[_button] );
 			break;
 		}
 
@@ -1507,7 +1530,7 @@ void WgWidget::UpdateX( const WgUpdateInfo& _info )
 
 //____ UpdateGeometry() _______________________________________________________
 
-bool WgWidget::UpdateGeometry( bool bPreferResize, bool bMoveChildren )
+bool WgWidget::UpdateGeometry( bool bPreferResize, bool bMoveChildren, bool bEmit )
 {
 
 	//
@@ -1735,7 +1758,8 @@ bool WgWidget::UpdateGeometry( bool bPreferResize, bool bMoveChildren )
 			}
 		}
 
-			Emit( WgSignal::GeometryChange() );
+		if( bEmit )
+			EmitW( WgSignal::GeometryChange() );
 	}
 
 	return retVal;
@@ -2211,23 +2235,26 @@ void	WgWidget::CloneContent( WgWidget * _pClone, WgWidget * _pCloneRoot, WgWidge
 
 	// Clone Emitter data
 
-	_pClone->m_nCallbacks 			= m_nCallbacks;
-	if( m_nCallbacks && _pTreeRoot )
+	WgEmitter * pCloneEmitter = _pClone->GetEmitter();
+	WgEmitter * pEmitter = GetEmitter();
+
+	pCloneEmitter->m_nCallbacks 	= pEmitter->m_nCallbacks;
+	if( pEmitter->m_nCallbacks && _pTreeRoot )
 	{
-		_pClone->m_paCallbacks		= new WgCallback[m_nCallbacks];
-		for( int i = 0 ; i < m_nCallbacks ; i++ )
+		pCloneEmitter->m_paCallbacks		= new WgCallback[pEmitter->m_nCallbacks];
+		for( int i = 0 ; i < pEmitter->m_nCallbacks ; i++ )
 		{
-			_pClone->m_paCallbacks[i] = m_paCallbacks[i];
+			pCloneEmitter->m_paCallbacks[i] = pEmitter->m_paCallbacks[i];
 
 			char	map[1024];												// Should be more than enough...
 			map[0] = 0;
 
-			if( _pTreeRoot->PathFinder( (WgWidget *) _pClone->m_paCallbacks[i].pObj, map ) )	// Typecast to WgWidget is OK in this case...
-				_pClone->m_paCallbacks[i].pObj = _pCloneRoot->PathFollower( map );
+			if( _pTreeRoot->PathFinder( (WgWidget *) pCloneEmitter->m_paCallbacks[i].pObj, map ) )	// Typecast to WgWidget is OK in this case...
+				pCloneEmitter->m_paCallbacks[i].pObj = _pCloneRoot->PathFollower( map );
 		}
 	}
 	else
-		_pClone->m_paCallbacks		= 0;
+		pCloneEmitter->m_paCallbacks		= 0;
 
 	// Clone Type-specific data.
 

@@ -32,7 +32,7 @@
 #endif
 
 
-class Wdg_Shader:public WgWidget
+class Wdg_Shader:public WgWidget, public WgEmitter
 {
 	public:
 
@@ -54,6 +54,7 @@ class Wdg_Shader:public WgWidget
 		WgWidget * NewOfMyType() const;
 
 		virtual void	RenderRecursively(Uint8 _layer);
+		WgEmitter * GetEmitter() { return this; }
 
 	private:
 		void	Init();

@@ -112,9 +112,9 @@ class	WgGizmoDragbar : public WgGizmo
 	protected:
 		void	OnCloneContent( const WgGizmo * _pOrg );
 		void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-		void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+		void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 		void	OnRefresh();
-		bool	OnMarkTest( const WgCord& ofs );
+		bool	OnAlphaTest( const WgCord& ofs );
 		void	OnEnable();
 		void	OnDisable();
 
@@ -166,10 +166,10 @@ class	WgGizmoDragbar : public WgGizmo
 		void	UpdateMinSize( void );
 
 
-		Component	FindMarkedComponent( int _x, int _y );								// -1 = None.
+		Component	FindMarkedComponent( WgCord ofs );								// -1 = None.
 		void		RenderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block );
-		bool		MarkTestButton( int _x, int _y, WgRect& _dest, const WgBlock& _block );
-		bool		MarkTestSlider( int _x, int _y );
+		bool		MarkTestButton( WgCord ofs, WgRect& _dest, const WgBlock& _block );
+		bool		MarkTestSlider( WgCord ofs );
 		void		HeaderFooterChanged();
 		void		UnmarkReqRender();
 };

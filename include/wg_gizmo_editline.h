@@ -81,7 +81,7 @@ protected:
 	bool	IsSelectable() const { return m_inputMode != Static; }
 
 	void	OnUpdate( const WgUpdateInfo& _updateInfo );
-	void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	void	OnGotInputFocus();
 	void	OnLostInputFocus();
 	void	OnCloneContent( const WgGizmo * _pOrg );

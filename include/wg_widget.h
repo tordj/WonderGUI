@@ -90,12 +90,13 @@ class	Wg_Interface_TextHolder;
 
 //____ Class: WgWidget __________________________________________________________
 
-class	WgWidget : public WgEmitter
+class	WgWidget
 {
  	friend class Wdg_Root;
 	friend class WgInput;
 	friend class Wdg_Shader;
 	friend class WgWidgetHook;
+	friend class WgWidgetContainer;
 
 	public:
 		WgWidget( WgWidget* pParent = 0 );
@@ -226,9 +227,9 @@ class	WgWidget : public WgEmitter
 		WgWidget*			Root();											///< Returns the root of this widgets branch. Not necessarily a Wdg_Root object!
 		virtual	bool		IsRootWidget() const { return false; }			///< Returns true if this widget is a real root widget (of the Wdg_Root class).
 
-		virtual bool		SetGeometry( WgOrigo _origo, const WgRect& _geometry );
-		virtual bool		SetGeometry( WgOrigo _topLeft, Sint32 x1, Sint32 y1, WgOrigo _bottomRight, Sint32 x2, Sint32 y2 );
-		virtual bool		SetGeometry( const WgRect& _geometry );
+		virtual bool		SetGeometry( WgOrigo _origo, const WgRect& _geometry, bool bEmit = true );
+		virtual bool		SetGeometry( WgOrigo _topLeft, Sint32 x1, Sint32 y1, WgOrigo _bottomRight, Sint32 x2, Sint32 y2, bool bEmit = true );
+		virtual bool		SetGeometry( const WgRect& _geometry, bool bEmit = true );
 		inline const WgRect&	Geometry() const { return m_geo; };
 		WgRect				ScreenGeometry() const;
 
@@ -346,6 +347,72 @@ class	WgWidget : public WgEmitter
 		virtual const WgGizmo * GetGizmo() const { return 0; }
 		virtual WgGizmoHook * GetHook() const { return 0; }
 
+		virtual WgEmitter * GetEmitter() = 0;
+
+
+
+	inline void AddCallbackW( WgSignal::Signal_void sig, void(*fp)(void*), void * pObj ) {	if( !m_bDestroyed ) GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_void signal ) { if( !m_bDestroyed ) GetEmitter()->Emit(signal); }																					
+	inline int	RemoveCallbackW( WgSignal::Signal_void signal, void(*fp)(void*), void * pObj ) { return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+	
+	inline void AddCallbackW( WgSignal::Signal_bool sig, void(*fp)(void*,bool), void * pObj ) { if( !m_bDestroyed ) GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_bool signal, bool p1 ) { if( !m_bDestroyed ) GetEmitter()->Emit(signal,p1); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,bool), void * pObj ) {	return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_int sig, void(*fp)(void*,int), void * pObj ) { if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_int signal, int p1 ) { if( !m_bDestroyed )GetEmitter()->Emit(signal,p1); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,int), void * pObj ) {	return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_int64 sig, void(*fp)(void*,Sint64), void * pObj ) { if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_int64 signal, Sint64 p1 ) { if( !m_bDestroyed )GetEmitter()->Emit(signal,p1); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,Sint64), void * pObj ) {	return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_float sig, void(*fp)(void*,float), void * pObj ) { if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_float signal, float p1 ) { if( !m_bDestroyed )GetEmitter()->Emit(signal,p1); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,float), void * pObj ) {	return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_voidptr sig, void(*fp)(void*,const void *), void * pObj ) { if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_voidptr signal, const void * p1 ) { if( !m_bDestroyed )GetEmitter()->Emit(signal,p1); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,const void *), void * pObj ) {	return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_charptr sig, void(*fp)(void*,const char *), void * pObj ) { if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_charptr signal, const char * p1 ) { if( !m_bDestroyed )GetEmitter()->Emit(signal,p1); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,const char *), void * pObj ) {	return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_item sig, void(*fp)(void*,WgItem *), void * pObj ) { if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_item signal, WgItem * p1 ) { if( !m_bDestroyed )GetEmitter()->Emit(signal,p1); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,WgItem *), void * pObj ) {	return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_menuitem sig, void(*fp)(void*,WgMenuItem *), void * pObj ) { if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_menuitem signal, WgMenuItem * p1 ) { if( !m_bDestroyed )GetEmitter()->Emit(signal,p1); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,WgMenuItem *), void * pObj ) {	return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_treeentry sig, void(*fp)(void*,WgTreeEntry *), void * pObj ) { if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_treeentry signal, WgTreeEntry * p1 ) { if( !m_bDestroyed )GetEmitter()->Emit(signal,p1); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,WgTreeEntry *), void * pObj ) { return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_bool_bool sig, void(*fp)(void*,bool,bool), void * pObj ) {	if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_bool_bool signal, bool p1, bool p2 )	{ if( !m_bDestroyed )GetEmitter()->Emit(signal,p1,p2); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,bool,bool), void * pObj ) { return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_int_int sig, void(*fp)(void*,int,int), void * pObj ) {	if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_int_int signal, int p1, int p2 )	{ if( !m_bDestroyed )GetEmitter()->Emit(signal,p1,p2); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,int,int), void * pObj ) { return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+	inline void AddCallbackW( WgSignal::Signal_float_float sig, void(*fp)(void*,float,float), void * pObj ) {	if( !m_bDestroyed )GetEmitter()->AddCallbackUnsafe( sig, (void*) fp, pObj ); }
+	inline void EmitW( WgSignal::Signal_float_float signal, float p1, float p2 )	{ if( !m_bDestroyed )GetEmitter()->Emit(signal,p1,p2); }
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void(*fp)(void*,float,float), void * pObj ) { return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, (void*) fp, pObj ):0; }
+
+
+	inline int	RemoveCallbackW( WgSignal::Signal signal, void * pCallback, void * pObj ) { return (!m_bDestroyed)?GetEmitter()->RemoveCallback( signal, pCallback, pObj ):0; } 
+	inline int	RemoveCallbacksW( WgSignal::Signal signal ) { return (!m_bDestroyed)?GetEmitter()->RemoveCallbacks( signal ):0; }
+	inline int	RemoveCallbacksW( void * pObj ) { return (!m_bDestroyed)?GetEmitter()->RemoveCallbacks( pObj ):0; }
+	inline int	RemoveCallbacksW() { return (!m_bDestroyed)?GetEmitter()->RemoveCallbacks():0; }
+
+
+
+
+
 	protected:
 
 		Sint64		m_id;
@@ -377,7 +444,7 @@ class	WgWidget : public WgEmitter
 		bool		m_bMoveChildren;
 
 
-
+		bool		m_bDestroyed;
 
 
 		// To be set accordingly by derived classes. Initialised to default values.
@@ -447,7 +514,7 @@ private:
 		// Functions related to resizing (and indirectly moving/parenting etc).
 
 		void	RefreshTreeSizeLimit( void );	// Calculates minWidth & minHeight for szLimit_tree;
-		bool	UpdateGeometry(bool bPreferResize, bool bMoveChildren = false);
+		bool	UpdateGeometry(bool bPreferResize, bool bMoveChildren = false, bool bEmit = true );
 //		void	AnchorRefresh();				// Called when parent moves/resizes.
 
 		// Common subfunctions for Parent/Up/Down/Top/Bottom/Modal

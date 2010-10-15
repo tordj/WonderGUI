@@ -83,11 +83,11 @@ protected:
 */	
 
 
-	virtual void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	virtual void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	virtual void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			OnRefresh();
 	virtual void	OnCloneContent( const WgGizmo * _pOrg );
-	bool			OnMarkTest( const WgCord& ofs );
+	bool			OnAlphaTest( const WgCord& ofs );
 	void			OnEnable();
 	void			OnDisable();
 	virtual void	OnNewSize( const WgSize& size );

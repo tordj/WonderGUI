@@ -86,11 +86,8 @@ void WgGizmoValue::SetFormat( const WgValueFormat& format )
 
 void WgGizmoValue::ValueModified()
 {
-	if( m_pHook )
-	{
-		m_pHook->GetEmitter()->Emit( IntegerChanged(), m_value );	
-		m_pHook->GetEmitter()->Emit( Fraction(), FractionalValue() );
-	}
+	Emit( IntegerChanged(), m_value );	
+	Emit( Fraction(), FractionalValue() );
 
 	m_bRegenText = true;
 	RequestRender();
@@ -100,8 +97,7 @@ void WgGizmoValue::ValueModified()
 
 void WgGizmoValue::RangeModified()
 {
-	if( m_pHook )
-		m_pHook->GetEmitter()->Emit( Fraction(), FractionalValue() );
+	Emit( Fraction(), FractionalValue() );
 }
 
 

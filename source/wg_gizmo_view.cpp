@@ -22,6 +22,7 @@
 
 #include <wg_gizmo_view.h>
 #include <wg_gfxdevice.h>
+#include <wg_util.h>
 
 
 using namespace WgSignal;
@@ -50,11 +51,9 @@ WgGizmoView::WgGizmoView()
 	m_bAutoScrollX		= false;
 	m_bAutoScrollY		= false;
 
-	new (&m_elementsCollection) ViewGizmoCollection(this);
-
-	new (&m_elements[WINDOW]) ViewHook( (WgGizmo*)0, this, &m_elementsCollection );
-	new (&m_elements[XDRAG]) ViewHook( (WgGizmoHDragbar*)0, this, &m_elementsCollection );
-	new (&m_elements[YDRAG]) ViewHook( (WgGizmoVDragbar*)0, this, &m_elementsCollection );
+	new (&m_elements[WINDOW]) WgViewHook( (WgGizmo*)0, this );
+	new (&m_elements[XDRAG]) WgViewHook( (WgGizmoHDragbar*)0, this );
+	new (&m_elements[YDRAG]) WgViewHook( (WgGizmoVDragbar*)0, this );
 
 	UpdateElementGeometry( WgSize(256,256), WgSize(0,0) );
 }
@@ -323,35 +322,26 @@ bool WgGizmoView::SetViewPixelOfs( int x, int y )
 
 	if( bChangedX )
 	{
-		if( m_pHook )
-		{
-			m_pHook->GetEmitter()->Emit( ViewPosX(), ofsX );
-			m_pHook->GetEmitter()->Emit( ViewPosPixelX(), m_viewPixOfs.x );
+		Emit( ViewPosX(), ofsX );
+		Emit( ViewPosPixelX(), m_viewPixOfs.x );
 
-			m_pHook->GetEmitter()->Emit( ViewPosSizeX(), ofsX, ViewLenX() );
-			m_pHook->GetEmitter()->Emit( ViewPosSizePixelX(), m_viewPixOfs.x, pixLenX );
-		}
+		Emit( ViewPosSizeX(), ofsX, ViewLenX() );
+		Emit( ViewPosSizePixelX(), m_viewPixOfs.x, pixLenX );
 	}
 
 	if( bChangedY )
 	{
-		if( m_pHook )
-		{
-			m_pHook->GetEmitter()->Emit( ViewPosY(), ofsY );
-			m_pHook->GetEmitter()->Emit( ViewPosPixelY(), m_viewPixOfs.y );
+		Emit( ViewPosY(), ofsY );
+		Emit( ViewPosPixelY(), m_viewPixOfs.y );
 
-			m_pHook->GetEmitter()->Emit( ViewPosSizeY(), ofsY, ViewLenY() );
-			m_pHook->GetEmitter()->Emit( ViewPosSizePixelY(), m_viewPixOfs.y, pixLenY );
-		}
+		Emit( ViewPosSizeY(), ofsY, ViewLenY() );
+		Emit( ViewPosSizePixelY(), m_viewPixOfs.y, pixLenY );
 	}
 
 	if( bChangedX || bChangedY )
 	{
-		if( m_pHook )
-		{
-			m_pHook->GetEmitter()->Emit( ViewPos(), ofsX, ViewOfsY() );
-			m_pHook->GetEmitter()->Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
-		}
+		Emit( ViewPos(), ofsX, ViewOfsY() );
+		Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
 	}
 
 	RequestRender();
@@ -381,17 +371,14 @@ bool WgGizmoView::SetViewPixelOfsX( int x )
 
 	float	ofsX = ViewOfsX();
 
-	if( m_pHook )
-	{
-		m_pHook->GetEmitter()->Emit( ViewPosX(), ofsX );
-		m_pHook->GetEmitter()->Emit( ViewPosPixelX(), m_viewPixOfs.x );
+	Emit( ViewPosX(), ofsX );
+	Emit( ViewPosPixelX(), m_viewPixOfs.x );
 
-		m_pHook->GetEmitter()->Emit( ViewPos(), ofsX, ViewOfsY() );
-		m_pHook->GetEmitter()->Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
+	Emit( ViewPos(), ofsX, ViewOfsY() );
+	Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
 
-		m_pHook->GetEmitter()->Emit( ViewPosSizeX(), ofsX, ViewLenX() );
-		m_pHook->GetEmitter()->Emit( ViewPosSizePixelX(), m_viewPixOfs.x, pixLenX );
-	}
+	Emit( ViewPosSizeX(), ofsX, ViewLenX() );
+	Emit( ViewPosSizePixelX(), m_viewPixOfs.x, pixLenX );
 
 	RequestRender();
 	return retVal;
@@ -421,17 +408,14 @@ bool WgGizmoView::SetViewPixelOfsY( int y )
 
 	float	ofsY = ViewOfsY();
 
-	if( m_pHook )
-	{
-		m_pHook->GetEmitter()->Emit( ViewPosY(), ofsY );
-		m_pHook->GetEmitter()->Emit( ViewPosPixelY(), m_viewPixOfs.y );
+	Emit( ViewPosY(), ofsY );
+	Emit( ViewPosPixelY(), m_viewPixOfs.y );
 
-		m_pHook->GetEmitter()->Emit( ViewPos(), ViewOfsX(), ofsY );
-		m_pHook->GetEmitter()->Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
+	Emit( ViewPos(), ViewOfsX(), ofsY );
+	Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
 
-		m_pHook->GetEmitter()->Emit( ViewPosSizeY(), ofsY, ViewLenY() );
-		m_pHook->GetEmitter()->Emit( ViewPosSizePixelY(), m_viewPixOfs.y, pixLenY );
-	}
+	Emit( ViewPosSizeY(), ofsY, ViewLenY() );
+	Emit( ViewPosSizePixelY(), m_viewPixOfs.y, pixLenY );
 
 	RequestRender();
 	return retVal;
@@ -503,8 +487,8 @@ bool WgGizmoView::SetContent( WgGizmo * pContent )
 	// Delete previous hook and gizmo by explicitly calling its destructor.
 	// Placement new for a new hook holding this gizmo.
 
-	m_elements[WINDOW].~ViewHook();
-	new (&m_elements[WINDOW])ViewHook(pContent, this, &m_elementsCollection);
+	m_elements[WINDOW].~WgViewHook();
+	new (&m_elements[WINDOW])WgViewHook(pContent, this );
 
 	//
 
@@ -521,27 +505,27 @@ bool WgGizmoView::SetScrollbarX( WgGizmoHDragbar* pScrollbar )
 	// Remove callbacks to current scrollbar (if we have any)
 
 	if( m_elements[XDRAG].Gizmo() )
-		m_pHook->GetEmitter()->RemoveCallbacks(m_elements[XDRAG].Gizmo());
+		RemoveCallbacks(m_elements[XDRAG].Gizmo());
 
 	// Delete previous hook and gizmo by explicitly calling its destructor.
 	// Placement new for a new hook holding this gizmo.
 
-	m_elements[XDRAG].~ViewHook();
-	new (&m_elements[XDRAG])ViewHook(pScrollbar, this, &m_elementsCollection);
+	m_elements[XDRAG].~WgViewHook();
+	new (&m_elements[XDRAG])WgViewHook(pScrollbar, this );
 
 	//
 
 	if( pScrollbar )
 	{
-		m_elements[XDRAG].GetEmitter()->AddCallback( WgSignal::SliderPos(), WgGizmoView::cbSetViewOfsX, this );
-		m_elements[XDRAG].GetEmitter()->AddCallback( WgSignal::PrevPage(), WgGizmoView::cbJumpLeft, this );
-		m_elements[XDRAG].GetEmitter()->AddCallback( WgSignal::NextPage(), WgGizmoView::cbJumpRight, this );
-		m_elements[XDRAG].GetEmitter()->AddCallback( WgSignal::Forward(), WgGizmoView::cbStepRight, this );
-		m_elements[XDRAG].GetEmitter()->AddCallback( WgSignal::Back(), WgGizmoView::cbStepLeft, this );
-		m_elements[XDRAG].GetEmitter()->AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
+		pScrollbar->AddCallback( WgSignal::SliderPos(), WgGizmoView::cbSetViewOfsX, this );
+		pScrollbar->AddCallback( WgSignal::PrevPage(), WgGizmoView::cbJumpLeft, this );
+		pScrollbar->AddCallback( WgSignal::NextPage(), WgGizmoView::cbJumpRight, this );
+		pScrollbar->AddCallback( WgSignal::Forward(), WgGizmoView::cbStepRight, this );
+		pScrollbar->AddCallback( WgSignal::Back(), WgGizmoView::cbStepLeft, this );
+		pScrollbar->AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
 
-		m_pHook->GetEmitter()->AddCallback( WgSignal::ViewPosSizeX(), WgGizmoHDragbar::cbSetSlider, pScrollbar );
-		m_pHook->GetEmitter()->AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
+		AddCallback( WgSignal::ViewPosSizeX(), WgGizmoHDragbar::cbSetSlider, pScrollbar );
+		AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
 	}
 
 	UpdateElementGeometry( Size(), m_contentSize );
@@ -557,27 +541,27 @@ bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
 	// Remove callbacks to current scrollbar (if we have any)
 
 	if( m_elements[YDRAG].Gizmo() )
-		m_pHook->GetEmitter()->RemoveCallbacks(m_elements[YDRAG].Gizmo());
+		RemoveCallbacks(m_elements[YDRAG].Gizmo());
 
 	// Delete previous hook and gizmo by explicitly calling its destructor.
 	// Placement new for a new hook holding this gizmo.
 
-	m_elements[YDRAG].~ViewHook();
-	new (&m_elements[YDRAG])ViewHook(pScrollbar, this, &m_elementsCollection);
+	m_elements[YDRAG].~WgViewHook();
+	new (&m_elements[YDRAG])WgViewHook(pScrollbar, this );
 
 	//
 
 	if( pScrollbar )
 	{
-		m_elements[YDRAG].GetEmitter()->AddCallback( WgSignal::SliderPos(), WgGizmoView::cbSetViewOfsY, this );
-		m_elements[YDRAG].GetEmitter()->AddCallback( WgSignal::PrevPage(), WgGizmoView::cbJumpUp, this );
-		m_elements[YDRAG].GetEmitter()->AddCallback( WgSignal::NextPage(), WgGizmoView::cbJumpDown, this );
-		m_elements[YDRAG].GetEmitter()->AddCallback( WgSignal::Forward(), WgGizmoView::cbStepDown, this );
-		m_elements[YDRAG].GetEmitter()->AddCallback( WgSignal::Back(), WgGizmoView::cbStepUp, this );
-		m_elements[YDRAG].GetEmitter()->AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
+		pScrollbar->AddCallback( WgSignal::SliderPos(), WgGizmoView::cbSetViewOfsY, this );
+		pScrollbar->AddCallback( WgSignal::PrevPage(), WgGizmoView::cbJumpUp, this );
+		pScrollbar->AddCallback( WgSignal::NextPage(), WgGizmoView::cbJumpDown, this );
+		pScrollbar->AddCallback( WgSignal::Forward(), WgGizmoView::cbStepDown, this );
+		pScrollbar->AddCallback( WgSignal::Back(), WgGizmoView::cbStepUp, this );
+		pScrollbar->AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
 
-		m_pHook->GetEmitter()->AddCallback( WgSignal::ViewPosSizeY(), WgGizmoVDragbar::cbSetSlider, pScrollbar );
-		m_pHook->GetEmitter()->AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
+		AddCallback( WgSignal::ViewPosSizeY(), WgGizmoVDragbar::cbSetSlider, pScrollbar );
+		AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
 	}
 
 	UpdateElementGeometry( Size(), m_contentSize );
@@ -651,6 +635,53 @@ void WgGizmoView::SetFillerSource( const WgBlockSetPtr& pBlocks )
 {
 	m_pFillerBlocks = pBlocks;
 	RequestRender( m_geoFiller );
+}
+
+//____ FindGizmo() ____________________________________________________________
+
+WgGizmo * WgGizmoView::FindGizmo( const WgCord& pos, WgSearchMode mode )
+{
+	// Check XDRAG
+
+	WgViewHook * p = &m_elements[XDRAG];
+	if( p->m_pGizmo && p->m_geo.Contains( pos ) )
+	{
+		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() ) )
+			return p->m_pGizmo;
+	}
+	
+	// Check YDRAG
+
+	p = &m_elements[YDRAG];
+	if( p->m_pGizmo && p->m_geo.Contains( pos ) )
+	{
+		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() ) )
+			return p->m_pGizmo;
+	}
+
+	// Check WINDOW
+
+	p = &m_elements[WINDOW];
+	WgRect geo( p->m_geo.Pos(), WgSize::Min(p->m_geo,m_contentSize) );
+
+	if( p->m_pGizmo && geo.Contains( pos ) )
+	{
+		if( p->m_pGizmo->IsContainer() )
+		{
+			WgGizmo * pFound = p->m_pGizmo->CastToContainer()->FindGizmo( pos - p->m_geo.Pos() + m_viewPixOfs, mode );
+			if( pFound )
+				return pFound;
+		}
+		else if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() + m_viewPixOfs ) )
+			return p->m_pGizmo;
+	}
+
+	// Check our little corner square...
+
+	if( mode != WG_SEARCH_MARKPOLICY || MarkTest( pos ) )
+		return this;
+	else
+		return 0;
 }
 
 
@@ -829,51 +860,45 @@ void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& new
 	// Send signals if views size or position over content has changed
 	// or contents size has changed.
 
-	if( m_pHook )
-	{
-		WgEmitter * pEmitter = m_pHook->GetEmitter();
+	if( bNewOfsX || bNewContentWidth )
+		Emit( ViewPosX(), ViewOfsX() );
+	if( bNewOfsX )
+		Emit( ViewPosPixelX(), m_viewPixOfs.x );
 
-		if( bNewOfsX || bNewContentWidth )
-			pEmitter->Emit( ViewPosX(), ViewOfsX() );
-		if( bNewOfsX )
-			pEmitter->Emit( ViewPosPixelX(), m_viewPixOfs.x );
+	if( bNewOfsY || bNewContentHeight )
+		Emit( ViewPosY(), ViewOfsY() );
+	if( bNewOfsY )
+		Emit( ViewPosPixelY(), m_viewPixOfs.y );
 
-		if( bNewOfsY || bNewContentHeight )
-			pEmitter->Emit( ViewPosY(), ViewOfsY() );
-		if( bNewOfsY )
-			pEmitter->Emit( ViewPosPixelY(), m_viewPixOfs.y );
+	if( bNewWidth || bNewContentWidth )
+		Emit( ViewSizeX(), ViewLenX() );
+	if( bNewWidth )
+		Emit( ViewSizePixelX(), ViewPixelLenX() );
 
-		if( bNewWidth || bNewContentWidth )
-			pEmitter->Emit( ViewSizeX(), ViewLenX() );
-		if( bNewWidth )
-			pEmitter->Emit( ViewSizePixelX(), ViewPixelLenX() );
+	if( bNewHeight || bNewContentHeight )
+		Emit( ViewSizeY(), ViewLenY() );
+	if( bNewHeight )
+		Emit( ViewSizePixelY(), ViewPixelLenY() );
 
-		if( bNewHeight || bNewContentHeight )
-			pEmitter->Emit( ViewSizeY(), ViewLenY() );
-		if( bNewHeight )
-			pEmitter->Emit( ViewSizePixelY(), ViewPixelLenY() );
+	if( bNewOfsX || bNewWidth || bNewContentWidth )
+		Emit( ViewPosSizeX(), ViewOfsX(), ViewLenX() );
+	if( bNewOfsX || bNewWidth )
+		Emit( ViewPosSizePixelX(), m_viewPixOfs.x, ViewPixelLenX() );
 
-		if( bNewOfsX || bNewWidth || bNewContentWidth )
-			pEmitter->Emit( ViewPosSizeX(), ViewOfsX(), ViewLenX() );
-		if( bNewOfsX || bNewWidth )
-			pEmitter->Emit( ViewPosSizePixelX(), m_viewPixOfs.x, ViewPixelLenX() );
+	if( bNewOfsY || bNewHeight || bNewContentHeight )
+		Emit( ViewPosSizeY(), ViewOfsY(), ViewLenY() );
+	if( bNewOfsY || bNewHeight )
+		Emit( ViewPosSizePixelY(), m_viewPixOfs.y, ViewPixelLenY() );
+	
+	if( bNewOfsX || bNewOfsY || bNewContentHeight || bNewContentWidth )
+		Emit( ViewPos(), ViewOfsX(), ViewOfsY() );
+	if( bNewOfsX || bNewOfsY )
+		Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
 
-		if( bNewOfsY || bNewHeight || bNewContentHeight )
-			pEmitter->Emit( ViewPosSizeY(), ViewOfsY(), ViewLenY() );
-		if( bNewOfsY || bNewHeight )
-			pEmitter->Emit( ViewPosSizePixelY(), m_viewPixOfs.y, ViewPixelLenY() );
-		
-		if( bNewOfsX || bNewOfsY || bNewContentHeight || bNewContentWidth )
-			pEmitter->Emit( ViewPos(), ViewOfsX(), ViewOfsY() );
-		if( bNewOfsX || bNewOfsY )
-			pEmitter->Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
-
-		if( bNewWidth || bNewHeight || bNewContentHeight || bNewContentWidth )
-			pEmitter->Emit( ViewSize(), ViewLenX(), ViewLenY() );
-		if( bNewWidth || bNewHeight )
-			pEmitter->Emit( ViewSizePixel(), ViewPixelLenX(), ViewPixelLenY() );
-	}
-
+	if( bNewWidth || bNewHeight || bNewContentHeight || bNewContentWidth )
+		Emit( ViewSize(), ViewLenX(), ViewLenY() );
+	if( bNewWidth || bNewHeight )
+		Emit( ViewSizePixel(), ViewPixelLenX(), ViewPixelLenY() );
 }
 
 
@@ -924,7 +949,20 @@ void WgGizmoView::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 	}
 }
 
+//____ OnAlphaTest() ___________________________________________________________
 
+bool WgGizmoView::OnAlphaTest( const WgCord& ofs )
+{
+	if( m_pFillerBlocks && m_geoFiller.Contains( ofs ) )
+	{
+		WgMode mode = m_bEnabled?WG_MODE_NORMAL:WG_MODE_DISABLED;
+
+		if( WgUtil::MarkTestBlock( ofs, m_pFillerBlocks->GetBlock(mode), m_geoFiller ) )
+			return true;
+	}
+
+	return false;
+}
 
 //____ OnCloneContent() _______________________________________________________
 
@@ -983,99 +1021,100 @@ bool WgGizmoView::SetAutoscroll( bool bAutoX, bool bAutoY )
 
 
 
-//____ ViewHook::Constructors _________________________________________________
+//____ WgViewHook::Constructors _________________________________________________
 
-WgGizmoView::ViewHook::ViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView, WgGizmoCollection * pCollection ) 
-: WgGizmoHook( pHDragbar, pCollection ), m_type(WgGizmoView::XDRAG), m_pView(pView), m_bShow(false) { if( m_pGizmo ) DoSetGizmo(); }
+WgViewHook::WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView ) 
+: WgGizmoHook( pHDragbar ), /*m_type(WgGizmoView::XDRAG),*/ m_pView(pView), m_bShow(false) { if( m_pGizmo ) DoSetGizmo(); }
 
-WgGizmoView::ViewHook::ViewHook( WgGizmoVDragbar * pVDragbar, WgGizmoView * pView, WgGizmoCollection * pCollection ) 
-			: WgGizmoHook( pVDragbar, pCollection ), m_type(WgGizmoView::YDRAG), m_pView(pView), m_bShow(false) { if( m_pGizmo ) DoSetGizmo(); }
+WgViewHook::WgViewHook( WgGizmoVDragbar * pVDragbar, WgGizmoView * pView ) 
+			: WgGizmoHook( pVDragbar ), /*m_type(WgGizmoView::YDRAG),*/ m_pView(pView), m_bShow(false) { if( m_pGizmo ) DoSetGizmo(); }
 
-WgGizmoView::ViewHook::ViewHook( WgGizmo * pContent, WgGizmoView * pView, WgGizmoCollection * pCollection ) 
-			: WgGizmoHook( pContent, pCollection ), m_type(WgGizmoView::WINDOW), m_pView(pView), m_bShow(true) { if( m_pGizmo ) DoSetGizmo(); }
+WgViewHook::WgViewHook( WgGizmo * pContent, WgGizmoView * pView ) 
+			: WgGizmoHook( pContent ), /*m_type(WgGizmoView::WINDOW),*/ m_pView(pView), m_bShow(true) { if( m_pGizmo ) DoSetGizmo(); }
 
-//____ ViewHook::Destructor ___________________________________________________
+//____ WgViewHook::Destructor ___________________________________________________
 
-WgGizmoView::ViewHook::~ViewHook()
+WgViewHook::~WgViewHook()
 {
 	delete m_pGizmo;
 }
 
-//____ ViewHook::Pos() ________________________________________________________
+//____ WgViewHook::Pos() ________________________________________________________
 
-WgCord WgGizmoView::ViewHook::Pos() const
+WgCord WgViewHook::Pos() const
 {
 	return m_geo.Pos();
 }
 
-//____ ViewHook::Size() _______________________________________________________
+//____ WgViewHook::Size() _______________________________________________________
 
-WgSize WgGizmoView::ViewHook::Size() const
+WgSize WgViewHook::Size() const
 {
 	return m_geo.Size();
 }
 
-//____ ViewHook::Geo() ________________________________________________________
+//____ WgViewHook::Geo() ________________________________________________________
 
-WgRect WgGizmoView::ViewHook::Geo() const
+WgRect WgViewHook::Geo() const
 {
 	return m_geo;
 }
 
-//____ ViewHook::ScreenPos() __________________________________________________
+//____ WgViewHook::ScreenPos() __________________________________________________
 
-WgCord WgGizmoView::ViewHook::ScreenPos() const
+WgCord WgViewHook::ScreenPos() const
 {
 	return m_pView->ScreenPos() + m_geo.Pos();
 }
 
-//____ ViewHook::ScreenGeo() __________________________________________________
+//____ WgViewHook::ScreenGeo() __________________________________________________
 
-WgRect WgGizmoView::ViewHook::ScreenGeo() const
+WgRect WgViewHook::ScreenGeo() const
 {
 	return m_geo + m_pView->ScreenPos();
 }
 
 
-//____ ViewHook::PrevHook() ___________________________________________________
+//____ WgViewHook::PrevHook() ___________________________________________________
 
-WgGizmoHook * WgGizmoView::ViewHook::PrevHook() const
+WgGizmoHook * WgViewHook::PrevHook() const
 {
-	if( m_type == 0 )
+	if( this == &m_pView->m_elements[0] )
 		return 0;
 	else
-		return &m_pView->m_elements[m_type-1];
+		return (((WgViewHook*)this)-1);
 }
 
-//____ ViewHook::NextHook() ___________________________________________________
+//____ WgViewHook::NextHook() ___________________________________________________
 
-WgGizmoHook * WgGizmoView::ViewHook::NextHook() const
+WgGizmoHook * WgViewHook::NextHook() const
 {
-	if( m_type == 2 )
+	if( this == &m_pView->m_elements[2] )
 		return 0;
 	else
-		return &m_pView->m_elements[m_type+1];
+		return (((WgViewHook*)this)-1);
 }
 
-//____ ViewHook::GetEmitter() _________________________________________________
+//____ WgViewHook::Parent() ___________________________________________________
 
-WgEmitter* WgGizmoView::ViewHook::GetEmitter()
+WgGizmoContainer * WgViewHook::Parent() const
 {
-	return this;
+	return m_pView;
 }
 
-//____ ViewHook::GetRoot() ____________________________________________________
 
-WgWidget* WgGizmoView::ViewHook::GetRoot()
+//____ WgViewHook::GetRoot() ____________________________________________________
+
+WgWidget* WgViewHook::GetRoot()
 {
 	//TODO: Figure out how this should work and implement.
 
 	return false;
 }
 
-//____ ViewHook::ReleaseGizmo() _______________________________________________
+//____ WgViewHook::ReleaseGizmo() _______________________________________________
 
-WgGizmo* WgGizmoView::ViewHook::ReleaseGizmo()
+WgGizmo* WgViewHook::ReleaseGizmo()
 {
 	WgGizmo * p = m_pGizmo;
 	m_pGizmo = 0;
@@ -1083,41 +1122,39 @@ WgGizmo* WgGizmoView::ViewHook::ReleaseGizmo()
 }
 
 
+//____ WgViewHook::RequestRender() ______________________________________________
 
-
-//____ ViewHook::RequestRender() ______________________________________________
-
-void WgGizmoView::ViewHook::RequestRender()
+void WgViewHook::RequestRender()
 {
 	m_pView->RequestRender( m_geo );
 }
 
-void WgGizmoView::ViewHook::RequestRender( const WgRect& rect )
+void WgViewHook::RequestRender( const WgRect& rect )
 {
 	WgRect r = rect;
 	r += m_geo.Pos();
 	m_pView->RequestRender( r );
 }
 
-//____ ViewHook::RequestResize() ______________________________________________
+//____ WgViewHook::RequestResize() ______________________________________________
 
-void WgGizmoView::ViewHook::RequestResize()
+void WgViewHook::RequestResize()
 {
 	//TODO: Figure out how this should work and implement.
 }
 
-//____ ViewHook::RequestFocus() _______________________________________________
+//____ WgViewHook::RequestFocus() _______________________________________________
 
-bool WgGizmoView::ViewHook::RequestFocus()
+bool WgViewHook::RequestFocus()
 {
 	//TODO: Figure out how this should work and implement.
 
 	return false;
 }
 
-//____ ViewHook::ReleaseFocus() _______________________________________________
+//____ WgViewHook::ReleaseFocus() _______________________________________________
 
-bool WgGizmoView::ViewHook::ReleaseFocus()
+bool WgViewHook::ReleaseFocus()
 {
 	//TODO: Figure out how this should work and implement.
 

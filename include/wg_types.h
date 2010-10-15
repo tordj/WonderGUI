@@ -407,5 +407,22 @@ class		WgUpdateInfo
 };
 
 
+//____ WgSearchMode _____________________________________________________________
+
+enum WgSearchMode
+{
+	WG_SEARCH_MARKPOLICY,			// Perform a mark test on Gizmo.
+	WG_SEARCH_GEOMETRY,
+	WG_SEARCH_ACTION_TARGET,
+};
+
+//____ WgMarkPolicy _____________________________________________________________
+
+enum WgMarkPolicy
+{
+	WG_MARKPOLICY_OPAQUE,
+	WG_MARKPOLICY_ALPHA,
+	WG_MARKPOLICY_TRANSPARENT
+};
 
 #endif // WG_TYPES_DOT_H

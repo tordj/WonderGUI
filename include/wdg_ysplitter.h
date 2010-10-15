@@ -27,7 +27,7 @@
 #	include <wg_widget.h>
 #endif
 
-class Wdg_YSplitter:public WgWidget
+class Wdg_YSplitter:public WgWidget, public WgEmitter
 {
 	public:
 		WIDGET_CONSTRUCTORS(Wdg_YSplitter,WgWidget)
@@ -42,6 +42,8 @@ class Wdg_YSplitter:public WgWidget
 
 	protected:
 		WgWidget * NewOfMyType() const;
+
+		WgEmitter * GetEmitter() { return this; }
 
 	private:	
 		void Init();

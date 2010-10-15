@@ -52,7 +52,7 @@ class	Wdg_VDrag;
 
 
 
-class Wdg_Menu:public WgWidget
+class Wdg_Menu:public WgWidget, public WgEmitter
 {
 	friend class WgMenuItem;
 	friend class WgMenuSubMenu;
@@ -148,8 +148,8 @@ public:
 	bool	Resize( int _w, int _h, bool bAllowMoveChildren = false ) { return false; }
 	bool	ResizeWidth( int _w, bool bAllowMoveChildren = false ) { return false; }
 	bool	ResizeHeight( int _h, bool bAllowMoveChildren = false ) { return false; }
-	bool	SetGeometry(WgOrigo _origo, const WgRect &_geometry) { return false; }
-	bool	SetGeometry( WgOrigo _topLeft, Sint32 x1, Sint32 y1, WgOrigo _bottomRight, Sint32 x2, Sint32 y2 ) { return false; }
+	bool	SetGeometry(WgOrigo _origo, const WgRect &_geometry, bool bEmit = true ) { return false; }
+	bool	SetGeometry( WgOrigo _topLeft, Sint32 x1, Sint32 y1, WgOrigo _bottomRight, Sint32 x2, Sint32 y2, bool bEmit = true ) { return false; }
 
 	//
 
@@ -158,6 +158,7 @@ public:
 
 protected:
 	WgWidget * NewOfMyType() const;
+	WgEmitter * GetEmitter() { return this; }
 private:
 	void		Init();
 	void		DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _layer );

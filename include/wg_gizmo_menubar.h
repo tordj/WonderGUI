@@ -135,9 +135,9 @@ public:
 protected:
 	//TODO: Should handle disable/enable (close open menu?) and cloning.
 
-	void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool	OnMarkTest( const WgCord& ofs );
+	bool	OnAlphaTest( const WgCord& ofs );
 	void	OnRefresh();
 	void	OnCloneContent( const WgGizmo * _pOrg );
 

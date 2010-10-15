@@ -279,7 +279,7 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 //____ OnAction() _____________________________________________________________
 
-void WgGizmoMenubar::OnAction( WgEmitter * pEmitter, WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
+void WgGizmoMenubar::OnAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
 {
 	switch( _action )
 	{
@@ -338,9 +338,9 @@ void WgGizmoMenubar::OnRefresh( void )
 	RequestRender();
 }
 
-//____ OnMarkTest() ___________________________________________________
+//____ OnAlphaTest() ___________________________________________________
 
-bool WgGizmoMenubar::OnMarkTest( const WgCord& ofs )
+bool WgGizmoMenubar::OnAlphaTest( const WgCord& ofs )
 {
 	return true;
 }

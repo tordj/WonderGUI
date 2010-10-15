@@ -30,12 +30,8 @@
 #endif
 
 
-#ifndef WG_GIZMO_COLLECTION_DOT_H
-#	include <wg_gizmo_collection.h>
-#endif
-
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_GIZMO_CONTAINER_DOT_H
+#	include <wg_gizmo_container.h>
 #endif
 
 #ifndef WG_GFX_DOT_H
@@ -48,10 +44,11 @@
 	_class_( WgOrigo origo, const WgRect& geometry, WgWidget * pParent = 0 ) : Wdg_Widget<_gizmoclass_>( origo, geometry, pParent ) {}; \
 	_class_( WgOrigo upperLeft, Sint32 x1, Sint32 y1, WgOrigo lowerRight, Sint32 x2, Sint32 y2, WgWidget * pParent = 0 ) : Wdg_Widget<_gizmoclass_>(upperLeft,x1, y1, lowerRight, x2, y2, pParent) {}
 
+
 class WgWidgetHook : public WgGizmoHook
 {
 public:
-	WgWidgetHook( WgGizmo * pGizmo, WgGizmoCollection * pCollection, WgWidget * pWidget ) : WgGizmoHook( pGizmo,pCollection ), m_pWidget(pWidget) {}
+	WgWidgetHook( WgGizmo * pGizmo, WgGizmoContainer * pParent, WgWidget * pWidget ) : WgGizmoHook( pGizmo ), m_pWidget(pWidget), m_pParent(pParent) {}
 
 	WgCord	Pos() const { return WgCord( m_pWidget->PosX(), m_pWidget->PosY() ); }
 	WgSize	Size() const { return WgSize( m_pWidget->Width(), m_pWidget->Height() ); }
@@ -97,9 +94,9 @@ public:
 		return 0;
 	}
 
-	WgEmitter * GetEmitter()
+	WgGizmoContainer * Parent() const
 	{
-		return m_pWidget;
+		return m_pParent;
 	}
 
 	inline WgWidget* GetRoot() { return m_pWidget->Root(); }			// Should in the future not return a widget, but a gizmo.
@@ -125,18 +122,69 @@ protected:
 	bool	ReleaseFocus() { return m_pWidget->RemoveInputFocus(); }
 
 
-	WgWidget *		m_pWidget;
+	WgWidget *			m_pWidget;
+	WgGizmoContainer *	m_pParent;
 };
 
 
+class WgWidgetContainer : public WgGizmoContainer
+{
+public:
+	// With wg_gizmo_widget_wrapper all widgets that are siblings behave as one collective gizmo_manager...
 
-template<class T> class Wdg_Widget : public WgWidget, protected WgGizmoCollection, public T
+	WgGizmoHook *	FirstHook() const
+	{
+		if( m_pWidget->m_pParent )
+		{
+			WgWidget * p = m_pWidget->m_pParent->FirstChild();
+			
+			while( p->GetHook() == 0 )
+				p = p->NextSibling();
+
+			return p->GetHook();
+		}
+		else
+			return m_pWidget->GetHook();	// Discards const, is ok in this case...
+	}
+
+	WgGizmoHook *	LastHook() const
+	{
+		if( m_pWidget->m_pParent )
+		{
+			WgWidget * p = m_pWidget->m_pParent->LastChild();
+			
+			while( p->GetHook() == 0 )
+				p = p->PrevSibling();
+
+			return p->GetHook();
+		}
+		else
+			return m_pWidget->GetHook();	// Discards const, is ok in this case...
+	}
+
+	WgGizmo * FindGizmo( const WgCord& pos, WgSearchMode mode )
+	{
+		return 0;
+	};
+
+
+
+	WgWidget *		m_pWidget;
+
+private:
+	WgGizmoHook*	_firstHook() const { return FirstHook(); }
+	WgGizmoHook*	_lastHook() const { return LastHook(); }
+
+};
+
+
+template<class T> class Wdg_Widget : public WgWidget, public T
 {
 public:	
-	Wdg_Widget( WgWidget* pParent = 0 ) : WgWidget(pParent) { m_pHook = new WgWidgetHook(this,this,this); T::SetHook(m_pHook); }
-	Wdg_Widget( const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget(geometry, pParent) {  m_pHook = new WgWidgetHook(this,this,this); T::SetHook(m_pHook); }
-	Wdg_Widget( WgOrigo origo, const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget( origo, geometry, pParent ) {  m_pHook = new WgWidgetHook(this,this,this); T::SetHook(m_pHook); }
-	Wdg_Widget( WgOrigo upperLeft, Sint32 x1, Sint32 y1, WgOrigo lowerRight, Sint32 x2, Sint32 y2, WgWidget * pParent = 0 ) : WgWidget(upperLeft,x1, y1, lowerRight, x2, y2, pParent) {  m_pHook = new WgWidgetHook(this,this,this); T::SetHook(m_pHook); }
+	Wdg_Widget( WgWidget* pParent = 0 ) : WgWidget(pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
+	Wdg_Widget( const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget(geometry, pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
+	Wdg_Widget( WgOrigo origo, const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget( origo, geometry, pParent ) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
+	Wdg_Widget( WgOrigo upperLeft, Sint32 x1, Sint32 y1, WgOrigo lowerRight, Sint32 x2, Sint32 y2, WgWidget * pParent = 0 ) : WgWidget(upperLeft,x1, y1, lowerRight, x2, y2, pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
 	virtual ~Wdg_Widget() { T::m_pHook = 0; delete m_pHook; };
 
 	virtual const char * Type() const { return T::Type(); }
@@ -175,42 +223,6 @@ public:
 	inline WgString	GetTooltipString() const { return T::GetTooltipString(); }
 
 
-	// With wg_gizmo_widget_wrapper all widgets that are siblings behave as one collective gizmo_manager...
-
-	virtual WgGizmoHook *	FirstHook() const
-	{
-		if( m_pParent )
-		{
-			WgWidget * p = m_pParent->FirstChild();
-			
-			while( p->GetHook() == 0 )
-				p = p->NextSibling();
-
-			return p->GetHook();
-		}
-		else
-			return GetHook();	// Discards const, is ok in this case...
-	}
-
-	virtual WgGizmoHook *	LastHook() const
-	{
-		if( m_pParent )
-		{
-			WgWidget * p = m_pParent->LastChild();
-			
-			while( p->GetHook() == 0 )
-				p = p->PrevSibling();
-
-			return p->GetHook();
-		}
-		else
-			return GetHook();	// Discards const, is ok in this case...
-	}
-
-	WgGizmoHook*	_firstHook() const { return FirstHook(); }
-	WgGizmoHook*	_lastHook() const { return LastHook(); }
-
-
 	void SetCursorStyle( WgCursorStyle style )
 	{
 		T::SetCursorStyle(style);
@@ -242,6 +254,11 @@ protected:
 		return WgCord( WgWidget::PosX(), WgWidget::PosY() );
 	}
 
+	WgEmitter * GetEmitter()
+	{
+		return this;
+	}
+
 
 private:
 
@@ -252,7 +269,7 @@ private:
 
 	void DoMyOwnActionRespond( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 	{
-		T::OnAction( this, action, button_key, info, inputObj );
+		T::OnAction( action, button_key, info, inputObj );
 	}
 
 	void DoMyOwnRefresh( void )
@@ -278,7 +295,7 @@ private:
 
 	bool DoMyOwnMarkTest( int _x, int _y )
 	{
-		return T::OnMarkTest( WgCord(_x,_y) );
+		return T::OnAlphaTest( WgCord(_x,_y) );
 	}
 
 	void DoMyOwnDisOrEnable( void ) 
@@ -299,7 +316,7 @@ private:
 	};
 
 	WgWidgetHook *	m_pHook;
-
+	WgWidgetContainer m_container;
 };
 
 

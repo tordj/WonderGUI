@@ -101,9 +101,9 @@ void WgGizmoFill::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 		pDevice->Fill( _clip, m_colDisabled );
 }
 
-//____ OnMarkTest() ___________________________________________________________
+//____ OnAlphaTest() ___________________________________________________________
 
-bool WgGizmoFill::OnMarkTest( const WgCord& ofs )
+bool WgGizmoFill::OnAlphaTest( const WgCord& ofs )
 {
 	if( (m_bEnabled && m_colEnabled.a == 0) || (!m_bEnabled && m_colDisabled.a == 0 ) )
 		return false;

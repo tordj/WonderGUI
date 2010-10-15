@@ -247,7 +247,7 @@ void Wdg_ListView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butto
 
 	if( _action == WgInput::POINTER_EXIT && m_pLastMarkedItem != 0 )
 	{
-		m_pLastMarkedItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
+		m_pLastMarkedItem->ActionRespond( GetEmitter(), _action, _button_key, _info, _inputObj );
 		m_pLastMarkedItem = 0;
 		return;
 	}
@@ -256,7 +256,7 @@ void Wdg_ListView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butto
 
 	if( pItem != m_pLastMarkedItem && m_pLastMarkedItem != 0 )
 	{
-		m_pLastMarkedItem->ActionRespond( this, WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
+		m_pLastMarkedItem->ActionRespond( GetEmitter(), WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
 		m_pLastMarkedItem = 0;
 	}
 
@@ -265,13 +265,13 @@ void Wdg_ListView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butto
 		// Make sure item gets a POINTER_ENTER.
 
 		if( _action == WgInput::POINTER_OVER && !m_pLastMarkedItem )
-			pItem->ActionRespond( this, WgInput::POINTER_ENTER, _button_key, _info, _inputObj );
+			pItem->ActionRespond( GetEmitter(), WgInput::POINTER_ENTER, _button_key, _info, _inputObj );
 
 		//
 
 		// HACK. Remove when message loop is implemented
 		// pItem can be deleted in the ActionResponse callback. Make sure it still exist // Martin
-		pItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
+		pItem->ActionRespond( GetEmitter(), _action, _button_key, _info, _inputObj );
 		WgItem* p = m_items.getFirst();
 		while(p && p != pItem) p = p->GetNext();
 		if(p == pItem)

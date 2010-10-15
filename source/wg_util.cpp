@@ -45,12 +45,12 @@ bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 
 //____ MarkTestBlock() ________________________________________________________
 
-bool WgUtil::MarkTestBlock( Sint32 _x, Sint32 _y, const WgBlock& block, WgRect area )
+bool WgUtil::MarkTestBlock( WgCord ofs, const WgBlock& block, WgRect area )
 {
 	AdjustScaledArea(block, area);
 
 	// Sanity check & shortcuts.
-	if( !area.Contains(_x,_y) )
+	if( !area.Contains(ofs.x,ofs.y) )
 		return false;
 
 	if( block.IsOpaque() )
@@ -58,8 +58,8 @@ bool WgUtil::MarkTestBlock( Sint32 _x, Sint32 _y, const WgBlock& block, WgRect a
 
 	// Make cordinates relative area.
 
-	_x -= area.x;
-	_y -= area.y;
+	ofs.x -= area.x;
+	ofs.y -= area.y;
 
 
 	const WgBorders& borders = block.GetBorders();
@@ -69,22 +69,22 @@ bool WgUtil::MarkTestBlock( Sint32 _x, Sint32 _y, const WgBlock& block, WgRect a
 	int	xSection = 0;
 	int ySection = 0;
 
-	if( _x >= area.w - borders.right )
+	if( ofs.x >= area.w - borders.right )
 		xSection = 2;
-	else if( _x > borders.left )
+	else if( ofs.x > borders.left )
 		xSection = 1;
 
-	if( _y >= area.h - borders.bottom )
+	if( ofs.y >= area.h - borders.bottom )
 		ySection = 2;
-	else if( _y > borders.top )
+	else if( ofs.y > borders.top )
 		ySection = 1;
 
 
-	// Convert _x to X-offset in bitmap, taking stretch/tile section into account.
+	// Convert ofs.x to X-offset in bitmap, taking stretch/tile section into account.
 
 	if( xSection == 2 )
 	{
-		_x = block.GetWidth() - (area.w - _x);
+		ofs.x = block.GetWidth() - (area.w - ofs.x);
 	}
 	else if( xSection == 1 )
 	{
@@ -100,20 +100,20 @@ bool WgUtil::MarkTestBlock( Sint32 _x, Sint32 _y, const WgBlock& block, WgRect a
 			bTile = block.HasTiledBottomBorder();
 
 		if( bTile )
-			_x = ((_x - borders.left) % tileAreaWidth) + borders.left;
+			ofs.x = ((ofs.x - borders.left) % tileAreaWidth) + borders.left;
 		else
 		{
 			double screenWidth = area.w - borders.GetWidth();	// Width of stretch-area on screen.
-			_x = (int) ((_x-borders.left)/screenWidth * tileAreaWidth + borders.left);
+			ofs.x = (int) ((ofs.x-borders.left)/screenWidth * tileAreaWidth + borders.left);
 		}
 	}
 
 
-	// Convert _y to Y-offset in bitmap, taking stretch/tile section into account.
+	// Convert ofs.y to Y-offset in bitmap, taking stretch/tile section into account.
 
 	if( ySection == 2 )
 	{
-		_y = block.GetHeight() - (area.h - _y);
+		ofs.y = block.GetHeight() - (area.h - ofs.y);
 	}
 	else if( ySection == 1 )
 	{
@@ -129,15 +129,15 @@ bool WgUtil::MarkTestBlock( Sint32 _x, Sint32 _y, const WgBlock& block, WgRect a
 			bTile = block.HasTiledRightBorder();
 
 		if( bTile )
-			_y = ((_y - borders.top) % tileAreaHeight) + borders.top;
+			ofs.y = ((ofs.y - borders.top) % tileAreaHeight) + borders.top;
 		else
 		{
 			double screenHeight = area.h - borders.GetHeight();	// Height of stretch-area on screen.
-			_y = (int) ((_y-borders.top)/screenHeight * tileAreaHeight + borders.top);
+			ofs.y = (int) ((ofs.y-borders.top)/screenHeight * tileAreaHeight + borders.top);
 		}
 	}
 
-	Uint8 alpha = block.GetSurface()->opacity(block.GetRect().x+_x, block.GetRect().y+_y);
+	Uint8 alpha = block.GetSurface()->opacity(block.GetRect().x+ofs.x, block.GetRect().y+ofs.y);
 
 	if( alpha )
 		return true;

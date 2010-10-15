@@ -63,9 +63,9 @@ void WgGizmoDummy::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 {
 }
 
-//____ OnMarkTest() ___________________________________________________________
+//____ OnAlphaTest() ___________________________________________________________
 
-bool WgGizmoDummy::OnMarkTest( const WgCord& ofs )
+bool WgGizmoDummy::OnAlphaTest( const WgCord& ofs )
 {
 	return false;
 }

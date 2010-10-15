@@ -41,6 +41,7 @@
 //#include "widget.h"
 
 class WgWidget;
+class WgGizmo;
 class WgPointerSpy;
 class Wdg_Root;
 
@@ -52,6 +53,7 @@ struct WgActionDetails
 	WgModifierKeys	modifier;					// Status of modifier keys during action.
 	Uint32			nWidgets;					// Number of widgets receiving the action.
 	WgWidget *		aWidgets[WG_MAX_WIDGETS];	// The widgets receiving the action.
+	WgGizmo *		aGizmos[WG_MAX_WIDGETS];	// The gizmos receiving the action.
 
 	union
 	{
@@ -97,6 +99,7 @@ class WgInput
 {
 	friend class Wdg_Root;
 	friend class WgWidget;
+	friend class WgGizmo;
 
 public:
 	WgInput();
@@ -135,6 +138,8 @@ public:
 	Uint32	getKeyRepeatDelay() const{ return m_keyRepeatDelay; }
 
 	inline WgWidget *	getFocusedWidget( void ) { return m_pFocusedWidget; }
+	inline WgGizmo *	getFocusedGizmo( void ) { return m_pFocusedGizmo; }
+
 
 	inline void				setModifierKeys( WgModifierKeys modifier ) { m_modifierKeys = modifier; }
 	inline WgModifierKeys	getModifierKeys( void ) const { return m_modifierKeys; }
@@ -149,9 +154,12 @@ public:
 	bool	isKeyDown( Uint16 native_keycode ) const;
 	bool	isKeyDown( WgKey wg_keycode ) const;
 	bool	isPointerInside( WgWidget * pWidget ) const;
+	bool	isPointerInside( WgGizmo * pGizmo ) const;
 
 	bool	wasButtonPressInside( Uint8 button, WgWidget * pWidget ) const;
+	bool	wasButtonPressInside( Uint8 button, WgGizmo * pGizmo ) const;
 	bool	wasButtonReleaseInside( Uint8 button, WgWidget * pWidget ) const;
+	bool	wasButtonReleaseInside( Uint8 button, WgGizmo * pGizmo ) const;
 
 	const WgActionDetails * getPressDetails( Uint8 button ) const;
 	const WgActionDetails * getReleaseDetails( Uint8 button ) const;
@@ -223,12 +231,16 @@ private:
 
 	void	setRootWidget( Wdg_Root * pRootWidget );
 	void	setFocusedWidget( WgWidget * pWidget );
+	void	setFocusedGizmo( WgGizmo * pGizmo );
 
 	bool	widgetInStack( const WgWidget * pWidget, const WgActionDetails& info ) const; // Check if widget is in Events widget stack.
+	bool	gizmoInStack( const WgGizmo * pGizmo, const WgActionDetails& info ) const; // Check if widget is in Events widget stack.
 	void	widgetRemoved( WgWidget * pWidget );
+	void	gizmoRemoved( WgGizmo * pGizmo );
 
 	Wdg_Root	* 	m_pRootWidget;				///< Pointer at root widget which we are a part of.
 	WgWidget	*	m_pFocusedWidget;			///< Pointer at widget with keyboard focus. Default is root widget.
+	WgGizmo		*	m_pFocusedGizmo;			///< Pointer at widget with keyboard focus. Default is root widget.
 
 	Uint32			m_time;						///< Accumulative time counter in milliseconds
 

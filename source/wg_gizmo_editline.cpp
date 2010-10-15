@@ -231,7 +231,7 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 //____ OnAction() _____________________________________________________________
 
-void WgGizmoEditline::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{

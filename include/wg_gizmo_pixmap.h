@@ -53,7 +53,7 @@ protected:
 
 	void	OnCloneContent( const WgGizmo * _pOrg );
 	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool	OnMarkTest( const WgCord& ofs );
+	bool	OnAlphaTest( const WgCord& ofs );
 	void	OnEnable();
 	void	OnDisable();
 

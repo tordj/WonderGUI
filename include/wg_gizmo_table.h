@@ -36,16 +36,12 @@
 #	include <wg_gizmo_hook.h>
 #endif
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
-#endif
-
 #ifndef WG_INTERFACE_TEXTHOLDER_DOT_H
 #	include <wg_interface_textholder.h>
 #endif
 
-#ifndef WG_GIZMO_COLLECTION_DOT_H
-#	include <wg_gizmo_collection.h>
+#ifndef WG_GIZMO_CONTAINER_DOT_H
+#	include <wg_gizmo_container.h>
 #endif
 
 class WgText;
@@ -59,7 +55,7 @@ typedef int(*fpGizmoCmp)(WgGizmo*,WgGizmo*);
 
 //____ WgTableHook ____________________________________________________________
 
-class WgTableHook : public WgGizmoHook, public WgEmitter
+class WgTableHook : public WgGizmoHook
 {
 	friend class WgTableRow2;
 	friend class WgGizmoTable;
@@ -86,11 +82,10 @@ class WgTableHook : public WgGizmoHook, public WgEmitter
 	WgTableColumn2*	GetColumn() const;
 	inline int		GetColumnNb() const;
 
-
+	inline WgGizmoContainer * Parent() const;
 
 	// Needs to be here for now since Emitters are inherrited by Widgets. Shouldn't be hooks business in the future...
 
-	WgEmitter* 	GetEmitter();
 	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
 
 protected:
@@ -106,7 +101,8 @@ protected:
 	bool	RequestFocus();
 	bool	ReleaseFocus();
 
-	int		m_height;			// Minimum height needed for this Gizmo.
+	int				m_height;		// Minimum height needed for this Gizmo.
+	WgTableRow2 *	m_pRow;			// 
 };
 
 //____ WgTableColumn2 _________________________________________________________
@@ -235,7 +231,7 @@ private:
 
 //____ WgGizmoTable ___________________________________________________________
 
-class WgGizmoTable : public WgGizmo /*, public WgGizmoCollection CAN NOT BE WHILE WE ARE WIDGETS!!! */
+class WgGizmoTable : public WgGizmo, public WgGizmoContainer
 {
 friend class WgTableColumn2;
 friend class WgTableRow2;
@@ -266,10 +262,8 @@ public:
 	void	SetArrowOrigo( WgOrigo origo );
 	WgOrigo	GetArrowOrigo() const { return m_sortMarkerOrigo; }
 
-	void	SetCellPadding( int x, int y );
-
-	int		GetCellPaddingX() const	{ return m_cellPaddingX; }
-	int		GetCellPaddingY() const	{ return m_cellPaddingY; }
+	void	SetCellPadding( WgBorders padding );
+	WgBorders	GetCellPadding() const	{ return m_cellPadding; }
 
 	void	SetAutoScaleHeaders(bool autoScaleHeaders);
 	bool	GetAutoScaleHeaders() const { return m_bAutoScaleHeader; }
@@ -354,6 +348,11 @@ public:
 	bool	IsView() const { return false; }
 	bool	IsContainer() const { return true; }
 
+	// Overloaded from container
+
+	WgGizmo * FindGizmo( const WgCord& ofs, WgSearchMode mode );
+
+
 	// New methods!
 
 	enum SelectMode
@@ -376,8 +375,8 @@ protected:
 	void	OnCloneContent( const WgGizmo * _pOrg );
 	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	OnNewSize( const WgSize& size );
-	void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool	OnMarkTest( const WgCord& ofs );
+	void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	bool	OnAlphaTest( const WgCord& ofs );
 	void	OnEnable();
 	void	OnDisable();
 
@@ -447,8 +446,7 @@ private:
 	WgOrigo			m_sortMarkerOrigo;
 	WgCord8			m_sortMarkerOfs;
 
-	int				m_cellPaddingX;
-	int				m_cellPaddingY;
+	WgBorders		m_cellPadding;
 
 	WgBlockSetPtr	m_pAscendGfx;
 	WgBlockSetPtr	m_pDescendGfx;
@@ -488,8 +486,14 @@ private:
 
 WgTableRow2* WgTableHook::GetRow() const 
 {
-	return static_cast<WgTableRow2*>(m_pCollection);
+	return m_pRow;
 }
+
+WgGizmoContainer * WgTableHook::Parent() const
+{
+	return m_pRow->m_pTable;
+}
+
 
 inline int WgTableHook::GetColumnNb() const
 {

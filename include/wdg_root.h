@@ -33,7 +33,7 @@
 
 class WgInput;
 
-class Wdg_Root : public WgWidget
+class Wdg_Root : public WgWidget, public WgEmitter
 {
 
 public:
@@ -81,6 +81,7 @@ protected:
 	virtual WgWidget * NewOfMyType() const;
 
 	bool	DoMyOwnMarkTest( int _x, int _y );
+	WgEmitter * GetEmitter() { return this; }
 
 private:
 	void	Init();

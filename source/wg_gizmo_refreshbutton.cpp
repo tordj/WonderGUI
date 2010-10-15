@@ -314,7 +314,7 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canva
 
 //____ OnAction() _____________________________________________________________
 
-void WgGizmoRefreshButton::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoRefreshButton::OnAction( WgInput::UserAction action, int button, const WgActionDetails& info, const WgInput& inputObj )
 {
 	switch( action )
 	{
@@ -334,7 +334,7 @@ void WgGizmoRefreshButton::OnAction( WgEmitter * pEmitter, WgInput::UserAction a
             break;
 	}
 
-	WgGizmoButton::OnAction( pEmitter, action, button, info, inputObj );
+	WgGizmoButton::OnAction( action, button, info, inputObj );
 }
 
 //_____ GetRenderMode() ________________________________________________________

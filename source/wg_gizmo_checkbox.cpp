@@ -166,17 +166,11 @@ bool WgGizmoCheckbox::SetState( bool _state )
 		m_bChecked = _state;
 
 		if( _state )
-		{
-			if( m_pHook )
-				m_pHook->GetEmitter()->Emit( Set() );
-		}
+			Emit( Set() );
 		else
-		{
-			if( m_pHook )
-				m_pHook->GetEmitter()->Emit( Unset() );
-		}
-		if( m_pHook )
-			m_pHook->GetEmitter()->Emit( Flipped(), m_bChecked );
+			Emit( Unset() );
+
+		Emit( Flipped(), m_bChecked );
 		RequestRender();
 	}
 
@@ -209,7 +203,7 @@ void WgGizmoCheckbox::OnDisable()
 
 //____ OnAction() _________________________________________________
 
-void WgGizmoCheckbox::OnAction( WgEmitter * pEmitter, WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
+void WgGizmoCheckbox::OnAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
 {
 	switch( _action )
 	{
@@ -582,9 +576,9 @@ bool WgGizmoCheckbox::MarkTestTextArea( int _x, int _y )
 	return false;
 }
 
-//____ OnMarkTest() ______________________________________________________
+//____ OnAlphaTest() ______________________________________________________
 
-bool WgGizmoCheckbox::OnMarkTest( const WgCord& ofs )
+bool WgGizmoCheckbox::OnAlphaTest( const WgCord& ofs )
 {
 	// mark test text area
 	if( MarkTestTextArea( ofs.x, ofs.y ) )
@@ -632,14 +626,14 @@ bool WgGizmoCheckbox::OnMarkTest( const WgCord& ofs )
 		else
 			bgRect = WgRect(0,0, sz.w, sz.h);
 
-		if( WgUtil::MarkTestBlock( ofs.x, ofs.y, bgBlock, bgRect ) )
+		if( WgUtil::MarkTestBlock( ofs, bgBlock, bgRect ) )
 			return true;
 	}
 
 	if( iconBlock.IsValid() )
 	{
 		WgRect iconRect = GetIconRect( sz );
-		if( WgUtil::MarkTestBlock( ofs.x, ofs.y, iconBlock, iconRect ) )
+		if( WgUtil::MarkTestBlock( ofs, iconBlock, iconRect ) )
 			return true;
 	}
 

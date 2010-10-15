@@ -255,10 +255,10 @@ void WgGizmoAnimation::OnUpdate( const WgUpdateInfo& _updateInfo )
 
 	// Emit signals if playPos somehow has changed.
 
-	if( m_pHook && (m_bPlayPosIsNew || m_bPlaying) )
+	if( m_bPlayPosIsNew || m_bPlaying )
 	{
-		m_pHook->GetEmitter()->Emit( WgSignal::IntegerChanged(), static_cast<int>(m_playPos) );
-		m_pHook->GetEmitter()->Emit( WgSignal::Fraction(), (float)m_playPos/(float)m_pAnim->duration());
+		Emit( WgSignal::IntegerChanged(), static_cast<int>(m_playPos) );
+		Emit( WgSignal::Fraction(), (float)m_playPos/(float)m_pAnim->duration());
 	}
 
 
@@ -344,9 +344,9 @@ void WgGizmoAnimation::OnCloneContent( const WgGizmo * _pOrg )
 
 }
 
-//____ OnMarkTest() ______________________________________________________
+//____ OnAlphaTest() ______________________________________________________
 
-bool WgGizmoAnimation::OnMarkTest( const WgCord& ofs )
+bool WgGizmoAnimation::OnAlphaTest( const WgCord& ofs )
 {
 	if( m_bEnabled && m_pSurf )
 	{

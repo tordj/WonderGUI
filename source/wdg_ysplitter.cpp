@@ -70,8 +70,8 @@ void Wdg_YSplitter::Start( WgWidget * pTopPane, WgWidget * pSplitHandle, WgWidge
 	m_pHandle = pSplitHandle;
 	m_topFraction = topFraction;
 
-	m_pHandle->AddCallback( WgSignal::ButtonPress(1), cbHandlePressed, this );
-	m_pHandle->AddCallback( WgSignal::ButtonDragTotalY(1), cbHandleDragged, this );
+	m_pHandle->AddCallbackW( WgSignal::ButtonPress(1), cbHandlePressed, this );
+	m_pHandle->AddCallbackW( WgSignal::ButtonDragTotalY(1), cbHandleDragged, this );
 
 
 /*	m_pHandle->SetGeometry( WgOrigo::topLeft(), 0, 0, WgOrigo::topRight(), 0, m_pHandle->Height() );
@@ -91,7 +91,7 @@ void Wdg_YSplitter::Start( WgWidget * pTopPane, WgWidget * pSplitHandle, WgWidge
 void Wdg_YSplitter::Stop()
 {
 	if( m_pHandle )
-		m_pHandle->RemoveCallbacks( this );
+		m_pHandle->RemoveCallbacksW( this );
 
 	m_pTopPane		= 0;
 	m_pBottomPane	= 0;

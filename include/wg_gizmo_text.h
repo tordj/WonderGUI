@@ -90,8 +90,8 @@ protected:
 	void	OnNewSize( const WgSize& size );
 	void	OnRefresh();
 	void	OnUpdate( const WgUpdateInfo& _updateInfo );
-	void	OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool	OnMarkTest( const WgCord& ofs );
+	void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	bool	OnAlphaTest( const WgCord& ofs );
 	void	OnEnable();
 	void	OnDisable();
 	void	OnGotInputFocus();

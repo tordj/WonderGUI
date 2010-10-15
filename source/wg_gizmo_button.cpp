@@ -238,7 +238,7 @@ void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 //____ OnAction() _____________________________________________________________
 
-void WgGizmoButton::OnAction( WgEmitter * pEmitter, WgInput::UserAction action, int button, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoButton::OnAction( WgInput::UserAction action, int button, const WgActionDetails& info, const WgInput& inputObj )
 {
 //	if( !m_bEnabled )
 //		return;
@@ -382,16 +382,16 @@ void WgGizmoButton::OnCloneContent( const WgGizmo * _pOrg )
 	 	m_bRenderDown[i] = pOrg->m_bRenderDown[i];
 }
 
-//____ OnMarkTest() ___________________________________________________________
+//____ OnAlphaTest() ___________________________________________________________
 
-bool WgGizmoButton::OnMarkTest( const WgCord& ofs )
+bool WgGizmoButton::OnAlphaTest( const WgCord& ofs )
 {
 	if( !m_pBgGfx )
 		return false;
 
 	WgSize	sz = Size();
 
-	return	WgUtil::MarkTestBlock( ofs.x, ofs.y, m_pBgGfx->GetBlock(m_mode), WgRect(0,0,sz.w,sz.h) );
+	return	WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode), WgRect(0,0,sz.w,sz.h) );
 }
 
 //____ OnGotInputFocus() ______________________________________________________

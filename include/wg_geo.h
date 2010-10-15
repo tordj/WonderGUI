@@ -247,10 +247,12 @@ public:
 	bool Intersection( const WgRect& r1, const WgRect& r2 );
 
 	void GrowToContain( int x, int y );
-	void GrowToContain( const WgRect& r );
+	void GrowToContain( const WgRect& _rect );
+	void GrowToContain( const WgCord& _coord );
 
 	inline bool Contains( int x, int y ) const;
 	inline bool Contains( const WgRect& _rect ) const;
+	inline bool	Contains( const WgCord& _coord ) const;
 
 	inline bool IntersectsWith( const WgRect& _rect ) const;
 
@@ -318,6 +320,14 @@ inline void WgSize::ConstrainTo( const WgMinMax2D& c )
 inline bool WgRect::Contains( int _x, int _y ) const
 {
 	if( _x >= x && _x < x + w && _y >= y && _y < y + h )
+		return true;
+	return false;
+}
+
+//_____________________________________________________________________________
+inline bool WgRect::Contains( const WgCord& _coord ) const
+{
+	if( _coord.x >= x && _coord.x < x + w && _coord.y >= y && _coord.y < y + h )
 		return true;
 	return false;
 }

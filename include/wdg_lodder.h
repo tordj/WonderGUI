@@ -27,7 +27,7 @@
 #	include <wg_widget.h>
 #endif
 
-class Wdg_Lodder:public WgWidget
+class Wdg_Lodder:public WgWidget, public WgEmitter
 {
 	public:
 		WIDGET_CONSTRUCTORS(Wdg_Lodder,WgWidget)
@@ -52,6 +52,9 @@ class Wdg_Lodder:public WgWidget
 
 	protected:
 		WgWidget * NewOfMyType() const;
+
+		WgEmitter * GetEmitter() { return this; }
+
 
 		bool	AddLOD( WgWidget * pWidget );
 		bool	RemoveLOD( WgWidget * pWidget );

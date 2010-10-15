@@ -4,7 +4,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include "wg_origo.h"
+#include <wg_origo.h>
+#include <wg_geo.h>
 
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -13,13 +14,14 @@
 class WgBlock;
 class WgRect;
 
+
 //____ WgUtil _________________________________________________________________
 
 namespace WgUtil
 {
 	bool		AdjustScaledArea(const WgBlock& block, WgRect& area);
 
-	bool		MarkTestBlock( Sint32 x, Sint32 y, const WgBlock& block, WgRect area );
+	bool		MarkTestBlock( WgCord ofs, const WgBlock& block, WgRect area );
 
 	template <class T> inline T Max (T a, T b) {return (a>b?a:b); }	
 	template <class T> inline T Min (T a, T b) {return (a<b?a:b); }	

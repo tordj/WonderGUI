@@ -46,7 +46,7 @@
 #endif
 
 
-class Wdg_Baseclass_View : public WgWidget
+class Wdg_Baseclass_View : public WgWidget, public WgEmitter
 {
 public:
 	virtual ~Wdg_Baseclass_View();
@@ -174,6 +174,8 @@ protected:
 	virtual void DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pCloneRoot, const WgWidget * _pBranchRoot );
 
 	void		SetContentSize( Uint32 width, Uint32 height );
+
+	WgEmitter * GetEmitter() { return this; }
 
 	Uint32		m_contentWidth;
 	Uint32		m_contentHeight;

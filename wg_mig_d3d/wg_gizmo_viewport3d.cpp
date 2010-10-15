@@ -112,9 +112,9 @@ void WgGizmoViewport3D::OnCloneContent( const WgGizmo * _pOrg )
 	m_spScene		= pOrg->m_spScene;
 }
 
-//____ OnMarkTest() ______________________________________________________
+//____ OnAlphaTest() ______________________________________________________
 
-bool WgGizmoViewport3D::OnMarkTest( const WgCord& ofs )
+bool WgGizmoViewport3D::OnAlphaTest( const WgCord& ofs )
 {
 	return true;
 }

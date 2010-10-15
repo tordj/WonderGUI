@@ -24,23 +24,64 @@
 #define	WG_GIZMO_VIEW_DOT_H
 
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
-#endif
-
-#ifndef WG_GIZMO_COLLECTION_DOT_H
-#	include <wg_gizmo_collection.h>
+#ifndef WG_GIZMO_CONTAINER_DOT_H
+#	include <wg_gizmo_container.h>
 #endif
 
 #ifndef	WG_GIZMO_DRAGBARS_DOT_H
 #	include <wg_gizmo_dragbars.h>
 #endif
 
+//____ WgViewHook _____________________________________________________________
+
+class WgViewHook : public WgGizmoHook
+{
+	friend class WgGizmoView;
+public:
+
+	WgCord	Pos() const;
+	WgSize	Size() const;
+	WgRect	Geo() const;
+	WgCord	ScreenPos() const;
+	WgRect	ScreenGeo() const;
+
+	WgGizmoHook * PrevHook() const;
+	WgGizmoHook * NextHook() const;
+
+	WgGizmoContainer * Parent() const;
+
+	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
+
+	void	RequestRender();
+	void	RequestRender( const WgRect& rect );
+	void	RequestResize();
+
+	bool	RequestFocus();
+	bool	ReleaseFocus();
+
+
+protected:
+	WgViewHook() : WgGizmoHook( 0 ) {};				// So we can make them members and then make placement new...
+	WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView );
+	WgViewHook( WgGizmoVDragbar * pHDragbar, WgGizmoView * pView );
+	WgViewHook( WgGizmo * pContent, WgGizmoView * pView );
+	~WgViewHook();
+
+	WgGizmo* ReleaseGizmo();
+
+//	ElementType		m_type;
+	WgGizmoView *	m_pView;
+	WgRect			m_geo;
+	bool			m_bShow;
+};
+
+
 
 //____ WgGizmoView ________________________________________________________
 
-class WgGizmoView : public WgGizmo /*, public WgGizmoCollection CAN NOT BE WHILE WE ARE WIDGETS!!! */
+class WgGizmoView : public WgGizmo, public WgGizmoContainer
 {
+	friend class WgViewHook;
 public:
 	virtual ~WgGizmoView();
 	virtual const char * Type() const;
@@ -175,6 +216,15 @@ public:
 	WgGizmo*	GetContent() const { return m_elements[WINDOW].Gizmo(); }
 	WgGizmo*	ReleaseContent();
 
+	WgViewHook * FirstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }
+	WgViewHook * LastHook() const { return const_cast<WgViewHook*>(&m_elements[2]); }
+
+
+	// Overloaded from container
+
+	WgGizmo * FindGizmo( const WgCord& pos, WgSearchMode mode );
+
+
 /*
 	NEED TO BE IMPLEMENTED!!!
 
@@ -197,48 +247,9 @@ protected:
 		YDRAG
 	};
 
-	//____ ViewHook _____________________________________________________________
-
-	class ViewHook : public WgGizmoHook, public WgEmitter
-	{
-		friend class WgGizmoView;
-	public:
-		ViewHook() : WgGizmoHook( 0, 0 ) {};				// So we can make them members and then make placement new...
-		ViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView, WgGizmoCollection * pCollection );
-		ViewHook( WgGizmoVDragbar * pHDragbar, WgGizmoView * pView, WgGizmoCollection * pCollection );
-		ViewHook( WgGizmo * pContent, WgGizmoView * pView, WgGizmoCollection * pCollection );
-		~ViewHook();
-
-		WgCord	Pos() const;
-		WgSize	Size() const;
-		WgRect	Geo() const;
-		WgCord	ScreenPos() const;
-		WgRect	ScreenGeo() const;
-
-		WgGizmoHook * PrevHook() const;
-		WgGizmoHook * NextHook() const;
-
-		WgEmitter* 	GetEmitter();
-		WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
-
-		void	RequestRender();
-		void	RequestRender( const WgRect& rect );
-		void	RequestResize();
-
-		bool	RequestFocus();
-		bool	ReleaseFocus();
-
-	protected:
-		WgGizmo* ReleaseGizmo();
-
-		ElementType		m_type;
-		WgGizmoView *	m_pView;
-		WgRect			m_geo;
-		bool			m_bShow;
-	};
 
 	//____ ViewGizmoCollection __________________________________________________
-
+/*
 	class ViewGizmoCollection : public WgGizmoCollection
 	{
 	public:
@@ -253,7 +264,7 @@ protected:
 
 		WgGizmoView *	m_pView;
 	};
-
+*/
 
 	WgGizmoView();
 	virtual void OnNewSize( const WgSize& size );
@@ -261,10 +272,10 @@ protected:
 	// Following method should be overridden by subclasses instead of OnNewSize()!
 	// Takes into account that scrollbars might decrease the visible area of the subclass.
 
-	virtual void OnNewViewSize( const WgSize& size ) {};
-	virtual void OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-
-	virtual void OnCloneContent( const WgGizmo * _pOrg );
+	void		OnNewViewSize( const WgSize& size ) {};
+	void		OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	bool		OnAlphaTest( const WgCord& ofs );
+	void		OnCloneContent( const WgGizmo * _pOrg );
 
 	void		SetContentSize( const WgSize& size );
 	void		UpdateElementGeometry( const WgSize& mySize, const WgSize& newContentSize );
@@ -290,10 +301,14 @@ protected:
 	bool		m_bAutoScrollX;
 	bool		m_bAutoScrollY;
 
-	ViewGizmoCollection	m_elementsCollection;	// WgGizmoCollection for the elements gizmos.
-	ViewHook			m_elements[3];			// Content, xDrag and yDrag gizmos in that order.
+//	ViewGizmoCollection	m_elementsCollection;	// WgGizmoCollection for the elements gizmos.
+	WgViewHook		m_elements[3];			// Content, xDrag and yDrag gizmos in that order.
 
 private:
+	WgGizmoHook*	_firstHook() const { return FirstHook(); }
+	WgGizmoHook*	_lastHook() const { return LastHook(); }
+
+
 	WgBlockSetPtr	m_pFillerBlocks;
 	WgRect			m_geoFiller;
 };

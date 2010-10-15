@@ -32,7 +32,7 @@ class WgGizmoViewport3D:public WgGizmo
 		void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 		void	OnRefresh();
 		void	OnUpdate( const WgUpdateInfo& _updateInfo );
-		bool	OnMarkTest( const WgCord& ofs );
+		bool	OnAlphaTest( const WgCord& ofs );
 
 	private:
 	
