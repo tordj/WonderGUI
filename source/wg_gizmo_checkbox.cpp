@@ -284,8 +284,8 @@ WgRect WgGizmoCheckbox::GetIconRect( const WgSize& gizmoSize )
 		int w = pIcon->GetWidth();
 		int h = pIcon->GetHeight();
 
-		int bgW = gizmoSize.w - m_iconAreaBorders.GetWidth();
-		int bgH = gizmoSize.h - m_iconAreaBorders.GetHeight();
+		int bgW = gizmoSize.w - m_iconAreaBorders.width();
+		int bgH = gizmoSize.h - m_iconAreaBorders.height();
 
 		if( m_iconScale != 0.f )
 		{
@@ -303,8 +303,8 @@ WgRect WgGizmoCheckbox::GetIconRect( const WgSize& gizmoSize )
 
 		rect.x = m_iconOrigo.calcOfsX( bgW, w );
 		rect.y = m_iconOrigo.calcOfsY( bgH, h );
-		rect.w = w + m_iconAreaBorders.GetWidth();
-		rect.h = h + m_iconAreaBorders.GetHeight();;
+		rect.w = w + m_iconAreaBorders.width();
+		rect.h = h + m_iconAreaBorders.height();;
 	}
 	else
 	{
@@ -327,7 +327,7 @@ WgRect WgGizmoCheckbox::GetContentRect( const WgSize& gizmoSize, const WgRect& i
 	WgBlockSetPtr p = m_bChecked ? m_pBlockChecked : m_pBlockUnchecked;
 
 	if( p )
-		rect.Shrink( p->GetContentBorders() );
+		rect.shrink( p->GetContentBorders() );
 
 	if( m_bIconPushText )
 	{
@@ -407,7 +407,7 @@ void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	if( pIcon && iconRect.w > 0 && iconRect.h > 0 )
 	{
 		WgRect iconBlitRect = iconRect;
-		iconBlitRect.Shrink( m_iconAreaBorders );
+		iconBlitRect.shrink( m_iconAreaBorders );
 		iconBlitRect.x += _canvas.x;
 		iconBlitRect.y += _canvas.y;
 		pDevice->ClipBlitBlock( _clip, pIcon->GetBlock(mode), iconBlitRect );
@@ -569,7 +569,7 @@ bool WgGizmoCheckbox::MarkTestTextArea( int _x, int _y )
 
 	for( int i = 0; i < m_textAreaCount; ++i )
 	{
-		if( m_pTextArea[i].Contains(_x,_y) )
+		if( m_pTextArea[i].contains(_x,_y) )
 			return true;
 	}
 

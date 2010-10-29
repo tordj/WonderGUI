@@ -82,6 +82,12 @@ void Wdg_Menu::Init( void )
 	m_contentOfs			= 0;
 	m_bPressOnSlider		= false;
 
+	m_savedMousePos.x		= -1;
+	m_savedMousePos.y		= -1;
+
+	m_nSelectorKeys			= 0;
+	m_selectorCountdown		= 0;
+
 	WgWidget::Modal();				// A menu is always modal...
 }
 
@@ -130,7 +136,7 @@ bool Wdg_Menu::SetSeparatorSource( const WgBlockSetPtr pGfx, const WgBorders& bo
 
 	m_pSepGfx		= pGfx;
 	m_sepBorders	= borders;
-	m_sepHeight		= m_pSepGfx->GetHeight() + m_sepBorders.GetHeight();
+	m_sepHeight		= m_pSepGfx->GetHeight() + m_sepBorders.height();
 
 	AdjustSize();
 	RequestRender();
@@ -514,6 +520,67 @@ WgBorders Wdg_Menu::GetContentBorders() const
 		return WgBorders(0);
 }
 
+//____ ScrollItemIntoView() ___________________________________________________
+
+void Wdg_Menu::ScrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop )
+{
+	WgMenuItem * p = m_items.getFirst();
+	unsigned int ofs = 0;
+
+	while( p != pItem )
+	{
+		if( p->GetType() == SEPARATOR )
+			ofs += m_sepHeight;
+		else
+			ofs += m_entryHeight;
+
+		p = p->getNext();
+	}
+
+	if( bForceAtTop || ofs < m_contentOfs )
+		SetViewPixels(ofs);
+	else if( ofs + m_entryHeight > m_contentOfs + GetViewSizePixels() )
+		SetViewPixels( ofs + m_entryHeight - GetViewSizePixels() );
+}
+
+//____ MarkFirstFilteredEntry() _______________________________________________
+
+void Wdg_Menu::MarkFirstFilteredEntry()
+{
+	WgMenuItem * pItem = m_items.getFirst();
+
+	while( pItem )
+	{
+		if( pItem->GetType() != SEPARATOR )
+		{
+			WgString str = ((WgMenuEntry*)pItem)->GetText();
+		
+			if( str.Length() > (unsigned) m_nSelectorKeys )
+			{
+				const WgChar * pChars = str.GetChars();
+
+				int i = 0;
+				while( i < m_nSelectorKeys && towlower(pChars[i].GetGlyph()) == m_selectorKeys[i] )
+					i++;
+
+				if( i == m_nSelectorKeys )
+					break;
+			}
+		}
+
+		pItem = pItem->getNext();
+	}
+
+
+	if( pItem )
+	{
+		m_markedItem = pItem->getIndex()+1;
+		RequestRender();
+		ScrollItemIntoView( pItem );
+	}
+
+}
+
 
 //____ DoMyOwnRender() ________________________________________________________
 
@@ -540,7 +607,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 	Uint32	yPos = window.y + contentBorders.top - m_contentOfs;
 	Uint32	xPosText = window.x + contentBorders.left + m_iconFieldWidth;
 	Uint32	xPosIcon = window.x + contentBorders.left;
-	Uint32	textFieldLen = window.w - contentBorders.GetWidth() - m_iconFieldWidth - m_arrowFieldWidth;
+	Uint32	textFieldLen = window.w - contentBorders.width() - m_iconFieldWidth - m_arrowFieldWidth;
 
 	WgPen	entryPen( WgGfx::GetDevice(), WgCord( xPosText, yPos ), clip );
 	WgPen	accelPen( WgGfx::GetDevice(), WgCord( xPosText, yPos ), clip );
@@ -559,10 +626,10 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				if( m_pSepGfx )
 				{
 					WgRect sepClip(clip);
-					sepClip.Shrink(0, contentBorders.top, 0, contentBorders.bottom);
+					sepClip.shrink(0, contentBorders.top, 0, contentBorders.bottom);
 
 					WgRect	dest( window.x + m_sepBorders.left, yPos + m_sepBorders.top,
-									window.w - m_sepBorders.GetWidth(), m_pSepGfx->GetHeight() );
+									window.w - m_sepBorders.width(), m_pSepGfx->GetHeight() );
 
 					WgGfx::clipBlitBlock( sepClip, m_pSepGfx->GetBlock(WG_MODE_NORMAL), dest );
 					yPos += m_sepHeight;
@@ -580,13 +647,13 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				if( item == m_markedItem )
 				{
 					WgRect markClip(clip);
-					markClip.Shrink(0, contentBorders.top, 0, contentBorders.bottom);
+					markClip.shrink(0, contentBorders.top, 0, contentBorders.bottom);
 
 					WgRect dest(
 						window.x + m_markBorders.left,
 						yPos + m_markBorders.top,
-						window.w - m_markBorders.GetWidth(),
-						m_entryHeight - m_markBorders.GetHeight() );
+						window.w - m_markBorders.width(),
+						m_entryHeight - m_markBorders.height() );
 					WgGfx::clipBlitBlock( markClip, m_pMarkGfx->GetBlock(WG_MODE_MARKED), dest );
 
 					mode = WG_MODE_MARKED;
@@ -714,6 +781,15 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 
 void Wdg_Menu::DoMyOwnUpdate( const WgUpdateInfo& _updateInfo )
 {
+	if( m_selectorCountdown > 0 )
+	{
+		m_selectorCountdown -= _updateInfo.msDiff;
+		if( m_selectorCountdown < 0 )
+		{
+			m_selectorCountdown = 0;
+			m_nSelectorKeys = 0;
+		}
+	}
 }
 
 //____ DoMyOwnActionRespond() _________________________________________________
@@ -736,43 +812,47 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 
 		case WgInput::POINTER_OVER:
 		{
-			WgMenuItem * pItem = GetItemAtAbsPos( _info.x, _info.y );
-
-			Uint32 markedItem = 0;
-			if( pItem && !m_bPressOnSlider )
+			if( _info.x != m_savedMousePos.x || _info.y != m_savedMousePos.y )
 			{
-					if( pItem->GetType() != SEPARATOR )
-					{
-						if( ((WgMenuEntry*)pItem)->IsEnabled() )
-							markedItem = pItem->getIndex()+1;
-					}
+				m_savedMousePos.x = _info.x;
+				m_savedMousePos.y = _info.y;
 
-			}
+				WgMenuItem * pItem = GetItemAtAbsPos( _info.x, _info.y );
 
-			if(	markedItem != m_markedItem )
-			{
-				// We might need to close any previously marked submenu...
-
-				if( m_markedItem != 0 )
+				Uint32 markedItem = 0;
+				if( pItem && !m_bPressOnSlider )
 				{
-					CloseSubMenu(m_markedItem);
+						if( pItem->GetType() != SEPARATOR )
+						{
+							if( ((WgMenuEntry*)pItem)->IsEnabled() )
+								markedItem = pItem->getIndex()+1;
+						}
+
 				}
 
-				//
+				if(	markedItem != m_markedItem )
+				{
+					// We might need to close any previously marked submenu...
 
-				m_markedItem = markedItem;
+					if( m_markedItem != 0 )
+					{
+						CloseSubMenu(m_markedItem);
+					}
+
+					//
+
+					m_markedItem = markedItem;
+				}
+
+				RequestRender();
+
+				// Open submenu if we are over a submenu entry.
+
+				if( pItem && pItem->GetType() == SUBMENU )
+				{
+					OpenSubMenu( (WgMenuSubMenu*) pItem );
+				}
 			}
-
-			RequestRender();
-
-			// Open submenu if we are over a submenu entry.
-
-			if( pItem && pItem->GetType() == SUBMENU )
-			{
-				OpenSubMenu( (WgMenuSubMenu*) pItem );
-			}
-
-
 		}
 		break;
 
@@ -783,7 +863,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 				break;
 			}
 
-			if( !m_btnReleaseArea.Contains( _info.x, _info.y ) )
+			if( !m_btnReleaseArea.contains( _info.x, _info.y ) )
 			{
 				Close();
 
@@ -816,6 +896,163 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 				SelectItem(pItem);
 			}
 		}
+		break;
+
+
+		case WgInput::CHARACTER:
+		{
+			if( _info.character != 0 )
+			{
+				m_selectorCountdown = c_selectorCountdownStart;
+
+				if( m_nSelectorKeys < c_maxSelectorKeys )
+				{
+					m_selectorKeys[m_nSelectorKeys++] = towlower( _info.character );
+					MarkFirstFilteredEntry();
+				}
+			}
+		}
+		break;
+
+		case WgInput::KEY_PRESS:
+		case WgInput::KEY_REPEAT:
+		{
+			WgMenuItem * pItem = 0;
+			if( m_markedItem != 0 )
+				pItem = m_items.get( m_markedItem-1 );
+
+
+			switch( button_key )
+			{
+				case WGKEY_ESCAPE:
+					Close();
+					break;
+
+				case WGKEY_RIGHT:
+					if( pItem )
+					{
+						if( pItem->GetType() == SUBMENU )
+							OpenSubMenu( (WgMenuSubMenu*) pItem );
+					}
+					break;
+
+				case WGKEY_LEFT:
+					if( m_pParentMenu )
+							Close();
+					break;
+
+				case WGKEY_RETURN:
+					if( pItem )
+					{
+						if( pItem->GetType() == ENTRY || pItem->GetType() == CHECKBOX || pItem->GetType() == RADIOBUTTON )
+							Emit( MenuEntryPressed(), pItem );
+
+						if( pItem->GetType() == SUBMENU )
+							OpenSubMenu( (WgMenuSubMenu*) pItem );
+						else
+							SelectItem(pItem);
+					}
+					break;
+
+				case WGKEY_UP:
+					if( pItem )
+					{
+						pItem = pItem->getPrev();
+						while( pItem != 0 && pItem->GetType() == SEPARATOR )
+							pItem = pItem->getPrev();		
+					}
+					break;
+
+				case WGKEY_DOWN:
+					if( pItem )
+					{
+						pItem = pItem->getNext();
+						while( pItem != 0 && pItem->GetType() == SEPARATOR )
+							pItem = pItem->getNext();		
+					}
+					else
+					{
+						pItem = m_items.getFirst();
+						while( pItem != 0 && pItem->GetType() == SEPARATOR )
+							pItem = pItem->getNext();		
+					}
+					break;
+
+				case WGKEY_HOME:
+					pItem = m_items.getFirst();
+					while( pItem != 0 && pItem->GetType() == SEPARATOR )
+						pItem = pItem->getNext();		
+					break;
+
+				case WGKEY_END:
+					pItem = m_items.getLast();
+					while( pItem != 0 && pItem->GetType() == SEPARATOR )
+						pItem = pItem->getPrev();		
+					break;
+
+				case WGKEY_PAGEUP:
+				{
+					int viewHeight = GetViewSizePixels();
+
+					int distance = m_entryHeight;
+					while( pItem != 0 && distance < viewHeight )
+					{
+						if( pItem->GetType() == SEPARATOR )
+							distance += m_sepHeight;
+						else
+							distance += m_entryHeight;
+	
+						pItem = pItem->getPrev();
+					}
+
+					if( !pItem )
+					{
+						pItem = m_items.getFirst();
+						while( pItem != 0 && pItem->GetType() == SEPARATOR )
+							pItem = pItem->getNext();
+					}
+
+					break;
+				}
+				case WGKEY_PAGEDOWN:
+				{
+					int viewHeight = GetViewSizePixels();
+
+					int distance = m_entryHeight;
+					while( pItem != 0 && distance < viewHeight )
+					{
+						if( pItem->GetType() == SEPARATOR )
+							distance += m_sepHeight;
+						else
+							distance += m_entryHeight;
+	
+						pItem = pItem->getNext();
+					}
+
+					if( !pItem )
+					{
+						pItem = m_items.getLast();
+						while( pItem != 0 && pItem->GetType() == SEPARATOR )
+							pItem = pItem->getNext();
+					}
+
+					break;
+				}
+			}
+
+
+			if( pItem )
+			{
+				Uint32 markedItem = pItem->getIndex()+1;
+				if( markedItem != m_markedItem )
+				{
+					m_markedItem = markedItem;
+					ScrollItemIntoView(pItem);
+					RequestRender();
+				}
+			}
+
+		}			
 		break;
 
         default:
@@ -880,10 +1117,10 @@ void Wdg_Menu::SelectItem(WgMenuItem* pItem)
 
 void Wdg_Menu::Open( )
 {
-	Open( m_pMenuRoot, m_menuPosX, m_menuPosY, m_menuMinW, &m_btnReleaseArea, m_pParentMenu );
+	Open( m_pMenuRoot, m_menuPosX, m_menuPosY, m_menuMinW, 0, &m_btnReleaseArea, m_pParentMenu );
 }
 
-void Wdg_Menu::Open( Wdg_Root * pRoot, Uint32 x, Uint32 y, Uint32 minW, WgRect * pBtnReleaseArea, Wdg_Menu * pParentMenu )
+void Wdg_Menu::Open( Wdg_Root * pRoot, Uint32 x, Uint32 y, Uint32 minW, WgMenuItem * pMarkedItem, WgRect * pBtnReleaseArea, Wdg_Menu * pParentMenu )
 {
 	if( pBtnReleaseArea )
 		m_btnReleaseArea = * pBtnReleaseArea;
@@ -897,9 +1134,23 @@ void Wdg_Menu::Open( Wdg_Root * pRoot, Uint32 x, Uint32 y, Uint32 minW, WgRect *
 	if( (Uint32) Width() < minW )
 		AdjustSize();
 
+	m_savedMousePos.x = -1;
+	m_savedMousePos.y = -1;
+
+	m_nSelectorKeys			= 0;
+	m_selectorCountdown		= 0;
+
 	SetParent(pRoot);
 	SetPos( x, y );
 	Emit( MenuOpened() );
+
+	GrabInputFocus();
+	if( pMarkedItem && pMarkedItem->getChain() == &m_items )
+	{
+		m_markedItem = pMarkedItem->getIndex()+1;
+		RequestRender();
+		ScrollItemIntoView( pMarkedItem, true );
+	}
 }
 
 //____ Close() ________________________________________________________________
@@ -919,6 +1170,9 @@ void Wdg_Menu::Close()
 		SetParent(0);
 		Emit( MenuClosed() );
 	}
+
+	if( m_pParentMenu )
+		m_pParentMenu->GrabInputFocus();
 }
 
 
@@ -972,7 +1226,7 @@ void Wdg_Menu::OpenSubMenu( WgMenuSubMenu * pItem )
 		yOfs += m_entryHeight - (Uint32) pMenu->Height();
 
 
-	pMenu->Open( (Wdg_Root*)Root(), xOfs, yOfs, 0, &releaseArea, this );
+	pMenu->Open( (Wdg_Root*)Root(), xOfs, yOfs, 0, 0, &releaseArea, this );
 }
 
 //____ CloseSubMenu() _________________________________________________________
@@ -1025,7 +1279,7 @@ WgMenuItem * Wdg_Menu::GetItemAtAbsPos( int x, int y )
 
 	y += m_contentOfs;
 
-	if( y > 0 && x > 0 && x < (int) (m_geo.w - contentBorders.GetWidth() ) )
+	if( y > 0 && x > 0 && x < (int) (m_geo.w - contentBorders.width() ) )
 	{
 		WgMenuItem * pItem = m_items.getFirst();
 		while( pItem )
@@ -1055,10 +1309,10 @@ void Wdg_Menu::AdjustSize()
 {
 	WgBorders contentBorders = GetContentBorders();
 
-	Uint32  w = contentBorders.GetWidth();
-	Uint32	h = contentBorders.GetHeight();
+	Uint32  w = contentBorders.width();
+	Uint32	h = contentBorders.height();
 
-	Uint32 minSep = m_sepBorders.GetWidth();
+	Uint32 minSep = m_sepBorders.width();
 	if( m_pSepGfx )
 		minSep += m_pSepGfx->GetMinWidth();
 
@@ -1077,7 +1331,7 @@ void Wdg_Menu::AdjustSize()
 			{
 				h += m_entryHeight;
 
-				Uint32 minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorders.GetWidth() + m_iconFieldWidth + m_arrowFieldWidth;
+				Uint32 minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorders.width() + m_iconFieldWidth + m_arrowFieldWidth;
 
 				if( w < minW )
 					w = minW;
@@ -1088,10 +1342,10 @@ void Wdg_Menu::AdjustSize()
 		pItem = pItem->getNext();
 	}
 
-	m_contentHeight = h - contentBorders.GetHeight();
+	m_contentHeight = h - contentBorders.height();
 
-	if( h < m_entryHeight + contentBorders.GetHeight() )
-		h = m_entryHeight + contentBorders.GetHeight();
+	if( h < m_entryHeight + contentBorders.height() )
+		h = m_entryHeight + contentBorders.height();
 
 	if( h > (Uint32) MaxHeight() )
 	{
@@ -1124,9 +1378,9 @@ void Wdg_Menu::AdjustSize()
 
 		w += sliderWidth;
 
-		if( h < sliderHeight + contentBorders.GetHeight() )
+		if( h < sliderHeight + contentBorders.height() )
 		{
-			h = sliderHeight + contentBorders.GetHeight();
+			h = sliderHeight + contentBorders.height();
 			WgWidget::SetHeight(h);							// Need to change height before we can add slider...
 		}
 
@@ -1162,15 +1416,23 @@ void Wdg_Menu::AdjustSize()
 
 float Wdg_Menu::GetViewOfs()
 {
-	return ((float)m_contentOfs) / (m_contentHeight-(Height()-GetContentBorders().GetHeight()));
+	return ((float)m_contentOfs) / (m_contentHeight-(Height()-GetContentBorders().height()));
 }
 
 //____ GetViewSize() __________________________________________________________
 
 float Wdg_Menu::GetViewSize()
 {
-	return ((float)(Height()-GetContentBorders().GetHeight())) / m_contentHeight;
+	return ((float)(GetViewSizePixels())) / m_contentHeight;
 }
+
+//____ GetViewSizePixels() ____________________________________________________
+
+int Wdg_Menu::GetViewSizePixels()
+{
+	return Height()-GetContentBorders().height();
+}
+
 
 //____ SetView() ______________________________________________________________
 
@@ -1182,7 +1444,7 @@ void Wdg_Menu::SetView(float pos)
 	if( pos > 1.f )
 		pos = 1.f;
 
-	int viewHeight = Height() - GetContentBorders().GetHeight();
+	int viewHeight = Height() - GetContentBorders().height();
 
 	int ofs = (int) (pos * (m_contentHeight-viewHeight));
 
@@ -1202,7 +1464,7 @@ void Wdg_Menu::SetViewPixels(int pos)
 	if( pos < 0 )
 		pos = 0;
 
-	int viewHeight = Height() - GetContentBorders().GetHeight();
+	int viewHeight = Height() - GetContentBorders().height();
 
 	if( pos + viewHeight > (int) m_contentHeight )
 		pos = m_contentHeight - viewHeight;
@@ -1245,7 +1507,7 @@ void Wdg_Menu::StepViewUp()
 
 void Wdg_Menu::StepViewPageDown()
 {
-	int viewHeight = Height() - GetContentBorders().GetHeight();
+	int viewHeight = Height() - GetContentBorders().height();
 	SetViewPixels( m_contentOfs + (viewHeight - m_entryHeight) );
 }
 
@@ -1253,7 +1515,7 @@ void Wdg_Menu::StepViewPageDown()
 
 void Wdg_Menu::StepViewPageUp()
 {
-	int viewHeight = Height() - GetContentBorders().GetHeight();
+	int viewHeight = Height() - GetContentBorders().height();
 	SetViewPixels( m_contentOfs - (viewHeight - m_entryHeight) );
 }
 

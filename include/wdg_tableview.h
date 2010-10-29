@@ -50,8 +50,20 @@ public:
 	inline void		SetID( Uint32 id ) { m_id = id; }
 	inline Uint32	GetID() const { return m_id; }
 
-	void			SetWidth( Uint32 pixels );
-	inline Uint32	GetWidth() const { return m_pixelWidth; }
+	void			SetWidth( int pixels );
+	inline Uint32	GetWidth() const { return (Uint32) m_pixelWidth; }
+
+	void			SetContentWidth( int pixels );
+	inline int		GetContentWidth() const;
+
+	void			SetMinWidth( int pixels );
+	inline int		GetMinWidth( int pixels ) const { return m_minWidth; }
+
+	void			SetMaxWidth( int pixels );
+	inline int		GetMaxWidth( int pixels ) const { return m_maxWidth; }
+
+	void			SetScaleWeight( float weight );
+	inline float	GetScaleWeight() const { return m_scaleWeight; }
 
 	void			Hide();
 	void			Show();
@@ -78,7 +90,13 @@ private:
 	WgText *		GetTextObj();
 
 	int				m_id;
-	Uint32			m_pixelWidth;
+
+	int				m_defWidth;
+	int				m_minWidth;
+	int				m_maxWidth;
+	float			m_scaleWeight;
+
+	float			m_pixelWidth;			// Should always contain a fixed point value except when calculations are performed.
 	fpItemCmp		m_fpCompare;
 	bool			m_bVisible;
 	bool			m_bEnabled;
@@ -119,6 +137,7 @@ public:
 
 	inline	WgItem* GetItem(int column) { return WgItemRow::GetItem(column); }
 
+	inline void SetHeightModify(int pixels) { WgItemRow::SetHeightModify(pixels); }
 	
 
 	void	SetItem( WgItem * pItem, Uint32 col );
@@ -169,7 +188,6 @@ public:
 
 	void	SetAutoScaleHeaders(bool autoScaleHeaders);
 	bool	GetAutoScaleHeaders() const { return m_bAutoScaleHeader; }
-	float	CalcHeaderScaleFactor();
 
 	Sint32	GetHeaderHeight()	{ return (m_bShowHeader && m_pHeaderGfx) ? m_pHeaderGfx->GetHeight(0) : 0; }
 
@@ -243,10 +261,10 @@ public:
 	inline bool	GrabInputFocus() { return WgWidget::GrabInputFocus(); }
 	inline bool	RemoveInputFocus() { return WgWidget::GrabInputFocus(); }
 
-
 protected:
 	WgWidget * NewOfMyType() const;
 
+	void	DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo );
 	void	DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGeo );
 	void	DoMyOwnActionRespond( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	void	DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer );
@@ -257,6 +275,9 @@ protected:
 
 private:
 	void 	Init();
+
+	void	TweakColumnWidths( int targetWidth );
+	void	ExtendLastColumn( int targetWidth );
 
 	void		refreshItems();
 	void		ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff );
@@ -270,6 +291,7 @@ private:
 
 	void		UpdateContentSize();
 	void		UpdateMarkedRowColumn( int row, int column );
+	void		RecalcColumnWidths( int width=0 );
 
 	struct SortInfo
 	{

@@ -39,10 +39,12 @@ const char * WgItemRow::GetMyType()
 
 WgItemRow::WgItemRow()
 {
+	m_heightModify = 0;
 }
 
 WgItemRow::WgItemRow( Sint64 id ) : WgItem( id )
 {
+	m_heightModify = 0;
 }
 
 
@@ -51,6 +53,15 @@ WgItemRow::WgItemRow( Sint64 id ) : WgItem( id )
 WgItemRow::~WgItemRow()
 {
 }
+
+//____ SetHeightModify() ______________________________________________________
+
+void WgItemRow::SetHeightModify( int pixels )
+{
+	m_heightModify = pixels;
+	refreshItems();
+}
+
 
 //____ AdaptToHeight() ________________________________________________________
 
@@ -206,6 +217,7 @@ void WgItemRow::refreshItems()
 		p = p->getNext();
 	}
 
+	contentHeight += m_heightModify;
 
 	Sint32	diffX = contentWidth - m_width;
 	Sint32	diffY = contentHeight - m_height;

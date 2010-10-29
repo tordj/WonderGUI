@@ -224,8 +224,8 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	if( m_pBgGfx )
 	{
-		window.Shrink( m_pBgGfx->GetContentBorders() );
-		clip.Intersection( window, _clip );
+		window.shrink( m_pBgGfx->GetContentBorders() );
+		clip.intersection( window, _clip );
 	}
 	else
 		clip = _clip;
@@ -262,14 +262,14 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 			if( m_pEntryGfx )
 			{
-				WgRect	dest( posX, window.y, pI->m_width + b.GetWidth(), window.h );
+				WgRect	dest( posX, window.y, pI->m_width + b.width(), window.h );
 				pDevice->ClipBlitBlock( clip, m_pEntryGfx->GetBlock(mode), dest );
 			}
 
 			pen.SetPos( WgCord(posX + b.left, printPosY) );
 			pDevice->PrintLine( &pen, m_pTextProp, mode, pI->m_pText );
 
-			posX += pI->m_width + b.GetWidth();
+			posX += pI->m_width + b.width();
 		}
 		itemNb++;
 		pI = pI->getNext();
@@ -383,7 +383,7 @@ bool WgGizmoMenubar::OpenMenu( Uint32 nb )
 		pos.y += m_pBgGfx->GetContentBorders().top;
 	}
 
-	int bordersWidth = GetEntryBorders().GetWidth();
+	int bordersWidth = GetEntryBorders().width();
 
 	WgMenuBarItem * pI = m_items.getFirst();
 	while( pI != pItem )
@@ -407,7 +407,7 @@ bool WgGizmoMenubar::OpenMenu( Uint32 nb )
 		else
 			yPos = y + Size().h;
 
-		pItem->m_pMenu->Open((Wdg_Root*)m_pHook->GetRoot(), x, yPos, 0, &r );
+		pItem->m_pMenu->Open((Wdg_Root*)m_pHook->GetRoot(), x, yPos, 0, 0, &r );
 	}
 	return true;
 }
@@ -443,7 +443,7 @@ Uint32 WgGizmoMenubar::GetItemAtAbsPos( int x, int y )
 
 	if( y > 0 && x > 0 && y < (int) Size().h )
 	{
-		int bordersWidth = GetEntryBorders().GetWidth();	
+		int bordersWidth = GetEntryBorders().width();	
 
 		WgMenuBarItem * pItem = m_items.getFirst();
 		int		item = 1;

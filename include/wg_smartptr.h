@@ -110,7 +110,7 @@ public:
 			if( ((WgRefCountedPooled*)m_pObj)->m_ref == 0 )
 			{
 				m_pObj->~T();
-				((WgRefCountedPooled*)m_pObj)->m_pPool->FreeEntry(m_pObj);
+				((WgRefCountedPooled*)m_pObj)->m_pPool->freeEntry(m_pObj);
 			}
 		}
 	};
@@ -127,7 +127,7 @@ public:
 				if( ((WgRefCountedPooled*)m_pObj)->m_ref == 0 )
 				{
 					m_pObj->~T();
-					((WgRefCountedPooled*)m_pObj)->m_pPool->FreeEntry(m_pObj);
+					((WgRefCountedPooled*)m_pObj)->m_pPool->freeEntry(m_pObj);
 				}
 			}
 

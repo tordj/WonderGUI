@@ -22,15 +22,20 @@
 #ifndef WG_GFXDEVICE_GL_DOT_H
 #define WG_GFXDEVICE_GL_DOT_H
 
+
+#include <wg_geo.h>
+
 #ifdef WIN32
 #	include <windows.h>
 #endif
 
 #include <GL/gl.h>
 
+
 #ifndef	WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
 #endif
+
 
 class WgSurfaceGL;
 

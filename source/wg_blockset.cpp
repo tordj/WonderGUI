@@ -339,7 +339,7 @@ WgSize WgBlockSet::GetMinSize( int alt ) const
 	if( !p )
 		return WgSize();
 
-	return p->gfxBorders.GetSize(); 
+	return p->gfxBorders.size(); 
 }
 
 //____ GetMinWidth() __________________________________________________________
@@ -350,7 +350,7 @@ int WgBlockSet::GetMinWidth( int alt ) const
 	if( !p )
 		return 0;
 
-	return p->gfxBorders.GetWidth(); 
+	return p->gfxBorders.width(); 
 }
 
 //____ GetMinHeight() _________________________________________________________
@@ -361,7 +361,7 @@ int WgBlockSet::GetMinHeight( int alt ) const
 	if( !p )
 		return 0;
 
-	return p->gfxBorders.GetHeight(); 
+	return p->gfxBorders.height(); 
 }
 
 //____ GetSurface() ___________________________________________________________

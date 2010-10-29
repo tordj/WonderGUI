@@ -4,23 +4,29 @@
 
 Uint32	WgMemPool::g_allocatedEver = 0;
 
+//____ Constructor ____________________________________________________________
+
 WgMemPool::WgMemPool( Uint32 entriesPerBlock, Uint32 entrySize )
 {
 	m_nEntriesPerBlock	= entriesPerBlock;
 	m_entrySize			= entrySize;
 }
 
+//____ Destructor _____________________________________________________________
+
 WgMemPool::~WgMemPool()
 {
 }
 
-void * WgMemPool::AllocEntry()
+//____ allocEntry() ___________________________________________________________
+
+void * WgMemPool::allocEntry()
 {
 	g_allocatedEver++;
 
 	Block * pBlock = m_blocks.getFirst();
 	if(pBlock == 0)
-		pBlock = AddBlock();
+		pBlock = addBlock();
 
 	if( pBlock->nAllocEntries == pBlock->maxEntries )
 	{
@@ -29,16 +35,18 @@ void * WgMemPool::AllocEntry()
 		pBlock = m_blocks.getFirst();
 		if( pBlock->nAllocEntries == pBlock->maxEntries )
 		{
-			AddBlock();						// We don't have any free entries left in any block.
+			addBlock();						// We don't have any free entries left in any block.
 											// so we need to create a new one.
 			pBlock = m_blocks.getFirst();
 		}
 	}
 
-	return pBlock->AllocEntry();
+	return pBlock->allocEntry();
 }
 
-void WgMemPool::FreeEntry( void * pEntry )
+//____ freeEntry() ____________________________________________________________
+
+void WgMemPool::freeEntry( void * pEntry )
 {
 	if( pEntry == 0 )
 		return;
@@ -58,22 +66,22 @@ void WgMemPool::FreeEntry( void * pEntry )
 	if( pBlock->nAllocEntries == pBlock->maxEntries )
 		m_blocks.push_front(pBlock);			// Full block will get an entry free, needs to be among the free ones...
 
-	pBlock->FreeEntry(pEntry);
+	pBlock->freeEntry(pEntry);
 
 	if( pBlock->nAllocEntries == 0 )
 		delete pBlock;
 }
 
+//____ addBlock() _____________________________________________________________
 
-WgMemPool::Block *WgMemPool::AddBlock()
+WgMemPool::Block *WgMemPool::addBlock()
 {
 	Block * pBlock = new Block( m_nEntriesPerBlock, m_entrySize );
 	m_blocks.push_front( pBlock );
 	return pBlock;
 }
 
-
-
+//____ Block::Constructor _____________________________________________________
 
 WgMemPool::Block::Block( Uint32 _nEntries, Uint32 _entrySize )
 {
@@ -86,12 +94,16 @@ WgMemPool::Block::Block( Uint32 _nEntries, Uint32 _entrySize )
 	entrySize		= _entrySize;
 }
 
+//____ Block::Destructor ______________________________________________________
+
 WgMemPool::Block::~Block()
 {
 	free( pMemBlock );
 }
 
-void * WgMemPool::Block::AllocEntry()
+//____ Block::allocEntry() ____________________________________________________
+
+void * WgMemPool::Block::allocEntry()
 {
 	if( nAllocEntries == maxEntries )
 		return 0;
@@ -111,8 +123,9 @@ void * WgMemPool::Block::AllocEntry()
 	return p;
 }
 
+//____ Block::freeEntry() _____________________________________________________
 
-bool WgMemPool::Block::FreeEntry( void * pEntry )
+bool WgMemPool::Block::freeEntry( void * pEntry )
 {
 	if( pEntry < pMemBlock || pEntry >= ((Uint8*)pMemBlock) + blockSize )
 		return false;

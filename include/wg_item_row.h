@@ -43,6 +43,8 @@ public:
 	static const char * GetMyType();
 
 
+	void	SetHeightModify( int pixels );
+
 	inline bool	GrabInputFocus() { return WgItem::GrabInputFocus(); }
 	inline bool	RemoveInputFocus() { return WgItem::GrabInputFocus(); }
 
@@ -64,6 +66,8 @@ protected:
 	void refreshItems();
 	void ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff );
 	WgItem* GetMarkedItem( Uint32 x, Uint32 y );
+
+	int		m_heightModify;
 
 };
 

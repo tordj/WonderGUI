@@ -309,7 +309,7 @@ void WgGfxDevice::ClipTileBlit( const WgRect& _clip, const WgSurface* _pSrc, con
 	WgRect	myRect;
 
 	WgRect	clip;
-	if( !clip.Intersection( _dest, _clip ) )
+	if( !clip.intersection( _dest, _clip ) )
 		return;
 
 	// Take care of start-offset change caused by clipping.
@@ -436,12 +436,12 @@ void WgGfxDevice::BlitBlock( const WgBlock& _block, const WgRect& _dest2, bool b
 
 	// Render left and right stretch areas
 
-	if( _dest.h > (Sint32) borders.GetHeight() )
+	if( _dest.h > (Sint32) borders.height() )
 	{
 		if( borders.left > 0 )
 		{
-			WgRect sr( src.x, src.y + borders.top, borders.left, src.h - borders.GetHeight() );
-			WgRect dr( _dest.x, _dest.y + borders.top, borders.left, _dest.h - borders.GetHeight() );
+			WgRect sr( src.x, src.y + borders.top, borders.left, src.h - borders.height() );
+			WgRect dr( _dest.x, _dest.y + borders.top, borders.left, _dest.h - borders.height() );
 
 			if( _block.HasTiledLeftBorder() )
 				TileBlit( pSurf, sr, dr );
@@ -452,9 +452,9 @@ void WgGfxDevice::BlitBlock( const WgBlock& _block, const WgRect& _dest2, bool b
 		if( borders.right > 0 )
 		{
 			WgRect sr(	src.x + src.w - borders.right, src.y + borders.top,
-						borders.right, src.h - borders.GetHeight() );
+						borders.right, src.h - borders.height() );
 			WgRect dr(	_dest.x + _dest.w - borders.right, _dest.y + borders.top,
-						borders.right, _dest.h - borders.GetHeight() );
+						borders.right, _dest.h - borders.height() );
 
 			if( _block.HasTiledRightBorder() )
 				TileBlit( pSurf, sr, dr );
@@ -469,10 +469,10 @@ void WgGfxDevice::BlitBlock( const WgBlock& _block, const WgRect& _dest2, bool b
 	if( (_dest.h > borders.top + borders.bottom) && (_dest.w > borders.left + borders.right ) )
 	{
 		WgRect sr(	src.x + borders.left, src.y + borders.top,
-					src.w - borders.GetWidth(), src.h - borders.GetHeight() );
+					src.w - borders.width(), src.h - borders.height() );
 
 		WgRect dr(	_dest.x + borders.left, _dest.y + borders.top,
-					_dest.w - borders.GetWidth(), _dest.h - borders.GetHeight() );
+					_dest.w - borders.width(), _dest.h - borders.height() );
 
 		if( _block.HasTiledCenter() )
 			TileBlit( pSurf, sr, dr );
@@ -496,7 +496,7 @@ void WgGfxDevice::ClipBlitBlock( const WgRect& _clip, const WgBlock& _block, con
 
 	// Shortcuts & optimizations for common special cases.
 
-	if( _clip.Contains( _dest2 ) )
+	if( _clip.contains( _dest2 ) )
 	{
 		BlitBlock( _block, _dest2, bTriLinear, mipmapbias );
 		return;
@@ -561,12 +561,12 @@ void WgGfxDevice::ClipBlitBlock( const WgRect& _clip, const WgBlock& _block, con
 
 	// Render left and right stretch areas
 
-	if( _dest.h > (Sint32) borders.GetHeight() )
+	if( _dest.h > (Sint32) borders.height() )
 	{
 		if( borders.left > 0 )
 		{
-			WgRect sr( src.x, src.y + borders.top, borders.left, src.h - borders.GetHeight() );
-			WgRect dr( _dest.x, _dest.y + borders.top, borders.left, _dest.h - borders.GetHeight() );
+			WgRect sr( src.x, src.y + borders.top, borders.left, src.h - borders.height() );
+			WgRect dr( _dest.x, _dest.y + borders.top, borders.left, _dest.h - borders.height() );
 
 			if( _block.HasTiledLeftBorder() )
 				ClipTileBlit( _clip, pSurf, sr, dr );
@@ -577,9 +577,9 @@ void WgGfxDevice::ClipBlitBlock( const WgRect& _clip, const WgBlock& _block, con
 		if( borders.right > 0 )
 		{
 			WgRect sr(	src.x + src.w - borders.right, src.y + borders.top,
-						borders.right, src.h - borders.GetHeight() );
+						borders.right, src.h - borders.height() );
 			WgRect dr(	_dest.x + _dest.w - borders.right, _dest.y + borders.top,
-						borders.right, _dest.h - borders.GetHeight() );
+						borders.right, _dest.h - borders.height() );
 
 			if( _block.HasTiledRightBorder() )
 				ClipTileBlit( _clip, pSurf, sr, dr );
@@ -594,10 +594,10 @@ void WgGfxDevice::ClipBlitBlock( const WgRect& _clip, const WgBlock& _block, con
 	if( (_dest.h > borders.top + borders.bottom) && (_dest.w > borders.left + borders.right ) )
 	{
 		WgRect sr(	src.x + borders.left, src.y + borders.top,
-					src.w - borders.GetWidth(), src.h - borders.GetHeight() );
+					src.w - borders.width(), src.h - borders.height() );
 
 		WgRect dr(	_dest.x + borders.left, _dest.y + borders.top,
-					_dest.w - borders.GetWidth(), _dest.h - borders.GetHeight() );
+					_dest.w - borders.width(), _dest.h - borders.height() );
 
 		if( _block.HasTiledCenter() )
 			ClipTileBlit( _clip, pSurf, sr, dr );
@@ -624,13 +624,13 @@ void WgGfxDevice::ClipBlitHorrBar(	const WgRect& _clip, const WgSurface * _pSurf
 	WgRect	r( _src.x, _src.y, _borders.left, _src.h );
 	ClipBlit( _clip, _pSurf, r, _dx, _dy );
 
-	_len -= _borders.GetWidth();			// Remove left and right edges from len.
+	_len -= _borders.width();			// Remove left and right edges from len.
 	_dx += _borders.left;
 
 	// Blit tiling part
 
 	r.x += _borders.left;
-	r.w = _src.w - _borders.GetWidth();
+	r.w = _src.w - _borders.width();
 
 	if( _bTile )
 	{
@@ -675,13 +675,13 @@ void WgGfxDevice::ClipBlitVertBar(	const WgRect& _clip, const WgSurface * _pSurf
 	WgRect	r( _src.x, _src.y, _src.w, _borders.top );
 	ClipBlit( _clip, _pSurf, r, _dx, _dy );
 
-	_len -= _borders.GetHeight();			// Remove top and bottom edges from len.
+	_len -= _borders.height();			// Remove top and bottom edges from len.
 	_dy += _borders.top;
 
 	// Blit tiling part
 
 	r.y += _borders.top;
-	r.h = _src.h - _borders.GetHeight();
+	r.h = _src.h - _borders.height();
 
 	if( _bTile )
 	{
@@ -723,13 +723,13 @@ void WgGfxDevice::BlitHorrBar(	const WgSurface * _pSurf, const WgRect& _src,
 	WgRect	r( _src.x, _src.y, _borders.left, _src.h );
 	Blit( _pSurf, r, _dx, _dy );
 
-	_len -= _borders.GetWidth();			// Remove left and right edges from len.
+	_len -= _borders.width();			// Remove left and right edges from len.
 	_dx += _borders.left;
 
 	// Blit tiling part
 
 	r.x += _borders.left;
-	r.w = _src.w - _borders.GetWidth();
+	r.w = _src.w - _borders.width();
 
 	if( _bTile )
 	{
@@ -770,13 +770,13 @@ void WgGfxDevice::BlitVertBar(	const WgSurface * _pSurf, const WgRect& _src,
 	WgRect	r( _src.x, _src.y, _src.w, _borders.top );
 	Blit( _pSurf, r, _dx, _dy );
 
-	_len -= _borders.GetHeight();			// Remove top and bottom borders from len.
+	_len -= _borders.height();			// Remove top and bottom borders from len.
 	_dy += _borders.top;
 
 	// Blit tiling part
 
 	r.y += _borders.top;
-	r.h = _src.h - _borders.GetHeight();
+	r.h = _src.h - _borders.height();
 
 	if( _bTile )
 	{
@@ -897,7 +897,7 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 	WgPen pen;
 	pen.SetDevice( this );
 
-	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.Contains( dest ) )
+	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.contains( dest ) )
 		pen.SetClipRect( clip );
 
 	PrintText(clip, pText, 0, dest, &pen);

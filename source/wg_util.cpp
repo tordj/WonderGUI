@@ -12,17 +12,17 @@ bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 
 	const WgBorders& borders = block.GetBorders();
 
-	int areaW = area.w - borders.GetWidth();
-	int areaH = area.h - borders.GetHeight();
+	int areaW = area.w - borders.width();
+	int areaH = area.h - borders.height();
 
-	int blockW = block.GetWidth() - borders.GetWidth();
-	int blockH = block.GetHeight() - borders.GetHeight();
+	int blockW = block.GetWidth() - borders.width();
+	int blockH = block.GetHeight() - borders.height();
 
 	if(areaW <= 0 || areaH <= 0 || blockW <= 0 || blockH <= 0)
 		return false;
 
-	int adjustedW = borders.GetWidth();
-	int adjustedH = borders.GetHeight();
+	int adjustedW = borders.width();
+	int adjustedH = borders.height();
 
 	if(areaW * blockH > blockW * areaH)
 	{
@@ -50,7 +50,7 @@ bool WgUtil::MarkTestBlock( WgCord ofs, const WgBlock& block, WgRect area )
 	AdjustScaledArea(block, area);
 
 	// Sanity check & shortcuts.
-	if( !area.Contains(ofs.x,ofs.y) )
+	if( !area.contains(ofs.x,ofs.y) )
 		return false;
 
 	if( block.IsOpaque() )
@@ -88,7 +88,7 @@ bool WgUtil::MarkTestBlock( WgCord ofs, const WgBlock& block, WgRect area )
 	}
 	else if( xSection == 1 )
 	{
-		int tileAreaWidth = block.GetWidth() - borders.GetWidth();
+		int tileAreaWidth = block.GetWidth() - borders.width();
 
 		bool bTile;
 
@@ -103,7 +103,7 @@ bool WgUtil::MarkTestBlock( WgCord ofs, const WgBlock& block, WgRect area )
 			ofs.x = ((ofs.x - borders.left) % tileAreaWidth) + borders.left;
 		else
 		{
-			double screenWidth = area.w - borders.GetWidth();	// Width of stretch-area on screen.
+			double screenWidth = area.w - borders.width();	// Width of stretch-area on screen.
 			ofs.x = (int) ((ofs.x-borders.left)/screenWidth * tileAreaWidth + borders.left);
 		}
 	}
@@ -117,7 +117,7 @@ bool WgUtil::MarkTestBlock( WgCord ofs, const WgBlock& block, WgRect area )
 	}
 	else if( ySection == 1 )
 	{
-		int tileAreaHeight = block.GetHeight() - borders.GetHeight();
+		int tileAreaHeight = block.GetHeight() - borders.height();
 
 		bool bTile;
 
@@ -132,7 +132,7 @@ bool WgUtil::MarkTestBlock( WgCord ofs, const WgBlock& block, WgRect area )
 			ofs.y = ((ofs.y - borders.top) % tileAreaHeight) + borders.top;
 		else
 		{
-			double screenHeight = area.h - borders.GetHeight();	// Height of stretch-area on screen.
+			double screenHeight = area.h - borders.height();	// Height of stretch-area on screen.
 			ofs.y = (int) ((ofs.y-borders.top)/screenHeight * tileAreaHeight + borders.top);
 		}
 	}

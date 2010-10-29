@@ -185,7 +185,7 @@ void WgGizmoRefreshButton::OnNewSize( const WgSize& size )
 	Uint32 w = size.w;
 
 	if( m_pBgGfx )
-		w -= m_pBgGfx->GetContentBorders().GetWidth();
+		w -= m_pBgGfx->GetContentBorders().width();
 	m_refreshText.setLineWidth(w);
 
 	WgGizmoButton::OnNewSize( size );
@@ -307,7 +307,7 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canva
 
 		WgRect printWindow( _canvas.x + xOfs, _canvas.y + yOfs, _canvas.w, _canvas.h );
 		if( m_pBgGfx )
-			printWindow.Shrink( m_pBgGfx->GetContentBorders() );
+			printWindow.shrink( m_pBgGfx->GetContentBorders() );
 		pDevice->PrintText( _clip, pText, printWindow );
 	}
 }

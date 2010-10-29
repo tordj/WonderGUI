@@ -101,7 +101,7 @@ Uint32 WgGizmoButton::GetTextAreaWidth()
 	int w = Size().w;
 
 	if( m_pBgGfx )
-		w -= m_pBgGfx->GetContentBorders().GetWidth(); 
+		w -= m_pBgGfx->GetContentBorders().width(); 
 
 	return w;
 }
@@ -188,7 +188,7 @@ void WgGizmoButton::OnNewSize( const WgSize& size )
 	Uint32 w = size.w;
 
 	if( m_pBgGfx )
-		w -= m_pBgGfx->GetContentBorders().GetWidth();
+		w -= m_pBgGfx->GetContentBorders().width();
 
 	m_text.setLineWidth(w);
 }
@@ -231,7 +231,7 @@ void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		WgRect printWindow( _canvas.x + xOfs, _canvas.y + yOfs, _canvas.w, _canvas.h );
 
 		if( m_pBgGfx )
-			printWindow.Shrink( m_pBgGfx->GetContentBorders() );
+			printWindow.shrink( m_pBgGfx->GetContentBorders() );
 		pDevice->PrintText( _clip, &m_text, printWindow );
 	}
 }

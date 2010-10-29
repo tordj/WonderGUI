@@ -69,10 +69,10 @@ public:
 	inline T*		getFirst() const { return (T*) m_pFirst; };
 	inline T*		getLast() const { return (T*) m_pLast; };
 
-	inline void	push_front( T* pLink ) { WgChainImp::push_front( pLink ); };
+	inline void		push_front( T* pLink ) { WgChainImp::push_front( pLink ); };
 	inline T*		pop_front() { return (T*) WgChainImp::pop_front(); };
 
-	inline void	push_back( T* pLink ) { WgChainImp::push_back( pLink ); };
+	inline void		push_back( T* pLink ) { WgChainImp::push_back( pLink ); };
 	inline T*		pop_back() { return (T*) WgChainImp::pop_back(); };
 
 	inline T*		get( Uint32 index ) const { return (T*) WgChainImp::get(index); };

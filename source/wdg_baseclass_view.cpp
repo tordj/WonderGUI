@@ -782,6 +782,7 @@ void Wdg_Baseclass_View::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 	}
 
 	WgRect subclassNewGeo = WgRect(newGeo.x, newGeo.y, lenPixX, lenPixY );
+//	WgRect subclassNewGeo = newGeo;
 	DoMyOwnGeometryChangeSubclass( m_subclassGeo, subclassNewGeo );
 	m_subclassGeo = subclassNewGeo;
 }
@@ -911,13 +912,13 @@ void Wdg_Baseclass_View::SetContentSize( Uint32 width, Uint32 height )
 		}
 	}
 
-	if( bViewChanged )
-	{
-		WgRect subclassNewGeo = WgRect(m_geo.x, m_geo.y, ViewPixelLenX(), ViewPixelLenY() );
-		DoMyOwnGeometryChangeSubclass( m_subclassGeo, subclassNewGeo );
-		m_subclassGeo = subclassNewGeo;
-	}
+	//---
 
+	WgRect subclassNewGeo = WgRect(m_geo.x, m_geo.y, ViewPixelLenX(), ViewPixelLenY() );
+	DoMyOwnGeometryChangeSubclass( m_subclassGeo, subclassNewGeo );
+	m_subclassGeo = subclassNewGeo;
+
+	//---
 
 	float	lenX = ViewLenX();
 	float	lenY = ViewLenY();

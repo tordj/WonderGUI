@@ -1042,7 +1042,7 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 			return WgRect();							// Invalid row.
 
 		if( pRow->IsVisible() )
-			r.y += pRow->Height() + m_cellPadding.GetHeight();
+			r.y += pRow->Height() + m_cellPadding.height();
 
 		pRow = pRow->GetNext();
 	}
@@ -1073,7 +1073,7 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 	// Apply padding
 
 	r.x += m_cellPadding.left;
-	r.w -= m_cellPadding.GetWidth();
+	r.w -= m_cellPadding.width();
 
 	if( r.w < 0 )
 		r.w = 0;
@@ -1527,7 +1527,7 @@ void WgGizmoTable::UpdateContentSize()
 	while( p )
 	{
 		if( p->IsVisible() )
-			size.h += p->Height() + m_cellPadding.GetHeight();
+			size.h += p->Height() + m_cellPadding.height();
 		p = p->getNext();
 	}
 
@@ -1685,7 +1685,7 @@ int WgGizmoTable::GetMarkedRow( int y, WgTableRow2*& pSaveRow, int& saveYOfs )
 	{
 		if( p->IsVisible() )
 		{
-			if( y < p->Height() +  m_cellPadding.GetHeight() )
+			if( y < (int) (p->Height() +  m_cellPadding.height()) )
 			{
 				pSaveRow	= p;
 				saveYOfs	= y;
@@ -1693,7 +1693,7 @@ int WgGizmoTable::GetMarkedRow( int y, WgTableRow2*& pSaveRow, int& saveYOfs )
 				return row;
 			}
 
-			y -= p->Height() +  m_cellPadding.GetHeight();
+			y -= p->Height() +  m_cellPadding.height();
 		}
 		p = p->getNext();
 		row++;
@@ -1846,7 +1846,7 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 			WgRect rText = r2;
 			if( m_pHeaderGfx )
-				rText.Shrink( m_pHeaderGfx->GetContentBorders() );
+				rText.shrink( m_pHeaderGfx->GetContentBorders() );
 
 			m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
 			pDevice->PrintText( _clip, m_pColumns[i].GetTextObj(), rText );
@@ -1881,7 +1881,7 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		{
 			if( r.y + (Sint32) pRow->Height() >= clipView.y )
 				 break;
-			r.y += pRow->Height() + m_cellPadding.GetHeight();
+			r.y += pRow->Height() + m_cellPadding.height();
 			iRowColor++;
 		}
 		pRow = pRow->GetNext();
@@ -1901,10 +1901,10 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		if( r.y >= clipView.y + clipView.h )
 			break;
 
-		r.h = pRow->Height() + m_cellPadding.GetHeight();
+		r.h = pRow->Height() + m_cellPadding.height();
 
 		WgRect	u;
-		if( u.Intersection( r, clipView ) )
+		if( u.intersection( r, clipView ) )
 		{
 			if( pRow->IsSelected() )
 			{
@@ -1956,7 +1956,7 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 					rc.w = _window.x + _window.w - rc.x;		// Last column stretches to end of tableview...
 
 				rc.x += m_cellPadding.left;
-				rc.w -= m_cellPadding.GetWidth();
+				rc.w -= m_cellPadding.width();
 
 				WgRect clip2( rc, clipView );
 
@@ -1967,7 +1967,7 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 			}
 		}
 
-		r.y += pRow->Height() + m_cellPadding.GetHeight();
+		r.y += pRow->Height() + m_cellPadding.height();
 		pRow = (WgTableRow2 *) pRow->GetNext();
 		iRowColor++;
 	}
@@ -1981,7 +1981,7 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 			r.h = m_emptyRowHeight;
 
 			WgRect	u;
-			if( u.Intersection( r, clipView ) )
+			if( u.intersection( r, clipView ) )
 			{
 				if( m_nRowColors > 0 )
 				{

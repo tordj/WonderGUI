@@ -2240,7 +2240,7 @@ void WgBorderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 
 	WgBlockSetPtr blockSet = blockSetRes->GetBlockSet();
 
-	m_Borders.Set(WgUtil::ToSint32(xmlNode["all"], 0));
+	m_Borders.set(WgUtil::ToSint32(xmlNode["all"], 0));
 	m_Borders.left = WgUtil::ToSint32(xmlNode["left"]);
 	m_Borders.top = WgUtil::ToSint32(xmlNode["top"]);
 	m_Borders.right = WgUtil::ToSint32(xmlNode["right"]);
@@ -4998,6 +4998,7 @@ void Wdg_TabList_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr<Uint16>(s, xmlNode, "minwidth", widget->GetMinTabWidth(), 0);
 	WriteDiffAttr<Uint32>(s, xmlNode, "alertrate", widget->GetAlertRate(), 250);
 	WriteDiffAttr(s, xmlNode, "textorigo", widget->GetTextOrigo(), WgOrigo::topLeft());
+	WriteDiffAttr(s, xmlNode, "opaque_tabs", widget->getTabMouseOpacity(), false );
 
 	if(widget->GetTabWidthMode() != Wdg_TabList::TabWidthModeNormal || xmlNode.HasAttribute("tabmode"))
 	{
@@ -5034,6 +5035,8 @@ void Wdg_TabList_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	widget->SetMinTabWidth(WgUtil::ToUint16(xmlNode["minwidth"]));
 	widget->SetAlertRate(WgUtil::ToUint32(xmlNode["alertrate"]));
 	widget->SetTextOrigo(WgUtil::ToOrigo(xmlNode["textorigo"]));
+	widget->setTabMouseOpacity(WgUtil::ToBool(xmlNode["opaque_tabs"]));
+	
 
 	std::string mode = xmlNode["tabmode"];
 	if(mode.empty() || mode == "normal")widget->SetTabWidthMode(Wdg_TabList::TabWidthModeNormal);

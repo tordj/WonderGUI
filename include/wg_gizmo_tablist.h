@@ -48,7 +48,7 @@ class WgTab : public WgLink
 {
 	friend class WgGizmoTablist;
 public:
-	WgTab( Sint32 _id );
+	WgTab( int id );
 	virtual ~WgTab();
 
 	LINK_METHODS( WgTab );
@@ -63,13 +63,13 @@ public:
 	void			SetSource( const WgBlockSetPtr& pGfx ) { m_pGfx = pGfx; }
 	WgBlockSetPtr	GetSource() const			{ return m_pGfx; }
 
-	void			SetId( Sint32 id ) { m_id = id; }
+	void			SetId( int id ) { m_id = id; }
 
 private:
 
 	WgText			m_text;
 	Uint32			m_width;
-	Sint32			m_id;
+	int				m_id;
 	bool			m_bAlert;
 	WgBlockSetPtr	m_pGfx;
 
@@ -142,6 +142,10 @@ public:
 	bool SetTabId( Sint32 id, Sint32 newId );
 	Sint32 GetTabId(Uint32 position);
 
+	void	setTabMouseOpacity( bool bOpaque ) { m_bTabOpaqueForMouse = bOpaque; };
+	bool	getTabMouseOpacity() const { return m_bTabOpaqueForMouse; }
+
+
 	bool SetTabTextColor( Sint32 id, WgColor col );
 
 	Uint32	GetTabWidth( Sint32 id );
@@ -196,6 +200,7 @@ private:
 	WgTab *		m_pTabSelected;
 	WgTab *		m_pTabMarked;
 
+	bool		m_bTabOpaqueForMouse;
 	bool		m_bAlertOn;
 	Sint16		m_alertModeCnt;
 	Uint16		m_alertRate;				// Milliseconds between switching graphics.

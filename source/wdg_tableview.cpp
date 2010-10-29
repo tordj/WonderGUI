@@ -13,7 +13,6 @@ static const char	Wdg_Type[] = {"TordJ/TableView"};
 
 WgTableColumn::WgTableColumn()
 {
-	m_pixelWidth		= 4;
 	m_fpCompare			= 0;
 	m_bVisible			= true;
 	m_bEnabled			= true;
@@ -21,13 +20,17 @@ WgTableColumn::WgTableColumn()
 	m_id				= 0;
 	m_pOwner			= 0;
 	m_pText				= 0;
+	m_defWidth			= 4;
+	m_minWidth			= 4;
+	m_maxWidth			= 0x1FFFFFFF;
+	m_scaleWeight		= 1.f;
+	m_pixelWidth		= 4;
 }
 
 
 
 WgTableColumn::WgTableColumn( Wdg_TableView * pOwner )
 {
-	m_pixelWidth		= 4;
 	m_fpCompare			= 0;
 	m_bVisible			= true;
 	m_bEnabled			= true;
@@ -35,18 +38,28 @@ WgTableColumn::WgTableColumn( Wdg_TableView * pOwner )
 	m_id				= 0;
 	m_pOwner			= pOwner;
 	m_pText				= 0;
+	m_defWidth			= 4;
+	m_minWidth			= 4;
+	m_maxWidth			= 0x1FFFFFFF;
+	m_scaleWeight		= 1.f;
+	m_pixelWidth		= 4;
 }
 
 
 WgTableColumn::WgTableColumn(const WgTableColumn& column)
 {
-	m_pixelWidth = column.m_pixelWidth;
 	m_fpCompare = column.m_fpCompare;
 	m_bVisible = column.m_bVisible;
 	m_bEnabled = column.m_bEnabled;
 	m_bInitialAscend = column.m_bInitialAscend;
 	m_id = column.m_id;
 	m_pOwner = 0;
+
+	m_defWidth			= column.m_defWidth;
+	m_minWidth			= column.m_minWidth;
+	m_maxWidth			= column.m_maxWidth;
+	m_scaleWeight		= column.m_scaleWeight;
+	m_pixelWidth		= column.m_pixelWidth;
 
 	if(column.m_pText)
 	{
@@ -73,23 +86,83 @@ WgTableColumn::~WgTableColumn()
 }
 
 
-void WgTableColumn::SetWidth( Uint32 pixels )
+void WgTableColumn::SetWidth( int pixels )
 {
-	if( pixels < 4 )
+	if( pixels < m_minWidth || pixels > m_maxWidth )
 		return;
 
-	if( m_pixelWidth != pixels )
+	if( m_defWidth != pixels )
 	{
-		Sint32 widthdiff = pixels - m_pixelWidth;
-		m_pixelWidth = pixels;
+		Sint32 widthdiff = pixels - m_defWidth;
+		m_defWidth = pixels;
 		if( m_bVisible && m_pOwner )
 		{
 			m_pOwner->SetContentSize( m_pOwner->m_contentWidth + widthdiff, m_pOwner->m_contentHeight );
 			m_pOwner->RequestRender();
+			m_pOwner->RecalcColumnWidths();
 		}
 	}
-
 }
+
+void WgTableColumn::SetContentWidth( int pixels )
+{
+	if( m_pOwner )
+		pixels += m_pOwner->GetCellPaddingX()*2;
+
+	SetWidth( pixels );
+}
+
+int WgTableColumn::GetContentWidth() const
+{
+	if( m_pOwner )
+		return ((int)m_pixelWidth) + m_pOwner->GetCellPaddingX()*2;
+	else
+		return ((int)m_pixelWidth);
+}
+
+
+void WgTableColumn::SetMinWidth( int pixels )
+{
+	if( pixels < 4 || pixels > m_maxWidth )
+		return;
+
+	m_minWidth = pixels;
+
+	if( m_defWidth < pixels )
+		m_defWidth = pixels;
+
+	if( m_pOwner )
+		m_pOwner->RecalcColumnWidths();
+}
+
+
+void WgTableColumn::SetMaxWidth( int pixels )
+{
+	if( pixels < m_minWidth )
+		return;
+
+	m_maxWidth = pixels;
+
+	if( m_defWidth > pixels )
+		m_defWidth = pixels;
+
+	if( m_pOwner )
+		m_pOwner->RecalcColumnWidths();
+}
+
+
+void WgTableColumn::SetScaleWeight( float weight )
+{
+	if( weight < 0.f )
+		return;
+
+	m_scaleWeight = weight;
+	if( m_pOwner )
+		m_pOwner->RecalcColumnWidths();
+}
+
+
+
 
 void WgTableColumn::Hide()
 {
@@ -99,8 +172,9 @@ void WgTableColumn::Hide()
 
 		if( m_pOwner )
 		{
-			m_pOwner->SetContentSize( m_pOwner->m_contentWidth - m_pixelWidth, m_pOwner->m_contentHeight );
+			m_pOwner->SetContentSize( m_pOwner->m_contentWidth - (int)m_pixelWidth, m_pOwner->m_contentHeight );
 			m_pOwner->RequestRender();
+			m_pOwner->RecalcColumnWidths();
 		}
 	}
 }
@@ -113,8 +187,9 @@ void WgTableColumn::Show()
 
 		if( m_pOwner )
 		{
-			m_pOwner->SetContentSize( m_pOwner->m_contentWidth + m_pixelWidth, m_pOwner->m_contentHeight );
+			m_pOwner->SetContentSize( m_pOwner->m_contentWidth + (int)m_pixelWidth, m_pOwner->m_contentHeight );
 			m_pOwner->RequestRender();
+			m_pOwner->RecalcColumnWidths();
 		}
 	}
 }
@@ -450,6 +525,206 @@ void Wdg_TableView::RemoveColumns()
 	m_nColumns = 0;
 }
 
+//____ RecalcColumnWidths() ____________________________________________________
+/*
+void Wdg_TableView::RecalcColumnWidths( int width )
+{
+	if(!m_bAutoScaleHeader)
+	{
+		for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+			m_pColumns[i].m_pixelWidth = (float)m_pColumns[i].m_defWidth;
+	}
+	else
+	{
+		// Get some values we need
+
+		int wantedWidth = width!=0?width:m_geo.w;
+		int totalDefWidth = 0;
+		float totalPixelWeight = 0;
+
+		for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+		{
+			if( m_pColumns[i].m_bVisible )
+			{
+				totalDefWidth	+= m_pColumns[i].m_defWidth;
+				totalPixelWeight += m_pColumns[i].m_scaleWeight * m_pColumns[i].m_defWidth;
+			}
+		}
+
+		// Resize columns
+
+		if( wantedWidth > totalDefWidth )		// Take care of growing
+		{
+			for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+			{
+				if( m_pColumns[i].m_bVisible )
+				{
+					int width = (int) (m_pColumns[i].m_defWidth + (m_pColumns[i].m_scaleWeight * m_pColumns[i].m_defWidth)/totalPixelWeight*(wantedWidth-totalDefWidth));
+					if( width > m_pColumns[i].m_maxWidth )
+						width = m_pColumns[i].m_maxWidth;
+
+					m_pColumns[i].m_pixelWidth = (float)width;
+				}
+			}
+		}
+		else if( wantedWidth < totalDefWidth )	// Take care of shrinking
+		{
+			for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+			{
+				if( m_pColumns[i].m_bVisible )
+				{
+					int width = (int) (m_pColumns[i].m_defWidth - (m_pColumns[i].m_scaleWeight * m_pColumns[i].m_defWidth)/totalPixelWeight*(totalDefWidth-wantedWidth));
+					if( width < m_pColumns[i].m_minWidth )
+						width = m_pColumns[i].m_minWidth;
+
+					m_pColumns[i].m_pixelWidth = (float)width;
+				}
+			}
+		}
+		else
+		{
+			for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+				m_pColumns[i].m_pixelWidth = (float)m_pColumns[i].m_defWidth;
+		}
+	}
+}
+*/
+
+
+
+//____ RecalcColumnWidths() ___________________________________________________
+
+void Wdg_TableView::RecalcColumnWidths( int width )
+{
+	for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+		m_pColumns[i].m_pixelWidth = (float) m_pColumns[i].m_defWidth;
+
+
+	int wantedWidth = width!=0?width:m_geo.w;
+
+	if( m_bAutoScaleHeader )
+	{
+		// Get some values we need
+
+		int totalDefWidth = 0;
+		float totalPixelWeight = 0;
+
+		for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+		{
+			if( m_pColumns[i].m_bVisible )
+			{
+				totalDefWidth	+= m_pColumns[i].m_defWidth;
+				totalPixelWeight += m_pColumns[i].m_scaleWeight * m_pColumns[i].m_defWidth;
+			}
+		}
+
+		float	extraWidth = (float) (wantedWidth - totalDefWidth);
+
+		// Resize columns
+
+		float	nextTotalWeight = totalPixelWeight;					// Total weight for next iteration
+		bool	bKeepGoing = true;
+
+		while( extraWidth >= 1.f && bKeepGoing )		// Take care of growing
+		{
+			bKeepGoing = false;
+			for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+			{
+				if( m_pColumns[i].m_bVisible && m_pColumns[i].m_defWidth != 0 && m_pColumns[i].m_pixelWidth < m_pColumns[i].m_maxWidth )
+				{
+					bKeepGoing = true;
+
+					float part = ((m_pColumns[i].m_scaleWeight * m_pColumns[i].m_defWidth)/totalPixelWeight) * extraWidth;
+					if( part + m_pColumns[i].m_pixelWidth > m_pColumns[i].m_maxWidth )
+					{
+						extraWidth -= m_pColumns[i].m_maxWidth - m_pColumns[i].m_pixelWidth;
+						m_pColumns[i].m_pixelWidth = (float) m_pColumns[i].m_maxWidth;
+
+						part = m_pColumns[i].m_maxWidth - m_pColumns[i].m_pixelWidth;
+						nextTotalWeight -= m_pColumns[i].m_scaleWeight * m_pColumns[i].m_defWidth;
+					}
+					else
+					{
+						extraWidth -= part;
+						m_pColumns[i].m_pixelWidth += part;
+					}
+				}
+			}
+			totalPixelWeight = nextTotalWeight;
+		}
+/*		else if( wantedWidth < totalDefWidth )	// Take care of shrinking
+		{
+			for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+			{
+				if( m_pColumns[i].m_bVisible )
+				{
+					int width = (int) (m_pColumns[i].m_defWidth - (m_pColumns[i].m_scaleWeight * m_pColumns[i].m_defWidth)/totalPixelWeight*(totalDefWidth-wantedWidth));
+					if( width < m_pColumns[i].m_minWidth )
+						width = m_pColumns[i].m_minWidth;
+
+					m_pColumns[i].m_pixelWidth = width;
+				}
+			}
+		}
+*/
+		TweakColumnWidths( wantedWidth );
+	}
+
+	ExtendLastColumn( wantedWidth );
+}
+
+
+//____ ExtendLastColumn() _____________________________________________________
+
+void Wdg_TableView::ExtendLastColumn( int targetWidth )
+{
+	int totalWidth = 0;
+	for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+		totalWidth += (int) m_pColumns[i].m_pixelWidth;
+
+	if( totalWidth < targetWidth && m_nColumns > 0 )
+		m_pColumns[m_nColumns-1].m_pixelWidth += (float) (targetWidth - totalWidth);
+}
+
+
+//____ TweakColumnWidths() ____________________________________________________
+
+void Wdg_TableView::TweakColumnWidths( int targetWidth )
+{
+	// Make table the width of target width by adding pixels to the columns closest to being wider.
+
+	int widthDiff = targetWidth;
+	for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+		widthDiff -= (int) m_pColumns[i].m_pixelWidth;
+
+	for( int loop = 0 ; loop < widthDiff ; loop++ )
+	{
+		float bestDecimals = 0.f;
+		int	  bestColumn = -1;
+
+		for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+		{
+			float decimals = m_pColumns[i].m_pixelWidth - (int)m_pColumns[i].m_pixelWidth;
+			if( decimals >= bestDecimals && m_pColumns[i].m_pixelWidth < m_pColumns[i].m_maxWidth )
+			{
+				bestDecimals = decimals;
+				bestColumn = i;
+			}
+		}
+		
+		if( bestColumn != -1 )
+			m_pColumns[bestColumn].m_pixelWidth = (float) ((int) (m_pColumns[bestColumn].m_pixelWidth + 1.f));
+	}
+
+	// Remove the deciamals
+
+	for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+		m_pColumns[i].m_pixelWidth = (float) ((int) m_pColumns[i].m_pixelWidth);
+}
+
+
+
+
 //____ AddColumn() ____________________________________________________________
 
 Uint32 Wdg_TableView::AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo& headerAlign, Sint32(*fpCompare)(WgItem *,WgItem *), bool bInitialAscend, bool bEnabled, int id )
@@ -461,7 +736,7 @@ Uint32 Wdg_TableView::AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo&
 		pCol[i] = m_pColumns[i];
 		m_pColumns[i].m_pText = 0;			// To avoid deletion of text object further down.
 	}
-	pCol[m_nColumns].m_pixelWidth = pixelwidth;
+	pCol[m_nColumns].m_defWidth = pixelwidth;
 
 	WgText * p = new WgText( pText );
 	p->SetWrap(false);
@@ -473,15 +748,18 @@ Uint32 Wdg_TableView::AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo&
 	pCol[m_nColumns].m_bEnabled = bEnabled;
 	pCol[m_nColumns].m_bInitialAscend = bInitialAscend;
 	pCol[m_nColumns].m_id = id;
+	pCol[m_nColumns].m_pOwner = this;
 
 	if( m_pColumns )
 		delete [] m_pColumns;
 	m_pColumns = pCol;
 	m_nColumns++;
 
+	RecalcColumnWidths();
 	SetContentSize( m_contentWidth + pixelwidth, m_contentHeight );
 	RequestRender();
-	return m_nColumns;
+
+	return m_nColumns-1;
 }
 
 
@@ -531,8 +809,6 @@ WgRect Wdg_TableView::GetCellGeo( int row, int column )
 
 	WgRect	r( 0 - m_viewPixOfsX, 0 - m_viewPixOfsY, 0, 0 );
 
-	float scale = CalcHeaderScaleFactor();
-
 	// Adjust for header
 
 	if( m_bShowHeader && m_pHeaderGfx )
@@ -566,12 +842,11 @@ WgRect Wdg_TableView::GetCellGeo( int row, int column )
 	if( column >= (int) m_nColumns )
 		return WgRect();							// Invalid column;
 
-	r.x = (int)(r.x * scale);
 	for( int i = 0 ; i <= column ; i++ )
 	{
 		if( m_pColumns[i].m_bVisible )
 		{
-			r.w = (int)(m_pColumns[i].m_pixelWidth * scale);
+			r.w = (int) m_pColumns[i].m_pixelWidth;
 //			if( i == m_nColumns-1 && r.x + r.w < _window.x + _window.w )
 //				r.w = _window.x + _window.w - r.x;		// Last column stretches to end of tableview...
 
@@ -579,7 +854,7 @@ WgRect Wdg_TableView::GetCellGeo( int row, int column )
 			r.w -= m_cellPaddingX*2;
 
 			if( i != column )
-				r.x += (int)(m_pColumns[i].m_pixelWidth * scale) - m_cellPaddingX;		// One cellpadding already added...
+				r.x += ((int) m_pColumns[i].m_pixelWidth) - m_cellPaddingX;		// One cellpadding already added...
 		}
 	}
 
@@ -775,11 +1050,10 @@ void Wdg_TableView::UpdateContentSize()
 
 	// Calc contentWidth
 
-	float scale = CalcHeaderScaleFactor();
 	for( Uint32 i = 0 ; i < m_nColumns ; i++ )
 	{
 		if( m_pColumns[i].m_bVisible )
-			contentWidth += (int)(m_pColumns[i].m_pixelWidth * scale);
+			contentWidth += (int) m_pColumns[i].m_pixelWidth;
 	}
 
 	// Possibly add header to height
@@ -879,6 +1153,15 @@ void Wdg_TableView::ScrollIntoView( WgTableRow* pRow )
 		SetViewPixelOfsY( GetHeaderHeight() + itemPosY + pRow->Height() - ViewPixelLenY() );
 }
 
+//____ DoMyOwnGeometryChange() ________________________________________________
+
+void Wdg_TableView::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
+{
+	RecalcColumnWidths( newGeo.w );
+	Wdg_Baseclass_View::DoMyOwnGeometryChange( oldGeo, newGeo );
+}
+
+
 //____ DoMyOwnGeometryChangeSubclass() ________________________________________________
 
 void Wdg_TableView::DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGeo )
@@ -888,7 +1171,6 @@ void Wdg_TableView::DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGe
 		AdaptItemsToWidth( newGeo.w );		// this won't do anything since the items are WgTableRows
 		UpdateContentSize();
 
-		float scale = CalcHeaderScaleFactor();
 
 		// so we'll manually go through and tell every row's item to adapt to the new width.
 		// something like this is probably required in SetColumnWidth() as well,
@@ -903,7 +1185,7 @@ void Wdg_TableView::DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGe
 			{
 				if( m_pColumns[i].m_bVisible )
 				{
-					Sint32 width = (int)(m_pColumns[i].m_pixelWidth * scale);
+					Sint32 width = (int) m_pColumns[i].m_pixelWidth;
 					if( i == m_nColumns-1 )
 						width = newGeo.w - x - m_cellPaddingX*2;		// Last column stretches to end of tableview...
 
@@ -941,7 +1223,7 @@ WgItem* Wdg_TableView::GetMarkedItem( Uint32 x, Uint32 y )
 
 	// Cell found, check so we are inside the cells padding.
 
-	int scaledW = (int)(m_pColumns[column].m_pixelWidth * CalcHeaderScaleFactor());
+	int scaledW = (int) m_pColumns[column].m_pixelWidth;
 	if( xOfs < m_cellPaddingX || (int) xOfs > scaledW - m_cellPaddingX )
 		return 0;
 
@@ -1033,13 +1315,11 @@ int Wdg_TableView::GetMarkedColumn( Uint32 x, Uint32& saveXOfs )
 
 	// Loop through columns to find out which one we are inside.
 
-	float scale = CalcHeaderScaleFactor();
-
 	for( Uint32 col = 0 ; col < m_nColumns ; col++ )
 	{
 		if( m_pColumns[col].m_bVisible )
 		{
-			Uint32 scaledW = (Uint32)(m_pColumns[col].m_pixelWidth * scale);
+			Uint32 scaledW = (unsigned int) m_pColumns[col].m_pixelWidth;
 			if( x < scaledW )
 			{
 				saveXOfs	= x;
@@ -1085,26 +1365,6 @@ void Wdg_TableView::SetAutoScaleHeaders(bool autoScaleHeaders)
 	}
 }
 
-//____ CalcHeaderScaleFactor() ________________________________________________________
-float Wdg_TableView::CalcHeaderScaleFactor()
-{
-	if(!m_bAutoScaleHeader)
-		return 1.f;
-
-	int w = 0;
-	for( Uint32 i = 0 ; i < m_nColumns ; i++ )
-	{
-		if( !m_pColumns[i].m_bVisible )
-			continue;
-		w += m_pColumns[i].m_pixelWidth;
-	}
-
-	if(w == 0)
-		return 1.f;
-
-	return (float)m_geo.w / (float)w;
-}
-
 //____ DoMyOwnRender() ________________________________________________________
 void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
@@ -1114,14 +1374,11 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 	if( r.w < _window.w )
 		r.w = _window.w;
 
-	float scale = CalcHeaderScaleFactor();
-
 	// Draw header (if any)
 
 	if( m_bShowHeader && m_pHeaderGfx )
 	{
 		WgRect	r2 = r;
-		r2.x = (int)(r2.x * scale);
 		r2.y = _window.y;						// Header is glued to top of view.
 		r2.h = m_pHeaderGfx->GetHeight();
 		for( Uint32 i = 0 ; i < m_nColumns ; i++ )
@@ -1133,10 +1390,10 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			if( r2.x >= _window.x + _window.w )
 				break;
 
-			r2.w = (int)(m_pColumns[i].m_pixelWidth * scale);
+			r2.w = (int)m_pColumns[i].m_pixelWidth +1;		// +1 to compensate for pixel overlap-hack further down.
 			//if( i == m_nColumns-1 && r2.x + r2.w < _window.x + _window.w )
-			if( i == m_nColumns-1 )
-				r2.w = _window.x + _window.w - r2.x;		// Last column header stretches to end of tableview...
+//			if( i == m_nColumns-1 )
+//				r2.w = _window.x + _window.w - r2.x;		// Last column header stretches to end of tableview...
 
 			WgMode mode = WG_MODE_NORMAL;
 
@@ -1166,7 +1423,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 //			{
 				WgRect rText = r2;
 				if( m_pHeaderGfx )
-					rText.Shrink( m_pHeaderGfx->GetContentBorders() );
+					rText.shrink( m_pHeaderGfx->GetContentBorders() );
 
 				m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
 				WgGfx::printText( _clip, m_pColumns[i].GetTextObj(), rText );
@@ -1229,7 +1486,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 		r.h = pRow->Height() + m_cellPaddingY*2;
 
 		WgRect	u;
-		if( u.Intersection( r, clipView ) )
+		if( u.intersection( r, clipView ) )
 		{
 			if( pRow->IsSelected() )
 			{
@@ -1260,7 +1517,6 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 		WgItem *	pCell = pRow->GetFirstItem();
 		WgRect		rc = r;
 
-		rc.x = (int)(rc.x * scale);
 		rc.y += m_cellPaddingY;
 		rc.h = pRow->Height();
 		for( Uint32 i = 0 ; i < m_nColumns && pCell != 0 ; i++ )
@@ -1271,9 +1527,9 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 				if( rc.x >= _window.x + _window.w )
 					break;
 
-				rc.w = (int)(m_pColumns[i].m_pixelWidth * scale);
-				if( i == m_nColumns-1 && rc.x + rc.w < _window.x + _window.w )
-					rc.w = _window.x + _window.w - rc.x;		// Last column stretches to end of tableview...
+				rc.w = (int)m_pColumns[i].m_pixelWidth;
+//				if( i == m_nColumns-1 && rc.x + rc.w < _window.x + _window.w )
+//					rc.w = _window.x + _window.w - rc.x;		// Last column stretches to end of tableview...
 
 				rc.x += m_cellPaddingX;
 				rc.w -= m_cellPaddingX*2;
@@ -1283,8 +1539,8 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 				//
 
 				pCell->Render( rc, clip2 );
-				rc.x += (int)(m_pColumns[i].m_pixelWidth * scale) - m_cellPaddingX;		// One cellpadding already added...
-				rc.x -= 1;	// HACK: Overlap last pixel to avoid double separator graphics between two headers
+				rc.x += ((int)m_pColumns[i].m_pixelWidth) - m_cellPaddingX;		// One cellpadding already added...
+//				rc.x -= 1;	// HACK: Overlap last pixel to avoid double separator graphics between two headers
 			}
 			pCell = pCell->GetNext();
 		}
@@ -1303,7 +1559,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			r.h = m_emptyRowHeight;
 
 			WgRect	u;
-			if( u.Intersection( r, clipView ) )
+			if( u.intersection( r, clipView ) )
 			{
 				if( m_nRowColors > 0 )
 				{
@@ -1404,15 +1660,14 @@ WgTableColumn *Wdg_TableView::GetHeaderColumnAt(int x, int y)
 
 	if( m_bShowHeader && m_pHeaderGfx && m_pHeaderGfx->GetHeight() > y )
 	{
-		float scale = CalcHeaderScaleFactor();
 		int xOfs = x;
 		for( Uint32 col = 0 ; col < m_nColumns ; col++ )
 		{
 			if( m_pColumns[col].m_bVisible )
 			{
-				int scaledW = (int)(m_pColumns[col].m_pixelWidth * scale);
-				if( xOfs < scaledW || col == m_nColumns-1 )	// Last column header stretches to end of tableview...
-					return &m_pColumns[col];
+				int scaledW = (int) m_pColumns[col].m_pixelWidth;
+//				if( xOfs < scaledW || col == m_nColumns-1 )	// Last column header stretches to end of tableview...
+//					return &m_pColumns[col];
 				xOfs -= scaledW - 1;
 			}
 		}
@@ -1435,12 +1690,11 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 		{
 			if( m_bShowHeader && m_pHeaderGfx && m_pHeaderGfx->GetHeight() > y )		// Press on header?
 			{
-				float scale = CalcHeaderScaleFactor();
 				int xOfs = x;
 				for( Uint32 col = 0 ; col < m_nColumns ; col++ )
 				{
-					int scaledW = (int)(m_pColumns[col].m_pixelWidth * scale);
-					if( m_pColumns[col].m_bVisible && (xOfs < scaledW || col == m_nColumns-1) )	// Last column header stretches to end of tableview...
+					int scaledW = (int)m_pColumns[col].m_pixelWidth;
+					if( m_pColumns[col].m_bVisible && xOfs < scaledW )	// Last column header stretches to end of tableview...
 					{
 						if( m_pColumns[col].m_bEnabled )
 						{

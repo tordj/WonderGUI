@@ -133,7 +133,7 @@ public:
 	void	SelectItem(WgMenuItem* pItem);
 
 	void	Open( );
-	void	Open( Wdg_Root * pRoot, Uint32 x, Uint32 y, Uint32 minW = 0, WgRect * pBtnReleaseArea = 0, Wdg_Menu * pParentMenu = 0 );
+	void	Open( Wdg_Root * pRoot, Uint32 x, Uint32 y, Uint32 minW = 0, WgMenuItem * pMarkedItem = 0, WgRect * pBtnReleaseArea = 0, Wdg_Menu * pParentMenu = 0 );
 	void	Close();
 
 	//____ Methods __________________________________________
@@ -190,8 +190,12 @@ private:
 
 	WgBorders	GetContentBorders() const;
 
+	void		ScrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop = false );
+	void		MarkFirstFilteredEntry();
+
 	float		GetViewOfs();
 	float		GetViewSize();
+	int			GetViewSizePixels();
 
 	void		SetView(float pos);
 	void		SetViewPixels(int pos);
@@ -240,6 +244,14 @@ private:
 	Uint32					m_contentHeight;	// Total height of content in pixels.
 	Uint32					m_contentOfs;		// Offset in pixels of content displayed.
 	bool					m_bPressOnSlider;	// Set if button 1 is down and was pressed on slider.
+	WgCord					m_savedMousePos;	// Holds absolute mouse position so we know when it has moved (only highlight item under pointer when it's moved).
+
+	const static int		c_maxSelectorKeys = 20;
+	const static int		c_selectorCountdownStart = 1000;
+
+	Uint16					m_selectorKeys[c_maxSelectorKeys];	// Filter for marking entry on keyboard input.
+	int						m_nSelectorKeys;					// Number of characters in the filter.
+	int						m_selectorCountdown;				// Countdown in ms for clearing filter due to no keyboard input.
 
 	// Members defining background
 

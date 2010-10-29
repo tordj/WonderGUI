@@ -131,7 +131,7 @@ public:
 	WgSize( int _w, int _h ) {w=_w;h=_h;}
 	WgSize( const WgRect& rect );
 	WgSize( const WgCord& c1, const WgCord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
-	inline void ConstrainTo( const WgMinMax2D& minmax );
+	inline void constrainTo( const WgMinMax2D& minmax );
 
 
 	inline WgSize operator=(const WgSize& k)	{ w = k.w; h = k.h; return *this; }
@@ -160,8 +160,8 @@ public:
 	inline WgSize operator*(int x) const	{ WgSize res; res.w = w * x; res.h = h * x; return res; }
 	inline WgSize operator/(int x) const	{ WgSize res; res.w = w / x; res.h = h / x; return res; }
 
-	static inline WgSize Min( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
-	static inline WgSize Max( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
+	static inline WgSize min( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
+	static inline WgSize max( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
 
 	int	w, h;
 };
@@ -177,11 +177,11 @@ public:
 	WgBorders( Uint8 _left, Uint8 _right, Uint8 _top, Uint8 _bottom ) : left(_left), right(_right), top(_top), bottom(_bottom) {}
 	WgBorders( Uint8 _all ) : left(_all), right(_all), top(_all), bottom(_all) {}
 
-	inline void		Set( Uint8 _all ) { left = right = top = bottom = _all; }
+	inline void		set( Uint8 _all ) { left = right = top = bottom = _all; }
 
-	inline WgSize	GetSize() const { return WgSize( ((int)left)+right, ((int)top)+bottom ); }
-	inline Uint32	GetWidth() const { return ((Uint32)left)+right; }
-	inline Uint32	GetHeight() const { return ((Uint32)top)+bottom; }
+	inline WgSize	size() const { return WgSize( ((int)left)+right, ((int)top)+bottom ); }
+	inline Uint32	width() const { return ((Uint32)left)+right; }
+	inline Uint32	height() const { return ((Uint32)top)+bottom; }
 
 	bool			operator==(const WgBorders& borders) const { return left == borders.left &&
 																		right == borders.right &&
@@ -234,37 +234,37 @@ public:
 	inline WgRect operator+(const WgBorders& k) const	{ WgRect res; res.x = x - k.left; res.y = y- k.top; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
 	inline WgRect operator-(const WgBorders& k) const	{ WgRect res; res.x = x + k.left; res.y = y+ k.top; res.w = w - (k.left + k.right); res.h = h - (k.top + k.bottom); return res; }
 
-	void SetPos( const WgCord& p ) { x = p.x; y = p.y; }
-	void SetSize( const WgSize& sz ) { w = sz.w; h = sz.h; }
+	void setPos( const WgCord& p ) { x = p.x; y = p.y; }
+	void setSize( const WgSize& sz ) { w = sz.w; h = sz.h; }
 
-	void Shrink(const WgBorders &borders);
-	void Shrink(int left, int top, int right, int bottom);
+	void shrink(const WgBorders &borders);
+	void shrink(int left, int top, int right, int bottom);
 
-	void Grow(const WgBorders &borders);
-	void Grow(int left, int top, int right, int bottom);
+	void grow(const WgBorders &borders);
+	void grow(int left, int top, int right, int bottom);
 
 
-	bool Intersection( const WgRect& r1, const WgRect& r2 );
+	bool intersection( const WgRect& r1, const WgRect& r2 );
 
-	void GrowToContain( int x, int y );
-	void GrowToContain( const WgRect& _rect );
-	void GrowToContain( const WgCord& _coord );
+	void growToContain( int x, int y );
+	void growToContain( const WgRect& _rect );
+	void growToContain( const WgCord& _coord );
 
-	inline bool Contains( int x, int y ) const;
-	inline bool Contains( const WgRect& _rect ) const;
-	inline bool	Contains( const WgCord& _coord ) const;
+	inline bool contains( int x, int y ) const;
+	inline bool contains( const WgRect& _rect ) const;
+	inline bool	contains( const WgCord& _coord ) const;
 
-	inline bool IntersectsWith( const WgRect& _rect ) const;
+	inline bool intersectsWith( const WgRect& _rect ) const;
 
-	inline int Width() const		{ return w; }
-	inline int Height() const	{ return h; }
-	inline WgSize Size() const		{ return WgSize(w,h); }
-	inline WgCord Pos() const		{ return WgCord(x,y); }
+	inline int width() const		{ return w; }
+	inline int height() const	{ return h; }
+	inline WgSize size() const		{ return WgSize(w,h); }
+	inline WgCord pos() const		{ return WgCord(x,y); }
 
-	inline int Left() const		{ return x; }
-	inline int Top() const		{ return y; }
-	inline int Right() const		{ return x + w; }
-	inline int Bottom() const	{ return y + h; }
+	inline int left() const		{ return x; }
+	inline int top() const		{ return y; }
+	inline int right() const		{ return x + w; }
+	inline int bottom() const	{ return y + h; }
 
 	int	x, y, w, h;
 };
@@ -303,7 +303,7 @@ inline WgSize WgSize::operator=(const WgRect& k)
 }
 
 //_____________________________________________________________________________
-inline void WgSize::ConstrainTo( const WgMinMax2D& c )
+inline void WgSize::constrainTo( const WgMinMax2D& c )
 {
 	if( w < c.minW )
 		w = c.minW;
@@ -317,7 +317,7 @@ inline void WgSize::ConstrainTo( const WgMinMax2D& c )
 }
 
 //_____________________________________________________________________________
-inline bool WgRect::Contains( int _x, int _y ) const
+inline bool WgRect::contains( int _x, int _y ) const
 {
 	if( _x >= x && _x < x + w && _y >= y && _y < y + h )
 		return true;
@@ -325,7 +325,7 @@ inline bool WgRect::Contains( int _x, int _y ) const
 }
 
 //_____________________________________________________________________________
-inline bool WgRect::Contains( const WgCord& _coord ) const
+inline bool WgRect::contains( const WgCord& _coord ) const
 {
 	if( _coord.x >= x && _coord.x < x + w && _coord.y >= y && _coord.y < y + h )
 		return true;
@@ -333,7 +333,7 @@ inline bool WgRect::Contains( const WgCord& _coord ) const
 }
 
 //_____________________________________________________________________________
-inline bool WgRect::Contains( const WgRect& _rect ) const
+inline bool WgRect::contains( const WgRect& _rect ) const
 {
 	if( _rect.x >= x && _rect.y >= y && _rect.x + _rect.w <= x + w &&  _rect.y + _rect.h <= y + h )
 		return true;
@@ -341,12 +341,12 @@ inline bool WgRect::Contains( const WgRect& _rect ) const
 }
 
 //_____________________________________________________________________________
-inline bool WgRect::IntersectsWith( const WgRect& _rect ) const
+inline bool WgRect::intersectsWith( const WgRect& _rect ) const
 {
-	if(Left() >= _rect.Right()) return false;
-	if(Right() <= _rect.Left()) return false;
-	if(Top() >= _rect.Bottom()) return false;
-	if(Bottom() <= _rect.Top()) return false;
+	if(left() >= _rect.right()) return false;
+	if(right() <= _rect.left()) return false;
+	if(top() >= _rect.bottom()) return false;
+	if(bottom() <= _rect.top()) return false;
 
 	return true;
 }

@@ -11,14 +11,14 @@ public:
 	WgMemPool( Uint32 entriesPerBlock, Uint32 entrySize );
 	virtual ~WgMemPool();
 
-	void *	AllocEntry();
-	void	FreeEntry( void * pEntry );
+	void *	allocEntry();
+	void	freeEntry( void * pEntry );
 
 private:
 
 	class Block;
 
-	Block *AddBlock();
+	Block *	addBlock();
 
 
 
@@ -33,8 +33,8 @@ private:
 		LINK_METHODS( Block );
 
 
-		void * AllocEntry();
-		bool FreeEntry( void * pEntry );
+		void * allocEntry();
+		bool freeEntry( void * pEntry );
 
 		void *		pMemBlock;			// Memory area containing our entries.
 		int			blockSize;			// Size of memory area containing our entries.
@@ -52,7 +52,7 @@ private:
 	Uint32			m_nEntriesPerBlock;
 	Uint32			m_entrySize;
 
-	static Uint32			g_allocatedEver;
+	static Uint32	g_allocatedEver;
 };
 
 

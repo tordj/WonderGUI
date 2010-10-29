@@ -15,9 +15,9 @@ static const char	c_gizmoType[] = {"TordJ/TabList"};
 
 //____ WgTab::Constructor __________________________________________________________
 
-WgTab::WgTab( Sint32 _id )
+WgTab::WgTab( int id )
 {
-	m_id = _id;
+	m_id = id;
 	m_bAlert = false;
 	m_width = 1;
 	m_text.setAlignment(WgOrigo::midCenter());
@@ -60,6 +60,7 @@ WgGizmoTablist::WgGizmoTablist()
 //	m_textOrigo		= WgOrigo::topLeft();
 	m_textOrigo		= WgOrigo::midCenter();
 
+	m_bTabOpaqueForMouse = false;
 	m_tabWidthMode	= TabWidthModeNormal;
 	m_widestTab		= 0;
 }
@@ -697,7 +698,7 @@ bool WgGizmoTablist::ResizeTab( WgTab * pTab )
 
 	WgBlockSetPtr pSrc = GetTabSource(pTab);
 
-	width += pSrc->GetContentBorders().GetWidth();
+	width += pSrc->GetContentBorders().width();
 
 	if( width < m_minTabWidth )
 		width = m_minTabWidth;
@@ -776,7 +777,9 @@ WgTab * WgGizmoTablist::Pos2Tab( Sint32 x, Sint32 y )
 			// Tab is hit if position is on a non-transparent (alpha != 0) pixel of the block
 			// or inside tabs text-area.
 
-			if( ((unsigned) x) > pSrc->GetContentBorders().left && ((unsigned) x) < w - pSrc->GetContentBorders().right &&
+			if( m_bTabOpaqueForMouse && x >= 0 && y >= 0 && x < (int) w && y < sz.h )
+				bHit = true;
+			else if( ((unsigned) x) > pSrc->GetContentBorders().left && ((unsigned) x) < w - pSrc->GetContentBorders().right &&
 				((unsigned) y) > pSrc->GetContentBorders().top && y < sz.h - pSrc->GetContentBorders().bottom )
 				bHit = true;
 			else
@@ -945,7 +948,7 @@ void WgGizmoTablist::RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, 
 	pDevice->ClipBlitBlock( clip, block, dest );
 
 	WgRect	r = dest;
-	r.Shrink( pSrc->GetContentBorders() );
+	r.shrink( pSrc->GetContentBorders() );
 
 	if( tab.m_pItemRow )
 	{
@@ -1056,8 +1059,10 @@ void WgGizmoTablist::OnCloneContent( const WgGizmo * _pOrg )
 	m_minTabWidth	= pOrg->m_minTabWidth;
 	m_overlap		= pOrg->m_overlap;
 
-	m_tabWidthMode	= pOrg->m_tabWidthMode;
-	m_widestTab		= pOrg->m_widestTab;
+	m_tabWidthMode			= pOrg->m_tabWidthMode;
+	m_widestTab				= pOrg->m_widestTab;
+	m_bTabOpaqueForMouse	= pOrg->m_bTabOpaqueForMouse;
+
 }
 
 

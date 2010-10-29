@@ -181,9 +181,9 @@ public:
 	inline int					GetHeight() const { return m_rect.h; }
 	inline WgSize				GetSize() const { return WgSize(m_rect.w, m_rect.h); }
 
-	inline int					GetMinWidth() const { return m_gfxBorders.GetWidth(); }
-	inline int					GetMinHeight() const { return m_gfxBorders.GetHeight(); }
-	inline WgSize				GetMinSize() const { return WgSize(m_gfxBorders.GetWidth(), m_gfxBorders.GetHeight()); }
+	inline int					GetMinWidth() const { return m_gfxBorders.width(); }
+	inline int					GetMinHeight() const { return m_gfxBorders.height(); }
+	inline WgSize				GetMinSize() const { return m_gfxBorders.size(); }
 
 	inline bool					IsOpaque() const { return ((m_flags & WG_OPAQUE) != 0); }
 	inline bool					HasOpaqueCenter() const { return ((m_flags & WG_OPAQUE_CENTER) != 0); }

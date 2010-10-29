@@ -164,12 +164,38 @@ void WgGizmoCombobox::OnAction( WgInput::UserAction action, int button_key, cons
 						else
 							yPos = r.y+r.h;
 
-						m_pMenu->Open( (Wdg_Root*) pRoot, r.x, yPos, r.w, &r );
+						m_pMenu->Open( (Wdg_Root*) pRoot, r.x, yPos, r.w, m_pSelectedItem, &r );
 					}
 				}
 
 				newMode = WG_MODE_SELECTED;
 			}
+			break;
+
+		case WgInput::WHEEL_ROLL:
+			if( m_pSelectedItem )
+			{
+				WgMenuItem * pItem = m_pSelectedItem;
+				int distance = info.rolldistance;
+
+				while( distance < 0 && pItem->getPrev() )
+				{
+					pItem = pItem->getPrev();
+					distance++;
+				}
+
+				while( distance > 0 && pItem->getNext() )
+				{
+					pItem = pItem->getNext();
+					distance--;
+				}
+
+				m_pMenu->SelectItem( pItem );
+			}
+			break;
+
+		case WgInput::KEY_PRESS:
+		case WgInput::KEY_REPEAT:
 			break;
 
         default:
@@ -201,7 +227,7 @@ void WgGizmoCombobox::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 	WgRect r( _canvas );
 	if( m_pTextBoxBg )
-		r.Shrink( m_pTextBoxBg->GetContentBorders() );
+		r.shrink( m_pTextBoxBg->GetContentBorders() );
 	
 	WgRect	textClip( r, _clip );
 
