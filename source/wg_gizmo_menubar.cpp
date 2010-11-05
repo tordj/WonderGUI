@@ -139,7 +139,7 @@ bool WgGizmoMenubar::AddMenu( const char * pTitle, Wdg_Menu * pMenu, Uint16 navK
 
 	// Finish up
 
-	m_items.push_back(pItem);
+	m_items.PushBack(pItem);
 	RequestRender();
 	return true;
 }
@@ -147,7 +147,7 @@ bool WgGizmoMenubar::AddMenu( const char * pTitle, Wdg_Menu * pMenu, Uint16 navK
 //____ RemoveMenu() ________________________________________________________
 bool WgGizmoMenubar::RemoveMenu( Wdg_Menu * pMenu )
 {
-	for( WgMenuBarItem * pI = m_items.getFirst(); pI; pI = pI->getNext() )
+	for( WgMenuBarItem * pI = m_items.First(); pI; pI = pI->Next() )
 	{
 		if(pI->m_pMenu == pMenu)
 		{
@@ -163,7 +163,7 @@ bool WgGizmoMenubar::RemoveMenu( Wdg_Menu * pMenu )
 //____ GetMenuTitle() ________________________________________________________
 WgChar *WgGizmoMenubar::GetMenuTitle(Wdg_Menu * pMenu) const
 {
-	for( WgMenuBarItem * pI = m_items.getFirst(); pI; pI = pI->getNext() )
+	for( WgMenuBarItem * pI = m_items.First(); pI; pI = pI->Next() )
 	{
 		if(pI->m_pMenu == pMenu)
 			return pI->m_pText;
@@ -174,7 +174,7 @@ WgChar *WgGizmoMenubar::GetMenuTitle(Wdg_Menu * pMenu) const
 //____ ShowMenu() ________________________________________________________
 bool WgGizmoMenubar::ShowMenu(Wdg_Menu * pMenu)
 {
-	for( WgMenuBarItem * pI = m_items.getFirst(); pI; pI = pI->getNext() )
+	for( WgMenuBarItem * pI = m_items.First(); pI; pI = pI->Next() )
 	{
 		if(pI->m_pMenu == pMenu)
 		{
@@ -188,7 +188,7 @@ bool WgGizmoMenubar::ShowMenu(Wdg_Menu * pMenu)
 //____ HideMenu() ________________________________________________________
 bool WgGizmoMenubar::HideMenu(Wdg_Menu * pMenu)
 {
-	for( WgMenuBarItem * pI = m_items.getFirst(); pI; pI = pI->getNext() )
+	for( WgMenuBarItem * pI = m_items.First(); pI; pI = pI->Next() )
 	{
 		if(pI->m_pMenu == pMenu)
 		{
@@ -232,7 +232,7 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	// Go throught the MenuBarItems and print their text and render their rectangles.
 
-	WgMenuBarItem * pI = m_items.getFirst();
+	WgMenuBarItem * pI = m_items.First();
 	Uint32 posX = window.x;
 	
 	WgPen pen;
@@ -272,7 +272,7 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 			posX += pI->m_width + b.width();
 		}
 		itemNb++;
-		pI = pI->getNext();
+		pI = pI->Next();
 	}
 }
 
@@ -288,7 +288,7 @@ void WgGizmoMenubar::OnAction( WgInput::UserAction _action, int _button_key, con
 		{
 			Uint32 item = GetItemAtAbsPos( _info.x, _info.y );
 
-			if( item && !m_items.get(item-1)->m_bEnabled )
+			if( item && !m_items.Get(item-1)->m_bEnabled )
 				item = 0;								// Item is disabled and can't be marked.
 
 			if(m_markedItem != item)
@@ -368,7 +368,7 @@ WgBorders WgGizmoMenubar::GetEntryBorders() const
 
 bool WgGizmoMenubar::OpenMenu( Uint32 nb )
 {
-	WgMenuBarItem * pItem = m_items.get(nb-1);
+	WgMenuBarItem * pItem = m_items.Get(nb-1);
 	if( pItem == 0 || pItem->m_pMenu == 0 )
 		return false;
 
@@ -385,13 +385,13 @@ bool WgGizmoMenubar::OpenMenu( Uint32 nb )
 
 	int bordersWidth = GetEntryBorders().width();
 
-	WgMenuBarItem * pI = m_items.getFirst();
+	WgMenuBarItem * pI = m_items.First();
 	while( pI != pItem )
 	{
 		if( pI->IsVisible() )
 			x += pI->m_width + bordersWidth;
 
-		pI = pI->getNext();
+		pI = pI->Next();
 	}
 
 	WgRect	r(x, y, pI->m_width+bordersWidth, Size().h );
@@ -419,7 +419,7 @@ bool WgGizmoMenubar::CloseMenu( Uint32 nb )
 	if( nb == 0 )
 		return false;
 
-	WgMenuBarItem * pItem = m_items.get(m_selectedItem-1);
+	WgMenuBarItem * pItem = m_items.Get(m_selectedItem-1);
 	if( !pItem || !pItem->m_pMenu )
 		return false;
 
@@ -445,7 +445,7 @@ Uint32 WgGizmoMenubar::GetItemAtAbsPos( int x, int y )
 	{
 		int bordersWidth = GetEntryBorders().width();	
 
-		WgMenuBarItem * pItem = m_items.getFirst();
+		WgMenuBarItem * pItem = m_items.First();
 		int		item = 1;
 		while( pItem )
 		{
@@ -457,7 +457,7 @@ Uint32 WgGizmoMenubar::GetItemAtAbsPos( int x, int y )
 					return item;
 			}
 
-			pItem = pItem->getNext();
+			pItem = pItem->Next();
 			item++;
 		}
 	}
@@ -471,7 +471,7 @@ void WgGizmoMenubar::MoveOutsideModal( int x, int y )
 {
 	Uint32 item = GetItemAtAbsPos( x, y );
 
-	if( item && item != m_selectedItem && m_items.get(item-1)->m_bEnabled )
+	if( item && item != m_selectedItem && m_items.Get(item-1)->m_bEnabled )
 	{
 		CloseMenu( m_selectedItem );
 		OpenMenu(item);
@@ -483,7 +483,7 @@ void WgGizmoMenubar::MoveOutsideModal( int x, int y )
 
 void WgGizmoMenubar::MenuOpened( WgMenuBarItem * pItem )
 {
-	Uint32 item = pItem->getIndex()+1;
+	Uint32 item = pItem->Index()+1;
 	m_selectedItem = item;
 	RequestRender();
 }

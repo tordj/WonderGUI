@@ -42,8 +42,8 @@ public:
 
 	inline Type	GetType() const { return BITMAP; }
 
-	void					insertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool binaryFile=false );
-	void					copyGlyphs( WgBitmapGlyphs* pOtherGlyphSet );
+	void					InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool binaryFile=false );
+	void					CopyGlyphs( WgBitmapGlyphs* pOtherGlyphSet );
 
 
 	const WgGlyph *			GetGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...

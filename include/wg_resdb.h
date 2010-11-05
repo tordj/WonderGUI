@@ -293,22 +293,22 @@ public:
 	std::string			FindTextManagerId( const WgTextManager* data ) const{ TextManagerRes *r =  	FindResTextManager(data); return r ? r->id : ""; }
 	std::string			FindSkinManagerId( const WgSkinManager* data ) const{ SkinManagerRes *r =  	FindResSkinManager(data); return r ? r->id : ""; }
 
-	inline ResDBRes *		GetFirstResDBRes() const { return m_resDbs.getFirst(); }
-	inline SurfaceRes *		GetFirstResSurface() const { return m_surfaces.getFirst(); }
-	inline GlyphSetRes *	GetFirstResGlyphSet() const { return m_glyphSets.getFirst(); }
-	inline FontRes *		GetFirstResFont() const { return m_fonts.getFirst(); }
-	inline AnimRes *		GetFirstResAnim() const { return m_anims.getFirst(); }
-	inline CursorRes *		GetFirstResCursor() const { return m_cursors.getFirst(); }
-	inline TextPropRes *	GetFirstResTextProp() const { return m_textProps.getFirst(); }
-	inline ColorRes *		GetFirstResColor() const { return m_colors.getFirst(); }
-	inline BlockSetRes *	GetFirstResBlockSet() const { return m_blockSets.getFirst(); }
-	inline WidgetRes *		GetFirstResWidget() const { return m_widgets.getFirst(); }
-	inline ItemRes *		GetFirstResItem() const { return m_items.getFirst(); }
-	inline MenuItemRes *	GetFirstResMenuItem() const { return m_menuItems.getFirst(); }
-	inline TabRes *			GetFirstResTab() const { return m_tabs.getFirst(); }
-	inline TextManagerRes *	GetFirstResTextManager() const { return m_textManagers.getFirst(); }
-	inline SkinManagerRes *	GetFirstResSkinManager() const { return m_skinManagers.getFirst(); }
-	inline ConnectRes *		GetFirstResConnect() const { return m_connects.getFirst(); }
+	inline ResDBRes *		GetFirstResDBRes() const { return m_resDbs.First(); }
+	inline SurfaceRes *		GetFirstResSurface() const { return m_surfaces.First(); }
+	inline GlyphSetRes *	GetFirstResGlyphSet() const { return m_glyphSets.First(); }
+	inline FontRes *		GetFirstResFont() const { return m_fonts.First(); }
+	inline AnimRes *		GetFirstResAnim() const { return m_anims.First(); }
+	inline CursorRes *		GetFirstResCursor() const { return m_cursors.First(); }
+	inline TextPropRes *	GetFirstResTextProp() const { return m_textProps.First(); }
+	inline ColorRes *		GetFirstResColor() const { return m_colors.First(); }
+	inline BlockSetRes *	GetFirstResBlockSet() const { return m_blockSets.First(); }
+	inline WidgetRes *		GetFirstResWidget() const { return m_widgets.First(); }
+	inline ItemRes *		GetFirstResItem() const { return m_items.First(); }
+	inline MenuItemRes *	GetFirstResMenuItem() const { return m_menuItems.First(); }
+	inline TabRes *			GetFirstResTab() const { return m_tabs.First(); }
+	inline TextManagerRes *	GetFirstResTextManager() const { return m_textManagers.First(); }
+	inline SkinManagerRes *	GetFirstResSkinManager() const { return m_skinManagers.First(); }
+	inline ConnectRes *		GetFirstResConnect() const { return m_connects.First(); }
 
 
 private:

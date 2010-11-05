@@ -178,15 +178,15 @@ void WgGizmoCombobox::OnAction( WgInput::UserAction action, int button_key, cons
 				WgMenuItem * pItem = m_pSelectedItem;
 				int distance = info.rolldistance;
 
-				while( distance < 0 && pItem->getPrev() )
+				while( distance < 0 && pItem->Prev() )
 				{
-					pItem = pItem->getPrev();
+					pItem = pItem->Prev();
 					distance++;
 				}
 
-				while( distance > 0 && pItem->getNext() )
+				while( distance > 0 && pItem->Next() )
 				{
-					pItem = pItem->getNext();
+					pItem = pItem->Next();
 					distance--;
 				}
 
@@ -333,9 +333,9 @@ void WgGizmoCombobox::EntrySelected(WgMenuItem * pItem)
 		int ofs = buff.FindFirst( "%1" );
 		if( ofs >= 0 )
 		{
-			WgTextPropPtr pProp = buff[ofs].GetProperties();
+			WgTextPropPtr pProp = buff[ofs].Properties();
 
-			const WgChar * pEntry = ((WgMenuEntry*)pItem)->GetText().GetChars();
+			const WgChar * pEntry = ((WgMenuEntry*)pItem)->GetText().Chars();
 			Uint32 len = WgTextTool::strlen( pEntry );
 
 			buff.Replace( ofs, 2, pEntry );
@@ -344,13 +344,13 @@ void WgGizmoCombobox::EntrySelected(WgMenuItem * pItem)
 
 			for( unsigned int i = 0 ; i < len ; i++ )
 			{
-				if( p[i].GetPropHandle() == 0 )
+				if( p[i].PropHandle() == 0 )
 					p[i].SetProperties( pProp );
 			}
 
 			buff.EndWrite();
 
 		}
-		SetText( buff.GetChars() );
+		SetText( buff.Chars() );
 	}
 }

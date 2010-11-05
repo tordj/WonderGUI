@@ -242,8 +242,8 @@ void WgGfxDeviceGL::Blit( const WgSurface* _pSrc, const WgRect& _src, Sint32 _dx
 	if( !_pSrc )
 		return;
 
-	float sw = (float) _pSrc->GetWidth();
-	float sh = (float) _pSrc->GetHeight();
+	float sw = (float) _pSrc->Width();
+	float sh = (float) _pSrc->Height();
 
 	float	sx1 = _src.x/sw;
 	float	sx2 = (_src.x+_src.w)/sw;
@@ -281,8 +281,8 @@ void WgGfxDeviceGL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float
 	if( !pSrc )
 		return;
 
-	float tw = (float) pSrc->GetWidth();
-	float th = (float) pSrc->GetHeight();
+	float tw = (float) pSrc->Width();
+	float th = (float) pSrc->Height();
 
 	float	sx1 = sx/tw;
 	float	sx2 = (sx+sw)/tw;

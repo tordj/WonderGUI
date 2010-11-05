@@ -45,7 +45,7 @@ WgGfxAnim::WgGfxAnim( Uint32 width, Uint32 height )
 
 bool WgGfxAnim::insertFrame( Uint32 pos, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration )
 {
-	if( pSurf->width() < xOfs + m_width || pSurf->height() < yOfs + m_height )
+	if( pSurf->Width() < xOfs + m_width || pSurf->Height() < yOfs + m_height )
 		return false;
 
 
@@ -55,7 +55,7 @@ bool WgGfxAnim::insertFrame( Uint32 pos, WgSurface * pSurf, Uint16 xOfs, Uint16 
 	pFrame->ofs.x = xOfs;
 	pFrame->ofs.y = yOfs;
 
-	bool bOk = WgAnim::insertKeyFrame( pos, pFrame, duration );
+	bool bOk = WgAnim::InsertKeyFrame( pos, pFrame, duration );
 
 	if( !bOk )
 		delete pFrame;
@@ -71,7 +71,7 @@ bool WgGfxAnim::insertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, Uint16 xOf
 	pFrame->ofs.x = xOfs;
 	pFrame->ofs.y = yOfs;
 
-	bool bOk = WgAnim::insertKeyFrame( pBefore, pFrame, duration );
+	bool bOk = WgAnim::InsertKeyFrame( pBefore, pFrame, duration );
 
 	if( !bOk )
 		delete pFrame;
@@ -83,7 +83,7 @@ bool WgGfxAnim::insertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, Uint16 xOf
 
 bool WgGfxAnim::addFrame( WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration )
 {
-	if( pSurf->width() < xOfs + m_width || pSurf->height() < yOfs + m_height )
+	if( pSurf->Width() < xOfs + m_width || pSurf->Height() < yOfs + m_height )
 		return false;
 
 	WgGfxFrame * pFrame = new WgGfxFrame;
@@ -92,7 +92,7 @@ bool WgGfxAnim::addFrame( WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 du
 	pFrame->ofs.x = xOfs;
 	pFrame->ofs.y = yOfs;
 
-	bool bOk = WgAnim::addKeyFrame( pFrame, duration );
+	bool bOk = WgAnim::AddKeyFrame( pFrame, duration );
 
 	if( !bOk )
 		delete pFrame;
@@ -106,9 +106,9 @@ bool WgGfxAnim::addFrame( WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 du
 Uint32 WgGfxAnim::addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration, int spacing )
 {
 	if( nFrames == 0 )
-		nFrames = (pSurf->width() - xOfs) / m_width;				// Put in as many as fits along surface width.
+		nFrames = (pSurf->Width() - xOfs) / m_width;				// Put in as many as fits along surface width.
 
-	if( pSurf->width() < xOfs + (m_width+spacing) * nFrames || pSurf->height() < yOfs + m_height )
+	if( pSurf->Width() < xOfs + (m_width+spacing) * nFrames || pSurf->Height() < yOfs + m_height )
 		return 0;
 
 	for( Uint32 i = 0 ; i < nFrames ; i++ )
@@ -119,7 +119,7 @@ Uint32 WgGfxAnim::addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 
 		pFrame->ofs.x = xOfs + i*(m_width+spacing);
 		pFrame->ofs.y = yOfs;
 
-		bool bOk = WgAnim::addKeyFrame( pFrame, duration );
+		bool bOk = WgAnim::AddKeyFrame( pFrame, duration );
 			
 		if( !bOk )
 		{
@@ -137,9 +137,9 @@ Uint32 WgGfxAnim::addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 
 Uint32 WgGfxAnim::addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration, int spacing )
 {
 	if( nFrames == 0 )
-		nFrames = (pSurf->height() - yOfs) / m_height;			// Put in as many as fits along surface width.
+		nFrames = (pSurf->Height() - yOfs) / m_height;			// Put in as many as fits along surface width.
 
-	if( pSurf->width() < xOfs + m_width || pSurf->height() < yOfs + (m_height+spacing)*nFrames )
+	if( pSurf->Width() < xOfs + m_width || pSurf->Height() < yOfs + (m_height+spacing)*nFrames )
 		return 0;
 
 	for( Uint32 i = 0 ; i < nFrames ; i++ )
@@ -150,7 +150,7 @@ Uint32 WgGfxAnim::addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 
 		pFrame->ofs.x = xOfs;
 		pFrame->ofs.y = yOfs + i*(m_height+spacing);
 
-		bool bOk = WgAnim::addKeyFrame( pFrame, duration );
+		bool bOk = WgAnim::AddKeyFrame( pFrame, duration );
 			
 		if( !bOk )
 		{
@@ -167,7 +167,7 @@ Uint32 WgGfxAnim::addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 
 
 WgGfxFrame * WgGfxAnim::getFrame( Uint32 ticks, WgGfxFrame * pProximity ) const
 {
-	WgAnimPlayPos playPos = getPlayPos( ticks, pProximity );
+	WgAnimPlayPos playPos = PlayPos( ticks, pProximity );
 
 	return (WgGfxFrame *) playPos.pKeyFrame1;
 }

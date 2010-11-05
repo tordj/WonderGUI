@@ -189,7 +189,7 @@ WgVectorGlyphs::CacheSlot * WgVectorGlyphs::FindSlotInIndex( Uint16 ch, int size
 
 void WgVectorGlyphs::TouchSlot( CacheSlot * pSlot )
 {
-	pSlot->moveFirst();								// Move slot to the top
+	pSlot->MoveFirst();								// Move slot to the top
 
 	pSlot->access = m_accessCounter;				// Increase access counter.
 	pSlot->pSurf->access = m_accessCounter++;		// We don't sort the surfaces, probably faster to just compare access when

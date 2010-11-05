@@ -79,7 +79,7 @@ void Wdg_ListView::UpdateContentSize()
 	Uint32	contentWidth = 0;
 	Uint32	contentHeight = 0;
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	if( p )
 		contentHeight -= m_itemSpacing;		// We will get one spacing too much...
@@ -104,12 +104,12 @@ void Wdg_ListView::refreshItems()
 
 	// Check so we still have our m_pLastMarkedItem...
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 	while( p )
 	{
 		if( p == m_pLastMarkedItem )
 			break;
-		p = p->getNext();
+		p = p->Next();
 	}
 	if( p == 0 )
 		m_pLastMarkedItem = 0;
@@ -176,11 +176,11 @@ bool Wdg_ListView::GetItemPixelPos( WgItem * pItem, WgCord& pos )
 	// calc y pos of this row
 	Uint32 itemPosY = 0;
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 	while( p && p != pItem )
 	{
 		itemPosY += p->Height() + m_itemSpacing;
-		p = p->getNext();
+		p = p->Next();
 	}
 
 	pos = WgCord(0, itemPosY);
@@ -218,7 +218,7 @@ WgItem* Wdg_ListView::GetMarkedItem( Uint32 x, Uint32 y )
 {
 	y += m_viewPixOfsY;							// Transform from relative widget cordinates to content-cordinates.
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	while( p )
 	{
@@ -272,7 +272,7 @@ void Wdg_ListView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butto
 		// HACK. Remove when message loop is implemented
 		// pItem can be deleted in the ActionResponse callback. Make sure it still exist // Martin
 		pItem->ActionRespond( GetEmitter(), _action, _button_key, _info, _inputObj );
-		WgItem* p = m_items.getFirst();
+		WgItem* p = m_items.First();
 		while(p && p != pItem) p = p->GetNext();
 		if(p == pItem)
 			m_pLastMarkedItem = pItem;
@@ -297,7 +297,7 @@ void Wdg_ListView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 	r.h = m_contentHeight;
 
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	// Skip Rows that are above clipping area.
 

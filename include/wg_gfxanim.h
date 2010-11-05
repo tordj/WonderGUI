@@ -63,8 +63,8 @@ public:
 
 	WgGfxFrame * getFrame( Uint32 tick, WgGfxFrame * pProximity = 0 ) const;
 
-	WgGfxFrame * getFirstFrame(void) {return (WgGfxFrame *) WgAnim::getFirstKeyFrame(); };
-	WgGfxFrame * getLastFrame(void) {return (WgGfxFrame *) WgAnim::getLastKeyFrame(); };
+	WgGfxFrame * getFirstFrame(void) {return (WgGfxFrame *) WgAnim::FirstKeyFrame(); };
+	WgGfxFrame * getLastFrame(void) {return (WgGfxFrame *) WgAnim::LastKeyFrame(); };
 
 
 protected:
@@ -79,8 +79,8 @@ class WgGfxFrame : public WgKeyFrame
 public:
 	// Derived from WgKeyFrame: Uint32	timestamp
 
-	WgGfxFrame * getNext(void) {return (WgGfxFrame *) WgKeyFrame::getNext();};
-	WgGfxFrame * getPrev(void) {return (WgGfxFrame *) WgKeyFrame::getPrev();};
+	WgGfxFrame * getNext(void) {return (WgGfxFrame *) WgKeyFrame::Next();};
+	WgGfxFrame * getPrev(void) {return (WgGfxFrame *) WgKeyFrame::Prev();};
 
 	WgSurface	* pSurf;
 	WgUCord16		ofs;

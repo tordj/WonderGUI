@@ -60,8 +60,8 @@ public:
 	virtual	Sint64	Id64() const		{ return m_id; };
 	virtual	void	SetId64(Sint64 id)	{ m_id = id; }
 
-	inline	WgItem * GetNext() const	{ return (WgItem *) getNext(); };
-	inline	WgItem * GetPrev() const	{ return (WgItem *) getPrev(); };
+	inline	WgItem * GetNext() const	{ return (WgItem *) Next(); };
+	inline	WgItem * GetPrev() const	{ return (WgItem *) Prev(); };
 	inline	Wg_Interface_ItemHolder * GetHolder() const	{ return m_pMyHolder; };
 
 	// Only works for rows in a Wdg_TableView atm.

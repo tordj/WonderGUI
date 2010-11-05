@@ -125,7 +125,7 @@ public:
 	bool			AddMenu( const char * pTitle, Wdg_Menu * pMenu, Uint16 navKey = 0 );
 	bool			RemoveMenu( Wdg_Menu * pMenu );
 
-	WgMenuBarItem*	GetFirstMenuBarItem() { return m_items.getFirst(); }
+	WgMenuBarItem*	GetFirstMenuBarItem() { return m_items.First(); }
 
 	WgChar *		GetMenuTitle(Wdg_Menu * pMenu) const;
 

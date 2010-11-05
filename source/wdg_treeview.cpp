@@ -216,7 +216,7 @@ WgTreeEntry * Wdg_TreeView::FindEntryAtViewOfs( Sint32 ofs, Sint32 * wpOfsInside
 {
 	ofs += m_viewPixOfsY;
 
-	WgTreeEntry * pEntry = m_entries.getFirst();
+	WgTreeEntry * pEntry = m_entries.First();
 
 	Sint32	height = 0;
 
@@ -244,7 +244,7 @@ void Wdg_TreeView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 {
 	int yOfs = _window.y -m_viewPixOfsY;
 
-	WgTreeEntry * pEntry = m_entries.getFirst();
+	WgTreeEntry * pEntry = m_entries.First();
 	if( pEntry == 0 )
 		return;
 
@@ -333,7 +333,7 @@ Uint32 Wdg_TreeView::GetEntryHeight( WgTreeEntry * pEntry )
 
 Uint32 Wdg_TreeView::GetEntryOfs( WgTreeEntry * pEntry )
 {
-	WgTreeEntry * p = m_entries.getFirst();
+	WgTreeEntry * p = m_entries.First();
 	if( p == 0 )
 		return 0;
 
@@ -440,11 +440,11 @@ WgTreeEntry * Wdg_TreeView::AddEntry( long id, WgTreeEntry * pParent, WgTreeEntr
 	else
 		pChain = &pParent->m_children;
 
-	pChain->push_back(p);
+	pChain->PushBack(p);
 
 	if( pBefore )
 		if( pBefore->GetParent() == pParent )
-			p->moveBefore( pBefore );
+			p->MoveBefore( pBefore );
 
 	RefreshSize(pParent);
 	RequestRender();		//TODO: Optimize, only call if needed.
@@ -459,7 +459,7 @@ bool Wdg_TreeView::MoveEntry( WgTreeEntry * pEntry, WgTreeEntry * pParent, WgTre
 
 	if( pParent != pOldParent )
 	{
-		pEntry->disconnect();
+		pEntry->Disconnect();
 
 		WgChain<WgTreeEntry> * pChain;
 
@@ -468,7 +468,7 @@ bool Wdg_TreeView::MoveEntry( WgTreeEntry * pEntry, WgTreeEntry * pParent, WgTre
 		else
 			pChain = &pParent->m_children;
 
-		pChain->push_back(pEntry);
+		pChain->PushBack(pEntry);
 
 		RefreshSize(pParent);
 		RefreshSize(pOldParent);
@@ -476,7 +476,7 @@ bool Wdg_TreeView::MoveEntry( WgTreeEntry * pEntry, WgTreeEntry * pParent, WgTre
 
 	if( pBefore )
 		if( pBefore->GetParent() == pParent )
-			pEntry->moveBefore( pBefore );
+			pEntry->MoveBefore( pBefore );
 
 	RequestRender();		//TODO: Optimize, only call if needed.
 
@@ -527,7 +527,7 @@ WgSize Wdg_TreeView::CalcSize( WgChain<WgTreeEntry>& chain )
 {
 	WgSize sz(0,0);
 
-	WgTreeEntry * p = chain.getFirst();
+	WgTreeEntry * p = chain.First();
 
 	// Calculate content width/height.
 
@@ -551,7 +551,7 @@ WgSize Wdg_TreeView::CalcSize( WgChain<WgTreeEntry>& chain )
 			if( p->childrenWidth + xOfs > (unsigned int) sz.w )
 				sz.w = p->childrenWidth;
 		}
-		p = p->getNext();
+		p = p->Next();
 	}
 	return sz;
 }
@@ -609,7 +609,7 @@ void Wdg_TreeView::RefreshSize( WgTreeEntry * p )
 
 bool Wdg_TreeView::OpenEntry( WgTreeEntry * pEntry )
 {
-	if( pEntry->m_children.getFirst() == 0 )
+	if( pEntry->m_children.First() == 0 )
 		return false;
 
 	if( pEntry->bOpen )
@@ -630,7 +630,7 @@ bool Wdg_TreeView::OpenEntry( WgTreeEntry * pEntry )
 
 bool Wdg_TreeView::CloseEntry( WgTreeEntry * pEntry )
 {
-	if( pEntry->m_children.getFirst() == 0 )
+	if( pEntry->m_children.First() == 0 )
 		return false;
 
 	if( !pEntry->bOpen )
@@ -752,7 +752,7 @@ void Wdg_TreeView::UnselectAllEntries()
 
 void Wdg_TreeView::DeleteAllEntries()
 {
-	m_entries.clear();
+	m_entries.Clear();
 	RequestRender();			// We want one big rectangle instead of many small...
 }
 
@@ -959,14 +959,14 @@ WgTreeEntry::~WgTreeEntry()
 
 WgTreeEntry * WgTreeEntry::GetPrev()
 {
-	WgTreeEntry * p = getPrev();			// Check for previous sibling.
+	WgTreeEntry * p = Prev();			// Check for previous sibling.
 
 	if( p )
 	{
 		// We had a sibling, recurse through its last children.
 
-		while( p->m_children.getLast() )
-			p = p->m_children.getLast();
+		while( p->m_children.Last() )
+			p = p->m_children.Last();
 
 		return p;							// Return sibling or last child/grandchild of it.
 	}
@@ -978,11 +978,11 @@ WgTreeEntry * WgTreeEntry::GetPrev()
 
 WgTreeEntry * WgTreeEntry::GetNext()
 {
-	if( m_children.getFirst() )
-		return m_children.getFirst();		// We had a child, return it.
+	if( m_children.First() )
+		return m_children.First();		// We had a child, return it.
 
-	if( getNext() )
-		return getNext();					// We had a sibling, return it.
+	if( Next() )
+		return Next();					// We had a sibling, return it.
 
 	// Iterate through our ancestry and return first next sibling
 	// of them that we can find.
@@ -990,8 +990,8 @@ WgTreeEntry * WgTreeEntry::GetNext()
 	WgTreeEntry * p = pParent;
 	while( p != 0 )
 	{
-		if( p->getNext() )
-			return p->getNext();
+		if( p->Next() )
+			return p->Next();
 
 		p = p->pParent;
 	}

@@ -29,7 +29,7 @@ WgAnim::WgAnim()
 {
 	m_scale			= 1.f;
 	m_duration		= 0;
-	m_playMode	= FORWARD_ONCE;
+	m_playMode	= WG_FORWARD_ONCE;
 }
 
 //____ ~WgAnim() ______________________________________________________________
@@ -38,17 +38,17 @@ WgAnim::~WgAnim()
 {
 }
 
-//____ setPlayMode() __________________________________________________________
+//____ SetPlayMode() __________________________________________________________
 
-bool WgAnim::setPlayMode( PlayMode mode )
+bool WgAnim::SetPlayMode( WgAnimMode mode )
 {
 	m_playMode = mode;
 	return true;
 }
 
-//____ setTimeScaler() ________________________________________________________
+//____ SetTimeScaler() ________________________________________________________
 
-bool WgAnim::setTimeScaler( float scale )
+bool WgAnim::SetTimeScaler( float scale )
 {
 	if( scale <= 0.f )
 		return false;
@@ -58,75 +58,75 @@ bool WgAnim::setTimeScaler( float scale )
 }
 
 
-//____ deleteKeyFrame() _______________________________________________________
+//____ DeleteKeyFrame() _______________________________________________________
 
-bool WgAnim::deleteKeyFrame( Uint32 pos )
+bool WgAnim::DeleteKeyFrame( Uint32 pos )
 {
 	return false;
 }
 
-//____ deleteKeyFrame() _______________________________________________________
+//____ DeleteKeyFrame() _______________________________________________________
 
-bool WgAnim::deleteKeyFrame( WgKeyFrame * pKeyFrame )
+bool WgAnim::DeleteKeyFrame( WgKeyFrame * pKeyFrame )
 {
 	delete pKeyFrame;
 	return true;
 }
 
 
-//____ insertKeyFrame() _______________________________________________________
+//____ InsertKeyFrame() _______________________________________________________
 
-bool WgAnim::insertKeyFrame( Uint32 pos, WgKeyFrame * pFrame, Uint32 duration )
+bool WgAnim::InsertKeyFrame( Uint32 pos, WgKeyFrame * pFrame, Uint32 duration )
 {
-	WgKeyFrame * pPos = m_keyframes.getFirst();
+	WgKeyFrame * pPos = m_keyframes.First();
 
 	for( Uint32 i = 0 ; i < pos ; i++ )
 	{
-		pPos = pPos->getNext();
+		pPos = pPos->Next();
 		if( pPos == 0 )
 			return false;
 	}
 
-	return insertKeyFrame( pPos, pFrame, duration );
+	return InsertKeyFrame( pPos, pFrame, duration );
 }
 
 
-bool WgAnim::insertKeyFrame( WgKeyFrame * pPos, WgKeyFrame * pFrame, Uint32 duration )
+bool WgAnim::InsertKeyFrame( WgKeyFrame * pPos, WgKeyFrame * pFrame, Uint32 duration )
 {
-	if( pFrame->m_duration == 0 || pPos->getChain() != &m_keyframes || m_duration + pFrame->m_duration < m_duration )
+	if( pFrame->m_duration == 0 || pPos->Chain() != &m_keyframes || m_duration + pFrame->m_duration < m_duration )
 		return false;
 	
-	pFrame->moveBefore( pPos );
+	pFrame->MoveBefore( pPos );
 	pFrame->m_timestamp = pPos->m_timestamp;
 	pFrame->m_duration = duration;
 
 	while( pPos != 0 )
 	{
 		pPos->m_timestamp += duration;
-		pPos = pPos->getNext();
+		pPos = pPos->Next();
 	}
 	m_duration += duration; 
 	return true;
 }
 
 
-//____ addKeyFrame() __________________________________________________________
+//____ AddKeyFrame() __________________________________________________________
 
-bool WgAnim::addKeyFrame( WgKeyFrame * pFrame, Uint32 duration )
+bool WgAnim::AddKeyFrame( WgKeyFrame * pFrame, Uint32 duration )
 {
 	if( duration == 0 || m_duration + duration < m_duration )
 		return false;
 
 	pFrame->m_duration = duration;
-	pFrame->moveLast( &m_keyframes );
+	pFrame->MoveLast( &m_keyframes );
 	pFrame->m_timestamp = m_duration;
 	m_duration += pFrame->m_duration;
 	return true;
 }
 
-//____ getPlayPos() ___________________________________________________________
+//____ PlayPos() ___________________________________________________________
 
-WgAnimPlayPos WgAnim::getPlayPos( Uint32 ticks, WgKeyFrame * pProximity ) const
+WgAnimPlayPos WgAnim::PlayPos( Uint32 ticks, WgKeyFrame * pProximity ) const
 {
 	ticks *= (Uint32) m_scale;
 	
@@ -134,144 +134,144 @@ WgAnimPlayPos WgAnim::getPlayPos( Uint32 ticks, WgKeyFrame * pProximity ) const
 
 	switch( m_playMode )
 	{
-		case FORWARD_ONCE:
+		case WG_FORWARD_ONCE:
 		{
 			if( ticks >= m_duration )
 			{
-				pos.pKeyFrame1		= m_keyframes.getLast();
-				pos.pKeyFrame2		= m_keyframes.getLast();
+				pos.pKeyFrame1		= m_keyframes.Last();
+				pos.pKeyFrame2		= m_keyframes.Last();
 				pos.transition		= 1.f;													// 1.f only when it has stopped.
 				pos.animOffset		= m_duration;
 			}
 			else
 			{
-				WgKeyFrame * pFrame = getKeyFrame( ticks, pProximity );
+				WgKeyFrame * pFrame = KeyFrame( ticks, pProximity );
 				pos.pKeyFrame1			= pFrame;
 				pos.transition			= (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 				pos.animOffset			= m_duration;
-				pos.pKeyFrame2			= pFrame->getNext();
+				pos.pKeyFrame2			= pFrame->Next();
 
 				if( pos.pKeyFrame2 == 0 )
-					pos.pKeyFrame2		= m_keyframes.getLast();
+					pos.pKeyFrame2		= m_keyframes.Last();
 			}
 			break;
 		}
 
-		case BACKWARD_ONCE:
+		case WG_BACKWARD_ONCE:
 		{
 			if( ticks >= m_duration )
 			{
-				pos.pKeyFrame1			= m_keyframes.getFirst();
-				pos.pKeyFrame2			= m_keyframes.getFirst();
+				pos.pKeyFrame1			= m_keyframes.First();
+				pos.pKeyFrame2			= m_keyframes.First();
 				pos.transition			= 1.f;											// 1.f only when it has stopped.
 				pos.animOffset			= 0;
 			}
 			else
 			{
-				WgKeyFrame * pFrame = getKeyFrame( m_duration - ticks, pProximity );
+				WgKeyFrame * pFrame = KeyFrame( m_duration - ticks, pProximity );
 				pos.pKeyFrame2			= pFrame;
 				pos.transition			= 1.f - (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 				pos.animOffset			= m_duration - ticks;
-				pos.pKeyFrame1			= pFrame->getNext();
+				pos.pKeyFrame1			= pFrame->Next();
 
 				if( pos.pKeyFrame1 == 0 )
-					pos.pKeyFrame1		= m_keyframes.getLast();
+					pos.pKeyFrame1		= m_keyframes.Last();
 			}
 			break;
 		}
 	
-		case FORWARD_LOOPING:
+		case WG_FORWARD_LOOPING:
 		{
 			ticks = ticks % m_duration;
 
-			WgKeyFrame * pFrame = getKeyFrame( ticks, pProximity );
+			WgKeyFrame * pFrame		= KeyFrame( ticks, pProximity );
 			pos.pKeyFrame1			= pFrame;
 			pos.transition			= (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 			pos.animOffset			= ticks;
-			pos.pKeyFrame2			= pFrame->getNext();
+			pos.pKeyFrame2			= pFrame->Next();
 
 			if( pos.pKeyFrame2 == 0 )
-				pos.pKeyFrame2		= m_keyframes.getFirst();
+				pos.pKeyFrame2		= m_keyframes.First();
 			break;
 		}
 
-		case BACKWARD_LOOPING:
+		case WG_BACKWARD_LOOPING:
 		{
 			ticks = ticks % m_duration;
 
-			WgKeyFrame * pFrame = getKeyFrame( m_duration - ticks, pProximity );
+			WgKeyFrame * pFrame =	KeyFrame( m_duration - ticks, pProximity );
 			pos.pKeyFrame2			= pFrame;
 			pos.transition			= 1.f - (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 			pos.animOffset			= m_duration - ticks;
-			pos.pKeyFrame1			= pFrame->getNext();
+			pos.pKeyFrame1			= pFrame->Next();
 
 			if( pos.pKeyFrame1 == 0 )
-				pos.pKeyFrame1		= m_keyframes.getFirst();
+				pos.pKeyFrame1		= m_keyframes.First();
 			break;
 		}
 
 
-		case FORWARD_PINGPONG:
+		case WG_FORWARD_PINGPONG:
 		{
 			Uint32	ts;
 
 			if( ((ticks/m_duration) % 2) == 0 )
 			{
 				ts = ticks % m_duration;
-				WgKeyFrame * pFrame = getKeyFrame( ts, pProximity );
+				WgKeyFrame * pFrame		= KeyFrame( ts, pProximity );
 				pos.pKeyFrame1			= pFrame;
 				pos.transition	= (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 				pos.animOffset			= ts;
-				pos.pKeyFrame2			= pFrame->getNext();
+				pos.pKeyFrame2			= pFrame->Next();
 
 				if( pos.pKeyFrame2 == 0 )
-					pos.pKeyFrame2		= m_keyframes.getLast();
+					pos.pKeyFrame2		= m_keyframes.Last();
 			}
 			else
 			{
 				ts = m_duration - (ticks % m_duration);
 
-				WgKeyFrame * pFrame = getKeyFrame( ts, pProximity );
+				WgKeyFrame * pFrame		= KeyFrame( ts, pProximity );
 				pos.pKeyFrame2			= pFrame;
 				pos.transition			= 1.f - (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 				pos.animOffset			= ts;
-				pos.pKeyFrame1			= pFrame->getNext();
+				pos.pKeyFrame1			= pFrame->Next();
 
 				if( pos.pKeyFrame1 == 0 )
-					pos.pKeyFrame1		= m_keyframes.getLast();
+					pos.pKeyFrame1		= m_keyframes.Last();
 			
 			}
 			break;
 		}
 
-		case BACKWARD_PINGPONG:
+		case WG_BACKWARD_PINGPONG:
 		{
 			Uint32	ts;
 
 			if( ((ticks/m_duration) % 2) == 1 )
 			{
 				ts = ticks % m_duration;
-				WgKeyFrame * pFrame = getKeyFrame( ts, pProximity );
+				WgKeyFrame * pFrame		= KeyFrame( ts, pProximity );
 				pos.pKeyFrame1			= pFrame;
 				pos.transition	= (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 				pos.animOffset			= ts;
-				pos.pKeyFrame2			= pFrame->getNext();
+				pos.pKeyFrame2			= pFrame->Next();
 
 				if( pos.pKeyFrame2 == 0 )
-					pos.pKeyFrame2		= m_keyframes.getLast();
+					pos.pKeyFrame2		= m_keyframes.Last();
 			}
 			else
 			{
 				ts = m_duration - (ticks % m_duration);
 
-				WgKeyFrame * pFrame = getKeyFrame( ts, pProximity );
+				WgKeyFrame * pFrame		= KeyFrame( ts, pProximity );
 				pos.pKeyFrame2			= pFrame;
 				pos.transition	= 1.f - (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 				pos.animOffset			= ts;
-				pos.pKeyFrame1			= pFrame->getNext();
+				pos.pKeyFrame1			= pFrame->Next();
 
 				if( pos.pKeyFrame1 == 0 )
-					pos.pKeyFrame1		= m_keyframes.getLast();			
+					pos.pKeyFrame1		= m_keyframes.Last();			
 			}
 			break;
 		}
@@ -279,9 +279,9 @@ WgAnimPlayPos WgAnim::getPlayPos( Uint32 ticks, WgKeyFrame * pProximity ) const
 	return pos;
 }
 
-//____ getKeyFrame() __________________________________________________________
+//____ KeyFrame() __________________________________________________________
 
-WgKeyFrame * WgAnim::getKeyFrame( Uint32 ticks, WgKeyFrame * pProximity ) const
+WgKeyFrame * WgAnim::KeyFrame( Uint32 ticks, WgKeyFrame * pProximity ) const
 {
 	// If proximity isn't set, we'll start from first or last depending
 	// on which we belive is closest.
@@ -290,9 +290,9 @@ WgKeyFrame * WgAnim::getKeyFrame( Uint32 ticks, WgKeyFrame * pProximity ) const
 	if( !pProximity )
 	{
 		if( ticks < m_duration - ticks )
-			pProximity = m_keyframes.getFirst();
+			pProximity = m_keyframes.First();
 		else
-			pProximity = m_keyframes.getLast();
+			pProximity = m_keyframes.Last();
 	}
 
 
@@ -300,15 +300,15 @@ WgKeyFrame * WgAnim::getKeyFrame( Uint32 ticks, WgKeyFrame * pProximity ) const
 
 	if( pProximity->m_timestamp > ticks )
 	{
-		pProximity = pProximity->getPrev();
+		pProximity = pProximity->Prev();
 		while( pProximity->m_timestamp > ticks )
-			pProximity = pProximity->getPrev();
+			pProximity = pProximity->Prev();
 
 	}
 	else
 	{
 		while( pProximity->m_timestamp + pProximity->m_duration <= ticks )
-			pProximity = pProximity->getNext();
+			pProximity = pProximity->Next();
 	}
 	
 	return pProximity;
@@ -316,40 +316,40 @@ WgKeyFrame * WgAnim::getKeyFrame( Uint32 ticks, WgKeyFrame * pProximity ) const
 
 
 
-//____ time2ofs() _____________________________________________________________
+//____ TimeToOfs() _____________________________________________________________
 
-Uint32 WgAnim::time2ofs( Uint32 ticks )
+Uint32 WgAnim::TimeToOfs( Uint32 ticks )
 {
 	ticks *= (Uint32) m_scale;
 	
 	switch( m_playMode )
 	{
-		case FORWARD_ONCE:
+		case WG_FORWARD_ONCE:
 			if( ticks >= m_duration )
 				return m_duration;
 
 			return ticks;
 
-		case BACKWARD_ONCE:
+		case WG_BACKWARD_ONCE:
 			if( ticks >= m_duration )
 				return 0;
 
 			return m_duration - ticks;
 	
-		case FORWARD_LOOPING:
+		case WG_FORWARD_LOOPING:
 			return ticks % m_duration;
 
-		case BACKWARD_LOOPING:
+		case WG_BACKWARD_LOOPING:
 			return m_duration - (ticks % m_duration);
 
 
-		case FORWARD_PINGPONG:
+		case WG_FORWARD_PINGPONG:
 			if( ((ticks/m_duration) % 2) == 0 )
 				return ticks % m_duration;
 			else
 				return m_duration - (ticks % m_duration);
 
-		case BACKWARD_PINGPONG:
+		case WG_BACKWARD_PINGPONG:
 			if( ((ticks/m_duration) % 2) == 1 )
 				return ticks % m_duration;
 			else
@@ -364,14 +364,14 @@ Uint32 WgAnim::time2ofs( Uint32 ticks )
 
 
 
-//____ WgKeyFrame::setDuration() ______________________________________________
+//____ WgKeyFrame::SetDuration() ______________________________________________
 
-bool WgKeyFrame::setDuration( Uint32 ticks )
+bool WgKeyFrame::SetDuration( Uint32 ticks )
 {
 	
 	// Ugly hack to get a pointer to our WgAnim object.
 
-	WgChain<WgKeyFrame> * pChain = getChain();
+	WgChain<WgKeyFrame> * pChain = Chain();
 	WgAnim * pAnim = 0;
 	char * ofs = (char *) &(pAnim->m_keyframes);
 	pAnim = (WgAnim *)(((char *)pChain) - ofs);
@@ -387,11 +387,11 @@ bool WgKeyFrame::setDuration( Uint32 ticks )
 
 	m_duration = ticks;
 
-	WgKeyFrame * pFrame = getNext();
+	WgKeyFrame * pFrame = Next();
 	while( pFrame )
 	{
 		pFrame->m_duration += change;
-		pFrame = pFrame->getNext();
+		pFrame = pFrame->Next();
 	}
 	return true;
 }

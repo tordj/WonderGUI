@@ -98,11 +98,11 @@ void WgGizmoTablist::SetTextProperties( const WgTextPropPtr& pProp )
 		// the font is set on every render anyway,
 		// so i'll comment out this part
 
-		WgTab * pTab = m_tabs.getFirst();
+		WgTab * pTab = m_tabs.First();
 		while( pTab )
 		{
 			pTab->m_text.setProperties(m_pProp);
-			pTab = pTab->getNext();
+			pTab = pTab->Next();
 		}
 
 		//
@@ -186,11 +186,11 @@ bool WgGizmoTablist::AddTab( Sint32 id, const char * pText, Uint32 position, con
 	pTab->SetSource( pGfx );
 	ResizeTab(pTab);
 
-	WgTab * pPos = m_tabs.get(position);
+	WgTab * pPos = m_tabs.Get(position);
 	if( pPos )
-		pTab->moveBefore(pPos);
+		pTab->MoveBefore(pPos);
 	else
-		m_tabs.push_back(pTab);
+		m_tabs.PushBack(pTab);
 	RequestRender();
 	return true;
 }
@@ -209,11 +209,11 @@ bool WgGizmoTablist::AddTab( Sint32 id, const Uint16* pText, Uint32 position, co
 	pTab->SetSource( pGfx );
 	ResizeTab(pTab);
 
-	WgTab * pPos = m_tabs.get(position);
+	WgTab * pPos = m_tabs.Get(position);
 	if( pPos )
-		pTab->moveBefore(pPos);
+		pTab->MoveBefore(pPos);
 	else
-		m_tabs.push_back(pTab);
+		m_tabs.PushBack(pTab);
 	RequestRender();
 	return true;
 }
@@ -232,11 +232,11 @@ bool WgGizmoTablist::AddTab( Sint32 id, const WgChar* pText, Uint32 position, co
 	pTab->SetSource( pGfx );
 	ResizeTab(pTab);
 
-	WgTab * pPos = m_tabs.get(position);
+	WgTab * pPos = m_tabs.Get(position);
 	if( pPos )
-		pTab->moveBefore(pPos);
+		pTab->MoveBefore(pPos);
 	else
-		m_tabs.push_back(pTab);
+		m_tabs.PushBack(pTab);
 	RequestRender();
 	return true;
 }
@@ -255,11 +255,11 @@ bool WgGizmoTablist::AddTab( Sint32 id, const WgText * pText, Uint32 position, c
 	pTab->SetSource( pGfx );
 	ResizeTab(pTab);
 
-	WgTab * pPos = m_tabs.get(position);
+	WgTab * pPos = m_tabs.Get(position);
 	if( pPos )
-		pTab->moveBefore(pPos);
+		pTab->MoveBefore(pPos);
 	else
-		m_tabs.push_back(pTab);
+		m_tabs.PushBack(pTab);
 	RequestRender();
 	return true;
 }
@@ -290,10 +290,10 @@ void WgGizmoTablist::RemoveAllTabs()
 	m_pTabSelected = 0;
 	m_pTabMarked = 0;
 
-	WgTab *pTab = m_tabs.getFirst();
+	WgTab *pTab = m_tabs.First();
 	while(pTab)
 	{
-		WgTab *pNext = pTab->getNext();
+		WgTab *pNext = pTab->Next();
 		delete pTab;
 		pTab = pNext;
 	}
@@ -308,11 +308,11 @@ bool WgGizmoTablist::MoveTab( Sint32 id, Uint32 position )
 	WgTab * pTab = FindTab(id);
 	if( pTab )
 	{
-		WgTab * pPos = m_tabs.get(position);
+		WgTab * pPos = m_tabs.Get(position);
 		if( pPos )
-			pTab->moveBefore(pPos);
+			pTab->MoveBefore(pPos);
 		else
-			m_tabs.push_back(pTab);
+			m_tabs.PushBack(pTab);
 		RequestRender();
 		return true;
 	}
@@ -338,11 +338,11 @@ bool WgGizmoTablist::SetTabId( Sint32 id, Sint32 newId )
 
 Sint32 WgGizmoTablist::GetTabId(Uint32 position)
 {
-	WgTab *pTab = m_tabs.getFirst();
+	WgTab *pTab = m_tabs.First();
 	if( pTab && position )
 	{
 		position--;
-		pTab = pTab->getNext();
+		pTab = pTab->Next();
 	}
 	if(pTab)
 		return pTab->m_id;
@@ -450,12 +450,12 @@ int WgGizmoTablist::GetSelectedTabPos() const
 		return -1;
 
 	int iPos = 0;
-	WgTab *pTab = m_tabs.getFirst();
+	WgTab *pTab = m_tabs.First();
 	while(pTab)
 	{
 		if(pTab == m_pTabSelected)
 			return iPos;
-		pTab = pTab->getNext();
+		pTab = pTab->Next();
 		iPos++;
 	}
 	return -1;
@@ -520,7 +520,7 @@ Uint32 WgGizmoTablist::GetTabCount( ) const
 {
 	Uint32 n = 0;
 
-	for( WgTab * pTab = m_tabs.getFirst(); pTab; pTab = pTab->getNext() )
+	for( WgTab * pTab = m_tabs.First(); pTab; pTab = pTab->Next() )
 		n++;
 
 	return n;
@@ -589,19 +589,19 @@ WgTab* WgGizmoTablist::GetSelectedTab()
 //____ GetFirstTab() ______________________________________________________________
 WgTab* WgGizmoTablist::GetFirstTab()
 {
-	return m_tabs.getFirst();
+	return m_tabs.First();
 }
 
 WgTab* WgGizmoTablist::GetLastTab()
 {
-	return m_tabs.getLast();
+	return m_tabs.Last();
 }
 
 WgTab* WgGizmoTablist::GetFirstVisibleTab()
 {
 	WgTab* pTab = GetFirstTab();
 	while(pTab && !pTab->m_bVisible)
-		pTab = pTab->getNext();
+		pTab = pTab->Next();
 	return pTab;
 }
 
@@ -609,7 +609,7 @@ WgTab* WgGizmoTablist::GetLastVisibleTab()
 {
 	WgTab* pTab = GetLastTab();
 	while(pTab && !pTab->m_bVisible)
-		pTab = pTab->getPrev();
+		pTab = pTab->Prev();
 	return pTab;
 }
 
@@ -617,13 +617,13 @@ WgTab* WgGizmoTablist::GetLastVisibleTab()
 
 WgTab* WgGizmoTablist::FindTab( Sint32 id )
 {
-	WgTab * pTab = m_tabs.getFirst();
+	WgTab * pTab = m_tabs.First();
 
 	while( pTab )
 	{
 		if( pTab->m_id == id )
 			return pTab;
-		pTab = pTab->getNext();
+		pTab = pTab->Next();
 	}
 	return 0;
 }
@@ -713,7 +713,7 @@ bool WgGizmoTablist::ResizeTab( WgTab * pTab )
 		else if(width > m_widestTab)
 		{
 			m_widestTab = width;
-			for( WgTab *pTab2 = m_tabs.getFirst(); pTab2; pTab2 = pTab2->getNext() )
+			for( WgTab *pTab2 = m_tabs.First(); pTab2; pTab2 = pTab2->Next() )
 				pTab2->m_width = m_widestTab;
 			retVal = true;
 		}
@@ -734,12 +734,12 @@ bool WgGizmoTablist::ResizeAllTabs()
 {
 	bool	retval = false;
 
-	WgTab * pTab = m_tabs.getFirst();
+	WgTab * pTab = m_tabs.First();
 	while( pTab )
 	{
 		if( ResizeTab(pTab) )
 			retval = true;
-		pTab = pTab->getNext();
+		pTab = pTab->Next();
 	}
 
 	return retval;
@@ -756,7 +756,7 @@ WgTab * WgGizmoTablist::Pos2Tab( Sint32 x, Sint32 y )
 
 	bool bMovingUp = true;
 	WgTab * pHit = NULL;
-	WgTab * pTab = m_tabs.getFirst();
+	WgTab * pTab = m_tabs.First();
 	WgSize	sz = Size();
 
 	while( pTab )
@@ -765,7 +765,7 @@ WgTab * WgGizmoTablist::Pos2Tab( Sint32 x, Sint32 y )
 		{
 			Uint32 w = (Uint32) (pTab->m_width*scaleFactor + 0.5f);
 
-			if(m_tabWidthMode == TabWidthModeExpand && pTab->getNext() == 0)
+			if(m_tabWidthMode == TabWidthModeExpand && pTab->Next() == 0)
 				w = sz.w - x;
 
 			if(pTab == m_pTabSelected)
@@ -796,7 +796,7 @@ WgTab * WgGizmoTablist::Pos2Tab( Sint32 x, Sint32 y )
 
 			x -= w - m_overlap;
 		}
-		pTab = pTab->getNext();
+		pTab = pTab->Next();
 	}
 
 	return pHit;
@@ -814,7 +814,7 @@ void WgGizmoTablist::OnUpdate( const WgUpdateInfo& _updateInfo )
 
 		// Check if we have to render something...
 
-		WgTab * pTab = m_tabs.getFirst();
+		WgTab * pTab = m_tabs.First();
 		while( pTab )
 		{
 			if( pTab->m_bAlert && pTab->m_bVisible )
@@ -822,7 +822,7 @@ void WgGizmoTablist::OnUpdate( const WgUpdateInfo& _updateInfo )
 				RequestRender();			// Somewhat stupid to render all tabs though...
 				break;
 			}
-			pTab = pTab->getNext();
+			pTab = pTab->Next();
 		}
 	}
 }
@@ -835,7 +835,7 @@ float WgGizmoTablist::CalcTabScaleFactor()
 
 	int xLen = 0;
 	int nTabs = 0;
-	WgTab * pTab = m_tabs.getFirst();
+	WgTab * pTab = m_tabs.First();
 	while( pTab )
 	{
 		if(pTab->m_bVisible)
@@ -843,7 +843,7 @@ float WgGizmoTablist::CalcTabScaleFactor()
 			xLen += pTab->m_width;
 			nTabs++;
 		}
-		pTab = pTab->getNext();
+		pTab = pTab->Next();
 	}
 
 	if(m_tabWidthMode == TabWidthModeExpand2)
@@ -876,7 +876,7 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	Sint32 xOfs = (Sint32)_canvas.x;
 	int width;
-	WgTab * pTab = m_tabs.getFirst();
+	WgTab * pTab = m_tabs.First();
 	while( pTab )
 	{
 		if(pTab->m_bVisible)
@@ -897,13 +897,13 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 			xOfs += width - m_overlap;
 		}
-		pTab = pTab->getNext();
+		pTab = pTab->Next();
 	}
 
 	if( m_pTabSelected && m_pTabSelected->m_bVisible )
 	{
 		// Now render all tabs to the right of the selected tab
-		WgTab * pTab = m_tabs.getLast();
+		WgTab * pTab = m_tabs.Last();
 		while( pTab )
 		{
 			if(pTab->m_bVisible)
@@ -927,7 +927,7 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 					break;
 			}
 
-			pTab = pTab->getPrev();
+			pTab = pTab->Prev();
 		}
 	}
 

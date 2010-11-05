@@ -1069,11 +1069,11 @@ Uint32 WgTextTool::getTextFormattedUTF8( const WgChar * pSrc, char * pDst, Uint3
 	while( !pSrc->IsEndOfText() )
 	{
 
-		if( hActiveProp != pSrc->GetPropHandle() )
+		if( hActiveProp != pSrc->PropHandle() )
 		{
 			// Handle changed properties
 
-			n = enc.SetProp( pSrc->GetProperties() );
+			n = enc.SetProp( pSrc->Properties() );
 
 			if( n > maxBytes - ofs )
 				break;								// Can't fit this encoding in, just quit.
@@ -1081,13 +1081,13 @@ Uint32 WgTextTool::getTextFormattedUTF8( const WgChar * pSrc, char * pDst, Uint3
 			strcpy( pDst+ofs, enc.GetCodes() );
 			ofs += n;
 
-			hActiveProp = pSrc->GetPropHandle();
+			hActiveProp = pSrc->PropHandle();
 		}
 
 
 		// Copy the glyph.
 
-		Uint16 glyph = pSrc->GetGlyph();
+		Uint16 glyph = pSrc->Glyph();
 
 		if( glyph < 128 )
 		{
@@ -1147,11 +1147,11 @@ Uint32 WgTextTool::getTextFormatted( const WgChar * pSrc, Uint16 * pDst, Uint32 
 
 	while( !pSrc->IsEndOfText() )
 	{
-		if( hActiveProp != pSrc->GetPropHandle() )
+		if( hActiveProp != pSrc->PropHandle() )
 		{
 			// Handle changed properties
 
-			n = enc.SetProp( pSrc->GetProperties() );
+			n = enc.SetProp( pSrc->Properties() );
 
 			if( n > maxBytes - ofs )
 				break;								// Can't fit this encoding in, just quit.
@@ -1160,7 +1160,7 @@ Uint32 WgTextTool::getTextFormatted( const WgChar * pSrc, Uint16 * pDst, Uint32 
 			for( unsigned int i = 0 ; i < n ; i++ )
 				pDst[ofs++] = * p++;
 
-			hActiveProp = pSrc->GetPropHandle();
+			hActiveProp = pSrc->PropHandle();
 		}
 
 		// Copy the glyph.
@@ -1168,7 +1168,7 @@ Uint32 WgTextTool::getTextFormatted( const WgChar * pSrc, Uint16 * pDst, Uint32 
 		if( ofs >= maxBytes )
 			break;					// Can't fit character, so we just terminate.
 
-		pDst[ofs++] = pSrc->GetGlyph();
+		pDst[ofs++] = pSrc->Glyph();
 
 		pSrc++;
 	}
@@ -1209,15 +1209,15 @@ Uint32 WgTextTool::getTextSizeFormattedUTF8( const WgChar * pSrc, Uint32 maxChar
 	{
 		// Handle any changes to properties
 
-		if( hActiveProp != pSrc->GetPropHandle() )
+		if( hActiveProp != pSrc->PropHandle() )
 		{
-			ofs += enc.SetProp( pSrc->GetProperties() );
-			hActiveProp = pSrc->GetPropHandle();
+			ofs += enc.SetProp( pSrc->Properties() );
+			hActiveProp = pSrc->PropHandle();
 		}
 
 		// Add the glyph
 
-		Uint16 glyph = pSrc->GetGlyph();
+		Uint16 glyph = pSrc->Glyph();
 
 		if( glyph < 128 )
 			ofs++;
@@ -1257,10 +1257,10 @@ Uint32 WgTextTool::getTextSizeFormatted( const WgChar * pSrc, Uint32 maxChars, c
 	{
 		// Handle any changes to properties
 
-		if( hActiveProp != pSrc->GetPropHandle() )
+		if( hActiveProp != pSrc->PropHandle() )
 		{
-			ofs += enc.SetProp( pSrc->GetProperties() );
-			hActiveProp = pSrc->GetPropHandle();
+			ofs += enc.SetProp( pSrc->Properties() );
+			hActiveProp = pSrc->PropHandle();
 		}
 
 		// Add the glyph
@@ -1292,7 +1292,7 @@ Uint32 WgTextTool::CopyChars( const WgChar * pSrc, WgChar * pDst, Uint32 maxChar
 	for( ; n < maxChars ; n++ )
 	{
 
-		Uint16 h = pSrc[n].GetPropHandle();
+		Uint16 h = pSrc[n].PropHandle();
 		if( h == hProp )
 			nProp++;
 		else
@@ -1336,7 +1336,7 @@ void WgTextTool::DerefProps( WgChar * p, Uint32 n )
 	for( int i = 0 ; i < (int) n ; i++ )
 	{
 
-		Uint16 h = p[i].GetPropHandle();
+		Uint16 h = p[i].PropHandle();
 		if( h == hProp )
 			nProp++;
 		else
@@ -1364,7 +1364,7 @@ void WgTextTool::RefProps( WgChar * p, Uint32 n )
 	for( unsigned int i = 0 ; i < n ; i++ )
 	{
 
-		Uint16 h = p[i].GetPropHandle();
+		Uint16 h = p[i].PropHandle();
 		if( h == hProp )
 			nProp++;
 		else
@@ -1916,7 +1916,7 @@ Uint32 WgTextTool::getTextUTF8( const WgChar * pSrc, char * pDest, Uint32 maxByt
 	Uint32 nChars = 0;
 	Uint16 glyph;
 
-	while( (glyph = pSrc->GetGlyph()) != 0 )
+	while( (glyph = pSrc->Glyph()) != 0 )
 	{
 		if( glyph < 128 )
 		{
@@ -2021,7 +2021,7 @@ Uint32 WgTextTool::getTextSizeUTF8( const WgChar* pSrc, Uint32 len )
 {
 	Uint32 size = 0;
 	Uint16 glyph = 0;
-	for( Uint32 i = 0 ; i < len && (0 != ( glyph = pSrc->GetGlyph()) ) ; i++ )
+	for( Uint32 i = 0 ; i < len && (0 != ( glyph = pSrc->Glyph()) ) ; i++ )
 	{
 		size++;
 		if( glyph > 127 )
@@ -2143,17 +2143,17 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pProp, co
 Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString )
 {
 	WgPen pen;
-	Uint16 hProp = pString->GetPropHandle();
+	Uint16 hProp = pString->PropHandle();
 
 	pen.SetTextNode( pNode );
 	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 	while( !pString->IsEndOfLine() )
 	{
-		if( pString->GetPropHandle() != hProp )
+		if( pString->PropHandle() != hProp )
 			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
-		pen.SetChar( pString->GetGlyph() );
+		pen.SetChar( pString->Glyph() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 		pString++;
@@ -2161,7 +2161,7 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp,
 
 	// We include the terminator in case it is set to be visible.
 
-	pen.SetChar( pString->GetGlyph() );
+	pen.SetChar( pString->Glyph() );
 	pen.ApplyKerning();
 	pen.AdvancePos();
 
@@ -2173,7 +2173,7 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp,
 Uint32 WgTextTool::lineWidthPart( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol )
 {
 	WgPen pen;
-	Uint16 hProp = pString->GetPropHandle();
+	Uint16 hProp = pString->PropHandle();
 
 	pen.SetTextNode( pNode );
 	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
@@ -2183,10 +2183,10 @@ Uint32 WgTextTool::lineWidthPart( WgTextNode * pNode, const WgTextPropPtr& pDefP
 		if( pString->IsEndOfLine() )
 			break;
 
-		if( pString->GetPropHandle() != hProp )
+		if( pString->PropHandle() != hProp )
 			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
-		pen.SetChar( pString->GetGlyph() );
+		pen.SetChar( pString->Glyph() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 		pString++;
@@ -2313,7 +2313,7 @@ void  WgTextTool::forwardColumns( const WgChar *& pPos, Uint32 nColumns )
 {
 	Uint32 len = 0;
 
-	while( pPos->GetGlyph() != 0 && len < nColumns  )
+	while( pPos->Glyph() != 0 && len < nColumns  )
 	{
 		len++;
 		pPos++;
@@ -2343,13 +2343,13 @@ int  WgTextTool::forwardPixels( WgTextNode * pNode, const WgTextPropPtr& pDefPro
 
 	while( !pPos->IsEndOfLine() )
 	{
-		if( hProp != pPos->GetPropHandle() )
+		if( hProp != pPos->PropHandle() )
 		{
-			hProp = pPos->GetPropHandle();
+			hProp = pPos->PropHandle();
 			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 		}
 
-		pen.SetChar( pPos->GetGlyph() );
+		pen.SetChar( pPos->Glyph() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 
@@ -2360,7 +2360,7 @@ int  WgTextTool::forwardPixels( WgTextNode * pNode, const WgTextPropPtr& pDefPro
 		pPos++;
 	}
 
-	pen.SetChar( pPos->GetGlyph() );	// End the line to get correct length. Pointer at EOL.
+	pen.SetChar( pPos->Glyph() );	// End the line to get correct length. Pointer at EOL.
 	return pen.GetPosX();
 }
 
@@ -2397,9 +2397,9 @@ Uint32	WgTextTool::ofsX2column( WgTextNode * pNode, const WgTextPropPtr& pDefPro
 
 	while( !pPos->IsEndOfLine() )
 	{
-		if( pPos->GetPropHandle()!= hProp )
+		if( pPos->PropHandle()!= hProp )
 		{
-			hProp = pPos->GetPropHandle();
+			hProp = pPos->PropHandle();
 			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 		}
 
@@ -2407,7 +2407,7 @@ Uint32	WgTextTool::ofsX2column( WgTextNode * pNode, const WgTextPropPtr& pDefPro
 			pen.AdvancePosCursor( * pCursor );
 		cursColumn--;
 
-		pen.SetChar( pPos->GetGlyph() );
+		pen.SetChar( pPos->Glyph() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 		endX = pen.GetPosX();
@@ -2720,8 +2720,8 @@ void WgTextTool::SetChars( const WgChar& ch, WgChar * pChar, Uint32 nb )
 	for( unsigned int i = 0 ; i < nb ; i++ )
 		pChar[i].all = ch.all;
 
-	if( ch.GetPropHandle() != 0 )
-		WgTextPropManager::IncRef( ch.GetPropHandle(), nb );
+	if( ch.PropHandle() != 0 )
+		WgTextPropManager::IncRef( ch.PropHandle(), nb );
 }
 
 
@@ -3071,7 +3071,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 
 					}
 
-					pRes = pRes->getNext();
+					pRes = pRes->Next();
 				}
 			}
 		}

@@ -123,8 +123,8 @@ public:
 	void Unselect( bool bUnselectItems = true );
 	inline bool IsSelected() const { if( m_mode == WG_MODE_SELECTED ) return true; return false; }
 
-	inline	WgTableRow* GetNext() const	{ return (WgTableRow*)WgItemRow::getNext(); };
-	inline	WgTableRow* GetPrev() const	{ return (WgTableRow*)WgItemRow::getPrev(); };
+	inline	WgTableRow* GetNext() const	{ return (WgTableRow*)WgItemRow::Next(); };
+	inline	WgTableRow* GetPrev() const	{ return (WgTableRow*)WgItemRow::Prev(); };
 
 	inline	void	SetVisible(bool bVisible) { WgItemRow::SetVisible(bVisible); }
 	inline	void	Show() { WgItemRow::SetVisible(true); }

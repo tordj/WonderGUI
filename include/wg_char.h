@@ -111,7 +111,7 @@ public:
 							///
 							/// @return The glyph part of the character.
 
-	inline Uint16			GetGlyph() const { return glyph; }
+	inline Uint16			Glyph() const { return glyph; }
 
 							/// Sets the properties of the character.
 
@@ -125,7 +125,7 @@ public:
 							///
 							/// @return The properties of the character as a handle.
 
-	inline Uint16			GetPropHandle() const { return (Uint16) properties; }
+	inline Uint16			PropHandle() const { return (Uint16) properties; }
 
 							/// Gets read-access to the properties of the character.
 							///
@@ -134,7 +134,7 @@ public:
 							/// @return Read-only pointer to a WgTextProp specifying the properties of the character. A valid pointer
 							/// is always returned, if the character has no properties set a pointer to an empty default WgTextProp is returned.
 
-	inline WgTextPropPtr	GetProperties() const { return WgTextPropPtr(properties); }
+	inline WgTextPropPtr	Properties() const { return WgTextPropPtr(properties); }
 
 							/// Checks if the character is set to be underlined in the given mode.
 
@@ -164,22 +164,22 @@ public:
 							/// @return If the character has a color specified for the given mode that will be returned,
 							///			otherwise an unspecified value will be returned.
 
-	inline const WgColor	GetColor(const WgTextPropPtr& pDefProp, WgMode mode) const { return WgTextTool::GetCombColor(pDefProp.GetHandle(), properties, mode); }
+	inline const WgColor	Color(const WgTextPropPtr& pDefProp, WgMode mode) const { return WgTextTool::GetCombColor(pDefProp.GetHandle(), properties, mode); }
 
 							/// Returns the text-link (weblink) this character links to, if any.
 							///
 							/// @return Pointer to the WgTextLink this character is part of or NULL if none.
 
-	inline WgTextLinkPtr	GetLink(const WgTextPropPtr& pDefProp) const { return WgTextTool::GetCombLink(pDefProp.GetHandle(), properties); }
+	inline WgTextLinkPtr	Link(const WgTextPropPtr& pDefProp) const { return WgTextTool::GetCombLink(pDefProp.GetHandle(), properties); }
 
 							/// Returns the characters specified font (if any).
 							///
 							/// @return Pointer to the font specified for this character or NULL if none.
 
-	inline WgFont *		GetFont(const WgTextPropPtr& pDefProp) const { return WgTextTool::GetCombFont(pDefProp.GetHandle(), properties); }
+	inline WgFont *			Font(const WgTextPropPtr& pDefProp) const { return WgTextTool::GetCombFont(pDefProp.GetHandle(), properties); }
 
 
-	inline WgGlyphSet *		GetGlyphSet( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombGlyphSet(pDefProp.GetHandle(), properties, mode); }
+	inline WgGlyphSet *		GlyphSet( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombGlyphSet(pDefProp.GetHandle(), properties, mode); }
 
 							/// Returns the characters font style specification for the given mode.
 							///
@@ -191,7 +191,7 @@ public:
 							///
 							/// @return Font style specified for the given mode.
 
-	inline int				GetSize( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombSize(pDefProp.GetHandle(), properties, mode); }
+	inline int				Size( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombSize(pDefProp.GetHandle(), properties, mode); }
 
 
 							/// Returns the characters font size for the given mode.
@@ -204,7 +204,7 @@ public:
 							///
 							/// @return Characters font size for the given mode.
 
-	inline WgFontStyle		GetStyle( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombStyle(pDefProp.GetHandle(), properties, mode); }
+	inline WgFontStyle		Style( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombStyle(pDefProp.GetHandle(), properties, mode); }
 
 							/// Checks if the character terminates the current line.
 							/// @return True if the glyph portion of the character contains End-Of-Line (\\n) or End-of-Text (null).
@@ -214,7 +214,7 @@ public:
 							/// Checks if the character terminates the text.
 							/// @return True if the glyph portion of the character is End-of-Text (null).
 
-	inline bool IsEndOfText() const { if( glyph == 0 ) return true; return false; }
+	inline bool				IsEndOfText() const { if( glyph == 0 ) return true; return false; }
 
 							/// Checks if the character is a whitespace.
 							/// @return True if the glyph portion of the characer contains a space or WG_NO_BREAK_SPACE.

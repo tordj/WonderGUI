@@ -93,24 +93,24 @@ bool WgGfxDevice::EndRender()
 
 void WgGfxDevice::Blit( const WgSurface* pSrc )
 {
-	Blit( pSrc, WgRect( 0, 0, pSrc->GetWidth(), pSrc->GetHeight() ), 0, 0 );
+	Blit( pSrc, WgRect( 0, 0, pSrc->Width(), pSrc->Height() ), 0, 0 );
 }
 
 void WgGfxDevice::Blit( const WgSurface* pSrc, Sint32 dx, Sint32 dy )
 {
-	Blit( pSrc, WgRect( 0, 0, pSrc->GetWidth(), pSrc->GetHeight() ), dx, dy );
+	Blit( pSrc, WgRect( 0, 0, pSrc->Width(), pSrc->Height() ), dx, dy );
 }
 
 //____ StretchBlit() ___________________________________________________________
 
 void WgGfxDevice::StretchBlit( const WgSurface * pSrc, bool bTriLinear, float mipmapBias )
 {
-	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->GetWidth(), (float) pSrc->GetHeight(), 0, 0, (float) m_canvasWidth, (float) m_canvasHeight, bTriLinear, mipmapBias );
+	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->Width(), (float) pSrc->Height(), 0, 0, (float) m_canvasWidth, (float) m_canvasHeight, bTriLinear, mipmapBias );
 }
 
 void WgGfxDevice::StretchBlit( const WgSurface * pSrc, const WgRect& dest, bool bTriLinear, float mipmapBias )
 {
-	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->GetWidth(), (float) pSrc->GetHeight(), (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, bTriLinear, mipmapBias );
+	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->Width(), (float) pSrc->Height(), (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, bTriLinear, mipmapBias );
 }
 
 void WgGfxDevice::StretchBlit( const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipmapBias )
@@ -122,12 +122,12 @@ void WgGfxDevice::StretchBlit( const WgSurface * pSrc, const WgRect& src, const 
 
 void WgGfxDevice::TileBlit( const WgSurface* _pSrc )
 {
-	TileBlit( _pSrc, WgRect( 0, 0, _pSrc->GetWidth(), _pSrc->GetHeight() ), WgRect(0,0,m_canvasWidth,m_canvasHeight) );
+	TileBlit( _pSrc, WgRect( 0, 0, _pSrc->Width(), _pSrc->Height() ), WgRect(0,0,m_canvasWidth,m_canvasHeight) );
 }
 
 void WgGfxDevice::TileBlit( const WgSurface* _pSrc, const WgRect& _dest )
 {
-	TileBlit( _pSrc, WgRect( 0, 0, _pSrc->GetWidth(), _pSrc->GetHeight() ), _dest );
+	TileBlit( _pSrc, WgRect( 0, 0, _pSrc->Width(), _pSrc->Height() ), _dest );
 }
 
 void WgGfxDevice::TileBlit( const WgSurface* _pSrc, const WgRect& _src, const WgRect& _dest )
@@ -187,12 +187,12 @@ void WgGfxDevice::ClipFill( const WgRect& _clip, const WgRect& _rect, const WgCo
 
 void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurface* pSrc )
 {
-	ClipBlit( clip, pSrc, WgRect(0,0,pSrc->GetWidth(),pSrc->GetHeight()), 0, 0 );
+	ClipBlit( clip, pSrc, WgRect(0,0,pSrc->Width(),pSrc->Height()), 0, 0 );
 }
 
 void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurface* pSrc, Sint32 dx, Sint32 dy  )
 {
-	ClipBlit( clip, pSrc, WgRect(0,0,pSrc->GetWidth(),pSrc->GetHeight()), dx, dy );
+	ClipBlit( clip, pSrc, WgRect(0,0,pSrc->Width(),pSrc->Height()), dx, dy );
 }
 
 void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurface* pSrc, const WgRect& srcRect, Sint32 dx, Sint32 dy  )
@@ -240,12 +240,12 @@ void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurface* pSrc, const WgR
 
 void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, bool bTriLinear, float mipBias )
 {
-	ClipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->GetWidth(), pSrc->GetHeight()), WgRect( 0,0,m_canvasWidth,m_canvasHeight), bTriLinear, mipBias );
+	ClipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->Width(), pSrc->Height()), WgRect( 0,0,m_canvasWidth,m_canvasHeight), bTriLinear, mipBias );
 }
 
 void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& dest, bool bTriLinear, float mipBias )
 {
-	ClipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->GetWidth(), pSrc->GetHeight()), dest, bTriLinear, mipBias );
+	ClipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->Width(), pSrc->Height()), dest, bTriLinear, mipBias );
 }
 
 void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipBias )
@@ -290,14 +290,14 @@ void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, f
 
 void WgGfxDevice::ClipTileBlit( const WgRect& clip, const WgSurface* pSrc )
 {
-	ClipTileBlit( clip, pSrc, WgRect( 0,0,pSrc->GetWidth(),pSrc->GetHeight() ),
+	ClipTileBlit( clip, pSrc, WgRect( 0,0,pSrc->Width(),pSrc->Height() ),
 				  WgRect(0,0,m_canvasWidth,m_canvasHeight) );
 }
 
 void WgGfxDevice::ClipTileBlit( const WgRect& clip, const WgSurface* pSrc,
 								  const WgRect& dest )
 {
-	ClipTileBlit( clip, pSrc, WgRect(0,0,pSrc->GetWidth(),pSrc->GetHeight()), dest );
+	ClipTileBlit( clip, pSrc, WgRect(0,0,pSrc->Width(),pSrc->Height()), dest );
 }
 
 
@@ -990,9 +990,9 @@ int WgGfxDevice::CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, cons
  	{
 		// Act on possible change of character attributes.
 
-		if( pLine[i].GetPropHandle() != hProp )
+		if( pLine[i].PropHandle() != hProp )
 		{
-			hProp = pLine[i].GetPropHandle();
+			hProp = pLine[i].PropHandle();
 
 			int success = pPen->SetTextProp( pDefProp.GetHandle(), hProp, mode );
 			if( !success )
@@ -1000,7 +1000,7 @@ int WgGfxDevice::CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, cons
 		}
 
 		// Calculate position and blit the glyph.
-		Uint16 ch = pLine[i].GetGlyph();
+		Uint16 ch = pLine[i].Glyph();
 
 		if( pPen->SetChar( ch ) )
 			pPen->ApplyKerning();
@@ -1012,7 +1012,7 @@ int WgGfxDevice::CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, cons
 			// If this was a WG_HYPHEN_BREAK_PERMITTED that was not rendered we need
 			// to render a normal hyphen.
 
-			if( pLine[i].GetGlyph() == WG_HYPHEN_BREAK_PERMITTED && !pPen->SetChar( ch ) && pPen->SetChar('-') )
+			if( pLine[i].Glyph() == WG_HYPHEN_BREAK_PERMITTED && !pPen->SetChar( ch ) && pPen->SetChar('-') )
 				pPen->ApplyKerning();
 
 			break;
@@ -1044,9 +1044,9 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode
  	{
 		// Act on possible change of character attributes.
 
-		if( _pLine[i].GetPropHandle() != hProp )
+		if( _pLine[i].PropHandle() != hProp )
 		{
-			hProp = _pLine[i].GetPropHandle();
+			hProp = _pLine[i].PropHandle();
 
 			int success = pPen->SetTextProp( pDefProp.GetHandle(), hProp, mode );
 			if( !success )
@@ -1063,14 +1063,14 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode
 			// Check if this is start of underlined text with this font and in that case draw the underline.
 
 			if( _pLine[i].IsUnderlined(pDefProp, mode) &&
-				(i==0 || !(_pLine[i-1].IsUnderlined(pDefProp, mode)) || _pLine[i-1].GetFont(pDefProp) != _pLine[i].GetFont(pDefProp)) )
+				(i==0 || !(_pLine[i-1].IsUnderlined(pDefProp, mode)) || _pLine[i-1].Font(pDefProp) != _pLine[i].Font(pDefProp)) )
 				DrawUnderline( WgRect(0,0,65535,65535), pDefProp, mode, pPen->GetPosX(), pPen->GetPosY(), _pLine+i, maxChars-i );
 
 		}
 
 		// Calculate position and blit the glyph.
 
-		Uint16 ch = _pLine[i].GetGlyph();
+		Uint16 ch = _pLine[i].Glyph();
 
 		if( pPen->SetChar( ch ) )
 		{
@@ -1096,7 +1096,7 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode
 		// If character after line-end was a WG_HYPHEN_BREAK_PERMITTED we need
 		// to render a normal hyphen.
 
-		if( _pLine[i].GetGlyph() == WG_HYPHEN_BREAK_PERMITTED )
+		if( _pLine[i].Glyph() == WG_HYPHEN_BREAK_PERMITTED )
 		{
 			if( pPen->SetChar( '-' ) )
 			{
@@ -1126,13 +1126,13 @@ void WgGfxDevice::DrawUnderline( const WgRect& clip, const WgTextPropPtr& pDefPr
 
 	for( int i = 0 ; i < maxChars && !pLine[i].IsEndOfLine() ; i++ )
 	{
-		if( pLine[i].GetPropHandle() != hProp )
+		if( pLine[i].PropHandle() != hProp )
 		{
 			if( pLine[i].IsUnderlined(pDefProp, mode) )
 			{
 				const WgFont * pFont = pen.GetFont();			// Save font for comparison.
 
-				hProp = pLine[i].GetPropHandle();
+				hProp = pLine[i].PropHandle();
 				pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
 
 				// We need to break if font has changed.
@@ -1145,7 +1145,7 @@ void WgGfxDevice::DrawUnderline( const WgRect& clip, const WgTextPropPtr& pDefPr
 				break;
 		}
 
-		pen.SetChar( pLine[i].GetGlyph() );
+		pen.SetChar( pLine[i].Glyph() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 	}

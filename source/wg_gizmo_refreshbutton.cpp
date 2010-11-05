@@ -130,7 +130,7 @@ void WgGizmoRefreshButton::StartRefresh()
 		m_bStopping = false;
 		m_refreshProgress = 0.f;
 		m_animTimer = 0;
-		m_pRefreshAnim->setPlayMode( WgAnim::FORWARD_LOOPING );		//UGLY! Should change once the animation system has been updated.
+		m_pRefreshAnim->SetPlayMode( WG_FORWARD_LOOPING );		//UGLY! Should change once the animation system has been updated.
 
 		RequestRender();
 	}
@@ -139,11 +139,11 @@ void WgGizmoRefreshButton::StartRefresh()
 //_____________________________________________________________________________
 void WgGizmoRefreshButton::StopRefresh()
 {
-	if( m_pRefreshAnim && m_pRefreshAnim->durationScaled())
+	if( m_pRefreshAnim && m_pRefreshAnim->DurationScaled())
 	{
 		m_bStopping = true;
-		m_animTimer = m_animTimer % m_pRefreshAnim->durationScaled();	// So it doesn't stop immmediately.
-		m_pRefreshAnim->setPlayMode( WgAnim::FORWARD_ONCE );	//UGLY! Should change once the animation system has been updated.
+		m_animTimer = m_animTimer % m_pRefreshAnim->DurationScaled();	// So it doesn't stop immmediately.
+		m_pRefreshAnim->SetPlayMode( WG_FORWARD_ONCE );	//UGLY! Should change once the animation system has been updated.
 	}
 	else
 		StopRefreshNow();
@@ -167,7 +167,7 @@ void WgGizmoRefreshButton::SetRefreshProgress( float fraction )
 		if( m_pRefreshAnim )
 		{
 			WgGfxFrame * pOldFrame = m_pRefreshAnim->getFrame( m_animTimer );
-			m_animTimer = (Uint32) (fraction * m_pRefreshAnim->duration());
+			m_animTimer = (Uint32) (fraction * m_pRefreshAnim->Duration());
 			WgGfxFrame * pNewFrame = m_pRefreshAnim->getFrame( m_animTimer );
 
 			if( pOldFrame != pNewFrame )

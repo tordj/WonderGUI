@@ -92,7 +92,7 @@ WgVectorGlyphs::~WgVectorGlyphs()
 							pSlot->size = 0;
 							pSlot->character = 0;
 
-							pSlot->moveLast();
+							pSlot->MoveLast();
 						}
 					}
 					delete [] m_cachedGlyphsIndex[size][page];
@@ -540,18 +540,18 @@ void WgVectorGlyphs::ClearCache()
 {
 	for( int i = 0 ; i < GLYPH_SLOT_SIZES ; i++ )
 	{
-		CacheSlot * p = s_cacheSlots[i].getFirst();
+		CacheSlot * p = s_cacheSlots[i].First();
 		while( p )
 		{
 			if( p->pOwner )
 				p->pOwner->SlotLost( p );
-			p = p->getNext();
+			p = p->Next();
 		}
 
-		s_cacheSlots[i].clear();
+		s_cacheSlots[i].Clear();
 	}
 
-	s_cacheSurfaces.clear();
+	s_cacheSurfaces.Clear();
 }
 
 
@@ -572,11 +572,11 @@ WgVectorGlyphs::CacheSlot * WgVectorGlyphs::GetCacheSlot( int width, int height 
 
 	// Make sure we have
 
-	CacheSlot * pSlot = s_cacheSlots[index].getLast();
+	CacheSlot * pSlot = s_cacheSlots[index].Last();
 	if( pSlot == 0 || pSlot->character != 0 )
 	{
 		AddCacheSlots( &s_cacheSlots[index], WgSize(size,size), 16 );
-		pSlot = s_cacheSlots[index].getLast();
+		pSlot = s_cacheSlots[index].Last();
 	}
 
 	return pSlot;
@@ -600,7 +600,7 @@ int WgVectorGlyphs::AddCacheSlots( WgChain<CacheSlot> * pChain, const WgSize& sl
 	pSurf->Fill( WgColor( 255,255,255,0 ) );
 
 	CacheSurf * pCache = new CacheSurf( pSurf );
-	s_cacheSurfaces.push_back( pCache );
+	s_cacheSurfaces.PushBack( pCache );
 
 	// Create the slots
 
@@ -612,7 +612,7 @@ int WgVectorGlyphs::AddCacheSlots( WgChain<CacheSlot> * pChain, const WgSize& sl
 		for( slot.x = 0 ; slot.x + slotSize.w < texSize.w ; slot.x += slotSize.w + 1 )
 		{
 			CacheSlot * pSlot = new CacheSlot( pCache, slot );
-			pChain->push_back(pSlot);
+			pChain->PushBack(pSlot);
 			nSlots++;
 		}
 	}

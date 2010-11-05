@@ -29,7 +29,7 @@ public:
 	WgString( const WgCharSeq& seq );
 	~WgString();
 
-	const WgChar*	GetChars() const;
+	const WgChar*	Chars() const;
 	Uint32			Length() const;
 	bool			IsEmpty() const;
 

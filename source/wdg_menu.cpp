@@ -204,12 +204,12 @@ bool Wdg_Menu::SetTextProperties( const WgTextPropPtr& pEntryProp, const WgTextP
 
 	// We need to modify MinWidth now that fonts might have changed
 
-	WgMenuItem * pItem = m_items.getFirst();
+	WgMenuItem * pItem = m_items.First();
 	while( pItem )
 	{
 		if( pItem->GetType() != SEPARATOR )
 			CalcEntryMinWidth( (WgMenuEntry*) pItem );
-		pItem = pItem->getNext();
+		pItem = pItem->Next();
 	}
 
 	// Refresh everything affected...
@@ -324,7 +324,7 @@ int Wdg_Menu::AddItem( WgMenuItem * pItem )
 
 	// Add the item.
 
-	m_items.push_back(pItem);
+	m_items.PushBack(pItem);
 	m_nItems++;
 
 	// Refresh what needs to be refreshed...
@@ -350,13 +350,13 @@ int Wdg_Menu::InsertItem( WgMenuItem * pEntry, int pos )
 
 	// Add the item.
 
-	WgMenuItem * pPos = m_items.get(pos);
+	WgMenuItem * pPos = m_items.Get(pos);
 	if( pPos )
-		pEntry->moveBefore(pPos);
+		pEntry->MoveBefore(pPos);
 	else
 	{
 		pos = m_nItems;
-		m_items.push_back(pEntry);
+		m_items.PushBack(pEntry);
 	}
 
 	m_nItems++;
@@ -374,10 +374,10 @@ int Wdg_Menu::InsertItem( WgMenuItem * pEntry, int pos )
 
 bool Wdg_Menu::RemoveItem( WgMenuItem * pEntry )
 {
-	if( !m_items.isMember(pEntry) )
+	if( !m_items.IsMemberOf(pEntry) )
 		return false;
 
-	pEntry->disconnect();
+	pEntry->Disconnect();
 	m_nItems--;
 	AdjustSize();
 	RequestRender();
@@ -397,12 +397,12 @@ void Wdg_Menu::RemoveAllItems()
 {
 	Close();
 
-	WgMenuItem* pItem = m_items.getFirst();
+	WgMenuItem* pItem = m_items.First();
 	while( pItem )
 	{
 		pItem->SetMyMenu(0);
-		pItem->disconnect();
-		pItem = m_items.getFirst();
+		pItem->Disconnect();
+		pItem = m_items.First();
 	}
 
 	m_nItems = 0;
@@ -413,7 +413,7 @@ void Wdg_Menu::RemoveAllItems()
 
 bool Wdg_Menu::DeleteItem( WgMenuItem * pEntry )
 {
-	if( !m_items.isMember(pEntry) )
+	if( !m_items.IsMemberOf(pEntry) )
 		return false;
 
 	delete pEntry;
@@ -433,7 +433,7 @@ bool Wdg_Menu::DeleteItem( int pos )
 void Wdg_Menu::DeleteAllItems()
 {
 	Close();
-	m_items.clear();
+	m_items.Clear();
 	m_nItems = 0;
 	AdjustSize();
 }
@@ -442,8 +442,8 @@ void Wdg_Menu::DeleteAllItems()
 
 int Wdg_Menu::GetItemPos( WgMenuItem* pEntry )
 {
-	if( m_items.isMember( pEntry ) )
-		return pEntry->getIndex();
+	if( m_items.IsMemberOf( pEntry ) )
+		return pEntry->Index();
 	else
 		return -1;
 }
@@ -452,15 +452,15 @@ int Wdg_Menu::GetItemPos( WgMenuItem* pEntry )
 
 WgMenuItem* Wdg_Menu::GetItem( int pos )
 {
-	return m_items.get(pos);
+	return m_items.Get(pos);
 }
 
 //____ FindItem() _____________________________________________________
 
 WgMenuItem* Wdg_Menu::FindItem(int id)
 {
-	WgMenuItem* pItem = m_items.getFirst();
-	for(; pItem; pItem = pItem->getNext())
+	WgMenuItem* pItem = m_items.First();
+	for(; pItem; pItem = pItem->Next())
 	{
 		if(pItem->GetId() == id)
 			return pItem;
@@ -476,7 +476,7 @@ void Wdg_Menu::MoveOutsideModal( int x, int y )
 
 	if( pItem )
 	{
-		Uint32		itemNb = pItem->getIndex()+1;
+		Uint32		itemNb = pItem->Index()+1;
 		if( itemNb != m_markedItem )
 			CloseSubMenu(m_markedItem);
 	}
@@ -497,11 +497,11 @@ void Wdg_Menu::CalcEntryMinWidth( WgMenuEntry * pEntry )
 	wNormal += WgTextTool::lineWidth( 0, m_pEntryProp, "  " );
 	wMarked += WgTextTool::lineWidth( 0, m_pEntryProp, "  " );
 
-	wNormal += WgTextTool::lineWidth( 0, m_pEntryProp, WG_MODE_NORMAL, pEntry->GetText().GetChars() );
-	wMarked += WgTextTool::lineWidth( 0, m_pEntryProp, WG_MODE_MARKED, pEntry->GetText().GetChars() );
+	wNormal += WgTextTool::lineWidth( 0, m_pEntryProp, WG_MODE_NORMAL, pEntry->GetText().Chars() );
+	wMarked += WgTextTool::lineWidth( 0, m_pEntryProp, WG_MODE_MARKED, pEntry->GetText().Chars() );
 
-	wNormal += WgTextTool::lineWidth( 0, m_pKeyAccelProp, WG_MODE_NORMAL, pEntry->GetAccelText().GetChars() );
-	wMarked += WgTextTool::lineWidth( 0, m_pKeyAccelProp, WG_MODE_MARKED, pEntry->GetAccelText().GetChars() );
+	wNormal += WgTextTool::lineWidth( 0, m_pKeyAccelProp, WG_MODE_NORMAL, pEntry->GetAccelText().Chars() );
+	wMarked += WgTextTool::lineWidth( 0, m_pKeyAccelProp, WG_MODE_MARKED, pEntry->GetAccelText().Chars() );
 
 
 	if( wNormal > wMarked )
@@ -524,7 +524,7 @@ WgBorders Wdg_Menu::GetContentBorders() const
 
 void Wdg_Menu::ScrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop )
 {
-	WgMenuItem * p = m_items.getFirst();
+	WgMenuItem * p = m_items.First();
 	unsigned int ofs = 0;
 
 	while( p != pItem )
@@ -534,7 +534,7 @@ void Wdg_Menu::ScrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop )
 		else
 			ofs += m_entryHeight;
 
-		p = p->getNext();
+		p = p->Next();
 	}
 
 	if( bForceAtTop || ofs < m_contentOfs )
@@ -547,7 +547,7 @@ void Wdg_Menu::ScrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop )
 
 void Wdg_Menu::MarkFirstFilteredEntry()
 {
-	WgMenuItem * pItem = m_items.getFirst();
+	WgMenuItem * pItem = m_items.First();
 
 	while( pItem )
 	{
@@ -557,10 +557,10 @@ void Wdg_Menu::MarkFirstFilteredEntry()
 		
 			if( str.Length() > (unsigned) m_nSelectorKeys )
 			{
-				const WgChar * pChars = str.GetChars();
+				const WgChar * pChars = str.Chars();
 
 				int i = 0;
-				while( i < m_nSelectorKeys && towlower(pChars[i].GetGlyph()) == m_selectorKeys[i] )
+				while( i < m_nSelectorKeys && towlower(pChars[i].Glyph()) == m_selectorKeys[i] )
 					i++;
 
 				if( i == m_nSelectorKeys )
@@ -568,13 +568,13 @@ void Wdg_Menu::MarkFirstFilteredEntry()
 			}
 		}
 
-		pItem = pItem->getNext();
+		pItem = pItem->Next();
 	}
 
 
 	if( pItem )
 	{
-		m_markedItem = pItem->getIndex()+1;
+		m_markedItem = pItem->Index()+1;
 		RequestRender();
 		ScrollItemIntoView( pItem );
 	}
@@ -602,7 +602,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 
 	WgBorders	contentBorders = GetContentBorders();
 
-	WgMenuItem * pItem = m_items.getFirst();
+	WgMenuItem * pItem = m_items.First();
 
 	Uint32	yPos = window.y + contentBorders.top - m_contentOfs;
 	Uint32	xPosText = window.x + contentBorders.left + m_iconFieldWidth;
@@ -661,8 +661,8 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 
 				// Print the text (if any)
 
-				const WgChar * pText = ((WgMenuEntry*)pItem)->GetText().GetChars();
-				if( pText->GetGlyph() != 0 )
+				const WgChar * pText = ((WgMenuEntry*)pItem)->GetText().Chars();
+				if( pText->Glyph() != 0 )
 				{
 					int y = yPos + (m_entryHeight - entryPen.GetLineHeight())/2 + entryPen.GetBaseline();
 					entryPen.SetPos( WgCord( xPosText, y ) );
@@ -671,8 +671,8 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 
 				// Print the accel text (if any)
 
-				const WgChar * pAccelText = ((WgMenuEntry*)pItem)->GetAccelText().GetChars();
-				if( pAccelText->GetGlyph() != 0 )
+				const WgChar * pAccelText = ((WgMenuEntry*)pItem)->GetAccelText().Chars();
+				if( pAccelText->Glyph() != 0 )
 				{
 					int y = yPos + (m_entryHeight - accelPen.GetLineHeight())/2 + accelPen.GetBaseline();
 					int width = WgTextTool::lineWidth( 0, m_pKeyAccelProp, mode, pAccelText );
@@ -772,7 +772,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 			}
 		}
 
-		pItem = pItem->getNext();
+		pItem = pItem->Next();
 		item++;
 	}
 }
@@ -801,7 +801,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 		{
 			// Unmark any selected item unless it is a submenu...
 
-			WgMenuItem * pOldItem = m_items.get(m_markedItem-1);
+			WgMenuItem * pOldItem = m_items.Get(m_markedItem-1);
 			if( pOldItem && pOldItem->GetType() != SUBMENU )
 			{
 				m_markedItem = 0;
@@ -825,7 +825,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 						if( pItem->GetType() != SEPARATOR )
 						{
 							if( ((WgMenuEntry*)pItem)->IsEnabled() )
-								markedItem = pItem->getIndex()+1;
+								markedItem = pItem->Index()+1;
 						}
 
 				}
@@ -919,7 +919,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 		{
 			WgMenuItem * pItem = 0;
 			if( m_markedItem != 0 )
-				pItem = m_items.get( m_markedItem-1 );
+				pItem = m_items.Get( m_markedItem-1 );
 
 
 			switch( button_key )
@@ -957,37 +957,37 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 				case WGKEY_UP:
 					if( pItem )
 					{
-						pItem = pItem->getPrev();
+						pItem = pItem->Prev();
 						while( pItem != 0 && pItem->GetType() == SEPARATOR )
-							pItem = pItem->getPrev();		
+							pItem = pItem->Prev();		
 					}
 					break;
 
 				case WGKEY_DOWN:
 					if( pItem )
 					{
-						pItem = pItem->getNext();
+						pItem = pItem->Next();
 						while( pItem != 0 && pItem->GetType() == SEPARATOR )
-							pItem = pItem->getNext();		
+							pItem = pItem->Next();		
 					}
 					else
 					{
-						pItem = m_items.getFirst();
+						pItem = m_items.First();
 						while( pItem != 0 && pItem->GetType() == SEPARATOR )
-							pItem = pItem->getNext();		
+							pItem = pItem->Next();		
 					}
 					break;
 
 				case WGKEY_HOME:
-					pItem = m_items.getFirst();
+					pItem = m_items.First();
 					while( pItem != 0 && pItem->GetType() == SEPARATOR )
-						pItem = pItem->getNext();		
+						pItem = pItem->Next();		
 					break;
 
 				case WGKEY_END:
-					pItem = m_items.getLast();
+					pItem = m_items.Last();
 					while( pItem != 0 && pItem->GetType() == SEPARATOR )
-						pItem = pItem->getPrev();		
+						pItem = pItem->Prev();		
 					break;
 
 				case WGKEY_PAGEUP:
@@ -1002,14 +1002,14 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 						else
 							distance += m_entryHeight;
 	
-						pItem = pItem->getPrev();
+						pItem = pItem->Prev();
 					}
 
 					if( !pItem )
 					{
-						pItem = m_items.getFirst();
+						pItem = m_items.First();
 						while( pItem != 0 && pItem->GetType() == SEPARATOR )
-							pItem = pItem->getNext();
+							pItem = pItem->Next();
 					}
 
 					break;
@@ -1026,14 +1026,14 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 						else
 							distance += m_entryHeight;
 	
-						pItem = pItem->getNext();
+						pItem = pItem->Next();
 					}
 
 					if( !pItem )
 					{
-						pItem = m_items.getLast();
+						pItem = m_items.Last();
 						while( pItem != 0 && pItem->GetType() == SEPARATOR )
-							pItem = pItem->getNext();
+							pItem = pItem->Next();
 					}
 
 					break;
@@ -1043,7 +1043,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 
 			if( pItem )
 			{
-				Uint32 markedItem = pItem->getIndex()+1;
+				Uint32 markedItem = pItem->Index()+1;
 				if( markedItem != m_markedItem )
 				{
 					m_markedItem = markedItem;
@@ -1145,9 +1145,9 @@ void Wdg_Menu::Open( Wdg_Root * pRoot, Uint32 x, Uint32 y, Uint32 minW, WgMenuIt
 	Emit( MenuOpened() );
 
 	GrabInputFocus();
-	if( pMarkedItem && pMarkedItem->getChain() == &m_items )
+	if( pMarkedItem && pMarkedItem->Chain() == &m_items )
 	{
-		m_markedItem = pMarkedItem->getIndex()+1;
+		m_markedItem = pMarkedItem->Index()+1;
 		RequestRender();
 		ScrollItemIntoView( pMarkedItem, true );
 	}
@@ -1200,7 +1200,7 @@ void Wdg_Menu::OpenSubMenu( WgMenuSubMenu * pItem )
 
 	Uint32 yOfs = GetContentBorders().top + m_geo.y;
 
-	WgMenuItem * p = m_items.getFirst();
+	WgMenuItem * p = m_items.First();
 	while( p != pItem )
 	{
 		if( p->IsSetToVisible() )
@@ -1210,7 +1210,7 @@ void Wdg_Menu::OpenSubMenu( WgMenuSubMenu * pItem )
 			else
 				yOfs += m_entryHeight;
 		}
-		p = p->getNext();
+		p = p->Next();
 	}
 
 	// Calculate btnReleaseArea
@@ -1233,7 +1233,7 @@ void Wdg_Menu::OpenSubMenu( WgMenuSubMenu * pItem )
 
 void Wdg_Menu::CloseSubMenu( Uint32 item )
 {
-	WgMenuItem * pItem = m_items.get(item-1);
+	WgMenuItem * pItem = m_items.Get(item-1);
 
 	if( pItem->GetType() == SUBMENU )
 	{
@@ -1281,7 +1281,7 @@ WgMenuItem * Wdg_Menu::GetItemAtAbsPos( int x, int y )
 
 	if( y > 0 && x > 0 && x < (int) (m_geo.w - contentBorders.width() ) )
 	{
-		WgMenuItem * pItem = m_items.getFirst();
+		WgMenuItem * pItem = m_items.First();
 		while( pItem )
 		{
 			if( pItem->IsSetToVisible() )
@@ -1296,7 +1296,7 @@ WgMenuItem * Wdg_Menu::GetItemAtAbsPos( int x, int y )
 					return pItem;
 				}
 			}
-			pItem = pItem->getNext();
+			pItem = pItem->Next();
 		}
 	}
 
@@ -1316,7 +1316,7 @@ void Wdg_Menu::AdjustSize()
 	if( m_pSepGfx )
 		minSep += m_pSepGfx->GetMinWidth();
 
-	WgMenuItem * pItem = m_items.getFirst();
+	WgMenuItem * pItem = m_items.First();
 	while( pItem )
 	{
 		if( pItem->IsSetToVisible() )
@@ -1339,7 +1339,7 @@ void Wdg_Menu::AdjustSize()
 		}
 
 
-		pItem = pItem->getNext();
+		pItem = pItem->Next();
 	}
 
 	m_contentHeight = h - contentBorders.height();

@@ -80,14 +80,14 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 	// Copy prefix
 
 	const WgChar * p = pBeg;
-	while(  p - pBeg < 4 && p < pEnd && p->GetGlyph() != '1' )
+	while(  p - pBeg < 4 && p < pEnd && p->Glyph() != '1' )
 	{
-		assert( p->GetGlyph() < '0' || p->GetGlyph() > '9' );		// No numerics allowed in prefix.
+		assert( p->Glyph() < '0' || p->Glyph() > '9' );		// No numerics allowed in prefix.
 		p++;
 	}
 	
 	for( int i = 0 ; i < p - pBeg ; i++ )
-		prefix[i] = pBeg[i].GetGlyph();
+		prefix[i] = pBeg[i].Glyph();
 
 
 
@@ -100,7 +100,7 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 
 	// Save textprops of the '1' character.
 
-	pTextProperties = pBeg->GetProperties();
+	pTextProperties = pBeg->Properties();
 	pBeg++;
 
 	//
@@ -112,7 +112,7 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 
 	bool	bHasSeparator = false;
 
-	Uint16	glyph = pBeg->GetGlyph();
+	Uint16	glyph = pBeg->Glyph();
 	if( glyph < '0' || glyph > '9' )
 	{
 		separator = glyph;
@@ -129,7 +129,7 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 
 	int nZeroes = 0;
 
-	while( pBeg != pEnd && pBeg->GetGlyph() == '0' )
+	while( pBeg != pEnd && pBeg->Glyph() == '0' )
 	{
 		pBeg++;
 		nZeroes++;
@@ -148,15 +148,15 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 
 	if( pEnd - pBeg >= 2 )
 	{
-		Uint16 sep = pBeg->GetGlyph();
-		Uint16 after = pBeg[1].GetGlyph();
+		Uint16 sep = pBeg->Glyph();
+		Uint16 after = pBeg[1].Glyph();
 
 		if( after == '0' )
 		{
 			period = sep;
 			pBeg+=2;
 			nZeroes = 1;
-			while( pBeg != pEnd && pBeg->GetGlyph() == '0' )
+			while( pBeg != pEnd && pBeg->Glyph() == '0' )
 			{
 				pBeg++;
 				nZeroes++;
@@ -177,7 +177,7 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 		n = 4;
 
 	for( int i = 0 ; i < n ; i++ )
-		suffix[i] = pBeg[i].GetGlyph();	
+		suffix[i] = pBeg[i].Glyph();	
 }
 
 

@@ -92,12 +92,12 @@ void WgItemStack::DeleteAllItems()
 
 void WgItemStack::AdaptToWidth( Uint32 displayed_width )
 {
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	while( p )
 	{
 		p->AdaptToWidth(displayed_width);
-		p = p->getNext();
+		p = p->Next();
 	}
 	
 	refreshItems();
@@ -107,12 +107,12 @@ void WgItemStack::AdaptToWidth( Uint32 displayed_width )
 
 void WgItemStack::AdaptToHeight( Uint32 displayed_height )
 {
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	while( p )
 	{
 		p->AdaptToHeight(displayed_height);
-		p = p->getNext();
+		p = p->Next();
 	}			
 	
 	refreshItems();
@@ -126,7 +126,7 @@ void WgItemStack::Render( const WgRect& _window, const WgRect& _clip )
 
 	r = _window;
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	for(Uint32 i = 0; p && i < m_itemOffsets.entries(); i++)
 	{
@@ -135,7 +135,7 @@ void WgItemStack::Render( const WgRect& _window, const WgRect& _clip )
 		r.x = _window.x + m_itemOffsets[i].origo.calcOfsX(_window.w, r.w) + m_itemOffsets[i].ofsX;
 		r.y = _window.y + m_itemOffsets[i].origo.calcOfsY(_window.h, r.h) + m_itemOffsets[i].ofsY;
 		p->Render( r, _clip );
-		p = p->getNext();
+		p = p->Next();
 	}
 }
 
@@ -158,12 +158,12 @@ WgItem* WgItemStack::Clone( WgItem * _pClone )
 
 void WgItemStack::Enable( bool bEnable )
 {
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	while( p )
 	{
 		p->Enable(bEnable);
-		p = p->getNext();
+		p = p->Next();
 	}		
 }
 
@@ -174,7 +174,7 @@ void WgItemStack::refreshItems()
 	Uint32	contentWidth = m_minWidth;
 	Uint32	contentHeight = m_minHeight;
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 	for(Uint32 i = 0; p && i < m_itemOffsets.entries(); i++ )
 	{
 		Uint32 w = p->Width() + WgAbs(m_itemOffsets[i].ofsX);
@@ -183,7 +183,7 @@ void WgItemStack::refreshItems()
 		if( w > contentWidth)	contentWidth = w;
 		if( h > contentHeight)	contentHeight = h;
 
-		p = p->getNext();
+		p = p->Next();
 	}
 
 	Sint32	diffX = contentWidth - m_width;

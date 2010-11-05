@@ -39,10 +39,10 @@ WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& 
 	if( m_gfxBorders.left || m_gfxBorders.right || m_gfxBorders.top || m_gfxBorders.bottom )
 		m_flags |= WG_HAS_BORDERS;
 
-	if(m_rect.x + m_rect.w > (Sint32)m_pSurf->width())
-		m_rect.w = m_pSurf->width() - m_rect.x;
-	if(m_rect.y + m_rect.h > (Sint32)m_pSurf->height())
-		m_rect.h = m_pSurf->height() - m_rect.y;
+	if(m_rect.x + m_rect.w > (Sint32)m_pSurf->Width())
+		m_rect.w = m_pSurf->Width() - m_rect.x;
+	if(m_rect.y + m_rect.h > (Sint32)m_pSurf->Height())
+		m_rect.h = m_pSurf->Height() - m_rect.y;
 }
 
 
@@ -125,7 +125,7 @@ bool WgBlockSet::AddAlternative( WgSize activationSize, const WgSurface * pSurf,
 
 
 
-	LinkedAlt * pOther = m_altChain.getFirst();
+	LinkedAlt * pOther = m_altChain.First();
 	while( pOther )
 	{
 		if( pOther->activationSize.w == p->activationSize.w && pOther->activationSize.h == p->activationSize.h )
@@ -142,14 +142,14 @@ bool WgBlockSet::AddAlternative( WgSize activationSize, const WgSurface * pSurf,
 				return false;			// Can't determine Alt-order, conflicting activation-sizes (smaller in one dimension but bigger in the other).
 			}
 
-			p->moveBefore( pOther );
+			p->MoveBefore( pOther );
 			return true;
 		}
 
-		pOther = pOther->getNext();
+		pOther = pOther->Next();
 	}
 
-	m_altChain.push_back( p );
+	m_altChain.PushBack( p );
 	return true;
 }
 
@@ -158,11 +158,11 @@ bool WgBlockSet::AddAlternative( WgSize activationSize, const WgSurface * pSurf,
 int WgBlockSet::GetNbAlternatives() const
 {
 	int nb = 1;
-	LinkedAlt * p = m_altChain.getFirst();
+	LinkedAlt * p = m_altChain.First();
 	while( p )
 	{
 		nb++;
-		p = p->getNext();
+		p = p->Next();
 	}
 	return nb;
 }
@@ -175,14 +175,14 @@ WgSize WgBlockSet::GetActivationSize( int alt ) const
 		return WgSize(0,0);
 
 	int nb = 1;
-	LinkedAlt * p = m_altChain.getFirst();
+	LinkedAlt * p = m_altChain.First();
 	while( p )
 	{
 		if( nb == alt )
 			return p->activationSize;
 
 		nb++;
-		p = p->getNext();
+		p = p->Next();
 	}
 
 	return WgSize(0,0);
@@ -197,14 +197,14 @@ WgBlockSet::Alt_Data* WgBlockSet::GetAlt( int n )
 		return &m_base;
 
 	int nb = 1;
-	LinkedAlt * p = m_altChain.getFirst();
+	LinkedAlt * p = m_altChain.First();
 	while( p )
 	{
 		if( nb == n )
 			return &p->data;
 
 		nb++;
-		p = p->getNext();
+		p = p->Next();
 	}
 	return 0;
 }
@@ -213,14 +213,14 @@ WgBlockSet::Alt_Data* WgBlockSet::GetAlt( WgSize destSize )
 {
 	Alt_Data * pData = &m_base;
 
-	LinkedAlt * p = m_altChain.getFirst();
+	LinkedAlt * p = m_altChain.First();
 	while( p )
 	{
 		if( destSize.w > p->activationSize.w && destSize.h > p->activationSize.h )
 			break;
 
 		pData = &p->data;
-		p = p->getNext();
+		p = p->Next();
 	}
 	return pData;
 }
@@ -231,14 +231,14 @@ const WgBlockSet::Alt_Data* WgBlockSet::GetAlt( int n ) const
 		return &m_base;
 
 	int nb = 1;
-	LinkedAlt * p = m_altChain.getFirst();
+	LinkedAlt * p = m_altChain.First();
 	while( p )
 	{
 		if( nb == n )
 			return &p->data;
 
 		nb++;
-		p = p->getNext();
+		p = p->Next();
 	}
 	return 0;
 }
@@ -247,14 +247,14 @@ const WgBlockSet::Alt_Data* WgBlockSet::GetAlt( WgSize destSize ) const
 {
 	const Alt_Data * pData = &m_base;
 
-	LinkedAlt * p = m_altChain.getFirst();
+	LinkedAlt * p = m_altChain.First();
 	while( p )
 	{
 		if( destSize.w > p->activationSize.w && destSize.h > p->activationSize.h )
 			break;
 
 		pData = &p->data;
-		p = p->getNext();
+		p = p->Next();
 	}
 	return pData;
 }
@@ -429,7 +429,7 @@ bool WgBlockSet::SetTile(Uint32 place, bool bTile)
 		return false;
 
 	// cannot scale and tile at the same time
-	if((place & WG_TILE_CENTER) && IsScaled())
+	if((place & WG_TILE_CENTER) && (IsScaled() || IsFixedSize()))
 		return false;
 
 	if(bTile)
@@ -445,7 +445,7 @@ bool WgBlockSet::SetTile(Uint32 place, bool bTile)
 bool WgBlockSet::SetScale(bool bScale)
 {
 	// cannot scale and tile at the same time
-	if((m_flags & WG_TILE_CENTER) && bScale)
+	if((IsFixedSize() || HasTiledCenter()) && bScale)
 		return false;
 
 	if(bScale)
@@ -456,14 +456,34 @@ bool WgBlockSet::SetScale(bool bScale)
 	return true;
 }
 
+//____ SetFixedSize() _____________________________________________________________
+
+bool WgBlockSet::SetFixedSize(bool bFixedSize)
+{
+	if( IsScaled() || HasTiledCenter() )
+		return false;
+
+	if(bFixedSize)
+		m_flags |= WG_FIXED_CENTER;
+	else
+		m_flags &= ~WG_FIXED_CENTER;
+
+	return true;
+}
+
+
 //____ VerifyFlags() __________________________________________________________
 
 Uint32 WgBlockSet::VerifyFlags(Uint32 _flags)
 {
-	if((_flags & (WG_SCALE_CENTER | WG_TILE_CENTER)) == (WG_SCALE_CENTER | WG_TILE_CENTER))
+	// Make sure not more than one of SCALE/TILE/FIXED is set on center.
+
+	int centerFlags = _flags & (WG_SCALE_CENTER | WG_TILE_CENTER | WG_FIXED_CENTER);
+
+	if( centerFlags != 0 && centerFlags != WG_SCALE_CENTER && centerFlags != WG_TILE_CENTER && centerFlags != WG_FIXED_CENTER )
 	{
 		assert(0);
-		return _flags &~ WG_TILE_CENTER;
+		return _flags &~ (WG_SCALE_CENTER | WG_TILE_CENTER | WG_FIXED_CENTER);		// Fall back to stretch.
 	}
 	return _flags;
 }

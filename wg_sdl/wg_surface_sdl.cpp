@@ -106,9 +106,9 @@ WgSurfaceSDL::~WgSurfaceSDL()
 	SDL_FreeSurface( m_pSurface );
 }
 
-//____ GetWidth() ______________________________________________________________
+//____ Width() ______________________________________________________________
 
-Uint32 WgSurfaceSDL::GetWidth() const
+Uint32 WgSurfaceSDL::Width() const
 {
 	if( m_pSurface )
 		return m_pSurface->w;
@@ -116,9 +116,9 @@ Uint32 WgSurfaceSDL::GetWidth() const
 	return 0;
 }
 
-//____ GetHeight() _____________________________________________________________
+//____ Height() _____________________________________________________________
 
-Uint32 WgSurfaceSDL::GetHeight() const
+Uint32 WgSurfaceSDL::Height() const
 {
 	if( m_pSurface )
 		return m_pSurface->h;
@@ -241,7 +241,7 @@ Uint8 WgSurfaceSDL::GetOpacity( Uint32 x, Uint32 y ) const
 
 	if( m_pSurface->flags & SDL_SRCCOLORKEY )
 	{
-		if( pixel( x, y ) == 0 )
+		if( GetPixel( x, y ) == 0 )
 			return 0;
 	}
 

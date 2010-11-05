@@ -543,8 +543,8 @@ public:
 
 	virtual void Accept(WgResourceVisitor* visitor)	{ visitor->Visit(this); }
 
-	static std::string		FromPlayMode(WgAnim::PlayMode mode);
-	static WgAnim::PlayMode	ToPlayMode(const std::string& playmode);
+	static std::string		FromPlayMode(WgAnimMode mode);
+	static WgAnimMode	ToPlayMode(const std::string& playmode);
 
 	static const char* TagName() { return "anim"; }
 private:

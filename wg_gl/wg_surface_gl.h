@@ -48,8 +48,8 @@ public:
 
 	// Methods needed by WgSurface
 
-	Uint32		GetWidth() const;
-	Uint32		GetHeight() const;
+	Uint32		Width() const;
+	Uint32		Height() const;
 	bool		IsOpaque() const;
 
 	Uint32		GetPixel( Uint32 x, Uint32 y ) const;

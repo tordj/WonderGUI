@@ -58,7 +58,7 @@ WgItem::~WgItem()
 {
 	if( m_pMyHolder )
 	{
-		disconnect();
+		Disconnect();
 		m_pMyHolder->m_nItems--;
 		m_pMyHolder->refreshItems();
 	}

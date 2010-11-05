@@ -35,19 +35,19 @@ WgString::~WgString()
 {
 }
 
-const WgChar* WgString::GetChars() const
+const WgChar* WgString::Chars() const
 {
-	return m_buffer.GetChars();
+	return m_buffer.Chars();
 }
 
 Uint32 WgString::Length() const
 {
-	return m_buffer.GetNbChars();
+	return m_buffer.NbChars();
 }
 
 bool WgString::IsEmpty() const
 {
-	return m_buffer.GetNbChars()==0?true:false;
+	return m_buffer.NbChars()==0?true:false;
 }
 
 //____ Set() ___________________________________________________________________
@@ -78,13 +78,13 @@ void WgString::Set( const WgCharSeq& seq )
 
 void WgString::Append( const WgString& str )
 {
-	m_buffer.PushBack(str.GetChars(), str.Length());
+	m_buffer.PushBack(str.Chars(), str.Length());
 }
 
 void WgString::Append( const WgCharBuffer* pBuffer )
 {
 	if( pBuffer )
-		m_buffer.PushBack( pBuffer->GetChars(), pBuffer->GetNbChars() );
+		m_buffer.PushBack( pBuffer->Chars(), pBuffer->NbChars() );
 }
 
 void WgString::Append( const WgCharSeq& seq )
@@ -96,13 +96,13 @@ void WgString::Append( const WgCharSeq& seq )
 
 void WgString::Prepend( const WgString& str )
 {
-	m_buffer.PushFront(str.GetChars(), str.Length());
+	m_buffer.PushFront(str.Chars(), str.Length());
 }
 
 void WgString::Prepend( const WgCharBuffer* pBuffer )
 {
 	if( pBuffer )
-		m_buffer.PushFront( pBuffer->GetChars(), pBuffer->GetNbChars() );
+		m_buffer.PushFront( pBuffer->Chars(), pBuffer->NbChars() );
 }
 
 void WgString::Prepend( const WgCharSeq& seq )

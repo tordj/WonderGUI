@@ -56,7 +56,7 @@ WgSurface::~WgSurface()
 
 WgRect WgSurface::Dimensions() const
 {
-	return WgRect( 0, 0, GetWidth(), GetHeight() );
+	return WgRect( 0, 0, Width(), Height() );
 }
 
 //____ Col2Pixel() ____________________________________________________________
@@ -102,8 +102,8 @@ bool WgSurface::Fill( WgColor col )
 
 
 	Uint32 pixel = Col2Pixel( col );
-	int width = GetWidth();
-	int height = GetHeight();
+	int width = Width();
+	int height = Height();
 	int pitch = GetPitch();
 	Uint8 * pDest = m_pPixels;
 

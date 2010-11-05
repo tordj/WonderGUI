@@ -39,7 +39,7 @@ Wg_Interface_ItemHolder::Wg_Interface_ItemHolder()
 
 Wg_Interface_ItemHolder::~Wg_Interface_ItemHolder()
 {
-	for(WgItem * p = m_items.getFirst(); p; p = p->getNext())
+	for(WgItem * p = m_items.First(); p; p = p->Next())
 		p->m_pMyHolder = 0;	// so the item doesn't remove itself in the destructor
 }
 
@@ -56,42 +56,42 @@ void Wg_Interface_ItemHolder::SetSortFunction(Sint32 (*fp)(WgItem *, WgItem *))
 Uint32 Wg_Interface_ItemHolder::AddItem( WgItem * pItem )
 {
 	pItem->m_pMyHolder = this;
-	m_items.push_back( pItem );
+	m_items.PushBack( pItem );
 	m_nItems++;
 	ItemAdded(pItem);
-	return pItem->getIndex();
+	return pItem->Index();
 }
 
 //____ InsertItem() ___________________________________________________________
 
 Uint32 Wg_Interface_ItemHolder::InsertItem( WgItem * pItem, Uint32 pos )
 {
-	WgItem * p = m_items.get(pos);
+	WgItem * p = m_items.Get(pos);
 
 	if( p )
-		pItem->moveBefore( p );
+		pItem->MoveBefore( p );
 	else
-		m_items.push_back(pItem);
+		m_items.PushBack(pItem);
 
 	pItem->m_pMyHolder = this;
 	m_nItems++;
 	ItemAdded(pItem);
-	return pItem->getIndex();
+	return pItem->Index();
 }
 
 //____ HasItem() ___________________________________________________________
 
 bool Wg_Interface_ItemHolder::HasItem( WgItem * pItem ) const
 {
-	return m_items.isMember( pItem );
+	return m_items.IsMemberOf( pItem );
 }
 
 //____ GetItemPos() ___________________________________________________________
 
 Sint32 Wg_Interface_ItemHolder::GetItemPos( WgItem * pItem )
 {
-	if( m_items.isMember( pItem ) )
-		return pItem->getIndex();
+	if( m_items.IsMemberOf( pItem ) )
+		return pItem->Index();
 	else
 		return -1;
 }
@@ -100,7 +100,7 @@ Sint32 Wg_Interface_ItemHolder::GetItemPos( WgItem * pItem )
 
 WgItem * Wg_Interface_ItemHolder::FindItem( Uint32 id )
 {
-	WgItem * pItem = m_items.getFirst();
+	WgItem * pItem = m_items.First();
 
 	while( pItem )
 	{
@@ -116,7 +116,7 @@ WgItem * Wg_Interface_ItemHolder::FindItem( Uint32 id )
 
 WgItem * Wg_Interface_ItemHolder::GetFirstSelectedItem()
 {
-	WgItem * pItem = m_items.getFirst();
+	WgItem * pItem = m_items.First();
 
 	while( pItem )
 	{
@@ -132,12 +132,12 @@ WgItem * Wg_Interface_ItemHolder::GetFirstSelectedItem()
 
 WgItem* Wg_Interface_ItemHolder::GetItem( Uint32 pos )
 {
-	return m_items.get(pos);
+	return m_items.Get(pos);
 }
 
 const WgItem* Wg_Interface_ItemHolder::GetItem( Uint32 pos ) const
 {
-	return m_items.get(pos);
+	return m_items.Get(pos);
 }
 
 
@@ -145,13 +145,13 @@ const WgItem* Wg_Interface_ItemHolder::GetItem( Uint32 pos ) const
 
 WgItem* Wg_Interface_ItemHolder::RemoveItem( Uint32 pos )
 {
-	WgItem * p = m_items.get(pos);
+	WgItem * p = m_items.Get(pos);
 	if( p )
 	{
 		if( p == m_pFocusedItem )
 			m_pFocusedItem = 0;
 
-		p->disconnect();
+		p->Disconnect();
 		p->m_pMyHolder = 0;
 		m_nItems--;
 		refreshItems();
@@ -163,13 +163,13 @@ WgItem* Wg_Interface_ItemHolder::RemoveItem( Uint32 pos )
 
 bool Wg_Interface_ItemHolder::RemoveItem( WgItem * pItem )
 {
-	if( !m_items.isMember(pItem) )
+	if( !m_items.IsMemberOf(pItem) )
 		return false;
 
 	if( pItem == m_pFocusedItem )
 		m_pFocusedItem = 0;
 
-	pItem->disconnect();
+	pItem->Disconnect();
 	pItem->m_pMyHolder = 0;
 	m_nItems--;
 	refreshItems();
@@ -180,12 +180,12 @@ bool Wg_Interface_ItemHolder::RemoveItem( WgItem * pItem )
 
 void Wg_Interface_ItemHolder::RemoveAllItems()
 {
-	WgItem * pItem = m_items.getFirst();
+	WgItem * pItem = m_items.First();
 	while( pItem )
 	{
-		pItem->disconnect();
+		pItem->Disconnect();
 		pItem->m_pMyHolder = 0;
-		pItem = m_items.getFirst();
+		pItem = m_items.First();
 	}
 	m_nItems = 0;
 	m_pFocusedItem = 0;
@@ -196,7 +196,7 @@ void Wg_Interface_ItemHolder::RemoveAllItems()
 
 bool Wg_Interface_ItemHolder::DeleteItem( Uint32 pos )
 {
-	return DeleteItem(m_items.get(pos));
+	return DeleteItem(m_items.Get(pos));
 }
 
 //____ DeleteItem() ___________________________________________________________
@@ -208,7 +208,7 @@ bool Wg_Interface_ItemHolder::DeleteItem( WgItem * pItem )
 		if( pItem == m_pFocusedItem )
 			m_pFocusedItem = 0;
 
-		pItem->disconnect();
+		pItem->Disconnect();
 		pItem->m_pMyHolder = 0;	// so the item doesn't remove itself in the destructor
 		delete pItem;
 		m_nItems--;
@@ -222,9 +222,9 @@ bool Wg_Interface_ItemHolder::DeleteItem( WgItem * pItem )
 
 void Wg_Interface_ItemHolder::DeleteAllItems()
 {
-	for(WgItem * p = m_items.getFirst(); p; p = p->getNext())
+	for(WgItem * p = m_items.First(); p; p = p->Next())
 		p->m_pMyHolder = 0;	// so the item doesn't remove itself in the destructor
-	m_items.clear();
+	m_items.Clear();
 	m_nItems = 0;
 	m_pFocusedItem = 0;
 	refreshItems();
@@ -236,7 +236,7 @@ void Wg_Interface_ItemHolder::DeleteAllItems()
 void Wg_Interface_ItemHolder::SortItems()
 {
 
-	WgItem * pItem = m_items.getFirst();
+	WgItem * pItem = m_items.First();
 	int nItems = 1;
 
 	while( pItem )
@@ -245,7 +245,7 @@ void Wg_Interface_ItemHolder::SortItems()
 
 		if( nItems >= 2 )
 		{
-			WgItem * pFirst = m_items.getFirst();
+			WgItem * pFirst = m_items.First();
 			WgItem * pLast = pItem;
 
 			bool bFirst = false;
@@ -256,7 +256,7 @@ void Wg_Interface_ItemHolder::SortItems()
 				bFirst = !bFirst;
 
 			if( bFirst )
-				m_items.push_front( pItem );
+				m_items.PushFront( pItem );
 			else
 				InsertItemSortedBetween(pFirst, pLast, pItem, nItems );
 		}
@@ -274,13 +274,13 @@ void Wg_Interface_ItemHolder::InsertItemSorted( WgItem * pItem )
 {
 	if( m_nItems == 0 )
 	{
-		m_items.push_back(pItem);
+		m_items.PushBack(pItem);
 	}
 	else
 	{
 
-		WgItem * pFirst = m_items.getFirst();
-		WgItem * pLast = m_items.getLast();
+		WgItem * pFirst = m_items.First();
+		WgItem * pLast = m_items.Last();
 
 		// First check if we should be put first or last in list. Equal to last should put us last.
 
@@ -289,12 +289,12 @@ void Wg_Interface_ItemHolder::InsertItemSorted( WgItem * pItem )
 		{
 			if( CompareItems( pItem, pFirst ) < 0 )
 			{
-				pItem->moveBefore( pFirst );
+				pItem->MoveBefore( pFirst );
 				bInserted = true;
 			}
 			else if( CompareItems( pItem, pLast ) >= 0 )
 			{
-				pItem->moveAfter( pLast );
+				pItem->MoveAfter( pLast );
 				bInserted = true;
 			}
 		}
@@ -302,12 +302,12 @@ void Wg_Interface_ItemHolder::InsertItemSorted( WgItem * pItem )
 		{
 			if( CompareItems( pItem, pFirst ) > 0 )
 			{
-				pItem->moveBefore( pFirst );
+				pItem->MoveBefore( pFirst );
 				bInserted = true;
 			}
 			else if( CompareItems( pItem, pLast ) <= 0 )
 			{
-				pItem->moveAfter( pLast );
+				pItem->MoveAfter( pLast );
 				bInserted = true;
 			}
 		}
@@ -325,7 +325,7 @@ void Wg_Interface_ItemHolder::InsertItemSorted( WgItem * pItem )
 	ItemAdded(pItem);
 /*
 
-	WgItem * pPlace = m_items.getFirst();
+	WgItem * pPlace = m_items.First();
 
 	if( m_bSortAscend )
 	{
@@ -373,7 +373,7 @@ void Wg_Interface_ItemHolder::InsertItemSortedBetween( WgItem * pFirst, WgItem *
 	if( nItems <= 2 )				// Should never be less than two but we handle it as a failsafe
 									// in case we screw up some calling code in the future...
 	{								// Only two items means that we have found our position for insertion.
-		pItem->moveAfter( pFirst );
+		pItem->MoveAfter( pFirst );
 		return;
 	}
 	else
@@ -453,7 +453,7 @@ void Wg_Interface_ItemHolder::SetItemSpacing( Uint32 spacing )
 
 void Wg_Interface_ItemHolder::AdaptItemsToWidth( Uint32 w )
 {
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	while( p )
 	{
@@ -466,7 +466,7 @@ void Wg_Interface_ItemHolder::AdaptItemsToWidth( Uint32 w )
 
 void Wg_Interface_ItemHolder::AdaptItemsToHeight( Uint32 h )
 {
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	while( p )
 	{

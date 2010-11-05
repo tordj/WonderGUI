@@ -24,20 +24,20 @@ void * WgMemPool::allocEntry()
 {
 	g_allocatedEver++;
 
-	Block * pBlock = m_blocks.getFirst();
+	Block * pBlock = m_blocks.First();
 	if(pBlock == 0)
 		pBlock = addBlock();
 
 	if( pBlock->nAllocEntries == pBlock->maxEntries )
 	{
-		m_blocks.push_back(pBlock);			// This block is full so we put it in the back.
+		m_blocks.PushBack(pBlock);			// This block is full so we put it in the back.
 
-		pBlock = m_blocks.getFirst();
+		pBlock = m_blocks.First();
 		if( pBlock->nAllocEntries == pBlock->maxEntries )
 		{
 			addBlock();						// We don't have any free entries left in any block.
 											// so we need to create a new one.
-			pBlock = m_blocks.getFirst();
+			pBlock = m_blocks.First();
 		}
 	}
 
@@ -51,11 +51,11 @@ void WgMemPool::freeEntry( void * pEntry )
 	if( pEntry == 0 )
 		return;
 
-	Block * pBlock = m_blocks.getFirst();
+	Block * pBlock = m_blocks.First();
 
 	while( (pBlock && pEntry < pBlock->pMemBlock) || (pEntry >= ((Uint8*)pBlock->pMemBlock) + pBlock->blockSize) )
 	{
-		pBlock = pBlock->getNext();
+		pBlock = pBlock->Next();
 	}
 
 	if( !pBlock )
@@ -64,7 +64,7 @@ void WgMemPool::freeEntry( void * pEntry )
 	}
 
 	if( pBlock->nAllocEntries == pBlock->maxEntries )
-		m_blocks.push_front(pBlock);			// Full block will get an entry free, needs to be among the free ones...
+		m_blocks.PushFront(pBlock);			// Full block will get an entry free, needs to be among the free ones...
 
 	pBlock->freeEntry(pEntry);
 
@@ -77,7 +77,7 @@ void WgMemPool::freeEntry( void * pEntry )
 WgMemPool::Block *WgMemPool::addBlock()
 {
 	Block * pBlock = new Block( m_nEntriesPerBlock, m_entrySize );
-	m_blocks.push_front( pBlock );
+	m_blocks.PushFront( pBlock );
 	return pBlock;
 }
 

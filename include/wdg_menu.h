@@ -127,7 +127,7 @@ public:
 
 
 	WgMenuItem *FindItem( int id );
-	WgMenuItem *GetFirstItem() const { return m_items.getFirst(); }
+	WgMenuItem *GetFirstItem() const { return m_items.First(); }
 	WgMenuItem *GetSelectedItem() const { return m_pSelectedItem; }
 
 	void	SelectItem(WgMenuItem* pItem);

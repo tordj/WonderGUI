@@ -102,13 +102,13 @@ WgCharSeq::WgCharSeq( const std::string& str, int ofs, int len )
 WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer )
 {
 	m_type		= WGCHAR;
-	m_pChar		= (void *) pBuffer->GetChars();
-	m_nbChars	= pBuffer->GetNbChars();
+	m_pChar		= (void *) pBuffer->Chars();
+	m_nbChars	= pBuffer->NbChars();
 }
 
 WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len )
 {
-	int realNbChars = (int) pBuffer->GetNbChars();
+	int realNbChars = (int) pBuffer->NbChars();
 	if( ofs + len > realNbChars )
 	{
 		if( ofs > realNbChars )
@@ -117,14 +117,14 @@ WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len )
 	}
 
 	m_type		= WGCHAR;
-	m_pChar		= (void *)  (pBuffer->GetChars() + ofs);
+	m_pChar		= (void *)  (pBuffer->Chars() + ofs);
 	m_nbChars	= len;
 }
 
 WgCharSeq::WgCharSeq( const WgString& str )
 {
 	m_type		= WGCHAR;
-	m_pChar		= (void *) str.GetChars();
+	m_pChar		= (void *) str.Chars();
 	m_nbChars	= str.Length();
 }
 
@@ -139,7 +139,7 @@ WgCharSeq::WgCharSeq( const WgString& str, int ofs, int len )
 	}
 
 	m_type		= WGCHAR;
-	m_pChar		= (void *) (str.GetChars() + ofs);
+	m_pChar		= (void *) (str.Chars() + ofs);
 	m_nbChars	= len;
 }
 
@@ -429,7 +429,7 @@ const WgCharSeq::UnicodeBasket WgCharSeq::GetUnicode() const
 		{
 			Uint16 * p = new Uint16[m_nbChars];
 			for( int i = 0 ; i < m_nbChars ; i++ )
-				p[i] = ((WgChar*)m_pChar)[i].GetGlyph();
+				p[i] = ((WgChar*)m_pChar)[i].Glyph();
 			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;

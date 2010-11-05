@@ -70,58 +70,58 @@ void WgResDB::Clear()
 	// This will cause memory leaks until all resources are properly equipped
 	// with smartpointers.
 
-	m_surfaces.clear();
-	m_glyphSets.clear();
-	m_fonts.clear();
-	m_anims.clear();
-	m_cursors.clear();
-	m_textProps.clear();
-	m_colors.clear();
-	m_legos.clear();
-	m_blockSets.clear();
-	m_widgets.clear();
-	m_items.clear();
-	m_menuItems.clear();
-	m_tabs.clear();
-	m_textManagers.clear();
-	m_skinManagers.clear();
-	m_connects.clear();
-	m_resDbs.clear();
+	m_surfaces.Clear();
+	m_glyphSets.Clear();
+	m_fonts.Clear();
+	m_anims.Clear();
+	m_cursors.Clear();
+	m_textProps.Clear();
+	m_colors.Clear();
+	m_legos.Clear();
+	m_blockSets.Clear();
+	m_widgets.Clear();
+	m_items.Clear();
+	m_menuItems.Clear();
+	m_tabs.Clear();
+	m_textManagers.Clear();
+	m_skinManagers.Clear();
+	m_connects.Clear();
+	m_resDbs.Clear();
 }
 
 void WgResDB::DestroyFonts()
 {
-	for(FontRes* res = GetFirstResFont(); res; res = res->getNext())
+	for(FontRes* res = GetFirstResFont(); res; res = res->Next())
 		delete res->res;
 }
 
 void WgResDB::DestroyAnims()
 {
-	for(AnimRes* res = GetFirstResAnim(); res; res = res->getNext())
+	for(AnimRes* res = GetFirstResAnim(); res; res = res->Next())
 		delete res->res;
 }
 
 void WgResDB::DestroyCursors()
 {
-	for(CursorRes* res = GetFirstResCursor(); res; res = res->getNext())
+	for(CursorRes* res = GetFirstResCursor(); res; res = res->Next())
 		delete res->res;
 }
 
 void WgResDB::DestroyTextManagers()
 {
-	for(TextManagerRes* res = GetFirstResTextManager(); res; res = res->getNext())
+	for(TextManagerRes* res = GetFirstResTextManager(); res; res = res->Next())
 		delete res->res;
 }
 
 void WgResDB::ClearWidgets()
 {
 	m_mapWidgets.clear();
-	m_widgets.clear();
+	m_widgets.Clear();
 }
 
 void WgResDB::ClearConnects()
 {
-	m_connects.clear();
+	m_connects.Clear();
 	m_mapConnects.clear();
 }
 
@@ -226,7 +226,7 @@ bool WgResDB::AddResDb( const std::string& file, MetaData * pMetaData )
 		WgResDB * pDb = m_pResLoader->LoadDb( file, this );
 		// store resource even if load failed. could be an optional include
 		ResDBRes* p = new ResDBRes(file, pDb, file, pMetaData);
-		m_resDbs.push_back(p);
+		m_resDbs.PushBack(p);
 		m_mapResDBs[file] = p;
 		return true;
 	}
@@ -240,7 +240,7 @@ bool WgResDB::AddResDb( WgResDB* db, const std::string& file, MetaData * pMetaDa
 	if(GetResDbRes(file) == 0)
 	{
 		ResDBRes* p = new ResDBRes(file, db, file, pMetaData);
-		m_resDbs.push_back(p);
+		m_resDbs.PushBack(p);
 		if(file.size())
 			m_mapResDBs[file] = p;
 		return true;
@@ -259,7 +259,7 @@ bool WgResDB::AddSurface( const std::string& id, const std::string& file, MetaDa
 			return false;
 
 		SurfaceRes* p = new SurfaceRes(id, pSurface, file, pMetaData);
-		m_surfaces.push_back(p);
+		m_surfaces.PushBack(p);
 		if(id.size())
 			m_mapSurfaces[id] = p;
 		return true;
@@ -275,7 +275,7 @@ bool WgResDB::AddSurface( const std::string& id, WgSurface * pSurface, const std
 	if(m_mapSurfaces.find(id) == m_mapSurfaces.end())
 	{
 		SurfaceRes* p = new SurfaceRes(id, pSurface, filename, pMetaData);
-		m_surfaces.push_back(p);
+		m_surfaces.PushBack(p);
 		if(id.size())
 			m_mapSurfaces[id] = p;
 		return true;
@@ -297,7 +297,7 @@ bool WgResDB::AddGlyphSet( const std::string& id, const std::string& file, MetaD
 			return false;
 
 		GlyphSetRes* p = new GlyphSetRes(id, pGlyphSet, file, pMetaData);
-		m_glyphSets.push_back(p);
+		m_glyphSets.PushBack(p);
 		if(id.size())
 			m_mapGlyphSets[id] = p;
 		return true;
@@ -311,7 +311,7 @@ bool WgResDB::AddGlyphSet( const std::string& id, WgGlyphSet * pGlyphSet, const 
 	if(m_mapGlyphSets.find(id) == m_mapGlyphSets.end())
 	{
 		GlyphSetRes* p = new GlyphSetRes(id, pGlyphSet, file, pMetaData);
-		m_glyphSets.push_back(p);
+		m_glyphSets.PushBack(p);
 		if(id.size())
 			m_mapGlyphSets[id] = p;
 		return true;
@@ -327,7 +327,7 @@ bool WgResDB::AddFont( const std::string& id, WgFont * pFont, MetaData * pMetaDa
 	if(m_mapFonts.find(id) == m_mapFonts.end())
 	{
 		FontRes* p = new FontRes(id, pFont, pMetaData);
-		m_fonts.push_back(p);
+		m_fonts.PushBack(p);
 		if(id.size())
 			m_mapFonts[id] = p;
 		return true;
@@ -343,7 +343,7 @@ bool WgResDB::AddAnim( const std::string& id, WgAnim * pAnim, MetaData * pMetaDa
 	if(m_mapAnims.find(id) == m_mapAnims.end())
 	{
 		AnimRes* p = new AnimRes(id, pAnim, pMetaData);
-		m_anims.push_back(p);
+		m_anims.PushBack(p);
 		if(id.size())
 			m_mapAnims[id] = p;
 		return true;
@@ -359,7 +359,7 @@ bool WgResDB::AddCursor( const std::string& id, WgCursor * pCursor, MetaData * p
 	if(m_mapCursors.find(id) == m_mapCursors.end())
 	{
 		CursorRes* p = new CursorRes(id, pCursor, pMetaData);
-		m_cursors.push_back(p);
+		m_cursors.PushBack(p);
 		if(id.size())
 			m_mapCursors[id] = p;
 		return true;
@@ -375,7 +375,7 @@ bool WgResDB::AddTextProp( const std::string& id, WgTextPropPtr pProp, MetaData 
 	if(m_mapTextProps.find(id) == m_mapTextProps.end())
 	{
 		TextPropRes* p = new TextPropRes(id, pProp, pMetaData);
-		m_textProps.push_back(p);
+		m_textProps.PushBack(p);
 		if(id.size())
 			m_mapTextProps[id] = p;
 		return true;
@@ -391,7 +391,7 @@ bool WgResDB::AddColor( const std::string& id, WgColor col, MetaData * pMetaData
 	if(m_mapColors.find(id) == m_mapColors.end())
 	{
 		ColorRes* p = new ColorRes(id, col, pMetaData);
-		m_colors.push_back(p);
+		m_colors.PushBack(p);
 		if(id.size())
 			m_mapColors[id] = p;
 		return true;
@@ -407,7 +407,7 @@ bool WgResDB::AddLegoSource( const std::string& id, const std::string& surface, 
 	if(m_mapLegoSources.find(id) == m_mapLegoSources.end())
 	{
 		LegoSource* p = new LegoSource(id, surface, rect, nStates, pMetaData);
-		m_legos.push_back(p);
+		m_legos.PushBack(p);
 		if(id.size())
 			m_mapLegoSources[id] = p;
 		return true;
@@ -439,7 +439,7 @@ bool WgResDB::AddBlockSet( const std::string& id, WgBlockSetPtr pBlockSet, MetaD
 	if(m_mapBlockSets.find(id) == m_mapBlockSets.end())
 	{
 		BlockSetRes* p = new BlockSetRes(id, pBlockSet, pMetaData);
-		m_blockSets.push_back(p);
+		m_blockSets.PushBack(p);
 		if(id.size())
 			m_mapBlockSets[id] = p;
 		return true;
@@ -455,7 +455,7 @@ bool WgResDB::AddWidget( const std::string& id, WgWidget * pWidget, MetaData * p
 	if(m_mapWidgets.find(id) == m_mapWidgets.end())
 	{
 		WidgetRes* p = new WidgetRes(id, pWidget, pMetaData);
-		m_widgets.push_back(p);
+		m_widgets.PushBack(p);
 		if(id.size())
 			m_mapWidgets[id] = p;
 		return true;
@@ -471,7 +471,7 @@ bool WgResDB::AddItem( const std::string& id, WgItem * pItem, MetaData * pMetaDa
 	if(m_mapItems.find(id) == m_mapItems.end())
 	{
 		ItemRes* p = new ItemRes(id, pItem, pMetaData);
-		m_items.push_back(p);
+		m_items.PushBack(p);
 		if(id.size())
 			m_mapItems[id] = p;
 		return true;
@@ -487,7 +487,7 @@ bool WgResDB::AddMenuItem( const std::string& id, WgMenuItem * pItem, MetaData *
 	if(m_mapMenuItems.find(id) == m_mapMenuItems.end())
 	{
 		MenuItemRes* p = new MenuItemRes(id, pItem, pMetaData);
-		m_menuItems.push_back(p);
+		m_menuItems.PushBack(p);
 		if(id.size())
 			m_mapMenuItems[id] = p;
 		return true;
@@ -503,7 +503,7 @@ bool WgResDB::AddTab( const std::string& id, WgTab * pItem, MetaData * pMetaData
 	if(m_mapTabs.find(id) == m_mapTabs.end())
 	{
 		TabRes* p = new TabRes(id, pItem, pMetaData);
-		m_tabs.push_back(p);
+		m_tabs.PushBack(p);
 		if(id.size())
 			m_mapTabs[id] = p;
 		return true;
@@ -519,7 +519,7 @@ bool WgResDB::AddTextManager( const std::string& id, WgTextManager* pManager, Me
 	if(m_mapTextManagers.find(id) == m_mapTextManagers.end())
 	{
 		TextManagerRes* p = new TextManagerRes(id, pManager, pMetaData);
-		m_textManagers.push_back(p);
+		m_textManagers.PushBack(p);
 		if(id.size())
 			m_mapTextManagers[id] = p;
 		return true;
@@ -535,7 +535,7 @@ bool WgResDB::AddSkinManager( const std::string& id, WgSkinManager* pManager, Me
 	if(m_mapSkinManagers.find(id) == m_mapSkinManagers.end())
 	{
 		SkinManagerRes* p = new SkinManagerRes(id, pManager, pMetaData);
-		m_skinManagers.push_back(p);
+		m_skinManagers.PushBack(p);
 		if(id.size())
 			m_mapSkinManagers[id] = p;
 		return true;
@@ -549,7 +549,7 @@ bool WgResDB::AddSkinManager( const std::string& id, WgSkinManager* pManager, Me
 bool WgResDB::AddConnect( MetaData * pMetaData )
 {
 	ConnectRes* p = new ConnectRes(pMetaData);
-	m_connects.push_back(p);
+	m_connects.PushBack(p);
 	return true;
 }
 
@@ -670,7 +670,7 @@ WgSkinManager * WgResDB::GetSkinManager( const std::string& id ) const
 
 WgResDB::ResDBRes * WgResDB::GetResDbRes( const std::string& id ) const
 {
-	for(ResDBRes* res = GetFirstResDBRes(); res; res = res->getNext())
+	for(ResDBRes* res = GetFirstResDBRes(); res; res = res->Next())
 	{
 		if(res->file == id)
 			return res;
@@ -689,7 +689,7 @@ WgResDB::ResDBRes * WgResDB::GetResDbRes( const std::string& id ) const
 WgResDB::SurfaceRes * WgResDB::GetResSurface( const std::string& id ) const
 {
 	SurfaceRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -706,7 +706,7 @@ WgResDB::SurfaceRes * WgResDB::GetResSurface( const std::string& id ) const
 WgResDB::GlyphSetRes * WgResDB::GetResGlyphSet( const std::string& id ) const
 {
 	GlyphSetRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -723,7 +723,7 @@ WgResDB::GlyphSetRes * WgResDB::GetResGlyphSet( const std::string& id ) const
 WgResDB::FontRes * WgResDB::GetResFont( const std::string& id ) const
 {
 	FontRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -740,7 +740,7 @@ WgResDB::FontRes * WgResDB::GetResFont( const std::string& id ) const
 WgResDB::AnimRes * WgResDB::GetResAnim( const std::string& id ) const
 {
 	AnimRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -757,7 +757,7 @@ WgResDB::AnimRes * WgResDB::GetResAnim( const std::string& id ) const
 WgResDB::CursorRes * WgResDB::GetResCursor( const std::string& id ) const
 {
 	CursorRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -774,7 +774,7 @@ WgResDB::CursorRes * WgResDB::GetResCursor( const std::string& id ) const
 WgResDB::TextPropRes * WgResDB::GetResTextProp( const std::string& id ) const
 {
 	TextPropRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -791,7 +791,7 @@ WgResDB::TextPropRes * WgResDB::GetResTextProp( const std::string& id ) const
 WgResDB::ColorRes * WgResDB::GetResColor( const std::string& id ) const
 {
 	ColorRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -808,7 +808,7 @@ WgResDB::ColorRes * WgResDB::GetResColor( const std::string& id ) const
 WgResDB::LegoSource * WgResDB::GetLegoSource( const std::string& id ) const
 {
 	LegoSource* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -823,7 +823,7 @@ WgResDB::LegoSource * WgResDB::GetLegoSource( const std::string& id ) const
 WgResDB::BlockSetRes * WgResDB::GetResBlockSet( const std::string& id ) const
 {
 	BlockSetRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -840,7 +840,7 @@ WgResDB::BlockSetRes * WgResDB::GetResBlockSet( const std::string& id ) const
 WgResDB::WidgetRes * WgResDB::GetResWidget( const std::string& id ) const
 {
 	WidgetRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -857,7 +857,7 @@ WgResDB::WidgetRes * WgResDB::GetResWidget( const std::string& id ) const
 WgResDB::ItemRes * WgResDB::GetResItem( const std::string& id ) const
 {
 	ItemRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -874,7 +874,7 @@ WgResDB::ItemRes * WgResDB::GetResItem( const std::string& id ) const
 WgResDB::MenuItemRes * WgResDB::GetResMenuItem( const std::string& id ) const
 {
 	MenuItemRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -891,7 +891,7 @@ WgResDB::MenuItemRes * WgResDB::GetResMenuItem( const std::string& id ) const
 WgResDB::TabRes * WgResDB::GetResTab( const std::string& id ) const
 {
 	TabRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -909,7 +909,7 @@ WgResDB::TabRes * WgResDB::GetResTab( const std::string& id ) const
 WgResDB::TextManagerRes * WgResDB::GetResTextManager( const std::string& id ) const
 {
 	TextManagerRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -926,7 +926,7 @@ WgResDB::TextManagerRes * WgResDB::GetResTextManager( const std::string& id ) co
 WgResDB::SkinManagerRes * WgResDB::GetResSkinManager( const std::string& id ) const
 {
 	SkinManagerRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -944,7 +944,7 @@ WgResDB::SkinManagerRes * WgResDB::GetResSkinManager( const std::string& id ) co
 WgResDB::ConnectRes * WgResDB::GetResConnect( const std::string& id ) const
 {
 	ConnectRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -960,7 +960,7 @@ WgResDB::ConnectRes * WgResDB::GetResConnect( const std::string& id ) const
 
 WgResDB::ResDBRes * WgResDB::FindResDbRes( const WgResDB * data ) const
 {
-	for(ResDBRes* res = GetFirstResDBRes(); res; res = res->getNext())
+	for(ResDBRes* res = GetFirstResDBRes(); res; res = res->Next())
 	{
 		if(res->res == data)
 			return res;
@@ -979,7 +979,7 @@ WgResDB::ResDBRes * WgResDB::FindResDbRes( const WgResDB * data ) const
 WgResDB::SurfaceRes* WgResDB::FindResSurface( const WgSurface* surf ) const
 {
 	SurfaceRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -987,7 +987,7 @@ WgResDB::SurfaceRes* WgResDB::FindResSurface( const WgSurface* surf ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResSurface(); res; res = res->getNext())
+	for(res = GetFirstResSurface(); res; res = res->Next())
 		if(res->res == surf)
 			return res;
 	return 0;
@@ -998,7 +998,7 @@ WgResDB::SurfaceRes* WgResDB::FindResSurface( const WgSurface* surf ) const
 WgResDB::GlyphSetRes* WgResDB::FindResGlyphSet( const WgGlyphSet* meta ) const
 {
 	GlyphSetRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1006,7 +1006,7 @@ WgResDB::GlyphSetRes* WgResDB::FindResGlyphSet( const WgGlyphSet* meta ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResGlyphSet(); res; res = res->getNext())
+	for(res = GetFirstResGlyphSet(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1017,7 +1017,7 @@ WgResDB::GlyphSetRes* WgResDB::FindResGlyphSet( const WgGlyphSet* meta ) const
 WgResDB::FontRes* WgResDB::FindResFont( const WgFont* meta ) const
 {
 	FontRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1025,7 +1025,7 @@ WgResDB::FontRes* WgResDB::FindResFont( const WgFont* meta ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResFont(); res; res = res->getNext())
+	for(res = GetFirstResFont(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1036,7 +1036,7 @@ WgResDB::FontRes* WgResDB::FindResFont( const WgFont* meta ) const
 WgResDB::AnimRes* WgResDB::FindResAnim( const WgAnim* meta ) const
 {
 	AnimRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1044,7 +1044,7 @@ WgResDB::AnimRes* WgResDB::FindResAnim( const WgAnim* meta ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResAnim(); res; res = res->getNext())
+	for(res = GetFirstResAnim(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1055,7 +1055,7 @@ WgResDB::AnimRes* WgResDB::FindResAnim( const WgAnim* meta ) const
 WgResDB::CursorRes* WgResDB::FindResCursor( const WgCursor* meta ) const
 {
 	CursorRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1063,7 +1063,7 @@ WgResDB::CursorRes* WgResDB::FindResCursor( const WgCursor* meta ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResCursor(); res; res = res->getNext())
+	for(res = GetFirstResCursor(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1074,7 +1074,7 @@ WgResDB::CursorRes* WgResDB::FindResCursor( const WgCursor* meta ) const
 WgResDB::TextPropRes* WgResDB::FindResTextProp( const WgTextPropPtr meta ) const
 {
 	TextPropRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1082,7 +1082,7 @@ WgResDB::TextPropRes* WgResDB::FindResTextProp( const WgTextPropPtr meta ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResTextProp(); res; res = res->getNext())
+	for(res = GetFirstResTextProp(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1093,7 +1093,7 @@ WgResDB::TextPropRes* WgResDB::FindResTextProp( const WgTextPropPtr meta ) const
 WgResDB::BlockSetRes* WgResDB::FindResBlockSet( const WgBlockSetPtr meta ) const
 {
 	BlockSetRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1101,7 +1101,7 @@ WgResDB::BlockSetRes* WgResDB::FindResBlockSet( const WgBlockSetPtr meta ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResBlockSet(); res; res = res->getNext())
+	for(res = GetFirstResBlockSet(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1112,7 +1112,7 @@ WgResDB::BlockSetRes* WgResDB::FindResBlockSet( const WgBlockSetPtr meta ) const
 WgResDB::WidgetRes* WgResDB::FindResWidget( const WgWidget* meta ) const
 {
 	WidgetRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1120,7 +1120,7 @@ WgResDB::WidgetRes* WgResDB::FindResWidget( const WgWidget* meta ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResWidget(); res; res = res->getNext())
+	for(res = GetFirstResWidget(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1131,7 +1131,7 @@ WgResDB::WidgetRes* WgResDB::FindResWidget( const WgWidget* meta ) const
 WgResDB::ItemRes* WgResDB::FindResItem( const WgItem* meta ) const
 {
 	ItemRes * res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1139,7 +1139,7 @@ WgResDB::ItemRes* WgResDB::FindResItem( const WgItem* meta ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResItem(); res; res = res->getNext())
+	for(res = GetFirstResItem(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1150,7 +1150,7 @@ WgResDB::ItemRes* WgResDB::FindResItem( const WgItem* meta ) const
 WgResDB::MenuItemRes* WgResDB::FindResMenuItem( const WgMenuItem* meta ) const
 {
 	MenuItemRes * res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1158,7 +1158,7 @@ WgResDB::MenuItemRes* WgResDB::FindResMenuItem( const WgMenuItem* meta ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResMenuItem(); res; res = res->getNext())
+	for(res = GetFirstResMenuItem(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1170,7 +1170,7 @@ WgResDB::MenuItemRes* WgResDB::FindResMenuItem( const WgMenuItem* meta ) const
 WgResDB::TabRes* WgResDB::FindResTab( const WgTab* meta ) const
 {
 	TabRes * res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1178,7 +1178,7 @@ WgResDB::TabRes* WgResDB::FindResTab( const WgTab* meta ) const
 				return res;
 		}
 	}
-	for(res = GetFirstResTab(); res; res = res->getNext())
+	for(res = GetFirstResTab(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1190,7 +1190,7 @@ WgResDB::TabRes* WgResDB::FindResTab( const WgTab* meta ) const
 WgResDB::TextManagerRes* WgResDB::FindResTextManager( const WgTextManager* meta ) const
 {
 	TextManagerRes * res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1198,7 +1198,7 @@ WgResDB::TextManagerRes* WgResDB::FindResTextManager( const WgTextManager* meta 
 				return res;
 		}
 	}
-	for(res = GetFirstResTextManager(); res; res = res->getNext())
+	for(res = GetFirstResTextManager(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1209,7 +1209,7 @@ WgResDB::TextManagerRes* WgResDB::FindResTextManager( const WgTextManager* meta 
 WgResDB::SkinManagerRes* WgResDB::FindResSkinManager( const WgSkinManager* meta ) const
 {
 	SkinManagerRes * res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->getNext())
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
@@ -1217,7 +1217,7 @@ WgResDB::SkinManagerRes* WgResDB::FindResSkinManager( const WgSkinManager* meta 
 				return res;
 		}
 	}
-	for(res = GetFirstResSkinManager(); res; res = res->getNext())
+	for(res = GetFirstResSkinManager(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;

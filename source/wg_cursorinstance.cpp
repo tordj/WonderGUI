@@ -187,7 +187,7 @@ void WgCursorInstance::gotoPrevWord()
 
 	const WgChar* pText = m_pText->getLineText(line) + col - 1;
 
-	while( !isspace(pText->GetGlyph()) && !ispunct(pText->GetGlyph()) )
+	while( !isspace(pText->Glyph()) && !ispunct(pText->Glyph()) )
 	{
 		if(col == 0)
 		{
@@ -226,7 +226,7 @@ void WgCursorInstance::gotoBeginningOfWord()
 
 	const WgChar* pText = m_pText->getLineText(line) + col - 1;
 
-	while( isspace(pText->GetGlyph()) || ispunct(pText->GetGlyph()) )
+	while( isspace(pText->Glyph()) || ispunct(pText->Glyph()) )
 	{
 		if(col == 0)
 		{
@@ -265,7 +265,7 @@ void WgCursorInstance::gotoNextWord()
 
 	const WgChar* pText = m_pText->getLineText(line) + col;
 
-	while( !pText->IsEndOfText() && (isspace(pText->GetGlyph()) || ispunct(pText->GetGlyph())) )
+	while( !pText->IsEndOfText() && (isspace(pText->Glyph()) || ispunct(pText->Glyph())) )
 	{
 		if(pText->IsEndOfLine())
 			line++, col = 0;
@@ -292,7 +292,7 @@ void WgCursorInstance::gotoEndOfWord()
 
 	const WgChar* pText = m_pText->getLineText(line) + col;
 
-	while( !pText->IsEndOfText() && !isspace(pText->GetGlyph()) && !ispunct(pText->GetGlyph()) )
+	while( !pText->IsEndOfText() && !isspace(pText->Glyph()) && !ispunct(pText->Glyph()) )
 	{
 		if(pText->IsEndOfLine())
 			line++, col = 0;

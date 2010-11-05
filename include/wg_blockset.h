@@ -50,16 +50,19 @@ class WgSurface;
 
 enum WgBlockFlags
 {
-	WG_OPAQUE_CENTER	= 0x01,
-	WG_OPAQUE			= 0x03,
+	WG_OPAQUE_CENTER	= 0x001,
+	WG_OPAQUE			= 0x003,
 
-	WG_TILE_CENTER		= 0x04,
-	WG_SCALE_CENTER		= 0x08,
+	WG_TILE_CENTER		= 0x004,
+	WG_SCALE_CENTER		= 0x008,
+	WG_FIXED_CENTER		= 0x010,
 
-	WG_TILE_LEFT		= 0x10,
-	WG_TILE_RIGHT		= 0x20,
-	WG_TILE_TOP			= 0x40,
-	WG_TILE_BOTTOM		= 0x80,
+	WG_TILE_LEFT		= 0x020,
+	WG_TILE_RIGHT		= 0x040,
+	WG_TILE_TOP			= 0x080,
+	WG_TILE_BOTTOM		= 0x100,
+
+
 
 	WG_TILE_BORDERS		= WG_TILE_LEFT | WG_TILE_RIGHT | WG_TILE_TOP | WG_TILE_BOTTOM,
 	WG_TILE_ALL			= WG_TILE_BORDERS | WG_TILE_CENTER,
@@ -67,15 +70,15 @@ enum WgBlockFlags
 	// On a skip-request the block is assumed to be totally transparent and
 	// will not be rendered at all (even if it actually contains graphics).
 
-	WG_SKIP_NORMAL		= 0x100,
-	WG_SKIP_MARKED		= 0x200,
-	WG_SKIP_SELECTED	= 0x400,
-	WG_SKIP_DISABLED	= 0x800,
-	WG_SKIP_SPECIAL		= 0x1000,
+	WG_SKIP_NORMAL		= 0x200,
+	WG_SKIP_MARKED		= 0x400,
+	WG_SKIP_SELECTED	= 0x800,
+	WG_SKIP_DISABLED	= 0x1000,
+	WG_SKIP_SPECIAL		= 0x2000,
 
 	// Flags that can not be set by user
 
-	WG_HAS_BORDERS		= 0x2000,	
+	WG_HAS_BORDERS		= 0x4000,	
 };
 
 
@@ -197,6 +200,7 @@ public:
 	inline bool					HasTiledRightBorder() const { return ((m_flags & WG_TILE_RIGHT) != 0); }
 
 	inline bool					IsScaled() const { return ((m_flags & WG_SCALE_CENTER) != 0); }
+	inline bool					IsFixedSize() const { return ((m_flags & WG_FIXED_CENTER) != 0); }
 
 	inline bool					IsSkipable() const	{ return ((m_flags & WG_SKIP_NORMAL) != 0); }
 
@@ -299,6 +303,9 @@ public:
 
 	bool				IsScaled() const { return ((m_flags & WG_SCALE_CENTER) != 0); }
 	bool				SetScale(bool bScale);
+
+	bool				IsFixedSize() const { return ((m_flags & WG_FIXED_CENTER) != 0); }
+	bool				SetFixedSize(bool bFixedSize);						//TODO: Make center-mode enum of fixed-size/tile/stretch/scale.
 
 	bool				SameBlock( WgMode one, WgMode two, int alt = 0 );
 	inline bool			IsModeSkipable( WgMode m ) const;

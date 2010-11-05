@@ -815,7 +815,7 @@ WgRect Wdg_TableView::GetCellGeo( int row, int column )
 		r.y += m_pHeaderGfx->GetHeight();
 
 
-	WgTableRow * pRow = (WgTableRow *) m_items.getFirst();
+	WgTableRow * pRow = (WgTableRow *) m_items.First();
 
 	// Forward to our row
 	for( int i = 0 ; i < row ; i++ )
@@ -826,7 +826,7 @@ WgRect Wdg_TableView::GetCellGeo( int row, int column )
 		if( pRow->IsVisible() )
 			r.y += pRow->Height() + m_cellPaddingY*2;
 
-		pRow = (WgTableRow *) pRow->GetNext();
+		pRow = (WgTableRow *) pRow->Next();
 	}
 	r.y += m_cellPaddingY;
 
@@ -896,7 +896,7 @@ bool Wdg_TableView::DeleteRow( Uint32 pos )
 	if( pos == m_markedRow )
 		UpdateMarkedRowColumn(-1,m_markedColumn);
 
-	if(m_pLastMarkedItem == m_items.get(pos))
+	if(m_pLastMarkedItem == m_items.Get(pos))
 		m_pLastMarkedItem = 0;
 	return DeleteItem(pos);
 }
@@ -1039,13 +1039,13 @@ void Wdg_TableView::UpdateContentSize()
 
 	// Calc contentHeight
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	while( p )
 	{
 		if( p->IsVisible() )
 			contentHeight += p->Height() + m_cellPaddingY*2;
-		p = p->getNext();
+		p = p->Next();
 	}
 
 	// Calc contentWidth
@@ -1083,7 +1083,7 @@ void Wdg_TableView::refreshItems()
 
 	if( m_pLastMarkedItem )
 	{
-		WgItem * p = m_items.getFirst();
+		WgItem * p = m_items.First();
 
 		while( p )
 		{
@@ -1093,7 +1093,7 @@ void Wdg_TableView::refreshItems()
 					p = 0;
 				break;
 			}
-			p = p->getNext();
+			p = p->Next();
 		}
 		if( p == 0 )
 			m_pLastMarkedItem = 0;
@@ -1132,12 +1132,12 @@ void Wdg_TableView::ScrollIntoView( WgTableRow* pRow )
 	// calc y pos of this row
 	Uint32 itemPosY = 0;
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 	while( p && p != pRow )
 	{
 		if(p->IsVisible())
 			itemPosY += p->Height() + m_cellPaddingY*2;
-		p = p->getNext();
+		p = p->Next();
 	}
 
 	if( !p )
@@ -1175,7 +1175,7 @@ void Wdg_TableView::DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGe
 		// so we'll manually go through and tell every row's item to adapt to the new width.
 		// something like this is probably required in SetColumnWidth() as well,
 		// however none of this is a viable solution of course.
-		WgTableRow * pRow = (WgTableRow *) m_items.getFirst();
+		WgTableRow * pRow = (WgTableRow *) m_items.First();
 		while( pRow )
 		{
 			WgItem *	pCell = pRow->GetFirstItem();
@@ -1239,7 +1239,7 @@ WgItem* Wdg_TableView::GetMarkedItem( Uint32 x, Uint32 y )
 
 	for( int i = 0 ; i < column ; i++ )
 	{
-		p = p->getNext();
+		p = p->Next();
 		if( p == 0 )
 			return 0;								// Items ended on this row before we reached our column.
 	}
@@ -1276,7 +1276,7 @@ int Wdg_TableView::GetMarkedRow( Uint32 y, WgTableRow*& pSaveRow, Uint32& saveYO
 
 	//
 
-	WgItem * p	= m_items.getFirst();
+	WgItem * p	= m_items.First();
 
 	while( p )
 	{
@@ -1292,7 +1292,7 @@ int Wdg_TableView::GetMarkedRow( Uint32 y, WgTableRow*& pSaveRow, Uint32& saveYO
 
 			y -= p->Height() +  m_cellPaddingY*2;
 		}
-		p = p->getNext();
+		p = p->Next();
 		row++;
 	}
 	return -1;									// Rows ended before mark-point.
@@ -1346,7 +1346,7 @@ void Wdg_TableView::ItemAdded( WgItem * pItem )
 	for( unsigned int n = 0 ; n < m_nColumns && pI ; n++ )
 	{
 		pI->AdaptToWidth( m_pColumns[n].GetWidth() - m_cellPaddingX*2 );
-		pI = pI->getNext();
+		pI = pI->Next();
 	}
 
 
@@ -1452,7 +1452,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 	// Start drawing cell contents.
 
-	WgTableRow * pRow = (WgTableRow *) m_items.getFirst();
+	WgTableRow * pRow = (WgTableRow *) m_items.First();
 	int iRowColor = 0;
 
 	// Skip rows that are above clipping area.
@@ -1882,7 +1882,7 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 		// HACK. Remove when message loop is implemented
 		// pItem can be deleted in the ActionResponse callback. Make sure it still exist // Martin
 		m_pLastMarkedItem = 0;
-		WgTableRow* pRow = (WgTableRow*)m_items.getFirst();
+		WgTableRow* pRow = (WgTableRow*)m_items.First();
 		while( pRow )
 		{
 			if( pRow->HasItem( pItem ) )

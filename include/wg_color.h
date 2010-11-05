@@ -47,7 +47,7 @@ public:
 	inline WgColor operator*( float f ) const;
 	inline WgColor operator*( const WgColor& k ) const;
 
-	static WgColor blend( const WgColor& start, const WgColor& dest, float grade );
+	static WgColor Blend( const WgColor& start, const WgColor& dest, float grade );
 
 	inline static WgColor& White() {return g_white;};
 	inline static WgColor& Black() {return g_black;};

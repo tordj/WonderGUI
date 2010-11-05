@@ -47,7 +47,7 @@ class Wdg_Lodder:public WgWidget, public WgEmitter
 
 		void		AddChildrenAsLODs();
 		const Lod*	GetLOD(Uint32 iLod) const;
-		Uint32		GetLODCount() const { return m_lodChain.size(); }
+		Uint32		GetLODCount() const { return m_lodChain.Size(); }
 		bool		IsLOD(WgWidget* pWidget) const;
 
 	protected:

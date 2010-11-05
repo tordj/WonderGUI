@@ -26,19 +26,19 @@ WgChainImp::WgChainImp()
 //-----------------------------------------------------------------------------
 WgChainImp::~WgChainImp()
 {
-	clear();
+	Clear();
 }
 
 
 //-----------------------------------------------------------------------------
-WgLink* WgChainImp::get( Uint32 index ) const
+WgLink* WgChainImp::Get( int index ) const
 {
 	if( index >= m_size )
 		return 0;
 
 	WgLink * pLink = m_pFirst;
 
-	for( Uint32 i = 0 ; i < index ; i++ )
+	for( int i = 0 ; i < index ; i++ )
 		pLink = pLink->m_pNext;
 
 	return pLink;
@@ -46,13 +46,13 @@ WgLink* WgChainImp::get( Uint32 index ) const
 
 
 //-----------------------------------------------------------------------------
-bool WgChainImp::isMember( WgLink * _pLink ) const
+bool WgChainImp::IsMemberOf( WgLink * _pLink ) const
 {
 	return _pLink != 0 && _pLink->m_pChain == this;
 }
 
 //-----------------------------------------------------------------------------
-void WgChainImp::clear()
+void WgChainImp::Clear()
 {
 	while( m_pFirst )
 		delete	m_pFirst;
@@ -65,19 +65,19 @@ void WgChainImp::clear()
 //-----------------------------------------------------------------------------
 WgLink::WgLink( WgChainImp * pChain )
 {
-	reset();
+	Reset();
 	if( pChain )
-		moveFirst( pChain );
+		MoveFirst( pChain );
 }
 
 //-----------------------------------------------------------------------------
 WgLink::~WgLink()
 {
-	disconnect();
+	Disconnect();
 }
 
 //-----------------------------------------------------------------------------
-Sint32 WgLink::getIndex() const
+int WgLink::Index() const
 {
 	if( !m_pChain )
 		return -1;
@@ -94,7 +94,7 @@ Sint32 WgLink::getIndex() const
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::moveUp()
+bool WgLink::MoveUp()
 {
 	if( !m_pPrev )
 		return false;
@@ -119,7 +119,7 @@ bool WgLink::moveUp()
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::moveDown()
+bool WgLink::MoveDown()
 {
 	if( !m_pNext )
 		return false;
@@ -144,7 +144,7 @@ bool WgLink::moveDown()
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::moveFirst( WgChainImp * pChain )
+bool WgLink::MoveFirst( WgChainImp * pChain )
 {
 	if( !pChain )
 	{
@@ -154,7 +154,7 @@ bool WgLink::moveFirst( WgChainImp * pChain )
 	}
 
 	if( m_pChain )
-		unlink();
+		Unlink();
 
 	m_pChain = pChain;
 	m_pPrev = 0;
@@ -171,7 +171,7 @@ bool WgLink::moveFirst( WgChainImp * pChain )
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::moveLast( WgChainImp * pChain )
+bool WgLink::MoveLast( WgChainImp * pChain )
 {
 	if( !pChain )
 	{
@@ -181,7 +181,7 @@ bool WgLink::moveLast( WgChainImp * pChain )
 	}
 
 	if( m_pChain )
-		unlink();
+		Unlink();
 
 	m_pChain = pChain;
 	m_pNext = 0;
@@ -198,7 +198,7 @@ bool WgLink::moveLast( WgChainImp * pChain )
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::moveAfter( WgLink * pLink )
+bool WgLink::MoveAfter( WgLink * pLink )
 {
 	if( !pLink || !pLink->m_pChain )
 		return false;
@@ -207,7 +207,7 @@ bool WgLink::moveAfter( WgLink * pLink )
 		return true;
 
 	if( m_pChain )
-		unlink();
+		Unlink();
 
 	m_pChain = pLink->m_pChain;
 	m_pNext = pLink->m_pNext;
@@ -227,7 +227,7 @@ bool WgLink::moveAfter( WgLink * pLink )
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::moveBefore( WgLink * pLink )
+bool WgLink::MoveBefore( WgLink * pLink )
 {
 	if( !pLink || !pLink->m_pChain )
 		return false;
@@ -236,7 +236,7 @@ bool WgLink::moveBefore( WgLink * pLink )
 		return true;
 
 	if( m_pChain )
-		unlink();
+		Unlink();
 
 	m_pChain = pLink->m_pChain;
 	m_pNext = pLink;
@@ -257,12 +257,12 @@ bool WgLink::moveBefore( WgLink * pLink )
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::disconnect()
+bool WgLink::Disconnect()
 {
 	if( m_pChain )
 	{
-		unlink();
-		reset();
+		Unlink();
+		Reset();
 		return true;
 	}
 

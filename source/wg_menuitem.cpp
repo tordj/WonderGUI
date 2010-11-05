@@ -162,18 +162,18 @@ bool WgMenuRadioButton::Select()
 
 	m_bSelected = true;
 
-	WgMenuItem * pItem = this->getNext();
+	WgMenuItem * pItem = this->Next();
 	while( pItem && pItem->GetType() == RADIOBUTTON )
 	{
 		((WgMenuRadioButton*)pItem)->m_bSelected = false;
-		pItem = pItem->getNext();
+		pItem = pItem->Next();
 	}
 
-	pItem = this->getPrev();
+	pItem = this->Prev();
 	while( pItem && pItem->GetType() == RADIOBUTTON )
 	{
 		((WgMenuRadioButton*)pItem)->m_bSelected = false;
-		pItem = pItem->getPrev();
+		pItem = pItem->Prev();
 	}
 
 	

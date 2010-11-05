@@ -121,7 +121,7 @@ public:
 	Uint32		nbChars() const;
 	Uint32		nbLines() const;
 
-	inline const WgChar * getText() const { return m_buffer.GetChars(); }
+	inline const WgChar * getText() const { return m_buffer.Chars(); }
 	inline WgCharBuffer * getBuffer() { return &m_buffer; }
 	inline const WgCharBuffer * getBuffer() const { return &m_buffer; }
 

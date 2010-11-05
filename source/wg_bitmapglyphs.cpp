@@ -53,7 +53,7 @@ WgBitmapGlyphs::WgBitmapGlyphs( WgSurface * pSurf, char * pGlyphSpec, bool binar
 		m_glyphTab[i] = 0;
 
 	// Insert the glyphs
-	insertGlyphs(pSurf, pGlyphSpec, binaryFile);
+	InsertGlyphs(pSurf, pGlyphSpec, binaryFile);
 /*
 	// Create an underline specification from the '_' character as default.
 	// It should be possible to specify something different in the spec file later on...
@@ -94,9 +94,9 @@ WgBitmapGlyphs::~WgBitmapGlyphs()
 }
 
 
-//____ copyGlyphs() ___________________________________________________________
+//____ CopyGlyphs() ___________________________________________________________
 
-void WgBitmapGlyphs::copyGlyphs( WgBitmapGlyphs* pOtherFont )
+void WgBitmapGlyphs::CopyGlyphs( WgBitmapGlyphs* pOtherFont )
 {
 	// Multiply average spacing by glyph count so that we can continue to add widths..
 	m_avgSpacing *= m_nGlyphs;
@@ -196,9 +196,9 @@ inline int WgBitmapGlyphs::GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph*
 }
 
 
-//____ insertGlyphs() _________________________________________________________
+//____ InsertGlyphs() _________________________________________________________
 
-void WgBitmapGlyphs::insertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool binaryFile )
+void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool binaryFile )
 {
 	// Multiply average spacing by glyph count so that we can continue to add widths..
 	m_avgSpacing *= m_nGlyphs;

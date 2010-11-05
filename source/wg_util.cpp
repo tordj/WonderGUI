@@ -7,6 +7,30 @@
 
 bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 {
+	if( block.IsFixedSize() )
+	{
+		int areaW = area.w;
+		int areaH = area.h;
+
+		int blockW = block.GetWidth();
+		int blockH = block.GetHeight();		
+
+		if( areaW > blockW )
+		{
+			area.x += (areaW - blockW)/2;
+			area.w = blockW;
+		}
+
+		if( areaH > blockH )
+		{
+			area.y += (areaH - blockH)/2;
+			area.h = blockH;
+		}
+
+		return true;
+	}
+
+
 	if(!block.IsScaled())
 		return false;
 
@@ -137,7 +161,7 @@ bool WgUtil::MarkTestBlock( WgCord ofs, const WgBlock& block, WgRect area )
 		}
 	}
 
-	Uint8 alpha = block.GetSurface()->opacity(block.GetRect().x+ofs.x, block.GetRect().y+ofs.y);
+	Uint8 alpha = block.GetSurface()->GetOpacity(block.GetRect().x+ofs.x, block.GetRect().y+ofs.y);
 
 	if( alpha )
 		return true;

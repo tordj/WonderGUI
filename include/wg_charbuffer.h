@@ -462,7 +462,7 @@ public:
 	/// @return Pointer to the null-terminated content of the buffer. A valid pointer is always returned, never null.
 
 
-	inline const WgChar * GetChars() const { return (const WgChar*) GetPtr(0); }
+	inline const WgChar * Chars() const { return (const WgChar*) GetPtr(0); }
 
 	/// @brief Returns the number of characters in the buffer.
 	///
@@ -470,7 +470,7 @@ public:
 	///
 	/// @return Number of characters in the buffer (or length of the buffer content if you so will).
 
-	inline Uint32		GetNbChars() const { return m_pHead->m_len; }
+	inline Uint32		NbChars() const { return m_pHead->m_len; }
 
 	/// @brief Returns the number of characters in the buffer.
 	///
@@ -486,7 +486,7 @@ public:
 	///
 	/// @return Number of characters the buffer can hold before it needs to be reallocated.
 
-	inline Uint32		GetSize() const { return m_pHead->m_size; }
+	inline Uint32		Size() const { return m_pHead->m_size; }
 
 	/// @brief 	Returns available space for new characters in the front of the buffer.
 	///
@@ -495,7 +495,7 @@ public:
 	///
 	/// @return Number of characters that can be pushed to the front without causing extra overhead.
 
-	inline Uint32		GetFrontCapacity() const { return m_pHead->m_beg; }
+	inline Uint32		FrontCapacity() const { return m_pHead->m_beg; }
 
 	/// @brief 	Returns available space for new characters in the back of the buffer.
 	///
@@ -504,7 +504,7 @@ public:
 	///
 	/// @return Number of characters that can be pushed to the back without causing extra overhead.
 
-	inline Uint32		GetBackCapacity() const { return m_pHead->m_size - (m_pHead->m_beg + m_pHead->m_len); }
+	inline Uint32		BackCapacity() const { return m_pHead->m_size - (m_pHead->m_beg + m_pHead->m_len); }
 
 	/// @brief 	Returns total available space for new characters in the buffer.
 	///
@@ -513,7 +513,7 @@ public:
 	///
 	/// @return Number of characters that can be added to the buffer without reallocation.
 
-	inline Uint32		GetCapacity() const { return m_pHead->m_size - m_pHead->m_len; }
+	inline Uint32		Capacity() const { return m_pHead->m_size - m_pHead->m_len; }
 
 
 	/// @brief	Fills the buffer with specified character.
@@ -832,7 +832,7 @@ public:
 	///
 	/// @return Number of objects referencing the same buffer. Always one or higher.
 
-	inline Uint32		GetRefCount() const { return m_pHead->m_refCnt; }
+	inline Uint32		RefCount() const { return m_pHead->m_refCnt; }
 
 	/// @brief Returns total number of memory buffers currently in use.
 	///
@@ -841,7 +841,7 @@ public:
 	/// @return Number of memory buffers currently in use, which is @<=
 	/// total number of WgCharBuffer, WgString and WgText objects combined.
 
-	inline static Uint32 GetNbBuffers() { return g_nBuffers; }
+	inline static Uint32 NbBuffers() { return g_nBuffers; }
 
 private:
 

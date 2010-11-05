@@ -41,10 +41,10 @@ friend class WgChain<WgTreeEntry>;
 
 public:
 
-	inline WgTreeEntry * GetPrevSibling() { return getPrev(); }
-	inline WgTreeEntry * GetNextSibling() { return getNext(); }
-	inline WgTreeEntry * GetFirstChild() { return m_children.getFirst(); }
-	inline WgTreeEntry * GetLastChild() { return m_children.getLast(); }
+	inline WgTreeEntry * GetPrevSibling() { return Prev(); }
+	inline WgTreeEntry * GetNextSibling() { return Next(); }
+	inline WgTreeEntry * GetFirstChild() { return m_children.First(); }
+	inline WgTreeEntry * GetLastChild() { return m_children.Last(); }
 	inline WgTreeEntry * GetParent() { return pParent; }
 
 	WgTreeEntry * GetPrev();
@@ -52,7 +52,7 @@ public:
 
 	inline long 	GetID() { return id; }
 	inline bool		IsOpen() { return bOpen; }
-	inline bool		HasChildren() { return (m_children.getFirst()!=0)?true:false; }
+	inline bool		HasChildren() { return (m_children.First()!=0)?true:false; }
 	inline bool		IsSelected() { return (mode == WG_MODE_SELECTED); }
 	inline bool		IsDisabled() { return (mode == WG_MODE_DISABLED); }
 	inline WgItem * GetItem() { return pItem; }
@@ -124,8 +124,8 @@ class Wdg_TreeView : public Wdg_Baseclass_View
 		void	DisableAllEntries();
 		void	GotoEntry( WgTreeEntry * pEntry );
 
-		inline WgTreeEntry *	GetFirstEntry() { return m_entries.getFirst(); }
-		inline WgTreeEntry *	GetLastEntry() { return m_entries.getLast(); }
+		inline WgTreeEntry *	GetFirstEntry() { return m_entries.First(); }
+		inline WgTreeEntry *	GetLastEntry() { return m_entries.Last(); }
 
 		WgTreeEntry *	GetFirstSelectedEntry();
 		WgTreeEntry *	GetLastSelectedEntry();

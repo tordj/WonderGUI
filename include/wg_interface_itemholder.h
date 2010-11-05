@@ -63,8 +63,8 @@ public:
 	void	SetItemMarkColor( const WgColor& color );
 	WgColor	GetItemMarkColor() const { return m_itemMarkColor; }
 
-	inline WgItem*	GetFirstItem()	{ return m_items.getFirst();};
-	inline WgItem*	GetLastItem()	{ return m_items.getLast();};
+	inline WgItem*	GetFirstItem()	{ return m_items.First();};
+	inline WgItem*	GetLastItem()	{ return m_items.Last();};
 
 	void	SetItemSpacing( Uint32 spacing );
 	inline Uint32 ItemSpacing()		{ return m_itemSpacing; };

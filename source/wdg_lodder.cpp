@@ -64,7 +64,7 @@ bool Wdg_Lodder::AddLOD( WgWidget * pWidget )
 	Lod * pNew = new Lod();
 	pNew->pWidget = pWidget;
 	pNew->minSize = pWidget->GetMinSize();
-	m_lodChain.push_back(pNew);
+	m_lodChain.PushBack(pNew);
 
 	pWidget->HideBranch();
 	pWidget->MinSize(0, 0);
@@ -92,15 +92,15 @@ void Wdg_Lodder::AddChildrenAsLODs()
 
 const Wdg_Lodder::Lod* Wdg_Lodder::GetLOD(Uint32 iLod) const
 {
-	if(iLod >= m_lodChain.size())
+	if(iLod >= m_lodChain.Size())
 		return 0;
-	return m_lodChain.get(iLod);
+	return m_lodChain.Get(iLod);
 }
 
 //_____________________________________________________________________________
 bool Wdg_Lodder::RemoveLOD( WgWidget * pWidget )
 {
-	Lod * p = m_lodChain.getFirst();
+	Lod * p = m_lodChain.First();
 
 	while( p )
 	{
@@ -116,7 +116,7 @@ bool Wdg_Lodder::RemoveLOD( WgWidget * pWidget )
 
 			return true;
 		}
-		p = p->getNext();
+		p = p->Next();
 	}
 
 	return false;
@@ -125,8 +125,8 @@ bool Wdg_Lodder::RemoveLOD( WgWidget * pWidget )
 //_____________________________________________________________________________
 void Wdg_Lodder::Clear()
 {
-	while( m_lodChain.size() > 0  )
-		RemoveLOD( m_lodChain.getFirst()->pWidget );
+	while( m_lodChain.Size() > 0  )
+		RemoveLOD( m_lodChain.First()->pWidget );
 }
 
 //_____________________________________________________________________________
@@ -135,7 +135,7 @@ void Wdg_Lodder::SelectLod( const WgRect& r )
 	int			biggestFit = 0;
 	WgWidget * pWidget = 0;
 
-	Lod * p = m_lodChain.getFirst();
+	Lod * p = m_lodChain.First();
 
 	while( p )
 	{
@@ -144,7 +144,7 @@ void Wdg_Lodder::SelectLod( const WgRect& r )
 			biggestFit = p->minSize.w * p->minSize.h;
 			pWidget = p->pWidget;
 		}
-		p = p->getNext();
+		p = p->Next();
 	}
 	
 	if( pWidget != m_pCurrentLod )
@@ -170,14 +170,14 @@ void Wdg_Lodder::SelectLod( const WgRect& r )
 //_____________________________________________________________________________
 bool Wdg_Lodder::IsLOD(WgWidget* pWidget) const
 {
-	Lod * p = m_lodChain.getFirst();
+	Lod * p = m_lodChain.First();
 
 	while( p )
 	{
 		if( p->pWidget == pWidget )
 			return true;
 
-		p = p->getNext();
+		p = p->Next();
 	}
 	return false;
 }
@@ -201,18 +201,18 @@ void Wdg_Lodder::DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pCloneRoo
 
 	pClone->m_pCurrentLod = 0;
 
-	Lod * p = m_lodChain.getFirst();
+	Lod * p = m_lodChain.First();
 	while( p )
 	{
 		Lod * pNew = new Lod();
 		pNew->pWidget = p->pWidget->CloneBranch();
 		pNew->minSize = p->minSize;
-		pClone->m_lodChain.push_back(pNew);
+		pClone->m_lodChain.PushBack(pNew);
 
 		if(m_pCurrentLod == p->pWidget)
 			pClone->m_pCurrentLod = pNew->pWidget;
 
-		p = p->getNext();
+		p = p->Next();
 	}
 }
 

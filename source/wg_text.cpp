@@ -137,7 +137,7 @@ void WgText::regenHardLines()
 	}
 	else
 	{
-		int nLines = WgTextTool::countLines( m_buffer.GetChars() );
+		int nLines = WgTextTool::countLines( m_buffer.Chars() );
 
 		if( m_pHardLines == &WgText::g_emptyLine )
 		{
@@ -157,7 +157,7 @@ void WgText::regenHardLines()
 
 		int		line = 0;
 		int		ofs = 0;
-		const WgChar * p = m_buffer.GetChars();
+		const WgChar * p = m_buffer.Chars();
 
 		m_pHardLines[line].ofs = ofs;
 
@@ -316,7 +316,7 @@ Uint32 WgText::getSoftLineWidthPart( Uint32 _line, Uint32 startCol, Uint32 nCol 
 	if( nCol > pLine->nChars )
 		return 0;
 
-	return WgTextTool::lineWidthPart( m_pManagerNode, m_pProp, m_mode, m_buffer.GetChars() + pLine->ofs, nCol );
+	return WgTextTool::lineWidthPart( m_pManagerNode, m_pProp, m_mode, m_buffer.Chars() + pLine->ofs, nCol );
 }
 
 
@@ -344,7 +344,7 @@ Uint32 WgText::getLineWidthPart( Uint32 _line, Uint32 startCol, Uint32 nCol ) co
 	if( nCol > pLine->nChars - startCol )
 		return 0;
 
-	return WgTextTool::lineWidthPart( m_pManagerNode, m_pProp, m_mode, m_buffer.GetChars() + pLine->ofs, nCol );
+	return WgTextTool::lineWidthPart( m_pManagerNode, m_pProp, m_mode, m_buffer.Chars() + pLine->ofs, nCol );
 }
 
 //____ width() ________________________________________________________________
@@ -1201,7 +1201,7 @@ const WgChar * WgText::getLineText( int line ) const
 	if( line < 0 || line >= m_nHardLines )
 		return 0;
 
-	return m_buffer.GetChars() + m_pHardLines[line].ofs;
+	return m_buffer.Chars() + m_pHardLines[line].ofs;
 }
 
 //____ getSoftLineText() ______________________________________________________
@@ -1211,7 +1211,7 @@ const WgChar * WgText::getSoftLineText( int line ) const
 	if( line < 0 || line >= m_nSoftLines )
 		return 0;
 
-	return m_buffer.GetChars() + m_pSoftLines[line].ofs;
+	return m_buffer.Chars() + m_pSoftLines[line].ofs;
 }
 
 //____ SetWrap() ______________________________________________________________
@@ -1249,7 +1249,7 @@ void WgText::posSoft2Hard( Uint32 &line, Uint32 &col ) const
 
 	WgTextLine * pLine = &m_pSoftLines[line];
 
-	const WgChar * pOfs = m_buffer.GetChars() + pLine->ofs;
+	const WgChar * pOfs = m_buffer.Chars() + pLine->ofs;
 	if( col > pLine->nChars )
 		pOfs += pLine->nChars;
 	else
@@ -1258,11 +1258,11 @@ void WgText::posSoft2Hard( Uint32 &line, Uint32 &col ) const
 	// Convert character pointer to hard line/col
 
 	int ln = 0;
-	while( pOfs > m_buffer.GetChars() + m_pHardLines[ln].ofs + m_pHardLines[ln].nChars )
+	while( pOfs > m_buffer.Chars() + m_pHardLines[ln].ofs + m_pHardLines[ln].nChars )
 		ln++;
 
 	line = ln;
-	col = pOfs - (m_buffer.GetChars() + m_pHardLines[ln].ofs);
+	col = pOfs - (m_buffer.Chars() + m_pHardLines[ln].ofs);
 	return;
 }
 
@@ -1277,7 +1277,7 @@ void WgText::posHard2Soft( Uint32 &line, Uint32 &col ) const
 
 	WgTextLine * pLine = &m_pHardLines[line];
 
-	const WgChar * pOfs = m_buffer.GetChars() + pLine->ofs;
+	const WgChar * pOfs = m_buffer.Chars() + pLine->ofs;
 	if( col > pLine->nChars )
 		pOfs += pLine->nChars;
 	else
@@ -1286,11 +1286,11 @@ void WgText::posHard2Soft( Uint32 &line, Uint32 &col ) const
 	// Convert character pointer to soft line/col
 
 	int ln = line;							// Corresponding soft line needs to be same or higher...
-	while( pOfs > m_buffer.GetChars() + m_pSoftLines[ln].ofs + m_pSoftLines[ln].nChars )
+	while( pOfs > m_buffer.Chars() + m_pSoftLines[ln].ofs + m_pSoftLines[ln].nChars )
 		ln++;
 
 	line = ln;
-	col = pOfs - (m_buffer.GetChars() + m_pSoftLines[ln].ofs);
+	col = pOfs - (m_buffer.Chars() + m_pSoftLines[ln].ofs);
 	return;
 }
 
@@ -1328,21 +1328,21 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 			// Update if textproperties have changed.
 
-			if( p->GetPropHandle() != hProp )
+			if( p->PropHandle() != hProp )
 			{
-				pen.SetTextProp( m_pProp.GetHandle(), p->GetPropHandle(), m_mode );
-				hProp = p->GetPropHandle();
-				breakLevel = WgTextTool::GetCombBreakLevel( m_pProp.GetHandle(), p->GetPropHandle() );
+				pen.SetTextProp( m_pProp.GetHandle(), p->PropHandle(), m_mode );
+				hProp = p->PropHandle();
+				breakLevel = WgTextTool::GetCombBreakLevel( m_pProp.GetHandle(), p->PropHandle() );
 			}
 
 			// Break if this is end of line or end of text
 
-			if( p->GetGlyph() == '\n' )
+			if( p->Glyph() == '\n' )
 			{
 				bBreakSkips = true;
 				break;
 			}
-			else if( p->GetGlyph() == 0 )
+			else if( p->Glyph() == 0 )
 			{
 				bEndOfText = true;
 				bBreakSkips = false;
@@ -1361,7 +1361,7 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 			case WG_BREAK_ON:
 
-				if( p->GetGlyph() == WG_HYPHEN_BREAK_PERMITTED )
+				if( p->Glyph() == WG_HYPHEN_BREAK_PERMITTED )
 				{
 					// Check so a hyphen will fit on the line as well, otherwise we can't break here.
 					// We don't take kerning into account here, not so important.
@@ -1398,7 +1398,7 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 			// Increase line length
 
-			pen.SetChar( p->GetGlyph() );
+			pen.SetChar( p->Glyph() );
 			pen.ApplyKerning();
 
 
@@ -1471,9 +1471,9 @@ void WgText::regenSoftLines()
 	int nSoftLines;
 
 	if( bHasSoftLineArray )
-		nSoftLines = countWriteSoftLines( m_buffer.GetChars(), m_pSoftLines, m_nSoftLines );
+		nSoftLines = countWriteSoftLines( m_buffer.Chars(), m_pSoftLines, m_nSoftLines );
 	else
-		nSoftLines = countWriteSoftLines( m_buffer.GetChars(), 0, 0 );
+		nSoftLines = countWriteSoftLines( m_buffer.Chars(), 0, 0 );
 
 	// If we don't have any softbreaks we can just point at
 	// the hardlines since they are the same.
@@ -1509,5 +1509,5 @@ void WgText::regenSoftLines()
 
 	// Fill in the softlines-array.
 
-	countWriteSoftLines( m_buffer.GetChars(), m_pSoftLines, m_nSoftLines );
+	countWriteSoftLines( m_buffer.Chars(), m_pSoftLines, m_nSoftLines );
 }

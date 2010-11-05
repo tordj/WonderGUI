@@ -233,16 +233,16 @@ WgSurfaceGL::~WgSurfaceGL()
 	glDeleteTextures( 1, &m_texture );
 }
 
-//____ GetWidth() ______________________________________________________________
+//____ Width() ______________________________________________________________
 
-Uint32 WgSurfaceGL::GetWidth() const
+Uint32 WgSurfaceGL::Width() const
 {
 	return m_width;
 }
 
-//____ GetHeight() _____________________________________________________________
+//____ Height() _____________________________________________________________
 
-Uint32 WgSurfaceGL::GetHeight() const
+Uint32 WgSurfaceGL::Height() const
 {
 	return m_height;
 }

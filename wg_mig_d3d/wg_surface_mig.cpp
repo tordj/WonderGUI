@@ -111,16 +111,16 @@ WgSurfaceMIG::~WgSurfaceMIG()
 		Unlock();
 }
 
-//____ GetWidth() ______________________________________________________________
+//____ Width() ______________________________________________________________
 
-Uint32 WgSurfaceMIG::GetWidth() const
+Uint32 WgSurfaceMIG::Width() const
 {
 	return m_pTexture ? m_pTexture->GetWidth() : 0;
 }
 
-//____ GetHeight() _____________________________________________________________
+//____ Height() _____________________________________________________________
 
-Uint32 WgSurfaceMIG::GetHeight() const
+Uint32 WgSurfaceMIG::Height() const
 {
 	return m_pTexture ? m_pTexture->GetHeight() : 0;
 }
@@ -139,7 +139,7 @@ Uint32 WgSurfaceMIG::GetPixel( Uint32 x, Uint32 y ) const
 	Uint32 pixel = 0;
 	if( m_pTexture->GetPixelFormat() != EPixelFormat::eRGBA32 )
 		return pixel;	// TODO: support other formats?
-	if(x < GetWidth() && y < GetHeight())
+	if(x < Width() && y < Height())
 	{
 		if( m_pPixels )
 			pixel = * ((Uint32*) &m_pPixels[m_pitch*y + 4*x]);
@@ -164,7 +164,7 @@ Uint8 WgSurfaceMIG::GetOpacity( Uint32 x, Uint32 y ) const
 	Uint8 alpha = 255;
 	if( m_pTexture->GetPixelFormat() != EPixelFormat::eRGBA32 )
 		return alpha;	// TODO: support other formats?
-	if(x < GetWidth() && y < GetHeight())
+	if(x < Width() && y < Height())
 	{
 		if( m_pPixels )
 			alpha = m_pPixels[m_pitch*y + 4*x + 3];	// Tror att den ligger där, eller + 0.

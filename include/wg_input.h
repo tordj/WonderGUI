@@ -137,9 +137,8 @@ public:
 	Uint32	getKeyRepeatRate() const { return m_keyRepeatRate; }
 	Uint32	getKeyRepeatDelay() const{ return m_keyRepeatDelay; }
 
-	inline WgWidget *	getFocusedWidget( void ) { return m_pFocusedWidget; }
-	inline WgGizmo *	getFocusedGizmo( void ) { return m_pFocusedGizmo; }
-
+	inline WgWidget *	getFocusedWidget() const { return m_pFocusedWidget; }
+	inline WgGizmo *	getFocusedGizmo() const { return m_pFocusedGizmo; }
 
 	inline void				setModifierKeys( WgModifierKeys modifier ) { m_modifierKeys = modifier; }
 	inline WgModifierKeys	getModifierKeys( void ) const { return m_modifierKeys; }

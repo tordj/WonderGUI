@@ -67,12 +67,12 @@ void WgItemRow::SetHeightModify( int pixels )
 
 void WgItemRow::AdaptToHeight( Uint32 displayed_height )
 {
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	while( p )
 	{
 		p->AdaptToHeight(displayed_height);
-		p = p->getNext();
+		p = p->Next();
 	}			
 	
 	refreshItems();
@@ -127,7 +127,7 @@ void WgItemRow::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction _action
 		// HACK. Remove when message loop is implemented
 		// pItem can be deleted in the ActionResponse callback. Make sure it still exist // Martin
 		pItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
-		WgItem* p = m_items.getFirst();
+		WgItem* p = m_items.First();
 		while(p && p != pItem) p = p->GetNext();
 		if(p == pItem)
 			m_pLastMarkedItem = pItem;
@@ -156,7 +156,7 @@ void WgItemRow::Render( const WgRect& _window, const WgRect& _clip )
 
 	r = _window;
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	while( p )
 	{
@@ -164,7 +164,7 @@ void WgItemRow::Render( const WgRect& _window, const WgRect& _clip )
 		r.w = p->Width();
 		p->Render( r, _clip );
 		r.x += p->Width() + m_itemSpacing;
-		p = p->getNext();
+		p = p->Next();
 	}
 }
 
@@ -187,12 +187,12 @@ WgItem* WgItemRow::Clone( WgItem * _pClone )
 
 void WgItemRow::Enable( bool bEnable )
 {
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	while( p )
 	{
 		p->Enable(bEnable);
-		p = p->getNext();
+		p = p->Next();
 	}		
 }
 
@@ -203,7 +203,7 @@ void WgItemRow::refreshItems()
 	Uint32	contentWidth = 0;
 	Uint32	contentHeight = 0;
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 
 	if( p )
 		contentWidth -= m_itemSpacing;		// We will get one spacing too much...
@@ -214,7 +214,7 @@ void WgItemRow::refreshItems()
 			contentHeight = p->Height();
 		
 		contentWidth += p->Width() + m_itemSpacing;
-		p = p->getNext();
+		p = p->Next();
 	}
 
 	contentHeight += m_heightModify;
@@ -246,7 +246,7 @@ WgItem* WgItemRow::GetMarkedItem( Uint32 x, Uint32 y )
 	// also, there are surely situations where you only want the row, and other ones where you want specific sub-items...
 	// how to solve this?
 	/*Uint32 itemX1 = 0;
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 	while( p )
 	{
 		Uint32 itemX2 = itemX1 + p->Width();

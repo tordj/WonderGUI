@@ -13,7 +13,7 @@ class WgPointerSpy
 public:
 //	virtual void EnterWidget( WgWidget * pWidget ) = 0;
 //	virtual void LeaveWidget( WgWidget * pWidget ) = 0;
-	virtual void PointerPosition( Sint32 x, Sint32 y, WgWidget * pWidget, Uint32 msHover ) = 0;
+	virtual void PointerPosition( Sint32 x, Sint32 y, WgWidget * pWidget, Uint32 msHover, WgWidget* pPressed ) = 0;
 };
 
 #endif //WG_POINTERSPY_DOT_H

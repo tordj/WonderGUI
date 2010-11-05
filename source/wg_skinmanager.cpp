@@ -44,7 +44,7 @@ WgSkinNode * WgSkinManager::NewNode( WgGizmo * pGizmo )
 		return 0;
 
 	WgSkinNode * p = new WgSkinNode( this, pGizmo );
-	m_nodes.push_back( p );
+	m_nodes.PushBack( p );
 	return p;
 }
 

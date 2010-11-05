@@ -463,8 +463,16 @@ start:
 		if( m_position.nWidgets > 0 )
 			pWdg = m_position.aWidgets[0];*/
 
+		WgWidget* pPressed = 0;
+		if( m_bButtonDown[ 0 ] == true )
+		{
+			const WgActionDetails * p = &m_pressed[0];
+			if( p->nWidgets > 0 )
+				pPressed = p->aWidgets[0];
+		}
+		
 		for( Uint32 i = 0; i < m_nPointerSpies; ++i )
-			m_pPointerSpies[ i ]->PointerPosition( m_position.x, m_position.y, pTopMarkSpy, m_time - m_hoverStartTime );
+			m_pPointerSpies[ i ]->PointerPosition( m_position.x, m_position.y, pTopMarkSpy, m_time - m_hoverStartTime, pPressed );
 	}
 
 }

@@ -271,6 +271,17 @@ enum WgCursorStyle
 	WG_CURSOR_SIZE_W_E,						// double-pointed arrow pointing west and east
 };
 
+//____ WgAnimMode _____________________________________________________________
+
+enum WgAnimMode
+{
+	WG_FORWARD_ONCE,
+	WG_BACKWARD_ONCE,
+	WG_FORWARD_LOOPING,
+	WG_BACKWARD_LOOPING,
+	WG_FORWARD_PINGPONG,
+	WG_BACKWARD_PINGPONG
+};
 
 
 //____ WgTintMode _____________________________________________________________

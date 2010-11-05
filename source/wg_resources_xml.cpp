@@ -451,7 +451,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	s.BeginTag(TagName());
 
 	// references
-	for(WgResDB::ResDBRes* res = s.ResDb()->GetFirstResDBRes(); res; res = res->getNext())
+	for(WgResDB::ResDBRes* res = s.ResDb()->GetFirstResDBRes(); res; res = res->Next())
 	{
 		WgReferenceRes refRes(this, res);
 		refRes.SetMetaData(res->meta);
@@ -459,7 +459,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	}
 
 	// colors
-	for(WgResDB::ColorRes* res = s.ResDb()->GetFirstResColor(); res; res = res->getNext())
+	for(WgResDB::ColorRes* res = s.ResDb()->GetFirstResColor(); res; res = res->Next())
 	{
 		WgColorRes colorRes(this, res->res);
 		colorRes.SetMetaData(res->meta);
@@ -470,7 +470,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResGlyphSet())
 	{
 		s.AddText("\n");
-		for(WgResDB::GlyphSetRes* res = s.ResDb()->GetFirstResGlyphSet(); res; res = res->getNext())
+		for(WgResDB::GlyphSetRes* res = s.ResDb()->GetFirstResGlyphSet(); res; res = res->Next())
 		{
 			WgGlyphSetRes glyphSetRes(this, res->res);
 			glyphSetRes.SetMetaData(res->meta);
@@ -482,7 +482,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResSurface())
 	{
 		s.AddText("\n");
-		for(WgResDB::SurfaceRes* res = s.ResDb()->GetFirstResSurface(); res; res = res->getNext())
+		for(WgResDB::SurfaceRes* res = s.ResDb()->GetFirstResSurface(); res; res = res->Next())
 		{
 			WgSurfaceRes surfaceRes(this, res->res);
 			surfaceRes.SetMetaData(res->meta);
@@ -494,7 +494,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResAnim())
 	{
 		s.AddText("\n");
-		for(WgResDB::AnimRes* res = s.ResDb()->GetFirstResAnim(); res; res = res->getNext())
+		for(WgResDB::AnimRes* res = s.ResDb()->GetFirstResAnim(); res; res = res->Next())
 		{
 			WgAnimRes animRes(this, (WgGfxAnim*)res->res);
 			animRes.SetMetaData(res->meta);
@@ -506,7 +506,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResCursor())
 	{
 		s.AddText("\n");
-		for(WgResDB::CursorRes* res = s.ResDb()->GetFirstResCursor(); res; res = res->getNext())
+		for(WgResDB::CursorRes* res = s.ResDb()->GetFirstResCursor(); res; res = res->Next())
 		{
 			WgCursorRes cursorRes(this, res->res);
 			cursorRes.SetMetaData(res->meta);
@@ -518,7 +518,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResFont())
 	{
 		s.AddText("\n");
-		for(WgResDB::FontRes* res = s.ResDb()->GetFirstResFont(); res; res = res->getNext())
+		for(WgResDB::FontRes* res = s.ResDb()->GetFirstResFont(); res; res = res->Next())
 		{
 			WgFontRes fontRes(this, res->res);
 			fontRes.SetMetaData(res->meta);
@@ -530,7 +530,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResBlockSet())
 	{
 		s.AddText("\n");
-		for(WgResDB::BlockSetRes* res = s.ResDb()->GetFirstResBlockSet(); res; res = res->getNext())
+		for(WgResDB::BlockSetRes* res = s.ResDb()->GetFirstResBlockSet(); res; res = res->Next())
 		{
 			WgBlockSetRes blockSetRes(this, res->res);
 			blockSetRes.SetMetaData(res->meta);
@@ -542,7 +542,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResTextProp())
 	{
 		s.AddText("\n");
-		for(WgResDB::TextPropRes* res = s.ResDb()->GetFirstResTextProp(); res; res = res->getNext())
+		for(WgResDB::TextPropRes* res = s.ResDb()->GetFirstResTextProp(); res; res = res->Next())
 		{
 			WgTextPropRes textPropRes(this, res->res);
 			textPropRes.SetMetaData(res->meta);
@@ -554,7 +554,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResTextManager())
 	{
 		s.AddText("\n");
-		for(WgResDB::TextManagerRes* res = s.ResDb()->GetFirstResTextManager(); res; res = res->getNext())
+		for(WgResDB::TextManagerRes* res = s.ResDb()->GetFirstResTextManager(); res; res = res->Next())
 		{
 			WgTextManagerRes textManagerRes(this, res->res);
 			textManagerRes.SetMetaData(res->meta);
@@ -566,7 +566,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResSkinManager())
 	{
 		s.AddText("\n");
-		for(WgResDB::SkinManagerRes* res = s.ResDb()->GetFirstResSkinManager(); res; res = res->getNext())
+		for(WgResDB::SkinManagerRes* res = s.ResDb()->GetFirstResSkinManager(); res; res = res->Next())
 		{
 			WgSkinManagerRes skinManagerRes(this, res->res);
 			skinManagerRes.SetMetaData(res->meta);
@@ -578,7 +578,7 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 	if(s.ResDb()->GetFirstResWidget())
 	{
 		s.AddText("\n");
-		for(WgResDB::WidgetRes* res = s.ResDb()->GetFirstResWidget(); res; res = res->getNext())
+		for(WgResDB::WidgetRes* res = s.ResDb()->GetFirstResWidget(); res; res = res->Next())
 		{
 			// Only write top level widgets. WgWidgetRes takes care of the subtree
 			if(IsTopLevelWidget(res->res, s))
@@ -612,7 +612,7 @@ void WgXmlRoot::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 
 bool WgXmlRoot::IsTopLevelWidget(WgWidget* widget, WgResourceSerializerXML& s)
 {
-	for(WgResDB::WidgetRes* res = s.ResDb()->GetFirstResWidget(); res; res = res->getNext())
+	for(WgResDB::WidgetRes* res = s.ResDb()->GetFirstResWidget(); res; res = res->Next())
 	{
 		if(widget->IsChildOf(res->res))
 			return false;
@@ -633,7 +633,7 @@ bool WgXmlRoot::IsTopLevelWidget(WgWidget* widget, WgResourceSerializerXML& s)
 void WgConnectRes::Serialize(WgResourceSerializerXML& s, WgWidgetRes* widgetRes)
 {
 	WgWidget* widget = widgetRes->GetWidget();
-	for(WgResDB::ConnectRes* res = s.ResDb()->GetFirstResConnect(); res; res = res->getNext())
+	for(WgResDB::ConnectRes* res = s.ResDb()->GetFirstResConnect(); res; res = res->Next())
 	{
 		ConnectData* meta = (ConnectData*)res->meta;
 		if(meta && meta->pEmitter == widget)
@@ -1818,9 +1818,9 @@ void WgAnimRes::Serialize(WgResourceSerializerXML& s)
 	s.BeginTag(TagName(), XmlNode());
 	WriteDiffAttr<Uint32>(s, XmlNode(), "state_w", m_pAnim->width() - legoMargin, 0);
 	WriteDiffAttr<Uint32>(s, XmlNode(), "state_h", m_pAnim->height(), 0);
-	WriteDiffAttr(s, XmlNode(), "playmode", FromPlayMode(m_pAnim->playMode()), FromPlayMode(WgAnim::FORWARD_ONCE));
-	WriteDiffAttr(s, XmlNode(), "timescale", m_pAnim->timeScaler(), 1.f);
-	WriteDiffAttr(s, XmlNode(), "duration", m_pAnim->duration(), (Uint32)0);
+	WriteDiffAttr(s, XmlNode(), "playmode", FromPlayMode(m_pAnim->PlayMode()), FromPlayMode(WG_FORWARD_ONCE));
+	WriteDiffAttr(s, XmlNode(), "timescale", m_pAnim->TimeScaler(), 1.f);
+	WriteDiffAttr(s, XmlNode(), "duration", m_pAnim->Duration(), (Uint32)0);
 
 	s.EndTag();
 }
@@ -1828,8 +1828,8 @@ void WgAnimRes::Serialize(WgResourceSerializerXML& s)
 void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
 	m_pAnim = new WgGfxAnim();
-	m_pAnim->setTimeScaler(WgUtil::ToFloat(xmlNode["timescale"]));
-	m_pAnim->setPlayMode(ToPlayMode(xmlNode["playmode"]));
+	m_pAnim->SetTimeScaler(WgUtil::ToFloat(xmlNode["timescale"]));
+	m_pAnim->SetPlayMode(ToPlayMode(xmlNode["playmode"]));
 
 	const int legoMargin = 2;
 	Uint32 duration = WgUtil::ToUint32(xmlNode["duration"]);
@@ -1857,7 +1857,7 @@ void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 		m_pAnim->setWidth(stateW);
 		m_pAnim->setHeight(stateH);
 
-		int nHorStates = pSurf->width() / (stateW + legoMargin);
+		int nHorStates = pSurf->Width() / (stateW + legoMargin);
 		for(int y = 0; nStates > 0; y += stateH + legoMargin, nStates -= nHorStates)
 		{
 			if(nStates > nHorStates)
@@ -1870,31 +1870,31 @@ void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 	s.ResDb()->AddAnim(xmlNode["id"], m_pAnim, new WgXMLMetaData(xmlNode));
 }
 
-std::string WgAnimRes::FromPlayMode(WgAnim::PlayMode mode)
+std::string WgAnimRes::FromPlayMode(WgAnimMode mode)
 {
 	switch(mode)
 	{
-		case WgAnim::FORWARD_ONCE:		return "fwd_once";
-		case WgAnim::BACKWARD_ONCE:		return "bwd_once";
-		case WgAnim::FORWARD_LOOPING:	return "fwd_loop";
-		case WgAnim::BACKWARD_LOOPING:	return "bwd_loop";
-		case WgAnim::FORWARD_PINGPONG:	return "fwd_pong";
-		case WgAnim::BACKWARD_PINGPONG:	return "bwd_pong";
+		case WG_FORWARD_ONCE:		return "fwd_once";
+		case WG_BACKWARD_ONCE:		return "bwd_once";
+		case WG_FORWARD_LOOPING:	return "fwd_loop";
+		case WG_BACKWARD_LOOPING:	return "bwd_loop";
+		case WG_FORWARD_PINGPONG:	return "fwd_pong";
+		case WG_BACKWARD_PINGPONG:	return "bwd_pong";
 		default:
 			return "fwd_once";
 	}
 }
 
-WgAnim::PlayMode WgAnimRes::ToPlayMode(const std::string& playmode)
+WgAnimMode WgAnimRes::ToPlayMode(const std::string& playmode)
 {
 	if(playmode.empty() ||
-		playmode =="fwd_once")	return WgAnim::FORWARD_ONCE;
-	if(playmode == "bwd_once")	return WgAnim::BACKWARD_ONCE;
-	if(playmode == "fwd_loop")	return WgAnim::FORWARD_LOOPING;
-	if(playmode == "bwd_loop")	return WgAnim::BACKWARD_LOOPING;
-	if(playmode == "fwd_pong")	return WgAnim::FORWARD_PINGPONG;
-	if(playmode == "bwd_pong")	return WgAnim::BACKWARD_PINGPONG;
-	return WgAnim::FORWARD_ONCE;
+		playmode =="fwd_once")	return WG_FORWARD_ONCE;
+	if(playmode == "bwd_once")	return WG_BACKWARD_ONCE;
+	if(playmode == "fwd_loop")	return WG_FORWARD_LOOPING;
+	if(playmode == "bwd_loop")	return WG_BACKWARD_LOOPING;
+	if(playmode == "fwd_pong")	return WG_FORWARD_PINGPONG;
+	if(playmode == "bwd_pong")	return WG_BACKWARD_PINGPONG;
+	return WG_FORWARD_ONCE;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1908,7 +1908,7 @@ void WgKeyFrameRes::Serialize(WgResourceSerializerXML& s)
 	WriteSurfaceAttr(s, m_pFrame->pSurf, "surface");
 	WriteDiffAttr<Uint16>(s, xmlNode, "xofs", m_pFrame->ofs.x, 0);
 	WriteDiffAttr<Uint16>(s, xmlNode, "yofs", m_pFrame->ofs.y, 0);
-	WriteDiffAttr<Uint32>(s, xmlNode, "duration", m_pFrame->duration(), 0);
+	WriteDiffAttr<Uint32>(s, xmlNode, "duration", m_pFrame->Duration(), 0);
 	s.EndTag();
 }
 
@@ -2397,6 +2397,7 @@ void WgLegoRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 //		content_borders=[left,right,top,bottom]
 //		tile=[true | false]
 //		scale=[true | false]
+//		fixed_size=[true | false]
 //		skip_normal=[true | false]
 //		skip_marked=[true | false]
 //		skip_selected=[true | false]
@@ -2423,6 +2424,8 @@ void WgBlockSetRes::Serialize(WgResourceSerializerXML& s)
 		WgTileRes(this, tileFlags).Serialize(s);
 
 	WriteDiffAttr(s, xmlNode, "scale", (m_pBlockSet->GetFlags() & WG_SCALE_CENTER) != 0, false);
+	WriteDiffAttr(s, xmlNode, "fixed_size", (m_pBlockSet->GetFlags() & WG_FIXED_CENTER) != 0, false);
+
 
 	Uint32 flags = m_pBlockSet->GetFlags();
 	if( flags & WG_SKIP_NORMAL )
@@ -2549,8 +2552,12 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 
 	Uint32 flags = WgUtil::ToBool(xmlNode["tile"]) ? WG_TILE_ALL : 0;
 	bool scale = WgUtil::ToBool(xmlNode["scale"]);
+	bool fixedSize = WgUtil::ToBool(xmlNode["fixed_size"]);
 
-	VERIFY(!(scale && (flags & WG_TILE_CENTER)), "Cannot set both scale and tile center");
+	
+
+	VERIFY(!((scale && fixedSize) || (scale && (flags & WG_TILE_CENTER)) || (fixedSize && (flags & WG_TILE_CENTER))), 
+		"Cannot set more than one of scale, tile center and fixed_size" );
 
 	if( WgUtil::ToBool(xmlNode["skip_normal"]) )
 		flags |= WG_SKIP_NORMAL;
@@ -2610,7 +2617,7 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 
 		if(rect[0].w == 0 && rect[0].h == 0)
 		{
-			rect[0] = WgRect(0, 0, pSurface->width(), pSurface->height());
+			rect[0] = WgRect(0, 0, pSurface->Width(), pSurface->Height());
 		}
 
 
@@ -2632,6 +2639,10 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 
 	if(scale)
 		m_pBlockSet->SetScale(scale);
+	else if( fixedSize )
+		m_pBlockSet->SetFixedSize(fixedSize);
+
+
 
 	s.ResDb()->AddBlockSet( id, m_pBlockSet, new WgXMLMetaData(XmlNode()) );
 }
@@ -2851,7 +2862,7 @@ void WgAltRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 
 		if(rect[0].w == 0 && rect[0].h == 0)
 		{
-			rect[0] = WgRect(0, 0, pSurface->width(), pSurface->height());
+			rect[0] = WgRect(0, 0, pSurface->Width(), pSurface->Height());
 		}
 
 		int nBlocks = WgUtil::ToSint32(xmlNode["blocks"]);
@@ -3120,7 +3131,7 @@ void WgPropRes::Deserialized(WgResourceSerializerXML& s)
 			m_pProp = m_prop.Register();
 		}
 
-		int ofs = textHolder->GetCharBuffer()->GetNbChars();
+		int ofs = textHolder->GetCharBuffer()->NbChars();
 		int len = m_textIn.size();
 		textHolder->GetCharBuffer()->PushBack(WgCharSeq(m_textIn.c_str(), len));
 		textHolder->GetCharBuffer()->SetProperties(m_pProp, ofs, len);
@@ -3167,7 +3178,7 @@ WgCharBuffer* WgBoldTextRes::GetCharBuffer()
 
 void WgItalicTextRes::DeserializeText(const char * pChars, int len)
 {
-	Uint32 ofs = GetCharBuffer()->GetSize();
+	Uint32 ofs = GetCharBuffer()->Size();
 	GetCharBuffer()->PushBack(WgCharSeq(pChars, len));
 	GetCharBuffer()->SetStyle(WG_STYLE_ITALIC, ofs, len);
 }
@@ -3195,7 +3206,7 @@ WgCharBuffer* WgItalicTextRes::GetCharBuffer()
 
 void WgUnderlinedTextRes::DeserializeText(const char * pChars, int len)
 {
-	Uint32 ofs = GetCharBuffer()->GetSize();
+	Uint32 ofs = GetCharBuffer()->Size();
 	GetCharBuffer()->PushBack(WgCharSeq(pChars, len));
 	GetCharBuffer()->SetUnderlined(ofs, len);
 }
@@ -3406,7 +3417,7 @@ void Wdg_Button_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetIconSource(), "icon");
 	WriteDiffAttr(s, xmlNode, "iconorigo", widget->GetIconOrigo(), WgOrigo::topLeft());
 	WriteDiffAttr<Sint8>(s, xmlNode, "iconofs", widget->GetIconOfsX(), widget->GetIconOfsY(), 0, 0);
-	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
+	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
 
 	s.EndTag();
 }
@@ -3494,7 +3505,7 @@ void Wdg_RefreshButton_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetIconSource(), "icon");
 	WriteDiffAttr(s, xmlNode, "iconorigo", widget->GetIconOrigo(), WgOrigo::topLeft());
 	WriteDiffAttr<Sint8>(s, xmlNode, "iconofs", widget->GetIconOfsX(), widget->GetIconOfsY(), 0, 0);
-	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
+	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
 
 	if( widget->GetRefreshAnimation() )
 		WriteDiffAttr( s, xmlNode, "refresh_anim", s.ResDb()->FindAnimId(widget->GetRefreshAnimation()).c_str(), "" );
@@ -3635,7 +3646,7 @@ void Wdg_CheckBox2_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "fixedsize", widget->GetFixedSize(), false);
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "blockset_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
-	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
+	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
 
 	WriteBlockSetAttr(s, widget->GetCheckedIcon(), "icon_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
@@ -3722,7 +3733,7 @@ void Wdg_ComboBox_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteBlockSetAttr(s, widget->GetSource(), "blockset");
 
-	WriteTextAttrib(s, widget->GetTextFormat().GetChars(), "textformat");
+	WriteTextAttrib(s, widget->GetTextFormat().Chars(), "textformat");
 
 	// Write menu as a subtag only if it doesn't have a parent.
 	Wdg_Menu* menu = widget->GetMenu();
@@ -3810,7 +3821,7 @@ void Wdg_HDrag_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetBwdSource(), "source_bwd");
 	WriteBlockSetAttr(s, widget->GetFwdSource(), "source_fwd");
 	WgButtonLayoutRes::Serialize(s, xmlNode, "layout", widget->GetButtonLayout());
-	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
+	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
 
 	s.EndTag();
 }
@@ -3863,7 +3874,7 @@ void Wdg_VDrag_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetBwdSource(), "source_bwd");
 	WriteBlockSetAttr(s, widget->GetFwdSource(), "source_fwd");
 	WgButtonLayoutRes::Serialize(s, xmlNode, "layout", widget->GetButtonLayout());
-	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
+	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
 
 	s.EndTag();
 }
@@ -4274,7 +4285,7 @@ void Wdg_Menu_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "entryheight", widget->GetEntryHeight(), 0);
 
 	//
-	for(WgMenuItem* item = widget->GetFirstItem(); item; item = item->getNext())
+	for(WgMenuItem* item = widget->GetFirstItem(); item; item = item->Next())
 	{
 		WgMenuItemRes* itemRes = 0;
 
@@ -4389,7 +4400,7 @@ void Wdg_MenuBar_Res::Serialize(WgResourceSerializerXML& s)
 	WriteTextPropAttr(s, widget->GetTextProp(), "entry_prop");
 
 	WgMenuBarItem* barItem = widget->GetFirstMenuBarItem();
-	for(; barItem; barItem = barItem->getNext())
+	for(; barItem; barItem = barItem->Next())
 	{
 		WgMenuBarItemRes(this, barItem).Serialize(s);
 	}
@@ -4602,7 +4613,7 @@ void Wdg_RadioButton2_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "fixedsize", widget->GetFixedSize(), false);
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "blockset_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
-	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
+	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
 
 	WriteBlockSetAttr(s, widget->GetCheckedIcon(), "icon_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
@@ -5010,7 +5021,7 @@ void Wdg_TabList_Res::Serialize(WgResourceSerializerXML& s)
 		s.AddAttribute("tabmode", value);
 	}
 
-	for(WgTab*tab = widget->GetFirstTab(); tab; tab = tab->getNext())
+	for(WgTab*tab = widget->GetFirstTab(); tab; tab = tab->Next())
 	{
 		WgTabRes* tabRes = new WgTabRes(this, tab);
 		WgResDB::TabRes* tabDb = s.ResDb()->FindResTab(tab);
@@ -5170,7 +5181,7 @@ void Wdg_Text_Res::Serialize(WgResourceSerializerXML& s)
 	Wdg_Text* widget = GetWidget();
 	WgWidgetRes::Serialize(s);
 	WgEditTextRes::Serialize(this, xmlNode, s, widget);
-	WriteTextAttrib(s, widget->GetTooltipString().GetChars(), "tooltip");
+	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
 	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), 0);
 	WriteDiffAttr(s, xmlNode, "max_rows", widget->MaxLines(), 0);
 	s.EndTag();
@@ -5370,7 +5381,7 @@ void WgItemPixmapRes::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, item->GetSource(), "blockset");
 	WgBorderRes::Serialize(s, xmlNode, "margin", item->Margin());
 	WgSizeRes::Serialize(s, xmlNode, "forcesize", item->GetForceSize(), WgSize(0, 0) );
-	WriteTextAttrib(s, item->GetTooltipString().GetChars(), "tooltip");
+	WriteTextAttrib(s, item->GetTooltipString().Chars(), "tooltip");
 	s.EndTag();
 }
 
@@ -5405,7 +5416,7 @@ void WgItemRowRes::Serialize(WgResourceSerializerXML& s)
 	s.BeginTag(TagName(), XmlNode());
 	WgItemRes::Serialize(s);
 	WgItemHolderRes::Serialize(this, xmlNode, s, item);
-	WriteTextAttrib(s, item->GetTooltipString().GetChars(), "tooltip");
+	WriteTextAttrib(s, item->GetTooltipString().Chars(), "tooltip");
 	s.EndTag();
 }
 
@@ -5437,7 +5448,7 @@ void WgItemStackRes::Serialize(WgResourceSerializerXML& s)
 	s.BeginTag(TagName(), XmlNode());
 	WgItemRes::Serialize(s);
 	WgItemHolderRes::Serialize(this, xmlNode, s, item->GetItemHolder());
-	WriteTextAttrib(s, item->GetTooltipString().GetChars(), "tooltip");
+	WriteTextAttrib(s, item->GetTooltipString().Chars(), "tooltip");
 	s.EndTag();
 }
 
@@ -5622,14 +5633,14 @@ void WgMenuEntryRes::Serialize(WgResourceSerializerXML& s, bool bOpenTag)
 
 	WgMenuItemRes::Serialize(s);
 	WriteDiffAttr(s, xmlNode, "enabled", item->IsEnabled(), true);
-	WriteTextAttrib(s, item->GetText().GetChars(), "text");
+	WriteTextAttrib(s, item->GetText().Chars(), "text");
 
 	if( !item->GetHelpText().IsEmpty() )
-		WriteTextAttrib(s, item->GetHelpText().GetChars(), "helptext");
+		WriteTextAttrib(s, item->GetHelpText().Chars(), "helptext");
 	else
 		s.RemoveAttribute("helptext");
 
-	WriteTextAttrib(s, item->GetAccelText().GetChars(), "acceltext");
+	WriteTextAttrib(s, item->GetAccelText().Chars(), "acceltext");
 	WriteDiffAttr(s, xmlNode, "navkey", item->GetNavKey(), (Uint16)0);
 	if(xmlNode.HasAttribute("accelmod") || item->GetAccelModif() != WG_MODKEY_NONE)
 	{

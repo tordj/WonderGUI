@@ -119,7 +119,7 @@ bool WgGizmoAnimation::SetPlayPosFractional( float _fraction )
 	if( !m_pAnim )
 		return false;
 	
-	_fraction *= m_pAnim->duration();
+	_fraction *= m_pAnim->Duration();
 
 	
 	if( _fraction == m_playPos )
@@ -187,7 +187,7 @@ Uint32 WgGizmoAnimation::Duration()
 	if( !m_pAnim )
 		return 0;
 
-	return	m_pAnim->durationScaled();
+	return	m_pAnim->DurationScaled();
 }
 
 //____ DurationScaled() _______________________________________________________
@@ -197,7 +197,7 @@ Uint32 WgGizmoAnimation::DurationScaled()
 	if( !m_pAnim )
 		return 0;
 
-	return	(Uint32) (m_pAnim->durationScaled() / m_speed);
+	return	(Uint32) (m_pAnim->DurationScaled() / m_speed);
 }
 
 //____ Speed() ________________________________________________________________
@@ -258,7 +258,7 @@ void WgGizmoAnimation::OnUpdate( const WgUpdateInfo& _updateInfo )
 	if( m_bPlayPosIsNew || m_bPlaying )
 	{
 		Emit( WgSignal::IntegerChanged(), static_cast<int>(m_playPos) );
-		Emit( WgSignal::Fraction(), (float)m_playPos/(float)m_pAnim->duration());
+		Emit( WgSignal::Fraction(), (float)m_playPos/(float)m_pAnim->Duration());
 	}
 
 
@@ -350,12 +350,12 @@ bool WgGizmoAnimation::OnAlphaTest( const WgCord& ofs )
 {
 	if( m_bEnabled && m_pSurf )
 	{
-  	if( m_pSurf->opacity( m_src.x + (ofs.x % m_src.w), m_src.y + (ofs.y % m_src.h) ) )
+  	if( m_pSurf->GetOpacity( m_src.x + (ofs.x % m_src.w), m_src.y + (ofs.y % m_src.h) ) )
 			return true;
 	}
 	else if( m_pDisableSurf )
 	{
-  	if( m_pDisableSurf->opacity( m_dis_src.x + (ofs.x % m_dis_src.w), m_dis_src.y + (ofs.y % m_dis_src.h) ) )
+  	if( m_pDisableSurf->GetOpacity( m_dis_src.x + (ofs.x % m_dis_src.w), m_dis_src.y + (ofs.y % m_dis_src.h) ) )
 			return true;
 	}
 

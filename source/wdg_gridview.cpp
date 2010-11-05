@@ -242,7 +242,7 @@ void Wdg_GridView::ScrollIntoView(WgItem* pItem )
 	while(!bFound && bSuccess)
 	{
 		itemRect = WgRect(itemArray.rect.x, itemArray.rect.y, itemArray.rect.w, itemArray.rect.h);
-		for(WgItem* p = itemArray.pFirstItem; p != itemArray.pNextFirst; p = p->getNext())
+		for(WgItem* p = itemArray.pFirstItem; p != itemArray.pNextFirst; p = p->Next())
 		{
 			WgSize itemSize = CalcCellSize(p);
 			itemRect.w = itemSize.w;
@@ -289,12 +289,12 @@ void Wdg_GridView::refreshItems()
 
 	// Check so we still have our m_pLastMarkedItem...
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 	while( p )
 	{
 		if( p == m_pLastMarkedItem )
 			break;
-		p = p->getNext();
+		p = p->Next();
 	}
 	if( p == 0 )
 		m_pLastMarkedItem = 0;
@@ -354,7 +354,7 @@ WgItem* Wdg_GridView::GetMarkedItem( Uint32 x, Uint32 y )
 		if(itemArray.rect.contains(x, y))
 		{
 			WgRect itemRect(itemArray.rect.x, itemArray.rect.y, 0, 0);
-			for(WgItem* p = itemArray.pFirstItem; p != itemArray.pNextFirst; p = p->getNext())
+			for(WgItem* p = itemArray.pFirstItem; p != itemArray.pNextFirst; p = p->Next())
 			{
 				WgSize itemSize = CalcCellSize(p);
 				itemRect.w = itemSize.w;
@@ -453,7 +453,7 @@ void Wdg_GridView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 		WgRect itemRect(itemArray.rect.x + r.x, itemArray.rect.y + r.y, itemArray.rect.w, itemArray.rect.h);
 		if(itemRect.intersectsWith(_clip))
 		{
-			for(WgItem* p = itemArray.pFirstItem; p != itemArray.pNextFirst; p = p->getNext())
+			for(WgItem* p = itemArray.pFirstItem; p != itemArray.pNextFirst; p = p->Next())
 			{
 				WgSize itemSize = CalcCellSize(p);
 				itemRect.w = itemSize.w;
@@ -554,7 +554,7 @@ void Wdg_GridView::CalcBiggestCell()
 {
 	WgSize z(0,0);
 
-	WgItem * p = m_items.getFirst();
+	WgItem * p = m_items.First();
 	while( p )
 	{
 		Sint32 w = p->Width() + m_cellPaddingX*2;
@@ -648,7 +648,7 @@ WgRect Wdg_GridView::CalcItemRect( const WgItem * pItem, const WgRect& cellRect 
 bool Wdg_GridView::GetFirstRowOrCol( ItemArray* pArray, const WgSize &contentSize )
 {
 	pArray->pFirstItem = 0;
-	pArray->pNextFirst = m_items.getFirst();
+	pArray->pNextFirst = m_items.First();
 	pArray->rect.x = 0;
 	pArray->rect.y = 0;
 	pArray->rect.w = 0;

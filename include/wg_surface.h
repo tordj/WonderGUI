@@ -76,8 +76,8 @@ public:
 	// Methods for reading dimensions and abilities.
 
 	virtual	WgRect		Dimensions() const;
-	virtual	Uint32		GetWidth() const = 0;
-	virtual	Uint32		GetHeight() const = 0;
+	virtual	Uint32		Width() const = 0;
+	virtual	Uint32		Height() const = 0;
 	virtual bool		IsOpaque() const = 0;
 
 	// Slow, simple methods for reading and parsing individual pixels.
@@ -144,7 +144,7 @@ public:
 
 
     // Deprecated legacy methods
-
+/*
 	inline Uint32		width() const { return GetWidth(); }
 	inline Uint32		height() const { return GetHeight(); }
 	inline bool			hasAlpha() const { return !IsOpaque(); }
@@ -152,7 +152,7 @@ public:
 	inline Uint8		opacity( Uint32 x, Uint32 y ) const { return GetOpacity(x,y); }
 	inline Uint32		col2pixel( const WgColor& col ) const { return Col2Pixel(col); }
 	inline WgColor		pixel2col( Uint32 pixel ) const { return Pixel2Col(pixel); }
-
+*/
 	// Methods for defining BlockSets
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& marked,

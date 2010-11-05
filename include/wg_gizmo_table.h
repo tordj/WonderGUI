@@ -78,9 +78,9 @@ class WgTableHook : public WgGizmoHook
 	WgTableHook*	PrevInColumn() const;
 	WgTableHook*	NextInColumn() const;
 
-	inline WgTableRow2*	GetRow() const;
-	WgTableColumn2*	GetColumn() const;
-	inline int		GetColumnNb() const;
+	inline WgTableRow2*	Row() const;
+	WgTableColumn2*	Column() const;
+	inline int		ColumnNb() const;
 
 	inline WgGizmoContainer * Parent() const;
 
@@ -116,32 +116,32 @@ public:
 	WgTableColumn2();
 	WgTableColumn2(const WgTableColumn2& column);
 
-	inline void		setID( Sint64 id ) { m_id = id; }
-	inline Sint64	getID() const { return m_id; }
+	inline void		SetId( Sint64 id ) { m_id = id; }
+	inline Sint64	Id() const { return m_id; }
 
-	void			setWidth( int pixels );
-	inline int		getDesiredWidth() const { return m_desiredWidth; }
-	inline int		getRealWidth() const { return m_realWidth; }
+	void			SetWidth( int pixels );
+	inline int		DesiredWidth() const { return m_desiredWidth; }
+	inline int		RealWidth() const { return m_realWidth; }
 
-	void			hide();
-	void			show();
-	inline bool		isHidden() const { return !m_bVisible; }
+	void			Hide();
+	void			Show();
+	inline bool		IsHidden() const { return !m_bVisible; }
 
-	void			enable();
-	void			disable();
-	inline bool		isDisabled() const { return !m_bEnabled; }
+	void			Enable();
+	void			Disable();
+	inline bool		IsDisabled() const { return !m_bEnabled; }
 
-	inline void		setInitialSortOrder( bool bAscend ) { m_bInitialAscend = bAscend; }
-	inline bool		isInitialAscend() const { return m_bInitialAscend; }
+	inline void		SetInitialSortOrder( bool bAscend ) { m_bInitialAscend = bAscend; }
+	inline bool		IsInitialAscend() const { return m_bInitialAscend; }
 
-	inline int		index() const;
+	inline int		Index() const;
 
 
 	WgTableHook*	FirstHook() const;
 	WgTableHook*	LastHook() const;
 
-	void setSortFunction( fpGizmoCmp pFunc );
-	inline fpGizmoCmp getSortFunction() const { return m_fpCompare; }
+	void SetSortFunction( fpGizmoCmp pFunc );
+	inline fpGizmoCmp SortFunction() const { return m_fpCompare; }
 
 private:
 	WgTableColumn2( WgGizmoTable * pOwner );
@@ -192,8 +192,8 @@ public:
 	void Unselect();
 	inline bool IsSelected() const { if( m_mode == WG_MODE_SELECTED ) return true; return false; }
 
-	inline	WgTableRow2* GetNext() const	{ return getNext(); };
-	inline	WgTableRow2* GetPrev() const	{ return getPrev(); };
+	inline	WgTableRow2* Next() const	{ return (WgTableRow2*) WgLink::m_pNext; };
+	inline	WgTableRow2* Prev() const	{ return (WgTableRow2*) WgLink::m_pNext; };
 
 	inline	void	SetVisible(bool bVisible);
 	inline	void	Show() { SetVisible(true); }
@@ -209,9 +209,9 @@ public:
 	void			SetGizmo( WgGizmo * pGizmo, int cell );
 	int				AddGizmo( WgGizmo * pGizmo );
 
-	WgGizmoTable*	GetTable() const { return m_pTable; }
+	WgGizmoTable*	Table() const { return m_pTable; }
 protected:
-		LINK_METHODS( WgTableRow2 );
+//		LINK_METHODS( WgTableRow2 );
 
 private:
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
@@ -318,8 +318,8 @@ public:
 	WgBlockSetPtr	GetSelectedRowBg() const { return m_pSelectedRowGfx; }
 	WgColor			GetSelectedRowColor() const { return m_selectedRowColor; }
 
-	inline WgTableRow2*	GetFirstRow() const { return m_rows.getFirst(); }
-	inline WgTableRow2*	GetLastRow() const { return m_rows.getLast(); }
+	inline WgTableRow2*	FirstRow() const { return m_rows.First(); }
+	inline WgTableRow2*	LastRow() const { return m_rows.Last(); }
 	inline int			NbRows() const { return m_nRows; }
 	inline int			CompareRows(WgTableRow2* p1, WgTableRow2* p2) const;
 
@@ -329,7 +329,7 @@ public:
 	bool	GetAutoScrollMarked() const						{ return m_bAutoScrollMarked; }
 
 	void	ShowHeader( bool bShow );
-	bool	ShowHeader() const { return m_bShowHeader; }
+	bool	GetShowHeader() const { return m_bShowHeader; }
 
 //	WgItem	GetCell( Uint32 row, Uint32 column );
 
@@ -484,7 +484,7 @@ private:
 
 
 
-WgTableRow2* WgTableHook::GetRow() const 
+WgTableRow2* WgTableHook::Row() const 
 {
 	return m_pRow;
 }
@@ -495,12 +495,12 @@ WgGizmoContainer * WgTableHook::Parent() const
 }
 
 
-inline int WgTableHook::GetColumnNb() const
+inline int WgTableHook::ColumnNb() const
 {
-	return this - GetRow()->m_pCells;
+	return this - Row()->m_pCells;
 }
 
-inline int WgTableColumn2::index() const 
+inline int WgTableColumn2::Index() const 
 { 
 	return this - m_pTable->m_pColumns; 
 }

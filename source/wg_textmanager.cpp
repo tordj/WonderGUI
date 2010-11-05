@@ -65,7 +65,7 @@ WgTextNode * WgTextManager::NewNode( WgText * pText )
 		return 0;
 
 	WgTextNode * p = new WgTextNode( this, pText );
-	m_nodes.push_back( p );
+	m_nodes.PushBack( p );
 	p->Refresh();
 	return p;
 }
@@ -74,11 +74,11 @@ WgTextNode * WgTextManager::NewNode( WgText * pText )
 
 void WgTextManager::RefreshAll()
 {
-	WgTextNode * p = m_nodes.getFirst();
+	WgTextNode * p = m_nodes.First();
 	while( p )
 	{
 		p->Refresh();
-		p = p->getNext();
+		p = p->Next();
 	}
 }
 
