@@ -256,9 +256,9 @@ void WgTableRow::SetItem( WgItem * pItem, Uint32 col )
 
 }
 
-Uint32 WgTableRow::AddItem( WgItem * pItem )
+void WgTableRow::AddItem( WgItem * pItem )
 {
-	return WgItemRow::AddItem(pItem);
+	WgItemRow::AddItem(pItem);
 }
 
 bool WgTableRow::Select( bool bSelectItems )
@@ -1106,10 +1106,11 @@ void Wdg_TableView::refreshItems()
 
 void Wdg_TableView::ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
 {
+	if( m_pColumns == 0 )
+		return;
 
-	//TODO: More specialized and optimized handling.
-
-	refreshItems();
+	SetContentSize(m_contentWidth, m_contentHeight+heightDiff);
+	RequestRender();		//TODO: This can be optimized, we might not need to render the whole view.
 }
 
 //____ ItemMarkChanged() ________________________________________________

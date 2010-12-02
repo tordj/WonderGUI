@@ -135,6 +135,7 @@ Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 		m_pText->putText( WgCharSeq( str, 0, retVal ) );
 	}
 
+	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	AdjustViewOfs();
 
 	return retVal;
@@ -155,6 +156,7 @@ bool WgGizmoEditline::InsertCharAtCursor( Uint16 c )
 		return false;
 
 	m_pText->putChar( c );
+	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	AdjustViewOfs();
 	return true;
 }
@@ -301,6 +303,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 					m_pText->delSelection();
 				m_pText->setSelectionMode(false);
 				m_pText->putChar( button_key );
+				Emit( WgSignal::TextChanged() );
 				AdjustViewOfs();
 			}
 		}
@@ -361,6 +364,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 					m_pText->delPrevWord();
 				else
 					m_pText->delPrevChar();
+				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 				break;
 
 			case WGKEY_DELETE:
@@ -370,6 +374,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 					m_pText->delNextWord();
 				else
 					m_pText->delNextChar();
+				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 				break;
 
 			case WGKEY_HOME:
@@ -444,7 +449,9 @@ void WgGizmoEditline::AdjustViewOfs()
 		pen.AdvancePos();
 
 		int pwAdvance	= pen.GetPosX();
-		int cursWidth	= m_pText->getFont()->GetCursor()->advance(m_pText->cursorMode() );
+		int cursAdvance	= m_pText->getFont()->GetCursor()->advance(m_pText->cursorMode() );
+		int cursBearing	= m_pText->getFont()->GetCursor()->bearingX(m_pText->cursorMode() );
+		int cursWidth	= m_pText->getFont()->GetCursor()->width(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.
@@ -477,12 +484,12 @@ void WgGizmoEditline::AdjustViewOfs()
 		if( cursCol < m_pText->getLine(0)->nChars )
 		{
 			if( m_bPasswordMode )
-				minOfs = (cursCol+1) * pwAdvance + cursWidth - geoWidth;
+				minOfs = (cursCol+1) * pwAdvance + cursAdvance - geoWidth;
 			else
-				minOfs = m_pText->getLineWidthPart( 0, 0, cursCol+1 ) + cursWidth - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
+				minOfs = m_pText->getLineWidthPart( 0, 0, cursCol+1 ) + cursAdvance - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
 		}
 		else
-			minOfs = cursOfs + cursWidth - geoWidth;
+			minOfs = cursOfs + cursBearing + cursWidth - geoWidth;
 
 		// Check boundaries and update
 
@@ -561,6 +568,7 @@ void WgGizmoEditline::OnNewSize( const WgSize& size )
 
 void WgGizmoEditline::TextModified()
 {
+	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	RequestRender();
 	AdjustViewOfs();
 }

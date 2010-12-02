@@ -840,6 +840,15 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 
 				// TODO: should take textprop for cursors position into account...
 				int linewidth = pText->getSoftLineWidthPart(i, 0, cursCol ) /*+ pPen->AdvancePosCursor( *pCursor )*/ + pText->getSoftLineWidthPart(i, cursCol );
+
+				if( pCursor->column() < pLines[i].nChars )
+					linewidth += pText->getFont()->GetCursor()->advance(pText->cursorMode() );
+				else
+				{
+					linewidth += pText->getFont()->GetCursor()->bearingX(pText->cursorMode() );
+					linewidth += pText->getFont()->GetCursor()->width(pText->cursorMode() );
+				}
+
 				pos.x += origo.calcOfsX( dest.w, linewidth );
 				if( pos.x < dest.x )
 					pos.x = dest.x;
@@ -1064,8 +1073,10 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode
 
 			if( _pLine[i].IsUnderlined(pDefProp, mode) &&
 				(i==0 || !(_pLine[i-1].IsUnderlined(pDefProp, mode)) || _pLine[i-1].Font(pDefProp) != _pLine[i].Font(pDefProp)) )
-				DrawUnderline( WgRect(0,0,65535,65535), pDefProp, mode, pPen->GetPosX(), pPen->GetPosY(), _pLine+i, maxChars-i );
-
+			{
+				WgRect clip = pPen->HasClipRect()?pPen->GetClipRect():WgRect(0,0,65535,65535);
+				DrawUnderline( clip, pDefProp, mode, pPen->GetPosX(), pPen->GetPosY(), _pLine+i, maxChars-i );
+			}
 		}
 
 		// Calculate position and blit the glyph.

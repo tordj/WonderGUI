@@ -22,6 +22,7 @@
 
 
 #include <wg_item_stack.h>
+#include <wg_gfx.h>
 
 static const char	Wdg_Type[] = {"TordJ/WgItemStack"};
 
@@ -42,18 +43,30 @@ WgItemStack::WgItemStack()
 {
 	m_minWidth = 0;
 	m_minHeight = 0;
+
+	m_tintColor = WgColor(255,255,255);
+	m_blendMode = WG_BLENDMODE_BLEND;
+	m_tintMode	= TINTMODE_OPAQUE;
 }
 
 WgItemStack::WgItemStack( Sint64 id ) : WgItem( id )
 {
 	m_minWidth = 0;
 	m_minHeight = 0;
+
+	m_tintColor = WgColor(255,255,255);
+	m_blendMode = WG_BLENDMODE_BLEND;
+	m_tintMode	= TINTMODE_OPAQUE;
 }
 
 WgItemStack::WgItemStack( Sint64 id, int minW, int minH ) : WgItem( id )
 {
 	m_minWidth = minW;
 	m_minHeight = minH;
+
+	m_tintColor = WgColor(255,255,255);
+	m_blendMode = WG_BLENDMODE_BLEND;
+	m_tintMode	= TINTMODE_OPAQUE;
 }
 
 //____ ~WgItemStack() ___________________________________________________________
@@ -63,11 +76,47 @@ WgItemStack::~WgItemStack()
 	m_itemOffsets.clear();
 }
 
+//____ SetColor() _____________________________________________________________
+
+void WgItemStack::SetColor( const WgColor& col )
+{
+	if( m_tintColor != col )
+	{
+		m_tintColor = col;
+		Modified(0,0);
+	}
+}
+
+//____ SetBlendMode() _________________________________________________________
+
+void WgItemStack::SetBlendMode( WgBlendMode mode )
+{
+	if( m_blendMode != mode )
+	{
+		m_blendMode = mode;
+		Modified(0,0);
+	}
+}
+
+//____ SetTintMode() __________________________________________________________
+
+void WgItemStack::SetTintMode( WgTintMode mode )
+{
+	if( m_tintMode != mode )
+	{
+		m_tintMode = mode;
+		Modified(0,0);
+	}
+}
+
+
+
 //____ AddItem() ______________________________________________________________
 
 Uint32 WgItemStack::AddItem( WgItem * pItem, WgOrigo origo, int ofsX, int ofsY )
 {
-	Uint32 pos = Wg_Interface_ItemHolder::AddItem(pItem);
+	Wg_Interface_ItemHolder::AddItem(pItem);
+	Uint32 pos = pItem->Index();
 	m_itemOffsets.insert(pos, ItemOffset(origo, ofsX, ofsY));
 	return pos;
 }
@@ -76,7 +125,8 @@ Uint32 WgItemStack::AddItem( WgItem * pItem, WgOrigo origo, int ofsX, int ofsY )
 
 Uint32 WgItemStack::InsertItem( WgItem * pItem, Uint32 pos, WgOrigo origo, int ofsX, int ofsY )
 {
-	Uint32 insertedPos = Wg_Interface_ItemHolder::InsertItem(pItem, pos);
+	Wg_Interface_ItemHolder::InsertItem(pItem, pos);
+	Uint32 insertedPos = pItem->Index();
 	m_itemOffsets.insert(insertedPos, ItemOffset(origo, ofsX, ofsY));
 	return insertedPos;
 }
@@ -122,6 +172,22 @@ void WgItemStack::AdaptToHeight( Uint32 displayed_height )
 
 void WgItemStack::Render( const WgRect& _window, const WgRect& _clip )
 {
+
+	// Set our tint color and blend mode.
+
+	WgBlendMode		oldBM = WgGfx::blendMode();
+	WgColor			oldTC = WgGfx::tintColor();
+	
+	WgGfx::setBlendMode(m_blendMode);
+
+	if( m_tintMode == TINTMODE_OPAQUE )
+		WgGfx::setTintColor(m_tintColor);
+	else	// MULTIPLY
+		WgGfx::setTintColor(m_tintColor*oldTC);
+
+
+	// Render children
+
 	WgRect r;
 
 	r = _window;
@@ -137,6 +203,12 @@ void WgItemStack::Render( const WgRect& _window, const WgRect& _clip )
 		p->Render( r, _clip );
 		p = p->Next();
 	}
+
+
+	// Reset old blend mode and tint color
+
+	WgGfx::setBlendMode(oldBM);
+	WgGfx::setTintColor(oldTC);
 }
 
 //____ Clone() ________________________________________________________________

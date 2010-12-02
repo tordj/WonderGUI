@@ -6,6 +6,7 @@
 #include <wg_interface_textholder.h>
 #include <wg_color.h>
 #include <wg_blockset.h>
+#include <wg_tooltip.h>
 
 class WgItemWrapText : public WgItem, public Wg_Interface_TextHolder
 {
@@ -22,6 +23,8 @@ public:
 	void			SetText(const WgText * pStr);
 	void			SetTextProp(WgTextPropPtr pProp);
 	void			SetMargin(WgBorders margin);
+
+	DECLARE_TOOLTIP_SUPPORT();
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();

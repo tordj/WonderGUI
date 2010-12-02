@@ -91,7 +91,11 @@ bool WgRect::intersection( const WgRect& _r1, const WgRect& _r2 )
 	h = y2 - y;
 
 	if( w <= 0 || h <= 0 )
+	{
+		w = 0;
+		h = 0;
 		return	false;
+	}
 
 	return	true;
 }

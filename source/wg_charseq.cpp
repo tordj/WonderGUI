@@ -571,6 +571,76 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 	}
 }
 
+//____ GetStdString() _________________________________________________________
+
+std::string WgCharSeq::GetStdString() const
+{
+//	char	temp[512];
+
+	switch( m_type )
+	{
+		case WGCHAR:
+		{
+			Uint32 size = WgTextTool::getTextSizeUTF8( (WgChar*) m_pChar, m_nbChars );
+			char * p = new char[size+1];
+			WgTextTool::getTextUTF8( (WgChar*) m_pChar, p, size+1 );
+			std::string str( p, size );
+			delete p;
+			return str;
+		}
+		case UTF8:
+		{
+			const char * p = (const char *) m_pChar;
+			WgTextTool::forwardCharacters( p, m_nbChars );
+			int size = p - (const char *) m_pChar;
+			return std::string( p, size );
+		}
+		case UTF16:
+		{
+			Uint32 size = WgTextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
+			char * p = new char[size+1];
+			WgTextTool::getTextUTF8( (Uint16*) m_pChar, p, size+1 );
+			std::string str( p, size );
+			delete p;
+			return str;
+		}
+		case ESCAPED_UTF8:
+		{
+			Uint32 size = WgTextTool::getTextSizeStrippedUTF8( (char *) m_pChar, m_nbChars );
+			char * p = new char[size+1];
+			WgTextTool::stripTextCommands( (char*) m_pChar, p, size+1 );
+			std::string str( p, size );
+			delete p;
+			return str;
+		}
+
+		case ESCAPED_UTF16:
+		{
+			Uint32 size = WgTextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
+			char * p = new char[size+1];
+			WgTextTool::stripTextCommandsConvert( (Uint16*) m_pChar, (char*) (p + size - (m_nbChars+1)*2), m_nbChars+1 );
+			std::string str( p, size );
+			delete p;
+			return str;
+		}
+
+		case MAP8:
+		{
+			Uint32 size = WgTextTool::getTextSizeUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, m_nbChars );
+			char * p = new char[size+1];
+			WgTextTool::getTextUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, p, size+1 );
+			std::string str( p, size );
+			delete p;
+			return str;
+		}
+
+		default:					// EMPTY
+			return "";
+	}
+}
+
+
+
 //____ CharBasket::Destructor __________________________________________________
 
 WgCharSeq::WgCharBasket::~WgCharBasket()

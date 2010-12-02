@@ -173,84 +173,17 @@ void WgGizmoTablist::SetTabWidthMode(TabWidthMode mode)
 
 //____ AddTab() _______________________________________________________________
 
-bool WgGizmoTablist::AddTab( Sint32 id, const char * pText, Uint32 position, const WgBlockSetPtr& pGfx )
+bool WgGizmoTablist::AddTab( int id, const WgCharSeq& text, int position, const WgBlockSetPtr& pGfx )
 {
 	if( FindTab(id) )
 		return false;					// We already have a tab with this ID...
 
+	if( position == -1 )
+		position = INT_MAX;
 
 	WgTab * pTab = new WgTab(id);
 
-	pTab->m_text.setText(pText);
-	pTab->m_text.setProperties(m_pProp);
-	pTab->SetSource( pGfx );
-	ResizeTab(pTab);
-
-	WgTab * pPos = m_tabs.Get(position);
-	if( pPos )
-		pTab->MoveBefore(pPos);
-	else
-		m_tabs.PushBack(pTab);
-	RequestRender();
-	return true;
-}
-
-//____ AddTab() _______________________________________________________________
-
-bool WgGizmoTablist::AddTab( Sint32 id, const Uint16* pText, Uint32 position, const WgBlockSetPtr& pGfx )
-{
-	if( FindTab(id) )
-		return false;					// We already have a tab with this ID...
-
-	WgTab * pTab = new WgTab(id);
-
-	pTab->m_text.setText(pText);
-	pTab->m_text.setProperties(m_pProp);
-	pTab->SetSource( pGfx );
-	ResizeTab(pTab);
-
-	WgTab * pPos = m_tabs.Get(position);
-	if( pPos )
-		pTab->MoveBefore(pPos);
-	else
-		m_tabs.PushBack(pTab);
-	RequestRender();
-	return true;
-}
-
-//____ AddTab() _______________________________________________________________
-
-bool WgGizmoTablist::AddTab( Sint32 id, const WgChar* pText, Uint32 position, const WgBlockSetPtr& pGfx )
-{
-	if( FindTab(id) )
-		return false;					// We already have a tab with this ID...
-
-	WgTab * pTab = new WgTab(id);
-
-	pTab->m_text.setText(pText);
-	pTab->m_text.setProperties(m_pProp);
-	pTab->SetSource( pGfx );
-	ResizeTab(pTab);
-
-	WgTab * pPos = m_tabs.Get(position);
-	if( pPos )
-		pTab->MoveBefore(pPos);
-	else
-		m_tabs.PushBack(pTab);
-	RequestRender();
-	return true;
-}
-
-//____ AddTab() _______________________________________________________________
-
-bool WgGizmoTablist::AddTab( Sint32 id, const WgText * pText, Uint32 position, const WgBlockSetPtr& pGfx )
-{
-	if( FindTab(id) )
-		return false;					// We already have a tab with this ID...
-
-	WgTab * pTab = new WgTab(id);
-
-	pTab->m_text.setText(pText);
+	pTab->m_text.setText(text);
 	pTab->m_text.setProperties(m_pProp);
 	pTab->SetSource( pGfx );
 	ResizeTab(pTab);
@@ -266,7 +199,7 @@ bool WgGizmoTablist::AddTab( Sint32 id, const WgText * pText, Uint32 position, c
 
 //____ RemoveTab() ____________________________________________________________
 
-bool WgGizmoTablist::RemoveTab( Sint32 id )
+bool WgGizmoTablist::RemoveTab( int id )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -303,7 +236,7 @@ void WgGizmoTablist::RemoveAllTabs()
 
 //____ MoveTab() ______________________________________________________________
 
-bool WgGizmoTablist::MoveTab( Sint32 id, Uint32 position )
+bool WgGizmoTablist::MoveTab( int id, int position )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -321,7 +254,7 @@ bool WgGizmoTablist::MoveTab( Sint32 id, Uint32 position )
 
 //____ SetTabId() ___________________________________________________________
 
-bool WgGizmoTablist::SetTabId( Sint32 id, Sint32 newId )
+bool WgGizmoTablist::SetTabId( int id, int newId )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -336,7 +269,7 @@ bool WgGizmoTablist::SetTabId( Sint32 id, Sint32 newId )
 
 //____ GetTabId() ___________________________________________________________
 
-Sint32 WgGizmoTablist::GetTabId(Uint32 position)
+int WgGizmoTablist::GetTabId(int position)
 {
 	WgTab *pTab = m_tabs.First();
 	if( pTab && position )
@@ -351,42 +284,12 @@ Sint32 WgGizmoTablist::GetTabId(Uint32 position)
 
 //____ SetTabText() ___________________________________________________________
 
-bool WgGizmoTablist::SetTabText( Sint32 id, const char * pText )
+bool WgGizmoTablist::SetTabText( int id, const WgCharSeq& text )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
 	{
-		pTab->m_text.setText( pText );
-		ResizeTab(pTab);
-		RequestRender();
-		return true;
-	}
-	return false;
-}
-
-//____ SetTabText() ___________________________________________________________
-
-bool WgGizmoTablist::SetTabText( Sint32 id, const Uint16* pText )
-{
-	WgTab * pTab = FindTab(id);
-	if( pTab )
-	{
-		pTab->m_text.setText( pText );
-		ResizeTab(pTab);
-		RequestRender();
-		return true;
-	}
-	return false;
-}
-
-//____ SetTabText() ___________________________________________________________
-
-bool WgGizmoTablist::SetTabText( Sint32 id, const WgText * pText )
-{
-	WgTab * pTab = FindTab(id);
-	if( pTab )
-	{
-		pTab->m_text.setText( pText );
+		pTab->m_text.setText( text );
 		ResizeTab(pTab);
 		RequestRender();
 		return true;
@@ -395,7 +298,7 @@ bool WgGizmoTablist::SetTabText( Sint32 id, const WgText * pText )
 }
 
 //____ SetTabTextColor() ____________________________________________________________
-bool WgGizmoTablist::SetTabTextColor( Sint32 id, WgColor col )
+bool WgGizmoTablist::SetTabTextColor( int id, WgColor col )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -409,7 +312,7 @@ bool WgGizmoTablist::SetTabTextColor( Sint32 id, WgColor col )
 
 //____ SelectTab() ____________________________________________________________
 
-bool WgGizmoTablist::SelectTab( Sint32 id )
+bool WgGizmoTablist::SelectTab( int id )
 {
 	WgTab * pTab = FindTab(id);
 
@@ -463,7 +366,7 @@ int WgGizmoTablist::GetSelectedTabPos() const
 
 //____ SetAlert() _____________________________________________________________
 
-bool WgGizmoTablist::SetAlert( Sint32 id, bool bAlertOn )
+bool WgGizmoTablist::SetAlert( int id, bool bAlertOn )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -478,7 +381,7 @@ bool WgGizmoTablist::SetAlert( Sint32 id, bool bAlertOn )
 
 //____ GetAlert() _____________________________________________________________
 
-bool WgGizmoTablist::GetAlert( Sint32 id )
+bool WgGizmoTablist::GetAlert( int id )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -490,7 +393,7 @@ bool WgGizmoTablist::GetAlert( Sint32 id )
 }
 
 //____ () ______________________________________________________________
-bool WgGizmoTablist::ShowTab( Sint32 id, bool bVisible )
+bool WgGizmoTablist::ShowTab( int id, bool bVisible )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -516,9 +419,9 @@ bool WgGizmoTablist::ShowTab( Sint32 id, bool bVisible )
 
 //____ GetTabCount() ______________________________________________________________
 
-Uint32 WgGizmoTablist::GetTabCount( ) const
+int WgGizmoTablist::GetTabCount( ) const
 {
-	Uint32 n = 0;
+	int n = 0;
 
 	for( WgTab * pTab = m_tabs.First(); pTab; pTab = pTab->Next() )
 		n++;
@@ -528,7 +431,7 @@ Uint32 WgGizmoTablist::GetTabCount( ) const
 
 //____ GetTabWidth() ______________________________________________________________
 
-Uint32 WgGizmoTablist::GetTabWidth( Sint32 id )
+Uint32 WgGizmoTablist::GetTabWidth( int id )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -541,14 +444,14 @@ Uint32 WgGizmoTablist::GetTabWidth( Sint32 id )
 
 //____ HasTab() ______________________________________________________________
 
-bool WgGizmoTablist::HasTab( Sint32 id )
+bool WgGizmoTablist::HasTab( int id )
 {
 	return FindTab(id) != 0;
 }
 
 //____ LockTabContent() ______________________________________________________________
 
-WgItemRow* WgGizmoTablist::LockTabContent( Sint32 id )
+WgItemRow* WgGizmoTablist::LockTabContent( int id )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -569,7 +472,7 @@ WgItemRow* WgGizmoTablist::LockTabContent( Sint32 id )
 
 //____ UnlockTabContent() ______________________________________________________________
 
-void WgGizmoTablist::UnlockTabContent( Sint32 id )
+void WgGizmoTablist::UnlockTabContent( int id )
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -615,7 +518,7 @@ WgTab* WgGizmoTablist::GetLastVisibleTab()
 
 //____ FindTab() ______________________________________________________________
 
-WgTab* WgGizmoTablist::FindTab( Sint32 id )
+WgTab* WgGizmoTablist::FindTab( int id )
 {
 	WgTab * pTab = m_tabs.First();
 
@@ -747,7 +650,7 @@ bool WgGizmoTablist::ResizeAllTabs()
 
 //____ Pos2Tab() ______________________________________________________________
 
-WgTab * WgGizmoTablist::Pos2Tab( Sint32 x, Sint32 y )
+WgTab * WgGizmoTablist::Pos2Tab( int x, int y )
 {
 	if( x < 0 || y < 0 )
 		return 0;
@@ -874,7 +777,7 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	// Render all tabs to the left of the selected tab first
 
 
-	Sint32 xOfs = (Sint32)_canvas.x;
+	int xOfs = (int)_canvas.x;
 	int width;
 	WgTab * pTab = m_tabs.First();
 	while( pTab )
@@ -992,8 +895,8 @@ void WgGizmoTablist::OnAction( WgInput::UserAction action, int button_key, const
 		{
 			WgCord pos = Abs2local( WgCord(info.x, info.y) );
 
-			Sint32	x = pos.x;
-			Sint32	y = pos.y;
+			int	x = pos.x;
+			int	y = pos.y;
 
 			WgTab * pTab = Pos2Tab( x, y );
 			if( pTab && pTab != m_pTabSelected )
@@ -1010,8 +913,8 @@ void WgGizmoTablist::OnAction( WgInput::UserAction action, int button_key, const
 		{
 			WgCord pos = Abs2local( WgCord(info.x, info.y) );
 
-			Sint32	x = pos.x;
-			Sint32	y = pos.y;
+			int	x = pos.x;
+			int	y = pos.y;
 
 			WgTab * pTab = Pos2Tab( x, y );
 			if( pTab != m_pTabMarked )

@@ -137,6 +137,7 @@ public:
 	const WgCharBasket		GetWgChars() const;
 	const UnicodeBasket		GetUnicode() const;
 	const UTF8Basket		GetUTF8() const;
+	std::string				GetStdString() const;
 	int						GetNbLines() const;
 	void					CopyTo( WgChar * pDest ) const;
 //	void					CopyTo( char * pDest ) const;			//TODO: implement.

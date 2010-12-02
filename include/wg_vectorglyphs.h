@@ -155,6 +155,7 @@ private:
 	int					m_renderFlags;
 	RenderMode			m_renderMode[WG_MAX_FONTSIZE+1];
 	int					m_sizeOffset;								// value to add to specified size (for GetGlyph(), GetKerning() etc) before getting glyph data.
+	int					m_whitespaceAdvance[WG_MAX_FONTSIZE+1];
 
 	//____ Static stuff __________________________________________________________
 

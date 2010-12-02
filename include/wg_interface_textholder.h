@@ -114,30 +114,11 @@ public:
 	int			ReplaceChar( int ofs, const WgChar& character );
 	int			DeleteChar( int ofs );
 
-
-//	void				SetText( const char * _pStr );
-//	void				SetText( const Uint16 * _pStr );
-//	void				SetText( const WgChar * _pStr );
-//	void				SetText( const WgText * _pText );
-
-//	Uint32				SetFormattedText( const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
-//	Uint32				SetFormattedText( const Uint16 * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
-
-//	Uint32				AddFormattedText( const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
-//	Uint32				InsertFormattedText( Uint32 line, Uint32 col, const char * pText, Uint32 nChar = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
-
 	void				SetLineSpaceAdjustment( Sint8 adjustment );
 	Sint8				GetLineSpaceAdjustment() const;
 
 	virtual bool		SetTextWrap(bool bWrap);
 	bool				GetTextWrap() const { return m_pText->IsWrap(); }
-
-
-//	inline void			AddText( const char * pszText ) { AddFormattedText( pszText ); }
-//	void				AddText( const WgText * pText, Uint32 fromLine = 0, Uint32 nLines = 0xFFFFFFFF );
-//	void				AddText( const WgCharBuffer* charBuffer );
-//	void				RemoveTextLines( Uint32 start, Uint32 nLines = 0xFFFFFFFF );
-//	void				RemoveSelectedText();
 
 	inline WgMode		TextMode() const { return m_pText->mode(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }

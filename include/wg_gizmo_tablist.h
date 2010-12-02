@@ -41,7 +41,7 @@
 
 class WgFont;
 class WgSurface;
-
+class WgCharSeq;
 class WgItemRow;
 
 class WgTab : public WgLink
@@ -53,7 +53,7 @@ public:
 
 	LINK_METHODS( WgTab );
 
-	Sint32			GetId() const			{ return m_id; }
+	int				GetId() const			{ return m_id; }
 	void			SetAlert(bool bAlertOn) { m_bAlert = bAlertOn; }
 	bool			GetAlert() const		{ return m_bAlert; }
 
@@ -127,41 +127,36 @@ public:
 	void 			SetTabWidthMode(TabWidthMode mode);
 	TabWidthMode	GetTabWidthMode() const { return m_tabWidthMode; }
 
-	bool AddTab( Sint32 id, const char * pText, Uint32 position = 0xFFFFFFFF, const WgBlockSetPtr& pGfx = 0 );
-	bool AddTab( Sint32 id, const Uint16* pText, Uint32 position = 0xFFFFFFFF, const WgBlockSetPtr& pGfx = 0 );
-	bool AddTab( Sint32 id, const WgChar* pText, Uint32 position = 0xFFFFFFFF, const WgBlockSetPtr& pGfx = 0 );
-	bool AddTab( Sint32 id, const WgText * pText, Uint32 position = 0xFFFFFFFF, const WgBlockSetPtr& pGfx = 0 );
-	bool RemoveTab( Sint32 id );
+	bool AddTab( int id, const WgCharSeq& text, int position = -1, const WgBlockSetPtr& pGfx = 0 );
+	bool RemoveTab( int id );
 	void RemoveAllTabs( );
 
-	bool MoveTab( Sint32 id, Uint32 position );
-	bool SetTabText( Sint32 id, const char * pText );
-	bool SetTabText( Sint32 id, const Uint16* pText );
-	bool SetTabText( Sint32 id, const WgText * pText );
+	bool MoveTab( int id, int position );
+	bool SetTabText( int id, const WgCharSeq& text );
 
-	bool SetTabId( Sint32 id, Sint32 newId );
-	Sint32 GetTabId(Uint32 position);
+	bool SetTabId( int id, int newId );
+	int GetTabId(int position);
 
 	void	setTabMouseOpacity( bool bOpaque ) { m_bTabOpaqueForMouse = bOpaque; };
 	bool	getTabMouseOpacity() const { return m_bTabOpaqueForMouse; }
 
 
-	bool SetTabTextColor( Sint32 id, WgColor col );
+	bool SetTabTextColor( int id, WgColor col );
 
-	Uint32	GetTabWidth( Sint32 id );
+	Uint32	GetTabWidth( int id );
 
-	bool SelectTab( Sint32 id );
+	bool SelectTab( int id );
 	int GetSelectedTabId() const;
 	int GetSelectedTabPos() const;
-	bool SetAlert( Sint32 id, bool bAlertOn );
-	bool GetAlert( Sint32 id );
-	bool ShowTab( Sint32 id, bool bVisible );
-	Uint32 GetTabCount( ) const;
+	bool SetAlert( int id, bool bAlertOn );
+	bool GetAlert( int id );
+	bool ShowTab( int id, bool bVisible );
+	int GetTabCount( ) const;
 
-	bool HasTab( Sint32 id );
+	bool HasTab( int id );
 
-	WgItemRow*	LockTabContent( Sint32 id );
-	void		UnlockTabContent( Sint32 id );
+	WgItemRow*	LockTabContent( int id );
+	void		UnlockTabContent( int id );
 
 	WgTab*			GetSelectedTab();
 	WgTab*			GetFirstTab();
@@ -182,10 +177,10 @@ private:
 
 	WgBlockSetPtr	GetTabSource( WgTab * pTab );
 	WgMode			GetTabMode(const WgTab& tab);
-	WgTab*			FindTab( Sint32 id );
+	WgTab*			FindTab( int id );
 	bool			ResizeTab( WgTab * pTab );
 	bool			ResizeAllTabs();
-	WgTab*	 		Pos2Tab( Sint32 x, Sint32 y );
+	WgTab*	 		Pos2Tab( int x, int y );
 	float			CalcTabScaleFactor();
 
 	void	RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, const WgRect& clip );

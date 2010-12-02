@@ -124,6 +124,7 @@ public:
 
 	int			GetItemPos( WgMenuItem* pEntry );
 	WgMenuItem*	GetItem( int pos );
+	int			GetItemCount() const { return (int)m_items.Size(); }
 
 
 	WgMenuItem *FindItem( int id );

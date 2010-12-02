@@ -209,6 +209,8 @@ namespace WgSignal
 	class TreeEntryOpened			: public Signal_treeentry { public: TreeEntryOpened() { type = (Uint16) __LINE__; data = 0; };};
 	class TreeEntryClosed			: public Signal_treeentry { public: TreeEntryClosed() { type = (Uint16) __LINE__; data = 0; };};
 
+	class TextChanged				: public Signal_void { public: TextChanged() { type = (Uint16) __LINE__; data = 0; }; };
+
 };
 
 	
