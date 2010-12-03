@@ -555,8 +555,8 @@ void Wdg_Menu::MarkFirstFilteredEntry()
 		if( pItem->GetType() != SEPARATOR )
 		{
 			WgString str = ((WgMenuEntry*)pItem)->GetText();
-
-			if( str.Length() > (unsigned) m_nSelectorKeys )
+		
+			if( str.Length() >= (unsigned) m_nSelectorKeys )
 			{
 				const WgChar * pChars = str.Chars();
 

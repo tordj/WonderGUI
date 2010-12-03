@@ -52,6 +52,15 @@ public:
 	inline bool	GrabInputFocus() { return WgItem::GrabInputFocus(); }
 	inline bool	RemoveInputFocus() { return WgItem::GrabInputFocus(); }
 
+	void		SetColor( const WgColor& color);
+	void		SetTintMode( WgTintMode mode );
+	void		SetBlendMode( WgBlendMode mode );
+
+	inline WgColor			Color() { return m_tintColor; }
+	inline WgBlendMode	BlendMode() { return m_blendMode; }
+	inline WgTintMode	TintMode() { return m_tintMode; }
+
+
 protected:
 
 	void	AdaptToWidth( Uint32 displayed_width );
@@ -73,6 +82,11 @@ protected:
 
 	int m_minWidth;
 	int m_minHeight;
+
+	WgColor				m_tintColor;
+	WgBlendMode			m_blendMode;
+	WgTintMode			m_tintMode;
+
 
 	struct ItemOffset
 	{

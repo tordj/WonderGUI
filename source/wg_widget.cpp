@@ -211,7 +211,7 @@ bool WgWidget::SetGeometry( WgOrigo _topLeft, Sint32 _x1, Sint32 _y1, WgOrigo _b
 	m_x2 = _x2;
 	m_y2 = _y2;
 
-	return UpdateGeometry( true, false, bEmit );
+	return UpdateGeometry( false, false, bEmit );
 }
 
 //____ SetGeometry(2) _________________________________________________________
@@ -239,7 +239,7 @@ bool WgWidget::SetGeometry( WgOrigo _origo, const WgRect& _geometry, bool bEmit 
 	m_x2 = _geometry.x + _geometry.w;
 	m_y2 = _geometry.y + _geometry.h;
 
-	return UpdateGeometry( true, false, bEmit );
+	return UpdateGeometry( false, false, bEmit );
 }
 
 //____ SetGeometry(3) _________________________________________________________
@@ -262,7 +262,7 @@ bool WgWidget::SetGeometry( const WgRect& _geometry, bool bEmit )
 	m_x2 = _geometry.x + _geometry.w;
 	m_y2 = _geometry.y + _geometry.h;
 
-	return UpdateGeometry( true, false, bEmit );
+	return UpdateGeometry( false, false, bEmit );
 }
 
 

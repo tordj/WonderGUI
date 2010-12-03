@@ -53,18 +53,17 @@ void Wg_Interface_ItemHolder::SetSortFunction(Sint32 (*fp)(WgItem *, WgItem *))
 
 //____ AddItem() ______________________________________________________________
 
-Uint32 Wg_Interface_ItemHolder::AddItem( WgItem * pItem )
+void Wg_Interface_ItemHolder::AddItem( WgItem * pItem )
 {
 	pItem->m_pMyHolder = this;
 	m_items.PushBack( pItem );
 	m_nItems++;
 	ItemAdded(pItem);
-	return pItem->Index();
 }
 
 //____ InsertItem() ___________________________________________________________
 
-Uint32 Wg_Interface_ItemHolder::InsertItem( WgItem * pItem, Uint32 pos )
+void Wg_Interface_ItemHolder::InsertItem( WgItem * pItem, Uint32 pos )
 {
 	WgItem * p = m_items.Get(pos);
 
@@ -76,7 +75,6 @@ Uint32 Wg_Interface_ItemHolder::InsertItem( WgItem * pItem, Uint32 pos )
 	pItem->m_pMyHolder = this;
 	m_nItems++;
 	ItemAdded(pItem);
-	return pItem->Index();
 }
 
 //____ HasItem() ___________________________________________________________

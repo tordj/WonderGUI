@@ -218,10 +218,13 @@ bool WgPen::SetChar( Uint32 chr )
 	return false;
 }
 
+//____ BlitChar() _____________________________________________________________
+
 void WgPen::BlitChar() const
 {
 	int x = GetBlitPosX();
 	int y = GetBlitPosY();
+
 	if( m_bClip )
 		m_pDevice->ClipBlit( m_clipRect, m_pGlyph->pSurf, m_pGlyph->rect, x, y);
 	else

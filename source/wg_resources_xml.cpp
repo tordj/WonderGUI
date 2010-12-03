@@ -5128,7 +5128,7 @@ void WgTabRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 	Wdg_TabList* tabList = tabListRes->GetWidget();
 	Sint32 uid = WgUtil::ToSint32(xmlNode["uid"], 1 + tabList->GetTabCount());
 	WgBlockSetPtr blockset = s.ResDb()->GetBlockSet(xmlNode["blockset"]);
-	tabList->AddTab(uid, text.c_str(), -1, blockset);
+	tabList->AddTab(uid, text.c_str(), INT_MAX, blockset);
 	tabList->SetAlert(uid, WgUtil::ToBool(xmlNode["alert"]) );
 	if(xmlNode.HasAttribute("icon"))
 	{

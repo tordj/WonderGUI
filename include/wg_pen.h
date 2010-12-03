@@ -98,7 +98,8 @@ public:
 	inline int				GetBlitPosX() const { return m_pos.x + m_pGlyph->bearingX; }
 	inline int				GetBlitPosY() const { return m_pos.y + m_pGlyph->bearingY; }
 	
-
+	inline const WgRect&	GetClipRect() const { return m_clipRect; }
+	inline bool				HasClipRect() const { return m_bClip; }
 
 	inline WgFont *			GetFont() const { return m_pFont; }
 	inline int				GetSize() const { return m_size; }

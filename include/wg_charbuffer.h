@@ -847,8 +847,8 @@ private:
 
 	struct BufferHead
 	{
-		Uint16		m_lockCnt;
-		Uint16		m_refCnt;
+		Uint32		m_lockCnt;
+		Uint32		m_refCnt;
 		Uint32		m_size;					// Size in number of WgChar of buffer.
 		Uint32		m_beg;					// Beginning of chars.
 		Uint32		m_len;					// Number of chars.

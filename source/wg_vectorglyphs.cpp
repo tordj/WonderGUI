@@ -50,9 +50,13 @@ WgVectorGlyphs::WgVectorGlyphs( char* pTTF_File, int bytes, int faceIndex )
 	m_ftCharSize	= 0;
 	m_accessCounter = 0;
 	m_sizeOffset	= 0;
+	m_whitespaceAdvance = 0;
 
 	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
+	{
 		m_cachedGlyphsIndex[i] = 0;
+		m_whitespaceAdvance[i] = 0;
+	}
 
 	FT_Error err = FT_New_Memory_Face(	WgBase::GetFreeTypeLibrary(),
 										(const FT_Byte *)pTTF_File,
@@ -191,26 +195,27 @@ int WgVectorGlyphs::GetWhitespaceAdvance( int size )
 {
 	size += m_sizeOffset;
 
-	//TODO: We should probably cache this...
+	if( !m_whitespaceAdvance[size] )
+	{
+		FT_Error err;
 
-	FT_Error err;
+		// Set size for FreeType
 
-	// Set size for FreeType
+		if( m_ftCharSize != size )
+			if( !SetCharSize( size ) )
+				return 0;
 
-	if( m_ftCharSize != size )
-		if( !SetCharSize( size ) )
+		// Load whitespace glyph
+
+		err = FT_Load_Char( m_ftFace, ' ', FT_LOAD_RENDER );
+		if( err )
 			return 0;
 
-	// Load whitespace glyph
+		// Get and return advance
+		m_whitespaceAdvance[size] = m_ftFace->glyph->advance.x >> 6;
+	}
 
-	err = FT_Load_Char( m_ftFace, ' ', FT_LOAD_RENDER );
-	if( err )
-		return 0;
-
-	// Get and return advance
-
-	return  m_ftFace->glyph->advance.x >> 6;
-
+	return m_whitespaceAdvance[size];
 }
 
 //____ GetHeight() ____________________________________________________________
@@ -223,7 +228,7 @@ int WgVectorGlyphs::GetHeight( int size )
 		if( !SetCharSize( size ) )
 			return 0;
 
-	return (m_ftFace->size->metrics.ascender - m_ftFace->size->metrics.descender+32) >> 6;
+	return (m_ftFace->size->metrics.ascender - m_ftFace->size->metrics.descender) >> 6;
 }
 
 //____ GetLineSpacing() ____________________________________________________________
@@ -236,7 +241,7 @@ int WgVectorGlyphs::GetLineSpacing( int size )
 		if( !SetCharSize( size ) )
 			return 0;
 
-	return (m_ftFace->size->metrics.height+32) >> 6;
+	return (m_ftFace->size->metrics.height) >> 6;
 }
 
 
@@ -250,7 +255,7 @@ int WgVectorGlyphs::GetBaseline( int size )
 		if( !SetCharSize( size ) )
 			return 0;
 
-	return (m_ftFace->size->metrics.ascender+32) >> 6;
+	return (m_ftFace->size->metrics.ascender) >> 6;
 }
 
 
@@ -281,7 +286,7 @@ int WgVectorGlyphs::GetMaxGlyphAdvance( int size )
 {
 	size += m_sizeOffset;
 
-	return (m_ftFace->size->metrics.max_advance+32) >> 6;
+	return m_ftFace->size->metrics.max_advance >> 6;
 }
 
 

@@ -31,7 +31,11 @@
 #	include <wg_geo.h>
 #endif
 
-class WgGfxAnim;
+#ifndef WG_GFXANIM_DOT_H
+#	include <wg_gfxanim.h>
+#endif
+
+//class WgGfxAnim;
 class WgGlyphSet;
 
 
@@ -78,6 +82,7 @@ public:
 	int					bearingY( Mode m ) const { return m_bearing[m].y; };
 	WgCord				bearing( Mode m ) const { return m_bearing[m]; }
 	int					advance( Mode m ) const { return m_advance[m]; };
+	int					width( Mode m ) const { return m_pAnim[m]->width(); }
 	WgGfxAnim * 		anim( Mode m ) const { return m_pAnim[m]; };
 	ScaleMode			scaleMode( Mode m ) const { return m_scaleMode[m]; }
 	WgBorders			stretchBorders( Mode m ) const { return m_stretchBorders[m]; }

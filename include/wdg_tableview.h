@@ -141,7 +141,7 @@ public:
 	
 
 	void	SetItem( WgItem * pItem, Uint32 col );
-	Uint32	AddItem( WgItem * pItem );
+	void	AddItem( WgItem * pItem );
 
 
 	void	SetTooltipString( const WgString& str )		{ WgItemRow::SetTooltipString( str ); }	\
@@ -220,8 +220,8 @@ public:
 	Uint32	GetSortColumns()	{ return c_nSortColumns; }
 	bool	GetSortColumn( Uint32 order, Uint32& columnIndex, bool& bAscend );
 
-	inline Uint32		AddRow( WgTableRow * pRow )  { return AddItem( pRow );  }
-	inline Uint32		InsertRow( WgTableRow * pRow, Uint32 pos ) { return InsertItem( pRow, pos ); }
+	inline void			AddRow( WgTableRow * pRow )  { AddItem( pRow );  }
+	inline void			InsertRow( WgTableRow * pRow, Uint32 pos ) { InsertItem( pRow, pos ); }
 	inline void			InsertRowSorted( WgTableRow * pRow ) { InsertItemSorted( pRow ); }
 	inline Sint32		GetRowNb( WgTableRow * pRow ) { return GetItemPos( pRow ); }
 	inline WgTableRow *	GetRow( Uint32 pos ) { return (WgTableRow *) GetItem(pos); }

@@ -37,8 +37,8 @@ public:
 	Wg_Interface_ItemHolder();
 	virtual ~Wg_Interface_ItemHolder();
 
-	Uint32	AddItem( WgItem * pItem );
-	Uint32	InsertItem( WgItem * pItem, Uint32 pos );
+	void	AddItem( WgItem * pItem );
+	void	InsertItem( WgItem * pItem, Uint32 pos );
 	void	InsertItemSorted( WgItem * pItem );
 
 	bool	HasItem( WgItem * pItem ) const;
