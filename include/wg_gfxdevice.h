@@ -35,11 +35,11 @@
 #	include <wg_textprop.h>
 #endif
 
-/*
+
 #ifndef WG_GEO_DOT_H
 #	include <wg_geo.h>
 #endif
-
+/*
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>
 #endif
@@ -81,10 +81,14 @@ public:
 	virtual Uint32	SetRenderFlags( Uint32 flags );
 	virtual bool	SetSaveDirtyRects( bool bSave );
 
-	inline WgColor&	 	GetTintColor()	{ return m_tintColor; }
-	inline WgBlendMode 	GetBlendMode()	{ return m_blendMode; }
-	inline Uint32		GetRenderFlags()	{ return m_renderFlags; }
-	inline bool			GetSaveDirtyRects() { return m_bSaveDirtyRects; }
+	inline const WgColor&	GetTintColor() const { return m_tintColor; }
+	inline WgBlendMode 	GetBlendMode() const { return m_blendMode; }
+	inline Uint32		GetRenderFlags() const { return m_renderFlags; }
+	inline bool			GetSaveDirtyRects() const { return m_bSaveDirtyRects; }
+
+	// Geometry related methods.
+
+	inline WgSize	CanvasSize() const { return m_canvasSize; }
 
 	// Begin/end render methods.
 
@@ -186,8 +190,7 @@ protected:
 	WgBlendMode	m_blendMode;		// Current BlendMode.
 	Uint32		m_renderFlags;		// Current flags.
 
-	Uint32		m_canvasHeight;
-	Uint32		m_canvasWidth;
+	WgSize		m_canvasSize;
 	bool		m_bSaveDirtyRects;
 
 };

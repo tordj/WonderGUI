@@ -61,15 +61,9 @@ void WgGfxDeviceSDL::SetCanvas( WgSurfaceSDL * pCanvas )
 	m_pCanvas 		= pCanvas;
 
 	if( pCanvas )
-	{
-	m_canvasHeight 	= pCanvas->Height();
-	m_canvasWidth 	= pCanvas->Width();
-	}
+		m_canvasSize = WgSize( pCanvas->Width(), pCanvas->Height() );
 	else
-	{
-		m_canvasHeight 	= 0;
-		m_canvasWidth 	= 0;
-	}
+		m_canvasHeight 	= WgSize(0,0);
 }
 
 

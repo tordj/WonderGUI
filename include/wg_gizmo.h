@@ -56,6 +56,7 @@ class WgChildManager;
 class WgSkinManager;
 class Wg_Interface_TextHolder;
 class WgGizmoContainer;
+class WgSkinNode;
 
 class WgGizmo : public WgEmitter
 {

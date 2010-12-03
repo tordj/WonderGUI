@@ -36,6 +36,7 @@
 class WgGizmoContainer;
 class WgWidget;
 class WgGfxDevice;
+class WgGizmo;
 
 class WgGizmoHook
 {

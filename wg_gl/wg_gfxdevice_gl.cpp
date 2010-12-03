@@ -25,11 +25,11 @@
 
 //____ Constructor _____________________________________________________________
 
-WgGfxDeviceGL::WgGfxDeviceGL( Uint32 width, Uint32 height )
+WgGfxDeviceGL::WgGfxDeviceGL( WgSize canvas )
 {
 	m_bRendering = false;
 
-	SetCanvas( width, height );
+	SetCanvas( canvas );
 }
 
 //____ Destructor ______________________________________________________________
@@ -40,10 +40,9 @@ WgGfxDeviceGL::~WgGfxDeviceGL()
 
 //____ SetCanvas() __________________________________________________________________
 
-void WgGfxDeviceGL::SetCanvas( Uint32 width, Uint32 height )
+void WgGfxDeviceGL::SetCanvas( WgSize size )
 {
-	m_canvasHeight 	= height;
-	m_canvasWidth 	= width;
+	m_canvasSize 	= size;
 }
 
 //____ SetTintColor() __________________________________________________________
@@ -150,7 +149,7 @@ bool WgGfxDeviceGL::BeginRender()
 	glPushMatrix();							// Store The Projection Matrix
 
 	glLoadIdentity();								// Reset The Projection Matrix
-	glOrtho(0,m_canvasWidth,0,m_canvasHeight,-1,1);	// Set Up An Ortho Screen
+	glOrtho(0,m_canvasSize.w,0,m_canvasSize.h,-1,1);	// Set Up An Ortho Screen
 
 	glMatrixMode(GL_MODELVIEW);				// Select The Modelview Matrix
 	glPushMatrix();							// Store The Modelview Matrix
@@ -218,9 +217,9 @@ void WgGfxDeviceGL::Fill( const WgRect& _rect, const WgColor& _col )
 		glEnable(GL_BLEND);
 
 	int	dx1 = _rect.x;
-	int	dy1 = m_canvasHeight - _rect.y;
+	int	dy1 = m_canvasSize.h - _rect.y;
 	int dx2 = _rect.x + _rect.w;
-	int dy2 = m_canvasHeight - (_rect.y + _rect.h);
+	int dy2 = m_canvasSize.h - (_rect.y + _rect.h);
 
 	glColor4ub( _col.r, _col.g, _col.b, _col.a );
 	glBegin(GL_QUADS);
@@ -252,7 +251,7 @@ void WgGfxDeviceGL::Blit( const WgSurface* _pSrc, const WgRect& _src, Sint32 _dx
 
 	int		dx1 = _dx;
 	int		dx2 = _dx + _src.w;
-	int		dy1 = m_canvasHeight - _dy;
+	int		dy1 = m_canvasSize.h - _dy;
 	int		dy2 = dy1 - _src.h;
 
 	glBindTexture(GL_TEXTURE_2D, ((WgSurfaceGL*) _pSrc)->GetTexture() );
@@ -291,7 +290,7 @@ void WgGfxDeviceGL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float
 
 	float	dx1 = dx;
 	float	dx2 = dx + dw;
-	float	dy1 = m_canvasHeight - dy;
+	float	dy1 = m_canvasSize.h - dy;
 	float	dy2 = dy1 - dh;
 
 	glBindTexture(GL_TEXTURE_2D, ((WgSurfaceGL*)pSrc)->GetTexture() );

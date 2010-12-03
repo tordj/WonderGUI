@@ -105,7 +105,7 @@ void WgGfxDevice::Blit( const WgSurface* pSrc, Sint32 dx, Sint32 dy )
 
 void WgGfxDevice::StretchBlit( const WgSurface * pSrc, bool bTriLinear, float mipmapBias )
 {
-	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->Width(), (float) pSrc->Height(), 0, 0, (float) m_canvasWidth, (float) m_canvasHeight, bTriLinear, mipmapBias );
+	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->Width(), (float) pSrc->Height(), 0, 0, (float) m_canvasSize.w, (float) m_canvasSize.h, bTriLinear, mipmapBias );
 }
 
 void WgGfxDevice::StretchBlit( const WgSurface * pSrc, const WgRect& dest, bool bTriLinear, float mipmapBias )
@@ -122,7 +122,7 @@ void WgGfxDevice::StretchBlit( const WgSurface * pSrc, const WgRect& src, const 
 
 void WgGfxDevice::TileBlit( const WgSurface* _pSrc )
 {
-	TileBlit( _pSrc, WgRect( 0, 0, _pSrc->Width(), _pSrc->Height() ), WgRect(0,0,m_canvasWidth,m_canvasHeight) );
+	TileBlit( _pSrc, WgRect( 0, 0, _pSrc->Width(), _pSrc->Height() ), WgRect(0,0,m_canvasSize) );
 }
 
 void WgGfxDevice::TileBlit( const WgSurface* _pSrc, const WgRect& _dest )
@@ -240,7 +240,7 @@ void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurface* pSrc, const WgR
 
 void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, bool bTriLinear, float mipBias )
 {
-	ClipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->Width(), pSrc->Height()), WgRect( 0,0,m_canvasWidth,m_canvasHeight), bTriLinear, mipBias );
+	ClipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->Width(), pSrc->Height()), WgRect( 0,0,m_canvasSize), bTriLinear, mipBias );
 }
 
 void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& dest, bool bTriLinear, float mipBias )
@@ -291,7 +291,7 @@ void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, f
 void WgGfxDevice::ClipTileBlit( const WgRect& clip, const WgSurface* pSrc )
 {
 	ClipTileBlit( clip, pSrc, WgRect( 0,0,pSrc->Width(),pSrc->Height() ),
-				  WgRect(0,0,m_canvasWidth,m_canvasHeight) );
+				  WgRect(0,0,m_canvasSize) );
 }
 
 void WgGfxDevice::ClipTileBlit( const WgRect& clip, const WgSurface* pSrc,

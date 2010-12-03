@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -22,15 +22,15 @@
 
 #include <wg_gfxdevice_null.h>
 
-WgGfxDeviceNull::WgGfxDeviceNull()
+WgGfxDeviceNull::WgGfxDeviceNull( WgSize size )
 {
+	m_canvasSize = size;
 }
 
 WgGfxDeviceNull::~WgGfxDeviceNull()
 {
 }
-	
-			
+
 void WgGfxDeviceNull::Fill( const WgRect& rect, const WgColor& col )
 {
 }

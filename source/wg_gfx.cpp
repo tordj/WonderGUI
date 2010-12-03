@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -32,8 +32,8 @@
 #include	<wg_types.h>
 
 
-WgGfxDevice *			WgGfx::m_pNullDevice = 0;					
-WgGfxDevice *			WgGfx::m_pDevice = new WgGfxDeviceNull();
+WgGfxDevice *			WgGfx::m_pNullDevice = 0;
+WgGfxDevice *			WgGfx::m_pDevice = new WgGfxDeviceNull( WgSize(4096,4096) );
 
 
 //____ SetDevice() _____________________________________________________________
@@ -41,11 +41,11 @@ WgGfxDevice *			WgGfx::m_pDevice = new WgGfxDeviceNull();
 void WgGfx::SetDevice( WgGfxDevice * pDevice )
 {
 	// HACK: Save what must be the null-device if we don't have anyone yet.
-	
+
 	if( m_pNullDevice == 0 )
 		m_pNullDevice = m_pDevice;
 
-	
+
 	if( pDevice == 0 )
 	{
 		m_pDevice = m_pNullDevice;
@@ -57,7 +57,7 @@ void WgGfx::SetDevice( WgGfxDevice * pDevice )
 
 //____ clipBlitRow() __________________________________________________________
 
-void WgGfx::clipBlitRow( const WgRect& clip, const WgSurface * pSrc, const WgRect& _srcrect, 
+void WgGfx::clipBlitRow( const WgRect& clip, const WgSurface * pSrc, const WgRect& _srcrect,
 						 Uint32 tileOfs, Uint32 tileLen, Sint32 dx, Sint32 dy, Uint32 len, bool bStretch )
 {
 	/*
