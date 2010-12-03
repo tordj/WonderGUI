@@ -1290,6 +1290,11 @@ void Wdg_TableView::ItemAdded( WgItem * pItem )
 {
 	//
 
+	SetContentSize( m_contentWidth, m_contentHeight + pItem->Height() + m_cellPaddingY*2 );
+
+	// This should really be done BEFORE the item is added, now we might affect content size again,
+	// several times over in worst case!
+
 	WgItemRow * pRow = (WgItemRow*) pItem;
 	WgItem * pI = pRow->GetFirstItem();
 
@@ -1299,10 +1304,8 @@ void Wdg_TableView::ItemAdded( WgItem * pItem )
 		pI = pI->Next();
 	}
 
-
 	// Set size and request render
 
-	SetContentSize( m_contentWidth, m_contentHeight + pItem->Height() + m_cellPaddingY*2 );
 	RequestRender();
 }
 
