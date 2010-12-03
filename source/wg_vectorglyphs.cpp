@@ -50,7 +50,6 @@ WgVectorGlyphs::WgVectorGlyphs( char* pTTF_File, int bytes, int faceIndex )
 	m_ftCharSize	= 0;
 	m_accessCounter = 0;
 	m_sizeOffset	= 0;
-	m_whitespaceAdvance = 0;
 
 	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 	{

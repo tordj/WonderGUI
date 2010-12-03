@@ -118,9 +118,9 @@ void Wdg_ListView::refreshItems()
 	RequestRender();
 }
 
-//____ ItemModified() _________________________________________________________
+//____ ItemSizeModified() _________________________________________________________
 
-void Wdg_ListView::ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
+void Wdg_ListView::ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
 {
 	// this is wrong. an item's size changing doesn't necessarily mean
 	// that the content size is changing.
@@ -130,6 +130,16 @@ void Wdg_ListView::ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heigh
 	// recalculate content size.
 	refreshItems();
 }
+
+//____ ItemVisibilityModified() _______________________________________________
+
+void Wdg_ListView::ItemVisibilityModified( WgItem * pItem, bool bVisible )
+{
+	//TODO: More specific and optimized handling.
+	
+	refreshItems();
+}
+
 
 //____ ItemAdded() ____________________________________________________________
 

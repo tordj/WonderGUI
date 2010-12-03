@@ -77,7 +77,8 @@ public:
 
 protected:
 	virtual void refreshItems() = 0;
-	virtual void ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff ) = 0;
+	virtual void ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff ) = 0;
+	virtual void ItemVisibilityModified( WgItem * pItem, bool bVisible ) = 0;
 	virtual void ItemAdded( WgItem * pItem ) { refreshItems();	}; // Slow fallback method for making sure everyting is up-to-date...
 	virtual void ItemMarkChanged( WgItem * pItem, bool bMarked ) {};
 	virtual WgItem* GetMarkedItem( Uint32 x, Uint32 y ) = 0;
