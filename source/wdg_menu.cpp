@@ -20,6 +20,7 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#include	<wctype.h>
 
 #include	<wdg_menu.h>
 #include	<wdg_root.h>
@@ -959,7 +960,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					{
 						pItem = pItem->Prev();
 						while( pItem != 0 && pItem->GetType() == SEPARATOR )
-							pItem = pItem->Prev();		
+							pItem = pItem->Prev();
 					}
 					break;
 
@@ -968,26 +969,26 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					{
 						pItem = pItem->Next();
 						while( pItem != 0 && pItem->GetType() == SEPARATOR )
-							pItem = pItem->Next();		
+							pItem = pItem->Next();
 					}
 					else
 					{
 						pItem = m_items.First();
 						while( pItem != 0 && pItem->GetType() == SEPARATOR )
-							pItem = pItem->Next();		
+							pItem = pItem->Next();
 					}
 					break;
 
 				case WGKEY_HOME:
 					pItem = m_items.First();
 					while( pItem != 0 && pItem->GetType() == SEPARATOR )
-						pItem = pItem->Next();		
+						pItem = pItem->Next();
 					break;
 
 				case WGKEY_END:
 					pItem = m_items.Last();
 					while( pItem != 0 && pItem->GetType() == SEPARATOR )
-						pItem = pItem->Prev();		
+						pItem = pItem->Prev();
 					break;
 
 				case WGKEY_PAGEUP:
@@ -1001,7 +1002,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 							distance += m_sepHeight;
 						else
 							distance += m_entryHeight;
-	
+
 						pItem = pItem->Prev();
 					}
 
@@ -1025,7 +1026,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 							distance += m_sepHeight;
 						else
 							distance += m_entryHeight;
-	
+
 						pItem = pItem->Next();
 					}
 
@@ -1052,7 +1053,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 				}
 			}
 
-		}			
+		}
 		break;
 
         default:

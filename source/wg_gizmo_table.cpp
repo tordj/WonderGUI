@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include	<string.h>
+#include	<stdlib.h>
 
 #include	<wg_gizmo_table.h>
 #include	<wg_text.h>
@@ -206,7 +207,7 @@ WgWidget* WgTableHook::GetRoot()
 }
 
 
-WgTableHook::WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow ) : WgGizmoHook( pGizmo ) 
+WgTableHook::WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow ) : WgGizmoHook( pGizmo )
 {
 	m_height = pGizmo->BestSize().h;
 	m_pRow	 = pRow;
@@ -221,6 +222,7 @@ WgGizmo* WgTableHook::ReleaseGizmo()
 {
 	WgGizmo * p = m_pGizmo;
 	m_pGizmo = 0;
+
 	return p;
 }
 
@@ -509,7 +511,7 @@ int WgTableRow2::AddGizmo( WgGizmo * pGizmo )
 	// Look for the last empty cell
 
 	int cell = m_nCells;
-	
+
 	while( cell > 0 && m_pCells[cell-1].Gizmo() == 0 )
 		cell--;
 
@@ -539,7 +541,7 @@ void WgTableRow2::GrowCellsArray( int nCells )
 	}
 
 	// Delte old array and set pointers
-		
+
 	if( m_pCells )
 		free( m_pCells );
 
@@ -837,7 +839,7 @@ void WgGizmoTable::RemoveColumns()
 
 //TODO: Add default gizmo to parameters
 
-int WgGizmoTable::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrigo& headerAlign, int(*fpCompare)(WgGizmo *,WgGizmo *), 
+int WgGizmoTable::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrigo& headerAlign, int(*fpCompare)(WgGizmo *,WgGizmo *),
 							 bool bInitialAscend, bool bEnabled, Sint64 id, WgGizmo * pDefaultGizmo )
 {
 	WgTableColumn2 * pCol = new WgTableColumn2[m_nColumns+1];
@@ -860,7 +862,7 @@ int WgGizmoTable::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrigo& hea
 	pCol[m_nColumns].m_bInitialAscend = bInitialAscend;
 	pCol[m_nColumns].m_id = id;
 	pCol[m_nColumns].m_pDefaultGizmo = pDefaultGizmo;
-	
+
 
 	if( m_pColumns )
 		delete [] m_pColumns;
@@ -1055,7 +1057,7 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 	else
 		r.h = pRow->Height();
 
-	// Go through columns, determine x-pos. 
+	// Go through columns, determine x-pos.
 
 	for( int i = 0 ; i < column ; i++ )
 	{
@@ -1774,7 +1776,7 @@ WgGizmo * WgGizmoTable::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 	{
 		if( xOfs < m_cellPadding.left || xOfs >= m_pColumns[col].m_realWidth - m_cellPadding.right ||
 			yOfs < m_cellPadding.top || yOfs >= pRow->Height() - m_cellPadding.bottom )
-		{	
+		{
 			pGizmo = pRow->GetGizmo(col);
 			if( mode != WG_SEARCH_MARKPOLICY || pGizmo->MarkTest( WgCord( xOfs-m_cellPadding.left, yOfs-m_cellPadding.top) )  )
 				return pGizmo;

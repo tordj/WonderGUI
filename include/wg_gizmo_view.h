@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -31,6 +31,8 @@
 #ifndef	WG_GIZMO_DRAGBARS_DOT_H
 #	include <wg_gizmo_dragbars.h>
 #endif
+
+class WgGizmoView;
 
 //____ WgViewHook _____________________________________________________________
 
@@ -114,7 +116,7 @@ public:
 	static void cbSetViewOfs	(void * pGizmo, float x, float y) { ((WgGizmoView*)pGizmo)->SetViewOfs(x,y); }
 	static void cbSetViewOfsX	(void * pGizmo, float x) { ((WgGizmoView*)pGizmo)->SetViewOfsX(x); }
 	static void cbSetViewOfsY	(void * pGizmo, float y) { ((WgGizmoView*)pGizmo)->SetViewOfsY(y); }
-	
+
 	static void cbWheelRollX(void * pGizmo, int distance) { ((WgGizmoView*)pGizmo)->WheelRollX(distance); }
 	static void cbWheelRollY(void * pGizmo, int distance) { ((WgGizmoView*)pGizmo)->WheelRollY(distance); }
 
@@ -154,7 +156,7 @@ public:
 	inline Uint32	ViewPixelOfsX() { return m_viewPixOfs.x; };
 	inline Uint32	ViewPixelOfsY() { return m_viewPixOfs.y; };
 	inline WgCord		ViewPixelOfs() { return m_viewPixOfs; };
-	
+
 	Uint32	ViewPixelLenX();
 	Uint32	ViewPixelLenY();
 
@@ -179,24 +181,27 @@ public:
 	bool	ViewInclude( WgRect& rect );
 	bool	ViewIncludeX( WgRect& rect );
 	bool	ViewIncludeY( WgRect& rect );
-*/	
+*/
 
 	bool	SetAutoscroll( bool bAutoX, bool bAutoY	);
 	bool	AutoScrollX() const { return m_bAutoScrollX; }
 	bool	AutoScrollY() const { return m_bAutoScrollY; }
 
-	bool	SetScrollbarX( WgGizmoHDragbar * pScrollbar );
-	bool	SetScrollbarY( WgGizmoVDragbar * pScrollbar );
+	bool				SetScrollbarX( WgGizmoHDragbar * pScrollbar );
+	inline void			DeleteScrollbarX() {SetScrollbarX(0);}
+	WgGizmoHDragbar *	GetScrollbarX() const { return (WgGizmoHDragbar*) m_elements[XDRAG].Gizmo(); }
+	WgGizmoHDragbar* 	ReleaseScrollbarX();
 
-	WgGizmoHDragbar* ReleaseScrollbarX();
-	WgGizmoVDragbar* ReleaseScrollbarY();
+	bool				SetScrollbarY( WgGizmoVDragbar * pScrollbar );
+	inline void			DeleteScrollbarY() {SetScrollbarY(0);}
+	WgGizmoVDragbar *	GetScrollbarY() const { return (WgGizmoVDragbar*) m_elements[YDRAG].Gizmo(); }
+	WgGizmoVDragbar* 	ReleaseScrollbarY();
 
-	inline void	DeleteScrollbarX() {SetScrollbarX(0);}
-	inline void	DeleteScrollbarY() {SetScrollbarY(0);}
+	bool				SetContent( WgGizmo * pContent );
+	inline void			DeleteContent() {SetContent(0); }
+	WgGizmo*			GetContent() const { return m_elements[WINDOW].Gizmo(); }
+	WgGizmo*			ReleaseContent();
 
-
-	WgGizmoHDragbar *GetScrollbarX() const { return (WgGizmoHDragbar*) m_elements[XDRAG].Gizmo(); }
-	WgGizmoVDragbar *GetScrollbarY() const { return (WgGizmoVDragbar*) m_elements[YDRAG].Gizmo(); }
 
 	void	SetScrollbarAutoHide( bool bHideX, bool bHideY );
 	bool	GetScrollbarAutoHideX() const { return m_bAutoHideScrollbarX; }
@@ -211,10 +216,6 @@ public:
 
 	void	SetFillerSource( const WgBlockSetPtr& pBlocks );
 
-	bool		SetContent( WgGizmo * pContent );
-	inline void	DeleteContent() {SetContent(0); }
-	WgGizmo*	GetContent() const { return m_elements[WINDOW].Gizmo(); }
-	WgGizmo*	ReleaseContent();
 
 	WgViewHook * FirstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }
 	WgViewHook * LastHook() const { return const_cast<WgViewHook*>(&m_elements[2]); }
@@ -228,7 +229,7 @@ public:
 /*
 	NEED TO BE IMPLEMENTED!!!
 
-	int		HeightForWidth( int width ) const;	// 
+	int		HeightForWidth( int width ) const;	//
 	int		WidthForHeight( int height ) const;
 
 	WgSize	MinSize() const;				// Defined by dragbars minsize...

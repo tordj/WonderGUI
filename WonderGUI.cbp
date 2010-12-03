@@ -68,7 +68,6 @@
 		<Unit filename="include/wdg_textview.h" />
 		<Unit filename="include/wdg_treeview.h" />
 		<Unit filename="include/wdg_value.h" />
-		<Unit filename="include/wdg_widgetview.h" />
 		<Unit filename="include/wdg_ysplitter.h" />
 		<Unit filename="include/wg_anim.h" />
 		<Unit filename="include/wg_base.h" />
@@ -78,7 +77,6 @@
 		<Unit filename="include/wg_char.h" />
 		<Unit filename="include/wg_charbuffer.h" />
 		<Unit filename="include/wg_charseq.h" />
-		<Unit filename="include/wg_childmanager.h" />
 		<Unit filename="include/wg_color.h" />
 		<Unit filename="include/wg_cursor.h" />
 		<Unit filename="include/wg_cursorinstance.h" />
@@ -111,9 +109,11 @@
 		<Unit filename="include/wg_gizmo_radiobutton.h" />
 		<Unit filename="include/wg_gizmo_refreshbutton.h" />
 		<Unit filename="include/wg_gizmo_row.h" />
+		<Unit filename="include/wg_gizmo_table.h" />
 		<Unit filename="include/wg_gizmo_tablist.h" />
 		<Unit filename="include/wg_gizmo_text.h" />
 		<Unit filename="include/wg_gizmo_value.h" />
+		<Unit filename="include/wg_gizmo_view.h" />
 		<Unit filename="include/wg_gizmo_widget_wrapper.h" />
 		<Unit filename="include/wg_glyphset.h" />
 		<Unit filename="include/wg_input.h" />
@@ -141,6 +141,7 @@
 		<Unit filename="include/wg_resource_visitor.h" />
 		<Unit filename="include/wg_resources_xml.h" />
 		<Unit filename="include/wg_resourceserializer_xml.h" />
+		<Unit filename="include/wg_root.h" />
 		<Unit filename="include/wg_signals.h" />
 		<Unit filename="include/wg_signalstanza.h" />
 		<Unit filename="include/wg_simpletext.h" />
@@ -171,7 +172,6 @@
 		<Unit filename="source/wdg_tableview.cpp" />
 		<Unit filename="source/wdg_textview.cpp" />
 		<Unit filename="source/wdg_treeview.cpp" />
-		<Unit filename="source/wdg_widgetview.cpp" />
 		<Unit filename="source/wdg_ysplitter.cpp" />
 		<Unit filename="source/wg_anim.cpp" />
 		<Unit filename="source/wg_base.cpp" />
@@ -181,7 +181,6 @@
 		<Unit filename="source/wg_char.cpp" />
 		<Unit filename="source/wg_charbuffer.cpp" />
 		<Unit filename="source/wg_charseq.cpp" />
-		<Unit filename="source/wg_childmanager.cpp" />
 		<Unit filename="source/wg_color.cpp" />
 		<Unit filename="source/wg_cursor.cpp" />
 		<Unit filename="source/wg_cursorinstance.cpp" />
@@ -204,13 +203,16 @@
 		<Unit filename="source/wg_gizmo_editvalue.cpp" />
 		<Unit filename="source/wg_gizmo_fill.cpp" />
 		<Unit filename="source/wg_gizmo_fps.cpp" />
+		<Unit filename="source/wg_gizmo_hook.cpp" />
 		<Unit filename="source/wg_gizmo_menubar.cpp" />
 		<Unit filename="source/wg_gizmo_pixmap.cpp" />
 		<Unit filename="source/wg_gizmo_radiobutton.cpp" />
 		<Unit filename="source/wg_gizmo_refreshbutton.cpp" />
+		<Unit filename="source/wg_gizmo_table.cpp" />
 		<Unit filename="source/wg_gizmo_tablist.cpp" />
 		<Unit filename="source/wg_gizmo_text.cpp" />
 		<Unit filename="source/wg_gizmo_value.cpp" />
+		<Unit filename="source/wg_gizmo_view.cpp" />
 		<Unit filename="source/wg_glyphset.cpp" />
 		<Unit filename="source/wg_input.cpp" />
 		<Unit filename="source/wg_interface_edittext.cpp" />
@@ -231,6 +233,7 @@
 		<Unit filename="source/wg_resource_factory_xml.cpp" />
 		<Unit filename="source/wg_resources_xml.cpp" />
 		<Unit filename="source/wg_resourceserializer_xml.cpp" />
+		<Unit filename="source/wg_root.cpp" />
 		<Unit filename="source/wg_string.cpp" />
 		<Unit filename="source/wg_surface.cpp" />
 		<Unit filename="source/wg_text.cpp" />

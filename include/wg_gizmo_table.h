@@ -46,6 +46,7 @@
 
 class WgText;
 class WgFont;
+class WgGizmoTable;
 class WgTableRow2;
 class WgTableColumn2;
 
@@ -93,7 +94,7 @@ protected:
 	~WgTableHook();
 
 	WgGizmo* ReleaseGizmo();
-	
+
 	void	RequestRender();
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
@@ -102,7 +103,7 @@ protected:
 	bool	ReleaseFocus();
 
 	int				m_height;		// Minimum height needed for this Gizmo.
-	WgTableRow2 *	m_pRow;			// 
+	WgTableRow2 *	m_pRow;			//
 };
 
 //____ WgTableColumn2 _________________________________________________________
@@ -170,7 +171,7 @@ private:
 
 	WgGizmo *		m_pDefaultGizmo;
 
-	
+
 };
 
 //____ WgTableRow2 ____________________________________________________________
@@ -484,7 +485,7 @@ private:
 
 
 
-WgTableRow2* WgTableHook::Row() const 
+WgTableRow2* WgTableHook::Row() const
 {
 	return m_pRow;
 }
@@ -500,9 +501,9 @@ inline int WgTableHook::ColumnNb() const
 	return this - Row()->m_pCells;
 }
 
-inline int WgTableColumn2::Index() const 
-{ 
-	return this - m_pTable->m_pColumns; 
+inline int WgTableColumn2::Index() const
+{
+	return this - m_pTable->m_pColumns;
 }
 
 
