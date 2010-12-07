@@ -51,3 +51,12 @@ void WgGizmoHook::RelinkGizmo()
 {
 	m_pGizmo->m_pHook = this;
 }
+
+//____ ReleaseGizmo() _________________________________________________________
+
+WgGizmo* WgGizmoHook::ReleaseGizmo()
+{
+	WgGizmo * p = m_pGizmo;
+	m_pGizmo = 0;
+	return p;
+}

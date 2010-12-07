@@ -51,7 +51,6 @@ public:
 	WgDirtyRectObj();
 	~WgDirtyRectObj();
 
-	
 	void		Add( const WgRect& rect );
 	inline void	Sub( const WgRect& rect ) { Sub( rect.x, rect.y, rect.w, rect.h ); }
 

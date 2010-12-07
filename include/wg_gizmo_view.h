@@ -69,8 +69,6 @@ protected:
 	WgViewHook( WgGizmo * pContent, WgGizmoView * pView );
 	~WgViewHook();
 
-	WgGizmo* ReleaseGizmo();
-
 //	ElementType		m_type;
 	WgGizmoView *	m_pView;
 	WgRect			m_geo;

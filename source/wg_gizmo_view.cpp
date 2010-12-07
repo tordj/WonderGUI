@@ -1112,16 +1112,6 @@ WgWidget* WgViewHook::GetRoot()
 	return false;
 }
 
-//____ WgViewHook::ReleaseGizmo() _______________________________________________
-
-WgGizmo* WgViewHook::ReleaseGizmo()
-{
-	WgGizmo * p = m_pGizmo;
-	m_pGizmo = 0;
-	return p;
-}
-
-
 //____ WgViewHook::RequestRender() ______________________________________________
 
 void WgViewHook::RequestRender()

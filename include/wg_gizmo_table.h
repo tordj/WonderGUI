@@ -93,8 +93,6 @@ protected:
 	WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow );
 	~WgTableHook();
 
-	WgGizmo* ReleaseGizmo();
-
 	void	RequestRender();
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();

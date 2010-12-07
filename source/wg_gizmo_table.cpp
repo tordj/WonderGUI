@@ -217,15 +217,6 @@ WgTableHook::~WgTableHook()
 {
 }
 
-
-WgGizmo* WgTableHook::ReleaseGizmo()
-{
-	WgGizmo * p = m_pGizmo;
-	m_pGizmo = 0;
-
-	return p;
-}
-
 void WgTableHook::RequestRender()
 {
 	WgGizmoTable* pTable = Row()->Table();

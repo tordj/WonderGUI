@@ -113,6 +113,7 @@ bool WgRoot::SetGizmo( WgGizmo * pGizmo )
 
 WgGizmo * WgRoot::ReleaseGizmo()
 {
+	return m_hook.ReleaseGizmo();
 }
 
 //____ Update() _______________________________________________________________
@@ -125,12 +126,12 @@ void WgRoot::Update( int msTime )
 
 int WgRoot::Render( WgRect * pDirtyRects, int nRects, int maxRects )
 {
-	return Render( pDirtyRects, nRects, maxRects, WgRect( WgCord(0,0), m_size ) );
+	return Render( pDirtyRects, nRects, maxRects, Geo() );
 }
 
 int WgRoot::Render( WgRect * pDirtyRects, int nRects, int maxRects, const WgRect& clip )
 {
-	int retVal = BeginRender( paDirtyRects, nRects, maxRects, clip );
+	int retVal = BeginRender( pDirtyRects, nRects, maxRects, clip );
 	RenderLayer(0xFF);
 	EndRender();
 	return retVal;
@@ -140,11 +141,12 @@ int WgRoot::Render( WgRect * pDirtyRects, int nRects, int maxRects, const WgRect
 
 int WgRoot::BeginRender( WgRect * pDirtyRects, int nRects, int maxRects )
 {
-	return BeginRender( pDirtyRects, nRects, maxRects, WgRect( WgCord(0,0), m_size ) );
+	return BeginRender( pDirtyRects, nRects, maxRects, Geo() );
 }
 
 int WgRoot::BeginRender( WgRect * pDirtyRects, int nRects, int maxRects, const WgRect& clip )
 {
+	m_pGfxDevice->BeginRender();
 }
 
 //____ RenderLayer() __________________________________________________________
@@ -157,11 +159,16 @@ void WgRoot::RenderLayer( int layer )
 
 void WgRoot::EndRender( void )
 {
+	m_pGfxDevice->EndRender();
+	m_dirtyRects.Clear();
 }
 
+//____ AddDirtyRect() _________________________________________________________
 
-
-
+void WgRoot::AddDirtyRect( WgRect rect )
+{
+	m_dirtyRects.Add( rect );
+}
 
 
 
@@ -225,12 +232,19 @@ WgWidget* WgRoot::Hook::GetRoot()
 	return 0;
 }
 
+WgRoot* WgRoot::Hook::Root() const
+{
+	return m_pRoot;
+}
+
 void WgRoot::Hook::RequestRender()
 {
+	m_pRoot->AddDirtyRect( Geo() );
 }
 
 void WgRoot::Hook::RequestRender( const WgRect& rect )
 {
+	m_pRoot->AddDirtyRect( WgRect( Pos() + rect.pos(), rect.size() ) );
 }
 
 void WgRoot::Hook::RequestResize()

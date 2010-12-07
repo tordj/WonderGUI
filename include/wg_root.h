@@ -59,6 +59,9 @@ public:
 
 	void	Update( int msTime );
 
+//	inline int	NbDirtyRects() const { return m_dirtyRects....  TODO: Implement when WgDirtyRectObj has a Size() method
+	int		ExportDirtyRects( WgRect * pDest, int maxRects ) const;
+
 	int		Render( WgRect * pDirtyRects, int nRects, int maxRects );
 	int		Render( WgRect * pDirtyRects, int nRects, int maxRects, const WgRect& clip );
 
@@ -67,6 +70,7 @@ public:
 	void	RenderLayer( int layer );
 	void	EndRender( void );
 
+	void	AddDirtyRect( WgRect rect );
 
 protected:
 
@@ -88,6 +92,7 @@ protected:
 		WgGizmoHook *	NextHook() const;
 
 		WgGizmoContainer* Parent() const;
+		WgRoot*			Root() const;
 
 		WgWidget*		GetRoot();			// Should in the future not return a widget, but a gizmo.
 
@@ -103,7 +108,7 @@ protected:
 		WgRoot *		m_pRoot;
 	};
 
-
+	WgDirtyRectObj		m_dirtyRects;
 
 	WgGfxDevice *		m_pGfxDevice;
 	WgInputDevice *		m_pInputDevice;
