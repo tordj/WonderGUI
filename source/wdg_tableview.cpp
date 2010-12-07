@@ -1043,8 +1043,11 @@ void Wdg_TableView::ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 
 	if( m_pColumns == 0 )
 		return;
 
-	SetContentSize(m_contentWidth, m_contentHeight+heightDiff);
-	RequestRender();		//TODO: This can be optimized, we might not need to render the whole view.
+	if( ! pItem->IsHidden() )
+	{
+		SetContentSize(m_contentWidth, m_contentHeight+heightDiff);
+		RequestRender();		//TODO: This can be optimized, we might not need to render the whole view.
+	}
 }
 
 //____ ItemVisibilityModified() _______________________________________________
@@ -1290,7 +1293,8 @@ void Wdg_TableView::ItemAdded( WgItem * pItem )
 {
 	//
 
-	SetContentSize( m_contentWidth, m_contentHeight + pItem->Height() + m_cellPaddingY*2 );
+	if( !((WgTableRow*)pItem)->IsHidden() )
+		SetContentSize( m_contentWidth, m_contentHeight + pItem->Height() + m_cellPaddingY*2 );
 
 	// This should really be done BEFORE the item is added, now we might affect content size again,
 	// several times over in worst case!
