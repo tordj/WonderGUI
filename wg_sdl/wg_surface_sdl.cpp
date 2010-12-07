@@ -20,7 +20,11 @@
 
 =========================================================================*/
 
-#include <SDL.h>
+#ifdef WIN32
+#	include <SDL.h>
+#else
+#	include <SDL/SDL.h>
+#endif
 #include <wg_surface_sdl.h>
 
 //____ Constructor _____________________________________________________________
