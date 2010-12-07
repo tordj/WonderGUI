@@ -55,7 +55,9 @@ private:
 	void		Init();
 
 	void		refreshItems();
-	void		ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff );
+	void		ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff );
+	void		ItemVisibilityModified( WgItem * pItem, bool bVisible );
+
 	void		ItemAdded( WgItem * pItem );
 	void		ItemMarkChanged( WgItem * pItem, bool bMarked );
 	WgItem* 	GetMarkedItem( Uint32 x, Uint32 y );

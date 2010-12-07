@@ -278,9 +278,11 @@ private:
 
 	void	TweakColumnWidths( int targetWidth );
 	void	ExtendLastColumn( int targetWidth );
+	void	AdaptCellsToWidth();
 
 	void		refreshItems();
-	void		ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff );
+	void		ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff );
+	void		ItemVisibilityModified( WgItem * pItem, bool bVisible );
 	void		ItemMarkChanged( WgItem * pItem, bool bMarked );
 	WgItem*		GetMarkedItem( Uint32 x, Uint32 y );
 	Sint32		CompareItems(WgItem * pItem1, WgItem * pItem2 );

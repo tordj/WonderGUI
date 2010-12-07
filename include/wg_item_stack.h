@@ -77,7 +77,9 @@ protected:
 	// Callbacks for interfaces;
 
 	void refreshItems();
-	void ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff );
+	void ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff );
+	void ItemVisibilityModified( WgItem * pItem, bool bVisible );
+
 	WgItem* GetMarkedItem( Uint32 x, Uint32 y );
 
 	int m_minWidth;

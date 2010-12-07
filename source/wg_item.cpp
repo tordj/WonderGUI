@@ -69,16 +69,16 @@ void WgItem::SetVisible(bool bVisible)
 {
 	if(m_bVisible != bVisible)
 	{
-		m_bVisible = bVisible;
-		if( m_pMyHolder )
-			m_pMyHolder->ItemModified(this, 0, 0 );
-
 		if( m_mode == WG_MODE_SELECTED )
 		{
 			m_mode = WG_MODE_NORMAL;
 			if( m_pMyHolder )
 				m_pMyHolder->ItemMarkChanged(this, false);
 		}
+
+		m_bVisible = bVisible;
+		if( m_pMyHolder )
+			m_pMyHolder->ItemVisibilityModified(this, bVisible);
 	}
 }
 
@@ -119,7 +119,7 @@ void WgItem::ActionRespond( WgEmitter * _pEmitter, WgInput::UserAction _action, 
 			{
 				m_mode = WG_MODE_MARKED;
 				if( m_pMyHolder )
-					m_pMyHolder->ItemModified(this, 0, 0 );
+					m_pMyHolder->ItemSizeModified(this, 0, 0 );
 			}
 			_pEmitter->Emit( ItemEnter(), this );
 			if(m_mode == WG_MODE_NORMAL)
@@ -135,7 +135,7 @@ void WgItem::ActionRespond( WgEmitter * _pEmitter, WgInput::UserAction _action, 
 			{
 				m_mode = WG_MODE_NORMAL;
 				if( m_pMyHolder )
-					m_pMyHolder->ItemModified(this, 0, 0 );
+					m_pMyHolder->ItemSizeModified(this, 0, 0 );
 			}
 			_pEmitter->Emit( ItemExit(), this );
 			if(m_mode == WG_MODE_MARKED)
@@ -217,7 +217,7 @@ void WgItem::Enable( bool bEnable )
 void WgItem::Modified( Sint32 widthDiff, Sint32 heightDiff )
 {
 	if( m_pMyHolder )
-		m_pMyHolder->ItemModified(this, widthDiff, heightDiff );
+		m_pMyHolder->ItemSizeModified(this, widthDiff, heightDiff );
 }
 
 //____ Select() _______________________________________________________________
@@ -232,7 +232,7 @@ bool WgItem::Select()
 		m_mode = WG_MODE_SELECTED;
 		if( m_pMyHolder )
 		{
-			m_pMyHolder->ItemModified(this, 0, 0 );
+			m_pMyHolder->ItemSizeModified(this, 0, 0 );
 			m_pMyHolder->ItemMarkChanged(this, true);
 		}
 	}
@@ -248,7 +248,7 @@ void WgItem::Unselect()
 		m_mode = WG_MODE_NORMAL;
 		if( m_pMyHolder )
 		{
-			m_pMyHolder->ItemModified(this, 0, 0 );
+			m_pMyHolder->ItemSizeModified(this, 0, 0 );
 			m_pMyHolder->ItemMarkChanged(this, false);
 		}
 	}
@@ -263,7 +263,7 @@ void WgItem::Mark()
 		m_mode = WG_MODE_MARKED;
 		if( m_pMyHolder )
 		{
-			m_pMyHolder->ItemModified(this, 0, 0 );
+			m_pMyHolder->ItemSizeModified(this, 0, 0 );
 //			m_pMyHolder->ItemMarkChanged(this, true);
 		}
 	}
@@ -278,7 +278,7 @@ void WgItem::Unmark()
 		m_mode = WG_MODE_NORMAL;
 		if( m_pMyHolder )
 		{
-			m_pMyHolder->ItemModified(this, 0, 0 );
+			m_pMyHolder->ItemSizeModified(this, 0, 0 );
 //			m_pMyHolder->ItemMarkChanged(this, true);
 		}
 	}
@@ -293,7 +293,7 @@ void WgItem::Enable()
 	{
 		m_mode = WG_MODE_NORMAL;
 		if( m_pMyHolder )
-			m_pMyHolder->ItemModified(this, 0, 0 );
+			m_pMyHolder->ItemSizeModified(this, 0, 0 );
 	}
 }
 
@@ -309,7 +309,7 @@ void WgItem::Disable()
 		m_mode = WG_MODE_DISABLED;
 
 		if( m_pMyHolder )
-			m_pMyHolder->ItemModified(this, 0, 0 );
+			m_pMyHolder->ItemSizeModified(this, 0, 0 );
 	}
 }
 

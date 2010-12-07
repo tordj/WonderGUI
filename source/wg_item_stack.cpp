@@ -268,9 +268,18 @@ void WgItemStack::refreshItems()
 	
 }
 
-//____ ItemModified() _________________________________________________________
+//____ ItemSizeModified() _________________________________________________________
 
-void WgItemStack::ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
+void WgItemStack::ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
+{
+	//TODO: More specific and optimized handling.
+	
+	refreshItems();
+}
+
+//____ ItemVisibilityModified() _______________________________________________
+
+void WgItemStack::ItemVisibilityModified( WgItem * pItem, bool bVisible )
 {
 	//TODO: More specific and optimized handling.
 	

@@ -302,9 +302,9 @@ void Wdg_GridView::refreshItems()
 	RequestRender();
 }
 
-//____ ItemModified() _________________________________________________________
+//____ ItemSizeModified() _________________________________________________________
 
-void Wdg_GridView::ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
+void Wdg_GridView::ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
 {
 	if( widthDiff || heightDiff )
 	{
@@ -316,6 +316,16 @@ void Wdg_GridView::ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heigh
 
 	RequestRender();
 }
+
+//____ ItemVisibilityModified() _______________________________________________
+
+void Wdg_GridView::ItemVisibilityModified( WgItem * pItem, bool bVisible )
+{
+	//TODO: More specific and optimized handling.
+	
+	refreshItems();
+}
+
 
 //____ ItemAdded() ____________________________________________________________
 

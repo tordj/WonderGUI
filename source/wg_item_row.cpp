@@ -229,14 +229,24 @@ void WgItemRow::refreshItems()
 	
 }
 
-//____ ItemModified() _________________________________________________________
+//____ ItemSizeModified() _____________________________________________________
 
-void WgItemRow::ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
+void WgItemRow::ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
 {
 	//TODO: More specific and optimized handling.
 	
 	refreshItems();
 }
+
+//____ ItemVisibilityModified() _______________________________________________
+
+void WgItemRow::ItemVisibilityModified( WgItem * pItem, bool bVisible )
+{
+	//TODO: More specific and optimized handling.
+	
+	refreshItems();
+}
+
 
 //____ GetMarkedItem() _________________________________________________________
 

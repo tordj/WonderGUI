@@ -100,6 +100,7 @@ void WgTableColumn::SetWidth( int pixels )
 			m_pOwner->SetContentSize( m_pOwner->m_contentWidth + widthdiff, m_pOwner->m_contentHeight );
 			m_pOwner->RequestRender();
 			m_pOwner->RecalcColumnWidths();
+			m_pOwner->AdaptCellsToWidth();
 		}
 	}
 }
@@ -524,73 +525,6 @@ void Wdg_TableView::RemoveColumns()
 	m_pColumns = 0;
 	m_nColumns = 0;
 }
-
-//____ RecalcColumnWidths() ____________________________________________________
-/*
-void Wdg_TableView::RecalcColumnWidths( int width )
-{
-	if(!m_bAutoScaleHeader)
-	{
-		for( unsigned int i = 0 ; i < m_nColumns ; i++ )
-			m_pColumns[i].m_pixelWidth = (float)m_pColumns[i].m_defWidth;
-	}
-	else
-	{
-		// Get some values we need
-
-		int wantedWidth = width!=0?width:m_geo.w;
-		int totalDefWidth = 0;
-		float totalPixelWeight = 0;
-
-		for( unsigned int i = 0 ; i < m_nColumns ; i++ )
-		{
-			if( m_pColumns[i].m_bVisible )
-			{
-				totalDefWidth	+= m_pColumns[i].m_defWidth;
-				totalPixelWeight += m_pColumns[i].m_scaleWeight * m_pColumns[i].m_defWidth;
-			}
-		}
-
-		// Resize columns
-
-		if( wantedWidth > totalDefWidth )		// Take care of growing
-		{
-			for( unsigned int i = 0 ; i < m_nColumns ; i++ )
-			{
-				if( m_pColumns[i].m_bVisible )
-				{
-					int width = (int) (m_pColumns[i].m_defWidth + (m_pColumns[i].m_scaleWeight * m_pColumns[i].m_defWidth)/totalPixelWeight*(wantedWidth-totalDefWidth));
-					if( width > m_pColumns[i].m_maxWidth )
-						width = m_pColumns[i].m_maxWidth;
-
-					m_pColumns[i].m_pixelWidth = (float)width;
-				}
-			}
-		}
-		else if( wantedWidth < totalDefWidth )	// Take care of shrinking
-		{
-			for( unsigned int i = 0 ; i < m_nColumns ; i++ )
-			{
-				if( m_pColumns[i].m_bVisible )
-				{
-					int width = (int) (m_pColumns[i].m_defWidth - (m_pColumns[i].m_scaleWeight * m_pColumns[i].m_defWidth)/totalPixelWeight*(totalDefWidth-wantedWidth));
-					if( width < m_pColumns[i].m_minWidth )
-						width = m_pColumns[i].m_minWidth;
-
-					m_pColumns[i].m_pixelWidth = (float)width;
-				}
-			}
-		}
-		else
-		{
-			for( unsigned int i = 0 ; i < m_nColumns ; i++ )
-				m_pColumns[i].m_pixelWidth = (float)m_pColumns[i].m_defWidth;
-		}
-	}
-}
-*/
-
-
 
 //____ RecalcColumnWidths() ___________________________________________________
 
@@ -1102,9 +1036,9 @@ void Wdg_TableView::refreshItems()
 	RequestRender();
 }
 
-//____ ItemModified() _________________________________________________________
+//____ ItemSizeModified() _________________________________________________________
 
-void Wdg_TableView::ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
+void Wdg_TableView::ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff )
 {
 	if( m_pColumns == 0 )
 		return;
@@ -1112,6 +1046,22 @@ void Wdg_TableView::ItemModified( WgItem * pItem, Sint32 widthDiff , Sint32 heig
 	SetContentSize(m_contentWidth, m_contentHeight+heightDiff);
 	RequestRender();		//TODO: This can be optimized, we might not need to render the whole view.
 }
+
+//____ ItemVisibilityModified() _______________________________________________
+
+void Wdg_TableView::ItemVisibilityModified( WgItem * pItem, bool bVisible )
+{
+	if( m_pColumns == 0 )
+		return;
+
+	int heightDiff = pItem->Height() + m_cellPaddingY*2;
+	if( !bVisible )
+		heightDiff = -heightDiff;
+
+	SetContentSize(m_contentWidth, m_contentHeight+heightDiff);
+	RequestRender();		//TODO: This can be optimized, we might not need to render the whole view.
+}
+
 
 //____ ItemMarkChanged() ________________________________________________
 
@@ -1169,36 +1119,35 @@ void Wdg_TableView::DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGe
 {
 	if( oldGeo.w != newGeo.w )
 	{
-		AdaptItemsToWidth( newGeo.w );		// this won't do anything since the items are WgTableRows
+//		AdaptItemsToWidth( newGeo.w );		// this won't do anything since the items are WgTableRows
 		UpdateContentSize();
+		AdaptCellsToWidth();
 
+	}
+}
 
-		// so we'll manually go through and tell every row's item to adapt to the new width.
-		// something like this is probably required in SetColumnWidth() as well,
-		// however none of this is a viable solution of course.
-		WgTableRow * pRow = (WgTableRow *) m_items.First();
-		while( pRow )
+//____ AdaptCellsToWidth() ____________________________________________________
+
+void Wdg_TableView::AdaptCellsToWidth()
+{
+	WgTableRow * pRow = (WgTableRow *) m_items.First();
+	while( pRow )
+	{
+		WgItem *	pCell = pRow->GetFirstItem();
+
+		for( Uint32 i = 0 ; i < m_nColumns && pCell != 0 ; i++ )
 		{
-			WgItem *	pCell = pRow->GetFirstItem();
-
-			Sint32 x = 0;
-			for( Uint32 i = 0 ; i < m_nColumns && pCell != 0 ; i++ )
+			if( m_pColumns[i].m_bVisible )
 			{
-				if( m_pColumns[i].m_bVisible )
-				{
-					Sint32 width = (int) m_pColumns[i].m_pixelWidth;
-					if( i == m_nColumns-1 )
-						width = newGeo.w - x - m_cellPaddingX*2;		// Last column stretches to end of tableview...
+				Sint32 width = (int) m_pColumns[i].m_pixelWidth;
+				width -= m_cellPaddingX*2;
+				pCell->AdaptToWidth( width );
 
-					pCell->AdaptToWidth( width );
-
-					x += m_cellPaddingX*2 + width;
-				}
-				pCell = pCell->GetNext();
 			}
-
-			pRow = (WgTableRow *) pRow->GetNext();
+			pCell = pCell->GetNext();
 		}
+
+		pRow = (WgTableRow *) pRow->GetNext();
 	}
 }
 
@@ -1341,6 +1290,11 @@ void Wdg_TableView::ItemAdded( WgItem * pItem )
 {
 	//
 
+	SetContentSize( m_contentWidth, m_contentHeight + pItem->Height() + m_cellPaddingY*2 );
+
+	// This should really be done BEFORE the item is added, now we might affect content size again,
+	// several times over in worst case!
+
 	WgItemRow * pRow = (WgItemRow*) pItem;
 	WgItem * pI = pRow->GetFirstItem();
 
@@ -1350,10 +1304,8 @@ void Wdg_TableView::ItemAdded( WgItem * pItem )
 		pI = pI->Next();
 	}
 
-
 	// Set size and request render
 
-	SetContentSize( m_contentWidth, m_contentHeight + pItem->Height() + m_cellPaddingY*2 );
 	RequestRender();
 }
 
