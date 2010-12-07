@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <memory.h>
+#include <limits.h>
 #include <algorithm>
 
 #include <wg_gizmo_tablist.h>

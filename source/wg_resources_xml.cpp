@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <assert.h>
+#include <limits.h>
 
 #include <wg_resources_xml.h>
 #include <wg_resource_factory_xml.h>
@@ -2554,9 +2555,9 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	bool scale = WgUtil::ToBool(xmlNode["scale"]);
 	bool fixedSize = WgUtil::ToBool(xmlNode["fixed_size"]);
 
-	
 
-	VERIFY(!((scale && fixedSize) || (scale && (flags & WG_TILE_CENTER)) || (fixedSize && (flags & WG_TILE_CENTER))), 
+
+	VERIFY(!((scale && fixedSize) || (scale && (flags & WG_TILE_CENTER)) || (fixedSize && (flags & WG_TILE_CENTER))),
 		"Cannot set more than one of scale, tile center and fixed_size" );
 
 	if( WgUtil::ToBool(xmlNode["skip_normal"]) )
@@ -2609,7 +2610,7 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		rect[0] = WgRectRes::Deserialize(xmlNode);
 
 		WgSurface* pSurface = s.ResDb()->GetSurface(xmlNode["surface"]);
-		
+
 		if( !bRequired && !pSurface )
 			return;
 
@@ -2877,7 +2878,7 @@ void WgAltRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 	for( int i = nRects ; i < 5 ; i++ )
 		rect[i] = rect[0];					// Fill up with normal for unspecified ones.
 
-	pBlockSet->AddAlternative( activationSize, pSurface, rect[0], rect[1], rect[2], 
+	pBlockSet->AddAlternative( activationSize, pSurface, rect[0], rect[1], rect[2],
 							   rect[3], rect[4], gfxBorders, contentBorders);
 }
 
@@ -3313,7 +3314,7 @@ void WgWidgetRes::Serialize(WgResourceSerializerXML& s)
 			WriteDiffAttr( s, xmlNode, "skinmanager", skinManagerId, std::string("") );
 		}
 	}
-	
+
 	//
 
 	WgConnectRes::Serialize(s, this);
@@ -5047,7 +5048,7 @@ void Wdg_TabList_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	widget->SetAlertRate(WgUtil::ToUint32(xmlNode["alertrate"]));
 	widget->SetTextOrigo(WgUtil::ToOrigo(xmlNode["textorigo"]));
 	widget->setTabMouseOpacity(WgUtil::ToBool(xmlNode["opaque_tabs"]));
-	
+
 
 	std::string mode = xmlNode["tabmode"];
 	if(mode.empty() || mode == "normal")widget->SetTabWidthMode(Wdg_TabList::TabWidthModeNormal);

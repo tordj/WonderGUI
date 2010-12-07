@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_root.h>
+#include <new>
 
 #ifndef WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
