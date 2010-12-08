@@ -31,16 +31,22 @@
 #	include <wg_gizmo_collection.h>
 #endif
 
-class WgGizmoContainer : /* public WgGizmo CAN NOT BE WHILE WE ARE WIDGETS!!!,*/ public WgGizmoCollection
+class WgGizmoContainer : public WgGizmoCollection
 {
 public:
+	virtual WgGizmo *	CastToGizmo() = 0;
+	virtual WgRoot *	CastToRoot();
 
-	virtual WgGizmo * FindGizmo( const WgCord& ofs, WgSearchMode mode ) = 0;
-
-	WgGizmoContainer * CastToContainer() { return this; }
-	const WgGizmoContainer * CastToContainer() const { return this; }
+	virtual WgGizmo *	IsGizmo();
+	virtual WgRoot *	IsRoot();
 
 
+	virtual WgGizmo *	FindGizmo( const WgCord& ofs, WgSearchMode mode ) = 0;
+
+
+protected:
+	virtual bool FocusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
+	virtual bool FocusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
 };
 
 

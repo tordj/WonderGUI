@@ -1132,21 +1132,3 @@ void WgViewHook::RequestResize()
 {
 	//TODO: Figure out how this should work and implement.
 }
-
-//____ WgViewHook::RequestFocus() _______________________________________________
-
-bool WgViewHook::RequestFocus()
-{
-	//TODO: Figure out how this should work and implement.
-
-	return false;
-}
-
-//____ WgViewHook::ReleaseFocus() _______________________________________________
-
-bool WgViewHook::ReleaseFocus()
-{
-	//TODO: Figure out how this should work and implement.
-
-	return false;
-}

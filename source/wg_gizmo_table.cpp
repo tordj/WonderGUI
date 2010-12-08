@@ -236,22 +236,6 @@ void WgTableHook::RequestResize()
 	//TODO: Recalculate height of row...
 }
 
-bool WgTableHook::RequestFocus()
-{
-	//TODO: Figure out how this should work and implement.
-
-	return false;
-}
-
-bool WgTableHook::ReleaseFocus()
-{
-	//TODO: Figure out how this should work and implement.
-
-	return false;
-}
-
-
-
 
 WgTableColumn2::WgTableColumn2()
 {

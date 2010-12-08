@@ -55,6 +55,7 @@ public:
 
 	inline	WgGizmo *		Gizmo() const { return m_pGizmo; }
 	virtual	WgGizmoContainer* Parent() const = 0;
+	virtual WgRoot *		Root();
 
 	virtual WgWidget*	GetRoot() = 0;			// Should in the future not return a widget, but a gizmo.
 
@@ -70,8 +71,8 @@ protected:
 	virtual void	RequestRender( const WgRect& rect ) = 0;
 	virtual void	RequestResize() = 0;
 
-	virtual bool	RequestFocus() = 0;
-	virtual bool	ReleaseFocus() = 0;
+	virtual bool	RequestFocus() { Parent()->;
+	virtual bool	ReleaseFocus();
 
 	void			DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			DoSetNewSize( const WgSize& size );

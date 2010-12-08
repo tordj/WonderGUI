@@ -100,7 +100,6 @@ WgRect WgRoot::Geo() const
 
 bool WgRoot::SetGizmo( WgGizmo * pGizmo )
 {
-
 	if( m_hook.Gizmo() )
 		m_hook.~Hook();
 
@@ -129,12 +128,21 @@ int WgRoot::Render()
 	return Render( Geo() );
 }
 
-int WgRoot::Render( const WgRect& clip )
+bool WgRoot::Render( const WgRect& clip )
 {
-	int retVal = BeginRender( clip );
-	RenderLayer(0xFF);
-	EndRender();
-	return retVal;
+	if( !BeginRender() )
+		return false;
+
+	if( !RenderSection( clip ) )
+	{
+		EndRender();
+		return false;
+	}
+
+	if( !EndRender() )
+		return false;
+
+	return true;
 }
 
 //____ BeginRender() __________________________________________________________
@@ -142,26 +150,49 @@ int WgRoot::Render( const WgRect& clip )
 bool WgRoot::BeginRender()
 {
 	if( m_pGfxDevice )
-	{
 		return m_pGfxDevice->BeginRender();
-	}
 	else
 		return false;
 }
 
 
-//____ RenderLayer() __________________________________________________________
+//____ RenderSection() __________________________________________________________
 
-void WgRoot::RenderLayer( int layer )
+bool WgRoot::RenderSection( const WgRect& clip, int layer )
 {
+	if( !m_pGfxDevice )
+		return false;						// No GFX-device.
+
+	if( !m_hook.Gizmo() )
+		return false;						// No Gizmo to render (should this return false or true?)
+
+	WgRect canvas = Geo();
+	WgRect clip2( clip, dest );
+	if( clip2.w == 0 || clip2.h == 0 )
+		return false;						// Invalid rect area.
+
+
+	WgDirtyRect * pRect = m_dirtyRects.pRectList;
+	
+	while( pRect )
+	{
+		m_hook.DoRender( m_pGfxDevice, canvas, canvas, clip2, layer );
+		pRect = pRect->pNext;
+	}
+
+	return true;
 }
 
 //____ EndRender() ____________________________________________________________
 
-void WgRoot::EndRender( void )
+bool WgRoot::EndRender( void )
 {
-	m_pGfxDevice->EndRender();
 	m_dirtyRects.Clear();
+
+	if( m_pGfxDevice )
+		return m_pGfxDevice->EndRender();
+	else
+		return false;
 }
 
 //____ AddDirtyRect() _________________________________________________________
@@ -171,6 +202,35 @@ void WgRoot::AddDirtyRect( WgRect rect )
 	m_dirtyRects.Add( rect );
 }
 
+//____ ExportDirtyRects() _____________________________________________________
+
+int WgRoot::ExportDirtyRects( WgRect * pDest, int maxRects ) const
+{
+	WgDirtyRect * pRect = m_dirtyRects.pRectList;
+	int	nExported = 0;
+
+	while( pRect && nExported < maxRects )
+	{
+		pDest[nExported++] = pRect;
+		pRect = pRect->pNext;
+	}
+
+	return nExported;
+}
+
+//____ FocusRequested() _______________________________________________________
+
+bool WgRoot::FocusRequested( WgGizmo * pGizmoRequesting )
+{
+	//TODO: Implement
+}
+
+//____ FocusReleased() ________________________________________________________
+
+bool WgRoot::FocusReleased( WgGizmo * pGizmoReleasing )
+{
+	//TODO: Implement
+}
 
 
 
@@ -250,17 +310,8 @@ void WgRoot::Hook::RequestRender( const WgRect& rect )
 
 void WgRoot::Hook::RequestResize()
 {
-	// Do nothing.
+	// Do nothing, root ignores size requests.
 }
-
-bool WgRoot::Hook::RequestFocus()
-{
-}
-
-bool WgRoot::Hook::ReleaseFocus()
-{
-}
-
 
 
 

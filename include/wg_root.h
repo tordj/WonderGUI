@@ -62,17 +62,18 @@ public:
 //	inline int	NbDirtyRects() const { return m_dirtyRects....  TODO: Implement when WgDirtyRectObj has a Size() method
 	int		ExportDirtyRects( WgRect * pDest, int maxRects ) const;
 
-	int		Render( WgRect * pDirtyRects, int nRects, int maxRects );
-	int		Render( WgRect * pDirtyRects, int nRects, int maxRects, const WgRect& clip );
+	bool	Render();
+	bool	Render( const WgRect& clip );
 
-	int		BeginRender( WgRect * pDirtyRects, int nRects, int maxRects );
-	int		BeginRender( WgRect * pDirtyRects, int nRects, int maxRects, const WgRect& clip );
-	void	RenderLayer( int layer );
-	void	EndRender( void );
+	bool	BeginRender();
+	bool	RenderSection( const WgRect& clip, int layer = 0xFF );
+	bool	EndRender();
 
 	void	AddDirtyRect( WgRect rect );
 
 protected:
+	bool	FocusRequested( WgGizmo * pGizmoRequesting );
+	bool	FocusReleased( WgGizmo * pGizmoReleasing );
 
 	class Hook : public WgGizmoHook
 	{
@@ -101,9 +102,6 @@ protected:
 		void			RequestRender();
 		void			RequestRender( const WgRect& rect );
 		void			RequestResize();
-
-		bool			RequestFocus();
-		bool			ReleaseFocus();
 
 		WgRoot *		m_pRoot;
 	};

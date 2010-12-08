@@ -97,9 +97,6 @@ protected:
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
 
-	bool	RequestFocus();
-	bool	ReleaseFocus();
-
 	int				m_height;		// Minimum height needed for this Gizmo.
 	WgTableRow2 *	m_pRow;			//
 };
@@ -347,9 +344,14 @@ public:
 	bool	IsView() const { return false; }
 	bool	IsContainer() const { return true; }
 
+	WgGizmoContainer * CastToContainer() { return this; }
+	const WgGizmoContainer * CastToContainer() const { return this; }
+
+
 	// Overloaded from container
 
 	WgGizmo * FindGizmo( const WgCord& ofs, WgSearchMode mode );
+	WgGizmo * Gizmo() { return this; }
 
 
 	// New methods!

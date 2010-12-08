@@ -58,9 +58,6 @@ public:
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
 
-	bool	RequestFocus();
-	bool	ReleaseFocus();
-
 
 protected:
 	WgViewHook() : WgGizmoHook( 0 ) {};				// So we can make them members and then make placement new...
@@ -215,14 +212,14 @@ public:
 	void	SetFillerSource( const WgBlockSetPtr& pBlocks );
 
 
-	WgViewHook * FirstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }
-	WgViewHook * LastHook() const { return const_cast<WgViewHook*>(&m_elements[2]); }
 
+	WgGizmoContainer * CastToContainer() { return this; }
+	const WgGizmoContainer * CastToContainer() const { return this; }
 
 	// Overloaded from container
 
 	WgGizmo * FindGizmo( const WgCord& pos, WgSearchMode mode );
-
+	WgGizmo * CastToGizmo() { return this; }
 
 /*
 	NEED TO BE IMPLEMENTED!!!
@@ -304,8 +301,8 @@ protected:
 	WgViewHook		m_elements[3];			// Content, xDrag and yDrag gizmos in that order.
 
 private:
-	WgGizmoHook*	_firstHook() const { return FirstHook(); }
-	WgGizmoHook*	_lastHook() const { return LastHook(); }
+	WgGizmoHook*	_firstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }
+	WgGizmoHook*	_lastHook() const { return const_cast<WgViewHook*>(&m_elements[2]); }
 
 
 	WgBlockSetPtr	m_pFillerBlocks;

@@ -60,3 +60,41 @@ WgGizmo* WgGizmoHook::ReleaseGizmo()
 	m_pGizmo = 0;
 	return p;
 }
+
+//____ RequestFocus() _________________________________________________________
+
+bool WgGizmoHook::RequestFocus()
+{
+	WgGizmoContainer * pParent = Parent();
+
+	if( pParent )
+		return pParent->FocusRequested(this, m_pGizmo);
+	else
+		return false;
+}
+
+//____ ReleaseFocus() _________________________________________________________
+
+bool WgGizmoHook::ReleaseFocus()
+{
+	WgGizmoContainer * pParent = Parent();
+
+	if( pParent )
+		return pParent->FocusReleased(this, m_pGizmo);
+	else
+		return false;
+}
+
+//____ Root() _________________________________________________________________
+
+WgRoot * WgGizmoHook::Root()
+{
+	WgGizmoContainer * pParent = Parent();
+
+	if( pParent )
+	{
+		WgGizmoHook * pHook = pParent->Gizmo()->Hook();
+		if( pHook )
+			return pHook->Root();
+	}
+}
