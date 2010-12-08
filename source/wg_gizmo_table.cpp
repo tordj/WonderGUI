@@ -199,7 +199,7 @@ WgWidget* WgTableHook::GetRoot()
 	WgGizmoTable* pTable = Row()->Table();
 	if( pTable )
 	{
-		WgGizmoHook* pHook = pTable->GetHook();
+		WgGizmoHook* pHook = pTable->Hook();
 		if( pHook )
 			return pHook->GetRoot();
 	}

@@ -123,7 +123,7 @@ void WgRoot::Update( int msTime )
 
 //____ Render() _______________________________________________________________
 
-int WgRoot::Render()
+bool WgRoot::Render()
 {
 	return Render( Geo() );
 }
@@ -167,7 +167,7 @@ bool WgRoot::RenderSection( const WgRect& clip, int layer )
 		return false;						// No Gizmo to render (should this return false or true?)
 
 	WgRect canvas = Geo();
-	WgRect clip2( clip, dest );
+	WgRect clip2( clip, canvas );
 	if( clip2.w == 0 || clip2.h == 0 )
 		return false;						// Invalid rect area.
 
@@ -211,30 +211,32 @@ int WgRoot::ExportDirtyRects( WgRect * pDest, int maxRects ) const
 
 	while( pRect && nExported < maxRects )
 	{
-		pDest[nExported++] = pRect;
+		pDest[nExported++] = * pRect;
 		pRect = pRect->pNext;
 	}
 
 	return nExported;
 }
 
+
 //____ FocusRequested() _______________________________________________________
 
-bool WgRoot::FocusRequested( WgGizmo * pGizmoRequesting )
+bool WgRoot::FocusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting )
 {
 	//TODO: Implement
+	return false;
 }
 
 //____ FocusReleased() ________________________________________________________
 
-bool WgRoot::FocusReleased( WgGizmo * pGizmoReleasing )
+bool WgRoot::FocusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
 {
 	//TODO: Implement
+	return false;
 }
 
 
-
-
+///////////////////////////////////////////////////////////////////////////////
 
 WgRoot::Hook::Hook( WgGizmo * pGizmo, WgRoot * pRoot) : WgGizmoHook(pGizmo)
 {
@@ -242,10 +244,8 @@ WgRoot::Hook::Hook( WgGizmo * pGizmo, WgRoot * pRoot) : WgGizmoHook(pGizmo)
 	DoSetGizmo();
 }
 
-
 WgRoot::Hook::~Hook()
 {
-
 }
 
 WgCord WgRoot::Hook::Pos() const

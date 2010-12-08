@@ -37,6 +37,7 @@ class WgGizmoContainer;
 class WgWidget;
 class WgGfxDevice;
 class WgGizmo;
+class WgRoot;
 
 class WgGizmoHook
 {
@@ -71,7 +72,7 @@ protected:
 	virtual void	RequestRender( const WgRect& rect ) = 0;
 	virtual void	RequestResize() = 0;
 
-	virtual bool	RequestFocus() { Parent()->;
+	virtual bool	RequestFocus();
 	virtual bool	ReleaseFocus();
 
 	void			DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );

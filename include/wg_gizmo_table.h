@@ -351,8 +351,6 @@ public:
 	// Overloaded from container
 
 	WgGizmo * FindGizmo( const WgCord& ofs, WgSearchMode mode );
-	WgGizmo * Gizmo() { return this; }
-
 
 	// New methods!
 
@@ -382,6 +380,8 @@ protected:
 	void	OnDisable();
 
 private:
+	WgGizmo *	CastToGizmo() { return this; }
+
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
 

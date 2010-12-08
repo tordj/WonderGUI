@@ -162,6 +162,12 @@ public:
 			return m_pWidget->GetHook();	// Discards const, is ok in this case...
 	}
 
+	WgGizmo * CastToGizmo()
+	{
+		return 0;
+	}
+
+
 	WgGizmo * FindGizmo( const WgCord& pos, WgSearchMode mode )
 	{
 		return 0;
@@ -259,6 +265,7 @@ protected:
 		return this;
 	}
 
+	
 
 private:
 

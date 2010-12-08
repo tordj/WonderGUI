@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_gizmo_hook.h>
+#include <wg_gizmo_container.h>
 #include <wg_gizmo.h>
 
 
@@ -65,24 +66,14 @@ WgGizmo* WgGizmoHook::ReleaseGizmo()
 
 bool WgGizmoHook::RequestFocus()
 {
-	WgGizmoContainer * pParent = Parent();
-
-	if( pParent )
-		return pParent->FocusRequested(this, m_pGizmo);
-	else
-		return false;
+	return Parent()->FocusRequested(this, m_pGizmo);
 }
 
 //____ ReleaseFocus() _________________________________________________________
 
 bool WgGizmoHook::ReleaseFocus()
 {
-	WgGizmoContainer * pParent = Parent();
-
-	if( pParent )
-		return pParent->FocusReleased(this, m_pGizmo);
-	else
-		return false;
+	return Parent()->FocusReleased(this, m_pGizmo);
 }
 
 //____ Root() _________________________________________________________________
@@ -90,11 +81,15 @@ bool WgGizmoHook::ReleaseFocus()
 WgRoot * WgGizmoHook::Root()
 {
 	WgGizmoContainer * pParent = Parent();
-
-	if( pParent )
+	
+	if( pParent->IsGizmo() )
 	{
-		WgGizmoHook * pHook = pParent->Gizmo()->Hook();
+		WgGizmoHook * pHook = pParent->CastToGizmo()->Hook();
 		if( pHook )
 			return pHook->Root();
 	}
+	else if( pParent->IsRoot() )
+		return pParent->CastToRoot();
+
+	return 0;
 }

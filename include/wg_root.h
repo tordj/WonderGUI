@@ -22,20 +22,23 @@
 #ifndef WG_ROOT_DOT_H
 #define WG_ROOT_DOT_H
 
-#ifndef WG_GIZMO_HOOK_DOT_H
-#	include <wg_gizmo_hook.h>
+#ifndef WG_GIZMO_CONTAINER_DOT_H
+#	include <wg_gizmo_container.h>
 #endif
 
 #ifndef WG_GEO_DOT_H
 #	include <wg_geo.h>
 #endif
 
+#ifndef WG_DIRTYRECT_DOT_H
+#	include <wg_dirtyrect.h>
+#endif
 
 class WgInputDevice;
 class WgGfxDevice;
 class WgGizmo;
 
-class WgRoot
+class WgRoot : private WgGizmoContainer
 {
 public:
 	WgRoot();
@@ -71,10 +74,9 @@ public:
 
 	void	AddDirtyRect( WgRect rect );
 
-protected:
-	bool	FocusRequested( WgGizmo * pGizmoRequesting );
-	bool	FocusReleased( WgGizmo * pGizmoReleasing );
+	virtual WgGizmo *	FindGizmo( const WgCord& ofs, WgSearchMode mode ) = 0;
 
+protected:
 	class Hook : public WgGizmoHook
 	{
 		friend class WgRoot;
@@ -103,8 +105,21 @@ protected:
 		void			RequestRender( const WgRect& rect );
 		void			RequestResize();
 
-		WgRoot *		m_pRoot;
+		WgRoot *		m_pRoot;  
 	};
+
+	WgGizmoHook*	_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
+	WgGizmoHook*	_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
+
+	bool		IsGizmo() const { return false; }
+	bool		IsRoot() const { return true; }
+
+	WgGizmo *	CastToGizmo() { return 0; }
+	WgRoot *	CastToRoot() { return this; }
+
+	bool FocusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
+	bool FocusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
+
 
 	WgDirtyRectObj		m_dirtyRects;
 

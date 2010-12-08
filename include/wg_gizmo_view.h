@@ -219,7 +219,6 @@ public:
 	// Overloaded from container
 
 	WgGizmo * FindGizmo( const WgCord& pos, WgSearchMode mode );
-	WgGizmo * CastToGizmo() { return this; }
 
 /*
 	NEED TO BE IMPLEMENTED!!!
@@ -243,24 +242,6 @@ protected:
 		YDRAG
 	};
 
-
-	//____ ViewGizmoCollection __________________________________________________
-/*
-	class ViewGizmoCollection : public WgGizmoCollection
-	{
-	public:
-		ViewGizmoCollection() {};				// So we can make them members and then make placement new...
-		ViewGizmoCollection( WgGizmoView * pView ) {m_pView = pView;}
-
-		ViewHook *	FirstHook() const { return &m_pView->m_elements[0]; }
-		ViewHook *	LastHook() const { return &m_pView->m_elements[2]; }
-
-		WgGizmoHook*	_firstHook() const { return FirstHook(); }
-		WgGizmoHook*	_lastHook() const { return LastHook(); }
-
-		WgGizmoView *	m_pView;
-	};
-*/
 
 	WgGizmoView();
 	virtual void OnNewSize( const WgSize& size );
@@ -301,6 +282,8 @@ protected:
 	WgViewHook		m_elements[3];			// Content, xDrag and yDrag gizmos in that order.
 
 private:
+	WgGizmo * CastToGizmo() { return this; }
+
 	WgGizmoHook*	_firstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }
 	WgGizmoHook*	_lastHook() const { return const_cast<WgViewHook*>(&m_elements[2]); }
 
