@@ -124,14 +124,14 @@ void WgRoot::Update( int msTime )
 
 //____ Render() _______________________________________________________________
 
-int WgRoot::Render( WgRect * pDirtyRects, int nRects, int maxRects )
+int WgRoot::Render()
 {
-	return Render( pDirtyRects, nRects, maxRects, Geo() );
+	return Render( Geo() );
 }
 
-int WgRoot::Render( WgRect * pDirtyRects, int nRects, int maxRects, const WgRect& clip )
+int WgRoot::Render( const WgRect& clip )
 {
-	int retVal = BeginRender( pDirtyRects, nRects, maxRects, clip );
+	int retVal = BeginRender( clip );
 	RenderLayer(0xFF);
 	EndRender();
 	return retVal;
@@ -139,15 +139,16 @@ int WgRoot::Render( WgRect * pDirtyRects, int nRects, int maxRects, const WgRect
 
 //____ BeginRender() __________________________________________________________
 
-int WgRoot::BeginRender( WgRect * pDirtyRects, int nRects, int maxRects )
+bool WgRoot::BeginRender()
 {
-	return BeginRender( pDirtyRects, nRects, maxRects, Geo() );
+	if( m_pGfxDevice )
+	{
+		return m_pGfxDevice->BeginRender();
+	}
+	else
+		return false;
 }
 
-int WgRoot::BeginRender( WgRect * pDirtyRects, int nRects, int maxRects, const WgRect& clip )
-{
-	m_pGfxDevice->BeginRender();
-}
 
 //____ RenderLayer() __________________________________________________________
 
