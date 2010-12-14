@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -54,11 +54,11 @@ public:
 	WgSize	Size() const { return WgSize( m_pWidget->Width(), m_pWidget->Height() ); }
 	WgRect	Geo() const { return m_pWidget->Geometry(); }
 
-	WgCord	ScreenPos() const 
+	WgCord	ScreenPos() const
 	{
 		int x = 0,y = 0;
 		m_pWidget->Local2abs( &x, &y );
-		return WgCord(x,y); 
+		return WgCord(x,y);
 	}
 
 	WgRect	ScreenGeo() const { return m_pWidget->ScreenGeometry(); }
@@ -68,7 +68,7 @@ public:
 	WgGizmoHook *	PrevHook() const
 	{
 		WgWidget * p = m_pWidget->PrevSibling();
-	
+
 		while( p )
 		{
 			if( p->GetHook() )
@@ -83,7 +83,7 @@ public:
 	WgGizmoHook *	NextHook() const
 	{
 		WgWidget * p = m_pWidget->NextSibling();
-	
+
 		while( p )
 		{
 			if( p->GetHook() )
@@ -111,7 +111,7 @@ protected:
 		// Refresh size limits
 
 		WgSize sz = m_pGizmo->MinSize();
-	
+
 		m_pWidget->m_sizeLimit_self.minW = sz.w;
 		m_pWidget->m_sizeLimit_self.minH = sz.h;
 
@@ -137,7 +137,7 @@ public:
 		if( m_pWidget->m_pParent )
 		{
 			WgWidget * p = m_pWidget->m_pParent->FirstChild();
-			
+
 			while( p->GetHook() == 0 )
 				p = p->NextSibling();
 
@@ -152,7 +152,7 @@ public:
 		if( m_pWidget->m_pParent )
 		{
 			WgWidget * p = m_pWidget->m_pParent->LastChild();
-			
+
 			while( p->GetHook() == 0 )
 				p = p->PrevSibling();
 
@@ -162,7 +162,7 @@ public:
 			return m_pWidget->GetHook();	// Discards const, is ok in this case...
 	}
 
-	WgGizmo * CastToGizmo()
+	WgGizmo * _castToGizmo()
 	{
 		return 0;
 	}
@@ -186,7 +186,7 @@ private:
 
 template<class T> class Wdg_Widget : public WgWidget, public T
 {
-public:	
+public:
 	Wdg_Widget( WgWidget* pParent = 0 ) : WgWidget(pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
 	Wdg_Widget( const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget(geometry, pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
 	Wdg_Widget( WgOrigo origo, const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget( origo, geometry, pParent ) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
@@ -195,7 +195,7 @@ public:
 
 	virtual const char * Type() const { return T::Type(); }
 	static const char * GetMyType() { return T::GetMyType(); }
-	
+
 	virtual WgGizmo * GetGizmo() { return this; }
 	virtual const WgGizmo * GetGizmo() const { return this; }
 	virtual WgGizmoHook * GetHook() const { return m_pHook; }
@@ -235,8 +235,8 @@ public:
 	}
 
 	WgCursorStyle GetCursorStyle() const
-	{ 
-		return T::GetCursorStyle(); 
+	{
+		return T::GetCursorStyle();
 	}
 
 	virtual bool IsInputField() const
@@ -265,13 +265,13 @@ protected:
 		return this;
 	}
 
-	
+
 
 private:
 
-	void DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer ) 
-	{ 
-		T::OnRender( WgGfx::GetDevice(), _window, _window, _clip, _layer ); 
+	void DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+	{
+		T::OnRender( WgGfx::GetDevice(), _window, _window, _clip, _layer );
 	}
 
 	void DoMyOwnActionRespond( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
@@ -290,7 +290,7 @@ private:
 	}
 
 
-	void DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo ) 
+	void DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 	{
 		T::OnNewSize( WgSize(newGeo.w, newGeo.h) );
 	};
@@ -305,13 +305,13 @@ private:
 		return T::OnAlphaTest( WgCord(_x,_y) );
 	}
 
-	void DoMyOwnDisOrEnable( void ) 
+	void DoMyOwnDisOrEnable( void )
 	{
 		if( WgWidget::m_bEnabled )
 			T::OnEnable();
 		else
 			T::OnDisable();
-	
+
 	};
 
 	void DoMyOwnInputFocusChange( bool _bFocus )

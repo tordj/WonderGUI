@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -22,46 +22,46 @@
 
 #include <wg_gizmo_container.h>
 
-//____ IsGizmo() ______________________________________________________________
+//____ _isGizmo() ______________________________________________________________
 
-bool WgGizmoContainer::IsGizmo() const
+bool WgGizmoContainer::_isGizmo() const
 {
 	return true;
 }
 
-//____ IsRoot() _______________________________________________________________
+//____ _isRoot() _______________________________________________________________
 
-bool WgGizmoContainer::IsRoot() const
+bool WgGizmoContainer::_isRoot() const
 {
 	return false;
 }
 
 
-//____ CastToRoot() ___________________________________________________________
+//____ _castToRoot() ___________________________________________________________
 
-WgRoot * WgGizmoContainer::CastToRoot()
+WgRoot * WgGizmoContainer::_castToRoot()
 {
 	return 0;
 }
 
-//____ FocusRequested() _______________________________________________________
+//____ _focusRequested() _______________________________________________________
 
-bool WgGizmoContainer::FocusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting )
+bool WgGizmoContainer::_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting )
 {
-	WgGizmoHook * p = CastToGizmo()->Hook();
+	WgGizmoHook * p = _castToGizmo()->Hook();
 	if( p )
-		return p->Parent()->FocusRequested( p, pGizmoRequesting );
+		return p->Parent()->_focusRequested( p, pGizmoRequesting );
 	else
 		return false;
 }
 
-//____ FocusReleased() ________________________________________________________
+//____ _focusReleased() ________________________________________________________
 
-bool WgGizmoContainer::FocusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
+bool WgGizmoContainer::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
 {
-	WgGizmoHook * p = CastToGizmo()->Hook();
+	WgGizmoHook * p = _castToGizmo()->Hook();
 	if( p )
-		return p->Parent()->FocusReleased( p, pGizmoReleasing );
+		return p->Parent()->_focusReleased( p, pGizmoReleasing );
 	else
 		return false;
 }

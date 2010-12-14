@@ -20,33 +20,39 @@
 
 =========================================================================*/
 
-#ifndef	WG_GIZMO_CONTAINER_DOT_H
-#define	WG_GIZMO_CONTAINER_DOT_H
+#ifndef	WG_GIZMO_PARENT_DOT_H
+#define	WG_GIZMO_PARENT_DOT_H
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_TYPES_DOT_H
+#	include <wg_gizmo_types.h>
 #endif
 
-#ifndef WG_GIZMO_PARENT_DOT_H
-#	include <wg_gizmo_parent.h>
+#ifndef WG_GIZMO_COLLECTION_DOT_H
+#	include <wg_gizmo_collection.h>
 #endif
 
-class WgGizmoContainer : public WgGizmoParent
+class WgGizmo;
+class WgRoot;
+class WgGizmoHook;
+
+
+class WgGizmoParent : public WgGizmoCollection
 {
-	friend class WgGizmoHook;
+	public:
 
-	private:
-		bool		_isGizmo() const;
-		bool		_isRoot() const;
+		virtual WgGizmo *	FindGizmo( const WgCord& ofs, WgSearchMode mode ) = 0;
 
-//		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
-		WgRoot *	_castToRoot();
+	protected:
 
+		virtual bool		_isGizmo() const = 0;
+		virtual bool		_isRoot() const = 0;
 
-		bool 		_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
-		bool 		_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
+		virtual WgGizmo *	_castToGizmo() = 0;
+		virtual WgRoot *	_castToRoot() = 0;
+
+		virtual bool _focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
+		virtual bool _focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;
 };
-
 
 
 #endif //WG_GIZMO_PARENT_DOT_H

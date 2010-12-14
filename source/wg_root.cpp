@@ -115,12 +115,6 @@ WgGizmo * WgRoot::ReleaseGizmo()
 	return m_hook.ReleaseGizmo();
 }
 
-//____ Update() _______________________________________________________________
-
-void WgRoot::Update( int msTime )
-{
-}
-
 //____ Render() _______________________________________________________________
 
 bool WgRoot::Render()
@@ -173,7 +167,7 @@ bool WgRoot::RenderSection( const WgRect& clip, int layer )
 
 
 	WgDirtyRect * pRect = m_dirtyRects.pRectList;
-	
+
 	while( pRect )
 	{
 		m_hook.DoRender( m_pGfxDevice, canvas, canvas, clip2, layer );
@@ -219,17 +213,17 @@ int WgRoot::ExportDirtyRects( WgRect * pDest, int maxRects ) const
 }
 
 
-//____ FocusRequested() _______________________________________________________
+//____ _focusRequested() _______________________________________________________
 
-bool WgRoot::FocusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting )
+bool WgRoot::_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting )
 {
 	//TODO: Implement
 	return false;
 }
 
-//____ FocusReleased() ________________________________________________________
+//____ _focusReleased() ________________________________________________________
 
-bool WgRoot::FocusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
+bool WgRoot::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
 {
 	//TODO: Implement
 	return false;

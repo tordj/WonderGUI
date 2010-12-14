@@ -97,6 +97,7 @@
 		<Unit filename="include/wg_gizmo_circlemeter.h" />
 		<Unit filename="include/wg_gizmo_collection.h" />
 		<Unit filename="include/wg_gizmo_combobox.h" />
+		<Unit filename="include/wg_gizmo_container.h" />
 		<Unit filename="include/wg_gizmo_dragbars.h" />
 		<Unit filename="include/wg_gizmo_editline.h" />
 		<Unit filename="include/wg_gizmo_editvalue.h" />
@@ -105,6 +106,7 @@
 		<Unit filename="include/wg_gizmo_hook.h" />
 		<Unit filename="include/wg_gizmo_item_wrapper.h" />
 		<Unit filename="include/wg_gizmo_menubar.h" />
+		<Unit filename="include/wg_gizmo_parent.h" />
 		<Unit filename="include/wg_gizmo_pixmap.h" />
 		<Unit filename="include/wg_gizmo_radiobutton.h" />
 		<Unit filename="include/wg_gizmo_refreshbutton.h" />
@@ -162,7 +164,6 @@
 		<Unit filename="include/wg_widget.h" />
 		<Unit filename="include/wondergui.h" />
 		<Unit filename="source/wdg_baseclass_view.cpp" />
-		<Unit filename="source/wdg_container.cpp" />
 		<Unit filename="source/wdg_gridview.cpp" />
 		<Unit filename="source/wdg_listview.cpp" />
 		<Unit filename="source/wdg_lodder.cpp" />
@@ -198,6 +199,7 @@
 		<Unit filename="source/wg_gizmo_checkbox.cpp" />
 		<Unit filename="source/wg_gizmo_circlemeter.cpp" />
 		<Unit filename="source/wg_gizmo_combobox.cpp" />
+		<Unit filename="source/wg_gizmo_container.cpp" />
 		<Unit filename="source/wg_gizmo_dragbars.cpp" />
 		<Unit filename="source/wg_gizmo_editline.cpp" />
 		<Unit filename="source/wg_gizmo_editvalue.cpp" />

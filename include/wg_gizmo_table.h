@@ -380,7 +380,7 @@ protected:
 	void	OnDisable();
 
 private:
-	WgGizmo *	CastToGizmo() { return this; }
+	WgGizmo*		_castToGizmo() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }

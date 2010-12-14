@@ -282,7 +282,7 @@ protected:
 	WgViewHook		m_elements[3];			// Content, xDrag and yDrag gizmos in that order.
 
 private:
-	WgGizmo * CastToGizmo() { return this; }
+	WgGizmo* 		_castToGizmo() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }
 	WgGizmoHook*	_lastHook() const { return const_cast<WgViewHook*>(&m_elements[2]); }

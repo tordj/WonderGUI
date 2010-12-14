@@ -60,8 +60,6 @@ public:
 	WgGizmo * 				ReleaseGizmo();
 
 
-	void	Update( int msTime );
-
 //	inline int	NbDirtyRects() const { return m_dirtyRects....  TODO: Implement when WgDirtyRectObj has a Size() method
 	int		ExportDirtyRects( WgRect * pDest, int maxRects ) const;
 
@@ -74,7 +72,7 @@ public:
 
 	void	AddDirtyRect( WgRect rect );
 
-	virtual WgGizmo *	FindGizmo( const WgCord& ofs, WgSearchMode mode ) = 0;
+	WgGizmo *	FindGizmo( const WgCord& ofs, WgSearchMode mode );
 
 protected:
 	class Hook : public WgGizmoHook
@@ -105,20 +103,22 @@ protected:
 		void			RequestRender( const WgRect& rect );
 		void			RequestResize();
 
-		WgRoot *		m_pRoot;  
+		WgRoot *		m_pRoot;
 	};
+
+
+	bool			IsGizmo() const { return false; }
+	bool			IsRoot() const { return true; }
+
+	WgGizmo *		CastToGizmo() { return 0; }
+	WgRoot *		CastToRoot() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
 	WgGizmoHook*	_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
 
-	bool		IsGizmo() const { return false; }
-	bool		IsRoot() const { return true; }
+	bool 			_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
+	bool 			_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
 
-	WgGizmo *	CastToGizmo() { return 0; }
-	WgRoot *	CastToRoot() { return this; }
-
-	bool FocusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
-	bool FocusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
 
 
 	WgDirtyRectObj		m_dirtyRects;
