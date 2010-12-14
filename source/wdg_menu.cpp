@@ -1249,6 +1249,10 @@ void Wdg_Menu::CloseSubMenu( Uint32 item )
 
 void Wdg_Menu::DoMyOwnInputFocusChange( bool _bFocus )
 {
+	if(!_bFocus)
+	{
+		Close();
+	}
 }
 
 //____ DoMyOwnGeometryChange() ________________________________________________

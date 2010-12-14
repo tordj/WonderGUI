@@ -1173,7 +1173,11 @@ bool WgInput::isPointerInside( WgWidget * pWidget ) const
 void	WgInput::setFocusedWidget( WgWidget * pWidget )
 {
 	if( m_pFocusedWidget )
-		m_pFocusedWidget->LostInputFocus();
+	{
+		WgWidget* pTmp = m_pFocusedWidget;
+		m_pFocusedWidget = 0;
+		pTmp->LostInputFocus();
+	}
 
 	m_pFocusedWidget = pWidget;
 

@@ -195,6 +195,9 @@ void WgText::clear()
 	m_nSoftLines = 1;
 
 	clearSelection();
+
+	if( m_pCursor )
+		m_pCursor->gotoHardPos(m_pCursor->line(), m_pCursor->column());
 }
 
 
