@@ -27,8 +27,8 @@
 
 //____ DoRender() _____________________________________________________________
 
-void WgGizmoHook::DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) 
-{ 
+void WgGizmoHook::DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+{
 	m_pGizmo->OnRender( pDevice, _canvas, _window, _clip, _layer );
 }
 
@@ -66,14 +66,14 @@ WgGizmo* WgGizmoHook::ReleaseGizmo()
 
 bool WgGizmoHook::RequestFocus()
 {
-	return Parent()->FocusRequested(this, m_pGizmo);
+	return Parent()->_focusRequested(this, m_pGizmo);
 }
 
 //____ ReleaseFocus() _________________________________________________________
 
 bool WgGizmoHook::ReleaseFocus()
 {
-	return Parent()->FocusReleased(this, m_pGizmo);
+	return Parent()->_focusReleased(this, m_pGizmo);
 }
 
 //____ Root() _________________________________________________________________
@@ -81,15 +81,15 @@ bool WgGizmoHook::ReleaseFocus()
 WgRoot * WgGizmoHook::Root()
 {
 	WgGizmoContainer * pParent = Parent();
-	
-	if( pParent->IsGizmo() )
+
+	if( pParent->_isGizmo() )
 	{
-		WgGizmoHook * pHook = pParent->CastToGizmo()->Hook();
+		WgGizmoHook * pHook = pParent->_castToGizmo()->Hook();
 		if( pHook )
 			return pHook->Root();
 	}
-	else if( pParent->IsRoot() )
-		return pParent->CastToRoot();
+	else if( pParent->_isRoot() )
+		return pParent->_castToRoot();
 
 	return 0;
 }
