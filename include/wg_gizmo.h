@@ -52,7 +52,6 @@
 class WgUpdateInfo;
 class WgEmitter;
 class WgGfxDevice;
-class WgChildManager;
 class WgSkinManager;
 class Wg_Interface_TextHolder;
 class WgGizmoContainer;
@@ -96,7 +95,7 @@ public:
 	inline WgMarkPolicy	GetMarkPolicy() const { return m_markPolicy; }
 	bool				MarkTest( const WgCord& ofs );
 
-	WgGizmoHook*		Hook() const { return m_pHook; }
+	WgGizmoHook*		GetHook() const { return m_pHook; }
 
 	// Convenient calls to hook
 
@@ -106,7 +105,6 @@ public:
 	inline WgRect		ScreenGeometry() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
 	inline bool			GrabFocus() { if( m_pHook ) return m_pHook->RequestFocus(); return false; }
 	inline bool			ReleaseFocus() { if( m_pHook ) return m_pHook->ReleaseFocus(); return false; }
-
 //	inline WgGizmoContainer * Parent() { if( m_pHook ) return m_pHook->Parent(); return 0; }		// Currently conflicts with WgWidget;
 
 	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->NextHook(); if( p ) return p->Gizmo(); } return 0; }
@@ -171,8 +169,6 @@ protected:
 	//
 
 	WgGizmoHook *	m_pHook;
-
-	WgChildManager * m_pChildManager;
 
 	WgSkinNode *	m_pSkinNode;
 

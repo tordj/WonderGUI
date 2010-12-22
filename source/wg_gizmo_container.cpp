@@ -36,6 +36,15 @@ bool WgGizmoContainer::_isRoot() const
 	return false;
 }
 
+//____ _getRenderBox() ________________________________________________________
+
+WgRect WgGizmoContainer::_getRenderBox() const
+{
+	// Default implementation.
+
+	return WgRect(0,0,Size());
+}
+
 
 //____ _castToRoot() ___________________________________________________________
 

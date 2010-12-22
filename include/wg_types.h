@@ -436,4 +436,31 @@ enum WgMarkPolicy
 	WG_MARKPOLICY_TRANSPARENT
 };
 
+//____ WgLocation _____________________________________________________________
+
+enum WgLocation
+{
+	// Clockwise from upper left corner, center last. Must be in range 0-8
+
+	WG_NORTHWEST	= 0,
+	WG_NORTH		= 1,	
+	WG_NORTHEAST	= 2,
+	WG_EAST			= 3,
+	WG_SOUTHEAST	= 4,
+	WG_SOUTH		= 5,
+	WG_SOUTHWEST	= 6,
+	WG_WEST			= 7,
+	WG_CENTER		= 8
+};
+
+
+enum WgSizePolicy
+{
+	WG_SIZE_SPECIFIED = 0,
+	WG_SIZE_MIN,
+	WG_SIZE_BEST,
+	WG_SIZE_MAX,
+};
+
+
 #endif // WG_TYPES_DOT_H

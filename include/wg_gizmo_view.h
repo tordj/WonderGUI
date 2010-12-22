@@ -282,6 +282,8 @@ protected:
 	WgViewHook		m_elements[3];			// Content, xDrag and yDrag gizmos in that order.
 
 private:
+	void			_renderBoxModified( WgGizmoHook * pHook, const WgRect& oldBox, const WgRect& newBox ) { return; }
+
 	WgGizmo* 		_castToGizmo() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }

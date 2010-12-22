@@ -35,9 +35,16 @@ class WgGizmoContainer : public WgGizmoParent
 {
 	friend class WgGizmoHook;
 
+	public:
+		WgRect		GetRenderBox() const;
+
 	private:
 		bool		_isGizmo() const;
 		bool		_isRoot() const;
+
+		// Call when a child container has modified its renderBox, caused by its children.
+
+		void		_renderBoxModified( WgGizmoHook * pHook, const WgRect& oldBox, const WgRect& newBox ) = 0;
 
 //		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
 		WgRoot *	_castToRoot();
@@ -45,6 +52,8 @@ class WgGizmoContainer : public WgGizmoParent
 
 		bool 		_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
 		bool 		_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
+
+		WgRect		m_renderBox;		// Bounding-box for all rendering from this branch.
 };
 
 

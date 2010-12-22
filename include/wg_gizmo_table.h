@@ -273,15 +273,15 @@ public:
 	void	SetRowBlocks( WgBlockSetPtr * pRowBlocks, int nRowSource );
 	int		GetRowBlockCount() const { return m_nRowBlocks; }
 	WgBlockSetPtr* GetRowBlocks( ) { return m_pRowBlocks; }
-	void	RemoveRowBlocks();
+	void	DeleteRowBlocks();
 
 	void	SetRowColors( WgColor * pRowColors, int nRowColors );
 	int		GetRowColorCount() const { return m_nRowColors; }
 	WgColor*GetRowColors( ) { return m_pRowColors; }
-	void	RemoveRowColors();
+	void	DeleteRowColors();
 
 	int		AddColumn( const WgCharSeq& text, int pixelwidth, WgOrigo& origo = WgOrigo::midLeft(), int(*fpCompare)(WgGizmo*,WgGizmo*) = 0, bool bInitialAscend = true, bool bEnabled = true, Sint64 id = 0, WgGizmo * pDefaultGizmo = 0 );
-	void	RemoveColumns();
+	void	DeleteColumns();
 //	bool	SetColumnWidth( Uint32 column, Uint32 pixelwidth );
 //	bool	SetColumnVisible( Uint32 column, bool bVisible );
 
@@ -301,9 +301,9 @@ public:
 	void			InsertRowSorted( WgTableRow2* pRow );
 	int				GetRowNb( WgTableRow2* pRow ) const;
 	WgTableRow2*	GetRow( int pos );
-	WgTableRow2*	RemoveRow( int pos );
-	bool			RemoveRow( WgTableRow2* pRow );
-	void			RemoveAllRows();
+	WgTableRow2*	ReleaseRow( int pos );
+	bool			ReleaseRow( WgTableRow2* pRow );
+	void			ReleaseAllRows();
 	bool			DeleteRow( int pos );
 	bool			DeleteRow( WgTableRow2* pRow );
 	void			DeleteAllRows();

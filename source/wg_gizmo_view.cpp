@@ -56,6 +56,8 @@ WgGizmoView::WgGizmoView()
 	new (&m_elements[YDRAG]) WgViewHook( (WgGizmoVDragbar*)0, this );
 
 	UpdateElementGeometry( WgSize(256,256), WgSize(0,0) );
+
+	m_renderBox = WgRect(0,0,0,0);
 }
 
 //____ ~WgGizmoView() __________________________________________________
@@ -907,6 +909,9 @@ void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& new
 void WgGizmoView::OnNewSize( const WgSize& size )
 {
 	UpdateElementGeometry( size, m_contentSize );
+
+	m_renderBox.setSize(size);			// We can make it easy for us, everything stays inside the view except for
+										// dragbars who are not containers.
 }
 
 

@@ -640,9 +640,9 @@ WgGizmoTable::WgGizmoTable()
 
 WgGizmoTable::~WgGizmoTable( void )
 {
-	RemoveColumns();
-	RemoveRowColors();
-	RemoveRowBlocks();
+	DeleteColumns();
+	DeleteRowColors();
+	DeleteRowBlocks();
 
 	delete [] m_pColumns;
 	m_pColumns = 0;							// So that refresh methods called when underlying items are deleted knows...
@@ -744,7 +744,7 @@ void WgGizmoTable::SetEmptyRowHeight( int height )
 void WgGizmoTable::SetRowColors( WgColor * pRowColors, int nRowColors )
 {
 	if( m_pRowColors )
-		RemoveRowColors();
+		DeleteRowColors();
 
 	if( nRowColors > 0 && pRowColors )
 	{
@@ -757,8 +757,8 @@ void WgGizmoTable::SetRowColors( WgColor * pRowColors, int nRowColors )
 	RequestRender();
 }
 
-//____ RemoveRowColors() ______________________________________________________
-void WgGizmoTable::RemoveRowColors()
+//____ DeleteRowColors() ______________________________________________________
+void WgGizmoTable::DeleteRowColors()
 {
 	if( m_pRowColors )
 	{
@@ -773,7 +773,7 @@ void WgGizmoTable::RemoveRowColors()
 void WgGizmoTable::SetRowBlocks( WgBlockSetPtr * pRowBlocks, int nRowBlocks )
 {
 	if( m_pRowBlocks )
-		RemoveRowBlocks();
+		DeleteRowBlocks();
 
 	if( nRowBlocks > 0 && pRowBlocks )
 	{
@@ -787,8 +787,8 @@ void WgGizmoTable::SetRowBlocks( WgBlockSetPtr * pRowBlocks, int nRowBlocks )
 	RequestRender();
 }
 
-//____ RemoveRowBlocks() ______________________________________________________
-void WgGizmoTable::RemoveRowBlocks()
+//____ DeleteRowBlocks() ______________________________________________________
+void WgGizmoTable::DeleteRowBlocks()
 {
 	if( m_pRowBlocks )
 	{
@@ -799,9 +799,9 @@ void WgGizmoTable::RemoveRowBlocks()
 }
 
 
-//____ RemoveColumns() ____________________________________________________________
+//____ DeleteColumns() ____________________________________________________________
 
-void WgGizmoTable::RemoveColumns()
+void WgGizmoTable::DeleteColumns()
 {
 	UpdateMarkedRowColumn(-1, -1);
 
@@ -1240,9 +1240,9 @@ void WgGizmoTable::SetSelectedRowBg( WgBlockSetPtr pBlock )
 }
 
 
-//____ RemoveRow() ____________________________________________________________
+//____ ReleaseRow() ____________________________________________________________
 
-WgTableRow2 * WgGizmoTable::RemoveRow( int pos )
+WgTableRow2 * WgGizmoTable::ReleaseRow( int pos )
 {
 	if( pos == m_markedRow )
 		UpdateMarkedRowColumn(-1,m_markedColumn);
@@ -1253,7 +1253,7 @@ WgTableRow2 * WgGizmoTable::RemoveRow( int pos )
 	return pRow;
 }
 
-bool WgGizmoTable::RemoveRow( WgTableRow2 * pRow )
+bool WgGizmoTable::ReleaseRow( WgTableRow2 * pRow )
 {
 	if( GetRowNb(pRow) == m_markedRow )
 		UpdateMarkedRowColumn(-1,m_markedColumn);
@@ -1266,9 +1266,9 @@ bool WgGizmoTable::RemoveRow( WgTableRow2 * pRow )
 	return false;
 }
 
-//____ RemoveAllRows() ________________________________________________________
+//____ ReleaseAllRows() ________________________________________________________
 
-void WgGizmoTable::RemoveAllRows()
+void WgGizmoTable::ReleaseAllRows()
 {
 	UpdateMarkedRowColumn(-1,m_markedColumn);
 

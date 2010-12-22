@@ -61,7 +61,7 @@ const char * WgGizmo::GetMyType()
 
 void WgGizmo::Enable()
 {
-	if( !m_bEnabled )
+	if( !m_bEnabled || IsContainer() )
 	{
 		m_bEnabled = true;
 		OnEnable();
@@ -72,7 +72,7 @@ void WgGizmo::Enable()
 
 void WgGizmo::Disable()
 {
-	if( m_bEnabled )
+	if( m_bEnabled || IsContainer() )
 	{
 		m_bEnabled = false;
 		OnDisable();
