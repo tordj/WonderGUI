@@ -102,6 +102,7 @@ protected:
 		void			RequestRender();
 		void			RequestRender( const WgRect& rect );
 		void			RequestResize();
+		void			BoundingBoxChanged();
 
 		WgRoot *		m_pRoot;
 	};

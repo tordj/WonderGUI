@@ -307,6 +307,10 @@ void WgRoot::Hook::RequestResize()
 	// Do nothing, root ignores size requests.
 }
 
+void WgRoot::Hook::BoundingBoxChanged()
+{
+	// Do nothing, you can't draw outside root anyway.
+}
 
 
 

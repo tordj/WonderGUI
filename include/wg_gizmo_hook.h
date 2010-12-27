@@ -71,6 +71,8 @@ protected:
 	virtual void	RequestRender() = 0;
 	virtual void	RequestRender( const WgRect& rect ) = 0;
 	virtual void	RequestResize() = 0;
+	virtual void	BoundingBoxChanged() = 0;
+
 
 	virtual bool	RequestFocus();
 	virtual bool	ReleaseFocus();

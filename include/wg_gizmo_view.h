@@ -58,6 +58,7 @@ public:
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
 
+	void	BoundingBoxChanged();
 
 protected:
 	WgViewHook() : WgGizmoHook( 0 ) {};				// So we can make them members and then make placement new...
@@ -282,8 +283,6 @@ protected:
 	WgViewHook		m_elements[3];			// Content, xDrag and yDrag gizmos in that order.
 
 private:
-	void			_renderBoxModified( WgGizmoHook * pHook, const WgRect& oldBox, const WgRect& newBox ) { return; }
-
 	WgGizmo* 		_castToGizmo() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }

@@ -35,6 +35,7 @@
 #	include <wg_types.h>
 #endif
 
+class WgSkinNode;
 class WgGizmo;
 
 class WgSkinManager

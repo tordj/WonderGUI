@@ -43,8 +43,6 @@ class WgGizmoParent : public WgGizmoCollection
 		virtual WgGizmo *	FindGizmo( const WgCord& ofs, WgSearchMode mode ) = 0;
 
 	protected:
-		virtual WgRect		_getRenderBox() const = 0;
-
 		virtual bool		_isGizmo() const = 0;
 		virtual bool		_isRoot() const = 0;
 

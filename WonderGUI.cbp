@@ -77,6 +77,7 @@
 		<Unit filename="include/wg_char.h" />
 		<Unit filename="include/wg_charbuffer.h" />
 		<Unit filename="include/wg_charseq.h" />
+		<Unit filename="include/wg_codepages.h" />
 		<Unit filename="include/wg_color.h" />
 		<Unit filename="include/wg_cursor.h" />
 		<Unit filename="include/wg_cursorinstance.h" />
@@ -99,9 +100,11 @@
 		<Unit filename="include/wg_gizmo_combobox.h" />
 		<Unit filename="include/wg_gizmo_container.h" />
 		<Unit filename="include/wg_gizmo_dragbars.h" />
+		<Unit filename="include/wg_gizmo_dummy.h" />
 		<Unit filename="include/wg_gizmo_editline.h" />
 		<Unit filename="include/wg_gizmo_editvalue.h" />
 		<Unit filename="include/wg_gizmo_fill.h" />
+		<Unit filename="include/wg_gizmo_flexgeo.h" />
 		<Unit filename="include/wg_gizmo_fps.h" />
 		<Unit filename="include/wg_gizmo_hook.h" />
 		<Unit filename="include/wg_gizmo_item_wrapper.h" />
@@ -147,6 +150,7 @@
 		<Unit filename="include/wg_signals.h" />
 		<Unit filename="include/wg_signalstanza.h" />
 		<Unit filename="include/wg_simpletext.h" />
+		<Unit filename="include/wg_skinmanager.h" />
 		<Unit filename="include/wg_smartptr.h" />
 		<Unit filename="include/wg_string.h" />
 		<Unit filename="include/wg_surface.h" />
@@ -182,6 +186,7 @@
 		<Unit filename="source/wg_char.cpp" />
 		<Unit filename="source/wg_charbuffer.cpp" />
 		<Unit filename="source/wg_charseq.cpp" />
+		<Unit filename="source/wg_codepages.cpp" />
 		<Unit filename="source/wg_color.cpp" />
 		<Unit filename="source/wg_cursor.cpp" />
 		<Unit filename="source/wg_cursorinstance.cpp" />
@@ -201,9 +206,11 @@
 		<Unit filename="source/wg_gizmo_combobox.cpp" />
 		<Unit filename="source/wg_gizmo_container.cpp" />
 		<Unit filename="source/wg_gizmo_dragbars.cpp" />
+		<Unit filename="source/wg_gizmo_dummy.cpp" />
 		<Unit filename="source/wg_gizmo_editline.cpp" />
 		<Unit filename="source/wg_gizmo_editvalue.cpp" />
 		<Unit filename="source/wg_gizmo_fill.cpp" />
+		<Unit filename="source/wg_gizmo_flexgeo.cpp" />
 		<Unit filename="source/wg_gizmo_fps.cpp" />
 		<Unit filename="source/wg_gizmo_hook.cpp" />
 		<Unit filename="source/wg_gizmo_menubar.cpp" />
@@ -236,6 +243,7 @@
 		<Unit filename="source/wg_resources_xml.cpp" />
 		<Unit filename="source/wg_resourceserializer_xml.cpp" />
 		<Unit filename="source/wg_root.cpp" />
+		<Unit filename="source/wg_skinmanager.cpp" />
 		<Unit filename="source/wg_string.cpp" />
 		<Unit filename="source/wg_surface.cpp" />
 		<Unit filename="source/wg_text.cpp" />

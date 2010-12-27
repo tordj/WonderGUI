@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -57,7 +57,6 @@ WgGizmoView::WgGizmoView()
 
 	UpdateElementGeometry( WgSize(256,256), WgSize(0,0) );
 
-	m_renderBox = WgRect(0,0,0,0);
 }
 
 //____ ~WgGizmoView() __________________________________________________
@@ -93,13 +92,13 @@ bool WgGizmoView::StepUp()
 
 //____ StepDown() _____________________________________________________________
 bool WgGizmoView::StepDown()
-{ 
+{
 	return SetViewPixelOfsY( m_viewPixOfs.y + m_stepSizeY );
 }
 
 //____ StepLeft() _____________________________________________________________
 bool WgGizmoView::StepLeft()
-{ 
+{
 	int ofs = m_viewPixOfs.x - m_stepSizeX;
 
 	if( ofs < 0 )
@@ -111,7 +110,7 @@ bool WgGizmoView::StepLeft()
 //____ StepRight() ____________________________________________________________
 
 bool WgGizmoView::StepRight()
-{ 
+{
 	return SetViewPixelOfsX( m_viewPixOfs.x + m_stepSizeX );
 }
 
@@ -651,7 +650,7 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCord& pos, WgSearchMode mode )
 		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.pos() ) )
 			return p->m_pGizmo;
 	}
-	
+
 	// Check YDRAG
 
 	p = &m_elements[YDRAG];
@@ -690,7 +689,7 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCord& pos, WgSearchMode mode )
 
 //____ UpdateElementGeometry() ________________________________________________
 
-void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& newContentSize ) 
+void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& newContentSize )
 {
 	WgRect	newDragX, newDragY, newWindow, newFiller;
 	bool	bShowDragX = false, bShowDragY = false;
@@ -891,7 +890,7 @@ void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& new
 		Emit( ViewPosSizeY(), ViewOfsY(), ViewLenY() );
 	if( bNewOfsY || bNewHeight )
 		Emit( ViewPosSizePixelY(), m_viewPixOfs.y, ViewPixelLenY() );
-	
+
 	if( bNewOfsX || bNewOfsY || bNewContentHeight || bNewContentWidth )
 		Emit( ViewPos(), ViewOfsX(), ViewOfsY() );
 	if( bNewOfsX || bNewOfsY )
@@ -909,9 +908,6 @@ void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& new
 void WgGizmoView::OnNewSize( const WgSize& size )
 {
 	UpdateElementGeometry( size, m_contentSize );
-
-	m_renderBox.setSize(size);			// We can make it easy for us, everything stays inside the view except for
-										// dragbars who are not containers.
 }
 
 
@@ -924,7 +920,7 @@ void WgGizmoView::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 		WgRect window = m_elements[WINDOW].m_geo + _canvas.pos();
 		WgRect canvas( window.pos() - m_viewPixOfs, m_contentSize );
 		WgRect clip( window, _clip );
-		
+
 		if( clip.w > 0 && clip.h > 0 )
 			m_elements[WINDOW].DoRender( pDevice, canvas, window, clip, _layer );
 	}
@@ -982,7 +978,7 @@ void WgGizmoView::OnCloneContent( const WgGizmo * _pOrg )
 	m_jumpSizeY		= pOrg->m_jumpSizeY;
 
 	m_viewPixOfs	= pOrg->m_viewPixOfs;
-					
+
 /*
 	m_pScrollbarX	= 0;
 	m_pScrollbarY	= 0;
@@ -1028,13 +1024,13 @@ bool WgGizmoView::SetAutoscroll( bool bAutoX, bool bAutoY )
 
 //____ WgViewHook::Constructors _________________________________________________
 
-WgViewHook::WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView ) 
+WgViewHook::WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView )
 : WgGizmoHook( pHDragbar ), /*m_type(WgGizmoView::XDRAG),*/ m_pView(pView), m_bShow(false) { if( m_pGizmo ) DoSetGizmo(); }
 
-WgViewHook::WgViewHook( WgGizmoVDragbar * pVDragbar, WgGizmoView * pView ) 
+WgViewHook::WgViewHook( WgGizmoVDragbar * pVDragbar, WgGizmoView * pView )
 			: WgGizmoHook( pVDragbar ), /*m_type(WgGizmoView::YDRAG),*/ m_pView(pView), m_bShow(false) { if( m_pGizmo ) DoSetGizmo(); }
 
-WgViewHook::WgViewHook( WgGizmo * pContent, WgGizmoView * pView ) 
+WgViewHook::WgViewHook( WgGizmo * pContent, WgGizmoView * pView )
 			: WgGizmoHook( pContent ), /*m_type(WgGizmoView::WINDOW),*/ m_pView(pView), m_bShow(true) { if( m_pGizmo ) DoSetGizmo(); }
 
 //____ WgViewHook::Destructor ___________________________________________________
@@ -1137,3 +1133,11 @@ void WgViewHook::RequestResize()
 {
 	//TODO: Figure out how this should work and implement.
 }
+
+//____ WgViewHook::BoundingBoxChanged() ______________________________________________
+
+void WgViewHook::BoundingBoxChanged()
+{
+	//TODO: Figure out how this should work and implement.
+}
+

@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -94,8 +94,8 @@ void WgGizmo::SetSkinManager( WgSkinManager * pManager )
 
 //____ GetSkinManager() _______________________________________________________
 
-WgSkinManager *	WgGizmo::GetSkinManager() const 
-{ 
+WgSkinManager *	WgGizmo::GetSkinManager() const
+{
 	if( m_pSkinNode )
 		return m_pSkinNode->GetManager();
 
@@ -170,6 +170,12 @@ WgCord WgGizmo::Abs2local( const WgCord& cord ) const
 	return WgCord( cord.x - c.x, cord.y - c.y );
 }
 
+//____ BoundingBoxForSize() ___________________________________________________
+
+WgRect WgGizmo::BoundingBoxForSize( WgSize size ) const
+{
+	return WgRect(0,0,size);
+}
 
 
 //____ HeightForWidth() _______________________________________________________

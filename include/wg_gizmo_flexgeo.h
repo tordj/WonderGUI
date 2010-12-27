@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -205,7 +205,7 @@ public:
 
 	bool			DeleteGizmo( WgGizmo * pGizmo );
 	bool			ReleaseGizmo( WgGizmo * pGizmo );
-	
+
 	void			DeleteAllGizmos();
 	void			ReleaseAllGizmos();
 
@@ -240,7 +240,6 @@ public:
 
 	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );
 
-
 private:
 	void			OnCloneContent( const WgGizmo * _pOrg );
 	void			OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
@@ -249,8 +248,6 @@ private:
 	bool			OnAlphaTest( const WgCord& ofs );
 	void			OnEnable();
 	void			OnDisable();
-
-	WgRect			_getRenderBox() const;
 
 	WgGizmo*		_castToGizmo() { return this; }
 

@@ -95,7 +95,7 @@ public:
 	inline WgMarkPolicy	GetMarkPolicy() const { return m_markPolicy; }
 	bool				MarkTest( const WgCord& ofs );
 
-	WgGizmoHook*		GetHook() const { return m_pHook; }
+	WgGizmoHook*		Hook() const { return m_pHook; }
 
 	// Convenient calls to hook
 
@@ -114,7 +114,10 @@ public:
 	WgCord				Abs2local( const WgCord& cord ) const; 		// Cordinate from global to local cordsys
 
 
+
 	// To be overloaded by Gizmo
+
+	virtual WgRect	BoundingBoxForSize( WgSize size ) const;
 
 	virtual int		HeightForWidth( int width ) const;
 	virtual int		WidthForHeight( int height ) const;
@@ -134,6 +137,7 @@ public:
 	virtual bool	SetNormal();					// Switch to WG_MODE_NORMAL unless we are disabled or widget controls mode itself.
 	virtual WgMode	Mode() const;
 
+
 //	virtual WgGizmoManager*	GetView() const { return 0; }
 //	virtual WgGizmoManager*	GetContainer() const { return 0; }
 
@@ -148,6 +152,7 @@ protected:
 	inline void		RequestRender() { if( m_pHook ) m_pHook->RequestRender(); }
 	inline void		RequestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->RequestRender( rect ); }
 	inline void		RequestResize() { if( m_pHook ) m_pHook->RequestResize(); }
+	inline void		BoundingBoxChanged() { if( m_pHook ) m_pHook->BoundingBoxChanged(); }
 
 	// To be overloaded by Gizmo
 
@@ -181,8 +186,9 @@ protected:
 	bool			m_bEnabled;
 	bool			m_bOpaque;
 
-	bool			m_bRendersAll;
 	bool			m_bRenderOne;
+	bool			m_bRendersAll;
+	bool			m_bOutsideBounds;
 };
 
 

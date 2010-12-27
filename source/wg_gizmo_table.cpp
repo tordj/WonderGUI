@@ -236,6 +236,11 @@ void WgTableHook::RequestResize()
 	//TODO: Recalculate height of row...
 }
 
+void WgTableHook::BoundingBoxChanged()
+{
+	//TODO: Implement
+}
+
 
 WgTableColumn2::WgTableColumn2()
 {
