@@ -167,7 +167,7 @@ public:
 	inline WgCord	offset() const { return m_pixelOfs; }
 
 private:
-	WgFlexAnchor();
+	WgFlexAnchor() m_xRelative(0.f), m_yRelative(0.f), m_pixelOfs.x(0), m_pixelOfs.y(0) {};
 	WgFlexAnchor( float xRelative, float yRelative, const WgCord& pixelOfs );
 
 	float	m_xRelative;
@@ -184,12 +184,18 @@ friend class WgFlexHook;
 
 public:
 
-	enum	ChildGeoPolicy
-	{
-			UNLIMITED,
-			PARENT_CLIP,
-			PARENT_LIMIT,
-	};
+	WgGizmoFlexGeo();
+	virtual ~WgGizmoFlexGeo();
+
+	virtual const char *Type( void ) const;
+	static const char * GetMyType();
+
+	void			SetClipChildren( bool bClipChildren );
+	void			SetConfineChildren( bool bRestrictChildren );
+
+	inline bool		IsClippingChildren() const { return m_bClipChildren; );
+	inline bool		IsConfiningChildren() const { return m_bConfineChildren; }
+
 
 	void			SetChildGeoPolicy( ChildGeoPolicy policy );
 
@@ -221,6 +227,8 @@ public:
 	WgFlexHook*		LastHook() const;
 
 	// Overloaded from WgGizmo
+
+	WgRect			BoundingBoxForSize( WgSize size ) const;
 
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
@@ -256,7 +264,9 @@ private:
 
 	WgChain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;
-	ChildGeoPolicy				m_childGeoPolicy;
+
+	bool			m_bClipChildren;
+	bool			m_bConfineChildren;
 };
 
 
