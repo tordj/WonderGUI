@@ -252,6 +252,13 @@ WgMode WgGizmo::Mode() const
 
 //____ Fillers _______________________________________________________________
 
+
+void WgGizmo::OnRedrawRequest()
+{
+	RequestRender();
+}
+
+
 void WgGizmo::OnNewSize( const WgSize& size )
 {
 	RequestRender();

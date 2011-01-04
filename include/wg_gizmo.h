@@ -80,6 +80,7 @@ public:
 	WgSkinManager *		GetSkinManager() const;
 
 
+	inline void			Redraw() { OnRedrawRequest();}
 	inline void			Refresh() { OnRefresh(); }
 	void				Enable();
 	void				Disable();
@@ -156,6 +157,7 @@ protected:
 
 	// To be overloaded by Gizmo
 
+	virtual void	OnRedrawRequest();
 	virtual void	OnCloneContent( const WgGizmo * _pOrg ) = 0;
 	virtual void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) = 0;
 	virtual void	OnNewSize( const WgSize& size );

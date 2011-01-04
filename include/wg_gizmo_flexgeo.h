@@ -45,6 +45,7 @@ public:
 
 	void	SetAnchored();
 	bool	SetAnchored( int anchorTopLeft, int anchorBottomRight );
+	bool	SetAnchored( int anchorTopLeft, int anchorBottomRight, WgBorders borders );
 
 	void	SetFloating();
 	bool	SetFloating( const WgRect& geometry );
@@ -65,6 +66,7 @@ public:
 
 	inline bool	IsFloating() const { return m_bFloating; }
 	inline bool	IsAnchored() const { return !m_bFloating; }
+	inline bool IsHidden() const { return m_bHidden; }
 
 	// Methods for floating hooks
 
@@ -123,13 +125,17 @@ public:
 protected:
 	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
 
+	LINK_METHODS( WgFlexHook );
+
 	WgFlexHook( WgGizmo * pGizmo, WgGizmoFlexGeo * pParent );
 
-	void		RefreshRealGeo();
+	bool		RefreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 
 	void		RequestRender();
 	void		RequestRender( const WgRect& rect );
 	void		RequestResize();
+
+	bool		LimitPlacementSize();
 
 	WgGizmoFlexGeo * m_pParent;
 
@@ -159,6 +165,8 @@ protected:
 
 class WgFlexAnchor
 {
+	friend class WgGizmoFlexGeo;
+
 public:
 	inline float	relativeX() const { return m_xRelative; }
 	inline float	relativeY() const { return m_yRelative; }
@@ -166,8 +174,10 @@ public:
 	inline int		offsetY() const { return m_pixelOfs.y; }
 	inline WgCord	offset() const { return m_pixelOfs; }
 
+	inline WgCord	position( const WgSize& parentSize ) const { return WgCord((int)(m_xRelative*parentSize.w), (int)(m_yRelative*parentSize.h)) + m_pixelOfs; }
+
 private:
-	WgFlexAnchor() m_xRelative(0.f), m_yRelative(0.f), m_pixelOfs.x(0), m_pixelOfs.y(0) {};
+	WgFlexAnchor() : m_xRelative(0.f), m_yRelative(0.f), m_pixelOfs(0,0) {};
 	WgFlexAnchor( float xRelative, float yRelative, const WgCord& pixelOfs );
 
 	float	m_xRelative;
@@ -193,11 +203,9 @@ public:
 	void			SetClipChildren( bool bClipChildren );
 	void			SetConfineChildren( bool bRestrictChildren );
 
-	inline bool		IsClippingChildren() const { return m_bClipChildren; );
+	inline bool		IsClippingChildren() const { return m_bClipChildren; }
 	inline bool		IsConfiningChildren() const { return m_bConfineChildren; }
 
-
-	void			SetChildGeoPolicy( ChildGeoPolicy policy );
 
 	WgFlexHook *	AddGizmo( WgGizmo * pGizmo );
 	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
@@ -216,15 +224,15 @@ public:
 	void			ReleaseAllGizmos();
 
 	int				AddAnchor( float relativeX, float relativeY, const WgCord& pixelOfs );
-	int				ReplaceAnchor( int index, float relativeX, float relativeY, const WgCord& pixelOfs );
+	bool			ReplaceAnchor( int index, float relativeX, float relativeY, const WgCord& pixelOfs );
 	bool			DeleteAnchor( int index );
 
 	inline int		NbAnchors() const { return m_anchors.size()+9; }
-	WgFlexAnchor *	Anchor( int index );
+	const WgFlexAnchor *	Anchor( int index );
 
 
-	WgFlexHook*		FirstHook() const;
-	WgFlexHook*		LastHook() const;
+	inline WgFlexHook*	FirstHook() const { return m_hooks.First(); }
+	inline WgFlexHook*	LastHook() const { return m_hooks.Last(); }
 
 	// Overloaded from WgGizmo
 
@@ -249,6 +257,14 @@ public:
 	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );
 
 private:
+	
+	enum ClipMode
+	{
+		CLIP,
+		NO_CLIP,
+		INVERTED_CLIP		
+	};
+
 	void			OnCloneContent( const WgGizmo * _pOrg );
 	void			OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			OnNewSize( const WgSize& size );
@@ -256,6 +272,8 @@ private:
 	bool			OnAlphaTest( const WgCord& ofs );
 	void			OnEnable();
 	void			OnDisable();
+
+	void			OnRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 
 	WgGizmo*		_castToGizmo() { return this; }
 
@@ -265,8 +283,12 @@ private:
 	WgChain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;
 
+	ClipMode		m_clipMode;	
+
 	bool			m_bClipChildren;
 	bool			m_bConfineChildren;
+
+	static WgFlexAnchor	g_baseAnchors[9];
 };
 
 
