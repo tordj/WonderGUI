@@ -97,6 +97,9 @@ void WgDirtyRectObj::Clip( const WgRect * _pClip )
 
 void WgDirtyRectObj::Add( const WgRect& rect )
 {
+	if( rect.w == 0 || rect.h == 0 )
+		return;
+
 	WgDirtyRect * pRect = (WgDirtyRect*) g_pMemPool->allocEntry();
 
 	*((WgRect*) pRect) = rect;
@@ -105,6 +108,9 @@ void WgDirtyRectObj::Add( const WgRect& rect )
 
 void WgDirtyRectObj::Add( const int _x, const int _y, const int _w, const int _h )
 {
+	if( _w == 0 || _h == 0 )
+		return;
+
 	WgDirtyRect * pRect = (WgDirtyRect*) g_pMemPool->allocEntry();
 	pRect->x = _x;
 	pRect->y = _y;
@@ -235,6 +241,9 @@ bool WgDirtyRectObj::OneForAll( WgRect * wpRect )
 
 void WgDirtyRectObj::Sub( const int _x, const int _y, const int _w, const int _h )
 {
+	if( _w == 0 || _h == 0 )
+		return;
+
 	WgDirtyRect * pRect = pRectList;
 //	WgDirtyRect	** wppRect = &pRectList;			// WritePointer to Pointer to rectangle...
 

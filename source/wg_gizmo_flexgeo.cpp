@@ -443,7 +443,7 @@ void WgFlexHook::RequestResize()
 
 //____ () _________________________________________________
 
-WgGizmoFlexGeo::WgGizmoFlexGeo() : m_bClipChildren(false), m_bConfineChildren(false), m_clipMode( NO_CLIP )
+WgGizmoFlexGeo::WgGizmoFlexGeo() : m_bConfineChildren(false)
 {
 }
 
@@ -471,44 +471,11 @@ const char * WgGizmoFlexGeo::GetMyType()
 
 //____ () _________________________________________________
 
-void WgGizmoFlexGeo::SetClipChildren( bool bClipChildren )
-{
-	if( bClipChildren != m_bClipChildren )
-	{
-		m_bClipChildren = bClipChildren;
-
-		// Request render on portion of children and grandchildren outside our geometry.
-
-		m_clipMode = INVERTED_CLIP;
-		if( !m_bConfineChildren )
-		{
-			WgFlexHook * p = m_hooks.First();
-			while( p )
-			{
-				p->Gizmo()->Redraw();
-				p = p->NextHook();
-			}
-		}
-
-		//
-
-		if( bClipChildren )
-			m_clipMode = CLIP;
-		else
-			m_clipMode = NO_CLIP;
-	}
-
-}
-
-//____ () _________________________________________________
-
 void WgGizmoFlexGeo::SetConfineChildren( bool bConfineChildren )
 {
 	if( bConfineChildren != m_bConfineChildren )
 	{
 		m_bConfineChildren = bConfineChildren;
-
-		BoundingBoxChanged();
 
 		// Update geo on children and render if changed.
 		// Clip rendering if m_bClipChildren!
@@ -689,12 +656,6 @@ const WgFlexAnchor * WgGizmoFlexGeo::Anchor( int index )
 
 //____ () _________________________________________________
 
-WgRect WgGizmoFlexGeo::BoundingBoxForSize( WgSize size ) const
-{
-}
-
-//____ () _________________________________________________
-
 int WgGizmoFlexGeo::HeightForWidth( int width ) const
 {
 }
@@ -729,6 +690,37 @@ WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 {
 }
 
+
+//____ () _________________________________________________
+
+void WgGizmoFlexGeo::OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+{
+	WgFlexHook * pHook = m_hooks.First();
+	while( pHook )
+	{
+		pHook->DoCollectRects( rects, pHook->m_realGeo + geo.pos(), clip );
+		pHook = pHook->NextHook();
+	}
+}
+
+//____ () _________________________________________________
+
+void WgGizmoFlexGeo::OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+{
+	WgFlexHook * pHook = m_hooks.First();
+	while( pHook )
+	{
+		pHook->DoMaskRects( rects, pHook->m_realGeo + geo.pos(), clip );
+		pHook = pHook->NextHook();
+	}
+}
+
+//____ () _________________________________________________
+
+void WgGizmoFlexGeo::OnRedrawRequest()
+{
+}
+
 //____ () _________________________________________________
 
 void WgGizmoFlexGeo::OnRequestRender( const WgRect& rect, WgFlexHook * pHook )
@@ -745,32 +737,12 @@ void WgGizmoFlexGeo::OnRequestRender( const WgRect& rect, WgFlexHook * pHook )
 
 	// Clip against our own geometry and render
 
-	switch( m_clipMode )
-	{
-		case NO_CLIP:
-		{
-			RequestRender( rect );
-			break;
-		}
-		case CLIP:
-		{
-			WgRect	clip( 0,0,Size() );
-			if( clip.contains(rect) )
-				RequestRender( rect );
-			else
-				RequestRender( WgRect( rect, clip ) );
-			break;
-		}
-		case INVERTED_CLIP:
-		{
-			WgRect	clip( 0,0,Size() );
-			if( clip.contains(rect) )
-				return;
-
-			RequestRender( rect );				//TODO: Can be clipped into one or more rectangles for optimization.
-			break;
-		}
-	}
+	WgRect	clip( 0,0,Size() );
+	if( clip.contains(rect) )
+		RequestRender( rect );
+	else
+		RequestRender( WgRect( rect, clip ) );
+	break;
 
 }
 

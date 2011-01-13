@@ -97,8 +97,6 @@ protected:
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
 
-	void	BoundingBoxChanged();
-
 	int				m_height;		// Minimum height needed for this Gizmo.
 	WgTableRow2 *	m_pRow;			//
 };

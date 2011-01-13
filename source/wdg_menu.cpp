@@ -89,6 +89,8 @@ void Wdg_Menu::Init( void )
 	m_nSelectorKeys			= 0;
 	m_selectorCountdown		= 0;
 
+	m_bIsOpeningSubMenu = false;
+
 	WgWidget::Modal();				// A menu is always modal...
 }
 
@@ -1182,6 +1184,8 @@ void Wdg_Menu::Close()
 
 void Wdg_Menu::OpenSubMenu( WgMenuSubMenu * pItem )
 {
+	m_bIsOpeningSubMenu = true;
+
 	Wdg_Menu * pMenu = pItem->GetSubMenu();
 
 	if( !pMenu )
@@ -1228,6 +1232,8 @@ void Wdg_Menu::OpenSubMenu( WgMenuSubMenu * pItem )
 
 
 	pMenu->Open( (Wdg_Root*)Root(), xOfs, yOfs, 0, 0, &releaseArea, this );
+
+	m_bIsOpeningSubMenu = false;
 }
 
 //____ CloseSubMenu() _________________________________________________________
@@ -1249,7 +1255,7 @@ void Wdg_Menu::CloseSubMenu( Uint32 item )
 
 void Wdg_Menu::DoMyOwnInputFocusChange( bool _bFocus )
 {
-	if(!_bFocus)
+	if(!_bFocus && !m_bIsOpeningSubMenu)
 	{
 		Close();
 	}

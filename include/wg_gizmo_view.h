@@ -58,8 +58,6 @@ public:
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
 
-	void	BoundingBoxChanged();
-
 protected:
 	WgViewHook() : WgGizmoHook( 0 ) {};				// So we can make them members and then make placement new...
 	WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView );

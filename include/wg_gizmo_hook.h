@@ -38,6 +38,7 @@ class WgWidget;
 class WgGfxDevice;
 class WgGizmo;
 class WgRoot;
+class WgDirtyRectObj;
 
 class WgGizmoHook
 {
@@ -71,8 +72,6 @@ protected:
 	virtual void	RequestRender() = 0;
 	virtual void	RequestRender( const WgRect& rect ) = 0;
 	virtual void	RequestResize() = 0;
-	virtual void	BoundingBoxChanged() = 0;
-
 
 	virtual bool	RequestFocus();
 	virtual bool	ReleaseFocus();
@@ -80,6 +79,10 @@ protected:
 	void			DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			DoSetNewSize( const WgSize& size );
 	void			DoSetGizmo();				// Calls SetHook(this) on Gizmo. Call when get a new Gizmo.
+	void			DoCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+	void			DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+	
+
 
 	WgGizmo *		m_pGizmo;
 };

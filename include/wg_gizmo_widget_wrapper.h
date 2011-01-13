@@ -121,9 +121,6 @@ protected:
 	bool	RequestFocus() { return m_pWidget->GrabInputFocus(); }
 	bool	ReleaseFocus() { return m_pWidget->RemoveInputFocus(); }
 
-	void	BoundingBoxChanged() {}				// Do nothing, Widgets don't support Bounding Box.
-
-
 
 	WgWidget *			m_pWidget;
 	WgGizmoContainer *	m_pParent;

@@ -1134,10 +1134,3 @@ void WgViewHook::RequestResize()
 	//TODO: Figure out how this should work and implement.
 }
 
-//____ WgViewHook::BoundingBoxChanged() ______________________________________________
-
-void WgViewHook::BoundingBoxChanged()
-{
-	//TODO: Figure out how this should work and implement.
-}
-

@@ -218,7 +218,8 @@ enum WgBlendMode //: Uint8
 	WG_BLENDMODE_OPAQUE,			///< Completely opaque blitting, ignoring alpha of source and tint-color.
 	WG_BLENDMODE_BLEND,				///< Normal mode, alpha of source and tint-color is taken into account.
 	WG_BLENDMODE_ADD,				///< RGBA Additive.
-	WG_BLENDMODE_MULTIPLY			///< RGBA Multiply.
+	WG_BLENDMODE_MULTIPLY,			///< RGBA Multiply.
+	WG_BLENDMODE_INVERT
 };
 
 //____ WgFontStyle ____________________________________________________________

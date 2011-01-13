@@ -200,10 +200,7 @@ public:
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
 
-	void			SetClipChildren( bool bClipChildren );
 	void			SetConfineChildren( bool bRestrictChildren );
-
-	inline bool		IsClippingChildren() const { return m_bClipChildren; }
 	inline bool		IsConfiningChildren() const { return m_bConfineChildren; }
 
 
@@ -236,8 +233,6 @@ public:
 
 	// Overloaded from WgGizmo
 
-	WgRect			BoundingBoxForSize( WgSize size ) const;
-
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
 
@@ -257,14 +252,9 @@ public:
 	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );
 
 private:
-	
-	enum ClipMode
-	{
-		CLIP,
-		NO_CLIP,
-		INVERTED_CLIP		
-	};
 
+	void			OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+	void			OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 	void			OnCloneContent( const WgGizmo * _pOrg );
 	void			OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			OnNewSize( const WgSize& size );
@@ -273,6 +263,7 @@ private:
 	void			OnEnable();
 	void			OnDisable();
 
+	void			OnRedrawRequest();
 	void			OnRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 
 	WgGizmo*		_castToGizmo() { return this; }
@@ -283,9 +274,6 @@ private:
 	WgChain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;
 
-	ClipMode		m_clipMode;	
-
-	bool			m_bClipChildren;
 	bool			m_bConfineChildren;
 
 	static WgFlexAnchor	g_baseAnchors[9];

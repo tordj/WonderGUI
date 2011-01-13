@@ -161,6 +161,7 @@ public:
 //  --------------
 
 	inline const WgTextPropPtr&	getProperties() const { return m_pProp; }
+	inline WgColor				getColor() const { return m_pProp->GetColor(); }
 	inline WgColor				getColor(WgMode mode) const { return m_pProp->GetColor(mode); }
 	inline WgFontStyle			getStyle(WgMode mode) const { return m_pProp->GetStyle(mode); }
 	inline WgFont *				getFont() const { return m_pProp->GetFont(); }

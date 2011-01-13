@@ -75,6 +75,10 @@ bool WgGfxDeviceMIG::SetBlendMode( WgBlendMode blendMode )
 			m_blendModeMIG = ERenderer::eBlendModeMultiply;
 			break;
 
+		case WG_BLENDMODE_INVERT:
+			m_blendModeMIG = ERenderer::eBlendModeInvert;
+			break;
+
 		default:
 			return false;
 	}

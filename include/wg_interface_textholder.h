@@ -58,6 +58,7 @@ public:
 	inline WgTextPropPtr GetTextProperties() { return m_pText->getProperties(); }
 
 
+	inline WgColor		GetTextColor() const { return m_pText->getColor(); }
 	inline WgColor		GetTextColor(WgMode mode) const { return m_pText->getColor(mode); }
 	inline WgFontStyle	GetTextStyle(WgMode mode) const { return m_pText->getStyle(mode); }
 	inline WgFont *		GetFont() const { return m_pText->getFont(); }
