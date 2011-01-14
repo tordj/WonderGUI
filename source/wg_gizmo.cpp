@@ -260,12 +260,6 @@ void WgGizmo::OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRec
 }
 
 
-void WgGizmo::OnRedrawRequest()
-{
-	RequestRender();
-}
-
-
 void WgGizmo::OnNewSize( const WgSize& size )
 {
 	RequestRender();

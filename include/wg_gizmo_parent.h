@@ -51,6 +51,8 @@ class WgGizmoParent : public WgGizmoCollection
 
 		virtual bool _focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
 		virtual bool _focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;
+
+		virtual void _getRenderContext( WgRenderContext * pContext, WgGizmoHook * pGizmoRequesting ) = 0;
 };
 
 

@@ -1021,6 +1021,36 @@ bool WgGizmoView::SetAutoscroll( bool bAutoX, bool bAutoY )
 }
 
 
+//____ () _________________________________________________
+
+void WgGizmoView::_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting )
+{
+	// Get data recursively
+
+	if( Hook() )
+		Hook()->GetRenderContext( wpContext );
+
+	// Make our modifications.
+
+	WgViewHook * pHook = (WgFlexHook*) pGizmoRequesting;
+
+	wpContext->window = pHook->m_geo + wpContext->window.pos();
+
+	if( pHook = &m_elements[WINDOW] )
+		wpContext->canvas = WgRect( wpContext->canvas.pos() + pHook->m_geo + m_viewPixOfs, m_contentSize );
+	else
+		wpContext->canvas = wpContext->window;
+
+	wpContext->clip.intersection( wpContext->clip, wpContext->window );
+
+	if( !pHook->m_bShow )
+	{
+		wpContext->clip.w = 0;
+		wpContext->clip.h = 0;
+	}
+}
+
+
 
 //____ WgViewHook::Constructors _________________________________________________
 

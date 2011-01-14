@@ -60,6 +60,13 @@ void WgGizmoHook::DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const W
 	m_pGizmo->OnMaskRects( rects, geo, clip );
 }
 
+//_____ GetRenderContext() ________________________________________________
+
+void WgGizmoHook::GetRenderContext( WgRenderContext * wpContext )
+{
+	return Parent()->_getRenderContext( wpContext, this );
+}
+
 
 //____ RelinkGizmo() __________________________________________________________
 

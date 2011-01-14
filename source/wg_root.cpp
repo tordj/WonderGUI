@@ -229,6 +229,17 @@ bool WgRoot::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
 	return false;
 }
 
+//____ _getRenderContext() ____________________________________________________
+
+void WgRoot::_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting )
+{
+	wpContext->canvas	= m_geo;
+	wpContext->window	= m_geo;
+	wpContext->clip		= m_geo;
+	wpContext->rects	= &m_dirtyRects;
+	wpContext->pDevice	= m_pGfxDevice;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

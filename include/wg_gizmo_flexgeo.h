@@ -263,13 +263,17 @@ private:
 	void			OnEnable();
 	void			OnDisable();
 
-	void			OnRedrawRequest();
 	void			OnRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
+
+	void			MaskRequestRender( WgFlexHook * pHook );	// Request render on childs areas not covered by siblings.
+
 
 	WgGizmo*		_castToGizmo() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
+
+	void			_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting );
 
 	WgChain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;

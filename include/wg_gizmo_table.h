@@ -385,6 +385,7 @@ private:
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
 
+	void			_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting );
 
 	void		refreshRows();
 	void		RowModified( WgTableRow2* pRow, int widthDiff , int heightDiff );

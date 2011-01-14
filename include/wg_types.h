@@ -454,6 +454,7 @@ enum WgLocation
 	WG_CENTER		= 8
 };
 
+//____ WgSizePolicy ___________________________________________________________
 
 enum WgSizePolicy
 {
@@ -461,6 +462,20 @@ enum WgSizePolicy
 	WG_SIZE_MIN,
 	WG_SIZE_BEST,
 	WG_SIZE_MAX,
+};
+
+//____ WgRenderContext ________________________________________________________
+
+class WgRenderContext
+{
+public:
+	WgRenderContext() : pDevice(0) {}
+
+	WgRect				canvas;
+	WgRect				window;
+	WgRect				clip;
+	WgDirtyRectObj *	pDirtyRects;
+	WgGfxDevice *		pDevice;
 };
 
 

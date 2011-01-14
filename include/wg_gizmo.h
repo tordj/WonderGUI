@@ -80,7 +80,6 @@ public:
 	WgSkinManager *		GetSkinManager() const;
 
 
-	inline void			Redraw() { OnRedrawRequest();}
 	inline void			Refresh() { OnRefresh(); }
 	void				Enable();
 	void				Disable();
@@ -158,7 +157,6 @@ protected:
 
 	virtual void	OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 	virtual void	OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
-	virtual void	OnRedrawRequest();
 	virtual void	OnCloneContent( const WgGizmo * _pOrg ) = 0;
 	virtual void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) = 0;
 	virtual void	OnNewSize( const WgSize& size );

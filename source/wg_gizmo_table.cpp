@@ -2304,3 +2304,21 @@ bool WgGizmoTable::OnAlphaTest( const WgCord& ofs )
 	return true;
 }
 
+//____ _getRenderContext() ____________________________________________________
+
+void WgGizmoTable::_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting )
+{
+	// Get data recursively
+
+	if( Hook() )
+		Hook()->GetRenderContext( wpContext );
+
+	// Make our modifications.
+
+	WgTableHook * pHook = (WgTableHook*) pGizmoRequesting;
+
+	wpContext->canvas = pHook->Geo() + wpContext->canvas.pos();
+	wpContext->window = wpContext->canvas;
+	wpContext->clip.intersection( wpContext->clip, wpContext->window );
+}
+

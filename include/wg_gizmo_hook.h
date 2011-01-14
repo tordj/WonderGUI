@@ -59,7 +59,7 @@ public:
 	virtual	WgGizmoContainer* Parent() const = 0;
 	virtual WgRoot *		Root();
 
-	virtual WgWidget*	GetRoot() = 0;			// Should in the future not return a widget, but a gizmo.
+	virtual WgWidget*	GetRoot() = 0;			// Remove once Widgets are gone...
 
 protected:
 	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
@@ -76,12 +76,14 @@ protected:
 	virtual bool	RequestFocus();
 	virtual bool	ReleaseFocus();
 
+	void			GetRenderContext( WgRenderContext * wpContext );
+
 	void			DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			DoSetNewSize( const WgSize& size );
 	void			DoSetGizmo();				// Calls SetHook(this) on Gizmo. Call when get a new Gizmo.
+
 	void			DoCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 	void			DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
-	
 
 
 	WgGizmo *		m_pGizmo;
