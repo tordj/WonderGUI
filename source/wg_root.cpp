@@ -229,18 +229,6 @@ bool WgRoot::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
 	return false;
 }
 
-//____ _getRenderContext() ____________________________________________________
-
-void WgRoot::_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting )
-{
-	wpContext->canvas	= m_geo;
-	wpContext->window	= m_geo;
-	wpContext->clip		= m_geo;
-	wpContext->rects	= &m_dirtyRects;
-	wpContext->pDevice	= m_pGfxDevice;
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 
 WgRoot::Hook::Hook( WgGizmo * pGizmo, WgRoot * pRoot) : WgGizmoHook(pGizmo)
@@ -278,16 +266,6 @@ WgRect WgRoot::Hook::ScreenGeo() const
 	return m_pRoot->Geo();
 }
 
-WgGizmoHook * WgRoot::Hook::PrevHook() const
-{
-	return 0;
-}
-
-WgGizmoHook * WgRoot::Hook::NextHook() const
-{
-	return 0;
-}
-
 WgGizmoContainer* WgRoot::Hook::Parent() const
 {
 	return 0;
@@ -318,10 +296,14 @@ void WgRoot::Hook::RequestResize()
 	// Do nothing, root ignores size requests.
 }
 
-void WgRoot::Hook::BoundingBoxChanged()
+WgGizmoHook * WgRoot::Hook::_prevHook() const
 {
-	// Do nothing, you can't draw outside root anyway.
+	return 0;
 }
 
+WgGizmoHook * WgRoot::Hook::_nextHook() const
+{
+	return 0;
+}
 
 

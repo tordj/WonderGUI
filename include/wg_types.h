@@ -464,19 +464,4 @@ enum WgSizePolicy
 	WG_SIZE_MAX,
 };
 
-//____ WgRenderContext ________________________________________________________
-
-class WgRenderContext
-{
-public:
-	WgRenderContext() : pDevice(0) {}
-
-	WgRect				canvas;
-	WgRect				window;
-	WgRect				clip;
-	WgDirtyRectObj *	pDirtyRects;
-	WgGfxDevice *		pDevice;
-};
-
-
 #endif // WG_TYPES_DOT_H

@@ -65,7 +65,7 @@ public:
 
 
 
-	WgGizmoHook *	PrevHook() const
+	WgGizmoHook *	_prevHook() const
 	{
 		WgWidget * p = m_pWidget->PrevSibling();
 
@@ -80,7 +80,7 @@ public:
 	}
 
 
-	WgGizmoHook *	NextHook() const
+	WgGizmoHook *	_nextHook() const
 	{
 		WgWidget * p = m_pWidget->NextSibling();
 

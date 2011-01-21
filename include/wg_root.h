@@ -89,9 +89,6 @@ protected:
 		WgCord			ScreenPos() const;
 		WgRect			ScreenGeo() const;
 
-		WgGizmoHook *	PrevHook() const;
-		WgGizmoHook *	NextHook() const;
-
 		WgGizmoContainer* Parent() const;
 		WgRoot*			Root() const;
 
@@ -102,7 +99,9 @@ protected:
 		void			RequestRender();
 		void			RequestRender( const WgRect& rect );
 		void			RequestResize();
-		void			BoundingBoxChanged();
+
+		WgGizmoHook *	_prevHook() const;
+		WgGizmoHook *	_nextHook() const;
 
 		WgRoot *		m_pRoot;
 	};
@@ -119,8 +118,6 @@ protected:
 
 	bool 			_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
 	bool 			_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
-
-	void			_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting );
 
 	WgDirtyRectObj		m_dirtyRects;
 

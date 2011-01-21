@@ -75,12 +75,12 @@ WgRect WgTableHook::ScreenGeo() const
 }
 
 
-WgGizmoHook* WgTableHook::PrevHook() const
+WgGizmoHook* WgTableHook::_prevHook() const
 {
 	return PrevInTable();
 }
 
-WgGizmoHook* WgTableHook::NextHook() const
+WgGizmoHook* WgTableHook::_nextHook() const
 {
 	return NextInTable();
 }
@@ -2302,23 +2302,5 @@ void WgGizmoTable::UpdateMarkedRowColumn( int row, int column )
 bool WgGizmoTable::OnAlphaTest( const WgCord& ofs )
 {
 	return true;
-}
-
-//____ _getRenderContext() ____________________________________________________
-
-void WgGizmoTable::_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting )
-{
-	// Get data recursively
-
-	if( Hook() )
-		Hook()->GetRenderContext( wpContext );
-
-	// Make our modifications.
-
-	WgTableHook * pHook = (WgTableHook*) pGizmoRequesting;
-
-	wpContext->canvas = pHook->Geo() + wpContext->canvas.pos();
-	wpContext->window = wpContext->canvas;
-	wpContext->clip.intersection( wpContext->clip, wpContext->window );
 }
 

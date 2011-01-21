@@ -1083,9 +1083,10 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextPropPtr& pDefProp, WgMode
 
 		Uint16 ch = _pLine[i].Glyph();
 
-		if( pPen->SetChar( ch ) )
+		bool bBlit = pPen->SetChar( ch );
+		pPen->ApplyKerning();
+		if( bBlit )
 		{
-			pPen->ApplyKerning();
 
 /*			if(selStartX == -1 && i >= iSelStart)
 				selStartX = pPen->GetBlitPosX();

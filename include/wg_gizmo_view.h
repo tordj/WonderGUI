@@ -47,8 +47,8 @@ public:
 	WgCord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
-	WgGizmoHook * PrevHook() const;
-	WgGizmoHook * NextHook() const;
+	inline WgGizmoHook * PrevHook() const { return _prevHook(); }
+	inline WgGizmoHook * NextHook() const { return _nextHook(); }
 
 	WgGizmoContainer * Parent() const;
 
@@ -64,6 +64,10 @@ protected:
 	WgViewHook( WgGizmoVDragbar * pHDragbar, WgGizmoView * pView );
 	WgViewHook( WgGizmo * pContent, WgGizmoView * pView );
 	~WgViewHook();
+
+	WgGizmoHook *	_prevHook() const;
+	WgGizmoHook *	_nextHook() const;
+
 
 //	ElementType		m_type;
 	WgGizmoView *	m_pView;

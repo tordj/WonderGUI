@@ -52,8 +52,8 @@ public:
 	virtual WgCord	ScreenPos() const = 0;
 	virtual WgRect	ScreenGeo() const = 0;
 
-	virtual WgGizmoHook *	PrevHook() const = 0;
-	virtual WgGizmoHook *	NextHook() const = 0;
+	inline WgGizmoHook *	PrevHook() const { return _prevHook(); }
+	inline WgGizmoHook *	NextHook() const { return _nextHook(); }
 
 	inline	WgGizmo *		Gizmo() const { return m_pGizmo; }
 	virtual	WgGizmoContainer* Parent() const = 0;
@@ -76,8 +76,6 @@ protected:
 	virtual bool	RequestFocus();
 	virtual bool	ReleaseFocus();
 
-	void			GetRenderContext( WgRenderContext * wpContext );
-
 	void			DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			DoSetNewSize( const WgSize& size );
 	void			DoSetGizmo();				// Calls SetHook(this) on Gizmo. Call when get a new Gizmo.
@@ -85,6 +83,9 @@ protected:
 	void			DoCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 	void			DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 
+	virtual WgGizmoHook *	_prevHook() const = 0;
+	virtual WgGizmoHook *	_nextHook() const = 0;
+	
 
 	WgGizmo *		m_pGizmo;
 };

@@ -67,9 +67,6 @@ class WgTableHook : public WgGizmoHook
 	WgCord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
-	WgGizmoHook*	PrevHook() const;
-	WgGizmoHook*	NextHook() const;
-
 	WgTableHook*	PrevInTable() const;
 	WgTableHook*	NextInTable() const;
 
@@ -96,6 +93,10 @@ protected:
 	void	RequestRender();
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
+
+	WgGizmoHook *	_prevHook() const;
+	WgGizmoHook *	_nextHook() const;
+
 
 	int				m_height;		// Minimum height needed for this Gizmo.
 	WgTableRow2 *	m_pRow;			//
@@ -384,8 +385,6 @@ private:
 
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
-
-	void			_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting );
 
 	void		refreshRows();
 	void		RowModified( WgTableRow2* pRow, int widthDiff , int heightDiff );

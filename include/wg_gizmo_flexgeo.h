@@ -38,16 +38,18 @@ class WgFlexHook : public WgGizmoHook, protected WgLink
 {
 	friend class WgGizmo;
 	friend class WgGizmoContainer;
+	friend class WgGizmoFlexGeo;
+	friend class WgChain<WgFlexHook>;
 
 public:
 
 	// Flex-specific methods
 
-	void	SetAnchored();
+	bool	SetAnchored();
 	bool	SetAnchored( int anchorTopLeft, int anchorBottomRight );
 	bool	SetAnchored( int anchorTopLeft, int anchorBottomRight, WgBorders borders );
 
-	void	SetFloating();
+	bool	SetFloating();
 	bool	SetFloating( const WgRect& geometry );
 	bool	SetFloating( const WgRect& geometry, WgLocation hotspot );
 	bool	SetFloating( const WgRect& geometry, WgLocation hotspot, int anchor );
@@ -115,8 +117,8 @@ public:
 	WgCord		ScreenPos() const;
 	WgRect		ScreenGeo() const;
 
-	WgGizmoHook *	PrevHook() const;
-	WgGizmoHook *	NextHook() const;
+	inline WgFlexHook *	PrevHook() const { return Prev(); }
+	inline WgFlexHook *	NextHook() const { return Next(); }
 
 	WgGizmoContainer* Parent() const;
 
@@ -136,6 +138,9 @@ protected:
 	void		RequestResize();
 
 	bool		LimitPlacementSize();
+
+	WgGizmoHook *	_prevHook() const;
+	WgGizmoHook *	_nextHook() const;
 
 	WgGizmoFlexGeo * m_pParent;
 
@@ -223,6 +228,7 @@ public:
 	int				AddAnchor( float relativeX, float relativeY, const WgCord& pixelOfs );
 	bool			ReplaceAnchor( int index, float relativeX, float relativeY, const WgCord& pixelOfs );
 	bool			DeleteAnchor( int index );
+	void			DeleteAllAnchors();
 
 	inline int		NbAnchors() const { return m_anchors.size()+9; }
 	const WgFlexAnchor *	Anchor( int index );
@@ -272,8 +278,6 @@ private:
 
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
-
-	void			_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting );
 
 	WgChain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;

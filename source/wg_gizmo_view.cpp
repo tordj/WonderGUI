@@ -1021,37 +1021,6 @@ bool WgGizmoView::SetAutoscroll( bool bAutoX, bool bAutoY )
 }
 
 
-//____ () _________________________________________________
-
-void WgGizmoView::_getRenderContext( WgRenderContext * wpContext, WgGizmoHook * pGizmoRequesting )
-{
-	// Get data recursively
-
-	if( Hook() )
-		Hook()->GetRenderContext( wpContext );
-
-	// Make our modifications.
-
-	WgViewHook * pHook = (WgFlexHook*) pGizmoRequesting;
-
-	wpContext->window = pHook->m_geo + wpContext->window.pos();
-
-	if( pHook = &m_elements[WINDOW] )
-		wpContext->canvas = WgRect( wpContext->canvas.pos() + pHook->m_geo + m_viewPixOfs, m_contentSize );
-	else
-		wpContext->canvas = wpContext->window;
-
-	wpContext->clip.intersection( wpContext->clip, wpContext->window );
-
-	if( !pHook->m_bShow )
-	{
-		wpContext->clip.w = 0;
-		wpContext->clip.h = 0;
-	}
-}
-
-
-
 //____ WgViewHook::Constructors _________________________________________________
 
 WgViewHook::WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView )
@@ -1105,34 +1074,12 @@ WgRect WgViewHook::ScreenGeo() const
 	return m_geo + m_pView->ScreenPos();
 }
 
-
-//____ WgViewHook::PrevHook() ___________________________________________________
-
-WgGizmoHook * WgViewHook::PrevHook() const
-{
-	if( this == &m_pView->m_elements[0] )
-		return 0;
-	else
-		return (((WgViewHook*)this)-1);
-}
-
-//____ WgViewHook::NextHook() ___________________________________________________
-
-WgGizmoHook * WgViewHook::NextHook() const
-{
-	if( this == &m_pView->m_elements[2] )
-		return 0;
-	else
-		return (((WgViewHook*)this)-1);
-}
-
 //____ WgViewHook::Parent() ___________________________________________________
 
 WgGizmoContainer * WgViewHook::Parent() const
 {
 	return m_pView;
 }
-
 
 //____ WgViewHook::GetRoot() ____________________________________________________
 
@@ -1164,3 +1111,22 @@ void WgViewHook::RequestResize()
 	//TODO: Figure out how this should work and implement.
 }
 
+//____ WgViewHook::_prevHook() ___________________________________________________
+
+WgGizmoHook * WgViewHook::_prevHook() const
+{
+	if( this == &m_pView->m_elements[0] )
+		return 0;
+	else
+		return (((WgViewHook*)this)-1);
+}
+
+//____ WgViewHook::_nextHook() ___________________________________________________
+
+WgGizmoHook * WgViewHook::_nextHook() const
+{
+	if( this == &m_pView->m_elements[2] )
+		return 0;
+	else
+		return (((WgViewHook*)this)-1);
+}

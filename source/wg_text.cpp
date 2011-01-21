@@ -1407,7 +1407,7 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 			// Check if we need to put a softbreak.
 
-			Uint32 len = pen.GetPosX() + pen.GetGlyph()->bearingX + pen.GetGlyph()->rect.w; // No advance on last character of line, just bearingX + width
+			Uint32 len = pen.GetBlitPosX() + pen.GetGlyph()->rect.w; // No advance on last character of line, just bearingX + width
 			if( len > m_lineWidth )			
 			{
 				if( pbp != 0 && pbp != pLineStart )
