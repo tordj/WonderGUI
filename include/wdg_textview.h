@@ -69,6 +69,9 @@ public:
 
 	virtual bool		IsInputField() const	{ return (m_text.nbChars() > 0); }
 
+	virtual Wg_Interface_TextHolder* GetText() { return this; }
+
+
 protected:
 	WgWidget * NewOfMyType() const;
 private:

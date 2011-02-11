@@ -12,7 +12,7 @@ WgCursor::WgCursor()
 		m_scaleMode[i] = FIXED_SIZE;
 		m_sizeRatio[i]	= 1.f;
 	}
-
+	m_blitMode = NORMAL;
 }
 
 WgCursor::WgCursor(	WgCursor& in )
@@ -25,6 +25,15 @@ WgCursor::WgCursor(	WgCursor& in )
 		m_scaleMode[i]	= in.m_scaleMode[i];
 		m_sizeRatio[i]	= in.m_sizeRatio[i];
 	}
+
+	m_blitMode = in.m_blitMode;
+}
+
+//____ setBlitMode() __________________________________________________________
+
+void WgCursor::setBlitMode( BlitMode mode )
+{
+	m_blitMode = mode;
 }
 
 

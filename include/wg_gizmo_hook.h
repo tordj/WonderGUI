@@ -69,6 +69,8 @@ protected:
 	void			RelinkGizmo();				// Make sure Gizmo links us. Call when hook has been relocated.
 	WgGizmo*		ReleaseGizmo();				//
 
+	// To be called by Gizmo
+
 	virtual void	RequestRender() = 0;
 	virtual void	RequestRender( const WgRect& rect ) = 0;
 	virtual void	RequestResize() = 0;
@@ -76,12 +78,16 @@ protected:
 	virtual bool	RequestFocus();
 	virtual bool	ReleaseFocus();
 
+	// To be called by Parent
+
 	void			DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			DoSetNewSize( const WgSize& size );
 	void			DoSetGizmo();				// Calls SetHook(this) on Gizmo. Call when get a new Gizmo.
 
 	void			DoCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 	void			DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+
+	//
 
 	virtual WgGizmoHook *	_prevHook() const = 0;
 	virtual WgGizmoHook *	_nextHook() const = 0;
