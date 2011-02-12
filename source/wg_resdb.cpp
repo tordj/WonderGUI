@@ -56,8 +56,10 @@ void WgResDB::Clear()
 	m_mapTextProps.clear();
 	m_mapLegoSources.clear();
 	m_mapBlockSets.clear();
+#ifdef WG_LEGACY
 	m_mapWidgets.clear();
 	m_mapItems.clear();
+#endif
 	m_mapMenuItems.clear();
 	m_mapTabs.clear();
 	m_mapTextManagers.clear();
@@ -79,8 +81,10 @@ void WgResDB::Clear()
 	m_colors.Clear();
 	m_legos.Clear();
 	m_blockSets.Clear();
+#ifdef WG_LEGACY
 	m_widgets.Clear();
 	m_items.Clear();
+#endif
 	m_menuItems.Clear();
 	m_tabs.Clear();
 	m_textManagers.Clear();
@@ -113,6 +117,7 @@ void WgResDB::DestroyTextManagers()
 		delete res->res;
 }
 
+#ifdef WG_LEGACY
 void WgResDB::ClearWidgets()
 {
 	m_mapWidgets.clear();
@@ -124,6 +129,7 @@ void WgResDB::ClearConnects()
 	m_connects.Clear();
 	m_mapConnects.clear();
 }
+#endif
 
 //____ () _________________________________________________________
 
@@ -176,6 +182,7 @@ std::string	WgResDB::GenerateName( const WgBlockSetPtr data )
 	return std::string("_blockset__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
+#ifdef WG_LEGACY
 std::string	WgResDB::GenerateName( const WgWidget* data )
 {
 	static int nGenerated = 0;
@@ -189,6 +196,7 @@ std::string	WgResDB::GenerateName( const WgItem* data )
 	char pBuf[100];
 	return std::string("_item__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
+#endif
 
 std::string	WgResDB::GenerateName( const WgMenuItem* data )
 {
@@ -415,6 +423,7 @@ bool WgResDB::AddLegoSource( const std::string& id, const std::string& surface, 
 	return false;
 }
 
+#ifdef WG_LEGACY
 bool WgResDB::Connect( const std::string& id, WgWidget* emitter, const std::string& action, WgWidget* receiver)
 {
 	assert(m_pResLoader);
@@ -425,6 +434,7 @@ bool WgResDB::Connect( const std::string& id, WgWidget* emitter, const std::stri
 	}
 	return false;
 }
+#endif
 
 std::string WgResDB::LoadString( const std::string& token )
 {
@@ -447,6 +457,7 @@ bool WgResDB::AddBlockSet( const std::string& id, WgBlockSetPtr pBlockSet, MetaD
 	return false;
 }
 
+#ifdef WG_LEGACY
 //____ () _________________________________________________________
 
 bool WgResDB::AddWidget( const std::string& id, WgWidget * pWidget, MetaData * pMetaData )
@@ -478,6 +489,7 @@ bool WgResDB::AddItem( const std::string& id, WgItem * pItem, MetaData * pMetaDa
 	}
 	return false;
 }
+#endif
 
 //____ () _________________________________________________________
 
@@ -617,6 +629,7 @@ WgBlockSetPtr WgResDB::GetBlockSet( const std::string& id ) const
 	return blockRes ? blockRes->res : WgBlockSetPtr();
 }
 
+#ifdef WG_LEGACY
 //____ () _________________________________________________________
 
 WgWidget * WgResDB::GetWidget( const std::string& id ) const
@@ -632,6 +645,7 @@ WgItem * WgResDB::GetItem( const std::string& id ) const
 	ItemRes* itemRes = GetResItem(id);
 	return itemRes ? itemRes->res : 0;
 }
+#endif
 
 //____ () _________________________________________________________
 
@@ -835,6 +849,7 @@ WgResDB::BlockSetRes * WgResDB::GetResBlockSet( const std::string& id ) const
 	return it == m_mapBlockSets.end() ? 0 : it->second;
 }
 
+#ifdef WG_LEGACY
 //____ () _________________________________________________________
 
 WgResDB::WidgetRes * WgResDB::GetResWidget( const std::string& id ) const
@@ -868,6 +883,7 @@ WgResDB::ItemRes * WgResDB::GetResItem( const std::string& id ) const
 	ItemMap::const_iterator it = m_mapItems.find(id);
 	return it == m_mapItems.end() ? 0 : it->second;
 }
+#endif
 
 //____ () _________________________________________________________
 
@@ -1107,6 +1123,7 @@ WgResDB::BlockSetRes* WgResDB::FindResBlockSet( const WgBlockSetPtr meta ) const
 	return 0;
 }
 
+#ifdef WG_LEGACY
 //____ () _________________________________________________________
 
 WgResDB::WidgetRes* WgResDB::FindResWidget( const WgWidget* meta ) const
@@ -1144,6 +1161,7 @@ WgResDB::ItemRes* WgResDB::FindResItem( const WgItem* meta ) const
 			return res;
 	return 0;
 }
+#endif
 
 //____ () _________________________________________________________
 
@@ -1508,7 +1526,7 @@ bool WgResDB::RemoveBlockSet( WgResDB::BlockSetRes * pRes )
 	return true;
 }
 
-
+#ifdef WG_LEGACY
 //____ RemoveWidget() _________________________________________________________
 
 bool WgResDB::RemoveWidget( const std::string& id )
@@ -1571,7 +1589,7 @@ bool WgResDB::RemoveItem( WgResDB::ItemRes * pRes )
 	delete pRes;
 	return true;
 }
-
+#endif
 
 //____ RemoveMenuItem() _______________________________________________________
 

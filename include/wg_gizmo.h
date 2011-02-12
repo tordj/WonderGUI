@@ -174,13 +174,13 @@ protected:
 
 	//
 
+	Uint32			m_id;
 	WgGizmoHook *	m_pHook;
 
 	WgSkinNode *	m_pSkinNode;
 
 	WgCursorStyle	m_cursorStyle;
 
-	Uint32			m_id;
 	WgString		m_tooltip;
 	WgMarkPolicy	m_markPolicy;
 

@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_FONTSET_DOT_H
-#define	WG_FONTSET_DOT_H
+#ifndef	WG_FONT_DOT_H
+#define	WG_FONT_DOT_H
 
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -72,8 +72,8 @@ public:
 
 
 	WgGlyphSet *		GetGlyphSet( WgFontStyle style, int size ) const;
-	const WgGlyph *		GetGlyph( Uint32 chr, WgFontStyle style, int size ) const;					
-	GlyphProvided		IsGlyphProvided( Uint32 chr, WgFontStyle style, int size ) const;					
+	const WgGlyph *		GetGlyph( Uint32 chr, WgFontStyle style, int size ) const;
+	GlyphProvided		IsGlyphProvided( Uint32 chr, WgFontStyle style, int size ) const;
 
 #ifdef	WG_USE_FREETYPE
 	bool				SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style  );

@@ -212,6 +212,18 @@ int WgRoot::ExportDirtyRects( WgRect * pDest, int maxRects ) const
 	return nExported;
 }
 
+//____ FindGizmo() _____________________________________________________________
+
+WgGizmo * WgRoot::FindGizmo( const WgCord& ofs, WgSearchMode mode )
+{
+	if( !m_geo.contains(ofs) || !m_hook.Gizmo() )
+		return 0;
+
+	//TODO: Implement!
+
+	return 0;
+}
+
 
 //____ _focusRequested() _______________________________________________________
 
