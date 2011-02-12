@@ -22,6 +22,7 @@
 
 #include <wg_pen.h>
 #include <wg_texttool.h>
+#include <wg_text.h>
 #include <wg_font.h>
 #include <wg_cursorinstance.h>
 #include <wg_gfxanim.h>
@@ -273,6 +274,27 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 			bearing		*= scaleValue;
 			break;
 	}
+	
+	// Set tintcolor/blendmode. Save original modes so we can restore them.
+
+	WgColor		tintColor;
+	WgBlendMode blendMode;
+	switch( pCursor->blitMode() )
+	{
+		case WgCursor::NORMAL:
+			break;
+		case WgCursor::TINTED:
+			tintColor = m_pDevice->GetTintColor();
+			m_pDevice->SetTintColor( tintColor * instance.text()->getColor() );
+			break;
+		case WgCursor::INVERT_BG:
+			blendMode = m_pDevice->GetBlendMode();
+			m_pDevice->SetBlendMode(WG_BLENDMODE_INVERT);
+			break;
+	}
+
+	//
+
 
 	WgBlock block( pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, pAnim->width(), pAnim->height()), pCursor->stretchBorders(mode), 0, blockFlags );
 
@@ -280,6 +302,22 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 		m_pDevice->ClipBlitBlock( m_clipRect, block, WgRect(m_pos + bearing, size) );
 	else
 		m_pDevice->BlitBlock( block, WgRect(m_pos + bearing, size) );
+
+	// Restore tintcolor/blendmode.
+
+	switch( pCursor->blitMode() )
+	{
+		case WgCursor::NORMAL:
+			break;
+		case WgCursor::TINTED:
+			m_pDevice->SetTintColor( tintColor );
+			break;
+		case WgCursor::INVERT_BG:
+			m_pDevice->SetBlendMode( blendMode );
+			break;
+	}
+
+
 
 	return true;
 }

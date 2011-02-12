@@ -161,11 +161,38 @@ const WgUnderline * WgFont::GetUnderline( int size )
 
 const WgGlyph * WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 {
+	const WgGlyph * p = 0;
+
+	// Special case: For whitespace we give vector glyphs top priority
+
+#ifdef WG_USE_FREETYPE
+
+	if( chr == 32 || chr == 0xA0 )
+	{
+		// VectorGlyphs whitespace spec of the right style
+
+		if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] != 0 )
+		{
+			p = m_aVectorGlyphs[style][size]->GetGlyph( chr, size );
+			if( p )
+				return p;
+		}
+
+		// Default VectorGlyphs whitespace spec
+
+		if( m_pDefaultVectorGlyphs )
+		{
+			p = m_pDefaultVectorGlyphs->GetGlyph( chr, size );
+			if( p )
+				return p;
+		}
+	}
+#endif
+
 	// Find the right glyph to the following priorities:
 
 	// 1. BitmapGlyphs of the right style and size.
 
-	const WgGlyph * p = 0;
 
 	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] != 0 )
 	{	
@@ -217,7 +244,7 @@ const WgGlyph * WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) cons
 
 		if( m_aDefaultBitmapGlyphs[i] != 0 )
 		{
-			p = m_aDefaultBitmapGlyphs[size]->GetGlyph( chr, size );
+			p = m_aDefaultBitmapGlyphs[i]->GetGlyph( chr, size );
 			if( p )
 				return p;
 		}
@@ -233,6 +260,8 @@ const WgGlyph * WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) cons
 WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, int size ) const
 {
 	// Find the right glyph to the following priorities:
+
+	//TODO: Vector glyphs generate the bitmap on this call, that is totally unnecessary!
 
 	// 1. BitmapGlyphs of the right style and size.
 

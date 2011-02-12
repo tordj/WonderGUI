@@ -31,6 +31,10 @@
 #	include <wg_cursor.h>
 #endif
 
+#ifndef WG_COLOR_DOT_H
+#	include <wg_color.h>
+#endif
+
 class WgText;
 class WgCharSeq;
 

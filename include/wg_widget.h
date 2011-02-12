@@ -308,6 +308,7 @@ class	WgWidget
 		bool			MoveAbove( WgWidget * pSibling );
 		bool			MoveBelow( WgWidget * pSibling );
 
+		bool			HasInputFocus();
 		bool			GrabInputFocus();
 		bool			RemoveInputFocus();
 

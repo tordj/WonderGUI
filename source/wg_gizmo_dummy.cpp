@@ -29,6 +29,7 @@ static const char	c_gizmoType[] = {"TordJ/Dummy"};
 
 WgGizmoDummy::WgGizmoDummy()
 {
+	m_markPolicy = WG_MARKPOLICY_TRANSPARENT;
 }
 
 //____ Destructor _____________________________________________________________
@@ -67,5 +68,8 @@ void WgGizmoDummy::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 bool WgGizmoDummy::OnAlphaTest( const WgCord& ofs )
 {
+	if( m_markPolicy == WG_MARKPOLICY_OPAQUE )
+		return true;
+
 	return false;
 }

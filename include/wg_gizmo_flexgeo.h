@@ -271,9 +271,6 @@ private:
 
 	void			OnRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 
-	void			MaskRequestRender( WgFlexHook * pHook );	// Request render on childs areas not covered by siblings.
-
-
 	WgGizmo*		_castToGizmo() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }

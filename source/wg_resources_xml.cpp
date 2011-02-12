@@ -1943,6 +1943,7 @@ void WgCursorRes::Serialize(WgResourceSerializerXML& s)
 	s.AddAttribute("ins", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::INS)), m_pCursor->bearingX(WgCursor::INS), m_pCursor->bearingY(WgCursor::INS), m_pCursor->advance(WgCursor::INS), ScaleModeToString(m_pCursor->scaleMode(WgCursor::EOL)) ));
 	s.AddAttribute("ovr", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::OVR)), m_pCursor->bearingX(WgCursor::OVR), m_pCursor->bearingY(WgCursor::OVR), m_pCursor->advance(WgCursor::OVR), ScaleModeToString(m_pCursor->scaleMode(WgCursor::EOL)) ));
 
+	s.AddAttribute("blitmode", BlitModeToString(m_pCursor->blitMode()) );
 	s.EndTag();
 }
 
@@ -1963,6 +1964,8 @@ void WgCursorRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 
 	VERIFY(WgUtil::FromString(xmlNode["ovr"], anim, bearing.x, bearing.y, spacing, scaleMode ) == 5, "invalid OVR spec");
 	m_pCursor->setMode(WgCursor::OVR, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing, StringToScaleMode(scaleMode));
+
+	m_pCursor->setBlitMode( StringToBlitMode(xmlNode["blitmode"]) );
 
 	s.ResDb()->AddCursor(xmlNode["id"], m_pCursor, new WgXMLMetaData(xmlNode));
 }
@@ -2011,6 +2014,40 @@ WgCursor::ScaleMode	WgCursorRes::StringToScaleMode( const std::string& str )
 
 	return WgCursor::FIXED_SIZE;
 }
+
+std::string	WgCursorRes::BlitModeToString( WgCursor::BlitMode mode )
+{
+	switch( mode )
+	{
+		case WgCursor::NORMAL:
+			return "normal";
+		case WgCursor::TINTED:
+			return "tinted";
+		case WgCursor::INVERT_BG:
+			return "invert_bg";
+	}
+
+	return "normal";
+}
+
+WgCursor::BlitMode	WgCursorRes::StringToBlitMode( const std::string& str )
+{
+	if( str == "normal" )
+	{
+		return WgCursor::NORMAL;
+	}
+	else if( str == "tinted" )
+	{
+		return WgCursor::TINTED;
+	}
+	else if( str == "invert_bg" )
+	{
+		return WgCursor::INVERT_BG;
+	}
+
+	return WgCursor::NORMAL;
+}
+
 
 
 

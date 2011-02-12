@@ -42,6 +42,42 @@ const static char itoa_table [35+36+1]= { "zyxwvutsrqponmlkjihgfedcba98765432101
 
 static char	breakRulesTab[256];
 
+
+//____ parseChar() ____________________________________________________________
+
+Uint16 WgTextTool::parseChar( const char * pChar )
+{
+	if( pChar[0] == 0 )
+		return 0;
+
+	if( pChar[0] == '0' && pChar[1] == 'x' )
+	{
+		Uint16 value = 0;
+		pChar += 2;
+
+		for( char in = * pChar++ ; in != 0 ; in = * pChar++ )
+		{
+			if( in >= '0' && in <= '9' )
+				value = (value << 4) + (in - '0' );
+			else if( in >= 'a' && in <= 'f' )
+				value = (value << 4 )+ (in - 'a') + 10;
+			else if( in >= 'A' && in <= 'F' )
+				value = (value << 4 )+ (in - 'A') + 10;
+			else
+				break;
+		}
+
+		return value;
+	}
+	else
+	{
+		return readChar( pChar );
+	}
+
+}
+
+
+
 //____ clearBreakRules() ______________________________________________________
 
 void WgTextTool::clearBreakRules()

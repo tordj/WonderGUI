@@ -594,6 +594,8 @@ private:
 	std::string	ScaleModeToString( WgCursor::ScaleMode mode );
 	WgCursor::ScaleMode	StringToScaleMode( const std::string& str );
 
+	std::string	BlitModeToString( WgCursor::BlitMode mode );
+	WgCursor::BlitMode	StringToBlitMode( const std::string& str );
 
 	WgCursor*	m_pCursor;
 };

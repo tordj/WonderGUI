@@ -862,10 +862,15 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 
 			pPen->SetPos( pos );
 			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs, cursCol, false);
-			pPen->BlitCursor( *pCursor );
+			WgCord cursorPos = pPen->GetPos();
 			pPen->AdvancePosCursor( *pCursor );
 			pPen->FlushChar();				// Avoid kerning against glyph before cursor.
 			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs + cursCol, pLines[i].nChars - cursCol, true );
+
+			WgCord restorePos = pPen->GetPos();
+			pPen->SetPos( cursorPos );
+			pPen->BlitCursor( *pCursor );
+			pPen->SetPos( restorePos );
 		}
 		else
 		{

@@ -470,7 +470,7 @@ void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 			//
 
 			const char * pChr = chr;
-			Uint16 c = WgTextTool::readChar( pChr );
+			Uint16 c = WgTextTool::parseChar( pChr );
 
 			int tab = c >> 8;
 			if( m_glyphTab[tab] == 0 )
@@ -542,8 +542,8 @@ void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 				{
 					const char* pChrLeft = chrLeft;
 					const char* pChrRight = chrRight;
-					Uint16 cLeft = WgTextTool::readChar( pChrLeft );
-					Uint16 cRight = WgTextTool::readChar( pChrRight );
+					Uint16 cLeft = WgTextTool::parseChar( pChrLeft );
+					Uint16 cRight = WgTextTool::parseChar( pChrRight );
 
 					int indexLeft = GetGlyph( cLeft )->kerningIndex;
 					int indexRight = GetGlyph( cRight )->kerningIndex;
