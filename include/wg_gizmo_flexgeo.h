@@ -266,8 +266,9 @@ private:
 	void			OnNewSize( const WgSize& size );
 	void			OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool			OnAlphaTest( const WgCord& ofs );
-	void			OnEnable();
-	void			OnDisable();
+
+	inline void		OnEnable() { WgGizmoContainer::OnEnable(); }
+	inline void		OnDisable() { WgGizmoContainer::OnDisable(); }
 
 	void			OnRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 

@@ -2068,20 +2068,6 @@ void WgGizmoTable::OnCloneContent( const WgGizmo * _pOrg )
 }
 
 
-//____ OnEnable() _____________________________________________________________
-
-void WgGizmoTable::OnEnable( void )
-{
-	RequestRender();
-}
-
-//____ OnDisable() ____________________________________________________________
-
-void WgGizmoTable::OnDisable( void )
-{
-	RequestRender();
-}
-
 //____ GetHeaderColumnAt() ____________________________________________________
 
 WgTableColumn2 *WgGizmoTable::GetHeaderColumnAt( const WgCord& pos )

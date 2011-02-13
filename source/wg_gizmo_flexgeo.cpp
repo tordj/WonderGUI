@@ -174,7 +174,7 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 {
 	if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
 		return false;
-	
+
 	WgFlexHook * pFirst = Chain()->First();
 	while( pFirst != this && pFirst != pSibling )
 		pFirst = pFirst->Next();
@@ -226,7 +226,7 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 {
 	if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
 		return false;
-	
+
 	WgFlexHook * pFirst = Chain()->First();
 	while( pFirst != this && pFirst != pSibling )
 		pFirst = pFirst->Next();
@@ -523,12 +523,12 @@ WgWidget* WgFlexHook::GetRoot()
 		return 0;
 }
 
-WgFlexHook::WgFlexHook( WgGizmo * pGizmo, WgGizmoFlexGeo * pParent ) : 
-	m_bHidden(false), m_bFloating(false), m_sizePolicy(WG_SIZE_SPECIFIED), m_minSize(0,0),
-	m_maxSize(65536,65536), m_anchor(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
-	m_placementGeo(0,0,pGizmo->BestSize()), m_anchorTopLeft(WG_NORTHWEST), 
-	m_anchorBottomRight(WG_SOUTHEAST), m_borders(0), m_pParent(pParent), 
-	WgGizmoHook( pGizmo )	
+WgFlexHook::WgFlexHook( WgGizmo * pGizmo, WgGizmoFlexGeo * pParent ) : WgGizmoHook( pGizmo ),
+	m_pParent(pParent), m_bHidden(false), m_bFloating(false), m_sizePolicy(WG_SIZE_SPECIFIED),
+	m_minSize(0,0), m_maxSize(65536,65536), m_anchor(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
+	m_placementGeo(0,0,pGizmo->BestSize()), m_anchorTopLeft(WG_NORTHWEST),
+	m_anchorBottomRight(WG_SOUTHEAST), m_borders(0)
+
 {
 }
 
@@ -651,7 +651,7 @@ bool WgFlexHook::RefreshRealGeo()
 
 		// Limit size/pos according to parent
 
-		if( m_bConfineChildren )
+		if( m_pParent->IsConfiningChildren() )
 		{
 			if( sz.w > parentSize.w )
 				sz.w = parentSize.w;
@@ -871,7 +871,7 @@ bool WgGizmoFlexGeo::DeleteGizmo( WgGizmo * pGizmo )
 	WgFlexHook * pHook = (WgFlexHook *) pGizmo->Hook();
 	OnRequestRender( pHook->m_realGeo, pHook );
 
-	// Delete the gizmo and return 
+	// Delete the gizmo and return
 
 	delete pHook;
 	return true;
@@ -889,7 +889,7 @@ bool WgGizmoFlexGeo::ReleaseGizmo( WgGizmo * pGizmo )
 	WgFlexHook * pHook = (WgFlexHook *) pGizmo->Hook();
 	OnRequestRender( pHook->m_realGeo, pHook );
 
-	// Delete the gizmo and return 
+	// Delete the gizmo and return
 
 	pHook->ReleaseGizmo();
 	delete pHook;
@@ -934,7 +934,7 @@ void WgGizmoFlexGeo::ReleaseAllGizmos()
 		pHook = pHook->NextHook();
 	}
 
-	DeleteAllGizmos();		// Will only delete the hooks and request render on dirty areas since 
+	DeleteAllGizmos();		// Will only delete the hooks and request render on dirty areas since
 							// we already have disconnected the children.
 }
 
@@ -960,13 +960,13 @@ bool WgGizmoFlexGeo::ReplaceAnchor( int index, float relativeX, float relativeY,
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		if( (pHook->m_bFloating && pHook->m_anchor == index) || 
+		if( (pHook->m_bFloating && pHook->m_anchor == index) ||
 			(!pHook->m_bFloating && (pHook->m_anchorBottomRight == index || pHook->m_anchorTopLeft == index)) )
 			pHook->RefreshRealGeo();
 
 		pHook = pHook->NextHook();
 	}
-	
+
 	return true;
 }
 
@@ -1206,16 +1206,5 @@ void WgGizmoFlexGeo::OnAction( WgInput::UserAction action, int button_key, const
 
 bool WgGizmoFlexGeo::OnAlphaTest( const WgCord& ofs )
 {
-}
-
-//____ () _________________________________________________
-
-void WgGizmoFlexGeo::OnEnable()
-{
-}
-
-//____ () _________________________________________________
-
-void WgGizmoFlexGeo::OnDisable()
-{
+	return false;
 }

@@ -35,6 +35,11 @@ class WgGizmoContainer : public WgGizmoParent
 {
 	friend class WgGizmoHook;
 
+	protected:
+		virtual void	OnEnable();
+		virtual void	OnDisable();
+
+
 	private:
 		bool		_isGizmo() const;
 		bool		_isRoot() const;
@@ -43,8 +48,8 @@ class WgGizmoContainer : public WgGizmoParent
 		WgRoot *	_castToRoot();
 
 
-		bool 		_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
-		bool 		_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
+		bool 		_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inerits from WgGizmo
+		bool 		_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inerits from WgGizmo
 };
 
 

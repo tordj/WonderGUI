@@ -211,6 +211,7 @@ protected:
 //		LINK_METHODS( WgTableRow2 );
 
 private:
+
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
 
@@ -377,8 +378,8 @@ protected:
 	void	OnNewSize( const WgSize& size );
 	void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool	OnAlphaTest( const WgCord& ofs );
-	void	OnEnable();
-	void	OnDisable();
+	inline void		OnEnable() { WgGizmoContainer::OnEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+	inline void		OnDisable() { WgGizmoContainer::OnDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 
 private:
 	WgGizmo*		_castToGizmo() { return this; }

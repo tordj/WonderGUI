@@ -257,6 +257,10 @@ protected:
 	bool		OnAlphaTest( const WgCord& ofs );
 	void		OnCloneContent( const WgGizmo * _pOrg );
 
+	inline void		OnEnable() { WgGizmoContainer::OnEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+	inline void		OnDisable() { WgGizmoContainer::OnDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+
+
 	void		SetContentSize( const WgSize& size );
 	void		UpdateElementGeometry( const WgSize& mySize, const WgSize& newContentSize );
 

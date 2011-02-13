@@ -22,6 +22,30 @@
 
 #include <wg_gizmo_container.h>
 
+//____ () _________________________________________________
+
+void WgGizmoContainer::OnEnable()
+{
+	WgGizmo * p = FirstGizmo();
+	while( p )
+	{
+		p->Enable();
+		p = p->NextSibling();
+	}
+}
+
+//____ () _________________________________________________
+
+void WgGizmoContainer::OnDisable()
+{
+	WgGizmo * p = FirstGizmo();
+	while( p )
+	{
+		p->Disable();
+		p = p->NextSibling();
+	}
+}
+
 //____ _isGizmo() ______________________________________________________________
 
 bool WgGizmoContainer::_isGizmo() const
