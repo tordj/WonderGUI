@@ -128,6 +128,7 @@ public:
 	typedef ResWrapper<WgTab*>			TabRes;
 	typedef ResWrapper<WgTextManager*>	TextManagerRes;
 	typedef ResWrapper<WgSkinManager*>	SkinManagerRes;
+	typedef ResWrapper<WgGizmo*>		GizmoRes;
 
 	//----
 
@@ -141,6 +142,7 @@ public:
 	static std::string	GenerateName( const WgMenuItem* data );
 	static std::string	GenerateName( const WgTextManager* data );
 	static std::string	GenerateName( const WgSkinManager* data );
+	static std::string	GenerateName( const WgGizmo * data );
 
 	void				SetResLoader( WgResLoader * pLoader );
 	void				Clear();
@@ -149,6 +151,8 @@ public:
 	void				DestroyAnims();
 	void				DestroyCursors();
 	void				DestroyTextManagers();
+	
+	void				ClearGizmos();// debug function
 
 #ifdef WG_LEGACY
 	void				ClearWidgets();// debug function
@@ -180,6 +184,7 @@ public:
 	bool				AddTextManager( const std::string& id, WgTextManager* pTextManager, MetaData * pMetaData = 0 );
 	bool				AddSkinManager( const std::string& id, WgSkinManager* pSkinManager, MetaData * pMetaData = 0 );
 	bool				AddConnect( MetaData * pMetaData );
+	bool				AddGizmo( const std::string& id, WgGizmo * pGizmo, MetaData * pMetaData = 0 ); 
 
 	bool				RemoveSurface( const std::string& id );
 	bool				RemoveGlyphSet( const std::string& id );
@@ -196,6 +201,7 @@ public:
 	bool				RemoveSkinManager( const std::string& id );
 	bool				RemoveConnect( const std::string& id );
 	bool				RemoveResDB( const std::string& id );
+	bool				RemoveGizmo( const std::string& id );
 
 	bool				RemoveSurface( SurfaceRes * pRes );
 	bool				RemoveGlyphSet( GlyphSetRes * pRes );
@@ -212,6 +218,7 @@ public:
 	bool				RemoveSkinManager( SkinManagerRes * pRes );
 	bool				RemoveConnect( ConnectRes* pRes );
 	bool				RemoveResDB( ResDBRes* pRes );
+	bool				RemoveGizmo( GizmoRes * pRes );
 
 
 
@@ -227,6 +234,7 @@ public:
 	WgSkinManager *		GetSkinManager( const std::string& id ) const;
 	WgMenuItem *		GetMenuItem( const std::string& id ) const;
 	WgTab*				GetTab( const std::string& id ) const;
+	WgGizmo*			GetGizmo( const std::string& id ) const;
 
 
 #ifdef WG_LEGACY
@@ -288,6 +296,7 @@ public:
 	TextManagerRes *	GetResTextManager( const std::string& id ) const;
 	SkinManagerRes *	GetResSkinManager( const std::string& id ) const;
 	ConnectRes *		GetResConnect( const std::string& id ) const;
+	GizmoRes *			GetResGizmo( const std::string& id ) const;
 
 	ResDBRes *			FindResDbRes( const WgResDB * data ) const;
 	SurfaceRes *		FindResSurface( const WgSurface * data ) const;
@@ -301,6 +310,7 @@ public:
 	TabRes *			FindResTab( const WgTab* data ) const;
 	TextManagerRes *	FindResTextManager( const WgTextManager* data ) const;
 	SkinManagerRes *	FindResSkinManager( const WgSkinManager* data ) const;
+	GizmoRes *			FindResGizmo( const WgGizmo* data ) const;
 
 	std::string			FindSurfaceId( const WgSurface * data ) const		{ SurfaceRes * r =	FindResSurface(data); return r ? r->id : ""; }
 	std::string			FindGlyphSetId( const WgGlyphSet * data ) const		{ GlyphSetRes * r =	FindResGlyphSet(data); return r ? r->id : ""; }
@@ -313,6 +323,7 @@ public:
 	std::string			FindTabId( const WgTab* data ) const				{ TabRes *r =		FindResTab(data); return r ? r->id : ""; }
 	std::string			FindTextManagerId( const WgTextManager* data ) const{ TextManagerRes *r =  	FindResTextManager(data); return r ? r->id : ""; }
 	std::string			FindSkinManagerId( const WgSkinManager* data ) const{ SkinManagerRes *r =  	FindResSkinManager(data); return r ? r->id : ""; }
+	std::string			FindGizmoId( const WgGizmo* data ) const			{ GizmoRes *r =	FindResGizmo(data); return r ? r->id : ""; }
 
 	inline ResDBRes *		GetFirstResDBRes() const { return m_resDbs.First(); }
 	inline SurfaceRes *		GetFirstResSurface() const { return m_surfaces.First(); }
@@ -328,6 +339,19 @@ public:
 	inline TextManagerRes *	GetFirstResTextManager() const { return m_textManagers.First(); }
 	inline SkinManagerRes *	GetFirstResSkinManager() const { return m_skinManagers.First(); }
 	inline ConnectRes *		GetFirstResConnect() const { return m_connects.First(); }
+	inline GizmoRes *		GetFirstResGizmo() const { return m_gizmos.First(); }
+
+
+	template<typename T> T* GetCastGizmo(const std::string& id) const
+	{
+		WgGizmo * pGizmo = GetGizmo(id);
+		if(pGizmo)
+		{
+			if(T::GetMyType() == pGizmo->Type())
+				return static_cast<T*>(pGizmo);
+		}
+		return 0;
+	}
 
 
 private:
@@ -358,6 +382,7 @@ private:
 	typedef std::map<std::string, TextManagerRes*>	TextManagerMap;
 	typedef std::map<std::string, SkinManagerRes*>	SkinManagerMap;
 	typedef std::map<std::string, ConnectRes*>		ConnectMap;
+	typedef std::map<std::string, GizmoRes*>		GizmoMap;
 
 	WgChain<ResDBRes>		m_resDbs;
 	WgChain<SurfaceRes>		m_surfaces;
@@ -374,6 +399,7 @@ private:
 	WgChain<TextManagerRes>	m_textManagers;
 	WgChain<SkinManagerRes>	m_skinManagers;
 	WgChain<ConnectRes>		m_connects;
+	WgChain<GizmoRes>		m_gizmos;
 
 	ResDBMap		m_mapResDBs;
 	ColMap			m_mapColors;
@@ -390,6 +416,7 @@ private:
 	TextManagerMap	m_mapTextManagers;
 	SkinManagerMap	m_mapSkinManagers;
 	ConnectMap		m_mapConnects;
+	GizmoMap		m_mapGizmos;
 
 	WgResLoader *	m_pResLoader;
 };

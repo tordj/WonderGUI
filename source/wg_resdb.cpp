@@ -56,6 +56,7 @@ void WgResDB::Clear()
 	m_mapTextProps.clear();
 	m_mapLegoSources.clear();
 	m_mapBlockSets.clear();
+	m_mapGizmos.clear();
 #ifdef WG_LEGACY
 	m_mapWidgets.clear();
 	m_mapItems.clear();
@@ -81,6 +82,7 @@ void WgResDB::Clear()
 	m_colors.Clear();
 	m_legos.Clear();
 	m_blockSets.Clear();
+	m_gizmos.Clear();
 #ifdef WG_LEGACY
 	m_widgets.Clear();
 	m_items.Clear();
@@ -115,6 +117,12 @@ void WgResDB::DestroyTextManagers()
 {
 	for(TextManagerRes* res = GetFirstResTextManager(); res; res = res->Next())
 		delete res->res;
+}
+
+void WgResDB::ClearGizmos()
+{
+	m_mapGizmos.clear();
+	m_gizmos.Clear();
 }
 
 #ifdef WG_LEGACY
@@ -180,6 +188,13 @@ std::string	WgResDB::GenerateName( const WgBlockSetPtr data )
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_blockset__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
+}
+
+std::string	WgResDB::GenerateName( const WgGizmo* data )
+{
+	static int nGenerated = 0;
+	char pBuf[100];
+	return std::string("_gizmo__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
 #ifdef WG_LEGACY
@@ -457,6 +472,23 @@ bool WgResDB::AddBlockSet( const std::string& id, WgBlockSetPtr pBlockSet, MetaD
 	return false;
 }
 
+//____ () _________________________________________________________
+
+bool WgResDB::AddGizmo( const std::string& id, WgGizmo * pGizmo, MetaData * pMetaData )
+{
+	assert(m_mapGizmos.find(id) == m_mapGizmos.end());
+	if(m_mapGizmos.find(id) == m_mapGizmos.end())
+	{
+		GizmoRes* p = new GizmoRes(id, pGizmo, pMetaData);
+		m_gizmos.PushBack(p);
+		if(id.size())
+			m_mapGizmos[id] = p;
+		return true;
+	}
+	return false;
+}
+
+
 #ifdef WG_LEGACY
 //____ () _________________________________________________________
 
@@ -627,6 +659,14 @@ WgBlockSetPtr WgResDB::GetBlockSet( const std::string& id ) const
 {
 	BlockSetRes* blockRes = GetResBlockSet(id);
 	return blockRes ? blockRes->res : WgBlockSetPtr();
+}
+
+//____ () _________________________________________________________
+
+WgGizmo * WgResDB::GetGizmo( const std::string& id ) const
+{
+	GizmoRes* gizmoRes = GetResGizmo(id);
+	return gizmoRes ? gizmoRes->res : 0;
 }
 
 #ifdef WG_LEGACY
@@ -848,6 +888,24 @@ WgResDB::BlockSetRes * WgResDB::GetResBlockSet( const std::string& id ) const
 	BlockMap::const_iterator it = m_mapBlockSets.find(id);
 	return it == m_mapBlockSets.end() ? 0 : it->second;
 }
+
+//____ () _________________________________________________________
+
+WgResDB::GizmoRes * WgResDB::GetResGizmo( const std::string& id ) const
+{
+	GizmoRes* res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
+	{
+		if(db->res)
+		{
+			if((res = db->res->GetResGizmo(id)))
+				return res;
+		}
+	}
+	GizmoMap::const_iterator it = m_mapGizmos.find(id);
+	return it == m_mapGizmos.end() ? 0 : it->second;
+}
+
 
 #ifdef WG_LEGACY
 //____ () _________________________________________________________
@@ -1118,6 +1176,25 @@ WgResDB::BlockSetRes* WgResDB::FindResBlockSet( const WgBlockSetPtr meta ) const
 		}
 	}
 	for(res = GetFirstResBlockSet(); res; res = res->Next())
+		if(res->res == meta)
+			return res;
+	return 0;
+}
+
+//____ () _________________________________________________________
+
+WgResDB::GizmoRes* WgResDB::FindResGizmo( const WgGizmo* meta ) const
+{
+	GizmoRes* res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
+	{
+		if(db->res)
+		{
+			if((res = db->res->FindResGizmo(meta)))
+				return res;
+		}
+	}
+	for(res = GetFirstResGizmo(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1525,6 +1602,38 @@ bool WgResDB::RemoveBlockSet( WgResDB::BlockSetRes * pRes )
 	delete pRes;
 	return true;
 }
+
+//____ RemoveGizmo() _________________________________________________________
+
+bool WgResDB::RemoveGizmo( const std::string& id )
+{
+	GizmoMap::iterator it = m_mapGizmos.find( id );
+
+	if( it == m_mapGizmos.end() )
+		return false;
+
+	GizmoRes * pRes = it->second;
+	m_mapGizmos.erase(it);
+	delete pRes;
+
+	return true;
+}
+
+bool WgResDB::RemoveGizmo( WgResDB::GizmoRes * pRes )
+{
+	if( !pRes )
+		return false;
+
+	if( pRes->id.length() > 0 )
+	{
+		GizmoMap::iterator it = m_mapGizmos.find( pRes->id );
+		assert( it != m_mapGizmos.end() );
+		m_mapGizmos.erase(it);
+	}
+	delete pRes;
+	return true;
+}
+
 
 #ifdef WG_LEGACY
 //____ RemoveWidget() _________________________________________________________
