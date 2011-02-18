@@ -39,13 +39,18 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual void	OnEnable();
 		virtual void	OnDisable();
 
-
 	private:
 		bool		_isGizmo() const;
 		bool		_isRoot() const;
 
 //		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
 		WgRoot *	_castToRoot();
+
+
+		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, const WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut ) = 0;
+		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) = 0;
+		virtual void	_clearDirtyRects() = 0;
+
 
 
 		bool 		_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inerits from WgGizmo

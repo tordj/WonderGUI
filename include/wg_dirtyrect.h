@@ -36,7 +36,7 @@ class	WgDirtyRect:public WgRect
 	WgDirtyRect() {}
 	~WgDirtyRect() {}
 public:
-
+	static void Destroy( WgDirtyRect * pRect );		// Only call if rect is not connected!!!
 	
 	//	int					x, y, w, h;
 	WgDirtyRect		* pPrev, * pNext;
@@ -64,6 +64,10 @@ public:
 	void	Clear( void );
 	bool	OneForAll( WgRect * _wpRect );		// Generates the smallest possible rectangle
 												// Containing all dirty rectangles (or returns false).
+
+	WgDirtyRect *	Pop();
+	inline void		PushExistingRect( WgDirtyRect * pRect ) { Addrect( pRect, pRectList ); }
+
 	WgDirtyRect * 	pRectList;
 private:
 	WgDirtyRect * 	ClipRectangles( WgDirtyRect * _p1, WgDirtyRect * _p2 );

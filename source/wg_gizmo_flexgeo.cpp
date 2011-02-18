@@ -708,6 +708,97 @@ void WgFlexHook::RequestResize()
 		RefreshRealGeo();
 }
 
+
+//____ WgFlexHook::CastDirtRecursively() ___________________________________
+
+void WgFlexHook::CastDirtRecursively( const WgRect& parentGeo, const WgRect& clip, const WgDirtyRect * pDirtIn, WgDirtyRectObj * pDirtOut )
+{
+	WgDirtyRectObj	siblingDirt;
+
+	// Recurse through the siblings ontop of us if there are any, filling dirt
+
+	if( NextHook() )
+	{
+		NextHook()->CastDirtRecursively( parentGeo, clip, pDirtIn, siblingDirt );
+	}
+	else
+		siblingDirt.PushExistingRect( pDirtIn );
+		
+	// Get our screen geometry and clippedArea.
+
+	WgRect screenGeo = m_realGeo + parentGeo.pos();
+	WgRect clippedArea( screenGeo, clip );
+
+	// If we are outside visible bounds, we just transfer the dirt and return.
+
+	if( clippedArea.w == 0 || clippedArea.h == 0 )
+	{
+		siblingDirt.Transfer(dirtOut);
+		return;
+	}
+
+	// Loop through dirty rects
+
+	WgDirtyRect * pRect = siblingDirt.Pop();;
+	while( pRect )
+	{
+		WgRect dirtyArea( clippedArea, pRect );
+		if( dirtyArea.w != 0 && dirtyArea.h != 0 )
+		{
+
+			if( m_pGizmo->IsContainer() )
+			{
+				// This is a container, call CastDirt recursively,
+
+				m_pGizmo->CastToContainer()->CastDirtyRect( screenGeo, clippedArea, pRect, pDirtOut );
+			}
+			else
+			{
+				// Add dirtyArea to our list of what to render
+
+				m_dirt.Add( dirtyArea );
+
+				// Mask ourselves from the rectangle and move remains to dirtOut
+
+				WgDirtyRectObj temp;
+				temp.PushExistingRect( pRect );
+				DoMaskRects( temp, screenGeo, clippedArea );
+				temp.Transfer(dirtOut);			
+			}
+		}
+		else
+		{
+			dirtOut.PushExistingRect( pRect );
+		}
+
+		pRect = siblingDirt.Pop();
+	}
+
+}
+
+//____ WgFlexHook::RenderDirtyRects() _____________________________________________________
+
+void WgFlexHook::RenderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer )
+{
+	WgRect geo =  m_realGeo + parentPos;
+
+	if( m_pGizmo->IsContainer() )
+	{
+		m_pGizmo->CastToContainer()->RenderDirtyRects( pDevice, geo, geo, _layer );
+	}
+	else
+	{
+		WgDirtyRect * pDirt = m_dirt.pRectList;
+		while( pDirt )
+		{
+			DoRender( pDevice, geo, geo, *pDirt, _layer );
+			pDirt = pDirt->pNext;
+		}
+	}
+}
+
+
+
 //____ () _________________________________________________
 
 WgGizmoFlexGeo::WgGizmoFlexGeo() : m_bConfineChildren(false)
@@ -1186,9 +1277,47 @@ void WgGizmoFlexGeo::OnCloneContent( const WgGizmo * _pOrg )
 
 //____ () _________________________________________________
 
-void WgGizmoFlexGeo::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoFlexGeo::RenderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
 {
+	WgFlexHook *pHook	= m_hooks.First();
+	WgCord		pos		= _canvas.pos();
+
+	while( pHook )
+	{
+		pHook->RenderDirtyRects( pDevice, pos, _layer );
+		pHook = pHook->NextHook();
+	}
 }
+
+//____ ClearDirtyRects() ______________________________________________________
+
+void WgGizmoFlexGeo::ClearDirtyRects()
+{
+	WgFlexHook *pHook	= m_hooks.First();
+
+	while( pHook )
+	{
+		pHook->m_dirt.Clear();
+		if( pHook->Gizmo()->IsContainer() )
+			pHook->Gizmo()->CastToContainer()->ClearDirtyRects();
+
+		pHook = pHook->NextHook();
+	}
+}
+
+
+//____ CastDirtyRect() _____________________________________________________
+
+void WgGizmoFlexGeo::CastDirtyRect( const WgRect& geo, const WgRect& clip, const WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut )
+{
+	WgFlexHook * pHook = m_hooks.First();
+
+	if( pHook )
+	{
+		CastDirtRecursively( geo, WgRect(clip,geo), pDirtIn, pDirtOut );
+	}
+}
+
 
 //____ () _________________________________________________
 

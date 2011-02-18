@@ -138,6 +138,9 @@ protected:
 	void		RequestResize();
 
 	bool		LimitPlacementSize();
+	void		CastDirtRecursively( const WgRect& parentGeo, const WgRect& clip, const WgDirtyRect * pDirtIn, WgDirtyRectObj * pDirtOut );
+	void		RenderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
+
 
 	WgGizmoHook *	_prevHook() const;
 	WgGizmoHook *	_nextHook() const;
@@ -163,6 +166,11 @@ protected:
 	int			m_anchorTopLeft;
 	int			m_anchorBottomRight;
 	WgBorders	m_borders;
+
+	//
+
+	WgDirtyRectObj	m_dirt;		// Dirty areas to be rendered, in screen coordinates!
+
 };
 
 
@@ -256,6 +264,11 @@ public:
 	// Overloaded from container
 
 	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );
+
+	void			CastDirtyRect( const WgRect& geo, const WgRect& clip, const WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut );
+	void			RenderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
+	void			ClearDirtyRects();
+
 
 private:
 
