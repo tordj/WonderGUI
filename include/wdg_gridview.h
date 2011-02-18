@@ -71,6 +71,8 @@ public:
 	inline bool	GrabInputFocus() { return WgWidget::GrabInputFocus(); }
 	inline bool	RemoveInputFocus() { return WgWidget::GrabInputFocus(); }
 
+	virtual WgString GetTooltipString() const;
+
 
 protected:
 	WgWidget * NewOfMyType() const;
