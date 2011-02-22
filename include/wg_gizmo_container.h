@@ -31,6 +31,9 @@
 #	include <wg_gizmo_parent.h>
 #endif
 
+class WgDirtyRect;
+class WgDirtyRectObj;
+
 class WgGizmoContainer : public WgGizmoParent
 {
 	friend class WgGizmoHook;
@@ -47,7 +50,7 @@ class WgGizmoContainer : public WgGizmoParent
 		WgRoot *	_castToRoot();
 
 
-		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, const WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut ) = 0;
+		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut ) = 0;
 		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) = 0;
 		virtual void	_clearDirtyRects() = 0;
 

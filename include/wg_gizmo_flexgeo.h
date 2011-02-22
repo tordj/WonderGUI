@@ -30,6 +30,10 @@
 #endif
 
 
+#ifndef WG_DIRTYRECT_DOT_H
+#	include <wg_dirtyrect.h>
+#endif
+
 class WgGizmoFlexGeo;
 
 //____ WgFlexHook _____________________________________________________________
@@ -138,8 +142,8 @@ protected:
 	void		RequestResize();
 
 	bool		LimitPlacementSize();
-	void		CastDirtRecursively( const WgRect& parentGeo, const WgRect& clip, const WgDirtyRect * pDirtIn, WgDirtyRectObj * pDirtOut );
-	void		RenderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
+	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj * pDirtOut );
+	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
 
 
 	WgGizmoHook *	_prevHook() const;
@@ -265,9 +269,6 @@ public:
 
 	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );
 
-	void			CastDirtyRect( const WgRect& geo, const WgRect& clip, const WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut );
-	void			RenderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
-	void			ClearDirtyRects();
 
 
 private:
@@ -286,6 +287,11 @@ private:
 	void			OnRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 
 	WgGizmo*		_castToGizmo() { return this; }
+
+	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut );
+	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
+	void			_clearDirtyRects();
+
 
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }

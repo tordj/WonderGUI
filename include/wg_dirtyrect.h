@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -36,8 +36,7 @@ class	WgDirtyRect:public WgRect
 	WgDirtyRect() {}
 	~WgDirtyRect() {}
 public:
-	static void Destroy( WgDirtyRect * pRect );		// Only call if rect is not connected!!!
-	
+
 	//	int					x, y, w, h;
 	WgDirtyRect		* pPrev, * pNext;
 };
@@ -50,6 +49,8 @@ public:
 
 	WgDirtyRectObj();
 	~WgDirtyRectObj();
+
+	static void Destroy( WgDirtyRect * pRect );		// Only for destroying dirty rects not belonging to any DirtyRectObj!
 
 	void		Add( const WgRect& rect );
 	inline void	Sub( const WgRect& rect ) { Sub( rect.x, rect.y, rect.w, rect.h ); }

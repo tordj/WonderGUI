@@ -674,9 +674,9 @@ WgDirtyRect * WgDirtyRectObj::ClipRectangles( WgDirtyRect * p1, WgDirtyRect * p2
 		return	0;
 }
 
-//____ WgDirtyRect::Destroy() _________________________________________________
+//____ WgDirtyRectObj::Destroy() _________________________________________________
 
-static WgDirtyRect::Destroy( WgDirtyRect * pRect )
+void WgDirtyRectObj::Destroy( WgDirtyRect * pRect )
 {
 	g_pMemPool->freeEntry(pRect);
 }

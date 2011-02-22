@@ -175,11 +175,18 @@ public:
 
 
 
+
+
 	WgWidget *		m_pWidget;
 
 private:
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
+
+	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut ) {}
+	void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) {}
+	void	_clearDirtyRects() {}
+
 
 };
 
