@@ -269,8 +269,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] != 0 )
 	{	
-		p = m_aBitmapGlyphs[size][style]->GetGlyph( chr, size );
-		if( p )
+		if( m_aBitmapGlyphs[size][style]->HasGlyph( chr ) )
 			return EXACT_MATCH_PROVIDED;
 	}
 
@@ -278,8 +277,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	if( m_aDefaultBitmapGlyphs[size] != 0 )
 	{	
-		p = m_aDefaultBitmapGlyphs[size]->GetGlyph( chr, size );
-		if( p )
+		if( m_aDefaultBitmapGlyphs[size]->HasGlyph( chr ) )
 			return DEFAULT_PROVIDED;
 	}
 
@@ -288,8 +286,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] != 0 )
 	{
-		p = m_aVectorGlyphs[style][size]->GetGlyph( chr, size );
-		if( p )
+		if( m_aVectorGlyphs[style][size]->HasGlyph( chr ) )
 			return EXACT_MATCH_PROVIDED;
 	}
 
@@ -297,8 +294,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	if( m_pDefaultVectorGlyphs )
 	{
-		p = m_pDefaultVectorGlyphs->GetGlyph( chr, size );
-		if( p )
+		if( m_pDefaultVectorGlyphs->HasGlyph( chr ) )
 			return DEFAULT_PROVIDED;
 	}
 #endif
@@ -310,15 +306,13 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 	{
 		if( m_aBitmapGlyphs[i] != 0 && m_aBitmapGlyphs[i][style] != 0 )
 		{
-			p = m_aBitmapGlyphs[i][style]->GetGlyph( chr, i );
-			if( p )
+			if( m_aBitmapGlyphs[i][style]->HasGlyph( chr ) )
 				return SMALLER_MATCH_PROVIDED;
 		}
 
 		if( m_aDefaultBitmapGlyphs[i] != 0 )
 		{
-			p = m_aDefaultBitmapGlyphs[size]->GetGlyph( chr, size );
-			if( p )
+			if( m_aDefaultBitmapGlyphs[size]->HasGlyph( chr ) )
 				return SMALLER_DEFAULT_PROVIDED;
 		}
 	}
