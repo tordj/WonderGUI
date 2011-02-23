@@ -60,6 +60,26 @@ void WgGizmoHook::DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const W
 	m_pGizmo->OnMaskRects( rects, geo, clip );
 }
 
+//_____________________________________________________________________________
+
+void WgGizmoHook::_doCastDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut )
+{
+	if( m_pGizmo->IsContainer() )
+		m_pGizmo->CastToContainer()->_onCastDirtyRect( geo, clip, pDirtIn, pDirtOut );
+}
+
+void WgGizmoHook::_doRenderDirtyRects( WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& window, Uint8 layer )
+{
+	if( m_pGizmo->IsContainer() )
+		m_pGizmo->CastToContainer()->_onRenderDirtyRects( pDevice, canvas, window, layer );
+}
+
+void WgGizmoHook::_doClearDirtyRects()
+{
+	if( m_pGizmo->IsContainer() )
+		m_pGizmo->CastToContainer()->_onRenderDirtyRects();
+}
+
 //____ RelinkGizmo() __________________________________________________________
 
 void WgGizmoHook::RelinkGizmo()

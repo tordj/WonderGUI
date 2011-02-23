@@ -38,6 +38,7 @@ class WgWidget;
 class WgGfxDevice;
 class WgGizmo;
 class WgRoot;
+class WgDirtyRect;
 class WgDirtyRectObj;
 
 class WgGizmoHook
@@ -87,11 +88,15 @@ protected:
 	void			DoCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 	void			DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 
+	void			_doCastDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut );
+	void			_doRenderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
+	void			_doClearDirtyRects();
+
 	//
 
 	virtual WgGizmoHook *	_prevHook() const = 0;
 	virtual WgGizmoHook *	_nextHook() const = 0;
-	
+
 
 	WgGizmo *		m_pGizmo;
 };
