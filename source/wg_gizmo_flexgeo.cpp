@@ -750,7 +750,7 @@ void WgFlexHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& cl
 			{
 				// This is a container, call CastDirt recursively,
 
-				m_pGizmo->CastToContainer()->_castDirtyRect( screenGeo, clippedArea, pRect, pDirtOut );
+				_doCastDirtyRect( screenGeo, clippedArea, pRect, pDirtOut );
 			}
 			else
 			{
@@ -784,7 +784,7 @@ void WgFlexHook::_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentP
 
 	if( m_pGizmo->IsContainer() )
 	{
-		m_pGizmo->CastToContainer()->_renderDirtyRects( pDevice, geo, geo, _layer );
+		_doRenderDirtyRects( pDevice, geo, geo, _layer );
 	}
 	else
 	{
@@ -1177,36 +1177,44 @@ const WgFlexAnchor * WgGizmoFlexGeo::Anchor( int index )
 
 int WgGizmoFlexGeo::HeightForWidth( int width ) const
 {
+	return 0;		// No recommendation.
 }
 
 //____ () _________________________________________________
 
 int WgGizmoFlexGeo::WidthForHeight( int height ) const
 {
+	return 0;		// No recommendation.
 }
 
 //____ () _________________________________________________
 
 WgSize WgGizmoFlexGeo::MinSize() const
 {
+	return WgSize(1,1);
 }
 
 //____ () _________________________________________________
 
 WgSize WgGizmoFlexGeo::BestSize() const
 {
+	return WgSize(0,0);		// No recommendation.
 }
 
 //____ () _________________________________________________
 
 WgSize WgGizmoFlexGeo::MaxSize() const
 {
+	return WgSize(65535,65535);
 }
 
 //____ () _________________________________________________
 
 WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 {
+	//TODO: Implement!
+
+	return 0;
 }
 
 
@@ -1299,7 +1307,7 @@ void WgGizmoFlexGeo::_clearDirtyRects()
 	{
 		pHook->m_dirt.Clear();
 		if( pHook->Gizmo()->IsContainer() )
-			pHook->Gizmo()->CastToContainer()->_clearDirtyRects();
+			pHook->_doClearDirtyRects();
 
 		pHook = pHook->NextHook();
 	}
@@ -1308,7 +1316,7 @@ void WgGizmoFlexGeo::_clearDirtyRects()
 
 //____ _castDirtyRect() _____________________________________________________
 
-void WgGizmoFlexGeo::_castDirtyRect( const WgRect& geo, const WgRect& clip, const WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut )
+void WgGizmoFlexGeo::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut )
 {
 	WgFlexHook * pHook = m_hooks.First();
 
