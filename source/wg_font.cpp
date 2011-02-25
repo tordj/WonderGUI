@@ -135,14 +135,16 @@ const WgUnderline * WgFont::GetUnderline( int size )
 	// Create an underline specification from the '_' character as default.
 	// It should be possible to specify something different in the spec file later on...
 
-	const WgGlyph* pUnder = GetGlyph('_', WG_STYLE_NORMAL, size);
+	WgGlyphPtr pUnder = GetGlyph('_', WG_STYLE_NORMAL, size);
 
-	m_tempUnderline.pSurf = pUnder->pSurf;
-	m_tempUnderline.rect = pUnder->rect;
-	m_tempUnderline.bearingX = pUnder->bearingX;
-	m_tempUnderline.bearingY = pUnder->bearingY;
+	const WgGlyphBitmap * pSrc = pUnder->GetBitmap();
 
-	if( pUnder->rect.w > 2 )
+	m_tempUnderline.pSurf = pSrc->pSurface;
+	m_tempUnderline.rect = pSrc->rect;
+	m_tempUnderline.bearingX = pSrc->bearingX;
+	m_tempUnderline.bearingY = pSrc->bearingY;
+
+	if( pSrc->rect.w > 2 )
 	{
 		m_tempUnderline.leftBorder = 1;
 		m_tempUnderline.rightBorder = 1;
@@ -159,9 +161,9 @@ const WgUnderline * WgFont::GetUnderline( int size )
 
 //____ GetGlyph() _____________________________________________________________
 
-const WgGlyph * WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
+WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 {
-	const WgGlyph * p = 0;
+	WgGlyphPtr p;
 
 	// Special case: For whitespace we give vector glyphs top priority
 

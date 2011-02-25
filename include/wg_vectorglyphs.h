@@ -70,8 +70,8 @@ public:
 
 	inline Type	GetType() const { return VECTOR; }
 
-	int			GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRightGlyph, int size );
-	WgGlyph *	GetGlyph( Uint16 chr, int size );
+	int			GetKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size );
+	WgGlyphPtr	GetGlyph( Uint16 chr, int size );
 	bool		HasGlyph( Uint16 chr );
 
 	int			GetHeight( int size );
@@ -99,6 +99,24 @@ private:
 	const static int	GLYPH_PIXEL_SIZE_QUANTIZATION = 4;
 	const static int	GLYPH_SLOT_SIZES = ((MAX_GLYPH_PIXEL_SIZE-MIN_GLYPH_PIXEL_SIZE)/GLYPH_PIXEL_SIZE_QUANTIZATION)+1;
 
+	class CacheSlot;
+
+	class Glyph : public WgGlyph
+	{
+	public:
+		Glyph();
+		Glyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, WgGlyphSet * pGlyphSet );
+		~Glyph();
+		const WgGlyphBitmap * GetBitmap();
+
+		void	SlotLost() { m_pSlot = 0; }
+		bool	IsInitialized() { return m_pGlyphSet?true:false; }
+
+		CacheSlot * m_pSlot;
+		Uint16		m_size;			// size of character in points.
+		Uint16		m_character;	// Unicode for character.
+	};
+
 	class CacheSurf : public WgLink
 	{
 	public:
@@ -115,19 +133,17 @@ private:
 	class CacheSlot : public WgLink
 	{
 	public:
-		CacheSlot( CacheSurf * _pSurf, const WgRect& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; pOwner = 0; size = 0; character = 0; }
+		CacheSlot( CacheSurf * _pSurf, const WgRect& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; bitmap.pSurface = pSurf->pSurf, pGlyph = 0; }
 
 		LINK_METHODS( CacheSlot );		
 
 		Uint32			access;			// Timestamp of last access.
 
-		CacheSurf *		pSurf;
-		WgRect			rect;
+		WgGlyphBitmap	bitmap;
+		Glyph *			pGlyph;
 
-		WgGlyph			glyph;
-		WgVectorGlyphs *pOwner;			// Font object that owns the character.
-		Uint16			size;			// size of character in points.
-		Uint16			character;		// Unicode for character.
+		CacheSurf *		pSurf;
+		WgRect			rect;				// Rect for the slot - not the glyph itself as in WgGlyphBitmap which might be smaller.
 	};
 
 
@@ -137,12 +153,11 @@ private:
 
 	bool				SetCharSize( int size );
 
-	inline void			SlotLost( const CacheSlot * pSlot ) { RemoveSlotFromIndex( pSlot ); }	// Callback, called BEFORE content of slot is lost.
+	CacheSlot *			GenerateBitmap( Glyph * pGlyph );
 	void				CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot );
 
-	void				AddSlotToIndex( Uint16 ch, int size, CacheSlot * pSlot );
-	void				RemoveSlotFromIndex( const CacheSlot * pSlot );
-	inline CacheSlot *	FindSlotInIndex( Uint16 glyph, int size ) const;
+	Glyph *				AddGlyph( Uint16 ch, int size, int advance, Uint32 kerningIndex );
+	inline Glyph *		FindGlyph( Uint16 glyph, int size ) const;
 
 	inline void			TouchSlot( CacheSlot * pSlot );
 
@@ -150,7 +165,7 @@ private:
 	FT_Face				m_ftFace;
 	char*				m_pData;
 	int					m_ftCharSize;
-	CacheSlot ***		m_cachedGlyphsIndex[WG_MAX_FONTSIZE+1];
+	Glyph **			m_cachedGlyphsIndex[WG_MAX_FONTSIZE+1];
 	Uint32				m_accessCounter;
 	int					m_renderFlags;
 	RenderMode			m_renderMode[WG_MAX_FONTSIZE+1];
@@ -176,12 +191,12 @@ private:
 
 };
 
-//____ FindSlotInIndex() _______________________________________________________
+//____ FindGlyphInIndex() _______________________________________________________
 
-WgVectorGlyphs::CacheSlot * WgVectorGlyphs::FindSlotInIndex( Uint16 ch, int size ) const
+WgVectorGlyphs::Glyph * WgVectorGlyphs::FindGlyph( Uint16 ch, int size ) const
 {
-	if( m_cachedGlyphsIndex[size] != 0 && m_cachedGlyphsIndex[size][ch>>8] != 0 && m_cachedGlyphsIndex[size][ch>>8][ch&0xFF] )
-		return m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
+	if( m_cachedGlyphsIndex[size] != 0 && m_cachedGlyphsIndex[size][ch>>8] != 0 && m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].IsInitialized() )
+		return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
 
 	return 0;
 }

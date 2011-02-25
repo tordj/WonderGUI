@@ -72,7 +72,7 @@ public:
 
 
 	WgGlyphSet *		GetGlyphSet( WgFontStyle style, int size ) const;
-	const WgGlyph *		GetGlyph( Uint32 chr, WgFontStyle style, int size ) const;
+	WgGlyphPtr			GetGlyph( Uint32 chr, WgFontStyle style, int size ) const;
 	GlyphProvided		IsGlyphProvided( Uint32 chr, WgFontStyle style, int size ) const;
 
 #ifdef	WG_USE_FREETYPE

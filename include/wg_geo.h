@@ -29,7 +29,7 @@
 #endif
 
 class WgRect;
-
+class WgSurface;
 
 //____ Class: WgCord32 ________________________________________________________
 
@@ -268,8 +268,6 @@ public:
 
 	int	x, y, w, h;
 };
-
-
 
 //_____________________________________________________________________________
 inline WgCord32::WgCord32( const WgRect& rect )
