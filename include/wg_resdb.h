@@ -32,6 +32,10 @@
 #	ifndef WG_WIDGET_DOT_H
 #	   include <wg_widget.h>
 #	endif
+#else
+#	ifndef WG_GIZMO_DOT_H
+#		include <wg_gizmo.h>
+#	endif
 #endif
 
 #ifndef WG_CHAIN_DOT_H
@@ -151,7 +155,7 @@ public:
 	void				DestroyAnims();
 	void				DestroyCursors();
 	void				DestroyTextManagers();
-	
+
 	void				ClearGizmos();// debug function
 
 #ifdef WG_LEGACY
@@ -184,7 +188,7 @@ public:
 	bool				AddTextManager( const std::string& id, WgTextManager* pTextManager, MetaData * pMetaData = 0 );
 	bool				AddSkinManager( const std::string& id, WgSkinManager* pSkinManager, MetaData * pMetaData = 0 );
 	bool				AddConnect( MetaData * pMetaData );
-	bool				AddGizmo( const std::string& id, WgGizmo * pGizmo, MetaData * pMetaData = 0 ); 
+	bool				AddGizmo( const std::string& id, WgGizmo * pGizmo, MetaData * pMetaData = 0 );
 
 	bool				RemoveSurface( const std::string& id );
 	bool				RemoveGlyphSet( const std::string& id );

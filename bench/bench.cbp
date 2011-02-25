@@ -13,12 +13,15 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="../include" />
+					<Add directory="../wg_sdl" />
 				</Compiler>
 				<Linker>
 					<Add library="freetype" />
 					<Add library="expat" />
 					<Add library="WonderGUI" />
 					<Add library="wg_sdl" />
+					<Add directory="../obj/Debug" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -35,8 +38,8 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="`sdl-config --cflags`" />
 			<Add option="-Wall" />
+			<Add option="`sdl-config --cflags`" />
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --libs`" />
@@ -46,6 +49,7 @@
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

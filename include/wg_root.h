@@ -38,7 +38,7 @@ class WgInputDevice;
 class WgGfxDevice;
 class WgGizmo;
 
-class WgRoot : private WgGizmoContainer
+class WgRoot : private WgGizmoParent
 {
 public:
 	WgRoot();
