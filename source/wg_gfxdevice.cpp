@@ -1032,7 +1032,7 @@ int WgGfxDevice::CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, cons
 			break;
 		}
  	}
-	int ofs = pPen->GetBlitPosX();
+	int ofs = pPen->GetPosX();
 	pPen->FlushChar();
 	return ofs;
 }

@@ -109,25 +109,25 @@ void WgBitmapGlyphs::CopyGlyphs( WgBitmapGlyphs* pOtherFont )
 			if(m_glyphTab[tabIndex] == NULL)
 			{
 				// Allocate memory for this tab, and reset it
-				m_glyphTab[tabIndex] = new WgGlyph[256];
+				m_glyphTab[tabIndex] = new Glyph[256];
 				for( int i = 0 ; i < 256 ; i++ )
 				{
-					m_glyphTab[tabIndex][i] = WgGlyph();
+					m_glyphTab[tabIndex][i] = Glyph();
 				}
 			}
 
 			// Copy all the glyphs of this tab
 			for( int i = 0 ; i < 256 ; i++ )
 			{
-				if(m_glyphTab[tabIndex][i].pSurf == 0)
+				if(m_glyphTab[tabIndex][i].m_src.pSurface == 0)
 				{
 					m_glyphTab[tabIndex][i] = pOtherFont->m_glyphTab[tabIndex][i];
 
-					m_avgSpacing += m_glyphTab[tabIndex][i].advance;
+					m_avgSpacing += m_glyphTab[tabIndex][i].Advance();
 
 					// See if we have a new max height
-					if(m_glyphTab[tabIndex][i].rect.h > (int)m_height)
-						m_height = m_glyphTab[tabIndex][i].rect.h;
+					if(m_glyphTab[tabIndex][i].m_src.rect.h > (int)m_height)
+						m_height = m_glyphTab[tabIndex][i].m_src.rect.h;
 
 					m_nGlyphs++;
 				}
@@ -144,12 +144,12 @@ void WgBitmapGlyphs::CopyGlyphs( WgBitmapGlyphs* pOtherFont )
 
 inline bool WgBitmapGlyphs::HasGlyph( Uint16 chr )
 {
-	WgGlyph * pGlyph = m_glyphTab[chr >> 8];
+	Glyph * pGlyph = m_glyphTab[chr >> 8];
 
 	if( pGlyph )
 	{
 		pGlyph += (chr & 0xFF);
-		if( pGlyph->pSurf != 0 )
+		if( pGlyph->m_src.pSurface != 0 )
 			return true;
 	}
 
@@ -159,14 +159,14 @@ inline bool WgBitmapGlyphs::HasGlyph( Uint16 chr )
 
 //____ GetGlyph() _________________________________________________________
 
-inline WgGlyph const *	WgBitmapGlyphs::GetGlyph( Uint16 chr, int size )
+inline WgGlyphPtr WgBitmapGlyphs::GetGlyph( Uint16 chr, int size )
 {
-	WgGlyph * pGlyph = m_glyphTab[chr >> 8];
+	Glyph * pGlyph = m_glyphTab[chr >> 8];
 
 	if( pGlyph )
 	{
 		pGlyph += (chr & 0xFF);
-		if( pGlyph->pSurf != 0 )
+		if( pGlyph->m_src.pSurface != 0 )
 			return pGlyph;
 	}
 
@@ -178,16 +178,16 @@ inline WgGlyph const *	WgBitmapGlyphs::GetGlyph( Uint16 chr, int size )
 //____ GetKerning() _________________________________________________________
 
 
-inline int WgBitmapGlyphs::GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRightGlyph, int size )
+inline int WgBitmapGlyphs::GetKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size )
 {
-	if( pLeftGlyph == 0 || pRightGlyph == 0 )
-		return 0;
-
 	if( !m_pKerningTable )
 		return 0;
 
-	int indexLeft = pLeftGlyph->kerningIndex;
-	int indexRight = pRightGlyph->kerningIndex;
+	if( !pLeftGlyph || !pRightGlyph )
+		return 0;
+
+	int indexLeft = pLeftGlyph->KerningIndex();
+	int indexRight = pRightGlyph->KerningIndex();
 
 	if( indexLeft >= m_nKerningGlyphs || indexRight >= m_nKerningGlyphs )
 		return 0;
@@ -293,10 +293,10 @@ void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 
 		if(firstInsert)
 		{
-			m_glyphTab[0] = new WgGlyph[256];
+			m_glyphTab[0] = new Glyph[256];
 			for( int i = 0 ; i < 256 ; i++ )
 			{
-				m_glyphTab[0][i] = WgGlyph();
+				m_glyphTab[0][i] = Glyph();
 			}
 		}
 
@@ -342,21 +342,21 @@ void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 						int tab = c >> 8;
 						if( m_glyphTab[tab] == 0 )
 						{
-							m_glyphTab[tab] = new WgGlyph[256];
+							m_glyphTab[tab] = new Glyph[256];
 							for( int i = 0 ; i < 256 ; i++ )
 							{
-								m_glyphTab[tab][i] = WgGlyph();
+								m_glyphTab[tab][i] = Glyph();
 							}
 						}
 
 						c &= 0xff;
-						m_glyphTab[tab][c] = WgGlyph(info.x, info.y, info.width, info.height, (Uint8)info.advance, (Sint8)info.xoffset, (Sint8)info.yoffset, m_nGlyphs, pSurf);
+						m_glyphTab[tab][c] = Glyph( (Uint8)info.advance, (Sint8)info.xoffset, (Sint8)info.yoffset, m_nGlyphs, this, pSurf, WgRect( info.x, info.y, info.width, info.height) );
 
 						if(firstInsert)
 						{
 							// This is done every iteration, but it doesn't matter really
-							m_glyphTab[0][32].advance	= m_spaceSpacing;
-							m_glyphTab[0][0xA0].advance = m_spaceSpacing;	// NO_BREAK_SPACE
+							m_glyphTab[0][32].SetAdvance( m_spaceSpacing );
+							m_glyphTab[0][0xA0].SetAdvance( m_spaceSpacing );	// NO_BREAK_SPACE
 						}
 
 						if( info.height > (int) m_height )
@@ -398,8 +398,8 @@ void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 						Uint16 cLeft = info.first;
 						Uint16 cRight = info.second;
 
-						int indexLeft = GetGlyph( cLeft )->kerningIndex;
-						int indexRight = GetGlyph( cRight )->kerningIndex;
+						int indexLeft = GetGlyph( cLeft )->KerningIndex();
+						int indexRight = GetGlyph( cRight )->KerningIndex();
 
 						m_pKerningTable[ (indexLeft * m_nGlyphs) + indexRight ] = (Sint8)info.amount;
 					}
@@ -451,13 +451,13 @@ void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 			if( (int) m_spaceSpacing != firstSpacing )
 				m_bMonospace = false;
 
-			m_glyphTab[0] = new WgGlyph[256];
+			m_glyphTab[0] = new Glyph[256];
 			for( int i = 0 ; i < 256 ; i++ )
 			{
-				m_glyphTab[0][i] = WgGlyph();
+				m_glyphTab[0][i] = Glyph();
 			}
-			m_glyphTab[0][32].advance	= m_spaceSpacing;
-			m_glyphTab[0][0xA0].advance = m_spaceSpacing;	// NO_BREAK_SPACE
+			m_glyphTab[0][32].SetAdvance( m_spaceSpacing );
+			m_glyphTab[0][0xA0].SetAdvance( m_spaceSpacing );	// NO_BREAK_SPACE
 		}
 
 
@@ -475,18 +475,18 @@ void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 			int tab = c >> 8;
 			if( m_glyphTab[tab] == 0 )
 			{
-				m_glyphTab[tab] = new WgGlyph[256];
+				m_glyphTab[tab] = new Glyph[256];
 				for( int i = 0 ; i < 256 ; i++ )
 				{
-					m_glyphTab[tab][i] = WgGlyph();
+					m_glyphTab[tab][i] = Glyph();
 				}
 			}
 
 			c &= 0xff;
 
-			if(m_glyphTab[tab][c].pSurf == NULL)
+			if(m_glyphTab[tab][c].m_src.pSurface == NULL)
 			{
-				m_glyphTab[tab][c] = WgGlyph(x, y, w, h, advance, bearingX, bearingY, m_nGlyphs, pSurf);
+				m_glyphTab[tab][c] = Glyph( advance, bearingX, bearingY, m_nGlyphs, this, pSurf, WgRect( x, y, w, h ) );
 
 				if( advance != firstSpacing )
 					m_bMonospace = false;
@@ -545,8 +545,8 @@ void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 					Uint16 cLeft = WgTextTool::parseChar( pChrLeft );
 					Uint16 cRight = WgTextTool::parseChar( pChrRight );
 
-					int indexLeft = GetGlyph( cLeft )->kerningIndex;
-					int indexRight = GetGlyph( cRight )->kerningIndex;
+					int indexLeft = GetGlyph( cLeft )->KerningIndex();
+					int indexRight = GetGlyph( cRight )->KerningIndex();
 
 					m_pKerningTable[ (indexLeft * m_nGlyphs) + indexRight ] = kern;
 
@@ -561,4 +561,18 @@ void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 	m_avgSpacing /= m_nGlyphs;
 }
 
+//____ WgBitmapGlyphs::Glyph constructor ______________________________________
 
+WgBitmapGlyphs::Glyph::Glyph()
+{
+	m_src.pSurface = 0;
+}
+
+WgBitmapGlyphs::Glyph::Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphSet * pGlyphSet, WgSurface * pSurf, const WgRect& rect )
+: WgGlyph( advance, kerningIndex, pGlyphSet )
+{
+		m_src.pSurface	= pSurf;
+		m_src.rect		= rect;
+		m_src.bearingX	= bearingX;
+		m_src.bearingY	= bearingY;
+}

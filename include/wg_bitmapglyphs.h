@@ -46,9 +46,9 @@ public:
 	void					CopyGlyphs( WgBitmapGlyphs* pOtherGlyphSet );
 
 
-	const WgGlyph *			GetGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
+	WgGlyphPtr				GetGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
 	bool					HasGlyph( Uint16 chr );
-	int						GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRightGlyph, int size );
+	int						GetKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size );
 
 	inline int				GetHeight( int size ) { return m_height; }
 	inline int				GetLineSpacing( int size ) { return m_height; }
@@ -61,7 +61,21 @@ public:
 
 private:
 
-	WgGlyph * 	m_glyphTab[256];
+	class Glyph : public WgGlyph
+	{
+	public:
+		Glyph();
+		Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphSet * pGlyphSet, WgSurface * pSurf, const WgRect& rect );
+
+		const WgGlyphBitmap * GetBitmap() { return &m_src; }
+
+		void SetAdvance( short advance ) { m_advance = advance; }
+
+		WgGlyphBitmap	m_src;
+	};
+
+
+	Glyph * 	m_glyphTab[256];
 
 	int			m_nKerningGlyphs;
 	Sint8*		m_pKerningTable;

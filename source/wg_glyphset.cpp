@@ -41,24 +41,18 @@
 
 WgGlyph::WgGlyph()
 {
-	rect.x = 0; rect.y = 0; rect.w = 0; rect.h = 0;
-	advance = 0;
-	bearingX = 0;
-	bearingY = 0;
-	kerningIndex = 0;
-	pSurf = 0;
+	m_pGlyphSet = 0;
+	m_advance = 0;
+	m_kerningIndex = 0;
 }
 
 //____ WgGlyph::WgGlyph() _______________________________________________________
 
-WgGlyph::WgGlyph(Sint32 _rectX, Sint32 _rectY, Sint32 _rectW, Sint32 _rectH, Uint8 _advance, Sint8 _bearingX, Sint8 _bearingY, Uint16 _kerningIndex, WgSurface* _pSurface)
+WgGlyph::WgGlyph( int advance, Uint32 kerningIndex, WgGlyphSet * pGlyphSet )
 {
-	rect.x = _rectX; rect.y = _rectY; rect.w = _rectW; rect.h = _rectH;
-	advance = _advance;
-	bearingX = _bearingX;
-	bearingY = _bearingY;
-	kerningIndex = _kerningIndex;
-	pSurf = _pSurface;
+	m_pGlyphSet = pGlyphSet;
+	m_advance = advance;
+	m_kerningIndex = kerningIndex;
 }
 
 

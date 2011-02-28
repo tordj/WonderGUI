@@ -8,6 +8,7 @@ class WgRefCounted
 {
 friend class WgSmartPtrImpl;
 template<class T> friend class WgSmartPtr;
+template<class T> friend class WgRefCountPtr;
 
 public:
 	WgRefCounted() {m_ref = 0;}

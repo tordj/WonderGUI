@@ -135,14 +135,16 @@ const WgUnderline * WgFont::GetUnderline( int size )
 	// Create an underline specification from the '_' character as default.
 	// It should be possible to specify something different in the spec file later on...
 
-	const WgGlyph* pUnder = GetGlyph('_', WG_STYLE_NORMAL, size);
+	WgGlyphPtr pUnder = GetGlyph('_', WG_STYLE_NORMAL, size);
 
-	m_tempUnderline.pSurf = pUnder->pSurf;
-	m_tempUnderline.rect = pUnder->rect;
-	m_tempUnderline.bearingX = pUnder->bearingX;
-	m_tempUnderline.bearingY = pUnder->bearingY;
+	const WgGlyphBitmap * pSrc = pUnder->GetBitmap();
 
-	if( pUnder->rect.w > 2 )
+	m_tempUnderline.pSurf = pSrc->pSurface;
+	m_tempUnderline.rect = pSrc->rect;
+	m_tempUnderline.bearingX = pSrc->bearingX;
+	m_tempUnderline.bearingY = pSrc->bearingY;
+
+	if( pSrc->rect.w > 2 )
 	{
 		m_tempUnderline.leftBorder = 1;
 		m_tempUnderline.rightBorder = 1;
@@ -159,9 +161,9 @@ const WgUnderline * WgFont::GetUnderline( int size )
 
 //____ GetGlyph() _____________________________________________________________
 
-const WgGlyph * WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
+WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 {
-	const WgGlyph * p = 0;
+	WgGlyphPtr p;
 
 	// Special case: For whitespace we give vector glyphs top priority
 
@@ -269,8 +271,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] != 0 )
 	{	
-		p = m_aBitmapGlyphs[size][style]->GetGlyph( chr, size );
-		if( p )
+		if( m_aBitmapGlyphs[size][style]->HasGlyph( chr ) )
 			return EXACT_MATCH_PROVIDED;
 	}
 
@@ -278,8 +279,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	if( m_aDefaultBitmapGlyphs[size] != 0 )
 	{	
-		p = m_aDefaultBitmapGlyphs[size]->GetGlyph( chr, size );
-		if( p )
+		if( m_aDefaultBitmapGlyphs[size]->HasGlyph( chr ) )
 			return DEFAULT_PROVIDED;
 	}
 
@@ -288,8 +288,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] != 0 )
 	{
-		p = m_aVectorGlyphs[style][size]->GetGlyph( chr, size );
-		if( p )
+		if( m_aVectorGlyphs[style][size]->HasGlyph( chr ) )
 			return EXACT_MATCH_PROVIDED;
 	}
 
@@ -297,8 +296,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	if( m_pDefaultVectorGlyphs )
 	{
-		p = m_pDefaultVectorGlyphs->GetGlyph( chr, size );
-		if( p )
+		if( m_pDefaultVectorGlyphs->HasGlyph( chr ) )
 			return DEFAULT_PROVIDED;
 	}
 #endif
@@ -310,15 +308,13 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 	{
 		if( m_aBitmapGlyphs[i] != 0 && m_aBitmapGlyphs[i][style] != 0 )
 		{
-			p = m_aBitmapGlyphs[i][style]->GetGlyph( chr, i );
-			if( p )
+			if( m_aBitmapGlyphs[i][style]->HasGlyph( chr ) )
 				return SMALLER_MATCH_PROVIDED;
 		}
 
 		if( m_aDefaultBitmapGlyphs[i] != 0 )
 		{
-			p = m_aDefaultBitmapGlyphs[size]->GetGlyph( chr, size );
-			if( p )
+			if( m_aDefaultBitmapGlyphs[size]->HasGlyph( chr ) )
 				return SMALLER_DEFAULT_PROVIDED;
 		}
 	}

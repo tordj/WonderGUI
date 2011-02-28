@@ -61,7 +61,7 @@ public:
 protected:
 	WgViewHook() : WgGizmoHook( 0 ) {};				// So we can make them members and then make placement new...
 	WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView );
-	WgViewHook( WgGizmoVDragbar * pHDragbar, WgGizmoView * pView );
+	WgViewHook( WgGizmoVDragbar * pVDragbar, WgGizmoView * pView );
 	WgViewHook( WgGizmo * pContent, WgGizmoView * pView );
 	~WgViewHook();
 

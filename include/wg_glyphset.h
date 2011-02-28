@@ -27,22 +27,51 @@
 #	include <wg_geo.h>
 #endif
 
+#ifndef WG_SMARTPTR_DOT_H
+#	include <wg_smartptr.h>
+#endif
+
 class	WgSurface;
+class	WgGlyphSet;
+
+
+
+
+//____ WgGlyphBitmap _____________________________________________________________
+
+struct WgGlyphBitmap
+{
+	WgSurface*	pSurface;
+	WgRect		rect;
+	Sint8		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
+	Sint8		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
+};
+
 
 //____ WgGlyph ________________________________________________________________
 
-struct	WgGlyph
+class WgGlyph
 {
-	WgGlyph();
-	WgGlyph(Sint32 _rectX, Sint32 _rectY, Sint32 _rectW, Sint32 _rectH, Uint8 _advance, Sint8 _bearingX, Sint8 _bearingY, Uint16 _kerningIndex, WgSurface* _pSurface);
+friend class WgFont;
 
-	WgSurface *		pSurf;
-	WgRect			rect;
-	Uint8			advance;		// spacing to next glyph
-	Sint8			bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
-	Sint8			bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
-	Uint32			kerningIndex;	// index into kerning table (WgBitmapGlyphs) or glyph_index (WgVectorGlyphs)
+public:
+	virtual const WgGlyphBitmap * GetBitmap() = 0;
+
+	inline int		Advance() { return m_advance; }
+	inline Uint32	KerningIndex() { return m_kerningIndex; }
+	inline WgGlyphSet *	GlyphSet() { return m_pGlyphSet; }
+
+protected:
+	WgGlyph();
+	WgGlyph( int advance, Uint32 _kerningIndex, WgGlyphSet * pGlyphSet );
+
+	WgGlyphSet *	m_pGlyphSet;	// glyphset that this glyph belongs to
+	int				m_advance;		// spacing to next glyph
+	Uint32			m_kerningIndex;	// index into kerning table (WgBitmapGlyphs) or glyph_index (WgVectorGlyphs)
 };
+
+typedef WgGlyph*	WgGlyphPtr;
+
 
 //____ WgUnderline ____________________________________________________________
 
@@ -75,8 +104,8 @@ public:
 
 	virtual	Type			GetType() const = 0;
 
-	virtual int				GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRightGlyph, int size ) = 0;
-	virtual const WgGlyph *	GetGlyph( Uint16 chr, int size ) = 0;
+	virtual int				GetKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size ) = 0;
+	virtual WgGlyphPtr		GetGlyph( Uint16 chr, int size ) = 0;
 	virtual bool			HasGlyph( Uint16 chr ) = 0;
 
 	virtual int				GetHeight( int size ) = 0;
