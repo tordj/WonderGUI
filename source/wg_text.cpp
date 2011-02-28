@@ -480,6 +480,14 @@ void WgText::setFont( WgFont * pFont )
 	regenSoftLines();
 }
 
+void WgText::setBreakLevel( int level )
+{
+	WgTextProp	prop = * m_pProp;
+	prop.SetBreakLevel(level);
+	m_pProp = prop.Register();
+	regenSoftLines();
+}
+
 void WgText::clearProperties()
 {
 	m_pProp = 0;
@@ -511,6 +519,14 @@ void WgText::clearStyle( WgMode mode )
 {
 	WgTextProp	prop = * m_pProp;
 	prop.ClearStyle(mode);
+	m_pProp = prop.Register();
+	regenSoftLines();
+}
+
+void WgText::clearBreakLevel()
+{
+	WgTextProp	prop = * m_pProp;
+	prop.ClearBreakLevel();
 	m_pProp = prop.Register();
 	regenSoftLines();
 }
@@ -1451,10 +1467,15 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 void WgText::regenSoftLines()
 {
+	bool	bHasSoftLineArray = (m_pSoftLines != m_pHardLines && m_pSoftLines != &WgText::g_emptyLine)?true:false;
+
 	// Take care of our special case (empty text)
 
 	if( m_pHardLines == &WgText::g_emptyLine )
 	{
+		if( bHasSoftLineArray )
+			delete [] m_pSoftLines;
+
 		m_pSoftLines = &WgText::g_emptyLine;
 		m_nSoftLines = 1;
 		return;
@@ -1464,12 +1485,13 @@ void WgText::regenSoftLines()
 
 	if( !m_bWrap )
 	{
+		if( bHasSoftLineArray )
+			delete [] m_pSoftLines;
+
 		m_pSoftLines = m_pHardLines;
 		m_nSoftLines = m_nHardLines;
 		return;
 	}
-
-	bool	bHasSoftLineArray = (m_pSoftLines != m_pHardLines && m_pSoftLines != &WgText::g_emptyLine)?true:false;
 
 	int nSoftLines;
 
