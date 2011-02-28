@@ -3,10 +3,10 @@
 #else
     #include <stdlib.h>
 #endif
-#ifdef __APPLE__
-#include <SDL/SDL.h>
-#else
+#ifdef WIN32
 #include <SDL.h>
+#else
+#include <SDL/SDL.h>
 #endif
 
 #include <wondergui.h>

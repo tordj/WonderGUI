@@ -120,6 +120,7 @@ void WgDirtyRectObj::Add( const WgRect& rect )
 	WgDirtyRect * pRect = (WgDirtyRect*) g_pMemPool->allocEntry();
 
 	*((WgRect*) pRect) = rect;
+	Addrect( pRect, pRectList );
 }
 
 void WgDirtyRectObj::Add( const int _x, const int _y, const int _w, const int _h )
