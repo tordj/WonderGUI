@@ -480,6 +480,14 @@ void WgText::setFont( WgFont * pFont )
 	regenSoftLines();
 }
 
+void WgText::setBreakLevel( int level )
+{
+	WgTextProp	prop = * m_pProp;
+	prop.SetBreakLevel(level);
+	m_pProp = prop.Register();
+	regenSoftLines();
+}
+
 void WgText::clearProperties()
 {
 	m_pProp = 0;
@@ -511,6 +519,14 @@ void WgText::clearStyle( WgMode mode )
 {
 	WgTextProp	prop = * m_pProp;
 	prop.ClearStyle(mode);
+	m_pProp = prop.Register();
+	regenSoftLines();
+}
+
+void WgText::clearBreakLevel()
+{
+	WgTextProp	prop = * m_pProp;
+	prop.ClearBreakLevel();
 	m_pProp = prop.Register();
 	regenSoftLines();
 }

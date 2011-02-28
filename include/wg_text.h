@@ -164,6 +164,7 @@ public:
 	inline WgColor				getColor() const { return m_pProp->GetColor(); }
 	inline WgColor				getColor(WgMode mode) const { return m_pProp->GetColor(mode); }
 	inline WgFontStyle			getStyle(WgMode mode) const { return m_pProp->GetStyle(mode); }
+	inline int					getBreakLevel() const { return m_pProp->GetBreakLevel(); }
 	inline WgFont *				getFont() const { return m_pProp->GetFont(); }
 
 //	--------------
@@ -176,6 +177,8 @@ public:
 	void				setStyle( WgFontStyle style );
 	void				setStyle( WgFontStyle style, WgMode mode );
 
+	void				setBreakLevel( int level );
+
 	void				setFont( WgFont * pFont );
 
 // -------------
@@ -187,6 +190,8 @@ public:
 
 	void				clearStyle();
 	void				clearStyle( WgMode mode );
+
+	void				clearBreakLevel();
 
 	void				clearFont();
 
