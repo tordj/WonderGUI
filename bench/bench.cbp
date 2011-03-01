@@ -13,14 +13,8 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
-					<Add directory="../include" />
-					<Add directory="../wg_sdl" />
 				</Compiler>
 				<Linker>
-					<Add library="freetype" />
-					<Add library="expat" />
-					<Add library="WonderGUI" />
-					<Add library="wg_sdl" />
 					<Add directory="../obj/Debug" />
 				</Linker>
 			</Target>
@@ -34,17 +28,23 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add directory="../obj/Release" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="`sdl-config --cflags`" />
+			<Add directory="../include" />
+			<Add directory="../wg_sdl" />
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --libs`" />
+			<Add library="freetype" />
+			<Add library="expat" />
+			<Add library="WonderGUI" />
+			<Add library="wg_sdl" />
 		</Linker>
-		<Unit filename="cb.bmp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

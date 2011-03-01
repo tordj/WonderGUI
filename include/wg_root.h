@@ -56,7 +56,7 @@ public:
 
 	inline WgGizmo *		Gizmo() const { return m_hook.Gizmo(); }
 	bool					SetGizmo( WgGizmo * pGizmo );
-	inline void				DeleteGizmo() { SetGizmo(0); }
+	inline void			DeleteGizmo() { SetGizmo(0); }
 	WgGizmo * 				ReleaseGizmo();
 
 
@@ -66,8 +66,8 @@ public:
 	bool	Render();
 	bool	Render( const WgRect& clip );
 
-	bool	BeginRender();
-	bool	RenderSection( const WgRect& clip, int layer = 0xFF );
+	bool	BeginRender( const WgRect& clip );
+	bool	RenderSection( int layer = 0xFF );
 	bool	EndRender();
 
 	void	AddDirtyRect( WgRect rect );

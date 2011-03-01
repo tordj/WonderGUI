@@ -195,7 +195,7 @@ public:
 
 private:
 	WgFlexAnchor() : m_xRelative(0.f), m_yRelative(0.f), m_pixelOfs(0,0) {};
-	WgFlexAnchor( float xRelative, float yRelative, const WgCord& pixelOfs );
+	WgFlexAnchor( float xRelative, float yRelative, const WgCord& pixelOfs ) : m_xRelative(xRelative), m_yRelative(yRelative), m_pixelOfs(pixelOfs) {}
 
 	float	m_xRelative;
 	float	m_yRelative;

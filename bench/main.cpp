@@ -56,7 +56,14 @@ int main ( int argc, char** argv )
 	WgGizmoPixmap * pBackground = new WgGizmoPixmap();
 	pBackground->SetSource( pImageBlock );
 
-	pRoot->SetGizmo(pBackground);
+	//
+
+	WgGizmoFlexGeo * pFlex = new WgGizmoFlexGeo();
+	WgFlexHook * pHook = pFlex->AddGizmo( pBackground );
+
+	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
+
+	pRoot->SetGizmo(pFlex);
 
     // program main loop
 
