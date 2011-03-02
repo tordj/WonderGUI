@@ -528,8 +528,8 @@ WgFlexHook::WgFlexHook( WgGizmo * pGizmo, WgGizmoFlexGeo * pParent ) : WgGizmoHo
 	m_minSize(0,0), m_maxSize(65536,65536), m_anchor(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
 	m_placementGeo(0,0,pGizmo->BestSize()), m_anchorTopLeft(WG_NORTHWEST),
 	m_anchorBottomRight(WG_SOUTHEAST), m_borders(0)
-
 {
+	DoSetGizmo();
 }
 
 bool WgFlexHook::LimitPlacementSize()
@@ -1337,6 +1337,12 @@ void WgGizmoFlexGeo::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDi
 
 void WgGizmoFlexGeo::OnNewSize( const WgSize& size )
 {
+	WgFlexHook * pHook = m_hooks.First();
+	while( pHook )
+	{
+		pHook->RefreshRealGeo();
+		pHook = pHook->NextHook();
+	}
 }
 
 //____ () _________________________________________________
