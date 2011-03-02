@@ -424,8 +424,8 @@ class		WgUpdateInfo
 enum WgSearchMode
 {
 	WG_SEARCH_MARKPOLICY,			// Perform a mark test on Gizmo.
-	WG_SEARCH_GEOMETRY,
-	WG_SEARCH_ACTION_TARGET,
+	WG_SEARCH_GEOMETRY,				// Goes strictly on geometry, ignores alpha.
+	WG_SEARCH_ACTION_TARGET,		// Like MARKPOLICY, but takes modality into account.
 };
 
 //____ WgMarkPolicy _____________________________________________________________

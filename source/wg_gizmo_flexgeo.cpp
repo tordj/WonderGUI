@@ -35,6 +35,17 @@ WgFlexAnchor		WgGizmoFlexGeo::g_baseAnchors[9] = { WgFlexAnchor(0.f, 0.f, WgCord
 														 WgFlexAnchor(0.f, 0.5f, WgCord(0,0)),
 														 WgFlexAnchor(0.5f, 0.5f, WgCord(0,0)) };
 
+//____ WgFlexHook::Constructor ________________________________________________
+
+WgFlexHook::WgFlexHook( WgGizmo * pGizmo, WgGizmoFlexGeo * pParent ) : WgGizmoHook( pGizmo ),
+	m_pParent(pParent), m_bHidden(false), m_bFloating(false), m_sizePolicy(WG_SIZE_SPECIFIED),
+	m_minSize(0,0), m_maxSize(65536,65536), m_anchor(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
+	m_placementGeo(0,0,pGizmo->BestSize()), m_anchorTopLeft(WG_NORTHWEST),
+	m_anchorBottomRight(WG_SOUTHEAST), m_borders(0)
+{
+}
+
+//____ WgFlexHook::SetAnchored() ______________________________________________
 
 bool WgFlexHook::SetAnchored()
 {
@@ -44,6 +55,8 @@ bool WgFlexHook::SetAnchored()
 	RefreshRealGeo();
 	return true;
 }
+
+//____ WgFlexHook::SetAnchored() ______________________________________________
 
 bool WgFlexHook::SetAnchored( int anchorTopLeft, int anchorBottomRight )
 {
@@ -58,6 +71,8 @@ bool WgFlexHook::SetAnchored( int anchorTopLeft, int anchorBottomRight )
 	RefreshRealGeo();
 	return true;
 }
+
+//____ WgFlexHook::SetAnchored() ______________________________________________
 
 bool  WgFlexHook::SetAnchored( int anchorTopLeft, int anchorBottomRight, WgBorders borders )
 {
@@ -75,6 +90,7 @@ bool  WgFlexHook::SetAnchored( int anchorTopLeft, int anchorBottomRight, WgBorde
 }
 
 
+//____ WgFlexHook::SetFloating() ______________________________________________
 
 bool WgFlexHook::SetFloating()
 {
@@ -85,15 +101,21 @@ bool WgFlexHook::SetFloating()
 	return true;
 }
 
+//____ WgFlexHook::SetFloating() ______________________________________________
+
 bool WgFlexHook::SetFloating( const WgRect& geometry )
 {
 	return SetFloating( geometry, WG_NORTHWEST, WG_NORTHWEST );
 }
 
+//____ WgFlexHook::SetFloating() ______________________________________________
+
 bool WgFlexHook::SetFloating( const WgRect& geometry, WgLocation hotspot )
 {
 	return SetFloating( geometry, hotspot, hotspot );
 }
+
+//____ WgFlexHook::SetFloating() ______________________________________________
 
 bool WgFlexHook::SetFloating( const WgRect& geometry, WgLocation hotspot, int anchor )
 {
@@ -110,15 +132,21 @@ bool WgFlexHook::SetFloating( const WgRect& geometry, WgLocation hotspot, int an
 	return true;
 }
 
+//____ WgFlexHook::Top() ______________________________________________________
+
 void WgFlexHook::Top()
 {
 	MoveOver( Chain()->Last() );
 }
 
+//____ WgFlexHook::Bottom() ___________________________________________________
+
 void WgFlexHook::Bottom()
 {
 	MoveUnder( Chain()->First() );
 }
+
+//____ WgFlexHook::Up() _______________________________________________________
 
 bool WgFlexHook::Up()
 {
@@ -145,6 +173,8 @@ bool WgFlexHook::Up()
 	return true;
 }
 
+//____ WgFlexHook::Down() _____________________________________________________
+
 bool WgFlexHook::Down()
 {
 	WgFlexHook * pPrev = Prev();
@@ -169,6 +199,8 @@ bool WgFlexHook::Down()
 
 	return true;
 }
+
+//____ WgFlexHook::MoveOver() _________________________________________________
 
 bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 {
@@ -222,6 +254,8 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 	return true;
 }
 
+//____ WgFlexHook::MoveUnder() ________________________________________________
+
 bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 {
 	if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
@@ -273,6 +307,8 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 	return true;
 }
 
+//____ WgFlexHook::Hide() _____________________________________________________
+
 void WgFlexHook::Hide()
 {
 	if( !m_bHidden )
@@ -282,6 +318,8 @@ void WgFlexHook::Hide()
 	}
 }
 
+//____ WgFlexHook::Show() _____________________________________________________
+
 void WgFlexHook::Show()
 {
 	if( m_bHidden )
@@ -290,6 +328,8 @@ void WgFlexHook::Show()
 		m_pParent->OnRequestRender( m_realGeo, this );
 	}
 }
+
+//____ WgFlexHook::SetOrigo() _________________________________________________
 
 bool WgFlexHook::SetOrigo( int anchor )
 {
@@ -305,6 +345,8 @@ bool WgFlexHook::SetOrigo( int anchor )
 	return true;
 }
 
+//____ WgFlexHook::SetHotspot() _______________________________________________
+
 bool WgFlexHook::SetHotspot( WgLocation hotspot )
 {
 	if( hotspot != m_hotspot )
@@ -316,6 +358,8 @@ bool WgFlexHook::SetHotspot( WgLocation hotspot )
 	return true;
 }
 
+//____ WgFlexHook::SetSizePolicy() ____________________________________________
+
 bool WgFlexHook::SetSizePolicy( WgSizePolicy policy )
 {
 	if( policy != m_sizePolicy )
@@ -326,6 +370,8 @@ bool WgFlexHook::SetSizePolicy( WgSizePolicy policy )
 	}
 	return true;
 }
+
+//____ WgFlexHook::SetMinSize() _______________________________________________
 
 bool WgFlexHook::SetMinSize( const WgSize& size )
 {
@@ -339,6 +385,8 @@ bool WgFlexHook::SetMinSize( const WgSize& size )
 	return true;
 }
 
+//____ WgFlexHook::SetMaxSize() _______________________________________________
+
 bool WgFlexHook::SetMaxSize( const WgSize& size )
 {
 	if( size.w < m_minSize.w || size.h < m_minSize.h )
@@ -350,6 +398,8 @@ bool WgFlexHook::SetMaxSize( const WgSize& size )
 		RefreshRealGeo();
 	return true;
 }
+
+//____ WgFlexHook::SetGeo() ___________________________________________________
 
 bool WgFlexHook::SetGeo( const WgRect& geometry )
 {
@@ -363,6 +413,8 @@ bool WgFlexHook::SetGeo( const WgRect& geometry )
 	return ret;
 }
 
+//____ WgFlexHook::SetOfs() ___________________________________________________
+
 bool WgFlexHook::SetOfs( const WgCord& ofs )
 {
 	m_placementGeo.x = ofs.x;
@@ -375,6 +427,8 @@ bool WgFlexHook::SetOfs( const WgCord& ofs )
 	return true;
 }
 
+//____ WgFlexHook::SetOfsX() __________________________________________________
+
 bool WgFlexHook::SetOfsX( int x )
 {
 	m_placementGeo.x = x;
@@ -386,6 +440,8 @@ bool WgFlexHook::SetOfsX( int x )
 	return true;
 }
 
+//____ WgFlexHook::SetOfsY() __________________________________________________
+
 bool WgFlexHook::SetOfsY( int y )
 {
 	m_placementGeo.y = y;
@@ -396,6 +452,8 @@ bool WgFlexHook::SetOfsY( int y )
 	}
 	return true;
 }
+
+//____ WgFlexHook::SetSize() __________________________________________________
 
 bool WgFlexHook::SetSize( const WgSize& size )
 {
@@ -409,6 +467,8 @@ bool WgFlexHook::SetSize( const WgSize& size )
 	return true;
 }
 
+//____ WgFlexHook::SetWidth() _________________________________________________
+
 bool WgFlexHook::SetWidth( int width )
 {
 	m_placementGeo.w = width;
@@ -420,6 +480,8 @@ bool WgFlexHook::SetWidth( int width )
 	return true;
 }
 
+//____ WgFlexHook::SetHeight() ________________________________________________
+
 bool WgFlexHook::SetHeight( int height )
 {
 	m_placementGeo.h = height;
@@ -430,6 +492,8 @@ bool WgFlexHook::SetHeight( int height )
 	}
 	return true;
 }
+
+//____ WgFlexHook::Move() _____________________________________________________
 
 bool WgFlexHook::Move( const WgCord& ofs )
 {
@@ -446,6 +510,8 @@ bool WgFlexHook::Move( const WgCord& ofs )
 	return true;
 }
 
+//____ WgFlexHook::MoveX() ____________________________________________________
+
 bool WgFlexHook::MoveX( int x )
 {
 	if( !m_bFloating )
@@ -460,6 +526,8 @@ bool WgFlexHook::MoveX( int x )
 
 	return true;}
 
+//____ WgFlexHook::MoveY() ____________________________________________________
+
 bool WgFlexHook::MoveY( int y )
 {
 	if( !m_bFloating )
@@ -472,47 +540,45 @@ bool WgFlexHook::MoveY( int y )
 	if( !RefreshRealGeo() )
 			return false;							// Return false if we could not get (exactly) the requested position.
 
-	return true;}
-
-WgCord WgFlexHook::Pos() const
-{
-	return m_realGeo.pos();
+	return true;
 }
 
-WgSize WgFlexHook::Size() const
-{
-	return m_realGeo.size();
-}
-
-WgRect WgFlexHook::Geo() const
-{
-	return m_realGeo;
-}
+//____ WgFlexHook::ScreenPos() ________________________________________________
 
 WgCord WgFlexHook::ScreenPos() const
 {
 	return m_realGeo.pos() + m_pParent->ScreenPos();
 }
 
+//____ WgFlexHook::ScreenGeo() ________________________________________________
+
 WgRect WgFlexHook::ScreenGeo() const
 {
 	return m_realGeo + m_pParent->ScreenPos();
 }
+
+//____ WgFlexHook::_prevHook() ________________________________________________
 
 WgGizmoHook * WgFlexHook::_prevHook() const
 {
 	return Prev();
 }
 
+//____ WgFlexHook::_nextHook() ________________________________________________
+
 WgGizmoHook * WgFlexHook::_nextHook() const
 {
 	return Next();
 }
 
+//____ WgFlexHook::Parent() ___________________________________________________
+
 WgGizmoContainer* WgFlexHook::Parent() const
 {
 	return m_pParent;
 }
+
+//____ WgFlexHook::GetRoot() __________________________________________________
 
 WgWidget* WgFlexHook::GetRoot()
 {
@@ -523,14 +589,7 @@ WgWidget* WgFlexHook::GetRoot()
 		return 0;
 }
 
-WgFlexHook::WgFlexHook( WgGizmo * pGizmo, WgGizmoFlexGeo * pParent ) : WgGizmoHook( pGizmo ),
-	m_pParent(pParent), m_bHidden(false), m_bFloating(false), m_sizePolicy(WG_SIZE_SPECIFIED),
-	m_minSize(0,0), m_maxSize(65536,65536), m_anchor(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
-	m_placementGeo(0,0,pGizmo->BestSize()), m_anchorTopLeft(WG_NORTHWEST),
-	m_anchorBottomRight(WG_SOUTHEAST), m_borders(0)
-
-{
-}
+//____ WgFlexHook::LimitPlacementSize() _______________________________________
 
 bool WgFlexHook::LimitPlacementSize()
 {
@@ -562,6 +621,8 @@ bool WgFlexHook::LimitPlacementSize()
 
 	return ret;
 }
+
+//____ WgFlexHook::RefreshRealGeo() ___________________________________________
 
 bool WgFlexHook::RefreshRealGeo()
 {
@@ -692,15 +753,21 @@ bool WgFlexHook::RefreshRealGeo()
 
 }
 
+//____ WgFlexHook::RequestRender() ____________________________________________
+
 void WgFlexHook::RequestRender()
 {
 	m_pParent->OnRequestRender( m_realGeo, this );
 }
 
+//____ WgFlexHook::RequestRender() ____________________________________________
+
 void WgFlexHook::RequestRender( const WgRect& rect )
 {
 	m_pParent->OnRequestRender( rect + m_realGeo.pos(), this );
 }
+
+//____ WgFlexHook::RequestResize() ____________________________________________
 
 void WgFlexHook::RequestResize()
 {
@@ -799,13 +866,13 @@ void WgFlexHook::_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentP
 
 
 
-//____ () _________________________________________________
+//____ Constructor ____________________________________________________________
 
 WgGizmoFlexGeo::WgGizmoFlexGeo() : m_bConfineChildren(false)
 {
 }
 
-//____ () _________________________________________________
+//____ Destructor _____________________________________________________________
 
 WgGizmoFlexGeo::~WgGizmoFlexGeo()
 {
@@ -813,21 +880,21 @@ WgGizmoFlexGeo::~WgGizmoFlexGeo()
 	DeleteAllAnchors();
 }
 
-//____ () _________________________________________________
+//____ Type() _________________________________________________________________
 
 const char * WgGizmoFlexGeo::Type( void ) const
 {
 	return GetMyType();
 }
 
-//____ () _________________________________________________
+//____ GetMyType() ____________________________________________________________
 
 const char * WgGizmoFlexGeo::GetMyType()
 {
 	return c_gizmoType;
 }
 
-//____ () _________________________________________________
+//____ SetConfineChildren() ___________________________________________________
 
 void WgGizmoFlexGeo::SetConfineChildren( bool bConfineChildren )
 {
@@ -846,7 +913,7 @@ void WgGizmoFlexGeo::SetConfineChildren( bool bConfineChildren )
 
 
 
-//____ () _________________________________________________
+//____ AddGizmo() _____________________________________________________________
 
 WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo )
 {
@@ -859,7 +926,7 @@ WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo )
 	return p;
 }
 
-//____ () _________________________________________________
+//____ AddGizmo() _____________________________________________________________
 
 WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo, int anchorTopLeft, int anchorBottomRight, WgBorders borders )
 {
@@ -872,7 +939,7 @@ WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo, int anchorTopLeft, int 
 	return p;
 }
 
-//____ () _________________________________________________
+//____ AddGizmo() _____________________________________________________________
 
 WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation hotspot, int anchor )
 {
@@ -885,7 +952,7 @@ WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo, const WgRect& geometry,
 	return p;
 }
 
-//____ () _________________________________________________
+//____ AddGizmo() _____________________________________________________________
 
 WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation hotspot )
 {
@@ -898,7 +965,7 @@ WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo, const WgRect& geometry,
 	return p;
 }
 
-//____ () _________________________________________________
+//____ InsertGizmo() __________________________________________________________
 
 WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling )
 {
@@ -911,7 +978,7 @@ WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling )
 	return p;
 }
 
-//____ () _________________________________________________
+//____ InsertGizmo() __________________________________________________________
 
 WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders borders )
 {
@@ -924,7 +991,7 @@ WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, 
 	return p;
 }
 
-//____ () _________________________________________________
+//____ InsertGizmo() __________________________________________________________
 
 WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgLocation hotspot, int anchor )
 {
@@ -937,7 +1004,7 @@ WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, 
 	return p;
 }
 
-//____ () _________________________________________________
+//____ InsertGizmo() __________________________________________________________
 
 WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgLocation hotspot )
 {
@@ -950,7 +1017,7 @@ WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, 
 	return p;
 }
 
-//____ () _________________________________________________
+//____ DeleteGizmo() __________________________________________________________
 
 bool WgGizmoFlexGeo::DeleteGizmo( WgGizmo * pGizmo )
 {
@@ -968,7 +1035,7 @@ bool WgGizmoFlexGeo::DeleteGizmo( WgGizmo * pGizmo )
 	return true;
 }
 
-//____ () _________________________________________________
+//____ ReleaseGizmo() _________________________________________________________
 
 bool WgGizmoFlexGeo::ReleaseGizmo( WgGizmo * pGizmo )
 {
@@ -987,7 +1054,7 @@ bool WgGizmoFlexGeo::ReleaseGizmo( WgGizmo * pGizmo )
 	return true;
 }
 
-//____ () _________________________________________________
+//____ DeleteAllGizmos() ______________________________________________________
 
 void WgGizmoFlexGeo::DeleteAllGizmos()
 {
@@ -1014,7 +1081,7 @@ void WgGizmoFlexGeo::DeleteAllGizmos()
 	}
 }
 
-//____ () _________________________________________________
+//____ ReleaseAllGizmos) ______________________________________________________
 
 void WgGizmoFlexGeo::ReleaseAllGizmos()
 {
@@ -1029,7 +1096,7 @@ void WgGizmoFlexGeo::ReleaseAllGizmos()
 							// we already have disconnected the children.
 }
 
-//____ AddAnchor() _________________________________________________
+//____ AddAnchor() ____________________________________________________________
 
 int WgGizmoFlexGeo::AddAnchor( float relativeX, float relativeY, const WgCord& pixelOfs )
 {
@@ -1037,7 +1104,7 @@ int WgGizmoFlexGeo::AddAnchor( float relativeX, float relativeY, const WgCord& p
 	return m_anchors.size()+9-1;
 }
 
-//____ ReplaceAnchor() _________________________________________________
+//____ ReplaceAnchor() ________________________________________________________
 
 bool WgGizmoFlexGeo::ReplaceAnchor( int index, float relativeX, float relativeY, const WgCord& pixelOfs )
 {
@@ -1061,7 +1128,7 @@ bool WgGizmoFlexGeo::ReplaceAnchor( int index, float relativeX, float relativeY,
 	return true;
 }
 
-//____ DeleteAnchor() _________________________________________________
+//____ DeleteAnchor() _________________________________________________________
 
 bool WgGizmoFlexGeo::DeleteAnchor( int index )
 {
@@ -1112,7 +1179,7 @@ bool WgGizmoFlexGeo::DeleteAnchor( int index )
 	return true;
 }
 
-//____ DeleteAllAnchors() _________________________________________________
+//____ DeleteAllAnchors() _____________________________________________________
 
 void WgGizmoFlexGeo::DeleteAllAnchors()
 {
@@ -1158,7 +1225,7 @@ void WgGizmoFlexGeo::DeleteAllAnchors()
 
 
 
-//____ Anchor() _________________________________________________
+//____ Anchor() _______________________________________________________________
 
 const WgFlexAnchor * WgGizmoFlexGeo::Anchor( int index )
 {
@@ -1173,52 +1240,79 @@ const WgFlexAnchor * WgGizmoFlexGeo::Anchor( int index )
 	return 0;
 }
 
-//____ () _________________________________________________
+//____ HeightForWidth() _______________________________________________________
 
 int WgGizmoFlexGeo::HeightForWidth( int width ) const
 {
 	return 0;		// No recommendation.
 }
 
-//____ () _________________________________________________
+//____ WidthForHeight() _______________________________________________________
 
 int WgGizmoFlexGeo::WidthForHeight( int height ) const
 {
 	return 0;		// No recommendation.
 }
 
-//____ () _________________________________________________
+//____ MinSize() ______________________________________________________________
 
 WgSize WgGizmoFlexGeo::MinSize() const
 {
 	return WgSize(1,1);
 }
 
-//____ () _________________________________________________
+//____ BestSize() _____________________________________________________________
 
 WgSize WgGizmoFlexGeo::BestSize() const
 {
 	return WgSize(0,0);		// No recommendation.
 }
 
-//____ () _________________________________________________
+//____ MaxSize() ______________________________________________________________
 
 WgSize WgGizmoFlexGeo::MaxSize() const
 {
 	return WgSize(65535,65535);
 }
 
-//____ () _________________________________________________
+//____ FindGizmo() ____________________________________________________________
 
 WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 {
-	//TODO: Implement!
+	WgFlexHook * pHook = m_hooks.Last();
+	WgGizmo * pResult = 0;
 
-	return 0;
+	while( pHook && !pResult )
+	{
+		if( pHook->m_realGeo.contains( ofs ) )
+		{
+			if( pHook->Gizmo()->IsContainer() )
+			{
+				pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_realGeo.pos(), mode );
+			}
+			else
+			{
+				switch( mode )
+				{
+					case WG_SEARCH_ACTION_TARGET:
+					case WG_SEARCH_MARKPOLICY:
+						if( pHook->Gizmo()->MarkTest( ofs - pHook->m_realGeo.pos() ) )
+							pResult = pHook->Gizmo();
+						break;
+					case WG_SEARCH_GEOMETRY:
+						pResult = pHook->Gizmo();
+						break;
+				}
+			}
+		}
+		pHook = pHook->PrevHook();
+	}
+
+	return pResult;
 }
 
 
-//____ () _________________________________________________
+//____ OnCollectRects() _______________________________________________________
 
 void WgGizmoFlexGeo::OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
 {
@@ -1230,7 +1324,7 @@ void WgGizmoFlexGeo::OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, c
 	}
 }
 
-//____ () _________________________________________________
+//____ OnMaskRects() __________________________________________________________
 
 void WgGizmoFlexGeo::OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
 {
@@ -1242,7 +1336,7 @@ void WgGizmoFlexGeo::OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, cons
 	}
 }
 
-//____ () _________________________________________________
+//____ OnRequestRender() ______________________________________________________
 
 void WgGizmoFlexGeo::OnRequestRender( const WgRect& rect, const WgFlexHook * pHook )
 {
@@ -1277,13 +1371,13 @@ void WgGizmoFlexGeo::OnRequestRender( const WgRect& rect, const WgFlexHook * pHo
 }
 
 
-//____ () _________________________________________________
+//____ OnCloneContent() _______________________________________________________
 
 void WgGizmoFlexGeo::OnCloneContent( const WgGizmo * _pOrg )
 {
 }
 
-//____ () _________________________________________________
+//____ _renderDirtyRects() ____________________________________________________
 
 void WgGizmoFlexGeo::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
 {
@@ -1297,7 +1391,7 @@ void WgGizmoFlexGeo::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _ca
 	}
 }
 
-//____ _clearDirtyRects() ______________________________________________________
+//____ _clearDirtyRects() _____________________________________________________
 
 void WgGizmoFlexGeo::_clearDirtyRects()
 {
@@ -1314,7 +1408,7 @@ void WgGizmoFlexGeo::_clearDirtyRects()
 }
 
 
-//____ _castDirtyRect() _____________________________________________________
+//____ _castDirtyRect() _______________________________________________________
 
 void WgGizmoFlexGeo::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut )
 {
@@ -1327,19 +1421,26 @@ void WgGizmoFlexGeo::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDi
 }
 
 
-//____ () _________________________________________________
+//____ OnNewSize() ____________________________________________________________
 
 void WgGizmoFlexGeo::OnNewSize( const WgSize& size )
 {
+	WgFlexHook * pHook = m_hooks.Last();
+	
+	while( pHook )
+	{
+		pHook->RefreshRealGeo();
+		pHook = pHook->PrevHook();
+	}
 }
 
-//____ () _________________________________________________
+//____ OnAction() _____________________________________________________________
 
 void WgGizmoFlexGeo::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 }
 
-//____ () _________________________________________________
+//____ OnAlphaTest() __________________________________________________________
 
 bool WgGizmoFlexGeo::OnAlphaTest( const WgCord& ofs )
 {
