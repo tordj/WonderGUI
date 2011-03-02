@@ -1370,6 +1370,12 @@ void WgGizmoFlexGeo::OnRequestRender( const WgRect& rect, const WgFlexHook * pHo
 	}
 }
 
+//____ () _________________________________________________
+
+void WgGizmoFlexGeo::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+{
+	// Do nothing
+}
 
 //____ OnCloneContent() _______________________________________________________
 

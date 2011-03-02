@@ -15,8 +15,6 @@
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
-					<Add directory="include" />
-					<Add directory="/usr/include/freetype2" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -29,13 +27,16 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-Wall" />
-					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 		</Build>
+		<Compiler>
+			<Add directory="include" />
+			<Add directory="/usr/include/freetype2" />
+		</Compiler>
 		<Unit filename="include/wg_anim.h" />
 		<Unit filename="include/wg_base.h" />
 		<Unit filename="include/wg_bitmapglyphs.h" />
