@@ -43,6 +43,7 @@ WgFlexHook::WgFlexHook( WgGizmo * pGizmo, WgGizmoFlexGeo * pParent ) : WgGizmoHo
 	m_placementGeo(0,0,pGizmo->BestSize()), m_anchorTopLeft(WG_NORTHWEST),
 	m_anchorBottomRight(WG_SOUTHEAST), m_borders(0)
 {
+	DoSetGizmo();
 }
 
 //____ WgFlexHook::SetAnchored() ______________________________________________
@@ -674,41 +675,43 @@ bool WgFlexHook::RefreshRealGeo()
 				break;
 
 			case WG_NORTH:
-				pos.x += sz.w/2;
+				pos.x -= sz.w/2;
 				break;
 
 			case WG_NORTHEAST:
-				pos.x += sz.w;
+				pos.x -= sz.w;
 				break;
 
 			case WG_EAST:
-				pos.x += sz.w;
-				pos.y += sz.h/2;
+				pos.x -= sz.w;
+				pos.y -= sz.h/2;
 				break;
 
 			case WG_SOUTHEAST:
-				pos.x += sz.w;
-				pos.y += sz.h;
+				pos.x -= sz.w;
+				pos.y -= sz.h;
 				break;
 
 			case WG_SOUTH:
-				pos.x += sz.w/2;
-				pos.y += sz.h;
+				pos.x -= sz.w/2;
+				pos.y -= sz.h;
 				break;
 
 			case WG_SOUTHWEST:
-				pos.y += sz.h;
+				pos.y -= sz.h;
 				break;
 
 			case WG_WEST:
-				pos.y += sz.h/2;
+				pos.y -= sz.h/2;
 				break;
 
 			case WG_CENTER:
-				pos.x += sz.w/2;
-				pos.y += sz.h/2;
+				pos.x -= sz.w/2;
+				pos.y -= sz.h/2;
 				break;
 		}
+
+		pos += m_placementGeo.pos();
 
 		// Limit size/pos according to parent
 
@@ -967,6 +970,33 @@ WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo, const WgRect& geometry,
 
 //____ InsertGizmo() __________________________________________________________
 
+WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation hotspot, int anchor )
+{
+	if( !pGizmo )
+		return 0;
+
+	WgFlexHook * p = new WgFlexHook( pGizmo, this );
+	m_hooks.PushBack(p);
+	p->SetFloating( WgRect(pos, pGizmo->BestSize()), hotspot, anchor );
+	return p;
+}
+
+//____ () _________________________________________________
+
+WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation hotspot )
+{
+	if( !pGizmo )
+		return 0;
+
+	WgFlexHook * p = new WgFlexHook( pGizmo, this );
+	m_hooks.PushBack(p);
+	p->SetFloating( WgRect(pos, pGizmo->BestSize()), hotspot );
+	return p;
+}
+
+
+//____ () _________________________________________________
+
 WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling )
 {
 	if( !pGizmo || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
@@ -1018,6 +1048,33 @@ WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, 
 }
 
 //____ DeleteGizmo() __________________________________________________________
+
+WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCord& pos, WgLocation hotspot, int anchor )
+{
+	if( !pGizmo || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
+		return 0;
+
+	WgFlexHook * p = new WgFlexHook( pGizmo, this );
+	p->MoveBefore( (WgFlexHook*)pSibling->Hook() );
+	p->SetFloating( pos, hotspot, anchor );
+	return p;
+}
+
+//____ () _________________________________________________
+
+WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCord& pos, WgLocation hotspot )
+{
+	if( !pGizmo || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
+		return 0;
+
+	WgFlexHook * p = new WgFlexHook( pGizmo, this );
+	p->MoveBefore( (WgFlexHook*)pSibling->Hook() );
+	p->SetFloating( pos, hotspot );
+	return p;
+}
+
+
+//____ () _________________________________________________
 
 bool WgGizmoFlexGeo::DeleteGizmo( WgGizmo * pGizmo )
 {

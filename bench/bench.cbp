@@ -9,7 +9,8 @@
 			<Target title="Debug">
 				<Option output="bin/Debug/bench" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
-				<Option type="1" />
+				<Option external_deps="../obj/Debug/libWonderGUI.a;../obj/Debug/libwg_sdl.a;" />
+				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
@@ -42,8 +43,8 @@
 			<Add option="`sdl-config --libs`" />
 			<Add library="freetype" />
 			<Add library="expat" />
-			<Add library="WonderGUI" />
 			<Add library="wg_sdl" />
+			<Add library="WonderGUI" />
 		</Linker>
 		<Unit filename="main.cpp" />
 		<Extensions>
