@@ -225,11 +225,15 @@ public:
 	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
 	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation hotspot, int anchor );
 	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation hotspot = WG_NORTHWEST );
+	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation hotspot, int anchor );
+	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation hotspot = WG_NORTHWEST );
 
 	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling );
 	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
 	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgLocation hotspot, int anchor );
 	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgLocation hotspot = WG_NORTHWEST );
+	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCord& geometry, WgLocation hotspot, int anchor );
+	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCord& geometry, WgLocation hotspot = WG_NORTHWEST );
 
 	bool			DeleteGizmo( WgGizmo * pGizmo );
 	bool			ReleaseGizmo( WgGizmo * pGizmo );

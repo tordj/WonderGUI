@@ -14,6 +14,7 @@
 #include <wg_gfxdevice_sdl.h>
 
 
+WgSurface * 	loadSurface( const char * path );
 SDL_Surface *	initSDL( int w, int h );
 bool	eventLoop();
 
@@ -39,22 +40,20 @@ int main ( int argc, char** argv )
 
 	WgRoot * pRoot = new WgRoot( pGfxDevice, pInputDevice );
 
-    // load an image
-    SDL_Surface* bmp = SDL_LoadBMP("cb2.bmp");
-    if (!bmp)
-    {
-        printf("Unable to load bitmap: %s\n", SDL_GetError());
-        return 1;
-    }
 
+	// Load images and specify blocks
 
-	WgSurfaceSDL * pImage = new WgSurfaceSDL(bmp);
-	WgBlockSetPtr pImageBlock = pImage->defineBlockSet( WgRect(0,0,bmp->w,bmp->h), WgBorders(0), WgBorders(0), 0 );
+	WgSurface * pBackImg = loadSurface("What-Goes-Up-3.bmp");
+	WgBlockSetPtr pBackBlock = pBackImg->defineBlockSet( WgRect(0,0,pBackImg->Width(),pBackImg->Height()), WgBorders(0), WgBorders(0), WG_TILE_ALL );
+
+	WgSurface * pFlagImg = loadSurface("cb2.bmp");
+	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0 );
+
 
 	//
 
 	WgGizmoPixmap * pBackground = new WgGizmoPixmap();
-	pBackground->SetSource( pImageBlock );
+	pBackground->SetSource( pBackBlock );
 
 	//
 
@@ -64,6 +63,21 @@ int main ( int argc, char** argv )
 	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
 
 	pRoot->SetGizmo(pFlex);
+
+	//
+
+	WgGizmoPixmap * pFlag1= new WgGizmoPixmap();
+	pFlag1->SetSource( pFlagBlock );
+
+	pHook = pFlex->AddGizmo( pFlag1, WgCord(0,0), WG_CENTER );
+
+
+
+	WgGizmoPixmap * pFlag2= new WgGizmoPixmap();
+	pFlag2->SetSource( pFlagBlock );
+
+	pHook = pFlex->AddGizmo( pFlag2, WgCord(100,100), WG_CENTER );
+
 
     // program main loop
 
@@ -88,7 +102,8 @@ int main ( int argc, char** argv )
 	delete pGfxDevice;
 	delete pInputDevice;
 	delete pCanvas;
-	delete pImage;
+	delete pBackImg;
+	delete pFlagImg;
 
 	WgBase::Exit();
 
@@ -149,4 +164,21 @@ bool eventLoop()
 	} // end of message processing
 
 	return true;
+}
+
+
+//____ loadSurface() __________________________________________________________
+
+WgSurface * loadSurface( const char * path )
+{
+    // load an image
+    SDL_Surface* bmp = SDL_LoadBMP(path);
+    if (!bmp)
+    {
+        printf("Unable to load bitmap: %s\n", SDL_GetError());
+        return 0;
+    }
+
+	return new WgSurfaceSDL(bmp);
+
 }
