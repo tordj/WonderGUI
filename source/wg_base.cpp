@@ -45,6 +45,8 @@ WgTextPropPtr	WgBase::s_pDefaultTextProp;
 
 void WgBase::Init()
 {
+	s_pWeakPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
+
 	WgTextTool::setDefaultBreakRules();
 
 	WgDirtyRectObj::Init();
@@ -67,6 +69,22 @@ void WgBase::Exit()
 #endif
 	WgDirtyRectObj::Exit();
 	s_pDefaultTextProp = 0;
+
+	delete s_pWeakPtrPool;
+}
+
+//____ AllocWeakPtrHub() ______________________________________________________
+
+WgWeakPtrHub * WgBase::AllocWeakPtrHub()
+{
+	return (WgWeakPtrHub*) s_pWeakPtrPool->allocEntry();
+}
+
+//____ FreeWeakPtrHub() _______________________________________________________
+
+void WgBase::FreeWeakPtrHub( WgWeakPtrHub * pHub )
+{
+	s_pWeakPtrPool->freeEntry( pHub );
 }
 
 

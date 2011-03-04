@@ -57,6 +57,10 @@ class Wg_Interface_TextHolder;
 class WgGizmoContainer;
 class WgSkinNode;
 
+
+
+
+
 class WgGizmo : public WgEmitter
 {
 friend class WgSkinNode;
@@ -177,6 +181,7 @@ protected:
 
 	Uint32			m_id;
 	WgGizmoHook *	m_pHook;
+	WgWeakPtrHub *	m_pWeakPtrHub;
 
 	WgSkinNode *	m_pSkinNode;
 

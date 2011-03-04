@@ -33,23 +33,28 @@ enum	WgEventId
 	WG_EVENT_KEY_RELEASED,
 	WG_EVENT_CHARACTER,
 	WG_EVENT_WHEEL_ROLLED,
+	WG_EVENT_TIME_PASSED,
+
+	WG_EVENT_END_POINTER_MOVED,
+	WG_EVENT_BUTTON_DRAG,
 };
 
 
 namespace WgEvent
 {
-	class EventBase
+	class Event
 	{
 		friend class WgEventHandler;
 
 		public:
 
-			inline WgEventId	Id() { return m_id; }
-			inline Int64		Timestamp() { return m_timestamp; }
-			inline WgGizmo *	Gizmo() { return m_pGizmo; }
+			inline WgEventId		Id() const { return m_id; }
+			inline Int64			Timestamp() const { return m_timestamp; }
+			inline WgGizmo *		Gizmo() const { return m_pGizmo; }
+			inline WgModifierKeys	ModKeys() const { return m_modKeys; }  
 
 		protected:
-			EventBase() { m_timestamp = 0; m_pGizmo = 0; };
+			Event() { m_timestamp = 0; m_pGizmo = 0; };
 
 			struct Param
 			{
@@ -59,89 +64,120 @@ namespace WgEvent
 					int		integer;
 					float	real;
 					void *	pointer;
+
+					struct
+					{
+						short	short1;
+						short	short2;
+					};
 				};
 			}
 
-			WgEventId	m_id;				// Id of the event
-			Int64		m_timestamp;		// Timestamp of posting this event
-			WgGizmo *	m_pGizmo;			// Gizmo posting the event
-			Param		m_param[4];
+			WgEventId		m_id;				// Id of the event
+			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
+			Int64			m_timestamp;		// Timestamp of posting this event
+			WgGizmo *		m_pGizmo;			// Gizmo posting the event
+			Param			m_param[4];
 	};
 
-	class PointerMoved : public EventBase
+	class PointerMoved : public Event
 	{
 	public:
 		PointerMoved( const WgCord& pos );
 
-		WgCord			Pos() const { return WgCord( m_param[0].integer, m_param[1].integer ); }
-		WgModifierKeys	Modkeys() const { return (WgModifierKeys) m_param[2].integer; }
+		WgCord			Pos() const;
 	}
 
-	class ButtonPressed : public EventBase
+	class ButtonPressed : public Event
 	{
 	public:
 		ButtonPressed( int button );
 
-		int				Button() const { return m_param[0].integer; }
-		WgCord			Pos() const { return WgCord( m_param[1].integer, m_param[2].integer ); }
-		WgModifierKeys	Modkeys() const { return (WgModifierKeys) m_param[3].integer; }
+		int				Button() const;
+		WgCord			PointerPos() const;
 	}
 
-	class ButtonReleased : public EventBase
+	class ButtonReleased : public Event
 	{
 	public:
 		ButtonReleased( int button );
 
-		int				Button() const { return m_param[0].integer; }
-		WgCord			Pos() const { return WgCord( m_param[1].integer, m_param[2].integer ); }
-		WgModifierKeys	Modkeys() const { return (WgModifierKeys) m_param[3].integer; }
+		int				Button() const;
+		WgCord			PointerPos() const;
 	}
 
-	class KeyPressed : public EventBase
+	class KeyPressed : public Event
 	{
 	public:
 		KeyPressed( int native_charcode );
 
-		int				NativeKeyCode() const { return m_param[0].integer; }
-		int				TranslatedKeyCode() const { return m_param[1].integer; }
-		WgModifierKeys	Modkeys() const { return (WgModifierKeys) m_param[2].integer; }
+		int				NativeKeyCode() const;
+		int				TranslatedKeyCode() const;
+		WgCord			PointerPos() const;
 	}
 
-	class KeyReleased : public EventBase
+	class KeyReleased : public Event
 	{
 	public:
 		KeyReleased( int native_charcode );
 
-		int				NativeKeyCode() const { return m_param[0].integer; }
-		int				TranslatedKeyCode() const { return m_param[1].integer; }
-		WgModifierKeys	Modkeys() const { return (WgModifierKeys) m_param[2].integer; }
+		int				NativeKeyCode() const;
+		int				TranslatedKeyCode() const;
+		WgCord			PointerPos() const;
 	}
 
-	class Character : public EventBase
+	class Character : public Event
 	{
 	public:
 		Character( unsigned short character );
 
-		unsigned short	Character() const { return (unsigned short) m_param[0].integer; }
+		unsigned short	Character() const;
 	}
 
-	class WheelRolled : public EventBase
+	class WheelRolled : public Event
 	{
 	public:
 		WheelRolled( int wheel, int distance );
 
-		int				Wheel() const { return m_param[0].integer; }
-		int				Distance() const { return m_param[1].integer; }
-		WgModifierKeys	Modkeys() const { return (WgModifierKeys) m_param[2].integer; }
+		int				Wheel() const;
+		int				Distance() const;
+		WgCord			PointerPos() const;
 	}
 
-	class TimePassed : public EventBase
+	class TimePassed : public Event
 	{
 	public:
 		TimePassed( int ms );
 
-		int				Millisec() const { return m_param[0].integer; }
+		int				Millisec() const;
 	}
+
+
+	//___ Internally posted events ____________________________________________
+
+	class EndPointerMoved : public Event
+	{
+		friend class WgEventHandler;
+	protected:
+		EndPointerMoved( const WgCord& pos );
+	public:
+		WgCord			Pos() const;
+	}
+
+	class ButtonDrag : public Event
+	{
+		friend class WgEventHandler;
+	protected:
+		ButtonDrag( int button, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos );
+	public:
+		int				Button() const;
+		WgCord			DragSinceStart() const;
+		WgCord			DragSinceLast() const;
+		WgCord			PointerPos() const;
+		WgCord			StartPos() const;
+		WgCord			PrevPos() const;
+	}
+
 
 }
 

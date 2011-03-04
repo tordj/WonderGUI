@@ -48,6 +48,8 @@ typedef struct FT_LibraryRec_  *FT_Library;
 
 class WgFont;
 class WgTextPropManager;
+class WgMemPool;
+class WgWeakPtrHub;
 
 class WgBase
 {
@@ -69,12 +71,14 @@ public:
 	static void SetDefaultTextProp( const WgTextPropPtr& pProp );
 	static WgTextPropPtr GetDefaultTextProp() { return s_pDefaultTextProp; }
 
-
+	static WgWeakPtrHub *	AllocWeakPtrHub();
+	static void			FreeWeakPtrHub( WgWeakPtrHub * pHub );
 
 private:
 	static WgTextPropPtr	s_pDefaultTextProp;
 //	WgTextMgrPtr	m_pDefTextMgr;
 
+	static WgMemPool *	s_pWeakPtrPool;
 
 #ifdef WG_USE_FREETYPE
 	static bool			s_bFreeTypeInitialized;

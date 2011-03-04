@@ -208,6 +208,110 @@ private:
 };
 
 
+class WgWeakPtrHub
+{
+public:
+	int		refCnt;
+	void *	pObj;
+};
+
+
+template<class T> class WgWeakPtr
+{
+public:
+	WgWeakPtr( T * pObj=0 )
+	{
+		if( pObj )
+		{
+			if( !pObj->m_pWeakPtrHub )
+			{
+				m_pHub = WgBase::AllocWeakPtrHub();
+				m_pHub->refCnt = 1;
+				m_pHub->pObj = pObj;
+				pObj->m_pWeakPtrHub = m_pHub;
+			}
+			else
+			{
+				m_pHub = pObj->m_pWeakPtrHub;
+				m_pHub->refCnt++;
+			}
+		}
+		else
+		{
+			m_pHub = 0;
+		}
+	};
+
+	WgWeakPtr(const WgWeakPtr<T>& r)
+	{
+		m_pHub = r.m_pHub;
+		if( m_pHub )
+			((WgWeakPtr*)m_pHub)->refCnt++;
+	}
+
+	~WgWeakPtr()
+	{
+		if( m_pHub )
+		{
+			m_pHub->refCnt--;
+
+			if( m_pHub->refCnt == 0 )
+			{
+				if( m_pHub->pObj )
+					m_pHub->pObj->m_pWeakPtrHub = 0;
+				WgBase::FreeWeakPtrHub(m_pHub);
+			}
+		}
+	}
+
+
+
+    WgWeakPtr<T> & operator=( WgWeakPtr<T> const & r)
+	{
+		if( m_pHub != r.m_pHub )
+		{
+			if( m_pHub )
+			{
+				m_pHub->refCnt--;
+
+				if( m_pHub->refCnt == 0 )
+				{
+					if( m_pHub->pObj )
+						m_pHub->pObj->m_pWeakPtrHub = 0;
+					WgBase::FreeWeakPtrHub(m_pHub);
+				}
+			}
+
+			m_pHub = r.m_pHub;
+			if( m_pHub )
+				m_pHub->refCnt++;
+		}
+		return *this;
+	}
+
+	inline T & operator*() const { return * GetRealPtr(); }
+	inline T * operator->() const { return GetRealPtr(); }
+
+	inline bool operator==(const WgSmartPtrPooled<T>& other) const { return m_pHub == other.m_pHub; }
+	inline bool operator!=(const WgSmartPtrPooled<T>& other) const { return m_pHub != other.m_pHub; }
+
+	inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
+
+	inline T * GetRealPtr() const 
+	{ 
+		if( m_pHub && m_pHub->pObj )
+			return (T*) m_pHub->Obj; 
+		else
+			return (T*) (0);
+	}
+
+
+private:
+
+	WgWeakPtrHub * m_pHub;
+};
+
+
 
 #endif //WG_SMARTPTR_DOT_H
 

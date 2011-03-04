@@ -50,10 +50,44 @@ public:
 
 private:
 
+	void	CompleteEvent( WgEvent::EventBase& _event );
+	void	ProcessEventInternal( WgEvent::EventBase& _event );
 
-	std::vector<WgEvent>	m_eventQueue;
+	void	ProcessPointerMoved( WgEvent::PointerMoved * pEvent );
+
+	//
+
+	std::deque<WgEvent>		m_eventQueue;
+	bool					m_bIsProcessing;	// Set when we are inside ProcessEvents().
+	std::deque<WgEvent>::iterator	m_insertPos;// Position where we insert events being queued when processing.
 
 	Int64					m_time;
+	WgCord					m_pointerPos;
+	WgModifierKeys			m_modKeys;
+
+	// Settings for keyboard/pointer input
+
+	int			m_doubleClickTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
+
+	int			m_buttonRepeatDelay;
+	int			m_buttonRepeatRate;
+
+	int			m_keyRepeatDelay;
+	int			m_keyRepeatRate;
+
+	std::map<int,WgKey>	m_keycodeMap;		// Maps native keycodes to WgKey.
+
+	// Current mouse state
+
+	std::vector<WgGizmoWeakPtr>	m_vInsideWidgets;
+
+	// Current button states
+
+	WgEvent::EventBase	m_latestButtonEvents[WG_MAX_BUTTONS];
+
+	// Current keyboard state
+
+
 
 };
 
