@@ -10,8 +10,6 @@
 #endif
 
 
-
-
 //___ WgSmartPtrImpl __________________________________________________________
 
 class WgSmartPtrImpl
@@ -208,86 +206,43 @@ private:
 };
 
 
-class WgWeakPtrHub
+//____ WgWeakPtrImpl __________________________________________________________
+
+class WgWeakPtrImpl
 {
 public:
-	int		refCnt;
-	void *	pObj;
+	WgWeakPtrImpl( WgWeakPtrTarget * pObj );
+	~WgWeakPtrImpl();
+
+	void copy( WgWeakPtrImpl const & r );
+
+	WgWeakPtrHub * m_pHub;
 };
 
 
-template<class T> class WgWeakPtr
+//____ WgWeakPtr ______________________________________________________________
+
+template<class T> class WgWeakPtr : private WgWeakPtrImpl
 {
 public:
-	WgWeakPtr( T * pObj=0 )
-	{
-		if( pObj )
-		{
-			if( !pObj->m_pWeakPtrHub )
-			{
-				m_pHub = WgBase::AllocWeakPtrHub();
-				m_pHub->refCnt = 1;
-				m_pHub->pObj = pObj;
-				pObj->m_pWeakPtrHub = m_pHub;
-			}
-			else
-			{
-				m_pHub = pObj->m_pWeakPtrHub;
-				m_pHub->refCnt++;
-			}
-		}
-		else
-		{
-			m_pHub = 0;
-		}
-	};
+	WgWeakPtr( T * pObj=0 ) : WgWeakPtrImpl( pObj ) {}
 
 	WgWeakPtr(const WgWeakPtr<T>& r)
 	{
 		m_pHub = r.m_pHub;
 		if( m_pHub )
-			((WgWeakPtr*)m_pHub)->refCnt++;
+			m_pHub->refCnt++;
 	}
 
-	~WgWeakPtr()
+	~WgWeakPtr() {}
+
+
+    inline WgWeakPtr<T> & operator=( WgWeakPtr<T> const & r)
 	{
-		if( m_pHub )
-		{
-			m_pHub->refCnt--;
-
-			if( m_pHub->refCnt == 0 )
-			{
-				if( m_pHub->pObj )
-					m_pHub->pObj->m_pWeakPtrHub = 0;
-				WgBase::FreeWeakPtrHub(m_pHub);
-			}
-		}
-	}
-
-
-
-    WgWeakPtr<T> & operator=( WgWeakPtr<T> const & r)
-	{
-		if( m_pHub != r.m_pHub )
-		{
-			if( m_pHub )
-			{
-				m_pHub->refCnt--;
-
-				if( m_pHub->refCnt == 0 )
-				{
-					if( m_pHub->pObj )
-						m_pHub->pObj->m_pWeakPtrHub = 0;
-					WgBase::FreeWeakPtrHub(m_pHub);
-				}
-			}
-
-			m_pHub = r.m_pHub;
-			if( m_pHub )
-				m_pHub->refCnt++;
-		}
+		copy( r );
 		return *this;
 	}
+
 
 	inline T & operator*() const { return * GetRealPtr(); }
 	inline T * operator->() const { return GetRealPtr(); }
@@ -297,18 +252,13 @@ public:
 
 	inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 
-	inline T * GetRealPtr() const 
-	{ 
+	inline T * GetRealPtr() const
+	{
 		if( m_pHub && m_pHub->pObj )
-			return (T*) m_pHub->Obj; 
+			return static_cast<T*>(m_pHub->pObj);
 		else
-			return (T*) (0);
+			return reinterpret_cast<T*>(0);
 	}
-
-
-private:
-
-	WgWeakPtrHub * m_pHub;
 };
 
 

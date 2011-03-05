@@ -39,6 +39,7 @@
 
 WgTextPropPtr	WgBase::s_pDefaultTextProp;
 
+WgMemPool *		WgBase::s_pWeakPtrPool;
 
 
 //____ Init() __________________________________________________________________
