@@ -47,10 +47,10 @@ typedef unsigned __int64  uint64_t;
 	typedef unsigned char	Uint8;
 	typedef signed char		Sint8;
 	typedef unsigned short	Uint16;
-	typedef signed short	Sint16;
-	typedef unsigned int	Uint32;
+	typedef signed short		Sint16;
+	typedef unsigned int		Uint32;
 	typedef signed int		Sint32;
-	typedef uint64_t		Uint64;
+	typedef uint64_t			Uint64;
 	typedef int64_t			Sint64;
 #endif
 
@@ -444,7 +444,7 @@ enum WgLocation
 	// Clockwise from upper left corner, center last. Must be in range 0-8
 
 	WG_NORTHWEST	= 0,
-	WG_NORTH		= 1,	
+	WG_NORTH		= 1,
 	WG_NORTHEAST	= 2,
 	WG_EAST			= 3,
 	WG_SOUTHEAST	= 4,

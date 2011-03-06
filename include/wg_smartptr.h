@@ -211,6 +211,7 @@ private:
 class WgWeakPtrImpl
 {
 public:
+	WgWeakPtrImpl() { m_pHub = 0; }
 	WgWeakPtrImpl( WgWeakPtrTarget * pObj );
 	~WgWeakPtrImpl();
 
@@ -225,6 +226,7 @@ public:
 template<class T> class WgWeakPtr : private WgWeakPtrImpl
 {
 public:
+	WgWeakPtr() {}
 	WgWeakPtr( T * pObj=0 ) : WgWeakPtrImpl( pObj ) {}
 
 	WgWeakPtr(const WgWeakPtr<T>& r)

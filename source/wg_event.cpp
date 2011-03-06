@@ -26,171 +26,171 @@ namespace WgEvent
 {
 	//____ PointerMoved __________________________________________________________
 
-	PointerMoved::PointerMoved( const WgCord& pos ) 
-	{ 
-		m_id = WG_EVENT_POINTER_MOVED; 
-		m_param[0].integer = pos.x;	
-		m_param[1].integer = pos.y;	
+	PointerMoved::PointerMoved( const WgCord& pos )
+	{
+		m_id = WG_EVENT_POINTER_MOVED;
+		m_param[0].integer = pos.x;
+		m_param[1].integer = pos.y;
 	}
 
-	WgCord PointerMoved::Pos() const 
-	{ 
-		return WgCord( m_param[0].integer, m_param[1].integer ); 
+	WgCord PointerMoved::Pos() const
+	{
+		return WgCord( m_param[0].integer, m_param[1].integer );
 	}
-	
+
 	//____ ButtonPressed ______________________________________________________
 
-	ButtonPressed::ButtonPressed( int button ) 
-	{ 
-		m_id = WG_EVENT_BUTTON_PRESSED; 
-		m_param[0].integer = button; 
+	ButtonPressed::ButtonPressed( int button )
+	{
+		m_id = WG_EVENT_BUTTON_PRESSED;
+		m_param[0].integer = button;
 	}
 
-	int ButtonPressed::Button() const 
-	{ 
-		return m_param[0].integer; 
+	int ButtonPressed::Button() const
+	{
+		return m_param[0].integer;
 	}
-	
-	WgCord ButtonPressed::PointerPos() const 
-	{ 
-		return WgCord( m_param[1].integer, m_param[2].integer ); 
+
+	WgCord ButtonPressed::PointerPos() const
+	{
+		return WgCord( m_param[1].integer, m_param[2].integer );
 	}
-	
+
 	//____ ButtonReleased _____________________________________________________
 
-	ButtonReleased::ButtonReleased( int button ) 
-	{ 
-		m_id = WG_EVENT_BUTTON_RELEASED; 
-		m_param[0].integer = button; 
+	ButtonReleased::ButtonReleased( int button )
+	{
+		m_id = WG_EVENT_BUTTON_RELEASED;
+		m_param[0].integer = button;
 	}
 
-	int ButtonReleased::Button() const 
-	{ 
-		return m_param[0].integer; 
+	int ButtonReleased::Button() const
+	{
+		return m_param[0].integer;
 	}
 
-	WgCord ButtonReleased::PointerPos() const 
-	{ 
-		return WgCord( m_param[1].integer, m_param[2].integer ); 
+	WgCord ButtonReleased::PointerPos() const
+	{
+		return WgCord( m_param[1].integer, m_param[2].integer );
 	}
-	
+
 	//____ KeyPressed _________________________________________________________
 
-	KeyPressed::KeyPressed( int native_charcode ) 
-	{ 
-		m_id = WG_EVENT_KEY_PRESSED; 
-		m_param[0].integer = native_charcode; 
+	KeyPressed::KeyPressed( int native_keycode )
+	{
+		m_id = WG_EVENT_KEY_PRESSED;
+		m_param[0].integer = native_keycode;
 	}
 
-	int KeyPressed::NativeKeyCode() const 
-	{ 
-		return m_param[0].integer; 
-	}
-	
-	int KeyPressed::TranslatedKeyCode() const 
-	{ 
-		return m_param[1].integer; 
+	int KeyPressed::NativeKeyCode() const
+	{
+		return m_param[0].integer;
 	}
 
-	WgCord KeyPressed::PointerPos() const 
-	{ 
+	int KeyPressed::TranslatedKeyCode() const
+	{
+		return m_param[1].integer;
+	}
+
+	WgCord KeyPressed::PointerPos() const
+	{
 		return WgCord( m_param[2].integer, m_param[3].integer );
 	}
 
 	//____ KeyReleased ________________________________________________________
 
-	KeyReleased::KeyReleased( int native_charcode ) 
-	{ 
-		m_id = WG_EVENT_KEY_RELEASED; 
-		m_param[0].integer = native_keycode; 
+	KeyReleased::KeyReleased( int native_keycode )
+	{
+		m_id = WG_EVENT_KEY_RELEASED;
+		m_param[0].integer = native_keycode;
 	}
 
-	int KeyReleased::NativeKeyCode() const 
-	{ 
-		return m_param[0].integer; 
-	}
-	
-	int KeyReleased::TranslatedKeyCode() const 
-	{ 
-		return m_param[1].integer; 
+	int KeyReleased::NativeKeyCode() const
+	{
+		return m_param[0].integer;
 	}
 
-	WgCord KeyReleased::PointerPos() const 
-	{ 
+	int KeyReleased::TranslatedKeyCode() const
+	{
+		return m_param[1].integer;
+	}
+
+	WgCord KeyReleased::PointerPos() const
+	{
 		return WgCord( m_param[2].integer, m_param[3].integer );
 	}
 
 
 	//____ Character __________________________________________________________
 
-	Character::Character( unsigned short character ) 
-	{ 
-		m_id = WG_EVENT_CHARACTER; 
-		m_param[0].integer = character; 
+	Character::Character( unsigned short character )
+	{
+		m_id = WG_EVENT_CHARACTER;
+		m_param[0].integer = character;
 	}
 
-	unsigned short Character::Character() const 
-	{ 
-		return (unsigned short) m_param[0].integer; 
+	unsigned short Character::Char() const
+	{
+		return (unsigned short) m_param[0].integer;
 	}
 
 	//____ WheelRolled ________________________________________________________
 
-	WheelRolled::WheelRolled( int wheel, int distance ) 
-	{ 
-		m_id = WG_EVENT_WHEEL_ROLLED; 
-		m_param[0].integer = wheel; 
-		m_param[1].integer = distance; 
+	WheelRolled::WheelRolled( int wheel, int distance )
+	{
+		m_id = WG_EVENT_WHEEL_ROLLED;
+		m_param[0].integer = wheel;
+		m_param[1].integer = distance;
 	}
 
-	int WheelRolled::Wheel() const 
-	{ 
-		return m_param[0].integer; 
+	int WheelRolled::Wheel() const
+	{
+		return m_param[0].integer;
 	}
-	
-	int WheelRolled::Distance() const 
-	{ 
-		return m_param[1].integer; 
+
+	int WheelRolled::Distance() const
+	{
+		return m_param[1].integer;
 	}
-	
-	WgCord WheelRolled::PointerPos() const 
-	{ 
+
+	WgCord WheelRolled::PointerPos() const
+	{
 		return WgCord( m_param[2].integer, m_param[3].integer );
 	}
 
 	//____ TimePassed _________________________________________________________
 
-	TimePassed::TimePassed( int ms ) 
-	{ 
-		m_id = WG_EVENT_TIME_PASSED; 
-		m_param[0].integer = ms; 
+	TimePassed::TimePassed( int ms )
+	{
+		m_id = WG_EVENT_TIME_PASSED;
+		m_param[0].integer = ms;
 	}
 
-	int TimePassed::Millisec() const 
-	{ 
-		return m_param[0].integer; 
+	int TimePassed::Millisec() const
+	{
+		return m_param[0].integer;
 	}
 
 	//____ EndPointerMoved _______________________________________________________
 
-	EndPointerMoved::EndPointerMoved( const WgCord& pos ) 
-	{ 
-		m_id = WG_EVENT_END_POINTER_MOVED; 
-		m_param[0].integer = pos.x;	
-		m_param[1].integer = pos.y;	
+	EndPointerMoved::EndPointerMoved( const WgCord& pos )
+	{
+		m_id = WG_EVENT_END_POINTER_MOVED;
+		m_param[0].integer = pos.x;
+		m_param[1].integer = pos.y;
 	}
 
-	WgCord EndPointerMoved::Pos() const 
-	{ 
-		return WgCord( m_param[0].integer, m_param[1].integer ); 
+	WgCord EndPointerMoved::Pos() const
+	{
+		return WgCord( m_param[0].integer, m_param[1].integer );
 	}
 
-	//____ ButtonDrag _________________________________________________________
+	//____ ButtonDragged ______________________________________________________
 
-	ButtonDrag::ButtonDrag( int button, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos ) 
-	{ 
+	ButtonDragged::ButtonDragged( int button, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos )
+	{
 
-		m_id = WG_EVENT_BUTTON_DRAG; 
+		m_id = WG_EVENT_BUTTON_DRAGGED;
 		m_param[0].integer = button;
 
 		m_param[1].short1 = orgPos.x;
@@ -204,29 +204,29 @@ namespace WgEvent
 	}
 
 
-	WgCord ButtonDrag::DragSinceStart() const
+	WgCord ButtonDragged::DraggedSinceStart() const
 	{
-		return WgCord( m_param[2].short1, m_param[2].short2 ) );
+		return WgCord( m_param[2].short1, m_param[2].short2 );
 	}
 
-	WgCord ButtonDrag::DragSinceLast() const
+	WgCord ButtonDragged::DraggedSinceLast() const
 	{
-		return WgCord( m_param[3].short1, m_param[3].short2 ) );
+		return WgCord( m_param[3].short1, m_param[3].short2 );
 	}
 
-	WgCord ButtonDrag::PointerPos() const;
+	WgCord ButtonDragged::PointerPos() const
 	{
-		return WgCord( m_param[1].short1 + m_param[2].short1, m_param[1].short2 + m_param[2].short2 ) );
+		return WgCord( m_param[1].short1 + m_param[2].short1, m_param[1].short2 + m_param[2].short2 );
 	}
 
-	WgCord ButtonDrag::StartPos() const
+	WgCord ButtonDragged::StartPos() const
 	{
-		return WgCord( m_param[1].short1, m_param[1].short2 ) );
+		return WgCord( m_param[1].short1, m_param[1].short2 );
 	}
 
-	WgCord ButtonDrag::PrevPos() const
+	WgCord ButtonDragged::PrevPos() const
 	{
-		return WgCord( m_param[1].short1 + m_param[2].short1 - m_param[3].short1, m_param[1].short2 + m_param[2].short2 - m_param[3].short2 ) );
+		return WgCord( m_param[1].short1 + m_param[2].short1 - m_param[3].short1, m_param[1].short2 + m_param[2].short2 - m_param[3].short2 );
 	}
 
 };

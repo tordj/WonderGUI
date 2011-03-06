@@ -42,6 +42,7 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual void	OnEnable();
 		virtual void	OnDisable();
 
+
 	private:
 		bool		_isGizmo() const;
 		bool		_isRoot() const;

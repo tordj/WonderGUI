@@ -59,8 +59,6 @@ class WgSkinNode;
 
 
 
-
-
 class WgGizmo : public WgEmitter, public WgWeakPtrTarget
 {
 friend class WgSkinNode;
@@ -196,6 +194,7 @@ protected:
 	bool			m_bRendersAll;
 };
 
+typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
 
 #endif

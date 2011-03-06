@@ -19,27 +19,34 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
 #ifndef WG_EVENTHANDLER_DOT_H
 #define WG_EVENTHANDLER_DOT_H
 
+#include <deque>
+#include <map>
 #include <vector>
 
 #ifndef WG_EVENT_DOT_H
 #	include <wg_event.h>
 #endif
 
+#ifndef WG_KEY_DOT_H
+#	include <wg_key.h>
+#endif
+
+class WgRoot;
+
 class WgEventHandler
 {
 public:
-	WgEventHandler( Int64 startTime );
+	WgEventHandler( int64_t startTime, WgRoot * pRoot );
 	~WgEventHandler();
 
-	bool QueueEvent( const WgEvent::EventBase& _event );
+	bool QueueEvent( const WgEvent::Event& _event );
 
 	void ProcessEvents();
 
-	
+
 /*
 	bool AddCallback( WgEventId eventId, WgGizmo * pEmitter, void(*fp)(void*), void * pObj );
 	bool AddCallback( const WgSignal::Signal_bool& signal, WgEmitter * pEmitter, void(*fp)(void*,bool), void * pObj );
@@ -50,40 +57,47 @@ public:
 
 private:
 
-	void	CompleteEvent( WgEvent::EventBase& _event );
-	void	ProcessEventInternal( WgEvent::EventBase& _event );
+	void	CompleteEvent( WgEvent::Event& _event );
+	void	ProcessEventInternal( WgEvent::Event& _event );
 
+	void	ProcessTimePassed( WgEvent::TimePassed * pEvent );
 	void	ProcessPointerMoved( WgEvent::PointerMoved * pEvent );
+	void	ProcessEndPointerMoved( WgEvent::EndPointerMoved * pEvent );
+	void	ProcessButtonPressed( WgEvent::ButtonPressed * pEvent );
+	void	ProcessButtonReleased( WgEvent::ButtonReleased * pEvent );
+	void	ProcessButtonDragged( WgEvent::ButtonDragged * pEvent );
 
 	//
 
-	std::deque<WgEvent>		m_eventQueue;
-	bool					m_bIsProcessing;	// Set when we are inside ProcessEvents().
-	std::deque<WgEvent>::iterator	m_insertPos;// Position where we insert events being queued when processing.
+	WgRoot *		m_pRoot;
 
-	Int64					m_time;
-	WgCord					m_pointerPos;
-	WgModifierKeys			m_modKeys;
+	std::deque<WgEvent::Event>				m_eventQueue;
+	bool									m_bIsProcessing;	// Set when we are inside ProcessEvents().
+	std::deque<WgEvent::Event>::iterator	m_insertPos;		// Position where we insert events being queued when processing.
+
+	int64_t		m_time;
+	WgCord			m_pointerPos;
+	WgModifierKeys	m_modKeys;
 
 	// Settings for keyboard/pointer input
 
-	int			m_doubleClickTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
+	int				m_doubleClickTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
 
-	int			m_buttonRepeatDelay;
-	int			m_buttonRepeatRate;
+	int				m_buttonRepeatDelay;
+	int				m_buttonRepeatRate;
 
-	int			m_keyRepeatDelay;
-	int			m_keyRepeatRate;
+	int				m_keyRepeatDelay;
+	int				m_keyRepeatRate;
 
 	std::map<int,WgKey>	m_keycodeMap;		// Maps native keycodes to WgKey.
 
 	// Current mouse state
 
-	std::vector<WgGizmoWeakPtr>	m_vInsideWidgets;
+	std::vector<WgGizmoWeakPtr>	m_vMarkedWidgets;	// Widgets the pointer currently is "inside"
 
 	// Current button states
 
-	WgEvent::EventBase	m_latestButtonEvents[WG_MAX_BUTTONS];
+	WgEvent::Event	m_latestButtonEvents[WG_MAX_BUTTONS];
 
 	// Current keyboard state
 
