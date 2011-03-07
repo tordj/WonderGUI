@@ -57,7 +57,7 @@ public:
 	inline WgGizmoHook *	NextHook() const { return _nextHook(); }
 
 	inline	WgGizmo *		Gizmo() const { return m_pGizmo; }
-	virtual	WgGizmoContainer* Parent() const = 0;
+	virtual WgGizmoContainer* Parent() const = 0;
 	virtual WgRoot *		Root();
 
 	virtual WgWidget*	GetRoot() = 0;			// Remove once Widgets are gone...

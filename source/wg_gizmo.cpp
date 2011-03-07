@@ -29,7 +29,7 @@ static const char	s_type[] = {"Unspecified"};
 
 //____ Constructor ____________________________________________________________
 
-WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pWeakPtrHub(0), m_pSkinNode(0), m_bEnabled(true), 
+WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_bEnabled(true),
 					m_bOpaque(false), m_bRenderOne(false), m_bRendersAll(false),
 					m_cursorStyle(WG_CURSOR_DEFAULT), m_markPolicy( WG_MARKPOLICY_ALPHA )
 {
@@ -40,9 +40,6 @@ WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pWeakPtrHub(0), m_pSkinNode(0), m_bEna
 WgGizmo::~WgGizmo()
 {
 	delete m_pSkinNode;
-
-	if( m_pWeakPtrHub )
-		m_pWeakPtrHub->pObj = 0;
 }
 
 

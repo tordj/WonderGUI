@@ -53,6 +53,8 @@
 		<Unit filename="include/wg_dynarray.h" />
 		<Unit filename="include/wg_emitter.h" />
 		<Unit filename="include/wg_emitterstanza.h" />
+		<Unit filename="include/wg_event.h" />
+		<Unit filename="include/wg_eventhandler.h" />
 		<Unit filename="include/wg_font.h" />
 		<Unit filename="include/wg_geo.h" />
 		<Unit filename="include/wg_gfxanim.h" />
@@ -130,6 +132,8 @@
 		<Unit filename="source/wg_cursorinstance.cpp" />
 		<Unit filename="source/wg_dirtyrect.cpp" />
 		<Unit filename="source/wg_emitter.cpp" />
+		<Unit filename="source/wg_event.cpp" />
+		<Unit filename="source/wg_eventhandler.cpp" />
 		<Unit filename="source/wg_font.cpp" />
 		<Unit filename="source/wg_geo.cpp" />
 		<Unit filename="source/wg_gfxanim.cpp" />
@@ -171,6 +175,7 @@
 		<Unit filename="source/wg_resdb.cpp" />
 		<Unit filename="source/wg_root.cpp" />
 		<Unit filename="source/wg_skinmanager.cpp" />
+		<Unit filename="source/wg_smartptr.cpp" />
 		<Unit filename="source/wg_string.cpp" />
 		<Unit filename="source/wg_surface.cpp" />
 		<Unit filename="source/wg_text.cpp" />

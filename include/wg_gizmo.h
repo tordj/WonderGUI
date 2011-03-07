@@ -59,9 +59,7 @@ class WgSkinNode;
 
 
 
-
-
-class WgGizmo : public WgEmitter
+class WgGizmo : public WgEmitter, public WgWeakPtrTarget
 {
 friend class WgSkinNode;
 friend class WgGizmoHook;
@@ -181,7 +179,6 @@ protected:
 
 	Uint32			m_id;
 	WgGizmoHook *	m_pHook;
-	WgWeakPtrHub *	m_pWeakPtrHub;
 
 	WgSkinNode *	m_pSkinNode;
 
@@ -197,6 +194,7 @@ protected:
 	bool			m_bRendersAll;
 };
 
+typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
 
 #endif
