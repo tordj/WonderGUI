@@ -84,22 +84,7 @@ WgVectorGlyphs::~WgVectorGlyphs()
 			for( int page = 0 ; page < 256 ; page++ )
 			{
 				if( m_cachedGlyphsIndex[size][page] != 0 )
-				{
-					for( int glyph = 0 ; glyph < 256 ; glyph++ )
-					{
-						CacheSlot * pSlot = m_cachedGlyphsIndex[size][page][glyph];
-						if(  pSlot != 0 )
-						{
-							pSlot->pOwner = 0;
-							pSlot->access = 0;
-							pSlot->size = 0;
-							pSlot->character = 0;
-
-							pSlot->MoveLast();
-						}
-					}
 					delete [] m_cachedGlyphsIndex[size][page];
-				}
 			}
 
 			delete [] m_cachedGlyphsIndex[size];
@@ -125,13 +110,13 @@ bool WgVectorGlyphs::SetCharSize( int size )
 		switch( m_renderMode[size] )
 		{
 			case MONOCHROME:
-				m_renderFlags = FT_LOAD_RENDER | FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
+				m_renderFlags = FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
 				break;
 			case CRISP_EDGES:
-				m_renderFlags = FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL;
+				m_renderFlags = FT_LOAD_TARGET_NORMAL;
 				break;
 			case BEST_SHAPES:
-				m_renderFlags = FT_LOAD_RENDER | FT_LOAD_TARGET_LIGHT;
+				m_renderFlags = FT_LOAD_TARGET_LIGHT;
 				break;
 
 			default:
@@ -167,11 +152,11 @@ bool WgVectorGlyphs::SetRenderMode( RenderMode mode, int startSize, int endSize 
 
 //____ GetKerning() ___________________________________________________________
 
-int WgVectorGlyphs::GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRightGlyph, int size )
+int WgVectorGlyphs::GetKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size )
 {
 	size += m_sizeOffset;
 
-	if( pLeftGlyph == 0 || pRightGlyph == 0 )
+	if( !pLeftGlyph || !pRightGlyph )
 		return 0;
 
 	// Set size for FreeType
@@ -183,7 +168,7 @@ int WgVectorGlyphs::GetKerning( const WgGlyph* pLeftGlyph, const WgGlyph* pRight
 	// Get kerning info
 
 	FT_Vector	delta;
-	FT_Get_Kerning( m_ftFace, pLeftGlyph->kerningIndex, pRightGlyph->kerningIndex, FT_KERNING_DEFAULT, &delta );
+	FT_Get_Kerning( m_ftFace, pLeftGlyph->KerningIndex(), pRightGlyph->KerningIndex(), FT_KERNING_DEFAULT, &delta );
 
 	return delta.x >> 6;
 }
@@ -302,7 +287,54 @@ bool WgVectorGlyphs::HasGlyph( Uint16 ch )
 
 //____ GetGlyph() _____________________________________________________________
 
-WgGlyph * WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
+WgGlyphPtr WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
+{
+	size += m_sizeOffset;
+
+	// Sanity check
+
+	if( size > WG_MAX_FONTSIZE || size < 0 )
+		return 0;
+
+	// Get cached glyph if we have one
+
+	Glyph * pGlyph = FindGlyph( ch, size );
+	if( pGlyph == 0 )
+	{
+		FT_Error err;
+
+		// Set size for FreeType
+
+		if( m_ftCharSize != size )
+			if( !SetCharSize( size ) )
+				return 0;
+
+		// Load Glyph
+
+		FT_UInt char_index = FT_Get_Char_Index( m_ftFace, ch );
+		if( char_index == 0 )
+			return 0;			// We got index for missing glyph.
+
+		err = FT_Load_Glyph( m_ftFace, char_index, m_renderFlags );
+		if( err )
+			return 0;
+
+		// Get some details about the glyph
+
+		int advance = m_ftFace->glyph->advance.x >> 6;
+
+		// Get a Glyph object and fill in details
+
+		pGlyph = AddGlyph( ch, size, advance, char_index );
+	}
+
+	return pGlyph;
+}
+
+
+
+/*
+WgGlyphPtr WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
 {
 	size += m_sizeOffset;
 
@@ -375,6 +407,51 @@ WgGlyph * WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
 	TouchSlot( pSlot );								// Notify cache that we have accessed this one
 	return &pSlot->glyph;
 }
+*/
+
+//____ _______________________________________________________
+
+WgVectorGlyphs::CacheSlot * WgVectorGlyphs::GenerateBitmap( Glyph * pGlyph )
+{
+	FT_Error err;
+
+	// Set size for FreeType
+
+	if( m_ftCharSize != pGlyph->m_size )
+		if( !SetCharSize( pGlyph->m_size ) )
+			return 0;
+
+	// Load Glyph
+
+	err = FT_Load_Glyph( m_ftFace, pGlyph->KerningIndex(), FT_LOAD_RENDER | m_renderFlags );
+	if( err )
+		return 0;
+
+	// Get some details about the glyph
+
+	int width = m_ftFace->glyph->bitmap.width;
+	int height = m_ftFace->glyph->bitmap.rows;
+
+	// Get a cache slot
+
+	CacheSlot * pSlot = GetCacheSlot( width, height );
+
+	if( pSlot )
+	{
+		// Fill in missing slot details
+
+		pSlot->pGlyph = pGlyph;
+		pSlot->bitmap.rect = WgRect(pSlot->rect.x, pSlot->rect.y, width, height);
+		pSlot->bitmap.bearingX = m_ftFace->glyph->bitmap_left;
+		pSlot->bitmap.bearingY = -m_ftFace->glyph->bitmap_top;
+
+		//
+
+		CopyBitmap( &m_ftFace->glyph->bitmap, pSlot );	// Copy our glyph bitmap to the slot
+	}
+
+	return pSlot;
+}
 
 
 
@@ -384,9 +461,9 @@ WgGlyph * WgVectorGlyphs::GetGlyph( Uint16 ch, int size )
 
 void WgVectorGlyphs::CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 {
-	WgSurface * pSurf = pSlot->glyph.pSurf;
+	WgSurface * pSurf = pSlot->bitmap.pSurface;
 
-	unsigned char * pDest = (unsigned char*) pSurf->LockRegion( WgSurface::WRITE_ONLY, pSlot->rect );
+	unsigned char * pDest = (unsigned char*) pSurf->LockRegion( WgSurface::WRITE_ONLY, pSlot->bitmap.rect );
 	assert( pDest != 0 );
 	assert( pSurf->GetPixelFormat()->type == WgSurface::RGBA_8 );
 
@@ -398,11 +475,11 @@ void WgVectorGlyphs::CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 
 	switch( m_renderFlags )
 	{
-		case (FT_LOAD_RENDER | FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO):
+		case (FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO):
 			CopyA1ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, pDest, pSlot->rect.w, pSlot->rect.h, dest_pitch );
 			break;
-		case (FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL):
-		case (FT_LOAD_RENDER | FT_LOAD_TARGET_LIGHT):
+		case (FT_LOAD_TARGET_NORMAL):
+		case (FT_LOAD_TARGET_LIGHT):
 			CopyA8ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, pDest, pSlot->rect.w, pSlot->rect.h, dest_pitch );
 			break;
 
@@ -487,47 +564,31 @@ void WgVectorGlyphs::CopyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_h
 	}
 }
 
+//___ AddGlyph() ________________________________________________________
 
-
-//___ AddSlotToIndex() ________________________________________________________
-
-void WgVectorGlyphs::AddSlotToIndex( Uint16 ch, int size, CacheSlot * pSlot )
+WgVectorGlyphs::Glyph * WgVectorGlyphs::AddGlyph( Uint16 ch, int size, int advance, Uint32 kerningIndex )
 {
 	if( m_cachedGlyphsIndex[size] == 0 )
 	{
-		CacheSlot *** p = new CacheSlot**[256];
-		memset( p, 0, 256*sizeof(CacheSlot**) );
+		Glyph ** p = new Glyph*[256];
+		memset( p, 0, 256*sizeof(Glyph*) );
 
 		m_cachedGlyphsIndex[size] = p;
 	}
 
 	if( m_cachedGlyphsIndex[size][ch>>8] == 0 )
 	{
-		CacheSlot ** p = new CacheSlot*[256];
-		memset( p, 0, 256*sizeof(CacheSlot*) );
+		Glyph * p = new Glyph[256];
 
 		m_cachedGlyphsIndex[size][ch>>8] = p;
 	}
 
-	assert( m_cachedGlyphsIndex[size][ch>>8][ch&0xFF] == 0 );
+	assert( !m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].IsInitialized() );
 
-	m_cachedGlyphsIndex[size][ch>>8][ch&0xFF] = pSlot;
+	m_cachedGlyphsIndex[size][ch>>8][ch&0xFF] = Glyph( ch, size, advance, kerningIndex, this );
+
+	return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
 }
-
-
-//____ RemoveSlotFromIndex() __________________________________________________
-
-void WgVectorGlyphs::RemoveSlotFromIndex( const CacheSlot * pSlot )
-{
-
-	int	size	= pSlot->size;
-	Uint16 ch	= pSlot->character;
-
-	assert( FindSlotInIndex(ch, size) != 0 );
-
-	m_cachedGlyphsIndex[size][ch>>8][ch&0xFF] = 0;
-}
-
 
 
 //____ SetSurfaceFactory() ____________________________________________________
@@ -547,8 +608,8 @@ void WgVectorGlyphs::ClearCache()
 		CacheSlot * p = s_cacheSlots[i].First();
 		while( p )
 		{
-			if( p->pOwner )
-				p->pOwner->SlotLost( p );
+			if( p->pGlyph )
+				p->pGlyph->SlotLost();
 			p = p->Next();
 		}
 
@@ -577,7 +638,7 @@ WgVectorGlyphs::CacheSlot * WgVectorGlyphs::GetCacheSlot( int width, int height 
 	// Make sure we have
 
 	CacheSlot * pSlot = s_cacheSlots[index].Last();
-	if( pSlot == 0 || pSlot->character != 0 )
+	if( pSlot == 0 || pSlot->pGlyph != 0 )
 	{
 		AddCacheSlots( &s_cacheSlots[index], WgSize(size,size), 16 );
 		pSlot = s_cacheSlots[index].Last();
@@ -669,6 +730,46 @@ WgVectorGlyphs::CacheSurf::~CacheSurf()
 {
 	delete pSurf;
 }
+
+WgVectorGlyphs::Glyph::Glyph()
+: WgGlyph( 0, 0, 0 )
+{
+	m_pSlot = 0;
+	m_size = 0;
+	m_character = 0;
+}
+
+
+WgVectorGlyphs::Glyph::Glyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, WgGlyphSet * pGlyphSet )
+: WgGlyph( advance, kerningIndex, pGlyphSet )
+{
+	m_pSlot = 0;
+	m_size = size;
+	m_character = character;
+}
+
+WgVectorGlyphs::Glyph::~Glyph()
+{
+	if(  m_pSlot != 0 )
+	{
+		m_pSlot->pGlyph = 0;
+		m_pSlot->access = 0;
+
+		m_pSlot->MoveLast();
+	}
+}
+
+const WgGlyphBitmap * WgVectorGlyphs::Glyph::GetBitmap()
+{
+	if( !m_pSlot )
+	{
+		m_pSlot = ((WgVectorGlyphs*)m_pGlyphSet)->GenerateBitmap( this );
+	}
+
+	((WgVectorGlyphs*)m_pGlyphSet)->TouchSlot(m_pSlot);
+	return &m_pSlot->bitmap;
+}
+
 
 
 #endif //WG_USE_FREETYPE

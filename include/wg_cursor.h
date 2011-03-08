@@ -65,6 +65,12 @@ public:
 		TILE_2D
 	};
 
+	enum BlitMode
+	{
+		NORMAL,
+		TINTED,
+		INVERT_BG,
+	};
 
 
 	bool				setMode( Mode m, WgGfxAnim * pAnim, WgCord bearing = WgCord(), int advance = 0, ScaleMode mode = FIXED_SIZE, float size_ratio = 1.f, WgBorders borders = WgBorders(0)  );
@@ -77,6 +83,8 @@ public:
 	void				setScaleMode( Mode m, ScaleMode mode );
 	void				setSizeRatio( Mode m, float ratio );
 
+	void				setBlitMode( BlitMode mode );
+	BlitMode			blitMode() const { return m_blitMode; }
 
 	int					bearingX( Mode m ) const { return m_bearing[m].x; };
 	int					bearingY( Mode m ) const { return m_bearing[m].y; };
@@ -98,6 +106,8 @@ private:
 	ScaleMode			m_scaleMode[N_MODES];
 	WgBorders			m_stretchBorders[N_MODES];
 	float				m_sizeRatio[N_MODES];			// ratio <= 1.f. Cursors height relative fonts lineheight.
+
+	BlitMode			m_blitMode;
 };
 
 

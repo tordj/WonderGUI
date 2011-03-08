@@ -20,39 +20,69 @@
 
 =========================================================================*/
 
+#include <wg_smartptr.h>
 
-#include <stdio.h>
-#include <limits.h>
-#include <string.h>
-#include <wg_glyphset.h>
-#include <wg_texttool.h>
+#include <wg_base.h>
 
-
-// TEMP PROFILING INCLUDES
-//#include "Utilities/EProfiler.h"
-//#include "Misc/Util/Util.hpp"
-
-
-
-
-
-
-//____ WgGlyph::WgGlyph() _______________________________________________________
-
-WgGlyph::WgGlyph()
+WgWeakPtrImpl::WgWeakPtrImpl( WgWeakPtrTarget * pObj )
 {
-	m_pGlyphSet = 0;
-	m_advance = 0;
-	m_kerningIndex = 0;
+	if( pObj )
+	{
+		if( !pObj->m_pHub )
+		{
+			m_pHub = WgBase::AllocWeakPtrHub();
+			m_pHub->refCnt = 1;
+			m_pHub->pObj = pObj;
+			pObj->m_pHub = m_pHub;
+		}
+		else
+		{
+			m_pHub = pObj->m_pHub;
+			m_pHub->refCnt++;
+		}
+	}
+	else
+	{
+		m_pHub = 0;
+	}
+};
+
+
+WgWeakPtrImpl::~WgWeakPtrImpl()
+{
+	if( m_pHub )
+	{
+		m_pHub->refCnt--;
+
+		if( m_pHub->refCnt == 0 )
+		{
+			if( m_pHub->pObj )
+				m_pHub->pObj->m_pHub = 0;
+			WgBase::FreeWeakPtrHub(m_pHub);
+		}
+	}
 }
 
-//____ WgGlyph::WgGlyph() _______________________________________________________
 
-WgGlyph::WgGlyph( int advance, Uint32 kerningIndex, WgGlyphSet * pGlyphSet )
+
+void WgWeakPtrImpl::copy( WgWeakPtrImpl const & r)
 {
-	m_pGlyphSet = pGlyphSet;
-	m_advance = advance;
-	m_kerningIndex = kerningIndex;
+	if( m_pHub != r.m_pHub )
+	{
+		if( m_pHub )
+		{
+			m_pHub->refCnt--;
+
+			if( m_pHub->refCnt == 0 )
+			{
+				if( m_pHub->pObj )
+					m_pHub->pObj->m_pHub = 0;
+				WgBase::FreeWeakPtrHub(m_pHub);
+			}
+		}
+
+		m_pHub = r.m_pHub;
+		if( m_pHub )
+			m_pHub->refCnt++;
+	}
 }
-
-

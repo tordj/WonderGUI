@@ -65,7 +65,7 @@ public:
 
 
 
-	WgGizmoHook *	PrevHook() const
+	WgGizmoHook *	_prevHook() const
 	{
 		WgWidget * p = m_pWidget->PrevSibling();
 
@@ -80,7 +80,7 @@ public:
 	}
 
 
-	WgGizmoHook *	NextHook() const
+	WgGizmoHook *	_nextHook() const
 	{
 		WgWidget * p = m_pWidget->NextSibling();
 
@@ -120,9 +120,6 @@ protected:
 
 	bool	RequestFocus() { return m_pWidget->GrabInputFocus(); }
 	bool	ReleaseFocus() { return m_pWidget->RemoveInputFocus(); }
-
-	void	BoundingBoxChanged() {}				// Do nothing, Widgets don't support Bounding Box.
-
 
 
 	WgWidget *			m_pWidget;
@@ -178,11 +175,18 @@ public:
 
 
 
+
+
 	WgWidget *		m_pWidget;
 
 private:
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
+
+	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut ) {}
+	void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) {}
+	void	_clearDirtyRects() {}
+
 
 };
 

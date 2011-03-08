@@ -58,8 +58,10 @@ public:
 	inline WgTextPropPtr GetTextProperties() { return m_pText->getProperties(); }
 
 
+	inline WgColor		GetTextColor() const { return m_pText->getColor(); }
 	inline WgColor		GetTextColor(WgMode mode) const { return m_pText->getColor(mode); }
 	inline WgFontStyle	GetTextStyle(WgMode mode) const { return m_pText->getStyle(mode); }
+	inline int			GetBreakLevel() const { return m_pText->getBreakLevel(); }
 	inline WgFont *		GetFont() const { return m_pText->getFont(); }
 
 
@@ -72,6 +74,8 @@ public:
 
 	inline void			SetTextStyle( WgFontStyle style )					{ m_pText->setStyle(style); TextModified(); }
 	inline void			SetTextStyle( WgFontStyle style, WgMode mode )		{ m_pText->setStyle(style,mode); TextModified(); }
+
+	inline void			SetBreakLevel( int level )							{ m_pText->setBreakLevel(level); TextModified(); }
 
 	inline void			SetFont( WgFont * pFont )							{ m_pText->setFont(pFont); TextModified(); }
 
@@ -87,6 +91,8 @@ public:
 
 	inline void			ClearTextStyle()										{ m_pText->clearStyle(); TextModified(); }
 	inline void			ClearTextStyle( WgMode mode )						{ m_pText->clearStyle(mode); TextModified(); }
+
+	inline void			ClearBreakLevel()									{ m_pText->clearBreakLevel(); TextModified(); }
 
 	inline void			ClearFont()											{ m_pText->clearFont(); TextModified(); }
 

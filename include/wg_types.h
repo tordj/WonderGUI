@@ -47,10 +47,10 @@ typedef unsigned __int64  uint64_t;
 	typedef unsigned char	Uint8;
 	typedef signed char		Sint8;
 	typedef unsigned short	Uint16;
-	typedef signed short	Sint16;
-	typedef unsigned int	Uint32;
+	typedef signed short		Sint16;
+	typedef unsigned int		Uint32;
 	typedef signed int		Sint32;
-	typedef uint64_t		Uint64;
+	typedef uint64_t			Uint64;
 	typedef int64_t			Sint64;
 #endif
 
@@ -217,7 +217,8 @@ enum WgBlendMode //: Uint8
 	WG_BLENDMODE_OPAQUE,			///< Completely opaque blitting, ignoring alpha of source and tint-color.
 	WG_BLENDMODE_BLEND,				///< Normal mode, alpha of source and tint-color is taken into account.
 	WG_BLENDMODE_ADD,				///< RGBA Additive.
-	WG_BLENDMODE_MULTIPLY			///< RGBA Multiply.
+	WG_BLENDMODE_MULTIPLY,			///< RGBA Multiply.
+	WG_BLENDMODE_INVERT
 };
 
 //____ WgFontStyle ____________________________________________________________
@@ -422,8 +423,8 @@ class		WgUpdateInfo
 enum WgSearchMode
 {
 	WG_SEARCH_MARKPOLICY,			// Perform a mark test on Gizmo.
-	WG_SEARCH_GEOMETRY,
-	WG_SEARCH_ACTION_TARGET,
+	WG_SEARCH_GEOMETRY,				// Goes strictly on geometry, ignores alpha.
+	WG_SEARCH_ACTION_TARGET,		// Like MARKPOLICY, but takes modality into account.
 };
 
 //____ WgMarkPolicy _____________________________________________________________
@@ -452,6 +453,7 @@ enum WgLocation
 	WG_CENTER		= 8
 };
 
+//____ WgSizePolicy ___________________________________________________________
 
 enum WgSizePolicy
 {
@@ -460,6 +462,5 @@ enum WgSizePolicy
 	WG_SIZE_BEST,
 	WG_SIZE_MAX,
 };
-
 
 #endif // WG_TYPES_DOT_H

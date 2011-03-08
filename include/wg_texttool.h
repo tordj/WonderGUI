@@ -76,6 +76,7 @@ public:
 	inline static int	sizeUTF8( Uint16 ch );
 
 	inline static Uint16 readChar( const char *& pStr );
+	static Uint16	parseChar( const char * pStr );	// Should be null terminated
 
 	static Uint32	readString( const char *& pSrc, Uint16 * pDst, Uint32 maxChars = 0xFFFFFFFF );
 	static Uint32	readString( const char *& pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );

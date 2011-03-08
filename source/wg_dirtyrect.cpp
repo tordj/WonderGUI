@@ -38,7 +38,7 @@ void WgDirtyRectObj::Exit()
 	g_pMemPool = 0;
 }
 
-//____ WgDirtyRectObj::WgDirtyRectObj() ___________________________________________
+//____ Constructor ____________________________________________________________
 
 WgDirtyRectObj::WgDirtyRectObj( void )
 {
@@ -46,7 +46,7 @@ WgDirtyRectObj::WgDirtyRectObj( void )
 	pRectList = 0;
 }
 
-//____ WgDirtyRectObj::~WgDirtyRectObj() __________________________________________
+//____ Destructor _____________________________________________________________
 
 WgDirtyRectObj::~WgDirtyRectObj( void )
 {
@@ -55,7 +55,24 @@ WgDirtyRectObj::~WgDirtyRectObj( void )
 	Clear();
 }
 
-//____ WgDirtyRectObj::Clip() ___________________________________________________
+//____ Pop() _____________________________________________________________
+
+WgDirtyRect * WgDirtyRectObj::Pop()
+{
+	WgDirtyRect * p = pRectList;
+
+	if( p )
+	{
+		pRectList = p->pNext;
+		if( pRectList )
+			pRectList->pPrev = 0;
+	}
+
+	return p;
+}
+
+
+//____ Clip() _________________________________________________________________
 
 void WgDirtyRectObj::Clip( const WgRect * _pClip )
 {
@@ -93,10 +110,13 @@ void WgDirtyRectObj::Clip( const WgRect * _pClip )
 }
 
 
-//____ WgDirtyRectObj::Add() ____________________________________________________
+//____ Add() __________________________________________________________________
 
 void WgDirtyRectObj::Add( const WgRect& rect )
 {
+	if( rect.w == 0 || rect.h == 0 )
+		return;
+
 	WgDirtyRect * pRect = (WgDirtyRect*) g_pMemPool->allocEntry();
 
 	*((WgRect*) pRect) = rect;
@@ -105,6 +125,9 @@ void WgDirtyRectObj::Add( const WgRect& rect )
 
 void WgDirtyRectObj::Add( const int _x, const int _y, const int _w, const int _h )
 {
+	if( _w == 0 || _h == 0 )
+		return;
+
 	WgDirtyRect * pRect = (WgDirtyRect*) g_pMemPool->allocEntry();
 	pRect->x = _x;
 	pRect->y = _y;
@@ -114,7 +137,7 @@ void WgDirtyRectObj::Add( const int _x, const int _y, const int _w, const int _h
 }
 
 
-//____ WgDirtyRectObj::Addrect() ________________________________________________
+//____ Addrect() ______________________________________________________________
 
 void	WgDirtyRectObj::Addrect( WgDirtyRect * pRect, WgDirtyRect * pOffset )
 {
@@ -172,7 +195,7 @@ void	WgDirtyRectObj::Addrect( WgDirtyRect * pRect, WgDirtyRect * pOffset )
 }
 
 
-//____ WgDirtyRectObj::Transfer() _______________________________________________
+//____ Transfer() _____________________________________________________________
 
 void WgDirtyRectObj::Transfer( WgDirtyRectObj * pDest )
 {
@@ -189,7 +212,7 @@ void WgDirtyRectObj::Transfer( WgDirtyRectObj * pDest )
 }
 
 
-//____ WgDirtyRectObj::OneForAll() ______________________________________________
+//____ OneForAll() ____________________________________________________________
 
 bool WgDirtyRectObj::OneForAll( WgRect * wpRect )
 {
@@ -231,10 +254,13 @@ bool WgDirtyRectObj::OneForAll( WgRect * wpRect )
 	}
 }
 
-//____ WgDirtyRectObj::Sub() ____________________________________________________
+//____ Sub() __________________________________________________________________
 
 void WgDirtyRectObj::Sub( const int _x, const int _y, const int _w, const int _h )
 {
+	if( _w == 0 || _h == 0 )
+		return;
+
 	WgDirtyRect * pRect = pRectList;
 //	WgDirtyRect	** wppRect = &pRectList;			// WritePointer to Pointer to rectangle...
 
@@ -354,7 +380,7 @@ void WgDirtyRectObj::Sub( const int _x, const int _y, const int _w, const int _h
 }
 
 
-//____ WgDirtyRectObj::ClipTransfer() ___________________________________________
+//____ ClipTransfer() _________________________________________________________
 
 void WgDirtyRectObj::ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pClip )
 {
@@ -483,7 +509,7 @@ void WgDirtyRectObj::ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pCli
 	}
 }
 
-//____ WgDirtyRectObj::Clear() __________________________________________________
+//____ Clear() ________________________________________________________________
 
 void WgDirtyRectObj::Clear( void )
 {
@@ -500,7 +526,7 @@ void WgDirtyRectObj::Clear( void )
 }
 
 
-//____ WgDirtyRectObj::ClipRectangles() _________________________________________
+//____ ClipRectangles() _______________________________________________________
 
 WgDirtyRect * WgDirtyRectObj::ClipRectangles( WgDirtyRect * p1, WgDirtyRect * p2 )
 {
@@ -647,4 +673,11 @@ WgDirtyRect * WgDirtyRectObj::ClipRectangles( WgDirtyRect * p1, WgDirtyRect * p2
 		p1->h = p3->h;
 		g_pMemPool->freeEntry(p3);
 		return	0;
+}
+
+//____ WgDirtyRectObj::Destroy() _________________________________________________
+
+void WgDirtyRectObj::Destroy( WgDirtyRect * pRect )
+{
+	g_pMemPool->freeEntry(pRect);
 }

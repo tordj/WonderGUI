@@ -1,5 +1,13 @@
 
 
+PAPERCUTS
+=========
+
+* WgSurface should have a Size() method returning WgSize.
+* WgGfxDeviceSDL should be able to take a SDL_Surface directly as canvas.
+* Gizmos needs more constructors for convenience! WgGizmoPixmap could take the WgBlockSetPtr directly.
+* More versions of WgSurface::defineBlockSet(), no need to force user to specify borders etc.
+
 
 FONT SYSTEM
 ===========

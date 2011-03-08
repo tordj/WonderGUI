@@ -22,6 +22,7 @@
 
 #include <wg_pen.h>
 #include <wg_texttool.h>
+#include <wg_text.h>
 #include <wg_font.h>
 #include <wg_cursorinstance.h>
 #include <wg_gfxanim.h>
@@ -60,12 +61,6 @@ void WgPen::Init()
 	m_pGlyph = &m_dummyGlyph; 
 	m_pPrevGlyph = &m_dummyGlyph; 
 	m_color = 0xFFFFFFFF, 
-
-	m_dummyGlyph.advance = 0;
-	m_dummyGlyph.bearingX = 0;
-	m_dummyGlyph.bearingY = 0;
-	m_dummyGlyph.kerningIndex = 0;
-	m_dummyGlyph.pSurf = 0;
 
 	m_tabWidth = 80; 
 
@@ -128,23 +123,23 @@ bool WgPen::SetChar( Uint32 chr )
 		if( chr == ' ' && !m_bShowSpace )
 		{
 			if(m_pGlyphs)
-				m_dummyGlyph.advance = m_pGlyphs->GetWhitespaceAdvance( m_size );
+				m_dummyGlyph.SetAdvance( m_pGlyphs->GetWhitespaceAdvance( m_size ) );
 			else
-				m_dummyGlyph.advance = 0;
+				m_dummyGlyph.SetAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
 			return false;
 		}
 		
 		if( chr == '\n' && !m_bShowCRLF )
 		{
-			m_dummyGlyph.advance = 0;
+			m_dummyGlyph.SetAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
 			return false;		
 		}
 
 		if( chr == 0 )
 		{
-			m_dummyGlyph.advance = 0;
+			m_dummyGlyph.SetAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
 			return false;		
 		}
@@ -154,14 +149,14 @@ bool WgPen::SetChar( Uint32 chr )
 			int x = m_pos.x;
 			x += m_tabWidth;
 			x -= (x - m_origo.x) % m_tabWidth;
-			m_dummyGlyph.advance = x;
+			m_dummyGlyph.SetAdvance(x);
 			return false;
 		}
 	}
 
 	if( chr == WG_BREAK_PERMITTED || chr == WG_HYPHEN_BREAK_PERMITTED )
 	{
-		m_dummyGlyph.advance = 0;
+		m_dummyGlyph.SetAdvance(0);
 		m_pGlyph = &m_dummyGlyph;
 		return false;		
 	}
@@ -174,61 +169,61 @@ bool WgPen::SetChar( Uint32 chr )
 		return false;
 	}
 
-	const WgGlyph * p = m_pGlyphs->GetGlyph( chr, m_size );
-	if( p )
+	// First we try to get the glyph from our GlyphSet.
+
+	WgGlyphPtr p = m_pGlyphs->GetGlyph( chr, m_size );
+	if( !p )
 	{
-		m_pGlyph = p;
-		return true;
-	}
-	// If not in glyphset we get the closest match in size/style from Font.
+		// If not in glyphset we get the closest match in size/style from Font.
 
-	m_pPrevGlyph = &m_dummyGlyph;		// We can't do kerning against a glyph from a different GlyphSet.
+		p = m_pFont->GetGlyph( chr, m_style, m_size );
+		if( !p )
+		{
+			// The glyph doesn't exist in this font, try to get the unicode
+			// WHITE_BOX as a replacement glyph.
 
-	p = m_pFont->GetGlyph( chr, m_style, m_size );
-	if( p )
-	{
-		m_pGlyph = p;
-		return true;
-	}
+			p = m_pFont->GetGlyph( 0xFFFD, m_style, m_size );
+			if( !p )
+			{
+				// We don't have the white box, try with the most suitable
+				// common ascii character instead...
 
-	// The glyph doesn't exist in this font, try to get the unicode
-	// WHITE_BOX as a replacement glyph.
+				p = m_pFont->GetGlyph( '*', m_style, m_size );
+				if( !p )
+				{
+					// Total failure, nothing to render...
 
-	p = m_pFont->GetGlyph( 0xFFFD, m_style, m_size );
-	if( p )
-	{
-		m_pGlyph = p;
-		return true;
-	}
-
-	// We don't have the white box, try with the most suitable
-	// common ascii character instead...
-
-	p = m_pFont->GetGlyph( '*', m_style, m_size );
-	if( p )
-	{
-		m_pGlyph = p;
-		return true;
+					m_pGlyph = &m_dummyGlyph;
+					m_dummyGlyph.SetAdvance(0);
+					return false;
+				}
+			}
+		}
 	}
 
-	// Total failure, nothing to render...
+	if( m_pPrevGlyph->GlyphSet() != p->GlyphSet() )
+		m_pPrevGlyph = &m_dummyGlyph; // We can't do kerning between glyphs from different glyphsets.
 
-	m_pGlyph = &m_dummyGlyph;
-	m_dummyGlyph.advance = 0;
-	return false;
+	m_pGlyph = p;
+	return true;
 }
 
 //____ BlitChar() _____________________________________________________________
 
 void WgPen::BlitChar() const
 {
-	int x = GetBlitPosX();
-	int y = GetBlitPosY();
+	const WgGlyphBitmap * pSrc = m_pGlyph->GetBitmap();
 
-	if( m_bClip )
-		m_pDevice->ClipBlit( m_clipRect, m_pGlyph->pSurf, m_pGlyph->rect, x, y);
-	else
-		m_pDevice->Blit( m_pGlyph->pSurf, m_pGlyph->rect, x, y);
+	if( pSrc )
+	{
+		int x = m_pos.x + pSrc->bearingX;
+		int y = m_pos.y + pSrc->bearingY;
+
+		if( m_bClip )
+			m_pDevice->ClipBlit( m_clipRect, pSrc->pSurface, pSrc->rect, x, y);
+		else
+			m_pDevice->Blit( pSrc->pSurface, pSrc->rect, x, y);
+	}
 }
 
 //____ BlitCursor() _______________________________________________________
@@ -273,6 +268,27 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 			bearing		*= scaleValue;
 			break;
 	}
+	
+	// Set tintcolor/blendmode. Save original modes so we can restore them.
+
+	WgColor		tintColor;
+	WgBlendMode blendMode;
+	switch( pCursor->blitMode() )
+	{
+		case WgCursor::NORMAL:
+			break;
+		case WgCursor::TINTED:
+			tintColor = m_pDevice->GetTintColor();
+			m_pDevice->SetTintColor( tintColor * instance.text()->getColor() );
+			break;
+		case WgCursor::INVERT_BG:
+			blendMode = m_pDevice->GetBlendMode();
+			m_pDevice->SetBlendMode(WG_BLENDMODE_INVERT);
+			break;
+	}
+
+	//
+
 
 	WgBlock block( pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, pAnim->width(), pAnim->height()), pCursor->stretchBorders(mode), 0, blockFlags );
 
@@ -280,6 +296,22 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 		m_pDevice->ClipBlitBlock( m_clipRect, block, WgRect(m_pos + bearing, size) );
 	else
 		m_pDevice->BlitBlock( block, WgRect(m_pos + bearing, size) );
+
+	// Restore tintcolor/blendmode.
+
+	switch( pCursor->blitMode() )
+	{
+		case WgCursor::NORMAL:
+			break;
+		case WgCursor::TINTED:
+			m_pDevice->SetTintColor( tintColor );
+			break;
+		case WgCursor::INVERT_BG:
+			m_pDevice->SetBlendMode( blendMode );
+			break;
+	}
+
+
 
 	return true;
 }
@@ -310,3 +342,4 @@ void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 
 	m_pos.x += advance;
 }
+

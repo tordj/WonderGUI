@@ -38,6 +38,8 @@ class WgWidget;
 class WgGfxDevice;
 class WgGizmo;
 class WgRoot;
+class WgDirtyRect;
+class WgDirtyRectObj;
 
 class WgGizmoHook
 {
@@ -51,14 +53,14 @@ public:
 	virtual WgCord	ScreenPos() const = 0;
 	virtual WgRect	ScreenGeo() const = 0;
 
-	virtual WgGizmoHook *	PrevHook() const = 0;
-	virtual WgGizmoHook *	NextHook() const = 0;
+	inline WgGizmoHook *	PrevHook() const { return _prevHook(); }
+	inline WgGizmoHook *	NextHook() const { return _nextHook(); }
 
 	inline	WgGizmo *		Gizmo() const { return m_pGizmo; }
-	virtual	WgGizmoContainer* Parent() const = 0;
+	virtual WgGizmoContainer* Parent() const = 0;
 	virtual WgRoot *		Root();
 
-	virtual WgWidget*	GetRoot() = 0;			// Should in the future not return a widget, but a gizmo.
+	virtual WgWidget*	GetRoot() = 0;			// Remove once Widgets are gone...
 
 protected:
 	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
@@ -68,18 +70,33 @@ protected:
 	void			RelinkGizmo();				// Make sure Gizmo links us. Call when hook has been relocated.
 	WgGizmo*		ReleaseGizmo();				//
 
+	// To be called by Gizmo
+
 	virtual void	RequestRender() = 0;
 	virtual void	RequestRender( const WgRect& rect ) = 0;
 	virtual void	RequestResize() = 0;
-	virtual void	BoundingBoxChanged() = 0;
-
 
 	virtual bool	RequestFocus();
 	virtual bool	ReleaseFocus();
 
+	// To be called by Parent
+
 	void			DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			DoSetNewSize( const WgSize& size );
 	void			DoSetGizmo();				// Calls SetHook(this) on Gizmo. Call when get a new Gizmo.
+
+	void			DoCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+	void			DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+
+	void			_doCastDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut );
+	void			_doRenderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
+	void			_doClearDirtyRects();
+
+	//
+
+	virtual WgGizmoHook *	_prevHook() const = 0;
+	virtual WgGizmoHook *	_nextHook() const = 0;
+
 
 	WgGizmo *		m_pGizmo;
 };

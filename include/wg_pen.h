@@ -82,21 +82,21 @@ public:
 
 	void					SetTab( int width ) { m_tabWidth = width; }
 	bool					SetChar( Uint32 chr );
-	void					FlushChar() { m_pGlyph = &m_dummyGlyph; m_dummyGlyph.advance = 0; }
+	void					FlushChar() { m_pGlyph = &m_dummyGlyph; m_dummyGlyph.SetAdvance(0); }
 	void					ApplyKerning() { if( m_pPrevGlyph != &m_dummyGlyph && m_pGlyph != &m_dummyGlyph ) m_pos.x += m_pGlyphs->GetKerning( m_pPrevGlyph, m_pGlyph, m_size ); }
 
-	inline void				AdvancePos() { m_pos.x += m_pGlyph->advance; }							///< Advances position past current character.
+	inline void				AdvancePos() { m_pos.x += m_pGlyph->Advance(); }							///< Advances position past current character.
 	inline void				AdvancePosMonospaced() { m_pos.x += m_pGlyphs->GetMaxGlyphAdvance(m_size); }	///< Advances position past current character using monospace spacing.
 	void					AdvancePosCursor( const WgCursorInstance& instance );
 
-	inline const WgGlyph *	GetGlyph() const { return m_pGlyph; }
+	inline WgGlyphPtr		GetGlyph() const { return m_pGlyph; }
 	inline WgCord			GetPos() const { return m_pos; }
 	inline int				GetPosX() const { return m_pos.x; }
 	inline int				GetPosY() const { return m_pos.y; }
 
-	inline WgCord			GetBlitPos() const { return WgCord( m_pos.x + m_pGlyph->bearingX, m_pos.y + m_pGlyph->bearingY ); }
-	inline int				GetBlitPosX() const { return m_pos.x + m_pGlyph->bearingX; }
-	inline int				GetBlitPosY() const { return m_pos.y + m_pGlyph->bearingY; }
+//	inline WgCord			GetBlitPos() const { return WgCord( m_pos.x + m_pGlyph->BearingX(), m_pos.y + m_pGlyph->BearingY() ); }
+//	inline int				GetBlitPosX() const { return m_pos.x + m_pGlyph->BearingX(); }
+//	inline int				GetBlitPosY() const { return m_pos.y + m_pGlyph->BearingY(); }
 	
 	inline const WgRect&	GetClipRect() const { return m_clipRect; }
 	inline bool				HasClipRect() const { return m_bClip; }
@@ -119,10 +119,21 @@ public:
 private:
 	void Init();
 
+	class DummyGlyph : public WgGlyph
+	{
+	public:
+		DummyGlyph() : WgGlyph( 0, 0, 0 ) {}
+		const WgGlyphBitmap * GetBitmap() { return 0; }
+
+		void SetAdvance( int advance ) { m_advance = advance; }
+	};
+
+
+
 	WgGlyphSet *m_pGlyphs;			// Pointer at our glyphs.
 
-	const WgGlyph *	m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
-	const WgGlyph *	m_pGlyph;		// Current glyph.
+	WgGlyphPtr		m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
+	WgGlyphPtr		m_pGlyph;		// Current glyph.
 
 	WgFont *		m_pFont;		// Pointer back to the font.
 	int				m_size;			// Fontsize we got a glyphset for, which might be smaller than what we requested.
@@ -135,7 +146,7 @@ private:
 	WgCord			m_origo;		// Origo position, from where we start printing and count tab-positions.
 	WgCord			m_pos;			// Position of this pen in screen pixels.
 
-	WgGlyph			m_dummyGlyph;	// Dummy glyph used for whitespace, tab etc
+	DummyGlyph		m_dummyGlyph;	// Dummy glyph used for whitespace, tab etc
 
 	int				m_tabWidth;		// Tab width in pixels.
 

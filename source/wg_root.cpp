@@ -100,10 +100,18 @@ WgRect WgRoot::Geo() const
 
 bool WgRoot::SetGizmo( WgGizmo * pGizmo )
 {
+	// Until WgGizmoContainer properly can inherit from WgGizmo we need to check that
+	// we get a container. In the future we should take a WgGizmoContainer as parameter instead.
+
+	if( pGizmo && !pGizmo->IsContainer() )
+		return false;
+
 	if( m_hook.Gizmo() )
 		m_hook.~Hook();
 
 	new (&m_hook) Hook(pGizmo, this);
+
+	m_hook.DoCollectRects( m_dirtyRects, Geo(), Geo() );
 
 	return true;
 }
@@ -124,10 +132,10 @@ bool WgRoot::Render()
 
 bool WgRoot::Render( const WgRect& clip )
 {
-	if( !BeginRender() )
+	if( !BeginRender( clip ) )
 		return false;
 
-	if( !RenderSection( clip ) )
+	if( !RenderSection() )
 	{
 		EndRender();
 		return false;
@@ -141,38 +149,39 @@ bool WgRoot::Render( const WgRect& clip )
 
 //____ BeginRender() __________________________________________________________
 
-bool WgRoot::BeginRender()
+bool WgRoot::BeginRender( const WgRect& clip )
 {
-	if( m_pGfxDevice )
-		return m_pGfxDevice->BeginRender();
-	else
-		return false;
-}
-
-
-//____ RenderSection() __________________________________________________________
-
-bool WgRoot::RenderSection( const WgRect& clip, int layer )
-{
-	if( !m_pGfxDevice )
-		return false;						// No GFX-device.
-
-	if( !m_hook.Gizmo() )
-		return false;						// No Gizmo to render (should this return false or true?)
+	if( !m_pGfxDevice || !m_hook.Gizmo() )
+		return false;						// No GFX-device or no widgets to render.
 
 	WgRect canvas = Geo();
 	WgRect clip2( clip, canvas );
 	if( clip2.w == 0 || clip2.h == 0 )
 		return false;						// Invalid rect area.
 
-
-	WgDirtyRect * pRect = m_dirtyRects.pRectList;
+	WgDirtyRect * pRect = m_dirtyRects.Pop();
+	WgDirtyRectObj	outDummy;
 
 	while( pRect )
 	{
-		m_hook.DoRender( m_pGfxDevice, canvas, canvas, clip2, layer );
-		pRect = pRect->pNext;
+		m_hook._doCastDirtyRect( canvas, clip, pRect, &outDummy );
+		pRect = m_dirtyRects.Pop();
 	}
+
+	return m_pGfxDevice->BeginRender();
+}
+
+
+//____ RenderSection() __________________________________________________________
+
+bool WgRoot::RenderSection( int layer )
+{
+	if( !m_pGfxDevice || !m_hook.Gizmo() )
+		return false;						// No GFX-device or no widgets to render.
+
+	WgRect canvas = Geo();
+
+	m_hook._doRenderDirtyRects( m_pGfxDevice, canvas, canvas, layer );
 
 	return true;
 }
@@ -181,12 +190,12 @@ bool WgRoot::RenderSection( const WgRect& clip, int layer )
 
 bool WgRoot::EndRender( void )
 {
-	m_dirtyRects.Clear();
+	if( !m_pGfxDevice || !m_hook.Gizmo() )
+		return false;						// No GFX-device or no widgets to render.
 
-	if( m_pGfxDevice )
-		return m_pGfxDevice->EndRender();
-	else
-		return false;
+	m_hook._doClearDirtyRects();
+
+	return m_pGfxDevice->EndRender();
 }
 
 //____ AddDirtyRect() _________________________________________________________
@@ -212,6 +221,18 @@ int WgRoot::ExportDirtyRects( WgRect * pDest, int maxRects ) const
 	return nExported;
 }
 
+//____ FindGizmo() _____________________________________________________________
+
+WgGizmo * WgRoot::FindGizmo( const WgCord& ofs, WgSearchMode mode )
+{
+	if( !m_geo.contains(ofs) || !m_hook.Gizmo() )
+		return 0;
+
+	//TODO: Implement!
+
+	return 0;
+}
+
 
 //____ _focusRequested() _______________________________________________________
 
@@ -228,7 +249,6 @@ bool WgRoot::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
 	//TODO: Implement
 	return false;
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -267,16 +287,6 @@ WgRect WgRoot::Hook::ScreenGeo() const
 	return m_pRoot->Geo();
 }
 
-WgGizmoHook * WgRoot::Hook::PrevHook() const
-{
-	return 0;
-}
-
-WgGizmoHook * WgRoot::Hook::NextHook() const
-{
-	return 0;
-}
-
 WgGizmoContainer* WgRoot::Hook::Parent() const
 {
 	return 0;
@@ -307,10 +317,14 @@ void WgRoot::Hook::RequestResize()
 	// Do nothing, root ignores size requests.
 }
 
-void WgRoot::Hook::BoundingBoxChanged()
+WgGizmoHook * WgRoot::Hook::_prevHook() const
 {
-	// Do nothing, you can't draw outside root anyway.
+	return 0;
 }
 
+WgGizmoHook * WgRoot::Hook::_nextHook() const
+{
+	return 0;
+}
 
 

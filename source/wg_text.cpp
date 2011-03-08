@@ -480,6 +480,14 @@ void WgText::setFont( WgFont * pFont )
 	regenSoftLines();
 }
 
+void WgText::setBreakLevel( int level )
+{
+	WgTextProp	prop = * m_pProp;
+	prop.SetBreakLevel(level);
+	m_pProp = prop.Register();
+	regenSoftLines();
+}
+
 void WgText::clearProperties()
 {
 	m_pProp = 0;
@@ -511,6 +519,14 @@ void WgText::clearStyle( WgMode mode )
 {
 	WgTextProp	prop = * m_pProp;
 	prop.ClearStyle(mode);
+	m_pProp = prop.Register();
+	regenSoftLines();
+}
+
+void WgText::clearBreakLevel()
+{
+	WgTextProp	prop = * m_pProp;
+	prop.ClearBreakLevel();
 	m_pProp = prop.Register();
 	regenSoftLines();
 }
@@ -1369,8 +1385,8 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 					// Check so a hyphen will fit on the line as well, otherwise we can't break here.
 					// We don't take kerning into account here, not so important.
 
-					const WgGlyph * pHyphen = pen.GetGlyphSet()->GetGlyph( '-', pen.GetSize() );
-					if( !pHyphen || Uint32(pen.GetPosX() + pHyphen->advance) > m_lineWidth )
+					WgGlyphPtr pHyphen = pen.GetGlyphSet()->GetGlyph( '-', pen.GetSize() );
+					if( !pHyphen || Uint32(pen.GetPosX() + pHyphen->Advance()) > m_lineWidth )
 						break;			// Can't break here, hyphen wouldn't fit on line.
 				}
 
@@ -1407,7 +1423,8 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 			// Check if we need to put a softbreak.
 
-			Uint32 len = pen.GetPosX() + pen.GetGlyph()->bearingX + pen.GetGlyph()->rect.w; // No advance on last character of line, just bearingX + width
+//			Uint32 len = pen.GetBlitPosX() + pen.GetGlyph()->rect.w; // No advance on last character of line, just bearingX + width
+			Uint32 len = pen.GetPosX() + pen.GetGlyph()->Advance();
 			if( len > m_lineWidth )			
 			{
 				if( pbp != 0 && pbp != pLineStart )
@@ -1451,10 +1468,15 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 void WgText::regenSoftLines()
 {
+	bool	bHasSoftLineArray = (m_pSoftLines != m_pHardLines && m_pSoftLines != &WgText::g_emptyLine)?true:false;
+
 	// Take care of our special case (empty text)
 
 	if( m_pHardLines == &WgText::g_emptyLine )
 	{
+		if( bHasSoftLineArray )
+			delete [] m_pSoftLines;
+
 		m_pSoftLines = &WgText::g_emptyLine;
 		m_nSoftLines = 1;
 		return;
@@ -1464,12 +1486,13 @@ void WgText::regenSoftLines()
 
 	if( !m_bWrap )
 	{
+		if( bHasSoftLineArray )
+			delete [] m_pSoftLines;
+
 		m_pSoftLines = m_pHardLines;
 		m_nSoftLines = m_nHardLines;
 		return;
 	}
-
-	bool	bHasSoftLineArray = (m_pSoftLines != m_pHardLines && m_pSoftLines != &WgText::g_emptyLine)?true:false;
 
 	int nSoftLines;
 

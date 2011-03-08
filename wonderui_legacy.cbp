@@ -2,41 +2,71 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="WonderGUI" />
+		<Option title="wonderui_legacy" />
+		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="obj/Debug/libWonderGUI" prefix_auto="1" extension_auto="1" />
+				<Option output="libwonderui_legacy" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="obj/Debug/" />
+				<Option object_output="obj/legacy/Debug/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add directory="/usr/include/freetype2" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="obj/Release/libWonderGUI" prefix_auto="1" extension_auto="1" />
+				<Option output="libwonderui_legacy" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="obj/Release/" />
+				<Option object_output="obj/legacy/Release/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-O2" />
 					<Add option="-Wall" />
+					<Add option="-O2" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 		</Build>
-		<Compiler>
-			<Add directory="include" />
-			<Add directory="/usr/include/freetype2" />
-		</Compiler>
+		<Unit filename="include/wdg_animation.h" />
+		<Unit filename="include/wdg_baseclass_text.h" />
+		<Unit filename="include/wdg_baseclass_view.h" />
+		<Unit filename="include/wdg_button.h" />
+		<Unit filename="include/wdg_checkbox2.h" />
+		<Unit filename="include/wdg_circlemeter.h" />
+		<Unit filename="include/wdg_combobox.h" />
+		<Unit filename="include/wdg_container.h" />
+		<Unit filename="include/wdg_dragbars.h" />
+		<Unit filename="include/wdg_editline.h" />
+		<Unit filename="include/wdg_editvalue.h" />
+		<Unit filename="include/wdg_fill.h" />
+		<Unit filename="include/wdg_fps.h" />
+		<Unit filename="include/wdg_gizmotable.h" />
+		<Unit filename="include/wdg_gizmoview.h" />
+		<Unit filename="include/wdg_gridview.h" />
+		<Unit filename="include/wdg_listview.h" />
+		<Unit filename="include/wdg_lodder.h" />
+		<Unit filename="include/wdg_menu.h" />
+		<Unit filename="include/wdg_menubar.h" />
+		<Unit filename="include/wdg_pixmap.h" />
+		<Unit filename="include/wdg_radiobutton2.h" />
+		<Unit filename="include/wdg_refreshbutton.h" />
+		<Unit filename="include/wdg_root.h" />
+		<Unit filename="include/wdg_shader.h" />
+		<Unit filename="include/wdg_tableview.h" />
+		<Unit filename="include/wdg_tablist.h" />
+		<Unit filename="include/wdg_text.h" />
+		<Unit filename="include/wdg_textview.h" />
+		<Unit filename="include/wdg_treeview.h" />
+		<Unit filename="include/wdg_value.h" />
+		<Unit filename="include/wdg_ysplitter.h" />
 		<Unit filename="include/wg_anim.h" />
 		<Unit filename="include/wg_base.h" />
 		<Unit filename="include/wg_bitmapglyphs.h" />
@@ -53,10 +83,9 @@
 		<Unit filename="include/wg_dynarray.h" />
 		<Unit filename="include/wg_emitter.h" />
 		<Unit filename="include/wg_emitterstanza.h" />
-		<Unit filename="include/wg_event.h" />
-		<Unit filename="include/wg_eventhandler.h" />
 		<Unit filename="include/wg_font.h" />
 		<Unit filename="include/wg_geo.h" />
+		<Unit filename="include/wg_gfx.h" />
 		<Unit filename="include/wg_gfxanim.h" />
 		<Unit filename="include/wg_gfxdevice.h" />
 		<Unit filename="include/wg_gfxdevice_null.h" />
@@ -76,21 +105,31 @@
 		<Unit filename="include/wg_gizmo_flexgeo.h" />
 		<Unit filename="include/wg_gizmo_fps.h" />
 		<Unit filename="include/wg_gizmo_hook.h" />
+		<Unit filename="include/wg_gizmo_item_wrapper.h" />
 		<Unit filename="include/wg_gizmo_menubar.h" />
 		<Unit filename="include/wg_gizmo_parent.h" />
 		<Unit filename="include/wg_gizmo_pixmap.h" />
 		<Unit filename="include/wg_gizmo_radiobutton.h" />
 		<Unit filename="include/wg_gizmo_refreshbutton.h" />
+		<Unit filename="include/wg_gizmo_row.h" />
 		<Unit filename="include/wg_gizmo_table.h" />
 		<Unit filename="include/wg_gizmo_tablist.h" />
 		<Unit filename="include/wg_gizmo_text.h" />
 		<Unit filename="include/wg_gizmo_value.h" />
 		<Unit filename="include/wg_gizmo_view.h" />
+		<Unit filename="include/wg_gizmo_widget_wrapper.h" />
 		<Unit filename="include/wg_glyphset.h" />
-		<Unit filename="include/wg_inputdevice.h" />
+		<Unit filename="include/wg_input.h" />
 		<Unit filename="include/wg_interface_edittext.h" />
+		<Unit filename="include/wg_interface_itemholder.h" />
 		<Unit filename="include/wg_interface_textholder.h" />
 		<Unit filename="include/wg_interface_valueholder.h" />
+		<Unit filename="include/wg_item.h" />
+		<Unit filename="include/wg_item_pixmap.h" />
+		<Unit filename="include/wg_item_row.h" />
+		<Unit filename="include/wg_item_stack.h" />
+		<Unit filename="include/wg_item_text.h" />
+		<Unit filename="include/wg_item_wraptext.h" />
 		<Unit filename="include/wg_key.h" />
 		<Unit filename="include/wg_mempool.h" />
 		<Unit filename="include/wg_menuitem.h" />
@@ -98,8 +137,13 @@
 		<Unit filename="include/wg_pen.h" />
 		<Unit filename="include/wg_pointerspy.h" />
 		<Unit filename="include/wg_refcounted.h" />
+		<Unit filename="include/wg_refcountedpooled.h" />
 		<Unit filename="include/wg_resdb.h" />
-		<Unit filename="include/wg_root.h" />
+		<Unit filename="include/wg_resloader.h" />
+		<Unit filename="include/wg_resource_factory_xml.h" />
+		<Unit filename="include/wg_resource_visitor.h" />
+		<Unit filename="include/wg_resources_xml.h" />
+		<Unit filename="include/wg_resourceserializer_xml.h" />
 		<Unit filename="include/wg_signals.h" />
 		<Unit filename="include/wg_signalstanza.h" />
 		<Unit filename="include/wg_skinmanager.h" />
@@ -117,7 +161,20 @@
 		<Unit filename="include/wg_util.h" />
 		<Unit filename="include/wg_valueformat.h" />
 		<Unit filename="include/wg_vectorglyphs.h" />
+		<Unit filename="include/wg_widget.h" />
 		<Unit filename="include/wondergui.h" />
+		<Unit filename="include/wondergui_legacy.h" />
+		<Unit filename="source/wdg_baseclass_view.cpp" />
+		<Unit filename="source/wdg_gridview.cpp" />
+		<Unit filename="source/wdg_listview.cpp" />
+		<Unit filename="source/wdg_lodder.cpp" />
+		<Unit filename="source/wdg_menu.cpp" />
+		<Unit filename="source/wdg_root.cpp" />
+		<Unit filename="source/wdg_shader.cpp" />
+		<Unit filename="source/wdg_tableview.cpp" />
+		<Unit filename="source/wdg_textview.cpp" />
+		<Unit filename="source/wdg_treeview.cpp" />
+		<Unit filename="source/wdg_ysplitter.cpp" />
 		<Unit filename="source/wg_anim.cpp" />
 		<Unit filename="source/wg_base.cpp" />
 		<Unit filename="source/wg_bitmapglyphs.cpp" />
@@ -132,10 +189,9 @@
 		<Unit filename="source/wg_cursorinstance.cpp" />
 		<Unit filename="source/wg_dirtyrect.cpp" />
 		<Unit filename="source/wg_emitter.cpp" />
-		<Unit filename="source/wg_event.cpp" />
-		<Unit filename="source/wg_eventhandler.cpp" />
 		<Unit filename="source/wg_font.cpp" />
 		<Unit filename="source/wg_geo.cpp" />
+		<Unit filename="source/wg_gfx.cpp" />
 		<Unit filename="source/wg_gfxanim.cpp" />
 		<Unit filename="source/wg_gfxdevice.cpp" />
 		<Unit filename="source/wg_gfxdevice_null.cpp" />
@@ -164,18 +220,26 @@
 		<Unit filename="source/wg_gizmo_value.cpp" />
 		<Unit filename="source/wg_gizmo_view.cpp" />
 		<Unit filename="source/wg_glyphset.cpp" />
-		<Unit filename="source/wg_inputdevice.cpp" />
+		<Unit filename="source/wg_input.cpp" />
 		<Unit filename="source/wg_interface_edittext.cpp" />
+		<Unit filename="source/wg_interface_itemholder.cpp" />
 		<Unit filename="source/wg_interface_textholder.cpp" />
 		<Unit filename="source/wg_interface_valueholder.cpp" />
+		<Unit filename="source/wg_item.cpp" />
+		<Unit filename="source/wg_item_pixmap.cpp" />
+		<Unit filename="source/wg_item_row.cpp" />
+		<Unit filename="source/wg_item_stack.cpp" />
+		<Unit filename="source/wg_item_text.cpp" />
+		<Unit filename="source/wg_item_wraptext.cpp" />
 		<Unit filename="source/wg_mempool.cpp" />
 		<Unit filename="source/wg_menuitem.cpp" />
 		<Unit filename="source/wg_origo.cpp" />
 		<Unit filename="source/wg_pen.cpp" />
 		<Unit filename="source/wg_resdb.cpp" />
-		<Unit filename="source/wg_root.cpp" />
+		<Unit filename="source/wg_resource_factory_xml.cpp" />
+		<Unit filename="source/wg_resources_xml.cpp" />
+		<Unit filename="source/wg_resourceserializer_xml.cpp" />
 		<Unit filename="source/wg_skinmanager.cpp" />
-		<Unit filename="source/wg_smartptr.cpp" />
 		<Unit filename="source/wg_string.cpp" />
 		<Unit filename="source/wg_surface.cpp" />
 		<Unit filename="source/wg_text.cpp" />
@@ -186,10 +250,11 @@
 		<Unit filename="source/wg_util.cpp" />
 		<Unit filename="source/wg_valueformat.cpp" />
 		<Unit filename="source/wg_vectorglyphs.cpp" />
+		<Unit filename="source/wg_widget-render.cpp" />
+		<Unit filename="source/wg_widget.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />
-			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

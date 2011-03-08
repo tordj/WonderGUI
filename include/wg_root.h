@@ -38,7 +38,7 @@ class WgInputDevice;
 class WgGfxDevice;
 class WgGizmo;
 
-class WgRoot : private WgGizmoContainer
+class WgRoot : private WgGizmoParent
 {
 public:
 	WgRoot();
@@ -56,7 +56,7 @@ public:
 
 	inline WgGizmo *		Gizmo() const { return m_hook.Gizmo(); }
 	bool					SetGizmo( WgGizmo * pGizmo );
-	inline void				DeleteGizmo() { SetGizmo(0); }
+	inline void			DeleteGizmo() { SetGizmo(0); }
 	WgGizmo * 				ReleaseGizmo();
 
 
@@ -66,8 +66,8 @@ public:
 	bool	Render();
 	bool	Render( const WgRect& clip );
 
-	bool	BeginRender();
-	bool	RenderSection( const WgRect& clip, int layer = 0xFF );
+	bool	BeginRender( const WgRect& clip );
+	bool	RenderSection( int layer = 0xFF );
 	bool	EndRender();
 
 	void	AddDirtyRect( WgRect rect );
@@ -89,9 +89,6 @@ protected:
 		WgCord			ScreenPos() const;
 		WgRect			ScreenGeo() const;
 
-		WgGizmoHook *	PrevHook() const;
-		WgGizmoHook *	NextHook() const;
-
 		WgGizmoContainer* Parent() const;
 		WgRoot*			Root() const;
 
@@ -102,25 +99,25 @@ protected:
 		void			RequestRender();
 		void			RequestRender( const WgRect& rect );
 		void			RequestResize();
-		void			BoundingBoxChanged();
+
+		WgGizmoHook *	_prevHook() const;
+		WgGizmoHook *	_nextHook() const;
 
 		WgRoot *		m_pRoot;
 	};
 
 
-	bool			IsGizmo() const { return false; }
-	bool			IsRoot() const { return true; }
+	bool			_isGizmo() const { return false; }
+	bool			_isRoot() const { return true; }
 
-	WgGizmo *		CastToGizmo() { return 0; }
-	WgRoot *		CastToRoot() { return this; }
+	WgGizmo *		_castToGizmo() { return 0; }
+	WgRoot *		_castToRoot() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
 	WgGizmoHook*	_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
 
 	bool 			_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
 	bool 			_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
-
-
 
 	WgDirtyRectObj		m_dirtyRects;
 

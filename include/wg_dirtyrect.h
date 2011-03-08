@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -37,7 +37,6 @@ class	WgDirtyRect:public WgRect
 	~WgDirtyRect() {}
 public:
 
-	
 	//	int					x, y, w, h;
 	WgDirtyRect		* pPrev, * pNext;
 };
@@ -50,6 +49,8 @@ public:
 
 	WgDirtyRectObj();
 	~WgDirtyRectObj();
+
+	static void Destroy( WgDirtyRect * pRect );		// Only for destroying dirty rects not belonging to any DirtyRectObj!
 
 	void		Add( const WgRect& rect );
 	inline void	Sub( const WgRect& rect ) { Sub( rect.x, rect.y, rect.w, rect.h ); }
@@ -64,6 +65,10 @@ public:
 	void	Clear( void );
 	bool	OneForAll( WgRect * _wpRect );		// Generates the smallest possible rectangle
 												// Containing all dirty rectangles (or returns false).
+
+	WgDirtyRect *	Pop();
+	inline void		PushExistingRect( WgDirtyRect * pRect ) { Addrect( pRect, pRectList ); }
+
 	WgDirtyRect * 	pRectList;
 private:
 	WgDirtyRect * 	ClipRectangles( WgDirtyRect * _p1, WgDirtyRect * _p2 );

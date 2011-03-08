@@ -20,39 +20,17 @@
 
 =========================================================================*/
 
+#ifndef	WG_INPUTDEVICE_DOT_H
+#define WG_INPUTDEVICE_DOT_H
 
-#include <stdio.h>
-#include <limits.h>
-#include <string.h>
-#include <wg_glyphset.h>
-#include <wg_texttool.h>
-
-
-// TEMP PROFILING INCLUDES
-//#include "Utilities/EProfiler.h"
-//#include "Misc/Util/Util.hpp"
-
-
-
-
-
-
-//____ WgGlyph::WgGlyph() _______________________________________________________
-
-WgGlyph::WgGlyph()
+class WgInputDevice
 {
-	m_pGlyphSet = 0;
-	m_advance = 0;
-	m_kerningIndex = 0;
-}
+public:
+	WgInputDevice();
+	~WgInputDevice();
 
-//____ WgGlyph::WgGlyph() _______________________________________________________
+private:
 
-WgGlyph::WgGlyph( int advance, Uint32 kerningIndex, WgGlyphSet * pGlyphSet )
-{
-	m_pGlyphSet = pGlyphSet;
-	m_advance = advance;
-	m_kerningIndex = kerningIndex;
-}
+};
 
-
+#endif //WG_INPUTDEVICE_DOT_H

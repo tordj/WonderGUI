@@ -1179,6 +1179,17 @@ WgInput* WgWidget::GetInputObj()
 	return pInputObj;
 }
 
+//____ HasInputFocus() ________________________________________________________
+
+bool WgWidget::HasInputFocus( void )
+{
+	WgInput * pInputObj = GetInputObj();
+
+	if( pInputObj && pInputObj->getFocusedWidget() == this )
+		return true;
+
+	return false;
+}
 
 //____ GrabInputFocus() _______________________________________________________
 
@@ -1274,6 +1285,10 @@ void WgWidget::ActionRespond( WgInput::UserAction _action, int _button, const Wg
 {
 	if( !m_bEnabled )
 		return;
+
+	// We should do all internal response before sending the signals.
+	DoMyOwnActionRespond( _action, _button, _info, _inputObj );
+
 
 	switch( _action )
 	{
@@ -1487,8 +1502,6 @@ void WgWidget::ActionRespond( WgInput::UserAction _action, int _button, const Wg
 		case WgInput::CHARACTER:
             break;
 	}
-
-	DoMyOwnActionRespond( _action, _button, _info, _inputObj );
 }
 
 

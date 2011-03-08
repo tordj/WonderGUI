@@ -31,9 +31,17 @@
 #	include <wg_gizmo_parent.h>
 #endif
 
+class WgDirtyRect;
+class WgDirtyRectObj;
+
 class WgGizmoContainer : public WgGizmoParent
 {
 	friend class WgGizmoHook;
+
+	protected:
+		virtual void	OnEnable();
+		virtual void	OnDisable();
+
 
 	private:
 		bool		_isGizmo() const;
@@ -43,8 +51,14 @@ class WgGizmoContainer : public WgGizmoParent
 		WgRoot *	_castToRoot();
 
 
-		bool 		_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
-		bool 		_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
+		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut ) = 0;
+		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) = 0;
+		virtual void	_clearDirtyRects() = 0;
+
+
+
+		bool 		_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inerits from WgGizmo
+		bool 		_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inerits from WgGizmo
 };
 
 

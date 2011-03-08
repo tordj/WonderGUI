@@ -23,14 +23,15 @@
 #include <wg_gizmo.h>
 #include <wg_types.h>
 #include <wg_skinmanager.h>
+#include <wg_dirtyrect.h>
 
 static const char	s_type[] = {"Unspecified"};
 
 //____ Constructor ____________________________________________________________
 
-WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_bEnabled(true), m_bOpaque(false),
-					m_bRendersAll(false), m_bRenderOne(false), m_cursorStyle(WG_CURSOR_DEFAULT),
-					m_markPolicy( WG_MARKPOLICY_ALPHA )
+WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_bEnabled(true),
+					m_bOpaque(false), m_bRenderOne(false), m_bRendersAll(false),
+					m_cursorStyle(WG_CURSOR_DEFAULT), m_markPolicy( WG_MARKPOLICY_ALPHA )
 {
 }
 
@@ -170,14 +171,6 @@ WgCord WgGizmo::Abs2local( const WgCord& cord ) const
 	return WgCord( cord.x - c.x, cord.y - c.y );
 }
 
-//____ BoundingBoxForSize() ___________________________________________________
-
-WgRect WgGizmo::BoundingBoxForSize( WgSize size ) const
-{
-	return WgRect(0,0,size);
-}
-
-
 //____ HeightForWidth() _______________________________________________________
 
 int WgGizmo::HeightForWidth( int width ) const
@@ -251,6 +244,21 @@ WgMode WgGizmo::Mode() const
 
 
 //____ Fillers _______________________________________________________________
+
+
+void WgGizmo::OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+{
+	rects.Add( WgRect( geo, clip ) );
+}
+
+void WgGizmo::OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+{
+	if( m_bOpaque )
+	{
+		rects.Sub( WgRect( geo, clip ) );
+	}
+}
+
 
 void WgGizmo::OnNewSize( const WgSize& size )
 {

@@ -46,6 +46,40 @@ void WgGizmoHook::DoSetGizmo()
 	m_pGizmo->SetHook(this);
 }
 
+//____ DoCollectRects() _______________________________________________________
+
+void WgGizmoHook::DoCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+{
+	m_pGizmo->OnCollectRects( rects, geo, clip );
+}
+
+//____ DoMaskRects() __________________________________________________________
+
+void WgGizmoHook::DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+{
+	m_pGizmo->OnMaskRects( rects, geo, clip );
+}
+
+//_____________________________________________________________________________
+
+void WgGizmoHook::_doCastDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut )
+{
+	if( m_pGizmo->IsContainer() )
+		m_pGizmo->CastToContainer()->_castDirtyRect( geo, clip, pDirtIn, pDirtOut );
+}
+
+void WgGizmoHook::_doRenderDirtyRects( WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& window, Uint8 layer )
+{
+	if( m_pGizmo->IsContainer() )
+		m_pGizmo->CastToContainer()->_renderDirtyRects( pDevice, canvas, window, layer );
+}
+
+void WgGizmoHook::_doClearDirtyRects()
+{
+	if( m_pGizmo->IsContainer() )
+		m_pGizmo->CastToContainer()->_clearDirtyRects();
+}
+
 //____ RelinkGizmo() __________________________________________________________
 
 void WgGizmoHook::RelinkGizmo()

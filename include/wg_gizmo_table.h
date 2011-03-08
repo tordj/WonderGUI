@@ -67,9 +67,6 @@ class WgTableHook : public WgGizmoHook
 	WgCord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
-	WgGizmoHook*	PrevHook() const;
-	WgGizmoHook*	NextHook() const;
-
 	WgTableHook*	PrevInTable() const;
 	WgTableHook*	NextInTable() const;
 
@@ -97,7 +94,9 @@ protected:
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
 
-	void	BoundingBoxChanged();
+	WgGizmoHook *	_prevHook() const;
+	WgGizmoHook *	_nextHook() const;
+
 
 	int				m_height;		// Minimum height needed for this Gizmo.
 	WgTableRow2 *	m_pRow;			//
@@ -212,6 +211,7 @@ protected:
 //		LINK_METHODS( WgTableRow2 );
 
 private:
+
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
 
@@ -378,15 +378,14 @@ protected:
 	void	OnNewSize( const WgSize& size );
 	void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool	OnAlphaTest( const WgCord& ofs );
-	void	OnEnable();
-	void	OnDisable();
+	inline void		OnEnable() { WgGizmoContainer::OnEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+	inline void		OnDisable() { WgGizmoContainer::OnDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 
 private:
 	WgGizmo*		_castToGizmo() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
-
 
 	void		refreshRows();
 	void		RowModified( WgTableRow2* pRow, int widthDiff , int heightDiff );

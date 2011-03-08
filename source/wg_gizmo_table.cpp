@@ -75,12 +75,12 @@ WgRect WgTableHook::ScreenGeo() const
 }
 
 
-WgGizmoHook* WgTableHook::PrevHook() const
+WgGizmoHook* WgTableHook::_prevHook() const
 {
 	return PrevInTable();
 }
 
-WgGizmoHook* WgTableHook::NextHook() const
+WgGizmoHook* WgTableHook::_nextHook() const
 {
 	return NextInTable();
 }
@@ -234,11 +234,6 @@ void WgTableHook::RequestRender( const WgRect& rect )
 void WgTableHook::RequestResize()
 {
 	//TODO: Recalculate height of row...
-}
-
-void WgTableHook::BoundingBoxChanged()
-{
-	//TODO: Implement
 }
 
 
@@ -2072,20 +2067,6 @@ void WgGizmoTable::OnCloneContent( const WgGizmo * _pOrg )
 	m_selectedRowColor = pOrg->m_selectedRowColor;
 }
 
-
-//____ OnEnable() _____________________________________________________________
-
-void WgGizmoTable::OnEnable( void )
-{
-	RequestRender();
-}
-
-//____ OnDisable() ____________________________________________________________
-
-void WgGizmoTable::OnDisable( void )
-{
-	RequestRender();
-}
 
 //____ GetHeaderColumnAt() ____________________________________________________
 

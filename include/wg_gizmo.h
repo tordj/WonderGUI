@@ -57,7 +57,9 @@ class Wg_Interface_TextHolder;
 class WgGizmoContainer;
 class WgSkinNode;
 
-class WgGizmo : public WgEmitter
+
+
+class WgGizmo : public WgEmitter, public WgWeakPtrTarget
 {
 friend class WgSkinNode;
 friend class WgGizmoHook;
@@ -97,10 +99,12 @@ public:
 
 	WgGizmoHook*		Hook() const { return m_pHook; }
 
+
 	// Convenient calls to hook
 
 	inline WgCord		Pos() const { if( m_pHook ) return m_pHook->Pos(); return WgCord(0,0); }
 	inline WgSize		Size() const { if( m_pHook ) return m_pHook->Size(); return WgSize(256,256); }
+	inline WgRect		Geo() const { if( m_pHook ) return m_pHook->Geo(); return WgRect(0,0,256,256); }
 	inline WgCord		ScreenPos() const { if( m_pHook ) return m_pHook->ScreenPos(); return WgCord(0,0); }
 	inline WgRect		ScreenGeometry() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
 	inline bool			GrabFocus() { if( m_pHook ) return m_pHook->RequestFocus(); return false; }
@@ -116,8 +120,6 @@ public:
 
 
 	// To be overloaded by Gizmo
-
-	virtual WgRect	BoundingBoxForSize( WgSize size ) const;
 
 	virtual int		HeightForWidth( int width ) const;
 	virtual int		WidthForHeight( int height ) const;
@@ -138,6 +140,7 @@ public:
 	virtual WgMode	Mode() const;
 
 
+
 //	virtual WgGizmoManager*	GetView() const { return 0; }
 //	virtual WgGizmoManager*	GetContainer() const { return 0; }
 
@@ -152,10 +155,11 @@ protected:
 	inline void		RequestRender() { if( m_pHook ) m_pHook->RequestRender(); }
 	inline void		RequestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->RequestRender( rect ); }
 	inline void		RequestResize() { if( m_pHook ) m_pHook->RequestResize(); }
-	inline void		BoundingBoxChanged() { if( m_pHook ) m_pHook->BoundingBoxChanged(); }
 
 	// To be overloaded by Gizmo
 
+	virtual void	OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+	virtual void	OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 	virtual void	OnCloneContent( const WgGizmo * _pOrg ) = 0;
 	virtual void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) = 0;
 	virtual void	OnNewSize( const WgSize& size );
@@ -173,13 +177,13 @@ protected:
 
 	//
 
+	Uint32			m_id;
 	WgGizmoHook *	m_pHook;
 
 	WgSkinNode *	m_pSkinNode;
 
 	WgCursorStyle	m_cursorStyle;
 
-	Uint32			m_id;
 	WgString		m_tooltip;
 	WgMarkPolicy	m_markPolicy;
 
@@ -188,9 +192,9 @@ protected:
 
 	bool			m_bRenderOne;
 	bool			m_bRendersAll;
-	bool			m_bOutsideBounds;
 };
 
+typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
 
 #endif

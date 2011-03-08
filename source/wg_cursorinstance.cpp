@@ -31,7 +31,7 @@
 #	include <wg_texttool.h>
 #endif
 
-#ifndef WG_FONTSET_DOT_H
+#ifndef WG_FONT_DOT_H
 #	include <wg_font.h>
 #endif
 
@@ -665,7 +665,7 @@ bool WgCursorInstance::hasSelection()
 	if(m_selStartLine < 0)
 		return false;
 
-	return m_selStartLine != m_line || m_selStartLine == m_line && m_selStartColumn != m_column;
+	return m_selStartLine != m_line || (m_selStartLine == m_line && m_selStartColumn != m_column);
 }
 
 void WgCursorInstance::delSelection()
@@ -677,7 +677,7 @@ void WgCursorInstance::delSelection()
 
 	int line = m_line;
 	int column = m_column;
-	if(m_selStartLine < (int)m_line || m_selStartLine == (int)m_line && m_selStartColumn < (int)m_column)
+	if(m_selStartLine < (int)m_line || (m_selStartLine == (int)m_line && m_selStartColumn < (int)m_column))
 	{
 		std::swap(line, m_selStartLine);
 		std::swap(column, m_selStartColumn);

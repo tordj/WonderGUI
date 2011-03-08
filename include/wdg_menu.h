@@ -222,6 +222,9 @@ private:
 
 	//____ Members ___________________________________________
 
+	bool	m_bIsOpeningSubMenu;				// Lets us know if we lose focus due to submenu opening or not.
+
+
 	// Members defining items.
 
 	WgChain<WgMenuItem>		m_items;

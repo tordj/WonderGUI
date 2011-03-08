@@ -20,39 +20,16 @@
 
 =========================================================================*/
 
+#include <wg_inputdevice.h>
 
-#include <stdio.h>
-#include <limits.h>
-#include <string.h>
-#include <wg_glyphset.h>
-#include <wg_texttool.h>
+//____ Constructor ____________________________________________________________
 
-
-// TEMP PROFILING INCLUDES
-//#include "Utilities/EProfiler.h"
-//#include "Misc/Util/Util.hpp"
-
-
-
-
-
-
-//____ WgGlyph::WgGlyph() _______________________________________________________
-
-WgGlyph::WgGlyph()
+WgInputDevice::WgInputDevice()
 {
-	m_pGlyphSet = 0;
-	m_advance = 0;
-	m_kerningIndex = 0;
 }
 
-//____ WgGlyph::WgGlyph() _______________________________________________________
+//____ Destructor _____________________________________________________________
 
-WgGlyph::WgGlyph( int advance, Uint32 kerningIndex, WgGlyphSet * pGlyphSet )
+WgInputDevice::~WgInputDevice()
 {
-	m_pGlyphSet = pGlyphSet;
-	m_advance = advance;
-	m_kerningIndex = kerningIndex;
 }
-
-

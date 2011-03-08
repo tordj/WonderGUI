@@ -47,8 +47,8 @@ public:
 	WgCord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
-	WgGizmoHook * PrevHook() const;
-	WgGizmoHook * NextHook() const;
+	inline WgGizmoHook * PrevHook() const { return _prevHook(); }
+	inline WgGizmoHook * NextHook() const { return _nextHook(); }
 
 	WgGizmoContainer * Parent() const;
 
@@ -58,14 +58,16 @@ public:
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
 
-	void	BoundingBoxChanged();
-
 protected:
 	WgViewHook() : WgGizmoHook( 0 ) {};				// So we can make them members and then make placement new...
 	WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView );
-	WgViewHook( WgGizmoVDragbar * pHDragbar, WgGizmoView * pView );
+	WgViewHook( WgGizmoVDragbar * pVDragbar, WgGizmoView * pView );
 	WgViewHook( WgGizmo * pContent, WgGizmoView * pView );
 	~WgViewHook();
+
+	WgGizmoHook *	_prevHook() const;
+	WgGizmoHook *	_nextHook() const;
+
 
 //	ElementType		m_type;
 	WgGizmoView *	m_pView;
@@ -254,6 +256,10 @@ protected:
 	void		OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	bool		OnAlphaTest( const WgCord& ofs );
 	void		OnCloneContent( const WgGizmo * _pOrg );
+
+	inline void		OnEnable() { WgGizmoContainer::OnEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+	inline void		OnDisable() { WgGizmoContainer::OnDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+
 
 	void		SetContentSize( const WgSize& size );
 	void		UpdateElementGeometry( const WgSize& mySize, const WgSize& newContentSize );

@@ -123,9 +123,6 @@ Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 
 	if( m_maxCharacters == 0 || ((unsigned) str.Length()) < m_maxCharacters - m_pText->nbChars() )
 	{
-		Uint32 line = m_pText->line();
-		Uint32 column = m_pText->column();
-
 		m_pText->putText( str );
 		retVal = str.Length();
 	}

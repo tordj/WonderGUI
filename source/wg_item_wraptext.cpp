@@ -181,7 +181,6 @@ void WgItemWrapText::Render( const WgRect& _window, const WgRect& _clip )
 	r.w -= ( m_margin.left + m_margin.right );
 	r.h -= ( m_margin.top + m_margin.bottom );
 
-
 	if( m_bgFill.a != 0 )
 		WgGfx::fillRect( WgRect(r, _clip), m_bgFill );
 
