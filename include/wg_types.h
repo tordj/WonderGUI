@@ -88,7 +88,6 @@ enum WgTxtAttr
 
 //____ WgExtChar __________________________________________________________
 
-#define WG_ESCAPE_CODE		0xA4
 
 //0x1b
 
@@ -443,7 +442,7 @@ enum WgLocation
 	// Clockwise from upper left corner, center last. Must be in range 0-8
 
 	WG_NORTHWEST	= 0,
-	WG_NORTH		= 1,	
+	WG_NORTH		= 1,
 	WG_NORTHEAST	= 2,
 	WG_EAST			= 3,
 	WG_SOUTHEAST	= 4,
