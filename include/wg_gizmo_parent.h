@@ -42,6 +42,10 @@ class WgGizmoParent : public WgGizmoCollection
 
 		virtual WgGizmo *	FindGizmo( const WgCord& ofs, WgSearchMode mode ) = 0;
 
+		inline WgGizmo *	CastToGizmo() { return _castToGizmo(); }
+		inline WgRoot *		CastToRoot()  { return _castToRoot(); }
+
+
 	protected:
 		virtual bool		_isGizmo() const = 0;
 		virtual bool		_isRoot() const = 0;
