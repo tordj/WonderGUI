@@ -129,15 +129,22 @@ namespace WgEvent
 
 	class ButtonPress : public Event
 	{
+		friend class ::WgEventHandler;
+	protected:
+		ButtonPress() {}						// So we can make members in WgEventHandler
 	public:
 		ButtonPress( int button );
 
 		int				Button() const;
 		WgCord			PointerPos() const;
+
 	};
 
 	class ButtonRelease : public Event
 	{
+		friend class ::WgEventHandler;
+	protected:
+		ButtonRelease() {}						// So we can make members in WgEventHandler
 	public:
 		ButtonRelease( int button );
 
@@ -225,7 +232,7 @@ namespace WgEvent
 
 		int				Button() const;
 		WgCord			PointerPos() const;
-	}
+	};
 
 	class ButtonDoubleClick : public Event
 	{
@@ -235,7 +242,7 @@ namespace WgEvent
 
 		int				Button() const;
 		WgCord			PointerPos() const;
-	}
+	};
 
 	class PointerEnterGizmo : public Event
 	{
@@ -255,7 +262,7 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
-		GizmoPress( WgGizmo * pGizmo, int button, WgCord& screenPos, WgCord& ofs );
+		GizmoPress( WgGizmo * pGizmo, int button, const WgCord& screenPos, const WgCord& ofs );
 
 		int				Button() const;
 		WgCord			PointerOfs() const;
@@ -266,7 +273,7 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
-		GizmoRelease( WgGizmo * pGizmo, int button, WgCord& screenPos, WgCord& ofs, bool bWasPressed, bool bIsOutside );
+		GizmoRelease( WgGizmo * pGizmo, int button, const WgCord& screenPos, const WgCord& ofs, bool bWasPressed, bool bIsOutside );
 
 		int				Button() const;
 		WgCord			PointerOfs() const;

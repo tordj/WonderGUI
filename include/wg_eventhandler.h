@@ -95,14 +95,16 @@ private:
 
 	// Current mouse state
 
-	std::vector<WgGizmoWeakPtr>	m_vMarkedWidgets;	// Widgets the pointer currently is "inside"
+	std::vector<WgGizmoWeakPtr>	m_vMarkedWidgets;	// Widgets the pointer currently is "inside".
 
 	// Current button states
 
-	WgEvent::ButtonPressed	m_latestPress[WG_MAX_BUTTONS];			// Saved info for the last time each button was pressed
-	WgEvent::ButtonReleased	m_latestRelease[WG_MAX_BUTTONS];		// Saved info for the last time each button was released
+	WgEvent::Event *		m_pLatestButtonEvents[WG_MAX_BUTTONS];	// Pointer at event object in either m_latestPress or m_latestRelease.
 
-	std::vector<WgGizmoWeakPtr>	m_latestPressWidgets[WG_MAX_BUTTONS];	// List of widgets who received the last press, for each button.
+	WgEvent::ButtonPress	m_latestPress[WG_MAX_BUTTONS];			// Saved info for the last time each button was pressed.
+	WgEvent::ButtonRelease	m_latestRelease[WG_MAX_BUTTONS];		// Saved info for the last time each button was released.
+
+	std::vector<WgGizmoWeakPtr>	m_latestPressWidgets[WG_MAX_BUTTONS];	// List of widgets who received the latest press, for each button.
 
 	// Current keyboard state
 

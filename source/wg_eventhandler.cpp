@@ -41,6 +41,9 @@ WgEventHandler::WgEventHandler( int64_t startTime, WgRoot * pRoot )
 
 	m_keyRepeatDelay		= 300;
 	m_keyRepeatRate			= 150;
+
+	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
+		m_pLatestButtonEvents[i] = 0;
 }
 
 //____ Destructor _____________________________________________________________
@@ -150,8 +153,14 @@ void WgEventHandler::ProcessEventInternal( WgEvent::Event& _event )
 		case WG_EVENT_BUTTON_RELEASE:
 			ProcessButtonRelease( (WgEvent::ButtonRelease*) &_event );
 			break;
+
+		case WG_EVENT_BUTTON_CLICK:
+			break;
+		case WG_EVENT_BUTTON_DOUBLECLICK:
+			break;
+
 		case WG_EVENT_KEY_PRESS:
-		case WG_EVENT_KEY_RELEAS:
+		case WG_EVENT_KEY_RELEASE:
 		case WG_EVENT_CHARACTER:
 		case WG_EVENT_WHEEL_ROLL:
 			break;
@@ -176,6 +185,11 @@ void WgEventHandler::ProcessEventInternal( WgEvent::Event& _event )
 		case WG_EVENT_POINTER_EXIT_GIZMO:
 			break;
 
+		case WG_EVENT_GIZMO_PRESS:
+			break;
+		case WG_EVENT_GIZMO_RELEASE:
+			break;
+
 	}
 
 }
@@ -196,12 +210,8 @@ void WgEventHandler::ProcessPointerMove( WgEvent::PointerMove * pEvent )
 
 	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
 	{
-		if( m_latestButtonEvents[i].Id() == WG_EVENT_BUTTON_PRESS )
-		{
-			WgEvent::ButtonPress * p = static_cast<WgEvent::ButtonPress*> (&m_latestButtonEvents[i]);
-
-			QueueEvent( WgEvent::ButtonDrag( i, p->PointerPos(), m_pointerPos, pEvent->Pos() ) );
-		}
+		if( m_pLatestButtonEvents[i] && m_pLatestButtonEvents[i]->Id() == WG_EVENT_BUTTON_PRESS )
+			QueueEvent( WgEvent::ButtonDrag( i, m_latestPress[i].PointerPos(), m_pointerPos, pEvent->Pos() ) );
 	}
 
 	// Post event for finalizing move once button drag is taken care of.
@@ -275,9 +285,9 @@ void WgEventHandler::ProcessButtonPress( WgEvent::ButtonPress * pEvent )
 
 	// Post GIZMO_PRESS events
 
-	for( size_t i = 0 ; i < vNowInside.size() ; i++ )
+	for( size_t i = 0 ; i < m_vMarkedWidgets.size() ; i++ )
 	{
-		WgGizmo * pGizmo = vNowInside[i].GetRealPtr();
+		WgGizmo * pGizmo = m_vMarkedWidgets[i].GetRealPtr();
 
 		if( pGizmo )
 		{
@@ -296,12 +306,13 @@ void WgEventHandler::ProcessButtonPress( WgEvent::ButtonPress * pEvent )
 			distance.x >= -m_doubleClickDistanceTreshold &&
 			distance.y <= m_doubleClickDistanceTreshold &&
 			distance.y >= -m_doubleClickDistanceTreshold )
-			QueueEvent( WgEvent::ButtonDoubleClick(button);
+			QueueEvent( WgEvent::ButtonDoubleClick(button) );
 	}
 
 	// Save info for the future
 
-	m_latestPress[button] = &pEvent;
+	m_latestPress[button] = *pEvent;
+	m_pLatestButtonEvents[button] = &m_latestPress[button];
 
 }
 
@@ -317,6 +328,10 @@ void WgEventHandler::ProcessButtonRelease( WgEvent::ButtonRelease * pEvent )
 
 	// Post GIZMO_RELEASE events for all that were NOT pressed
 
+	// Save info for the future
+
+	m_latestRelease[button] = *pEvent;
+	m_pLatestButtonEvents[button] = &m_latestRelease[button];
 
 }
 

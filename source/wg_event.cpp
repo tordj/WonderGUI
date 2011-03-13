@@ -115,7 +115,7 @@ namespace WgEvent
 
 	//____ KeyPress ___________________________________________________________
 
-	KeyPressed::KeyPress( int native_keycode )
+	KeyPress::KeyPress( int native_keycode )
 	{
 		m_id = WG_EVENT_KEY_PRESS;
 		m_param[0].integer = native_keycode;
@@ -175,7 +175,7 @@ namespace WgEvent
 
 	//____ WheelRoll __________________________________________________________
 
-	WheelRolled::WheelRoll( int wheel, int distance )
+	WheelRoll::WheelRoll( int wheel, int distance )
 	{
 		m_id = WG_EVENT_WHEEL_ROLL;
 		m_param[0].integer = wheel;
@@ -270,7 +270,7 @@ namespace WgEvent
 
 	//____ GizmoPress() _______________________________________________________
 
-	GizmoPress::GizmoPress( WgGizmo * pGizmo, int button, WgCord& screenPos, WgCord& pos )
+	GizmoPress::GizmoPress( WgGizmo * pGizmo, int button, const WgCord& screenPos, const WgCord& pos )
 	{
 		m_id		= WG_EVENT_GIZMO_PRESS;
 		m_pGizmo 	= pGizmo;
@@ -289,19 +289,19 @@ namespace WgEvent
 		return m_param[0].integer;
 	}
 
-	WgCord GizmoPress::Pos() const
+	WgCord GizmoPress::PointerOfs() const
 	{
 		return WgCord( m_param[2].short1, m_param[2].short2 );
 	}
 
-	WgCord GizmoPress::ScreenPos() const
+	WgCord GizmoPress::PointerScreenPos() const
 	{
 		return WgCord( m_param[1].short1, m_param[1].short2 );
 	}
 
 	//____ GizmoRelease() _______________________________________________________
 
-	GizmoRelease::GizmoRelease( WgGizmo * pGizmo, int button, WgCord& screenPos, WgCord& ofs, bool bWasPressed, bool bIsOutside )
+	GizmoRelease::GizmoRelease( WgGizmo * pGizmo, int button, const WgCord& screenPos, const WgCord& ofs, bool bWasPressed, bool bIsOutside )
 	{
 		m_id		= WG_EVENT_GIZMO_PRESS;
 		m_pGizmo 	= pGizmo;
@@ -335,12 +335,12 @@ namespace WgEvent
 
 	bool GizmoRelease::WasPressed() const
 	{
-		return (bool) m_param[3].bool1;
+		return (bool) m_param[3].byte1;
 	}
 
 	bool GizmoRelease::IsOutside() const
 	{
-		return (bool) m_param[3].bool2;
+		return (bool) m_param[3].byte2;
 	}
 
 };
