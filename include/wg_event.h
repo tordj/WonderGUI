@@ -46,20 +46,27 @@ class WgEventHandler;
 enum	WgEventId
 {
 	WG_EVENT_DUMMY,
-	WG_EVENT_POINTER_MOVED,
-	WG_EVENT_BUTTON_PRESSED,
-	WG_EVENT_BUTTON_RELEASED,
-	WG_EVENT_KEY_PRESSED,
-	WG_EVENT_KEY_RELEASED,
+	WG_EVENT_POINTER_MOVE,
+	WG_EVENT_BUTTON_PRESS,
+	WG_EVENT_BUTTON_RELEASE,
+	WG_EVENT_KEY_PRESS,
+	WG_EVENT_KEY_RELEASE,
 	WG_EVENT_CHARACTER,
-	WG_EVENT_WHEEL_ROLLED,
-	WG_EVENT_TIME_PASSED,
+	WG_EVENT_WHEEL_ROLL,
+	WG_EVENT_TIME_PASS,
 
-	WG_EVENT_END_POINTER_MOVED,
-	WG_EVENT_BUTTON_DRAGGED,
+	WG_EVENT_END_POINTER_MOVE,
+	WG_EVENT_BUTTON_DRAG,
 
-	WG_EVENT_POINTER_ENTERED_GIZMO,
-	WG_EVENT_POINTER_LEFT_GIZMO
+	WG_EVENT_POINTER_ENTER_GIZMO,
+	WG_EVENT_POINTER_EXIT_GIZMO,
+
+	WG_EVENT_GIZMO_PRESS,
+	WG_EVENT_GIZMO_RELEASE,
+
+	WG_EVENT_BUTTON_CLICK,
+	WG_EVENT_BUTTON_DOUBLECLICK,
+
 };
 
 
@@ -94,56 +101,71 @@ namespace WgEvent
 						short	short1;
 						short	short2;
 					};
+
+					struct
+					{
+						char	byte1;
+						char	byte2;
+						char	byte3;
+						char	byte4;
+					};
 				};
 			};
 
 			WgEventId		m_id;				// Id of the event
 			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
-			int64_t		m_timestamp;		// Timestamp of posting this event
+			int64_t			m_timestamp;		// Timestamp of posting this event
 			WgGizmoWeakPtr	m_pGizmo;			// Gizmo posting the event
 			Param			m_param[4];
 	};
 
-	class PointerMoved : public Event
+	class PointerMove : public Event
 	{
 	public:
-		PointerMoved( const WgCord& pos );
+		PointerMove( const WgCord& pos );
 
 		WgCord			Pos() const;
 	};
 
-	class ButtonPressed : public Event
+	class ButtonPress : public Event
 	{
+		friend class ::WgEventHandler;
+	protected:
+		ButtonPress() {}						// So we can make members in WgEventHandler
 	public:
-		ButtonPressed( int button );
+		ButtonPress( int button );
+
+		int				Button() const;
+		WgCord			PointerPos() const;
+
+	};
+
+	class ButtonRelease : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		ButtonRelease() {}						// So we can make members in WgEventHandler
+	public:
+		ButtonRelease( int button );
 
 		int				Button() const;
 		WgCord			PointerPos() const;
 	};
 
-	class ButtonReleased : public Event
+	class KeyPress : public Event
 	{
 	public:
-		ButtonReleased( int button );
-
-		int				Button() const;
-		WgCord			PointerPos() const;
-	};
-
-	class KeyPressed : public Event
-	{
-	public:
-		KeyPressed( int native_keycode );
+		KeyPress( int native_keycode );
 
 		int				NativeKeyCode() const;
 		int				TranslatedKeyCode() const;
 		WgCord			PointerPos() const;
 	};
 
-	class KeyReleased : public Event
+	class KeyRelease : public Event
 	{
 	public:
-		KeyReleased( int native_keycode );
+		KeyRelease( int native_keycode );
 
 		int				NativeKeyCode() const;
 		int				TranslatedKeyCode() const;
@@ -158,20 +180,20 @@ namespace WgEvent
 		unsigned short	Char() const;
 	};
 
-	class WheelRolled : public Event
+	class WheelRoll : public Event
 	{
 	public:
-		WheelRolled( int wheel, int distance );
+		WheelRoll( int wheel, int distance );
 
 		int				Wheel() const;
 		int				Distance() const;
 		WgCord			PointerPos() const;
 	};
 
-	class TimePassed : public Event
+	class TimePass : public Event
 	{
 	public:
-		TimePassed( int ms );
+		TimePass( int ms );
 
 		int				Millisec() const;
 	};
@@ -179,20 +201,20 @@ namespace WgEvent
 
 	//___ Internally posted events ____________________________________________
 
-	class EndPointerMoved : public Event
+	class EndPointerMove : public Event
 	{
 		friend class ::WgEventHandler;
 	protected:
-		EndPointerMoved( const WgCord& pos );
+		EndPointerMove( const WgCord& pos );
 	public:
 		WgCord			Pos() const;
 	};
 
-	class ButtonDragged : public Event
+	class ButtonDrag : public Event
 	{
 		friend class ::WgEventHandler;
 	protected:
-		ButtonDragged( int button, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos );
+		ButtonDrag( int button, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos );
 	public:
 		int				Button() const;
 		WgCord			DraggedSinceStart() const;
@@ -202,19 +224,64 @@ namespace WgEvent
 		WgCord			PrevPos() const;
 	};
 
-	class PointerEnteredGizmo : public Event
+	class ButtonClick : public Event
 	{
 		friend class ::WgEventHandler;
 	protected:
-		PointerEnteredGizmo( WgGizmo * pGizmo ) { m_pGizmo = pGizmo; }
+		ButtonClick( int button );
+
+		int				Button() const;
+		WgCord			PointerPos() const;
 	};
 
-	class PointerLeftGizmo : public Event
+	class ButtonDoubleClick : public Event
 	{
 		friend class ::WgEventHandler;
 	protected:
-		PointerLeftGizmo( WgGizmo * pGizmo ) { m_pGizmo = pGizmo; }
+		ButtonDoubleClick( int button );
+
+		int				Button() const;
+		WgCord			PointerPos() const;
 	};
+
+	class PointerEnterGizmo : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		PointerEnterGizmo( WgGizmo * pGizmo ) { m_pGizmo = pGizmo; }
+	};
+
+	class PointerExitGizmo : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		PointerExitGizmo( WgGizmo * pGizmo ) { m_pGizmo = pGizmo; }
+	};
+
+	class GizmoPress : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		GizmoPress( WgGizmo * pGizmo, int button, const WgCord& screenPos, const WgCord& ofs );
+
+		int				Button() const;
+		WgCord			PointerOfs() const;
+		WgCord			PointerScreenPos() const;
+	};
+
+	class GizmoRelease : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		GizmoRelease( WgGizmo * pGizmo, int button, const WgCord& screenPos, const WgCord& ofs, bool bWasPressed, bool bIsOutside );
+
+		int				Button() const;
+		WgCord			PointerOfs() const;
+		WgCord			PointerScreenPos() const;
+		bool			WasPressed() const;
+		bool			IsOutside() const;
+	};
+
 
 }
 

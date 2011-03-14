@@ -88,7 +88,6 @@ enum WgTxtAttr
 
 //____ WgExtChar __________________________________________________________
 
-#define WG_ESCAPE_CODE		0xA4
 
 //0x1b
 

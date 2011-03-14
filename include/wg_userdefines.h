@@ -54,6 +54,8 @@
 
 #define	WG_MAX_FONTSIZE		256	// Max size (pixels) for font.
 
+#define WG_ESCAPE_CODE		0xA4
+
 #define WG_DEFAULT_CODEPAGE WG_CODEPAGE_1252
 
 //____ input related defines __________________________________________________

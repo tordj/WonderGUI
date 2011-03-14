@@ -60,12 +60,12 @@ private:
 	void	CompleteEvent( WgEvent::Event& _event );
 	void	ProcessEventInternal( WgEvent::Event& _event );
 
-	void	ProcessTimePassed( WgEvent::TimePassed * pEvent );
-	void	ProcessPointerMoved( WgEvent::PointerMoved * pEvent );
-	void	ProcessEndPointerMoved( WgEvent::EndPointerMoved * pEvent );
-	void	ProcessButtonPressed( WgEvent::ButtonPressed * pEvent );
-	void	ProcessButtonReleased( WgEvent::ButtonReleased * pEvent );
-	void	ProcessButtonDragged( WgEvent::ButtonDragged * pEvent );
+	void	ProcessTimePass( WgEvent::TimePass * pEvent );
+	void	ProcessPointerMove( WgEvent::PointerMove * pEvent );
+	void	ProcessEndPointerMove( WgEvent::EndPointerMove * pEvent );
+	void	ProcessButtonPress( WgEvent::ButtonPress * pEvent );
+	void	ProcessButtonRelease( WgEvent::ButtonRelease * pEvent );
+	void	ProcessButtonDrag( WgEvent::ButtonDrag * pEvent );
 
 	//
 
@@ -81,7 +81,8 @@ private:
 
 	// Settings for keyboard/pointer input
 
-	int				m_doubleClickTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
+	int				m_doubleClickTimeTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
+	int				m_doubleClickDistanceTreshold;	// Maximum distance the pointer may move between first and second press to count as a doubleclick.
 
 	int				m_buttonRepeatDelay;
 	int				m_buttonRepeatRate;
@@ -89,15 +90,21 @@ private:
 	int				m_keyRepeatDelay;
 	int				m_keyRepeatRate;
 
+
 	std::map<int,WgKey>	m_keycodeMap;		// Maps native keycodes to WgKey.
 
 	// Current mouse state
 
-	std::vector<WgGizmoWeakPtr>	m_vMarkedWidgets;	// Widgets the pointer currently is "inside"
+	std::vector<WgGizmoWeakPtr>	m_vMarkedWidgets;	// Widgets the pointer currently is "inside".
 
 	// Current button states
 
-	WgEvent::Event	m_latestButtonEvents[WG_MAX_BUTTONS];
+	WgEvent::Event *		m_pLatestButtonEvents[WG_MAX_BUTTONS];	// Pointer at event object in either m_latestPress or m_latestRelease.
+
+	WgEvent::ButtonPress	m_latestPress[WG_MAX_BUTTONS];			// Saved info for the last time each button was pressed.
+	WgEvent::ButtonRelease	m_latestRelease[WG_MAX_BUTTONS];		// Saved info for the last time each button was released.
+
+	std::vector<WgGizmoWeakPtr>	m_latestPressWidgets[WG_MAX_BUTTONS];	// List of widgets who received the latest press, for each button.
 
 	// Current keyboard state
 
