@@ -74,6 +74,8 @@ public:
 	WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len );
 	WgCharSeq( const std::string& str );
 	WgCharSeq( const std::string& str, int ofs, int len );
+	WgCharSeq( const std::wstring& str );
+	WgCharSeq( const std::wstring& str, int ofs, int len );
 	WgCharSeq( const WgString& str );
 	WgCharSeq( const WgString& str, int ofs, int len );
 	WgCharSeq( const WgCharSeq& seq, int ofs = 0, int len = 0x7FFFFFFF );
@@ -138,6 +140,7 @@ public:
 	const UnicodeBasket		GetUnicode() const;
 	const UTF8Basket		GetUTF8() const;
 	std::string				GetStdString() const;
+	std::wstring			GetStdWstring() const;
 	int						GetNbLines() const;
 	void					CopyTo( WgChar * pDest ) const;
 //	void					CopyTo( char * pDest ) const;			//TODO: implement.

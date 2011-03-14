@@ -98,6 +98,30 @@ WgCharSeq::WgCharSeq( const std::string& str, int ofs, int len )
 }
 
 
+WgCharSeq::WgCharSeq( const std::wstring& str )
+{
+    m_type      = UTF16;
+    m_pChar     = (void *) str.c_str();
+    m_nbChars   = str.length();
+}
+
+WgCharSeq::WgCharSeq( const std::wstring& str, int ofs, int len )
+{
+	const wchar_t * p = str.c_str();
+	int strlen = str.length();
+
+	if( ofs + len > strlen )
+	{
+		if( ofs > strlen )
+			ofs = strlen;
+		len = strlen - ofs;
+	}
+
+    m_type      = UTF16;
+    m_pChar     = p + ofs;
+    m_nbChars   = len;
+}
+
 
 WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer )
 {
@@ -489,6 +513,71 @@ const WgCharSeq::UnicodeBasket WgCharSeq::GetUnicode() const
 			basket.length = 0;
 			basket.bIsOwner = false;
 			return basket;
+	}
+}
+
+//____ GetStdWstring() ____________________________________________________________
+
+std::wstring WgCharSeq::GetStdWstring() const
+{
+	std::wstring str;
+
+	switch( m_type )
+	{
+		case WGCHAR:
+		{
+			Uint16 * p = new Uint16[m_nbChars];
+			for( int i = 0 ; i < m_nbChars ; i++ )
+				p[i] = ((WgChar*)m_pChar)[i].Glyph();
+			str.assign( (const wchar_t *)p, m_nbChars );
+			delete [] p;
+			return str;
+		}
+		case UTF8:
+		{
+			Uint16 * p = new Uint16[m_nbChars];
+			const char * pSrc = (const char *) m_pChar;
+			WgTextTool::readString( pSrc, p, m_nbChars );
+			str.assign( (const wchar_t *)p, m_nbChars );
+			delete [] p;
+			return str;
+		}
+		case UTF16:
+			str.assign( (const wchar_t *) m_pChar, m_nbChars );
+			return str;
+
+		case ESCAPED_UTF8:
+		{
+			Uint16 * p = new Uint16[m_nbChars];
+			const char * pSrc = (const char *) m_pChar;
+			WgTextTool::stripTextCommandsConvert( pSrc, p, m_nbChars );
+			str.assign( (const wchar_t *)p, m_nbChars );
+			delete [] p;
+			return str;
+		}
+
+		case ESCAPED_UTF16:
+		{
+			Uint16 * p = new Uint16[m_nbChars];
+			const Uint16 * pSrc = (const Uint16 *) m_pChar;
+			WgTextTool::stripTextCommands( pSrc, p, m_nbChars );
+			str.assign( (const wchar_t *)p, m_nbChars );
+			delete [] p;
+			return str;
+		}
+
+		case MAP8:
+		{
+			Uint16 * p = new Uint16[m_nbChars];
+			const char * pSrc = (const char *) m_pChar;
+			WgTextTool::readString( pSrc, ((WgCharSeq8*)this)->m_codepage, p, m_nbChars );
+			str.assign( (const wchar_t *)p, m_nbChars );
+			delete [] p;
+			return str;
+		}
+
+		default:					// EMPTY
+			return str;
 	}
 }
 
