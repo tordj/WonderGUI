@@ -46,27 +46,24 @@ class WgEventHandler;
 enum	WgEventId
 {
 	WG_EVENT_DUMMY,
+	WG_EVENT_TIME_PASS,
+
+	WG_EVENT_POINTER_ENTER,
 	WG_EVENT_POINTER_MOVE,
+	WG_EVENT_END_POINTER_MOVE,
+	WG_EVENT_POINTER_EXIT,
+
 	WG_EVENT_BUTTON_PRESS,
+	WG_EVENT_BUTTON_REPEAT,
+	WG_EVENT_BUTTON_DRAG,
 	WG_EVENT_BUTTON_RELEASE,
+	WG_EVENT_BUTTON_CLICK,
+	WG_EVENT_BUTTON_DOUBLECLICK,
+
 	WG_EVENT_KEY_PRESS,
 	WG_EVENT_KEY_RELEASE,
 	WG_EVENT_CHARACTER,
 	WG_EVENT_WHEEL_ROLL,
-	WG_EVENT_TIME_PASS,
-
-	WG_EVENT_END_POINTER_MOVE,
-	WG_EVENT_BUTTON_DRAG,
-
-	WG_EVENT_POINTER_ENTER_GIZMO,
-	WG_EVENT_POINTER_EXIT_GIZMO,
-
-	WG_EVENT_GIZMO_PRESS,
-	WG_EVENT_GIZMO_RELEASE,
-
-	WG_EVENT_BUTTON_CLICK,
-	WG_EVENT_BUTTON_DOUBLECLICK,
-
 };
 
 
@@ -80,12 +77,15 @@ namespace WgEvent
 		public:
 
 			inline WgEventId		Id() const { return m_id; }
-			inline int64_t		Timestamp() const { return m_timestamp; }
+			inline int64_t			Timestamp() const { return m_timestamp; }
 			inline WgGizmo *		Gizmo() const { return m_pGizmo.GetRealPtr(); }
+			inline bool				IsForGizmo() const { return m_bIsForGizmo; }
 			inline WgModifierKeys	ModKeys() const { return m_modKeys; }
+			inline WgCord			PointerPos() const { return m_pointerLocalPos; }
+			inline WgCord			PointerScreenPos() const { return m_pointerScreenPos; }
 
 		protected:
-			Event() : m_id(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_pGizmo(0) {}
+			Event() : m_id(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false), m_pGizmo(0) {}
 
 			struct Param
 			{
@@ -101,26 +101,44 @@ namespace WgEvent
 						short	short1;
 						short	short2;
 					};
-
-					struct
-					{
-						char	byte1;
-						char	byte2;
-						char	byte3;
-						char	byte4;
-					};
 				};
 			};
 
 			WgEventId		m_id;				// Id of the event
 			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
 			int64_t			m_timestamp;		// Timestamp of posting this event
-			WgGizmoWeakPtr	m_pGizmo;			// Gizmo posting the event
+			bool			m_bIsForGizmo;		// Set if this event is for a specific Gizmo (m_pGizmo set at creation, even if weak pointer now is null).
+			WgGizmoWeakPtr	m_pGizmo;			// Gizmo to receive this event.
+			WgCord			m_pointerLocalPos;	// Gizmo-relative position of pointer. Same as m_pointerScreenPos if Gizmo not set.
+			WgCord			m_pointerScreenPos;	// Screen position of pointer.
 			Param			m_param[4];
 	};
 
+
+	class PointerEnter : public Event
+	{
+		friend class ::WgEventHandler;
+	public:
+		PointerEnter( const WgCord& pos );
+	protected:
+		PointerEnter( WgGizmo * pGizmo );
+	};
+
+	class PointerExit : public Event
+	{
+		friend class ::WgEventHandler;
+	public:
+		PointerExit();
+	protected:
+		PointerExit( WgGizmo * pGizmo );
+	};
+
+
 	class PointerMove : public Event
 	{
+		friend class ::WgEventHandler;
+	protected:
+		PointerMove( WgGizmo * pGizmo );
 	public:
 		PointerMove( const WgCord& pos );
 
@@ -131,13 +149,12 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
-		ButtonPress() {}						// So we can make members in WgEventHandler
+		ButtonPress() {}								// So we can make members in WgEventHandler
+		ButtonPress( int button, WgGizmo * pGizmo );
 	public:
 		ButtonPress( int button );
 
 		int				Button() const;
-		WgCord			PointerPos() const;
-
 	};
 
 	class ButtonRelease : public Event
@@ -145,11 +162,13 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	protected:
 		ButtonRelease() {}						// So we can make members in WgEventHandler
+		ButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside );
 	public:
 		ButtonRelease( int button );
 
 		int				Button() const;
-		WgCord			PointerPos() const;
+		bool			PressInside() const;
+		bool			ReleaseInside() const;
 	};
 
 	class KeyPress : public Event
@@ -159,7 +178,6 @@ namespace WgEvent
 
 		int				NativeKeyCode() const;
 		int				TranslatedKeyCode() const;
-		WgCord			PointerPos() const;
 	};
 
 	class KeyRelease : public Event
@@ -169,7 +187,6 @@ namespace WgEvent
 
 		int				NativeKeyCode() const;
 		int				TranslatedKeyCode() const;
-		WgCord			PointerPos() const;
 	};
 
 	class Character : public Event
@@ -187,7 +204,6 @@ namespace WgEvent
 
 		int				Wheel() const;
 		int				Distance() const;
-		WgCord			PointerPos() const;
 	};
 
 	class TimePass : public Event
@@ -219,9 +235,21 @@ namespace WgEvent
 		int				Button() const;
 		WgCord			DraggedSinceStart() const;
 		WgCord			DraggedSinceLast() const;
-		WgCord			PointerPos() const;
 		WgCord			StartPos() const;
 		WgCord			PrevPos() const;
+		WgCord			CurrPos() const;
+	};
+
+	class ButtonRepeat : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		ButtonRepeat() {}								// So we can make members in WgEventHandler
+		ButtonRepeat( int button, WgGizmo * pGizmo );
+	public:
+		ButtonRepeat( int button );
+
+		int				Button() const;
 	};
 
 	class ButtonClick : public Event
@@ -229,9 +257,9 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	protected:
 		ButtonClick( int button );
+		ButtonClick( int button, WgGizmo * pGizmo );
 
 		int				Button() const;
-		WgCord			PointerPos() const;
 	};
 
 	class ButtonDoubleClick : public Event
@@ -239,50 +267,10 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	protected:
 		ButtonDoubleClick( int button );
+		ButtonDoubleClick( int button, WgGizmo * pGizmo );
 
 		int				Button() const;
-		WgCord			PointerPos() const;
 	};
-
-	class PointerEnterGizmo : public Event
-	{
-		friend class ::WgEventHandler;
-	protected:
-		PointerEnterGizmo( WgGizmo * pGizmo ) { m_pGizmo = pGizmo; }
-	};
-
-	class PointerExitGizmo : public Event
-	{
-		friend class ::WgEventHandler;
-	protected:
-		PointerExitGizmo( WgGizmo * pGizmo ) { m_pGizmo = pGizmo; }
-	};
-
-	class GizmoPress : public Event
-	{
-		friend class ::WgEventHandler;
-	protected:
-		GizmoPress( WgGizmo * pGizmo, int button, const WgCord& screenPos, const WgCord& ofs );
-
-		int				Button() const;
-		WgCord			PointerOfs() const;
-		WgCord			PointerScreenPos() const;
-	};
-
-	class GizmoRelease : public Event
-	{
-		friend class ::WgEventHandler;
-	protected:
-		GizmoRelease( WgGizmo * pGizmo, int button, const WgCord& screenPos, const WgCord& ofs, bool bWasPressed, bool bIsOutside );
-
-		int				Button() const;
-		WgCord			PointerOfs() const;
-		WgCord			PointerScreenPos() const;
-		bool			WasPressed() const;
-		bool			IsOutside() const;
-	};
-
-
 }
 
 

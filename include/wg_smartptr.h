@@ -227,7 +227,7 @@ template<class T> class WgWeakPtr : private WgWeakPtrImpl
 {
 public:
 	WgWeakPtr() {}
-	WgWeakPtr( T * pObj=0 ) : WgWeakPtrImpl( pObj ) {}
+	WgWeakPtr( T * pObj ) : WgWeakPtrImpl( pObj ) {}
 
 	WgWeakPtr(const WgWeakPtr<T>& r)
 	{

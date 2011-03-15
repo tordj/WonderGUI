@@ -57,15 +57,24 @@ public:
 
 private:
 
-	void	CompleteEvent( WgEvent::Event& _event );
-	void	ProcessEventInternal( WgEvent::Event& _event );
+	void	FinalizeEvent( WgEvent::Event& _event );
+	void	ProcessGeneralEvent( WgEvent::Event& _event );
 
 	void	ProcessTimePass( WgEvent::TimePass * pEvent );
+
+	void	ProcessPointerEnter( WgEvent::PointerEnter * pEvent );
 	void	ProcessPointerMove( WgEvent::PointerMove * pEvent );
 	void	ProcessEndPointerMove( WgEvent::EndPointerMove * pEvent );
+	void	ProcessPointerExit( WgEvent::PointerExit * pEvent );
+
 	void	ProcessButtonPress( WgEvent::ButtonPress * pEvent );
-	void	ProcessButtonRelease( WgEvent::ButtonRelease * pEvent );
+	void	ProcessButtonRepeat( WgEvent::ButtonRepeat * pEvent );
 	void	ProcessButtonDrag( WgEvent::ButtonDrag * pEvent );
+	void	ProcessButtonRelease( WgEvent::ButtonRelease * pEvent );
+	void	ProcessButtonClick( WgEvent::ButtonClick * pEvent );
+	void	ProcessButtonDoubleClick( WgEvent::ButtonDoubleClick * pEvent );
+
+	bool	IsGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
 
 	//
 
@@ -95,7 +104,7 @@ private:
 
 	// Current mouse state
 
-	std::vector<WgGizmoWeakPtr>	m_vMarkedWidgets;	// Widgets the pointer currently is "inside".
+	std::vector<WgGizmoWeakPtr>	m_vMarkedGizmos;	// Gizmos the pointer currently is "inside".
 
 	// Current button states
 
@@ -104,7 +113,10 @@ private:
 	WgEvent::ButtonPress	m_latestPress[WG_MAX_BUTTONS];			// Saved info for the last time each button was pressed.
 	WgEvent::ButtonRelease	m_latestRelease[WG_MAX_BUTTONS];		// Saved info for the last time each button was released.
 
-	std::vector<WgGizmoWeakPtr>	m_latestPressWidgets[WG_MAX_BUTTONS];	// List of widgets who received the latest press, for each button.
+	std::vector<WgGizmoWeakPtr>	m_latestPressGizmos[WG_MAX_BUTTONS];	// List of gizmos who received the latest press, for each button.
+	std::vector<WgGizmoWeakPtr>	m_previousPressGizmos[WG_MAX_BUTTONS];	// List of gizmos who received the second latest press, for each button,
+																		// used for double-click handling.
+
 
 	// Current keyboard state
 

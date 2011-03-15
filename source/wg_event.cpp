@@ -24,18 +24,53 @@
 
 namespace WgEvent
 {
+
+	//____ PointerEnter _______________________________________________________
+
+	PointerEnter::PointerEnter( const WgCord& pos )
+	{
+		m_id = WG_EVENT_POINTER_ENTER;
+
+		m_pointerLocalPos = pos; 
+		m_pointerScreenPos = pos; 
+	}
+
+	PointerEnter::PointerEnter( WgGizmo * pGizmo )
+	{
+		m_id = WG_EVENT_POINTER_ENTER;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+	}
+
+	//____ PointerExit ________________________________________________________
+
+	PointerExit::PointerExit()
+	{
+		m_id = WG_EVENT_POINTER_EXIT;
+	}
+
+	PointerExit::PointerExit( WgGizmo * pGizmo )
+	{
+		m_id = WG_EVENT_POINTER_EXIT;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+	}
+
 	//____ PointerMove __________________________________________________________
 
 	PointerMove::PointerMove( const WgCord& pos )
 	{
 		m_id = WG_EVENT_POINTER_MOVE;
-		m_param[0].integer = pos.x;
-		m_param[1].integer = pos.y;
+
+		m_pointerLocalPos = pos;
+		m_pointerScreenPos = pos;
 	}
 
-	WgCord PointerMove::Pos() const
+	PointerMove::PointerMove( WgGizmo * pGizmo )
 	{
-		return WgCord( m_param[0].integer, m_param[1].integer );
+		m_id = WG_EVENT_POINTER_MOVE;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
 	}
 
 	//____ ButtonPress ______________________________________________________
@@ -46,15 +81,44 @@ namespace WgEvent
 		m_param[0].integer = button;
 	}
 
+	ButtonPress::ButtonPress( int button, WgGizmo * pGizmo )
+	{
+		m_id			= WG_EVENT_BUTTON_PRESS;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+
+		m_param[0].integer = button;
+	}
+
+
 	int ButtonPress::Button() const
 	{
 		return m_param[0].integer;
 	}
 
-	WgCord ButtonPress::PointerPos() const
+	//____ ButtonRepeat ______________________________________________________
+
+	ButtonRepeat::ButtonRepeat( int button )
 	{
-		return WgCord( m_param[1].integer, m_param[2].integer );
+		m_id = WG_EVENT_BUTTON_REPEAT;
+		m_param[0].integer = button;
 	}
+
+	ButtonRepeat::ButtonRepeat( int button, WgGizmo * pGizmo )
+	{
+		m_id			= WG_EVENT_BUTTON_REPEAT;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+
+		m_param[0].integer = button;
+	}
+
+
+	int ButtonRepeat::Button() const
+	{
+		return m_param[0].integer;
+	}
+
 
 	//____ ButtonRelease _____________________________________________________
 
@@ -62,17 +126,38 @@ namespace WgEvent
 	{
 		m_id = WG_EVENT_BUTTON_RELEASE;
 		m_param[0].integer = button;
+
+		m_param[1].boolean = true;			// Always assumed to have had the press inside our window.
+		m_param[2].boolean = true;			// Always assumed to be inside our window now.
 	}
+
+	ButtonRelease::ButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside )
+	{
+		m_id			= WG_EVENT_BUTTON_RELEASE;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+
+		m_param[0].integer = button;
+		m_param[1].boolean = bPressInside;
+		m_param[2].boolean = bReleaseInside;
+	}
+
 
 	int ButtonRelease::Button() const
 	{
 		return m_param[0].integer;
 	}
 
-	WgCord ButtonRelease::PointerPos() const
+	bool ButtonRelease::PressInside() const
 	{
-		return WgCord( m_param[1].integer, m_param[2].integer );
+		return m_param[1].boolean;
 	}
+
+	bool ButtonRelease::ReleaseInside() const
+	{
+		return m_param[2].boolean;
+	}
+
 
 
 	//____ ButtonClick _____________________________________________________
@@ -83,14 +168,19 @@ namespace WgEvent
 		m_param[0].integer = button;
 	}
 
+	ButtonClick::ButtonClick( int button, WgGizmo * pGizmo )
+	{
+		m_id = WG_EVENT_BUTTON_CLICK;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+
+		m_param[0].integer = button;
+	}
+
+
 	int ButtonClick::Button() const
 	{
 		return m_param[0].integer;
-	}
-
-	WgCord ButtonClick::PointerPos() const
-	{
-		return WgCord( m_param[1].integer, m_param[2].integer );
 	}
 
 	//____ ButtonDoubleClick _____________________________________________________
@@ -101,16 +191,19 @@ namespace WgEvent
 		m_param[0].integer = button;
 	}
 
+	ButtonDoubleClick::ButtonDoubleClick( int button, WgGizmo * pGizmo )
+	{
+		m_id = WG_EVENT_BUTTON_CLICK;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+
+		m_param[0].integer = button;
+	}
+
 	int ButtonDoubleClick::Button() const
 	{
 		return m_param[0].integer;
 	}
-
-	WgCord ButtonDoubleClick::PointerPos() const
-	{
-		return WgCord( m_param[1].integer, m_param[2].integer );
-	}
-
 
 
 	//____ KeyPress ___________________________________________________________
@@ -131,11 +224,6 @@ namespace WgEvent
 		return m_param[1].integer;
 	}
 
-	WgCord KeyPress::PointerPos() const
-	{
-		return WgCord( m_param[2].integer, m_param[3].integer );
-	}
-
 	//____ KeyRelease ________________________________________________________
 
 	KeyRelease::KeyRelease( int native_keycode )
@@ -153,12 +241,6 @@ namespace WgEvent
 	{
 		return m_param[1].integer;
 	}
-
-	WgCord KeyRelease::PointerPos() const
-	{
-		return WgCord( m_param[2].integer, m_param[3].integer );
-	}
-
 
 	//____ Character __________________________________________________________
 
@@ -190,11 +272,6 @@ namespace WgEvent
 	int WheelRoll::Distance() const
 	{
 		return m_param[1].integer;
-	}
-
-	WgCord WheelRoll::PointerPos() const
-	{
-		return WgCord( m_param[2].integer, m_param[3].integer );
 	}
 
 	//____ TimePass ___________________________________________________________
@@ -253,7 +330,7 @@ namespace WgEvent
 		return WgCord( m_param[3].short1, m_param[3].short2 );
 	}
 
-	WgCord ButtonDrag::PointerPos() const
+	WgCord ButtonDrag::CurrPos() const
 	{
 		return WgCord( m_param[1].short1 + m_param[2].short1, m_param[1].short2 + m_param[2].short2 );
 	}
@@ -266,81 +343,6 @@ namespace WgEvent
 	WgCord ButtonDrag::PrevPos() const
 	{
 		return WgCord( m_param[1].short1 + m_param[2].short1 - m_param[3].short1, m_param[1].short2 + m_param[2].short2 - m_param[3].short2 );
-	}
-
-	//____ GizmoPress() _______________________________________________________
-
-	GizmoPress::GizmoPress( WgGizmo * pGizmo, int button, const WgCord& screenPos, const WgCord& pos )
-	{
-		m_id		= WG_EVENT_GIZMO_PRESS;
-		m_pGizmo 	= pGizmo;
-
-		m_param[0].integer = button;
-
-		m_param[1].short1 = screenPos.x;
-		m_param[1].short2 = screenPos.y;
-
-		m_param[2].short1 = pos.x;
-		m_param[2].short2 = pos.y;
-	}
-
-	int GizmoPress::Button() const
-	{
-		return m_param[0].integer;
-	}
-
-	WgCord GizmoPress::PointerOfs() const
-	{
-		return WgCord( m_param[2].short1, m_param[2].short2 );
-	}
-
-	WgCord GizmoPress::PointerScreenPos() const
-	{
-		return WgCord( m_param[1].short1, m_param[1].short2 );
-	}
-
-	//____ GizmoRelease() _______________________________________________________
-
-	GizmoRelease::GizmoRelease( WgGizmo * pGizmo, int button, const WgCord& screenPos, const WgCord& ofs, bool bWasPressed, bool bIsOutside )
-	{
-		m_id		= WG_EVENT_GIZMO_PRESS;
-		m_pGizmo 	= pGizmo;
-
-		m_param[0].integer = button;
-
-		m_param[1].short1 = screenPos.x;
-		m_param[1].short2 = screenPos.y;
-
-		m_param[2].short1 = ofs.x;
-		m_param[2].short2 = ofs.y;
-
-		m_param[3].byte1 = (char) bWasPressed;
-		m_param[3].byte2 = (char) bIsOutside;
-	}
-
-	int GizmoRelease::Button() const
-	{
-		return m_param[0].integer;
-	}
-
-	WgCord GizmoRelease::PointerOfs() const
-	{
-		return WgCord( m_param[2].short1, m_param[2].short2 );
-	}
-
-	WgCord GizmoRelease::PointerScreenPos() const
-	{
-		return WgCord( m_param[1].short1, m_param[1].short2 );
-	}
-
-	bool GizmoRelease::WasPressed() const
-	{
-		return (bool) m_param[3].byte1;
-	}
-
-	bool GizmoRelease::IsOutside() const
-	{
-		return (bool) m_param[3].byte2;
 	}
 
 };
