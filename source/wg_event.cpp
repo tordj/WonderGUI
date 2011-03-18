@@ -32,8 +32,8 @@ namespace WgEvent
 	{
 		m_id = WG_EVENT_POINTER_ENTER;
 
-		m_pointerLocalPos = pos; 
-		m_pointerScreenPos = pos; 
+		m_pointerLocalPos = pos;
+		m_pointerScreenPos = pos;
 	}
 
 	PointerEnter::PointerEnter( WgGizmo * pGizmo )
@@ -330,6 +330,10 @@ namespace WgEvent
 		m_param[3].short2 = currPos.y - prevPos.y;
 	}
 
+	int ButtonDrag::Button() const
+	{
+		return m_param[0].integer;
+	}
 
 
 	WgCord ButtonDrag::DraggedSinceStart() const

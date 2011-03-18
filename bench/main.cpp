@@ -16,7 +16,7 @@
 
 WgSurface * 	loadSurface( const char * path );
 SDL_Surface *	initSDL( int w, int h );
-bool	eventLoop();
+bool			eventLoop( WgEventHandler * pHandler );
 
 
 //____ main() _________________________________________________________________
@@ -40,6 +40,7 @@ int main ( int argc, char** argv )
 
 	WgRoot * pRoot = new WgRoot( pGfxDevice, pInputDevice );
 
+	WgEventHandler * pEventHandler = new WgEventHandler( 0, pRoot );
 
 	// Load images and specify blocks
 
@@ -81,7 +82,7 @@ int main ( int argc, char** argv )
 
     // program main loop
 
-    while (eventLoop())
+    while (eventLoop( pEventHandler ))
     {
 
         // DRAWING STARTS HERE
@@ -139,8 +140,14 @@ SDL_Surface * initSDL( int w, int h )
 
 //____ eventLoop() ____________________________________________________________
 
-bool eventLoop()
+bool eventLoop( WgEventHandler * pHandler )
 {
+	static int	prevTicks = 0;
+
+	int ticks = SDL_GetTicks();
+	pHandler->QueueEvent( WgEvent::TimePass( ticks - prevTicks ) );
+	prevTicks = ticks;
+
    // message processing loop
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
@@ -149,19 +156,46 @@ bool eventLoop()
 		switch (event.type)
 		{
 			// exit if the window is closed
-		case SDL_QUIT:
-			return false;
+			case SDL_QUIT:
+				return false;
 
 			// check for keypresses
-		case SDL_KEYDOWN:
+			case SDL_KEYDOWN:
 			{
 				// exit if ESCAPE is pressed
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 					return false;
 				break;
 			}
+
+			case	SDL_MOUSEMOTION:
+			{
+				pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.motion.x, event.motion.y ) ) );
+				break;
+			}
+
+			case	SDL_MOUSEBUTTONDOWN:
+				if(event.button.button == 4 )
+					pHandler->QueueEvent( WgEvent::WheelRoll( 1, 120 ) );
+				else if(event.button.button == 5)
+					pHandler->QueueEvent( WgEvent::WheelRoll( 1, -120 ) );
+				else
+				{
+					pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.button.x, event.button.y )) );
+					pHandler->QueueEvent( WgEvent::ButtonPress( event.button.button ) );
+				}
+				break;
+
+			case	SDL_MOUSEBUTTONUP:
+				pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.button.x, event.button.y ) ));
+				pHandler->QueueEvent( WgEvent::ButtonRelease( event.button.button ) );
+				break;
+
+
 		} // end switch
 	} // end of message processing
+
+	pHandler->ProcessEvents();
 
 	return true;
 }

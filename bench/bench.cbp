@@ -49,7 +49,11 @@
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
-			<debugger />
+			<debugger>
+				<search_path add="../include" />
+				<search_path add="../wg_gl" />
+				<search_path add="../wg_sdl" />
+			</debugger>
 			<envvars />
 		</Extensions>
 	</Project>

@@ -59,6 +59,10 @@
 #	include <wg_emitter.h>
 #endif
 
+#ifndef WG_EVENTHANDLER_DOT_H
+#	include <wg_eventhandler.h>
+#endif
+
 #ifndef WG_FONT_DOT_H
 #	include <wg_font.h>
 #endif
