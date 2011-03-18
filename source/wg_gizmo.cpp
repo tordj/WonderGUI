@@ -274,6 +274,11 @@ void WgGizmo::OnUpdate( const WgUpdateInfo& _updateInfo )
 {
 }
 
+void WgGizmo::OnEvent( const WgEvent::Event& _event, WgEventHandler * pHandler )
+{
+
+}
+
 void WgGizmo::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 }

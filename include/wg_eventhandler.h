@@ -64,7 +64,7 @@ private:
 
 	void	ProcessPointerEnter( WgEvent::PointerEnter * pEvent );
 	void	ProcessPointerMove( WgEvent::PointerMove * pEvent );
-	void	ProcessEndPointerMove( WgEvent::EndPointerMove * pEvent );
+	void	ProcessPointerPlaced( WgEvent::PointerPlaced * pEvent );
 	void	ProcessPointerExit( WgEvent::PointerExit * pEvent );
 
 	void	ProcessButtonPress( WgEvent::ButtonPress * pEvent );
@@ -108,13 +108,13 @@ private:
 
 	// Current button states
 
-	WgEvent::Event *		m_pLatestButtonEvents[WG_MAX_BUTTONS];	// Pointer at event object in either m_latestPress or m_latestRelease.
+	WgEvent::Event *		m_pLatestButtonEvents[WG_MAX_BUTTONS+1];	// Pointer at event object in either m_latestPress or m_latestRelease.
 
-	WgEvent::ButtonPress	m_latestPress[WG_MAX_BUTTONS];			// Saved info for the last time each button was pressed.
-	WgEvent::ButtonRelease	m_latestRelease[WG_MAX_BUTTONS];		// Saved info for the last time each button was released.
+	WgEvent::ButtonPress	m_latestPress[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
+	WgEvent::ButtonRelease	m_latestRelease[WG_MAX_BUTTONS+1];		// Saved info for the last time each button was released.
 
-	std::vector<WgGizmoWeakPtr>	m_latestPressGizmos[WG_MAX_BUTTONS];	// List of gizmos who received the latest press, for each button.
-	std::vector<WgGizmoWeakPtr>	m_previousPressGizmos[WG_MAX_BUTTONS];	// List of gizmos who received the second latest press, for each button,
+	std::vector<WgGizmoWeakPtr>	m_latestPressGizmos[WG_MAX_BUTTONS+1];	// List of gizmos who received the latest press, for each button.
+	std::vector<WgGizmoWeakPtr>	m_previousPressGizmos[WG_MAX_BUTTONS+1];	// List of gizmos who received the second latest press, for each button,
 																		// used for double-click handling.
 
 

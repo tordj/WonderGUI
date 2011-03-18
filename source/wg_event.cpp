@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_event.h>
+#include <wg_gizmo.h>
 
 namespace WgEvent
 {
@@ -287,18 +288,11 @@ namespace WgEvent
 		return m_param[0].integer;
 	}
 
-	//____ EndPointerMove _______________________________________________________
+	//____ PointerPlaced _______________________________________________________
 
-	EndPointerMove::EndPointerMove( const WgCord& pos )
+	PointerPlaced::PointerPlaced()
 	{
-		m_id = WG_EVENT_END_POINTER_MOVE;
-		m_param[0].integer = pos.x;
-		m_param[1].integer = pos.y;
-	}
-
-	WgCord EndPointerMove::Pos() const
-	{
-		return WgCord( m_param[0].integer, m_param[1].integer );
+		m_id = WG_EVENT_POINTER_PLACED;
 	}
 
 	//____ ButtonDrag _________________________________________________________
@@ -318,6 +312,24 @@ namespace WgEvent
 		m_param[3].short1 = currPos.x - prevPos.x;
 		m_param[3].short2 = currPos.y - prevPos.y;
 	}
+
+	ButtonDrag::ButtonDrag( int button, WgGizmo * pGizmo, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos )
+	{
+		m_id = WG_EVENT_BUTTON_DRAG;
+		m_bIsForGizmo		= true;
+		m_pGizmo 			= pGizmo;
+		m_param[0].integer	= button;
+
+		m_param[1].short1 = orgPos.x;
+		m_param[1].short2 = orgPos.y;
+
+		m_param[2].short1 = currPos.x - orgPos.x;
+		m_param[2].short2 = currPos.y - orgPos.y;
+
+		m_param[3].short1 = currPos.x - prevPos.x;
+		m_param[3].short2 = currPos.y - prevPos.y;
+	}
+
 
 
 	WgCord ButtonDrag::DraggedSinceStart() const

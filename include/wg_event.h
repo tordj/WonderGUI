@@ -35,12 +35,16 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_SMARTPTR_DOT_H
+#	include <wg_smartptr.h>
 #endif
 
 
+
 class WgEventHandler;
+class WgGizmo;
+
+typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
 
 enum	WgEventId
@@ -50,7 +54,7 @@ enum	WgEventId
 
 	WG_EVENT_POINTER_ENTER,
 	WG_EVENT_POINTER_MOVE,
-	WG_EVENT_END_POINTER_MOVE,
+	WG_EVENT_POINTER_PLACED,
 	WG_EVENT_POINTER_EXIT,
 
 	WG_EVENT_BUTTON_PRESS,
@@ -141,8 +145,6 @@ namespace WgEvent
 		PointerMove( WgGizmo * pGizmo );
 	public:
 		PointerMove( const WgCord& pos );
-
-		WgCord			Pos() const;
 	};
 
 	class ButtonPress : public Event
@@ -217,13 +219,11 @@ namespace WgEvent
 
 	//___ Internally posted events ____________________________________________
 
-	class EndPointerMove : public Event
+	class PointerPlaced : public Event
 	{
 		friend class ::WgEventHandler;
 	protected:
-		EndPointerMove( const WgCord& pos );
-	public:
-		WgCord			Pos() const;
+		PointerPlaced();
 	};
 
 	class ButtonDrag : public Event
@@ -231,6 +231,7 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	protected:
 		ButtonDrag( int button, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos );
+		ButtonDrag( int button, WgGizmo * pGizmo, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos );
 	public:
 		int				Button() const;
 		WgCord			DraggedSinceStart() const;

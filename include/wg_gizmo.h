@@ -47,6 +47,9 @@
 #	include <wg_signals.h>
 #endif
 
+#ifndef WG_EVENT_DOT_H
+#	include <wg_event.h>
+#endif
 
 
 class WgUpdateInfo;
@@ -56,6 +59,7 @@ class WgSkinManager;
 class Wg_Interface_TextHolder;
 class WgGizmoContainer;
 class WgSkinNode;
+class WgEventHandler;
 
 
 
@@ -158,6 +162,7 @@ protected:
 
 	// To be overloaded by Gizmo
 
+
 	virtual void	OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 	virtual void	OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
 	virtual void	OnCloneContent( const WgGizmo * _pOrg ) = 0;
@@ -165,6 +170,7 @@ protected:
 	virtual void	OnNewSize( const WgSize& size );
 	virtual void	OnRefresh();
 	virtual void	OnUpdate( const WgUpdateInfo& _updateInfo );
+	virtual void	OnEvent( const WgEvent::Event& _event, WgEventHandler * pHandler );
 	virtual void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	virtual	bool	OnAlphaTest( const WgCord& ofs );
 	virtual void	OnEnable();

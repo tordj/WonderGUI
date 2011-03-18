@@ -26,6 +26,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_key.h>
+#include <wg_event.h>
 
 static const char	c_gizmoType[] = {"TordJ/Button"};
 
@@ -235,6 +236,71 @@ void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		pDevice->PrintText( _clip, &m_text, printWindow );
 	}
 }
+
+//____ OnEvent() ______________________________________________________________
+
+void WgGizmoButton::OnEvent( const WgEvent::Event& _event, WgEventHandler * pHandler )
+{
+	switch( _event.Id() )
+	{
+		case	WG_EVENT_KEY_PRESS:
+		{
+			if( static_cast<const WgEvent::KeyPress&>(_event).TranslatedKeyCode() == WGKEY_RETURN )
+				m_bReturnPressed = true;
+			break;
+		}
+
+		case	WG_EVENT_KEY_RELEASE:
+		{
+			if( static_cast< const WgEvent::KeyPress&>(_event).TranslatedKeyCode() == WGKEY_RETURN )
+				m_bReturnPressed = false;
+			break;
+
+			//TODO: Send signal!
+		}
+
+		case	WG_EVENT_POINTER_ENTER:
+			m_bPointerInside = true;
+			break;
+
+		case	WG_EVENT_POINTER_EXIT:
+			m_bPointerInside = false;
+			break;
+
+		case WG_EVENT_BUTTON_PRESS:
+		{
+			int button = static_cast<const WgEvent::ButtonPress&>(_event).Button();
+
+			m_bPressedInside[button-1] = true;
+			break;
+		}
+		case WG_EVENT_BUTTON_RELEASE:
+		{
+			const WgEvent::ButtonRelease& ev = static_cast<const WgEvent::ButtonRelease&>(_event);
+			int button = ev.Button();
+
+			if( ev.ReleaseInside() )
+			{
+				//TODO: Send signal if right button was released!
+			}
+
+			m_bPressedInside[button-1] = false;
+			break;
+		}
+        default:
+            break;
+
+	}
+
+	WgMode newMode = GetRenderMode();
+	if( newMode != m_mode )
+	{
+		m_mode = newMode;
+		RequestRender();
+	}
+
+}
+
 
 //____ OnAction() _____________________________________________________________
 

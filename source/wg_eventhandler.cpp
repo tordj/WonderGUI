@@ -42,7 +42,7 @@ WgEventHandler::WgEventHandler( int64_t startTime, WgRoot * pRoot )
 	m_keyRepeatDelay		= 300;
 	m_keyRepeatRate			= 150;
 
-	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
+	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 		m_pLatestButtonEvents[i] = 0;
 }
 
@@ -146,8 +146,8 @@ void WgEventHandler::ProcessGeneralEvent( WgEvent::Event& _event )
 		case WG_EVENT_POINTER_MOVE:
 			ProcessPointerMove( (WgEvent::PointerMove*) &_event );
 			break;
-		case WG_EVENT_END_POINTER_MOVE:
-			ProcessEndPointerMove( (WgEvent::EndPointerMove*) &_event );
+		case WG_EVENT_POINTER_PLACED:
+			ProcessPointerPlaced( (WgEvent::PointerPlaced*) &_event );
 			break;
 
 		case WG_EVENT_POINTER_EXIT:
@@ -199,7 +199,7 @@ void WgEventHandler::ProcessTimePass( WgEvent::TimePass * pEvent )
 {
 	// Check if we need to post BUTTON_REPEAT
 
-	for( int button = 0 ; button < WG_MAX_BUTTONS ; button++ )
+	for( int button = 0 ; button <= WG_MAX_BUTTONS ; button++ )
 	{
 		if( m_pLatestButtonEvents[button] == &m_latestPress[button] )
 		{
@@ -238,6 +238,21 @@ void WgEventHandler::ProcessTimePass( WgEvent::TimePass * pEvent )
 
 void WgEventHandler::ProcessPointerEnter( WgEvent::PointerEnter * pEvent )
 {
+	// Post events for button drag
+
+	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
+	{
+		if( m_pLatestButtonEvents[i] && m_pLatestButtonEvents[i]->Id() == WG_EVENT_BUTTON_PRESS )
+			QueueEvent( WgEvent::ButtonDrag( i, m_latestPress[i].PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
+	}
+
+	// Post event for finalizing position once button drag is taken care of.
+
+	QueueEvent( WgEvent::PointerPlaced() );
+
+	// Update pointer position
+
+	m_pointerPos = pEvent->PointerPos();
 }
 
 //____ ProcessPointerExit() ___________________________________________________
@@ -264,24 +279,24 @@ void WgEventHandler::ProcessPointerMove( WgEvent::PointerMove * pEvent )
 {
 	// Post events for button drag
 
-	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
+	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_pLatestButtonEvents[i] && m_pLatestButtonEvents[i]->Id() == WG_EVENT_BUTTON_PRESS )
-			QueueEvent( WgEvent::ButtonDrag( i, m_latestPress[i].PointerPos(), m_pointerPos, pEvent->Pos() ) );
+			QueueEvent( WgEvent::ButtonDrag( i, m_latestPress[i].PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
 	}
 
 	// Post event for finalizing move once button drag is taken care of.
 
-	QueueEvent( WgEvent::EndPointerMove( pEvent->Pos() ) );
+	QueueEvent( WgEvent::PointerPlaced() );
 
 	// Update pointer position
 
-	m_pointerPos = pEvent->Pos();
+	m_pointerPos = pEvent->PointerPos();
 }
 
-//____ ProcessEndPointerMove() _______________________________________________
+//____ ProcessPointerPlaced() _________________________________________________
 
-void WgEventHandler::ProcessEndPointerMove( WgEvent::EndPointerMove * pEvent )
+void WgEventHandler::ProcessPointerPlaced( WgEvent::PointerPlaced * pEvent )
 {
 	std::vector<WgGizmo*>	vNowMarked;
 
@@ -464,6 +479,21 @@ void WgEventHandler::ProcessButtonRelease( WgEvent::ButtonRelease * pEvent )
 
 void WgEventHandler::ProcessButtonDrag( WgEvent::ButtonDrag * pEvent )
 {
+	int button = pEvent->Button();
+
+	// Post POINTER_DRAG events for all gizmos that are pressed
+
+	for( size_t i = 0 ; i < m_latestPressGizmos[button].size() ; i++ )
+	{
+		WgGizmo * pGizmo = m_latestPressGizmos[button][i].GetRealPtr();
+
+		if( pGizmo )
+		{
+			WgCord	ofs = pGizmo->ScreenPos();
+			QueueEvent( WgEvent::ButtonDrag( button, pGizmo, pEvent->StartPos() - ofs, pEvent->PrevPos() - ofs, pEvent->CurrPos() - ofs ) );
+		}
+	}
+
 }
 
 //____ ProcessButtonClick() _________________________________________________
