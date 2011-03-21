@@ -231,6 +231,7 @@ public:
 
 	WgWeakPtr(const WgWeakPtr<T>& r)
 	{
+
 		m_pHub = r.m_pHub;
 		if( m_pHub )
 			m_pHub->refCnt++;

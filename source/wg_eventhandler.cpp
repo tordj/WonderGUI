@@ -42,6 +42,8 @@ WgEventHandler::WgEventHandler( int64_t startTime, WgRoot * pRoot )
 	m_keyRepeatDelay		= 300;
 	m_keyRepeatRate			= 150;
 
+	m_bIsProcessing			= false;
+
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 		m_pLatestButtonEvents[i] = 0;
 }
@@ -63,7 +65,8 @@ bool WgEventHandler::QueueEvent( const WgEvent::Event& _event )
 		// If two or more events are posted by the same event being processed,
 		// they need to be queued in the order of posting.
 
-		m_eventQueue.insert( m_insertPos++, _event );
+		m_insertPos = m_eventQueue.insert( m_insertPos, _event );
+		m_insertPos++;
 	}
 	else
 	{
@@ -87,7 +90,7 @@ void WgEventHandler::ProcessEvents()
 		WgEvent::Event& ev = m_eventQueue.front();
 
 		m_insertPos = m_eventQueue.begin()+1;	// Insert position set to right after current event.
-		
+
 		FinalizeEvent( ev );
 
 		if( ev.IsForGizmo() )
@@ -204,11 +207,11 @@ void WgEventHandler::ProcessTimePass( WgEvent::TimePass * pEvent )
 		if( m_pLatestButtonEvents[button] == &m_latestPress[button] )
 		{
 			int msSinceRepeatStart = (int) (m_time - m_latestPress[button].Timestamp() - m_buttonRepeatDelay );
-			
+
 			// First BUTTON_REPEAT event posted separately.
 
 			if( msSinceRepeatStart < 0 && msSinceRepeatStart + pEvent->Millisec() >= 0 )
-				QueueEvent( WgEvent::ButtonRepeat(button) );	
+				QueueEvent( WgEvent::ButtonRepeat(button) );
 
 			// Calculate ms since last BUTTON_REPEAT event
 
@@ -224,13 +227,13 @@ void WgEventHandler::ProcessTimePass( WgEvent::TimePass * pEvent )
 			{
 				QueueEvent( WgEvent::ButtonRepeat(button) );
 				msToProcess -= m_buttonRepeatRate;
-			}	
+			}
 		}
 	}
 
 
 	// Increase time counter
-	
+
 	m_time += pEvent->Millisec();
 }
 
@@ -416,7 +419,7 @@ void WgEventHandler::ProcessButtonRepeat( WgEvent::ButtonRepeat * pEvent )
 {
 	int button = pEvent->Button();
 
-	// Post BUTTON_REPEAT events for all widgets that received the press and we 
+	// Post BUTTON_REPEAT events for all widgets that received the press and we
 	// still are inside.
 
 	for( size_t i = 0 ; i < m_latestPressGizmos[button].size() ; i++ )
@@ -460,7 +463,7 @@ void WgEventHandler::ProcessButtonRelease( WgEvent::ButtonRelease * pEvent )
 				QueueEvent( WgEvent::ButtonRelease( button, pGizmo, false, bIsInside ) );
 			}
 		}
-	}	
+	}
 
 	// As long as the button was pressed inside our window we have a click
 	// on this level.
@@ -502,7 +505,7 @@ void WgEventHandler::ProcessButtonClick( WgEvent::ButtonClick * pEvent )
 {
 	int button = pEvent->Button();
 
-	// Post BUTTON_CLICK events for all widgets that received the press and we 
+	// Post BUTTON_CLICK events for all widgets that received the press and we
 	// still are inside.
 
 	for( size_t i = 0 ; i < m_latestPressGizmos[button].size() ; i++ )

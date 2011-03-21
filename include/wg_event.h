@@ -89,7 +89,7 @@ namespace WgEvent
 			inline WgCord			PointerScreenPos() const { return m_pointerScreenPos; }
 
 		protected:
-			Event() : m_id(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false), m_pGizmo(0) {}
+			Event() : m_id(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false) {}
 
 			struct Param
 			{
