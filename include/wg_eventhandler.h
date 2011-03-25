@@ -36,6 +36,31 @@
 
 class WgRoot;
 
+
+
+class WgEventFilter
+{
+public:
+	WgEventFilter();
+	WgEventFilter( WgEventId eventType );
+	WgEventFilter( WgEventId eventType, WgGizmo * pGizmo );
+	WgEventFilter( WgGizmo * pGizmo );
+
+	bool	FilterEvent( const WgEvent::Event& _event );
+
+	WgEventId	m_type;
+	WgGizmo * 	m_pGizmo;
+};
+
+
+class WgEventListener
+{
+public:
+	virtual void ProcessEvent( const WgEvent::Event& _event ) = 0;
+};
+
+
+
 class WgEventHandler
 {
 public:
@@ -46,13 +71,14 @@ public:
 
 	void ProcessEvents();
 
+	void AddCallback( void(*fp)(WgEvent::Event& _event) );
+	void AddCallback( const WgEventFilter& filter, void(*fp)(WgEvent::Event& _event) );
+	void AddCallback( const WgEventFilter& filter, void(*fp)(WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
+	void AddCallback( const WgEventFilter& filter, void(*fp)(WgEvent::Event& _event, void * pPayload), void * pPayload );
 
-/*
-	bool AddCallback( WgEventId eventId, WgGizmo * pEmitter, void(*fp)(void*), void * pObj );
-	bool AddCallback( const WgSignal::Signal_bool& signal, WgEmitter * pEmitter, void(*fp)(void*,bool), void * pObj );
-	bool AddCallback( const WgSignal::Signal_int& signal, WgEmitter * pEmitter, void(*fp)(void*,int), void * pObj );
-	bool AddCallback( const WgSignal::Signal_float& signal, WgEmitter * pEmitter, void(*fp)(void*,float), void * pObj );
-*/
+
+	void AddListener( WgEventListener * pListener );
+	void AddListener( const WgEventFilter& filter, WgEventListener * pListener );
 
 
 private:
@@ -117,8 +143,23 @@ private:
 	std::vector<WgGizmoWeakPtr>	m_previousPressGizmos[WG_MAX_BUTTONS+1];	// List of gizmos who received the second latest press, for each button,
 																		// used for double-click handling.
 
-
 	// Current keyboard state
+
+
+
+	// Callbacks and listeners
+
+	std::vector<
+
+
+	struct Callbacks
+	{
+		WgEventFilter	filter;
+
+		void *			pDestination;
+	};
+
+
 
 
 
