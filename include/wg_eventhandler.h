@@ -41,13 +41,21 @@ class WgRoot;
 class WgEventFilter
 {
 public:
-	WgEventFilter();
-	WgEventFilter( WgEventId eventType );
-	WgEventFilter( WgEventId eventType, WgGizmo * pGizmo );
-	WgEventFilter( WgGizmo * pGizmo );
+	WgEventFilter() : m_bGizmo(false), m_type(WG_EVENT_DUMMY), m_pGizmo(0) {}
+	WgEventFilter( WgEventId eventType ) : m_bGizmo(false), m_type(eventType), m_pGizmo(0) {}
+	WgEventFilter( WgEventId eventType, WgGizmo * pGizmo ) : m_bGizmo(true), m_type(eventType), m_pGizmo(pGizmo) {}
+	WgEventFilter( WgGizmo * pGizmo ) : m_bGizmo(true), m_type(WG_EVENT_DUMMY), m_pGizmo(pGizmo) {}
 
-	bool	FilterEvent( const WgEvent::Event& _event );
+	bool	FilterEvent( const WgEvent::Event& _event ) const;
 
+	inline bool			FiltersGizmo() const { return m_bGizmo; }
+	inline bool			FiltersType() const { return (m_type!=WG_EVENT_DUMMY); }
+	inline WgGizmo*		Gizmo() const { return m_pGizmo; }
+	inline WgEventId	EventType() const { return m_type; }
+
+private:
+
+	bool		m_bGizmo;
 	WgEventId	m_type;
 	WgGizmo * 	m_pGizmo;
 };
@@ -56,7 +64,9 @@ public:
 class WgEventListener
 {
 public:
-	virtual void ProcessEvent( const WgEvent::Event& _event ) = 0;
+	virtual ~WgEventListener() {};
+
+	virtual void OnEvent( const WgEvent::Event& _event ) = 0;
 };
 
 
@@ -67,21 +77,36 @@ public:
 	WgEventHandler( int64_t startTime, WgRoot * pRoot );
 	~WgEventHandler();
 
-	bool QueueEvent( const WgEvent::Event& _event );
+	bool	QueueEvent( const WgEvent::Event& _event );
 
-	void ProcessEvents();
+	void	ProcessEvents();
 
-	void AddCallback( void(*fp)(WgEvent::Event& _event) );
-	void AddCallback( const WgEventFilter& filter, void(*fp)(WgEvent::Event& _event) );
-	void AddCallback( const WgEventFilter& filter, void(*fp)(WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
-	void AddCallback( const WgEventFilter& filter, void(*fp)(WgEvent::Event& _event, void * pPayload), void * pPayload );
+	void	AddCallback( void(*fp)( const WgEvent::Event& _event) );
+	void	AddCallback( void(*fp)( const WgEvent::Event& _event, void * pParam), void * pParam );
+	void	AddCallback( void(*fp)( const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
+	void	AddCallback( WgEventListener * pListener );
 
+	void	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event& _event) );
+	void	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event& _event, void * pParam), void * pParam );
+	void	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
+	void	AddCallback( const WgEventFilter& filter, WgEventListener * pListener );
 
-	void AddListener( WgEventListener * pListener );
-	void AddListener( const WgEventFilter& filter, WgEventListener * pListener );
+	bool	DeleteCallback( const WgEventFilter& filter, WgGizmo * pGizmo );
+	bool	DeleteCallback( const WgEventFilter& filter, void * pFunction );
+	bool	DeleteCallback( const WgEventFilter& filter, WgEventListener * pListener );
+
+	int		DeleteCallbacks( WgGizmo * pGizmo );
+	int		DeleteCallbacks( void * pFunction );
+	int		DeleteCallbacks( WgEventListener * pListener );
+	int		DeleteCallbacks( const WgEventFilter& filter );
+
+	int		DeleteAllCallbacks();
+
 
 
 private:
+	class	Callback;
+
 
 	void	FinalizeEvent( WgEvent::Event& _event );
 	void	ProcessGeneralEvent( WgEvent::Event& _event );
@@ -102,6 +127,8 @@ private:
 
 	bool	IsGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
 
+	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
+
 	//
 
 	WgRoot *		m_pRoot;
@@ -110,7 +137,7 @@ private:
 	bool									m_bIsProcessing;	// Set when we are inside ProcessEvents().
 	std::deque<WgEvent::Event>::iterator	m_insertPos;		// Position where we insert events being queued when processing.
 
-	int64_t		m_time;
+	int64_t			m_time;
 	WgCord			m_pointerPos;
 	WgModifierKeys	m_modKeys;
 
@@ -134,33 +161,87 @@ private:
 
 	// Current button states
 
-	WgEvent::Event *		m_pLatestButtonEvents[WG_MAX_BUTTONS+1];	// Pointer at event object in either m_latestPress or m_latestRelease.
+	WgEvent::Event *			m_pLatestButtonEvents[WG_MAX_BUTTONS+1];	// Pointer at event object in either m_latestPress or m_latestRelease.
 
-	WgEvent::ButtonPress	m_latestPress[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
-	WgEvent::ButtonRelease	m_latestRelease[WG_MAX_BUTTONS+1];		// Saved info for the last time each button was released.
+	WgEvent::ButtonPress		m_latestPress[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
+	WgEvent::ButtonRelease		m_latestRelease[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was released.
 
-	std::vector<WgGizmoWeakPtr>	m_latestPressGizmos[WG_MAX_BUTTONS+1];	// List of gizmos who received the latest press, for each button.
+	std::vector<WgGizmoWeakPtr>	m_latestPressGizmos[WG_MAX_BUTTONS+1];		// List of gizmos who received the latest press, for each button.
 	std::vector<WgGizmoWeakPtr>	m_previousPressGizmos[WG_MAX_BUTTONS+1];	// List of gizmos who received the second latest press, for each button,
-																		// used for double-click handling.
+																			// used for double-click handling.
 
 	// Current keyboard state
 
 
 
-	// Callbacks and listeners
+	// Callbacks
 
-	std::vector<
-
-
-	struct Callbacks
+	class Callback : public WgLink
 	{
-		WgEventFilter	filter;
+	public:
+		virtual ~Callback() {};
 
-		void *			pDestination;
+		virtual void ProcessEvent( const WgEvent::Event& _event ) = 0;
+		virtual bool IsAlive() const = 0;
+
+		WgEventId	m_eventType;
 	};
 
 
+	class GizmoCallback : public Callback
+	{
+	public:
+		GizmoCallback( WgEventId eventType, void(*fp)(const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
 
+		void 	ProcessEvent( const WgEvent::Event& _event );
+		bool 	IsAlive() const;
+
+	private:
+		void(*m_pFunction)(const WgEvent::Event& _event, WgGizmo * pDest);
+		WgGizmoWeakPtr	m_pGizmo;		// Destination Gizmo, not source as in the event.
+	};
+
+	class FunctionCallbackParam : public Callback
+	{
+	public:
+		FunctionCallbackParam( WgEventId eventType, void(*fp)(const WgEvent::Event& _event, void * pParam), void * pParam );
+
+		void 	ProcessEvent( const WgEvent::Event& _event );
+		bool 	IsAlive() const;
+
+	private:
+		void(*m_pFunction)( const WgEvent::Event& _event, void * pParam);
+		void *			m_pParam;
+	};
+
+	class FunctionCallback : public Callback
+	{
+	public:
+		FunctionCallback( WgEventId eventType, void(*fp)(const WgEvent::Event& _event) );
+
+		void 	ProcessEvent( const WgEvent::Event& _event );
+		bool 	IsAlive() const;
+
+	private:
+		void(*m_pFunction)( const WgEvent::Event& _event);
+	};
+
+	class ListenerCallback : public Callback
+	{
+	public:
+		ListenerCallback( WgEventId eventType, WgEventListener * pListener );
+
+		void 	ProcessEvent( const WgEvent::Event& _event );
+		bool 	IsAlive() const;
+
+	private:
+		WgEventListener *	m_pListener;
+	};
+
+
+	WgChain<Callback>						m_globalCallbacks;	// Callbacks called for every event.
+
+	std::map<WgGizmo*,WgChain<Callback> >	m_gizmoCallbacks;	// Callbacks for Gizmo-specific events.
 
 
 };
