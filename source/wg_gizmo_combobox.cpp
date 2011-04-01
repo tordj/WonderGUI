@@ -261,12 +261,14 @@ bool WgGizmoCombobox::OnAlphaTest( const WgCord& ofs )
 
 void WgGizmoCombobox::OnGotInputFocus()
 {
+	m_bFocused = true;
 }
 
 //____ OnLostInputFocus() ______________________________________________
 
 void WgGizmoCombobox::OnLostInputFocus()
 {
+	m_bFocused = false;
 }
 
 

@@ -35,7 +35,6 @@ WgGizmoText::WgGizmoText()
 {
 	m_pText			= &m_text;
 	m_pText->CreateCursor();
-	m_bHasFocus		= false;
 	m_maxCharacters	= 0;
 	m_maxLines		= 0;
 
@@ -66,28 +65,28 @@ const char * WgGizmoText::GetMyType()
 //____ goBOL() ________________________________________________________________
 void WgGizmoText::goBOL()
 {
-	if( IsEditable() && m_bHasFocus )
+	if( IsEditable() && m_bFocused )
 		m_pText->goBOL();
 }
 
 //____ goEOL() ________________________________________________________________
 void WgGizmoText::goEOL()
 {
-	if( IsEditable() && m_bHasFocus )
+	if( IsEditable() && m_bFocused )
 		m_pText->goEOL();
 }
 
 //____ goBOF() ________________________________________________________________
 void WgGizmoText::goBOF()
 {
-	if( IsEditable() && m_bHasFocus )
+	if( IsEditable() && m_bFocused )
 		m_pText->goBOF();
 }
 
 //____ goEOF() ________________________________________________________________
 void WgGizmoText::goEOF()
 {
-	if( IsEditable() && m_bHasFocus )
+	if( IsEditable() && m_bFocused )
 		m_pText->goEOF();
 }
 
@@ -102,7 +101,7 @@ void WgGizmoText::SetInputMode(InputMode mode)
 
 void WgGizmoText::OnUpdate( const WgUpdateInfo& _updateInfo )
 {
-	if( IsSelectable() && m_bHasFocus )
+	if( IsSelectable() && m_bFocused )
 	{
 		m_pText->incTime( _updateInfo.msDiff );
 		RequestRender();					//TODO: Should only render the cursor and selection!
@@ -131,12 +130,13 @@ void WgGizmoText::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 {
 	WgText * pText = &m_text;
 
-	if( m_bHasFocus && IsEditable() )
-		pDevice->PrintTextWithCursor( _clip, pText, *m_pText->GetCursor(), _canvas );
+	if( m_bFocused && IsEditable() )
+		m_text.showCursor();
 	else
-	{
-		pDevice->PrintText( _clip, pText, _canvas );
-	}
+		m_text.hideCursor();
+
+	pDevice->PrintText( _clip, pText, _canvas );
+
 	if( pText != &m_text )
 		delete pText;
 }
@@ -154,7 +154,7 @@ void WgGizmoText::OnRefresh( void )
 
 void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
-	if( m_bHasFocus && (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
+	if( m_bFocused && (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
 		if( IsSelectable() && (info.modifier & WG_MODKEY_SHIFT) )
 		{
@@ -176,13 +176,13 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 	}
 	else if( action == WgInput::BUTTON_RELEASE || action == WgInput::BUTTON_RELEASE_OUTSIDE )
 	{
-		if(m_bHasFocus && button_key == 1)
+		if(m_bFocused && button_key == 1)
 			m_pText->setSelectionMode(false);
 	}
 
 	if( action == WgInput::CHARACTER )
 	{
-		if( IsEditable() && m_bHasFocus )
+		if( IsEditable() && m_bFocused )
 		{
 			if( button_key >= 32 && button_key != 127)
 			{
@@ -199,7 +199,7 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 		}
 	}
 
-	if( action == WgInput::KEY_RELEASE && m_bHasFocus )
+	if( action == WgInput::KEY_RELEASE && m_bFocused )
 	{
 		switch( button_key )
 		{
@@ -210,7 +210,7 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 		}
 	}
 
-	if( (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) && IsEditable() && m_bHasFocus )
+	if( (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) && IsEditable() && m_bFocused )
 	{
 		switch( button_key )
 		{
@@ -333,7 +333,7 @@ void WgGizmoText::OnNewSize( const WgSize& size )
 
 void WgGizmoText::OnGotInputFocus()
 {
-	m_bHasFocus = true;
+	m_bFocused = true;
 	if( IsEditable() ) // render with cursor on
 	{
 		m_pText->GetCursor()->goEOF();
@@ -345,7 +345,7 @@ void WgGizmoText::OnGotInputFocus()
 
 void WgGizmoText::OnLostInputFocus()
 {
-	m_bHasFocus = false;
+	m_bFocused = false;
 	if( IsEditable() ) // render with cursor off
 		RequestRender();
 }
@@ -366,7 +366,7 @@ Uint32 WgGizmoText::InsertTextAtCursor( const WgCharSeq& str )
 	if( !IsEditable() )
 		return 0;
 
-	if( m_bHasFocus )
+	if( m_bFocused )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
@@ -399,7 +399,7 @@ bool WgGizmoText::InsertCharAtCursor( Uint16 c )
 	if( !IsEditable() )
 		return 0;
 
-	if( m_bHasFocus )
+	if( m_bFocused )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 

@@ -161,8 +161,6 @@ public:
 
 	virtual void		PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest );
 
-	virtual void		PrintTextWithCursor( const WgRect& clip, const WgText * pText, const WgCursorInstance& cursor, const WgRect& dest );
-
 	// Low-level print methods
 
 	virtual void		PrintLine( WgPen * pPen, const WgTextPropPtr& pTextProp, WgMode mode, const WgChar * pString, int maxChars = 0x1FFFFFFF, bool bLineEnding = true );
@@ -173,9 +171,12 @@ public:
 protected:
 	WgGfxDevice();
 
-	void PrintText( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen );
-	void PrintTextSelection( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen );
-	int CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, const WgChar* pLine, Uint32 nChars, WgMode mode );
+	void	PrintText( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen );
+	void	PrintTextSelection( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen );
+	int		CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, const WgChar* pLine, Uint32 nChars, WgMode mode );
+
+	int		LineAlignmentToOffset( const WgText * pText, int line, const WgRect& dest );
+
 
 //	virtual void	FillSubPixel( float dx, float dy, float dw, float dh, const WgColor& col ) = 0;
 //

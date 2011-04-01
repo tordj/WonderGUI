@@ -99,7 +99,6 @@ private:
 	WgText				m_text;
 
 	bool				m_bPasswordMode;
-	bool				m_bHasFocus;
 	Uint32				m_maxCharacters;
 	Uint16				m_pwGlyph;
 	int					m_viewOfs;

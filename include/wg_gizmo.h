@@ -113,6 +113,7 @@ public:
 	inline WgRect		ScreenGeometry() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
 	inline bool			GrabFocus() { if( m_pHook ) return m_pHook->RequestFocus(); return false; }
 	inline bool			ReleaseFocus() { if( m_pHook ) return m_pHook->ReleaseFocus(); return false; }
+	inline bool			IsFocused() { return m_bFocused; }
 //	inline WgGizmoContainer * Parent() { if( m_pHook ) return m_pHook->Parent(); return 0; }		// Currently conflicts with WgWidget;
 
 	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->NextHook(); if( p ) return p->Gizmo(); } return 0; }
@@ -195,6 +196,7 @@ protected:
 
 	bool			m_bEnabled;
 	bool			m_bOpaque;
+	bool			m_bFocused;
 
 	bool			m_bRenderOne;
 	bool			m_bRendersAll;

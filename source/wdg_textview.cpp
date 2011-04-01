@@ -121,10 +121,7 @@ void Wdg_TextView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 
 	WgRect contentRect( _window.x - ViewPixelOfsX(), _window.y - ViewPixelOfsY(), ContentWidth(), ContentHeight() );
 
-	if( m_pText->GetCursor() )
-		WgGfx::printTextWithCursor( _clip, pText, *m_pText->GetCursor(), contentRect );
-	else
-		WgGfx::printText( _clip, pText, contentRect );
+	WgGfx::printText( _clip, pText, contentRect );
 
 	if( pText != &m_text )
 		delete pText;

@@ -55,7 +55,6 @@ WgGizmoButton::WgGizmoButton()
 	m_iconOfs.x			= 0;
 	m_iconOfs.y			= 0;
 
-	m_bHasInputFocus = false;
 	m_bReturnPressed = false;
 	m_bPointerInside = false;
 }
@@ -464,7 +463,7 @@ bool WgGizmoButton::OnAlphaTest( const WgCord& ofs )
 
 void WgGizmoButton::OnGotInputFocus()
 {
-	m_bHasInputFocus = true;
+	m_bFocused = true;
 	RequestRender();
 }
 
@@ -472,7 +471,7 @@ void WgGizmoButton::OnGotInputFocus()
 
 void WgGizmoButton::OnLostInputFocus()
 {
-	m_bHasInputFocus = false;
+	m_bFocused = false;
 	m_bReturnPressed = false;
 	RequestRender();
 }

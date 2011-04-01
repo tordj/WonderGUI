@@ -874,14 +874,8 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 		}
 		else
 		{
-			pos.x = dest.x;
-			if( origo.anchorX() != 0 && origo.hotspotX() != 0 )
-			{
-				pos.x += origo.calcOfsX( dest.w, pText->getSoftLineWidth(i) );
-				if( pos.x < dest.x )
-					pos.x = dest.x;
-				pPen->SetOrigo( pos );		// So tab positions will start counting from start of line.
-			}
+			pos.x = dest.x + LineAlignmentToOffset( pText, i, dest );
+			pPen->SetOrigo( pos );		// So tab positions will start counting from start of line.
 
 			pPen->SetPos( pos );
 			PrintLine( pPen, pDefProp, pText->mode(), pChars + pLines[i].ofs, pLines[i].nChars, true );
@@ -890,15 +884,6 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgC
 
 		pos.y += pPen->GetLineSpacing() + pText->lineSpaceAdjustment();
 	}
-}
-
-void WgGfxDevice::PrintTextWithCursor( const WgRect& clip, const WgText * pText, const WgCursorInstance& ci, const WgRect& dest )
-{
-	if( !pText || !pText->getFont()  )
-		return;
-
-	WgPen	pen( this, dest, clip );
-	PrintText(clip, pText, &ci, dest, &pen);
 }
 
 //____ PrintText() ____________________________________________________________
@@ -914,9 +899,27 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.contains( dest ) )
 		pen.SetClipRect( clip );
 
-	PrintText(clip, pText, 0, dest, &pen);
+	if( pText->isCursorShowing() )
+		PrintText(clip, pText, pText->GetCursor(), dest, &pen);
+	else
+		PrintText(clip, pText, 0, dest, &pen);
 }
 
+//____ LineAlignmentToOffset() ______________________________________________
+
+int WgGfxDevice::LineAlignmentToOffset( const WgText * pText, int line, const WgRect& dest )
+{
+	const WgOrigo& origo	= pText->alignment();
+	int		ofs = 0;
+
+	if( origo.anchorX() != 0 && origo.hotspotX() != 0 )
+	{
+		ofs = origo.calcOfsX( dest.w, pText->getSoftLineWidth(line) );
+		if( ofs < 0 )
+			ofs = 0;
+	}
+	return ofs;
+}
 
 //___________________________________________________________________________________________________
 void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dstRect, WgPen* pPen )
@@ -955,7 +958,7 @@ void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, 
 	int lineH = pPen->GetLineSpacing() + pText->lineSpaceAdjustment();
 	if(iSelStartLine == iSelEndLine)
 	{
-		r.x = dstPos.x + xs;
+		r.x = dstPos.x + xs + LineAlignmentToOffset( pText, iSelStartLine, dstRect );
 		r.y = dstPos.y + iSelStartLine * lineH;
 		r.w = xe - xs;
 		r.h = lineH;
@@ -963,7 +966,7 @@ void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, 
 	}
 	else
 	{
-		r.x = dstPos.x + xs;
+		r.x = dstPos.x + xs  + LineAlignmentToOffset( pText, iSelStartLine, dstRect );
 		r.y = dstPos.y + iSelStartLine * lineH;
 		r.w = pText->getSoftLineSelectionWidth(iSelStartLine) - xs;
 		r.h = lineH;
@@ -972,14 +975,14 @@ void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, 
 		++iSelStartLine;
 		for(; iSelStartLine < iSelEndLine; ++iSelStartLine)
 		{
-			r.x = dstPos.x;
+			r.x = dstPos.x  + LineAlignmentToOffset( pText, iSelStartLine, dstRect );
 			r.y += lineH;
 			r.w = pText->getSoftLineSelectionWidth(iSelStartLine);
 			r.h = lineH;
 			ClipFill(clip, r, col);
 		}
 
-		r.x = dstPos.x;
+		r.x = dstPos.x  + LineAlignmentToOffset( pText, iSelStartLine, dstRect );
 		r.y = r.y + r.h;
 		r.w = xe;
 		r.h = lineH;

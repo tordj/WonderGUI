@@ -147,6 +147,7 @@ public:
 	void				refresh();
 
 //  --------------
+
 	void				selectText( Uint32 startLine, Uint32 startCol, Uint32 endLine, Uint32 endCol );
 	bool				getSelection( Uint32& startLine, Uint32& startCol, Uint32& endLine, Uint32& endCol ) const;
 	void				clearSelection( );
@@ -253,6 +254,10 @@ public:
 	void			CreateCursor() { m_pCursor = new WgCursorInstance(*this); }
 	void			DestroyCursor() { delete m_pCursor; m_pCursor = 0; }
 	WgCursorInstance*GetCursor() const { return m_pCursor; }
+
+	void			hideCursor() { if(m_pCursor) m_pCursor->hide(); }
+	void			showCursor() { if(m_pCursor) m_pCursor->show(); }
+	bool			isCursorShowing() const { return m_pCursor ? !m_pCursor->isHidden() : false; }
 
 	bool			incTime( Uint32 ms ) { return m_pCursor ? m_pCursor->incTime(ms) : false; }
 	void			insertMode( bool bInsert ) { if(m_pCursor) m_pCursor->insertMode(bInsert); }

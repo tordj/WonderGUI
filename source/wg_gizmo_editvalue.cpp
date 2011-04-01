@@ -42,8 +42,7 @@ using namespace WgSignal;
 WgGizmoEditvalue::WgGizmoEditvalue()
 {
 	m_bRegenText	= true;
-
-	m_pMyCursor		= 0;
+	m_buttonDownOfs = 0;
 
 	m_cursorStyle	= WG_CURSOR_IBEAM;
 
@@ -206,9 +205,9 @@ void WgGizmoEditvalue::OnRefresh( void )
 
 void WgGizmoEditvalue::OnUpdate( const WgUpdateInfo& _updateInfo )
 {
-	if( m_pMyCursor )
+	if( m_text.GetCursor() )
 	{
-		m_pMyCursor->incTime( _updateInfo.msDiff );
+		m_text.GetCursor()->incTime( _updateInfo.msDiff );
 		RequestRender();					//TODO: Should only render the cursor!
 	}
 }
@@ -227,20 +226,21 @@ void WgGizmoEditvalue::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	{
 		m_text.setScaledValue( m_value, (Uint32) pow(10.f,m_format.decimals), m_useFormat );
 		m_bRegenText = false;
+		m_text.goEOL();
 	}
 
 	// Make sure cursor is at EOL - length of suffix.
-
-	if( m_pMyCursor )
+/*
+	if( m_text.GetCursor() )
 	{
 		int i = 0;
 		while( m_format.suffix[i] != 0 && i < 4)
 			i++;
 
-		m_pMyCursor->goEOL();
-		m_pMyCursor->goLeft( i );
+		m_text.GetCursor()->goEOL();
+		m_text.GetCursor()->goLeft( i );
 	}
-
+*/
 
 
 	// Leave if we have nothing to print
@@ -250,48 +250,148 @@ void WgGizmoEditvalue::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 	// Print the text
 
-	if( m_pMyCursor )
-		pDevice->PrintTextWithCursor( _clip, &m_text, *m_pMyCursor, _canvas );
-	else
-		pDevice->PrintText( _clip, &m_text, _canvas );
+	pDevice->PrintText( _clip, &m_text, _canvas );
 }
+
+//____ ParseValueFromInput() __________________________________________________
+
+bool WgGizmoEditvalue::ParseValueFromInput( int64_t * wpResult )
+{
+	// Parse text as value as a positive or negative integer within boundaries
+	// return false if value had to be modified in any way.
+
+	const WgChar * p = m_text.getBuffer()->Chars();
+	int		nbChars = m_text.getBuffer()->NbChars();
+
+	int64_t	value = 0;
+	bool	bModified = false;
+	int		nDecimals = 0;
+
+	if( nbChars > 0 )
+	{
+		for( int i = 0 ; i < nbChars ; i++ )
+		{
+			Uint16 glyph = p[i].glyph;
+
+			if( glyph == '-' )
+				continue;
+
+			if( glyph == m_format.period )
+			{			
+				nDecimals = nbChars-i-1;
+			}
+			else if( glyph >= '0' && glyph <= '9' )
+			{
+				value *= 10;
+				value += glyph - '0';
+			}
+
+		}
+
+		if( nDecimals > m_format.decimals )
+		{
+			value /= (int) pow(10.0,nDecimals-m_format.decimals);
+			bModified = true;
+		}
+		if( nDecimals < m_format.decimals )
+			value *= (int) pow(10.0,m_format.decimals-nDecimals);
+
+		if( p[0].glyph == '-' )
+			value = -value;
+
+	}
+
+	if( value < m_rangeMin )
+	{
+		value = m_rangeMin;
+		bModified = true;
+	}
+
+	if( value > m_rangeMax )
+	{
+		value = m_rangeMax;
+		bModified = true;
+	}
+
+	* wpResult = value;
+	return bModified;
+}
+
+
 
 //____ OnAction() _____________________________________________________________
 
 void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
+
+	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
+	{
+		if( !m_bFocused )
+			GrabFocus();
+
+		if( m_bFocused )
+		{
+			if( info.modifier & WG_MODKEY_SHIFT )
+			{
+				m_text.setSelectionMode(true);
+			}
+
+			WgCord ofs = Abs2local(WgCord(info.x,0));
+
+			int x = ofs.x;
+			int y = ofs.y;
+
+			// Adjust for alignment
+
+			const WgOrigo& origo	= m_text.alignment();
+			int		ofsX = 0;
+			if( origo.anchorX() != 0 && origo.hotspotX() != 0 )
+			{
+				ofsX = origo.calcOfsX( Size().w, m_text.getSoftLineWidth(0) );
+				if( ofsX < 0 )
+					ofsX = 0;
+			}
+			x -= ofsX;
+
+			//
+
+			if( action == WgInput::BUTTON_PRESS || x != m_buttonDownOfs )
+			{
+				m_text.gotoPixel(x, 0);
+				m_buttonDownOfs = x;
+			}
+
+			if( action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
+			{
+				m_text.clearSelection();
+				m_text.setSelectionMode(true);
+			}
+		}
+//		AdjustViewOfs();
+	}
+
+	if( action == WgInput::BUTTON_RELEASE || action == WgInput::BUTTON_RELEASE_OUTSIDE )
+	{
+		if( m_bFocused && button_key == 1 )
+			m_text.setSelectionMode(false);
+	}
+
+
+
+	if( action == WgInput::BUTTON_DOUBLECLICK && button_key == 1 )
+	{
+		m_text.selectAll();
+	}
+
+
 	if( action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT )
 	{
 		switch( button_key )
 		{
-			case WGKEY_BACKSPACE:
+			case WGKEY_RETURN:
 			{
-				if( m_useFormat.decimals != 0 )
-					m_useFormat.bForcePeriod = true;	// Force period if decimals are involved.
-
-
-				Sint64 value = m_value;
-
-				// Remove decimals, remove period, decrease value or remove minus sign.
-
-				if( m_useFormat.decimals != 0 )
-					m_useFormat.decimals--;
-				else if( m_useFormat.bForcePeriod )
-					m_useFormat.bForcePeriod = false;
-				else
-				{
-					value /= 10;
-					if( m_useFormat.integers )
-						m_useFormat.integers--;
-					else if( m_useFormat.bZeroIsNegative )
-						m_useFormat.bZeroIsNegative = false;
-				}
-				// Mask away decimals not shown.
-
-				int mask = (int) pow( 10.f, m_format.decimals - m_useFormat.decimals );
-				value -= value % mask;
-
-				// Set value, possibly emit signals
+				int64_t		value;
+				bool bModified = ParseValueFromInput( &value );
 
 				if( value != m_value )
 				{
@@ -300,13 +400,104 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 					Emit( Fraction(), FractionalValue() );
 				}
 
-				// Force render
 
-				m_bRegenText = true;
-				RequestRender();
+				if( bModified )
+				{
+					m_text.setScaledValue( value, (Uint32) pow(10.f,m_format.decimals), m_useFormat );
+					m_text.GetCursor()->goEOL();
+				}
+				else
+				{
+					ReleaseFocus();
+				}
 
 			}
 			break;
+
+			case WGKEY_LEFT:
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_text.setSelectionMode(true);
+
+				if( info.modifier & WG_MODKEY_CTRL )
+					m_text.gotoPrevWord();
+				else
+					m_text.goLeft();
+				break;
+			case WGKEY_RIGHT:
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_text.setSelectionMode(true);
+
+				if( info.modifier & WG_MODKEY_CTRL )
+					m_text.gotoNextWord();
+				else
+					m_text.goRight();
+				break;
+
+			case WGKEY_BACKSPACE:
+				if(m_text.hasSelection())
+					m_text.delSelection();
+				else if( info.modifier & WG_MODKEY_CTRL )
+					m_text.delPrevWord();
+				else
+					m_text.delPrevChar();
+				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
+				break;
+
+			case WGKEY_DELETE:
+				if(m_text.hasSelection())
+					m_text.delSelection();
+				else if( info.modifier & WG_MODKEY_CTRL )
+					m_text.delNextWord();
+				else
+					m_text.delNextChar();
+				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
+				break;
+
+			case WGKEY_HOME:
+
+				/*
+				 *	I am not sure if this is the proper way to this, but in my opinion, the default
+				 *	"actions" has to be separated from any modifier key action combination
+				 */
+				switch( info.modifier )
+				{
+
+				case WG_MODKEY_CTRL:
+					break;
+
+				default: // no modifier key was pressed
+					if( info.modifier & WG_MODKEY_SHIFT )
+						m_text.setSelectionMode(true);
+
+					m_text.goBOL();
+					break;
+				}
+
+				break;
+
+			case WGKEY_END:
+
+				/*
+			 	 *	I am not sure if this is the proper way to this, but in my opinion, the default
+		 		 *	"actions" has to be separated from any modifier key action combination
+				 */
+				switch( info.modifier )
+				{
+
+				case WG_MODKEY_CTRL:
+					break;
+
+				default: // no modifier key was pressed
+					if( info.modifier & WG_MODKEY_SHIFT )
+						m_text.setSelectionMode(true);
+
+					m_text.goEOL();
+					break;
+				}
+
+				break;
+
+
 
 			default:
 				break;
@@ -315,34 +506,43 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 
 	if( action == WgInput::CHARACTER )
 	{
-		// Period is only allowed if it isn't displayed yet and format allows periods.
+		// Period is only allowed if it isn't displayed yet and value has decimals.
+		// It's not allowed before a minus sign.
+		// A zero is inserted (always INSERTED even if mode is replace) if there is no number before it.
 
+		WgCursorInstance * pCursor = m_text.GetCursor();
 		if( button_key == m_format.period )
 		{
-			// prevent period if value >= noDecimalThreshold
-			if( 0 == m_format.noDecimalThreshold || (int)m_value < m_format.noDecimalThreshold )
+			if( m_format.decimals > 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
+				(pCursor->column() != 0 || (*m_text.getBuffer())[0].glyph != '-' ) )
 			{
-				if( m_format.decimals != 0 && !m_useFormat.bForcePeriod )
+				if(m_text.hasSelection())
+					m_text.delSelection();
+				m_text.setSelectionMode(false);
+
+				if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].glyph == '-' ) )
 				{
-					m_useFormat.integers = m_format.integers;
-					m_useFormat.bForcePeriod = true;
-					m_bRegenText = true;
-					RequestRender();
+					m_text.insertChar( 0, WgChar('0') );
+					pCursor->goRight();
 				}
+
+				pCursor->putChar( m_format.period );
 			}
 		}
 
 		// Handle minus
+		// Only allow minus at start of text and only if range allows negative values.
 
 		if( button_key == '-' )
 		{
-			if( m_rangeMin < 0 && m_useFormat.integers == 0 &&
-				!m_useFormat.bForcePeriod && m_useFormat.decimals == 0 &&
-				!m_useFormat.bZeroIsNegative )
+			if( pCursor->column() == 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
+				m_rangeMin < 0 )
 			{
-				m_useFormat.bZeroIsNegative = true;
-				m_bRegenText = true;
-				RequestRender();
+				if(m_text.hasSelection())
+					m_text.delSelection();
+				m_text.setSelectionMode(false);
+
+				pCursor->putChar( '-' );
 			}
 		}
 
@@ -350,74 +550,16 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 
 		if( button_key >= '0' && button_key <= '9' )
 		{
-			int number = button_key - '0';
-
-			if( m_useFormat.bForcePeriod )
+			if( pCursor->column() == 0 && (*m_text.getBuffer())[0].glyph == '-' )
 			{
-				// We have a period, so we are typing decimals...
-
-				if( m_useFormat.decimals < m_format.decimals )
-				{
-					Sint64 value = m_value >= 0 ? m_value : -m_value;
-					value += number * (int) pow(10.f, m_format.decimals - m_useFormat.decimals -1 );
-
-					// Possibly make value negative
-
-					if( m_useFormat.bZeroIsNegative )
-						value = 0-value;
-
-
-					if( (value >= m_rangeMin || value >= 0) && value <= m_rangeMax )
-					{
-						m_useFormat.decimals++;
-
-						// Set value, possibly emit signals
-
-						if( value != m_value )
-						{
-							m_value = value;
-							Emit( IntegerChanged(), m_value );
-							Emit( Fraction(), FractionalValue() );
-						}
-
-						// Force render
-
-						m_bRegenText = true;
-						RequestRender();
-					}
-				}
 			}
 			else
 			{
-				// No period displayed, so we are typing integer-part.
-				Sint64 value = (m_value >= 0 ? m_value : -m_value) * 10;
-				value += number * (int) pow(10.f, m_format.decimals );
+				if(m_text.hasSelection())
+					m_text.delSelection();
+				m_text.setSelectionMode(false);
 
-				// Possibly make value negative
-
-				if( m_useFormat.bZeroIsNegative )
-					value = 0-value;
-
-
-				if( (value >= m_rangeMin || value >= 0) && value <= m_rangeMax )
-				{
-					if( m_useFormat.integers < m_format.integers )
-						m_useFormat.integers++;
-
-					// Set value, possibly emit signals
-
-					if( value != m_value )
-					{
-						m_value = value;
-						Emit( IntegerChanged(), m_value );
-						Emit( Fraction(), FractionalValue() );
-					}
-
-					// Force render
-
-					m_bRegenText = true;
-					RequestRender();
-				}
+				pCursor->putChar( button_key );
 			}
 		}
 	}
@@ -459,7 +601,9 @@ void WgGizmoEditvalue::OnDisable( void )
 
 void WgGizmoEditvalue::OnGotInputFocus()
 {
-	m_pMyCursor = new WgCursorInstance( m_text );
+	m_bFocused = true;
+	m_text.CreateCursor();
+	m_text.GetCursor()->goEOL();
 	m_useFormat = m_format;
 	m_bRegenText = true;
 
@@ -476,10 +620,25 @@ void WgGizmoEditvalue::OnGotInputFocus()
 
 void WgGizmoEditvalue::OnLostInputFocus()
 {
-	delete m_pMyCursor;
-	m_pMyCursor = 0;
+	m_bFocused = false;
+	m_text.DestroyCursor();
 	m_useFormat = m_format;
 	m_bRegenText = true;
 
 	RequestRender();
+}
+
+
+//____ SelectAllText() __________________________________________________________
+
+bool WgGizmoEditvalue::SelectAllText()
+{
+	if( !m_text.GetCursor() )
+	{
+		if( !GrabFocus() )
+			return false;				// Couldn't get cursor.
+	}
+
+	m_text.selectAll();
+	return true;
 }

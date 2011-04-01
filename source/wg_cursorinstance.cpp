@@ -41,6 +41,7 @@
 WgCursorInstance::WgCursorInstance( WgText& text )
 {
 	m_pText 		= &text;
+	m_bHidden		= false;
 	m_bInsert		= true;
 	m_bSelectMode	= false;
 	m_wantedOfsX	= -1;
@@ -60,6 +61,29 @@ bool WgCursorInstance::incTime( Uint32 ms )
 	m_time += ms;
 	return true; //TODO: Should only return true if cursor needs to be re-rendered.
 }
+
+//____ hide() _________________________________________________________________
+
+void WgCursorInstance::hide()
+{
+	m_bHidden = true;
+}
+
+//____ show() _________________________________________________________________
+
+void WgCursorInstance::show()
+{
+	m_bHidden = false;
+}
+
+//____ isHidden() _____________________________________________________________
+
+bool WgCursorInstance::isHidden() const
+{
+	return m_bHidden;
+}
+
+
 
 //____ insertMode() ____________________________________________________________
 

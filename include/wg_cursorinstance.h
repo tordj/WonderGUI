@@ -49,6 +49,10 @@ public:
 	bool			incTime( Uint32 ms );
 	void			insertMode( bool bInsert );
 
+	void			hide();
+	void			show();
+	bool			isHidden() const;
+
 	void			goUp( Uint32 nLines = 1 );
 	void			goDown( Uint32 nLines = 1 );
 	inline void		goLeft( Uint32 nChars = 1 );
@@ -106,6 +110,7 @@ protected:
 	void			UpdateLocation(Uint32 line, Uint32 col);
 
 	WgText *		m_pText;
+	bool			m_bHidden;
 	bool			m_bInsert;
 	bool			m_bSelectMode;
 	int				m_selStartLine;

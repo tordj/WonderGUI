@@ -118,7 +118,6 @@ protected:
 	bool			m_bPressedInside[WG_MAX_BUTTONS];
 	bool			m_bReturnPressed;
 	bool			m_bPointerInside;
-	bool			m_bHasInputFocus;
 };
 
 #endif //WG_GIZMO_BUTTON_DOT_H

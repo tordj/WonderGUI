@@ -67,8 +67,8 @@ public:
 
 	//
 
-	inline Uint32	calcOfsX( Uint32 parentWidth, Uint32 childWidth ) const { return (Uint32) (parentWidth*xa - childWidth*xhs); }
-	inline Uint32	calcOfsY( Uint32 parentHeight, Uint32 childHeight ) const { return (Uint32) (parentHeight*ya - childHeight*yhs); }
+	inline int		calcOfsX( int parentWidth, int childWidth ) const { return (int) (parentWidth*xa - childWidth*xhs); }
+	inline int		calcOfsY( int parentHeight, int childHeight ) const { return (int) (parentHeight*ya - childHeight*yhs); }
 
 	// Operators
 	

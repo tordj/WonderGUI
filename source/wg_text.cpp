@@ -244,7 +244,6 @@ void WgText::setText( const WgText * pText )
 	clearSelection();
 }
 
-
 //_________________________________________________________
 void WgText::selectText( Uint32 startLine, Uint32 startCol, Uint32 endLine, Uint32 endCol )
 {
@@ -316,8 +315,8 @@ Uint32 WgText::getSoftLineWidthPart( Uint32 _line, Uint32 startCol, Uint32 nCol 
 
 	const WgTextLine * pLine = getSoftLine(_line);
 
-	if( nCol > pLine->nChars )
-		return 0;
+	if( pLine->nChars - startCol < nCol )
+		nCol = pLine->nChars-startCol;
 
 	return WgTextTool::lineWidthPart( m_pManagerNode, m_pProp, m_mode, m_buffer.Chars() + pLine->ofs, nCol );
 }

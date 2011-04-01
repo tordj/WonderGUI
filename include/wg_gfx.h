@@ -361,12 +361,6 @@ inline void WgGfx::printText( const WgRect& clip, const WgText * pText, const Wg
 	m_pDevice->PrintText( clip, pText, dest );
 }
 
-inline void WgGfx::printTextWithCursor( const WgRect& clip, const WgText * pText,
-											const WgCursorInstance& cursor, const WgRect& dest )
-{
-	m_pDevice->PrintTextWithCursor( clip, pText, cursor, dest );
-}
-
 inline void WgGfx::printLine( WgPen * pPen, const WgTextPropPtr& pTextProp, WgMode mode, const WgChar * pString, int maxChars, bool bLineEnding )
 {
 	m_pDevice->PrintLine( pPen, pTextProp, mode, pString, maxChars, bLineEnding );

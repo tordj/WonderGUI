@@ -68,6 +68,8 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 		const WgValueFormat& GetFormat() const { return m_format; }
 		void	Clear();									// Sets value to 0 and clears input field.
 
+		bool	SelectAllText();
+
 //		virtual bool		IsInputField() const	{ return true; }
 		virtual bool		IsInputField() const	{ return (m_text.nbChars() > 0); }
 
@@ -88,17 +90,17 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 		void	ValueModified();				///< Called when value has been modified.
 		void	RangeModified();				///< Called when range (and thus fractional value) has been modified.
 
+		bool	ParseValueFromInput( int64_t * wpResult );
 
 
 		WgWidget *			NewOfMyType() const;
-
-		WgCursorInstance *	m_pMyCursor;					// Non-null when widget has input focus.
 
 		bool				m_bRegenText;
 		WgValueFormat		m_format;			///< Value format specified by user
 		WgValueFormat		m_useFormat;		///< Value format currently used (affected by user typing in values).
 		WgText				m_text;
 		WgOrigo				m_textOrigo;
+		int					m_buttonDownOfs;
 };
 
 

@@ -39,7 +39,6 @@ WgGizmoEditline::WgGizmoEditline()
 	m_text.SetWrap(false);
 	m_bPasswordMode = false;
 	m_pwGlyph		= '*';
-	m_bHasFocus		= false;
 	m_viewOfs		= 0;
 	m_maxCharacters = 0;
 	m_inputMode		= Editable;
@@ -85,7 +84,7 @@ void WgGizmoEditline::SetInputMode(InputMode mode)
 
 void WgGizmoEditline::goBOL()
 {
-	if( IsEditable() && m_bHasFocus )
+	if( IsEditable() && m_bFocused )
 		m_pText->goBOL();
 }
 
@@ -93,7 +92,7 @@ void WgGizmoEditline::goBOL()
 
 void WgGizmoEditline::goEOL()
 {
-	if( IsEditable() && m_bHasFocus )
+	if( IsEditable() && m_bFocused )
 		m_pText->goEOL();
 }
 
@@ -115,7 +114,7 @@ Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 	if( !IsEditable() )
 		return 0;
 
-	if( !m_bHasFocus )
+	if( !m_bFocused )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
@@ -145,7 +144,7 @@ bool WgGizmoEditline::InsertCharAtCursor( Uint16 c )
 	if( !IsEditable() )
 		return 0;
 
-	if( !m_bHasFocus )
+	if( !m_bFocused )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
@@ -170,7 +169,7 @@ bool WgGizmoEditline::SetTextWrap(bool bWrap)
 
 void WgGizmoEditline::OnUpdate( const WgUpdateInfo& _updateInfo )
 {
-	if( IsSelectable() && m_bHasFocus )
+	if( IsSelectable() && m_bFocused )
 	{
 		m_pText->incTime( _updateInfo.msDiff );
 		RequestRender();					//TODO: Should only render the cursor and selection!
@@ -212,16 +211,22 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		if( m_text.getSelection(sl, sc, el, ec) )
 			pText->selectText(sl, sc, el, ec);
 		delete [] pContent;
+
+		pText->CreateCursor();
+		pText->gotoSoftPos( m_text.line(), m_text.column() );
+
 	}
 
 	WgRect r = _canvas;
 	r.x -= m_viewOfs;
 	r.w += m_viewOfs;
 
-	if( m_bHasFocus && IsEditable() )
-		pDevice->PrintTextWithCursor( _clip, pText, *m_pText->GetCursor(), r );
+	if( m_bFocused && IsEditable() )
+		pText->showCursor();
 	else
-		pDevice->PrintText( _clip, pText, r );
+		pText->hideCursor();
+
+	pDevice->PrintText( _clip, pText, r );
 
 	if( pText != &m_text )
 		delete pText;
@@ -234,10 +239,10 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 {
 	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
-		if( !m_bHasFocus )
+		if( !m_bFocused )
 			GrabFocus();
 
-		if( m_bHasFocus )
+		if( m_bFocused )
 		{
 			if( IsSelectable() && (info.modifier & WG_MODKEY_SHIFT) )
 			{
@@ -285,13 +290,13 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 
 	if( action == WgInput::BUTTON_RELEASE || action == WgInput::BUTTON_RELEASE_OUTSIDE )
 	{
-		if( m_bHasFocus && button_key == 1 )
+		if( m_bFocused && button_key == 1 )
 			m_pText->setSelectionMode(false);
 	}
 
 	if( action == WgInput::CHARACTER )
 	{
-		if( IsEditable() && m_bHasFocus && button_key >= 32 && button_key != 127)
+		if( IsEditable() && m_bFocused && button_key >= 32 && button_key != 127)
 		{
 			// by default - no max limit
 			if( m_maxCharacters == 0 || m_maxCharacters > m_pText->nbChars() )
@@ -306,7 +311,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 		}
 	}
 
-	if( action == WgInput::KEY_RELEASE && m_bHasFocus )
+	if( action == WgInput::KEY_RELEASE && m_bFocused )
 	{
 		switch( button_key )
 		{
@@ -317,7 +322,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 		}
 	}
 
-	if( (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) && IsEditable() && m_bHasFocus )
+	if( (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) && IsEditable() && m_bFocused )
 	{
 		switch( button_key )
 		{
@@ -436,7 +441,7 @@ void WgGizmoEditline::AdjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_bHasFocus && m_pText->getFont() )
+	if( m_bFocused && m_pText->getFont() )
 	{
 		Uint32 cursCol	= m_pText->column();
 
@@ -524,7 +529,7 @@ void WgGizmoEditline::OnDisable()
 
 void WgGizmoEditline::OnGotInputFocus()
 {
-	m_bHasFocus = true;
+	m_bFocused = true;
 
 	if( IsEditable() )
 	{
@@ -537,7 +542,7 @@ void WgGizmoEditline::OnGotInputFocus()
 
 void WgGizmoEditline::OnLostInputFocus()
 {
-	m_bHasFocus = false;
+	m_bFocused = false;
 
 	if( IsSelectable() )
 	{

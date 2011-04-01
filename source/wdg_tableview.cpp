@@ -528,13 +528,13 @@ void Wdg_TableView::RemoveColumns()
 
 //____ RecalcColumnWidths() ___________________________________________________
 
-void Wdg_TableView::RecalcColumnWidths( int width )
+void Wdg_TableView::RecalcColumnWidths()
 {
 	for( unsigned int i = 0 ; i < m_nColumns ; i++ )
 		m_pColumns[i].m_pixelWidth = (float) m_pColumns[i].m_defWidth;
 
 
-	int wantedWidth = width!=0?width:m_geo.w;
+	int wantedWidth = ViewPixelLenX();
 
 	if( m_bAutoScaleHeader )
 	{
@@ -1111,7 +1111,6 @@ void Wdg_TableView::ScrollIntoView( WgTableRow* pRow )
 
 void Wdg_TableView::DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 {
-	RecalcColumnWidths( newGeo.w );
 	Wdg_Baseclass_View::DoMyOwnGeometryChange( oldGeo, newGeo );
 }
 
@@ -1123,9 +1122,9 @@ void Wdg_TableView::DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGe
 	if( oldGeo.w != newGeo.w )
 	{
 //		AdaptItemsToWidth( newGeo.w );		// this won't do anything since the items are WgTableRows
-		UpdateContentSize();
+		RecalcColumnWidths();
 		AdaptCellsToWidth();
-
+		UpdateContentSize();
 	}
 }
 

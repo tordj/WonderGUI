@@ -293,7 +293,7 @@ private:
 
 	void		UpdateContentSize();
 	void		UpdateMarkedRowColumn( int row, int column );
-	void		RecalcColumnWidths( int width=0 );
+	void		RecalcColumnWidths();
 
 	struct SortInfo
 	{
