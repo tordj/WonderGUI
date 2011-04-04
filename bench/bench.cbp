@@ -45,6 +45,7 @@
 			<Add library="expat" />
 			<Add library="wg_sdl" />
 			<Add library="WonderGUI" />
+			<Add library="SDL_image" />
 		</Linker>
 		<Unit filename="main.cpp" />
 		<Extensions>
@@ -53,6 +54,7 @@
 				<search_path add="../include" />
 				<search_path add="../wg_gl" />
 				<search_path add="../wg_sdl" />
+				<search_path add="../source" />
 			</debugger>
 			<envvars />
 		</Extensions>

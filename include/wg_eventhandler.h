@@ -102,6 +102,7 @@ public:
 
 	int		DeleteAllCallbacks();
 
+	int		DeleteDeadCallbacks();
 
 
 private:
@@ -110,6 +111,7 @@ private:
 
 	void	FinalizeEvent( WgEvent::Event& _event );
 	void	ProcessGeneralEvent( WgEvent::Event& _event );
+	void	ProcessEventCallbacks( WgEvent::Event& _event );
 
 	void	ProcessTimePass( WgEvent::TimePass * pEvent );
 
@@ -180,6 +182,8 @@ private:
 	{
 	public:
 		virtual ~Callback() {};
+
+		LINK_METHODS(Callback);
 
 		virtual void ProcessEvent( const WgEvent::Event& _event ) = 0;
 		virtual bool IsAlive() const = 0;

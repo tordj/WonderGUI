@@ -9,6 +9,8 @@
 #include <SDL/SDL.h>
 #endif
 
+#include <SDL_image.h>
+
 #include <wondergui.h>
 #include <wg_surface_sdl.h>
 #include <wg_gfxdevice_sdl.h>
@@ -28,6 +30,8 @@ int main ( int argc, char** argv )
 	SDL_Surface * pScreen = initSDL(640,480);
 	if(!pScreen )
 		return 1;
+
+	IMG_Init( IMG_INIT_PNG | IMG_INIT_JPG );
 
 	// Init WonderGUI
 
@@ -50,6 +54,9 @@ int main ( int argc, char** argv )
 	WgSurface * pFlagImg = loadSurface("cb2.bmp");
 	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0 );
 
+	WgSurface * pBlocksImg = loadSurface("blocks.png");
+	WgBlockSetPtr pButtonBlock = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,0,8*4+6,8), 2), WgBorders(3), WgBorders(2), WG_OPAQUE );
+
 
 	//
 
@@ -64,6 +71,13 @@ int main ( int argc, char** argv )
 	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
 
 	pRoot->SetGizmo(pFlex);
+
+	//
+
+	WgGizmoButton * pButton = new WgGizmoButton();
+	pButton->SetSource( pButtonBlock );
+
+	pHook = pFlex->AddGizmo( pButton, WgRect(0,0,100,100), WG_NORTHWEST );
 
 	//
 
@@ -94,6 +108,11 @@ int main ( int argc, char** argv )
 
         // finally, update the screen :)
         SDL_Flip(pScreen);
+
+        // Pause for a while
+
+        SDL_Delay(10);
+
     } // end main loop
 
 
@@ -107,6 +126,8 @@ int main ( int argc, char** argv )
 	delete pFlagImg;
 
 	WgBase::Exit();
+
+	IMG_Quit();
 
     // all is well ;)
     printf("Exited cleanly\n");
@@ -206,10 +227,10 @@ bool eventLoop( WgEventHandler * pHandler )
 WgSurface * loadSurface( const char * path )
 {
     // load an image
-    SDL_Surface* bmp = SDL_LoadBMP(path);
+    SDL_Surface* bmp = IMG_Load(path);
     if (!bmp)
     {
-        printf("Unable to load bitmap: %s\n", SDL_GetError());
+        printf("Unable to load bitmap: %s\n", IMG_GetError());
         return 0;
     }
 

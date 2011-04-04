@@ -150,6 +150,8 @@ int WgEventHandler::DeleteCallbacks( const WgEventFilter& filter )
 	return false;
 }
 
+
+
 //____ DeleteAllCallbacks() ___________________________________________________
 
 int WgEventHandler::DeleteAllCallbacks()
@@ -157,6 +159,16 @@ int WgEventHandler::DeleteAllCallbacks()
 	//TODO Implement
 	return false;
 }
+
+//____ DeleteDeadCallbacks() __________________________________________________
+
+int WgEventHandler::DeleteDeadCallbacks()
+{
+	//TODO Implement
+	return false;
+}
+
+
 
 //____ _addCallback() _________________________________________________________
 
@@ -217,21 +229,55 @@ void WgEventHandler::ProcessEvents()
 
 		if( ev.IsForGizmo() )
 		{
-			if( ev.Gizmo() )
-			{
-				//TODO: Send event to Gizmo
-			}
+			WgGizmo * pGizmo = ev.Gizmo();
+			if( pGizmo )
+				pGizmo->OnEvent( ev, this );
 		}
 		else
 		{
 			ProcessGeneralEvent( ev );
 		}
-//		ProcessEventCallbacks( ev );
+		ProcessEventCallbacks( ev );
 
 		m_eventQueue.pop_front();
 	}
 
 	m_bIsProcessing = false;
+}
+
+//____ ProcessEventCallbacks() ________________________________________________
+
+void WgEventHandler::ProcessEventCallbacks( WgEvent::Event& _event )
+{
+	// Call all global callbacks
+
+	Callback * pCallback = m_globalCallbacks.First();
+
+	while( pCallback )
+	{
+		pCallback->ProcessEvent( _event );
+		pCallback = pCallback->Next();
+	}
+
+	// Call all Gizmo-specific callbacks
+
+	WgChain<Callback> * pChain = 0;
+
+	if( !_event.IsForGizmo() )
+		pChain = &m_gizmoCallbacks[0];
+	else if( _event.Gizmo() )
+		pChain = &m_gizmoCallbacks[_event.Gizmo()];
+	else
+		return;	// Event was for a Gizmo that now has disappeared.
+
+
+	pCallback = pChain->First();
+
+	while( pCallback )
+	{
+		pCallback->ProcessEvent( _event );
+		pCallback = pCallback->Next();
+	}
 }
 
 
