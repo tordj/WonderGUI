@@ -9,6 +9,7 @@
 			<Target title="Debug">
 				<Option output="bin/Debug/bench" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
+				<Option external_deps="../libwondergui.a;../wg_sdl/libwg_sdl.a;" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -18,6 +19,7 @@
 			<Target title="Release">
 				<Option output="bin/Release/bench" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
+				<Option external_deps="../libwondergui.a;../wg_sdl/libwg_sdl.a;" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -41,7 +43,6 @@
 			<Add library="freetype" />
 			<Add library="SDL_image" />
 		</Linker>
-		<Unit filename="cb.bmp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

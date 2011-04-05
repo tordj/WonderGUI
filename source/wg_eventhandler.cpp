@@ -478,7 +478,13 @@ void WgEventHandler::ProcessPointerPlaced( WgEvent::PointerPlaced * pEvent )
 	while( pGizmo )
 	{
 		vNowMarked.push_back(pGizmo);
-		pGizmo = pGizmo->Hook()->Parent()->CastToGizmo();
+
+		WgGizmoContainer * p = pGizmo->Hook()->Parent();
+
+		if( p )
+			pGizmo = p->CastToGizmo();
+		else
+			pGizmo = 0;
 	}
 
 	// Post POINTER_EXIT events for gizmos no longer marked
