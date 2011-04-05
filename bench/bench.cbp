@@ -9,15 +9,11 @@
 			<Target title="Debug">
 				<Option output="bin/Debug/bench" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
-				<Option external_deps="../obj/Debug/libWonderGUI.a;../obj/Debug/libwg_sdl.a;" />
-				<Option type="0" />
+				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
-				<Linker>
-					<Add directory="../obj/Debug" />
-				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/bench" prefix_auto="1" extension_auto="1" />
@@ -29,34 +25,29 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add directory="../obj/Release" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="`sdl-config --cflags`" />
-			<Add directory="../include" />
 			<Add directory="../wg_sdl" />
+			<Add directory="../include" />
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --libs`" />
+			<Add library="../libwondergui.a" />
+			<Add library="../wg_sdl/libwg_sdl.a" />
 			<Add library="freetype" />
-			<Add library="expat" />
-			<Add library="wg_sdl" />
-			<Add library="WonderGUI" />
 			<Add library="SDL_image" />
 		</Linker>
+		<Unit filename="cb.bmp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
-			<debugger>
-				<search_path add="../include" />
-				<search_path add="../wg_gl" />
-				<search_path add="../wg_sdl" />
-				<search_path add="../source" />
-			</debugger>
 			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
