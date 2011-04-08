@@ -27,7 +27,7 @@
 #include	<wg_char.h>
 #include	<wg_pen.h>
 
-static const char	c_gizmoType[] = {"TordJ/Fps"};
+static const char	c_gizmoType[] = {"Fps"};
 
 
 #define		TICK_BUFFER			64

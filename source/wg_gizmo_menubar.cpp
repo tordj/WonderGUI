@@ -43,7 +43,7 @@
 
 #include <wg_texttool.h>
 
-static const char	c_gizmoType[] = {"TordJ/MenuBar"};
+static const char	c_gizmoType[] = {"MenuBar"};
 
 
 //____ WgGizmoMenubar() _________________________________________________________________
@@ -234,7 +234,7 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	WgMenuBarItem * pI = m_items.First();
 	Uint32 posX = window.x;
-	
+
 	WgPen pen;
 	pen.SetTextProp( m_pTextProp );
 	pen.SetClipRect( clip );
@@ -443,7 +443,7 @@ Uint32 WgGizmoMenubar::GetItemAtAbsPos( int x, int y )
 
 	if( y > 0 && x > 0 && y < (int) Size().h )
 	{
-		int bordersWidth = GetEntryBorders().width();	
+		int bordersWidth = GetEntryBorders().width();
 
 		WgMenuBarItem * pItem = m_items.First();
 		int		item = 1;

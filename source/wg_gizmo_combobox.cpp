@@ -27,7 +27,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 
-static const char	c_gizmoType[] = {"TordJ/ComboBox"};
+static const char	c_gizmoType[] = {"ComboBox"};
 
 
 //____ WgGizmoCombobox() _________________________________________________________________
@@ -228,7 +228,7 @@ void WgGizmoCombobox::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	WgRect r( _canvas );
 	if( m_pTextBoxBg )
 		r.shrink( m_pTextBoxBg->GetContentBorders() );
-	
+
 	WgRect	textClip( r, _clip );
 
 	m_text.setMode( m_mode );
@@ -341,7 +341,7 @@ void WgGizmoCombobox::EntrySelected(WgMenuItem * pItem)
 			Uint32 len = WgTextTool::strlen( pEntry );
 
 			buff.Replace( ofs, 2, pEntry );
-			
+
 			WgChar * p = buff.BeginWrite() + ofs;
 
 			for( unsigned int i = 0 ; i < len ; i++ )

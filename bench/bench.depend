@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1301813280 source:/home/tord/Workspace/wondergui/bench/main.cpp
+1302267997 source:/home/tord/Workspace/wondergui/bench/main.cpp
 	<cstdlib>
 	<stdlib.h>
 	<SDL.h>
@@ -8,8 +8,10 @@
 	<wondergui.h>
 	<wg_surface_sdl.h>
 	<wg_gfxdevice_sdl.h>
+	<wg_eventlogger.h>
+	<iostream>
 
-1278057011 /usr/include/SDL/SDL.h
+1278057020 /usr/include/SDL/SDL.h
 	"SDL_main.h"
 	"SDL_stdinc.h"
 	"SDL_audio.h"
@@ -28,14 +30,14 @@
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_main.h
+1278057020 /usr/include/SDL/SDL_main.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_stdinc.h
+1278057020 /usr/include/SDL/SDL_stdinc.h
 	"SDL_config.h"
 	<sys/types.h>
 	<stdio.h>
@@ -61,17 +63,17 @@
 	<stdlib.h>
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_config.h
+1278057020 /usr/include/SDL/SDL_config.h
 	"SDL_platform.h"
 	<stdarg.h>
 
-1278057011 /usr/include/SDL/SDL_platform.h
+1278057020 /usr/include/SDL/SDL_platform.h
 
-1278057011 /usr/include/SDL/begin_code.h
+1278057020 /usr/include/SDL/begin_code.h
 
-1278057011 /usr/include/SDL/close_code.h
+1278057020 /usr/include/SDL/close_code.h
 
-1278057011 /usr/include/SDL/SDL_audio.h
+1278057020 /usr/include/SDL/SDL_audio.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_endian.h"
@@ -81,23 +83,23 @@
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_error.h
+1278057020 /usr/include/SDL/SDL_error.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_endian.h
+1278057020 /usr/include/SDL/SDL_endian.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_mutex.h
+1278057020 /usr/include/SDL/SDL_mutex.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_thread.h
+1278057020 /usr/include/SDL/SDL_thread.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_mutex.h"
@@ -105,24 +107,24 @@
 	<process.h>
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_rwops.h
+1278057020 /usr/include/SDL/SDL_rwops.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_cdrom.h
+1278057020 /usr/include/SDL/SDL_cdrom.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_cpuinfo.h
+1278057020 /usr/include/SDL/SDL_cpuinfo.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_events.h
+1278057020 /usr/include/SDL/SDL_events.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_active.h"
@@ -133,63 +135,63 @@
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_active.h
+1278057020 /usr/include/SDL/SDL_active.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_keyboard.h
+1278057020 /usr/include/SDL/SDL_keyboard.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_keysym.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_keysym.h
+1278057020 /usr/include/SDL/SDL_keysym.h
 
-1278057011 /usr/include/SDL/SDL_mouse.h
+1278057020 /usr/include/SDL/SDL_mouse.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_video.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_video.h
+1278057020 /usr/include/SDL/SDL_video.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_rwops.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_joystick.h
+1278057020 /usr/include/SDL/SDL_joystick.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_quit.h
+1278057020 /usr/include/SDL/SDL_quit.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 
-1278057011 /usr/include/SDL/SDL_loadso.h
-	"SDL_stdinc.h"
-	"SDL_error.h"
-	"begin_code.h"
-	"close_code.h"
-
-1278057011 /usr/include/SDL/SDL_timer.h
+1278057020 /usr/include/SDL/SDL_loadso.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1278057011 /usr/include/SDL/SDL_version.h
+1278057020 /usr/include/SDL/SDL_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1278057020 /usr/include/SDL/SDL_version.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1301132550 /home/tord/Workspace/wondergui/include/wondergui.h
+1300462154 /home/tord/Workspace/wondergui/include/wondergui.h
 	<wg_anim.h>
 	<wg_base.h>
 	<wg_bitmapglyphs.h>
@@ -259,81 +261,81 @@
 	<wg_gizmo_value.h>
 	<wg_gizmo_view.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_anim.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_anim.h
 	<wg_types.h>
 	<wg_chain.h>
 
-1301132550 /home/tord/Workspace/wondergui/include/wg_types.h
+1300459179 /home/tord/Workspace/wondergui/include/wg_types.h
 	<stdint.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_chain.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_chain.h
 	<wg_types.h>
 
-1299302801 /home/tord/Workspace/wondergui/include/wg_base.h
+1299485429 /home/tord/Workspace/wondergui/include/wg_base.h
 	<wg_textmgr.h>
 	<wg_userdefines.h>
 	<wg_textprop.h>
 
-1301132550 /home/tord/Workspace/wondergui/include/wg_userdefines.h
+1300459179 /home/tord/Workspace/wondergui/include/wg_userdefines.h
 	<wg_types.h>
 
-1280349867 /home/tord/Workspace/wondergui/include/wg_textprop.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_textprop.h
 	<wg_types.h>
 	<wg_chain.h>
 	<wg_color.h>
 	<wg_emitter.h>
 	<wg_smartptr.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_color.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_color.h
 	<wg_types.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_emitter.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_emitter.h
 	<wg_types.h>
 	<wg_emitterstanza.h>
 	<wg_signalstanza.h>
 
-1279127853 /home/tord/Workspace/wondergui/include/wg_emitterstanza.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_emitterstanza.h
 
-1279127853 /home/tord/Workspace/wondergui/include/wg_signalstanza.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_signalstanza.h
 
-1301132550 /home/tord/Workspace/wondergui/include/wg_smartptr.h
+1300780457 /home/tord/Workspace/wondergui/include/wg_smartptr.h
 	<wg_mempool.h>
 	<wg_refcounted.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_mempool.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_mempool.h
 	<wg_types.h>
 	<wg_chain.h>
 
-1299307034 /home/tord/Workspace/wondergui/include/wg_refcounted.h
+1299485429 /home/tord/Workspace/wondergui/include/wg_refcounted.h
 
-1299010800 /home/tord/Workspace/wondergui/include/wg_bitmapglyphs.h
+1299055970 /home/tord/Workspace/wondergui/include/wg_bitmapglyphs.h
 	<wg_geo.h>
 	<wg_glyphset.h>
 
-1299302801 /home/tord/Workspace/wondergui/include/wg_geo.h
+1299485429 /home/tord/Workspace/wondergui/include/wg_geo.h
 	<wg_types.h>
 
-1299010800 /home/tord/Workspace/wondergui/include/wg_glyphset.h
+1299055970 /home/tord/Workspace/wondergui/include/wg_glyphset.h
 	<wg_geo.h>
 	<wg_smartptr.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_blockset.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_blockset.h
 	<wg_types.h>
 	<wg_geo.h>
 	<wg_smartptr.h>
 	<wg_refcounted.h>
 	<wg_chain.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_char.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_char.h
 	"wg_types.h"
 	"wg_textpropmanager.h"
 	<wg_texttool.h>
 
-1279127853 /home/tord/Workspace/wondergui/include/wg_textpropmanager.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_textpropmanager.h
 	<wg_types.h>
 	<wg_textprop.h>
 
-1297495663 /home/tord/Workspace/wondergui/include/wg_texttool.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_texttool.h
 	<wg_userdefines.h>
 	<wg_types.h>
 	<wg_color.h>
@@ -342,60 +344,60 @@
 	<wg_cursor.h>
 	<wg_charseq.h>
 
-1297495663 /home/tord/Workspace/wondergui/include/wg_cursor.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_cursor.h
 	<wg_types.h>
 	<wg_geo.h>
 	<wg_gfxanim.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_gfxanim.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gfxanim.h
 	<wg_anim.h>
 	<wg_types.h>
 	<wg_geo.h>
 
-1301132550 /home/tord/Workspace/wondergui/include/wg_charseq.h
+1300459179 /home/tord/Workspace/wondergui/include/wg_charseq.h
 	<string>
 	<wg_types.h>
 	<wg_userdefines.h>
 
-1291358658 /home/tord/Workspace/wondergui/include/wg_charbuffer.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_charbuffer.h
 	<wg_types.h>
 	<wg_char.h>
 
-1288853166 /home/tord/Workspace/wondergui/include/wg_codepages.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_codepages.h
 	<wg_types.h>
 
-1301725412 /home/tord/Workspace/wondergui/include/wg_cursorinstance.h
+1301899856 /home/tord/Workspace/wondergui/include/wg_cursorinstance.h
 	<wg_types.h>
 	<wg_cursor.h>
 	<wg_color.h>
 
-1298099233 /home/tord/Workspace/wondergui/include/wg_dirtyrect.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_dirtyrect.h
 	<wg_geo.h>
 
-1301737232 /home/tord/Workspace/wondergui/include/wg_eventhandler.h
+1302267959 /home/tord/Workspace/wondergui/include/wg_eventhandler.h
 	<deque>
 	<map>
 	<vector>
 	<wg_event.h>
 	<wg_key.h>
 
-1301132550 /home/tord/Workspace/wondergui/include/wg_event.h
+1302273112 /home/tord/Workspace/wondergui/include/wg_event.h
 	<wg_types.h>
 	<wg_userdefines.h>
 	<wg_geo.h>
 	<wg_smartptr.h>
 
-1279127853 /home/tord/Workspace/wondergui/include/wg_key.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_key.h
 	<SDL_keysym.h>
 	<dinput.h>
 
-1299010800 /home/tord/Workspace/wondergui/include/wg_font.h
+1299055970 /home/tord/Workspace/wondergui/include/wg_font.h
 	<wg_types.h>
 	<wg_userdefines.h>
 	<wg_glyphset.h>
 	<assert.h>
 
-1301725412 /home/tord/Workspace/wondergui/include/wg_gfxdevice.h
+1301899856 /home/tord/Workspace/wondergui/include/wg_gfxdevice.h
 	<wg_types.h>
 	<wg_color.h>
 	<wg_textprop.h>
@@ -403,7 +405,7 @@
 	<wg_surface.h>
 	<wg_blockset.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_surface.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_surface.h
 	<wg_types.h>
 	<wg_chain.h>
 	<wg_geo.h>
@@ -412,11 +414,11 @@
 	<wg_blockset.h>
 	<wg_smartptr.h>
 
-1291059696 /home/tord/Workspace/wondergui/include/wg_gfxdevice_null.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gfxdevice_null.h
 	<wg_types.h>
 	<wg_gfxdevice.h>
 
-1301737461 /home/tord/Workspace/wondergui/include/wg_gizmo.h
+1301991275 /home/tord/Workspace/wondergui/include/wg_gizmo.h
 	<wg_types.h>
 	<wg_string.h>
 	<wg_input.h>
@@ -425,31 +427,31 @@
 	<wg_signals.h>
 	<wg_event.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_string.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_string.h
 	<wg_types.h>
 	<wg_charbuffer.h>
 	<wg_charseq.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_input.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_input.h
 	<wg_types.h>
 	<wg_userdefines.h>
 	<wg_key.h>
 	<vector>
 
-1299438391 /home/tord/Workspace/wondergui/include/wg_gizmo_hook.h
+1299485429 /home/tord/Workspace/wondergui/include/wg_gizmo_hook.h
 	<wg_geo.h>
 	<wg_emitter.h>
 
-1291358658 /home/tord/Workspace/wondergui/include/wg_signals.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_signals.h
 	<wg_types.h>
 	<wg_signalstanza.h>
 
-1295775996 /home/tord/Workspace/wondergui/include/wg_inputdevice.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_inputdevice.h
 
-1301725412 /home/tord/Workspace/wondergui/include/wg_origo.h
+1301899856 /home/tord/Workspace/wondergui/include/wg_origo.h
 	<wg_types.h>
 
-1299010800 /home/tord/Workspace/wondergui/include/wg_pen.h
+1299055970 /home/tord/Workspace/wondergui/include/wg_pen.h
 	<wg_types.h>
 	<wg_color.h>
 	<wg_geo.h>
@@ -457,33 +459,33 @@
 	<wg_glyphset.h>
 	<wg_gfxdevice.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_pointerspy.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_pointerspy.h
 	<wg_types.h>
 
-1298823351 /home/tord/Workspace/wondergui/include/wg_root.h
+1299055970 /home/tord/Workspace/wondergui/include/wg_root.h
 	<wg_gizmo_container.h>
 	<wg_geo.h>
 	<wg_dirtyrect.h>
 
-1299438742 /home/tord/Workspace/wondergui/include/wg_gizmo_container.h
+1299485429 /home/tord/Workspace/wondergui/include/wg_gizmo_container.h
 	<wg_gizmo.h>
 	<wg_gizmo_parent.h>
 
-1301132550 /home/tord/Workspace/wondergui/include/wg_gizmo_parent.h
+1299838191 /home/tord/Workspace/wondergui/include/wg_gizmo_parent.h
 	<wg_gizmo_types.h>
 	<wg_gizmo_collection.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_collection.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_collection.h
 	<wg_types.h>
 	<wg_geo.h>
 	<wg_gizmo_hook.h>
 
-1293273629 /home/tord/Workspace/wondergui/include/wg_skinmanager.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_skinmanager.h
 	<wg_chain.h>
 	<wg_geo.h>
 	<wg_types.h>
 
-1301725412 /home/tord/Workspace/wondergui/include/wg_text.h
+1301899856 /home/tord/Workspace/wondergui/include/wg_text.h
 	<wg_types.h>
 	<wg_color.h>
 	<wg_origo.h>
@@ -492,14 +494,14 @@
 	<wg_textmanager.h>
 	"wg_cursorinstance.h"
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_textmanager.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_textmanager.h
 	<wg_chain.h>
 	<wg_types.h>
 
-1279127853 /home/tord/Workspace/wondergui/include/wg_tooltip.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_tooltip.h
 	<wg_string.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_util.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_util.h
 	<string>
 	<sstream>
 	<vector>
@@ -507,138 +509,142 @@
 	<wg_geo.h>
 	<wg_types.h>
 
-1279127853 /home/tord/Workspace/wondergui/include/wg_valueformat.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_valueformat.h
 	<wg_types.h>
 	<wg_textprop.h>
 	<wg_charseq.h>
 
-1299010800 /home/tord/Workspace/wondergui/include/wg_vectorglyphs.h
+1299055970 /home/tord/Workspace/wondergui/include/wg_vectorglyphs.h
 	<wg_userdefines.h>
 	<wg_types.h>
 	<wg_chain.h>
 	<wg_glyphset.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_animation.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_animation.h
 	<wg_gizmo.h>
 	<wg_gfxanim.h>
 
-1301725412 /home/tord/Workspace/wondergui/include/wg_gizmo_button.h
+1301899856 /home/tord/Workspace/wondergui/include/wg_gizmo_button.h
 	<wg_gizmo.h>
 	<wg_blockset.h>
 	<wg_text.h>
 	<wg_interface_textholder.h>
 
-1299010800 /home/tord/Workspace/wondergui/include/wg_interface_textholder.h
+1299055970 /home/tord/Workspace/wondergui/include/wg_interface_textholder.h
 	<wg_text.h>
 	<wg_origo.h>
 	<wg_color.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_checkbox.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_checkbox.h
 	<wg_gizmo.h>
 	<wg_interface_textholder.h>
 	<wg_text.h>
 	<wg_tooltip.h>
 	<wg_blockset.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_circlemeter.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_circlemeter.h
 	<wg_gizmo.h>
 	<wg_interface_valueholder.h>
 	<wg_text.h>
 	<wg_blockset.h>
 
-1279127853 /home/tord/Workspace/wondergui/include/wg_interface_valueholder.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_interface_valueholder.h
 	<wg_valueformat.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_dragbars.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_dragbars.h
 	<wg_gizmo.h>
 	<wg_tooltip.h>
 	<wg_blockset.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_dummy.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_dummy.h
 	<wg_gizmo.h>
 
-1301725412 /home/tord/Workspace/wondergui/include/wg_gizmo_editline.h
+1301899856 /home/tord/Workspace/wondergui/include/wg_gizmo_editline.h
 	<wg_gizmo.h>
 	<wg_interface_edittext.h>
 	<wg_text.h>
 	<wg_cursorinstance.h>
 
-1279127853 /home/tord/Workspace/wondergui/include/wg_interface_edittext.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_interface_edittext.h
 	<wg_interface_textholder.h>
 
-1301725412 /home/tord/Workspace/wondergui/include/wg_gizmo_editvalue.h
+1301899856 /home/tord/Workspace/wondergui/include/wg_gizmo_editvalue.h
 	<wg_gizmo.h>
 	<wg_text.h>
 	<wg_valueformat.h>
 	<wg_interface_valueholder.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_fill.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_fill.h
 	<wg_gizmo.h>
 	<wg_color.h>
 
-1299302801 /home/tord/Workspace/wondergui/include/wg_gizmo_flexgeo.h
+1299485429 /home/tord/Workspace/wondergui/include/wg_gizmo_flexgeo.h
 	<vector>
 	<wg_gizmo_container.h>
 	<wg_dirtyrect.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_fps.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_fps.h
 	<wg_gizmo.h>
 	<wg_textprop.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_pixmap.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_pixmap.h
 	<wg_gizmo.h>
 	<wg_blockset.h>
 
-1279127853 /home/tord/Workspace/wondergui/include/wg_gizmo_radiobutton.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_radiobutton.h
 	<wg_gizmo_checkbox.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_refreshbutton.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_refreshbutton.h
 	<wg_gizmo_button.h>
 	<wg_blockset.h>
 	<wg_text.h>
 	<wg_interface_textholder.h>
 
-1297498998 /home/tord/Workspace/wondergui/include/wg_gizmo_table.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_table.h
 	<wg_color.h>
 	<wg_blockset.h>
 	<wg_gizmo_hook.h>
 	<wg_interface_textholder.h>
 	<wg_gizmo_container.h>
 
-1291358658 /home/tord/Workspace/wondergui/include/wg_gizmo_tablist.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_tablist.h
 	<wg_gizmo.h>
 	<wg_chain.h>
 	<wg_text.h>
 	<wg_blockset.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_text.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_text.h
 	<wg_gizmo.h>
 	<wg_interface_edittext.h>
 	<wg_text.h>
 	<wg_cursorinstance.h>
 	<wg_tooltip.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_value.h
+1298654556 /home/tord/Workspace/wondergui/include/wg_gizmo_value.h
 	<wg_gizmo.h>
 	<wg_text.h>
 	<wg_valueformat.h>
 	<wg_interface_valueholder.h>
 
-1299010800 /home/tord/Workspace/wondergui/include/wg_gizmo_view.h
+1299055970 /home/tord/Workspace/wondergui/include/wg_gizmo_view.h
 	<wg_gizmo_container.h>
 	<wg_gizmo_dragbars.h>
 
-1289193621 /home/tord/Workspace/wondergui/wg_sdl/wg_surface_sdl.h
+1298654556 /home/tord/Workspace/wondergui/wg_sdl/wg_surface_sdl.h
 	<wg_surface.h>
 	<SDL.h>
 	<SDL/SDL.h>
 
-1279127854 /home/tord/Workspace/wondergui/wg_sdl/wg_gfxdevice_sdl.h
+1298654556 /home/tord/Workspace/wondergui/wg_sdl/wg_gfxdevice_sdl.h
 	<wg_gfxdevice.h>
 
-1273984075 /usr/include/SDL/SDL_image.h
+1273659171 /usr/include/SDL/SDL_image.h
 	"SDL.h"
 	"SDL_version.h"
 	"begin_code.h"
 	"close_code.h"
+
+1302270174 /home/tord/Workspace/wondergui/include/wg_eventlogger.h
+	<iostream>
+	<wg_eventhandler.h>
 

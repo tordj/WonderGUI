@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -23,7 +23,7 @@
 #include <wg_gizmo_dummy.h>
 #include <wg_gfxdevice.h>
 
-static const char	c_gizmoType[] = {"TordJ/Dummy"};
+static const char	c_gizmoType[] = {"Dummy"};
 
 //____ Constructor ____________________________________________________________
 

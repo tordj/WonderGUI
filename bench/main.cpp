@@ -14,7 +14,11 @@
 #include <wondergui.h>
 #include <wg_surface_sdl.h>
 #include <wg_gfxdevice_sdl.h>
+#include <wg_eventlogger.h>
 
+#include <iostream>
+
+extern std::ostream cout;
 
 WgSurface * 	loadSurface( const char * path );
 SDL_Surface *	initSDL( int w, int h );
@@ -45,6 +49,9 @@ int main ( int argc, char** argv )
 	WgRoot * pRoot = new WgRoot( pGfxDevice, pInputDevice );
 
 	WgEventHandler * pEventHandler = new WgEventHandler( 0, pRoot );
+
+	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
+	pEventHandler->AddCallback( pEventLogger );
 
 	// Load images and specify blocks
 
@@ -166,7 +173,7 @@ bool eventLoop( WgEventHandler * pHandler )
 	static int	prevTicks = 0;
 
 	int ticks = SDL_GetTicks();
-	pHandler->QueueEvent( WgEvent::TimePass( ticks - prevTicks ) );
+	pHandler->QueueEvent( WgEvent::Tick( ticks - prevTicks ) );
 	prevTicks = ticks;
 
    // message processing loop

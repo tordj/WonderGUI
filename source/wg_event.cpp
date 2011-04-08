@@ -25,6 +25,11 @@
 
 namespace WgEvent
 {
+	WgGizmo * Event::Gizmo() const
+	{
+		return m_pGizmo.GetRealPtr();
+	}
+
 
 	//____ PointerEnter _______________________________________________________
 
@@ -225,6 +230,24 @@ namespace WgEvent
 		return m_param[1].integer;
 	}
 
+	//____ KeyRepeat ___________________________________________________________
+
+	KeyRepeat::KeyRepeat( int native_keycode )
+	{
+		m_id = WG_EVENT_KEY_REPEAT;
+		m_param[0].integer = native_keycode;
+	}
+
+	int KeyRepeat::NativeKeyCode() const
+	{
+		return m_param[0].integer;
+	}
+
+	int KeyRepeat::TranslatedKeyCode() const
+	{
+		return m_param[1].integer;
+	}
+
 	//____ KeyRelease ________________________________________________________
 
 	KeyRelease::KeyRelease( int native_keycode )
@@ -275,15 +298,15 @@ namespace WgEvent
 		return m_param[1].integer;
 	}
 
-	//____ TimePass ___________________________________________________________
+	//____ Tick _______________________________________________________________
 
-	TimePass::TimePass( int ms )
+	Tick::Tick( int ms )
 	{
-		m_id = WG_EVENT_TIME_PASS;
+		m_id = WG_EVENT_TICK;
 		m_param[0].integer = ms;
 	}
 
-	int TimePass::Millisec() const
+	int Tick::Millisec() const
 	{
 		return m_param[0].integer;
 	}

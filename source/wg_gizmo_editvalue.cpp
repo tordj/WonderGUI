@@ -31,7 +31,7 @@
 #include <wg_key.h>
 #include <wg_textmanager.h>
 
-static const char Wdg_Type[] = {"TordJ/EditValue"};
+static const char Wdg_Type[] = {"EditValue"};
 
 using namespace WgSignal;
 
@@ -277,7 +277,7 @@ bool WgGizmoEditvalue::ParseValueFromInput( int64_t * wpResult )
 				continue;
 
 			if( glyph == m_format.period )
-			{			
+			{
 				nDecimals = nbChars-i-1;
 			}
 			else if( glyph >= '0' && glyph <= '9' )

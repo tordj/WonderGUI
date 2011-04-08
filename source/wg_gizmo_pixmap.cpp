@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -27,7 +27,7 @@
 #include <wg_util.h>
 
 
-static const char	c_gizmoType[] = {"TordJ/Pixmap"};
+static const char	c_gizmoType[] = {"Pixmap"};
 
 //____ Constructor ____________________________________________________________
 
@@ -62,7 +62,7 @@ void WgGizmoPixmap::SetSource( const WgBlockSetPtr& pBlockSet )
 	if( m_pGfx != pBlockSet )
 	{
 		m_pGfx = pBlockSet;
-	
+
 		if( m_pGfx && m_pGfx->IsOpaque() )
 			m_bOpaque = true;
 		else
@@ -105,7 +105,7 @@ void WgGizmoPixmap::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		block = m_pGfx->GetBlock(WG_MODE_NORMAL);
 	else
 		block = m_pGfx->GetBlock(WG_MODE_DISABLED);
-		
+
 	pDevice->ClipBlitBlock( _clip, block, _canvas);
 }
 

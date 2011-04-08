@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -26,7 +26,7 @@
 #include	<wg_gfxdevice.h>
 
 
-static const char c_gizmoType[] = {"TordJ/Value"};
+static const char c_gizmoType[] = {"Value"};
 
 using namespace WgSignal;
 
@@ -86,7 +86,7 @@ void WgGizmoValue::SetFormat( const WgValueFormat& format )
 
 void WgGizmoValue::ValueModified()
 {
-	Emit( IntegerChanged(), m_value );	
+	Emit( IntegerChanged(), m_value );
 	Emit( Fraction(), FractionalValue() );
 
 	m_bRegenText = true;
@@ -122,7 +122,7 @@ void WgGizmoValue::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		m_text.setScaledValue( m_value, (unsigned int) pow(10.f,m_format.decimals), m_format );
 		m_bRegenText = false;
 	}
- 
+
 	pDevice->PrintText( _clip, &m_text, _canvas );
 }
 

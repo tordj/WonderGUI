@@ -23,7 +23,7 @@
 #include <wg_gizmo_flexgeo.h>
 #include <wg_dirtyrect.h>
 
-static const char	c_gizmoType[] = {"TordJ/FlexGeo"};
+static const char	c_gizmoType[] = {"FlexGeo"};
 
 WgFlexAnchor		WgGizmoFlexGeo::g_baseAnchors[9] = { WgFlexAnchor(0.f, 0.f, WgCord(0,0)),
 														 WgFlexAnchor(0.5f, 0.f, WgCord(0,0)),
@@ -1489,7 +1489,7 @@ void WgGizmoFlexGeo::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDi
 void WgGizmoFlexGeo::OnNewSize( const WgSize& size )
 {
 	WgFlexHook * pHook = m_hooks.Last();
-	
+
 	while( pHook )
 	{
 		pHook->RefreshRealGeo();

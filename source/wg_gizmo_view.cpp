@@ -27,7 +27,7 @@
 
 using namespace WgSignal;
 
-static const char	c_gizmoType[] = {"TordJ/View"};
+static const char	c_gizmoType[] = {"View"};
 
 
 //____ Constructor ____________________________________________________________

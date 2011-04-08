@@ -113,7 +113,7 @@ private:
 	void	ProcessGeneralEvent( WgEvent::Event& _event );
 	void	ProcessEventCallbacks( WgEvent::Event& _event );
 
-	void	ProcessTimePass( WgEvent::TimePass * pEvent );
+	void	ProcessTick( WgEvent::Tick * pEvent );
 
 	void	ProcessPointerEnter( WgEvent::PointerEnter * pEvent );
 	void	ProcessPointerMove( WgEvent::PointerMove * pEvent );

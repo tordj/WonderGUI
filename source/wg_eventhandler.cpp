@@ -349,13 +349,14 @@ void WgEventHandler::ProcessGeneralEvent( WgEvent::Event& _event )
 			break;
 
 		case WG_EVENT_KEY_PRESS:
+		case WG_EVENT_KEY_REPEAT:
 		case WG_EVENT_KEY_RELEASE:
 		case WG_EVENT_CHARACTER:
 		case WG_EVENT_WHEEL_ROLL:
 			break;
 
-		case WG_EVENT_TIME_PASS:
-			ProcessTimePass( (WgEvent::TimePass*) &_event );
+		case WG_EVENT_TICK:
+			ProcessTick( (WgEvent::Tick*) &_event );
 			break;
 
 		case WG_EVENT_DUMMY:
@@ -364,9 +365,9 @@ void WgEventHandler::ProcessGeneralEvent( WgEvent::Event& _event )
 
 }
 
-//____ ProcessTimePass() ______________________________________________________
+//____ ProcessTick() ______________________________________________________
 
-void WgEventHandler::ProcessTimePass( WgEvent::TimePass * pEvent )
+void WgEventHandler::ProcessTick( WgEvent::Tick * pEvent )
 {
 	// Check if we need to post BUTTON_REPEAT
 

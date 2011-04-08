@@ -27,7 +27,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_pen.h>
 
-static const char	c_gizmoType[] = {"TordJ/Editline"};
+static const char	c_gizmoType[] = {"Editline"};
 
 //____ Constructor ____________________________________________________________
 
