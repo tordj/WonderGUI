@@ -209,13 +209,14 @@ bool eventLoop( WgEventHandler * pHandler )
 					pHandler->QueueEvent( WgEvent::WheelRoll( 1, -120 ) );
 				else
 				{
-					pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.button.x, event.button.y )) );
+//					pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.button.x, event.button.y )) );
 					pHandler->QueueEvent( WgEvent::ButtonPress( event.button.button ) );
 				}
 				break;
 
 			case	SDL_MOUSEBUTTONUP:
-				pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.button.x, event.button.y ) ));
+//				pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.button.x, event.button.y ) ));
+				if( event.button.button != 4 && event.button.button != 5 )
 				pHandler->QueueEvent( WgEvent::ButtonRelease( event.button.button ) );
 				break;
 

@@ -60,7 +60,7 @@
 
 //____ input related defines __________________________________________________
 
-#define	WG_MAX_BUTTONS		3	// Maximum number of mouse buttons that wonderGUI is aware of.
+#define	WG_MAX_BUTTONS		8	// Maximum number of mouse buttons that wonderGUI is aware of.
 #define	WG_MAX_WIDGETS		8	// Maximum number of widgets that can receive the same action.
 								//(through intercept settings on parents). No overflow check!
 #define	WG_MAX_KEYS_DOWN	16	// Maximum number of keys simultaneously depressed. No overflow check!

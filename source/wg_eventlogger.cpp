@@ -165,21 +165,37 @@ void WgEventLogger::OnEvent( const WgEvent::Event& _event )
 			sprintf( params, " button=%d", ((const WgEvent::ButtonDoubleClick&)_event).Button() );
 			break;
 		case WG_EVENT_KEY_PRESS:
+		{
 			id = "KeyPress";
+			const WgEvent::KeyPress * pEvent = static_cast<const WgEvent::KeyPress*>(&_event);
+			sprintf( params, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
 			break;
+		}
 		case WG_EVENT_KEY_REPEAT:
+		{
 			id = "KeyRepeat";
+			const WgEvent::KeyRepeat * pEvent = static_cast<const WgEvent::KeyRepeat*>(&_event);
+			sprintf( params, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
 			break;
+		}
 		case WG_EVENT_KEY_RELEASE:
+		{
 			id = "KeyRelease";
+			const WgEvent::KeyRelease * pEvent = static_cast<const WgEvent::KeyRelease*>(&_event);
+			sprintf( params, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
 			break;
+		}
 		case WG_EVENT_CHARACTER:
 			id = "Character";
+			sprintf( params, " char=%X", ((const WgEvent::Character&)_event).Char() );
 			break;
 		case WG_EVENT_WHEEL_ROLL:
+		{
 			id = "WheelRoll";
+			const WgEvent::WheelRoll * pEvent = static_cast<const WgEvent::WheelRoll*>(&_event);
+			sprintf( params, "wheel=%d distance=%d", pEvent->Wheel(), pEvent->Distance() );
 			break;
-
+		}
 		default:
 			id = "Unknown Event";
 			break;
