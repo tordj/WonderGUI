@@ -39,8 +39,23 @@ public:
 	void IgnoreEvent( WgEventId event );
 	void LogEvent( WgEventId event );
 
-	void IgnoreAllEvents();
+	void LogPointerEvents();
+	void IgnorePointerEvents();
+
+	void LogButtonEvents();
+	void IgnoreButtonEvents();
+
+	void LogKeyboardEvents();
+	void IgnoreKeyboardEvents();
+
+	void LogMouseEvents();
+	void IgnoreMouseEvents();
+
+	void LogInputEvents();
+	void IgnoreInputEvents();
+
 	void LogAllEvents();
+	void IgnoreAllEvents();
 
 	bool IsEventLogged( WgEventId event ) { return m_eventFilter[event]; }
 
