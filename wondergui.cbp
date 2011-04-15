@@ -50,7 +50,6 @@
 		<Unit filename="include/wg_color.h" />
 		<Unit filename="include/wg_cursor.h" />
 		<Unit filename="include/wg_cursorinstance.h" />
-		<Unit filename="include/wg_dirtyrect.h" />
 		<Unit filename="include/wg_dynarray.h" />
 		<Unit filename="include/wg_emitter.h" />
 		<Unit filename="include/wg_emitterstanza.h" />
@@ -104,6 +103,7 @@
 		<Unit filename="include/wg_origo.h" />
 		<Unit filename="include/wg_pen.h" />
 		<Unit filename="include/wg_pointerspy.h" />
+		<Unit filename="include/wg_rectchain.h" />
 		<Unit filename="include/wg_refcounted.h" />
 		<Unit filename="include/wg_resdb.h" />
 		<Unit filename="include/wg_resloader.h" />
@@ -115,6 +115,7 @@
 		<Unit filename="include/wg_string.h" />
 		<Unit filename="include/wg_surface.h" />
 		<Unit filename="include/wg_text.h" />
+		<Unit filename="include/wg_textlink.h" />
 		<Unit filename="include/wg_textmanager.h" />
 		<Unit filename="include/wg_textprop.h" />
 		<Unit filename="include/wg_textpropmanager.h" />
@@ -138,7 +139,6 @@
 		<Unit filename="source/wg_color.cpp" />
 		<Unit filename="source/wg_cursor.cpp" />
 		<Unit filename="source/wg_cursorinstance.cpp" />
-		<Unit filename="source/wg_dirtyrect.cpp" />
 		<Unit filename="source/wg_emitter.cpp" />
 		<Unit filename="source/wg_event.cpp" />
 		<Unit filename="source/wg_eventhandler.cpp" />
@@ -181,6 +181,7 @@
 		<Unit filename="source/wg_menuitem.cpp" />
 		<Unit filename="source/wg_origo.cpp" />
 		<Unit filename="source/wg_pen.cpp" />
+		<Unit filename="source/wg_rectchain.cpp" />
 		<Unit filename="source/wg_resdb.cpp" />
 		<Unit filename="source/wg_root.cpp" />
 		<Unit filename="source/wg_skinmanager.cpp" />
@@ -188,6 +189,7 @@
 		<Unit filename="source/wg_string.cpp" />
 		<Unit filename="source/wg_surface.cpp" />
 		<Unit filename="source/wg_text.cpp" />
+		<Unit filename="source/wg_textlink.cpp" />
 		<Unit filename="source/wg_textmanager.cpp" />
 		<Unit filename="source/wg_textprop.cpp" />
 		<Unit filename="source/wg_textpropmanager.cpp" />

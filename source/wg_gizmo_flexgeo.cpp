@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_gizmo_flexgeo.h>
-#include <wg_dirtyrect.h>
+#include <wg_rectchain.h>
 
 static const char	c_gizmoType[] = {"FlexGeo"};
 
@@ -781,9 +781,9 @@ void WgFlexHook::RequestResize()
 
 //____ WgFlexHook::_castDirtRecursively() ___________________________________
 
-void WgFlexHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj * pDirtOut )
+void WgFlexHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut )
 {
-	WgDirtyRectObj	siblingDirt;
+	WgRectChain	siblingDirt;
 
 	// Recurse through the siblings ontop of us if there are any, filling dirt
 
@@ -809,7 +809,7 @@ void WgFlexHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& cl
 
 	// Loop through dirty rects
 
-	WgDirtyRect * pRect = siblingDirt.Pop();;
+	WgRectLink * pRect = siblingDirt.Pop();;
 	while( pRect )
 	{
 		WgRect dirtyArea( clippedArea, *pRect );
@@ -830,7 +830,7 @@ void WgFlexHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& cl
 
 				// Mask ourselves from the rectangle and move remains to dirtOut
 
-				WgDirtyRectObj temp;
+				WgRectChain temp;
 				temp.PushExistingRect( pRect );
 				DoMaskRects( temp, screenGeo, clippedArea );
 				temp.Transfer( pDirtOut);
@@ -858,7 +858,7 @@ void WgFlexHook::_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentP
 	}
 	else
 	{
-		WgDirtyRect * pDirt = m_dirt.pRectList;
+		WgRectLink * pDirt = m_dirt.pRectList;
 		while( pDirt )
 		{
 			DoRender( pDevice, geo, geo, *pDirt, _layer );
@@ -1115,7 +1115,7 @@ bool WgGizmoFlexGeo::ReleaseGizmo( WgGizmo * pGizmo )
 
 void WgGizmoFlexGeo::DeleteAllGizmos()
 {
-	WgDirtyRectObj	dirt;
+	WgRectChain	dirt;
 
 	// Collect dirty areas and delete hooks, taking any connected gizmos with them.
 
@@ -1130,7 +1130,7 @@ void WgGizmoFlexGeo::DeleteAllGizmos()
 
 	// RequestRender on all dirty rectangles
 
-	WgDirtyRect * pDirt = dirt.pRectList;
+	WgRectLink * pDirt = dirt.pRectList;
 	while( pDirt )
 	{
 		RequestRender( * pDirt );
@@ -1371,7 +1371,7 @@ WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 
 //____ OnCollectRects() _______________________________________________________
 
-void WgGizmoFlexGeo::OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmoFlexGeo::OnCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
@@ -1383,7 +1383,7 @@ void WgGizmoFlexGeo::OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, c
 
 //____ OnMaskRects() __________________________________________________________
 
-void WgGizmoFlexGeo::OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmoFlexGeo::OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
@@ -1402,7 +1402,7 @@ void WgGizmoFlexGeo::OnRequestRender( const WgRect& rect, const WgFlexHook * pHo
 
 	// Clip our geometry and put it in a dirtyrect-list
 
-	WgDirtyRectObj rects;
+	WgRectChain rects;
 	rects.Add( WgRect( rect, WgRect(0,0,Size())) );
 
 	// Remove portions of dirty rect that are covered by opaque upper siblings,
@@ -1419,7 +1419,7 @@ void WgGizmoFlexGeo::OnRequestRender( const WgRect& rect, const WgFlexHook * pHo
 
 	// Make request render calls
 
-	WgDirtyRect * pRect = rects.pRectList;
+	WgRectLink * pRect = rects.pRectList;
 	while( pRect )
 	{
 		RequestRender( * pRect );
@@ -1473,7 +1473,7 @@ void WgGizmoFlexGeo::_clearDirtyRects()
 
 //____ _castDirtyRect() _______________________________________________________
 
-void WgGizmoFlexGeo::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut )
+void WgGizmoFlexGeo::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
 {
 	WgFlexHook * pHook = m_hooks.First();
 

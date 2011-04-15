@@ -159,8 +159,8 @@ bool WgRoot::BeginRender( const WgRect& clip )
 	if( clip2.w == 0 || clip2.h == 0 )
 		return false;						// Invalid rect area.
 
-	WgDirtyRect * pRect = m_dirtyRects.Pop();
-	WgDirtyRectObj	outDummy;
+	WgRectLink * pRect = m_dirtyRects.Pop();
+	WgRectChain	outDummy;
 
 	while( pRect )
 	{
@@ -209,7 +209,7 @@ void WgRoot::AddDirtyRect( WgRect rect )
 
 int WgRoot::ExportDirtyRects( WgRect * pDest, int maxRects ) const
 {
-	WgDirtyRect * pRect = m_dirtyRects.pRectList;
+	WgRectLink * pRect = m_dirtyRects.pRectList;
 	int	nExported = 0;
 
 	while( pRect && nExported < maxRects )

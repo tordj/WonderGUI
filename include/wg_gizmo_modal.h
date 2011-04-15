@@ -73,7 +73,7 @@ protected:
 	void		RequestRender( const WgRect& rect );
 	void		RequestResize();
 
-	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj * pDirtOut );
+	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
 	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
 
 
@@ -114,7 +114,7 @@ public:
 
 	WgModalHook *	FirstModalChild();
 	WgModalHook *	LastModalChild();
-	
+
 
 	// Overloaded from WgGizmo
 
@@ -163,7 +163,7 @@ private:
 		void		RequestRender( const WgRect& rect );
 		void		RequestResize();
 
-		void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj * pDirtOut );
+		void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
 		void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
 
 
@@ -176,8 +176,8 @@ private:
 
 
 
-	void			OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
-	void			OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+	void			OnCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	void			OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	void			OnCloneContent( const WgGizmo * _pOrg );
 	void			OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			OnNewSize( const WgSize& size );
@@ -191,7 +191,7 @@ private:
 
 	WgGizmo*		_castToGizmo() { return this; }
 
-	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut );
+	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
 	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
 	void			_clearDirtyRects();
 
