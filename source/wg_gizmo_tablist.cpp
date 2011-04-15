@@ -12,7 +12,7 @@
 #include <wg_item_row.h>
 
 
-static const char	c_gizmoType[] = {"TordJ/TabList"};
+static const char	c_gizmoType[] = {"TabList"};
 
 //____ WgTab::Constructor __________________________________________________________
 

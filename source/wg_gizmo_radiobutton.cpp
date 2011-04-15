@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -25,7 +25,7 @@
 
 using namespace WgSignal;
 
-static const char	c_gizmoType[] = {"TordJ/RadioButton2"};
+static const char	c_gizmoType[] = {"RadioButton"};
 
 
 
@@ -112,7 +112,7 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 void WgGizmoRadiobutton::OnCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoCheckbox::OnCloneContent( _pOrg );
-	
+
 	WgGizmoRadiobutton * pOrg = (WgGizmoRadiobutton *) _pOrg;
 
 	m_bAllowUnchecking	= pOrg->m_bAllowUnchecking;

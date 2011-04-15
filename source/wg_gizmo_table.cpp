@@ -29,7 +29,7 @@
 #include	<wg_gfx.h>
 
 
-static const char	c_gizmoType[] = {"TordJ/Table"};
+static const char	c_gizmoType[] = {"Table"};
 
 
 WgCord WgTableHook::Pos() const

@@ -68,6 +68,7 @@ class WgGizmo : public WgEmitter, public WgWeakPtrTarget
 friend class WgSkinNode;
 friend class WgGizmoHook;
 friend class WgInput;
+friend class WgEventHandler;
 
 public:
 	WgGizmo();

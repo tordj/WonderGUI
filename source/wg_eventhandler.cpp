@@ -150,6 +150,8 @@ int WgEventHandler::DeleteCallbacks( const WgEventFilter& filter )
 	return false;
 }
 
+
+
 //____ DeleteAllCallbacks() ___________________________________________________
 
 int WgEventHandler::DeleteAllCallbacks()
@@ -157,6 +159,16 @@ int WgEventHandler::DeleteAllCallbacks()
 	//TODO Implement
 	return false;
 }
+
+//____ DeleteDeadCallbacks() __________________________________________________
+
+int WgEventHandler::DeleteDeadCallbacks()
+{
+	//TODO Implement
+	return false;
+}
+
+
 
 //____ _addCallback() _________________________________________________________
 
@@ -217,21 +229,55 @@ void WgEventHandler::ProcessEvents()
 
 		if( ev.IsForGizmo() )
 		{
-			if( ev.Gizmo() )
-			{
-				//TODO: Send event to Gizmo
-			}
+			WgGizmo * pGizmo = ev.Gizmo();
+			if( pGizmo )
+				pGizmo->OnEvent( ev, this );
 		}
 		else
 		{
 			ProcessGeneralEvent( ev );
 		}
-//		ProcessEventCallbacks( ev );
+		ProcessEventCallbacks( ev );
 
 		m_eventQueue.pop_front();
 	}
 
 	m_bIsProcessing = false;
+}
+
+//____ ProcessEventCallbacks() ________________________________________________
+
+void WgEventHandler::ProcessEventCallbacks( WgEvent::Event& _event )
+{
+	// Call all global callbacks
+
+	Callback * pCallback = m_globalCallbacks.First();
+
+	while( pCallback )
+	{
+		pCallback->ProcessEvent( _event );
+		pCallback = pCallback->Next();
+	}
+
+	// Call all Gizmo-specific callbacks
+
+	WgChain<Callback> * pChain = 0;
+
+	if( !_event.IsForGizmo() )
+		pChain = &m_gizmoCallbacks[0];
+	else if( _event.Gizmo() )
+		pChain = &m_gizmoCallbacks[_event.Gizmo()];
+	else
+		return;	// Event was for a Gizmo that now has disappeared.
+
+
+	pCallback = pChain->First();
+
+	while( pCallback )
+	{
+		pCallback->ProcessEvent( _event );
+		pCallback = pCallback->Next();
+	}
 }
 
 
@@ -303,13 +349,14 @@ void WgEventHandler::ProcessGeneralEvent( WgEvent::Event& _event )
 			break;
 
 		case WG_EVENT_KEY_PRESS:
+		case WG_EVENT_KEY_REPEAT:
 		case WG_EVENT_KEY_RELEASE:
 		case WG_EVENT_CHARACTER:
 		case WG_EVENT_WHEEL_ROLL:
 			break;
 
-		case WG_EVENT_TIME_PASS:
-			ProcessTimePass( (WgEvent::TimePass*) &_event );
+		case WG_EVENT_TICK:
+			ProcessTick( (WgEvent::Tick*) &_event );
 			break;
 
 		case WG_EVENT_DUMMY:
@@ -318,9 +365,9 @@ void WgEventHandler::ProcessGeneralEvent( WgEvent::Event& _event )
 
 }
 
-//____ ProcessTimePass() ______________________________________________________
+//____ ProcessTick() ______________________________________________________
 
-void WgEventHandler::ProcessTimePass( WgEvent::TimePass * pEvent )
+void WgEventHandler::ProcessTick( WgEvent::Tick * pEvent )
 {
 	// Check if we need to post BUTTON_REPEAT
 
@@ -432,7 +479,13 @@ void WgEventHandler::ProcessPointerPlaced( WgEvent::PointerPlaced * pEvent )
 	while( pGizmo )
 	{
 		vNowMarked.push_back(pGizmo);
-		pGizmo = pGizmo->Hook()->Parent()->CastToGizmo();
+
+		WgGizmoContainer * p = pGizmo->Hook()->Parent();
+
+		if( p )
+			pGizmo = p->CastToGizmo();
+		else
+			pGizmo = 0;
 	}
 
 	// Post POINTER_EXIT events for gizmos no longer marked

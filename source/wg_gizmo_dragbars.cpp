@@ -30,9 +30,9 @@
 using namespace WgSignal;
 using namespace WgUtil;
 
-static const char	c_gizmoType[] = {"Unspecified type derived from TordJ/DragBar"};
-static const char c_gizmoTypeH[] = {"TordJ/HDrag"};
-static const char c_gizmoTypeV[] = {"TordJ/VDrag"};
+static const char	c_gizmoType[] = {"Unspecified type derived from DragBar"};
+static const char c_gizmoTypeH[] = {"HDrag"};
+static const char c_gizmoTypeV[] = {"VDrag"};
 
 
 //____ WgGizmoDragbar() ____________________________________________________
@@ -255,7 +255,7 @@ void WgGizmoDragbar::OnCloneContent( const WgGizmo * _pOrg )
 
 	m_bPressOnDragBar	= 0;
 	m_dragBarPressOfs	= 0;
-  	
+
 	m_btnLayout			= pOrg->m_btnLayout;
 	m_headerLen			= pOrg->m_headerLen;
 	m_footerLen			= pOrg->m_footerLen;
@@ -745,7 +745,7 @@ void WgGizmoDragbar::OnAction( WgInput::UserAction action, int button_key, const
 			break;
 		}
 
-		
+
 		case WgInput::BUTTON_DOWN:
 		{
 			if( button_key != 1 )

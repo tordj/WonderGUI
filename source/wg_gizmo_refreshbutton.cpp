@@ -29,7 +29,7 @@
 #include <wg_util.h>
 #include <wg_key.h>
 
-static const char	c_gizmoType[] = {"TordJ/RefreshButton"};
+static const char	c_gizmoType[] = {"RefreshButton"};
 
 //____ Constructor ____________________________________________________________
 

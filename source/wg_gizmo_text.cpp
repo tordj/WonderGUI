@@ -25,7 +25,7 @@
 #include	<wg_font.h>
 #include	<wg_gfxdevice.h>
 
-static const char	c_gizmoType[] = {"TordJ/GizmoText"};
+static const char	c_gizmoType[] = {"GizmoText"};
 
 
 

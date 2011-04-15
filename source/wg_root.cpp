@@ -225,12 +225,13 @@ int WgRoot::ExportDirtyRects( WgRect * pDest, int maxRects ) const
 
 WgGizmo * WgRoot::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 {
-	if( !m_geo.contains(ofs) || !m_hook.Gizmo() )
+	if( !Geo().contains(ofs) || !m_hook.Gizmo() )
 		return 0;
 
-	//TODO: Implement!
+	if( m_hook.Gizmo() && m_hook.Gizmo()->IsContainer() )
+		return m_hook.Gizmo()->CastToContainer()->FindGizmo( ofs, mode );
 
-	return 0;
+	return m_hook.Gizmo();
 }
 
 

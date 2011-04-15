@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -28,7 +28,7 @@
 #include <math.h>
 
 
-static const char	c_gizmoType[] = {"TordJ/Animation"};
+static const char	c_gizmoType[] = {"Animation"};
 
 
 
@@ -89,7 +89,7 @@ bool WgGizmoAnimation::DisableSource( WgSurface * _pSurf, WgRect& _rect )
 {
 	if( _rect.w == 0 || _rect.h == 0 )
 		return false;
-	
+
 	m_pDisableSurf	= _pSurf;
 	m_dis_src		= _rect;
 
@@ -118,10 +118,10 @@ bool WgGizmoAnimation::SetPlayPosFractional( float _fraction )
 {
 	if( !m_pAnim )
 		return false;
-	
+
 	_fraction *= m_pAnim->Duration();
 
-	
+
 	if( _fraction == m_playPos )
 	{
 		m_bPlayPosIsNew = true;				// So it doesn't step forward in update before render.
@@ -270,7 +270,7 @@ void WgGizmoAnimation::OnUpdate( const WgUpdateInfo& _updateInfo )
 		if( m_pSurf && m_pSurf->IsOpaque() )
 			m_bOpaque = true;
 		else
-			m_bOpaque = false;			
+			m_bOpaque = false;
 
 		m_src.x = pFrame->ofs.x;
 		m_src.y = pFrame->ofs.y;
@@ -281,7 +281,7 @@ void WgGizmoAnimation::OnUpdate( const WgUpdateInfo& _updateInfo )
 		m_src.x = pFrame->ofs.x;
 		m_src.y = pFrame->ofs.y;
 		RequestRender();
-	}	
+	}
 
 	m_bPlayPosIsNew = false;
 }
@@ -370,7 +370,7 @@ void WgGizmoAnimation::OnEnable( void )
 		m_bOpaque = true;
 	else
 		m_bOpaque = false;
-		
+
 	RequestRender();
 }
 

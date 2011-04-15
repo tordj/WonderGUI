@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -28,7 +28,7 @@
 #include <wg_key.h>
 #include <wg_event.h>
 
-static const char	c_gizmoType[] = {"TordJ/Button"};
+static const char	c_gizmoType[] = {"Button"};
 
 //____ Constructor ____________________________________________________________
 
@@ -97,11 +97,11 @@ bool WgGizmoButton::SetSource( const WgBlockSetPtr& pGfx )
 //____ GetTextAreaWidth() _____________________________________________________
 
 Uint32 WgGizmoButton::GetTextAreaWidth()
-{ 
+{
 	int w = Size().w;
 
 	if( m_pBgGfx )
-		w -= m_pBgGfx->GetContentBorders().width(); 
+		w -= m_pBgGfx->GetContentBorders().width();
 
 	return w;
 }

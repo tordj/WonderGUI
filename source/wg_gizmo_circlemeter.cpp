@@ -27,7 +27,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_surface.h>
 
-static const char	c_gizmoType[] = {"TordJ/CircleMeter"};
+static const char	c_gizmoType[] = {"CircleMeter"};
 
 using namespace WgSignal;
 

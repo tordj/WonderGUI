@@ -29,7 +29,7 @@
 
 using namespace WgSignal;
 
-static const char	c_gizmoType[] = {"TordJ/CheckBox2"};
+static const char	c_gizmoType[] = {"CheckBox"};
 
 
 
