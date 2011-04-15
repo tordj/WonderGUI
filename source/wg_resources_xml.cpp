@@ -800,52 +800,52 @@ WgWidget::PointerMask WgPointerMaskRes::Deserialize(const WgXmlNode& xmlNode, co
 
 
 //////////////////////////////////////////////////////////////////////////
-/// WgCursorStyleRes /////////////////////////////////////////////////////
+/// WgPointerStyleRes /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-// cursorstyle=[value]
-void WgCursorStyleRes::Serialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode, const std::string& attr, WgCursorStyle style, WgCursorStyle def)
+// pointerstyle=[value]
+void WgPointerStyleRes::Serialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode, const std::string& attr, WgPointerStyle style, WgPointerStyle def)
 {
 	if(xmlNode.HasAttribute(attr) || style != def)
 	{
 		switch(style)
 		{
-			case WG_CURSOR_ARROW:			s.AddAttribute(attr, "arrow"); break;
-			case WG_CURSOR_HOURGLASS:		s.AddAttribute(attr, "hourglass"); break;
-			case WG_CURSOR_HAND:			s.AddAttribute(attr, "hand"); break;
-			case WG_CURSOR_CROSSHAIR:		s.AddAttribute(attr, "crosshair"); break;
-			case WG_CURSOR_HELP:			s.AddAttribute(attr, "help"); break;
-			case WG_CURSOR_IBEAM:			s.AddAttribute(attr, "ibeam"); break;
-			case WG_CURSOR_STOP:			s.AddAttribute(attr, "stop"); break;
-			case WG_CURSOR_UP_ARROW:		s.AddAttribute(attr, "up_arrow"); break;
-			case WG_CURSOR_SIZE_ALL:		s.AddAttribute(attr, "size_all"); break;
-			case WG_CURSOR_SIZE_NE_SW:		s.AddAttribute(attr, "size_ne_sw"); break;
-			case WG_CURSOR_SIZE_NW_SE:		s.AddAttribute(attr, "size_nw_se"); break;
-			case WG_CURSOR_SIZE_N_S:		s.AddAttribute(attr, "size_n_s"); break;
-			case WG_CURSOR_SIZE_W_E:		s.AddAttribute(attr, "size_w_e"); break;
+			case WG_POINTER_ARROW:			s.AddAttribute(attr, "arrow"); break;
+			case WG_POINTER_HOURGLASS:		s.AddAttribute(attr, "hourglass"); break;
+			case WG_POINTER_HAND:			s.AddAttribute(attr, "hand"); break;
+			case WG_POINTER_CROSSHAIR:		s.AddAttribute(attr, "crosshair"); break;
+			case WG_POINTER_HELP:			s.AddAttribute(attr, "help"); break;
+			case WG_POINTER_IBEAM:			s.AddAttribute(attr, "ibeam"); break;
+			case WG_POINTER_STOP:			s.AddAttribute(attr, "stop"); break;
+			case WG_POINTER_UP_ARROW:		s.AddAttribute(attr, "up_arrow"); break;
+			case WG_POINTER_SIZE_ALL:		s.AddAttribute(attr, "size_all"); break;
+			case WG_POINTER_SIZE_NE_SW:		s.AddAttribute(attr, "size_ne_sw"); break;
+			case WG_POINTER_SIZE_NW_SE:		s.AddAttribute(attr, "size_nw_se"); break;
+			case WG_POINTER_SIZE_N_S:		s.AddAttribute(attr, "size_n_s"); break;
+			case WG_POINTER_SIZE_W_E:		s.AddAttribute(attr, "size_w_e"); break;
 			default: assert(0);
 		}
 	}
 }
 
-WgCursorStyle WgCursorStyleRes::Deserialize(const WgXmlNode& xmlNode, const std::string& attr)
+WgPointerStyle WgPointerStyleRes::Deserialize(const WgXmlNode& xmlNode, const std::string& attr)
 {
-	WgCursorStyle style = WG_CURSOR_DEFAULT;
+	WgPointerStyle style = WG_POINTER_DEFAULT;
 	const std::string& val = xmlNode[attr];
-	if(val.empty() || val == "default") style = WG_CURSOR_DEFAULT;
-	else if(val == "arrow")				style = WG_CURSOR_ARROW;
-	else if(val == "default")			style = WG_CURSOR_DEFAULT;
-	else if(val == "hourglass")			style = WG_CURSOR_HOURGLASS;
-	else if(val == "hand")				style = WG_CURSOR_HAND;
-	else if(val == "crosshair")			style = WG_CURSOR_CROSSHAIR;
-	else if(val == "help")				style = WG_CURSOR_HELP;
-	else if(val == "ibeam")				style = WG_CURSOR_IBEAM;
-	else if(val == "stop")				style = WG_CURSOR_STOP;
-	else if(val == "up_arrow")			style = WG_CURSOR_UP_ARROW;
-	else if(val == "size_all")			style = WG_CURSOR_SIZE_ALL;
-	else if(val == "size_ne_sw")		style = WG_CURSOR_SIZE_NE_SW;
-	else if(val == "size_nw_se")		style = WG_CURSOR_SIZE_NW_SE;
-	else if(val == "size_n_s")			style = WG_CURSOR_SIZE_N_S;
-	else if(val == "size_w_e")			style = WG_CURSOR_SIZE_W_E;
+	if(val.empty() || val == "default") style = WG_POINTER_DEFAULT;
+	else if(val == "arrow")				style = WG_POINTER_ARROW;
+	else if(val == "default")			style = WG_POINTER_DEFAULT;
+	else if(val == "hourglass")			style = WG_POINTER_HOURGLASS;
+	else if(val == "hand")				style = WG_POINTER_HAND;
+	else if(val == "crosshair")			style = WG_POINTER_CROSSHAIR;
+	else if(val == "help")				style = WG_POINTER_HELP;
+	else if(val == "ibeam")				style = WG_POINTER_IBEAM;
+	else if(val == "stop")				style = WG_POINTER_STOP;
+	else if(val == "up_arrow")			style = WG_POINTER_UP_ARROW;
+	else if(val == "size_all")			style = WG_POINTER_SIZE_ALL;
+	else if(val == "size_ne_sw")		style = WG_POINTER_SIZE_NE_SW;
+	else if(val == "size_nw_se")		style = WG_POINTER_SIZE_NW_SE;
+	else if(val == "size_n_s")			style = WG_POINTER_SIZE_N_S;
+	else if(val == "size_w_e")			style = WG_POINTER_SIZE_W_E;
 	else assert(0);
 	return style;
 }
@@ -933,6 +933,7 @@ WgMode WgModeRes::Deserialize(const std::string& value)
 //		id=[mode]
 //		style=[fontstyle]
 //		col=[color]
+//		bg_col=[background color]
 //		size=[size]
 //		underlined=[true | false]
 void WgModePropRes::Serialize(WgResourceSerializerXML& s)
@@ -954,6 +955,11 @@ void WgModePropRes::Serialize(WgResourceSerializerXML& s)
 	WgColor color = textProp->GetColor(m_mode);
 	if(color != textPropRes->GetColor())
 		WgColorRes::Serialize(s, XmlNode(), "col", color, WgColor(0, color.a+1)); // force write by making color != default
+
+	WgColor bgColor = textProp->GetBgColor(m_mode);
+	if(bgColor != textPropRes->GetBgColor())
+		WgColorRes::Serialize(s, XmlNode(), "bg_col", bgColor, WgColor(0, bgColor.a+1)); // force write by making color != default
+
 
 	if(textProp->IsUnderlined(m_mode) != textPropRes->IsUnderlined())
 		s.AddAttribute("underlined", WgUtil::ToString(textProp->IsUnderlined(m_mode)));
@@ -980,6 +986,9 @@ void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	if(xmlNode.HasAttribute("col"))
 		textProp->SetColor(WgColorRes::Deserialize(s, xmlNode["col"]), m_mode);
 
+	if(xmlNode.HasAttribute("bg_col"))
+		textProp->SetBgColor(WgColorRes::Deserialize(s, xmlNode["bg_col"]), m_mode);
+
 	if(WgUtil::ToBool(xmlNode["underlined"]))
 		textProp->SetUnderlined(m_mode);
 	else
@@ -995,6 +1004,7 @@ void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 //		size=[default size]
 //		style=[default fontstyle]
 //		col=[default color]
+//		bg_col=[default background color]
 //		underlined=[default true | false]
 //		breaklevel=[value]
 void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
@@ -1005,7 +1015,9 @@ void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
 	VERIFY(fontRes->id.size(), "<textprop> id witth 0 length");
 
 	m_bColored = m_pProp->IsColored(WG_MODE_NORMAL);
+	m_bBgColor = m_pProp->IsBgColored(WG_MODE_NORMAL);
 	m_color = m_pProp->GetColor(WG_MODE_NORMAL);
+	m_bgColor = m_pProp->GetBgColor(WG_MODE_NORMAL);
 	m_style = m_pProp->GetStyle(WG_MODE_NORMAL);
 	m_underlined = m_pProp->IsUnderlined(WG_MODE_NORMAL);
 	m_size = m_pProp->GetSize(WG_MODE_NORMAL);
@@ -1025,6 +1037,9 @@ void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
 	if(m_bColored)
 		WgColorRes::Serialize(s, XmlNode(), "col", m_color, WgColor(0, m_color.a+1)); // force write by making m_color != default
 
+	if(m_bBgColor)
+		WgColorRes::Serialize(s, XmlNode(), "bg_col", m_bgColor, WgColor(0, m_bgColor.a+1)); // force write by making m_color != default
+
 	if(m_underlined)
 		s.AddAttribute("underlined", "true");
 
@@ -1042,16 +1057,26 @@ void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
 
 void WgTextPropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
-	WgFont * pFont = s.ResDb()->GetFont( xmlNode["font"] );
-	ASSERT(pFont, "font '" + xmlNode["font"] + "' doesn't exist");
-	if( pFont )
-		m_prop.SetFont( pFont );
+	std::string fontId = xmlNode["font"];
+
+	if( !fontId.empty() )
+	{
+		WgFont * pFont = s.ResDb()->GetFont( fontId );
+		ASSERT(pFont, "font '" + fontId + "' doesn't exist");
+		if( pFont )
+			m_prop.SetFont( pFont );
+	}
 
 	m_prop.SetBreakLevel( WgUtil::ToSint32( xmlNode["breaklevel"], -1 ) );
 
 	m_bColored = xmlNode.HasAttribute("col");
 	if(m_bColored)
 		m_color = WgColorRes::Deserialize(s, xmlNode["col"]);
+
+	m_bBgColor = xmlNode.HasAttribute("bg_col");
+	if(m_bBgColor)
+		m_bgColor = WgColorRes::Deserialize(s, xmlNode["bg_col"]);
+
 	m_style = WgFontStyleRes::Deserialize(xmlNode, s);
 	m_underlined = WgUtil::ToBool(xmlNode["underlined"]);
 	m_size = WgUtil::ToUint32(xmlNode["size"]);
@@ -1062,6 +1087,9 @@ void WgTextPropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 
 	if(m_bColored)
 		m_prop.SetColor(m_color);
+
+	if(m_bBgColor)
+		m_prop.SetBgColor(m_bgColor);
 
 	if( m_underlined )
 		m_prop.SetUnderlined();
@@ -1744,7 +1772,7 @@ void WgFontRes::Serialize(WgResourceSerializerXML& s)
 	if(res->id.size())
 		s.AddAttribute("id", res->id);
 
-	WriteCursorAttr(s, m_pFont->GetCursor(), "cursor");
+//	WriteCursorAttr(s, m_pFont->GetCursor(), "cursor");
 
 	// Write default vector glyphs
 
@@ -1806,7 +1834,7 @@ void WgFontRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 		}
 	}
 
-	m_pFont->SetCursor(s.ResDb()->GetCursor(xmlNode["cursor"]));
+//	m_pFont->SetCursor(s.ResDb()->GetCursor(xmlNode["cursor"]));
 	s.ResDb()->AddFont(xmlNode["id"], m_pFont, new WgXMLMetaData(XmlNode()));
 }
 
@@ -2926,18 +2954,42 @@ void WgAltRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, WgResourceSerializerXML& s, Wg_Interface_TextHolder* holder)
 {
 	WriteTextPropAttr(s, holder->GetTextProperties(), "prop");
+	WriteTextPropAttr(s, holder->GetSelectionProperties(), "selection_prop");
+	WriteTextPropAttr(s, holder->GetLinkProperties(), "link_prop");
+
+	WgCursor * pCursor = holder->GetCursor();
+	if( pCursor )
+	{
+		std::string id = s.ResDb()->FindCursorId(pCursor);
+		if( id.empty() )
+		{
+			id = s.ResDb()->GenerateName(pCursor);
+			s.ResDb()->AddCursor(id, pCursor);				//TODO: It's probably too late to add it here...
+		}
+
+		s.AddAttribute("cursor", id);
+	}
+	std::string cursorId = xmlNode["cursor"];
+	if( cursorId.length() )
+	{
+		WgCursor * pCursor = s.ResDb()->GetCursor(cursorId);
+		if( pCursor )
+			holder->SetCursor(pCursor);
+	}
+
+
 	WgText *pTextObj = holder->TextObj();
 	const WgChar *pText = pTextObj->getText();
 	WriteTextAttrib(s, pText, "text");
 
 	WriteDiffAttr(s, xmlNode, "textalign", holder->TextAlignment(), WgOrigo::topLeft());
-
+/*
 	WgColor defSel(0);
 	WgResDB::ColorRes* colorRes = s.ResDb()->GetResColor("TextSelectionColor");
 	if(colorRes)
 		defSel = colorRes->res;
 	WgColorRes::Serialize(s, xmlNode, "selection_color", holder->GetSelectionColor(), defSel);
-
+*/
 	if(xmlNode.HasAttribute("tint") || holder->TextTintMode() != TINTMODE_MULTIPLY)
 	{
 		if(holder->TextTintMode() == TINTMODE_MULTIPLY)
@@ -2958,7 +3010,7 @@ void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, 
 		if(id.empty())
 		{
 			id = s.ResDb()->GenerateName(pManager);
-			s.ResDb()->AddTextManager(id, pManager);
+			s.ResDb()->AddTextManager(id, pManager);				//TODO: It's probably too late to add it here...
 		}
 		s.AddAttribute("textmanager", id);
 	}
@@ -3007,6 +3059,22 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	if(prop)
 		holder->SetTextProperties(prop);
 
+	prop = s.ResDb()->GetTextProp(xmlNode["selection_prop"]);
+	if(prop)
+		holder->SetSelectionProperties(prop);
+
+	prop = s.ResDb()->GetTextProp(xmlNode["link_prop"]);
+	if(prop)
+		holder->SetLinkProperties(prop);
+
+	std::string cursorId = xmlNode["cursor"];
+	if( cursorId.length() )
+	{
+		WgCursor * pCursor = s.ResDb()->GetCursor(cursorId);
+		if( pCursor )
+			holder->SetCursor(pCursor);
+	}
+
 	std::string text = ReadLocalizedString(xmlNode["text"], s);
 	if(text.length())
 	{
@@ -3016,12 +3084,12 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	}
 
 	holder->SetTextAlignment(WgUtil::ToOrigo(xmlNode["textalign"]));
-
+/*
 	if( xmlNode.HasAttribute("selection_color") )
 		holder->SetSelectionColor( WgColorRes::Deserialize(s, xmlNode["selection_color"]) );
 	else
 		holder->SetSelectionColor( WgColorRes::Deserialize(s, "#TextSelectionColor") );
-
+*/
 	WgTintMode tint = TINTMODE_MULTIPLY;
 	if(xmlNode["tint"] == "opaque")
 		tint = TINTMODE_OPAQUE;
@@ -3324,7 +3392,7 @@ void WgWidgetRes::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "tooltipdelay", m_Widget->TooltipDelay(), 500);
 	WriteDiffAttr(s, xmlNode, "layer", m_Widget->Layer(), (Uint8)WG_DEFAULT_LAYER);
 	WgPointerMaskRes::Serialize(s, xmlNode, "pointermask", m_Widget->GetPointerMask());
-	WgCursorStyleRes::Serialize(s, xmlNode, "cursorstyle", m_Widget->GetCursorStyle());
+	WgPointerStyleRes::Serialize(s, xmlNode, "pointerstyle", m_Widget->GetPointerStyle());
 	WgSizeRes::Serialize(s, xmlNode, "minsize", m_Widget->GetMinSizeUser(), WgSize(1, 1));
 	WgSizeRes::Serialize(s, xmlNode, "maxsize", m_Widget->GetMaxSizeUser(), WgSize(10000, 10000));
 	WriteDiffAttr(s, xmlNode, "enabled", m_Widget->IsEnabled(), true);
@@ -3380,7 +3448,7 @@ void WgWidgetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 	m_Widget->SetTooltipDelay(WgUtil::ToSint32(xmlNode["tooltipdelay"], 500));
 	m_Widget->SetLayer(WgUtil::ToUint8(xmlNode["layer"], WG_DEFAULT_LAYER));
 	m_Widget->SetPointerMask(WgPointerMaskRes::Deserialize(xmlNode, "pointermask"));
-	m_Widget->SetCursorStyle(WgCursorStyleRes::Deserialize(xmlNode, "cursorstyle"));
+	m_Widget->SetPointerStyle(WgPointerStyleRes::Deserialize(xmlNode, "pointerstyle"));
 	m_Widget->MinSize(WgSizeRes::Deserialize(xmlNode, "minsize", WgSize(1, 1)));
 	m_Widget->MaxSize(WgSizeRes::Deserialize(xmlNode, "maxsize", WgSize(10000, 10000)));
 	m_Widget->SetEnabled(WgUtil::ToBool(xmlNode["enabled"], true));

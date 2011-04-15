@@ -44,7 +44,7 @@ WgGizmoEditvalue::WgGizmoEditvalue()
 	m_bRegenText	= true;
 	m_buttonDownOfs = 0;
 
-	m_cursorStyle	= WG_CURSOR_IBEAM;
+	m_pointerStyle	= WG_POINTER_IBEAM;
 
 	m_text.SetWrap(false);
 }

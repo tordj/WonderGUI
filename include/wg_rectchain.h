@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_DIRTYRECT_DOT_H
-#define	WG_DIRTYRECT_DOT_H
+#ifndef	WG_RECTCHAIN_DOT_H
+#define	WG_RECTCHAIN_DOT_H
 
 #ifndef	WG_GEO_DOT_H
 #	include	<wg_geo.h>
@@ -29,54 +29,54 @@
 
 class WgMemPool;
 
-class	WgDirtyRect:public WgRect
+class	WgRectLink:public WgRect
 {
-	friend class WgDirtyRectObj;
+	friend class WgRectChain;
 
-	WgDirtyRect() {}
-	~WgDirtyRect() {}
+	WgRectLink() {}
+	~WgRectLink() {}
 public:
 
 	//	int					x, y, w, h;
-	WgDirtyRect		* pPrev, * pNext;
+	WgRectLink		* pPrev, * pNext;
 };
 
-class	WgDirtyRectObj
+class	WgRectChain
 {
 public:
 	static void Init();
 	static void Exit();
 
-	WgDirtyRectObj();
-	~WgDirtyRectObj();
+	WgRectChain();
+	~WgRectChain();
 
-	static void Destroy( WgDirtyRect * pRect );		// Only for destroying dirty rects not belonging to any DirtyRectObj!
+	static void Destroy( WgRectLink * pRect );		// Only for destroying dirty rects not belonging to any DirtyRectObj!
 
 	void		Add( const WgRect& rect );
 	inline void	Sub( const WgRect& rect ) { Sub( rect.x, rect.y, rect.w, rect.h ); }
 
 	void	Add( const int _x, const int _y, const int _w, const int _h );
 	void 	Sub( const int _x, const int _y, const int _w, const int _h );
-	void	Transfer( WgDirtyRectObj * _pDest );						// Move dirty rectangles to this container.
-	void	ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pClip );	// Transfer all that is within clip
+	void	Transfer( WgRectChain * _pDest );						// Move rectangles to this container.
+	void	ClipTransfer( WgRectChain * _pDest, const WgRect * _pClip );	// Transfer all that is within clip
 																																	// rectangle to pDest.
 	void	Clip( const WgRect * _pClip );
 
 	void	Clear( void );
 	bool	OneForAll( WgRect * _wpRect );		// Generates the smallest possible rectangle
-												// Containing all dirty rectangles (or returns false).
+												// Containing all rectangles (or returns false).
 
-	WgDirtyRect *	Pop();
-	inline void		PushExistingRect( WgDirtyRect * pRect ) { Addrect( pRect, pRectList ); }
+	WgRectLink *	Pop();
+	inline void		PushExistingRect( WgRectLink * pRect ) { Addrect( pRect, pRectList ); }
 
-	WgDirtyRect * 	pRectList;
+	WgRectLink * 	pRectList;
 private:
-	WgDirtyRect * 	ClipRectangles( WgDirtyRect * _p1, WgDirtyRect * _p2 );
-	void			Addrect( WgDirtyRect * _pRect, WgDirtyRect * _pOffset );
+	WgRectLink * 	ClipRectangles( WgRectLink * _p1, WgRectLink * _p2 );
+	void			Addrect( WgRectLink * _pRect, WgRectLink * _pOffset );
 
 	static	WgMemPool *	g_pMemPool;
-	static	Sint32		g_nDirtyRectObj;
+	static	Sint32		g_nRectChains;
 };
 
 
-#endif	// WG_DIRTYRECT_DOT_H
+#endif	// WG_RECTCHAIN_DOT_H

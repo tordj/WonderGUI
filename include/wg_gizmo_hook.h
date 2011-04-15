@@ -38,8 +38,8 @@ class WgWidget;
 class WgGfxDevice;
 class WgGizmo;
 class WgRoot;
-class WgDirtyRect;
-class WgDirtyRectObj;
+class WgRectLink;
+class WgRectChain;
 
 class WgGizmoHook
 {
@@ -85,10 +85,10 @@ protected:
 	void			DoSetNewSize( const WgSize& size );
 	void			DoSetGizmo();				// Calls SetHook(this) on Gizmo. Call when get a new Gizmo.
 
-	void			DoCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
-	void			DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+	void			DoCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	void			DoMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 
-	void			_doCastDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut );
+	void			_doCastDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
 	void			_doRenderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
 	void			_doClearDirtyRects();
 

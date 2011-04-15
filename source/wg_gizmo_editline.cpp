@@ -42,7 +42,7 @@ WgGizmoEditline::WgGizmoEditline()
 	m_viewOfs		= 0;
 	m_maxCharacters = 0;
 	m_inputMode		= Editable;
-	m_cursorStyle	= WG_CURSOR_IBEAM;
+	m_pointerStyle	= WG_POINTER_IBEAM;
 }
 
 //____ Destructor _____________________________________________________________
@@ -72,11 +72,11 @@ void WgGizmoEditline::SetInputMode(InputMode mode)
 
 	if( IsSelectable() )
 	{
-		m_cursorStyle = WG_CURSOR_IBEAM;
+		m_pointerStyle = WG_POINTER_IBEAM;
 	}
 	else
 	{
-		m_cursorStyle = WG_CURSOR_DEFAULT;
+		m_pointerStyle = WG_POINTER_DEFAULT;
 	}
 }
 
@@ -193,6 +193,7 @@ void WgGizmoEditline::OnCloneContent( const WgGizmo * _pOrg )
 
 void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
+
 	WgText * pText = &m_text;
 	if( m_bPasswordMode )
 	{
@@ -202,18 +203,21 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 			pContent[i] = m_pwGlyph;
 		pContent[nChars] = 0;
 		pText = new WgText( pContent );
+		delete [] pContent;
+
 		pText->SetWrap(false);
 		pText->setAlignment(m_text.alignment());
 		pText->setProperties(m_text.getProperties());
+		pText->setSelectionProperties(m_text.getSelectionProperties());
 		pText->setMode(m_text.mode());
-		pText->setSelectionColor(m_text.getSelectionColor());
-		Uint32 sl, sc, el, ec;
-		if( m_text.getSelection(sl, sc, el, ec) )
-			pText->selectText(sl, sc, el, ec);
-		delete [] pContent;
 
 		pText->CreateCursor();
 		pText->gotoSoftPos( m_text.line(), m_text.column() );
+		pText->incTime( m_text.time() );
+
+		Uint32 sl, sc, el, ec;
+		if( m_text.getSelection(sl, sc, el, ec) )
+			pText->selectText(sl, sc, el, ec);
 
 	}
 
@@ -258,7 +262,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 			if( m_bPasswordMode )
 			{
 				WgPen	pen;
-				pen.SetTextProp( m_pText->getProperties() );
+				pen.SetTextAttr( m_pText->GetAttr() );
 				pen.SetChar(m_pwGlyph);
 				pen.AdvancePos();
 
@@ -443,17 +447,21 @@ void WgGizmoEditline::AdjustViewOfs()
 
 	if( m_bFocused && m_pText->getFont() )
 	{
+		WgCursor * pCursor = WgTextTool::GetCursor( m_pText );
+		if( !pCursor )
+			return;
+
 		Uint32 cursCol	= m_pText->column();
 
 		WgPen	pen;
-		pen.SetTextProp( m_pText->getProperties() );
+		pen.SetTextAttr( m_pText->GetAttr() );
 		pen.SetChar(m_pwGlyph);
 		pen.AdvancePos();
 
 		int pwAdvance	= pen.GetPosX();
-		int cursAdvance	= m_pText->getFont()->GetCursor()->advance(m_pText->cursorMode() );
-		int cursBearing	= m_pText->getFont()->GetCursor()->bearingX(m_pText->cursorMode() );
-		int cursWidth	= m_pText->getFont()->GetCursor()->width(m_pText->cursorMode() );
+		int cursAdvance	= pCursor->advance(m_pText->cursorMode() );
+		int cursBearing	= pCursor->bearingX(m_pText->cursorMode() );
+		int cursWidth	= pCursor->width(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.

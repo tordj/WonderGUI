@@ -51,8 +51,8 @@
 #	include <wg_cursorinstance.h>
 #endif
 
-#ifndef WG_DIRTYRECT_DOT_H
-#	include <wg_dirtyrect.h>
+#ifndef WG_RECTCHAIN_DOT_H
+#	include <wg_rectchain.h>
 #endif
 
 #ifndef WG_EMITTER_DOT_H

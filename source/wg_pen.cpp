@@ -28,7 +28,7 @@
 #include <wg_gfxanim.h>
 #include <wg_blockset.h>
 #include <wg_textmanager.h>
-
+#include <wg_base.h>
 
 WgPen::WgPen()
 { 
@@ -49,6 +49,12 @@ WgPen::WgPen( WgGfxDevice * pDevice, const WgCord& origo, const WgRect& clip )
 
 void WgPen::Init()
 {
+	m_hCharProp	= 0;
+	m_pAttr		= 0;
+	m_linkMode	= WG_MODE_NORMAL;
+	m_bSelected = false;
+	m_bPropsOk	= false;
+
 	m_pDevice = 0;
 	m_pTextNode = 0;
 
@@ -79,8 +85,103 @@ void WgPen::SetClipRect( const WgRect& clip )
 }
 
 
-//____ SetTextProp() __________________________________________________________
+//____ SetLinkMode() __________________________________________________________
 
+bool WgPen::SetLinkMode( WgMode mode )
+{
+	if( mode != m_linkMode )
+	{
+		m_linkMode = mode;
+		_updateProps();
+	}
+	return m_bPropsOk;
+}
+
+//____ SetSelected() __________________________________________________________
+
+bool WgPen::SetSelected( bool bSelected )
+{
+	if( bSelected != m_bSelected )
+	{
+		m_bSelected = bSelected;
+		_updateProps();
+	}
+	return m_bPropsOk;
+}
+
+//____ SetTextAttr() __________________________________________________________
+
+bool WgPen::SetTextAttr( const WgTextAttr * pAttr )
+{
+	if( pAttr != m_pAttr )
+	{
+		m_pAttr = pAttr;
+		_updateProps();
+	}
+	return m_bPropsOk;
+}
+
+//____ SetCharProp() __________________________________________________________
+
+bool WgPen::SetCharProp( Uint16 hCharProp )
+{
+	if( hCharProp != m_hCharProp )
+	{
+		m_hCharProp = hCharProp;
+		_updateProps();
+	}
+	return m_bPropsOk;
+}
+
+//____ SetAllProps() __________________________________________________________
+
+bool WgPen::SetAllProps( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
+{
+	m_hCharProp = hCharProp;
+	m_pAttr		= pAttr;
+	m_linkMode	= linkMode;
+	m_bSelected	= bSelected;
+	_updateProps();
+	return m_bPropsOk;
+}
+
+//____ _updateProps() __________________________________________________________
+
+void WgPen::_updateProps()
+{
+	m_pFont	= WgTextTool::GetCharFont( m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
+	if( !m_pFont )
+	{
+		m_bPropsOk = false;
+		return;
+	}
+
+	m_color = WgTextTool::GetCharColor( m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
+	m_style	= WgTextTool::GetCharStyle( m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
+	m_size	= WgTextTool::GetCharSize( m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
+
+	if( m_pTextNode )
+		m_size = (int) m_pTextNode->GetSize( m_pFont, m_style, m_size );
+
+
+	m_bShowSpace = WgTextTool::GetCharVisibility( ' ', m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
+	m_bShowCRLF = WgTextTool::GetCharVisibility( '\n', m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
+
+	m_pGlyph = &m_dummyGlyph;
+	m_pPrevGlyph = &m_dummyGlyph;
+
+
+	m_pGlyphs = m_pFont->GetGlyphSet( m_style, m_size );
+	if( !m_pGlyphs )
+	{
+		m_bPropsOk = false;
+		return;
+	}
+
+	m_bPropsOk = true;
+}
+
+/*
 bool WgPen::SetTextProp( Uint16 hTextProp, Uint16 hCharProp, WgMode mode )
 {
 	m_pFont	= WgTextTool::GetCombFont( hTextProp, hCharProp );
@@ -108,7 +209,7 @@ bool WgPen::SetTextProp( Uint16 hTextProp, Uint16 hCharProp, WgMode mode )
 
 	return true;
 }
-
+*/
 
 //____ SetChar() _____________________________________________________________
 
@@ -230,7 +331,7 @@ void WgPen::BlitChar() const
 
 bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 {
-	WgCursor * pCursor = m_pFont->GetCursor();
+	WgCursor * pCursor = WgTextTool::GetCursor(instance.m_pText);
 	if( pCursor == 0 )
 		return false;
 
@@ -322,8 +423,8 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 {
-	WgCursor * pCursor = m_pFont->GetCursor();
-	if( !pCursor )
+	WgCursor * pCursor = WgTextTool::GetCursor( instance.m_pText );
+	if( pCursor == 0 )
 		return;
 
 	WgCursor::Mode mode = instance.cursorMode();

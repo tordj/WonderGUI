@@ -30,8 +30,8 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_DIRTYRECT_DOT_H
-#	include <wg_dirtyrect.h>
+#ifndef WG_RECTCHAIN_DOT_H
+#	include <wg_rectchain.h>
 #endif
 
 class WgInputDevice;
@@ -119,7 +119,7 @@ protected:
 	bool 			_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
 	bool 			_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
 
-	WgDirtyRectObj		m_dirtyRects;
+	WgRectChain			m_dirtyRects;
 
 	WgGfxDevice *		m_pGfxDevice;
 	WgInputDevice *		m_pInputDevice;

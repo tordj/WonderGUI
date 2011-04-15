@@ -142,7 +142,7 @@ public:
 
 							/// @return True if the character is set to underlined for the given mode.
 
-	inline bool				IsUnderlined(const WgTextPropPtr& pDefProp, WgMode mode) const { return WgTextTool::IsCombUnderlined(pDefProp.GetHandle(), properties, mode); }
+	inline bool				IsUnderlined( WgMode mode ) const { return GetPropRef().IsUnderlined(mode); }
 
 							/// Checks if the character has a color specified for the given mode.
 
@@ -164,22 +164,44 @@ public:
 							/// @return If the character has a color specified for the given mode that will be returned,
 							///			otherwise an unspecified value will be returned.
 
-	inline const WgColor	Color(const WgTextPropPtr& pDefProp, WgMode mode) const { return WgTextTool::GetCombColor(pDefProp.GetHandle(), properties, mode); }
+	inline const WgColor	Color( WgMode mode ) const { return GetPropRef().GetColor(mode); }
+
+							/// Checks if the character has a background color specified for the given mode.
+
+							/// @param mode			The mode of the Widget or Item containing the text.
+							///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
+
+							/// @return True if the character has a background color specified for the specified mode.
+
+	inline bool				IsBgColored( WgMode mode ) const { return GetPropRef().IsBgColored(mode); }
+
+							/// Returns the characters specified background color (if any) for the given mode.
+
+							/// @param mode			The mode of the Widget or Item containing the text.
+							///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
+
+							/// The method IsBgColored() needs to be called to determine wether the
+							/// character actually has a background color for the given mode or not.
+							///
+							/// @return If the character has a background color specified for the given mode that will be returned,
+							///			otherwise an unspecified value will be returned.
+
+	inline const WgColor	BgColor( WgMode mode ) const { return GetPropRef().GetBgColor(mode); }
 
 							/// Returns the text-link (weblink) this character links to, if any.
 							///
 							/// @return Pointer to the WgTextLink this character is part of or NULL if none.
 
-	inline WgTextLinkPtr	Link(const WgTextPropPtr& pDefProp) const { return WgTextTool::GetCombLink(pDefProp.GetHandle(), properties); }
+	inline WgTextLinkPtr	Link() const { return GetPropRef().GetLink(); }
 
 							/// Returns the characters specified font (if any).
 							///
 							/// @return Pointer to the font specified for this character or NULL if none.
 
-	inline WgFont *			Font(const WgTextPropPtr& pDefProp) const { return WgTextTool::GetCombFont(pDefProp.GetHandle(), properties); }
+	inline WgFont *			Font() const { return GetPropRef().GetFont(); }
 
 
-	inline WgGlyphSet *		GlyphSet( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombGlyphSet(pDefProp.GetHandle(), properties, mode); }
+//	inline WgGlyphSet *		GlyphSet( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombGlyphSet(pDefProp.GetHandle(), properties, mode); }
 
 							/// Returns the characters font style specification for the given mode.
 							///
@@ -191,7 +213,7 @@ public:
 							///
 							/// @return Font style specified for the given mode.
 
-	inline int				Size( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombSize(pDefProp.GetHandle(), properties, mode); }
+	inline int				Size( WgMode mode = WG_MODE_NORMAL ) const { GetPropRef().GetSize(mode); }
 
 
 							/// Returns the characters font size for the given mode.
@@ -204,7 +226,7 @@ public:
 							///
 							/// @return Characters font size for the given mode.
 
-	inline WgFontStyle		Style( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombStyle(pDefProp.GetHandle(), properties, mode); }
+	inline WgFontStyle		Style( WgMode mode = WG_MODE_NORMAL ) const { return GetPropRef().GetStyle(mode); }
 
 							/// Checks if the character terminates the current line.
 							/// @return True if the glyph portion of the character contains End-Of-Line (\\n) or End-of-Text (null).

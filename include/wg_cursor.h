@@ -96,6 +96,8 @@ public:
 	WgBorders			stretchBorders( Mode m ) const { return m_stretchBorders[m]; }
 	float				sizeRatio(Mode m ) const { return m_sizeRatio[m]; }
 
+	
+
 private:
 	enum { N_MODES = 3 };
 

@@ -370,7 +370,12 @@ void Wdg_TextView::AdjustViewOfs()
 		Uint32 cursCol, cursLine;
 
 		m_pText->getSoftPos(cursLine, cursCol);
-		int cursWidth	= m_pText->getFont()->GetCursor()->advance(m_pText->cursorMode() );
+
+		WgCursor * pCursor = WgTextTool::GetCursor( m_pText );
+		if( !pCursor )
+			return;
+
+		int cursWidth	= pCursor->advance(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.

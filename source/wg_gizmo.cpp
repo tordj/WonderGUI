@@ -23,7 +23,7 @@
 #include <wg_gizmo.h>
 #include <wg_types.h>
 #include <wg_skinmanager.h>
-#include <wg_dirtyrect.h>
+#include <wg_rectchain.h>
 
 static const char	s_type[] = {"Unspecified"};
 
@@ -31,7 +31,7 @@ static const char	s_type[] = {"Unspecified"};
 
 WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_bEnabled(true), m_bFocused(false),
 					m_bOpaque(false), m_bRenderOne(false), m_bRendersAll(false),
-					m_cursorStyle(WG_CURSOR_DEFAULT), m_markPolicy( WG_MARKPOLICY_ALPHA )
+					m_pointerStyle(WG_POINTER_DEFAULT), m_markPolicy( WG_MARKPOLICY_ALPHA )
 {
 }
 
@@ -246,12 +246,12 @@ WgMode WgGizmo::Mode() const
 //____ Fillers _______________________________________________________________
 
 
-void WgGizmo::OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmo::OnCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	rects.Add( WgRect( geo, clip ) );
 }
 
-void WgGizmo::OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmo::OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	if( m_bOpaque )
 	{

@@ -26,8 +26,8 @@
 #ifndef WG_TYPES_DOT_H
 #	include	<wg_types.h>
 #endif
-#ifndef WG_DIRTYRECT_DOT_H
-#	include	<wg_dirtyrect.h>
+#ifndef WG_RECTCHAIN_DOT_H
+#	include	<wg_rectchain.h>
 #endif
 #ifndef WG_EMITTER_DOT_H
 #	include	<wg_emitter.h>
@@ -208,8 +208,8 @@ class	WgWidget
 
 		virtual WgString	GetTooltipString() const	{ return 0; }
 
-		virtual void			SetCursorStyle( WgCursorStyle style )		{ m_cursorStyle = style; }
-		virtual WgCursorStyle	GetCursorStyle() const					{ return m_cursorStyle; }
+		virtual void			SetPointerStyle( WgPointerStyle style )		{ m_pointerStyle = style; }
+		virtual WgPointerStyle	GetPointerStyle() const					{ return m_pointerStyle; }
 
 		virtual bool		SetParent( WgWidget * _pParent, WgWidget * pBelow = 0 );	      // Set parent widget.
 		inline WgWidget*	Parent() const 		{return m_pParent;}
@@ -420,7 +420,7 @@ class	WgWidget
 		Sint32		m_tooltipDelay;
 		Uint8		m_layer;
 
-		WgCursorStyle	m_cursorStyle;
+		WgPointerStyle	m_pointerStyle;
 
 		// Only to be manipulated by Class::WgWidget itself.
 		// Read-only for derived WgWidget-classes!
@@ -495,7 +495,7 @@ private:
     	Uint16     	m_actionFilterBlock;		// What actions to block.
     	Uint16     	m_actionFilterCopy;			// What actions to copy.
 
-		void	MaskAgainstBranch( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY );
+		void	MaskAgainstBranch( WgRectChain * _pDirtObj, int _ofsX, int _ofsY );
 		void	AdoptionFocusUpdate( WgWidget * pNewParent );
 
 		// WgWidgets own update routine.
@@ -531,7 +531,7 @@ private:
 
 		// Data only used by widget-render.cpp
 
-		WgDirtyRectObj m_dirtyRects;
+		WgRectChain m_dirtyRects;
 
 		// Subfunctions for WgWidget::Render().
 
@@ -540,11 +540,11 @@ private:
 		void	ClearBranchFromDirt( void );
 		void	FreezeBranch( int _ofsX, int _ofsY );
 		void	PushDirt( int _ofsX, int _ofsY );
-		void	PushDirtSub( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY );
-		void	AddDirtToNonOpaqueCovering( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY );
-		bool	MaskAgainstFrozenBranch( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY );
-		void	CollectDirtyRectangles( WgDirtyRectObj * _pDirtObj );
-		void	PushDirtSubCovering( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY );
+		void	PushDirtSub( WgRectChain * _pDirtObj, int _ofsX, int _ofsY );
+		void	AddDirtToNonOpaqueCovering( WgRectChain * _pDirtObj, int _ofsX, int _ofsY );
+		bool	MaskAgainstFrozenBranch( WgRectChain * _pDirtObj, int _ofsX, int _ofsY );
+		void	CollectDirtyRectangles( WgRectChain * _pDirtObj );
+		void	PushDirtSubCovering( WgRectChain * _pDirtObj, int _ofsX, int _ofsY );
 		void	ClipDirtAgainstVisibleGeometry( const WgRect& visible );
 
 

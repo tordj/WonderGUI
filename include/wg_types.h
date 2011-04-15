@@ -251,24 +251,24 @@ enum WgFontStyle
 #define WG_NB_FONTSTYLES	17
 
 
-//____ WgCursorStyle __________________________________________________________
+//____ WgPointerStyle __________________________________________________________
 
-enum WgCursorStyle
+enum WgPointerStyle
 {
-	WG_CURSOR_ARROW,						// default arrow
-	WG_CURSOR_DEFAULT = WG_CURSOR_ARROW,	// default arrow
-	WG_CURSOR_HOURGLASS,					// hourglass
-	WG_CURSOR_HAND,							// hand
-	WG_CURSOR_CROSSHAIR,					// crosshair
-	WG_CURSOR_HELP,							// help
-	WG_CURSOR_IBEAM,						// I-beam
-	WG_CURSOR_STOP,							// slashed circle
-	WG_CURSOR_UP_ARROW,						// arrow pointing up
-	WG_CURSOR_SIZE_ALL,						// four-pointed arrow in all directions
-	WG_CURSOR_SIZE_NE_SW,					// double-pointed arrow pointing northeast and southwest
-	WG_CURSOR_SIZE_NW_SE,					// double-pointed arrow pointing northwest and southeast
-	WG_CURSOR_SIZE_N_S,						// double-pointed arrow pointing north and south
-	WG_CURSOR_SIZE_W_E,						// double-pointed arrow pointing west and east
+	WG_POINTER_ARROW,						// default arrow
+	WG_POINTER_DEFAULT = WG_POINTER_ARROW,	// default arrow
+	WG_POINTER_HOURGLASS,					// hourglass
+	WG_POINTER_HAND,							// hand
+	WG_POINTER_CROSSHAIR,					// crosshair
+	WG_POINTER_HELP,							// help
+	WG_POINTER_IBEAM,						// I-beam
+	WG_POINTER_STOP,							// slashed circle
+	WG_POINTER_UP_ARROW,						// arrow pointing up
+	WG_POINTER_SIZE_ALL,						// four-pointed arrow in all directions
+	WG_POINTER_SIZE_NE_SW,					// double-pointed arrow pointing northeast and southwest
+	WG_POINTER_SIZE_NW_SE,					// double-pointed arrow pointing northwest and southeast
+	WG_POINTER_SIZE_N_S,						// double-pointed arrow pointing north and south
+	WG_POINTER_SIZE_W_E,						// double-pointed arrow pointing west and east
 };
 
 //____ WgAnimMode _____________________________________________________________

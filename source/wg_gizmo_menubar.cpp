@@ -117,8 +117,11 @@ bool WgGizmoMenubar::AddMenu( const char * pTitle, Wdg_Menu * pMenu, Uint16 navK
 
 	// Calculate linewidth
 
-	Uint32 lineWidthNormal = WgTextTool::lineWidth( 0, m_pTextProp, WG_MODE_NORMAL, pItem->m_pText );
-	Uint32 lineWidthMarked = WgTextTool::lineWidth( 0, m_pTextProp, WG_MODE_MARKED, pItem->m_pText );
+	WgTextAttr	attr(m_pTextProp, WG_MODE_NORMAL);
+	
+	Uint32 lineWidthNormal = WgTextTool::lineWidth( 0, &attr, pItem->m_pText );
+	attr.mode = WG_MODE_MARKED;
+	Uint32 lineWidthMarked = WgTextTool::lineWidth( 0, &attr, pItem->m_pText );
 
 	if( lineWidthNormal > lineWidthMarked )
 		pItem->m_width = lineWidthNormal;
@@ -235,8 +238,11 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	WgMenuBarItem * pI = m_items.First();
 	Uint32 posX = window.x;
 	
+
 	WgPen pen;
-	pen.SetTextProp( m_pTextProp );
+
+	WgTextAttr	attr( m_pTextProp );
+	pen.SetTextAttr( &attr );
 	pen.SetClipRect( clip );
 	pen.SetDevice( pDevice );
 
@@ -267,7 +273,9 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 			}
 
 			pen.SetPos( WgCord(posX + b.left, printPosY) );
-			pDevice->PrintLine( &pen, m_pTextProp, mode, pI->m_pText );
+
+			WgTextAttr	attr( m_pTextProp, mode );
+			pDevice->PrintLine( &pen, &attr, pI->m_pText );
 
 			posX += pI->m_width + b.width();
 		}

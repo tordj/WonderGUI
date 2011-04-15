@@ -85,7 +85,7 @@ protected:
 
 private:
 	void	Init();
-	int		ExportDirtyRects( WgDirtyRectObj * _pDirtObj, WgRect * _wpaDirtyRects, int _maxRects );
+	int		ExportDirtyRects( WgRectChain * _pDirtObj, WgRect * _wpaDirtyRects, int _maxRects );
 
 
 

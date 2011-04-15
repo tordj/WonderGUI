@@ -65,7 +65,9 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	pTemp = temp;
 
 	WgPen pen( pDevice, _canvas, _clip );
-	pen.SetTextProp( m_pProp );
+	WgTextAttr attr( m_pProp );
+
+	pen.SetTextAttr( &attr );
 	
 	int height = pen.GetLineSpacing();
 
@@ -153,7 +155,7 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		pTemp = temp;
 		sprintf( pTemp, "%s: %.4f ms", pkProfiler->GetTimer(i)->GetName().GetChars(), fTime );
 		WgTextTool::readString( (const char *&)pTemp, temp2, 39 );
-		pDevice->PrintLine( &pen, m_pProp, WG_MODE_NORMAL, temp2 );
+		pDevice->PrintLine( &pen, &attr, temp2 );
 		pen.MoveY( height );
 	}
 
@@ -169,7 +171,7 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		sprintf( pTemp, "%.4f ms", fLine );
 		WgTextTool::readString( (const char *&)pTemp, temp2, 39 );
 		int x = _canvas.x + int(Size().w*fLine/fTimeScale);
-		pDevice->PrintLine( &pen, m_pProp, WG_MODE_NORMAL, temp2 );
+		pDevice->PrintLine( &pen, &attr, temp2 );
 		pen.MoveY( height );	
 		fLine += fSpace;
 	}

@@ -51,6 +51,7 @@ public:
 
 	inline static WgColor& White() {return g_white;};
 	inline static WgColor& Black() {return g_black;};
+	inline static WgColor& None() {return g_none;};		///< Default fully transparent color.
 
 
 	union
@@ -68,6 +69,7 @@ public:
 
 	static WgColor	g_white;
 	static WgColor	g_black;
+	static WgColor	g_none;
 };
 
 

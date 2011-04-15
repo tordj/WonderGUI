@@ -31,7 +31,7 @@
 
 
 #ifndef WG_DIRTYRECT_DOT_H
-#	include <wg_dirtyrect.h>
+#	include <wg_rectchain.h>
 #endif
 
 class WgGizmoFlexGeo;
@@ -143,7 +143,7 @@ protected:
 	void		RequestResize();
 
 	bool		LimitPlacementSize();
-	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj * pDirtOut );
+	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectChain * pDirtIn, WgRectChain * pDirtOut );
 	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
 
 
@@ -174,7 +174,7 @@ protected:
 
 	//
 
-	WgDirtyRectObj	m_dirt;		// Dirty areas to be rendered, in screen coordinates!
+	WgRectChain	m_dirt;		// Dirty areas to be rendered, in screen coordinates!
 
 };
 
@@ -278,8 +278,8 @@ public:
 
 private:
 
-	void			OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
-	void			OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+	void			OnCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	void			OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	void			OnCloneContent( const WgGizmo * _pOrg );
 	void			OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			OnNewSize( const WgSize& size );
@@ -293,7 +293,7 @@ private:
 
 	WgGizmo*		_castToGizmo() { return this; }
 
-	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut );
+	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
 	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
 	void			_clearDirtyRects();
 

@@ -151,7 +151,7 @@ void WgWidget::Init()
 	m_layer				= WG_DEFAULT_LAYER;
 	m_tooltipDelay		= 500; // default 500 msec tooltip delay
 
-	m_cursorStyle		= WG_CURSOR_DEFAULT;
+	m_pointerStyle		= WG_POINTER_DEFAULT;
 	m_bDestroyed		= false;
 }
 

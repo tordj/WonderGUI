@@ -256,13 +256,13 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-/// WgCursorStyleRes /////////////////////////////////////////////////////
+/// WgPointerStyleRes ////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-class WgCursorStyleRes
+class WgPointerStyleRes
 {
 public:
-	static void Serialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode, const std::string& attr, WgCursorStyle style, WgCursorStyle def = WG_CURSOR_DEFAULT);
-	static WgCursorStyle Deserialize(const WgXmlNode& xmlNode, const std::string& attr);
+	static void Serialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode, const std::string& attr, WgPointerStyle style, WgPointerStyle def = WG_POINTER_DEFAULT);
+	static WgPointerStyle Deserialize(const WgXmlNode& xmlNode, const std::string& attr);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -314,6 +314,8 @@ public:
 		m_pProp(pProp),
 		m_color(0),
 		m_bColored(false),
+		m_bgColor(0),
+		m_bBgColor(false),
 		m_style(WG_STYLE_NORMAL),
 		m_underlined(false),
 		m_size(0)
@@ -328,6 +330,7 @@ public:
 	WgTextProp*		GetTextProp()	{ return &m_prop; }
 
 	WgColor			GetColor() const { return m_color; }
+	WgColor			GetBgColor() const { return m_bgColor; }
 	WgFontStyle		GetStyle() const { return m_style; }
 	int				GetSize() const { return m_size; }
 	bool			IsUnderlined() const { return m_underlined; }
@@ -337,8 +340,11 @@ public:
 private:
 	WgTextProp		m_prop;
 	WgTextPropPtr	m_pProp;
+	WgColor			m_bgColor;
+//	std::string		m_bgColorName;
+	bool			m_bBgColor;
 	WgColor			m_color;
-	std::string		m_colorName;
+//	std::string		m_colorName;
 	bool			m_bColored;
 	WgFontStyle		m_style;
 	bool			m_underlined;

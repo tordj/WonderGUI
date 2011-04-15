@@ -176,20 +176,19 @@ public:
 
 	static Uint32	textWidth( const WgText& kTextObj );
 //	static Uint32	lineWidth( const WgText& kTextObj, const char * pString );
-	static Uint32	lineWidth( WgTextNode * pNode, const WgTextPropPtr& pProp, const char * pString );
-	static Uint32	lineWidth( WgTextNode * pNode, const WgTextPropPtr& pPropt, const Uint16 * pString );
-	static Uint32	lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString );
-	static Uint32	lineWidthPart( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol );
+	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const char * pString );
+	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const Uint16 * pString );
+	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar * pString );
+	static Uint32	lineWidthPart( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar * pString, int nCol );
 
-	static int		forwardPixels( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar *& pPos, Uint32 nPixels );
+	static int		forwardPixels( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar *& pPos, Uint32 nPixels );
 //	static void		forwardColumns( TextParam& param, const Uint16 *& pPos, Uint32 nColumns );
 	static void		forwardColumns( const WgChar *& pPos, Uint32 nColumns );
 	static void		forwardCharacters( const char *& pChar, Uint32 nChars );
 	static void		forwardEscapedCharacters( const char *& pChar, Uint32 nChars );
 	static void		forwardEscapedCharacters( const Uint16 *& pChar, Uint32 nChars );
 
-	static Uint32	ofsX2column( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, int ofs, const WgChar * pString, WgCursorInstance * pCursor = 0, int * wpOfsRemainder = 0 );
-
+	static Uint32	ofsX2column( WgTextNode * pNode, const WgTextAttr * pAttr, int ofs, const WgChar * pString, WgCursorInstance * pCursor = 0, int * wpOfsRemainder = 0 );
 
 	static void			SetGlyph( Uint16 glyph, WgChar * pChar, Uint32 nb );
 	static void			SetChars( const WgChar& ch, WgChar * pChar, Uint32 nb );
@@ -209,8 +208,24 @@ public:
 	static void			ClearUnderlined( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 
 
+	static void			AddProp( WgTextAttr& attr, const WgTextPropPtr& pProp, WgMode mode = WG_MODE_NORMAL );
+
+	static bool				IsCharUnderlined(	Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
+	static const WgColor	GetCharColor(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
+	static const WgColor	GetCharBgColor(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
+	static WgFontStyle		GetCharStyle(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
+	static int				GetCharSize(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
+	static WgFont *			GetCharFont(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
+	static WgGlyphSet *		GetCharGlyphSet(	Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
+	static bool				GetCharVisibility(	Uint16 character, Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
+	static int				GetCharBreakLevel(	Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL );
+	static WgTextLinkPtr	GetCharLink(		Uint16 hCharProp, const WgTextAttr * pAttr );
+	static bool				IsCharLink(			Uint16 hCharProp, const WgTextAttr * pAttr );
+
+/*
 	static bool				IsCombUnderlined( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
 	static const WgColor	GetCombColor( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
+	static const WgColor	GetCombBgColor( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
 	static WgFontStyle		GetCombStyle( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
 	static int				GetCombSize( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
 	static WgTextLinkPtr	GetCombLink( Uint16 hTextProp, Uint16 hCharProp = 0 );
@@ -218,6 +233,10 @@ public:
 	static WgGlyphSet *		GetCombGlyphSet( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
 	static bool				GetCombCharVisibility( Uint16 character, Uint16 hTextProp, Uint16 hCharProp = 0 );
 	static int				GetCombBreakLevel( Uint16 hTextProp, Uint16 hCharProp = 0 );
+*/
+	static WgCursor *		GetCursor( const WgText * pText );
+	static WgTextPropPtr	GetSelectionProperties( const WgText * pText );
+	static WgTextPropPtr	GetLinkProperties( const WgText * pText );
 
     static char *           itoa( int value, char * str, int base );
 

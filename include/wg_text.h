@@ -69,12 +69,12 @@ struct WgTextLine
 {
 	Uint32	nChars;			// Number of characters on this line (not including break).
 	Uint32	ofs;			// Offset in buffer for line.
-/*
+
 	int		width;			// Width in pixels of line
 	short	height;			// Height in pixels of line
 	short	lineSpacing;	// Spacing from this line to next in pixels.
 	short	baseline;		// Offset in pixels to the baseline.
-*/
+
 	// Following characters can lead to a soft break:
 	//
 	// Whitespace, tab and BREAK_PERMITTED_HERE: Gives no hyphen.
@@ -130,6 +130,7 @@ public:
 	const WgChar * 		getLineText( int line ) const;
 	Uint32				getLineWidth( Uint32 line ) const;
 	Uint32				getLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol = 0xFFFFFFFF ) const;
+	int					getLineOfsY( int line ) const;
 
 	const WgTextLine *	getSoftLines() const;
 	WgTextLine *		getSoftLine( int line ) const;
@@ -161,12 +162,12 @@ public:
 
 //  --------------
 
-	inline const WgTextPropPtr&	getProperties() const { return m_pProp; }
-	inline WgColor				getColor() const { return m_pProp->GetColor(); }
-	inline WgColor				getColor(WgMode mode) const { return m_pProp->GetColor(mode); }
-	inline WgFontStyle			getStyle(WgMode mode) const { return m_pProp->GetStyle(mode); }
-	inline int					getBreakLevel() const { return m_pProp->GetBreakLevel(); }
-	inline WgFont *				getFont() const { return m_pProp->GetFont(); }
+	inline const WgTextPropPtr&	getProperties() const { return m_attr.pBaseProp; }
+	inline WgColor				getColor() const { return m_attr.pBaseProp->GetColor(); }
+	inline WgColor				getColor(WgMode mode) const { return m_attr.pBaseProp->GetColor(mode); }
+	inline WgFontStyle			getStyle(WgMode mode) const { return m_attr.pBaseProp->GetStyle(mode); }
+	inline int					getBreakLevel() const { return m_attr.pBaseProp->GetBreakLevel(); }
+	inline WgFont *				getFont() const { return m_attr.pBaseProp->GetFont(); }
 
 //	--------------
 
@@ -198,9 +199,25 @@ public:
 
 // -------------
 
-	void				setSelectionColor(WgColor c) { m_selColor = c; }
-	WgColor				getSelectionColor() const { return m_selColor; }
+	void				setLinkProperties( const WgTextPropPtr& pProp );
+	void				clearLinkProperties();
+	WgTextPropPtr		getLinkProperties() const { return m_attr.pLinkProp; }
 
+	void				setSelectionProperties( const WgTextPropPtr& pProp );
+	void				clearSelectionProperties();
+	WgTextPropPtr		getSelectionProperties() const { return m_attr.pSelectionProp; }
+
+// -------------
+
+	void				setSelectionBgColor(WgColor c);
+	inline WgColor		getSelectionBgColor() const { return m_attr.pSelectionProp->GetColor(); }
+
+// -------------
+
+	void				setCursorStyle( WgCursor * pCursor );
+	inline WgCursor *	getCursorStyle() const { return m_pCursorStyle; }
+
+	
 // -------------
 
 	void				setValue( double value, const WgValueFormat& form );
@@ -223,13 +240,13 @@ public:
 
 
 
-	inline void			setMode( WgMode mode ) { m_mode = mode; }
+	inline void			setMode( WgMode mode ) { m_attr.mode = mode; }
 	inline void			setAlignment( const WgOrigo& origo ) { m_origo = origo; }
 	inline void			setTintMode( WgTintMode mode ) { m_tintMode = mode; }
 	inline void			setLineSpaceAdjustment( Sint8 adjustment ) { m_lineSpaceAdj = adjustment; }
 
 
-	inline WgMode		mode() const { return m_mode; }
+	inline WgMode		mode() const { return m_attr.mode; }
 	inline const WgOrigo& alignment() const { return m_origo; }
 	inline WgTintMode	tintMode() const { return m_tintMode; }
 	inline Sint8		lineSpaceAdjustment() const { return m_lineSpaceAdj; }
@@ -307,14 +324,31 @@ public:
 	WgCursor::Mode	cursorMode() const { return m_pCursor ? m_pCursor->cursorMode() : WgCursor::EOL; }
 
 	void			setSelectionMode(bool bOn){ if(m_pCursor) m_pCursor->setSelectionMode(bOn); }
-	bool			hasSelection(){ return m_pCursor ? m_pCursor->hasSelection() : false; }
+	bool			hasSelection()const { return m_pCursor ? m_pCursor->hasSelection() : false; }
 	void			delSelection(){ if(m_pCursor) m_pCursor->delSelection(); }
 
 	void			selectAll() { if(m_pCursor) m_pCursor->selectAll(); }
 
-	Uint32			LineColToOffset(int line, int col);
+	Uint32			LineColToOffset(int line, int col) const;
+	void			OffsetToSoftLineCol(int ofs, int* wpLine, int* wpCol) const;
+
+	const WgTextAttr*	GetAttr() const { return &m_attr; }
+
+	//
+
+	int				ScreenY( const WgRect& container ) const;
+	int				ScreenX( int line, const WgRect& container ) const;
+	int				CoordToLine( const WgCord& coord, const WgRect& container ) const;
+	int				CoordToOfs( const WgCord& coord, const WgRect& container ) const;
+	WgTextLinkPtr	CoordToLink( const WgCord& coord, const WgRect& container ) const;
+
+	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCord& pointerOfs );
+
+	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }
+	WgMode			GetMarkedLinkMode() const { return m_markedLinkMode; }
 
 protected:
+
 
 
 	static const int	parseBufLen = 9+16+1+16+8;
@@ -324,25 +358,38 @@ protected:
 
 	void			regenHardLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
 	void			regenSoftLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
-
 	int 			countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines, int maxWrite ); // Central algorithm of regenSoftLines().
 
-	WgCharBuffer	m_buffer;
+	void			refreshAllLines();
+	void			refreshLineInfo( WgTextLine * pLine );
 
+
+	WgCharBuffer	m_buffer;
+	WgCursor*		m_pCursorStyle;
 	WgCursorInstance*	m_pCursor;
 	WgTextNode *	m_pManagerNode;
 
-	WgColor			m_selColor;
+	WgTextAttr		m_attr;
+
 	WgTintMode		m_tintMode;
 	WgOrigo			m_origo;
-	WgMode			m_mode;
+//	WgMode			m_mode;
+
+	WgTextLinkPtr	m_pMarkedLink;
+	WgMode			m_markedLinkMode;
+
+//	int				m_markedLinkOfs;	// Offset in buffer for first character of link currently marked or -1 if none.
+
 	int				m_selStartLine;
 	int				m_selEndLine;
 	int				m_selStartCol;
 	int				m_selEndCol;
 	Sint8			m_lineSpaceAdj;		// Adjustment of linespacing for this text.
-	WgTextPropPtr	m_pProp;			// Default properties for this text. Used for all characters who have
+
+//	WgTextPropPtr	m_pProp;			// Default properties for this text. Used for all characters who have
 										// properties set to 0.
+//	WgTextPropPtr	m_pLinkProp;		// Props used for links, overriding certain text and char properties.
+//	WgTextPropPtr	m_pSelectionProp;	// Props used for selected text, overriding certain text, char and link properties.
 
 	WgTextLine*		m_pHardLines;
 	WgTextLine*		m_pSoftLines;

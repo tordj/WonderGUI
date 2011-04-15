@@ -117,7 +117,7 @@ int Wdg_Root::BeginRender( WgRect * _paDirtyRects, int _nRects, int _maxRects, W
 	// Gather the rectangles for the exported list now before the rectangles get
 	// split up too much.
 
-	WgDirtyRectObj	dirtObj;
+	WgRectChain	dirtObj;
 	CollectDirtyRectangles( &dirtObj );
 
 	// Distribute any dirty rectangles left to our topmost children, thus
@@ -168,11 +168,11 @@ int	Wdg_Root::Render( WgRect * _paDirtyRects, int _nRects, int _maxRects, WgRect
 
 //____ ExportDirtyRects() ___________________________________________________
 
-int	Wdg_Root::ExportDirtyRects( WgDirtyRectObj * _pDirtObj, WgRect * _wpaDirtyRects,
+int	Wdg_Root::ExportDirtyRects( WgRectChain * _pDirtObj, WgRect * _wpaDirtyRects,
 															int _maxRects )
 {
 	int		i = 0;
-	WgDirtyRect * pDirt = _pDirtObj->pRectList;
+	WgRectLink * pDirt = _pDirtObj->pRectList;
 
 	// Fill in the array.
 
