@@ -27,21 +27,19 @@
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
-
 #ifndef WG_COLOR_DOT_H
 #	include <wg_color.h>
-#endif
-
-#ifndef WG_EMITTER_DOT_H
-#	include <wg_emitter.h>
 #endif
 
 #ifndef WG_SMARTPTR_DOT_H
 #	include <wg_smartptr.h>
 #endif
+
+#ifndef WG_TEXTLINK_DOT_H
+#	include <wg_textlink.h>
+#endif
+
+
 
 class WgChar;
 class WgFont;
@@ -50,22 +48,6 @@ class WgTextProp;
 class WgTextPropPtr;
 class WgTextPropHolder;
 class WgTextPropManager;
-
-
-
-//____ WgTextLink _____________________________________________________________
-
-class WgTextLink : public WgEmitter, private WgRefCounted
-{
-	friend class WgSmartPtr<WgTextLink>;
-protected:
-	WgTextLink() { m_mode = WG_MODE_NORMAL; };
-
-	WgMode 	m_mode;
-};
-
-typedef	WgSmartPtr<WgTextLink>	WgTextLinkPtr;
-
 
 
 //____ WgTextPropPtr __________________________________________________________
@@ -118,6 +100,7 @@ public:
 	WgTextPropPtr	Register() const;
 
 	void			SetColor( WgColor col, WgMode mode = WG_MODE_ALL );
+	void			SetBgColor( WgColor col, WgMode mode = WG_MODE_ALL );
 	void			SetStyle( WgFontStyle style, WgMode mode = WG_MODE_ALL );
 	void			SetSize( int size, WgMode mode = WG_MODE_ALL );
 	void			SetUnderlined( WgMode mode = WG_MODE_ALL );
@@ -128,6 +111,7 @@ public:
 	bool			SetCharVisibility( Uint16 specialCharacter, bool bVisible );
 
 	void			ClearColor( WgMode mode = WG_MODE_ALL );
+	void			ClearBgColor( WgMode mode = WG_MODE_ALL );
 	void			ClearStyle( WgMode mode = WG_MODE_ALL );
 	void			ClearSize( WgMode mode = WG_MODE_ALL );
 	void			ClearUnderlined( WgMode mode = WG_MODE_ALL );
@@ -142,9 +126,12 @@ public:
 	inline bool				IsUnderlined( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bUnderlined; }
 	inline bool				IsColored( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bColored; }
 	inline const WgColor&	GetColor( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_color; }
+	inline bool				IsBgColored( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bBgColor; }
+	inline const WgColor&	GetBgColor( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bgColor; }
 	inline WgFontStyle		GetStyle( WgMode mode = WG_MODE_NORMAL ) const { return (WgFontStyle) m_modeProp[mode].m_style; }
 	inline int				GetSize( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_size; }
 	bool					GetCharVisibility( Uint16 specialCharacter ) const;
+	inline int				GetCharVisibilityFlags() const { return m_visibilityFlags; }
 
 	inline WgTextLinkPtr	GetLink() const { return m_pLink; }
 	inline WgFont *			GetFont() const { return m_pFont; }
@@ -154,12 +141,14 @@ public:
 
 	bool					IsEqual(WgMode mode0, WgMode mode1) const;
 	bool					IsColorStatic() const;
+	bool					IsBgColorStatic() const;
 	bool					IsStyleStatic() const;
 	bool					IsSizeStatic() const;
 	bool					IsUnderlineStatic() const;
 
 	inline bool		CompareTo( const WgTextPropPtr& pProp ) const { return CompareTo( &(*pProp) ); }
 	bool			CompareColorTo( const WgTextPropPtr& pProp ) const;
+	bool			CompareBgColorTo( const WgTextPropPtr& pProp ) const;
 	bool			CompareStyleTo( const WgTextPropPtr& pProp ) const;
 	bool			CompareSizeTo( const WgTextPropPtr& pProp ) const;
 	bool			CompareUnderlineTo( const WgTextPropPtr& pProp ) const;
@@ -179,6 +168,8 @@ private:
 		bool			m_bUnderlined;	///< Hierarchally cumulative, anyone in hierarchy set gives underlined.
 		bool			m_bColored;		///< Set if color of this struct should be used.
 		WgColor			m_color;		///< Color for character if m_bColored is set. Search order is character, text.
+		bool			m_bBgColor;		///< Set if we have a background color to use.
+		WgColor			m_bgColor;		///< Color for background if m_bBgColor is set. Search order is character, text.
 	};
 
 	//____
@@ -206,6 +197,60 @@ private:
 };
 
 // CR, NON-BREAK SPACE, BREAK PERMITTED, HYPHEN BREAK PERMITTED, TAB.
+
+/*
+	Text properties priority order:
+	===============================
+
+	1.	Characters own properties.
+	2.	Link properties (if applicable).
+	3.	Selection properties (if applicable).
+	4.	Base properties.
+	5.	WgBase::defaultProp.
+	6.	Hardcoded defaults: TextColor=white, bgColor=transparent, style=normal, underline=false, size=0, breakLevel=3
+
+
+*/
+
+/*
+class WgTextAttr
+{
+public:
+	WgTextAttr() : pFont(0), style(WG_STYLE_NORMAL), color(WgColor::White()), bgColor(WgColor::None()), 
+				   bUnderlined(false), breakLevel(3), visibilityFlags(0) {}
+
+	inline void	Clear() {	pFont = 0; style = WG_STYLE_NORMAL; color = WgColor::White(); 
+							bgColor = WgColor::None(); bUnderlined = false; breakLevel = 0;
+							visibilityFlags = 0; pLink = 0; }
+
+	WgFont *		pFont;
+	WgFontStyle		style;
+	WgColor			color;
+	WgColor			bgColor;
+	bool			bUnderlined;
+	int				breakLevel;
+	int				visibilityFlags;
+	WgTextLinkPtr	pLink;
+};
+*/
+
+
+class WgTextAttr
+{
+public:
+	WgTextAttr() : mode(WG_MODE_NORMAL) {}
+	WgTextAttr( const WgTextPropPtr& pBaseProp, WgMode mode = WG_MODE_NORMAL ) : mode(mode), pBaseProp(pBaseProp) {}
+	WgTextAttr( const WgTextPropPtr& pBaseProp, const WgTextPropPtr& pLinkProp, const WgTextPropPtr& pSelectionProp, WgMode mode = WG_MODE_NORMAL )
+		: mode(mode), pBaseProp(pBaseProp), pLinkProp(pLinkProp), pSelectionProp(pSelectionProp) {}
+
+	WgMode			mode;			///< Current mode of this text.
+	WgTextPropPtr	pBaseProp;		///< Base properties for the text. Not to be confused with WgBase::defaultProp.
+	WgTextPropPtr	pLinkProp;		///< Properties added for links. Overrides WgBase::defaultProp, BaseProp and SelectionProp.
+	WgTextPropPtr	pSelectionProp;	///< Properties added for selection. Overrides WgBase::defaultProp and BaseProp.
+};
+
+
+
 
 
 

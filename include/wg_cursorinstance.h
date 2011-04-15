@@ -37,11 +37,13 @@
 
 class WgText;
 class WgCharSeq;
+class WgPen;
 
 //____ WgCursorInstance ________________________________________________________
 
 class WgCursorInstance
 {
+	friend class WgPen;
 public:
 
 	WgCursorInstance( WgText& text );

@@ -67,9 +67,11 @@ public:
 
 	void					SetOrigo( const WgCord& pos ) { m_origo = pos; }
 
-	inline bool				SetTextProp( const WgTextPropPtr& pTextProp, const WgTextPropPtr& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { return SetTextProp( pTextProp.m_hProp, pCharProp.m_hProp, mode ); }
-	bool					SetTextProp( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
-
+	bool					SetAllProps( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
+	bool					SetCharProp( Uint16 hCharProp );
+	bool					SetTextAttr( const WgTextAttr * pAttr );
+	bool					SetSelected( bool bSelected );
+	bool					SetLinkMode( WgMode mode );
 
 	inline void				SetPos( const WgCord& pos ) { m_pos = pos; }
 	inline void				SetPosX( int x ) { m_pos.x = x; }
@@ -119,6 +121,8 @@ public:
 private:
 	void Init();
 
+	void _updateProps();
+
 	class DummyGlyph : public WgGlyph
 	{
 	public:
@@ -128,7 +132,16 @@ private:
 		void SetAdvance( int advance ) { m_advance = advance; }
 	};
 
+	//
 
+	Uint16			m_hCharProp;
+	const WgTextAttr*	m_pAttr;
+	WgMode			m_linkMode;
+	bool			m_bSelected;
+
+	bool			m_bPropsOk;
+
+	//
 
 	WgGlyphSet *m_pGlyphs;			// Pointer at our glyphs.
 
@@ -155,6 +168,8 @@ private:
 
 	bool			m_bClip;		// Set if we have a clipping rectangle.
 	WgRect			m_clipRect;		// Clipping rectangle used for ClipBlit().
+
+
 };
 
 #endif //WG_PEN_DOT_H

@@ -101,8 +101,8 @@ public:
 	virtual void	Fill( const WgRect& rect, const WgColor& col ) = 0;
 
 	virtual void	Blit( const WgSurface* pSrc );
-	virtual void	Blit( const WgSurface* pSrc, Sint32 dx, Sint32 dy );
-	virtual void	Blit( const WgSurface* pSrc, const WgRect& src, Sint32 dx, Sint32 dy ) = 0;
+	virtual void	Blit( const WgSurface* pSrc, int dx, int dy );
+	virtual void	Blit( const WgSurface* pSrc, const WgRect& src, int dx, int dy ) = 0;
 
 	virtual void	StretchBlit( const WgSurface * pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
 	virtual void	StretchBlit( const WgSurface * pSrc, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
@@ -116,9 +116,9 @@ public:
 	virtual void	ClipFill( const WgRect& clip, const WgRect& rect, const WgColor& col );
 
 	virtual void	ClipBlit( const WgRect& clip, const WgSurface* src );
-	virtual void	ClipBlit( const WgRect& clip, const WgSurface* src, Sint32 dx, Sint32 dy  );
+	virtual void	ClipBlit( const WgRect& clip, const WgSurface* src, int dx, int dy  );
 	virtual void	ClipBlit( const WgRect& clip, const WgSurface* src,
-							  const WgRect& srcrect, Sint32 dx, Sint32 dy  );
+							  const WgRect& srcrect, int dx, int dy  );
 
 	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, bool bTriLinear = false, float mipBias = 0.f );
 	virtual void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
@@ -142,20 +142,20 @@ public:
 
 	virtual void	ClipBlitHorrBar(	const WgRect& _clip, const WgSurface * _pSurf, const WgRect& _src,
 										const WgBorders& _borders, bool _bTile,
-										Sint32 _dx, Sint32 _dy, Sint32 _len );
+										int _dx, int _dy, int _len );
 
 	virtual void	ClipBlitVertBar(	const WgRect& _clip, const WgSurface * _pSurf, const WgRect& _src,
 										const WgBorders& _borders, bool _bTile,
-										Sint32 _dx, Sint32 _dy, Sint32 _len );
+										int _dx, int _dy, int _len );
 
 
 	virtual void	BlitHorrBar(		const WgSurface * _pSurf, const WgRect& _src,
 										const WgBorders& _borders, bool _bTile,
-										Sint32 _dx, Sint32 _dy, Sint32 _len );
+										int _dx, int _dy, int _len );
 
 	virtual void	BlitVertBar(		const WgSurface * _pSurf, const WgRect& _src,
 										const WgBorders& _borders, bool _bTile,
-										Sint32 _dx, Sint32 _dy, Sint32 _len );
+										int _dx, int _dy, int _len );
 
 	// High-level print methods
 
@@ -163,7 +163,8 @@ public:
 
 	// Low-level print methods
 
-	virtual void		PrintLine( WgPen * pPen, const WgTextPropPtr& pTextProp, WgMode mode, const WgChar * pString, int maxChars = 0x1FFFFFFF, bool bLineEnding = true );
+	virtual void		PrintLine( WgPen * pPen, const WgTextAttr* pAttr, const WgChar * pString, int maxChars = 0x1FFFFFFF, 
+									bool bLineEnding = true, const WgTextLinkPtr pMarkedLink = 0, WgMode markedLinkMode = WG_MODE_NORMAL );
 
 	virtual void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 								   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f ) = 0;
@@ -171,19 +172,23 @@ public:
 protected:
 	WgGfxDevice();
 
-	void	PrintText( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen );
-	void	PrintTextSelection( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen );
-	int		CalcCharOffset(WgPen *pPen, const WgTextPropPtr& pDefProp, const WgChar* pLine, Uint32 nChars, WgMode mode );
+//	void	PrintTextSelection( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen );
+	int		CalcCharOffset(WgPen *pPen, const WgChar* pLine, Uint32 nChars );
 
-	int		LineAlignmentToOffset( const WgText * pText, int line, const WgRect& dest );
+	int		PenStartX( const WgText * pText, int line, const WgRect& dest );
+	int		PenStartY( const WgText * pText, const WgRect& dest );
+
+	void	DrawTextBg( const WgRect& clip, const WgText * pText, const WgRect& dest );
+	void	DrawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect, 
+							  int iStartOfs, int iEndOfs, WgColor color );
 
 
 //	virtual void	FillSubPixel( float dx, float dy, float dw, float dh, const WgColor& col ) = 0;
 //
 //	virtual void	BlitSubPixel( const WgSurface * pSrc, const WgRect& srcrect,
 //								  float dx, float dy ) = 0;
-	virtual void 	DrawUnderline( 	const WgRect& clip, const WgTextPropPtr& pTextProp,
-									WgMode mode, int _x, int _y, const WgChar * pLine, int maxChars = 0x1FFFFFFF );
+	virtual void 	DrawUnderline( 	const WgRect& clip, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected,
+									int _x, int _y, const WgChar * pLine, int maxChars = 0x1FFFFFFF );
 
 
 

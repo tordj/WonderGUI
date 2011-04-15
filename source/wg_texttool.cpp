@@ -2120,7 +2120,7 @@ Uint32 WgTextTool::textWidth( const WgText& kTextObj )
 
 	for( Uint32 i = 0 ; i < nLines ; i++ )
 	{
-		Uint32 w = lineWidth( kTextObj.getNode(), kTextObj.getProperties(), kTextObj.mode(), kTextObj.getLineText( i ) );
+		Uint32 w = lineWidth( kTextObj.getNode(), kTextObj.GetAttr(), kTextObj.getLineText( i ) );
 
 		if( w > maxWidth )
 			maxWidth = w;
@@ -2131,11 +2131,11 @@ Uint32 WgTextTool::textWidth( const WgText& kTextObj )
 
 //____ lineWidth() ____________________________________________________________
 
-Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pProp, const char * pString )
+Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const char * pString )
 {
 	WgPen pen;
 	pen.SetTextNode( pNode );
-	pen.SetTextProp( pProp );
+	pen.SetTextAttr( pAttr );
 
 	while( * pString != 0 && * pString != '\n' )
 	{
@@ -2153,11 +2153,11 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pProp, co
 	return pen.GetPosX();
 }
 
-Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pProp, const Uint16 * pString )
+Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const Uint16 * pString )
 {
 	WgPen pen;
 	pen.SetTextNode( pNode );
-	pen.SetTextProp( pProp );
+	pen.SetTextAttr( pAttr );
 
 	while( * pString != 0 && * pString != '\n' )
 	{
@@ -2176,18 +2176,18 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pProp, co
 }
 
 
-Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString )
+Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar * pString )
 {
 	WgPen pen;
 	Uint16 hProp = pString->PropHandle();
 
 	pen.SetTextNode( pNode );
-	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
+	pen.SetAllProps( hProp, pAttr );
 
 	while( !pString->IsEndOfLine() )
 	{
 		if( pString->PropHandle() != hProp )
-			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
+			pen.SetCharProp( hProp );
 
 		pen.SetChar( pString->Glyph() );
 		pen.ApplyKerning();
@@ -2206,13 +2206,13 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextPropPtr& pDefProp,
 
 //____ lineWidthPart() ________________________________________________________
 
-Uint32 WgTextTool::lineWidthPart( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar * pString, int nCol )
+Uint32 WgTextTool::lineWidthPart( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar * pString, int nCol )
 {
 	WgPen pen;
 	Uint16 hProp = pString->PropHandle();
 
 	pen.SetTextNode( pNode );
-	pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
+	pen.SetAllProps( hProp, pAttr );
 
 	for( int i = 0 ; i < nCol ; i++ )
 	{
@@ -2220,7 +2220,7 @@ Uint32 WgTextTool::lineWidthPart( WgTextNode * pNode, const WgTextPropPtr& pDefP
 			break;
 
 		if( pString->PropHandle() != hProp )
-			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
+			pen.SetCharProp( hProp );
 
 		pen.SetChar( pString->Glyph() );
 		pen.ApplyKerning();
@@ -2368,21 +2368,22 @@ void  WgTextTool::forwardColumns( const WgChar *& pPos, Uint32 nColumns )
 */
 
 
-int  WgTextTool::forwardPixels( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, const WgChar *& pPos, Uint32 nPixels )
+int  WgTextTool::forwardPixels( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar *& pPos, Uint32 nPixels )
 {
 	WgPen	pen;
 
-	Uint16	hProp = 0xFFFF;
+	Uint16	hProp = pPos->PropHandle();
 	int		length = 0;
 
 	pen.SetTextNode( pNode );
+	pen.SetAllProps( hProp, pAttr );
 
 	while( !pPos->IsEndOfLine() )
 	{
 		if( hProp != pPos->PropHandle() )
 		{
 			hProp = pPos->PropHandle();
-			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
+			pen.SetCharProp( hProp );
 		}
 
 		pen.SetChar( pPos->Glyph() );
@@ -2411,7 +2412,7 @@ int  WgTextTool::forwardPixels( WgTextNode * pNode, const WgTextPropPtr& pDefPro
 	find what gap between two columns is being pointed at, not a specific column.
 */
 
-Uint32	WgTextTool::ofsX2column( WgTextNode * pNode, const WgTextPropPtr& pDefProp, WgMode mode, int ofsX, const WgChar * pString, WgCursorInstance * pCursor, int * wpRemainder )
+Uint32	WgTextTool::ofsX2column( WgTextNode * pNode, const WgTextAttr * pAttr, int ofsX, const WgChar * pString, WgCursorInstance * pCursor, int * wpRemainder )
 {
 	if(!pString)
 		return 0;
@@ -2428,6 +2429,7 @@ Uint32	WgTextTool::ofsX2column( WgTextNode * pNode, const WgTextPropPtr& pDefPro
 		cursColumn = pCursor->column();
 
 	pen.SetTextNode( pNode );
+	pen.SetTextAttr( pAttr );
 
 	// Find beginning and end cordinates of character that ofs is within.
 
@@ -2436,7 +2438,7 @@ Uint32	WgTextTool::ofsX2column( WgTextNode * pNode, const WgTextPropPtr& pDefPro
 		if( pPos->PropHandle()!= hProp )
 		{
 			hProp = pPos->PropHandle();
-			pen.SetTextProp( pDefProp.GetHandle(), hProp, mode );
+			pen.SetCharProp( hProp );
 		}
 
 		if( cursColumn == 0 )
@@ -2843,6 +2845,356 @@ void WgTextTool::ModifyProperties( const PropModifier& modif, WgChar * pChar, Ui
 }
 
 
+//____ GetPropAttributes() ________________________________________________________
+/*
+void WgTextTool::GetPropAttributes( WgTextAttr& attr, const WgTextPropPtr& pProp, WgMode mode )
+{
+	
+	if( pProp->GetFont() )
+		attr.pFont = pProp->GetFont();
+
+	if( pProp->GetStyle(mode) != WG_STYLE_NORMAL )
+		attr.style = pProp->GetStyle(mode);
+
+	if( pProp->IsColored(mode) )
+		attr.color = pProp->GetColor(mode);
+
+	if( pProp->IsBgColored(mode) )
+		attr.bgColor = pProp->GetBgColor(mode);
+
+	if( pProp->IsUnderlined(mode) )
+		attr.bUnderlined = true;
+
+	if( pProp->GetBreakLevel() != -1 )
+		attr.breakLevel = pProp->GetBreakLevel();
+
+	attr.visibilityFlags |= pProp->GetCharVisibilityFlags();
+
+	if( pProp->GetLink() )
+		attr.pLink = pProp->GetLink();
+}
+*/
+
+
+//____ IsCharUnderlined() _____________________________________________________
+
+bool WgTextTool::IsCharUnderlined( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
+{
+	WgMode mode = pAttr->mode;
+
+	if( bSelected && WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_modeProp[mode].m_bUnderlined )
+		return true;
+
+	if (WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_bUnderlined ||
+		WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_modeProp[mode].m_bUnderlined ||
+		WgBase::GetDefaultTextProp()->m_modeProp[mode].m_bUnderlined )
+		return true;
+
+	if( pAttr->pLinkProp && IsCharLink( hCharProp, pAttr ) )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_modeProp[mode].m_bUnderlined )
+			return true;
+	}
+
+	return false;
+}
+
+//____ GetCharSize() __________________________________________________________
+
+int WgTextTool::GetCharSize( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
+{
+	// Prio 1: Size from character.
+
+	if( WgTextPropManager::GetProp(hCharProp).m_modeProp[pAttr->mode].m_size != 0 )
+		return WgTextPropManager::GetProp(hCharProp).m_modeProp[pAttr->mode].m_size;
+
+	// Prio 2: Size from LinkProp.
+
+	if( pAttr->pLinkProp && IsCharLink( hCharProp, pAttr ) )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_modeProp[pAttr->mode].m_size != 0 )
+			return WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_modeProp[pAttr->mode].m_size;
+	}
+	
+	// Prio 3: Size from SelectionProp.
+
+	if( bSelected )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_modeProp[pAttr->mode].m_size != 0 )
+		return WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_modeProp[pAttr->mode].m_size;
+	}
+
+	// Prio 4: Size from BaseProp.
+
+	if( WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_modeProp[pAttr->mode].m_size != 0 )
+		return WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_modeProp[pAttr->mode].m_size;
+
+	// Prio 5: Size from default textprop.
+
+	return WgBase::GetDefaultTextProp()->m_modeProp[pAttr->mode].m_size;
+}
+
+
+//____ GetCharStyle() _________________________________________________________
+
+WgFontStyle WgTextTool::GetCharStyle( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
+{
+	// Prio 1: Style from character.
+
+	if( WgTextPropManager::GetProp(hCharProp).m_modeProp[pAttr->mode].m_style != WG_STYLE_NORMAL )
+		return (WgFontStyle) WgTextPropManager::GetProp(hCharProp).m_modeProp[pAttr->mode].m_style;
+
+	// Prio 2: Style from LinkProp.
+
+	if( pAttr->pLinkProp && IsCharLink( hCharProp, pAttr ) )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_modeProp[pAttr->mode].m_style != WG_STYLE_NORMAL )
+			return (WgFontStyle) WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_modeProp[pAttr->mode].m_style;
+	}
+	
+	// Prio 3: Style from SelectionProp.
+
+	if( bSelected )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_modeProp[pAttr->mode].m_style != WG_STYLE_NORMAL )
+		return (WgFontStyle) WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_modeProp[pAttr->mode].m_style;
+	}
+
+	// Prio 4: Style from BaseProp.
+
+	if( WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_modeProp[pAttr->mode].m_style != WG_STYLE_NORMAL )
+		return (WgFontStyle) WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_modeProp[pAttr->mode].m_style;
+
+	// Prio 3: Style from default textprop.
+
+	return (WgFontStyle) WgBase::GetDefaultTextProp()->m_modeProp[pAttr->mode].m_style;
+}
+
+
+//____ GetCharColor() _________________________________________________________
+
+const WgColor WgTextTool::GetCharColor( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
+{
+	// Prio 1: Color from character.
+
+	if( WgTextPropManager::GetProp(hCharProp).m_modeProp[pAttr->mode].m_bColored )
+		return WgTextPropManager::GetProp(hCharProp).m_modeProp[pAttr->mode].m_color;
+
+	// Prio 2: Color from LinkProp.
+
+	if( pAttr->pLinkProp && IsCharLink( hCharProp, pAttr ) )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_modeProp[pAttr->mode].m_bColored )
+			return WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_modeProp[pAttr->mode].m_color;
+	}
+	
+	// Prio 3: Color from SelectionProp.
+
+	if( bSelected )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_modeProp[pAttr->mode].m_bColored )
+		return WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_modeProp[pAttr->mode].m_color;
+	}
+
+	// Prio 4: Color from BaseProp.
+
+	if( WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_modeProp[pAttr->mode].m_bColored )
+		return WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_modeProp[pAttr->mode].m_color;
+
+	// Prio 5: Color from default textprop
+
+	if( WgBase::GetDefaultTextProp()->m_modeProp[pAttr->mode].m_bColored )
+		return WgBase::GetDefaultTextProp()->m_modeProp[pAttr->mode].m_color;
+
+	// Prio 6: Just a white color...
+
+	return WgColor::White();
+}
+
+//____ GetCharBgColor() _________________________________________________________
+
+const WgColor WgTextTool::GetCharBgColor( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
+{
+	// Prio 1: Color from character.
+
+	if( WgTextPropManager::GetProp(hCharProp).m_modeProp[pAttr->mode].m_bBgColor )
+		return WgTextPropManager::GetProp(hCharProp).m_modeProp[pAttr->mode].m_bgColor;
+
+	// Prio 2: Color from LinkProp.
+
+	if( pAttr->pLinkProp && IsCharLink( hCharProp, pAttr ) )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_modeProp[pAttr->mode].m_bBgColor )
+			return WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_modeProp[pAttr->mode].m_bgColor;
+	}
+	
+	// Prio 3: Color from SelectionProp.
+
+	if( bSelected )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_modeProp[pAttr->mode].m_bBgColor )
+		return WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_modeProp[pAttr->mode].m_bgColor;
+	}
+
+	// Prio 4: Color from BaseProp.
+
+	if( WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_modeProp[pAttr->mode].m_bBgColor )
+		return WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_modeProp[pAttr->mode].m_bgColor;
+
+	// Prio 5: Color from default textprop
+
+	if( WgBase::GetDefaultTextProp()->m_modeProp[pAttr->mode].m_bBgColor )
+		return WgBase::GetDefaultTextProp()->m_modeProp[pAttr->mode].m_bgColor;
+
+	// Prio 6: Just a fully transparent white color...
+
+	return WgColor::None();
+}
+
+//____ IsCharLink() __________________________________________________________
+
+bool WgTextTool::IsCharLink(Uint16 hCharProp, const WgTextAttr * pAttr )
+{
+	if( WgTextPropManager::GetProp(hCharProp).m_pLink ||
+		WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_pLink )
+		return true;
+
+	return false;
+}
+
+
+//____ GetCharLink() __________________________________________________________
+
+WgTextLinkPtr WgTextTool::GetCharLink(Uint16 hCharProp, const WgTextAttr * pAttr )
+{
+	// Prio 1: Link set for character.
+
+	if( WgTextPropManager::GetProp(hCharProp).m_pLink )
+		return WgTextPropManager::GetProp(hCharProp).m_pLink;
+
+	// Prio 2: Link set for BaseProp.
+
+	return WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_pLink;
+}
+
+//____ GetCharBreakLevel() ____________________________________________________
+
+int WgTextTool::GetCharBreakLevel( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode )
+{
+	// Prio 1: BreakLevel from character.
+
+	if( WgTextPropManager::GetProp(hCharProp).m_breakLevel != -1 )
+		return WgTextPropManager::GetProp(hCharProp).m_breakLevel;
+
+	// Prio 2: BreakLevel from LinkProp.
+
+	if( pAttr->pLinkProp && IsCharLink( hCharProp, pAttr ) )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_breakLevel != -1 )
+			return WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_breakLevel;
+	}
+	
+	// Prio 3: BreakLevel from BaseProp.
+
+	if( WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_breakLevel != -1 )
+		return WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_breakLevel;
+
+	// Prio 4: BreakLevel from default textprop
+
+	if( WgBase::GetDefaultTextProp()->m_breakLevel != -1 )
+		return WgBase::GetDefaultTextProp()->m_breakLevel;
+
+	// Prio 5: Use hardcoded default level...
+
+	return 3;
+}
+
+
+//____ GetCharFont() __________________________________________________________
+
+WgFont * WgTextTool::GetCharFont( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
+{
+	// Prio 1: Color from character.
+
+	if( WgTextPropManager::GetProp(hCharProp).m_pFont )
+		return WgTextPropManager::GetProp(hCharProp).m_pFont;
+
+	// Prio 2: Color from LinkProp.
+
+	if( pAttr->pLinkProp && IsCharLink( hCharProp, pAttr ) )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_pFont )
+			return WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).m_pFont;
+	}
+	
+	// Prio 3: Color from SelectionProp.
+
+	if( bSelected )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_pFont )
+		return WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).m_pFont;
+	}
+
+	// Prio 4: Color from BaseProp.
+
+	if( WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_pFont )
+		return WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).m_pFont;
+
+	// Prio 5: Color from default textprop
+
+	return WgBase::GetDefaultTextProp()->m_pFont;
+
+}
+
+//____ GetCharGlyphSet() ______________________________________________________
+
+WgGlyphSet * WgTextTool::GetCharGlyphSet( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
+{
+	WgFont * p = GetCharFont( hCharProp, pAttr, linkMode, bSelected);
+
+	if( !p )
+		return 0;
+
+	return p->GetGlyphSet( GetCharStyle(hCharProp, pAttr, linkMode, bSelected), GetCharSize(hCharProp, pAttr, linkMode, bSelected) );
+}
+
+//____ GetCharVisibility() ________________________________________________
+
+bool WgTextTool::GetCharVisibility( Uint16 character, Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
+{
+	// Prio 1: Visibility from character.
+
+	if( WgTextPropManager::GetProp(hCharProp).GetCharVisibility(character) )
+		return true;
+
+	// Prio 2: Color from LinkProp.
+
+	if( pAttr->pLinkProp && IsCharLink( hCharProp, pAttr ) )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pLinkProp.GetHandle()).GetCharVisibility(character) )
+			return true;
+	}
+	
+	// Prio 3: Color from SelectionProp.
+
+	if( bSelected )
+	{
+		if( WgTextPropManager::GetProp(pAttr->pSelectionProp.GetHandle()).GetCharVisibility(character) )
+		return true;
+	}
+
+	// Prio 4: Color from BaseProp.
+
+	if( WgTextPropManager::GetProp(pAttr->pBaseProp.GetHandle()).GetCharVisibility(character) )
+		return true;
+
+	// Prio 5: Color from default textprop
+
+	return WgBase::GetDefaultTextProp()->GetCharVisibility(character);
+}
+
+
+/*
 //____ IsCombUnderlined() _____________________________________________________
 
 bool WgTextTool::IsCombUnderlined( Uint16 hTextProp, Uint16 hCharProp, WgMode mode )
@@ -2915,6 +3267,31 @@ const WgColor WgTextTool::GetCombColor(Uint16 hTextProp, Uint16 hCharProp, WgMod
 
 	return WgColor::White();
 }
+
+//____ GetCombBgColor() _________________________________________________________
+
+const WgColor WgTextTool::GetCombBgColor(Uint16 hTextProp, Uint16 hCharProp, WgMode mode)
+{
+	// Prio 1: Color set for character.
+
+	if( WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_bBgColor )
+		return WgTextPropManager::GetProp(hCharProp).m_modeProp[mode].m_bgColor;
+
+	// Prio 2: Color set for text.
+
+	if( WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_bBgColor )
+		return WgTextPropManager::GetProp(hTextProp).m_modeProp[mode].m_bgColor;
+
+	// Prio 3: Color from default textprop
+
+	if( WgBase::GetDefaultTextProp()->m_modeProp[mode].m_bBgColor )
+		return WgBase::GetDefaultTextProp()->m_modeProp[mode].m_bgColor;
+
+	// Prio 4: Just a fully transparent white color...
+
+	return WgColor::None();
+}
+
 
 //____ GetCombLink() __________________________________________________________
 
@@ -3004,10 +3381,40 @@ bool WgTextTool::GetCombCharVisibility( Uint16 character, Uint16 hTextProp, Uint
 
 	return WgBase::GetDefaultTextProp()->GetCharVisibility(character);
 }
+*/
 
+//____ GetCursor() ____________________________________________________________
 
+WgCursor * WgTextTool::GetCursor( const WgText * pText )
+{
+	WgCursor * p = pText->getCursorStyle();
+	if( p )
+		return p;
 
+	return WgBase::GetDefaultCursor();
+}
 
+//____ GetSelectionProperties() _______________________________________________
+
+WgTextPropPtr WgTextTool::GetSelectionProperties( const WgText * pText )
+{
+	WgTextPropPtr p = pText->getSelectionProperties();
+	if( p )
+		return p;
+
+	return WgBase::GetDefaultSelectionProp();
+}
+
+//____ GetLinkProperties() ____________________________________________________
+
+WgTextPropPtr WgTextTool::GetLinkProperties( const WgText * pText )
+{
+	WgTextPropPtr p = pText->getLinkProperties();
+	if( p )
+		return p;
+
+	return WgBase::GetDefaultLinkProp();
+}
 
 //____ TextPropEncoder::Constructor ___________________________________________
 

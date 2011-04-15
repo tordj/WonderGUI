@@ -289,6 +289,12 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 				break;
 		}
 	}
+
+	// Let text object handle its actions.
+
+	bool bRender = m_text.OnAction( action, button_key, ScreenGeometry(), WgCord(info.x, info.y) );
+	if( bRender )
+		RequestRender();
 }
 
 //____ OnCloneContent() _______________________________________________________

@@ -20,19 +20,19 @@
 
 =========================================================================*/
 
-#include	<wg_dirtyrect.h>
+#include	<wg_rectchain.h>
 #include	<wg_mempool.h>
 
-WgMemPool *	WgDirtyRectObj::g_pMemPool		= 0;
-Sint32		WgDirtyRectObj::g_nDirtyRectObj	= 0;
+WgMemPool *	WgRectChain::g_pMemPool		= 0;
+Sint32		WgRectChain::g_nRectChains	= 0;
 
-void WgDirtyRectObj::Init()
+void WgRectChain::Init()
 {
 	if( g_pMemPool == 0 )
-		g_pMemPool = new WgMemPool(512, sizeof(WgDirtyRect) );
+		g_pMemPool = new WgMemPool(512, sizeof(WgRectLink) );
 }
 
-void WgDirtyRectObj::Exit()
+void WgRectChain::Exit()
 {
 	delete g_pMemPool;
 	g_pMemPool = 0;
@@ -40,26 +40,26 @@ void WgDirtyRectObj::Exit()
 
 //____ Constructor ____________________________________________________________
 
-WgDirtyRectObj::WgDirtyRectObj( void )
+WgRectChain::WgRectChain( void )
 {
-	g_nDirtyRectObj++;
+	g_nRectChains++;
 	pRectList = 0;
 }
 
 //____ Destructor _____________________________________________________________
 
-WgDirtyRectObj::~WgDirtyRectObj( void )
+WgRectChain::~WgRectChain( void )
 {
-	g_nDirtyRectObj--;
+	g_nRectChains--;
 
 	Clear();
 }
 
 //____ Pop() _____________________________________________________________
 
-WgDirtyRect * WgDirtyRectObj::Pop()
+WgRectLink * WgRectChain::Pop()
 {
-	WgDirtyRect * p = pRectList;
+	WgRectLink * p = pRectList;
 
 	if( p )
 	{
@@ -74,9 +74,9 @@ WgDirtyRect * WgDirtyRectObj::Pop()
 
 //____ Clip() _________________________________________________________________
 
-void WgDirtyRectObj::Clip( const WgRect * _pClip )
+void WgRectChain::Clip( const WgRect * _pClip )
 {
-	WgDirtyRect	* pRect = pRectList;
+	WgRectLink	* pRect = pRectList;
 
 	while( pRect )
 	{
@@ -89,7 +89,7 @@ void WgDirtyRectObj::Clip( const WgRect * _pClip )
 			{
 				// Delete the rectangle
 
-	 			WgDirtyRect	* pTmp = pRect;
+	 			WgRectLink	* pTmp = pRect;
 	 			pRect = pRect->pNext;
 
 				if( pRect )
@@ -112,23 +112,23 @@ void WgDirtyRectObj::Clip( const WgRect * _pClip )
 
 //____ Add() __________________________________________________________________
 
-void WgDirtyRectObj::Add( const WgRect& rect )
+void WgRectChain::Add( const WgRect& rect )
 {
 	if( rect.w == 0 || rect.h == 0 )
 		return;
 
-	WgDirtyRect * pRect = (WgDirtyRect*) g_pMemPool->allocEntry();
+	WgRectLink * pRect = (WgRectLink*) g_pMemPool->allocEntry();
 
 	*((WgRect*) pRect) = rect;
 	Addrect( pRect, pRectList );
 }
 
-void WgDirtyRectObj::Add( const int _x, const int _y, const int _w, const int _h )
+void WgRectChain::Add( const int _x, const int _y, const int _w, const int _h )
 {
 	if( _w == 0 || _h == 0 )
 		return;
 
-	WgDirtyRect * pRect = (WgDirtyRect*) g_pMemPool->allocEntry();
+	WgRectLink * pRect = (WgRectLink*) g_pMemPool->allocEntry();
 	pRect->x = _x;
 	pRect->y = _y;
 	pRect->w = _w;
@@ -139,9 +139,9 @@ void WgDirtyRectObj::Add( const int _x, const int _y, const int _w, const int _h
 
 //____ Addrect() ______________________________________________________________
 
-void	WgDirtyRectObj::Addrect( WgDirtyRect * pRect, WgDirtyRect * pOffset )
+void	WgRectChain::Addrect( WgRectLink * pRect, WgRectLink * pOffset )
 {
-	WgDirtyRect * pReturn;
+	WgRectLink * pReturn;
 
 
 	// Optimization stuff
@@ -167,7 +167,7 @@ void	WgDirtyRectObj::Addrect( WgDirtyRect * pRect, WgDirtyRect * pOffset )
 				if( pOffset->pNext != 0 )
 					pOffset->pNext->pPrev = pOffset->pPrev;
 
-				WgDirtyRect * pOffset2 = pOffset->pNext;
+				WgRectLink * pOffset2 = pOffset->pNext;
 				g_pMemPool->freeEntry(pOffset);
 				pOffset = pOffset2;
 			}
@@ -197,10 +197,10 @@ void	WgDirtyRectObj::Addrect( WgDirtyRect * pRect, WgDirtyRect * pOffset )
 
 //____ Transfer() _____________________________________________________________
 
-void WgDirtyRectObj::Transfer( WgDirtyRectObj * pDest )
+void WgRectChain::Transfer( WgRectChain * pDest )
 {
-	WgDirtyRect * pRect = pRectList;
-	WgDirtyRect	* pRect2;
+	WgRectLink * pRect = pRectList;
+	WgRectLink	* pRect2;
 
 	while( pRect != 0 )
 	{
@@ -214,13 +214,13 @@ void WgDirtyRectObj::Transfer( WgDirtyRectObj * pDest )
 
 //____ OneForAll() ____________________________________________________________
 
-bool WgDirtyRectObj::OneForAll( WgRect * wpRect )
+bool WgRectChain::OneForAll( WgRect * wpRect )
 {
 	if( pRectList == 0 )
 		return	false;											// No rectangle returned.
 	else
 	{
-		WgDirtyRect * pRect = pRectList;
+		WgRectLink * pRect = pRectList;
 
 		// Just fill in the first so we have something to start with.
 
@@ -256,13 +256,13 @@ bool WgDirtyRectObj::OneForAll( WgRect * wpRect )
 
 //____ Sub() __________________________________________________________________
 
-void WgDirtyRectObj::Sub( const int _x, const int _y, const int _w, const int _h )
+void WgRectChain::Sub( const int _x, const int _y, const int _w, const int _h )
 {
 	if( _w == 0 || _h == 0 )
 		return;
 
-	WgDirtyRect * pRect = pRectList;
-//	WgDirtyRect	** wppRect = &pRectList;			// WritePointer to Pointer to rectangle...
+	WgRectLink * pRect = pRectList;
+//	WgRectLink	** wppRect = &pRectList;			// WritePointer to Pointer to rectangle...
 
 	while( pRect != 0 )
 	{
@@ -281,7 +281,7 @@ void WgDirtyRectObj::Sub( const int _x, const int _y, const int _w, const int _h
 
 				if( pRect->y < _y )													// Top part
 				{
-					WgDirtyRect * pNew = (WgDirtyRect*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
 
 					pNew->x = pRect->x;
 					pNew->y = pRect->y;
@@ -296,7 +296,7 @@ void WgDirtyRectObj::Sub( const int _x, const int _y, const int _w, const int _h
 
 				if( pRect->x < _x )													// Left part
 				{
-					WgDirtyRect * pNew = (WgDirtyRect*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
 
 					pNew->x = pRect->x;
 					pNew->w = _x - pRect->x;
@@ -319,7 +319,7 @@ void WgDirtyRectObj::Sub( const int _x, const int _y, const int _w, const int _h
 
 				if( pRect->x + pRect->w > _x + _w )					// Right part
 				{
-					WgDirtyRect * pNew = (WgDirtyRect*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
 
 					pNew->x = _x + _w;
 					pNew->w = pRect->x + pRect->w - ( _x + _w );
@@ -342,7 +342,7 @@ void WgDirtyRectObj::Sub( const int _x, const int _y, const int _w, const int _h
 
 				if( pRect->y + pRect->h > _y + _h )					// Bottom part
 				{
-					WgDirtyRect * pNew = (WgDirtyRect*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
 
 					pNew->x = pRect->x;
 					pNew->y = _y + _h;
@@ -358,7 +358,7 @@ void WgDirtyRectObj::Sub( const int _x, const int _y, const int _w, const int _h
 
 			// Delete the old rectangle
 
- 			WgDirtyRect	* pTmp = pRect;
+ 			WgRectLink	* pTmp = pRect;
  			pRect = pRect->pNext;
 
 			if( pRect )
@@ -382,9 +382,9 @@ void WgDirtyRectObj::Sub( const int _x, const int _y, const int _w, const int _h
 
 //____ ClipTransfer() _________________________________________________________
 
-void WgDirtyRectObj::ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pClip )
+void WgRectChain::ClipTransfer( WgRectChain * _pDest, const WgRect * _pClip )
 {
-	WgDirtyRect * pRect = pRectList;
+	WgRectLink * pRect = pRectList;
 
 
 	while( pRect != 0 )
@@ -404,7 +404,7 @@ void WgDirtyRectObj::ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pCli
 
 				if( pRect->y < _pClip->y )													// Top part
 				{
-					WgDirtyRect * pNew = (WgDirtyRect*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
 
 					pNew->x = pRect->x;
 					pNew->y = pRect->y;
@@ -419,7 +419,7 @@ void WgDirtyRectObj::ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pCli
 
 				if( pRect->x < _pClip->x )													// Left part
 				{
-					WgDirtyRect * pNew = (WgDirtyRect*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
 
 					pNew->x = pRect->x;
 					pNew->w = _pClip->x - pRect->x;
@@ -442,7 +442,7 @@ void WgDirtyRectObj::ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pCli
 
 				if( pRect->x + pRect->w > _pClip->x + _pClip->w )					// Right part
 				{
-					WgDirtyRect * pNew = (WgDirtyRect*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
 
 					pNew->x = _pClip->x + _pClip->w;
 					pNew->w = pRect->x + pRect->w - ( _pClip->x + _pClip->w );
@@ -465,7 +465,7 @@ void WgDirtyRectObj::ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pCli
 
 				if( pRect->y + pRect->h > _pClip->y + _pClip->h )					// Bottom part
 				{
-					WgDirtyRect * pNew = (WgDirtyRect*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
 
 					pNew->x = pRect->x;
 					pNew->y = _pClip->y + _pClip->h;
@@ -486,7 +486,7 @@ void WgDirtyRectObj::ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pCli
 			{
 				// Disconnect and add the rectangle to our destination
 
-	 			WgDirtyRect	* pTmp = pRect;
+	 			WgRectLink	* pTmp = pRect;
 	 			pRect = pRect->pNext;
 
 				if( pRect )
@@ -511,9 +511,9 @@ void WgDirtyRectObj::ClipTransfer( WgDirtyRectObj * _pDest, const WgRect * _pCli
 
 //____ Clear() ________________________________________________________________
 
-void WgDirtyRectObj::Clear( void )
+void WgRectChain::Clear( void )
 {
-	WgDirtyRect * pRect = pRectList, * pRect2;
+	WgRectLink * pRect = pRectList, * pRect2;
 
 	while( pRect != 0 )
 	{
@@ -528,7 +528,7 @@ void WgDirtyRectObj::Clear( void )
 
 //____ ClipRectangles() _______________________________________________________
 
-WgDirtyRect * WgDirtyRectObj::ClipRectangles( WgDirtyRect * p1, WgDirtyRect * p2 )
+WgRectLink * WgRectChain::ClipRectangles( WgRectLink * p1, WgRectLink * p2 )
 {
 	// This function has a preference for clipping/splitting p1...
 
@@ -597,13 +597,13 @@ WgDirtyRect * WgDirtyRectObj::ClipRectangles( WgDirtyRect * p1, WgDirtyRect * p2
 
 		// Clip p1 against p2.
 
-		WgDirtyRect * p3 = 0;
+		WgRectLink * p3 = 0;
 
 		// Cut off upper part
 
 		if( p1->y < p2->y )
 		{
-			p3 = (WgDirtyRect*) g_pMemPool->allocEntry();
+			p3 = (WgRectLink*) g_pMemPool->allocEntry();
 			p3->x = p1->x;
 			p3->w = p1->w;
 			p3->y = p1->y;
@@ -619,7 +619,7 @@ WgDirtyRect * WgDirtyRectObj::ClipRectangles( WgDirtyRect * p1, WgDirtyRect * p2
 		{
 			if( p3 == 0 )
 			{
-				p3 = (WgDirtyRect*) g_pMemPool->allocEntry();
+				p3 = (WgRectLink*) g_pMemPool->allocEntry();
 				p3->x = p1->x;
 				p3->y = p1->y;
 				p3->w = p2->x - p1->x;
@@ -639,7 +639,7 @@ WgDirtyRect * WgDirtyRectObj::ClipRectangles( WgDirtyRect * p1, WgDirtyRect * p2
 		{
 			if( p3 == 0 )
 			{
-				p3 = (WgDirtyRect*) g_pMemPool->allocEntry();
+				p3 = (WgRectLink*) g_pMemPool->allocEntry();
 				p3->x = p2->x + p2->w;
 				p3->y = p1->y;
 				p3->w = p1->x + p1->w - (p2->x + p2->w);
@@ -675,9 +675,9 @@ WgDirtyRect * WgDirtyRectObj::ClipRectangles( WgDirtyRect * p1, WgDirtyRect * p2
 		return	0;
 }
 
-//____ WgDirtyRectObj::Destroy() _________________________________________________
+//____ WgRectChain::Destroy() _________________________________________________
 
-void WgDirtyRectObj::Destroy( WgDirtyRect * pRect )
+void WgRectChain::Destroy( WgRectLink * pRect )
 {
 	g_pMemPool->freeEntry(pRect);
 }

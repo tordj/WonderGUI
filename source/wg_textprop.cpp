@@ -25,6 +25,7 @@
 #include <wg_color.h>
 #include <wg_char.h>
 #include <wg_font.h>
+#include <wg_textlink.h>
 
 #include <memory.h>
 
@@ -46,8 +47,10 @@ WgTextProp::WgTextProp( const WgTextPropPtr& pProp )
 	for( int i = 0 ; i < WG_NB_MODES ; i++ )
 	{
 		m_modeProp[i].m_bColored	= pProp->m_modeProp[i].m_bColored;
+		m_modeProp[i].m_bBgColor	= pProp->m_modeProp[i].m_bBgColor;
 		m_modeProp[i].m_bUnderlined = pProp->m_modeProp[i].m_bUnderlined;
 		m_modeProp[i].m_color		= pProp->m_modeProp[i].m_color;
+		m_modeProp[i].m_bgColor		= pProp->m_modeProp[i].m_bgColor;
 		m_modeProp[i].m_style		= pProp->m_modeProp[i].m_style;
 		m_modeProp[i].m_style		= pProp->m_modeProp[i].m_size;
 	}
@@ -75,6 +78,9 @@ void WgTextProp::ClearAll()
 		m_modeProp[i].m_bColored	= false;
 		m_modeProp[i].m_color.argb = 0xFFFFFFFF;
 
+		m_modeProp[i].m_bBgColor	= false;
+		m_modeProp[i].m_bgColor.argb = 0xFFFFFFFF;
+
 		m_modeProp[i].m_style = WG_STYLE_NORMAL;
 		m_modeProp[i].m_size = 0;
 		m_modeProp[i].m_bUnderlined = false;
@@ -101,6 +107,26 @@ void WgTextProp::SetColor( WgColor col, WgMode mode )
 		m_modeProp[mode].m_color	= col;
 	}
 }
+
+//____ SetBgColor() ___________________________________________________________
+
+void WgTextProp::SetBgColor( WgColor col, WgMode mode )
+{
+	if( mode == WG_MODE_ALL )
+	{
+		for( int i = 0 ; i < WG_NB_MODES ; i++ )
+		{
+			m_modeProp[i].m_bBgColor	= true;
+			m_modeProp[i].m_bgColor		= col;
+		}
+	}
+	else
+	{
+		m_modeProp[mode].m_bBgColor	= true;
+		m_modeProp[mode].m_bgColor	= col;
+	}
+}
+
 
 //____ SetStyle() _____________________________________________________________
 
@@ -166,6 +192,26 @@ void WgTextProp::ClearColor( WgMode mode )
 	}
 }
 
+//____ ClearBgColor() _________________________________________________________
+
+void WgTextProp::ClearBgColor( WgMode mode )
+{
+	if( mode == WG_MODE_ALL )
+	{
+		for( int i = 0 ; i < WG_NB_MODES ; i++ )
+		{
+			m_modeProp[i].m_bBgColor	= false;
+			m_modeProp[i].m_bgColor.argb = 0xFFFFFFFF;
+		}
+	}
+	else
+	{
+		m_modeProp[mode].m_bBgColor	= false;
+		m_modeProp[mode].m_bgColor.argb = 0xFFFFFFFF;
+	}
+}
+
+
 //____ ClearStyle() _____________________________________________________________
 
 void WgTextProp::ClearStyle( WgMode mode )
@@ -217,6 +263,17 @@ bool WgTextProp::IsColorStatic() const
 }
 
 //_____________________________________________________________________________
+bool WgTextProp::IsBgColorStatic() const
+{
+	for( int i = 1 ; i < WG_NB_MODES ; i++ )
+		if( m_modeProp[0].m_bBgColor != m_modeProp[i].m_bBgColor || m_modeProp[0].m_bgColor != m_modeProp[i].m_bgColor )
+			return false;
+
+	return true;
+}
+
+
+//_____________________________________________________________________________
 bool WgTextProp::IsStyleStatic() const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
@@ -256,6 +313,17 @@ bool WgTextProp::CompareColorTo( const WgTextPropPtr& pProp ) const
 
 	return true;
 }
+
+//_____________________________________________________________________________
+bool WgTextProp::CompareBgColorTo( const WgTextPropPtr& pProp ) const
+{
+	for( int i = 1 ; i < WG_NB_MODES ; i++ )
+		if( m_modeProp[i].m_bBgColor != pProp->m_modeProp[i].m_bBgColor || m_modeProp[i].m_bgColor != pProp->m_modeProp[i].m_bgColor )
+			return false;
+
+	return true;
+}
+
 
 //_____________________________________________________________________________
 bool WgTextProp::CompareStyleTo( const WgTextPropPtr& pProp ) const
@@ -303,8 +371,10 @@ Uint8 WgTextProp::CalculateChecksum() const
 	for( int i = 0 ; i < WG_NB_MODES ; i++ )
 	{
 		chk.Add8( (Uint8) m_modeProp[i].m_bColored );
+		chk.Add8( (Uint8) m_modeProp[i].m_bBgColor );
 		chk.Add8( (Uint8) m_modeProp[i].m_bUnderlined );
 		chk.Add32( m_modeProp[i].m_color.argb );
+		chk.Add32( m_modeProp[i].m_bgColor.argb );
 		chk.Add16( m_modeProp[i].m_style );
 		chk.Add16( m_modeProp[i].m_size );
 	}
@@ -326,8 +396,10 @@ bool WgTextProp::CompareTo( const WgTextProp * pProp ) const
 		if( m_modeProp[i].m_style != pProp->m_modeProp[i].m_style ||
 			m_modeProp[i].m_size != pProp->m_modeProp[i].m_size ||
 			m_modeProp[i].m_bColored != pProp->m_modeProp[i].m_bColored ||
+			m_modeProp[i].m_bBgColor != pProp->m_modeProp[i].m_bBgColor ||
 			m_modeProp[i].m_bUnderlined != pProp->m_modeProp[i].m_bUnderlined ||
-			m_modeProp[i].m_color.argb != pProp->m_modeProp[i].m_color.argb )
+			m_modeProp[i].m_color.argb != pProp->m_modeProp[i].m_color.argb ||
+			m_modeProp[i].m_bgColor.argb != pProp->m_modeProp[i].m_bgColor.argb )
 			return false;
 	}
 
@@ -385,9 +457,6 @@ bool WgTextProp::GetCharVisibility( Uint16 specialCharacter ) const
 			return true;		// All other characters are always visible
 	};
 }
-
-
-
 
 //=============================================================================
 //							>>> WgTextPropPtr <<<
@@ -476,8 +545,10 @@ void WgTextProp::AssertIntegrity() const
 bool WgTextProp::IsEqual(WgMode mode0, WgMode mode1) const
 {
 	return	m_modeProp[mode0].m_bColored == m_modeProp[mode1].m_bColored &&
+			m_modeProp[mode0].m_bBgColor == m_modeProp[mode1].m_bBgColor &&
 			m_modeProp[mode0].m_bUnderlined == m_modeProp[mode1].m_bUnderlined &&
 			m_modeProp[mode0].m_color == m_modeProp[mode1].m_color &&
+			m_modeProp[mode0].m_bgColor == m_modeProp[mode1].m_bgColor &&
 			m_modeProp[mode0].m_style == m_modeProp[mode1].m_style &&			
 			m_modeProp[mode0].m_size == m_modeProp[mode1].m_size;			
 }

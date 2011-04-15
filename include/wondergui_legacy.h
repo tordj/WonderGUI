@@ -169,7 +169,7 @@
 #endif
 
 #ifndef WG_DIRTYRECT_DOT_H
-#	include <wg_dirtyrect.h>
+#	include <wg_rectchain.h>
 #endif
 
 #ifndef WG_FONTSET_DOT_H

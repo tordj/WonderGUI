@@ -15,7 +15,6 @@ FONT SYSTEM
 * WgBitmapGlyphs handle baseline and ascend correctly so we can mix bitmap glyphs with vector glyphs with good result.
 * Separate struct and bitmap-cache for vector glyphs so we can get glyph info without touching the cache.
 * TTF: Try to use multiple size-objects so we don't have to set size all the time.
-* Handle underline in a better way, taking TTF offset and thickness into account.
 * VectorGlyphs: Limit cache size!
 * WgBitmapGlyphs: Currently uses linespacing for height... :(
 
@@ -23,6 +22,11 @@ TEXTSYSTEM
 ==========
 * Handle linebreaks so that cursor will fit on line if text is editable.
 * Handle linebreaks so that EOL/EOF characters will fit if displayed.
+
+underlining
+-----------
+* Handle underline in a better way, taking TTF offset and thickness into account.
+* Start/stop select size and color correctly according to props.
 
 
 CURSOR

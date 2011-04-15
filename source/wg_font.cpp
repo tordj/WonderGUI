@@ -31,25 +31,19 @@ WgFont::WgFont()
 {
 
 	Init();
-	m_pCursor = 0;
-
 }
 
 #ifdef WG_USE_FREETYPE
-WgFont::WgFont( WgVectorGlyphs * pNormal, WgCursor * pCursor )
+WgFont::WgFont( WgVectorGlyphs * pNormal )
 {
 	Init();
-	m_pCursor = pCursor;
-
 	SetVectorGlyphs( pNormal, WG_STYLE_NORMAL );
 }
 #endif
 
-WgFont::WgFont( WgBitmapGlyphs * pNormal, int size, WgCursor * pCursor )
+WgFont::WgFont( WgBitmapGlyphs * pNormal, int size )
 {
 	Init();
-	m_pCursor = pCursor;
-
 	SetBitmapGlyphs( pNormal, WG_STYLE_NORMAL, size );
 }
 
@@ -57,8 +51,6 @@ WgFont::WgFont( WgBitmapGlyphs * pNormal, int size, WgCursor * pCursor )
 
 void WgFont::Init()
 {
-	m_pCursor = 0;
-
 #ifdef	WG_USE_FREETYPE
 	m_pDefaultVectorGlyphs = 0;
 
@@ -475,14 +467,4 @@ WgBitmapGlyphs * WgFont::GetBitmapGlyphs( WgFontStyle style, int size )
 
 	return 0;
 }
-
-
-//____ SetCursor() ____________________________________________________________
-
-bool WgFont::SetCursor( WgCursor * _pCursor )
-{
-	m_pCursor = _pCursor;
-	return true;
-}
-
 

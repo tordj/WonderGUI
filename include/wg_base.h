@@ -50,6 +50,7 @@ class WgFont;
 class WgTextPropManager;
 class WgMemPool;
 class WgWeakPtrHub;
+class WgCursor;
 
 class WgBase
 {
@@ -71,11 +72,24 @@ public:
 	static void SetDefaultTextProp( const WgTextPropPtr& pProp );
 	static WgTextPropPtr GetDefaultTextProp() { return s_pDefaultTextProp; }
 
+	static void SetDefaultSelectionProp( const WgTextPropPtr& pProp );
+	static WgTextPropPtr GetDefaultSelectionProp() { return s_pDefaultSelectionProp; }
+
+	static void SetDefaultLinkProp( const WgTextPropPtr& pProp );
+	static WgTextPropPtr GetDefaultLinkProp() { return s_pDefaultLinkProp; }
+
+	static void SetDefaultCursor( WgCursor * pCursor );
+	static WgCursor * GetDefaultCursor() { return s_pDefaultCursor; }
+
 	static WgWeakPtrHub *	AllocWeakPtrHub();
 	static void			FreeWeakPtrHub( WgWeakPtrHub * pHub );
 
 private:
 	static WgTextPropPtr	s_pDefaultTextProp;
+	static WgTextPropPtr	s_pDefaultSelectionProp;
+	static WgTextPropPtr	s_pDefaultLinkProp;
+
+	static WgCursor *		s_pDefaultCursor;
 //	WgTextMgrPtr	m_pDefTextMgr;
 
 	static WgMemPool *	s_pWeakPtrPool;

@@ -44,7 +44,7 @@
 
 void WgWidget::RequestRender( int _x, int _y, int _w, int _h, WgWidget * _pMaskBranch, bool _bRenderParentToo )
 {
-	WgDirtyRectObj	dirtObj;
+	WgRectChain	dirtObj;
 
 	dirtObj.Add( _x, _y, _w, _h );
 
@@ -91,7 +91,7 @@ void WgWidget::RequestRender( int _x, int _y, int _w, int _h, WgWidget * _pMaskB
 
 		if( _bRenderParentToo && !m_bOpaque && m_bRenderedHere && m_pParent != 0 )
 		{
-			WgDirtyRect	* pRect = dirtObj.pRectList;
+			WgRectLink	* pRect = dirtObj.pRectList;
 			while( pRect )
 			{
 				m_pParent->RequestRender( m_geo.x + pRect->x, m_geo.y + pRect->y, pRect->w, pRect->h );
@@ -107,7 +107,7 @@ void WgWidget::RequestRender( int _x, int _y, int _w, int _h, WgWidget * _pMaskB
 
 //____ WgWidget::MaskAgainstBranch() ____________________________________________
 
-void WgWidget::MaskAgainstBranch( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY )
+void WgWidget::MaskAgainstBranch( WgRectChain * _pDirtObj, int _ofsX, int _ofsY )
 {
 	if( m_bRenderedHere && !m_bHidden )
 	{
@@ -151,7 +151,7 @@ void WgWidget::RenderRecursively(Uint8 _layer)
 
 		m_dirtyRects.Clip( &window );
 
-		WgDirtyRect * pDirty = m_dirtyRects.pRectList;
+		WgRectLink * pDirty = m_dirtyRects.pRectList;
  		while( pDirty != 0 )
  		{
 			DoMyOwnRender( window, *pDirty, _layer );
@@ -209,7 +209,7 @@ void WgWidget::FreezeBranch( int _ofsX, int _ofsY )
 
 	// Freeze my rectangles
 
-	WgDirtyRect	* pDirt = m_dirtyRects.pRectList;
+	WgRectLink	* pDirt = m_dirtyRects.pRectList;
 	while( pDirt )
 	{
 		pDirt->x += _ofsX;
@@ -306,7 +306,7 @@ void	WgWidget::PreRenderMasking( int _ofsX, int _ofsY )
 
 //____ WgWidget::AddDirtToNonOpaqueCovering() ___________________________________
 
-void WgWidget::AddDirtToNonOpaqueCovering( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY )
+void WgWidget::AddDirtToNonOpaqueCovering( WgRectChain * _pDirtObj, int _ofsX, int _ofsY )
 {
  	if( !m_bOpaque && !m_bHidden )
  	{
@@ -317,7 +317,7 @@ void WgWidget::AddDirtToNonOpaqueCovering( WgDirtyRectObj * _pDirtObj, int _ofsX
 	 	clip.w = m_geo.w;
 	 	clip.h = m_geo.h;
 
-		WgDirtyRect * pTmp = _pDirtObj->pRectList;
+		WgRectLink * pTmp = _pDirtObj->pRectList;
 		WgRect		clipped;
 
 		while( pTmp )
@@ -342,7 +342,7 @@ void WgWidget::AddDirtToNonOpaqueCovering( WgDirtyRectObj * _pDirtObj, int _ofsX
 // check m_bRenderedHere and we return weather we encountered a non-opaque widget
 // along the way.
 
-bool WgWidget::MaskAgainstFrozenBranch( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY )
+bool WgWidget::MaskAgainstFrozenBranch( WgRectChain * _pDirtObj, int _ofsX, int _ofsY )
 {
 
 	if( !m_bHidden )
@@ -418,7 +418,7 @@ void	WgWidget::PushDirt( int _ofsX, int _ofsY )
 
 		// Make another copy to work with when pushing
 
-		WgDirtyRectObj	dirtObj;
+		WgRectChain	dirtObj;
 		dirtObj.Add( rect.x, rect.y, rect.w, rect.h );
 
 		// Push against covering siblings, parent-siblings etc, begin with topmost.
@@ -451,7 +451,7 @@ void	WgWidget::PushDirt( int _ofsX, int _ofsY )
 // Subroutine for PushDirt(). Pushes dirt towards siblings and parents siblings etc
 // which are covering. Only used for m_bRendersAll and m_bRenderOne widgets.
 
-void	WgWidget::PushDirtSubCovering( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY )
+void	WgWidget::PushDirtSubCovering( WgRectChain * _pDirtObj, int _ofsX, int _ofsY )
 {
 	_ofsX -= m_geo.x;
 	_ofsY -= m_geo.y;
@@ -469,7 +469,7 @@ void	WgWidget::PushDirtSubCovering( WgDirtyRectObj * _pDirtObj, int _ofsX, int _
 // Subroutine for PushDirt(), calling its siblings recursively and moving dirt
 // to top-sibling first, then following through with the rest.
 
-void	WgWidget::PushDirtSub( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY )
+void	WgWidget::PushDirtSub( WgRectChain * _pDirtObj, int _ofsX, int _ofsY )
 {
 	if( m_id == 1 )
 	{
@@ -513,7 +513,7 @@ void	WgWidget::PushDirtSub( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY )
 
 		// Whatever we cover we must update too since we're not opaque :(
 
-		WgDirtyRect * pTmp = _pDirtObj->pRectList;
+		WgRectLink * pTmp = _pDirtObj->pRectList;
 		WgRect		clipped;
 
 		while( pTmp )
@@ -528,9 +528,9 @@ void	WgWidget::PushDirtSub( WgDirtyRectObj * _pDirtObj, int _ofsX, int _ofsY )
 
 //____ WgWidget::CollectDirtyRectangles() _______________________________________
 
-void WgWidget::CollectDirtyRectangles( WgDirtyRectObj * _pDirtObj )
+void WgWidget::CollectDirtyRectangles( WgRectChain * _pDirtObj )
 {
-	WgDirtyRect	* pDirt = m_dirtyRects.pRectList;
+	WgRectLink	* pDirt = m_dirtyRects.pRectList;
 
 	while( pDirt )
 	{

@@ -48,21 +48,21 @@ void WgGizmoHook::DoSetGizmo()
 
 //____ DoCollectRects() _______________________________________________________
 
-void WgGizmoHook::DoCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmoHook::DoCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	m_pGizmo->OnCollectRects( rects, geo, clip );
 }
 
 //____ DoMaskRects() __________________________________________________________
 
-void WgGizmoHook::DoMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmoHook::DoMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	m_pGizmo->OnMaskRects( rects, geo, clip );
 }
 
 //_____________________________________________________________________________
 
-void WgGizmoHook::_doCastDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut )
+void WgGizmoHook::_doCastDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
 {
 	if( m_pGizmo->IsContainer() )
 		m_pGizmo->CastToContainer()->_castDirtyRect( geo, clip, pDirtIn, pDirtOut );

@@ -24,6 +24,7 @@
 
 WgColor	WgColor::g_white(0xFFFFFFFF);
 WgColor	WgColor::g_black(0xFF000000);
+WgColor	WgColor::g_none(0x00FFFFFF);
 
 
 //____ blend() ________________________________________________________________

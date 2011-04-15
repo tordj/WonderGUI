@@ -42,8 +42,8 @@
 #endif
 
 
-#ifndef WG_DIRTYRECT_DOT_H
-#	include <wg_dirtyrect.h>
+#ifndef WG_RECTCHAIN_DOT_H
+#	include <wg_rectchain.h>
 #endif
 
 #ifndef WG_BLOCKSET_DOT_H
@@ -187,7 +187,7 @@ public:
 protected:
 	WgSurface();
 
-	WgDirtyRectObj 			m_dirtyRects;
+	WgRectChain 			m_dirtyRects;
 	PixelFormat				m_pixelFormat;
 	LockStatus				m_lockStatus;
 	Uint32					m_pitch;

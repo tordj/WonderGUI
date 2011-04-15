@@ -23,7 +23,7 @@
 
 
 #include <wg_base.h>
-#include <wg_dirtyrect.h>
+#include <wg_rectchain.h>
 #include <wg_textpropmanager.h>
 #include <wg_texttool.h>
 
@@ -38,6 +38,9 @@
 
 
 WgTextPropPtr	WgBase::s_pDefaultTextProp;
+WgTextPropPtr	WgBase::s_pDefaultSelectionProp;
+WgTextPropPtr	WgBase::s_pDefaultLinkProp;
+WgCursor *		WgBase::s_pDefaultCursor = 0;
 
 WgMemPool *		WgBase::s_pWeakPtrPool;
 
@@ -50,7 +53,7 @@ void WgBase::Init()
 
 	WgTextTool::setDefaultBreakRules();
 
-	WgDirtyRectObj::Init();
+	WgRectChain::Init();
 #ifdef WG_USE_FREETYPE
 	s_bFreeTypeInitialized = false;
 #endif
@@ -68,7 +71,7 @@ void WgBase::Exit()
 	if( s_bFreeTypeInitialized )
 		FT_Done_FreeType( s_freeTypeLibrary );
 #endif
-	WgDirtyRectObj::Exit();
+	WgRectChain::Exit();
 	s_pDefaultTextProp = 0;
 
 	delete s_pWeakPtrPool;
@@ -133,3 +136,24 @@ void WgBase::SetDefaultTextProp( const WgTextPropPtr& pProp )
 	s_pDefaultTextProp = pProp;
 }
 
+//____ SetDefaultSelectionProp() ___________________________________________________
+
+void WgBase::SetDefaultSelectionProp( const WgTextPropPtr& pProp )
+{
+	s_pDefaultSelectionProp = pProp;
+}
+
+//____ SetDefaultLinkProp() ___________________________________________________
+
+void WgBase::SetDefaultLinkProp( const WgTextPropPtr& pProp )
+{
+	s_pDefaultLinkProp = pProp;
+}
+
+
+//____ SetDefaultCursor() ___________________________________________________
+
+void WgBase::SetDefaultCursor( WgCursor * pCursor )
+{
+	s_pDefaultCursor = pCursor;
+}

@@ -39,8 +39,6 @@
 
 #include <assert.h>
 
-class WgCursor;
-
 #ifdef	WG_USE_FREETYPE
 	class WgVectorGlyphs;
 #endif
@@ -55,9 +53,9 @@ class WgFont
 public:
 	WgFont();
 #ifdef WG_USE_FREETYPE
-	WgFont( WgVectorGlyphs * pNormal, WgCursor * pCursor );
+	WgFont( WgVectorGlyphs * pNormal );
 #endif
-	WgFont( WgBitmapGlyphs * pNormal, int size, WgCursor * pCursor );
+	WgFont( WgBitmapGlyphs * pNormal, int size );
 	~WgFont();
 
 	enum GlyphProvided
@@ -95,16 +93,11 @@ public:
 	WgBitmapGlyphs *		GetBitmapGlyphs( WgFontStyle style, int size );
 	inline WgBitmapGlyphs *	GetDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return false; }
 
-	bool				SetCursor( WgCursor * pCursor );
-	inline WgCursor * 	GetCursor() const { return m_pCursor; }
-
 	const WgUnderline *	GetUnderline( int size );
 
 
 protected:
 	void	Init();
-
-	WgCursor *			m_pCursor;
 
 #ifdef	WG_USE_FREETYPE
 	WgVectorGlyphs *	m_pDefaultVectorGlyphs;

@@ -94,8 +94,8 @@ public:
 
 	void				CloneContent( const WgGizmo * _pOrg );
 
-	inline void				SetCursorStyle( WgCursorStyle style )	{ m_cursorStyle = style; }
-	inline WgCursorStyle	GetCursorStyle() const					{ return m_cursorStyle; }
+	inline void				SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
+	inline WgPointerStyle	GetPointerStyle() const					{ return m_pointerStyle; }
 
 
 	inline void			SetMarkPolicy( WgMarkPolicy policy ) { m_markPolicy = policy; }
@@ -165,8 +165,8 @@ protected:
 	// To be overloaded by Gizmo
 
 
-	virtual void	OnCollectRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
-	virtual void	OnMaskRects( WgDirtyRectObj& rects, const WgRect& geo, const WgRect& clip );
+	virtual void	OnCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	virtual void	OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	virtual void	OnCloneContent( const WgGizmo * _pOrg ) = 0;
 	virtual void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) = 0;
 	virtual void	OnNewSize( const WgSize& size );
@@ -190,7 +190,7 @@ protected:
 
 	WgSkinNode *	m_pSkinNode;
 
-	WgCursorStyle	m_cursorStyle;
+	WgPointerStyle	m_pointerStyle;
 
 	WgString		m_tooltip;
 	WgMarkPolicy	m_markPolicy;

@@ -183,7 +183,7 @@ private:
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
 
-	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgDirtyRect * pDirtIn, WgDirtyRectObj* pDirtOut ) {}
+	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) {}
 	void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) {}
 	void	_clearDirtyRects() {}
 
@@ -236,14 +236,14 @@ public:
 	inline WgString	GetTooltipString() const { return T::GetTooltipString(); }
 
 
-	void SetCursorStyle( WgCursorStyle style )
+	void SetPointerStyle( WgPointerStyle style )
 	{
-		T::SetCursorStyle(style);
+		T::SetPointerStyle(style);
 	}
 
-	WgCursorStyle GetCursorStyle() const
+	WgPointerStyle GetPointerStyle() const
 	{
-		return T::GetCursorStyle();
+		return T::GetPointerStyle();
 	}
 
 	virtual bool IsInputField() const
