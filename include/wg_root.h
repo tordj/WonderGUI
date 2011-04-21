@@ -60,7 +60,7 @@ public:
 	WgGizmo * 				ReleaseGizmo();
 
 
-//	inline int	NbDirtyRects() const { return m_dirtyRects....  TODO: Implement when WgDirtyRectObj has a Size() method
+//	inline int	NbDirtyRects() const { return m_dirtyRects....  TODO: Implement when WgRectChain has a Size() method
 	int		ExportDirtyRects( WgRect * pDest, int maxRects ) const;
 
 	bool	Render();

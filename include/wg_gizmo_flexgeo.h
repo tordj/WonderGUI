@@ -143,7 +143,7 @@ protected:
 	void		RequestResize();
 
 	bool		LimitPlacementSize();
-	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectChain * pDirtIn, WgRectChain * pDirtOut );
+	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
 	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
 
 

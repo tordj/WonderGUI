@@ -55,6 +55,109 @@ void WgEventLogger::LogEvent( WgEventId event )
 	m_eventFilter[event] = true;
 }
 
+//____ IgnorePointerEvents ____________________________________________________________
+
+void WgEventLogger::IgnorePointerEvents()
+{
+	m_eventFilter[WG_EVENT_POINTER_ENTER] = false;
+	m_eventFilter[WG_EVENT_POINTER_MOVE] = false;
+	m_eventFilter[WG_EVENT_POINTER_PLACED] = false;
+	m_eventFilter[WG_EVENT_POINTER_EXIT] = false;
+}
+
+//____ LogPointerEvents _______________________________________________________________
+
+void WgEventLogger::LogPointerEvents()
+{
+	m_eventFilter[WG_EVENT_POINTER_ENTER] = true;
+	m_eventFilter[WG_EVENT_POINTER_MOVE] = true;
+	m_eventFilter[WG_EVENT_POINTER_PLACED] = true;
+	m_eventFilter[WG_EVENT_POINTER_EXIT] = true;
+}
+
+
+//____ IgnoreButtonEvents ____________________________________________________________
+
+void WgEventLogger::IgnoreButtonEvents()
+{
+	m_eventFilter[WG_EVENT_BUTTON_PRESS] = false;
+	m_eventFilter[WG_EVENT_BUTTON_REPEAT] = false;
+	m_eventFilter[WG_EVENT_BUTTON_DRAG] = false;
+	m_eventFilter[WG_EVENT_BUTTON_RELEASE] = false;
+	m_eventFilter[WG_EVENT_BUTTON_CLICK] = false;
+	m_eventFilter[WG_EVENT_BUTTON_DOUBLECLICK] = false;
+}
+
+//____ LogButtonEvents _______________________________________________________________
+
+void WgEventLogger::LogButtonEvents()
+{
+	m_eventFilter[WG_EVENT_BUTTON_PRESS] = true;
+	m_eventFilter[WG_EVENT_BUTTON_REPEAT] = true;
+	m_eventFilter[WG_EVENT_BUTTON_DRAG] = true;
+	m_eventFilter[WG_EVENT_BUTTON_RELEASE] = true;
+	m_eventFilter[WG_EVENT_BUTTON_CLICK] = true;
+	m_eventFilter[WG_EVENT_BUTTON_DOUBLECLICK] = true;
+}
+
+//____ IgnoreKeyboardEvents ____________________________________________________________
+
+void WgEventLogger::IgnoreKeyboardEvents()
+{
+	m_eventFilter[WG_EVENT_KEY_PRESS] = false;
+	m_eventFilter[WG_EVENT_KEY_REPEAT] = false;
+	m_eventFilter[WG_EVENT_KEY_RELEASE] = false;
+	m_eventFilter[WG_EVENT_CHARACTER] = false;
+}
+
+//____ LogKeyboardEvents _______________________________________________________________
+
+void WgEventLogger::LogKeyboardEvents()
+{
+	m_eventFilter[WG_EVENT_KEY_PRESS] = true;
+	m_eventFilter[WG_EVENT_KEY_REPEAT] = true;
+	m_eventFilter[WG_EVENT_KEY_RELEASE] = true;
+	m_eventFilter[WG_EVENT_CHARACTER] = true;
+}
+
+//____ LogMouseEvents() _______________________________________________________
+
+void WgEventLogger::LogMouseEvents()
+{
+	LogPointerEvents();
+	LogButtonEvents();
+	LogEvent( WG_EVENT_WHEEL_ROLL );
+}
+
+//____ IgnoreMouseEvents() ____________________________________________________
+
+void WgEventLogger::IgnoreMouseEvents()
+{
+	IgnorePointerEvents();
+	IgnoreButtonEvents();
+	IgnoreEvent( WG_EVENT_WHEEL_ROLL );
+}
+
+
+//____ LogInputEvents() _______________________________________________________
+
+void WgEventLogger::LogInputEvents()
+{
+	LogMouseEvents();
+	LogKeyboardEvents();
+}
+
+//____ IgnoreInputEvents() ____________________________________________________
+
+void WgEventLogger::IgnoreInputEvents()
+{
+	IgnoreMouseEvents();
+	IgnoreKeyboardEvents();
+}
+
+
+
+
 //____ IgnoreAllEvents ________________________________________________________
 
 void WgEventLogger::IgnoreAllEvents()
