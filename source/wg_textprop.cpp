@@ -25,7 +25,6 @@
 #include <wg_color.h>
 #include <wg_char.h>
 #include <wg_font.h>
-#include <wg_textlink.h>
 
 #include <memory.h>
 
@@ -42,7 +41,7 @@ WgTextProp::WgTextProp( const WgTextPropPtr& pProp )
 	m_pLink				= pProp->m_pLink;
 	m_pFont				= pProp->m_pFont;
 	m_visibilityFlags	= pProp->m_visibilityFlags;
-	m_breakLevel	= -1;
+	m_breakLevel		= pProp->m_breakLevel;
 
 	for( int i = 0 ; i < WG_NB_MODES ; i++ )
 	{
@@ -551,4 +550,11 @@ bool WgTextProp::IsEqual(WgMode mode0, WgMode mode1) const
 			m_modeProp[mode0].m_bgColor == m_modeProp[mode1].m_bgColor &&
 			m_modeProp[mode0].m_style == m_modeProp[mode1].m_style &&			
 			m_modeProp[mode0].m_size == m_modeProp[mode1].m_size;			
+}
+
+//____ WgTextLink::Constructor ________________________________________________
+
+WgTextLink::WgTextLink( std::string link, WgTextLinkHandlerPtr pEmitter ) : 
+			m_bClicked(false), m_pEmitter(pEmitter), m_link(link) 
+{
 }

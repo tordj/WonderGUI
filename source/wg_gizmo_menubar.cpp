@@ -28,6 +28,7 @@
 #include	<wg_types.h>
 #include	<wg_char.h>
 #include	<wg_pen.h>
+#include	<wg_base.h>
 
 #ifndef WG_SURFACE_DOT_H
 #	include	<wg_surface.h>
@@ -117,11 +118,15 @@ bool WgGizmoMenubar::AddMenu( const char * pTitle, Wdg_Menu * pMenu, Uint16 navK
 
 	// Calculate linewidth
 
-	WgTextAttr	attr(m_pTextProp, WG_MODE_NORMAL);
-	
-	Uint32 lineWidthNormal = WgTextTool::lineWidth( 0, &attr, pItem->m_pText );
-	attr.mode = WG_MODE_MARKED;
-	Uint32 lineWidthMarked = WgTextTool::lineWidth( 0, &attr, pItem->m_pText );
+	WgTextAttr	attr;
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL);
+	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_MODE_NORMAL);
+	Uint32 lineWidthNormal = WgTextTool::lineWidth( 0, attr, WG_MODE_NORMAL, pItem->m_pText );
+
+	attr.Clear();
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), WG_MODE_MARKED);
+	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_MODE_MARKED);
+	Uint32 lineWidthMarked = WgTextTool::lineWidth( 0, attr, WG_MODE_NORMAL, pItem->m_pText );
 
 	if( lineWidthNormal > lineWidthMarked )
 		pItem->m_width = lineWidthNormal;
@@ -240,8 +245,12 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	WgPen pen;
 
-	WgTextAttr	attr( m_pTextProp );
-	pen.SetTextAttr( &attr );
+
+	WgTextAttr	attr;
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL);
+	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_MODE_NORMAL);
+
+	pen.SetAttributes( attr );
 	pen.SetClipRect( clip );
 	pen.SetDevice( pDevice );
 
@@ -273,8 +282,12 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 			pen.SetPos( WgCord(posX + b.left, printPosY) );
 
-			WgTextAttr	attr( m_pTextProp, mode );
-			pDevice->PrintLine( &pen, &attr, pI->m_pText );
+			WgTextAttr	attr;
+			WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL);
+			WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_MODE_NORMAL);
+			pen.SetAttributes( attr );
+
+			pDevice->PrintLine( pen, attr, pI->m_pText );
 
 			posX += pI->m_width + b.width();
 		}

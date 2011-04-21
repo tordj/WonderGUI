@@ -78,39 +78,39 @@ public:
 	inline static Uint16 readChar( const char *& pStr );
 	static Uint16	parseChar( const char * pStr );	// Should be null terminated
 
-	static Uint32	readString( const char *& pSrc, Uint16 * pDst, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	readString( const char *& pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	readString( const Uint16 *& pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	readString( const char *& pSrc, WgCodePage codepage, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	readString( const char *& pSrc, WgCodePage codepage, Uint16 * pDst, Uint32 maxChars = 0xFFFFFFFF );
+	static Uint32	readString( const char *& pSrc, Uint16 * pDst, Uint32 maxChars = INT_MAX );
+	static Uint32	readString( const char *& pSrc, WgChar * pDst, Uint32 maxChars = INT_MAX );
+	static Uint32	readString( const Uint16 *& pSrc, WgChar * pDst, Uint32 maxChars = INT_MAX );
+	static Uint32	readString( const char *& pSrc, WgCodePage codepage, WgChar * pDst, Uint32 maxChars = INT_MAX );
+	static Uint32	readString( const char *& pSrc, WgCodePage codepage, Uint16 * pDst, Uint32 maxChars = INT_MAX );
 
-	static Uint32	countChars( const char * pStr, Uint32 strlen = 0xFFFFFFFF );
+	static Uint32	countChars( const char * pStr, Uint32 strlen = INT_MAX );
 
 	static Uint32	countLines( const char * pStr );
 	static Uint32	countLines( const Uint16 * pStr );
 	static Uint32	countLines( const WgChar * pStr );
 
-	static Uint32	countWhitespaces( const char * pStr, Uint32 len = 0xFFFFFFFF );
-	static Uint32	countWhitespaces( const Uint16 * pStr, Uint32 len = 0xFFFFFFFF  );
-	static Uint32	countWhitespaces( const WgChar * pStr, Uint32 len = 0xFFFFFFFF  );
+	static Uint32	countWhitespaces( const char * pStr, Uint32 len = INT_MAX );
+	static Uint32	countWhitespaces( const Uint16 * pStr, Uint32 len = INT_MAX  );
+	static Uint32	countWhitespaces( const WgChar * pStr, Uint32 len = INT_MAX  );
 
-	static Uint32	countLineChars( const char * pStr, Uint32 len = 0xFFFFFFFF );
-	static Uint32	countLineChars( const Uint16 * pStr, Uint32 len = 0xFFFFFFFF );
-	static Uint32	countLineChars( const WgChar * pStr, Uint32 len = 0xFFFFFFFF );
+	static Uint32	countLineChars( const char * pStr, Uint32 len = INT_MAX );
+	static Uint32	countLineChars( const Uint16 * pStr, Uint32 len = INT_MAX );
+	static Uint32	countLineChars( const WgChar * pStr, Uint32 len = INT_MAX );
 
-	static void		countCharsLines( const char * pStr, Uint32& putChars, Uint32& putLines, Uint32 strlen = 0xFFFFFFFF );
-	static void		countCharsLines( const Uint16 * pStr, Uint32& putChars, Uint32& putLines, Uint32 strlen = 0xFFFFFFFF );
-	static void		countCharsLines( const WgChar * pStr, Uint32& putChars, Uint32& putLines, Uint32 strlen = 0xFFFFFFFF );
+	static void		countCharsLines( const char * pStr, Uint32& putChars, Uint32& putLines, Uint32 strlen = INT_MAX );
+	static void		countCharsLines( const Uint16 * pStr, Uint32& putChars, Uint32& putLines, Uint32 strlen = INT_MAX );
+	static void		countCharsLines( const WgChar * pStr, Uint32& putChars, Uint32& putLines, Uint32 strlen = INT_MAX );
 
-	static Uint32	countNonFormattingChars( const char * pStr, Uint32 strlen = 0xFFFFFFFF );
-	static Uint32	countNonFormattingChars( const Uint16 * pStr, Uint32 strlen = 0xFFFFFFFF );
+	static Uint32	countNonFormattingChars( const char * pStr, Uint32 strlen = INT_MAX );
+	static Uint32	countNonFormattingChars( const Uint16 * pStr, Uint32 strlen = INT_MAX );
 
 
 
-	static Uint32	readFormattedString( const char * pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
-	static Uint32	readFormattedString( const Uint16 * pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
+	static Uint32	readFormattedString( const char * pSrc, WgChar * pDst, Uint32 maxChars = INT_MAX, const WgResDB * pResDB = 0 );
+	static Uint32	readFormattedString( const Uint16 * pSrc, WgChar * pDst, Uint32 maxChars = INT_MAX, const WgResDB * pResDB = 0 );
 
-	static Uint32	CopyChars( const WgChar * pSrc, WgChar * pDst, Uint32 maxChars = 0xFFFFFFFF );
+	static Uint32	CopyChars( const WgChar * pSrc, WgChar * pDst, Uint32 maxChars = INT_MAX );
 
 	static char * nextLine( char * pStr );
 
@@ -137,22 +137,22 @@ public:
 
 	static Uint32	getTextUTF8( const WgChar * pSrc, char * pDest, Uint32 maxBytes );
 	static Uint32	getTextUTF8( const Uint16 * pSrc, char * pDest, Uint32 maxBytes );
-	static Uint32	getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars = 0x7FFFFFFF );
+	static Uint32	getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars = INT_MAX );
 
-	static Uint32	getTextSizeUTF8( const WgChar * pSrc, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	getTextSizeUTF8( const Uint16 * pSrc, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars = 0x7FFFFFFF );
+	static Uint32	getTextSizeUTF8( const WgChar * pSrc, Uint32 maxChars = INT_MAX );
+	static Uint32	getTextSizeUTF8( const Uint16 * pSrc, Uint32 maxChars = INT_MAX );
+	static Uint32	getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars = INT_MAX );
 
 	static Uint32	getTextFormatted( const WgChar * pSrc, Uint16 * pDest, Uint32 maxChars, const WgResDB * pResDB = 0 );
-	static Uint32	getTextSizeFormatted( const WgChar * pSrc, Uint32 maxChars = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
+	static Uint32	getTextSizeFormatted( const WgChar * pSrc, Uint32 maxChars = INT_MAX, const WgResDB * pResDB = 0 );
 
 	static Uint32	getTextFormattedUTF8( const WgChar * pSrc, char * pDest, Uint32 maxBytes, const WgResDB * pResDB = 0 );
-	static Uint32	getTextSizeFormattedUTF8( const WgChar * pSrc, Uint32 maxChars = 0xFFFFFFFF, const WgResDB * pResDB = 0 );
+	static Uint32	getTextSizeFormattedUTF8( const WgChar * pSrc, Uint32 maxChars = INT_MAX, const WgResDB * pResDB = 0 );
 
-	static Uint32	getTextSizeStrippedUTF8( const char * pStr, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	getTextSizeStrippedUTF8( const Uint16 * pStr, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	getTextSizeStripped( const char * pStr, Uint32 maxChars = 0xFFFFFFFF );
-	static Uint32	getTextSizeStripped( const Uint16 * pStr, Uint32 maxChars = 0xFFFFFFFF );
+	static Uint32	getTextSizeStrippedUTF8( const char * pStr, Uint32 maxChars = INT_MAX );
+	static Uint32	getTextSizeStrippedUTF8( const Uint16 * pStr, Uint32 maxChars = INT_MAX );
+	static Uint32	getTextSizeStripped( const char * pStr, Uint32 maxChars = INT_MAX );
+	static Uint32	getTextSizeStripped( const Uint16 * pStr, Uint32 maxChars = INT_MAX );
 
 
 
@@ -174,21 +174,13 @@ public:
 	static int		glyphcmpIgnoreCase( const WgChar * pStr1, const WgChar * pStr2 );
 
 
-	static Uint32	textWidth( const WgText& kTextObj );
-//	static Uint32	lineWidth( const WgText& kTextObj, const char * pString );
-	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const char * pString );
-	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const Uint16 * pString );
-	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar * pString );
-	static Uint32	lineWidthPart( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar * pString, int nCol );
+	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const char * pString );
+	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const Uint16 * pString );
+	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr& attr, WgMode mode, const WgChar * pString );
 
-	static int		forwardPixels( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar *& pPos, Uint32 nPixels );
-//	static void		forwardColumns( TextParam& param, const Uint16 *& pPos, Uint32 nColumns );
-	static void		forwardColumns( const WgChar *& pPos, Uint32 nColumns );
 	static void		forwardCharacters( const char *& pChar, Uint32 nChars );
 	static void		forwardEscapedCharacters( const char *& pChar, Uint32 nChars );
 	static void		forwardEscapedCharacters( const Uint16 *& pChar, Uint32 nChars );
-
-	static Uint32	ofsX2column( WgTextNode * pNode, const WgTextAttr * pAttr, int ofs, const WgChar * pString, WgCursorInstance * pCursor = 0, int * wpOfsRemainder = 0 );
 
 	static void			SetGlyph( Uint16 glyph, WgChar * pChar, Uint32 nb );
 	static void			SetChars( const WgChar& ch, WgChar * pChar, Uint32 nb );
@@ -208,8 +200,8 @@ public:
 	static void			ClearUnderlined( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 
 
-	static void			AddProp( WgTextAttr& attr, const WgTextPropPtr& pProp, WgMode mode = WG_MODE_NORMAL );
-
+	static void			AddPropAttributes( WgTextAttr& attr, const WgTextPropPtr& pProp, WgMode mode = WG_MODE_NORMAL );
+/*
 	static bool				IsCharUnderlined(	Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
 	static const WgColor	GetCharColor(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
 	static const WgColor	GetCharBgColor(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
@@ -221,6 +213,7 @@ public:
 	static int				GetCharBreakLevel(	Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL );
 	static WgTextLinkPtr	GetCharLink(		Uint16 hCharProp, const WgTextAttr * pAttr );
 	static bool				IsCharLink(			Uint16 hCharProp, const WgTextAttr * pAttr );
+*/
 
 /*
 	static bool				IsCombUnderlined( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );

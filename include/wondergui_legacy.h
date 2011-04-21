@@ -201,7 +201,7 @@
 #endif
 
 #ifndef WG_INPUTDEVICE_DOT_H
-#	include <wg_inputdevice.h>
+//#	include <wg_inputdevice.h>
 #endif
 
 #ifndef WG_MEMPOOL_DOT_H
@@ -221,7 +221,7 @@
 #endif
 
 #ifndef WG_ROOT_DOT_H
-#	include <wg_root.h>
+//#	include <wg_root.h>
 #endif
 
 #ifndef WG_SIGNALS_DOT_H

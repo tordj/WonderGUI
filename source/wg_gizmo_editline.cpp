@@ -120,7 +120,7 @@ Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 
 	Uint32 retVal = 0;
 
-	if( m_maxCharacters == 0 || ((unsigned) str.Length()) < m_maxCharacters - m_pText->nbChars() )
+	if( m_maxCharacters == 0 || str.Length() < m_maxCharacters - m_pText->nbChars() )
 	{
 		m_pText->putText( str );
 		retVal = str.Length();
@@ -215,7 +215,7 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		pText->gotoSoftPos( m_text.line(), m_text.column() );
 		pText->incTime( m_text.time() );
 
-		Uint32 sl, sc, el, ec;
+		int sl, sc, el, ec;
 		if( m_text.getSelection(sl, sc, el, ec) )
 			pText->selectText(sl, sc, el, ec);
 
@@ -261,8 +261,11 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 
 			if( m_bPasswordMode )
 			{
+				WgTextAttr	attr;
+				m_pText->GetBaseAttr( attr );
+
 				WgPen	pen;
-				pen.SetTextAttr( m_pText->GetAttr() );
+				pen.SetAttributes( attr );
 				pen.SetChar(m_pwGlyph);
 				pen.AdvancePos();
 
@@ -280,7 +283,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 			}
 			else
 			{
-				m_pText->gotoPixel(x, 0);
+				m_pText->CursorGotoCoord( WgCord(x, 0), WgRect(0,0,1000000,1000000) );
 			}
 
 			if(IsSelectable() && action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
@@ -451,10 +454,13 @@ void WgGizmoEditline::AdjustViewOfs()
 		if( !pCursor )
 			return;
 
-		Uint32 cursCol	= m_pText->column();
+		int cursCol	= m_pText->column();
+
+		WgTextAttr	attr;
+		m_pText->GetBaseAttr( attr );
 
 		WgPen	pen;
-		pen.SetTextAttr( m_pText->GetAttr() );
+		pen.SetAttributes( attr );
 		pen.SetChar(m_pwGlyph);
 		pen.AdvancePos();
 
@@ -473,7 +479,7 @@ void WgGizmoEditline::AdjustViewOfs()
 		if( m_bPasswordMode )
 			cursOfs = cursCol * pwAdvance;
 		else
-			cursOfs	= m_pText->getLineWidthPart( 0, 0, cursCol );
+			cursOfs	= m_pText->getSoftLineWidthPart( 0, 0, cursCol );
 
 		// Calculate maxOfs
 
@@ -482,7 +488,7 @@ void WgGizmoEditline::AdjustViewOfs()
 			if( m_bPasswordMode )
 				maxOfs = (cursCol-1) * pwAdvance;
 			else
-				maxOfs = m_pText->getLineWidthPart( 0, 0, cursCol-1 );
+				maxOfs = m_pText->getSoftLineWidthPart( 0, 0, cursCol-1 );
 		}
 		else
 			maxOfs = cursOfs;
@@ -496,7 +502,7 @@ void WgGizmoEditline::AdjustViewOfs()
 			if( m_bPasswordMode )
 				minOfs = (cursCol+1) * pwAdvance + cursAdvance - geoWidth;
 			else
-				minOfs = m_pText->getLineWidthPart( 0, 0, cursCol+1 ) + cursAdvance - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
+				minOfs = m_pText->getSoftLineWidthPart( 0, 0, cursCol+1 ) + cursAdvance - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
 		}
 		else
 			minOfs = cursOfs + cursBearing + cursWidth - geoWidth;

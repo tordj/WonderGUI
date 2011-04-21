@@ -155,8 +155,8 @@ public:
 
 	// Low-level print methods
 
-	static inline void		printLine( WgPen * pPen, const WgTextAttr * pAttr,
-									   const WgChar * pString, int maxChars = 0x1FFFFFFF, bool bLineEnding = true );
+	static inline void		printLine( WgPen& pen, const WgTextAttr& attr,
+									   const WgChar * pString, int maxChars = INT_MAX, WgMode mode = WG_MODE_NORMAL );
 
 private:
 	static WgGfxDevice *	m_pDevice;
@@ -361,9 +361,9 @@ inline void WgGfx::printText( const WgRect& clip, const WgText * pText, const Wg
 	m_pDevice->PrintText( clip, pText, dest );
 }
 
-inline void WgGfx::printLine( WgPen * pPen, const WgTextAttr * pAttr, const WgChar * pString, int maxChars, bool bLineEnding )
+inline void WgGfx::printLine( WgPen& pen, const WgTextAttr& attr, const WgChar * pString, int maxChars, WgMode mode )
 {
-	m_pDevice->PrintLine( pPen, pAttr, pString, maxChars, bLineEnding );
+	m_pDevice->PrintLine( pen, attr, pString, maxChars, mode );
 }
 
 

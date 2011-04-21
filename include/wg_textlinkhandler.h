@@ -20,12 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_TEXTLINK_DOT_H
-#define WG_TEXTLINK_DOT_H
-
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
+#ifndef WG_TEXTLINKHANDLER_DOT_H
+#define WG_TEXTLINKHANDLER_DOT_H
 
 #ifndef WG_SMARTPTR_DOT_H
 #	include <wg_smartptr.h>
@@ -41,31 +37,24 @@
 
 class WgText;
 
-//____ WgTextLink _____________________________________________________________
+typedef	WgSmartPtr<class WgTextLinkHandler> WgTextLinkHandlerPtr;
 
-class WgTextLink : public WgEmitter, private WgRefCounted
+
+//____ WgTextLinkHandler ______________________________________________________
+
+class WgTextLinkHandler : public WgEmitter, public WgRefCounted
 {
-	friend class WgSmartPtr<WgTextLink>;
 	friend class WgText;
 
 public:
-	void			SetClicked() { m_bClicked = true; }
-	void			ClearClicked() { m_bClicked = false; }
-	inline bool		Clicked() const { return m_bClicked; }
+	static WgTextLinkHandlerPtr	Create() { return new WgTextLinkHandler(); }
 
-protected:
-	WgTextLink() { m_bClicked = false; };
-
-
-	// Called by text-class so we can respond to actions.
+private:
+	WgTextLinkHandler() {}
+	~WgTextLinkHandler() {}
 
 	void	OnAction( WgInput::UserAction action, int button_key );
-
-	//
-
-	bool			m_bClicked;
 };
 
-typedef	WgSmartPtr<WgTextLink>	WgTextLinkPtr;
 
-#endif //WG_TEXTLINK_DOT_H
+#endif //WG_TEXTLINKHANDLER_DOT_H

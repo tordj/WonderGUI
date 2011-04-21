@@ -524,7 +524,7 @@ public:
 	/// character. Only the used section of the buffer is filled, unused capacity
 	/// is not affected.
 
-	inline void			Fill( const WgChar& ch )												{ Fill( ch, 0, 0xFFFFFFFF ); }
+	inline void			Fill( const WgChar& ch )												{ Fill( ch, 0, INT_MAX ); }
 
 	/// @brief	Fills a section of the buffer with specified character.
 	///
@@ -547,7 +547,7 @@ public:
 	/// Only the used section of the buffer is affected, unused capacity is not
 	/// filled with the glyph.
 
-	inline void			SetGlyphs( Uint16 glyph )												{ SetGlyphs( glyph, 0, 0xFFFFFFFF ); }
+	inline void			SetGlyphs( Uint16 glyph )												{ SetGlyphs( glyph, 0, INT_MAX ); }
 
 	/// @brief	Sets the glyph for a range of characters.
 	///
@@ -568,7 +568,7 @@ public:
 	/// By setting the properties you erase all previous settings of individual
 	/// properties for the characters, like font, color, style and underlined.
 
-	inline void			SetProperties( const WgTextPropPtr& pProp )								{ SetProperties( pProp, 0, 0xFFFFFFFF ); }
+	inline void			SetProperties( const WgTextPropPtr& pProp )								{ SetProperties( pProp, 0, INT_MAX ); }
 
 	/// @brief	Sets the properties for a range of characters.
 	///
@@ -593,7 +593,7 @@ public:
 	///
 	/// Setting pFont to null is identical to calling ClearFont().
 
-	void				SetFont( WgFont * pFont )												{ SetFont( pFont, 0, 0xFFFFFFFF ); }
+	void				SetFont( WgFont * pFont )												{ SetFont( pFont, 0, INT_MAX ); }
 
 	/// @brief	Sets the font for a range of characters.
 	///
@@ -621,7 +621,7 @@ public:
 	/// This method specifies the color with which the characters glyphs will be tinted when displayed in the specified mode
 	/// or all modes.
 
-	inline void			SetColor( const WgColor color, WgMode mode = WG_MODE_ALL )				{ SetColor( color, 0, 0xFFFFFFFF, mode ); }
+	inline void			SetColor( const WgColor color, WgMode mode = WG_MODE_ALL )				{ SetColor( color, 0, INT_MAX, mode ); }
 
 	/// @brief	Sets the color for a range of characters.
 	///
@@ -650,7 +650,7 @@ public:
 	/// This method specifies the style in which the character is rendered when displayed in the specified mode
 	/// or all modes.
 
-	inline void			SetStyle( WgFontStyle style, WgMode mode = WG_MODE_ALL )				{ SetStyle( style, 0, 0xFFFFFFFF, mode ); }
+	inline void			SetStyle( WgFontStyle style, WgMode mode = WG_MODE_ALL )				{ SetStyle( style, 0, INT_MAX, mode ); }
 
 	/// @brief	Sets the style for a range of characters.
 	///
@@ -676,7 +676,7 @@ public:
 	///
 	/// Specifying a single mode as underlined doesn't affect whether other modes are underlined or not.
 
-	inline void			SetUnderlined( WgMode mode = WG_MODE_ALL )								{ SetUnderlined( 0, 0xFFFFFFFF, mode ); }
+	inline void			SetUnderlined( WgMode mode = WG_MODE_ALL )								{ SetUnderlined( 0, INT_MAX, mode ); }
 
 	/// @brief	Sets a range of characters to underlined.
 	///
@@ -696,14 +696,14 @@ public:
 	///
 	/// Clears the content of the buffer without resizing it.
 
-	inline void			Clear() { Delete( 0, 0xFFFFFFFF ); }
+	inline void			Clear() { Delete( 0, INT_MAX ); }
 
 	/// @brief	Clears the properties for all characters currently in the buffer.
 	///
 	/// By clearing the properties you erase all previous settings of individual
 	/// properties for the characters, like font, color, style and underlined.
 
-	inline void			ClearProperties()														{ ClearProperties( 0, 0xFFFFFFFF ); }
+	inline void			ClearProperties()														{ ClearProperties( 0, INT_MAX ); }
 
 	/// @brief	Clears the properties for a range of characters.
 	///
@@ -718,7 +718,7 @@ public:
 
 	/// @brief	Clears the font for all characters currently in the buffer.
 
-	inline void			ClearFont()																{ ClearFont( 0, 0xFFFFFFFF ); }
+	inline void			ClearFont()																{ ClearFont( 0, INT_MAX ); }
 
 	/// @brief	Clears the font for a range of characters.
 	///
@@ -738,7 +738,7 @@ public:
 	///
 	/// This method clears the color-property of all characters in the buffer.
 
-	inline void			ClearColor( WgMode mode = WG_MODE_ALL )									{ ClearColor( 0, 0xFFFFFFFF, mode ); }
+	inline void			ClearColor( WgMode mode = WG_MODE_ALL )									{ ClearColor( 0, INT_MAX, mode ); }
 
 	/// @brief	Clears the color setting for a range of characters.
 	///
@@ -761,7 +761,7 @@ public:
 	///
 	/// This method clears the style-property of all characters in the buffer.
 
-	inline void			ClearStyle( WgMode mode = WG_MODE_ALL )									{ ClearStyle( 0, 0xFFFFFFFF, mode ); }
+	inline void			ClearStyle( WgMode mode = WG_MODE_ALL )									{ ClearStyle( 0, INT_MAX, mode ); }
 
 	/// @brief	Clears the style setting for a range of characters.
 	///
@@ -782,7 +782,7 @@ public:
 	/// @param mode		The characters can have their underline removed from an individual mode by specifying it here.
 	///					This parameter defaults to WG_MODE_ALL, which removes underline from the characters in all modes.
 
-	inline void			ClearUnderlined( WgMode mode = WG_MODE_ALL )							{ ClearUnderlined( 0, 0xFFFFFFFF, mode ); }
+	inline void			ClearUnderlined( WgMode mode = WG_MODE_ALL )							{ ClearUnderlined( 0, INT_MAX, mode ); }
 
 	/// @brief	Removes underline from a range of characters.
 	///

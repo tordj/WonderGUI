@@ -78,7 +78,7 @@ public:
 	WgCharSeq( const std::wstring& str, int ofs, int len );
 	WgCharSeq( const WgString& str );
 	WgCharSeq( const WgString& str, int ofs, int len );
-	WgCharSeq( const WgCharSeq& seq, int ofs = 0, int len = 0x7FFFFFFF );
+	WgCharSeq( const WgCharSeq& seq, int ofs = 0, int len = INT_MAX );
 
 	class WgCharBasket
 	{

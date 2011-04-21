@@ -67,11 +67,13 @@ public:
 
 	void					SetOrigo( const WgCord& pos ) { m_origo = pos; }
 
-	bool					SetAllProps( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
-	bool					SetCharProp( Uint16 hCharProp );
-	bool					SetTextAttr( const WgTextAttr * pAttr );
-	bool					SetSelected( bool bSelected );
-	bool					SetLinkMode( WgMode mode );
+	bool					SetAttributes( const WgTextAttr& attr );
+	bool					SetSize( int size );
+	void					SetFont( WgFont * pFont );
+	void					SetStyle( WgFontStyle style );
+	void					SetColor( WgColor color );
+//	void					SetCharVisibility( int visibilityFlags );		// We need something better here...
+
 
 	inline void				SetPos( const WgCord& pos ) { m_pos = pos; }
 	inline void				SetPosX( int x ) { m_pos.x = x; }
@@ -121,7 +123,7 @@ public:
 private:
 	void Init();
 
-	void _updateProps();
+	void _onAttrChanged();
 
 	class DummyGlyph : public WgGlyph
 	{
@@ -134,13 +136,6 @@ private:
 
 	//
 
-	Uint16			m_hCharProp;
-	const WgTextAttr*	m_pAttr;
-	WgMode			m_linkMode;
-	bool			m_bSelected;
-
-	bool			m_bPropsOk;
-
 	//
 
 	WgGlyphSet *m_pGlyphs;			// Pointer at our glyphs.
@@ -149,6 +144,7 @@ private:
 	WgGlyphPtr		m_pGlyph;		// Current glyph.
 
 	WgFont *		m_pFont;		// Pointer back to the font.
+	int				m_wantedSize;	// Size we requested.
 	int				m_size;			// Fontsize we got a glyphset for, which might be smaller than what we requested.
 	WgFontStyle		m_style;		// Style of glyphset we requested.
 	WgColor			m_color;		// Color this pen draws in.

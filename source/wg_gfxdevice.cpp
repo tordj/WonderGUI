@@ -32,7 +32,6 @@
 #include <wg_gfxanim.h>
 #include <wg_util.h>
 #include <wg_pen.h>
-#include <wg_textlink.h>
 
 //____ Constructor _____________________________________________________________
 
@@ -819,21 +818,24 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 	pen.SetDevice( this );
 	pen.SetTextNode( pText->getNode() );
 
+	WgTextAttr	attr;
+	pText->GetBaseAttr(attr);
+	pen.SetAttributes(attr);
+
 	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.contains( dest ) )
 		pen.SetClipRect( clip );
 
-	pen.SetTextAttr( pText->GetAttr() );
-
 	const WgCursorInstance* pCursor = 0;
-	if( pText->isCursorShowing() )
-		pCursor = pText->GetCursor();
+	int cursLine = -1, cursCol = -1;
 
-	Uint32 cursLine = -1, cursCol = -1;
-	if(pCursor)
+	if( pText->isCursorShowing() )
+	{
+		pCursor = pText->GetCursor();
 		pCursor->getSoftPos( cursLine, cursCol );
+	}
 
 	WgCord	pos;
-	pos.y = pText->ScreenY( dest ) + pen.GetBaseline();
+	pos.y = pText->LineStartY( 0, dest ) + pText->getSoftLine(0)->baseline;
 
 	Uint32				nLines = pText->nbSoftLines();
 	const WgTextLine *	pLines = pText->getSoftLines();
@@ -841,18 +843,19 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 
 	for( unsigned int i = 0 ; i < nLines ; i++ )
 	{
-		pos.x = pText->ScreenX( i, dest );
+		pos.x = pText->LineStartX( i, dest );
 		pen.SetOrigo( pos );		// So tab positions will start counting from start of line.
 		pen.SetPos( pos );
+		pen.FlushChar();			// Remove kerning info for previous char.
 
 		if( cursLine == i )
 		{
 			// Draw line parts, make space for cursor.
 
-			PrintLine( &pen, pText->GetAttr(), pChars + pLines[i].ofs, cursCol, false, pText->GetMarkedLink(), pText->GetMarkedLinkMode() );
+			_printTextSpan( pen, pText, pLines[i].ofs, cursCol, false );
 			WgCord cursorPos = pen.GetPos();
 			pen.AdvancePosCursor( *pCursor );
-			PrintLine( &pen, pText->GetAttr(), pChars + pLines[i].ofs + cursCol, pLines[i].nChars - cursCol, true, pText->GetMarkedLink(), pText->GetMarkedLinkMode() );
+			_printTextSpan( pen, pText, pLines[i].ofs + cursCol, pLines[i].nChars - cursCol, true );
 
 			// Blit the cursor
 
@@ -863,12 +866,108 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 		}
 		else
 		{
-			PrintLine( &pen, pText->GetAttr(), pChars + pLines[i].ofs, pLines[i].nChars, true, pText->GetMarkedLink(), pText->GetMarkedLinkMode() );
+			_printTextSpan( pen, pText, pLines[i].ofs, pLines[i].nChars, true );
 		}
 
 		pos.y += pLines[i].lineSpacing;
 	}
 }
+
+//____ _printTextSpan() ________________________________________________________
+
+void WgGfxDevice::_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, bool bLineEnding )
+{
+	WgColor baseCol	= m_tintColor;
+	WgColor	color	= baseCol;
+
+	const WgChar * pChars = pText->getText();
+	Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
+	WgTextAttr		attr;
+
+	// Print loop
+
+	for( int i = ofs ; i < ofs + len ; i++ )
+ 	{
+		// Act on possible change of character attributes.
+
+		if( pChars[i].PropHandle() != hProp )
+		{
+			bool bWasUnderlined = attr.bUnderlined;
+
+			hProp = pChars[i].PropHandle();
+
+			pText->GetCharAttr( attr, i );
+			pen.SetAttributes(attr);
+			if( !pen.GetGlyphSet() )
+				return;											// Better not to print than to crash...
+
+			// Set tint colors (if changed)
+
+			if( pen.GetColor() != color )
+			{
+				color = pen.GetColor();
+				SetTintColor( baseCol * color );
+			}
+
+			// Check if this is start of underlined text and in that case draw the underline.
+
+			if( attr.bUnderlined && (i==0 || !bWasUnderlined) )
+			{
+				WgRect clip = pen.HasClipRect()?pen.GetClipRect():WgRect(0,0,65535,65535);
+				DrawUnderline( clip, pText, pen.GetPosX(), pen.GetPosY(), i, (ofs+len)-i );
+			}
+
+		}
+
+		// Calculate position and blit the glyph.
+
+		Uint16 ch = pChars[i].Glyph();
+
+		bool bBlit = pen.SetChar( ch );
+		pen.ApplyKerning();
+		if( bBlit )
+		{
+
+/*			if(selStartX == -1 && i >= iSelStart)
+				selStartX = pen.GetBlitPosX();
+
+			if(selStartX >= 0 && i < iSelEnd)
+				selEndX = pen.GetBlitPosX();
+*/
+			pen.BlitChar();
+		}
+
+		pen.AdvancePos();
+
+ 	}
+
+	// Render line-endings.
+
+	if( bLineEnding )
+	{
+		// If character after line-end was a WG_HYPHEN_BREAK_PERMITTED we need
+		// to render a normal hyphen.
+
+		if( pChars[ofs+len].Glyph() == WG_HYPHEN_BREAK_PERMITTED )
+		{
+			if( pen.SetChar( '-' ) )
+			{
+				pen.ApplyKerning();
+				pen.BlitChar();
+			}
+		}
+
+		// TODO: print LF-character if there is one following and properties says it should be displayed.
+
+	}
+
+	// Restore tint color.
+
+	if( m_tintColor != baseCol )
+		SetTintColor(baseCol);
+}
+
+
 
 //____ DrawTextBg() ___________________________________________________________
 
@@ -882,12 +981,13 @@ void WgGfxDevice::DrawTextBg( const WgRect& clip, const WgText * pText, const Wg
 
 	// First take care of general background color
 
-	WgTextPropPtr pDefProp = pText->getProperties();
+	WgTextAttr	attr;
+	pText->GetBaseAttr(attr);
 
-	if( pDefProp->IsBgColored( mode ) )
+	if( attr.bgColor.a != 0 )
 	{
 		bBgColored = true;
-		bgColor = pDefProp->GetBgColor( mode );
+		bgColor = attr.bgColor;
 		bgRects.Add( clip );
 	}
 
@@ -904,7 +1004,7 @@ void WgGfxDevice::DrawTextBg( const WgRect& clip, const WgText * pText, const Wg
 
 	int selStart, selEnd;
 
-	Uint32 startLine, startCol, endLine, endCol;
+	int startLine, startCol, endLine, endCol;
 	pText->getSelection( startLine, startCol, endLine, endCol );
 	selStart = pText->LineColToOffset(startLine, startCol);
 	selEnd = pText->LineColToOffset(endLine,endCol);
@@ -928,8 +1028,8 @@ void WgGfxDevice::DrawTextBg( const WgRect& clip, const WgText * pText, const Wg
 	WgColor	color = bgColor;
 	int		startOfs = 0;
 
-	const WgChar * pChars = pText->getBuffer()->Chars();
-	int nChars = pText->getBuffer()->Length();
+	const WgChar * pChars = pText->getText();
+	int nChars = pText->nbChars();
 
 	for( int ofs = 0 ; ofs < nChars ; ofs++ )
 	{
@@ -946,18 +1046,14 @@ void WgGfxDevice::DrawTextBg( const WgRect& clip, const WgText * pText, const Wg
 		{
 			hProp = pChars[ofs].PropHandle();
 
-			WgMode		linkMode = WG_MODE_NORMAL;
-			WgTextLinkPtr pLink = WgTextTool::GetCharLink( hProp, pText->GetAttr() );
-			if( pLink && pLink == pText->GetMarkedLink() )
-				linkMode = pText->GetMarkedLinkMode();
+			WgTextAttr	attr;
+			pText->GetCharAttr( attr, ofs );
 
-			WgColor newColor = WgTextTool::GetCharBgColor( hProp, pText->GetAttr(), linkMode );
-
-			if( ofs != startOfs && newColor != color && color != bgColor )
+			if( ofs != startOfs && attr.bgColor != color && color != bgColor )
 			{
 				DrawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
 				hProp = pChars[ofs].PropHandle();
-				color = newColor;
+				color = attr.bgColor;
 				startOfs = ofs;
 			}
 		}
@@ -969,79 +1065,6 @@ void WgGfxDevice::DrawTextBg( const WgRect& clip, const WgText * pText, const Wg
 		DrawTextSectionBg( clip, pText, dest, startOfs, nChars, color );
 }
 
-/*
-//___________________________________________________________________________________________________
-void WgGfxDevice::PrintTextSelection( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dstRect, WgPen* pPen )
-{
-	const WgTextPropPtr	pDefProp = pText->getProperties();
-	const WgOrigo& origo	= pText->alignment();
-
-	Uint32				nLines = pText->nbSoftLines();
-	const WgTextLine *	pLines = pText->getSoftLines();
-	const WgChar *		pChars = pText->getText();
-
-	pPen->SetTextNode( pText->getNode() );
-	pPen->SetTextProp( pDefProp, WgTextPropPtr(), pText->mode() );
-
-	Uint32 iSelStartLine, iSelEndLine, iSelStartCol, iSelEndCol;
-	if(!pText->getSelection(iSelStartLine, iSelStartCol, iSelEndLine, iSelEndCol))
-		return;
-
-	pText->posHard2Soft(iSelStartLine, iSelStartCol);
-	pText->posHard2Soft(iSelEndLine, iSelEndCol);
-
-	pPen->SetPos(WgCord(0, 0));
-	int xs = CalcCharOffset(pPen, pDefProp, pChars + pLines[iSelStartLine].ofs, iSelStartCol, pText->mode() );
-
-	pPen->SetPos(WgCord(0, 0));
-	int xe = CalcCharOffset(pPen, pDefProp, pChars + pLines[iSelEndLine].ofs, iSelEndCol, pText->mode() );
-
-	WgCord dstPos;
-	dstPos.x = dstRect.x;
-	dstPos.y = (int) dstRect.y + origo.calcOfsY( dstRect.h, pText->height() );
-
-	WgRect r;
-
-	WgColor col = pText->getSelectionBgColor();
-
-	int lineH = pPen->GetLineSpacing() + pText->lineSpaceAdjustment();
-	if(iSelStartLine == iSelEndLine)
-	{
-		r.x = dstPos.x + xs + LineAlignmentToOffset( pText, iSelStartLine, dstRect );
-		r.y = dstPos.y + iSelStartLine * lineH;
-		r.w = xe - xs;
-		r.h = lineH;
-		ClipFill(clip, r, col);
-	}
-	else
-	{
-		r.x = dstPos.x + xs  + LineAlignmentToOffset( pText, iSelStartLine, dstRect );
-		r.y = dstPos.y + iSelStartLine * lineH;
-		r.w = pText->getSoftLineSelectionWidth(iSelStartLine) - xs;
-		r.h = lineH;
-		ClipFill(clip, r, col);
-
-		++iSelStartLine;
-		for(; iSelStartLine < iSelEndLine; ++iSelStartLine)
-		{
-			r.x = dstPos.x  + LineAlignmentToOffset( pText, iSelStartLine, dstRect );
-			r.y += lineH;
-			r.w = pText->getSoftLineSelectionWidth(iSelStartLine);
-			r.h = lineH;
-			ClipFill(clip, r, col);
-		}
-
-		r.x = dstPos.x  + LineAlignmentToOffset( pText, iSelStartLine, dstRect );
-		r.y = r.y + r.h;
-		r.w = xe;
-		r.h = lineH;
-		ClipFill(clip, r, col);
-	}
-
-
-}
-*/
-
 //___________________________________________________________________________________________________
 void WgGfxDevice::DrawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect, 
 									  int iStartOfs, int iEndOfs, WgColor color )
@@ -1049,110 +1072,53 @@ void WgGfxDevice::DrawTextSectionBg( const WgRect& clip, const WgText * pText, c
 	const WgTextLine *	pLines = pText->getSoftLines();
 	const WgChar *		pChars = pText->getText();
 
-	int iStartLine, iStartCol;
-	int iEndLine, iEndCol;
-
-	pText->OffsetToSoftLineCol( iStartOfs, &iStartLine, &iStartCol );
-	pText->OffsetToSoftLineCol( iEndOfs, &iEndLine, &iEndCol );
+	WgTextPos startPos = pText->OfsToPos( iStartOfs );
+	WgTextPos endPos = pText->OfsToPos( iEndOfs );
 	
-	WgPen pen;
-	pen.SetTextNode( pText->getNode() );
-	pen.SetTextAttr( pText->GetAttr() );
+	int xs = pText->PosToCoordX( startPos, dstRect );
+	int xe = pText->PosToCoordX( endPos, dstRect );
 
-	int xs = CalcCharOffset(&pen, pChars + pLines[iStartLine].ofs, iStartCol );
-	int xe = CalcCharOffset(&pen, pChars + pLines[iEndLine].ofs, iEndCol );
-
-	int dstPosY = pText->ScreenY( dstRect );
+	int dstPosY = pText->LineStartY( 0, dstRect );
 
 	WgRect r;
 
-	if(iStartLine == iEndLine)
+	if(startPos.line == endPos.line)
 	{
-		r.x = pText->ScreenX( iStartLine, dstRect ) + xs;
-		r.y = dstPosY + pText->getLineOfsY(iStartLine);
+		r.x = xs;
+		r.y = dstPosY + pText->getLineOfsY(startPos.line);
 		r.w = xe - xs;
-		r.h = pLines[iStartLine].height;
+		r.h = pLines[startPos.line].height;
 		ClipFill(clip, r, color);
 	}
 	else
 	{
-		r.x = pText->ScreenX( iStartLine, dstRect ) + xs;
-		r.y = dstPosY + pText->getLineOfsY(iStartLine);
-		r.w = pText->getSoftLineSelectionWidth(iStartLine) - xs;
-		r.h = pLines[iStartLine].height;
+		r.x = xs;
+		r.y = dstPosY + pText->getLineOfsY(startPos.line);
+		r.w = pText->LineStartX(startPos.line, dstRect) + pText->getSoftLineSelectionWidth(startPos.line) - xs;
+		r.h = pLines[startPos.line].height;
 		ClipFill(clip, r, color);
-		r.y += pLines[iStartLine].lineSpacing;
+		r.y += pLines[startPos.line].lineSpacing;
 
-		++iStartLine;
-		for(; iStartLine < iEndLine; ++iStartLine)
+		++startPos.line;
+		for(; startPos.line < endPos.line; ++startPos.line)
 		{
-			r.x = pText->ScreenX( iStartLine, dstRect );
-			r.w = pText->getSoftLineSelectionWidth(iStartLine);
-			r.h = pLines[iStartLine].height;
+			r.x = pText->LineStartX( startPos.line, dstRect );
+			r.w = pText->getSoftLineSelectionWidth(startPos.line);
+			r.h = pLines[startPos.line].height;
 			ClipFill(clip, r, color);
-			r.y += pLines[iStartLine].lineSpacing;
+			r.y += pLines[startPos.line].lineSpacing;
 		}
 
-		r.x = pText->ScreenX( iStartLine, dstRect );
-		r.w = xe;
-		r.h = pLines[iStartLine].height;
+		r.x = pText->LineStartX( startPos.line, dstRect );
+		r.w = xe - r.x;
+		r.h = pLines[startPos.line].height;
 		ClipFill(clip, r, color);
 	}
 }
 
-//_________________________________________________________________________
-
-int WgGfxDevice::CalcCharOffset(WgPen *pPen, const WgChar* pLine, Uint32 nChars )
-{
-	if( !pLine )
-		return 0;
-
-	Uint16	hProp = 0xFFFF;
-
-	pPen->FlushChar();
-	pPen->SetPos(WgCord(0, 0));
-
- 	for( Uint32 i = 0; i < nChars; i++ )
- 	{
-		// Act on possible change of character attributes.
-
-		if( pLine[i].PropHandle() != hProp )
-		{
-			hProp = pLine[i].PropHandle();
-
-			int success = pPen->SetCharProp( hProp );
-			if( !success )
-				break;
-		}
-
-		// Calculate position.
-		Uint16 ch = pLine[i].Glyph();
-
-		if( pPen->SetChar( ch ) )
-			pPen->ApplyKerning();
-
-		pPen->AdvancePos();
-
-		if( pLine[i].IsEndOfLine() )
-		{
-			// If this was a WG_HYPHEN_BREAK_PERMITTED that was not rendered we need
-			// to render a normal hyphen.
-
-			if( pLine[i].Glyph() == WG_HYPHEN_BREAK_PERMITTED && !pPen->SetChar( ch ) && pPen->SetChar('-') )
-				pPen->ApplyKerning();
-
-			break;
-		}
- 	}
-	int ofs = pPen->GetPosX();
-	pPen->FlushChar();
-	return ofs;
-}
-
 //____ PrintLine() ________________________________________________________
 
-void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextAttr * pAttr, const WgChar * _pLine, int maxChars, bool bLineEnding, 
-							 const WgTextLinkPtr pMarkedLink, WgMode markedLinkMode )
+void WgGfxDevice::PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars, WgMode mode )
 {
 	if( !_pLine )
 		return;
@@ -1161,12 +1127,9 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextAttr * pAttr, const WgCha
 	WgColor	color	= baseCol;
 
 	Uint16	hProp				= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
+	WgTextAttr	attr;
 
-	bool	bSelected	= false;
-	WgMode	linkMode	= WG_MODE_NORMAL;
-
-	pPen->FlushChar();
-	pPen->SetAllProps(0, pAttr, linkMode, bSelected );
+	pen.FlushChar();
 
 	// Print loop
 
@@ -1177,87 +1140,59 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextAttr * pAttr, const WgCha
 
 		if( _pLine[i].PropHandle() != hProp )
 		{
+			bool bWasUnderlined = attr.bUnderlined;
+
+			attr = baseAttr;
+
+			WgTextTool::AddPropAttributes( attr, _pLine[i].Properties(), mode );
+
 			hProp = _pLine[i].PropHandle();
 
-			int success = pPen->SetCharProp( hProp );
-			if( !success )
-				return;
-
-			// Update link-mode if this is beginning of a link.
-
-			WgTextLinkPtr pLink = WgTextTool::GetCharLink( hProp, pAttr );
-
-			if( pLink )
-			{
-				if( pLink == pMarkedLink )
-					linkMode = markedLinkMode;
-				else
-					linkMode = WG_MODE_NORMAL;
-
-				pPen->SetLinkMode(linkMode);
-			}
-
+			pen.SetAttributes( attr );
+			if( !pen.GetGlyphSet() )
+				return;											// No glyphset, better to leave than to crash...
 
 			// Set tint colors (if changed)
 
-			if( pPen->GetColor() != color )
+			if( pen.GetColor() != color )
 			{
-				color = pPen->GetColor();
+				color = pen.GetColor();
 				SetTintColor( baseCol * color );
 			}
 
 			// Check if this is start of underlined text and in that case draw the underline.
+/*
+		TODO: Figure out how to do this properly, taking mode and char-props correctly into account.
 
-			if( WgTextTool::IsCharUnderlined( _pLine[i].PropHandle(), pAttr, linkMode, bSelected ) &&
-				(i==0 || !WgTextTool::IsCharUnderlined( _pLine[i-1].PropHandle(), pAttr, linkMode, bSelected )) )
+			if( attr.bUnderlined && (i==0 || !bWasUnderlined) )
 			{
-				WgRect clip = pPen->HasClipRect()?pPen->GetClipRect():WgRect(0,0,65535,65535);
-				DrawUnderline( clip, pAttr, linkMode, bSelected, pPen->GetPosX(), pPen->GetPosY(), _pLine+i, maxChars-i );
+				WgRect clip = pen.HasClipRect()?pen.GetClipRect():WgRect(0,0,65535,65535);
+				DrawUnderline( clip, pText, pen.GetPosX(), pen.GetPosY(), i, len-i );
 			}
-
+*/
 		}
 
 		// Calculate position and blit the glyph.
 
 		Uint16 ch = _pLine[i].Glyph();
 
-		bool bBlit = pPen->SetChar( ch );
-		pPen->ApplyKerning();
+		bool bBlit = pen.SetChar( ch );
+		pen.ApplyKerning();
 		if( bBlit )
 		{
 
 /*			if(selStartX == -1 && i >= iSelStart)
-				selStartX = pPen->GetBlitPosX();
+				selStartX = pen.GetBlitPosX();
 
 			if(selStartX >= 0 && i < iSelEnd)
-				selEndX = pPen->GetBlitPosX();
+				selEndX = pen.GetBlitPosX();
 */
-			pPen->BlitChar();
+			pen.BlitChar();
 		}
 
-		pPen->AdvancePos();
+		pen.AdvancePos();
 
  	}
-
-	// Render line-endings.
-
-	if( bLineEnding )
-	{
-		// If character after line-end was a WG_HYPHEN_BREAK_PERMITTED we need
-		// to render a normal hyphen.
-
-		if( _pLine[i].Glyph() == WG_HYPHEN_BREAK_PERMITTED )
-		{
-			if( pPen->SetChar( '-' ) )
-			{
-				pPen->ApplyKerning();
-				pPen->BlitChar();
-			}
-		}
-
-		// TODO: print LF-character if there is one following and properties says it should be displayed.
-
-	}
 
 	// Restore tint color.
 
@@ -1268,28 +1203,30 @@ void WgGfxDevice::PrintLine( WgPen * pPen, const WgTextAttr * pAttr, const WgCha
 
 //____ DrawUnderline() ________________________________________________________
 
-void WgGfxDevice::DrawUnderline( const WgRect& clip, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected, int _x, int _y, const WgChar * pLine, int maxChars )
+void WgGfxDevice::DrawUnderline( const WgRect& clip, const WgText * pText, int _x, int _y, int ofs, int maxChars )
 {
 	Uint32 hProp = 0xFFFF;
 
 	WgPen pen;
+	const WgChar * pChars = pText->getText();
 
-	for( int i = 0 ; i < maxChars && !pLine[i].IsEndOfLine() ; i++ )
+	for( int i = ofs ; i < ofs + maxChars && !pChars[i].IsEndOfLine() ; i++ )
 	{
-		if( pLine[i].PropHandle() != hProp )
+		if( pChars[i].PropHandle() != hProp )
 		{
-			if( WgTextTool::IsCharUnderlined( pLine[i].PropHandle(), pAttr, linkMode, bSelected ) )
-			{
-				const WgFont * pFont = pen.GetFont();			// Save font for comparison.
+			WgTextAttr attr;
+			pText->GetCharAttr( attr, i );
 
-				hProp = pLine[i].PropHandle();
-				pen.SetAllProps( hProp, pAttr, linkMode, bSelected );
+			if( attr.bUnderlined )
+			{
+				hProp = pChars[i].PropHandle();
+				pen.SetAttributes( attr );
 			}
 			else
 				break;
 		}
 
-		pen.SetChar( pLine[i].Glyph() );
+		pen.SetChar( pChars[i].Glyph() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 	}
@@ -1299,7 +1236,5 @@ void WgGfxDevice::DrawUnderline( const WgRect& clip, const WgTextAttr * pAttr, W
 	ClipBlitHorrBar( clip, pUnderline->pSurf, pUnderline->rect, WgBorders( pUnderline->leftBorder, pUnderline->rightBorder, 0, 0 ), false,
 					_x + pUnderline->bearingX, _y + pUnderline->bearingY, pen.GetPosX() );
 }
-
-
 
 

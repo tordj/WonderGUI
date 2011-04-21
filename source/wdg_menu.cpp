@@ -31,6 +31,7 @@
 #include	<wg_font.h>
 #include	<wg_texttool.h>
 #include	<wg_pen.h>
+#include	<wg_base.h>
 
 using namespace WgSignal;
 
@@ -186,17 +187,23 @@ bool Wdg_Menu::SetTextProperties( const WgTextPropPtr& pEntryProp, const WgTextP
 	if( m_pEntryProp )
 	{
 		WgPen		pen;
-		WgTextAttr	attr( m_pEntryProp );
+		WgTextAttr	attr;
+		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL );
+		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_MODE_NORMAL );
 
-		pen.SetTextAttr( &attr );
+		pen.SetAttributes( attr );
 		int	heightNormal	= pen.GetLineSpacing();
 
-		attr.mode = WG_MODE_MARKED;
-		pen.SetTextAttr( &attr );
+		attr.Clear();
+		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextProp(), WG_MODE_MARKED );
+		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_MODE_MARKED );
+		pen.SetAttributes( attr );
 		int heightMarked	= pen.GetLineSpacing();
 
-		attr.mode = WG_MODE_DISABLED;
-		pen.SetTextAttr( &attr );
+		attr.Clear();
+		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextProp(), WG_MODE_DISABLED );
+		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_MODE_DISABLED );
+		pen.SetAttributes( attr );
 		int heightDisabled	= pen.GetLineSpacing();
 
 		if( m_entryHeight < heightNormal )
@@ -496,20 +503,28 @@ void Wdg_Menu::MoveOutsideModal( int x, int y )
 
 void Wdg_Menu::CalcEntryMinWidth( WgMenuEntry * pEntry )
 {
-	WgTextAttr	entryAttr(m_pEntryProp);
-	WgTextAttr	accelAttr(m_pEntryProp);
+	WgTextAttr	entryAttr;
+	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL );
+	WgTextTool::AddPropAttributes(entryAttr, m_pEntryProp, WG_MODE_NORMAL);
+	WgTextAttr	accelAttr;
+	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL );
+	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_MODE_NORMAL);
 
-	int wNormal = WgTextTool::lineWidth( 0, &entryAttr, "  " );
-	int wMarked = WgTextTool::lineWidth( 0, &entryAttr, "  " );
+	int wNormal = WgTextTool::lineWidth( 0, entryAttr, "  " );
+	int wMarked = WgTextTool::lineWidth( 0, entryAttr, "  " );
 
-	wNormal += WgTextTool::lineWidth( 0, &entryAttr, pEntry->GetText().Chars() );
-	wNormal += WgTextTool::lineWidth( 0, &accelAttr, pEntry->GetAccelText().Chars() );
+	wNormal += WgTextTool::lineWidth( 0, entryAttr, WG_MODE_NORMAL, pEntry->GetText().Chars() );
+	wNormal += WgTextTool::lineWidth( 0, accelAttr, WG_MODE_NORMAL, pEntry->GetAccelText().Chars() );
 
-	entryAttr.mode = WG_MODE_MARKED;
-	accelAttr.mode = WG_MODE_MARKED;
+	entryAttr.Clear();
+	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextProp(), WG_MODE_MARKED );
+	WgTextTool::AddPropAttributes(entryAttr, m_pEntryProp, WG_MODE_MARKED);
+	accelAttr.Clear();
+	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextProp(), WG_MODE_MARKED );
+	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_MODE_MARKED);
 
-	wMarked += WgTextTool::lineWidth( 0, &entryAttr, pEntry->GetText().Chars() );
-	wMarked += WgTextTool::lineWidth( 0, &accelAttr, pEntry->GetAccelText().Chars() );
+	wMarked += WgTextTool::lineWidth( 0, entryAttr, WG_MODE_NORMAL, pEntry->GetText().Chars() );
+	wMarked += WgTextTool::lineWidth( 0, accelAttr, WG_MODE_NORMAL, pEntry->GetAccelText().Chars() );
 
 
 	if( wNormal > wMarked )
@@ -620,8 +635,6 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 	WgPen	entryPen( WgGfx::GetDevice(), WgCord( xPosText, yPos ), clip );
 	WgPen	accelPen( WgGfx::GetDevice(), WgCord( xPosText, yPos ), clip );
 
-	WgTextAttr	entryAttr( m_pEntryProp );
-	WgTextAttr	accelAttr( m_pKeyAccelProp );
 
 	unsigned int	item = 1;
 	while( pItem )
@@ -671,11 +684,14 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				const WgChar * pText = ((WgMenuEntry*)pItem)->GetText().Chars();
 				if( pText->Glyph() != 0 )
 				{
-					entryAttr.mode = mode;
-					entryPen.SetTextAttr( &entryAttr );
+
+					WgTextAttr	attr;
+					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), mode );
+					WgTextTool::AddPropAttributes( attr, m_pEntryProp, mode );
+					entryPen.SetAttributes( attr );
 					int y = yPos + (m_entryHeight - entryPen.GetLineHeight())/2 + entryPen.GetBaseline();
 					entryPen.SetPos( WgCord( xPosText, y ) );
-					WgGfx::printLine( &entryPen, &entryAttr, pText );
+					WgGfx::printLine( entryPen, attr, pText );
 				}
 
 				// Print the accel text (if any)
@@ -683,15 +699,17 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				const WgChar * pAccelText = ((WgMenuEntry*)pItem)->GetAccelText().Chars();
 				if( pAccelText->Glyph() != 0 )
 				{
-					accelAttr.mode = mode;
-					accelPen.SetTextAttr( &accelAttr );
+					WgTextAttr	attr;
+					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), mode );
+					WgTextTool::AddPropAttributes( attr, m_pKeyAccelProp, mode );
+					accelPen.SetAttributes( attr );
 
 					int y = yPos + (m_entryHeight - accelPen.GetLineHeight())/2 + accelPen.GetBaseline();
-					int width = WgTextTool::lineWidth( 0, &accelAttr, pAccelText );
+					int width = WgTextTool::lineWidth( 0, attr, mode, pAccelText );
 					int x = xPosText + textFieldLen - width;
 
 					accelPen.SetPos( WgCord(x, y) );
-					WgGfx::printLine( &accelPen, &accelAttr, pAccelText );
+					WgGfx::printLine( accelPen, attr, pAccelText );
 				}
 
 				// Show the icon/checkbox/radiobutton (if any)

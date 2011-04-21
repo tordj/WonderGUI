@@ -145,7 +145,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 			int y = info.y;
 			Abs2local( &x, &y );
 
-			m_pText->gotoPixel(x,y);
+			m_pText->CursorGotoCoord( WgCord(x,y), WgRect(0,0,m_geo.w,m_geo.h) );
 			AdjustViewOfs();
 		}
 		else
@@ -190,12 +190,12 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				break;
 
 			case WGKEY_UP:
-				m_pText->goUp();
+				m_pText->CursorGoUp(1,m_geo);
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_DOWN:
-				m_pText->goDown();
+				m_pText->CursorGoDown(1,m_geo);
 				AdjustViewOfs();
 				break;
 
@@ -320,7 +320,7 @@ Uint32 Wdg_TextView::InsertTextAtCursor( const WgCharSeq& str )
 
 	Uint32 retVal = 0;
 
-	if( m_maxCharacters == 0 || ((unsigned) str.Length()) < m_maxCharacters - m_pText->nbChars() )
+	if( m_maxCharacters == 0 || str.Length() < m_maxCharacters - m_pText->nbChars() )
 	{
 		m_pText->putText( str );
 		retVal = str.Length();
@@ -367,7 +367,7 @@ void Wdg_TextView::AdjustViewOfs()
 
 	if( m_pText->GetCursor() && m_pText->getFont() )
 	{
-		Uint32 cursCol, cursLine;
+		int cursCol, cursLine;
 
 		m_pText->getSoftPos(cursLine, cursCol);
 
@@ -384,12 +384,12 @@ void Wdg_TextView::AdjustViewOfs()
 
 		// Calculate cursOfs
 
-		cursOfs	= m_pText->getLineWidthPart( 0, 0, cursCol );
+		cursOfs	= m_pText->getSoftLineWidthPart( 0, 0, cursCol );
 
 		// Calculate maxOfs
 
 		if( cursCol > 0 )
-			maxOfs = m_pText->getLineWidthPart( 0, 0, cursCol-1 );
+			maxOfs = m_pText->getSoftLineWidthPart( 0, 0, cursCol-1 );
 		else
 			maxOfs = cursOfs;
 
@@ -398,7 +398,7 @@ void Wdg_TextView::AdjustViewOfs()
 		Uint32 geoWidth = ViewPixelLenX();
 
 		if( cursCol < m_pText->getLine(0)->nChars )
-			minOfs = m_pText->getLineWidthPart( 0, 0, cursCol+1 ) + cursWidth - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
+			minOfs = m_pText->getSoftLineWidthPart( 0, 0, cursCol+1 ) + cursWidth - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
 		else
 			minOfs = cursOfs + cursWidth - geoWidth;
 
@@ -416,7 +416,7 @@ void Wdg_TextView::AdjustViewOfs()
 
 		Uint32 lineBegY = 0;
 
-		for( Uint32 i = 0 ; i < cursLine ; i++ )
+		for( int i = 0 ; i < cursLine ; i++ )
 			lineBegY += m_text.softLineSpacing(i);
 
 		Uint32 lineEndY = lineBegY + m_text.softLineHeight(cursLine);

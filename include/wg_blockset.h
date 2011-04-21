@@ -223,11 +223,9 @@ class WgMemPool;
 typedef	WgSmartPtrPooled<WgBlockSet>	WgBlockSetPtr;
 
 
-class WgBlockSet : private WgLink, private WgRefCountedPooled
+class WgBlockSet : private WgLink, public WgRefCountedPooled
 {
 	friend class WgSurface;
-	friend class WgChain<WgBlockSet>;
-	friend class WgSmartPtrPooled<WgBlockSet>;
 
 protected:
 	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked, 

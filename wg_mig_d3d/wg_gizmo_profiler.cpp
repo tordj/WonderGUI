@@ -5,6 +5,7 @@
 #include	<wg_gfx.h>
 #include	<wg_color.h>
 #include	<wg_char.h>
+#include	<wg_base.h>
 
 #include "Utilities/EProfiler.h"
 
@@ -65,9 +66,12 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	pTemp = temp;
 
 	WgPen pen( pDevice, _canvas, _clip );
-	WgTextAttr attr( m_pProp );
+	WgTextAttr attr;
+	
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp() );
+	WgTextTool::AddPropAttributes( attr, m_pProp );
 
-	pen.SetTextAttr( &attr );
+	pen.SetAttributes( attr );
 	
 	int height = pen.GetLineSpacing();
 
@@ -155,7 +159,7 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		pTemp = temp;
 		sprintf( pTemp, "%s: %.4f ms", pkProfiler->GetTimer(i)->GetName().GetChars(), fTime );
 		WgTextTool::readString( (const char *&)pTemp, temp2, 39 );
-		pDevice->PrintLine( &pen, &attr, temp2 );
+		pDevice->PrintLine( pen, attr, temp2 );
 		pen.MoveY( height );
 	}
 
@@ -171,7 +175,7 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		sprintf( pTemp, "%.4f ms", fLine );
 		WgTextTool::readString( (const char *&)pTemp, temp2, 39 );
 		int x = _canvas.x + int(Size().w*fLine/fTimeScale);
-		pDevice->PrintLine( &pen, &attr, temp2 );
+		pDevice->PrintLine( pen, attr, temp2 );
 		pen.MoveY( height );	
 		fLine += fSpace;
 	}

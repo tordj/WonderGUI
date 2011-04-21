@@ -336,29 +336,14 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 				m_text.setSelectionMode(true);
 			}
 
-			WgCord ofs = Abs2local(WgCord(info.x,0));
-
-			int x = ofs.x;
-			int y = ofs.y;
-
-			// Adjust for alignment
-
-			const WgOrigo& origo	= m_text.alignment();
-			int		ofsX = 0;
-			if( origo.anchorX() != 0 && origo.hotspotX() != 0 )
-			{
-				ofsX = origo.calcOfsX( Size().w, m_text.getSoftLineWidth(0) );
-				if( ofsX < 0 )
-					ofsX = 0;
-			}
-			x -= ofsX;
+			WgCord ofs = Abs2local(WgCord(info.x,info.y));
 
 			//
 
-			if( action == WgInput::BUTTON_PRESS || x != m_buttonDownOfs )
+			if( action == WgInput::BUTTON_PRESS || ofs.x != m_buttonDownOfs )
 			{
-				m_text.gotoPixel(x, 0);
-				m_buttonDownOfs = x;
+				m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+				m_buttonDownOfs = ofs.x;
 			}
 
 			if( action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))

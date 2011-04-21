@@ -23,6 +23,8 @@
 #ifndef WG_TEXTPROP_DOT_H
 #define WG_TEXTPROP_DOT_H
 
+#include <string>
+
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
 #endif
@@ -33,10 +35,6 @@
 
 #ifndef WG_SMARTPTR_DOT_H
 #	include <wg_smartptr.h>
-#endif
-
-#ifndef WG_TEXTLINK_DOT_H
-#	include <wg_textlink.h>
 #endif
 
 
@@ -79,6 +77,25 @@ public:
 
 private:
 	Uint16			m_hProp;
+};
+
+//____ WgTextLink _____________________________________________________________
+
+typedef	WgSmartPtr<class WgTextLinkHandler> WgTextLinkHandlerPtr;
+typedef	WgSmartPtr<class WgTextLink> WgTextLinkPtr;
+
+class WgTextLink : public WgRefCounted
+{
+public:
+	static WgTextLinkPtr Create( std::string link, WgTextLinkHandlerPtr pEmitter ) { return new WgTextLink(link,pEmitter); }
+
+	bool					m_bClicked;
+	WgTextLinkHandlerPtr	m_pEmitter;
+	std::string				m_link;
+
+private:
+	WgTextLink( std::string link, WgTextLinkHandlerPtr pEmitter );
+	~WgTextLink() {}
 };
 
 
@@ -212,18 +229,19 @@ private:
 
 */
 
-/*
+
 class WgTextAttr
 {
 public:
-	WgTextAttr() : pFont(0), style(WG_STYLE_NORMAL), color(WgColor::White()), bgColor(WgColor::None()), 
+	WgTextAttr() : pFont(0), size(0), style(WG_STYLE_NORMAL), color(WgColor::White()), bgColor(WgColor::None()), 
 				   bUnderlined(false), breakLevel(3), visibilityFlags(0) {}
 
-	inline void	Clear() {	pFont = 0; style = WG_STYLE_NORMAL; color = WgColor::White(); 
-							bgColor = WgColor::None(); bUnderlined = false; breakLevel = 0;
+	inline void	Clear() {	pFont = 0; size = 0; style = WG_STYLE_NORMAL; color = WgColor::White(); 
+							bgColor = WgColor::None(); bUnderlined = false; breakLevel = 3;
 							visibilityFlags = 0; pLink = 0; }
 
 	WgFont *		pFont;
+	int				size;
 	WgFontStyle		style;
 	WgColor			color;
 	WgColor			bgColor;
@@ -232,24 +250,6 @@ public:
 	int				visibilityFlags;
 	WgTextLinkPtr	pLink;
 };
-*/
-
-
-class WgTextAttr
-{
-public:
-	WgTextAttr() : mode(WG_MODE_NORMAL) {}
-	WgTextAttr( const WgTextPropPtr& pBaseProp, WgMode mode = WG_MODE_NORMAL ) : mode(mode), pBaseProp(pBaseProp) {}
-	WgTextAttr( const WgTextPropPtr& pBaseProp, const WgTextPropPtr& pLinkProp, const WgTextPropPtr& pSelectionProp, WgMode mode = WG_MODE_NORMAL )
-		: mode(mode), pBaseProp(pBaseProp), pLinkProp(pLinkProp), pSelectionProp(pSelectionProp) {}
-
-	WgMode			mode;			///< Current mode of this text.
-	WgTextPropPtr	pBaseProp;		///< Base properties for the text. Not to be confused with WgBase::defaultProp.
-	WgTextPropPtr	pLinkProp;		///< Properties added for links. Overrides WgBase::defaultProp, BaseProp and SelectionProp.
-	WgTextPropPtr	pSelectionProp;	///< Properties added for selection. Overrides WgBase::defaultProp and BaseProp.
-};
-
-
 
 
 

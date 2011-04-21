@@ -56,8 +56,8 @@ public:
 	inline void	SetPasswordMode( bool on_off ) { m_bPasswordMode = on_off; };
 	inline bool PasswordMode() {return m_bPasswordMode;};
 	inline Uint16 PasswordGlyph() const				 { return m_pwGlyph; };
-	inline void SetMaxCharacters( Uint32 characters ) { m_maxCharacters = characters; }
-	inline Uint32 MaxCharacters() { return m_maxCharacters; }
+	inline void SetMaxCharacters( int characters ) { m_maxCharacters = characters; }
+	inline int MaxCharacters() { return m_maxCharacters; }
 	void	SetPasswordGlyph( Uint16 glyph );
 
 	void		goBOL();
@@ -99,7 +99,7 @@ private:
 	WgText				m_text;
 
 	bool				m_bPasswordMode;
-	Uint32				m_maxCharacters;
+	int					m_maxCharacters;
 	Uint16				m_pwGlyph;
 	int					m_viewOfs;
 	InputMode			m_inputMode;

@@ -23,6 +23,8 @@
 #ifndef	WG_CURSORINSTANCE_DOT_H
 #define WG_CURSORINSTANCE_DOT_H
 
+#include <climits>
+
 #ifndef	WG_TYPES_DOT_H
 #	include <wg_types.h>
 #endif
@@ -48,42 +50,37 @@ public:
 
 	WgCursorInstance( WgText& text );
 
-	bool			incTime( Uint32 ms );
+	bool			incTime( int ms );
 	void			insertMode( bool bInsert );
 
 	void			hide();
 	void			show();
 	bool			isHidden() const;
 
-	void			goUp( Uint32 nLines = 1 );
-	void			goDown( Uint32 nLines = 1 );
-	inline void		goLeft( Uint32 nChars = 1 );
-	inline void		goRight( Uint32 nChars = 1 );
+	inline void		goLeft( int nChars = 1 );
+	inline void		goRight( int nChars = 1 );
 
 	inline void		goBOF();
 	inline void		goEOF();
 	void			goBOL();
 	void			goEOL();
 
-	void			gotoHardLine( Uint32 line );
-	void			gotoSoftLine( Uint32 line );
+	void			gotoSoftLine( int line, const WgRect& container );
 
+	void			gotoHardPos( int line, int col );
+	void			gotoSoftPos( int line, int col );
 
-	void			gotoHardPos( Uint32 line, Uint32 col );
-	void			gotoSoftPos( Uint32 line, Uint32 col );
-
-	void			gotoPixel( Sint32 x, Sint32 y );
-	void			gotoColumn( Sint32 col );
+	void			gotoColumn( int col );
 
 	void			gotoPrevWord();
 	void			gotoBeginningOfWord();
 	void			gotoNextWord();
 	void			gotoEndOfWord();
 
-	void			getSoftPos( Uint32 &line, Uint32 &col ) const;
+	void			getSoftPos( int &line, int &col ) const;
 
 	bool			putChar( Uint16 character );
-	Uint32			putText( const WgCharSeq& seq );
+	int				putText( const WgCharSeq& seq );
 	void			unputText( int nChar );
 	void 			delPrevWord();
 	void 			delNextWord();
@@ -93,9 +90,9 @@ public:
 	int				ofsX() const;				// Offset in pixels from beginning of line.
 	int				ofsY() const;				// Offset in pixels from top of text.
 
-	inline Uint32	line() const;
-	inline Uint32	column() const;
-	inline Uint32	time() const;
+	inline int		line() const;
+	inline int		column() const;
+	inline int		time() const;
 
 	inline WgText *	text() const;
 
@@ -108,8 +105,8 @@ public:
 	void			selectAll();
 
 protected:
-	void			gotoPos( Uint32 line, Uint32 col );
-	void			UpdateLocation(Uint32 line, Uint32 col);
+	void			gotoPos( int line, int col );
+	void			UpdateLocation(int line, int col);
 
 	WgText *		m_pText;
 	bool			m_bHidden;
@@ -118,31 +115,31 @@ protected:
 	int				m_selStartLine;
 	int				m_selStartColumn;
 
-	Uint32			m_time;					// For the animation
-	Uint32			m_line;					// Line of the text containing the cursor (0+)
-	Uint32			m_column;				// Character in the line the cursor preceeds (0+)
+	int				m_time;					// For the animation
+	int				m_line;					// Line of the text containing the cursor (0+)
+	int				m_column;				// Character in the line the cursor preceeds (0+)
 
-	Sint32			m_wantedOfsX;			// Desired ofsX for cursor when moving between lines. -1 when not applicable.
+	int				m_wantedOfsX;			// Desired ofsX for cursor when moving between lines. -1 when not applicable.
 
 };
 
 //____ line() __________________________________________________________________
 
-inline Uint32 WgCursorInstance::line() const
+inline int WgCursorInstance::line() const
 {
 	return m_line;
 }
 
 //____ column() ________________________________________________________________
 
-inline Uint32 WgCursorInstance::column() const
+inline int WgCursorInstance::column() const
 {
 	return m_column;
 }
 
 //____ time() __________________________________________________________________
 
-inline Uint32 WgCursorInstance::time() const
+inline int WgCursorInstance::time() const
 {
 	return m_time;
 }
@@ -155,7 +152,7 @@ inline WgText * WgCursorInstance::text() const
 }
 
 
-inline void WgCursorInstance::goLeft( Uint32 nChars )
+inline void WgCursorInstance::goLeft( int nChars )
 {
 	//if( m_column <= nChars )
 	//	gotoColumn( 0 );
@@ -163,7 +160,7 @@ inline void WgCursorInstance::goLeft( Uint32 nChars )
 		gotoColumn( m_column - nChars );
 }
 
-inline void WgCursorInstance::goRight( Uint32 nChars )
+inline void WgCursorInstance::goRight( int nChars )
 {
 	gotoColumn( m_column + nChars );
 }
@@ -175,7 +172,7 @@ inline void WgCursorInstance::goBOF()
 
 inline void WgCursorInstance::goEOF()
 {
-	gotoSoftPos( 0xFFFFFFFF, 0xFFFFFFFF );
+	gotoSoftPos( INT_MAX, INT_MAX );
 }
 
 

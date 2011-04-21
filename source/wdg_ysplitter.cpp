@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include	<wdg_ysplitter.h>
-
+#include <assert.h>
 static const char	Wdg_Type[] = {"TordJ/YSplitter"};
 
 
@@ -39,6 +39,7 @@ void Wdg_YSplitter::Init( void )
 	m_pTopPane		= 0;
 	m_pBottomPane	= 0;
 	m_pHandle		= 0;
+	m_topFraction   = 0.5f;
 }
 
 
@@ -63,16 +64,14 @@ const char * Wdg_YSplitter::GetMyType( void )
 
 
 //_____________________________________________________________________________
-void Wdg_YSplitter::Start( WgWidget * pTopPane, WgWidget * pSplitHandle, WgWidget * pBottomPane, float topFraction )
+void Wdg_YSplitter::Setup( WgWidget * pTopPane, WgWidget * pSplitHandle, WgWidget * pBottomPane, float topFraction )
 {
 	m_pTopPane = pTopPane;
 	m_pBottomPane = pBottomPane;
 	m_pHandle = pSplitHandle;
 	m_topFraction = topFraction;
 
-	m_pHandle->AddCallbackW( WgSignal::ButtonPress(1), cbHandlePressed, this );
-	m_pHandle->AddCallbackW( WgSignal::ButtonDragTotalY(1), cbHandleDragged, this );
-
+	assert(pTopPane && pSplitHandle && pBottomPane);
 
 /*	m_pHandle->SetGeometry( WgOrigo::topLeft(), 0, 0, WgOrigo::topRight(), 0, m_pHandle->Height() );
 	m_pHandle->SetParent(this);
@@ -83,24 +82,33 @@ void Wdg_YSplitter::Start( WgWidget * pTopPane, WgWidget * pSplitHandle, WgWidge
 	m_pBottomPane->SetGeometry( WgOrigo::bottomLeft(), 0,0, WgOrigo::bottomRight(), 0, -m_pTopPane->MinHeight() );
 	m_pBottomPane->SetParent(this);
 */
-	UpdatePanes();
 }
 
+//_____________________________________________________________________________
+void Wdg_YSplitter::Start()
+{
+	if( m_pHandle && m_pTopPane && m_pBottomPane )
+	{
+		m_pHandle->AddCallbackW( WgSignal::ButtonPress(1), cbHandlePressed, this );
+		m_pHandle->AddCallbackW( WgSignal::ButtonDragTotalY(1), cbHandleDragged, this );
+
+		UpdatePanes();
+	}
+}
 
 //_____________________________________________________________________________
 void Wdg_YSplitter::Stop()
 {
 	if( m_pHandle )
 		m_pHandle->RemoveCallbacksW( this );
-
-	m_pTopPane		= 0;
-	m_pBottomPane	= 0;
-	m_pHandle		= 0;
 }
 
 //_____________________________________________________________________________
 void Wdg_YSplitter::UpdatePanes()
 {
+	if( ! m_pTopPane )
+		return;
+
 	if( m_topFraction == 0.f )
 		BottomPaneOnly();
 	else if( m_topFraction == 1.f )

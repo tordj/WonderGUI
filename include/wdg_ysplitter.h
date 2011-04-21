@@ -35,10 +35,18 @@ class Wdg_YSplitter:public WgWidget, public WgEmitter
 		virtual const char * Type() const;
 		static const char * GetMyType();
 
-		void	Start( WgWidget * pTopPane, WgWidget * pSplitHandle, WgWidget * pBottomPane, float topFraction );
+		void	Setup( WgWidget * pTopPane, WgWidget * pSplitHandle, WgWidget * pBottomPane, float topFraction );
+
+		void	Start();
 		void	Stop();
 
+		WgWidget* GetTopPane() const { return m_pTopPane; }
+		WgWidget* GetBottomPane() const { return m_pBottomPane; }
+		WgWidget* GetHandle() const { return m_pHandle; }
+		
+		void	SetTopFraction(float fraction) { m_topFraction = fraction; UpdatePanes(); }
 		float	GetTopFraction() const { return m_topFraction; }
+
 
 	protected:
 		WgWidget * NewOfMyType() const;

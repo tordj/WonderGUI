@@ -161,12 +161,7 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 			m_pText->setSelectionMode(true);
 		}
 
-		WgCord pos = Abs2local( WgCord(info.x, info.y) );
-
-		Sint32	x = pos.x;
-		Sint32	y = pos.y;
-
-		m_pText->gotoPixel(x,y);
+		m_pText->CursorGotoCoord( WgCord(info.x, info.y), ScreenGeometry() );
 
 		if(IsSelectable() && action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
 		{
@@ -237,14 +232,14 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				m_pText->goUp();
+				m_pText->CursorGoUp( 1, ScreenGeometry() );
 				break;
 
 			case WGKEY_DOWN:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				m_pText->goDown();
+				m_pText->CursorGoDown( 1, ScreenGeometry() );
 				break;
 
 			case WGKEY_BACKSPACE:
@@ -378,7 +373,7 @@ Uint32 WgGizmoText::InsertTextAtCursor( const WgCharSeq& str )
 
 	Uint32 nChars = 0;
 
-	if( m_maxCharacters == 0 || ((unsigned)str.Length()) < m_maxCharacters - m_pText->nbChars() )
+	if( m_maxCharacters == 0 || str.Length() < m_maxCharacters - m_pText->nbChars() )
 	{
 		m_pText->putText( str );
 		nChars = str.Length();

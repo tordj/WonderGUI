@@ -56,7 +56,7 @@ WgCursorInstance::WgCursorInstance( WgText& text )
 
 //____ incTime() _______________________________________________________________
 
-bool WgCursorInstance::incTime( Uint32 ms )
+bool WgCursorInstance::incTime( int ms )
 {
 	m_time += ms;
 	return true; //TODO: Should only return true if cursor needs to be re-rendered.
@@ -93,45 +93,28 @@ void WgCursorInstance::insertMode( bool bInsert )
 }
 
 
-//____ gotoHardLine() _________________________________________________________
-
-void WgCursorInstance::gotoHardLine( Uint32 line )
-{
-	Uint32 maxLine = m_pText->nbLines()-1;
-
-	if( m_wantedOfsX == -1 )
-		m_wantedOfsX = ofsX();
-
-	if( line > maxLine )
-		line = maxLine;
-
-	UpdateLocation(line, WgTextTool::ofsX2column( m_pText->getNode(), m_pText->GetAttr(), m_wantedOfsX, m_pText->getLineText(line) ));
-}
-
 //____ gotoSoftLine() _________________________________________________________
 
-void WgCursorInstance::gotoSoftLine( Uint32 line )
+void WgCursorInstance::gotoSoftLine( int line, const WgRect& container )
 {
-	// First we need to get our soft column...
-
-	Uint32	ln = m_line;
-	Uint32	col = m_column;
-	m_pText->posHard2Soft( ln, col );
+	// First we need to update m_wantedOfsX...
 
 	if( m_wantedOfsX == -1 )
+	{
+		int	ln = m_line;
+		int	col = m_column;
+		m_pText->posHard2Soft( ln, col );
+
 		m_wantedOfsX = m_pText->getSoftLineWidthPart( ln, 0, col );
+	}
 
 	// Set our line and convert to hard
 
-	ln = line;
-
-	const WgChar * pStr = m_pText->getSoftLineText(ln);
-	if( pStr )
-		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->GetAttr(), m_wantedOfsX, pStr );
+	int ln = line;
+	int col = m_pText->CoordToColumn( line, WgCord( m_wantedOfsX+container.x, 0), container, true );
 
 
 	m_pText->posSoft2Hard( ln, col );
-
 	UpdateLocation(ln, col);
 }
 
@@ -148,7 +131,7 @@ void WgCursorInstance::gotoColumn( Sint32 col )
 	if( line > maxLine )
 		line = maxLine;
 
-	Uint32 maxCol = m_pText->getLine(line)->nChars;
+	int maxCol = m_pText->getLine(line)->nChars;
 
 	// Check whether to hop down/up on lines
 	if(col < 0)
@@ -200,8 +183,8 @@ void WgCursorInstance::gotoPrevWord()
 	if(m_line == 0 && m_column == 0)
 		return;
 
-	Uint32 line = m_line;
-	Uint32 col = m_column;
+	int line = m_line;
+	int col = m_column;
 
 	if(line > m_pText->nbLines() - 1)
 		line = m_pText->nbLines() - 1;
@@ -239,8 +222,8 @@ void WgCursorInstance::gotoBeginningOfWord()
 	if(m_line == 0 && m_column == 0)
 		return;
 
-	Uint32 line = m_line;
-	Uint32 col = m_column;
+	int line = m_line;
+	int col = m_column;
 
 	if(line > m_pText->nbLines() - 1)
 		line = m_pText->nbLines() - 1;
@@ -278,8 +261,8 @@ void WgCursorInstance::gotoNextWord()
 {
 	gotoEndOfWord();
 
-	Uint32 line = m_line;
-	Uint32 col = m_column;
+	int line = m_line;
+	int col = m_column;
 
 	if(line > m_pText->nbLines() - 1)
 		line = m_pText->nbLines() - 1;
@@ -305,8 +288,8 @@ void WgCursorInstance::gotoNextWord()
 //_____________________________________________________________________________
 void WgCursorInstance::gotoEndOfWord()
 {
-	Uint32 line = m_line;
-	Uint32 col = m_column;
+	int line = m_line;
+	int col = m_column;
 
 	if(line > m_pText->nbLines() - 1)
 		line = m_pText->nbLines() - 1;
@@ -331,7 +314,7 @@ void WgCursorInstance::gotoEndOfWord()
 
 //____ gotoHardPos() __________________________________________________________
 
-void WgCursorInstance::gotoHardPos( Uint32 line, Uint32 col )
+void WgCursorInstance::gotoHardPos( int line, int col )
 {
 	gotoPos( line, col );
 	m_wantedOfsX = -1;
@@ -340,13 +323,13 @@ void WgCursorInstance::gotoHardPos( Uint32 line, Uint32 col )
 
 //____ gotoPos() ______________________________________________________________
 
-void WgCursorInstance::gotoPos( Uint32 line, Uint32 col )
+void WgCursorInstance::gotoPos( int line, int col )
 {
-	Uint32 maxLine = m_pText->nbLines()-1;
+	int maxLine = m_pText->nbLines()-1;
 	if( line > maxLine )
 		line = maxLine;
 
-	Uint32 maxCol = m_pText->getLine(line)->nChars;
+	int maxCol = m_pText->getLine(line)->nChars;
 	if( col > maxCol )
 		col = maxCol;
 
@@ -355,7 +338,7 @@ void WgCursorInstance::gotoPos( Uint32 line, Uint32 col )
 
 //____ gotoSoftPos() __________________________________________________________
 
-void WgCursorInstance::gotoSoftPos( Uint32 line, Uint32 col )
+void WgCursorInstance::gotoSoftPos( int line, int col )
 {
 	m_pText->posSoft2Hard( line, col );
 
@@ -366,7 +349,7 @@ void WgCursorInstance::gotoSoftPos( Uint32 line, Uint32 col )
 
 //____ getSoftPos() ___________________________________________________________
 
-void WgCursorInstance::getSoftPos( Uint32 &line, Uint32 &col ) const
+void WgCursorInstance::getSoftPos( int &line, int &col ) const
 {
 	line	= m_line;
 	col		= m_column;
@@ -374,41 +357,6 @@ void WgCursorInstance::getSoftPos( Uint32 &line, Uint32 &col ) const
 	m_pText->posHard2Soft( line, col );
 }
 
-
-//____ gotoPixel() _____________________________________________________________
-
-void WgCursorInstance::gotoPixel( Sint32 x, Sint32 y )
-{
-
-//	TODO: Needs to be able to handle text which isn't left-justified.
-//  TODO: Needs to be able to handle text which varies in height (almost fixed, just isn't supported by softLineHeight() yet...)
-
-	Uint32 line = 0;
-	while( line < m_pText->nbSoftLines() )
-	{
-		y -= m_pText->softLineSpacing(line);
-		if( y < 0  )
-			break;
-
-		line++;
-	}
-
-	WgCursorInstance * pCursorOnLine = 0;
-
-	if( m_line == line )
-		pCursorOnLine = this;
-
-	if(line == m_pText->nbSoftLines())
-		line--;
-
-	Uint32 column = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->GetAttr(), x, m_pText->getSoftLineText(line), pCursorOnLine );
-
-	m_pText->posSoft2Hard( line, column );
-
-	UpdateLocation(line, column);
-
-	m_wantedOfsX = -1;
-}
 
 
 //____ putChar() ______________________________________________________________
@@ -419,8 +367,8 @@ bool WgCursorInstance::putChar( Uint16 character )
 
 	int ret;
 
-	Uint32 line = m_line;
-	Uint32 column = m_column;
+	int line = m_line;
+	int column = m_column;
 
 	int ofs = m_pText->LineColToOffset( line, column );
 
@@ -447,12 +395,12 @@ bool WgCursorInstance::putChar( Uint16 character )
 
 //____ putText() ______________________________________________________________
 
-Uint32	WgCursorInstance::putText( const WgCharSeq& seq )
+int	WgCursorInstance::putText( const WgCharSeq& seq )
 {
 	m_wantedOfsX = -1;
 
-	Uint32 nInserted;
-	Uint32 nLines = m_pText->nbLines();
+	int nInserted;
+	int nLines = m_pText->nbLines();
 
 	int ofs = m_pText->LineColToOffset( m_line, m_column );
 
@@ -545,8 +493,8 @@ bool WgCursorInstance::delNextChar()
 
 int WgCursorInstance::ofsX() const
 {
-	Uint32	ln = m_line;
-	Uint32	col = m_column;
+	int	ln = m_line;
+	int	col = m_column;
 	m_pText->posHard2Soft( ln, col );
 
 	return m_pText->getSoftLineWidthPart( ln, 0, col );
@@ -583,8 +531,8 @@ WgCursor::Mode WgCursorInstance::cursorMode() const
 
 void WgCursorInstance::goBOL()
 {
-	Uint32	ln = m_line;
-	Uint32	col = m_column;
+	int	ln = m_line;
+	int	col = m_column;
 	m_pText->posHard2Soft( ln, col );
 
 	col = 0;
@@ -598,11 +546,11 @@ void WgCursorInstance::goBOL()
 
 void WgCursorInstance::goEOL()
 {
-	Uint32	ln = m_line;
-	Uint32	col = m_column;
+	int	ln = m_line;
+	int	col = m_column;
 	m_pText->posHard2Soft( ln, col );
 
-	col = 0xFFFFFFFF;
+	col = INT_MAX;
 
 	m_pText->posSoft2Hard( ln, col );
 	gotoHardPos( ln, col );
@@ -610,60 +558,8 @@ void WgCursorInstance::goEOL()
 	m_wantedOfsX = -1;
 }
 
-
-
-//____ goUp() _________________________________________________________________
-
-void WgCursorInstance::goUp( Uint32 nLines )
-{
-	Uint32	ln = m_line;
-	Uint32	col = m_column;
-	m_pText->posHard2Soft( ln, col );
-
-	if( m_wantedOfsX == -1 )
-		m_wantedOfsX = m_pText->getSoftLineWidthPart( ln, 0, col );
-
-	if( ln != 0 )
-	{
-		if( nLines > ln )
-			ln = 0;
-		else
-			ln -= nLines;
-
-		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->GetAttr(), m_wantedOfsX, m_pText->getSoftLineText(ln) );
-
-		m_pText->posSoft2Hard(ln,col);
-		gotoPos(ln, col);
-	}
-}
-
-//____ goDown() _______________________________________________________________
-
-void WgCursorInstance::goDown( Uint32 nLines )
-{
-	Uint32	ln = m_line;
-	Uint32	col = m_column;
-	m_pText->posHard2Soft( ln, col );
-
-	if( m_wantedOfsX == -1 )
-		m_wantedOfsX = m_pText->getSoftLineWidthPart( ln, 0, col );
-
-	if( nLines + ln < ln )
-		ln = 0xFFFFFFFF;
-	else
-		ln += nLines;
-
-	const WgChar * pStr = m_pText->getSoftLineText(ln);
-	if( pStr )
-		col = WgTextTool::ofsX2column( m_pText->getNode(), m_pText->GetAttr(), m_wantedOfsX, pStr );
-
-	m_pText->posSoft2Hard(ln,col);
-	gotoPos(ln, col);
-}
-
-
 //////////////////////////////////////////////////////////////////////////
-void WgCursorInstance::UpdateLocation(Uint32 line, Uint32 column)
+void WgCursorInstance::UpdateLocation(int line, int column)
 {
 	m_line = line;
 	m_column = column;

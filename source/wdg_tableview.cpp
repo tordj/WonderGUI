@@ -22,7 +22,7 @@ WgTableColumn::WgTableColumn()
 	m_pText				= 0;
 	m_defWidth			= 4;
 	m_minWidth			= 4;
-	m_maxWidth			= 0x1FFFFFFF;
+	m_maxWidth			= INT_MAX;
 	m_scaleWeight		= 1.f;
 	m_pixelWidth		= 4;
 }
@@ -40,7 +40,7 @@ WgTableColumn::WgTableColumn( Wdg_TableView * pOwner )
 	m_pText				= 0;
 	m_defWidth			= 4;
 	m_minWidth			= 4;
-	m_maxWidth			= 0x1FFFFFFF;
+	m_maxWidth			= INT_MAX;
 	m_scaleWeight		= 1.f;
 	m_pixelWidth		= 4;
 }

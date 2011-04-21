@@ -769,7 +769,7 @@ float WgGizmoTablist::CalcTabScaleFactor()
 
 void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& clip, Uint8 _layer )
 {
-	Uint32	selectedX	= 0xFFFFFFFF;			// X-offset for selected tab.
+	Uint32	selectedX	= INT_MAX;			// X-offset for selected tab.
 
 	float scaleFactor = CalcTabScaleFactor();
 
@@ -796,7 +796,7 @@ void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 			if( pTab == m_pTabSelected )
 				selectedX = xOfs;
-			else if( selectedX == 0xFFFFFFFF )
+			else if( selectedX == INT_MAX )
 				RenderTab( pDevice, *pTab, r, clip );
 
 			xOfs += width - m_overlap;

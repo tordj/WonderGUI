@@ -20,15 +20,16 @@
 
 =========================================================================*/
 
-#include <wg_textlink.h>
+#include <wg_textlinkhandler.h>
 #include <wg_input.h>
 #include <wg_signals.h>
 
 using namespace WgSignal;
 
+
 //____ OnAction() _____________________________________________________________
 
-void WgTextLink::OnAction( WgInput::UserAction action, int button_key )
+void WgTextLinkHandler::OnAction( WgInput::UserAction action, int button_key )
 {
 	switch( action )
 	{

@@ -163,8 +163,7 @@ public:
 
 	// Low-level print methods
 
-	virtual void		PrintLine( WgPen * pPen, const WgTextAttr* pAttr, const WgChar * pString, int maxChars = 0x1FFFFFFF, 
-									bool bLineEnding = true, const WgTextLinkPtr pMarkedLink = 0, WgMode markedLinkMode = WG_MODE_NORMAL );
+	virtual void		PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars = INT_MAX, WgMode mode = WG_MODE_NORMAL );
 
 	virtual void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 								   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f ) = 0;
@@ -172,11 +171,7 @@ public:
 protected:
 	WgGfxDevice();
 
-//	void	PrintTextSelection( const WgRect& clip, const WgText * pText, const WgCursorInstance* pCursor, const WgRect& dest, WgPen* pPen );
-	int		CalcCharOffset(WgPen *pPen, const WgChar* pLine, Uint32 nChars );
-
-	int		PenStartX( const WgText * pText, int line, const WgRect& dest );
-	int		PenStartY( const WgText * pText, const WgRect& dest );
+	void	_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, bool bLineEnding );
 
 	void	DrawTextBg( const WgRect& clip, const WgText * pText, const WgRect& dest );
 	void	DrawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect, 
@@ -187,9 +182,8 @@ protected:
 //
 //	virtual void	BlitSubPixel( const WgSurface * pSrc, const WgRect& srcrect,
 //								  float dx, float dy ) = 0;
-	virtual void 	DrawUnderline( 	const WgRect& clip, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected,
-									int _x, int _y, const WgChar * pLine, int maxChars = 0x1FFFFFFF );
 
+	virtual void	DrawUnderline( const WgRect& clip, const WgText * pText, int _x, int _y, int ofs, int maxChars );
 
 
 	WgColor		m_tintColor;		// Current Tint color.

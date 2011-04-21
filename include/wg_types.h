@@ -463,4 +463,16 @@ enum WgSizePolicy
 	WG_SIZE_MAX,
 };
 
+//____ WgTextPos ______________________________________________________________
+
+class WgTextPos
+{
+public:
+	WgTextPos() : line(0), col(0) {}
+	WgTextPos( int line, int col ) : line(line), col(col) {}
+
+	int	line;
+	int col;
+};
+
 #endif // WG_TYPES_DOT_H

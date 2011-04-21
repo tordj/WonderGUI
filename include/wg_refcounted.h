@@ -10,7 +10,7 @@ friend class WgSmartPtrImpl;
 template<class T> friend class WgSmartPtr;
 template<class T> friend class WgRefCountPtr;
 
-public:
+protected:
 	WgRefCounted() {m_ref = 0;}
 	virtual ~WgRefCounted() {};
 
@@ -25,7 +25,7 @@ class WgRefCountedPooled
 {
 	template<class T> friend class WgSmartPtrPooled;
 
-public:
+protected:
 	WgRefCountedPooled(WgMemPool * pPool) {m_ref = 0;m_pPool = pPool; }
 	virtual ~WgRefCountedPooled() {};
 

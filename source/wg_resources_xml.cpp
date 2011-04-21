@@ -56,6 +56,7 @@
 #include <wdg_editvalue.h>
 #include <wdg_textview.h>
 #include <wdg_refreshbutton.h>
+#include <wdg_ysplitter.h>
 
 #include <wg_item_pixmap.h>
 #include <wg_item_row.h>
@@ -419,14 +420,17 @@ void WgResourceXML::RegisterResources()
 
 	WgResourceFactoryXML::Register<WgTabRes>			(WgTabRes::TagName());
 
-	WgResourceFactoryXML::Register<Wdg_Text_Res>	(Wdg_Text_Res::TagName());
-	WgResourceFactoryXML::Register<Wdg_Text_Res>	(Wdg_Text::GetMyType());
+	WgResourceFactoryXML::Register<Wdg_Text_Res>		(Wdg_Text_Res::TagName());
+	WgResourceFactoryXML::Register<Wdg_Text_Res>		(Wdg_Text::GetMyType());
 
 	WgResourceFactoryXML::Register<Wdg_EditLine_Res>	(Wdg_EditLine_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_EditLine_Res>	(Wdg_EditLine::GetMyType());
 
 	WgResourceFactoryXML::Register<Wdg_TextView_Res>	(Wdg_TextView_Res::TagName());
 	WgResourceFactoryXML::Register<Wdg_TextView_Res>	(Wdg_TextView::GetMyType());
+
+	WgResourceFactoryXML::Register<Wdg_YSplitter_Res>		(Wdg_YSplitter_Res::TagName());
+	WgResourceFactoryXML::Register<Wdg_YSplitter_Res>		(Wdg_YSplitter::GetMyType());
 
 	WgResourceFactoryXML::Register<WgBoldTextRes>		(WgBoldTextRes::TagName());
 	WgResourceFactoryXML::Register<WgItalicTextRes>		(WgItalicTextRes::TagName());
@@ -5343,7 +5347,7 @@ void Wdg_EditLine_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteDiffAttr(s, xmlNode, "password", widget->PasswordMode(), false);
 	WriteDiffAttr(s, xmlNode, "pwd_glyph", widget->PasswordGlyph(), (Uint16)'*');
-	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), (Uint32)0);
+	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), (int)0);
 
 	s.EndTag();
 }
@@ -5400,7 +5404,7 @@ void Wdg_TextView_Res::Serialize(WgResourceSerializerXML& s)
 	WgBaseViewRes::Serialize(xmlNode, s, widget);
 	WgEditTextRes::Serialize(this, xmlNode, s, widget);
 
-	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), (Uint32)0);
+	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), (int)0);
 
 	s.EndTag();
 }
@@ -5415,6 +5419,58 @@ void Wdg_TextView_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 	WgEditTextRes::Deserialize(xmlNode, s, widget);
 
 	widget->SetMaxCharacters(WgUtil::ToUint32(xmlNode["max_length"]));
+}
+
+//////////////////////////////////////////////////////////////////////////
+/// Wdg_YSplitter_Res ////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// <ysplitter [widget-attribs] 
+//		top_pane=
+//		bottom_pane=
+//		handle=
+//		split_fraction=
+// />
+Wdg_YSplitter_Res::Wdg_YSplitter_Res(WgResourceXML* parent, Wdg_YSplitter* widget) :
+	WgWidgetRes(parent, widget)
+{
+}
+
+void Wdg_YSplitter_Res::Serialize(WgResourceSerializerXML& s)
+{
+	const WgXmlNode& xmlNode = XmlNode();
+	Wdg_YSplitter* widget = GetWidget();
+
+	s.BeginTag(TagName(), XmlNode());
+
+	WgWidgetRes::Serialize(s);
+
+	if( widget->GetTopPane() )
+		WriteWidgetRefAttr(s, widget->GetTopPane(), "top_pane");
+
+	if( widget->GetBottomPane() )
+		WriteWidgetRefAttr(s, widget->GetBottomPane(), "bottom_pane");
+
+	if( widget->GetHandle() )
+		WriteWidgetRefAttr(s, widget->GetHandle(), "handle");
+
+	WriteDiffAttr(s, xmlNode, "split_fraction", widget->GetTopFraction(), 0.5f);
+
+	s.EndTag();
+}
+
+void Wdg_YSplitter_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
+{
+	Wdg_YSplitter* widget = new Wdg_YSplitter();
+	m_Widget = widget;
+
+	WgWidgetRes::Deserialize(xmlNode, s);
+
+	WgWidget* topPane = s.ResDb()->GetWidget( xmlNode["top_pane"] );
+	WgWidget* bottomPane = s.ResDb()->GetWidget( xmlNode["bottom_pane"] );
+	WgWidget* handle = s.ResDb()->GetWidget( xmlNode["handle"] );
+	float fraction = WgUtil::ToFloat( xmlNode["split_fraction"], 0.5f );
+
+	widget->Setup( topPane, handle, bottomPane, fraction );
 }
 
 //////////////////////////////////////////////////////////////////////////

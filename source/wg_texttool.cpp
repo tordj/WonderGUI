@@ -2111,31 +2111,13 @@ Uint32 WgTextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int 
 }
 
 
-
-//____ textWidth() ____________________________________________________________
-Uint32 WgTextTool::textWidth( const WgText& kTextObj )
-{
-	Uint32 nLines	= kTextObj.nbLines();
-	Uint32 maxWidth = 0;
-
-	for( Uint32 i = 0 ; i < nLines ; i++ )
-	{
-		Uint32 w = lineWidth( kTextObj.getNode(), kTextObj.GetAttr(), kTextObj.getLineText( i ) );
-
-		if( w > maxWidth )
-			maxWidth = w;
-	}
-	return maxWidth;
-}
-
-
 //____ lineWidth() ____________________________________________________________
 
-Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const char * pString )
+Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const char * pString )
 {
 	WgPen pen;
 	pen.SetTextNode( pNode );
-	pen.SetTextAttr( pAttr );
+	pen.SetAttributes( attr );
 
 	while( * pString != 0 && * pString != '\n' )
 	{
@@ -2153,11 +2135,11 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, cons
 	return pen.GetPosX();
 }
 
-Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const Uint16 * pString )
+Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const Uint16 * pString )
 {
 	WgPen pen;
 	pen.SetTextNode( pNode );
-	pen.SetTextAttr( pAttr );
+	pen.SetAttributes( attr );
 
 	while( * pString != 0 && * pString != '\n' )
 	{
@@ -2176,19 +2158,23 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, cons
 }
 
 
-Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar * pString )
+Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, WgMode mode, const WgChar * pString )
 {
+	WgTextAttr	attr2;
+
 	WgPen pen;
-	Uint16 hProp = pString->PropHandle();
+	Uint16 hProp = 0xFFFF;
 
 	pen.SetTextNode( pNode );
-	pen.SetAllProps( hProp, pAttr );
 
 	while( !pString->IsEndOfLine() )
 	{
 		if( pString->PropHandle() != hProp )
-			pen.SetCharProp( hProp );
-
+		{
+			attr2 = attr;
+			AddPropAttributes( attr2, pString->Properties(), mode );
+			pen.SetAttributes( attr2 );
+		}
 		pen.SetChar( pString->Glyph() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
@@ -2200,33 +2186,6 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr * pAttr, cons
 	pen.SetChar( pString->Glyph() );
 	pen.ApplyKerning();
 	pen.AdvancePos();
-
-	return pen.GetPosX();
-}
-
-//____ lineWidthPart() ________________________________________________________
-
-Uint32 WgTextTool::lineWidthPart( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar * pString, int nCol )
-{
-	WgPen pen;
-	Uint16 hProp = pString->PropHandle();
-
-	pen.SetTextNode( pNode );
-	pen.SetAllProps( hProp, pAttr );
-
-	for( int i = 0 ; i < nCol ; i++ )
-	{
-		if( pString->IsEndOfLine() )
-			break;
-
-		if( pString->PropHandle() != hProp )
-			pen.SetCharProp( hProp );
-
-		pen.SetChar( pString->Glyph() );
-		pen.ApplyKerning();
-		pen.AdvancePos();
-		pString++;
-	}
 
 	return pen.GetPosX();
 }
@@ -2338,147 +2297,6 @@ void WgTextTool::forwardEscapedCharacters( const Uint16 *& pStr, Uint32 nChars )
 		else
 			n++;
 	}
-}
-
-
-
-
-//____ forwardColumns() _______________________________________________________
-
-void  WgTextTool::forwardColumns( const WgChar *& pPos, Uint32 nColumns )
-{
-	Uint32 len = 0;
-
-	while( pPos->Glyph() != 0 && len < nColumns  )
-	{
-		len++;
-		pPos++;
-	}
-}
-
-
-//____ forwardPixels() ________________________________________________________
-/**
-	Forwards pPos the number of characters needed to as closely as possible
-	reach (but not pass) the specified number of pixels.
-
-	@returns	The exact number of pixels pPos was moved, which can and typically
-				will be less than the amount requested.
-
-*/
-
-
-int  WgTextTool::forwardPixels( WgTextNode * pNode, const WgTextAttr * pAttr, const WgChar *& pPos, Uint32 nPixels )
-{
-	WgPen	pen;
-
-	Uint16	hProp = pPos->PropHandle();
-	int		length = 0;
-
-	pen.SetTextNode( pNode );
-	pen.SetAllProps( hProp, pAttr );
-
-	while( !pPos->IsEndOfLine() )
-	{
-		if( hProp != pPos->PropHandle() )
-		{
-			hProp = pPos->PropHandle();
-			pen.SetCharProp( hProp );
-		}
-
-		pen.SetChar( pPos->Glyph() );
-		pen.ApplyKerning();
-		pen.AdvancePos();
-
-		if( (Uint32) pen.GetPosX() > nPixels )
-			return length;
-
-		length = pen.GetPosX();
-		pPos++;
-	}
-
-	pen.SetChar( pPos->Glyph() );	// End the line to get correct length. Pointer at EOL.
-	return pen.GetPosX();
-}
-
-//____ ofsX2column() ___________________________________________________________
-/**
-	Finds the character column in a line of text whose leftmost pixel is closest
-	to the specified X-offset. Optionally returns a remainder as well (which might
-	be negative).
-
-	This method is mainly made for translating mouse positions to text columns
-	when re-positioning cursor or selecting text sections. Therefore we want to
-	find what gap between two columns is being pointed at, not a specific column.
-*/
-
-Uint32	WgTextTool::ofsX2column( WgTextNode * pNode, const WgTextAttr * pAttr, int ofsX, const WgChar * pString, WgCursorInstance * pCursor, int * wpRemainder )
-{
-	if(!pString)
-		return 0;
-	const WgChar * pPos = pString;
-
-
-	WgPen	pen;
-	int		begX = 0;							// Beginning cordinate of character
-	int		endX = 0;							// End cordinate of character
-	Uint16	hProp = 0xFFFF;
-
-	int		cursColumn = -1;
-	if( pCursor )
-		cursColumn = pCursor->column();
-
-	pen.SetTextNode( pNode );
-	pen.SetTextAttr( pAttr );
-
-	// Find beginning and end cordinates of character that ofs is within.
-
-	while( !pPos->IsEndOfLine() )
-	{
-		if( pPos->PropHandle()!= hProp )
-		{
-			hProp = pPos->PropHandle();
-			pen.SetCharProp( hProp );
-		}
-
-		if( cursColumn == 0 )
-			pen.AdvancePosCursor( * pCursor );
-		cursColumn--;
-
-		pen.SetChar( pPos->Glyph() );
-		pen.ApplyKerning();
-		pen.AdvancePos();
-		endX = pen.GetPosX();
-
-		if( endX > ofsX )
-			break;
-
-		begX = endX;
-		pPos++;
-	}
-
-	// Choose column depending on what half of the character ofs is within
-	// and calculate remainder accordingly.
-
-	int remainder, column;
-
-	if( pPos->IsEndOfLine() || ( (ofsX - begX) < (endX - begX)/2 ) )
-	{
-		remainder = ofsX - begX;
-		column = pPos - pString;
-	}
-	else
-	{
-		remainder = ofsX - endX;
-		column = pPos + 1 - pString;
-	}
-
-	// Return values.
-
-	if( wpRemainder )
-		* wpRemainder = remainder;
-
-	return column;
 }
 
 
@@ -2845,13 +2663,18 @@ void WgTextTool::ModifyProperties( const PropModifier& modif, WgChar * pChar, Ui
 }
 
 
-//____ GetPropAttributes() ________________________________________________________
-/*
-void WgTextTool::GetPropAttributes( WgTextAttr& attr, const WgTextPropPtr& pProp, WgMode mode )
+//____ AddPropAttributes() ________________________________________________________
+
+void WgTextTool::AddPropAttributes( WgTextAttr& attr, const WgTextPropPtr& pProp, WgMode mode )
 {
-	
+	if( !pProp )
+		return;
+
 	if( pProp->GetFont() )
 		attr.pFont = pProp->GetFont();
+
+	if( pProp->GetSize(mode) != 0 )
+		attr.size = pProp->GetSize(mode);
 
 	if( pProp->GetStyle(mode) != WG_STYLE_NORMAL )
 		attr.style = pProp->GetStyle(mode);
@@ -2873,9 +2696,9 @@ void WgTextTool::GetPropAttributes( WgTextAttr& attr, const WgTextPropPtr& pProp
 	if( pProp->GetLink() )
 		attr.pLink = pProp->GetLink();
 }
-*/
 
 
+/*
 //____ IsCharUnderlined() _____________________________________________________
 
 bool WgTextTool::IsCharUnderlined( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
@@ -3192,7 +3015,7 @@ bool WgTextTool::GetCharVisibility( Uint16 character, Uint16 hCharProp, const Wg
 
 	return WgBase::GetDefaultTextProp()->GetCharVisibility(character);
 }
-
+*/
 
 /*
 //____ IsCombUnderlined() _____________________________________________________

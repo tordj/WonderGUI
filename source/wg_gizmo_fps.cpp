@@ -26,6 +26,7 @@
 #include	<wg_color.h>
 #include	<wg_char.h>
 #include	<wg_pen.h>
+#include	<wg_base.h>
 
 static const char	c_gizmoType[] = {"Fps"};
 
@@ -129,9 +130,12 @@ void WgGizmoFps::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 	const char *	pTemp;
 
 	WgPen	pen( pDevice, _canvas, _clip );
-	WgTextAttr attr(m_pProp);
+	WgTextAttr attr;
+	
+	WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextProp());
+	WgTextTool::AddPropAttributes(attr, m_pProp);
 
-	pen.SetTextAttr( &attr );
+	pen.SetAttributes( attr );
 	pen.SetPos( WgCord(_canvas.x, _canvas.y + pen.GetBaseline()) );
 
 	int height = pen.GetLineSpacing();
@@ -140,28 +144,28 @@ void WgGizmoFps::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 	sprintf( temp, "Now: %.2f", fpsCurrent );
 	WgTextTool::readString( pTemp, temp2, 39 );
 
-	pDevice->PrintLine( &pen, &attr, temp2 );
+	pDevice->PrintLine( pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Min: %.2f", fpsMin );
 	WgTextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
-	pDevice->PrintLine( &pen, &attr, temp2 );
+	pDevice->PrintLine( pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Avg: %.2f", fpsAvg );
 	WgTextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
-	pDevice->PrintLine( &pen, &attr, temp2 );
+	pDevice->PrintLine( pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Max: %.2f", fpsMax );
 	WgTextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
-	pDevice->PrintLine( &pen, &attr, temp2 );
+	pDevice->PrintLine( pen, attr, temp2 );
 }
 
 //____ OnUpdate() ________________________________________________________

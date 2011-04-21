@@ -48,7 +48,11 @@
 #endif
 
 #ifndef	WG_CURSORINSTANCE_DOT_H
-	#include "wg_cursorinstance.h"
+	#include <wg_cursorinstance.h>
+#endif
+
+#ifndef WG_INPUT_DOT_H
+#	include <wg_input.h>
 #endif
 
 class	WgValueFormat;
@@ -67,8 +71,8 @@ public:
 
 struct WgTextLine
 {
-	Uint32	nChars;			// Number of characters on this line (not including break).
-	Uint32	ofs;			// Offset in buffer for line.
+	int		nChars;			// Number of characters on this line (not including break).
+	int		ofs;			// Offset in buffer for line.
 
 	int		width;			// Width in pixels of line
 	short	height;			// Height in pixels of line
@@ -118,8 +122,8 @@ public:
 	int			deleteChar( int ofs );
 
 
-	Uint32		nbChars() const;
-	Uint32		nbLines() const;
+	int			nbChars() const;
+	int			nbLines() const;
 
 	inline const WgChar * getText() const { return m_buffer.Chars(); }
 	inline WgCharBuffer * getBuffer() { return &m_buffer; }
@@ -128,20 +132,19 @@ public:
 	const WgTextLine *	getLines() const;
 	WgTextLine *		getLine( int line ) const;
 	const WgChar * 		getLineText( int line ) const;
-	Uint32				getLineWidth( Uint32 line ) const;
-	Uint32				getLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol = 0xFFFFFFFF ) const;
+	int					getLineWidth( int line ) const;
 	int					getLineOfsY( int line ) const;
 
 	const WgTextLine *	getSoftLines() const;
 	WgTextLine *		getSoftLine( int line ) const;
 	const WgChar * 		getSoftLineText( int line ) const;
-	Uint32				getSoftLineWidth( Uint32 line ) const;
-	Uint32				getSoftLineWidthPart( Uint32 line, Uint32 startCol, Uint32 nCol = 0xFFFFFFFF ) const;
-	Uint32				nbSoftLines() const;
-	Uint32				getSoftLineSelectionWidth( Uint32 line ) const;
+	int					getSoftLineWidth( int line ) const;
+	int					getSoftLineWidthPart( int line, int startCol, int nCol = INT_MAX ) const;
+	int					nbSoftLines() const;
+	int					getSoftLineSelectionWidth( int line ) const;
 
-	void				posSoft2Hard( Uint32 &line, Uint32 &col ) const;
-	void				posHard2Soft( Uint32 &line, Uint32 &col ) const;
+	void				posSoft2Hard( int &line, int &col ) const;
+	void				posHard2Soft( int &line, int &col ) const;
 
 
 	void				clear();
@@ -149,8 +152,8 @@ public:
 
 //  --------------
 
-	void				selectText( Uint32 startLine, Uint32 startCol, Uint32 endLine, Uint32 endCol );
-	bool				getSelection( Uint32& startLine, Uint32& startCol, Uint32& endLine, Uint32& endCol ) const;
+	void				selectText( int startLine, int startCol, int endLine, int endCol );
+	bool				getSelection( int& startLine, int& startCol, int& endLine, int& endCol ) const;
 	void				clearSelection( );
 //  --------------
 
@@ -162,12 +165,12 @@ public:
 
 //  --------------
 
-	inline const WgTextPropPtr&	getProperties() const { return m_attr.pBaseProp; }
-	inline WgColor				getColor() const { return m_attr.pBaseProp->GetColor(); }
-	inline WgColor				getColor(WgMode mode) const { return m_attr.pBaseProp->GetColor(mode); }
-	inline WgFontStyle			getStyle(WgMode mode) const { return m_attr.pBaseProp->GetStyle(mode); }
-	inline int					getBreakLevel() const { return m_attr.pBaseProp->GetBreakLevel(); }
-	inline WgFont *				getFont() const { return m_attr.pBaseProp->GetFont(); }
+	inline const WgTextPropPtr&	getProperties() const { return m_pBaseProp; }
+	inline WgColor				getColor() const { return m_pBaseProp->GetColor(); }
+	inline WgColor				getColor(WgMode mode) const { return m_pBaseProp->GetColor(mode); }
+	inline WgFontStyle			getStyle(WgMode mode) const { return m_pBaseProp->GetStyle(mode); }
+	inline int					getBreakLevel() const { return m_pBaseProp->GetBreakLevel(); }
+	inline WgFont *				getFont() const { return m_pBaseProp->GetFont(); }
 
 //	--------------
 
@@ -201,52 +204,69 @@ public:
 
 	void				setLinkProperties( const WgTextPropPtr& pProp );
 	void				clearLinkProperties();
-	WgTextPropPtr		getLinkProperties() const { return m_attr.pLinkProp; }
+	WgTextPropPtr		getLinkProperties() const { return m_pLinkProp; }
 
 	void				setSelectionProperties( const WgTextPropPtr& pProp );
 	void				clearSelectionProperties();
-	WgTextPropPtr		getSelectionProperties() const { return m_attr.pSelectionProp; }
+	WgTextPropPtr		getSelectionProperties() const { return m_pSelectionProp; }
 
 // -------------
 
 	void				setSelectionBgColor(WgColor c);
-	inline WgColor		getSelectionBgColor() const { return m_attr.pSelectionProp->GetColor(); }
+	inline WgColor		getSelectionBgColor() const { return m_pSelectionProp->GetColor(); }
 
 // -------------
 
 	void				setCursorStyle( WgCursor * pCursor );
 	inline WgCursor *	getCursorStyle() const { return m_pCursorStyle; }
 
-	
+// -------------
+
+	void				GetBaseAttr( WgTextAttr& attr ) const;
+	bool				GetCharAttr( WgTextAttr& attr, int charOfs ) const;
+	bool				IsCharUnderlined(	int charOfs ) const;
+	WgColor				GetCharColor(		int charOfs ) const;
+	WgColor				GetCharBgColor(		int charOfs ) const;
+	WgFontStyle			GetCharStyle(		int charOfs ) const;
+	int					GetCharSize(		int charOfs ) const;
+	WgFont *			GetCharFont(		int charOfs ) const;
+//	WgGlyphSet *		GetCharGlyphSet(	int charOfs ) const;
+//	bool				GetCharVisibility(	int charOfs ) const;
+	int					GetCharBreakLevel(	int charOfs ) const;
+	WgTextLinkPtr		GetCharLink(		int charOfs ) const;
+	bool				IsCharLink(			int charOfs ) const;
+
 // -------------
 
 	void				setValue( double value, const WgValueFormat& form );
 	void				setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form );
 //	Sint32				compareTo( const WgText * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
 
-	Uint32				width() const;
-	Uint32				height() const;
+	int					width() const;
+	int					height() const;
+
+	int					unwrappedWidth() const;				// Width of text if no lines are wrapped.
 
 	int					heightForWidth( int width ) const;
 
-	Uint32				softLineHeight( Uint32 line );
-	Uint32				softLineSpacing( Uint32 line );
+	int					softLineHeight( int line );
+	int					softLineSpacing( int line );
 
-	void				setLineWidth( Uint32 width );
-	inline Uint32		getLineWidth() const { return m_lineWidth; }
+	void				setLineWidth( int width );
+	inline int			getLineWidth() const { return m_lineWidth; }
 
 	void				SetWrap( bool bWrap );
 	bool				IsWrap() const { return m_bWrap; }
 
 
 
-	inline void			setMode( WgMode mode ) { m_attr.mode = mode; }
+	inline void			setMode( WgMode mode ) { m_mode = mode; }
 	inline void			setAlignment( const WgOrigo& origo ) { m_origo = origo; }
 	inline void			setTintMode( WgTintMode mode ) { m_tintMode = mode; }
 	inline void			setLineSpaceAdjustment( Sint8 adjustment ) { m_lineSpaceAdj = adjustment; }
 
 
-	inline WgMode		mode() const { return m_attr.mode; }
+	inline WgMode		mode() const { return m_mode; }
 	inline const WgOrigo& alignment() const { return m_origo; }
 	inline WgTintMode	tintMode() const { return m_tintMode; }
 	inline Sint8		lineSpaceAdjustment() const { return m_lineSpaceAdj; }
@@ -256,12 +276,12 @@ public:
 
 
 	char *	getTextUTF8() const;
-	Uint32	getTextUTF8( char * pDest, Uint32 maxBytes ) const;
-	Uint32	getTextSizeUTF8() const;
+	int		getTextUTF8( char * pDest, int maxBytes ) const;
+	int		getTextSizeUTF8() const;
 
 	char *	getTextFormattedUTF8() const;
-	Uint32	getTextFormattedUTF8( char * pDest, Uint32 maxBytes ) const;
-	Uint32	getTextSizeFormattedUTF8() const;
+	int		getTextFormattedUTF8( char * pDest, int maxBytes ) const;
+	int		getTextSizeFormattedUTF8() const;
 
 	char *	getSelectedTextFormattedUTF8() const;
 	char *	getSelectedTextUTF8() const;
@@ -272,42 +292,41 @@ public:
 	void			DestroyCursor() { delete m_pCursor; m_pCursor = 0; }
 	WgCursorInstance*GetCursor() const { return m_pCursor; }
 
+	void			CursorGotoCoord( const WgCord& coord, const WgRect& container );
+	void			CursorGotoLine( int line, const WgRect& container );
+	void			CursorGoUp( int nbLines, const WgRect& container );
+	void			CursorGoDown( int nbLines, const WgRect& container );
+
 	void			hideCursor() { if(m_pCursor) m_pCursor->hide(); }
 	void			showCursor() { if(m_pCursor) m_pCursor->show(); }
 	bool			isCursorShowing() const { return m_pCursor ? !m_pCursor->isHidden() : false; }
 
-	bool			incTime( Uint32 ms ) { return m_pCursor ? m_pCursor->incTime(ms) : false; }
+	bool			incTime( int ms ) { return m_pCursor ? m_pCursor->incTime(ms) : false; }
 	void			insertMode( bool bInsert ) { if(m_pCursor) m_pCursor->insertMode(bInsert); }
 
-	void			goUp( Uint32 nLines = 1 ) { if(m_pCursor) m_pCursor->goUp(nLines); }
-	void			goDown( Uint32 nLines = 1 )	 { if(m_pCursor) m_pCursor->goDown(nLines); }
-	inline void		goLeft( Uint32 nChars = 1 ){ if(m_pCursor) m_pCursor->goLeft(nChars); }
-	inline void		goRight( Uint32 nChars = 1 ){ if(m_pCursor) m_pCursor->goRight(nChars); }
+	inline void		goLeft( int nChars = 1 ){ if(m_pCursor) m_pCursor->goLeft(nChars); }
+	inline void		goRight( int nChars = 1 ){ if(m_pCursor) m_pCursor->goRight(nChars); }
 
 	inline void		goBOF(){ if(m_pCursor) m_pCursor->goBOF(); }
 	inline void		goEOF(){ if(m_pCursor) m_pCursor->goEOF(); }
 	void			goBOL(){ if(m_pCursor) m_pCursor->goBOL(); }
 	void			goEOL(){ if(m_pCursor) m_pCursor->goEOL(); }
 
-	void			gotoHardLine( Uint32 line ){ if(m_pCursor) m_pCursor->gotoHardLine(line); }
-	void			gotoSoftLine( Uint32 line ){ if(m_pCursor) m_pCursor->gotoSoftLine(line); }
+	void			gotoSoftLine( int line, const WgRect& container ){ if(m_pCursor) m_pCursor->gotoSoftLine(line, container); }
 
 
-//	void			gotoHardPos( Uint32 line, Uint32 col ){ if(m_pCursor) m_pCursor->gotoHardPos( line, col );}
-	void			gotoSoftPos( Uint32 line, Uint32 col ){ if(m_pCursor) m_pCursor->gotoSoftPos( line, col );}
-
-	void			gotoPixel( Sint32 x, Sint32 y ){ if(m_pCursor) m_pCursor->gotoPixel( x, y );}
-	void			gotoColumn( Sint32 col ){ if(m_pCursor) m_pCursor->gotoColumn( col );}
+	void			gotoSoftPos( int line, int col ){ if(m_pCursor) m_pCursor->gotoSoftPos( line, col );}
+	void			gotoColumn( int col ){ if(m_pCursor) m_pCursor->gotoColumn( col );}
 
 	void			gotoPrevWord(){ if(m_pCursor) m_pCursor->gotoPrevWord();}
 	void			gotoBeginningOfWord(){ if(m_pCursor) m_pCursor->gotoBeginningOfWord();}
 	void			gotoNextWord(){ if(m_pCursor) m_pCursor->gotoNextWord();}
 	void			gotoEndOfWord(){ if(m_pCursor) m_pCursor->gotoEndOfWord();}
 
-	void			getSoftPos( Uint32 &line, Uint32 &col ) const{if(m_pCursor) m_pCursor->getSoftPos( line, col );}
+	void			getSoftPos( int &line, int &col ) const{if(m_pCursor) m_pCursor->getSoftPos( line, col );}
 
 	bool			putChar( Uint16 character ){return m_pCursor ? m_pCursor->putChar( character ):false;}
-	Uint32			putText( const WgCharSeq& seq ){return m_pCursor ? m_pCursor->putText( seq ):0;}
+	int				putText( const WgCharSeq& seq ){return m_pCursor ? m_pCursor->putText( seq ):0;}
 	void			unputText( int nChar ){if(m_pCursor) m_pCursor->unputText( nChar );}
 	void 			delPrevWord(){if(m_pCursor) m_pCursor->delPrevWord();}
 	void 			delNextWord(){if(m_pCursor) m_pCursor->delNextWord();}
@@ -317,9 +336,9 @@ public:
 	int				ofsX() const{return m_pCursor ? m_pCursor->ofsX():0;}
 	int				ofsY() const{return m_pCursor ? m_pCursor->ofsY():0;}
 
-	inline Uint32	line() const{return m_pCursor ? m_pCursor->line():0;}
-	inline Uint32	column() const{return m_pCursor ? m_pCursor->column():0;}
-	inline Uint32	time() const{return m_pCursor ? m_pCursor->time():0;}
+	inline int		line() const{return m_pCursor ? m_pCursor->line():0;}
+	inline int		column() const{return m_pCursor ? m_pCursor->column():0;}
+	inline int		time() const{return m_pCursor ? m_pCursor->time():0;}
 
 	WgCursor::Mode	cursorMode() const { return m_pCursor ? m_pCursor->cursorMode() : WgCursor::EOL; }
 
@@ -329,18 +348,33 @@ public:
 
 	void			selectAll() { if(m_pCursor) m_pCursor->selectAll(); }
 
-	Uint32			LineColToOffset(int line, int col) const;
-	void			OffsetToSoftLineCol(int ofs, int* wpLine, int* wpCol) const;
-
-	const WgTextAttr*	GetAttr() const { return &m_attr; }
+	int				LineColToOffset(int line, int col) const;						// HARD LINES!!!!!
+//	void			OffsetToSoftLineCol(int ofs, int* wpLine, int* wpCol) const;
 
 	//
 
-	int				ScreenY( const WgRect& container ) const;
-	int				ScreenX( int line, const WgRect& container ) const;
-	int				CoordToLine( const WgCord& coord, const WgRect& container ) const;
-	int				CoordToOfs( const WgCord& coord, const WgRect& container ) const;
+	int				LineStartX( int line, const WgRect& container ) const;
+	int				LineStartY( int line, const WgRect& container ) const;
+	WgCord			LineStart( int line, const WgRect& container ) const;
+
+	int				CoordToLine( const WgCord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	int				CoordToColumn( int line, const WgCord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	WgTextPos		CoordToPos( const WgCord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	int				CoordToOfs( const WgCord& coord, const WgRect& container, bool bCursorMode = false ) const;
 	WgTextLinkPtr	CoordToLink( const WgCord& coord, const WgRect& container ) const;
+
+	int				PosToCoordX( const WgTextPos& pos, const WgRect& container ) const;
+	int				PosToCoordY( const WgTextPos& pos, const WgRect& container ) const;
+	WgCord			PosToCoord( const WgTextPos& pos, const WgRect& container ) const;
+	int				PosToOfs( const WgTextPos& pos ) const;
+
+	int				OfsToCoordX( int ofs, const WgRect& container ) const;
+	int				OfsToCoordY( int ofs, const WgRect& container ) const;
+	WgCord			OfsToCoord( int ofs, const WgRect& container ) const;
+	WgTextPos		OfsToPos( int ofs ) const;
+
+
+
 
 	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCord& pointerOfs );
 
@@ -369,11 +403,10 @@ protected:
 	WgCursorInstance*	m_pCursor;
 	WgTextNode *	m_pManagerNode;
 
-	WgTextAttr		m_attr;
 
 	WgTintMode		m_tintMode;
 	WgOrigo			m_origo;
-//	WgMode			m_mode;
+	WgMode			m_mode;
 
 	WgTextLinkPtr	m_pMarkedLink;
 	WgMode			m_markedLinkMode;
@@ -386,10 +419,10 @@ protected:
 	int				m_selEndCol;
 	Sint8			m_lineSpaceAdj;		// Adjustment of linespacing for this text.
 
-//	WgTextPropPtr	m_pProp;			// Default properties for this text. Used for all characters who have
+	WgTextPropPtr	m_pBaseProp;		// Default properties for this text. Used for all characters who have
 										// properties set to 0.
-//	WgTextPropPtr	m_pLinkProp;		// Props used for links, overriding certain text and char properties.
-//	WgTextPropPtr	m_pSelectionProp;	// Props used for selected text, overriding certain text, char and link properties.
+	WgTextPropPtr	m_pLinkProp;		// Props used for links, overriding certain text and char properties.
+	WgTextPropPtr	m_pSelectionProp;	// Props used for selected text, overriding certain text, char and link properties.
 
 	WgTextLine*		m_pHardLines;
 	WgTextLine*		m_pSoftLines;
@@ -397,9 +430,9 @@ protected:
 	int				m_nSoftLines;
 	int				m_nHardLines;
 
-	Uint32			m_lineWidth;
+	int				m_lineWidth;
 
-	Uint32			m_newCursorPos;
+	int				m_newCursorPos;
 
 	bool			m_bWrap;
 

@@ -1418,6 +1418,21 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
+class Wdg_YSplitter_Res : public WgWidgetRes
+{
+public:
+	Wdg_YSplitter_Res(WgResourceXML* parent, class Wdg_YSplitter* widget = 0);
+
+	class Wdg_YSplitter*	GetWidget() { return (Wdg_YSplitter*)WgWidgetRes::GetWidget(); }
+
+	virtual void			Accept(WgResourceVisitor* visitor)	{ WgWidgetRes::Accept(visitor); }
+	virtual void			Serialize(WgResourceSerializerXML& s);
+	virtual void			Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
+
+	static const char*		TagName() { return "ysplitter"; }
+};
+
+//////////////////////////////////////////////////////////////////////////
 /// WgItemRes ////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 class WgItemRes : public WgResourceXML

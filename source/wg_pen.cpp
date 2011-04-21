@@ -49,12 +49,6 @@ WgPen::WgPen( WgGfxDevice * pDevice, const WgCord& origo, const WgRect& clip )
 
 void WgPen::Init()
 {
-	m_hCharProp	= 0;
-	m_pAttr		= 0;
-	m_linkMode	= WG_MODE_NORMAL;
-	m_bSelected = false;
-	m_bPropsOk	= false;
-
 	m_pDevice = 0;
 	m_pTextNode = 0;
 
@@ -62,11 +56,15 @@ void WgPen::Init()
 	m_pGlyphs = 0; 
 
 	m_size = 0; 
+	m_wantedSize = 0;
 	m_style = WG_STYLE_NORMAL; 
 
 	m_pGlyph = &m_dummyGlyph; 
 	m_pPrevGlyph = &m_dummyGlyph; 
 	m_color = 0xFFFFFFFF, 
+
+	m_bShowSpace = true;
+	m_bShowCRLF = true;
 
 	m_tabWidth = 80; 
 
@@ -85,131 +83,76 @@ void WgPen::SetClipRect( const WgRect& clip )
 }
 
 
-//____ SetLinkMode() __________________________________________________________
 
-bool WgPen::SetLinkMode( WgMode mode )
+//____ _onAttrChanged() __________________________________________________________
+
+void WgPen::_onAttrChanged()
 {
-	if( mode != m_linkMode )
-	{
-		m_linkMode = mode;
-		_updateProps();
-	}
-	return m_bPropsOk;
-}
-
-//____ SetSelected() __________________________________________________________
-
-bool WgPen::SetSelected( bool bSelected )
-{
-	if( bSelected != m_bSelected )
-	{
-		m_bSelected = bSelected;
-		_updateProps();
-	}
-	return m_bPropsOk;
-}
-
-//____ SetTextAttr() __________________________________________________________
-
-bool WgPen::SetTextAttr( const WgTextAttr * pAttr )
-{
-	if( pAttr != m_pAttr )
-	{
-		m_pAttr = pAttr;
-		_updateProps();
-	}
-	return m_bPropsOk;
-}
-
-//____ SetCharProp() __________________________________________________________
-
-bool WgPen::SetCharProp( Uint16 hCharProp )
-{
-	if( hCharProp != m_hCharProp )
-	{
-		m_hCharProp = hCharProp;
-		_updateProps();
-	}
-	return m_bPropsOk;
-}
-
-//____ SetAllProps() __________________________________________________________
-
-bool WgPen::SetAllProps( Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode, bool bSelected )
-{
-	m_hCharProp = hCharProp;
-	m_pAttr		= pAttr;
-	m_linkMode	= linkMode;
-	m_bSelected	= bSelected;
-	_updateProps();
-	return m_bPropsOk;
-}
-
-//____ _updateProps() __________________________________________________________
-
-void WgPen::_updateProps()
-{
-	m_pFont	= WgTextTool::GetCharFont( m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
 	if( !m_pFont )
 	{
-		m_bPropsOk = false;
+		m_pGlyphs = 0;
 		return;
 	}
 
-	m_color = WgTextTool::GetCharColor( m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
-	m_style	= WgTextTool::GetCharStyle( m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
-	m_size	= WgTextTool::GetCharSize( m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
-
 	if( m_pTextNode )
-		m_size = (int) m_pTextNode->GetSize( m_pFont, m_style, m_size );
-
-
-	m_bShowSpace = WgTextTool::GetCharVisibility( ' ', m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
-	m_bShowCRLF = WgTextTool::GetCharVisibility( '\n', m_hCharProp, m_pAttr, m_linkMode, m_bSelected );
-
-	m_pGlyph = &m_dummyGlyph;
-	m_pPrevGlyph = &m_dummyGlyph;
-
+		m_size = (int) m_pTextNode->GetSize( m_pFont, m_style, m_wantedSize );
+	else
+		m_size = m_wantedSize;
 
 	m_pGlyphs = m_pFont->GetGlyphSet( m_style, m_size );
-	if( !m_pGlyphs )
-	{
-		m_bPropsOk = false;
-		return;
-	}
-
-	m_bPropsOk = true;
 }
 
-/*
-bool WgPen::SetTextProp( Uint16 hTextProp, Uint16 hCharProp, WgMode mode )
+//____ SetAttributes() ________________________________________________________
+
+bool WgPen::SetAttributes( const WgTextAttr& attr )
 {
-	m_pFont	= WgTextTool::GetCombFont( hTextProp, hCharProp );
-	if( !m_pFont )
+	if( attr.size < 0 && attr.size > WG_MAX_FONTSIZE )
 		return false;
 
-	m_color = WgTextTool::GetCombColor( hTextProp, hCharProp, mode );
-	m_style	= WgTextTool::GetCombStyle( hTextProp, hCharProp, mode );
-	m_size	= WgTextTool::GetCombSize( hTextProp, hCharProp, mode );
-
-	if( m_pTextNode )
-		m_size = (int) m_pTextNode->GetSize( m_pFont, m_style, m_size );
-
-
-	m_bShowSpace = WgTextTool::GetCombCharVisibility( ' ', hTextProp, hCharProp );
-	m_bShowCRLF = WgTextTool::GetCombCharVisibility( '\n', hTextProp, hCharProp );
-
-	m_pGlyph = &m_dummyGlyph;
-	m_pPrevGlyph = &m_dummyGlyph;
-
-
-	m_pGlyphs = m_pFont->GetGlyphSet( m_style, m_size );
-	if( !m_pGlyphs )
-		return false;
-
+	m_pFont			= attr.pFont;
+	m_wantedSize	= attr.size;
+	m_style			= attr.style;
+	m_color			= attr.color;
+	_onAttrChanged();
 	return true;
 }
-*/
+
+//____ SetSize() ______________________________________________________________
+
+bool WgPen::SetSize( int size )
+{
+	if( size < 0 && size > WG_MAX_FONTSIZE )
+		return false;
+
+	m_wantedSize = size;
+	_onAttrChanged();
+	return true;
+}
+
+//____ SetFont() ______________________________________________________________
+
+void WgPen::SetFont( WgFont * pFont )
+{
+	m_pFont = pFont;
+	_onAttrChanged();
+}
+
+//____ SetStyle() _____________________________________________________________
+
+void WgPen::SetStyle( WgFontStyle style )
+{
+	m_style = style;
+	_onAttrChanged();
+}
+
+//____ SetColor() _____________________________________________________________
+
+void WgPen::SetColor( WgColor color )
+{
+	m_color = color;
+//	_onAttrChanged();
+}
+
 
 //____ SetChar() _____________________________________________________________
 
