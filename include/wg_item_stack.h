@@ -74,6 +74,7 @@ protected:
 	void	Enable( bool bEnable ); 
 //	Sint32	CompareTo( WgItem * pOther );
 
+
 	// Callbacks for interfaces;
 
 	void refreshItems();
@@ -81,6 +82,7 @@ protected:
 	void ItemVisibilityModified( WgItem * pItem, bool bVisible );
 
 	WgItem* GetMarkedItem( Uint32 x, Uint32 y );
+	virtual WgRect	RequestItemGeo( WgItem * pItem );
 
 	int m_minWidth;
 	int m_minHeight;

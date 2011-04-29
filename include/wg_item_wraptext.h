@@ -24,6 +24,9 @@ public:
 	void			SetTextProp(WgTextPropPtr pProp);
 	void			SetMargin(WgBorders margin);
 
+	WgPointerStyle	GetPointerStyle() const;
+
+
 	DECLARE_TOOLTIP_SUPPORT();
 
 	virtual const char *Type( void ) const;
@@ -35,6 +38,7 @@ protected:
 
 	virtual void 	AdaptToWidth( Uint32 displayed_width );
 
+	virtual void	ActionRespond( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
  	virtual void	Render( const WgRect& _window, const WgRect& _clip );
 	virtual WgItem* Clone( WgItem * _pClone = 0 );
 	virtual void	Enable( bool bEnable ); 

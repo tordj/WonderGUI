@@ -777,3 +777,42 @@ WgString Wdg_GridView::GetTooltipString() const
 	return tooltip;
 }
 
+//____ RequestItemGeo() _______________________________________________________
+
+WgRect Wdg_GridView::RequestItemGeo( WgItem * pItem )
+{
+	WgRect r = ScreenGeometry();
+
+	r.x -= m_viewPixOfsX;
+	r.y -= m_viewPixOfsY;
+
+	ItemArray itemArray;
+	WgSize content(m_contentWidth, m_contentHeight);
+	bool bSuccess = GetFirstRowOrCol(&itemArray, content);
+
+	while(bSuccess)
+	{
+		WgRect itemRect(itemArray.rect.x + r.x, itemArray.rect.y + r.y, itemArray.rect.w, itemArray.rect.h);
+
+		for(WgItem* p = itemArray.pFirstItem; p != itemArray.pNextFirst; p = p->Next())
+		{
+			WgSize itemSize = CalcCellSize(p);
+			itemRect.w = itemSize.w;
+			itemRect.h = itemSize.h;
+
+			if(p == pItem)
+				return itemRect;
+
+			if(m_layout == Vertical)
+				itemRect.x += itemRect.w;
+			else
+				itemRect.y += itemRect.h;
+		}
+
+		bSuccess = GetNextRowOrCol(&itemArray, content);
+	}
+
+	return WgRect();
+}
+
+

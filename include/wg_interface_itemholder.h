@@ -66,7 +66,7 @@ public:
 	inline WgItem*	GetFirstItem()	{ return m_items.First();};
 	inline WgItem*	GetLastItem()	{ return m_items.Last();};
 
-	void	SetItemSpacing( Uint32 spacing );
+	void	SetItemSpacing( Uint32 spacing, bool bCellInclusive = false );
 	inline Uint32 ItemSpacing()		{ return m_itemSpacing; };
 	inline Uint32 NbItems()			{ return m_nItems; };
 
@@ -74,6 +74,7 @@ public:
 
 	void	SetSortFunction( Sint32(*fp)(WgItem *,WgItem *) );
 
+	virtual WgRect	RequestItemGeo( WgItem * pItem ) = 0;
 
 protected:
 	virtual void refreshItems() = 0;
@@ -99,11 +100,13 @@ protected:
 //	virtual WgSize	RequestItemSize( WgItem * pItem ) = 0;
 
 
+
 //	virtual void ItemAdded( WgItem * pItem ) = 0;
 //	virtual void ItemRemoved( WgItem * pItem ) = 0;
 
 	WgChain<WgItem>	m_items;
 	Uint32			m_itemSpacing;
+	bool			m_bCellInclusiveItemSpacing;
 	Uint32			m_nItems;
 	WgColor			m_itemMarkColor;
 	bool			m_bSortAscend;

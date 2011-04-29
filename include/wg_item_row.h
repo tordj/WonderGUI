@@ -44,6 +44,10 @@ public:
 
 
 	void	SetHeightModify( int pixels );
+	void	SetMarkChildren( bool bMarkChildren );
+	void	SetStretchLastItem( bool bStretch );
+	void	SetUseAllHeight( bool bUseAllHeight );
+	void	SetWidthExpandUsage( float usage );		// 0.f -> 1.f, how much of extra width the items should grow into.
 
 	inline bool	GrabInputFocus() { return WgItem::GrabInputFocus(); }
 	inline bool	RemoveInputFocus() { return WgItem::GrabInputFocus(); }
@@ -51,6 +55,9 @@ public:
 protected:
 
 	void	AdaptToHeight( Uint32 displayed_height );
+	void	AdaptToWidth( Uint32 displayed_width );
+
+	float	WidthExpandFactor( int screen_width ); // Factor to expand each items width with.
 
 	void	ActionRespond( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
  	void	Render( const WgRect& _window, const WgRect& _clip );
@@ -67,9 +74,16 @@ protected:
 	void ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff );
 	void ItemVisibilityModified( WgItem * pItem, bool bVisible );
 	WgItem* GetMarkedItem( Uint32 x, Uint32 y );
+	virtual WgRect	RequestItemGeo( WgItem * pItem );
+	float	WidthExpandPercentage( int screen_width );
+
 
 	int		m_heightModify;
+	bool	m_bMarkChildren;
 
+	bool	m_bStretchLastItem;
+	bool	m_bUseAllHeight;
+	float	m_widthExpandUsage;
 };
 
 

@@ -165,6 +165,29 @@ void WgItemWrapText::UpdateSize()
 	Modified(widthModif, heightModif);
 }
 
+//____ GetPointerStyle() ________________________________________
+
+WgPointerStyle WgItemWrapText::GetPointerStyle() const
+{
+	if( m_text.GetMarkedLink() )
+		return WG_POINTER_HAND;
+
+	return WG_POINTER_DEFAULT; 
+}
+
+
+//____ ActionRespond() ________________________________________________________
+
+void WgItemWrapText::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+{
+	// Let text object handle its actions.
+
+	bool bRender = m_text.OnAction( action, button_key, m_pMyHolder->RequestItemGeo(this), WgCord(info.x, info.y) );
+	if( bRender )
+		Modified(0,0);
+
+}
+
 //____ Render() _______________________________________________________________
 
 void WgItemWrapText::Render( const WgRect& _window, const WgRect& _clip )

@@ -30,6 +30,7 @@
 Wg_Interface_ItemHolder::Wg_Interface_ItemHolder()
 {
 	m_itemSpacing	= 0;
+	m_bCellInclusiveItemSpacing = false;
 	m_nItems		= 0;
 	m_itemMarkColor	= WgColor(0,0,0);
 	m_bSortAscend	= true;
@@ -438,11 +439,12 @@ void Wg_Interface_ItemHolder::SetItemMarkColor( const WgColor& color )
 
 //____ SetItemSpacing() _______________________________________________________
 
-void Wg_Interface_ItemHolder::SetItemSpacing( Uint32 spacing )
+void Wg_Interface_ItemHolder::SetItemSpacing( Uint32 spacing, bool bCellInclusive )
 {
-	if( spacing != m_itemSpacing )
+	if( spacing != m_itemSpacing && bCellInclusive != m_bCellInclusiveItemSpacing )
 	{
 		m_itemSpacing = spacing;
+		m_bCellInclusiveItemSpacing = bCellInclusive;
 		refreshItems();
 	}
 }

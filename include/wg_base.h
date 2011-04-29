@@ -38,6 +38,11 @@
 #	include <wg_textprop.h>
 #endif
 
+#ifndef WG_TEXTLINKHANDLER_DOT_H
+#	include <wg_textlinkhandler.h>
+#endif
+
+
 
 #ifdef WG_USE_FREETYPE
 
@@ -81,13 +86,17 @@ public:
 	static void SetDefaultCursor( WgCursor * pCursor );
 	static WgCursor * GetDefaultCursor() { return s_pDefaultCursor; }
 
+	static void SetDefaultTextLinkHandler( WgTextLinkHandler * pHandler );
+	static WgTextLinkHandler * GetDefaultTextLinkHandler() { return s_pDefaultTextLinkHandler; }
+
 	static WgWeakPtrHub *	AllocWeakPtrHub();
 	static void			FreeWeakPtrHub( WgWeakPtrHub * pHub );
 
 private:
-	static WgTextPropPtr	s_pDefaultTextProp;
-	static WgTextPropPtr	s_pDefaultSelectionProp;
-	static WgTextPropPtr	s_pDefaultLinkProp;
+	static WgTextPropPtr		s_pDefaultTextProp;
+	static WgTextPropPtr		s_pDefaultSelectionProp;
+	static WgTextPropPtr		s_pDefaultLinkProp;
+	static WgTextLinkHandler*	s_pDefaultTextLinkHandler;
 
 	static WgCursor *		s_pDefaultCursor;
 //	WgTextMgrPtr	m_pDefTextMgr;

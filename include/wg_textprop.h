@@ -23,7 +23,6 @@
 #ifndef WG_TEXTPROP_DOT_H
 #define WG_TEXTPROP_DOT_H
 
-#include <string>
 
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -33,8 +32,8 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
+#ifndef WG_TEXTLINKHANDLER_DOT_H
+#	include <wg_textlinkhandler.h>
 #endif
 
 
@@ -44,9 +43,9 @@ class WgFont;
 class WgGlyphSet;
 class WgTextProp;
 class WgTextPropPtr;
+class WgTextLink;
 class WgTextPropHolder;
 class WgTextPropManager;
-
 
 //____ WgTextPropPtr __________________________________________________________
 
@@ -77,25 +76,6 @@ public:
 
 private:
 	Uint16			m_hProp;
-};
-
-//____ WgTextLink _____________________________________________________________
-
-typedef	WgSmartPtr<class WgTextLinkHandler> WgTextLinkHandlerPtr;
-typedef	WgSmartPtr<class WgTextLink> WgTextLinkPtr;
-
-class WgTextLink : public WgRefCounted
-{
-public:
-	static WgTextLinkPtr Create( std::string link, WgTextLinkHandlerPtr pEmitter ) { return new WgTextLink(link,pEmitter); }
-
-	bool					m_bClicked;
-	WgTextLinkHandlerPtr	m_pEmitter;
-	std::string				m_link;
-
-private:
-	WgTextLink( std::string link, WgTextLinkHandlerPtr pEmitter );
-	~WgTextLink() {}
 };
 
 

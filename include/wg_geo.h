@@ -31,46 +31,46 @@
 class WgRect;
 
 
-//____ Class: WgCord32 ________________________________________________________
+//____ Class: WgCord ________________________________________________________
 
-class	WgCord32
+class	WgCord
 {
 public:
-	WgCord32() : x(0), y(0) {}
-	WgCord32( int x, int y ) : x(x), y(y) {}
-	WgCord32( const WgRect& rect );
+	WgCord() : x(0), y(0) {}
+	WgCord( int x, int y ) : x(x), y(y) {}
+	WgCord( const WgRect& rect );
 
-	inline WgCord32 operator=(const WgCord32& k)	{ x = k.x; y = k.y; return *this; }
-	inline WgCord32 operator=(const WgRect& r);
+	inline WgCord operator=(const WgCord& k)	{ x = k.x; y = k.y; return *this; }
+	inline WgCord operator=(const WgRect& r);
 
-	inline bool operator==(const WgCord32& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-	inline bool operator!=(const WgCord32& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
+	inline bool operator==(const WgCord& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
+	inline bool operator!=(const WgCord& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
 
-	inline void operator+=(const WgCord32& k)			{ x += k.x; y += k.y; }
-	inline void operator-=(const WgCord32& k)			{ x -= k.x; y -= k.y; }
-	inline WgCord32 operator+(const WgCord32& k) const	{ WgCord32 res; res.x = x + k.x; res.y = y + k.y; return res; }
-	inline WgCord32 operator-(const WgCord32& k) const	{ WgCord32 res; res.x = x - k.x; res.y = y - k.y; return res; }
+	inline void operator+=(const WgCord& k)			{ x += k.x; y += k.y; }
+	inline void operator-=(const WgCord& k)			{ x -= k.x; y -= k.y; }
+	inline WgCord operator+(const WgCord& k) const	{ WgCord res; res.x = x + k.x; res.y = y + k.y; return res; }
+	inline WgCord operator-(const WgCord& k) const	{ WgCord res; res.x = x - k.x; res.y = y - k.y; return res; }
 
 	inline void operator*=(double v)				{ x = (int) (x*v); y = (int) (y*v); }
 	inline void operator/=(double v)				{ x = (int) (x/v); y = (int) (y/v); }
-	inline WgCord32 operator*(double v) const	{ WgCord32 res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
-	inline WgCord32 operator/(double v) const	{ WgCord32 res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
+	inline WgCord operator*(double v) const	{ WgCord res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
+	inline WgCord operator/(double v) const	{ WgCord res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
 
 	inline void operator*=(float v)				{ x = (int) (x*v); y = (int) (y*v); }
 	inline void operator/=(float v)				{ x = (int) (x/v); y = (int) (y/v); }
-	inline WgCord32 operator*(float v) const	{ WgCord32 res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
-	inline WgCord32 operator/(float v) const	{ WgCord32 res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
+	inline WgCord operator*(float v) const	{ WgCord res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
+	inline WgCord operator/(float v) const	{ WgCord res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
 
 	inline void operator*=(int v)				{ x *= v; y *= v; }
 	inline void operator/=(int v)				{ x /= v; y /= v; }
-	inline WgCord32 operator*(int v) const	{ WgCord32 res; res.x = x * v; res.y = y * v; return res; }
-	inline WgCord32 operator/(int v) const	{ WgCord32 res; res.x = x / v; res.y = y / v; return res; }
+	inline WgCord operator*(int v) const	{ WgCord res; res.x = x * v; res.y = y * v; return res; }
+	inline WgCord operator/(int v) const	{ WgCord res; res.x = x / v; res.y = y / v; return res; }
 
 
 	int	x, y;
 };
 
-typedef WgCord32	WgCord;
+typedef WgCord	WgCord32;
 
 //____ Class: WgCord16 ________________________________________________________
 
@@ -272,14 +272,14 @@ public:
 
 
 //_____________________________________________________________________________
-inline WgCord32::WgCord32( const WgRect& rect )
+inline WgCord::WgCord( const WgRect& rect )
 {
 	x = rect.x;
 	y = rect.y;
 }
 
 //_____________________________________________________________________________
-inline WgCord32 WgCord32::operator=(const WgRect& r)
+inline WgCord WgCord::operator=(const WgRect& r)
 {
 	x = r.x;
 	y = r.y;

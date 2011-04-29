@@ -970,11 +970,13 @@ void WgGfxDevice::_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int
 
 //____ DrawTextBg() ___________________________________________________________
 
-void WgGfxDevice::DrawTextBg( const WgRect& clip, const WgText * pText, const WgRect& dest )
+void WgGfxDevice::DrawTextBg( const WgRect& _clip, const WgText * pText, const WgRect& dest )
 {
 	WgRectChain	bgRects;
 	WgColor		bgColor;
 	bool		bBgColored;
+
+	WgRect		clip(_clip,dest);		// Make sure clipping rect is inside dest.
 
 	WgMode mode = pText->mode();
 
@@ -1038,23 +1040,30 @@ void WgGfxDevice::DrawTextBg( const WgRect& clip, const WgText * pText, const Wg
 				DrawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
 
 			startOfs = selEnd;
-			ofs = startOfs-1;
+			ofs = startOfs;
 		}
 
 		if( pChars[ofs].PropHandle() != hProp )
 		{
+			// Update hProp and get background color
+
 			hProp = pChars[ofs].PropHandle();
 
-			WgTextAttr	attr;
-			pText->GetCharAttr( attr, ofs );
+			WgColor newColor = pText->GetCharBgColor(ofs);
 
-			if( ofs != startOfs && attr.bgColor != color && color != bgColor )
+			if( newColor != color )
 			{
-				DrawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
-				hProp = pChars[ofs].PropHandle();
-				color = attr.bgColor;
+				// Draw previous bg section which now ended
+
+				if( ofs != startOfs && color != bgColor )
+					DrawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
+
+				// Set start and color of current background section
+
+				color = newColor;
 				startOfs = ofs;
 			}
+
 		}
 	}
 

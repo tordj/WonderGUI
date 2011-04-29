@@ -993,10 +993,13 @@ void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	if(xmlNode.HasAttribute("bg_col"))
 		textProp->SetBgColor(WgColorRes::Deserialize(s, xmlNode["bg_col"]), m_mode);
 
-	if(WgUtil::ToBool(xmlNode["underlined"]))
-		textProp->SetUnderlined(m_mode);
-	else
-		textProp->ClearUnderlined(m_mode);
+	if(xmlNode.HasAttribute("underlined"))
+	{
+		if(WgUtil::ToBool(xmlNode["underlined"]))
+			textProp->SetUnderlined(m_mode);
+		else 
+			textProp->ClearUnderlined(m_mode);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

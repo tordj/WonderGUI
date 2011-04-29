@@ -23,38 +23,64 @@
 #ifndef WG_TEXTLINKHANDLER_DOT_H
 #define WG_TEXTLINKHANDLER_DOT_H
 
+#include <string>
+
+
 #ifndef WG_SMARTPTR_DOT_H
 #	include <wg_smartptr.h>
 #endif
 
-#ifndef WG_EMITTER_DOT_H
-#	include <wg_emitter.h>
-#endif
-
-#ifndef WG_INPUT_DOT_H
-#	include <wg_input.h>
-#endif
-
 class WgText;
+class WgTextLink;
+class WgTextLinkHandler;
+class WgCord;
 
-typedef	WgSmartPtr<class WgTextLinkHandler> WgTextLinkHandlerPtr;
+typedef	WgSmartPtr<class WgTextLink> WgTextLinkPtr;
+
+
+//____ WgTextLink _____________________________________________________________
+
+
+class WgTextLink : public WgRefCounted
+{
+public:
+	static WgTextLinkPtr Create( std::string link, WgTextLinkHandler * pHandler ) { return new WgTextLink(link,pHandler); }
+
+	WgTextLinkHandler *		Handler() const { return m_pHandler; }
+	std::string				Link() const { return m_link; }
+	bool					HasBeenAccessed() const { return m_bAccessed; }
+
+private:
+	bool					m_bAccessed;
+	WgTextLinkHandler *		m_pHandler;
+	std::string				m_link;
+
+	WgTextLink( std::string link, WgTextLinkHandler * pHandler );
+	~WgTextLink() {}
+};
 
 
 //____ WgTextLinkHandler ______________________________________________________
 
-class WgTextLinkHandler : public WgEmitter, public WgRefCounted
+class WgTextLinkHandler
 {
 	friend class WgText;
 
 public:
-	static WgTextLinkHandlerPtr	Create() { return new WgTextLinkHandler(); }
-
-private:
 	WgTextLinkHandler() {}
 	~WgTextLinkHandler() {}
 
-	void	OnAction( WgInput::UserAction action, int button_key );
-};
+protected:
 
+	virtual void	OnPointerEnter( const WgTextLinkPtr& pLink, const WgCord& screenPos );
+	virtual void	OnPointerOver( const WgTextLinkPtr& pLink, const WgCord& screenPos );
+	virtual void	OnPointerExit( const WgTextLinkPtr& pLink, const WgCord& screenPos );
+
+	virtual void	OnButtonPress( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos );
+	virtual void	OnButtonRelease( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos );
+	virtual void	OnButtonRepeat( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos );
+	virtual void	OnButtonClick( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos );
+	virtual void	OnButtonDoubleClick( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos );
+};
 
 #endif //WG_TEXTLINKHANDLER_DOT_H
