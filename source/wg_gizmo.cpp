@@ -57,6 +57,14 @@ const char * WgGizmo::GetMyType()
 	return s_type;
 }
 
+//____ GetPointerStyle() ________________________________________
+
+WgPointerStyle WgGizmo::GetPointerStyle() const
+{ 
+	return m_pointerStyle; 
+}
+
+
 
 //____ Enable() _______________________________________________________________
 

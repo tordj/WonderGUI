@@ -21,48 +21,46 @@
 =========================================================================*/
 
 #include <wg_textlinkhandler.h>
-#include <wg_input.h>
-#include <wg_signals.h>
+#include <wg_base.h>
 
-using namespace WgSignal;
+//____ WgTextLink::Constructor ________________________________________________
 
-
-//____ OnAction() _____________________________________________________________
-
-void WgTextLinkHandler::OnAction( WgInput::UserAction action, int button_key )
+WgTextLink::WgTextLink( std::string link, WgTextLinkHandler * pHandler ) : 
+			m_bAccessed(false), m_pHandler(pHandler), m_link(link) 
 {
-	switch( action )
-	{
-		case WgInput::POINTER_ENTER:
-			Emit( PointerEnter() );
-			break;
-		case WgInput::POINTER_OVER:
-			Emit( PointerOver() );
-			break;
-		case WgInput::POINTER_EXIT:
-			Emit( PointerExit() );
-			break;
-		case WgInput::BUTTON_PRESS:
-			Emit( ButtonPress(button_key) );
-			break;
-		case WgInput::BUTTON_DOWN:
-			Emit( ButtonDown(button_key) );
-			break;
-		case WgInput::BUTTON_REPEAT:
-			Emit( ButtonRepeat(button_key) );
-			break;
-		case WgInput::BUTTON_RELEASE:
-     		Emit( ButtonRelease(button_key) );
-			break;
-		case WgInput::BUTTON_RELEASE_OUTSIDE:
-     		Emit( ButtonReleaseOutside(button_key) );
-			break;
-		case WgInput::BUTTON_CLICK:
-     		Emit( ButtonClick(button_key) );
-			break;
-		case WgInput::BUTTON_DOUBLECLICK:
-     		Emit( ButtonDoubleClick(button_key) );
-			break;
-	}
+}
+
+
+
+void WgTextLinkHandler::OnPointerEnter( const WgTextLinkPtr& pLink, const WgCord& screenPos )
+{
+}
+
+void WgTextLinkHandler::OnPointerOver( const WgTextLinkPtr& pLink, const WgCord& screenPos )
+{
+}
+
+void WgTextLinkHandler::OnPointerExit( const WgTextLinkPtr& pLink, const WgCord& screenPos )
+{
+}
+
+void WgTextLinkHandler::OnButtonPress( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos )
+{
+}
+
+void WgTextLinkHandler::OnButtonRelease( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos )
+{
+}
+
+void WgTextLinkHandler::OnButtonRepeat( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos )
+{
+}
+
+void WgTextLinkHandler::OnButtonClick( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos )
+{
+}
+
+void WgTextLinkHandler::OnButtonDoubleClick( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos )
+{
 }
 

@@ -86,6 +86,9 @@ public:
 
 	virtual WgString	GetTooltipString() const	{ return 0; }
 
+	virtual WgPointerStyle	GetPointerStyle() const	{ return WG_POINTER_DEFAULT; }
+
+
 	virtual const char *Type( void ) const = 0;
 
 	bool			GrabInputFocus();

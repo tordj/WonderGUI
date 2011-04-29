@@ -551,10 +551,3 @@ bool WgTextProp::IsEqual(WgMode mode0, WgMode mode1) const
 			m_modeProp[mode0].m_style == m_modeProp[mode1].m_style &&			
 			m_modeProp[mode0].m_size == m_modeProp[mode1].m_size;			
 }
-
-//____ WgTextLink::Constructor ________________________________________________
-
-WgTextLink::WgTextLink( std::string link, WgTextLinkHandlerPtr pEmitter ) : 
-			m_bClicked(false), m_pEmitter(pEmitter), m_link(link) 
-{
-}

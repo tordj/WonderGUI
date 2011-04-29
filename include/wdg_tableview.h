@@ -148,7 +148,8 @@ public:
 	void	SetTooltipString( const WgChar* pString )	{ WgItemRow::SetTooltipString( pString ); }	\
 	void	SetTooltipString( const Uint16* pString )	{ WgItemRow::SetTooltipString( pString ); }	\
 	void	SetTooltipString( const char* pString )		{ WgItemRow::SetTooltipString( pString ); }	\
-
+protected:
+	virtual WgRect	RequestItemGeo( WgItem * pItem );		// Overloading version from WgItemRow
 
 };
 
@@ -294,6 +295,9 @@ private:
 	void		UpdateContentSize();
 	void		UpdateMarkedRowColumn( int row, int column );
 	void		RecalcColumnWidths();
+
+	WgRect		RequestItemGeo( WgItem * pItem );
+
 
 	struct SortInfo
 	{

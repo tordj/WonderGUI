@@ -2065,6 +2065,14 @@ int WgText::LineColToOffset(int line, int col) const
 bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCord& pointerOfs )
 {
 	bool bRefresh = false;
+	WgTextLinkHandler * pHandler;
+	
+	if( m_pMarkedLink )
+	{
+		pHandler = m_pMarkedLink->Handler();
+		if( !pHandler )
+			pHandler = WgBase::GetDefaultTextLinkHandler();
+	}
 
 	switch( action )
 	{
@@ -2074,7 +2082,8 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 			WgTextLinkPtr pLink = CoordToLink( pointerOfs, container );
 			if( m_pMarkedLink && pLink != m_pMarkedLink )
 			{
-				m_pMarkedLink->m_pEmitter->OnAction( WgInput::POINTER_EXIT, button_key );
+				if( pHandler )
+					pHandler->OnPointerExit( m_pMarkedLink, pointerOfs );
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2083,12 +2092,19 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 			{
 				if( pLink != m_pMarkedLink )
 				{
-					pLink->m_pEmitter->OnAction( WgInput::POINTER_ENTER, button_key );
+					pHandler = pLink->Handler();
+					if( !pHandler )
+						pHandler = WgBase::GetDefaultTextLinkHandler();
+
+					if( pHandler )
+						pHandler->OnPointerEnter( m_pMarkedLink, pointerOfs );
+
 					m_pMarkedLink = pLink;
 					m_markedLinkMode = WG_MODE_MARKED;
 					bRefresh = true;
 				}
-				m_pMarkedLink->m_pEmitter->OnAction( WgInput::POINTER_OVER, button_key );
+				if( pHandler )
+					pHandler->OnPointerOver( m_pMarkedLink, pointerOfs );
 			}
 			break;
 		}
@@ -2098,7 +2114,8 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 		{
 			if( m_pMarkedLink )
 			{			
-				m_pMarkedLink->m_pEmitter->OnAction( WgInput::POINTER_EXIT, button_key );
+				if( pHandler )
+					pHandler->OnPointerExit( m_pMarkedLink, pointerOfs );
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2109,23 +2126,21 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 		{
 			if( m_pMarkedLink )
 			{	
-				m_pMarkedLink->m_pEmitter->OnAction( WgInput::BUTTON_PRESS, button_key );
+				if( pHandler )
+					pHandler->OnButtonPress( button_key, m_pMarkedLink, pointerOfs );
 				m_markedLinkMode = WG_MODE_SELECTED;
 				bRefresh = true;
 			}
-			break;
-		}
-		case WgInput::BUTTON_DOWN:
-		{
-			if( m_pMarkedLink )
-				m_pMarkedLink->m_pEmitter->OnAction( WgInput::BUTTON_DOWN, button_key );
 			break;
 		}
 
 		case WgInput::BUTTON_REPEAT:
 		{
 			if( m_pMarkedLink )
-				m_pMarkedLink->m_pEmitter->OnAction( WgInput::BUTTON_REPEAT, button_key );
+			{
+				if( pHandler )
+					pHandler->OnButtonRepeat( button_key, m_pMarkedLink, pointerOfs );
+			}
 			break;
 		}
 
@@ -2133,10 +2148,13 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 		{
 			if( m_pMarkedLink )
 			{
-				m_pMarkedLink->m_pEmitter->OnAction( WgInput::BUTTON_RELEASE, button_key );
+				if( pHandler )
+				{
+					pHandler->OnButtonRelease( button_key, m_pMarkedLink, pointerOfs );
 
-				if( m_markedLinkMode == WG_MODE_SELECTED )
-					m_pMarkedLink->m_pEmitter->OnAction( WgInput::BUTTON_CLICK, button_key );
+					if( m_markedLinkMode == WG_MODE_SELECTED )
+						pHandler->OnButtonClick( button_key, m_pMarkedLink, pointerOfs );
+				}
 				
 				m_markedLinkMode = WG_MODE_MARKED;
 				bRefresh = true;
@@ -2145,8 +2163,8 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 		}
 
 		case WgInput::BUTTON_DOUBLECLICK:
-			if( m_pMarkedLink )
-				m_pMarkedLink->m_pEmitter->OnAction( WgInput::BUTTON_DOUBLECLICK, button_key );
+			if( m_pMarkedLink && pHandler )
+				pHandler->OnButtonDoubleClick( button_key, m_pMarkedLink, pointerOfs );
 			break;
 	}
 
@@ -2216,7 +2234,7 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 		{
 			if( m_mode == WG_MODE_DISABLED )
 				mode = WG_MODE_DISABLED;
-			else if( pLink->m_bClicked )
+			else if( pLink->HasBeenAccessed() )
 				mode = WG_MODE_SPECIAL;
 			else
 				mode = WG_MODE_NORMAL;

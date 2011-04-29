@@ -83,6 +83,7 @@ protected:
 	void ItemAdded( WgItem * pItem );
 	void ItemMarkChanged( WgItem * pItem, bool bMarked );
 	WgItem* GetMarkedItem( Uint32 x, Uint32 y );
+	virtual WgRect	RequestItemGeo( WgItem * pItem );
 
 
 	void DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGeo );

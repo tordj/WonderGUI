@@ -49,6 +49,9 @@ public:
 	inline bool	GrabInputFocus() { return WgWidget::GrabInputFocus(); }
 	inline bool	RemoveInputFocus() { return WgWidget::GrabInputFocus(); }
 
+	WgPointerStyle		GetPointerStyle() const;
+
+
 protected:
 	WgWidget * NewOfMyType() const;
 private:
@@ -74,6 +77,8 @@ private:
 //	void		DoMyOwnDisOrEnable( void );
 
 	void		UpdateContentSize();
+	WgRect		RequestItemGeo( WgItem * pItem );
+	bool		DoWeHaveItem( const WgItem * pItem );
 
 	WgItem *	m_pLastMarkedItem;
 

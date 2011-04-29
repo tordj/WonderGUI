@@ -22,6 +22,7 @@
 
 #include <wdg_listview.h>
 #include <wg_gfx.h>
+#include <wg_item_row.h>
 
 static const char	Wdg_Type[] = {"TordJ/ListView"};
 
@@ -104,16 +105,8 @@ void Wdg_ListView::refreshItems()
 
 	// Check so we still have our m_pLastMarkedItem...
 
-	WgItem * p = m_items.First();
-	while( p )
-	{
-		if( p == m_pLastMarkedItem )
-			break;
-		p = p->Next();
-	}
-	if( p == 0 )
+	if( !DoWeHaveItem(m_pLastMarkedItem) )
 		m_pLastMarkedItem = 0;
-
 
 	RequestRender();
 }
@@ -282,14 +275,47 @@ void Wdg_ListView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butto
 		// HACK. Remove when message loop is implemented
 		// pItem can be deleted in the ActionResponse callback. Make sure it still exist // Martin
 		pItem->ActionRespond( GetEmitter(), _action, _button_key, _info, _inputObj );
-		WgItem* p = m_items.First();
-		while(p && p != pItem) p = p->GetNext();
-		if(p == pItem)
+		if(DoWeHaveItem(pItem))
 			m_pLastMarkedItem = pItem;
 		else
 			m_pLastMarkedItem = 0;
 	}
 }
+
+
+//____ DoWeHaveItem() _________________________________________________________
+
+bool Wdg_ListView::DoWeHaveItem( const WgItem * pItem )
+{
+	// This is a quick-and-dirty, ListView-specific implmentation that can't even handle
+	// recursion. But who cares, both direct callbacks and items are about to get deprecated.
+	// Just needed to solve one specific issue as easily as possible...
+
+	WgItem* p = m_items.First();
+	while( p )
+	{
+		if( p == pItem )
+			return true;
+
+		if( p->Type() == WgItemRow::GetMyType() )
+		{
+			WgItem * p2 = ((WgItemRow*)p)->GetFirstItem();
+			while( p2 )
+			{
+				if( p2 == pItem )
+					return true;
+
+				p2 = p2->GetNext();
+			}
+
+		}
+
+		p = p->GetNext();
+	}
+
+	return false;
+}
+
 
 
 //____ DoMyOwnRender() ________________________________________________________
@@ -332,6 +358,10 @@ void Wdg_ListView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 					WgGfx::clipBlitRow(u, m_pLineMarkSurf, m_lineMarkSrc, m_lineMarkTileOfs, m_lineMarkTileLen, r.x, r.y, r.w, true);
 			}
 		}
+
+		if( m_bCellInclusiveItemSpacing )
+			r.h += m_itemSpacing;
+
 		p->Render( r, _clip );
 		r.y += p->Height() + m_itemSpacing;
 		p = p->GetNext();
@@ -351,3 +381,50 @@ bool Wdg_ListView::DoMyOwnMarkTest( int _x, int _y )
 {
 	return true;
 }
+
+//____ GetPointerStyle() ________________________________________
+
+WgPointerStyle Wdg_ListView::GetPointerStyle() const
+{
+	WgPointerStyle style = WG_POINTER_DEFAULT;
+
+	if( m_pLastMarkedItem )
+		style = m_pLastMarkedItem->GetPointerStyle();
+
+	if( style == WG_POINTER_DEFAULT )
+		style = m_pointerStyle;
+
+	return style; 
+}
+
+
+//____ RequestItemGeo() _______________________________________________________
+
+WgRect Wdg_ListView::RequestItemGeo( WgItem * pItem )
+{
+	WgRect r = ScreenGeometry();
+
+	if( r.w < (Sint32) m_contentWidth )
+		r.w = m_contentWidth;
+
+	r.x -= m_viewPixOfsX;
+	r.y -= m_viewPixOfsY;
+	r.h = m_contentHeight;
+
+	WgItem * p = m_items.First();
+	while( p )
+	{
+		if( p == pItem )
+		{
+			r.h = p->Height();
+			return r;
+		}
+
+		r.y += p->Height() + m_itemSpacing;
+		p = p->Next();
+	}
+
+	return WgRect();
+}
+
+

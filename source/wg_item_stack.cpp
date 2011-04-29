@@ -294,3 +294,34 @@ WgItem* WgItemStack::GetMarkedItem( Uint32 x, Uint32 y )
 }
 
 
+
+//____ RequestItemGeo() _______________________________________________________
+
+WgRect WgItemStack::RequestItemGeo( WgItem * pItem )
+{
+	WgRect window = m_pMyHolder->RequestItemGeo(this);
+
+	WgItem * p = m_items.First();
+
+
+	for(Uint32 i = 0; p && i < m_itemOffsets.entries(); i++)
+	{
+		if( p == pItem )
+		{
+			WgRect r;
+			r.w = p->Width();
+			r.h = p->Height();
+			r.x = window.x + m_itemOffsets[i].origo.calcOfsX(window.w, r.w) + m_itemOffsets[i].ofsX;
+			r.y = window.y + m_itemOffsets[i].origo.calcOfsY(window.h, r.h) + m_itemOffsets[i].ofsY;
+			return r;
+		}
+
+		p = p->Next();
+	}
+
+	return WgRect();
+}
+
+
+
+

@@ -36,6 +36,9 @@
 #	include <wg_charseq.h>
 #endif
 
+class WgString;
+
+
 //____ WgValueFormat __________________________________________________________
 
 class WgValueFormat
@@ -46,6 +49,8 @@ class WgValueFormat
 		WgValueFormat( const WgValueFormat& in );
 		WgValueFormat(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
 						Uint16 _separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 );
+
+		void setFormat( const WgCharSeq& format );
 
 		void setFormat( int nInt, int nDec, int grouping, bool bPlus = false,
 						Uint16 _separator = 0, Uint16 period = 0, bool bForcePeriod = false );
@@ -99,8 +104,8 @@ class WgValueFormat
 		Uint8		grouping;			/// Number of integers to group together. 0 = no grouping
 		Uint16		separator;			/// Character to separate integer groups with.
 		Uint16		period;				/// Character used for separating integer and decimal part
-		Uint16		prefix[4];			/// Maximum of 4 characters preceding the value, like $, £ or similar.
-		Uint16		suffix[4];			/// Maximum of 4 characters following the value.
+		Uint16		prefix[5];			/// Maximum of 4 characters preceding the value, like $, £ or similar.
+		Uint16		suffix[5];			/// Maximum of 4 characters following the value.
 		bool		bPlus;				/// Set if a plus sign should be preceding positive value.
 		bool		bZeroIsNegative;	/// Set if zero value should be deemed negative and be preceeded by minus.
 		bool		bForcePeriod;		/// Display period even if there are no decimals?
@@ -108,7 +113,61 @@ class WgValueFormat
 		bool		bSetTextProp;		/// Set if properties should be set for text.
 		bool		bForceDecimals;		/// Display decimals even if they are 0
 		int			noDecimalThreshold;	/// If the value is >= this, no decimals will be displayed.
+		int			scale;				/// Value is scaled by this value before being formatted.
 };
+
+//____ WgValueFormatter _______________________________________________________
+
+/*
+	Ideas:
+
+			* Use textprops on format-string.
+						(props for minus determines props for negative values,
+						(props for leading '1' determines props for positive values,
+						 props for first decimal determines props for decimals.
+						 
+						 Prop override order for number portion:
+							base from '1'.
+							override with decimalprops (if decimals).
+							override with minusprop (if negative value).
+
+						Prop override order for prefix/subfix:
+							base from individual prefix/subfix characters.
+							override with minusprop (if negative value).
+						 )
+
+		    * Position of minus-sign (before or after prefix).
+			* Support hex-values (choose upper/lower).
+			* Setting for round off or truncate decimals.
+
+			* Skip bForcePeriod, bZeroIsNegative, bSetTextProp and pTextProperties.
+			* Replace noDecimalTreshold with "value digits"?
+*/
+
+
+class WgValueFormatter
+{
+public:
+	WgValueFormatter();
+	WgValueFormatter( const WgCharSeq& format );
+	~WgValueFormatter();
+
+	void SetFormat( const WgCharSeq& format );
+
+	WgString Prefix() const;
+	WgString Suffix() const;
+	int		 Decimals() const { return m_format.decimals; }
+
+	WgString Format( Sint64 value ) const;
+	WgString FormatNoPreSuffix( Sint64 value ) const;
+
+private:
+
+	void	_formatValue( WgCharBuffer * pBuffer, Sint64 value ) const;
+
+	WgValueFormat	m_format;
+};
+
 
 
 #endif

@@ -32,17 +32,18 @@
 #	include <wg_vectorglyphs.h>
 #	include FT_FREETYPE_H
 
-	bool		WgBase::s_bFreeTypeInitialized;
-	FT_Library	WgBase::s_freeTypeLibrary;
+	bool				WgBase::s_bFreeTypeInitialized;
+	FT_Library			WgBase::s_freeTypeLibrary;
 #endif
 
 
-WgTextPropPtr	WgBase::s_pDefaultTextProp;
-WgTextPropPtr	WgBase::s_pDefaultSelectionProp;
-WgTextPropPtr	WgBase::s_pDefaultLinkProp;
-WgCursor *		WgBase::s_pDefaultCursor = 0;
+WgTextPropPtr			WgBase::s_pDefaultTextProp;
+WgTextPropPtr			WgBase::s_pDefaultSelectionProp;
+WgTextPropPtr			WgBase::s_pDefaultLinkProp;
+WgTextLinkHandler*		WgBase::s_pDefaultTextLinkHandler = 0;
+WgCursor *				WgBase::s_pDefaultCursor = 0;
 
-WgMemPool *		WgBase::s_pWeakPtrPool;
+WgMemPool *				WgBase::s_pWeakPtrPool;
 
 
 //____ Init() __________________________________________________________________
@@ -157,3 +158,12 @@ void WgBase::SetDefaultCursor( WgCursor * pCursor )
 {
 	s_pDefaultCursor = pCursor;
 }
+
+//____ SetDefaultTextLinkHandler() ____________________________________________
+
+void WgBase::SetDefaultTextLinkHandler( WgTextLinkHandler * pHandler )
+{
+	s_pDefaultTextLinkHandler = pHandler;
+}
+
+

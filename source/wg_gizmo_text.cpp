@@ -124,6 +124,17 @@ WgSize WgGizmoText::BestSize() const
 	return WgSize( m_text.width(), m_text.height() );
 }
 
+//____ GetPointerStyle() ________________________________________
+
+WgPointerStyle WgGizmoText::GetPointerStyle() const
+{
+	if( m_text.GetMarkedLink() )
+		return WG_POINTER_HAND;
+
+	return m_pointerStyle; 
+}
+
+
 //____ OnRender() ________________________________________________________
 
 void WgGizmoText::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
@@ -287,8 +298,8 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 
 	// Let text object handle its actions.
 
-	bool bRender = m_text.OnAction( action, button_key, ScreenGeometry(), WgCord(info.x, info.y) );
-	if( bRender )
+	bool bChanged = m_text.OnAction( action, button_key, ScreenGeometry(), WgCord(info.x, info.y) );
+	if( bChanged )
 		RequestRender();
 }
 

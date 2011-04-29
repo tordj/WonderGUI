@@ -49,8 +49,8 @@ WgInput::WgInput()
 	m_keyRepeatDelay		= 300;
 	m_keyRepeatRate			= 150;
 
-	m_pointerX				= 0;
-	m_pointerY				= 0;
+	m_pointerX				= -1;
+	m_pointerY				= -1;
 
 	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
 	{
@@ -483,9 +483,6 @@ start:
 
 void WgInput::pointer_setPos( Sint32 x, Sint32 y )
 {
-	if( x == m_pointerX && y == m_pointerY )
-		return;
-
 	m_pointerX = x;
 	m_pointerY = y;
 }
@@ -494,9 +491,6 @@ void WgInput::pointer_setPos( Sint32 x, Sint32 y )
 
 void WgInput::pointer_move( Sint32 x, Sint32 y )
 {
-	if( x == 0 && y == 0 )
-		return;
-
 	m_pointerX += x;
 	m_pointerY += y;
 }

@@ -95,7 +95,7 @@ public:
 	void				CloneContent( const WgGizmo * _pOrg );
 
 	inline void				SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
-	inline WgPointerStyle	GetPointerStyle() const					{ return m_pointerStyle; }
+	virtual WgPointerStyle	GetPointerStyle() const;
 
 
 	inline void			SetMarkPolicy( WgMarkPolicy policy ) { m_markPolicy = policy; }

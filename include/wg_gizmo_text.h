@@ -73,6 +73,8 @@ public:
 	virtual void		SetInputMode(InputMode mode);
 	virtual InputMode	GetInputMode() const { return m_inputMode; }
 
+	WgPointerStyle		GetPointerStyle() const;
+
 	virtual bool TempIsInputField() const { return IsEditable(); }
 	virtual Wg_Interface_TextHolder* TempGetText() { return this; }
 

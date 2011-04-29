@@ -64,6 +64,42 @@ public:
 		return *this;
 	}
 
+	inline WgString& operator += ( const WgString& kSource )
+	{
+		Append( kSource );
+		return *this;
+	}
+	inline WgString& operator += ( const WgCharBuffer* pBuffer )
+	{
+		Append( pBuffer );
+		return *this;
+	}
+	inline WgString& operator += ( const WgCharSeq& seq )
+	{
+		Append( seq );
+		return *this;
+	}
+
+	inline WgString operator + ( const WgString& kSource ) const
+	{
+		WgString str(*this);
+		str.Append( kSource );
+		return str;
+	}
+	inline WgString operator + ( const WgCharBuffer* pBuffer ) const
+	{
+		WgString str(*this);
+		str.Append( pBuffer );
+		return str;
+	}
+	inline WgString operator + ( const WgCharSeq& seq ) const
+	{
+		WgString str(*this);
+		str.Append( seq );
+		return str;
+	}
+
+
 	bool operator == ( const WgString& kOther ) const	{ return (m_buffer == kOther.m_buffer); }
 
 

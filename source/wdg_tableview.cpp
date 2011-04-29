@@ -295,6 +295,17 @@ void WgTableRow::Unselect( bool bUnselectItems )
 	}
 }
 
+WgRect WgTableRow::RequestItemGeo( WgItem * pItem )
+{
+	int colNb = GetItemPos(pItem);
+	int rowNb = m_pMyHolder->GetItemPos(this);
+
+	WgRect cellGeo = ((Wdg_TableView*)m_pMyHolder)->GetCellGeo(rowNb,colNb);
+	WgRect screenGeo = ((Wdg_TableView*)m_pMyHolder)->ScreenGeometry();
+
+	return cellGeo + screenGeo.pos();
+}
+
 
 
 //____ NewOfMyType() __________________________________________________________
@@ -1920,3 +1931,14 @@ WgString Wdg_TableView::GetTooltipString() const
 	return tooltip;
 }
 
+
+//____ RequestItemGeo() _______________________________________________________
+
+WgRect Wdg_TableView::RequestItemGeo( WgItem * pItem )
+{
+	// We should never get here since we have overloaded WgItemRow::RequestItemGeo().
+
+	assert(false);
+
+	return WgRect();
+}
