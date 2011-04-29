@@ -189,7 +189,7 @@ WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 
 
 	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] != 0 )
-	{	
+	{
 		p = m_aBitmapGlyphs[size][style]->GetGlyph( chr, size );
 		if( p )
 			return p;
@@ -198,7 +198,7 @@ WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 	// 2. Default BitmapGlyphs of the right size.
 
 	if( m_aDefaultBitmapGlyphs[size] != 0 )
-	{	
+	{
 		p = m_aDefaultBitmapGlyphs[size]->GetGlyph( chr, size );
 		if( p )
 			return p;
@@ -259,10 +259,8 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	// 1. BitmapGlyphs of the right style and size.
 
-	const WgGlyph * p = 0;
-
 	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] != 0 )
-	{	
+	{
 		if( m_aBitmapGlyphs[size][style]->HasGlyph( chr ) )
 			return EXACT_MATCH_PROVIDED;
 	}
@@ -270,7 +268,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 	// 2. Default BitmapGlyphs of the right size.
 
 	if( m_aDefaultBitmapGlyphs[size] != 0 )
-	{	
+	{
 		if( m_aDefaultBitmapGlyphs[size]->HasGlyph( chr ) )
 			return DEFAULT_PROVIDED;
 	}
@@ -313,7 +311,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	// No representation for the glyph found, we failed.
 
-	return NOT_PROVIDED;	
+	return NOT_PROVIDED;
 }
 
 #ifdef WG_USE_FREETYPE

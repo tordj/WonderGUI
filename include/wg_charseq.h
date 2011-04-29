@@ -22,6 +22,7 @@
 #ifndef WG_CHARSEQ_DOT_H
 #define WG_CHARSEQ_DOT_H
 
+#include <climits>
 #include <string>
 
 #ifndef	WG_TYPES_DOT_H
