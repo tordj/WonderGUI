@@ -271,19 +271,19 @@
 1289193621 /home/tord/Workspace/wondergui/include/wg_chain.h
 	<wg_types.h>
 
-1302930266 /home/tord/Workspace/wondergui/include/wg_base.h
+1304101013 /home/tord/Workspace/wondergui/include/wg_base.h
 	<wg_textmgr.h>
 	<wg_userdefines.h>
 	<wg_textprop.h>
+	<wg_textlinkhandler.h>
 
 1302329851 /home/tord/Workspace/wondergui/include/wg_userdefines.h
 	<wg_types.h>
 
-1303452631 /home/tord/Workspace/wondergui/include/wg_textprop.h
-	<string>
+1304101013 /home/tord/Workspace/wondergui/include/wg_textprop.h
 	<wg_types.h>
 	<wg_color.h>
-	<wg_smartptr.h>
+	<wg_textlinkhandler.h>
 
 1302930266 /home/tord/Workspace/wondergui/include/wg_color.h
 	<wg_types.h>
@@ -311,7 +311,7 @@
 	<wg_geo.h>
 	<wg_glyphset.h>
 
-1299302801 /home/tord/Workspace/wondergui/include/wg_geo.h
+1304101013 /home/tord/Workspace/wondergui/include/wg_geo.h
 	<wg_types.h>
 
 1299010800 /home/tord/Workspace/wondergui/include/wg_glyphset.h
@@ -420,7 +420,7 @@
 	<wg_types.h>
 	<wg_gfxdevice.h>
 
-1302930266 /home/tord/Workspace/wondergui/include/wg_gizmo.h
+1304101013 /home/tord/Workspace/wondergui/include/wg_gizmo.h
 	<wg_types.h>
 	<wg_string.h>
 	<wg_input.h>
@@ -429,7 +429,7 @@
 	<wg_signals.h>
 	<wg_event.h>
 
-1289193621 /home/tord/Workspace/wondergui/include/wg_string.h
+1304101013 /home/tord/Workspace/wondergui/include/wg_string.h
 	<wg_types.h>
 	<wg_charbuffer.h>
 	<wg_charseq.h>
@@ -512,7 +512,7 @@
 	<wg_geo.h>
 	<wg_types.h>
 
-1279127853 /home/tord/Workspace/wondergui/include/wg_valueformat.h
+1304101013 /home/tord/Workspace/wondergui/include/wg_valueformat.h
 	<wg_types.h>
 	<wg_textprop.h>
 	<wg_charseq.h>
@@ -616,7 +616,7 @@
 	<wg_text.h>
 	<wg_blockset.h>
 
-1288853180 /home/tord/Workspace/wondergui/include/wg_gizmo_text.h
+1304101013 /home/tord/Workspace/wondergui/include/wg_gizmo_text.h
 	<wg_gizmo.h>
 	<wg_interface_edittext.h>
 	<wg_text.h>
@@ -659,4 +659,8 @@
 
 1302930266 /home/tord/Workspace/wondergui/include/wg_rectchain.h
 	<wg_geo.h>
+
+1304101013 /home/tord/Workspace/wondergui/include/wg_textlinkhandler.h
+	<string>
+	<wg_smartptr.h>
 
