@@ -1,1 +1,540 @@
 # depslib dependency file v1.0
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_anim.cpp
+	<wg_anim.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_anim.h
+	<wg_types.h>
+	<wg_chain.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_types.h
+	<stdint.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_chain.h
+	<wg_types.h>
+
+1300517559 source:/home/tordj/Workspace/WonderGUI/source/wg_bitmapglyphs.cpp
+	<stdio.h>
+	<limits.h>
+	<string.h>
+	<wg_bitmapglyphs.h>
+	<wg_texttool.h>
+
+1299580865 /home/tordj/Workspace/WonderGUI/include/wg_bitmapglyphs.h
+	<wg_geo.h>
+	<wg_glyphset.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_geo.h
+	<wg_types.h>
+
+1299580865 /home/tordj/Workspace/WonderGUI/include/wg_glyphset.h
+	<wg_geo.h>
+	<wg_smartptr.h>
+
+1300604695 /home/tordj/Workspace/WonderGUI/include/wg_smartptr.h
+	<wg_mempool.h>
+	<wg_refcounted.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_mempool.h
+	<wg_types.h>
+	<wg_chain.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_refcounted.h
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_texttool.h
+	<wg_userdefines.h>
+	<wg_types.h>
+	<wg_color.h>
+	<wg_textprop.h>
+	<wg_glyphset.h>
+	<wg_cursor.h>
+	<wg_charseq.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_userdefines.h
+	<wg_types.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_color.h
+	<wg_types.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_textprop.h
+	<wg_types.h>
+	<wg_color.h>
+	<wg_textlinkhandler.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_textlinkhandler.h
+	<string>
+	<wg_smartptr.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_cursor.h
+	<wg_types.h>
+	<wg_geo.h>
+	<wg_gfxanim.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_gfxanim.h
+	<wg_anim.h>
+	<wg_types.h>
+	<wg_geo.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_charseq.h
+	<climits>
+	<string>
+	<wg_types.h>
+	<wg_userdefines.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_blockset.cpp
+	<wg_blockset.h>
+	<wg_geo.h>
+	<wg_surface.h>
+	<assert.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_blockset.h
+	<wg_types.h>
+	<wg_geo.h>
+	<wg_smartptr.h>
+	<wg_refcounted.h>
+	<wg_chain.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_surface.h
+	<wg_types.h>
+	<wg_chain.h>
+	<wg_geo.h>
+	<wg_color.h>
+	<wg_rectchain.h>
+	<wg_blockset.h>
+	<wg_smartptr.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_rectchain.h
+	<wg_geo.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_chain.cpp
+	<wg_chain.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_char.cpp
+	<wg_char.h>
+	<wg_font.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_char.h
+	"wg_types.h"
+	"wg_textpropmanager.h"
+	<wg_texttool.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_textpropmanager.h
+	<wg_types.h>
+	<wg_textprop.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_font.h
+	<wg_types.h>
+	<wg_userdefines.h>
+	<wg_glyphset.h>
+	<assert.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_charbuffer.cpp
+	<memory.h>
+	<string.h>
+	<wg_charbuffer.h>
+	<wg_string.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_charbuffer.h
+	<wg_types.h>
+	<wg_char.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_string.h
+	<wg_types.h>
+	<wg_charbuffer.h>
+	<wg_charseq.h>
+
+1300517559 source:/home/tordj/Workspace/WonderGUI/source/wg_charseq.cpp
+	<memory.h>
+	<wg_charseq.h>
+	<wg_charbuffer.h>
+	<wg_string.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_codepages.cpp
+	<wg_codepages.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_codepages.h
+	<wg_types.h>
+
+1299580865 source:/home/tordj/Workspace/WonderGUI/source/wg_cursor.cpp
+	<wg_cursor.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_emitter.cpp
+	<wg_emitter.h>
+	<string>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_emitter.h
+	<wg_types.h>
+	<wg_emitterstanza.h>
+	<wg_signalstanza.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_emitterstanza.h
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_signalstanza.h
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_geo.cpp
+	<wg_geo.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_gfxanim.cpp
+	<wg_gfxanim.h>
+	<wg_surface.h>
+
+1291358993 source:/home/tordj/Workspace/WonderGUI/source/wg_gfxdevice_null.cpp
+	<wg_gfxdevice_null.h>
+
+1291358993 /home/tordj/Workspace/WonderGUI/include/wg_gfxdevice_null.h
+	<wg_types.h>
+	<wg_gfxdevice.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_gfxdevice.h
+	<climits>
+	<wg_types.h>
+	<wg_color.h>
+	<wg_textprop.h>
+	<wg_geo.h>
+	<wg_surface.h>
+	<wg_blockset.h>
+
+1299580865 source:/home/tordj/Workspace/WonderGUI/source/wg_gizmo_container.cpp
+	<wg_gizmo_container.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_gizmo_container.h
+	<wg_gizmo.h>
+	<wg_gizmo_parent.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_gizmo.h
+	<wg_types.h>
+	<wg_string.h>
+	<wg_input.h>
+	<wg_gizmo_hook.h>
+	<wg_emitter.h>
+	<wg_signals.h>
+	<wg_event.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_input.h
+	<wg_types.h>
+	<wg_userdefines.h>
+	<wg_key.h>
+	<vector>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_key.h
+	<SDL_keysym.h>
+	<dinput.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_gizmo_hook.h
+	<wg_geo.h>
+	<wg_emitter.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_signals.h
+	<wg_types.h>
+	<wg_signalstanza.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_event.h
+	<wg_types.h>
+	<wg_userdefines.h>
+	<wg_geo.h>
+	<wg_smartptr.h>
+
+1299952094 /home/tordj/Workspace/WonderGUI/include/wg_gizmo_parent.h
+	<wg_gizmo_types.h>
+	<wg_gizmo_collection.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_gizmo_collection.h
+	<wg_types.h>
+	<wg_geo.h>
+	<wg_gizmo_hook.h>
+
+1300517559 source:/home/tordj/Workspace/WonderGUI/source/wg_glyphset.cpp
+	<stdio.h>
+	<limits.h>
+	<string.h>
+	<wg_glyphset.h>
+	<wg_texttool.h>
+
+1299580865 source:/home/tordj/Workspace/WonderGUI/source/wg_inputdevice.cpp
+	<wg_inputdevice.h>
+
+1299580865 /home/tordj/Workspace/WonderGUI/include/wg_inputdevice.h
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_interface_edittext.cpp
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_interface_textholder.cpp
+	<wg_interface_textholder.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_interface_textholder.h
+	<wg_text.h>
+	<wg_origo.h>
+	<wg_color.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_text.h
+	<wg_types.h>
+	<wg_color.h>
+	<wg_origo.h>
+	<wg_char.h>
+	<wg_charbuffer.h>
+	<wg_textmanager.h>
+	<wg_cursorinstance.h>
+	<wg_input.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_origo.h
+	<wg_types.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_textmanager.h
+	<wg_chain.h>
+	<wg_types.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_cursorinstance.h
+	<climits>
+	<wg_types.h>
+	<wg_cursor.h>
+	<wg_color.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_interface_valueholder.cpp
+	<wg_interface_valueholder.h>
+	<math.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_interface_valueholder.h
+	<wg_valueformat.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_valueformat.h
+	<wg_types.h>
+	<wg_textprop.h>
+	<wg_charseq.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_mempool.cpp
+	<wg_mempool.h>
+	<malloc.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_menuitem.cpp
+	<wg_menuitem.h>
+	<wg_char.h>
+	<wg_texttool.h>
+	<wdg_menu.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_menuitem.h
+	"wg_chain.h"
+	<wg_userdefines.h>
+	<wg_blockset.h>
+	<wg_string.h>
+
+1299580865 /home/tordj/Workspace/WonderGUI/include/wdg_menu.h
+	<wg_widget.h>
+	<wg_menuitem.h>
+	<wg_blockset.h>
+	<wdg_dragbars.h>
+	<wg_textprop.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_widget.h
+	<wg_types.h>
+	<wg_rectchain.h>
+	<wg_emitter.h>
+	<wg_input.h>
+	<wg_origo.h>
+	<wg_signals.h>
+	<wg_blockset.h>
+	<wg_string.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wdg_dragbars.h
+	<wg_gizmo_widget_wrapper.h>
+	<wg_gizmo_dragbars.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_gizmo_widget_wrapper.h
+	<assert.h>
+	<wg_widget.h>
+	<wg_gizmo_container.h>
+	<wg_gfx.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_gfx.h
+	<wg_types.h>
+	<wg_geo.h>
+	<wg_origo.h>
+	<wg_blockset.h>
+	<wg_texttool.h>
+	<wg_gfxdevice.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_gizmo_dragbars.h
+	<wg_gizmo.h>
+	<wg_tooltip.h>
+	<wg_blockset.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_tooltip.h
+	<wg_string.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_origo.cpp
+	<wg_origo.h>
+
+1299580865 source:/home/tordj/Workspace/WonderGUI/source/wg_resdb.cpp
+	<stdlib.h>
+	<wg_resdb.h>
+	<wg_resources_xml.h>
+	<wg_resloader.h>
+	<assert.h>
+	<wg_font.h>
+
+1299580865 /home/tordj/Workspace/WonderGUI/include/wg_resdb.h
+	<string>
+	<vector>
+	<map>
+	<wg_widget.h>
+	<wg_gizmo.h>
+	<wg_chain.h>
+	<wg_textprop.h>
+	<wg_blockset.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_resources_xml.h
+	<wg_resdb.h>
+	<wg_types.h>
+	<wg_textprop.h>
+	<wg_gfxanim.h>
+	<wg_widget.h>
+	<wg_resource_visitor.h>
+	<wdg_listview.h>
+	<wdg_gridview.h>
+	<wdg_tableview.h>
+	<wdg_textview.h>
+	<wdg_text.h>
+	<wdg_dragbars.h>
+	<wg_resourceserializer_xml.h>
+	<vector>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_resource_visitor.h
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wdg_listview.h
+	<wdg_baseclass_view.h>
+	<wg_interface_itemholder.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wdg_baseclass_view.h
+	<wg_widget.h>
+	<wdg_dragbars.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_interface_itemholder.h
+	<wg_item.h>
+	<wg_geo.h>
+	<wg_color.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_item.h
+	<wg_types.h>
+	<wg_chain.h>
+	<wg_input.h>
+	<wg_geo.h>
+	<wg_string.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wdg_gridview.h
+	<wdg_baseclass_view.h>
+	<wg_interface_itemholder.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wdg_tableview.h
+	<wdg_baseclass_view.h>
+	<wg_interface_itemholder.h>
+	<wg_item_row.h>
+	<wg_color.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_item_row.h
+	<wg_item.h>
+	<wg_interface_itemholder.h>
+	<wg_interface_textholder.h>
+	<wg_tooltip.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wdg_textview.h
+	<wdg_baseclass_view.h>
+	<wg_interface_edittext.h>
+	<wg_text.h>
+	<wg_cursorinstance.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_interface_edittext.h
+	<wg_interface_textholder.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wdg_text.h
+	<wg_gizmo_widget_wrapper.h>
+	<wg_gizmo_text.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_gizmo_text.h
+	<wg_gizmo.h>
+	<wg_interface_edittext.h>
+	<wg_text.h>
+	<wg_cursorinstance.h>
+	<wg_tooltip.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_resourceserializer_xml.h
+	<string>
+	<vector>
+	<map>
+	<stack>
+	<sstream>
+	<wg_textprop.h>
+	<expat.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_resloader.h
+	<string>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_skinmanager.cpp
+	<wg_skinmanager.h>
+	<wg_gizmo.h>
+
+1293699310 /home/tordj/Workspace/WonderGUI/include/wg_skinmanager.h
+	<wg_chain.h>
+	<wg_geo.h>
+	<wg_types.h>
+
+1299580865 source:/home/tordj/Workspace/WonderGUI/source/wg_smartptr.cpp
+	<wg_smartptr.h>
+	<wg_base.h>
+
+1304149625 /home/tordj/Workspace/WonderGUI/include/wg_base.h
+	<wg_textmgr.h>
+	<wg_userdefines.h>
+	<wg_textprop.h>
+	<wg_textlinkhandler.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_string.cpp
+	<memory.h>
+	<wg_string.h>
+	<wg_charseq.h>
+	<wg_texttool.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_surface.cpp
+	<new>
+	<memory.h>
+	<wg_surface.h>
+	<wg_geo.h>
+	<wg_blockset.h>
+	<wg_mempool.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_textmanager.cpp
+	<wg_textmanager.h>
+	<wg_text.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_textpropmanager.cpp
+	<wg_textpropmanager.h>
+	<wg_util.h>
+	<wg_color.h>
+	<wg_char.h>
+	<wg_font.h>
+	<memory.h>
+
+1291316921 /home/tordj/Workspace/WonderGUI/include/wg_util.h
+	<string>
+	<sstream>
+	<vector>
+	<wg_origo.h>
+	<wg_geo.h>
+	<wg_types.h>
+
+1291316921 source:/home/tordj/Workspace/WonderGUI/source/wg_util.cpp
+	<wg_util.h>
+	<wg_geo.h>
+	<wg_blockset.h>
+	<wg_surface.h>
+
+1299580865 source:/home/tordj/Workspace/WonderGUI/source/wg_vectorglyphs.cpp
+	<wg_userdefines.h>
+	<wg_base.h>
+	<wg_vectorglyphs.h>
+	<wg_surface.h>
+	<assert.h>
+	<ft2build.h>
+
+1299580865 /home/tordj/Workspace/WonderGUI/include/wg_vectorglyphs.h
+	<wg_userdefines.h>
+	<wg_types.h>
+	<wg_chain.h>
+	<wg_glyphset.h>
+
