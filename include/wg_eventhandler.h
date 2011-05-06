@@ -91,17 +91,22 @@ public:
 	void	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
 	void	AddCallback( const WgEventFilter& filter, WgEventListener * pListener );
 
-	int		DeleteCallbacks( WgGizmo * pGizmo );
-	int		DeleteCallbacks( void * pFunction );
-	int		DeleteCallbacks( WgEventListener * pListener );
-	int		DeleteCallbacks( const WgEventFilter& filter );
+	int		DeleteCallbacksTo( const WgGizmo * pGizmo );
+	int		DeleteCallbacksTo( const WgEventListener * pListener );
+	int		DeleteCallbacksTo( void(*fp)( const WgEvent::Event& _event) );
+	int		DeleteCallbacksTo( void(*fp)( const WgEvent::Event& _event, void * pParam) );
 
-	int		DeleteCallbacks( const WgEventFilter& filter, WgGizmo * pGizmo );
-	int		DeleteCallbacks( const WgEventFilter& filter, void * pFunction );
-	int		DeleteCallbacks( const WgEventFilter& filter, WgEventListener * pListener );
+	int		DeleteCallbacksOn( const WgGizmo * pGizmo );
+	int		DeleteCallbacksOn( const WgEventId type );
+	int		DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventId type );
+
+	int		DeleteCallback( const WgEventFilter& filter, const WgGizmo * pGizmo );
+	int		DeleteCallback( const WgEventFilter& filter, const WgEventListener * pListener );
+	int		DeleteCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event& _event) );
+	int		DeleteCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event& _event, void * pParam) );
+
 
 	int		DeleteAllCallbacks();
-
 	int		DeleteDeadCallbacks();
 
 
@@ -130,7 +135,7 @@ private:
 	bool	_isGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
-	int		_deleteCallbacks( void * pReceiver );
+	int		_deleteCallbacksOn( const void * pReceiver );
 
 	//
 
@@ -186,9 +191,10 @@ private:
 
 		LINK_METHODS(Callback);
 
-		virtual void 	ProcessEvent( const WgEvent::Event& _event ) = 0;
-		virtual bool 	IsAlive() const = 0;
-		virtual void * 	Receiver() const = 0;
+		virtual void 		ProcessEvent( const WgEvent::Event& _event ) = 0;
+		virtual bool 		IsAlive() const = 0;
+		virtual void * 		Receiver() const = 0;
+		inline WgEventId	EventType() const { return m_eventType; }
 
 		WgEventId	m_eventType;
 	};

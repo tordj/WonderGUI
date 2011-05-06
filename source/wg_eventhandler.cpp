@@ -105,29 +105,138 @@ void WgEventHandler::AddCallback( const WgEventFilter& filter, WgEventListener *
 	_addCallback( filter, p );
 }
 
-//____ DeleteCallbacks() _______________________________________________________
+//____ DeleteCallbacksTo() _______________________________________________________
 
-int WgEventHandler::DeleteCallbacks( WgGizmo * pGizmo )
+int WgEventHandler::DeleteCallbacksTo( const WgGizmo * pGizmo )
 {
 	// Delete all callbacks with the specified Gizmo as recipient.
 
-	return _deleteCallbacks(pGizmo);
+	return _deleteCallbacksTo(pGizmo);
 }
 
-int WgEventHandler::DeleteCallbacks( void * pFunction )
+int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEvent::Event& _event) )
 {
-	return _deleteCallbacks(pFunction);
+	return _deleteCallbacksTo( reinterpret_cast<void*>(fp) );
 }
 
-int WgEventHandler::DeleteCallbacks( WgEventListener * pListener )
+int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEvent::Event& _event, void * pParam) )
 {
-	return _deleteCallbacks(pListener);
+	return _deleteCallbacksTo( reinterpret_cast<void*>(fp) );
 }
+
+int WgEventHandler::DeleteCallbacksTo( const WgEventListener * pListener )
+{
+	return _deleteCallbacksTo(pListener);
+}
+
+//____ DeleteCallbacksOn() _______________________________________________________
+
+int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo )
+{
+	std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.find(WgGizmoWeakPtr(pGizmo));
+
+	if( it == m_gizmoCallbacks.end() )
+		return 0;
+
+	int nDeleted = it->second.Size();
+	m_gizmoCallbacks.erase(it);
+	return nDeleted;
+}
+
+int WgEventHandler::DeleteCallbacksOn( const WgEventId type )
+{
+}
+
+int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventId type )
+{
+	std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.find(WgGizmoWeakPtr(pGizmo));
+
+	if( it == m_gizmoCallbacks.end() )
+		return 0;
+
+	int nDeleted = 0;
+	Callback * p = it->second.First();
+	while( p )
+	{
+		if( p->EventType() == type )
+		{
+			Callback * pNext = p->Next();
+			delete p;
+			nDeleted++;
+			p = pNext;
+		}
+		else
+			p = p->Next();
+	}
+
+	if( it->second.Size() == 0 )
+		m_gizmoCallbacks.erase(it);
+
+	return nDeleted;
+}
+
+
+
 
 int WgEventHandler::DeleteCallbacks( const WgEventFilter& filter )
 {
-	//TODO Implement
-	return 0;
+	// If filter only has Gizmo set this method will delete all callbacks listening
+	// specifically to that Gizmo.
+	// If filter only has EventType set, this method will delete all callbacks listening
+	// specifically to that EventType
+
+	int nDeleted = 0;
+	WgChain<Callback>*	pChain;
+
+	if( filter.FiltersGizmo() )
+	{
+		std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.find(WgGizmoWeakPtr(filter.Gizmo()));
+
+		if( it == m_gizmoCallbacks.end() )
+			return 0;					// No callbacks for Gizmo
+
+		if( filter.FiltersType() )
+		{
+			pChain = &it->second;
+		}
+		else							// Just erase the whole map entry.
+		{
+			nDeleted = it->second.Size();
+			m_gizmoCallbacks.erase(it);
+			return nDeleted;
+		}
+	}
+	else
+	{
+		if( filter.FiltersType() )
+		{
+			pChain = &m_globalCallbacks;
+		}
+		else
+		{
+			nDeleted = m_globalCallbacks.Size();
+			m_globalCallbacks.Clear();
+			return nDeleted;
+		}
+	}
+
+	// We now have the right chain and need to check all the callbacks.
+
+	Callback * p = pChain->First();
+	while( p )
+	{
+		if( filter.EventType() == p->EventType() )
+		{
+			Callback * pNext = p->Next();
+			delete p;
+			nDeleted++;
+			p = pNext;
+		}
+		else
+			p = p->Next();
+	}
+
+	return nDeleted;
 }
 
 int WgEventHandler::DeleteCallbacks( const WgEventFilter& filter, WgGizmo * pGizmo )
@@ -232,9 +341,9 @@ void WgEventHandler::_addCallback( const WgEventFilter& filter, Callback * pCall
 }
 
 
-//____ _deleteCallbacks() __________________________________________________
+//____ _deleteCallbacksOn() __________________________________________________
 
-int WgEventHandler::_deleteCallbacks( void * pReceiver )
+int WgEventHandler::_deleteCallbacksOn( const void * pReceiver )
 {
 	int nDeleted = 0;
 
@@ -279,6 +388,45 @@ int WgEventHandler::_deleteCallbacks( void * pReceiver )
 	return nDeleted;
 }
 
+int WgEventHandler::_deleteCallbacks( const WgEventFilter& filter, void * pReceiver )
+{
+	// Deletes all callbacks created with exactly the same filter settings and receiver.
+
+	int nDeleted = 0;
+	WgChain<Callback>*	pChain;
+
+	if( filter.FiltersGizmo() )
+	{
+		std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.find(WgGizmoWeakPtr(filter.Gizmo()));
+
+		if( it == m_gizmoCallbacks.end() )
+			return 0;					// No callbacks for Gizmo
+
+		pChain = &it->second;
+	}
+	else
+	{
+		pChain = &m_globalCallbacks;
+	}
+
+	// We now have the right chain and need to check all the callbacks.
+
+	Callback * p = pChain->First();
+	while( p )
+	{
+		if( filter.EventType() == p->EventType() && pReceiver == p->Receiver() )
+		{
+			Callback * pNext = p->Next();
+			delete p;
+			nDeleted++;
+			p = pNext;
+		}
+		else
+			p = p->Next();
+	}
+
+	return nDeleted;
+}
 
 
 //____ QueueEvent() ___________________________________________________________
