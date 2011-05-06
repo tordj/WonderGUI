@@ -44,6 +44,7 @@ WgItemRow::WgItemRow()
 	m_bStretchLastItem = false;
 	m_bUseAllHeight = false;
 	m_widthExpandUsage = 0.f;
+	m_minWidthFraction = 0.f;
 }
 
 WgItemRow::WgItemRow( Sint64 id ) : WgItem( id )
@@ -53,6 +54,7 @@ WgItemRow::WgItemRow( Sint64 id ) : WgItem( id )
 	m_bStretchLastItem = false;
 	m_bUseAllHeight = false;
 	m_widthExpandUsage = 0.f;
+	m_minWidthFraction = 0.f;
 }
 
 
@@ -91,6 +93,14 @@ void WgItemRow::SetWidthExpandUsage( float usage )
 	m_widthExpandUsage = usage;
 }
 
+//____ SetMinWidthFraction() __________________________________________________
+
+void WgItemRow::SetMinWidthFraction( float fraction )
+{
+	LIMIT(fraction,0.f,1.f);
+	m_minWidthFraction = fraction;
+}
+
 
 //____ SetHeightModify() ______________________________________________________
 
@@ -100,11 +110,25 @@ void WgItemRow::SetHeightModify( int pixels )
 	refreshItems();
 }
 
+//____ ItemWidth() ___________________________________________________________
+
+int WgItemRow::ItemWidth( WgItem * pItem, int screen_width )
+{
+	int minWidth = (int) (m_minWidthFraction*screen_width);
+
+	int width = pItem->Width();
+	if( width < minWidth )
+		width = minWidth;
+
+	return width;
+}
+
 //____ WidthExpandFactor() ________________________________________________
 
 float WgItemRow::WidthExpandFactor( int screen_width )
 {
-
+	return 1.f;
+/*
 	//TODO: Take item_spacing into account.
 
 	int totalWidth = 0;
@@ -122,6 +146,7 @@ float WgItemRow::WidthExpandFactor( int screen_width )
 	float	expand_factor = (screen_width-totalWidth)/totalWidth*m_widthExpandUsage + 1.f;
 
 	return expand_factor;
+*/
 }
 
 //____ AdaptToHeight() ________________________________________________________
@@ -143,19 +168,17 @@ void WgItemRow::AdaptToHeight( Uint32 displayed_height )
 
 void WgItemRow::AdaptToWidth( Uint32 displayed_width )
 {
-	float multiplier = WidthExpandFactor(displayed_width);
-
 	WgItem * p = m_items.First();
 	int totalWidth = 0;
 
 	while( p )
 	{
-		int width = p->Width();
+		int width;
 
 		if( m_bStretchLastItem && p->Next() == 0 )
 			width = displayed_width - totalWidth;
 		else
-			width = (int) (width*multiplier);					// Get items wanted width.
+			width =  ItemWidth(p, displayed_width);					// Get items wanted width.
 
 		totalWidth += width;
 		p->AdaptToWidth(width);
@@ -256,10 +279,10 @@ void WgItemRow::Render( const WgRect& _window, const WgRect& _clip )
 		if( m_bStretchLastItem && p->Next() == 0 )
 			r.w = _window.x + _window.w - r.x;
 		else
-			r.w = (int) (p->Width()*multiplier);
+			r.w = ItemWidth(p, _window.w);
 
 		p->Render( r, _clip );
-		r.x += p->Width() + m_itemSpacing;
+		r.x += r.w + m_itemSpacing;
 		p = p->Next();
 	}
 }

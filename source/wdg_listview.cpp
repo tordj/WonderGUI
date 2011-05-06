@@ -121,7 +121,11 @@ void Wdg_ListView::ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 h
 	//RequestRender();		//TODO: Only render what is necessary (if anything).
 
 	// recalculate content size.
-	refreshItems();
+
+	if( heightDiff != 0 )
+		refreshItems();
+	else
+		RequestRender();
 }
 
 //____ ItemVisibilityModified() _______________________________________________

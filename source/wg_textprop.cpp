@@ -51,7 +51,7 @@ WgTextProp::WgTextProp( const WgTextPropPtr& pProp )
 		m_modeProp[i].m_color		= pProp->m_modeProp[i].m_color;
 		m_modeProp[i].m_bgColor		= pProp->m_modeProp[i].m_bgColor;
 		m_modeProp[i].m_style		= pProp->m_modeProp[i].m_style;
-		m_modeProp[i].m_style		= pProp->m_modeProp[i].m_size;
+		m_modeProp[i].m_size		= pProp->m_modeProp[i].m_size;
 	}
 }
 

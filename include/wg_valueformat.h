@@ -36,7 +36,9 @@
 #	include <wg_charseq.h>
 #endif
 
-class WgString;
+#ifndef WG_STRING_DOT_H
+#	include <wg_string.h>
+#endif
 
 
 //____ WgValueFormat __________________________________________________________
@@ -55,13 +57,13 @@ class WgValueFormat
 		void setFormat( int nInt, int nDec, int grouping, bool bPlus = false,
 						Uint16 _separator = 0, Uint16 period = 0, bool bForcePeriod = false );
 
-		void setPrefix( const Uint16 * pText );
-		void setPrefix( const char * pText );
-		inline const Uint16* getPrefix() const { return prefix; }
+		void setPrefix( const WgString& str );
+		void setPrefix( const WgCharSeq& seq );
+		inline const WgString& getPrefix() const { return prefix; }
 
-		void setSuffix( const Uint16 * pText );
-		void setSuffix( const char * pText );
-		inline const Uint16* getSuffix() const { return suffix; }
+		void setSuffix( const WgString& str );
+		void setSuffix( const WgCharSeq& seq );
+		inline const WgString& getSuffix() const { return suffix; }
 
 		inline void setTextProperties( WgTextPropPtr& _pProperties ) { pTextProperties = _pProperties; bSetTextProp = true; }
 		inline void clearTextProperties() { bSetTextProp = false; }
@@ -104,8 +106,8 @@ class WgValueFormat
 		Uint8		grouping;			/// Number of integers to group together. 0 = no grouping
 		Uint16		separator;			/// Character to separate integer groups with.
 		Uint16		period;				/// Character used for separating integer and decimal part
-		Uint16		prefix[5];			/// Maximum of 4 characters preceding the value, like $, £ or similar.
-		Uint16		suffix[5];			/// Maximum of 4 characters following the value.
+		WgString	prefix;				/// Characters preceding the value, like $, £ or similar.
+		WgString	suffix;				/// Characters following the value.
 		bool		bPlus;				/// Set if a plus sign should be preceding positive value.
 		bool		bZeroIsNegative;	/// Set if zero value should be deemed negative and be preceeded by minus.
 		bool		bForcePeriod;		/// Display period even if there are no decimals?

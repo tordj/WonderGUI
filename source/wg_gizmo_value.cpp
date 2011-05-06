@@ -119,7 +119,7 @@ void WgGizmoValue::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 {
 	if( m_bRegenText )
 	{
-		m_text.setScaledValue( m_value, (unsigned int) pow(10.f,m_format.decimals), m_format );
+		m_text.setScaledValue( m_value, m_format.scale, m_format );
 		m_bRegenText = false;
 	}
 

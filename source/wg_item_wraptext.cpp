@@ -95,7 +95,8 @@ void WgItemWrapText::MinSize( Uint32 width, Uint32 height )
 {
 	m_minWidth = width;
 	m_minHeight = height;
-	UpdateSize();
+
+	TextModified();
 }
 
 //____ SetBgFill() _________________________________________________________
@@ -133,7 +134,13 @@ void WgItemWrapText::SetMargin(WgBorders margin)
 
 void WgItemWrapText::TextModified()
 {
+	int oldWidth = m_width;
+	int oldHeight = m_height;
+
 	UpdateSize();
+
+	Modified(m_width-oldWidth, m_height-oldHeight);
+
 }
 
 //____ UpdateSize() _________________________________________________________
@@ -156,13 +163,8 @@ void WgItemWrapText::UpdateSize()
 	if( height < 1 )
 		height = 1;
 
-	Sint32 widthModif = width - m_width;
-	Sint32 heightModif = height - m_height;
-
 	m_width = width;
 	m_height = height;
-
-	Modified(widthModif, heightModif);
 }
 
 //____ GetPointerStyle() ________________________________________
@@ -182,7 +184,10 @@ void WgItemWrapText::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction ac
 {
 	// Let text object handle its actions.
 
-	bool bRender = m_text.OnAction( action, button_key, m_pMyHolder->RequestItemGeo(this), WgCord(info.x, info.y) );
+	WgRect	r = m_pMyHolder->RequestItemGeo(this);
+	r.shrink( m_margin );
+
+	bool bRender = m_text.OnAction( action, button_key, r, WgCord(info.x, info.y) );
 	if( bRender )
 		Modified(0,0);
 
@@ -271,6 +276,6 @@ void WgItemWrapText::AdaptToWidth( Uint32 displayed_width )
 		width = 1;
 
 	m_text.setLineWidth( width );
-	TextModified();
+	UpdateSize();
 }
 

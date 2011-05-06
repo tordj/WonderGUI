@@ -136,7 +136,9 @@ public:
 	inline bool operator==(const WgCharBuffer& other) const { return CompareBuffers( this->m_pHead, other.m_pHead ); }
 	inline bool operator!=(const WgCharBuffer& other) const { return !CompareBuffers( this->m_pHead, other.m_pHead ); }
 
-	WgChar&				operator[](Uint32 i)								{ return *(WgChar*)GetPtr(i); }
+	// These operator[] are slow, please use Chars() or BeginWrite() instead.
+
+	WgChar&				operator[](Uint32 i)								{ if( m_pHead->m_refCnt > 1 ) ReshapeBuffer(0,0,m_pHead->m_len,0); return *(WgChar*)GetPtr(i); }
 	const WgChar&		operator[](Uint32 i) const							{ return *(const WgChar*)GetPtr(i); }
 
 	inline operator bool() const { return m_pHead->m_len != 0?true:false; }
