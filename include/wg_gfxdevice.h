@@ -23,6 +23,8 @@
 #ifndef	WG_GFXDEVICE_DOT_H
 #define WG_GFXDEVICE_DOT_H
 
+#include <climits>
+
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
 #endif
@@ -174,7 +176,7 @@ protected:
 	void	_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, bool bLineEnding );
 
 	void	DrawTextBg( const WgRect& clip, const WgText * pText, const WgRect& dest );
-	void	DrawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect, 
+	void	DrawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect,
 							  int iStartOfs, int iEndOfs, WgColor color );
 
 

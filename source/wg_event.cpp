@@ -199,7 +199,7 @@ namespace WgEvent
 
 	ButtonDoubleClick::ButtonDoubleClick( int button, WgGizmo * pGizmo )
 	{
-		m_id = WG_EVENT_BUTTON_CLICK;
+		m_id = WG_EVENT_BUTTON_DOUBLECLICK;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 

@@ -20,6 +20,7 @@
 
 =========================================================================*/
 
+#include <assert.h>
 #include <wg_event.h>
 #include <wg_eventhandler.h>
 #include <wg_root.h>
@@ -360,6 +361,10 @@ void WgEventHandler::ProcessGeneralEvent( WgEvent::Event& _event )
 			break;
 
 		case WG_EVENT_DUMMY:
+			break;
+
+		case WG_EVENT_MAX:
+			assert(false);								// NOT ALLOWED!
 			break;
 	}
 

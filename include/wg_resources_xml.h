@@ -312,10 +312,10 @@ public:
 	WgTextPropRes(WgResourceXML* parent, WgTextPropPtr pProp = (Uint16) 0) :
 		WgResourceXML(parent),
 		m_pProp(pProp),
-		m_color(0),
-		m_bColored(false),
 		m_bgColor(0),
 		m_bBgColor(false),
+		m_color(0),
+		m_bColored(false),
 		m_style(WG_STYLE_NORMAL),
 		m_underlined(false),
 		m_size(0)

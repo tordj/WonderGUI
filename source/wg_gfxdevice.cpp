@@ -837,11 +837,10 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 	WgCord	pos;
 	pos.y = pText->LineStartY( 0, dest ) + pText->getSoftLine(0)->baseline;
 
-	Uint32				nLines = pText->nbSoftLines();
+	int					nLines = pText->nbSoftLines();
 	const WgTextLine *	pLines = pText->getSoftLines();
-	const WgChar *		pChars = pText->getText();
 
-	for( unsigned int i = 0 ; i < nLines ; i++ )
+	for( int i = 0 ; i < nLines ; i++ )
 	{
 		pos.x = pText->LineStartX( i, dest );
 		pen.SetOrigo( pos );		// So tab positions will start counting from start of line.
@@ -1023,7 +1022,7 @@ void WgGfxDevice::DrawTextBg( const WgRect& _clip, const WgText * pText, const W
 		selEnd = -1;
 	}
 
-	// Scan through the text, drawing character specific backgrounds 
+	// Scan through the text, drawing character specific backgrounds
 	// (and in the future punching holes in the general background?)
 
 	Uint16	hProp = 0;
@@ -1075,15 +1074,14 @@ void WgGfxDevice::DrawTextBg( const WgRect& _clip, const WgText * pText, const W
 }
 
 //___________________________________________________________________________________________________
-void WgGfxDevice::DrawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect, 
+void WgGfxDevice::DrawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect,
 									  int iStartOfs, int iEndOfs, WgColor color )
 {
 	const WgTextLine *	pLines = pText->getSoftLines();
-	const WgChar *		pChars = pText->getText();
 
 	WgTextPos startPos = pText->OfsToPos( iStartOfs );
 	WgTextPos endPos = pText->OfsToPos( iEndOfs );
-	
+
 	int xs = pText->PosToCoordX( startPos, dstRect );
 	int xe = pText->PosToCoordX( endPos, dstRect );
 

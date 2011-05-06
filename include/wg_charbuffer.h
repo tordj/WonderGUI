@@ -121,25 +121,25 @@ public:
 		// See if we need to copy the buffer because of write-lock
 
 		if( m_pHead->m_lockCnt != 0 )
-			ReshapeBuffer(0,0,m_pHead->m_len,0);
+			_reshapeBuffer(0,0,m_pHead->m_len,0);
 	};
 
 	~WgCharBuffer()
 	{
-		DerefBuffer();
+		_derefBuffer();
 	};
 
 
     WgCharBuffer& operator=( WgCharBuffer const & r);
 	WgCharBuffer& operator=( WgString const & r);
 
-	inline bool operator==(const WgCharBuffer& other) const { return CompareBuffers( this->m_pHead, other.m_pHead ); }
-	inline bool operator!=(const WgCharBuffer& other) const { return !CompareBuffers( this->m_pHead, other.m_pHead ); }
+	inline bool operator==(const WgCharBuffer& other) const { return _compareBuffers( this->m_pHead, other.m_pHead ); }
+	inline bool operator!=(const WgCharBuffer& other) const { return !_compareBuffers( this->m_pHead, other.m_pHead ); }
 
 	// These operator[] are slow, please use Chars() or BeginWrite() instead.
 
-	WgChar&				operator[](Uint32 i)								{ if( m_pHead->m_refCnt > 1 ) ReshapeBuffer(0,0,m_pHead->m_len,0); return *(WgChar*)GetPtr(i); }
-	const WgChar&		operator[](Uint32 i) const							{ return *(const WgChar*)GetPtr(i); }
+	WgChar&				operator[](Uint32 i)								{ if( m_pHead->m_refCnt > 1 ) ReshapeBuffer(0,0,m_pHead->m_len,0); return *(WgChar*)_ptr(i); }
+	const WgChar&		operator[](Uint32 i) const							{ return *(const WgChar*)_ptr(i); }
 
 	inline operator bool() const { return m_pHead->m_len != 0?true:false; }
 
@@ -166,7 +166,7 @@ public:
 	///					having to move the content or reallocate the buffer.
 	///
 
-	void	SetCapacity( Uint32 front, Uint32 back ) { ReshapeBuffer( front, 0, m_pHead->m_len, back ); }
+	void	SetCapacity( Uint32 front, Uint32 back ) { _reshapeBuffer( front, 0, m_pHead->m_len, back ); }
 
 	/// @brief Gives access to direct manipulation of the buffer content.
 	///
@@ -464,7 +464,7 @@ public:
 	/// @return Pointer to the null-terminated content of the buffer. A valid pointer is always returned, never null.
 
 
-	inline const WgChar * Chars() const { return (const WgChar*) GetPtr(0); }
+	inline const WgChar * Chars() const { return (const WgChar*) _getPtr(0); }
 
 	/// @brief Returns the number of characters in the buffer.
 	///
@@ -857,38 +857,38 @@ private:
 	};
 
 
-	void        	ClearCharsNoDeref( Uint32 ofs, Uint32 n );  ///< Clears specified characters in buffer without dereferencing properties.
-	inline void *	GetPtr( Uint32 ofs ) const { return ((char*) &m_pHead[1]) + sizeof(WgChar)*(m_pHead->m_beg+ofs); }
+	void        	_clearCharsNoDeref( Uint32 ofs, Uint32 n );  ///< Clears specified characters in buffer without dereferencing properties.
+	inline void *	_getPtr( Uint32 ofs ) const { return ((char*) &m_pHead[1]) + sizeof(WgChar)*(m_pHead->m_beg+ofs); }
 
-	void			PushFrontInternal( Uint32 nChars );
-	void			PushBackInternal( Uint32 nChars );
-	Uint32			ReplaceInternal( Uint32 ofs, Uint32 delChar, Uint32 addChar, const WgChar * pChars = 0);
+	void			_pushFrontInternal( Uint32 nChars );
+	void			_pushBackInternal( Uint32 nChars );
+	Uint32			_replaceInternal( Uint32 ofs, Uint32 delChar, Uint32 addChar, const WgChar * pChars = 0);
 
 
 
-	inline void		DerefBuffer()
+	inline void		_derefBuffer()
 	{
 		m_pHead->m_refCnt--;
 		if( m_pHead->m_refCnt == 0 )
 		{
-			DerefProps(0, m_pHead->m_len);
-			DestroyBuffer(m_pHead);
+			_derefProps(0, m_pHead->m_len);
+			_destroyBuffer(m_pHead);
 		}
 	}
 
-	BufferHead *	CreateBuffer( Uint32 size );
-	inline void 	DestroyBuffer( BufferHead * pBuffer ) { delete [] (char*) pBuffer; g_nBuffers--; }
+	BufferHead *	_createBuffer( Uint32 size );
+	inline void 	_destroyBuffer( BufferHead * pBuffer ) { delete [] (char*) pBuffer; g_nBuffers--; }
 
-	void			CopyChars( BufferHead * pDst, Uint32 ofsDst, const BufferHead * pSrc, Uint32 ofsSrc, Uint32 nChars );
-	void			CopyChars( BufferHead * pDst, Uint32 ofsDst, const WgChar * pChars, Uint32 nChars );
-	void			ReshapeBuffer( Uint32 begMargin, Uint32 copyOfs, Uint32 copyLen, Uint32 endMargin );
+	void			_copyChars( BufferHead * pDst, Uint32 ofsDst, const BufferHead * pSrc, Uint32 ofsSrc, Uint32 nChars );
+	void			_copyChars( BufferHead * pDst, Uint32 ofsDst, const WgChar * pChars, Uint32 nChars );
+	void			_reshapeBuffer( Uint32 begMargin, Uint32 copyOfs, Uint32 copyLen, Uint32 endMargin );
 
-	void			SetChars( Uint32 ofs, Uint32 nChars, Uint32 value );
+	void			_setChars( Uint32 ofs, Uint32 nChars, Uint32 value );
 
-	inline void		DerefProps( Uint32 ofs, Uint32 n ) { WgTextTool::DerefProps( (WgChar*) GetPtr(ofs), n ); }
-	inline void		RefProps( Uint32 ofs, Uint32 n ) { WgTextTool::RefProps( (WgChar*) GetPtr(ofs), n ); }
+	inline void		_derefProps( Uint32 ofs, Uint32 n ) { WgTextTool::DerefProps( (WgChar*) _getPtr(ofs), n ); }
+	inline void		_refProps( Uint32 ofs, Uint32 n ) { WgTextTool::RefProps( (WgChar*) _getPtr(ofs), n ); }
 
-	static bool		CompareBuffers( const BufferHead * p1, const BufferHead * p2 );
+	static bool		_compareBuffers( const BufferHead * p1, const BufferHead * p2 );
 
 
 	const static Uint32		c_emptyChar = 0x00000020;	// Value to fill out empty WgChars with.

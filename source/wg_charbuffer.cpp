@@ -35,7 +35,7 @@ WgCharBuffer::BufferHead * WgCharBuffer::g_pEmptyBuffer = 0;
 
 WgCharBuffer::WgCharBuffer( Uint32 size )
 {
-	m_pHead = CreateBuffer( size );
+	m_pHead = _createBuffer( size );
 	m_pHead->m_refCnt++;
 }
 
@@ -53,7 +53,7 @@ WgCharBuffer& WgCharBuffer::operator=( WgCharBuffer const & r)
 		// See if we need to copy the buffer because of write-lock
 
 		if( m_pHead->m_lockCnt != 0 )
-			ReshapeBuffer(0,0,m_pHead->m_len,0);
+			_reshapeBuffer(0,0,m_pHead->m_len,0);
 	}
 	return *this;
 }
@@ -70,7 +70,7 @@ WgCharBuffer& WgCharBuffer::operator=( WgString const & r)
 		// See if we need to copy the buffer because of write-lock
 
 		if( m_pHead->m_lockCnt != 0 )
-			ReshapeBuffer(0,0,m_pHead->m_len,0);
+			_reshapeBuffer(0,0,m_pHead->m_len,0);
 	}
 	return *this;
 }
@@ -99,7 +99,7 @@ void WgCharBuffer::Trim()
 
 	// We need to trim the buffer
 
-	ReshapeBuffer(0,0,m_pHead->m_len,0);
+	_reshapeBuffer(0,0,m_pHead->m_len,0);
 }
 
 void WgCharBuffer::TrimWhiteSpace()
@@ -117,7 +117,7 @@ void WgCharBuffer::Reset( Uint32 size )
 {
 	if( m_pHead->m_size == size && m_pHead->m_refCnt == 1 )
 	{
-		DerefProps( 0, m_pHead->m_len );
+		_derefProps( 0, m_pHead->m_len );
 		m_pHead->m_beg = 0;
 		m_pHead->m_len = 0;
 
@@ -126,27 +126,27 @@ void WgCharBuffer::Reset( Uint32 size )
 	else
 	{
 		DerefBuffer();
-		m_pHead = CreateBuffer( size );
+		m_pHead = _createBuffer( size );
 		m_pHead->m_refCnt++;
 	}
 }
 
 
-//____ ReshapeBuffer() _____________________________________________________________
+//____ _reshapeBuffer() _____________________________________________________________
 
 /**
 	Reshapes the buffer by specifying begin/end margins and what subset of content
 	to keep.
 */
 
-void WgCharBuffer::ReshapeBuffer( Uint32 begMargin, Uint32 copyOfs, Uint32 copyLen, Uint32 endMargin )
+void WgCharBuffer::_reshapeBuffer( Uint32 begMargin, Uint32 copyOfs, Uint32 copyLen, Uint32 endMargin )
 {
 
 	// First create a buffer of right size and
 	// copy the content.
 
-	BufferHead * p = CreateBuffer( begMargin + copyLen + endMargin );
-	CopyChars( p, begMargin, m_pHead, m_pHead->m_beg + copyOfs, copyLen );
+	BufferHead * p = _createBuffer( begMargin + copyLen + endMargin );
+	_copyChars( p, begMargin, m_pHead, m_pHead->m_beg + copyOfs, copyLen );
 	((Uint32*)&p[1])[begMargin + copyLen] = 0;	// Terminate the buffer content.
 
 
@@ -161,20 +161,20 @@ void WgCharBuffer::ReshapeBuffer( Uint32 begMargin, Uint32 copyOfs, Uint32 copyL
 		// We only need to dereference the props we haven't copied to the new buffer
 
 		if( copyOfs > 0 )
-			DerefProps( 0, copyOfs );
+			_derefProps( 0, copyOfs );
 
 		if( copyOfs + copyLen < m_pHead->m_len )
-			DerefProps( copyOfs + copyLen, m_pHead->m_len - copyOfs - copyLen );
+			_derefProps( copyOfs + copyLen, m_pHead->m_len - copyOfs - copyLen );
 		//
 
-		DestroyBuffer(m_pHead);
+		_destroyBuffer(m_pHead);
 	}
 	else
 	{
 		// Since the previous buffer wasn't destroyed, we need to reference the new
 		// one since we have one extra copy of all the WgChar.
 
-		RefProps( copyOfs, copyLen );		// Easier to scan through the old buffer, content is identical anyway...
+		_refProps( copyOfs, copyLen );		// Easier to scan through the old buffer, content is identical anyway...
 	}
 
 	//
@@ -190,7 +190,7 @@ void WgCharBuffer::ReshapeBuffer( Uint32 begMargin, Uint32 copyOfs, Uint32 copyL
 WgChar*	WgCharBuffer::BeginWrite()
 {
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	m_pHead->m_lockCnt++;
 	return (WgChar*) GetPtr(0);
@@ -213,11 +213,11 @@ Uint32 WgCharBuffer::PopFront( Uint32 nChars )
 
 	if( m_pHead->m_refCnt > 1 )
 	{
-		ReshapeBuffer(0, nChars, m_pHead->m_len - nChars, 0);
+		_reshapeBuffer(0, nChars, m_pHead->m_len - nChars, 0);
 	}
 	else
 	{
-		DerefProps( 0, nChars );
+		_derefProps( 0, nChars );
 
 		m_pHead->m_beg += nChars;
 		m_pHead->m_len -= nChars;
@@ -235,11 +235,11 @@ Uint32 WgCharBuffer::PopBack( Uint32 nChars )
 
 	if( m_pHead->m_refCnt > 1 )
 	{
-		ReshapeBuffer(0, 0, m_pHead->m_len - nChars, 0);
+		_reshapeBuffer(0, 0, m_pHead->m_len - nChars, 0);
 	}
 	else
 	{
-		DerefProps( m_pHead->m_len - nChars, nChars );
+		_derefProps( m_pHead->m_len - nChars, nChars );
 		m_pHead->m_len -= nChars;
 		* ((Uint32 *) GetPtr(m_pHead->m_len)) = 0;		// null terminate.
 	}
@@ -247,7 +247,7 @@ Uint32 WgCharBuffer::PopBack( Uint32 nChars )
 	return nChars;
 }
 
-//____ CopyChars() _____________________________________________________________
+//____ _copyChars() _____________________________________________________________
 
 /**
 	Copies WgChars in buffers from source to destination. Areas may overlap.
@@ -260,7 +260,7 @@ Uint32 WgCharBuffer::PopBack( Uint32 nChars )
 	No error checking, parameters are assumed to have been verified before call.
 */
 
-void WgCharBuffer::CopyChars( BufferHead * pDst, Uint32 ofsDst, const BufferHead * pSrc, Uint32 ofsSrc, Uint32 nChars )
+void WgCharBuffer::_copyChars( BufferHead * pDst, Uint32 ofsDst, const BufferHead * pSrc, Uint32 ofsSrc, Uint32 nChars )
 {
 	memmove( ((char*)&pDst[1])+ofsDst*sizeof(WgChar), ((char*)&pSrc[1])+ofsSrc*sizeof(WgChar), nChars*sizeof(WgChar) );
 }
@@ -277,14 +277,14 @@ void WgCharBuffer::CopyChars( BufferHead * pDst, Uint32 ofsDst, const BufferHead
 
 */
 
-void WgCharBuffer::CopyChars( BufferHead * pDst, Uint32 ofsDst, const WgChar * pChars, Uint32 nChars )
+void WgCharBuffer::_copyChars( BufferHead * pDst, Uint32 ofsDst, const WgChar * pChars, Uint32 nChars )
 {
 	memcpy( ((char*)&pDst[1])+ofsDst*sizeof(WgChar), pChars, nChars*sizeof(WgChar) );
 }
 
-//____ SetChars() _____________________________________________________________
+//____ _setChars() _____________________________________________________________
 
-void WgCharBuffer::SetChars( Uint32 ofs, Uint32 nChars, Uint32 value )
+void WgCharBuffer::_setChars( Uint32 ofs, Uint32 nChars, Uint32 value )
 {
 	Uint32 * pChar = ((Uint32 *) &m_pHead[1]) + m_pHead->m_beg + ofs;
 
@@ -308,7 +308,7 @@ Uint32 WgCharBuffer::PushFront( const WgChar& character )
 Uint32 WgCharBuffer::PushFront( Uint32 nChars )
 {
 	PushFrontInternal(nChars);
-	SetChars( 0, nChars, c_emptyChar );
+	_setChars( 0, nChars, c_emptyChar );
 	return nChars;
 }
 
@@ -319,7 +319,7 @@ Uint32 WgCharBuffer::PushFront( const WgChar * pChars )
 	PushFrontInternal(len);
 
 	memcpy( GetPtr(0), pChars, sizeof(WgChar)*len );
-	RefProps(0,len);
+	_refProps(0,len);
 	return len;
 }
 
@@ -328,7 +328,7 @@ Uint32 WgCharBuffer::PushFront( const WgChar * pChars, Uint32 nChars )
 	PushFrontInternal(nChars);
 
 	memcpy( GetPtr(0), pChars, sizeof(WgChar)*nChars );
-	RefProps(0,nChars);
+	_refProps(0,nChars);
 	return nChars;
 }
 
@@ -357,7 +357,7 @@ Uint32 WgCharBuffer::PushBack( const WgChar& character )
 Uint32 WgCharBuffer::PushBack( Uint32 nChars )
 {
 	PushBackInternal(nChars);
-	SetChars( m_pHead->m_len - nChars, nChars, c_emptyChar );
+	_setChars( m_pHead->m_len - nChars, nChars, c_emptyChar );
 	return nChars;
 }
 
@@ -368,7 +368,7 @@ Uint32 WgCharBuffer::PushBack( const WgChar * pChars )
 	PushBackInternal(len);
 
 	memcpy( ((WgChar*) GetPtr(0)) + m_pHead->m_len-len, pChars, sizeof(WgChar)*len );
-	RefProps(m_pHead->m_len-len,len);
+	_refProps(m_pHead->m_len-len,len);
 	return len;
 }
 
@@ -377,7 +377,7 @@ Uint32 WgCharBuffer::PushBack( const WgChar * pChars, Uint32 nChars )
 	PushBackInternal(nChars);
 
 	memcpy( ((WgChar*) GetPtr(0)) + m_pHead->m_len-nChars, pChars, sizeof(WgChar)*nChars );
-	RefProps(m_pHead->m_len-nChars,nChars);
+	_refProps(m_pHead->m_len-nChars,nChars);
 	return nChars;
 }
 
@@ -410,13 +410,13 @@ void WgCharBuffer::PushFrontInternal( Uint32 nChars )
 		{
 			// Not enough space at front, need to move chars...
 
-			CopyChars( m_pHead, nChars, m_pHead, m_pHead->m_beg, m_pHead->m_len+1 );
+			_copyChars( m_pHead, nChars, m_pHead, m_pHead->m_beg, m_pHead->m_len+1 );
 			m_pHead->m_beg = 0;
 		}
 	}
 	else
 	{
-		ReshapeBuffer(nChars, 0, m_pHead->m_len, 0 );
+		_reshapeBuffer(nChars, 0, m_pHead->m_len, 0 );
 		m_pHead->m_beg = 0;
 	}
 
@@ -444,13 +444,13 @@ void WgCharBuffer::PushBackInternal( Uint32 nChars )
 			// needed since it seems more likely we will have use of
 			// any extra space at the end of the buffer now...
 
-			CopyChars( m_pHead, 0, m_pHead, m_pHead->m_beg, m_pHead->m_len+1 );
+			_copyChars( m_pHead, 0, m_pHead, m_pHead->m_beg, m_pHead->m_len+1 );
 			m_pHead->m_beg = 0;
 		}
 	}
 	else
 	{
-		ReshapeBuffer( 0, 0, m_pHead->m_len, nChars );
+		_reshapeBuffer( 0, 0, m_pHead->m_len, nChars );
 		m_pHead->m_beg = 0;
 	}
 
@@ -567,7 +567,7 @@ Uint32 WgCharBuffer::ReplaceInternal( Uint32 ofs, Uint32 delChar, Uint32 addSpac
 	// Dereference the props of the characters to be deleted
 
 	if( delChar != 0 )
-		DerefProps( ofs, delChar );
+		_derefProps( ofs, delChar );
 
 	// Check if we can just modify this buffer to fit things in
 
@@ -588,21 +588,21 @@ Uint32 WgCharBuffer::ReplaceInternal( Uint32 ofs, Uint32 delChar, Uint32 addSpac
 			{
 				// Just move the beginning to adjust space.
 
-				CopyChars( m_pHead, m_pHead->m_beg-sizeChange, m_pHead, m_pHead->m_beg, ofs );
+				_copyChars( m_pHead, m_pHead->m_beg-sizeChange, m_pHead, m_pHead->m_beg, ofs );
 				m_pHead->m_beg -= sizeChange;
 			}
 			else if( endBuffer >= sizeChange )
 			{
 				// Just move the end to adjust space.
 
-				CopyChars( m_pHead, m_pHead->m_beg+ofs+addSpace, m_pHead, m_pHead->m_beg+ofs+delChar, m_pHead->m_len-ofs-delChar+1 );
+				_copyChars( m_pHead, m_pHead->m_beg+ofs+addSpace, m_pHead, m_pHead->m_beg+ofs+delChar, m_pHead->m_len-ofs-delChar+1 );
 			}
 			else
 			{
 				// Move both beginning and end to make space
 
-				CopyChars( m_pHead, 0, m_pHead, m_pHead->m_beg, ofs );
-				CopyChars( m_pHead, ofs+addSpace, m_pHead, m_pHead->m_beg+ofs+delChar, sizeChange - begBuffer +1 );
+				_copyChars( m_pHead, 0, m_pHead, m_pHead->m_beg, ofs );
+				_copyChars( m_pHead, ofs+addSpace, m_pHead, m_pHead->m_beg+ofs+delChar, sizeChange - begBuffer +1 );
 				m_pHead->m_beg = 0;
 			}
 
@@ -614,9 +614,9 @@ Uint32 WgCharBuffer::ReplaceInternal( Uint32 ofs, Uint32 delChar, Uint32 addSpac
 		// Create a new buffer, copy the content to be keept and leave room
 		// at ofs for any characters to be added.
 
-		BufferHead * pBuffer = CreateBuffer( m_pHead->m_len + sizeChange );
-		CopyChars( pBuffer, 0, m_pHead, m_pHead->m_beg, ofs );
-		CopyChars( pBuffer, 0+ofs+addSpace, m_pHead, m_pHead->m_beg+ofs+delChar, m_pHead->m_len-ofs-delChar+1);
+		BufferHead * pBuffer = _createBuffer( m_pHead->m_len + sizeChange );
+		_copyChars( pBuffer, 0, m_pHead, m_pHead->m_beg, ofs );
+		_copyChars( pBuffer, 0+ofs+addSpace, m_pHead, m_pHead->m_beg+ofs+delChar, m_pHead->m_len-ofs-delChar+1);
 		pBuffer->m_len = m_pHead->m_len + sizeChange;
 
 		// Do our own deref buffer
@@ -624,14 +624,14 @@ Uint32 WgCharBuffer::ReplaceInternal( Uint32 ofs, Uint32 delChar, Uint32 addSpac
 		m_pHead->m_refCnt--;
 		if( m_pHead->m_refCnt == 0 )
 		{
-			DestroyBuffer(m_pHead);
+			_destroyBuffer(m_pHead);
 			m_pHead = pBuffer;
 		}
 		else
 		{
 			m_pHead = pBuffer;
-			SetChars( ofs, addSpace, c_emptyChar );
-			RefProps( 0, m_pHead->m_len );
+			_setChars( ofs, addSpace, c_emptyChar );
+			_refProps( 0, m_pHead->m_len );
 		}
 
 		m_pHead->m_refCnt++;
@@ -643,19 +643,19 @@ Uint32 WgCharBuffer::ReplaceInternal( Uint32 ofs, Uint32 delChar, Uint32 addSpac
 	{
 		if( pChars != 0 )
 		{
-			CopyChars( m_pHead, m_pHead->m_beg + ofs, pChars, addSpace );
-			RefProps( ofs, addSpace );
+			_copyChars( m_pHead, m_pHead->m_beg + ofs, pChars, addSpace );
+			_refProps( ofs, addSpace );
 		}
 		else
-			SetChars( ofs, addSpace, c_emptyChar );
+			_setChars( ofs, addSpace, c_emptyChar );
 	}
 	return delChar;
 }
 
 
-//____ CreateBuffer() __________________________________________________________
+//____ _createBuffer() __________________________________________________________
 
-WgCharBuffer::BufferHead * WgCharBuffer::CreateBuffer( Uint32 size )
+WgCharBuffer::BufferHead * WgCharBuffer::_createBuffer( Uint32 size )
 {
 	if( size == 0 && g_pEmptyBuffer )
 		return g_pEmptyBuffer;
@@ -744,9 +744,9 @@ void WgCharBuffer::Fill( const WgChar& ch, Uint32 ofs, Uint32 len )
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::SetChars( ch, (WgChar*)GetPtr(ofs), len );
+	WgTextTool::_setChars( ch, (WgChar*)GetPtr(ofs), len );
 }
 
 //____ SetGlyphs() _____________________________________________________________
@@ -760,7 +760,7 @@ void WgCharBuffer::SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len )
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::SetGlyph( glyph, (WgChar*)GetPtr(ofs), len );
 }
@@ -778,7 +778,7 @@ void WgCharBuffer::SetProperties( const WgTextPropPtr& pProp, Uint32 ofs, Uint32
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::SetProperties( pProp, (WgChar*)GetPtr(ofs), len );
 }
@@ -794,7 +794,7 @@ void WgCharBuffer::SetColor( const WgColor color, Uint32 ofs, Uint32 len, WgMode
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::SetColor(color, (WgChar*)GetPtr(ofs), len, mode);
 }
@@ -811,7 +811,7 @@ void WgCharBuffer::SetStyle( WgFontStyle style, Uint32 ofs, Uint32 len, WgMode m
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::SetStyle(style, (WgChar*)GetPtr(ofs), len, mode );
 }
@@ -828,7 +828,7 @@ void WgCharBuffer::SetFont( WgFont * pFont, Uint32 ofs, Uint32 len  )
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::SetFont( pFont, (WgChar*)GetPtr(ofs), len );
 }
@@ -844,7 +844,7 @@ void WgCharBuffer::SetUnderlined( Uint32 ofs, Uint32 len, WgMode mode )
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::SetUnderlined( (WgChar*)GetPtr(ofs), len, mode );
 }
@@ -861,7 +861,7 @@ void WgCharBuffer::ClearProperties( Uint32 ofs, Uint32 len  )
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::ClearProperties( (WgChar*)GetPtr(ofs), len );
 }
@@ -877,7 +877,7 @@ void WgCharBuffer::ClearColor( Uint32 ofs, Uint32 len, WgMode mode )
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::ClearColor( (WgChar*)GetPtr(ofs), len, mode );
 }
@@ -893,7 +893,7 @@ void WgCharBuffer::ClearStyle( Uint32 ofs, Uint32 len, WgMode mode )
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::ClearStyle( (WgChar*)GetPtr(ofs), len, mode );
 }
@@ -910,7 +910,7 @@ void WgCharBuffer::ClearFont( Uint32 ofs, Uint32 len  )
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::ClearFont( (WgChar*)GetPtr(ofs), len );
 }
@@ -926,7 +926,7 @@ void WgCharBuffer::ClearUnderlined( Uint32 ofs, Uint32 len, WgMode mode  )
 		len = m_pHead->m_len - ofs;
 
 	if( m_pHead->m_refCnt > 1 )
-		ReshapeBuffer(0,0,m_pHead->m_len,0);
+		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	WgTextTool::ClearUnderlined( (WgChar*)GetPtr(ofs), len, mode );
 }

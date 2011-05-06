@@ -283,7 +283,6 @@ void WgText::selectText( int startLine, int startCol, int endLine, int endCol )
 	m_selEndCol = endCol;
 
 	const WgTextLine * pCurLine = &m_pHardLines[startLine];
-	const WgTextLine * pLastLine = &m_pHardLines[endLine];
 	if(endCol > pCurLine->nChars)
 		endCol = pCurLine->nChars;
 }
@@ -484,7 +483,7 @@ void WgText::clearLinkProperties()
 	if( m_pLinkProp )
 	{
 		m_pLinkProp = 0;
-		regenSoftLines();		//TODO: Optimize: Only do if we have links.	
+		regenSoftLines();		//TODO: Optimize: Only do if we have links.
 		refreshAllLines();
 	}
 }
@@ -1487,7 +1486,7 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 //			Uint32 len = pen.GetBlitPosX() + pen.GetGlyph()->rect.w; // No advance on last character of line, just bearingX + width
 			int len = pen.GetPosX() + pen.GetGlyph()->Advance();
-			if( len > m_lineWidth )			
+			if( len > m_lineWidth )
 			{
 				if( pbp != 0 && pbp != pLineStart )
 				{
@@ -1758,7 +1757,7 @@ int WgText::LineStartY( int line, const WgRect& container ) const
 		if( ofs < 0 )
 			ofs = 0;
 	}
-	
+
 	if( line > m_nSoftLines )
 		line = m_nSoftLines;
 
@@ -1905,7 +1904,7 @@ WgTextLinkPtr WgText::CoordToLink( const WgCord& coord, const WgRect& container 
 int WgText::OfsToCoordY( int ofs, const WgRect& container ) const
 {
 	int y = LineStartY( OfsToPos(ofs).line, container );
-	
+
 	for( int i = 0 ; i < m_nSoftLines ; i++ )
 	{
 		if( ofs < m_pSoftLines[i].ofs + m_pSoftLines[i].nChars )
@@ -2033,7 +2032,7 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 {
 	bool bRefresh = false;
 	WgTextLinkHandler * pHandler;
-	
+
 	if( m_pMarkedLink )
 	{
 		pHandler = m_pMarkedLink->Handler();
@@ -2075,12 +2074,12 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 			}
 			break;
 		}
-			
+
 
 		case WgInput::POINTER_EXIT:
 		{
 			if( m_pMarkedLink )
-			{			
+			{
 				if( pHandler )
 					pHandler->OnPointerExit( m_pMarkedLink, pointerOfs );
 				m_pMarkedLink = 0;
@@ -2092,7 +2091,7 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 		case WgInput::BUTTON_PRESS:
 		{
 			if( m_pMarkedLink )
-			{	
+			{
 				if( pHandler )
 					pHandler->OnButtonPress( button_key, m_pMarkedLink, pointerOfs );
 				m_markedLinkMode = WG_MODE_SELECTED;
@@ -2122,7 +2121,7 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 					if( m_markedLinkMode == WG_MODE_SELECTED )
 						pHandler->OnButtonClick( button_key, m_pMarkedLink, pointerOfs );
 				}
-				
+
 				m_markedLinkMode = WG_MODE_MARKED;
 				bRefresh = true;
 			}
@@ -2132,6 +2131,9 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 		case WgInput::BUTTON_DOUBLECLICK:
 			if( m_pMarkedLink && pHandler )
 				pHandler->OnButtonDoubleClick( button_key, m_pMarkedLink, pointerOfs );
+			break;
+
+		default:
 			break;
 	}
 
