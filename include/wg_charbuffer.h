@@ -138,7 +138,7 @@ public:
 
 	// These operator[] are slow, please use Chars() or BeginWrite() instead.
 
-	WgChar&				operator[](Uint32 i)								{ if( m_pHead->m_refCnt > 1 ) ReshapeBuffer(0,0,m_pHead->m_len,0); return *(WgChar*)_ptr(i); }
+	WgChar&				operator[](Uint32 i)								{ if( m_pHead->m_refCnt > 1 ) _reshapeBuffer(0,0,m_pHead->m_len,0); return *(WgChar*)_ptr(i); }
 	const WgChar&		operator[](Uint32 i) const							{ return *(const WgChar*)_ptr(i); }
 
 	inline operator bool() const { return m_pHead->m_len != 0?true:false; }
@@ -464,7 +464,7 @@ public:
 	/// @return Pointer to the null-terminated content of the buffer. A valid pointer is always returned, never null.
 
 
-	inline const WgChar * Chars() const { return (const WgChar*) _getPtr(0); }
+	inline const WgChar * Chars() const { return (const WgChar*) _ptr(0); }
 
 	/// @brief Returns the number of characters in the buffer.
 	///
@@ -858,11 +858,11 @@ private:
 
 
 	void        	_clearCharsNoDeref( Uint32 ofs, Uint32 n );  ///< Clears specified characters in buffer without dereferencing properties.
-	inline void *	_getPtr( Uint32 ofs ) const { return ((char*) &m_pHead[1]) + sizeof(WgChar)*(m_pHead->m_beg+ofs); }
+	inline void *	_ptr( Uint32 ofs ) const { return ((char*) &m_pHead[1]) + sizeof(WgChar)*(m_pHead->m_beg+ofs); }
 
-	void			_pushFrontInternal( Uint32 nChars );
-	void			_pushBackInternal( Uint32 nChars );
-	Uint32			_replaceInternal( Uint32 ofs, Uint32 delChar, Uint32 addChar, const WgChar * pChars = 0);
+	void			_pushFront( Uint32 nChars );
+	void			_pushBack( Uint32 nChars );
+	Uint32			_replace( Uint32 ofs, Uint32 delChar, Uint32 addChar, const WgChar * pChars = 0);
 
 
 
@@ -885,8 +885,8 @@ private:
 
 	void			_setChars( Uint32 ofs, Uint32 nChars, Uint32 value );
 
-	inline void		_derefProps( Uint32 ofs, Uint32 n ) { WgTextTool::DerefProps( (WgChar*) _getPtr(ofs), n ); }
-	inline void		_refProps( Uint32 ofs, Uint32 n ) { WgTextTool::RefProps( (WgChar*) _getPtr(ofs), n ); }
+	inline void		_derefProps( Uint32 ofs, Uint32 n ) { WgTextTool::DerefProps( (WgChar*) _ptr(ofs), n ); }
+	inline void		_refProps( Uint32 ofs, Uint32 n ) { WgTextTool::RefProps( (WgChar*) _ptr(ofs), n ); }
 
 	static bool		_compareBuffers( const BufferHead * p1, const BufferHead * p2 );
 
