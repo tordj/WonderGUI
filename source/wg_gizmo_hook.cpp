@@ -46,16 +46,16 @@ void WgGizmoHook::DoSetGizmo()
 	m_pGizmo->SetHook(this);
 }
 
-//____ DoCollectRects() _______________________________________________________
+//____ _doCollectRects() _______________________________________________________
 
-void WgGizmoHook::DoCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmoHook::_doCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	m_pGizmo->OnCollectRects( rects, geo, clip );
 }
 
-//____ DoMaskRects() __________________________________________________________
+//____ _doMaskRects() __________________________________________________________
 
-void WgGizmoHook::DoMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmoHook::_doMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	m_pGizmo->OnMaskRects( rects, geo, clip );
 }

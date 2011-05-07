@@ -45,7 +45,7 @@ WgCharBuffer& WgCharBuffer::operator=( WgCharBuffer const & r)
 {
 	if( m_pHead != r.m_pHead )
 	{
-		DerefBuffer();
+		_derefBuffer();
 
 		m_pHead = r.m_pHead;
 		m_pHead->m_refCnt++;
@@ -62,7 +62,7 @@ WgCharBuffer& WgCharBuffer::operator=( WgString const & r)
 {
 	if( m_pHead != r.m_buffer.m_pHead )
 	{
-		DerefBuffer();
+		_derefBuffer();
 
 		m_pHead = r.m_buffer.m_pHead;
 		m_pHead->m_refCnt++;
@@ -77,11 +77,11 @@ WgCharBuffer& WgCharBuffer::operator=( WgString const & r)
 
 
 
-//____ ClearCharsNoDeref() _____________________________________________________
+//____ _clearCharsNoDeref() _____________________________________________________
 
-void WgCharBuffer::ClearCharsNoDeref( Uint32 ofs, Uint32 n )
+void WgCharBuffer::_clearCharsNoDeref( Uint32 ofs, Uint32 n )
 {
-	Uint32 * p = (Uint32*) GetPtr(ofs);
+	Uint32 * p = (Uint32*) _ptr(ofs);
 
 	for( int i = 0 ; i < (int) n ; i++ )
 		* p++ = c_emptyChar;
@@ -121,11 +121,11 @@ void WgCharBuffer::Reset( Uint32 size )
 		m_pHead->m_beg = 0;
 		m_pHead->m_len = 0;
 
-		*((Uint32*) GetPtr(0))= 0;	// NULL-terminate content.
+		*((Uint32*) _ptr(0))= 0;	// NULL-terminate content.
 	}
 	else
 	{
-		DerefBuffer();
+		_derefBuffer();
 		m_pHead = _createBuffer( size );
 		m_pHead->m_refCnt++;
 	}
@@ -193,7 +193,7 @@ WgChar*	WgCharBuffer::BeginWrite()
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
 	m_pHead->m_lockCnt++;
-	return (WgChar*) GetPtr(0);
+	return (WgChar*) _ptr(0);
 }
 
 
@@ -241,7 +241,7 @@ Uint32 WgCharBuffer::PopBack( Uint32 nChars )
 	{
 		_derefProps( m_pHead->m_len - nChars, nChars );
 		m_pHead->m_len -= nChars;
-		* ((Uint32 *) GetPtr(m_pHead->m_len)) = 0;		// null terminate.
+		* ((Uint32 *) _ptr(m_pHead->m_len)) = 0;		// null terminate.
 	}
 
 	return nChars;
@@ -296,14 +296,14 @@ void WgCharBuffer::_setChars( Uint32 ofs, Uint32 nChars, Uint32 value )
 
 Uint32 WgCharBuffer::PushFront( const WgChar& character )
 {
-	PushFrontInternal(1);
-	*((WgChar*)GetPtr(0)) = character;
+	_pushFront(1);
+	*((WgChar*)_ptr(0)) = character;
 	return 1;
 }
 
 Uint32 WgCharBuffer::PushFront( Uint32 nChars )
 {
-	PushFrontInternal(nChars);
+	_pushFront(nChars);
 	_setChars( 0, nChars, c_emptyChar );
 	return nChars;
 }
@@ -312,18 +312,18 @@ Uint32 WgCharBuffer::PushFront( const WgChar * pChars )
 {
 	Uint32 len = WgTextTool::strlen( pChars );
 
-	PushFrontInternal(len);
+	_pushFront(len);
 
-	memcpy( GetPtr(0), pChars, sizeof(WgChar)*len );
+	memcpy( _ptr(0), pChars, sizeof(WgChar)*len );
 	_refProps(0,len);
 	return len;
 }
 
 Uint32 WgCharBuffer::PushFront( const WgChar * pChars, Uint32 nChars )
 {
-	PushFrontInternal(nChars);
+	_pushFront(nChars);
 
-	memcpy( GetPtr(0), pChars, sizeof(WgChar)*nChars );
+	memcpy( _ptr(0), pChars, sizeof(WgChar)*nChars );
 	_refProps(0,nChars);
 	return nChars;
 }
@@ -331,8 +331,8 @@ Uint32 WgCharBuffer::PushFront( const WgChar * pChars, Uint32 nChars )
 Uint32 WgCharBuffer::PushFront( const WgCharSeq& seq )
 {
 	Uint32 len = seq.Length();
-	PushFrontInternal(len);
-	seq.CopyTo((WgChar*)GetPtr(0));
+	_pushFront(len);
+	seq.CopyTo((WgChar*)_ptr(0));
 	return len;
 }
 
@@ -341,14 +341,14 @@ Uint32 WgCharBuffer::PushFront( const WgCharSeq& seq )
 
 Uint32 WgCharBuffer::PushBack( const WgChar& character )
 {
-	PushBackInternal(1);
-	*((WgChar*)GetPtr( m_pHead->m_len - 1)) = character;
+	_pushBack(1);
+	*((WgChar*)_ptr( m_pHead->m_len - 1)) = character;
 	return 1;
 }
 
 Uint32 WgCharBuffer::PushBack( Uint32 nChars )
 {
-	PushBackInternal(nChars);
+	_pushBack(nChars);
 	_setChars( m_pHead->m_len - nChars, nChars, c_emptyChar );
 	return nChars;
 }
@@ -357,18 +357,18 @@ Uint32 WgCharBuffer::PushBack( const WgChar * pChars )
 {
 	Uint32 len = WgTextTool::strlen( pChars );
 
-	PushBackInternal(len);
+	_pushBack(len);
 
-	memcpy( ((WgChar*) GetPtr(0)) + m_pHead->m_len-len, pChars, sizeof(WgChar)*len );
+	memcpy( ((WgChar*) _ptr(0)) + m_pHead->m_len-len, pChars, sizeof(WgChar)*len );
 	_refProps(m_pHead->m_len-len,len);
 	return len;
 }
 
 Uint32 WgCharBuffer::PushBack( const WgChar * pChars, Uint32 nChars )
 {
-	PushBackInternal(nChars);
+	_pushBack(nChars);
 
-	memcpy( ((WgChar*) GetPtr(0)) + m_pHead->m_len-nChars, pChars, sizeof(WgChar)*nChars );
+	memcpy( ((WgChar*) _ptr(0)) + m_pHead->m_len-nChars, pChars, sizeof(WgChar)*nChars );
 	_refProps(m_pHead->m_len-nChars,nChars);
 	return nChars;
 }
@@ -376,17 +376,17 @@ Uint32 WgCharBuffer::PushBack( const WgChar * pChars, Uint32 nChars )
 Uint32 WgCharBuffer::PushBack( const WgCharSeq& seq )
 {
 	Uint32 nChars = seq.Length();
-	PushBackInternal(nChars);
-	memset( ((WgChar*) GetPtr(0)) + m_pHead->m_len-nChars, 0, sizeof(WgChar)*nChars );
-	seq.CopyTo( ((WgChar*) GetPtr(0)) + m_pHead->m_len-nChars );
+	_pushBack(nChars);
+	memset( ((WgChar*) _ptr(0)) + m_pHead->m_len-nChars, 0, sizeof(WgChar)*nChars );
+	seq.CopyTo( ((WgChar*) _ptr(0)) + m_pHead->m_len-nChars );
 	return nChars;
 }
 
 
 
-//____ PushFrontInternal() _____________________________________________________
+//____ _pushFront() _____________________________________________________
 
-void WgCharBuffer::PushFrontInternal( Uint32 nChars )
+void WgCharBuffer::_pushFront( Uint32 nChars )
 {
 	// Check if we can just modify this buffer to fit things in
 
@@ -415,9 +415,9 @@ void WgCharBuffer::PushFrontInternal( Uint32 nChars )
 	m_pHead->m_len += nChars;
 }
 
-//____ PushBackInternal() ______________________________________________________
+//____ _pushBack() ______________________________________________________
 
-void WgCharBuffer::PushBackInternal( Uint32 nChars )
+void WgCharBuffer::_pushBack( Uint32 nChars )
 {
 	// Check if we can just modify this buffer to fit things in
 
@@ -446,33 +446,33 @@ void WgCharBuffer::PushBackInternal( Uint32 nChars )
 	}
 
 	m_pHead->m_len += nChars;
-	* ((Uint32*) GetPtr(m_pHead->m_len)) = 0;					// Null terminate the string.
+	* ((Uint32*) _ptr(m_pHead->m_len)) = 0;					// Null terminate the string.
 }
 
 //____ Insert() ________________________________________________________________
 
 Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar& character )
 {
-	ReplaceInternal( ofs, 0, 1, &character );
+	_replace( ofs, 0, 1, &character );
 	return 1;
 }
 
 Uint32 WgCharBuffer::Insert( Uint32 ofs, Uint32 nChars )
 {
-	ReplaceInternal( ofs, 0, nChars );
+	_replace( ofs, 0, nChars );
 	return nChars;
 }
 
 Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar * pChars )
 {
 	Uint32 nInsert = WgTextTool::strlen( pChars );
-	ReplaceInternal( ofs, 0, nInsert, pChars );
+	_replace( ofs, 0, nInsert, pChars );
 	return nInsert;
 }
 
 Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar * pChars, Uint32 nChars )
 {
-	ReplaceInternal( ofs, 0, nChars, pChars );
+	_replace( ofs, 0, nChars, pChars );
 	return nChars;
 }
 
@@ -481,7 +481,7 @@ Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgCharSeq& seq )
 	if( ofs > m_pHead->m_len )
 		ofs = m_pHead->m_len;
 
-	ReplaceInternal( ofs, 0, seq.Length() );
+	_replace( ofs, 0, seq.Length() );
 	WgChar * pChars = BeginWrite();
 	seq.CopyTo( pChars+ofs );
 	EndWrite();
@@ -492,7 +492,7 @@ Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgCharSeq& seq )
 
 Uint32 WgCharBuffer::Delete( Uint32 ofs, Uint32 nChars )
 {
-	return ReplaceInternal( ofs, nChars, 0 );
+	return _replace( ofs, nChars, 0 );
 }
 
 //____ Replace() _______________________________________________________________
@@ -502,26 +502,26 @@ Uint32 WgCharBuffer::Replace( Uint32 ofs, const WgChar& character )
 	if( ofs >= m_pHead->m_len )
 		PushBack( character );
 	else
-		*((WgChar*)GetPtr(ofs)) = character;
+		*((WgChar*)_ptr(ofs)) = character;
 	return 1;
 }
 
 Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, Uint32 nInsert )
 {
-	ReplaceInternal( ofs, nDelete, nInsert );
+	_replace( ofs, nDelete, nInsert );
 	return nInsert;
 }
 
 Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars )
 {
 	Uint32 nInsert = WgTextTool::strlen( pChars );
-	ReplaceInternal( ofs, nDelete, nInsert, pChars );
+	_replace( ofs, nDelete, nInsert, pChars );
 	return nInsert;
 }
 
 Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars, Uint32 nInsert)
 {
-	ReplaceInternal( ofs, nDelete, nInsert, pChars );
+	_replace( ofs, nDelete, nInsert, pChars );
 	return nInsert;
 }
 
@@ -530,7 +530,7 @@ Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgCharSeq& seq )
 	if( ofs > m_pHead->m_len )
 		ofs = m_pHead->m_len;
 
-	ReplaceInternal( ofs, nDelete, seq.Length() );
+	_replace( ofs, nDelete, seq.Length() );
 	WgChar * pChars = BeginWrite();
 	seq.CopyTo( pChars+ofs );
 	EndWrite();
@@ -540,9 +540,9 @@ Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgCharSeq& seq )
 
 
 
-//____ ReplaceInternal() ______________________________________________________
+//____ _replace() ______________________________________________________
 
-Uint32 WgCharBuffer::ReplaceInternal( Uint32 ofs, Uint32 delChar, Uint32 addSpace, const WgChar * pChars )
+Uint32 WgCharBuffer::_replace( Uint32 ofs, Uint32 delChar, Uint32 addSpace, const WgChar * pChars )
 {
 	// Forcing sane values
 
@@ -673,9 +673,9 @@ WgCharBuffer::BufferHead * WgCharBuffer::_createBuffer( Uint32 size )
 	return pBuffer;
 }
 
-//____ CompareBuffers() _______________________________________________________
+//____ _compareBuffers() _______________________________________________________
 
-bool WgCharBuffer::CompareBuffers( const BufferHead * p1, const BufferHead * p2 )
+bool WgCharBuffer::_compareBuffers( const BufferHead * p1, const BufferHead * p2 )
 {
 	// Some quick compares for common cases
 
@@ -700,7 +700,7 @@ int WgCharBuffer::CompareTo( const WgCharBuffer * pBuffer )
 	if( m_pHead == pBuffer->m_pHead )
 		return 0;
 
-	return WgTextTool::strcmp( (WgChar*) GetPtr(0), (WgChar*) pBuffer->GetPtr(0) );
+	return WgTextTool::strcmp( (WgChar*) _ptr(0), (WgChar*) pBuffer->_ptr(0) );
 }
 
 //____ CompareGlyphsTo() ______________________________________________________
@@ -710,7 +710,7 @@ int WgCharBuffer::CompareGlyphsTo( const WgCharBuffer * pBuffer )
 	if( m_pHead == pBuffer->m_pHead )
 		return 0;
 
-	return WgTextTool::glyphcmp( (WgChar*) GetPtr(0), (WgChar*) pBuffer->GetPtr(0) );
+	return WgTextTool::glyphcmp( (WgChar*) _ptr(0), (WgChar*) pBuffer->_ptr(0) );
 }
 
 //____ CompareGlyphsIgnoreCaseTo() ____________________________________________
@@ -720,7 +720,7 @@ int WgCharBuffer::CompareGlyphsIgnoreCaseTo( const WgCharBuffer * pBuffer )
 	if( m_pHead == pBuffer->m_pHead )
 		return 0;
 
-	return WgTextTool::glyphcmpIgnoreCase( (WgChar*) GetPtr(0), (WgChar*) pBuffer->GetPtr(0) );
+	return WgTextTool::glyphcmpIgnoreCase( (WgChar*) _ptr(0), (WgChar*) pBuffer->_ptr(0) );
 }
 
 
@@ -737,7 +737,7 @@ void WgCharBuffer::Fill( const WgChar& ch, Uint32 ofs, Uint32 len )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::_setChars( ch, (WgChar*)GetPtr(ofs), len );
+	WgTextTool::SetChars( ch, (WgChar*)_ptr(ofs), len );
 }
 
 //____ SetGlyphs() _____________________________________________________________
@@ -753,7 +753,7 @@ void WgCharBuffer::SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::SetGlyph( glyph, (WgChar*)GetPtr(ofs), len );
+	WgTextTool::SetGlyph( glyph, (WgChar*)_ptr(ofs), len );
 }
 
 
@@ -771,7 +771,7 @@ void WgCharBuffer::SetProperties( const WgTextPropPtr& pProp, Uint32 ofs, Uint32
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::SetProperties( pProp, (WgChar*)GetPtr(ofs), len );
+	WgTextTool::SetProperties( pProp, (WgChar*)_ptr(ofs), len );
 }
 
 //___ SetColor() _______________________________________________________________
@@ -787,7 +787,7 @@ void WgCharBuffer::SetColor( const WgColor color, Uint32 ofs, Uint32 len, WgMode
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::SetColor(color, (WgChar*)GetPtr(ofs), len, mode);
+	WgTextTool::SetColor(color, (WgChar*)_ptr(ofs), len, mode);
 }
 
 
@@ -804,7 +804,7 @@ void WgCharBuffer::SetStyle( WgFontStyle style, Uint32 ofs, Uint32 len, WgMode m
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::SetStyle(style, (WgChar*)GetPtr(ofs), len, mode );
+	WgTextTool::SetStyle(style, (WgChar*)_ptr(ofs), len, mode );
 }
 
 
@@ -821,7 +821,7 @@ void WgCharBuffer::SetFont( WgFont * pFont, Uint32 ofs, Uint32 len  )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::SetFont( pFont, (WgChar*)GetPtr(ofs), len );
+	WgTextTool::SetFont( pFont, (WgChar*)_ptr(ofs), len );
 }
 
 //___ SetUnderlined() __________________________________________________________
@@ -837,7 +837,7 @@ void WgCharBuffer::SetUnderlined( Uint32 ofs, Uint32 len, WgMode mode )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::SetUnderlined( (WgChar*)GetPtr(ofs), len, mode );
+	WgTextTool::SetUnderlined( (WgChar*)_ptr(ofs), len, mode );
 }
 
 
@@ -854,7 +854,7 @@ void WgCharBuffer::ClearProperties( Uint32 ofs, Uint32 len  )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::ClearProperties( (WgChar*)GetPtr(ofs), len );
+	WgTextTool::ClearProperties( (WgChar*)_ptr(ofs), len );
 }
 
 //___ ClearColor() _____________________________________________________________
@@ -870,7 +870,7 @@ void WgCharBuffer::ClearColor( Uint32 ofs, Uint32 len, WgMode mode )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::ClearColor( (WgChar*)GetPtr(ofs), len, mode );
+	WgTextTool::ClearColor( (WgChar*)_ptr(ofs), len, mode );
 }
 
 //___ ClearStyle() _____________________________________________________________
@@ -886,7 +886,7 @@ void WgCharBuffer::ClearStyle( Uint32 ofs, Uint32 len, WgMode mode )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::ClearStyle( (WgChar*)GetPtr(ofs), len, mode );
+	WgTextTool::ClearStyle( (WgChar*)_ptr(ofs), len, mode );
 }
 
 
@@ -903,7 +903,7 @@ void WgCharBuffer::ClearFont( Uint32 ofs, Uint32 len  )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::ClearFont( (WgChar*)GetPtr(ofs), len );
+	WgTextTool::ClearFont( (WgChar*)_ptr(ofs), len );
 }
 
 //___ ClearUnderlined() ________________________________________________________
@@ -919,7 +919,7 @@ void WgCharBuffer::ClearUnderlined( Uint32 ofs, Uint32 len, WgMode mode  )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::ClearUnderlined( (WgChar*)GetPtr(ofs), len, mode );
+	WgTextTool::ClearUnderlined( (WgChar*)_ptr(ofs), len, mode );
 }
 
 //____ FindFirst() ____________________________________________________________
@@ -927,7 +927,7 @@ void WgCharBuffer::ClearUnderlined( Uint32 ofs, Uint32 len, WgMode mode  )
 int WgCharBuffer::FindFirst( const WgCharSeq& _seq, Uint32 ofs )
 {
 	WgCharSeq::WgCharBasket seq		= _seq.GetWgChars();
-	WgChar *				pBuff	= (WgChar*)GetPtr(0);
+	WgChar *				pBuff	= (WgChar*)_ptr(0);
 
 	while( ofs + seq.length <= m_pHead->m_len )
 	{
@@ -950,7 +950,7 @@ int WgCharBuffer::FindFirst( const WgCharSeq& _seq, Uint32 ofs )
 
 int WgCharBuffer::FindFirst( Uint16 character, Uint32 ofs )
 {
-	WgChar *				pBuff	= (WgChar*)GetPtr(0);
+	WgChar *				pBuff	= (WgChar*)_ptr(0);
 
 	while( ofs < m_pHead->m_len )
 	{
