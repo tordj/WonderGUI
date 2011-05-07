@@ -40,6 +40,7 @@
 #include <wg_input.h>
 #include <wg_base.h>
 #include <wg_textlinkhandler.h>
+#include <wg_string.h>
 
 //____ Constructor ____________________________________________________________
 
@@ -855,11 +856,10 @@ WgChar * WgText::parseValue( double value, const WgValueFormat& f, WgChar tempst
 
 	// Add suffix
 
-	for( int i = 0 ; i < 4 && f.suffix[i] != 0 ; i++ )
-	{
-		p->SetGlyph(f.suffix[i]);
-		p++;
-	}
+	const WgChar * pSuffix = f.suffix.Chars();
+
+	for( unsigned int i = 0 ; i < f.suffix.Length() && i < 4 ; i++ )
+		* p++ = pSuffix[i];
 
 	// Terminate string
 
@@ -925,29 +925,10 @@ WgChar * WgText::parseValue( double value, const WgValueFormat& f, WgChar tempst
 
 	// Possibly put a prefix at the start
 
-	if( f.prefix[0] != 0 )
-	{
-		if( f.prefix[1] != 0 )
-		{
-			if( f.prefix[2] != 0 )
-			{
-				if( f.prefix[3] != 0 )
-				{
-					p--;
-					p->SetGlyph(f.prefix[3]);
-				}
+	const WgChar * pPrefix = f.prefix.Chars();
 
-				p--;
-				p->SetGlyph(f.prefix[2]);
-			}
-
-			p--;
-			p->SetGlyph(f.prefix[1]);
-		}
-
-		p--;
-		p->SetGlyph(f.prefix[0]);
-	}
+	for( int i = f.prefix.Length()-1 ; i >= 0 ; i-- )
+		* --p = pPrefix[i];
 
 	// Possibly put a plus or minus sign before prefix.
 
@@ -1004,11 +985,10 @@ WgChar * WgText::parseScaledValue( Sint64 value, Uint32 scale, const WgValueForm
 		}
 	}
 
-	// Add suffix
+	const WgChar * pSuffix = f.suffix.Chars();
 
-	for( int i = 0 ; i < 4 && f.suffix[i] != 0 ; i++ )
-		p++->SetGlyph(f.suffix[i]);
-
+	for( unsigned int i = 0 ; i < f.suffix.Length() && i < 4 ; i++ )
+		* p++ = pSuffix[i];
 
 	// Terminate string
 
@@ -1061,23 +1041,10 @@ WgChar * WgText::parseScaledValue( Sint64 value, Uint32 scale, const WgValueForm
 
 	// Possibly put a prefix at the start
 
-	if( f.prefix[0] != 0 )
-	{
-		if( f.prefix[1] != 0 )
-		{
-			if( f.prefix[2] != 0 )
-			{
-				if( f.prefix[3] != 0 )
-					(--p)->SetGlyph(f.prefix[3]);
+	const WgChar * pPrefix = f.prefix.Chars();
 
-				(--p)->SetGlyph(f.prefix[2]);
-			}
-
-			(--p)->SetGlyph(f.prefix[1]);
-		}
-
-		(--p)->SetGlyph(f.prefix[0]);
-	}
+	for( int i = f.prefix.Length()-1 ; i >= 0 ; i-- )
+		* --p = pPrefix[i];
 
 	// Possibly put a plus or minus sign at the very start.
 

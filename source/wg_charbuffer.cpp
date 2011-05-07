@@ -297,7 +297,11 @@ void WgCharBuffer::_setChars( Uint32 ofs, Uint32 nChars, Uint32 value )
 Uint32 WgCharBuffer::PushFront( const WgChar& character )
 {
 	_pushFront(1);
-	*((WgChar*)_ptr(0)) = character;
+	*((Uint32*)_ptr(0)) = character.all;
+
+	if( character.properties )
+		WgTextPropManager::IncRef(character.properties, 1 );
+
 	return 1;
 }
 
@@ -342,7 +346,11 @@ Uint32 WgCharBuffer::PushFront( const WgCharSeq& seq )
 Uint32 WgCharBuffer::PushBack( const WgChar& character )
 {
 	_pushBack(1);
-	*((WgChar*)_ptr( m_pHead->m_len - 1)) = character;
+	*((Uint32*)_ptr( m_pHead->m_len - 1)) = character.all;
+
+	if( character.properties )
+		WgTextPropManager::IncRef(character.properties, 1 );
+
 	return 1;
 }
 
@@ -411,6 +419,7 @@ void WgCharBuffer::_pushFront( Uint32 nChars )
 		_reshapeBuffer(nChars, 0, m_pHead->m_len, 0 );
 		m_pHead->m_beg = 0;
 	}
+
 
 	m_pHead->m_len += nChars;
 }

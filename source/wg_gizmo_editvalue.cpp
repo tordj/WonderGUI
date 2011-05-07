@@ -224,7 +224,7 @@ void WgGizmoEditvalue::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 	if( m_bRegenText )
 	{
-		m_text.setScaledValue( m_value, (Uint32) pow(10.f,m_format.decimals), m_useFormat );
+		m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
 		m_bRegenText = false;
 		m_text.goEOL();
 	}
@@ -301,18 +301,6 @@ bool WgGizmoEditvalue::ParseValueFromInput( int64_t * wpResult )
 
 	}
 
-	if( value < m_rangeMin )
-	{
-		value = m_rangeMin;
-		bModified = true;
-	}
-
-	if( value > m_rangeMax )
-	{
-		value = m_rangeMax;
-		bModified = true;
-	}
-
 	* wpResult = value;
 	return bModified;
 }
@@ -323,6 +311,7 @@ bool WgGizmoEditvalue::ParseValueFromInput( int64_t * wpResult )
 
 void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
+	bool	bTextChanged = false;
 
 	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
@@ -374,21 +363,31 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 		switch( button_key )
 		{
 			case WGKEY_RETURN:
-			{
+			{	
+				// We already have correct value in m_value, but we want
+				// to set the bModified flag if value is entered in a weird way.
+
 				int64_t		value;
 				bool bModified = ParseValueFromInput( &value );
-
-				if( value != m_value )
+				
+				if( m_value < m_rangeMin )
 				{
-					m_value = value;
-					Emit( IntegerChanged(), m_value );
-					Emit( Fraction(), FractionalValue() );
+					m_value = m_rangeMin;
+					bModified = true;
 				}
 
+				if( m_value > m_rangeMax )
+				{
+					m_value = m_rangeMax;
+					bModified = true;
+				}
 
 				if( bModified )
 				{
-					m_text.setScaledValue( value, (Uint32) pow(10.f,m_format.decimals), m_useFormat );
+					Emit( IntegerChanged(), m_value );
+					Emit( Fraction(), FractionalValue() );
+
+					m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
 					m_text.GetCursor()->goEOL();
 				}
 				else
@@ -425,7 +424,8 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 					m_text.delPrevWord();
 				else
 					m_text.delPrevChar();
-				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
+
+				bTextChanged = true;
 				break;
 
 			case WGKEY_DELETE:
@@ -435,7 +435,8 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 					m_text.delNextWord();
 				else
 					m_text.delNextChar();
-				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
+
+				bTextChanged = true;
 				break;
 
 			case WGKEY_HOME:
@@ -512,6 +513,7 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 				}
 
 				pCursor->putChar( m_format.period );
+				bTextChanged = true;
 			}
 		}
 
@@ -528,6 +530,7 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 				m_text.setSelectionMode(false);
 
 				pCursor->putChar( '-' );
+				bTextChanged = true;
 			}
 		}
 
@@ -545,7 +548,23 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 				m_text.setSelectionMode(false);
 
 				pCursor->putChar( button_key );
+				bTextChanged = true;
 			}
+		}
+	}
+
+
+	if( bTextChanged )
+	{
+		int64_t		value;
+		bool bModified = ParseValueFromInput( &value );
+
+		if( value != m_value )
+		{
+			m_value = value;
+			Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
+			Emit( IntegerChanged(), m_value );
+			Emit( Fraction(), FractionalValue() );
 		}
 	}
 }

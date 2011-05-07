@@ -56,14 +56,14 @@ void WgValueFormatter::SetFormat( const WgCharSeq& format )
 
 WgString WgValueFormatter::Prefix() const
 {
-	return WgString( m_format.prefix );
+	return m_format.prefix;
 }
 
 //____ Suffix() _______________________________________________________________
 
 WgString WgValueFormatter::Suffix() const
 {
-	return WgString( m_format.suffix );
+	return m_format.suffix;
 }
 
 //____ Format() _______________________________________________________________
@@ -188,16 +188,6 @@ WgValueFormat::WgValueFormat()
 	grouping		= 0;
 	separator		= 0xA0 /*0xA0=NO_BREAK_SPACE*/;
 	period			= 0x2e;
-	prefix[0]		= 0;
-	prefix[1]		= 0;
-	prefix[2]		= 0;
-	prefix[3]		= 0;
-	prefix[4]		= 0;
-	suffix[0]		= 0;
-	suffix[1]		= 0;
-	suffix[2]		= 0;
-	suffix[3]		= 0;
-	suffix[4]		= 0;
 	bPlus			= false;
 	bZeroIsNegative = false;
 	bForcePeriod	= false;
@@ -224,11 +214,8 @@ WgValueFormat::WgValueFormat( const WgValueFormat& in )
 	separator	= in.separator;
 	period		= in.period;
 
-	for( int i = 0 ; i < 4 ; i++ )
-	{
-		prefix[i]	= in.prefix[i];
-		suffix[i]	= in.suffix[i];
-	}
+	prefix		= in.prefix;
+	suffix		= in.suffix;
 
 	bPlus			= in.bPlus;
 	bZeroIsNegative = in.bZeroIsNegative;
@@ -248,8 +235,6 @@ WgValueFormat::WgValueFormat( int nInt, int nDec, int grouping, bool bPlus,
 {
 	separator		= _separator /*0xA0=NO_BREAK_SPACE*/;
 	period			= 0x2e;
-	prefix[0]		= 0;
-	suffix[0]		= 0;
 
 	bSetTextProp	= false;
 	bForceDecimals	= true;
@@ -272,16 +257,6 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 	grouping		= 0;
 	separator		= 0xA0 /*0xA0=NO_BREAK_SPACE*/;
 	period			= 0x2e;
-	prefix[0]		= 0;
-	prefix[1]		= 0;
-	prefix[2]		= 0;
-	prefix[3]		= 0;
-	prefix[4]		= 0;
-	suffix[0]		= 0;
-	suffix[1]		= 0;
-	suffix[2]		= 0;
-	suffix[3]		= 0;
-	suffix[4]		= 0;
 	bPlus			= false;
 	bZeroIsNegative = false;
 	bForcePeriod	= false;
@@ -298,16 +273,13 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 	// Copy prefix
 
 	const WgChar * p = pBeg;
-	while(  p - pBeg < 4 && p < pEnd && p->Glyph() != '1' )
+	while(  p < pEnd && p->Glyph() != '1' )
 	{
 		assert( p->Glyph() < '0' || p->Glyph() > '9' );		// No numerics allowed in prefix.
 		p++;
 	}
-	
-	for( int i = 0 ; i < p - pBeg ; i++ )
-		prefix[i] = pBeg[i].Glyph();
 
-
+	prefix = WgCharSeq( pBeg, p - pBeg );
 
 	pBeg = p;
 
@@ -330,12 +302,17 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 
 	bool	bHasSeparator = false;
 
-	Uint16	glyph = pBeg->Glyph();
-	if( glyph < '0' || glyph > '9' )
+	if( pEnd - pBeg >= 2 )
 	{
-		separator = glyph;
-		pBeg++;
-		bHasSeparator = true;
+		Uint16 sep = pBeg->Glyph();
+		Uint16 after = pBeg[1].Glyph();
+
+		if( (sep < '0' || sep > '9') && after == '0' )
+		{
+			separator = sep;
+			pBeg++;
+			bHasSeparator = true;
+		}
 	}
 
 	// 
@@ -353,8 +330,7 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 		nZeroes++;
 	}
 
-	assert( nZeroes > 1 && nZeroes <= 6 );
-	if( bHasSeparator )
+	if( bHasSeparator && nZeroes > 0 )
 		grouping = nZeroes;
 
 	// 
@@ -399,12 +375,7 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 
 	// Copy suffix
 
-	int n = pEnd - pBeg;
-	if( n > 4 )
-		n = 4;
-
-	for( int i = 0 ; i < n ; i++ )
-		suffix[i] = pBeg[i].Glyph();	
+	suffix = WgCharSeq( pBeg, pEnd - pBeg );
 }
 
 //____ setFormat() ____________________________________________________________
@@ -427,55 +398,29 @@ void WgValueFormat::setFormat( int _nInt, int _nDec, int _grouping, bool _bPlus,
 
 //____ setPrefix(1) ___________________________________________________________
 
-void WgValueFormat::setPrefix( const Uint16 * pText )
+void WgValueFormat::setPrefix( const WgString& str )
 {
-	if( !pText )
-		prefix[0] = 0;
-	else
-	{
-		for( int i = 0 ; i < 4 ; i++ )
-		{
-			prefix[i] = pText[i];
-			if( pText[i] == 0 )
-				return;
-		}
-	}
+	prefix = str;
 }
 
 //____ setPrefix(2) ___________________________________________________________
 
-void WgValueFormat::setPrefix( const char * pText )
+void WgValueFormat::setPrefix( const WgCharSeq& seq )
 {
-	if( !pText )
-		prefix[0] = 0;
-	else
-		WgTextTool::readString( pText, prefix, 4 );
+	prefix = seq;
 }
 
 //____ setSuffix(1) ___________________________________________________________
 
-void WgValueFormat::setSuffix( const Uint16 * pText )
+void WgValueFormat::setSuffix( const WgString& str )
 {
-	if( !pText )
-		suffix[0] = 0;
-	else
-	{
-		for( int i = 0 ; i < 4 ; i++ )
-		{
-			suffix[i] = pText[i];
-			if( pText[i] == 0 )
-				return;
-		}
-	}
+	suffix = str;
 }
 
 //____ setSuffix(2) ___________________________________________________________
 
-void WgValueFormat::setSuffix( const char * pText )
+void WgValueFormat::setSuffix( const WgCharSeq& seq )
 {
-	if( !pText )
-		suffix[0] = 0;
-	else
-		WgTextTool::readString( pText, suffix, 4 );
+	suffix = seq;
 }
 

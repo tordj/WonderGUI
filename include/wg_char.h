@@ -65,6 +65,7 @@ class WgChar
 friend class WgText;
 friend class WgTextProp;
 friend class WgTextTool;
+friend class WgCharBuffer;
 
 public:
 	/// Initializes an empty character containing null (End of Text) and no properties.

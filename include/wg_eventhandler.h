@@ -91,17 +91,22 @@ public:
 	void	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
 	void	AddCallback( const WgEventFilter& filter, WgEventListener * pListener );
 
-	bool	DeleteCallback( const WgEventFilter& filter, WgGizmo * pGizmo );
-	bool	DeleteCallback( const WgEventFilter& filter, void * pFunction );
-	bool	DeleteCallback( const WgEventFilter& filter, WgEventListener * pListener );
+	int		DeleteCallbacksTo( const WgGizmo * pGizmo );
+	int		DeleteCallbacksTo( const WgEventListener * pListener );
+	int		DeleteCallbacksTo( void(*fp)( const WgEvent::Event& _event) );
+	int		DeleteCallbacksTo( void(*fp)( const WgEvent::Event& _event, void * pParam) );
 
-	int		DeleteCallbacks( WgGizmo * pGizmo );
-	int		DeleteCallbacks( void * pFunction );
-	int		DeleteCallbacks( WgEventListener * pListener );
-	int		DeleteCallbacks( const WgEventFilter& filter );
+	int		DeleteCallbacksOn( const WgGizmo * pGizmo );
+	int		DeleteCallbacksOn( const WgEventId type );
+	int		DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventId type );
+
+	int		DeleteCallback( const WgEventFilter& filter, const WgGizmo * pGizmo );
+	int		DeleteCallback( const WgEventFilter& filter, const WgEventListener * pListener );
+	int		DeleteCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event& _event) );
+	int		DeleteCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event& _event, void * pParam) );
+
 
 	int		DeleteAllCallbacks();
-
 	int		DeleteDeadCallbacks();
 
 
@@ -109,27 +114,28 @@ private:
 	class	Callback;
 
 
-	void	FinalizeEvent( WgEvent::Event& _event );
-	void	ProcessGeneralEvent( WgEvent::Event& _event );
-	void	ProcessEventCallbacks( WgEvent::Event& _event );
+	void	_finalizeEvent( WgEvent::Event& _event );
+	void	_processGeneralEvent( WgEvent::Event& _event );
+	void	_processEventCallbacks( WgEvent::Event& _event );
 
-	void	ProcessTick( WgEvent::Tick * pEvent );
+	void	_processTick( WgEvent::Tick * pEvent );
 
-	void	ProcessPointerEnter( WgEvent::PointerEnter * pEvent );
-	void	ProcessPointerMove( WgEvent::PointerMove * pEvent );
-	void	ProcessPointerPlaced( WgEvent::PointerPlaced * pEvent );
-	void	ProcessPointerExit( WgEvent::PointerExit * pEvent );
+	void	_processPointerEnter( WgEvent::PointerEnter * pEvent );
+	void	_processPointerMove( WgEvent::PointerMove * pEvent );
+	void	_processPointerPlaced( WgEvent::PointerPlaced * pEvent );
+	void	_processPointerExit( WgEvent::PointerExit * pEvent );
 
-	void	ProcessButtonPress( WgEvent::ButtonPress * pEvent );
-	void	ProcessButtonRepeat( WgEvent::ButtonRepeat * pEvent );
-	void	ProcessButtonDrag( WgEvent::ButtonDrag * pEvent );
-	void	ProcessButtonRelease( WgEvent::ButtonRelease * pEvent );
-	void	ProcessButtonClick( WgEvent::ButtonClick * pEvent );
-	void	ProcessButtonDoubleClick( WgEvent::ButtonDoubleClick * pEvent );
+	void	_processButtonPress( WgEvent::ButtonPress * pEvent );
+	void	_processButtonRepeat( WgEvent::ButtonRepeat * pEvent );
+	void	_processButtonDrag( WgEvent::ButtonDrag * pEvent );
+	void	_processButtonRelease( WgEvent::ButtonRelease * pEvent );
+	void	_processButtonClick( WgEvent::ButtonClick * pEvent );
+	void	_processButtonDoubleClick( WgEvent::ButtonDoubleClick * pEvent );
 
-	bool	IsGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
+	bool	_isGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
+	int		_deleteCallbacksOn( const void * pReceiver );
 
 	//
 
@@ -185,8 +191,10 @@ private:
 
 		LINK_METHODS(Callback);
 
-		virtual void ProcessEvent( const WgEvent::Event& _event ) = 0;
-		virtual bool IsAlive() const = 0;
+		virtual void 		ProcessEvent( const WgEvent::Event& _event ) = 0;
+		virtual bool 		IsAlive() const = 0;
+		virtual void * 		Receiver() const = 0;
+		inline WgEventId	EventType() const { return m_eventType; }
 
 		WgEventId	m_eventType;
 	};
@@ -199,6 +207,7 @@ private:
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;
+		void *	Receiver() const;
 
 	private:
 		void(*m_pFunction)(const WgEvent::Event& _event, WgGizmo * pDest);
@@ -212,6 +221,7 @@ private:
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;
+		void *	Receiver() const;
 
 	private:
 		void(*m_pFunction)( const WgEvent::Event& _event, void * pParam);
@@ -225,6 +235,7 @@ private:
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;
+		void *	Receiver() const;
 
 	private:
 		void(*m_pFunction)( const WgEvent::Event& _event);
@@ -237,6 +248,7 @@ private:
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;
+		void *	Receiver() const;
 
 	private:
 		WgEventListener *	m_pListener;
@@ -245,7 +257,7 @@ private:
 
 	WgChain<Callback>						m_globalCallbacks;	// Callbacks called for every event.
 
-	std::map<WgGizmo*,WgChain<Callback> >	m_gizmoCallbacks;	// Callbacks for Gizmo-specific events.
+	std::map<WgGizmoWeakPtr,WgChain<Callback> >	m_gizmoCallbacks;	// Callbacks for Gizmo-specific events.
 
 
 };

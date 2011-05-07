@@ -627,6 +627,6 @@ void WgCursorInstance::selectAll()
 	setSelectionMode(true);
 	m_selStartLine = 0;
 	m_selStartColumn = 0;
-	gotoHardPos(m_pText->nbLines(), -1);
+	gotoHardPos(m_pText->nbLines(), INT_MAX);
 	setSelectionMode(false);
 }

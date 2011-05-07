@@ -86,6 +86,7 @@ namespace WgEvent
 			inline WgEventId		Id() const { return m_id; }
 			inline int64_t			Timestamp() const { return m_timestamp; }
 					WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
+			inline WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
 			inline bool				IsForGizmo() const { return m_bIsForGizmo; }
 			inline WgModifierKeys	ModKeys() const { return m_modKeys; }
 			inline WgCord			PointerPos() const { return m_pointerLocalPos; }

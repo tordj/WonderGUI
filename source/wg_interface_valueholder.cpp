@@ -22,6 +22,7 @@
 
 
 #include <wg_interface_valueholder.h>
+#include <wg_string.h>
 
 #include <math.h>
 

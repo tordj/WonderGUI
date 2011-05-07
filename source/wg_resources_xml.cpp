@@ -249,7 +249,7 @@ namespace
 	}
 
 	template<typename T>
-	void WriteTextAttrib(WgResourceSerializerXML& s, T* pText, const std::string& attr)
+	void WriteTextAttrib(WgResourceSerializerXML& s, const T* pText, const std::string& attr)
 	{
 		if(pText == 0)
 			return;
@@ -1129,20 +1129,15 @@ void WgValueFormatRes::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr<Uint16>(s, xmlNode, "separator", m_format->getSeparator(), 0xA0);
 	WriteDiffAttr<Uint16>(s, xmlNode, "period", m_format->getPeriod(), 0x2e);
 
-	Uint16 pre[5] = {0};
-	Uint16 suf[5] = {0};
 
-	for(int i = 0; i < 4; i++)
-	{
-		pre[i] = m_format->getPrefix()[i];
-		suf[i] = m_format->getSuffix()[i];
-	}
+	std::wstring	pre = WgCharSeq(m_format->getPrefix()).GetStdWstring();
+	std::wstring	suf = WgCharSeq(m_format->getSuffix()).GetStdWstring();
 
-	if(*pre || xmlNode.HasAttribute("prefix"))
-		WriteTextAttrib(s, pre, "prefix");
+	if(!pre.empty() || xmlNode.HasAttribute("prefix"))
+		WriteTextAttrib(s, m_format->getPrefix().Chars(), "prefix");
 
-	if(*suf || xmlNode.HasAttribute("suffix"))
-		WriteTextAttrib(s, suf, "suffix");
+	if(!suf.empty() || xmlNode.HasAttribute("suffix"))
+		WriteTextAttrib(s, m_format->getSuffix().Chars(), "suffix");
 
 	WriteDiffAttr(s, xmlNode, "plus_sign", m_format->getPlus(), false);
 	WriteDiffAttr(s, xmlNode, "negative_zero", m_format->getZeroIsNegative(), false);
@@ -1166,16 +1161,8 @@ void WgValueFormatRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 	format.setSeparator(WgUtil::ToUint16(xmlNode["separator"], 0xA0));
 	format.setPeriod(WgUtil::ToUint16(xmlNode["period"], 0x2e));
 
-
-	Uint16 pre[5] = {0};
-	Uint16 suf[5] = {0};
-	const char* pPre = xmlNode["prefix"].c_str();
-	const char* pSuf = xmlNode["suffix"].c_str();
-	WgTextTool::readString(pPre, pre, 4);
-	WgTextTool::readString(pSuf, suf, 4);
-
-	format.setPrefix(pre);
-	format.setSuffix(suf);
+	format.setPrefix(xmlNode["prefix"].c_str());
+	format.setSuffix(xmlNode["suffix"].c_str());
 
 	format.setPlus(WgUtil::ToBool(xmlNode["plus_sign"], false));
 	format.setZeroIsNegative(WgUtil::ToBool(xmlNode["negative_zero"], false));

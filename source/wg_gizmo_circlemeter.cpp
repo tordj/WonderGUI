@@ -343,7 +343,7 @@ void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas,
 
 		if( m_bRegenText )
 		{
-			m_text.setScaledValue( m_value, (Uint32) pow(10.f,m_format.decimals), m_format );
+			m_text.setScaledValue( m_value, m_format.scale, m_format );
 			m_bRegenText = false;
 		}
 
