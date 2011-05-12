@@ -32,6 +32,8 @@
 
 class WgItemRow : public WgItem, public Wg_Interface_ItemHolder
 {
+	friend class Wdg_TableView;
+
 public:
 	WgItemRow();
 	WgItemRow( Sint64 id );

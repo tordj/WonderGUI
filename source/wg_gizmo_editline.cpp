@@ -305,16 +305,17 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 	{
 		if( IsEditable() && m_bFocused && button_key >= 32 && button_key != 127)
 		{
+
+			if(m_pText->hasSelection())
+				m_pText->delSelection();
+			m_pText->setSelectionMode(false);
+
 			// by default - no max limit
 			if( m_maxCharacters == 0 || m_maxCharacters > m_pText->nbChars() )
-			{
-				if(m_pText->hasSelection())
-					m_pText->delSelection();
-				m_pText->setSelectionMode(false);
 				m_pText->putChar( button_key );
-				Emit( WgSignal::TextChanged() );
-				AdjustViewOfs();
-			}
+
+			Emit( WgSignal::TextChanged() );
+			AdjustViewOfs();
 		}
 	}
 
