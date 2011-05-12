@@ -167,6 +167,7 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 {
 	if( m_bFocused && (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
+
 		if( IsSelectable() && (info.modifier & WG_MODKEY_SHIFT) )
 		{
 			m_pText->setSelectionMode(true);
@@ -185,6 +186,11 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 		if(m_bFocused && button_key == 1)
 			m_pText->setSelectionMode(false);
 	}
+	else if( !m_bFocused && IsEditable() && action == WgInput::BUTTON_PRESS && button_key == 1 )
+	{
+		GrabFocus();
+	}
+
 
 	if( action == WgInput::CHARACTER )
 	{
@@ -420,12 +426,12 @@ bool WgGizmoText::InsertCharAtCursor( Uint16 c )
 
 bool WgGizmoText::InsertCharAtCursorInternal( Uint16 c )
 {
-	if( m_maxCharacters != 0 && m_maxCharacters < (int) m_pText->nbChars() )
-		return false;
-
 	if(m_pText->hasSelection())
 		m_pText->delSelection();
 	m_pText->setSelectionMode(false);
+
+	if( m_maxCharacters != 0 && m_maxCharacters < (int) m_pText->nbChars() )
+		return false;
 
 	m_pText->putChar( c );
 

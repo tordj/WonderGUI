@@ -75,6 +75,8 @@ public:
 protected:
 	WgWidget * NewOfMyType() const;
 private:
+	bool	InsertCharAtCursorInternal( Uint16 c );
+
 	bool	IsEditable() const { return m_inputMode == Editable; }
 	void	Init();
 	

@@ -98,9 +98,9 @@ void WgTableColumn::SetWidth( int pixels )
 		if( m_bVisible && m_pOwner )
 		{
 			m_pOwner->SetContentSize( m_pOwner->m_contentWidth + widthdiff, m_pOwner->m_contentHeight );
-			m_pOwner->RequestRender();
 			m_pOwner->RecalcColumnWidths();
 			m_pOwner->AdaptCellsToWidth();
+			m_pOwner->RequestRender();
 		}
 	}
 }
@@ -865,6 +865,22 @@ void Wdg_TableView::DeleteAllRows()
 }
 
 
+//____ GetPointerStyle() ________________________________________
+
+WgPointerStyle Wdg_TableView::GetPointerStyle() const
+{
+	WgPointerStyle style = WG_POINTER_DEFAULT;
+
+	if( m_pLastMarkedItem )
+		style = m_pLastMarkedItem->GetPointerStyle();
+
+	if( style == WG_POINTER_DEFAULT )
+		style = m_pointerStyle;
+
+	return style; 
+}
+
+
 //____ SetClickSortPrio() _____________________________________________________
 
 bool Wdg_TableView::SetClickSortPrio( Uint8 prio )
@@ -1054,6 +1070,8 @@ void Wdg_TableView::ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 
 	if( m_pColumns == 0 )
 		return;
 
+//	UpdateContentSize();
+
 	if( ! pItem->IsHidden() )
 	{
 		SetContentSize(m_contentWidth, m_contentHeight+heightDiff);
@@ -1160,6 +1178,7 @@ void Wdg_TableView::AdaptCellsToWidth()
 			pCell = pCell->GetNext();
 		}
 
+		pRow->refreshItems();
 		pRow = (WgTableRow *) pRow->GetNext();
 	}
 }
@@ -1301,7 +1320,7 @@ int Wdg_TableView::GetMarkedColumn( Uint32 x, Uint32& saveXOfs )
 
 void Wdg_TableView::ItemAdded( WgItem * pItem )
 {
-	//
+	// Set size before refreshItems(), so it can modify size relatively (although its a bit inefficient...)
 
 	if( !((WgTableRow*)pItem)->IsHidden() )
 		SetContentSize( m_contentWidth, m_contentHeight + pItem->Height() + m_cellPaddingY*2 );
@@ -1318,7 +1337,9 @@ void Wdg_TableView::ItemAdded( WgItem * pItem )
 		pI = pI->Next();
 	}
 
-	// Set size and request render
+	pRow->refreshItems();
+
+	// Request render
 
 	RequestRender();
 }

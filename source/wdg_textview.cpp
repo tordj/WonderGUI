@@ -137,37 +137,55 @@ void Wdg_TextView::DoMyOwnRefresh( void )
 
 void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
-	if( action == WgInput::BUTTON_PRESS && button_key == 1 )
-	{
-		if( m_pText->GetCursor() )
-		{
-			int x = info.x;
-			int y = info.y;
-			Abs2local( &x, &y );
 
-			m_pText->CursorGotoCoord( WgCord(x,y), WgRect(0,0,m_geo.w,m_geo.h) );
-			AdjustViewOfs();
+	if( m_pText->GetCursor() && (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
+	{
+		if( (info.modifier & WG_MODKEY_SHIFT) )
+		{
+			m_pText->setSelectionMode(true);
 		}
-		else
-			GrabInputFocus();
+
+		int x = info.x;
+		int y = info.y;
+		Abs2local( &x, &y );
+
+		m_pText->CursorGotoCoord( WgCord(x,y), WgRect(0-m_viewPixOfsX,0-m_viewPixOfsY,m_contentWidth,m_contentHeight) );
+		AdjustViewOfs();
+//		m_pText->CursorGotoCoord( WgCord(info.x, info.y), ScreenGeometry() );
+
+		if( action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
+		{
+			m_pText->clearSelection();
+			m_pText->setSelectionMode(true);
+		}
+	}
+	else if( action == WgInput::BUTTON_RELEASE || action == WgInput::BUTTON_RELEASE_OUTSIDE )
+	{
+		if(m_pText->GetCursor() && button_key == 1)
+			m_pText->setSelectionMode(false);
+	}
+	else if( !m_pText->GetCursor() && IsEditable() && action == WgInput::BUTTON_PRESS && button_key == 1 )
+	{
+		GrabInputFocus();
 	}
 
 	if( m_pText->GetCursor() && action == WgInput::CHARACTER )
 	{
-		if( button_key >= 32  && button_key != 127 )
+		if( (button_key >= 32  && button_key != 127) || button_key == '\t' /* button_key == 13 */ )
 		{
-			// by default - no max limit
-			if( m_maxCharacters == 0 || m_maxCharacters > m_pText->nbChars() )
-				m_pText->putChar( button_key );
+			InsertCharAtCursorInternal( button_key );
 		}
-//		if( button_key == 13 )
-//				m_pText->putChar( '\n' );
+	}
 
-		if( button_key == '\t' )
-				m_pText->putChar( '\t' );
-
-		SetContentSize( m_text.width(), m_text.height() );
-		AdjustViewOfs();
+	if( action == WgInput::KEY_RELEASE && m_pText->GetCursor() )
+	{
+		switch( button_key )
+		{
+			case WGKEY_SHIFT:
+				if(!inputObj.isButtonDown(1))
+					m_pText->setSelectionMode(false);
+			break;
+		}
 	}
 
 	if( m_pText->GetCursor() && (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) )
@@ -175,14 +193,20 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 		switch( button_key )
 		{
 			case WGKEY_LEFT:
-				if( info.modifier == WG_MODKEY_CTRL )
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( info.modifier & WG_MODKEY_CTRL )
 					m_pText->gotoPrevWord();
 				else
 					m_pText->goLeft();
 				AdjustViewOfs();
 				break;
 			case WGKEY_RIGHT:
-				if( info.modifier == WG_MODKEY_CTRL )
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( info.modifier & WG_MODKEY_CTRL )
 					m_pText->gotoNextWord();
 				else
 					m_pText->goRight();
@@ -190,27 +214,46 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				break;
 
 			case WGKEY_UP:
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
 				m_pText->CursorGoUp(1,m_geo);
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_DOWN:
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
 				m_pText->CursorGoDown(1,m_geo);
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_BACKSPACE:
-				m_pText->delPrevChar();
+				if(m_pText->hasSelection())
+					m_pText->delSelection();
+				else if( info.modifier & WG_MODKEY_CTRL )
+					m_pText->delPrevWord();
+				else
+					m_pText->delPrevChar();
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_DELETE:
-				m_pText->delNextChar();
+				if(m_pText->hasSelection())
+					m_pText->delSelection();
+				else if( info.modifier & WG_MODKEY_CTRL )
+					m_pText->delNextWord();
+				else
+					m_pText->delNextChar();
 				AdjustViewOfs();
 				break;
 
 			case WGKEY_HOME:
-				if( info.modifier == WG_MODKEY_CTRL )
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( info.modifier & WG_MODKEY_CTRL )
 					m_pText->goBOF();
 				else
 					m_pText->goBOL();
@@ -218,7 +261,10 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				break;
 
 			case WGKEY_END:
-				if( info.modifier == WG_MODKEY_CTRL )
+				if( info.modifier & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( info.modifier & WG_MODKEY_CTRL )
 					m_pText->goEOF();
 				else
 					m_pText->goEOL();
@@ -226,7 +272,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				break;
 
 			default:
-				if( button_key == m_newlineKey && info.modifier == m_newlineModif )
+				if( button_key == m_newlineKey && info.modifier == m_newlineModif && button_key != WGKEY_UNMAPPED )
 					m_pText->putChar( '\n' );
 				break;
 		}
@@ -347,10 +393,20 @@ bool Wdg_TextView::InsertCharAtCursor( Uint16 c )
 		if( !GrabInputFocus() )
 			return false;				// Couldn't get input focus...
 
+	return InsertCharAtCursorInternal(c);
+}
+
+bool Wdg_TextView::InsertCharAtCursorInternal( Uint16 c )
+{
+	if(m_pText->hasSelection())
+		m_pText->delSelection();
+	m_pText->setSelectionMode(false);
+
 	if( m_maxCharacters != 0 && m_maxCharacters < m_pText->nbChars() )
 		return false;
 
 	m_pText->putChar( c );
+	SetContentSize( m_text.width(), m_text.height() );
 	AdjustViewOfs();
 	return true;
 }

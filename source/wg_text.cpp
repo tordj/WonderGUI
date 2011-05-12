@@ -1752,12 +1752,8 @@ void WgText::CursorGoDown( int nbLines, const WgRect& container )
 int WgText::LineStartY( int line, const WgRect& container ) const
 {
 	int		ofs = 0;
-	if( m_origo.anchorY() != 0 && m_origo.hotspotY() != 0 )
-	{
+	if( m_origo.anchorY() != 0 || m_origo.hotspotY() != 0 )
 		ofs = m_origo.calcOfsY( container.h, height() );
-		if( ofs < 0 )
-			ofs = 0;
-	}
 	
 	if( line > m_nSoftLines )
 		line = m_nSoftLines;
@@ -1774,12 +1770,9 @@ int WgText::LineStartX( int line, const WgRect& container ) const
 {
 	int		ofs = 0;
 
-	if( m_origo.anchorX() != 0 && m_origo.hotspotX() != 0 )
-	{
+	if( m_origo.anchorX() != 0 || m_origo.hotspotX() != 0 )
 		ofs = m_origo.calcOfsX( container.w, getSoftLineWidth(line) );
-		if( ofs < 0 )
-			ofs = 0;
-	}
+
 	return ofs + container.x;
 }
 
@@ -1809,7 +1802,7 @@ int WgText::CoordToLine( const WgCord& coord, const WgRect& container, bool bCur
 	//
 
 	if( bCursorMode )
-		return m_nSoftLines;
+		return m_nSoftLines-1;
 	else
 		return -1;				// Below last line.
 }
@@ -1820,7 +1813,7 @@ int WgText::CoordToColumn( int line, const WgCord& coord, const WgRect& containe
 {
 	//TODO: Take cursor and selection into account!!!
 
-	if( line == -1 )
+	if( line < 0 || line >= m_nSoftLines )
 		return -1;
 
 	WgTextLine * pLine = &m_pSoftLines[line];
