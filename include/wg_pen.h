@@ -63,7 +63,7 @@ public:
 
 	void					SetClipRect( const WgRect& clip );
 	inline void				SetDevice( WgGfxDevice * pDevice ) { m_pDevice = pDevice; }
-	void					SetTextNode( WgTextNode * pNode ) { m_pTextNode = pNode; }
+	void					SetTextNode( WgTextNode * pNode ) { m_pTextNode = pNode; _onAttrChanged(); }
 
 	void					SetOrigo( const WgCord& pos ) { m_origo = pos; }
 

@@ -191,6 +191,7 @@ void WgItemWrapText::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction ac
 	if( bRender )
 		Modified(0,0);
 
+	WgItem::ActionRespond( pEmitter, action, button_key, info, inputObj );
 }
 
 //____ Render() _______________________________________________________________
@@ -204,19 +205,18 @@ void WgItemWrapText::Render( const WgRect& _window, const WgRect& _clip )
 	if( r.h < (Sint32) m_height )
 		r.h = m_height;
 
+	if( m_bgFill.a != 0 )
+		WgGfx::fillRect( WgRect(r, _clip), m_bgFill );
+
 	r.x += m_margin.left;
 	r.y += m_margin.top;
 	r.w -= ( m_margin.left + m_margin.right );
 	r.h -= ( m_margin.top + m_margin.bottom );
 
-	if( m_bgFill.a != 0 )
-		WgGfx::fillRect( WgRect(r, _clip), m_bgFill );
-
 	if( GetMode() != m_pText->mode() )
 		m_pText->setMode( GetMode() );
 
 	WgGfx::printText( _clip, m_pText, r );
-
 }
 
 //____ Clone() ________________________________________________________________
