@@ -341,9 +341,9 @@ void WgEventHandler::_addCallback( const WgEventFilter& filter, Callback * pCall
 }
 
 
-//____ _deleteCallbacksOn() __________________________________________________
+//____ _deleteCallbacksTo() __________________________________________________
 
-int WgEventHandler::_deleteCallbacksOn( const void * pReceiver )
+int WgEventHandler::_deleteCallbacksTo( const void * pReceiver )
 {
 	int nDeleted = 0;
 

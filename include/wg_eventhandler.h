@@ -135,7 +135,7 @@ private:
 	bool	_isGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
-	int		_deleteCallbacksOn( const void * pReceiver );
+	int		_deleteCallbacksTo( const void * pReceiver );
 
 	//
 
