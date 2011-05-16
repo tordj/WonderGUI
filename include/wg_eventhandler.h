@@ -38,9 +38,43 @@ class WgRoot;
 
 
 
+/*
+
+	pEventHandler->AddCallback( WgEvent::ButtonDrag::Filter(pTitleBar, 2 ), WgFlexGeo::cbDrag, pWindow );
+
+	pEventHandler->AddCallback( WgEvent::ButtonDragFilter(pTitleBar, 2 ), WgFlexGeo::cbDrag, pWindow );
+
+	pEventHandler->AddCallback( WgEventFilter::ButtonDrag(pTitleBar 2 ), WgFlexGeo::cbDrag, pWindow );
+
+
+*/
+
+
+
+
 class WgEventFilter
 {
 public:
+	virtual bool			FilterEvent( const WgEvent::Event& _event ) const = 0;
+
+	WgGizmo*				Gizmo() const;
+	inline WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
+
+private:
+
+	WgEventFilter();
+
+	WgGizmoWeakPtr 	m_pGizmo;
+
+	union
+	{
+		void * 	pData;
+		int		data;
+
+	};
+
+/*
+
 	WgEventFilter() : m_bGizmo(false), m_type(WG_EVENT_DUMMY), m_pGizmo(0) {}
 	WgEventFilter( WgEventId eventType ) : m_bGizmo(false), m_type(eventType), m_pGizmo(0) {}
 	WgEventFilter( WgEventId eventType, WgGizmo * pGizmo ) : m_bGizmo(true), m_type(eventType), m_pGizmo(pGizmo) {}
@@ -50,14 +84,11 @@ public:
 
 	inline bool			FiltersGizmo() const { return m_bGizmo; }
 	inline bool			FiltersType() const { return (m_type!=WG_EVENT_DUMMY); }
-	inline WgGizmo*		Gizmo() const { return m_pGizmo; }
 	inline WgEventId	EventType() const { return m_type; }
 
 private:
+*/
 
-	bool		m_bGizmo;
-	WgEventId	m_type;
-	WgGizmo * 	m_pGizmo;
 };
 
 
@@ -136,6 +167,8 @@ private:
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
 	int		_deleteCallbacksTo( const void * pReceiver );
+	int		_deleteCallbacksOnType( WgEventId type, WgChain<Callback> * pChain );
+	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
 	//
 
