@@ -463,6 +463,35 @@ enum WgSizePolicy
 	WG_SIZE_MAX,
 };
 
+//____ WgEventId ______________________________________________________________
+
+enum	WgEventId
+{
+	WG_EVENT_DUMMY = 0,
+	WG_EVENT_TICK,
+
+	WG_EVENT_POINTER_ENTER,
+	WG_EVENT_POINTER_MOVE,
+	WG_EVENT_POINTER_PLACED,
+	WG_EVENT_POINTER_EXIT,
+
+	WG_EVENT_BUTTON_PRESS,
+	WG_EVENT_BUTTON_REPEAT,
+	WG_EVENT_BUTTON_DRAG,
+	WG_EVENT_BUTTON_RELEASE,
+	WG_EVENT_BUTTON_CLICK,
+	WG_EVENT_BUTTON_DOUBLECLICK,
+
+	WG_EVENT_KEY_PRESS,
+	WG_EVENT_KEY_REPEAT,
+	WG_EVENT_KEY_RELEASE,
+	WG_EVENT_CHARACTER,
+	WG_EVENT_WHEEL_ROLL,
+
+	WG_EVENT_MAX
+};
+
+
 //____ WgTextPos ______________________________________________________________
 
 class WgTextPos

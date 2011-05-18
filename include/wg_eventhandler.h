@@ -35,62 +35,7 @@
 #endif
 
 class WgRoot;
-
-
-
-/*
-
-	pEventHandler->AddCallback( WgEvent::ButtonDrag::Filter(pTitleBar, 2 ), WgFlexGeo::cbDrag, pWindow );
-
-	pEventHandler->AddCallback( WgEvent::ButtonDragFilter(pTitleBar, 2 ), WgFlexGeo::cbDrag, pWindow );
-
-	pEventHandler->AddCallback( WgEventFilter::ButtonDrag(pTitleBar 2 ), WgFlexGeo::cbDrag, pWindow );
-
-
-*/
-
-
-
-
-class WgEventFilter
-{
-public:
-	virtual bool			FilterEvent( const WgEvent::Event& _event ) const = 0;
-
-	WgGizmo*				Gizmo() const;
-	inline WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
-
-private:
-
-	WgEventFilter();
-
-	WgGizmoWeakPtr 	m_pGizmo;
-
-	union
-	{
-		void * 	pData;
-		int		data;
-
-	};
-
-/*
-
-	WgEventFilter() : m_bGizmo(false), m_type(WG_EVENT_DUMMY), m_pGizmo(0) {}
-	WgEventFilter( WgEventId eventType ) : m_bGizmo(false), m_type(eventType), m_pGizmo(0) {}
-	WgEventFilter( WgEventId eventType, WgGizmo * pGizmo ) : m_bGizmo(true), m_type(eventType), m_pGizmo(pGizmo) {}
-	WgEventFilter( WgGizmo * pGizmo ) : m_bGizmo(true), m_type(WG_EVENT_DUMMY), m_pGizmo(pGizmo) {}
-
-	bool	FilterEvent( const WgEvent::Event& _event ) const;
-
-	inline bool			FiltersGizmo() const { return m_bGizmo; }
-	inline bool			FiltersType() const { return (m_type!=WG_EVENT_DUMMY); }
-	inline WgEventId	EventType() const { return m_type; }
-
-private:
-*/
-
-};
-
+class WgEventFilter;
 
 class WgEventListener
 {
@@ -224,19 +169,20 @@ private:
 
 		LINK_METHODS(Callback);
 
-		virtual void 		ProcessEvent( const WgEvent::Event& _event ) = 0;
-		virtual bool 		IsAlive() const = 0;
-		virtual void * 		Receiver() const = 0;
-		inline WgEventId	EventType() const { return m_eventType; }
+		virtual void 			ProcessEvent( const WgEvent::Event& _event ) = 0;
+		virtual bool 			IsAlive() const = 0;
+		virtual void * 			Receiver() const = 0;
+		inline const WgEventFilter& 	Filter() const { return m_filter; }
 
-		WgEventId	m_eventType;
+	protected:
+		WgEventFilter		m_filter;
 	};
 
 
 	class GizmoCallback : public Callback
 	{
 	public:
-		GizmoCallback( WgEventId eventType, void(*fp)(const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
+		GizmoCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;
@@ -250,7 +196,7 @@ private:
 	class FunctionCallbackParam : public Callback
 	{
 	public:
-		FunctionCallbackParam( WgEventId eventType, void(*fp)(const WgEvent::Event& _event, void * pParam), void * pParam );
+		FunctionCallbackParam( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event, void * pParam), void * pParam );
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;
@@ -264,7 +210,7 @@ private:
 	class FunctionCallback : public Callback
 	{
 	public:
-		FunctionCallback( WgEventId eventType, void(*fp)(const WgEvent::Event& _event) );
+		FunctionCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event) );
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;
@@ -277,7 +223,7 @@ private:
 	class ListenerCallback : public Callback
 	{
 	public:
-		ListenerCallback( WgEventId eventType, WgEventListener * pListener );
+		ListenerCallback( const WgEventFilter& filter, WgEventListener * pListener );
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;

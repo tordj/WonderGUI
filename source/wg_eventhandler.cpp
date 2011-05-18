@@ -22,6 +22,7 @@
 
 #include <assert.h>
 #include <wg_event.h>
+#include <wg_eventfilter.h>
 #include <wg_eventhandler.h>
 #include <wg_root.h>
 #include <wg_gizmo_container.h>
@@ -59,49 +60,49 @@ WgEventHandler::~WgEventHandler()
 
 void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event& _event) )
 {
-	Callback * p = new FunctionCallback( WG_EVENT_DUMMY, fp );
+	Callback * p = new FunctionCallback( WgEventFilter(), fp );
 	m_globalCallbacks.PushBack( p );
 }
 
 void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event& _event, void * pParam), void * pParam )
 {
-	Callback * p = new FunctionCallbackParam( WG_EVENT_DUMMY, fp, pParam );
+	Callback * p = new FunctionCallbackParam( WgEventFilter(), fp, pParam );
 	m_globalCallbacks.PushBack( p );
 }
 
 void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest )
 {
-	Callback * p = new GizmoCallback( WG_EVENT_DUMMY, fp, pDest );
+	Callback * p = new GizmoCallback( WgEventFilter(), fp, pDest );
 	m_globalCallbacks.PushBack( p );
 }
 
 void WgEventHandler::AddCallback( WgEventListener * pListener )
 {
-	Callback * p = new ListenerCallback( WG_EVENT_DUMMY, pListener );
+	Callback * p = new ListenerCallback( WgEventFilter(), pListener );
 	m_globalCallbacks.PushBack( p );
 }
 
 void WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event) )
 {
-	Callback * p = new FunctionCallback( filter.EventType(), fp );
+	Callback * p = new FunctionCallback( filter, fp );
 	_addCallback( filter, p );
 }
 
 void WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event, void * pParam), void * pParam )
 {
-	Callback * p = new FunctionCallbackParam( filter.EventType(), fp, pParam );
+	Callback * p = new FunctionCallbackParam( filter, fp, pParam );
 	_addCallback( filter, p );
 }
 
 void WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest )
 {
-	Callback * p = new GizmoCallback( filter.EventType(), fp, pDest );
+	Callback * p = new GizmoCallback( filter, fp, pDest );
 	_addCallback( filter, p );
 }
 
 void WgEventHandler::AddCallback( const WgEventFilter& filter, WgEventListener * pListener )
 {
-	Callback * p = new ListenerCallback( filter.EventType(), pListener );
+	Callback * p = new ListenerCallback( filter, pListener );
 	_addCallback( filter, p );
 }
 
@@ -178,7 +179,7 @@ int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventId type )
 	Callback * p = it->second.First();
 	while( p )
 	{
-		if( p->EventType() == type )
+		if( p->Filter().EventType() == type )
 		{
 			Callback * pNext = p->Next();
 			delete p;
@@ -363,7 +364,7 @@ int WgEventHandler::_deleteCallbacksOnType( WgEventId type, WgChain<Callback> * 
 	while( p )
 	{
 
-		if( p->EventType() == type )
+		if( p->Filter().EventType() == type )
 		{
 			Callback * pNext = p->Next();
 			delete p;
@@ -404,7 +405,7 @@ int WgEventHandler::_deleteCallback( const WgEventFilter& filter, const void * p
 	Callback * p = pChain->First();
 	while( p )
 	{
-		if( filter.EventType() == p->EventType() && pReceiver == p->Receiver() )
+		if( filter.EventType() == p->Filter().EventType() && pReceiver == p->Receiver() )
 		{
 			Callback * pNext = p->Next();
 			delete p;
@@ -962,9 +963,9 @@ bool WgEventHandler::_isGizmoInList( const WgGizmo * pGizmo, const std::vector<W
 
 
 
-WgEventHandler::GizmoCallback::GizmoCallback( WgEventId eventType, void(*fp)(const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest )
+WgEventHandler::GizmoCallback::GizmoCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest )
 {
-	m_eventType = eventType;
+	m_filter = filter;
 	m_pFunction = fp;
 	m_pGizmo = pDest;
 }
@@ -987,9 +988,9 @@ void * WgEventHandler::GizmoCallback::Receiver() const
 }
 
 
-WgEventHandler::FunctionCallback::FunctionCallback( WgEventId eventType, void(*fp)(const WgEvent::Event& _event) )
+WgEventHandler::FunctionCallback::FunctionCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event) )
 {
-	m_eventType = eventType;
+	m_filter = filter;
 	m_pFunction = fp;
 }
 
@@ -1009,9 +1010,9 @@ void * WgEventHandler::FunctionCallback::Receiver() const
 	return reinterpret_cast<void*>(m_pFunction);
 }
 
-WgEventHandler::FunctionCallbackParam::FunctionCallbackParam( WgEventId eventType, void(*fp)(const WgEvent::Event& _event, void * pDest), void * pParam )
+WgEventHandler::FunctionCallbackParam::FunctionCallbackParam( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event, void * pDest), void * pParam )
 {
-	m_eventType = eventType;
+	m_filter = filter;
 	m_pFunction = fp;
 	m_pParam 	= pParam;
 }
@@ -1033,9 +1034,9 @@ void * WgEventHandler::FunctionCallbackParam::Receiver() const
 }
 
 
-WgEventHandler::ListenerCallback::ListenerCallback( WgEventId eventType, WgEventListener * pListener )
+WgEventHandler::ListenerCallback::ListenerCallback( const WgEventFilter& filter, WgEventListener * pListener )
 {
-	m_eventType = eventType;
+	m_filter = filter;
 	m_pListener = pListener;
 }
 

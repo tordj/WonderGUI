@@ -44,6 +44,8 @@
 			<Add library="SDL_image" />
 		</Linker>
 		<Unit filename="main.cpp" />
+		<Unit filename="../include/wg_eventfilter.h" />
+		<Unit filename="../source/wg_eventfilter.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
