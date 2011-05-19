@@ -463,9 +463,9 @@ enum WgSizePolicy
 	WG_SIZE_MAX,
 };
 
-//____ WgEventId ______________________________________________________________
+//____ WgEventType ______________________________________________________________
 
-enum	WgEventId
+enum	WgEventType
 {
 	WG_EVENT_DUMMY = 0,
 	WG_EVENT_TICK,

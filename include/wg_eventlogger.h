@@ -36,8 +36,8 @@ public:
 
 	void OnEvent( const WgEvent::Event& _event );
 
-	void IgnoreEvent( WgEventId event );
-	void LogEvent( WgEventId event );
+	void IgnoreEvent( WgEventType event );
+	void LogEvent( WgEventType event );
 
 	void LogPointerEvents();
 	void IgnorePointerEvents();
@@ -57,7 +57,7 @@ public:
 	void LogAllEvents();
 	void IgnoreAllEvents();
 
-	bool IsEventLogged( WgEventId event ) { return m_eventFilter[event]; }
+	bool IsEventLogged( WgEventType event ) { return m_eventFilter[event]; }
 
 private:
 	std::string	FormatTimestamp( int64_t ms );

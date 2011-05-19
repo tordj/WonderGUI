@@ -144,7 +144,7 @@ int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo )
 	return nDeleted;
 }
 
-int WgEventHandler::DeleteCallbacksOn( WgEventId type )
+int WgEventHandler::DeleteCallbacksOn( WgEventType type )
 {
 	// Delete global callbacks on this event type
 
@@ -168,7 +168,7 @@ int WgEventHandler::DeleteCallbacksOn( WgEventId type )
 
 
 
-int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventId type )
+int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventType type )
 {
 	std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.find( WgGizmoWeakPtr(const_cast<WgGizmo*>(pGizmo)));
 
@@ -356,7 +356,7 @@ int WgEventHandler::_deleteCallbacksTo( const void * pReceiver )
 
 //____ _deleteCallbacksOnType() _______________________________________________
 
-int WgEventHandler::_deleteCallbacksOnType( WgEventId type, WgChain<Callback> * pChain )
+int WgEventHandler::_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain )
 {
 	int nDeleted = 0;
 	Callback * p = pChain->First();
@@ -530,7 +530,7 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event& _event )
 	// Only global POINTER_ENTER & POINTER_MOVE events have these members
 	// set, the rest needs to have them filled in.
 
-	if( _event.IsForGizmo() || (_event.Id() != WG_EVENT_POINTER_MOVE && _event.Id() != WG_EVENT_POINTER_ENTER) )
+	if( _event.IsForGizmo() || (_event.Type() != WG_EVENT_POINTER_MOVE && _event.Type() != WG_EVENT_POINTER_ENTER) )
 	{
 		_event.m_pointerScreenPos = m_pointerPos;
 		_event.m_pointerLocalPos = m_pointerPos;
@@ -545,7 +545,7 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event& _event )
 void WgEventHandler::_processGeneralEvent( WgEvent::Event& _event )
 {
 
-	switch( _event.m_id )
+	switch( _event.Type() )
 	{
 		case WG_EVENT_POINTER_ENTER:
 			_processPointerEnter( (WgEvent::PointerEnter*) &_event );
@@ -655,7 +655,7 @@ void WgEventHandler::_processPointerEnter( WgEvent::PointerEnter * pEvent )
 
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
-		if( m_pLatestButtonEvents[i] && m_pLatestButtonEvents[i]->Id() == WG_EVENT_BUTTON_PRESS )
+		if( m_pLatestButtonEvents[i] && m_pLatestButtonEvents[i]->Type() == WG_EVENT_BUTTON_PRESS )
 			QueueEvent( WgEvent::ButtonDrag( i, m_latestPress[i].PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
 	}
 
@@ -694,7 +694,7 @@ void WgEventHandler::_processPointerMove( WgEvent::PointerMove * pEvent )
 
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
-		if( m_pLatestButtonEvents[i] && m_pLatestButtonEvents[i]->Id() == WG_EVENT_BUTTON_PRESS )
+		if( m_pLatestButtonEvents[i] && m_pLatestButtonEvents[i]->Type() == WG_EVENT_BUTTON_PRESS )
 			QueueEvent( WgEvent::ButtonDrag( i, m_latestPress[i].PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
 	}
 

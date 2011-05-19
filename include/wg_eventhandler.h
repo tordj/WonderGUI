@@ -30,12 +30,16 @@
 #	include <wg_event.h>
 #endif
 
+#ifndef WG_EVENTFILTER_DOT_H
+#	include <wg_eventfilter.h>
+#endif
+
+
 #ifndef WG_KEY_DOT_H
 #	include <wg_key.h>
 #endif
 
 class WgRoot;
-class WgEventFilter;
 
 class WgEventListener
 {
@@ -73,8 +77,8 @@ public:
 	int		DeleteCallbacksTo( void(*fp)( const WgEvent::Event& _event, void * pParam) );
 
 	int		DeleteCallbacksOn( const WgGizmo * pGizmo );
-	int		DeleteCallbacksOn( const WgEventId type );
-	int		DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventId type );
+	int		DeleteCallbacksOn( const WgEventType type );
+	int		DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventType type );
 
 	int		DeleteCallback( const WgEventFilter& filter, const WgGizmo * pGizmo );
 	int		DeleteCallback( const WgEventFilter& filter, const WgEventListener * pListener );
@@ -112,7 +116,7 @@ private:
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
 	int		_deleteCallbacksTo( const void * pReceiver );
-	int		_deleteCallbacksOnType( WgEventId type, WgChain<Callback> * pChain );
+	int		_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain );
 	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
 	//

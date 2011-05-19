@@ -35,7 +35,7 @@ namespace WgEvent
 
 	PointerEnter::PointerEnter( const WgCord& pos )
 	{
-		m_id = WG_EVENT_POINTER_ENTER;
+		m_type = WG_EVENT_POINTER_ENTER;
 
 		m_pointerLocalPos = pos;
 		m_pointerScreenPos = pos;
@@ -43,7 +43,7 @@ namespace WgEvent
 
 	PointerEnter::PointerEnter( WgGizmo * pGizmo )
 	{
-		m_id = WG_EVENT_POINTER_ENTER;
+		m_type = WG_EVENT_POINTER_ENTER;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
@@ -52,12 +52,12 @@ namespace WgEvent
 
 	PointerExit::PointerExit()
 	{
-		m_id = WG_EVENT_POINTER_EXIT;
+		m_type = WG_EVENT_POINTER_EXIT;
 	}
 
 	PointerExit::PointerExit( WgGizmo * pGizmo )
 	{
-		m_id = WG_EVENT_POINTER_EXIT;
+		m_type = WG_EVENT_POINTER_EXIT;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
@@ -66,7 +66,7 @@ namespace WgEvent
 
 	PointerMove::PointerMove( const WgCord& pos )
 	{
-		m_id = WG_EVENT_POINTER_MOVE;
+		m_type = WG_EVENT_POINTER_MOVE;
 
 		m_pointerLocalPos = pos;
 		m_pointerScreenPos = pos;
@@ -74,7 +74,7 @@ namespace WgEvent
 
 	PointerMove::PointerMove( WgGizmo * pGizmo )
 	{
-		m_id = WG_EVENT_POINTER_MOVE;
+		m_type = WG_EVENT_POINTER_MOVE;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
@@ -83,13 +83,13 @@ namespace WgEvent
 
 	ButtonPress::ButtonPress( int button )
 	{
-		m_id = WG_EVENT_BUTTON_PRESS;
+		m_type = WG_EVENT_BUTTON_PRESS;
 		m_param[0].integer = button;
 	}
 
 	ButtonPress::ButtonPress( int button, WgGizmo * pGizmo )
 	{
-		m_id			= WG_EVENT_BUTTON_PRESS;
+		m_type			= WG_EVENT_BUTTON_PRESS;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 
@@ -106,13 +106,13 @@ namespace WgEvent
 
 	ButtonRepeat::ButtonRepeat( int button )
 	{
-		m_id = WG_EVENT_BUTTON_REPEAT;
+		m_type = WG_EVENT_BUTTON_REPEAT;
 		m_param[0].integer = button;
 	}
 
 	ButtonRepeat::ButtonRepeat( int button, WgGizmo * pGizmo )
 	{
-		m_id			= WG_EVENT_BUTTON_REPEAT;
+		m_type			= WG_EVENT_BUTTON_REPEAT;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 
@@ -130,7 +130,7 @@ namespace WgEvent
 
 	ButtonRelease::ButtonRelease( int button )
 	{
-		m_id = WG_EVENT_BUTTON_RELEASE;
+		m_type = WG_EVENT_BUTTON_RELEASE;
 		m_param[0].integer = button;
 
 		m_param[1].boolean = true;			// Always assumed to have had the press inside our window.
@@ -139,7 +139,7 @@ namespace WgEvent
 
 	ButtonRelease::ButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside )
 	{
-		m_id			= WG_EVENT_BUTTON_RELEASE;
+		m_type			= WG_EVENT_BUTTON_RELEASE;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 
@@ -170,13 +170,13 @@ namespace WgEvent
 
 	ButtonClick::ButtonClick( int button )
 	{
-		m_id = WG_EVENT_BUTTON_CLICK;
+		m_type = WG_EVENT_BUTTON_CLICK;
 		m_param[0].integer = button;
 	}
 
 	ButtonClick::ButtonClick( int button, WgGizmo * pGizmo )
 	{
-		m_id = WG_EVENT_BUTTON_CLICK;
+		m_type = WG_EVENT_BUTTON_CLICK;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 
@@ -193,13 +193,13 @@ namespace WgEvent
 
 	ButtonDoubleClick::ButtonDoubleClick( int button )
 	{
-		m_id = WG_EVENT_BUTTON_DOUBLECLICK;
+		m_type = WG_EVENT_BUTTON_DOUBLECLICK;
 		m_param[0].integer = button;
 	}
 
 	ButtonDoubleClick::ButtonDoubleClick( int button, WgGizmo * pGizmo )
 	{
-		m_id = WG_EVENT_BUTTON_DOUBLECLICK;
+		m_type = WG_EVENT_BUTTON_DOUBLECLICK;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 
@@ -216,7 +216,7 @@ namespace WgEvent
 
 	KeyPress::KeyPress( int native_keycode )
 	{
-		m_id = WG_EVENT_KEY_PRESS;
+		m_type = WG_EVENT_KEY_PRESS;
 		m_param[0].integer = native_keycode;
 	}
 
@@ -234,7 +234,7 @@ namespace WgEvent
 
 	KeyRepeat::KeyRepeat( int native_keycode )
 	{
-		m_id = WG_EVENT_KEY_REPEAT;
+		m_type = WG_EVENT_KEY_REPEAT;
 		m_param[0].integer = native_keycode;
 	}
 
@@ -252,7 +252,7 @@ namespace WgEvent
 
 	KeyRelease::KeyRelease( int native_keycode )
 	{
-		m_id = WG_EVENT_KEY_RELEASE;
+		m_type = WG_EVENT_KEY_RELEASE;
 		m_param[0].integer = native_keycode;
 	}
 
@@ -270,7 +270,7 @@ namespace WgEvent
 
 	Character::Character( unsigned short character )
 	{
-		m_id = WG_EVENT_CHARACTER;
+		m_type = WG_EVENT_CHARACTER;
 		m_param[0].integer = character;
 	}
 
@@ -283,7 +283,7 @@ namespace WgEvent
 
 	WheelRoll::WheelRoll( int wheel, int distance )
 	{
-		m_id = WG_EVENT_WHEEL_ROLL;
+		m_type = WG_EVENT_WHEEL_ROLL;
 		m_param[0].integer = wheel;
 		m_param[1].integer = distance;
 	}
@@ -302,7 +302,7 @@ namespace WgEvent
 
 	Tick::Tick( int ms )
 	{
-		m_id = WG_EVENT_TICK;
+		m_type = WG_EVENT_TICK;
 		m_param[0].integer = ms;
 	}
 
@@ -315,7 +315,7 @@ namespace WgEvent
 
 	PointerPlaced::PointerPlaced()
 	{
-		m_id = WG_EVENT_POINTER_PLACED;
+		m_type = WG_EVENT_POINTER_PLACED;
 	}
 
 	//____ ButtonDrag _________________________________________________________
@@ -323,7 +323,7 @@ namespace WgEvent
 	ButtonDrag::ButtonDrag( int button, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos )
 	{
 
-		m_id = WG_EVENT_BUTTON_DRAG;
+		m_type = WG_EVENT_BUTTON_DRAG;
 		m_param[0].integer = button;
 
 		m_param[1].short1 = orgPos.x;
@@ -338,7 +338,7 @@ namespace WgEvent
 
 	ButtonDrag::ButtonDrag( int button, WgGizmo * pGizmo, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos )
 	{
-		m_id = WG_EVENT_BUTTON_DRAG;
+		m_type = WG_EVENT_BUTTON_DRAG;
 		m_bIsForGizmo		= true;
 		m_pGizmo 			= pGizmo;
 		m_param[0].integer	= button;

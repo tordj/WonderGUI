@@ -20,6 +20,8 @@
 
 =========================================================================*/
 
+#include <assert.h>
+#include <wg_key.h>
 #include <wg_event.h>
 #include <wg_eventfilter.h>
 #include <wg_gizmo.h>
@@ -64,7 +66,7 @@ WgEventFilter	WgEventFilter::PointerMove( WgGizmo * pGizmo )
 
 WgEventFilter	WgEventFilter::ButtonPress()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_PRESS, 0, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_PRESS, 0, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonPress( int button)
@@ -74,7 +76,7 @@ WgEventFilter	WgEventFilter::ButtonPress( int button)
 
 WgEventFilter	WgEventFilter::ButtonPress( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_PRESS, pGizmo, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_PRESS, pGizmo, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonPress( WgGizmo * pGizmo, int button )
@@ -86,7 +88,7 @@ WgEventFilter	WgEventFilter::ButtonPress( WgGizmo * pGizmo, int button )
 
 WgEventFilter	WgEventFilter::ButtonRelease()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_RELEASE, 0, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_RELEASE, 0, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonRelease( int button)
@@ -96,7 +98,7 @@ WgEventFilter	WgEventFilter::ButtonRelease( int button)
 
 WgEventFilter	WgEventFilter::ButtonRelease( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_RELEASE, pGizmo, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_RELEASE, pGizmo, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonRelease( WgGizmo * pGizmo, int button )
@@ -108,7 +110,7 @@ WgEventFilter	WgEventFilter::ButtonRelease( WgGizmo * pGizmo, int button )
 
 WgEventFilter	WgEventFilter::ButtonDrag()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_DRAG, 0, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_DRAG, 0, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonDrag( int button)
@@ -118,7 +120,7 @@ WgEventFilter	WgEventFilter::ButtonDrag( int button)
 
 WgEventFilter	WgEventFilter::ButtonDrag( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_DRAG, pGizmo, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_DRAG, pGizmo, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonDrag( WgGizmo * pGizmo, int button )
@@ -130,7 +132,7 @@ WgEventFilter	WgEventFilter::ButtonDrag( WgGizmo * pGizmo, int button )
 
 WgEventFilter	WgEventFilter::ButtonRepeat()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_REPEAT, 0, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_REPEAT, 0, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonRepeat( int button)
@@ -140,7 +142,7 @@ WgEventFilter	WgEventFilter::ButtonRepeat( int button)
 
 WgEventFilter	WgEventFilter::ButtonRepeat( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_REPEAT, pGizmo, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_REPEAT, pGizmo, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonRepeat( WgGizmo * pGizmo, int button )
@@ -152,7 +154,7 @@ WgEventFilter	WgEventFilter::ButtonRepeat( WgGizmo * pGizmo, int button )
 
 WgEventFilter	WgEventFilter::ButtonClick()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, 0, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_CLICK, 0, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonClick( int button)
@@ -162,7 +164,7 @@ WgEventFilter	WgEventFilter::ButtonClick( int button)
 
 WgEventFilter	WgEventFilter::ButtonClick( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, pGizmo, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_CLICK, pGizmo, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonClick( WgGizmo * pGizmo, int button )
@@ -174,7 +176,7 @@ WgEventFilter	WgEventFilter::ButtonClick( WgGizmo * pGizmo, int button )
 
 WgEventFilter	WgEventFilter::ButtonDoubleClick()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, 0, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_CLICK, 0, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonDoubleClick( int button)
@@ -184,7 +186,7 @@ WgEventFilter	WgEventFilter::ButtonDoubleClick( int button)
 
 WgEventFilter	WgEventFilter::ButtonDoubleClick( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, pGizmo, _filterButtonEvents, -1 );
+	return WgEventFilter( WG_EVENT_BUTTON_CLICK, pGizmo, _filterButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::ButtonDoubleClick( WgGizmo * pGizmo, int button )
@@ -196,128 +198,156 @@ WgEventFilter	WgEventFilter::ButtonDoubleClick( WgGizmo * pGizmo, int button )
 
 WgEventFilter	WgEventFilter::KeyPress()
 {
+	return WgEventFilter( WG_EVENT_KEY_PRESS, 0, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
 WgEventFilter	WgEventFilter::KeyPress( WgGizmo * pGizmo )
 {
+	return WgEventFilter( WG_EVENT_KEY_PRESS, pGizmo, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
-WgEventFilter	WgEventFilter::KeyPress( WgKey translated_keycode )
+WgEventFilter	WgEventFilter::KeyPress( WgKey keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_PRESS, 0, _filterKeyEvents, keycode );
 }
 
 WgEventFilter	WgEventFilter::KeyPress( WgGizmo * pGizmo, WgKey keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_PRESS, pGizmo, _filterKeyEvents, keycode );
 }
 
 //____ KeyRelease() ___________________________________________________________
 
 WgEventFilter	WgEventFilter::KeyRelease()
 {
+	return WgEventFilter( WG_EVENT_KEY_RELEASE, 0, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
 WgEventFilter	WgEventFilter::KeyRelease( WgGizmo * pGizmo )
 {
+	return WgEventFilter( WG_EVENT_KEY_RELEASE, pGizmo, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
-WgEventFilter	WgEventFilter::KeyRelease( WgKey translated_keycode )
+WgEventFilter	WgEventFilter::KeyRelease( WgKey keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_RELEASE, 0, _filterKeyEvents, keycode );
 }
 
 WgEventFilter	WgEventFilter::KeyRelease( WgGizmo * pGizmo, WgKey keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_RELEASE, pGizmo, _filterKeyEvents, keycode );
 }
 
 //____ KeyRepeat() ____________________________________________________________
 
 WgEventFilter	WgEventFilter::KeyRepeat()
 {
+	return WgEventFilter( WG_EVENT_KEY_REPEAT, 0, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
 WgEventFilter	WgEventFilter::KeyRepeat( WgGizmo * pGizmo )
 {
+	return WgEventFilter( WG_EVENT_KEY_REPEAT, pGizmo, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
-WgEventFilter	WgEventFilter::KeyRepeat( WgKey translated_keycode )
+WgEventFilter	WgEventFilter::KeyRepeat( WgKey keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_REPEAT, 0, _filterKeyEvents, keycode );
 }
 
 WgEventFilter	WgEventFilter::KeyRepeat( WgGizmo * pGizmo, WgKey keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_REPEAT, pGizmo, _filterKeyEvents, keycode );
 }
 
 //____ KeyPressNative() _______________________________________________________
 
 WgEventFilter	WgEventFilter::KeyPressNative( int native_keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_PRESS, 0, _filterNativeKeyEvents, native_keycode );
 }
 
 WgEventFilter	WgEventFilter::KeyPressNative( WgGizmo * pGizmo, int native_keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_PRESS, pGizmo, _filterNativeKeyEvents, native_keycode );
 }
 
 //____ KeyReleaseNative() _____________________________________________________
 
 WgEventFilter	WgEventFilter::KeyReleaseNative( int native_keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_RELEASE, 0, _filterNativeKeyEvents, native_keycode );
 }
 
 WgEventFilter	WgEventFilter::KeyReleaseNative( WgGizmo * pGizmo, int native_keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_RELEASE, pGizmo, _filterNativeKeyEvents, native_keycode );
 }
 
 //____ KeyRepeatNative() ______________________________________________________
 
 WgEventFilter	WgEventFilter::KeyRepeatNative( int native_keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_REPEAT, 0, _filterNativeKeyEvents, native_keycode );
 }
 
 WgEventFilter	WgEventFilter::KeyRepeatNative( WgGizmo * pGizmo, int native_keycode )
 {
+	return WgEventFilter( WG_EVENT_KEY_REPEAT, pGizmo, _filterNativeKeyEvents, native_keycode );
 }
 
 //____ Character() ____________________________________________________________
 
 WgEventFilter	WgEventFilter::Character()
 {
+	return WgEventFilter( WG_EVENT_CHARACTER, 0, _filterCharacterEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::Character( unsigned short character)
 {
+	return WgEventFilter( WG_EVENT_CHARACTER, 0, _filterCharacterEvents, character );
 }
 
 WgEventFilter	WgEventFilter::Character( WgGizmo * pGizmo )
 {
+	return WgEventFilter( WG_EVENT_CHARACTER, pGizmo, _filterCharacterEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::Character( WgGizmo * pGizmo, unsigned short character )
 {
+	return WgEventFilter( WG_EVENT_CHARACTER, pGizmo, _filterCharacterEvents, character );
 }
 
 //____ WheelRoll() ____________________________________________________________
 
 WgEventFilter	WgEventFilter::WheelRoll()
 {
+	return WgEventFilter( WG_EVENT_WHEEL_ROLL, 0, _filterWheelRollEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::WheelRoll( int wheel )
 {
+	return WgEventFilter( WG_EVENT_WHEEL_ROLL, 0, _filterWheelRollEvents, wheel );
 }
 
 WgEventFilter	WgEventFilter::WheelRoll( WgGizmo * pGizmo )
 {
+	return WgEventFilter( WG_EVENT_WHEEL_ROLL, pGizmo, _filterWheelRollEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::WheelRoll( int wheel, WgGizmo * pGizmo )
 {
+	return WgEventFilter( WG_EVENT_WHEEL_ROLL, pGizmo, _filterWheelRollEvents, wheel );
 }
 
 //____ Tick() _________________________________________________________________
 
 WgEventFilter	WgEventFilter::Tick()
 {
+	return WgEventFilter( WG_EVENT_TICK, 0, _filterTickEvents );
 }
 
+//_____________________________________________________________________________
 
 bool WgEventFilter::_filterDummy( const WgEvent::Event& _event, const WgEventFilter& filter )
 {
@@ -327,7 +357,7 @@ bool WgEventFilter::_filterDummy( const WgEvent::Event& _event, const WgEventFil
 
 bool WgEventFilter::_filterPointerEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
 {
-	if( _event.Id() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
 		return true;
 
 	return false;
@@ -335,31 +365,137 @@ bool WgEventFilter::_filterPointerEvents( const WgEvent::Event& _event, const Wg
 
 bool WgEventFilter::_filterButtonEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
 {
-	if( _event.Id() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )&&
-		(filter.m_data1 == -1 || filter.m_data1 == static_cast<WgEvent::Bu )
-		return true;
+	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	{
+		if( filter.m_data1 == 0 )
+			return true;
+		else
+		{
+			int btn;
 
+			switch(_event.Type() )
+			{
+				case WG_EVENT_BUTTON_PRESS:
+					btn = (static_cast<const WgEvent::ButtonPress&>(_event)).Button();
+					break;
+				case WG_EVENT_BUTTON_REPEAT:
+					btn = (static_cast<const WgEvent::ButtonRepeat&>(_event)).Button();
+					break;
+				case WG_EVENT_BUTTON_DRAG:
+					btn = (static_cast<const WgEvent::ButtonDrag&>(_event)).Button();
+					break;
+				case WG_EVENT_BUTTON_RELEASE:
+					btn = (static_cast<const WgEvent::ButtonRelease&>(_event)).Button();
+					break;
+				case WG_EVENT_BUTTON_CLICK:
+					btn = (static_cast<const WgEvent::ButtonClick&>(_event)).Button();
+					break;
+				case WG_EVENT_BUTTON_DOUBLECLICK:
+					btn = (static_cast<const WgEvent::ButtonDoubleClick&>(_event)).Button();
+					break;
+				default:
+					assert(false);		// We should never get here.
+					return false;
+			}
+
+			if( btn == filter.m_data1 )
+				return true;
+		}
+	}
 	return false;
-}}
+}
 
 bool WgEventFilter::_filterKeyEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
 {
+	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	{
+		if( filter.m_data1 == 0 )
+			return true;
+		else
+		{
+			int key;
+
+			switch(_event.Type() )
+			{
+				case WG_EVENT_KEY_PRESS:
+					key = (static_cast<const WgEvent::KeyPress&>(_event)).TranslatedKeyCode();
+					break;
+				case WG_EVENT_KEY_REPEAT:
+					key = (static_cast<const WgEvent::KeyRepeat&>(_event)).TranslatedKeyCode();
+					break;
+				case WG_EVENT_KEY_RELEASE:
+					key = (static_cast<const WgEvent::KeyRelease&>(_event)).TranslatedKeyCode();
+					break;
+				default:
+					assert(false);		// We should never get here.
+					return false;
+			}
+
+			if( key == filter.m_data1 )
+				return true;
+		}
+	}
+	return false;
 }
 
 bool WgEventFilter::_filterNativeKeyEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
 {
+	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	{
+		int key;
+
+		switch(_event.Type() )
+		{
+			case WG_EVENT_KEY_PRESS:
+				key = (static_cast<const WgEvent::KeyPress&>(_event)).NativeKeyCode();
+				break;
+			case WG_EVENT_KEY_REPEAT:
+				key = (static_cast<const WgEvent::KeyRepeat&>(_event)).NativeKeyCode();
+				break;
+			case WG_EVENT_KEY_RELEASE:
+				key = (static_cast<const WgEvent::KeyRelease&>(_event)).NativeKeyCode();
+				break;
+			default:
+				assert(false);		// We should never get here.
+				return false;
+		}
+
+		if( key == filter.m_data1 )
+			return true;
+	}
+	return false;
 }
 
 bool WgEventFilter::_filterCharacterEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
 {
+	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	{
+		int chr = (static_cast<const WgEvent::Character&>(_event)).Char();
+
+		if( chr == filter.m_data1 )
+			return true;
+	}
+	return false;
 }
 
 bool WgEventFilter::_filterWheelRollEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
 {
+	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	{
+		int chr = (static_cast<const WgEvent::WheelRoll&>(_event)).Wheel();
+
+		if( chr == filter.m_data1 )
+			return true;
+	}
+	return false;
 }
 
 bool WgEventFilter::_filterTickEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
 {
+	if( _event.Type() == filter.EventType() )
+		return true;
+
+	return false;
 }
 
 

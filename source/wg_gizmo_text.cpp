@@ -131,7 +131,7 @@ WgPointerStyle WgGizmoText::GetPointerStyle() const
 	if( m_text.GetMarkedLink() )
 		return WG_POINTER_HAND;
 
-	return m_pointerStyle; 
+	return m_pointerStyle;
 }
 
 
@@ -215,7 +215,7 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 	{
 		switch( button_key )
 		{
-			case WGKEY_SHIFT:
+			case WG_KEY_SHIFT:
 				if(!inputObj.isButtonDown(1))
 					m_pText->setSelectionMode(false);
 			break;
@@ -226,7 +226,7 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 	{
 		switch( button_key )
 		{
-			case WGKEY_LEFT:
+			case WG_KEY_LEFT:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -235,7 +235,7 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 				else
 					m_pText->goLeft();
 				break;
-			case WGKEY_RIGHT:
+			case WG_KEY_RIGHT:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -245,21 +245,21 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 					m_pText->goRight();
 				break;
 
-			case WGKEY_UP:
+			case WG_KEY_UP:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
 				m_pText->CursorGoUp( 1, ScreenGeometry() );
 				break;
 
-			case WGKEY_DOWN:
+			case WG_KEY_DOWN:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
 				m_pText->CursorGoDown( 1, ScreenGeometry() );
 				break;
 
-			case WGKEY_BACKSPACE:
+			case WG_KEY_BACKSPACE:
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
 				else if( info.modifier & WG_MODKEY_CTRL )
@@ -268,7 +268,7 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 					m_pText->delPrevChar();
 				break;
 
-			case WGKEY_DELETE:
+			case WG_KEY_DELETE:
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
 				else if( info.modifier & WG_MODKEY_CTRL )
@@ -277,7 +277,7 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 					m_pText->delNextChar();
 				break;
 
-			case WGKEY_HOME:
+			case WG_KEY_HOME:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -287,7 +287,7 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 					m_pText->goBOL();
 				break;
 
-			case WGKEY_END:
+			case WG_KEY_END:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 

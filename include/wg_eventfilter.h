@@ -103,7 +103,7 @@ public:
 
 	static WgEventFilter	KeyRepeat();
 	static WgEventFilter	KeyRepeat( WgGizmo * pGizmo );
-	static WgEventFilter	KeyRepeat( WgKey translated_keycode );
+	static WgEventFilter	KeyRepeat( WgKey keycode );
 	static WgEventFilter	KeyRepeat( WgGizmo * pGizmo, WgKey keycode );
 
 	static WgEventFilter	KeyPressNative( int native_keycode );
@@ -129,27 +129,27 @@ public:
 
 
 	inline bool			FilterEvent( const WgEvent::Event& _event ) const { return m_pFilterFunc( _event, *this ); }
-	inline WgEventId 	EventType() const { return m_eventType; }
+	inline WgEventType 	EventType() const { return m_eventType; }
 	inline bool			FiltersGizmo() const { return m_pGizmo?true:false; }
 	inline WgGizmo *	Gizmo() const { return m_pGizmo; }
 private:
 	WgEventFilter() : m_eventType(WG_EVENT_DUMMY), m_pFilterFunc(_filterDummy) {}
-	WgEventFilter( WgEventId eventType, WgGizmo * pGizmo, WgFilterFuncPtr pFunc, int data1 = 0, int data2 = 0 )
-				: m_eventType(eventType), m_pGizmo(pGizmo), m_pFilterFunc(pFunc), m_filterData1(data1), m_filterData2(data2) {}
+	WgEventFilter( WgEventType eventType, WgGizmo * pGizmo, WgFilterFuncPtr pFunc, int data1 = 0, int data2 = 0 )
+				: m_eventType(eventType), m_pGizmo(pGizmo), m_pFilterFunc(pFunc), m_data1(data1), m_data2(data2) {}
 
 
-	WgEventId			m_eventType;		// Only event type filter accepts, if a specific.
+	WgEventType			m_eventType;		// Only event type filter accepts, if a specific.
 	WgGizmo *	 		m_pGizmo;			// Only Gizmo filter accepts, if a specific one.
 	WgFilterFuncPtr 	m_pFilterFunc;		// Pointer at filter function.
-	int					m_filterData1;		// Additional data for filter function.
-	int					m_filterData2;		// Additional data for filter function.
+	int					m_data1;			// Additional data for filter function.
+	int					m_data2;			// Additional data for filter function.
 
 
 	static bool _filterDummy( const WgEvent::Event& _event, const WgEventFilter& filter );
 	static bool _filterPointerEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
 	static bool _filterButtonEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
 	static bool _filterKeyEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
-	static bool _filterKeyNativeEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
+	static bool _filterNativeKeyEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
 	static bool _filterCharacterEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
 	static bool _filterWheelRollEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
 	static bool _filterTickEvents( const WgEvent::Event& _event, const WgEventFilter& filter );

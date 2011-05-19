@@ -270,7 +270,7 @@ private:
 
 	Uint32			m_hoverStartTime;
 
-	Uint16			m_keycodeMap[WGKEY_ARRAYSIZE];
+	Uint16			m_keycodeMap[WG_KEY_ARRAYSIZE];
 
 };
 
