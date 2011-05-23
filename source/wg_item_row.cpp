@@ -45,6 +45,7 @@ WgItemRow::WgItemRow()
 	m_bUseAllHeight = false;
 	m_widthExpandUsage = 0.f;
 	m_minWidthFraction = 0.f;
+	m_minWidthFractionLimit = INT_MAX;
 }
 
 WgItemRow::WgItemRow( Sint64 id ) : WgItem( id )
@@ -55,6 +56,7 @@ WgItemRow::WgItemRow( Sint64 id ) : WgItem( id )
 	m_bUseAllHeight = false;
 	m_widthExpandUsage = 0.f;
 	m_minWidthFraction = 0.f;
+	m_minWidthFractionLimit = INT_MAX;
 }
 
 
@@ -95,10 +97,11 @@ void WgItemRow::SetWidthExpandUsage( float usage )
 
 //____ SetMinWidthFraction() __________________________________________________
 
-void WgItemRow::SetMinWidthFraction( float fraction )
+void WgItemRow::SetMinWidthFraction( float fraction, int limit )
 {
 	LIMIT(fraction,0.f,1.f);
 	m_minWidthFraction = fraction;
+	m_minWidthFractionLimit = limit;
 }
 
 
@@ -115,6 +118,9 @@ void WgItemRow::SetHeightModify( int pixels )
 int WgItemRow::ItemWidth( WgItem * pItem, int screen_width )
 {
 	int minWidth = (int) (m_minWidthFraction*screen_width);
+	if( minWidth > m_minWidthFractionLimit )
+		minWidth = m_minWidthFractionLimit;
+
 
 	int width = pItem->Width();
 	if( width < minWidth )
@@ -263,8 +269,6 @@ void WgItemRow::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction _action
 
 void WgItemRow::Render( const WgRect& _window, const WgRect& _clip )
 {
-	float multiplier = WidthExpandFactor(_window.w);
-
 	WgRect r;
 
 	r = _window;

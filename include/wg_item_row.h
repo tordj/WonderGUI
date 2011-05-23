@@ -50,7 +50,7 @@ public:
 	void	SetStretchLastItem( bool bStretch );
 	void	SetUseAllHeight( bool bUseAllHeight );
 	void	SetWidthExpandUsage( float usage );		// 0.f -> 1.f, how much of extra width the items should grow into.
-	void	SetMinWidthFraction( float fraction );	// Minimum width of contained items in fractions of rows width.
+	void	SetMinWidthFraction( float fraction, int limit );	// Minimum width of contained items in fractions of rows width.
 
 	inline bool	GrabInputFocus() { return WgItem::GrabInputFocus(); }
 	inline bool	RemoveInputFocus() { return WgItem::GrabInputFocus(); }
@@ -90,6 +90,7 @@ protected:
 	bool	m_bStretchLastItem;
 	bool	m_bUseAllHeight;
 	float	m_minWidthFraction;
+	int		m_minWidthFractionLimit;
 	float	m_widthExpandUsage;
 };
 

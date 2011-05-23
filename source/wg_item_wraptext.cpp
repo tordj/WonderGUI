@@ -153,9 +153,9 @@ void WgItemWrapText::UpdateSize()
 	height = m_text.height() + m_margin.top + m_margin.bottom;
 
 	if( width < m_minWidth )
-		width = m_minWidth + m_margin.left + m_margin.right;
+		width = m_minWidth;
 	if( height < m_minHeight )
-		height = m_minHeight + m_margin.top + m_margin.bottom;
+		height = m_minHeight;
 
 	if( width < 1 )
 		width = 1;
