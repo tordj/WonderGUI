@@ -43,7 +43,7 @@ void Wdg_TextView::Init()
 	m_maxCharacters = 0;
 	m_inputMode		= Static;
 
-	m_newlineKey	= WGKEY_RETURN;
+	m_newlineKey	= WG_KEY_RETURN;
 	m_newlineModif	= WG_MODKEY_NONE;
 
 	m_text.setLineWidth( Width() );
@@ -181,7 +181,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 	{
 		switch( button_key )
 		{
-			case WGKEY_SHIFT:
+			case WG_KEY_SHIFT:
 				if(!inputObj.isButtonDown(1))
 					m_pText->setSelectionMode(false);
 			break;
@@ -192,7 +192,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 	{
 		switch( button_key )
 		{
-			case WGKEY_LEFT:
+			case WG_KEY_LEFT:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -202,7 +202,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 					m_pText->goLeft();
 				AdjustViewOfs();
 				break;
-			case WGKEY_RIGHT:
+			case WG_KEY_RIGHT:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -213,7 +213,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				AdjustViewOfs();
 				break;
 
-			case WGKEY_UP:
+			case WG_KEY_UP:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -221,7 +221,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				AdjustViewOfs();
 				break;
 
-			case WGKEY_DOWN:
+			case WG_KEY_DOWN:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -229,7 +229,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				AdjustViewOfs();
 				break;
 
-			case WGKEY_BACKSPACE:
+			case WG_KEY_BACKSPACE:
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
 				else if( info.modifier & WG_MODKEY_CTRL )
@@ -239,7 +239,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				AdjustViewOfs();
 				break;
 
-			case WGKEY_DELETE:
+			case WG_KEY_DELETE:
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
 				else if( info.modifier & WG_MODKEY_CTRL )
@@ -249,7 +249,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				AdjustViewOfs();
 				break;
 
-			case WGKEY_HOME:
+			case WG_KEY_HOME:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -260,7 +260,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				AdjustViewOfs();
 				break;
 
-			case WGKEY_END:
+			case WG_KEY_END:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -272,7 +272,7 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 				break;
 
 			default:
-				if( button_key == m_newlineKey && info.modifier == m_newlineModif && button_key != WGKEY_UNMAPPED )
+				if( button_key == m_newlineKey && info.modifier == m_newlineModif && button_key != WG_KEY_UNMAPPED )
 					m_pText->putChar( '\n' );
 				break;
 		}

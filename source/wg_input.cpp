@@ -85,7 +85,7 @@ WgInput::WgInput()
 	m_pPointerSpies = 0;
 	m_nPointerSpies = 0;
 
-	for( int i = 0 ; i < WGKEY_ARRAYSIZE ; i++ )
+	for( int i = 0 ; i < WG_KEY_ARRAYSIZE ; i++ )
 		m_keycodeMap[i] = 0;
 }
 
@@ -101,8 +101,8 @@ WgInput::~WgInput()
 
 void WgInput::map_keycode( WgKey wg_keycode, Uint16 native_keycode )
 {
-	assert( wg_keycode < WGKEY_ARRAYSIZE );
-	if( wg_keycode > WGKEY_ARRAYSIZE )
+	assert( wg_keycode < WG_KEY_ARRAYSIZE );
+	if( wg_keycode > WG_KEY_ARRAYSIZE )
 		return;
 
 	m_keycodeMap[wg_keycode] = native_keycode;
@@ -112,11 +112,11 @@ void WgInput::map_keycode( WgKey wg_keycode, Uint16 native_keycode )
 
 WgKey WgInput::translate_keycode( Uint16 native_keycode )
 {
-	for( int i = 0 ; i < WGKEY_ARRAYSIZE ; i++ )
+	for( int i = 0 ; i < WG_KEY_ARRAYSIZE ; i++ )
 		if( m_keycodeMap[i] == native_keycode )
 			return (WgKey) i;
 
-	return WGKEY_UNMAPPED;
+	return WG_KEY_UNMAPPED;
 }
 
 //____ addPointerSpy() ________________________________________________________
@@ -383,7 +383,7 @@ start:
 			myKeyAction.character		= m_keys.aKeysDown[key].character;
 
 			int keycode = myKeyAction.keycode;
-			if( keycode == WGKEY_UNMAPPED )
+			if( keycode == WG_KEY_UNMAPPED )
 				keycode = myKeyAction.native_keycode;
 
 			// Send KEY_DOWN
@@ -879,7 +879,7 @@ void WgInput::key_press_( WgInputEventData ed )
 
 	for( Uint32 i = 0 ; i < myAction.nWidgets ; i++ )
 	{
-		if(keycode == WGKEY_UNMAPPED)
+		if(keycode == WG_KEY_UNMAPPED)
 			myAction.aWidgets[i]->ActionRespond( KEY_PRESS, native_keycode, myAction, *this );
 		else
 			myAction.aWidgets[i]->ActionRespond( KEY_PRESS, keycode, myAction, *this );
@@ -955,7 +955,7 @@ void WgInput::key_release_( WgInputEventData ed )
 
 	for( Uint32 i = 0 ; i < myAction.nWidgets ; i++ )
 	{
-		if(keycode == WGKEY_UNMAPPED)
+		if(keycode == WG_KEY_UNMAPPED)
 			myAction.aWidgets[i]->ActionRespond( KEY_RELEASE, native_keycode, myAction, *this );
 		else
 			myAction.aWidgets[i]->ActionRespond( KEY_RELEASE, keycode, myAction, *this );

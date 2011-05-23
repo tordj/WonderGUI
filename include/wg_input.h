@@ -79,7 +79,7 @@ struct WgKeyDetails
 {
 	Uint32			timestamp;					// Timestamp (milliseconds) of key press.
 	WgModifierKeys	modifier;					// Status of modifier keys during key press.
-	WgKey			keycode;					// Keycode of key pressed (translated to WGKEY_x ).
+	WgKey			keycode;					// Keycode of key pressed (translated to WG_KEY_x ).
 	Uint16			native_keycode;				// Keycode of key pressed (native format).
 	Uint16			character;					// Character resulting from key press.
 };

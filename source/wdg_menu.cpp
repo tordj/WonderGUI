@@ -954,11 +954,11 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 
 			switch( button_key )
 			{
-				case WGKEY_ESCAPE:
+				case WG_KEY_ESCAPE:
 					Close();
 					break;
 
-				case WGKEY_RIGHT:
+				case WG_KEY_RIGHT:
 					if( pItem )
 					{
 						if( pItem->GetType() == SUBMENU )
@@ -966,12 +966,12 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					}
 					break;
 
-				case WGKEY_LEFT:
+				case WG_KEY_LEFT:
 					if( m_pParentMenu )
 							Close();
 					break;
 
-				case WGKEY_RETURN:
+				case WG_KEY_RETURN:
 					if( pItem )
 					{
 						if( pItem->GetType() == ENTRY || pItem->GetType() == CHECKBOX || pItem->GetType() == RADIOBUTTON )
@@ -984,7 +984,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					}
 					break;
 
-				case WGKEY_UP:
+				case WG_KEY_UP:
 					if( pItem )
 					{
 						pItem = pItem->Prev();
@@ -993,7 +993,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					}
 					break;
 
-				case WGKEY_DOWN:
+				case WG_KEY_DOWN:
 					if( pItem )
 					{
 						pItem = pItem->Next();
@@ -1008,19 +1008,19 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					}
 					break;
 
-				case WGKEY_HOME:
+				case WG_KEY_HOME:
 					pItem = m_items.First();
 					while( pItem != 0 && pItem->GetType() == SEPARATOR )
 						pItem = pItem->Next();
 					break;
 
-				case WGKEY_END:
+				case WG_KEY_END:
 					pItem = m_items.Last();
 					while( pItem != 0 && pItem->GetType() == SEPARATOR )
 						pItem = pItem->Prev();
 					break;
 
-				case WGKEY_PAGEUP:
+				case WG_KEY_PAGEUP:
 				{
 					int viewHeight = GetViewSizePixels();
 
@@ -1044,7 +1044,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 
 					break;
 				}
-				case WGKEY_PAGEDOWN:
+				case WG_KEY_PAGEDOWN:
 				{
 					int viewHeight = GetViewSizePixels();
 
