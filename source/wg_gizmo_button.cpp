@@ -240,18 +240,18 @@ void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 void WgGizmoButton::OnEvent( const WgEvent::Event& _event, WgEventHandler * pHandler )
 {
-	switch( _event.Id() )
+	switch( _event.Type() )
 	{
 		case	WG_EVENT_KEY_PRESS:
 		{
-			if( static_cast<const WgEvent::KeyPress&>(_event).TranslatedKeyCode() == WGKEY_RETURN )
+			if( static_cast<const WgEvent::KeyPress&>(_event).TranslatedKeyCode() == WG_KEY_RETURN )
 				m_bReturnPressed = true;
 			break;
 		}
 
 		case	WG_EVENT_KEY_RELEASE:
 		{
-			if( static_cast< const WgEvent::KeyPress&>(_event).TranslatedKeyCode() == WGKEY_RETURN )
+			if( static_cast< const WgEvent::KeyPress&>(_event).TranslatedKeyCode() == WG_KEY_RETURN )
 				m_bReturnPressed = false;
 			break;
 
@@ -312,14 +312,14 @@ void WgGizmoButton::OnAction( WgInput::UserAction action, int button, const WgAc
 	{
 		case	WgInput::KEY_PRESS:
 		{
-			if( button == WGKEY_RETURN )
+			if( button == WG_KEY_RETURN )
 				m_bReturnPressed = true;
 			break;
 		}
 
 		case	WgInput::KEY_RELEASE:
 		{
-			if( button == WGKEY_RETURN )
+			if( button == WG_KEY_RETURN )
 				m_bReturnPressed = false;
 			break;
 

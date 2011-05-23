@@ -43,14 +43,14 @@ WgEventLogger::~WgEventLogger()
 
 //____ IgnoreEvent ____________________________________________________________
 
-void WgEventLogger::IgnoreEvent( WgEventId event )
+void WgEventLogger::IgnoreEvent( WgEventType event )
 {
 	m_eventFilter[event] = false;
 }
 
 //____ LogEvent _______________________________________________________________
 
-void WgEventLogger::LogEvent( WgEventId event )
+void WgEventLogger::LogEvent( WgEventType event )
 {
 	m_eventFilter[event] = true;
 }
@@ -179,7 +179,7 @@ void WgEventLogger::LogAllEvents()
 
 void WgEventLogger::OnEvent( const WgEvent::Event& _event )
 {
-	if( m_eventFilter[_event.Id()] == false )
+	if( m_eventFilter[_event.Type()] == false )
 		return;
 
 	string	timestamp;
@@ -193,7 +193,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event& _event )
 
 	timestamp = FormatTimestamp( _event.Timestamp() );
 
-	switch( _event.Id() )
+	switch( _event.Type() )
 	{
 		case WG_EVENT_DUMMY:
 			id = "Dummy";

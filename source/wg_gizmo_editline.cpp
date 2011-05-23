@@ -323,7 +323,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 	{
 		switch( button_key )
 		{
-			case WGKEY_SHIFT:
+			case WG_KEY_SHIFT:
 				if(!inputObj.isButtonDown(1))
 					m_pText->setSelectionMode(false);
 			break;
@@ -334,7 +334,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 	{
 		switch( button_key )
 		{
-			case WGKEY_LEFT:
+			case WG_KEY_LEFT:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -350,7 +350,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 					m_pText->goLeft();
 				}
 				break;
-			case WGKEY_RIGHT:
+			case WG_KEY_RIGHT:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
@@ -367,7 +367,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 				}
 				break;
 
-			case WGKEY_BACKSPACE:
+			case WG_KEY_BACKSPACE:
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
 				else if( (info.modifier & WG_MODKEY_CTRL) && !m_bPasswordMode)
@@ -377,7 +377,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 				break;
 
-			case WGKEY_DELETE:
+			case WG_KEY_DELETE:
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
 				else if( (info.modifier & WG_MODKEY_CTRL) && !m_bPasswordMode)
@@ -387,7 +387,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 				break;
 
-			case WGKEY_HOME:
+			case WG_KEY_HOME:
 
 				/*
 				 *	I am not sure if this is the proper way to this, but in my opinion, the default
@@ -409,7 +409,7 @@ void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, cons
 
 				break;
 
-			case WGKEY_END:
+			case WG_KEY_END:
 
 				/*
 			 	 *	I am not sure if this is the proper way to this, but in my opinion, the default

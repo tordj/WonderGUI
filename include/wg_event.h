@@ -46,35 +46,6 @@ class WgGizmo;
 
 typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
-
-enum	WgEventId
-{
-	WG_EVENT_DUMMY = 0,
-	WG_EVENT_TICK,
-
-	WG_EVENT_POINTER_ENTER,
-	WG_EVENT_POINTER_MOVE,
-	WG_EVENT_POINTER_PLACED,
-	WG_EVENT_POINTER_EXIT,
-
-	WG_EVENT_BUTTON_PRESS,
-	WG_EVENT_BUTTON_REPEAT,
-	WG_EVENT_BUTTON_DRAG,
-	WG_EVENT_BUTTON_RELEASE,
-	WG_EVENT_BUTTON_CLICK,
-	WG_EVENT_BUTTON_DOUBLECLICK,
-
-	WG_EVENT_KEY_PRESS,
-	WG_EVENT_KEY_REPEAT,
-	WG_EVENT_KEY_RELEASE,
-	WG_EVENT_CHARACTER,
-	WG_EVENT_WHEEL_ROLL,
-
-	WG_EVENT_MAX
-};
-
-
-
 namespace WgEvent
 {
 	class Event
@@ -83,7 +54,7 @@ namespace WgEvent
 
 		public:
 
-			inline WgEventId		Id() const { return m_id; }
+			inline WgEventType		Type() const { return m_type; }
 			inline int64_t			Timestamp() const { return m_timestamp; }
 					WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
 			inline WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
@@ -93,7 +64,7 @@ namespace WgEvent
 			inline WgCord			PointerScreenPos() const { return m_pointerScreenPos; }
 
 		protected:
-			Event() : m_id(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false) {}
+			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false) {}
 
 			struct Param
 			{
@@ -112,7 +83,7 @@ namespace WgEvent
 				};
 			};
 
-			WgEventId		m_id;				// Id of the event
+			WgEventType		m_type;				// Type of event
 			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
 			int64_t			m_timestamp;		// Timestamp of posting this event
 			bool			m_bIsForGizmo;		// Set if this event is for a specific Gizmo (m_pGizmo set at creation, even if weak pointer now is null).

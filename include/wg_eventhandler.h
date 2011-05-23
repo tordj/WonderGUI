@@ -30,36 +30,16 @@
 #	include <wg_event.h>
 #endif
 
+#ifndef WG_EVENTFILTER_DOT_H
+#	include <wg_eventfilter.h>
+#endif
+
+
 #ifndef WG_KEY_DOT_H
 #	include <wg_key.h>
 #endif
 
 class WgRoot;
-
-
-
-class WgEventFilter
-{
-public:
-	WgEventFilter() : m_bGizmo(false), m_type(WG_EVENT_DUMMY), m_pGizmo(0) {}
-	WgEventFilter( WgEventId eventType ) : m_bGizmo(false), m_type(eventType), m_pGizmo(0) {}
-	WgEventFilter( WgEventId eventType, WgGizmo * pGizmo ) : m_bGizmo(true), m_type(eventType), m_pGizmo(pGizmo) {}
-	WgEventFilter( WgGizmo * pGizmo ) : m_bGizmo(true), m_type(WG_EVENT_DUMMY), m_pGizmo(pGizmo) {}
-
-	bool	FilterEvent( const WgEvent::Event& _event ) const;
-
-	inline bool			FiltersGizmo() const { return m_bGizmo; }
-	inline bool			FiltersType() const { return (m_type!=WG_EVENT_DUMMY); }
-	inline WgGizmo*		Gizmo() const { return m_pGizmo; }
-	inline WgEventId	EventType() const { return m_type; }
-
-private:
-
-	bool		m_bGizmo;
-	WgEventId	m_type;
-	WgGizmo * 	m_pGizmo;
-};
-
 
 class WgEventListener
 {
@@ -97,8 +77,8 @@ public:
 	int		DeleteCallbacksTo( void(*fp)( const WgEvent::Event& _event, void * pParam) );
 
 	int		DeleteCallbacksOn( const WgGizmo * pGizmo );
-	int		DeleteCallbacksOn( const WgEventId type );
-	int		DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventId type );
+	int		DeleteCallbacksOn( const WgEventType type );
+	int		DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventType type );
 
 	int		DeleteCallback( const WgEventFilter& filter, const WgGizmo * pGizmo );
 	int		DeleteCallback( const WgEventFilter& filter, const WgEventListener * pListener );
@@ -135,7 +115,9 @@ private:
 	bool	_isGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
-	int		_deleteCallbacksOn( const void * pReceiver );
+	int		_deleteCallbacksTo( const void * pReceiver );
+	int		_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain );
+	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
 	//
 
@@ -191,19 +173,20 @@ private:
 
 		LINK_METHODS(Callback);
 
-		virtual void 		ProcessEvent( const WgEvent::Event& _event ) = 0;
-		virtual bool 		IsAlive() const = 0;
-		virtual void * 		Receiver() const = 0;
-		inline WgEventId	EventType() const { return m_eventType; }
+		virtual void 			ProcessEvent( const WgEvent::Event& _event ) = 0;
+		virtual bool 			IsAlive() const = 0;
+		virtual void * 			Receiver() const = 0;
+		inline const WgEventFilter& 	Filter() const { return m_filter; }
 
-		WgEventId	m_eventType;
+	protected:
+		WgEventFilter		m_filter;
 	};
 
 
 	class GizmoCallback : public Callback
 	{
 	public:
-		GizmoCallback( WgEventId eventType, void(*fp)(const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
+		GizmoCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event, WgGizmo * pDest), WgGizmo * pDest );
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;
@@ -217,7 +200,7 @@ private:
 	class FunctionCallbackParam : public Callback
 	{
 	public:
-		FunctionCallbackParam( WgEventId eventType, void(*fp)(const WgEvent::Event& _event, void * pParam), void * pParam );
+		FunctionCallbackParam( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event, void * pParam), void * pParam );
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;
@@ -231,7 +214,7 @@ private:
 	class FunctionCallback : public Callback
 	{
 	public:
-		FunctionCallback( WgEventId eventType, void(*fp)(const WgEvent::Event& _event) );
+		FunctionCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event& _event) );
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;
@@ -244,7 +227,7 @@ private:
 	class ListenerCallback : public Callback
 	{
 	public:
-		ListenerCallback( WgEventId eventType, WgEventListener * pListener );
+		ListenerCallback( const WgEventFilter& filter, WgEventListener * pListener );
 
 		void 	ProcessEvent( const WgEvent::Event& _event );
 		bool 	IsAlive() const;

@@ -175,8 +175,8 @@ protected:
 
 	void	_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, bool bLineEnding );
 
-	void	DrawTextBg( const WgRect& clip, const WgText * pText, const WgRect& dest );
-	void	DrawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect,
+	void	_drawTextBg( const WgRect& clip, const WgText * pText, const WgRect& dest );
+	void	_drawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect,
 							  int iStartOfs, int iEndOfs, WgColor color );
 
 
@@ -185,7 +185,7 @@ protected:
 //	virtual void	BlitSubPixel( const WgSurface * pSrc, const WgRect& srcrect,
 //								  float dx, float dy ) = 0;
 
-	virtual void	DrawUnderline( const WgRect& clip, const WgText * pText, int _x, int _y, int ofs, int maxChars );
+	virtual void	_drawUnderline( const WgRect& clip, const WgText * pText, int _x, int _y, int ofs, int maxChars );
 
 
 	WgColor		m_tintColor;		// Current Tint color.

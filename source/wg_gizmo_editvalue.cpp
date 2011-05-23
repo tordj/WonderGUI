@@ -362,14 +362,14 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 	{
 		switch( button_key )
 		{
-			case WGKEY_RETURN:
-			{	
+			case WG_KEY_RETURN:
+			{
 				// We already have correct value in m_value, but we want
 				// to set the bModified flag if value is entered in a weird way.
 
 				int64_t		value;
 				bool bModified = ParseValueFromInput( &value );
-				
+
 				if( m_value < m_rangeMin )
 				{
 					m_value = m_rangeMin;
@@ -398,7 +398,7 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 			}
 			break;
 
-			case WGKEY_LEFT:
+			case WG_KEY_LEFT:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
 
@@ -407,7 +407,7 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 				else
 					m_text.goLeft();
 				break;
-			case WGKEY_RIGHT:
+			case WG_KEY_RIGHT:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
 
@@ -417,7 +417,7 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 					m_text.goRight();
 				break;
 
-			case WGKEY_BACKSPACE:
+			case WG_KEY_BACKSPACE:
 				if(m_text.hasSelection())
 					m_text.delSelection();
 				else if( info.modifier & WG_MODKEY_CTRL )
@@ -428,7 +428,7 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 				bTextChanged = true;
 				break;
 
-			case WGKEY_DELETE:
+			case WG_KEY_DELETE:
 				if(m_text.hasSelection())
 					m_text.delSelection();
 				else if( info.modifier & WG_MODKEY_CTRL )
@@ -439,7 +439,7 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 				bTextChanged = true;
 				break;
 
-			case WGKEY_HOME:
+			case WG_KEY_HOME:
 
 				/*
 				 *	I am not sure if this is the proper way to this, but in my opinion, the default
@@ -461,7 +461,7 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 
 				break;
 
-			case WGKEY_END:
+			case WG_KEY_END:
 
 				/*
 			 	 *	I am not sure if this is the proper way to this, but in my opinion, the default

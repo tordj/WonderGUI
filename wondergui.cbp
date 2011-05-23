@@ -54,6 +54,7 @@
 		<Unit filename="include/wg_emitter.h" />
 		<Unit filename="include/wg_emitterstanza.h" />
 		<Unit filename="include/wg_event.h" />
+		<Unit filename="include/wg_eventfilter.h" />
 		<Unit filename="include/wg_eventhandler.h" />
 		<Unit filename="include/wg_eventlogger.h" />
 		<Unit filename="include/wg_font.h" />
@@ -141,6 +142,7 @@
 		<Unit filename="source/wg_cursorinstance.cpp" />
 		<Unit filename="source/wg_emitter.cpp" />
 		<Unit filename="source/wg_event.cpp" />
+		<Unit filename="source/wg_eventfilter.cpp" />
 		<Unit filename="source/wg_eventhandler.cpp" />
 		<Unit filename="source/wg_eventlogger.cpp" />
 		<Unit filename="source/wg_font.cpp" />

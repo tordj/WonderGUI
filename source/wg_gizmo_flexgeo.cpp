@@ -832,7 +832,7 @@ void WgFlexHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& cl
 
 				WgRectChain temp;
 				temp.PushExistingRect( pRect );
-				DoMaskRects( temp, screenGeo, clippedArea );
+				_doMaskRects( temp, screenGeo, clippedArea );
 				temp.Transfer( pDirtOut);
 			}
 		}
@@ -1376,7 +1376,7 @@ void WgGizmoFlexGeo::OnCollectRects( WgRectChain& rects, const WgRect& geo, cons
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		pHook->DoCollectRects( rects, pHook->m_realGeo + geo.pos(), clip );
+		pHook->_doCollectRects( rects, pHook->m_realGeo + geo.pos(), clip );
 		pHook = pHook->NextHook();
 	}
 }
@@ -1388,7 +1388,7 @@ void WgGizmoFlexGeo::OnMaskRects( WgRectChain& rects, const WgRect& geo, const W
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		pHook->DoMaskRects( rects, pHook->m_realGeo + geo.pos(), clip );
+		pHook->_doMaskRects( rects, pHook->m_realGeo + geo.pos(), clip );
 		pHook = pHook->NextHook();
 	}
 }
@@ -1412,7 +1412,7 @@ void WgGizmoFlexGeo::OnRequestRender( const WgRect& rect, const WgFlexHook * pHo
 	while( pCover )
 	{
 		if( pCover->m_realGeo.intersectsWith( pHook->m_realGeo ) )
-			pCover->DoMaskRects( rects, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
+			pCover->_doMaskRects( rects, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
 
 		pCover = pCover->NextHook();
 	}

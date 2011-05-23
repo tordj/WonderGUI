@@ -320,7 +320,7 @@ void WgGizmoRefreshButton::OnAction( WgInput::UserAction action, int button, con
 	{
 		case	WgInput::KEY_RELEASE:
 		{
-			if( m_bAutoRefresh && button == WGKEY_RETURN )
+			if( m_bAutoRefresh && button == WG_KEY_RETURN )
 				StartRefresh();
 
 			break;

@@ -809,7 +809,7 @@ void WgGfxDevice::BlitVertBar(	const WgSurface * _pSurf, const WgRect& _src,
 
 void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest )
 {
-	DrawTextBg(clip, pText, dest);
+	_drawTextBg(clip, pText, dest);
 
 	if( !pText || !pText->getFont()  )
 		return;
@@ -913,7 +913,7 @@ void WgGfxDevice::_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int
 			if( attr.bUnderlined && (i==0 || !bWasUnderlined) )
 			{
 				WgRect clip = pen.HasClipRect()?pen.GetClipRect():WgRect(0,0,65535,65535);
-				DrawUnderline( clip, pText, pen.GetPosX(), pen.GetPosY(), i, (ofs+len)-i );
+				_drawUnderline( clip, pText, pen.GetPosX(), pen.GetPosY(), i, (ofs+len)-i );
 			}
 
 		}
@@ -968,9 +968,9 @@ void WgGfxDevice::_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int
 
 
 
-//____ DrawTextBg() ___________________________________________________________
+//____ _drawTextBg() ___________________________________________________________
 
-void WgGfxDevice::DrawTextBg( const WgRect& _clip, const WgText * pText, const WgRect& dest )
+void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const WgRect& dest )
 {
 	WgRectChain	bgRects;
 	WgColor		bgColor;
@@ -1014,7 +1014,7 @@ void WgGfxDevice::DrawTextBg( const WgRect& _clip, const WgText * pText, const W
 
 	if( selStart != selEnd && pSelProp->IsBgColored() )
 	{
-		DrawTextSectionBg( clip, pText, dest, selStart, selEnd, pSelProp->GetBgColor(mode) );
+		_drawTextSectionBg( clip, pText, dest, selStart, selEnd, pSelProp->GetBgColor(mode) );
 	}
 	else
 	{
@@ -1037,7 +1037,7 @@ void WgGfxDevice::DrawTextBg( const WgRect& _clip, const WgText * pText, const W
 		if( ofs == selStart )
 		{
 			if( color != bgColor )
-				DrawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
+				_drawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
 
 			startOfs = selEnd;
 			ofs = startOfs;
@@ -1056,7 +1056,7 @@ void WgGfxDevice::DrawTextBg( const WgRect& _clip, const WgText * pText, const W
 				// Draw previous bg section which now ended
 
 				if( ofs != startOfs && color != bgColor )
-					DrawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
+					_drawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
 
 				// Set start and color of current background section
 
@@ -1070,11 +1070,12 @@ void WgGfxDevice::DrawTextBg( const WgRect& _clip, const WgText * pText, const W
 	// Draw last background section if it is colored
 
 	if( startOfs != nChars && color != bgColor )
-		DrawTextSectionBg( clip, pText, dest, startOfs, nChars, color );
+		_drawTextSectionBg( clip, pText, dest, startOfs, nChars, color );
 }
 
-//___________________________________________________________________________________________________
-void WgGfxDevice::DrawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect,
+//____ _drawTextSectionBg() ___________________________________________________
+
+void WgGfxDevice::_drawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect,
 									  int iStartOfs, int iEndOfs, WgColor color )
 {
 	const WgTextLine *	pLines = pText->getSoftLines();
@@ -1208,9 +1209,9 @@ void WgGfxDevice::PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgCha
 }
 
 
-//____ DrawUnderline() ________________________________________________________
+//____ _drawUnderline() ________________________________________________________
 
-void WgGfxDevice::DrawUnderline( const WgRect& clip, const WgText * pText, int _x, int _y, int ofs, int maxChars )
+void WgGfxDevice::_drawUnderline( const WgRect& clip, const WgText * pText, int _x, int _y, int ofs, int maxChars )
 {
 	Uint32 hProp = 0xFFFF;
 

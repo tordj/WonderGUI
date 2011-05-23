@@ -111,7 +111,7 @@ bool WgRoot::SetGizmo( WgGizmo * pGizmo )
 
 	new (&m_hook) Hook(pGizmo, this);
 
-	m_hook.DoCollectRects( m_dirtyRects, Geo(), Geo() );
+	m_hook._doCollectRects( m_dirtyRects, Geo(), Geo() );
 
 	return true;
 }
