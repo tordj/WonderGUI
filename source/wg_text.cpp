@@ -1876,7 +1876,12 @@ WgTextPos WgText::CoordToPos( const WgCord& coord, const WgRect& container, bool
 
 int WgText::CoordToOfs( const WgCord& coord, const WgRect& container, bool bCursorMode ) const
 {
-	return PosToOfs( CoordToPos( coord, container, bCursorMode ) );
+	WgTextPos pos = CoordToPos( coord, container, bCursorMode );
+
+	if( pos.line == -1 || pos.col == -1 )
+		return -1;
+	else
+		return PosToOfs( pos );
 }
 
 
@@ -1940,10 +1945,11 @@ WgTextPos WgText::OfsToPos( int ofs ) const
 
 //____ PosToCoordX() __________________________________________________________
 
-int WgText::PosToCoordX( const WgTextPos& pos, const WgRect& container ) const
+int WgText::PosToCoordX( const WgTextPos& _pos, const WgRect& container ) const
 {
 	//TODO: Take cursor and selection into account!!!
-	//TODO: Correct invalid position.
+
+	WgTextPos	pos = ClampPos(_pos);
 
 	WgTextLine * pLine = &m_pSoftLines[pos.line];
 
@@ -1993,23 +1999,30 @@ WgCord WgText::PosToCoord( const WgTextPos& pos, const WgRect& container ) const
 
 //____ PosToOfs() _____________________________________________________________
 
-int WgText::PosToOfs( const WgTextPos& pos ) const
+int WgText::PosToOfs( const WgTextPos& _pos ) const
 {
-	if( pos.line < 0 )
-		return 0;
-
-	if( pos.line >= m_nSoftLines )
-		return m_buffer.Length();
-
-	if( pos.col < 0 )
-		return m_pSoftLines[pos.line].ofs;
-
-	if( pos.col > m_pSoftLines[pos.line].nChars )
-		return m_pSoftLines[pos.line].ofs + m_pSoftLines[pos.line].nChars;
-
+	WgTextPos pos = ClampPos(_pos);
 	return m_pSoftLines[pos.line].ofs + pos.col;
 }
 
+//____ ClampPos() _____________________________________________________________
+
+WgTextPos WgText::ClampPos( WgTextPos pos ) const
+{
+	if( pos.line < 0 )
+		return WgTextPos(0,0);
+
+	if( pos.line >= m_nSoftLines )
+		return WgTextPos(m_nSoftLines-1, m_pSoftLines[m_nSoftLines-1].nChars);
+
+	if( pos.col < 0 )
+		return WgTextPos(pos.line,0);
+
+	if( pos.col > m_pSoftLines[pos.line].nChars )
+		return WgTextPos(pos.line, m_pSoftLines[pos.line].nChars );
+
+	return pos;
+}
 
 //____ LineColToOffset() ______________________________________________________
 

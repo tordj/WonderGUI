@@ -25,7 +25,7 @@
 
 //____ WgTextLink::Constructor ________________________________________________
 
-WgTextLink::WgTextLink( std::string link, WgTextLinkHandler * pHandler ) : 
+WgTextLink::WgTextLink( const std::string& link, WgTextLinkHandler * pHandler ) : 
 			m_bAccessed(false), m_pHandler(pHandler), m_link(link) 
 {
 }

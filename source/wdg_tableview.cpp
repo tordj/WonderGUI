@@ -1077,6 +1077,7 @@ void Wdg_TableView::ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 
 		SetContentSize(m_contentWidth, m_contentHeight+heightDiff);
 		RequestRender();		//TODO: This can be optimized, we might not need to render the whole view.
 	}
+
 }
 
 //____ ItemVisibilityModified() _______________________________________________
@@ -1206,10 +1207,10 @@ WgItem* Wdg_TableView::GetMarkedItem( Uint32 x, Uint32 y )
 	// Cell found, check so we are inside the cells padding.
 
 	int scaledW = (int) m_pColumns[column].m_pixelWidth;
-	if( xOfs < m_cellPaddingX || (int) xOfs > scaledW - m_cellPaddingX )
+	if( xOfs < m_cellPaddingX || (int) xOfs - m_cellPaddingX > scaledW )
 		return 0;
 
-	if( yOfs < m_cellPaddingY || yOfs > pRow->Height() - m_cellPaddingY )
+	if( yOfs < m_cellPaddingY || yOfs - m_cellPaddingY > pRow->Height() )
 		return 0;
 
 
@@ -1380,7 +1381,8 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 			r2.w = (int)m_pColumns[i].m_pixelWidth +1;		// +1 to compensate for pixel overlap-hack further down.
 			//if( i == m_nColumns-1 && r2.x + r2.w < _window.x + _window.w )
-//			if( i == m_nColumns-1 )
+			if( i == m_nColumns-1 )
+				r2.w = (int)m_pColumns[i].m_pixelWidth;		// Don't compensate on last column header
 //				r2.w = _window.x + _window.w - r2.x;		// Last column header stretches to end of tableview...
 
 			WgMode mode = WG_MODE_NORMAL;
@@ -1654,7 +1656,7 @@ WgTableColumn *Wdg_TableView::GetHeaderColumnAt(int x, int y)
 			if( m_pColumns[col].m_bVisible )
 			{
 				int scaledW = (int) m_pColumns[col].m_pixelWidth;
-//				if( xOfs < scaledW || col == m_nColumns-1 )	// Last column header stretches to end of tableview...
+//				if( xOfs < scaledW )
 //					return &m_pColumns[col];
 				xOfs -= scaledW - 1;
 			}

@@ -44,10 +44,10 @@ typedef	WgSmartPtr<class WgTextLink> WgTextLinkPtr;
 class WgTextLink : public WgRefCounted
 {
 public:
-	static WgTextLinkPtr Create( std::string link, WgTextLinkHandler * pHandler ) { return new WgTextLink(link,pHandler); }
+	static WgTextLinkPtr Create( const std::string& link, WgTextLinkHandler * pHandler ) { return new WgTextLink(link,pHandler); }
 
 	WgTextLinkHandler *		Handler() const { return m_pHandler; }
-	std::string				Link() const { return m_link; }
+	const std::string&		Link() const { return m_link; }
 	bool					HasBeenAccessed() const { return m_bAccessed; }
 
 private:
@@ -55,7 +55,7 @@ private:
 	WgTextLinkHandler *		m_pHandler;
 	std::string				m_link;
 
-	WgTextLink( std::string link, WgTextLinkHandler * pHandler );
+	WgTextLink( const std::string& link, WgTextLinkHandler * pHandler );
 	~WgTextLink() {}
 };
 

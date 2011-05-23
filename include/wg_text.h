@@ -363,6 +363,8 @@ public:
 	int				CoordToOfs( const WgCord& coord, const WgRect& container, bool bCursorMode = false ) const;
 	WgTextLinkPtr	CoordToLink( const WgCord& coord, const WgRect& container ) const;
 
+	// WgTextPos is automatically clamped for all PosTo...-methods.
+
 	int				PosToCoordX( const WgTextPos& pos, const WgRect& container ) const;
 	int				PosToCoordY( const WgTextPos& pos, const WgRect& container ) const;
 	WgCord			PosToCoord( const WgTextPos& pos, const WgRect& container ) const;
@@ -373,7 +375,7 @@ public:
 	WgCord			OfsToCoord( int ofs, const WgRect& container ) const;
 	WgTextPos		OfsToPos( int ofs ) const;
 
-
+	WgTextPos		ClampPos( WgTextPos ) const;
 
 
 	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCord& pointerOfs );
