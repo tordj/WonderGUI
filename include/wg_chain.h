@@ -77,7 +77,7 @@ public:
 
 	inline T*		Get( int index ) const { return (T*) WgChainImp::Get(index); };
 
-	inline Uint32	Size() const { return m_size; }
+	inline int		Size() const { return m_size; }
 };
 
 

@@ -57,12 +57,15 @@ WgGizmoTablist::WgGizmoTablist()
 
 	m_minTabWidth	= 0;
 	m_overlap		= 0;
+	m_maxOverlap	= 0;
 
-//	m_textOrigo		= WgOrigo::topLeft();
+	m_tabWidthMode		= INDIVIDUAL_WIDTH;
+	m_tabExpandMode		= NO_EXPAND;
+	m_tabCompressMode	= NO_COMPRESS;
+
 	m_textOrigo		= WgOrigo::midCenter();
 
 	m_bTabOpaqueForMouse = false;
-	m_tabWidthMode	= TabWidthModeNormal;
 	m_widestTab		= 0;
 }
 
@@ -96,9 +99,6 @@ void WgGizmoTablist::SetTextProperties( const WgTextPropPtr& pProp )
 
 		// Change font for all tabs.
 
-		// the font is set on every render anyway,
-		// so i'll comment out this part
-
 		WgTab * pTab = m_tabs.First();
 		while( pTab )
 		{
@@ -108,7 +108,7 @@ void WgGizmoTablist::SetTextProperties( const WgTextPropPtr& pProp )
 
 		//
 
-		ResizeAllTabs();
+		ResizeTabs();
 		RequestRender();
 	}
 
@@ -127,32 +127,73 @@ void WgGizmoTablist::SetSource( WgBlockSetPtr pBlockSet, SourceType type )
 	}
 
 	m_sources[type] = pBlockSet;
+	ResizeTabs();
 	RequestRender();
 }
 
+//____ SetTabExpandMode() _____________________________________________________
+
+void WgGizmoTablist::SetTabExpandMode( TabExpandMode mode )
+{
+	m_tabExpandMode = mode;
+	ResizeTabs();
+	RequestRender();
+}
+
+//____ SetTabCompressMode() ___________________________________________________
+
+void WgGizmoTablist::SetTabCompressMode( TabCompressMode mode )
+{
+	m_tabCompressMode = mode;
+	ResizeTabs();
+	RequestRender();
+}
+
+//____ SetTabWidthMode() ______________________________________________________
+
+void WgGizmoTablist::SetTabWidthMode( TabWidthMode mode )
+{
+	m_tabWidthMode = mode;
+	ResizeTabs();
+	RequestRender();
+}
 
 
 //____ SetOverlap() ___________________________________________________________
 
-void WgGizmoTablist::SetOverlap( Uint16 overlap )
+void WgGizmoTablist::SetOverlap( int overlap )
 {
 	m_overlap = overlap;
+	ResizeTabs();
 	RequestRender();
+}
+
+//____ SetMaxOverlap() ________________________________________________________
+
+void WgGizmoTablist::SetMaxOverlap( int maxOverlap )
+{
+	m_maxOverlap = maxOverlap;
+
+	if( m_tabCompressMode == OVERLAP_TABS )
+	{
+		ResizeTabs();
+		RequestRender();
+	}
 }
 
 //____ SetMinTabWidth() _______________________________________________________
 
-void WgGizmoTablist::SetMinTabWidth( Uint16 minWidth )
+void WgGizmoTablist::SetMinTabWidth( int minWidth )
 {
 	m_minTabWidth	= minWidth;
 
-	if( ResizeAllTabs() )
-		RequestRender();
+	ResizeTabs();
+	RequestRender();
 }
 
 //____ SetAlertRate() _________________________________________________________
 
-void WgGizmoTablist::SetAlertRate( Uint32 millisec )
+void WgGizmoTablist::SetAlertRate( int millisec )
 {
 	m_alertRate = millisec;
 }
@@ -163,13 +204,6 @@ void WgGizmoTablist::SetTextOrigo( WgOrigo origo )
 {
 	m_textOrigo = origo;
 	RequestRender();
-}
-
-//____ SetExpandTabsToWidth() _________________________________________________
-
-void WgGizmoTablist::SetTabWidthMode(TabWidthMode mode)
-{
-	m_tabWidthMode = mode;
 }
 
 //____ AddTab() _______________________________________________________________
@@ -187,13 +221,14 @@ bool WgGizmoTablist::AddTab( int id, const WgCharSeq& text, int position, const 
 	pTab->m_text.setText(text);
 	pTab->m_text.setProperties(m_pProp);
 	pTab->SetSource( pGfx );
-	ResizeTab(pTab);
 
 	WgTab * pPos = m_tabs.Get(position);
 	if( pPos )
 		pTab->MoveBefore(pPos);
 	else
 		m_tabs.PushBack(pTab);
+
+	ResizeTabs();
 	RequestRender();
 	return true;
 }
@@ -211,6 +246,7 @@ bool WgGizmoTablist::RemoveTab( int id )
 			m_pTabMarked = 0;
 
 		delete pTab;
+		ResizeTabs();
 		RequestRender();
 		return true;
 	}
@@ -291,7 +327,7 @@ bool WgGizmoTablist::SetTabText( int id, const WgCharSeq& text )
 	if( pTab )
 	{
 		pTab->m_text.setText( text );
-		ResizeTab(pTab);
+		ResizeTabs();
 		RequestRender();
 		return true;
 	}
@@ -324,14 +360,14 @@ bool WgGizmoTablist::SelectTab( int id )
 	{
 		m_pTabSelected = pTab;
 		pTab->m_bAlert = false;		// Selecting automatically stops any alert.
-		ResizeAllTabs();	// fonts have changed
+		ResizeTabs();				// fonts have changed
 		RequestRender();
 
 		Emit( WgSignal::TabSelected(), pTab->m_id );
 		return true;
 	}
 
-	ResizeAllTabs();	// fonts have changed
+	ResizeTabs();		// fonts have changed
 	RequestRender();
 
 	return false;
@@ -393,7 +429,8 @@ bool WgGizmoTablist::GetAlert( int id )
 	return false;
 }
 
-//____ () ______________________________________________________________
+//____ ShowTabl() ______________________________________________________________
+
 bool WgGizmoTablist::ShowTab( int id, bool bVisible )
 {
 	WgTab * pTab = FindTab(id);
@@ -410,6 +447,7 @@ bool WgGizmoTablist::ShowTab( int id, bool bVisible )
 			}
 
 			pTab->m_bVisible = bVisible;
+			ResizeTabs();
 			RequestRender();
 		}
 		return true;
@@ -479,7 +517,7 @@ void WgGizmoTablist::UnlockTabContent( int id )
 	if( pTab )
 	{
 		pTab->m_bLockedContent = false;
-		ResizeTab( pTab );
+		ResizeTabs();
 		RequestRender();
 	}
 }
@@ -491,15 +529,20 @@ WgTab* WgGizmoTablist::GetSelectedTab()
 }
 
 //____ GetFirstTab() ______________________________________________________________
+
 WgTab* WgGizmoTablist::GetFirstTab()
 {
 	return m_tabs.First();
 }
 
+//____ GetLastTab() ______________________________________________________________
+
 WgTab* WgGizmoTablist::GetLastTab()
 {
 	return m_tabs.Last();
 }
+
+//____ GetFirstVisibleTab() ___________________________________________________
 
 WgTab* WgGizmoTablist::GetFirstVisibleTab()
 {
@@ -508,6 +551,8 @@ WgTab* WgGizmoTablist::GetFirstVisibleTab()
 		pTab = pTab->Next();
 	return pTab;
 }
+
+//____ GetLastVisibleTab() ____________________________________________________
 
 WgTab* WgGizmoTablist::GetLastVisibleTab()
 {
@@ -568,29 +613,314 @@ WgMode	WgGizmoTablist::GetTabMode(const WgTab& tab)
 		return WG_MODE_MARKED;
 	else
 		return WG_MODE_NORMAL;
-
-/*
-	if( !m_bEnabled )
-		return src.m_pTabBlock->GetBlock( WG_MODE_DISABLED );
-	else if( m_bAlertOn && tab.m_bAlert )
-		return src.m_pTabBlock->GetBlock( WG_MODE_SPECIAL );
-//	else if( m_pTabMarked == &tab && m_pTabSelected == &tab )
-//		cord = src.m_srcSelectedMarked;
-	else if( m_pTabSelected == &tab )
-		return src.m_pTabBlock->GetBlock( WG_MODE_SELECTED );
-	else if( m_pTabMarked == &tab )
-		return src.m_pTabBlock->GetBlock( WG_MODE_MARKED );
-	else
-		return src.m_pTabBlock->GetBlock( WG_MODE_NORMAL );
-*/
 }
 
-//____ ResizeTab() ____________________________________________________________
+//____ ResizeTabs() ___________________________________________________________
 
-bool WgGizmoTablist::ResizeTab( WgTab * pTab )
+void WgGizmoTablist::ResizeTabs()
 {
-	bool retVal = false;
+	if( m_tabs.Size() == 0 )
+		return;
 
+	// First we calculate and set the start width for all tabs
+
+	switch( m_tabWidthMode )
+	{
+		case UNIFIED_WIDTH:
+		{
+			int widest = 0;
+			WgTab * pTab = m_tabs.First();
+			while( pTab )
+			{
+				int w = CalcTabsWantedWidth(pTab);
+				if( w > widest )
+					widest = w;
+				pTab = pTab->Next();
+			}
+
+			pTab = m_tabs.First();
+			while( pTab )
+			{
+				pTab->m_width = widest;
+				pTab->m_advance = widest - m_overlap;
+				pTab = pTab->Next();
+			}
+
+		}
+			break;
+
+		default:
+			assert(0);					// Should never happen, but we will default to INDIVIDUAL_WIDTH if it does.
+		case INDIVIDUAL_WIDTH:
+		{
+			WgTab * pTab = m_tabs.First();
+			while( pTab )
+			{
+				pTab->m_width = CalcTabsWantedWidth(pTab);
+				pTab->m_advance = pTab->m_width - m_overlap;
+				pTab = pTab->Next();
+			}
+			break;
+		}
+	}
+
+	// Count total width
+
+	int totalWidth = 0;
+
+	WgTab * pTab = m_tabs.First();
+
+	for( int i = 0 ; i < m_tabs.Size()-1 ; i++ )
+	{
+		totalWidth += pTab->m_advance;				// Add advance for all but last tab.
+		pTab = pTab->Next();
+	}
+
+	totalWidth += pTab->m_width;					// Add width for last tab.
+
+	// Shrink or grow tabs and advance as applicable
+
+	if( totalWidth < Size().w )
+	{
+		switch( m_tabExpandMode )
+		{
+			case GROW_TABS:
+			{
+				int goal = Size().w;
+				int diff = goal - totalWidth;
+
+				int combWidth = 0;							// Combined width of tabs, ignoring overlaps.
+				WgTab * pTab = m_tabs.First();
+				while( pTab )
+				{
+					combWidth += pTab->m_width;
+					pTab = pTab->Next();
+				}
+
+				float	growFactor = diff / (float) combWidth;
+				float	fractions = 0.f;
+
+				pTab = m_tabs.First();
+				while( pTab )
+				{
+					float inc = fractions + pTab->m_width * growFactor;			
+					fractions = inc - (int) inc;
+					pTab->m_width += (int) inc;
+					pTab->m_advance += (int) inc;
+					diff -= (int) inc;
+					pTab = pTab->Next();
+				}
+
+				// Make sure last tab ends exactly on pixel.
+
+				if( diff > 0 )
+				{
+					m_tabs.Last()->m_width += diff;
+					m_tabs.Last()->m_advance += diff;
+				}
+
+				break;
+			}
+			case SPREAD_TABS:
+			{
+				int diff = Size().w - totalWidth;
+				int nSpaces = m_tabs.Size()-1;
+
+				float	incFactor = diff / (float) nSpaces;
+				float	fractions = 0.f;
+
+				WgTab * pTab = m_tabs.First();
+				for( int i = 0 ; i < nSpaces ; i++ )
+				{
+					float inc = fractions + incFactor;			
+					fractions = inc - (int) inc;
+					pTab->m_advance += (int) inc;
+					diff -= (int) inc;
+					pTab = pTab->Next();
+				}
+
+				// Make sure last tab ends exactly on pixel, i.e
+				// we use up all the diff.
+
+				if( diff > 0 )
+					pTab->m_advance += diff;
+
+				break;
+			}
+
+			case UNIFY_TABS:
+			{
+				// Set widest tab as our unifiedWidth
+
+				int unifiedWidth = 0;							// Combined width of tabs, ignoring overlaps.
+				WgTab * pTab = m_tabs.First();
+				while( pTab )
+				{
+					if( pTab->m_width > unifiedWidth )
+						unifiedWidth = pTab->m_width;
+					pTab = pTab->Next();
+				}
+				
+				// Calculate number of pixels we want to expand in total
+
+				int totalExpand = 0;
+				pTab = m_tabs.First();
+				while( pTab )
+				{
+					if( pTab->m_width < unifiedWidth )
+						totalExpand += unifiedWidth - pTab->m_width;
+					pTab = pTab->Next();
+				}
+
+				// translate to growFactor
+
+				int goal = Size().w;
+				int diff = goal - totalWidth;
+
+				if( diff > totalExpand )
+					diff = totalExpand;
+
+				float	growFactor = diff / (float) totalExpand;
+				float	fractions = 0.f;
+
+				// 
+
+				pTab = m_tabs.First();
+				while( pTab )
+				{
+					if( pTab->m_width < unifiedWidth )
+					{
+						float inc = fractions + (unifiedWidth - pTab->m_width) * growFactor;			
+						fractions = inc - (int) inc;
+						pTab->m_width += (int) inc;
+						pTab->m_advance += (int) inc;
+						diff -= (int) inc;
+					}
+					pTab = pTab->Next();
+				}
+
+				// Make sure last tab ends exactly on pixel.
+				// We do this by adding any leftover diff to
+				// last tab that isn't of the unified width.
+
+				if( diff > 0 )
+				{
+					pTab = m_tabs.Last();
+					while( pTab )
+					{
+						if( pTab->m_width < unifiedWidth )
+						{
+							pTab->m_width += diff;
+							pTab->m_advance += diff;
+							break;
+						}
+						pTab = pTab->Prev();
+					}
+				}
+				break;
+			}
+
+			default:
+				assert(false);				// Should never happen, but we will default to NO_EXPAND if it does.
+			case NO_EXPAND:
+				break;
+		}
+	}
+	else if( totalWidth > Size().w )
+	{
+		switch( m_tabCompressMode )
+		{
+			case SHRINK_TABS:
+			{
+				// We start out with all tabs at minimum width (m_minTabWidth) and add extra space
+				// relative to their width beyond the minimum.
+
+				int minTotalWidth = m_tabs.Size()*m_minTabWidth - (m_tabs.Size()-1)*m_overlap;
+				int widthToShare = Size().w - minTotalWidth;
+
+				if( widthToShare <= 0 )
+				{
+					// Just set all tabs to minimum width
+
+					WgTab * pTab = m_tabs.First();
+					while( pTab )
+					{
+						pTab->m_width = m_minTabWidth;
+						pTab->m_advance = m_minTabWidth - m_overlap;
+						pTab = pTab->Next();
+					}
+				}
+				else
+				{
+					// Add widthToShare in relation to their current width.
+
+					float	scaleFactor = widthToShare / (float) (totalWidth - minTotalWidth);
+					float	fractions = 0.f;
+
+					WgTab * pTab = m_tabs.First();
+					while( pTab )
+					{
+						float width = fractions + m_minTabWidth + (pTab->m_width - m_minTabWidth)*scaleFactor;
+						fractions = width - (int) width;
+
+						pTab->m_width = (int) width;
+						pTab->m_advance = ((int) width) - m_overlap;
+						widthToShare -= (int) width;
+						pTab = pTab->Next();
+					}
+
+					if( widthToShare > 0 )
+					{
+						m_tabs.Last()->m_width += widthToShare;
+						m_tabs.Last()->m_advance += widthToShare;
+					}
+				}
+				break;
+			}
+			case OVERLAP_TABS:
+			{
+				if( m_maxOverlap <= m_overlap )
+					break;
+
+				int diff = totalWidth - Size().w;
+				int nSpaces = m_tabs.Size()-1;
+
+				float	decFactor = diff / (float) nSpaces;
+				float	fractions = 0.f;
+
+				if( decFactor > (float) m_maxOverlap - m_overlap )
+					decFactor = (float) m_maxOverlap - m_overlap;
+
+				WgTab * pTab = m_tabs.First();
+				for( int i = 0 ; i < nSpaces ; i++ )
+				{
+					float dec = fractions + decFactor;			
+					fractions = dec - (int) dec;
+					pTab->m_advance -= (int) dec;
+					diff -= (int) dec;
+					pTab = pTab->Next();
+				}
+
+				// Make sure last tab ends exactly on pixel, i.e
+				// we use up all the diff.
+
+				if( diff > 0 && decFactor < m_maxOverlap - m_overlap )
+					pTab->m_advance -= diff;
+
+				break;
+			}
+			default:
+				assert(false);				// Should never happen, but we will default to NO_COMPRESS if it does.
+			case NO_COMPRESS:
+				break;
+		}
+	}
+}
+
+//____ CalcTabsWantedWidth() _______________________________________________________
+
+int WgGizmoTablist::CalcTabsWantedWidth( WgTab * pTab )
+{
 	int width = pTab->m_text.width();
 
 	if( pTab->m_pItemRow )
@@ -610,44 +940,9 @@ bool WgGizmoTablist::ResizeTab( WgTab * pTab )
 	if( width < pSrc->GetMinWidth() )
 		width = pSrc->GetMinWidth();
 
-	if( m_tabWidthMode == TabWidthModeUnified )
-	{
-		if(width < m_widestTab)
-			width = m_widestTab;
-		else if(width > m_widestTab)
-		{
-			m_widestTab = width;
-			for( WgTab *pTab2 = m_tabs.First(); pTab2; pTab2 = pTab2->Next() )
-				pTab2->m_width = m_widestTab;
-			retVal = true;
-		}
-	}
-
-	if( width != (int) pTab->m_width )
-	{
-		pTab->m_width = width;
-		retVal = true;
-	}
-
-	return retVal;
+	return width;
 }
 
-//____ ResizeAllTabs() ________________________________________________________
-
-bool WgGizmoTablist::ResizeAllTabs()
-{
-	bool	retval = false;
-
-	WgTab * pTab = m_tabs.First();
-	while( pTab )
-	{
-		if( ResizeTab(pTab) )
-			retval = true;
-		pTab = pTab->Next();
-	}
-
-	return retval;
-}
 
 //____ Pos2Tab() ______________________________________________________________
 
@@ -655,8 +950,6 @@ WgTab * WgGizmoTablist::Pos2Tab( int x, int y )
 {
 	if( x < 0 || y < 0 )
 		return 0;
-
-	float scaleFactor = CalcTabScaleFactor();
 
 	bool bMovingUp = true;
 	WgTab * pHit = NULL;
@@ -667,13 +960,10 @@ WgTab * WgGizmoTablist::Pos2Tab( int x, int y )
 	{
 		if(pTab->m_bVisible)
 		{
-			Uint32 w = (Uint32) (pTab->m_width*scaleFactor + 0.5f);
+			Uint32 w = pTab->m_width;
 
-			if(m_tabWidthMode == TabWidthModeExpand && pTab->Next() == 0)
-				w = sz.w - x;
-
-			if(pTab == m_pTabSelected)
-				bMovingUp = false;
+//			if(pTab == m_pTabSelected)
+//				bMovingUp = false;
 
 			WgBlockSetPtr pSrc = GetTabSource(pTab);
 			bool	bHit = false;
@@ -691,14 +981,20 @@ WgTab * WgGizmoTablist::Pos2Tab( int x, int y )
 
 			if( bHit )
 			{
-				// Handle overlap
+/*				// Handle overlap
 				if(bMovingUp)
 					pHit = pTab;
 				else
 					return pTab;
+*/
+
+				if( pTab == m_pTabSelected )
+					return pTab;
+				else
+					pHit = pTab;
 			}
 
-			x -= w - m_overlap;
+			x -= pTab->m_advance;
 		}
 		pTab = pTab->Next();
 	}
@@ -731,110 +1027,39 @@ void WgGizmoTablist::OnUpdate( const WgUpdateInfo& _updateInfo )
 	}
 }
 
-//____ CalcTabScaleFactor() ___________________________________________________
-
-float WgGizmoTablist::CalcTabScaleFactor()
-{
-	float scaleFactor = 1.f;
-
-	int xLen = 0;
-	int nTabs = 0;
-	WgTab * pTab = m_tabs.First();
-	while( pTab )
-	{
-		if(pTab->m_bVisible)
-		{
-			xLen += pTab->m_width;
-			nTabs++;
-		}
-		pTab = pTab->Next();
-	}
-
-	if(m_tabWidthMode == TabWidthModeExpand2)
-	{
-		m_overlap = -(Size().w - xLen) / (nTabs - 1);
-	}
-
-	int maxLen = Size().w + m_overlap*(nTabs-1);
-	if( m_tabWidthMode == TabWidthModeExpand || xLen > maxLen )
-	{
-		scaleFactor =  maxLen / (float) xLen;
-	}
-
-	return scaleFactor;
-}
-
-
 //____ OnRender() ________________________________________________________
 
 void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& clip, Uint8 _layer )
 {
 	Uint32	selectedX	= INT_MAX;			// X-offset for selected tab.
 
-	float scaleFactor = CalcTabScaleFactor();
-
-	// Render all normal tabs
-
-	// Render all tabs to the left of the selected tab first
-
+	// Render all normal tabs first
 
 	int xOfs = (int)_canvas.x;
-	int width;
 	WgTab * pTab = m_tabs.First();
 	while( pTab )
 	{
 		if(pTab->m_bVisible)
 		{
-			width = (int)(pTab->m_width*scaleFactor + 0.5f);
-			// expand last tab to canvas edge
-			if(m_tabWidthMode == TabWidthModeExpand && pTab == GetLastVisibleTab())
-				width = _canvas.x + _canvas.w - xOfs;
-
-			WgRect r( xOfs, _canvas.y, width, _canvas.h );
-
-//			Uint32 yOfs = window.y + window.h - GetTabSource(pTab).m_srcH;
+			WgRect r( xOfs, _canvas.y, pTab->m_width, _canvas.h );
 
 			if( pTab == m_pTabSelected )
 				selectedX = xOfs;
-			else if( selectedX == INT_MAX )
+			else
 				RenderTab( pDevice, *pTab, r, clip );
 
-			xOfs += width - m_overlap;
+			xOfs += pTab->m_advance;
 		}
 		pTab = pTab->Next();
 	}
 
+	// Render selected tab last, makes sure it comes out ontop.
+
 	if( m_pTabSelected && m_pTabSelected->m_bVisible )
 	{
-		// Now render all tabs to the right of the selected tab
-		WgTab * pTab = m_tabs.Last();
-		while( pTab )
-		{
-			if(pTab->m_bVisible)
-			{
-				// expand last tab to window edge
-				if(m_tabWidthMode == TabWidthModeExpand && pTab == GetLastVisibleTab())
-				{
-					xOfs -= width - m_overlap;
-				}
-				else
-				{
-					width = (int)(pTab->m_width*scaleFactor + 0.5f);
-					xOfs -= width - m_overlap;
-				}
-
-
-				WgRect r( xOfs, _canvas.y, width, _canvas.h );
-
-				RenderTab( pDevice, *pTab, r, clip );
-				if( pTab == m_pTabSelected )
-					break;
-			}
-
-			pTab = pTab->Prev();
-		}
-	}
-
+		WgRect r( selectedX, _canvas.y, m_pTabSelected->m_width, _canvas.h );
+		RenderTab( pDevice, *m_pTabSelected, r, clip );
+	}	
 }
 
 //____ RenderTab() _______________________________________________________
@@ -865,26 +1090,29 @@ void WgGizmoTablist::RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, 
 		r.w -= rowWidth;
 	}
 
-	//WgRect	text( xOfs + m_contentRect.x, yOfs + m_contentRect.y, m_contentRect.w + (tab.m_width - m_srcH), m_contentRect.h );
-
 	tab.m_text.setAlignment(m_textOrigo);
-	/*if( m_pTabSelected == &tab )
-		tab.m_text.setFonts(m_pSelectedFonts);
-	else
-		tab.m_text.setFonts(m_pFonts);*/
 
 	WgRect clip2( clip, r );
 	tab.m_text.setMode(mode);
 	pDevice->PrintText( clip2, &tab.m_text, r );
 }
 
-//____ OnRefresh() _______________________________________________________
+//____ OnRefresh() ____________________________________________________________
 
 void WgGizmoTablist::OnRefresh( void )
 {
-	ResizeAllTabs();
+	ResizeTabs();
 	RequestRender();
 }
+
+//____ OnNewSize() ____________________________________________________________
+
+void WgGizmoTablist::OnNewSize( const WgSize& size )
+{
+	ResizeTabs();
+}
+
+
 
 //____ OnAction() _____________________________________________________________
 
@@ -962,8 +1190,11 @@ void WgGizmoTablist::OnCloneContent( const WgGizmo * _pOrg )
 
 	m_minTabWidth	= pOrg->m_minTabWidth;
 	m_overlap		= pOrg->m_overlap;
+	m_maxOverlap	= pOrg->m_maxOverlap;
 
 	m_tabWidthMode			= pOrg->m_tabWidthMode;
+	m_tabExpandMode			= pOrg->m_tabExpandMode;
+	m_tabCompressMode		= pOrg->m_tabCompressMode;
 	m_widestTab				= pOrg->m_widestTab;
 	m_bTabOpaqueForMouse	= pOrg->m_bTabOpaqueForMouse;
 

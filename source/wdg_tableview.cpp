@@ -1133,8 +1133,8 @@ void Wdg_TableView::ScrollIntoView( WgTableRow* pRow )
 
 	if( itemPosY < viewOfsMin )							// is the row above the view?
 		SetViewPixelOfsY( itemPosY );
-	else if( GetHeaderHeight() + itemPosY + pRow->Height() > viewOfsMax )	// is the row below the view?
-		SetViewPixelOfsY( GetHeaderHeight() + itemPosY + pRow->Height() - ViewPixelLenY() );
+	else if( GetHeaderHeight() + itemPosY + pRow->Height() + m_cellPaddingY*2 > viewOfsMax )	// is the row below the view?
+		SetViewPixelOfsY( GetHeaderHeight() + itemPosY + pRow->Height() + m_cellPaddingY*2 - ViewPixelLenY() );
 }
 
 //____ DoMyOwnGeometryChange() ________________________________________________

@@ -4584,6 +4584,7 @@ void Wdg_Pixmap_Res::Serialize(WgResourceSerializerXML& s)
 //	const WgXmlNode& xmlNode = XmlNode();
 
 	WriteBlockSetAttr(s, widget->GetSource(), "blockset");
+	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
 
 	s.EndTag();
 }
@@ -4595,6 +4596,7 @@ void Wdg_Pixmap_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerX
 	WgWidgetRes::Deserialize(xmlNode, s);
 
 	widget->SetSource(s.ResDb()->GetBlockSet(xmlNode["blockset"]));
+	widget->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
 
 }
 
@@ -5105,20 +5107,41 @@ void Wdg_TabList_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteTextPropAttr(s, widget->GetTextProperties(), "textprop");
 	WriteBlockSetAttr(s, widget->GetSource(), "blockset");
-	WriteDiffAttr<Uint16>(s, xmlNode, "overlap", widget->GetOverlap(), 0);
-	WriteDiffAttr<Uint16>(s, xmlNode, "minwidth", widget->GetMinTabWidth(), 0);
-	WriteDiffAttr<Uint32>(s, xmlNode, "alertrate", widget->GetAlertRate(), 250);
+	WriteDiffAttr<Sint32>(s, xmlNode, "overlap", widget->GetOverlap(), 0);
+	WriteDiffAttr<Sint32>(s, xmlNode, "maxoverlap", widget->GetMaxOverlap(), 0);
+	WriteDiffAttr<Sint32>(s, xmlNode, "minwidth", widget->GetMinTabWidth(), 0);
+	WriteDiffAttr<Sint32>(s, xmlNode, "alertrate", widget->GetAlertRate(), 250);
 	WriteDiffAttr(s, xmlNode, "textorigo", widget->GetTextOrigo(), WgOrigo::topLeft());
 	WriteDiffAttr(s, xmlNode, "opaque_tabs", widget->getTabMouseOpacity(), false );
 
-	if(widget->GetTabWidthMode() != Wdg_TabList::TabWidthModeNormal || xmlNode.HasAttribute("tabmode"))
+	if(widget->GetTabWidthMode() != Wdg_TabList::INDIVIDUAL_WIDTH || xmlNode.HasAttribute("tabwidth"))
 	{
 		Wdg_TabList::TabWidthMode mode = widget->GetTabWidthMode();
-		std::string value = "normal";
-		if(mode == Wdg_TabList::TabWidthModeUnified) value = "unified";
-		else if(mode == Wdg_TabList::TabWidthModeExpand) value = "expand";
-		else if(mode == Wdg_TabList::TabWidthModeExpand2) value = "expand2";
-		s.AddAttribute("tabmode", value);
+		std::string value = "individual";
+		if(mode == Wdg_TabList::UNIFIED_WIDTH) value = "unified";
+
+		s.AddAttribute("tabwidth", value);
+	}
+
+	if(widget->GetTabExpandMode() != Wdg_TabList::NO_EXPAND || xmlNode.HasAttribute("tabexpand"))
+	{
+		Wdg_TabList::TabExpandMode mode = widget->GetTabExpandMode();
+		std::string value = "none";
+		if(mode == Wdg_TabList::GROW_TABS) value = "grow";
+		else if(mode == Wdg_TabList::GROW_TABS) value = "spread";
+		else if(mode == Wdg_TabList::UNIFY_TABS) value = "unify";
+		
+		s.AddAttribute("tabexpand", value);
+	}
+
+	if(widget->GetTabCompressMode() != Wdg_TabList::NO_COMPRESS || xmlNode.HasAttribute("tabcompress"))
+	{
+		Wdg_TabList::TabCompressMode mode = widget->GetTabCompressMode();
+		std::string value = "none";
+		if(mode == Wdg_TabList::SHRINK_TABS) value = "shrink";
+		else if(mode == Wdg_TabList::OVERLAP_TABS) value = "overlap";
+		
+		s.AddAttribute("tabcompress", value);
 	}
 
 	for(WgTab*tab = widget->GetFirstTab(); tab; tab = tab->Next())
@@ -5142,19 +5165,31 @@ void Wdg_TabList_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	widget->SetTextProperties(s.ResDb()->GetTextProp(xmlNode["textprop"]));
 	WgBlockSetPtr blockset = s.ResDb()->GetBlockSet(xmlNode["blockset"]);
 	widget->SetSource( blockset, Wdg_TabList::SourceTypeAll);
-	widget->SetOverlap(WgUtil::ToUint16(xmlNode["overlap"]));
-	widget->SetMinTabWidth(WgUtil::ToUint16(xmlNode["minwidth"]));
-	widget->SetAlertRate(WgUtil::ToUint32(xmlNode["alertrate"]));
+	widget->SetOverlap(WgUtil::ToSint32(xmlNode["overlap"]));
+	widget->SetMaxOverlap(WgUtil::ToSint32(xmlNode["maxoverlap"]));
+	widget->SetMinTabWidth(WgUtil::ToSint32(xmlNode["minwidth"]));
+	widget->SetAlertRate(WgUtil::ToSint32(xmlNode["alertrate"]));
 	widget->SetTextOrigo(WgUtil::ToOrigo(xmlNode["textorigo"]));
 	widget->setTabMouseOpacity(WgUtil::ToBool(xmlNode["opaque_tabs"]));
 
-
-	std::string mode = xmlNode["tabmode"];
-	if(mode.empty() || mode == "normal")widget->SetTabWidthMode(Wdg_TabList::TabWidthModeNormal);
-	else if(mode == "unified")			widget->SetTabWidthMode(Wdg_TabList::TabWidthModeUnified);
-	else if(mode == "expand")			widget->SetTabWidthMode(Wdg_TabList::TabWidthModeExpand);
-	else if(mode == "expand2")			widget->SetTabWidthMode(Wdg_TabList::TabWidthModeExpand2);
+	std::string mode = xmlNode["tabwidth"];
+	if(mode.empty() || mode == "individual")widget->SetTabWidthMode(Wdg_TabList::INDIVIDUAL_WIDTH);
+	else if(mode == "unified")			widget->SetTabWidthMode(Wdg_TabList::UNIFIED_WIDTH);
 	else assert(0);
+
+	mode = xmlNode["tabexpand"];
+	if(mode.empty() || mode == "none")widget->SetTabExpandMode(Wdg_TabList::NO_EXPAND);
+	else if(mode == "grow")			widget->SetTabExpandMode(Wdg_TabList::GROW_TABS);
+	else if(mode == "spread")			widget->SetTabExpandMode(Wdg_TabList::SPREAD_TABS);
+	else if(mode == "unify")			widget->SetTabExpandMode(Wdg_TabList::UNIFY_TABS);
+	else assert(0);
+
+	mode = xmlNode["tabcompress"];
+	if(mode.empty() || mode == "none")widget->SetTabCompressMode(Wdg_TabList::NO_COMPRESS);
+	else if(mode == "shrink")			widget->SetTabCompressMode(Wdg_TabList::SHRINK_TABS);
+	else if(mode == "overlap")			widget->SetTabCompressMode(Wdg_TabList::OVERLAP_TABS);
+	else assert(0);
+
 }
 
 //////////////////////////////////////////////////////////////////////////

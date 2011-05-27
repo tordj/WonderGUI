@@ -68,7 +68,8 @@ public:
 private:
 
 	WgText			m_text;
-	Uint32			m_width;
+	int				m_width;		// Width of this tab.
+	int				m_advance;		// Distance from beginning of this tab to the next one.
 	int				m_id;
 	bool			m_bAlert;
 	WgBlockSetPtr	m_pGfx;
@@ -90,7 +91,7 @@ public:
         SourceTypeAll,
 	};
 	static const int m_nSourceTypes = 3;
-
+/*
 	enum TabWidthMode
 	{
 		TabWidthModeNormal,	// All tabs have required width
@@ -98,6 +99,29 @@ public:
 		TabWidthModeExpand,	// Tabs are stretched out to cover the entire width of the tab list
 		TabWidthModeExpand2,// Tabs are overlapped to cover the entire width of the tab list
 	};
+*/
+
+	enum TabExpandMode
+	{
+		NO_EXPAND,
+		GROW_TABS,
+		SPREAD_TABS,
+		UNIFY_TABS,
+	};
+
+	enum TabCompressMode
+	{
+		NO_COMPRESS,
+		SHRINK_TABS,
+		OVERLAP_TABS,
+	};
+
+	enum TabWidthMode
+	{
+		INDIVIDUAL_WIDTH,
+		UNIFIED_WIDTH
+	};
+
 
 	WgGizmoTablist();
 	~WgGizmoTablist();
@@ -112,19 +136,28 @@ public:
 	void			SetSource( WgBlockSetPtr pBlockSet, SourceType type = SourceTypeAll);
 	WgBlockSetPtr	GetSource(SourceType type = SourceTypeMiddle) const			{ return m_sources[type]; }
 
-	void	SetOverlap( Uint16 overlap );
-	Uint16	GetOverlap() const { return m_overlap; }
+	void	SetOverlap( int overlap );
+	int		GetOverlap() const { return m_overlap; }
 
-	void 	SetMinTabWidth( Uint16 minWidth );
-	Uint16 	GetMinTabWidth() const { return m_minTabWidth; }
+	void	SetMaxOverlap( int maxOverlap );
+	int		GetMaxOverlap() const { return m_maxOverlap; }
 
-	void 	SetAlertRate( Uint32 millisec );
-	Uint32	GetAlertRate() const { return m_alertRate; }
+	void 	SetMinTabWidth( int minWidth );
+	int 	GetMinTabWidth() const { return m_minTabWidth; }
+
+	void 	SetAlertRate( int millisec );
+	int		GetAlertRate() const { return m_alertRate; }
 
 	void 	SetTextOrigo( WgOrigo origo );
 	WgOrigo	GetTextOrigo() const { return m_textOrigo; }
 
-	void 			SetTabWidthMode(TabWidthMode mode);
+	void			SetTabExpandMode( TabExpandMode mode );
+	TabExpandMode	GetTabExpandMode() const { return m_tabExpandMode; }
+
+	void			SetTabCompressMode( TabCompressMode mode );
+	TabCompressMode	GetTabCompressMode() const { return m_tabCompressMode; }
+
+	void 			SetTabWidthMode( TabWidthMode mode );
 	TabWidthMode	GetTabWidthMode() const { return m_tabWidthMode; }
 
 	bool AddTab( int id, const WgCharSeq& text, int position = -1, const WgBlockSetPtr& pGfx = 0 );
@@ -169,6 +202,7 @@ protected:
 	void	OnCloneContent( const WgGizmo * _pOrg );
 	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	OnRefresh();
+	void	OnNewSize( const WgSize& size );
 	void	OnUpdate( const WgUpdateInfo& _updateInfo );
 	void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool	OnAlphaTest( const WgCord& ofs );
@@ -178,10 +212,10 @@ private:
 	WgBlockSetPtr	GetTabSource( WgTab * pTab );
 	WgMode			GetTabMode(const WgTab& tab);
 	WgTab*			FindTab( int id );
-	bool			ResizeTab( WgTab * pTab );
-	bool			ResizeAllTabs();
 	WgTab*	 		Pos2Tab( int x, int y );
-	float			CalcTabScaleFactor();
+	
+	void			ResizeTabs();
+	int				CalcTabsWantedWidth( WgTab * pTab );
 
 	void	RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, const WgRect& clip );
 
@@ -197,14 +231,18 @@ private:
 
 	bool		m_bTabOpaqueForMouse;
 	bool		m_bAlertOn;
-	Sint16		m_alertModeCnt;
-	Uint16		m_alertRate;				// Milliseconds between switching graphics.
+	int			m_alertModeCnt;
+	int			m_alertRate;				// Milliseconds between switching graphics.
 
-	Uint16		m_minTabWidth;
-	Sint16		m_overlap;
+	int			m_minTabWidth;
+	int			m_overlap;					// As set by user.
+	int			m_maxOverlap;				// Maximum allowed overlap in TabCompressMode::OVERLAP_TABS. set by user.
 
-	TabWidthMode m_tabWidthMode;
-	Uint16		m_widestTab;
+	TabWidthMode	m_tabWidthMode;
+	TabExpandMode	m_tabExpandMode;
+	TabCompressMode m_tabCompressMode;
+
+	int			m_widestTab;
 };
 
 
