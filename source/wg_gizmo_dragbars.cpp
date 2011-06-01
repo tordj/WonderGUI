@@ -236,9 +236,9 @@ void WgGizmoDragbar::HeaderFooterChanged()
 
 
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoDragbar::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoDragbar::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoDragbar * pOrg = (WgGizmoDragbar *) _pOrg;
 
@@ -314,9 +314,9 @@ void	WgGizmoDragbar::ViewToPosLen( int * _wpPos, int * _wpLen )
 //	* _wpLen = ((int)(pos + len)) - (int) pos;
 }
 
-//____ OnEnable() ___________________________________________________
+//____ _onEnable() ___________________________________________________
 
-void WgGizmoDragbar::OnEnable( void )
+void WgGizmoDragbar::_onEnable( void )
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_NORMAL;
@@ -324,9 +324,9 @@ void WgGizmoDragbar::OnEnable( void )
 	RequestRender();
 }
 
-//____ OnDisable() ___________________________________________________
+//____ _onDisable() ___________________________________________________
 
-void WgGizmoDragbar::OnDisable( void )
+void WgGizmoDragbar::_onDisable( void )
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_DISABLED;
@@ -334,9 +334,9 @@ void WgGizmoDragbar::OnDisable( void )
 	RequestRender();
 }
 
-//____ OnRefresh() _______________________________________________________
+//____ _onRefresh() _______________________________________________________
 
-void WgGizmoDragbar::OnRefresh( void )
+void WgGizmoDragbar::_onRefresh( void )
 {
 	RequestRender();
 }
@@ -442,9 +442,9 @@ void WgGizmoDragbar::RenderButton( WgGfxDevice * pDevice, const WgRect& _clip, W
 			_dest.y += _dest.h;
 }
 
-//____ OnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
-void WgGizmoDragbar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoDragbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	WgRect	dest = _canvas;
 
@@ -497,9 +497,9 @@ void WgGizmoDragbar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		RenderButton( pDevice, _clip, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_FOOTER_FWD]) );
 }
 
-//____ OnAlphaTest() ______________________________________________________
+//____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoDragbar::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoDragbar::_onAlphaTest( const WgCord& ofs )
 {
 	if( FindMarkedComponent( ofs ) == C_NONE )
 		return false;
@@ -604,9 +604,9 @@ void WgGizmoDragbar::UnmarkReqRender()
 }
 
 
-//____ OnAction() _________________________________________________
+//____ _onAction() _________________________________________________
 
-void WgGizmoDragbar::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	int		barPos, barLen;
 	ViewToPosLen( &barPos, &barLen );

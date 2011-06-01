@@ -159,7 +159,7 @@ protected:
 	inline void			TextModified( WgText * pText ) { TextModified(); }
 	virtual void		TextModified() = 0;
 	void				CloneInterface( Wg_Interface_TextHolder * _pClone );
-	void				OnCloneContent( const Wg_Interface_TextHolder * pOrg );
+	void				_onCloneContent( const Wg_Interface_TextHolder * pOrg );
 
 	WgText *			m_pText;			// Must always be set by derived class!
 

@@ -53,9 +53,9 @@ void WgGizmoProfiler::SetTextProperties( WgTextPropPtr& pProp )
 
 
 
-//____ OnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
-void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoProfiler::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	//____
 
@@ -193,17 +193,17 @@ void WgGizmoProfiler::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 */
 }
 
-//____ OnUpdate() ________________________________________________________
+//____ _onUpdate() ________________________________________________________
 
-void WgGizmoProfiler::OnUpdate( const WgUpdateInfo& _updateInfo )
+void WgGizmoProfiler::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 	RequestRender();
 }
 
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoProfiler::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoProfiler::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoProfiler * pOrg		= (WgGizmoProfiler *) _pOrg;
 
@@ -211,9 +211,9 @@ void WgGizmoProfiler::OnCloneContent( const WgGizmo * _pOrg )
 }
 
 
-//____ OnAlphaTest() ___________________________________________________
+//____ _onAlphaTest() ___________________________________________________
 
-bool WgGizmoProfiler::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoProfiler::_onAlphaTest( const WgCord& ofs )
 {
 	return false;
 }

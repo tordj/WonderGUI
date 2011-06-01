@@ -102,7 +102,7 @@ void WgGizmoCirclemeter::SetBackgroundSource(	WgSurface * pSurf, Uint32 xNormal,
 		m_disableBg.x	= xDisable;
 		m_disableBg.y	= yDisable;
 
-		OnRefresh();
+		_onRefresh();
 }
 
 //____ SetForegroundSource() __________________________________________________
@@ -114,7 +114,7 @@ void WgGizmoCirclemeter::SetForegroundSource( WgSurface * pSurf, WgRect& src, Ui
 	m_destOfsFg.x	= destOfsX;
 	m_destOfsFg.y	= destOfsY;
 
-	OnRefresh();
+	_onRefresh();
 }
 
 
@@ -200,9 +200,9 @@ void WgGizmoCirclemeter::SetFormat( const WgValueFormat& format )
 
 
 
-//____ OnAction() _________________________________________________
+//____ _onAction() _________________________________________________
 
-void WgGizmoCirclemeter::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoCirclemeter::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	int newRenderStyle = m_renderStyle;
 
@@ -258,9 +258,9 @@ void WgGizmoCirclemeter::OnAction( WgInput::UserAction action, int button_key, c
 	}
 }
 
-//____ OnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
-void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoCirclemeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 
 	// Render the background
@@ -373,16 +373,16 @@ void WgGizmoCirclemeter::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas,
 	}
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoCirclemeter::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoCirclemeter::_onCloneContent( const WgGizmo * _pOrg )
 {
 	//TODO: Implement!
 }
 
-//____ OnAlphaTest() ______________________________________________________
+//____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoCirclemeter::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoCirclemeter::_onAlphaTest( const WgCord& ofs )
 {
 	//TODO: Implement!
 
@@ -390,17 +390,17 @@ bool WgGizmoCirclemeter::OnAlphaTest( const WgCord& ofs )
 	return true;
 }
 
-//____ OnEnable() ___________________________________________________
+//____ _onEnable() ___________________________________________________
 
-void WgGizmoCirclemeter::OnEnable( void )
+void WgGizmoCirclemeter::_onEnable( void )
 {
 	m_renderStyle = 0;
 	RequestRender();
 }
 
-//____ OnDisable() ___________________________________________________
+//____ _onDisable() ___________________________________________________
 
-void WgGizmoCirclemeter::OnDisable( void )
+void WgGizmoCirclemeter::_onDisable( void )
 {
 	m_renderStyle = 3;
 	RequestRender();
@@ -433,9 +433,9 @@ void WgGizmoCirclemeter::RepresentationModified()
 	RequestRender();
 }
 
-//____ OnRefresh() _______________________________________________________
+//____ _onRefresh() _______________________________________________________
 
-void WgGizmoCirclemeter::OnRefresh( void )
+void WgGizmoCirclemeter::_onRefresh( void )
 {
 	if( m_pSurfBg )
 	{

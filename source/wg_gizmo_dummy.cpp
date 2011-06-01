@@ -52,21 +52,21 @@ const char * WgGizmoDummy::GetMyType()
 	return c_gizmoType;
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoDummy::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoDummy::_onCloneContent( const WgGizmo * _pOrg )
 {
 }
 
-//____ OnRender() _____________________________________________________________
+//____ _onRender() _____________________________________________________________
 
-void WgGizmoDummy::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoDummy::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 }
 
-//____ OnAlphaTest() ___________________________________________________________
+//____ _onAlphaTest() ___________________________________________________________
 
-bool WgGizmoDummy::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoDummy::_onAlphaTest( const WgCord& ofs )
 {
 	if( m_markPolicy == WG_MARKPOLICY_OPAQUE )
 		return true;

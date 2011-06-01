@@ -97,11 +97,11 @@ public:
 
 protected:
 
-		void		OnUpdate( const WgUpdateInfo& _updateInfo );
-		void		OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-		void		OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-		void		OnCloneContent( const WgGizmo * _pOrg );
-		virtual void OnNewSize( const WgSize& size );
+		void		_onUpdate( const WgUpdateInfo& _updateInfo );
+		void		_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+		void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+		void		_onCloneContent( const WgGizmo * _pOrg );
+		virtual void _onNewSize( const WgSize& size );
 
 		WgMode	GetRenderMode();
 

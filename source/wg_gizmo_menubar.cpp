@@ -207,9 +207,9 @@ bool WgGizmoMenubar::HideMenu(Wdg_Menu * pMenu)
 	return false;
 }
 
-//____ OnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
-void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Render background
 
@@ -297,9 +297,9 @@ void WgGizmoMenubar::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 }
 
 
-//____ OnAction() _____________________________________________________________
+//____ _onAction() _____________________________________________________________
 
-void WgGizmoMenubar::OnAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
+void WgGizmoMenubar::_onAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
 {
 	switch( _action )
 	{
@@ -351,23 +351,23 @@ void WgGizmoMenubar::OnAction( WgInput::UserAction _action, int _button_key, con
 	}
 }
 
-//____ OnRefresh() _______________________________________________________
+//____ _onRefresh() _______________________________________________________
 
-void WgGizmoMenubar::OnRefresh( void )
+void WgGizmoMenubar::_onRefresh( void )
 {
 	RequestRender();
 }
 
-//____ OnAlphaTest() ___________________________________________________
+//____ _onAlphaTest() ___________________________________________________
 
-bool WgGizmoMenubar::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoMenubar::_onAlphaTest( const WgCord& ofs )
 {
 	return true;
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoMenubar::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoMenubar::_onCloneContent( const WgGizmo * _pOrg )
 {
 	//TODO: Implement!
 }

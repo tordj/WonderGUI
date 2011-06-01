@@ -90,7 +90,7 @@ bool WgGizmoCheckbox::SetSource( const WgBlockSetPtr& _pUnchecked, const WgBlock
 	m_pBlockChecked		= _pChecked;
 	m_bFixedSizeBox		= bFixedSizeBox;
 
-	OnRefresh();
+	_onRefresh();
 	return true;
 }
 
@@ -107,7 +107,7 @@ void WgGizmoCheckbox::SetIcon( const WgBlockSetPtr& _pUnchecked, const WgBlockSe
 	m_bIconPushText		= _bPushText;
 	m_iconAreaBorders	= _areaBorders;
 
-	OnRefresh();
+	_onRefresh();
 }
 
 
@@ -185,14 +185,14 @@ void WgGizmoCheckbox::SetTextMouseOverOfsX( Uint16 ofs )
 	RefreshTextArea();
 }
 
-//____ OnEnable() _________________________________________________
-void WgGizmoCheckbox::OnEnable()
+//____ _onEnable() _________________________________________________
+void WgGizmoCheckbox::_onEnable()
 {
 	RequestRender();
 }
 
-//____ OnDisable() _________________________________________________
-void WgGizmoCheckbox::OnDisable()
+//____ _onDisable() _________________________________________________
+void WgGizmoCheckbox::_onDisable()
 {
 	m_bOver = false;
 	m_bPressed = false;
@@ -201,9 +201,9 @@ void WgGizmoCheckbox::OnDisable()
 }
 
 
-//____ OnAction() _________________________________________________
+//____ _onAction() _________________________________________________
 
-void WgGizmoCheckbox::OnAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
+void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
 {
 	switch( _action )
 	{
@@ -359,9 +359,9 @@ WgRect WgGizmoCheckbox::GetContentRect( const WgSize& gizmoSize, const WgRect& i
 
 
 
-//____ OnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
-void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Get correct mode
 
@@ -438,9 +438,9 @@ void WgGizmoCheckbox::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	}
 }
 
-//____ OnRefresh() _______________________________________________________
+//____ _onRefresh() _______________________________________________________
 
-void WgGizmoCheckbox::OnRefresh( void )
+void WgGizmoCheckbox::_onRefresh( void )
 {
 	if( m_pBlockChecked && m_pBlockUnchecked && m_pBlockChecked->IsOpaque() &&
 		m_pBlockUnchecked->IsOpaque() )
@@ -452,18 +452,18 @@ void WgGizmoCheckbox::OnRefresh( void )
 	RefreshTextArea();
 }
 
-//____ OnNewSize() _______________________________________________________
+//____ _onNewSize() _______________________________________________________
 
-void WgGizmoCheckbox::OnNewSize( const WgSize& size )
+void WgGizmoCheckbox::_onNewSize( const WgSize& size )
 {
 	m_text.setLineWidth( GetTextAreaWidth() );
 	RefreshTextArea();
 }
 
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoCheckbox::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoCheckbox::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoCheckbox * pOrg = (WgGizmoCheckbox *) _pOrg;
 
@@ -492,7 +492,7 @@ void WgGizmoCheckbox::OnCloneContent( const WgGizmo * _pOrg )
 		m_aDisplace[i]	= pOrg->m_aDisplace[i];
 	}
 
-	Wg_Interface_TextHolder::OnCloneContent( pOrg );
+	Wg_Interface_TextHolder::_onCloneContent( pOrg );
 }
 
 //____ TextModified() _________________________________________________________
@@ -576,9 +576,9 @@ bool WgGizmoCheckbox::MarkTestTextArea( int _x, int _y )
 	return false;
 }
 
-//____ OnAlphaTest() ______________________________________________________
+//____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoCheckbox::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoCheckbox::_onAlphaTest( const WgCord& ofs )
 {
 	// mark test text area
 	if( MarkTestTextArea( ofs.x, ofs.y ) )

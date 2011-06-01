@@ -284,13 +284,13 @@ private:
 	void			OnCloneContent( const WgGizmo * _pOrg );
 	void			OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			OnNewSize( const WgSize& size );
-	void			OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool			OnAlphaTest( const WgCord& ofs );
+	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	bool			_onAlphaTest( const WgCord& ofs );
 
-	inline void		OnEnable() { WgGizmoContainer::OnEnable(); }
-	inline void		OnDisable() { WgGizmoContainer::OnDisable(); }
+	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }
+	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }
 
-	void			OnRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
+	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 
 	WgGizmo*		_castToGizmo() { return this; }
 

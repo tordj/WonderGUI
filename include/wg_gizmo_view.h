@@ -247,18 +247,18 @@ protected:
 
 
 	WgGizmoView();
-	virtual void OnNewSize( const WgSize& size );
+	virtual void _onNewSize( const WgSize& size );
 
-	// Following method should be overridden by subclasses instead of OnNewSize()!
+	// Following method should be overridden by subclasses instead of _onNewSize()!
 	// Takes into account that scrollbars might decrease the visible area of the subclass.
 
 	void		OnNewViewSize( const WgSize& size ) {};
-	void		OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool		OnAlphaTest( const WgCord& ofs );
-	void		OnCloneContent( const WgGizmo * _pOrg );
+	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	bool		_onAlphaTest( const WgCord& ofs );
+	void		_onCloneContent( const WgGizmo * _pOrg );
 
-	inline void		OnEnable() { WgGizmoContainer::OnEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
-	inline void		OnDisable() { WgGizmoContainer::OnDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 
 
 	void		SetContentSize( const WgSize& size );

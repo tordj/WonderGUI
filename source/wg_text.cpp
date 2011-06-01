@@ -2033,7 +2033,7 @@ int WgText::LineColToOffset(int line, int col) const
 
 //____ onAction() _____________________________________________________________
 
-bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCord& pointerOfs )
+bool WgText::_onAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCord& pointerOfs )
 {
 	bool bRefresh = false;
 	WgTextLinkHandler * pHandler;

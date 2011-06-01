@@ -97,9 +97,9 @@ void WgGizmoText::SetInputMode(InputMode mode)
 	m_inputMode = mode;
 }
 
-//____ OnUpdate() ________________________________________________________
+//____ _onUpdate() ________________________________________________________
 
-void WgGizmoText::OnUpdate( const WgUpdateInfo& _updateInfo )
+void WgGizmoText::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 	if( IsSelectable() && m_bFocused )
 	{
@@ -135,9 +135,9 @@ WgPointerStyle WgGizmoText::GetPointerStyle() const
 }
 
 
-//____ OnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
-void WgGizmoText::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoText::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	WgText * pText = &m_text;
 
@@ -152,18 +152,18 @@ void WgGizmoText::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 		delete pText;
 }
 
-//____ OnRefresh() _______________________________________________________
+//____ _onRefresh() _______________________________________________________
 
-void WgGizmoText::OnRefresh( void )
+void WgGizmoText::_onRefresh( void )
 {
 	//TODO: Implement more I believe...
 
 	RequestRender();
 }
 
-//____ OnAction() _________________________________________________
+//____ _onAction() _________________________________________________
 
-void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	if( m_bFocused && (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
@@ -304,52 +304,52 @@ void WgGizmoText::OnAction( WgInput::UserAction action, int button_key, const Wg
 
 	// Let text object handle its actions.
 
-	bool bChanged = m_text.OnAction( action, button_key, ScreenGeometry(), WgCord(info.x, info.y) );
+	bool bChanged = m_text._onAction( action, button_key, ScreenGeometry(), WgCord(info.x, info.y) );
 	if( bChanged )
 		RequestRender();
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoText::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoText::_onCloneContent( const WgGizmo * _pOrg )
 {
 	//TODO: Implement!
 }
 
-//____ OnAlphaTest() ______________________________________________________
+//____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoText::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoText::_onAlphaTest( const WgCord& ofs )
 {
 	return true;																				// Accept all at least for now...
 }
 
-//____ OnEnable() ___________________________________________________
+//____ _onEnable() ___________________________________________________
 
-void WgGizmoText::OnEnable( void )
+void WgGizmoText::_onEnable( void )
 {
 	m_text.setMode(WG_MODE_NORMAL);
 	RequestRender();
 }
 
-//____ OnDisable() ___________________________________________________
+//____ _onDisable() ___________________________________________________
 
-void WgGizmoText::OnDisable( void )
+void WgGizmoText::_onDisable( void )
 {
 	m_text.setMode(WG_MODE_DISABLED);
 	RequestRender();
 }
 
-//____ OnNewSize() ________________________________________________
+//____ _onNewSize() ________________________________________________
 
-void WgGizmoText::OnNewSize( const WgSize& size )
+void WgGizmoText::_onNewSize( const WgSize& size )
 {
 	m_text.setLineWidth( size.w );
 }
 
 
-//____ OnGotInputFocus() ______________________________________________
+//____ _onGotInputFocus() ______________________________________________
 
-void WgGizmoText::OnGotInputFocus()
+void WgGizmoText::_onGotInputFocus()
 {
 	m_bFocused = true;
 	if( IsEditable() ) // render with cursor on
@@ -359,9 +359,9 @@ void WgGizmoText::OnGotInputFocus()
 	}
 }
 
-//____ OnLostInputFocus() ______________________________________________
+//____ _onLostInputFocus() ______________________________________________
 
-void WgGizmoText::OnLostInputFocus()
+void WgGizmoText::_onLostInputFocus()
 {
 	m_bFocused = false;
 	if( IsEditable() ) // render with cursor off

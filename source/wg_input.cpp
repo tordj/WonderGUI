@@ -232,7 +232,7 @@ void WgInput::end_events()
 				if( p->aWidgets[wdg] )
 					p->aWidgets[wdg]->ActionRespond( BUTTON_DOWN, btn+1, m_currentPosition, *this );
 				else if( p->aGizmos[wdg] )
-					p->aGizmos[wdg]->OnAction( BUTTON_DOWN, btn+1, m_currentPosition, *this );
+					p->aGizmos[wdg]->_onAction( BUTTON_DOWN, btn+1, m_currentPosition, *this );
 			}
 			// reset hover time if a button is down
 			m_hoverStartTime = m_time;

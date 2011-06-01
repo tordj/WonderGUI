@@ -93,27 +93,27 @@ protected:
 	//
 
 
-	void OnGotInputFocus() 
+	void _onGotInputFocus() 
 	{
-		T::OnGotInputFocus();
+		T::_onGotInputFocus();
 	}
 
-	void OnLostInputFocus() 
+	void _onLostInputFocus() 
 	{
-		T::OnLostInputFocus();
+		T::_onLostInputFocus();
 	}
 
 
 
 	void AdaptToWidth( Uint32 displayed_width ) 
 	{ 
-		T::OnNewSize( WgSize( displayed_width, WgItem::m_height) ); 
+		T::_onNewSize( WgSize( displayed_width, WgItem::m_height) ); 
 		WgItem::m_width = displayed_width;
 	}
 
 	void AdaptToHeight( Uint32 displayed_height ) 
 	{ 
-		T::OnNewSize( WgSize( WgItem::m_width, displayed_height ) ) ;
+		T::_onNewSize( WgSize( WgItem::m_width, displayed_height ) ) ;
 		WgItem::m_height = displayed_height;
 	}
 
@@ -122,17 +122,17 @@ protected:
 		if( action == WgInput::KEY_PRESS )
 			int x = 0;
 
-		T::OnAction( action, button_key, info, inputObj );
+		T::_onAction( action, button_key, info, inputObj );
 	}
 
  	void Render( const WgRect& _window, const WgRect& _clip )
 	{
-		T::OnRender( WgGfx::GetDevice(), _window, _window, _clip, 0 );
+		T::_onRender( WgGfx::GetDevice(), _window, _window, _clip, 0 );
 	}
 
 	void Refresh( void )
 	{
-		T::OnRefresh();
+		T::_onRefresh();
 	}
 
 	WgItem* Clone( WgItem * _pClone )
@@ -140,14 +140,14 @@ protected:
 		WgItem::Clone( _pClone );
 
 		if( _pClone->Type() == Type() )
-			((WgGizmoItem*)_pClone)->OnCloneContent(this);
+			((WgGizmoItem*)_pClone)->_onCloneContent(this);
 
 		return _pClone;
 	}
 
 	WgItem*	GetMarkedItem( Uint32 _x, Uint32 _y )
 	{
-		if( T::OnAlphaTest( WgCord( _x, _y ) ) )
+		if( T::_onAlphaTest( WgCord( _x, _y ) ) )
 			return this;
 			 
 		return 0;

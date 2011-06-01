@@ -107,11 +107,11 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 	return true;
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoRadiobutton::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoRadiobutton::_onCloneContent( const WgGizmo * _pOrg )
 {
-	WgGizmoCheckbox::OnCloneContent( _pOrg );
+	WgGizmoCheckbox::_onCloneContent( _pOrg );
 
 	WgGizmoRadiobutton * pOrg = (WgGizmoRadiobutton *) _pOrg;
 

@@ -84,7 +84,7 @@ void WgGizmoFps::SetTextProperties( const WgTextPropPtr& pProp )
 
 //____ DoMyOwnRender() ________________________________________________________
 
-void WgGizmoFps::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoFps::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 
 	const int	cCurrentFrames = 10;
@@ -168,9 +168,9 @@ void WgGizmoFps::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 	pDevice->PrintLine( pen, attr, temp2 );
 }
 
-//____ OnUpdate() ________________________________________________________
+//____ _onUpdate() ________________________________________________________
 
-void WgGizmoFps::OnUpdate( const WgUpdateInfo& _updateInfo )
+void WgGizmoFps::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 	m_tickBufferOfs = (++m_tickBufferOfs) % TICK_BUFFER;
 
@@ -184,7 +184,7 @@ void WgGizmoFps::OnUpdate( const WgUpdateInfo& _updateInfo )
 
 //____ DoMyOwnCloning() _______________________________________________________
 
-void WgGizmoFps::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoFps::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoFps * pOrg		= (WgGizmoFps *) _pOrg;
 

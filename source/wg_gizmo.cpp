@@ -73,7 +73,7 @@ void WgGizmo::Enable()
 	if( !m_bEnabled || IsContainer() )
 	{
 		m_bEnabled = true;
-		OnEnable();
+		_onEnable();
 	}
 }
 
@@ -84,7 +84,7 @@ void WgGizmo::Disable()
 	if( m_bEnabled || IsContainer() )
 	{
 		m_bEnabled = false;
-		OnDisable();
+		_onDisable();
 	}
 }
 
@@ -118,7 +118,7 @@ bool WgGizmo::MarkTest( const WgCord& ofs )
 	switch( m_markPolicy )
 	{
 	case WG_MARKPOLICY_ALPHA:
-		return OnAlphaTest(ofs);
+		return _onAlphaTest(ofs);
 	case WG_MARKPOLICY_TRANSPARENT:
 		return false;
 	default:						//WG_MARKPOLICY_OPAQUE:
@@ -141,7 +141,7 @@ void WgGizmo::CloneContent( const WgGizmo * _pOrg )
 	m_bRenderOne	= _pOrg->m_bRenderOne;
 
 	if( _pOrg->Type() == Type() )
-		OnCloneContent( _pOrg );
+		_onCloneContent( _pOrg );
 }
 
 //____ SetHook() ___________________________________________________________
@@ -149,7 +149,7 @@ void WgGizmo::CloneContent( const WgGizmo * _pOrg )
 void WgGizmo::SetHook( WgGizmoHook * pHook )
 {
 	m_pHook = pHook;
-	OnNewSize( Size() );
+	_onNewSize( Size() );
 }
 
 //____ SetSkinNode() __________________________________________________________
@@ -157,7 +157,7 @@ void WgGizmo::SetHook( WgGizmoHook * pHook )
 void WgGizmo::SetSkinNode( WgSkinNode * pNode )
 {
 	m_pSkinNode = pNode;
-	OnRefresh();
+	_onRefresh();
 }
 
 
@@ -254,12 +254,12 @@ WgMode WgGizmo::Mode() const
 //____ Fillers _______________________________________________________________
 
 
-void WgGizmo::OnCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmo::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	rects.Add( WgRect( geo, clip ) );
 }
 
-void WgGizmo::OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmo::_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	if( m_bOpaque )
 	{
@@ -268,50 +268,50 @@ void WgGizmo::OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& 
 }
 
 
-void WgGizmo::OnNewSize( const WgSize& size )
+void WgGizmo::_onNewSize( const WgSize& size )
 {
 	RequestRender();
 }
 
-void WgGizmo::OnRefresh()
+void WgGizmo::_onRefresh()
 {
 	RequestRender();
 }
 
-void WgGizmo::OnUpdate( const WgUpdateInfo& _updateInfo )
+void WgGizmo::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 }
 
-void WgGizmo::OnEvent( const WgEvent::Event& _event, WgEventHandler * pHandler )
+void WgGizmo::_onEvent( const WgEvent::Event& _event, WgEventHandler * pHandler )
 {
 
 }
 
-void WgGizmo::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmo::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 }
 
-bool WgGizmo::OnAlphaTest( const WgCord& ofs )
+bool WgGizmo::_onAlphaTest( const WgCord& ofs )
 {
 	return true;
 }
 
-void WgGizmo::OnEnable()
+void WgGizmo::_onEnable()
 {
 	RequestRender();
 }
 
-void WgGizmo::OnDisable()
+void WgGizmo::_onDisable()
 {
 	RequestRender();
 }
 
-void WgGizmo::OnGotInputFocus()
+void WgGizmo::_onGotInputFocus()
 {
 	m_bFocused = true;
 }
 
-void WgGizmo::OnLostInputFocus()
+void WgGizmo::_onLostInputFocus()
 {
 	m_bFocused = false;
 }

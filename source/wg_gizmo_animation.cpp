@@ -241,9 +241,9 @@ bool WgGizmoAnimation::Stop()
 	return true;
 }
 
-//____ OnUpdate() ________________________________________________________
+//____ _onUpdate() ________________________________________________________
 
-void WgGizmoAnimation::OnUpdate( const WgUpdateInfo& _updateInfo )
+void WgGizmoAnimation::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 	if( !m_pAnim || !m_bEnabled )
 		return;
@@ -287,9 +287,9 @@ void WgGizmoAnimation::OnUpdate( const WgUpdateInfo& _updateInfo )
 }
 
 
-//____ OnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
-void WgGizmoAnimation::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoAnimation::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( !m_bEnabled && m_pDisableSurf )
 	{
@@ -301,9 +301,9 @@ void WgGizmoAnimation::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	}
 }
 
-//____ OnRefresh() _______________________________________________________
+//____ _onRefresh() _______________________________________________________
 
-void WgGizmoAnimation::OnRefresh( void )
+void WgGizmoAnimation::_onRefresh( void )
 {
 
 	if( m_bEnabled && m_pSurf )
@@ -328,7 +328,7 @@ void WgGizmoAnimation::OnRefresh( void )
 
 //____ DoMyOwnCloning() _______________________________________________________
 
-void WgGizmoAnimation::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoAnimation::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoAnimation * pOrg = (WgGizmoAnimation *) _pOrg;
 
@@ -344,9 +344,9 @@ void WgGizmoAnimation::OnCloneContent( const WgGizmo * _pOrg )
 
 }
 
-//____ OnAlphaTest() ______________________________________________________
+//____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoAnimation::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoAnimation::_onAlphaTest( const WgCord& ofs )
 {
 	if( m_bEnabled && m_pSurf )
 	{
@@ -362,9 +362,9 @@ bool WgGizmoAnimation::OnAlphaTest( const WgCord& ofs )
 	return false;
 }
 
-//____ OnEnable() ___________________________________________________
+//____ _onEnable() ___________________________________________________
 
-void WgGizmoAnimation::OnEnable( void )
+void WgGizmoAnimation::_onEnable( void )
 {
 	if( m_pSurf && m_pSurf->IsOpaque() )
 		m_bOpaque = true;
@@ -374,9 +374,9 @@ void WgGizmoAnimation::OnEnable( void )
 	RequestRender();
 }
 
-//____ OnDisable() ___________________________________________________
+//____ _onDisable() ___________________________________________________
 
-void WgGizmoAnimation::OnDisable( void )
+void WgGizmoAnimation::_onDisable( void )
 {
 	if( m_pDisableSurf && m_pDisableSurf->IsOpaque() )
 		m_bOpaque = true;

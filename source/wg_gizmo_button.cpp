@@ -165,25 +165,25 @@ void WgGizmoButton::GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sint8
 }
 
 
-//____ OnEnable() _____________________________________________________________
+//____ _onEnable() _____________________________________________________________
 
-void WgGizmoButton::OnEnable()
+void WgGizmoButton::_onEnable()
 {
 	m_mode = WG_MODE_NORMAL;
 	RequestRender();
 }
 
-//____ OnDisable() ____________________________________________________________
+//____ _onDisable() ____________________________________________________________
 
-void WgGizmoButton::OnDisable()
+void WgGizmoButton::_onDisable()
 {
 	m_mode = WG_MODE_DISABLED;
 	RequestRender();
 }
 
-//____ OnNewSize() ____________________________________________________________
+//____ _onNewSize() ____________________________________________________________
 
-void WgGizmoButton::OnNewSize( const WgSize& size )
+void WgGizmoButton::_onNewSize( const WgSize& size )
 {
 	Uint32 w = size.w;
 
@@ -194,9 +194,9 @@ void WgGizmoButton::OnNewSize( const WgSize& size )
 }
 
 
-//____ OnRender() _____________________________________________________________
+//____ _onRender() _____________________________________________________________
 
-void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Render background
 
@@ -236,9 +236,9 @@ void WgGizmoButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	}
 }
 
-//____ OnEvent() ______________________________________________________________
+//____ _onEvent() ______________________________________________________________
 
-void WgGizmoButton::OnEvent( const WgEvent::Event& _event, WgEventHandler * pHandler )
+void WgGizmoButton::_onEvent( const WgEvent::Event& _event, WgEventHandler * pHandler )
 {
 	switch( _event.Type() )
 	{
@@ -301,9 +301,9 @@ void WgGizmoButton::OnEvent( const WgEvent::Event& _event, WgEventHandler * pHan
 }
 
 
-//____ OnAction() _____________________________________________________________
+//____ _onAction() _____________________________________________________________
 
-void WgGizmoButton::OnAction( WgInput::UserAction action, int button, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoButton::_onAction( WgInput::UserAction action, int button, const WgActionDetails& info, const WgInput& inputObj )
 {
 //	if( !m_bEnabled )
 //		return;
@@ -383,9 +383,9 @@ WgMode WgGizmoButton::GetRenderMode()
 }
 
 
-//____ OnRefresh() ____________________________________________________________
+//____ _onRefresh() ____________________________________________________________
 
-void WgGizmoButton::OnRefresh( void )
+void WgGizmoButton::_onRefresh( void )
 {
 	if( m_pBgGfx )
 	{
@@ -420,9 +420,9 @@ void WgGizmoButton::GetPressAnim( bool& button1, bool& button2, bool& button3, b
 }
 
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoButton::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoButton::_onCloneContent( const WgGizmo * _pOrg )
 {
 
 	WgGizmoButton * pOrg = (WgGizmoButton *) _pOrg;
@@ -447,9 +447,9 @@ void WgGizmoButton::OnCloneContent( const WgGizmo * _pOrg )
 	 	m_bRenderDown[i] = pOrg->m_bRenderDown[i];
 }
 
-//____ OnAlphaTest() ___________________________________________________________
+//____ _onAlphaTest() ___________________________________________________________
 
-bool WgGizmoButton::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoButton::_onAlphaTest( const WgCord& ofs )
 {
 	if( !m_pBgGfx )
 		return false;
@@ -459,17 +459,17 @@ bool WgGizmoButton::OnAlphaTest( const WgCord& ofs )
 	return	WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode), WgRect(0,0,sz.w,sz.h) );
 }
 
-//____ OnGotInputFocus() ______________________________________________________
+//____ _onGotInputFocus() ______________________________________________________
 
-void WgGizmoButton::OnGotInputFocus()
+void WgGizmoButton::_onGotInputFocus()
 {
 	m_bFocused = true;
 	RequestRender();
 }
 
-//____ OnLostInputFocus() _____________________________________________________
+//____ _onLostInputFocus() _____________________________________________________
 
-void WgGizmoButton::OnLostInputFocus()
+void WgGizmoButton::_onLostInputFocus()
 {
 	m_bFocused = false;
 	m_bReturnPressed = false;

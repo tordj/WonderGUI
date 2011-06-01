@@ -47,9 +47,9 @@ class WgGizmoFps:public WgGizmo
 		void SetTextProperties( const WgTextPropPtr& pProp );
 
 	protected:
-		void	OnUpdate( const WgUpdateInfo& _updateInfo );
-		void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-		void	OnCloneContent( const WgGizmo * _pOrg );
+		void	_onUpdate( const WgUpdateInfo& _updateInfo );
+		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+		void	_onCloneContent( const WgGizmo * _pOrg );
 
 	private:
 

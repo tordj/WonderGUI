@@ -39,8 +39,8 @@ class WgGizmoContainer : public WgGizmoParent
 	friend class WgGizmoHook;
 
 	protected:
-		virtual void	OnEnable();
-		virtual void	OnDisable();
+		virtual void	_onEnable();
+		virtual void	_onDisable();
 
 
 	private:

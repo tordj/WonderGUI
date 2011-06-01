@@ -47,28 +47,28 @@ void WgGizmoViewport3D::SetScene( const ESGObjectPtr& spScene )
 	m_spScene = spScene;
 }
 
-//____ OnRefresh() _______________________________________________________
+//____ _onRefresh() _______________________________________________________
 
-void WgGizmoViewport3D::OnRefresh( void )
+void WgGizmoViewport3D::_onRefresh( void )
 {
     RequestRender();
 }
 
-//____ OnUpdate() ________________________________________________________
+//____ _onUpdate() ________________________________________________________
 
-void	WgGizmoViewport3D::OnUpdate( const WgUpdateInfo& _updateInfo )
+void	WgGizmoViewport3D::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 	RequestRender();
 }
 
 
-//____ OnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
 #ifdef BENCHMARK
 extern bool g_bF4;
 #endif
 
-void WgGizmoViewport3D::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoViewport3D::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& window, const WgRect& _clip, Uint8 _layer )
 {
 	if( !m_bEnabled || m_spCamera == NULL || m_spScene == NULL )
 		return;
@@ -102,9 +102,9 @@ void WgGizmoViewport3D::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, 
 	ERenderer::GetCurrent()->SetViewPort( 0, 0, w, h );
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoViewport3D::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoViewport3D::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoViewport3D * pOrg = (WgGizmoViewport3D *) _pOrg;
 
@@ -112,9 +112,9 @@ void WgGizmoViewport3D::OnCloneContent( const WgGizmo * _pOrg )
 	m_spScene		= pOrg->m_spScene;
 }
 
-//____ OnAlphaTest() ______________________________________________________
+//____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoViewport3D::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoViewport3D::_onAlphaTest( const WgCord& ofs )
 {
 	return true;
 }

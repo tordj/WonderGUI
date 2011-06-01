@@ -208,7 +208,7 @@ public:
 
 	WgGizmoTable*	Table() const { return m_pTable; }
 protected:
-//		LINK_METHODS( WgTableRow2 );
+//		PROTECTED_LINK_METHODS( WgTableRow2 );
 
 private:
 
@@ -217,14 +217,14 @@ private:
 
 	void			GrowCellsArray( int nCells );
 
-	int			m_nCells;
-	WgTableHook* m_pCells;
-	WgGizmoTable* m_pTable;
+	int				m_nCells;
+	WgTableHook*	m_pCells;
+	WgGizmoTable*	m_pTable;
 
-	Sint64		m_id;
-	int			m_height;
-	WgMode		m_mode;
-	bool		m_bVisible;
+	Sint64			m_id;
+	int				m_height;
+	WgMode			m_mode;
+	bool			m_bVisible;
 };
 
 //____ WgGizmoTable ___________________________________________________________
@@ -373,13 +373,11 @@ public:
 
 protected:
 
-	void	OnCloneContent( const WgGizmo * _pOrg );
-	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	void	OnNewSize( const WgSize& size );
-	void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool	OnAlphaTest( const WgCord& ofs );
-	inline void		OnEnable() { WgGizmoContainer::OnEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
-	inline void		OnDisable() { WgGizmoContainer::OnDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void	_onNewSize( const WgSize& size );
+	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	bool	_onAlphaTest( const WgCord& ofs );
 
 private:
 	WgGizmo*		_castToGizmo() { return this; }

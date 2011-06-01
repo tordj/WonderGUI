@@ -199,8 +199,8 @@ void Wg_Interface_TextHolder::CloneInterface( Wg_Interface_TextHolder * _pClone 
 {
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void Wg_Interface_TextHolder::OnCloneContent( const Wg_Interface_TextHolder * pOrg )
+void Wg_Interface_TextHolder::_onCloneContent( const Wg_Interface_TextHolder * pOrg )
 {
 }

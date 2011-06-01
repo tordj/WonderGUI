@@ -80,15 +80,15 @@ protected:
 	bool	IsEditable() const { return m_inputMode == Editable; }
 	bool	IsSelectable() const { return m_inputMode != Static; }
 
-	void	OnUpdate( const WgUpdateInfo& _updateInfo );
-	void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	void	OnGotInputFocus();
-	void	OnLostInputFocus();
-	void	OnCloneContent( const WgGizmo * _pOrg );
-	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	void	OnEnable();
-	void	OnDisable();
-	void	OnNewSize( const WgSize& size );
+	void	_onUpdate( const WgUpdateInfo& _updateInfo );
+	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	void	_onGotInputFocus();
+	void	_onLostInputFocus();
+	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void	_onEnable();
+	void	_onDisable();
+	void	_onNewSize( const WgSize& size );
 
 	void	TextModified();
 

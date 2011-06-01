@@ -378,7 +378,7 @@ public:
 	WgTextPos		ClampPos( WgTextPos ) const;
 
 
-	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCord& pointerOfs );
+	bool			_onAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCord& pointerOfs );
 
 	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }
 	WgMode			GetMarkedLinkMode() const { return m_markedLinkMode; }

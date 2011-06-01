@@ -178,9 +178,9 @@ void WgGizmoRefreshButton::SetRefreshProgress( float fraction )
 }
 
 
-//____ OnNewSize() ____________________________________________________________
+//____ _onNewSize() ____________________________________________________________
 
-void WgGizmoRefreshButton::OnNewSize( const WgSize& size )
+void WgGizmoRefreshButton::_onNewSize( const WgSize& size )
 {
 	Uint32 w = size.w;
 
@@ -188,11 +188,11 @@ void WgGizmoRefreshButton::OnNewSize( const WgSize& size )
 		w -= m_pBgGfx->GetContentBorders().width();
 	m_refreshText.setLineWidth(w);
 
-	WgGizmoButton::OnNewSize( size );
+	WgGizmoButton::_onNewSize( size );
 }
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::OnUpdate( const WgUpdateInfo& _updateInfo )
+void WgGizmoRefreshButton::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 	if( m_bRefreshing && m_pRefreshAnim )
 	{
@@ -220,9 +220,9 @@ void WgGizmoRefreshButton::OnUpdate( const WgUpdateInfo& _updateInfo )
 }
 
 
-//____ OnRender() _____________________________________________________________
+//____ _onRender() _____________________________________________________________
 
-void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Render background
 
@@ -312,9 +312,9 @@ void WgGizmoRefreshButton::OnRender( WgGfxDevice * pDevice, const WgRect& _canva
 	}
 }
 
-//____ OnAction() _____________________________________________________________
+//____ _onAction() _____________________________________________________________
 
-void WgGizmoRefreshButton::OnAction( WgInput::UserAction action, int button, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoRefreshButton::_onAction( WgInput::UserAction action, int button, const WgActionDetails& info, const WgInput& inputObj )
 {
 	switch( action )
 	{
@@ -334,7 +334,7 @@ void WgGizmoRefreshButton::OnAction( WgInput::UserAction action, int button, con
             break;
 	}
 
-	WgGizmoButton::OnAction( action, button, info, inputObj );
+	WgGizmoButton::_onAction( action, button, info, inputObj );
 }
 
 //_____ GetRenderMode() ________________________________________________________
@@ -369,13 +369,13 @@ WgMode WgGizmoRefreshButton::GetRenderMode()
 }
 
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoRefreshButton::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoRefreshButton::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoRefreshButton * pOrg = (WgGizmoRefreshButton *) _pOrg;
 
-	WgGizmoButton::OnCloneContent( _pOrg );
+	WgGizmoButton::_onCloneContent( _pOrg );
 
 	m_pRefreshAnim		= pOrg->m_pRefreshAnim;
 	m_animTarget		= pOrg->m_animTarget;

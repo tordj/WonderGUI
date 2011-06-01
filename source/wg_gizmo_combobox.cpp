@@ -125,9 +125,9 @@ void WgGizmoCombobox::SetTextFormat( const WgCharSeq& str )
 		EntrySelected(m_pMenu->GetSelectedItem());
 }
 
-//____ OnAction() _____________________________________________________________
+//____ _onAction() _____________________________________________________________
 
-void WgGizmoCombobox::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	WgMode	newMode = m_mode;
 
@@ -211,9 +211,9 @@ void WgGizmoCombobox::OnAction( WgInput::UserAction action, int button_key, cons
 
 }
 
-//____ OnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
-void WgGizmoCombobox::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Render the textbox
 	if(m_pTextBoxBg)
@@ -235,21 +235,21 @@ void WgGizmoCombobox::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	pDevice->PrintText( textClip, &m_text, r );
 }
 
-//____ OnRefresh() _______________________________________________________
+//____ _onRefresh() _______________________________________________________
 
-void WgGizmoCombobox::OnRefresh( void )
+void WgGizmoCombobox::_onRefresh( void )
 {
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoCombobox::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoCombobox::_onCloneContent( const WgGizmo * _pOrg )
 {
 }
 
-//____ OnAlphaTest() ______________________________________________________
+//____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoCombobox::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoCombobox::_onAlphaTest( const WgCord& ofs )
 {
 	if( !m_pTextBoxBg )
 		return false;
@@ -257,24 +257,24 @@ bool WgGizmoCombobox::OnAlphaTest( const WgCord& ofs )
 	return WgUtil::MarkTestBlock( ofs, m_pTextBoxBg->GetBlock(m_mode), WgRect( WgCord(0,0), Size() ) );
 }
 
-//____ OnGotInputFocus() ______________________________________________
+//____ _onGotInputFocus() ______________________________________________
 
-void WgGizmoCombobox::OnGotInputFocus()
+void WgGizmoCombobox::_onGotInputFocus()
 {
 	m_bFocused = true;
 }
 
-//____ OnLostInputFocus() ______________________________________________
+//____ _onLostInputFocus() ______________________________________________
 
-void WgGizmoCombobox::OnLostInputFocus()
+void WgGizmoCombobox::_onLostInputFocus()
 {
 	m_bFocused = false;
 }
 
 
-//____ OnEnable() _____________________________________________________________
+//____ _onEnable() _____________________________________________________________
 
-void WgGizmoCombobox::OnEnable( void )
+void WgGizmoCombobox::_onEnable( void )
 {
 	WgMode newMode;
 
@@ -288,9 +288,9 @@ void WgGizmoCombobox::OnEnable( void )
 		RequestRender();
 }
 
-//____ OnDisable() ____________________________________________________________
+//____ _onDisable() ____________________________________________________________
 
-void WgGizmoCombobox::OnDisable( void )
+void WgGizmoCombobox::_onDisable( void )
 {
 	WgMode newMode;
 

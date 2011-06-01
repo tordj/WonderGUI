@@ -106,8 +106,8 @@ protected:
  	virtual void	Render( const WgRect& _window, const WgRect& _clip );
 	virtual WgItem* Clone( WgItem * _pClone );
 
-	virtual void	OnGotInputFocus() {}
-	virtual void	OnLostInputFocus() {}
+	virtual void	_onGotInputFocus() {}
+	virtual void	_onLostInputFocus() {}
 
 	virtual void	Refresh( void );
 //	virtual void	Update( const WgUpdateInfo& _updateInfo );

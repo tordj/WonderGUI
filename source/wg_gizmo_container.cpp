@@ -24,7 +24,7 @@
 
 //____ () _________________________________________________
 
-void WgGizmoContainer::OnEnable()
+void WgGizmoContainer::_onEnable()
 {
 	WgGizmo * p = FirstGizmo();
 	while( p )
@@ -36,7 +36,7 @@ void WgGizmoContainer::OnEnable()
 
 //____ () _________________________________________________
 
-void WgGizmoContainer::OnDisable()
+void WgGizmoContainer::_onDisable()
 {
 	WgGizmo * p = FirstGizmo();
 	while( p )

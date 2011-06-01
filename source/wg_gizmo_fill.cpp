@@ -81,9 +81,9 @@ void WgGizmoFill::SetColor( const WgColor& enabled, const WgColor& disabled )
 	RequestRender();
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoFill::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoFill::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoFill * pOrg = (WgGizmoFill*) _pOrg;
 
@@ -91,9 +91,9 @@ void WgGizmoFill::OnCloneContent( const WgGizmo * _pOrg )
 	m_colDisabled = pOrg->m_colDisabled;
 }
 
-//____ OnRender() _____________________________________________________________
+//____ _onRender() _____________________________________________________________
 
-void WgGizmoFill::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoFill::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( m_bEnabled )
 		pDevice->Fill( _clip, m_colEnabled );
@@ -101,9 +101,9 @@ void WgGizmoFill::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 		pDevice->Fill( _clip, m_colDisabled );
 }
 
-//____ OnAlphaTest() ___________________________________________________________
+//____ _onAlphaTest() ___________________________________________________________
 
-bool WgGizmoFill::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoFill::_onAlphaTest( const WgCord& ofs )
 {
 	if( (m_bEnabled && m_colEnabled.a == 0) || (!m_bEnabled && m_colDisabled.a == 0 ) )
 		return false;
@@ -111,9 +111,9 @@ bool WgGizmoFill::OnAlphaTest( const WgCord& ofs )
 	return true;
 }
 
-//____ OnEnable() _____________________________________________________________
+//____ _onEnable() _____________________________________________________________
 
-void WgGizmoFill::OnEnable()
+void WgGizmoFill::_onEnable()
 {
 	if( m_colEnabled != m_colDisabled )
 	{
@@ -126,9 +126,9 @@ void WgGizmoFill::OnEnable()
 	}
 }
 
-//____ OnDisable() ____________________________________________________________
+//____ _onDisable() ____________________________________________________________
 
-void WgGizmoFill::OnDisable()
+void WgGizmoFill::_onDisable()
 {
 	if( m_colEnabled != m_colDisabled )
 	{

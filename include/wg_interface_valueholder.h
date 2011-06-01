@@ -69,7 +69,7 @@ protected:
 	virtual void	RangeModified() = 0;				///< Called when range (and thus fractional value) has been modified.
 
 	void			CloneInterface( Wg_Interface_ValueHolder * _pClone );
-	void			OnCloneContent( const Wg_Interface_ValueHolder * pOrg );
+	void			_onCloneContent( const Wg_Interface_ValueHolder * pOrg );
 
 	Sint64			m_rangeMin;
 	Sint64			m_rangeMax;

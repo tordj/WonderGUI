@@ -494,12 +494,20 @@ enum	WgEventType
 
 //____ WgSortOrder ____________________________________________________________
 
-enum	WgSortOrder
+enum WgSortOrder
 {
 	WG_SORT_ASCENDING,
 	WG_SORT_DESCENDING
-}
+};
 
+//____ WgSelectMode ___________________________________________________________
+
+enum WgSelectMode
+{
+	WG_SELECT_OFF,
+	WG_SELECT_SINGLE,
+	WG_SELECT_MULTI
+};
 
 
 //____ WgTextPos ______________________________________________________________

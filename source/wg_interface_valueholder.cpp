@@ -214,9 +214,9 @@ void Wg_Interface_ValueHolder::CloneInterface( Wg_Interface_ValueHolder * _pClon
 	_pClone->m_stepSize	= m_stepSize;
 	_pClone->m_unitSize	= m_unitSize;
 }
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void Wg_Interface_ValueHolder::OnCloneContent( const Wg_Interface_ValueHolder * pOrg )
+void Wg_Interface_ValueHolder::_onCloneContent( const Wg_Interface_ValueHolder * pOrg )
 {
 	m_rangeMin 	= pOrg->m_rangeMin;
 	m_rangeMax 	= pOrg->m_rangeMax;

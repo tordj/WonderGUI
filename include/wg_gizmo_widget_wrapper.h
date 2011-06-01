@@ -279,28 +279,28 @@ private:
 
 	void DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 	{
-		T::OnRender( WgGfx::GetDevice(), _window, _window, _clip, _layer );
+		T::_onRender( WgGfx::GetDevice(), _window, _window, _clip, _layer );
 	}
 
 	void DoMyOwnActionRespond( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 	{
-		T::OnAction( action, button_key, info, inputObj );
+		T::_onAction( action, button_key, info, inputObj );
 	}
 
 	void DoMyOwnRefresh( void )
 	{
-		T::OnRefresh();
+		T::_onRefresh();
 	}
 
 	void DoMyOwnUpdate( const WgUpdateInfo& _updateInfo )
 	{
-		T::OnUpdate( _updateInfo );
+		T::_onUpdate( _updateInfo );
 	}
 
 
 	void DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo )
 	{
-		T::OnNewSize( WgSize(newGeo.w, newGeo.h) );
+		T::_onNewSize( WgSize(newGeo.w, newGeo.h) );
 	};
 
 	void DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pCloneRoot, const WgWidget * _pBranchRoot )
@@ -310,24 +310,24 @@ private:
 
 	bool DoMyOwnMarkTest( int _x, int _y )
 	{
-		return T::OnAlphaTest( WgCord(_x,_y) );
+		return T::_onAlphaTest( WgCord(_x,_y) );
 	}
 
 	void DoMyOwnDisOrEnable( void )
 	{
 		if( WgWidget::m_bEnabled )
-			T::OnEnable();
+			T::_onEnable();
 		else
-			T::OnDisable();
+			T::_onDisable();
 
 	};
 
 	void DoMyOwnInputFocusChange( bool _bFocus )
 	{
 		if( _bFocus )
-			T::OnGotInputFocus();
+			T::_onGotInputFocus();
 		else
-			T::OnLostInputFocus();
+			T::_onLostInputFocus();
 	};
 
 	WgWidgetHook *	m_pHook;

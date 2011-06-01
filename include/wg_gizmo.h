@@ -87,7 +87,7 @@ public:
 	WgSkinManager *		GetSkinManager() const;
 
 
-	inline void			Refresh() { OnRefresh(); }
+	inline void			Refresh() { _onRefresh(); }
 	void				Enable();
 	void				Disable();
 	inline bool			IsEnabled() const { return m_bEnabled; }
@@ -165,20 +165,20 @@ protected:
 	// To be overloaded by Gizmo
 
 
-	virtual void	OnCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	virtual void	OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	virtual void	OnCloneContent( const WgGizmo * _pOrg ) = 0;
-	virtual void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) = 0;
-	virtual void	OnNewSize( const WgSize& size );
-	virtual void	OnRefresh();
-	virtual void	OnUpdate( const WgUpdateInfo& _updateInfo );
-	virtual void	OnEvent( const WgEvent::Event& _event, WgEventHandler * pHandler );
-	virtual void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	virtual	bool	OnAlphaTest( const WgCord& ofs );
-	virtual void	OnEnable();
-	virtual void	OnDisable();
-	virtual void	OnGotInputFocus();
-	virtual void	OnLostInputFocus();
+	virtual void	_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	virtual void	_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	virtual void	_onCloneContent( const WgGizmo * _pOrg ) = 0;
+	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) = 0;
+	virtual void	_onNewSize( const WgSize& size );
+	virtual void	_onRefresh();
+	virtual void	_onUpdate( const WgUpdateInfo& _updateInfo );
+	virtual void	_onEvent( const WgEvent::Event& _event, WgEventHandler * pHandler );
+	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	virtual	bool	_onAlphaTest( const WgCord& ofs );
+	virtual void	_onEnable();
+	virtual void	_onDisable();
+	virtual void	_onGotInputFocus();
+	virtual void	_onLostInputFocus();
 	// rename when gizmos are done
 	virtual bool	TempIsInputField() const;
 	virtual Wg_Interface_TextHolder*	TempGetText();
@@ -204,6 +204,8 @@ protected:
 };
 
 typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
+
+typedef	Sint32(*WgGizmoSortFunc)(const WgGizmo *,const WgGizmo *);
 
 
 #endif

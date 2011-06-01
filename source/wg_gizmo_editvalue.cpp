@@ -189,9 +189,9 @@ void WgGizmoEditvalue::RangeModified()
 }
 
 
-//____ OnRefresh() ____________________________________________________________
+//____ _onRefresh() ____________________________________________________________
 
-void WgGizmoEditvalue::OnRefresh( void )
+void WgGizmoEditvalue::_onRefresh( void )
 {
 	if( m_text.getFont() != 0 )
 	{
@@ -201,9 +201,9 @@ void WgGizmoEditvalue::OnRefresh( void )
 
 }
 
-//____ OnUpdate() _____________________________________________________________
+//____ _onUpdate() _____________________________________________________________
 
-void WgGizmoEditvalue::OnUpdate( const WgUpdateInfo& _updateInfo )
+void WgGizmoEditvalue::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 	if( m_text.GetCursor() )
 	{
@@ -213,9 +213,9 @@ void WgGizmoEditvalue::OnUpdate( const WgUpdateInfo& _updateInfo )
 }
 
 
-//____ OnRender() _____________________________________________________________
+//____ _onRender() _____________________________________________________________
 
-void WgGizmoEditvalue::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoEditvalue::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( m_text.getFont() == 0 )
 		return;
@@ -307,9 +307,9 @@ bool WgGizmoEditvalue::ParseValueFromInput( int64_t * wpResult )
 
 
 
-//____ OnAction() _____________________________________________________________
+//____ _onAction() _____________________________________________________________
 
-void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	bool	bTextChanged = false;
 
@@ -570,13 +570,13 @@ void WgGizmoEditvalue::OnAction( WgInput::UserAction action, int button_key, con
 }
 
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoEditvalue::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoEditvalue::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoEditvalue * pOrg = (WgGizmoEditvalue *) _pOrg;
 
-	Wg_Interface_ValueHolder::OnCloneContent( pOrg );
+	Wg_Interface_ValueHolder::_onCloneContent( pOrg );
 
 	m_format		= pOrg->m_format;
 	m_text.setText(&pOrg->m_text);
@@ -584,26 +584,26 @@ void WgGizmoEditvalue::OnCloneContent( const WgGizmo * _pOrg )
 	m_textOrigo	= pOrg->m_textOrigo;
 }
 
-//____ OnEnable() _____________________________________________________________
+//____ _onEnable() _____________________________________________________________
 
-void WgGizmoEditvalue::OnEnable( void )
+void WgGizmoEditvalue::_onEnable( void )
 {
 	m_text.setMode(WG_MODE_NORMAL);
 	RequestRender();
 }
 
-//____ OnDisable() ____________________________________________________________
+//____ _onDisable() ____________________________________________________________
 
-void WgGizmoEditvalue::OnDisable( void )
+void WgGizmoEditvalue::_onDisable( void )
 {
 	m_text.setMode(WG_MODE_DISABLED);
 	RequestRender();
 }
 
 
-//____ OnGotInputFocus() ______________________________________________________
+//____ _onGotInputFocus() ______________________________________________________
 
-void WgGizmoEditvalue::OnGotInputFocus()
+void WgGizmoEditvalue::_onGotInputFocus()
 {
 	m_bFocused = true;
 	m_text.CreateCursor();
@@ -620,9 +620,9 @@ void WgGizmoEditvalue::OnGotInputFocus()
 	RequestRender();
 }
 
-//____ OnLostInputFocus() _____________________________________________________
+//____ _onLostInputFocus() _____________________________________________________
 
-void WgGizmoEditvalue::OnLostInputFocus()
+void WgGizmoEditvalue::_onLostInputFocus()
 {
 	m_bFocused = false;
 	m_text.DestroyCursor();

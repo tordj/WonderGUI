@@ -29,14 +29,14 @@
 
 void WgGizmoHook::DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
-	m_pGizmo->OnRender( pDevice, _canvas, _window, _clip, _layer );
+	m_pGizmo->_onRender( pDevice, _canvas, _window, _clip, _layer );
 }
 
 //____ DoSetNewSize() _________________________________________________________
 
 void WgGizmoHook::DoSetNewSize( const WgSize& size )
 {
-	m_pGizmo->OnNewSize( size );
+	m_pGizmo->_onNewSize( size );
 }
 
 //____ DoSetGizmo() ___________________________________________________________
@@ -50,14 +50,14 @@ void WgGizmoHook::DoSetGizmo()
 
 void WgGizmoHook::_doCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
-	m_pGizmo->OnCollectRects( rects, geo, clip );
+	m_pGizmo->_onCollectRects( rects, geo, clip );
 }
 
 //____ _doMaskRects() __________________________________________________________
 
 void WgGizmoHook::_doMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
-	m_pGizmo->OnMaskRects( rects, geo, clip );
+	m_pGizmo->_onMaskRects( rects, geo, clip );
 }
 
 //_____________________________________________________________________________

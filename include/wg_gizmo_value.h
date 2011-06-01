@@ -59,11 +59,11 @@ public:
 	inline WgValueFormat	Format() { return m_format; }
 	virtual const WgValueFormat&	GetFormat() const { return m_format; }
 protected:
-	void	OnRefresh();
-	void	OnCloneContent( const WgGizmo * _pOrg );
-	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	void	OnEnable();
-	void	OnDisable();
+	void	_onRefresh();
+	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void	_onEnable();
+	void	_onDisable();
 
 private:
 	void	ValueModified();				///< Called when value has been modified.

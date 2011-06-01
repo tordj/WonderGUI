@@ -65,19 +65,19 @@ void WgChainImp::Clear()
 //-----------------------------------------------------------------------------
 WgLink::WgLink( WgChainImp * pChain )
 {
-	Reset();
+	_reset();
 	if( pChain )
-		MoveFirst( pChain );
+		_moveFirst( pChain );
 }
 
 //-----------------------------------------------------------------------------
 WgLink::~WgLink()
 {
-	Disconnect();
+	_disconnect();
 }
 
 //-----------------------------------------------------------------------------
-int WgLink::Index() const
+int WgLink::_index() const
 {
 	if( !m_pChain )
 		return -1;
@@ -94,7 +94,7 @@ int WgLink::Index() const
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::MoveUp()
+bool WgLink::_moveUp()
 {
 	if( !m_pPrev )
 		return false;
@@ -119,7 +119,7 @@ bool WgLink::MoveUp()
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::MoveDown()
+bool WgLink::_moveDown()
 {
 	if( !m_pNext )
 		return false;
@@ -144,7 +144,7 @@ bool WgLink::MoveDown()
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::MoveFirst( WgChainImp * pChain )
+bool WgLink::_moveFirst( WgChainImp * pChain )
 {
 	if( !pChain )
 	{
@@ -154,7 +154,7 @@ bool WgLink::MoveFirst( WgChainImp * pChain )
 	}
 
 	if( m_pChain )
-		Unlink();
+		_unlink();
 
 	m_pChain = pChain;
 	m_pPrev = 0;
@@ -171,7 +171,7 @@ bool WgLink::MoveFirst( WgChainImp * pChain )
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::MoveLast( WgChainImp * pChain )
+bool WgLink::_moveLast( WgChainImp * pChain )
 {
 	if( !pChain )
 	{
@@ -181,7 +181,7 @@ bool WgLink::MoveLast( WgChainImp * pChain )
 	}
 
 	if( m_pChain )
-		Unlink();
+		_unlink();
 
 	m_pChain = pChain;
 	m_pNext = 0;
@@ -198,7 +198,7 @@ bool WgLink::MoveLast( WgChainImp * pChain )
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::MoveAfter( WgLink * pLink )
+bool WgLink::_moveAfter( WgLink * pLink )
 {
 	if( !pLink || !pLink->m_pChain )
 		return false;
@@ -207,7 +207,7 @@ bool WgLink::MoveAfter( WgLink * pLink )
 		return true;
 
 	if( m_pChain )
-		Unlink();
+		_unlink();
 
 	m_pChain = pLink->m_pChain;
 	m_pNext = pLink->m_pNext;
@@ -227,7 +227,7 @@ bool WgLink::MoveAfter( WgLink * pLink )
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::MoveBefore( WgLink * pLink )
+bool WgLink::_moveBefore( WgLink * pLink )
 {
 	if( !pLink || !pLink->m_pChain )
 		return false;
@@ -236,7 +236,7 @@ bool WgLink::MoveBefore( WgLink * pLink )
 		return true;
 
 	if( m_pChain )
-		Unlink();
+		_unlink();
 
 	m_pChain = pLink->m_pChain;
 	m_pNext = pLink;
@@ -257,12 +257,12 @@ bool WgLink::MoveBefore( WgLink * pLink )
 }
 
 //-----------------------------------------------------------------------------
-bool WgLink::Disconnect()
+bool WgLink::_disconnect()
 {
 	if( m_pChain )
 	{
-		Unlink();
-		Reset();
+		_unlink();
+		_reset();
 		return true;
 	}
 

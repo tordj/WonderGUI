@@ -45,7 +45,7 @@ public:
 
 private:
 
-	void	OnCloneContent( const WgGizmo * _pOrg );
+	void	_onCloneContent( const WgGizmo * _pOrg );
 	
 	bool			m_bAllowUnchecking;
 

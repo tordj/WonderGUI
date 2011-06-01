@@ -65,13 +65,13 @@ public:
 	bool		IsPlaying() { return m_bPlaying; };
 
 protected:
-	void	OnCloneContent( const WgGizmo * _pOrg );
-	void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	void	OnRefresh();
-	void	OnUpdate( const WgUpdateInfo& _updateInfo );
-	bool	OnAlphaTest( const WgCord& ofs );
-	void	OnEnable();
-	void	OnDisable();
+	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void	_onRefresh();
+	void	_onUpdate( const WgUpdateInfo& _updateInfo );
+	bool	_onAlphaTest( const WgCord& ofs );
+	void	_onEnable();
+	void	_onDisable();
 
 private:
 

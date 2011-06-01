@@ -903,17 +903,17 @@ void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& new
 }
 
 
-//____ OnNewSize() ____________________________________________________________
+//____ _onNewSize() ____________________________________________________________
 
-void WgGizmoView::OnNewSize( const WgSize& size )
+void WgGizmoView::_onNewSize( const WgSize& size )
 {
 	UpdateElementGeometry( size, m_contentSize );
 }
 
 
-//____ OnRender() _____________________________________________________________
+//____ _onRender() _____________________________________________________________
 
-void WgGizmoView::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( m_elements[WINDOW].Gizmo() )
 	{
@@ -950,9 +950,9 @@ void WgGizmoView::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 	}
 }
 
-//____ OnAlphaTest() ___________________________________________________________
+//____ _onAlphaTest() ___________________________________________________________
 
-bool WgGizmoView::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoView::_onAlphaTest( const WgCord& ofs )
 {
 	if( m_pFillerBlocks && m_geoFiller.contains( ofs ) )
 	{
@@ -965,9 +965,9 @@ bool WgGizmoView::OnAlphaTest( const WgCord& ofs )
 	return false;
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoView::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoView::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoView* pOrg = (WgGizmoView*)_pOrg;
 

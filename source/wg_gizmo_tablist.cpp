@@ -1002,9 +1002,9 @@ WgTab * WgGizmoTablist::Pos2Tab( int x, int y )
 	return pHit;
 }
 
-//____ OnUpdate() ________________________________________________________
+//____ _onUpdate() ________________________________________________________
 
-void WgGizmoTablist::OnUpdate( const WgUpdateInfo& _updateInfo )
+void WgGizmoTablist::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 	m_alertModeCnt -= _updateInfo.msDiff;
 	if( m_alertModeCnt <= 0 )
@@ -1027,9 +1027,9 @@ void WgGizmoTablist::OnUpdate( const WgUpdateInfo& _updateInfo )
 	}
 }
 
-//____ OnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
-void WgGizmoTablist::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& clip, Uint8 _layer )
+void WgGizmoTablist::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& clip, Uint8 _layer )
 {
 	Uint32	selectedX	= INT_MAX;			// X-offset for selected tab.
 
@@ -1097,26 +1097,26 @@ void WgGizmoTablist::RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, 
 	pDevice->PrintText( clip2, &tab.m_text, r );
 }
 
-//____ OnRefresh() ____________________________________________________________
+//____ _onRefresh() ____________________________________________________________
 
-void WgGizmoTablist::OnRefresh( void )
+void WgGizmoTablist::_onRefresh( void )
 {
 	ResizeTabs();
 	RequestRender();
 }
 
-//____ OnNewSize() ____________________________________________________________
+//____ _onNewSize() ____________________________________________________________
 
-void WgGizmoTablist::OnNewSize( const WgSize& size )
+void WgGizmoTablist::_onNewSize( const WgSize& size )
 {
 	ResizeTabs();
 }
 
 
 
-//____ OnAction() _____________________________________________________________
+//____ _onAction() _____________________________________________________________
 
-void WgGizmoTablist::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoTablist::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	switch( action )
 	{
@@ -1167,9 +1167,9 @@ void WgGizmoTablist::OnAction( WgInput::UserAction action, int button_key, const
 	}
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoTablist::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoTablist::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoTablist * pOrg = (WgGizmoTablist *) _pOrg;
 
@@ -1201,9 +1201,9 @@ void WgGizmoTablist::OnCloneContent( const WgGizmo * _pOrg )
 }
 
 
-//____ OnAlphaTest() ________________________________________
+//____ _onAlphaTest() ________________________________________
 
-bool WgGizmoTablist::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoTablist::_onAlphaTest( const WgCord& ofs )
 {
 	return Pos2Tab(ofs.x, ofs.y) != NULL;
 }

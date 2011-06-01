@@ -1164,7 +1164,7 @@ void WgGizmoTable::ConnectRow( WgTableRow2* pRow, WgTableRow2* pPlaceBefore )
 	pRow->m_pTable = this;
 
 	if( pPlaceBefore )
-		pRow->MoveBefore(pPlaceBefore);
+		pRow->_moveBefore(pPlaceBefore);
 	else
 		m_rows.PushBack(pRow);
 
@@ -1180,7 +1180,7 @@ void WgGizmoTable::DisconnectRow( WgTableRow2* pRow )
 {
 	m_nRows--;
 	pRow->m_pTable = 0;
-	pRow->Disconnect();
+	pRow->_disconnect();
 
 	m_contentSize.h -= pRow->Height();
 
@@ -1194,7 +1194,7 @@ void WgGizmoTable::DisconnectRow( WgTableRow2* pRow )
 int WgGizmoTable::GetRowNb( WgTableRow2* pRow ) const
 {
 	if( m_rows.IsMemberOf( pRow ) )
-		return pRow->Index();
+		return pRow->_index();
 	else
 		return -1;
 }
@@ -1395,7 +1395,7 @@ bool WgGizmoTable::SortRows( int column, bool bAscend, int prio )
 			if( bFirst )
 				m_rows.PushFront( pRow );
 			else
-				pRow->MoveBefore(FindRowInsertSpot( pFirst, pLast, pRow, m_nRows ));
+				pRow->_moveBefore(FindRowInsertSpot( pFirst, pLast, pRow, m_nRows ));
 		}
 
 		nRows++;
@@ -1585,9 +1585,9 @@ void WgGizmoTable::ScrollIntoView( WgTableRow2* pRow )
 }
 */
 
-//____ OnNewSize() ____________________________________________________________
+//____ _onNewSize() ____________________________________________________________
 
-void WgGizmoTable::OnNewSize( const WgSize& newSize )
+void WgGizmoTable::_onNewSize( const WgSize& newSize )
 {
 	bool bWidthChanged = (newSize.w!=m_gizmoSize.w)?true:false;
 
@@ -1772,8 +1772,8 @@ WgGizmo * WgGizmoTable::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 }
 
 
-//____ OnRender() _____________________________________________________________
-void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+//____ _onRender() _____________________________________________________________
+void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	WgRect	r = _canvas;
 	WgRect	clipView = _clip;
@@ -1987,9 +1987,9 @@ void WgGizmoTable::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 }
 
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoTable::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoTable::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoTable * pOrg = (WgGizmoTable *) _pOrg;
 
@@ -2097,9 +2097,9 @@ WgTableColumn2 *WgGizmoTable::GetHeaderColumnAt( const WgCord& pos )
 	return NULL;
 }
 
-//____ OnAction() _____________________________________________________________
+//____ _onAction() _____________________________________________________________
 
-void WgGizmoTable::OnAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
+void WgGizmoTable::_onAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
 {
 	WgCord pos = Abs2local( WgCord(_info.x, _info.y) );
 
@@ -2288,9 +2288,9 @@ void WgGizmoTable::UpdateMarkedRowColumn( int row, int column )
 }
 
 
-//____ OnAlphaTest() ___________________________________________________
+//____ _onAlphaTest() ___________________________________________________
 
-bool WgGizmoTable::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoTable::_onAlphaTest( const WgCord& ofs )
 {
 	return true;
 }

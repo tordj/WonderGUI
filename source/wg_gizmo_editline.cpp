@@ -165,9 +165,9 @@ bool WgGizmoEditline::SetTextWrap(bool bWrap)
 	return !bWrap;
 }
 
-//____ OnUpdate() _____________________________________________________________
+//____ _onUpdate() _____________________________________________________________
 
-void WgGizmoEditline::OnUpdate( const WgUpdateInfo& _updateInfo )
+void WgGizmoEditline::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 	if( IsSelectable() && m_bFocused )
 	{
@@ -178,20 +178,20 @@ void WgGizmoEditline::OnUpdate( const WgUpdateInfo& _updateInfo )
 
 
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoEditline::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoEditline::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoEditline * pOrg = (WgGizmoEditline*) _pOrg;
 
-	Wg_Interface_TextHolder::OnCloneContent( pOrg );
+	Wg_Interface_TextHolder::_onCloneContent( pOrg );
 
 	//TODO: Implement!
 }
 
-//____ OnRender() _____________________________________________________________
+//____ _onRender() _____________________________________________________________
 
-void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoEditline::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 
 	WgText * pText = &m_text;
@@ -237,9 +237,9 @@ void WgGizmoEditline::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 }
 
 
-//____ OnAction() _____________________________________________________________
+//____ _onAction() _____________________________________________________________
 
-void WgGizmoEditline::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoEditline::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
@@ -524,25 +524,25 @@ void WgGizmoEditline::AdjustViewOfs()
 
 
 
-//____ OnEnable() _____________________________________________________________
+//____ _onEnable() _____________________________________________________________
 
-void WgGizmoEditline::OnEnable()
+void WgGizmoEditline::_onEnable()
 {
 	m_text.setMode(WG_MODE_NORMAL);
 	RequestRender();
 }
 
-//____ OnDisable() ____________________________________________________________
+//____ _onDisable() ____________________________________________________________
 
-void WgGizmoEditline::OnDisable()
+void WgGizmoEditline::_onDisable()
 {
 	m_text.setMode(WG_MODE_DISABLED);
 	RequestRender();
 }
 
-//____ OnGotInputFocus() ______________________________________________________
+//____ _onGotInputFocus() ______________________________________________________
 
-void WgGizmoEditline::OnGotInputFocus()
+void WgGizmoEditline::_onGotInputFocus()
 {
 	m_bFocused = true;
 
@@ -553,9 +553,9 @@ void WgGizmoEditline::OnGotInputFocus()
 	}
 }
 
-//____ OnLostInputFocus() _____________________________________________________
+//____ _onLostInputFocus() _____________________________________________________
 
-void WgGizmoEditline::OnLostInputFocus()
+void WgGizmoEditline::_onLostInputFocus()
 {
 	m_bFocused = false;
 
@@ -572,9 +572,9 @@ void WgGizmoEditline::OnLostInputFocus()
 	}
 }
 
-//____ OnNewSize() ____________________________________________________________
+//____ _onNewSize() ____________________________________________________________
 
-void WgGizmoEditline::OnNewSize( const WgSize& size )
+void WgGizmoEditline::_onNewSize( const WgSize& size )
 {
 	AdjustViewOfs();
 	RequestRender();

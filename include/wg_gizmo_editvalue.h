@@ -75,15 +75,15 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 
 	protected:
 
-		void	OnUpdate( const WgUpdateInfo& _updateInfo );
-		void	OnCloneContent( const WgGizmo * _pOrg );
-		void	OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-		void	OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-		void	OnEnable();
-		void	OnDisable();
-		void	OnGotInputFocus();
-		void	OnLostInputFocus();
-		void	OnRefresh();
+		void	_onUpdate( const WgUpdateInfo& _updateInfo );
+		void	_onCloneContent( const WgGizmo * _pOrg );
+		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+		void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+		void	_onEnable();
+		void	_onDisable();
+		void	_onGotInputFocus();
+		void	_onLostInputFocus();
+		void	_onRefresh();
 
 	private:
 

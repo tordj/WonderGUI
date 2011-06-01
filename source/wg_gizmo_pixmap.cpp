@@ -84,18 +84,18 @@ WgSize WgGizmoPixmap::BestSize() const
 
 
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoPixmap::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoPixmap::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoPixmap * pOrg = (WgGizmoPixmap*) _pOrg;
 
 	m_pGfx = pOrg->m_pGfx;
 }
 
-//____ OnRender() _____________________________________________________________
+//____ _onRender() _____________________________________________________________
 
-void WgGizmoPixmap::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoPixmap::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( !m_pGfx )
 		return;
@@ -109,9 +109,9 @@ void WgGizmoPixmap::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	pDevice->ClipBlitBlock( _clip, block, _canvas);
 }
 
-//____ OnAlphaTest() ___________________________________________________________
+//____ _onAlphaTest() ___________________________________________________________
 
-bool WgGizmoPixmap::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoPixmap::_onAlphaTest( const WgCord& ofs )
 {
 	if( !m_pGfx )
 		return	false;												// No visible pixel, so don't accept the mark...
@@ -125,9 +125,9 @@ bool WgGizmoPixmap::OnAlphaTest( const WgCord& ofs )
 	return WgUtil::MarkTestBlock( ofs, m_pGfx->GetBlock(mode), WgRect(0,0,sz.w,sz.h) );
 }
 
-//____ OnEnable() _____________________________________________________________
+//____ _onEnable() _____________________________________________________________
 
-void WgGizmoPixmap::OnEnable()
+void WgGizmoPixmap::_onEnable()
 {
 	if( m_pGfx )
 	{
@@ -136,9 +136,9 @@ void WgGizmoPixmap::OnEnable()
 	}
 }
 
-//____ OnDisable() ____________________________________________________________
+//____ _onDisable() ____________________________________________________________
 
-void WgGizmoPixmap::OnDisable()
+void WgGizmoPixmap::_onDisable()
 {
 	if( m_pGfx )
 	{

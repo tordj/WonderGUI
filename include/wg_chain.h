@@ -85,17 +85,31 @@ public:
 //____ Class WgLink _____________________________________________________________
 
 #define	LINK_METHODS( type ) \
-	inline bool	MoveUp() { return WgLink::MoveUp(); }; \
-	inline bool	MoveDown() { return WgLink::MoveDown(); }; \
-	inline bool	MoveFirst( WgChain<type> * pChain = 0 ) { return WgLink::MoveFirst( pChain ); }; \
-	inline bool	MoveLast( WgChain<type> * pChain = 0 ) { return WgLink::MoveLast( pChain ); }; \
-	inline bool	MoveAfter( type * pLink ) { return WgLink::MoveAfter( pLink ); }; \
-	inline bool	MoveBefore( type * pLink) { return WgLink::MoveBefore( pLink ); }; \
-	inline bool	Disconnect() {return WgLink::Disconnect(); }; \
+	inline bool	MoveUp() { return WgLink::_moveUp(); }; \
+	inline bool	MoveDown() { return WgLink::_moveDown(); }; \
+	inline bool	MoveFirst( WgChain<type> * pChain = 0 ) { return WgLink::_moveFirst( pChain ); }; \
+	inline bool	MoveLast( WgChain<type> * pChain = 0 ) { return WgLink::_moveLast( pChain ); }; \
+	inline bool	MoveAfter( type * pLink ) { return WgLink::_moveAfter( pLink ); }; \
+	inline bool	MoveBefore( type * pLink) { return WgLink::_moveBefore( pLink ); }; \
+	inline bool	Disconnect() {return WgLink::_disconnect(); }; \
 	inline type *	Prev() const { return (type *) m_pPrev; }; \
 	inline type *	Next() const { return (type *) m_pNext; }; \
 	inline WgChain<type> * Chain() const { return (WgChain<type> *) m_pChain; }; \
-	inline int		Index() const { return WgLink::Index(); };
+	inline int		Index() const { return WgLink::_index(); };
+
+#define	PROTECTED_LINK_METHODS( type ) \
+	inline bool	_moveUp() { return WgLink::_moveUp(); }; \
+	inline bool	_moveDown() { return WgLink::_moveDown(); }; \
+	inline bool	_moveFirst( WgChain<type> * pChain = 0 ) { return WgLink::_moveFirst( pChain ); }; \
+	inline bool	_moveLast( WgChain<type> * pChain = 0 ) { return WgLink::_moveLast( pChain ); }; \
+	inline bool	_moveAfter( type * pLink ) { return WgLink::_moveAfter( pLink ); }; \
+	inline bool	_moveBefore( type * pLink) { return WgLink::_moveBefore( pLink ); }; \
+	inline bool	_disconnect() {return WgLink::_disconnect(); }; \
+	inline type *	_prev() const { return (type *) m_pPrev; }; \
+	inline type *	_next() const { return (type *) m_pNext; }; \
+	inline WgChain<type> * _chain() const { return (WgChain<type> *) m_pChain; }; \
+	inline int		_index() const { return WgLink::_index(); };
+
 
 
 class WgLink
@@ -107,15 +121,15 @@ protected:
 	WgLink( WgChainImp * pChain = 0 );
 	virtual ~WgLink();
 
-	bool		MoveUp();						///< Move link one step closer to top.
-	bool		MoveDown();						///< Move link one step closer to bottom.
-	bool		MoveFirst( WgChainImp * pChain = 0 );///< Move link to top of current or specified chain.
-	bool		MoveLast( WgChainImp * pChain = 0 ); ///< Move link to bottom of current or specified chain.
-	bool		MoveAfter( WgLink * pLink );		///< Move link to position right after specified link in specified links chain.
-	bool		MoveBefore( WgLink * pLink );		///< Move link to position right before specified link in specified links chain.
+	bool		_moveUp();						///< Move link one step closer to top.
+	bool		_moveDown();						///< Move link one step closer to bottom.
+	bool		_moveFirst( WgChainImp * pChain = 0 );///< Move link to top of current or specified chain.
+	bool		_moveLast( WgChainImp * pChain = 0 ); ///< Move link to bottom of current or specified chain.
+	bool		_moveAfter( WgLink * pLink );		///< Move link to position right after specified link in specified links chain.
+	bool		_moveBefore( WgLink * pLink );		///< Move link to position right before specified link in specified links chain.
 
-    int			Index() const;					///< Get position in chain (0+), -1 if not in a chain.
-	bool		Disconnect();					///< Disconnects Link from its chain.
+    int			_index() const;					///< Get position in chain (0+), -1 if not in a chain.
+	bool		_disconnect();					///< Disconnects Link from its chain.
 
 protected:
 	WgChainImp *	m_pChain;
@@ -124,8 +138,8 @@ protected:
 	WgLink *		m_pPrev;
 
 private:
-	void		Reset();
-	void		Unlink();
+	void		_reset();
+	void		_unlink();
 
 };
 
@@ -134,7 +148,7 @@ private:
 
 inline void	WgChainImp::PushFront( WgLink * pLink )
 {
-	pLink->MoveFirst( this );
+	pLink->_moveFirst( this );
 }
 
 //____ WgChainImp::PopFront() ________________________________________________
@@ -143,7 +157,7 @@ inline WgLink * WgChainImp::PopFront()
 {
 	WgLink * pLink = m_pFirst;
 	if( pLink )
-		pLink->Disconnect();
+		pLink->_disconnect();
 	return pLink;
 }
 
@@ -151,7 +165,7 @@ inline WgLink * WgChainImp::PopFront()
 
 inline void	WgChainImp::PushBack( WgLink * pLink )
 {
-	pLink->MoveLast( this );
+	pLink->_moveLast( this );
 }
 
 //____ WgChainImp::PopBack() _________________________________________________
@@ -160,14 +174,14 @@ inline WgLink * WgChainImp::PopBack()
 {
 	WgLink * pLink = m_pLast;
 	if( pLink )
-		pLink->Disconnect();
+		pLink->_disconnect();
 	return pLink;
 }
 
 
-//____ WgLink::Unlink() _________________________________________________________
+//____ WgLink::_unlink() _________________________________________________________
 
-inline void WgLink::Unlink()
+inline void WgLink::_unlink()
 {
 	if( m_pPrev )
 		m_pPrev->m_pNext = m_pNext;
@@ -182,9 +196,9 @@ inline void WgLink::Unlink()
 	m_pChain->m_size--;
 }
 
-//____ WgLink::Reset() __________________________________________________________
+//____ WgLink::_reset() __________________________________________________________
 
-inline void WgLink::Reset()
+inline void WgLink::_reset()
 {
 	m_pChain	= 0;
 	m_pPrev		= 0;

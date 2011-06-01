@@ -488,12 +488,12 @@ void Wg_Interface_ItemHolder::DoMyOwnCloning( Wg_Interface_ItemHolder * pFrom )
 bool Wg_Interface_ItemHolder::SetFocusedItem( WgItem * pItem )
 {
 	if( m_pFocusedItem && m_pFocusedItem != pItem )
-		m_pFocusedItem->OnLostInputFocus();
+		m_pFocusedItem->_onLostInputFocus();
 
 	m_pFocusedItem = pItem;
 
 	if( pItem )
-		pItem->OnGotInputFocus();
+		pItem->_onGotInputFocus();
 
 	return GrabInputFocus();
 }
@@ -501,7 +501,7 @@ bool Wg_Interface_ItemHolder::SetFocusedItem( WgItem * pItem )
 bool Wg_Interface_ItemHolder::UnsetFocusedItem( WgItem * pItem )
 {
 	if( pItem && pItem == m_pFocusedItem )
-		m_pFocusedItem->OnLostInputFocus();
+		m_pFocusedItem->_onLostInputFocus();
 
 	m_pFocusedItem = 0;
 

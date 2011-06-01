@@ -101,9 +101,9 @@ void WgGizmoValue::RangeModified()
 }
 
 
-//____ OnRefresh() ____________________________________________________________
+//____ _onRefresh() ____________________________________________________________
 
-void WgGizmoValue::OnRefresh( void )
+void WgGizmoValue::_onRefresh( void )
 {
 	if( m_pFonts != 0 )
 	{
@@ -113,9 +113,9 @@ void WgGizmoValue::OnRefresh( void )
 
 }
 
-//____ OnRender() _____________________________________________________________
+//____ _onRender() _____________________________________________________________
 
-void WgGizmoValue::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoValue::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	if( m_bRegenText )
 	{
@@ -126,13 +126,13 @@ void WgGizmoValue::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 	pDevice->PrintText( _clip, &m_text, _canvas );
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoValue::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoValue::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoValue * pOrg = (WgGizmoValue *) _pOrg;
 
-	Wg_Interface_ValueHolder::OnCloneContent( pOrg );
+	Wg_Interface_ValueHolder::_onCloneContent( pOrg );
 
 	m_pFonts		= pOrg->m_pFonts;
 	m_format		= pOrg->m_format;
@@ -141,17 +141,17 @@ void WgGizmoValue::OnCloneContent( const WgGizmo * _pOrg )
 
 }
 
-//____ OnEnable() _____________________________________________________________
+//____ _onEnable() _____________________________________________________________
 
-void WgGizmoValue::OnEnable( void )
+void WgGizmoValue::_onEnable( void )
 {
 	m_text.setMode(WG_MODE_NORMAL);
 	RequestRender();
 }
 
-//____ OnDisable() ____________________________________________________________
+//____ _onDisable() ____________________________________________________________
 
-void WgGizmoValue::OnDisable( void )
+void WgGizmoValue::_onDisable( void )
 {
 	m_text.setMode(WG_MODE_DISABLED);
 	RequestRender();
