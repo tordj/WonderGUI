@@ -492,6 +492,16 @@ enum	WgEventType
 };
 
 
+//____ WgSortOrder ____________________________________________________________
+
+enum	WgSortOrder
+{
+	WG_SORT_ASCENDING,
+	WG_SORT_DESCENDING
+}
+
+
+
 //____ WgTextPos ______________________________________________________________
 
 class WgTextPos
