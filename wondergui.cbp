@@ -79,7 +79,6 @@
 		<Unit filename="include/wg_gizmo_flexgeo.h" />
 		<Unit filename="include/wg_gizmo_fps.h" />
 		<Unit filename="include/wg_gizmo_hook.h" />
-		<Unit filename="include/wg_gizmo_item_wrapper.h" />
 		<Unit filename="include/wg_gizmo_menubar.h" />
 		<Unit filename="include/wg_gizmo_modal.h" />
 		<Unit filename="include/wg_gizmo_parent.h" />

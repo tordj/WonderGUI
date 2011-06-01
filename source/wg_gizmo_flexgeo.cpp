@@ -572,9 +572,9 @@ WgGizmoHook * WgFlexHook::_nextHook() const
 	return Next();
 }
 
-//____ WgFlexHook::Parent() ___________________________________________________
+//____ WgFlexHook::_parent() __________________________________________________
 
-WgGizmoContainer* WgFlexHook::Parent() const
+WgGizmoContainer* WgFlexHook::_parent() const
 {
 	return m_pParent;
 }

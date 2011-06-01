@@ -89,7 +89,6 @@ protected:
 		WgCord			ScreenPos() const;
 		WgRect			ScreenGeo() const;
 
-		WgGizmoContainer* Parent() const;
 		WgRoot*			Root() const;
 
 		WgWidget*		GetRoot();			// Should in the future not return a widget, but a gizmo.
@@ -102,6 +101,7 @@ protected:
 
 		WgGizmoHook *	_prevHook() const;
 		WgGizmoHook *	_nextHook() const;
+		WgGizmoContainer * _parent() const;			// Always returns 0.
 
 		WgRoot *		m_pRoot;
 	};

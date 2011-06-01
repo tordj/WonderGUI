@@ -288,11 +288,6 @@ WgRect WgRoot::Hook::ScreenGeo() const
 	return m_pRoot->Geo();
 }
 
-WgGizmoContainer* WgRoot::Hook::Parent() const
-{
-	return 0;
-}
-
 WgWidget* WgRoot::Hook::GetRoot()
 {
 	return 0;
@@ -328,4 +323,8 @@ WgGizmoHook * WgRoot::Hook::_nextHook() const
 	return 0;
 }
 
+WgGizmoContainer* WgRoot::Hook::_parent() const
+{
+	return 0;
+}
 

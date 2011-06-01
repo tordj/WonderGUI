@@ -50,7 +50,7 @@ public:
 	inline WgGizmoHook * PrevHook() const { return _prevHook(); }
 	inline WgGizmoHook * NextHook() const { return _nextHook(); }
 
-	WgGizmoContainer * Parent() const;
+	inline WgGizmoView * Parent() const { return m_pView; }
 
 	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
 
@@ -65,9 +65,9 @@ protected:
 	WgViewHook( WgGizmo * pContent, WgGizmoView * pView );
 	~WgViewHook();
 
-	WgGizmoHook *	_prevHook() const;
-	WgGizmoHook *	_nextHook() const;
-
+	WgGizmoHook *		_prevHook() const;
+	WgGizmoHook *		_nextHook() const;
+	WgGizmoContainer *	_parent() const;
 
 //	ElementType		m_type;
 	WgGizmoView *	m_pView;

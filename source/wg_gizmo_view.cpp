@@ -1074,12 +1074,6 @@ WgRect WgViewHook::ScreenGeo() const
 	return m_geo + m_pView->ScreenPos();
 }
 
-//____ WgViewHook::Parent() ___________________________________________________
-
-WgGizmoContainer * WgViewHook::Parent() const
-{
-	return m_pView;
-}
 
 //____ WgViewHook::GetRoot() ____________________________________________________
 
@@ -1129,4 +1123,11 @@ WgGizmoHook * WgViewHook::_nextHook() const
 		return 0;
 	else
 		return (((WgViewHook*)this)-1);
+}
+
+//____ WgViewHook::_parent() ___________________________________________________
+
+WgGizmoContainer * WgViewHook::_parent() const
+{
+	return m_pView;
 }

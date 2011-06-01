@@ -94,7 +94,7 @@ public:
 		return 0;
 	}
 
-	WgGizmoContainer * Parent() const
+	WgGizmoContainer * _parent() const
 	{
 		return m_pParent;
 	}
@@ -182,6 +182,7 @@ public:
 private:
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
+
 
 	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) {}
 	void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) {}

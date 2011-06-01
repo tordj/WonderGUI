@@ -246,3 +246,17 @@ WgSurface * loadSurface( const char * path )
 	return new WgSurfaceSDL(bmp);
 
 }
+
+//____ cbMoveGizmo() __________________________________________________________
+
+void cbMoveGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo )
+{
+	if( _event.Type() != WG_EVENT_BUTTON_DRAG || !pGizmo->ParentX() )
+		return;
+
+	const WgEvent::ButtonDrag& event = static_cast<const WgEvent::ButtonDrag&>(_event);
+
+
+
+}
+
