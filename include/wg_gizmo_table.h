@@ -80,7 +80,7 @@ class WgTableHook : public WgGizmoHook
 	WgTableColumn2*	Column() const;
 	inline int		ColumnNb() const;
 
-	inline WgGizmoContainer * Parent() const;
+	inline WgGizmoTable * Parent() const;
 
 	// Needs to be here for now since Emitters are inherrited by Widgets. Shouldn't be hooks business in the future...
 
@@ -96,7 +96,7 @@ protected:
 
 	WgGizmoHook *	_prevHook() const;
 	WgGizmoHook *	_nextHook() const;
-
+	WgGizmoContainer * _parent() const;
 
 	int				m_height;		// Minimum height needed for this Gizmo.
 	WgTableRow2 *	m_pRow;			//
@@ -491,7 +491,7 @@ WgTableRow2* WgTableHook::Row() const
 	return m_pRow;
 }
 
-WgGizmoContainer * WgTableHook::Parent() const
+WgGizmoTable * WgTableHook::Parent() const
 {
 	return m_pRow->m_pTable;
 }

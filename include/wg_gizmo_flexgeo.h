@@ -125,7 +125,7 @@ public:
 	inline WgFlexHook *	PrevHook() const { return Prev(); }
 	inline WgFlexHook *	NextHook() const { return Next(); }
 
-	WgGizmoContainer* Parent() const;
+	inline WgGizmoFlexGeo * Parent() const { return m_pParent; }
 
 	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
 
@@ -149,6 +149,7 @@ protected:
 
 	WgGizmoHook *	_prevHook() const;
 	WgGizmoHook *	_nextHook() const;
+	WgGizmoContainer * _parent() const;
 
 	WgGizmoFlexGeo * m_pParent;
 
