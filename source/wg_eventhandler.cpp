@@ -470,7 +470,7 @@ void WgEventHandler::ProcessEvents()
 		{
 			WgGizmo * pGizmo = ev.Gizmo();
 			if( pGizmo )
-				pGizmo->OnEvent( ev, this );
+				pGizmo->_onEvent( ev, this );
 		}
 		else
 		{

@@ -205,7 +205,7 @@ protected:
 
 typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
-typedef	Sint32(*WgGizmoSortFunc)(const WgGizmo *,const WgGizmo *);
+typedef	int(*WgGizmoSortFunc)(const WgGizmo *,const WgGizmo *);
 
 
 #endif

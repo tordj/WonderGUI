@@ -279,11 +279,11 @@ public:
 
 private:
 
-	void			OnCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	void			OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	void			OnCloneContent( const WgGizmo * _pOrg );
-	void			OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	void			OnNewSize( const WgSize& size );
+	void			_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	void			_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	void			_onCloneContent( const WgGizmo * _pOrg );
+	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void			_onNewSize( const WgSize& size );
 	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool			_onAlphaTest( const WgCord& ofs );
 

@@ -100,6 +100,8 @@
 		<Unit filename="include/wg_key.h" />
 		<Unit filename="include/wg_mempool.h" />
 		<Unit filename="include/wg_menuitem.h" />
+		<Unit filename="include/wg_orderedlayout.h" />
+		<Unit filename="include/wg_orderedselectable.h" />
 		<Unit filename="include/wg_origo.h" />
 		<Unit filename="include/wg_pen.h" />
 		<Unit filename="include/wg_pointerspy.h" />
@@ -125,6 +127,7 @@
 		<Unit filename="include/wg_userdefines.h" />
 		<Unit filename="include/wg_util.h" />
 		<Unit filename="include/wg_valueformat.h" />
+		<Unit filename="include/wg_vboxlayout.h" />
 		<Unit filename="include/wg_vectorglyphs.h" />
 		<Unit filename="include/wondergui.h" />
 		<Unit filename="source/wg_anim.cpp" />
@@ -180,6 +183,7 @@
 		<Unit filename="source/wg_interface_valueholder.cpp" />
 		<Unit filename="source/wg_mempool.cpp" />
 		<Unit filename="source/wg_menuitem.cpp" />
+		<Unit filename="source/wg_orderedlayout.cpp" />
 		<Unit filename="source/wg_origo.cpp" />
 		<Unit filename="source/wg_pen.cpp" />
 		<Unit filename="source/wg_rectchain.cpp" />

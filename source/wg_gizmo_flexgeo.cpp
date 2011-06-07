@@ -168,7 +168,7 @@ bool WgFlexHook::Up()
 
 	if( cover.w > 0 && cover.h > 0 )
 	{
-		m_pParent->OnRequestRender( cover, this );
+		m_pParent->_onRequestRender( cover, this );
 	}
 
 	return true;
@@ -195,7 +195,7 @@ bool WgFlexHook::Down()
 
 	if( cover.w > 0 && cover.h > 0 )
 	{
-		m_pParent->OnRequestRender( cover, pPrev );
+		m_pParent->_onRequestRender( cover, pPrev );
 	}
 
 	return true;
@@ -229,7 +229,7 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 			WgRect cover( m_realGeo, p->m_realGeo );
 
 			if( cover.w > 0 && cover.h > 0 )
-				m_pParent->OnRequestRender( cover, this );
+				m_pParent->_onRequestRender( cover, this );
 
 			p = p->Next();
 		}
@@ -246,7 +246,7 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 			WgRect cover( m_realGeo, p->m_realGeo );
 
 			if( cover.w > 0 && cover.h > 0 )
-				m_pParent->OnRequestRender( cover, p );
+				m_pParent->_onRequestRender( cover, p );
 
 			p = p->Prev();
 		}
@@ -282,7 +282,7 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 			WgRect cover( m_realGeo, p->m_realGeo );
 
 			if( cover.w > 0 && cover.h > 0 )
-				m_pParent->OnRequestRender( cover, this );
+				m_pParent->_onRequestRender( cover, this );
 
 			p = p->Next();
 		}
@@ -299,7 +299,7 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 			WgRect cover( m_realGeo, p->m_realGeo );
 
 			if( cover.w > 0 && cover.h > 0 )
-				m_pParent->OnRequestRender( cover, p );
+				m_pParent->_onRequestRender( cover, p );
 
 			p = p->Prev();
 		}
@@ -314,7 +314,7 @@ void WgFlexHook::Hide()
 {
 	if( !m_bHidden )
 	{
-		m_pParent->OnRequestRender( m_realGeo, this );
+		m_pParent->_onRequestRender( m_realGeo, this );
 		m_bHidden = true;
 	}
 }
@@ -326,7 +326,7 @@ void WgFlexHook::Show()
 	if( m_bHidden )
 	{
 		m_bHidden = false;
-		m_pParent->OnRequestRender( m_realGeo, this );
+		m_pParent->_onRequestRender( m_realGeo, this );
 	}
 }
 
@@ -760,14 +760,14 @@ bool WgFlexHook::RefreshRealGeo()
 
 void WgFlexHook::RequestRender()
 {
-	m_pParent->OnRequestRender( m_realGeo, this );
+	m_pParent->_onRequestRender( m_realGeo, this );
 }
 
 //____ WgFlexHook::RequestRender() ____________________________________________
 
 void WgFlexHook::RequestRender( const WgRect& rect )
 {
-	m_pParent->OnRequestRender( rect + m_realGeo.pos(), this );
+	m_pParent->_onRequestRender( rect + m_realGeo.pos(), this );
 }
 
 //____ WgFlexHook::RequestResize() ____________________________________________
@@ -1047,7 +1047,6 @@ WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, 
 	return p;
 }
 
-//____ DeleteGizmo() __________________________________________________________
 
 WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCord& pos, WgLocation hotspot, int anchor )
 {
@@ -1060,7 +1059,6 @@ WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, 
 	return p;
 }
 
-//____ () _________________________________________________
 
 WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCord& pos, WgLocation hotspot )
 {
@@ -1074,7 +1072,7 @@ WgFlexHook * WgGizmoFlexGeo::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, 
 }
 
 
-//____ () _________________________________________________
+//____ DeleteGizmo() _________________________________________________
 
 bool WgGizmoFlexGeo::DeleteGizmo( WgGizmo * pGizmo )
 {
@@ -1084,7 +1082,7 @@ bool WgGizmoFlexGeo::DeleteGizmo( WgGizmo * pGizmo )
 	// Force rendering of the area the gizmo was covering
 
 	WgFlexHook * pHook = (WgFlexHook *) pGizmo->Hook();
-	OnRequestRender( pHook->m_realGeo, pHook );
+	_onRequestRender( pHook->m_realGeo, pHook );
 
 	// Delete the gizmo and return
 
@@ -1102,7 +1100,7 @@ bool WgGizmoFlexGeo::ReleaseGizmo( WgGizmo * pGizmo )
 	// Force rendering of the area the gizmo was covering
 
 	WgFlexHook * pHook = (WgFlexHook *) pGizmo->Hook();
-	OnRequestRender( pHook->m_realGeo, pHook );
+	_onRequestRender( pHook->m_realGeo, pHook );
 
 	// Delete the gizmo and return
 
@@ -1369,9 +1367,9 @@ WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 }
 
 
-//____ OnCollectRects() _______________________________________________________
+//____ _onCollectRects() _______________________________________________________
 
-void WgGizmoFlexGeo::OnCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmoFlexGeo::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
@@ -1381,9 +1379,9 @@ void WgGizmoFlexGeo::OnCollectRects( WgRectChain& rects, const WgRect& geo, cons
 	}
 }
 
-//____ OnMaskRects() __________________________________________________________
+//____ _onMaskRects() __________________________________________________________
 
-void WgGizmoFlexGeo::OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmoFlexGeo::_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
@@ -1393,9 +1391,9 @@ void WgGizmoFlexGeo::OnMaskRects( WgRectChain& rects, const WgRect& geo, const W
 	}
 }
 
-//____ OnRequestRender() ______________________________________________________
+//____ _onRequestRender() ______________________________________________________
 
-void WgGizmoFlexGeo::OnRequestRender( const WgRect& rect, const WgFlexHook * pHook )
+void WgGizmoFlexGeo::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook )
 {
 	if( pHook->IsHidden() )
 		return;
@@ -1427,17 +1425,18 @@ void WgGizmoFlexGeo::OnRequestRender( const WgRect& rect, const WgFlexHook * pHo
 	}
 }
 
-//____ () _________________________________________________
+//____ _onRender() ____________________________________________________________
 
-void WgGizmoFlexGeo::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoFlexGeo::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Do nothing
 }
 
-//____ OnCloneContent() _______________________________________________________
+//____ _onCloneContent() _______________________________________________________
 
-void WgGizmoFlexGeo::OnCloneContent( const WgGizmo * _pOrg )
+void WgGizmoFlexGeo::_onCloneContent( const WgGizmo * _pOrg )
 {
+	//TODO: Implement
 }
 
 //____ _renderDirtyRects() ____________________________________________________
@@ -1484,9 +1483,9 @@ void WgGizmoFlexGeo::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRe
 }
 
 
-//____ OnNewSize() ____________________________________________________________
+//____ _onNewSize() ____________________________________________________________
 
-void WgGizmoFlexGeo::OnNewSize( const WgSize& size )
+void WgGizmoFlexGeo::_onNewSize( const WgSize& size )
 {
 	WgFlexHook * pHook = m_hooks.Last();
 
@@ -1497,15 +1496,15 @@ void WgGizmoFlexGeo::OnNewSize( const WgSize& size )
 	}
 }
 
-//____ OnAction() _____________________________________________________________
+//____ _onAction() _____________________________________________________________
 
-void WgGizmoFlexGeo::OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+void WgGizmoFlexGeo::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 }
 
-//____ OnAlphaTest() __________________________________________________________
+//____ _onAlphaTest() __________________________________________________________
 
-bool WgGizmoFlexGeo::OnAlphaTest( const WgCord& ofs )
+bool WgGizmoFlexGeo::_onAlphaTest( const WgCord& ofs )
 {
 	return false;
 }
