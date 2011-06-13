@@ -48,9 +48,9 @@ class WgVBoxLayout : public WgOrdSelLayout
 {
 public:
 	WgVBoxLayout();
-	virtual ~WgVBoxLayout();
+	~WgVBoxLayout();
 
-	virtual const char * Type() const;
+	const char * Type() const;
 	static const char * GetMyType();
 
 	inline WgVBoxHook * AddGizmo( WgGizmo * pGizmo ) { WgOrderedLayout::AddGizmo(pGizmo); }
@@ -75,10 +75,30 @@ public:
 
 protected:
 
+	// Overloaded from Gizmo
+
 //	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onNewSize( const WgSize& size );
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 
+	// Overloaded from container
+
+	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
+	void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
+	void	_clearDirtyRects();
+
+	// Overloaded from WgOrderedLayout
+
+	WgRect	_hookGeo( const WgOrderedHook * pHook );
+	void	_advanceGeoToHook( WgRect& prevHookGeo, const WgOrderedHook * pHook );	// geo (assumed to be for previous hook) is advanced to specified hook.
+	void	_onResizeRequested( WgOrderedHook * pHook );
+	void	_onRenderRequested( WgOrderedHook * pHook );
+	void	_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect );
+	void	_onGizmoAppeared( WgOrderedHook * pInserted );				// so parent can update geometry and possibly request render.
+	void	_onGizmoDisappeared( WgOrderedHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+	void	_onGizmosReordered();
+	void	_refreshAllGizmos();
+	WgOrderedHook * _newHook(WgGizmo * pGizmo);
 
 };
 

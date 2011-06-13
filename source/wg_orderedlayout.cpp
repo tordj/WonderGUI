@@ -177,6 +177,20 @@ WgGizmoHook * WgOrderedHook::_nextHook() const
 	return _next();
 }
 
+//____ Constructor() __________________________________________________________
+
+WgOrderedLayout::WgOrderedLayout() : m_sortOrder(WG_SORT_ASCENDING), m_pSortFunc(0), m_nContainerChildren(0)
+{
+
+}
+
+
+//____ Destructor() ___________________________________________________________
+
+WgOrderdLayout::~WgOrderedLayout()
+{
+}
+
 
 //____ AddGizmo() _____________________________________________________________
 
@@ -188,6 +202,7 @@ WgOrderedHook * WgOrderedLayout::AddGizmo( WgGizmo * pGizmo )
 	WgOrderedHook * pHook = _newHook( pGizmo );
 	m_hooks.PushBack(pHook);
 	_onGizmoAppeared(pHook);
+
 	return pHook;
 }
 
@@ -360,14 +375,21 @@ void WgOrderedLayout::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgR
 
 	// Loop through our children, sharing dirt with other containers and letting them mask us
 
-	WgOrderedHook * pHook = m_hooks.First();
-	while( pHook != 0 )
+	if( m_nChildContainers > 0 )
 	{
-		if( pHook->Gizmo()->IsContainer() )
-		{
 
+		WgOrderedHook * pHook = m_hooks.First();
+		WgRect	childGeo = _hookGeo(pHook);
+
+		while( pHook != 0 )
+		{
+			if( pHook->Gizmo()->IsContainer() )
+			{
+
+			}
+			pHook = pHook->NextHook();
+			_advanceGeoToHook( childGeo, pHook );
 		}
-		pHook = pHook->NextHook();
 	}
 
 }

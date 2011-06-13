@@ -201,6 +201,7 @@
 		<Unit filename="source/wg_texttool.cpp" />
 		<Unit filename="source/wg_util.cpp" />
 		<Unit filename="source/wg_valueformat.cpp" />
+		<Unit filename="source/wg_vboxlayout.cpp" />
 		<Unit filename="source/wg_vectorglyphs.cpp" />
 		<Extensions>
 			<code_completion />

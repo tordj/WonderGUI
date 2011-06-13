@@ -96,6 +96,9 @@ class WgOrderedLayout : public WgGizmo, public WgGizmoContainer
 {
 	friend class WgOrderedHook;
 public:
+	WgOrderedLayout();
+	virtual ~WgOrderedLayout();
+
 
 	WgOrderedHook * AddGizmo( WgGizmo * pGizmo );
 	WgOrderedHook * InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling );
@@ -153,12 +156,12 @@ protected:
 	// To be overloaded by subclasses
 
 	virtual WgRect	_hookGeo( const WgOrderedHook * pHook ) = 0;
-	virtual void	_advanceGeoToHook( WgRect& geo, const WgOrderedHook * pHook ) = 0;	// geo (assumed to be for previous hook) is advanced to specified hook.
+	virtual void	_advanceGeoToHook( WgRect& prevHookGeo, const WgOrderedHook * pHook ) = 0;	// geo (assumed to be for previous hook) is advanced to specified hook.
 	virtual void	_onResizeRequested( WgOrderedHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgOrderedHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect ) = 0;
-	virtual void	_onGizmoAppeared( WgOrderedHook * pInserted ) = 0;			// so parent can update geometry and possibly request render.
-	virtual void	_onGizmoDisappeared( WgOrderedHook * pToBeRemoved ) = 0;	// so parent can update geometry and possibly request render.
+	virtual void	_onGizmoAppeared( WgOrderedHook * pInserted );				// so parent can update geometry and possibly request render.
+	virtual void	_onGizmoDisappeared( WgOrderedHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
 	virtual void	_onGizmosReordered() = 0;
 	virtual void	_refreshAllGizmos() = 0;
 	virtual WgOrderedHook * _newHook(WgGizmo * pGizmo) = 0;
@@ -170,6 +173,7 @@ protected:
 
 	WgSortOrder		m_sortOrder;
 	WgGizmoSortFunc	m_pSortFunc;
+	int				m_nChildContainers;					// Number of VISIBLE children that are containers.
 };
 
 
