@@ -898,7 +898,7 @@ void WgGizmoTable::UpdateColumnWidths()
 			if( m_pColumns[n].m_bWidthChanged && pHook->Gizmo() )
 			{
 				int w = m_pColumns[n].m_realWidth;
-				int h = pHook->Gizmo()->HeightForWidth(w);
+				int h = pHook->Gizmo()->HeightForWidth(w);		//TODO: NEEDS TO BE ABLE TO HANDLE -1 (NO RECOMMENDATION) AS ANSWER!!!!!!!!!
 				pHook->DoSetNewSize( WgSize( w, h ) );
 
 				if( h != pHook->m_height )
@@ -1605,7 +1605,7 @@ int WgGizmoTable::HeightForWidth( int width ) const
 {
 	//TODO: Implement, should recurse through lines and their gizmos checking height needed.
 
-	return 0;		// No recommendation, for the moment
+	return -1;		// No recommendation, for the moment
 }
 
 //____ WidthForHeight() _______________________________________________________

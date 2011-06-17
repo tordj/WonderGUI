@@ -66,6 +66,7 @@ public:
 	inline WgCord operator*(int v) const	{ WgCord res; res.x = x * v; res.y = y * v; return res; }
 	inline WgCord operator/(int v) const	{ WgCord res; res.x = x / v; res.y = y / v; return res; }
 
+	inline void clear()						{ x = 0; y = 0; }
 
 	int	x, y;
 };
@@ -132,6 +133,7 @@ public:
 	WgSize( const WgRect& rect );
 	WgSize( const WgCord& c1, const WgCord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 	inline void constrainTo( const WgMinMax2D& minmax );
+	inline void clear()		{ w = 0; h = 0; }
 
 
 	inline WgSize operator=(const WgSize& k)	{ w = k.w; h = k.h; return *this; }
@@ -182,6 +184,7 @@ public:
 	inline WgSize	size() const { return WgSize( ((int)left)+right, ((int)top)+bottom ); }
 	inline Uint32	width() const { return ((Uint32)left)+right; }
 	inline Uint32	height() const { return ((Uint32)top)+bottom; }
+	inline void		clear()			{ left = 0; right = 0; top = 0; bottom = 0; }
 
 	bool			operator==(const WgBorders& borders) const { return left == borders.left &&
 																		right == borders.right &&
@@ -265,6 +268,9 @@ public:
 	inline int top() const		{ return y; }
 	inline int right() const		{ return x + w; }
 	inline int bottom() const	{ return y + h; }
+
+	inline bool	empty() const { return (w==0||h==0)?true:false; }
+	inline void clear()			{ x = 0; y = 0; w = 0; h = 0; }
 
 	int	x, y, w, h;
 };

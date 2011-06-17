@@ -183,14 +183,14 @@ WgCord WgGizmo::Abs2local( const WgCord& cord ) const
 
 int WgGizmo::HeightForWidth( int width ) const
 {
-	return 0;		// No recommendation.
+	return -1;		// No recommendation.
 }
 
 //____ WidthForHeight() _______________________________________________________
 
 int WgGizmo::WidthForHeight( int height ) const
 {
-	return 0;		// No recommendation.
+	return -1;		// No recommendation.
 }
 
 //____ MinSize() ______________________________________________________________

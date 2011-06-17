@@ -23,6 +23,10 @@
 #ifndef WG_VBOXLAYOUT_DOT_H
 #define WG_VBOXLAYOUT_DOT_H
 
+#ifndef WG_ORDERED_LAYOUT_DOT_H
+#	include <wg_orderedlayout.h>
+#endif
+
 class WgVBoxHook : public WgOrdSelHook
 {
 public:
@@ -42,6 +46,8 @@ protected:
 	WgGizmoContainer* _parent() const;
 
 	WgVBoxLayout *	m_pParent;
+	int				m_height;
+	WgSize			m_bestSize;			// Cached best size from the child.
 };
 
 class WgVBoxLayout : public WgOrdSelLayout
@@ -85,7 +91,6 @@ protected:
 
 	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
 	void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
-	void	_clearDirtyRects();
 
 	// Overloaded from WgOrderedLayout
 
@@ -99,6 +104,11 @@ protected:
 	void	_onGizmosReordered();
 	void	_refreshAllGizmos();
 	WgOrderedHook * _newHook(WgGizmo * pGizmo);
+
+
+	WgSize	m_size;
+	WgSize	m_bestSize;
+	int		m_bestWidthCounter;				// Number of Gizmos who have exactly m_bestSize.w as their prefered width.
 
 };
 
