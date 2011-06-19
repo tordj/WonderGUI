@@ -184,6 +184,7 @@
 		<Unit filename="source/wg_mempool.cpp" />
 		<Unit filename="source/wg_menuitem.cpp" />
 		<Unit filename="source/wg_orderedlayout.cpp" />
+		<Unit filename="source/wg_orderedselectable.cpp" />
 		<Unit filename="source/wg_origo.cpp" />
 		<Unit filename="source/wg_pen.cpp" />
 		<Unit filename="source/wg_rectchain.cpp" />

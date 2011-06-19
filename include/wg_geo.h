@@ -129,7 +129,8 @@ class	WgSize
 {
 public:
 	WgSize() : w(0), h(0) {}
-	WgSize( int _w, int _h ) {w=_w;h=_h;}
+	WgSize( int _w, int _h ) : w(_w), h(_h) {}
+	WgSize( const WgSize& size ) : w(size.w), h(size.h) {}
 	WgSize( const WgRect& rect );
 	WgSize( const WgCord& c1, const WgCord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 	inline void constrainTo( const WgMinMax2D& minmax );

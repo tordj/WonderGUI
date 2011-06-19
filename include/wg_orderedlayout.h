@@ -39,6 +39,10 @@
 #	include <wg_chain.h>
 #endif
 
+#ifndef WG_RECTCHAIN_DOT_H
+#	include <wg_rectchain.h>
+#endif
+
 class WgOrderedLayout;
 
 
@@ -69,7 +73,7 @@ public:
 	inline void		Hide() { SetHidden(true); }
 	inline void		Unhide() { SetHidden(false); }
 	void			SetHidden( bool bHide );
-
+	bool			Hidden() { return m_bHidden; }
 
 	// Needs to be here for now since Emitters are inherrited by Widgets. Shouldn't be hooks business in the future...
 

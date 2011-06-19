@@ -179,7 +179,7 @@ WgGizmoHook * WgOrderedHook::_nextHook() const
 
 //____ Constructor() __________________________________________________________
 
-WgOrderedLayout::WgOrderedLayout() : m_sortOrder(WG_SORT_ASCENDING), m_pSortFunc(0), m_nContainerChildren(0)
+WgOrderedLayout::WgOrderedLayout() : m_sortOrder(WG_SORT_ASCENDING), m_pSortFunc(0), m_nChildContainers(0)
 {
 
 }
@@ -187,7 +187,7 @@ WgOrderedLayout::WgOrderedLayout() : m_sortOrder(WG_SORT_ASCENDING), m_pSortFunc
 
 //____ Destructor() ___________________________________________________________
 
-WgOrderdLayout::~WgOrderedLayout()
+WgOrderedLayout::~WgOrderedLayout()
 {
 }
 
@@ -368,30 +368,6 @@ void WgOrderedLayout::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 void WgOrderedLayout::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
 {
-
-	WgRectChain		dirt;
-	dirt.PushExistingRect( pDirtIn );
-
-
-	// Loop through our children, sharing dirt with other containers and letting them mask us
-
-	if( m_nChildContainers > 0 )
-	{
-
-		WgOrderedHook * pHook = m_hooks.First();
-		WgRect	childGeo = _hookGeo(pHook);
-
-		while( pHook != 0 )
-		{
-			if( pHook->Gizmo()->IsContainer() )
-			{
-
-			}
-			pHook = pHook->NextHook();
-			_advanceGeoToHook( childGeo, pHook );
-		}
-	}
-
 }
 
 //____ _renderDirtyRects() ____________________________________________________

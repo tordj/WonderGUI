@@ -57,6 +57,7 @@ typedef unsigned __int64  uint64_t;
 template<typename T> inline T WgMin(const T &a, const T &b) { return a < b ? a : b; }
 template<typename T> inline T WgMax(const T &a, const T &b) { return a > b ? a : b; }
 template<typename T> inline T WgAbs(T x)					{ return x >= 0 ? x : -x; }
+template<typename T> inline void WgSwap(T &a, T &b) { T c = a; a = b; b = c; }
 
 #define		LIMIT(x, min, max)	if( x < min) x = min; if( x > max) x = max;
 
@@ -504,7 +505,7 @@ enum WgSortOrder
 
 enum WgSelectMode
 {
-	WG_SELECT_OFF,
+	WG_SELECT_NONE,
 	WG_SELECT_SINGLE,
 	WG_SELECT_MULTI
 };

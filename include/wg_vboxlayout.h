@@ -24,17 +24,21 @@
 #define WG_VBOXLAYOUT_DOT_H
 
 #ifndef WG_ORDERED_LAYOUT_DOT_H
-#	include <wg_orderedlayout.h>
+#	include <wg_orderedselectable.h>
 #endif
+
+class WgVBoxLayout;
 
 class WgVBoxHook : public WgOrdSelHook
 {
-public:
-	inline WgVBoxHook * PrevHook() const { return Prev(); }
-	inline WgVBoxHook * NextHook() const { return Next(); }
+	friend class WgVBoxLayout;
 
-	inline WgVBoxHook * PrevSelectedHook() const { return _prevSelectedHook(); }
-	inline WgVBoxHook * NextSelectedHook() const { return _nextSelectedHook(); }
+public:
+	inline WgVBoxHook * PrevHook() const { return _prev(); }
+	inline WgVBoxHook * NextHook() const { return _next(); }
+
+	inline WgVBoxHook * PrevSelectedHook() const { return static_cast<WgVBoxHook*>(_prevSelectedHook()); }
+	inline WgVBoxHook * NextSelectedHook() const { return static_cast<WgVBoxHook*>(_nextSelectedHook()); }
 
 	inline WgVBoxLayout * Parent() const { return m_pParent; }
 
@@ -59,9 +63,9 @@ public:
 	const char * Type() const;
 	static const char * GetMyType();
 
-	inline WgVBoxHook * AddGizmo( WgGizmo * pGizmo ) { WgOrderedLayout::AddGizmo(pGizmo); }
-	inline WgVBoxHook * InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling ) { WgOrderedLayout::InsertGizmo(pGizmo,pSibling); }
-	inline WgVBoxHook * InsertGizmoSorted( WgGizmo * pGizmo ) { WgOrderedLayout::InsertGizmoSorted(pGizmo); }
+	inline WgVBoxHook * AddGizmo( WgGizmo * pGizmo ) { return static_cast<WgVBoxHook*>(WgOrderedLayout::AddGizmo(pGizmo)); }
+	inline WgVBoxHook * InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling ) { return static_cast<WgVBoxHook*>(WgOrderedLayout::InsertGizmo(pGizmo,pSibling)); }
+	inline WgVBoxHook * InsertGizmoSorted( WgGizmo * pGizmo ) { return static_cast<WgVBoxHook*>(WgOrderedLayout::InsertGizmoSorted(pGizmo)); }
 
 	inline WgVBoxHook* FirstHook() const { return static_cast<WgVBoxHook*>(m_hooks.First()); }
 	inline WgVBoxHook* LastHook() const { return static_cast<WgVBoxHook*>(m_hooks.Last()); }
@@ -105,10 +109,17 @@ protected:
 	void	_refreshAllGizmos();
 	WgOrderedHook * _newHook(WgGizmo * pGizmo);
 
+	// Internal to WgVBoxLayout
+
+	void	_adaptChildrenToWidth( int width );
+	void 	_refreshBestSize();
+	void	_refreshBestWidth();
+	void	_renderFromChildOnward( WgOrderedHook * pHook );
+
 
 	WgSize	m_size;
 	WgSize	m_bestSize;
-	int		m_bestWidthCounter;				// Number of Gizmos who have exactly m_bestSize.w as their prefered width.
+	int		m_nBestWidth;				// Number of Gizmos who have exactly m_bestSize.w as their prefered width.
 
 };
 

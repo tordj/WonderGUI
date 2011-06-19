@@ -20,12 +20,15 @@
 
 =========================================================================*/
 
+#include <assert.h>
 #include <wg_vboxlayout.h>
+
+
 
 static const char	c_gizmoType[] = {"VBoxLayout"};
 
 
-WgVBoxHook::WgVBoxHook( WgGizmo * pGizmo, WgVBoxLayout * pParent ) : WgOrderedHook(pGizmo), m_pParent(pParent)
+WgVBoxHook::WgVBoxHook( WgGizmo * pGizmo, WgVBoxLayout * pParent ) : WgOrdSelHook(pGizmo), m_pParent(pParent)
 {
 }
 
@@ -37,7 +40,7 @@ WgGizmoContainer* WgVBoxHook::_parent() const
 
 //____ Constructor ____________________________________________________________
 
-WgVBoxLayout::WgVBoxLayout()
+WgVBoxLayout::WgVBoxLayout() : m_nBestWidth(0)
 {
 }
 
@@ -153,27 +156,115 @@ void WgVBoxLayout::_onAction( WgInput::UserAction action, int button_key, const 
 {
 }
 
+//____ _castDirtyRect() _______________________________________________________
 
-void WgVBoxLayout::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
+void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
 {
+	/* FUTURE OPTIMIZATIONS:
+
+		In worst case scenario we might get an awful lot of dirty rectangles if all our children are containers and do masking.
+		In theory we could get 2*X+2 dirty rects where X is number of child containers getting dirt, since we might get one
+		dirty rect left and right of each child.
+
+		This could be avoided if we somehow could tell WgRectChain to split rects vertically first instead of horizontally OR
+		if WgRectChain had some logic to join rects when adding new ones.
+	*/
+
+	// We can save the rectangle intact for our own use since no children can be masked by their siblings.
+
+	m_dirt.Add( WgRect( *pDirtIn, clip) );
+
+	// Initialize stuff
+
+	WgVBoxHook * pHook = FirstHook();
+	WgRect geo = _hookGeo(pHook) + _geo.pos();
+
+	int y1 = WgMax(clip.y, pDirtIn->y);
+	int y2 = WgMin(clip.y+clip.h,pDirtIn->y+pDirtIn->h);
+	assert( y1 < y2 );										// Our parent (or earlier) have screwed up, passing us a rectangle outside our clipped geometry.
+
+	// Step forward to first non-hidden container within geometric boundaries.
+
+	while( (geo.y + geo.h < y1 || pHook->Hidden() || !pHook->Gizmo()->IsContainer()) && geo.y < y2 )
+	{
+		pHook = pHook->NextHook();
+		if( !pHook )
+		{
+			pDirtOut->PushExistingRect(pDirtIn);	// We return the rectangle intact since no children have cut it up.
+			return;
+		}
+		_advanceGeoToHook( geo, pHook );
+	}
+
+	// We have found at least one non-hidden container within geometric boundaries
+	// and need to call _castDirtyRect() recursively.
+
+	WgRect			orgDirtIn = * pDirtIn;
+	WgRectChain		dirtChain1, dirtChain2;
+	WgRectChain *	pDirtInChain = &dirtChain1;
+	WgRectChain *	pDirtOutChain = &dirtChain2;
+
+	pDirtInChain->PushExistingRect(pDirtIn);
+
+	while( geo.y < y2 )
+	{
+		// Process dirty rects if child is an unhidden container.
+
+		if( !pHook->Hidden() && pHook->Gizmo()->IsContainer() )
+		{
+			WgRectLink * pDirt = pDirtInChain->Pop();
+
+			while( pDirt )
+			{
+				if( pDirt->intersectsWith(geo) )
+					pHook->_doCastDirtyRect( geo, WgRect(geo,clip), pDirt, pDirtOutChain );
+				else
+					pDirtOutChain->PushExistingRect(pDirt);
+
+				pDirt = pDirtInChain->Pop();
+			}
+
+			WgSwap( pDirtInChain, pDirtOutChain );			// Our dirt out is next siblings dirt in...
+		}
+
+		// Forward to next child
+
+		pHook = pHook->NextHook();
+		if( !pHook )
+			break;
+
+		_advanceGeoToHook( geo, pHook );
+	}
+
+	// pDirtInChain now contains the dirty rects that remains after
+	// masking against our children, which we should return.
+
+	if( m_bOpaque )
+	{
+		pDirtInChain->Clear();
+		pDirtInChain->Add(orgDirtIn);
+		pDirtInChain->Sub(clip);
+	}
+
+	pDirtInChain->Transfer( pDirtOut );
 }
 
 //____ _renderDirtyRects() ____________________________________________________
 
 void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
 {
-	WgVBoxHook * pHook = m_hooks.First();
+	WgVBoxHook * pHook = FirstHook();
 	if( !pHook )
 		return;
 
-	// Loop through dirty rects above window, stop at first visible
+	// Loop through children above window, stop at first visible
 
 	WgRect	geo = _hookGeo(pHook) + _canvas.pos();
 	while( geo.y + geo.h < _window.y )
 	{
 		pHook = pHook->NextHook();
 		if( !pHook )
-			return;							// 
+			return;							//
 
 		_advanceGeoToHook( geo, pHook );
 	}
@@ -185,14 +276,14 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 
 	// Loop through our dirty rects and render our (non-container) children.
 
-	WgRectLink * pDirt = m_dirt.First();
+	WgRectLink * pDirt = m_dirt.pRectList;
 
 	while( pDirt )
 	{
-		WgVBoxHook* pHook = pFirstVisible;
-		WgRect		geo = firstVisibleGeo;
+		pHook = pFirstVisible;
+		geo = firstVisibleGeo;
 
-		// Skip forward to first child whose geo 
+		// Skip forward to first child whose geo overlaps dirty rect
 
 		while( geo.y + geo.h <= pDirt->y )
 		{
@@ -204,8 +295,8 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 
 		while( geo.y < pDirt->y + pDirt->h )
 		{
-			if( !pHook->m_bHidden  )
-
+			if( !pHook->m_bHidden && !pHook->Gizmo()->IsContainer() )
+				pHook->DoRender( pDevice, geo, geo, WgRect(geo,*pDirt), _layer );
 
 			pHook = pHook->NextHook();
 			if( !pHook )
@@ -213,23 +304,24 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 			_advanceGeoToHook( geo, pHook );
 		}
 
-		pDirt = pDirt->Next();
+		pDirt = pDirt->pNext;
 	}
 
 
-	// Loop through our container-children, get them to render their dirty rects.
+	// Loop through our visible container-children, get them to render their dirty rects.
 
-	pHook = m_hooks.First();
+	pHook = pFirstVisible;
+	geo = firstVisibleGeo;
 
-
-
-	while( pHook )
+	while( geo.y < _window.y + _window.h  )
 	{
 		if( pHook->Gizmo()->IsContainer() )
-		{
-			pHook->_doRenderDirtyRects(	pDevice, 
-		}
+			pHook->_doRenderDirtyRects(	pDevice, geo, geo, _layer );
+
 		pHook = pHook->NextHook();
+		if( !pHook )
+			break;
+		_advanceGeoToHook( geo, pHook );
 	}
 
 
@@ -256,38 +348,40 @@ WgRect WgVBoxLayout::_hookGeo( const WgOrderedHook * pHook )
 void  WgVBoxLayout::_advanceGeoToHook( WgRect& prevHookGeo, const WgOrderedHook * pHook )
 {
 	prevHookGeo.y += prevHookGeo.h;
-	prevHookGeo.h = pHook->m_height;
+	prevHookGeo.h = static_cast<const WgVBoxHook*>(pHook)->m_height;
 }
 
 //____ _onResizeRequested() ___________________________________________________
 
-void WgVBoxLayout::_onResizeRequested( WgOrderedHook * pHook )
+void WgVBoxLayout::_onResizeRequested( WgOrderedHook * _pHook )
 {
+	WgVBoxHook * pHook = static_cast<WgVBoxHook*>(_pHook);
+
 	// Update BestSize
 
-	WgSize oldBestSize = pHook->m_bestSize();
+	WgSize oldBestSize = pHook->m_bestSize;
 	pHook->m_bestSize = pHook->Gizmo()->BestSize();
 
-	m_bestSize.h += pHook->BestSize.h - oldBestSize.h;
+	m_bestSize.h += pHook->m_bestSize.h - oldBestSize.h;
 
-	if( pHook->BestSize.w != oldBestSize.w )
+	if( pHook->m_bestSize.w != oldBestSize.w )
 	{
-		if( pHook->BestSize.w > m_bestSize.w )				// Is new best size bigger than previous?
+		if( pHook->m_bestSize.w > m_bestSize.w )				// Is new best size bigger than previous?
 		{
-			m_bestSize.w = pHook->BestSize.w;
-			m_bestWidthCounter = 1;
+			m_bestSize.w = pHook->m_bestSize.w;
+			m_nBestWidth = 1;
 		}
 		else if( oldBestSize.w == m_bestSize.w )			// Was this our widest child (or one of them)?
 		{
-			m_bestWidthCounter--;
-			if( m_bestWidthCounter == 0 )
-				_recalcBestWidth();
+			m_nBestWidth--;
+			if( m_nBestWidth == 0 )
+				_refreshBestWidth();
 		}
 	}
 
 	// We accept any change to height for current width ourselves
 
-	int newHeight = pHook->Gizmo()->HeightForWidth();
+	int newHeight = pHook->Gizmo()->HeightForWidth(m_size.w);
 
 	bool bRequestRender = false;
 	if( newHeight != m_size.h )
@@ -328,28 +422,28 @@ void  WgVBoxLayout::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rec
 
 void  WgVBoxLayout::_onGizmoAppeared( WgOrderedHook * pInserted )
 {
+	WgVBoxHook * pHook = static_cast<WgVBoxHook*>(pInserted);
+
 	// Update stored BestSize
 
-	WgSize bestSize = pInserted->Gizmo()->BestSize();
-	pInserted->m_bestWidth = bestSize.w;
-	m_bestSize.h += bestSize.h;
+	pHook->m_bestSize = pHook->Gizmo()->BestSize();
 
-	if( m_bestSize.w == bestSize.w )
+	if( m_bestSize.w == pHook->m_bestSize.w )
 	{
-		m_bestWidthCounter++;
+		m_nBestWidth++;
 	}
-	else if( m_bestSize.w < bestSize.w )
+	else if( m_bestSize.w < pHook->m_bestSize.w )
 	{
-		m_bestSize.w = bestSize.w;
-		m_bestWidthCounter = 1;
+		m_bestSize.w = pHook->m_bestSize.w;
+		m_nBestWidth = 1;
 	}
 
 	// We set Gizmo to same width as ours to start with, our parent will
 	// expand us in RequestResize() if it wants to.
 
-	int	height = pInserted->Gizmo()->HeightForWidth(m_size.w);
-	pInserted->DoSetNewSize( WgSize(m_size.w,height) );
-	pInserted->m_height = height;
+	int	height = pHook->Gizmo()->HeightForWidth(m_size.w);
+	pHook->DoSetNewSize( WgSize(m_size.w,height) );
+	pHook->m_height = height;
 	m_size.h = height;
 
 	// Request and handle possible resize.
@@ -358,30 +452,31 @@ void  WgVBoxLayout::_onGizmoAppeared( WgOrderedHook * pInserted )
 
 	// Request render on affected part.
 
-	_renderFromChildOnward(pInserted);
+	_renderFromChildOnward(pHook);
 }
 
 //____ _onGizmoDisappeared() __________________________________________________
 
 void WgVBoxLayout::_onGizmoDisappeared( WgOrderedHook * pToBeRemoved )
 {
+	WgVBoxHook * pHook = static_cast<WgVBoxHook*>(pToBeRemoved);
+
 	// Update stored BestSize
 
-	WgSize bestSize = pInserted->Gizmo()->BestSize();
-	m_bestSize.h -= bestSize.h;
+	m_bestSize.h -= pHook->m_bestSize.h;
 
-	if( m_bestSize.w == bestSize.w )
+	if( m_bestSize.w == pHook->m_bestSize.w )
 	{
-		m_bestWidthCounter--;
-		if( m_bestWidthCounter == 0 )
+		m_nBestWidth--;
+		if( m_nBestWidth == 0 )
 			_refreshBestWidth();
 	}
 
 	//
 
-	_renderFromChildOnward(pToBeRemoved);
-	m_size.h -= pToBeRemoved->m_height;
-	pToBeRemoved->m_height = 0;				// If gizmo is just being hidden it needs to have m_height set to 0.
+	_renderFromChildOnward(pHook);
+	m_size.h -= pHook->m_height;
+	pHook->m_height = 0;				// If gizmo is just being hidden it needs to have m_height set to 0.
 	RequestResize();
 }
 
@@ -415,7 +510,7 @@ void WgVBoxLayout::_adaptChildrenToWidth( int width )
 }
 
 //____ _refreshBestWidth() ______________________________________________________
-// Updates m_bestSize.w and m_nBestWidth. Relies on m_bestWidth of the visible 
+// Updates m_bestSize.w and m_nBestWidth. Relies on m_bestSize of the visible
 // hooks to have up-to-date data.
 
 void WgVBoxLayout::_refreshBestWidth()
@@ -426,12 +521,12 @@ void WgVBoxLayout::_refreshBestWidth()
 
 	while( pHook )
 	{
-		if( !pHook->m_bHidden && pHook->m_bestWidth >= m_bestSize.w )
+		if( !pHook->m_bHidden && pHook->m_bestSize.w >= m_bestSize.w )
 		{
-			if( pHook->m_bestWidth > m_bestSize.w )
+			if( pHook->m_bestSize.w > m_bestSize.w )
 			{
-				m_bestSize.w = pHook->m_bestWidth;
-				m_BestWidth = 1;
+				m_bestSize.w = pHook->m_bestSize.w;
+				m_nBestWidth = 1;
 			}
 			else
 				m_nBestWidth++;
@@ -441,8 +536,8 @@ void WgVBoxLayout::_refreshBestWidth()
 }
 
 //____ _refreshBestSize() ______________________________________________________
-// Refreshes m_bestWidth for all visible hooks, m_bestSize and m_nBestWidth with fresh
-// info straight from the children. 
+// Refreshes m_bestSize for all visible hooks, m_bestSize and m_nBestWidth with fresh
+// info straight from the children.
 
 void WgVBoxLayout::_refreshBestSize()
 {
@@ -454,19 +549,17 @@ void WgVBoxLayout::_refreshBestSize()
 	{
 		if( !pHook->m_bHidden )
 		{
-			WgSize best = pHook->Gizmo()->BestSize();
+			pHook->m_bestSize = pHook->Gizmo()->BestSize();
 
-			pHook->m_bestWidth = best.w;
-
-			if( best.w > m_bestSize.w )
+			if( pHook->m_bestSize.w > m_bestSize.w )
 			{
-				m_bestSize.w = best.w;
-				m_BestWidth = 1;
+				m_bestSize.w = pHook->m_bestSize.w;
+				m_nBestWidth = 1;
 			}
-			else if( best.w == m_bestSize.w )
+			else if( pHook->m_bestSize.w == m_bestSize.w )
 				m_nBestWidth++;
 
-			m_bestSize.h += best.h;
+			m_bestSize.h += pHook->m_bestSize.h;
 		}
 		pHook = pHook->NextHook();
 	}

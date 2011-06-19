@@ -23,20 +23,31 @@
 #ifndef WG_ORDERED_SELECTABLE_DOT_H
 #define WG_ORDERED_SELECTABLE_DOT_H
 
+#ifndef WG_ORDERED_LAYOUT_DOT_H
+#	include <wg_orderedlayout.h>
+#endif
+
+#ifndef WG_BLOCKSET_DOT_H
+#	include <wg_blockset.h>
+#endif
+
+class WgOrdSelLayout;
+
+
 class WgOrdSelHook : public WgOrderedHook
 {
 public:
-	void			SetSelected( bool bSelected );
-	bool			IsSelected() const { return m_bSelected; }
+	void					SetSelected( bool bSelected );
+	inline bool				IsSelected() const { return m_bSelected; }
 
-	inline WgOrdSelHook*	PrevHook() const { return Prev(); }
-	inline WgOrdSelHook*	NextHook() const { return Next(); }
-	inline WgOrdSelHook*	Parent() const { return (WgOrdSelLayout*) _parent(); }
+	inline WgOrdSelHook*	PrevHook() const { return _prev(); }
+	inline WgOrdSelHook*	NextHook() const { return _next(); }
+	inline WgOrdSelLayout*	Parent() const { return (WgOrdSelLayout*) _parent(); }
 
 protected:
 	PROTECTED_LINK_METHODS( WgOrdSelHook );
 
-	WgOrdSelHook( WgGizmo * pGizmo, WgGizmoOrdSelHook * pParent );
+	WgOrdSelHook( WgGizmo * pGizmo );
 	~WgOrdSelHook();
 
 	WgOrdSelHook *	_prevSelectedHook() const;
@@ -63,21 +74,23 @@ public:
 	WgGizmo *		FirstSelectedGizmo() const;
 	WgGizmo *		LastSelectedGizmo() const;
 
-	void			SetSelectionBg( const WgBlockSetPtr& blocks );
-	void			SetSelectionBg( WgColor bgColor );
-	
+
+	void			SetChildBg( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg );
+	void			SetChildFg( const WgBlockSetPtr& pFg );
+//	void			SetChildBg( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg );
 
 
 protected:
 	void			_onCloneContent( const WgGizmo * _pOrg );
 
-
 	WgOrdSelHook *	_firstSelectedHook() const;
 	WgOrdSelHook *	_lastSelectedHook() const;
 
-	WgColor			m_selectionBgColor;
-	WgBlockSetPtr	m_pSelectionBg;
-	WgBlockSetPtr	m_pSelectionFg;
+	WgColorSetPtr	m_pOddBgColor;
+	WgColorSetPtr	m_pEvenBgColor;
+	WgBlockSetPtr	m_pOddBgGfx;
+	WgBlockSetPtr	m_pEvenBgGfx;
+	WgBlockSetPtr	m_pFgGfx;
 
 	bool			m_bScrollOnSelect;
 	WgSelectMode	m_selectMode;
