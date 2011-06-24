@@ -149,6 +149,21 @@ namespace
 		}
 	}
 
+	void WriteColorSetAttr(WgResourceSerializerXML& s, WgColorSetPtr pColorSet, const std::string& attr)
+	{
+		if(pColorSet)
+		{
+			std::string id = s.ResDb()->FindColorSetId(pColorSet);
+			if(id.empty())
+			{
+				id = s.ResDb()->GenerateName(pColorSet);
+				s.ResDb()->AddColorSet(id, pColorSet);
+			}
+			s.AddAttribute(attr, id);
+		}
+	}
+
+
 	void WriteTextPropAttr(WgResourceSerializerXML& s, WgTextPropPtr prop, const std::string& attr)
 	{
 		if(prop)
@@ -321,6 +336,7 @@ void WgResourceXML::RegisterResources()
 	//WgResourceFactoryXML::Register<WgPropRes>			(WgPropRes::TagName());
 	WgResourceFactoryXML::Register<WgGeometryRes>		(WgGeometryRes::TagName());
 	WgResourceFactoryXML::Register<WgColorRes>			(WgColorRes::TagName());
+	WgResourceFactoryXML::Register<WgColorSetRes>		(WgColorSetRes::TagName());
 	WgResourceFactoryXML::Register<WgSurfaceRes>		(WgSurfaceRes::TagName());
 	WgResourceFactoryXML::Register<WgGlyphSetRes>		(WgGlyphSetRes::TagName());
 	WgResourceFactoryXML::Register<WgFontRes>			(WgFontRes::TagName());
@@ -530,6 +546,19 @@ void WgXmlRoot::Serialize(WgResourceSerializerXML& s)
 			fontRes.Serialize(s);
 		}
 	}
+
+	// color sets
+	if(s.ResDb()->GetFirstResColorSet())
+	{
+		s.AddText("\n");
+		for(WgResDB::ColorSetRes* res = s.ResDb()->GetFirstResColorSet(); res; res = res->Next())
+		{
+			WgColorSetRes colorSetRes(this, res->res);
+			colorSetRes.SetMetaData(res->meta);
+			colorSetRes.Serialize(s);
+		}
+	}
+
 
 	// block sets
 	if(s.ResDb()->GetFirstResBlockSet())
@@ -943,62 +972,95 @@ WgMode WgModeRes::Deserialize(const std::string& value)
 void WgModePropRes::Serialize(WgResourceSerializerXML& s)
 {
 	WgTextPropRes* textPropRes = WgResourceXML::Cast<WgTextPropRes>(Parent());
-	ASSERT(textPropRes, "invalid parent for <mode>");
+	WgColorSetRes* colorSetRes = WgResourceXML::Cast<WgColorSetRes>(Parent());
 
-	WgTextProp* textProp = textPropRes->GetTextProp();
+	ASSERT(textPropRes||colorSetRes, "invalid parent for <mode>");
 
-	s.BeginTag(TagName());
-	s.AddAttribute("id", WgModeRes::Serialize(m_mode));
+	if( colorSetRes )
+	{
+		// Only write down if we are different from color of WG_MODE_NORMAL
 
-	if(textProp->GetSize(m_mode) != textPropRes->GetSize())
-		s.AddAttribute("size", WgUtil::ToString(textProp->GetSize(m_mode)));
+		WgColorSetPtr p = colorSetRes->GetColorSet();
+		WgColor color = p->Color(m_mode);
 
-	if(textProp->GetStyle(m_mode) != textPropRes->GetStyle())
-		s.AddAttribute("style", WgFontStyleRes::Serialize(textProp->GetStyle(m_mode), s));
+		if(color != p->Color(WG_MODE_NORMAL))
+		{
+			s.BeginTag(TagName());
+			s.AddAttribute("id", WgModeRes::Serialize(m_mode));
+			WgColorRes::Serialize(s, XmlNode(), "col", color, WgColor(0, color.a+1)); // force write by making color != default
+			s.EndTag();
+		}
+	}
+	else
+	{
+		s.BeginTag(TagName());
+		s.AddAttribute("id", WgModeRes::Serialize(m_mode));
 
-	WgColor color = textProp->GetColor(m_mode);
-	if(color != textPropRes->GetColor())
-		WgColorRes::Serialize(s, XmlNode(), "col", color, WgColor(0, color.a+1)); // force write by making color != default
+		WgTextProp* textProp = textPropRes->GetTextProp();
 
-	WgColor bgColor = textProp->GetBgColor(m_mode);
-	if(bgColor != textPropRes->GetBgColor())
-		WgColorRes::Serialize(s, XmlNode(), "bg_col", bgColor, WgColor(0, bgColor.a+1)); // force write by making color != default
+		if(textProp->GetSize(m_mode) != textPropRes->GetSize())
+			s.AddAttribute("size", WgUtil::ToString(textProp->GetSize(m_mode)));
+
+		if(textProp->GetStyle(m_mode) != textPropRes->GetStyle())
+			s.AddAttribute("style", WgFontStyleRes::Serialize(textProp->GetStyle(m_mode), s));
+
+		WgColor color = textProp->GetColor(m_mode);
+		if(color != textPropRes->GetColor())
+			WgColorRes::Serialize(s, XmlNode(), "col", color, WgColor(0, color.a+1)); // force write by making color != default
+
+		WgColor bgColor = textProp->GetBgColor(m_mode);
+		if(bgColor != textPropRes->GetBgColor())
+			WgColorRes::Serialize(s, XmlNode(), "bg_col", bgColor, WgColor(0, bgColor.a+1)); // force write by making color != default
 
 
-	if(textProp->IsUnderlined(m_mode) != textPropRes->IsUnderlined())
-		s.AddAttribute("underlined", WgUtil::ToString(textProp->IsUnderlined(m_mode)));
+		if(textProp->IsUnderlined(m_mode) != textPropRes->IsUnderlined())
+			s.AddAttribute("underlined", WgUtil::ToString(textProp->IsUnderlined(m_mode)));
 
-	s.EndTag();
+		s.EndTag();
+	}
 }
 
 void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
 	WgTextPropRes* textPropRes = WgResourceXML::Cast<WgTextPropRes>(Parent());
-	ASSERT(textPropRes, "invalid parent for <mode>");
-	ASSERT(xmlNode.HasAttribute("id"), "missing id on <mode>");
+	WgColorSetRes* colorSetRes = WgResourceXML::Cast<WgColorSetRes>(Parent());
 
-	WgTextProp* textProp = textPropRes->GetTextProp();
+	ASSERT(textPropRes||colorSetRes, "invalid parent for <mode>");
+	ASSERT(xmlNode.HasAttribute("id"), "missing id on <mode>");
 
 	m_mode = WgModeRes::Deserialize(xmlNode["id"]);
 
-	if(xmlNode.HasAttribute("size"))
-		textProp->SetSize(WgUtil::ToUint32(xmlNode["size"]), m_mode);
-
-	if(xmlNode.HasAttribute("style"))
-		textProp->SetStyle(WgFontStyleRes::Deserialize(xmlNode, s), m_mode);
-
-	if(xmlNode.HasAttribute("col"))
-		textProp->SetColor(WgColorRes::Deserialize(s, xmlNode["col"]), m_mode);
-
-	if(xmlNode.HasAttribute("bg_col"))
-		textProp->SetBgColor(WgColorRes::Deserialize(s, xmlNode["bg_col"]), m_mode);
-
-	if(xmlNode.HasAttribute("underlined"))
+	if( colorSetRes )
 	{
-		if(WgUtil::ToBool(xmlNode["underlined"]))
-			textProp->SetUnderlined(m_mode);
-		else 
-			textProp->ClearUnderlined(m_mode);
+		WgColorSetPtr pColorSet = colorSetRes->GetColorSet();
+
+		if(xmlNode.HasAttribute("col"))
+			pColorSet->SetColor(WgColorRes::Deserialize(s, xmlNode["col"]), m_mode);
+
+	}
+	else
+	{
+		WgTextProp* textProp = textPropRes->GetTextProp();
+
+		if(xmlNode.HasAttribute("size"))
+			textProp->SetSize(WgUtil::ToUint32(xmlNode["size"]), m_mode);
+
+		if(xmlNode.HasAttribute("style"))
+			textProp->SetStyle(WgFontStyleRes::Deserialize(xmlNode, s), m_mode);
+
+		if(xmlNode.HasAttribute("col"))
+			textProp->SetColor(WgColorRes::Deserialize(s, xmlNode["col"]), m_mode);
+
+		if(xmlNode.HasAttribute("bg_col"))
+			textProp->SetBgColor(WgColorRes::Deserialize(s, xmlNode["bg_col"]), m_mode);
+
+		if(xmlNode.HasAttribute("underlined"))
+		{
+			if(WgUtil::ToBool(xmlNode["underlined"]))
+				textProp->SetUnderlined(m_mode);
+			else 
+				textProp->ClearUnderlined(m_mode);
+		}
 	}
 }
 
@@ -2436,6 +2498,56 @@ void WgLegoRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 	rect.w = (rect.w + 2) / nStates - 2;
 	s.ResDb()->AddLegoSource(name, surf, rect, nStates);
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+/// WgColorSetRes ////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//	<blockset
+//		id=[name]
+//		col=[color]
+//		content_borders=[all]
+//		content_borders=[left,right,top,bottom]
+//	/>
+void WgColorSetRes::Serialize(WgResourceSerializerXML& s)
+{
+	VERIFY(m_pColorSet, "null-ptr colorset");
+
+	s.BeginTag(TagName());
+
+	const WgXmlNode& xmlNode = XmlNode();
+
+	WriteColorSetAttr(s, m_pColorSet, "id");
+
+	WgColor	normalColor = m_pColorSet->Color(WG_MODE_NORMAL);
+
+	WgColorRes::Serialize( s, xmlNode, "col", normalColor );
+
+	if(m_pColorSet->Color(WG_MODE_MARKED) != normalColor )
+		WgModePropRes(this, WG_MODE_MARKED).Serialize(s);
+	if(m_pColorSet->Color(WG_MODE_SELECTED) != normalColor )
+		WgModePropRes(this, WG_MODE_SELECTED).Serialize(s);
+	if(m_pColorSet->Color(WG_MODE_DISABLED) != normalColor )
+		WgModePropRes(this, WG_MODE_DISABLED).Serialize(s);
+	if(m_pColorSet->Color(WG_MODE_SPECIAL) != normalColor )
+		WgModePropRes(this, WG_MODE_SPECIAL).Serialize(s);
+
+	s.EndTag();
+}
+
+void WgColorSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
+{
+	std::string id = xmlNode["id"];
+	VERIFY(id.size() != 0, "missing id in <colorset>");
+
+	if(xmlNode.HasAttribute("col"))
+		m_pColorSet = WgColorSet::Create( WgColorRes::Deserialize(s, xmlNode["col"]) );
+	else
+		m_pColorSet = WgColorSet::Create();
+
+	s.ResDb()->AddColorSet( id, m_pColorSet, new WgXMLMetaData(XmlNode()) );
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -4926,8 +5038,10 @@ WgCharBuffer* WgTableColumnRes::GetCharBuffer()
 //		arrow_pos=[x,y]
 //		cellpad=[x,y]
 //		sortprio=[prio] integer
-//		linemark_col=[color]
-//		linemark_blockset=[name]
+//		odd_row_colors=[colorset]
+//		even_row_colors=[colorset]
+//		odd_row_blocks=[blockset]
+//		even_row_blocks=[blockset]
 //		empty_row_height=[height]
 // />
 Wdg_TableView_Res::Wdg_TableView_Res(WgResourceXML* parent, Wdg_TableView* widget) :
@@ -4961,66 +5075,12 @@ void Wdg_TableView_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "arrow_pos", widget->GetArrowPosX(), widget->GetArrowPosY(), 0, 0);
 	WriteDiffAttr(s, xmlNode, "cellpad", widget->GetCellPaddingX(), widget->GetCellPaddingY(), (Uint8)0, (Uint8)0);
 	WriteDiffAttr(s, xmlNode, "sortprio", widget->GetClickSortPrio(), (Uint8)0);
-	WgColorRes::Serialize(s, xmlNode, "linemark_col", widget->GetLineMarkColor());
 
-	WriteBlockSetAttr(s, widget->GetLineMarkSource(), "linemark_blockset");
-
-	//
-
-	Uint32 nRowColors = widget->GetRowColorCount();
-	std::vector<std::string> rowColors;
-	WgUtil::Tokenize(xmlNode["rowcolors"], rowColors);
-	if(nRowColors)
-	{
-		std::string rowColor;
-		for(Uint32 i = 0; i < nRowColors; i++)
-		{
-			if( i > 0 )
-				rowColor += ",";
-
-			WgColor color = widget->GetRowColors()[i];
-
-			if( i < rowColors.size() && rowColors[i][0] == '#' )
-			{
-				WgColor oldCol = s.ResDb()->GetColor(rowColors[i].substr(1));
-				if(oldCol == color)
-				{
-					rowColor += rowColors[i];
-					continue;
-				}
-			}
-
-			rowColor += WgColorRes::ToHexString(color);
-		}
-		s.AddAttribute("rowcolors", rowColor);
-	}
-	else
-	{
-		s.RemoveAttribute("rowcolors");
-	}
-
-	//
-
-	Uint32 nRowBlocks = widget->GetRowBlockCount();
-	if(nRowBlocks)
-	{
-		std::string rowBlocks;
-		for(Uint32 i = 0; i < nRowBlocks; i++)
-		{
-			std::string id = s.ResDb()->FindBlockSetId( widget->GetRowBlocks()[i] );
-			if( id.length() > 0 )
-			{
-				if( rowBlocks.length() > 0 )
-					rowBlocks += ",";
-				rowBlocks += id;
-			}
-		}
-		s.AddAttribute("rowblocks", rowBlocks);
-	}
-	else
-	{
-		s.RemoveAttribute("rowblocks");
-	}
+	WriteColorSetAttr(s, widget->GetOddRowColors(), "odd_row_colors" );
+	WriteColorSetAttr(s, widget->GetEvenRowColors(), "even_row_colors" );
+	
+	WriteBlockSetAttr(s, widget->GetOddRowBlocks(), "odd_row_blocks" );
+	WriteBlockSetAttr(s, widget->GetEvenRowBlocks(), "even_row_blocks" );
 
 
 	// columns
@@ -5059,30 +5119,10 @@ void Wdg_TableView_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 	widget->SetHeaderSource(s.ResDb()->GetBlockSet(xmlNode["header_blockset"]));
 	widget->SetArrowOrigo(WgUtil::ToOrigo(xmlNode["arrow_origo"]));
 	widget->SetClickSortPrio(WgUtil::ToUint8(xmlNode["sortprio"]));
-	widget->SetLineMarkColor( WgColorRes::Deserialize(s, xmlNode["linemark_col"]) );
-	widget->SetLineMarkSource( s.ResDb()->GetBlockSet(xmlNode["linemark_blockset"]) );
 
-	std::vector<std::string> rowColors;
-	WgUtil::Tokenize(xmlNode["rowcolors"], rowColors);
-	if(rowColors.size())
-	{
-		WgColor* colors = new WgColor[rowColors.size()];
-		for(Uint32 iColor = 0; iColor < rowColors.size(); iColor++)
-			colors[iColor] = WgColorRes::Deserialize(s, rowColors[iColor]);
-		widget->SetRowColors(colors, rowColors.size());
-		delete[] colors;
-	}
+	widget->SetRowBlocks( s.ResDb()->GetBlockSet(xmlNode["odd_row_blocks"]), s.ResDb()->GetBlockSet(xmlNode["even_row_blocks"]) );
+	widget->SetRowColors( s.ResDb()->GetColorSet(xmlNode["odd_row_colors"]), s.ResDb()->GetColorSet(xmlNode["even_row_colors"]) );
 
-	std::vector<std::string> rowBlocks;
-	WgUtil::Tokenize(xmlNode["rowblocks"], rowBlocks);
-	if(rowBlocks.size())
-	{
-		WgBlockSetPtr* blocks = new WgBlockSetPtr[rowBlocks.size()];
-		for(Uint32 iBlock = 0; iBlock < rowBlocks.size(); iBlock++)
-			blocks[iBlock] = s.ResDb()->GetBlockSet( rowBlocks[iBlock] );
-		widget->SetRowBlocks(blocks, rowBlocks.size());
-		delete[] blocks;
-	}
 
 	WgBlockSetPtr pAscend = s.ResDb()->GetBlockSet(xmlNode["arrow_asc"]);
 	WgBlockSetPtr pDescend = s.ResDb()->GetBlockSet(xmlNode["arrow_dsc"]);

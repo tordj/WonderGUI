@@ -32,6 +32,7 @@ public:
 	virtual void Visit(class WgTextPropRes*) {}
 	virtual void Visit(class WgGeometryRes*) {}
 	virtual void Visit(class WgColorRes*) {}
+	virtual void Visit(class WgColorSetRes*) {}
 	virtual void Visit(class WgSurfaceRes*) {}
 	virtual void Visit(class WgGlyphSetRes*) {}
 	virtual void Visit(class WgFontRes*) {}

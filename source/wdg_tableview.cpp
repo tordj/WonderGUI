@@ -326,13 +326,6 @@ void Wdg_TableView::Init( void )
 	m_nColumns			= 0;
 	m_pColumns			= 0;
 
-	m_nRowColors		= 0;
-	m_pRowColors		= 0;
-
-	m_nRowBlocks		= 0;
-	m_pRowBlocks		= 0;
-
-
 	m_sortMarkerOrigo	= WgOrigo::midRight();
 	m_sortMarkerOfs.x	= 0;
 	m_sortMarkerOfs.y	= 0;
@@ -361,8 +354,6 @@ void Wdg_TableView::Init( void )
 Wdg_TableView::~Wdg_TableView( void )
 {
 	RemoveColumns();
-	RemoveRowColors();
-	RemoveRowBlocks();
 
 	delete [] m_pColumns;
 	m_pColumns = 0;							// So that refresh methods called when underlying items are deleted knows...
@@ -393,6 +384,7 @@ bool Wdg_TableView::SetHeaderSource( const WgBlockSetPtr& pHeader )
 	return true;
 }
 
+/*
 //____ SetLineMarkSource() ____________________________________________________
 
 void Wdg_TableView::SetLineMarkSource( WgBlockSetPtr pGfx )
@@ -400,6 +392,7 @@ void Wdg_TableView::SetLineMarkSource( WgBlockSetPtr pGfx )
 	m_pMarkedLineGfx = pGfx;
 	RequestRender();
 }
+*/
 
 //____ SetArrowSource() _______________________________________________________
 
@@ -468,18 +461,10 @@ void Wdg_TableView::SetEmptyRowHeight( Uint32 height )
 
 //____ SetRowColors() _________________________________________________________
 
-void Wdg_TableView::SetRowColors( WgColor * pRowColors, Sint32 nRowColors )
+void Wdg_TableView::SetRowColors( const WgColorSetPtr& pOddColors, const WgColorSetPtr& pEvenColors )
 {
-	if( m_pRowColors )
-		RemoveRowColors();
-
-	if( nRowColors > 0 && pRowColors )
-	{
-		m_nRowColors = nRowColors;
-		m_pRowColors = new WgColor[ m_nRowColors ];
-
-		memcpy( m_pRowColors, pRowColors, sizeof( WgColor ) * m_nRowColors );
-	}
+	m_pRowColors[0] = pOddColors;
+	m_pRowColors[1] = pEvenColors;
 
 	RequestRender();
 }
@@ -487,29 +472,18 @@ void Wdg_TableView::SetRowColors( WgColor * pRowColors, Sint32 nRowColors )
 //____ RemoveRowColors() ______________________________________________________
 void Wdg_TableView::RemoveRowColors()
 {
-	if( m_pRowColors )
-	{
-		delete [] m_pRowColors;
-		m_pRowColors = 0;
-		m_nRowColors = 0;
-	}
+	m_pRowColors[0] = 0;
+	m_pRowColors[1] = 0;
+
+	RequestRender();
 }
 
 //____ SetRowBlocks() _________________________________________________________
 
-void Wdg_TableView::SetRowBlocks( WgBlockSetPtr * pRowBlocks, Sint32 nRowBlocks )
+void Wdg_TableView::SetRowBlocks( const WgBlockSetPtr& pOddBlocks, const WgBlockSetPtr& pEvenBlocks )
 {
-	if( m_pRowBlocks )
-		RemoveRowBlocks();
-
-	if( nRowBlocks > 0 && pRowBlocks )
-	{
-		m_nRowBlocks = nRowBlocks;
-		m_pRowBlocks = new WgBlockSetPtr[ m_nRowBlocks ];
-
-		for( int i = 0 ; i < nRowBlocks ; i++ )
-			m_pRowBlocks[i] = pRowBlocks[i];
-	}
+	m_pRowBlocks[0] = pOddBlocks;
+	m_pRowBlocks[1] = pEvenBlocks;
 
 	RequestRender();
 }
@@ -517,12 +491,10 @@ void Wdg_TableView::SetRowBlocks( WgBlockSetPtr * pRowBlocks, Sint32 nRowBlocks 
 //____ RemoveRowBlocks() ______________________________________________________
 void Wdg_TableView::RemoveRowBlocks()
 {
-	if( m_pRowBlocks )
-	{
-		delete [] m_pRowBlocks;
-		m_pRowBlocks = 0;
-		m_nRowBlocks = 0;
-	}
+	m_pRowBlocks[0] = 0;
+	m_pRowBlocks[1] = 0;
+
+	RequestRender();
 }
 
 
@@ -1387,10 +1359,19 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 			WgMode mode = WG_MODE_NORMAL;
 
-			if(&m_pColumns[i] == m_pMarkedHeader)
+			bool	bMarked = (&m_pColumns[i]==m_pMarkedHeader);
+			bool	bSelected = (i==m_lastSortColumn);
+
+			if( bSelected )
+			{
+				if( bMarked )
+					mode = WG_MODE_SPECIAL;
+				else
+					mode = WG_MODE_SELECTED;
+			}
+			else if( bMarked )
 				mode = WG_MODE_MARKED;
-			else if( i == m_lastSortColumn )
-				mode = WG_MODE_SPECIAL;
+
 
 			WgGfx::clipBlitBlock( _clip, m_pHeaderGfx->GetBlock(mode), r2 );
 
@@ -1443,7 +1424,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 	// Start drawing cell contents.
 
 	WgTableRow * pRow = (WgTableRow *) m_items.First();
-	int iRowColor = 0;
+	int iRowNb = 0;
 
 	// Skip rows that are above clipping area.
 	r.y += m_cellPaddingY;
@@ -1454,7 +1435,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			if( r.y + (Sint32) pRow->Height() >= clipView.y )
 				 break;
 			r.y += pRow->Height() + m_cellPaddingY*2;
-			iRowColor++;
+			iRowNb++;
 		}
 		pRow = (WgTableRow *) pRow->GetNext();
 	}
@@ -1478,30 +1459,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 		WgRect	u;
 		if( u.intersection( r, clipView ) )
 		{
-			if( pRow->IsSelected() )
-			{
-				if(HasLineMarkSource() == true)
-					WgGfx::clipBlitBlock(u, m_pMarkedLineGfx->GetBlock(WG_MODE_NORMAL), r );
-				else
-					WgGfx::fillRect( u, m_itemMarkColor );
-			}
-			else
-			{
-				if( m_nRowColors > 0 )
-				{
-					WgColor color = m_pRowColors[ iRowColor % m_nRowColors ];
-					if( 0 != color.a )
-						WgGfx::fillRect( u, color );
-				}
-
-				if( m_nRowBlocks > 0 )
-				{
-					WgBlockSetPtr p = m_pRowBlocks[ iRowColor % m_nRowBlocks ];
-					if( p )
-					WgGfx::clipBlitBlock(u, p->GetBlock(WG_MODE_NORMAL), r );
-				}
-
-			}
+			DrawRowBg( u, pRow, iRowNb, r );
 		}
 
 		WgItem *	pCell = pRow->GetFirstItem();
@@ -1537,7 +1495,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 		r.y += pRow->Height() + m_cellPaddingY*2;
 		pRow = (WgTableRow *) pRow->GetNext();
-		iRowColor++;
+		iRowNb++;
 	}
 
 	// Possibly fill with empty rows
@@ -1550,27 +1508,43 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 			WgRect	u;
 			if( u.intersection( r, clipView ) )
-			{
-				if( m_nRowColors > 0 )
-				{
-					WgColor color = m_pRowColors[ iRowColor % m_nRowColors ];
-					if( 0 != color.a )
-						WgGfx::fillRect( u, color );
-				}
-
-				if( m_nRowBlocks > 0 )
-				{
-					WgBlockSetPtr p = m_pRowBlocks[ iRowColor % m_nRowBlocks ];
-					if( p )
-					WgGfx::clipBlitBlock(u, p->GetBlock(WG_MODE_NORMAL), r );
-				}
-			}
+				DrawRowBg( u, pRow, iRowNb, r );
 
 			r.y += r.h;
-			iRowColor++;
+			iRowNb++;
 		}
 	}
 
+}
+
+//____ DrawRowBg() ____________________________________________________________
+
+void Wdg_TableView::DrawRowBg( const WgRect& clip, WgTableRow * pRow, int iRowNb, const WgRect& dest )
+{
+	WgMode mode = WG_MODE_NORMAL;
+	if( pRow->IsSelected() )
+	{
+		if( iRowNb == m_markedRow )
+			mode = WG_MODE_SPECIAL;
+		else
+			mode = WG_MODE_SELECTED;
+	}
+	else if( iRowNb == m_markedRow )
+		mode = WG_MODE_MARKED;
+
+	if( m_pRowColors[iRowNb%2] )
+	{
+		WgColor color = m_pRowColors[iRowNb%2]->Color(mode);
+		if( 0 != color.a )
+			WgGfx::fillRect( clip, color );
+	}
+
+	if( m_pRowBlocks[iRowNb%2] )
+	{
+		WgBlockSetPtr p = m_pRowBlocks[iRowNb%2];
+		if( p && !p->IsModeSkipable(mode) )
+			WgGfx::clipBlitBlock(clip, p->GetBlock(mode), dest );
+	}
 }
 
 //____ DoMyOwnCloning() _______________________________________________________
@@ -1595,23 +1569,11 @@ void Wdg_TableView::DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pClone
 			pClone->m_pColumns[i] = WgTableColumn(m_pColumns[i]);
 	}
 
-	pClone->m_nRowColors = m_nRowColors;
-	pClone->m_pRowColors = 0;
-	if( m_nRowColors > 0 && m_pRowColors )
-	{
-		pClone->m_pRowColors = new WgColor[ m_nRowColors ];
-		memcpy( pClone->m_pRowColors, m_pRowColors, sizeof( WgColor ) * m_nRowColors );
-	}
+	pClone->m_pRowColors[0] = m_pRowColors[0];
+	pClone->m_pRowColors[1] = m_pRowColors[1];
 
-	pClone->m_nRowBlocks = m_nRowBlocks;
-	pClone->m_pRowBlocks = 0;
-	if( m_nRowBlocks > 0 && m_pRowBlocks )
-	{
-		pClone->m_pRowBlocks = new WgBlockSetPtr[ m_nRowBlocks ];
-
-		for( unsigned int i = 0 ; i < m_nRowBlocks ; i++ )
-			pClone->m_pRowBlocks[i] = m_pRowBlocks[i];					// Can't memcpy this... smartpointers...
-	}
+	pClone->m_pRowBlocks[0] = m_pRowBlocks[0];
+	pClone->m_pRowBlocks[1] = m_pRowBlocks[1];
 
 	pClone->m_pHeaderProps = m_pHeaderProps;
 	pClone->m_sortMarkerOrigo = m_sortMarkerOrigo;
@@ -1624,7 +1586,7 @@ void Wdg_TableView::DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pClone
 	pClone->m_lastSortColumnAscendStatus = m_lastSortColumnAscendStatus;
 	pClone->m_pHeaderGfx = m_pHeaderGfx;
 	pClone->m_pMarkedHeader = m_pMarkedHeader;
-	pClone->m_pMarkedLineGfx = m_pMarkedLineGfx;
+//	pClone->m_pMarkedLineGfx = m_pMarkedLineGfx;
 
 	pClone->m_emptyRowHeight = m_emptyRowHeight;
 }
@@ -1655,10 +1617,10 @@ WgTableColumn *Wdg_TableView::GetHeaderColumnAt(int x, int y)
 		{
 			if( m_pColumns[col].m_bVisible )
 			{
-				int scaledW = (int) m_pColumns[col].m_pixelWidth;
-//				if( xOfs < scaledW )
-//					return &m_pColumns[col];
-				xOfs -= scaledW - 1;
+				int w = (int) m_pColumns[col].m_pixelWidth;
+				if( xOfs < w )
+					return &m_pColumns[col];
+				xOfs -= w - 1;
 			}
 		}
 	}
@@ -1684,10 +1646,11 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 				for( Uint32 col = 0 ; col < m_nColumns ; col++ )
 				{
 					int scaledW = (int)m_pColumns[col].m_pixelWidth;
-					if( m_pColumns[col].m_bVisible && xOfs < scaledW )	// Last column header stretches to end of tableview...
+					if( m_pColumns[col].m_bVisible && xOfs < scaledW )
 					{
 						if( m_pColumns[col].m_bEnabled )
 						{
+							Emit( WgSignal::TableHeaderPress(_button_key), col );
 							bool	bAscend = m_pColumns[col].m_bInitialAscend;
 							if( col == m_lastSortColumn )
 								bAscend = !m_lastSortColumnAscendStatus;

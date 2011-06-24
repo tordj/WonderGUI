@@ -35,10 +35,6 @@
 #	include <wg_smartptr.h>
 #endif
 
-#ifndef WG_REFCOUNTED_DOT_H
-#	include <wg_refcounted.h>
-#endif
-
 #ifndef WG_CHAIN_DOT_H
 #	include <wg_chain.h>
 #endif

@@ -1429,6 +1429,16 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 				break;
 			}
 
+			// Handle a "break-after" from previous character
+
+			if( bBreakAfterPrev )
+			{
+				pbp = p;
+				bBreakSkips = false;
+				bBreakAfterPrev = false;
+			}
+
+
 			// Check if we can move the breakpoint up to this character.
 
 			WgBreakRules breakStatus = WgTextTool::isBreakAllowed( p->glyph, attr.breakLevel );
@@ -1465,13 +1475,6 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 				break;
 
 			default:				// WG_NO_BREAK
-
-				if( bBreakAfterPrev )
-				{
-					pbp = p;
-					bBreakSkips = false;
-					bBreakAfterPrev = false;
-				}
 				break;
 
 			}
@@ -1769,7 +1772,11 @@ int WgText::LineStartX( int line, const WgRect& container ) const
 	int		ofs = 0;
 
 	if( m_origo.anchorX() != 0 || m_origo.hotspotX() != 0 )
+	{	
 		ofs = m_origo.calcOfsX( container.w, getSoftLineWidth(line) );
+		if( ofs < 0 )
+			ofs = 0;
+	}
 
 	return ofs + container.x;
 }

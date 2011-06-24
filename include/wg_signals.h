@@ -128,6 +128,8 @@ namespace WgSignal
 	//		static Signal_WgItemPtr	sig_itemPointerExit; 
 	//		static Signal_WgItemPtr sig_itemPointerOver;  
 
+	class TableHeaderPress			: public Signal_int { public: TableHeaderPress( Uint8 button ) { type = (Uint16) __LINE__; data = button; };};
+
 	class TableRowMarked			: public Signal_int { public: TableRowMarked() { type = (Uint16) __LINE__; data = 0; };};
 	class TableColumnMarked			: public Signal_int { public: TableColumnMarked() { type = (Uint16) __LINE__; data = 0; };};
 	class TableCellMarked			: public Signal_int_int { public: TableCellMarked() { type = (Uint16) __LINE__; data = 0; };};
@@ -147,6 +149,8 @@ namespace WgSignal
 	class TableRowDoubleClick		: public Signal_int { public: TableRowDoubleClick( Uint8 button ) { type = (Uint16) __LINE__; data = button; };};
 	class TableColumnDoubleClick	: public Signal_int { public: TableColumnDoubleClick( Uint8 button ) { type = (Uint16) __LINE__; data = button; };};
 	class TableCellDoubleClick		: public Signal_int_int { public: TableCellDoubleClick( Uint8 button ) { type = (Uint16) __LINE__; data = button; };};
+
+
 
 
 	class ViewPos					: public Signal_float_float { public: ViewPos() { type = (Uint16) __LINE__; data = 0; };};

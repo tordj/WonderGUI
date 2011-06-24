@@ -741,6 +741,28 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
+/// WgColorSetRes ////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+typedef	WgSmartPtr<class WgColorSet> WgColorSetPtr;
+class WgColorSetRes : public WgResourceXML
+{
+public:
+	WgColorSetRes(WgResourceXML* parent, WgColorSetPtr pColorSet = 0) : WgResourceXML(parent), m_pColorSet(pColorSet) { }
+
+	virtual void Serialize(WgResourceSerializerXML& s);
+	virtual void Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
+
+	virtual void Accept(WgResourceVisitor* visitor)	{ visitor->Visit(this); }
+
+	WgColorSetPtr	GetColorSet() { return m_pColorSet; }
+
+	static const char* TagName() { return "colorset"; }
+private:
+	WgColorSetPtr	m_pColorSet;
+};
+
+
+//////////////////////////////////////////////////////////////////////////
 /// WgBlockSetRes ////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 typedef	WgSmartPtrPooled<class WgBlockSet> WgBlockSetPtr;

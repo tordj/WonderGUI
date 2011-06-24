@@ -125,7 +125,13 @@ int WgItemRow::ItemWidth( WgItem * pItem, int screen_width )
 	int width = pItem->Width();
 	if( width < minWidth )
 		width = minWidth;
+/*
+	// Very naive implementation of maxWidth, doesn't work under all circumstances.
 
+	int maxWidth = screen_width - minWidth*m_nItems;
+	if( width > maxWidth )
+		width = maxWidth;
+*/
 	return width;
 }
 

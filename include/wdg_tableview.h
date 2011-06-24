@@ -29,7 +29,7 @@
 
 #include <wg_interface_itemholder.h>
 #include <wg_item_row.h>
-#include <wg_color.h>
+#include <wg_colorset.h>
 
 
 class WgText;
@@ -195,14 +195,16 @@ public:
 	void	SetEmptyRowHeight( Uint32 height );
 	Uint32	GetEmptyRowHeight() { return m_emptyRowHeight; }
 
-	void	SetRowBlocks( WgBlockSetPtr * pRowBlocks, Sint32 nRowSource );
-	Uint32	GetRowBlockCount() { return m_nRowBlocks; }
-	WgBlockSetPtr* GetRowBlocks( ) { return m_pRowBlocks; }
+	inline void	SetRowBlocks( const WgBlockSetPtr& pBlocks ) { SetRowBlocks(pBlocks,pBlocks); }
+	void	SetRowBlocks( const WgBlockSetPtr& pOddBlocks, const WgBlockSetPtr& pEvenBlocks );
+	WgBlockSetPtr GetOddRowBlocks() const { return m_pRowBlocks[0]; }
+	WgBlockSetPtr GetEvenRowBlocks() const { return m_pRowBlocks[1]; }
 	void	RemoveRowBlocks();
 
-	void	SetRowColors( WgColor * pRowColors, Sint32 nRowColors );
-	Uint32	GetRowColorCount() { return m_nRowColors; }
-	WgColor*GetRowColors( ) { return m_pRowColors; }
+	inline void	SetRowColors( const WgColorSetPtr& pColors ) { SetRowColors(pColors,pColors); }
+	void	SetRowColors( const WgColorSetPtr& pOddColors, const WgColorSetPtr& pEvenColors );
+	WgColorSetPtr GetOddRowColors() const { return m_pRowColors[0]; }
+	WgColorSetPtr GetEvenRowColors() const { return m_pRowColors[1]; }
 	void	RemoveRowColors();
 
 	Uint32	AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo& origo = WgOrigo::midLeft(), Sint32(*fpCompare)(WgItem *,WgItem *) = 0, bool bInitialAscend = true, bool bEnabled = true, int id = 0 );
@@ -234,12 +236,13 @@ public:
 	bool				DeleteRow( WgTableRow * pRow );
 	void				DeleteAllRows();
 	inline WgTableRow *	FindRow( Sint32 id ) { return (WgTableRow*) FindItem(id); }
+/*
 	inline void			SetLineMarkColor( WgColor c ) { SetItemMarkColor(c); }
 	void				SetLineMarkSource( WgBlockSetPtr pBlock );
 	bool				HasLineMarkSource() const { if( m_pMarkedLineGfx ) return true; return false; }
 	WgBlockSetPtr		GetLineMarkSource() const { return m_pMarkedLineGfx; }
 	WgColor				GetLineMarkColor() const { return GetItemMarkColor(); }
-
+*/
 	inline WgTableRow *	GetFirstRow() { return (WgTableRow *) GetFirstItem(); }
 	inline WgTableRow *	GetLastRow() { return (WgTableRow *) GetLastItem(); }
 	inline Uint32		NbRows() { return NbItems(); }
@@ -277,6 +280,8 @@ protected:
 
 private:
 	void 	Init();
+
+	void	DrawRowBg( const WgRect& clip, WgTableRow * pRow, int iRowNb, const WgRect& dest );
 
 	void	TweakColumnWidths( int targetWidth );
 	void	ExtendLastColumn( int targetWidth );
@@ -322,11 +327,8 @@ private:
 	Uint32			m_nColumns;
 	WgTableColumn *	m_pColumns;
 
-	Uint32			m_nRowColors;
-	WgColor *		m_pRowColors;
-
-	Uint32			m_nRowBlocks;
-	WgBlockSetPtr*	m_pRowBlocks;
+	WgColorSetPtr 	m_pRowColors[2];
+	WgBlockSetPtr	m_pRowBlocks[2];
 
 	Uint32			m_emptyRowHeight;						// Set if empty rows should fill out the view.
 
@@ -368,7 +370,7 @@ private:
 	WgTableColumn*	m_pMarkedHeader;						// Header currently marked by mouse
 
 
-	WgBlockSetPtr	m_pMarkedLineGfx;
+//	WgBlockSetPtr	m_pMarkedLineGfx;
 };
 
 #endif // WDG_TABLEVIEW_DOT_H

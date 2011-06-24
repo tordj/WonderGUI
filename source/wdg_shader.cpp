@@ -152,7 +152,10 @@ void Wdg_Shader::RenderRecursively(Uint8 _layer)
 
 	// Render children recursively
 	for( WgWidget * pTmp = m_pFirstChild ; pTmp != 0 ; pTmp = pTmp->m_pNextSibling )
-	    pTmp->RenderRecursively(_layer);
+	{
+		if( !pTmp->m_bHidden )
+			pTmp->RenderRecursively(_layer);
+	}
 
 	// Reset old blend mode and tint color
 

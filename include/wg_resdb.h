@@ -50,6 +50,10 @@
 #	include <wg_blockset.h>
 #endif
 
+#ifndef WG_COLORSET_DOT_H
+#	include <wg_colorset.h>
+#endif
+
 
 class WgSurface;
 class WgGlyphSet;
@@ -127,6 +131,7 @@ public:
 	typedef ResWrapper<WgCursor*>		CursorRes;
 	typedef ResWrapper<WgTextPropPtr>	TextPropRes;
 	typedef ResWrapper<WgColor>			ColorRes;
+	typedef ResWrapper<WgColorSetPtr>	ColorSetRes;
 	typedef ResWrapper<WgBlockSetPtr>	BlockSetRes;
 	typedef ResWrapper<WgMenuItem*>		MenuItemRes;
 	typedef ResWrapper<WgTab*>			TabRes;
@@ -141,8 +146,10 @@ public:
 	static std::string	GenerateName( const WgFont * data );
 	static std::string	GenerateName( const WgAnim * data );
 	static std::string	GenerateName( const WgCursor * data );
-	static std::string	GenerateName( const WgTextPropPtr data );
-	static std::string	GenerateName( const WgBlockSetPtr data );
+	static std::string	GenerateName( const WgColor data );
+	static std::string	GenerateName( const WgColorSetPtr& data );
+	static std::string	GenerateName( const WgTextPropPtr& data );
+	static std::string	GenerateName( const WgBlockSetPtr& data );
 	static std::string	GenerateName( const WgMenuItem* data );
 	static std::string	GenerateName( const WgTextManager* data );
 	static std::string	GenerateName( const WgSkinManager* data );
@@ -179,10 +186,11 @@ public:
 	bool				AddFont( const std::string& id, WgFont * pFont, MetaData * pMetaData = 0 );
 	bool				AddAnim( const std::string& id, WgAnim * pAnim, MetaData * pMetaData = 0 );
 	bool				AddCursor( const std::string& id, WgCursor * pCursor, MetaData * pMetaData = 0 );
-	bool				AddTextProp( const std::string& id, WgTextPropPtr pProp, MetaData * pMetaData = 0 );
+	bool				AddTextProp( const std::string& id, const WgTextPropPtr& pProp, MetaData * pMetaData = 0 );
 	bool				AddColor( const std::string& id, WgColor col, MetaData * pMetaData = 0 );
+	bool				AddColorSet( const std::string& id, const WgColorSetPtr& pColorSet, MetaData * pMetaData = 0 );
 	bool				AddLegoSource( const std::string& id, const std::string& surface, WgRect rect, Uint32 nStates, MetaData * pMetaData = 0 );
-	bool				AddBlockSet( const std::string& id, WgBlockSetPtr pBlockSet, MetaData * pMetaData = 0 );
+	bool				AddBlockSet( const std::string& id, const WgBlockSetPtr& pBlockSet, MetaData * pMetaData = 0 );
 	bool				AddMenuItem( const std::string& id, WgMenuItem * pMenuItem, MetaData * pMetaData = 0 );
 	bool				AddTab( const std::string& id, WgTab * pTab, MetaData * pMetaData = 0 );
 	bool				AddTextManager( const std::string& id, WgTextManager* pTextManager, MetaData * pMetaData = 0 );
@@ -197,6 +205,7 @@ public:
 	bool				RemoveCursor( const std::string& id );
 	bool				RemoveTextProp( const std::string& id );
 	bool				RemoveColor( const std::string& id );
+	bool				RemoveColorSet( const std::string& id );
 	bool				RemoveLegoSource( const std::string& id );
 	bool				RemoveBlockSet( const std::string& id );
 	bool				RemoveMenuItem( const std::string& id );
@@ -214,6 +223,7 @@ public:
 	bool				RemoveCursor( CursorRes * pRes );
 	bool				RemoveTextProp( TextPropRes * pRes );
 	bool				RemoveColor( ColorRes * pRes );
+	bool				RemoveColorSet( ColorSetRes * pRes );
 	bool				RemoveLegoSource( LegoSource * pRes );
 	bool				RemoveBlockSet( BlockSetRes * pRes );
 	bool				RemoveMenuItem( MenuItemRes * pRes );
@@ -233,6 +243,7 @@ public:
 	WgCursor *			GetCursor( const std::string& id ) const;
 	WgTextPropPtr		GetTextProp( const std::string& id ) const;
 	WgColor				GetColor( const std::string& id ) const;
+	WgColorSetPtr		GetColorSet( const std::string& id ) const;
 	WgBlockSetPtr		GetBlockSet( const std::string& id ) const;
 	WgTextManager *		GetTextManager( const std::string& id ) const;
 	WgSkinManager *		GetSkinManager( const std::string& id ) const;
@@ -293,6 +304,7 @@ public:
 	CursorRes *			GetResCursor( const std::string& id ) const;
 	TextPropRes *		GetResTextProp( const std::string& id ) const;
 	ColorRes *			GetResColor( const std::string& id ) const;
+	ColorSetRes *		GetResColorSet( const std::string& id ) const;
 	LegoSource *		GetLegoSource( const std::string& id ) const;
 	BlockSetRes *		GetResBlockSet( const std::string& id ) const;
 	MenuItemRes *		GetResMenuItem( const std::string& id ) const;
@@ -308,8 +320,10 @@ public:
 	FontRes *			FindResFont( const WgFont * data ) const;
 	AnimRes *			FindResAnim( const WgAnim * data ) const;
 	CursorRes *			FindResCursor( const WgCursor * data ) const;
-	TextPropRes *		FindResTextProp( const WgTextPropPtr data ) const;
-	BlockSetRes *		FindResBlockSet( const WgBlockSetPtr data ) const;
+	TextPropRes *		FindResTextProp( const WgTextPropPtr& data ) const;
+	ColorRes *			FindResColor( const WgColor col ) const;
+	ColorSetRes *		FindResColorSet( const WgColorSetPtr& data ) const;
+	BlockSetRes *		FindResBlockSet( const WgBlockSetPtr& data ) const;
 	MenuItemRes *		FindResMenuItem( const WgMenuItem* data ) const;
 	TabRes *			FindResTab( const WgTab* data ) const;
 	TextManagerRes *	FindResTextManager( const WgTextManager* data ) const;
@@ -321,8 +335,10 @@ public:
 	std::string			FindFontId( const WgFont * data ) const				{ FontRes *	r =		FindResFont(data); return r ? r->id : ""; }
 	std::string			FindAnimId( const WgAnim * data ) const				{ AnimRes *	r =		FindResAnim(data); return r ? r->id : ""; }
 	std::string			FindCursorId( const WgCursor * data ) const			{ CursorRes *	r =	FindResCursor(data); return r ? r->id : ""; }
-	std::string			FindTextPropId( const WgTextPropPtr data ) const	{ TextPropRes *r =  FindResTextProp(data); return r ? r->id : ""; }
-	std::string			FindBlockSetId( const WgBlockSetPtr data ) const	{ BlockSetRes *r =  FindResBlockSet(data); return r ? r->id : ""; }
+	std::string			FindTextPropId( const WgTextPropPtr& data ) const	{ TextPropRes *r =  FindResTextProp(data); return r ? r->id : ""; }
+	std::string			FindColorId( const WgColor data ) const				{ ColorRes *r =		FindResColor(data); return r ? r->id : ""; }
+	std::string			FindColorSetId( const WgColorSetPtr& data ) const	{ ColorSetRes *r =  FindResColorSet(data); return r ? r->id : ""; }
+	std::string			FindBlockSetId( const WgBlockSetPtr& data ) const	{ BlockSetRes *r =  FindResBlockSet(data); return r ? r->id : ""; }
 	std::string			FindMenuItemId( const WgMenuItem* data ) const		{ MenuItemRes *r =  FindResMenuItem(data); return r ? r->id : ""; }
 	std::string			FindTabId( const WgTab* data ) const				{ TabRes *r =		FindResTab(data); return r ? r->id : ""; }
 	std::string			FindTextManagerId( const WgTextManager* data ) const{ TextManagerRes *r =  	FindResTextManager(data); return r ? r->id : ""; }
@@ -337,6 +353,7 @@ public:
 	inline CursorRes *		GetFirstResCursor() const { return m_cursors.First(); }
 	inline TextPropRes *	GetFirstResTextProp() const { return m_textProps.First(); }
 	inline ColorRes *		GetFirstResColor() const { return m_colors.First(); }
+	inline ColorSetRes *	GetFirstResColorSet() const { return m_colorSets.First(); }
 	inline BlockSetRes *	GetFirstResBlockSet() const { return m_blockSets.First(); }
 	inline MenuItemRes *	GetFirstResMenuItem() const { return m_menuItems.First(); }
 	inline TabRes *			GetFirstResTab() const { return m_tabs.First(); }
@@ -379,6 +396,7 @@ private:
 	typedef std::map<std::string, CursorRes*>		CursorMap;
 	typedef std::map<std::string, TextPropRes*>		PropMap;
 	typedef std::map<std::string, ColorRes*>		ColMap;
+	typedef std::map<std::string, ColorSetRes*>		ColSetMap;
 	typedef std::map<std::string, LegoSource*>		LegoMap;
 	typedef std::map<std::string, BlockSetRes*>		BlockMap;
 	typedef std::map<std::string, MenuItemRes*>		MenuItemMap;
@@ -396,6 +414,7 @@ private:
 	WgChain<CursorRes>		m_cursors;
 	WgChain<TextPropRes>	m_textProps;
 	WgChain<ColorRes>		m_colors;
+	WgChain<ColorSetRes>	m_colorSets;
 	WgChain<LegoSource>		m_legos;
 	WgChain<BlockSetRes>	m_blockSets;
 	WgChain<MenuItemRes>	m_menuItems;
@@ -407,6 +426,7 @@ private:
 
 	ResDBMap		m_mapResDBs;
 	ColMap			m_mapColors;
+	ColSetMap		m_mapColorSets;
 	SurfMap			m_mapSurfaces;
 	GlyphMap		m_mapGlyphSets;
 	FontMap			m_mapFonts;

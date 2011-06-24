@@ -53,6 +53,8 @@ void WgResDB::Clear()
 	m_mapFonts.clear();
 	m_mapAnims.clear();
 	m_mapCursors.clear();
+	m_mapColors.clear();
+	m_mapColorSets.clear();
 	m_mapTextProps.clear();
 	m_mapLegoSources.clear();
 	m_mapBlockSets.clear();
@@ -79,6 +81,7 @@ void WgResDB::Clear()
 	m_anims.Clear();
 	m_cursors.Clear();
 	m_textProps.Clear();
+	m_colorSets.Clear();
 	m_colors.Clear();
 	m_legos.Clear();
 	m_blockSets.Clear();
@@ -176,14 +179,29 @@ std::string	WgResDB::GenerateName( const WgCursor * data )
 	return std::string("_cursor__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgTextPropPtr data )
+std::string	WgResDB::GenerateName( const WgColor data )
+{
+	static int nGenerated = 0;
+	char pBuf[100];
+	return std::string("_color__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
+}
+
+std::string	WgResDB::GenerateName( const WgColorSetPtr& data )
+{
+	static int nGenerated = 0;
+	char pBuf[100];
+	return std::string("_colorset__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
+}
+
+
+std::string	WgResDB::GenerateName( const WgTextPropPtr& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_textprop__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgBlockSetPtr data )
+std::string	WgResDB::GenerateName( const WgBlockSetPtr& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -392,7 +410,7 @@ bool WgResDB::AddCursor( const std::string& id, WgCursor * pCursor, MetaData * p
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddTextProp( const std::string& id, WgTextPropPtr pProp, MetaData * pMetaData )
+bool WgResDB::AddTextProp( const std::string& id, const WgTextPropPtr& pProp, MetaData * pMetaData )
 {
 	//assert(m_mapTextProps.find(id) == m_mapTextProps.end());
 	if(m_mapTextProps.find(id) == m_mapTextProps.end())
@@ -421,6 +439,23 @@ bool WgResDB::AddColor( const std::string& id, WgColor col, MetaData * pMetaData
 	}
 	return false;
 }
+
+//____ () _________________________________________________________
+
+bool WgResDB::AddColorSet( const std::string& id, const WgColorSetPtr& pColorSet, MetaData * pMetaData )
+{
+	assert(m_mapColorSets.find(id) == m_mapColorSets.end());
+	if(m_mapColorSets.find(id) == m_mapColorSets.end())
+	{
+		ColorSetRes* p = new ColorSetRes(id, pColorSet, pMetaData);
+		m_colorSets.PushBack(p);
+		if(id.size())
+			m_mapColorSets[id] = p;
+		return true;
+	}
+	return false;
+}
+
 
 //____ () _________________________________________________________
 
@@ -458,7 +493,7 @@ std::string WgResDB::LoadString( const std::string& token )
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddBlockSet( const std::string& id, WgBlockSetPtr pBlockSet, MetaData * pMetaData )
+bool WgResDB::AddBlockSet( const std::string& id, const WgBlockSetPtr& pBlockSet, MetaData * pMetaData )
 {
 	assert(m_mapBlockSets.find(id) == m_mapBlockSets.end());
 	if(m_mapBlockSets.find(id) == m_mapBlockSets.end())
@@ -651,6 +686,14 @@ WgColor WgResDB::GetColor( const std::string& id ) const
 {
 	ColorRes* colorRes = GetResColor(id);
 	return colorRes ? colorRes->res : WgColor::Black();
+}
+
+//____ () _________________________________________________________
+
+WgColorSetPtr WgResDB::GetColorSet( const std::string& id ) const
+{
+	ColorSetRes* colorSetRes = GetResColorSet(id);
+	return colorSetRes ? colorSetRes->res : WgColorSetPtr();
 }
 
 //____ () _________________________________________________________
@@ -856,6 +899,24 @@ WgResDB::ColorRes * WgResDB::GetResColor( const std::string& id ) const
 	ColMap::const_iterator it = m_mapColors.find(id);
 	return it == m_mapColors.end() ? 0 : it->second;
 }
+
+//____ () _________________________________________________________
+
+WgResDB::ColorSetRes * WgResDB::GetResColorSet( const std::string& id ) const
+{
+	ColorSetRes* res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
+	{
+		if(db->res)
+		{
+			if((res = db->res->GetResColorSet(id)))
+				return res;
+		}
+	}
+	ColSetMap::const_iterator it = m_mapColorSets.find(id);
+	return it == m_mapColorSets.end() ? 0 : it->second;
+}
+
 
 //____ () _________________________________________________________
 
@@ -1145,7 +1206,7 @@ WgResDB::CursorRes* WgResDB::FindResCursor( const WgCursor* meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::TextPropRes* WgResDB::FindResTextProp( const WgTextPropPtr meta ) const
+WgResDB::TextPropRes* WgResDB::FindResTextProp( const WgTextPropPtr& meta ) const
 {
 	TextPropRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
@@ -1164,7 +1225,45 @@ WgResDB::TextPropRes* WgResDB::FindResTextProp( const WgTextPropPtr meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::BlockSetRes* WgResDB::FindResBlockSet( const WgBlockSetPtr meta ) const
+WgResDB::ColorRes* WgResDB::FindResColor( const WgColor meta ) const
+{
+	ColorRes* res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
+	{
+		if(db->res)
+		{
+			if((res = db->res->FindResColor(meta)))
+				return res;
+		}
+	}
+	for(res = GetFirstResColor(); res; res = res->Next())
+		if(res->res == meta)
+			return res;
+	return 0;
+}
+
+//____ () _________________________________________________________
+
+WgResDB::ColorSetRes* WgResDB::FindResColorSet( const WgColorSetPtr& meta ) const
+{
+	ColorSetRes* res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
+	{
+		if(db->res)
+		{
+			if((res = db->res->FindResColorSet(meta)))
+				return res;
+		}
+	}
+	for(res = GetFirstResColorSet(); res; res = res->Next())
+		if(res->res == meta)
+			return res;
+	return 0;
+}
+
+//____ () _________________________________________________________
+
+WgResDB::BlockSetRes* WgResDB::FindResBlockSet( const WgBlockSetPtr& meta ) const
 {
 	BlockSetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
@@ -1540,6 +1639,38 @@ bool WgResDB::RemoveColor( WgResDB::ColorRes * pRes )
 	delete pRes;
 	return true;
 }
+
+//____ RemoveColorSet() _______________________________________________________
+
+bool WgResDB::RemoveColorSet( const std::string& id )
+{
+	ColSetMap::iterator it = m_mapColorSets.find( id );
+
+	if( it == m_mapColorSets.end() )
+		return false;
+
+	ColorSetRes * pRes = it->second;
+	m_mapColorSets.erase(it);
+	delete pRes;
+
+	return true;
+}
+
+bool WgResDB::RemoveColorSet( WgResDB::ColorSetRes * pRes )
+{
+	if( !pRes )
+		return false;
+
+	if( pRes->id.length() > 0 )
+	{
+		ColSetMap::iterator it = m_mapColorSets.find( pRes->id );
+		assert( it != m_mapColorSets.end() );
+		m_mapColorSets.erase(it);
+	}
+	delete pRes;
+	return true;
+}
+
 
 
 //____ RemoveLegoSource() _____________________________________________________

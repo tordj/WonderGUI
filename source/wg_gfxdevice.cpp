@@ -1217,6 +1217,7 @@ void WgGfxDevice::_drawUnderline( const WgRect& clip, const WgText * pText, int 
 
 	WgPen pen;
 	const WgChar * pChars = pText->getText();
+	pen.SetTextNode( pText->getNode() );
 
 	for( int i = ofs ; i < ofs + maxChars && !pChars[i].IsEndOfLine() ; i++ )
 	{
