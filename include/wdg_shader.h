@@ -53,7 +53,7 @@ class Wdg_Shader:public WgWidget, public WgEmitter
 	protected:
 		WgWidget * NewOfMyType() const;
 
-		virtual void	RenderRecursively(Uint8 _layer);
+		virtual void	RenderRecursively(Uint8 _layer, const WgRect& clip);
 		WgEmitter * GetEmitter() { return this; }
 
 	private:

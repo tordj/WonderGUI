@@ -70,8 +70,6 @@ public:
 	WgTextLinkHandler() {}
 	~WgTextLinkHandler() {}
 
-protected:
-
 	virtual void	OnPointerEnter( const WgTextLinkPtr& pLink, const WgCord& screenPos );
 	virtual void	OnPointerOver( const WgTextLinkPtr& pLink, const WgCord& screenPos );
 	virtual void	OnPointerExit( const WgTextLinkPtr& pLink, const WgCord& screenPos );

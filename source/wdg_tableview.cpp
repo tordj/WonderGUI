@@ -1889,6 +1889,9 @@ void Wdg_TableView::UpdateMarkedRowColumn( int row, int column )
 
 		if( row != -1 && column != -1 )
 			Emit( WgSignal::TableCellMarked(), row, column );
+
+		RequestRender();									//TODO: Lazy and slow to always do this (even if there is no color/block difference) 
+															// and on whole area when only two rows are affected.
 	}
 }
 

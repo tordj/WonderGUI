@@ -973,13 +973,13 @@ void WgGfxDevice::_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int
 void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const WgRect& dest )
 {
 	WgRectChain	bgRects;
-	WgColor		bgColor;
-	bool		bBgColored;
+//	WgColor		bgColor;
+//	bool		bBgColored;
 
 	WgRect		clip(_clip,dest);		// Make sure clipping rect is inside dest.
 
 	WgMode mode = pText->mode();
-
+/*
 	// First take care of general background color
 
 	WgTextAttr	attr;
@@ -1000,7 +1000,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 		Fill( *pBgRect, bgColor );
 		pBgRect = pBgRect->pNext;
 	}
-
+*/
 	// Take care of selection background color (if we have any)
 
 	int selStart, selEnd;
@@ -1025,8 +1025,8 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 	// Scan through the text, drawing character specific backgrounds
 	// (and in the future punching holes in the general background?)
 
-	Uint16	hProp = 0;
-	WgColor	color = bgColor;
+	Uint16	hProp = 0xFFFF;
+	WgColor	color;
 	int		startOfs = 0;
 
 	const WgChar * pChars = pText->getText();
@@ -1036,7 +1036,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 	{
 		if( ofs == selStart )
 		{
-			if( color != bgColor )
+			if( color.a != 0 )
 				_drawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
 
 			startOfs = selEnd;
@@ -1055,7 +1055,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 			{
 				// Draw previous bg section which now ended
 
-				if( ofs != startOfs && color != bgColor )
+				if( ofs != startOfs && color.a != 0 )
 					_drawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
 
 				// Set start and color of current background section
@@ -1069,7 +1069,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 
 	// Draw last background section if it is colored
 
-	if( startOfs != nChars && color != bgColor )
+	if( startOfs != nChars && color.a != 0 )
 		_drawTextSectionBg( clip, pText, dest, startOfs, nChars, color );
 }
 

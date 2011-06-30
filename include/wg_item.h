@@ -86,7 +86,8 @@ public:
 
 	virtual WgString	GetTooltipString() const	{ return 0; }
 
-	virtual WgPointerStyle	GetPointerStyle() const	{ return WG_POINTER_DEFAULT; }
+	inline void			SetPointerStyle( WgPointerStyle style ) { m_pointerStyle = style; }
+	virtual WgPointerStyle	GetPointerStyle() const	{ return m_pointerStyle; }
 
 
 	virtual const char *Type( void ) const = 0;
@@ -119,6 +120,7 @@ protected:
 
 	Sint64			m_id;
 	WgMode			m_mode;
+	WgPointerStyle	m_pointerStyle;
 
 	bool			m_bVisible;
 

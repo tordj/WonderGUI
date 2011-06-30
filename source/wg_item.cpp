@@ -38,6 +38,7 @@ WgItem::WgItem()
 	m_pMyHolder	= 0;
 	m_id		= 0;
 	m_mode		= WG_MODE_NORMAL;
+	m_pointerStyle = WG_POINTER_DEFAULT;
 	m_bVisible	= true;
 }
 
@@ -48,6 +49,7 @@ WgItem::WgItem( Sint64 id )
 	m_pMyHolder	= 0;
 	m_id		= id;
 	m_mode		= WG_MODE_NORMAL;
+	m_pointerStyle = WG_POINTER_DEFAULT;
 	m_bVisible	= true;
 }
 

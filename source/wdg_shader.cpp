@@ -119,7 +119,7 @@ bool Wdg_Shader::DoMyOwnMarkTest( int _x, int _y )
 
 //____ RenderRecursively() ____________________________________________________
 
-void Wdg_Shader::RenderRecursively(Uint8 _layer)
+void Wdg_Shader::RenderRecursively(Uint8 _layer, const WgRect& clip )
 {
 	// Skip my own rendering
 
@@ -149,13 +149,9 @@ void Wdg_Shader::RenderRecursively(Uint8 _layer)
 			WgGfx::setTintColor(m_tintColor*oldTC);
 	}
 
+	// Call base method.
 
-	// Render children recursively
-	for( WgWidget * pTmp = m_pFirstChild ; pTmp != 0 ; pTmp = pTmp->m_pNextSibling )
-	{
-		if( !pTmp->m_bHidden )
-			pTmp->RenderRecursively(_layer);
-	}
+	WgWidget::RenderRecursively( _layer, clip );
 
 	// Reset old blend mode and tint color
 

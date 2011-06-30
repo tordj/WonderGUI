@@ -58,11 +58,12 @@ public:
 
 	inline WgTextPropPtr GetTextProperties() { return m_pText->getProperties(); }
 
-	inline WgColor		GetTextColor() const { return m_pText->getColor(); }
-	inline WgColor		GetTextColor(WgMode mode) const { return m_pText->getColor(mode); }
-	inline WgFontStyle	GetTextStyle(WgMode mode) const { return m_pText->getStyle(mode); }
-	inline int			GetBreakLevel() const { return m_pText->getBreakLevel(); }
-	inline WgFont *		GetFont() const { return m_pText->getFont(); }
+	inline WgColor			GetTextColor() const { return m_pText->getColor(); }
+	inline WgColor			GetTextColor(WgMode mode) const { return m_pText->getColor(mode); }
+	inline WgFontStyle		GetTextStyle(WgMode mode) const { return m_pText->getStyle(mode); }
+	inline int				GetBreakLevel() const { return m_pText->getBreakLevel(); }
+	inline WgFont *			GetFont() const { return m_pText->getFont(); }
+	inline WgTextLinkPtr	GetLink() const { return m_pText->getLink(); }
 
 // -------------
 
@@ -77,6 +78,7 @@ public:
 	inline void			SetBreakLevel( int level )							{ m_pText->setBreakLevel(level); TextModified(); }
 
 	inline void			SetFont( WgFont * pFont )							{ m_pText->setFont(pFont); TextModified(); }
+	inline void			SetLink( WgTextLinkPtr pLink )						{ m_pText->setLink(pLink); TextModified(); }
 
 // -------------
 
@@ -91,6 +93,7 @@ public:
 	inline void			ClearBreakLevel()									{ m_pText->clearBreakLevel(); TextModified(); }
 
 	inline void			ClearFont()											{ m_pText->clearFont(); TextModified(); }
+	inline void			ClearLink()											{ m_pText->clearLink(); TextModified(); }
 
 //	-----------
 

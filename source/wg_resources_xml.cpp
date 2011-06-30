@@ -5076,12 +5076,25 @@ void Wdg_TableView_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "cellpad", widget->GetCellPaddingX(), widget->GetCellPaddingY(), (Uint8)0, (Uint8)0);
 	WriteDiffAttr(s, xmlNode, "sortprio", widget->GetClickSortPrio(), (Uint8)0);
 
-	WriteColorSetAttr(s, widget->GetOddRowColors(), "odd_row_colors" );
-	WriteColorSetAttr(s, widget->GetEvenRowColors(), "even_row_colors" );
-	
-	WriteBlockSetAttr(s, widget->GetOddRowBlocks(), "odd_row_blocks" );
-	WriteBlockSetAttr(s, widget->GetEvenRowBlocks(), "even_row_blocks" );
+	// row colors
 
+	if( widget->GetOddRowColors() == widget->GetEvenRowColors() )
+		WriteColorSetAttr(s, widget->GetOddRowColors(), "row_colors" );
+	else
+	{
+		WriteColorSetAttr(s, widget->GetOddRowColors(), "odd_row_colors" );
+		WriteColorSetAttr(s, widget->GetEvenRowColors(), "even_row_colors" );
+	}
+
+	// row blocks
+
+	if( widget->GetOddRowBlocks() == widget->GetEvenRowBlocks() )
+		WriteBlockSetAttr(s, widget->GetOddRowBlocks(), "row_blocks" );
+	else
+	{
+		WriteBlockSetAttr(s, widget->GetOddRowBlocks(), "odd_row_blocks" );
+		WriteBlockSetAttr(s, widget->GetEvenRowBlocks(), "even_row_blocks" );
+	}
 
 	// columns
 	for(Uint32 iColumn = 0; iColumn < widget->NbColumns(); iColumn++)
@@ -5120,8 +5133,15 @@ void Wdg_TableView_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 	widget->SetArrowOrigo(WgUtil::ToOrigo(xmlNode["arrow_origo"]));
 	widget->SetClickSortPrio(WgUtil::ToUint8(xmlNode["sortprio"]));
 
-	widget->SetRowBlocks( s.ResDb()->GetBlockSet(xmlNode["odd_row_blocks"]), s.ResDb()->GetBlockSet(xmlNode["even_row_blocks"]) );
-	widget->SetRowColors( s.ResDb()->GetColorSet(xmlNode["odd_row_colors"]), s.ResDb()->GetColorSet(xmlNode["even_row_colors"]) );
+	if( xmlNode.HasAttribute("row_blocks") )
+		widget->SetRowBlocks( s.ResDb()->GetBlockSet(xmlNode["row_blocks"]) );
+	else
+		widget->SetRowBlocks( s.ResDb()->GetBlockSet(xmlNode["odd_row_blocks"]), s.ResDb()->GetBlockSet(xmlNode["even_row_blocks"]) );
+
+	if( xmlNode.HasAttribute("row_colors") )
+		widget->SetRowColors( s.ResDb()->GetColorSet(xmlNode["row_colors"]) );
+	else
+		widget->SetRowColors( s.ResDb()->GetColorSet(xmlNode["odd_row_colors"]), s.ResDb()->GetColorSet(xmlNode["even_row_colors"]) );
 
 
 	WgBlockSetPtr pAscend = s.ResDb()->GetBlockSet(xmlNode["arrow_asc"]);

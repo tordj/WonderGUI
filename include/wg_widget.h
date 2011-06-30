@@ -535,7 +535,7 @@ private:
 
 		// Subfunctions for WgWidget::Render().
 
-		virtual void	RenderRecursively(Uint8 _layer);
+		virtual void	RenderRecursively(Uint8 _layer, const WgRect& clip );
 		void	PreRenderMasking( int _ofsX, int _ofsY );
 		void	ClearBranchFromDirt( void );
 		void	FreezeBranch( int _ofsX, int _ofsY );

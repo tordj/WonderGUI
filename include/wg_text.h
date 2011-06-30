@@ -171,6 +171,7 @@ public:
 	inline WgFontStyle			getStyle(WgMode mode) const { return m_pBaseProp->GetStyle(mode); }
 	inline int					getBreakLevel() const { return m_pBaseProp->GetBreakLevel(); }
 	inline WgFont *				getFont() const { return m_pBaseProp->GetFont(); }
+	inline WgTextLinkPtr		getLink() const { return m_pBaseProp->GetLink(); }
 
 //	--------------
 
@@ -185,6 +186,7 @@ public:
 	void				setBreakLevel( int level );
 
 	void				setFont( WgFont * pFont );
+	void				setLink( const WgTextLinkPtr& pLink );
 
 // -------------
 
@@ -199,6 +201,7 @@ public:
 	void				clearBreakLevel();
 
 	void				clearFont();
+	void				clearLink();
 
 // -------------
 
@@ -378,7 +381,7 @@ public:
 	WgTextPos		ClampPos( WgTextPos ) const;
 
 
-	bool			_onAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCord& pointerOfs );
+	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCord& pointerOfs );
 
 	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }
 	WgMode			GetMarkedLinkMode() const { return m_markedLinkMode; }

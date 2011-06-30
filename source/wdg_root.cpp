@@ -141,7 +141,7 @@ void Wdg_Root::RenderLayer( Uint8 _layer )
 	// Do the actual rendering. Take the lowest one first and the upmost last.
 	// That way we can handle bRenderAll and bRenderOne objects.
 
-	RenderRecursively(_layer);
+	RenderRecursively(_layer, m_geo );
 }
 
 //____ EndRender() ____________________________________________________________

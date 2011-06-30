@@ -304,7 +304,7 @@ void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const W
 
 	// Let text object handle its actions.
 
-	bool bChanged = m_text._onAction( action, button_key, ScreenGeometry(), WgCord(info.x, info.y) );
+	bool bChanged = m_text.OnAction( action, button_key, ScreenGeometry(), WgCord(info.x, info.y) );
 	if( bChanged )
 		RequestRender();
 }

@@ -565,6 +565,15 @@ void WgText::setFont( WgFont * pFont )
 	refreshAllLines();
 }
 
+void WgText::setLink( const WgTextLinkPtr& pLink )
+{
+	WgTextProp	prop = * m_pBaseProp;
+	prop.SetLink(pLink);
+	m_pBaseProp = prop.Register();
+	regenSoftLines();
+	refreshAllLines();
+}
+
 void WgText::setBreakLevel( int level )
 {
 	WgTextProp	prop = * m_pBaseProp;
@@ -629,6 +638,15 @@ void WgText::clearFont()
 {
 	WgTextProp	prop = * m_pBaseProp;
 	prop.ClearFont();
+	m_pBaseProp = prop.Register();
+	regenSoftLines();
+	refreshAllLines();
+}
+
+void WgText::clearLink()
+{
+	WgTextProp	prop = * m_pBaseProp;
+	prop.ClearLink();
 	m_pBaseProp = prop.Register();
 	regenSoftLines();
 	refreshAllLines();
@@ -1410,7 +1428,7 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 			if( p->PropHandle() != hProp )
 			{
-				GetCharAttr(attr, p-pStart);
+				GetCharAttr(attr, p - m_buffer.Chars());
 				pen.SetAttributes(attr);
 				hProp = p->PropHandle();
 			}
@@ -1652,7 +1670,7 @@ void WgText::refreshLineInfo( WgTextLine * pLine )
 			if( pChars[i].PropHandle() != hProp )
 			{
 				WgTextAttr	attr;
-				GetCharAttr( attr, i );
+				GetCharAttr( attr, pLine->ofs + i );
 				pen.SetAttributes( attr );
 
 				hProp = pChars[i].PropHandle();
@@ -2038,9 +2056,9 @@ int WgText::LineColToOffset(int line, int col) const
 	return m_pHardLines[line].ofs + col;
 }
 
-//____ onAction() _____________________________________________________________
+//____ OnAction() _____________________________________________________________
 
-bool WgText::_onAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCord& pointerOfs )
+bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCord& pointerOfs )
 {
 	bool bRefresh = false;
 	WgTextLinkHandler * pHandler;
