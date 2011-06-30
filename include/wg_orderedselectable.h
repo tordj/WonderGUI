@@ -37,11 +37,21 @@ class WgOrdSelLayout;
 class WgOrdSelHook : public WgOrderedHook
 {
 public:
+	inline void				Select() { SetSelected(true); }
+	inline void				Unselect() { SetSelected(false); }
 	void					SetSelected( bool bSelected );
-	inline bool				IsSelected() const { return m_bSelected; }
+	inline bool				Selected() const { return m_bSelected; }
+
+	void					SetSelectable( bool bSelectable );
+	inline bool				Selectable() const { return m_bSelectable; }
+
 
 	inline WgOrdSelHook*	PrevHook() const { return _prev(); }
 	inline WgOrdSelHook*	NextHook() const { return _next(); }
+
+	inline WgOrdSelHook*	PrevSelectedHook() const { return _prevSelectedHook(); }
+	inline WgOrdSelHook*	NextSelectedHook() const { return _nextSelectedHook(); }
+
 	inline WgOrdSelLayout*	Parent() const { return (WgOrdSelLayout*) _parent(); }
 
 protected:
@@ -68,16 +78,24 @@ public:
 	void			SetSelectMode( WgSelectMode mode );
 	inline WgSelectMode	SelectMode() const					{ return m_selectMode; }
 
-	inline void		SetScrollToSelected( bool bScroll )		{ m_bScrollOnSelect = bScroll; }
-	inline bool		ScrollToSelect() const				{ return m_bScrollOnSelect; }
+	inline void		SetAutoScrollOnSelect( bool bScroll )	{ m_bScrollOnSelect = bScroll; }
+	inline bool		AutoScrollOnSelect() const				{ return m_bScrollOnSelect; }
 
-	WgGizmo *		FirstSelectedGizmo() const;
-	WgGizmo *		LastSelectedGizmo() const;
+	inline WgOrdSelHook *	FirstHook() const { return static_cast<WgOrdSelHook*>( _firstHook());}
+	inline WgOrdSelHook *	LastHook() const; { return static_cast<WgOrdSelHook*>( _lastHook());}
+
+	inline WgOrdSelHook *	FirstSelectedHook() const { return _firstSelectedHook(); }
+	inline WgOrdSelHook *	LastSelectedHook() const { return _lastSelectedHook(); }
 
 
-	void			SetChildBg( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg );
-	void			SetChildFg( const WgBlockSetPtr& pFg );
-//	void			SetChildBg( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg );
+	inline void		SetChildBgBlocks( const WgBlockSetPtr& pBg ) { SetChildBgBlocks( pBg, pBg ); }
+	void			SetChildBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg );
+	void			SetChildFgBlocks( const WgBlockSetPtr& pFg );
+
+	inline void		SetChildBgColors( const WgColorSetPtr& pBg ) { SetChildBgColors( pBg, pBg ); }
+	void			SetChildBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg );
+
+	inline WgBlockSetPtr	ChildBgBlocksEven() const { return m_pOddBgBlocks; }
 
 
 protected:
@@ -86,11 +104,11 @@ protected:
 	WgOrdSelHook *	_firstSelectedHook() const;
 	WgOrdSelHook *	_lastSelectedHook() const;
 
-	WgColorSetPtr	m_pOddBgColor;
-	WgColorSetPtr	m_pEvenBgColor;
-	WgBlockSetPtr	m_pOddBgGfx;
-	WgBlockSetPtr	m_pEvenBgGfx;
-	WgBlockSetPtr	m_pFgGfx;
+	WgColorSetPtr	m_pOddBgColors;
+	WgColorSetPtr	m_pEvenBgColors;
+	WgBlockSetPtr	m_pOddBgBlocks;
+	WgBlockSetPtr	m_pEvenBgBlocks;
+	WgBlockSetPtr	m_pFgBlocks;
 
 	bool			m_bScrollOnSelect;
 	WgSelectMode	m_selectMode;
