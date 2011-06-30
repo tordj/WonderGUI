@@ -21,3 +21,30 @@
 =========================================================================*/
 
 #include <wg_orderedselectable.h>
+
+void WgOrdSelHook::SetSelected( bool bSelected );
+void WgOrdSelHook::SetSelectable( bool bSelectable );
+
+WgOrdSelHook::WgOrdSelHook( WgGizmo * pGizmo );
+WgOrdSelHook::~WgOrdSelHook();
+
+WgOrdSelHook *	WgOrdSelHook::_prevSelectedHook() const;
+WgOrdSelHook *	WgOrdSelHook::_nextSelectedHook() const;
+
+int WgOrdSelLayout::SelectAll();
+void WgOrdSelLayout::ClearSelection();
+
+int WgOrdSelLayout::GetNbSelected();
+
+void WgOrdSelLayout::SetSelectMode( WgSelectMode mode );
+
+
+void WgOrdSelLayout::SetChildBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg );
+void WgOrdSelLayout::SetChildFgBlocks( const WgBlockSetPtr& pFg );
+
+void WgOrdSelLayout::SetChildBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg );
+
+void WgOrdSelLayout::_onCloneContent( const WgGizmo * _pOrg );
+
+WgOrdSelHook * WgOrdSelLayout::_firstSelectedHook() const;
+WgOrdSelHook * WgOrdSelLayout::_lastSelectedHook() const;
