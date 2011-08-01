@@ -31,15 +31,22 @@
 #	include <wg_blockset.h>
 #endif
 
+#ifndef WG_COLORSET_DOT_H
+#	include <wg_colorset.h>
+#endif
+
+
 class WgOrdSelLayout;
 
 
 class WgOrdSelHook : public WgOrderedHook
 {
+	friend class WgOrdSelLayout;
+
 public:
-	inline void				Select() { SetSelected(true); }
-	inline void				Unselect() { SetSelected(false); }
-	void					SetSelected( bool bSelected );
+	inline bool				Select() { return SetSelected(true); }
+	inline bool				Unselect() { return SetSelected(false); }
+	bool					SetSelected( bool bSelected );
 	inline bool				Selected() const { return m_bSelected; }
 
 	void					SetSelectable( bool bSelectable );
@@ -69,11 +76,12 @@ protected:
 
 class WgOrdSelLayout : public WgOrderedLayout
 {
+	friend class WgOrdSelHook;
 public:
 	int				SelectAll();
-	void			ClearSelection();
+	void			UnselectAll();
 
-	int				GetNbSelected();
+	inline int		GetNbSelected() const { return m_nbSelected; }
 
 	void			SetSelectMode( WgSelectMode mode );
 	inline WgSelectMode	SelectMode() const					{ return m_selectMode; }
@@ -82,7 +90,7 @@ public:
 	inline bool		AutoScrollOnSelect() const				{ return m_bScrollOnSelect; }
 
 	inline WgOrdSelHook *	FirstHook() const { return static_cast<WgOrdSelHook*>( _firstHook());}
-	inline WgOrdSelHook *	LastHook() const; { return static_cast<WgOrdSelHook*>( _lastHook());}
+	inline WgOrdSelHook *	LastHook() const { return static_cast<WgOrdSelHook*>( _lastHook());}
 
 	inline WgOrdSelHook *	FirstSelectedHook() const { return _firstSelectedHook(); }
 	inline WgOrdSelHook *	LastSelectedHook() const { return _lastSelectedHook(); }
@@ -99,10 +107,17 @@ public:
 
 
 protected:
+	WgOrdSelLayout();
+	~WgOrdSelLayout();
+
 	void			_onCloneContent( const WgGizmo * _pOrg );
 
 	WgOrdSelHook *	_firstSelectedHook() const;
 	WgOrdSelHook *	_lastSelectedHook() const;
+
+	virtual void	_onGizmoSelected( WgOrdSelHook * pSelected );			// so parent can do what it needs to.
+	virtual void	_onGizmoUnselected( WgOrdSelHook * pUnselected );		// so parent can do what it needs to.
+
 
 	WgColorSetPtr	m_pOddBgColors;
 	WgColorSetPtr	m_pEvenBgColors;
@@ -112,7 +127,8 @@ protected:
 
 	bool			m_bScrollOnSelect;
 	WgSelectMode	m_selectMode;
-	WgOrdSelHook *	m_pLatestSelected;				// Pointer at latest selected hook if any is selected.
+	int				m_nbSelected;
+//	WgOrdSelHook *	m_pLatestSelected;				// Pointer at latest selected hook if any is selected.
 
 };
 
