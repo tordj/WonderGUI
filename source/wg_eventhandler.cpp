@@ -973,7 +973,7 @@ WgEventHandler::GizmoCallback::GizmoCallback( const WgEventFilter& filter, void(
 void WgEventHandler::GizmoCallback::ProcessEvent( const WgEvent::Event& _event )
 {
 	WgGizmo * p = m_pGizmo.GetRealPtr();
-	if( p )
+	if( p && m_filter.FilterEvent(_event) )
 		m_pFunction(_event,p);
 }
 
@@ -996,7 +996,7 @@ WgEventHandler::FunctionCallback::FunctionCallback( const WgEventFilter& filter,
 
 void WgEventHandler::FunctionCallback::ProcessEvent( const WgEvent::Event& _event )
 {
-	if( m_pFunction )
+	if( m_pFunction && m_filter.FilterEvent(_event) )
 		m_pFunction(_event);
 }
 
@@ -1019,7 +1019,7 @@ WgEventHandler::FunctionCallbackParam::FunctionCallbackParam( const WgEventFilte
 
 void WgEventHandler::FunctionCallbackParam::ProcessEvent( const WgEvent::Event& _event )
 {
-	if( m_pFunction )
+	if( m_pFunction && m_filter.FilterEvent(_event) )
 		m_pFunction(_event,m_pParam);
 }
 
@@ -1042,7 +1042,8 @@ WgEventHandler::ListenerCallback::ListenerCallback( const WgEventFilter& filter,
 
 void WgEventHandler::ListenerCallback::ProcessEvent( const WgEvent::Event& _event )
 {
-	m_pListener->OnEvent( _event );
+	if( m_filter.FilterEvent(_event) )
+		m_pListener->OnEvent( _event );
 }
 
 bool WgEventHandler::ListenerCallback::IsAlive() const

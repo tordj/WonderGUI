@@ -25,6 +25,9 @@ WgSurface * 	loadSurface( const char * path );
 SDL_Surface *	initSDL( int w, int h );
 bool			eventLoop( WgEventHandler * pHandler );
 
+void cbInitDrag( const WgEvent::Event& _event, WgGizmo * pGizmo );
+void cbDragGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo );
+
 
 //____ main() _________________________________________________________________
 
@@ -50,9 +53,12 @@ int main ( int argc, char** argv )
 	WgRoot * pRoot = new WgRoot( pGfxDevice, pInputDevice );
 
 	WgEventHandler * pEventHandler = new WgEventHandler( 0, pRoot );
-
+/*
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
+	pEventLogger->IgnoreAllEvents();
+	pEventLogger->LogButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
+*/
 
 	// Load images and specify blocks
 
@@ -101,6 +107,23 @@ int main ( int argc, char** argv )
 
 	pHook = pFlex->AddGizmo( pFlag2, WgCord(100,100), WG_CENTER );
 
+
+	pEventHandler->AddCallback( WgEventFilter::ButtonPress(pFlag1, 1), cbInitDrag, pFlag1 );
+	pEventHandler->AddCallback( WgEventFilter::ButtonDrag(pFlag1, 1), cbDragGizmo, pFlag1 );
+
+	//
+
+	WgVBoxLayout * pVBox = new WgVBoxLayout();
+
+	WgGizmoPixmap * pFlag3 = new WgGizmoPixmap();
+	pFlag3->SetSource( pFlagBlock );
+	WgGizmoPixmap * pFlag4= new WgGizmoPixmap();
+	pFlag4->SetSource( pFlagBlock );
+
+	pVBox->AddGizmo(pFlag3);
+	pVBox->AddGizmo(pFlag4);
+
+	pFlex->AddGizmo( pVBox, WgCord(50,50), WG_NORTHWEST );
 
     // program main loop
 
@@ -247,16 +270,37 @@ WgSurface * loadSurface( const char * path )
 
 }
 
-//____ cbMoveGizmo() __________________________________________________________
 
-void cbMoveGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo )
+WgCord dragStartPos;
+
+//____ cbInitDrag() ___________________________________________________________
+
+void cbInitDrag( const WgEvent::Event& _event, WgGizmo * pGizmo )
+{
+	WgFlexHook * pHook = static_cast<WgFlexHook*>(pGizmo->Hook());
+
+
+	dragStartPos = pHook->FloatOfs();
+	printf( "DRAG START!\n" );
+}
+
+//____ cbDragGizmo() __________________________________________________________
+
+void cbDragGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo )
 {
 	if( _event.Type() != WG_EVENT_BUTTON_DRAG || !pGizmo->ParentX() )
 		return;
 
 	const WgEvent::ButtonDrag& event = static_cast<const WgEvent::ButtonDrag&>(_event);
 
+	WgCord	dragDistance = event.DraggedSinceStart();
 
+	WgCord	ofs = dragStartPos + dragDistance;
 
+//	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
+	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
+
+	WgFlexHook * pHook = static_cast<WgFlexHook*>(pGizmo->Hook());
+	pHook->SetOfs(dragStartPos+dragDistance);
 }
 

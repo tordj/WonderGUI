@@ -23,7 +23,7 @@
 #ifndef WG_VBOXLAYOUT_DOT_H
 #define WG_VBOXLAYOUT_DOT_H
 
-#ifndef WG_ORDERED_LAYOUT_DOT_H
+#ifndef WG_ORDERED_SELECTABLE_DOT_H
 #	include <wg_orderedselectable.h>
 #endif
 

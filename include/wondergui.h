@@ -276,6 +276,8 @@
 #	include <wg_gizmo_view.h>
 #endif
 
-
+#ifndef WG_VBOXLAYOUT_DOT_H
+#	include <wg_vboxlayout.h>
+#endif
 
 #endif //WONDERGUI_DOT_H
