@@ -40,6 +40,7 @@ WgRoot::WgRoot( WgGfxDevice * pGfxDevice, WgInputDevice * pInputDevice )
 	m_geo = WgRect(0,0,0,0);
 	m_pGfxDevice = pGfxDevice;
 	m_pInputDevice = pInputDevice;
+	m_hook.m_pRoot = this;
 }
 
 //____ Destructor _____________________________________________________________
@@ -106,10 +107,8 @@ bool WgRoot::SetGizmo( WgGizmo * pGizmo )
 	if( pGizmo && !pGizmo->IsContainer() )
 		return false;
 
-	if( m_hook.Gizmo() )
-		m_hook.~Hook();
-
-	new (&m_hook) Hook(pGizmo, this);
+	m_hook._attachGizmo(pGizmo);
+	m_hook.DoSetNewSize(m_geo.size());
 
 	m_hook._doCollectRects( m_dirtyRects, Geo(), Geo() );
 
@@ -120,7 +119,7 @@ bool WgRoot::SetGizmo( WgGizmo * pGizmo )
 
 WgGizmo * WgRoot::ReleaseGizmo()
 {
-	return m_hook.ReleaseGizmo();
+	return m_hook._releaseGizmo();
 }
 
 //____ Render() _______________________________________________________________
@@ -252,12 +251,6 @@ bool WgRoot::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-WgRoot::Hook::Hook( WgGizmo * pGizmo, WgRoot * pRoot) : WgGizmoHook(pGizmo)
-{
-	m_pRoot = pRoot;
-	DoSetGizmo();
-}
 
 WgRoot::Hook::~Hook()
 {

@@ -39,13 +39,6 @@ void WgGizmoHook::DoSetNewSize( const WgSize& size )
 	m_pGizmo->_onNewSize( size );
 }
 
-//____ DoSetGizmo() ___________________________________________________________
-
-void WgGizmoHook::DoSetGizmo()
-{
-	m_pGizmo->SetHook(this);
-}
-
 //____ _doCollectRects() _______________________________________________________
 
 void WgGizmoHook::_doCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
@@ -80,19 +73,29 @@ void WgGizmoHook::_doClearDirtyRects()
 		m_pGizmo->CastToContainer()->_clearDirtyRects();
 }
 
-//____ RelinkGizmo() __________________________________________________________
+//____ _attachGizmo() __________________________________________________________
 
-void WgGizmoHook::RelinkGizmo()
+void WgGizmoHook::_attachGizmo( WgGizmo * pGizmo )
 {
-	m_pGizmo->m_pHook = this;
+	if( m_pGizmo )
+		m_pGizmo->m_pHook = 0;
+
+	m_pGizmo = pGizmo;
+
+	if( pGizmo )
+		pGizmo->m_pHook = this;
 }
 
-//____ ReleaseGizmo() _________________________________________________________
+//____ _releaseGizmo() _________________________________________________________
 
-WgGizmo* WgGizmoHook::ReleaseGizmo()
+WgGizmo* WgGizmoHook::_releaseGizmo()
 {
 	WgGizmo * p = m_pGizmo;
 	m_pGizmo = 0;
+
+	if( p )
+		p->m_pHook = 0;
+
 	return p;
 }
 

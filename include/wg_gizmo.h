@@ -152,7 +152,7 @@ public:
 
 protected:
 
-	void			SetHook( WgGizmoHook * pHook );
+	void			_onNewHook( WgGizmoHook * pHook );
 	void			SetSkinNode( WgSkinNode * pNode );
 	WgSkinNode *	GetSkinNode() const { return m_pSkinNode; }
 

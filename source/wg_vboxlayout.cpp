@@ -24,12 +24,12 @@
 #include <wg_vboxlayout.h>
 
 
-
 static const char	c_gizmoType[] = {"VBoxLayout"};
 
 
-WgVBoxHook::WgVBoxHook( WgGizmo * pGizmo, WgVBoxLayout * pParent ) : WgOrdSelHook(pGizmo), m_pParent(pParent)
+WgVBoxHook::WgVBoxHook( WgGizmo * pGizmo, WgVBoxLayout * pParent ) : WgOrderedHook(pGizmo), m_pParent(pParent)
 {
+	DoSetGizmo();
 }
 
 
@@ -589,8 +589,8 @@ void WgVBoxLayout::_renderFromChildOnward( WgOrderedHook * pHook )
 
 //____ _newHook() _____________________________________________________________
 
-WgOrderedHook *  WgVBoxLayout::_newHook(WgGizmo * pGizmo)
+WgOrderedHook *  WgVBoxLayout::_newHook()
 {
-	return new WgVBoxHook( pGizmo, this );
+	return new WgVBoxHook( this );
 }
 

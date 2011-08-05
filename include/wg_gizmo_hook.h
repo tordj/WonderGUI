@@ -45,6 +45,7 @@ class WgGizmoHook
 {
 	friend class WgGizmo;
 	friend class WgGizmoContainer;
+	friend class WgOrderedLayout;
 
 public:
 	virtual WgCord	Pos() const = 0;
@@ -63,12 +64,11 @@ public:
 	virtual WgWidget*	GetRoot() = 0;			// Remove once Widgets are gone...
 
 protected:
-	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
 
-	WgGizmoHook( WgGizmo * pGizmo ) : m_pGizmo(pGizmo) {}
+	WgGizmoHook() : m_pGizmo(0) {}
 
-	void			RelinkGizmo();				// Make sure Gizmo links us. Call when hook has been relocated.
-	WgGizmo*		ReleaseGizmo();				//
+	void			_attachGizmo( WgGizmo * pGizmo );				// Make sure Gizmo links us. Call when hook has been relocated.
+	WgGizmo*		_releaseGizmo();								//
 
 	// To be called by Gizmo
 
@@ -83,7 +83,6 @@ protected:
 
 	void			DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			DoSetNewSize( const WgSize& size );
-	void			DoSetGizmo();				// Calls SetHook(this) on Gizmo. Call when get a new Gizmo.
 
 	void			_doCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	void			_doMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );

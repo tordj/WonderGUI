@@ -69,7 +69,6 @@
 		<Unit filename="include/wg_gizmo_checkbox.h" />
 		<Unit filename="include/wg_gizmo_circlemeter.h" />
 		<Unit filename="include/wg_gizmo_collection.h" />
-		<Unit filename="include/wg_gizmo_combobox.h" />
 		<Unit filename="include/wg_gizmo_container.h" />
 		<Unit filename="include/wg_gizmo_dragbars.h" />
 		<Unit filename="include/wg_gizmo_dummy.h" />
@@ -79,7 +78,6 @@
 		<Unit filename="include/wg_gizmo_flexgeo.h" />
 		<Unit filename="include/wg_gizmo_fps.h" />
 		<Unit filename="include/wg_gizmo_hook.h" />
-		<Unit filename="include/wg_gizmo_menubar.h" />
 		<Unit filename="include/wg_gizmo_modal.h" />
 		<Unit filename="include/wg_gizmo_parent.h" />
 		<Unit filename="include/wg_gizmo_pixmap.h" />
@@ -157,7 +155,6 @@
 		<Unit filename="source/wg_gizmo_button.cpp" />
 		<Unit filename="source/wg_gizmo_checkbox.cpp" />
 		<Unit filename="source/wg_gizmo_circlemeter.cpp" />
-		<Unit filename="source/wg_gizmo_combobox.cpp" />
 		<Unit filename="source/wg_gizmo_container.cpp" />
 		<Unit filename="source/wg_gizmo_dragbars.cpp" />
 		<Unit filename="source/wg_gizmo_dummy.cpp" />
@@ -167,7 +164,6 @@
 		<Unit filename="source/wg_gizmo_flexgeo.cpp" />
 		<Unit filename="source/wg_gizmo_fps.cpp" />
 		<Unit filename="source/wg_gizmo_hook.cpp" />
-		<Unit filename="source/wg_gizmo_menubar.cpp" />
 		<Unit filename="source/wg_gizmo_pixmap.cpp" />
 		<Unit filename="source/wg_gizmo_radiobutton.cpp" />
 		<Unit filename="source/wg_gizmo_refreshbutton.cpp" />

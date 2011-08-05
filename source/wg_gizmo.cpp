@@ -60,8 +60,8 @@ const char * WgGizmo::GetMyType()
 //____ GetPointerStyle() ________________________________________
 
 WgPointerStyle WgGizmo::GetPointerStyle() const
-{ 
-	return m_pointerStyle; 
+{
+	return m_pointerStyle;
 }
 
 
@@ -144,12 +144,11 @@ void WgGizmo::CloneContent( const WgGizmo * _pOrg )
 		_onCloneContent( _pOrg );
 }
 
-//____ SetHook() ___________________________________________________________
+//____ _onNewHook() ___________________________________________________________
 
-void WgGizmo::SetHook( WgGizmoHook * pHook )
+void WgGizmo::_onNewHook( WgGizmoHook * pHook )
 {
 	m_pHook = pHook;
-	_onNewSize( Size() );
 }
 
 //____ SetSkinNode() __________________________________________________________

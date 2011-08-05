@@ -192,7 +192,7 @@ public:
 	inline	WgTableRow2* Next() const	{ return (WgTableRow2*) WgLink::m_pNext; };
 	inline	WgTableRow2* Prev() const	{ return (WgTableRow2*) WgLink::m_pNext; };
 
-	inline	void	SetVisible(bool bVisible);
+	void			SetVisible(bool bVisible);
 	inline	void	Show() { SetVisible(true); }
 	inline	void	Hide() { SetVisible(false); }
 	inline	bool	IsVisible() const { return m_bVisible; }

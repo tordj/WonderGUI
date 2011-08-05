@@ -82,7 +82,7 @@ public:
 protected:
 	PROTECTED_LINK_METHODS( WgOrderedHook );
 
-	WgOrderedHook( WgGizmo * pGizmo );
+	WgOrderedHook();
 	~WgOrderedHook();
 
 	void	RequestRender();
@@ -164,8 +164,8 @@ protected:
 	virtual void	_onResizeRequested( WgOrderedHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgOrderedHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect ) = 0;
-	virtual void	_onGizmoAppeared( WgOrderedHook * pInserted );				// so parent can update geometry and possibly request render.
-	virtual void	_onGizmoDisappeared( WgOrderedHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+	virtual void	_onGizmoAppeared( WgOrderedHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.
+	virtual void	_onGizmoDisappeared( WgOrderedHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
 	virtual void	_onGizmosReordered() = 0;
 	virtual void	_refreshAllGizmos() = 0;
 	virtual WgOrderedHook * _newHook(WgGizmo * pGizmo) = 0;

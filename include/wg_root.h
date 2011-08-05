@@ -79,8 +79,7 @@ protected:
 	{
 		friend class WgRoot;
 	public:
-		Hook() : WgGizmoHook( 0 ), m_pRoot(0) {};				// So we can make them members and then make placement new...
-		Hook( WgGizmo * pGizmo, WgRoot * pRoot);
+		Hook() : m_pRoot(0) {};				// So we can make them members and then make placement new...
 		~Hook();
 
 		WgCord			Pos() const;

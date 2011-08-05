@@ -134,7 +134,7 @@ protected:
 
 	LINK_METHODS( WgFlexHook );
 
-	WgFlexHook( WgGizmo * pGizmo, WgGizmoFlexGeo * pParent );
+	WgFlexHook( WgGizmoFlexGeo * pParent, const WgRect& placementGeo );
 
 	bool		RefreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 
