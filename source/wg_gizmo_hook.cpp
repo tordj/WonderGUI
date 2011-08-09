@@ -86,6 +86,14 @@ void WgGizmoHook::_attachGizmo( WgGizmo * pGizmo )
 		pGizmo->m_pHook = this;
 }
 
+//____ _relinkGizmo() __________________________________________________________
+
+void WgGizmoHook::_relinkGizmo()
+{
+	if( m_pGizmo )
+		m_pGizmo->m_pHook = this;
+}
+
 //____ _releaseGizmo() _________________________________________________________
 
 WgGizmo* WgGizmoHook::_releaseGizmo()

@@ -212,9 +212,8 @@ WgWidget* WgTableHook::GetRoot()
 }
 
 
-WgTableHook::WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow ) : WgGizmoHook( pGizmo )
+WgTableHook::WgTableHook( WgTableRow2 * pRow )
 {
-	m_height = pGizmo->BestSize().h;
 	m_pRow	 = pRow;
 }
 
@@ -473,14 +472,22 @@ void WgTableRow2::SetGizmo( WgGizmo * pGizmo, int cell )
 	if( m_pCells[cell].Gizmo() )
 		m_pCells[cell].~WgTableHook();
 
-	new (&m_pCells[cell])WgTableHook(pGizmo, this);
+	new (&m_pCells[cell])WgTableHook(this);
 
-	if( m_pCells[cell].m_height > m_height )
+	m_pCells[cell]._attachGizmo(pGizmo);
+
+	int width = m_pTable->m_pColumns[cell].RealWidth();
+	int height = pGizmo->HeightForWidth(width);
+
+	m_pCells[cell].m_height = height;
+	m_pCells[cell].DoSetNewSize( WgSize(width, height) );
+
+	if( height > m_height )
 	{
 		if( m_pTable )
-			m_pTable->m_contentSize.h += m_pCells[cell].m_height - m_height;
+			m_pTable->m_contentSize.h += height - m_height;
 
-		m_height = m_pCells[cell].m_height;
+		m_height = height;
 	}
 
 	//TODO: Meddela table att rad har ändrats.
@@ -515,10 +522,7 @@ void WgTableRow2::GrowCellsArray( int nCells )
 	// Go through gizmos and update their hook pointers
 
 	for( int i = 0 ; i < m_nCells ; i++ )
-	{
-		if( p[i].m_pGizmo )
-			p[i].RelinkGizmo();		// We don't call SetHook() since we don't need to resize or anything...
-	}
+			p[i]._relinkGizmo();
 
 	// Delte old array and set pointers
 

@@ -68,6 +68,7 @@ protected:
 	WgGizmoHook() : m_pGizmo(0) {}
 
 	void			_attachGizmo( WgGizmo * pGizmo );				// Make sure Gizmo links us. Call when hook has been relocated.
+	void			_relinkGizmo();
 	WgGizmo*		_releaseGizmo();								//
 
 	// To be called by Gizmo

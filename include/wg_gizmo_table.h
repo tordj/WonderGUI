@@ -87,7 +87,7 @@ class WgTableHook : public WgGizmoHook
 	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
 
 protected:
-	WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow );
+	WgTableHook( WgTableRow2 * pRow );
 	~WgTableHook();
 
 	void	RequestRender();
