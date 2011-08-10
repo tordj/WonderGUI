@@ -53,12 +53,14 @@ int main ( int argc, char** argv )
 	WgRoot * pRoot = new WgRoot( pGfxDevice, pInputDevice );
 
 	WgEventHandler * pEventHandler = new WgEventHandler( 0, pRoot );
-/*
+
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
-	pEventLogger->IgnoreAllEvents();
-	pEventLogger->LogButtonEvents();
+	pEventLogger->IgnoreEvent( WG_EVENT_POINTER_PLACED );
+	pEventLogger->IgnoreEvent( WG_EVENT_POINTER_MOVE );
+//	pEventLogger->IgnoreAllEvents();
+//	pEventLogger->LogButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
-*/
+
 
 	// Load images and specify blocks
 
@@ -120,6 +122,10 @@ int main ( int argc, char** argv )
 	WgGizmoPixmap * pFlag4= new WgGizmoPixmap();
 	pFlag4->SetSource( pFlagBlock );
 
+	WgGizmoButton * pButton2 = new WgGizmoButton();
+	pButton2->SetSource( pButtonBlock );
+
+	pVBox->AddGizmo(pButton2);
 	pVBox->AddGizmo(pFlag3);
 	pVBox->AddGizmo(pFlag4);
 

@@ -51,12 +51,11 @@ WgGizmoView::WgGizmoView()
 	m_bAutoScrollX		= false;
 	m_bAutoScrollY		= false;
 
-	new (&m_elements[WINDOW]) WgViewHook( (WgGizmo*)0, this );
-	new (&m_elements[XDRAG]) WgViewHook( (WgGizmoHDragbar*)0, this );
-	new (&m_elements[YDRAG]) WgViewHook( (WgGizmoVDragbar*)0, this );
+	m_elements[WINDOW]._setParent(this);
+	m_elements[XDRAG]._setParent(this);
+	m_elements[YDRAG]._setParent(this);
 
 	UpdateElementGeometry( WgSize(256,256), WgSize(0,0) );
-
 }
 
 //____ ~WgGizmoView() __________________________________________________
@@ -485,13 +484,7 @@ bool WgGizmoView::SetViewOfsY( float y )
 
 bool WgGizmoView::SetContent( WgGizmo * pContent )
 {
-	// Delete previous hook and gizmo by explicitly calling its destructor.
-	// Placement new for a new hook holding this gizmo.
-
-	m_elements[WINDOW].~WgViewHook();
-	new (&m_elements[WINDOW])WgViewHook(pContent, this );
-
-	//
+	m_elements[WINDOW]._attachGizmo(pContent);
 
 	UpdateElementGeometry( Size(), pContent->BestSize() );
 	RequestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
@@ -508,13 +501,9 @@ bool WgGizmoView::SetScrollbarX( WgGizmoHDragbar* pScrollbar )
 	if( m_elements[XDRAG].Gizmo() )
 		RemoveCallbacks(m_elements[XDRAG].Gizmo());
 
-	// Delete previous hook and gizmo by explicitly calling its destructor.
-	// Placement new for a new hook holding this gizmo.
-
-	m_elements[XDRAG].~WgViewHook();
-	new (&m_elements[XDRAG])WgViewHook(pScrollbar, this );
-
 	//
+
+	m_elements[XDRAG]._attachGizmo(pScrollbar);
 
 	if( pScrollbar )
 	{
@@ -544,11 +533,9 @@ bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
 	if( m_elements[YDRAG].Gizmo() )
 		RemoveCallbacks(m_elements[YDRAG].Gizmo());
 
-	// Delete previous hook and gizmo by explicitly calling its destructor.
-	// Placement new for a new hook holding this gizmo.
+	//
 
-	m_elements[YDRAG].~WgViewHook();
-	new (&m_elements[YDRAG])WgViewHook(pScrollbar, this );
+	m_elements[YDRAG]._attachGizmo(pScrollbar);
 
 	//
 
@@ -575,7 +562,7 @@ bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
 
 WgGizmo* WgGizmoView::ReleaseContent()
 {
-	WgGizmo * p = m_elements[WINDOW].ReleaseGizmo();
+	WgGizmo * p = m_elements[WINDOW]._releaseGizmo();
 	UpdateElementGeometry( Size(), WgSize(0,0) );
 	return p;
 }
@@ -584,7 +571,7 @@ WgGizmo* WgGizmoView::ReleaseContent()
 
 WgGizmoHDragbar* WgGizmoView::ReleaseScrollbarX()
 {
-	WgGizmoHDragbar * p = (WgGizmoHDragbar*) m_elements[XDRAG].ReleaseGizmo();
+	WgGizmoHDragbar * p = (WgGizmoHDragbar*) m_elements[XDRAG]._releaseGizmo();
 	UpdateElementGeometry( Size(), m_contentSize );
 	return p;
 }
@@ -593,7 +580,7 @@ WgGizmoHDragbar* WgGizmoView::ReleaseScrollbarX()
 
 WgGizmoVDragbar* WgGizmoView::ReleaseScrollbarY()
 {
-	WgGizmoVDragbar * p = (WgGizmoVDragbar*) m_elements[YDRAG].ReleaseGizmo();
+	WgGizmoVDragbar * p = (WgGizmoVDragbar*) m_elements[YDRAG]._releaseGizmo();
 	UpdateElementGeometry( Size(), m_contentSize );
 	return p;
 }
@@ -842,6 +829,14 @@ void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& new
 		m_elements[YDRAG].m_bShow = bShowDragY;
 
 		RequestRender();
+
+		// Notify elements of their new size.
+
+		m_elements[WINDOW].DoSetNewSize(newWindow.size());
+		if( bShowDragX )
+			m_elements[XDRAG].DoSetNewSize(newDragX.size());
+		if( bShowDragY )
+			m_elements[YDRAG].DoSetNewSize(newDragY.size());
 	}
 
 	// If contentSize has changed we save changes and set flags
@@ -1020,18 +1015,6 @@ bool WgGizmoView::SetAutoscroll( bool bAutoX, bool bAutoY )
 	return true;
 }
 
-
-//____ WgViewHook::Constructors _________________________________________________
-
-WgViewHook::WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView )
-: WgGizmoHook( pHDragbar ), /*m_type(WgGizmoView::XDRAG),*/ m_pView(pView), m_bShow(false) { if( m_pGizmo ) DoSetGizmo(); }
-
-WgViewHook::WgViewHook( WgGizmoVDragbar * pVDragbar, WgGizmoView * pView )
-			: WgGizmoHook( pVDragbar ), /*m_type(WgGizmoView::YDRAG),*/ m_pView(pView), m_bShow(false) { if( m_pGizmo ) DoSetGizmo(); }
-
-WgViewHook::WgViewHook( WgGizmo * pContent, WgGizmoView * pView )
-			: WgGizmoHook( pContent ), /*m_type(WgGizmoView::WINDOW),*/ m_pView(pView), m_bShow(true) { if( m_pGizmo ) DoSetGizmo(); }
-
 //____ WgViewHook::Destructor ___________________________________________________
 
 WgViewHook::~WgViewHook()
@@ -1131,3 +1114,5 @@ WgGizmoContainer * WgViewHook::_parent() const
 {
 	return m_pView;
 }
+
+

@@ -97,7 +97,7 @@ void WgOrdSelHook::SetSelectable( bool bSelectable )
 }
 
 
-WgOrdSelHook::WgOrdSelHook( WgGizmo * pGizmo ) : WgOrderedHook(pGizmo), m_bSelectable(true), m_bSelected(false)
+WgOrdSelHook::WgOrdSelHook() : m_bSelectable(true), m_bSelected(false)
 {
 }
 

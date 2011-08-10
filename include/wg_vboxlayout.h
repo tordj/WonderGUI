@@ -47,7 +47,7 @@ protected:
 
 	WgVBoxHook( WgVBoxLayout * pParent );
 
-	virtual WgGizmoContainer * _parent() const;
+	WgGizmoContainer * _parent() const;
 
 	WgVBoxLayout *	m_pParent;
 	int				m_height;

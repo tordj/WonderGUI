@@ -64,7 +64,7 @@ public:
 protected:
 	PROTECTED_LINK_METHODS( WgOrdSelHook );
 
-	WgOrdSelHook( WgGizmo * pGizmo );
+	WgOrdSelHook();
 	~WgOrdSelHook();
 
 	WgOrdSelHook *	_prevSelectedHook() const;

@@ -27,9 +27,8 @@
 static const char	c_gizmoType[] = {"VBoxLayout"};
 
 
-WgVBoxHook::WgVBoxHook( WgGizmo * pGizmo, WgVBoxLayout * pParent ) : WgOrderedHook(pGizmo), m_pParent(pParent)
+WgVBoxHook::WgVBoxHook( WgVBoxLayout * pParent ) : m_pParent(pParent)
 {
-	DoSetGizmo();
 }
 
 
@@ -145,6 +144,7 @@ void WgVBoxLayout::_onNewSize( const WgSize& size )
 {
 	if( size.w != m_size.w )
 	{
+		m_size.w = size.w;
 		_adaptChildrenToWidth( size.w );
 		RequestRender();
 	}
@@ -438,13 +438,20 @@ void  WgVBoxLayout::_onGizmoAppeared( WgOrderedHook * pInserted )
 		m_nBestWidth = 1;
 	}
 
+	m_bestSize.h += pHook->m_bestSize.h;
+
 	// We set Gizmo to same width as ours to start with, our parent will
 	// expand us in RequestResize() if it wants to.
 
 	int	height = pHook->Gizmo()->HeightForWidth(m_size.w);
-	pHook->DoSetNewSize( WgSize(m_size.w,height) );
+	if( height == -1 )
+		height = m_bestSize.h;
+
+
 	pHook->m_height = height;
-	m_size.h = height;
+	m_size.h += height;
+
+	pHook->DoSetNewSize( WgSize(m_size.w,height) );
 
 	// Request and handle possible resize.
 
@@ -501,6 +508,9 @@ void WgVBoxLayout::_adaptChildrenToWidth( int width )
 		if( !pHook->m_bHidden )
 		{
 			int height = pHook->Gizmo()->HeightForWidth( width );
+			if( height == -1 )
+				height = pHook->m_bestSize.h;
+
 			pHook->DoSetNewSize( WgSize(width,height) );
 			pHook->m_height = height;
 			m_size.h += height;

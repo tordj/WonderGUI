@@ -59,15 +59,14 @@ public:
 	void	RequestResize();
 
 protected:
-	WgViewHook() : WgGizmoHook( 0 ) {};				// So we can make them members and then make placement new...
-	WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView );
-	WgViewHook( WgGizmoVDragbar * pVDragbar, WgGizmoView * pView );
-	WgViewHook( WgGizmo * pContent, WgGizmoView * pView );
+	WgViewHook() : m_pView(0), m_bShow(false) {};				// So we can make them members and then make placement new...
 	~WgViewHook();
+	inline void			_setParent( WgGizmoView * pParent ) { m_pView = pParent; }
 
 	WgGizmoHook *		_prevHook() const;
 	WgGizmoHook *		_nextHook() const;
 	WgGizmoContainer *	_parent() const;
+
 
 //	ElementType		m_type;
 	WgGizmoView *	m_pView;

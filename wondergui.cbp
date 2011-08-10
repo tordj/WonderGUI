@@ -97,7 +97,6 @@
 		<Unit filename="include/wg_interface_valueholder.h" />
 		<Unit filename="include/wg_key.h" />
 		<Unit filename="include/wg_mempool.h" />
-		<Unit filename="include/wg_menuitem.h" />
 		<Unit filename="include/wg_orderedlayout.h" />
 		<Unit filename="include/wg_orderedselectable.h" />
 		<Unit filename="include/wg_origo.h" />
@@ -178,7 +177,6 @@
 		<Unit filename="source/wg_interface_textholder.cpp" />
 		<Unit filename="source/wg_interface_valueholder.cpp" />
 		<Unit filename="source/wg_mempool.cpp" />
-		<Unit filename="source/wg_menuitem.cpp" />
 		<Unit filename="source/wg_orderedlayout.cpp" />
 		<Unit filename="source/wg_orderedselectable.cpp" />
 		<Unit filename="source/wg_origo.cpp" />

@@ -61,7 +61,7 @@ public:
 
 	inline WgOrderedHook*	PrevHook() const { return _prev(); }
 	inline WgOrderedHook*	NextHook() const { return _next(); }
-	inline WgOrderedLayout * Parent() const { return (WgOrderedLayout*) _parent(); }
+	inline WgOrderedLayout * Parent() const;
 
 	bool			MoveUp();
 	bool			MoveDown();
@@ -168,7 +168,7 @@ protected:
 	virtual void	_onGizmoDisappeared( WgOrderedHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
 	virtual void	_onGizmosReordered() = 0;
 	virtual void	_refreshAllGizmos() = 0;
-	virtual WgOrderedHook * _newHook(WgGizmo * pGizmo) = 0;
+	virtual WgOrderedHook * _newHook() = 0;
 
 	//
 

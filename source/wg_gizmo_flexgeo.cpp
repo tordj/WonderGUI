@@ -747,6 +747,7 @@ bool WgFlexHook::RefreshRealGeo()
 
 	RequestRender();
 	m_realGeo = newGeo;
+	DoSetNewSize(newGeo);
 	RequestRender();
 
 	//
@@ -998,10 +999,12 @@ WgFlexHook * WgGizmoFlexGeo::AddGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLo
 	if( !pGizmo )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pGizmo->BestSize()) );
+	WgSize bestSize = pGizmo->BestSize();
+
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,bestSize) );
 	p->_attachGizmo( pGizmo );
 	m_hooks.PushBack(p);
-	p->SetFloating( WgRect(pos, pGizmo->BestSize()), hotspot );
+	p->SetFloating( WgRect(pos, bestSize), hotspot );
 	return p;
 }
 

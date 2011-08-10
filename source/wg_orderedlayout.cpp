@@ -30,8 +30,6 @@ WgCord WgOrderedHook::Pos() const
 
 WgSize WgOrderedHook::Size() const
 {
-	WgOrderedLayout * pParent = Parent();
-
 	return Parent()->_hookGeo(this).size();
 }
 
@@ -133,6 +131,12 @@ void WgOrderedHook::SetHidden( bool bHide )
 	}
 }
 
+WgOrderedLayout * WgOrderedHook::Parent() const
+{
+	return static_cast<WgOrderedLayout*>(_parent());
+}
+
+
 WgWidget* WgOrderedHook::GetRoot()
 {
 	WgGizmoHook * p = Parent()->Hook();
@@ -153,7 +157,9 @@ WgOrderedHook::~WgOrderedHook()
 
 void WgOrderedHook::RequestRender()
 {
-	Parent()->_onRenderRequested(this);
+	WgOrderedLayout * p = Parent();
+
+	p->_onRenderRequested(this);
 }
 
 void WgOrderedHook::RequestRender( const WgRect& rect )
@@ -201,12 +207,9 @@ WgOrderedHook * WgOrderedLayout::AddGizmo( WgGizmo * pGizmo )
 
 	WgOrderedHook * pHook = _newHook();
 	m_hooks.PushBack(pHook);
-
 	pHook->_attachGizmo( pGizmo );
-	pHook->DoSetNewSize( _hookGeo(pHook) );
 
 	_onGizmoAppeared(pHook);
-
 	return pHook;
 }
 
@@ -221,7 +224,6 @@ WgOrderedHook * WgOrderedLayout::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibli
 	pHook->_moveBefore(static_cast<WgOrderedHook*>(pSibling->Hook()));
 
 	pHook->_attachGizmo( pGizmo );
-	pHook->DoSetNewSize( _hookGeo(pHook) );
 
 	_onGizmoAppeared(pHook);
 	return pHook;
@@ -352,7 +354,10 @@ WgGizmo * WgOrderedLayout::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 				}
 			}
 		}
-		pHook = pHook->PrevHook();
+		pHook = pHook->NextHook();
+
+		if( pHook )
+			_advanceGeoToHook( rect, pHook );
 	}
 
 	return pResult;
