@@ -240,8 +240,8 @@ public:
 	bool			DeleteGizmo( WgGizmo * pGizmo );
 	bool			ReleaseGizmo( WgGizmo * pGizmo );
 
-	void			DeleteAllGizmos();
-	void			ReleaseAllGizmos();
+	bool			DeleteAllGizmos();
+	bool			ReleaseAllGizmos();
 
 	int				AddAnchor( float relativeX, float relativeY, const WgCord& pixelOfs );
 	bool			ReplaceAnchor( int index, float relativeX, float relativeY, const WgCord& pixelOfs );

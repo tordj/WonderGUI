@@ -228,6 +228,10 @@ void WgGizmoButton::_onNewSize( const WgSize& size )
 
 void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
+	WgRect cli = _clip;
+	WgRect can = _canvas;
+	WgRect win = _window;
+
 	// Render background
 
 	if( m_pBgGfx )
@@ -262,6 +266,10 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 		if( m_pBgGfx )
 			printWindow.shrink( m_pBgGfx->GetContentBorders() );
+
+		WgRect c = _clip;
+		WgRect printW = printWindow;
+
 		pDevice->PrintText( _clip, &m_text, printWindow );
 	}
 }

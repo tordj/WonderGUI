@@ -424,9 +424,6 @@ int WgText::width() const
 
 int WgText::height() const
 {
-	if( !m_pBaseProp->GetFont() )
-		return 0;
-
 	int height = 0;
 	for( int i = 0 ; i < m_nSoftLines-1 ; i++ )
 		height += m_pSoftLines[i].lineSpacing;
@@ -1790,7 +1787,7 @@ int WgText::LineStartX( int line, const WgRect& container ) const
 	int		ofs = 0;
 
 	if( m_origo.anchorX() != 0 || m_origo.hotspotX() != 0 )
-	{	
+	{
 		ofs = m_origo.calcOfsX( container.w, getSoftLineWidth(line) );
 		if( ofs < 0 )
 			ofs = 0;

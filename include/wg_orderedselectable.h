@@ -96,14 +96,15 @@ public:
 	inline WgOrdSelHook *	LastSelectedHook() const { return _lastSelectedHook(); }
 
 
-	inline void		SetChildBgBlocks( const WgBlockSetPtr& pBg ) { SetChildBgBlocks( pBg, pBg ); }
-	void			SetChildBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg );
-	void			SetChildFgBlocks( const WgBlockSetPtr& pFg );
+	inline void		SetBgBlocks( const WgBlockSetPtr& pBg ) { SetChildBgBlocks( pBg, pBg ); }
+	void			SetBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg );
+	void			SetFgBlocks( const WgBlockSetPtr& pFg );
 
-	inline void		SetChildBgColors( const WgColorSetPtr& pBg ) { SetChildBgColors( pBg, pBg ); }
-	void			SetChildBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg );
+	inline void		SetBgColors( const WgColorSetPtr& pBg ) { SetChildBgColors( pBg, pBg ); }
+	void			SetBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg );
 
-	inline WgBlockSetPtr	ChildBgBlocksEven() const { return m_pOddBgBlocks; }
+	inline WgBlockSetPtr	BgBlocksEven() const { return m_pEvenBgBlocks; }
+	inline WgBlockSetPtr	BgBlocksOdd() const { return m_pOddBgBlocks; }
 
 
 protected:

@@ -163,6 +163,7 @@
 		<Unit filename="source/wg_gizmo_flexgeo.cpp" />
 		<Unit filename="source/wg_gizmo_fps.cpp" />
 		<Unit filename="source/wg_gizmo_hook.cpp" />
+		<Unit filename="source/wg_gizmo_modal.cpp" />
 		<Unit filename="source/wg_gizmo_pixmap.cpp" />
 		<Unit filename="source/wg_gizmo_radiobutton.cpp" />
 		<Unit filename="source/wg_gizmo_refreshbutton.cpp" />

@@ -16,10 +16,15 @@
 #include <wg_surface_sdl.h>
 #include <wg_gfxdevice_sdl.h>
 #include <wg_eventlogger.h>
+#include <wg_bitmapglyphs.h>
+#include <wg_textprop.h>
 
 #include <iostream>
 
 extern std::ostream cout;
+
+int fileSize( const char * pPath );
+void * loadFile( const char * pPath );
 
 WgSurface * 	loadSurface( const char * path );
 SDL_Surface *	initSDL( int w, int h );
@@ -61,6 +66,24 @@ int main ( int argc, char** argv )
 //	pEventLogger->LogButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
 
+	// Load font
+
+	WgSurface * pFontImg = loadSurface("anuvverbubbla_8x8.png");
+	char * pFontSpec = (char*) loadFile( "anuvverbubbla_8x8.fnt" );
+
+	WgBitmapGlyphs * pGlyphs = new WgBitmapGlyphs( pFontImg, pFontSpec );
+
+	WgFont * pFont = new WgFont();
+	pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 8 );
+
+	// Set default textprop
+
+	WgTextProp prop;
+
+	prop.SetFont(pFont);
+	prop.SetSize(8);
+
+	WgBase::SetDefaultTextProp( prop.Register() );
 
 	// Load images and specify blocks
 
@@ -124,6 +147,7 @@ int main ( int argc, char** argv )
 
 	WgGizmoButton * pButton2 = new WgGizmoButton();
 	pButton2->SetSource( pButtonBlock );
+	pButton2->SetText( "STANDARD BUTTON" );
 
 	pVBox->AddGizmo(pButton2);
 	pVBox->AddGizmo(pFlag3);
@@ -275,6 +299,50 @@ WgSurface * loadSurface( const char * path )
 	return new WgSurfaceSDL(bmp);
 
 }
+
+//____ fileSize() _____________________________________________________________
+
+int fileSize( const char * pPath )
+{
+	FILE * fp = fopen( pPath, "rb" );
+	if( !fp )
+		return 0;
+
+	fseek( fp, 0, SEEK_END );
+	int size = ftell(fp);
+	fseek( fp, 0, SEEK_SET );
+	fclose( fp );
+
+	return size;
+}
+
+//____ loadFile() _____________________________________________________________
+
+void * loadFile( const char * pPath )
+{
+	FILE * fp = fopen( pPath, "rb" );
+	if( !fp )
+		return 0;
+
+	fseek( fp, 0, SEEK_END );
+	int size = ftell(fp);
+	fseek( fp, 0, SEEK_SET );
+
+	char * pMem = (char*) malloc( size+1 );
+	pMem[size] = 0;
+	int nRead = fread( pMem, 1, size, fp );
+	fclose( fp );
+
+	if( nRead < size )
+	{
+		free( pMem );
+		return 0;
+	}
+
+	return pMem;
+
+}
+
 
 
 WgCord dragStartPos;

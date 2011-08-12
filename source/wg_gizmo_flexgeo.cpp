@@ -666,6 +666,9 @@ bool WgFlexHook::RefreshRealGeo()
 
 		// Calculate position
 
+		Detta ser skumt ut.... både Anchor() OCH m_hotspot? Ska det inte vara antingen eller?
+		Ersätt även switch-sats med anrop till WgUtil::LocationToOfs().
+
 		WgCord pos = m_pParent->Anchor(m_anchor)->position( parentSize );
 
 		switch( m_hotspot )

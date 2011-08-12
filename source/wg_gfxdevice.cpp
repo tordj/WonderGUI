@@ -809,10 +809,10 @@ void WgGfxDevice::BlitVertBar(	const WgSurface * _pSurf, const WgRect& _src,
 
 void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest )
 {
-	_drawTextBg(clip, pText, dest);
-
-	if( !pText || !pText->getFont()  )
+	if( !pText )
 		return;
+
+	_drawTextBg(clip, pText, dest);
 
 	WgPen pen;
 	pen.SetDevice( this );
@@ -820,6 +820,10 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 
 	WgTextAttr	attr;
 	pText->GetBaseAttr(attr);
+
+	if( attr.pFont == 0 )
+		return;
+
 	pen.SetAttributes(attr);
 
 	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.contains( dest ) )

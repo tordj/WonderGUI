@@ -762,7 +762,7 @@ void WgEventHandler::_processPointerPlaced( WgEvent::PointerPlaced * pEvent )
 			j++;
 		}
 
-		if( j == vNowMarked.size() )
+		if( j == m_vMarkedGizmos.size() )
 			QueueEvent( WgEvent::PointerEnter( pGizmo ) );
 		else
 			QueueEvent( WgEvent::PointerMove( pGizmo ) );

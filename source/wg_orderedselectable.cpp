@@ -213,26 +213,26 @@ void WgOrdSelLayout::SetSelectMode( WgSelectMode mode )
 	m_selectMode = mode;
 }
 
-//____ SetChildBgBlocks() _____________________________________________________
+//____ SetBgBlocks() _____________________________________________________
 
-void WgOrdSelLayout::SetChildBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg )
+void WgOrdSelLayout::SetBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg )
 {
 	m_pOddBgBlocks = pOddBg;
 	m_pEvenBgBlocks = pEvenBg;
 	_refreshAllGizmos();
 }
 
-//____ SetChildFgBlocks() _____________________________________________________
+//____ SetFgBlocks() _____________________________________________________
 
-void WgOrdSelLayout::SetChildFgBlocks( const WgBlockSetPtr& pFg )
+void WgOrdSelLayout::SetFgBlocks( const WgBlockSetPtr& pFg )
 {
 	m_pFgBlocks = pFg;
 	_refreshAllGizmos();
 }
 
-//____ SetChildBgColors() _____________________________________________________
+//____ SetBgColors() _____________________________________________________
 
-void WgOrdSelLayout::SetChildBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg )
+void WgOrdSelLayout::SetBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg )
 {
 	m_pOddBgColors = pOddBg;
 	m_pEvenBgColors = pEvenBg;
