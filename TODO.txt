@@ -18,6 +18,7 @@ BEFORE RELEASE
 
 * Debug/finish layout class Table.
 * Debug/finish layout class FlexGeo
+* Debug/finish WgGizmoView (delete child gizmos where appropriate, not use signals etc).
 
 - Bitmap-fonter.
 

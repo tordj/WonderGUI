@@ -205,6 +205,8 @@ public:
 
 	void			SetGizmo( WgGizmo * pGizmo, int cell );
 	int				AddGizmo( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseGizmo( int cell );
+	bool			DeleteGizmo( int cell );
 
 	WgGizmoTable*	Table() const { return m_pTable; }
 protected:
@@ -320,6 +322,14 @@ public:
 	inline WgTableRow2*	LastRow() const { return m_rows.Last(); }
 	inline int			NbRows() const { return m_nRows; }
 	inline int			CompareRows(WgTableRow2* p1, WgTableRow2* p2) const;
+
+	// Overloaded from WgGizmoParent
+
+	bool			DeleteGizmo( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+
+	bool			DeleteAllGizmos();
+	bool			ReleaseAllGizmos();
 
 //	void	ScrollIntoView( WgTableRow2* pRow );
 

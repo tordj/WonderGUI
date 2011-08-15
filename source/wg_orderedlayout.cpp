@@ -260,10 +260,10 @@ bool WgOrderedLayout::DeleteGizmo( WgGizmo * pGizmo )
 
 //____ ReleaseGizmo() _________________________________________________________
 
-bool WgOrderedLayout::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgOrderedLayout::ReleaseGizmo( WgGizmo * pGizmo )
 {
 	if( !pGizmo || !pGizmo->Hook() || pGizmo->Hook()->Parent() != this )
-		return false;
+		return 0;
 
 	// Disconnect and notify subclass that gizmo has disappeared
 
@@ -272,25 +272,29 @@ bool WgOrderedLayout::ReleaseGizmo( WgGizmo * pGizmo )
 
 	_onGizmoDisappeared( pHook );
 
-	return true;
+	return pGizmo;
 }
 
 //____ DeleteAllGizmos() ______________________________________________________
 
-void WgOrderedLayout::DeleteAllGizmos()
+bool WgOrderedLayout::DeleteAllGizmos()
 {
 	m_hooks.Clear();
 	_refreshAllGizmos();
+
+	return true;
 }
 
 //____ ReleaseAllGizmos() _____________________________________________________
 
-void WgOrderedLayout::ReleaseAllGizmos()
+bool WgOrderedLayout::ReleaseAllGizmos()
 {
 	while( m_hooks.First() )
 		m_hooks.PopFront();
 
 	_refreshAllGizmos();
+
+	return true;
 }
 
 //____ SortGizmos() ___________________________________________________________

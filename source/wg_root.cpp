@@ -122,6 +122,40 @@ WgGizmo * WgRoot::ReleaseGizmo()
 	return m_hook._releaseGizmo();
 }
 
+WgGizmo * WgRoot::ReleaseGizmo( WgGizmo * pGizmo )
+{
+	if( pGizmo == m_hook.Gizmo() )
+		return ReleaseGizmo();
+
+	return false;
+}
+
+
+//____ DeleteGizmo() __________________________________________________________
+
+bool WgRoot::DeleteGizmo( WgGizmo * pGizmo )
+{
+	if( pGizmo == m_hook.Gizmo() )
+		return SetGizmo(0);
+
+	return false;
+}
+
+//____ DeleteAllGizmos() ______________________________________________________
+
+bool WgRoot::DeleteAllGizmos()
+{
+	return DeleteGizmo();
+}
+
+//____ ReleaseAllGizmos() _____________________________________________________
+
+bool WgRoot::ReleaseAllGizmos()
+{
+	return ReleaseGizmo()==0?false:true;
+}
+
+
 //____ Render() _______________________________________________________________
 
 bool WgRoot::Render()

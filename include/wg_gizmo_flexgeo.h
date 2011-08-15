@@ -238,7 +238,7 @@ public:
 	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCord& geometry, WgLocation hotspot = WG_NORTHWEST );
 
 	bool			DeleteGizmo( WgGizmo * pGizmo );
-	bool			ReleaseGizmo( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
 
 	bool			DeleteAllGizmos();
 	bool			ReleaseAllGizmos();

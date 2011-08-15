@@ -199,6 +199,11 @@ public:
 	WgGizmo*			GetContent() const { return m_elements[WINDOW].Gizmo(); }
 	WgGizmo*			ReleaseContent();
 
+	bool				DeleteGizmo( WgGizmo * pGizmo );
+	WgGizmo *			ReleaseGizmo( WgGizmo * pGizmo );
+
+	bool				DeleteAllGizmos();
+	bool				ReleaseAllGizmos();
 
 	void	SetScrollbarAutoHide( bool bHideX, bool bHideY );
 	bool	GetScrollbarAutoHideX() const { return m_bAutoHideScrollbarX; }
@@ -244,6 +249,7 @@ protected:
 		YDRAG
 	};
 
+	const int	MAX_ELEMENTS = 3;
 
 	WgGizmoView();
 	virtual void _onNewSize( const WgSize& size );
@@ -285,7 +291,7 @@ protected:
 	bool		m_bAutoScrollY;
 
 //	ViewGizmoCollection	m_elementsCollection;	// WgGizmoCollection for the elements gizmos.
-	WgViewHook		m_elements[3];			// Content, xDrag and yDrag gizmos in that order.
+	WgViewHook		m_elements[c_nElements];	// Content, xDrag and yDrag gizmos in that order.
 
 private:
 	WgGizmo* 		_castToGizmo() { return this; }

@@ -56,9 +56,16 @@ public:
 
 	inline WgGizmo *		Gizmo() const { return m_hook.Gizmo(); }
 	bool					SetGizmo( WgGizmo * pGizmo );
-	inline void			DeleteGizmo() { SetGizmo(0); }
+	inline void				DeleteGizmo() { SetGizmo(0); }
 	WgGizmo * 				ReleaseGizmo();
 
+	// Inherited from WgGizmoParent
+
+	bool					DeleteGizmo( WgGizmo * pGizmo );
+	WgGizmo *				ReleaseGizmo( WgGizmo * pGizmo );
+
+	bool					DeleteAllGizmos();
+	bool					ReleaseAllGizmos();
 
 //	inline int	NbDirtyRects() const { return m_dirtyRects....  TODO: Implement when WgRectChain has a Size() method
 	int		ExportDirtyRects( WgRect * pDest, int maxRects ) const;

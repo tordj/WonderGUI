@@ -1115,10 +1115,10 @@ bool WgGizmoFlexGeo::DeleteGizmo( WgGizmo * pGizmo )
 
 //____ ReleaseGizmo() _________________________________________________________
 
-bool WgGizmoFlexGeo::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgGizmoFlexGeo::ReleaseGizmo( WgGizmo * pGizmo )
 {
 	if( !pGizmo || !pGizmo->Hook() || pGizmo->Hook()->Parent() != this )
-		return false;
+		return 0;
 
 	// Force rendering of the area the gizmo was covering
 
@@ -1129,12 +1129,12 @@ bool WgGizmoFlexGeo::ReleaseGizmo( WgGizmo * pGizmo )
 
 	pHook->_releaseGizmo();
 	delete pHook;
-	return true;
+	return pGizmo;
 }
 
 //____ DeleteAllGizmos() ______________________________________________________
 
-void WgGizmoFlexGeo::DeleteAllGizmos()
+bool WgGizmoFlexGeo::DeleteAllGizmos()
 {
 	WgRectChain	dirt;
 
@@ -1157,11 +1157,13 @@ void WgGizmoFlexGeo::DeleteAllGizmos()
 		RequestRender( * pDirt );
 		pDirt = pDirt->pNext;
 	}
+
+	return true;
 }
 
 //____ ReleaseAllGizmos) ______________________________________________________
 
-void WgGizmoFlexGeo::ReleaseAllGizmos()
+bool WgGizmoFlexGeo::ReleaseAllGizmos()
 {
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
@@ -1172,6 +1174,7 @@ void WgGizmoFlexGeo::ReleaseAllGizmos()
 
 	DeleteAllGizmos();		// Will only delete the hooks and request render on dirty areas since
 							// we already have disconnected the children.
+	return true;
 }
 
 //____ AddAnchor() ____________________________________________________________

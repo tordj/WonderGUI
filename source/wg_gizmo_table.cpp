@@ -464,6 +464,7 @@ WgTableRow2::~WgTableRow2()
 	free( m_pCells );		// This array was reserved with calloc() and not new[]!
 }
 
+
 void WgTableRow2::SetGizmo( WgGizmo * pGizmo, int cell )
 {
 	if( m_nCells <= cell )
@@ -490,7 +491,7 @@ void WgTableRow2::SetGizmo( WgGizmo * pGizmo, int cell )
 		m_height = height;
 	}
 
-	//TODO: Meddela table att rad har ändrats.
+	//TODO: Meddela table att rad har Ã¤ndrats.
 }
 
 int WgTableRow2::AddGizmo( WgGizmo * pGizmo )
@@ -506,6 +507,30 @@ int WgTableRow2::AddGizmo( WgGizmo * pGizmo )
 
 	SetGizmo( pGizmo, cell );
 	return cell;
+}
+
+WgGizmo * WgTableRow2::ReleaseGizmo( int cell )
+{
+	if( m_nCells <= cell || !m_pCells[cell].Gizmo() )
+		return false;
+
+	WgGizmo * pReleased = m_pCells[cell].Gizmo();
+	m_pCells[cell]._attachGizmo(0);
+	m_pCells[cell].~WgTableHook();
+	new (&m_pCells[cell])WgTableHook(this);		// Is this really necessary?
+
+	return pReleased;
+}
+
+bool WgTableRow2::DeleteGizmo( int cell )
+{
+	if( m_nCells <= cell || !m_pCells[cell].Gizmo() )
+		return false;
+
+	m_pCells[cell].~WgTableHook();
+	new (&m_pCells[cell])WgTableHook(this);
+
+	return true;
 }
 
 
@@ -1066,6 +1091,51 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 
 	return r;
 }
+
+//____ DeleteGizmo() __________________________________________________________
+
+bool WgGizmoTable::DeleteGizmo( WgGizmo * pGizmo )
+{
+	if( !pGizmo || pGizmo->ParentX() != this )
+		return false;
+
+	WgTableRow2 * pHook = static_cast<WgTableHook*>(pGizmo->Hook());
+	WgTableRow2 * pRow = pHook->Row();
+
+	return pRow->DeleteGizmo( pHook->ColumnNb() );
+}
+
+//____ ReleaseGizmo() _________________________________________________________
+
+WgGizmo * WgGizmoTable::ReleaseGizmo( WgGizmo * pGizmo )
+{
+	if( !pGizmo || pGizmo->ParentX() != this )
+		return 0;
+
+	WgTableRow2 * pHook = static_cast<WgTableHook*>(pGizmo->Hook());
+	WgTableRow2 * pRow = pHook->Row();
+
+	return pRow->ReleaseGizmo( pHook->ColumnNb() );
+}
+
+//____ DeleteAllGizmos() ______________________________________________________
+
+bool WgGizmoTable::DeleteAllGizmos()
+{
+	//TODO: Implement
+
+	return false;
+}
+
+//____ ReleaseAllGizmos() _____________________________________________________
+
+bool WgGizmoTable::ReleaseAllGizmos()
+{
+	//TODO: Implement
+
+	return false;
+}
+
 
 
 //____ AddRow() _______________________________________________________________

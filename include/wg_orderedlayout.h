@@ -109,10 +109,10 @@ public:
 	WgOrderedHook * InsertGizmoSorted( WgGizmo * pGizmo );
 
 	bool			DeleteGizmo( WgGizmo * pGizmo );
-	bool			ReleaseGizmo( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
 
-	void			DeleteAllGizmos();
-	void			ReleaseAllGizmos();
+	bool			DeleteAllGizmos();
+	bool			ReleaseAllGizmos();
 
 	void			SortGizmos();
 	void			SetSortOrder( WgSortOrder order );

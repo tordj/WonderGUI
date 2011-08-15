@@ -585,6 +585,56 @@ WgGizmoVDragbar* WgGizmoView::ReleaseScrollbarY()
 	return p;
 }
 
+//____ DeleteGizmo() __________________________________________________________
+
+bool WgGizmoView::DeleteGizmo( WgGizmo * pGizmo )
+{
+	if( pGizmo == m_elements[XDRAG].Gizmo() )
+		return SetScrollbarX(0);
+	else if( pGizmo == m_elements[YDRAG].Gizmo() )
+		return SetScrollbarY(0);
+	else if( pGizmo == m_elements[WINDOW].Gizmo() )
+		return SetContent(0);
+
+	return false;
+}
+
+//____ ReleaseGizmo() _________________________________________________________
+
+WgGizmo * WgGizmoView::ReleaseGizmo( WgGizmo * pGizmo )
+{
+	if( pGizmo == m_elements[XDRAG].Gizmo() )
+		return ReleaseScrollbarX();
+	else if( pGizmo == m_elements[YDRAG].Gizmo() )
+		return ReleaseScrollbarY();
+	else if( pGizmo == m_elements[WINDOW].Gizmo() )
+		return ReleaseContent();
+
+	return 0;
+}
+
+//____ DeleteAllGizmos() ______________________________________________________
+
+bool WgGizmoView::DeleteAllGizmos()
+{
+	SetScrollbarX(0);
+	SetScrollbarY(0);
+	SetContent(0);
+	return true;
+}
+
+//____ ReleaseAllGizmos() _____________________________________________________
+
+bool WgGizmoView::ReleaseAllGizmos()
+{
+	ReleaseScrollbarX();
+	ReleaseScrollbarY();
+	ReleaseContent();
+	return true;
+}
+
+
+
 //____ SetScrollbarAutoHide() _________________________________________________
 
 void WgGizmoView::SetScrollbarAutoHide( bool bHideX, bool bHideY )
