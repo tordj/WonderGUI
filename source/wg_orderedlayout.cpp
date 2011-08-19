@@ -407,7 +407,7 @@ void WgOrderedLayout::_clearDirtyRects()
 	while( pHook )
 	{
 		if( pHook->Gizmo()->IsContainer() )
-			pHook->_doClearDirtyRects();
+			pHook->Gizmo()->CastToContainer()->_clearDirtyRects();
 
 		pHook = pHook->NextHook();
 	}

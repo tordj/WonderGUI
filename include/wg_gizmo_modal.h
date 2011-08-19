@@ -23,9 +23,21 @@
 #ifndef WG_GIZMO_MODAL_DOT_H
 #define WG_GIZMO_MODAL_DOT_H
 
+#ifndef WG_GIZMO_CONTAINER_DOT_H
+#	include <wg_gizmo_container.h>
+#endif
+
+#ifndef WG_DIRTYRECT_DOT_H
+#	include <wg_rectchain.h>
+#endif
+
+class WgGizmoModal;
+
+
 class WgModalHook : public WgGizmoHook, protected WgLink
 {
 	friend class WgGizmoModal;
+	friend class WgChain<WgModalHook>;
 
 public:
 
@@ -70,7 +82,7 @@ protected:
 
 	PROTECTED_LINK_METHODS( WgModalHook );
 
-	WgModalHook( WgGizmo * pGizmo, WgGizmoModal * pParent );
+	WgModalHook( WgGizmoModal * pParent );
 
 	bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 
@@ -84,6 +96,7 @@ protected:
 
 	WgGizmoHook *	_prevHook() const;
 	WgGizmoHook *	_nextHook() const;
+	WgGizmoContainer * _parent() const;
 
 
 	WgGizmoModal * m_pParent;
@@ -91,14 +104,19 @@ protected:
 	WgRect		m_realGeo;			// Gizmos geo relative parent
 
 	WgLocation	m_origo;
-	WgRect		m_placementGeo;		// Gizmos geo relative anchor and hotspot.
+	WgRect		m_placementGeo;		// Gizmos geo relative anchor and hotspot. Setting width and height to 0 uses Gizmos BestSize() dynamically.
+									// Setting just one of them to 0 uses Gizmos HeightForWidth() or WidthForHeight() dynamically.
 
+	WgRectChain	m_dirt;		// Dirty areas to be rendered, in screen coordinates!
 };
 
 
 
 class WgGizmoModal : public WgGizmo, public WgGizmoContainer
 {
+	friend class BaseHook;
+	friend class WgModalHook;
+
 public:
 	WgGizmoModal();
 	~WgGizmoModal();
@@ -113,13 +131,13 @@ public:
 
 
 	WgModalHook *	AddModalGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
-	WgModalHook *	AddModalGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation origo = WG_NORTHWEST );
+	WgModalHook *	AddModalGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation origo = WG_NORTHWEST ) { return AddModalGizmo( pGizmo, WgRect(pos,0,0), origo); }
 
 	bool			DeleteAllModalGizmos();
 	bool			ReleaseAllModalGizmos();
 
 	bool			DeleteGizmo( WgGizmo * pGizmo );
-	bool			ReleaseGizmo( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
 
 	bool			DeleteAllGizmos();
 	bool			ReleaseAllGizmos();
@@ -180,9 +198,12 @@ private:
 
 
 		WgGizmoHook *	_prevHook() const { return 0; }
-		WgGizmoHook *	_nextHook() const { return m_pParent->FirstModalChild(); }
+		WgGizmoHook *	_nextHook() const { return m_pParent->FirstModalGizmo(); }
+		WgGizmoContainer * _parent() const { return m_pParent; }
 
-		WgGizmoModal * m_pParent;
+		WgGizmoModal * 	m_pParent;
+		WgRectChain		m_dirt;		// Dirty areas to be rendered, in screen coordinates!
+
 	};
 
 
@@ -195,10 +216,10 @@ private:
 	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool			_onAlphaTest( const WgCord& ofs );
 
-	inline void		_onEnable() { WgGizmoContainer::OnEnable(); }
-	inline void		_onDisable() { WgGizmoContainer::OnDisable(); }
+	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }
+	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }
 
-	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
+	void			_onRequestRender( const WgRect& rect, const WgModalHook * pHook );	// rect is in our coordinate system.
 
 	WgGizmo*		_castToGizmo() { return this; }
 
@@ -214,8 +235,7 @@ private:
 	BaseHook				m_baseHook;
 	WgChain<WgModalHook>	m_modalHooks;		// First modal gizmo lies at the bottom.
 
-	WgColor					m_dimColor;
-
+	WgSize					m_size;
 
 };
 

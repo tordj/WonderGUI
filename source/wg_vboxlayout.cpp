@@ -217,7 +217,7 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 			while( pDirt )
 			{
 				if( pDirt->intersectsWith(geo) )
-					pHook->_doCastDirtyRect( geo, WgRect(geo,clip), pDirt, pDirtOutChain );
+					pHook->Gizmo()->CastToContainer()->_castDirtyRect( geo, WgRect(geo,clip), pDirt, pDirtOutChain );
 				else
 					pDirtOutChain->PushExistingRect(pDirt);
 
@@ -296,7 +296,7 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 		while( geo.y < pDirt->y + pDirt->h )
 		{
 			if( !pHook->m_bHidden && !pHook->Gizmo()->IsContainer() )
-				pHook->DoRender( pDevice, geo, geo, WgRect(geo,*pDirt), _layer );
+				pHook->Gizmo()->_onRender( pDevice, geo, geo, WgRect(geo,*pDirt), _layer );
 
 			pHook = pHook->NextHook();
 			if( !pHook )
@@ -316,7 +316,7 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 	while( geo.y < _window.y + _window.h  )
 	{
 		if( pHook->Gizmo()->IsContainer() )
-			pHook->_doRenderDirtyRects(	pDevice, geo, geo, _layer );
+			pHook->Gizmo()->CastToContainer()->_renderDirtyRects( pDevice, geo, geo, _layer );
 
 		pHook = pHook->NextHook();
 		if( !pHook )
@@ -451,7 +451,7 @@ void  WgVBoxLayout::_onGizmoAppeared( WgOrderedHook * pInserted )
 	pHook->m_height = height;
 	m_size.h += height;
 
-	pHook->DoSetNewSize( WgSize(m_size.w,height) );
+	pHook->Gizmo()->_onNewSize( WgSize(m_size.w,height) );
 
 	// Request and handle possible resize.
 
@@ -511,7 +511,7 @@ void WgVBoxLayout::_adaptChildrenToWidth( int width )
 			if( height == -1 )
 				height = pHook->m_bestSize.h;
 
-			pHook->DoSetNewSize( WgSize(width,height) );
+			pHook->Gizmo()->_onNewSize( WgSize(width,height) );
 			pHook->m_height = height;
 			m_size.h += height;
 		}

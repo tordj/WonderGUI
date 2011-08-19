@@ -37,6 +37,13 @@ class WgRectChain;
 class WgGizmoContainer : public WgGizmoParent
 {
 	friend class WgGizmoHook;
+	friend class WgFlexHook;
+
+	friend class WgRoot;
+	friend class WgGizmoFlexGeo;
+	friend class WgGizmoModal;
+	friend class WgOrderedLayout;
+	friend class WgVBoxLayout;
 
 	protected:
 		virtual void	_onEnable();

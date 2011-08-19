@@ -249,7 +249,7 @@ protected:
 		YDRAG
 	};
 
-	const int	MAX_ELEMENTS = 3;
+	static const int	MAX_ELEMENTS = 3;
 
 	WgGizmoView();
 	virtual void _onNewSize( const WgSize& size );
@@ -291,7 +291,7 @@ protected:
 	bool		m_bAutoScrollY;
 
 //	ViewGizmoCollection	m_elementsCollection;	// WgGizmoCollection for the elements gizmos.
-	WgViewHook		m_elements[c_nElements];	// Content, xDrag and yDrag gizmos in that order.
+	WgViewHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag gizmos in that order.
 
 private:
 	WgGizmo* 		_castToGizmo() { return this; }

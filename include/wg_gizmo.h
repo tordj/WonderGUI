@@ -66,9 +66,22 @@ class WgEventHandler;
 class WgGizmo : public WgEmitter, public WgWeakPtrTarget
 {
 friend class WgSkinNode;
-friend class WgGizmoHook;
 friend class WgInput;
 friend class WgEventHandler;
+
+friend class WgGizmoHook;
+friend class WgFlexHook;
+friend class WgModalHook;
+friend class WgVBoxHook;
+
+friend class WgRoot;
+friend class WgGizmoFlexGeo;
+friend class WgGizmoModal;
+friend class WgGizmoTable;
+friend class WgGizmoView;
+friend class WgVBoxLayout;
+
+friend class WgTableRow2;
 
 public:
 	WgGizmo();
@@ -111,7 +124,7 @@ public:
 	inline WgSize		Size() const { if( m_pHook ) return m_pHook->Size(); return WgSize(256,256); }
 	inline WgRect		Geo() const { if( m_pHook ) return m_pHook->Geo(); return WgRect(0,0,256,256); }
 	inline WgCord		ScreenPos() const { if( m_pHook ) return m_pHook->ScreenPos(); return WgCord(0,0); }
-	inline WgRect		ScreenGeometry() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
+	inline WgRect		ScreenGeo() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
 	inline bool			GrabFocus() { if( m_pHook ) return m_pHook->RequestFocus(); return false; }
 	inline bool			ReleaseFocus() { if( m_pHook ) return m_pHook->ReleaseFocus(); return false; }
 	inline bool			IsFocused() { return m_bFocused; }

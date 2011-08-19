@@ -21,10 +21,11 @@
 =========================================================================*/
 
 #include <wg_gizmo_modal.h>
+#include <wg_util.h>
 
 static const char	c_gizmoType[] = {"Modal"};
 
-Improve WgModalHook geometry handling, should be able to run on BestSize by default, answering to resize-requests.
+// Improve WgModalHook geometry handling, should be able to run on BestSize by default, answering to resize-requests.
 
 
 //_____________________________________________________________________________
@@ -40,11 +41,11 @@ bool WgModalHook::SetGeo( const WgRect& geometry, WgLocation origo )
 	m_placementGeo 	= geometry;
 	m_origo 		= origo;
 
-	if( geometry.w <= 0 )
-		geometry.w = 1;
+	if( m_placementGeo.w <= 0 )
+		m_placementGeo.w = 1;
 
-	if( geometry.h <= 0 )
-		gemoetry.h = 1;
+	if( m_placementGeo.h <= 0 )
+		m_placementGeo.h = 1;
 
 	return _refreshRealGeo();
 }
@@ -82,6 +83,9 @@ bool WgModalHook::SetOfsY( int y )
 //_____________________________________________________________________________
 bool WgModalHook::SetSize( WgSize sz )
 {
+	if( sz.w < 0 || sz.h < 0 )
+		return false;
+
 	m_placementGeo.setSize( sz );
 	return _refreshRealGeo();
 }
@@ -89,6 +93,9 @@ bool WgModalHook::SetSize( WgSize sz )
 //_____________________________________________________________________________
 bool WgModalHook::SetWidth( int width )
 {
+	if( width < 0 )
+		return false;
+
 	m_placementGeo.w = width;
 	return _refreshRealGeo();
 }
@@ -96,6 +103,9 @@ bool WgModalHook::SetWidth( int width )
 //_____________________________________________________________________________
 bool WgModalHook::SetHeight( int height )
 {
+	if( height < 0 )
+		return false;
+
 	m_placementGeo.h = height;
 	return _refreshRealGeo();
 }
@@ -154,10 +164,35 @@ WgModalHook::WgModalHook( WgGizmoModal * pParent )
 //_____________________________________________________________________________
 bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly the requested (floating) geometry.
 {
-	WgCord ofs = WgUtil::LocationToOfs( m_origo, m_pParent->Size() );
+	WgCord ofs = WgUtil::LocationToOfs( m_origo, m_pParent->Size() ) - WgUtil::LocationToOfs( m_origo, m_placementGeo.size() );
 	ofs += m_placementGeo.pos();
 
-	m_realGeo = WgRect( ofs, m_placementGeo.size() );
+	WgSize sz = m_placementGeo.size();
+
+	if( sz.w == 0 && sz.h == 0 )
+		sz = m_pGizmo->BestSize();
+	else if( sz.w == 0 )
+		sz.w = m_pGizmo->WidthForHeight(sz.h);
+	else if( sz.h == 0 )
+		sz.h = m_pGizmo->HeightForWidth(sz.w);
+
+	if( sz.w <= 0 )
+		sz.w = 1;
+	if( sz.h <= 0 )
+		sz.h = 1;
+
+	WgRect newGeo( ofs, sz );
+
+	if( newGeo != m_realGeo )
+	{
+		if( sz != m_realGeo.size() )
+			m_pParent->_onNewSize(sz);
+
+		RequestRender();
+		m_realGeo = WgRect( ofs, sz );
+		RequestRender();
+	}
+
 	return true;
 }
 
@@ -176,6 +211,7 @@ void WgModalHook::RequestRender( const WgRect& rect )
 //_____________________________________________________________________________
 void WgModalHook::RequestResize()
 {
+	_refreshRealGeo();
 }
 
 //_____________________________________________________________________________
@@ -195,8 +231,8 @@ WgGizmoHook * WgModalHook::_prevHook() const
 
 	if( p )
 		return p;
-	else if( m_baseHook.Gizmo() )
-		return &m_baseHook;
+	else if( m_pParent->m_baseHook.Gizmo() )
+		return &m_pParent->m_baseHook;
 	else
 		return 0;
 }
@@ -214,10 +250,17 @@ WgGizmoHook * WgModalHook::_nextHook() const
 		return 0;
 }
 
+//_____________________________________________________________________________
+WgGizmoContainer * WgModalHook::_parent() const
+{
+	return m_pParent;
+}
+
+
 
 void WgGizmoModal::BaseHook::RequestRender()
 {
-	m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->Size() ), 0 );
+	m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
 }
 
 void WgGizmoModal::BaseHook::RequestRender( const WgRect& rect )
@@ -240,7 +283,7 @@ void WgGizmoModal::BaseHook::_renderDirtyRects( WgGfxDevice * pDevice, const WgC
 
 //____ Constructor ____________________________________________________________
 
-WgGizmoModal::WgGizmoModal() : m_dimColor(WgColor::None()), m_baseHook(this)
+WgGizmoModal::WgGizmoModal() : m_baseHook(this)
 {
 }
 
@@ -253,99 +296,295 @@ WgGizmoModal::~WgGizmoModal()
 
 //____ Type() _________________________________________________________________
 
-virtual const char *WgGizmoModal::Type( void ) const
+const char *WgGizmoModal::Type( void ) const
 {
 	return GetMyType();
 }
 
 //____ GetMyType() ____________________________________________________________
 
-static const char * WgGizmoModal::GetMyType()
+const char * WgGizmoModal::GetMyType()
 {
 	return c_gizmoType;
 }
 
+//____ SetBaseGizmo() _________________________________________________________
+
 WgGizmoHook * WgGizmoModal::SetBaseGizmo( WgGizmo * pGizmo )
 {
+	// Replace Gizmo
+
+	WgGizmo * pOldGizmo = m_baseHook._releaseGizmo();
+	if( pOldGizmo )
+		delete pOldGizmo;
+	m_baseHook._attachGizmo(pGizmo);
+	_onRequestRender( WgRect(0,0,m_size), 0 );
+
+	// Notify that we might want a new size now...
+
+	RequestResize();
+	return &m_baseHook;
 }
+
+//____ BaseGizmo() ____________________________________________________________
 
 WgGizmo * WgGizmoModal::BaseGizmo()
 {
+	return m_baseHook.Gizmo();
 }
+
+//____ DeleteBaseGizmo() ______________________________________________________
 
 bool WgGizmoModal::DeleteBaseGizmo()
 {
+	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
+	if( pGizmo )
+	{
+		delete pGizmo;
+		_onRequestRender( WgRect(0,0,m_size), 0 );
+		RequestResize();
+		return true;
+	}
+
+	return false;
 }
+
+//____ ReleaseBaseGizmo() _____________________________________________________
 
 WgGizmo * WgGizmoModal::ReleaseBaseGizmo()
 {
+	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
+	if( pGizmo )
+	{
+		_onRequestRender( WgRect(0,0,m_size), 0 );
+		RequestResize();
+	}
+
+	return pGizmo;
 }
+
+//____ AddModalGizmo() ________________________________________________________
 
 WgModalHook * WgGizmoModal::AddModalGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo )
 {
+	// Create Hook and fill in members.
+
+	WgModalHook * pHook = new WgModalHook( this );
+	pHook->_attachGizmo(pGizmo);
+	pHook->m_origo = origo;
+	pHook->m_placementGeo = geometry;
+	m_modalHooks.PushBack(pHook);
+
+	// Refresh geometry and request render.
+
+	pHook->_refreshRealGeo();
+	return pHook;
 }
 
-WgModalHook * WgGizmoModal::AddModalGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation origo )
-{
-}
+//____ DeleteAllModalGizmos() _________________________________________________
 
 bool WgGizmoModal::DeleteAllModalGizmos()
 {
+	m_modalHooks.Clear();
+	RequestRender();
+	return true;
 }
+
+//____ ReleaseAllModalGizmos() ________________________________________________
 
 bool WgGizmoModal::ReleaseAllModalGizmos()
 {
+	WgModalHook * pHook = m_modalHooks.First();
+	while( pHook )
+	{
+		pHook->_releaseGizmo();
+		pHook = pHook->_next();
+	}
+
+	m_modalHooks.Clear();
+	RequestRender();
+	return true;
 }
+
+//____ DeleteGizmo() __________________________________________________________
 
 bool WgGizmoModal::DeleteGizmo( WgGizmo * pGizmo )
 {
+	if( !pGizmo || pGizmo->ParentX() != this )
+		return false;
+
+	if( pGizmo == m_baseHook.Gizmo() )
+		return DeleteBaseGizmo();
+	else
+	{
+		WgModalHook * pHook = (WgModalHook *) pGizmo->Hook();
+		pHook->RequestRender();
+		delete pHook;
+		return true;
+	}
 }
 
-bool WgGizmoModal::ReleaseGizmo( WgGizmo * pGizmo )
+//____ ReleaseGizmo() _________________________________________________________
+
+WgGizmo * WgGizmoModal::ReleaseGizmo( WgGizmo * pGizmo )
 {
+	if( !pGizmo || pGizmo->ParentX() != this )
+		return 0;
+
+	if( pGizmo == m_baseHook.Gizmo() )
+		return ReleaseBaseGizmo();
+	else
+	{
+		WgModalHook * pHook = (WgModalHook *) pGizmo->Hook();
+		pHook->RequestRender();
+		pHook->_releaseGizmo();
+		delete pHook;
+		return pGizmo;
+	}
+
 }
+
+//____ DeleteAllGizmos() ______________________________________________________
 
 bool WgGizmoModal::DeleteAllGizmos()
 {
+	DeleteBaseGizmo();
+	DeleteAllModalGizmos();
+	return true;
 }
+
+//____ ReleaseAllGizmos() _____________________________________________________
 
 bool WgGizmoModal::ReleaseAllGizmos()
 {
+	ReleaseBaseGizmo();
+	ReleaseAllGizmos();
+	return true;
 }
 
-WgModalHook * WgGizmoModal::FirstModalChild()
+//____ FirstMocalGizmo() ______________________________________________________
+
+WgModalHook * WgGizmoModal::FirstModalGizmo()
 {
+	return m_modalHooks.First();
 }
 
-WgModalHook * WgGizmoModal::LastModalChild()
+//____ LastModalGizmo() _______________________________________________________
+
+WgModalHook * WgGizmoModal::LastModalGizmo()
 {
+	return m_modalHooks.Last();
 }
 
+//____ HeightForWidth() _______________________________________________________
 
 int WgGizmoModal::HeightForWidth( int width ) const
 {
+	if( m_baseHook.Gizmo() )
+		return m_baseHook.Gizmo()->HeightForWidth( width );
+	else
+		return WgGizmo::HeightForWidth(width);
 }
+
+//____ WidthForHeight() _______________________________________________________
 
 int WgGizmoModal::WidthForHeight( int height ) const
 {
+	if( m_baseHook.Gizmo() )
+		return m_baseHook.Gizmo()->WidthForHeight( height );
+	else
+		return WgGizmo::WidthForHeight(height);
 }
+
+//____ MinSize() ______________________________________________________________
 
 WgSize WgGizmoModal::MinSize() const
 {
+	if( m_baseHook.Gizmo() )
+		return m_baseHook.Gizmo()->MinSize();
+	else
+		return WgGizmo::MinSize();
 }
+
+//____ BestSize() _____________________________________________________________
 
 WgSize WgGizmoModal::BestSize() const
 {
+	if( m_baseHook.Gizmo() )
+		return m_baseHook.Gizmo()->BestSize();
+	else
+		return WgGizmo::BestSize();
 }
+
+//____ MaxSize() ______________________________________________________________
 
 WgSize WgGizmoModal::MaxSize() const
 {
+	if( m_baseHook.Gizmo() )
+		return m_baseHook.Gizmo()->MaxSize();
+	else
+		return WgGizmo::MaxSize();
 }
 
-
+//____ FindGizmo() ____________________________________________________________
 
 WgGizmo *  WgGizmoModal::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 {
+
+	// Test against all our modal gizmos
+
+	WgModalHook * pHook = m_modalHooks.Last();
+
+	while( pHook )
+	{
+		if( pHook->m_realGeo.contains(ofs) )
+		{
+			switch( mode )
+			{
+				case WG_SEARCH_MARKPOLICY:
+					if( pHook->Gizmo()->MarkTest( ofs - pHook->m_realGeo.pos() ) )
+						return pHook->Gizmo();
+				break;
+
+				case WG_SEARCH_GEOMETRY:
+					return pHook->Gizmo();
+
+				case WG_SEARCH_ACTION_TARGET:
+					if( pHook->Gizmo()->MarkTest( ofs - pHook->m_realGeo.pos() ) )
+						return m_modalHooks.Last()->Gizmo();									// Top modal hook gets the action.
+				break;
+			}
+		}
+		pHook = pHook->_prev();
+	}
+
+	// Test against our base Gizmo.
+
+	if( m_baseHook.Gizmo() )
+	{
+		switch( mode )
+		{
+			case WG_SEARCH_MARKPOLICY:
+				if( m_baseHook.Gizmo()->MarkTest(ofs) )
+					return m_baseHook.Gizmo();
+			break;
+
+			case WG_SEARCH_GEOMETRY:
+				return m_baseHook.Gizmo();
+
+			case WG_SEARCH_ACTION_TARGET:
+				if( m_baseHook.Gizmo()->MarkTest(ofs) )
+				{
+					if( m_modalHooks.Last() )
+						return m_modalHooks.Last()->Gizmo();									// Top modal hook gets the action.
+					else
+						return m_baseHook.Gizmo();
+				}
+			break;
+		}
+	}
+
+	return 0;
 }
 
 
@@ -357,27 +596,7 @@ void WgGizmoModal::_onMaskRects( WgRectChain& rects, const WgRect& geo, const Wg
 {
 }
 
-void WgGizmoModal::_onCloneContent( const WgGizmo * _pOrg )
-{
-}
-
-void WgGizmoModal::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
-{
-}
-
-void WgGizmoModal::_onNewSize( const WgSize& size )
-{
-}
-
-void WgGizmoModal::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
-{
-}
-
-bool WgGizmoModal::_onAlphaTest( const WgCord& ofs )
-{
-}
-
-void WgGizmoModal::onRequestRender( const WgRect& rect, const WgFlexHook * pHook )
+void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHook )
 {
 }
 
@@ -385,13 +604,126 @@ void WgGizmoModal::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRect
 {
 }
 
+
+//____ _renderDirtyRects() ____________________________________________________
+
 void WgGizmoModal::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
 {
+	// Render dirty rects belonging to base gizmo.
+
+	if( m_baseHook.Gizmo() )
+	{
+		if( m_baseHook.Gizmo()->IsContainer() )
+		{
+			m_baseHook.Gizmo()->CastToContainer()->_renderDirtyRects( pDevice, _canvas, _canvas, _layer );
+		}
+		else
+		{
+			WgRectLink * pDirt = m_baseHook.m_dirt.pRectList;
+			while( pDirt )
+			{
+				m_baseHook.Gizmo()->_onRender( pDevice, _canvas, _canvas, *pDirt, _layer );
+				pDirt = pDirt->pNext;
+			}
+		}
+	}
+
+	// Render dirty rects belonging to modal gizmos.
+
+	WgModalHook * pHook = m_modalHooks.First();
+
+	while( pHook )
+	{
+		WgRect geo = pHook->m_realGeo + _canvas.pos();
+		if( pHook->Gizmo()->IsContainer() )
+		{
+			pHook->Gizmo()->CastToContainer()->_renderDirtyRects( pDevice, geo, geo, _layer );
+		}
+		else
+		{
+			WgRectLink * pDirt = pHook->m_dirt.pRectList;
+			while( pDirt )
+			{
+				pHook->Gizmo()->_onRender( pDevice, geo, geo, *pDirt, _layer );
+				pDirt = pDirt->pNext;
+			}
+		}
+
+		pHook = pHook->_next();
+	}
+
 }
+
+//____ _clearDirtyRects() _____________________________________________________
 
 void WgGizmoModal::_clearDirtyRects()
 {
+	// Clear dirty rects for modals
+
+	WgModalHook *pHook	= m_modalHooks.First();
+
+	while( pHook )
+	{
+		pHook->m_dirt.Clear();
+		if( pHook->Gizmo()->IsContainer() )
+			pHook->Gizmo()->CastToContainer()->_clearDirtyRects();
+
+		pHook = pHook->NextHook();
+	}
+
+	// Clear dirty rects for base
+
+	m_baseHook.m_dirt.Clear();
+	if( m_baseHook.Gizmo() && m_baseHook.Gizmo()->IsContainer() )
+		m_baseHook.Gizmo()->CastToContainer()->_clearDirtyRects();
+
 }
+
+//____ _onNewSize() ___________________________________________________________
+
+void WgGizmoModal::_onNewSize( const WgSize& sz )
+{
+	// Update size of base gizmo
+
+	if( m_baseHook.Gizmo() )
+		m_baseHook.Gizmo()->_onNewSize(sz);
+
+	// Refresh modal gizmos geometry, their positions might have changed.
+
+	WgModalHook * pHook = m_modalHooks.First();
+
+	while( pHook )
+	{
+		pHook->_refreshRealGeo();
+		pHook = pHook->_next();
+	}
+}
+
+//____ _onCloneContent() ______________________________________________________
+
+void WgGizmoModal::_onCloneContent( const WgGizmo * _pOrg )
+{
+}
+
+//____ _onRender() ____________________________________________________________
+
+void WgGizmoModal::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+{
+}
+
+//____ _onAction() ____________________________________________________________
+
+void WgGizmoModal::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
+{
+}
+
+//____ _onAlphaTest() _________________________________________________________
+
+bool WgGizmoModal::_onAlphaTest( const WgCord& ofs )
+{
+	return false;
+}
+
 
 
 

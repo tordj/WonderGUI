@@ -882,11 +882,11 @@ void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& new
 
 		// Notify elements of their new size.
 
-		m_elements[WINDOW].DoSetNewSize(newWindow.size());
+		m_elements[WINDOW].Gizmo()->_onNewSize(newWindow.size());
 		if( bShowDragX )
-			m_elements[XDRAG].DoSetNewSize(newDragX.size());
+			m_elements[XDRAG].Gizmo()->_onNewSize(newDragX.size());
 		if( bShowDragY )
-			m_elements[YDRAG].DoSetNewSize(newDragY.size());
+			m_elements[YDRAG].Gizmo()->_onNewSize(newDragY.size());
 	}
 
 	// If contentSize has changed we save changes and set flags
@@ -967,7 +967,7 @@ void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		WgRect clip( window, _clip );
 
 		if( clip.w > 0 && clip.h > 0 )
-			m_elements[WINDOW].DoRender( pDevice, canvas, window, clip, _layer );
+			m_elements[WINDOW].Gizmo()->_onRender( pDevice, canvas, window, clip, _layer );
 	}
 	if( m_elements[XDRAG].m_bShow )
 	{
@@ -975,7 +975,7 @@ void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		WgRect clip( window, _clip );
 
 		if( clip.w > 0 && clip.h > 0 )
-			m_elements[XDRAG].DoRender( pDevice, window, window, clip, _layer );
+			m_elements[XDRAG].Gizmo()->_onRender( pDevice, window, window, clip, _layer );
 	}
 	if( m_elements[YDRAG].m_bShow )
 	{
@@ -983,7 +983,7 @@ void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		WgRect clip( window, _clip );
 
 		if( clip.w > 0 && clip.h > 0 )
-			m_elements[YDRAG].DoRender( pDevice, window, window, clip, _layer );
+			m_elements[YDRAG].Gizmo()->_onRender( pDevice, window, window, clip, _layer );
 	}
 
 	WgMode mode = m_bEnabled?WG_MODE_NORMAL:WG_MODE_DISABLED;

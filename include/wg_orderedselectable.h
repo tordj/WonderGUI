@@ -96,11 +96,11 @@ public:
 	inline WgOrdSelHook *	LastSelectedHook() const { return _lastSelectedHook(); }
 
 
-	inline void		SetBgBlocks( const WgBlockSetPtr& pBg ) { SetChildBgBlocks( pBg, pBg ); }
+	inline void		SetBgBlocks( const WgBlockSetPtr& pBg ) { SetBgBlocks( pBg, pBg ); }
 	void			SetBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg );
 	void			SetFgBlocks( const WgBlockSetPtr& pFg );
 
-	inline void		SetBgColors( const WgColorSetPtr& pBg ) { SetChildBgColors( pBg, pBg ); }
+	inline void		SetBgColors( const WgColorSetPtr& pBg ) { SetBgColors( pBg, pBg ); }
 	void			SetBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg );
 
 	inline WgBlockSetPtr	BgBlocksEven() const { return m_pEvenBgBlocks; }

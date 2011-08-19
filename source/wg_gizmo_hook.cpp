@@ -25,52 +25,12 @@
 #include <wg_gizmo.h>
 
 
-//____ DoRender() _____________________________________________________________
+//____ Destructor _____________________________________________________________
 
-void WgGizmoHook::DoRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+WgGizmoHook::~WgGizmoHook()
 {
-	m_pGizmo->_onRender( pDevice, _canvas, _window, _clip, _layer );
-}
-
-//____ DoSetNewSize() _________________________________________________________
-
-void WgGizmoHook::DoSetNewSize( const WgSize& size )
-{
-	m_pGizmo->_onNewSize( size );
-}
-
-//____ _doCollectRects() _______________________________________________________
-
-void WgGizmoHook::_doCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
-{
-	m_pGizmo->_onCollectRects( rects, geo, clip );
-}
-
-//____ _doMaskRects() __________________________________________________________
-
-void WgGizmoHook::_doMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
-{
-	m_pGizmo->_onMaskRects( rects, geo, clip );
-}
-
-//_____________________________________________________________________________
-
-void WgGizmoHook::_doCastDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
-{
-	if( m_pGizmo->IsContainer() )
-		m_pGizmo->CastToContainer()->_castDirtyRect( geo, clip, pDirtIn, pDirtOut );
-}
-
-void WgGizmoHook::_doRenderDirtyRects( WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& window, Uint8 layer )
-{
-	if( m_pGizmo->IsContainer() )
-		m_pGizmo->CastToContainer()->_renderDirtyRects( pDevice, canvas, window, layer );
-}
-
-void WgGizmoHook::_doClearDirtyRects()
-{
-	if( m_pGizmo->IsContainer() )
-		m_pGizmo->CastToContainer()->_clearDirtyRects();
+	if( m_pGizmo )
+		delete m_pGizmo;
 }
 
 //____ _attachGizmo() __________________________________________________________

@@ -56,7 +56,7 @@ bool WgRoot::SetGfxDevice( WgGfxDevice * pDevice )
 	m_pGfxDevice = pDevice;
 
 	if( m_pGfxDevice && !m_bHasGeo && m_hook.Gizmo() )
-		m_hook.DoSetNewSize( m_pGfxDevice->CanvasSize() );
+		m_hook.Gizmo()->_onNewSize( m_pGfxDevice->CanvasSize() );
 
 	return true;
 }
@@ -108,9 +108,9 @@ bool WgRoot::SetGizmo( WgGizmo * pGizmo )
 		return false;
 
 	m_hook._attachGizmo(pGizmo);
-	m_hook.DoSetNewSize(m_geo.size());
+	m_hook.Gizmo()->_onNewSize(m_geo.size());
 
-	m_hook._doCollectRects( m_dirtyRects, Geo(), Geo() );
+	m_hook.Gizmo()->_onCollectRects( m_dirtyRects, Geo(), Geo() );
 
 	return true;
 }
@@ -145,7 +145,8 @@ bool WgRoot::DeleteGizmo( WgGizmo * pGizmo )
 
 bool WgRoot::DeleteAllGizmos()
 {
-	return DeleteGizmo();
+	DeleteGizmo();
+	return true;
 }
 
 //____ ReleaseAllGizmos() _____________________________________________________
@@ -197,7 +198,7 @@ bool WgRoot::BeginRender( const WgRect& clip )
 
 	while( pRect )
 	{
-		m_hook._doCastDirtyRect( canvas, clip, pRect, &outDummy );
+		m_hook.Gizmo()->CastToContainer()->_castDirtyRect( canvas, clip, pRect, &outDummy );
 		pRect = m_dirtyRects.Pop();
 	}
 
@@ -214,7 +215,7 @@ bool WgRoot::RenderSection( int layer )
 
 	WgRect canvas = Geo();
 
-	m_hook._doRenderDirtyRects( m_pGfxDevice, canvas, canvas, layer );
+	m_hook.Gizmo()->CastToContainer()->_renderDirtyRects( m_pGfxDevice, canvas, canvas, layer );
 
 	return true;
 }
@@ -226,7 +227,7 @@ bool WgRoot::EndRender( void )
 	if( !m_pGfxDevice || !m_hook.Gizmo() )
 		return false;						// No GFX-device or no widgets to render.
 
-	m_hook._doClearDirtyRects();
+	m_hook.Gizmo()->CastToContainer()->_clearDirtyRects();
 
 	return m_pGfxDevice->EndRender();
 }

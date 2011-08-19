@@ -22,6 +22,7 @@
 
 #include <wg_gizmo_flexgeo.h>
 #include <wg_rectchain.h>
+#include <wg_util.h>
 
 static const char	c_gizmoType[] = {"FlexGeo"};
 
@@ -666,54 +667,9 @@ bool WgFlexHook::RefreshRealGeo()
 
 		// Calculate position
 
-		Detta ser skumt ut.... både Anchor() OCH m_hotspot? Ska det inte vara antingen eller?
-		Ersätt även switch-sats med anrop till WgUtil::LocationToOfs().
-
-		WgCord pos = m_pParent->Anchor(m_anchor)->position( parentSize );
-
-		switch( m_hotspot )
-		{
-			case WG_NORTHWEST:
-				break;
-
-			case WG_NORTH:
-				pos.x -= sz.w/2;
-				break;
-
-			case WG_NORTHEAST:
-				pos.x -= sz.w;
-				break;
-
-			case WG_EAST:
-				pos.x -= sz.w;
-				pos.y -= sz.h/2;
-				break;
-
-			case WG_SOUTHEAST:
-				pos.x -= sz.w;
-				pos.y -= sz.h;
-				break;
-
-			case WG_SOUTH:
-				pos.x -= sz.w/2;
-				pos.y -= sz.h;
-				break;
-
-			case WG_SOUTHWEST:
-				pos.y -= sz.h;
-				break;
-
-			case WG_WEST:
-				pos.y -= sz.h/2;
-				break;
-
-			case WG_CENTER:
-				pos.x -= sz.w/2;
-				pos.y -= sz.h/2;
-				break;
-		}
-
-		pos += m_placementGeo.pos();
+		WgCord pos = m_pParent->Anchor(m_anchor)->position( parentSize );	// Anchor,
+		pos -= WgUtil::LocationToOfs( m_hotspot, sz );						// hotspot
+		pos += m_placementGeo.pos();										// and Offset.
 
 		// Limit size/pos according to parent
 
@@ -750,7 +706,7 @@ bool WgFlexHook::RefreshRealGeo()
 
 	RequestRender();
 	m_realGeo = newGeo;
-	DoSetNewSize(newGeo);
+	m_pGizmo->_onNewSize(newGeo);
 	RequestRender();
 
 	//
@@ -823,7 +779,7 @@ void WgFlexHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& cl
 			{
 				// This is a container, call CastDirt recursively,
 
-				_doCastDirtyRect( screenGeo, clippedArea, pRect, pDirtOut );
+				m_pGizmo->CastToContainer()->_castDirtyRect( screenGeo, clippedArea, pRect, pDirtOut );
 			}
 			else
 			{
@@ -835,7 +791,7 @@ void WgFlexHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& cl
 
 				WgRectChain temp;
 				temp.PushExistingRect( pRect );
-				_doMaskRects( temp, screenGeo, clippedArea );
+				m_pGizmo->_onMaskRects( temp, screenGeo, clippedArea );
 				temp.Transfer( pDirtOut);
 			}
 		}
@@ -857,14 +813,14 @@ void WgFlexHook::_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentP
 
 	if( m_pGizmo->IsContainer() )
 	{
-		_doRenderDirtyRects( pDevice, geo, geo, _layer );
+		m_pGizmo->CastToContainer()->_renderDirtyRects( pDevice, geo, geo, _layer );
 	}
 	else
 	{
 		WgRectLink * pDirt = m_dirt.pRectList;
 		while( pDirt )
 		{
-			DoRender( pDevice, geo, geo, *pDirt, _layer );
+			m_pGizmo->_onRender( pDevice, geo, geo, *pDirt, _layer );
 			pDirt = pDirt->pNext;
 		}
 	}
@@ -1400,7 +1356,7 @@ void WgGizmoFlexGeo::_onCollectRects( WgRectChain& rects, const WgRect& geo, con
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		pHook->_doCollectRects( rects, pHook->m_realGeo + geo.pos(), clip );
+		pHook->Gizmo()->_onCollectRects( rects, pHook->m_realGeo + geo.pos(), clip );
 		pHook = pHook->NextHook();
 	}
 }
@@ -1412,7 +1368,7 @@ void WgGizmoFlexGeo::_onMaskRects( WgRectChain& rects, const WgRect& geo, const 
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		pHook->_doMaskRects( rects, pHook->m_realGeo + geo.pos(), clip );
+		pHook->Gizmo()->_onMaskRects( rects, pHook->m_realGeo + geo.pos(), clip );
 		pHook = pHook->NextHook();
 	}
 }
@@ -1436,7 +1392,7 @@ void WgGizmoFlexGeo::_onRequestRender( const WgRect& rect, const WgFlexHook * pH
 	while( pCover )
 	{
 		if( pCover->m_realGeo.intersectsWith( pHook->m_realGeo ) )
-			pCover->_doMaskRects( rects, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
+			pCover->Gizmo()->_onMaskRects( rects, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
 
 		pCover = pCover->NextHook();
 	}
@@ -1489,7 +1445,7 @@ void WgGizmoFlexGeo::_clearDirtyRects()
 	{
 		pHook->m_dirt.Clear();
 		if( pHook->Gizmo()->IsContainer() )
-			pHook->_doClearDirtyRects();
+			pHook->Gizmo()->CastToContainer()->_clearDirtyRects();
 
 		pHook = pHook->NextHook();
 	}

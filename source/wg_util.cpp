@@ -267,49 +267,34 @@ Uint32 WgUtil::DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
 
 WgCord WgUtil::LocationToOfs( WgLocation location, WgSize base )
 {
-	WgCord ofs;
-
 	switch( location )
 	{
+		default:
 		case WG_NORTHWEST:
-			break;
+			return WgCord(0,0);
 
 		case WG_NORTH:
-			ofs.x -= base.w/2;
-			break;
+			return WgCord( base.w/2,0 );
 
 		case WG_NORTHEAST:
-			ofs.x -= base.w;
-			break;
+			return WgCord( base.w,0 );
 
 		case WG_EAST:
-			ofs.x -= base.w;
-			ofs.y -= base.h/2;
-			break;
+			return WgCord( base.w, base.h/2 );
 
 		case WG_SOUTHEAST:
-			ofs.x -= base.w;
-			ofs.y -= base.h;
-			break;
+			return WgCord( base.w, base.h );
 
 		case WG_SOUTH:
-			ofs.x -= base.w/2;
-			ofs.y -= base.h;
-			break;
+			return WgCord( base.w/2, base.h );
 
 		case WG_SOUTHWEST:
-			ofs.y -= base.h;
-			break;
+			return WgCord( 0, base.h );
 
 		case WG_WEST:
-			ofs.y -= base.h/2;
-			break;
+			return WgCord( 0, base.h/2 );
 
 		case WG_CENTER:
-			ofs.x -= base.w/2;
-			ofs.y -= base.h/2;
-			break;
+			return WgCord( base.w/2, base.h/2 );
 	}
-
-	return ofs;
 }
