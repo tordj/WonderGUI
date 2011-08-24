@@ -133,7 +133,7 @@ void WgWidget::MaskAgainstBranch( WgRectChain * _pDirtObj, int _ofsX, int _ofsY 
 
 //____ WgWidget::RenderRecursively() ____________________________________________
 
-void WgWidget::RenderRecursively(Uint8 _layer, const WgRect& clip )
+void WgWidget::RenderRecursively(Uint8 _layer, const WgRect& _clip )
 {
 	// Update the clip rectangle
 
@@ -145,19 +145,19 @@ void WgWidget::RenderRecursively(Uint8 _layer, const WgRect& clip )
 	window.h = m_geo.h;
 	Local2abs( &window.x, &window.y );
 
-	window.intersection( window, clip );
+	WgRect clip( window, _clip );
 
 	// Do my own rendering
 
 	if( m_dirtyRects.pRectList && (_layer & m_layer) != 0)
 	{
 
-		m_dirtyRects.Clip( &window );
+		m_dirtyRects.Clip( &clip );
 
 		WgRectLink * pDirty = m_dirtyRects.pRectList;
  		while( pDirty != 0 )
  		{
-			DoMyOwnRender( window, WgRect(clip, *pDirty), _layer );
+			DoMyOwnRender( window, *pDirty, _layer );
  			pDirty = pDirty->pNext;
  		}
 	}
@@ -169,7 +169,7 @@ void WgWidget::RenderRecursively(Uint8 _layer, const WgRect& clip )
 	for( WgWidget * pTmp = m_pFirstChild ; pTmp != 0 ; pTmp = pTmp->m_pNextSibling )
 	{
 		if( !pTmp->m_bHidden )
-			pTmp->RenderRecursively(_layer, window );
+			pTmp->RenderRecursively(_layer, clip );
 	}
 }
 

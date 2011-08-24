@@ -471,6 +471,9 @@ enum	WgEventType
 	WG_EVENT_DUMMY = 0,
 	WG_EVENT_TICK,
 
+	WG_EVENT_FOCUS_GAINED,
+	WG_EVENT_FOCUS_LOST,
+
 	WG_EVENT_POINTER_ENTER,
 	WG_EVENT_POINTER_MOVE,
 	WG_EVENT_POINTER_PLACED,
@@ -521,6 +524,14 @@ public:
 
 	int	line;
 	int col;
+};
+
+//____ WgSortContext __________________________________________________________
+
+struct WgSortContext
+{
+public:
+	bool	bAscend;
 };
 
 #endif // WG_TYPES_DOT_H

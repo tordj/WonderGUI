@@ -55,6 +55,7 @@ WgGizmoCheckbox::WgGizmoCheckbox()
 	m_iconScale			= 0.f;
 	m_bIconPushText		= true;
 
+	m_bOpaqueText		= true;
 
 	m_aDisplace[0].x	= m_aDisplace[0].y = 0;
 	m_aDisplace[1]		= m_aDisplace[2] = m_aDisplace[0];
@@ -155,6 +156,16 @@ void WgGizmoCheckbox::GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sin
 
 	xDown = m_aDisplace[2].x;
 	yDown = m_aDisplace[2].y;
+}
+
+//_________________________________________________________________________
+void WgGizmoCheckbox::SetTextAreaOpaque( bool bOpaque )
+{
+	if( m_bOpaqueText != bOpaque )
+	{
+		m_bOpaqueText = bOpaque;
+		RefreshTextArea();
+	}
 }
 
 //____ SetState() _____________________________________________________________
@@ -514,6 +525,9 @@ void WgGizmoCheckbox::RefreshTextArea()
 		m_pTextArea = 0;
 	}
 	m_textAreaCount = 0;
+
+	if( !m_bOpaqueText )
+		return;
 
 	WgRect	contentRect = GetContentRect( Size(), GetIconRect( Size() ) );
 

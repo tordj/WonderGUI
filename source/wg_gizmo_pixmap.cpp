@@ -102,9 +102,9 @@ void WgGizmoPixmap::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	WgBlock	block;
 	if( m_bEnabled )
-		block = m_pGfx->GetBlock(WG_MODE_NORMAL);
+		block = m_pGfx->GetBlock(WG_MODE_NORMAL, _canvas);
 	else
-		block = m_pGfx->GetBlock(WG_MODE_DISABLED);
+		block = m_pGfx->GetBlock(WG_MODE_DISABLED, _canvas);
 
 	pDevice->ClipBlitBlock( _clip, block, _canvas);
 }

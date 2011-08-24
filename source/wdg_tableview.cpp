@@ -344,6 +344,7 @@ void Wdg_TableView::Init( void )
 	m_lastSortColumnAscendStatus	= true;
 
 	m_pMarkedHeader = NULL;
+	m_pPressedHeader = NULL;
 
 	m_markedRow = -1;
 	m_markedColumn = -1;
@@ -372,11 +373,56 @@ const char * Wdg_TableView::GetMyType( void )
 	return Wdg_Type;
 }
 
+//____ SetColumnOrder() _______________________________________________________
+
+bool Wdg_TableView::SetColumnOrder( std::vector<int> columns )
+{
+	if( columns.size() != m_nColumns )
+		return false;
+
+	// Some quick and simple error check to make us reasonably 
+	// confident that no column is specified twice and that no 
+	// non-existing columns are specified.
+
+	int total = 0;
+	int acceptedTotal = 0;
+	for( int i = 0 ; i < m_nColumns ; i++ )
+	{
+		total += columns[i];
+		acceptedTotal += i;
+	}
+
+	if( total != acceptedTotal )
+		return false;
+
+	// Copy content
+
+	for( int i = 0 ; i < m_nColumns ; i++ )
+		m_columnOrder[i] = columns[i];
+
+	// Needed since we now might have an new last visible column
+
+	RecalcColumnWidths();
+
+	return true;
+}
+
+//____ ResetColumnOrder() _____________________________________________________
+
+void Wdg_TableView::ResetColumnOrder()
+{
+	assert( m_columnOrder.size() == m_nColumns );
+
+	for( int i = 0 ; i < m_nColumns ; i++ )
+		m_columnOrder[i] = i;
+}
+
 //____ SetHeaderSource() ______________________________________________________
 
-bool Wdg_TableView::SetHeaderSource( const WgBlockSetPtr& pHeader )
+bool Wdg_TableView::SetHeaderSource( const WgBlockSetPtr& pHeaderNormalColumn, const WgBlockSetPtr& pHeaderSelectedColumn )
 {
-	m_pHeaderGfx		= pHeader;
+	m_pHeaderGfxNormal		= pHeaderNormalColumn;
+	m_pHeaderGfxSelected	= pHeaderSelectedColumn;
 
 	if( m_bShowHeader )
 		RequestRender();
@@ -507,13 +553,15 @@ void Wdg_TableView::RemoveColumns()
 	delete [] m_pColumns;
 	m_pColumns = 0;
 	m_nColumns = 0;
+
+	m_columnOrder.clear();
 }
 
 //____ RecalcColumnWidths() ___________________________________________________
 
 void Wdg_TableView::RecalcColumnWidths()
 {
-	for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+	for( int i = 0 ; i < m_nColumns ; i++ )
 		m_pColumns[i].m_pixelWidth = (float) m_pColumns[i].m_defWidth;
 
 
@@ -526,7 +574,7 @@ void Wdg_TableView::RecalcColumnWidths()
 		int totalDefWidth = 0;
 		float totalPixelWeight = 0;
 
-		for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+		for( int i = 0 ; i < m_nColumns ; i++ )
 		{
 			if( m_pColumns[i].m_bVisible )
 			{
@@ -545,7 +593,7 @@ void Wdg_TableView::RecalcColumnWidths()
 		while( extraWidth >= 1.f && bKeepGoing )		// Take care of growing
 		{
 			bKeepGoing = false;
-			for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+			for( int i = 0 ; i < m_nColumns ; i++ )
 			{
 				if( m_pColumns[i].m_bVisible && m_pColumns[i].m_defWidth != 0 && m_pColumns[i].m_pixelWidth < m_pColumns[i].m_maxWidth )
 				{
@@ -596,11 +644,26 @@ void Wdg_TableView::RecalcColumnWidths()
 void Wdg_TableView::ExtendLastColumn( int targetWidth )
 {
 	int totalWidth = 0;
-	for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+	for( int i = 0 ; i < m_nColumns ; i++ )
 		totalWidth += (int) m_pColumns[i].m_pixelWidth;
 
 	if( totalWidth < targetWidth && m_nColumns > 0 )
-		m_pColumns[m_nColumns-1].m_pixelWidth += (float) (targetWidth - totalWidth);
+	{
+		// Find the rightmost visible column.
+
+		int col = m_nColumns-1;
+		WgTableColumn * p = &m_pColumns[GetColumnAtPosition(col)];
+		
+		while( !p->m_bVisible )
+		{
+			if( col == 0 )
+				return;								// No visible column to extend.
+			col--;
+			p = &m_pColumns[GetColumnAtPosition(col)];
+		}
+
+		p->m_pixelWidth += (float) (targetWidth - totalWidth);
+	}
 }
 
 
@@ -611,7 +674,7 @@ void Wdg_TableView::TweakColumnWidths( int targetWidth )
 	// Make table the width of target width by adding pixels to the columns closest to being wider.
 
 	int widthDiff = targetWidth;
-	for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+	for( int i = 0 ; i < m_nColumns ; i++ )
 		widthDiff -= (int) m_pColumns[i].m_pixelWidth;
 
 	for( int loop = 0 ; loop < widthDiff ; loop++ )
@@ -619,7 +682,7 @@ void Wdg_TableView::TweakColumnWidths( int targetWidth )
 		float bestDecimals = 0.f;
 		int	  bestColumn = -1;
 
-		for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+		for( int i = 0 ; i < m_nColumns ; i++ )
 		{
 			float decimals = m_pColumns[i].m_pixelWidth - (int)m_pColumns[i].m_pixelWidth;
 			if( decimals >= bestDecimals && m_pColumns[i].m_pixelWidth < m_pColumns[i].m_maxWidth )
@@ -635,7 +698,7 @@ void Wdg_TableView::TweakColumnWidths( int targetWidth )
 
 	// Remove the deciamals
 
-	for( unsigned int i = 0 ; i < m_nColumns ; i++ )
+	for( int i = 0 ; i < m_nColumns ; i++ )
 		m_pColumns[i].m_pixelWidth = (float) ((int) m_pColumns[i].m_pixelWidth);
 }
 
@@ -644,11 +707,11 @@ void Wdg_TableView::TweakColumnWidths( int targetWidth )
 
 //____ AddColumn() ____________________________________________________________
 
-Uint32 Wdg_TableView::AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo& headerAlign, Sint32(*fpCompare)(WgItem *,WgItem *), bool bInitialAscend, bool bEnabled, int id )
+Uint32 Wdg_TableView::AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo& headerAlign, fpItemCmp fpCompare, bool bInitialAscend, bool bEnabled, int id )
 {
 	WgTableColumn * pCol = new WgTableColumn[m_nColumns+1];
 
-	for( Uint32 i = 0 ; i < m_nColumns ; i++ )
+	for( int i = 0 ; i < m_nColumns ; i++ )
 	{
 		pCol[i] = m_pColumns[i];
 		m_pColumns[i].m_pText = 0;			// To avoid deletion of text object further down.
@@ -670,7 +733,9 @@ Uint32 Wdg_TableView::AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo&
 	if( m_pColumns )
 		delete [] m_pColumns;
 	m_pColumns = pCol;
+	m_columnOrder.push_back(m_nColumns);
 	m_nColumns++;
+
 
 	RecalcColumnWidths();
 	SetContentSize( m_contentWidth + pixelwidth, m_contentHeight );
@@ -684,12 +749,46 @@ Uint32 Wdg_TableView::AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo&
 
 WgTableColumn* Wdg_TableView::FindColumn(Uint32 id) const
 {
-	for( Uint32 i = 0 ; i < m_nColumns ; i++ )
+	for( int i = 0 ; i < m_nColumns ; i++ )
 		if( m_pColumns[i].m_id == (int) id )
 			return &m_pColumns[i];
 
 	return 0;
 }
+
+//____ GetColumnAtPosition() ___________________________________________________
+
+int Wdg_TableView::GetColumnAtPosition( int position )
+{
+	return m_columnOrder[position];
+}
+
+//____ GetItemAtPosition() _____________________________________________________
+
+WgItem * Wdg_TableView::GetItemAtPosition( int position, WgTableRow * pRow )
+{
+	int ofs = m_columnOrder[position];
+
+	WgItem * p = pRow->GetFirstItem();
+
+	for( int i = 0 ; i < ofs && p != 0 ; i++ )
+		p = p->Next();
+
+	return p;
+}
+
+//____ GetPositionOfColumn() __________________________________________________
+
+int Wdg_TableView::GetPositionOfColumn( int col )
+{
+	for( int i = 0 ; i < m_nColumns ; i++ )
+		if( col == m_columnOrder[i] )
+			return i;
+
+	assert(false);			// Should never get here.
+	return -1;
+}
+
 
 
 //____ GetSortColumn() _____________________________________________________
@@ -728,8 +827,7 @@ WgRect Wdg_TableView::GetCellGeo( int row, int column )
 
 	// Adjust for header
 
-	if( m_bShowHeader && m_pHeaderGfx )
-		r.y += m_pHeaderGfx->GetHeight();
+	r.y += GetHeaderHeight();
 
 
 	WgTableRow * pRow = (WgTableRow *) m_items.First();
@@ -869,7 +967,7 @@ bool Wdg_TableView::SetClickSortPrio( Uint8 prio )
 
 bool Wdg_TableView::SortRows( Uint32 column, bool bAscend, Uint8 prio )
 {
-	if( column >= m_nColumns || prio > c_nSortColumns )
+	if( (int) column >= m_nColumns || prio > c_nSortColumns )
 		return false;
 
 
@@ -906,13 +1004,17 @@ bool Wdg_TableView::SortRows( Uint32 column, bool bAscend, Uint8 prio )
 
 Sint32 Wdg_TableView::CompareItems( WgItem * pItem1, WgItem * pItem2 )
 {
+	WgSortContext	context;
+
 	for( int n = 0 ; n < c_nSortColumns ; n++ )
 	{
-		Uint32 col = m_sortStack[n].column;
+		int col = m_sortStack[n].column;
 
 		if( col < m_nColumns && m_pColumns[col].m_fpCompare != 0 )
 		{
-			int diff = m_pColumns[col].m_fpCompare( ((WgTableRow*)pItem1)->GetItem(col), ((WgTableRow*)pItem2)->GetItem(col) );
+			context.bAscend = m_sortStack[n].bAscend;
+
+			int diff = m_pColumns[col].m_fpCompare( GetExtendedCellContent( (WgTableRow*)pItem1, col ), GetExtendedCellContent( (WgTableRow*)pItem2, col ), context );
 
 			if( diff != 0 )
 			{
@@ -927,6 +1029,28 @@ Sint32 Wdg_TableView::CompareItems( WgItem * pItem1, WgItem * pItem2 )
 	return 0;
 
 //	return m_pColumns[m_sortColumn].fpCompare( ((WgTableRow*)pItem1)->GetItem(m_sortColumn), ((WgTableRow*)pItem2)->GetItem(m_sortColumn) );
+}
+
+//____ GetExtendedCellContent() _______________________________________________
+
+WgItem * Wdg_TableView::GetExtendedCellContent( WgTableRow * pRow, int col )
+{
+	WgItem * pContent = pRow->GetItem(col);	
+
+	// Look through previous column positions in table to find the one extending over our cell.
+
+	if( !pContent )
+	{
+		int pos = GetPositionOfColumn(col);
+	
+		while( pos > 0 && !pContent )
+		{
+			pos--;
+			pContent = GetItemAtPosition( pos, pRow );
+		}
+	}
+	
+	return pContent;
 }
 
 
@@ -946,22 +1070,42 @@ void Wdg_TableView::ShowHeader( bool bShow )
 {
 	if( bShow != m_bShowHeader )
 	{
-		m_bShowHeader = bShow;
-
 		int newHeight = m_contentHeight;
-
-		if( m_pHeaderGfx )
+		if( bShow )
 		{
-			if( bShow )
-				newHeight += m_pHeaderGfx->GetHeight();
-			else
-				newHeight -= m_pHeaderGfx->GetHeight();
+			m_bShowHeader = bShow;
+			newHeight += GetHeaderHeight();
 		}
+		else
+		{
+			newHeight -= GetHeaderHeight();
+			m_bShowHeader = bShow;
+		}
+
 
 		SetContentSize( m_contentWidth, newHeight );
 		RequestRender();
 	}
 }
+
+//____ GetHeaderHeight() ______________________________________________________
+
+int Wdg_TableView::GetHeaderHeight()
+{
+	if( !m_bShowHeader )
+		return 0;
+
+	int h = 0;
+
+	if( m_pHeaderGfxNormal )
+		h = m_pHeaderGfxNormal->GetHeight();
+
+	if( m_pHeaderGfxSelected && m_pHeaderGfxSelected->GetHeight() > h )
+		h = m_pHeaderGfxSelected->GetHeight();
+
+	return h;
+}
+
 
 //____ UpdateContentSize() _________________________________________________________
 
@@ -983,16 +1127,15 @@ void Wdg_TableView::UpdateContentSize()
 
 	// Calc contentWidth
 
-	for( Uint32 i = 0 ; i < m_nColumns ; i++ )
+	for( int i = 0 ; i < m_nColumns ; i++ )
 	{
 		if( m_pColumns[i].m_bVisible )
 			contentWidth += (int) m_pColumns[i].m_pixelWidth;
 	}
 
-	// Possibly add header to height
+	// Possibly add header to height (if we have one)
 
-	if( m_bShowHeader && m_pHeaderGfx )
-		contentHeight += m_pHeaderGfx->GetHeight();
+	contentHeight += GetHeaderHeight();
 
 	// Set size and request render
 
@@ -1139,7 +1282,7 @@ void Wdg_TableView::AdaptCellsToWidth()
 	{
 		WgItem *	pCell = pRow->GetFirstItem();
 
-		for( Uint32 i = 0 ; i < m_nColumns && pCell != 0 ; i++ )
+		for( int i = 0 ; i < m_nColumns && pCell != 0 ; i++ )
 		{
 			if( m_pColumns[i].m_bVisible )
 			{
@@ -1215,12 +1358,10 @@ int Wdg_TableView::GetMarkedRow( Uint32 y, WgTableRow*& pSaveRow, Uint32& saveYO
 
 	// Transform from relative widget cordinates to content-cordinates.
 
-	if( m_bShowHeader && m_pHeaderGfx )
-	{
-		if( (int)y < m_pHeaderGfx->GetHeight() )
-			return -1;	// on header.
-		y -=  m_pHeaderGfx->GetHeight();
-	}
+	int headerHeight = GetHeaderHeight();
+	if( (int)y < headerHeight )
+		return -1;	// on header.
+	y -=  headerHeight;
 
 	y += m_viewPixOfsY;
 
@@ -1270,8 +1411,10 @@ int Wdg_TableView::GetMarkedColumn( Uint32 x, Uint32& saveXOfs )
 
 	// Loop through columns to find out which one we are inside.
 
-	for( Uint32 col = 0 ; col < m_nColumns ; col++ )
+	for( int _col = 0 ; _col < m_nColumns ; _col++ )
 	{
+		int col = GetColumnAtPosition( _col );
+
 		if( m_pColumns[col].m_bVisible )
 		{
 			Uint32 scaledW = (unsigned int) m_pColumns[col].m_pixelWidth;
@@ -1304,7 +1447,7 @@ void Wdg_TableView::ItemAdded( WgItem * pItem )
 	WgItemRow * pRow = (WgItemRow*) pItem;
 	WgItem * pI = pRow->GetFirstItem();
 
-	for( unsigned int n = 0 ; n < m_nColumns && pI ; n++ )
+	for( int n = 0 ; n < m_nColumns && pI ; n++ )
 	{
 		pI->AdaptToWidth( m_pColumns[n].GetWidth() - m_cellPaddingX*2 );
 		pI = pI->Next();
@@ -1337,13 +1480,16 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 	// Draw header (if any)
 
-	if( m_bShowHeader && m_pHeaderGfx )
+	int headerHeight = GetHeaderHeight();
+	if( headerHeight > 0 )
 	{
 		WgRect	r2 = r;
 		r2.y = _window.y;						// Header is glued to top of view.
-		r2.h = m_pHeaderGfx->GetHeight();
-		for( Uint32 i = 0 ; i < m_nColumns ; i++ )
+		r2.h = headerHeight;
+		for( int _i = 0 ; _i < m_nColumns ; _i++ )
 		{
+			int i = GetColumnAtPosition(_i);
+
 			if( !m_pColumns[i].m_bVisible )
 				continue;
 
@@ -1359,21 +1505,20 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 			WgMode mode = WG_MODE_NORMAL;
 
-			bool	bMarked = (&m_pColumns[i]==m_pMarkedHeader);
-			bool	bSelected = (i==m_lastSortColumn);
-
-			if( bSelected )
+			if(&m_pColumns[i]==m_pMarkedHeader )
 			{
-				if( bMarked )
-					mode = WG_MODE_SPECIAL;
-				else
+				if( m_pPressedHeader == m_pMarkedHeader )
 					mode = WG_MODE_SELECTED;
+				else if( m_pPressedHeader == 0 )
+					mode = WG_MODE_MARKED;
 			}
-			else if( bMarked )
-				mode = WG_MODE_MARKED;
-
-
-			WgGfx::clipBlitBlock( _clip, m_pHeaderGfx->GetBlock(mode), r2 );
+			WgBlockSetPtr pHeaderGfx;
+			if( i==m_lastSortColumn )				// See if column is the selected one.
+				pHeaderGfx = m_pHeaderGfxSelected;
+			else
+				pHeaderGfx = m_pHeaderGfxNormal;
+			
+			WgGfx::clipBlitBlock( _clip, pHeaderGfx->GetBlock(mode), r2 );
 
 			if( i == m_lastSortColumn && m_pAscendGfx && m_pDescendGfx )
 			{
@@ -1393,8 +1538,8 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 //			if( m_pHeaderTextProp )
 //			{
 				WgRect rText = r2;
-				if( m_pHeaderGfx )
-					rText.shrink( m_pHeaderGfx->GetContentBorders() );
+				if( pHeaderGfx )
+					rText.shrink( pHeaderGfx->GetContentBorders() );
 
 				m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
 				WgGfx::printText( _clip, m_pColumns[i].GetTextObj(), rText );
@@ -1403,13 +1548,13 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			r2.x += r2.w - 1;	// HACK: Overlap last pixel to avoid double separator graphics between two headers
 		}
 
-		r.y += m_pHeaderGfx->GetHeight();
+		r.y += headerHeight;
 
 		// Modify clipping rectangle for view content (we don't want to draw over header)
 
-		if(  _clip.y < _window.y + m_pHeaderGfx->GetHeight())
+		if(  _clip.y < _window.y + headerHeight)
 		{
-			Sint32 diff = _window.y + m_pHeaderGfx->GetHeight() - _clip.y;
+			Sint32 diff = _window.y + headerHeight - _clip.y;
 			clipView.y += diff;
 			clipView.h -= diff;
 			if( clipView.h < 1 )
@@ -1424,7 +1569,8 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 	// Start drawing cell contents.
 
 	WgTableRow * pRow = (WgTableRow *) m_items.First();
-	int iRowNb = 0;
+	int iVisibleRowNb = 0;
+	int iRealRowNb = 0;
 
 	// Skip rows that are above clipping area.
 	r.y += m_cellPaddingY;
@@ -1435,8 +1581,9 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			if( r.y + (Sint32) pRow->Height() >= clipView.y )
 				 break;
 			r.y += pRow->Height() + m_cellPaddingY*2;
-			iRowNb++;
+			iVisibleRowNb++;
 		}
+		iRealRowNb++;
 		pRow = (WgTableRow *) pRow->GetNext();
 	}
 	r.y -= m_cellPaddingY;
@@ -1448,6 +1595,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 		if( pRow->IsHidden() )
 		{
 			pRow = (WgTableRow *) pRow->GetNext();
+			iRealRowNb++;
 			continue;
 		}
 
@@ -1459,25 +1607,38 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 		WgRect	u;
 		if( u.intersection( r, clipView ) )
 		{
-			DrawRowBg( u, pRow, iRowNb, r );
+			DrawRowBg( u, pRow, iVisibleRowNb, iRealRowNb, r );
 		}
 
-		WgItem *	pCell = pRow->GetFirstItem();
 		WgRect		rc = r;
 
 		rc.y += m_cellPaddingY;
 		rc.h = pRow->Height();
-		for( Uint32 i = 0 ; i < m_nColumns && pCell != 0 ; i++ )
+		for( int _i = 0 ; _i < m_nColumns ; _i++ )
 		{
-			if( m_pColumns[i].m_bVisible )
+			WgItem * pCell = GetItemAtPosition( _i, pRow );
+			int i = GetColumnAtPosition( _i );
+
+			if( pCell && m_pColumns[i].m_bVisible )
 			{
 				// don't draw columns that are outside of the window
 				if( rc.x >= _window.x + _window.w )
 					break;
 
 				rc.w = (int)m_pColumns[i].m_pixelWidth;
-//				if( i == m_nColumns-1 && rc.x + rc.w < _window.x + _window.w )
-//					rc.w = _window.x + _window.w - rc.x;		// Last column stretches to end of tableview...
+
+				// Extend cell over any following empty columns.
+
+				for( int j = _i+1 ; j < m_nColumns ; j++ )
+				{
+					WgItem * pNext = GetItemAtPosition( j, pRow );
+					if( pNext )
+						break;
+
+					rc.w += (int)m_pColumns[GetColumnAtPosition(j)].m_pixelWidth;
+				}
+								
+				//
 
 				rc.x += m_cellPaddingX;
 				rc.w -= m_cellPaddingX*2;
@@ -1490,12 +1651,12 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 				rc.x += ((int)m_pColumns[i].m_pixelWidth) - m_cellPaddingX;		// One cellpadding already added...
 //				rc.x -= 1;	// HACK: Overlap last pixel to avoid double separator graphics between two headers
 			}
-			pCell = pCell->GetNext();
 		}
 
 		r.y += pRow->Height() + m_cellPaddingY*2;
 		pRow = (WgTableRow *) pRow->GetNext();
-		iRowNb++;
+		iVisibleRowNb++;
+		iRealRowNb++;
 	}
 
 	// Possibly fill with empty rows
@@ -1508,10 +1669,10 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 			WgRect	u;
 			if( u.intersection( r, clipView ) )
-				DrawRowBg( u, pRow, iRowNb, r );
+				DrawRowBg( u, pRow, iVisibleRowNb, iVisibleRowNb, r );
 
 			r.y += r.h;
-			iRowNb++;
+			iVisibleRowNb++;
 		}
 	}
 
@@ -1519,31 +1680,31 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 //____ DrawRowBg() ____________________________________________________________
 
-void Wdg_TableView::DrawRowBg( const WgRect& clip, WgTableRow * pRow, int iRowNb, const WgRect& dest )
+void Wdg_TableView::DrawRowBg( const WgRect& clip, WgTableRow * pRow, int iVisibleRowNb, int iRealRowNb, const WgRect& dest )
 {
 	WgMode mode = WG_MODE_NORMAL;
 	if( pRow->IsSelected() )
 	{
-		if( iRowNb == m_markedRow )
+		if( iRealRowNb == m_markedRow )
 			mode = WG_MODE_SPECIAL;
 		else
 			mode = WG_MODE_SELECTED;
 	}
-	else if( iRowNb == m_markedRow )
+	else if( iRealRowNb == m_markedRow )
 		mode = WG_MODE_MARKED;
 
-	if( m_pRowColors[iRowNb%2] )
+	if( m_pRowColors[iVisibleRowNb%2] )
 	{
-		WgColor color = m_pRowColors[iRowNb%2]->Color(mode);
+		WgColor color = m_pRowColors[iVisibleRowNb%2]->Color(mode);
 		if( 0 != color.a )
 			WgGfx::fillRect( clip, color );
 	}
 
-	if( m_pRowBlocks[iRowNb%2] )
+	if( m_pRowBlocks[iVisibleRowNb%2] )
 	{
-		WgBlockSetPtr p = m_pRowBlocks[iRowNb%2];
+		WgBlockSetPtr p = m_pRowBlocks[iVisibleRowNb%2];
 		if( p && !p->IsModeSkipable(mode) )
-			WgGfx::clipBlitBlock(clip, p->GetBlock(mode), dest );
+			WgGfx::clipBlitBlock(clip, p->GetBlock(mode, dest.size() ), dest );
 	}
 }
 
@@ -1565,7 +1726,7 @@ void Wdg_TableView::DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pClone
 	if(m_nColumns && m_pColumns)
 	{
 		pClone->m_pColumns = new WgTableColumn[m_nColumns];
-		for(Uint32 i = 0; i < m_nColumns; i++)
+		for(int i = 0; i < m_nColumns; i++)
 			pClone->m_pColumns[i] = WgTableColumn(m_pColumns[i]);
 	}
 
@@ -1584,7 +1745,8 @@ void Wdg_TableView::DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pClone
 	pClone->m_pDescendGfx = m_pDescendGfx;
 	pClone->m_lastSortColumn = m_lastSortColumn;
 	pClone->m_lastSortColumnAscendStatus = m_lastSortColumnAscendStatus;
-	pClone->m_pHeaderGfx = m_pHeaderGfx;
+	pClone->m_pHeaderGfxNormal = m_pHeaderGfxNormal;
+	pClone->m_pHeaderGfxSelected = m_pHeaderGfxSelected;
 	pClone->m_pMarkedHeader = m_pMarkedHeader;
 //	pClone->m_pMarkedLineGfx = m_pMarkedLineGfx;
 
@@ -1610,11 +1772,13 @@ WgTableColumn *Wdg_TableView::GetHeaderColumnAt(int x, int y)
 	if(x < 0 || y < 0)
 		return NULL;
 
-	if( m_bShowHeader && m_pHeaderGfx && m_pHeaderGfx->GetHeight() > y )
+	if( GetHeaderHeight() > y )
 	{
 		int xOfs = x;
-		for( Uint32 col = 0 ; col < m_nColumns ; col++ )
+		for( int _col = 0 ; _col < m_nColumns ; _col++ )
 		{
+			int col = GetColumnAtPosition(_col);
+
 			if( m_pColumns[col].m_bVisible )
 			{
 				int w = (int) m_pColumns[col].m_pixelWidth;
@@ -1640,43 +1804,34 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 	{
 		case WgInput::BUTTON_PRESS:
 		{
-			if( m_bShowHeader && m_pHeaderGfx && m_pHeaderGfx->GetHeight() > y )		// Press on header?
+			WgTableColumn * pCol = GetHeaderColumnAt( x, y );			// Press on header?
+			if( pCol )
 			{
-				int xOfs = x;
-				for( Uint32 col = 0 ; col < m_nColumns ; col++ )
+				m_pPressedHeader = pCol;
+
+				int col = pCol - m_pColumns;
+				Emit( WgSignal::TableHeaderPress(_button_key), col );
+				bool	bAscend = pCol->m_bInitialAscend;
+				if( col == m_lastSortColumn )
+					bAscend = !m_lastSortColumnAscendStatus;
+
+				// If we have clicked on the header of a column that is higher than clickSortPrio, we
+				// should just flip bAscend right away since it's already sorted.
+
+				for( int i = 0 ; i < m_clickSortPrio ; i++ )
 				{
-					int scaledW = (int)m_pColumns[col].m_pixelWidth;
-					if( m_pColumns[col].m_bVisible && xOfs < scaledW )
+					if( m_sortStack[i].column == col )
 					{
-						if( m_pColumns[col].m_bEnabled )
-						{
-							Emit( WgSignal::TableHeaderPress(_button_key), col );
-							bool	bAscend = m_pColumns[col].m_bInitialAscend;
-							if( col == m_lastSortColumn )
-								bAscend = !m_lastSortColumnAscendStatus;
-
-							// If we have clicked on the header of a column that is higher than clickSortPrio, we
-							// should just flip bAscend right away since it's already sorted.
-
-							for( int i = 0 ; i < m_clickSortPrio ; i++ )
-							{
-								if( m_sortStack[i].column == col )
-								{
-									bAscend = !m_sortStack[i].bAscend;
-									break;
-								}
-							}
-
-							//
-
-							SortRows( col, bAscend, m_clickSortPrio );
-						}
+						bAscend = !m_sortStack[i].bAscend;
 						break;
 					}
-					xOfs -= scaledW - 1;
 				}
-				break;
+
+				//
+
+				SortRows( col, bAscend, m_clickSortPrio );
 			}
+
 
 			Uint32 saveOfs;
 			WgTableRow * pSaveRow;
@@ -1696,6 +1851,15 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 				}
 			}
 		}
+		break;
+
+		case WgInput::BUTTON_RELEASE:
+			if( m_pPressedHeader )
+			{			
+				m_pPressedHeader = 0;
+				RequestRender();
+			}
+
 		break;
 
 		case WgInput::BUTTON_CLICK:

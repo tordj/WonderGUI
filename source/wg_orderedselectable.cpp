@@ -22,29 +22,66 @@
 
 #include <wg_orderedselectable.h>
 
-void WgOrdSelHook::SetSelected( bool bSelected );
-void WgOrdSelHook::SetSelectable( bool bSelectable );
+void WgOrdSelHook::SetSelected( bool bSelected )
+{
+}
 
-WgOrdSelHook::WgOrdSelHook( WgGizmo * pGizmo );
-WgOrdSelHook::~WgOrdSelHook();
+void WgOrdSelHook::SetSelectable( bool bSelectable )
+{
+}
 
-WgOrdSelHook *	WgOrdSelHook::_prevSelectedHook() const;
-WgOrdSelHook *	WgOrdSelHook::_nextSelectedHook() const;
+WgOrdSelHook::WgOrdSelHook( WgGizmo * pGizmo )
+{
+}
 
-int WgOrdSelLayout::SelectAll();
-void WgOrdSelLayout::ClearSelection();
+WgOrdSelHook::~WgOrdSelHook()
+{
+}
 
-int WgOrdSelLayout::GetNbSelected();
+WgOrdSelHook *	WgOrdSelHook::_prevSelectedHook() const
+{
+}
 
-void WgOrdSelLayout::SetSelectMode( WgSelectMode mode );
+WgOrdSelHook *	WgOrdSelHook::_nextSelectedHook() const
+{
+}
 
+int WgOrdSelLayout::SelectAll()
+{
+}
 
-void WgOrdSelLayout::SetChildBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg );
-void WgOrdSelLayout::SetChildFgBlocks( const WgBlockSetPtr& pFg );
+void WgOrdSelLayout::ClearSelection()
+{
+}
 
-void WgOrdSelLayout::SetChildBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg );
+int WgOrdSelLayout::GetNbSelected()
+{
+}
 
-void WgOrdSelLayout::_onCloneContent( const WgGizmo * _pOrg );
+void WgOrdSelLayout::SetSelectMode( WgSelectMode mode )
+{
+}
 
-WgOrdSelHook * WgOrdSelLayout::_firstSelectedHook() const;
-WgOrdSelHook * WgOrdSelLayout::_lastSelectedHook() const;
+void WgOrdSelLayout::SetChildBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg )
+{
+}
+
+void WgOrdSelLayout::SetChildFgBlocks( const WgBlockSetPtr& pFg )
+{
+}
+
+void WgOrdSelLayout::SetChildBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg )
+{
+}
+
+void WgOrdSelLayout::_onCloneContent( const WgGizmo * _pOrg )
+{
+}
+
+WgOrdSelHook * WgOrdSelLayout::_firstSelectedHook() const
+{
+}
+
+WgOrdSelHook * WgOrdSelLayout::_lastSelectedHook() const
+{
+}

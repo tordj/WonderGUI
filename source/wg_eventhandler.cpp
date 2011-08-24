@@ -547,6 +547,10 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event& _event )
 
 	switch( _event.Type() )
 	{
+		case WG_EVENT_FOCUS_GAINED:
+		case WG_EVENT_FOCUS_LOST:
+			break;
+
 		case WG_EVENT_POINTER_ENTER:
 			_processPointerEnter( (WgEvent::PointerEnter*) &_event );
 			break;

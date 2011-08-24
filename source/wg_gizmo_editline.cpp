@@ -43,6 +43,7 @@ WgGizmoEditline::WgGizmoEditline()
 	m_maxCharacters = 0;
 	m_inputMode		= Editable;
 	m_pointerStyle	= WG_POINTER_IBEAM;
+	m_bResetCursorOnFocus = true;
 }
 
 //____ Destructor _____________________________________________________________
@@ -548,7 +549,8 @@ void WgGizmoEditline::_onGotInputFocus()
 
 	if( IsEditable() )
 	{
-		m_pText->GetCursor()->goEOL();
+		if( m_bResetCursorOnFocus )
+			m_pText->GetCursor()->goEOL();
 		RequestRender(); // render with cursor on
 	}
 }
@@ -563,6 +565,7 @@ void WgGizmoEditline::_onLostInputFocus()
 	{
 		m_pText->clearSelection();
 		m_pText->setSelectionMode(false);
+		m_bResetCursorOnFocus = false;
 	}
 
 	if( IsEditable() || m_viewOfs != 0 )
@@ -585,6 +588,7 @@ void WgGizmoEditline::_onNewSize( const WgSize& size )
 
 void WgGizmoEditline::TextModified()
 {
+	m_bResetCursorOnFocus = true;			// Any change to text while we don't have focus resets the position.
 	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	RequestRender();
 	AdjustViewOfs();

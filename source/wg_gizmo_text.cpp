@@ -40,6 +40,7 @@ WgGizmoText::WgGizmoText()
 
 	m_text.setLineWidth( Size().w );
 	m_inputMode = Static;
+	m_bResetCursorOnFocus = true;
 }
 
 
@@ -354,7 +355,8 @@ void WgGizmoText::_onGotInputFocus()
 	m_bFocused = true;
 	if( IsEditable() ) // render with cursor on
 	{
-		m_pText->GetCursor()->goEOF();
+		if(	m_bResetCursorOnFocus )
+			m_pText->GetCursor()->goEOF();
 		RequestRender();
 	}
 }
@@ -364,6 +366,7 @@ void WgGizmoText::_onGotInputFocus()
 void WgGizmoText::_onLostInputFocus()
 {
 	m_bFocused = false;
+	m_bResetCursorOnFocus = false;
 	if( IsEditable() ) // render with cursor off
 		RequestRender();
 }
@@ -374,6 +377,7 @@ void WgGizmoText::_onLostInputFocus()
 
 void WgGizmoText::TextModified()
 {
+	m_bResetCursorOnFocus = true;
 	RequestRender();
 }
 

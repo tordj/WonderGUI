@@ -1870,13 +1870,19 @@ int WgText::CoordToColumn( int line, const WgCord& coord, const WgRect& containe
 			pen.AdvancePosCursor( * pCursor );
 		cursColumn--;
 */
-
+		int charStartX = pen.GetPosX();
 		pen.SetChar( pChars[i].Glyph() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
+		int charEndX = pen.GetPosX();
 
-		if( pen.GetPosX() > coord.x )
-			return i;
+		if( charEndX > coord.x )
+		{
+			if( bCursorMode && (charEndX - coord.x) <= (coord.x - charStartX) )
+				return i+1;
+			else
+				return i;
+		}
 	}
 
 	return bCursorMode?pLine->nChars:-1;			// We should never get here...

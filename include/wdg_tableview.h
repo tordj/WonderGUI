@@ -36,7 +36,11 @@ class WgText;
 class WgFont;
 class Wdg_TableView;
 
-typedef Sint32(*fpItemCmp)(WgItem*,WgItem*);
+
+
+typedef Sint32(*fpItemCmp)(WgItem*,WgItem*, const WgSortContext& context);
+
+
 
 
 class WgTableColumn : public Wg_Interface_TextHolder
@@ -165,11 +169,16 @@ public:
 
 	//____ Methods __________________________________________
 
+	bool	SetColumnOrder( std::vector<int> columns );
+	inline const std::vector<int>& GetColumnOrder() const { return m_columnOrder; }
+	void	ResetColumnOrder();
+
 	bool	SetHeaderTextProp( const WgTextPropPtr& pProp );
 	inline	WgTextPropPtr GetHeaderTextProp() const { return m_pHeaderProps; };
 
-	bool	SetHeaderSource( const WgBlockSetPtr& pHeader );
-	WgBlockSetPtr GetHeaderSource() const { return m_pHeaderGfx; }
+	bool	SetHeaderSource( const WgBlockSetPtr& pHeaderNormalColumn, const WgBlockSetPtr& pHeaderSelectedColumn );
+	WgBlockSetPtr GetHeaderSourceNormal() const { return m_pHeaderGfxNormal; }
+	WgBlockSetPtr GetHeaderSourceSelected() const { return m_pHeaderGfxSelected; }
 
 	void	SetArrowSource( const WgBlockSetPtr& pAscend, const WgBlockSetPtr& pDescend );
 	WgBlockSetPtr GetArrowAscend() const { return m_pAscendGfx; }
@@ -190,7 +199,7 @@ public:
 	void	SetAutoScaleHeaders(bool autoScaleHeaders);
 	bool	GetAutoScaleHeaders() const { return m_bAutoScaleHeader; }
 
-	Sint32	GetHeaderHeight()	{ return (m_bShowHeader && m_pHeaderGfx) ? m_pHeaderGfx->GetHeight(0) : 0; }
+	int		GetHeaderHeight();
 
 	void	SetEmptyRowHeight( Uint32 height );
 	Uint32	GetEmptyRowHeight() { return m_emptyRowHeight; }
@@ -207,7 +216,7 @@ public:
 	WgColorSetPtr GetEvenRowColors() const { return m_pRowColors[1]; }
 	void	RemoveRowColors();
 
-	Uint32	AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo& origo = WgOrigo::midLeft(), Sint32(*fpCompare)(WgItem *,WgItem *) = 0, bool bInitialAscend = true, bool bEnabled = true, int id = 0 );
+	Uint32	AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo& origo = WgOrigo::midLeft(), fpItemCmp fpCompare = 0, bool bInitialAscend = true, bool bEnabled = true, int id = 0 );
 	void	RemoveColumns();
 //	bool	SetColumnWidth( Uint32 column, Uint32 pixelwidth );
 //	bool	SetColumnVisible( Uint32 column, bool bVisible );
@@ -281,7 +290,12 @@ protected:
 private:
 	void 	Init();
 
-	void	DrawRowBg( const WgRect& clip, WgTableRow * pRow, int iRowNb, const WgRect& dest );
+	int		GetColumnAtPosition( int position );
+	WgItem * GetItemAtPosition( int position, WgTableRow * pRow );
+	int		GetPositionOfColumn( int col );
+	WgItem *GetExtendedCellContent( WgTableRow * pRow, int col );
+
+	void	DrawRowBg( const WgRect& clip, WgTableRow * pRow, int iVisibleRowNb, int RealRowNb, const WgRect& dest );
 
 	void	TweakColumnWidths( int targetWidth );
 	void	ExtendLastColumn( int targetWidth );
@@ -313,7 +327,6 @@ private:
 		bool		bAscend;
 	};
 
-
 	static const int c_nSortColumns = 4;
 	SortInfo		m_sortStack[c_nSortColumns];			// 0xFFFF = none
 
@@ -324,8 +337,10 @@ private:
 
 	bool			m_bAutoScrollMarked;
 
-	Uint32			m_nColumns;
+	int				m_nColumns;
 	WgTableColumn *	m_pColumns;
+
+	std::vector<int> m_columnOrder;
 
 	WgColorSetPtr 	m_pRowColors[2];
 	WgBlockSetPtr	m_pRowBlocks[2];
@@ -364,10 +379,12 @@ private:
 		HEADER_SRC_HIGHLIGHT,
 	};
 
-	WgBlockSetPtr	m_pHeaderGfx;
+	WgBlockSetPtr	m_pHeaderGfxNormal;
+	WgBlockSetPtr	m_pHeaderGfxSelected;
 
 	WgTableColumn*	GetHeaderColumnAt(int x, int y);
 	WgTableColumn*	m_pMarkedHeader;						// Header currently marked by mouse
+	WgTableColumn*	m_pPressedHeader;						// Header who have received current mouse button press
 
 
 //	WgBlockSetPtr	m_pMarkedLineGfx;
