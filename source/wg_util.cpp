@@ -13,7 +13,7 @@ bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 		int areaH = area.h;
 
 		int blockW = block.GetWidth();
-		int blockH = block.GetHeight();		
+		int blockH = block.GetHeight();
 
 		if( areaW > blockW )
 		{
@@ -263,3 +263,38 @@ Uint32 WgUtil::DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
 	return nChar;
 }
 
+//____ LocationToOfs() ________________________________________________________
+
+WgCord WgUtil::LocationToOfs( WgLocation location, WgSize base )
+{
+	switch( location )
+	{
+		default:
+		case WG_NORTHWEST:
+			return WgCord(0,0);
+
+		case WG_NORTH:
+			return WgCord( base.w/2,0 );
+
+		case WG_NORTHEAST:
+			return WgCord( base.w,0 );
+
+		case WG_EAST:
+			return WgCord( base.w, base.h/2 );
+
+		case WG_SOUTHEAST:
+			return WgCord( base.w, base.h );
+
+		case WG_SOUTH:
+			return WgCord( base.w/2, base.h );
+
+		case WG_SOUTHWEST:
+			return WgCord( 0, base.h );
+
+		case WG_WEST:
+			return WgCord( 0, base.h/2 );
+
+		case WG_CENTER:
+			return WgCord( base.w/2, base.h/2 );
+	}
+}

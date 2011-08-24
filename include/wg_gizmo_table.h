@@ -87,7 +87,7 @@ class WgTableHook : public WgGizmoHook
 	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
 
 protected:
-	WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow );
+	WgTableHook( WgTableRow2 * pRow );
 	~WgTableHook();
 
 	void	RequestRender();
@@ -192,7 +192,7 @@ public:
 	inline	WgTableRow2* Next() const	{ return (WgTableRow2*) WgLink::m_pNext; };
 	inline	WgTableRow2* Prev() const	{ return (WgTableRow2*) WgLink::m_pNext; };
 
-	inline	void	SetVisible(bool bVisible);
+	void			SetVisible(bool bVisible);
 	inline	void	Show() { SetVisible(true); }
 	inline	void	Hide() { SetVisible(false); }
 	inline	bool	IsVisible() const { return m_bVisible; }
@@ -205,6 +205,8 @@ public:
 
 	void			SetGizmo( WgGizmo * pGizmo, int cell );
 	int				AddGizmo( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseGizmo( int cell );
+	bool			DeleteGizmo( int cell );
 
 	WgGizmoTable*	Table() const { return m_pTable; }
 protected:
@@ -320,6 +322,14 @@ public:
 	inline WgTableRow2*	LastRow() const { return m_rows.Last(); }
 	inline int			NbRows() const { return m_nRows; }
 	inline int			CompareRows(WgTableRow2* p1, WgTableRow2* p2) const;
+
+	// Overloaded from WgGizmoParent
+
+	bool			DeleteGizmo( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+
+	bool			DeleteAllGizmos();
+	bool			ReleaseAllGizmos();
 
 //	void	ScrollIntoView( WgTableRow2* pRow );
 

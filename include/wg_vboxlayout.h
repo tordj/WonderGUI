@@ -24,12 +24,12 @@
 #define WG_VBOXLAYOUT_DOT_H
 
 #ifndef WG_ORDERED_LAYOUT_DOT_H
-#	include <wg_orderedselectable.h>
+#	include <wg_orderedlayout.h>
 #endif
 
 class WgVBoxLayout;
 
-class WgVBoxHook : public WgOrdSelHook
+class WgVBoxHook : public WgOrderedHook
 {
 	friend class WgVBoxLayout;
 
@@ -37,24 +37,24 @@ public:
 	inline WgVBoxHook * PrevHook() const { return _prev(); }
 	inline WgVBoxHook * NextHook() const { return _next(); }
 
-	inline WgVBoxHook * PrevSelectedHook() const { return static_cast<WgVBoxHook*>(_prevSelectedHook()); }
-	inline WgVBoxHook * NextSelectedHook() const { return static_cast<WgVBoxHook*>(_nextSelectedHook()); }
+//	inline WgVBoxHook * PrevSelectedHook() const { return static_cast<WgVBoxHook*>(_prevSelectedHook()); }
+//	inline WgVBoxHook * NextSelectedHook() const { return static_cast<WgVBoxHook*>(_nextSelectedHook()); }
 
 	inline WgVBoxLayout * Parent() const { return m_pParent; }
 
 protected:
 	PROTECTED_LINK_METHODS( WgVBoxHook );
 
-	WgVBoxHook( WgGizmo * pGizmo, WgVBoxLayout * pParent );
+	WgVBoxHook( WgVBoxLayout * pParent );
 
-	WgGizmoContainer* _parent() const;
+	WgGizmoContainer * _parent() const;
 
 	WgVBoxLayout *	m_pParent;
 	int				m_height;
 	WgSize			m_bestSize;			// Cached best size from the child.
 };
 
-class WgVBoxLayout : public WgOrdSelLayout
+class WgVBoxLayout : public WgOrderedLayout
 {
 public:
 	WgVBoxLayout();
@@ -70,8 +70,8 @@ public:
 	inline WgVBoxHook* FirstHook() const { return static_cast<WgVBoxHook*>(m_hooks.First()); }
 	inline WgVBoxHook* LastHook() const { return static_cast<WgVBoxHook*>(m_hooks.Last()); }
 
-	inline WgVBoxHook* FirstSelectedHook() const { return static_cast<WgVBoxHook*>(_firstSelectedHook()); }
-	inline WgVBoxHook* LastSelectedHook() const { return static_cast<WgVBoxHook*>(_lastSelectedHook()); }
+//	inline WgVBoxHook* FirstSelectedHook() const { return static_cast<WgVBoxHook*>(_firstSelectedHook()); }
+//	inline WgVBoxHook* LastSelectedHook() const { return static_cast<WgVBoxHook*>(_lastSelectedHook()); }
 
 
 	// Overloaded from WgGizmo
@@ -107,7 +107,7 @@ protected:
 	void	_onGizmoDisappeared( WgOrderedHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
 	void	_onGizmosReordered();
 	void	_refreshAllGizmos();
-	WgOrderedHook * _newHook(WgGizmo * pGizmo);
+	WgOrderedHook * _newHook();
 
 	// Internal to WgVBoxLayout
 

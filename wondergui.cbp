@@ -69,7 +69,6 @@
 		<Unit filename="include/wg_gizmo_checkbox.h" />
 		<Unit filename="include/wg_gizmo_circlemeter.h" />
 		<Unit filename="include/wg_gizmo_collection.h" />
-		<Unit filename="include/wg_gizmo_combobox.h" />
 		<Unit filename="include/wg_gizmo_container.h" />
 		<Unit filename="include/wg_gizmo_dragbars.h" />
 		<Unit filename="include/wg_gizmo_dummy.h" />
@@ -79,7 +78,6 @@
 		<Unit filename="include/wg_gizmo_flexgeo.h" />
 		<Unit filename="include/wg_gizmo_fps.h" />
 		<Unit filename="include/wg_gizmo_hook.h" />
-		<Unit filename="include/wg_gizmo_menubar.h" />
 		<Unit filename="include/wg_gizmo_modal.h" />
 		<Unit filename="include/wg_gizmo_parent.h" />
 		<Unit filename="include/wg_gizmo_pixmap.h" />
@@ -99,7 +97,6 @@
 		<Unit filename="include/wg_interface_valueholder.h" />
 		<Unit filename="include/wg_key.h" />
 		<Unit filename="include/wg_mempool.h" />
-		<Unit filename="include/wg_menuitem.h" />
 		<Unit filename="include/wg_orderedlayout.h" />
 		<Unit filename="include/wg_orderedselectable.h" />
 		<Unit filename="include/wg_origo.h" />
@@ -157,7 +154,6 @@
 		<Unit filename="source/wg_gizmo_button.cpp" />
 		<Unit filename="source/wg_gizmo_checkbox.cpp" />
 		<Unit filename="source/wg_gizmo_circlemeter.cpp" />
-		<Unit filename="source/wg_gizmo_combobox.cpp" />
 		<Unit filename="source/wg_gizmo_container.cpp" />
 		<Unit filename="source/wg_gizmo_dragbars.cpp" />
 		<Unit filename="source/wg_gizmo_dummy.cpp" />
@@ -167,7 +163,7 @@
 		<Unit filename="source/wg_gizmo_flexgeo.cpp" />
 		<Unit filename="source/wg_gizmo_fps.cpp" />
 		<Unit filename="source/wg_gizmo_hook.cpp" />
-		<Unit filename="source/wg_gizmo_menubar.cpp" />
+		<Unit filename="source/wg_gizmo_modal.cpp" />
 		<Unit filename="source/wg_gizmo_pixmap.cpp" />
 		<Unit filename="source/wg_gizmo_radiobutton.cpp" />
 		<Unit filename="source/wg_gizmo_refreshbutton.cpp" />
@@ -182,7 +178,6 @@
 		<Unit filename="source/wg_interface_textholder.cpp" />
 		<Unit filename="source/wg_interface_valueholder.cpp" />
 		<Unit filename="source/wg_mempool.cpp" />
-		<Unit filename="source/wg_menuitem.cpp" />
 		<Unit filename="source/wg_orderedlayout.cpp" />
 		<Unit filename="source/wg_orderedselectable.cpp" />
 		<Unit filename="source/wg_origo.cpp" />

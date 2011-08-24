@@ -23,24 +23,41 @@
 #ifndef WG_GIZMO_MODAL_DOT_H
 #define WG_GIZMO_MODAL_DOT_H
 
+#ifndef WG_GIZMO_CONTAINER_DOT_H
+#	include <wg_gizmo_container.h>
+#endif
+
+#ifndef WG_DIRTYRECT_DOT_H
+#	include <wg_rectchain.h>
+#endif
+
+class WgGizmoModal;
+
+
 class WgModalHook : public WgGizmoHook, protected WgLink
 {
 	friend class WgGizmoModal;
+	friend class WgChain<WgModalHook>;
 
 public:
 
 	void	Top();								// Put us ontop of all our silbings.
 
 	bool	SetGeo( const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
-	bool	SetGeo( const WgCord& pos, WgLocation origo = WG_NORTHWEST );
+	bool	SetGeo( const WgCord& ofs, WgLocation origo = WG_NORTHWEST );
 
 	bool	SetOfs( const WgCord& ofs );
 	bool	SetOfsX( int x );
 	bool	SetOfsY( int y );
 
+	bool	SetSize( WgSize sz );
+	bool	SetWidth( int width );
+	bool	SetHeight( int height );
+
 	bool	Move( const WgCord& ofs );
 	bool	MoveX( int x );
 	bool	MoveY( int y );
+
 
 
 
@@ -53,8 +70,8 @@ public:
 	WgCord		ScreenPos() const;
 	WgRect		ScreenGeo() const;
 
-	inline WgModalHook *	PrevHook() const { return Prev(); }
-	inline WgModalHook *	NextHook() const { return Next(); }
+	inline WgModalHook *	PrevHook() const { return _prev(); }
+	inline WgModalHook *	NextHook() const { return _next(); }
 
 	WgGizmoContainer* Parent() const;
 
@@ -63,11 +80,11 @@ public:
 protected:
 	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
 
-	LINK_METHODS( WgModalHook );
+	PROTECTED_LINK_METHODS( WgModalHook );
 
-	WgModalHook( WgGizmo * pGizmo, WgGizmoModal * pParent );
+	WgModalHook( WgGizmoModal * pParent );
 
-	bool		RefreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
+	bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 
 	void		RequestRender();
 	void		RequestRender( const WgRect& rect );
@@ -79,6 +96,7 @@ protected:
 
 	WgGizmoHook *	_prevHook() const;
 	WgGizmoHook *	_nextHook() const;
+	WgGizmoContainer * _parent() const;
 
 
 	WgGizmoModal * m_pParent;
@@ -86,14 +104,19 @@ protected:
 	WgRect		m_realGeo;			// Gizmos geo relative parent
 
 	WgLocation	m_origo;
-	WgRect		m_placementGeo;	// Gizmos geo relative anchor and hotspot.
+	WgRect		m_placementGeo;		// Gizmos geo relative anchor and hotspot. Setting width and height to 0 uses Gizmos BestSize() dynamically.
+									// Setting just one of them to 0 uses Gizmos HeightForWidth() or WidthForHeight() dynamically.
 
+	WgRectChain	m_dirt;		// Dirty areas to be rendered, in screen coordinates!
 };
 
 
 
 class WgGizmoModal : public WgGizmo, public WgGizmoContainer
 {
+	friend class BaseHook;
+	friend class WgModalHook;
+
 public:
 	WgGizmoModal();
 	~WgGizmoModal();
@@ -101,19 +124,26 @@ public:
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
 
-	bool			SetNormalChild( WgGizmo * pGizmo );
-	WgGizmo *		NormalChild();
-	bool			DeleteNormalChild();
-	WgGizmo *		ReleaseNormalChild();
+	WgGizmoHook *	SetBaseGizmo( WgGizmo * pGizmo );
+	WgGizmo *		BaseGizmo();
+	bool			DeleteBaseGizmo();
+	WgGizmo *		ReleaseBaseGizmo();
 
 
-	WgModalHook *	AddModalChild( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
-	WgModalHook *	AddModalChild( WgGizmo * pGizmo, const WgCord& pos, WgLocation origo = WG_NORTHWEST );
-	bool			DeleteModalChild( WgGizmo * pGizmo );
-	bool			ReleaseModalChild( WgGizmo * pGizmo );
+	WgModalHook *	AddModalGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
+	WgModalHook *	AddModalGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation origo = WG_NORTHWEST ) { return AddModalGizmo( pGizmo, WgRect(pos,0,0), origo); }
 
-	WgModalHook *	FirstModalChild();
-	WgModalHook *	LastModalChild();
+	bool			DeleteAllModalGizmos();
+	bool			ReleaseAllModalGizmos();
+
+	bool			DeleteGizmo( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+
+	bool			DeleteAllGizmos();
+	bool			ReleaseAllGizmos();
+
+	WgModalHook *	FirstModalGizmo();
+	WgModalHook *	LastModalGizmo();
 
 
 	// Overloaded from WgGizmo
@@ -138,7 +168,7 @@ public:
 
 private:
 
-	class NormalHook : public WgGizmoHook
+	class BaseHook : public WgGizmoHook
 	{
 		friend class WgGizmoModal;
 
@@ -157,7 +187,7 @@ private:
 		inline WgWidget*	GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
 
 	protected:
-		NormalHook( WgGizmo * pGizmo, WgGizmoModal * pParent );
+		BaseHook( WgGizmoModal * pParent ) : m_pParent(pParent) {}
 
 		void		RequestRender();
 		void		RequestRender( const WgRect& rect );
@@ -168,26 +198,28 @@ private:
 
 
 		WgGizmoHook *	_prevHook() const { return 0; }
-		WgGizmoHook *	_nextHook() const { return m_pParent->FirstModalChild(); }
+		WgGizmoHook *	_nextHook() const { return m_pParent->FirstModalGizmo(); }
+		WgGizmoContainer * _parent() const { return m_pParent; }
 
+		WgGizmoModal * 	m_pParent;
+		WgRectChain		m_dirt;		// Dirty areas to be rendered, in screen coordinates!
 
-		WgGizmoModal * m_pParent;
 	};
 
 
 
-	void			OnCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	void			OnMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	void			OnCloneContent( const WgGizmo * _pOrg );
-	void			OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	void			OnNewSize( const WgSize& size );
-	void			OnAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool			OnAlphaTest( const WgCord& ofs );
+	void			_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	void			_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	void			_onCloneContent( const WgGizmo * _pOrg );
+	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void			_onNewSize( const WgSize& size );
+	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	bool			_onAlphaTest( const WgCord& ofs );
 
-	inline void		OnEnable() { WgGizmoContainer::OnEnable(); }
-	inline void		OnDisable() { WgGizmoContainer::OnDisable(); }
+	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }
+	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }
 
-	void			OnRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
+	void			_onRequestRender( const WgRect& rect, const WgModalHook * pHook );	// rect is in our coordinate system.
 
 	WgGizmo*		_castToGizmo() { return this; }
 
@@ -196,12 +228,14 @@ private:
 	void			_clearDirtyRects();
 
 
-	WgGizmoHook*	_firstHook() const { return FirstHook(); }
-	WgGizmoHook*	_lastHook() const { return LastHook(); }
+	WgGizmoHook*	_firstHook();		// Fist Hook returned is the normal child, then follows the modal ones.
+	WgGizmoHook*	_lastHook();		//
 
 
-	NormalHook				m_normalHook;
-	WgChain<WgModalHook>	m_modalHooks;
+	BaseHook				m_baseHook;
+	WgChain<WgModalHook>	m_modalHooks;		// First modal gizmo lies at the bottom.
+
+	WgSize					m_size;
 
 };
 

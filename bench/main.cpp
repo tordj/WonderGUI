@@ -16,14 +16,22 @@
 #include <wg_surface_sdl.h>
 #include <wg_gfxdevice_sdl.h>
 #include <wg_eventlogger.h>
+#include <wg_bitmapglyphs.h>
+#include <wg_textprop.h>
 
 #include <iostream>
 
 extern std::ostream cout;
 
+int fileSize( const char * pPath );
+void * loadFile( const char * pPath );
+
 WgSurface * 	loadSurface( const char * path );
 SDL_Surface *	initSDL( int w, int h );
 bool			eventLoop( WgEventHandler * pHandler );
+
+void cbInitDrag( const WgEvent::Event& _event, WgGizmo * pGizmo );
+void cbDragGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo );
 
 
 //____ main() _________________________________________________________________
@@ -52,7 +60,30 @@ int main ( int argc, char** argv )
 	WgEventHandler * pEventHandler = new WgEventHandler( 0, pRoot );
 
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
+	pEventLogger->IgnoreEvent( WG_EVENT_POINTER_PLACED );
+	pEventLogger->IgnoreEvent( WG_EVENT_POINTER_MOVE );
+//	pEventLogger->IgnoreAllEvents();
+//	pEventLogger->LogButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
+
+	// Load font
+
+	WgSurface * pFontImg = loadSurface("anuvverbubbla_8x8.png");
+	char * pFontSpec = (char*) loadFile( "anuvverbubbla_8x8.fnt" );
+
+	WgBitmapGlyphs * pGlyphs = new WgBitmapGlyphs( pFontImg, pFontSpec );
+
+	WgFont * pFont = new WgFont();
+	pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 8 );
+
+	// Set default textprop
+
+	WgTextProp prop;
+
+	prop.SetFont(pFont);
+	prop.SetSize(8);
+
+	WgBase::SetDefaultTextProp( prop.Register() );
 
 	// Load images and specify blocks
 
@@ -101,6 +132,28 @@ int main ( int argc, char** argv )
 
 	pHook = pFlex->AddGizmo( pFlag2, WgCord(100,100), WG_CENTER );
 
+
+	pEventHandler->AddCallback( WgEventFilter::ButtonPress(pFlag1, 1), cbInitDrag, pFlag1 );
+	pEventHandler->AddCallback( WgEventFilter::ButtonDrag(pFlag1, 1), cbDragGizmo, pFlag1 );
+
+	//
+
+	WgVBoxLayout * pVBox = new WgVBoxLayout();
+
+	WgGizmoPixmap * pFlag3 = new WgGizmoPixmap();
+	pFlag3->SetSource( pFlagBlock );
+	WgGizmoPixmap * pFlag4= new WgGizmoPixmap();
+	pFlag4->SetSource( pFlagBlock );
+
+	WgGizmoButton * pButton2 = new WgGizmoButton();
+	pButton2->SetSource( pButtonBlock );
+	pButton2->SetText( "STANDARD BUTTON" );
+
+	pVBox->AddGizmo(pButton2);
+	pVBox->AddGizmo(pFlag3);
+	pVBox->AddGizmo(pFlag4);
+
+	pFlex->AddGizmo( pVBox, WgCord(50,50), WG_NORTHWEST );
 
     // program main loop
 
@@ -247,16 +300,81 @@ WgSurface * loadSurface( const char * path )
 
 }
 
-//____ cbMoveGizmo() __________________________________________________________
+//____ fileSize() _____________________________________________________________
 
-void cbMoveGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo )
+int fileSize( const char * pPath )
+{
+	FILE * fp = fopen( pPath, "rb" );
+	if( !fp )
+		return 0;
+
+	fseek( fp, 0, SEEK_END );
+	int size = ftell(fp);
+	fseek( fp, 0, SEEK_SET );
+	fclose( fp );
+
+	return size;
+}
+
+//____ loadFile() _____________________________________________________________
+
+void * loadFile( const char * pPath )
+{
+	FILE * fp = fopen( pPath, "rb" );
+	if( !fp )
+		return 0;
+
+	fseek( fp, 0, SEEK_END );
+	int size = ftell(fp);
+	fseek( fp, 0, SEEK_SET );
+
+	char * pMem = (char*) malloc( size+1 );
+	pMem[size] = 0;
+	int nRead = fread( pMem, 1, size, fp );
+	fclose( fp );
+
+	if( nRead < size )
+	{
+		free( pMem );
+		return 0;
+	}
+
+	return pMem;
+
+}
+
+
+
+WgCord dragStartPos;
+
+//____ cbInitDrag() ___________________________________________________________
+
+void cbInitDrag( const WgEvent::Event& _event, WgGizmo * pGizmo )
+{
+	WgFlexHook * pHook = static_cast<WgFlexHook*>(pGizmo->Hook());
+
+
+	dragStartPos = pHook->FloatOfs();
+	printf( "DRAG START!\n" );
+}
+
+//____ cbDragGizmo() __________________________________________________________
+
+void cbDragGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo )
 {
 	if( _event.Type() != WG_EVENT_BUTTON_DRAG || !pGizmo->ParentX() )
 		return;
 
 	const WgEvent::ButtonDrag& event = static_cast<const WgEvent::ButtonDrag&>(_event);
 
+	WgCord	dragDistance = event.DraggedSinceStart();
 
+	WgCord	ofs = dragStartPos + dragDistance;
 
+//	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
+	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
+
+	WgFlexHook * pHook = static_cast<WgFlexHook*>(pGizmo->Hook());
+	pHook->SetOfs(dragStartPos+dragDistance);
 }
 

@@ -40,6 +40,7 @@ WgRoot::WgRoot( WgGfxDevice * pGfxDevice, WgInputDevice * pInputDevice )
 	m_geo = WgRect(0,0,0,0);
 	m_pGfxDevice = pGfxDevice;
 	m_pInputDevice = pInputDevice;
+	m_hook.m_pRoot = this;
 }
 
 //____ Destructor _____________________________________________________________
@@ -55,7 +56,7 @@ bool WgRoot::SetGfxDevice( WgGfxDevice * pDevice )
 	m_pGfxDevice = pDevice;
 
 	if( m_pGfxDevice && !m_bHasGeo && m_hook.Gizmo() )
-		m_hook.DoSetNewSize( m_pGfxDevice->CanvasSize() );
+		m_hook.Gizmo()->_onNewSize( m_pGfxDevice->CanvasSize() );
 
 	return true;
 }
@@ -106,12 +107,10 @@ bool WgRoot::SetGizmo( WgGizmo * pGizmo )
 	if( pGizmo && !pGizmo->IsContainer() )
 		return false;
 
-	if( m_hook.Gizmo() )
-		m_hook.~Hook();
+	m_hook._attachGizmo(pGizmo);
+	m_hook.Gizmo()->_onNewSize(m_geo.size());
 
-	new (&m_hook) Hook(pGizmo, this);
-
-	m_hook._doCollectRects( m_dirtyRects, Geo(), Geo() );
+	m_hook.Gizmo()->_onCollectRects( m_dirtyRects, Geo(), Geo() );
 
 	return true;
 }
@@ -120,8 +119,43 @@ bool WgRoot::SetGizmo( WgGizmo * pGizmo )
 
 WgGizmo * WgRoot::ReleaseGizmo()
 {
-	return m_hook.ReleaseGizmo();
+	return m_hook._releaseGizmo();
 }
+
+WgGizmo * WgRoot::ReleaseGizmo( WgGizmo * pGizmo )
+{
+	if( pGizmo == m_hook.Gizmo() )
+		return ReleaseGizmo();
+
+	return false;
+}
+
+
+//____ DeleteGizmo() __________________________________________________________
+
+bool WgRoot::DeleteGizmo( WgGizmo * pGizmo )
+{
+	if( pGizmo == m_hook.Gizmo() )
+		return SetGizmo(0);
+
+	return false;
+}
+
+//____ DeleteAllGizmos() ______________________________________________________
+
+bool WgRoot::DeleteAllGizmos()
+{
+	DeleteGizmo();
+	return true;
+}
+
+//____ ReleaseAllGizmos() _____________________________________________________
+
+bool WgRoot::ReleaseAllGizmos()
+{
+	return ReleaseGizmo()==0?false:true;
+}
+
 
 //____ Render() _______________________________________________________________
 
@@ -164,7 +198,7 @@ bool WgRoot::BeginRender( const WgRect& clip )
 
 	while( pRect )
 	{
-		m_hook._doCastDirtyRect( canvas, clip, pRect, &outDummy );
+		m_hook.Gizmo()->CastToContainer()->_castDirtyRect( canvas, clip, pRect, &outDummy );
 		pRect = m_dirtyRects.Pop();
 	}
 
@@ -181,7 +215,7 @@ bool WgRoot::RenderSection( int layer )
 
 	WgRect canvas = Geo();
 
-	m_hook._doRenderDirtyRects( m_pGfxDevice, canvas, canvas, layer );
+	m_hook.Gizmo()->CastToContainer()->_renderDirtyRects( m_pGfxDevice, canvas, canvas, layer );
 
 	return true;
 }
@@ -193,7 +227,7 @@ bool WgRoot::EndRender( void )
 	if( !m_pGfxDevice || !m_hook.Gizmo() )
 		return false;						// No GFX-device or no widgets to render.
 
-	m_hook._doClearDirtyRects();
+	m_hook.Gizmo()->CastToContainer()->_clearDirtyRects();
 
 	return m_pGfxDevice->EndRender();
 }
@@ -252,12 +286,6 @@ bool WgRoot::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-WgRoot::Hook::Hook( WgGizmo * pGizmo, WgRoot * pRoot) : WgGizmoHook(pGizmo)
-{
-	m_pRoot = pRoot;
-	DoSetGizmo();
-}
 
 WgRoot::Hook::~Hook()
 {

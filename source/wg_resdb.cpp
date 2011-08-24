@@ -22,10 +22,12 @@
 
 #include <stdlib.h>
 #include <wg_resdb.h>
-#include <wg_resources_xml.h>
+//#include <wg_resources_xml.h>
 #include <wg_resloader.h>
 #include <assert.h>
 #include <wg_font.h>
+#include <wg_textmanager.h>
+
 //____ () _________________________________________________________
 
 WgResDB::WgResDB() :

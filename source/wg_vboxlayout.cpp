@@ -24,11 +24,10 @@
 #include <wg_vboxlayout.h>
 
 
-
 static const char	c_gizmoType[] = {"VBoxLayout"};
 
 
-WgVBoxHook::WgVBoxHook( WgGizmo * pGizmo, WgVBoxLayout * pParent ) : WgOrdSelHook(pGizmo), m_pParent(pParent)
+WgVBoxHook::WgVBoxHook( WgVBoxLayout * pParent ) : m_pParent(pParent)
 {
 }
 
@@ -145,6 +144,7 @@ void WgVBoxLayout::_onNewSize( const WgSize& size )
 {
 	if( size.w != m_size.w )
 	{
+		m_size.w = size.w;
 		_adaptChildrenToWidth( size.w );
 		RequestRender();
 	}
@@ -217,7 +217,7 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 			while( pDirt )
 			{
 				if( pDirt->intersectsWith(geo) )
-					pHook->_doCastDirtyRect( geo, WgRect(geo,clip), pDirt, pDirtOutChain );
+					pHook->Gizmo()->CastToContainer()->_castDirtyRect( geo, WgRect(geo,clip), pDirt, pDirtOutChain );
 				else
 					pDirtOutChain->PushExistingRect(pDirt);
 
@@ -296,7 +296,7 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 		while( geo.y < pDirt->y + pDirt->h )
 		{
 			if( !pHook->m_bHidden && !pHook->Gizmo()->IsContainer() )
-				pHook->DoRender( pDevice, geo, geo, WgRect(geo,*pDirt), _layer );
+				pHook->Gizmo()->_onRender( pDevice, geo, geo, WgRect(geo,*pDirt), _layer );
 
 			pHook = pHook->NextHook();
 			if( !pHook )
@@ -316,7 +316,7 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 	while( geo.y < _window.y + _window.h  )
 	{
 		if( pHook->Gizmo()->IsContainer() )
-			pHook->_doRenderDirtyRects(	pDevice, geo, geo, _layer );
+			pHook->Gizmo()->CastToContainer()->_renderDirtyRects( pDevice, geo, geo, _layer );
 
 		pHook = pHook->NextHook();
 		if( !pHook )
@@ -438,13 +438,20 @@ void  WgVBoxLayout::_onGizmoAppeared( WgOrderedHook * pInserted )
 		m_nBestWidth = 1;
 	}
 
+	m_bestSize.h += pHook->m_bestSize.h;
+
 	// We set Gizmo to same width as ours to start with, our parent will
 	// expand us in RequestResize() if it wants to.
 
 	int	height = pHook->Gizmo()->HeightForWidth(m_size.w);
-	pHook->DoSetNewSize( WgSize(m_size.w,height) );
+	if( height == -1 )
+		height = m_bestSize.h;
+
+
 	pHook->m_height = height;
-	m_size.h = height;
+	m_size.h += height;
+
+	pHook->Gizmo()->_onNewSize( WgSize(m_size.w,height) );
 
 	// Request and handle possible resize.
 
@@ -501,7 +508,10 @@ void WgVBoxLayout::_adaptChildrenToWidth( int width )
 		if( !pHook->m_bHidden )
 		{
 			int height = pHook->Gizmo()->HeightForWidth( width );
-			pHook->DoSetNewSize( WgSize(width,height) );
+			if( height == -1 )
+				height = pHook->m_bestSize.h;
+
+			pHook->Gizmo()->_onNewSize( WgSize(width,height) );
 			pHook->m_height = height;
 			m_size.h += height;
 		}
@@ -589,8 +599,8 @@ void WgVBoxLayout::_renderFromChildOnward( WgOrderedHook * pHook )
 
 //____ _newHook() _____________________________________________________________
 
-WgOrderedHook *  WgVBoxLayout::_newHook(WgGizmo * pGizmo)
+WgOrderedHook *  WgVBoxLayout::_newHook()
 {
-	return new WgVBoxHook( pGizmo, this );
+	return new WgVBoxHook( this );
 }
 

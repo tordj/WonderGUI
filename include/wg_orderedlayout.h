@@ -61,7 +61,7 @@ public:
 
 	inline WgOrderedHook*	PrevHook() const { return _prev(); }
 	inline WgOrderedHook*	NextHook() const { return _next(); }
-	inline WgOrderedLayout * Parent() const { return (WgOrderedLayout*) _parent(); }
+	inline WgOrderedLayout * Parent() const;
 
 	bool			MoveUp();
 	bool			MoveDown();
@@ -82,7 +82,7 @@ public:
 protected:
 	PROTECTED_LINK_METHODS( WgOrderedHook );
 
-	WgOrderedHook( WgGizmo * pGizmo );
+	WgOrderedHook();
 	~WgOrderedHook();
 
 	void	RequestRender();
@@ -109,10 +109,10 @@ public:
 	WgOrderedHook * InsertGizmoSorted( WgGizmo * pGizmo );
 
 	bool			DeleteGizmo( WgGizmo * pGizmo );
-	bool			ReleaseGizmo( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
 
-	void			DeleteAllGizmos();
-	void			ReleaseAllGizmos();
+	bool			DeleteAllGizmos();
+	bool			ReleaseAllGizmos();
 
 	void			SortGizmos();
 	void			SetSortOrder( WgSortOrder order );
@@ -164,11 +164,11 @@ protected:
 	virtual void	_onResizeRequested( WgOrderedHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgOrderedHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect ) = 0;
-	virtual void	_onGizmoAppeared( WgOrderedHook * pInserted );				// so parent can update geometry and possibly request render.
-	virtual void	_onGizmoDisappeared( WgOrderedHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+	virtual void	_onGizmoAppeared( WgOrderedHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.
+	virtual void	_onGizmoDisappeared( WgOrderedHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
 	virtual void	_onGizmosReordered() = 0;
 	virtual void	_refreshAllGizmos() = 0;
-	virtual WgOrderedHook * _newHook(WgGizmo * pGizmo) = 0;
+	virtual WgOrderedHook * _newHook() = 0;
 
 	//
 

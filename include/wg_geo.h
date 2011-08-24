@@ -122,6 +122,34 @@ public:
 	Uint16	x, y;
 };
 
+class WgSize;
+
+//____ WgBorders ______________________________________________________________
+
+class WgBorders
+{
+public:
+	WgBorders() : left(0), right(0), top(0), bottom(0) {}
+	WgBorders( Uint8 _left, Uint8 _right, Uint8 _top, Uint8 _bottom ) : left(_left), right(_right), top(_top), bottom(_bottom) {}
+	WgBorders( Uint8 _all ) : left(_all), right(_all), top(_all), bottom(_all) {}
+
+	inline void		set( Uint8 _all ) { left = right = top = bottom = _all; }
+
+	inline WgSize	size() const;
+	inline Uint32	width() const { return ((Uint32)left)+right; }
+	inline Uint32	height() const { return ((Uint32)top)+bottom; }
+	inline void		clear()			{ left = 0; right = 0; top = 0; bottom = 0; }
+
+	bool			operator==(const WgBorders& borders) const { return left == borders.left &&
+																		right == borders.right &&
+																		top == borders.top &&
+																		bottom == borders.bottom; }
+	bool			operator!=(const WgBorders& borders) const { return !(*this == borders); }
+
+
+	Uint8	left, right;
+	Uint8	top, bottom;
+};
 
 //____ Class: WgSize ________________________________________________________
 
@@ -148,6 +176,11 @@ public:
 	inline WgSize operator+(const WgSize& k) const	{ WgSize res; res.w = w + k.w; res.h = h + k.h; return res; }
 	inline WgSize operator-(const WgSize& k) const	{ WgSize res; res.w = w - k.w; res.h = h - k.h; return res; }
 
+	inline void operator+=(const WgBorders& k)			{ w += k.left + k.right; h += k.top + k.bottom; }
+	inline void operator-=(const WgBorders& k)			{ w -= k.left + k.right; h -= k.top + k.bottom; }
+	inline WgSize operator+(const WgBorders& k) const	{ WgSize res; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
+	inline WgSize operator-(const WgBorders& k) const	{ WgSize res; res.w = w - k.left - k.right; res.h = h - k.top - k.bottom; return res; return res; }
+
 	inline void operator*=(double x)				{ w = (int) (w*x); h = (int) (h*x); }
 	inline void operator/=(double x)				{ w = (int) (w/x); h = (int) (h/x); }
 	inline WgSize operator*(double x) const	{ WgSize res; res.w = (int) (w*x); res.h = (int) (h*x); return res; }
@@ -167,35 +200,6 @@ public:
 	static inline WgSize max( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
 
 	int	w, h;
-};
-
-
-
-//____ WgBorders ______________________________________________________________
-
-class WgBorders
-{
-public:
-	WgBorders() : left(0), right(0), top(0), bottom(0) {}
-	WgBorders( Uint8 _left, Uint8 _right, Uint8 _top, Uint8 _bottom ) : left(_left), right(_right), top(_top), bottom(_bottom) {}
-	WgBorders( Uint8 _all ) : left(_all), right(_all), top(_all), bottom(_all) {}
-
-	inline void		set( Uint8 _all ) { left = right = top = bottom = _all; }
-
-	inline WgSize	size() const { return WgSize( ((int)left)+right, ((int)top)+bottom ); }
-	inline Uint32	width() const { return ((Uint32)left)+right; }
-	inline Uint32	height() const { return ((Uint32)top)+bottom; }
-	inline void		clear()			{ left = 0; right = 0; top = 0; bottom = 0; }
-
-	bool			operator==(const WgBorders& borders) const { return left == borders.left &&
-																		right == borders.right &&
-																		top == borders.top &&
-																		bottom == borders.bottom; }
-	bool			operator!=(const WgBorders& borders) const { return !(*this == borders); }
-
-
-	Uint8	left, right;
-	Uint8	top, bottom;
 };
 
 
@@ -293,6 +297,11 @@ inline WgCord WgCord::operator=(const WgRect& r)
 	return *this;
 }
 
+//_____________________________________________________________________________
+inline WgSize WgBorders::size() const
+{
+	return WgSize( ((int)left)+right, ((int)top)+bottom );
+}
 
 //_____________________________________________________________________________
 inline WgSize::WgSize( const WgRect& rect )

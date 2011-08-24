@@ -59,15 +59,14 @@ public:
 	void	RequestResize();
 
 protected:
-	WgViewHook() : WgGizmoHook( 0 ) {};				// So we can make them members and then make placement new...
-	WgViewHook( WgGizmoHDragbar * pHDragbar, WgGizmoView * pView );
-	WgViewHook( WgGizmoVDragbar * pVDragbar, WgGizmoView * pView );
-	WgViewHook( WgGizmo * pContent, WgGizmoView * pView );
+	WgViewHook() : m_pView(0), m_bShow(false) {};				// So we can make them members and then make placement new...
 	~WgViewHook();
+	inline void			_setParent( WgGizmoView * pParent ) { m_pView = pParent; }
 
 	WgGizmoHook *		_prevHook() const;
 	WgGizmoHook *		_nextHook() const;
 	WgGizmoContainer *	_parent() const;
+
 
 //	ElementType		m_type;
 	WgGizmoView *	m_pView;
@@ -200,6 +199,11 @@ public:
 	WgGizmo*			GetContent() const { return m_elements[WINDOW].Gizmo(); }
 	WgGizmo*			ReleaseContent();
 
+	bool				DeleteGizmo( WgGizmo * pGizmo );
+	WgGizmo *			ReleaseGizmo( WgGizmo * pGizmo );
+
+	bool				DeleteAllGizmos();
+	bool				ReleaseAllGizmos();
 
 	void	SetScrollbarAutoHide( bool bHideX, bool bHideY );
 	bool	GetScrollbarAutoHideX() const { return m_bAutoHideScrollbarX; }
@@ -245,6 +249,7 @@ protected:
 		YDRAG
 	};
 
+	static const int	MAX_ELEMENTS = 3;
 
 	WgGizmoView();
 	virtual void _onNewSize( const WgSize& size );
@@ -286,7 +291,7 @@ protected:
 	bool		m_bAutoScrollY;
 
 //	ViewGizmoCollection	m_elementsCollection;	// WgGizmoCollection for the elements gizmos.
-	WgViewHook		m_elements[3];			// Content, xDrag and yDrag gizmos in that order.
+	WgViewHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag gizmos in that order.
 
 private:
 	WgGizmo* 		_castToGizmo() { return this; }

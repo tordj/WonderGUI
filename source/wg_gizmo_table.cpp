@@ -212,9 +212,8 @@ WgWidget* WgTableHook::GetRoot()
 }
 
 
-WgTableHook::WgTableHook( WgGizmo * pGizmo, WgTableRow2 * pRow ) : WgGizmoHook( pGizmo )
+WgTableHook::WgTableHook( WgTableRow2 * pRow )
 {
-	m_height = pGizmo->BestSize().h;
 	m_pRow	 = pRow;
 }
 
@@ -465,6 +464,7 @@ WgTableRow2::~WgTableRow2()
 	free( m_pCells );		// This array was reserved with calloc() and not new[]!
 }
 
+
 void WgTableRow2::SetGizmo( WgGizmo * pGizmo, int cell )
 {
 	if( m_nCells <= cell )
@@ -473,17 +473,25 @@ void WgTableRow2::SetGizmo( WgGizmo * pGizmo, int cell )
 	if( m_pCells[cell].Gizmo() )
 		m_pCells[cell].~WgTableHook();
 
-	new (&m_pCells[cell])WgTableHook(pGizmo, this);
+	new (&m_pCells[cell])WgTableHook(this);
 
-	if( m_pCells[cell].m_height > m_height )
+	m_pCells[cell]._attachGizmo(pGizmo);
+
+	int width = m_pTable->m_pColumns[cell].RealWidth();
+	int height = pGizmo->HeightForWidth(width);
+
+	m_pCells[cell].m_height = height;
+	pGizmo->_onNewSize( WgSize(width, height) );
+
+	if( height > m_height )
 	{
 		if( m_pTable )
-			m_pTable->m_contentSize.h += m_pCells[cell].m_height - m_height;
+			m_pTable->m_contentSize.h += height - m_height;
 
-		m_height = m_pCells[cell].m_height;
+		m_height = height;
 	}
 
-	//TODO: Meddela table att rad har ändrats.
+	//TODO: Meddela table att rad har Ã¤ndrats.
 }
 
 int WgTableRow2::AddGizmo( WgGizmo * pGizmo )
@@ -501,6 +509,30 @@ int WgTableRow2::AddGizmo( WgGizmo * pGizmo )
 	return cell;
 }
 
+WgGizmo * WgTableRow2::ReleaseGizmo( int cell )
+{
+	if( m_nCells <= cell || !m_pCells[cell].Gizmo() )
+		return false;
+
+	WgGizmo * pReleased = m_pCells[cell].Gizmo();
+	m_pCells[cell]._attachGizmo(0);
+	m_pCells[cell].~WgTableHook();
+	new (&m_pCells[cell])WgTableHook(this);		// Is this really necessary?
+
+	return pReleased;
+}
+
+bool WgTableRow2::DeleteGizmo( int cell )
+{
+	if( m_nCells <= cell || !m_pCells[cell].Gizmo() )
+		return false;
+
+	m_pCells[cell].~WgTableHook();
+	new (&m_pCells[cell])WgTableHook(this);
+
+	return true;
+}
+
 
 
 void WgTableRow2::GrowCellsArray( int nCells )
@@ -515,10 +547,7 @@ void WgTableRow2::GrowCellsArray( int nCells )
 	// Go through gizmos and update their hook pointers
 
 	for( int i = 0 ; i < m_nCells ; i++ )
-	{
-		if( p[i].m_pGizmo )
-			p[i].RelinkGizmo();		// We don't call SetHook() since we don't need to resize or anything...
-	}
+			p[i]._relinkGizmo();
 
 	// Delte old array and set pointers
 
@@ -899,7 +928,7 @@ void WgGizmoTable::UpdateColumnWidths()
 			{
 				int w = m_pColumns[n].m_realWidth;
 				int h = pHook->Gizmo()->HeightForWidth(w);		//TODO: NEEDS TO BE ABLE TO HANDLE -1 (NO RECOMMENDATION) AS ANSWER!!!!!!!!!
-				pHook->DoSetNewSize( WgSize( w, h ) );
+				pHook->Gizmo()->_onNewSize( WgSize( w, h ) );
 
 				if( h != pHook->m_height )
 				{
@@ -1062,6 +1091,51 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 
 	return r;
 }
+
+//____ DeleteGizmo() __________________________________________________________
+
+bool WgGizmoTable::DeleteGizmo( WgGizmo * pGizmo )
+{
+	if( !pGizmo || pGizmo->ParentX() != this )
+		return false;
+
+	WgTableHook * pHook = static_cast<WgTableHook*>(pGizmo->Hook());
+	WgTableRow2 * pRow = pHook->Row();
+
+	return pRow->DeleteGizmo( pHook->ColumnNb() );
+}
+
+//____ ReleaseGizmo() _________________________________________________________
+
+WgGizmo * WgGizmoTable::ReleaseGizmo( WgGizmo * pGizmo )
+{
+	if( !pGizmo || pGizmo->ParentX() != this )
+		return 0;
+
+	WgTableHook * pHook = static_cast<WgTableHook*>(pGizmo->Hook());
+	WgTableRow2 * pRow = pHook->Row();
+
+	return pRow->ReleaseGizmo( pHook->ColumnNb() );
+}
+
+//____ DeleteAllGizmos() ______________________________________________________
+
+bool WgGizmoTable::DeleteAllGizmos()
+{
+	//TODO: Implement
+
+	return false;
+}
+
+//____ ReleaseAllGizmos() _____________________________________________________
+
+bool WgGizmoTable::ReleaseAllGizmos()
+{
+	//TODO: Implement
+
+	return false;
+}
+
 
 
 //____ AddRow() _______________________________________________________________
@@ -1944,7 +2018,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 				//
 
-				pHook->DoRender( pDevice, rc, rc, clip2, _layer );
+				pHook->Gizmo()->_onRender( pDevice, rc, rc, clip2, _layer );
 				rc.x += m_pColumns[i].m_realWidth - m_cellPadding.left;		// Left cellpadding already added...
 			}
 		}

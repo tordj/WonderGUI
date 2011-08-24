@@ -164,6 +164,36 @@ void WgGizmoButton::GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sint8
 	yDown = m_aDisplace[WG_MODE_SELECTED].y;
 }
 
+//____ BestSize() _____________________________________________________________
+
+WgSize WgGizmoButton::BestSize() const
+{
+	WgSize best( m_text.width(), m_text.height() );
+
+	if( m_pBgGfx )
+	{
+		WgSize gfxSize = m_pBgGfx->GetSize();
+		WgBorders textBorders = m_pBgGfx->GetContentBorders();
+		WgSize	textArea = gfxSize - textBorders;
+
+		if( best.w > textArea.w )
+			best.w += textBorders.width();
+
+		if( best.h > textArea.h )
+			best.h += textBorders.height();
+
+		if( best.w < gfxSize.w )
+			best.w = gfxSize.w;
+
+		if( best.h < gfxSize.h )
+			best.h = gfxSize.h;
+	}
+
+	//TODO: Take icon with origo, offset and size into account.
+
+	return best;
+}
+
 
 //____ _onEnable() _____________________________________________________________
 
@@ -198,6 +228,10 @@ void WgGizmoButton::_onNewSize( const WgSize& size )
 
 void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
+	WgRect cli = _clip;
+	WgRect can = _canvas;
+	WgRect win = _window;
+
 	// Render background
 
 	if( m_pBgGfx )
@@ -232,6 +266,10 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 		if( m_pBgGfx )
 			printWindow.shrink( m_pBgGfx->GetContentBorders() );
+
+		WgRect c = _clip;
+		WgRect printW = printWindow;
+
 		pDevice->PrintText( _clip, &m_text, printWindow );
 	}
 }

@@ -1,4 +1,28 @@
 
+BEFORE RELEASE
+==============
+
+* Sort function in WgOrderedLayout.
+
+* Layout Class HBox.
+* Layout Class Stack.
+* Layout Class Grid.
+* Layout Class VList (selectable).
+* VList work with View (scroll_into_view etc).
+* Layout Class Modal.
+* WgCord -> WgCoord.
+* Debug dirty rects.
+* Tangentbordshantering i WgEventHandler.
+* WgBlockSet externa från surface.
+* WgGizmoMenu/MenuBar/ComboBox work with Layout Class Modal.
+
+* Debug/finish layout class Table.
+* Debug/finish layout class FlexGeo
+* Debug/finish WgGizmoView (delete child gizmos where appropriate, not use signals etc).
+
+- Bitmap-fonter.
+
+
 
 PAPERCUTS
 =========

@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -66,7 +66,7 @@ public:
 
 	void			SetIconAlignment( WgOrigo alignment );
 	void			SetIconOffset( Sint8 xOfs, Sint8 yOfs );
-	
+
     bool			SetDisplacement( Sint8 xUp = 0, Sint8 yUp = 0, Sint8 xOver = 0, Sint8 yOver = 0, Sint8 xDown = 0, Sint8 yDown = 0 );
 	void			GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sint8& yOver, Sint8& xDown, Sint8& yDown ) const;
 
@@ -74,13 +74,13 @@ public:
 
 protected:
 /*
-	virtual int		HeightForWidth( int width );
-	virtual int		WidthForHeight( int height );
+	virtual int		HeightForWidth( int width ) const;
+	virtual int		WidthForHeight( int height ) const;
 
-	virtual WgSize	MinSize();
-	virtual WgSize	BestSize();
-	virtual WgSize	MaxSize();
-*/	
+	virtual WgSize	MinSize() const;
+	virtual WgSize	MaxSize() const;
+*/
+	WgSize			BestSize() const;
 
 
 	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
@@ -111,7 +111,7 @@ protected:
 	WgOrigo			m_iconOrigo;
 	WgCord8			m_iconOfs;
 
-	bool			m_bRenderDown[WG_MAX_BUTTONS];	// Render down-version if [button] pressed?		
+	bool			m_bRenderDown[WG_MAX_BUTTONS];	// Render down-version if [button] pressed?
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 	WgCord8			m_aDisplace[4];			// Text displacement for up, mouse_over, down and disabled.
 

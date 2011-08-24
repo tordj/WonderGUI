@@ -131,6 +131,12 @@ void WgOrderedHook::SetHidden( bool bHide )
 	}
 }
 
+WgOrderedLayout * WgOrderedHook::Parent() const
+{
+	return static_cast<WgOrderedLayout*>(_parent());
+}
+
+
 WgWidget* WgOrderedHook::GetRoot()
 {
 	WgGizmoHook * p = Parent()->Hook();
@@ -140,10 +146,8 @@ WgWidget* WgOrderedHook::GetRoot()
 		return 0;
 }
 
-WgOrderedHook::WgOrderedHook( WgGizmo * pGizmo ) : WgGizmoHook(pGizmo),
-	m_bHidden(false)
+WgOrderedHook::WgOrderedHook() : m_bHidden(false)
 {
-	DoSetGizmo();
 }
 
 WgOrderedHook::~WgOrderedHook()
@@ -153,7 +157,9 @@ WgOrderedHook::~WgOrderedHook()
 
 void WgOrderedHook::RequestRender()
 {
-	Parent()->_onRenderRequested(this);
+	WgOrderedLayout * p = Parent();
+
+	p->_onRenderRequested(this);
 }
 
 void WgOrderedHook::RequestRender( const WgRect& rect )
@@ -199,10 +205,11 @@ WgOrderedHook * WgOrderedLayout::AddGizmo( WgGizmo * pGizmo )
 	if( !pGizmo )
 		return 0;
 
-	WgOrderedHook * pHook = _newHook( pGizmo );
+	WgOrderedHook * pHook = _newHook();
 	m_hooks.PushBack(pHook);
-	_onGizmoAppeared(pHook);
+	pHook->_attachGizmo( pGizmo );
 
+	_onGizmoAppeared(pHook);
 	return pHook;
 }
 
@@ -213,8 +220,11 @@ WgOrderedHook * WgOrderedLayout::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibli
 	if( !pGizmo || !pSibling || !pSibling->ParentX() || pSibling->ParentX() != this )
 		return 0;
 
-	WgOrderedHook * pHook = _newHook( pGizmo );
+	WgOrderedHook * pHook = _newHook();
 	pHook->_moveBefore(static_cast<WgOrderedHook*>(pSibling->Hook()));
+
+	pHook->_attachGizmo( pGizmo );
+
 	_onGizmoAppeared(pHook);
 	return pHook;
 }
@@ -224,6 +234,8 @@ WgOrderedHook * WgOrderedLayout::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibli
 WgOrderedHook * WgOrderedLayout::InsertGizmoSorted( WgGizmo * pGizmo )
 {
 	//TODO: Implement
+
+	return 0;
 }
 
 //____ DeleteGizmo() __________________________________________________________
@@ -248,10 +260,10 @@ bool WgOrderedLayout::DeleteGizmo( WgGizmo * pGizmo )
 
 //____ ReleaseGizmo() _________________________________________________________
 
-bool WgOrderedLayout::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgOrderedLayout::ReleaseGizmo( WgGizmo * pGizmo )
 {
 	if( !pGizmo || !pGizmo->Hook() || pGizmo->Hook()->Parent() != this )
-		return false;
+		return 0;
 
 	// Disconnect and notify subclass that gizmo has disappeared
 
@@ -260,25 +272,29 @@ bool WgOrderedLayout::ReleaseGizmo( WgGizmo * pGizmo )
 
 	_onGizmoDisappeared( pHook );
 
-	return true;
+	return pGizmo;
 }
 
 //____ DeleteAllGizmos() ______________________________________________________
 
-void WgOrderedLayout::DeleteAllGizmos()
+bool WgOrderedLayout::DeleteAllGizmos()
 {
 	m_hooks.Clear();
 	_refreshAllGizmos();
+
+	return true;
 }
 
 //____ ReleaseAllGizmos() _____________________________________________________
 
-void WgOrderedLayout::ReleaseAllGizmos()
+bool WgOrderedLayout::ReleaseAllGizmos()
 {
 	while( m_hooks.First() )
 		m_hooks.PopFront();
 
 	_refreshAllGizmos();
+
+	return true;
 }
 
 //____ SortGizmos() ___________________________________________________________
@@ -342,7 +358,10 @@ WgGizmo * WgOrderedLayout::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 				}
 			}
 		}
-		pHook = pHook->PrevHook();
+		pHook = pHook->NextHook();
+
+		if( pHook )
+			_advanceGeoToHook( rect, pHook );
 	}
 
 	return pResult;
@@ -388,7 +407,7 @@ void WgOrderedLayout::_clearDirtyRects()
 	while( pHook )
 	{
 		if( pHook->Gizmo()->IsContainer() )
-			pHook->_doClearDirtyRects();
+			pHook->Gizmo()->CastToContainer()->_clearDirtyRects();
 
 		pHook = pHook->NextHook();
 	}
@@ -400,4 +419,3 @@ bool WgOrderedLayout::_onAlphaTest( const WgCord& ofs )
 {
 	return false;
 }
-

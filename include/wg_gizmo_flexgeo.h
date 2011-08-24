@@ -134,7 +134,7 @@ protected:
 
 	LINK_METHODS( WgFlexHook );
 
-	WgFlexHook( WgGizmo * pGizmo, WgGizmoFlexGeo * pParent );
+	WgFlexHook( WgGizmoFlexGeo * pParent, const WgRect& placementGeo );
 
 	bool		RefreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 
@@ -238,10 +238,10 @@ public:
 	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCord& geometry, WgLocation hotspot = WG_NORTHWEST );
 
 	bool			DeleteGizmo( WgGizmo * pGizmo );
-	bool			ReleaseGizmo( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
 
-	void			DeleteAllGizmos();
-	void			ReleaseAllGizmos();
+	bool			DeleteAllGizmos();
+	bool			ReleaseAllGizmos();
 
 	int				AddAnchor( float relativeX, float relativeY, const WgCord& pixelOfs );
 	bool			ReplaceAnchor( int index, float relativeX, float relativeY, const WgCord& pixelOfs );
