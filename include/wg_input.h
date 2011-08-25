@@ -108,6 +108,9 @@ public:
 	inline Sint32 pointerX() { return m_pointerX; }
 	inline Sint32 pointerY() { return m_pointerY; }
 
+	void	focus_gained();
+	void	focus_lost();
+
 	void	map_keycode( WgKey wg_keycode, Uint16 native_keycode );
 
 	void	begin_events( Uint32 time_ms );
@@ -236,6 +239,8 @@ private:
 	bool	gizmoInStack( const WgGizmo * pGizmo, const WgActionDetails& info ) const; // Check if widget is in Events widget stack.
 	void	widgetRemoved( WgWidget * pWidget );
 	void	gizmoRemoved( WgGizmo * pGizmo );
+
+	bool			m_bHasFocus;
 
 	Wdg_Root	* 	m_pRootWidget;				///< Pointer at root widget which we are a part of.
 	WgWidget	*	m_pFocusedWidget;			///< Pointer at widget with keyboard focus. Default is root widget.

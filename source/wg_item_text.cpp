@@ -76,16 +76,10 @@ void WgItemText::SetTextProp(const WgTextPropPtr& pProp)
 	TextModified();
 }
 
-void WgItemText::SetText(const char* pStr)
+void WgItemText::SetText(const WgCharSeq& seq)
 {
-	m_text.setText(pStr);
-	TextModified();
-}
-
-void WgItemText::SetText(const Uint16 * pStr)
-{
-	m_text.setText(pStr);
-	TextModified();
+	m_text.setText(seq);
+	Modified( 0, 0 );
 }
 
 void WgItemText::SetText(const WgText * pText)

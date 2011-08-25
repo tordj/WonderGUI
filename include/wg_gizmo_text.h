@@ -109,6 +109,7 @@ private:
 	int					m_maxCharacters;
 	int					m_maxLines;
 	InputMode			m_inputMode;
+	bool				m_bResetCursorOnFocus;
 };
 
 

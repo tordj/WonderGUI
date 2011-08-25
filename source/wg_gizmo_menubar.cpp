@@ -283,8 +283,8 @@ void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 			pen.SetPos( WgCord(posX + b.left, printPosY) );
 
 			WgTextAttr	attr;
-			WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL);
-			WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_MODE_NORMAL);
+			WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), mode );
+			WgTextTool::AddPropAttributes( attr, m_pTextProp, mode );
 			pen.SetAttributes( attr );
 
 			pDevice->PrintLine( pen, attr, pI->m_pText );

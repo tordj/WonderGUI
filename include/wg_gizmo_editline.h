@@ -98,6 +98,7 @@ private:
 
 	WgText				m_text;
 
+	bool				m_bResetCursorOnFocus;
 	bool				m_bPasswordMode;
 	int					m_maxCharacters;
 	Uint16				m_pwGlyph;

@@ -35,6 +35,8 @@
 
 WgInput::WgInput()
 {
+	m_bHasFocus				= true;
+
 	m_pRootWidget			= 0;
 	m_pFocusedWidget		= 0;
 	m_pFocusedGizmo			= 0;
@@ -171,6 +173,32 @@ bool WgInput::removePointerSpy( WgPointerSpy * pSpy )
 	m_pPointerSpies = pNewArray;
 
 	return true;
+}
+
+//____ focus_gained() _________________________________________________________
+
+void WgInput::focus_gained()
+{
+	if( !m_bHasFocus )
+	{
+		if( m_pFocusedWidget )
+			m_pFocusedWidget->GotInputFocus();
+
+		m_bHasFocus = true;
+	}
+}
+
+//____ focus_lost() _________________________________________________________
+
+void WgInput::focus_lost()
+{
+	if( m_bHasFocus )
+	{
+		if( m_pFocusedWidget )
+			m_pFocusedWidget->LostInputFocus();
+
+		m_bHasFocus = false;
+	}
 }
 
 
@@ -1170,12 +1198,13 @@ void	WgInput::setFocusedWidget( WgWidget * pWidget )
 	{
 		WgWidget* pTmp = m_pFocusedWidget;
 		m_pFocusedWidget = 0;
-		pTmp->LostInputFocus();
+		if( m_bHasFocus )
+			pTmp->LostInputFocus();
 	}
 
 	m_pFocusedWidget = pWidget;
 
-	if( m_pFocusedWidget )
+	if( m_pFocusedWidget && m_bHasFocus )
 		m_pFocusedWidget->GotInputFocus();
 
 }

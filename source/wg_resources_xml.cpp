@@ -284,11 +284,39 @@ namespace
 			s.AddAttribute("id", id);
 	}
 
+	template< class T >	void WriteTextManager( T* pObject, WgResourceSerializerXML& s )
+	{
+		WgTextManager* pManager = pObject->GetTextManager();
+		if( pManager )
+		{
+			std::string id = s.ResDb()->FindTextManagerId( pManager );
+
+			if(id.empty())
+			{
+				id = s.ResDb()->GenerateName(pManager);
+				s.ResDb()->AddTextManager(id, pManager);				//TODO: It's probably too late to add it here...
+			}
+			s.AddAttribute("textmanager", id);
+		}
+	}
+
 	std::string ReadLocalizedString(const std::string& text, WgResourceSerializerXML& s)
 	{
 		if(text.size() > 0 && text[0] == ':')
 			return s.ResDb()->LoadString(text.substr(1));
 		return text;
+	}
+
+	template< class T >	void ReadTextManager(T* pObject, const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
+	{
+		std::string managerId = xmlNode["textmanager"];
+		if( managerId.length() )
+		{
+			WgTextManager * pManager = s.ResDb()->GetTextManager(managerId);
+			VERIFY(pManager != 0,  "unknown textmanager '" + managerId + "' specified");
+			if( pManager )
+				pObject->SetTextManager( pManager );
+		}
 	}
 }
 
@@ -2503,7 +2531,7 @@ void WgLegoRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 //////////////////////////////////////////////////////////////////////////
 /// WgColorSetRes ////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-//	<blockset
+//	<colorset
 //		id=[name]
 //		col=[color]
 //		content_borders=[all]
@@ -3026,7 +3054,6 @@ void WgAltRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 	}
 	else
 	{
-		WgRect rect[5];
 		rect[0] = WgRectRes::Deserialize(xmlNode);
 
 		pSurface = s.ResDb()->GetSurface(xmlNode["surface"]);
@@ -3108,19 +3135,7 @@ void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, 
 
 	WriteDiffAttr(s, xmlNode, "wrap", holder->GetTextWrap(), true);
 
-	WgTextManager * pManager = holder->GetTextManager();
-	if( pManager )
-	{
-		std::string id = s.ResDb()->FindTextManagerId( pManager );
-
-		if(id.empty())
-		{
-			id = s.ResDb()->GenerateName(pManager);
-			s.ResDb()->AddTextManager(id, pManager);				//TODO: It's probably too late to add it here...
-		}
-		s.AddAttribute("textmanager", id);
-	}
-
+	WriteTextManager(holder, s);
 
 
 /*	WgTextPropPtr pCurProp = 0;
@@ -3204,13 +3219,7 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	holder->SetLineSpaceAdjustment(WgUtil::ToSint8(xmlNode["linespaceadjustment"]));
 	holder->SetTextWrap(WgUtil::ToBool(xmlNode["wrap"], true));
 
-	std::string managerId = xmlNode["textmanager"];
-	if( managerId.length() )
-	{
-		WgTextManager * pManager = s.ResDb()->GetTextManager(managerId);
-		VERIFY(pManager != 0,  "unknown textmanager '" + managerId + "' specified");
-		holder->SetTextManager( pManager );
-	}
+	ReadTextManager(holder, xmlNode, s);
 }
 
 void WgTextHolderRes::DeserializeText(const char * pChars, int len)
@@ -3865,6 +3874,7 @@ void Wdg_CheckBox2_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "icon_scale", widget->GetIconScale(), 0.f );
 	WriteDiffAttr(s, xmlNode, "icon_origo", widget->GetIconOrigo(), WgOrigo::midLeft());
 	WriteDiffAttr(s, xmlNode, "icon_push_text", widget->IsIconPushingText(), false);
+	WriteDiffAttr(s, xmlNode, "text_area_opaque", widget->IsTextAreaOpaque(), true);
 
 	WgBorderRes::Serialize(s, xmlNode, "icon_borders", widget->GetIconBorders());
 
@@ -3901,6 +3911,7 @@ void Wdg_CheckBox2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo,
 					WgUtil::ToFloat(xmlNode["icon_scale"], 0.f),
 					WgUtil::ToBool(xmlNode["icon_push_text"], false) );
+	widget->SetTextAreaOpaque( WgUtil::ToBool(xmlNode["text_area_opaque"], true) ); 
 }
 
 WgCharBuffer* Wdg_CheckBox2_Res::GetCharBuffer()
@@ -4136,6 +4147,7 @@ void Wdg_EditValue_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteDiffAttr(s, xmlNode, "textalign", widget->GetTextAlignment(), WgOrigo::topLeft());
 	WriteTextPropAttr(s, widget->GetTextProp(), "prop");
+	WriteTextManager(widget, s);
 
 	s.EndTag();
 }
@@ -4152,6 +4164,8 @@ void Wdg_EditValue_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 	WgTextPropPtr prop = s.ResDb()->GetTextProp(xmlNode["prop"]);
 	if(prop)
 		widget->SetTextProp(prop);
+
+	ReadTextManager(widget, xmlNode, s);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -4991,6 +5005,7 @@ void WgTableColumnRes::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "enabled", !m_column->IsDisabled(), true);
 	WriteDiffAttr(s, xmlNode, "ascend", m_column->IsInitialAscend(), true);
 	WriteDiffAttr(s, xmlNode, "uid", m_column->GetID(), (Uint32)0);
+	WriteDiffAttr(s, xmlNode, "scale_weight", m_column->GetScaleWeight(), 1.f);
 
 	s.EndTag();
 }
@@ -5009,10 +5024,12 @@ void WgTableColumnRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 	bool enabled = WgUtil::ToBool(xmlNode["enabled"], true);
 	Uint16 pixelw = WgUtil::ToUint16(xmlNode["pixelwidth"]);
 	WgOrigo origo = WgUtil::ToOrigo(xmlNode["origo"]);
+	float weight = WgUtil::ToFloat(xmlNode["scale_weight"],1.f);
 	int id = WgUtil::ToSint32(xmlNode["uid"]);
 
 //	WgCharSeq charSeq(m_pCharBuffer);
-	tableViewRes->GetWidget()->AddColumn(ReadLocalizedString(xmlNode["text"], s).c_str(), pixelw, origo, 0, ascend, enabled, id);
+	Uint32 column = tableViewRes->GetWidget()->AddColumn(ReadLocalizedString(xmlNode["text"], s).c_str(), pixelw, origo, 0, ascend, enabled, id);
+	tableViewRes->GetWidget()->GetColumn(column)->SetScaleWeight(weight);
 }
 
 WgCharBuffer* WgTableColumnRes::GetCharBuffer()
@@ -5065,7 +5082,8 @@ void Wdg_TableView_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "scaleheader", widget->GetAutoScaleHeaders(), false);
 
 	WriteTextPropAttr(s, widget->GetHeaderTextProp(), "header_textprop");
-	WriteBlockSetAttr(s, widget->GetHeaderSource(), "header_blockset");
+	WriteBlockSetAttr(s, widget->GetHeaderSourceNormal(), "header_blockset_normal");
+	WriteBlockSetAttr(s, widget->GetHeaderSourceSelected(), "header_blockset_selected");
 
 	WriteBlockSetAttr(s, widget->GetArrowAscend(), "arrow_asc");
 	WriteBlockSetAttr(s, widget->GetArrowDescend(), "arrow_dsc");
@@ -5129,7 +5147,21 @@ void Wdg_TableView_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 	widget->ShowHeader(WgUtil::ToBool(xmlNode["header"], true));
 	widget->SetAutoScaleHeaders(WgUtil::ToBool(xmlNode["scaleheader"], false));
 	widget->SetHeaderTextProp(s.ResDb()->GetTextProp(xmlNode["header_textprop"]));
-	widget->SetHeaderSource(s.ResDb()->GetBlockSet(xmlNode["header_blockset"]));
+
+	if( xmlNode.HasAttribute("header_blockset") )
+	{
+		// Temporary code to ease the transition until we have header_blockset_normal
+		// and header_blockset_selected in all XML-files.
+
+		WgBlockSetPtr p = s.ResDb()->GetBlockSet(xmlNode["header_blockset"]);
+		widget->SetHeaderSource( p, p );
+	}
+	else
+	{
+		widget->SetHeaderSource(s.ResDb()->GetBlockSet(xmlNode["header_blockset_normal"]), 
+								s.ResDb()->GetBlockSet(xmlNode["header_blockset_selected"]));
+	}
+
 	widget->SetArrowOrigo(WgUtil::ToOrigo(xmlNode["arrow_origo"]));
 	widget->SetClickSortPrio(WgUtil::ToUint8(xmlNode["sortprio"]));
 

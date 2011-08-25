@@ -74,6 +74,9 @@ public:
     bool			SetDisplacement( Sint8 xUnchecked = 0, Sint8 yUnchecked = 0, Sint8 xOver = 0, Sint8 yOver = 0, Sint8 xChecked = 0, Sint8 yChecked = 0 );
 	void			GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sint8& yOver, Sint8& xDown, Sint8& yDown ) const;
 
+	bool			IsTextAreaOpaque() const { return m_bOpaqueText; }
+	void			SetTextAreaOpaque( bool bOpaque );
+
 	inline bool		IsChecked() { return m_bChecked; };
 
 	inline bool		Check( void ) { return SetState( true ); };
@@ -141,7 +144,7 @@ private:
 	Uint16			m_textMouseOverOfsX;
 	WgRect*			m_pTextArea;					// For marktesting the text area
 	Uint16			m_textAreaCount;
-
+	bool			m_bOpaqueText;
 };
 
 

@@ -93,6 +93,19 @@ namespace WgEvent
 			Param			m_param[4];
 	};
 
+	class FocusGained : public Event
+	{
+		friend class ::WgEventHandler;
+	public:
+		FocusGained();
+	};
+
+	class FocusLost : public Event
+	{
+		friend class ::WgEventHandler;
+	public:
+		FocusLost();
+	};
 
 	class PointerEnter : public Event
 	{

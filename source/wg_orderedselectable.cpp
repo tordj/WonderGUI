@@ -244,6 +244,7 @@ void WgOrdSelLayout::_onCloneContent( const WgGizmo * _pOrg )
 {
 }
 
+
 //____ _firstSelectedHook() ___________________________________________________
 
 WgOrdSelHook * WgOrdSelLayout::_firstSelectedHook() const

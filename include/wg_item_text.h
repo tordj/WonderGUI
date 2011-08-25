@@ -39,8 +39,7 @@ public:
 	~WgItemText();
 
 	void SetTextProp(const WgTextPropPtr& pProp);
-	void SetText(const char* pStr);
-	void SetText(const Uint16 * pStr);
+	void SetText( const WgCharSeq& seq );
 	void SetText(const WgText * pText);
 	void SetMargin(WgBorders margin);
 

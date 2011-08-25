@@ -30,6 +30,19 @@ namespace WgEvent
 		return m_pGizmo.GetRealPtr();
 	}
 
+	//____ FocusGained ________________________________________________________
+
+	FocusGained::FocusGained()
+	{
+		m_type = WG_EVENT_FOCUS_GAINED;
+	}
+
+	//____ FocusLost __________________________________________________________
+
+	FocusLost::FocusLost()
+	{
+		m_type = WG_EVENT_FOCUS_LOST;
+	}
 
 	//____ PointerEnter _______________________________________________________
 
