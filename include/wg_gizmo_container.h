@@ -38,6 +38,7 @@ class WgGizmoContainer : public WgGizmoParent
 {
 	friend class WgGizmoHook;
 	friend class WgFlexHook;
+	friend class WgModalHook;
 
 	friend class WgRoot;
 	friend class WgGizmoFlexGeo;

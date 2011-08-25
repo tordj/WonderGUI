@@ -714,9 +714,9 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCord& pos, WgSearchMode mode )
 			return p->m_pGizmo;
 	}
 
-	// Check our little corner square...
+	// Check our little corner square and geometry
 
-	if( mode != WG_SEARCH_MARKPOLICY || MarkTest( pos ) )
+	if( mode == WG_SEARCH_GEOMETRY || MarkTest( pos ) )
 		return this;
 	else
 		return 0;

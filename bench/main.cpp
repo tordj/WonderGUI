@@ -33,6 +33,10 @@ bool			eventLoop( WgEventHandler * pHandler );
 void cbInitDrag( const WgEvent::Event& _event, WgGizmo * pGizmo );
 void cbDragGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo );
 
+void cbOpenModal( const WgEvent::Event& _event, WgGizmo * pGizmo );
+void cbCloseModal( const WgEvent::Event& _event, WgGizmo * pGizmo );
+
+WgGizmoModal * g_pModal = 0;
 
 //____ main() _________________________________________________________________
 
@@ -56,6 +60,7 @@ int main ( int argc, char** argv )
 	WgInputDevice * pInputDevice = new WgInputDevice();
 
 	WgRoot * pRoot = new WgRoot( pGfxDevice, pInputDevice );
+	pRoot->SetGeo(WgRect(0,0,640,480));
 
 	WgEventHandler * pEventHandler = new WgEventHandler( 0, pRoot );
 
@@ -97,19 +102,33 @@ int main ( int argc, char** argv )
 	WgBlockSetPtr pButtonBlock = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,0,8*4+6,8), 2), WgBorders(3), WgBorders(2), WG_OPAQUE );
 
 
-	//
+	// Background
 
 	WgGizmoPixmap * pBackground = new WgGizmoPixmap();
 	pBackground->SetSource( pBackBlock );
 
-	//
+	// Main Flex
 
 	WgGizmoFlexGeo * pFlex = new WgGizmoFlexGeo();
 	WgFlexHook * pHook = pFlex->AddGizmo( pBackground );
 
 	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
 
-	pRoot->SetGizmo(pFlex);
+
+	// Modal container
+
+	g_pModal = new WgGizmoModal();
+	g_pModal->SetBaseGizmo( pFlex );
+
+	pRoot->SetGizmo(g_pModal);
+
+
+	// Modal button
+
+	WgGizmoButton * pModalButton = new WgGizmoButton();
+	pModalButton->SetSource( pButtonBlock );
+
+	pEventHandler->AddCallback( WgEventFilter::ButtonClick(pModalButton, 1), cbCloseModal, pModalButton );
 
 	//
 
@@ -117,6 +136,8 @@ int main ( int argc, char** argv )
 	pButton->SetSource( pButtonBlock );
 
 	pHook = pFlex->AddGizmo( pButton, WgRect(0,0,100,100), WG_NORTHWEST );
+
+	pEventHandler->AddCallback( WgEventFilter::ButtonPress(pButton, 1), cbOpenModal, pModalButton );
 
 	//
 
@@ -377,4 +398,19 @@ void cbDragGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo )
 	WgFlexHook * pHook = static_cast<WgFlexHook*>(pGizmo->Hook());
 	pHook->SetOfs(dragStartPos+dragDistance);
 }
+
+//____ cbOpenModal() __________________________________________________________
+
+void cbOpenModal( const WgEvent::Event& _event, WgGizmo * pGizmo )
+{
+	g_pModal->AddModalGizmo( pGizmo, WgCord(), WG_SOUTHEAST );
+}
+
+//____ cbCloseModal() __________________________________________________________
+
+void cbCloseModal( const WgEvent::Event& _event, WgGizmo * pGizmo )
+{
+	g_pModal->ReleaseGizmo(pGizmo);
+}
+
 

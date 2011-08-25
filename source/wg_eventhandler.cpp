@@ -200,7 +200,7 @@ int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventType type 
 
 
 
-
+//____ DeleteCallbacks() ______________________________________________________
 
 int WgEventHandler::DeleteCallback( const WgEventFilter& filter,const  WgGizmo * pGizmo )
 {
@@ -713,27 +713,33 @@ void WgEventHandler::_processPointerPlaced( WgEvent::PointerPlaced * pEvent )
 {
 	std::vector<WgGizmo*>	vNowMarked;
 
-	// Collect widgets we now are inside
+	WgGizmo * pGizmoPointed = m_pRoot->FindGizmo( m_pointerPos, WG_SEARCH_MARKPOLICY );
+	WgGizmo * pGizmoTarget = m_pRoot->FindGizmo( m_pointerPos, WG_SEARCH_ACTION_TARGET );
 
-	WgGizmo * pGizmo = m_pRoot->FindGizmo( m_pointerPos, WG_SEARCH_ACTION_TARGET );
 
-	while( pGizmo )
+	// Collect gizmos we now are inside (if we aren't outside our modal gizmo).
+
+	if( pGizmoPointed == pGizmoTarget )
 	{
-		vNowMarked.push_back(pGizmo);
+		WgGizmo * pGizmo = pGizmoPointed;
+		while( pGizmo )
+		{
+			vNowMarked.push_back(pGizmo);
 
-		WgGizmoContainer * p = pGizmo->Hook()->Parent();
+			WgGizmoContainer * p = pGizmo->Hook()->Parent();
 
-		if( p )
-			pGizmo = p->CastToGizmo();
-		else
-			pGizmo = 0;
+			if( p )
+				pGizmo = p->CastToGizmo();
+			else
+				pGizmo = 0;
+		}
 	}
 
 	// Post POINTER_EXIT events for gizmos no longer marked
 
 	for( size_t i = 0 ; i < m_vMarkedGizmos.size() ; i++ )
 	{
-		pGizmo = m_vMarkedGizmos[i].GetRealPtr();
+		WgGizmo * pGizmo = m_vMarkedGizmos[i].GetRealPtr();
 
 		size_t j = 0;
 		while( j < vNowMarked.size() )
@@ -752,7 +758,7 @@ void WgEventHandler::_processPointerPlaced( WgEvent::PointerPlaced * pEvent )
 
 	for( size_t i = 0 ; i < vNowMarked.size() ; i++ )
 	{
-		pGizmo = vNowMarked[i];
+		WgGizmo * pGizmo = vNowMarked[i];
 
 		size_t j = 0;
 		while( j < m_vMarkedGizmos.size() )
@@ -773,6 +779,9 @@ void WgEventHandler::_processPointerPlaced( WgEvent::PointerPlaced * pEvent )
 	m_vMarkedGizmos.clear();
 	for( size_t i = 0 ; i < vNowMarked.size() ; i++ )
 		m_vMarkedGizmos.push_back( vNowMarked[i] );
+
+	//
+
 }
 
 //____ _processButtonPress() ___________________________________________________

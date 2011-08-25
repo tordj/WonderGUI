@@ -838,8 +838,10 @@ WgGizmoFlexGeo::WgGizmoFlexGeo() : m_bConfineChildren(false)
 
 WgGizmoFlexGeo::~WgGizmoFlexGeo()
 {
-	DeleteAllGizmos();
-	DeleteAllAnchors();
+// This is done automatically now, calls like these in destructor are forbidden.
+
+//	DeleteAllGizmos();
+//	DeleteAllAnchors();
 }
 
 //____ Type() _________________________________________________________________
@@ -1344,6 +1346,9 @@ WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 		}
 		pHook = pHook->PrevHook();
 	}
+
+	if( !pResult && mode == WG_SEARCH_GEOMETRY )
+		pResult = this;
 
 	return pResult;
 }

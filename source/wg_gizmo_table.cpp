@@ -1832,14 +1832,14 @@ WgGizmo * WgGizmoTable::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 			yOfs < m_cellPadding.top || yOfs >= pRow->Height() - m_cellPadding.bottom )
 		{
 			pGizmo = pRow->GetGizmo(col);
-			if( mode != WG_SEARCH_MARKPOLICY || pGizmo->MarkTest( WgCord( xOfs-m_cellPadding.left, yOfs-m_cellPadding.top) )  )
+			if( mode == WG_SEARCH_GEOMETRY || pGizmo->MarkTest( WgCord( xOfs-m_cellPadding.left, yOfs-m_cellPadding.top) )  )
 				return pGizmo;
 		}
 	}
 
 	// Check ourselves
 
-	if( mode != WG_SEARCH_MARKPOLICY || MarkTest( ofs ) )
+	if( mode == WG_SEARCH_GEOMETRY || MarkTest( ofs ) )
 		return this;
 	else
 		return 0;

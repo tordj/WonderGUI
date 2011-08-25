@@ -91,7 +91,6 @@ protected:
 	void		RequestResize();
 
 	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
-	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
 
 
 	WgGizmoHook *	_prevHook() const;
@@ -193,10 +192,6 @@ private:
 		void		RequestRender( const WgRect& rect );
 		void		RequestResize();
 
-		void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
-		void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
-
-
 		WgGizmoHook *	_prevHook() const { return 0; }
 		WgGizmoHook *	_nextHook() const { return m_pParent->FirstModalGizmo(); }
 		WgGizmoContainer * _parent() const { return m_pParent; }
@@ -228,8 +223,8 @@ private:
 	void			_clearDirtyRects();
 
 
-	WgGizmoHook*	_firstHook();		// Fist Hook returned is the normal child, then follows the modal ones.
-	WgGizmoHook*	_lastHook();		//
+	WgGizmoHook*	_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
+	WgGizmoHook*	_lastHook() const;		//
 
 
 	BaseHook				m_baseHook;

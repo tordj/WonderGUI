@@ -258,6 +258,76 @@ namespace WgEvent
 		int				TranslatedKeyCode() const;
 	};
 
+
+/*
+	class ModalPointerEnter : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		ModalPointerEnter( WgGizmo * pModalGizmo, WgGizmo * pEnteredGizmo );
+	public:
+
+	};
+
+	class ModalPointerExit : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		ModalPointerExit( WgGizmo * pModalGizmo, WgGizmo * pExitedGizmo );
+	};
+
+	class ModalPointerMove : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		ModalPointerMove( WgGizmo * pModalGizmo, WgGizmo * pPointedGizmo );
+	};
+
+	class ModalButtonPress : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		ModalButtonPress( int button, WgGizmo * pModalGizmo, WgGizmo * pPressedGizmo );
+	public:
+		int				Button() const;
+	};
+
+	class ModalButtonRelease : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		ButtonRelease() {}						// So we can make members in WgEventHandler
+		ButtonRelease( int button, WgGizmo * pModalGizmo, WgGizmo * pPressedGizmo, bool bPressInside, bool bReleaseInside );
+	public:
+		int				Button() const;
+		bool			PressInside() const;
+		bool			ReleaseInside() const;
+	};
+
+	class ModalButtonDrag : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		ModalButtonDrag( int button, WgGizmo * pModalGizmo, WgGizmo * pPressedGizmo, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos );
+	public:
+		int				Button() const;
+		WgCord			DraggedSinceStart() const;
+		WgCord			DraggedSinceLast() const;
+		WgCord			StartPos() const;
+		WgCord			PrevPos() const;
+		WgCord			CurrPos() const;
+	};
+
+	class ModalButtonRepeat : public Event
+	{
+		friend class ::WgEventHandler;
+	protected:
+		ModalButtonRepeat() {}								// So we can make members in WgEventHandler
+		ModalButtonRepeat( int button, WgGizmo * pGizmo );
+	public:
+		int				Button() const;
+	};
+*/
 }
 
 

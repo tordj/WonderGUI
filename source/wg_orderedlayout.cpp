@@ -364,6 +364,9 @@ WgGizmo * WgOrderedLayout::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 			_advanceGeoToHook( rect, pHook );
 	}
 
+	if( !pResult && mode == WG_SEARCH_GEOMETRY )
+		pResult = this;
+
 	return pResult;
 
 
