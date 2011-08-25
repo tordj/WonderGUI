@@ -94,189 +94,112 @@ namespace WgEvent
 
 	//____ ButtonPress ______________________________________________________
 
-	ButtonPress::ButtonPress( int button )
+	ButtonPress::ButtonPress( int button ) : ButtonEvent(button)
 	{
 		m_type = WG_EVENT_BUTTON_PRESS;
-		m_param[0].integer = button;
 	}
 
-	ButtonPress::ButtonPress( int button, WgGizmo * pGizmo )
+	ButtonPress::ButtonPress( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
 	{
 		m_type			= WG_EVENT_BUTTON_PRESS;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
-
-		m_param[0].integer = button;
-	}
-
-
-	int ButtonPress::Button() const
-	{
-		return m_param[0].integer;
 	}
 
 	//____ ButtonRepeat ______________________________________________________
 
-	ButtonRepeat::ButtonRepeat( int button )
+	ButtonRepeat::ButtonRepeat( int button ) : ButtonEvent(button)
 	{
 		m_type = WG_EVENT_BUTTON_REPEAT;
-		m_param[0].integer = button;
 	}
 
-	ButtonRepeat::ButtonRepeat( int button, WgGizmo * pGizmo )
+	ButtonRepeat::ButtonRepeat( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
 	{
 		m_type			= WG_EVENT_BUTTON_REPEAT;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
-
-		m_param[0].integer = button;
 	}
-
-
-	int ButtonRepeat::Button() const
-	{
-		return m_param[0].integer;
-	}
-
 
 	//____ ButtonRelease _____________________________________________________
 
-	ButtonRelease::ButtonRelease( int button )
+	ButtonRelease::ButtonRelease( int button ) : ButtonEvent(button)
 	{
 		m_type = WG_EVENT_BUTTON_RELEASE;
-		m_param[0].integer = button;
 
-		m_param[1].boolean = true;			// Always assumed to have had the press inside our window.
-		m_param[2].boolean = true;			// Always assumed to be inside our window now.
+		m_bPressInside = true;			// Always assumed to have had the press inside our window.
+		m_bReleaseInside = true;			// Always assumed to be inside our window now.
 	}
 
-	ButtonRelease::ButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside )
+	ButtonRelease::ButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside ) : ButtonEvent(button)
 	{
 		m_type			= WG_EVENT_BUTTON_RELEASE;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 
-		m_param[0].integer = button;
-		m_param[1].boolean = bPressInside;
-		m_param[2].boolean = bReleaseInside;
-	}
-
-
-	int ButtonRelease::Button() const
-	{
-		return m_param[0].integer;
+		m_bPressInside = bPressInside;
+		m_bReleaseInside = bReleaseInside;
 	}
 
 	bool ButtonRelease::PressInside() const
 	{
-		return m_param[1].boolean;
+		return m_bPressInside;
 	}
 
 	bool ButtonRelease::ReleaseInside() const
 	{
-		return m_param[2].boolean;
+		return m_bReleaseInside;
 	}
 
 
 
 	//____ ButtonClick _____________________________________________________
 
-	ButtonClick::ButtonClick( int button )
+	ButtonClick::ButtonClick( int button ) : ButtonEvent(button)
 	{
 		m_type = WG_EVENT_BUTTON_CLICK;
-		m_param[0].integer = button;
 	}
 
-	ButtonClick::ButtonClick( int button, WgGizmo * pGizmo )
+	ButtonClick::ButtonClick( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
 	{
 		m_type = WG_EVENT_BUTTON_CLICK;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
-
-		m_param[0].integer = button;
 	}
 
-
-	int ButtonClick::Button() const
-	{
-		return m_param[0].integer;
-	}
 
 	//____ ButtonDoubleClick _____________________________________________________
 
-	ButtonDoubleClick::ButtonDoubleClick( int button )
+	ButtonDoubleClick::ButtonDoubleClick( int button ) : ButtonEvent(button)
 	{
 		m_type = WG_EVENT_BUTTON_DOUBLECLICK;
-		m_param[0].integer = button;
 	}
 
-	ButtonDoubleClick::ButtonDoubleClick( int button, WgGizmo * pGizmo )
+	ButtonDoubleClick::ButtonDoubleClick( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
 	{
 		m_type = WG_EVENT_BUTTON_DOUBLECLICK;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
-
-		m_param[0].integer = button;
 	}
-
-	int ButtonDoubleClick::Button() const
-	{
-		return m_param[0].integer;
-	}
-
 
 	//____ KeyPress ___________________________________________________________
 
-	KeyPress::KeyPress( int native_keycode )
+	KeyPress::KeyPress( int native_keycode ) : KeyEvent(native_keycode)
 	{
 		m_type = WG_EVENT_KEY_PRESS;
-		m_param[0].integer = native_keycode;
-	}
-
-	int KeyPress::NativeKeyCode() const
-	{
-		return m_param[0].integer;
-	}
-
-	int KeyPress::TranslatedKeyCode() const
-	{
-		return m_param[1].integer;
 	}
 
 	//____ KeyRepeat ___________________________________________________________
 
-	KeyRepeat::KeyRepeat( int native_keycode )
+	KeyRepeat::KeyRepeat( int native_keycode ) : KeyEvent(native_keycode)
 	{
 		m_type = WG_EVENT_KEY_REPEAT;
-		m_param[0].integer = native_keycode;
-	}
-
-	int KeyRepeat::NativeKeyCode() const
-	{
-		return m_param[0].integer;
-	}
-
-	int KeyRepeat::TranslatedKeyCode() const
-	{
-		return m_param[1].integer;
 	}
 
 	//____ KeyRelease ________________________________________________________
 
-	KeyRelease::KeyRelease( int native_keycode )
+	KeyRelease::KeyRelease( int native_keycode ) : KeyEvent(native_keycode)
 	{
 		m_type = WG_EVENT_KEY_RELEASE;
-		m_param[0].integer = native_keycode;
-	}
-
-	int KeyRelease::NativeKeyCode() const
-	{
-		return m_param[0].integer;
-	}
-
-	int KeyRelease::TranslatedKeyCode() const
-	{
-		return m_param[1].integer;
 	}
 
 	//____ Character __________________________________________________________
@@ -284,12 +207,12 @@ namespace WgEvent
 	Character::Character( unsigned short character )
 	{
 		m_type = WG_EVENT_CHARACTER;
-		m_param[0].integer = character;
+		m_char = character;
 	}
 
 	unsigned short Character::Char() const
 	{
-		return (unsigned short) m_param[0].integer;
+		return m_char;
 	}
 
 	//____ WheelRoll __________________________________________________________
@@ -297,18 +220,18 @@ namespace WgEvent
 	WheelRoll::WheelRoll( int wheel, int distance )
 	{
 		m_type = WG_EVENT_WHEEL_ROLL;
-		m_param[0].integer = wheel;
-		m_param[1].integer = distance;
+		m_wheel = wheel;
+		m_distance = distance;
 	}
 
 	int WheelRoll::Wheel() const
 	{
-		return m_param[0].integer;
+		return m_wheel;
 	}
 
 	int WheelRoll::Distance() const
 	{
-		return m_param[1].integer;
+		return m_distance;
 	}
 
 	//____ Tick _______________________________________________________________
@@ -316,12 +239,12 @@ namespace WgEvent
 	Tick::Tick( int ms )
 	{
 		m_type = WG_EVENT_TICK;
-		m_param[0].integer = ms;
+		m_millisec = ms;
 	}
 
 	int Tick::Millisec() const
 	{
-		return m_param[0].integer;
+		return m_millisec;
 	}
 
 	//____ PointerPlaced _______________________________________________________
@@ -333,68 +256,50 @@ namespace WgEvent
 
 	//____ ButtonDrag _________________________________________________________
 
-	ButtonDrag::ButtonDrag( int button, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos )
+	ButtonDrag::ButtonDrag( int button, const WgCord& startPos, const WgCord& prevPos, const WgCord& currPos ) : ButtonEvent(button)
 	{
 
 		m_type = WG_EVENT_BUTTON_DRAG;
-		m_param[0].integer = button;
 
-		m_param[1].short1 = orgPos.x;
-		m_param[1].short2 = orgPos.y;
-
-		m_param[2].short1 = currPos.x - orgPos.x;
-		m_param[2].short2 = currPos.y - orgPos.y;
-
-		m_param[3].short1 = currPos.x - prevPos.x;
-		m_param[3].short2 = currPos.y - prevPos.y;
+		m_startPos = startPos;
+		m_prevPos = prevPos;
+		m_currPos = currPos;
 	}
 
-	ButtonDrag::ButtonDrag( int button, WgGizmo * pGizmo, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos )
+	ButtonDrag::ButtonDrag( int button, WgGizmo * pGizmo, const WgCord& startPos, const WgCord& prevPos, const WgCord& currPos ) : ButtonEvent(button)
 	{
 		m_type = WG_EVENT_BUTTON_DRAG;
 		m_bIsForGizmo		= true;
 		m_pGizmo 			= pGizmo;
-		m_param[0].integer	= button;
 
-		m_param[1].short1 = orgPos.x;
-		m_param[1].short2 = orgPos.y;
-
-		m_param[2].short1 = currPos.x - orgPos.x;
-		m_param[2].short2 = currPos.y - orgPos.y;
-
-		m_param[3].short1 = currPos.x - prevPos.x;
-		m_param[3].short2 = currPos.y - prevPos.y;
+		m_startPos = startPos;
+		m_prevPos = prevPos;
+		m_currPos = currPos;
 	}
 
-	int ButtonDrag::Button() const
+	WgCord ButtonDrag::DraggedTotal() const
 	{
-		return m_param[0].integer;
+		return m_currPos - m_startPos;
 	}
 
-
-	WgCord ButtonDrag::DraggedSinceStart() const
+	WgCord ButtonDrag::DraggedNow() const
 	{
-		return WgCord( m_param[2].short1, m_param[2].short2 );
-	}
-
-	WgCord ButtonDrag::DraggedSinceLast() const
-	{
-		return WgCord( m_param[3].short1, m_param[3].short2 );
+		return m_currPos - m_prevPos;
 	}
 
 	WgCord ButtonDrag::CurrPos() const
 	{
-		return WgCord( m_param[1].short1 + m_param[2].short1, m_param[1].short2 + m_param[2].short2 );
+		return m_currPos;
 	}
 
 	WgCord ButtonDrag::StartPos() const
 	{
-		return WgCord( m_param[1].short1, m_param[1].short2 );
+		return m_startPos;
 	}
 
 	WgCord ButtonDrag::PrevPos() const
 	{
-		return WgCord( m_param[1].short1 + m_param[2].short1 - m_param[3].short1, m_param[1].short2 + m_param[2].short2 - m_param[3].short2 );
+		return m_prevPos;
 	}
 
 };

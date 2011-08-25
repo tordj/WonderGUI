@@ -276,20 +276,20 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 //____ _onEvent() ______________________________________________________________
 
-void WgGizmoButton::_onEvent( const WgEvent::Event& _event, WgEventHandler * pHandler )
+void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
-	switch( _event.Type() )
+	switch( pEvent->Type() )
 	{
 		case	WG_EVENT_KEY_PRESS:
 		{
-			if( static_cast<const WgEvent::KeyPress&>(_event).TranslatedKeyCode() == WG_KEY_RETURN )
+			if( static_cast<const WgEvent::KeyPress*>(pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 				m_bReturnPressed = true;
 			break;
 		}
 
 		case	WG_EVENT_KEY_RELEASE:
 		{
-			if( static_cast< const WgEvent::KeyPress&>(_event).TranslatedKeyCode() == WG_KEY_RETURN )
+			if( static_cast< const WgEvent::KeyPress*>(pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 				m_bReturnPressed = false;
 			break;
 
@@ -306,17 +306,17 @@ void WgGizmoButton::_onEvent( const WgEvent::Event& _event, WgEventHandler * pHa
 
 		case WG_EVENT_BUTTON_PRESS:
 		{
-			int button = static_cast<const WgEvent::ButtonPress&>(_event).Button();
+			int button = static_cast<const WgEvent::ButtonPress*>(pEvent)->Button();
 
 			m_bPressedInside[button-1] = true;
 			break;
 		}
 		case WG_EVENT_BUTTON_RELEASE:
 		{
-			const WgEvent::ButtonRelease& ev = static_cast<const WgEvent::ButtonRelease&>(_event);
-			int button = ev.Button();
+			const WgEvent::ButtonRelease* pEv = static_cast<const WgEvent::ButtonRelease*>(pEvent);
+			int button = pEv->Button();
 
-			if( ev.ReleaseInside() )
+			if( pEv->ReleaseInside() )
 			{
 				//TODO: Send signal if right button was released!
 			}

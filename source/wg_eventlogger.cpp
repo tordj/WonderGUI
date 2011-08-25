@@ -177,9 +177,9 @@ void WgEventLogger::LogAllEvents()
 
 //____ OnEvent() ______________________________________________________________
 
-void WgEventLogger::OnEvent( const WgEvent::Event& _event )
+void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 {
-	if( m_eventFilter[_event.Type()] == false )
+	if( m_eventFilter[_pEvent->Type()] == false )
 		return;
 
 	string	timestamp;
@@ -191,16 +191,16 @@ void WgEventLogger::OnEvent( const WgEvent::Event& _event )
 	char	params[256]; params[0] = 0;			// Event specific parameters
 
 
-	timestamp = FormatTimestamp( _event.Timestamp() );
+	timestamp = FormatTimestamp( _pEvent->Timestamp() );
 
-	switch( _event.Type() )
+	switch( _pEvent->Type() )
 	{
 		case WG_EVENT_DUMMY:
 			id = "Dummy";
 			break;
 		case WG_EVENT_TICK:
 			id = "Tick";
-			sprintf( params, " millisec=%d", ((const WgEvent::Tick&)_event).Millisec() );
+			sprintf( params, " millisec=%d", ((const WgEvent::Tick*)_pEvent)->Millisec() );
 			break;
 		case WG_EVENT_POINTER_ENTER:
 			id = "PointerEnter";
@@ -216,24 +216,24 @@ void WgEventLogger::OnEvent( const WgEvent::Event& _event )
 			break;
 		case WG_EVENT_BUTTON_PRESS:
 			id = "ButtonPress";
-			sprintf( params, " button=%d", ((const WgEvent::ButtonPress&)_event).Button() );
+			sprintf( params, " button=%d", ((const WgEvent::ButtonPress*)_pEvent)->Button() );
 			break;
 		case WG_EVENT_BUTTON_REPEAT:
 			id = "ButtonRepeat";
-			sprintf( params, " button=%d", ((const WgEvent::ButtonRepeat&)_event).Button() );
+			sprintf( params, " button=%d", ((const WgEvent::ButtonRepeat*)_pEvent)->Button() );
 			break;
 		case WG_EVENT_BUTTON_DRAG:
 		{
 			id = "ButtonDrag";
 
-			const WgEvent::ButtonDrag * pEvent = static_cast<const WgEvent::ButtonDrag*>(&_event);
+			const WgEvent::ButtonDrag * pEvent = static_cast<const WgEvent::ButtonDrag*>(_pEvent);
 
 			WgCord	now		= pEvent->CurrPos();
 			WgCord 	prev	= pEvent->PrevPos();
 			WgCord	start	= pEvent->StartPos();
 
-			WgCord	dragNow	= pEvent->DraggedSinceLast();
-			WgCord	dragTotal=pEvent->DraggedSinceStart();
+			WgCord	dragNow	= pEvent->DraggedNow();
+			WgCord	dragTotal=pEvent->DraggedTotal();
 
 			sprintf( params, " button=%d position(start=%d,%d prev=%d,%d now=%d,%d) dragged(now=%d,%d total=%d,%d)",
 					pEvent->Button(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
@@ -243,7 +243,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event& _event )
 		{
 			id = "ButtonRelease";
 
-			const WgEvent::ButtonRelease * pEvent = static_cast<const WgEvent::ButtonRelease*>(&_event);
+			const WgEvent::ButtonRelease * pEvent = static_cast<const WgEvent::ButtonRelease*>(_pEvent);
 
 			const static char outside[] = "outside";
 			const static char inside[] = "inside";
@@ -261,41 +261,41 @@ void WgEventLogger::OnEvent( const WgEvent::Event& _event )
 		}
 		case WG_EVENT_BUTTON_CLICK:
 			id = "ButtonClick";
-			sprintf( params, " button=%d", ((const WgEvent::ButtonClick&)_event).Button() );
+			sprintf( params, " button=%d", static_cast<const WgEvent::ButtonClick*>(_pEvent)->Button() );
 			break;
 		case WG_EVENT_BUTTON_DOUBLECLICK:
 			id = "ButtonDoubleClick";
-			sprintf( params, " button=%d", ((const WgEvent::ButtonDoubleClick&)_event).Button() );
+			sprintf( params, " button=%d", static_cast<const WgEvent::ButtonDoubleClick*>(_pEvent)->Button() );
 			break;
 		case WG_EVENT_KEY_PRESS:
 		{
 			id = "KeyPress";
-			const WgEvent::KeyPress * pEvent = static_cast<const WgEvent::KeyPress*>(&_event);
+			const WgEvent::KeyPress * pEvent = static_cast<const WgEvent::KeyPress*>(_pEvent);
 			sprintf( params, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
 			break;
 		}
 		case WG_EVENT_KEY_REPEAT:
 		{
 			id = "KeyRepeat";
-			const WgEvent::KeyRepeat * pEvent = static_cast<const WgEvent::KeyRepeat*>(&_event);
+			const WgEvent::KeyRepeat * pEvent = static_cast<const WgEvent::KeyRepeat*>(_pEvent);
 			sprintf( params, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
 			break;
 		}
 		case WG_EVENT_KEY_RELEASE:
 		{
 			id = "KeyRelease";
-			const WgEvent::KeyRelease * pEvent = static_cast<const WgEvent::KeyRelease*>(&_event);
+			const WgEvent::KeyRelease * pEvent = static_cast<const WgEvent::KeyRelease*>(_pEvent);
 			sprintf( params, "wg_keycode=%d native_keycode=%d", pEvent->TranslatedKeyCode(), pEvent->NativeKeyCode() );
 			break;
 		}
 		case WG_EVENT_CHARACTER:
 			id = "Character";
-			sprintf( params, " char=%X", ((const WgEvent::Character&)_event).Char() );
+			sprintf( params, " char=%X", static_cast<const WgEvent::Character*>(_pEvent)->Char() );
 			break;
 		case WG_EVENT_WHEEL_ROLL:
 		{
 			id = "WheelRoll";
-			const WgEvent::WheelRoll * pEvent = static_cast<const WgEvent::WheelRoll*>(&_event);
+			const WgEvent::WheelRoll * pEvent = static_cast<const WgEvent::WheelRoll*>(_pEvent);
 			sprintf( params, "wheel=%d distance=%d", pEvent->Wheel(), pEvent->Distance() );
 			break;
 		}
@@ -306,10 +306,10 @@ void WgEventLogger::OnEvent( const WgEvent::Event& _event )
 
 	};
 
-	gizmo = FormatGizmo( _event );
+	gizmo = FormatGizmo( _pEvent );
 
-	modkeys = FormatModkeys( _event );
-	pointerPos = FormatPointerPos( _event );
+	modkeys = FormatModkeys( _pEvent );
+	pointerPos = FormatPointerPos( _pEvent );
 
 
 
@@ -338,14 +338,14 @@ string WgEventLogger::FormatTimestamp( int64_t ms )
 
 //____ FormatGizmo() __________________________________________________________
 
-string WgEventLogger::FormatGizmo( const WgEvent::Event& _event )
+string WgEventLogger::FormatGizmo( const WgEvent::Event * _pEvent )
 {
 	std::string	out;
 
-	if( _event.IsForGizmo() )
+	if( _pEvent->IsForGizmo() )
 	{
 		char	temp[64];
-		WgGizmo * pGizmo = _event.Gizmo();
+		WgGizmo * pGizmo = _pEvent->Gizmo();
 
 		static const char def_type[] = "deleted";
 		const char * pType = def_type;
@@ -362,9 +362,9 @@ string WgEventLogger::FormatGizmo( const WgEvent::Event& _event )
 
 //____ FormatModkeys() __________________________________________________________
 
-string WgEventLogger::FormatModkeys( const WgEvent::Event& _event )
+string WgEventLogger::FormatModkeys( const WgEvent::Event * _pEvent )
 {
-	WgModifierKeys keys = _event.ModKeys();
+	WgModifierKeys keys = _pEvent->ModKeys();
 
 	string	out;
 
@@ -380,10 +380,10 @@ string WgEventLogger::FormatModkeys( const WgEvent::Event& _event )
 
 //____ FormatPointerPos() _____________________________________________________
 
-string WgEventLogger::FormatPointerPos( const WgEvent::Event& _event )
+string WgEventLogger::FormatPointerPos( const WgEvent::Event * _pEvent )
 {
-	WgCord localPos = _event.PointerPos();
-	WgCord globalPos = _event.PointerScreenPos();
+	WgCord localPos = _pEvent->PointerPos();
+	WgCord globalPos = _pEvent->PointerScreenPos();
 
 
 	char	temp[64];

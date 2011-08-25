@@ -281,7 +281,7 @@ void WgGizmo::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 }
 
-void WgGizmo::_onEvent( const WgEvent::Event& _event, WgEventHandler * pHandler )
+void WgGizmo::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 
 }

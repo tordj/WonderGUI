@@ -53,7 +53,6 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 
 		public:
-
 			inline WgEventType		Type() const { return m_type; }
 			inline int64_t			Timestamp() const { return m_timestamp; }
 					WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
@@ -65,23 +64,7 @@ namespace WgEvent
 
 		protected:
 			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false) {}
-
-			struct Param
-			{
-				union
-				{
-					bool	boolean;
-					int		integer;
-					float	real;
-					void *	pointer;
-
-					struct
-					{
-						short	short1;
-						short	short2;
-					};
-				};
-			};
+			virtual ~Event() {}
 
 			WgEventType		m_type;				// Type of event
 			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
@@ -90,8 +73,32 @@ namespace WgEvent
 			WgGizmoWeakPtr	m_pGizmo;			// Gizmo to receive this event.
 			WgCord			m_pointerLocalPos;	// Gizmo-relative position of pointer. Same as m_pointerScreenPos if Gizmo not set.
 			WgCord			m_pointerScreenPos;	// Screen position of pointer.
-			Param			m_param[4];
 	};
+
+	class ButtonEvent : public Event
+	{
+		friend class ::WgEventHandler;
+	public:
+		inline int		Button() const { return m_button; }
+	protected:
+		ButtonEvent(int button) : m_button(button) {}
+
+		int		m_button;
+	};
+
+	class KeyEvent : public Event
+	{
+		friend class ::WgEventHandler;
+	public:
+		inline int		NativeKeyCode() const { return m_nativeKeyCode; }
+		inline int		TranslatedKeyCode() const { return m_translatedKeyCode; }
+	protected:
+		KeyEvent( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode) {}
+
+		int		m_nativeKeyCode;
+		int		m_translatedKeyCode;
+	};
+
 
 	class FocusGained : public Event
 	{
@@ -135,48 +142,41 @@ namespace WgEvent
 		PointerMove( const WgCord& pos );
 	};
 
-	class ButtonPress : public Event
+	class ButtonPress : public ButtonEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
-		ButtonPress() {}								// So we can make members in WgEventHandler
 		ButtonPress( int button, WgGizmo * pGizmo );
 	public:
 		ButtonPress( int button );
-
-		int				Button() const;
 	};
 
-	class ButtonRelease : public Event
+	class ButtonRelease : public ButtonEvent
 	{
 		friend class ::WgEventHandler;
-	protected:
-		ButtonRelease() {}						// So we can make members in WgEventHandler
-		ButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside );
 	public:
 		ButtonRelease( int button );
 
-		int				Button() const;
 		bool			PressInside() const;
 		bool			ReleaseInside() const;
+
+	protected:
+		ButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside );
+
+		bool			m_bPressInside;
+		bool			m_bReleaseInside;
 	};
 
-	class KeyPress : public Event
+	class KeyPress : public KeyEvent
 	{
 	public:
 		KeyPress( int native_keycode );
-
-		int				NativeKeyCode() const;
-		int				TranslatedKeyCode() const;
 	};
 
-	class KeyRelease : public Event
+	class KeyRelease : public KeyEvent
 	{
 	public:
 		KeyRelease( int native_keycode );
-
-		int				NativeKeyCode() const;
-		int				TranslatedKeyCode() const;
 	};
 
 	class Character : public Event
@@ -185,6 +185,8 @@ namespace WgEvent
 		Character( unsigned short character );
 
 		unsigned short	Char() const;
+	protected:
+		unsigned short	m_char;
 	};
 
 	class WheelRoll : public Event
@@ -192,8 +194,11 @@ namespace WgEvent
 	public:
 		WheelRoll( int wheel, int distance );
 
-		int				Wheel() const;
-		int				Distance() const;
+		int			Wheel() const;
+		int			Distance() const;
+	protected:
+		int			m_wheel;
+		int			m_distance;
 	};
 
 	class Tick : public Event
@@ -202,6 +207,8 @@ namespace WgEvent
 		Tick( int ms );
 
 		int				Millisec() const;
+	protected:
+		int			m_millisec;
 	};
 
 
@@ -214,61 +221,54 @@ namespace WgEvent
 		PointerPlaced();
 	};
 
-	class ButtonDrag : public Event
+	class ButtonDrag : public ButtonEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
-		ButtonDrag( int button, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos );
+		ButtonDrag( int button, const WgCord& startPos, const WgCord& prevPos, const WgCord& currPos );
 		ButtonDrag( int button, WgGizmo * pGizmo, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos );
 	public:
-		int				Button() const;
-		WgCord			DraggedSinceStart() const;
-		WgCord			DraggedSinceLast() const;
+		WgCord			DraggedTotal() const;
+		WgCord			DraggedNow() const;
 		WgCord			StartPos() const;
 		WgCord			PrevPos() const;
 		WgCord			CurrPos() const;
+	protected:
+		WgCord			m_startPos;
+		WgCord			m_prevPos;
+		WgCord			m_currPos;
 	};
 
-	class ButtonRepeat : public Event
+	class ButtonRepeat : public ButtonEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
-		ButtonRepeat() {}								// So we can make members in WgEventHandler
 		ButtonRepeat( int button, WgGizmo * pGizmo );
 	public:
 		ButtonRepeat( int button );
-
-		int				Button() const;
 	};
 
-	class ButtonClick : public Event
+	class ButtonClick : public ButtonEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
 		ButtonClick( int button );
 		ButtonClick( int button, WgGizmo * pGizmo );
-	public:
-		int				Button() const;
 	};
 
-	class ButtonDoubleClick : public Event
+	class ButtonDoubleClick : public ButtonEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
 		ButtonDoubleClick( int button );
 		ButtonDoubleClick( int button, WgGizmo * pGizmo );
-	public:
-		int				Button() const;
 	};
 
-	class KeyRepeat : public Event
+	class KeyRepeat : public KeyEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
 		KeyRepeat( int native_keycode );
-	public:
-		int				NativeKeyCode() const;
-		int				TranslatedKeyCode() const;
 	};
 
 

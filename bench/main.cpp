@@ -30,11 +30,11 @@ WgSurface * 	loadSurface( const char * path );
 SDL_Surface *	initSDL( int w, int h );
 bool			eventLoop( WgEventHandler * pHandler );
 
-void cbInitDrag( const WgEvent::Event& _event, WgGizmo * pGizmo );
-void cbDragGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo );
+void cbInitDrag( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
+void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
 
-void cbOpenModal( const WgEvent::Event& _event, WgGizmo * pGizmo );
-void cbCloseModal( const WgEvent::Event& _event, WgGizmo * pGizmo );
+void cbOpenModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
+void cbCloseModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
 
 WgGizmoModal * g_pModal = 0;
 
@@ -248,7 +248,7 @@ bool eventLoop( WgEventHandler * pHandler )
 	static int	prevTicks = 0;
 
 	int ticks = SDL_GetTicks();
-	pHandler->QueueEvent( WgEvent::Tick( ticks - prevTicks ) );
+	pHandler->QueueEvent( new WgEvent::Tick( ticks - prevTicks ) );
 	prevTicks = ticks;
 
    // message processing loop
@@ -273,26 +273,26 @@ bool eventLoop( WgEventHandler * pHandler )
 
 			case	SDL_MOUSEMOTION:
 			{
-				pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.motion.x, event.motion.y ) ) );
+				pHandler->QueueEvent( new WgEvent::PointerMove( WgCord( event.motion.x, event.motion.y ) ) );
 				break;
 			}
 
 			case	SDL_MOUSEBUTTONDOWN:
 				if(event.button.button == 4 )
-					pHandler->QueueEvent( WgEvent::WheelRoll( 1, 120 ) );
+					pHandler->QueueEvent( new WgEvent::WheelRoll( 1, 120 ) );
 				else if(event.button.button == 5)
-					pHandler->QueueEvent( WgEvent::WheelRoll( 1, -120 ) );
+					pHandler->QueueEvent( new WgEvent::WheelRoll( 1, -120 ) );
 				else
 				{
 //					pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.button.x, event.button.y )) );
-					pHandler->QueueEvent( WgEvent::ButtonPress( event.button.button ) );
+					pHandler->QueueEvent( new WgEvent::ButtonPress( event.button.button ) );
 				}
 				break;
 
 			case	SDL_MOUSEBUTTONUP:
 //				pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.button.x, event.button.y ) ));
 				if( event.button.button != 4 && event.button.button != 5 )
-				pHandler->QueueEvent( WgEvent::ButtonRelease( event.button.button ) );
+				pHandler->QueueEvent( new WgEvent::ButtonRelease( event.button.button ) );
 				break;
 
 
@@ -370,7 +370,7 @@ WgCord dragStartPos;
 
 //____ cbInitDrag() ___________________________________________________________
 
-void cbInitDrag( const WgEvent::Event& _event, WgGizmo * pGizmo )
+void cbInitDrag( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 {
 	WgFlexHook * pHook = static_cast<WgFlexHook*>(pGizmo->Hook());
 
@@ -381,14 +381,14 @@ void cbInitDrag( const WgEvent::Event& _event, WgGizmo * pGizmo )
 
 //____ cbDragGizmo() __________________________________________________________
 
-void cbDragGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo )
+void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 {
-	if( _event.Type() != WG_EVENT_BUTTON_DRAG || !pGizmo->ParentX() )
+	if( _pEvent->Type() != WG_EVENT_BUTTON_DRAG || !pGizmo->ParentX() )
 		return;
 
-	const WgEvent::ButtonDrag& event = static_cast<const WgEvent::ButtonDrag&>(_event);
+	const WgEvent::ButtonDrag* pEvent = static_cast<const WgEvent::ButtonDrag*>(_pEvent);
 
-	WgCord	dragDistance = event.DraggedSinceStart();
+	WgCord	dragDistance = pEvent->DraggedTotal();
 
 	WgCord	ofs = dragStartPos + dragDistance;
 
@@ -401,14 +401,14 @@ void cbDragGizmo( const WgEvent::Event& _event, WgGizmo * pGizmo )
 
 //____ cbOpenModal() __________________________________________________________
 
-void cbOpenModal( const WgEvent::Event& _event, WgGizmo * pGizmo )
+void cbOpenModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 {
 	g_pModal->AddModalGizmo( pGizmo, WgCord(), WG_SOUTHEAST );
 }
 
 //____ cbCloseModal() __________________________________________________________
 
-void cbCloseModal( const WgEvent::Event& _event, WgGizmo * pGizmo )
+void cbCloseModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 {
 	g_pModal->ReleaseGizmo(pGizmo);
 }

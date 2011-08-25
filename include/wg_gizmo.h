@@ -185,7 +185,7 @@ protected:
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_onRefresh();
 	virtual void	_onUpdate( const WgUpdateInfo& _updateInfo );
-	virtual void	_onEvent( const WgEvent::Event& _event, WgEventHandler * pHandler );
+	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	virtual	bool	_onAlphaTest( const WgCord& ofs );
 	virtual void	_onEnable();
