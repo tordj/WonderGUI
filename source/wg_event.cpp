@@ -25,6 +25,8 @@
 
 namespace WgEvent
 {
+	//____ Event ______________________________________________________________
+
 	WgGizmo * Event::Gizmo() const
 	{
 		return m_pGizmo.GetRealPtr();
@@ -177,6 +179,33 @@ namespace WgEvent
 	ButtonDoubleClick::ButtonDoubleClick( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
 	{
 		m_type = WG_EVENT_BUTTON_DOUBLECLICK;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+	}
+
+	//____ PointerMoveOutsideModal ___________________________________________________
+
+	PointerMoveOutsideModal::PointerMoveOutsideModal( WgGizmo * pGizmo )
+	{
+		m_type = WG_EVENT_POINTER_MOVE_OUTSIDE_MODAL;
+		m_bIsForGizmo	= true;
+		m_pGizmo		= pGizmo;
+	}
+
+	//____ ButtonPressOutsideModal ______________________________________________________
+
+	ButtonPressOutsideModal::ButtonPressOutsideModal( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
+	{
+		m_type			= WG_EVENT_BUTTON_PRESS_OUTSIDE_MODAL;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+	}
+
+	//____ ButtonReleaseOutsideModal _____________________________________________________
+
+	ButtonReleaseOutsideModal::ButtonReleaseOutsideModal( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
+	{
+		m_type			= WG_EVENT_BUTTON_RELEASE_OUTSIDE_MODAL;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}

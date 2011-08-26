@@ -267,6 +267,18 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			id = "ButtonDoubleClick";
 			sprintf( params, " button=%d", static_cast<const WgEvent::ButtonDoubleClick*>(_pEvent)->Button() );
 			break;
+		case WG_EVENT_POINTER_MOVE_OUTSIDE_MODAL:
+			id = "PointerMoveOutsideModal";
+			break;
+		case WG_EVENT_BUTTON_PRESS_OUTSIDE_MODAL:
+			id = "ButtonPressOutsideModal";
+			sprintf( params, " button=%d", ((const WgEvent::ButtonPressOutsideModal*)_pEvent)->Button() );
+			break;
+		case WG_EVENT_BUTTON_RELEASE_OUTSIDE_MODAL:
+			id = "ButtonReleaseOutsideModal";
+			sprintf( params, " button=%d", ((const WgEvent::ButtonReleaseOutsideModal*)_pEvent)->Button() );
+			break;
+
 		case WG_EVENT_KEY_PRESS:
 		{
 			id = "KeyPress";

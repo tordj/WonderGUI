@@ -462,6 +462,13 @@ void WgEventHandler::ProcessEvents()
 {
 	m_bIsProcessing = true;
 
+	// First thing: we make sure that we know what Gizmos pointer is inside, in case that has changed.
+
+	m_insertPos = m_eventQueue.begin();	// Insert any POINTER_ENTER/EXIT right at beginning.
+	_updateMarkedGizmos(false);
+
+	// Process all the events
+
 	while( !m_eventQueue.empty() )
 	{
 		WgEvent::Event * pEvent = m_eventQueue.front();
@@ -697,6 +704,7 @@ void WgEventHandler::_processPointerExit( WgEvent::PointerExit * pEvent )
 	}
 
 	m_vMarkedGizmos.clear();
+	m_vModalGizmos.clear();
 }
 
 
@@ -724,6 +732,14 @@ void WgEventHandler::_processPointerMove( WgEvent::PointerMove * pEvent )
 //____ _processPointerPlaced() _________________________________________________
 
 void WgEventHandler::_processPointerPlaced( WgEvent::PointerPlaced * pEvent )
+{
+	_updateMarkedGizmos(true);
+
+}
+
+//____ _updateMarkedGizmos() _______________________________________________
+
+void WgEventHandler::_updateMarkedGizmos(bool bPostPointerMoveEvents)
 {
 	std::vector<WgGizmo*>	vNowMarked;
 
@@ -784,7 +800,7 @@ void WgEventHandler::_processPointerPlaced( WgEvent::PointerPlaced * pEvent )
 
 		if( j == m_vMarkedGizmos.size() )
 			QueueEvent( new WgEvent::PointerEnter( pGizmo ) );
-		else
+		else if( bPostPointerMoveEvents )
 			QueueEvent( new WgEvent::PointerMove( pGizmo ) );
 	}
 
@@ -794,14 +810,46 @@ void WgEventHandler::_processPointerPlaced( WgEvent::PointerPlaced * pEvent )
 	for( size_t i = 0 ; i < vNowMarked.size() ; i++ )
 		m_vMarkedGizmos.push_back( vNowMarked[i] );
 
-	//
 
+
+	// **** HANDLING OF MODAL GIZMOS ****
+	// This is a bit easier and more straight forward since:
+	// a) We don't have pointer enter/exit events, just move.
+	// b) Press/release outside do not neeed to be matched. We can get release outside
+	//    even if press was inside and have a press outside that gets an release inside.
+	//	  The modal gizmo still gets the corresponding event if it knows what to listen for.
+
+
+	// Update m_vModalGizmos and queue outside modal events.
+
+	m_vModalGizmos.clear();
+	if( pGizmoTarget != pGizmoPointed )
+	{
+		WgGizmo * pGizmo = pGizmoTarget;
+		while( pGizmo )
+		{
+			m_vModalGizmos.push_back(pGizmo);
+			if( bPostPointerMoveEvents )
+				QueueEvent( new WgEvent::PointerMoveOutsideModal(pGizmo) );
+
+			WgGizmoContainer * p = pGizmo->Hook()->Parent();
+
+			if( p )
+				pGizmo = p->CastToGizmo();
+			else
+				pGizmo = 0;
+		}
+	}
 }
+
+
 
 //____ _processButtonPress() ___________________________________________________
 
 void WgEventHandler::_processButtonPress( WgEvent::ButtonPress * pEvent )
 {
+	_updateMarkedGizmos(false);
+
 	int button = pEvent->Button();
 
 	// Update m_previousPressGizmos
@@ -851,6 +899,18 @@ void WgEventHandler::_processButtonPress( WgEvent::ButtonPress * pEvent )
 
 	m_bButtonPressed[button] = true;
 
+	// If m_vModalGizmos has content then we have the press outside a modal
+	// gizmo and should inform.
+
+	for( size_t i = 0 ; i < m_vModalGizmos.size() ; i++ )
+	{
+		WgGizmo * pGizmo = m_vModalGizmos[i].GetRealPtr();
+
+		if( pGizmo )
+			QueueEvent( new WgEvent::ButtonPressOutsideModal( button, pGizmo ) );
+	}
+
+
 }
 
 
@@ -858,6 +918,8 @@ void WgEventHandler::_processButtonPress( WgEvent::ButtonPress * pEvent )
 
 void WgEventHandler::_processButtonRepeat( WgEvent::ButtonRepeat * pEvent )
 {
+	_updateMarkedGizmos(false);
+
 	int button = pEvent->Button();
 
 	// Post BUTTON_REPEAT events for all widgets that received the press and we
@@ -877,6 +939,8 @@ void WgEventHandler::_processButtonRepeat( WgEvent::ButtonRepeat * pEvent )
 
 void WgEventHandler::_processButtonRelease( WgEvent::ButtonRelease * pEvent )
 {
+	_updateMarkedGizmos(false);
+
 	int button = pEvent->Button();
 
 	// Post BUTTON_RELEASE events for all gizmos that were pressed
@@ -917,6 +981,18 @@ void WgEventHandler::_processButtonRelease( WgEvent::ButtonRelease * pEvent )
 	delete m_pLatestReleaseEvents[button];		// Delete previous saved event.
 	m_pLatestReleaseEvents[button] = pEvent;
 	m_bButtonPressed[button] = false;
+
+	// If m_vModalGizmos has content then we have the release outside a modal
+	// gizmo and should inform.
+
+	for( size_t i = 0 ; i < m_vModalGizmos.size() ; i++ )
+	{
+		WgGizmo * pGizmo = m_vModalGizmos[i].GetRealPtr();
+
+		if( pGizmo )
+			QueueEvent( new WgEvent::ButtonReleaseOutsideModal( button, pGizmo ) );
+	}
+
 
 }
 

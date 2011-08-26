@@ -119,6 +119,8 @@ private:
 	int		_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain );
 	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
+	void 	_updateMarkedGizmos(bool bPostPointerMoveEvents);
+
 	//
 
 	WgRoot *		m_pRoot;
@@ -147,7 +149,9 @@ private:
 
 	// Current mouse state
 
-	std::vector<WgGizmoWeakPtr>	m_vMarkedGizmos;	// Gizmos the pointer currently is "inside".
+	std::vector<WgGizmoWeakPtr>	m_vMarkedGizmos;	// Gizmos the pointer currently is "inside". Empty if outside a modal gizmo.
+
+	std::vector<WgGizmoWeakPtr>	m_vModalGizmos;		// Current modal gizmo with parents when pointer is outside a modal gizmo, otherwise empty.
 
 	// Current button states
 
