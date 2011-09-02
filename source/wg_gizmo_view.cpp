@@ -55,7 +55,7 @@ WgGizmoView::WgGizmoView()
 	m_elements[XDRAG]._setParent(this);
 	m_elements[YDRAG]._setParent(this);
 
-	UpdateElementGeometry( WgSize(256,256), WgSize(0,0) );
+	UpdateElementGeo( WgSize(256,256), WgSize(0,0) );
 }
 
 //____ ~WgGizmoView() __________________________________________________
@@ -486,7 +486,7 @@ bool WgGizmoView::SetContent( WgGizmo * pContent )
 {
 	m_elements[WINDOW]._attachGizmo(pContent);
 
-	UpdateElementGeometry( Size(), pContent->BestSize() );
+	UpdateElementGeo( Size(), pContent->BestSize() );
 	RequestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 
@@ -518,7 +518,7 @@ bool WgGizmoView::SetScrollbarX( WgGizmoHDragbar* pScrollbar )
 		AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
 	}
 
-	UpdateElementGeometry( Size(), m_contentSize );
+	UpdateElementGeo( Size(), m_contentSize );
 	pScrollbar->SetSlider( ViewOfsX(), ViewLenX() );
 	RequestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
@@ -552,7 +552,7 @@ bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
 		AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
 	}
 
-	UpdateElementGeometry( Size(), m_contentSize );
+	UpdateElementGeo( Size(), m_contentSize );
 	pScrollbar->SetSlider( ViewOfsY(), ViewLenY() );
 	RequestRender( m_elements[YDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
@@ -563,7 +563,7 @@ bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
 WgGizmo* WgGizmoView::ReleaseContent()
 {
 	WgGizmo * p = m_elements[WINDOW]._releaseGizmo();
-	UpdateElementGeometry( Size(), WgSize(0,0) );
+	UpdateElementGeo( Size(), WgSize(0,0) );
 	return p;
 }
 
@@ -572,7 +572,7 @@ WgGizmo* WgGizmoView::ReleaseContent()
 WgGizmoHDragbar* WgGizmoView::ReleaseScrollbarX()
 {
 	WgGizmoHDragbar * p = (WgGizmoHDragbar*) m_elements[XDRAG]._releaseGizmo();
-	UpdateElementGeometry( Size(), m_contentSize );
+	UpdateElementGeo( Size(), m_contentSize );
 	return p;
 }
 
@@ -581,7 +581,7 @@ WgGizmoHDragbar* WgGizmoView::ReleaseScrollbarX()
 WgGizmoVDragbar* WgGizmoView::ReleaseScrollbarY()
 {
 	WgGizmoVDragbar * p = (WgGizmoVDragbar*) m_elements[YDRAG]._releaseGizmo();
-	UpdateElementGeometry( Size(), m_contentSize );
+	UpdateElementGeo( Size(), m_contentSize );
 	return p;
 }
 
@@ -651,7 +651,7 @@ void WgGizmoView::SetScrollbarAutoHide( bool bHideX, bool bHideY )
 	// Force a refresh of our subclass if its geometry has been affected.
 
 	if( ScrollbarXVisible() != bWasVisibleX || ScrollbarYVisible() != bWasVisibleY )
-		UpdateElementGeometry( Size(), m_contentSize );
+		UpdateElementGeo( Size(), m_contentSize );
 }
 
 //____ SetScrollbarPositions() ________________________________________________
@@ -664,7 +664,7 @@ void WgGizmoView::SetScrollbarPositions( bool bBottom, bool bRight )
 	m_bScrollbarBottom	= bBottom;
 	m_bScrollbarRight	= bRight;
 
-	UpdateElementGeometry( Size(), m_contentSize );
+	UpdateElementGeo( Size(), m_contentSize );
 }
 
 //____ SetFillerSource() ______________________________________________________
@@ -724,9 +724,9 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCord& pos, WgSearchMode mode )
 
 
 
-//____ UpdateElementGeometry() ________________________________________________
+//____ UpdateElementGeo() _____________________________________________________
 
-void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& newContentSize )
+void WgGizmoView::UpdateElementGeo( const WgSize& mySize, const WgSize& newContentSize )
 {
 	WgRect	newDragX, newDragY, newWindow, newFiller;
 	bool	bShowDragX = false, bShowDragY = false;
@@ -952,7 +952,7 @@ void WgGizmoView::UpdateElementGeometry( const WgSize& mySize, const WgSize& new
 
 void WgGizmoView::_onNewSize( const WgSize& size )
 {
-	UpdateElementGeometry( size, m_contentSize );
+	UpdateElementGeo( size, m_contentSize );
 }
 
 
@@ -1054,7 +1054,7 @@ void WgGizmoView::_onCloneContent( const WgGizmo * _pOrg )
 //_____________________________________________________________________________
 void WgGizmoView::SetContentSize( const WgSize& size )
 {
-	UpdateElementGeometry( Size(), WgSize(size) );
+	UpdateElementGeo( Size(), WgSize(size) );
 }
 
 //_____________________________________________________________________________

@@ -45,18 +45,21 @@ class WgGizmoContainer : public WgGizmoParent
 	friend class WgGizmoModal;
 	friend class WgOrderedLayout;
 	friend class WgVBoxLayout;
+	friend class WgMonotainer;
+
+	public:
+
+		bool		IsGizmo() const;
+		bool		IsRoot() const;
+
+//		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
+		WgRoot *	CastToRoot();
 
 	protected:
 		virtual void	_onEnable();
 		virtual void	_onDisable();
 
-
 	private:
-		bool		_isGizmo() const;
-		bool		_isRoot() const;
-
-//		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
-		WgRoot *	_castToRoot();
 
 
 		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) = 0;

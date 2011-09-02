@@ -370,8 +370,8 @@ WgSize WgGizmoDragbar::BestSize() const
 
 void WgGizmoDragbar::UpdateMinSize()
 {
-	Sint32	minW = 4;
-	Sint32	minH = 4;
+	int	minW = 4;
+	int	minH = 4;
 
 	// Check min w/h for BgGfx.
 

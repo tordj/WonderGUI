@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -135,8 +135,8 @@ bool Wg_Interface_ValueHolder::SetFractionalValue( float fraction )
 
 	// Calculate new value and set it.
 
-	int value = (Sint32)(fraction * (m_rangeMax - m_rangeMin) + m_rangeMin);	
-	
+	int value = (int)(fraction * (m_rangeMax - m_rangeMin) + m_rangeMin);
+
 	if( m_nValueDigits != 0 && value != m_rangeMin && value != m_rangeMax )
 	{
 		int ceiling = (int) pow( 10.f, (float) m_nValueDigits );

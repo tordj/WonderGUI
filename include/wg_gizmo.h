@@ -80,6 +80,7 @@ friend class WgGizmoModal;
 friend class WgGizmoTable;
 friend class WgGizmoView;
 friend class WgVBoxLayout;
+friend class WgMonotainer;
 
 friend class WgTableRow2;
 
@@ -90,8 +91,8 @@ public:
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
 
-	inline Sint32		Id() const { return m_id; }
-	inline void			SetId( Sint32 id ) { m_id = id; }
+	inline int		Id() const { return m_id; }
+	inline void			SetId( int id ) { m_id = id; }
 
 	inline WgString		GetTooltipString() const { return m_tooltip; }
 	inline void			SetTooltipString( const WgString& str ) { m_tooltip = str; }
@@ -130,8 +131,8 @@ public:
 	inline bool			IsFocused() { return m_bFocused; }
 	inline WgGizmoContainer * ParentX() { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
 
-	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->NextHook(); if( p ) return p->Gizmo(); } return 0; }
-	inline WgGizmo *	PrevSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->PrevHook(); if( p ) return p->Gizmo(); } return 0; }
+	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
+	inline WgGizmo *	PrevSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
 
 	WgCord				Local2abs( const WgCord& cord ) const;		// Cordinate from local cordsys to global
 	WgCord				Abs2local( const WgCord& cord ) const; 		// Cordinate from global to local cordsys

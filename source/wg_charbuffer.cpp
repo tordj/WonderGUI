@@ -562,7 +562,7 @@ Uint32 WgCharBuffer::_replace( Uint32 ofs, Uint32 delChar, Uint32 addSpace, cons
 		delChar = m_pHead->m_len - ofs;
 
 
-	Sint32 sizeChange = addSpace - delChar;
+	int sizeChange = addSpace - delChar;
 
 	// Dereference the props of the characters to be deleted
 

@@ -86,6 +86,7 @@
 		<Unit filename="include/wg_gizmo_row.h" />
 		<Unit filename="include/wg_gizmo_table.h" />
 		<Unit filename="include/wg_gizmo_tablist.h" />
+		<Unit filename="include/wg_gizmo_taborder.h" />
 		<Unit filename="include/wg_gizmo_text.h" />
 		<Unit filename="include/wg_gizmo_value.h" />
 		<Unit filename="include/wg_gizmo_view.h" />
@@ -97,6 +98,7 @@
 		<Unit filename="include/wg_interface_valueholder.h" />
 		<Unit filename="include/wg_key.h" />
 		<Unit filename="include/wg_mempool.h" />
+		<Unit filename="include/wg_monotainer.h" />
 		<Unit filename="include/wg_orderedlayout.h" />
 		<Unit filename="include/wg_orderedselectable.h" />
 		<Unit filename="include/wg_origo.h" />
@@ -169,6 +171,7 @@
 		<Unit filename="source/wg_gizmo_refreshbutton.cpp" />
 		<Unit filename="source/wg_gizmo_table.cpp" />
 		<Unit filename="source/wg_gizmo_tablist.cpp" />
+		<Unit filename="source/wg_gizmo_taborder.cpp" />
 		<Unit filename="source/wg_gizmo_text.cpp" />
 		<Unit filename="source/wg_gizmo_value.cpp" />
 		<Unit filename="source/wg_gizmo_view.cpp" />
@@ -178,6 +181,7 @@
 		<Unit filename="source/wg_interface_textholder.cpp" />
 		<Unit filename="source/wg_interface_valueholder.cpp" />
 		<Unit filename="source/wg_mempool.cpp" />
+		<Unit filename="source/wg_monotainer.cpp" />
 		<Unit filename="source/wg_orderedlayout.cpp" />
 		<Unit filename="source/wg_orderedselectable.cpp" />
 		<Unit filename="source/wg_origo.cpp" />

@@ -75,7 +75,7 @@ private:
 	void			Addrect( WgRectLink * _pRect, WgRectLink * _pOffset );
 
 	static	WgMemPool *	g_pMemPool;
-	static	Sint32		g_nRectChains;
+	static	int		g_nRectChains;
 };
 
 

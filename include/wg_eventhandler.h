@@ -112,6 +112,10 @@ private:
 	void	_processButtonClick( WgEvent::ButtonClick * pEvent );
 	void	_processButtonDoubleClick( WgEvent::ButtonDoubleClick * pEvent );
 
+	void	_processKeyPress( WgEvent::KeyPress * pEvent );
+	void	_processKeyRepeat( WgEvent::KeyRepeat * pEvent );
+	void	_processKeyRelease( WgEvent::KeyRelease * pEvent );
+
 	bool	_isGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
@@ -166,7 +170,15 @@ private:
 
 	// Current keyboard state
 
+	struct KeyDownInfo
+	{
+		WgEvent::KeyPress * 		pEvent;
+		std::vector<WgGizmoWeakPtr>	gizmos;
+	};
 
+	std::vector<KeyDownInfo>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.
+
+	std::vector<
 
 	// Callbacks
 

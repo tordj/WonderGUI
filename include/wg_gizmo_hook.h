@@ -54,8 +54,8 @@ public:
 	virtual WgCord	ScreenPos() const = 0;
 	virtual WgRect	ScreenGeo() const = 0;
 
-	inline WgGizmoHook *	PrevHook() const { return _prevHook(); }
-	inline WgGizmoHook *	NextHook() const { return _nextHook(); }
+	inline WgGizmoHook *	Prev() const { return _prevHook(); }
+	inline WgGizmoHook *	Next() const { return _nextHook(); }
 
 	inline	WgGizmo *			Gizmo() const { return m_pGizmo; }
 	inline  WgGizmoContainer * 	Parent() const { return _parent(); }

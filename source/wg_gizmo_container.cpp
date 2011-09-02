@@ -46,23 +46,23 @@ void WgGizmoContainer::_onDisable()
 	}
 }
 
-//____ _isGizmo() ______________________________________________________________
+//____ IsGizmo() ______________________________________________________________
 
-bool WgGizmoContainer::_isGizmo() const
+bool WgGizmoContainer::IsGizmo() const
 {
 	return true;
 }
 
-//____ _isRoot() _______________________________________________________________
+//____ IsRoot() _______________________________________________________________
 
-bool WgGizmoContainer::_isRoot() const
+bool WgGizmoContainer::IsRoot() const
 {
 	return false;
 }
 
-//____ _castToRoot() ___________________________________________________________
+//____ CastToRoot() ___________________________________________________________
 
-WgRoot * WgGizmoContainer::_castToRoot()
+WgRoot * WgGizmoContainer::CastToRoot()
 {
 	return 0;
 }
@@ -71,7 +71,7 @@ WgRoot * WgGizmoContainer::_castToRoot()
 
 bool WgGizmoContainer::_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting )
 {
-	WgGizmoHook * p = _castToGizmo()->Hook();
+	WgGizmoHook * p = CastToGizmo()->Hook();
 	if( p )
 		return p->Parent()->_focusRequested( p, pGizmoRequesting );
 	else
@@ -82,7 +82,7 @@ bool WgGizmoContainer::_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoR
 
 bool WgGizmoContainer::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
 {
-	WgGizmoHook * p = _castToGizmo()->Hook();
+	WgGizmoHook * p = CastToGizmo()->Hook();
 	if( p )
 		return p->Parent()->_focusReleased( p, pGizmoReleasing );
 	else

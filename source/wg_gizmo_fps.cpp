@@ -88,7 +88,7 @@ void WgGizmoFps::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 {
 
 	const int	cCurrentFrames = 10;
-	Sint32 currOfs = ((Sint32)m_tickBufferOfs) - cCurrentFrames;
+	int currOfs = ((int)m_tickBufferOfs) - cCurrentFrames;
 	if( currOfs < 0 )
 		currOfs += TICK_BUFFER;
 
@@ -131,7 +131,7 @@ void WgGizmoFps::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 
 	WgPen	pen( pDevice, _canvas, _clip );
 	WgTextAttr attr;
-	
+
 	WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextProp());
 	WgTextTool::AddPropAttributes(attr, m_pProp);
 

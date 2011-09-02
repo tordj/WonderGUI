@@ -98,7 +98,7 @@ void WgGfxDeviceSDL::Fill( const WgRect& _rect, const WgColor& _col )
 		rect.h = _rect.h;
 
 
-     	Sint32 a = SDL_FillRect( pSurf, &rect, col );
+     	int a = SDL_FillRect( pSurf, &rect, col );
 
 	  	if( a == -1 )
    			printf( "Error: %s\n", SDL_GetError() );
@@ -130,7 +130,7 @@ void WgGfxDeviceSDL::Fill( const WgRect& _rect, const WgColor& _col )
 			g = (_col.g >> pForm->Gloss) * _col.a/255.f;
 			b = (_col.b >> pForm->Bloss) * _col.a/255.f;
 
-			Sint32 minLoss = pForm->Rloss;
+			int minLoss = pForm->Rloss;
 			if( pForm->Gloss < minLoss )
 				minLoss = pForm->Gloss;
 			if( pForm->Bloss < minLoss )
@@ -220,7 +220,7 @@ void WgGfxDeviceSDL::Fill( const WgRect& _rect, const WgColor& _col )
 
 //____ Blit() __________________________________________________________________
 
-void WgGfxDeviceSDL::Blit( const WgSurface* pSrc, const WgRect& src, Sint32 dx, Sint32 dy  )
+void WgGfxDeviceSDL::Blit( const WgSurface* pSrc, const WgRect& src, int dx, int dy  )
 {
 	if( !m_pCanvas || !pSrc )
 		return;

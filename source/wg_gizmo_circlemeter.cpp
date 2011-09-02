@@ -240,7 +240,7 @@ void WgGizmoCirclemeter::_onAction( WgInput::UserAction action, int button_key, 
 			{
 				const WgActionDetails * pPressInfo = inputObj.getPressDetails(1);
 
-				Sint32 dragX = info.x - pPressInfo->x;
+				int dragX = info.x - pPressInfo->x;
 				float	incPerPixel = (m_rangeMax - m_rangeMin)/(float)m_fullRangeDistance;
 				SetValue((int)(dragX*incPerPixel));
 			}

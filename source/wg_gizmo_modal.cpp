@@ -218,9 +218,9 @@ void WgModalHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& c
 
 	// Recurse through the siblings ontop of us if there are any, filling dirt
 
-	if( NextHook() )
+	if( Next() )
 	{
-		NextHook()->_castDirtRecursively( parentGeo, clip, pDirtIn, &siblingDirt );
+		Next()->_castDirtRecursively( parentGeo, clip, pDirtIn, &siblingDirt );
 	}
 	else
 		siblingDirt.PushExistingRect( pDirtIn );
@@ -651,7 +651,7 @@ void WgGizmoModal::_onCollectRects( WgRectChain& rects, const WgRect& geo, const
 	while( pHook )
 	{
 		pHook->Gizmo()->_onCollectRects( rects, pHook->m_realGeo + geo.pos(), clip );
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 	}
 }
 
@@ -666,7 +666,7 @@ void WgGizmoModal::_onMaskRects( WgRectChain& rects, const WgRect& geo, const Wg
 	while( pHook )
 	{
 		pHook->Gizmo()->_onMaskRects( rects, pHook->m_realGeo + geo.pos(), clip );
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 	}
 }
 
@@ -685,7 +685,7 @@ void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHo
 	WgModalHook * pCover;
 
 	if( pHook )
-		pCover = pHook->NextHook();
+		pCover = pHook->Next();
 	else
 		pCover = m_modalHooks.First();
 
@@ -694,7 +694,7 @@ void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHo
 		if( pCover->m_realGeo.intersectsWith( rect ) )
 			pCover->Gizmo()->_onMaskRects( rects, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
 
-		pCover = pCover->NextHook();
+		pCover = pCover->Next();
 	}
 
 	// Make request render calls
@@ -829,7 +829,7 @@ void WgGizmoModal::_clearDirtyRects()
 		if( pHook->Gizmo()->IsContainer() )
 			pHook->Gizmo()->CastToContainer()->_clearDirtyRects();
 
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 	}
 
 	// Clear dirty rects for base

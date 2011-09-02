@@ -58,7 +58,7 @@ public:
 	void	SetTintColor( WgColor color );
 	bool	SetBlendMode( WgBlendMode blendMode );
 	void	Fill( const WgRect& rect, const WgColor& col );
-	void	Blit( const WgSurface* src, const WgRect& srcrect, Sint32 dx, Sint32 dy  );
+	void	Blit( const WgSurface* src, const WgRect& srcrect, int dx, int dy  );
 
 	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );

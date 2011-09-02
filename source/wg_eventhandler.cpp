@@ -607,8 +607,17 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 			break;
 
 		case WG_EVENT_KEY_PRESS:
+			_processKeyPress( (WgEvent::KeyPress*) pEvent );
+			break;
+
 		case WG_EVENT_KEY_REPEAT:
+			_processKeyRepeat( (WgEvent::KeyRepeat*) pEvent );
+			break;
+
 		case WG_EVENT_KEY_RELEASE:
+			_processKeyRelease( (WgEvent::KeyRelease*) pEvent );
+			break;
+
 		case WG_EVENT_CHARACTER:
 		case WG_EVENT_WHEEL_ROLL:
 			break;
@@ -842,6 +851,24 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostPointerMoveEvents)
 	}
 }
 
+//____ _processKeyPress() ______________________________________________________
+
+void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
+{
+
+}
+
+//____ _processKeyRepeat() ____________________________________________________
+
+void WgEventHandler::_processKeyRepeat( WgEvent::KeyRepeat * pEvent )
+{
+}
+
+//____ _processKeyRelease() ___________________________________________________
+
+void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
+{
+}
 
 
 //____ _processButtonPress() ___________________________________________________

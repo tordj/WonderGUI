@@ -101,7 +101,7 @@ public:
 	{
 		UNSPECIFIED,				///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
 		SPECIFIED,					///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
-		RGB_8,						///< One byte of red, green and blue respectively in exactly that order. 
+		RGB_8,						///< One byte of red, green and blue respectively in exactly that order.
 		RGBA_8						///< One byte of red, green, blue and alpha respectively in exactly that order.
 	};
 
@@ -115,11 +115,11 @@ public:
 		Uint32	G_mask;				///< bitmask for getting the green bits out of the pixel
 		Uint32	B_mask;				///< bitmask for getting the blue bits out of the pixel
 		Uint32	A_mask;				///< bitmask for getting the alpha bits out of the pixel
-		
-		Sint32	R_shift;			///< amount to shift the red bits to get an 8-bit representation of red. This can be negative.
-		Sint32	G_shift;			///< amount to shift the green bits to get an 8-bit representation of red. This can be negative.
-		Sint32	B_shift;			///< amount to shift the blue bits to get an 8-bit representation of red. This can be negative.
-		Sint32	A_shift;			///< amount to shift the alpha bits to get an 8-bit representation of red. This can be negative.
+
+		int		R_shift;			///< amount to shift the red bits to get an 8-bit representation of red. This can be negative.
+		int		G_shift;			///< amount to shift the green bits to get an 8-bit representation of red. This can be negative.
+		int		B_shift;			///< amount to shift the blue bits to get an 8-bit representation of red. This can be negative.
+		int		A_shift;			///< amount to shift the alpha bits to get an 8-bit representation of red. This can be negative.
 
 		Uint8	R_bits;				///< number of bits for red in the pixel
 		Uint8	G_bits;				///< number of bits for green in the pixel
@@ -135,7 +135,7 @@ public:
 	inline	LockStatus	GetLockStatus() const { return m_lockStatus; }
 	inline  WgRect		GetLockRegion() const { return m_lockRegion; }
 	inline Uint32		GetPitch() const;						// of locked surface
-	inline const PixelFormat *GetPixelFormat() const;					// of locked surface	
+	inline const PixelFormat *GetPixelFormat() const;					// of locked surface
 
 
 	// Methods for modifying surface content
@@ -157,7 +157,7 @@ public:
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& marked,
 										const WgRect& selected, const WgRect& disabled,
-										const WgRect& special, const WgBorders& gfxBorders, 
+										const WgRect& special, const WgBorders& gfxBorders,
 										const WgBorders& contentBorders, Uint32 flags ) const;
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& marked,

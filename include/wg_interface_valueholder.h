@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -33,7 +33,7 @@ class	WgFont;
 
 class Wg_Interface_ValueHolder
 {
-public:	
+public:
 
 	Wg_Interface_ValueHolder();
 
@@ -52,8 +52,8 @@ public:
 	bool	IncValue();														///< Increase value by step size.
 	bool	DecValue();														///< Decrease value by step size.
 
-	bool	IncValue( Sint32 increment );					///< Increase value by parameter.
-	bool	DecValue( Sint32 decrement );					///< Decrease value by parameter.
+	bool	IncValue( int increment );					///< Increase value by parameter.
+	bool	DecValue( int decrement );					///< Decrease value by parameter.
 
 	inline Sint64	Value() {return m_value;};
 	float			FractionalValue();

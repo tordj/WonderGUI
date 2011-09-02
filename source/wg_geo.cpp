@@ -150,7 +150,7 @@ void WgRect::grow(const WgBorders &_borders)
 
 //____ growToContain() _______________________________________________________
 
-void WgRect::growToContain( Sint32 _x, Sint32 _y )
+void WgRect::growToContain( int _x, int _y )
 {
 	if( _x < x )
 	{

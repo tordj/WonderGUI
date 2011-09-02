@@ -316,7 +316,7 @@ void WgTableColumn2::SetWidth( int pixels )
 
 	if( m_desiredWidth != pixels )
 	{
-		Sint32 widthdiff = pixels - m_desiredWidth;
+		int widthdiff = pixels - m_desiredWidth;
 		m_desiredWidth = pixels;
 		if( m_bVisible && m_pTable )
 		{
@@ -1894,8 +1894,8 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 				else
 					block = m_pDescendGfx->GetBlock(mode);
 
-				Sint32 dx = (Sint32) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.GetWidth() * m_sortMarkerOrigo.hotspotX());
-				Sint32 dy = (Sint32) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.GetHeight() * m_sortMarkerOrigo.hotspotY());
+				int dx = (int) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.GetWidth() * m_sortMarkerOrigo.hotspotX());
+				int dy = (int) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.GetHeight() * m_sortMarkerOrigo.hotspotY());
 
 				pDevice->ClipBlitBlock( _clip, block, WgRect( dx, dy, block.GetWidth(), block.GetHeight()) );
 			}
@@ -1916,7 +1916,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 		if(  _clip.y < _window.y + m_pHeaderGfx->GetHeight())
 		{
-			Sint32 diff = _window.y + m_pHeaderGfx->GetHeight() - _clip.y;
+			int diff = _window.y + m_pHeaderGfx->GetHeight() - _clip.y;
 			clipView.y += diff;
 			clipView.h -= diff;
 			if( clipView.h < 1 )
@@ -1935,7 +1935,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	{
 		if( pRow->IsVisible() )
 		{
-			if( r.y + (Sint32) pRow->Height() >= clipView.y )
+			if( r.y + (int) pRow->Height() >= clipView.y )
 				 break;
 			r.y += pRow->Height() + m_cellPadding.height();
 			iRowColor++;

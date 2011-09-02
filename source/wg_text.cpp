@@ -750,10 +750,10 @@ char * WgText::getSelectedTextUTF8() const
 
 //____ compareTo() ____________________________________________________________
 /*
-Sint32 WgText::compareTo( const WgText * _pOther, bool bCheckCase ) const
+int WgText::compareTo( const WgText * _pOther, bool bCheckCase ) const
 {
 
-	Sint32	diff = 0;
+	int	diff = 0;
 	Uint32	line = 0;
 
 	WgChar * pMine = getLineText( 0 );
@@ -764,7 +764,7 @@ Sint32 WgText::compareTo( const WgText * _pOther, bool bCheckCase ) const
 		// default, case sensitive comparison
 		while( pMine && pOther )
 		{
-			Sint32	ofs = -1;
+			int	ofs = -1;
 
 			do
 			{
@@ -787,7 +787,7 @@ Sint32 WgText::compareTo( const WgText * _pOther, bool bCheckCase ) const
 		// case insensitive
 		while( pMine && pOther )
 		{
-			Sint32	ofs = -1;
+			int	ofs = -1;
 
 			do
 			{
