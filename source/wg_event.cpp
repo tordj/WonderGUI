@@ -214,21 +214,39 @@ namespace WgEvent
 
 	KeyPress::KeyPress( int native_keycode ) : KeyEvent(native_keycode)
 	{
-		m_type = WG_EVENT_KEY_PRESS;
+		m_type 		= WG_EVENT_KEY_PRESS;
+	}
+
+	KeyPress::KeyPress( int native_keycode, WgGizmo * pGizmo ) : KeyEvent(native_keycode)
+	{
+		m_type 		= WG_EVENT_KEY_PRESS;
+		m_pGizmo	= pGizmo;
 	}
 
 	//____ KeyRepeat ___________________________________________________________
 
 	KeyRepeat::KeyRepeat( int native_keycode ) : KeyEvent(native_keycode)
 	{
-		m_type = WG_EVENT_KEY_REPEAT;
+		m_type 		= WG_EVENT_KEY_REPEAT;
+	}
+
+	KeyRepeat::KeyRepeat( int native_keycode, WgGizmo * pGizmo ) : KeyEvent(native_keycode)
+	{
+		m_type 		= WG_EVENT_KEY_REPEAT;
+		m_pGizmo 	= pGizmo;
 	}
 
 	//____ KeyRelease ________________________________________________________
 
 	KeyRelease::KeyRelease( int native_keycode ) : KeyEvent(native_keycode)
 	{
-		m_type = WG_EVENT_KEY_RELEASE;
+		m_type 		= WG_EVENT_KEY_RELEASE;
+	}
+
+	KeyRelease::KeyRelease( int native_keycode, WgGizmo * pGizmo ) : KeyEvent(native_keycode)
+	{
+		m_type 		= WG_EVENT_KEY_RELEASE;
+		m_pGizmo	= pGizmo;
 	}
 
 	//____ Character __________________________________________________________

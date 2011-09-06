@@ -168,14 +168,20 @@ namespace WgEvent
 
 	class KeyPress : public KeyEvent
 	{
+		friend class ::WgEventHandler;
 	public:
 		KeyPress( int native_keycode );
+	protected:
+		KeyPress( int native_keycode, WgGizmo * pGizmo );
 	};
 
 	class KeyRelease : public KeyEvent
 	{
+		friend class ::WgEventHandler;
 	public:
 		KeyRelease( int native_keycode );
+	protected:
+		KeyRelease( int native_keycode, WgGizmo * pGizmo );
 	};
 
 	class Character : public Event
@@ -268,6 +274,7 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	protected:
 		KeyRepeat( int native_keycode );
+		KeyRepeat( int native_keycode, WgGizmo * pGizmo );
 	};
 
 

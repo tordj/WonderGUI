@@ -61,6 +61,14 @@ public:
 
 	void	ProcessEvents();
 
+	void	MapKey( WgKey translated_keycode, int native_keycode );
+	void	UnmapKey( WgKey translated_keycode );
+	void	ClearKeyMap();
+
+	bool	SetButtonRepeat( int delay, int rate );
+	bool	SetKeyRepeat( int delay, int rate );
+
+
 	void	AddCallback( void(*fp)( const WgEvent::Event * pEvent) );
 	void	AddCallback( void(*fp)( const WgEvent::Event * pEvent, void * pParam), void * pParam );
 	void	AddCallback( void(*fp)( const WgEvent::Event * pEvent, WgGizmo * pDest), WgGizmo * pDest );
@@ -173,12 +181,12 @@ private:
 	struct KeyDownInfo
 	{
 		WgEvent::KeyPress * 		pEvent;
-		std::vector<WgGizmoWeakPtr>	gizmos;
+		std::vector<WgGizmoWeakPtr>	vGizmos;				// Gizmos who received the press event.
 	};
 
-	std::vector<KeyDownInfo>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.
+	std::vector<KeyDownInfo*>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.
 
-	std::vector<
+	WgGizmoWeakPtr				m_keyFocusGizmo;		// Gizmo currently having the key focus.
 
 	// Callbacks
 

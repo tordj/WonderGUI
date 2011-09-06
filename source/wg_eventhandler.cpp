@@ -60,6 +60,63 @@ WgEventHandler::~WgEventHandler()
 {
 }
 
+//____ MapKey() _______________________________________________________________
+
+void WgEventHandler::MapKey( WgKey translated_keycode, int native_keycode )
+{
+	m_keycodeMap[native_keycode] = translated_keycode;
+}
+
+
+//____ UnmapKey() _____________________________________________________________
+
+void WgEventHandler::UnmapKey( WgKey translated_keycode )
+{
+	std::map<int,WgKey>::iterator it = m_keycodeMap.begin();
+
+	while( it != m_keycodeMap.end() )
+	{
+		if( it->second == translated_keycode )
+		{
+			std::map<int,WgKey>::iterator it2 = it++;
+			m_keycodeMap.erase(it2);
+		}
+		else
+			++it;
+	}
+}
+
+//____ ClearKeyMap() __________________________________________________________
+
+void WgEventHandler::ClearKeyMap()
+{
+	m_keycodeMap.clear();
+}
+
+//____ SetButtonRepeat() ______________________________________________________
+
+bool WgEventHandler::SetButtonRepeat( int delay, int rate )
+{
+	if( delay <= 0 || rate <= 0 )
+		return false;
+
+	m_buttonRepeatDelay	= delay;
+	m_buttonRepeatRate	= rate;
+	return true;
+}
+
+//____ SetKeyRepeat() _________________________________________________________
+
+bool WgEventHandler::SetKeyRepeat( int delay, int rate )
+{
+	if( delay <= 0 || rate <= 0 )
+		return false;
+
+	m_keyRepeatDelay	= delay;
+	m_keyRepeatRate		= rate;
+	return true;
+}
+
 //____ AddCallback() __________________________________________________________
 
 void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event * pEvent) )
@@ -491,10 +548,11 @@ void WgEventHandler::ProcessEvents()
 
 		m_eventQueue.pop_front();
 
-		// Delete event object unless its a BUTTON_PRESS or BUTTON_RELEASE event for NO SPECIFIC GIZMO,
-		// which are kept in m_pLatestPressEvents and m_pLatestReleaseEvents respectively.
+		// Delete event object unless its a BUTTON_PRESS, BUTTON_RELEASE or KEY_PRESS event for NO SPECIFIC GIZMO,
+		// which are kept in m_pLatestPressEvents, m_pLatestReleaseEvents and m_keysDown respectively.
 
-		if( pEvent->IsForGizmo() || (pEvent->Type() !=  WG_EVENT_BUTTON_PRESS && pEvent->Type() != WG_EVENT_BUTTON_RELEASE) )
+		if( pEvent->IsForGizmo() || (pEvent->Type() !=  WG_EVENT_BUTTON_PRESS &&
+			pEvent->Type() != WG_EVENT_BUTTON_RELEASE && pEvent->Type() != WG_EVENT_KEY_PRESS) )
 			delete pEvent;
 	}
 
@@ -555,6 +613,33 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 		if( pEvent->Gizmo() )
 			pEvent->m_pointerLocalPos -= pEvent->Gizmo()->ScreenPos();
 	}
+
+	// Event specific finalizations
+
+	switch( pEvent->Type() )
+	{
+
+		// Key events need translation of keycodes.
+
+		case WG_EVENT_KEY_PRESS:
+		case WG_EVENT_KEY_RELEASE:
+		case WG_EVENT_KEY_REPEAT:
+		{
+			WgEvent::KeyEvent* p = static_cast<WgEvent::KeyEvent*>(pEvent);
+
+			std::map<int,WgKey>::iterator it = m_keycodeMap.find(p->m_nativeKeyCode);
+			if( it != m_keycodeMap.end() )
+				p->m_translatedKeyCode = it->second;
+		}
+		break;
+
+
+		default:
+			break;
+	}
+
+
+
 }
 
 //____ _processGeneralEvent() _________________________________________________
@@ -668,6 +753,29 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 				QueueEvent( new WgEvent::ButtonRepeat(button) );
 				msToProcess -= m_buttonRepeatRate;
 			}
+		}
+	}
+
+	// Check if we need to post KEY_REPEAT
+
+	for( int i = 0 ; i < m_keysDown.size() ; i++ )
+	{
+		KeyDownInfo * pInfo = m_keysDown[i];
+		int64_t timePassed = pInfo->pEvent->Timestamp() - pEvent->Timestamp();
+
+		int fraction = 0;
+
+		if( timePassed < m_keyRepeatDelay )
+			fraction = (timePassed - m_keyRepeatDelay) + m_keyRepeatRate;
+		else
+			fraction = (timePassed - m_keyRepeatDelay)%m_keyRepeatRate;
+
+		fraction += pEvent->Millisec();
+
+		while( fraction >= m_keyRepeatRate )
+		{
+			QueueEvent( new WgEvent::KeyRepeat( pInfo->pEvent->NativeKeyCode() ) );
+			fraction -= m_keyRepeatRate;
 		}
 	}
 
@@ -855,19 +963,138 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostPointerMoveEvents)
 
 void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
 {
+	// Sanity checks
 
+	if( !m_keyFocusGizmo )
+		return;
+
+	// Fill in the info-structure.
+
+	KeyDownInfo * pInfo = new KeyDownInfo();
+	pInfo->pEvent = pEvent;
+
+	// Post KEY_PRESS events for gizmos and remember which ones we have posted it for
+
+	WgGizmo * pGizmo = m_keyFocusGizmo.GetRealPtr();
+	while( pGizmo )
+	{
+		QueueEvent( new WgEvent::KeyPress( pEvent->NativeKeyCode(), pGizmo ) );
+		pInfo->vGizmos.push_back(WgGizmoWeakPtr(pGizmo));
+		pGizmo = pGizmo->ParentX()->CastToGizmo();
+	}
+
+	// Push the info-structure onto m_keysDown.
+
+	m_keysDown.push_back( pInfo );
+
+	// Update modkeys
+
+	switch( pEvent->TranslatedKeyCode() )
+	{
+		case WG_KEY_SHIFT:
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SHIFT);
+			break;
+		case WG_KEY_CONTROL:
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_CTRL);
+			break;
+		case WG_KEY_ALT:
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_ALT);
+			break;
+		case WG_KEY_SUPER:
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SUPER);
+			break;
+		default:
+			break;
+	}
 }
 
 //____ _processKeyRepeat() ____________________________________________________
 
 void WgEventHandler::_processKeyRepeat( WgEvent::KeyRepeat * pEvent )
 {
+	// Find right KeyDownInfo structure
+
+	KeyDownInfo * pInfo = 0;
+
+	for( int i = 0 ; i < m_keysDown.size() ; i++ )
+	{
+		if( pEvent->NativeKeyCode() == m_keysDown[i]->pEvent->NativeKeyCode() )
+		{
+			pInfo = m_keysDown[i];
+			break;
+		}
+	}
+
+	assert( pInfo != 0 );		// KEY_RELEASE without a matching KEY_PRESS preceding.
+	if( pInfo == 0 )
+		return;
+
+	// Post KEY_REPEAT events for gizmos
+
+	for( int i = 0 ; i < pInfo->vGizmos.size() ; i++ )
+	{
+		if( pInfo->vGizmos[i] )
+			QueueEvent( new WgEvent::KeyRepeat( pEvent->NativeKeyCode(), pInfo->vGizmos[i].GetRealPtr() ));
+	}
+
 }
 
 //____ _processKeyRelease() ___________________________________________________
 
 void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 {
+	// Find right KeyDownInfo structure and remove it from m_keysDown.
+
+	KeyDownInfo * pInfo = 0;
+
+	std::vector<KeyDownInfo*>::iterator it = m_keysDown.begin();
+	while( it != m_keysDown.end() )
+	{
+		if( pEvent->NativeKeyCode() == (*it)->pEvent->NativeKeyCode() )
+		{
+			pInfo = *it;
+			m_keysDown.erase(it);
+			break;
+		}
+		it++;
+	}
+
+	assert( pInfo != 0 );			// KEY_RELEASE without a matching KEY_PRESS preceding.
+	if( !pInfo )
+		return;
+
+	// Post KEY_RELEASE events for gizmos
+
+	for( int i = 0 ; i < pInfo->vGizmos.size() ; i++ )
+	{
+		if( pInfo->vGizmos[i] )
+			QueueEvent( new WgEvent::KeyRelease( pEvent->NativeKeyCode(), pInfo->vGizmos[i].GetRealPtr() ));
+	}
+
+	// Delete the KeyPress-message and KeyDownInfo-structure
+
+	delete pInfo->pEvent;
+	delete pInfo;
+
+	// Update modkeys
+
+	switch( pEvent->TranslatedKeyCode() )
+	{
+		case WG_KEY_SHIFT:
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SHIFT);
+			break;
+		case WG_KEY_CONTROL:
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_CTRL);
+			break;
+		case WG_KEY_ALT:
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_ALT);
+			break;
+		case WG_KEY_SUPER:
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SUPER);
+			break;
+		default:
+			break;
+	}
 }
 
 
