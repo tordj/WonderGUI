@@ -45,6 +45,7 @@ WgEventHandler::WgEventHandler( int64_t startTime, WgRoot * pRoot )
 	m_keyRepeatRate			= 150;
 
 	m_bIsProcessing			= false;
+	m_bWindowFocus			= true;
 
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
@@ -116,6 +117,127 @@ bool WgEventHandler::SetKeyRepeat( int delay, int rate )
 	m_keyRepeatRate		= rate;
 	return true;
 }
+
+//____ SetFocusGroup() ________________________________________________________
+
+bool WgEventHandler::SetFocusGroup( WgGizmoContainer * pFocusGroup )
+{
+	// Sanity checks
+
+	if( pFocusGroup )
+	{
+		if( pFocusGroup->CastToGizmo() == m_keyFocusGroup.GetRealPtr() )
+			return true;									// Not an error, but we don't need to do anything
+
+		if( !pFocusGroup->IsFocusGroup() )
+			return false;									// Container is not a focus group
+
+		if( !pFocusGroup->CastToGizmo()->Hook() || pFocusGroup->CastToGizmo()->Hook()->Root() != m_pRoot )
+			return false;									// pFocusGroup is not a child of our root.
+	}
+
+	// Set new focus gizmo as specified by group
+
+	WgGizmoWeakPtr pNewFocusGizmo;
+
+	if( pFocusGroup )
+		if( m_focusGroupMap.find(pFocusGroup->CastToGizmo()) != m_focusGroupMap.end() )
+			pNewFocusGizmo = m_focusGroupMap[pFocusGroup->CastToGizmo()];
+
+	if( m_keyFocusGizmo )
+		m_keyFocusGizmo->_onLostInputFocus();
+
+	if( pNewFocusGizmo )
+		pNewFocusGizmo->_onGotInputFocus();
+
+	// Set members and exit
+
+	m_keyFocusGizmo = pNewFocusGizmo;
+	m_keyFocusGroup = pFocusGroup->CastToGizmo();
+
+	return true;
+}
+
+//____ SetKeyboardFocus() _____________________________________________________
+
+bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
+{
+	// Return if Gizmo is not child of our root.
+
+	if( pFocus && (!pFocus->Hook() || pFocus->Hook()->Root() != m_pRoot) )
+		return false;
+
+	// Handle old focus.
+
+	WgGizmo * pOldFocus = m_keyFocusGizmo.GetRealPtr();
+
+	if( pFocus == pOldFocus )
+		return true;
+
+	if( pOldFocus )
+		pOldFocus->_onLostInputFocus();
+
+	// Handle new focus, possibly switching focus group.
+
+	if( pFocus )
+	{
+		// Check what focus group (if any) this Gizmo belongs to.
+
+		WgGizmoContainer * p = pFocus->ParentX();
+		while( p && !p->IsFocusGroup() )
+			p = p->CastToGizmo()->ParentX();
+
+		if( p )
+			m_keyFocusGroup = p->CastToGizmo();
+		else
+			m_keyFocusGroup = 0;
+
+		// Activate focus
+
+		pFocus->_onGotInputFocus();
+	}
+
+	// Set members and exit.
+
+	m_keyFocusGizmo = pFocus;
+	m_focusGroupMap[m_keyFocusGroup] = pFocus;
+
+	return true;
+}
+
+//____ FocusGroup() ___________________________________________________________
+
+WgGizmoContainer * WgEventHandler::FocusGroup() const
+{
+	WgGizmo * pGizmo = m_keyFocusGroup.GetRealPtr();
+	if( pGizmo )
+		return pGizmo->CastToContainer();
+
+	return 0;
+}
+
+//____ IsButtonPressed() _________________________________________________________
+
+bool WgEventHandler::IsButtonPressed( int button )
+{
+	if( button >= 1 && button <= WG_MAX_BUTTONS )
+		return m_bButtonPressed[button];
+
+	return false;
+}
+
+//____ IsKeyPressed() ____________________________________________________________
+
+bool WgEventHandler::IsKeyPressed( int native_keycode )
+{
+	for( int i = 0 ; i < m_keysDown.size() ; i++ )
+		if( native_keycode == m_keysDown[i]->pEvent->NativeKeyCode() )
+			return true;
+
+	return false;
+}
+
+
 
 //____ AddCallback() __________________________________________________________
 
@@ -650,7 +772,11 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 	switch( pEvent->Type() )
 	{
 		case WG_EVENT_FOCUS_GAINED:
+			_processFocusGained( (WgEvent::FocusGained*) pEvent );
+			break;
+
 		case WG_EVENT_FOCUS_LOST:
+			_processFocusLost( (WgEvent::FocusLost*) pEvent );
 			break;
 
 		case WG_EVENT_POINTER_ENTER:
@@ -660,6 +786,7 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 		case WG_EVENT_POINTER_MOVE:
 			_processPointerMove( (WgEvent::PointerMove*) pEvent );
 			break;
+
 		case WG_EVENT_POINTER_PLACED:
 			_processPointerPlaced( (WgEvent::PointerPlaced*) pEvent );
 			break;
@@ -687,6 +814,7 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 		case WG_EVENT_BUTTON_CLICK:
 			_processButtonClick( (WgEvent::ButtonClick*) pEvent );
 			break;
+
 		case WG_EVENT_BUTTON_DOUBLECLICK:
 			_processButtonDoubleClick( (WgEvent::ButtonDoubleClick*) pEvent );
 			break;
@@ -704,7 +832,11 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 			break;
 
 		case WG_EVENT_CHARACTER:
+			_processCharacter( (WgEvent::Character*) pEvent );
+			break;
+
 		case WG_EVENT_WHEEL_ROLL:
+			_processWheelRoll( (WgEvent::WheelRoll*) pEvent );
 			break;
 
 		case WG_EVENT_TICK:
@@ -718,7 +850,6 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 			assert(false);								// NOT ALLOWED!
 			break;
 	}
-
 }
 
 //____ _processTick() ______________________________________________________
@@ -784,6 +915,28 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 
 	m_time += pEvent->Millisec();
 }
+
+
+//____ _processFocusGained() __________________________________________________
+
+void WgEventHandler::_processFocusGained( WgEvent::FocusGained * pEvent )
+{
+	if( !m_bWindowFocus && m_keyFocusGizmo )
+		m_keyFocusGizmo.GetRealPtr()->_onGotInputFocus();
+
+	m_bWindowFocus = true;
+}
+
+//____ _processFocusLost() ____________________________________________________
+
+void WgEventHandler::_processFocusLost( WgEvent::FocusLost * pEvent )
+{
+	if( m_bWindowFocus && m_keyFocusGizmo )
+		m_keyFocusGizmo.GetRealPtr()->_onLostInputFocus();
+
+	m_bWindowFocus = false;
+}
+
 
 //____ _processPointerEnter() __________________________________________________
 
@@ -1097,6 +1250,30 @@ void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 	}
 }
 
+//____ _processCharacter() ____________________________________________________
+
+void WgEventHandler::_processCharacter( WgEvent::Character * pEvent )
+{
+	WgGizmo * pGizmo = m_keyFocusGizmo.GetRealPtr();
+
+	if( pGizmo )
+		QueueEvent( new WgEvent::Character( pEvent->Char(), pGizmo ) );
+}
+
+//____ _processWheelRoll() ____________________________________________________
+
+void WgEventHandler::_processWheelRoll( WgEvent::WheelRoll * pEvent )
+{
+	_updateMarkedGizmos(false);
+
+	for( size_t i = 0 ; i < m_vMarkedGizmos.size() ; i++ )
+	{
+		WgGizmo * pGizmo = m_vMarkedGizmos[i].GetRealPtr();
+
+		if( pGizmo )
+			QueueEvent( new WgEvent::WheelRoll( pEvent->Wheel(), pEvent->Distance(), pGizmo ) );
+	}
+}
 
 //____ _processButtonPress() ___________________________________________________
 

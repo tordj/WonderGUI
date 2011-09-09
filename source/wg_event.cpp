@@ -257,6 +257,13 @@ namespace WgEvent
 		m_char = character;
 	}
 
+	Character::Character( unsigned short character, WgGizmo * pGizmo )
+	{
+		m_type		= WG_EVENT_CHARACTER;
+		m_char		= character;
+		m_pGizmo	= pGizmo;
+	}
+
 	unsigned short Character::Char() const
 	{
 		return m_char;
@@ -270,6 +277,15 @@ namespace WgEvent
 		m_wheel = wheel;
 		m_distance = distance;
 	}
+
+	WheelRoll::WheelRoll( int wheel, int distance, WgGizmo * pGizmo )
+	{
+		m_type		= WG_EVENT_WHEEL_ROLL;
+		m_wheel		= wheel;
+		m_distance	= distance;
+		m_pGizmo	= pGizmo;
+	}
+
 
 	int WheelRoll::Wheel() const
 	{

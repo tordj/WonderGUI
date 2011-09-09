@@ -111,6 +111,8 @@ public:
 	inline void				SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
 	virtual WgPointerStyle	GetPointerStyle() const;
 
+	inline void			SetTabLock( bool bLock ) { m_bTabLock = bLock; }
+	inline bool			IsTabLocked() const { return m_bTabLock; }
 
 	inline void			SetMarkPolicy( WgMarkPolicy policy ) { m_markPolicy = policy; }
 	inline WgMarkPolicy	GetMarkPolicy() const { return m_markPolicy; }
@@ -212,6 +214,7 @@ protected:
 	bool			m_bEnabled;
 	bool			m_bOpaque;
 	bool			m_bFocused;
+	bool			m_bTabLock;		// If set, the gizmo prevents focus shifting away from it with tab.
 
 	bool			m_bRenderOne;
 	bool			m_bRendersAll;

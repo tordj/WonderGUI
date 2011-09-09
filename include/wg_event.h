@@ -186,22 +186,28 @@ namespace WgEvent
 
 	class Character : public Event
 	{
+		friend class ::WgEventHandler;
 	public:
 		Character( unsigned short character );
 
 		unsigned short	Char() const;
+	protected:
+		Character( unsigned short character, WgGizmo * pGizmo );
 	protected:
 		unsigned short	m_char;
 	};
 
 	class WheelRoll : public Event
 	{
+		friend class ::WgEventHandler;
 	public:
 		WheelRoll( int wheel, int distance );
 
 		int			Wheel() const;
 		int			Distance() const;
 	protected:
+		WheelRoll( int wheel, int distance, WgGizmo * pGizmo );
+
 		int			m_wheel;
 		int			m_distance;
 	};

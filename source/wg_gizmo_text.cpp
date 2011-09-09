@@ -20,10 +20,11 @@
 
 =========================================================================*/
 
-#include	<wg_gizmo_text.h>
-#include	<wg_key.h>
-#include	<wg_font.h>
-#include	<wg_gfxdevice.h>
+#include <wg_gizmo_text.h>
+#include <wg_key.h>
+#include <wg_font.h>
+#include <wg_gfxdevice.h>
+#include <wg_eventhandler.h>
 
 static const char	c_gizmoType[] = {"GizmoText"};
 
@@ -160,6 +161,160 @@ void WgGizmoText::_onRefresh( void )
 	//TODO: Implement more I believe...
 
 	RequestRender();
+}
+
+//____ _onEvent() ______________________________________________________________
+
+void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+{
+	int type 				= pEvent->Type();
+	WgModifierKeys modKeys 	= pEvent->ModKeys();
+
+	if( m_bFocused && (type == WG_EVENT_BUTTON_PRESS || type == WG_EVENT_BUTTON_DRAG) && ((const WgEvent::ButtonEvent*)(pEvent))->Button() == 1 )
+	{
+
+		if( IsSelectable() && (modKeys & WG_MODKEY_SHIFT) )
+		{
+			m_pText->setSelectionMode(true);
+		}
+
+		m_pText->CursorGotoCoord( pEvent->PointerPos(), Geo() );
+
+		if(IsSelectable() && type == WG_EVENT_BUTTON_PRESS && !(modKeys & WG_MODKEY_SHIFT))
+		{
+			m_pText->clearSelection();
+			m_pText->setSelectionMode(true);
+		}
+	}
+	else if( type == WG_EVENT_BUTTON_RELEASE  )
+	{
+		if(m_bFocused && ((const WgEvent::ButtonEvent*)(pEvent))->Button() == 1)
+			m_pText->setSelectionMode(false);
+	}
+	else if( !m_bFocused && IsEditable() && type == WG_EVENT_BUTTON_PRESS && ((const WgEvent::ButtonEvent*)(pEvent))->Button() == 1 )
+	{
+		GrabFocus();
+	}
+
+
+	if( type == WG_EVENT_CHARACTER )
+	{
+		if( IsEditable() && m_bFocused )
+		{
+			int  chr = static_cast<const WgEvent::Character*>(pEvent)->Char();
+
+			if( chr >= 32 && chr != 127)
+			{
+				InsertCharAtCursorInternal(chr);
+			}
+			else if( chr == 13 )
+			{
+				InsertCharAtCursorInternal('\n');
+			}
+			else if( chr == '\t' )
+			{
+				InsertCharAtCursorInternal( '\t' );
+			}
+		}
+	}
+
+	if( type == WG_EVENT_KEY_RELEASE && m_bFocused )
+	{
+		switch( static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode() )
+		{
+			case WG_KEY_SHIFT:
+				if(!pHandler->IsButtonPressed(1))
+					m_pText->setSelectionMode(false);
+			break;
+		}
+	}
+
+	if( (type == WG_EVENT_KEY_PRESS || type == WG_EVENT_KEY_REPEAT) && IsEditable() && m_bFocused )
+	{
+		switch( static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode() )
+		{
+			case WG_KEY_LEFT:
+				if( modKeys & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( modKeys & WG_MODKEY_CTRL )
+					m_pText->gotoPrevWord();
+				else
+					m_pText->goLeft();
+				break;
+			case WG_KEY_RIGHT:
+				if( modKeys & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( modKeys & WG_MODKEY_CTRL )
+					m_pText->gotoNextWord();
+				else
+					m_pText->goRight();
+				break;
+
+			case WG_KEY_UP:
+				if( modKeys & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				m_pText->CursorGoUp( 1, ScreenGeo() );
+				break;
+
+			case WG_KEY_DOWN:
+				if( modKeys & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				m_pText->CursorGoDown( 1, ScreenGeo() );
+				break;
+
+			case WG_KEY_BACKSPACE:
+				if(m_pText->hasSelection())
+					m_pText->delSelection();
+				else if( modKeys & WG_MODKEY_CTRL )
+					m_pText->delPrevWord();
+				else
+					m_pText->delPrevChar();
+				break;
+
+			case WG_KEY_DELETE:
+				if(m_pText->hasSelection())
+					m_pText->delSelection();
+				else if( modKeys & WG_MODKEY_CTRL )
+					m_pText->delNextWord();
+				else
+					m_pText->delNextChar();
+				break;
+
+			case WG_KEY_HOME:
+				if( modKeys & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( modKeys & WG_MODKEY_CTRL )
+					m_pText->goBOF();
+				else
+					m_pText->goBOL();
+				break;
+
+			case WG_KEY_END:
+				if( modKeys & WG_MODKEY_SHIFT )
+					m_pText->setSelectionMode(true);
+
+				if( modKeys & WG_MODKEY_CTRL )
+					m_pText->goEOF();
+				else
+					m_pText->goEOL();
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	// Let text object handle its actions.
+/*
+	bool bChanged = m_text.OnAction( action, button_key, ScreenGeo(), WgCord(info.x, info.y) );
+	if( bChanged )
+		RequestRender();
+*/
 }
 
 //____ _onAction() _________________________________________________
