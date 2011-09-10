@@ -51,6 +51,10 @@ public:
 	WgGizmo * PrevInTabOrder( WgGizmo * pCurrGizmo ) const;
 	WgGizmo * LastInTabOrder() const;
 
+protected:
+
+	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+
 private:
 
 	class TabOrderEntry : public WgLink

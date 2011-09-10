@@ -49,6 +49,8 @@ class WgGizmoContainer : public WgGizmoParent
 
 	public:
 
+		void		SetFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
+		bool		IsFocusGroup() const { return m_bFocusGroup; }
 		bool		IsGizmo() const;
 		bool		IsRoot() const;
 
@@ -56,20 +58,22 @@ class WgGizmoContainer : public WgGizmoParent
 		WgRoot *	CastToRoot();
 
 	protected:
+		WgGizmoContainer() : m_bFocusGroup(false) {}
+		virtual ~WgGizmoContainer() {};
+
 		virtual void	_onEnable();
 		virtual void	_onDisable();
 
 	private:
 
-
 		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) = 0;
 		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) = 0;
 		virtual void	_clearDirtyRects() = 0;
 
-
-
 		bool 		_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inerits from WgGizmo
 		bool 		_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inerits from WgGizmo
+
+		bool		m_bFocusGroup;
 };
 
 

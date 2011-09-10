@@ -45,6 +45,7 @@ WgEventHandler::WgEventHandler( int64_t startTime, WgRoot * pRoot )
 	m_keyRepeatRate			= 150;
 
 	m_bIsProcessing			= false;
+	m_bWindowFocus			= true;
 
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
@@ -59,6 +60,184 @@ WgEventHandler::WgEventHandler( int64_t startTime, WgRoot * pRoot )
 WgEventHandler::~WgEventHandler()
 {
 }
+
+//____ MapKey() _______________________________________________________________
+
+void WgEventHandler::MapKey( WgKey translated_keycode, int native_keycode )
+{
+	m_keycodeMap[native_keycode] = translated_keycode;
+}
+
+
+//____ UnmapKey() _____________________________________________________________
+
+void WgEventHandler::UnmapKey( WgKey translated_keycode )
+{
+	std::map<int,WgKey>::iterator it = m_keycodeMap.begin();
+
+	while( it != m_keycodeMap.end() )
+	{
+		if( it->second == translated_keycode )
+		{
+			std::map<int,WgKey>::iterator it2 = it++;
+			m_keycodeMap.erase(it2);
+		}
+		else
+			++it;
+	}
+}
+
+//____ ClearKeyMap() __________________________________________________________
+
+void WgEventHandler::ClearKeyMap()
+{
+	m_keycodeMap.clear();
+}
+
+//____ SetButtonRepeat() ______________________________________________________
+
+bool WgEventHandler::SetButtonRepeat( int delay, int rate )
+{
+	if( delay <= 0 || rate <= 0 )
+		return false;
+
+	m_buttonRepeatDelay	= delay;
+	m_buttonRepeatRate	= rate;
+	return true;
+}
+
+//____ SetKeyRepeat() _________________________________________________________
+
+bool WgEventHandler::SetKeyRepeat( int delay, int rate )
+{
+	if( delay <= 0 || rate <= 0 )
+		return false;
+
+	m_keyRepeatDelay	= delay;
+	m_keyRepeatRate		= rate;
+	return true;
+}
+
+//____ SetFocusGroup() ________________________________________________________
+
+bool WgEventHandler::SetFocusGroup( WgGizmoContainer * pFocusGroup )
+{
+	// Sanity checks
+
+	if( pFocusGroup )
+	{
+		if( pFocusGroup->CastToGizmo() == m_keyFocusGroup.GetRealPtr() )
+			return true;									// Not an error, but we don't need to do anything
+
+		if( !pFocusGroup->IsFocusGroup() )
+			return false;									// Container is not a focus group
+
+		if( !pFocusGroup->CastToGizmo()->Hook() || pFocusGroup->CastToGizmo()->Hook()->Root() != m_pRoot )
+			return false;									// pFocusGroup is not a child of our root.
+	}
+
+	// Set new focus gizmo as specified by group
+
+	WgGizmoWeakPtr pNewFocusGizmo;
+
+	if( pFocusGroup )
+		if( m_focusGroupMap.find(pFocusGroup->CastToGizmo()) != m_focusGroupMap.end() )
+			pNewFocusGizmo = m_focusGroupMap[pFocusGroup->CastToGizmo()];
+
+	if( m_keyFocusGizmo )
+		m_keyFocusGizmo->_onLostInputFocus();
+
+	if( pNewFocusGizmo )
+		pNewFocusGizmo->_onGotInputFocus();
+
+	// Set members and exit
+
+	m_keyFocusGizmo = pNewFocusGizmo;
+	m_keyFocusGroup = pFocusGroup->CastToGizmo();
+
+	return true;
+}
+
+//____ SetKeyboardFocus() _____________________________________________________
+
+bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
+{
+	// Return if Gizmo is not child of our root.
+
+	if( pFocus && (!pFocus->Hook() || pFocus->Hook()->Root() != m_pRoot) )
+		return false;
+
+	// Handle old focus.
+
+	WgGizmo * pOldFocus = m_keyFocusGizmo.GetRealPtr();
+
+	if( pFocus == pOldFocus )
+		return true;
+
+	if( pOldFocus )
+		pOldFocus->_onLostInputFocus();
+
+	// Handle new focus, possibly switching focus group.
+
+	if( pFocus )
+	{
+		// Check what focus group (if any) this Gizmo belongs to.
+
+		WgGizmoContainer * p = pFocus->ParentX();
+		while( p && !p->IsFocusGroup() )
+			p = p->CastToGizmo()->ParentX();
+
+		if( p )
+			m_keyFocusGroup = p->CastToGizmo();
+		else
+			m_keyFocusGroup = 0;
+
+		// Activate focus
+
+		pFocus->_onGotInputFocus();
+	}
+
+	// Set members and exit.
+
+	m_keyFocusGizmo = pFocus;
+	m_focusGroupMap[m_keyFocusGroup] = pFocus;
+
+	return true;
+}
+
+//____ FocusGroup() ___________________________________________________________
+
+WgGizmoContainer * WgEventHandler::FocusGroup() const
+{
+	WgGizmo * pGizmo = m_keyFocusGroup.GetRealPtr();
+	if( pGizmo )
+		return pGizmo->CastToContainer();
+
+	return 0;
+}
+
+//____ IsButtonPressed() _________________________________________________________
+
+bool WgEventHandler::IsButtonPressed( int button )
+{
+	if( button >= 1 && button <= WG_MAX_BUTTONS )
+		return m_bButtonPressed[button];
+
+	return false;
+}
+
+//____ IsKeyPressed() ____________________________________________________________
+
+bool WgEventHandler::IsKeyPressed( int native_keycode )
+{
+	for( int i = 0 ; i < m_keysDown.size() ; i++ )
+		if( native_keycode == m_keysDown[i]->pEvent->NativeKeyCode() )
+			return true;
+
+	return false;
+}
+
+
 
 //____ AddCallback() __________________________________________________________
 
@@ -491,10 +670,11 @@ void WgEventHandler::ProcessEvents()
 
 		m_eventQueue.pop_front();
 
-		// Delete event object unless its a BUTTON_PRESS or BUTTON_RELEASE event for NO SPECIFIC GIZMO,
-		// which are kept in m_pLatestPressEvents and m_pLatestReleaseEvents respectively.
+		// Delete event object unless its a BUTTON_PRESS, BUTTON_RELEASE or KEY_PRESS event for NO SPECIFIC GIZMO,
+		// which are kept in m_pLatestPressEvents, m_pLatestReleaseEvents and m_keysDown respectively.
 
-		if( pEvent->IsForGizmo() || (pEvent->Type() !=  WG_EVENT_BUTTON_PRESS && pEvent->Type() != WG_EVENT_BUTTON_RELEASE) )
+		if( pEvent->IsForGizmo() || (pEvent->Type() !=  WG_EVENT_BUTTON_PRESS &&
+			pEvent->Type() != WG_EVENT_BUTTON_RELEASE && pEvent->Type() != WG_EVENT_KEY_PRESS) )
 			delete pEvent;
 	}
 
@@ -555,6 +735,33 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 		if( pEvent->Gizmo() )
 			pEvent->m_pointerLocalPos -= pEvent->Gizmo()->ScreenPos();
 	}
+
+	// Event specific finalizations
+
+	switch( pEvent->Type() )
+	{
+
+		// Key events need translation of keycodes.
+
+		case WG_EVENT_KEY_PRESS:
+		case WG_EVENT_KEY_RELEASE:
+		case WG_EVENT_KEY_REPEAT:
+		{
+			WgEvent::KeyEvent* p = static_cast<WgEvent::KeyEvent*>(pEvent);
+
+			std::map<int,WgKey>::iterator it = m_keycodeMap.find(p->m_nativeKeyCode);
+			if( it != m_keycodeMap.end() )
+				p->m_translatedKeyCode = it->second;
+		}
+		break;
+
+
+		default:
+			break;
+	}
+
+
+
 }
 
 //____ _processGeneralEvent() _________________________________________________
@@ -565,7 +772,11 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 	switch( pEvent->Type() )
 	{
 		case WG_EVENT_FOCUS_GAINED:
+			_processFocusGained( (WgEvent::FocusGained*) pEvent );
+			break;
+
 		case WG_EVENT_FOCUS_LOST:
+			_processFocusLost( (WgEvent::FocusLost*) pEvent );
 			break;
 
 		case WG_EVENT_POINTER_ENTER:
@@ -575,6 +786,7 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 		case WG_EVENT_POINTER_MOVE:
 			_processPointerMove( (WgEvent::PointerMove*) pEvent );
 			break;
+
 		case WG_EVENT_POINTER_PLACED:
 			_processPointerPlaced( (WgEvent::PointerPlaced*) pEvent );
 			break;
@@ -602,6 +814,7 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 		case WG_EVENT_BUTTON_CLICK:
 			_processButtonClick( (WgEvent::ButtonClick*) pEvent );
 			break;
+
 		case WG_EVENT_BUTTON_DOUBLECLICK:
 			_processButtonDoubleClick( (WgEvent::ButtonDoubleClick*) pEvent );
 			break;
@@ -619,7 +832,11 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 			break;
 
 		case WG_EVENT_CHARACTER:
+			_processCharacter( (WgEvent::Character*) pEvent );
+			break;
+
 		case WG_EVENT_WHEEL_ROLL:
+			_processWheelRoll( (WgEvent::WheelRoll*) pEvent );
 			break;
 
 		case WG_EVENT_TICK:
@@ -633,7 +850,6 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 			assert(false);								// NOT ALLOWED!
 			break;
 	}
-
 }
 
 //____ _processTick() ______________________________________________________
@@ -671,11 +887,56 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 		}
 	}
 
+	// Check if we need to post KEY_REPEAT
+
+	for( int i = 0 ; i < m_keysDown.size() ; i++ )
+	{
+		KeyDownInfo * pInfo = m_keysDown[i];
+		int64_t timePassed = pInfo->pEvent->Timestamp() - pEvent->Timestamp();
+
+		int fraction = 0;
+
+		if( timePassed < m_keyRepeatDelay )
+			fraction = (timePassed - m_keyRepeatDelay) + m_keyRepeatRate;
+		else
+			fraction = (timePassed - m_keyRepeatDelay)%m_keyRepeatRate;
+
+		fraction += pEvent->Millisec();
+
+		while( fraction >= m_keyRepeatRate )
+		{
+			QueueEvent( new WgEvent::KeyRepeat( pInfo->pEvent->NativeKeyCode() ) );
+			fraction -= m_keyRepeatRate;
+		}
+	}
+
 
 	// Increase time counter
 
 	m_time += pEvent->Millisec();
 }
+
+
+//____ _processFocusGained() __________________________________________________
+
+void WgEventHandler::_processFocusGained( WgEvent::FocusGained * pEvent )
+{
+	if( !m_bWindowFocus && m_keyFocusGizmo )
+		m_keyFocusGizmo.GetRealPtr()->_onGotInputFocus();
+
+	m_bWindowFocus = true;
+}
+
+//____ _processFocusLost() ____________________________________________________
+
+void WgEventHandler::_processFocusLost( WgEvent::FocusLost * pEvent )
+{
+	if( m_bWindowFocus && m_keyFocusGizmo )
+		m_keyFocusGizmo.GetRealPtr()->_onLostInputFocus();
+
+	m_bWindowFocus = false;
+}
+
 
 //____ _processPointerEnter() __________________________________________________
 
@@ -855,21 +1116,164 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostPointerMoveEvents)
 
 void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
 {
+	// Sanity checks
 
+	if( !m_keyFocusGizmo )
+		return;
+
+	// Fill in the info-structure.
+
+	KeyDownInfo * pInfo = new KeyDownInfo();
+	pInfo->pEvent = pEvent;
+
+	// Post KEY_PRESS events for gizmos and remember which ones we have posted it for
+
+	WgGizmo * pGizmo = m_keyFocusGizmo.GetRealPtr();
+	while( pGizmo )
+	{
+		QueueEvent( new WgEvent::KeyPress( pEvent->NativeKeyCode(), pGizmo ) );
+		pInfo->vGizmos.push_back(WgGizmoWeakPtr(pGizmo));
+		pGizmo = pGizmo->ParentX()->CastToGizmo();
+	}
+
+	// Push the info-structure onto m_keysDown.
+
+	m_keysDown.push_back( pInfo );
+
+	// Update modkeys
+
+	switch( pEvent->TranslatedKeyCode() )
+	{
+		case WG_KEY_SHIFT:
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SHIFT);
+			break;
+		case WG_KEY_CONTROL:
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_CTRL);
+			break;
+		case WG_KEY_ALT:
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_ALT);
+			break;
+		case WG_KEY_SUPER:
+			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SUPER);
+			break;
+		default:
+			break;
+	}
 }
 
 //____ _processKeyRepeat() ____________________________________________________
 
 void WgEventHandler::_processKeyRepeat( WgEvent::KeyRepeat * pEvent )
 {
+	// Find right KeyDownInfo structure
+
+	KeyDownInfo * pInfo = 0;
+
+	for( int i = 0 ; i < m_keysDown.size() ; i++ )
+	{
+		if( pEvent->NativeKeyCode() == m_keysDown[i]->pEvent->NativeKeyCode() )
+		{
+			pInfo = m_keysDown[i];
+			break;
+		}
+	}
+
+	assert( pInfo != 0 );		// KEY_RELEASE without a matching KEY_PRESS preceding.
+	if( pInfo == 0 )
+		return;
+
+	// Post KEY_REPEAT events for gizmos
+
+	for( int i = 0 ; i < pInfo->vGizmos.size() ; i++ )
+	{
+		if( pInfo->vGizmos[i] )
+			QueueEvent( new WgEvent::KeyRepeat( pEvent->NativeKeyCode(), pInfo->vGizmos[i].GetRealPtr() ));
+	}
+
 }
 
 //____ _processKeyRelease() ___________________________________________________
 
 void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 {
+	// Find right KeyDownInfo structure and remove it from m_keysDown.
+
+	KeyDownInfo * pInfo = 0;
+
+	std::vector<KeyDownInfo*>::iterator it = m_keysDown.begin();
+	while( it != m_keysDown.end() )
+	{
+		if( pEvent->NativeKeyCode() == (*it)->pEvent->NativeKeyCode() )
+		{
+			pInfo = *it;
+			m_keysDown.erase(it);
+			break;
+		}
+		it++;
+	}
+
+	assert( pInfo != 0 );			// KEY_RELEASE without a matching KEY_PRESS preceding.
+	if( !pInfo )
+		return;
+
+	// Post KEY_RELEASE events for gizmos
+
+	for( int i = 0 ; i < pInfo->vGizmos.size() ; i++ )
+	{
+		if( pInfo->vGizmos[i] )
+			QueueEvent( new WgEvent::KeyRelease( pEvent->NativeKeyCode(), pInfo->vGizmos[i].GetRealPtr() ));
+	}
+
+	// Delete the KeyPress-message and KeyDownInfo-structure
+
+	delete pInfo->pEvent;
+	delete pInfo;
+
+	// Update modkeys
+
+	switch( pEvent->TranslatedKeyCode() )
+	{
+		case WG_KEY_SHIFT:
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SHIFT);
+			break;
+		case WG_KEY_CONTROL:
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_CTRL);
+			break;
+		case WG_KEY_ALT:
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_ALT);
+			break;
+		case WG_KEY_SUPER:
+			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SUPER);
+			break;
+		default:
+			break;
+	}
 }
 
+//____ _processCharacter() ____________________________________________________
+
+void WgEventHandler::_processCharacter( WgEvent::Character * pEvent )
+{
+	WgGizmo * pGizmo = m_keyFocusGizmo.GetRealPtr();
+
+	if( pGizmo )
+		QueueEvent( new WgEvent::Character( pEvent->Char(), pGizmo ) );
+}
+
+//____ _processWheelRoll() ____________________________________________________
+
+void WgEventHandler::_processWheelRoll( WgEvent::WheelRoll * pEvent )
+{
+	_updateMarkedGizmos(false);
+
+	for( size_t i = 0 ; i < m_vMarkedGizmos.size() ; i++ )
+	{
+		WgGizmo * pGizmo = m_vMarkedGizmos[i].GetRealPtr();
+
+		if( pGizmo )
+			QueueEvent( new WgEvent::WheelRoll( pEvent->Wheel(), pEvent->Distance(), pGizmo ) );
+	}
+}
 
 //____ _processButtonPress() ___________________________________________________
 

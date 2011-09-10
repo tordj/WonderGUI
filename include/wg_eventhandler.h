@@ -40,6 +40,7 @@
 #endif
 
 class WgRoot;
+class WgGizmoContainer;
 
 class WgEventListener
 {
@@ -60,6 +61,40 @@ public:
 	bool	QueueEvent( WgEvent::Event * pEvent );
 
 	void	ProcessEvents();
+
+	//----
+
+	void	MapKey( WgKey translated_keycode, int native_keycode );
+	void	UnmapKey( WgKey translated_keycode );
+	void	ClearKeyMap();
+
+	//----
+
+	bool	SetButtonRepeat( int delay, int rate );
+	bool	SetKeyRepeat( int delay, int rate );
+
+	int		ButtonRepeatDelay() const { return m_buttonRepeatDelay; }
+	int		ButtonRepeatRate() const { return m_buttonRepeatRate; }
+
+	int		KeyRepeatDelay() const { return m_keyRepeatDelay; }
+	int		KeyRepeatRate() const { return m_keyRepeatRate; }
+
+	//----
+
+	bool	SetFocusGroup( WgGizmoContainer * pFocusGroup );
+	bool	SetKeyboardFocus( WgGizmo * pFocus );
+
+	WgGizmoContainer *	FocusGroup() const;
+	WgGizmo *			KeyboardFocus() const { return m_keyFocusGizmo.GetRealPtr(); }
+
+	//----
+
+	bool	IsButtonPressed( int button );
+	bool	IsKeyPressed( int native_keycode );
+
+	bool	IsWindowFocused() const { return m_bWindowFocus; }
+
+	//----
 
 	void	AddCallback( void(*fp)( const WgEvent::Event * pEvent) );
 	void	AddCallback( void(*fp)( const WgEvent::Event * pEvent, void * pParam), void * pParam );
@@ -100,6 +135,9 @@ private:
 
 	void	_processTick( WgEvent::Tick * pEvent );
 
+	void	_processFocusGained( WgEvent::FocusGained * pEvent );
+	void	_processFocusLost( WgEvent::FocusLost * pEvent );
+
 	void	_processPointerEnter( WgEvent::PointerEnter * pEvent );
 	void	_processPointerMove( WgEvent::PointerMove * pEvent );
 	void	_processPointerPlaced( WgEvent::PointerPlaced * pEvent );
@@ -112,9 +150,13 @@ private:
 	void	_processButtonClick( WgEvent::ButtonClick * pEvent );
 	void	_processButtonDoubleClick( WgEvent::ButtonDoubleClick * pEvent );
 
+	void	_processWheelRoll( WgEvent::WheelRoll * pEvent );
+
 	void	_processKeyPress( WgEvent::KeyPress * pEvent );
 	void	_processKeyRepeat( WgEvent::KeyRepeat * pEvent );
 	void	_processKeyRelease( WgEvent::KeyRelease * pEvent );
+
+	void	_processCharacter( WgEvent::Character * pEvent );
 
 	bool	_isGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
 
@@ -173,12 +215,17 @@ private:
 	struct KeyDownInfo
 	{
 		WgEvent::KeyPress * 		pEvent;
-		std::vector<WgGizmoWeakPtr>	gizmos;
+		std::vector<WgGizmoWeakPtr>	vGizmos;				// Gizmos who received the press event.
 	};
 
-	std::vector<KeyDownInfo>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.
+	std::vector<KeyDownInfo*>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.
 
-	std::vector<
+	bool						m_bWindowFocus;			// Set if we have window focus.
+	WgGizmoWeakPtr				m_keyFocusGroup;		// Current focus group (if any).
+	WgGizmoWeakPtr				m_keyFocusGizmo;		// Gizmo currently having the keyboard focus.
+
+	std::map<WgGizmoWeakPtr,WgGizmoWeakPtr>	m_focusGroupMap;	// Mapping focus groups (key) with their currently focused Gizmo (value).
+
 
 	// Callbacks
 

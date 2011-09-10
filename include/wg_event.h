@@ -168,34 +168,46 @@ namespace WgEvent
 
 	class KeyPress : public KeyEvent
 	{
+		friend class ::WgEventHandler;
 	public:
 		KeyPress( int native_keycode );
+	protected:
+		KeyPress( int native_keycode, WgGizmo * pGizmo );
 	};
 
 	class KeyRelease : public KeyEvent
 	{
+		friend class ::WgEventHandler;
 	public:
 		KeyRelease( int native_keycode );
+	protected:
+		KeyRelease( int native_keycode, WgGizmo * pGizmo );
 	};
 
 	class Character : public Event
 	{
+		friend class ::WgEventHandler;
 	public:
 		Character( unsigned short character );
 
 		unsigned short	Char() const;
+	protected:
+		Character( unsigned short character, WgGizmo * pGizmo );
 	protected:
 		unsigned short	m_char;
 	};
 
 	class WheelRoll : public Event
 	{
+		friend class ::WgEventHandler;
 	public:
 		WheelRoll( int wheel, int distance );
 
 		int			Wheel() const;
 		int			Distance() const;
 	protected:
+		WheelRoll( int wheel, int distance, WgGizmo * pGizmo );
+
 		int			m_wheel;
 		int			m_distance;
 	};
@@ -268,6 +280,7 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	protected:
 		KeyRepeat( int native_keycode );
+		KeyRepeat( int native_keycode, WgGizmo * pGizmo );
 	};
 
 

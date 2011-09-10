@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_gizmo_taborder.h>
+#include <wg_eventhandler.h>
 
 static const char	c_gizmoType[] = {"TabOrder"};
 
@@ -212,4 +213,51 @@ WgGizmoTabOrder::TabOrderEntry * WgGizmoTabOrder::_validateEntryBackward( WgGizm
 		pEntry = pEntry->Prev();
 
 	return pEntry;
+}
+
+//____ _onEvent() _____________________________________________________________
+
+void WgGizmoTabOrder::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+{
+	switch( _pEvent->Type() )
+	{
+		case WG_EVENT_KEY_PRESS:
+		case WG_EVENT_KEY_REPEAT:
+		{
+			const WgEvent::KeyEvent * pEvent = static_cast<const WgEvent::KeyEvent*>(_pEvent);
+			if( pEvent->TranslatedKeyCode() == WG_KEY_TAB )
+			{
+				WgGizmo * pFocused = pHandler->KeyboardFocus();
+				if( pFocused->IsTabLocked() )
+					break;
+
+				TabOrderEntry * pEntry = _findInTabOrder( pFocused );
+
+				if( pEntry )
+				{
+					if( pEvent->ModKeys() == WG_MODKEY_NONE )					// Forward
+					{
+						pEntry = _validateEntryForward( pEntry->Next() );
+						if( !pEntry )
+							pEntry = _validateEntryForward( m_tabOrder.First() );
+
+					}
+					else if( pEvent->ModKeys() == WG_MODKEY_SHIFT )				// Backward
+					{
+						pEntry = _validateEntryBackward( pEntry->Prev() );
+						if( !pEntry )
+							pEntry = _validateEntryBackward( m_tabOrder.Last() );
+					}
+
+					pHandler->SetKeyboardFocus(pEntry->pGizmo.GetRealPtr() );
+				}
+			}
+		}
+		break;
+
+		default:
+			break;
+	}
+
+
 }

@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -93,6 +93,7 @@ protected:
 	void	_onRefresh();
 	void	_onUpdate( const WgUpdateInfo& _updateInfo );
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	bool	_onAlphaTest( const WgCord& ofs );
 	void	_onEnable();
 	void	_onDisable();
