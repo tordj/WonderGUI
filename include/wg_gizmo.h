@@ -80,6 +80,7 @@ friend class WgGizmoModal;
 friend class WgGizmoTable;
 friend class WgGizmoView;
 friend class WgVBoxLayout;
+friend class WgMonotainer;
 
 friend class WgTableRow2;
 
@@ -90,8 +91,8 @@ public:
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
 
-	inline Sint32		Id() const { return m_id; }
-	inline void			SetId( Sint32 id ) { m_id = id; }
+	inline int		Id() const { return m_id; }
+	inline void			SetId( int id ) { m_id = id; }
 
 	inline WgString		GetTooltipString() const { return m_tooltip; }
 	inline void			SetTooltipString( const WgString& str ) { m_tooltip = str; }
@@ -110,6 +111,8 @@ public:
 	inline void				SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
 	virtual WgPointerStyle	GetPointerStyle() const;
 
+	inline void			SetTabLock( bool bLock ) { m_bTabLock = bLock; }
+	inline bool			IsTabLocked() const { return m_bTabLock; }
 
 	inline void			SetMarkPolicy( WgMarkPolicy policy ) { m_markPolicy = policy; }
 	inline WgMarkPolicy	GetMarkPolicy() const { return m_markPolicy; }
@@ -130,8 +133,8 @@ public:
 	inline bool			IsFocused() { return m_bFocused; }
 	inline WgGizmoContainer * ParentX() { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
 
-	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->NextHook(); if( p ) return p->Gizmo(); } return 0; }
-	inline WgGizmo *	PrevSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->PrevHook(); if( p ) return p->Gizmo(); } return 0; }
+	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
+	inline WgGizmo *	PrevSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
 
 	WgCord				Local2abs( const WgCord& cord ) const;		// Cordinate from local cordsys to global
 	WgCord				Abs2local( const WgCord& cord ) const; 		// Cordinate from global to local cordsys
@@ -185,7 +188,7 @@ protected:
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_onRefresh();
 	virtual void	_onUpdate( const WgUpdateInfo& _updateInfo );
-	virtual void	_onEvent( const WgEvent::Event& _event, WgEventHandler * pHandler );
+	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	virtual	bool	_onAlphaTest( const WgCord& ofs );
 	virtual void	_onEnable();
@@ -211,6 +214,7 @@ protected:
 	bool			m_bEnabled;
 	bool			m_bOpaque;
 	bool			m_bFocused;
+	bool			m_bTabLock;		// If set, the gizmo prevents focus shifting away from it with tab.
 
 	bool			m_bRenderOne;
 	bool			m_bRendersAll;

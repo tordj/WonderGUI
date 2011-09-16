@@ -48,16 +48,13 @@ class WgGizmoParent : public WgGizmoCollection
 		virtual bool		DeleteAllGizmos() = 0;
 		virtual bool		ReleaseAllGizmos() = 0;
 
-		inline WgGizmo *	CastToGizmo() { return _castToGizmo(); }
-		inline WgRoot *		CastToRoot()  { return _castToRoot(); }
+		virtual WgGizmo *	CastToGizmo() = 0;
+		virtual WgRoot *	CastToRoot() = 0;
 
+		virtual bool		IsGizmo() const = 0;
+		virtual bool		IsRoot() const = 0;
 
 	protected:
-		virtual bool		_isGizmo() const = 0;
-		virtual bool		_isRoot() const = 0;
-
-		virtual WgGizmo *	_castToGizmo() = 0;
-		virtual WgRoot *	_castToRoot() = 0;
 
 		virtual bool _focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
 		virtual bool _focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;

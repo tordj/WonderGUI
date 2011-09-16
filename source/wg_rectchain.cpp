@@ -24,7 +24,7 @@
 #include	<wg_mempool.h>
 
 WgMemPool *	WgRectChain::g_pMemPool		= 0;
-Sint32		WgRectChain::g_nRectChains	= 0;
+int		WgRectChain::g_nRectChains	= 0;
 
 void WgRectChain::Init()
 {

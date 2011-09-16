@@ -244,6 +244,10 @@
 #	include <wg_gizmo_fps.h>
 #endif
 
+#ifndef WG_GIZMO_MODAL_DOT_H
+#	include <wg_gizmo_modal.h>
+#endif
+
 #ifndef WG_GIZMO_PIXMAP_DOT_H
 #	include <wg_gizmo_pixmap.h>
 #endif

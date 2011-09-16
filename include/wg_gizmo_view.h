@@ -47,8 +47,8 @@ public:
 	WgCord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
-	inline WgGizmoHook * PrevHook() const { return _prevHook(); }
-	inline WgGizmoHook * NextHook() const { return _nextHook(); }
+	inline WgGizmoHook * Prev() const { return _prevHook(); }
+	inline WgGizmoHook * Next() const { return _nextHook(); }
 
 	inline WgGizmoView * Parent() const { return m_pView; }
 
@@ -171,9 +171,9 @@ public:
 	bool	SetViewOfsY( float y );
 
 /*
-	bool	ViewCenterOnPixel( Sint32 x, Sint32 y );
-	bool	ViewCenterOnPixelX( Sint32 x );
-	bool	ViewCenterOnPixelY( Sint32 y );
+	bool	ViewCenterOnPixel( int x, int y );
+	bool	ViewCenterOnPixelX( int x );
+	bool	ViewCenterOnPixelY( int y );
 
 	bool	ViewInclude( WgRect& rect );
 	bool	ViewIncludeX( WgRect& rect );
@@ -223,6 +223,9 @@ public:
 	WgGizmoContainer * CastToContainer() { return this; }
 	const WgGizmoContainer * CastToContainer() const { return this; }
 
+	WgGizmo* 		CastToGizmo() { return this; }
+
+
 	// Overloaded from container
 
 	WgGizmo * FindGizmo( const WgCord& pos, WgSearchMode mode );
@@ -267,7 +270,7 @@ protected:
 
 
 	void		SetContentSize( const WgSize& size );
-	void		UpdateElementGeometry( const WgSize& mySize, const WgSize& newContentSize );
+	void		UpdateElementGeo( const WgSize& mySize, const WgSize& newContentSize );
 
 	WgSize		m_contentSize;
 
@@ -294,7 +297,6 @@ protected:
 	WgViewHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag gizmos in that order.
 
 private:
-	WgGizmo* 		_castToGizmo() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }
 	WgGizmoHook*	_lastHook() const { return const_cast<WgViewHook*>(&m_elements[2]); }

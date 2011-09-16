@@ -359,6 +359,7 @@ public:
 	WgGizmoContainer * CastToContainer() { return this; }
 	const WgGizmoContainer * CastToContainer() const { return this; }
 
+	WgGizmo*		CastToGizmo() { return this; }
 
 	// Overloaded from container
 
@@ -390,8 +391,6 @@ protected:
 	bool	_onAlphaTest( const WgCord& ofs );
 
 private:
-	WgGizmo*		_castToGizmo() { return this; }
-
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
 	WgGizmoHook*	_lastHook() const { return LastHook(); }
 

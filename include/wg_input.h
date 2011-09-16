@@ -59,7 +59,7 @@ struct WgActionDetails
 	{
 		struct		// pointer
 		{
-			Sint32	x, y;						// X & Y position of pointer for action.
+			int	x, y;						// X & Y position of pointer for action.
 		};
 		struct		// key
 		{
@@ -69,7 +69,7 @@ struct WgActionDetails
 		};
 		struct		// wheel
 		{
-			Sint32	rolldistance;
+			int	rolldistance;
 		};
 	};
 };
@@ -105,8 +105,8 @@ public:
 	WgInput();
 	~WgInput();
 
-	inline Sint32 pointerX() { return m_pointerX; }
-	inline Sint32 pointerY() { return m_pointerY; }
+	inline int pointerX() { return m_pointerX; }
+	inline int pointerY() { return m_pointerY; }
 
 	void	focus_gained();
 	void	focus_lost();
@@ -116,8 +116,8 @@ public:
 	void	begin_events( Uint32 time_ms );
 	void	end_events();
 
-	void	pointer_setPos( Sint32 x, Sint32 y );
-	void	pointer_move( Sint32 x, Sint32 y );
+	void	pointer_setPos( int x, int y );
+	void	pointer_move( int x, int y );
 
 	void	button_press( Uint8 button );
 	void	button_release( Uint8 button );
@@ -130,7 +130,7 @@ public:
 	void	key_release_all();
 	void	button_release_all();
 
-	void	wheel_roll( Uint8 wheel, Sint32 distance );
+	void	wheel_roll( Uint8 wheel, int distance );
 
 	void	flush_event_queue();
 
@@ -215,10 +215,10 @@ private:
 		WgInputEvent	event;
 		Uint32			timestamp;
 		WgModifierKeys	modifier;
-		Sint32			pointerX;
-		Sint32			pointerY;
-		Sint32			data0;
-		Sint32			data1;
+		int			pointerX;
+		int			pointerY;
+		int			data0;
+		int			data1;
 	};
 	std::vector<WgInputEventData> m_eventQueue;
 
@@ -256,7 +256,7 @@ private:
 	Uint32			m_keyRepeatDelay;
 	Uint32			m_keyRepeatRate;
 
-	Sint32			m_pointerX, m_pointerY;
+	int			m_pointerX, m_pointerY;
 	WgModifierKeys	m_modifierKeys;
 
 	bool			m_bButtonDown[WG_MAX_BUTTONS];

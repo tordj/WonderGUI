@@ -94,31 +94,31 @@ public:
 
 	static inline void	clipBlitHorrBar(	const WgRect& _clip, const WgSurface * _pSurf, const WgRect& _src,
 											const WgBorders& _borders, bool _bTile,
-											Sint32 _dx, Sint32 _dy, Sint32 _len );
+											int _dx, int _dy, int _len );
 
 	static inline void	clipBlitVertBar(	const WgRect& _clip, const WgSurface * _pSurf, const WgRect& _src,
 											const WgBorders& _borders, bool _bTile,
-											Sint32 _dx, Sint32 _dy, Sint32 _len );
+											int _dx, int _dy, int _len );
 
 
 	static inline void	blitHorrBar(		const WgSurface * _pSurf, const WgRect& _src,
 											const WgBorders& _borders, bool _bTile,
-											Sint32 _dx, Sint32 _dy, Sint32 _len );
+											int _dx, int _dy, int _len );
 
 	static inline void	blitVertBar(		const WgSurface * _pSurf, const WgRect& _src,
 											const WgBorders& _borders, bool _bTile,
-											Sint32 _dx, Sint32 _dy, Sint32 _len );
+											int _dx, int _dy, int _len );
 
 
 	// Low-level blit methods, redirected to device.
 
 	static inline void		blit( const WgSurface* src );
-	static inline void		blit( const WgSurface* src, Sint32 dx, Sint32 dy );
-	static inline void		blit( const WgSurface* src, const WgRect& srcrect, Sint32 dx, Sint32 dy  );
+	static inline void		blit( const WgSurface* src, int dx, int dy );
+	static inline void		blit( const WgSurface* src, const WgRect& srcrect, int dx, int dy  );
 
 	static inline void		clipBlit( const WgRect& clip, const WgSurface* src );
-	static inline void		clipBlit( const WgRect& clip, const WgSurface* src, Sint32 dx, Sint32 dy );
-	static inline void		clipBlit( const WgRect& clip, const WgSurface* src, const WgRect& srcrect, Sint32 dx, Sint32 dy  );
+	static inline void		clipBlit( const WgRect& clip, const WgSurface* src, int dx, int dy );
+	static inline void		clipBlit( const WgRect& clip, const WgSurface* src, const WgRect& srcrect, int dx, int dy  );
 
 	static inline void		stretchBlit( const WgSurface* _pSrc );
 	static inline void		stretchBlit( const WgSurface * pSrc, const WgRect& dest );
@@ -146,7 +146,7 @@ public:
 	// Deprecated High-level blit methods
 
 	static void		clipBlitRow( const WgRect& clip, const WgSurface * src, const WgRect& srcrect,
-								 Uint32 tileOfs, Uint32 tileLen, Sint32 dx, Sint32 dy, Uint32 len, bool bStretch = false );
+								 Uint32 tileOfs, Uint32 tileLen, int dx, int dy, Uint32 len, bool bStretch = false );
 
 	// High-level print methods
 
@@ -215,12 +215,12 @@ inline void WgGfx::blit( const WgSurface* src )
 	m_pDevice->Blit( src );
 }
 
-inline void	WgGfx::blit( const WgSurface* src, Sint32 dx, Sint32 dy )
+inline void	WgGfx::blit( const WgSurface* src, int dx, int dy )
 {
 	m_pDevice->Blit( src, dx, dy );
 }
 
-inline void	WgGfx::blit( const WgSurface* src, const WgRect& srcrect, Sint32 dx, Sint32 dy  )
+inline void	WgGfx::blit( const WgSurface* src, const WgRect& srcrect, int dx, int dy  )
 {
 	m_pDevice->Blit( src, srcrect, dx, dy );
 }
@@ -230,12 +230,12 @@ inline void WgGfx::clipBlit( const WgRect& clip, const WgSurface* src )
 	m_pDevice->ClipBlit( clip, src );
 }
 
-inline void	WgGfx::clipBlit( const WgRect& clip, const WgSurface* src, Sint32 dx, Sint32 dy )
+inline void	WgGfx::clipBlit( const WgRect& clip, const WgSurface* src, int dx, int dy )
 {
 	m_pDevice->ClipBlit( clip, src, dx, dy );
 }
 
-inline void	WgGfx::clipBlit( const WgRect& clip, const WgSurface* src, const WgRect& srcrect, Sint32 dx, Sint32 dy  )
+inline void	WgGfx::clipBlit( const WgRect& clip, const WgSurface* src, const WgRect& srcrect, int dx, int dy  )
 {
 	m_pDevice->ClipBlit( clip, src, srcrect, dx, dy );
 }
@@ -314,14 +314,14 @@ inline void	WgGfx::clipTileBlit( const WgRect& clip, const WgSurface* src,
 
 inline void	WgGfx::clipBlitHorrBar(	const WgRect& _clip, const WgSurface * _pSurf, const WgRect& _src,
 									const WgBorders& _borders, bool _bTile,
-									Sint32 _dx, Sint32 _dy, Sint32 _len )
+									int _dx, int _dy, int _len )
 {
 	m_pDevice->ClipBlitHorrBar( _clip, _pSurf, _src, _borders, _bTile, _dx, _dy, _len );
 }
 
 inline void	WgGfx::clipBlitVertBar(	const WgRect& _clip, const WgSurface * _pSurf, const WgRect& _src,
 									const WgBorders& _borders, bool _bTile,
-									Sint32 _dx, Sint32 _dy, Sint32 _len )
+									int _dx, int _dy, int _len )
 {
 	m_pDevice->ClipBlitVertBar( _clip, _pSurf, _src, _borders, _bTile, _dx, _dy, _len );
 }
@@ -329,14 +329,14 @@ inline void	WgGfx::clipBlitVertBar(	const WgRect& _clip, const WgSurface * _pSur
 
 inline void	WgGfx::blitHorrBar(		const WgSurface * _pSurf, const WgRect& _src,
 									const WgBorders& _borders, bool _bTile,
-									Sint32 _dx, Sint32 _dy, Sint32 _len )
+									int _dx, int _dy, int _len )
 {
 	m_pDevice->BlitHorrBar( _pSurf, _src, _borders, _bTile, _dx, _dy, _len );
 }
 
 inline void	WgGfx::blitVertBar(		const WgSurface * _pSurf, const WgRect& _src,
 									const WgBorders& _borders, bool _bTile,
-									Sint32 _dx, Sint32 _dy, Sint32 _len )
+									int _dx, int _dy, int _len )
 {
 	m_pDevice->BlitVertBar( _pSurf, _src, _borders, _bTile, _dx, _dy, _len );
 }

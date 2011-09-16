@@ -358,11 +358,14 @@ WgGizmo * WgOrderedLayout::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 				}
 			}
 		}
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 
 		if( pHook )
 			_advanceGeoToHook( rect, pHook );
 	}
+
+	if( !pResult && mode == WG_SEARCH_GEOMETRY )
+		pResult = this;
 
 	return pResult;
 
@@ -409,7 +412,7 @@ void WgOrderedLayout::_clearDirtyRects()
 		if( pHook->Gizmo()->IsContainer() )
 			pHook->Gizmo()->CastToContainer()->_clearDirtyRects();
 
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 	}
 }
 

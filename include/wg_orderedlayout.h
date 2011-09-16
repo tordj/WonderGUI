@@ -59,8 +59,8 @@ public:
 	WgCord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
-	inline WgOrderedHook*	PrevHook() const { return _prev(); }
-	inline WgOrderedHook*	NextHook() const { return _next(); }
+	inline WgOrderedHook*	Prev() const { return _prev(); }
+	inline WgOrderedHook*	Next() const { return _next(); }
 	inline WgOrderedLayout * Parent() const;
 
 	bool			MoveUp();
@@ -131,6 +131,8 @@ public:
 	WgGizmoContainer *	CastToContainer() { return this; }
 	const WgGizmoContainer *	CastToContainer() const { return this; }
 
+	inline WgGizmo*	CastToGizmo() { return this; }
+
 	// Overloaded from container
 
 	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );	// Default OrderedLayout implementation, assuming front-gizmos overlapping end-gizmos in case of overlap.
@@ -143,8 +145,6 @@ protected:
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
-
-	inline WgGizmo*	_castToGizmo() { return this; }
 
 	inline WgGizmoHook*	_firstHook() const { return m_hooks.First(); }
 	inline WgGizmoHook*	_lastHook() const { return m_hooks.Last(); }

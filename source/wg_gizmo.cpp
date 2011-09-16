@@ -31,7 +31,7 @@ static const char	s_type[] = {"Unspecified"};
 
 WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_pointerStyle(WG_POINTER_DEFAULT),
 					m_markPolicy( WG_MARKPOLICY_ALPHA ), m_bEnabled(true), m_bOpaque(false),
-					m_bFocused(false), m_bRenderOne(false), m_bRendersAll(false)
+					m_bFocused(false), m_bTabLock(false), m_bRenderOne(false), m_bRendersAll(false)
 {
 }
 
@@ -281,7 +281,7 @@ void WgGizmo::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 }
 
-void WgGizmo::_onEvent( const WgEvent::Event& _event, WgEventHandler * pHandler )
+void WgGizmo::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 
 }

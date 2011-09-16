@@ -35,7 +35,7 @@ void WgGfxDeviceNull::Fill( const WgRect& rect, const WgColor& col )
 {
 }
 
-void WgGfxDeviceNull::Blit( const WgSurface* src, const WgRect& srcrect, Sint32 dx, Sint32 dy  )
+void WgGfxDeviceNull::Blit( const WgSurface* src, const WgRect& srcrect, int dx, int dy  )
 {
 }
 

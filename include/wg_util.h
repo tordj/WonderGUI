@@ -65,7 +65,7 @@ namespace WgUtil
 	}
 
 	// These two are needed to print the value as an integer instead of an ascii character
-	template<> inline std::string ToString(Sint8 value) { return ToString<Sint32>(value); }
+	template<> inline std::string ToString(Sint8 value) { return ToString<int>(value); }
 	template<> inline std::string ToString(Uint8 value) { return ToString<Uint32>(value); }
 
 	template<>
@@ -135,8 +135,8 @@ namespace WgUtil
 	template<>
 	inline bool FromString(const std::string& str, Sint8& a)
 	{
-		Sint32 i;
-		if(FromString<Sint32>(str, i))
+		int i;
+		if(FromString<int>(str, i))
 		{
 			if(Sint8(i) == i)
 			{
@@ -208,7 +208,7 @@ namespace WgUtil
 	inline bool 	ToBool(const std::string& value, bool def = false)	{ bool 	 v = def; FromString(value, v); return v; }
 	inline Sint8	ToSint8(const std::string& value, Sint8 def = 0)	{ Sint8	 v = def; FromString(value, v); return v; }
 	inline Sint16	ToSint16(const std::string& value, Sint16 def = 0)	{ Sint16 v = def; FromString(value, v); return v; }
-	inline Sint32	ToSint32(const std::string& value, Sint32 def = 0)	{ Sint32 v = def; FromString(value, v); return v; }
+	inline int	Toint(const std::string& value, int def = 0)	{ int v = def; FromString(value, v); return v; }
 	inline Sint64	ToSint64(const std::string& value, Sint64 def = 0)	{ Sint64 v = def; FromString(value, v); return v; }
 	inline Uint8	ToUint8(const std::string& value, Uint8 def = 0)	{ Uint8	 v = def; FromString(value, v); return v; }
 	inline Uint16	ToUint16(const std::string& value, Uint16 def = 0)	{ Uint16 v = def; FromString(value, v); return v; }

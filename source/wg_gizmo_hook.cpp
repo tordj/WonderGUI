@@ -87,14 +87,14 @@ WgRoot * WgGizmoHook::Root()
 {
 	WgGizmoContainer * pParent = Parent();
 
-	if( pParent->_isGizmo() )
+	if( pParent->IsGizmo() )
 	{
-		WgGizmoHook * pHook = pParent->_castToGizmo()->Hook();
+		WgGizmoHook * pHook = pParent->CastToGizmo()->Hook();
 		if( pHook )
 			return pHook->Root();
 	}
-	else if( pParent->_isRoot() )
-		return pParent->_castToRoot();
+	else if( pParent->IsRoot() )
+		return pParent->CastToRoot();
 
 	return 0;
 }

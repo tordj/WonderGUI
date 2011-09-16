@@ -349,128 +349,71 @@ WgEventFilter	WgEventFilter::Tick()
 
 //_____________________________________________________________________________
 
-bool WgEventFilter::_filterDummy( const WgEvent::Event& _event, const WgEventFilter& filter )
+bool WgEventFilter::_filterDummy( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
 	return true;
 }
 
 
-bool WgEventFilter::_filterPointerEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
+bool WgEventFilter::_filterPointerEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
 		return true;
 
 	return false;
 }
 
-bool WgEventFilter::_filterButtonEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
+bool WgEventFilter::_filterButtonEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
 	{
 		if( filter.m_data1 == 0 )
 			return true;
 		else
 		{
-			int btn;
+			const WgEvent::ButtonEvent * p = static_cast<const WgEvent::ButtonEvent*>(pEvent);
 
-			switch(_event.Type() )
-			{
-				case WG_EVENT_BUTTON_PRESS:
-					btn = (static_cast<const WgEvent::ButtonPress&>(_event)).Button();
-					break;
-				case WG_EVENT_BUTTON_REPEAT:
-					btn = (static_cast<const WgEvent::ButtonRepeat&>(_event)).Button();
-					break;
-				case WG_EVENT_BUTTON_DRAG:
-					btn = (static_cast<const WgEvent::ButtonDrag&>(_event)).Button();
-					break;
-				case WG_EVENT_BUTTON_RELEASE:
-					btn = (static_cast<const WgEvent::ButtonRelease&>(_event)).Button();
-					break;
-				case WG_EVENT_BUTTON_CLICK:
-					btn = (static_cast<const WgEvent::ButtonClick&>(_event)).Button();
-					break;
-				case WG_EVENT_BUTTON_DOUBLECLICK:
-					btn = (static_cast<const WgEvent::ButtonDoubleClick&>(_event)).Button();
-					break;
-				default:
-					assert(false);		// We should never get here.
-					return false;
-			}
-
-			if( btn == filter.m_data1 )
+			if( p->Button() == filter.m_data1 )
 				return true;
 		}
 	}
 	return false;
 }
 
-bool WgEventFilter::_filterKeyEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
+bool WgEventFilter::_filterKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
 	{
 		if( filter.m_data1 == 0 )
 			return true;
 		else
 		{
-			int key;
+			const WgEvent::KeyEvent * p = static_cast<const WgEvent::KeyEvent*>(pEvent);
 
-			switch(_event.Type() )
-			{
-				case WG_EVENT_KEY_PRESS:
-					key = (static_cast<const WgEvent::KeyPress&>(_event)).TranslatedKeyCode();
-					break;
-				case WG_EVENT_KEY_REPEAT:
-					key = (static_cast<const WgEvent::KeyRepeat&>(_event)).TranslatedKeyCode();
-					break;
-				case WG_EVENT_KEY_RELEASE:
-					key = (static_cast<const WgEvent::KeyRelease&>(_event)).TranslatedKeyCode();
-					break;
-				default:
-					assert(false);		// We should never get here.
-					return false;
-			}
-
-			if( key == filter.m_data1 )
+			if( p->TranslatedKeyCode() == filter.m_data1 )
 				return true;
 		}
 	}
 	return false;
 }
 
-bool WgEventFilter::_filterNativeKeyEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
+bool WgEventFilter::_filterNativeKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
 	{
-		int key;
+		const WgEvent::KeyEvent * p = static_cast<const WgEvent::KeyEvent*>(pEvent);
 
-		switch(_event.Type() )
-		{
-			case WG_EVENT_KEY_PRESS:
-				key = (static_cast<const WgEvent::KeyPress&>(_event)).NativeKeyCode();
-				break;
-			case WG_EVENT_KEY_REPEAT:
-				key = (static_cast<const WgEvent::KeyRepeat&>(_event)).NativeKeyCode();
-				break;
-			case WG_EVENT_KEY_RELEASE:
-				key = (static_cast<const WgEvent::KeyRelease&>(_event)).NativeKeyCode();
-				break;
-			default:
-				assert(false);		// We should never get here.
-				return false;
-		}
-
-		if( key == filter.m_data1 )
+		if( p->NativeKeyCode() == filter.m_data1 )
 			return true;
 	}
 	return false;
 }
 
-bool WgEventFilter::_filterCharacterEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
+bool WgEventFilter::_filterCharacterEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
 	{
-		int chr = (static_cast<const WgEvent::Character&>(_event)).Char();
+		int chr = (static_cast<const WgEvent::Character *>(pEvent))->Char();
 
 		if( chr == filter.m_data1 )
 			return true;
@@ -478,11 +421,11 @@ bool WgEventFilter::_filterCharacterEvents( const WgEvent::Event& _event, const 
 	return false;
 }
 
-bool WgEventFilter::_filterWheelRollEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
+bool WgEventFilter::_filterWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( _event.Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == _event.Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
 	{
-		int chr = (static_cast<const WgEvent::WheelRoll&>(_event)).Wheel();
+		int chr = (static_cast<const WgEvent::WheelRoll *>(pEvent))->Wheel();
 
 		if( chr == filter.m_data1 )
 			return true;
@@ -490,9 +433,9 @@ bool WgEventFilter::_filterWheelRollEvents( const WgEvent::Event& _event, const 
 	return false;
 }
 
-bool WgEventFilter::_filterTickEvents( const WgEvent::Event& _event, const WgEventFilter& filter )
+bool WgEventFilter::_filterTickEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( _event.Type() == filter.EventType() )
+	if( pEvent->Type() == filter.EventType() )
 		return true;
 
 	return false;

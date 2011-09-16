@@ -38,34 +38,42 @@ class WgGizmoContainer : public WgGizmoParent
 {
 	friend class WgGizmoHook;
 	friend class WgFlexHook;
+	friend class WgModalHook;
 
 	friend class WgRoot;
 	friend class WgGizmoFlexGeo;
 	friend class WgGizmoModal;
 	friend class WgOrderedLayout;
 	friend class WgVBoxLayout;
+	friend class WgMonotainer;
+
+	public:
+
+		void		SetFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
+		bool		IsFocusGroup() const { return m_bFocusGroup; }
+		bool		IsGizmo() const;
+		bool		IsRoot() const;
+
+//		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
+		WgRoot *	CastToRoot();
 
 	protected:
+		WgGizmoContainer() : m_bFocusGroup(false) {}
+		virtual ~WgGizmoContainer() {};
+
 		virtual void	_onEnable();
 		virtual void	_onDisable();
 
-
 	private:
-		bool		_isGizmo() const;
-		bool		_isRoot() const;
-
-//		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
-		WgRoot *	_castToRoot();
-
 
 		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) = 0;
 		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) = 0;
 		virtual void	_clearDirtyRects() = 0;
 
-
-
 		bool 		_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inerits from WgGizmo
 		bool 		_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inerits from WgGizmo
+
+		bool		m_bFocusGroup;
 };
 
 

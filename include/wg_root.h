@@ -55,7 +55,7 @@ public:
 	WgRect					Geo() const;
 
 	inline WgGizmo *		Gizmo() const { return m_hook.Gizmo(); }
-	bool					SetGizmo( WgGizmo * pGizmo );
+	bool					SetGizmo( WgGizmoContainer * pGizmo );
 	inline void				DeleteGizmo() { SetGizmo(0); }
 	WgGizmo * 				ReleaseGizmo();
 
@@ -66,6 +66,13 @@ public:
 
 	bool					DeleteAllGizmos();
 	bool					ReleaseAllGizmos();
+
+	bool					IsGizmo() const { return false; }
+	bool					IsRoot() const { return true; }
+
+	WgGizmo *				CastToGizmo() { return 0; }
+	WgRoot *				CastToRoot() { return this; }
+
 
 //	inline int	NbDirtyRects() const { return m_dirtyRects....  TODO: Implement when WgRectChain has a Size() method
 	int		ExportDirtyRects( WgRect * pDest, int maxRects ) const;
@@ -112,12 +119,6 @@ protected:
 		WgRoot *		m_pRoot;
 	};
 
-
-	bool			_isGizmo() const { return false; }
-	bool			_isRoot() const { return true; }
-
-	WgGizmo *		_castToGizmo() { return 0; }
-	WgRoot *		_castToRoot() { return this; }
 
 	WgGizmoHook*	_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
 	WgGizmoHook*	_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }

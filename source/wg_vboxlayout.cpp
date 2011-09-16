@@ -76,7 +76,7 @@ int WgVBoxLayout::HeightForWidth( int width ) const
 	while( pHook )
 	{
 		height += pHook->Gizmo()->HeightForWidth(width);
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 	}
 
 	return height;
@@ -104,7 +104,7 @@ WgSize WgVBoxLayout::MinSize() const
 		if( minBox.w < minGizmo.w )
 			minBox.w = minGizmo.w;
 
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 	}
 
 	return minBox;
@@ -132,7 +132,7 @@ WgSize WgVBoxLayout::MaxSize() const
 		if( maxBox.w < maxGizmo.w )
 			maxBox.w = maxGizmo.w;
 
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 	}
 
 	return maxBox;
@@ -150,11 +150,6 @@ void WgVBoxLayout::_onNewSize( const WgSize& size )
 	}
 }
 
-//____ _onAction() ____________________________________________________________
-
-void WgVBoxLayout::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
-{
-}
 
 //____ _castDirtyRect() _______________________________________________________
 
@@ -187,7 +182,7 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 
 	while( (geo.y + geo.h < y1 || pHook->Hidden() || !pHook->Gizmo()->IsContainer()) && geo.y < y2 )
 	{
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 		if( !pHook )
 		{
 			pDirtOut->PushExistingRect(pDirtIn);	// We return the rectangle intact since no children have cut it up.
@@ -229,7 +224,7 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 
 		// Forward to next child
 
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 		if( !pHook )
 			break;
 
@@ -262,7 +257,7 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 	WgRect	geo = _hookGeo(pHook) + _canvas.pos();
 	while( geo.y + geo.h < _window.y )
 	{
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 		if( !pHook )
 			return;							//
 
@@ -287,7 +282,7 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 
 		while( geo.y + geo.h <= pDirt->y )
 		{
-			pHook = pHook->NextHook();
+			pHook = pHook->Next();
 			if( !pHook )
 				break;
 			_advanceGeoToHook( geo, pHook );
@@ -298,7 +293,7 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 			if( !pHook->m_bHidden && !pHook->Gizmo()->IsContainer() )
 				pHook->Gizmo()->_onRender( pDevice, geo, geo, WgRect(geo,*pDirt), _layer );
 
-			pHook = pHook->NextHook();
+			pHook = pHook->Next();
 			if( !pHook )
 				break;
 			_advanceGeoToHook( geo, pHook );
@@ -318,7 +313,7 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 		if( pHook->Gizmo()->IsContainer() )
 			pHook->Gizmo()->CastToContainer()->_renderDirtyRects( pDevice, geo, geo, _layer );
 
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 		if( !pHook )
 			break;
 		_advanceGeoToHook( geo, pHook );
@@ -337,7 +332,7 @@ WgRect WgVBoxLayout::_hookGeo( const WgOrderedHook * pHook )
 	while( p != pHook )
 	{
 		ofs += p->m_height;
-		p = p->NextHook();
+		p = p->Next();
 	}
 
 	return WgRect(0,ofs,m_size.w,p->m_height);
@@ -476,7 +471,14 @@ void WgVBoxLayout::_onGizmoDisappeared( WgOrderedHook * pToBeRemoved )
 	{
 		m_nBestWidth--;
 		if( m_nBestWidth == 0 )
+		{
+			// Refresh best size, ignoring Gizmo to be removed.
+
+			int w = pHook->m_bestSize.w;
+			pHook->m_bestSize.w = 0;
 			_refreshBestWidth();
+			pHook->m_bestSize.w = w;
+		}
 	}
 
 	//
@@ -515,7 +517,7 @@ void WgVBoxLayout::_adaptChildrenToWidth( int width )
 			pHook->m_height = height;
 			m_size.h += height;
 		}
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 	}
 }
 
@@ -541,7 +543,7 @@ void WgVBoxLayout::_refreshBestWidth()
 			else
 				m_nBestWidth++;
 		}
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 	}
 }
 
@@ -571,7 +573,7 @@ void WgVBoxLayout::_refreshBestSize()
 
 			m_bestSize.h += pHook->m_bestSize.h;
 		}
-		pHook = pHook->NextHook();
+		pHook = pHook->Next();
 	}
 }
 

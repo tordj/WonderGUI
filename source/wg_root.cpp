@@ -99,12 +99,13 @@ WgRect WgRoot::Geo() const
 
 //____ SetGizmo() _____________________________________________________________
 
-bool WgRoot::SetGizmo( WgGizmo * pGizmo )
+bool WgRoot::SetGizmo( WgGizmoContainer * _pGizmo )
 {
-	// Until WgGizmoContainer properly can inherit from WgGizmo we need to check that
-	// we get a container. In the future we should take a WgGizmoContainer as parameter instead.
+	if( !_pGizmo )
+		return false;
 
-	if( pGizmo && !pGizmo->IsContainer() )
+	WgGizmo * pGizmo = _pGizmo->CastToGizmo();
+	if( !pGizmo )
 		return false;
 
 	m_hook._attachGizmo(pGizmo);

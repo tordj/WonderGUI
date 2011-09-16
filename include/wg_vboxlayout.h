@@ -34,8 +34,8 @@ class WgVBoxHook : public WgOrderedHook
 	friend class WgVBoxLayout;
 
 public:
-	inline WgVBoxHook * PrevHook() const { return _prev(); }
-	inline WgVBoxHook * NextHook() const { return _next(); }
+	inline WgVBoxHook * Prev() const { return _prev(); }
+	inline WgVBoxHook * Next() const { return _next(); }
 
 //	inline WgVBoxHook * PrevSelectedHook() const { return static_cast<WgVBoxHook*>(_prevSelectedHook()); }
 //	inline WgVBoxHook * NextSelectedHook() const { return static_cast<WgVBoxHook*>(_nextSelectedHook()); }

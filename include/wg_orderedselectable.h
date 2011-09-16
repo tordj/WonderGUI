@@ -53,11 +53,11 @@ public:
 	inline bool				Selectable() const { return m_bSelectable; }
 
 
-	inline WgOrdSelHook*	PrevHook() const { return _prev(); }
-	inline WgOrdSelHook*	NextHook() const { return _next(); }
+	inline WgOrdSelHook*	Prev() const { return _prev(); }
+	inline WgOrdSelHook*	Next() const { return _next(); }
 
-	inline WgOrdSelHook*	PrevSelectedHook() const { return _prevSelectedHook(); }
-	inline WgOrdSelHook*	NextSelectedHook() const { return _nextSelectedHook(); }
+	inline WgOrdSelHook*	PrevSelected() const { return _prevSelectedHook(); }
+	inline WgOrdSelHook*	NextSelected() const { return _nextSelectedHook(); }
 
 	inline WgOrdSelLayout*	Parent() const { return (WgOrdSelLayout*) _parent(); }
 

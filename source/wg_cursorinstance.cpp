@@ -121,10 +121,10 @@ void WgCursorInstance::gotoSoftLine( int line, const WgRect& container )
 
 //____ gotoColumn() ____________________________________________________________
 
-void WgCursorInstance::gotoColumn( Sint32 col )
+void WgCursorInstance::gotoColumn( int col )
 {
-	const Sint32 minLine = 0;
-	const Sint32 maxLine = m_pText->nbLines()-1;
+	const int minLine = 0;
+	const int maxLine = m_pText->nbLines()-1;
 
 	int line = m_line;
 
@@ -151,7 +151,7 @@ void WgCursorInstance::gotoColumn( Sint32 col )
 			col = m_pText->getLine(line)->nChars;
 		}
 	}
-	else if( col > (Sint32)maxCol )
+	else if( col > (int)maxCol )
 	{
 		line = line + 1;
 

@@ -83,7 +83,7 @@ int WgLink::_index() const
 		return -1;
 
 	WgLink * pLink = m_pChain->m_pFirst;
-	Sint32	index = 0;
+	int	index = 0;
 
 	while( pLink != this )
 	{

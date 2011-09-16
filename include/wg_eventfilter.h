@@ -45,7 +45,7 @@ class WgEventFilter;
 
 typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
-typedef	bool(*WgFilterFuncPtr)(const WgEvent::Event&, const WgEventFilter& );
+typedef	bool(*WgFilterFuncPtr)(const WgEvent::Event *, const WgEventFilter& );
 
 
 class WgEventFilter
@@ -128,7 +128,7 @@ public:
 	static WgEventFilter	Tick();
 
 
-	inline bool			FilterEvent( const WgEvent::Event& _event ) const { return m_pFilterFunc( _event, *this ); }
+	inline bool			FilterEvent( const WgEvent::Event * pEvent ) const { return m_pFilterFunc( pEvent, *this ); }
 	inline WgEventType 	EventType() const { return m_eventType; }
 	inline bool			FiltersGizmo() const { return m_pGizmo?true:false; }
 	inline WgGizmo *	Gizmo() const { return m_pGizmo; }
@@ -145,14 +145,14 @@ private:
 	int					m_data2;			// Additional data for filter function.
 
 
-	static bool _filterDummy( const WgEvent::Event& _event, const WgEventFilter& filter );
-	static bool _filterPointerEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
-	static bool _filterButtonEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
-	static bool _filterKeyEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
-	static bool _filterNativeKeyEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
-	static bool _filterCharacterEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
-	static bool _filterWheelRollEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
-	static bool _filterTickEvents( const WgEvent::Event& _event, const WgEventFilter& filter );
+	static bool _filterDummy( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterPointerEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterButtonEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterNativeKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterCharacterEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterTickEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 
 
 

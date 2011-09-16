@@ -70,8 +70,8 @@ public:
 	WgCord		ScreenPos() const;
 	WgRect		ScreenGeo() const;
 
-	inline WgModalHook *	PrevHook() const { return _prev(); }
-	inline WgModalHook *	NextHook() const { return _next(); }
+	inline WgModalHook *	Prev() const { return _prev(); }
+	inline WgModalHook *	Next() const { return _next(); }
 
 	WgGizmoContainer* Parent() const;
 
@@ -91,7 +91,6 @@ protected:
 	void		RequestResize();
 
 	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
-	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
 
 
 	WgGizmoHook *	_prevHook() const;
@@ -161,6 +160,8 @@ public:
 	WgGizmoContainer * CastToContainer() { return this; }
 	const WgGizmoContainer * CastToContainer() const { return this; }
 
+	WgGizmo*		CastToGizmo() { return this; }
+
 
 	// Overloaded from container
 
@@ -193,10 +194,6 @@ private:
 		void		RequestRender( const WgRect& rect );
 		void		RequestResize();
 
-		void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
-		void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
-
-
 		WgGizmoHook *	_prevHook() const { return 0; }
 		WgGizmoHook *	_nextHook() const { return m_pParent->FirstModalGizmo(); }
 		WgGizmoContainer * _parent() const { return m_pParent; }
@@ -221,15 +218,13 @@ private:
 
 	void			_onRequestRender( const WgRect& rect, const WgModalHook * pHook );	// rect is in our coordinate system.
 
-	WgGizmo*		_castToGizmo() { return this; }
-
 	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
 	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
 	void			_clearDirtyRects();
 
 
-	WgGizmoHook*	_firstHook();		// Fist Hook returned is the normal child, then follows the modal ones.
-	WgGizmoHook*	_lastHook();		//
+	WgGizmoHook*	_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
+	WgGizmoHook*	_lastHook() const;		//
 
 
 	BaseHook				m_baseHook;

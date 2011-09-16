@@ -122,8 +122,8 @@ public:
 	WgCord		ScreenPos() const;
 	WgRect		ScreenGeo() const;
 
-	inline WgFlexHook *	PrevHook() const { return Prev(); }
-	inline WgFlexHook *	NextHook() const { return Next(); }
+	inline WgFlexHook *	Prev() const { return _prev(); }
+	inline WgFlexHook *	Next() const { return _next(); }
 
 	inline WgGizmoFlexGeo * Parent() const { return m_pParent; }
 
@@ -132,7 +132,7 @@ public:
 protected:
 	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
 
-	LINK_METHODS( WgFlexHook );
+	PROTECTED_LINK_METHODS( WgFlexHook );
 
 	WgFlexHook( WgGizmoFlexGeo * pParent, const WgRect& placementGeo );
 
@@ -270,6 +270,7 @@ public:
 	WgGizmoContainer * CastToContainer() { return this; }
 	const WgGizmoContainer * CastToContainer() const { return this; }
 
+	WgGizmo*		CastToGizmo() { return this; }
 
 	// Overloaded from container
 
@@ -291,8 +292,6 @@ private:
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }
 
 	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
-
-	WgGizmo*		_castToGizmo() { return this; }
 
 	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
 	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );

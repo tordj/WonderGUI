@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -74,7 +74,7 @@ enum WgBlockFlags
 
 	// Flags that can not be set by user
 
-	WG_HAS_BORDERS		= 0x4000,	
+	WG_HAS_BORDERS		= 0x4000,
 };
 
 
@@ -84,7 +84,7 @@ class	WgHorrTile2 : public WgRect
 {
 public:
 	WgHorrTile2() {};
-	WgHorrTile2( Sint32 _x, Sint32 _y, Sint32 _w, Sint32 _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
+	WgHorrTile2( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
 	WgHorrTile2( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
 
 	Uint32	skip;
@@ -94,7 +94,7 @@ class	WgHorrTile3 : public WgRect
 {
 public:
 	WgHorrTile3() {};
-	WgHorrTile3( Sint32 _x, Sint32 _y, Sint32 _w, Sint32 _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
+	WgHorrTile3( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
 	WgHorrTile3( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
 
 	Uint32	skip;
@@ -104,7 +104,7 @@ class	WgHorrTile4 : public WgRect
 {
 public:
 	WgHorrTile4() {};
-	WgHorrTile4( Sint32 _x, Sint32 _y, Sint32 _w, Sint32 _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
+	WgHorrTile4( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
 	WgHorrTile4( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
 
 	Uint32	skip;
@@ -114,7 +114,7 @@ class	WgHorrTile5 : public WgRect
 {
 public:
 	WgHorrTile5() {};
-	WgHorrTile5( Sint32 _x, Sint32 _y, Sint32 _w, Sint32 _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
+	WgHorrTile5( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
 	WgHorrTile5( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
 
 	Uint32	skip;
@@ -126,7 +126,7 @@ class	WgVertTile2 : public WgRect
 {
 public:
 	WgVertTile2() {};
-	WgVertTile2( Sint32 _x, Sint32 _y, Sint32 _w, Sint32 _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
+	WgVertTile2( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
 	WgVertTile2( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
 
 	Uint32	skip;
@@ -136,7 +136,7 @@ class	WgVertTile3 : public WgRect
 {
 public:
 	WgVertTile3() {};
-	WgVertTile3( Sint32 _x, Sint32 _y, Sint32 _w, Sint32 _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
+	WgVertTile3( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
 	WgVertTile3( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
 
 	Uint32	skip;
@@ -146,7 +146,7 @@ class	WgVertTile4 : public WgRect
 {
 public:
 	WgVertTile4() {};
-	WgVertTile4( Sint32 _x, Sint32 _y, Sint32 _w, Sint32 _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
+	WgVertTile4( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
 	WgVertTile4( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
 
 	Uint32	skip;
@@ -156,7 +156,7 @@ class	WgVertTile5 : public WgRect
 {
 public:
 	WgVertTile5() {};
-	WgVertTile5( Sint32 _x, Sint32 _y, Sint32 _w, Sint32 _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
+	WgVertTile5( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
 	WgVertTile5( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
 
 	Uint32	skip;
@@ -170,7 +170,7 @@ class WgBlock
 public:
 	WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags );
 	WgBlock() : m_pSurf(0), m_flags(0) { }
-	
+
 	inline const WgRect&		GetRect() const { return m_rect; }
 	inline const WgSurface *	GetSurface() const { return m_pSurf; }
 	inline const WgBorders&		GetBorders() const { return m_gfxBorders; }
@@ -229,7 +229,7 @@ protected:
 	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked, 
 				const WgRect& selected, const WgRect& disabled, const WgRect& special, 
 				const WgBorders& gfxBorders, const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags );
-	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags );
+	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgBorders& gfxBorders, const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags );
 
 	struct Alt_Data
 	{
@@ -249,13 +249,13 @@ protected:
 		LINK_METHODS( LinkedAlt );
 
 		WgSize		activationSize;	// If (dest_width <= size.w) or (dest_height <= size.h) this or a smaller Alt will be used. Setting either size.w or size.h
-									// to 0 ignores that dimension in the comparison. Setting both to 0 makes it accessible only by other ways.							
+									// to 0 ignores that dimension in the comparison. Setting both to 0 makes it accessible only by other ways.
 		Alt_Data	data;
 	};
 
 public:
-	bool				AddAlternative( WgSize activationSize, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked, 
-										const WgRect& selected, const WgRect& disabled, const WgRect& special, 
+	bool				AddAlternative( WgSize activationSize, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked,
+										const WgRect& selected, const WgRect& disabled, const WgRect& special,
 										const WgBorders& gfxBorders, const WgBorders& contentBorders );
 
 	inline WgBlock		GetBlock( WgMode mode, WgSize destSize ) const { return GetBlock( mode, GetAlt(destSize) ); }
@@ -263,7 +263,7 @@ public:
 	inline bool			HasBlock( WgMode mode, int alt = 0 ) const;
 
 	int					GetNbAlternatives() const;
-	WgSize				GetActivationSize( int alt ) const; 
+	WgSize				GetActivationSize( int alt ) const;
 
 	bool				SetSize( WgSize size, int alt = 0 );
 	bool				SetPos( WgMode mode, WgCord pos, int alt = 0 );
@@ -347,7 +347,7 @@ inline bool WgBlockSet::HasBlock(WgMode m, int alt) const
 
 	if( p->x[m] != p->x[WG_MODE_NORMAL] || p->y[m] != p->y[WG_MODE_NORMAL] )
 		return true;
-	
+
 	return false;
 }
 

@@ -247,7 +247,7 @@ public:
 
 	void				setValue( double value, const WgValueFormat& form );
 	void				setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form );
-//	Sint32				compareTo( const WgText * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
+//	int				compareTo( const WgText * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
 
 	int					width() const;
 	int					height() const;

@@ -62,8 +62,8 @@ WgRect::WgRect( const WgCord32& p1, const WgCord32& p2 )
 
 bool WgRect::intersection( const WgRect& _r1, const WgRect& _r2 )
 {
-	Sint32		x1, y1;						// So we can use ourself as inparameter.
-	Sint32		x2, y2;
+	int		x1, y1;						// So we can use ourself as inparameter.
+	int		x2, y2;
 
 	if( _r1.x > _r2.x )
 		x1 = _r1.x;
@@ -150,7 +150,7 @@ void WgRect::grow(const WgBorders &_borders)
 
 //____ growToContain() _______________________________________________________
 
-void WgRect::growToContain( Sint32 _x, Sint32 _y )
+void WgRect::growToContain( int _x, int _y )
 {
 	if( _x < x )
 	{

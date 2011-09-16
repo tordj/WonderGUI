@@ -236,7 +236,7 @@ void WgGfxDeviceGL::Fill( const WgRect& _rect, const WgColor& _col )
 
 //____ Blit() __________________________________________________________________
 
-void WgGfxDeviceGL::Blit( const WgSurface* _pSrc, const WgRect& _src, Sint32 _dx, Sint32 _dy  )
+void WgGfxDeviceGL::Blit( const WgSurface* _pSrc, const WgRect& _src, int _dx, int _dy  )
 {
 	if( !_pSrc )
 		return;
