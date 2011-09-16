@@ -84,6 +84,7 @@
 		<Unit filename="include/wg_gizmo_radiobutton.h" />
 		<Unit filename="include/wg_gizmo_refreshbutton.h" />
 		<Unit filename="include/wg_gizmo_row.h" />
+		<Unit filename="include/wg_gizmo_stack.h" />
 		<Unit filename="include/wg_gizmo_table.h" />
 		<Unit filename="include/wg_gizmo_tablist.h" />
 		<Unit filename="include/wg_gizmo_taborder.h" />
@@ -169,6 +170,7 @@
 		<Unit filename="source/wg_gizmo_pixmap.cpp" />
 		<Unit filename="source/wg_gizmo_radiobutton.cpp" />
 		<Unit filename="source/wg_gizmo_refreshbutton.cpp" />
+		<Unit filename="source/wg_gizmo_stack.cpp" />
 		<Unit filename="source/wg_gizmo_table.cpp" />
 		<Unit filename="source/wg_gizmo_tablist.cpp" />
 		<Unit filename="source/wg_gizmo_taborder.cpp" />

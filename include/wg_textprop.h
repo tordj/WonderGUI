@@ -213,11 +213,11 @@ private:
 class WgTextAttr
 {
 public:
-	WgTextAttr() : pFont(0), size(0), style(WG_STYLE_NORMAL), color(WgColor::White()), bgColor(WgColor::None()), 
+	WgTextAttr() : pFont(0), size(0), style(WG_STYLE_NORMAL), color(WgColor::white), bgColor(WgColor::transparent),
 				   bUnderlined(false), breakLevel(3), visibilityFlags(0) {}
 
-	inline void	Clear() {	pFont = 0; size = 0; style = WG_STYLE_NORMAL; color = WgColor::White(); 
-							bgColor = WgColor::None(); bUnderlined = false; breakLevel = 3;
+	inline void	Clear() {	pFont = 0; size = 0; style = WG_STYLE_NORMAL; color = WgColor::white;
+							bgColor = WgColor::transparent; bUnderlined = false; breakLevel = 3;
 							visibilityFlags = 0; pLink = 0; }
 
 	WgFont *		pFont;

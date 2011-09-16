@@ -150,11 +150,6 @@ void WgVBoxLayout::_onNewSize( const WgSize& size )
 	}
 }
 
-//____ _onAction() ____________________________________________________________
-
-void WgVBoxLayout::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
-{
-}
 
 //____ _castDirtyRect() _______________________________________________________
 
@@ -476,7 +471,14 @@ void WgVBoxLayout::_onGizmoDisappeared( WgOrderedHook * pToBeRemoved )
 	{
 		m_nBestWidth--;
 		if( m_nBestWidth == 0 )
+		{
+			// Refresh best size, ignoring Gizmo to be removed.
+
+			int w = pHook->m_bestSize.w;
+			pHook->m_bestSize.w = 0;
 			_refreshBestWidth();
+			pHook->m_bestSize.w = w;
+		}
 	}
 
 	//
