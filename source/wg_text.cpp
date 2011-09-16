@@ -883,7 +883,7 @@ WgChar * WgText::parseValue( double value, const WgValueFormat& f, WgChar tempst
 
 	// Write integer part to temp area (backwards)
 
-	Uint16	temp2[16];
+	Uint16	temp2[32];
 
 	Uint32	intPart = (Uint32) value;
 	int			n = 0;
@@ -1011,7 +1011,7 @@ WgChar * WgText::parseScaledValue( Sint64 value, Uint32 scale, const WgValueForm
 
 	// Write integer part to temp area (backwards)
 
-	Uint16	temp2[16];
+	Uint16	temp2[32];
 
 	int			n = 0;
 
@@ -2184,6 +2184,8 @@ void WgText::GetBaseAttr( WgTextAttr& attr ) const
 {
 	attr.Clear();
 	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), m_mode );
+	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_mode );
+	WgTextTool::SetAttrColor( attr, m_pBaseColors, m_mode );
 	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_mode );
 }
 
@@ -2196,6 +2198,8 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 
 	attr.Clear();
 	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), m_mode );
+	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_mode );
+	WgTextTool::SetAttrColor( attr, m_pBaseColors, m_mode );
 	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_mode );
 
 	// Add selection properties if character is selected
@@ -2205,7 +2209,7 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 		int selStart = LineColToOffset( m_selStartLine, m_selStartCol );
 		int selEnd = LineColToOffset( m_selEndLine, m_selEndCol );
 
-		if( charOfs >= selStart && charOfs <= selEnd )
+		if( charOfs >= selStart && charOfs < selEnd )
 		{
 			if( m_pSelectionProp )
 				WgTextTool::AddPropAttributes( attr, m_pSelectionProp, m_mode );

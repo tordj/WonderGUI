@@ -101,6 +101,7 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 		WgText				m_text;
 		WgOrigo				m_textOrigo;
 		int					m_buttonDownOfs;
+		bool				m_bSelectAllOnRelease;
 };
 
 

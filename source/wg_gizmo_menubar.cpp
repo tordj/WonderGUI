@@ -218,9 +218,9 @@ void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		WgBlock block;
 
 		if( m_bEnabled )
-			block = m_pBgGfx->GetBlock(WG_MODE_NORMAL);
+			block = m_pBgGfx->GetBlock(WG_MODE_NORMAL,_canvas.size());
 		else
-			block = m_pBgGfx->GetBlock(WG_MODE_DISABLED);
+			block = m_pBgGfx->GetBlock(WG_MODE_DISABLED,_canvas.size());
 
 		pDevice->ClipBlitBlock( _clip, block, _canvas );
 	}
@@ -274,16 +274,21 @@ void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 			WgBorders b = GetEntryBorders();
 
+			WgColorSetPtr pTextColors = m_pBgGfx->GetTextColors();
+
 			if( m_pEntryGfx )
 			{
 				WgRect	dest( posX, window.y, pI->m_width + b.width(), window.h );
-				pDevice->ClipBlitBlock( clip, m_pEntryGfx->GetBlock(mode), dest );
+				pDevice->ClipBlitBlock( clip, m_pEntryGfx->GetBlock(mode,dest), dest );
+
+				pTextColors = m_pEntryGfx->GetTextColors();
 			}
 
 			pen.SetPos( WgCord(posX + b.left, printPosY) );
 
 			WgTextAttr	attr;
 			WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), mode );
+			WgTextTool::SetAttrColor( attr, pTextColors, mode );
 			WgTextTool::AddPropAttributes( attr, m_pTextProp, mode );
 			pen.SetAttributes( attr );
 

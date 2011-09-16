@@ -253,7 +253,7 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		int dy = (int)( m_iconOrigo.anchorY() * _canvas.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
 
 		WgRect dest( _canvas.x + dx, _canvas.y + dy, w, h );
-		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode), dest );
+		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, dest.size()), dest );
 	}
 
 	// Print text (with displacement).
@@ -261,6 +261,9 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
  	if( m_text.nbLines()!= 0 )
 	{
 		m_text.setMode(m_mode);
+
+		if( m_pBgGfx )
+			m_text.SetBgBlockColors( m_pBgGfx->GetTextColors() );
 
 		WgRect printWindow( _canvas.x + xOfs, _canvas.y + yOfs, _canvas.w, _canvas.h );
 
@@ -494,7 +497,7 @@ bool WgGizmoButton::_onAlphaTest( const WgCord& ofs )
 
 	WgSize	sz = Size();
 
-	return	WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode), WgRect(0,0,sz.w,sz.h) );
+	return	WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode,sz), WgRect(0,0,sz) );
 }
 
 //____ _onGotInputFocus() ______________________________________________________

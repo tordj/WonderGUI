@@ -134,7 +134,7 @@ void WgGizmoProfiler::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	// TODO: gradering.
 
 
-	pDevice->ClipFill( _clip, ScreenGeometry(), WgColor(0x40,0x40,0x40,0x80) );
+	pDevice->ClipFill( _clip, ScreenGeo(), WgColor(0x40,0x40,0x40,0x80) );
 	
 
 

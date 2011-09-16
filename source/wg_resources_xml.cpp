@@ -331,6 +331,11 @@ bool WgXMLMetaData::SetAttribute(const std::string& name, const std::string& val
 	return true;
 }
 
+bool WgXMLMetaData::HasAttribute(const std::string& name) const
+{
+	return xmlNode.HasAttribute(name);
+}
+
 void WgResourceXML::OnDeserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
 	m_node = xmlNode;
@@ -2626,7 +2631,6 @@ void WgBlockSetRes::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "scale", (m_pBlockSet->GetFlags() & WG_SCALE_CENTER) != 0, false);
 	WriteDiffAttr(s, xmlNode, "fixed_size", (m_pBlockSet->GetFlags() & WG_FIXED_CENTER) != 0, false);
 
-
 	Uint32 flags = m_pBlockSet->GetFlags();
 	if( flags & WG_SKIP_NORMAL )
 		s.AddAttribute("skip_normal", "true" );
@@ -2638,6 +2642,8 @@ void WgBlockSetRes::Serialize(WgResourceSerializerXML& s)
 		s.AddAttribute("skip_disabled", "true" );
 	if( flags & WG_SKIP_SPECIAL )
 		s.AddAttribute("skip_special", "true" );
+
+	WriteColorSetAttr(s, m_pBlockSet->GetTextColors(), "textcolors" );
 
 	WgRect rect[5];
 	rect[WG_MODE_NORMAL] = m_pBlockSet->GetRect(WG_MODE_NORMAL);
@@ -2770,6 +2776,7 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	if( WgUtil::ToBool(xmlNode["skip_special"]) )
 		flags |= WG_SKIP_SPECIAL;
 
+	WgColorSetPtr pTextColors =	s.ResDb()->GetColorSet(xmlNode["textcolors"]);
 
 	if(xmlNode.HasAttribute("lego"))
 	{
@@ -2794,11 +2801,11 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 
 		switch(nStates)
 		{
-		case 1: m_pBlockSet = pSurface->defineBlockSet(StateRect(rect, iState0), gfxBorders, contentBorders, flags); break;
-		case 2: m_pBlockSet = pSurface->defineBlockSet(StateRect(rect, iState0), StateRect(rect, iState1), gfxBorders, contentBorders, flags); break;
-		case 3: m_pBlockSet = pSurface->defineBlockSet(StateRect(rect, iState0), StateRect(rect, iState1), StateRect(rect, iState2), gfxBorders, contentBorders, flags); break;
-		case 4: m_pBlockSet = pSurface->defineBlockSet(StateRect(rect, iState0), StateRect(rect, iState1), StateRect(rect, iState2), StateRect(rect, iState3), gfxBorders, contentBorders, flags); break;
-		case 5: m_pBlockSet = pSurface->defineBlockSet(StateRect(rect, iState0), StateRect(rect, iState1), StateRect(rect, iState2), StateRect(rect, iState3), StateRect(rect, iState4), gfxBorders, contentBorders, flags); break;
+		case 1: m_pBlockSet = pSurface->defineBlockSet(StateRect(rect, iState0), gfxBorders, contentBorders, pTextColors, flags); break;
+		case 2: m_pBlockSet = pSurface->defineBlockSet(StateRect(rect, iState0), StateRect(rect, iState1), gfxBorders, contentBorders, pTextColors, flags); break;
+		case 3: m_pBlockSet = pSurface->defineBlockSet(StateRect(rect, iState0), StateRect(rect, iState1), StateRect(rect, iState2), gfxBorders, contentBorders, pTextColors, flags); break;
+		case 4: m_pBlockSet = pSurface->defineBlockSet(StateRect(rect, iState0), StateRect(rect, iState1), StateRect(rect, iState2), StateRect(rect, iState3), gfxBorders, contentBorders, pTextColors, flags); break;
+		case 5: m_pBlockSet = pSurface->defineBlockSet(StateRect(rect, iState0), StateRect(rect, iState1), StateRect(rect, iState2), StateRect(rect, iState3), StateRect(rect, iState4), gfxBorders, contentBorders, pTextColors, flags); break;
 		default:
 			ASSERT(0, "invalid states definition in <blockset>");
 		}
@@ -2829,11 +2836,11 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		switch(nBlocks)
 		{
 		case 0:
-		case 1: m_pBlockSet = pSurface->defineBlockSet(rect[0], gfxBorders, contentBorders, flags); break;
-		case 2: m_pBlockSet = pSurface->defineBlockSet(rect[0], rect[1], gfxBorders, contentBorders, flags); break;
-		case 3: m_pBlockSet = pSurface->defineBlockSet(rect[0], rect[1], rect[2], gfxBorders, contentBorders, flags); break;
-		case 4: m_pBlockSet = pSurface->defineBlockSet(rect[0], rect[1], rect[2], rect[3], gfxBorders, contentBorders, flags); break;
-		case 5: m_pBlockSet = pSurface->defineBlockSet(rect[0], rect[1], rect[2], rect[3], rect[4], gfxBorders, contentBorders, flags); break;
+		case 1: m_pBlockSet = pSurface->defineBlockSet(rect[0], gfxBorders, contentBorders, pTextColors, flags); break;
+		case 2: m_pBlockSet = pSurface->defineBlockSet(rect[0], rect[1], gfxBorders, contentBorders, pTextColors, flags); break;
+		case 3: m_pBlockSet = pSurface->defineBlockSet(rect[0], rect[1], rect[2], gfxBorders, contentBorders, pTextColors, flags); break;
+		case 4: m_pBlockSet = pSurface->defineBlockSet(rect[0], rect[1], rect[2], rect[3], gfxBorders, contentBorders, pTextColors, flags); break;
+		case 5: m_pBlockSet = pSurface->defineBlockSet(rect[0], rect[1], rect[2], rect[3], rect[4], gfxBorders, contentBorders, pTextColors, flags); break;
 		}
 	}
 
@@ -3086,9 +3093,11 @@ void WgAltRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 //////////////////////////////////////////////////////////////////////////
 void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, WgResourceSerializerXML& s, Wg_Interface_TextHolder* holder)
 {
+
 	WriteTextPropAttr(s, holder->GetTextProperties(), "prop");
 	WriteTextPropAttr(s, holder->GetSelectionProperties(), "selection_prop");
 	WriteTextPropAttr(s, holder->GetLinkProperties(), "link_prop");
+	WriteColorSetAttr(s, holder->TextBaseColors(), "base_colors" );
 
 	WgCursor * pCursor = holder->GetCursor();
 	if( pCursor )
@@ -3218,6 +3227,12 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 
 	holder->SetLineSpaceAdjustment(WgUtil::ToSint8(xmlNode["linespaceadjustment"]));
 	holder->SetTextWrap(WgUtil::ToBool(xmlNode["wrap"], true));
+
+	if(xmlNode.HasAttribute("base_colors"))
+	{
+		holder->SetTextBaseColors(s.ResDb()->GetColorSet(xmlNode["base_colors"]));
+
+	}
 
 	ReadTextManager(holder, xmlNode, s);
 }
@@ -3863,8 +3878,6 @@ void Wdg_CheckBox2_Res::Serialize(WgResourceSerializerXML& s)
 	widget->SetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
 	WriteDiffAttr<Sint8>(s, xmlNode, "displacement", disp[0], disp[1], disp[2], disp[3], disp[4], disp[5], 0, 0, 0, 0, 0, 0);
 	WriteDiffAttr(s, xmlNode, "checked", widget->IsChecked(), false);
-	WriteDiffAttr<Uint16>(s, xmlNode, "mouseover_ofs", widget->GetTextMouseOverOfsX(), 0);
-	WriteDiffAttr(s, xmlNode, "fixedsize", widget->GetFixedSize(), false);
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "blockset_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
 	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
@@ -3873,8 +3886,7 @@ void Wdg_CheckBox2_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
 	WriteDiffAttr(s, xmlNode, "icon_scale", widget->GetIconScale(), 0.f );
 	WriteDiffAttr(s, xmlNode, "icon_origo", widget->GetIconOrigo(), WgOrigo::midLeft());
-	WriteDiffAttr(s, xmlNode, "icon_push_text", widget->IsIconPushingText(), false);
-	WriteDiffAttr(s, xmlNode, "text_area_opaque", widget->IsTextAreaOpaque(), true);
+	WriteDiffAttr(s, xmlNode, "icon_push_text", widget->IsIconPushingText(), true);
 
 	WgBorderRes::Serialize(s, xmlNode, "icon_borders", widget->GetIconBorders());
 
@@ -3894,9 +3906,6 @@ void Wdg_CheckBox2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 	WgUtil::FromString(xmlNode["displacement"], disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
 	widget->SetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
 
-	widget->SetTextMouseOverOfsX(WgUtil::ToUint16(xmlNode["mouseover_ofs"]));
-	widget->SetFixedSize(WgUtil::ToBool(xmlNode["fixedsize"]));
-
 	WgBlockSetPtr checked = s.ResDb()->GetBlockSet(xmlNode["blockset_checked"]);
 	WgBlockSetPtr unchecked = s.ResDb()->GetBlockSet(xmlNode["blockset_unchecked"]);
 	widget->SetSource(unchecked, checked);
@@ -3910,8 +3919,7 @@ void Wdg_CheckBox2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 
 	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo,
 					WgUtil::ToFloat(xmlNode["icon_scale"], 0.f),
-					WgUtil::ToBool(xmlNode["icon_push_text"], false) );
-	widget->SetTextAreaOpaque( WgUtil::ToBool(xmlNode["text_area_opaque"], true) ); 
+					WgUtil::ToBool(xmlNode["icon_push_text"], true) );
 }
 
 WgCharBuffer* Wdg_CheckBox2_Res::GetCharBuffer()
@@ -4837,8 +4845,6 @@ void Wdg_RadioButton2_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr<Sint8>(s, xmlNode, "displacement", disp[0], disp[1], disp[2], disp[3], disp[4], disp[5], 0, 0, 0, 0, 0, 0);
 	WriteDiffAttr(s, xmlNode, "checked", widget->IsChecked(), false);
 	WriteDiffAttr(s, xmlNode, "allowuncheck", widget->AllowUnchecking(), false);
-	WriteDiffAttr<Uint16>(s, xmlNode, "mouseover_ofs", widget->GetTextMouseOverOfsX(), 0);
-	WriteDiffAttr(s, xmlNode, "fixedsize", widget->GetFixedSize(), false);
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "blockset_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
 	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
@@ -4847,7 +4853,7 @@ void Wdg_RadioButton2_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
 	WriteDiffAttr(s, xmlNode, "icon_scale", widget->GetIconScale(), 0.f );
 	WriteDiffAttr(s, xmlNode, "icon_origo", widget->GetIconOrigo(), WgOrigo::midLeft());
-	WriteDiffAttr(s, xmlNode, "icon_push_text", widget->IsIconPushingText(), false);
+	WriteDiffAttr(s, xmlNode, "icon_push_text", widget->IsIconPushingText(), true);
 	WgBorderRes::Serialize(s, xmlNode, "icon_borders", widget->GetIconBorders());
 
 	s.EndTag();
@@ -4865,9 +4871,6 @@ void Wdg_RadioButton2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeria
 	WgUtil::FromString(xmlNode["displacement"], disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
 	widget->SetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
 
-	widget->SetTextMouseOverOfsX(WgUtil::ToUint16(xmlNode["mouseover_ofs"]));
-	widget->SetFixedSize(WgUtil::ToBool(xmlNode["fixedsize"]));
-
 	WgBlockSetPtr checked = s.ResDb()->GetBlockSet(xmlNode["blockset_checked"]);
 	WgBlockSetPtr unchecked = s.ResDb()->GetBlockSet(xmlNode["blockset_unchecked"]);
 	widget->SetSource(unchecked, checked);
@@ -4882,7 +4885,7 @@ void Wdg_RadioButton2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeria
 
 	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo,
 					WgUtil::ToFloat(xmlNode["icon_scale"], 0.f),
-					WgUtil::ToBool(xmlNode["icon_push_text"], false) );
+					WgUtil::ToBool(xmlNode["icon_push_text"], true) );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -5934,7 +5937,7 @@ void WgMenuEntryRes::Serialize(WgResourceSerializerXML& s, bool bOpenTag)
 		case WG_MODKEY_CTRL_SHIFT:			value = "ctrl+shift"; break;
 		case WG_MODKEY_CTRL_ALT:			value = "ctrl+alt"; break;
 		case WG_MODKEY_CTRL_ALT_SHIFT:		value = "ctrl+alt+shift"; break;
-		case WG_MODKEY_GUI:					value = "gui"; break;
+		case WG_MODKEY_SUPER:				value = "super"; break;
 		case WG_MODKEY_SUPER_SHIFT:			value = "super+shift"; break;
 		case WG_MODKEY_SUPER_CTRL:			value = "super+ctrl"; break;
 		case WG_MODKEY_SUPER_ALT:			value = "super+alt"; break;
@@ -5983,7 +5986,7 @@ void WgMenuEntryRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerX
 	else if(value == "ctrl+alt") item->SetAccelModifier(WG_MODKEY_CTRL_ALT);
 	else if(value == "ctrl+shift") item->SetAccelModifier(WG_MODKEY_CTRL_SHIFT);
 	else if(value == "ctrl+alt+shift") item->SetAccelModifier(WG_MODKEY_CTRL_ALT_SHIFT);
-	else if(value == "gui") item->SetAccelModifier(WG_MODKEY_GUI);
+	else if(value == "super") item->SetAccelModifier(WG_MODKEY_SUPER);
 	else if(value == "super+shift") item->SetAccelModifier(WG_MODKEY_SUPER_SHIFT);
 	else if(value == "super+ctrl") item->SetAccelModifier(WG_MODKEY_SUPER_CTRL);
 	else if(value == "super+alt") item->SetAccelModifier(WG_MODKEY_SUPER_ALT);

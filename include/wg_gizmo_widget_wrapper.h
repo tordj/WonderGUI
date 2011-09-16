@@ -48,8 +48,8 @@
 class WgWidgetHook : public WgGizmoHook
 {
 public:
-	WgWidgetHook( WgGizmo * pGizmo, WgGizmoContainer * pParent, WgWidget * pWidget ) : WgGizmoHook( pGizmo ), m_pWidget(pWidget), m_pParent(pParent) {}
-
+	WgWidgetHook( WgGizmo * pGizmo, WgGizmoContainer * pParent, WgWidget * pWidget ) : WgGizmoHook(), m_pWidget(pWidget), m_pParent(pParent) { _attachGizmo(pGizmo); }
+	~WgWidgetHook() { m_pGizmo = 0; }	// Prevent WgGizmoHook from deleting Gizmo (which is part of the generated Widget).
 	WgCord	Pos() const { return WgCord( m_pWidget->PosX(), m_pWidget->PosY() ); }
 	WgSize	Size() const { return WgSize( m_pWidget->Width(), m_pWidget->Height() ); }
 	WgRect	Geo() const { return m_pWidget->Geometry(); }
@@ -132,6 +132,13 @@ class WgWidgetContainer : public WgGizmoContainer
 public:
 	// With wg_gizmo_widget_wrapper all widgets that are siblings behave as one collective gizmo_manager...
 
+	bool		DeleteGizmo( WgGizmo * pGizmo ) { return false; }
+	WgGizmo *	ReleaseGizmo( WgGizmo * pGizmo ) { return 0; }
+
+	bool		DeleteAllGizmos() { return false; }
+	bool		ReleaseAllGizmos() { return false; }
+
+
 	WgGizmoHook *	FirstHook() const
 	{
 		if( m_pWidget->m_pParent )
@@ -195,10 +202,10 @@ private:
 template<class T> class Wdg_Widget : public WgWidget, public T
 {
 public:
-	Wdg_Widget( WgWidget* pParent = 0 ) : WgWidget(pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
-	Wdg_Widget( const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget(geometry, pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
-	Wdg_Widget( WgOrigo origo, const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget( origo, geometry, pParent ) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
-	Wdg_Widget( WgOrigo upperLeft, Sint32 x1, Sint32 y1, WgOrigo lowerRight, Sint32 x2, Sint32 y2, WgWidget * pParent = 0 ) : WgWidget(upperLeft,x1, y1, lowerRight, x2, y2, pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); T::SetHook(m_pHook); }
+	Wdg_Widget( WgWidget* pParent = 0 ) : WgWidget(pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); }
+	Wdg_Widget( const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget(geometry, pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); }
+	Wdg_Widget( WgOrigo origo, const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget( origo, geometry, pParent ) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); }
+	Wdg_Widget( WgOrigo upperLeft, Sint32 x1, Sint32 y1, WgOrigo lowerRight, Sint32 x2, Sint32 y2, WgWidget * pParent = 0 ) : WgWidget(upperLeft,x1, y1, lowerRight, x2, y2, pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); }
 	virtual ~Wdg_Widget() { T::m_pHook = 0; delete m_pHook; };
 
 	virtual const char * Type() const { return T::Type(); }

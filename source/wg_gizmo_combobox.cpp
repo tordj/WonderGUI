@@ -218,8 +218,8 @@ void WgGizmoCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	// Render the textbox
 	if(m_pTextBoxBg)
 	{
-		const WgBlock&	block = m_pTextBoxBg->GetBlock( m_mode );
-		WgRect			dest( _canvas.x, _canvas.y, _canvas.w, _canvas.h );
+		const WgBlock&	block = m_pTextBoxBg->GetBlock( m_mode, _canvas.size() );
+		WgRect			dest( _canvas );
 		pDevice->ClipBlitBlock( _clip, block, dest );
 	}
 
@@ -230,6 +230,9 @@ void WgGizmoCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 		r.shrink( m_pTextBoxBg->GetContentBorders() );
 
 	WgRect	textClip( r, _clip );
+
+	if(m_pTextBoxBg)
+		m_text.SetBgBlockColors(m_pTextBoxBg->GetTextColors());
 
 	m_text.setMode( m_mode );
 	pDevice->PrintText( textClip, &m_text, r );
@@ -254,7 +257,9 @@ bool WgGizmoCombobox::_onAlphaTest( const WgCord& ofs )
 	if( !m_pTextBoxBg )
 		return false;
 
-	return WgUtil::MarkTestBlock( ofs, m_pTextBoxBg->GetBlock(m_mode), WgRect( WgCord(0,0), Size() ) );
+	WgSize sz = Size();
+
+	return WgUtil::MarkTestBlock( ofs, m_pTextBoxBg->GetBlock(m_mode,sz), WgRect( WgCord(0,0), sz ) );
 }
 
 //____ _onGotInputFocus() ______________________________________________
@@ -277,6 +282,7 @@ void WgGizmoCombobox::_onLostInputFocus()
 void WgGizmoCombobox::_onEnable( void )
 {
 	WgMode newMode;
+	WgMode oldMode = m_mode;
 
 	if( m_bEnabled )
 		newMode = WG_MODE_NORMAL;
@@ -284,7 +290,7 @@ void WgGizmoCombobox::_onEnable( void )
 		newMode = WG_MODE_DISABLED;
 
 	m_mode = newMode;
-	if( m_pTextBoxBg && !m_pTextBoxBg->SameBlock(newMode, m_mode) )
+	if( m_pTextBoxBg && !m_pTextBoxBg->SameBlock(newMode, oldMode) )
 		RequestRender();
 }
 
@@ -293,6 +299,7 @@ void WgGizmoCombobox::_onEnable( void )
 void WgGizmoCombobox::_onDisable( void )
 {
 	WgMode newMode;
+	WgMode oldMode = m_mode;
 
 	if( m_bEnabled )
 		newMode = WG_MODE_NORMAL;
@@ -300,7 +307,7 @@ void WgGizmoCombobox::_onDisable( void )
 		newMode = WG_MODE_DISABLED;
 
 	m_mode = newMode;
-	if( m_pTextBoxBg && !m_pTextBoxBg->SameBlock(newMode, m_mode) )
+	if( m_pTextBoxBg && !m_pTextBoxBg->SameBlock(newMode, oldMode) )
 		RequestRender();
 }
 

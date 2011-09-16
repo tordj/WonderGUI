@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-
 #include <wg_blockset.h>
+#include <wg_colorset.h>
 #include <wg_geo.h>
 #include <wg_surface.h>
 #include <assert.h>
@@ -49,12 +49,14 @@ WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& 
 WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect& normal, 
 					   const WgRect& marked, const WgRect& selected, const WgRect& disabled, 
 					   const WgRect& special, const WgBorders& gfxBorders, 
-					   const WgBorders& contentBorders, Uint32 flags ) : WgRefCountedPooled(pPool)
+					   const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags ) : WgRefCountedPooled(pPool)
 {
+	m_pTextColors				= pTextColors;
+	m_flags						= VerifyFlags(flags);
+
 	m_base.pSurf				= pSurf;
 	m_base.gfxBorders			= gfxBorders;
 	m_base.contentBorders		= contentBorders;
-	m_flags						= VerifyFlags(flags);
 	m_base.w					= normal.w;
 	m_base.h					= normal.h;
 
@@ -285,6 +287,17 @@ bool WgBlockSet::SetSize( WgSize size, int alt )
 	p->h = size.h;
 	return true;
 }
+
+//____ GetTextColor() _________________________________________________________
+
+WgColor WgBlockSet::GetTextColor( WgMode mode ) const
+{
+	if( !m_pTextColors )
+		return WgColor::None();
+
+	return m_pTextColors->Color(mode);
+}
+
 
 //____ GetRect() ______________________________________________________________
 

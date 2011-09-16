@@ -615,9 +615,9 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 	if( m_pBgGfx )
 	{
 		if( m_bEnabled )
-			WgGfx::clipBlitBlock( clip, m_pBgGfx->GetBlock(WG_MODE_NORMAL), window );
+			WgGfx::clipBlitBlock( clip, m_pBgGfx->GetBlock(WG_MODE_NORMAL,window), window );
 		else
-			WgGfx::clipBlitBlock( clip, m_pBgGfx->GetBlock(WG_MODE_DISABLED), window );
+			WgGfx::clipBlitBlock( clip, m_pBgGfx->GetBlock(WG_MODE_DISABLED,window), window );
 	}
 
 
@@ -651,7 +651,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 					WgRect	dest( window.x + m_sepBorders.left, yPos + m_sepBorders.top,
 									window.w - m_sepBorders.width(), m_pSepGfx->GetHeight() );
 
-					WgGfx::clipBlitBlock( sepClip, m_pSepGfx->GetBlock(WG_MODE_NORMAL), dest );
+					WgGfx::clipBlitBlock( sepClip, m_pSepGfx->GetBlock(WG_MODE_NORMAL,dest), dest );
 					yPos += m_sepHeight;
 				}
 			}
@@ -674,7 +674,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 						yPos + m_markBorders.top,
 						window.w - m_markBorders.width(),
 						m_entryHeight - m_markBorders.height() );
-					WgGfx::clipBlitBlock( markClip, m_pMarkGfx->GetBlock(WG_MODE_MARKED), dest );
+					WgGfx::clipBlitBlock( markClip, m_pMarkGfx->GetBlock(WG_MODE_MARKED,dest), dest );
 
 					mode = WG_MODE_MARKED;
 				}
@@ -687,6 +687,8 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 
 					WgTextAttr	attr;
 					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), mode );
+					if( m_pBgGfx )
+						WgTextTool::SetAttrColor( attr, m_pBgGfx->GetTextColors(), mode );
 					WgTextTool::AddPropAttributes( attr, m_pEntryProp, mode );
 					entryPen.SetAttributes( attr );
 					int y = yPos + (m_entryHeight - entryPen.GetLineHeight())/2 + entryPen.GetBaseline();
@@ -988,35 +990,30 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					if( pItem )
 					{
 						pItem = pItem->Prev();
-						while( pItem != 0 && pItem->GetType() == SEPARATOR )
+						while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsSetToVisible() ) )
 							pItem = pItem->Prev();
 					}
 					break;
 
 				case WG_KEY_DOWN:
 					if( pItem )
-					{
 						pItem = pItem->Next();
-						while( pItem != 0 && pItem->GetType() == SEPARATOR )
-							pItem = pItem->Next();
-					}
 					else
-					{
 						pItem = m_items.First();
-						while( pItem != 0 && pItem->GetType() == SEPARATOR )
+
+					while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsSetToVisible() ) )
 							pItem = pItem->Next();
-					}
 					break;
 
 				case WG_KEY_HOME:
 					pItem = m_items.First();
-					while( pItem != 0 && pItem->GetType() == SEPARATOR )
+					while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsSetToVisible() ) )
 						pItem = pItem->Next();
 					break;
 
 				case WG_KEY_END:
 					pItem = m_items.Last();
-					while( pItem != 0 && pItem->GetType() == SEPARATOR )
+					while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsSetToVisible() ))
 						pItem = pItem->Prev();
 					break;
 
@@ -1027,10 +1024,13 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					int distance = m_entryHeight;
 					while( pItem != 0 && distance < viewHeight )
 					{
-						if( pItem->GetType() == SEPARATOR )
-							distance += m_sepHeight;
-						else
-							distance += m_entryHeight;
+						if( pItem->IsSetToVisible() )
+						{
+							if( pItem->GetType() == SEPARATOR )
+								distance += m_sepHeight;
+							else
+								distance += m_entryHeight;
+						}
 
 						pItem = pItem->Prev();
 					}
@@ -1038,7 +1038,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					if( !pItem )
 					{
 						pItem = m_items.First();
-						while( pItem != 0 && pItem->GetType() == SEPARATOR )
+						while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsSetToVisible() ))
 							pItem = pItem->Next();
 					}
 
@@ -1051,10 +1051,13 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					int distance = m_entryHeight;
 					while( pItem != 0 && distance < viewHeight )
 					{
-						if( pItem->GetType() == SEPARATOR )
-							distance += m_sepHeight;
-						else
-							distance += m_entryHeight;
+						if( pItem->IsSetToVisible() )
+						{
+							if( pItem->GetType() == SEPARATOR )
+								distance += m_sepHeight;
+							else
+								distance += m_entryHeight;
+						}
 
 						pItem = pItem->Next();
 					}
@@ -1062,7 +1065,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 					if( !pItem )
 					{
 						pItem = m_items.Last();
-						while( pItem != 0 && pItem->GetType() == SEPARATOR )
+						while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsSetToVisible() ))
 							pItem = pItem->Next();
 					}
 

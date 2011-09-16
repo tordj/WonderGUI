@@ -156,7 +156,7 @@ void WgItemPixmap::Render( const WgRect& _window, const WgRect& _clip )
 		r.w = contentSize.w;
 		r.h = contentSize.h;
 		
-		WgGfx::clipBlitBlock( _clip, m_block->GetBlock(m_mode), r);
+		WgGfx::clipBlitBlock( _clip, m_block->GetBlock(m_mode,r), r);
 	}
 }
 

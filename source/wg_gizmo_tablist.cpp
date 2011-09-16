@@ -931,14 +931,16 @@ int WgGizmoTablist::CalcTabsWantedWidth( WgTab * pTab )
 	}
 
 	WgBlockSetPtr pSrc = GetTabSource(pTab);
+	if( pSrc )
+	{
+		width += pSrc->GetContentBorders().width();
 
-	width += pSrc->GetContentBorders().width();
+		if( width < pSrc->GetMinWidth() )
+			width = pSrc->GetMinWidth();
+	}
 
 	if( width < m_minTabWidth )
 		width = m_minTabWidth;
-
-	if( width < pSrc->GetMinWidth() )
-		width = pSrc->GetMinWidth();
 
 	return width;
 }
@@ -977,7 +979,7 @@ WgTab * WgGizmoTablist::Pos2Tab( int x, int y )
 				((unsigned) y) > pSrc->GetContentBorders().top && y < sz.h - pSrc->GetContentBorders().bottom )
 				bHit = true;
 			else
-				bHit = WgUtil::MarkTestBlock( WgCord(x, y), pSrc->GetBlock( GetTabMode(*pTab) ), WgRect(0,0,w,sz.h));
+				bHit = WgUtil::MarkTestBlock( WgCord(x, y), pSrc->GetBlock( GetTabMode(*pTab), WgSize(w,sz.h) ), WgRect(0,0,w,sz.h));
 
 			if( bHit )
 			{
@@ -1072,7 +1074,7 @@ void WgGizmoTablist::RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, 
 
 	WgMode	mode = GetTabMode(tab);
 
-	WgBlock block = pSrc->GetBlock(mode);
+	WgBlock block = pSrc->GetBlock(mode,dest);
 
 	pDevice->ClipBlitBlock( clip, block, dest );
 
@@ -1094,6 +1096,8 @@ void WgGizmoTablist::RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, 
 
 	WgRect clip2( clip, r );
 	tab.m_text.setMode(mode);
+	if( pSrc )
+		tab.m_text.SetBgBlockColors( pSrc->GetTextColors() );
 	pDevice->PrintText( clip2, &tab.m_text, r );
 }
 

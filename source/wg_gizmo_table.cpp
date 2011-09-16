@@ -1883,7 +1883,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 			else if( i == m_lastSortColumn )
 				mode = WG_MODE_SPECIAL;
 
-			pDevice->ClipBlitBlock( _clip, m_pHeaderGfx->GetBlock(mode), r2 );
+			pDevice->ClipBlitBlock( _clip, m_pHeaderGfx->GetBlock(mode,r2), r2 );
 
 			if( i == m_lastSortColumn && m_pAscendGfx && m_pDescendGfx )
 			{
@@ -1965,7 +1965,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 			if( pRow->IsSelected() )
 			{
 				if(HasSelectedRowBg() == true)
-					pDevice->ClipBlitBlock(u, m_pSelectedRowGfx->GetBlock(WG_MODE_NORMAL), r );
+					pDevice->ClipBlitBlock(u, m_pSelectedRowGfx->GetBlock(WG_MODE_NORMAL,r), r );
 				else
 					pDevice->Fill( u, m_selectedRowColor );
 			}
@@ -1982,7 +1982,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 				{
 					WgBlockSetPtr p = m_pRowBlocks[ iRowColor % m_nRowBlocks ];
 					if( p )
-						pDevice->ClipBlitBlock(u, p->GetBlock(WG_MODE_NORMAL), r );
+						pDevice->ClipBlitBlock(u, p->GetBlock(WG_MODE_NORMAL,r), r );
 				}
 
 			}

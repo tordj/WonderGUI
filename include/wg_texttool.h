@@ -51,6 +51,10 @@
 #	include <wg_charseq.h>
 #endif
 
+#ifndef WG_SMARTPTR_DOT_H
+#	include <wg_smartptr.h>
+#endif
+
 class WgFont;
 class WgGlyphSet;
 class WgText;
@@ -58,7 +62,9 @@ class WgChar;
 class WgCursorInstance;
 class WgResDB;
 class WgTextNode;
+class WgColorSet;
 
+typedef	WgSmartPtr<WgColorSet>	WgColorSetPtr;
 
 
 //____ WgTextTool _____________________________________________________________
@@ -201,6 +207,7 @@ public:
 
 
 	static void			AddPropAttributes( WgTextAttr& attr, const WgTextPropPtr& pProp, WgMode mode = WG_MODE_NORMAL );
+	static void			SetAttrColor( WgTextAttr& attr, const WgColorSetPtr& pColors, WgMode mode = WG_MODE_NORMAL );
 /*
 	static bool				IsCharUnderlined(	Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
 	static const WgColor	GetCharColor(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );

@@ -2697,7 +2697,15 @@ void WgTextTool::AddPropAttributes( WgTextAttr& attr, const WgTextPropPtr& pProp
 		attr.pLink = pProp->GetLink();
 }
 
+//____ SetAttrColor() _______________________________________________________
 
+void WgTextTool::SetAttrColor( WgTextAttr& attr, const WgColorSetPtr& pColors, WgMode mode )
+{
+	if( !pColors )
+		return;
+
+	attr.color = pColors->Color(mode);
+}
 
 //____ GetCursor() ____________________________________________________________
 

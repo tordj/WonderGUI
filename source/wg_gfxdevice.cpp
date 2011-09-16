@@ -1043,7 +1043,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 			if( color.a != 0 )
 				_drawTextSectionBg( clip, pText, dest, startOfs, ofs, color );
 
-			startOfs = selEnd;
+			startOfs = selEnd;			//TODO: We should not skip rendering background color, there migth be on link or character (or selection might not have one).
 			ofs = startOfs;
 		}
 

@@ -1518,7 +1518,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			else
 				pHeaderGfx = m_pHeaderGfxNormal;
 			
-			WgGfx::clipBlitBlock( _clip, pHeaderGfx->GetBlock(mode), r2 );
+			WgGfx::clipBlitBlock( _clip, pHeaderGfx->GetBlock(mode,r2), r2 );
 
 			if( i == m_lastSortColumn && m_pAscendGfx && m_pDescendGfx )
 			{
@@ -1535,15 +1535,19 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 				WgGfx::clipBlitBlock( _clip, block, WgRect( dx, dy, block.GetWidth(), block.GetHeight()) );
 			}
 
-//			if( m_pHeaderTextProp )
-//			{
-				WgRect rText = r2;
-				if( pHeaderGfx )
-					rText.shrink( pHeaderGfx->GetContentBorders() );
+			// Print text
 
-				m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
-				WgGfx::printText( _clip, m_pColumns[i].GetTextObj(), rText );
-//			}
+			if( pHeaderGfx )
+				m_pColumns[i].SetTextBaseColors(pHeaderGfx->GetTextColors());
+
+			WgRect rText = r2;
+			if( pHeaderGfx )
+				rText.shrink( pHeaderGfx->GetContentBorders() );
+
+			m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
+			WgGfx::printText( _clip, m_pColumns[i].GetTextObj(), rText );
+
+			//
 
 			r2.x += r2.w - 1;	// HACK: Overlap last pixel to avoid double separator graphics between two headers
 		}

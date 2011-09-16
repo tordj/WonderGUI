@@ -172,11 +172,11 @@ bool WgSurface::Fill( WgColor col )
 WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& marked,
 											const WgRect& selected, const WgRect& disabled,
 											const WgRect& special, const WgBorders& gfxBorders, 
-											const WgBorders& contentBorders, Uint32 flags ) const
+											const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 
 	WgBlockSet * p =new(g_pBlockSetMemPool->allocEntry())
-							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, disabled, special, gfxBorders, contentBorders, flags );
+							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, disabled, special, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
 	return WgBlockSetPtr(p);
@@ -184,11 +184,12 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 
 WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& marked,
 											const WgRect& selected, const WgRect& disabled,
-											const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+											const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+											const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 
 	WgBlockSet * p =new(g_pBlockSetMemPool->allocEntry())
-							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, disabled, normal, gfxBorders, contentBorders, flags );
+							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, disabled, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
 	return WgBlockSetPtr(p);
@@ -196,35 +197,39 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 
 WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& marked,
 										const WgRect& selected, const WgBorders& gfxBorders,
-										const WgBorders& contentBorders, Uint32 flags ) const
+										const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, 
+										Uint32 flags ) const
 {
 	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
-							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, normal, normal, gfxBorders, contentBorders, flags );
+							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, normal, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
 	return WgBlockSetPtr(p);
 }
 
 WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgRect& disabled,
-										const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+										const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
-							WgBlockSet(g_pBlockSetMemPool, this, normal, normal, normal, disabled, normal, gfxBorders, contentBorders, flags );
+							WgBlockSet(g_pBlockSetMemPool, this, normal, normal, normal, disabled, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
 	return WgBlockSetPtr(p);
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
-							WgBlockSet(g_pBlockSetMemPool, this, normal, normal, normal, normal, normal, gfxBorders, contentBorders, flags );
+							WgBlockSet(g_pBlockSetMemPool, this, normal, normal, normal, normal, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
 	return WgBlockSetPtr(p);
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip*4) / 5;
 	int h = tile.h;
@@ -235,10 +240,11 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile5& tile, const WgBorder
 							WgRect(tile.x+skip*2, tile.y, w, h),
 							WgRect(tile.x+skip*3, tile.y, w, h),
 							WgRect(tile.x+skip*4, tile.y, w, h),
-							gfxBorders, contentBorders, flags );
+							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip*3) / 4;
 	int h = tile.h;
@@ -248,10 +254,11 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile4& tile, const WgBorder
 							WgRect(tile.x+skip, tile.y, w, h),
 							WgRect(tile.x+skip*2, tile.y, w, h),
 							WgRect(tile.x+skip*3, tile.y, w, h),
-							gfxBorders, contentBorders, flags );
+							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip*2) / 3;
 	int h = tile.h;
@@ -260,10 +267,11 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile3& tile, const WgBorder
 	return defineBlockSet(	WgRect(tile.x, tile.y, w, h),
 							WgRect(tile.x+skip, tile.y, w, h),
 							WgRect(tile.x+skip*2, tile.y, w, h),
-							gfxBorders, contentBorders, flags );
+							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip) / 2;
 	int h = tile.h;
@@ -271,10 +279,11 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile2& tile, const WgBorder
 
 	return defineBlockSet(	WgRect(tile.x, tile.y, w, h),
 							WgRect(tile.x+skip, tile.y, w, h),
-							gfxBorders, contentBorders, flags );
+							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = tile.w;
 	int h = (tile.h - tile.skip*4) / 5;
@@ -285,10 +294,11 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile5& tile, const WgBorder
 							WgRect(tile.x, tile.y+skip*2, w, h),
 							WgRect(tile.x, tile.y+skip*3, w, h),
 							WgRect(tile.x, tile.y+skip*4, w, h),
-							gfxBorders, contentBorders, flags );
+							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = tile.w;
 	int h = (tile.h - tile.skip*3) / 4;
@@ -298,10 +308,11 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile4& tile, const WgBorder
 							WgRect(tile.x, tile.y+skip, w, h),
 							WgRect(tile.x, tile.y+skip*2, w, h),
 							WgRect(tile.x, tile.y+skip*3, w, h),
-							gfxBorders, contentBorders, flags );
+							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = tile.w;
 	int h = (tile.h - tile.skip*2) / 3;
@@ -310,10 +321,11 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile3& tile, const WgBorder
 	return defineBlockSet(	WgRect(tile.x, tile.y, w, h),
 							WgRect(tile.x, tile.y+skip, w, h),
 							WgRect(tile.x, tile.y+skip*2, w, h),
-							gfxBorders, contentBorders, flags );
+							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = tile.w;
 	int h = tile.h / 2;
@@ -321,6 +333,6 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile2& tile, const WgBorder
 
 	return defineBlockSet(	WgRect(tile.x, tile.y, w, h),
 							WgRect(tile.x, tile.y+skip, w, h),
-							gfxBorders, contentBorders, flags );
+							gfxBorders, contentBorders, pTextColors, flags );
 }
 

@@ -37,7 +37,7 @@ const	static char	 Widget_String[] = {"Unspecified"};
 WgWidget::WgWidget( WgWidget* pParent )
 {
 	Init();
-	SetParent( pParent );
+	_setParent( pParent, 0, false );
 	if( pParent )
 		SetGeometry( WgOrigo::topLeft(), 0, 0, WgOrigo::bottomRight(), 0, 0, false );
 }
@@ -45,14 +45,14 @@ WgWidget::WgWidget( WgWidget* pParent )
 WgWidget::WgWidget( const WgRect& geometry, WgWidget * pParent )
 {
 	Init();
-	SetParent( pParent );
+	_setParent( pParent, 0, false );
 	SetGeometry( WgOrigo::topLeft(), geometry, false );
 }
 
 WgWidget::WgWidget( WgOrigo origo, const WgRect& geometry, WgWidget * pParent )
 {
 	Init();
-	SetParent( pParent );
+	_setParent( pParent, 0, false );
 	SetGeometry( origo, geometry, false );
 }
 
@@ -60,7 +60,7 @@ WgWidget::WgWidget( WgOrigo topLeft, Sint32 x1, Sint32 y1, WgOrigo bottomRight,
 										Sint32 x2, Sint32 y2, WgWidget * pParent )
 {
 	Init();
-	SetParent( pParent );
+	_setParent( pParent, 0, false );
 	SetGeometry( topLeft, x1, y1, bottomRight, x2, y2, false );
 }
 
@@ -322,6 +322,11 @@ void WgWidget::RefreshBranch( void )
 
 bool WgWidget::SetParent( WgWidget * _pNewParent, WgWidget * _pBelow )
 {
+	return _setParent( _pNewParent, _pBelow, true );
+}
+
+bool WgWidget::_setParent( WgWidget * _pNewParent, WgWidget * _pBelow, bool bEmit )
+{
 	if( _pNewParent == m_pParent )
 		return true;
 
@@ -382,7 +387,7 @@ bool WgWidget::SetParent( WgWidget * _pNewParent, WgWidget * _pBelow )
 	}
 
 	m_bRenderedHere = false;
-	UpdateGeometry(false);
+	UpdateGeometry(false, false, false);
 
 	if( m_pParent != 0 )
 	{
@@ -2210,7 +2215,7 @@ WgWidget * WgWidget::CloneBranch( void )
 	// Connect the clone-branch to the rest of the tree
 
 	if( m_pParent != 0 )
-		pCloneBranch->SetParent( m_pParent );
+		pCloneBranch->_setParent( m_pParent,0,false );
 
 	return	pCloneBranch;
 }

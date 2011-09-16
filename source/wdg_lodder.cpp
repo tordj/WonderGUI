@@ -92,7 +92,7 @@ void Wdg_Lodder::AddChildrenAsLODs()
 
 const Wdg_Lodder::Lod* Wdg_Lodder::GetLOD(Uint32 iLod) const
 {
-	if(iLod >= m_lodChain.Size())
+	if(iLod >= (Uint32)m_lodChain.Size())
 		return 0;
 	return m_lodChain.Get(iLod);
 }

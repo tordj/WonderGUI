@@ -39,7 +39,7 @@
 #	include <wg_chain.h>
 #endif
 
-
+class WgColor;
 class WgRect;
 class WgBlock;
 class WgSurface;
@@ -213,9 +213,11 @@ private:
 
 //____ WgBlockSet _____________________________________________________________
 
+class WgColorSet;
 class WgBlockSet;
 class WgMemPool;
 
+typedef	WgSmartPtr<WgColorSet>			WgColorSetPtr;
 typedef	WgSmartPtrPooled<WgBlockSet>	WgBlockSetPtr;
 
 
@@ -226,7 +228,7 @@ class WgBlockSet : private WgLink, public WgRefCountedPooled
 protected:
 	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked, 
 				const WgRect& selected, const WgRect& disabled, const WgRect& special, 
-				const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags );
+				const WgBorders& gfxBorders, const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags );
 	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags );
 
 	struct Alt_Data
@@ -266,6 +268,8 @@ public:
 	bool				SetSize( WgSize size, int alt = 0 );
 	bool				SetPos( WgMode mode, WgCord pos, int alt = 0 );
 
+	inline WgColorSetPtr	GetTextColors() const { return m_pTextColors; }
+	WgColor				GetTextColor( WgMode mode ) const;
 	WgRect				GetRect( WgMode mode, int alt = 0 ) const;
 	WgSize				GetSize( int alt = 0 ) const;
 	int					GetWidth( int alt = 0 ) const;
@@ -315,6 +319,7 @@ private:
 
 	inline WgBlock	GetBlock( WgMode mode, const Alt_Data * pAlt ) const;
 
+	WgColorSetPtr				m_pTextColors;		// Default colors for text placed on this block.
 	Uint32						m_flags;
 	Alt_Data					m_base;				// Original blocks (Alt=0)
 

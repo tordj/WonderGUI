@@ -54,9 +54,19 @@ public:
 	virtual const char * Type() const;
 	static const char * GetMyType();
 
-	// for stretched backgrounds
+	enum ClickArea
+	{
+		DEFAULT,		// Full geometry of icon (no alpha test) + text + area between + alpha test on background.
+		ALPHA,			// Alpha test on background and icon.
+		GEO,			// Full geometry of Gizmo is clickable.
+		ICON,			// Only the icon (alpha test) is clickable.
+		TEXT			// Only the text is clickable.
+	};
 
-	bool			SetSource( const WgBlockSetPtr& _pUnchecked, const WgBlockSetPtr& _pChecked, bool bFixedSizeBox = false );
+	void			SetClickArea( ClickArea clickArea );
+	ClickArea		GetClickArea() const { return m_clickArea; }
+
+	bool			SetSource( const WgBlockSetPtr& _pUnchecked, const WgBlockSetPtr& _pChecked );
 
 	WgBlockSetPtr	GetCheckedSource() const { return m_pBlockChecked; }
 	WgBlockSetPtr	GetUncheckedSource() const { return m_pBlockUnchecked; }
@@ -74,9 +84,6 @@ public:
     bool			SetDisplacement( Sint8 xUnchecked = 0, Sint8 yUnchecked = 0, Sint8 xOver = 0, Sint8 yOver = 0, Sint8 xChecked = 0, Sint8 yChecked = 0 );
 	void			GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sint8& yOver, Sint8& xDown, Sint8& yDown ) const;
 
-	bool			IsTextAreaOpaque() const { return m_bOpaqueText; }
-	void			SetTextAreaOpaque( bool bOpaque );
-
 	inline bool		IsChecked() { return m_bChecked; };
 
 	inline bool		Check( void ) { return SetState( true ); };
@@ -84,16 +91,7 @@ public:
 	virtual bool	SetState( bool state );
 	inline bool		ChangeState( void ) { return SetState( !m_bChecked ); };
 
-	void			SetTextMouseOverOfsX( Uint16 ofs );
-	Uint16			GetTextMouseOverOfsX( )	{ return m_textMouseOverOfsX; }
-
-	bool			SetFixedSize(bool bFixedSizeBox);
-	bool			GetFixedSize() const { return m_bFixedSizeBox; }
-
 	Uint32			GetTextAreaWidth();
-
-//    bool			SetTextOffset( Sint8 x, Sint8 y = 0, Sint8 x2 = 0, Sint8 y2 = 0 );
-	int				GetLineWidth() const;
 
 	DECLARE_TOOLTIP_SUPPORT();
 
@@ -135,16 +133,11 @@ private:
 
 	WgBlockSetPtr	m_pBlockUnchecked;
 	WgBlockSetPtr	m_pBlockChecked;
-	bool			m_bFixedSizeBox;				// Set if checkbox block shouldn't be stretched.
-													// Checkbox will then be to left of widget and rest of
-													// the area only for the text.
 	WgText			m_text;
 
 	WgCord8			m_aDisplace[3];					// Text/icon displacement for unchecked, mouse over and checked.
-	Uint16			m_textMouseOverOfsX;
-	WgRect*			m_pTextArea;					// For marktesting the text area
-	Uint16			m_textAreaCount;
-	bool			m_bOpaqueText;
+
+	ClickArea		m_clickArea;
 };
 
 

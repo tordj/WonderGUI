@@ -31,6 +31,10 @@
 #	include <wg_color.h>
 #endif
 
+#ifndef WG_COLORSET_DOT_H
+#	include <wg_colorset.h>
+#endif
+
 #ifndef WG_ORIGO_DOT_H
 #	include <wg_origo.h>
 #endif
@@ -386,6 +390,12 @@ public:
 	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }
 	WgMode			GetMarkedLinkMode() const { return m_markedLinkMode; }
 
+	inline void		SetBaseColors( const WgColorSetPtr& pColors ) { m_pBaseColors = pColors; }
+	inline WgColorSetPtr BaseColors() const { return m_pBaseColors; }
+	
+	inline void		SetBgBlockColors( const WgColorSetPtr& pColors ) { m_pBgBlockColors = pColors; }
+	inline WgColorSetPtr BgBlockColors() const { return m_pBgBlockColors; }
+
 protected:
 
 
@@ -424,6 +434,9 @@ protected:
 	int				m_selEndCol;
 	Sint8			m_lineSpaceAdj;		// Adjustment of linespacing for this text.
 
+	WgColorSetPtr	m_pBgBlockColors;	// Textcolors as defined by background blockset (lowest prio).
+
+	WgColorSetPtr	m_pBaseColors;		// Default colors for this text (prio between m_pBgBlockColors and m_pBaseProp).
 	WgTextPropPtr	m_pBaseProp;		// Default properties for this text. Used for all characters who have
 										// properties set to 0.
 	WgTextPropPtr	m_pLinkProp;		// Props used for links, overriding certain text and char properties.

@@ -43,6 +43,7 @@ WgGizmoEditvalue::WgGizmoEditvalue()
 {
 	m_bRegenText	= true;
 	m_buttonDownOfs = 0;
+	m_bSelectAllOnRelease = false;
 
 	m_pointerStyle	= WG_POINTER_IBEAM;
 
@@ -313,43 +314,54 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 {
 	bool	bTextChanged = false;
 
-	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
+	WgCord ofs = Abs2local(WgCord(info.x,info.y));
+
+	if( action == WgInput::BUTTON_PRESS && button_key == 1 )
 	{
 		if( !m_bFocused )
+		{		
 			GrabFocus();
-
-		if( m_bFocused )
-		{
-			if( info.modifier & WG_MODKEY_SHIFT )
-			{
-				m_text.setSelectionMode(true);
-			}
-
-			WgCord ofs = Abs2local(WgCord(info.x,info.y));
-
-			//
-
-			if( action == WgInput::BUTTON_PRESS || ofs.x != m_buttonDownOfs )
-			{
-				m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
-				m_buttonDownOfs = ofs.x;
-			}
-
-			if( action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
-			{
-				m_text.clearSelection();
-				m_text.setSelectionMode(true);
-			}
+			m_bSelectAllOnRelease = true;
 		}
-//		AdjustViewOfs();
+		else
+			m_bSelectAllOnRelease = false;
+
+		if( info.modifier & WG_MODKEY_SHIFT )
+		{
+			m_text.setSelectionMode(true);
+			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+		}
+		else
+		{		
+			m_text.setSelectionMode(false);
+			m_text.clearSelection();
+			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			m_text.setSelectionMode(true);
+		}
+
+		m_buttonDownOfs = ofs.x;
+	}
+
+	if( action == WgInput::BUTTON_DOWN && button_key == 1 )
+	{
+		if( m_bFocused && ofs.x != m_buttonDownOfs )
+		{
+			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			m_buttonDownOfs = ofs.x;
+			m_bSelectAllOnRelease = false;
+		}
 	}
 
 	if( action == WgInput::BUTTON_RELEASE || action == WgInput::BUTTON_RELEASE_OUTSIDE )
 	{
 		if( m_bFocused && button_key == 1 )
+		{
 			m_text.setSelectionMode(false);
-	}
 
+			if( m_bSelectAllOnRelease )
+				m_text.selectAll();
+		}
+	}
 
 
 	if( action == WgInput::BUTTON_DOUBLECLICK && button_key == 1 )
@@ -401,6 +413,8 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 			case WG_KEY_LEFT:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
+				else
+					m_text.setSelectionMode(false);
 
 				if( info.modifier & WG_MODKEY_CTRL )
 					m_text.gotoPrevWord();
@@ -410,6 +424,8 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 			case WG_KEY_RIGHT:
 				if( info.modifier & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
+				else
+					m_text.setSelectionMode(false);
 
 				if( info.modifier & WG_MODKEY_CTRL )
 					m_text.gotoNextWord();
@@ -609,13 +625,14 @@ void WgGizmoEditvalue::_onGotInputFocus()
 	m_text.CreateCursor();
 	m_text.GetCursor()->goEOL();
 	m_useFormat = m_format;
-	m_bRegenText = true;
 
 	if( m_format.decimals != 0 )
 		m_useFormat.bForcePeriod = true;	// Force period if decimals are involved.
 
 	if( m_value < 0.f )
 		m_useFormat.bZeroIsNegative = true;	// Force minus sign if value is negative.
+
+	m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
 
 	RequestRender();
 }

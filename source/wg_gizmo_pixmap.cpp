@@ -122,7 +122,7 @@ bool WgGizmoPixmap::_onAlphaTest( const WgCord& ofs )
 
 	WgSize sz = Size();
 
-	return WgUtil::MarkTestBlock( ofs, m_pGfx->GetBlock(mode), WgRect(0,0,sz.w,sz.h) );
+	return WgUtil::MarkTestBlock( ofs, m_pGfx->GetBlock(mode,sz), WgRect(0,0,sz.w,sz.h) );
 }
 
 //____ _onEnable() _____________________________________________________________

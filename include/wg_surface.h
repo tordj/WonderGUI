@@ -158,30 +158,42 @@ public:
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& marked,
 										const WgRect& selected, const WgRect& disabled,
 										const WgRect& special, const WgBorders& gfxBorders, 
-										const WgBorders& contentBorders, Uint32 flags ) const;
+										const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& marked,
 										const WgRect& selected, const WgRect& disabled,
-										const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const;
+										const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& marked,
-										const WgRect& selected, const WgBorders& gfxBorders, const WgBorders& contentBorders,
-										Uint32 flags ) const;
+										const WgRect& selected, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& disabled,
-										const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags ) const;
+										const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
-	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgBorders& borders, const WgBorders& contentBorders, Uint32 flags ) const;
+	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgBorders& borders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
-	WgBlockSetPtr		defineBlockSet( const WgHorrTile5& horrTile, const WgBorders& borders, const WgBorders& contentBorders, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgHorrTile4& horrTile, const WgBorders& borders, const WgBorders& contentBorders, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgHorrTile3& horrTile, const WgBorders& borders, const WgBorders& contentBorders, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgHorrTile2& horrTile, const WgBorders& borders, const WgBorders& contentBorders, Uint32 flags ) const;
+	WgBlockSetPtr		defineBlockSet( const WgHorrTile5& horrTile, const WgBorders& borders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
+	WgBlockSetPtr		defineBlockSet( const WgHorrTile4& horrTile, const WgBorders& borders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
+	WgBlockSetPtr		defineBlockSet( const WgHorrTile3& horrTile, const WgBorders& borders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
+	WgBlockSetPtr		defineBlockSet( const WgHorrTile2& horrTile, const WgBorders& borders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
-	WgBlockSetPtr		defineBlockSet( const WgVertTile5& vertTile, const WgBorders& borders, const WgBorders& contentBorders, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgVertTile4& vertTile, const WgBorders& borders, const WgBorders& contentBorders, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgVertTile3& vertTile, const WgBorders& borders, const WgBorders& contentBorders, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgVertTile2& vertTile, const WgBorders& borders, const WgBorders& contentBorders, Uint32 flags ) const;
+	WgBlockSetPtr		defineBlockSet( const WgVertTile5& vertTile, const WgBorders& borders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
+	WgBlockSetPtr		defineBlockSet( const WgVertTile4& vertTile, const WgBorders& borders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
+	WgBlockSetPtr		defineBlockSet( const WgVertTile3& vertTile, const WgBorders& borders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
+	WgBlockSetPtr		defineBlockSet( const WgVertTile2& vertTile, const WgBorders& borders, const WgBorders& contentBorders, 
+										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
 
 protected:

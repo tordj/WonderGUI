@@ -114,6 +114,9 @@ public:
 
 //	-----------
 
+	inline void			SetTextBaseColors( const WgColorSetPtr& pColors ) { m_pText->SetBaseColors(pColors); }
+	inline WgColorSetPtr TextBaseColors() const { return m_pText->BaseColors(); }
+
 
 //	inline void			SetSelectionColor( WgColor color )							{ m_pText->setSelectionBgColor(color); }
 //	inline WgColor		GetSelectionColor() const									{ return m_pText->getSelectionBgColor(); }

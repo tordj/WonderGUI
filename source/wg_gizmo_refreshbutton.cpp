@@ -256,7 +256,7 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 	}
 	else if( m_pBgGfx )
 	{
-		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode), _canvas );
+		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode,_canvas.size()), _canvas );
 	}
 
 	// Get displacement offset
@@ -289,7 +289,7 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 		int dy = (int)( m_iconOrigo.anchorY() * _canvas.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
 
 		WgRect dest( _canvas.x + dx, _canvas.y + dy, w, h );
-		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode), dest );
+		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode,dest), dest );
 	}
 
 	// Print text (with displacement).
@@ -307,7 +307,10 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 
 		WgRect printWindow( _canvas.x + xOfs, _canvas.y + yOfs, _canvas.w, _canvas.h );
 		if( m_pBgGfx )
+		{
 			printWindow.shrink( m_pBgGfx->GetContentBorders() );
+			pText->SetBgBlockColors( m_pBgGfx->GetTextColors() );
+		}
 		pDevice->PrintText( _clip, pText, printWindow );
 	}
 }

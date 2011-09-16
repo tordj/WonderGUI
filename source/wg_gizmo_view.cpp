@@ -1003,7 +1003,7 @@ bool WgGizmoView::_onAlphaTest( const WgCord& ofs )
 	{
 		WgMode mode = m_bEnabled?WG_MODE_NORMAL:WG_MODE_DISABLED;
 
-		if( WgUtil::MarkTestBlock( ofs, m_pFillerBlocks->GetBlock(mode), m_geoFiller ) )
+		if( WgUtil::MarkTestBlock( ofs, m_pFillerBlocks->GetBlock(mode, m_geoFiller), m_geoFiller ) )
 			return true;
 	}
 

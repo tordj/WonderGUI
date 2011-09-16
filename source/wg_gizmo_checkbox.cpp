@@ -44,29 +44,20 @@ WgGizmoCheckbox::WgGizmoCheckbox()
 	m_pText				= &m_text;
 	m_text.setHolder( this );
 
-	m_textMouseOverOfsX = 0xFFFF;
-	m_pTextArea			= 0;
-	m_textAreaCount		= 0;
-
-	m_bFixedSizeBox		= false;
-
-
 	m_iconAreaBorders	= WgBorders(0);
 	m_iconScale			= 0.f;
 	m_bIconPushText		= true;
 
-	m_bOpaqueText		= true;
-
 	m_aDisplace[0].x	= m_aDisplace[0].y = 0;
 	m_aDisplace[1]		= m_aDisplace[2] = m_aDisplace[0];
+
+	m_clickArea			= DEFAULT;
 }
 
 //____ Destructor _____________________________________________________________
 
 WgGizmoCheckbox::~WgGizmoCheckbox()
 {
-	if( m_pTextArea )
-		delete [] m_pTextArea;
 }
 
 
@@ -85,12 +76,11 @@ const char * WgGizmoCheckbox::GetMyType( void )
 
 //____ SetSource() ____________________________________________________________
 
-bool WgGizmoCheckbox::SetSource( const WgBlockSetPtr& _pUnchecked, const WgBlockSetPtr& _pChecked, bool bFixedSizeBox )
+bool WgGizmoCheckbox::SetSource( const WgBlockSetPtr& _pUnchecked, const WgBlockSetPtr& _pChecked )
 {
 	m_pBlockUnchecked	= _pUnchecked;
 	m_pBlockChecked		= _pChecked;
-	m_bFixedSizeBox		= bFixedSizeBox;
-
+	
 	_onRefresh();
 	return true;
 }
@@ -109,24 +99,6 @@ void WgGizmoCheckbox::SetIcon( const WgBlockSetPtr& _pUnchecked, const WgBlockSe
 	m_iconAreaBorders	= _areaBorders;
 
 	_onRefresh();
-}
-
-
-//____ SetFixedSize() _________________________________________________________
-
-bool WgGizmoCheckbox::SetFixedSize(bool bFixedSizeBox)
-{
-	m_bFixedSizeBox = bFixedSizeBox;
-
-	RequestRender();
-	return true;
-}
-
-//____ GetLineWidth() _________________________________________________________
-
-int WgGizmoCheckbox::GetLineWidth() const
-{
-	return m_text.getLineWidth();
 }
 
 //____ SetDisplacement() ______________________________________________________
@@ -158,16 +130,6 @@ void WgGizmoCheckbox::GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sin
 	yDown = m_aDisplace[2].y;
 }
 
-//_________________________________________________________________________
-void WgGizmoCheckbox::SetTextAreaOpaque( bool bOpaque )
-{
-	if( m_bOpaqueText != bOpaque )
-	{
-		m_bOpaqueText = bOpaque;
-		RefreshTextArea();
-	}
-}
-
 //____ SetState() _____________________________________________________________
 
 bool WgGizmoCheckbox::SetState( bool _state )
@@ -188,13 +150,6 @@ bool WgGizmoCheckbox::SetState( bool _state )
 	return true;
 }
 
-
-//____ SetTextMouseOverOfsX() _________________________________________________
-void WgGizmoCheckbox::SetTextMouseOverOfsX( Uint16 ofs )
-{
-	m_textMouseOverOfsX = ofs;
-	RefreshTextArea();
-}
 
 //____ _onEnable() _________________________________________________
 void WgGizmoCheckbox::_onEnable()
@@ -356,12 +311,16 @@ WgRect WgGizmoCheckbox::GetContentRect( const WgSize& gizmoSize, const WgRect& i
 
 		if( spaceLeftOfIcon > spaceRightOfIcon )
 		{
+			if( contentX2 > iconX1 )
 			rect.w = contentX1 - iconX1;
 		}
 		else
 		{
-			rect.x = iconX2;
-			rect.w = contentX2 - iconX2;
+			if( contentX1 < iconX2 )
+			{
+				rect.x = iconX2;
+				rect.w = contentX2 - iconX2;
+			}
 		}
 	}
 
@@ -404,12 +363,7 @@ void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	// Blit background
 
 	if( pBlockSet )
-	{
-		if( m_bFixedSizeBox )
-			pDevice->ClipBlitBlock( _clip, pBlockSet->GetBlock(mode), WgRect(_canvas.x, _canvas.y, pBlockSet->GetWidth(), pBlockSet->GetHeight()) );
-		else
-			pDevice->ClipBlitBlock( _clip, pBlockSet->GetBlock(mode), _canvas );
-	}
+		pDevice->ClipBlitBlock( _clip, pBlockSet->GetBlock(mode,_canvas.size()), _canvas );
 
 	// Blit icon
 
@@ -421,13 +375,16 @@ void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 		iconBlitRect.shrink( m_iconAreaBorders );
 		iconBlitRect.x += _canvas.x;
 		iconBlitRect.y += _canvas.y;
-		pDevice->ClipBlitBlock( _clip, pIcon->GetBlock(mode), iconBlitRect );
+		pDevice->ClipBlitBlock( _clip, pIcon->GetBlock(mode,iconBlitRect.size()), iconBlitRect );
 	}
 
 	// Print content
 
  	if( m_text.nbLines()!= 0 )
 	{
+		if( pBlockSet )
+			m_text.SetBgBlockColors(pBlockSet->GetTextColors());
+
 		int	iDisplacement = 0;
 		if( (m_bPressed && m_bOver) || m_bChecked )
             iDisplacement = 2;
@@ -460,7 +417,6 @@ void WgGizmoCheckbox::_onRefresh( void )
 		m_bOpaque = false;
 
 	RequestRender();
-	RefreshTextArea();
 }
 
 //____ _onNewSize() _______________________________________________________
@@ -468,7 +424,6 @@ void WgGizmoCheckbox::_onRefresh( void )
 void WgGizmoCheckbox::_onNewSize( const WgSize& size )
 {
 	m_text.setLineWidth( GetTextAreaWidth() );
-	RefreshTextArea();
 }
 
 
@@ -484,7 +439,6 @@ void WgGizmoCheckbox::_onCloneContent( const WgGizmo * _pOrg )
 
 	m_pBlockUnchecked	= pOrg->m_pBlockUnchecked;
 	m_pBlockChecked		= pOrg->m_pBlockChecked;
-	m_bFixedSizeBox		= pOrg->m_bFixedSizeBox;
 
 	m_pIconUnchecked	= pOrg->m_pIconUnchecked;
 	m_pIconChecked		= pOrg->m_pIconChecked;
@@ -494,9 +448,7 @@ void WgGizmoCheckbox::_onCloneContent( const WgGizmo * _pOrg )
 	m_bIconPushText		= pOrg->m_bIconPushText;
 
 	m_text				= pOrg->m_text;
-
-	m_textMouseOverOfsX = pOrg->m_textMouseOverOfsX;
-
+	m_clickArea			= pOrg->m_clickArea;
 
 	for( int i = 0 ; i < 3 ; i++ )
 	{
@@ -510,82 +462,18 @@ void WgGizmoCheckbox::_onCloneContent( const WgGizmo * _pOrg )
 
 void WgGizmoCheckbox::TextModified()
 {
-	RefreshTextArea();
 	RequestRender();
 }
 
-
-//____ RefreshTextArea() ______________________________________________________
-
-void WgGizmoCheckbox::RefreshTextArea()
-{
-	if( m_pTextArea )
-	{
-		delete [] m_pTextArea;
-		m_pTextArea = 0;
-	}
-	m_textAreaCount = 0;
-
-	if( !m_bOpaqueText )
-		return;
-
-	WgRect	contentRect = GetContentRect( Size(), GetIconRect( Size() ) );
-
-
-
-	// calculate mark testing area for the text
-
-	WgTextPropPtr	pProp = m_text.getProperties();
-
-	const WgFont * pFontSet = pProp->GetFont();
-	if( !pFontSet )
-		return;
-	const WgOrigo& origo	= m_pText->alignment();
-
-	int textheight = m_pText->height();
-
-	int yPos = (int) (Size().h * origo.anchorY()
-							- textheight * origo.hotspotY());
-
-	Uint32				nLines = m_pText->nbLines();
-
-	m_textAreaCount = nLines;
-	m_pTextArea = new WgRect[ m_textAreaCount ];
-
-	int	textOfs = contentRect.x;
-
-	for( int i = 0 ; i < (int) nLines ; i++ )
-	{
-		// if text mouse over x offset is specified, text mark area starts there, otherwise at the regular text offset
-		int xMin = textOfs;
-		if( m_textMouseOverOfsX != 0xFFFF )
-			xMin = m_textMouseOverOfsX;
-
-		int linewidth = m_pText->getLineWidth(i);
-		int lineheight = m_pText->softLineSpacing(i);
-		int textStartX = (int) (textOfs + Size().w * origo.anchorX()
-								- linewidth * origo.hotspotX());
-
-		int xMax = textStartX + linewidth;
-
-		m_pTextArea[ i ] = WgRect( xMin, yPos, xMax - xMin, lineheight );
-
-		yPos += lineheight;
-	}
-}
 
 //____ MarkTestTextArea() ______________________________________________________
 
 bool WgGizmoCheckbox::MarkTestTextArea( int _x, int _y )
 {
-//	if( m_textAreaCount != m_pText->nbLines() )
-//		RefreshTextArea();
+	WgRect	contentRect = GetContentRect( Size(), GetIconRect( Size() ) );
 
-	for( int i = 0; i < m_textAreaCount; ++i )
-	{
-		if( m_pTextArea[i].contains(_x,_y) )
-			return true;
-	}
+	if( m_text.CoordToOfs( WgCord(_x,_y), contentRect ) != -1 )
+		return true;
 
 	return false;
 }
@@ -594,11 +482,6 @@ bool WgGizmoCheckbox::MarkTestTextArea( int _x, int _y )
 
 bool WgGizmoCheckbox::_onAlphaTest( const WgCord& ofs )
 {
-	// mark test text area
-	if( MarkTestTextArea( ofs.x, ofs.y ) )
-		return true;
-
-
 	WgMode mode = WG_MODE_NORMAL;
 
 	if( !m_bEnabled )
@@ -613,43 +496,92 @@ bool WgGizmoCheckbox::_onAlphaTest( const WgCord& ofs )
 	WgBlock bgBlock;
 	WgBlock iconBlock;
 
+	WgSize	bgSize		= Size();
+	WgRect	iconRect	= GetIconRect( bgSize );
+
+	iconRect.shrink( m_iconAreaBorders );
+
+
 	if( m_bChecked )
 	{
 		if( m_pBlockChecked )
-			bgBlock = m_pBlockChecked->GetBlock(mode);
+			bgBlock = m_pBlockChecked->GetBlock(mode,bgSize);
 
 		if( m_pIconChecked )
-			iconBlock = m_pIconChecked->GetBlock(mode);
+			iconBlock = m_pIconChecked->GetBlock(mode,iconRect);
 	}
 	else
 	{
 		if( m_pBlockUnchecked )
-			bgBlock = m_pBlockUnchecked->GetBlock(mode);
+			bgBlock = m_pBlockUnchecked->GetBlock(mode,bgSize);
 
 		if( m_pIconUnchecked )
-			iconBlock = m_pIconUnchecked->GetBlock(mode);
+			iconBlock = m_pIconUnchecked->GetBlock(mode,iconRect);
 	}
 
-	WgRect bgRect;
-	WgSize sz = Size();
 
-	if( bgBlock.IsValid() )
+	switch( m_clickArea )
 	{
-		if( m_bFixedSizeBox )
-			bgRect = WgRect(0,0,bgBlock.GetWidth(), bgBlock.GetHeight() );
-		else
-			bgRect = WgRect(0,0, sz.w, sz.h);
+		case DEFAULT:		// Full geometry of icon (no alpha test) + text + area between + alpha test on background.
+		{
+			// Extend iconRect so it connects with textArea before we compare
 
-		if( WgUtil::MarkTestBlock( ofs, bgBlock, bgRect ) )
+			WgRect	contentRect = GetContentRect( bgSize, GetIconRect( bgSize ) );	// This call needs IconRect with borders...
+
+			if( iconRect.x + iconRect.w < contentRect.x )
+				iconRect.w = contentRect.x - iconRect.x;
+
+			if( iconRect.x > contentRect.right() )
+			{
+				iconRect.w += iconRect.x - contentRect.right();
+				iconRect.x = contentRect.right();
+			}
+
+			if( iconRect.y + iconRect.h < contentRect.y )
+				iconRect.h = contentRect.y - iconRect.y;
+
+			if( iconRect.y > contentRect.bottom() )
+			{
+				iconRect.h += iconRect.y - contentRect.bottom();
+				iconRect.y = contentRect.bottom();
+			}
+
+			//
+
+			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize) )) ||
+				MarkTestTextArea( ofs.x, ofs.y ) ||
+				iconRect.contains( ofs.x, ofs.y ) )
+				return true;
+
+			return false;
+		}
+		case ALPHA:			// Alpha test on background and icon.
+		{
+			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize) )) ||
+				(iconBlock.IsValid() && WgUtil::MarkTestBlock( ofs, iconBlock, iconRect )) )
+				return true;
+
+			return false;
+		}
+		case GEO:			// Full geometry of Gizmo is clickable.
 			return true;
-	}
+		case ICON:			// Only the icon (alpha test) is clickable.
+		{
+			if( iconBlock.IsValid() && WgUtil::MarkTestBlock( ofs, iconBlock, iconRect ) )
+				return true;
 
-	if( iconBlock.IsValid() )
-	{
-		WgRect iconRect = GetIconRect( sz );
-		if( WgUtil::MarkTestBlock( ofs, iconBlock, iconRect ) )
-			return true;
-	}
+			return false;
+		}
+		case TEXT:			// Only the text is clickable.
+		{
+			if( MarkTestTextArea( ofs.x, ofs.y ) )
+				return true;
 
-	return false;
+			return false;
+		}
+
+		default:
+			assert(false);			// Garbage in m_clickArea
+			return false;
+	};
 }

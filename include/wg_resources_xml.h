@@ -97,6 +97,7 @@ public:
 
 	std::string GetAttribute(const std::string& name) const;
 	bool		SetAttribute(const std::string& name, const std::string& value);
+	bool		HasAttribute(const std::string& name) const;
 
 	WgXmlNode xmlNode;
 };

@@ -481,6 +481,9 @@ class	WgWidget
 private:
 		void 		Init();						// Common stuff for all Constructors.
 
+		bool		_setParent( WgWidget * _pNewParent, WgWidget * _pBelow, bool bEmit );
+
+
 		void		removeFromInputRecursively( WgInput * pInput );
 
 		WgInput*	GetInputObj();

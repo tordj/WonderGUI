@@ -80,6 +80,7 @@ public:
 
 		virtual std::string GetAttribute(const std::string& name) const = 0;
 		virtual bool		SetAttribute(const std::string& name, const std::string& value) = 0;
+		virtual bool		HasAttribute(const std::string& name) const = 0;
 	};
 
 	struct Resource : public WgLink
