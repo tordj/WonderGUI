@@ -452,7 +452,7 @@ public:
 class WgColorRes : public WgResourceXML
 {
 public:
-	WgColorRes(WgResourceXML* parent, WgColor col = WgColor::White()) : WgResourceXML(parent), m_color(col) { }
+	WgColorRes(WgResourceXML* parent, WgColor col = WgColor::white) : WgResourceXML(parent), m_color(col) { }
 	//WgColorRes(WgResourceXML* parent, const WgXmlAttribute& attr, WgColor col = WgColor::White()) : WgResourceXML(parent), m_color(col) { Deserialize(attr); }
 
 	WgColor GetColor() const	{ return m_color; }

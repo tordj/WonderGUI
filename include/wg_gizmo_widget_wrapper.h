@@ -138,7 +138,6 @@ public:
 	bool		DeleteAllGizmos() { return false; }
 	bool		ReleaseAllGizmos() { return false; }
 
-
 	WgGizmoHook *	FirstHook() const
 	{
 		if( m_pWidget->m_pParent )
@@ -169,16 +168,12 @@ public:
 			return m_pWidget->GetHook();	// Discards const, is ok in this case...
 	}
 
-	WgGizmo * _castToGizmo()
-	{
-		return 0;
-	}
-
-
 	WgGizmo * FindGizmo( const WgCord& pos, WgSearchMode mode )
 	{
 		return 0;
 	};
+
+	WgGizmo *	CastToGizmo() { return m_pWidget->GetGizmo(); }
 
 
 

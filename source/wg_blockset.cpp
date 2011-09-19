@@ -296,7 +296,7 @@ bool WgBlockSet::SetSize( WgSize size, int alt )
 WgColor WgBlockSet::GetTextColor( WgMode mode ) const
 {
 	if( !m_pTextColors )
-		return WgColor::None();
+		return WgColor::transparent;
 
 	return m_pTextColors->Color(mode);
 }
