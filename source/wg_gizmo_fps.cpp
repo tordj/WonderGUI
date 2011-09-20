@@ -136,7 +136,7 @@ void WgGizmoFps::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 	WgTextTool::AddPropAttributes(attr, m_pProp);
 
 	pen.SetAttributes( attr );
-	pen.SetPos( WgCord(_canvas.x, _canvas.y + pen.GetBaseline()) );
+	pen.SetPos( WgCoord(_canvas.x, _canvas.y + pen.GetBaseline()) );
 
 	int height = pen.GetLineSpacing();
 

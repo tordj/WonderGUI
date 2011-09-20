@@ -48,7 +48,7 @@ namespace WgEvent
 
 	//____ PointerEnter _______________________________________________________
 
-	PointerEnter::PointerEnter( const WgCord& pos )
+	PointerEnter::PointerEnter( const WgCoord& pos )
 	{
 		m_type = WG_EVENT_POINTER_ENTER;
 
@@ -79,7 +79,7 @@ namespace WgEvent
 
 	//____ PointerMove __________________________________________________________
 
-	PointerMove::PointerMove( const WgCord& pos )
+	PointerMove::PointerMove( const WgCoord& pos )
 	{
 		m_type = WG_EVENT_POINTER_MOVE;
 
@@ -319,7 +319,7 @@ namespace WgEvent
 
 	//____ ButtonDrag _________________________________________________________
 
-	ButtonDrag::ButtonDrag( int button, const WgCord& startPos, const WgCord& prevPos, const WgCord& currPos ) : ButtonEvent(button)
+	ButtonDrag::ButtonDrag( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : ButtonEvent(button)
 	{
 
 		m_type = WG_EVENT_BUTTON_DRAG;
@@ -329,7 +329,7 @@ namespace WgEvent
 		m_currPos = currPos;
 	}
 
-	ButtonDrag::ButtonDrag( int button, WgGizmo * pGizmo, const WgCord& startPos, const WgCord& prevPos, const WgCord& currPos ) : ButtonEvent(button)
+	ButtonDrag::ButtonDrag( int button, WgGizmo * pGizmo, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : ButtonEvent(button)
 	{
 		m_type = WG_EVENT_BUTTON_DRAG;
 		m_bIsForGizmo		= true;
@@ -340,27 +340,27 @@ namespace WgEvent
 		m_currPos = currPos;
 	}
 
-	WgCord ButtonDrag::DraggedTotal() const
+	WgCoord ButtonDrag::DraggedTotal() const
 	{
 		return m_currPos - m_startPos;
 	}
 
-	WgCord ButtonDrag::DraggedNow() const
+	WgCoord ButtonDrag::DraggedNow() const
 	{
 		return m_currPos - m_prevPos;
 	}
 
-	WgCord ButtonDrag::CurrPos() const
+	WgCoord ButtonDrag::CurrPos() const
 	{
 		return m_currPos;
 	}
 
-	WgCord ButtonDrag::StartPos() const
+	WgCoord ButtonDrag::StartPos() const
 	{
 		return m_startPos;
 	}
 
-	WgCord ButtonDrag::PrevPos() const
+	WgCoord ButtonDrag::PrevPos() const
 	{
 		return m_prevPos;
 	}

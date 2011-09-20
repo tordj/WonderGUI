@@ -50,7 +50,7 @@ WgGizmoDragbar::WgGizmoDragbar()
 	m_headerLen			= 0;
 	m_footerLen			= 0;
 
-	m_lastCursorDownPos = WgCord(-4096, -4096);
+	m_lastCursorDownPos = WgCoord(-4096, -4096);
 
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS; i++ )
 		m_mode[i] = WG_MODE_NORMAL;
@@ -499,7 +499,7 @@ void WgGizmoDragbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoDragbar::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoDragbar::_onAlphaTest( const WgCoord& ofs )
 {
 	if( FindMarkedComponent( ofs ) == C_NONE )
 		return false;
@@ -509,7 +509,7 @@ bool WgGizmoDragbar::_onAlphaTest( const WgCord& ofs )
 
 //____ MarkTestButton() _______________________________________________________
 
-bool WgGizmoDragbar::MarkTestButton( WgCord ofs, WgRect& _dest, const WgBlock& _block )
+bool WgGizmoDragbar::MarkTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block )
 {
 		if( m_bHorizontal )
 			_dest.w = _block.GetWidth();
@@ -528,7 +528,7 @@ bool WgGizmoDragbar::MarkTestButton( WgCord ofs, WgRect& _dest, const WgBlock& _
 
 //____ FindMarkedComponent() __________________________________________________
 
-WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( WgCord ofs )
+WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( WgCoord ofs )
 {
 	// First of all, do a mark test against the header buttons...
 
@@ -611,7 +611,7 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 	int		barPos, barLen;
 	ViewToPosLen( &barPos, &barLen );
 
-	WgCord pos = Abs2local( WgCord(info.x, info.y) );
+	WgCoord pos = Abs2local( WgCoord(info.x, info.y) );
 	int		x = pos.x;
 	int		y = pos.y;
 
@@ -756,7 +756,7 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 				// Don't update the scroll position unless the cursor was moved
 				// This prevents views from scrolling if content is added while the dragbar is pressed
 				// Martin
-				WgCord cursorPos = WgCord(info.x, info.y);
+				WgCoord cursorPos = WgCoord(info.x, info.y);
 				if(cursorPos != m_lastCursorDownPos)
 				{
 					m_lastCursorDownPos = cursorPos;
@@ -785,7 +785,7 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 
 //____ MarkTestSlider() _______________________________________________________
 
-bool WgGizmoDragbar::MarkTestSlider( WgCord ofs )
+bool WgGizmoDragbar::MarkTestSlider( WgCoord ofs )
 {
 	if( !m_pBarGfx )
 		return false;

@@ -1314,7 +1314,7 @@ void WgEventHandler::_processButtonPress( WgEvent::ButtonPress * pEvent )
 
 	if( m_pLatestPressEvents[button] && m_pLatestPressEvents[button]->Timestamp() + m_doubleClickTimeTreshold > pEvent->Timestamp() )
 	{
-		WgCord distance = pEvent->PointerPos() - m_pLatestPressEvents[button]->PointerPos();
+		WgCoord distance = pEvent->PointerPos() - m_pLatestPressEvents[button]->PointerPos();
 
 		if( distance.x <= m_doubleClickDistanceTreshold &&
 			distance.x >= -m_doubleClickDistanceTreshold &&
@@ -1441,7 +1441,7 @@ void WgEventHandler::_processButtonDrag( WgEvent::ButtonDrag * pEvent )
 
 		if( pGizmo )
 		{
-			WgCord	ofs = pGizmo->ScreenPos();
+			WgCoord	ofs = pGizmo->ScreenPos();
 			QueueEvent( new WgEvent::ButtonDrag( button, pGizmo, pEvent->StartPos() - ofs, pEvent->PrevPos() - ofs, pEvent->CurrPos() - ofs ) );
 		}
 	}

@@ -266,7 +266,7 @@ public:
 	WgSize				GetActivationSize( int alt ) const;
 
 	bool				SetSize( WgSize size, int alt = 0 );
-	bool				SetPos( WgMode mode, WgCord pos, int alt = 0 );
+	bool				SetPos( WgMode mode, WgCoord pos, int alt = 0 );
 
 	inline WgColorSetPtr	GetTextColors() const { return m_pTextColors; }
 	WgColor				GetTextColor( WgMode mode ) const;

@@ -21,9 +21,9 @@ namespace WgUtil
 {
 	bool		AdjustScaledArea(const WgBlock& block, WgRect& area);
 
-	bool		MarkTestBlock( WgCord ofs, const WgBlock& block, WgRect area );
+	bool		MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area );
 
-	WgCord 		LocationToOfs( WgLocation location, WgSize base );
+	WgCoord 		LocationToOfs( WgLocation location, WgSize base );
 
 	template <class T> inline T Max (T a, T b) {return (a>b?a:b); }
 	template <class T> inline T Min (T a, T b) {return (a<b?a:b); }

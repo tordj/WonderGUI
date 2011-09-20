@@ -254,7 +254,7 @@ void WgGizmoEditline::_onAction( WgInput::UserAction action, int button_key, con
 				m_pText->setSelectionMode(true);
 			}
 
-			WgCord ofs = Abs2local(WgCord(info.x,0));
+			WgCoord ofs = Abs2local(WgCoord(info.x,0));
 
 			int x = ofs.x;
 			int y = ofs.y;
@@ -284,7 +284,7 @@ void WgGizmoEditline::_onAction( WgInput::UserAction action, int button_key, con
 			}
 			else
 			{
-				m_pText->CursorGotoCoord( WgCord(x, 0), WgRect(0,0,1000000,1000000) );
+				m_pText->CursorGotoCoord( WgCoord(x, 0), WgRect(0,0,1000000,1000000) );
 			}
 
 			if(IsSelectable() && action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))

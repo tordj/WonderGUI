@@ -1710,7 +1710,7 @@ void WgText::refreshLineInfo( WgTextLine * pLine )
 
 //____ CursorGotoCoord() ________________________________________________________
 
-void WgText::CursorGotoCoord( const WgCord& coord, const WgRect& container )
+void WgText::CursorGotoCoord( const WgCoord& coord, const WgRect& container )
 {
 	if( !m_pCursor )
 		return;
@@ -1798,7 +1798,7 @@ int WgText::LineStartX( int line, const WgRect& container ) const
 
 //____ CoordToLine() __________________________________________________________
 
-int WgText::CoordToLine( const WgCord& coord, const WgRect& container, bool bCursorMode ) const
+int WgText::CoordToLine( const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
 {
 	int y = coord.y - LineStartY( 0, container );
 
@@ -1829,7 +1829,7 @@ int WgText::CoordToLine( const WgCord& coord, const WgRect& container, bool bCur
 
 //____ CoordToColumn() ___________________________________________________________
 
-int WgText::CoordToColumn( int line, const WgCord& coord, const WgRect& container, bool bCursorMode ) const
+int WgText::CoordToColumn( int line, const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
 {
 	//TODO: Take cursor and selection into account!!!
 
@@ -1887,7 +1887,7 @@ int WgText::CoordToColumn( int line, const WgCord& coord, const WgRect& containe
 
 //_____ CoordToPos() __________________________________________________________
 
-WgTextPos WgText::CoordToPos( const WgCord& coord, const WgRect& container, bool bCursorMode ) const
+WgTextPos WgText::CoordToPos( const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
 {
 	int line = CoordToLine( coord, container, bCursorMode );
 	if( line == -1 )
@@ -1902,7 +1902,7 @@ WgTextPos WgText::CoordToPos( const WgCord& coord, const WgRect& container, bool
 
 //____ CoordToOfs() ___________________________________________________________
 
-int WgText::CoordToOfs( const WgCord& coord, const WgRect& container, bool bCursorMode ) const
+int WgText::CoordToOfs( const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
 {
 	WgTextPos pos = CoordToPos( coord, container, bCursorMode );
 
@@ -1915,7 +1915,7 @@ int WgText::CoordToOfs( const WgCord& coord, const WgRect& container, bool bCurs
 
 //____ CoordToLink() __________________________________________________________
 
-WgTextLinkPtr WgText::CoordToLink( const WgCord& coord, const WgRect& container ) const
+WgTextLinkPtr WgText::CoordToLink( const WgCoord& coord, const WgRect& container ) const
 {
 	int ofs = CoordToOfs( coord, container );
 	if( ofs >= 0 )
@@ -1949,7 +1949,7 @@ int WgText::OfsToCoordX( int ofs, const WgRect& container ) const
 
 //____ OfsToCoord() ___________________________________________________________
 
-WgCord WgText::OfsToCoord( int ofs, const WgRect& container ) const
+WgCoord WgText::OfsToCoord( int ofs, const WgRect& container ) const
 {
 	return PosToCoord( OfsToPos(ofs), container );
 }
@@ -2020,9 +2020,9 @@ int WgText::PosToCoordY( const WgTextPos& pos, const WgRect& container ) const
 
 //____ PosToCoord() ___________________________________________________________
 
-WgCord WgText::PosToCoord( const WgTextPos& pos, const WgRect& container ) const
+WgCoord WgText::PosToCoord( const WgTextPos& pos, const WgRect& container ) const
 {
-	return WgCord( PosToCoordX(pos, container), PosToCoordY(pos, container) );
+	return WgCoord( PosToCoordX(pos, container), PosToCoordY(pos, container) );
 }
 
 //____ PosToOfs() _____________________________________________________________
@@ -2061,7 +2061,7 @@ int WgText::LineColToOffset(int line, int col) const
 
 //____ OnAction() _____________________________________________________________
 
-bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCord& pointerOfs )
+bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCoord& pointerOfs )
 {
 	bool bRefresh = false;
 	WgTextLinkHandler * pHandler;

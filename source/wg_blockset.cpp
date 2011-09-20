@@ -267,7 +267,7 @@ const WgBlockSet::Alt_Data* WgBlockSet::GetAlt( WgSize destSize ) const
 
 //____ SetPos() _______________________________________________________________
 
-bool WgBlockSet::SetPos( WgMode mode, WgCord pos, int alt )
+bool WgBlockSet::SetPos( WgMode mode, WgCoord pos, int alt )
 {
 	Alt_Data * p = GetAlt(alt);
 	if( !p )

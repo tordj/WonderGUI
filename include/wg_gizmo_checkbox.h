@@ -106,7 +106,7 @@ protected:
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
-	bool	_onAlphaTest( const WgCord& ofs );
+	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onEnable();
 	void	_onDisable();
 	
@@ -135,7 +135,7 @@ private:
 	WgBlockSetPtr	m_pBlockChecked;
 	WgText			m_text;
 
-	WgCord8			m_aDisplace[3];					// Text/icon displacement for unchecked, mouse over and checked.
+	WgCoord8			m_aDisplace[3];					// Text/icon displacement for unchecked, mouse over and checked.
 
 	ClickArea		m_clickArea;
 };

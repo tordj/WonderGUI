@@ -205,7 +205,7 @@ protected:
 	void	_onNewSize( const WgSize& size );
 	void	_onUpdate( const WgUpdateInfo& _updateInfo );
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool	_onAlphaTest( const WgCord& ofs );
+	bool	_onAlphaTest( const WgCoord& ofs );
 
 private:
 

@@ -111,7 +111,7 @@ void WgGizmoPixmap::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 //____ _onAlphaTest() ___________________________________________________________
 
-bool WgGizmoPixmap::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoPixmap::_onAlphaTest( const WgCoord& ofs )
 {
 	if( !m_pGfx )
 		return	false;												// No visible pixel, so don't accept the mark...

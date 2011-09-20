@@ -103,7 +103,7 @@ void WgGizmoFill::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 //____ _onAlphaTest() ___________________________________________________________
 
-bool WgGizmoFill::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoFill::_onAlphaTest( const WgCoord& ofs )
 {
 	if( (m_bEnabled && m_colEnabled.a == 0) || (!m_bEnabled && m_colDisabled.a == 0 ) )
 		return false;

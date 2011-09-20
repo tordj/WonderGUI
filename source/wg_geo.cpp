@@ -32,7 +32,7 @@ WgRect::WgRect( const WgRect& r1, const WgRect& r2 )
 	intersection( r1, r2 );
 }
 
-WgRect::WgRect( const WgCord32& p1, const WgCord32& p2 )
+WgRect::WgRect( const WgCoord& p1, const WgCoord& p2 )
 {
 	if( p1.x < p2.x )
 	{
@@ -173,7 +173,7 @@ void WgRect::growToContain( int _x, int _y )
 	}
 }
 
-void WgRect::growToContain( const WgCord& _coord )
+void WgRect::growToContain( const WgCoord& _coord )
 {
 	if( _coord.x < x )
 	{

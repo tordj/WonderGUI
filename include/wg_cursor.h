@@ -73,9 +73,9 @@ public:
 	};
 
 
-	bool				setMode( Mode m, WgGfxAnim * pAnim, WgCord bearing = WgCord(), int advance = 0, ScaleMode mode = FIXED_SIZE, float size_ratio = 1.f, WgBorders borders = WgBorders(0)  );
+	bool				setMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing = WgCoord(), int advance = 0, ScaleMode mode = FIXED_SIZE, float size_ratio = 1.f, WgBorders borders = WgBorders(0)  );
 
-	void				setBearing( Mode m, WgCord bearing );
+	void				setBearing( Mode m, WgCoord bearing );
 	void				setAdvance( Mode m, int advance );
 	void				setAnim( Mode m, WgGfxAnim * pAnim );
 
@@ -88,7 +88,7 @@ public:
 
 	int					bearingX( Mode m ) const { return m_bearing[m].x; };
 	int					bearingY( Mode m ) const { return m_bearing[m].y; };
-	WgCord				bearing( Mode m ) const { return m_bearing[m]; }
+	WgCoord				bearing( Mode m ) const { return m_bearing[m]; }
 	int					advance( Mode m ) const { return m_advance[m]; };
 	int					width( Mode m ) const { return m_pAnim[m]->width(); }
 	WgGfxAnim * 		anim( Mode m ) const { return m_pAnim[m]; };
@@ -102,7 +102,7 @@ private:
 	enum { N_MODES = 3 };
 
 	WgGfxAnim *			m_pAnim[N_MODES];
-	WgCord				m_bearing[N_MODES];
+	WgCoord				m_bearing[N_MODES];
 	int					m_advance[N_MODES];
 
 	ScaleMode			m_scaleMode[N_MODES];

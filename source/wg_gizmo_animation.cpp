@@ -346,7 +346,7 @@ void WgGizmoAnimation::_onCloneContent( const WgGizmo * _pOrg )
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoAnimation::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoAnimation::_onAlphaTest( const WgCoord& ofs )
 {
 	if( m_bEnabled && m_pSurf )
 	{

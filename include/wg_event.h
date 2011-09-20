@@ -59,8 +59,8 @@ namespace WgEvent
 			inline WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
 			inline bool				IsForGizmo() const { return m_bIsForGizmo; }
 			inline WgModifierKeys	ModKeys() const { return m_modKeys; }
-			inline WgCord			PointerPos() const { return m_pointerLocalPos; }
-			inline WgCord			PointerScreenPos() const { return m_pointerScreenPos; }
+			inline WgCoord			PointerPos() const { return m_pointerLocalPos; }
+			inline WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
 
 		protected:
 			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false) {}
@@ -71,8 +71,8 @@ namespace WgEvent
 			int64_t			m_timestamp;		// Timestamp of posting this event
 			bool			m_bIsForGizmo;		// Set if this event is for a specific Gizmo (m_pGizmo set at creation, even if weak pointer now is null).
 			WgGizmoWeakPtr	m_pGizmo;			// Gizmo to receive this event.
-			WgCord			m_pointerLocalPos;	// Gizmo-relative position of pointer. Same as m_pointerScreenPos if Gizmo not set.
-			WgCord			m_pointerScreenPos;	// Screen position of pointer.
+			WgCoord			m_pointerLocalPos;	// Gizmo-relative position of pointer. Same as m_pointerScreenPos if Gizmo not set.
+			WgCoord			m_pointerScreenPos;	// Screen position of pointer.
 	};
 
 	class ButtonEvent : public Event
@@ -117,7 +117,7 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	public:
-		PointerEnter( const WgCord& pos );
+		PointerEnter( const WgCoord& pos );
 	protected:
 		PointerEnter( WgGizmo * pGizmo );
 	};
@@ -138,7 +138,7 @@ namespace WgEvent
 	protected:
 		PointerMove( WgGizmo * pGizmo );
 	public:
-		PointerMove( const WgCord& pos );
+		PointerMove( const WgCoord& pos );
 	};
 
 	class ButtonPress : public ButtonEvent
@@ -236,18 +236,18 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
-		ButtonDrag( int button, const WgCord& startPos, const WgCord& prevPos, const WgCord& currPos );
-		ButtonDrag( int button, WgGizmo * pGizmo, const WgCord& orgPos, const WgCord& prevPos, const WgCord& currPos );
+		ButtonDrag( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos );
+		ButtonDrag( int button, WgGizmo * pGizmo, const WgCoord& orgPos, const WgCoord& prevPos, const WgCoord& currPos );
 	public:
-		WgCord			DraggedTotal() const;
-		WgCord			DraggedNow() const;
-		WgCord			StartPos() const;
-		WgCord			PrevPos() const;
-		WgCord			CurrPos() const;
+		WgCoord			DraggedTotal() const;
+		WgCoord			DraggedNow() const;
+		WgCoord			StartPos() const;
+		WgCoord			PrevPos() const;
+		WgCoord			CurrPos() const;
 	protected:
-		WgCord			m_startPos;
-		WgCord			m_prevPos;
-		WgCord			m_currPos;
+		WgCoord			m_startPos;
+		WgCoord			m_prevPos;
+		WgCoord			m_currPos;
 	};
 
 	class ButtonRepeat : public ButtonEvent

@@ -42,7 +42,7 @@ public:
 	bool	GetAutoScrollMarked()							{ return m_bAutoScrollMarked; }
 
 	void	ScrollIntoView( WgItem* pItem );
-	bool	GetItemPixelPos( WgItem * pItem, WgCord& pos );
+	bool	GetItemPixelPos( WgItem * pItem, WgCoord& pos );
 
 	WgItem*		GetFirstSelectedItem() { return 0; }
 

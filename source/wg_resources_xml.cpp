@@ -2069,7 +2069,7 @@ void WgCursorRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 	m_pCursor = new WgCursor();
 	std::string anim;
 
-	WgCord	bearing;
+	WgCoord	bearing;
 	int		spacing;
 	std::string scaleMode;
 
@@ -2510,7 +2510,7 @@ void WgBlockRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& 
 	m_x = WgUtil::ToSint32(xmlNode["x"]);
 	m_y = WgUtil::ToSint32(xmlNode["y"]);
 
-	blockSetRes->GetBlockSet()->SetPos(m_mode, WgCord(m_x, m_y) );
+	blockSetRes->GetBlockSet()->SetPos(m_mode, WgCoord(m_x, m_y) );
 }
 
 

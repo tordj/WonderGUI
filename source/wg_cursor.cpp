@@ -71,7 +71,7 @@ void WgCursor::setSizeRatio( Mode m, float ratio )
 
 //____ setMode() ______________________________________________________________
 
-bool WgCursor::setMode( Mode m, WgGfxAnim * pAnim, WgCord bearing, int advance, ScaleMode mode, float size_ratio, WgBorders borders )
+bool WgCursor::setMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing, int advance, ScaleMode mode, float size_ratio, WgBorders borders )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return false;
@@ -88,7 +88,7 @@ bool WgCursor::setMode( Mode m, WgGfxAnim * pAnim, WgCord bearing, int advance, 
 
 //____ setBearing() ___________________________________________________________
 
-void WgCursor::setBearing( Mode m, WgCord bearing )
+void WgCursor::setBearing( Mode m, WgCoord bearing )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;

@@ -632,8 +632,8 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 	Uint32	xPosIcon = window.x + contentBorders.left;
 	Uint32	textFieldLen = window.w - contentBorders.width() - m_iconFieldWidth - m_arrowFieldWidth;
 
-	WgPen	entryPen( WgGfx::GetDevice(), WgCord( xPosText, yPos ), clip );
-	WgPen	accelPen( WgGfx::GetDevice(), WgCord( xPosText, yPos ), clip );
+	WgPen	entryPen( WgGfx::GetDevice(), WgCoord( xPosText, yPos ), clip );
+	WgPen	accelPen( WgGfx::GetDevice(), WgCoord( xPosText, yPos ), clip );
 
 
 	unsigned int	item = 1;
@@ -692,7 +692,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 					WgTextTool::AddPropAttributes( attr, m_pEntryProp, mode );
 					entryPen.SetAttributes( attr );
 					int y = yPos + (m_entryHeight - entryPen.GetLineHeight())/2 + entryPen.GetBaseline();
-					entryPen.SetPos( WgCord( xPosText, y ) );
+					entryPen.SetPos( WgCoord( xPosText, y ) );
 					WgGfx::printLine( entryPen, attr, pText );
 				}
 
@@ -710,7 +710,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 					int width = WgTextTool::lineWidth( 0, attr, mode, pAccelText );
 					int x = xPosText + textFieldLen - width;
 
-					accelPen.SetPos( WgCord(x, y) );
+					accelPen.SetPos( WgCoord(x, y) );
 					WgGfx::printLine( accelPen, attr, pAccelText );
 				}
 

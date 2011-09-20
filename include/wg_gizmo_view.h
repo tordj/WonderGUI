@@ -41,10 +41,10 @@ class WgViewHook : public WgGizmoHook
 	friend class WgGizmoView;
 public:
 
-	WgCord	Pos() const;
+	WgCoord	Pos() const;
 	WgSize	Size() const;
 	WgRect	Geo() const;
-	WgCord	ScreenPos() const;
+	WgCoord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
 	inline WgGizmoHook * Prev() const { return _prevHook(); }
@@ -152,7 +152,7 @@ public:
 
 	inline Uint32	ViewPixelOfsX() { return m_viewPixOfs.x; };
 	inline Uint32	ViewPixelOfsY() { return m_viewPixOfs.y; };
-	inline WgCord		ViewPixelOfs() { return m_viewPixOfs; };
+	inline WgCoord		ViewPixelOfs() { return m_viewPixOfs; };
 
 	Uint32	ViewPixelLenX();
 	Uint32	ViewPixelLenY();
@@ -228,7 +228,7 @@ public:
 
 	// Overloaded from container
 
-	WgGizmo * FindGizmo( const WgCord& pos, WgSearchMode mode );
+	WgGizmo * FindGizmo( const WgCoord& pos, WgSearchMode mode );
 
 /*
 	NEED TO BE IMPLEMENTED!!!
@@ -262,7 +262,7 @@ protected:
 
 	void		OnNewViewSize( const WgSize& size ) {};
 	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool		_onAlphaTest( const WgCord& ofs );
+	bool		_onAlphaTest( const WgCoord& ofs );
 	void		_onCloneContent( const WgGizmo * _pOrg );
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
@@ -279,7 +279,7 @@ protected:
 	float		m_jumpSizeX;
 	float		m_jumpSizeY;
 
-	WgCord		m_viewPixOfs;
+	WgCoord		m_viewPixOfs;
 
 //	WgGizmoHDragbar *	m_pScrollbarX;
 //	WgGizmoVDragbar *	m_pScrollbarY;

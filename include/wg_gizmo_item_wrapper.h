@@ -68,8 +68,8 @@ protected:
 	bool		GizmoGrabFocus( WgGizmo * pGizmo ) { return WgItem::GrabInputFocus(); }
 	bool		GizmoReleaseFocus( WgGizmo * pGizmo ) { return WgItem::RemoveInputFocus(); }
 
-	WgCord		GizmoPos( const WgGizmo * pGizmo ) const { return WgCord(0,0); }
-	WgCord		GizmoScreenPos( const WgGizmo * pGizmo ) const { return WgCord(0,0); }
+	WgCoord		GizmoPos( const WgGizmo * pGizmo ) const { return WgCoord(0,0); }
+	WgCoord		GizmoScreenPos( const WgGizmo * pGizmo ) const { return WgCoord(0,0); }
 
 	WgSize GizmoSize( const WgGizmo * pGizmo ) const 
 	{ 
@@ -147,7 +147,7 @@ protected:
 
 	WgItem*	GetMarkedItem( Uint32 _x, Uint32 _y )
 	{
-		if( T::_onAlphaTest( WgCord( _x, _y ) ) )
+		if( T::_onAlphaTest( WgCoord( _x, _y ) ) )
 			return this;
 			 
 		return 0;

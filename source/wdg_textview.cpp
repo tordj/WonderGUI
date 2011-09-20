@@ -149,9 +149,9 @@ void Wdg_TextView::DoMyOwnActionRespond( WgInput::UserAction action, int button_
 		int y = info.y;
 		Abs2local( &x, &y );
 
-		m_pText->CursorGotoCoord( WgCord(x,y), WgRect(0-m_viewPixOfsX,0-m_viewPixOfsY,m_contentWidth,m_contentHeight) );
+		m_pText->CursorGotoCoord( WgCoord(x,y), WgRect(0-m_viewPixOfsX,0-m_viewPixOfsY,m_contentWidth,m_contentHeight) );
 		AdjustViewOfs();
-//		m_pText->CursorGotoCoord( WgCord(info.x, info.y), ScreenGeometry() );
+//		m_pText->CursorGotoCoord( WgCoord(info.x, info.y), ScreenGeometry() );
 
 		if( action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
 		{

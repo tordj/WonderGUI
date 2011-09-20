@@ -677,7 +677,7 @@ void WgGizmoView::SetFillerSource( const WgBlockSetPtr& pBlocks )
 
 //____ FindGizmo() ____________________________________________________________
 
-WgGizmo * WgGizmoView::FindGizmo( const WgCord& pos, WgSearchMode mode )
+WgGizmo * WgGizmoView::FindGizmo( const WgCoord& pos, WgSearchMode mode )
 {
 	// Check XDRAG
 
@@ -997,7 +997,7 @@ void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 //____ _onAlphaTest() ___________________________________________________________
 
-bool WgGizmoView::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoView::_onAlphaTest( const WgCoord& ofs )
 {
 	if( m_pFillerBlocks && m_geoFiller.contains( ofs ) )
 	{
@@ -1074,7 +1074,7 @@ WgViewHook::~WgViewHook()
 
 //____ WgViewHook::Pos() ________________________________________________________
 
-WgCord WgViewHook::Pos() const
+WgCoord WgViewHook::Pos() const
 {
 	return m_geo.pos();
 }
@@ -1095,7 +1095,7 @@ WgRect WgViewHook::Geo() const
 
 //____ WgViewHook::ScreenPos() __________________________________________________
 
-WgCord WgViewHook::ScreenPos() const
+WgCoord WgViewHook::ScreenPos() const
 {
 	return m_pView->ScreenPos() + m_geo.pos();
 }

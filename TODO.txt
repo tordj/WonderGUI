@@ -9,7 +9,6 @@ BEFORE RELEASE
 * Layout Class Grid.
 * Layout Class VList (selectable).
 * VList work with View (scroll_into_view etc).
-* WgCord -> WgCoord.
 * Debug dirty rects.
 * WgBlockSet externa från surface.
 * WgGizmoMenu/MenuBar/ComboBox work with Layout Class Modal.
