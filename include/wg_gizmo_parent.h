@@ -42,11 +42,11 @@ class WgGizmoParent : public WgGizmoCollection
 
 		virtual WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode ) = 0;
 
-		virtual bool		DeleteGizmo( WgGizmo * pGizmo ) = 0;
-		virtual WgGizmo *	ReleaseGizmo( WgGizmo * pGizmo ) = 0;
+		virtual bool		DeleteChild( WgGizmo * pGizmo ) = 0;
+		virtual WgGizmo *	ReleaseChild( WgGizmo * pGizmo ) = 0;
 
-		virtual bool		DeleteAllGizmos() = 0;
-		virtual bool		ReleaseAllGizmos() = 0;
+		virtual bool		DeleteAllChildren() = 0;
+		virtual bool		ReleaseAllChildren() = 0;
 
 		virtual WgGizmo *	CastToGizmo() = 0;
 		virtual WgRoot *	CastToRoot() = 0;

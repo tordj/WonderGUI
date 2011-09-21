@@ -85,7 +85,7 @@ public:
 
 	bool	SetGeo( const WgRect& geometry );
 
-	bool	SetOfs( const WgCord& ofs );
+	bool	SetOfs( const WgCoord& ofs );
 	bool	SetOfsX( int x );
 	bool	SetOfsY( int y );
 
@@ -93,7 +93,7 @@ public:
 	bool	SetWidth( int width );
 	bool	SetHeight( int height );
 
-	bool	Move( const WgCord& ofs );
+	bool	Move( const WgCoord& ofs );
 	bool	MoveX( int x );
 	bool	MoveY( int y );
 
@@ -103,7 +103,7 @@ public:
 	inline int			Origo() const { return m_anchor; }
 	inline WgLocation	Hotspot() const { return m_hotspot; }
 	inline WgRect		FloatGeo() const { return m_placementGeo; }
-	inline WgCord		FloatOfs() const { return m_placementGeo.pos(); }
+	inline WgCoord		FloatOfs() const { return m_placementGeo.pos(); }
 	inline WgRect		FloatSize() const { return m_placementGeo.size(); }
 
 	// Methods for anchored hooks
@@ -115,11 +115,11 @@ public:
 
 	// Standard Hook methods
 
-	inline WgCord		Pos() const { return m_realGeo.pos(); }
+	inline WgCoord		Pos() const { return m_realGeo.pos(); }
 	inline WgSize		Size() const { 	return m_realGeo.size(); }
 	inline WgRect		Geo() const { return m_realGeo; }
 ;
-	WgCord		ScreenPos() const;
+	WgCoord		ScreenPos() const;
 	WgRect		ScreenGeo() const;
 
 	inline WgFlexHook *	Prev() const { return _prev(); }
@@ -144,7 +144,7 @@ protected:
 
 	bool		LimitPlacementSize();
 	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
-	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCord& parentPos, Uint8 _layer );
+	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCoord& parentPos, Uint8 _layer );
 
 
 	WgGizmoHook *	_prevHook() const;
@@ -191,17 +191,17 @@ public:
 	inline float	relativeY() const { return m_yRelative; }
 	inline int		offsetX() const { return m_pixelOfs.x; }
 	inline int		offsetY() const { return m_pixelOfs.y; }
-	inline WgCord	offset() const { return m_pixelOfs; }
+	inline WgCoord	offset() const { return m_pixelOfs; }
 
-	inline WgCord	position( const WgSize& parentSize ) const { return WgCord((int)(m_xRelative*parentSize.w), (int)(m_yRelative*parentSize.h)) + m_pixelOfs; }
+	inline WgCoord	position( const WgSize& parentSize ) const { return WgCoord((int)(m_xRelative*parentSize.w), (int)(m_yRelative*parentSize.h)) + m_pixelOfs; }
 
 private:
 	WgFlexAnchor() : m_xRelative(0.f), m_yRelative(0.f), m_pixelOfs(0,0) {};
-	WgFlexAnchor( float xRelative, float yRelative, const WgCord& pixelOfs ) : m_xRelative(xRelative), m_yRelative(yRelative), m_pixelOfs(pixelOfs) {}
+	WgFlexAnchor( float xRelative, float yRelative, const WgCoord& pixelOfs ) : m_xRelative(xRelative), m_yRelative(yRelative), m_pixelOfs(pixelOfs) {}
 
 	float	m_xRelative;
 	float	m_yRelative;
-	WgCord	m_pixelOfs;
+	WgCoord	m_pixelOfs;
 };
 
 
@@ -223,28 +223,28 @@ public:
 	inline bool		IsConfiningChildren() const { return m_bConfineChildren; }
 
 
-	WgFlexHook *	AddGizmo( WgGizmo * pGizmo );
-	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
-	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation hotspot, int anchor );
-	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation hotspot = WG_NORTHWEST );
-	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation hotspot, int anchor );
-	WgFlexHook *	AddGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation hotspot = WG_NORTHWEST );
+	WgFlexHook *	AddChild( WgGizmo * pGizmo );
+	WgFlexHook *	AddChild( WgGizmo * pGizmo, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
+	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgRect& geometry, WgLocation hotspot, int anchor );
+	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgRect& geometry, WgLocation hotspot = WG_NORTHWEST );
+	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgCoord& pos, WgLocation hotspot, int anchor );
+	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgCoord& pos, WgLocation hotspot = WG_NORTHWEST );
 
-	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling );
-	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
-	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgLocation hotspot, int anchor );
-	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgLocation hotspot = WG_NORTHWEST );
-	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCord& geometry, WgLocation hotspot, int anchor );
-	WgFlexHook *	InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCord& geometry, WgLocation hotspot = WG_NORTHWEST );
+	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling );
+	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
+	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgLocation hotspot, int anchor );
+	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgLocation hotspot = WG_NORTHWEST );
+	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, WgLocation hotspot, int anchor );
+	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, WgLocation hotspot = WG_NORTHWEST );
 
-	bool			DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+	bool			DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
 
-	bool			DeleteAllGizmos();
-	bool			ReleaseAllGizmos();
+	bool			DeleteAllChildren();
+	bool			ReleaseAllChildren();
 
-	int				AddAnchor( float relativeX, float relativeY, const WgCord& pixelOfs );
-	bool			ReplaceAnchor( int index, float relativeX, float relativeY, const WgCord& pixelOfs );
+	int				AddAnchor( float relativeX, float relativeY, const WgCoord& pixelOfs );
+	bool			ReplaceAnchor( int index, float relativeX, float relativeY, const WgCoord& pixelOfs );
 	bool			DeleteAnchor( int index );
 	void			DeleteAllAnchors();
 
@@ -274,7 +274,7 @@ public:
 
 	// Overloaded from container
 
-	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );
+	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 
 
@@ -286,7 +286,7 @@ private:
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onNewSize( const WgSize& size );
 	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool			_onAlphaTest( const WgCord& ofs );
+	bool			_onAlphaTest( const WgCoord& ofs );
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }

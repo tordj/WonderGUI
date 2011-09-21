@@ -54,18 +54,18 @@ public:
 	bool					SetGeo( const WgRect& geo );
 	WgRect					Geo() const;
 
-	inline WgGizmo *		Gizmo() const { return m_hook.Gizmo(); }
-	bool					SetGizmo( WgGizmoContainer * pGizmo );
-	inline void				DeleteGizmo() { SetGizmo(0); }
-	WgGizmo * 				ReleaseGizmo();
+	inline WgGizmo *		Child() const { return m_hook.Gizmo(); }
+	bool					SetChild( WgGizmoContainer * pGizmo );
+	inline void				DeleteChild() { SetChild(0); }
+	WgGizmo * 				ReleaseChild();
 
 	// Inherited from WgGizmoParent
 
-	bool					DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *				ReleaseGizmo( WgGizmo * pGizmo );
+	bool					DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *				ReleaseChild( WgGizmo * pGizmo );
 
-	bool					DeleteAllGizmos();
-	bool					ReleaseAllGizmos();
+	bool					DeleteAllChildren();
+	bool					ReleaseAllChildren();
 
 	bool					IsGizmo() const { return false; }
 	bool					IsRoot() const { return true; }

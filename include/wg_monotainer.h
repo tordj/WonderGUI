@@ -65,7 +65,7 @@ public:
 
 	// Overloaded from container
 
-	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );
+	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 private:
 
@@ -76,11 +76,11 @@ private:
 	public:
 		// Standard Hook methods
 
-		inline WgCord		Pos() const { return m_pParent->Pos(); }
+		inline WgCoord		Pos() const { return m_pParent->Pos(); }
 		inline WgSize		Size() const { 	return m_pParent->Size(); }
 		inline WgRect		Geo() const { return m_pParent->Geo(); }
 
-		inline WgCord		ScreenPos() const { return m_pParent->ScreenPos(); }
+		inline WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
 		inline WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
 		inline WgGizmoContainer* Parent() const { return m_pParent; }
@@ -103,7 +103,7 @@ private:
 	};
 
 
-
+	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	void			_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	void			_onCloneContent( const WgGizmo * _pOrg );

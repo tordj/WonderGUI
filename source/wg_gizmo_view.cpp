@@ -585,9 +585,9 @@ WgGizmoVDragbar* WgGizmoView::ReleaseScrollbarY()
 	return p;
 }
 
-//____ DeleteGizmo() __________________________________________________________
+//____ DeleteChild() __________________________________________________________
 
-bool WgGizmoView::DeleteGizmo( WgGizmo * pGizmo )
+bool WgGizmoView::DeleteChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_elements[XDRAG].Gizmo() )
 		return SetScrollbarX(0);
@@ -599,9 +599,9 @@ bool WgGizmoView::DeleteGizmo( WgGizmo * pGizmo )
 	return false;
 }
 
-//____ ReleaseGizmo() _________________________________________________________
+//____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgGizmoView::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgGizmoView::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_elements[XDRAG].Gizmo() )
 		return ReleaseScrollbarX();
@@ -613,9 +613,9 @@ WgGizmo * WgGizmoView::ReleaseGizmo( WgGizmo * pGizmo )
 	return 0;
 }
 
-//____ DeleteAllGizmos() ______________________________________________________
+//____ DeleteAllChildren() ______________________________________________________
 
-bool WgGizmoView::DeleteAllGizmos()
+bool WgGizmoView::DeleteAllChildren()
 {
 	SetScrollbarX(0);
 	SetScrollbarY(0);
@@ -623,9 +623,9 @@ bool WgGizmoView::DeleteAllGizmos()
 	return true;
 }
 
-//____ ReleaseAllGizmos() _____________________________________________________
+//____ ReleaseAllChildren() _____________________________________________________
 
-bool WgGizmoView::ReleaseAllGizmos()
+bool WgGizmoView::ReleaseAllChildren()
 {
 	ReleaseScrollbarX();
 	ReleaseScrollbarY();
