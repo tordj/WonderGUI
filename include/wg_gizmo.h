@@ -116,17 +116,17 @@ public:
 
 	inline void			SetMarkPolicy( WgMarkPolicy policy ) { m_markPolicy = policy; }
 	inline WgMarkPolicy	GetMarkPolicy() const { return m_markPolicy; }
-	bool				MarkTest( const WgCord& ofs );
+	bool				MarkTest( const WgCoord& ofs );
 
 	WgGizmoHook*		Hook() const { return m_pHook; }
 
 
 	// Convenient calls to hook
 
-	inline WgCord		Pos() const { if( m_pHook ) return m_pHook->Pos(); return WgCord(0,0); }
+	inline WgCoord		Pos() const { if( m_pHook ) return m_pHook->Pos(); return WgCoord(0,0); }
 	inline WgSize		Size() const { if( m_pHook ) return m_pHook->Size(); return WgSize(256,256); }
 	inline WgRect		Geo() const { if( m_pHook ) return m_pHook->Geo(); return WgRect(0,0,256,256); }
-	inline WgCord		ScreenPos() const { if( m_pHook ) return m_pHook->ScreenPos(); return WgCord(0,0); }
+	inline WgCoord		ScreenPos() const { if( m_pHook ) return m_pHook->ScreenPos(); return WgCoord(0,0); }
 	inline WgRect		ScreenGeo() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
 	inline bool			GrabFocus() { if( m_pHook ) return m_pHook->RequestFocus(); return false; }
 	inline bool			ReleaseFocus() { if( m_pHook ) return m_pHook->ReleaseFocus(); return false; }
@@ -136,8 +136,8 @@ public:
 	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
 	inline WgGizmo *	PrevSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
 
-	WgCord				Local2abs( const WgCord& cord ) const;		// Cordinate from local cordsys to global
-	WgCord				Abs2local( const WgCord& cord ) const; 		// Cordinate from global to local cordsys
+	WgCoord				Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
+	WgCoord				Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
 
 
 
@@ -190,7 +190,7 @@ protected:
 	virtual void	_onUpdate( const WgUpdateInfo& _updateInfo );
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	virtual	bool	_onAlphaTest( const WgCord& ofs );
+	virtual	bool	_onAlphaTest( const WgCoord& ofs );
 	virtual void	_onEnable();
 	virtual void	_onDisable();
 	virtual void	_onGotInputFocus();

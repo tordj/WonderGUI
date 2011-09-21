@@ -311,7 +311,7 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 	// Let text object handle its actions.
 /*
-	bool bChanged = m_text.OnAction( action, button_key, ScreenGeo(), WgCord(info.x, info.y) );
+	bool bChanged = m_text.OnAction( action, button_key, ScreenGeo(), WgCoord(info.x, info.y) );
 	if( bChanged )
 		RequestRender();
 */
@@ -329,7 +329,7 @@ void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const W
 			m_pText->setSelectionMode(true);
 		}
 
-		m_pText->CursorGotoCoord( WgCord(info.x, info.y), ScreenGeo() );
+		m_pText->CursorGotoCoord( WgCoord(info.x, info.y), ScreenGeo() );
 
 		if(IsSelectable() && action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
 		{
@@ -460,7 +460,7 @@ void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const W
 
 	// Let text object handle its actions.
 
-	bool bChanged = m_text.OnAction( action, button_key, ScreenGeo(), WgCord(info.x, info.y) );
+	bool bChanged = m_text.OnAction( action, button_key, ScreenGeo(), WgCoord(info.x, info.y) );
 	if( bChanged )
 		RequestRender();
 }
@@ -474,7 +474,7 @@ void WgGizmoText::_onCloneContent( const WgGizmo * _pOrg )
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoText::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoText::_onAlphaTest( const WgCoord& ofs )
 {
 	return true;																				// Accept all at least for now...
 }

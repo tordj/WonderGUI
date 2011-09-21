@@ -284,7 +284,7 @@ void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 				pTextColors = m_pEntryGfx->GetTextColors();
 			}
 
-			pen.SetPos( WgCord(posX + b.left, printPosY) );
+			pen.SetPos( WgCoord(posX + b.left, printPosY) );
 
 			WgTextAttr	attr;
 			WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), mode );
@@ -365,7 +365,7 @@ void WgGizmoMenubar::_onRefresh( void )
 
 //____ _onAlphaTest() ___________________________________________________
 
-bool WgGizmoMenubar::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoMenubar::_onAlphaTest( const WgCoord& ofs )
 {
 	return true;
 }
@@ -397,7 +397,7 @@ bool WgGizmoMenubar::OpenMenu( Uint32 nb )
 	if( pItem == 0 || pItem->m_pMenu == 0 )
 		return false;
 
-	WgCord pos = Abs2local( WgCord(0, 0) );
+	WgCoord pos = Abs2local( WgCoord(0, 0) );
 
 	Sint32	x = pos.x;
 	Sint32	y = pos.y;
@@ -456,7 +456,7 @@ bool WgGizmoMenubar::CloseMenu( Uint32 nb )
 
 Uint32 WgGizmoMenubar::GetItemAtAbsPos( int x, int y )
 {
-	WgCord pos = Abs2local( WgCord(x, y) );
+	WgCoord pos = Abs2local( WgCoord(x, y) );
 	x = pos.x;
 	y = pos.y;
 

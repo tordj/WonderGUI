@@ -33,7 +33,7 @@
 class WgText;
 class WgTextLink;
 class WgTextLinkHandler;
-class WgCord;
+class WgCoord;
 
 typedef	WgSmartPtr<class WgTextLink> WgTextLinkPtr;
 
@@ -70,15 +70,15 @@ public:
 	WgTextLinkHandler() {}
 	virtual ~WgTextLinkHandler() {}
 
-	virtual void	OnPointerEnter( const WgTextLinkPtr& pLink, const WgCord& screenPos );
-	virtual void	OnPointerOver( const WgTextLinkPtr& pLink, const WgCord& screenPos );
-	virtual void	OnPointerExit( const WgTextLinkPtr& pLink, const WgCord& screenPos );
+	virtual void	OnPointerEnter( const WgTextLinkPtr& pLink, const WgCoord& screenPos );
+	virtual void	OnPointerOver( const WgTextLinkPtr& pLink, const WgCoord& screenPos );
+	virtual void	OnPointerExit( const WgTextLinkPtr& pLink, const WgCoord& screenPos );
 
-	virtual void	OnButtonPress( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos );
-	virtual void	OnButtonRelease( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos );
-	virtual void	OnButtonRepeat( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos );
-	virtual void	OnButtonClick( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos );
-	virtual void	OnButtonDoubleClick( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos );
+	virtual void	OnButtonPress( int button, const WgTextLinkPtr& pLink, const WgCoord& screenPos );
+	virtual void	OnButtonRelease( int button, const WgTextLinkPtr& pLink, const WgCoord& screenPos );
+	virtual void	OnButtonRepeat( int button, const WgTextLinkPtr& pLink, const WgCoord& screenPos );
+	virtual void	OnButtonClick( int button, const WgTextLinkPtr& pLink, const WgCoord& screenPos );
+	virtual void	OnButtonDoubleClick( int button, const WgTextLinkPtr& pLink, const WgCoord& screenPos );
 };
 
 #endif //WG_TEXTLINKHANDLER_DOT_H

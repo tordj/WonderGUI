@@ -350,7 +350,7 @@ private:
 	WgTextPropPtr	m_pHeaderProps;
 
 	WgOrigo			m_sortMarkerOrigo;
-	WgCord8			m_sortMarkerOfs;
+	WgCoord8			m_sortMarkerOfs;
 
 	Uint8			m_cellPaddingX;
 	Uint8			m_cellPaddingY;

@@ -213,7 +213,7 @@ void WgGizmoProfiler::_onCloneContent( const WgGizmo * _pOrg )
 
 //____ _onAlphaTest() ___________________________________________________
 
-bool WgGizmoProfiler::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoProfiler::_onAlphaTest( const WgCoord& ofs )
 {
 	return false;
 }

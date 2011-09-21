@@ -86,7 +86,7 @@ public:
 
 	void	AddDirtyRect( WgRect rect );
 
-	WgGizmo *	FindGizmo( const WgCord& ofs, WgSearchMode mode );
+	WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 protected:
 	class Hook : public WgGizmoHook
@@ -96,10 +96,10 @@ protected:
 		Hook() : m_pRoot(0) {};				// So we can make them members and then make placement new...
 		~Hook();
 
-		WgCord			Pos() const;
+		WgCoord			Pos() const;
 		WgSize			Size() const;
 		WgRect			Geo() const;
-		WgCord			ScreenPos() const;
+		WgCoord			ScreenPos() const;
 		WgRect			ScreenGeo() const;
 
 		WgRoot*			Root() const;

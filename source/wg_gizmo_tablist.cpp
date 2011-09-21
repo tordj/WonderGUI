@@ -979,7 +979,7 @@ WgTab * WgGizmoTablist::Pos2Tab( int x, int y )
 				((unsigned) y) > pSrc->GetContentBorders().top && y < sz.h - pSrc->GetContentBorders().bottom )
 				bHit = true;
 			else
-				bHit = WgUtil::MarkTestBlock( WgCord(x, y), pSrc->GetBlock( GetTabMode(*pTab), WgSize(w,sz.h) ), WgRect(0,0,w,sz.h));
+				bHit = WgUtil::MarkTestBlock( WgCoord(x, y), pSrc->GetBlock( GetTabMode(*pTab), WgSize(w,sz.h) ), WgRect(0,0,w,sz.h));
 
 			if( bHit )
 			{
@@ -1126,7 +1126,7 @@ void WgGizmoTablist::_onAction( WgInput::UserAction action, int button_key, cons
 	{
 		case WgInput::BUTTON_PRESS:
 		{
-			WgCord pos = Abs2local( WgCord(info.x, info.y) );
+			WgCoord pos = Abs2local( WgCoord(info.x, info.y) );
 
 			int	x = pos.x;
 			int	y = pos.y;
@@ -1144,7 +1144,7 @@ void WgGizmoTablist::_onAction( WgInput::UserAction action, int button_key, cons
 
 		case WgInput::POINTER_OVER:
 		{
-			WgCord pos = Abs2local( WgCord(info.x, info.y) );
+			WgCoord pos = Abs2local( WgCoord(info.x, info.y) );
 
 			int	x = pos.x;
 			int	y = pos.y;
@@ -1207,7 +1207,7 @@ void WgGizmoTablist::_onCloneContent( const WgGizmo * _pOrg )
 
 //____ _onAlphaTest() ________________________________________
 
-bool WgGizmoTablist::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoTablist::_onAlphaTest( const WgCoord& ofs )
 {
 	return Pos2Tab(ofs.x, ofs.y) != NULL;
 }

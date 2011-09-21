@@ -66,7 +66,7 @@ void WgGizmoDummy::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 //____ _onAlphaTest() ___________________________________________________________
 
-bool WgGizmoDummy::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoDummy::_onAlphaTest( const WgCoord& ofs )
 {
 	if( m_markPolicy == WG_MARKPOLICY_OPAQUE )
 		return true;

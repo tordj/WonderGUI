@@ -838,7 +838,7 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 		pCursor->getSoftPos( cursLine, cursCol );
 	}
 
-	WgCord	pos;
+	WgCoord	pos;
 	pos.y = pText->LineStartY( 0, dest ) + pText->getSoftLine(0)->baseline;
 
 	int					nLines = pText->nbSoftLines();
@@ -856,13 +856,13 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 			// Draw line parts, make space for cursor.
 
 			_printTextSpan( pen, pText, pLines[i].ofs, cursCol, false );
-			WgCord cursorPos = pen.GetPos();
+			WgCoord cursorPos = pen.GetPos();
 			pen.AdvancePosCursor( *pCursor );
 			_printTextSpan( pen, pText, pLines[i].ofs + cursCol, pLines[i].nChars - cursCol, true );
 
 			// Blit the cursor
 
-			WgCord restorePos = pen.GetPos();
+			WgCoord restorePos = pen.GetPos();
 			pen.SetPos( cursorPos );
 			pen.BlitCursor( *pCursor );
 			pen.SetPos( restorePos );

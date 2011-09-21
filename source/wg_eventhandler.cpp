@@ -230,7 +230,7 @@ bool WgEventHandler::IsButtonPressed( int button )
 
 bool WgEventHandler::IsKeyPressed( int native_keycode )
 {
-	for( int i = 0 ; i < m_keysDown.size() ; i++ )
+	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 		if( native_keycode == m_keysDown[i]->pEvent->NativeKeyCode() )
 			return true;
 
@@ -889,10 +889,10 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 
 	// Check if we need to post KEY_REPEAT
 
-	for( int i = 0 ; i < m_keysDown.size() ; i++ )
+	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 	{
 		KeyDownInfo * pInfo = m_keysDown[i];
-		int64_t timePassed = pInfo->pEvent->Timestamp() - pEvent->Timestamp();
+		int timePassed = (int) (pInfo->pEvent->Timestamp() - pEvent->Timestamp());
 
 		int fraction = 0;
 
@@ -1169,7 +1169,7 @@ void WgEventHandler::_processKeyRepeat( WgEvent::KeyRepeat * pEvent )
 
 	KeyDownInfo * pInfo = 0;
 
-	for( int i = 0 ; i < m_keysDown.size() ; i++ )
+	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 	{
 		if( pEvent->NativeKeyCode() == m_keysDown[i]->pEvent->NativeKeyCode() )
 		{
@@ -1184,7 +1184,7 @@ void WgEventHandler::_processKeyRepeat( WgEvent::KeyRepeat * pEvent )
 
 	// Post KEY_REPEAT events for gizmos
 
-	for( int i = 0 ; i < pInfo->vGizmos.size() ; i++ )
+	for( unsigned int i = 0 ; i < pInfo->vGizmos.size() ; i++ )
 	{
 		if( pInfo->vGizmos[i] )
 			QueueEvent( new WgEvent::KeyRepeat( pEvent->NativeKeyCode(), pInfo->vGizmos[i].GetRealPtr() ));
@@ -1218,7 +1218,7 @@ void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 
 	// Post KEY_RELEASE events for gizmos
 
-	for( int i = 0 ; i < pInfo->vGizmos.size() ; i++ )
+	for( unsigned int i = 0 ; i < pInfo->vGizmos.size() ; i++ )
 	{
 		if( pInfo->vGizmos[i] )
 			QueueEvent( new WgEvent::KeyRelease( pEvent->NativeKeyCode(), pInfo->vGizmos[i].GetRealPtr() ));
@@ -1314,7 +1314,7 @@ void WgEventHandler::_processButtonPress( WgEvent::ButtonPress * pEvent )
 
 	if( m_pLatestPressEvents[button] && m_pLatestPressEvents[button]->Timestamp() + m_doubleClickTimeTreshold > pEvent->Timestamp() )
 	{
-		WgCord distance = pEvent->PointerPos() - m_pLatestPressEvents[button]->PointerPos();
+		WgCoord distance = pEvent->PointerPos() - m_pLatestPressEvents[button]->PointerPos();
 
 		if( distance.x <= m_doubleClickDistanceTreshold &&
 			distance.x >= -m_doubleClickDistanceTreshold &&
@@ -1441,7 +1441,7 @@ void WgEventHandler::_processButtonDrag( WgEvent::ButtonDrag * pEvent )
 
 		if( pGizmo )
 		{
-			WgCord	ofs = pGizmo->ScreenPos();
+			WgCoord	ofs = pGizmo->ScreenPos();
 			QueueEvent( new WgEvent::ButtonDrag( button, pGizmo, pEvent->StartPos() - ofs, pEvent->PrevPos() - ofs, pEvent->CurrPos() - ofs ) );
 		}
 	}

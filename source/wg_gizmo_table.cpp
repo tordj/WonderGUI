@@ -32,7 +32,7 @@
 static const char	c_gizmoType[] = {"Table"};
 
 
-WgCord WgTableHook::Pos() const
+WgCoord WgTableHook::Pos() const
 {
 	return Geo();
 }
@@ -64,7 +64,7 @@ WgRect WgTableHook::Geo() const
 		return WgRect();
 }
 
-WgCord WgTableHook::ScreenPos() const
+WgCoord WgTableHook::ScreenPos() const
 {
 	return Pos() + Row()->Table()->ScreenPos();
 }
@@ -1813,7 +1813,7 @@ float WgGizmoTable::CalcHeaderScaleFactor() const
 
 //____ FindGizmo() ____________________________________________________________
 
-WgGizmo * WgGizmoTable::FindGizmo( const WgCord& ofs, WgSearchMode mode )
+WgGizmo * WgGizmoTable::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
 	// Check cell content
 
@@ -1832,7 +1832,7 @@ WgGizmo * WgGizmoTable::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 			yOfs < m_cellPadding.top || yOfs >= pRow->Height() - m_cellPadding.bottom )
 		{
 			pGizmo = pRow->GetGizmo(col);
-			if( mode == WG_SEARCH_GEOMETRY || pGizmo->MarkTest( WgCord( xOfs-m_cellPadding.left, yOfs-m_cellPadding.top) )  )
+			if( mode == WG_SEARCH_GEOMETRY || pGizmo->MarkTest( WgCoord( xOfs-m_cellPadding.left, yOfs-m_cellPadding.top) )  )
 				return pGizmo;
 		}
 	}
@@ -2149,7 +2149,7 @@ void WgGizmoTable::_onCloneContent( const WgGizmo * _pOrg )
 
 //____ GetHeaderColumnAt() ____________________________________________________
 
-WgTableColumn2 *WgGizmoTable::GetHeaderColumnAt( const WgCord& pos )
+WgTableColumn2 *WgGizmoTable::GetHeaderColumnAt( const WgCoord& pos )
 {
 	if(pos.x < 0 || pos.y < 0)
 		return NULL;
@@ -2175,7 +2175,7 @@ WgTableColumn2 *WgGizmoTable::GetHeaderColumnAt( const WgCord& pos )
 
 void WgGizmoTable::_onAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
 {
-	WgCord pos = Abs2local( WgCord(_info.x, _info.y) );
+	WgCoord pos = Abs2local( WgCoord(_info.x, _info.y) );
 
 	switch( _action )
 	{
@@ -2364,7 +2364,7 @@ void WgGizmoTable::UpdateMarkedRowColumn( int row, int column )
 
 //____ _onAlphaTest() ___________________________________________________
 
-bool WgGizmoTable::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoTable::_onAlphaTest( const WgCoord& ofs )
 {
 	return true;
 }

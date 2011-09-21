@@ -490,7 +490,7 @@ void WgGizmoButton::_onCloneContent( const WgGizmo * _pOrg )
 
 //____ _onAlphaTest() ___________________________________________________________
 
-bool WgGizmoButton::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoButton::_onAlphaTest( const WgCoord& ofs )
 {
 	if( !m_pBgGfx )
 		return false;

@@ -114,7 +114,7 @@ void WgGizmoViewport3D::_onCloneContent( const WgGizmo * _pOrg )
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoViewport3D::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoViewport3D::_onAlphaTest( const WgCoord& ofs )
 {
 	return true;
 }

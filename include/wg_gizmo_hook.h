@@ -48,10 +48,10 @@ class WgGizmoHook
 	friend class WgOrderedLayout;
 
 public:
-	virtual WgCord	Pos() const = 0;
+	virtual WgCoord	Pos() const = 0;
 	virtual WgSize	Size() const = 0;
 	virtual WgRect	Geo() const = 0;
-	virtual WgCord	ScreenPos() const = 0;
+	virtual WgCoord	ScreenPos() const = 0;
 	virtual WgRect	ScreenGeo() const = 0;
 
 	inline WgGizmoHook *	Prev() const { return _prevHook(); }

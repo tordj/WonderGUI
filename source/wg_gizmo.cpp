@@ -113,7 +113,7 @@ WgSkinManager *	WgGizmo::GetSkinManager() const
 
 //____ MarkTest() _____________________________________________________________
 
-bool WgGizmo::MarkTest( const WgCord& ofs )
+bool WgGizmo::MarkTest( const WgCoord& ofs )
 {
 	switch( m_markPolicy )
 	{
@@ -162,9 +162,9 @@ void WgGizmo::SetSkinNode( WgSkinNode * pNode )
 
 //____ Local2abs() ____________________________________________________________
 
-WgCord WgGizmo::Local2abs( const WgCord& cord ) const
+WgCoord WgGizmo::Local2abs( const WgCoord& cord ) const
 {
-	WgCord c = ScreenPos();
+	WgCoord c = ScreenPos();
 	c.x += cord.x;
 	c.y += cord.y;
 	return c;
@@ -172,10 +172,10 @@ WgCord WgGizmo::Local2abs( const WgCord& cord ) const
 
 //____ Abs2local() ____________________________________________________________
 
-WgCord WgGizmo::Abs2local( const WgCord& cord ) const
+WgCoord WgGizmo::Abs2local( const WgCoord& cord ) const
 {
-	WgCord c = ScreenPos();
-	return WgCord( cord.x - c.x, cord.y - c.y );
+	WgCoord c = ScreenPos();
+	return WgCoord( cord.x - c.x, cord.y - c.y );
 }
 
 //____ HeightForWidth() _______________________________________________________
@@ -290,7 +290,7 @@ void WgGizmo::_onAction( WgInput::UserAction action, int button_key, const WgAct
 {
 }
 
-bool WgGizmo::_onAlphaTest( const WgCord& ofs )
+bool WgGizmo::_onAlphaTest( const WgCoord& ofs )
 {
 	return true;
 }

@@ -32,35 +32,35 @@ WgTextLink::WgTextLink( const std::string& link, WgTextLinkHandler * pHandler ) 
 
 
 
-void WgTextLinkHandler::OnPointerEnter( const WgTextLinkPtr& pLink, const WgCord& screenPos )
+void WgTextLinkHandler::OnPointerEnter( const WgTextLinkPtr& pLink, const WgCoord& screenPos )
 {
 }
 
-void WgTextLinkHandler::OnPointerOver( const WgTextLinkPtr& pLink, const WgCord& screenPos )
+void WgTextLinkHandler::OnPointerOver( const WgTextLinkPtr& pLink, const WgCoord& screenPos )
 {
 }
 
-void WgTextLinkHandler::OnPointerExit( const WgTextLinkPtr& pLink, const WgCord& screenPos )
+void WgTextLinkHandler::OnPointerExit( const WgTextLinkPtr& pLink, const WgCoord& screenPos )
 {
 }
 
-void WgTextLinkHandler::OnButtonPress( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos )
+void WgTextLinkHandler::OnButtonPress( int button, const WgTextLinkPtr& pLink, const WgCoord& screenPos )
 {
 }
 
-void WgTextLinkHandler::OnButtonRelease( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos )
+void WgTextLinkHandler::OnButtonRelease( int button, const WgTextLinkPtr& pLink, const WgCoord& screenPos )
 {
 }
 
-void WgTextLinkHandler::OnButtonRepeat( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos )
+void WgTextLinkHandler::OnButtonRepeat( int button, const WgTextLinkPtr& pLink, const WgCoord& screenPos )
 {
 }
 
-void WgTextLinkHandler::OnButtonClick( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos )
+void WgTextLinkHandler::OnButtonClick( int button, const WgTextLinkPtr& pLink, const WgCoord& screenPos )
 {
 }
 
-void WgTextLinkHandler::OnButtonDoubleClick( int button, const WgTextLinkPtr& pLink, const WgCord& screenPos )
+void WgTextLinkHandler::OnButtonDoubleClick( int button, const WgTextLinkPtr& pLink, const WgCoord& screenPos )
 {
 }
 

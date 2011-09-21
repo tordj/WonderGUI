@@ -56,7 +56,7 @@ friend class WgFont;
 
 public:
 	WgPen();
-	WgPen( WgGfxDevice * pDevice, const WgCord& origo, const WgRect& clip = WgRect() );
+	WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip = WgRect() );
 //	WgPen( const WgTextPropPtr& pTextProp, const WgTextPropPtr& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextProp( pTextProp, pCharProp, mode ); } 
 //	WgPen( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextProp( hTextProp, hCharProp, mode ); } 
 	~WgPen() {}
@@ -65,7 +65,7 @@ public:
 	inline void				SetDevice( WgGfxDevice * pDevice ) { m_pDevice = pDevice; }
 	void					SetTextNode( WgTextNode * pNode ) { m_pTextNode = pNode; _onAttrChanged(); }
 
-	void					SetOrigo( const WgCord& pos ) { m_origo = pos; }
+	void					SetOrigo( const WgCoord& pos ) { m_origo = pos; }
 
 	bool					SetAttributes( const WgTextAttr& attr );
 	bool					SetSize( int size );
@@ -75,11 +75,11 @@ public:
 //	void					SetCharVisibility( int visibilityFlags );		// We need something better here...
 
 
-	inline void				SetPos( const WgCord& pos ) { m_pos = pos; }
+	inline void				SetPos( const WgCoord& pos ) { m_pos = pos; }
 	inline void				SetPosX( int x ) { m_pos.x = x; }
 	inline void				SetPosY( int y ) { m_pos.y = y; }
 
-	inline void				Move( const WgCord& pos ) { m_pos += pos; }
+	inline void				Move( const WgCoord& pos ) { m_pos += pos; }
 	inline void				MoveX( int x ) { m_pos.x += x; }
 	inline void				MoveY( int y ) { m_pos.y += y; }
 
@@ -94,11 +94,11 @@ public:
 	void					AdvancePosCursor( const WgCursorInstance& instance );
 
 	inline WgGlyphPtr		GetGlyph() const { return m_pGlyph; }
-	inline WgCord			GetPos() const { return m_pos; }
+	inline WgCoord			GetPos() const { return m_pos; }
 	inline int				GetPosX() const { return m_pos.x; }
 	inline int				GetPosY() const { return m_pos.y; }
 
-//	inline WgCord			GetBlitPos() const { return WgCord( m_pos.x + m_pGlyph->BearingX(), m_pos.y + m_pGlyph->BearingY() ); }
+//	inline WgCoord			GetBlitPos() const { return WgCoord( m_pos.x + m_pGlyph->BearingX(), m_pos.y + m_pGlyph->BearingY() ); }
 //	inline int				GetBlitPosX() const { return m_pos.x + m_pGlyph->BearingX(); }
 //	inline int				GetBlitPosY() const { return m_pos.y + m_pGlyph->BearingY(); }
 	
@@ -152,8 +152,8 @@ private:
 	bool			m_bShowSpace;	// Set if space control character should be shown (usually a dot in the middle of the cell).
 	bool			m_bShowCRLF;	// Set if the CR/LF control character should be shown.
 
-	WgCord			m_origo;		// Origo position, from where we start printing and count tab-positions.
-	WgCord			m_pos;			// Position of this pen in screen pixels.
+	WgCoord			m_origo;		// Origo position, from where we start printing and count tab-positions.
+	WgCoord			m_pos;			// Position of this pen in screen pixels.
 
 	DummyGlyph		m_dummyGlyph;	// Dummy glyph used for whitespace, tab etc
 

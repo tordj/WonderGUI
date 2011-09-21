@@ -43,7 +43,7 @@ protected:
 
 	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool	_onAlphaTest( const WgCord& ofs );
+	bool	_onAlphaTest( const WgCoord& ofs );
 
 };
 

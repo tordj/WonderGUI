@@ -35,7 +35,7 @@ WgPen::WgPen()
 	Init();
 }
 
-WgPen::WgPen( WgGfxDevice * pDevice, const WgCord& origo, const WgRect& clip )
+WgPen::WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip )
 {
 	Init();
 
@@ -289,7 +289,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 	float	scaleValue = (pCursor->sizeRatio(mode) * GetLineSpacing())/pAnim->height();
 	
 	WgSize	size = WgSize( pAnim->width(), pAnim->height() );
-	WgCord  bearing = pCursor->bearing( mode );
+	WgCoord  bearing = pCursor->bearing( mode );
 
 	int blockFlags = 0;
 

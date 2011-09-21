@@ -88,7 +88,7 @@ protected:
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onRefresh();
 	virtual void	_onCloneContent( const WgGizmo * _pOrg );
-	bool			_onAlphaTest( const WgCord& ofs );
+	bool			_onAlphaTest( const WgCoord& ofs );
 	void			_onEnable();
 	void			_onDisable();
 	virtual void	_onNewSize( const WgSize& size );
@@ -109,11 +109,11 @@ protected:
 	WgMode			m_mode;
 
 	WgOrigo			m_iconOrigo;
-	WgCord8			m_iconOfs;
+	WgCoord8			m_iconOfs;
 
 	bool			m_bRenderDown[WG_MAX_BUTTONS];	// Render down-version if [button] pressed?
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
-	WgCord8			m_aDisplace[4];			// Text displacement for up, mouse_over, down and disabled.
+	WgCoord8			m_aDisplace[4];			// Text displacement for up, mouse_over, down and disabled.
 
 	bool			m_bPressedInside[WG_MAX_BUTTONS];
 	bool			m_bReturnPressed;

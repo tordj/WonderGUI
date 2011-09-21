@@ -382,7 +382,7 @@ void WgGizmoCirclemeter::_onCloneContent( const WgGizmo * _pOrg )
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoCirclemeter::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoCirclemeter::_onAlphaTest( const WgCoord& ofs )
 {
 	//TODO: Implement!
 

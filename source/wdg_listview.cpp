@@ -163,7 +163,7 @@ void Wdg_ListView::ScrollIntoView( WgItem* pItem )
 	if( !pItem )
 		return;
 
-	WgCord pos;
+	WgCoord pos;
 
 	if(!GetItemPixelPos(pItem, pos))
 		return;
@@ -178,7 +178,7 @@ void Wdg_ListView::ScrollIntoView( WgItem* pItem )
 		SetViewPixelOfsY( itemPosY + pItem->Height() - ViewPixelLenY() );
 }
 
-bool Wdg_ListView::GetItemPixelPos( WgItem * pItem, WgCord& pos )
+bool Wdg_ListView::GetItemPixelPos( WgItem * pItem, WgCoord& pos )
 {
 	// calc y pos of this row
 	Uint32 itemPosY = 0;
@@ -190,7 +190,7 @@ bool Wdg_ListView::GetItemPixelPos( WgItem * pItem, WgCord& pos )
 		p = p->Next();
 	}
 
-	pos = WgCord(0, itemPosY);
+	pos = WgCoord(0, itemPosY);
 
 	if(!p)
 		return false;

@@ -314,7 +314,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 {
 	bool	bTextChanged = false;
 
-	WgCord ofs = Abs2local(WgCord(info.x,info.y));
+	WgCoord ofs = Abs2local(WgCoord(info.x,info.y));
 
 	if( action == WgInput::BUTTON_PRESS && button_key == 1 )
 	{
@@ -367,6 +367,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 	if( action == WgInput::BUTTON_DOUBLECLICK && button_key == 1 )
 	{
 		m_text.selectAll();
+		m_text.setSelectionMode(true);
 	}
 
 

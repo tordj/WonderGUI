@@ -152,7 +152,7 @@ void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, con
 			{
 				if( m_pMenu )
 				{
-					WgRect r( Local2abs(WgCord(0,0)), Size() );
+					WgRect r( Local2abs(WgCoord(0,0)), Size() );
 
 					if( m_pHook )
 					{
@@ -252,14 +252,14 @@ void WgGizmoCombobox::_onCloneContent( const WgGizmo * _pOrg )
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoCombobox::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoCombobox::_onAlphaTest( const WgCoord& ofs )
 {
 	if( !m_pTextBoxBg )
 		return false;
 
 	WgSize sz = Size();
 
-	return WgUtil::MarkTestBlock( ofs, m_pTextBoxBg->GetBlock(m_mode,sz), WgRect( WgCord(0,0), sz ) );
+	return WgUtil::MarkTestBlock( ofs, m_pTextBoxBg->GetBlock(m_mode,sz), WgRect( WgCoord(0,0), sz ) );
 }
 
 //____ _onGotInputFocus() ______________________________________________

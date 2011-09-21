@@ -61,10 +61,10 @@ class WgTableHook : public WgGizmoHook
 	friend class WgTableRow2;
 	friend class WgGizmoTable;
 
-	WgCord	Pos() const;
+	WgCoord	Pos() const;
 	WgSize	Size() const;
 	WgRect	Geo() const;
-	WgCord	ScreenPos() const;
+	WgCoord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
 	WgTableHook*	PrevInTable() const;
@@ -363,7 +363,7 @@ public:
 
 	// Overloaded from container
 
-	WgGizmo * FindGizmo( const WgCord& ofs, WgSearchMode mode );
+	WgGizmo * FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 	// New methods!
 
@@ -388,7 +388,7 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onNewSize( const WgSize& size );
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool	_onAlphaTest( const WgCord& ofs );
+	bool	_onAlphaTest( const WgCoord& ofs );
 
 private:
 	WgGizmoHook*	_firstHook() const { return FirstHook(); }
@@ -453,7 +453,7 @@ private:
 	WgTextPropPtr	m_pHeaderProps;
 
 	WgOrigo			m_sortMarkerOrigo;
-	WgCord8			m_sortMarkerOfs;
+	WgCoord8			m_sortMarkerOfs;
 
 	WgBorders		m_cellPadding;
 
@@ -483,7 +483,7 @@ private:
 
 	WgBlockSetPtr	m_pHeaderGfx;
 
-	WgTableColumn2*	GetHeaderColumnAt( const WgCord& pos );
+	WgTableColumn2*	GetHeaderColumnAt( const WgCoord& pos );
 	WgTableColumn2*	m_pMarkedHeader;						// Header currently marked by mouse
 
 

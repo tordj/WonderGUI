@@ -299,7 +299,7 @@ public:
 	void			DestroyCursor() { delete m_pCursor; m_pCursor = 0; }
 	WgCursorInstance*GetCursor() const { return m_pCursor; }
 
-	void			CursorGotoCoord( const WgCord& coord, const WgRect& container );
+	void			CursorGotoCoord( const WgCoord& coord, const WgRect& container );
 	void			CursorGotoLine( int line, const WgRect& container );
 	void			CursorGoUp( int nbLines, const WgRect& container );
 	void			CursorGoDown( int nbLines, const WgRect& container );
@@ -362,30 +362,30 @@ public:
 
 	int				LineStartX( int line, const WgRect& container ) const;
 	int				LineStartY( int line, const WgRect& container ) const;
-	WgCord			LineStart( int line, const WgRect& container ) const;
+	WgCoord			LineStart( int line, const WgRect& container ) const;
 
-	int				CoordToLine( const WgCord& coord, const WgRect& container, bool bCursorMode = false ) const;
-	int				CoordToColumn( int line, const WgCord& coord, const WgRect& container, bool bCursorMode = false ) const;
-	WgTextPos		CoordToPos( const WgCord& coord, const WgRect& container, bool bCursorMode = false ) const;
-	int				CoordToOfs( const WgCord& coord, const WgRect& container, bool bCursorMode = false ) const;
-	WgTextLinkPtr	CoordToLink( const WgCord& coord, const WgRect& container ) const;
+	int				CoordToLine( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	int				CoordToColumn( int line, const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	WgTextPos		CoordToPos( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	int				CoordToOfs( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	WgTextLinkPtr	CoordToLink( const WgCoord& coord, const WgRect& container ) const;
 
 	// WgTextPos is automatically clamped for all PosTo...-methods.
 
 	int				PosToCoordX( const WgTextPos& pos, const WgRect& container ) const;
 	int				PosToCoordY( const WgTextPos& pos, const WgRect& container ) const;
-	WgCord			PosToCoord( const WgTextPos& pos, const WgRect& container ) const;
+	WgCoord			PosToCoord( const WgTextPos& pos, const WgRect& container ) const;
 	int				PosToOfs( const WgTextPos& pos ) const;
 
 	int				OfsToCoordX( int ofs, const WgRect& container ) const;
 	int				OfsToCoordY( int ofs, const WgRect& container ) const;
-	WgCord			OfsToCoord( int ofs, const WgRect& container ) const;
+	WgCoord			OfsToCoord( int ofs, const WgRect& container ) const;
 	WgTextPos		OfsToPos( int ofs ) const;
 
 	WgTextPos		ClampPos( WgTextPos ) const;
 
 
-	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCord& pointerOfs );
+	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
 
 	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }
 	WgMode			GetMarkedLinkMode() const { return m_markedLinkMode; }

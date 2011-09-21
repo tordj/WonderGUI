@@ -472,7 +472,7 @@ bool WgGizmoCheckbox::MarkTestTextArea( int _x, int _y )
 {
 	WgRect	contentRect = GetContentRect( Size(), GetIconRect( Size() ) );
 
-	if( m_text.CoordToOfs( WgCord(_x,_y), contentRect ) != -1 )
+	if( m_text.CoordToOfs( WgCoord(_x,_y), contentRect ) != -1 )
 		return true;
 
 	return false;
@@ -480,7 +480,7 @@ bool WgGizmoCheckbox::MarkTestTextArea( int _x, int _y )
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoCheckbox::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoCheckbox::_onAlphaTest( const WgCoord& ofs )
 {
 	WgMode mode = WG_MODE_NORMAL;
 

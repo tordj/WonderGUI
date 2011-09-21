@@ -111,7 +111,7 @@ void WgCursorInstance::gotoSoftLine( int line, const WgRect& container )
 	// Set our line and convert to hard
 
 	int ln = line;
-	int col = m_pText->CoordToColumn( line, WgCord( m_wantedOfsX+container.x, 0), container, true );
+	int col = m_pText->CoordToColumn( line, WgCoord( m_wantedOfsX+container.x, 0), container, true );
 
 
 	m_pText->posSoft2Hard( ln, col );

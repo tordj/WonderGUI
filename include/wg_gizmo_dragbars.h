@@ -114,7 +114,7 @@ class	WgGizmoDragbar : public WgGizmo
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 		void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 		void	_onRefresh();
-		bool	_onAlphaTest( const WgCord& ofs );
+		bool	_onAlphaTest( const WgCoord& ofs );
 		void	_onEnable();
 		void	_onDisable();
 
@@ -145,7 +145,7 @@ class	WgGizmoDragbar : public WgGizmo
 		bool			m_bHorizontal;
 		bool			m_bPressOnDragBar;
 		int				m_dragBarPressOfs;
-		WgCord			m_lastCursorDownPos;
+		WgCoord			m_lastCursorDownPos;
 
 		ButtonLayout	m_btnLayout;
 		Uint8			m_headerLen;
@@ -166,10 +166,10 @@ class	WgGizmoDragbar : public WgGizmo
 		void	UpdateMinSize( void );
 
 
-		Component	FindMarkedComponent( WgCord ofs );								// -1 = None.
+		Component	FindMarkedComponent( WgCoord ofs );								// -1 = None.
 		void		RenderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block );
-		bool		MarkTestButton( WgCord ofs, WgRect& _dest, const WgBlock& _block );
-		bool		MarkTestSlider( WgCord ofs );
+		bool		MarkTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block );
+		bool		MarkTestSlider( WgCoord ofs );
 		void		HeaderFooterChanged();
 		void		UnmarkReqRender();
 };

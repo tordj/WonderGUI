@@ -40,7 +40,7 @@ class WgGizmoParent : public WgGizmoCollection
 {
 	public:
 
-		virtual WgGizmo *	FindGizmo( const WgCord& ofs, WgSearchMode mode ) = 0;
+		virtual WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode ) = 0;
 
 		virtual bool		DeleteGizmo( WgGizmo * pGizmo ) = 0;
 		virtual WgGizmo *	ReleaseGizmo( WgGizmo * pGizmo ) = 0;

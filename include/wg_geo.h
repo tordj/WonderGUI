@@ -31,76 +31,76 @@
 class WgRect;
 
 
-//____ Class: WgCord ________________________________________________________
+//____ Class: WgCoord ________________________________________________________
 
-class	WgCord
+class	WgCoord
 {
 public:
-	WgCord() : x(0), y(0) {}
-	WgCord( int x, int y ) : x(x), y(y) {}
-	WgCord( const WgRect& rect );
+	WgCoord() : x(0), y(0) {}
+	WgCoord( int x, int y ) : x(x), y(y) {}
+	WgCoord( const WgRect& rect );
 
-	inline WgCord operator=(const WgCord& k)	{ x = k.x; y = k.y; return *this; }
-	inline WgCord operator=(const WgRect& r);
+	inline WgCoord operator=(const WgCoord& k)	{ x = k.x; y = k.y; return *this; }
+	inline WgCoord operator=(const WgRect& r);
 
-	inline bool operator==(const WgCord& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-	inline bool operator!=(const WgCord& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
+	inline bool operator==(const WgCoord& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
+	inline bool operator!=(const WgCoord& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
 
-	inline void operator+=(const WgCord& k)			{ x += k.x; y += k.y; }
-	inline void operator-=(const WgCord& k)			{ x -= k.x; y -= k.y; }
-	inline WgCord operator+(const WgCord& k) const	{ WgCord res; res.x = x + k.x; res.y = y + k.y; return res; }
-	inline WgCord operator-(const WgCord& k) const	{ WgCord res; res.x = x - k.x; res.y = y - k.y; return res; }
+	inline void operator+=(const WgCoord& k)			{ x += k.x; y += k.y; }
+	inline void operator-=(const WgCoord& k)			{ x -= k.x; y -= k.y; }
+	inline WgCoord operator+(const WgCoord& k) const	{ WgCoord res; res.x = x + k.x; res.y = y + k.y; return res; }
+	inline WgCoord operator-(const WgCoord& k) const	{ WgCoord res; res.x = x - k.x; res.y = y - k.y; return res; }
 
 	inline void operator*=(double v)				{ x = (int) (x*v); y = (int) (y*v); }
 	inline void operator/=(double v)				{ x = (int) (x/v); y = (int) (y/v); }
-	inline WgCord operator*(double v) const	{ WgCord res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
-	inline WgCord operator/(double v) const	{ WgCord res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
+	inline WgCoord operator*(double v) const	{ WgCoord res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
+	inline WgCoord operator/(double v) const	{ WgCoord res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
 
 	inline void operator*=(float v)				{ x = (int) (x*v); y = (int) (y*v); }
 	inline void operator/=(float v)				{ x = (int) (x/v); y = (int) (y/v); }
-	inline WgCord operator*(float v) const	{ WgCord res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
-	inline WgCord operator/(float v) const	{ WgCord res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
+	inline WgCoord operator*(float v) const	{ WgCoord res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
+	inline WgCoord operator/(float v) const	{ WgCoord res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
 
 	inline void operator*=(int v)				{ x *= v; y *= v; }
 	inline void operator/=(int v)				{ x /= v; y /= v; }
-	inline WgCord operator*(int v) const	{ WgCord res; res.x = x * v; res.y = y * v; return res; }
-	inline WgCord operator/(int v) const	{ WgCord res; res.x = x / v; res.y = y / v; return res; }
+	inline WgCoord operator*(int v) const	{ WgCoord res; res.x = x * v; res.y = y * v; return res; }
+	inline WgCoord operator/(int v) const	{ WgCoord res; res.x = x / v; res.y = y / v; return res; }
 
 	inline void clear()						{ x = 0; y = 0; }
 
 	int	x, y;
 };
 
-typedef WgCord	WgCord32;
+typedef WgCoord	WgCoord;
 
-//____ Class: WgCord16 ________________________________________________________
+//____ Class: WgCoord16 ________________________________________________________
 
-class	WgCord16
+class	WgCoord16
 {
 public:
-	WgCord16() : x(0), y(0) {}
-	WgCord16( Sint16 _x, Sint16 _y ) {x=_x;y=_y;};
+	WgCoord16() : x(0), y(0) {}
+	WgCoord16( Sint16 _x, Sint16 _y ) {x=_x;y=_y;};
 
-	inline WgCord16 operator=(const WgCord16& k)	{ x = k.x; y = k.y; return *this; }
+	inline WgCoord16 operator=(const WgCoord16& k)	{ x = k.x; y = k.y; return *this; }
 
-	inline bool operator==(const WgCord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-	inline bool operator!=(const WgCord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
+	inline bool operator==(const WgCoord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
+	inline bool operator!=(const WgCoord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
 
 	Sint16	x, y;
 };
 
-//____ Class: WgCord8 _________________________________________________________
+//____ Class: WgCoord8 _________________________________________________________
 
-class	WgCord8
+class	WgCoord8
 {
 public:
-	WgCord8() : x(0), y(0) {}
-	WgCord8( Sint8 _x, Sint8 _y ) {x=_x;y=_y;};
+	WgCoord8() : x(0), y(0) {}
+	WgCoord8( Sint8 _x, Sint8 _y ) {x=_x;y=_y;};
 
-	inline WgCord8 operator=(const WgCord8& k)	{ x = k.x; y = k.y; return *this; }
+	inline WgCoord8 operator=(const WgCoord8& k)	{ x = k.x; y = k.y; return *this; }
 
-	inline bool operator==(const WgCord8& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-	inline bool operator!=(const WgCord8& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
+	inline bool operator==(const WgCoord8& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
+	inline bool operator!=(const WgCoord8& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
 
 	Sint8		x, y;
 };
@@ -160,7 +160,7 @@ public:
 	WgSize( int _w, int _h ) : w(_w), h(_h) {}
 	WgSize( const WgSize& size ) : w(size.w), h(size.h) {}
 	WgSize( const WgRect& rect );
-	WgSize( const WgCord& c1, const WgCord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
+	WgSize( const WgCoord& c1, const WgCoord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 	inline void constrainTo( const WgMinMax2D& minmax );
 	inline void clear()		{ w = 0; h = 0; }
 
@@ -212,16 +212,16 @@ public:
 	WgRect( int x, int y, int w, int h ) : x(x), y(y), w(w), h(h) {}
 	WgRect( const WgRect& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}
 	WgRect( const WgRect& r1, const WgRect& r2 );
-	WgRect( const WgCord& p1, const WgCord& p2 );
-	WgRect( const WgCord& p, const WgSize& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {}
-	WgRect( const WgCord& p, int w, int h ) : x(p.x), y(p.y), w(w), h(h) {}
+	WgRect( const WgCoord& p1, const WgCoord& p2 );
+	WgRect( const WgCoord& p, const WgSize& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {}
+	WgRect( const WgCoord& p, int w, int h ) : x(p.x), y(p.y), w(w), h(h) {}
 	WgRect( int x, int y, const WgSize& sz ) : x(x), y(y), w(sz.w), h(sz.h) {}
-	WgRect( const WgCord& p ) : x(p.x), y(p.y), w(0), h(0) {}
+	WgRect( const WgCoord& p ) : x(p.x), y(p.y), w(0), h(0) {}
 	WgRect( const WgSize& sz ) : x(0), y(0), w(sz.w), h(sz.h) {}
 
 	inline void operator=( const WgRect& );
 	inline void operator=( const WgSize& sz) { x=0; y=0; w=sz.w; h=sz.h; }
-	inline void operator=( const WgCord& c) { x=c.x; y=c.y; w=0; h=0; }
+	inline void operator=( const WgCoord& c) { x=c.x; y=c.y; w=0; h=0; }
 	inline bool operator==( const WgRect& rect) { return x == rect.x && y == rect.y && w == rect.w && h == rect.h; }
 	inline bool operator!=( const WgRect& rect) { return !(*this == rect); }
 
@@ -232,17 +232,17 @@ public:
 
 
 
-	inline void operator+=(const WgCord& k)				{ x += k.x; y += k.y; }
-	inline void operator-=(const WgCord& k)				{ x -= k.x; y -= k.y; }
-	inline WgRect operator+(const WgCord& k) const	{ WgRect res; res.x = x + k.x; res.y = y + k.y; res.w = w; res.h = h; return res; }
-	inline WgRect operator-(const WgCord& k) const	{ WgRect res; res.x = x - k.x; res.y = y - k.y; res.w = w; res.h = h; return res; }
+	inline void operator+=(const WgCoord& k)				{ x += k.x; y += k.y; }
+	inline void operator-=(const WgCoord& k)				{ x -= k.x; y -= k.y; }
+	inline WgRect operator+(const WgCoord& k) const	{ WgRect res; res.x = x + k.x; res.y = y + k.y; res.w = w; res.h = h; return res; }
+	inline WgRect operator-(const WgCoord& k) const	{ WgRect res; res.x = x - k.x; res.y = y - k.y; res.w = w; res.h = h; return res; }
 
 	inline void operator+=(const WgBorders& k)			{ x -= k.left; y-= k.top; w += k.left + k.right; h += k.top + k.bottom; }
 	inline void operator-=(const WgBorders& k)			{ x += k.left; y+= k.top; w -= k.left + k.right; h -= k.top + k.bottom; }
 	inline WgRect operator+(const WgBorders& k) const	{ WgRect res; res.x = x - k.left; res.y = y- k.top; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
 	inline WgRect operator-(const WgBorders& k) const	{ WgRect res; res.x = x + k.left; res.y = y+ k.top; res.w = w - (k.left + k.right); res.h = h - (k.top + k.bottom); return res; }
 
-	void setPos( const WgCord& p ) { x = p.x; y = p.y; }
+	void setPos( const WgCoord& p ) { x = p.x; y = p.y; }
 	void setSize( const WgSize& sz ) { w = sz.w; h = sz.h; }
 
 	void shrink(const WgBorders &borders);
@@ -256,18 +256,18 @@ public:
 
 	void growToContain( int x, int y );
 	void growToContain( const WgRect& _rect );
-	void growToContain( const WgCord& _coord );
+	void growToContain( const WgCoord& _coord );
 
 	inline bool contains( int x, int y ) const;
 	inline bool contains( const WgRect& _rect ) const;
-	inline bool	contains( const WgCord& _coord ) const;
+	inline bool	contains( const WgCoord& _coord ) const;
 
 	inline bool intersectsWith( const WgRect& _rect ) const;
 
 	inline int width() const		{ return w; }
 	inline int height() const	{ return h; }
 	inline WgSize size() const		{ return WgSize(w,h); }
-	inline WgCord pos() const		{ return WgCord(x,y); }
+	inline WgCoord pos() const		{ return WgCoord(x,y); }
 
 	inline int left() const		{ return x; }
 	inline int top() const		{ return y; }
@@ -283,14 +283,14 @@ public:
 
 
 //_____________________________________________________________________________
-inline WgCord::WgCord( const WgRect& rect )
+inline WgCoord::WgCoord( const WgRect& rect )
 {
 	x = rect.x;
 	y = rect.y;
 }
 
 //_____________________________________________________________________________
-inline WgCord WgCord::operator=(const WgRect& r)
+inline WgCoord WgCoord::operator=(const WgRect& r)
 {
 	x = r.x;
 	y = r.y;
@@ -341,7 +341,7 @@ inline bool WgRect::contains( int _x, int _y ) const
 }
 
 //_____________________________________________________________________________
-inline bool WgRect::contains( const WgCord& _coord ) const
+inline bool WgRect::contains( const WgCoord& _coord ) const
 {
 	if( _coord.x >= x && _coord.x < x + w && _coord.y >= y && _coord.y < y + h )
 		return true;

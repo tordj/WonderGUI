@@ -50,15 +50,15 @@ class WgWidgetHook : public WgGizmoHook
 public:
 	WgWidgetHook( WgGizmo * pGizmo, WgGizmoContainer * pParent, WgWidget * pWidget ) : WgGizmoHook(), m_pWidget(pWidget), m_pParent(pParent) { _attachGizmo(pGizmo); }
 	~WgWidgetHook() { m_pGizmo = 0; }	// Prevent WgGizmoHook from deleting Gizmo (which is part of the generated Widget).
-	WgCord	Pos() const { return WgCord( m_pWidget->PosX(), m_pWidget->PosY() ); }
+	WgCoord	Pos() const { return WgCoord( m_pWidget->PosX(), m_pWidget->PosY() ); }
 	WgSize	Size() const { return WgSize( m_pWidget->Width(), m_pWidget->Height() ); }
 	WgRect	Geo() const { return m_pWidget->Geometry(); }
 
-	WgCord	ScreenPos() const
+	WgCoord	ScreenPos() const
 	{
 		int x = 0,y = 0;
 		m_pWidget->Local2abs( &x, &y );
-		return WgCord(x,y);
+		return WgCoord(x,y);
 	}
 
 	WgRect	ScreenGeo() const { return m_pWidget->ScreenGeometry(); }
@@ -138,7 +138,6 @@ public:
 	bool		DeleteAllGizmos() { return false; }
 	bool		ReleaseAllGizmos() { return false; }
 
-
 	WgGizmoHook *	FirstHook() const
 	{
 		if( m_pWidget->m_pParent )
@@ -169,16 +168,12 @@ public:
 			return m_pWidget->GetHook();	// Discards const, is ok in this case...
 	}
 
-	WgGizmo * _castToGizmo()
-	{
-		return 0;
-	}
-
-
-	WgGizmo * FindGizmo( const WgCord& pos, WgSearchMode mode )
+	WgGizmo * FindGizmo( const WgCoord& pos, WgSearchMode mode )
 	{
 		return 0;
 	};
+
+	WgGizmo *	CastToGizmo() { return m_pWidget->GetGizmo(); }
 
 
 
@@ -270,9 +265,9 @@ public:
 protected:
 	WgWidget *	NewOfMyType() const { return new Wdg_Widget<T>; }
 
-	WgCord		GizmoPos( const WgGizmo * pGizmo ) const
+	WgCoord		GizmoPos( const WgGizmo * pGizmo ) const
 	{
-		return WgCord( WgWidget::PosX(), WgWidget::PosY() );
+		return WgCoord( WgWidget::PosX(), WgWidget::PosY() );
 	}
 
 	WgEmitter * GetEmitter()
@@ -317,7 +312,7 @@ private:
 
 	bool DoMyOwnMarkTest( int _x, int _y )
 	{
-		return T::_onAlphaTest( WgCord(_x,_y) );
+		return T::_onAlphaTest( WgCoord(_x,_y) );
 	}
 
 	void DoMyOwnDisOrEnable( void )

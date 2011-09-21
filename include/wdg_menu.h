@@ -248,7 +248,7 @@ private:
 	Uint32					m_contentHeight;	// Total height of content in pixels.
 	Uint32					m_contentOfs;		// Offset in pixels of content displayed.
 	bool					m_bPressOnSlider;	// Set if button 1 is down and was pressed on slider.
-	WgCord					m_savedMousePos;	// Holds absolute mouse position so we know when it has moved (only highlight item under pointer when it's moved).
+	WgCoord					m_savedMousePos;	// Holds absolute mouse position so we know when it has moved (only highlight item under pointer when it's moved).
 
 	const static int		c_maxSelectorKeys = 20;
 	const static int		c_selectorCountdownStart = 1000;
