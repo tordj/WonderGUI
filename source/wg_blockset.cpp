@@ -46,9 +46,9 @@ WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& 
 }
 
 
-WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect& normal, 
-					   const WgRect& marked, const WgRect& selected, const WgRect& disabled, 
-					   const WgRect& special, const WgBorders& gfxBorders, 
+WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect& normal,
+					   const WgRect& marked, const WgRect& selected, const WgRect& disabled,
+					   const WgRect& special, const WgBorders& gfxBorders,
 					   const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags ) : WgRefCountedPooled(pPool)
 {
 	m_pTextColors				= pTextColors;
@@ -73,7 +73,7 @@ WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect
 	m_base.y[WG_MODE_SPECIAL]	= special.y;
 }
 
-WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 						const WgColorSetPtr& pTextColors, Uint32 flags ) : WgRefCountedPooled(pPool)
 {
 	m_pTextColors				= pTextColors;
@@ -296,7 +296,7 @@ bool WgBlockSet::SetSize( WgSize size, int alt )
 WgColor WgBlockSet::GetTextColor( WgMode mode ) const
 {
 	if( !m_pTextColors )
-		return WgColor::None();
+		return WgColor::transparent;
 
 	return m_pTextColors->Color(mode);
 }
