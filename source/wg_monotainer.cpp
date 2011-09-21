@@ -145,7 +145,7 @@ WgSize WgMonotainer::MaxSize() const
 		return WgGizmo::MaxSize();
 }
 
-WgGizmo * WgMonotainer::FindGizmo( const WgCord& ofs, WgSearchMode mode )
+WgGizmo * WgMonotainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
 	if( m_hook.Gizmo() )
 		return m_hook.Gizmo()->CastToContainer()->FindGizmo( ofs, mode );
@@ -156,6 +156,11 @@ WgGizmo * WgMonotainer::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 	}
 
 	return 0;
+}
+
+
+void WgMonotainer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+{
 }
 
 void WgMonotainer::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )

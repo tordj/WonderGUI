@@ -321,6 +321,8 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
+#ifdef WG_LEGACY
+
 	if( m_bFocused && (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
 
@@ -463,6 +465,8 @@ void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const W
 	bool bChanged = m_text.OnAction( action, button_key, ScreenGeo(), WgCoord(info.x, info.y) );
 	if( bChanged )
 		RequestRender();
+
+#endif //WG_LEGACY
 }
 
 //____ _onCloneContent() _______________________________________________________

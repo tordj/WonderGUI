@@ -325,11 +325,11 @@ public:
 
 	// Overloaded from WgGizmoParent
 
-	bool			DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+	bool			DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
 
-	bool			DeleteAllGizmos();
-	bool			ReleaseAllGizmos();
+	bool			DeleteAllChildren();
+	bool			ReleaseAllChildren();
 
 //	void	ScrollIntoView( WgTableRow2* pRow );
 

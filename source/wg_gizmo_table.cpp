@@ -1092,9 +1092,9 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 	return r;
 }
 
-//____ DeleteGizmo() __________________________________________________________
+//____ DeleteChild() __________________________________________________________
 
-bool WgGizmoTable::DeleteGizmo( WgGizmo * pGizmo )
+bool WgGizmoTable::DeleteChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo || pGizmo->ParentX() != this )
 		return false;
@@ -1105,9 +1105,9 @@ bool WgGizmoTable::DeleteGizmo( WgGizmo * pGizmo )
 	return pRow->DeleteGizmo( pHook->ColumnNb() );
 }
 
-//____ ReleaseGizmo() _________________________________________________________
+//____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgGizmoTable::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgGizmoTable::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo || pGizmo->ParentX() != this )
 		return 0;
@@ -1118,18 +1118,18 @@ WgGizmo * WgGizmoTable::ReleaseGizmo( WgGizmo * pGizmo )
 	return pRow->ReleaseGizmo( pHook->ColumnNb() );
 }
 
-//____ DeleteAllGizmos() ______________________________________________________
+//____ DeleteAllChildren() ______________________________________________________
 
-bool WgGizmoTable::DeleteAllGizmos()
+bool WgGizmoTable::DeleteAllChildren()
 {
 	//TODO: Implement
 
 	return false;
 }
 
-//____ ReleaseAllGizmos() _____________________________________________________
+//____ ReleaseAllChildren() _____________________________________________________
 
-bool WgGizmoTable::ReleaseAllGizmos()
+bool WgGizmoTable::ReleaseAllChildren()
 {
 	//TODO: Implement
 

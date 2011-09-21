@@ -268,6 +268,10 @@
 #	include <wg_gizmo_tablist.h>
 #endif
 
+#ifndef WG_GIZMO_TABORDER_DOT_H
+#	include <wg_gizmo_taborder.h>
+#endif
+
 #ifndef WG_GIZMO_TEXT_DOT_H
 #	include <wg_gizmo_text.h>
 #endif

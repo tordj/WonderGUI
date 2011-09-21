@@ -73,6 +73,7 @@ friend class WgGizmoHook;
 friend class WgFlexHook;
 friend class WgModalHook;
 friend class WgVBoxHook;
+friend class WgStackHook;
 
 friend class WgRoot;
 friend class WgGizmoFlexGeo;
@@ -81,6 +82,7 @@ friend class WgGizmoTable;
 friend class WgGizmoView;
 friend class WgVBoxLayout;
 friend class WgMonotainer;
+friend class WgGizmoStack;
 
 friend class WgTableRow2;
 

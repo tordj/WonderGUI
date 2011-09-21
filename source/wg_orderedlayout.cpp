@@ -23,7 +23,7 @@
 #include <wg_orderedlayout.h>
 
 
-WgCord WgOrderedHook::Pos() const
+WgCoord WgOrderedHook::Pos() const
 {
 	return Parent()->_hookGeo(this).pos();
 }
@@ -38,7 +38,7 @@ WgRect WgOrderedHook::Geo() const
 	return Parent()->_hookGeo(this);
 }
 
-WgCord WgOrderedHook::ScreenPos() const
+WgCoord WgOrderedHook::ScreenPos() const
 {
 	return Parent()->_hookGeo(this).pos() + Parent()->ScreenPos();
 
@@ -198,9 +198,9 @@ WgOrderedLayout::~WgOrderedLayout()
 }
 
 
-//____ AddGizmo() _____________________________________________________________
+//____ AddChild() _____________________________________________________________
 
-WgOrderedHook * WgOrderedLayout::AddGizmo( WgGizmo * pGizmo )
+WgOrderedHook * WgOrderedLayout::AddChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo )
 		return 0;
@@ -213,9 +213,9 @@ WgOrderedHook * WgOrderedLayout::AddGizmo( WgGizmo * pGizmo )
 	return pHook;
 }
 
-//____ InsertGizmo() __________________________________________________________
+//____ InsertChild() __________________________________________________________
 
-WgOrderedHook * WgOrderedLayout::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling )
+WgOrderedHook * WgOrderedLayout::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling )
 {
 	if( !pGizmo || !pSibling || !pSibling->ParentX() || pSibling->ParentX() != this )
 		return 0;
@@ -229,18 +229,18 @@ WgOrderedHook * WgOrderedLayout::InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibli
 	return pHook;
 }
 
-//____ InsertGizmoSorted() ____________________________________________________
+//____ InsertChildSorted() ____________________________________________________
 
-WgOrderedHook * WgOrderedLayout::InsertGizmoSorted( WgGizmo * pGizmo )
+WgOrderedHook * WgOrderedLayout::InsertChildSorted( WgGizmo * pGizmo )
 {
 	//TODO: Implement
 
 	return 0;
 }
 
-//____ DeleteGizmo() __________________________________________________________
+//____ DeleteChild() __________________________________________________________
 
-bool WgOrderedLayout::DeleteGizmo( WgGizmo * pGizmo )
+bool WgOrderedLayout::DeleteChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo || !pGizmo->Hook() || pGizmo->Hook()->Parent() != this )
 		return false;
@@ -258,9 +258,9 @@ bool WgOrderedLayout::DeleteGizmo( WgGizmo * pGizmo )
 	return true;
 }
 
-//____ ReleaseGizmo() _________________________________________________________
+//____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgOrderedLayout::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgOrderedLayout::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo || !pGizmo->Hook() || pGizmo->Hook()->Parent() != this )
 		return 0;
@@ -275,9 +275,9 @@ WgGizmo * WgOrderedLayout::ReleaseGizmo( WgGizmo * pGizmo )
 	return pGizmo;
 }
 
-//____ DeleteAllGizmos() ______________________________________________________
+//____ DeleteAllChildren() ______________________________________________________
 
-bool WgOrderedLayout::DeleteAllGizmos()
+bool WgOrderedLayout::DeleteAllChildren()
 {
 	m_hooks.Clear();
 	_refreshAllGizmos();
@@ -285,9 +285,9 @@ bool WgOrderedLayout::DeleteAllGizmos()
 	return true;
 }
 
-//____ ReleaseAllGizmos() _____________________________________________________
+//____ ReleaseAllChildren() _____________________________________________________
 
-bool WgOrderedLayout::ReleaseAllGizmos()
+bool WgOrderedLayout::ReleaseAllChildren()
 {
 	while( m_hooks.First() )
 		m_hooks.PopFront();
@@ -297,9 +297,9 @@ bool WgOrderedLayout::ReleaseAllGizmos()
 	return true;
 }
 
-//____ SortGizmos() ___________________________________________________________
+//____ SortChildren() ___________________________________________________________
 
-void WgOrderedLayout::SortGizmos()
+void WgOrderedLayout::SortChildren()
 {
 	//TODO: Implement
 }
@@ -327,7 +327,7 @@ void WgOrderedLayout::ScrollIntoView( WgGizmo * pGizmo )
 
 //____ FindGizmo() ____________________________________________________________
 
-WgGizmo * WgOrderedLayout::FindGizmo( const WgCord& ofs, WgSearchMode mode )
+WgGizmo * WgOrderedLayout::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
 	WgOrderedHook * pHook = m_hooks.First();
 	WgGizmo * 		pResult = 0;
@@ -418,7 +418,7 @@ void WgOrderedLayout::_clearDirtyRects()
 
 //____ _onAlphaTest() _________________________________________________________
 
-bool WgOrderedLayout::_onAlphaTest( const WgCord& ofs )
+bool WgOrderedLayout::_onAlphaTest( const WgCoord& ofs )
 {
 	return false;
 }

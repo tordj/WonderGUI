@@ -242,6 +242,8 @@ void WgGizmoEditline::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 void WgGizmoEditline::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
+#ifdef WG_LEGACY
+
 	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
 		if( !m_bFocused )
@@ -437,6 +439,8 @@ void WgGizmoEditline::_onAction( WgInput::UserAction action, int button_key, con
 		}
 		AdjustViewOfs();
 	}
+
+#endif //WG_LEGACY
 
 }
 

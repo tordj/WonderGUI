@@ -44,9 +44,9 @@ public:
 	void	Top();								// Put us ontop of all our silbings.
 
 	bool	SetGeo( const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
-	bool	SetGeo( const WgCord& ofs, WgLocation origo = WG_NORTHWEST );
+	bool	SetGeo( const WgCoord& ofs, WgLocation origo = WG_NORTHWEST );
 
-	bool	SetOfs( const WgCord& ofs );
+	bool	SetOfs( const WgCoord& ofs );
 	bool	SetOfsX( int x );
 	bool	SetOfsY( int y );
 
@@ -54,7 +54,7 @@ public:
 	bool	SetWidth( int width );
 	bool	SetHeight( int height );
 
-	bool	Move( const WgCord& ofs );
+	bool	Move( const WgCoord& ofs );
 	bool	MoveX( int x );
 	bool	MoveY( int y );
 
@@ -63,11 +63,11 @@ public:
 
 	// Standard Hook methods
 
-	inline WgCord		Pos() const { return m_realGeo.pos(); }
+	inline WgCoord		Pos() const { return m_realGeo.pos(); }
 	inline WgSize		Size() const { 	return m_realGeo.size(); }
 	inline WgRect		Geo() const { return m_realGeo; }
 
-	WgCord		ScreenPos() const;
+	WgCoord		ScreenPos() const;
 	WgRect		ScreenGeo() const;
 
 	inline WgModalHook *	Prev() const { return _prev(); }
@@ -123,26 +123,26 @@ public:
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
 
-	WgGizmoHook *	SetBaseGizmo( WgGizmo * pGizmo );
-	WgGizmo *		BaseGizmo();
-	bool			DeleteBaseGizmo();
-	WgGizmo *		ReleaseBaseGizmo();
+	WgGizmoHook *	SetBase( WgGizmo * pGizmo );
+	WgGizmo *		Base();
+	bool			DeleteBase();
+	WgGizmo *		ReleaseBase();
 
 
-	WgModalHook *	AddModalGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
-	WgModalHook *	AddModalGizmo( WgGizmo * pGizmo, const WgCord& pos, WgLocation origo = WG_NORTHWEST ) { return AddModalGizmo( pGizmo, WgRect(pos,0,0), origo); }
+	WgModalHook *	AddModal( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
+	WgModalHook *	AddModal( WgGizmo * pGizmo, const WgCoord& pos, WgLocation origo = WG_NORTHWEST ) { return AddModal( pGizmo, WgRect(pos,0,0), origo); }
 
-	bool			DeleteAllModalGizmos();
-	bool			ReleaseAllModalGizmos();
+	bool			DeleteAllModal();
+	bool			ReleaseAllModal();
 
-	bool			DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+	bool			DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
 
-	bool			DeleteAllGizmos();
-	bool			ReleaseAllGizmos();
+	bool			DeleteAllChildren();
+	bool			ReleaseAllChildren();
 
-	WgModalHook *	FirstModalGizmo();
-	WgModalHook *	LastModalGizmo();
+	WgModalHook *	FirstModal();
+	WgModalHook *	LastModal();
 
 
 	// Overloaded from WgGizmo
@@ -165,7 +165,7 @@ public:
 
 	// Overloaded from container
 
-	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );
+	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 private:
 
@@ -176,11 +176,11 @@ private:
 	public:
 		// Standard Hook methods
 
-		inline WgCord		Pos() const { return m_pParent->Pos(); }
+		inline WgCoord		Pos() const { return m_pParent->Pos(); }
 		inline WgSize		Size() const { 	return m_pParent->Size(); }
 		inline WgRect		Geo() const { return m_pParent->Geo(); }
 
-		inline WgCord		ScreenPos() const { return m_pParent->ScreenPos(); }
+		inline WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
 		inline WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
 		inline WgGizmoContainer* Parent() const { return m_pParent; }
@@ -195,7 +195,7 @@ private:
 		void		RequestResize();
 
 		WgGizmoHook *	_prevHook() const { return 0; }
-		WgGizmoHook *	_nextHook() const { return m_pParent->FirstModalGizmo(); }
+		WgGizmoHook *	_nextHook() const { return m_pParent->FirstModal(); }
 		WgGizmoContainer * _parent() const { return m_pParent; }
 
 		WgGizmoModal * 	m_pParent;
@@ -211,7 +211,7 @@ private:
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onNewSize( const WgSize& size );
 	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool			_onAlphaTest( const WgCord& ofs );
+	bool			_onAlphaTest( const WgCoord& ofs );
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }

@@ -199,11 +199,11 @@ public:
 	WgGizmo*			GetContent() const { return m_elements[WINDOW].Gizmo(); }
 	WgGizmo*			ReleaseContent();
 
-	bool				DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *			ReleaseGizmo( WgGizmo * pGizmo );
+	bool				DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *			ReleaseChild( WgGizmo * pGizmo );
 
-	bool				DeleteAllGizmos();
-	bool				ReleaseAllGizmos();
+	bool				DeleteAllChildren();
+	bool				ReleaseAllChildren();
 
 	void	SetScrollbarAutoHide( bool bHideX, bool bHideY );
 	bool	GetScrollbarAutoHideX() const { return m_bAutoHideScrollbarX; }

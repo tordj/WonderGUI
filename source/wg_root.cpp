@@ -91,15 +91,15 @@ WgRect WgRoot::Geo() const
 	if( m_bHasGeo )
 		return m_geo;
 	else if( m_pGfxDevice )
-		return  WgRect( WgCord(0,0), m_pGfxDevice->CanvasSize() );
+		return  WgRect( WgCoord(0,0), m_pGfxDevice->CanvasSize() );
 	else
 		return WgRect(0,0,0,0);
 }
 
 
-//____ SetGizmo() _____________________________________________________________
+//____ SetChild() _____________________________________________________________
 
-bool WgRoot::SetGizmo( WgGizmoContainer * _pGizmo )
+bool WgRoot::SetChild( WgGizmoContainer * _pGizmo )
 {
 	if( !_pGizmo )
 		return false;
@@ -116,45 +116,45 @@ bool WgRoot::SetGizmo( WgGizmoContainer * _pGizmo )
 	return true;
 }
 
-//____ ReleaseGizmo() _________________________________________________________
+//____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgRoot::ReleaseGizmo()
+WgGizmo * WgRoot::ReleaseChild()
 {
 	return m_hook._releaseGizmo();
 }
 
-WgGizmo * WgRoot::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgRoot::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_hook.Gizmo() )
-		return ReleaseGizmo();
+		return ReleaseChild();
 
 	return false;
 }
 
 
-//____ DeleteGizmo() __________________________________________________________
+//____ DeleteChild() __________________________________________________________
 
-bool WgRoot::DeleteGizmo( WgGizmo * pGizmo )
+bool WgRoot::DeleteChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_hook.Gizmo() )
-		return SetGizmo(0);
+		return SetChild(0);
 
 	return false;
 }
 
-//____ DeleteAllGizmos() ______________________________________________________
+//____ DeleteAllChildren() ______________________________________________________
 
-bool WgRoot::DeleteAllGizmos()
+bool WgRoot::DeleteAllChildren()
 {
-	DeleteGizmo();
+	DeleteChild();
 	return true;
 }
 
-//____ ReleaseAllGizmos() _____________________________________________________
+//____ ReleaseAllChildren() _____________________________________________________
 
-bool WgRoot::ReleaseAllGizmos()
+bool WgRoot::ReleaseAllChildren()
 {
-	return ReleaseGizmo()==0?false:true;
+	return ReleaseChild()==0?false:true;
 }
 
 
@@ -258,7 +258,7 @@ int WgRoot::ExportDirtyRects( WgRect * pDest, int maxRects ) const
 
 //____ FindGizmo() _____________________________________________________________
 
-WgGizmo * WgRoot::FindGizmo( const WgCord& ofs, WgSearchMode mode )
+WgGizmo * WgRoot::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
 	if( !Geo().contains(ofs) || !m_hook.Gizmo() )
 		return 0;
@@ -292,7 +292,7 @@ WgRoot::Hook::~Hook()
 {
 }
 
-WgCord WgRoot::Hook::Pos() const
+WgCoord WgRoot::Hook::Pos() const
 {
 	return m_pRoot->Geo();
 }
@@ -307,7 +307,7 @@ WgRect WgRoot::Hook::Geo() const
 	return m_pRoot->Geo();
 }
 
-WgCord WgRoot::Hook::ScreenPos() const
+WgCoord WgRoot::Hook::ScreenPos() const
 {
 	return m_pRoot->Geo();
 }

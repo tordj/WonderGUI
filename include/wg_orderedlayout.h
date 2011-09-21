@@ -53,10 +53,10 @@ class WgOrderedHook : public WgGizmoHook, protected WgLink
 
 
 public:
-	WgCord	Pos() const;
+	WgCoord	Pos() const;
 	WgSize	Size() const;
 	WgRect	Geo() const;
-	WgCord	ScreenPos() const;
+	WgCoord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
 	inline WgOrderedHook*	Prev() const { return _prev(); }
@@ -104,17 +104,17 @@ public:
 	virtual ~WgOrderedLayout();
 
 
-	WgOrderedHook * AddGizmo( WgGizmo * pGizmo );
-	WgOrderedHook * InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling );
-	WgOrderedHook * InsertGizmoSorted( WgGizmo * pGizmo );
+	WgOrderedHook * AddChild( WgGizmo * pGizmo );
+	WgOrderedHook * InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling );
+	WgOrderedHook * InsertChildSorted( WgGizmo * pGizmo );
 
-	bool			DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+	bool			DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
 
-	bool			DeleteAllGizmos();
-	bool			ReleaseAllGizmos();
+	bool			DeleteAllChildren();
+	bool			ReleaseAllChildren();
 
-	void			SortGizmos();
+	void			SortChildren();
 	void			SetSortOrder( WgSortOrder order );
 	inline WgSortOrder	GetSortOrder() const { return m_sortOrder; }
 
@@ -135,13 +135,13 @@ public:
 
 	// Overloaded from container
 
-	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );	// Default OrderedLayout implementation, assuming front-gizmos overlapping end-gizmos in case of overlap.
+	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );	// Default OrderedLayout implementation, assuming front-gizmos overlapping end-gizmos in case of overlap.
 
 protected:
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool			_onAlphaTest( const WgCord& ofs );
+	bool			_onAlphaTest( const WgCoord& ofs );
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
