@@ -34,16 +34,16 @@ public:
 	WgMonotainer();
 	~WgMonotainer();
 
-	WgGizmoHook *	SetGizmo( WgGizmoContainer * pGizmo );
-	WgGizmo *		Gizmo();
-	bool			DeleteGizmo();
-	WgGizmo *		ReleaseGizmo();
+	WgGizmoHook *	SetChild( WgGizmoContainer * pGizmo );
+	WgGizmo *		Child();
+	bool			DeleteChild();
+	WgGizmo *		ReleaseChild();
 
-	bool			DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+	bool			DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
 
-	bool			DeleteAllGizmos();
-	bool			ReleaseAllGizmos();
+	bool			DeleteAllChildren();
+	bool			ReleaseAllChildren();
 
 
 	// Overloaded from WgGizmo

@@ -31,7 +31,7 @@
  {
  }
 
-WgGizmoHook * WgMonotainer::SetGizmo( WgGizmoContainer * _pGizmo )
+WgGizmoHook * WgMonotainer::SetChild( WgGizmoContainer * _pGizmo )
 {
 	if( !_pGizmo )
 		return false;
@@ -47,12 +47,12 @@ WgGizmoHook * WgMonotainer::SetGizmo( WgGizmoContainer * _pGizmo )
 	return &m_hook;
 }
 
-WgGizmo * WgMonotainer::Gizmo()
+WgGizmo * WgMonotainer::Child()
 {
 	return m_hook.Gizmo();
 }
 
-bool WgMonotainer::DeleteGizmo()
+bool WgMonotainer::DeleteChild()
 {
 	WgGizmo * pGizmo = m_hook._releaseGizmo();
 	if( pGizmo )
@@ -66,7 +66,7 @@ bool WgMonotainer::DeleteGizmo()
 	return false;
 }
 
-WgGizmo * WgMonotainer::ReleaseGizmo()
+WgGizmo * WgMonotainer::ReleaseChild()
 {
 	WgGizmo * pGizmo = m_hook._releaseGizmo();
 	if( pGizmo )
@@ -78,30 +78,30 @@ WgGizmo * WgMonotainer::ReleaseGizmo()
 	return pGizmo;
 }
 
-bool WgMonotainer::DeleteGizmo( WgGizmo * pGizmo )
+bool WgMonotainer::DeleteChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_hook.Gizmo() )
-		return DeleteGizmo();
+		return DeleteChild();
 
 	return false;
 }
 
-WgGizmo * WgMonotainer::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgMonotainer::ReleaseChild( WgGizmo * pGizmo )
 {
 	if(pGizmo == m_hook.Gizmo() )
-		return ReleaseGizmo();
+		return ReleaseChild();
 
 	return 0;
 }
 
-bool WgMonotainer::DeleteAllGizmos()
+bool WgMonotainer::DeleteAllChildren()
 {
-	return DeleteGizmo();
+	return DeleteChild();
 }
 
-bool WgMonotainer::ReleaseAllGizmos()
+bool WgMonotainer::ReleaseAllChildren()
 {
-	ReleaseGizmo();
+	ReleaseChild();
 	return true;
 }
 

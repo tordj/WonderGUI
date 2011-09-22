@@ -172,13 +172,6 @@ int main ( int argc, char** argv )
 
 	pVBox->AddChild(pButton2);
 
-	WgGizmoText * pText1 = new WgGizmoText();
-	pText1->SetText("TEXTA1");
-	pVBox->AddChild(pText1);
-
-	WgGizmoText * pText2 = new WgGizmoText();
-	pText2->SetText("TEXTB234ABC");
-	pVBox->AddChild(pText2);
 
 	pVBox->AddChild(pFlag3);
 	pVBox->AddChild(pFlag4);
@@ -187,14 +180,19 @@ int main ( int argc, char** argv )
 
 	//
 
-//	WgGizmoTabOrder * pTabOrder = new WgGizmoTabOrder();
-//	pVBox->AddGizmo(pTabOrder);
+	WgGizmoTabOrder * pTabOrder = new WgGizmoTabOrder();
+	pVBox->AddChild(pTabOrder);
 
-//	WgVBoxLayout * pTabBox = new WgVBoxLayout();
-//	pTabOrder->SetGizmo(pTabBox);
+	WgVBoxLayout * pTabBox = new WgVBoxLayout();
+	pTabOrder->SetChild(pTabBox);
 
-//	pVBox->AddGizmo(pTabBox);
+	WgGizmoText * pText1 = new WgGizmoText();
+	pText1->SetText("TEXTA1");
+	pTabBox->AddChild(pText1);
 
+	WgGizmoText * pText2 = new WgGizmoText();
+	pText2->SetText("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj");
+	pTabBox->AddChild(pText2);
 
 
 
