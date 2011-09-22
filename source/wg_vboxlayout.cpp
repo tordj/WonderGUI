@@ -144,7 +144,6 @@ void WgVBoxLayout::_onNewSize( const WgSize& size )
 {
 	if( size.w != m_size.w )
 	{
-		m_size.w = size.w;
 		_adaptChildrenToWidth( size.w );
 		RequestRender();
 	}
