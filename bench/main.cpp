@@ -176,7 +176,8 @@ int main ( int argc, char** argv )
 	pVBox->AddChild(pFlag3);
 	pVBox->AddChild(pFlag4);
 
-	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
+	pHook = pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
+	pHook->SetMaxSize( WgSize(120, INT_MAX) );
 
 	//
 

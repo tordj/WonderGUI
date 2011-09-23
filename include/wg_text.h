@@ -252,6 +252,7 @@ public:
 	int					width() const;
 	int					height() const;
 
+	WgSize				unwrappedSize() const;
 	int					unwrappedWidth() const;				// Width of text if no lines are wrapped.
 
 	int					heightForWidth( int width ) const;
