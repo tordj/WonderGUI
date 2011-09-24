@@ -405,6 +405,25 @@ int WgText::unwrappedWidth() const
 	return width;
 }
 
+//____ unwrappedSize() _______________________________________________________
+
+WgSize WgText::unwrappedSize() const
+{
+	WgSize	sz;
+
+	for( int i = 0 ; i < m_nHardLines ; i++ )
+	{
+		if( m_pHardLines[i].width > sz.w )
+			sz.w = m_pHardLines[i].width;
+
+		sz.h += m_pHardLines[i].lineSpacing;
+	}
+
+	sz.h += m_pHardLines[m_nHardLines-1].height - m_pHardLines[m_nHardLines-1].lineSpacing;
+	return sz;
+}
+
+
 //____ width() ________________________________________________________________
 
 int WgText::width() const

@@ -123,7 +123,7 @@ WgSize WgGizmoText::BestSize() const
 {
 	//TODO: Fix this so we don't return current size (after wraptext is adapted to width) but size for unwrapped lines.
 
-	return WgSize( m_text.width(), m_text.height() );
+	return m_text.unwrappedSize();
 }
 
 //____ GetPointerStyle() ________________________________________
