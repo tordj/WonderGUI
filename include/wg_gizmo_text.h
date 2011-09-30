@@ -70,8 +70,8 @@ public:
 	void		goBOF();
 	void		goEOF();
 
-	virtual void		SetInputMode(InputMode mode);
-	virtual InputMode	GetInputMode() const { return m_inputMode; }
+	virtual void			SetEditMode(WgTextEditMode mode);
+	virtual WgTextEditMode	GetEditMode() const { return m_editMode; }
 
 	WgPointerStyle		GetPointerStyle() const;
 
@@ -84,8 +84,8 @@ public:
 
 protected:
 
-	bool	IsEditable() const { return m_inputMode == Editable; }
-	bool	IsSelectable() const { return m_inputMode != Static; }
+	bool	IsEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
+	bool	IsSelectable() const { return m_editMode != WG_TEXT_STATIC; }
 
 	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
@@ -109,7 +109,7 @@ private:
 	bool				m_bHasFocus;
 	int					m_maxCharacters;
 	int					m_maxLines;
-	InputMode			m_inputMode;
+	WgTextEditMode		m_editMode;
 	bool				m_bResetCursorOnFocus;
 };
 

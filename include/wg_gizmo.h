@@ -133,7 +133,7 @@ public:
 	inline bool			GrabFocus() { if( m_pHook ) return m_pHook->RequestFocus(); return false; }
 	inline bool			ReleaseFocus() { if( m_pHook ) return m_pHook->ReleaseFocus(); return false; }
 	inline bool			IsFocused() { return m_bFocused; }
-	inline WgGizmoContainer * ParentX() { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
+	inline WgGizmoParent * ParentX() { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
 
 	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
 	inline WgGizmo *	PrevSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }

@@ -96,7 +96,7 @@ protected:
 
 	WgGizmoHook *	_prevHook() const;
 	WgGizmoHook *	_nextHook() const;
-	WgGizmoContainer * _parent() const;
+	WgGizmoParent * _parent() const;
 
 	int				m_height;		// Minimum height needed for this Gizmo.
 	WgTableRow2 *	m_pRow;			//

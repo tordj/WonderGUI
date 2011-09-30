@@ -183,7 +183,7 @@ private:
 		inline WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
 		inline WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		inline WgGizmoContainer* Parent() const { return m_pParent; }
+		inline WgGizmoModal* Parent() const { return m_pParent; }
 
 		inline WgWidget*	GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
 
@@ -196,7 +196,7 @@ private:
 
 		WgGizmoHook *	_prevHook() const { return 0; }
 		WgGizmoHook *	_nextHook() const { return m_pParent->FirstModal(); }
-		WgGizmoContainer * _parent() const { return m_pParent; }
+		WgGizmoParent * _parent() const { return m_pParent; }
 
 		WgGizmoModal * 	m_pParent;
 		WgRectChain		m_dirt;		// Dirty areas to be rendered, in screen coordinates!

@@ -83,7 +83,7 @@ private:
 		inline WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
 		inline WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		inline WgGizmoContainer* Parent() const { return m_pParent; }
+		inline WgMonotainer* Parent() const { return m_pParent; }
 
 		inline WgWidget*	GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
 
@@ -96,7 +96,7 @@ private:
 
 		WgGizmoHook *	_prevHook() const { return 0; }
 		WgGizmoHook *	_nextHook() const { return 0; }
-		WgGizmoContainer * _parent() const { return m_pParent; }
+		WgGizmoParent * _parent() const { return m_pParent; }
 
 		WgMonotainer * 	m_pParent;
 

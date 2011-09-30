@@ -34,7 +34,6 @@
 #	include <wg_rectchain.h>
 #endif
 
-class WgInputDevice;
 class WgGfxDevice;
 class WgGizmo;
 
@@ -42,14 +41,13 @@ class WgRoot : private WgGizmoParent
 {
 public:
 	WgRoot();
-	WgRoot( WgGfxDevice * pGfxDevice, WgInputDevice * pInputDevice );
+	WgRoot( WgGfxDevice * pGfxDevice );
 	~WgRoot();
 
 	bool					SetGfxDevice( WgGfxDevice * pDevice );
 	inline WgGfxDevice * 	GfxDevice() const { return m_pGfxDevice; };
 
-	bool 					SetInputDevice( WgInputDevice * pDevice );
-	inline WgInputDevice *	InputDevice() const { return m_pInputDevice; }
+	inline WgEventHandler *	EventHandler() const { return m_pEventHandler; }
 
 	bool					SetGeo( const WgRect& geo );
 	WgRect					Geo() const;
@@ -71,6 +69,7 @@ public:
 	bool					IsRoot() const { return true; }
 
 	WgGizmo *				CastToGizmo() { return 0; }
+	WgGizmoContainer *		CastToContainer() { return 0; }
 	WgRoot *				CastToRoot() { return this; }
 
 
@@ -114,7 +113,7 @@ protected:
 
 		WgGizmoHook *	_prevHook() const;
 		WgGizmoHook *	_nextHook() const;
-		WgGizmoContainer * _parent() const;			// Always returns 0.
+		WgGizmoParent * _parent() const;
 
 		WgRoot *		m_pRoot;
 	};
@@ -129,7 +128,7 @@ protected:
 	WgRectChain			m_dirtyRects;
 
 	WgGfxDevice *		m_pGfxDevice;
-	WgInputDevice *		m_pInputDevice;
+	WgEventHandler *	m_pEventHandler;
 	Hook				m_hook;
 	WgRect				m_geo;
 	bool				m_bHasGeo;

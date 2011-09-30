@@ -1160,7 +1160,7 @@ WgGizmoHook * WgViewHook::_nextHook() const
 
 //____ WgViewHook::_parent() ___________________________________________________
 
-WgGizmoContainer * WgViewHook::_parent() const
+WgGizmoParent * WgViewHook::_parent() const
 {
 	return m_pView;
 }

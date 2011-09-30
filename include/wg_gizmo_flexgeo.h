@@ -149,7 +149,7 @@ protected:
 
 	WgGizmoHook *	_prevHook() const;
 	WgGizmoHook *	_nextHook() const;
-	WgGizmoContainer * _parent() const;
+	WgGizmoParent * _parent() const;
 
 	WgGizmoFlexGeo * m_pParent;
 

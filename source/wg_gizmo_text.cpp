@@ -40,7 +40,7 @@ WgGizmoText::WgGizmoText()
 	m_maxLines		= 0;
 
 	m_text.setLineWidth( Size().w );
-	m_inputMode = Static;
+	m_editMode = WG_TEXT_STATIC;
 	m_bResetCursorOnFocus = true;
 }
 
@@ -94,9 +94,9 @@ void WgGizmoText::goEOF()
 
 
 //_______________________________________________________________
-void WgGizmoText::SetInputMode(InputMode mode)
+void WgGizmoText::SetEditMode(WgTextEditMode mode)
 {
-	m_inputMode = mode;
+	m_editMode = mode;
 }
 
 //____ _onUpdate() ________________________________________________________

@@ -85,7 +85,7 @@ WgGizmoHook* WgTableHook::_nextHook() const
 	return NextInTable();
 }
 
-WgGizmoContainer * WgTableHook::_parent() const
+WgGizmoParent * WgTableHook::_parent() const
 {
 	return m_pRow->m_pTable;
 }
