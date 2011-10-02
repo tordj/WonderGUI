@@ -60,6 +60,14 @@ bool WgGizmoContainer::IsRoot() const
 	return false;
 }
 
+//____ CastToContainer() ___________________________________________________________
+
+WgGizmoContainer * WgGizmoContainer::CastToContainer()
+{
+	return this;
+}
+
+
 //____ CastToRoot() ___________________________________________________________
 
 WgRoot * WgGizmoContainer::CastToRoot()

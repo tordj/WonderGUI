@@ -85,7 +85,7 @@ bool WgGizmoHook::ReleaseFocus()
 
 WgRoot * WgGizmoHook::Root()
 {
-	WgGizmoContainer * pParent = Parent();
+	WgGizmoParent * pParent = Parent();
 
 	if( pParent->IsGizmo() )
 	{

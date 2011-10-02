@@ -68,8 +68,8 @@ public:
 	Uint32	InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
-	virtual void		SetInputMode(InputMode mode);
-	virtual InputMode	GetInputMode() const { return m_inputMode; }
+	virtual void			SetEditMode(WgTextEditMode mode);
+	virtual WgTextEditMode	GetEditMode() const { return m_editMode; }
 	virtual bool		TempIsInputField() const	{ return IsEditable() && TextObj()->nbChars() > 0; }
 	virtual Wg_Interface_TextHolder* TempGetText(){ return this; }
 
@@ -77,8 +77,8 @@ public:
 
 protected:
 
-	bool	IsEditable() const { return m_inputMode == Editable; }
-	bool	IsSelectable() const { return m_inputMode != Static; }
+	bool	IsEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
+	bool	IsSelectable() const { return m_editMode != WG_TEXT_STATIC; }
 
 	void	_onUpdate( const WgUpdateInfo& _updateInfo );
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
@@ -104,7 +104,7 @@ private:
 	int					m_maxCharacters;
 	Uint16				m_pwGlyph;
 	int					m_viewOfs;
-	InputMode			m_inputMode;
+	WgTextEditMode		m_editMode;
 };
 
 

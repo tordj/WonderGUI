@@ -87,10 +87,6 @@
 #	include <wg_gizmo.h>
 #endif
 
-#ifndef WG_INPUTDEVICE_DOT_H
-#	include <wg_inputdevice.h>
-#endif
-
 #ifndef WG_KEY_DOT_H
 #	include <wg_key.h>
 #endif

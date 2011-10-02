@@ -57,12 +57,11 @@ int main ( int argc, char** argv )
 
 	WgSurfaceSDL * pCanvas = new WgSurfaceSDL( pScreen );
 	WgGfxDevice * pGfxDevice = new WgGfxDeviceSDL( pCanvas );
-	WgInputDevice * pInputDevice = new WgInputDevice();
 
-	WgRoot * pRoot = new WgRoot( pGfxDevice, pInputDevice );
+	WgRoot * pRoot = new WgRoot( pGfxDevice );
 	pRoot->SetGeo(WgRect(0,0,640,480));
 
-	WgEventHandler * pEventHandler = new WgEventHandler( 0, pRoot );
+	WgEventHandler * pEventHandler = pRoot->EventHandler();
 
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
 	pEventLogger->IgnoreEvent( WG_EVENT_POINTER_PLACED );
@@ -80,6 +79,27 @@ int main ( int argc, char** argv )
 
 	WgFont * pFont = new WgFont();
 	pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 8 );
+
+	WgSurface * pCursorImg = loadSurface("cursors.png");
+
+	WgGfxAnim * pCursorEOL = new WgGfxAnim();
+	pCursorEOL->setHeight(8);
+	pCursorEOL->setWidth(8);
+	pCursorEOL->addHorrTiledFrames(2, pCursorImg, 0, 0, 200 );
+
+
+	WgGfxAnim * pCursorINS = new WgGfxAnim();
+	pCursorINS->setHeight(8);
+	pCursorINS->setWidth(8);
+	pCursorINS->addHorrTiledFrames(2, pCursorImg, 0, 8, 200 );
+
+	WgCursor * pCursor = new WgCursor();
+	pCursor->setAnim(WgCursor::EOL, pCursorEOL);
+	pCursor->setAnim(WgCursor::INS, pCursorINS);
+	pCursor->setAnim(WgCursor::OVR, pCursorEOL);
+	pCursor->setBearing(WgCursor::EOL, WgCoord(0,-8));
+	pCursor->setBearing(WgCursor::INS, WgCoord(0,-8));
+	pCursor->setBearing(WgCursor::OVR, WgCoord(0,-8));
 
 	// Set default textprop
 
@@ -189,13 +209,17 @@ int main ( int argc, char** argv )
 
 	WgGizmoText * pText1 = new WgGizmoText();
 	pText1->SetText("TEXTA1");
+	pText1->SetEditMode(WG_TEXT_EDITABLE);
+	pText1->SetCursor(pCursor);
 	pTabBox->AddChild(pText1);
 
 	WgGizmoText * pText2 = new WgGizmoText();
 	pText2->SetText("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj");
+	pText2->SetEditMode(WG_TEXT_EDITABLE);
+	pText2->SetCursor(pCursor);
 	pTabBox->AddChild(pText2);
 
-
+	pText1->GrabFocus();
 
 
     // program main loop
@@ -224,7 +248,6 @@ int main ( int argc, char** argv )
 
 	delete pRoot;
 	delete pGfxDevice;
-	delete pInputDevice;
 	delete pCanvas;
 	delete pBackImg;
 	delete pFlagImg;

@@ -27,19 +27,27 @@
 #	include <wg_gfxdevice.h>
 #endif
 
+#include <wg_eventhandler.h>
+
 //____ Constructor ____________________________________________________________
 
-WgRoot::WgRoot() : m_pGfxDevice(0), m_pInputDevice(0), m_geo(0,0,0,0), m_bHasGeo(false)
+WgRoot::WgRoot()
 {
+	m_bHasGeo = false;
+	m_geo = WgRect(0,0,0,0);
+	m_pGfxDevice = 0;
+	m_pEventHandler = new WgEventHandler(this);
+	m_hook.m_pRoot = this;
+
 }
 
 
-WgRoot::WgRoot( WgGfxDevice * pGfxDevice, WgInputDevice * pInputDevice )
+WgRoot::WgRoot( WgGfxDevice * pGfxDevice )
 {
 	m_bHasGeo = false;
 	m_geo = WgRect(0,0,0,0);
 	m_pGfxDevice = pGfxDevice;
-	m_pInputDevice = pInputDevice;
+	m_pEventHandler = new WgEventHandler(this);
 	m_hook.m_pRoot = this;
 }
 
@@ -47,6 +55,7 @@ WgRoot::WgRoot( WgGfxDevice * pGfxDevice, WgInputDevice * pInputDevice )
 
 WgRoot::~WgRoot()
 {
+	delete m_pEventHandler;
 }
 
 //____ SetGfxDevice() _________________________________________________________
@@ -58,16 +67,6 @@ bool WgRoot::SetGfxDevice( WgGfxDevice * pDevice )
 	if( m_pGfxDevice && !m_bHasGeo && m_hook.Gizmo() )
 		m_hook.Gizmo()->_onNewSize( m_pGfxDevice->CanvasSize() );
 
-	return true;
-}
-
-//____ SetInputDevice() _______________________________________________________
-
-bool WgRoot::SetInputDevice( WgInputDevice * pDevice )
-{
-	//TODO: Handle mouse and keyboard focus changes...
-
-	m_pInputDevice = pDevice;
 	return true;
 }
 
@@ -274,16 +273,20 @@ WgGizmo * WgRoot::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 bool WgRoot::_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting )
 {
-	//TODO: Implement
-	return false;
+	if( m_pEventHandler )
+		return m_pEventHandler->SetKeyboardFocus(pGizmoRequesting);
+	else
+		return false;
 }
 
 //____ _focusReleased() ________________________________________________________
 
 bool WgRoot::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
 {
-	//TODO: Implement
-	return false;
+	if( m_pEventHandler )
+		return m_pEventHandler->SetKeyboardFocus(0);
+	else
+		return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -352,8 +355,8 @@ WgGizmoHook * WgRoot::Hook::_nextHook() const
 	return 0;
 }
 
-WgGizmoContainer* WgRoot::Hook::_parent() const
+WgGizmoParent * WgRoot::Hook::_parent() const
 {
-	return 0;
+	return m_pRoot;
 }
 

@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -31,7 +31,7 @@ class WgInterfaceEditText : public Wg_Interface_TextHolder
 {
 public:
 
-	virtual void	SetInputMode(InputMode mode) = 0;
+	virtual void	SetEditMode(WgTextEditMode mode) = 0;
 
 	virtual Uint32	InsertTextAtCursor( const WgCharSeq& str ) = 0;
 	virtual bool	InsertCharAtCursor( Uint16 c ) = 0;

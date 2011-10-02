@@ -55,6 +55,7 @@ class WgGizmoContainer : public WgGizmoParent
 		bool		IsRoot() const;
 
 //		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
+		WgGizmoContainer *	CastToContainer();
 		WgRoot *	CastToRoot();
 
 	protected:

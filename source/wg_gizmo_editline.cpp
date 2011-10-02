@@ -41,7 +41,7 @@ WgGizmoEditline::WgGizmoEditline()
 	m_pwGlyph		= '*';
 	m_viewOfs		= 0;
 	m_maxCharacters = 0;
-	m_inputMode		= Editable;
+	m_editMode		= WG_TEXT_EDITABLE;
 	m_pointerStyle	= WG_POINTER_IBEAM;
 	m_bResetCursorOnFocus = true;
 }
@@ -67,9 +67,9 @@ const char * WgGizmoEditline::GetMyType()
 }
 
 //______________________________________________________________
-void WgGizmoEditline::SetInputMode(InputMode mode)
+void WgGizmoEditline::SetEditMode(WgTextEditMode mode)
 {
-	m_inputMode = mode;
+	m_editMode = mode;
 
 	if( IsSelectable() )
 	{

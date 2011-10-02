@@ -43,13 +43,7 @@ class Wg_Interface_TextHolder : protected WgTextHolder
 {
 
 public:
-	enum InputMode
-	{
-		Static,
-		Selectable,
-		Editable,
-	};
-	virtual InputMode GetInputMode() const  { return Static; }
+	virtual WgTextEditMode GetEditMode() const  { return WG_TEXT_STATIC; }
 
 	virtual void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); TextModified(); }
 	inline WgTextManager * GetTextManager() const { return m_pText->getManager(); }

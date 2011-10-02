@@ -29,10 +29,10 @@
 
 //____ Constructor ____________________________________________________________
 
-WgEventHandler::WgEventHandler( int64_t startTime, WgRoot * pRoot )
+WgEventHandler::WgEventHandler( WgRoot * pRoot )
 {
 	m_pRoot					= pRoot;
-	m_time					= startTime;
+	m_time					= 0;
 	m_modKeys				= WG_MODKEY_NONE;
 
 	m_doubleClickTimeTreshold		= 250;
@@ -183,9 +183,9 @@ bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
 	{
 		// Check what focus group (if any) this Gizmo belongs to.
 
-		WgGizmoContainer * p = pFocus->ParentX();
+		WgGizmoContainer * p = pFocus->ParentX()->CastToContainer();
 		while( p && !p->IsFocusGroup() )
-			p = p->CastToGizmo()->ParentX();
+			p = p->CastToGizmo()->ParentX()->CastToContainer();
 
 		if( p )
 			m_keyFocusGroup = p->CastToGizmo();
@@ -1026,12 +1026,7 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostPointerMoveEvents)
 		{
 			vNowMarked.push_back(pGizmo);
 
-			WgGizmoContainer * p = pGizmo->Hook()->Parent();
-
-			if( p )
-				pGizmo = p->CastToGizmo();
-			else
-				pGizmo = 0;
+			pGizmo = pGizmo->ParentX()->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
 		}
 	}
 
@@ -1102,12 +1097,7 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostPointerMoveEvents)
 			if( bPostPointerMoveEvents )
 				QueueEvent( new WgEvent::PointerMoveOutsideModal(pGizmo) );
 
-			WgGizmoContainer * p = pGizmo->Hook()->Parent();
-
-			if( p )
-				pGizmo = p->CastToGizmo();
-			else
-				pGizmo = 0;
+			pGizmo = pGizmo->ParentX()->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
 		}
 	}
 }

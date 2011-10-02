@@ -575,7 +575,7 @@ WgGizmoHook * WgFlexHook::_nextHook() const
 
 //____ WgFlexHook::_parent() __________________________________________________
 
-WgGizmoContainer* WgFlexHook::_parent() const
+WgGizmoParent * WgFlexHook::_parent() const
 {
 	return m_pParent;
 }
@@ -650,11 +650,19 @@ bool WgFlexHook::RefreshRealGeo()
 				sz = m_pGizmo->BestSize();
 				if( sz.w == 0 && sz.h == 0 )
 					sz = m_pGizmo->MinSize();
+
+				if( sz.w > m_maxSize.w )
+				{
+					sz.w = m_maxSize.w;
+					sz.h = m_pGizmo->HeightForWidth(m_maxSize.w);
+				}
+
 				break;
 			case WG_SIZE_MAX:
 				sz = m_pGizmo->MaxSize();
 				break;
 		};
+
 
 		if( sz.w < m_minSize.w )
 			sz.w = m_minSize.w;

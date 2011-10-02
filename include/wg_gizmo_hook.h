@@ -33,7 +33,7 @@
 
 
 
-class WgGizmoContainer;
+class WgGizmoParent;
 class WgWidget;
 class WgGfxDevice;
 class WgGizmo;
@@ -58,7 +58,7 @@ public:
 	inline WgGizmoHook *	Next() const { return _nextHook(); }
 
 	inline	WgGizmo *			Gizmo() const { return m_pGizmo; }
-	inline  WgGizmoContainer * 	Parent() const { return _parent(); }
+	inline  WgGizmoParent * 	Parent() const { return _parent(); }
 	virtual WgRoot *			Root();
 
 	virtual WgWidget*	GetRoot() = 0;			// Remove once Widgets are gone...
@@ -85,7 +85,7 @@ protected:
 
 	virtual WgGizmoHook *	_prevHook() const = 0;
 	virtual WgGizmoHook *	_nextHook() const = 0;
-	virtual WgGizmoContainer * _parent() const = 0;
+	virtual WgGizmoParent * _parent() const = 0;
 
 
 	WgGizmo *		m_pGizmo;

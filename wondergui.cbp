@@ -92,7 +92,6 @@
 		<Unit filename="include/wg_gizmo_view.h" />
 		<Unit filename="include/wg_glyphset.h" />
 		<Unit filename="include/wg_input.h" />
-		<Unit filename="include/wg_inputdevice.h" />
 		<Unit filename="include/wg_interface_edittext.h" />
 		<Unit filename="include/wg_interface_textholder.h" />
 		<Unit filename="include/wg_interface_valueholder.h" />
@@ -176,7 +175,6 @@
 		<Unit filename="source/wg_gizmo_value.cpp" />
 		<Unit filename="source/wg_gizmo_view.cpp" />
 		<Unit filename="source/wg_glyphset.cpp" />
-		<Unit filename="source/wg_inputdevice.cpp" />
 		<Unit filename="source/wg_interface_edittext.cpp" />
 		<Unit filename="source/wg_interface_textholder.cpp" />
 		<Unit filename="source/wg_interface_valueholder.cpp" />

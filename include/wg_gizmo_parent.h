@@ -34,10 +34,12 @@
 class WgGizmo;
 class WgRoot;
 class WgGizmoHook;
-
+class WgGizmoContainer;
 
 class WgGizmoParent : public WgGizmoCollection
 {
+	friend class WgGizmoContainer;
+	friend class WgGizmoHook;
 	public:
 
 		virtual WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode ) = 0;
@@ -48,8 +50,9 @@ class WgGizmoParent : public WgGizmoCollection
 		virtual bool		DeleteAllChildren() = 0;
 		virtual bool		ReleaseAllChildren() = 0;
 
-		virtual WgGizmo *	CastToGizmo() = 0;
-		virtual WgRoot *	CastToRoot() = 0;
+		virtual WgGizmo *			CastToGizmo() = 0;
+		virtual WgGizmoContainer *	CastToContainer() = 0;
+		virtual WgRoot *			CastToRoot() = 0;
 
 		virtual bool		IsGizmo() const = 0;
 		virtual bool		IsRoot() const = 0;

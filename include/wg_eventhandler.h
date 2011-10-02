@@ -55,7 +55,7 @@ public:
 class WgEventHandler
 {
 public:
-	WgEventHandler( int64_t startTime, WgRoot * pRoot );
+	WgEventHandler( WgRoot * pRoot );
 	~WgEventHandler();
 
 	bool	QueueEvent( WgEvent::Event * pEvent );
