@@ -214,11 +214,14 @@ namespace WgEvent
 
 	class Tick : public Event
 	{
+		friend class ::WgEventHandler;
 	public:
 		Tick( int ms );
 
 		int				Millisec() const;
 	protected:
+		Tick( int ms, WgGizmo * pGizmo );
+
 		int			m_millisec;
 	};
 

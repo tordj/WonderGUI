@@ -128,6 +128,9 @@ public:
 private:
 	class	Callback;
 
+	void 	_postTickEvents( int ticks );
+	void 	_processEventQueue();
+
 
 	void	_finalizeEvent( WgEvent::Event * pEvent );
 	void	_processGeneralEvent( WgEvent::Event * pEvent );
@@ -178,6 +181,8 @@ private:
 	int64_t			m_time;
 	WgCoord			m_pointerPos;
 	WgModifierKeys	m_modKeys;
+
+	std::vector<WgGizmoWeakPtr>	m_vTickGizmos;		// Gizmos that have requested periodic tick-events (i.e. on every processEvents() ).
 
 	// Settings for keyboard/pointer input
 

@@ -639,6 +639,8 @@ bool WgEventHandler::QueueEvent( WgEvent::Event * pEvent )
 
 void WgEventHandler::ProcessEvents()
 {
+	int64_t	time = m_time;
+
 	m_bIsProcessing = true;
 
 	// First thing: we make sure that we know what Gizmos pointer is inside, in case that has changed.
@@ -646,8 +648,25 @@ void WgEventHandler::ProcessEvents()
 	m_insertPos = m_eventQueue.begin();	// Insert any POINTER_ENTER/EXIT right at beginning.
 	_updateMarkedGizmos(false);
 
-	// Process all the events
+	// Process all the events in the queue
 
+	_processEventQueue();
+
+	// Post Gizmo-specific tick events now we know how much time has passed
+
+	_postTickEvents( (int) (m_time-time) );
+
+	// Process Gizmo-specific tick events (and any events they might trigger)
+
+	_processEventQueue();
+
+	m_bIsProcessing = false;
+}
+
+//____ _processEventQueue() ___________________________________________________
+
+void WgEventHandler::_processEventQueue()
+{
 	while( !m_eventQueue.empty() )
 	{
 		WgEvent::Event * pEvent = m_eventQueue.front();
@@ -677,8 +696,23 @@ void WgEventHandler::ProcessEvents()
 			pEvent->Type() != WG_EVENT_BUTTON_RELEASE && pEvent->Type() != WG_EVENT_KEY_PRESS) )
 			delete pEvent;
 	}
+}
 
-	m_bIsProcessing = false;
+//____ _postTickEvents() ______________________________________________________
+
+void WgEventHandler::_postTickEvents( int ticks )
+{
+	for( int i = 0 ; i < m_vTickGizmos.size() ; i++ )
+	{
+		WgGizmo * pGizmo = m_vTickGizmos[i].GetRealPtr();
+
+		if( pGizmo && pGizmo->Hook() && pGizmo->Hook()->Root() == m_pRoot )
+			QueueEvent( new WgEvent::Tick( ticks, pGizmo ) );
+		else
+		{
+			//TODO: Decide what to do... probably just delete entry...
+		}
+	}
 }
 
 //____ _processEventCallbacks() ________________________________________________

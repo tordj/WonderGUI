@@ -115,7 +115,7 @@ int main ( int argc, char** argv )
 	WgSurface * pBackImg = loadSurface("What-Goes-Up-3.bmp");
 	WgBlockSetPtr pBackBlock = pBackImg->defineBlockSet( WgRect(0,0,pBackImg->Width(),pBackImg->Height()), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );
 
-	WgSurface * pFlagImg = loadSurface("cb2.bmp");
+	WgSurface * pFlagImg = loadSurface("splash.png");
 	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
 
 	WgSurface * pBlocksImg = loadSurface("blocks.png");
@@ -179,7 +179,10 @@ int main ( int argc, char** argv )
 
 	//
 
+
 	WgVBoxLayout * pVBox = new WgVBoxLayout();
+	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
+
 
 	WgGizmoPixmap * pFlag3 = new WgGizmoPixmap();
 	pFlag3->SetSource( pFlagBlock );
@@ -192,9 +195,8 @@ int main ( int argc, char** argv )
 
 	pVBox->AddChild(pButton2);
 
-
 	pVBox->AddChild(pFlag3);
-	pVBox->AddChild(pFlag4);
+//	pVBox->AddChild(pFlag4);
 
 	pHook = pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
 	pHook->SetMaxSize( WgSize(120, INT_MAX) );

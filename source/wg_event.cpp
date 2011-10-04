@@ -305,6 +305,14 @@ namespace WgEvent
 		m_millisec = ms;
 	}
 
+	Tick::Tick( int ms, WgGizmo * pGizmo )
+	{
+		m_type = WG_EVENT_TICK;
+		m_millisec = ms;
+		m_pGizmo = pGizmo;
+	}
+
+
 	int Tick::Millisec() const
 	{
 		return m_millisec;
