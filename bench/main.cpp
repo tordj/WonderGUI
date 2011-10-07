@@ -70,6 +70,32 @@ int main ( int argc, char** argv )
 //	pEventLogger->LogButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
 
+	pEventHandler->MapKey( WG_KEY_SHIFT, SDLK_LSHIFT );
+	pEventHandler->MapKey( WG_KEY_SHIFT, SDLK_RSHIFT );
+	pEventHandler->MapKey( WG_KEY_CONTROL, SDLK_LCTRL );
+	pEventHandler->MapKey( WG_KEY_CONTROL, SDLK_RCTRL );
+	pEventHandler->MapKey( WG_KEY_ALT, SDLK_LALT );
+	pEventHandler->MapKey( WG_KEY_ALT, SDLK_RALT );
+
+
+	pEventHandler->MapKey( WG_KEY_LEFT, SDLK_LEFT );
+	pEventHandler->MapKey( WG_KEY_RIGHT, SDLK_RIGHT );
+	pEventHandler->MapKey( WG_KEY_UP, SDLK_UP );
+	pEventHandler->MapKey( WG_KEY_DOWN, SDLK_DOWN );
+
+	pEventHandler->MapKey( WG_KEY_HOME, SDLK_HOME );
+	pEventHandler->MapKey( WG_KEY_END, SDLK_END );
+	pEventHandler->MapKey( WG_KEY_PAGEUP, SDLK_PAGEUP );
+	pEventHandler->MapKey( WG_KEY_PAGEDOWN, SDLK_PAGEDOWN );
+
+	pEventHandler->MapKey( WG_KEY_RETURN, SDLK_RETURN );
+	pEventHandler->MapKey( WG_KEY_BACKSPACE, SDLK_BACKSPACE );
+	pEventHandler->MapKey( WG_KEY_DELETE, SDLK_DELETE );
+	pEventHandler->MapKey( WG_KEY_TAB, SDLK_TAB );
+	pEventHandler->MapKey( WG_KEY_ESCAPE, SDLK_ESCAPE );
+
+
+
 	// Load font
 
 	WgSurface * pFontImg = loadSurface("anuvverbubbla_8x8.png");
@@ -86,12 +112,13 @@ int main ( int argc, char** argv )
 	pCursorEOL->setHeight(8);
 	pCursorEOL->setWidth(8);
 	pCursorEOL->addHorrTiledFrames(2, pCursorImg, 0, 0, 200 );
-
+	pCursorEOL->SetPlayMode( WG_FORWARD_LOOPING );
 
 	WgGfxAnim * pCursorINS = new WgGfxAnim();
 	pCursorINS->setHeight(8);
 	pCursorINS->setWidth(8);
 	pCursorINS->addHorrTiledFrames(2, pCursorImg, 0, 8, 200 );
+	pCursorINS->SetPlayMode( WG_FORWARD_LOOPING );
 
 	WgCursor * pCursor = new WgCursor();
 	pCursor->setAnim(WgCursor::EOL, pCursorEOL);
@@ -115,7 +142,7 @@ int main ( int argc, char** argv )
 	WgSurface * pBackImg = loadSurface("What-Goes-Up-3.bmp");
 	WgBlockSetPtr pBackBlock = pBackImg->defineBlockSet( WgRect(0,0,pBackImg->Width(),pBackImg->Height()), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );
 
-	WgSurface * pFlagImg = loadSurface("splash.png");
+	WgSurface * pFlagImg = loadSurface("cb2.bmp");
 	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
 
 	WgSurface * pBlocksImg = loadSurface("blocks.png");
@@ -181,7 +208,7 @@ int main ( int argc, char** argv )
 
 
 	WgVBoxLayout * pVBox = new WgVBoxLayout();
-	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
+//	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
 
 
 	WgGizmoPixmap * pFlag3 = new WgGizmoPixmap();
@@ -223,6 +250,9 @@ int main ( int argc, char** argv )
 
 	pText1->GrabFocus();
 
+	pTabOrder->AddToTabOrder(pText1);
+	pTabOrder->AddToTabOrder(pText2);
+	
 
     // program main loop
 
@@ -232,7 +262,6 @@ int main ( int argc, char** argv )
         // DRAWING STARTS HERE
 
 		pRoot->Render( WgRect(0,0,pCanvas->Width(),pCanvas->Height()) );
-
 
         // DRAWING ENDS HERE
 
@@ -284,6 +313,8 @@ SDL_Surface * initSDL( int w, int h )
         printf("Unable to set %dx%d video: %s\n", w, h, SDL_GetError());
         return 0;
     }
+	
+	SDL_EnableUNICODE(true);
 
 	return pScreen;
 }
@@ -315,6 +346,16 @@ bool eventLoop( WgEventHandler * pHandler )
 				// exit if ESCAPE is pressed
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 					return false;
+
+				pHandler->QueueEvent( new WgEvent::KeyPress( event.key.keysym.sym ) );
+				if( event.key.keysym.unicode != 0 )
+					pHandler->QueueEvent( new WgEvent::Character( event.key.keysym.unicode ) );
+				break;
+			}
+
+			case SDL_KEYUP:
+			{
+				pHandler->QueueEvent( new WgEvent::KeyRelease( event.key.keysym.sym ) );
 				break;
 			}
 

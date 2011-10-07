@@ -24,6 +24,8 @@
 #include <wg_types.h>
 #include <wg_skinmanager.h>
 #include <wg_rectchain.h>
+#include <wg_root.h>
+#include <wg_eventhandler.h>
 
 static const char	s_type[] = {"Unspecified"};
 
@@ -31,7 +33,8 @@ static const char	s_type[] = {"Unspecified"};
 
 WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_pointerStyle(WG_POINTER_DEFAULT),
 					m_markPolicy( WG_MARKPOLICY_ALPHA ), m_bEnabled(true), m_bOpaque(false),
-					m_bFocused(false), m_bTabLock(false), m_bRenderOne(false), m_bRendersAll(false)
+					m_bFocused(false), m_bTabLock(false), m_bReceiveTick(false),
+					m_bRenderOne(false), m_bRendersAll(false)
 {
 }
 
@@ -146,10 +149,44 @@ void WgGizmo::CloneContent( const WgGizmo * _pOrg )
 
 //____ _onNewHook() ___________________________________________________________
 
-void WgGizmo::_onNewHook( WgGizmoHook * pHook )
+void WgGizmo::_onNewHook( WgHook * pHook )
 {
 	m_pHook = pHook;
 }
+
+//____ _onNewRoot() ___________________________________________________________
+
+void WgGizmo::_onNewRoot( WgRoot * pRoot )
+{
+	if( m_bReceiveTick && pRoot )
+		pRoot->EventHandler()->_addTickReceiver(this);
+}
+
+//____ _startReceiveTicks() ___________________________________________________
+
+void WgGizmo::_startReceiveTicks()
+{
+	if( !m_bReceiveTick )
+	{
+		m_bReceiveTick = true;
+
+		if( m_pHook )
+		{
+			WgRoot * pRoot = m_pHook->Root();
+			if( pRoot )
+				pRoot->EventHandler()->_addTickReceiver(this);
+		}
+	}
+}
+
+//____ _stopReceiveTicks() ____________________________________________________
+
+void WgGizmo::_stopReceiveTicks()
+{
+	m_bReceiveTick = false;
+}
+
+
 
 //____ SetSkinNode() __________________________________________________________
 
@@ -182,14 +219,14 @@ WgCoord WgGizmo::Abs2local( const WgCoord& cord ) const
 
 int WgGizmo::HeightForWidth( int width ) const
 {
-	return -1;		// No recommendation.
+	return BestSize().h;		// Default is to stick with best height no matter what width.
 }
 
 //____ WidthForHeight() _______________________________________________________
 
 int WgGizmo::WidthForHeight( int height ) const
 {
-	return -1;		// No recommendation.
+	return BestSize().w;		// Default is to stick with best width no matter what height.
 }
 
 //____ MinSize() ______________________________________________________________

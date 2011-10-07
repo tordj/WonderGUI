@@ -34,7 +34,7 @@ public:
 	WgMonotainer();
 	~WgMonotainer();
 
-	WgGizmoHook *	SetChild( WgGizmoContainer * pGizmo );
+	WgHook *	SetChild( WgGizmoContainer * pGizmo );
 	WgGizmo *		Child();
 	bool			DeleteChild();
 	WgGizmo *		ReleaseChild();
@@ -69,7 +69,7 @@ public:
 
 private:
 
-	class Hook : public WgGizmoHook
+	class Hook : public WgHook
 	{
 		friend class WgMonotainer;
 
@@ -94,8 +94,8 @@ private:
 		inline void		RequestRender( const WgRect& rect ) { return m_pParent->RequestRender(rect); }
 		inline void		RequestResize() { return m_pParent->RequestResize(); }
 
-		WgGizmoHook *	_prevHook() const { return 0; }
-		WgGizmoHook *	_nextHook() const { return 0; }
+		WgHook *	_prevHook() const { return 0; }
+		WgHook *	_nextHook() const { return 0; }
 		WgGizmoParent * _parent() const { return m_pParent; }
 
 		WgMonotainer * 	m_pParent;
@@ -117,8 +117,8 @@ private:
 	void			_clearDirtyRects();
 
 
-	WgGizmoHook*	_firstHook() const;
-	WgGizmoHook*	_lastHook() const;
+	WgHook*	_firstHook() const;
+	WgHook*	_lastHook() const;
 
 	Hook			m_hook;
 

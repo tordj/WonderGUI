@@ -38,7 +38,7 @@ class WgGizmoFlexGeo;
 
 //____ WgFlexHook _____________________________________________________________
 
-class WgFlexHook : public WgGizmoHook, protected WgLink
+class WgFlexHook : public WgHook, protected WgLink
 {
 	friend class WgGizmo;
 	friend class WgGizmoContainer;
@@ -147,8 +147,8 @@ protected:
 	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCoord& parentPos, Uint8 _layer );
 
 
-	WgGizmoHook *	_prevHook() const;
-	WgGizmoHook *	_nextHook() const;
+	WgHook *	_prevHook() const;
+	WgHook *	_nextHook() const;
 	WgGizmoParent * _parent() const;
 
 	WgGizmoFlexGeo * m_pParent;
@@ -298,8 +298,8 @@ private:
 	void			_clearDirtyRects();
 
 
-	WgGizmoHook*	_firstHook() const { return FirstHook(); }
-	WgGizmoHook*	_lastHook() const { return LastHook(); }
+	WgHook*	_firstHook() const { return FirstHook(); }
+	WgHook*	_lastHook() const { return LastHook(); }
 
 	WgChain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;

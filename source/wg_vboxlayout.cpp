@@ -438,9 +438,6 @@ void  WgVBoxLayout::_onGizmoAppeared( WgOrderedHook * pInserted )
 	// expand us in RequestResize() if it wants to.
 
 	int	height = pHook->Gizmo()->HeightForWidth(m_size.w);
-	if( height == -1 )
-		height = m_bestSize.h;
-
 
 	pHook->m_height = height;
 	m_size.h += height;

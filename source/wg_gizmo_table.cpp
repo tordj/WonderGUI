@@ -75,12 +75,12 @@ WgRect WgTableHook::ScreenGeo() const
 }
 
 
-WgGizmoHook* WgTableHook::_prevHook() const
+WgHook* WgTableHook::_prevHook() const
 {
 	return PrevInTable();
 }
 
-WgGizmoHook* WgTableHook::_nextHook() const
+WgHook* WgTableHook::_nextHook() const
 {
 	return NextInTable();
 }
@@ -204,7 +204,7 @@ WgWidget* WgTableHook::GetRoot()
 	WgGizmoTable* pTable = Row()->Table();
 	if( pTable )
 	{
-		WgGizmoHook* pHook = pTable->Hook();
+		WgHook* pHook = pTable->Hook();
 		if( pHook )
 			return pHook->GetRoot();
 	}
@@ -927,7 +927,7 @@ void WgGizmoTable::UpdateColumnWidths()
 			if( m_pColumns[n].m_bWidthChanged && pHook->Gizmo() )
 			{
 				int w = m_pColumns[n].m_realWidth;
-				int h = pHook->Gizmo()->HeightForWidth(w);		//TODO: NEEDS TO BE ABLE TO HANDLE -1 (NO RECOMMENDATION) AS ANSWER!!!!!!!!!
+				int h = pHook->Gizmo()->HeightForWidth(w);
 				pHook->Gizmo()->_onNewSize( WgSize( w, h ) );
 
 				if( h != pHook->m_height )
@@ -1679,7 +1679,7 @@ int WgGizmoTable::HeightForWidth( int width ) const
 {
 	//TODO: Implement, should recurse through lines and their gizmos checking height needed.
 
-	return -1;		// No recommendation, for the moment
+	return BestSize().h;		// No recommendation, for the moment
 }
 
 //____ WidthForHeight() _______________________________________________________

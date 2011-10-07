@@ -35,8 +35,8 @@
 #	include <wg_input.h>
 #endif
 
-#ifndef WG_GIZMO_HOOK_DOT_H
-#	include <wg_gizmo_hook.h>
+#ifndef WG_HOOK_DOT_H
+#	include <wg_hook.h>
 #endif
 
 #ifndef WG_EMITTER_DOT_H
@@ -69,7 +69,7 @@ friend class WgSkinNode;
 friend class WgInput;
 friend class WgEventHandler;
 
-friend class WgGizmoHook;
+friend class WgHook;
 friend class WgFlexHook;
 friend class WgModalHook;
 friend class WgVBoxHook;
@@ -120,7 +120,7 @@ public:
 	inline WgMarkPolicy	GetMarkPolicy() const { return m_markPolicy; }
 	bool				MarkTest( const WgCoord& ofs );
 
-	WgGizmoHook*		Hook() const { return m_pHook; }
+	WgHook*		Hook() const { return m_pHook; }
 
 
 	// Convenient calls to hook
@@ -135,8 +135,8 @@ public:
 	inline bool			IsFocused() { return m_bFocused; }
 	inline WgGizmoParent * ParentX() { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
 
-	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
-	inline WgGizmo *	PrevSibling() const { if( m_pHook ) {WgGizmoHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
+	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
+	inline WgGizmo *	PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
 
 	WgCoord				Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
 	WgCoord				Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
@@ -170,9 +170,13 @@ public:
 
 protected:
 
-	void			_onNewHook( WgGizmoHook * pHook );
+	void			_onNewHook( WgHook * pHook );
+	void			_onNewRoot( WgRoot * pRoot );
 	void			SetSkinNode( WgSkinNode * pNode );
 	WgSkinNode *	GetSkinNode() const { return m_pSkinNode; }
+
+	void			_startReceiveTicks();
+	void			_stopReceiveTicks();
 
 	// Convenient calls to hook
 
@@ -197,6 +201,7 @@ protected:
 	virtual void	_onDisable();
 	virtual void	_onGotInputFocus();
 	virtual void	_onLostInputFocus();
+
 	// rename when gizmos are done
 	virtual bool	TempIsInputField() const;
 	virtual Wg_Interface_TextHolder*	TempGetText();
@@ -204,7 +209,7 @@ protected:
 	//
 
 	Uint32			m_id;
-	WgGizmoHook *	m_pHook;
+	WgHook *	m_pHook;
 
 	WgSkinNode *	m_pSkinNode;
 
@@ -215,8 +220,9 @@ protected:
 
 	bool			m_bEnabled;
 	bool			m_bOpaque;
-	bool			m_bFocused;
+	bool			m_bFocused;		// Set when Gizmo has keyborard focus.
 	bool			m_bTabLock;		// If set, the gizmo prevents focus shifting away from it with tab.
+	bool			m_bReceiveTick;	// Set if Gizmo should reveive periodic Tick() events.
 
 	bool			m_bRenderOne;
 	bool			m_bRendersAll;

@@ -54,6 +54,8 @@ public:
 
 class WgEventHandler
 {
+friend class WgGizmo;
+
 public:
 	WgEventHandler( WgRoot * pRoot );
 	~WgEventHandler();
@@ -169,7 +171,7 @@ private:
 	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
 	void 	_updateMarkedGizmos(bool bPostPointerMoveEvents);
-
+	void	_addTickReceiver( WgGizmo * pGizmo );
 	//
 
 	WgRoot *		m_pRoot;

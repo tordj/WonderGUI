@@ -1140,7 +1140,7 @@ void WgViewHook::RequestResize()
 
 //____ WgViewHook::_prevHook() ___________________________________________________
 
-WgGizmoHook * WgViewHook::_prevHook() const
+WgHook * WgViewHook::_prevHook() const
 {
 	if( this == &m_pView->m_elements[0] )
 		return 0;
@@ -1150,7 +1150,7 @@ WgGizmoHook * WgViewHook::_prevHook() const
 
 //____ WgViewHook::_nextHook() ___________________________________________________
 
-WgGizmoHook * WgViewHook::_nextHook() const
+WgHook * WgViewHook::_nextHook() const
 {
 	if( this == &m_pView->m_elements[2] )
 		return 0;

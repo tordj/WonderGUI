@@ -271,7 +271,7 @@ WgGizmo * WgRoot::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 //____ _focusRequested() _______________________________________________________
 
-bool WgRoot::_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting )
+bool WgRoot::_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting )
 {
 	if( m_pEventHandler )
 		return m_pEventHandler->SetKeyboardFocus(pGizmoRequesting);
@@ -281,7 +281,7 @@ bool WgRoot::_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting 
 
 //____ _focusReleased() ________________________________________________________
 
-bool WgRoot::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
+bool WgRoot::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing )
 {
 	if( m_pEventHandler )
 		return m_pEventHandler->SetKeyboardFocus(0);
@@ -345,12 +345,12 @@ void WgRoot::Hook::RequestResize()
 	// Do nothing, root ignores size requests.
 }
 
-WgGizmoHook * WgRoot::Hook::_prevHook() const
+WgHook * WgRoot::Hook::_prevHook() const
 {
 	return 0;
 }
 
-WgGizmoHook * WgRoot::Hook::_nextHook() const
+WgHook * WgRoot::Hook::_nextHook() const
 {
 	return 0;
 }

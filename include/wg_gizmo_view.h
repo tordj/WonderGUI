@@ -36,7 +36,7 @@ class WgGizmoView;
 
 //____ WgViewHook _____________________________________________________________
 
-class WgViewHook : public WgGizmoHook
+class WgViewHook : public WgHook
 {
 	friend class WgGizmoView;
 public:
@@ -47,8 +47,8 @@ public:
 	WgCoord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
-	inline WgGizmoHook * Prev() const { return _prevHook(); }
-	inline WgGizmoHook * Next() const { return _nextHook(); }
+	inline WgHook * Prev() const { return _prevHook(); }
+	inline WgHook * Next() const { return _nextHook(); }
 
 	inline WgGizmoView * Parent() const { return m_pView; }
 
@@ -63,8 +63,8 @@ protected:
 	~WgViewHook();
 	inline void			_setParent( WgGizmoView * pParent ) { m_pView = pParent; }
 
-	WgGizmoHook *		_prevHook() const;
-	WgGizmoHook *		_nextHook() const;
+	WgHook *		_prevHook() const;
+	WgHook *		_nextHook() const;
 	WgGizmoParent *		_parent() const;
 
 
@@ -298,8 +298,8 @@ protected:
 
 private:
 
-	WgGizmoHook*	_firstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }
-	WgGizmoHook*	_lastHook() const { return const_cast<WgViewHook*>(&m_elements[2]); }
+	WgHook*	_firstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }
+	WgHook*	_lastHook() const { return const_cast<WgViewHook*>(&m_elements[2]); }
 
 
 	WgBlockSetPtr	m_pFillerBlocks;

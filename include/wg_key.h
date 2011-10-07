@@ -4,7 +4,7 @@
 
 enum WgKey
 {
-	WG_KEY_LEFT = 0,
+	WG_KEY_LEFT = 1,
 	WG_KEY_RIGHT,
 	WG_KEY_UP,
 	WG_KEY_DOWN,

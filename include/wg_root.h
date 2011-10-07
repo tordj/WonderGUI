@@ -88,7 +88,7 @@ public:
 	WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 protected:
-	class Hook : public WgGizmoHook
+	class Hook : public WgHook
 	{
 		friend class WgRoot;
 	public:
@@ -111,19 +111,19 @@ protected:
 		void			RequestRender( const WgRect& rect );
 		void			RequestResize();
 
-		WgGizmoHook *	_prevHook() const;
-		WgGizmoHook *	_nextHook() const;
+		WgHook *	_prevHook() const;
+		WgHook *	_nextHook() const;
 		WgGizmoParent * _parent() const;
 
 		WgRoot *		m_pRoot;
 	};
 
 
-	WgGizmoHook*	_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
-	WgGizmoHook*	_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*	_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*	_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
 
-	bool 			_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
-	bool 			_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
+	bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );
+	bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );
 
 	WgRectChain			m_dirtyRects;
 

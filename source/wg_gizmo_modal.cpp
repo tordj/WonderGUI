@@ -277,7 +277,7 @@ void WgModalHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& c
 }
 
 //_____________________________________________________________________________
-WgGizmoHook * WgModalHook::_prevHook() const
+WgHook * WgModalHook::_prevHook() const
 {
 	WgModalHook * p = _prev();
 
@@ -290,7 +290,7 @@ WgGizmoHook * WgModalHook::_prevHook() const
 }
 
 //_____________________________________________________________________________
-WgGizmoHook * WgModalHook::_nextHook() const
+WgHook * WgModalHook::_nextHook() const
 {
 	WgModalHook * p = _prev();
 
@@ -357,7 +357,7 @@ const char * WgGizmoModal::GetMyType()
 
 //____ SetBase() _________________________________________________________
 
-WgGizmoHook * WgGizmoModal::SetBase( WgGizmo * pGizmo )
+WgHook * WgGizmoModal::SetBase( WgGizmo * pGizmo )
 {
 	// Replace Gizmo
 
@@ -889,7 +889,7 @@ bool WgGizmoModal::_onAlphaTest( const WgCoord& ofs )
 
 //____ _firstHook() ___________________________________________________________
 
-WgGizmoHook* WgGizmoModal::_firstHook() const
+WgHook* WgGizmoModal::_firstHook() const
 {
 	if( m_baseHook.Gizmo() )
 		return const_cast<BaseHook*>(&m_baseHook);
@@ -899,7 +899,7 @@ WgGizmoHook* WgGizmoModal::_firstHook() const
 
 //____ _lastHook() ____________________________________________________________
 
-WgGizmoHook* WgGizmoModal::_lastHook() const
+WgHook* WgGizmoModal::_lastHook() const
 {
 	return m_modalHooks.Last();
 }

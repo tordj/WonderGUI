@@ -702,18 +702,30 @@ void WgEventHandler::_processEventQueue()
 
 void WgEventHandler::_postTickEvents( int ticks )
 {
-	for( int i = 0 ; i < m_vTickGizmos.size() ; i++ )
-	{
-		WgGizmo * pGizmo = m_vTickGizmos[i].GetRealPtr();
+	std::vector<WgGizmoWeakPtr>::iterator it = m_vTickGizmos.begin();
 
-		if( pGizmo && pGizmo->Hook() && pGizmo->Hook()->Root() == m_pRoot )
-			QueueEvent( new WgEvent::Tick( ticks, pGizmo ) );
-		else
+	while( it != m_vTickGizmos.end() )
+	{
+		WgGizmo * pGizmo = (*it).GetRealPtr();
+
+		if( pGizmo && pGizmo->Hook() && pGizmo->Hook()->Root() == m_pRoot && pGizmo->m_bReceiveTick )
 		{
-			//TODO: Decide what to do... probably just delete entry...
+			QueueEvent( new WgEvent::Tick( ticks, pGizmo ) );
+			++it;
 		}
+		else
+			it = m_vTickGizmos.erase(it);
 	}
 }
+
+//____ _addTickReceiver() _____________________________________________________
+
+void WgEventHandler::_addTickReceiver( WgGizmo * pGizmo )
+{
+	if( pGizmo && !_isGizmoInList( pGizmo, m_vTickGizmos ) )
+		m_vTickGizmos.push_back( WgGizmoWeakPtr(pGizmo) );
+}
+
 
 //____ _processEventCallbacks() ________________________________________________
 
@@ -926,14 +938,14 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 	{
 		KeyDownInfo * pInfo = m_keysDown[i];
-		int timePassed = (int) (pInfo->pEvent->Timestamp() - pEvent->Timestamp());
+		int timePassed = (int) (pEvent->Timestamp() - pInfo->pEvent->Timestamp());
 
-		int fraction = 0;
+		int fraction = timePassed - m_keyRepeatDelay;
 
-		if( timePassed < m_keyRepeatDelay )
-			fraction = (timePassed - m_keyRepeatDelay) + m_keyRepeatRate;
+		if( fraction < 0 )
+			fraction += m_keyRepeatRate;
 		else
-			fraction = (timePassed - m_keyRepeatDelay)%m_keyRepeatRate;
+			fraction %= m_keyRepeatRate;
 
 		fraction += pEvent->Millisec();
 
@@ -1135,6 +1147,7 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostPointerMoveEvents)
 		}
 	}
 }
+
 
 //____ _processKeyPress() ______________________________________________________
 

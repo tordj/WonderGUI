@@ -23,8 +23,8 @@
 #ifndef WG_ORDERED_LAYOUT_DOT_H
 #define WG_ORDERED_LAYOUT_DOT_H
 
-#ifndef WG_GIZMO_HOOK_DOT_H
-#	include <wg_gizmo_hook.h>
+#ifndef WG_HOOK_DOT_H
+#	include <wg_hook.h>
 #endif
 
 #ifndef WG_GIZMO_CONTAINER_DOT_H
@@ -46,7 +46,7 @@
 class WgOrderedLayout;
 
 
-class WgOrderedHook : public WgGizmoHook, protected WgLink
+class WgOrderedHook : public WgHook, protected WgLink
 {
 	friend class WgOrderedLayout;
 	friend class WgChain<WgOrderedHook>;
@@ -89,8 +89,8 @@ protected:
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
 
-	WgGizmoHook *	_prevHook() const;
-	WgGizmoHook *	_nextHook() const;
+	WgHook *	_prevHook() const;
+	WgHook *	_nextHook() const;
 
 	bool				m_bHidden;
 };
@@ -146,8 +146,8 @@ protected:
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 
-	inline WgGizmoHook*	_firstHook() const { return m_hooks.First(); }
-	inline WgGizmoHook*	_lastHook() const { return m_hooks.Last(); }
+	inline WgHook*	_firstHook() const { return m_hooks.First(); }
+	inline WgHook*	_lastHook() const { return m_hooks.Last(); }
 
 	inline int		_compareGizmos(const WgGizmo * p1, const WgGizmo * p2) { return m_pSortFunc?m_pSortFunc(p1,p2):0; }
 

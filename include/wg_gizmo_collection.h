@@ -31,8 +31,8 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_GIZMO_HOOK_DOT_H
-#	include <wg_gizmo_hook.h>
+#ifndef WG_HOOK_DOT_H
+#	include <wg_hook.h>
 #endif
 
 
@@ -48,11 +48,11 @@ public:
 	WgGizmoCollection() {};
 	virtual ~WgGizmoCollection() {};
 
-	inline WgGizmo *	FirstGizmo() const { WgGizmoHook * p = FirstHook(); if( p ) return p->Gizmo(); else return 0; }
-	inline WgGizmo *	LastGizmo() const { WgGizmoHook * p = LastHook(); if( p ) return p->Gizmo(); else return 0; }
+	inline WgGizmo *	FirstGizmo() const { WgHook * p = FirstHook(); if( p ) return p->Gizmo(); else return 0; }
+	inline WgGizmo *	LastGizmo() const { WgHook * p = LastHook(); if( p ) return p->Gizmo(); else return 0; }
 
-	inline WgGizmoHook *	FirstHook() const { return _firstHook(); }
-	inline WgGizmoHook *	LastHook() const { return _lastHook(); }
+	inline WgHook *	FirstHook() const { return _firstHook(); }
+	inline WgHook *	LastHook() const { return _lastHook(); }
 
 
 //	dynamic_cast<WgGizmoStackHook*>(w->GetHook())
@@ -83,8 +83,8 @@ public:
 */
 
 protected:
-	virtual WgGizmoHook*	_firstHook() const = 0;
-	virtual WgGizmoHook*	_lastHook() const = 0;
+	virtual WgHook*	_firstHook() const = 0;
+	virtual WgHook*	_lastHook() const = 0;
 
 
 };

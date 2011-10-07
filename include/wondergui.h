@@ -187,8 +187,8 @@
 #	include <wg_gizmo_container.h>
 #endif
 
-#ifndef WG_GIZMO_HOOK_DOT_H
-#	include <wg_gizmo_hook.h>
+#ifndef WG_HOOK_DOT_H
+#	include <wg_hook.h>
 #endif
 
 #ifndef WG_GIZMO_PARENT_DOT_H

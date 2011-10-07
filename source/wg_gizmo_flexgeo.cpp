@@ -561,14 +561,14 @@ WgRect WgFlexHook::ScreenGeo() const
 
 //____ WgFlexHook::_prevHook() ________________________________________________
 
-WgGizmoHook * WgFlexHook::_prevHook() const
+WgHook * WgFlexHook::_prevHook() const
 {
 	return _prev();
 }
 
 //____ WgFlexHook::_nextHook() ________________________________________________
 
-WgGizmoHook * WgFlexHook::_nextHook() const
+WgHook * WgFlexHook::_nextHook() const
 {
 	return _next();
 }
@@ -584,7 +584,7 @@ WgGizmoParent * WgFlexHook::_parent() const
 
 WgWidget* WgFlexHook::GetRoot()
 {
-	WgGizmoHook * p = m_pParent->Hook();
+	WgHook * p = m_pParent->Hook();
 	if( p )
 		return p->GetRoot();
 	else

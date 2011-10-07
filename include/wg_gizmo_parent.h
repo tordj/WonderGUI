@@ -33,13 +33,13 @@
 
 class WgGizmo;
 class WgRoot;
-class WgGizmoHook;
+class WgHook;
 class WgGizmoContainer;
 
 class WgGizmoParent : public WgGizmoCollection
 {
 	friend class WgGizmoContainer;
-	friend class WgGizmoHook;
+	friend class WgHook;
 	public:
 
 		virtual WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode ) = 0;
@@ -59,8 +59,8 @@ class WgGizmoParent : public WgGizmoCollection
 
 	protected:
 
-		virtual bool _focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
-		virtual bool _focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;
+		virtual bool _focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
+		virtual bool _focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;
 };
 
 

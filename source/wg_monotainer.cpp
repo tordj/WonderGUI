@@ -31,7 +31,7 @@
  {
  }
 
-WgGizmoHook * WgMonotainer::SetChild( WgGizmoContainer * _pGizmo )
+WgHook * WgMonotainer::SetChild( WgGizmoContainer * _pGizmo )
 {
 	if( !_pGizmo )
 		return false;
@@ -215,12 +215,12 @@ void WgMonotainer::_clearDirtyRects()
 		m_hook.Gizmo()->CastToContainer()->_clearDirtyRects();
 }
 
-WgGizmoHook* WgMonotainer::_firstHook() const
+WgHook* WgMonotainer::_firstHook() const
 {
 	return const_cast<Hook*>(&m_hook);
 }
 
-WgGizmoHook* WgMonotainer::_lastHook() const
+WgHook* WgMonotainer::_lastHook() const
 {
 	return const_cast<Hook*>(&m_hook);
 }

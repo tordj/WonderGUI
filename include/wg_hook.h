@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_GIZMO_HOOK_DOT_H
-#define WG_GIZMO_HOOK_DOT_H
+#ifndef WG_HOOK_DOT_H
+#define WG_HOOK_DOT_H
 
 #ifndef	WG_GEO_DOT_H
 #	include <wg_geo.h>
@@ -41,7 +41,7 @@ class WgRoot;
 class WgRectLink;
 class WgRectChain;
 
-class WgGizmoHook
+class WgHook
 {
 	friend class WgGizmo;
 	friend class WgGizmoContainer;
@@ -54,8 +54,8 @@ public:
 	virtual WgCoord	ScreenPos() const = 0;
 	virtual WgRect	ScreenGeo() const = 0;
 
-	inline WgGizmoHook *	Prev() const { return _prevHook(); }
-	inline WgGizmoHook *	Next() const { return _nextHook(); }
+	inline WgHook *	Prev() const { return _prevHook(); }
+	inline WgHook *	Next() const { return _nextHook(); }
 
 	inline	WgGizmo *			Gizmo() const { return m_pGizmo; }
 	inline  WgGizmoParent * 	Parent() const { return _parent(); }
@@ -65,8 +65,8 @@ public:
 
 protected:
 
-	WgGizmoHook() : m_pGizmo(0) {}
-	virtual ~WgGizmoHook();
+	WgHook() : m_pGizmo(0) {}
+	virtual ~WgHook();
 
 	virtual void	_attachGizmo( WgGizmo * pGizmo );				// Make sure Gizmo links us. Call when hook has been relocated.
 	void			_relinkGizmo();
@@ -83,12 +83,12 @@ protected:
 
 	//
 
-	virtual WgGizmoHook *	_prevHook() const = 0;
-	virtual WgGizmoHook *	_nextHook() const = 0;
+	virtual WgHook *	_prevHook() const = 0;
+	virtual WgHook *	_nextHook() const = 0;
 	virtual WgGizmoParent * _parent() const = 0;
 
 
 	WgGizmo *		m_pGizmo;
 };
 
-#endif //WG_GIZMO_HOOK_DOT_H
+#endif //WG_HOOK_DOT_H

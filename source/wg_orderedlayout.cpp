@@ -139,7 +139,7 @@ WgOrderedLayout * WgOrderedHook::Parent() const
 
 WgWidget* WgOrderedHook::GetRoot()
 {
-	WgGizmoHook * p = Parent()->Hook();
+	WgHook * p = Parent()->Hook();
 	if( p )
 		return p->GetRoot();
 	else
@@ -173,12 +173,12 @@ void WgOrderedHook::RequestResize()
 }
 
 
-WgGizmoHook * WgOrderedHook::_prevHook() const
+WgHook * WgOrderedHook::_prevHook() const
 {
 	return _prev();
 }
 
-WgGizmoHook * WgOrderedHook::_nextHook() const
+WgHook * WgOrderedHook::_nextHook() const
 {
 	return _next();
 }

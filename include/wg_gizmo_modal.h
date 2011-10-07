@@ -34,7 +34,7 @@
 class WgGizmoModal;
 
 
-class WgModalHook : public WgGizmoHook, protected WgLink
+class WgModalHook : public WgHook, protected WgLink
 {
 	friend class WgGizmoModal;
 	friend class WgChain<WgModalHook>;
@@ -93,8 +93,8 @@ protected:
 	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
 
 
-	WgGizmoHook *	_prevHook() const;
-	WgGizmoHook *	_nextHook() const;
+	WgHook *	_prevHook() const;
+	WgHook *	_nextHook() const;
 	WgGizmoContainer * _parent() const;
 
 
@@ -123,7 +123,7 @@ public:
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
 
-	WgGizmoHook *	SetBase( WgGizmo * pGizmo );
+	WgHook *	SetBase( WgGizmo * pGizmo );
 	WgGizmo *		Base();
 	bool			DeleteBase();
 	WgGizmo *		ReleaseBase();
@@ -169,7 +169,7 @@ public:
 
 private:
 
-	class BaseHook : public WgGizmoHook
+	class BaseHook : public WgHook
 	{
 		friend class WgGizmoModal;
 
@@ -194,8 +194,8 @@ private:
 		void		RequestRender( const WgRect& rect );
 		void		RequestResize();
 
-		WgGizmoHook *	_prevHook() const { return 0; }
-		WgGizmoHook *	_nextHook() const { return m_pParent->FirstModal(); }
+		WgHook *	_prevHook() const { return 0; }
+		WgHook *	_nextHook() const { return m_pParent->FirstModal(); }
 		WgGizmoParent * _parent() const { return m_pParent; }
 
 		WgGizmoModal * 	m_pParent;
@@ -223,8 +223,8 @@ private:
 	void			_clearDirtyRects();
 
 
-	WgGizmoHook*	_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
-	WgGizmoHook*	_lastHook() const;		//
+	WgHook*	_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
+	WgHook*	_lastHook() const;		//
 
 
 	BaseHook				m_baseHook;
