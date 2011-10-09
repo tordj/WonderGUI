@@ -29,6 +29,7 @@
 #endif
 */
 
+#include <assert.h>
 
 #ifndef WG_USERDEFINES_DOT_H
 #	include <wg_userdefines.h>
@@ -66,7 +67,7 @@ public:
 
 #ifdef WG_USE_FREETYPE
 	static bool					InitFreeType();
-	static inline FT_Library	GetFreeTypeLibrary() { return s_freeTypeLibrary; }
+	static inline FT_Library	GetFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
 #endif
 
 
@@ -75,39 +76,43 @@ public:
 //	static const WgTextMgrPtr& GetDefaultTextManager();
 
 	static void SetDefaultTextProp( const WgTextPropPtr& pProp );
-	static WgTextPropPtr GetDefaultTextProp() { return s_pDefaultTextProp; }
+	static WgTextPropPtr GetDefaultTextProp() { assert(s_pData!=0); return s_pData->pDefaultTextProp; }
 
 	static void SetDefaultSelectionProp( const WgTextPropPtr& pProp );
-	static WgTextPropPtr GetDefaultSelectionProp() { return s_pDefaultSelectionProp; }
+	static WgTextPropPtr GetDefaultSelectionProp() { assert(s_pData!=0); return s_pData->pDefaultSelectionProp; }
 
 	static void SetDefaultLinkProp( const WgTextPropPtr& pProp );
-	static WgTextPropPtr GetDefaultLinkProp() { return s_pDefaultLinkProp; }
+	static WgTextPropPtr GetDefaultLinkProp() { assert(s_pData!=0); return s_pData->pDefaultLinkProp; }
 
 	static void SetDefaultCursor( WgCursor * pCursor );
-	static WgCursor * GetDefaultCursor() { return s_pDefaultCursor; }
+	static WgCursor * GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
 
 	static void SetDefaultTextLinkHandler( WgTextLinkHandler * pHandler );
-	static WgTextLinkHandler * GetDefaultTextLinkHandler() { return s_pDefaultTextLinkHandler; }
+	static WgTextLinkHandler * GetDefaultTextLinkHandler() { assert(s_pData!=0); return s_pData->pDefaultTextLinkHandler; }
 
 	static WgWeakPtrHub *	AllocWeakPtrHub();
 	static void			FreeWeakPtrHub( WgWeakPtrHub * pHub );
 
 private:
-	static WgTextPropPtr		s_pDefaultTextProp;
-	static WgTextPropPtr		s_pDefaultSelectionProp;
-	static WgTextPropPtr		s_pDefaultLinkProp;
-	static WgTextLinkHandler*	s_pDefaultTextLinkHandler;
 
-	static WgCursor *		s_pDefaultCursor;
-//	WgTextMgrPtr	m_pDefTextMgr;
+	struct Data
+	{
+		WgTextPropPtr		pDefaultTextProp;
+		WgTextPropPtr		pDefaultSelectionProp;
+		WgTextPropPtr		pDefaultLinkProp;
+		WgTextLinkHandler * pDefaultTextLinkHandler;
+		WgCursor *			pDefaultCursor;
 
-	static WgMemPool *	s_pWeakPtrPool;
+		WgMemPool *			pWeakPtrPool;
 
 #ifdef WG_USE_FREETYPE
-	static bool			s_bFreeTypeInitialized;
-	static FT_Library	s_freeTypeLibrary;
+		bool				bFreeTypeInitialized;
+		FT_Library			freeTypeLibrary;
 #endif
 
+	};
+
+	static Data *	s_pData;
 
 };
 

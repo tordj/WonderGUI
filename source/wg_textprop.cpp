@@ -467,7 +467,8 @@ WgTextPropPtr::WgTextPropPtr( WgTextPropHolder * pProp )
 {
 	if( pProp )
 		m_hProp = pProp->m_id;
-	else m_hProp = 0;
+	else 
+		m_hProp = 0;
 
 	WgTextPropManager::IncRef(m_hProp, 1);
 }
