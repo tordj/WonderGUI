@@ -32,8 +32,8 @@
 #	include <wg_blockset.h>
 #endif
 
-#ifndef WG_GIZMO_HOOK_DOT_H
-#	include <wg_gizmo_hook.h>
+#ifndef WG_HOOK_DOT_H
+#	include <wg_hook.h>
 #endif
 
 #ifndef WG_INTERFACE_TEXTHOLDER_DOT_H
@@ -56,7 +56,7 @@ typedef int(*fpGizmoCmp)(WgGizmo*,WgGizmo*);
 
 //____ WgTableHook ____________________________________________________________
 
-class WgTableHook : public WgGizmoHook
+class WgTableHook : public WgHook
 {
 	friend class WgTableRow2;
 	friend class WgGizmoTable;
@@ -94,9 +94,9 @@ protected:
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
 
-	WgGizmoHook *	_prevHook() const;
-	WgGizmoHook *	_nextHook() const;
-	WgGizmoContainer * _parent() const;
+	WgHook *	_prevHook() const;
+	WgHook *	_nextHook() const;
+	WgGizmoParent * _parent() const;
 
 	int				m_height;		// Minimum height needed for this Gizmo.
 	WgTableRow2 *	m_pRow;			//
@@ -144,8 +144,8 @@ private:
 	WgTableColumn2( WgGizmoTable * pOwner );
 	~WgTableColumn2();
 
-	WgGizmoHook*	_firstHook() const { return FirstHook(); }
-	WgGizmoHook*	_lastHook() const { return LastHook(); }
+	WgHook*	_firstHook() const { return FirstHook(); }
+	WgHook*	_lastHook() const { return LastHook(); }
 
 	void			TextModified();
 	void			SetTextObj(WgText *text);
@@ -214,8 +214,8 @@ protected:
 
 private:
 
-	WgGizmoHook*	_firstHook() const { return FirstHook(); }
-	WgGizmoHook*	_lastHook() const { return LastHook(); }
+	WgHook*	_firstHook() const { return FirstHook(); }
+	WgHook*	_lastHook() const { return LastHook(); }
 
 	void			GrowCellsArray( int nCells );
 
@@ -325,11 +325,11 @@ public:
 
 	// Overloaded from WgGizmoParent
 
-	bool			DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+	bool			DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
 
-	bool			DeleteAllGizmos();
-	bool			ReleaseAllGizmos();
+	bool			DeleteAllChildren();
+	bool			ReleaseAllChildren();
 
 //	void	ScrollIntoView( WgTableRow2* pRow );
 
@@ -391,8 +391,8 @@ protected:
 	bool	_onAlphaTest( const WgCoord& ofs );
 
 private:
-	WgGizmoHook*	_firstHook() const { return FirstHook(); }
-	WgGizmoHook*	_lastHook() const { return LastHook(); }
+	WgHook*	_firstHook() const { return FirstHook(); }
+	WgHook*	_lastHook() const { return LastHook(); }
 
 	void		refreshRows();
 	void		RowModified( WgTableRow2* pRow, int widthDiff , int heightDiff );

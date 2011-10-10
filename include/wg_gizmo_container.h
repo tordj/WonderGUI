@@ -36,7 +36,7 @@ class WgRectChain;
 
 class WgGizmoContainer : public WgGizmoParent
 {
-	friend class WgGizmoHook;
+	friend class WgHook;
 	friend class WgFlexHook;
 	friend class WgModalHook;
 
@@ -55,6 +55,7 @@ class WgGizmoContainer : public WgGizmoParent
 		bool		IsRoot() const;
 
 //		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
+		WgGizmoContainer *	CastToContainer();
 		WgRoot *	CastToRoot();
 
 	protected:
@@ -70,8 +71,8 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) = 0;
 		virtual void	_clearDirtyRects() = 0;
 
-		bool 		_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inerits from WgGizmo
-		bool 		_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inerits from WgGizmo
+		bool 		_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inerits from WgGizmo
+		bool 		_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inerits from WgGizmo
 
 		bool		m_bFocusGroup;
 };

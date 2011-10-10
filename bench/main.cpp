@@ -57,12 +57,11 @@ int main ( int argc, char** argv )
 
 	WgSurfaceSDL * pCanvas = new WgSurfaceSDL( pScreen );
 	WgGfxDevice * pGfxDevice = new WgGfxDeviceSDL( pCanvas );
-	WgInputDevice * pInputDevice = new WgInputDevice();
 
-	WgRoot * pRoot = new WgRoot( pGfxDevice, pInputDevice );
+	WgRoot * pRoot = new WgRoot( pGfxDevice );
 	pRoot->SetGeo(WgRect(0,0,640,480));
 
-	WgEventHandler * pEventHandler = new WgEventHandler( 0, pRoot );
+	WgEventHandler * pEventHandler = pRoot->EventHandler();
 
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
 	pEventLogger->IgnoreEvent( WG_EVENT_POINTER_PLACED );
@@ -70,6 +69,32 @@ int main ( int argc, char** argv )
 //	pEventLogger->IgnoreAllEvents();
 //	pEventLogger->LogButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
+
+	pEventHandler->MapKey( WG_KEY_SHIFT, SDLK_LSHIFT );
+	pEventHandler->MapKey( WG_KEY_SHIFT, SDLK_RSHIFT );
+	pEventHandler->MapKey( WG_KEY_CONTROL, SDLK_LCTRL );
+	pEventHandler->MapKey( WG_KEY_CONTROL, SDLK_RCTRL );
+	pEventHandler->MapKey( WG_KEY_ALT, SDLK_LALT );
+	pEventHandler->MapKey( WG_KEY_ALT, SDLK_RALT );
+
+
+	pEventHandler->MapKey( WG_KEY_LEFT, SDLK_LEFT );
+	pEventHandler->MapKey( WG_KEY_RIGHT, SDLK_RIGHT );
+	pEventHandler->MapKey( WG_KEY_UP, SDLK_UP );
+	pEventHandler->MapKey( WG_KEY_DOWN, SDLK_DOWN );
+
+	pEventHandler->MapKey( WG_KEY_HOME, SDLK_HOME );
+	pEventHandler->MapKey( WG_KEY_END, SDLK_END );
+	pEventHandler->MapKey( WG_KEY_PAGEUP, SDLK_PAGEUP );
+	pEventHandler->MapKey( WG_KEY_PAGEDOWN, SDLK_PAGEDOWN );
+
+	pEventHandler->MapKey( WG_KEY_RETURN, SDLK_RETURN );
+	pEventHandler->MapKey( WG_KEY_BACKSPACE, SDLK_BACKSPACE );
+	pEventHandler->MapKey( WG_KEY_DELETE, SDLK_DELETE );
+	pEventHandler->MapKey( WG_KEY_TAB, SDLK_TAB );
+	pEventHandler->MapKey( WG_KEY_ESCAPE, SDLK_ESCAPE );
+
+
 
 	// Load font
 
@@ -80,6 +105,28 @@ int main ( int argc, char** argv )
 
 	WgFont * pFont = new WgFont();
 	pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 8 );
+
+	WgSurface * pCursorImg = loadSurface("cursors.png");
+
+	WgGfxAnim * pCursorEOL = new WgGfxAnim();
+	pCursorEOL->setHeight(8);
+	pCursorEOL->setWidth(8);
+	pCursorEOL->addHorrTiledFrames(2, pCursorImg, 0, 0, 200 );
+	pCursorEOL->SetPlayMode( WG_FORWARD_LOOPING );
+
+	WgGfxAnim * pCursorINS = new WgGfxAnim();
+	pCursorINS->setHeight(8);
+	pCursorINS->setWidth(8);
+	pCursorINS->addHorrTiledFrames(2, pCursorImg, 0, 8, 200 );
+	pCursorINS->SetPlayMode( WG_FORWARD_LOOPING );
+
+	WgCursor * pCursor = new WgCursor();
+	pCursor->setAnim(WgCursor::EOL, pCursorEOL);
+	pCursor->setAnim(WgCursor::INS, pCursorINS);
+	pCursor->setAnim(WgCursor::OVR, pCursorEOL);
+	pCursor->setBearing(WgCursor::EOL, WgCoord(0,-8));
+	pCursor->setBearing(WgCursor::INS, WgCoord(0,-8));
+	pCursor->setBearing(WgCursor::OVR, WgCoord(0,-8));
 
 	// Set default textprop
 
@@ -93,13 +140,13 @@ int main ( int argc, char** argv )
 	// Load images and specify blocks
 
 	WgSurface * pBackImg = loadSurface("What-Goes-Up-3.bmp");
-	WgBlockSetPtr pBackBlock = pBackImg->defineBlockSet( WgRect(0,0,pBackImg->Width(),pBackImg->Height()), WgBorders(0), WgBorders(0), WG_TILE_ALL );
+	WgBlockSetPtr pBackBlock = pBackImg->defineBlockSet( WgRect(0,0,pBackImg->Width(),pBackImg->Height()), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );
 
 	WgSurface * pFlagImg = loadSurface("cb2.bmp");
-	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0 );
+	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
 
 	WgSurface * pBlocksImg = loadSurface("blocks.png");
-	WgBlockSetPtr pButtonBlock = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,0,8*4+6,8), 2), WgBorders(3), WgBorders(2), WG_OPAQUE );
+	WgBlockSetPtr pButtonBlock = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,0,8*4+6,8), 2), WgBorders(3), WgBorders(2), 0, WG_OPAQUE );
 
 
 	// Background
@@ -110,7 +157,7 @@ int main ( int argc, char** argv )
 	// Main Flex
 
 	WgGizmoFlexGeo * pFlex = new WgGizmoFlexGeo();
-	WgFlexHook * pHook = pFlex->AddGizmo( pBackground );
+	WgFlexHook * pHook = pFlex->AddChild( pBackground );
 
 	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
 
@@ -118,9 +165,9 @@ int main ( int argc, char** argv )
 	// Modal container
 
 	g_pModal = new WgGizmoModal();
-	g_pModal->SetBaseGizmo( pFlex );
+	g_pModal->SetBase( pFlex );
 
-	pRoot->SetGizmo(g_pModal);
+	pRoot->SetChild(g_pModal);
 
 
 	// Modal button
@@ -135,7 +182,7 @@ int main ( int argc, char** argv )
 	WgGizmoButton * pButton = new WgGizmoButton();
 	pButton->SetSource( pButtonBlock );
 
-	pHook = pFlex->AddGizmo( pButton, WgRect(0,0,100,100), WG_NORTHWEST );
+	pHook = pFlex->AddChild( pButton, WgRect(0,0,100,100), WG_NORTHWEST );
 
 	pEventHandler->AddCallback( WgEventFilter::ButtonPress(pButton, 1), cbOpenModal, pModalButton );
 
@@ -144,14 +191,14 @@ int main ( int argc, char** argv )
 	WgGizmoPixmap * pFlag1= new WgGizmoPixmap();
 	pFlag1->SetSource( pFlagBlock );
 
-	pHook = pFlex->AddGizmo( pFlag1, WgCord(0,0), WG_CENTER );
+	pHook = pFlex->AddChild( pFlag1, WgCoord(0,0), WG_CENTER );
 
 
 
 	WgGizmoPixmap * pFlag2= new WgGizmoPixmap();
 	pFlag2->SetSource( pFlagBlock );
 
-	pHook = pFlex->AddGizmo( pFlag2, WgCord(100,100), WG_CENTER );
+	pHook = pFlex->AddChild( pFlag2, WgCoord(100,100), WG_CENTER );
 
 
 	pEventHandler->AddCallback( WgEventFilter::ButtonPress(pFlag1, 1), cbInitDrag, pFlag1 );
@@ -159,7 +206,10 @@ int main ( int argc, char** argv )
 
 	//
 
+
 	WgVBoxLayout * pVBox = new WgVBoxLayout();
+//	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
+
 
 	WgGizmoPixmap * pFlag3 = new WgGizmoPixmap();
 	pFlag3->SetSource( pFlagBlock );
@@ -170,11 +220,39 @@ int main ( int argc, char** argv )
 	pButton2->SetSource( pButtonBlock );
 	pButton2->SetText( "STANDARD BUTTON" );
 
-	pVBox->AddGizmo(pButton2);
-	pVBox->AddGizmo(pFlag3);
-	pVBox->AddGizmo(pFlag4);
+	pVBox->AddChild(pButton2);
 
-	pFlex->AddGizmo( pVBox, WgCord(50,50), WG_NORTHWEST );
+	pVBox->AddChild(pFlag3);
+//	pVBox->AddChild(pFlag4);
+
+	pHook = pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
+	pHook->SetMaxSize( WgSize(120, INT_MAX) );
+
+	//
+
+	WgGizmoTabOrder * pTabOrder = new WgGizmoTabOrder();
+	pVBox->AddChild(pTabOrder);
+
+	WgVBoxLayout * pTabBox = new WgVBoxLayout();
+	pTabOrder->SetChild(pTabBox);
+
+	WgGizmoText * pText1 = new WgGizmoText();
+	pText1->SetText("TEXTA1");
+	pText1->SetEditMode(WG_TEXT_EDITABLE);
+	pText1->SetCursor(pCursor);
+	pTabBox->AddChild(pText1);
+
+	WgGizmoText * pText2 = new WgGizmoText();
+	pText2->SetText("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj");
+	pText2->SetEditMode(WG_TEXT_EDITABLE);
+	pText2->SetCursor(pCursor);
+	pTabBox->AddChild(pText2);
+
+	pText1->GrabFocus();
+
+	pTabOrder->AddToTabOrder(pText1);
+	pTabOrder->AddToTabOrder(pText2);
+	
 
     // program main loop
 
@@ -184,7 +262,6 @@ int main ( int argc, char** argv )
         // DRAWING STARTS HERE
 
 		pRoot->Render( WgRect(0,0,pCanvas->Width(),pCanvas->Height()) );
-
 
         // DRAWING ENDS HERE
 
@@ -202,7 +279,6 @@ int main ( int argc, char** argv )
 
 	delete pRoot;
 	delete pGfxDevice;
-	delete pInputDevice;
 	delete pCanvas;
 	delete pBackImg;
 	delete pFlagImg;
@@ -237,6 +313,8 @@ SDL_Surface * initSDL( int w, int h )
         printf("Unable to set %dx%d video: %s\n", w, h, SDL_GetError());
         return 0;
     }
+	
+	SDL_EnableUNICODE(true);
 
 	return pScreen;
 }
@@ -268,12 +346,22 @@ bool eventLoop( WgEventHandler * pHandler )
 				// exit if ESCAPE is pressed
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 					return false;
+
+				pHandler->QueueEvent( new WgEvent::KeyPress( event.key.keysym.sym ) );
+				if( event.key.keysym.unicode != 0 )
+					pHandler->QueueEvent( new WgEvent::Character( event.key.keysym.unicode ) );
+				break;
+			}
+
+			case SDL_KEYUP:
+			{
+				pHandler->QueueEvent( new WgEvent::KeyRelease( event.key.keysym.sym ) );
 				break;
 			}
 
 			case	SDL_MOUSEMOTION:
 			{
-				pHandler->QueueEvent( new WgEvent::PointerMove( WgCord( event.motion.x, event.motion.y ) ) );
+				pHandler->QueueEvent( new WgEvent::PointerMove( WgCoord( event.motion.x, event.motion.y ) ) );
 				break;
 			}
 
@@ -284,13 +372,13 @@ bool eventLoop( WgEventHandler * pHandler )
 					pHandler->QueueEvent( new WgEvent::WheelRoll( 1, -120 ) );
 				else
 				{
-//					pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.button.x, event.button.y )) );
+//					pHandler->QueueEvent( WgEvent::PointerMove( WgCoord( event.button.x, event.button.y )) );
 					pHandler->QueueEvent( new WgEvent::ButtonPress( event.button.button ) );
 				}
 				break;
 
 			case	SDL_MOUSEBUTTONUP:
-//				pHandler->QueueEvent( WgEvent::PointerMove( WgCord( event.button.x, event.button.y ) ));
+//				pHandler->QueueEvent( WgEvent::PointerMove( WgCoord( event.button.x, event.button.y ) ));
 				if( event.button.button != 4 && event.button.button != 5 )
 				pHandler->QueueEvent( new WgEvent::ButtonRelease( event.button.button ) );
 				break;
@@ -366,7 +454,7 @@ void * loadFile( const char * pPath )
 
 
 
-WgCord dragStartPos;
+WgCoord dragStartPos;
 
 //____ cbInitDrag() ___________________________________________________________
 
@@ -388,9 +476,9 @@ void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 
 	const WgEvent::ButtonDrag* pEvent = static_cast<const WgEvent::ButtonDrag*>(_pEvent);
 
-	WgCord	dragDistance = pEvent->DraggedTotal();
+	WgCoord	dragDistance = pEvent->DraggedTotal();
 
-	WgCord	ofs = dragStartPos + dragDistance;
+	WgCoord	ofs = dragStartPos + dragDistance;
 
 //	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
 	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
@@ -403,14 +491,14 @@ void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 
 void cbOpenModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 {
-	g_pModal->AddModalGizmo( pGizmo, WgCord(), WG_SOUTHEAST );
+	g_pModal->AddModal( pGizmo, WgCoord(), WG_SOUTHEAST );
 }
 
 //____ cbCloseModal() __________________________________________________________
 
 void cbCloseModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 {
-	g_pModal->ReleaseGizmo(pGizmo);
+	g_pModal->ReleaseChild(pGizmo);
 }
 
 

@@ -97,7 +97,7 @@ void WgText::Init()
 	m_lineWidth		= INT_MAX;
 	m_bWrap			= true;
 
-	refreshAllLines();
+	_refreshAllLines();
 	clearSelection();
 }
 
@@ -136,14 +136,14 @@ void WgText::setCursorStyle( WgCursor * pCursor )
 	if( pCursor != m_pCursorStyle )
 	{
 		m_pCursorStyle = pCursor;
-		regenSoftLines();					// Doesn't affect linelenght now, but should in the future,
-		refreshAllLines();					// so let's call these two methods anyway.
+		_regenSoftLines();					// Doesn't affect linelenght now, but should in the future,
+		_refreshAllLines();					// so let's call these two methods anyway.
 	}
 }
 
-//____ regenHardLines() _______________________________________________________
+//____ _regenHardLines() _______________________________________________________
 
-void WgText::regenHardLines()
+void WgText::_regenHardLines()
 {
 	int nLines = WgTextTool::countLines( m_buffer.Chars() );
 
@@ -201,7 +201,7 @@ void WgText::clear()
 	m_pSoftLines = m_pHardLines;
 	m_nSoftLines = 1;
 
-	refreshAllLines();
+	_refreshAllLines();
 	clearSelection();
 
 	if( m_pCursor )
@@ -213,9 +213,9 @@ void WgText::setText( const WgCharSeq& seq )
 {
 	m_buffer.Clear();
 	m_buffer.PushBack( seq );
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 	clearSelection();
 
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
@@ -224,9 +224,9 @@ void WgText::setText( const WgCharSeq& seq )
 void WgText::setText( const WgCharBuffer * buffer )
 {
 	m_buffer = * buffer;
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 	clearSelection();
 
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
@@ -236,9 +236,9 @@ void WgText::setText( const WgCharBuffer * buffer )
 void WgText::setText( const WgString& str )
 {
 	m_buffer = str;
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 	clearSelection();
 
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
@@ -250,9 +250,9 @@ void WgText::setText( const WgText * pText )
 	// TODO: Optimize, we can simply copy the hardlines array. Softlines needs to be generated though.
 
 	m_buffer = * pText->getBuffer();
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 	clearSelection();
 }
 
@@ -405,6 +405,25 @@ int WgText::unwrappedWidth() const
 	return width;
 }
 
+//____ unwrappedSize() _______________________________________________________
+
+WgSize WgText::unwrappedSize() const
+{
+	WgSize	sz;
+
+	for( int i = 0 ; i < m_nHardLines ; i++ )
+	{
+		if( m_pHardLines[i].width > sz.w )
+			sz.w = m_pHardLines[i].width;
+
+		sz.h += m_pHardLines[i].lineSpacing;
+	}
+
+	sz.h += m_pHardLines[m_nHardLines-1].height - m_pHardLines[m_nHardLines-1].lineSpacing;
+	return sz;
+}
+
+
 //____ width() ________________________________________________________________
 
 int WgText::width() const
@@ -436,11 +455,43 @@ int WgText::height() const
 
 int WgText::heightForWidth( int width ) const
 {
-	if( m_bWrap )
+	if( m_bWrap && width != m_lineWidth )
 	{
-		//TODO: Implement
+		const int		maxLines = 16;
 
-		return height();
+		WgTextLine		lineArray[maxLines];
+		WgTextLine *	pLines = lineArray;
+
+		int nSoftLines = _countWriteSoftLines( width, m_buffer.Chars(), pLines, maxLines );
+
+		// If the TextLines didn't fit in our little array we need to allocate a bigger one
+		// and regenerate
+
+		if( nSoftLines > maxLines )
+		{
+			pLines = new WgTextLine[nSoftLines];
+			_countWriteSoftLines( width, m_buffer.Chars(), pLines, nSoftLines );
+		}
+
+		// Generate line-info, so height-member is filled in.
+
+		for( int i = 0 ; i < nSoftLines ; i++ )
+			_refreshLineInfo(&pLines[i]);
+
+		// Calculate height
+
+		int height = 0;
+		for( int i = 0 ; i < nSoftLines-1 ; i++ )
+			height += pLines[i].lineSpacing;
+
+		height += pLines[nSoftLines-1].height;
+
+		// Possibly delete allocated area
+
+		if( pLines != lineArray )
+			delete [] pLines;
+
+		return height;
 	}
 	else
 		return height();
@@ -470,8 +521,8 @@ void WgText::setLinkProperties( const WgTextPropPtr& pProp )
 	if( m_pLinkProp != pProp )
 	{
 		m_pLinkProp = pProp;
-		regenSoftLines();		//TODO: Optimize: Only do if we have links.
-		refreshAllLines();
+		_regenSoftLines();		//TODO: Optimize: Only do if we have links.
+		_refreshAllLines();
 	}
 }
 
@@ -480,8 +531,8 @@ void WgText::clearLinkProperties()
 	if( m_pLinkProp )
 	{
 		m_pLinkProp = 0;
-		regenSoftLines();		//TODO: Optimize: Only do if we have links.
-		refreshAllLines();
+		_regenSoftLines();		//TODO: Optimize: Only do if we have links.
+		_refreshAllLines();
 	}
 }
 
@@ -490,8 +541,8 @@ void WgText::setSelectionProperties( const WgTextPropPtr& pProp )
 	if( m_pSelectionProp != pProp )
 	{
 		m_pSelectionProp = pProp;
-		regenSoftLines();		//TODO: Optimize: Only do if we have selected text.
-		refreshAllLines();
+		_regenSoftLines();		//TODO: Optimize: Only do if we have selected text.
+		_refreshAllLines();
 	}
 }
 
@@ -500,8 +551,8 @@ void WgText::clearSelectionProperties()
 	if( m_pSelectionProp )
 	{
 		m_pSelectionProp = 0;
-		regenSoftLines();		//TODO: Optimize: Only do if we have selected text.
-		refreshAllLines();
+		_regenSoftLines();		//TODO: Optimize: Only do if we have selected text.
+		_refreshAllLines();
 	}
 }
 
@@ -517,8 +568,8 @@ void WgText::setSelectionBgColor(WgColor color )
 void WgText::setProperties( const WgTextPropPtr& pProp )
 {
 	m_pBaseProp = pProp;
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 void WgText::setColor( const WgColor color )
@@ -540,8 +591,8 @@ void WgText::setStyle( WgFontStyle style )
 	WgTextProp	prop = * m_pBaseProp;
 	prop.SetStyle(style);
 	m_pBaseProp = prop.Register();
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 void WgText::setStyle( WgFontStyle style, WgMode mode )
@@ -549,8 +600,8 @@ void WgText::setStyle( WgFontStyle style, WgMode mode )
 	WgTextProp	prop = * m_pBaseProp;
 	prop.SetStyle(style,mode);
 	m_pBaseProp = prop.Register();
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 void WgText::setFont( WgFont * pFont )
@@ -558,8 +609,8 @@ void WgText::setFont( WgFont * pFont )
 	WgTextProp	prop = * m_pBaseProp;
 	prop.SetFont(pFont);
 	m_pBaseProp = prop.Register();
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 void WgText::setLink( const WgTextLinkPtr& pLink )
@@ -567,8 +618,8 @@ void WgText::setLink( const WgTextLinkPtr& pLink )
 	WgTextProp	prop = * m_pBaseProp;
 	prop.SetLink(pLink);
 	m_pBaseProp = prop.Register();
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 void WgText::setBreakLevel( int level )
@@ -576,8 +627,8 @@ void WgText::setBreakLevel( int level )
 	WgTextProp	prop = * m_pBaseProp;
 	prop.SetBreakLevel(level);
 	m_pBaseProp = prop.Register();
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 void WgText::clearProperties()
@@ -585,8 +636,8 @@ void WgText::clearProperties()
 	if( m_pBaseProp )
 	{
 		m_pBaseProp = 0;
-		regenSoftLines();
-		refreshAllLines();
+		_regenSoftLines();
+		_refreshAllLines();
 	}
 }
 
@@ -609,8 +660,8 @@ void WgText::clearStyle()
 	WgTextProp	prop = * m_pBaseProp;
 	prop.ClearStyle();
 	m_pBaseProp = prop.Register();
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 void WgText::clearStyle( WgMode mode )
@@ -618,8 +669,8 @@ void WgText::clearStyle( WgMode mode )
 	WgTextProp	prop = * m_pBaseProp;
 	prop.ClearStyle(mode);
 	m_pBaseProp = prop.Register();
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 void WgText::clearBreakLevel()
@@ -627,8 +678,8 @@ void WgText::clearBreakLevel()
 	WgTextProp	prop = * m_pBaseProp;
 	prop.ClearBreakLevel();
 	m_pBaseProp = prop.Register();
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 void WgText::clearFont()
@@ -636,8 +687,8 @@ void WgText::clearFont()
 	WgTextProp	prop = * m_pBaseProp;
 	prop.ClearFont();
 	m_pBaseProp = prop.Register();
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 void WgText::clearLink()
@@ -645,8 +696,8 @@ void WgText::clearLink()
 	WgTextProp	prop = * m_pBaseProp;
 	prop.ClearLink();
 	m_pBaseProp = prop.Register();
-	regenSoftLines();
-	refreshAllLines();
+	_regenSoftLines();
+	_refreshAllLines();
 }
 
 //____ getTextUTF8() __________________________________________________________
@@ -1096,9 +1147,9 @@ int WgText::nbChars() const
 
 void WgText::refresh()
 {
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 
 	if( m_pCursor )
 		m_pCursor->gotoHardPos(m_pCursor->line(), m_pCursor->column());
@@ -1112,9 +1163,9 @@ void WgText::refresh()
 int WgText::addChar( const WgChar& character )
 {
 	int nAdded = m_buffer.PushBack( character );
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 
 	return nAdded;
 }
@@ -1125,9 +1176,9 @@ int WgText::addChar( const WgChar& character )
 int WgText::addText( const WgCharSeq& seq )
 {
 	int nAdded = m_buffer.PushBack( seq );
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
@@ -1139,9 +1190,9 @@ int WgText::addText( const WgCharSeq& seq )
 int WgText::insertText( int ofs, const WgCharSeq& seq )
 {
 	int nInserted = m_buffer.Insert( ofs, seq );
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
@@ -1154,9 +1205,9 @@ int WgText::insertText( int ofs, const WgCharSeq& seq )
 int WgText::replaceText( int ofs, int nDelete, const WgCharSeq& seq )
 {
 	int nInserted = m_buffer.Replace( ofs, nDelete, seq );
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
@@ -1168,9 +1219,9 @@ int WgText::replaceText( int ofs, int nDelete, const WgCharSeq& seq )
 int WgText::deleteText( int ofs, int nChars )
 {
 	int nDeleted = m_buffer.Delete( ofs, nChars );
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 	return nDeleted;
 }
 
@@ -1180,9 +1231,9 @@ int WgText::deleteText( int ofs, int nChars )
 int WgText::replaceChar( int ofs, const WgChar& character )
 {
 	int nReplaced = m_buffer.Replace( ofs, character );
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 	return nReplaced;
 }
 
@@ -1192,9 +1243,9 @@ int WgText::replaceChar( int ofs, const WgChar& character )
 int WgText::insertChar( int ofs, const WgChar& character )
 {
 	int nInserted = m_buffer.Insert( ofs, character );
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 
 	return nInserted;
 }
@@ -1204,9 +1255,9 @@ int WgText::insertChar( int ofs, const WgChar& character )
 int WgText::deleteChar( int ofs )
 {
 	int nDeleted = m_buffer.Delete( ofs, 1 );
-	regenHardLines();
-	regenSoftLines();
-	refreshAllLines();
+	_regenHardLines();
+	_regenSoftLines();
+	_refreshAllLines();
 	return nDeleted;
 }
 
@@ -1315,8 +1366,8 @@ void WgText::SetWrap( bool bWrap )
 	if( m_bWrap != bWrap )
 	{
 		m_bWrap = bWrap;
-		regenSoftLines();
-		refreshAllLines();
+		_regenSoftLines();
+		_refreshAllLines();
 	}
 }
 
@@ -1330,8 +1381,8 @@ void WgText::setLineWidth( int width )
 
 		if( m_bWrap )
 		{
-			regenSoftLines();
-			refreshAllLines();
+			_regenSoftLines();
+			_refreshAllLines();
 		}
 	}
 }
@@ -1396,9 +1447,9 @@ void WgText::posHard2Soft( int &line, int &col ) const
 	return;
 }
 
-//____ countWriteSoftLines() __________________________________________________
+//____ _countWriteSoftLines() __________________________________________________
 
-int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines, int maxWrite )
+int WgText::_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLine * pWriteLines, int maxWrite ) const
 {
 	const WgChar *	p = pStart;
 	int			nSoftLines = 0;
@@ -1472,7 +1523,7 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 					// We don't take kerning into account here, not so important.
 
 					WgGlyphPtr pHyphen = pen.GetGlyphSet()->GetGlyph( '-', pen.GetSize() );
-					if( !pHyphen || (pen.GetPosX() + pHyphen->Advance()) > m_lineWidth )
+					if( !pHyphen || (pen.GetPosX() + pHyphen->Advance()) > maxWidth )
 						break;			// Can't break here, hyphen wouldn't fit on line.
 				}
 
@@ -1504,7 +1555,7 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 
 //			Uint32 len = pen.GetBlitPosX() + pen.GetGlyph()->rect.w; // No advance on last character of line, just bearingX + width
 			int len = pen.GetPosX() + pen.GetGlyph()->Advance();
-			if( len > m_lineWidth )
+			if( len > maxWidth )
 			{
 				if( pbp != 0 && pbp != pLineStart )
 				{
@@ -1543,9 +1594,9 @@ int WgText::countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines
 	return nSoftLines;
 }
 
-//____ regenSoftLines() _______________________________________________________
+//____ _regenSoftLines() _______________________________________________________
 
-void WgText::regenSoftLines()
+void WgText::_regenSoftLines()
 {
 	bool	bHasSoftLineArray = (m_pSoftLines != m_pHardLines)?true:false;
 
@@ -1564,9 +1615,9 @@ void WgText::regenSoftLines()
 	int nSoftLines;
 
 	if( bHasSoftLineArray )
-		nSoftLines = countWriteSoftLines( m_buffer.Chars(), m_pSoftLines, m_nSoftLines );
+		nSoftLines = _countWriteSoftLines( m_lineWidth, m_buffer.Chars(), m_pSoftLines, m_nSoftLines );
 	else
-		nSoftLines = countWriteSoftLines( m_buffer.Chars(), 0, 0 );
+		nSoftLines = _countWriteSoftLines( m_lineWidth, m_buffer.Chars(), 0, 0 );
 
 	// If we don't have any softbreaks we can just point at
 	// the hardlines since they are the same.
@@ -1602,31 +1653,31 @@ void WgText::regenSoftLines()
 
 	// Fill in the softlines-array.
 
-	countWriteSoftLines( m_buffer.Chars(), m_pSoftLines, m_nSoftLines );
+	_countWriteSoftLines( m_lineWidth, m_buffer.Chars(), m_pSoftLines, m_nSoftLines );
 }
 
-//____ refreshAllLines() _________________________________________________________
+//____ _refreshAllLines() _________________________________________________________
 
-void WgText::refreshAllLines()
+void WgText::_refreshAllLines()
 {
 	for( int i = 0 ; i < m_nHardLines ; i++ )
-		refreshLineInfo( &m_pHardLines[i] );
+		_refreshLineInfo( &m_pHardLines[i] );
 
 	if( m_pSoftLines != m_pHardLines )
 	{
 		for( int i = 0 ; i < m_nSoftLines ; i++ )
-			refreshLineInfo( &m_pSoftLines[i] );
+			_refreshLineInfo( &m_pSoftLines[i] );
 	}
 }
 
 
-//____ refreshLineInfo() ____________________________________________________
+//____ _refreshLineInfo() ____________________________________________________
 
 // Refreshes the width, height, baseline and linespacing parameters of a
 // WgTextLine.
 
 
-void WgText::refreshLineInfo( WgTextLine * pLine )
+void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 {
 	int maxAscend = 0;
 	int maxDescend = 0;

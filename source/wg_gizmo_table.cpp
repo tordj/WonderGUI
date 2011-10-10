@@ -75,17 +75,17 @@ WgRect WgTableHook::ScreenGeo() const
 }
 
 
-WgGizmoHook* WgTableHook::_prevHook() const
+WgHook* WgTableHook::_prevHook() const
 {
 	return PrevInTable();
 }
 
-WgGizmoHook* WgTableHook::_nextHook() const
+WgHook* WgTableHook::_nextHook() const
 {
 	return NextInTable();
 }
 
-WgGizmoContainer * WgTableHook::_parent() const
+WgGizmoParent * WgTableHook::_parent() const
 {
 	return m_pRow->m_pTable;
 }
@@ -204,7 +204,7 @@ WgWidget* WgTableHook::GetRoot()
 	WgGizmoTable* pTable = Row()->Table();
 	if( pTable )
 	{
-		WgGizmoHook* pHook = pTable->Hook();
+		WgHook* pHook = pTable->Hook();
 		if( pHook )
 			return pHook->GetRoot();
 	}
@@ -927,7 +927,7 @@ void WgGizmoTable::UpdateColumnWidths()
 			if( m_pColumns[n].m_bWidthChanged && pHook->Gizmo() )
 			{
 				int w = m_pColumns[n].m_realWidth;
-				int h = pHook->Gizmo()->HeightForWidth(w);		//TODO: NEEDS TO BE ABLE TO HANDLE -1 (NO RECOMMENDATION) AS ANSWER!!!!!!!!!
+				int h = pHook->Gizmo()->HeightForWidth(w);
 				pHook->Gizmo()->_onNewSize( WgSize( w, h ) );
 
 				if( h != pHook->m_height )
@@ -1092,9 +1092,9 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 	return r;
 }
 
-//____ DeleteGizmo() __________________________________________________________
+//____ DeleteChild() __________________________________________________________
 
-bool WgGizmoTable::DeleteGizmo( WgGizmo * pGizmo )
+bool WgGizmoTable::DeleteChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo || pGizmo->ParentX() != this )
 		return false;
@@ -1105,9 +1105,9 @@ bool WgGizmoTable::DeleteGizmo( WgGizmo * pGizmo )
 	return pRow->DeleteGizmo( pHook->ColumnNb() );
 }
 
-//____ ReleaseGizmo() _________________________________________________________
+//____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgGizmoTable::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgGizmoTable::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo || pGizmo->ParentX() != this )
 		return 0;
@@ -1118,18 +1118,18 @@ WgGizmo * WgGizmoTable::ReleaseGizmo( WgGizmo * pGizmo )
 	return pRow->ReleaseGizmo( pHook->ColumnNb() );
 }
 
-//____ DeleteAllGizmos() ______________________________________________________
+//____ DeleteAllChildren() ______________________________________________________
 
-bool WgGizmoTable::DeleteAllGizmos()
+bool WgGizmoTable::DeleteAllChildren()
 {
 	//TODO: Implement
 
 	return false;
 }
 
-//____ ReleaseAllGizmos() _____________________________________________________
+//____ ReleaseAllChildren() _____________________________________________________
 
-bool WgGizmoTable::ReleaseAllGizmos()
+bool WgGizmoTable::ReleaseAllChildren()
 {
 	//TODO: Implement
 
@@ -1679,7 +1679,7 @@ int WgGizmoTable::HeightForWidth( int width ) const
 {
 	//TODO: Implement, should recurse through lines and their gizmos checking height needed.
 
-	return -1;		// No recommendation, for the moment
+	return BestSize().h;		// No recommendation, for the moment
 }
 
 //____ WidthForHeight() _______________________________________________________

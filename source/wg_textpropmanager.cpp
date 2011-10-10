@@ -59,8 +59,8 @@ WgTextPropManager::WgTextPropManager()
 
 	// Initialize the index table
 
-	g_propIndex[0] = 0;
-	for( int i = 1 ; i < 256 ; i++ )
+//	g_propIndex[0] = 0;
+	for( int i = 0 ; i < 256 ; i++ )
 		g_propIndex[i] = -1;
 
 	// Insert nullProp into the index table

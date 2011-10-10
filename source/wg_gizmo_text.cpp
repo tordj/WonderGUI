@@ -38,9 +38,10 @@ WgGizmoText::WgGizmoText()
 	m_pText->CreateCursor();
 	m_maxCharacters	= 0;
 	m_maxLines		= 0;
+	m_bTabLock		= true;
 
 	m_text.setLineWidth( Size().w );
-	m_inputMode = Static;
+	m_editMode = WG_TEXT_STATIC;
 	m_bResetCursorOnFocus = true;
 }
 
@@ -94,9 +95,9 @@ void WgGizmoText::goEOF()
 
 
 //_______________________________________________________________
-void WgGizmoText::SetInputMode(InputMode mode)
+void WgGizmoText::SetEditMode(WgTextEditMode mode)
 {
-	m_inputMode = mode;
+	m_editMode = mode;
 }
 
 //____ _onUpdate() ________________________________________________________
@@ -123,7 +124,7 @@ WgSize WgGizmoText::BestSize() const
 {
 	//TODO: Fix this so we don't return current size (after wraptext is adapted to width) but size for unwrapped lines.
 
-	return WgSize( m_text.width(), m_text.height() );
+	return m_text.unwrappedSize();
 }
 
 //____ GetPointerStyle() ________________________________________
@@ -170,6 +171,18 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 	int type 				= pEvent->Type();
 	WgModifierKeys modKeys 	= pEvent->ModKeys();
 
+	if( type == WG_EVENT_TICK )
+	{
+		if( IsSelectable() && m_bFocused )
+		{
+			m_pText->incTime( ((const WgEvent::Tick*)(pEvent))->Millisec() );
+			RequestRender();					//TODO: Should only render the cursor and selection!
+		}
+		return;
+	}
+
+
+
 	if( m_bFocused && (type == WG_EVENT_BUTTON_PRESS || type == WG_EVENT_BUTTON_DRAG) && ((const WgEvent::ButtonEvent*)(pEvent))->Button() == 1 )
 	{
 
@@ -211,7 +224,7 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 			{
 				InsertCharAtCursorInternal('\n');
 			}
-			else if( chr == '\t' )
+			else if( chr == '\t' && m_bTabLock )
 			{
 				InsertCharAtCursorInternal( '\t' );
 			}
@@ -321,6 +334,8 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
+#ifdef WG_LEGACY
+
 	if( m_bFocused && (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
 
@@ -463,6 +478,8 @@ void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const W
 	bool bChanged = m_text.OnAction( action, button_key, ScreenGeo(), WgCoord(info.x, info.y) );
 	if( bChanged )
 		RequestRender();
+
+#endif //WG_LEGACY
 }
 
 //____ _onCloneContent() _______________________________________________________
@@ -510,6 +527,7 @@ void WgGizmoText::_onGotInputFocus()
 	m_bFocused = true;
 	if( IsEditable() ) // render with cursor on
 	{
+		_startReceiveTicks();
 		if(	m_bResetCursorOnFocus )
 			m_pText->GetCursor()->goEOF();
 		RequestRender();
@@ -522,8 +540,11 @@ void WgGizmoText::_onLostInputFocus()
 {
 	m_bFocused = false;
 	m_bResetCursorOnFocus = false;
-	if( IsEditable() ) // render with cursor off
+	if( IsEditable() )
+	{
+		_stopReceiveTicks();
 		RequestRender();
+	}
 }
 
 

@@ -252,6 +252,7 @@ public:
 	int					width() const;
 	int					height() const;
 
+	WgSize				unwrappedSize() const;
 	int					unwrappedWidth() const;				// Width of text if no lines are wrapped.
 
 	int					heightForWidth( int width ) const;
@@ -392,7 +393,7 @@ public:
 
 	inline void		SetBaseColors( const WgColorSetPtr& pColors ) { m_pBaseColors = pColors; }
 	inline WgColorSetPtr BaseColors() const { return m_pBaseColors; }
-	
+
 	inline void		SetBgBlockColors( const WgColorSetPtr& pColors ) { m_pBgBlockColors = pColors; }
 	inline WgColorSetPtr BgBlockColors() const { return m_pBgBlockColors; }
 
@@ -405,12 +406,12 @@ protected:
 	WgChar *	parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form, WgChar[parseBufLen] );
 
 
-	void			regenHardLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
-	void			regenSoftLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
-	int 			countWriteSoftLines( const WgChar * pStart, WgTextLine * pWriteLines, int maxWrite ); // Central algorithm of regenSoftLines().
+	void			_regenHardLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
+	void			_regenSoftLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
+	int 			_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLine * pWriteLines, int maxWrite ) const; // Central algorithm of regenSoftLines().
 
-	void			refreshAllLines();
-	void			refreshLineInfo( WgTextLine * pLine );
+	void			_refreshAllLines();
+	void			_refreshLineInfo( WgTextLine * pLine ) const;
 
 
 	WgCharBuffer	m_buffer;

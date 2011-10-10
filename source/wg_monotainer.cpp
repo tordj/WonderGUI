@@ -31,7 +31,7 @@
  {
  }
 
-WgGizmoHook * WgMonotainer::SetGizmo( WgGizmoContainer * _pGizmo )
+WgHook * WgMonotainer::SetChild( WgGizmoContainer * _pGizmo )
 {
 	if( !_pGizmo )
 		return false;
@@ -47,12 +47,12 @@ WgGizmoHook * WgMonotainer::SetGizmo( WgGizmoContainer * _pGizmo )
 	return &m_hook;
 }
 
-WgGizmo * WgMonotainer::Gizmo()
+WgGizmo * WgMonotainer::Child()
 {
 	return m_hook.Gizmo();
 }
 
-bool WgMonotainer::DeleteGizmo()
+bool WgMonotainer::DeleteChild()
 {
 	WgGizmo * pGizmo = m_hook._releaseGizmo();
 	if( pGizmo )
@@ -66,7 +66,7 @@ bool WgMonotainer::DeleteGizmo()
 	return false;
 }
 
-WgGizmo * WgMonotainer::ReleaseGizmo()
+WgGizmo * WgMonotainer::ReleaseChild()
 {
 	WgGizmo * pGizmo = m_hook._releaseGizmo();
 	if( pGizmo )
@@ -78,30 +78,30 @@ WgGizmo * WgMonotainer::ReleaseGizmo()
 	return pGizmo;
 }
 
-bool WgMonotainer::DeleteGizmo( WgGizmo * pGizmo )
+bool WgMonotainer::DeleteChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_hook.Gizmo() )
-		return DeleteGizmo();
+		return DeleteChild();
 
 	return false;
 }
 
-WgGizmo * WgMonotainer::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgMonotainer::ReleaseChild( WgGizmo * pGizmo )
 {
 	if(pGizmo == m_hook.Gizmo() )
-		return ReleaseGizmo();
+		return ReleaseChild();
 
 	return 0;
 }
 
-bool WgMonotainer::DeleteAllGizmos()
+bool WgMonotainer::DeleteAllChildren()
 {
-	return DeleteGizmo();
+	return DeleteChild();
 }
 
-bool WgMonotainer::ReleaseAllGizmos()
+bool WgMonotainer::ReleaseAllChildren()
 {
-	ReleaseGizmo();
+	ReleaseChild();
 	return true;
 }
 
@@ -145,7 +145,7 @@ WgSize WgMonotainer::MaxSize() const
 		return WgGizmo::MaxSize();
 }
 
-WgGizmo * WgMonotainer::FindGizmo( const WgCord& ofs, WgSearchMode mode )
+WgGizmo * WgMonotainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
 	if( m_hook.Gizmo() )
 		return m_hook.Gizmo()->CastToContainer()->FindGizmo( ofs, mode );
@@ -156,6 +156,11 @@ WgGizmo * WgMonotainer::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 	}
 
 	return 0;
+}
+
+
+void WgMonotainer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+{
 }
 
 void WgMonotainer::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
@@ -210,12 +215,12 @@ void WgMonotainer::_clearDirtyRects()
 		m_hook.Gizmo()->CastToContainer()->_clearDirtyRects();
 }
 
-WgGizmoHook* WgMonotainer::_firstHook() const
+WgHook* WgMonotainer::_firstHook() const
 {
 	return const_cast<Hook*>(&m_hook);
 }
 
-WgGizmoHook* WgMonotainer::_lastHook() const
+WgHook* WgMonotainer::_lastHook() const
 {
 	return const_cast<Hook*>(&m_hook);
 }

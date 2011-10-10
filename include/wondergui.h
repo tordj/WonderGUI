@@ -87,10 +87,6 @@
 #	include <wg_gizmo.h>
 #endif
 
-#ifndef WG_INPUTDEVICE_DOT_H
-#	include <wg_inputdevice.h>
-#endif
-
 #ifndef WG_KEY_DOT_H
 #	include <wg_key.h>
 #endif
@@ -191,8 +187,8 @@
 #	include <wg_gizmo_container.h>
 #endif
 
-#ifndef WG_GIZMO_HOOK_DOT_H
-#	include <wg_gizmo_hook.h>
+#ifndef WG_HOOK_DOT_H
+#	include <wg_hook.h>
 #endif
 
 #ifndef WG_GIZMO_PARENT_DOT_H
@@ -266,6 +262,10 @@
 
 #ifndef WG_GIZMO_TABLIST_DOT_H
 #	include <wg_gizmo_tablist.h>
+#endif
+
+#ifndef WG_GIZMO_TABORDER_DOT_H
+#	include <wg_gizmo_taborder.h>
 #endif
 
 #ifndef WG_GIZMO_TEXT_DOT_H

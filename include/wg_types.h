@@ -518,6 +518,14 @@ enum WgSelectMode
 };
 
 
+enum WgTextEditMode
+{
+	WG_TEXT_STATIC,
+	WG_TEXT_SELECTABLE,
+	WG_TEXT_EDITABLE,
+};
+
+
 //____ WgTextPos ______________________________________________________________
 
 class WgTextPos

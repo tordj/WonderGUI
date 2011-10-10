@@ -20,55 +20,55 @@
 
 =========================================================================*/
 
-#ifndef WG_VBOXLAYOUT_DOT_H
-#define WG_VBOXLAYOUT_DOT_H
+#ifndef WG_GIZMO_STACK_DOT_H
+#define WG_GIZMO_STACK_DOT_H
 
 #ifndef WG_ORDERED_LAYOUT_DOT_H
 #	include <wg_orderedlayout.h>
 #endif
 
-class WgVBoxLayout;
+class WgGizmoStack;
 
-class WgVBoxHook : public WgOrderedHook
+class WgStackHook : public WgOrderedHook
 {
-	friend class WgVBoxLayout;
+	friend class WgGizmoStack;
 
 public:
-	inline WgVBoxHook * Prev() const { return _prev(); }
-	inline WgVBoxHook * Next() const { return _next(); }
+	bool		Up();
+	bool		Down();
+	void		Top();
+	void		Bottom();
 
-//	inline WgVBoxHook * PrevSelectedHook() const { return static_cast<WgVBoxHook*>(_prevSelectedHook()); }
-//	inline WgVBoxHook * NextSelectedHook() const { return static_cast<WgVBoxHook*>(_nextSelectedHook()); }
+	inline WgStackHook * Prev() const { return _prev(); }
+	inline WgStackHook * Next() const { return _next(); }
 
-	inline WgVBoxLayout * Parent() const { return m_pParent; }
+	inline WgGizmoStack * Parent() const { return m_pParent; }
 
 protected:
-	PROTECTED_LINK_METHODS( WgVBoxHook );
+	PROTECTED_LINK_METHODS( WgStackHook );
 
-	WgVBoxHook( WgVBoxLayout * pParent );
+	WgStackHook( WgGizmoStack * pParent );
 
 	WgGizmoContainer * _parent() const;
 
-	WgVBoxLayout *	m_pParent;
-	int				m_height;
-	WgSize			m_bestSize;			// Cached best size from the child.
+	WgGizmoStack *	m_pParent;
 };
 
-class WgVBoxLayout : public WgOrderedLayout
+class WgGizmoStack : public WgOrderedLayout
 {
 public:
-	WgVBoxLayout();
-	~WgVBoxLayout();
+	WgGizmoStack();
+	~WgGizmoStack();
 
 	const char * Type() const;
 	static const char * GetMyType();
 
-	inline WgVBoxHook * AddChild( WgGizmo * pGizmo ) { return static_cast<WgVBoxHook*>(WgOrderedLayout::AddChild(pGizmo)); }
-	inline WgVBoxHook * InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling ) { return static_cast<WgVBoxHook*>(WgOrderedLayout::InsertChild(pGizmo,pSibling)); }
-	inline WgVBoxHook * InsertChildSorted( WgGizmo * pGizmo ) { return static_cast<WgVBoxHook*>(WgOrderedLayout::InsertChildSorted(pGizmo)); }
+	inline WgStackHook * AddChild( WgGizmo * pGizmo ) { return static_cast<WgStackHook*>(WgOrderedLayout::AddChild(pGizmo)); }
+	inline WgStackHook * InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling ) { return static_cast<WgStackHook*>(WgOrderedLayout::InsertChild(pGizmo,pSibling)); }
+	inline WgStackHook * InsertChildSorted( WgGizmo * pGizmo ) { return static_cast<WgStackHook*>(WgOrderedLayout::InsertChildSorted(pGizmo)); }
 
-	inline WgVBoxHook* FirstHook() const { return static_cast<WgVBoxHook*>(m_hooks.First()); }
-	inline WgVBoxHook* LastHook() const { return static_cast<WgVBoxHook*>(m_hooks.Last()); }
+	inline WgStackHook* FirstHook() const { return static_cast<WgStackHook*>(m_hooks.First()); }
+	inline WgStackHook* LastHook() const { return static_cast<WgStackHook*>(m_hooks.Last()); }
 
 //	inline WgVBoxHook* FirstSelectedHook() const { return static_cast<WgVBoxHook*>(_firstSelectedHook()); }
 //	inline WgVBoxHook* LastSelectedHook() const { return static_cast<WgVBoxHook*>(_lastSelectedHook()); }
@@ -108,20 +108,18 @@ protected:
 	void	_refreshAllGizmos();
 	WgOrderedHook * _newHook();
 
-	// Internal to WgVBoxLayout
+	// Internal to WgGizmoStack
 
-	void	_adaptChildrenToWidth( int width );
 	void 	_refreshBestSize();
-	void	_refreshBestWidth();
+	void	_adaptChildrenToSize();
 	void	_renderFromChildOnward( WgOrderedHook * pHook );
 
 
 	WgSize	m_size;
 	WgSize	m_bestSize;
-	int		m_nBestWidth;				// Number of Gizmos who have exactly m_bestSize.w as their prefered width.
 
 };
 
 
 
-#endif //WG_VBOXLAYOUT_DOT_H
+#endif //WG_GIZMO_STACK_DOT_H

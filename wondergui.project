@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="wondergui" InternalType="Library">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="source/wg_bitmapglyphs.cpp"/>
+    <File Name="source/wg_blockset.cpp"/>
+    <File Name="source/wg_chain.cpp"/>
+    <File Name="source/wg_char.cpp"/>
+    <File Name="source/wg_charbuffer.cpp"/>
+    <File Name="source/wg_charseq.cpp"/>
+    <File Name="source/wg_codepages.cpp"/>
+    <File Name="source/wg_color.cpp"/>
+    <File Name="source/wg_colorset.cpp"/>
+    <File Name="source/wg_cursor.cpp"/>
+    <File Name="source/wg_cursorinstance.cpp"/>
+    <File Name="source/wg_emitter.cpp"/>
+    <File Name="source/wg_event.cpp"/>
+    <File Name="source/wg_eventfilter.cpp"/>
+    <File Name="source/wg_eventhandler.cpp"/>
+    <File Name="source/wg_eventlogger.cpp"/>
+    <File Name="source/wg_font.cpp"/>
+    <File Name="source/wg_geo.cpp"/>
+    <File Name="source/wg_gfxanim.cpp"/>
+    <File Name="source/wg_gfxdevice.cpp"/>
+    <File Name="source/wg_gfxdevice_null.cpp"/>
+    <File Name="source/wg_gizmo.cpp"/>
+    <File Name="source/wg_gizmo_animation.cpp"/>
+    <File Name="source/wg_gizmo_button.cpp"/>
+    <File Name="source/wg_gizmo_checkbox.cpp"/>
+    <File Name="source/wg_gizmo_circlemeter.cpp"/>
+    <File Name="source/wg_gizmo_container.cpp"/>
+    <File Name="source/wg_gizmo_dragbars.cpp"/>
+    <File Name="source/wg_gizmo_dummy.cpp"/>
+    <File Name="source/wg_gizmo_editline.cpp"/>
+    <File Name="source/wg_gizmo_editvalue.cpp"/>
+    <File Name="source/wg_gizmo_fill.cpp"/>
+    <File Name="source/wg_gizmo_flexgeo.cpp"/>
+    <File Name="source/wg_gizmo_fps.cpp"/>
+    <File Name="source/wg_gizmo_modal.cpp"/>
+    <File Name="source/wg_gizmo_pixmap.cpp"/>
+    <File Name="source/wg_gizmo_radiobutton.cpp"/>
+    <File Name="source/wg_gizmo_refreshbutton.cpp"/>
+    <File Name="source/wg_gizmo_stack.cpp"/>
+    <File Name="source/wg_gizmo_table.cpp"/>
+    <File Name="source/wg_gizmo_tablist.cpp"/>
+    <File Name="source/wg_gizmo_taborder.cpp"/>
+    <File Name="source/wg_gizmo_text.cpp"/>
+    <File Name="source/wg_gizmo_value.cpp"/>
+    <File Name="source/wg_gizmo_view.cpp"/>
+    <File Name="source/wg_glyphset.cpp"/>
+    <File Name="source/wg_input.cpp"/>
+    <File Name="source/wg_interface_edittext.cpp"/>
+    <File Name="source/wg_interface_textholder.cpp"/>
+    <File Name="source/wg_interface_valueholder.cpp"/>
+    <File Name="source/wg_mempool.cpp"/>
+    <File Name="source/wg_monotainer.cpp"/>
+    <File Name="source/wg_orderedlayout.cpp"/>
+    <File Name="source/wg_orderedselectable.cpp"/>
+    <File Name="source/wg_origo.cpp"/>
+    <File Name="source/wg_pen.cpp"/>
+    <File Name="source/wg_rectchain.cpp"/>
+    <File Name="source/wg_resdb.cpp"/>
+    <File Name="source/wg_root.cpp"/>
+    <File Name="source/wg_skinmanager.cpp"/>
+    <File Name="source/wg_smartptr.cpp"/>
+    <File Name="source/wg_string.cpp"/>
+    <File Name="source/wg_surface.cpp"/>
+    <File Name="source/wg_text.cpp"/>
+    <File Name="source/wg_textlinkhandler.cpp"/>
+    <File Name="source/wg_textmanager.cpp"/>
+    <File Name="source/wg_textprop.cpp"/>
+    <File Name="source/wg_textpropmanager.cpp"/>
+    <File Name="source/wg_texttool.cpp"/>
+    <File Name="source/wg_util.cpp"/>
+    <File Name="source/wg_valueformat.cpp"/>
+    <File Name="source/wg_vboxlayout.cpp"/>
+    <File Name="source/wg_vectorglyphs.cpp"/>
+    <File Name="source/wg_base.cpp"/>
+    <File Name="source/wg_anim.cpp"/>
+    <File Name="source/wg_hook.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="include">
+    <File Name="include/wg_anim.h"/>
+    <File Name="include/wg_base.h"/>
+    <File Name="include/wg_bitmapglyphs.h"/>
+    <File Name="include/wg_blockset.h"/>
+    <File Name="include/wg_chain.h"/>
+    <File Name="include/wg_char.h"/>
+    <File Name="include/wg_charbuffer.h"/>
+    <File Name="include/wg_charseq.h"/>
+    <File Name="include/wg_codepages.h"/>
+    <File Name="include/wg_color.h"/>
+    <File Name="include/wg_colorset.h"/>
+    <File Name="include/wg_cursor.h"/>
+    <File Name="include/wg_cursorinstance.h"/>
+    <File Name="include/wg_dynarray.h"/>
+    <File Name="include/wg_emitter.h"/>
+    <File Name="include/wg_emitterstanza.h"/>
+    <File Name="include/wg_event.h"/>
+    <File Name="include/wg_eventfilter.h"/>
+    <File Name="include/wg_eventhandler.h"/>
+    <File Name="include/wg_eventlogger.h"/>
+    <File Name="include/wg_font.h"/>
+    <File Name="include/wg_geo.h"/>
+    <File Name="include/wg_gfxanim.h"/>
+    <File Name="include/wg_gfxdevice.h"/>
+    <File Name="include/wg_gfxdevice_null.h"/>
+    <File Name="include/wg_gizmo.h"/>
+    <File Name="include/wg_gizmo_animation.h"/>
+    <File Name="include/wg_gizmo_button.h"/>
+    <File Name="include/wg_gizmo_checkbox.h"/>
+    <File Name="include/wg_gizmo_circlemeter.h"/>
+    <File Name="include/wg_gizmo_collection.h"/>
+    <File Name="include/wg_gizmo_combobox.h"/>
+    <File Name="include/wg_gizmo_container.h"/>
+    <File Name="include/wg_gizmo_dragbars.h"/>
+    <File Name="include/wg_gizmo_dummy.h"/>
+    <File Name="include/wg_gizmo_editline.h"/>
+    <File Name="include/wg_gizmo_editvalue.h"/>
+    <File Name="include/wg_gizmo_fill.h"/>
+    <File Name="include/wg_gizmo_flexgeo.h"/>
+    <File Name="include/wg_gizmo_fps.h"/>
+    <File Name="include/wg_gizmo_menubar.h"/>
+    <File Name="include/wg_gizmo_modal.h"/>
+    <File Name="include/wg_gizmo_parent.h"/>
+    <File Name="include/wg_gizmo_pixmap.h"/>
+    <File Name="include/wg_gizmo_radiobutton.h"/>
+    <File Name="include/wg_gizmo_refreshbutton.h"/>
+    <File Name="include/wg_gizmo_stack.h"/>
+    <File Name="include/wg_gizmo_table.h"/>
+    <File Name="include/wg_gizmo_tablist.h"/>
+    <File Name="include/wg_gizmo_taborder.h"/>
+    <File Name="include/wg_gizmo_text.h"/>
+    <File Name="include/wg_gizmo_value.h"/>
+    <File Name="include/wg_gizmo_view.h"/>
+    <File Name="include/wg_glyphset.h"/>
+    <File Name="include/wg_interface_edittext.h"/>
+    <File Name="include/wg_interface_itemholder.h"/>
+    <File Name="include/wg_interface_textholder.h"/>
+    <File Name="include/wg_interface_valueholder.h"/>
+    <File Name="include/wg_key.h"/>
+    <File Name="include/wg_mempool.h"/>
+    <File Name="include/wg_menuitem.h"/>
+    <File Name="include/wg_monotainer.h"/>
+    <File Name="include/wg_orderedlayout.h"/>
+    <File Name="include/wg_orderedselectable.h"/>
+    <File Name="include/wg_origo.h"/>
+    <File Name="include/wg_pen.h"/>
+    <File Name="include/wg_rectchain.h"/>
+    <File Name="include/wg_refcounted.h"/>
+    <File Name="include/wg_resdb.h"/>
+    <File Name="include/wg_resloader.h"/>
+    <File Name="include/wg_root.h"/>
+    <File Name="include/wg_signals.h"/>
+    <File Name="include/wg_signalstanza.h"/>
+    <File Name="include/wg_skinmanager.h"/>
+    <File Name="include/wg_smartptr.h"/>
+    <File Name="include/wg_string.h"/>
+    <File Name="include/wg_surface.h"/>
+    <File Name="include/wg_text.h"/>
+    <File Name="include/wg_textlinkhandler.h"/>
+    <File Name="include/wg_textmanager.h"/>
+    <File Name="include/wg_textprop.h"/>
+    <File Name="include/wg_textpropmanager.h"/>
+    <File Name="include/wg_texttool.h"/>
+    <File Name="include/wg_tooltip.h"/>
+    <File Name="include/wg_types.h"/>
+    <File Name="include/wg_userdefines.h"/>
+    <File Name="include/wg_util.h"/>
+    <File Name="include/wg_valueformat.h"/>
+    <File Name="include/wg_vboxlayout.h"/>
+    <File Name="include/wg_vectorglyphs.h"/>
+    <File Name="include/wondergui.h"/>
+    <File Name="include/wg_hook.h"/>
+  </VirtualDirectory>
+  <Settings Type="Static Library">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="./include"/>
+        <IncludePath Value="/usr/include/freetype2/"/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[
+      ]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[
+      ]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+  <Dependencies Name="Debug"/>
+</CodeLite_Project>

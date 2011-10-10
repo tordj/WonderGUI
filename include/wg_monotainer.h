@@ -34,16 +34,16 @@ public:
 	WgMonotainer();
 	~WgMonotainer();
 
-	WgGizmoHook *	SetGizmo( WgGizmoContainer * pGizmo );
-	WgGizmo *		Gizmo();
-	bool			DeleteGizmo();
-	WgGizmo *		ReleaseGizmo();
+	WgHook *	SetChild( WgGizmoContainer * pGizmo );
+	WgGizmo *		Child();
+	bool			DeleteChild();
+	WgGizmo *		ReleaseChild();
 
-	bool			DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+	bool			DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
 
-	bool			DeleteAllGizmos();
-	bool			ReleaseAllGizmos();
+	bool			DeleteAllChildren();
+	bool			ReleaseAllChildren();
 
 
 	// Overloaded from WgGizmo
@@ -65,25 +65,25 @@ public:
 
 	// Overloaded from container
 
-	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );
+	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 private:
 
-	class Hook : public WgGizmoHook
+	class Hook : public WgHook
 	{
 		friend class WgMonotainer;
 
 	public:
 		// Standard Hook methods
 
-		inline WgCord		Pos() const { return m_pParent->Pos(); }
+		inline WgCoord		Pos() const { return m_pParent->Pos(); }
 		inline WgSize		Size() const { 	return m_pParent->Size(); }
 		inline WgRect		Geo() const { return m_pParent->Geo(); }
 
-		inline WgCord		ScreenPos() const { return m_pParent->ScreenPos(); }
+		inline WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
 		inline WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		inline WgGizmoContainer* Parent() const { return m_pParent; }
+		inline WgMonotainer* Parent() const { return m_pParent; }
 
 		inline WgWidget*	GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
 
@@ -94,16 +94,16 @@ private:
 		inline void		RequestRender( const WgRect& rect ) { return m_pParent->RequestRender(rect); }
 		inline void		RequestResize() { return m_pParent->RequestResize(); }
 
-		WgGizmoHook *	_prevHook() const { return 0; }
-		WgGizmoHook *	_nextHook() const { return 0; }
-		WgGizmoContainer * _parent() const { return m_pParent; }
+		WgHook *	_prevHook() const { return 0; }
+		WgHook *	_nextHook() const { return 0; }
+		WgGizmoParent * _parent() const { return m_pParent; }
 
 		WgMonotainer * 	m_pParent;
 
 	};
 
 
-
+	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	void			_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	void			_onCloneContent( const WgGizmo * _pOrg );
@@ -117,8 +117,8 @@ private:
 	void			_clearDirtyRects();
 
 
-	WgGizmoHook*	_firstHook() const;
-	WgGizmoHook*	_lastHook() const;
+	WgHook*	_firstHook() const;
+	WgHook*	_lastHook() const;
 
 	Hook			m_hook;
 

@@ -41,7 +41,7 @@ WgGizmoEditline::WgGizmoEditline()
 	m_pwGlyph		= '*';
 	m_viewOfs		= 0;
 	m_maxCharacters = 0;
-	m_inputMode		= Editable;
+	m_editMode		= WG_TEXT_EDITABLE;
 	m_pointerStyle	= WG_POINTER_IBEAM;
 	m_bResetCursorOnFocus = true;
 }
@@ -67,9 +67,9 @@ const char * WgGizmoEditline::GetMyType()
 }
 
 //______________________________________________________________
-void WgGizmoEditline::SetInputMode(InputMode mode)
+void WgGizmoEditline::SetEditMode(WgTextEditMode mode)
 {
-	m_inputMode = mode;
+	m_editMode = mode;
 
 	if( IsSelectable() )
 	{
@@ -242,6 +242,8 @@ void WgGizmoEditline::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 void WgGizmoEditline::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
+#ifdef WG_LEGACY
+
 	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
 	{
 		if( !m_bFocused )
@@ -437,6 +439,8 @@ void WgGizmoEditline::_onAction( WgInput::UserAction action, int button_key, con
 		}
 		AdjustViewOfs();
 	}
+
+#endif //WG_LEGACY
 
 }
 

@@ -585,9 +585,9 @@ WgGizmoVDragbar* WgGizmoView::ReleaseScrollbarY()
 	return p;
 }
 
-//____ DeleteGizmo() __________________________________________________________
+//____ DeleteChild() __________________________________________________________
 
-bool WgGizmoView::DeleteGizmo( WgGizmo * pGizmo )
+bool WgGizmoView::DeleteChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_elements[XDRAG].Gizmo() )
 		return SetScrollbarX(0);
@@ -599,9 +599,9 @@ bool WgGizmoView::DeleteGizmo( WgGizmo * pGizmo )
 	return false;
 }
 
-//____ ReleaseGizmo() _________________________________________________________
+//____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgGizmoView::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgGizmoView::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_elements[XDRAG].Gizmo() )
 		return ReleaseScrollbarX();
@@ -613,9 +613,9 @@ WgGizmo * WgGizmoView::ReleaseGizmo( WgGizmo * pGizmo )
 	return 0;
 }
 
-//____ DeleteAllGizmos() ______________________________________________________
+//____ DeleteAllChildren() ______________________________________________________
 
-bool WgGizmoView::DeleteAllGizmos()
+bool WgGizmoView::DeleteAllChildren()
 {
 	SetScrollbarX(0);
 	SetScrollbarY(0);
@@ -623,9 +623,9 @@ bool WgGizmoView::DeleteAllGizmos()
 	return true;
 }
 
-//____ ReleaseAllGizmos() _____________________________________________________
+//____ ReleaseAllChildren() _____________________________________________________
 
-bool WgGizmoView::ReleaseAllGizmos()
+bool WgGizmoView::ReleaseAllChildren()
 {
 	ReleaseScrollbarX();
 	ReleaseScrollbarY();
@@ -1140,7 +1140,7 @@ void WgViewHook::RequestResize()
 
 //____ WgViewHook::_prevHook() ___________________________________________________
 
-WgGizmoHook * WgViewHook::_prevHook() const
+WgHook * WgViewHook::_prevHook() const
 {
 	if( this == &m_pView->m_elements[0] )
 		return 0;
@@ -1150,7 +1150,7 @@ WgGizmoHook * WgViewHook::_prevHook() const
 
 //____ WgViewHook::_nextHook() ___________________________________________________
 
-WgGizmoHook * WgViewHook::_nextHook() const
+WgHook * WgViewHook::_nextHook() const
 {
 	if( this == &m_pView->m_elements[2] )
 		return 0;
@@ -1160,7 +1160,7 @@ WgGizmoHook * WgViewHook::_nextHook() const
 
 //____ WgViewHook::_parent() ___________________________________________________
 
-WgGizmoContainer * WgViewHook::_parent() const
+WgGizmoParent * WgViewHook::_parent() const
 {
 	return m_pView;
 }

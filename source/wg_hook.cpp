@@ -20,14 +20,14 @@
 
 =========================================================================*/
 
-#include <wg_gizmo_hook.h>
+#include <wg_hook.h>
 #include <wg_gizmo_container.h>
 #include <wg_gizmo.h>
 
 
 //____ Destructor _____________________________________________________________
 
-WgGizmoHook::~WgGizmoHook()
+WgHook::~WgHook()
 {
 	if( m_pGizmo )
 		delete m_pGizmo;
@@ -35,7 +35,7 @@ WgGizmoHook::~WgGizmoHook()
 
 //____ _attachGizmo() __________________________________________________________
 
-void WgGizmoHook::_attachGizmo( WgGizmo * pGizmo )
+void WgHook::_attachGizmo( WgGizmo * pGizmo )
 {
 	if( m_pGizmo )
 		m_pGizmo->m_pHook = 0;
@@ -48,7 +48,7 @@ void WgGizmoHook::_attachGizmo( WgGizmo * pGizmo )
 
 //____ _relinkGizmo() __________________________________________________________
 
-void WgGizmoHook::_relinkGizmo()
+void WgHook::_relinkGizmo()
 {
 	if( m_pGizmo )
 		m_pGizmo->m_pHook = this;
@@ -56,7 +56,7 @@ void WgGizmoHook::_relinkGizmo()
 
 //____ _releaseGizmo() _________________________________________________________
 
-WgGizmo* WgGizmoHook::_releaseGizmo()
+WgGizmo* WgHook::_releaseGizmo()
 {
 	WgGizmo * p = m_pGizmo;
 	m_pGizmo = 0;
@@ -69,27 +69,27 @@ WgGizmo* WgGizmoHook::_releaseGizmo()
 
 //____ RequestFocus() _________________________________________________________
 
-bool WgGizmoHook::RequestFocus()
+bool WgHook::RequestFocus()
 {
 	return Parent()->_focusRequested(this, m_pGizmo);
 }
 
 //____ ReleaseFocus() _________________________________________________________
 
-bool WgGizmoHook::ReleaseFocus()
+bool WgHook::ReleaseFocus()
 {
 	return Parent()->_focusReleased(this, m_pGizmo);
 }
 
 //____ Root() _________________________________________________________________
 
-WgRoot * WgGizmoHook::Root()
+WgRoot * WgHook::Root()
 {
-	WgGizmoContainer * pParent = Parent();
+	WgGizmoParent * pParent = Parent();
 
 	if( pParent->IsGizmo() )
 	{
-		WgGizmoHook * pHook = pParent->CastToGizmo()->Hook();
+		WgHook * pHook = pParent->CastToGizmo()->Hook();
 		if( pHook )
 			return pHook->Root();
 	}

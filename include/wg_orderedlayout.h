@@ -23,8 +23,8 @@
 #ifndef WG_ORDERED_LAYOUT_DOT_H
 #define WG_ORDERED_LAYOUT_DOT_H
 
-#ifndef WG_GIZMO_HOOK_DOT_H
-#	include <wg_gizmo_hook.h>
+#ifndef WG_HOOK_DOT_H
+#	include <wg_hook.h>
 #endif
 
 #ifndef WG_GIZMO_CONTAINER_DOT_H
@@ -46,17 +46,17 @@
 class WgOrderedLayout;
 
 
-class WgOrderedHook : public WgGizmoHook, protected WgLink
+class WgOrderedHook : public WgHook, protected WgLink
 {
 	friend class WgOrderedLayout;
 	friend class WgChain<WgOrderedHook>;
 
 
 public:
-	WgCord	Pos() const;
+	WgCoord	Pos() const;
 	WgSize	Size() const;
 	WgRect	Geo() const;
-	WgCord	ScreenPos() const;
+	WgCoord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
 	inline WgOrderedHook*	Prev() const { return _prev(); }
@@ -89,8 +89,8 @@ protected:
 	void	RequestRender( const WgRect& rect );
 	void	RequestResize();
 
-	WgGizmoHook *	_prevHook() const;
-	WgGizmoHook *	_nextHook() const;
+	WgHook *	_prevHook() const;
+	WgHook *	_nextHook() const;
 
 	bool				m_bHidden;
 };
@@ -104,17 +104,17 @@ public:
 	virtual ~WgOrderedLayout();
 
 
-	WgOrderedHook * AddGizmo( WgGizmo * pGizmo );
-	WgOrderedHook * InsertGizmo( WgGizmo * pGizmo, WgGizmo * pSibling );
-	WgOrderedHook * InsertGizmoSorted( WgGizmo * pGizmo );
+	WgOrderedHook * AddChild( WgGizmo * pGizmo );
+	WgOrderedHook * InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling );
+	WgOrderedHook * InsertChildSorted( WgGizmo * pGizmo );
 
-	bool			DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo );
+	bool			DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
 
-	bool			DeleteAllGizmos();
-	bool			ReleaseAllGizmos();
+	bool			DeleteAllChildren();
+	bool			ReleaseAllChildren();
 
-	void			SortGizmos();
+	void			SortChildren();
 	void			SetSortOrder( WgSortOrder order );
 	inline WgSortOrder	GetSortOrder() const { return m_sortOrder; }
 
@@ -135,19 +135,19 @@ public:
 
 	// Overloaded from container
 
-	WgGizmo *		FindGizmo( const WgCord& ofs, WgSearchMode mode );	// Default OrderedLayout implementation, assuming front-gizmos overlapping end-gizmos in case of overlap.
+	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );	// Default OrderedLayout implementation, assuming front-gizmos overlapping end-gizmos in case of overlap.
 
 protected:
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool			_onAlphaTest( const WgCord& ofs );
+	bool			_onAlphaTest( const WgCoord& ofs );
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 
-	inline WgGizmoHook*	_firstHook() const { return m_hooks.First(); }
-	inline WgGizmoHook*	_lastHook() const { return m_hooks.Last(); }
+	inline WgHook*	_firstHook() const { return m_hooks.First(); }
+	inline WgHook*	_lastHook() const { return m_hooks.Last(); }
 
 	inline int		_compareGizmos(const WgGizmo * p1, const WgGizmo * p2) { return m_pSortFunc?m_pSortFunc(p1,p2):0; }
 

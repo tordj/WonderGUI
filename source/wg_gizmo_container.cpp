@@ -60,6 +60,14 @@ bool WgGizmoContainer::IsRoot() const
 	return false;
 }
 
+//____ CastToContainer() ___________________________________________________________
+
+WgGizmoContainer * WgGizmoContainer::CastToContainer()
+{
+	return this;
+}
+
+
 //____ CastToRoot() ___________________________________________________________
 
 WgRoot * WgGizmoContainer::CastToRoot()
@@ -69,9 +77,9 @@ WgRoot * WgGizmoContainer::CastToRoot()
 
 //____ _focusRequested() _______________________________________________________
 
-bool WgGizmoContainer::_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting )
+bool WgGizmoContainer::_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting )
 {
-	WgGizmoHook * p = CastToGizmo()->Hook();
+	WgHook * p = CastToGizmo()->Hook();
 	if( p )
 		return p->Parent()->_focusRequested( p, pGizmoRequesting );
 	else
@@ -80,9 +88,9 @@ bool WgGizmoContainer::_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoR
 
 //____ _focusReleased() ________________________________________________________
 
-bool WgGizmoContainer::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
+bool WgGizmoContainer::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing )
 {
-	WgGizmoHook * p = CastToGizmo()->Hook();
+	WgHook * p = CastToGizmo()->Hook();
 	if( p )
 		return p->Parent()->_focusReleased( p, pGizmoReleasing );
 	else

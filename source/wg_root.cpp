@@ -27,19 +27,27 @@
 #	include <wg_gfxdevice.h>
 #endif
 
+#include <wg_eventhandler.h>
+
 //____ Constructor ____________________________________________________________
 
-WgRoot::WgRoot() : m_pGfxDevice(0), m_pInputDevice(0), m_geo(0,0,0,0), m_bHasGeo(false)
+WgRoot::WgRoot()
 {
+	m_bHasGeo = false;
+	m_geo = WgRect(0,0,0,0);
+	m_pGfxDevice = 0;
+	m_pEventHandler = new WgEventHandler(this);
+	m_hook.m_pRoot = this;
+
 }
 
 
-WgRoot::WgRoot( WgGfxDevice * pGfxDevice, WgInputDevice * pInputDevice )
+WgRoot::WgRoot( WgGfxDevice * pGfxDevice )
 {
 	m_bHasGeo = false;
 	m_geo = WgRect(0,0,0,0);
 	m_pGfxDevice = pGfxDevice;
-	m_pInputDevice = pInputDevice;
+	m_pEventHandler = new WgEventHandler(this);
 	m_hook.m_pRoot = this;
 }
 
@@ -47,6 +55,7 @@ WgRoot::WgRoot( WgGfxDevice * pGfxDevice, WgInputDevice * pInputDevice )
 
 WgRoot::~WgRoot()
 {
+	delete m_pEventHandler;
 }
 
 //____ SetGfxDevice() _________________________________________________________
@@ -58,16 +67,6 @@ bool WgRoot::SetGfxDevice( WgGfxDevice * pDevice )
 	if( m_pGfxDevice && !m_bHasGeo && m_hook.Gizmo() )
 		m_hook.Gizmo()->_onNewSize( m_pGfxDevice->CanvasSize() );
 
-	return true;
-}
-
-//____ SetInputDevice() _______________________________________________________
-
-bool WgRoot::SetInputDevice( WgInputDevice * pDevice )
-{
-	//TODO: Handle mouse and keyboard focus changes...
-
-	m_pInputDevice = pDevice;
 	return true;
 }
 
@@ -91,15 +90,15 @@ WgRect WgRoot::Geo() const
 	if( m_bHasGeo )
 		return m_geo;
 	else if( m_pGfxDevice )
-		return  WgRect( WgCord(0,0), m_pGfxDevice->CanvasSize() );
+		return  WgRect( WgCoord(0,0), m_pGfxDevice->CanvasSize() );
 	else
 		return WgRect(0,0,0,0);
 }
 
 
-//____ SetGizmo() _____________________________________________________________
+//____ SetChild() _____________________________________________________________
 
-bool WgRoot::SetGizmo( WgGizmoContainer * _pGizmo )
+bool WgRoot::SetChild( WgGizmoContainer * _pGizmo )
 {
 	if( !_pGizmo )
 		return false;
@@ -116,45 +115,45 @@ bool WgRoot::SetGizmo( WgGizmoContainer * _pGizmo )
 	return true;
 }
 
-//____ ReleaseGizmo() _________________________________________________________
+//____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgRoot::ReleaseGizmo()
+WgGizmo * WgRoot::ReleaseChild()
 {
 	return m_hook._releaseGizmo();
 }
 
-WgGizmo * WgRoot::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgRoot::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_hook.Gizmo() )
-		return ReleaseGizmo();
+		return ReleaseChild();
 
 	return false;
 }
 
 
-//____ DeleteGizmo() __________________________________________________________
+//____ DeleteChild() __________________________________________________________
 
-bool WgRoot::DeleteGizmo( WgGizmo * pGizmo )
+bool WgRoot::DeleteChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_hook.Gizmo() )
-		return SetGizmo(0);
+		return SetChild(0);
 
 	return false;
 }
 
-//____ DeleteAllGizmos() ______________________________________________________
+//____ DeleteAllChildren() ______________________________________________________
 
-bool WgRoot::DeleteAllGizmos()
+bool WgRoot::DeleteAllChildren()
 {
-	DeleteGizmo();
+	DeleteChild();
 	return true;
 }
 
-//____ ReleaseAllGizmos() _____________________________________________________
+//____ ReleaseAllChildren() _____________________________________________________
 
-bool WgRoot::ReleaseAllGizmos()
+bool WgRoot::ReleaseAllChildren()
 {
-	return ReleaseGizmo()==0?false:true;
+	return ReleaseChild()==0?false:true;
 }
 
 
@@ -258,7 +257,7 @@ int WgRoot::ExportDirtyRects( WgRect * pDest, int maxRects ) const
 
 //____ FindGizmo() _____________________________________________________________
 
-WgGizmo * WgRoot::FindGizmo( const WgCord& ofs, WgSearchMode mode )
+WgGizmo * WgRoot::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
 	if( !Geo().contains(ofs) || !m_hook.Gizmo() )
 		return 0;
@@ -272,18 +271,22 @@ WgGizmo * WgRoot::FindGizmo( const WgCord& ofs, WgSearchMode mode )
 
 //____ _focusRequested() _______________________________________________________
 
-bool WgRoot::_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting )
+bool WgRoot::_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting )
 {
-	//TODO: Implement
-	return false;
+	if( m_pEventHandler )
+		return m_pEventHandler->SetKeyboardFocus(pGizmoRequesting);
+	else
+		return false;
 }
 
 //____ _focusReleased() ________________________________________________________
 
-bool WgRoot::_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing )
+bool WgRoot::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing )
 {
-	//TODO: Implement
-	return false;
+	if( m_pEventHandler )
+		return m_pEventHandler->SetKeyboardFocus(0);
+	else
+		return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -292,7 +295,7 @@ WgRoot::Hook::~Hook()
 {
 }
 
-WgCord WgRoot::Hook::Pos() const
+WgCoord WgRoot::Hook::Pos() const
 {
 	return m_pRoot->Geo();
 }
@@ -307,7 +310,7 @@ WgRect WgRoot::Hook::Geo() const
 	return m_pRoot->Geo();
 }
 
-WgCord WgRoot::Hook::ScreenPos() const
+WgCoord WgRoot::Hook::ScreenPos() const
 {
 	return m_pRoot->Geo();
 }
@@ -342,18 +345,18 @@ void WgRoot::Hook::RequestResize()
 	// Do nothing, root ignores size requests.
 }
 
-WgGizmoHook * WgRoot::Hook::_prevHook() const
+WgHook * WgRoot::Hook::_prevHook() const
 {
 	return 0;
 }
 
-WgGizmoHook * WgRoot::Hook::_nextHook() const
+WgHook * WgRoot::Hook::_nextHook() const
 {
 	return 0;
 }
 
-WgGizmoContainer* WgRoot::Hook::_parent() const
+WgGizmoParent * WgRoot::Hook::_parent() const
 {
-	return 0;
+	return m_pRoot;
 }
 

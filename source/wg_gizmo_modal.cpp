@@ -51,7 +51,7 @@ bool WgModalHook::SetGeo( const WgRect& geometry, WgLocation origo )
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetGeo( const WgCord& ofs, WgLocation origo )
+bool WgModalHook::SetGeo( const WgCoord& ofs, WgLocation origo )
 {
 	m_placementGeo.setPos(ofs);
 	m_origo	= origo;
@@ -59,7 +59,7 @@ bool WgModalHook::SetGeo( const WgCord& ofs, WgLocation origo )
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetOfs( const WgCord& ofs )
+bool WgModalHook::SetOfs( const WgCoord& ofs )
 {
 	m_placementGeo.setPos(ofs);
 	return _refreshRealGeo();
@@ -111,7 +111,7 @@ bool WgModalHook::SetHeight( int height )
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::Move( const WgCord& ofs )
+bool WgModalHook::Move( const WgCoord& ofs )
 {
 	m_placementGeo += ofs;
 	return _refreshRealGeo();
@@ -132,7 +132,7 @@ bool WgModalHook::MoveY( int y )
 }
 
 //_____________________________________________________________________________
-WgCord WgModalHook::ScreenPos() const
+WgCoord WgModalHook::ScreenPos() const
 {
 	return m_pParent->ScreenPos() + m_realGeo.pos();
 }
@@ -178,7 +178,7 @@ bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly t
 	if( sz.h <= 0 )
 		sz.h = 1;
 
-	WgCord ofs = WgUtil::LocationToOfs( m_origo, m_pParent->Size() ) - WgUtil::LocationToOfs( m_origo, sz );
+	WgCoord ofs = WgUtil::LocationToOfs( m_origo, m_pParent->Size() ) - WgUtil::LocationToOfs( m_origo, sz );
 	ofs += m_placementGeo.pos();
 
 	WgRect newGeo( ofs, sz );
@@ -277,7 +277,7 @@ void WgModalHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& c
 }
 
 //_____________________________________________________________________________
-WgGizmoHook * WgModalHook::_prevHook() const
+WgHook * WgModalHook::_prevHook() const
 {
 	WgModalHook * p = _prev();
 
@@ -290,7 +290,7 @@ WgGizmoHook * WgModalHook::_prevHook() const
 }
 
 //_____________________________________________________________________________
-WgGizmoHook * WgModalHook::_nextHook() const
+WgHook * WgModalHook::_nextHook() const
 {
 	WgModalHook * p = _prev();
 
@@ -355,9 +355,9 @@ const char * WgGizmoModal::GetMyType()
 	return c_gizmoType;
 }
 
-//____ SetBaseGizmo() _________________________________________________________
+//____ SetBase() _________________________________________________________
 
-WgGizmoHook * WgGizmoModal::SetBaseGizmo( WgGizmo * pGizmo )
+WgHook * WgGizmoModal::SetBase( WgGizmo * pGizmo )
 {
 	// Replace Gizmo
 
@@ -373,16 +373,16 @@ WgGizmoHook * WgGizmoModal::SetBaseGizmo( WgGizmo * pGizmo )
 	return &m_baseHook;
 }
 
-//____ BaseGizmo() ____________________________________________________________
+//____ Base() ____________________________________________________________
 
-WgGizmo * WgGizmoModal::BaseGizmo()
+WgGizmo * WgGizmoModal::Base()
 {
 	return m_baseHook.Gizmo();
 }
 
-//____ DeleteBaseGizmo() ______________________________________________________
+//____ DeleteBase() ______________________________________________________
 
-bool WgGizmoModal::DeleteBaseGizmo()
+bool WgGizmoModal::DeleteBase()
 {
 	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
 	if( pGizmo )
@@ -396,9 +396,9 @@ bool WgGizmoModal::DeleteBaseGizmo()
 	return false;
 }
 
-//____ ReleaseBaseGizmo() _____________________________________________________
+//____ ReleaseBase() _____________________________________________________
 
-WgGizmo * WgGizmoModal::ReleaseBaseGizmo()
+WgGizmo * WgGizmoModal::ReleaseBase()
 {
 	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
 	if( pGizmo )
@@ -410,9 +410,9 @@ WgGizmo * WgGizmoModal::ReleaseBaseGizmo()
 	return pGizmo;
 }
 
-//____ AddModalGizmo() ________________________________________________________
+//____ AddModal() ________________________________________________________
 
-WgModalHook * WgGizmoModal::AddModalGizmo( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo )
+WgModalHook * WgGizmoModal::AddModal( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo )
 {
 	// Create Hook and fill in members.
 
@@ -428,18 +428,18 @@ WgModalHook * WgGizmoModal::AddModalGizmo( WgGizmo * pGizmo, const WgRect& geome
 	return pHook;
 }
 
-//____ DeleteAllModalGizmos() _________________________________________________
+//____ DeleteAllModal() _________________________________________________
 
-bool WgGizmoModal::DeleteAllModalGizmos()
+bool WgGizmoModal::DeleteAllModal()
 {
 	m_modalHooks.Clear();
 	RequestRender();
 	return true;
 }
 
-//____ ReleaseAllModalGizmos() ________________________________________________
+//____ ReleaseAllModal() ________________________________________________
 
-bool WgGizmoModal::ReleaseAllModalGizmos()
+bool WgGizmoModal::ReleaseAllModal()
 {
 	WgModalHook * pHook = m_modalHooks.First();
 	while( pHook )
@@ -453,15 +453,15 @@ bool WgGizmoModal::ReleaseAllModalGizmos()
 	return true;
 }
 
-//____ DeleteGizmo() __________________________________________________________
+//____ DeleteChild() __________________________________________________________
 
-bool WgGizmoModal::DeleteGizmo( WgGizmo * pGizmo )
+bool WgGizmoModal::DeleteChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo || pGizmo->ParentX() != this )
 		return false;
 
 	if( pGizmo == m_baseHook.Gizmo() )
-		return DeleteBaseGizmo();
+		return DeleteBase();
 	else
 	{
 		WgModalHook * pHook = (WgModalHook *) pGizmo->Hook();
@@ -471,15 +471,15 @@ bool WgGizmoModal::DeleteGizmo( WgGizmo * pGizmo )
 	}
 }
 
-//____ ReleaseGizmo() _________________________________________________________
+//____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgGizmoModal::ReleaseGizmo( WgGizmo * pGizmo )
+WgGizmo * WgGizmoModal::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo || pGizmo->ParentX() != this )
 		return 0;
 
 	if( pGizmo == m_baseHook.Gizmo() )
-		return ReleaseBaseGizmo();
+		return ReleaseBase();
 	else
 	{
 		WgModalHook * pHook = (WgModalHook *) pGizmo->Hook();
@@ -491,34 +491,34 @@ WgGizmo * WgGizmoModal::ReleaseGizmo( WgGizmo * pGizmo )
 
 }
 
-//____ DeleteAllGizmos() ______________________________________________________
+//____ DeleteAllChildren() ______________________________________________________
 
-bool WgGizmoModal::DeleteAllGizmos()
+bool WgGizmoModal::DeleteAllChildren()
 {
-	DeleteBaseGizmo();
-	DeleteAllModalGizmos();
+	DeleteBase();
+	DeleteAllModal();
 	return true;
 }
 
-//____ ReleaseAllGizmos() _____________________________________________________
+//____ ReleaseAllChildren() _____________________________________________________
 
-bool WgGizmoModal::ReleaseAllGizmos()
+bool WgGizmoModal::ReleaseAllChildren()
 {
-	ReleaseBaseGizmo();
-	ReleaseAllGizmos();
+	ReleaseBase();
+	ReleaseAllModal();
 	return true;
 }
 
-//____ FirstMocalGizmo() ______________________________________________________
+//____ FirstModal() ______________________________________________________
 
-WgModalHook * WgGizmoModal::FirstModalGizmo()
+WgModalHook * WgGizmoModal::FirstModal()
 {
 	return m_modalHooks.First();
 }
 
-//____ LastModalGizmo() _______________________________________________________
+//____ LastModal() _______________________________________________________
 
-WgModalHook * WgGizmoModal::LastModalGizmo()
+WgModalHook * WgGizmoModal::LastModal()
 {
 	return m_modalHooks.Last();
 }
@@ -575,7 +575,7 @@ WgSize WgGizmoModal::MaxSize() const
 
 //____ FindGizmo() ____________________________________________________________
 
-WgGizmo *  WgGizmoModal::FindGizmo( const WgCord& ofs, WgSearchMode mode )
+WgGizmo *  WgGizmoModal::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
 
 
@@ -882,14 +882,14 @@ void WgGizmoModal::_onAction( WgInput::UserAction action, int button_key, const 
 
 //____ _onAlphaTest() _________________________________________________________
 
-bool WgGizmoModal::_onAlphaTest( const WgCord& ofs )
+bool WgGizmoModal::_onAlphaTest( const WgCoord& ofs )
 {
 	return false;
 }
 
 //____ _firstHook() ___________________________________________________________
 
-WgGizmoHook* WgGizmoModal::_firstHook() const
+WgHook* WgGizmoModal::_firstHook() const
 {
 	if( m_baseHook.Gizmo() )
 		return const_cast<BaseHook*>(&m_baseHook);
@@ -899,7 +899,7 @@ WgGizmoHook* WgGizmoModal::_firstHook() const
 
 //____ _lastHook() ____________________________________________________________
 
-WgGizmoHook* WgGizmoModal::_lastHook() const
+WgHook* WgGizmoModal::_lastHook() const
 {
 	return m_modalHooks.Last();
 }

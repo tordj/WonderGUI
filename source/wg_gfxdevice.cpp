@@ -826,7 +826,7 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 
 	pen.SetAttributes(attr);
 
-	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.contains( dest ) )
+	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.contains( dest ) || pText->isCursorShowing() )
 		pen.SetClipRect( clip );
 
 	const WgCursorInstance* pCursor = 0;

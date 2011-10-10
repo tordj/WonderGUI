@@ -34,7 +34,6 @@
 #	include <wg_rectchain.h>
 #endif
 
-class WgInputDevice;
 class WgGfxDevice;
 class WgGizmo;
 
@@ -42,35 +41,35 @@ class WgRoot : private WgGizmoParent
 {
 public:
 	WgRoot();
-	WgRoot( WgGfxDevice * pGfxDevice, WgInputDevice * pInputDevice );
+	WgRoot( WgGfxDevice * pGfxDevice );
 	~WgRoot();
 
 	bool					SetGfxDevice( WgGfxDevice * pDevice );
 	inline WgGfxDevice * 	GfxDevice() const { return m_pGfxDevice; };
 
-	bool 					SetInputDevice( WgInputDevice * pDevice );
-	inline WgInputDevice *	InputDevice() const { return m_pInputDevice; }
+	inline WgEventHandler *	EventHandler() const { return m_pEventHandler; }
 
 	bool					SetGeo( const WgRect& geo );
 	WgRect					Geo() const;
 
-	inline WgGizmo *		Gizmo() const { return m_hook.Gizmo(); }
-	bool					SetGizmo( WgGizmoContainer * pGizmo );
-	inline void				DeleteGizmo() { SetGizmo(0); }
-	WgGizmo * 				ReleaseGizmo();
+	inline WgGizmo *		Child() const { return m_hook.Gizmo(); }
+	bool					SetChild( WgGizmoContainer * pGizmo );
+	inline void				DeleteChild() { SetChild(0); }
+	WgGizmo * 				ReleaseChild();
 
 	// Inherited from WgGizmoParent
 
-	bool					DeleteGizmo( WgGizmo * pGizmo );
-	WgGizmo *				ReleaseGizmo( WgGizmo * pGizmo );
+	bool					DeleteChild( WgGizmo * pGizmo );
+	WgGizmo *				ReleaseChild( WgGizmo * pGizmo );
 
-	bool					DeleteAllGizmos();
-	bool					ReleaseAllGizmos();
+	bool					DeleteAllChildren();
+	bool					ReleaseAllChildren();
 
 	bool					IsGizmo() const { return false; }
 	bool					IsRoot() const { return true; }
 
 	WgGizmo *				CastToGizmo() { return 0; }
+	WgGizmoContainer *		CastToContainer() { return 0; }
 	WgRoot *				CastToRoot() { return this; }
 
 
@@ -89,7 +88,7 @@ public:
 	WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 protected:
-	class Hook : public WgGizmoHook
+	class Hook : public WgHook
 	{
 		friend class WgRoot;
 	public:
@@ -112,24 +111,24 @@ protected:
 		void			RequestRender( const WgRect& rect );
 		void			RequestResize();
 
-		WgGizmoHook *	_prevHook() const;
-		WgGizmoHook *	_nextHook() const;
-		WgGizmoContainer * _parent() const;			// Always returns 0.
+		WgHook *	_prevHook() const;
+		WgHook *	_nextHook() const;
+		WgGizmoParent * _parent() const;
 
 		WgRoot *		m_pRoot;
 	};
 
 
-	WgGizmoHook*	_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
-	WgGizmoHook*	_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*	_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*	_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
 
-	bool 			_focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting );
-	bool 			_focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing );
+	bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );
+	bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );
 
 	WgRectChain			m_dirtyRects;
 
 	WgGfxDevice *		m_pGfxDevice;
-	WgInputDevice *		m_pInputDevice;
+	WgEventHandler *	m_pEventHandler;
 	Hook				m_hook;
 	WgRect				m_geo;
 	bool				m_bHasGeo;

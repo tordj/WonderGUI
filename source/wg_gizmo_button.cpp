@@ -164,34 +164,60 @@ void WgGizmoButton::GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sint8
 	yDown = m_aDisplace[WG_MODE_SELECTED].y;
 }
 
-//____ BestSize() _____________________________________________________________
 
-WgSize WgGizmoButton::BestSize() const
+//____ HeightForWidth() _______________________________________________________
+
+int WgGizmoButton::HeightForWidth( int width ) const
 {
-	WgSize best( m_text.width(), m_text.height() );
+	int height = 0;
 
 	if( m_pBgGfx )
+		height = m_pBgGfx->GetHeight();
+
+	if( m_text.nbChars() != 0 )
 	{
-		WgSize gfxSize = m_pBgGfx->GetSize();
-		WgBorders textBorders = m_pBgGfx->GetContentBorders();
-		WgSize	textArea = gfxSize - textBorders;
+		WgBorders borders;
 
-		if( best.w > textArea.w )
-			best.w += textBorders.width();
+		if( m_pBgGfx )
+			borders = m_pBgGfx->GetContentBorders();
 
-		if( best.h > textArea.h )
-			best.h += textBorders.height();
-
-		if( best.w < gfxSize.w )
-			best.w = gfxSize.w;
-
-		if( best.h < gfxSize.h )
-			best.h = gfxSize.h;
+		int heightForText = m_text.heightForWidth(width-borders.width()) + borders.height();
+		if( heightForText > height )
+			height = heightForText;
 	}
 
 	//TODO: Take icon with origo, offset and size into account.
 
-	return best;
+	return height;
+}
+
+
+//____ BestSize() _____________________________________________________________
+
+WgSize WgGizmoButton::BestSize() const
+{
+	WgSize bestSize;
+
+	if( m_pBgGfx )
+		bestSize = m_pBgGfx->GetSize();
+
+	if( m_text.nbChars() != 0 )
+	{
+		WgSize textSize = m_text.unwrappedSize();
+
+		if( m_pBgGfx )
+			textSize += m_pBgGfx->GetContentBorders();
+
+		if( textSize.w > bestSize.w )
+			bestSize.w = textSize.w;
+
+		if( textSize.h > bestSize.h )
+			bestSize.h = textSize.h;
+	}
+
+	//TODO: Take icon with origo, offset and size into account.
+
+	return bestSize;
 }
 
 

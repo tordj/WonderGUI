@@ -29,10 +29,10 @@
 
 //____ Constructor ____________________________________________________________
 
-WgEventHandler::WgEventHandler( int64_t startTime, WgRoot * pRoot )
+WgEventHandler::WgEventHandler( WgRoot * pRoot )
 {
 	m_pRoot					= pRoot;
-	m_time					= startTime;
+	m_time					= 0;
 	m_modKeys				= WG_MODKEY_NONE;
 
 	m_doubleClickTimeTreshold		= 250;
@@ -183,9 +183,9 @@ bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
 	{
 		// Check what focus group (if any) this Gizmo belongs to.
 
-		WgGizmoContainer * p = pFocus->ParentX();
+		WgGizmoContainer * p = pFocus->ParentX()->CastToContainer();
 		while( p && !p->IsFocusGroup() )
-			p = p->CastToGizmo()->ParentX();
+			p = p->CastToGizmo()->ParentX()->CastToContainer();
 
 		if( p )
 			m_keyFocusGroup = p->CastToGizmo();
@@ -639,6 +639,8 @@ bool WgEventHandler::QueueEvent( WgEvent::Event * pEvent )
 
 void WgEventHandler::ProcessEvents()
 {
+	int64_t	time = m_time;
+
 	m_bIsProcessing = true;
 
 	// First thing: we make sure that we know what Gizmos pointer is inside, in case that has changed.
@@ -646,8 +648,25 @@ void WgEventHandler::ProcessEvents()
 	m_insertPos = m_eventQueue.begin();	// Insert any POINTER_ENTER/EXIT right at beginning.
 	_updateMarkedGizmos(false);
 
-	// Process all the events
+	// Process all the events in the queue
 
+	_processEventQueue();
+
+	// Post Gizmo-specific tick events now we know how much time has passed
+
+	_postTickEvents( (int) (m_time-time) );
+
+	// Process Gizmo-specific tick events (and any events they might trigger)
+
+	_processEventQueue();
+
+	m_bIsProcessing = false;
+}
+
+//____ _processEventQueue() ___________________________________________________
+
+void WgEventHandler::_processEventQueue()
+{
 	while( !m_eventQueue.empty() )
 	{
 		WgEvent::Event * pEvent = m_eventQueue.front();
@@ -677,9 +696,36 @@ void WgEventHandler::ProcessEvents()
 			pEvent->Type() != WG_EVENT_BUTTON_RELEASE && pEvent->Type() != WG_EVENT_KEY_PRESS) )
 			delete pEvent;
 	}
-
-	m_bIsProcessing = false;
 }
+
+//____ _postTickEvents() ______________________________________________________
+
+void WgEventHandler::_postTickEvents( int ticks )
+{
+	std::vector<WgGizmoWeakPtr>::iterator it = m_vTickGizmos.begin();
+
+	while( it != m_vTickGizmos.end() )
+	{
+		WgGizmo * pGizmo = (*it).GetRealPtr();
+
+		if( pGizmo && pGizmo->Hook() && pGizmo->Hook()->Root() == m_pRoot && pGizmo->m_bReceiveTick )
+		{
+			QueueEvent( new WgEvent::Tick( ticks, pGizmo ) );
+			++it;
+		}
+		else
+			it = m_vTickGizmos.erase(it);
+	}
+}
+
+//____ _addTickReceiver() _____________________________________________________
+
+void WgEventHandler::_addTickReceiver( WgGizmo * pGizmo )
+{
+	if( pGizmo && !_isGizmoInList( pGizmo, m_vTickGizmos ) )
+		m_vTickGizmos.push_back( WgGizmoWeakPtr(pGizmo) );
+}
+
 
 //____ _processEventCallbacks() ________________________________________________
 
@@ -892,14 +938,14 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 	{
 		KeyDownInfo * pInfo = m_keysDown[i];
-		int timePassed = (int) (pInfo->pEvent->Timestamp() - pEvent->Timestamp());
+		int timePassed = (int) (pEvent->Timestamp() - pInfo->pEvent->Timestamp());
 
-		int fraction = 0;
+		int fraction = timePassed - m_keyRepeatDelay;
 
-		if( timePassed < m_keyRepeatDelay )
-			fraction = (timePassed - m_keyRepeatDelay) + m_keyRepeatRate;
+		if( fraction < 0 )
+			fraction += m_keyRepeatRate;
 		else
-			fraction = (timePassed - m_keyRepeatDelay)%m_keyRepeatRate;
+			fraction %= m_keyRepeatRate;
 
 		fraction += pEvent->Millisec();
 
@@ -1026,12 +1072,7 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostPointerMoveEvents)
 		{
 			vNowMarked.push_back(pGizmo);
 
-			WgGizmoContainer * p = pGizmo->Hook()->Parent();
-
-			if( p )
-				pGizmo = p->CastToGizmo();
-			else
-				pGizmo = 0;
+			pGizmo = pGizmo->ParentX()->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
 		}
 	}
 
@@ -1102,15 +1143,11 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostPointerMoveEvents)
 			if( bPostPointerMoveEvents )
 				QueueEvent( new WgEvent::PointerMoveOutsideModal(pGizmo) );
 
-			WgGizmoContainer * p = pGizmo->Hook()->Parent();
-
-			if( p )
-				pGizmo = p->CastToGizmo();
-			else
-				pGizmo = 0;
+			pGizmo = pGizmo->ParentX()->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
 		}
 	}
 }
+
 
 //____ _processKeyPress() ______________________________________________________
 

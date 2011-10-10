@@ -33,31 +33,34 @@
 
 class WgGizmo;
 class WgRoot;
-class WgGizmoHook;
-
+class WgHook;
+class WgGizmoContainer;
 
 class WgGizmoParent : public WgGizmoCollection
 {
+	friend class WgGizmoContainer;
+	friend class WgHook;
 	public:
 
 		virtual WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode ) = 0;
 
-		virtual bool		DeleteGizmo( WgGizmo * pGizmo ) = 0;
-		virtual WgGizmo *	ReleaseGizmo( WgGizmo * pGizmo ) = 0;
+		virtual bool		DeleteChild( WgGizmo * pGizmo ) = 0;
+		virtual WgGizmo *	ReleaseChild( WgGizmo * pGizmo ) = 0;
 
-		virtual bool		DeleteAllGizmos() = 0;
-		virtual bool		ReleaseAllGizmos() = 0;
+		virtual bool		DeleteAllChildren() = 0;
+		virtual bool		ReleaseAllChildren() = 0;
 
-		virtual WgGizmo *	CastToGizmo() = 0;
-		virtual WgRoot *	CastToRoot() = 0;
+		virtual WgGizmo *			CastToGizmo() = 0;
+		virtual WgGizmoContainer *	CastToContainer() = 0;
+		virtual WgRoot *			CastToRoot() = 0;
 
 		virtual bool		IsGizmo() const = 0;
 		virtual bool		IsRoot() const = 0;
 
 	protected:
 
-		virtual bool _focusRequested( WgGizmoHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
-		virtual bool _focusReleased( WgGizmoHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;
+		virtual bool _focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
+		virtual bool _focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;
 };
 
 

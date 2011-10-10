@@ -214,26 +214,28 @@ namespace WgEvent
 
 	KeyPress::KeyPress( int native_keycode ) : KeyEvent(native_keycode)
 	{
-		m_type 		= WG_EVENT_KEY_PRESS;
+		m_type 			= WG_EVENT_KEY_PRESS;
 	}
 
 	KeyPress::KeyPress( int native_keycode, WgGizmo * pGizmo ) : KeyEvent(native_keycode)
 	{
-		m_type 		= WG_EVENT_KEY_PRESS;
-		m_pGizmo	= pGizmo;
+		m_type 			= WG_EVENT_KEY_PRESS;
+		m_bIsForGizmo	= true;
+		m_pGizmo		= pGizmo;
 	}
 
 	//____ KeyRepeat ___________________________________________________________
 
 	KeyRepeat::KeyRepeat( int native_keycode ) : KeyEvent(native_keycode)
 	{
-		m_type 		= WG_EVENT_KEY_REPEAT;
+		m_type 			= WG_EVENT_KEY_REPEAT;
 	}
 
 	KeyRepeat::KeyRepeat( int native_keycode, WgGizmo * pGizmo ) : KeyEvent(native_keycode)
 	{
-		m_type 		= WG_EVENT_KEY_REPEAT;
-		m_pGizmo 	= pGizmo;
+		m_type 			= WG_EVENT_KEY_REPEAT;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
 	}
 
 	//____ KeyRelease ________________________________________________________
@@ -245,8 +247,9 @@ namespace WgEvent
 
 	KeyRelease::KeyRelease( int native_keycode, WgGizmo * pGizmo ) : KeyEvent(native_keycode)
 	{
-		m_type 		= WG_EVENT_KEY_RELEASE;
-		m_pGizmo	= pGizmo;
+		m_type 			= WG_EVENT_KEY_RELEASE;
+		m_bIsForGizmo	= true;
+		m_pGizmo		= pGizmo;
 	}
 
 	//____ Character __________________________________________________________
@@ -259,9 +262,10 @@ namespace WgEvent
 
 	Character::Character( unsigned short character, WgGizmo * pGizmo )
 	{
-		m_type		= WG_EVENT_CHARACTER;
-		m_char		= character;
-		m_pGizmo	= pGizmo;
+		m_type			= WG_EVENT_CHARACTER;
+		m_char			= character;
+		m_bIsForGizmo	= true;
+		m_pGizmo		= pGizmo;
 	}
 
 	unsigned short Character::Char() const
@@ -280,10 +284,11 @@ namespace WgEvent
 
 	WheelRoll::WheelRoll( int wheel, int distance, WgGizmo * pGizmo )
 	{
-		m_type		= WG_EVENT_WHEEL_ROLL;
-		m_wheel		= wheel;
-		m_distance	= distance;
-		m_pGizmo	= pGizmo;
+		m_type			= WG_EVENT_WHEEL_ROLL;
+		m_wheel			= wheel;
+		m_distance		= distance;
+		m_bIsForGizmo	= true;
+		m_pGizmo		= pGizmo;
 	}
 
 
@@ -304,6 +309,15 @@ namespace WgEvent
 		m_type = WG_EVENT_TICK;
 		m_millisec = ms;
 	}
+
+	Tick::Tick( int ms, WgGizmo * pGizmo )
+	{
+		m_type 			= WG_EVENT_TICK;
+		m_millisec 		= ms;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+	}
+
 
 	int Tick::Millisec() const
 	{

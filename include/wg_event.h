@@ -93,7 +93,7 @@ namespace WgEvent
 		inline int		NativeKeyCode() const { return m_nativeKeyCode; }
 		inline int		TranslatedKeyCode() const { return m_translatedKeyCode; }
 	protected:
-		KeyEvent( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode) {}
+		KeyEvent( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(0) {}
 
 		int		m_nativeKeyCode;
 		int		m_translatedKeyCode;
@@ -214,11 +214,14 @@ namespace WgEvent
 
 	class Tick : public Event
 	{
+		friend class ::WgEventHandler;
 	public:
 		Tick( int ms );
 
 		int				Millisec() const;
 	protected:
+		Tick( int ms, WgGizmo * pGizmo );
+
 		int			m_millisec;
 	};
 
