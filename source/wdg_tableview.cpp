@@ -116,7 +116,7 @@ void WgTableColumn::SetContentWidth( int pixels )
 int WgTableColumn::GetContentWidth() const
 {
 	if( m_pOwner )
-		return ((int)m_pixelWidth) + m_pOwner->GetCellPaddingX()*2;
+		return ((int)m_pixelWidth) - m_pOwner->GetCellPaddingX()*2;
 	else
 		return ((int)m_pixelWidth);
 }

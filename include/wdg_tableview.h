@@ -58,7 +58,7 @@ public:
 	inline Uint32	GetWidth() const { return (Uint32) m_pixelWidth; }
 
 	void			SetContentWidth( int pixels );
-	inline int		GetContentWidth() const;
+	int				GetContentWidth() const;
 
 	void			SetMinWidth( int pixels );
 	inline int		GetMinWidth( int pixels ) const { return m_minWidth; }
