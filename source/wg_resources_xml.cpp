@@ -3249,18 +3249,18 @@ void WgEditTextRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, Wg
 {
 	WgTextHolderRes::Serialize( pThis, xmlNode, s, holder );
 
-	WgInterfaceEditText::InputMode mode = holder->GetInputMode();
+	WgTextEditMode mode = holder->GetEditMode();
 
 	std::string defMode = "static";
 	std::string modeName;
 	switch(mode)
 	{
-	case WgInterfaceEditText::Selectable: modeName = "selectable"; break;
-	case WgInterfaceEditText::Editable: modeName = "editable"; break;
+	case WG_TEXT_SELECTABLE: modeName = "selectable"; break;
+	case WG_TEXT_EDITABLE: modeName = "editable"; break;
 	default: modeName = defMode;
 	}
 
-	WriteDiffAttr(s, xmlNode, "inputmode", modeName, defMode);
+	WriteDiffAttr(s, xmlNode, "editmode", modeName, defMode);
 }
 
 void WgEditTextRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgInterfaceEditText* holder)
@@ -3270,15 +3270,15 @@ void WgEditTextRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 
 	if(bEditable)
 	{
-		holder->SetInputMode(WgInterfaceEditText::Editable);
+		holder->SetEditMode(WG_TEXT_EDITABLE);
 	}
 	else
 	{
-		std::string modeName = xmlNode["inputmode"];
+		std::string modeName = xmlNode["editmode"];
 		if(modeName == "selectable")
-			holder->SetInputMode(WgInterfaceEditText::Selectable);
+			holder->SetEditMode(WG_TEXT_SELECTABLE);
 		else if(modeName == "editable")
-			holder->SetInputMode(WgInterfaceEditText::Editable);
+			holder->SetEditMode(WG_TEXT_EDITABLE);
 	}
 }
 

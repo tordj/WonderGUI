@@ -55,7 +55,7 @@
 class	WgWidget;
 class	WgChar;
 class	WgGizmo;
-class	WgGizmoHook;
+class	WgHook;
 class	Wg_Interface_TextHolder;
 
 //____ Callback Macros ________________________________________________________
@@ -346,7 +346,7 @@ class	WgWidget
 
 		virtual WgGizmo * GetGizmo() { return 0; }
 		virtual const WgGizmo * GetGizmo() const { return 0; }
-		virtual WgGizmoHook * GetHook() const { return 0; }
+		virtual WgHook * GetHook() const { return 0; }
 
 		virtual WgEmitter * GetEmitter() = 0;
 
