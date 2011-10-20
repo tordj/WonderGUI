@@ -64,11 +64,11 @@ public:
 
 /* TO BE PART OF ALL GIZMO MANAGERS ONCE WE ARE RID OF WIDGETS.
 
-//	virtual WgGizmoHook *	AddGizmo( WgGizmo * pGizmo ) = 0;
-//	virtual WgGizmoHook *	InsertGizmo( WgGizmo * pGizmo, Uint32 pos ) = 0;
+//	virtual WgHook *	AddGizmo( WgGizmo * pGizmo ) = 0;
+//	virtual WgHook *	InsertGizmo( WgGizmo * pGizmo, Uint32 pos ) = 0;
 
-//	virtual WgGizmoHook *	InsertGizmoBefore( WgGizmo * pGizmo, WgGizmo * pBefore ) = 0;
-//	virtual WgGizmoHook *	InsertGizmoAfter( WgGizmo * pGizmo, WgGizmo * pAfter ) = 0;
+//	virtual WgHook *	InsertGizmoBefore( WgGizmo * pGizmo, WgGizmo * pBefore ) = 0;
+//	virtual WgHook *	InsertGizmoAfter( WgGizmo * pGizmo, WgGizmo * pAfter ) = 0;
 
 
 

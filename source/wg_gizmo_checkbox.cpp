@@ -166,6 +166,60 @@ void WgGizmoCheckbox::_onDisable()
 	RequestRender();
 }
 
+//____ _onEvent() _____________________________________________________________
+
+void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+{
+	switch( pEvent->Type() )
+	{
+		case WG_EVENT_POINTER_ENTER:
+			if( !m_bOver )
+			{
+				m_bOver = true;
+				RequestRender();
+			}
+			break;
+
+		case WG_EVENT_POINTER_EXIT:
+			if( m_bOver )
+			{
+				m_bOver = false;
+				RequestRender();
+			}
+			break;
+
+		case WG_EVENT_BUTTON_PRESS:
+		{
+			int button = static_cast<const WgEvent::ButtonEvent*>(pEvent)->Button();
+			if( button == 1 && !m_bPressed )
+			{
+				m_bPressed = true;
+				RequestRender();
+			}
+			break;
+		}
+		case WG_EVENT_BUTTON_RELEASE:
+		{
+			int button = static_cast<const WgEvent::ButtonEvent*>(pEvent)->Button();
+			if( button == 1 && m_bPressed )
+			{
+				m_bPressed = false;
+				RequestRender();
+			}
+			break;
+		}
+		case WG_EVENT_BUTTON_CLICK:
+		{
+			int button = static_cast<const WgEvent::ButtonEvent*>(pEvent)->Button();
+			if( button == 1 )
+				SetState( !m_bChecked );
+			break;
+		}
+		default:
+			break;
+	}
+}
+
 
 //____ _onAction() _________________________________________________
 
@@ -223,18 +277,18 @@ Uint32 WgGizmoCheckbox::GetTextAreaWidth()
 {
 	WgSize gizmoSize = Size();
 
-	return GetContentRect( gizmoSize, GetIconRect( gizmoSize ) ).w;
+	return _getContentRect( gizmoSize, _getIconRect( gizmoSize ) ).w;
 }
 
 
-//____ GetIconRect() __________________________________________________________
+//____ _getIconRect() _________________________________________________________
 
 /*
 	Gets an icon-rect for the icon including borders, relative to upper left corner of widget.
 
 */
 
-WgRect WgGizmoCheckbox::GetIconRect( const WgSize& gizmoSize )
+WgRect WgGizmoCheckbox::_getIconRect( const WgSize& gizmoSize )
 {
 	WgRect rect;
 
@@ -284,9 +338,9 @@ WgRect WgGizmoCheckbox::GetIconRect( const WgSize& gizmoSize )
 }
 
 
-//____ GetContentRect() _____________________________________________________
+//____ _getContentRect() _____________________________________________________
 
-WgRect WgGizmoCheckbox::GetContentRect( const WgSize& gizmoSize, const WgRect& iconRect )
+WgRect WgGizmoCheckbox::_getContentRect( const WgSize& gizmoSize, const WgRect& iconRect )
 {
 	WgRect rect( 0,0, gizmoSize.w, gizmoSize.h );
 
@@ -367,7 +421,7 @@ void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 	// Blit icon
 
-	WgRect iconRect = GetIconRect( _canvas );
+	WgRect iconRect = _getIconRect( _canvas );
 
 	if( pIcon && iconRect.w > 0 && iconRect.h > 0 )
 	{
@@ -395,7 +449,7 @@ void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 		int   yOfs = m_aDisplace[iDisplacement].y;
 
 
-		WgRect	printWindow = GetContentRect( _canvas, iconRect );
+		WgRect	printWindow = _getContentRect( _canvas, iconRect );
 		printWindow.x += _canvas.x;
 		printWindow.y += _canvas.y;
 
@@ -470,7 +524,7 @@ void WgGizmoCheckbox::TextModified()
 
 bool WgGizmoCheckbox::MarkTestTextArea( int _x, int _y )
 {
-	WgRect	contentRect = GetContentRect( Size(), GetIconRect( Size() ) );
+	WgRect	contentRect = _getContentRect( Size(), _getIconRect( Size() ) );
 
 	if( m_text.CoordToOfs( WgCoord(_x,_y), contentRect ) != -1 )
 		return true;
@@ -497,7 +551,7 @@ bool WgGizmoCheckbox::_onAlphaTest( const WgCoord& ofs )
 	WgBlock iconBlock;
 
 	WgSize	bgSize		= Size();
-	WgRect	iconRect	= GetIconRect( bgSize );
+	WgRect	iconRect	= _getIconRect( bgSize );
 
 	iconRect.shrink( m_iconAreaBorders );
 
@@ -526,7 +580,7 @@ bool WgGizmoCheckbox::_onAlphaTest( const WgCoord& ofs )
 		{
 			// Extend iconRect so it connects with textArea before we compare
 
-			WgRect	contentRect = GetContentRect( bgSize, GetIconRect( bgSize ) );	// This call needs IconRect with borders...
+			WgRect	contentRect = _getContentRect( bgSize, _getIconRect( bgSize ) );	// This call needs IconRect with borders...
 
 			if( iconRect.x + iconRect.w < contentRect.x )
 				iconRect.w = contentRect.x - iconRect.x;

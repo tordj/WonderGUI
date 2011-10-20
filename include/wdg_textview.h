@@ -57,8 +57,8 @@ public:
 	Uint32	InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
-	virtual void		SetInputMode(InputMode mode);
-	virtual InputMode	GetInputMode() const { return m_inputMode; }
+	virtual void			SetEditMode(WgTextEditMode mode);
+	virtual WgTextEditMode	GetEditMode() const { return m_editMode; }
 
 	void	SetNewlineCombo( WgKey	key, WgModifierKeys modifiers );
 
@@ -77,7 +77,7 @@ protected:
 private:
 	bool	InsertCharAtCursorInternal( Uint16 c );
 
-	bool	IsEditable() const { return m_inputMode == Editable; }
+	bool	IsEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
 	void	Init();
 	
 	void	DoMyOwnUpdate( const WgUpdateInfo& _updateInfo );
@@ -101,7 +101,7 @@ private:
 	WgKey				m_newlineKey;
 	WgModifierKeys		m_newlineModif;
 
-	InputMode			m_inputMode;
+	WgTextEditMode		m_editMode;
 };
 
 

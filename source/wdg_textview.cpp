@@ -41,7 +41,7 @@ void Wdg_TextView::Init()
 {
 	m_pText			= &m_text;
 	m_maxCharacters = 0;
-	m_inputMode		= Static;
+	m_editMode		= WG_TEXT_STATIC;
 
 	m_newlineKey	= WG_KEY_RETURN;
 	m_newlineModif	= WG_MODKEY_NONE;
@@ -70,9 +70,9 @@ const char * Wdg_TextView::GetMyType( void )
 }
 
 //______________________________________________________________
-void Wdg_TextView::SetInputMode(InputMode mode)
+void Wdg_TextView::SetEditMode(WgTextEditMode mode)
 {
-	m_inputMode = mode;
+	m_editMode = mode;
 }
 
 //____ goBOL() ________________________________________________________________

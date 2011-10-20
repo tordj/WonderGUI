@@ -182,6 +182,28 @@ void WgGizmoFps::_onUpdate( const WgUpdateInfo& _updateInfo )
 }
 
 
+//____ _onEvent() _____________________________________________________________
+
+void WgGizmoFps::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+{
+	switch( pEvent->Type() )
+	{
+		case WG_EVENT_TICK:
+		{
+			m_tickBufferOfs = (++m_tickBufferOfs) % TICK_BUFFER;
+
+			int msDiff = ((WgEvent::Tick*)pEvent)->Millisec();
+			if( msDiff > 0 )
+				m_pTickBuffer[m_tickBufferOfs] = msDiff;
+			else
+				m_pTickBuffer[m_tickBufferOfs] = 1;
+			RequestRender();
+		}
+		default:
+			break;
+	}
+}
+
 //____ DoMyOwnCloning() _______________________________________________________
 
 void WgGizmoFps::_onCloneContent( const WgGizmo * _pOrg )
