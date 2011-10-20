@@ -32,6 +32,8 @@ WgCharBuffer::BufferHead * WgCharBuffer::g_pEmptyBuffer = 0;
 
 
 //____ Constructor() ___________________________________________________________
+//
+/// @brief Creates a new buffer of the specified initial capacity.
 
 WgCharBuffer::WgCharBuffer( Uint32 size )
 {
@@ -89,6 +91,8 @@ void WgCharBuffer::_clearCharsNoDeref( Uint32 ofs, Uint32 n )
 
 
 //____ Trim() __________________________________________________________________
+//
+/// @brief Trims down the buffer to the size of the content, thus removing any extra capacity.
 
 void WgCharBuffer::Trim()
 {
@@ -102,16 +106,17 @@ void WgCharBuffer::Trim()
 	_reshapeBuffer(0,0,m_pHead->m_len,0);
 }
 
+//____ TrimWhiteSpace() _______________________________________________________
+//
+/// @brief Removes white spaces from the beginning and end of the string
+
 void WgCharBuffer::TrimWhiteSpace()
 {
 }
 
 //____ Reset() _________________________________________________________________
-
-/**
-	Resets the buffer to an intial state of the specified size, deleting all
-	content in the process.
-*/
+//
+/// @brief Deletes all content and reallocates the buffer to the specified capacity.
 
 void WgCharBuffer::Reset( Uint32 size )
 {
@@ -186,6 +191,18 @@ void WgCharBuffer::_reshapeBuffer( Uint32 begMargin, Uint32 copyOfs, Uint32 copy
 
 
 //____ BeginWrite() ____________________________________________________________
+//
+/// @brief Gives access to direct manipulation of the buffer content.
+///
+/// Any attempt to directly read or manipulate the buffer content needs to be enclosed by calls to BeginWrite()
+/// and EndWrite().
+///
+/// You may NOT call any non-const methods of this buffer until you have called EndWrite() and not write
+/// outside the null-terminated content of the buffer even if you know that there is extra capacity.
+/// If you need to grow the content before manipulation you can use the appropriate PushFront(), PushBack()
+/// or Insert() methods before calling BeginWrite().
+///
+/// @return Pointer to the content of the buffer, null-terminated.
 
 WgChar*	WgCharBuffer::BeginWrite()
 {
@@ -198,6 +215,8 @@ WgChar*	WgCharBuffer::BeginWrite()
 
 
 //____ EndWrite() ______________________________________________________________
+//
+/// @brief Ends your direct access to the buffer content.
 
 void WgCharBuffer::EndWrite()
 {
@@ -205,6 +224,15 @@ void WgCharBuffer::EndWrite()
 }
 
 //____ PopFront() ______________________________________________________________
+//
+/// @brief Shrinks the content by removing characters from the front.
+///
+///	@param 	nChars	Number of characters to remove from the front. May be larger than content
+///					in which case all content is removed.
+///
+/// Removing characters from the front increases the front capacity by the same amount.
+///
+///	@return Number of characters that was removed from the front of the content.
 
 Uint32 WgCharBuffer::PopFront( Uint32 nChars )
 {
@@ -227,6 +255,15 @@ Uint32 WgCharBuffer::PopFront( Uint32 nChars )
 }
 
 //____ PopBack() _______________________________________________________________
+//
+/// @brief Shrinks the content by removing characters from the back.
+///
+///	@param 	nChars	Number of characters to remove from the back. May be larger than content
+///					in which case all content is removed.
+///
+/// Removing characters from the back increases the back capacity by the same amount.
+///
+///	@return Number of characters that was removed from the back of the content.
 
 Uint32 WgCharBuffer::PopBack( Uint32 nChars )
 {
@@ -294,6 +331,12 @@ void WgCharBuffer::_setChars( Uint32 ofs, Uint32 nChars, Uint32 value )
 
 //____ PushFront() _____________________________________________________________
 
+/// @brief Grows the content by pushing a character to the front.
+///
+///	@param 	character	Character to push to the front.
+///
+///	@return Number of characters the content was grown with. Always 1.
+
 Uint32 WgCharBuffer::PushFront( const WgChar& character )
 {
 	_pushFront(1);
@@ -305,12 +348,26 @@ Uint32 WgCharBuffer::PushFront( const WgChar& character )
 	return 1;
 }
 
+
+/// @brief Grows the content by pushing whitespace to the front.
+///
+///	@param 	nChars	Number of whitespace characters to push to the front.
+///
+///	@return Number of characters the content was grown with. Always equals nChars.
+
 Uint32 WgCharBuffer::PushFront( Uint32 nChars )
 {
 	_pushFront(nChars);
 	_setChars( 0, nChars, c_emptyChar );
 	return nChars;
 }
+
+
+/// @brief Grows the content by pushing a null-terminated string of characters to the front.
+///
+///	@param 	pChars	Pointer to string of null-terminated characters to push to the front.
+///
+///	@return Number of characters the content was grown with.
 
 Uint32 WgCharBuffer::PushFront( const WgChar * pChars )
 {
@@ -323,6 +380,16 @@ Uint32 WgCharBuffer::PushFront( const WgChar * pChars )
 	return len;
 }
 
+
+/// @brief Grows the content by pushing a specified number of characters to the front.
+///
+///	@param 	pChars	Pointer to string of characters to push to the front.
+/// @param	nChars	The number of characters to push.
+///
+/// The string may not end prematurely. If any of the characters pushed contains a null-character the behaviour is undefined.
+///
+///	@return Number of characters the content was grown with. Always equals nChars.
+
 Uint32 WgCharBuffer::PushFront( const WgChar * pChars, Uint32 nChars )
 {
 	_pushFront(nChars);
@@ -331,6 +398,13 @@ Uint32 WgCharBuffer::PushFront( const WgChar * pChars, Uint32 nChars )
 	_refProps(0,nChars);
 	return nChars;
 }
+
+
+/// @brief Grows the content by pushing a character sequence to the front.
+///
+///	@param 	seq		Character sequence to be pushed to the front.
+///
+///	@return Number of characters the content was grown with. Always equals length of the sequence.
 
 Uint32 WgCharBuffer::PushFront( const WgCharSeq& seq )
 {
@@ -342,6 +416,12 @@ Uint32 WgCharBuffer::PushFront( const WgCharSeq& seq )
 
 
 //____ PushBack() ______________________________________________________________
+//
+/// @brief Grows the content by pushing a character to the back.
+///
+///	@param 	character	Character to push to the back.
+///
+///	@return Number of characters the content was grown with. Always 1.
 
 Uint32 WgCharBuffer::PushBack( const WgChar& character )
 {
@@ -354,12 +434,25 @@ Uint32 WgCharBuffer::PushBack( const WgChar& character )
 	return 1;
 }
 
+
+/// @brief Grows the content by pushing whitespace to the back.
+///
+///	@param 	nChars	Number of whitespace characters to push to the back.
+///
+///	@return Number of characters the content was grown with. Always equals nChars.
+
 Uint32 WgCharBuffer::PushBack( Uint32 nChars )
 {
 	_pushBack(nChars);
 	_setChars( m_pHead->m_len - nChars, nChars, c_emptyChar );
 	return nChars;
 }
+
+/// @brief Grows the content by pushing a null-terminated string of characters to the back.
+///
+///	@param 	pChars	Pointer to string of null-terminated characters to push to the back.
+///
+///	@return Number of characters the content was grown with.
 
 Uint32 WgCharBuffer::PushBack( const WgChar * pChars )
 {
@@ -372,6 +465,17 @@ Uint32 WgCharBuffer::PushBack( const WgChar * pChars )
 	return len;
 }
 
+
+/// @brief Grows the content by pushing a specified number of characters to the back.
+///
+///	@param 	pChars	Pointer to string of characters to push to the back.
+///
+/// @param	nChars	The number of characters to push.
+///
+/// The string may not end prematurely. If any of the characters pushed contains a null-character the behaviour is undefined.
+///
+///	@return Number of characters the content was grown with. Always equals nChars.
+
 Uint32 WgCharBuffer::PushBack( const WgChar * pChars, Uint32 nChars )
 {
 	_pushBack(nChars);
@@ -380,6 +484,13 @@ Uint32 WgCharBuffer::PushBack( const WgChar * pChars, Uint32 nChars )
 	_refProps(m_pHead->m_len-nChars,nChars);
 	return nChars;
 }
+
+
+/// @brief Grows the content by pushing a character sequence to the back.
+///
+///	@param 	seq		Character sequence to be pushed to the back.
+///
+///	@return Number of characters the content was grown with. Always equals length of the sequence.
 
 Uint32 WgCharBuffer::PushBack( const WgCharSeq& seq )
 {
@@ -460,17 +571,49 @@ void WgCharBuffer::_pushBack( Uint32 nChars )
 
 //____ Insert() ________________________________________________________________
 
+/// @brief Inserts a character.
+///
+/// @param ofs		Offset to insert character at, counting from beginning of buffer content.
+///
+/// @param pChars	Pointer at null-terminated string of characters to insert.
+///
+/// If ofs is larger than number of characters in buffer the character is pushed on the back.
+///
+/// @return Number of characters that have been insert.
+
 Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar& character )
 {
 	_replace( ofs, 0, 1, &character );
 	return 1;
 }
 
+
+/// @brief Inserts whitespace characters.
+///
+/// @param ofs		Offset to insert characters at, counting from beginning of buffer content.
+///
+/// @param nChars	Number of whitespace characters to insert.
+///
+/// If ofs is larger than number of characters in buffer the whitespaces are pushed on the back.
+///
+/// @return Number of characters that have been insert. Always equals nChars.
+
 Uint32 WgCharBuffer::Insert( Uint32 ofs, Uint32 nChars )
 {
 	_replace( ofs, 0, nChars );
 	return nChars;
 }
+
+
+/// @brief Inserts null-terminated string of characters.
+///
+/// @param ofs		Offset to insert characters at, counting from beginning of buffer content.
+///
+/// @param pChars	Pointer at null-terminated string of characters to insert.
+///
+/// If ofs is larger than number of characters in buffer the content of pChars is pushed on the back.
+///
+/// @return Number of characters that have been insert. Always equals 1.
 
 Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar * pChars )
 {
@@ -479,11 +622,35 @@ Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar * pChars )
 	return nInsert;
 }
 
+
+/// @brief Inserts a specified number of characters.
+///
+/// @param ofs		Offset to insert characters at, counting from beginning of buffer content.
+///
+/// @param pChars	Pointer at string of characters to insert.
+///
+/// @param nChars	Number of characters to insert.
+///
+/// The string may not end prematurely. If any of the characters pushed contains a null-character the behaviour is undefined.
+/// If ofs is larger than number of characters in buffer the content of pChars is pushed on the back.
+///
+/// @return Number of characters that have been insert. Always equals nChars.
+
 Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar * pChars, Uint32 nChars )
 {
 	_replace( ofs, 0, nChars, pChars );
 	return nChars;
 }
+
+/// @brief Inserts characters from a character sequence.
+///
+/// @param ofs		Offset to insert characters at, counting from beginning of buffer content.
+///
+/// @param seq		Character sequence to be inserted.
+///
+/// If ofs is larger than number of characters in buffer the content of pChars is pushed on the back.
+///
+/// @return Number of characters that have been insert. Always equals length of sequence.
 
 Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgCharSeq& seq )
 {
@@ -498,6 +665,19 @@ Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgCharSeq& seq )
 }
 
 //____ Delete() ________________________________________________________________
+//
+/// @brief Deletes characters from the buffer.
+///
+///
+/// @param ofs		Offset to delete characters from, counting from beginning of buffer content.
+///
+/// @param nChars	Number of characters to delete, counting from ofs. This can be set larger than
+///					number of characters available for deletion in which case all content starting
+///					from ofs is deleted.
+///
+/// If ofs is larger than number of characters no characters are deleted.
+///
+/// @return Number of characters that were deleted.
 
 Uint32 WgCharBuffer::Delete( Uint32 ofs, Uint32 nChars )
 {
@@ -505,6 +685,16 @@ Uint32 WgCharBuffer::Delete( Uint32 ofs, Uint32 nChars )
 }
 
 //____ Replace() _______________________________________________________________
+//
+/// @brief Replace a character.
+///
+/// @param ofs		Offset of character to be replaced, counting from beginning of buffer content.
+///
+///	@param character	Character to replace buffer content at ofs with.
+///
+/// If ofs is larger than number of characters then character is pushed on the back of the buffer instead.
+///
+/// @return Number of characters that were replaced. Always equals 1.
 
 Uint32 WgCharBuffer::Replace( Uint32 ofs, const WgChar& character )
 {
@@ -515,11 +705,42 @@ Uint32 WgCharBuffer::Replace( Uint32 ofs, const WgChar& character )
 	return 1;
 }
 
+
+/// @brief Replace specified number of characters with (another number of) whitespaces.
+///
+/// @param ofs		Offset of first character to be replaced, counting from beginning of buffer content.
+///
+///	@param nDelete	Number of characters to be replaced.
+///
+/// @param nInsert	Number of whitespaces to replace the characters with.
+///
+/// If ofs is larger than number of characters nothing will be deleted and the to-be-inserted characters
+/// will just be pushed on the back of the buffer. If nDelete is larger than what is left of the buffer
+/// everything from ofs and forward is replaced.
+///
+/// @return Number of characters that were inserted. Always equals nInsert.
+
 Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, Uint32 nInsert )
 {
 	_replace( ofs, nDelete, nInsert );
 	return nInsert;
 }
+
+
+/// @brief Replace specified number of characters with a specified string.
+///
+/// @param ofs		Offset of first character to be replaced, counting from beginning of buffer content.
+///
+///	@param nDelete	Number of characters to be replaced.
+///
+/// @param pChars	Pointer at null-terminated string to replace the characters with. This string can be
+///					longer or shorter than the characters it replaces.
+///
+/// If ofs is larger than number of characters nothing will be deleted and the to-be-inserted characters
+/// will just be pushed on the back of the buffer. If nDelete is larger than what is left of the buffer
+/// everything from ofs and forward is replaced.
+///
+/// @return Number of characters that were inserted.
 
 Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars )
 {
@@ -528,11 +749,47 @@ Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars 
 	return nInsert;
 }
 
+
+/// @brief Replace specified number of characters with a string of specified length.
+///
+/// @param ofs		Offset of first character to be replaced, counting from beginning of buffer content.
+///
+///	@param nDelete	Number of characters to be replaced.
+///
+/// @param pChars	Pointer at a string of characters to replace the characters with.
+///
+///	@param nInsert 	Length of the string to replace the characters with. This can be
+///					longer or shorter than the characters it replaces.
+///
+/// If ofs is larger than number of characters nothing will be deleted and the to-be-inserted characters
+/// will just be pushed on the back of the buffer. If nDelete is larger than what is left of the buffer
+/// everything from ofs and forward is replaced.
+///
+/// @return Number of characters that were inserted. Always equals nInsert.
+
 Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars, Uint32 nInsert)
 {
 	_replace( ofs, nDelete, nInsert, pChars );
 	return nInsert;
 }
+
+
+/// @brief Replace specified number of characters with content of a char sequence.
+///
+/// @param ofs		Offset of first character to be replaced, counting from beginning of buffer content.
+///
+///	@param nDelete	Number of characters to be replaced.
+///
+/// @param seq		Character sequence to replace with. This can be longer or shorter than the characters it replaces.
+///
+///	@param nInsert 	Length of the string to replace the characters with. This can be
+///					longer or shorter than the characters to replace.
+///
+/// If ofs is larger than number of characters nothing will be deleted and the to-be-inserted characters
+/// will just be pushed on the back of the buffer. If nDelete is larger than what is left of the buffer
+/// everything from ofs and forward is replaced.
+///
+/// @return Number of characters that were inserted. Always equals length of sequence.
 
 Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgCharSeq& seq )
 {
@@ -734,6 +991,15 @@ int WgCharBuffer::CompareGlyphsIgnoreCaseTo( const WgCharBuffer * pBuffer )
 
 
 //____ Fill() __________________________________________________________________
+//
+/// @brief	Fills a section of the buffer with specified character.
+///
+/// @param ch		Character to fill section with.
+/// @param ofs		Offset of first character to be replaced, counting from beginning of buffer content.
+/// @param len		Number of characters to be replaced.
+///
+/// Fully replaces the content of the specified buffer section by filling it with the specified
+/// character. If the section spans outside the buffer content it will be adjusted properly.
 
 void WgCharBuffer::Fill( const WgChar& ch, Uint32 ofs, Uint32 len )
 {
@@ -750,6 +1016,15 @@ void WgCharBuffer::Fill( const WgChar& ch, Uint32 ofs, Uint32 len )
 }
 
 //____ SetGlyphs() _____________________________________________________________
+//
+/// @brief	Sets the glyph for a range of characters.
+///
+/// @param glyph	The glyph to be used. This may not be 0.
+/// @param ofs		Offset of first character to have its glyph changed.
+/// @param len		Number of characters to have their glyphs changed.
+///
+/// This method sets the glyph for all characters in the specified range. If the
+/// range spans outside the buffer content it will be adjusted properly.
 
 void WgCharBuffer::SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len )
 {
@@ -768,6 +1043,16 @@ void WgCharBuffer::SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len )
 
 
 //___ SetProperties() __________________________________________________________
+//
+/// @brief	Sets the properties for a range of characters.
+///
+/// @param	pProp	Pointer to the new properties for the characters.
+/// @param	ofs		Offset of first character to have its properties set, counting from beginning of buffer content.
+/// @param	len		Number of characters to have their properties set.
+///
+/// By setting the properties you erase all previous settings of individual
+/// properties for the characters, like font, color, style, and underlined.
+/// If the range spans outside the buffer content it will be adjusted properly.
 
 void WgCharBuffer::SetProperties( const WgTextPropPtr& pProp, Uint32 ofs, Uint32 len  )
 {
@@ -784,6 +1069,18 @@ void WgCharBuffer::SetProperties( const WgTextPropPtr& pProp, Uint32 ofs, Uint32
 }
 
 //___ SetColor() _______________________________________________________________
+//
+/// @brief	Sets the color for a range of characters.
+///
+/// @param color	The color to be used by the characters.
+/// @param ofs		Offset of first character to have its color changed.
+/// @param len		Number of characters to have their color changed.
+/// @param mode		The style can be changed for an individual mode by specifying it here.
+///					This parameter defaults to WG_MODE_ALL, which changes the style for all modes.
+///
+/// This method specifies the color, with which the characters glyphs will
+/// be tinted when displayed in the specified mode, for all characters in
+/// the specified range. If the range spans outside the buffer content it will be adjusted properly.
 
 void WgCharBuffer::SetColor( const WgColor color, Uint32 ofs, Uint32 len, WgMode mode )
 {
@@ -801,6 +1098,18 @@ void WgCharBuffer::SetColor( const WgColor color, Uint32 ofs, Uint32 len, WgMode
 
 
 //___ SetStyle() _______________________________________________________________
+//
+/// @brief	Sets the style for a range of characters.
+///
+/// @param style	The style to render the characters in.
+/// @param ofs		Offset of first character to have its style changed.
+/// @param len		Number of characters to have their style changed.
+/// @param mode		The style can be changed for an individual mode by specifying it here.
+///					This parameter defaults to WG_MODE_ALL, which changes the style for all modes.
+///
+/// This method specifies the style in which the character is rendered when
+/// displayed in the specified mode or all modes.
+/// If the range spans outside the buffer content it will be adjusted properly.
 
 void WgCharBuffer::SetStyle( WgFontStyle style, Uint32 ofs, Uint32 len, WgMode mode )
 {
@@ -818,6 +1127,17 @@ void WgCharBuffer::SetStyle( WgFontStyle style, Uint32 ofs, Uint32 len, WgMode m
 
 
 //___ SetFont() ________________________________________________________________
+//
+/// @brief	Sets the font for a range of characters.
+///
+/// @param pFont	The font to be used by all characters.
+/// @param ofs		Offset of first character to have its font changed.
+/// @param len		Number of characters to have their font changed.
+///
+/// This method sets the font for all characters in the specified range. If the
+/// range spans outside the buffer content it will be adjusted properly.
+///
+/// Setting pFont to null is identical to calling ClearFont().
 
 void WgCharBuffer::SetFont( WgFont * pFont, Uint32 ofs, Uint32 len  )
 {
@@ -834,6 +1154,16 @@ void WgCharBuffer::SetFont( WgFont * pFont, Uint32 ofs, Uint32 len  )
 }
 
 //___ SetUnderlined() __________________________________________________________
+//
+/// @brief	Sets a range of characters to underlined.
+///
+/// @param ofs		Offset of first character to become underlined.
+/// @param len		Number of characters to become underlined.
+/// @param mode		The characters can be made underlined for an individual mode by specifying it here.
+///					This parameter defaults to WG_MODE_ALL, which makes the characters underlined in all modes.
+///
+/// Specifying a single mode as underlined doesn't affect whether other modes are underlined or not.
+/// If the range spans outside the buffer content it will be adjusted properly.
 
 void WgCharBuffer::SetUnderlined( Uint32 ofs, Uint32 len, WgMode mode )
 {
@@ -851,6 +1181,15 @@ void WgCharBuffer::SetUnderlined( Uint32 ofs, Uint32 len, WgMode mode )
 
 
 //___ ClearProperties() ________________________________________________________
+//
+/// @brief	Clears the properties for a range of characters.
+///
+/// @param ofs		Offset of first character to have its properties cleared.
+///
+/// @param len		Number of characters to have their properties cleared.
+///
+/// By clearing the properties you erase all previous settings of individual
+/// properties for the characters, like font, color, style and underlined.
 
 void WgCharBuffer::ClearProperties( Uint32 ofs, Uint32 len  )
 {
@@ -867,6 +1206,16 @@ void WgCharBuffer::ClearProperties( Uint32 ofs, Uint32 len  )
 }
 
 //___ ClearColor() _____________________________________________________________
+//
+/// @brief	Clears the color setting for a range of characters.
+///
+/// @param ofs		Offset of first character to have its color setting cleared.
+/// @param len		Number of characters to have their color settings cleared.
+/// @param mode		The color can be cleared for an individual mode by specifying it here.
+///					This parameter defaults to WG_MODE_ALL, which clears the color for all modes.
+///
+/// This method clears the color-property of all characters in the specified range.
+/// If the range spans outside the buffer content it will be adjusted properly.
 
 void WgCharBuffer::ClearColor( Uint32 ofs, Uint32 len, WgMode mode )
 {
@@ -883,6 +1232,16 @@ void WgCharBuffer::ClearColor( Uint32 ofs, Uint32 len, WgMode mode )
 }
 
 //___ ClearStyle() _____________________________________________________________
+//
+/// @brief	Clears the style setting for a range of characters.
+///
+/// @param ofs		Offset of first character to have its style setting cleared.
+/// @param len		Number of characters to have their style settings cleared.
+/// @param mode		The style can be cleared for an individual mode by specifying it here.
+///					This parameter defaults to WG_MODE_ALL, which changes the style for all modes.
+///
+/// This method clears the style-property of all characters in the specified range.
+/// If the range spans outside the buffer content it will be adjusted properly.
 
 void WgCharBuffer::ClearStyle( Uint32 ofs, Uint32 len, WgMode mode )
 {
@@ -900,6 +1259,14 @@ void WgCharBuffer::ClearStyle( Uint32 ofs, Uint32 len, WgMode mode )
 
 
 //___ ClearFont() ______________________________________________________________
+//
+/// @brief	Clears the font for a range of characters.
+///
+/// @param ofs		Offset of first character to have its font property cleared.
+/// @param len		Number of characters to have their font properties cleared.
+///
+/// This method clears the font for all characters in the specified range. If the
+/// range spans outside the buffer content it will be adjusted properly.
 
 void WgCharBuffer::ClearFont( Uint32 ofs, Uint32 len  )
 {
@@ -916,6 +1283,15 @@ void WgCharBuffer::ClearFont( Uint32 ofs, Uint32 len  )
 }
 
 //___ ClearUnderlined() ________________________________________________________
+//
+/// @brief	Removes underline from a range of characters.
+///
+/// @param ofs		Offset of first character to not be underlined anymore.
+/// @param len		Number of characters to not be underlined anymore.
+/// @param mode		The characters can have their underline removed for an individual mode by specifying it here.
+///					This parameter defaults to WG_MODE_ALL, which removes underline from all modes.
+///
+/// If the range spans outside the buffer content it will be adjusted properly.
 
 void WgCharBuffer::ClearUnderlined( Uint32 ofs, Uint32 len, WgMode mode  )
 {
@@ -932,6 +1308,16 @@ void WgCharBuffer::ClearUnderlined( Uint32 ofs, Uint32 len, WgMode mode  )
 }
 
 //____ FindFirst() ____________________________________________________________
+//
+/// @brief	Finds the first occurence of the specified character sequence in buffer starting from offset.
+///
+/// @param seq		Sequence of characters to search for.
+/// @param ofs		Offset in buffer to start searching from.
+///
+/// Any character properties such as color, style etc is ignored by the comparison. Only the characters
+/// themselves are compared.
+///
+/// @return Offset in buffer for first match found or -1 if none found.
 
 int WgCharBuffer::FindFirst( const WgCharSeq& _seq, Uint32 ofs )
 {
@@ -956,6 +1342,17 @@ int WgCharBuffer::FindFirst( const WgCharSeq& _seq, Uint32 ofs )
 
 	return -1;
 }
+
+
+/// @brief	Finds the first occurence of the specified character in buffer starting from offset.
+///
+/// @param character	Characters to search for.
+/// @param ofs			Offset in buffer to start searching from.
+///
+/// Any character properties such as color, style etc is ignored by the comparison. Only the characters
+/// themselves are compared.
+///
+/// @return Offset in buffer for first match found or -1 if none found.
 
 int WgCharBuffer::FindFirst( Uint16 character, Uint32 ofs )
 {

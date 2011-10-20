@@ -32,7 +32,14 @@ class WgRect;
 
 
 //____ Class: WgCoord ________________________________________________________
+/**
 
+	Specifies a 2D Coordinate through class members x and y, where x is the
+	horizontal distance from origo moving from left to right and y is
+	the vertical distance moving downwards.
+
+	WgCoord specifies the position in discrete pixels (integer precision).
+**/
 class	WgCoord
 {
 public:
@@ -125,7 +132,20 @@ public:
 class WgSize;
 
 //____ WgBorders ______________________________________________________________
+/**
+	Specifies the thickness of the four borders of a rectangular area, measured in pixels.
+	
+	The four borders are, in order of specification, left, top, right, bottom. I.e.
+	you start with the left border and go clockwise.
 
+	The member variables of WgBorders are unsigned chars, so borders have a maximum
+	thickness of 255 pixels each.
+	
+	Borders are in most cases internal to the rectangular areas geometry, so the combined thickness of left and right
+	borders might not surpass the rectangles width and combined thickness of top and bottom borders may not surpass
+	the rectangles height.
+
+**/
 class WgBorders
 {
 public:
@@ -152,6 +172,13 @@ public:
 };
 
 //____ Class: WgSize ________________________________________________________
+
+/**
+	Specifies the size of a 2D rectangular area, measured in pixels, through
+	members w and h for width and height respectively.
+
+	Members are integer precision and can be negative.
+**/
 
 class	WgSize
 {
@@ -204,6 +231,24 @@ public:
 
 
 //____ WgRect ___________________________________________________________
+
+/**
+
+	Specifies a rectangular area of a 2D surface through position and size. 
+	Position is specified through the members x and y, containing the horizontal
+	and vertical offset from an origo position while members w and h specifies
+	the width and height.
+	
+	Origo is normally the top-left corner of a parent rectangle, screen surface or
+	bitmap and position normally specifies the position of the top-left corner, although
+	this might differ depending on context.
+	
+	Increasing x and y will always move the rectangle to the right and down respectively.
+
+	Members are not checked or truncated so width and height are allowed to contain negative values
+	but various WonderGUI methods accepting a WgRect as parameter might not be able to handle it.
+	
+**/
 
 class WgRect
 {

@@ -29,6 +29,20 @@
 
 //____ Class WgColor _______________________________________________________________________
 
+/**
+
+	Specifies a color in ARGB-format, where the alpha component controls transparency.
+	Range for the individual color components is 0-255.
+	
+	Setting alpha to 0 gives full transparency while 255 gives full opacity.
+
+	The different components can be accessed individually through the r, g, b, and a members,
+	or as a group through the argb member.
+
+	For convenience, the color class also provides static, predefined colors matching the standard web-palette.
+
+**/
+
 class WgColor
 {
 public:
