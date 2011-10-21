@@ -527,6 +527,7 @@ enum WgSelectMode
 	WG_SELECT_MULTI
 };
 
+//____ WgTextEditMode _________________________________________________________
 
 enum WgTextEditMode
 {

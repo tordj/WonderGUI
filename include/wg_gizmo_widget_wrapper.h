@@ -45,11 +45,11 @@
 	_class_( WgOrigo upperLeft, Sint32 x1, Sint32 y1, WgOrigo lowerRight, Sint32 x2, Sint32 y2, WgWidget * pParent = 0 ) : Wdg_Widget<_gizmoclass_>(upperLeft,x1, y1, lowerRight, x2, y2, pParent) {}
 
 
-class WgWidgetHook : public WgGizmoHook
+class WgWidgetHook : public WgHook
 {
 public:
-	WgWidgetHook( WgGizmo * pGizmo, WgGizmoContainer * pParent, WgWidget * pWidget ) : WgGizmoHook(), m_pWidget(pWidget), m_pParent(pParent) { _attachGizmo(pGizmo); }
-	~WgWidgetHook() { m_pGizmo = 0; }	// Prevent WgGizmoHook from deleting Gizmo (which is part of the generated Widget).
+	WgWidgetHook( WgGizmo * pGizmo, WgGizmoContainer * pParent, WgWidget * pWidget ) : WgHook(), m_pWidget(pWidget), m_pParent(pParent) { _attachGizmo(pGizmo); }
+	~WgWidgetHook() { m_pGizmo = 0; }	// Prevent WgHook from deleting Gizmo (which is part of the generated Widget).
 	WgCoord	Pos() const { return WgCoord( m_pWidget->PosX(), m_pWidget->PosY() ); }
 	WgSize	Size() const { return WgSize( m_pWidget->Width(), m_pWidget->Height() ); }
 	WgRect	Geo() const { return m_pWidget->Geometry(); }
@@ -65,7 +65,7 @@ public:
 
 
 
-	WgGizmoHook *	_prevHook() const
+	WgHook *	_prevHook() const
 	{
 		WgWidget * p = m_pWidget->PrevSibling();
 
@@ -80,7 +80,7 @@ public:
 	}
 
 
-	WgGizmoHook *	_nextHook() const
+	WgHook *	_nextHook() const
 	{
 		WgWidget * p = m_pWidget->NextSibling();
 
@@ -132,13 +132,13 @@ class WgWidgetContainer : public WgGizmoContainer
 public:
 	// With wg_gizmo_widget_wrapper all widgets that are siblings behave as one collective gizmo_manager...
 
-	bool		DeleteGizmo( WgGizmo * pGizmo ) { return false; }
-	WgGizmo *	ReleaseGizmo( WgGizmo * pGizmo ) { return 0; }
+	bool		DeleteChild( WgGizmo * pGizmo ) { return false; }
+	WgGizmo *	ReleaseChild( WgGizmo * pGizmo ) { return 0; }
 
-	bool		DeleteAllGizmos() { return false; }
-	bool		ReleaseAllGizmos() { return false; }
+	bool		DeleteAllChildren() { return false; }
+	bool		ReleaseAllChildren() { return false; }
 
-	WgGizmoHook *	FirstHook() const
+	WgHook *	FirstHook() const
 	{
 		if( m_pWidget->m_pParent )
 		{
@@ -153,7 +153,7 @@ public:
 			return m_pWidget->GetHook();	// Discards const, is ok in this case...
 	}
 
-	WgGizmoHook *	LastHook() const
+	WgHook *	LastHook() const
 	{
 		if( m_pWidget->m_pParent )
 		{
@@ -182,8 +182,8 @@ public:
 	WgWidget *		m_pWidget;
 
 private:
-	WgGizmoHook*	_firstHook() const { return FirstHook(); }
-	WgGizmoHook*	_lastHook() const { return LastHook(); }
+	WgHook*	_firstHook() const { return FirstHook(); }
+	WgHook*	_lastHook() const { return LastHook(); }
 
 
 	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) {}
@@ -208,7 +208,7 @@ public:
 
 	virtual WgGizmo * GetGizmo() { return this; }
 	virtual const WgGizmo * GetGizmo() const { return this; }
-	virtual WgGizmoHook * GetHook() const { return m_pHook; }
+	virtual WgHook * GetHook() const { return m_pHook; }
 
 	void	Enable()
 	{
