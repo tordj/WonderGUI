@@ -64,10 +64,10 @@ int main ( int argc, char** argv )
 	WgEventHandler * pEventHandler = pRoot->EventHandler();
 
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
-	pEventLogger->IgnoreEvent( WG_EVENT_POINTER_PLACED );
-	pEventLogger->IgnoreEvent( WG_EVENT_POINTER_MOVE );
+	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_POSITIONED );
+	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_MOVE );
 //	pEventLogger->IgnoreAllEvents();
-//	pEventLogger->LogButtonEvents();
+//	pEventLogger->LogMouseButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
 
 	pEventHandler->MapKey( WG_KEY_SHIFT, SDLK_LSHIFT );
@@ -175,7 +175,7 @@ int main ( int argc, char** argv )
 	WgGizmoButton * pModalButton = new WgGizmoButton();
 	pModalButton->SetSource( pButtonBlock );
 
-	pEventHandler->AddCallback( WgEventFilter::ButtonClick(pModalButton, 1), cbCloseModal, pModalButton );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonClick(pModalButton, 1), cbCloseModal, pModalButton );
 
 	//
 
@@ -184,7 +184,7 @@ int main ( int argc, char** argv )
 
 	pHook = pFlex->AddChild( pButton, WgRect(0,0,100,100), WG_NORTHWEST );
 
-	pEventHandler->AddCallback( WgEventFilter::ButtonPress(pButton, 1), cbOpenModal, pModalButton );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pButton, 1), cbOpenModal, pModalButton );
 
 	//
 
@@ -201,8 +201,8 @@ int main ( int argc, char** argv )
 	pHook = pFlex->AddChild( pFlag2, WgCoord(100,100), WG_CENTER );
 
 
-	pEventHandler->AddCallback( WgEventFilter::ButtonPress(pFlag1, 1), cbInitDrag, pFlag1 );
-	pEventHandler->AddCallback( WgEventFilter::ButtonDrag(pFlag1, 1), cbDragGizmo, pFlag1 );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pFlag1, 1), cbInitDrag, pFlag1 );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pFlag1, 1), cbDragGizmo, pFlag1 );
 
 	//
 
@@ -361,26 +361,26 @@ bool eventLoop( WgEventHandler * pHandler )
 
 			case	SDL_MOUSEMOTION:
 			{
-				pHandler->QueueEvent( new WgEvent::PointerMove( WgCoord( event.motion.x, event.motion.y ) ) );
+				pHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( event.motion.x, event.motion.y ) ) );
 				break;
 			}
 
 			case	SDL_MOUSEBUTTONDOWN:
 				if(event.button.button == 4 )
-					pHandler->QueueEvent( new WgEvent::WheelRoll( 1, 120 ) );
+					pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, 120 ) );
 				else if(event.button.button == 5)
-					pHandler->QueueEvent( new WgEvent::WheelRoll( 1, -120 ) );
+					pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, -120 ) );
 				else
 				{
-//					pHandler->QueueEvent( WgEvent::PointerMove( WgCoord( event.button.x, event.button.y )) );
-					pHandler->QueueEvent( new WgEvent::ButtonPress( event.button.button ) );
+//					pHandler->QueueEvent( WgEvent::MouseMove( WgCoord( event.button.x, event.button.y )) );
+					pHandler->QueueEvent( new WgEvent::MouseButtonPress( event.button.button ) );
 				}
 				break;
 
 			case	SDL_MOUSEBUTTONUP:
-//				pHandler->QueueEvent( WgEvent::PointerMove( WgCoord( event.button.x, event.button.y ) ));
+//				pHandler->QueueEvent( WgEvent::MouseMove( WgCoord( event.button.x, event.button.y ) ));
 				if( event.button.button != 4 && event.button.button != 5 )
-				pHandler->QueueEvent( new WgEvent::ButtonRelease( event.button.button ) );
+				pHandler->QueueEvent( new WgEvent::MouseButtonRelease( event.button.button ) );
 				break;
 
 
@@ -471,10 +471,10 @@ void cbInitDrag( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 
 void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 {
-	if( _pEvent->Type() != WG_EVENT_BUTTON_DRAG || !pGizmo->ParentX() )
+	if( _pEvent->Type() != WG_EVENT_MOUSEBUTTON_DRAG || !pGizmo->ParentX() )
 		return;
 
-	const WgEvent::ButtonDrag* pEvent = static_cast<const WgEvent::ButtonDrag*>(_pEvent);
+	const WgEvent::MouseButtonDrag* pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
 
 	WgCoord	dragDistance = pEvent->DraggedTotal();
 

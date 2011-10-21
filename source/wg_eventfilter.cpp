@@ -26,172 +26,172 @@
 #include <wg_eventfilter.h>
 #include <wg_gizmo.h>
 
-//____ PointerEnter() _________________________________________________________
+//____ MouseEnter() _________________________________________________________
 
-WgEventFilter	WgEventFilter::PointerEnter()
+WgEventFilter	WgEventFilter::MouseEnter()
 {
-	return WgEventFilter( WG_EVENT_POINTER_ENTER, 0, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_ENTER, 0, _filterPointerEvents );
 }
 
-WgEventFilter	WgEventFilter::PointerEnter( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseEnter( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_POINTER_ENTER, pGizmo, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_ENTER, pGizmo, _filterPointerEvents );
 }
 
-//____ PointerExit() _________________________________________________________
+//____ MouseLeave() _________________________________________________________
 
-WgEventFilter	WgEventFilter::PointerExit()
+WgEventFilter	WgEventFilter::MouseLeave()
 {
-	return WgEventFilter( WG_EVENT_POINTER_EXIT, 0, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_LEAVE, 0, _filterPointerEvents );
 }
 
-WgEventFilter	WgEventFilter::PointerExit( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseLeave( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_POINTER_EXIT, pGizmo, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_LEAVE, pGizmo, _filterPointerEvents );
 }
 
-//____ PointerMove() _________________________________________________________
+//____ MouseMove() _________________________________________________________
 
-WgEventFilter	WgEventFilter::PointerMove()
+WgEventFilter	WgEventFilter::MouseMove()
 {
-	return WgEventFilter( WG_EVENT_POINTER_MOVE, 0, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_MOVE, 0, _filterPointerEvents );
 }
 
-WgEventFilter	WgEventFilter::PointerMove( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseMove( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_POINTER_MOVE, pGizmo, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_MOVE, pGizmo, _filterPointerEvents );
 }
 
-//____ ButtonPress() _________________________________________________________
+//____ MouseButtonPress() _________________________________________________________
 
-WgEventFilter	WgEventFilter::ButtonPress()
+WgEventFilter	WgEventFilter::MouseButtonPress()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_PRESS, 0, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonPress( int button)
+WgEventFilter	WgEventFilter::MouseButtonPress( int button)
 {
-	return WgEventFilter( WG_EVENT_BUTTON_PRESS, 0, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::ButtonPress( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonPress( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_PRESS, pGizmo, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, pGizmo, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonPress( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonPress( WgGizmo * pGizmo, int button )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_PRESS, pGizmo, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, pGizmo, _filterMouseButtonEvents, button );
 }
 
-//____ ButtonRelease() ________________________________________________________
+//____ MouseButtonRelease() ________________________________________________________
 
-WgEventFilter	WgEventFilter::ButtonRelease()
+WgEventFilter	WgEventFilter::MouseButtonRelease()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_RELEASE, 0, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonRelease( int button)
+WgEventFilter	WgEventFilter::MouseButtonRelease( int button)
 {
-	return WgEventFilter( WG_EVENT_BUTTON_RELEASE, 0, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::ButtonRelease( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonRelease( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_RELEASE, pGizmo, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, pGizmo, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonRelease( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonRelease( WgGizmo * pGizmo, int button )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_RELEASE, pGizmo, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, pGizmo, _filterMouseButtonEvents, button );
 }
 
-//____ ButtonDrag() ___________________________________________________________
+//____ MouseButtonDrag() ___________________________________________________________
 
-WgEventFilter	WgEventFilter::ButtonDrag()
+WgEventFilter	WgEventFilter::MouseButtonDrag()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_DRAG, 0, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonDrag( int button)
+WgEventFilter	WgEventFilter::MouseButtonDrag( int button)
 {
-	return WgEventFilter( WG_EVENT_BUTTON_DRAG, 0, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::ButtonDrag( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonDrag( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_DRAG, pGizmo, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, pGizmo, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonDrag( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonDrag( WgGizmo * pGizmo, int button )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_DRAG, pGizmo, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, pGizmo, _filterMouseButtonEvents, button );
 }
 
-//____ ButtonRepeat() ________________________________________________________
+//____ MouseButtonRepeat() ________________________________________________________
 
-WgEventFilter	WgEventFilter::ButtonRepeat()
+WgEventFilter	WgEventFilter::MouseButtonRepeat()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_REPEAT, 0, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonRepeat( int button)
+WgEventFilter	WgEventFilter::MouseButtonRepeat( int button)
 {
-	return WgEventFilter( WG_EVENT_BUTTON_REPEAT, 0, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::ButtonRepeat( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonRepeat( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_REPEAT, pGizmo, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, pGizmo, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonRepeat( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonRepeat( WgGizmo * pGizmo, int button )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_REPEAT, pGizmo, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, pGizmo, _filterMouseButtonEvents, button );
 }
 
-//____ ButtonClick() ________________________________________________________
+//____ MouseButtonClick() ________________________________________________________
 
-WgEventFilter	WgEventFilter::ButtonClick()
+WgEventFilter	WgEventFilter::MouseButtonClick()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, 0, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonClick( int button)
+WgEventFilter	WgEventFilter::MouseButtonClick( int button)
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, 0, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::ButtonClick( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonClick( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, pGizmo, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pGizmo, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonClick( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonClick( WgGizmo * pGizmo, int button )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, pGizmo, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pGizmo, _filterMouseButtonEvents, button );
 }
 
-//____ ButtonDoubleClick() ________________________________________________________
+//____ MouseButtonDoubleClick() ________________________________________________________
 
-WgEventFilter	WgEventFilter::ButtonDoubleClick()
+WgEventFilter	WgEventFilter::MouseButtonDoubleClick()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, 0, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonDoubleClick( int button)
+WgEventFilter	WgEventFilter::MouseButtonDoubleClick( int button)
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, 0, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::ButtonDoubleClick( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonDoubleClick( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, pGizmo, _filterButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pGizmo, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::ButtonDoubleClick( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonDoubleClick( WgGizmo * pGizmo, int button )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_CLICK, pGizmo, _filterButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pGizmo, _filterMouseButtonEvents, button );
 }
 
 //____ KeyPress() _____________________________________________________________
@@ -318,26 +318,26 @@ WgEventFilter	WgEventFilter::Character( WgGizmo * pGizmo, unsigned short charact
 	return WgEventFilter( WG_EVENT_CHARACTER, pGizmo, _filterCharacterEvents, character );
 }
 
-//____ WheelRoll() ____________________________________________________________
+//____ MouseWheelRoll() ____________________________________________________________
 
-WgEventFilter	WgEventFilter::WheelRoll()
+WgEventFilter	WgEventFilter::MouseWheelRoll()
 {
-	return WgEventFilter( WG_EVENT_WHEEL_ROLL, 0, _filterWheelRollEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, 0, _filterMouseWheelRollEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::WheelRoll( int wheel )
+WgEventFilter	WgEventFilter::MouseWheelRoll( int wheel )
 {
-	return WgEventFilter( WG_EVENT_WHEEL_ROLL, 0, _filterWheelRollEvents, wheel );
+	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, 0, _filterMouseWheelRollEvents, wheel );
 }
 
-WgEventFilter	WgEventFilter::WheelRoll( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseWheelRoll( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_WHEEL_ROLL, pGizmo, _filterWheelRollEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, pGizmo, _filterMouseWheelRollEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::WheelRoll( int wheel, WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseWheelRoll( int wheel, WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_WHEEL_ROLL, pGizmo, _filterWheelRollEvents, wheel );
+	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, pGizmo, _filterMouseWheelRollEvents, wheel );
 }
 
 //____ Tick() _________________________________________________________________
@@ -363,7 +363,7 @@ bool WgEventFilter::_filterPointerEvents( const WgEvent::Event * pEvent, const W
 	return false;
 }
 
-bool WgEventFilter::_filterButtonEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterMouseButtonEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
 	{
@@ -371,7 +371,7 @@ bool WgEventFilter::_filterButtonEvents( const WgEvent::Event * pEvent, const Wg
 			return true;
 		else
 		{
-			const WgEvent::ButtonEvent * p = static_cast<const WgEvent::ButtonEvent*>(pEvent);
+			const WgEvent::MouseButtonEvent * p = static_cast<const WgEvent::MouseButtonEvent*>(pEvent);
 
 			if( p->Button() == filter.m_data1 )
 				return true;
@@ -421,11 +421,11 @@ bool WgEventFilter::_filterCharacterEvents( const WgEvent::Event * pEvent, const
 	return false;
 }
 
-bool WgEventFilter::_filterWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterMouseWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
 	{
-		int chr = (static_cast<const WgEvent::WheelRoll *>(pEvent))->Wheel();
+		int chr = (static_cast<const WgEvent::MouseWheelRoll *>(pEvent))->Wheel();
 
 		if( chr == filter.m_data1 )
 			return true;

@@ -46,95 +46,95 @@ namespace WgEvent
 		m_type = WG_EVENT_FOCUS_LOST;
 	}
 
-	//____ PointerEnter _______________________________________________________
+	//____ MouseEnter _______________________________________________________
 
-	PointerEnter::PointerEnter( const WgCoord& pos )
+	MouseEnter::MouseEnter( const WgCoord& pos )
 	{
-		m_type = WG_EVENT_POINTER_ENTER;
+		m_type = WG_EVENT_MOUSE_ENTER;
 
 		m_pointerLocalPos = pos;
 		m_pointerScreenPos = pos;
 	}
 
-	PointerEnter::PointerEnter( WgGizmo * pGizmo )
+	MouseEnter::MouseEnter( WgGizmo * pGizmo )
 	{
-		m_type = WG_EVENT_POINTER_ENTER;
+		m_type = WG_EVENT_MOUSE_ENTER;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
 
-	//____ PointerExit ________________________________________________________
+	//____ MouseLeave ________________________________________________________
 
-	PointerExit::PointerExit()
+	MouseLeave::MouseLeave()
 	{
-		m_type = WG_EVENT_POINTER_EXIT;
+		m_type = WG_EVENT_MOUSE_LEAVE;
 	}
 
-	PointerExit::PointerExit( WgGizmo * pGizmo )
+	MouseLeave::MouseLeave( WgGizmo * pGizmo )
 	{
-		m_type = WG_EVENT_POINTER_EXIT;
+		m_type = WG_EVENT_MOUSE_LEAVE;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
 
-	//____ PointerMove __________________________________________________________
+	//____ MouseMove __________________________________________________________
 
-	PointerMove::PointerMove( const WgCoord& pos )
+	MouseMove::MouseMove( const WgCoord& pos )
 	{
-		m_type = WG_EVENT_POINTER_MOVE;
+		m_type = WG_EVENT_MOUSE_MOVE;
 
 		m_pointerLocalPos = pos;
 		m_pointerScreenPos = pos;
 	}
 
-	PointerMove::PointerMove( WgGizmo * pGizmo )
+	MouseMove::MouseMove( WgGizmo * pGizmo )
 	{
-		m_type = WG_EVENT_POINTER_MOVE;
+		m_type = WG_EVENT_MOUSE_MOVE;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
 
-	//____ ButtonPress ______________________________________________________
+	//____ MouseButtonPress ______________________________________________________
 
-	ButtonPress::ButtonPress( int button ) : ButtonEvent(button)
+	MouseButtonPress::MouseButtonPress( int button ) : MouseButtonEvent(button)
 	{
-		m_type = WG_EVENT_BUTTON_PRESS;
+		m_type = WG_EVENT_MOUSEBUTTON_PRESS;
 	}
 
-	ButtonPress::ButtonPress( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
+	MouseButtonPress::MouseButtonPress( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
 	{
-		m_type			= WG_EVENT_BUTTON_PRESS;
+		m_type			= WG_EVENT_MOUSEBUTTON_PRESS;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
 
-	//____ ButtonRepeat ______________________________________________________
+	//____ MouseButtonRepeat ______________________________________________________
 
-	ButtonRepeat::ButtonRepeat( int button ) : ButtonEvent(button)
+	MouseButtonRepeat::MouseButtonRepeat( int button ) : MouseButtonEvent(button)
 	{
-		m_type = WG_EVENT_BUTTON_REPEAT;
+		m_type = WG_EVENT_MOUSEBUTTON_REPEAT;
 	}
 
-	ButtonRepeat::ButtonRepeat( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
+	MouseButtonRepeat::MouseButtonRepeat( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
 	{
-		m_type			= WG_EVENT_BUTTON_REPEAT;
+		m_type			= WG_EVENT_MOUSEBUTTON_REPEAT;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
 
-	//____ ButtonRelease _____________________________________________________
+	//____ MouseButtonRelease _____________________________________________________
 
-	ButtonRelease::ButtonRelease( int button ) : ButtonEvent(button)
+	MouseButtonRelease::MouseButtonRelease( int button ) : MouseButtonEvent(button)
 	{
-		m_type = WG_EVENT_BUTTON_RELEASE;
+		m_type = WG_EVENT_MOUSEBUTTON_RELEASE;
 
 		m_bPressInside = true;			// Always assumed to have had the press inside our window.
 		m_bReleaseInside = true;			// Always assumed to be inside our window now.
 	}
 
-	ButtonRelease::ButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside ) : ButtonEvent(button)
+	MouseButtonRelease::MouseButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside ) : MouseButtonEvent(button)
 	{
-		m_type			= WG_EVENT_BUTTON_RELEASE;
+		m_type			= WG_EVENT_MOUSEBUTTON_RELEASE;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 
@@ -142,70 +142,70 @@ namespace WgEvent
 		m_bReleaseInside = bReleaseInside;
 	}
 
-	bool ButtonRelease::PressInside() const
+	bool MouseButtonRelease::PressInside() const
 	{
 		return m_bPressInside;
 	}
 
-	bool ButtonRelease::ReleaseInside() const
+	bool MouseButtonRelease::ReleaseInside() const
 	{
 		return m_bReleaseInside;
 	}
 
 
 
-	//____ ButtonClick _____________________________________________________
+	//____ MouseButtonClick _____________________________________________________
 
-	ButtonClick::ButtonClick( int button ) : ButtonEvent(button)
+	MouseButtonClick::MouseButtonClick( int button ) : MouseButtonEvent(button)
 	{
-		m_type = WG_EVENT_BUTTON_CLICK;
+		m_type = WG_EVENT_MOUSEBUTTON_CLICK;
 	}
 
-	ButtonClick::ButtonClick( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
+	MouseButtonClick::MouseButtonClick( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
 	{
-		m_type = WG_EVENT_BUTTON_CLICK;
+		m_type = WG_EVENT_MOUSEBUTTON_CLICK;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
 
 
-	//____ ButtonDoubleClick _____________________________________________________
+	//____ MouseButtonDoubleClick _____________________________________________________
 
-	ButtonDoubleClick::ButtonDoubleClick( int button ) : ButtonEvent(button)
+	MouseButtonDoubleClick::MouseButtonDoubleClick( int button ) : MouseButtonEvent(button)
 	{
-		m_type = WG_EVENT_BUTTON_DOUBLECLICK;
+		m_type = WG_EVENT_MOUSEBUTTON_DOUBLECLICK;
 	}
 
-	ButtonDoubleClick::ButtonDoubleClick( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
+	MouseButtonDoubleClick::MouseButtonDoubleClick( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
 	{
-		m_type = WG_EVENT_BUTTON_DOUBLECLICK;
+		m_type = WG_EVENT_MOUSEBUTTON_DOUBLECLICK;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
 
-	//____ PointerMoveOutsideModal ___________________________________________________
+	//____ MouseMoveOutsideModal ___________________________________________________
 
-	PointerMoveOutsideModal::PointerMoveOutsideModal( WgGizmo * pGizmo )
+	MouseMoveOutsideModal::MouseMoveOutsideModal( WgGizmo * pGizmo )
 	{
-		m_type = WG_EVENT_POINTER_MOVE_OUTSIDE_MODAL;
+		m_type = WG_EVENT_MOUSE_MOVE_OUTSIDE_MODAL;
 		m_bIsForGizmo	= true;
 		m_pGizmo		= pGizmo;
 	}
 
-	//____ ButtonPressOutsideModal ______________________________________________________
+	//____ MouseButtonPressOutsideModal ______________________________________________________
 
-	ButtonPressOutsideModal::ButtonPressOutsideModal( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
+	MouseButtonPressOutsideModal::MouseButtonPressOutsideModal( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
 	{
-		m_type			= WG_EVENT_BUTTON_PRESS_OUTSIDE_MODAL;
+		m_type			= WG_EVENT_MOUSEBUTTON_PRESS_OUTSIDE_MODAL;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
 
-	//____ ButtonReleaseOutsideModal _____________________________________________________
+	//____ MouseButtonReleaseOutsideModal _____________________________________________________
 
-	ButtonReleaseOutsideModal::ButtonReleaseOutsideModal( int button, WgGizmo * pGizmo ) : ButtonEvent(button)
+	MouseButtonReleaseOutsideModal::MouseButtonReleaseOutsideModal( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
 	{
-		m_type			= WG_EVENT_BUTTON_RELEASE_OUTSIDE_MODAL;
+		m_type			= WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
@@ -273,18 +273,18 @@ namespace WgEvent
 		return m_char;
 	}
 
-	//____ WheelRoll __________________________________________________________
+	//____ MouseWheelRoll __________________________________________________________
 
-	WheelRoll::WheelRoll( int wheel, int distance )
+	MouseWheelRoll::MouseWheelRoll( int wheel, int distance )
 	{
-		m_type = WG_EVENT_WHEEL_ROLL;
+		m_type = WG_EVENT_MOUSEWHEEL_ROLL;
 		m_wheel = wheel;
 		m_distance = distance;
 	}
 
-	WheelRoll::WheelRoll( int wheel, int distance, WgGizmo * pGizmo )
+	MouseWheelRoll::MouseWheelRoll( int wheel, int distance, WgGizmo * pGizmo )
 	{
-		m_type			= WG_EVENT_WHEEL_ROLL;
+		m_type			= WG_EVENT_MOUSEWHEEL_ROLL;
 		m_wheel			= wheel;
 		m_distance		= distance;
 		m_bIsForGizmo	= true;
@@ -292,12 +292,12 @@ namespace WgEvent
 	}
 
 
-	int WheelRoll::Wheel() const
+	int MouseWheelRoll::Wheel() const
 	{
 		return m_wheel;
 	}
 
-	int WheelRoll::Distance() const
+	int MouseWheelRoll::Distance() const
 	{
 		return m_distance;
 	}
@@ -324,28 +324,28 @@ namespace WgEvent
 		return m_millisec;
 	}
 
-	//____ PointerPlaced _______________________________________________________
+	//____ MousePositioned _______________________________________________________
 
-	PointerPlaced::PointerPlaced()
+	MousePositioned::MousePositioned()
 	{
-		m_type = WG_EVENT_POINTER_PLACED;
+		m_type = WG_EVENT_MOUSE_POSITIONED;
 	}
 
-	//____ ButtonDrag _________________________________________________________
+	//____ MouseButtonDrag _________________________________________________________
 
-	ButtonDrag::ButtonDrag( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : ButtonEvent(button)
+	MouseButtonDrag::MouseButtonDrag( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : MouseButtonEvent(button)
 	{
 
-		m_type = WG_EVENT_BUTTON_DRAG;
+		m_type = WG_EVENT_MOUSEBUTTON_DRAG;
 
 		m_startPos = startPos;
 		m_prevPos = prevPos;
 		m_currPos = currPos;
 	}
 
-	ButtonDrag::ButtonDrag( int button, WgGizmo * pGizmo, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : ButtonEvent(button)
+	MouseButtonDrag::MouseButtonDrag( int button, WgGizmo * pGizmo, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : MouseButtonEvent(button)
 	{
-		m_type = WG_EVENT_BUTTON_DRAG;
+		m_type = WG_EVENT_MOUSEBUTTON_DRAG;
 		m_bIsForGizmo		= true;
 		m_pGizmo 			= pGizmo;
 
@@ -354,27 +354,27 @@ namespace WgEvent
 		m_currPos = currPos;
 	}
 
-	WgCoord ButtonDrag::DraggedTotal() const
+	WgCoord MouseButtonDrag::DraggedTotal() const
 	{
 		return m_currPos - m_startPos;
 	}
 
-	WgCoord ButtonDrag::DraggedNow() const
+	WgCoord MouseButtonDrag::DraggedNow() const
 	{
 		return m_currPos - m_prevPos;
 	}
 
-	WgCoord ButtonDrag::CurrPos() const
+	WgCoord MouseButtonDrag::CurrPos() const
 	{
 		return m_currPos;
 	}
 
-	WgCoord ButtonDrag::StartPos() const
+	WgCoord MouseButtonDrag::StartPos() const
 	{
 		return m_startPos;
 	}
 
-	WgCoord ButtonDrag::PrevPos() const
+	WgCoord MouseButtonDrag::PrevPos() const
 	{
 		return m_prevPos;
 	}
