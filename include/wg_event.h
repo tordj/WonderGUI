@@ -43,6 +43,9 @@
 
 class WgEventHandler;
 class WgGizmo;
+class WgGizmoButton;
+class WgGizmoCheckbox;
+class WgGizmoRadiobutton;
 
 typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
@@ -225,8 +228,75 @@ namespace WgEvent
 		int			m_millisec;
 	};
 
+	//____ WgGizmoButton events _______________________________________________
 
-	//___ Internally posted events ____________________________________________
+	class ButtonPress : public Event
+	{
+	public:
+		ButtonPress( WgGizmoButton * pGizmo );
+		WgGizmoButton *	Button() const;
+	};
+
+	//____ WgGizmoCheckbox events ______________________________________________
+
+	class CheckboxEvent : public Event
+	{
+	public:
+		WgGizmoCheckbox * Checkbox() const;
+	};
+
+	class CheckboxCheck : public CheckboxEvent
+	{
+	public:
+		CheckboxCheck( WgGizmoCheckbox * pGizmo );
+	};
+
+	class CheckboxUncheck : public CheckboxEvent
+	{
+	public:
+		CheckboxUncheck( WgGizmoCheckbox * pGizmo );
+	};
+
+	class CheckboxToggle : public CheckboxEvent
+	{
+	public:
+		CheckboxToggle( WgGizmoCheckbox * pGizmo, bool bChecked );
+		bool		IsChecked() const;
+
+	private:
+		bool	m_bChecked;
+	};
+
+	//____ WgGizmoRadiobutton events ___________________________________________
+
+	class RadiobuttonEvent : public Event
+	{
+	public:
+		WgGizmoRadiobutton * Radiobutton() const;
+	};
+
+	class RadiobuttonSelect : public RadiobuttonEvent
+	{
+	public:
+		RadiobuttonSelect( WgGizmoRadiobutton * pGizmo );
+	};
+
+	class RadiobuttonUnselect : public RadiobuttonEvent
+	{
+	public:
+		RadiobuttonUnselect( WgGizmoRadiobutton * pGizmo );
+	};
+
+	class RadiobuttonToggle : public RadiobuttonEvent
+	{
+	public:
+		RadiobuttonToggle( WgGizmoRadiobutton * pGizmo, bool bSelected );
+		bool	IsSelected() const;
+	private:
+		bool	m_bSelected;
+	};
+
+	//___ Internally posted events _____________________________________________
 
 	class MousePositioned : public Event
 	{

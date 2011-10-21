@@ -197,7 +197,7 @@ public:
 	inline WgSize operator/(int x) const	{ WgSize res; res.w = w / x; res.h = h / x; return res; }
 
 	static inline WgSize min( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
-	static inline WgSize max( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
+	static inline WgSize max( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w>sz2.w?sz1.w:sz2.w, sz1.h>sz2.h?sz1.h:sz2.h ); }
 
 	int	w, h;
 };

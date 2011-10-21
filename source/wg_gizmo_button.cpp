@@ -27,6 +27,7 @@
 #include <wg_util.h>
 #include <wg_key.h>
 #include <wg_event.h>
+#include <wg_eventhandler.h>
 
 static const char	c_gizmoType[] = {"Button"};
 
@@ -319,10 +320,11 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		case	WG_EVENT_KEY_RELEASE:
 		{
 			if( static_cast< const WgEvent::KeyPress*>(pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+			{
 				m_bReturnPressed = false;
+				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
+			}
 			break;
-
-			//TODO: Send signal!
 		}
 
 		case	WG_EVENT_MOUSE_ENTER:
@@ -336,7 +338,6 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 		{
 			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
-
 			m_bPressedInside[button-1] = true;
 			break;
 		}
@@ -344,15 +345,18 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		{
 			const WgEvent::MouseButtonRelease* pEv = static_cast<const WgEvent::MouseButtonRelease*>(pEvent);
 			int button = pEv->Button();
-
-			if( pEv->ReleaseInside() )
-			{
-				//TODO: Send signal if right button was released!
-			}
-
 			m_bPressedInside[button-1] = false;
 			break;
 		}
+		
+		case WG_EVENT_MOUSEBUTTON_CLICK:
+		{
+			const WgEvent::MouseButtonClick* pEv = static_cast<const WgEvent::MouseButtonClick*>(pEvent);
+			if( pEv->Button() == 1 )
+				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );			
+			break;
+		}
+		
         default:
             break;
 

@@ -45,7 +45,10 @@ public:
 
 private:
 
-	void	_onCloneContent( const WgGizmo * _pOrg );
+	void			_onCloneContent( const WgGizmo * _pOrg );
+	WgGizmoParent * _findRadioGroup();
+	void			_unselectRecursively( WgGizmoParent * pParent );
+	
 	
 	bool			m_bAllowUnchecking;
 

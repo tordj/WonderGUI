@@ -311,6 +311,37 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, "wheel=%d distance=%d", pEvent->Wheel(), pEvent->Distance() );
 			break;
 		}
+		
+		case WG_EVENT_BUTTON_PRESS:
+			id = "ButtonPress";
+			break;
+
+		case WG_EVENT_CHECKBOX_CHECK:
+			id = "CheckboxCheck";
+			break;
+
+		case WG_EVENT_CHECKBOX_UNCHECK:
+			id = "CheckboxUncheck";
+			break;
+			
+		case WG_EVENT_CHECKBOX_TOGGLE:
+			id = "CheckboxToggle";
+			sprintf( params, "checked=%d", (int) (static_cast<const WgEvent::CheckboxToggle*>(_pEvent)->IsChecked()) );
+			break;
+		
+		case WG_EVENT_RADIOBUTTON_SELECT:
+			id = "RadiobuttonSelect";
+			break;
+
+		case WG_EVENT_RADIOBUTTON_UNSELECT:
+			id = "RadiobuttonUnselect";
+			break;
+
+		case WG_EVENT_RADIOBUTTON_TOGGLE:
+			id = "RadiobuttonToggle";
+			sprintf( params, "selected=%d", (int) (static_cast<const WgEvent::RadiobuttonToggle*>(_pEvent)->IsSelected()) );
+			break;
+		
 		default:
 			id = "Unknown Event";
 			break;
@@ -354,7 +385,7 @@ string WgEventLogger::FormatGizmo( const WgEvent::Event * _pEvent )
 {
 	std::string	out;
 
-	if( _pEvent->IsForGizmo() )
+	if( _pEvent->IsForGizmo() || _pEvent->Gizmo() )
 	{
 		char	temp[64];
 		WgGizmo * pGizmo = _pEvent->Gizmo();

@@ -22,6 +22,9 @@
 
 #include <wg_event.h>
 #include <wg_gizmo.h>
+#include <wg_gizmo_button.h>
+#include <wg_gizmo_checkbox.h>
+#include <wg_gizmo_radiobutton.h>
 
 namespace WgEvent
 {
@@ -323,6 +326,95 @@ namespace WgEvent
 	{
 		return m_millisec;
 	}
+
+	//____ ButtonPress _________________________________________________________
+
+	ButtonPress::ButtonPress( WgGizmoButton * pGizmo )
+	{
+		m_type 			= WG_EVENT_BUTTON_PRESS;
+		m_pGizmo 		= pGizmo;
+	}
+
+	WgGizmoButton * ButtonPress::Button() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo )
+			return static_cast<WgGizmoButton*>(pGizmo);
+		else
+			return 0;
+	}
+
+
+	//____ Checkbox event methods ______________________________________________
+
+	WgGizmoCheckbox * CheckboxEvent::Checkbox() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo )
+			return static_cast<WgGizmoCheckbox*>(pGizmo);
+		else
+			return 0;
+	}
+		
+	CheckboxCheck::CheckboxCheck( WgGizmoCheckbox * pGizmo )
+	{
+		m_type = WG_EVENT_CHECKBOX_CHECK;
+		m_pGizmo = pGizmo;
+	}
+
+	CheckboxUncheck::CheckboxUncheck( WgGizmoCheckbox * pGizmo )
+	{
+		m_type = WG_EVENT_CHECKBOX_UNCHECK;
+		m_pGizmo = pGizmo;
+	}
+
+	CheckboxToggle::CheckboxToggle( WgGizmoCheckbox * pGizmo, bool bChecked )
+	{
+		m_type = WG_EVENT_CHECKBOX_TOGGLE;
+		m_pGizmo = pGizmo;
+		m_bChecked = bChecked;
+	}
+
+	bool CheckboxToggle::IsChecked() const
+	{
+		return m_bChecked;
+	}
+
+	//____ WgGizmoRadiobutton events ___________________________________________
+
+	WgGizmoRadiobutton * RadiobuttonEvent::Radiobutton() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo )
+			return static_cast<WgGizmoRadiobutton*>(pGizmo);
+		else
+			return 0;
+	}
+		
+	RadiobuttonSelect::RadiobuttonSelect( WgGizmoRadiobutton * pGizmo )
+	{
+		m_type = WG_EVENT_RADIOBUTTON_SELECT;
+		m_pGizmo = pGizmo;
+	}
+
+	RadiobuttonUnselect::RadiobuttonUnselect( WgGizmoRadiobutton * pGizmo )
+	{
+		m_type = WG_EVENT_RADIOBUTTON_UNSELECT;
+		m_pGizmo = pGizmo;
+	}
+
+	RadiobuttonToggle::RadiobuttonToggle( WgGizmoRadiobutton * pGizmo, bool bSelected )
+	{
+		m_type = WG_EVENT_RADIOBUTTON_TOGGLE;
+		m_pGizmo = pGizmo;
+		m_bSelected = bSelected;
+	}
+
+	bool RadiobuttonToggle::IsSelected() const
+	{
+		return m_bSelected;
+	}
+
 
 	//____ MousePositioned _______________________________________________________
 

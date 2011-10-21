@@ -25,6 +25,8 @@
 #include <wg_gfxdevice.h>
 #include <wg_font.h>
 #include <wg_util.h>
+#include <wg_root.h>
+#include <wg_eventhandler.h>
 #include <assert.h>
 
 using namespace WgSignal;
@@ -144,10 +146,51 @@ bool WgGizmoCheckbox::SetState( bool _state )
 			Emit( Unset() );
 
 		Emit( Flipped(), m_bChecked );
+
+		WgEventHandler * pHandler = EventHandler();
+		if( pHandler )
+		{				
+			if( _state )
+				pHandler->QueueEvent( new WgEvent::CheckboxCheck( this ) );
+			else
+				pHandler->QueueEvent( new WgEvent::CheckboxUncheck( this ) );
+				
+			pHandler->QueueEvent( new WgEvent::CheckboxToggle(this, _state ) );
+		}
+
 		RequestRender();
 	}
 
 	return true;
+}
+
+//____ BestSize() __________________________________________________
+
+WgSize WgGizmoCheckbox::BestSize() const
+{
+	WgSize iconBestSize;
+	WgSize bgBestSize;
+	WgSize textBestSize;
+	
+	if( m_text.nbChars() > 0 )
+		textBestSize = m_text.unwrappedSize();
+
+	if( m_pBlockUnchecked )
+	{
+		bgBestSize = m_pBlockUnchecked->GetSize();
+		textBestSize += m_pBlockUnchecked->GetContentBorders();
+	}	
+
+	if( m_pIconUnchecked )
+	{
+		iconBestSize = m_pIconUnchecked->GetSize() + m_iconAreaBorders.size();
+		
+		//TODO: Add magic for how icon influences textBestSize based on origo, iconAreaBorders, iconScale and bgBestSize
+	}
+
+	WgSize bestSize = WgSize::max( WgSize::max(iconBestSize,bgBestSize), textBestSize);
+	
+	return bestSize;
 }
 
 
@@ -166,6 +209,62 @@ void WgGizmoCheckbox::_onDisable()
 	RequestRender();
 }
 
+//____ _onEvent() __________________________________________________
+
+void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+{
+	switch( pEvent->Type() )
+	{
+		case WG_EVENT_MOUSE_ENTER:
+			if( !m_bOver )
+			{
+				m_bOver = true;
+				RequestRender();
+			}
+			break;
+
+		case WG_EVENT_MOUSE_LEAVE:
+			if( m_bOver )
+			{
+				m_bOver = false;
+				RequestRender();
+			}
+			break;
+
+		case WG_EVENT_MOUSEBUTTON_PRESS:
+		{
+			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
+			if( button == 1 && !m_bPressed )
+			{
+				m_bPressed = true;
+				RequestRender();
+			}
+			break;
+		}
+		
+		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		{
+			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
+			if( button == 1 && m_bPressed )
+			{
+				m_bPressed = false;
+				RequestRender();
+			}
+			break;
+		}
+		
+		case WG_EVENT_MOUSEBUTTON_CLICK:
+		{
+			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
+			if( button == 1 )
+				SetState( !m_bChecked );
+			break;
+		}
+		
+        default:
+            break;
+	}
+}
 
 //____ _onAction() _________________________________________________
 

@@ -95,6 +95,9 @@ public:
 
 	DECLARE_TOOLTIP_SUPPORT();
 
+	WgSize			BestSize() const;
+	
+
 protected:
 	WgRect	GetIconRect( const WgSize& gizmoSize );
 	WgRect	GetContentRect( const WgSize& gizmoSize, const WgRect& iconRect );
@@ -104,6 +107,7 @@ protected:
 	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
 	bool	_onAlphaTest( const WgCoord& ofs );

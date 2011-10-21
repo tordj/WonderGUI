@@ -141,7 +141,7 @@ public:
 	WgCoord				Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
 	WgCoord				Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
 
-
+	WgEventHandler *	EventHandler() const;
 
 	// To be overloaded by Gizmo
 
@@ -209,7 +209,7 @@ protected:
 	//
 
 	Uint32			m_id;
-	WgHook *	m_pHook;
+	WgHook *		m_pHook;
 
 	WgSkinNode *	m_pSkinNode;
 

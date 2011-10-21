@@ -18,7 +18,6 @@
 #include <wg_eventlogger.h>
 #include <wg_bitmapglyphs.h>
 #include <wg_textprop.h>
-
 #include <iostream>
 
 extern std::ostream cout;
@@ -148,6 +147,8 @@ int main ( int argc, char** argv )
 	WgSurface * pBlocksImg = loadSurface("blocks.png");
 	WgBlockSetPtr pButtonBlock = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,0,8*4+6,8), 2), WgBorders(3), WgBorders(2), 0, WG_OPAQUE );
 
+	WgBlockSetPtr pRadioBlockUnselected = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,42,11*4+6,11), 2), WgBorders(3), WgBorders(2), 0, 0 );
+	WgBlockSetPtr pRadioBlockSelected = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(52,42,11*4+6,11), 2), WgBorders(3), WgBorders(2), 0, 0 );
 
 	// Background
 
@@ -253,6 +254,25 @@ int main ( int argc, char** argv )
 	pTabOrder->AddToTabOrder(pText1);
 	pTabOrder->AddToTabOrder(pText2);
 	
+	// Radiobuttons test
+	
+	WgGizmoRadiobutton * pRB1 = new WgGizmoRadiobutton();
+	pRB1->SetIcon( pRadioBlockUnselected, pRadioBlockSelected, WgBorders(0), WgOrigo::midLeft() );
+	pVBox->AddChild(pRB1);
+	
+	WgGizmoRadiobutton * pRB2 = new WgGizmoRadiobutton();
+	pRB2->SetIcon( pRadioBlockUnselected, pRadioBlockSelected, WgBorders(0), WgOrigo::midLeft() );
+	pVBox->AddChild(pRB2);
+
+	WgGizmoRadiobutton * pRB3 = new WgGizmoRadiobutton();
+	pRB3->SetIcon( pRadioBlockUnselected, pRadioBlockSelected, WgBorders(0), WgOrigo::midLeft() );
+	pFlex->AddChild( pRB3, WgCoord(0,100) );
+
+	WgGizmoRadiobutton * pRB4 = new WgGizmoRadiobutton();
+	pRB4->SetIcon( pRadioBlockUnselected, pRadioBlockSelected, WgBorders(0), WgOrigo::midLeft() );
+	pFlex->AddChild( pRB4, WgCoord(0,120) );
+
+	pVBox->SetRadioGroup(true);
 
     // program main loop
 
