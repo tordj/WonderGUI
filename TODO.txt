@@ -1,4 +1,36 @@
 
+FOCUS
+=====
+* Fixa TAB_ORDER och reservering av Tab.
+* Keyboard focus vid modal.
+* Färdigställa WgStackGizmo.
+* Wdg_Layout.
+* Cut/Copy/Paste-support.
+* Pointermask+displacement i blockset.
+
+
+FIX GIZMOS
+==========
+v Animation	(untested, missing requesting TICKS!)
+v Button
+v Checkbox	(still to fix: WidthForHeight() )
+  Dragbars
+  Editline
+  Editvalue
+v Radiobutton
+  Refreshbutton
+  Table
+v Tablist	(untested, missing requesting TICKS!)
+  Combobox
+  Text
+v Value
+  Menu
+  Menubar
+  Treeview
+
+
+
+
 BEFORE RELEASE
 ==============
 

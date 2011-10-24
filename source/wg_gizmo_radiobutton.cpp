@@ -22,6 +22,7 @@
 
 #include <wg_gizmo_radiobutton.h>
 #include <wg_gizmo_container.h>
+#include <wg_eventhandler.h>
 
 using namespace WgSignal;
 
@@ -62,35 +63,21 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 {
 	if( m_bChecked != _state )
 	{
+		
+		WgEventHandler * pHandler = EventHandler();		
+		
 		if( _state )
 		{
-
-			// Go trough siblings and uncheck any checked RadioButton2
-
-			if( m_pHook )
-			{
-				WgGizmo * pGizmo = m_pHook->Parent()->FirstGizmo();
-				while( pGizmo )
-				{
-					if( pGizmo->Type() == c_gizmoType )
-					{
-						WgGizmoRadiobutton * pRB = (WgGizmoRadiobutton*) pGizmo;
-						if( pRB->m_bChecked )
-						{
-							pRB->m_bChecked = false;
-							pRB->Emit( Unset() );
-							pRB->Emit( Flipped(), false );
-							pRB->RequestRender();
-						}
-					}
-					pGizmo = pGizmo->NextSibling();
-				}
-			}
-
+			WgGizmoParent * pGroup = _findRadioGroup();
+			if( pGroup )
+				_unselectRecursively( pGroup );
+			
 			// Set and emit
 
 			m_bChecked = true;
 			Emit( Set() );
+			if( pHandler )
+				pHandler->QueueEvent( new WgEvent::RadiobuttonSelect(this) );
 		}
 		else
 		{
@@ -99,12 +86,72 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 
 			m_bChecked = false;
 			Emit( Unset() );
+			if( pHandler )
+				pHandler->QueueEvent( new WgEvent::RadiobuttonUnselect(this) );
 		}
 
 		Emit( Flipped(), m_bChecked );
+		if( pHandler )
+			pHandler->QueueEvent( new WgEvent::RadiobuttonToggle(this, m_bChecked) );
 		RequestRender();
 	}
 	return true;
+}
+
+//____ _findRadioGroup() _______________________________________________________
+
+WgGizmoParent * WgGizmoRadiobutton::_findRadioGroup()
+{
+	WgGizmoParent * pRadioGroup = 0;
+	WgGizmoParent * pParent = ParentX();
+	while( pParent )
+	{
+		pRadioGroup = pParent;
+		
+		if( pParent->IsGizmo() )
+		{
+			if( pParent->CastToContainer()->IsRadioGroup() )
+				break;
+				
+			pParent = pParent->CastToGizmo()->ParentX();
+		}
+		else break;
+	}
+
+	return pRadioGroup;
+}
+
+//____ _unselectRecursively() __________________________________________________
+
+void WgGizmoRadiobutton::_unselectRecursively( WgGizmoParent * pParent )
+{
+	WgGizmo * pGizmo = pParent->FirstGizmo();
+	
+	while( pGizmo )
+	{
+		if( pGizmo->Type() == WgGizmoRadiobutton::GetMyType() )
+		{
+			WgGizmoRadiobutton * pRB = (WgGizmoRadiobutton*) pGizmo;
+			if( pRB->m_bChecked )
+			{
+				pRB->m_bChecked = false;
+				pRB->Emit( Unset() );
+				pRB->Emit( Flipped(), false );
+
+				WgEventHandler * pHandler = EventHandler();
+				if( pHandler )
+				{
+					pHandler->QueueEvent( new WgEvent::RadiobuttonUnselect(pRB) );
+					pHandler->QueueEvent( new WgEvent::RadiobuttonToggle(pRB, false) );
+				}	
+				pRB->RequestRender();
+			}
+		}
+		else if( pGizmo->IsContainer() && !pGizmo->CastToContainer()->IsRadioGroup() )
+			_unselectRecursively( pGizmo->CastToContainer() );
+			
+		pGizmo = pGizmo->NextSibling();
+	}
 }
 
 //____ _onCloneContent() _______________________________________________________

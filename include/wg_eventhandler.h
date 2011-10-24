@@ -72,11 +72,11 @@ public:
 
 	//----
 
-	bool	SetButtonRepeat( int delay, int rate );
+	bool	SetMouseButtonRepeat( int delay, int rate );
 	bool	SetKeyRepeat( int delay, int rate );
 
-	int		ButtonRepeatDelay() const { return m_buttonRepeatDelay; }
-	int		ButtonRepeatRate() const { return m_buttonRepeatRate; }
+	int		MouseButtonRepeatDelay() const { return m_buttonRepeatDelay; }
+	int		MouseButtonRepeatRate() const { return m_buttonRepeatRate; }
 
 	int		KeyRepeatDelay() const { return m_keyRepeatDelay; }
 	int		KeyRepeatRate() const { return m_keyRepeatRate; }
@@ -91,7 +91,7 @@ public:
 
 	//----
 
-	bool	IsButtonPressed( int button );
+	bool	IsMouseButtonPressed( int button );
 	bool	IsKeyPressed( int native_keycode );
 
 	bool	IsWindowFocused() const { return m_bWindowFocus; }
@@ -143,19 +143,19 @@ private:
 	void	_processFocusGained( WgEvent::FocusGained * pEvent );
 	void	_processFocusLost( WgEvent::FocusLost * pEvent );
 
-	void	_processPointerEnter( WgEvent::PointerEnter * pEvent );
-	void	_processPointerMove( WgEvent::PointerMove * pEvent );
-	void	_processPointerPlaced( WgEvent::PointerPlaced * pEvent );
-	void	_processPointerExit( WgEvent::PointerExit * pEvent );
+	void	_processMouseEnter( WgEvent::MouseEnter * pEvent );
+	void	_processMouseMove( WgEvent::MouseMove * pEvent );
+	void	_processMousePosition( WgEvent::MousePosition * pEvent );
+	void	_processMouseLeave( WgEvent::MouseLeave * pEvent );
 
-	void	_processButtonPress( WgEvent::ButtonPress * pEvent );
-	void	_processButtonRepeat( WgEvent::ButtonRepeat * pEvent );
-	void	_processButtonDrag( WgEvent::ButtonDrag * pEvent );
-	void	_processButtonRelease( WgEvent::ButtonRelease * pEvent );
-	void	_processButtonClick( WgEvent::ButtonClick * pEvent );
-	void	_processButtonDoubleClick( WgEvent::ButtonDoubleClick * pEvent );
+	void	_processMouseButtonPress( WgEvent::MouseButtonPress * pEvent );
+	void	_processMouseButtonRepeat( WgEvent::MouseButtonRepeat * pEvent );
+	void	_processMouseButtonDrag( WgEvent::MouseButtonDrag * pEvent );
+	void	_processMouseButtonRelease( WgEvent::MouseButtonRelease * pEvent );
+	void	_processMouseButtonClick( WgEvent::MouseButtonClick * pEvent );
+	void	_processMouseButtonDoubleClick( WgEvent::MouseButtonDoubleClick * pEvent );
 
-	void	_processWheelRoll( WgEvent::WheelRoll * pEvent );
+	void	_processMouseWheelRoll( WgEvent::MouseWheelRoll * pEvent );
 
 	void	_processKeyPress( WgEvent::KeyPress * pEvent );
 	void	_processKeyRepeat( WgEvent::KeyRepeat * pEvent );
@@ -170,7 +170,7 @@ private:
 	int		_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain );
 	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
-	void 	_updateMarkedGizmos(bool bPostPointerMoveEvents);
+	void 	_updateMarkedGizmos(bool bPostMouseMoveEvents);
 	void	_addTickReceiver( WgGizmo * pGizmo );
 	//
 
@@ -210,8 +210,8 @@ private:
 
 	bool						m_bButtonPressed[WG_MAX_BUTTONS+1];
 
-	WgEvent::ButtonPress *		m_pLatestPressEvents[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
-	WgEvent::ButtonRelease *	m_pLatestReleaseEvents[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was released.
+	WgEvent::MouseButtonPress *		m_pLatestPressEvents[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
+	WgEvent::MouseButtonRelease *	m_pLatestReleaseEvents[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was released.
 
 	std::vector<WgGizmoWeakPtr>	m_latestPressGizmos[WG_MAX_BUTTONS+1];		// List of gizmos who received the latest press, for each button.
 	std::vector<WgGizmoWeakPtr>	m_previousPressGizmos[WG_MAX_BUTTONS+1];	// List of gizmos who received the second latest press, for each button,

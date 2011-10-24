@@ -215,6 +215,20 @@ WgCoord WgGizmo::Abs2local( const WgCoord& cord ) const
 	return WgCoord( cord.x - c.x, cord.y - c.y );
 }
 
+//____ EventHandler() __________________________________________________________
+
+WgEventHandler * WgGizmo::EventHandler() const
+{
+	if( m_pHook )
+	{
+		WgRoot * pRoot = m_pHook->Root();
+		if( pRoot )
+			return pRoot->EventHandler();
+	}		
+	return 0;
+}
+
+
 //____ HeightForWidth() _______________________________________________________
 
 int WgGizmo::HeightForWidth( int width ) const

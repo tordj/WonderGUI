@@ -95,6 +95,9 @@ public:
 
 	DECLARE_TOOLTIP_SUPPORT();
 
+	WgSize			BestSize() const;
+	
+
 protected:
 	WgRect	_getIconRect( const WgSize& gizmoSize );
 	WgRect	_getContentRect( const WgSize& gizmoSize, const WgRect& iconRect );

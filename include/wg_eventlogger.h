@@ -42,8 +42,8 @@ public:
 	void LogPointerEvents();
 	void IgnorePointerEvents();
 
-	void LogButtonEvents();
-	void IgnoreButtonEvents();
+	void LogMouseButtonEvents();
+	void IgnoreMouseButtonEvents();
 
 	void LogKeyboardEvents();
 	void IgnoreKeyboardEvents();

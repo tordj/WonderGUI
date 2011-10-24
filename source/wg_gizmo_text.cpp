@@ -183,7 +183,7 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 
 
-	if( m_bFocused && (type == WG_EVENT_BUTTON_PRESS || type == WG_EVENT_BUTTON_DRAG) && ((const WgEvent::ButtonEvent*)(pEvent))->Button() == 1 )
+	if( m_bFocused && (type == WG_EVENT_MOUSEBUTTON_PRESS || type == WG_EVENT_MOUSEBUTTON_DRAG) && ((const WgEvent::MouseButtonEvent*)(pEvent))->Button() == 1 )
 	{
 
 		if( IsSelectable() && (modKeys & WG_MODKEY_SHIFT) )
@@ -193,18 +193,18 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 		m_pText->CursorGotoCoord( pEvent->PointerPos(), Geo() );
 
-		if(IsSelectable() && type == WG_EVENT_BUTTON_PRESS && !(modKeys & WG_MODKEY_SHIFT))
+		if(IsSelectable() && type == WG_EVENT_MOUSEBUTTON_PRESS && !(modKeys & WG_MODKEY_SHIFT))
 		{
 			m_pText->clearSelection();
 			m_pText->setSelectionMode(true);
 		}
 	}
-	else if( type == WG_EVENT_BUTTON_RELEASE  )
+	else if( type == WG_EVENT_MOUSEBUTTON_RELEASE  )
 	{
-		if(m_bFocused && ((const WgEvent::ButtonEvent*)(pEvent))->Button() == 1)
+		if(m_bFocused && ((const WgEvent::MouseButtonEvent*)(pEvent))->Button() == 1)
 			m_pText->setSelectionMode(false);
 	}
-	else if( !m_bFocused && IsEditable() && type == WG_EVENT_BUTTON_PRESS && ((const WgEvent::ButtonEvent*)(pEvent))->Button() == 1 )
+	else if( !m_bFocused && IsEditable() && type == WG_EVENT_MOUSEBUTTON_PRESS && ((const WgEvent::MouseButtonEvent*)(pEvent))->Button() == 1 )
 	{
 		GrabFocus();
 	}
@@ -236,7 +236,7 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 		switch( static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode() )
 		{
 			case WG_KEY_SHIFT:
-				if(!pHandler->IsButtonPressed(1))
+				if(!pHandler->IsMouseButtonPressed(1))
 					m_pText->setSelectionMode(false);
 			break;
 		}

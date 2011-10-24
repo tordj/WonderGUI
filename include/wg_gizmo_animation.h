@@ -64,10 +64,13 @@ public:
 	bool		Stop();
 	bool		IsPlaying() { return m_bPlaying; };
 
+	WgSize			BestSize() const;
+
 protected:
 	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onRefresh();
+	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void	_onUpdate( const WgUpdateInfo& _updateInfo );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onEnable();

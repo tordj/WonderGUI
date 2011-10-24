@@ -59,45 +59,45 @@ void WgEventLogger::LogEvent( WgEventType event )
 
 void WgEventLogger::IgnorePointerEvents()
 {
-	m_eventFilter[WG_EVENT_POINTER_ENTER] = false;
-	m_eventFilter[WG_EVENT_POINTER_MOVE] = false;
-	m_eventFilter[WG_EVENT_POINTER_PLACED] = false;
-	m_eventFilter[WG_EVENT_POINTER_EXIT] = false;
+	m_eventFilter[WG_EVENT_MOUSE_ENTER] = false;
+	m_eventFilter[WG_EVENT_MOUSE_MOVE] = false;
+	m_eventFilter[WG_EVENT_MOUSE_POSITION] = false;
+	m_eventFilter[WG_EVENT_MOUSE_LEAVE] = false;
 }
 
 //____ LogPointerEvents _______________________________________________________________
 
 void WgEventLogger::LogPointerEvents()
 {
-	m_eventFilter[WG_EVENT_POINTER_ENTER] = true;
-	m_eventFilter[WG_EVENT_POINTER_MOVE] = true;
-	m_eventFilter[WG_EVENT_POINTER_PLACED] = true;
-	m_eventFilter[WG_EVENT_POINTER_EXIT] = true;
+	m_eventFilter[WG_EVENT_MOUSE_ENTER] = true;
+	m_eventFilter[WG_EVENT_MOUSE_MOVE] = true;
+	m_eventFilter[WG_EVENT_MOUSE_POSITION] = true;
+	m_eventFilter[WG_EVENT_MOUSE_LEAVE] = true;
 }
 
 
-//____ IgnoreButtonEvents ____________________________________________________________
+//____ IgnoreMouseButtonEvents ____________________________________________________________
 
-void WgEventLogger::IgnoreButtonEvents()
+void WgEventLogger::IgnoreMouseButtonEvents()
 {
-	m_eventFilter[WG_EVENT_BUTTON_PRESS] = false;
-	m_eventFilter[WG_EVENT_BUTTON_REPEAT] = false;
-	m_eventFilter[WG_EVENT_BUTTON_DRAG] = false;
-	m_eventFilter[WG_EVENT_BUTTON_RELEASE] = false;
-	m_eventFilter[WG_EVENT_BUTTON_CLICK] = false;
-	m_eventFilter[WG_EVENT_BUTTON_DOUBLECLICK] = false;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_PRESS] = false;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_REPEAT] = false;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_DRAG] = false;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_RELEASE] = false;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_CLICK] = false;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_DOUBLECLICK] = false;
 }
 
-//____ LogButtonEvents _______________________________________________________________
+//____ LogMouseButtonEvents _______________________________________________________________
 
-void WgEventLogger::LogButtonEvents()
+void WgEventLogger::LogMouseButtonEvents()
 {
-	m_eventFilter[WG_EVENT_BUTTON_PRESS] = true;
-	m_eventFilter[WG_EVENT_BUTTON_REPEAT] = true;
-	m_eventFilter[WG_EVENT_BUTTON_DRAG] = true;
-	m_eventFilter[WG_EVENT_BUTTON_RELEASE] = true;
-	m_eventFilter[WG_EVENT_BUTTON_CLICK] = true;
-	m_eventFilter[WG_EVENT_BUTTON_DOUBLECLICK] = true;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_PRESS] = true;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_REPEAT] = true;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_DRAG] = true;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_RELEASE] = true;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_CLICK] = true;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_DOUBLECLICK] = true;
 }
 
 //____ IgnoreKeyboardEvents ____________________________________________________________
@@ -125,8 +125,8 @@ void WgEventLogger::LogKeyboardEvents()
 void WgEventLogger::LogMouseEvents()
 {
 	LogPointerEvents();
-	LogButtonEvents();
-	LogEvent( WG_EVENT_WHEEL_ROLL );
+	LogMouseButtonEvents();
+	LogEvent( WG_EVENT_MOUSEWHEEL_ROLL );
 }
 
 //____ IgnoreMouseEvents() ____________________________________________________
@@ -134,8 +134,8 @@ void WgEventLogger::LogMouseEvents()
 void WgEventLogger::IgnoreMouseEvents()
 {
 	IgnorePointerEvents();
-	IgnoreButtonEvents();
-	IgnoreEvent( WG_EVENT_WHEEL_ROLL );
+	IgnoreMouseButtonEvents();
+	IgnoreEvent( WG_EVENT_MOUSEWHEEL_ROLL );
 }
 
 
@@ -202,31 +202,31 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			id = "Tick";
 			sprintf( params, " millisec=%d", ((const WgEvent::Tick*)_pEvent)->Millisec() );
 			break;
-		case WG_EVENT_POINTER_ENTER:
-			id = "PointerEnter";
+		case WG_EVENT_MOUSE_ENTER:
+			id = "MouseEnter";
 			break;
-		case WG_EVENT_POINTER_MOVE:
-			id = "PointerMove";
+		case WG_EVENT_MOUSE_MOVE:
+			id = "MouseMove";
 			break;
-		case WG_EVENT_POINTER_PLACED:
-			id = "PointerPlaced";
+		case WG_EVENT_MOUSE_POSITION:
+			id = "MousePosition";
 			break;
-		case WG_EVENT_POINTER_EXIT:
-			id = "PointerExit";
+		case WG_EVENT_MOUSE_LEAVE:
+			id = "MouseLeave";
 			break;
-		case WG_EVENT_BUTTON_PRESS:
-			id = "ButtonPress";
-			sprintf( params, " button=%d", ((const WgEvent::ButtonPress*)_pEvent)->Button() );
+		case WG_EVENT_MOUSEBUTTON_PRESS:
+			id = "MouseButtonPress";
+			sprintf( params, " button=%d", ((const WgEvent::MouseButtonPress*)_pEvent)->Button() );
 			break;
-		case WG_EVENT_BUTTON_REPEAT:
-			id = "ButtonRepeat";
-			sprintf( params, " button=%d", ((const WgEvent::ButtonRepeat*)_pEvent)->Button() );
+		case WG_EVENT_MOUSEBUTTON_REPEAT:
+			id = "MouseButtonRepeat";
+			sprintf( params, " button=%d", ((const WgEvent::MouseButtonRepeat*)_pEvent)->Button() );
 			break;
-		case WG_EVENT_BUTTON_DRAG:
+		case WG_EVENT_MOUSEBUTTON_DRAG:
 		{
-			id = "ButtonDrag";
+			id = "MouseButtonDrag";
 
-			const WgEvent::ButtonDrag * pEvent = static_cast<const WgEvent::ButtonDrag*>(_pEvent);
+			const WgEvent::MouseButtonDrag * pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
 
 			WgCoord	now		= pEvent->CurrPos();
 			WgCoord 	prev	= pEvent->PrevPos();
@@ -239,11 +239,11 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 					pEvent->Button(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
 			break;
 		}
-		case WG_EVENT_BUTTON_RELEASE:
+		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		{
-			id = "ButtonRelease";
+			id = "MouseButtonRelease";
 
-			const WgEvent::ButtonRelease * pEvent = static_cast<const WgEvent::ButtonRelease*>(_pEvent);
+			const WgEvent::MouseButtonRelease * pEvent = static_cast<const WgEvent::MouseButtonRelease*>(_pEvent);
 
 			const static char outside[] = "outside";
 			const static char inside[] = "inside";
@@ -259,24 +259,24 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, " button=%d press=%s release=%s", pEvent->Button(), pPress, pRelease );
 			break;
 		}
-		case WG_EVENT_BUTTON_CLICK:
-			id = "ButtonClick";
-			sprintf( params, " button=%d", static_cast<const WgEvent::ButtonClick*>(_pEvent)->Button() );
+		case WG_EVENT_MOUSEBUTTON_CLICK:
+			id = "MouseButtonClick";
+			sprintf( params, " button=%d", static_cast<const WgEvent::MouseButtonClick*>(_pEvent)->Button() );
 			break;
-		case WG_EVENT_BUTTON_DOUBLECLICK:
-			id = "ButtonDoubleClick";
-			sprintf( params, " button=%d", static_cast<const WgEvent::ButtonDoubleClick*>(_pEvent)->Button() );
+		case WG_EVENT_MOUSEBUTTON_DOUBLECLICK:
+			id = "MouseButtonDoubleClick";
+			sprintf( params, " button=%d", static_cast<const WgEvent::MouseButtonDoubleClick*>(_pEvent)->Button() );
 			break;
-		case WG_EVENT_POINTER_MOVE_OUTSIDE_MODAL:
-			id = "PointerMoveOutsideModal";
+		case WG_EVENT_MOUSE_MOVE_OUTSIDE_MODAL:
+			id = "MouseMoveOutsideModal";
 			break;
-		case WG_EVENT_BUTTON_PRESS_OUTSIDE_MODAL:
-			id = "ButtonPressOutsideModal";
-			sprintf( params, " button=%d", ((const WgEvent::ButtonPressOutsideModal*)_pEvent)->Button() );
+		case WG_EVENT_MOUSEBUTTON_PRESS_OUTSIDE_MODAL:
+			id = "MouseButtonPressOutsideModal";
+			sprintf( params, " button=%d", ((const WgEvent::MouseButtonPressOutsideModal*)_pEvent)->Button() );
 			break;
-		case WG_EVENT_BUTTON_RELEASE_OUTSIDE_MODAL:
-			id = "ButtonReleaseOutsideModal";
-			sprintf( params, " button=%d", ((const WgEvent::ButtonReleaseOutsideModal*)_pEvent)->Button() );
+		case WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL:
+			id = "MouseButtonReleaseOutsideModal";
+			sprintf( params, " button=%d", ((const WgEvent::MouseButtonReleaseOutsideModal*)_pEvent)->Button() );
 			break;
 
 		case WG_EVENT_KEY_PRESS:
@@ -304,17 +304,84 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			id = "Character";
 			sprintf( params, " char=%X", static_cast<const WgEvent::Character*>(_pEvent)->Char() );
 			break;
-		case WG_EVENT_WHEEL_ROLL:
+		case WG_EVENT_MOUSEWHEEL_ROLL:
 		{
-			id = "WheelRoll";
-			const WgEvent::WheelRoll * pEvent = static_cast<const WgEvent::WheelRoll*>(_pEvent);
+			id = "MouseWheelRoll";
+			const WgEvent::MouseWheelRoll * pEvent = static_cast<const WgEvent::MouseWheelRoll*>(_pEvent);
 			sprintf( params, "wheel=%d distance=%d", pEvent->Wheel(), pEvent->Distance() );
 			break;
 		}
+		
+		case WG_EVENT_BUTTON_PRESS:
+			id = "ButtonPress";
+			break;
+
+		case WG_EVENT_CHECKBOX_CHECK:
+			id = "CheckboxCheck";
+			break;
+
+		case WG_EVENT_CHECKBOX_UNCHECK:
+			id = "CheckboxUncheck";
+			break;
+			
+		case WG_EVENT_CHECKBOX_TOGGLE:
+			id = "CheckboxToggle";
+			sprintf( params, "checked=%d", (int) (static_cast<const WgEvent::CheckboxToggle*>(_pEvent)->IsChecked()) );
+			break;
+		
+		case WG_EVENT_RADIOBUTTON_SELECT:
+			id = "RadiobuttonSelect";
+			break;
+
+		case WG_EVENT_RADIOBUTTON_UNSELECT:
+			id = "RadiobuttonUnselect";
+			break;
+
+		case WG_EVENT_RADIOBUTTON_TOGGLE:
+			id = "RadiobuttonToggle";
+			sprintf( params, "selected=%d", (int) (static_cast<const WgEvent::RadiobuttonToggle*>(_pEvent)->IsSelected()) );
+			break;
+		
 		default:
 			id = "Unknown Event";
 			break;
 
+		case WG_EVENT_ANIMATION_UPDATE:
+		{
+			id = "AnimationUpdate";
+			const WgEvent::AnimationUpdate * pEvent = static_cast<const WgEvent::AnimationUpdate*>(_pEvent);
+			sprintf( params, "frame=%d fraction=%f", pEvent->Frame(), pEvent->Fraction() );
+			break;
+		}
+
+		case WG_EVENT_TAB_SELECT:
+			id = "TabSelect";
+			sprintf( params, "tabId=%d", static_cast<const WgEvent::TabSelect*>(_pEvent)->TabId() );
+			break;
+
+		case WG_EVENT_TAB_PRESS:
+		{
+			id = "TabPress";
+			const WgEvent::TabPress * pEvent = static_cast<const WgEvent::TabPress*>(_pEvent);
+			sprintf( params, "tabId=%d mouseButton=%d", pEvent->TabId(), pEvent->MouseButton() );
+			break;
+		}
+
+		case WG_EVENT_EDITVALUE_MODIFY:
+		{
+			id = "EditvalueModify";
+			const WgEvent::EditvalueEvent * pEvent = static_cast<const WgEvent::EditvalueEvent*>(_pEvent);
+			sprintf( params, "value=%ld fraction=%f", pEvent->Value(), pEvent->Fraction() );
+			break;
+		}
+
+		case WG_EVENT_EDITVALUE_SET:
+		{
+			id = "EditvalueSet";
+			const WgEvent::EditvalueEvent * pEvent = static_cast<const WgEvent::EditvalueEvent*>(_pEvent);
+			sprintf( params, "value=%ld fraction=%f", pEvent->Value(), pEvent->Fraction() );
+			break;
+		}
 
 	};
 
@@ -354,7 +421,7 @@ string WgEventLogger::FormatGizmo( const WgEvent::Event * _pEvent )
 {
 	std::string	out;
 
-	if( _pEvent->IsForGizmo() )
+	if( _pEvent->IsForGizmo() || _pEvent->Gizmo() )
 	{
 		char	temp[64];
 		WgGizmo * pGizmo = _pEvent->Gizmo();

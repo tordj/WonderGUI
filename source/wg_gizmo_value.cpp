@@ -86,6 +86,9 @@ void WgGizmoValue::SetFormat( const WgValueFormat& format )
 
 void WgGizmoValue::ValueModified()
 {
+	// NOTE: We have decided to not post any event on ValueModified since it 
+	// can only be done through the API.
+
 	Emit( IntegerChanged(), m_value );
 	Emit( Fraction(), FractionalValue() );
 

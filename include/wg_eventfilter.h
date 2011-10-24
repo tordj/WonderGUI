@@ -52,44 +52,44 @@ class WgEventFilter
 {
 	friend class WgEventHandler;
 public:
-	static WgEventFilter	PointerEnter();
-	static WgEventFilter	PointerEnter( WgGizmo * pGizmo );
+	static WgEventFilter	MouseEnter();
+	static WgEventFilter	MouseEnter( WgGizmo * pGizmo );
 
-	static WgEventFilter	PointerExit();
-	static WgEventFilter	PointerExit( WgGizmo * pGizmo );
+	static WgEventFilter	MouseLeave();
+	static WgEventFilter	MouseLeave( WgGizmo * pGizmo );
 
-	static WgEventFilter	PointerMove();
-	static WgEventFilter	PointerMove( WgGizmo * pGizmo );
+	static WgEventFilter	MouseMove();
+	static WgEventFilter	MouseMove( WgGizmo * pGizmo );
 
-	static WgEventFilter	ButtonPress();
-	static WgEventFilter	ButtonPress( int button);
-	static WgEventFilter	ButtonPress( WgGizmo * pGizmo );
-	static WgEventFilter	ButtonPress( WgGizmo * pGizmo, int button );
+	static WgEventFilter	MouseButtonPress();
+	static WgEventFilter	MouseButtonPress( int button);
+	static WgEventFilter	MouseButtonPress( WgGizmo * pGizmo );
+	static WgEventFilter	MouseButtonPress( WgGizmo * pGizmo, int button );
 
-	static WgEventFilter	ButtonRelease();
-	static WgEventFilter	ButtonRelease( int button);
-	static WgEventFilter	ButtonRelease( WgGizmo * pGizmo );
-	static WgEventFilter	ButtonRelease( WgGizmo * pGizmo, int button );
+	static WgEventFilter	MouseButtonRelease();
+	static WgEventFilter	MouseButtonRelease( int button);
+	static WgEventFilter	MouseButtonRelease( WgGizmo * pGizmo );
+	static WgEventFilter	MouseButtonRelease( WgGizmo * pGizmo, int button );
 
-	static WgEventFilter	ButtonDrag();
-	static WgEventFilter	ButtonDrag( int button);
-	static WgEventFilter	ButtonDrag( WgGizmo * pGizmo );
-	static WgEventFilter	ButtonDrag( WgGizmo * pGizmo, int button );
+	static WgEventFilter	MouseButtonDrag();
+	static WgEventFilter	MouseButtonDrag( int button);
+	static WgEventFilter	MouseButtonDrag( WgGizmo * pGizmo );
+	static WgEventFilter	MouseButtonDrag( WgGizmo * pGizmo, int button );
 
-	static WgEventFilter	ButtonRepeat();
-	static WgEventFilter	ButtonRepeat( int button);
-	static WgEventFilter	ButtonRepeat( WgGizmo * pGizmo );
-	static WgEventFilter	ButtonRepeat( WgGizmo * pGizmo, int button );
+	static WgEventFilter	MouseButtonRepeat();
+	static WgEventFilter	MouseButtonRepeat( int button);
+	static WgEventFilter	MouseButtonRepeat( WgGizmo * pGizmo );
+	static WgEventFilter	MouseButtonRepeat( WgGizmo * pGizmo, int button );
 
-	static WgEventFilter	ButtonClick();
-	static WgEventFilter	ButtonClick( int button);
-	static WgEventFilter	ButtonClick( WgGizmo * pGizmo );
-	static WgEventFilter	ButtonClick( WgGizmo * pGizmo, int button );
+	static WgEventFilter	MouseButtonClick();
+	static WgEventFilter	MouseButtonClick( int button);
+	static WgEventFilter	MouseButtonClick( WgGizmo * pGizmo );
+	static WgEventFilter	MouseButtonClick( WgGizmo * pGizmo, int button );
 
-	static WgEventFilter	ButtonDoubleClick();
-	static WgEventFilter	ButtonDoubleClick( int button);
-	static WgEventFilter	ButtonDoubleClick( WgGizmo * pGizmo );
-	static WgEventFilter	ButtonDoubleClick( WgGizmo * pGizmo, int button );
+	static WgEventFilter	MouseButtonDoubleClick();
+	static WgEventFilter	MouseButtonDoubleClick( int button);
+	static WgEventFilter	MouseButtonDoubleClick( WgGizmo * pGizmo );
+	static WgEventFilter	MouseButtonDoubleClick( WgGizmo * pGizmo, int button );
 
 	static WgEventFilter	KeyPress();
 	static WgEventFilter	KeyPress( WgGizmo * pGizmo );
@@ -120,10 +120,10 @@ public:
 	static WgEventFilter	Character( WgGizmo * pGizmo );
 	static WgEventFilter	Character( WgGizmo * pGizmo, unsigned short character );
 
-	static WgEventFilter	WheelRoll();
-	static WgEventFilter	WheelRoll( int wheel );
-	static WgEventFilter	WheelRoll( WgGizmo * pGizmo );
-	static WgEventFilter	WheelRoll( int wheel, WgGizmo * pGizmo );
+	static WgEventFilter	MouseWheelRoll();
+	static WgEventFilter	MouseWheelRoll( int wheel );
+	static WgEventFilter	MouseWheelRoll( WgGizmo * pGizmo );
+	static WgEventFilter	MouseWheelRoll( int wheel, WgGizmo * pGizmo );
 
 	static WgEventFilter	Tick();
 
@@ -147,11 +147,11 @@ private:
 
 	static bool _filterDummy( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterPointerEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterButtonEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterMouseButtonEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterNativeKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterCharacterEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterMouseWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterTickEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 
 

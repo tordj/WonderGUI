@@ -51,6 +51,10 @@ class WgGizmoContainer : public WgGizmoParent
 
 		void		SetFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
 		bool		IsFocusGroup() const { return m_bFocusGroup; }
+
+		void		SetRadioGroup( bool bRadioGroup ) { m_bRadioGroup = bRadioGroup; }
+		bool		IsRadioGroup() const { return m_bRadioGroup; }
+
 		bool		IsGizmo() const;
 		bool		IsRoot() const;
 
@@ -59,7 +63,7 @@ class WgGizmoContainer : public WgGizmoParent
 		WgRoot *	CastToRoot();
 
 	protected:
-		WgGizmoContainer() : m_bFocusGroup(false) {}
+		WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false) {}
 		virtual ~WgGizmoContainer() {};
 
 		virtual void	_onEnable();
@@ -75,6 +79,7 @@ class WgGizmoContainer : public WgGizmoParent
 		bool 		_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inerits from WgGizmo
 
 		bool		m_bFocusGroup;
+		bool		m_bRadioGroup;
 };
 
 

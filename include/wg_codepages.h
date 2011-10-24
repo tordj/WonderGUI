@@ -26,6 +26,18 @@
 #	include <wg_types.h>
 #endif
 
+/**
+	Static class containing code pages for tanslating 8-bit characters from various
+	encodings to unicode.
+	
+	These code pages are used by WgCharSeq8, which provides a convenient way of reading
+	text in various legacy encodings, but can also be accessed directly.
+
+	The code pages are simply static arrays of 256 16-bit entries each, where each
+	entry contains the unicode number for the 8-bit character corresponding
+	to the array index.
+**/
+
 class WgCodePages
 {
 public:
