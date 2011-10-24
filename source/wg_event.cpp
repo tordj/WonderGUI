@@ -25,6 +25,10 @@
 #include <wg_gizmo_button.h>
 #include <wg_gizmo_checkbox.h>
 #include <wg_gizmo_radiobutton.h>
+#include <wg_gizmo_animation.h>
+#include <wg_gizmo_tablist.h>
+#include <wg_gizmo_value.h>
+#include <wg_gizmo_editvalue.h>
 
 namespace WgEvent
 {
@@ -380,7 +384,7 @@ namespace WgEvent
 		return m_bChecked;
 	}
 
-	//____ WgGizmoRadiobutton events ___________________________________________
+	//____ Radiobutton event methods ___________________________________________
 
 	WgGizmoRadiobutton * RadiobuttonEvent::Radiobutton() const
 	{
@@ -415,12 +419,119 @@ namespace WgEvent
 		return m_bSelected;
 	}
 
-
-	//____ MousePositioned _______________________________________________________
-
-	MousePositioned::MousePositioned()
+	//____ Animation event methods _____________________________________________
+	
+	AnimationUpdate::AnimationUpdate( WgGizmoAnimation * pGizmo, int frame, float fraction )
 	{
-		m_type = WG_EVENT_MOUSE_POSITIONED;
+		m_type = WG_EVENT_ANIMATION_UPDATE;
+		m_pGizmo = pGizmo;
+		m_frame = frame;
+		m_fraction = fraction;
+	}
+
+	WgGizmoAnimation * AnimationUpdate::Animation() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo )
+			return static_cast<WgGizmoAnimation*>(pGizmo);
+		else
+			return 0;
+	}
+	
+	int AnimationUpdate::Frame() const
+	{
+		return m_frame;
+	}
+	
+	float AnimationUpdate::Fraction() const
+	{
+		return m_fraction;
+	}
+	
+	//____ Tablist event methods _______________________________________________
+	
+	WgGizmoTablist * TablistEvent::Tablist() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo )
+			return static_cast<WgGizmoTablist*>(pGizmo);
+		else
+			return 0;
+	}
+
+	TabSelect::TabSelect( WgGizmoTablist * pGizmo, int tabId )
+	{
+		m_type 		= WG_EVENT_TAB_SELECT;
+		m_pGizmo 	= pGizmo;
+		m_tabId 	= tabId;
+	}
+	
+	int TabSelect::TabId() const
+	{
+		return m_tabId;
+	}
+
+	TabPress::TabPress( WgGizmoTablist * pGizmo, int tabId, int mouseButton )
+	{
+		m_type 		= WG_EVENT_TAB_PRESS;
+		m_pGizmo 	= pGizmo;
+		m_tabId 	= tabId;
+		m_button	= mouseButton;
+	}
+	
+	int TabPress::TabId() const
+	{
+		return m_tabId;
+	}
+	
+	int TabPress::MouseButton() const
+	{
+		return m_button;
+	}
+
+	//____ WgEditvalue event methods ___________________________________________
+	
+
+	WgGizmoEditvalue * EditvalueEvent::Editvalue() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo )
+			return static_cast<WgGizmoEditvalue*>(pGizmo);
+		else
+			return 0;			
+	}
+	
+	int64_t EditvalueEvent::Value() const
+	{
+		return m_value;
+	}
+	
+	double EditvalueEvent::Fraction() const
+	{
+	}
+
+	EditvalueModify::EditvalueModify( WgGizmoEditvalue * pGizmo, int64_t value, double fraction )
+	{
+		m_type = WG_EVENT_EDITVALUE_MODIFY;
+		m_pGizmo = pGizmo;
+		m_value = value;
+		m_fraction = fraction;
+	}
+
+	EditvalueSet::EditvalueSet( WgGizmoEditvalue * pGizmo, int64_t value, double fraction )
+	{
+		m_type = WG_EVENT_EDITVALUE_SET;
+		m_pGizmo = pGizmo;
+		m_value = value;
+		m_fraction = fraction;
+	}
+
+	
+	//____ MousePosition _______________________________________________________
+
+	MousePosition::MousePosition()
+	{
+		m_type = WG_EVENT_MOUSE_POSITION;
 	}
 
 	//____ MouseButtonDrag _________________________________________________________

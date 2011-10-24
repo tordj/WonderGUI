@@ -26,7 +26,7 @@
 #	include <SDL/SDL.h>
 #endif
 #include <wg_surface_sdl.h>
-
+ 
 //____ Constructor _____________________________________________________________
 
 WgSurfaceSDL::WgSurfaceSDL( SDL_Surface * pSurf )

@@ -46,6 +46,11 @@ class WgGizmo;
 class WgGizmoButton;
 class WgGizmoCheckbox;
 class WgGizmoRadiobutton;
+class WgGizmoAnimation;
+class WgGizmoTablist;
+class WgGizmoValue;
+class WgGizmoEditvalue;
+class Wg_Interface_ValueHolder;
 
 typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
@@ -296,13 +301,81 @@ namespace WgEvent
 		bool	m_bSelected;
 	};
 
-	//___ Internally posted events _____________________________________________
+	//____ WgGizmoAnimation events _____________________________________________
 
-	class MousePositioned : public Event
+	class AnimationUpdate : public Event
+	{
+	public:
+		AnimationUpdate( WgGizmoAnimation * pGizmo, int frame, float fraction );
+		WgGizmoAnimation * Animation() const;
+		int		Frame() const;
+		float	Fraction() const;
+	private:
+		int		m_frame;
+		float	m_fraction;
+	};
+
+	//____ WgGizmoTablist events _______________________________________________
+	
+	class TablistEvent : public Event
+	{
+	public:
+		WgGizmoTablist *	Tablist() const;
+	};
+	
+	class TabSelect : public TablistEvent
+	{
+	public:
+		TabSelect( WgGizmoTablist * pGizmo, int tabId );
+		int		TabId() const;
+	private:
+		int		m_tabId;
+	};
+
+	class TabPress : public TablistEvent
+	{
+	public:
+		TabPress( WgGizmoTablist * pGizmo, int tabId, int mouseButton );
+		int		TabId() const;
+		int		MouseButton() const;
+	private:
+		int		m_tabId;
+		int		m_button;
+	};
+
+	//____ WgGizmoEditvalue events _____________________________________
+
+	class EditvalueEvent : public Event
+	{
+	public:
+		WgGizmoEditvalue * Editvalue() const;
+		int64_t		Value() const;
+		double		Fraction() const;
+	private:
+		int64_t		m_value;
+		double		m_fraction;
+	};
+
+	class EditvalueModify : public EditvalueEvent
+	{
+	public:
+		EditvalueModify( WgGizmoEditvalue * pGizmo, int64_t value, double fraction );
+	};
+
+	class EditvalueSet : public EditvalueEvent
+	{
+	public:
+		EditvalueSet( WgGizmoEditvalue * pGizmo, int64_t value, double fraction );
+	};
+
+
+	//____ Internally posted events ____________________________________________
+
+	class MousePosition : public Event
 	{
 		friend class ::WgEventHandler;
 	protected:
-		MousePositioned();
+		MousePosition();
 	};
 
 	class MouseButtonDrag : public MouseButtonEvent

@@ -24,6 +24,7 @@
 #include <wg_gizmo_animation.h>
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
+#include <wg_eventhandler.h>
 
 #include <math.h>
 
@@ -239,6 +240,72 @@ bool WgGizmoAnimation::Stop()
 
 	m_bPlaying = false;
 	return true;
+}
+
+//____ BestSize() ______________________________________________________________
+
+WgSize WgGizmoAnimation::BestSize() const
+{
+	return m_src.size();
+}
+
+//____ _onEvent() ______________________________________________________________
+
+void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+{
+	switch( pEvent->Type() )
+	{
+		case WG_EVENT_TICK:
+		{
+			const WgEvent::Tick * pTick = static_cast<const WgEvent::Tick*>(pEvent);
+			
+			if( !m_pAnim || !m_bEnabled )
+				return;
+
+			if( !m_bPlayPosIsNew && m_bPlaying )
+			{
+				m_playPos += pTick->Millisec() * m_speed;
+			}
+
+			// Emit signals if playPos somehow has changed.
+
+			if( m_bPlayPosIsNew || m_bPlaying )
+			{
+				Emit( WgSignal::IntegerChanged(), static_cast<int>(m_playPos) );
+				Emit( WgSignal::Fraction(), (float)m_playPos/(float)m_pAnim->Duration()-1);
+				
+				pHandler->QueueEvent( new WgEvent::AnimationUpdate(this, m_playPos, m_playPos/(float)(m_pAnim->Duration()-1)));
+			}
+
+
+			WgGfxFrame * pFrame = m_pAnim->getFrame( (Uint32) m_playPos );
+
+			if( pFrame->pSurf != m_pSurf )
+			{
+				m_pSurf = pFrame->pSurf;
+				if( m_pSurf && m_pSurf->IsOpaque() )
+					m_bOpaque = true;
+				else
+					m_bOpaque = false;
+
+				m_src.x = pFrame->ofs.x;
+				m_src.y = pFrame->ofs.y;
+				RequestRender();
+			}
+			else if( pFrame->ofs.x != m_src.x || pFrame->ofs.y != m_src.y )
+			{
+				m_src.x = pFrame->ofs.x;
+				m_src.y = pFrame->ofs.y;
+				RequestRender();
+			}
+
+			m_bPlayPosIsNew = false;
+		}
+		break;
+		
+		default:
+		break;
+	}
 }
 
 //____ _onUpdate() ________________________________________________________

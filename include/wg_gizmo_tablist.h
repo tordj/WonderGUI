@@ -168,7 +168,7 @@ public:
 	bool SetTabText( int id, const WgCharSeq& text );
 
 	bool SetTabId( int id, int newId );
-	int GetTabId(int position);
+	int GetTabId(int position) const;
 
 	void	setTabMouseOpacity( bool bOpaque ) { m_bTabOpaqueForMouse = bOpaque; };
 	bool	getTabMouseOpacity() const { return m_bTabOpaqueForMouse; }
@@ -176,27 +176,28 @@ public:
 
 	bool SetTabTextColor( int id, WgColor col );
 
-	Uint32	GetTabWidth( int id );
+	Uint32	GetTabWidth( int id ) const;
 
 	bool SelectTab( int id );
 	int GetSelectedTabId() const;
 	int GetSelectedTabPos() const;
 	bool SetAlert( int id, bool bAlertOn );
-	bool GetAlert( int id );
+	bool GetAlert( int id ) const;
 	bool ShowTab( int id, bool bVisible );
 	int GetTabCount( ) const;
 
-	bool HasTab( int id );
+	bool HasTab( int id ) const;
 
 	WgItemRow*	LockTabContent( int id );
 	void		UnlockTabContent( int id );
 
-	WgTab*			GetSelectedTab();
-	WgTab*			GetFirstTab();
-	WgTab*			GetLastTab();
-	WgTab* 			GetFirstVisibleTab();
-	WgTab* 			GetLastVisibleTab();
+	WgTab*			GetSelectedTab() const;
+	WgTab*			GetFirstTab() const;
+	WgTab*			GetLastTab() const;
+	WgTab* 			GetFirstVisibleTab() const;
+	WgTab* 			GetLastVisibleTab() const;
 
+	WgSize			BestSize() const;
 
 protected:
 	void	_onCloneContent( const WgGizmo * _pOrg );
@@ -204,18 +205,19 @@ protected:
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
 	void	_onUpdate( const WgUpdateInfo& _updateInfo );
+	void 	_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler );
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool	_onAlphaTest( const WgCoord& ofs );
 
 private:
 
-	WgBlockSetPtr	GetTabSource( WgTab * pTab );
-	WgMode			GetTabMode(const WgTab& tab);
-	WgTab*			FindTab( int id );
-	WgTab*	 		Pos2Tab( int x, int y );
+	WgBlockSetPtr	GetTabSource( WgTab * pTab ) const;
+	WgMode			GetTabMode(const WgTab& tab) const;
+	WgTab*			FindTab( int id ) const;
+	WgTab*	 		Pos2Tab( int x, int y ) const;
 	
 	void			ResizeTabs();
-	int				CalcTabsWantedWidth( WgTab * pTab );
+	int				CalcTabsWantedWidth( WgTab * pTab ) const;
 
 	void	RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, const WgRect& clip );
 

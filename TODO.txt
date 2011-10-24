@@ -11,7 +11,7 @@ FOCUS
 
 FIX GIZMOS
 ==========
-  Animation
+v Animation	(untested, missing requesting TICKS!)
 v Button
 v Checkbox	(still to fix: WidthForHeight() )
   Dragbars
@@ -20,11 +20,12 @@ v Checkbox	(still to fix: WidthForHeight() )
 v Radiobutton
   Refreshbutton
   Table
-  Tablist
+v Tablist	(untested, missing requesting TICKS!)
   Combobox
   Text
-  Value
+v Value
   Menu
+  Menubar
   Treeview
 
 

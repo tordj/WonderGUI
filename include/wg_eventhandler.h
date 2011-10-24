@@ -145,7 +145,7 @@ private:
 
 	void	_processMouseEnter( WgEvent::MouseEnter * pEvent );
 	void	_processMouseMove( WgEvent::MouseMove * pEvent );
-	void	_processMousePositioned( WgEvent::MousePositioned * pEvent );
+	void	_processMousePosition( WgEvent::MousePosition * pEvent );
 	void	_processMouseLeave( WgEvent::MouseLeave * pEvent );
 
 	void	_processMouseButtonPress( WgEvent::MouseButtonPress * pEvent );

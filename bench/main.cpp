@@ -63,7 +63,7 @@ int main ( int argc, char** argv )
 	WgEventHandler * pEventHandler = pRoot->EventHandler();
 
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
-	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_POSITIONED );
+	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_POSITION );
 	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_MOVE );
 //	pEventLogger->IgnoreAllEvents();
 //	pEventLogger->LogMouseButtonEvents();
@@ -278,7 +278,6 @@ int main ( int argc, char** argv )
 
     while (eventLoop( pEventHandler ))
     {
-
         // DRAWING STARTS HERE
 
 		pRoot->Render( WgRect(0,0,pCanvas->Width(),pCanvas->Height()) );

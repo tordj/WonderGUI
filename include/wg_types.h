@@ -476,7 +476,7 @@ enum	WgEventType
 
 	WG_EVENT_MOUSE_ENTER,
 	WG_EVENT_MOUSE_MOVE,
-	WG_EVENT_MOUSE_POSITIONED,
+	WG_EVENT_MOUSE_POSITION,
 	WG_EVENT_MOUSE_LEAVE,
 
 	WG_EVENT_MOUSEBUTTON_PRESS,
@@ -496,7 +496,7 @@ enum	WgEventType
 	WG_EVENT_MOUSEBUTTON_PRESS_OUTSIDE_MODAL,
 	WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL,
 
-	WG_EVENT_BUTTON_PRESS,
+	WG_EVENT_BUTTON_PRESS,					// Posted every time a button is pressed, either by mouse button one or key enter.
 	
 	WG_EVENT_CHECKBOX_CHECK,
 	WG_EVENT_CHECKBOX_UNCHECK,
@@ -505,6 +505,14 @@ enum	WgEventType
 	WG_EVENT_RADIOBUTTON_SELECT,
 	WG_EVENT_RADIOBUTTON_UNSELECT,
 	WG_EVENT_RADIOBUTTON_TOGGLE,
+	
+	WG_EVENT_ANIMATION_UPDATE,				// Posted every time the animation changes frame.
+	
+	WG_EVENT_TAB_SELECT,					// Posted when a new tab is selected.
+	WG_EVENT_TAB_PRESS,						// Posted every time any mousebutton is pressed on a widget.
+
+	WG_EVENT_EDITVALUE_MODIFY,				// Posted for every change to value through keyboard (once for every accepted keystroke).
+	WG_EVENT_EDITVALUE_SET,					// Posted when edited value is 'set' by moving away keyboard focus.
 
 	WG_EVENT_MAX
 };

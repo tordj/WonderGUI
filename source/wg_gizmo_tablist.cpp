@@ -8,6 +8,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_surface.h>
 #include <wg_util.h>
+#include <wg_eventhandler.h>
 
 #include <wg_item_row.h>
 
@@ -306,7 +307,7 @@ bool WgGizmoTablist::SetTabId( int id, int newId )
 
 //____ GetTabId() ___________________________________________________________
 
-int WgGizmoTablist::GetTabId(int position)
+int WgGizmoTablist::GetTabId(int position) const
 {
 	WgTab *pTab = m_tabs.First();
 	if( pTab && position )
@@ -364,6 +365,11 @@ bool WgGizmoTablist::SelectTab( int id )
 		RequestRender();
 
 		Emit( WgSignal::TabSelected(), pTab->m_id );
+
+		WgEventHandler * pHandler = EventHandler();
+		if( pHandler )
+			pHandler->QueueEvent( new WgEvent::TabSelect(this, pTab->m_id) );
+
 		return true;
 	}
 
@@ -418,7 +424,7 @@ bool WgGizmoTablist::SetAlert( int id, bool bAlertOn )
 
 //____ GetAlert() _____________________________________________________________
 
-bool WgGizmoTablist::GetAlert( int id )
+bool WgGizmoTablist::GetAlert( int id ) const
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -429,7 +435,7 @@ bool WgGizmoTablist::GetAlert( int id )
 	return false;
 }
 
-//____ ShowTabl() ______________________________________________________________
+//____ ShowTab() ______________________________________________________________
 
 bool WgGizmoTablist::ShowTab( int id, bool bVisible )
 {
@@ -470,7 +476,7 @@ int WgGizmoTablist::GetTabCount( ) const
 
 //____ GetTabWidth() ______________________________________________________________
 
-Uint32 WgGizmoTablist::GetTabWidth( int id )
+Uint32 WgGizmoTablist::GetTabWidth( int id ) const
 {
 	WgTab * pTab = FindTab(id);
 	if( pTab )
@@ -483,7 +489,7 @@ Uint32 WgGizmoTablist::GetTabWidth( int id )
 
 //____ HasTab() ______________________________________________________________
 
-bool WgGizmoTablist::HasTab( int id )
+bool WgGizmoTablist::HasTab( int id ) const
 {
 	return FindTab(id) != 0;
 }
@@ -523,28 +529,28 @@ void WgGizmoTablist::UnlockTabContent( int id )
 }
 
 //////////////////////////////////////////////////////////////////////////
-WgTab* WgGizmoTablist::GetSelectedTab()
+WgTab* WgGizmoTablist::GetSelectedTab() const
 {
 	return m_pTabSelected;
 }
 
 //____ GetFirstTab() ______________________________________________________________
 
-WgTab* WgGizmoTablist::GetFirstTab()
+WgTab* WgGizmoTablist::GetFirstTab() const
 {
 	return m_tabs.First();
 }
 
 //____ GetLastTab() ______________________________________________________________
 
-WgTab* WgGizmoTablist::GetLastTab()
+WgTab* WgGizmoTablist::GetLastTab() const
 {
 	return m_tabs.Last();
 }
 
 //____ GetFirstVisibleTab() ___________________________________________________
 
-WgTab* WgGizmoTablist::GetFirstVisibleTab()
+WgTab* WgGizmoTablist::GetFirstVisibleTab() const
 {
 	WgTab* pTab = GetFirstTab();
 	while(pTab && !pTab->m_bVisible)
@@ -554,7 +560,7 @@ WgTab* WgGizmoTablist::GetFirstVisibleTab()
 
 //____ GetLastVisibleTab() ____________________________________________________
 
-WgTab* WgGizmoTablist::GetLastVisibleTab()
+WgTab* WgGizmoTablist::GetLastVisibleTab() const
 {
 	WgTab* pTab = GetLastTab();
 	while(pTab && !pTab->m_bVisible)
@@ -564,7 +570,7 @@ WgTab* WgGizmoTablist::GetLastVisibleTab()
 
 //____ FindTab() ______________________________________________________________
 
-WgTab* WgGizmoTablist::FindTab( int id )
+WgTab* WgGizmoTablist::FindTab( int id ) const
 {
 	WgTab * pTab = m_tabs.First();
 
@@ -581,7 +587,7 @@ WgTab* WgGizmoTablist::FindTab( int id )
 
 //____ GetTabSource() _________________________________________________________
 
-WgBlockSetPtr WgGizmoTablist::GetTabSource( WgTab * pTab )
+WgBlockSetPtr WgGizmoTablist::GetTabSource( WgTab * pTab ) const
 {
 	if( pTab->GetSource() )
 	{
@@ -599,7 +605,7 @@ WgBlockSetPtr WgGizmoTablist::GetTabSource( WgTab * pTab )
 
 //____ GetTabMode() __________________________________________________________
 
-WgMode	WgGizmoTablist::GetTabMode(const WgTab& tab)
+WgMode	WgGizmoTablist::GetTabMode(const WgTab& tab) const
 {
 	if( !m_bEnabled )
 		return WG_MODE_DISABLED;
@@ -614,6 +620,88 @@ WgMode	WgGizmoTablist::GetTabMode(const WgTab& tab)
 	else
 		return WG_MODE_NORMAL;
 }
+
+//____ BestSize() ______________________________________________________________
+
+WgSize WgGizmoTablist::BestSize() const
+{
+	if( m_tabs.Size() == 0 )
+		return WgSize(0,0);
+
+	// Calculate best width
+
+	int bestWidth = 0;
+
+	switch( m_tabWidthMode )
+	{
+		case UNIFIED_WIDTH:
+		{
+			int widest = 0;
+			int nTabs = 0;
+			WgTab * pTab = m_tabs.First();
+			while( pTab )
+			{
+				int w = CalcTabsWantedWidth(pTab);
+				if( w > widest )
+					widest = w;
+				nTabs++;
+				pTab = pTab->Next();
+			}
+
+			bestWidth = widest*nTabs - m_overlap*(nTabs-1);
+			break;
+		}
+
+		default:
+			assert(0);					// Should never happen, but we will default to INDIVIDUAL_WIDTH if it does.
+		case INDIVIDUAL_WIDTH:
+		{
+			int nTabs = 0;
+			WgTab * pTab = m_tabs.First();
+			while( pTab )
+			{
+				bestWidth += CalcTabsWantedWidth(pTab);
+				nTabs++;
+				pTab = pTab->Next();
+			}
+
+			bestWidth -= m_overlap*(nTabs-1);
+
+			break;
+		}
+	}
+
+	// Calculate best height
+
+	int bestHeight = 0;
+	WgTab * pTab = m_tabs.First();
+	while( pTab )
+	{
+		int h = 0;
+		
+		WgBlockSetPtr pBg = GetTabSource(pTab);
+		if( pBg )
+		{
+			h = pBg->GetHeight();
+			int textH = pTab->m_text.height();
+			if( h - pBg->GetContentBorders().height() < textH )
+				h = textH + pBg->GetContentBorders().height();			
+		}
+		else
+			h = pTab->m_text.height();
+
+		if( h > bestHeight )
+			bestHeight = h;
+
+		pTab = pTab->Next();
+	}	
+	
+	//
+	
+	return WgSize( bestWidth, bestHeight );
+	
+}
+
 
 //____ ResizeTabs() ___________________________________________________________
 
@@ -919,7 +1007,7 @@ void WgGizmoTablist::ResizeTabs()
 
 //____ CalcTabsWantedWidth() _______________________________________________________
 
-int WgGizmoTablist::CalcTabsWantedWidth( WgTab * pTab )
+int WgGizmoTablist::CalcTabsWantedWidth( WgTab * pTab ) const
 {
 	int width = pTab->m_text.width();
 
@@ -948,7 +1036,7 @@ int WgGizmoTablist::CalcTabsWantedWidth( WgTab * pTab )
 
 //____ Pos2Tab() ______________________________________________________________
 
-WgTab * WgGizmoTablist::Pos2Tab( int x, int y )
+WgTab * WgGizmoTablist::Pos2Tab( int x, int y ) const
 {
 	if( x < 0 || y < 0 )
 		return 0;
@@ -1116,6 +1204,83 @@ void WgGizmoTablist::_onNewSize( const WgSize& size )
 	ResizeTabs();
 }
 
+
+//____ _onEvent() ______________________________________________________________
+
+void WgGizmoTablist::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+{
+	switch( _pEvent->Type() )
+	{
+		case WG_EVENT_TICK:
+		{
+			const WgEvent::Tick * pEvent = static_cast<const WgEvent::Tick*>(_pEvent);
+			
+			m_alertModeCnt -= pEvent->Millisec();
+			if( m_alertModeCnt <= 0 )
+			{
+				m_bAlertOn = !m_bAlertOn;
+				m_alertModeCnt = m_alertRate;		// This is right, we want it to stay in the new mode at least one frame.
+
+				// Check if we have to render something...
+
+				WgTab * pTab = m_tabs.First();
+				while( pTab )
+				{
+					if( pTab->m_bAlert && pTab->m_bVisible )
+					{
+						RequestRender();			// Somewhat stupid to render all tabs though...
+						break;
+					}
+					pTab = pTab->Next();
+				}
+			}
+			break;
+		}
+		
+		case WG_EVENT_MOUSEBUTTON_PRESS:
+		{
+			const WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
+
+			WgCoord pos = pEvent->PointerPos();
+
+			WgTab * pTab = Pos2Tab( pos.x, pos.y );
+			if( pTab && pTab != m_pTabSelected )
+			{
+				if( pEvent->Button() == 1 )
+					SelectTab(pTab->m_id);
+
+				Emit( WgSignal::TabPressed(), pTab->m_id );
+				pHandler->QueueEvent( new WgEvent::TabPress(this, pTab->m_id, pEvent->Button()) );
+			}
+		}
+		break;
+
+		case WG_EVENT_MOUSE_ENTER:
+		case WG_EVENT_MOUSE_MOVE:
+		{
+			WgCoord pos = _pEvent->PointerPos();
+
+			WgTab * pTab = Pos2Tab( pos.x, pos.y );
+			if( pTab != m_pTabMarked )
+			{
+				m_pTabMarked = pTab;
+				RequestRender();
+			}
+		}
+		break;
+
+		case WG_EVENT_MOUSE_LEAVE:
+			if( m_pTabMarked )
+			{
+				m_pTabMarked = 0;
+				RequestRender();
+			}
+		break;
+
+        default:
+            break;
+	}
+}
 
 
 //____ _onAction() _____________________________________________________________

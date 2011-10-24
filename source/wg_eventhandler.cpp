@@ -833,8 +833,8 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 			_processMouseMove( (WgEvent::MouseMove*) pEvent );
 			break;
 
-		case WG_EVENT_MOUSE_POSITIONED:
-			_processMousePositioned( (WgEvent::MousePositioned*) pEvent );
+		case WG_EVENT_MOUSE_POSITION:
+			_processMousePosition( (WgEvent::MousePosition*) pEvent );
 			break;
 
 		case WG_EVENT_MOUSE_LEAVE:
@@ -998,7 +998,7 @@ void WgEventHandler::_processMouseEnter( WgEvent::MouseEnter * pEvent )
 
 	// Post event for finalizing position once button drag is taken care of.
 
-	QueueEvent( new WgEvent::MousePositioned() );
+	QueueEvent( new WgEvent::MousePosition() );
 
 	// Update pointer position
 
@@ -1038,16 +1038,16 @@ void WgEventHandler::_processMouseMove( WgEvent::MouseMove * pEvent )
 
 	// Post event for finalizing move once button drag is taken care of.
 
-	QueueEvent( new WgEvent::MousePositioned() );
+	QueueEvent( new WgEvent::MousePosition() );
 
 	// Update pointer position
 
 	m_pointerPos = pEvent->PointerPos();
 }
 
-//____ _processMousePositioned() _________________________________________________
+//____ _processMousePosition() _________________________________________________
 
-void WgEventHandler::_processMousePositioned( WgEvent::MousePositioned * pEvent )
+void WgEventHandler::_processMousePosition( WgEvent::MousePosition * pEvent )
 {
 	_updateMarkedGizmos(true);
 

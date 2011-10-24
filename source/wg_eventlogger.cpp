@@ -61,7 +61,7 @@ void WgEventLogger::IgnorePointerEvents()
 {
 	m_eventFilter[WG_EVENT_MOUSE_ENTER] = false;
 	m_eventFilter[WG_EVENT_MOUSE_MOVE] = false;
-	m_eventFilter[WG_EVENT_MOUSE_POSITIONED] = false;
+	m_eventFilter[WG_EVENT_MOUSE_POSITION] = false;
 	m_eventFilter[WG_EVENT_MOUSE_LEAVE] = false;
 }
 
@@ -71,7 +71,7 @@ void WgEventLogger::LogPointerEvents()
 {
 	m_eventFilter[WG_EVENT_MOUSE_ENTER] = true;
 	m_eventFilter[WG_EVENT_MOUSE_MOVE] = true;
-	m_eventFilter[WG_EVENT_MOUSE_POSITIONED] = true;
+	m_eventFilter[WG_EVENT_MOUSE_POSITION] = true;
 	m_eventFilter[WG_EVENT_MOUSE_LEAVE] = true;
 }
 
@@ -208,8 +208,8 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		case WG_EVENT_MOUSE_MOVE:
 			id = "MouseMove";
 			break;
-		case WG_EVENT_MOUSE_POSITIONED:
-			id = "MousePositioned";
+		case WG_EVENT_MOUSE_POSITION:
+			id = "MousePosition";
 			break;
 		case WG_EVENT_MOUSE_LEAVE:
 			id = "MouseLeave";
@@ -346,6 +346,42 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			id = "Unknown Event";
 			break;
 
+		case WG_EVENT_ANIMATION_UPDATE:
+		{
+			id = "AnimationUpdate";
+			const WgEvent::AnimationUpdate * pEvent = static_cast<const WgEvent::AnimationUpdate*>(_pEvent);
+			sprintf( params, "frame=%d fraction=%f", pEvent->Frame(), pEvent->Fraction() );
+			break;
+		}
+
+		case WG_EVENT_TAB_SELECT:
+			id = "TabSelect";
+			sprintf( params, "tabId=%d", static_cast<const WgEvent::TabSelect*>(_pEvent)->TabId() );
+			break;
+
+		case WG_EVENT_TAB_PRESS:
+		{
+			id = "TabPress";
+			const WgEvent::TabPress * pEvent = static_cast<const WgEvent::TabPress*>(_pEvent);
+			sprintf( params, "tabId=%d mouseButton=%d", pEvent->TabId(), pEvent->MouseButton() );
+			break;
+		}
+
+		case WG_EVENT_EDITVALUE_MODIFY:
+		{
+			id = "EditvalueModify";
+			const WgEvent::EditvalueEvent * pEvent = static_cast<const WgEvent::EditvalueEvent*>(_pEvent);
+			sprintf( params, "value=%ld fraction=%f", pEvent->Value(), pEvent->Fraction() );
+			break;
+		}
+
+		case WG_EVENT_EDITVALUE_SET:
+		{
+			id = "EditvalueSet";
+			const WgEvent::EditvalueEvent * pEvent = static_cast<const WgEvent::EditvalueEvent*>(_pEvent);
+			sprintf( params, "value=%ld fraction=%f", pEvent->Value(), pEvent->Fraction() );
+			break;
+		}
 
 	};
 
