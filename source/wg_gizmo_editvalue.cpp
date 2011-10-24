@@ -41,7 +41,7 @@ using namespace WgSignal;
 
 WgGizmoEditvalue::WgGizmoEditvalue()
 {
-	m_bRegenText	= true;
+	_regenText();
 	m_buttonDownOfs = 0;
 	m_bSelectAllOnRelease = false;
 
@@ -73,7 +73,7 @@ const char * WgGizmoEditvalue::GetMyType( void )
 void WgGizmoEditvalue::SetTextColor( WgColor col )
 {
 	m_text.setColor( col );
-	m_bRegenText		= true;			// Is this necessary?
+	_regenText();			// Is this necessary?
 	RequestRender();
 }
 
@@ -89,7 +89,7 @@ bool WgGizmoEditvalue::SetTextProp( const WgTextPropPtr& _pProp )
 	if( _pProp != m_text.getProperties() )
 	{
 		m_text.setProperties(_pProp);
-		m_bRegenText		= true;		// Is this necessary?
+		_regenText();		// Is this necessary?
 		RequestRender();
 	}
 
@@ -178,7 +178,7 @@ void WgGizmoEditvalue::ValueModified()
 		m_useFormat.bForcePeriod = false;
 		m_useFormat.decimals = 0;
 	}
-	m_bRegenText = true;
+	_regenText();
 	RequestRender();
 }
 
@@ -196,7 +196,7 @@ void WgGizmoEditvalue::_onRefresh( void )
 {
 	if( m_text.getFont() != 0 )
 	{
-		m_bRegenText = true;
+		_regenText();
 		RequestRender();
 	}
 
@@ -221,29 +221,6 @@ void WgGizmoEditvalue::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, 
 	if( m_text.getFont() == 0 )
 		return;
 
-	// Possibly regenerate the text
-
-	if( m_bRegenText )
-	{
-		m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
-		m_bRegenText = false;
-		m_text.goEOL();
-	}
-
-	// Make sure cursor is at EOL - length of suffix.
-/*
-	if( m_text.GetCursor() )
-	{
-		int i = 0;
-		while( m_format.suffix[i] != 0 && i < 4)
-			i++;
-
-		m_text.GetCursor()->goEOL();
-		m_text.GetCursor()->goLeft( i );
-	}
-*/
-
-
 	// Leave if we have nothing to print
 
 	if( m_text.nbLines() == 0 )
@@ -252,6 +229,14 @@ void WgGizmoEditvalue::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, 
 	// Print the text
 
 	pDevice->PrintText( _clip, &m_text, _canvas );
+}
+
+//____ _regenText() ____________________________________________________________
+
+void WgGizmoEditvalue::_regenText()
+{
+		m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
+		m_text.goEOL();
 }
 
 //____ ParseValueFromInput() __________________________________________________
@@ -280,22 +265,52 @@ bool WgGizmoEditvalue::ParseValueFromInput( int64_t * wpResult )
 			if( glyph == m_format.period )
 			{
 				nDecimals = nbChars-i-1;
+				if( nDecimals > m_format.decimals )
+				{
+					// Only parse as many decimals as we need, avoid unnecessary overflows.
+					nbChars -= nDecimals - m_format.decimals;
+					nDecimals = m_format.decimals;
+					bModified = true;
+				}
+
 			}
 			else if( glyph >= '0' && glyph <= '9' )
 			{
-				value *= 10;
-				value += glyph - '0';
+				if( value <= LLONG_MAX/10 )
+					value *= 10;
+				else
+				{
+					value = LLONG_MAX;
+					bModified = true;
+					break;
+				}
+				
+				int toAdd = glyph - '0';
+
+				if( value <= LLONG_MAX-toAdd )
+					value += toAdd;
+				else
+				{
+					value = LLONG_MAX;
+					bModified = true;
+					break;
+				}
 			}
 
 		}
 
-		if( nDecimals > m_format.decimals )
-		{
-			value /= (int) pow(10.0,nDecimals-m_format.decimals);
-			bModified = true;
-		}
 		if( nDecimals < m_format.decimals )
-			value *= (int) pow(10.0,m_format.decimals-nDecimals);
+		{
+			int64_t multiplier = (int64_t) pow(10.0,m_format.decimals-nDecimals);
+
+			if( value <= LLONG_MAX/multiplier )
+				value *= multiplier;
+			else
+			{
+				value = LLONG_MAX;
+				bModified = true;
+			}
+		}
 
 		if( p[0].glyph == '-' )
 			value = -value;
@@ -645,7 +660,7 @@ void WgGizmoEditvalue::_onLostInputFocus()
 	m_bFocused = false;
 	m_text.DestroyCursor();
 	m_useFormat = m_format;
-	m_bRegenText = true;
+	_regenText();
 
 	RequestRender();
 }

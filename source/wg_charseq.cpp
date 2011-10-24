@@ -31,56 +31,48 @@
 
 //____ Constructors ____________________________________________________________
 
-WgCharSeq::WgCharSeq( const char * pChar)
+
+WgCharSeq::WgCharSeq( const char * pChar, WgResDB * pDB )
 {
-    m_type		= UTF8;
+	m_pDB 		= pDB;
+	m_type 		= ESCAPED_UTF8;
     m_pChar		= (void *) pChar;
-    m_nbChars	= WgTextTool::countChars(pChar);
+    m_nbChars	= WgTextTool::countNonFormattingChars(pChar);
 }
 
-WgCharSeq::WgCharSeq( const char * pChar, int len )
+WgCharSeq::WgCharSeq( const char * pChar, int len, WgResDB * pDB )
 {
-    m_type		= UTF8;
-    m_pChar		= (void *) pChar;
-    m_nbChars	= WgTextTool::countChars(pChar,len);
+	m_pDB 		= pDB;
+	m_type 		= ESCAPED_UTF8;
+	m_pChar		= (void *) pChar;
+    m_nbChars	= WgTextTool::countNonFormattingChars(pChar, len);
 }
 
-WgCharSeq::WgCharSeq( const Uint16 * pChar )
+WgCharSeq::WgCharSeq( const Uint16 * pChar, WgResDB * pDB )
 {
-    m_type		= UTF16;
-    m_pChar		= (void *) pChar;
-    m_nbChars	= WgTextTool::strlen(pChar);
+	m_pDB 		= pDB;
+	m_type 		= ESCAPED_UTF16;
+	m_pChar		= (void *) pChar;
+    m_nbChars	= WgTextTool::countNonFormattingChars(pChar);
+
+}
+WgCharSeq::WgCharSeq( const Uint16 * pChar, int len, WgResDB * pDB )
+{
+	m_pDB 		= pDB;
+	m_type 		= ESCAPED_UTF16;
+	m_pChar		= (void *) pChar;
+    m_nbChars	= WgTextTool::countNonFormattingChars(pChar, len);
 }
 
-WgCharSeq::WgCharSeq( const Uint16 * pChar, int len )
+WgCharSeq::WgCharSeq( const std::string& str, WgResDB * pDB )
 {
-    m_type		= UTF16;
-    m_pChar		= (void *) pChar;
-    m_nbChars	= len;
-}
-
-WgCharSeq::WgCharSeq( const WgChar * pChar )
-{
-    m_type		= WGCHAR;
-    m_pChar		= (void *) pChar;
-    m_nbChars	= WgTextTool::strlen(pChar);
-}
-
-WgCharSeq::WgCharSeq( const WgChar * pChar, int len )
-{
-    m_type      = WGCHAR;
-    m_pChar     = (void *) pChar;
-    m_nbChars   = len;
-}
-
-WgCharSeq::WgCharSeq( const std::string& str )
-{
-    m_type      = UTF8;
+	m_pDB 		= pDB;
+	m_type 		= ESCAPED_UTF8;
     m_pChar     = (void *) str.c_str();
-    m_nbChars   = WgTextTool::countChars(str.c_str());
+    m_nbChars   = WgTextTool::countNonFormattingChars(str.c_str());
 }
 
-WgCharSeq::WgCharSeq( const std::string& str, int ofs, int len )
+WgCharSeq::WgCharSeq( const std::string& str, int ofs, int len, WgResDB * pDB )
 {
 	const char * p = str.c_str();
 	int strlen = str.length();
@@ -92,20 +84,21 @@ WgCharSeq::WgCharSeq( const std::string& str, int ofs, int len )
 		len = strlen - ofs;
 	}
 
-    m_type      = UTF8;
+	m_pDB 		= pDB;
+	m_type 		= ESCAPED_UTF8;
     m_pChar     = p + ofs;
-    m_nbChars   = WgTextTool::countChars(p+ofs, len);
+    m_nbChars   = WgTextTool::countNonFormattingChars(p+ofs, len);
 }
 
-
-WgCharSeq::WgCharSeq( const std::wstring& str )
+WgCharSeq::WgCharSeq( const std::wstring& str, WgResDB * pDB )
 {
-    m_type      = UTF16;
+    m_type      = ESCAPED_UTF16;
     m_pChar     = (void *) str.c_str();
-    m_nbChars   = str.length();
+    m_nbChars   = WgTextTool::countNonFormattingChars( (Uint16*) str.c_str());
+	m_pDB		= pDB;
 }
 
-WgCharSeq::WgCharSeq( const std::wstring& str, int ofs, int len )
+WgCharSeq::WgCharSeq( const std::wstring& str, int ofs, int len, WgResDB * pDB )
 {
 	const wchar_t * p = str.c_str();
 	int strlen = str.length();
@@ -117,10 +110,29 @@ WgCharSeq::WgCharSeq( const std::wstring& str, int ofs, int len )
 		len = strlen - ofs;
 	}
 
-    m_type      = UTF16;
+    m_type      = ESCAPED_UTF16;
     m_pChar     = p + ofs;
-    m_nbChars   = len;
+    m_nbChars   = WgTextTool::countNonFormattingChars( ((Uint16*)p)+ofs, len);
+	m_pDB		= pDB;
 }
+
+
+WgCharSeq::WgCharSeq( const WgChar * pChar )
+{
+    m_type		= WGCHAR;
+    m_pChar		= (void *) pChar;
+    m_nbChars	= WgTextTool::strlen(pChar);
+	m_pDB		= 0;
+}
+
+WgCharSeq::WgCharSeq( const WgChar * pChar, int len )
+{
+    m_type      = WGCHAR;
+    m_pChar     = (void *) pChar;
+    m_nbChars   = len;
+	m_pDB		= 0;
+}
+
 
 
 WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer )
@@ -128,6 +140,7 @@ WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer )
 	m_type		= WGCHAR;
 	m_pChar		= (void *) pBuffer->Chars();
 	m_nbChars	= pBuffer->NbChars();
+	m_pDB		= 0;
 }
 
 WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len )
@@ -143,6 +156,7 @@ WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len )
 	m_type		= WGCHAR;
 	m_pChar		= (void *)  (pBuffer->Chars() + ofs);
 	m_nbChars	= len;
+	m_pDB		= 0;
 }
 
 WgCharSeq::WgCharSeq( const WgString& str )
@@ -150,6 +164,7 @@ WgCharSeq::WgCharSeq( const WgString& str )
 	m_type		= WGCHAR;
 	m_pChar		= (void *) str.Chars();
 	m_nbChars	= str.Length();
+	m_pDB		= 0;
 }
 
 WgCharSeq::WgCharSeq( const WgString& str, int ofs, int len )
@@ -165,6 +180,7 @@ WgCharSeq::WgCharSeq( const WgString& str, int ofs, int len )
 	m_type		= WGCHAR;
 	m_pChar		= (void *) (str.Chars() + ofs);
 	m_nbChars	= len;
+	m_pDB		= 0;
 }
 
 WgCharSeq::WgCharSeq( const WgCharSeq& seq, int ofs, int len )
@@ -320,14 +336,14 @@ void WgCharSeq::CopyTo( WgChar * pDest ) const
 		{
 			const char * pSrc = (const char*) m_pChar;
 			WgTextTool::DerefProps( pDest, m_nbChars );
-			WgTextTool::readFormattedString( pSrc, pDest, m_nbChars, ((WgCharSeqEscaped*)this)->m_pDB );
+			WgTextTool::readFormattedString( pSrc, pDest, m_nbChars, m_pDB );
 			break;
 		}
 		case ESCAPED_UTF16:
 		{
 			const Uint16 * pSrc = (const Uint16*) m_pChar;
 			WgTextTool::DerefProps( pDest, m_nbChars );
-			WgTextTool::readFormattedString( pSrc, pDest, m_nbChars, ((WgCharSeqEscaped*)this)->m_pDB );
+			WgTextTool::readFormattedString( pSrc, pDest, m_nbChars, m_pDB );
 			break;
 		}
 		case MAP8:
@@ -392,7 +408,7 @@ const WgCharSeq::WgCharBasket WgCharSeq::GetWgChars() const
 			WgChar * p = (WgChar *) new char[bytes];
 			memset( p, 0, bytes);
 			const char * pSrc = (char*) m_pChar;
-			WgTextTool::readFormattedString( pSrc, p, m_nbChars, ((WgCharSeqEscaped*)this)->m_pDB );
+			WgTextTool::readFormattedString( pSrc, p, m_nbChars, m_pDB );
 
 			basket.ptr = p;
 			basket.length = m_nbChars;
@@ -406,7 +422,7 @@ const WgCharSeq::WgCharBasket WgCharSeq::GetWgChars() const
 			WgChar * p = (WgChar *) new char[bytes];
 			memset( p, 0, bytes);
 			const Uint16 * pSrc = (Uint16*) m_pChar;
-			WgTextTool::readFormattedString( pSrc, p, m_nbChars, ((WgCharSeqEscaped*)this)->m_pDB );
+			WgTextTool::readFormattedString( pSrc, p, m_nbChars, m_pDB );
 
 			basket.ptr = p;
 			basket.length = m_nbChars;
@@ -633,7 +649,7 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 		{
 			Uint32 size = WgTextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
 			char * p = new char[size+1];
-			WgTextTool::stripTextCommandsConvert( (Uint16*) m_pChar, (char*) (p + size - (m_nbChars+1)*2), m_nbChars+1 );
+			WgTextTool::stripTextCommandsConvert( (Uint16*) m_pChar, p, m_nbChars+1 );
 			basket.ptr = p;
 			basket.length = size;
 			basket.bIsOwner = true;
@@ -707,7 +723,7 @@ std::string WgCharSeq::GetStdString() const
 		{
 			Uint32 size = WgTextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
 			char * p = new char[size+1];
-			WgTextTool::stripTextCommandsConvert( (Uint16*) m_pChar, (char*) (p + size - (m_nbChars+1)*2), m_nbChars+1 );
+			WgTextTool::stripTextCommandsConvert( (Uint16*) m_pChar, p, m_nbChars+1 );
 			std::string str( p, size );
 			delete p;
 			return str;
@@ -741,49 +757,49 @@ WgCharSeq::WgCharBasket::~WgCharBasket()
 	}
 }
 
-//____ WgCharSeqEscaped::Constructors _________________________________________
+//____ WgCharSeqLiteral::Constructors _________________________________________
 
-WgCharSeqEscaped::WgCharSeqEscaped( const char * pChar, WgResDB * pDB )
+WgCharSeqLiteral::WgCharSeqLiteral( const char * pChar)
 {
-	m_pDB 		= pDB;
-	m_type 		= ESCAPED_UTF8;
+    m_type		= UTF8;
     m_pChar		= (void *) pChar;
-    m_nbChars	= WgTextTool::countNonFormattingChars(pChar);
+    m_nbChars	= WgTextTool::countChars(pChar);
+	m_pDB		= 0;
 }
 
-WgCharSeqEscaped::WgCharSeqEscaped( const char * pChar, int len, WgResDB * pDB )
+WgCharSeqLiteral::WgCharSeqLiteral( const char * pChar, int len )
 {
-	m_pDB 		= pDB;
-	m_type 		= ESCAPED_UTF8;
-	m_pChar		= (void *) pChar;
-    m_nbChars	= WgTextTool::countNonFormattingChars(pChar, len);
+    m_type		= UTF8;
+    m_pChar		= (void *) pChar;
+    m_nbChars	= len;
+	m_pDB		= 0;
 }
 
-WgCharSeqEscaped::WgCharSeqEscaped( const Uint16 * pChar, WgResDB * pDB )
+WgCharSeqLiteral::WgCharSeqLiteral( const Uint16 * pChar )
 {
-	m_pDB 		= pDB;
-	m_type 		= ESCAPED_UTF16;
-	m_pChar		= (void *) pChar;
-    m_nbChars	= WgTextTool::countNonFormattingChars(pChar);
-
-}
-WgCharSeqEscaped::WgCharSeqEscaped( const Uint16 * pChar, int len, WgResDB * pDB )
-{
-	m_pDB 		= pDB;
-	m_type 		= ESCAPED_UTF16;
-	m_pChar		= (void *) pChar;
-    m_nbChars	= WgTextTool::countNonFormattingChars(pChar, len);
+    m_type		= UTF16;
+    m_pChar		= (void *) pChar;
+    m_nbChars	= WgTextTool::strlen(pChar);
+	m_pDB		= 0;
 }
 
-WgCharSeqEscaped::WgCharSeqEscaped( const std::string& str, WgResDB * pDB )
+WgCharSeqLiteral::WgCharSeqLiteral( const Uint16 * pChar, int len )
 {
-	m_pDB 		= pDB;
-	m_type 		= ESCAPED_UTF8;
+    m_type		= UTF16;
+    m_pChar		= (void *) pChar;
+    m_nbChars	= len;
+	m_pDB		= 0;
+}
+
+WgCharSeqLiteral::WgCharSeqLiteral( const std::string& str )
+{
+    m_type      = UTF8;
     m_pChar     = (void *) str.c_str();
-    m_nbChars   = WgTextTool::countNonFormattingChars(str.c_str());
+    m_nbChars   = str.length();
+	m_pDB		= 0;
 }
 
-WgCharSeqEscaped::WgCharSeqEscaped( const std::string& str, int ofs, int len, WgResDB * pDB )
+WgCharSeqLiteral::WgCharSeqLiteral( const std::string& str, int ofs, int len )
 {
 	const char * p = str.c_str();
 	int strlen = str.length();
@@ -795,12 +811,39 @@ WgCharSeqEscaped::WgCharSeqEscaped( const std::string& str, int ofs, int len, Wg
 		len = strlen - ofs;
 	}
 
-	m_pDB 		= pDB;
-	m_type 		= ESCAPED_UTF8;
+    m_type      = UTF8;
     m_pChar     = p + ofs;
-    m_nbChars   = WgTextTool::countNonFormattingChars(p+ofs, len);
-
+    m_nbChars   = WgTextTool::countChars(p+ofs, len);
+	m_pDB		= 0;
 }
+
+
+WgCharSeqLiteral::WgCharSeqLiteral( const std::wstring& str )
+{
+    m_type      = UTF16;
+    m_pChar     = (void *) str.c_str();
+    m_nbChars   = str.length();
+	m_pDB		= 0;
+}
+
+WgCharSeqLiteral::WgCharSeqLiteral( const std::wstring& str, int ofs, int len )
+{
+	const wchar_t * p = str.c_str();
+	int strlen = str.length();
+
+	if( ofs + len > strlen )
+	{
+		if( ofs > strlen )
+			ofs = strlen;
+		len = strlen - ofs;
+	}
+
+    m_type      = UTF16;
+    m_pChar     = p + ofs;
+    m_nbChars   = len;
+	m_pDB		= 0;
+}
+
 
 //____ WgCharSeq8::Constructors _________________________________________
 

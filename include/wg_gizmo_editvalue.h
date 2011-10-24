@@ -92,6 +92,7 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 
 		bool	ParseValueFromInput( int64_t * wpResult );
 
+		void	_regenText();
 
 		WgWidget *			NewOfMyType() const;
 

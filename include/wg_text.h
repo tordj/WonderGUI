@@ -406,8 +406,8 @@ protected:
 	WgChar *	parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form, WgChar[parseBufLen] );
 
 
-	void			_regenHardLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
-	void			_regenSoftLines();		// Set/remove softbreaks and regenerate the softlines-array (if necessary).
+	void			_regenHardLines();		// regenerate the softlines-array (if necessary).
+	void			_regenSoftLines();		// regenerate the softlines-array (if necessary).
 	int 			_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLine * pWriteLines, int maxWrite ) const; // Central algorithm of regenSoftLines().
 
 	void			_refreshAllLines();

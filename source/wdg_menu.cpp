@@ -958,6 +958,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 			{
 				case WG_KEY_ESCAPE:
 					Close();
+					pItem = 0;				// So we won't mark an item in the closed menu.
 					break;
 
 				case WG_KEY_RIGHT:
@@ -982,7 +983,10 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 						if( pItem->GetType() == SUBMENU )
 							OpenSubMenu( (WgMenuSubMenu*) pItem );
 						else
+						{
 							SelectItem(pItem);
+							pItem = 0;				// So we won't mark an item in the closed menu.
+						}
 					}
 					break;
 

@@ -65,18 +65,18 @@ class WgResDB;
 class WgCharSeq
 {
 public:
-	WgCharSeq( const char * pChar );
-	WgCharSeq( const char * pChar, int len );
-	WgCharSeq( const Uint16 * pChar );
-	WgCharSeq( const Uint16 * pChar, int len );
+	WgCharSeq( const char * pChar, WgResDB * pDB = 0);
+	WgCharSeq( const char * pChar, int len, WgResDB * pDB = 0 );
+	WgCharSeq( const Uint16 * pChar, WgResDB * pDB = 0 );
+	WgCharSeq( const Uint16 * pChar, int len, WgResDB * pDB = 0 );
 	WgCharSeq( const WgChar * pChar );
 	WgCharSeq( const WgChar * pChar, int len );
 	WgCharSeq( const WgCharBuffer * pBuffer );
 	WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len );
-	WgCharSeq( const std::string& str );
-	WgCharSeq( const std::string& str, int ofs, int len );
-	WgCharSeq( const std::wstring& str );
-	WgCharSeq( const std::wstring& str, int ofs, int len );
+	WgCharSeq( const std::string& str, WgResDB * pDB = 0 );
+	WgCharSeq( const std::string& str, int ofs, int len, WgResDB * pDB = 0 );
+	WgCharSeq( const std::wstring& str, WgResDB * pDB = 0 );
+	WgCharSeq( const std::wstring& str, int ofs, int len, WgResDB * pDB = 0 );
 	WgCharSeq( const WgString& str );
 	WgCharSeq( const WgString& str, int ofs, int len );
 	WgCharSeq( const WgCharSeq& seq, int ofs = 0, int len = INT_MAX );
@@ -170,22 +170,21 @@ protected:
 	SeqType			m_type;
 	const void * 	m_pChar;
 	int				m_nbChars;		// Length of sequence in number of characters.
+	WgResDB *		m_pDB;
 };
 
 
-class WgCharSeqEscaped : public WgCharSeq
+class WgCharSeqLiteral : public WgCharSeq
 {
-	friend class WgCharSeq;
 public:
-	WgCharSeqEscaped( const char * pChar, WgResDB * pDB = 0 );
-	WgCharSeqEscaped( const char * pChar, int len, WgResDB * pDB = 0 );
-	WgCharSeqEscaped( const Uint16 * pChar, WgResDB * pDB = 0 );
-	WgCharSeqEscaped( const Uint16 * pChar, int len, WgResDB * pDB = 0 );
-	WgCharSeqEscaped( const std::string& str, WgResDB * pDB = 0 );
-	WgCharSeqEscaped( const std::string& str, int ofs, int len, WgResDB * pDB = 0 );
-
-protected:
-	WgResDB *	m_pDB;
+	WgCharSeqLiteral( const char * pChar );
+	WgCharSeqLiteral( const char * pChar, int len );
+	WgCharSeqLiteral( const Uint16 * pChar );
+	WgCharSeqLiteral( const Uint16 * pChar, int len );
+	WgCharSeqLiteral( const std::string& str );
+	WgCharSeqLiteral( const std::string& str, int ofs, int len );
+	WgCharSeqLiteral( const std::wstring& str );
+	WgCharSeqLiteral( const std::wstring& str, int ofs, int len );
 };
 
 

@@ -371,7 +371,7 @@ WgItem* Wdg_GridView::GetMarkedItem( Uint32 x, Uint32 y )
 				itemRect.h = itemSize.h;
 
 				if(itemRect.contains(x, y))
-					return p;
+					return p->GetMarkedItem(x-itemRect.x, y-itemRect.y);
 
 				if(m_layout == Vertical)
 					itemRect.x += itemRect.w;
