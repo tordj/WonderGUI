@@ -45,7 +45,7 @@ class Wg_Interface_TextHolder : protected WgTextHolder
 public:
 	virtual WgTextEditMode GetEditMode() const  { return WG_TEXT_STATIC; }
 
-	virtual void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); TextModified(); }
+	virtual void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); _textModified(); }
 	inline WgTextManager * GetTextManager() const { return m_pText->getManager(); }
 
 // -------------
@@ -61,49 +61,49 @@ public:
 
 // -------------
 
-	inline void			SetTextProperties( const WgTextPropPtr& pProp )		{ m_pText->setProperties(pProp); TextModified(); }
+	inline void			SetTextProperties( const WgTextPropPtr& pProp )		{ m_pText->setProperties(pProp); _textModified(); }
 
-	inline void			SetTextColor( const WgColor color )					{ m_pText->setColor(color); TextModified(); }
-	inline void			SetTextColor( const WgColor color, WgMode mode )		{ m_pText->setColor(color,mode); TextModified(); }
+	inline void			SetTextColor( const WgColor color )					{ m_pText->setColor(color); _textModified(); }
+	inline void			SetTextColor( const WgColor color, WgMode mode )		{ m_pText->setColor(color,mode); _textModified(); }
 
-	inline void			SetTextStyle( WgFontStyle style )					{ m_pText->setStyle(style); TextModified(); }
-	inline void			SetTextStyle( WgFontStyle style, WgMode mode )		{ m_pText->setStyle(style,mode); TextModified(); }
+	inline void			SetTextStyle( WgFontStyle style )					{ m_pText->setStyle(style); _textModified(); }
+	inline void			SetTextStyle( WgFontStyle style, WgMode mode )		{ m_pText->setStyle(style,mode); _textModified(); }
 
-	inline void			SetBreakLevel( int level )							{ m_pText->setBreakLevel(level); TextModified(); }
+	inline void			SetBreakLevel( int level )							{ m_pText->setBreakLevel(level); _textModified(); }
 
-	inline void			SetFont( WgFont * pFont )							{ m_pText->setFont(pFont); TextModified(); }
-	inline void			SetLink( WgTextLinkPtr pLink )						{ m_pText->setLink(pLink); TextModified(); }
+	inline void			SetFont( WgFont * pFont )							{ m_pText->setFont(pFont); _textModified(); }
+	inline void			SetLink( WgTextLinkPtr pLink )						{ m_pText->setLink(pLink); _textModified(); }
 
 // -------------
 
-	inline void			ClearTextProperties()								{ m_pText->clearProperties(); TextModified(); }
+	inline void			ClearTextProperties()								{ m_pText->clearProperties(); _textModified(); }
 
-	inline void			ClearTextColor()										{ m_pText->clearColor(); TextModified(); }
-	inline void			ClearTextColor( WgMode mode )						{ m_pText->clearColor(mode); TextModified(); }
+	inline void			ClearTextColor()										{ m_pText->clearColor(); _textModified(); }
+	inline void			ClearTextColor( WgMode mode )						{ m_pText->clearColor(mode); _textModified(); }
 
-	inline void			ClearTextStyle()										{ m_pText->clearStyle(); TextModified(); }
-	inline void			ClearTextStyle( WgMode mode )						{ m_pText->clearStyle(mode); TextModified(); }
+	inline void			ClearTextStyle()										{ m_pText->clearStyle(); _textModified(); }
+	inline void			ClearTextStyle( WgMode mode )						{ m_pText->clearStyle(mode); _textModified(); }
 
-	inline void			ClearBreakLevel()									{ m_pText->clearBreakLevel(); TextModified(); }
+	inline void			ClearBreakLevel()									{ m_pText->clearBreakLevel(); _textModified(); }
 
-	inline void			ClearFont()											{ m_pText->clearFont(); TextModified(); }
-	inline void			ClearLink()											{ m_pText->clearLink(); TextModified(); }
+	inline void			ClearFont()											{ m_pText->clearFont(); _textModified(); }
+	inline void			ClearLink()											{ m_pText->clearLink(); _textModified(); }
 
 //	-----------
 
-	inline void			SetSelectionProperties( const WgTextPropPtr& pProp ) { m_pText->setSelectionProperties(pProp); TextModified(); }
+	inline void			SetSelectionProperties( const WgTextPropPtr& pProp ) { m_pText->setSelectionProperties(pProp); _textModified(); }
 	inline WgTextPropPtr GetSelectionProperties() const { return m_pText->getSelectionProperties(); }
-	inline void			ClearSelectionProperties() { m_pText->clearSelectionProperties(); TextModified(); }
+	inline void			ClearSelectionProperties() { m_pText->clearSelectionProperties(); _textModified(); }
 
 //	-----------
 
-	inline void			SetLinkProperties( const WgTextPropPtr& pProp ) { m_pText->setLinkProperties(pProp); TextModified(); }
+	inline void			SetLinkProperties( const WgTextPropPtr& pProp ) { m_pText->setLinkProperties(pProp); _textModified(); }
 	inline WgTextPropPtr GetLinkProperties() const { return m_pText->getLinkProperties(); }
-	inline void			ClearLinkProperties() { m_pText->clearLinkProperties(); TextModified(); }
+	inline void			ClearLinkProperties() { m_pText->clearLinkProperties(); _textModified(); }
 
 //	-----------
 
-	inline void			SetCursor( WgCursor * pCursor ) { m_pText->setCursorStyle(pCursor); TextModified(); }
+	inline void			SetCursor( WgCursor * pCursor ) { m_pText->setCursorStyle(pCursor); _textModified(); }
 	inline WgCursor *	GetCursor() const { return m_pText->getCursorStyle(); }
 
 //	-----------
@@ -156,9 +156,9 @@ public:
 protected:
 	Wg_Interface_TextHolder();
 
-	inline void			TextModified( WgText * pText ) { TextModified(); }
-	virtual void		TextModified() = 0;
-	void				CloneInterface( Wg_Interface_TextHolder * _pClone );
+	inline void			_textModified( WgText * pText ) { _textModified(); }
+	virtual void		_textModified() = 0;
+	void				_cloneInterface( Wg_Interface_TextHolder * _pClone );
 	void				_onCloneContent( const Wg_Interface_TextHolder * pOrg );
 
 	WgText *			m_pText;			// Must always be set by derived class!

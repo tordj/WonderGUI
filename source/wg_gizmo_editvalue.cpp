@@ -154,7 +154,7 @@ void WgGizmoEditvalue::Clear()
 	// Force value to zero, emit signals and request render
 
 	m_value = 0;
-	ValueModified();
+	_valueModified();
 
 	// Make the inputfield empty
 
@@ -163,9 +163,9 @@ void WgGizmoEditvalue::Clear()
 	m_useFormat.decimals = 0;
 }
 
-//____ ValueModified() ________________________________________________________
+//____ _valueModified() ________________________________________________________
 
-void WgGizmoEditvalue::ValueModified()
+void WgGizmoEditvalue::_valueModified()
 {
 	Emit( IntegerChanged(), m_value );
 	Emit( Fraction(), FractionalValue() );
@@ -182,9 +182,9 @@ void WgGizmoEditvalue::ValueModified()
 	RequestRender();
 }
 
-//____ RangeModified() ________________________________________________________
+//____ _rangeModified() ________________________________________________________
 
-void WgGizmoEditvalue::RangeModified()
+void WgGizmoEditvalue::_rangeModified()
 {
 	Emit( Fraction(), FractionalValue() );
 }
@@ -254,9 +254,9 @@ void WgGizmoEditvalue::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, 
 	pDevice->PrintText( _clip, &m_text, _canvas );
 }
 
-//____ ParseValueFromInput() __________________________________________________
+//____ _parseValueFromInput() __________________________________________________
 
-bool WgGizmoEditvalue::ParseValueFromInput( int64_t * wpResult )
+bool WgGizmoEditvalue::_parseValueFromInput( int64_t * wpResult )
 {
 	// Parse text as value as a positive or negative integer within boundaries
 	// return false if value had to be modified in any way.
@@ -381,7 +381,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 				// to set the bModified flag if value is entered in a weird way.
 
 				int64_t		value;
-				bool bModified = ParseValueFromInput( &value );
+				bool bModified = _parseValueFromInput( &value );
 
 				if( m_value < m_rangeMin )
 				{
@@ -574,7 +574,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 	if( bTextChanged )
 	{
 		int64_t		value;
-		bool bModified = ParseValueFromInput( &value );
+		bool bModified = _parseValueFromInput( &value );
 
 		if( value != m_value )
 		{

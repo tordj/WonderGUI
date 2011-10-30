@@ -67,7 +67,7 @@ class	WgFont;
 struct WgTextHolder
 {
 public:
-	virtual void		TextModified( WgText * pText ) = 0;
+	virtual void		_textModified( WgText * pText ) = 0;
 };
 
 

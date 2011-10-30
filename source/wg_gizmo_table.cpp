@@ -400,7 +400,7 @@ WgText* WgTableColumn2::GetTextObj()
 	return m_pText;
 }
 
-void WgTableColumn2::TextModified()
+void WgTableColumn2::_textModified()
 {
 	if( m_bVisible && m_pTable )
 		m_pTable->RequestRender();

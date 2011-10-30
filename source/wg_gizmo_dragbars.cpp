@@ -26,6 +26,7 @@
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
+#include <wg_eventhandler.h>
 
 using namespace WgSignal;
 using namespace WgUtil;
@@ -124,7 +125,7 @@ bool WgGizmoDragbar::SetSliderPos( float pos )
 bool WgGizmoDragbar::SetSliderPosPxlOfs( int x )
 {
 	int		barPos, barLen;
-	ViewToPosLen( &barPos, &barLen );
+	_viewToPosLen( &barPos, &barLen );
 
 	int		length;
 	if( m_bHorizontal )
@@ -171,8 +172,8 @@ bool WgGizmoDragbar::SetSource( WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx,
 	m_pBtnFwdGfx	= pBtnFwdGfx;
 	m_pBtnBwdGfx	= pBtnBwdGfx;
 
-	HeaderFooterChanged();
-	UpdateMinSize();
+	_headerFooterChanged();
+	_updateMinSize();
 	RequestRender();
 	return true;
 }
@@ -183,13 +184,13 @@ bool WgGizmoDragbar::SetButtonLayout(  ButtonLayout layout )
 {
 	m_btnLayout = layout;
 
-	HeaderFooterChanged();
+	_headerFooterChanged();
 	return true;
 }
 
-//____ HeaderFooterChanged() _______________________________________________
+//____ _headerFooterChanged() _______________________________________________
 
-void WgGizmoDragbar::HeaderFooterChanged()
+void WgGizmoDragbar::_headerFooterChanged()
 {
 	int	fwdLen = 0, bwdLen = 0;
 
@@ -228,7 +229,7 @@ void WgGizmoDragbar::HeaderFooterChanged()
 		m_headerLen = headerLen;
 		m_footerLen = footerLen;
 
-		UpdateMinSize();
+		_updateMinSize();
 	}
 
 	RequestRender();
@@ -261,9 +262,9 @@ void WgGizmoDragbar::_onCloneContent( const WgGizmo * _pOrg )
 	m_footerLen			= pOrg->m_footerLen;
 }
 
-//____ ViewToPosLen() _________________________________________________________
+//____ _viewToPosLen() _________________________________________________________
 
-void	WgGizmoDragbar::ViewToPosLen( int * _wpPos, int * _wpLen )
+void	WgGizmoDragbar::_viewToPosLen( int * _wpPos, int * _wpLen )
 {
 	// changes by Viktor.
 
@@ -366,9 +367,9 @@ WgSize WgGizmoDragbar::BestSize() const
 }
 
 
-//____ UpdateMinSize() ________________________________________________________
+//____ _updateMinSize() ________________________________________________________
 
-void WgGizmoDragbar::UpdateMinSize()
+void WgGizmoDragbar::_updateMinSize()
 {
 	int	minW = 4;
 	int	minH = 4;
@@ -425,9 +426,9 @@ void WgGizmoDragbar::UpdateMinSize()
 	}
 }
 
-//____ RenderButton() _________________________________________________________
+//____ _renderButton() _________________________________________________________
 
-void WgGizmoDragbar::RenderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block )
+void WgGizmoDragbar::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block )
 {
 		if( m_bHorizontal )
 			_dest.w = _block.GetWidth();
@@ -451,10 +452,10 @@ void WgGizmoDragbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	// Render header buttons
 
 	if( m_pBtnBwdGfx && (m_btnLayout & HEADER_BWD) )
-		RenderButton( pDevice, _clip, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_HEADER_BWD]) );
+		_renderButton( pDevice, _clip, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_HEADER_BWD]) );
 
 	if( m_pBtnFwdGfx && (m_btnLayout & HEADER_FWD) )
-		RenderButton( pDevice, _clip, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_HEADER_FWD]) );
+		_renderButton( pDevice, _clip, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_HEADER_FWD]) );
 
 	// Render background (if any).
 
@@ -472,7 +473,7 @@ void WgGizmoDragbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	{
 		int barPos;
 		int barLen;
-		ViewToPosLen( &barPos, &barLen );
+		_viewToPosLen( &barPos, &barLen );
 
 		WgRect	barDest;
 		if( m_bHorizontal )
@@ -491,25 +492,25 @@ void WgGizmoDragbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		dest.y += dest.h;
 
 	if( m_pBtnBwdGfx && (m_btnLayout & FOOTER_BWD) )
-		RenderButton( pDevice, _clip, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_FOOTER_BWD]) );
+		_renderButton( pDevice, _clip, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_FOOTER_BWD]) );
 
 	if( m_pBtnFwdGfx && (m_btnLayout & FOOTER_FWD) )
-		RenderButton( pDevice, _clip, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_FOOTER_FWD]) );
+		_renderButton( pDevice, _clip, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_FOOTER_FWD]) );
 }
 
 //____ _onAlphaTest() ______________________________________________________
 
 bool WgGizmoDragbar::_onAlphaTest( const WgCoord& ofs )
 {
-	if( FindMarkedComponent( ofs ) == C_NONE )
+	if( _findMarkedComponent( ofs ) == C_NONE )
 		return false;
 
 	return true;
 }
 
-//____ MarkTestButton() _______________________________________________________
+//____ _markTestButton() _______________________________________________________
 
-bool WgGizmoDragbar::MarkTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block )
+bool WgGizmoDragbar::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block )
 {
 		if( m_bHorizontal )
 			_dest.w = _block.GetWidth();
@@ -526,9 +527,9 @@ bool WgGizmoDragbar::MarkTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& 
 		return retVal;
 }
 
-//____ FindMarkedComponent() __________________________________________________
+//____ _findMarkedComponent() __________________________________________________
 
-WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( WgCoord ofs )
+WgGizmoDragbar::Component WgGizmoDragbar::_findMarkedComponent( WgCoord ofs )
 {
 	// First of all, do a mark test against the header buttons...
 
@@ -538,13 +539,13 @@ WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( WgCoord ofs )
 
 	if( m_pBtnBwdGfx && (m_btnLayout & HEADER_BWD) )
 	{
-		if( MarkTestButton( ofs, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_HEADER_BWD])) )
+		if( _markTestButton( ofs, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_HEADER_BWD])) )
 			return C_HEADER_BWD;
 	}
 
 	if( m_pBtnFwdGfx && (m_btnLayout & HEADER_FWD) )
 	{
-		if( MarkTestButton( ofs, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_HEADER_FWD])) )
+		if( _markTestButton( ofs, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_HEADER_FWD])) )
 			return C_HEADER_FWD;
 	}
 
@@ -557,19 +558,19 @@ WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( WgCoord ofs )
 
 	if( m_pBtnBwdGfx && (m_btnLayout & FOOTER_BWD) )
 	{
-		if( MarkTestButton( ofs, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_FOOTER_BWD])) )
+		if( _markTestButton( ofs, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_FOOTER_BWD])) )
 			return C_FOOTER_BWD;
 	}
 
 	if( m_pBtnFwdGfx && (m_btnLayout & FOOTER_FWD) )
 	{
-		if( MarkTestButton( ofs, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_FOOTER_FWD])) )
+		if( _markTestButton( ofs, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_FOOTER_FWD])) )
 			return C_FOOTER_FWD;
 	}
 
 	// Then, do a mark test against the dragbar...
 
-	if( MarkTestSlider( ofs ) == true )
+	if( _markTestSlider( ofs ) == true )
 		return C_BAR;
 
 	// Finally, do a mark test against the background.
@@ -593,15 +594,208 @@ WgGizmoDragbar::Component WgGizmoDragbar::FindMarkedComponent( WgCoord ofs )
 	return C_NONE;
 }
 
-//____ UnmarkReqRender() ______________________________________________________
+//____ _unmarkReqRender() ______________________________________________________
 
-void WgGizmoDragbar::UnmarkReqRender()
+void WgGizmoDragbar::_unmarkReqRender()
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_NORMAL;
 
-	RequestRender();
+	RequestRender(); 
 }
+
+//____ _onEvent() ______________________________________________________________
+
+void WgGizmoDragbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+{
+	int		barPos, barLen;
+	_viewToPosLen( &barPos, &barLen );
+
+	WgCoord pos = pEvent->PointerPos();
+	int		x = pos.x;
+	int		y = pos.y;
+
+	int		pointerOfs;
+	int		length;
+	if( m_bHorizontal )
+	{
+		pointerOfs = x;
+		length = Size().w;
+	}
+	else
+	{
+		pointerOfs = y;
+		length = Size().h;
+	}
+
+	length -= m_headerLen + m_footerLen;
+	pointerOfs -= m_headerLen;
+
+	switch( pEvent->Type() )
+	{
+		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		{
+			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+				return;
+
+			// Just put them all to NORMAL and request render.
+			// Release is followed by over before render anyway so right one will be highlighted.
+
+			_unmarkReqRender();
+			break;
+		}
+
+		case WG_EVENT_MOUSE_LEAVE:
+		{
+			// Turn any MARKED/SELECTED button/bg back to NORMAL.
+			// Turn bar back to NORMAL only if MARKED (selected bar should remain selected).
+			// Request render only if something changed (which it has unless bar was SELECTED...).
+
+			if( m_mode[C_BAR] == WG_MODE_SELECTED )
+				return;
+
+			_unmarkReqRender();
+			break;
+		}
+
+		case WG_EVENT_MOUSE_ENTER:
+		case WG_EVENT_MOUSE_MOVE:
+		{
+			if( m_mode[C_BAR] == WG_MODE_SELECTED )
+				return;
+
+			Component c = _findMarkedComponent(pos);
+
+			if( c != C_NONE && m_mode[c] == WG_MODE_NORMAL )
+			{
+				_unmarkReqRender();
+				m_mode[c] = WG_MODE_MARKED;
+			}
+
+			break;
+		}
+
+		case WG_EVENT_MOUSEBUTTON_PRESS:
+		{
+			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+				return;
+
+			Component c = _findMarkedComponent(pos);
+
+			_unmarkReqRender();
+			m_mode[c] = WG_MODE_SELECTED;
+
+
+			if( c == C_BAR )
+	  			m_dragBarPressOfs = pointerOfs - barPos;
+			else if( c == C_BG )
+			{
+				switch( m_bgPressMode )
+				{
+				case SKIP_PAGE:
+					if( pointerOfs - barPos < barLen/2 )
+					{
+						pHandler->QueueEvent( new WgEvent::DragbarPageUp(this,m_sliderPos,m_sliderSize) );
+						Emit( PrevPage() );
+					}
+					else
+					{
+						pHandler->QueueEvent( new WgEvent::DragbarPageDown(this,m_sliderPos,m_sliderSize) );
+						Emit( NextPage() );
+					}
+					break;
+				case GOTO_POS:
+					m_mode[C_BAR] = WG_MODE_SELECTED;
+					m_mode[C_BG] = WG_MODE_NORMAL;
+					m_dragBarPressOfs = barLen/2;
+					SetSliderPosPxlOfs( pointerOfs );
+					break;
+				default:
+//					assert( false );
+					break;
+				}
+
+			}
+			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
+			{
+				pHandler->QueueEvent( new WgEvent::DragbarStepDown(this,m_sliderPos,m_sliderSize) );
+				Emit( Forward() );
+			}
+			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
+			{
+				pHandler->QueueEvent( new WgEvent::DragbarStepUp(this,m_sliderPos,m_sliderSize) );
+				Emit( Back() );
+			}
+			break;
+		}
+
+		case WG_EVENT_MOUSEBUTTON_REPEAT:
+		{
+			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+				return;
+
+			if( m_mode[C_BAR] == WG_MODE_SELECTED )
+				return;
+
+			Component c = _findMarkedComponent(pos);
+
+			if( c == C_BG )
+			{
+				if( pointerOfs - barPos < barLen/2 )
+				{
+					pHandler->QueueEvent( new WgEvent::DragbarPageUp(this,m_sliderPos,m_sliderSize) );
+					Emit( PrevPage() );
+				}
+				else
+				{
+					pHandler->QueueEvent( new WgEvent::DragbarPageDown(this,m_sliderPos,m_sliderSize) );
+					Emit( NextPage() );
+				}
+			}
+			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
+			{
+				pHandler->QueueEvent( new WgEvent::DragbarStepDown(this,m_sliderPos,m_sliderSize) );
+				Emit( Forward() );
+			}
+			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
+			{
+				pHandler->QueueEvent( new WgEvent::DragbarStepUp(this,m_sliderPos,m_sliderSize) );
+				Emit( Back() );
+			}
+
+			break;
+		}
+
+		case WG_EVENT_MOUSEBUTTON_DRAG:
+		{
+			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+				return;
+
+			if( m_mode[C_BAR] == WG_MODE_SELECTED )
+			{
+				float	sliderPos = 0.f;
+
+				if( m_sliderSize < 1.f)
+					sliderPos = ((float)(pointerOfs - m_dragBarPressOfs)) / (length - barLen);
+
+				LIMIT( sliderPos, 0.f, 1.f );
+
+				if( sliderPos != m_sliderPos )
+				{
+					m_sliderPos = sliderPos;
+					RequestRender();
+					pHandler->QueueEvent( new WgEvent::DragbarMove(this,m_sliderPos,m_sliderSize) );
+					Emit( SliderPos(), m_sliderPos );
+				}
+			}
+		}
+        default:
+            break;
+
+	}
+
+}
+
 
 
 //____ _onAction() _________________________________________________
@@ -609,7 +803,7 @@ void WgGizmoDragbar::UnmarkReqRender()
 void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
 	int		barPos, barLen;
-	ViewToPosLen( &barPos, &barLen );
+	_viewToPosLen( &barPos, &barLen );
 
 	WgCoord pos = Abs2local( WgCoord(info.x, info.y) );
 	int		x = pos.x;
@@ -642,7 +836,7 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 			// Just put them all to NORMAL and request render.
 			// Release is followed by over before render anyway so right one will be highlighted.
 
-			UnmarkReqRender();
+			_unmarkReqRender();
 			break;
 		}
 
@@ -655,7 +849,7 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 			if( m_mode[C_BAR] == WG_MODE_SELECTED )
 				return;
 
-			UnmarkReqRender();
+			_unmarkReqRender();
 			break;
 		}
 
@@ -665,11 +859,11 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 			if( m_mode[C_BAR] == WG_MODE_SELECTED )
 				return;
 
-			Component c = FindMarkedComponent(pos);
+			Component c = _findMarkedComponent(pos);
 
 			if( c != C_NONE && m_mode[c] == WG_MODE_NORMAL )
 			{
-				UnmarkReqRender();
+				_unmarkReqRender();
 				m_mode[c] = WG_MODE_MARKED;
 			}
 
@@ -681,9 +875,9 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 			if( button_key != 1 )
 				return;
 
-			Component c = FindMarkedComponent(pos);
+			Component c = _findMarkedComponent(pos);
 
-			UnmarkReqRender();
+			_unmarkReqRender();
 			m_mode[c] = WG_MODE_SELECTED;
 
 
@@ -727,7 +921,7 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 			if( m_mode[C_BAR] == WG_MODE_SELECTED )
 				return;
 
-			Component c = FindMarkedComponent(pos);
+			Component c = _findMarkedComponent(pos);
 
 			if( c == C_BG )
 			{
@@ -783,15 +977,15 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 	}
 }
 
-//____ MarkTestSlider() _______________________________________________________
+//____ _markTestSlider() _______________________________________________________
 
-bool WgGizmoDragbar::MarkTestSlider( WgCoord ofs )
+bool WgGizmoDragbar::_markTestSlider( WgCoord ofs )
 {
 	if( !m_pBarGfx )
 		return false;
 
 	int   barPos, barLen;
-	ViewToPosLen( &barPos, &barLen );
+	_viewToPosLen( &barPos, &barLen );
 
 	WgSize	sz = Size();
 

@@ -406,9 +406,9 @@ void WgGizmoCirclemeter::_onDisable( void )
 	RequestRender();
 }
 
-//____ ValueModified() ________________________________________________________
+//____ _valueModified() ________________________________________________________
 
-void WgGizmoCirclemeter::ValueModified()
+void WgGizmoCirclemeter::_valueModified()
 {
 	Emit( IntegerChanged(), m_value );
 	Emit( Fraction(), FractionalValue() );
@@ -417,17 +417,17 @@ void WgGizmoCirclemeter::ValueModified()
 	RequestRender();
 }
 
-//____ RangeModified() ________________________________________________________
+//____ _rangeModified() ________________________________________________________
 
-void WgGizmoCirclemeter::RangeModified()
+void WgGizmoCirclemeter::_rangeModified()
 {
 	Emit( Fraction(), FractionalValue() );
 	RequestRender();		// Since the indicator will move when range is modified...
 }
 
-//____ RepresentationModified() _______________________________________________
+//____ _representationModified() _______________________________________________
 
-void WgGizmoCirclemeter::RepresentationModified()
+void WgGizmoCirclemeter::_representationModified()
 {
 	m_bRegenText = true;
 	RequestRender();
