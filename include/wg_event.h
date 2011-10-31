@@ -347,6 +347,8 @@ namespace WgEvent
 
 	class EditvalueEvent : public Event
 	{
+		friend class EditvalueModify;
+		friend class EditvalueSet;
 	public:
 		WgGizmoEditvalue * Editvalue() const;
 		int64_t		Value() const;

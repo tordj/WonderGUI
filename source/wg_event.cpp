@@ -508,6 +508,7 @@ namespace WgEvent
 	
 	double EditvalueEvent::Fraction() const
 	{
+		return m_fraction;
 	}
 
 	EditvalueModify::EditvalueModify( WgGizmoEditvalue * pGizmo, int64_t value, double fraction )

@@ -274,7 +274,7 @@ void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 				Emit( WgSignal::IntegerChanged(), static_cast<int>(m_playPos) );
 				Emit( WgSignal::Fraction(), (float)m_playPos/(float)m_pAnim->Duration()-1);
 				
-				pHandler->QueueEvent( new WgEvent::AnimationUpdate(this, m_playPos, m_playPos/(float)(m_pAnim->Duration()-1)));
+				pHandler->QueueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));
 			}
 
 
