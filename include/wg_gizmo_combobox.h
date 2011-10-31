@@ -66,11 +66,11 @@ public:
 	//		Editable - Grab input focus.
 	//		Non-editable - open menu.
 
-	//	+ Option för att fälla ut meny när man börjar editera?
-	//	+ Option för att öppna menyn över/under/over? (hur gör vi med button om vi tillåter over?).
-	//	+ Sätta bredd och maxhöjd på meny? Eller funktion för detta i menyn?
-	//	+ Funktion för att sätta default text (antingen entry eller meddelande eller specificerad text?)
-	//	+ Pil upp/ner för att stega igenom menyalternativen, både på öppen och stängd meny.
+	//	+ Option fÃ¶r att fÃ¤lla ut meny nÃ¤r man bÃ¶rjar editera?
+	//	+ Option fÃ¶r att Ã¶ppna menyn Ã¶ver/under/over? (hur gÃ¶r vi med button om vi tillÃ¥ter over?).
+	//	+ SÃ¤tta bredd och maxhÃ¶jd pÃ¥ meny? Eller funktion fÃ¶r detta i menyn?
+	//	+ Funktion fÃ¶r att sÃ¤tta default text (antingen entry eller meddelande eller specificerad text?)
+	//	+ Pil upp/ner fÃ¶r att stega igenom menyalternativen, bÃ¥de pÃ¥ Ã¶ppen och stÃ¤ngd meny.
 
 
 protected:
@@ -86,7 +86,7 @@ protected:
 
 private:
 
-	void	TextModified();
+	void	_textModified();
 
 	void	EntrySelected(WgMenuItem * pItem);
 	static void cbEntrySelected( void * pWdg, WgMenuItem * pItem ) { ((WgGizmoCombobox*)pWdg)->EntrySelected(pItem); }

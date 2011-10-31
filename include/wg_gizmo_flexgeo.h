@@ -118,7 +118,7 @@ public:
 	inline WgCoord		Pos() const { return m_realGeo.pos(); }
 	inline WgSize		Size() const { 	return m_realGeo.size(); }
 	inline WgRect		Geo() const { return m_realGeo; }
-;
+
 	WgCoord		ScreenPos() const;
 	WgRect		ScreenGeo() const;
 
@@ -136,46 +136,46 @@ protected:
 
 	WgFlexHook( WgGizmoFlexGeo * pParent, const WgRect& placementGeo );
 
-	bool		RefreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
+	bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 
 	void		RequestRender();
 	void		RequestRender( const WgRect& rect );
 	void		RequestResize();
 
-	bool		LimitPlacementSize();
+	bool		_limitPlacementSize();
 	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
 	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCoord& parentPos, Uint8 _layer );
 
 
-	WgHook *	_prevHook() const;
-	WgHook *	_nextHook() const;
+	WgHook *		_prevHook() const;
+	WgHook *		_nextHook() const;
 	WgGizmoParent * _parent() const;
 
-	WgGizmoFlexGeo * m_pParent;
+	WgGizmoFlexGeo* m_pParent;
 
-	bool		m_bHidden;
-	bool		m_bFloating;		// true = floating, false = anchored
-	WgRect		m_realGeo;			// Gizmos geo relative parent
+	bool			m_bHidden;
+	bool			m_bFloating;		// true = floating, false = anchored
+	WgRect			m_realGeo;			// Gizmos geo relative parent
 
 	// Only used for floating hooks.
 
 	WgSizePolicy	m_sizePolicy;
-	WgSize		m_minSize;
-	WgSize		m_maxSize;
+	WgSize			m_minSize;
+	WgSize			m_maxSize;
 
-	int			m_anchor;
-	WgLocation	m_hotspot;
-	WgRect		m_placementGeo;	// Gizmos geo relative anchor and hotspot.
+	int				m_anchor;
+	WgLocation		m_hotspot;
+	WgRect			m_placementGeo;	// Gizmos geo relative anchor and hotspot.
 
 	//Only used for anchored hooks.
 
-	int			m_anchorTopLeft;
-	int			m_anchorBottomRight;
-	WgBorders	m_borders;
+	int				m_anchorTopLeft;
+	int				m_anchorBottomRight;
+	WgBorders		m_borders;
 
 	//
 
-	WgRectChain	m_dirt;		// Dirty areas to be rendered, in screen coordinates!
+	WgRectChain		m_dirt;		// Dirty areas to be rendered, in screen coordinates!
 
 };
 

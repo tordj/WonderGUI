@@ -66,8 +66,8 @@ protected:
 	void	_onDisable();
 
 private:
-	void	ValueModified();				///< Called when value has been modified.
-	void	RangeModified();				///< Called when range (and thus fractional value) has been modified.
+	void	_valueModified();				///< Called when value has been modified.
+	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
 
 
 

@@ -549,9 +549,9 @@ void WgGizmoText::_onLostInputFocus()
 
 
 
-//____ TextModified() _________________________________________________________
+//____ _textModified() _________________________________________________________
 
-void WgGizmoText::TextModified()
+void WgGizmoText::_textModified()
 {
 	m_bResetCursorOnFocus = true;
 	RequestRender();

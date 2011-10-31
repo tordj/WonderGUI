@@ -55,15 +55,15 @@ bool Wg_Interface_ValueHolder::SetRange( Sint64 min, Sint64 max )
 	if( m_value < m_rangeMin )
 	{
 		m_value = m_rangeMin;
-		ValueModified();
+		_valueModified();
 	}
 	else if( m_value > m_rangeMax )
 	{
 		m_value = m_rangeMax;
-		ValueModified();
+		_valueModified();
 	}
 
-	RangeModified();
+	_rangeModified();
 	return true;
 }
 
@@ -114,7 +114,7 @@ bool Wg_Interface_ValueHolder::SetValue( Sint64 value )
 	if( value != m_value )
 	{
 		m_value = value;
-		ValueModified();
+		_valueModified();
 	}
 
 	return retVal;
@@ -202,11 +202,11 @@ bool Wg_Interface_ValueHolder::DecValue( int decrement )
 	return SetValue( m_value - decrement );
 }
 
-//____ CloneInterface() _______________________________________________________
+//____ _cloneInterface() _______________________________________________________
 
 // DEPRECATED! To be removed once all widgets/items have been turned into gizmos.
 
-void Wg_Interface_ValueHolder::CloneInterface( Wg_Interface_ValueHolder * _pClone )
+void Wg_Interface_ValueHolder::_cloneInterface( Wg_Interface_ValueHolder * _pClone )
 {
 	_pClone->m_rangeMin = m_rangeMin;
 	_pClone->m_rangeMax = m_rangeMax;

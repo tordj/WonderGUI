@@ -312,9 +312,9 @@ void WgGizmoCombobox::_onDisable( void )
 }
 
 
-//____ TextModified() _________________________________________________________
+//____ _textModified() _________________________________________________________
 
-void WgGizmoCombobox::TextModified()
+void WgGizmoCombobox::_textModified()
 {
 	RequestRender();
 }

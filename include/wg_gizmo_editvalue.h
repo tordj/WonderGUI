@@ -87,14 +87,12 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 
 	private:
 
-		void	ValueModified();				///< Called when value has been modified.
-		void	RangeModified();				///< Called when range (and thus fractional value) has been modified.
+		void	_valueModified();				///< Called when value has been modified.
+		void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
 
-		bool	ParseValueFromInput( int64_t * wpResult );
+		bool	_parseValueFromInput( int64_t * wpResult );
 
 		void	_regenText();
-
-		WgWidget *			NewOfMyType() const;
 
 		bool				m_bRegenText;
 		WgValueFormat		m_format;			///< Value format specified by user

@@ -362,7 +362,7 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	}
 
-	WgMode newMode = GetRenderMode();
+	WgMode newMode = _getRenderMode();
 	if( newMode != m_mode )
 	{
 		m_mode = newMode;
@@ -420,7 +420,7 @@ void WgGizmoButton::_onAction( WgInput::UserAction action, int button, const WgA
 
 	}
 
-	WgMode newMode = GetRenderMode();
+	WgMode newMode = _getRenderMode();
 	if( newMode != m_mode )
 	{
 		m_mode = newMode;
@@ -428,9 +428,9 @@ void WgGizmoButton::_onAction( WgInput::UserAction action, int button, const WgA
 	}
 }
 
-//_____ GetRenderMode() ________________________________________________________
+//_____ _getRenderMode() ________________________________________________________
 
-WgMode WgGizmoButton::GetRenderMode()
+WgMode WgGizmoButton::_getRenderMode()
 {
 	if( !IsEnabled() )
 		return WG_MODE_DISABLED;
@@ -498,7 +498,7 @@ void WgGizmoButton::_onCloneContent( const WgGizmo * _pOrg )
 
 	WgGizmoButton * pOrg = (WgGizmoButton *) _pOrg;
 
-	pOrg->Wg_Interface_TextHolder::CloneInterface( this );
+	pOrg->Wg_Interface_TextHolder::_cloneInterface( this );
 
 	m_text.setText(&pOrg->m_text);
 	m_pText = &m_text;
@@ -548,9 +548,9 @@ void WgGizmoButton::_onLostInputFocus()
 }
 
 
-//____ TextModified() __________________________________________________________
+//____ _textModified() __________________________________________________________
 
-void WgGizmoButton::TextModified()
+void WgGizmoButton::_textModified()
 {
 	RequestRender();
 }

@@ -58,30 +58,31 @@ public:
 	inline Uint16 PasswordGlyph() const				 { return m_pwGlyph; };
 	inline void SetMaxCharacters( int characters ) { m_maxCharacters = characters; }
 	inline int MaxCharacters() { return m_maxCharacters; }
-	void	SetPasswordGlyph( Uint16 glyph );
+	void		SetPasswordGlyph( Uint16 glyph );
 
 	void		goBOL();
 	void		goEOL();
 	void		goBOF() { goBOL(); }
 	void		goEOF() { goEOL(); }
 
-	Uint32	InsertTextAtCursor( const WgCharSeq& str );
-	bool	InsertCharAtCursor( Uint16 c );
+	Uint32		InsertTextAtCursor( const WgCharSeq& str );
+	bool		InsertCharAtCursor( Uint16 c );
 
 	virtual void			SetEditMode(WgTextEditMode mode);
 	virtual WgTextEditMode	GetEditMode() const { return m_editMode; }
-	virtual bool		TempIsInputField() const	{ return IsEditable() && TextObj()->nbChars() > 0; }
+	virtual bool			TempIsInputField() const	{ return _isEditable() && TextObj()->nbChars() > 0; }
 	virtual Wg_Interface_TextHolder* TempGetText(){ return this; }
 
-	bool	SetTextWrap(bool bWrap);						// Overloading SetTextWrap since we don't support wrapping text.
+	bool		SetTextWrap(bool bWrap);						// Overloading SetTextWrap since we don't support wrapping text.
 
 protected:
 
-	bool	IsEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
-	bool	IsSelectable() const { return m_editMode != WG_TEXT_STATIC; }
+	bool	_isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
+	bool	_isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
 
 	void	_onUpdate( const WgUpdateInfo& _updateInfo );
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void	_onGotInputFocus();
 	void	_onLostInputFocus();
 	void	_onCloneContent( const WgGizmo * _pOrg );
@@ -90,12 +91,12 @@ protected:
 	void	_onDisable();
 	void	_onNewSize( const WgSize& size );
 
-	void	TextModified();
+	void	_textModified();
 
 
 private:
 
-	void	AdjustViewOfs();
+	void	_adjustViewOfs();
 
 	WgText				m_text;
 

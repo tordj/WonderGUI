@@ -29,6 +29,9 @@
 #include <wg_gizmo_tablist.h>
 #include <wg_gizmo_value.h>
 #include <wg_gizmo_editvalue.h>
+#include <wg_gizmo_dragbars.h>
+#include <wg_gizmo_text.h>
+#include <wg_gizmo_editline.h>
 
 namespace WgEvent
 {
@@ -489,9 +492,8 @@ namespace WgEvent
 		return m_button;
 	}
 
-	//____ WgEditvalue event methods ___________________________________________
+	//____ Editvalue event methods ___________________________________________
 	
-
 	WgGizmoEditvalue * EditvalueEvent::Editvalue() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
@@ -527,6 +529,97 @@ namespace WgEvent
 		m_fraction = fraction;
 	}
 
+	//____ Dragbar event methods _______________________________________________
+	
+	DragbarEvent::DragbarEvent( WgGizmoDragbar * pGizmo, float pos, float length )
+	{
+		m_pGizmo 	= pGizmo;
+		m_pos 		= pos;
+		m_length 	= length;
+	}
+	
+	WgGizmoDragbar* DragbarEvent::Dragbar() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo )
+			return static_cast<WgGizmoDragbar*>(pGizmo);
+		else
+			return 0;					
+	}
+	
+	float DragbarEvent::Pos() const
+	{
+		return m_pos;
+	}
+	
+	float DragbarEvent::Length() const
+	{
+		return m_length;
+	}
+	
+	DragbarMove::DragbarMove( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
+	{
+		m_type = WG_EVENT_DRAGBAR_MOVE;
+	}
+	
+	DragbarStepUp::DragbarStepUp( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
+	{
+		m_type = WG_EVENT_DRAGBAR_STEP_UP;
+	}
+	
+	DragbarStepDown::DragbarStepDown( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
+	{
+		m_type = WG_EVENT_DRAGBAR_STEP_DOWN;
+	}
+	
+	DragbarPageUp::DragbarPageUp( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
+	{
+		m_type = WG_EVENT_DRAGBAR_PAGE_UP;
+	}
+	
+	DragbarPageDown::DragbarPageDown( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
+	{
+		m_type = WG_EVENT_DRAGBAR_PAGE_DOWN;
+	}
+
+	//____ Text event methods __________________________________________________
+	
+	WgInterfaceEditText * TextEvent::Interface() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo )
+		{
+			if( pGizmo->Type() == WgGizmoText::GetMyType() )
+				return static_cast<WgGizmoText*>(pGizmo);
+			else if( pGizmo->Type() == WgGizmoEditline::GetMyType() )
+				return static_cast<WgGizmoEditline*>(pGizmo);
+		}
+		return 0;					
+	}
+	
+	const WgText * TextEvent::Text() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo )
+			return m_pText;
+		else
+			return 0;							
+	}
+
+	TextModify::TextModify( WgGizmo * pGizmo, WgText * pText )
+	{
+		m_type 		= WG_EVENT_TEXT_MODIFY;
+		m_pGizmo 	= pGizmo;
+		m_pText 	= pText;
+	}
+	
+	TextSet::TextSet( WgGizmo * pGizmo, WgText * pText )
+	{
+		m_type 		= WG_EVENT_TEXT_SET;
+		m_pGizmo 	= pGizmo;
+		m_pText 	= pText;
+	}
+	
 	
 	//____ MousePosition _______________________________________________________
 

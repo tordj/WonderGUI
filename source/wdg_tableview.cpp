@@ -237,7 +237,7 @@ WgText* WgTableColumn::GetTextObj()
 	return m_pText;
 }
 
-void WgTableColumn::TextModified()
+void WgTableColumn::_textModified()
 {
 	if( m_bVisible && m_pOwner )
 		m_pOwner->RequestRender();

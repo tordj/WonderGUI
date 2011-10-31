@@ -47,7 +47,7 @@ public:
 	static const char * GetMyType();
 protected:
 	void	Init();
-	void	TextModified();		// Callback for Wg_Interface_TextHolder
+	void	_textModified();		// Callback for Wg_Interface_TextHolder
 
 
  	virtual void	Render( const WgRect& _window, const WgRect& _clip );

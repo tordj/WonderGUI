@@ -337,9 +337,9 @@ void Wdg_TextView::DoMyOwnInputFocusChange( bool _bFocus )
 	RequestRender();
 }
 
-//____ TextModified() _________________________________________________________
+//____ _textModified() _________________________________________________________
 
-void Wdg_TextView::TextModified()
+void Wdg_TextView::_textModified()
 {
 	SetContentSize( m_text.width(), m_text.height() );
 	RequestRender();

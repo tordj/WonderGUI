@@ -119,10 +119,10 @@ protected:
 private:
 
 
-	void	RefreshTextArea();
-	bool	MarkTestTextArea( int _x, int _y );
+	void	_refreshTextArea();
+	bool	_markTestTextArea( int _x, int _y );
 	
-	virtual void TextModified();
+	virtual void _textModified();
 
 
 	bool			m_bOver;						// Set when mouse is over.							
