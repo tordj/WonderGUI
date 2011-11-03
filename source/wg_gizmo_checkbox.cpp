@@ -557,17 +557,17 @@ void WgGizmoCheckbox::_onCloneContent( const WgGizmo * _pOrg )
 	Wg_Interface_TextHolder::_onCloneContent( pOrg );
 }
 
-//____ TextModified() _________________________________________________________
+//____ _textModified() _________________________________________________________
 
-void WgGizmoCheckbox::TextModified()
+void WgGizmoCheckbox::_textModified()
 {
 	RequestRender();
 }
 
 
-//____ MarkTestTextArea() ______________________________________________________
+//____ _markTestTextArea() ______________________________________________________
 
-bool WgGizmoCheckbox::MarkTestTextArea( int _x, int _y )
+bool WgGizmoCheckbox::_markTestTextArea( int _x, int _y )
 {
 	WgRect	contentRect = _getContentRect( Size(), _getIconRect( Size() ) );
 
@@ -648,7 +648,7 @@ bool WgGizmoCheckbox::_onAlphaTest( const WgCoord& ofs )
 			//
 
 			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize) )) ||
-				MarkTestTextArea( ofs.x, ofs.y ) ||
+				_markTestTextArea( ofs.x, ofs.y ) ||
 				iconRect.contains( ofs.x, ofs.y ) )
 				return true;
 
@@ -673,7 +673,7 @@ bool WgGizmoCheckbox::_onAlphaTest( const WgCoord& ofs )
 		}
 		case TEXT:			// Only the text is clickable.
 		{
-			if( MarkTestTextArea( ofs.x, ofs.y ) )
+			if( _markTestTextArea( ofs.x, ofs.y ) )
 				return true;
 
 			return false;

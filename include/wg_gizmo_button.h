@@ -72,8 +72,6 @@ public:
 
 	Uint32			GetTextAreaWidth();
 
-protected:
-
 	virtual int		HeightForWidth( int width ) const;
 /*	virtual int		WidthForHeight( int height ) const;
 
@@ -82,6 +80,7 @@ protected:
 */
 	WgSize			BestSize() const;
 
+protected:
 
 	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
@@ -96,9 +95,9 @@ protected:
 	void			_onLostInputFocus();
 
 
-	void			TextModified();
+	void			_textModified();
 
-	virtual WgMode	GetRenderMode();
+	virtual WgMode	_getRenderMode();
 
 
 	WgText			m_text;

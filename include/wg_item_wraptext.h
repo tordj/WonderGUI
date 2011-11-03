@@ -33,7 +33,7 @@ public:
 	static const char * GetMyType();
 protected:
 	void	Init();
-	void	TextModified();		// Callback for Wg_Interface_TextHolder
+	void	_textModified();		// Callback for Wg_Interface_TextHolder
 	void	UpdateSize();
 
 	virtual void 	AdaptToWidth( Uint32 displayed_width );

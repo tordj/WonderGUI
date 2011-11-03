@@ -173,7 +173,26 @@ public:
 		return 0;
 	};
 
-	WgGizmo *	CastToGizmo() { return m_pWidget->GetGizmo(); }
+	bool		IsGizmo() const
+	{
+		WgWidget * pRealParent = m_pWidget->Parent();
+
+		if( pRealParent && pRealParent->GetGizmo() )
+			return true;
+		else
+			return false;
+	}
+
+
+	WgGizmo *	CastToGizmo() 
+	{
+		WgWidget * pRealParent = m_pWidget->Parent();
+
+		if( pRealParent )
+			return pRealParent->GetGizmo();
+		else
+			return 0;
+	}
 
 
 

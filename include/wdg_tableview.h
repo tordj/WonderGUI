@@ -88,7 +88,7 @@ private:
 	WgTableColumn( Wdg_TableView * pOwner );
 	~WgTableColumn();
 
-	void			TextModified();
+	void			_textModified();
 	void			SetTextObj(WgText *text);
 	const WgText*	GetTextObj() const;
 	WgText *		GetTextObj();

@@ -85,9 +85,9 @@ class WgGizmoCirclemeter : public WgGizmo, public Wg_Interface_ValueHolder
 
 	private:
 
-		void	ValueModified();				///< Called when value has been modified.
-		void	RangeModified();				///< Called when range (and thus fractional value) has been modified.
-		void	RepresentationModified();		///< Called when fonts or value-format has been modified.
+		void	_valueModified();				///< Called when value has been modified.
+		void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
+		void	_representationModified();		///< Called when fonts or value-format has been modified.
 
 		WgValueFormat	m_format;
 

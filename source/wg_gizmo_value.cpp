@@ -82,11 +82,11 @@ void WgGizmoValue::SetFormat( const WgValueFormat& format )
 	RequestRender();
 }
 
-//____ ValueModified() ________________________________________________________
+//____ _valueModified() ________________________________________________________
 
-void WgGizmoValue::ValueModified()
+void WgGizmoValue::_valueModified()
 {
-	// NOTE: We have decided to not post any event on ValueModified since it 
+	// NOTE: We have decided to not post any event on _valueModified since it 
 	// can only be done through the API.
 
 	Emit( IntegerChanged(), m_value );
@@ -96,9 +96,9 @@ void WgGizmoValue::ValueModified()
 	RequestRender();
 }
 
-//____ RangeModified() ________________________________________________________
+//____ _rangeModified() ________________________________________________________
 
-void WgGizmoValue::RangeModified()
+void WgGizmoValue::_rangeModified()
 {
 	Emit( Fraction(), FractionalValue() );
 }

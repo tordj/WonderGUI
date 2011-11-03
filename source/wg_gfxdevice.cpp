@@ -495,7 +495,9 @@ void WgGfxDevice::ClipBlitBlock( const WgRect& _clip, const WgBlock& _block, con
 
 	// Shortcuts & optimizations for common special cases.
 
-	if( _clip.contains( _dest2 ) )
+	WgSize borderSize = _block.GetBorders().size();
+
+	if( _clip.contains( _dest2 ) && borderSize.w <= _dest2.size().w && borderSize.h <= _dest2.size().h )
 	{
 		BlitBlock( _block, _dest2, bTriLinear, mipmapbias );
 		return;

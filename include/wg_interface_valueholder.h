@@ -65,10 +65,10 @@ public:
 	inline Uint32	Modulator() { return m_modulator; }
 
 protected:
-	virtual void	ValueModified() = 0;				///< Called when value has been modified.
-	virtual void	RangeModified() = 0;				///< Called when range (and thus fractional value) has been modified.
+	virtual void	_valueModified() = 0;				///< Called when value has been modified.
+	virtual void	_rangeModified() = 0;				///< Called when range (and thus fractional value) has been modified.
 
-	void			CloneInterface( Wg_Interface_ValueHolder * _pClone );
+	void			_cloneInterface( Wg_Interface_ValueHolder * _pClone );
 	void			_onCloneContent( const Wg_Interface_ValueHolder * pOrg );
 
 	Sint64			m_rangeMin;

@@ -147,7 +147,7 @@ private:
 	WgHook*	_firstHook() const { return FirstHook(); }
 	WgHook*	_lastHook() const { return LastHook(); }
 
-	void			TextModified();
+	void			_textModified();
 	void			SetTextObj(WgText *text);
 	const WgText*	GetTextObj() const;
 	WgText *		GetTextObj();

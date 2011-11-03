@@ -90,7 +90,7 @@ private:
 	void	DoMyOwnDisOrEnable();
 	void	DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGeo );
 
-	void	TextModified();
+	void	_textModified();
 
 	void	AdjustViewOfs();
 

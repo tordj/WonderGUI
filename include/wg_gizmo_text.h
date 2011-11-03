@@ -101,7 +101,7 @@ protected:
 	void	_onLostInputFocus();
 
 private:
-	void	TextModified();
+	void	_textModified();
 	bool	InsertCharAtCursorInternal( Uint16 c );
 
 

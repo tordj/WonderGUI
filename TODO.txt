@@ -14,8 +14,8 @@ FIX GIZMOS
 v Animation	(untested, missing requesting TICKS!)
 v Button
 v Checkbox	(still to fix: WidthForHeight() )
-  Dragbars
-  Editline
+v Dragbars	(untested)
+v Editline	(untested, missing requesting TICKS!)
   Editvalue
 v Radiobutton
   Refreshbutton

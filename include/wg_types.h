@@ -496,7 +496,7 @@ enum	WgEventType
 	WG_EVENT_MOUSEBUTTON_PRESS_OUTSIDE_MODAL,
 	WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL,
 
-	WG_EVENT_BUTTON_PRESS,					// Posted every time a button is pressed, either by mouse button one or key enter.
+	WG_EVENT_BUTTON_PRESS,					// Posted every time a button is pressed, either by left mouse button or enter key.
 	
 	WG_EVENT_CHECKBOX_CHECK,
 	WG_EVENT_CHECKBOX_UNCHECK,
@@ -512,7 +512,16 @@ enum	WgEventType
 	WG_EVENT_TAB_PRESS,						// Posted every time any mousebutton is pressed on a widget.
 
 	WG_EVENT_EDITVALUE_MODIFY,				// Posted for every change to value through keyboard (once for every accepted keystroke).
-	WG_EVENT_EDITVALUE_SET,					// Posted when edited value is 'set' by moving away keyboard focus.
+	WG_EVENT_EDITVALUE_SET,					// Posted when edited value is 'set' by removing cursor.
+
+	WG_EVENT_DRAGBAR_MOVE,
+	WG_EVENT_DRAGBAR_STEP_UP,
+	WG_EVENT_DRAGBAR_STEP_DOWN,
+	WG_EVENT_DRAGBAR_PAGE_UP,
+	WG_EVENT_DRAGBAR_PAGE_DOWN,
+
+	WG_EVENT_TEXT_MODIFY,					// Posted for every change to text through cursor/selection.
+	WG_EVENT_TEXT_SET,						// Posted when edited text is 'set' by removing cursor.
 
 	WG_EVENT_MAX
 };

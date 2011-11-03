@@ -50,7 +50,9 @@ class WgGizmoAnimation;
 class WgGizmoTablist;
 class WgGizmoValue;
 class WgGizmoEditvalue;
-class Wg_Interface_ValueHolder;
+class WgGizmoDragbar;
+class WgInterfaceEditText;
+class WgText;
 
 typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
@@ -347,11 +349,13 @@ namespace WgEvent
 
 	class EditvalueEvent : public Event
 	{
+		friend class EditvalueModify;
+		friend class EditvalueSet;
 	public:
 		WgGizmoEditvalue * Editvalue() const;
 		int64_t		Value() const;
 		double		Fraction() const;
-	private:
+	protected:
 		int64_t		m_value;
 		double		m_fraction;
 	};
@@ -368,6 +372,74 @@ namespace WgEvent
 		EditvalueSet( WgGizmoEditvalue * pGizmo, int64_t value, double fraction );
 	};
 
+	//____ WgGizmoDragbar events ________________________________________________
+
+	class DragbarEvent : public Event
+	{
+	public:
+		WgGizmoDragbar* Dragbar() const;
+		float			Pos() const;
+		float			Length() const;
+		
+	protected:
+		DragbarEvent( WgGizmoDragbar * pGizmo, float pos, float length );
+		float			m_pos;
+		float			m_length;
+	};
+
+	class DragbarMove : public DragbarEvent
+	{
+	public:
+		DragbarMove( WgGizmoDragbar* pGizmo, float pos, float length );
+	};
+
+	class DragbarStepUp : public DragbarEvent
+	{
+	public:
+		DragbarStepUp( WgGizmoDragbar* pGizmo, float pos, float length );
+	};
+
+	class DragbarStepDown : public DragbarEvent
+	{
+	public:
+		DragbarStepDown( WgGizmoDragbar* pGizmo, float pos, float length );
+	};
+
+	class DragbarPageUp : public DragbarEvent
+	{
+	public:
+		DragbarPageUp( WgGizmoDragbar* pGizmo, float pos, float length );
+	};
+
+	class DragbarPageDown : public DragbarEvent
+	{
+	public:
+		DragbarPageDown( WgGizmoDragbar* pGizmo, float pos, float length );
+	};
+
+	//____ Text events ________________________________________
+
+	class TextEvent : public Event
+	{
+	public:
+		WgInterfaceEditText * Interface() const;
+		const WgText *		  Text() const;
+	protected:
+		WgText *	m_pText;
+	};
+
+	class TextModify : public TextEvent
+	{
+	public:
+		TextModify( WgGizmo * pGizmo, WgText * pText );
+	};
+	
+	class TextSet : public TextEvent
+	{
+	public:
+		TextSet( WgGizmo * pGizmo, WgText * pText );
+	};
+	
 
 	//____ Internally posted events ____________________________________________
 

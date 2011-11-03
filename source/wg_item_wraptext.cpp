@@ -96,7 +96,7 @@ void WgItemWrapText::MinSize( Uint32 width, Uint32 height )
 	m_minWidth = width;
 	m_minHeight = height;
 
-	TextModified();
+	_textModified();
 }
 
 //____ SetBgFill() _________________________________________________________
@@ -130,9 +130,9 @@ void WgItemWrapText::SetMargin(WgBorders margin)
 	Modified( 0, 0 );
 }
 
-//____ TextModified() _________________________________________________________
+//____ _textModified() _________________________________________________________
 
-void WgItemWrapText::TextModified()
+void WgItemWrapText::_textModified()
 {
 	int oldWidth = m_width;
 	int oldHeight = m_height;
@@ -235,7 +235,7 @@ WgItem* WgItemWrapText::Clone( WgItem * _pClone )
 		pClone->m_minHeight = m_minHeight;
 	}
 
-	Wg_Interface_TextHolder::CloneInterface( pClone );
+	Wg_Interface_TextHolder::_cloneInterface( pClone );
 	return WgItem::Clone(pClone);
 }
 
@@ -251,7 +251,7 @@ void WgItemWrapText::Enable( bool bEnable )
 		else
 			m_text.setMode(WG_MODE_DISABLED);
 
-		TextModified();					// Font might have changed...
+		_textModified();					// Font might have changed...
 	}
 }
 

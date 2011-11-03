@@ -37,7 +37,7 @@ void Wg_Interface_TextHolder::SetTextMode( WgMode _mode )
 	if( _mode != m_pText->mode() )
 	{
 		m_pText->setMode(_mode);
-		TextModified();
+		_textModified();
 	}
 }
 
@@ -47,7 +47,7 @@ bool Wg_Interface_TextHolder::SetTextWrap( bool bWrap )
 	if( bWrap != m_pText->IsWrap() )
 	{
 		m_pText->SetWrap(bWrap);
-		TextModified();
+		_textModified();
 	}
 	return true;
 }
@@ -59,7 +59,7 @@ void Wg_Interface_TextHolder::SetTextAlignment( const WgOrigo& origo )
 	if( origo != m_pText->alignment() )
 	{
 		m_pText->setAlignment(origo);
-		TextModified();
+		_textModified();
 	}
 }
 
@@ -70,7 +70,7 @@ void Wg_Interface_TextHolder::SetTextTintMode( WgTintMode mode )
 	if( mode != m_pText->tintMode() )
 	{
 		m_pText->setTintMode(mode);
-		TextModified();
+		_textModified();
 	}
 }
 
@@ -82,7 +82,7 @@ void Wg_Interface_TextHolder::ClearText()
 	if( m_pText )
 	{
 		m_pText->clear();
-		TextModified();
+		_textModified();
 	}
 }
 
@@ -90,86 +90,86 @@ void Wg_Interface_TextHolder::ClearText()
 void Wg_Interface_TextHolder::SetText( const WgCharSeq& seq )
 {
 	m_pText->setText( seq );
-	TextModified();
+	_textModified();
 }
 
 void Wg_Interface_TextHolder::SetText( const WgCharBuffer * pBuffer )
 {
 	m_pText->setText( pBuffer );
-	TextModified();
+	_textModified();
 }
 
 void Wg_Interface_TextHolder::SetText( const WgString& str )
 {
 	m_pText->setText( str );
-	TextModified();
+	_textModified();
 }
 
 void Wg_Interface_TextHolder::SetText( const WgText * pText )
 {
 	m_pText->setText( pText );
-	TextModified();
+	_textModified();
 }
 
 int Wg_Interface_TextHolder::AddText( const WgCharSeq& seq )
 {
 	int nAdded = m_pText->addText( seq );
-	TextModified();
+	_textModified();
 	return nAdded;
 }
 
 int Wg_Interface_TextHolder::InsertText( int ofs, const WgCharSeq& seq )
 {
 	int nAdded = m_pText->insertText( ofs, seq );
-	TextModified();
+	_textModified();
 	return nAdded;
 }
 
 int Wg_Interface_TextHolder::ReplaceText( int ofs, int nDelete, const WgCharSeq& seq )
 {
 	int nAdded = m_pText->replaceText( ofs, nDelete, seq );
-	TextModified();
+	_textModified();
 	return nAdded;
 }
 
 int Wg_Interface_TextHolder::DeleteText( int ofs, int len )
 {
 	int nDeleted = m_pText->deleteText( ofs, len );
-	TextModified();
+	_textModified();
 	return nDeleted;
 }
 
 void Wg_Interface_TextHolder::DeleteSelectedText()
 {
 	m_pText->deleteSelectedText();
-	TextModified();
+	_textModified();
 }
 
 int Wg_Interface_TextHolder::AddChar( const WgChar& character )
 {
 	int nAdded = m_pText->addChar( character );
-	TextModified();
+	_textModified();
 	return nAdded;
 }
 
 int Wg_Interface_TextHolder::InsertChar( int ofs, const WgChar& character )
 {
 	int nAdded = m_pText->insertChar( ofs, character );
-	TextModified();
+	_textModified();
 	return nAdded;
 }
 
 int Wg_Interface_TextHolder::ReplaceChar( int ofs, const WgChar& character )
 {
 	int nAdded = m_pText->replaceChar( ofs, character );
-	TextModified();
+	_textModified();
 	return nAdded;
 }
 
 int Wg_Interface_TextHolder::DeleteChar( int ofs )
 {
 	int nDeleted = m_pText->deleteChar( ofs );
-	TextModified();
+	_textModified();
 	return nDeleted;
 }
 
@@ -180,7 +180,7 @@ int Wg_Interface_TextHolder::DeleteChar( int ofs )
 void Wg_Interface_TextHolder::SetLineSpaceAdjustment( Sint8 adjustment )
 {
 	m_pText->setLineSpaceAdjustment( adjustment );
-	TextModified();
+	_textModified();
 }
 
 //____ GetLineSpaceAdjustment() __________________________________________________
@@ -191,11 +191,11 @@ Sint8 Wg_Interface_TextHolder::GetLineSpaceAdjustment() const
 }
 
 
-//____ CloneInterface() _______________________________________________________
+//____ _cloneInterface() _______________________________________________________
 
 //DEPRECATED! To be removed once all widgets and items are gizmos.
 
-void Wg_Interface_TextHolder::CloneInterface( Wg_Interface_TextHolder * _pClone )
+void Wg_Interface_TextHolder::_cloneInterface( Wg_Interface_TextHolder * _pClone )
 {
 }
 

@@ -3210,7 +3210,7 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	{
 		if(text[0] == ':')
 			text = s.ResDb()->LoadString(text.substr(1));
-		holder->SetText( WgCharSeqEscaped( text, s.ResDb() ) );
+		holder->SetText( WgCharSeq( text, s.ResDb() ) );
 	}
 
 	holder->SetTextAlignment(WgUtil::ToOrigo(xmlNode["textalign"]));

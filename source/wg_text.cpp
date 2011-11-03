@@ -1155,7 +1155,7 @@ void WgText::refresh()
 		m_pCursor->gotoHardPos(m_pCursor->line(), m_pCursor->column());
 
 	if( m_pHolder )
-		m_pHolder->TextModified( this );
+		m_pHolder->_textModified( this );
 }
 
 //____ addChar() ______________________________________________________________

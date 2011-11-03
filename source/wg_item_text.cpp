@@ -73,7 +73,7 @@ WgItemText::~WgItemText()
 void WgItemText::SetTextProp(const WgTextPropPtr& pProp)
 {
 	m_text.setProperties(pProp);
-	TextModified();
+	_textModified();
 }
 
 void WgItemText::SetText(const WgCharSeq& seq)
@@ -85,16 +85,16 @@ void WgItemText::SetText(const WgCharSeq& seq)
 void WgItemText::SetText(const WgText * pText)
 {
 	m_text.setText(pText);
-	TextModified();
+	_textModified();
 }
 
 void WgItemText::SetMargin(WgBorders margin)
 {
 	m_margin = margin;
-	TextModified();
+	_textModified();
 }
 
-void WgItemText::TextModified()
+void WgItemText::_textModified()
 {
 	Uint32	width, height;
 
@@ -151,7 +151,7 @@ WgItem* WgItemText::Clone( WgItem * _pClone )
 	if( !pClone )
 		pClone = new WgItemText( m_id, m_pText, m_pText->getProperties(), m_margin.left, m_margin.right, m_margin.top, m_margin.bottom );
 
-	Wg_Interface_TextHolder::CloneInterface( pClone );
+	Wg_Interface_TextHolder::_cloneInterface( pClone );
 	return WgItem::Clone(pClone);
 }
 
@@ -166,6 +166,6 @@ void WgItemText::Enable( bool bEnable )
 		else
 			m_text.setMode(WG_MODE_DISABLED);
 
-		TextModified();					// Font might have changed...
+		_textModified();					// Font might have changed...
 	}
 }
