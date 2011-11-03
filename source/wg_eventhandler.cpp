@@ -24,6 +24,7 @@
 #include <wg_event.h>
 #include <wg_eventfilter.h>
 #include <wg_eventhandler.h>
+#include <wg_base.h>
 #include <wg_root.h>
 #include <wg_gizmo_container.h>
 
@@ -34,15 +35,6 @@ WgEventHandler::WgEventHandler( WgRoot * pRoot )
 	m_pRoot					= pRoot;
 	m_time					= 0;
 	m_modKeys				= WG_MODKEY_NONE;
-
-	m_doubleClickTimeTreshold		= 250;
-	m_doubleClickDistanceTreshold	= 2;
-
-	m_buttonRepeatDelay		= 300;
-	m_buttonRepeatRate		= 200;
-
-	m_keyRepeatDelay		= 300;
-	m_keyRepeatRate			= 150;
 
 	m_bIsProcessing			= false;
 	m_bWindowFocus			= true;
@@ -59,63 +51,6 @@ WgEventHandler::WgEventHandler( WgRoot * pRoot )
 
 WgEventHandler::~WgEventHandler()
 {
-}
-
-//____ MapKey() _______________________________________________________________
-
-void WgEventHandler::MapKey( WgKey translated_keycode, int native_keycode )
-{
-	m_keycodeMap[native_keycode] = translated_keycode;
-}
-
-
-//____ UnmapKey() _____________________________________________________________
-
-void WgEventHandler::UnmapKey( WgKey translated_keycode )
-{
-	std::map<int,WgKey>::iterator it = m_keycodeMap.begin();
-
-	while( it != m_keycodeMap.end() )
-	{
-		if( it->second == translated_keycode )
-		{
-			std::map<int,WgKey>::iterator it2 = it++;
-			m_keycodeMap.erase(it2);
-		}
-		else
-			++it;
-	}
-}
-
-//____ ClearKeyMap() __________________________________________________________
-
-void WgEventHandler::ClearKeyMap()
-{
-	m_keycodeMap.clear();
-}
-
-//____ SetMouseButtonRepeat() ______________________________________________________
-
-bool WgEventHandler::SetMouseButtonRepeat( int delay, int rate )
-{
-	if( delay <= 0 || rate <= 0 )
-		return false;
-
-	m_buttonRepeatDelay	= delay;
-	m_buttonRepeatRate	= rate;
-	return true;
-}
-
-//____ SetKeyRepeat() _________________________________________________________
-
-bool WgEventHandler::SetKeyRepeat( int delay, int rate )
-{
-	if( delay <= 0 || rate <= 0 )
-		return false;
-
-	m_keyRepeatDelay	= delay;
-	m_keyRepeatRate		= rate;
-	return true;
 }
 
 //____ SetFocusGroup() ________________________________________________________
@@ -794,10 +729,7 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 		case WG_EVENT_KEY_REPEAT:
 		{
 			WgEvent::KeyEvent* p = static_cast<WgEvent::KeyEvent*>(pEvent);
-
-			std::map<int,WgKey>::iterator it = m_keycodeMap.find(p->m_nativeKeyCode);
-			if( it != m_keycodeMap.end() )
-				p->m_translatedKeyCode = it->second;
+			p->m_translatedKeyCode = WgBase::TranslateKey(p->m_nativeKeyCode);
 		}
 		break;
 
@@ -908,7 +840,10 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 	{
 		if( m_bButtonPressed[button] )
 		{
-			int msSinceRepeatStart = (int) (m_time - m_pLatestPressEvents[button]->Timestamp() - m_buttonRepeatDelay );
+			int buttonDelay = WgBase::MouseButtonRepeatDelay();
+			int buttonRate = WgBase::MouseButtonRepeatRate();
+			
+			int msSinceRepeatStart = (int) (m_time - m_pLatestPressEvents[button]->Timestamp() - buttonDelay );
 
 			// First BUTTON_REPEAT event posted separately.
 
@@ -921,38 +856,41 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 			if( msSinceRepeatStart < 0 )
 				msToProcess = msSinceRepeatStart + pEvent->Millisec();
 			else
-				msToProcess = (msSinceRepeatStart % m_buttonRepeatRate) + pEvent->Millisec();
+				msToProcess = (msSinceRepeatStart % buttonRate) + pEvent->Millisec();
 
 			// Post the amount of BUTTON_REPEAT that should be posted.
 
-			while( msToProcess >= m_buttonRepeatRate )
+			while( msToProcess >= buttonRate )
 			{
 				QueueEvent( new WgEvent::MouseButtonRepeat(button) );
-				msToProcess -= m_buttonRepeatRate;
+				msToProcess -= buttonRate;
 			}
 		}
 	}
 
 	// Check if we need to post KEY_REPEAT
 
+	int keyDelay 	= WgBase::KeyRepeatDelay();
+	int keyRate 	= WgBase::KeyRepeatRate();
+
 	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 	{
 		KeyDownInfo * pInfo = m_keysDown[i];
 		int timePassed = (int) (pEvent->Timestamp() - pInfo->pEvent->Timestamp());
 
-		int fraction = timePassed - m_keyRepeatDelay;
+		int fraction = timePassed - keyDelay;
 
 		if( fraction < 0 )
-			fraction += m_keyRepeatRate;
+			fraction += keyRate;
 		else
-			fraction %= m_keyRepeatRate;
+			fraction %= keyRate;
 
 		fraction += pEvent->Millisec();
 
-		while( fraction >= m_keyRepeatRate )
+		while( fraction >= keyRate )
 		{
 			QueueEvent( new WgEvent::KeyRepeat( pInfo->pEvent->NativeKeyCode() ) );
-			fraction -= m_keyRepeatRate;
+			fraction -= keyRate;
 		}
 	}
 
@@ -1349,14 +1287,18 @@ void WgEventHandler::_processMouseButtonPress( WgEvent::MouseButtonPress * pEven
 
 	// Handle possible double-click
 
-	if( m_pLatestPressEvents[button] && m_pLatestPressEvents[button]->Timestamp() + m_doubleClickTimeTreshold > pEvent->Timestamp() )
+	int doubleClickTimeTreshold = WgBase::DoubleClickTimeTreshold();
+	int doubleClickDistanceTreshold = WgBase::DoubleClickDistanceTreshold();
+	
+
+	if( m_pLatestPressEvents[button] && m_pLatestPressEvents[button]->Timestamp() + doubleClickTimeTreshold > pEvent->Timestamp() )
 	{
 		WgCoord distance = pEvent->PointerPos() - m_pLatestPressEvents[button]->PointerPos();
 
-		if( distance.x <= m_doubleClickDistanceTreshold &&
-			distance.x >= -m_doubleClickDistanceTreshold &&
-			distance.y <= m_doubleClickDistanceTreshold &&
-			distance.y >= -m_doubleClickDistanceTreshold )
+		if( distance.x <= doubleClickDistanceTreshold &&
+			distance.x >= -doubleClickDistanceTreshold &&
+			distance.y <= doubleClickDistanceTreshold &&
+			distance.y >= -doubleClickDistanceTreshold )
 			QueueEvent( new WgEvent::MouseButtonDoubleClick(button) );
 	}
 
