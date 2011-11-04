@@ -22,6 +22,13 @@
 
 #include <wg_gizmo_container.h>
 
+//____ () __________________________________________________
+
+WgGizmoContainer::WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false) 
+{
+}
+
+
 //____ () _________________________________________________
 
 void WgGizmoContainer::_onEnable()
