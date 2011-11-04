@@ -137,6 +137,21 @@ WgPointerStyle WgGizmoText::GetPointerStyle() const
 	return m_pointerStyle;
 }
 
+//____ GetTooltipString() _____________________________________________________
+
+WgString WgGizmoText::GetTooltipString() const
+{ 
+	if( !m_tooltip.IsEmpty() )
+		return m_tooltip; 
+	else	
+	{
+		WgSize sz = Size();
+		if( sz.w < m_text.width() || sz.h < m_text.height() )
+			return m_text.getBuffer();
+	}
+
+	return 0;
+}
 
 //____ _onRender() ________________________________________________________
 

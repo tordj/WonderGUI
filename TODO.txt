@@ -76,6 +76,9 @@ FONT SYSTEM
 * VectorGlyphs: Limit cache size!
 * WgBitmapGlyphs: Currently uses linespacing for height... :(
 
+* WgGlyph should have its own virtual blit method and we should use it to support fake ellipsis by blitting '...'
+
+
 TEXTSYSTEM
 ==========
 * Handle linebreaks so that cursor will fit on line if text is editable.

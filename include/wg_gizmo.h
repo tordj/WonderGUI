@@ -96,7 +96,8 @@ public:
 	inline int		Id() const { return m_id; }
 	inline void			SetId( int id ) { m_id = id; }
 
-	inline WgString		GetTooltipString() const { return m_tooltip; }
+	virtual WgString	GetTooltipString() const { return m_tooltip; }
+	WgString			GetRealTooltipString() const { return m_tooltip; }
 	inline void			SetTooltipString( const WgString& str ) { m_tooltip = str; }
 
 	void				SetSkinManager( WgSkinManager * pManager );

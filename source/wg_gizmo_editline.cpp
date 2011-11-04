@@ -38,6 +38,7 @@ WgGizmoEditline::WgGizmoEditline()
 	m_pText->CreateCursor();
 	m_text.setHolder( this );
 	m_text.SetWrap(false);
+	m_text.SetAutoEllipsis(false);
 	m_bPasswordMode = false;
 	m_pwGlyph		= '*';
 	m_viewOfs		= 0;
@@ -67,7 +68,8 @@ const char * WgGizmoEditline::GetMyType()
 	return c_gizmoType;
 }
 
-//______________________________________________________________
+//____ SetEditMode() __________________________________________________________
+
 void WgGizmoEditline::SetEditMode(WgTextEditMode mode)
 {
 	m_editMode = mode;
@@ -217,6 +219,7 @@ void WgGizmoEditline::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 		delete [] pContent;
 
 		pText->SetWrap(false);
+		pText->SetAutoEllipsis(false);
 		pText->setAlignment(m_text.alignment());
 		pText->setProperties(m_text.getProperties());
 		pText->setSelectionProperties(m_text.getSelectionProperties());
@@ -721,6 +724,8 @@ void WgGizmoEditline::_adjustViewOfs()
 		int maxOfs;			// Max allowed view offset in pixels.
 		int minOfs;			// Min allowed view offset in pixels.
 
+		int geoWidth = Size().w;
+		int	lineWidth = m_pText->getSoftLineWidth( 0 ) + cursBearing+cursWidth;
 
 		// Calculate cursOfs
 
@@ -737,13 +742,15 @@ void WgGizmoEditline::_adjustViewOfs()
 				maxOfs = (cursCol-1) * pwAdvance;
 			else
 				maxOfs = m_pText->getSoftLineWidthPart( 0, 0, cursCol-1 );
+
+			if( lineWidth < maxOfs + geoWidth )
+				maxOfs = WgMax( lineWidth - geoWidth, 0 );
 		}
 		else
 			maxOfs = cursOfs;
 
-		// Calculate minOfs
 
-		Uint32 geoWidth = Size().w;
+		// Calculate minOfs
 
 		if( cursCol < m_pText->getLine(0)->nChars )
 		{

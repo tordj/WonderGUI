@@ -43,6 +43,9 @@ public:
 	void SetText(const WgText * pText);
 	void SetMargin(WgBorders margin);
 
+	WgString GetTooltipString() const;
+
+
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
 protected:
@@ -59,6 +62,7 @@ private:
 	WgText			m_text;
 	WgBorders		m_margin;
 	bool			m_bEnabled;
+	bool			m_bAllFitInArea;
 };
 
 

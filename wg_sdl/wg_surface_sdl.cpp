@@ -110,24 +110,14 @@ WgSurfaceSDL::~WgSurfaceSDL()
 	SDL_FreeSurface( m_pSurface );
 }
 
-//____ Width() ______________________________________________________________
+//____ Size() _________________________________________________________________
 
-Uint32 WgSurfaceSDL::Width() const
+WgSize WgSurfaceSDL::Size() const
 {
 	if( m_pSurface )
-		return m_pSurface->w;
+		return WgSize( m_pSurface->w, m_pSurface->h );
 
-	return 0;
-}
-
-//____ Height() _____________________________________________________________
-
-Uint32 WgSurfaceSDL::Height() const
-{
-	if( m_pSurface )
-		return m_pSurface->h;
-
-	return 0;
+	return WgSize(0,0);
 }
 
 //____ IsOpaque() ______________________________________________________________
@@ -199,13 +189,13 @@ void WgSurfaceSDL::Unlock()
 
 //____ GetPixel() ______________________________________________________________
 
-Uint32 WgSurfaceSDL::GetPixel( Uint32 x, Uint32 y ) const
+Uint32 WgSurfaceSDL::GetPixel( WgCoord coord ) const
 {
 	SDL_LockSurface( m_pSurface );
 
 	Uint8 * pPixel = (Uint8 *) m_pSurface->pixels;
 
-	pPixel += y*m_pSurface->pitch + x*m_pSurface->format->BytesPerPixel;
+	pPixel += coord.y*m_pSurface->pitch + coord.x*m_pSurface->format->BytesPerPixel;
 
 	Uint32 val;
     switch( m_pSurface->format->BytesPerPixel )
@@ -226,7 +216,7 @@ Uint32 WgSurfaceSDL::GetPixel( Uint32 x, Uint32 y ) const
 
 //____ GetOpacity() ____________________________________________________________
 
-Uint8 WgSurfaceSDL::GetOpacity( Uint32 x, Uint32 y ) const
+Uint8 WgSurfaceSDL::GetOpacity( WgCoord coord ) const
 {
 	// All pixels are transparent if we don't have any surface...
 
@@ -239,13 +229,13 @@ Uint8 WgSurfaceSDL::GetOpacity( Uint32 x, Uint32 y ) const
 	// else.
 
 	if( m_pSurface->flags & SDL_SRCALPHA && m_pSurface->format->Amask )
-		return ((GetPixel(x,y) & m_pSurface->format->Amask) >> m_pSurface->format->Ashift) << m_pSurface->format->Aloss;
+		return ((GetPixel(coord) & m_pSurface->format->Amask) >> m_pSurface->format->Ashift) << m_pSurface->format->Aloss;
 
 	// Secondly, check for colorkey, return transparent if match.
 
 	if( m_pSurface->flags & SDL_SRCCOLORKEY )
 	{
-		if( GetPixel( x, y ) == 0 )
+		if( GetPixel( coord ) == 0 )
 			return 0;
 	}
 

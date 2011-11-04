@@ -150,8 +150,8 @@ public:
 
 	// High-level print methods
 
-	static inline void		printText( const WgRect& clip, const WgText * pText, const WgRect& dest );
-	static inline void		printTextWithCursor( const WgRect& clip, const WgText * pText, const WgCursorInstance& cursor, const WgRect& dest );
+	static inline bool		printText( const WgRect& clip, const WgText * pText, const WgRect& dest );
+	static inline bool		printTextWithCursor( const WgRect& clip, const WgText * pText, const WgCursorInstance& cursor, const WgRect& dest );
 
 	// Low-level print methods
 
@@ -356,9 +356,9 @@ inline void	WgGfx::blitBlock(		const WgBlock& block, const WgRect& dest )
 	m_pDevice->BlitBlock( block, dest );
 }
 
-inline void WgGfx::printText( const WgRect& clip, const WgText * pText, const WgRect& dest )
+inline bool WgGfx::printText( const WgRect& clip, const WgText * pText, const WgRect& dest )
 {
-	m_pDevice->PrintText( clip, pText, dest );
+	return m_pDevice->PrintText( clip, pText, dest );
 }
 
 inline void WgGfx::printLine( WgPen& pen, const WgTextAttr& attr, const WgChar * pString, int maxChars, WgMode mode )

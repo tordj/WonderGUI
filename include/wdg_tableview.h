@@ -269,7 +269,7 @@ public:
 
 	WgItem*	GetCell( Uint32 row, Uint32 column );
 
-	virtual WgString	GetTooltipString() const;
+	WgString			GetTooltipString() const;
 	WgPointerStyle		GetPointerStyle() const;
 
 	inline bool	GrabInputFocus() { return WgWidget::GrabInputFocus(); }

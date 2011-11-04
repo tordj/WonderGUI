@@ -1022,7 +1022,7 @@ private:
 };
 
 /// Wdg_ComboBox_Res /////////////////////////////////////////////////////
-class Wdg_ComboBox_Res : public WgWidgetRes, public WgTextHolderRes
+class Wdg_ComboBox_Res : public WgWidgetRes, public WgEditTextRes
 {
 public:
 	Wdg_ComboBox_Res(WgResourceXML* parent, class Wdg_ComboBox* widget = 0);

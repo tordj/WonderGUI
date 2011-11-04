@@ -29,12 +29,12 @@ WgSurfaceMIG::WgSurfaceMIG( ETextureDataPtr pTexture )
 	m_pTexture 		= pTexture;
 	m_pitch			= 0;
 
-	SetPixelFormat( pTexture );
+	_setPixelFormat( pTexture );
 }
 
-//____ SetPixelFormat() _______________________________________________________
+//____ _setPixelFormat() _______________________________________________________
 
-void WgSurfaceMIG::SetPixelFormat( ETextureDataPtr pTexture )
+void WgSurfaceMIG::_setPixelFormat( ETextureDataPtr pTexture )
 {
 	EPixelFormat format = pTexture->GetPixelFormat();
 
@@ -111,18 +111,11 @@ WgSurfaceMIG::~WgSurfaceMIG()
 		Unlock();
 }
 
-//____ Width() ______________________________________________________________
+//____ Size() ______________________________________________________________
 
-Uint32 WgSurfaceMIG::Width() const
+WgSize WgSurfaceMIG::Size() const
 {
-	return m_pTexture ? m_pTexture->GetWidth() : 0;
-}
-
-//____ Height() _____________________________________________________________
-
-Uint32 WgSurfaceMIG::Height() const
-{
-	return m_pTexture ? m_pTexture->GetHeight() : 0;
+	return m_pTexture ? WgSize(m_pTexture->GetWidth(),m_pTexture->GetHeight()) : WgSize();
 }
 
 //____ IsOpaque() ______________________________________________________________
@@ -134,22 +127,22 @@ bool WgSurfaceMIG::IsOpaque() const
 
 //____ GetPixel() ______________________________________________________________
 
-Uint32 WgSurfaceMIG::GetPixel( Uint32 x, Uint32 y ) const
+Uint32 WgSurfaceMIG::GetPixel( WgCoord coord ) const
 {
 	Uint32 pixel = 0;
 	if( m_pTexture->GetPixelFormat() != EPixelFormat::eRGBA32 )
 		return pixel;	// TODO: support other formats?
-	if(x < Width() && y < Height())
+	if(coord.x < Width() && coord.y < Height())
 	{
 		if( m_pPixels )
-			pixel = * ((Uint32*) &m_pPixels[m_pitch*y + 4*x]);
+			pixel = * ((Uint32*) &m_pPixels[m_pitch*coord.y + 4*coord.x]);
 		else if(m_pTexture)
 		{
 			int iPitch = 0;
 			uchar* pcData = m_pTexture->Lock( &iPitch, 0, false );
 			if(pcData)
 			{
-				pixel = * ((Uint32*) &pcData[iPitch*y + 4*x]);
+				pixel = * ((Uint32*) &pcData[iPitch*coord.y + 4*coord.x]);
 				m_pTexture->Unlock();
 			}
 		}
@@ -159,15 +152,15 @@ Uint32 WgSurfaceMIG::GetPixel( Uint32 x, Uint32 y ) const
 
 //____ GetOpacity() ____________________________________________________________
 
-Uint8 WgSurfaceMIG::GetOpacity( Uint32 x, Uint32 y ) const
+Uint8 WgSurfaceMIG::GetOpacity( WgCoord coord ) const
 {
 	Uint8 alpha = 255;
 	if( m_pTexture->GetPixelFormat() != EPixelFormat::eRGBA32 )
 		return alpha;	// TODO: support other formats?
-	if(x < Width() && y < Height())
+	if(coord.x < Width() && coord.y < Height())
 	{
 		if( m_pPixels )
-			alpha = m_pPixels[m_pitch*y + 4*x + 3];	// Tror att den ligger där, eller + 0.
+			alpha = m_pPixels[m_pitch*coord.y + 4*coord.x + 3];	// Tror att den ligger där, eller + 0.
 		else if(m_pTexture)
 		{
 			int iPitch = 0;
@@ -175,7 +168,7 @@ Uint8 WgSurfaceMIG::GetOpacity( Uint32 x, Uint32 y ) const
 
 			if( pcData )
 			{
-				alpha = pcData[iPitch*y + 4*x + 3]; // Tror att den ligger där, eller + 0.
+				alpha = pcData[iPitch*coord.y + 4*coord.x + 3]; // Tror att den ligger där, eller + 0.
 				m_pTexture->Unlock();
 			}
 		}

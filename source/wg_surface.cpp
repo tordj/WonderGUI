@@ -43,7 +43,7 @@ WgSurface::WgSurface()
 		g_pBlockSetMemPool = new WgMemPool( 16, sizeof(WgBlockSet) );
 
 
-	memset( &m_pixelFormat, 0, sizeof(PixelFormat) );
+	memset( &m_pixelFormat, 0, sizeof(WgPixelFormat) );
 }
 
 //____ ~WgSurface() ____________________________________________________________
@@ -52,12 +52,20 @@ WgSurface::~WgSurface()
 {
 }
 
-//____ Dimensions() ____________________________________________________________
+//____ Width() ________________________________________________________________
 
-WgRect WgSurface::Dimensions() const
+int WgSurface::Width() const
 {
-	return WgRect( 0, 0, Width(), Height() );
+	return Size().w;
 }
+
+//____ Height() _______________________________________________________________
+
+int WgSurface::Height() const
+{
+	return Size().h;
+}
+
 
 //____ Col2Pixel() ____________________________________________________________
 
@@ -104,7 +112,7 @@ bool WgSurface::Fill( WgColor col )
 	Uint32 pixel = Col2Pixel( col );
 	int width = Width();
 	int height = Height();
-	int pitch = GetPitch();
+	int pitch = Pitch();
 	Uint8 * pDest = m_pPixels;
 
 	bool ret = true;

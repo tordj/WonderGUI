@@ -39,7 +39,7 @@ public:
 
 	inline	ETextureDataPtr	MIG_Surf() const { return m_pTexture; };
 
-	inline	Uint32	GetPitch() const;				// Bytes per scanline, need to lock first.
+	inline	int		Pitch() const;				// Bytes per scanline, need to lock first.
 	inline	void*	Lock( LockStatus mode );
 	inline	void*	LockRegion( LockStatus mode, const WgRect& region );
 	inline	void	Unlock();
@@ -47,18 +47,17 @@ public:
 
 	// Methods needed by WgSurface
 
-	Uint32		Width() const;
-	Uint32		Height() const;
+	WgSize		Size() const;
 	bool		IsOpaque() const;
 
-	Uint32		GetPixel( Uint32 x, Uint32 y ) const;
-	Uint8		GetOpacity( Uint32 x, Uint32 y ) const;
+	Uint32		GetPixel( WgCoord coord ) const;
+	Uint8		GetOpacity( WgCoord coord ) const;
 
 
 
 
 private:
-	void		SetPixelFormat( ETextureDataPtr pTexture );
+	void		_setPixelFormat( ETextureDataPtr pTexture );
 
 	static const int c_pixelBytes = 4;
 
@@ -137,7 +136,7 @@ inline void WgSurfaceMIG::Unlock()
 
 //____ GetPitch() _____________________________________________________________
 
-inline Uint32 WgSurfaceMIG::GetPitch() const
+inline int WgSurfaceMIG::Pitch() const
 {
 	return m_pitch;
 }

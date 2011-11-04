@@ -96,6 +96,7 @@ void WgText::Init()
 
 	m_lineWidth		= INT_MAX;
 	m_bWrap			= true;
+	m_bAutoEllipsis = true;
 
 	_refreshAllLines();
 	clearSelection();
@@ -1371,6 +1372,18 @@ void WgText::SetWrap( bool bWrap )
 	}
 }
 
+//____ SetAutoEllipsis() ______________________________________________________
+
+void WgText::SetAutoEllipsis( bool bAutoEllipsis )
+{
+	if( m_bAutoEllipsis != bAutoEllipsis )
+	{
+		m_bAutoEllipsis = bAutoEllipsis;
+		_regenSoftLines();
+		_refreshAllLines();
+	}
+}
+
 //____ setLineWidth() _________________________________________________________
 
 void WgText::setLineWidth( int width )
@@ -1821,7 +1834,11 @@ int WgText::LineStartY( int line, const WgRect& container ) const
 {
 	int		ofs = 0;
 	if( m_origo.anchorY() != 0 || m_origo.hotspotY() != 0 )
+	{
 		ofs = m_origo.calcOfsY( container.h, height() );
+		if( ofs < 0 )
+			ofs = 0;
+	}
 	if( line > m_nSoftLines )
 		line = m_nSoftLines;
 

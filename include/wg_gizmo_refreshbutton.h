@@ -103,7 +103,7 @@ protected:
 		void		_onCloneContent( const WgGizmo * _pOrg );
 		virtual void _onNewSize( const WgSize& size );
 
-		WgMode	GetRenderMode();
+		WgMode		_getRenderMode();
 
 
 

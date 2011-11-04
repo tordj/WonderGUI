@@ -3143,6 +3143,8 @@ void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, 
 	WriteDiffAttr<Sint8>(s, xmlNode, "linespaceadjustment", holder->GetLineSpaceAdjustment(), 0);
 
 	WriteDiffAttr(s, xmlNode, "wrap", holder->GetTextWrap(), true);
+	
+	WriteDiffAttr(s, xmlNode, "ellipsis", holder->GetAutoEllipsis(), !holder->GetAutoEllipsis() );	//Ugly to always save it, but we have different defaults...
 
 	WriteTextManager(holder, s);
 
@@ -3227,6 +3229,9 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 
 	holder->SetLineSpaceAdjustment(WgUtil::ToSint8(xmlNode["linespaceadjustment"]));
 	holder->SetTextWrap(WgUtil::ToBool(xmlNode["wrap"], true));
+
+	if( xmlNode.HasAttribute("ellipsis"))
+		holder->SetAutoEllipsis(WgUtil::ToBool(xmlNode["ellipsis"]));
 
 	if(xmlNode.HasAttribute("base_colors"))
 	{
@@ -3653,7 +3658,7 @@ void Wdg_Button_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetIconSource(), "icon");
 	WriteDiffAttr(s, xmlNode, "iconorigo", widget->GetIconOrigo(), WgOrigo::topLeft());
 	WriteDiffAttr<Sint8>(s, xmlNode, "iconofs", widget->GetIconOfsX(), widget->GetIconOfsY(), 0, 0);
-	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
 
 	s.EndTag();
 }
@@ -3741,7 +3746,7 @@ void Wdg_RefreshButton_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetIconSource(), "icon");
 	WriteDiffAttr(s, xmlNode, "iconorigo", widget->GetIconOrigo(), WgOrigo::topLeft());
 	WriteDiffAttr<Sint8>(s, xmlNode, "iconofs", widget->GetIconOfsX(), widget->GetIconOfsY(), 0, 0);
-	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
 
 	if( widget->GetRefreshAnimation() )
 		WriteDiffAttr( s, xmlNode, "refresh_anim", s.ResDb()->FindAnimId(widget->GetRefreshAnimation()).c_str(), "" );
@@ -3880,7 +3885,7 @@ void Wdg_CheckBox2_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "checked", widget->IsChecked(), false);
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "blockset_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
-	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
 
 	WriteBlockSetAttr(s, widget->GetCheckedIcon(), "icon_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
@@ -3937,6 +3942,7 @@ WgCharBuffer* Wdg_CheckBox2_Res::GetCharBuffer()
 //		blockset=[name]
 //		text=[string]
 //		textformat=[string]
+//		placeholder=[string]
 //		menu=[name] >
 //
 //			<menu ... />
@@ -3960,11 +3966,12 @@ void Wdg_ComboBox_Res::Serialize(WgResourceSerializerXML& s)
 	const WgXmlNode& xmlNode = XmlNode();
 	Wdg_ComboBox* widget = GetWidget();
 	WgWidgetRes::Serialize(s);
-	WgTextHolderRes::Serialize(this, xmlNode, s, widget);
+	WgEditTextRes::Serialize(this, xmlNode, s, widget);
 
 	WriteBlockSetAttr(s, widget->GetSource(), "blockset");
 
 	WriteTextAttrib(s, widget->GetTextFormat().Chars(), "textformat");
+	WriteTextAttrib(s, widget->GetPlaceholderText().Chars(), "placeholder");
 
 	// Write menu as a subtag only if it doesn't have a parent.
 	Wdg_Menu* menu = widget->GetMenu();
@@ -3986,16 +3993,12 @@ void Wdg_ComboBox_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 	Wdg_ComboBox* widget = new Wdg_ComboBox();
 	m_Widget = widget;
 	WgWidgetRes::Deserialize(xmlNode, s);
-	WgTextHolderRes::Deserialize(xmlNode, s, widget);
+	WgEditTextRes::Deserialize(xmlNode, s, widget);
 
 	widget->SetSource(s.ResDb()->GetBlockSet(xmlNode["blockset"]));
-	widget->SetText(ReadLocalizedString(xmlNode["text"], s).c_str());
-
-	//Temporary solution only...
-	WgChar temp[256];
-	int nRead = WgTextTool::readFormattedString( ReadLocalizedString(xmlNode["textformat"], s).c_str(), temp, 256, s.ResDb() );
-	if( nRead > 0 )
-		widget->SetTextFormat(temp);
+	widget->SetText(ReadLocalizedString(xmlNode["text"], s));
+	widget->SetPlaceholderText(ReadLocalizedString(xmlNode["placeholder"], s));
+	widget->SetTextFormat(ReadLocalizedString(xmlNode["textformat"], s));
 }
 
 WgCharBuffer* Wdg_ComboBox_Res::GetCharBuffer()
@@ -4052,7 +4055,7 @@ void Wdg_HDrag_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetBwdSource(), "source_bwd");
 	WriteBlockSetAttr(s, widget->GetFwdSource(), "source_fwd");
 	WgButtonLayoutRes::Serialize(s, xmlNode, "layout", widget->GetButtonLayout());
-	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
 
 	s.EndTag();
 }
@@ -4105,7 +4108,7 @@ void Wdg_VDrag_Res::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, widget->GetBwdSource(), "source_bwd");
 	WriteBlockSetAttr(s, widget->GetFwdSource(), "source_fwd");
 	WgButtonLayoutRes::Serialize(s, xmlNode, "layout", widget->GetButtonLayout());
-	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
 
 	s.EndTag();
 }
@@ -4718,7 +4721,7 @@ void Wdg_Pixmap_Res::Serialize(WgResourceSerializerXML& s)
 //	const WgXmlNode& xmlNode = XmlNode();
 
 	WriteBlockSetAttr(s, widget->GetSource(), "blockset");
-	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
 
 	s.EndTag();
 }
@@ -4847,7 +4850,7 @@ void Wdg_RadioButton2_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "allowuncheck", widget->AllowUnchecking(), false);
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "blockset_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
-	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
 
 	WriteBlockSetAttr(s, widget->GetCheckedIcon(), "icon_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
@@ -5411,7 +5414,7 @@ void Wdg_Text_Res::Serialize(WgResourceSerializerXML& s)
 	Wdg_Text* widget = GetWidget();
 	WgWidgetRes::Serialize(s);
 	WgEditTextRes::Serialize(this, xmlNode, s, widget);
-	WriteTextAttrib(s, widget->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
 	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), 0);
 	WriteDiffAttr(s, xmlNode, "max_rows", widget->MaxLines(), 0);
 	s.EndTag();
@@ -5663,7 +5666,7 @@ void WgItemPixmapRes::Serialize(WgResourceSerializerXML& s)
 	WriteBlockSetAttr(s, item->GetSource(), "blockset");
 	WgBorderRes::Serialize(s, xmlNode, "margin", item->Margin());
 	WgSizeRes::Serialize(s, xmlNode, "forcesize", item->GetForceSize(), WgSize(0, 0) );
-	WriteTextAttrib(s, item->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, item->GetRealTooltipString().Chars(), "tooltip");
 	s.EndTag();
 }
 
@@ -5698,7 +5701,7 @@ void WgItemRowRes::Serialize(WgResourceSerializerXML& s)
 	s.BeginTag(TagName(), XmlNode());
 	WgItemRes::Serialize(s);
 	WgItemHolderRes::Serialize(this, xmlNode, s, item);
-	WriteTextAttrib(s, item->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, item->GetRealTooltipString().Chars(), "tooltip");
 	s.EndTag();
 }
 
@@ -5730,7 +5733,7 @@ void WgItemStackRes::Serialize(WgResourceSerializerXML& s)
 	s.BeginTag(TagName(), XmlNode());
 	WgItemRes::Serialize(s);
 	WgItemHolderRes::Serialize(this, xmlNode, s, item->GetItemHolder());
-	WriteTextAttrib(s, item->GetTooltipString().Chars(), "tooltip");
+	WriteTextAttrib(s, item->GetRealTooltipString().Chars(), "tooltip");
 	s.EndTag();
 }
 

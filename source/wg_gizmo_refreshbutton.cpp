@@ -340,9 +340,9 @@ void WgGizmoRefreshButton::_onAction( WgInput::UserAction action, int button, co
 	WgGizmoButton::_onAction( action, button, info, inputObj );
 }
 
-//_____ GetRenderMode() ________________________________________________________
+//_____ _getRenderMode() ________________________________________________________
 
-WgMode WgGizmoRefreshButton::GetRenderMode()
+WgMode WgGizmoRefreshButton::_getRenderMode()
 {
 	if( !IsEnabled() )
 		return WG_MODE_DISABLED;

@@ -49,6 +49,7 @@ WgItemText::WgItemText( Sint64 id, const WgText * pText, const WgTextPropPtr& pP
 void WgItemText::Init()
 {
 	m_bEnabled = true;
+	m_bAllFitInArea = true;
 	m_pText = &m_text;
 	m_text.setHolder( this );
 	m_text.SetWrap(false);
@@ -124,12 +125,12 @@ void WgItemText::Render( const WgRect& _window, const WgRect& _clip )
 		return;
 
 	WgRect r = _window;
-
+/*
 	if( r.w < (Sint32) m_width )
 		r.w = m_width;
 	if( r.h < (Sint32) m_height )
 		r.h = m_height;
-
+*/
 	r.x += m_margin.left;
 	r.y += m_margin.top;
 	r.w -= m_margin.left + m_margin.right;
@@ -138,7 +139,7 @@ void WgItemText::Render( const WgRect& _window, const WgRect& _clip )
 	if( GetMode() != m_pText->mode() )
 		m_pText->setMode( GetMode() );
 
-	WgGfx::printText( _clip, m_pText, r );
+	m_bAllFitInArea = WgGfx::printText( _clip, m_pText, r );
 }
 
 WgItem* WgItemText::Clone( WgItem * _pClone )
@@ -168,4 +169,12 @@ void WgItemText::Enable( bool bEnable )
 
 		_textModified();					// Font might have changed...
 	}
+}
+
+WgString WgItemText::GetTooltipString() const
+{
+	if( m_text.IsAutoEllipsis() && !m_bAllFitInArea )
+		return WgString( m_text.getBuffer() );
+
+	return 0;
 }

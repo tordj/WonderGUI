@@ -270,7 +270,7 @@ void WgPen::BlitChar() const
 	}
 }
 
-//____ BlitCursor() _______________________________________________________
+//____ BlitCursor() ___________________________________________________________
 
 bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 {

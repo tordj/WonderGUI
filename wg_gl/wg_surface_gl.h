@@ -40,7 +40,7 @@
 class WgSurfaceGL : public WgSurface
 {
 public:
-	WgSurfaceGL( GLint format, Uint32 width, Uint32 height, void * pPixels );
+	WgSurfaceGL( GLint format, WgSize dimensions, void * pPixels );
 	WgSurfaceGL( GLuint texture, Uint8 * pAlpha = 0 );
 	~WgSurfaceGL();
 
@@ -48,29 +48,27 @@ public:
 
 	// Methods needed by WgSurface
 
-	Uint32		Width() const;
-	Uint32		Height() const;
+	WgSize		Size() const;
 	bool		IsOpaque() const;
 
-	Uint32		GetPixel( Uint32 x, Uint32 y ) const;
-	Uint8		GetOpacity( Uint32 x, Uint32 y ) const;
+	Uint32		GetPixel( WgCoord coord ) const;
+	Uint8		GetOpacity( WgCoord coord ) const;
 
 	void *		Lock( LockStatus mode );
 	void *		LockRegion( LockStatus mode, const WgRect& region );
 	void		Unlock();
 
 private:
-	static bool	InitGlExtensions();
+	static bool	_initGlExtensions();
 
-	void		SetPixelFormat( GLint _format );
-	void		InitBuffer();
+	void		_setPixelFormat( GLint _format );
+	void		_initBuffer();
 
 
 	GLuint		m_buffer;			// Pointer at GL pixel buffer, if any.
 	GLuint 		m_texture;			// GL texture handle.
 	GLint		m_format;			// GL-enum for the texture format or 0 if unknown.
-	Uint32		m_width;			// Width in pixels.
-	Uint32		m_height;			// Height in pixels.
+	WgSize		m_size;				// Width and height in pixels.
 	Uint8 *		m_pAlpha;			// Pointer at supplementary alpha map, if any.
 	Uint32		m_pixelSize;		// Size in bytes of a pixel.
 

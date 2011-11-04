@@ -156,8 +156,8 @@ public:
 	inline void		set( Uint8 _all ) { left = right = top = bottom = _all; }
 
 	inline WgSize	size() const;
-	inline Uint32	width() const { return ((Uint32)left)+right; }
-	inline Uint32	height() const { return ((Uint32)top)+bottom; }
+	inline int		width() const { return ((int)left)+right; }
+	inline int		height() const { return ((int)top)+bottom; }
 	inline void		clear()			{ left = 0; right = 0; top = 0; bottom = 0; }
 
 	bool			operator==(const WgBorders& borders) const { return left == borders.left &&

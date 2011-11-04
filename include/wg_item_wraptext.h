@@ -12,8 +12,8 @@ class WgItemWrapText : public WgItem, public Wg_Interface_TextHolder
 {
 public:
 	WgItemWrapText(  );
-	WgItemWrapText( Sint64 id, const WgCharSeq& seq, WgTextPropPtr pProp, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
-	WgItemWrapText( Sint64 id, const WgText * pText, Uint32 startwidth, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
+	WgItemWrapText( Sint64 id, const WgCharSeq& seq, WgTextPropPtr pProp, Uint32 startwidth = INT_MAX, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
+	WgItemWrapText( Sint64 id, const WgText * pText, Uint32 startwidth = INT_MAX, WgColor bgFill = WgColor(0,0,0,0), Uint8 marginLeft=0, Uint8 marginRight=0, Uint8 marginTop=0, Uint8 marginBottom=0 );
 	~WgItemWrapText();
 
 	void			MinSize( Uint32 width, Uint32 height );
@@ -27,7 +27,14 @@ public:
 	WgPointerStyle	GetPointerStyle() const;
 
 
-	DECLARE_TOOLTIP_SUPPORT();
+
+	void		SetTooltipString( const WgString& str )			{ m_tooltipString = str; }
+	void		SetTooltipString( const WgChar* pString )	{ m_tooltipString.Set( pString ); }
+	void		SetTooltipString( const Uint16* pString )	{ m_tooltipString.Set( pString ); }
+	void		SetTooltipString( const char* pString )		{ m_tooltipString.Set( pString ); }
+	WgString	GetTooltipString() const;
+	WgString	GetRealTooltipString() const { return m_tooltipString; }
+
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
@@ -45,12 +52,14 @@ protected:
 	virtual Sint32	CompareTo( WgItem * pOther );
 
 private:
+	WgString	m_tooltipString;									\
 
 	WgText			m_text;
 	WgBorders		m_margin;
 	Uint32			m_minWidth;
 	Uint32			m_minHeight;
 	bool			m_bEnabled;
+	bool			m_bAllFitInArea;
 	WgColor			m_bgFill;
 };
 

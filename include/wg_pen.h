@@ -107,7 +107,7 @@ public:
 
 	inline WgFont *			GetFont() const { return m_pFont; }
 	inline int				GetSize() const { return m_size; }
-	inline int				GetStyle() const { return m_style; }
+	inline WgFontStyle		GetStyle() const { return m_style; }
 	inline WgColor			GetColor() const { return m_color; }
 	inline WgGlyphSet *		GetGlyphSet() const { return m_pGlyphs; }
 
@@ -117,7 +117,6 @@ public:
 	inline int				GetBaseline() const { return m_pGlyphs->GetBaseline(m_size); }
 
 	void					BlitChar() const;
-	
 	bool					BlitCursor( const WgCursorInstance& instance ) const;
 
 private:

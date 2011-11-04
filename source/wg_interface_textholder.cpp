@@ -52,6 +52,17 @@ bool Wg_Interface_TextHolder::SetTextWrap( bool bWrap )
 	return true;
 }
 
+//____ SetAutoEllipsis() __________________________________________________________
+bool Wg_Interface_TextHolder::SetAutoEllipsis( bool bAutoEllipsis )
+{
+	if( bAutoEllipsis != m_pText->IsAutoEllipsis() )
+	{
+		m_pText->SetAutoEllipsis(bAutoEllipsis);
+		_textModified();
+	}
+	return true;
+}
+
 //____ SetTextAlignment() _____________________________________________________
 
 void Wg_Interface_TextHolder::SetTextAlignment( const WgOrigo& origo )
