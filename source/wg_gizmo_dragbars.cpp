@@ -197,16 +197,16 @@ void WgGizmoDragbar::_headerFooterChanged()
 	if( m_bHorizontal )
 	{
 		if( m_pBtnFwdGfx )
-			fwdLen = m_pBtnFwdGfx->GetWidth();
+			fwdLen = m_pBtnFwdGfx->Width();
 		if( m_pBtnBwdGfx )
-			bwdLen = m_pBtnBwdGfx->GetWidth();
+			bwdLen = m_pBtnBwdGfx->Width();
 	}
 	else
 	{
 		if( m_pBtnFwdGfx )
-			fwdLen = m_pBtnFwdGfx->GetHeight();
+			fwdLen = m_pBtnFwdGfx->Height();
 		if( m_pBtnBwdGfx )
-			bwdLen = m_pBtnBwdGfx->GetHeight();
+			bwdLen = m_pBtnBwdGfx->Height();
 	}
 
 	int	headerLen = 0;
@@ -286,9 +286,9 @@ void	WgGizmoDragbar::_viewToPosLen( int * _wpPos, int * _wpLen )
 	int		minLen;
 
 	if( m_bHorizontal )
-		minLen = m_pBarGfx->GetMinWidth();
+		minLen = m_pBarGfx->MinWidth();
 	else
-		minLen = m_pBarGfx->GetMinHeight();
+		minLen = m_pBarGfx->MinHeight();
 
 	if( minLen < 4 )
 		minLen = 4;
@@ -378,16 +378,16 @@ void WgGizmoDragbar::_updateMinSize()
 
 	if( m_pBgGfx )
 	{
-		minW = Max( minW, m_pBgGfx->GetMinWidth() );
-		minH = Max( minH, m_pBgGfx->GetMinHeight() );
+		minW = Max( minW, m_pBgGfx->MinWidth() );
+		minH = Max( minH, m_pBgGfx->MinHeight() );
 	}
 
 	// Check min w/h for BarGfx.
 
 	if( m_pBarGfx )
 	{
-		minW = Max( minW, m_pBarGfx->GetMinWidth() );
-		minH = Max( minH, m_pBarGfx->GetMinHeight() );
+		minW = Max( minW, m_pBarGfx->MinWidth() );
+		minH = Max( minH, m_pBarGfx->MinHeight() );
 	}
 
 
@@ -403,16 +403,16 @@ void WgGizmoDragbar::_updateMinSize()
 
 	if( m_pBtnFwdGfx && (m_btnLayout & (HEADER_FWD | FOOTER_FWD)) )
 	{
-		minW = Max( minW, m_pBtnFwdGfx->GetWidth() );
-		minH = Max( minH, m_pBtnFwdGfx->GetHeight() );
+		minW = Max( minW, m_pBtnFwdGfx->Width() );
+		minH = Max( minH, m_pBtnFwdGfx->Height() );
 	}
 
 	// Check min w/h for backward button.
 
 	if( m_pBtnBwdGfx && (m_btnLayout & (HEADER_BWD | FOOTER_BWD)) )
 	{
-		minW = Max( minW, m_pBtnBwdGfx->GetWidth() );
-		minH = Max( minH, m_pBtnBwdGfx->GetHeight() );
+		minW = Max( minW, m_pBtnBwdGfx->Width() );
+		minH = Max( minH, m_pBtnBwdGfx->Height() );
 	}
 
 	// Set if changed.
@@ -431,9 +431,9 @@ void WgGizmoDragbar::_updateMinSize()
 void WgGizmoDragbar::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block )
 {
 		if( m_bHorizontal )
-			_dest.w = _block.GetWidth();
+			_dest.w = _block.Width();
 		else
-			_dest.h = _block.GetHeight();
+			_dest.h = _block.Height();
 
 		pDevice->ClipBlitBlock( _clip, _block, _dest );
 
@@ -513,9 +513,9 @@ bool WgGizmoDragbar::_onAlphaTest( const WgCoord& ofs )
 bool WgGizmoDragbar::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block )
 {
 		if( m_bHorizontal )
-			_dest.w = _block.GetWidth();
+			_dest.w = _block.Width();
 		else
-			_dest.h = _block.GetHeight();
+			_dest.h = _block.Height();
 
 		bool retVal = WgUtil::MarkTestBlock( ofs, _block, _dest );
 

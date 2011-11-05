@@ -98,7 +98,7 @@ bool WgFlexHook::SetFloating( const WgCoord& pos, int anchor, WgLocation hotspot
 	m_bFloating		= true;
 	m_anchor		= anchor;
 	m_hotspot		= hotspot;
-	m_placementGeo.setPos(pos);
+	m_placementGeo.SetPos(pos);
 
 	_limitPlacementSize();
 	_refreshRealGeo();
@@ -549,7 +549,7 @@ bool WgFlexHook::MoveY( int y )
 
 WgCoord WgFlexHook::ScreenPos() const
 {
-	return m_realGeo.pos() + m_pParent->ScreenPos();
+	return m_realGeo.Pos() + m_pParent->ScreenPos();
 }
 
 //____ WgFlexHook::ScreenGeo() ________________________________________________
@@ -641,7 +641,7 @@ bool WgFlexHook::_refreshRealGeo()
 		switch( m_sizePolicy )
 		{
 			case WG_SIZE_SPECIFIED:
-				sz = m_placementGeo.size();
+				sz = m_placementGeo.Size();
 				break;
 			case WG_SIZE_MIN:
 				sz = m_pGizmo->MinSize();
@@ -678,7 +678,7 @@ bool WgFlexHook::_refreshRealGeo()
 
 		WgCoord pos = m_pParent->Anchor(m_anchor)->position( parentSize );	// Anchor,
 		pos -= WgUtil::LocationToOfs( m_hotspot, sz );						// hotspot
-		pos += m_placementGeo.pos();										// and Offset.
+		pos += m_placementGeo.Pos();										// and Offset.
 
 		// Limit size/pos according to parent
 
@@ -703,7 +703,7 @@ bool WgFlexHook::_refreshRealGeo()
 		WgCoord bottomRight = m_pParent->Anchor(m_anchorBottomRight)->position( parentSize );
 
 		newGeo = WgRect(topLeft,bottomRight);
-		newGeo.shrink( m_borders );
+		newGeo.Shrink( m_borders );
 	}
 
 	// Return now if there was no change
@@ -735,7 +735,7 @@ void WgFlexHook::RequestRender()
 
 void WgFlexHook::RequestRender( const WgRect& rect )
 {
-	m_pParent->_onRequestRender( rect + m_realGeo.pos(), this );
+	m_pParent->_onRequestRender( rect + m_realGeo.Pos(), this );
 }
 
 //____ WgFlexHook::RequestResize() ____________________________________________
@@ -764,7 +764,7 @@ void WgFlexHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& cl
 
 	// Get our screen geometry and clippedArea.
 
-	WgRect screenGeo = m_realGeo + parentGeo.pos();
+	WgRect screenGeo = m_realGeo + parentGeo.Pos();
 	WgRect clippedArea( screenGeo, clip );
 
 	// If we are outside visible bounds, we just transfer the dirt and return.
@@ -1292,11 +1292,11 @@ WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 	while( pHook && !pResult )
 	{
-		if( pHook->m_realGeo.contains( ofs ) )
+		if( pHook->m_realGeo.Contains( ofs ) )
 		{
 			if( pHook->Gizmo()->IsContainer() )
 			{
-				pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_realGeo.pos(), mode );
+				pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_realGeo.Pos(), mode );
 			}
 			else
 			{
@@ -1304,7 +1304,7 @@ WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 				{
 					case WG_SEARCH_ACTION_TARGET:
 					case WG_SEARCH_MARKPOLICY:
-						if( pHook->Gizmo()->MarkTest( ofs - pHook->m_realGeo.pos() ) )
+						if( pHook->Gizmo()->MarkTest( ofs - pHook->m_realGeo.Pos() ) )
 							pResult = pHook->Gizmo();
 						break;
 					case WG_SEARCH_GEOMETRY:
@@ -1330,7 +1330,7 @@ void WgGizmoFlexGeo::_onCollectRects( WgRectChain& rects, const WgRect& geo, con
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		pHook->Gizmo()->_onCollectRects( rects, pHook->m_realGeo + geo.pos(), clip );
+		pHook->Gizmo()->_onCollectRects( rects, pHook->m_realGeo + geo.Pos(), clip );
 		pHook = pHook->Next();
 	}
 }
@@ -1342,7 +1342,7 @@ void WgGizmoFlexGeo::_onMaskRects( WgRectChain& rects, const WgRect& geo, const 
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		pHook->Gizmo()->_onMaskRects( rects, pHook->m_realGeo + geo.pos(), clip );
+		pHook->Gizmo()->_onMaskRects( rects, pHook->m_realGeo + geo.Pos(), clip );
 		pHook = pHook->Next();
 	}
 }
@@ -1365,7 +1365,7 @@ void WgGizmoFlexGeo::_onRequestRender( const WgRect& rect, const WgFlexHook * pH
 	WgFlexHook * pCover = pHook->Next();
 	while( pCover )
 	{
-		if( pCover->m_realGeo.intersectsWith( pHook->m_realGeo ) )
+		if( pCover->m_realGeo.IntersectsWith( pHook->m_realGeo ) )
 			pCover->Gizmo()->_onMaskRects( rects, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
 
 		pCover = pCover->Next();
@@ -1400,7 +1400,7 @@ void WgGizmoFlexGeo::_onCloneContent( const WgGizmo * _pOrg )
 void WgGizmoFlexGeo::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
 {
 	WgFlexHook *pHook	= m_hooks.First();
-	WgCoord		pos		= _canvas.pos();
+	WgCoord		pos		= _canvas.Pos();
 
 	while( pHook )
 	{

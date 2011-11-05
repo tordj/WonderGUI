@@ -25,12 +25,12 @@
 
 WgCoord WgOrderedHook::Pos() const
 {
-	return Parent()->_hookGeo(this).pos();
+	return Parent()->_hookGeo(this).Pos();
 }
 
 WgSize WgOrderedHook::Size() const
 {
-	return Parent()->_hookGeo(this).size();
+	return Parent()->_hookGeo(this).Size();
 }
 
 WgRect WgOrderedHook::Geo() const
@@ -40,7 +40,7 @@ WgRect WgOrderedHook::Geo() const
 
 WgCoord WgOrderedHook::ScreenPos() const
 {
-	return Parent()->_hookGeo(this).pos() + Parent()->ScreenPos();
+	return Parent()->_hookGeo(this).Pos() + Parent()->ScreenPos();
 
 }
 
@@ -336,12 +336,12 @@ WgGizmo * WgOrderedLayout::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 	while( pHook && !pResult )
 	{
-		if( rect.contains( ofs ) )
+		if( rect.Contains( ofs ) )
 		{
 			WgGizmo * pGizmo = pHook->Gizmo();
 			if( pGizmo->IsContainer() )
 			{
-				pResult = pGizmo->CastToContainer()->FindGizmo( ofs - rect.pos(), mode );
+				pResult = pGizmo->CastToContainer()->FindGizmo( ofs - rect.Pos(), mode );
 			}
 			else
 			{
@@ -349,7 +349,7 @@ WgGizmo * WgOrderedLayout::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 				{
 					case WG_SEARCH_ACTION_TARGET:
 					case WG_SEARCH_MARKPOLICY:
-						if( pGizmo->MarkTest( ofs - rect.pos() ) )
+						if( pGizmo->MarkTest( ofs - rect.Pos() ) )
 							pResult = pGizmo;
 						break;
 					case WG_SEARCH_GEOMETRY:

@@ -171,7 +171,7 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 	// Initialize stuff
 
 	WgVBoxHook * pHook = FirstHook();
-	WgRect geo = _hookGeo(pHook) + _geo.pos();
+	WgRect geo = _hookGeo(pHook) + _geo.Pos();
 
 	int y1 = WgMax(clip.y, pDirtIn->y);
 	int y2 = WgMin(clip.y+clip.h,pDirtIn->y+pDirtIn->h);
@@ -210,7 +210,7 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 
 			while( pDirt )
 			{
-				if( pDirt->intersectsWith(geo) )
+				if( pDirt->IntersectsWith(geo) )
 					pHook->Gizmo()->CastToContainer()->_castDirtyRect( geo, WgRect(geo,clip), pDirt, pDirtOutChain );
 				else
 					pDirtOutChain->PushExistingRect(pDirt);
@@ -253,7 +253,7 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 
 	// Loop through children above window, stop at first visible
 
-	WgRect	geo = _hookGeo(pHook) + _canvas.pos();
+	WgRect	geo = _hookGeo(pHook) + _canvas.Pos();
 	while( geo.y + geo.h < _window.y )
 	{
 		pHook = pHook->Next();
@@ -399,16 +399,16 @@ void WgVBoxLayout::_onResizeRequested( WgOrderedHook * _pHook )
 void  WgVBoxLayout::_onRenderRequested( WgOrderedHook * pHook )
 {
 	WgRect rect = _hookGeo(pHook);
-	if( !rect.empty() )
+	if( !rect.IsEmpty() )
 		RequestRender(rect);
 }
 
 void  WgVBoxLayout::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect )
 {
 	WgRect hookGeo = _hookGeo(pHook);
-	WgRect clippedRect( hookGeo, rect + hookGeo.pos() );
+	WgRect clippedRect( hookGeo, rect + hookGeo.Pos() );
 
-	if( !clippedRect.empty() )
+	if( !clippedRect.IsEmpty() )
 		RequestRender(clippedRect);
 }
 
@@ -549,7 +549,7 @@ void WgVBoxLayout::_refreshBestWidth()
 
 void WgVBoxLayout::_refreshBestSize()
 {
-	m_bestSize.clear();
+	m_bestSize.Clear();
 	m_nBestWidth = 0;
 	WgVBoxHook * pHook = FirstHook();
 

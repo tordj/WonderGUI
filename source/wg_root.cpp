@@ -108,7 +108,7 @@ bool WgRoot::SetChild( WgGizmoContainer * _pGizmo )
 		return false;
 
 	m_hook._attachGizmo(pGizmo);
-	m_hook.Gizmo()->_onNewSize(m_geo.size());
+	m_hook.Gizmo()->_onNewSize(m_geo.Size());
 
 	m_hook.Gizmo()->_onCollectRects( m_dirtyRects, Geo(), Geo() );
 
@@ -259,7 +259,7 @@ int WgRoot::ExportDirtyRects( WgRect * pDest, int maxRects ) const
 
 WgGizmo * WgRoot::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
-	if( !Geo().contains(ofs) || !m_hook.Gizmo() )
+	if( !Geo().Contains(ofs) || !m_hook.Gizmo() )
 		return 0;
 
 	if( m_hook.Gizmo() && m_hook.Gizmo()->IsContainer() )
@@ -337,7 +337,7 @@ void WgRoot::Hook::RequestRender()
 
 void WgRoot::Hook::RequestRender( const WgRect& rect )
 {
-	m_pRoot->AddDirtyRect( WgRect( Pos() + rect.pos(), rect.size() ) );
+	m_pRoot->AddDirtyRect( WgRect( Pos() + rect.Pos(), rect.Size() ) );
 }
 
 void WgRoot::Hook::RequestResize()

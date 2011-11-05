@@ -63,8 +63,8 @@ public:
 
 	// Standard Hook methods
 
-	inline WgCoord		Pos() const { return m_realGeo.pos(); }
-	inline WgSize		Size() const { 	return m_realGeo.size(); }
+	inline WgCoord		Pos() const { return m_realGeo.Pos(); }
+	inline WgSize		Size() const { 	return m_realGeo.Size(); }
 	inline WgRect		Geo() const { return m_realGeo; }
 
 	WgCoord		ScreenPos() const;

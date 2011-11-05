@@ -1041,7 +1041,7 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 	// Adjust for header
 
 	if( m_bShowHeader && m_pHeaderGfx )
-		r.y += m_pHeaderGfx->GetHeight();
+		r.y += m_pHeaderGfx->Height();
 
 
 	WgTableRow2 * pRow = m_rows.First();
@@ -1053,7 +1053,7 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 			return WgRect();							// Invalid row.
 
 		if( pRow->IsVisible() )
-			r.y += pRow->Height() + m_cellPadding.height();
+			r.y += pRow->Height() + m_cellPadding.Height();
 
 		pRow = pRow->Next();
 	}
@@ -1084,7 +1084,7 @@ WgRect WgGizmoTable::GetCellGeo( int row, int column )
 	// Apply padding
 
 	r.x += m_cellPadding.left;
-	r.w -= m_cellPadding.width();
+	r.w -= m_cellPadding.Width();
 
 	if( r.w < 0 )
 		r.w = 0;
@@ -1548,9 +1548,9 @@ void WgGizmoTable::ShowHeader( bool bShow )
 		if( m_pHeaderGfx )
 		{
 			if( bShow )
-				newHeight += m_pHeaderGfx->GetHeight();
+				newHeight += m_pHeaderGfx->Height();
 			else
-				newHeight -= m_pHeaderGfx->GetHeight();
+				newHeight -= m_pHeaderGfx->Height();
 		}
 
 		SetContentSize( WgSize( m_contentSize.w, newHeight ) );
@@ -1583,7 +1583,7 @@ void WgGizmoTable::UpdateContentSize()
 	while( p )
 	{
 		if( p->IsVisible() )
-			size.h += p->Height() + m_cellPadding.height();
+			size.h += p->Height() + m_cellPadding.Height();
 		p = p->Next();
 	}
 
@@ -1598,7 +1598,7 @@ void WgGizmoTable::UpdateContentSize()
 	// Possibly add header to height
 
 	if( m_bShowHeader && m_pHeaderGfx )
-		size.h += m_pHeaderGfx->GetHeight();
+		size.h += m_pHeaderGfx->Height();
 
 	// Set size and request render
 
@@ -1695,7 +1695,7 @@ WgSize WgGizmoTable::MinSize() const
 {
 	// A minimum of four pixels per column and height of header (if visible) + 4 pixels.
 
-	return WgSize( m_nColumns * 4, (m_pHeaderGfx&&m_bShowHeader)?m_pHeaderGfx->GetHeight()+4:4 );
+	return WgSize( m_nColumns * 4, (m_pHeaderGfx&&m_bShowHeader)?m_pHeaderGfx->Height()+4:4 );
 }
 
 //____ BestSize() _____________________________________________________________
@@ -1728,9 +1728,9 @@ int WgGizmoTable::GetMarkedRow( int y, WgTableRow2*& pSaveRow, int& saveYOfs )
 
 	if( m_bShowHeader && m_pHeaderGfx )
 	{
-		if( y < m_pHeaderGfx->GetHeight() )
+		if( y < m_pHeaderGfx->Height() )
 			return -1;	// on header.
-		y -=  m_pHeaderGfx->GetHeight();
+		y -=  m_pHeaderGfx->Height();
 	}
 
 	//
@@ -1741,7 +1741,7 @@ int WgGizmoTable::GetMarkedRow( int y, WgTableRow2*& pSaveRow, int& saveYOfs )
 	{
 		if( p->IsVisible() )
 		{
-			if( y < (int) (p->Height() +  m_cellPadding.height()) )
+			if( y < (int) (p->Height() +  m_cellPadding.Height()) )
 			{
 				pSaveRow	= p;
 				saveYOfs	= y;
@@ -1749,7 +1749,7 @@ int WgGizmoTable::GetMarkedRow( int y, WgTableRow2*& pSaveRow, int& saveYOfs )
 				return row;
 			}
 
-			y -= p->Height() +  m_cellPadding.height();
+			y -= p->Height() +  m_cellPadding.Height();
 		}
 		p = p->Next();
 		row++;
@@ -1859,7 +1859,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 	if( m_bShowHeader && m_pHeaderGfx )
 	{
-		WgRect	headerArea( _canvas.x, _window.y, _canvas.w, m_pHeaderGfx->GetHeight() );
+		WgRect	headerArea( _canvas.x, _window.y, _canvas.w, m_pHeaderGfx->Height() );
 		WgRect  r2 = headerArea;
 
 		for( int i = 0 ; i < m_nColumns ; i++ )
@@ -1894,15 +1894,15 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 				else
 					block = m_pDescendGfx->GetBlock(mode);
 
-				int dx = (int) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.GetWidth() * m_sortMarkerOrigo.hotspotX());
-				int dy = (int) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.GetHeight() * m_sortMarkerOrigo.hotspotY());
+				int dx = (int) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.Width() * m_sortMarkerOrigo.hotspotX());
+				int dy = (int) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.Height() * m_sortMarkerOrigo.hotspotY());
 
-				pDevice->ClipBlitBlock( _clip, block, WgRect( dx, dy, block.GetWidth(), block.GetHeight()) );
+				pDevice->ClipBlitBlock( _clip, block, WgRect( dx, dy, block.Size()) );
 			}
 
 			WgRect rText = r2;
 			if( m_pHeaderGfx )
-				rText.shrink( m_pHeaderGfx->GetContentBorders() );
+				rText.Shrink( m_pHeaderGfx->ContentBorders() );
 
 			m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
 			pDevice->PrintText( _clip, m_pColumns[i].GetTextObj(), rText );
@@ -1910,13 +1910,13 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 			r2.x += r2.w - 1;	// HACK: Overlap last pixel to avoid double separator graphics between two headers
 		}
 
-		r.y += m_pHeaderGfx->GetHeight();
+		r.y += m_pHeaderGfx->Height();
 
 		// Modify clipping rectangle for view content (we don't want to draw over header)
 
-		if(  _clip.y < _window.y + m_pHeaderGfx->GetHeight())
+		if(  _clip.y < _window.y + m_pHeaderGfx->Height())
 		{
-			int diff = _window.y + m_pHeaderGfx->GetHeight() - _clip.y;
+			int diff = _window.y + m_pHeaderGfx->Height() - _clip.y;
 			clipView.y += diff;
 			clipView.h -= diff;
 			if( clipView.h < 1 )
@@ -1937,7 +1937,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		{
 			if( r.y + (int) pRow->Height() >= clipView.y )
 				 break;
-			r.y += pRow->Height() + m_cellPadding.height();
+			r.y += pRow->Height() + m_cellPadding.Height();
 			iRowColor++;
 		}
 		pRow = pRow->Next();
@@ -1957,10 +1957,10 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		if( r.y >= clipView.y + clipView.h )
 			break;
 
-		r.h = pRow->Height() + m_cellPadding.height();
+		r.h = pRow->Height() + m_cellPadding.Height();
 
 		WgRect	u;
-		if( u.intersection( r, clipView ) )
+		if( u.Intersection( r, clipView ) )
 		{
 			if( pRow->IsSelected() )
 			{
@@ -2012,7 +2012,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 					rc.w = _window.x + _window.w - rc.x;		// Last column stretches to end of tableview...
 
 				rc.x += m_cellPadding.left;
-				rc.w -= m_cellPadding.width();
+				rc.w -= m_cellPadding.Width();
 
 				WgRect clip2( rc, clipView );
 
@@ -2023,7 +2023,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 			}
 		}
 
-		r.y += pRow->Height() + m_cellPadding.height();
+		r.y += pRow->Height() + m_cellPadding.Height();
 		pRow = (WgTableRow2 *) pRow->Next();
 		iRowColor++;
 	}
@@ -2037,7 +2037,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 			r.h = m_emptyRowHeight;
 
 			WgRect	u;
-			if( u.intersection( r, clipView ) )
+			if( u.Intersection( r, clipView ) )
 			{
 				if( m_nRowColors > 0 )
 				{
@@ -2154,7 +2154,7 @@ WgTableColumn2 *WgGizmoTable::GetHeaderColumnAt( const WgCoord& pos )
 	if(pos.x < 0 || pos.y < 0)
 		return NULL;
 
-	if( m_bShowHeader && m_pHeaderGfx && m_pHeaderGfx->GetHeight() > pos.y )
+	if( m_bShowHeader && m_pHeaderGfx && m_pHeaderGfx->Height() > pos.y )
 	{
 		int xOfs = pos.x;
 		for( int col = 0 ; col < m_nColumns ; col++ )
@@ -2181,7 +2181,7 @@ void WgGizmoTable::_onAction( WgInput::UserAction _action, int _button_key, cons
 	{
 		case WgInput::BUTTON_PRESS:
 		{
-			if( m_bShowHeader && m_pHeaderGfx && m_pHeaderGfx->GetHeight() > pos.y )		// Press on header?
+			if( m_bShowHeader && m_pHeaderGfx && m_pHeaderGfx->Height() > pos.y )		// Press on header?
 			{
 				int xOfs = pos.x;
 				for( int col = 0 ; col < m_nColumns ; col++ )

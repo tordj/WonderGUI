@@ -158,9 +158,9 @@ bool WgBlockSet::AddAlternative( WgSize activationSize, const WgSurface * pSurf,
 	return true;
 }
 
-//____ GetNbAlternatives() ____________________________________________________
+//____ NbAlternatives() ____________________________________________________
 
-int WgBlockSet::GetNbAlternatives() const
+int WgBlockSet::NbAlternatives() const
 {
 	int nb = 1;
 	LinkedAlt * p = m_altChain.First();
@@ -172,9 +172,9 @@ int WgBlockSet::GetNbAlternatives() const
 	return nb;
 }
 
-//____ GetActivationSize() ____________________________________________________
+//____ ActivationSize() ____________________________________________________
 
-WgSize WgBlockSet::GetActivationSize( int alt ) const
+WgSize WgBlockSet::ActivationSize( int alt ) const
 {
 	if( alt == 0 )
 		return WgSize(0,0);
@@ -291,9 +291,9 @@ bool WgBlockSet::SetSize( WgSize size, int alt )
 	return true;
 }
 
-//____ GetTextColor() _________________________________________________________
+//____ TextColor() _____________________________________________________________
 
-WgColor WgBlockSet::GetTextColor( WgMode mode ) const
+WgColor WgBlockSet::TextColor( WgMode mode ) const
 {
 	if( !m_pTextColors )
 		return WgColor::transparent;
@@ -302,9 +302,9 @@ WgColor WgBlockSet::GetTextColor( WgMode mode ) const
 }
 
 
-//____ GetRect() ______________________________________________________________
+//____ Rect() __________________________________________________________________
 
-WgRect WgBlockSet::GetRect( WgMode mode, int alt ) const
+WgRect WgBlockSet::Rect( WgMode mode, int alt ) const
 {
 	const Alt_Data * p = GetAlt(alt);
 	if( !p )
@@ -313,9 +313,9 @@ WgRect WgBlockSet::GetRect( WgMode mode, int alt ) const
 	return WgRect( p->x[mode], p->y[mode], p->w, p->h );
 }
 
-//____ GetSize() ______________________________________________________________
+//____ Size() __________________________________________________________________
 
-WgSize WgBlockSet::GetSize( int alt ) const
+WgSize WgBlockSet::Size( int alt ) const
 {
 	const Alt_Data * p = GetAlt(alt);
 	if( !p )
@@ -325,9 +325,9 @@ WgSize WgBlockSet::GetSize( int alt ) const
 }
 
 
-//____ GetWidth() ______________________________________________________________
+//____ Width() _________________________________________________________________
 
-int WgBlockSet::GetWidth( int alt ) const
+int WgBlockSet::Width( int alt ) const
 {
 	const Alt_Data * p = GetAlt(alt);
 	if( !p )
@@ -336,9 +336,9 @@ int WgBlockSet::GetWidth( int alt ) const
 	return p->w;
 }
 
-//____ GetHeight() ____________________________________________________________
+//____ Height() ________________________________________________________________
 
-int WgBlockSet::GetHeight( int alt ) const
+int WgBlockSet::Height( int alt ) const
 {
 	const Alt_Data * p = GetAlt(alt);
 	if( !p )
@@ -347,42 +347,42 @@ int WgBlockSet::GetHeight( int alt ) const
 	return p->h;
 }
 
-//____ GetMinSize() ___________________________________________________________
+//____ MinSize() _______________________________________________________________
 
-WgSize WgBlockSet::GetMinSize( int alt ) const
+WgSize WgBlockSet::MinSize( int alt ) const
 {
 	const Alt_Data * p = GetAlt(alt);
 	if( !p )
 		return WgSize();
 
-	return p->gfxBorders.size();
+	return p->gfxBorders.Size();
 }
 
-//____ GetMinWidth() __________________________________________________________
+//____ MinWidth() ______________________________________________________________
 
-int WgBlockSet::GetMinWidth( int alt ) const
+int WgBlockSet::MinWidth( int alt ) const
 {
 	const Alt_Data * p = GetAlt(alt);
 	if( !p )
 		return 0;
 
-	return p->gfxBorders.width();
+	return p->gfxBorders.Width();
 }
 
-//____ GetMinHeight() _________________________________________________________
+//____ MinHeight() _____________________________________________________________
 
-int WgBlockSet::GetMinHeight( int alt ) const
+int WgBlockSet::MinHeight( int alt ) const
 {
 	const Alt_Data * p = GetAlt(alt);
 	if( !p )
 		return 0;
 
-	return p->gfxBorders.height();
+	return p->gfxBorders.Height();
 }
 
-//____ GetSurface() ___________________________________________________________
+//____ Surface() _______________________________________________________________
 
-const WgSurface * WgBlockSet::GetSurface( int alt ) const
+const WgSurface * WgBlockSet::Surface( int alt ) const
 {
 	const Alt_Data * p = GetAlt(alt);
 	if( !p )
@@ -392,9 +392,9 @@ const WgSurface * WgBlockSet::GetSurface( int alt ) const
 }
 
 
-//____ GetGfxBorders() ________________________________________________________
+//____ GfxBorders() ____________________________________________________________
 
-WgBorders WgBlockSet::GetGfxBorders( int alt ) const
+WgBorders WgBlockSet::GfxBorders( int alt ) const
 {
 	const Alt_Data * p = GetAlt(alt);
 	if( !p )
@@ -414,9 +414,9 @@ void WgBlockSet::SetGfxBorders( const WgBorders& borders, int alt )
 	p->gfxBorders = borders;
 }
 
-//____ GetContentBorders() ____________________________________________________
+//____ ContentBorders() ____________________________________________________
 
-WgBorders WgBlockSet::GetContentBorders( int alt ) const
+WgBorders WgBlockSet::ContentBorders( int alt ) const
 {
 	const Alt_Data * p = GetAlt(alt);
 	if( !p )

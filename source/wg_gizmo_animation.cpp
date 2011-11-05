@@ -246,7 +246,7 @@ bool WgGizmoAnimation::Stop()
 
 WgSize WgGizmoAnimation::BestSize() const
 {
-	return m_src.size();
+	return m_src.Size();
 }
 
 //____ _onEvent() ______________________________________________________________

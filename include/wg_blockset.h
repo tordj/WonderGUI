@@ -171,18 +171,18 @@ public:
 	WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags );
 	WgBlock() : m_pSurf(0), m_flags(0) { }
 
-	inline const WgRect&		GetRect() const { return m_rect; }
-	inline const WgSurface *	GetSurface() const { return m_pSurf; }
-	inline const WgBorders&		GetBorders() const { return m_gfxBorders; }
-	inline const WgBorders&		GetContentBorders() const { return m_contentBorders; }
-	inline Uint32				GetFlags() const { return m_flags; }
-	inline int					GetWidth() const { return m_rect.w; }
-	inline int					GetHeight() const { return m_rect.h; }
-	inline WgSize				GetSize() const { return WgSize(m_rect.w, m_rect.h); }
+	inline const WgRect&		Rect() const { return m_rect; }
+	inline const WgSurface *	Surface() const { return m_pSurf; }
+	inline const WgBorders&		GfxBorders() const { return m_gfxBorders; }
+	inline const WgBorders&		ContentBorders() const { return m_contentBorders; }
+	inline Uint32				Flags() const { return m_flags; }
+	inline int					Width() const { return m_rect.w; }
+	inline int					Height() const { return m_rect.h; }
+	inline WgSize				Size() const { return WgSize(m_rect.w, m_rect.h); }
 
-	inline int					GetMinWidth() const { return m_gfxBorders.width(); }
-	inline int					GetMinHeight() const { return m_gfxBorders.height(); }
-	inline WgSize				GetMinSize() const { return m_gfxBorders.size(); }
+	inline int					MinWidth() const { return m_gfxBorders.Width(); }
+	inline int					MinHeight() const { return m_gfxBorders.Height(); }
+	inline WgSize				MinSize() const { return m_gfxBorders.Size(); }
 
 	inline bool					IsOpaque() const { return ((m_flags & WG_OPAQUE) != 0); }
 	inline bool					HasOpaqueCenter() const { return ((m_flags & WG_OPAQUE_CENTER) != 0); }
@@ -262,29 +262,29 @@ public:
 	inline WgBlock		GetBlock( WgMode mode, int alt = 0 ) const { return GetBlock( mode, GetAlt(alt) ); }
 	inline bool			HasBlock( WgMode mode, int alt = 0 ) const;
 
-	int					GetNbAlternatives() const;
-	WgSize				GetActivationSize( int alt ) const;
+	int					NbAlternatives() const;
+	WgSize				ActivationSize( int alt ) const;
 
 	bool				SetSize( WgSize size, int alt = 0 );
 	bool				SetPos( WgMode mode, WgCoord pos, int alt = 0 );
 
-	inline WgColorSetPtr	GetTextColors() const { return m_pTextColors; }
-	WgColor				GetTextColor( WgMode mode ) const;
-	WgRect				GetRect( WgMode mode, int alt = 0 ) const;
-	WgSize				GetSize( int alt = 0 ) const;
-	int					GetWidth( int alt = 0 ) const;
-	int					GetHeight( int alt = 0 ) const;
+	inline WgColorSetPtr	TextColors() const { return m_pTextColors; }
+	WgColor				TextColor( WgMode mode ) const;
+	WgRect				Rect( WgMode mode, int alt = 0 ) const;
+	WgSize				Size( int alt = 0 ) const;
+	int					Width( int alt = 0 ) const;
+	int					Height( int alt = 0 ) const;
 
-	int					GetMinWidth( int alt = 0 ) const;
-	int					GetMinHeight( int alt = 0 ) const;
-	WgSize				GetMinSize( int alt = 0 ) const;
+	int					MinWidth( int alt = 0 ) const;
+	int					MinHeight( int alt = 0 ) const;
+	WgSize				MinSize( int alt = 0 ) const;
 
-	const WgSurface *	GetSurface( int alt = 0 ) const;
-	WgBorders			GetGfxBorders( int alt = 0 ) const;
+	const WgSurface *	Surface( int alt = 0 ) const;
+	WgBorders			GfxBorders( int alt = 0 ) const;
 	void				SetGfxBorders( const WgBorders& borders, int alt = 0 );
-	WgBorders			GetContentBorders( int alt = 0 ) const;
+	WgBorders			ContentBorders( int alt = 0 ) const;
 	void				SetContentBorders( const WgBorders& borders, int alt = 0 );
-	inline Uint32		GetFlags() const { return m_flags; }
+	inline Uint32		Flags() const { return m_flags; }
 
 	inline bool			IsOpaque() const { return ((m_flags & WG_OPAQUE) != 0); }
 	inline bool			HasOpaqueCenter() const { return ((m_flags & WG_OPAQUE_CENTER) != 0); }

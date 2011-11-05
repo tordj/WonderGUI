@@ -682,35 +682,35 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCoord& pos, WgSearchMode mode )
 	// Check XDRAG
 
 	WgViewHook * p = &m_elements[XDRAG];
-	if( p->m_pGizmo && p->m_geo.contains( pos ) )
+	if( p->m_pGizmo && p->m_geo.Contains( pos ) )
 	{
-		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.pos() ) )
+		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() ) )
 			return p->m_pGizmo;
 	}
 
 	// Check YDRAG
 
 	p = &m_elements[YDRAG];
-	if( p->m_pGizmo && p->m_geo.contains( pos ) )
+	if( p->m_pGizmo && p->m_geo.Contains( pos ) )
 	{
-		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.pos() ) )
+		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() ) )
 			return p->m_pGizmo;
 	}
 
 	// Check WINDOW
 
 	p = &m_elements[WINDOW];
-	WgRect geo( p->m_geo.pos(), WgSize::min(p->m_geo,m_contentSize) );
+	WgRect geo( p->m_geo.Pos(), WgSize::Min(p->m_geo,m_contentSize) );
 
-	if( p->m_pGizmo && geo.contains( pos ) )
+	if( p->m_pGizmo && geo.Contains( pos ) )
 	{
 		if( p->m_pGizmo->IsContainer() )
 		{
-			WgGizmo * pFound = p->m_pGizmo->CastToContainer()->FindGizmo( pos - p->m_geo.pos() + m_viewPixOfs, mode );
+			WgGizmo * pFound = p->m_pGizmo->CastToContainer()->FindGizmo( pos - p->m_geo.Pos() + m_viewPixOfs, mode );
 			if( pFound )
 				return pFound;
 		}
-		else if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.pos() + m_viewPixOfs ) )
+		else if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() + m_viewPixOfs ) )
 			return p->m_pGizmo;
 	}
 
@@ -882,11 +882,11 @@ void WgGizmoView::UpdateElementGeo( const WgSize& mySize, const WgSize& newConte
 
 		// Notify elements of their new size.
 
-		m_elements[WINDOW].Gizmo()->_onNewSize(newWindow.size());
+		m_elements[WINDOW].Gizmo()->_onNewSize(newWindow.Size());
 		if( bShowDragX )
-			m_elements[XDRAG].Gizmo()->_onNewSize(newDragX.size());
+			m_elements[XDRAG].Gizmo()->_onNewSize(newDragX.Size());
 		if( bShowDragY )
-			m_elements[YDRAG].Gizmo()->_onNewSize(newDragY.size());
+			m_elements[YDRAG].Gizmo()->_onNewSize(newDragY.Size());
 	}
 
 	// If contentSize has changed we save changes and set flags
@@ -962,8 +962,8 @@ void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 {
 	if( m_elements[WINDOW].Gizmo() )
 	{
-		WgRect window = m_elements[WINDOW].m_geo + _canvas.pos();
-		WgRect canvas( window.pos() - m_viewPixOfs, m_contentSize );
+		WgRect window = m_elements[WINDOW].m_geo + _canvas.Pos();
+		WgRect canvas( window.Pos() - m_viewPixOfs, m_contentSize );
 		WgRect clip( window, _clip );
 
 		if( clip.w > 0 && clip.h > 0 )
@@ -971,7 +971,7 @@ void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 	}
 	if( m_elements[XDRAG].m_bShow )
 	{
-		WgRect window = m_elements[XDRAG].m_geo + _canvas.pos();
+		WgRect window = m_elements[XDRAG].m_geo + _canvas.Pos();
 		WgRect clip( window, _clip );
 
 		if( clip.w > 0 && clip.h > 0 )
@@ -979,7 +979,7 @@ void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 	}
 	if( m_elements[YDRAG].m_bShow )
 	{
-		WgRect window = m_elements[YDRAG].m_geo + _canvas.pos();
+		WgRect window = m_elements[YDRAG].m_geo + _canvas.Pos();
 		WgRect clip( window, _clip );
 
 		if( clip.w > 0 && clip.h > 0 )
@@ -989,7 +989,7 @@ void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 	WgMode mode = m_bEnabled?WG_MODE_NORMAL:WG_MODE_DISABLED;
 	if( m_pFillerBlocks && m_geoFiller.w != 0 && m_geoFiller.h != 0 )
 	{
-		WgRect window = m_geoFiller + _canvas.pos();
+		WgRect window = m_geoFiller + _canvas.Pos();
 		WgRect clip( window, _clip );
 		pDevice->ClipBlitBlock( clip, m_pFillerBlocks->GetBlock( mode, m_geoFiller ), window );
 	}
@@ -999,7 +999,7 @@ void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 bool WgGizmoView::_onAlphaTest( const WgCoord& ofs )
 {
-	if( m_pFillerBlocks && m_geoFiller.contains( ofs ) )
+	if( m_pFillerBlocks && m_geoFiller.Contains( ofs ) )
 	{
 		WgMode mode = m_bEnabled?WG_MODE_NORMAL:WG_MODE_DISABLED;
 
@@ -1076,14 +1076,14 @@ WgViewHook::~WgViewHook()
 
 WgCoord WgViewHook::Pos() const
 {
-	return m_geo.pos();
+	return m_geo.Pos();
 }
 
 //____ WgViewHook::Size() _______________________________________________________
 
 WgSize WgViewHook::Size() const
 {
-	return m_geo.size();
+	return m_geo.Size();
 }
 
 //____ WgViewHook::Geo() ________________________________________________________
@@ -1097,7 +1097,7 @@ WgRect WgViewHook::Geo() const
 
 WgCoord WgViewHook::ScreenPos() const
 {
-	return m_pView->ScreenPos() + m_geo.pos();
+	return m_pView->ScreenPos() + m_geo.Pos();
 }
 
 //____ WgViewHook::ScreenGeo() __________________________________________________
@@ -1127,7 +1127,7 @@ void WgViewHook::RequestRender()
 void WgViewHook::RequestRender( const WgRect& rect )
 {
 	WgRect r = rect;
-	r += m_geo.pos();
+	r += m_geo.Pos();
 	m_pView->RequestRender( r );
 }
 

@@ -85,7 +85,7 @@ void WgRectChain::Clip( const WgRect * _pClip )
 				pRect->y + pRect->h > _pClip->y + _pClip->h )
 		{
 
-			if( !pRect->intersection( *pRect, *_pClip ) )
+			if( !pRect->Intersection( *pRect, *_pClip ) )
 			{
 				// Delete the rectangle
 
@@ -480,7 +480,7 @@ void WgRectChain::ClipTransfer( WgRectChain * _pDest, const WgRect * _pClip )
 
 				// Finally, clip the dirty rectangle itself.
 
-				pRect->intersection( *pRect, *_pClip );
+				pRect->Intersection( *pRect, *_pClip );
 			}
 			else																// Fully covered by our clip rectangle.
 			{
@@ -535,9 +535,9 @@ WgRectLink * WgRectChain::ClipRectangles( WgRectLink * p1, WgRectLink * p2 )
 /*
 		Return values:	0 = No rectangle has been created or completely disappeared.
 												Both might have changed in size though...
-									<>0 = Om adressen stämmer överens med antingen p1 eller p2 så ska
-												den rektangeln tas bort, annars är det adressen till en ny
-												rektangel som har skapats (mao, någon har splittrats i två).
+									<>0 = Om adressen stÃ¤mmer Ã¶verens med antingen p1 eller p2 sÃ¥ ska
+												den rektangeln tas bort, annars Ã¤r det adressen till en ny
+												rektangel som har skapats (mao, nÃ¥gon har splittrats i tvÃ¥).
 */
 
 	// Check for intersection.

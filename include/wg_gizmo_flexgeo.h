@@ -103,8 +103,8 @@ public:
 	inline int			Origo() const { return m_anchor; }
 	inline WgLocation	Hotspot() const { return m_hotspot; }
 	inline WgRect		FloatGeo() const { return m_placementGeo; }
-	inline WgCoord		FloatOfs() const { return m_placementGeo.pos(); }
-	inline WgRect		FloatSize() const { return m_placementGeo.size(); }
+	inline WgCoord		FloatOfs() const { return m_placementGeo.Pos(); }
+	inline WgRect		FloatSize() const { return m_placementGeo.Size(); }
 
 	// Methods for anchored hooks
 
@@ -115,8 +115,8 @@ public:
 
 	// Standard Hook methods
 
-	inline WgCoord		Pos() const { return m_realGeo.pos(); }
-	inline WgSize		Size() const { 	return m_realGeo.size(); }
+	inline WgCoord		Pos() const { return m_realGeo.Pos(); }
+	inline WgSize		Size() const { 	return m_realGeo.Size(); }
 	inline WgRect		Geo() const { return m_realGeo; }
 
 	WgCoord		ScreenPos() const;

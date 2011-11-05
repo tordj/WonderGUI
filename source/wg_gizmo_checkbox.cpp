@@ -177,18 +177,18 @@ WgSize WgGizmoCheckbox::BestSize() const
 
 	if( m_pBlockUnchecked )
 	{
-		bgBestSize = m_pBlockUnchecked->GetSize();
-		textBestSize += m_pBlockUnchecked->GetContentBorders();
+		bgBestSize = m_pBlockUnchecked->Size();
+		textBestSize += m_pBlockUnchecked->ContentBorders();
 	}	
 
 	if( m_pIconUnchecked )
 	{
-		iconBestSize = m_pIconUnchecked->GetSize() + m_iconAreaBorders.size();
+		iconBestSize = m_pIconUnchecked->Size() + m_iconAreaBorders.Size();
 		
 		//TODO: Add magic for how icon influences textBestSize based on origo, iconAreaBorders, iconScale and bgBestSize
 	}
 
-	WgSize bestSize = WgSize::max( WgSize::max(iconBestSize,bgBestSize), textBestSize);
+	WgSize bestSize = WgSize::Max( WgSize::Max(iconBestSize,bgBestSize), textBestSize);
 	
 	return bestSize;
 }
@@ -346,11 +346,11 @@ WgRect WgGizmoCheckbox::_getIconRect( const WgSize& gizmoSize )
 
 	if( pIcon )
 	{
-		int w = pIcon->GetWidth();
-		int h = pIcon->GetHeight();
+		int w = pIcon->Width();
+		int h = pIcon->Height();
 
-		int bgW = gizmoSize.w - m_iconAreaBorders.width();
-		int bgH = gizmoSize.h - m_iconAreaBorders.height();
+		int bgW = gizmoSize.w - m_iconAreaBorders.Width();
+		int bgH = gizmoSize.h - m_iconAreaBorders.Height();
 
 		if( m_iconScale != 0.f )
 		{
@@ -368,8 +368,8 @@ WgRect WgGizmoCheckbox::_getIconRect( const WgSize& gizmoSize )
 
 		rect.x = m_iconOrigo.calcOfsX( bgW, w );
 		rect.y = m_iconOrigo.calcOfsY( bgH, h );
-		rect.w = w + m_iconAreaBorders.width();
-		rect.h = h + m_iconAreaBorders.height();;
+		rect.w = w + m_iconAreaBorders.Width();
+		rect.h = h + m_iconAreaBorders.Height();
 	}
 	else
 	{
@@ -392,7 +392,7 @@ WgRect WgGizmoCheckbox::_getContentRect( const WgSize& gizmoSize, const WgRect& 
 	WgBlockSetPtr p = m_bChecked ? m_pBlockChecked : m_pBlockUnchecked;
 
 	if( p )
-		rect.shrink( p->GetContentBorders() );
+		rect.Shrink( p->ContentBorders() );
 
 	if( m_bIconPushText )
 	{
@@ -462,7 +462,7 @@ void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	// Blit background
 
 	if( pBlockSet )
-		pDevice->ClipBlitBlock( _clip, pBlockSet->GetBlock(mode,_canvas.size()), _canvas );
+		pDevice->ClipBlitBlock( _clip, pBlockSet->GetBlock(mode,_canvas.Size()), _canvas );
 
 	// Blit icon
 
@@ -471,10 +471,10 @@ void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	if( pIcon && iconRect.w > 0 && iconRect.h > 0 )
 	{
 		WgRect iconBlitRect = iconRect;
-		iconBlitRect.shrink( m_iconAreaBorders );
+		iconBlitRect.Shrink( m_iconAreaBorders );
 		iconBlitRect.x += _canvas.x;
 		iconBlitRect.y += _canvas.y;
-		pDevice->ClipBlitBlock( _clip, pIcon->GetBlock(mode,iconBlitRect.size()), iconBlitRect );
+		pDevice->ClipBlitBlock( _clip, pIcon->GetBlock(mode,iconBlitRect.Size()), iconBlitRect );
 	}
 
 	// Print content
@@ -482,7 +482,7 @@ void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
  	if( m_text.nbLines()!= 0 )
 	{
 		if( pBlockSet )
-			m_text.SetBgBlockColors(pBlockSet->GetTextColors());
+			m_text.SetBgBlockColors(pBlockSet->TextColors());
 
 		int	iDisplacement = 0;
 		if( (m_bPressed && m_bOver) || m_bChecked )
@@ -598,7 +598,7 @@ bool WgGizmoCheckbox::_onAlphaTest( const WgCoord& ofs )
 	WgSize	bgSize		= Size();
 	WgRect	iconRect	= _getIconRect( bgSize );
 
-	iconRect.shrink( m_iconAreaBorders );
+	iconRect.Shrink( m_iconAreaBorders );
 
 
 	if( m_bChecked )
@@ -630,26 +630,26 @@ bool WgGizmoCheckbox::_onAlphaTest( const WgCoord& ofs )
 			if( iconRect.x + iconRect.w < contentRect.x )
 				iconRect.w = contentRect.x - iconRect.x;
 
-			if( iconRect.x > contentRect.right() )
+			if( iconRect.x > contentRect.Right() )
 			{
-				iconRect.w += iconRect.x - contentRect.right();
-				iconRect.x = contentRect.right();
+				iconRect.w += iconRect.x - contentRect.Right();
+				iconRect.x = contentRect.Right();
 			}
 
 			if( iconRect.y + iconRect.h < contentRect.y )
 				iconRect.h = contentRect.y - iconRect.y;
 
-			if( iconRect.y > contentRect.bottom() )
+			if( iconRect.y > contentRect.Bottom() )
 			{
-				iconRect.h += iconRect.y - contentRect.bottom();
-				iconRect.y = contentRect.bottom();
+				iconRect.h += iconRect.y - contentRect.Bottom();
+				iconRect.y = contentRect.Bottom();
 			}
 
 			//
 
 			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize) )) ||
 				_markTestTextArea( ofs.x, ofs.y ) ||
-				iconRect.contains( ofs.x, ofs.y ) )
+				iconRect.Contains( ofs.x, ofs.y ) )
 				return true;
 
 			return false;

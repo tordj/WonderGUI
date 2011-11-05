@@ -12,8 +12,8 @@ bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 		int areaW = area.w;
 		int areaH = area.h;
 
-		int blockW = block.GetWidth();
-		int blockH = block.GetHeight();
+		int blockW = block.Width();
+		int blockH = block.Height();
 
 		if( areaW > blockW )
 		{
@@ -34,19 +34,19 @@ bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 	if(!block.IsScaled())
 		return false;
 
-	const WgBorders& borders = block.GetBorders();
+	const WgBorders& borders = block.GfxBorders();
 
-	int areaW = area.w - borders.width();
-	int areaH = area.h - borders.height();
+	int areaW = area.w - borders.Width();
+	int areaH = area.h - borders.Height();
 
-	int blockW = block.GetWidth() - borders.width();
-	int blockH = block.GetHeight() - borders.height();
+	int blockW = block.Width() - borders.Width();
+	int blockH = block.Height() - borders.Height();
 
 	if(areaW <= 0 || areaH <= 0 || blockW <= 0 || blockH <= 0)
 		return false;
 
-	int adjustedW = borders.width();
-	int adjustedH = borders.height();
+	int adjustedW = borders.Width();
+	int adjustedH = borders.Height();
 
 	if(areaW * blockH > blockW * areaH)
 	{
@@ -74,7 +74,7 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area )
 	AdjustScaledArea(block, area);
 
 	// Sanity check & shortcuts.
-	if( !area.contains(ofs.x,ofs.y) )
+	if( !area.Contains(ofs.x,ofs.y) )
 		return false;
 
 	if( block.IsOpaque() )
@@ -86,7 +86,7 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area )
 	ofs.y -= area.y;
 
 
-	const WgBorders& borders = block.GetBorders();
+	const WgBorders& borders = block.GfxBorders();
 
 	// Determine in which section the cordinate is (0-2 for x and y).
 
@@ -108,11 +108,11 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area )
 
 	if( xSection == 2 )
 	{
-		ofs.x = block.GetWidth() - (area.w - ofs.x);
+		ofs.x = block.Width() - (area.w - ofs.x);
 	}
 	else if( xSection == 1 )
 	{
-		int tileAreaWidth = block.GetWidth() - borders.width();
+		int tileAreaWidth = block.Width() - borders.Width();
 
 		bool bTile;
 
@@ -127,7 +127,7 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area )
 			ofs.x = ((ofs.x - borders.left) % tileAreaWidth) + borders.left;
 		else
 		{
-			double screenWidth = area.w - borders.width();	// Width of stretch-area on screen.
+			double screenWidth = area.w - borders.Width();	// Width of stretch-area on screen.
 			ofs.x = (int) ((ofs.x-borders.left)/screenWidth * tileAreaWidth + borders.left);
 		}
 	}
@@ -137,11 +137,11 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area )
 
 	if( ySection == 2 )
 	{
-		ofs.y = block.GetHeight() - (area.h - ofs.y);
+		ofs.y = block.Height() - (area.h - ofs.y);
 	}
 	else if( ySection == 1 )
 	{
-		int tileAreaHeight = block.GetHeight() - borders.height();
+		int tileAreaHeight = block.Height() - borders.Height();
 
 		bool bTile;
 
@@ -156,12 +156,12 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area )
 			ofs.y = ((ofs.y - borders.top) % tileAreaHeight) + borders.top;
 		else
 		{
-			double screenHeight = area.h - borders.height();	// Height of stretch-area on screen.
+			double screenHeight = area.h - borders.Height();	// Height of stretch-area on screen.
 			ofs.y = (int) ((ofs.y-borders.top)/screenHeight * tileAreaHeight + borders.top);
 		}
 	}
 
-	Uint8 alpha = block.GetSurface()->GetOpacity(block.GetRect().x+ofs.x, block.GetRect().y+ofs.y);
+	Uint8 alpha = block.Surface()->GetOpacity(block.Rect().x+ofs.x, block.Rect().y+ofs.y);
 
 	if( alpha )
 		return true;

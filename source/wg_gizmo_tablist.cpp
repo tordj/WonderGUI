@@ -682,10 +682,10 @@ WgSize WgGizmoTablist::BestSize() const
 		WgBlockSetPtr pBg = GetTabSource(pTab);
 		if( pBg )
 		{
-			h = pBg->GetHeight();
+			h = pBg->Height();
 			int textH = pTab->m_text.height();
-			if( h - pBg->GetContentBorders().height() < textH )
-				h = textH + pBg->GetContentBorders().height();			
+			if( h - pBg->ContentBorders().Height() < textH )
+				h = textH + pBg->ContentBorders().Height();			
 		}
 		else
 			h = pTab->m_text.height();
@@ -1021,10 +1021,10 @@ int WgGizmoTablist::CalcTabsWantedWidth( WgTab * pTab ) const
 	WgBlockSetPtr pSrc = GetTabSource(pTab);
 	if( pSrc )
 	{
-		width += pSrc->GetContentBorders().width();
+		width += pSrc->ContentBorders().Width();
 
-		if( width < pSrc->GetMinWidth() )
-			width = pSrc->GetMinWidth();
+		if( width < pSrc->MinWidth() )
+			width = pSrc->MinWidth();
 	}
 
 	if( width < m_minTabWidth )
@@ -1063,8 +1063,8 @@ WgTab * WgGizmoTablist::Pos2Tab( int x, int y ) const
 
 			if( m_bTabOpaqueForMouse && x >= 0 && y >= 0 && x < (int) w && y < sz.h )
 				bHit = true;
-			else if( ((unsigned) x) > pSrc->GetContentBorders().left && ((unsigned) x) < w - pSrc->GetContentBorders().right &&
-				((unsigned) y) > pSrc->GetContentBorders().top && y < sz.h - pSrc->GetContentBorders().bottom )
+			else if( ((unsigned) x) > pSrc->ContentBorders().left && ((unsigned) x) < w - pSrc->ContentBorders().right &&
+				((unsigned) y) > pSrc->ContentBorders().top && y < sz.h - pSrc->ContentBorders().bottom )
 				bHit = true;
 			else
 				bHit = WgUtil::MarkTestBlock( WgCoord(x, y), pSrc->GetBlock( GetTabMode(*pTab), WgSize(w,sz.h) ), WgRect(0,0,w,sz.h));
@@ -1167,7 +1167,7 @@ void WgGizmoTablist::RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, 
 	pDevice->ClipBlitBlock( clip, block, dest );
 
 	WgRect	r = dest;
-	r.shrink( pSrc->GetContentBorders() );
+	r.Shrink( pSrc->ContentBorders() );
 
 	if( tab.m_pItemRow )
 	{
@@ -1185,7 +1185,7 @@ void WgGizmoTablist::RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, 
 	WgRect clip2( clip, r );
 	tab.m_text.setMode(mode);
 	if( pSrc )
-		tab.m_text.SetBgBlockColors( pSrc->GetTextColors() );
+		tab.m_text.SetBgBlockColors( pSrc->TextColors() );
 	pDevice->PrintText( clip2, &tab.m_text, r );
 }
 

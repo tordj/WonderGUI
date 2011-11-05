@@ -102,7 +102,7 @@ Uint32 WgGizmoButton::GetTextAreaWidth()
 	int w = Size().w;
 
 	if( m_pBgGfx )
-		w -= m_pBgGfx->GetContentBorders().width();
+		w -= m_pBgGfx->ContentBorders().Width();
 
 	return w;
 }
@@ -173,16 +173,16 @@ int WgGizmoButton::HeightForWidth( int width ) const
 	int height = 0;
 
 	if( m_pBgGfx )
-		height = m_pBgGfx->GetHeight();
+		height = m_pBgGfx->Height();
 
 	if( m_text.nbChars() != 0 )
 	{
 		WgBorders borders;
 
 		if( m_pBgGfx )
-			borders = m_pBgGfx->GetContentBorders();
+			borders = m_pBgGfx->ContentBorders();
 
-		int heightForText = m_text.heightForWidth(width-borders.width()) + borders.height();
+		int heightForText = m_text.heightForWidth(width-borders.Width()) + borders.Height();
 		if( heightForText > height )
 			height = heightForText;
 	}
@@ -200,14 +200,14 @@ WgSize WgGizmoButton::BestSize() const
 	WgSize bestSize;
 
 	if( m_pBgGfx )
-		bestSize = m_pBgGfx->GetSize();
+		bestSize = m_pBgGfx->Size();
 
 	if( m_text.nbChars() != 0 )
 	{
 		WgSize textSize = m_text.unwrappedSize();
 
 		if( m_pBgGfx )
-			textSize += m_pBgGfx->GetContentBorders();
+			textSize += m_pBgGfx->ContentBorders();
 
 		if( textSize.w > bestSize.w )
 			bestSize.w = textSize.w;
@@ -245,7 +245,7 @@ void WgGizmoButton::_onNewSize( const WgSize& size )
 	Uint32 w = size.w;
 
 	if( m_pBgGfx )
-		w -= m_pBgGfx->GetContentBorders().width();
+		w -= m_pBgGfx->ContentBorders().Width();
 
 	m_text.setLineWidth(w);
 }
@@ -273,14 +273,14 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	if( m_pIconGfx )
 	{
-		int w = m_pIconGfx->GetWidth();
-		int h = m_pIconGfx->GetHeight();
+		int w = m_pIconGfx->Width();
+		int h = m_pIconGfx->Height();
 
 		int dx = (int)( m_iconOrigo.anchorX() * _canvas.w - m_iconOrigo.hotspotX() * w + m_iconOfs.x + xOfs );
 		int dy = (int)( m_iconOrigo.anchorY() * _canvas.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
 
 		WgRect dest( _canvas.x + dx, _canvas.y + dy, w, h );
-		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, dest.size()), dest );
+		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, dest.Size()), dest );
 	}
 
 	// Print text (with displacement).
@@ -290,12 +290,12 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		m_text.setMode(m_mode);
 
 		if( m_pBgGfx )
-			m_text.SetBgBlockColors( m_pBgGfx->GetTextColors() );
+			m_text.SetBgBlockColors( m_pBgGfx->TextColors() );
 
 		WgRect printWindow( _canvas.x + xOfs, _canvas.y + yOfs, _canvas.w, _canvas.h );
 
 		if( m_pBgGfx )
-			printWindow.shrink( m_pBgGfx->GetContentBorders() );
+			printWindow.Shrink( m_pBgGfx->ContentBorders() );
 
 		WgRect c = _clip;
 		WgRect printW = printWindow;

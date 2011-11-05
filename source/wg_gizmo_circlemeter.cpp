@@ -366,7 +366,7 @@ void WgGizmoCirclemeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas
 		// Print the text
 
 		WgRect	textArea = _canvas;
-			textArea.shrink(m_numberBorders);
+			textArea.Shrink(m_numberBorders);
 
 		m_text.setMode(style);
 		pDevice->PrintText( _clip, &m_text, textArea );

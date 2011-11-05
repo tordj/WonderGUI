@@ -53,7 +53,7 @@ bool WgModalHook::SetGeo( const WgRect& geometry, WgLocation origo )
 //_____________________________________________________________________________
 bool WgModalHook::SetGeo( const WgCoord& ofs, WgLocation origo )
 {
-	m_placementGeo.setPos(ofs);
+	m_placementGeo.SetPos(ofs);
 	m_origo	= origo;
 	return _refreshRealGeo();
 }
@@ -61,7 +61,7 @@ bool WgModalHook::SetGeo( const WgCoord& ofs, WgLocation origo )
 //_____________________________________________________________________________
 bool WgModalHook::SetOfs( const WgCoord& ofs )
 {
-	m_placementGeo.setPos(ofs);
+	m_placementGeo.SetPos(ofs);
 	return _refreshRealGeo();
 }
 
@@ -86,7 +86,7 @@ bool WgModalHook::SetSize( WgSize sz )
 	if( sz.w < 0 || sz.h < 0 )
 		return false;
 
-	m_placementGeo.setSize( sz );
+	m_placementGeo.SetSize( sz );
 	return _refreshRealGeo();
 }
 
@@ -134,7 +134,7 @@ bool WgModalHook::MoveY( int y )
 //_____________________________________________________________________________
 WgCoord WgModalHook::ScreenPos() const
 {
-	return m_pParent->ScreenPos() + m_realGeo.pos();
+	return m_pParent->ScreenPos() + m_realGeo.Pos();
 }
 
 //_____________________________________________________________________________
@@ -164,7 +164,7 @@ WgModalHook::WgModalHook( WgGizmoModal * pParent )
 //_____________________________________________________________________________
 bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly the requested (floating) geometry.
 {
-	WgSize sz = m_placementGeo.size();
+	WgSize sz = m_placementGeo.Size();
 
 	if( sz.w == 0 && sz.h == 0 )
 		sz = m_pGizmo->BestSize();
@@ -179,7 +179,7 @@ bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly t
 		sz.h = 1;
 
 	WgCoord ofs = WgUtil::LocationToOfs( m_origo, m_pParent->Size() ) - WgUtil::LocationToOfs( m_origo, sz );
-	ofs += m_placementGeo.pos();
+	ofs += m_placementGeo.Pos();
 
 	WgRect newGeo( ofs, sz );
 
@@ -202,7 +202,7 @@ void WgModalHook::RequestRender()
 //_____________________________________________________________________________
 void WgModalHook::RequestRender( const WgRect& rect )
 {
-	m_pParent->_onRequestRender( rect + m_realGeo.pos(), this );
+	m_pParent->_onRequestRender( rect + m_realGeo.Pos(), this );
 }
 
 //_____________________________________________________________________________
@@ -227,7 +227,7 @@ void WgModalHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& c
 
 	// Get our screen geometry and clippedArea.
 
-	WgRect screenGeo = m_realGeo + parentGeo.pos();
+	WgRect screenGeo = m_realGeo + parentGeo.Pos();
 	WgRect clippedArea( screenGeo, clip );
 
 	// If we are outside visible bounds, we just transfer the dirt and return.
@@ -587,7 +587,7 @@ WgGizmo *  WgGizmoModal::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 	{
 		if( pHook->Gizmo()->IsContainer() )
 		{
-			WgGizmo * pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_realGeo.pos(), mode );
+			WgGizmo * pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_realGeo.Pos(), mode );
 			if( pResult )
 				return pResult;
 		}
@@ -600,17 +600,17 @@ WgGizmo *  WgGizmoModal::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 	while( pHook )
 	{
-		if( pHook->m_realGeo.contains(ofs) )
+		if( pHook->m_realGeo.Contains(ofs) )
 		{
 			if( pHook->Gizmo()->IsContainer() )
 			{
-				WgGizmo * pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_realGeo.pos(), mode );
+				WgGizmo * pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_realGeo.Pos(), mode );
 				if( pResult )
 					return pResult;
 			}
 			else if( mode == WG_SEARCH_GEOMETRY )
 				return pHook->Gizmo();
-			else if( pHook->Gizmo()->MarkTest( ofs - pHook->m_realGeo.pos() ) )
+			else if( pHook->Gizmo()->MarkTest( ofs - pHook->m_realGeo.Pos() ) )
 				return pHook->Gizmo();
 		}
 		pHook = pHook->_prev();
@@ -650,7 +650,7 @@ void WgGizmoModal::_onCollectRects( WgRectChain& rects, const WgRect& geo, const
 	WgModalHook * pHook = m_modalHooks.First();
 	while( pHook )
 	{
-		pHook->Gizmo()->_onCollectRects( rects, pHook->m_realGeo + geo.pos(), clip );
+		pHook->Gizmo()->_onCollectRects( rects, pHook->m_realGeo + geo.Pos(), clip );
 		pHook = pHook->Next();
 	}
 }
@@ -665,7 +665,7 @@ void WgGizmoModal::_onMaskRects( WgRectChain& rects, const WgRect& geo, const Wg
 	WgModalHook * pHook = m_modalHooks.First();
 	while( pHook )
 	{
-		pHook->Gizmo()->_onMaskRects( rects, pHook->m_realGeo + geo.pos(), clip );
+		pHook->Gizmo()->_onMaskRects( rects, pHook->m_realGeo + geo.Pos(), clip );
 		pHook = pHook->Next();
 	}
 }
@@ -691,7 +691,7 @@ void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHo
 
 	while( pCover )
 	{
-		if( pCover->m_realGeo.intersectsWith( rect ) )
+		if( pCover->m_realGeo.IntersectsWith( rect ) )
 			pCover->Gizmo()->_onMaskRects( rects, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
 
 		pCover = pCover->Next();
@@ -795,7 +795,7 @@ void WgGizmoModal::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 
 	while( pHook )
 	{
-		WgRect geo = pHook->m_realGeo + _canvas.pos();
+		WgRect geo = pHook->m_realGeo + _canvas.Pos();
 		if( pHook->Gizmo()->IsContainer() )
 		{
 			pHook->Gizmo()->CastToContainer()->_renderDirtyRects( pDevice, geo, geo, _layer );

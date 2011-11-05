@@ -269,7 +269,7 @@ public:
 	bool	GetAutoScaleHeaders() const { return m_bAutoScaleHeader; }
 	float	CalcHeaderScaleFactor() const;
 
-	int		GetHeaderHeight() const	{ return (m_bShowHeader && m_pHeaderGfx) ? m_pHeaderGfx->GetHeight(0) : 0; }
+	int		GetHeaderHeight() const	{ return (m_bShowHeader && m_pHeaderGfx) ? m_pHeaderGfx->Height(0) : 0; }
 
 	void	SetEmptyRowHeight( int height );
 	int		GetEmptyRowHeight() const { return m_emptyRowHeight; }

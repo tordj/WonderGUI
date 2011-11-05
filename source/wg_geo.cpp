@@ -29,7 +29,7 @@
 
 WgRect::WgRect( const WgRect& r1, const WgRect& r2 )
 {
-	intersection( r1, r2 );
+	Intersection( r1, r2 );
 }
 
 WgRect::WgRect( const WgCoord& p1, const WgCoord& p2 )
@@ -58,9 +58,9 @@ WgRect::WgRect( const WgCoord& p1, const WgCoord& p2 )
 }
 
 
-//____ intersection() ________________________________________________________________
+//____ Intersection() ________________________________________________________________
 
-bool WgRect::intersection( const WgRect& _r1, const WgRect& _r2 )
+bool WgRect::Intersection( const WgRect& _r1, const WgRect& _r2 )
 {
 	int		x1, y1;						// So we can use ourself as inparameter.
 	int		x2, y2;
@@ -100,9 +100,9 @@ bool WgRect::intersection( const WgRect& _r1, const WgRect& _r2 )
 	return	true;
 }
 
-//____ shrink() _____________________________________________________________
+//____ Shrink() _____________________________________________________________
 
-void WgRect::shrink(int left, int top, int right, int bottom)
+void WgRect::Shrink(int left, int top, int right, int bottom)
 {
 	x += left;
 	y += top;
@@ -116,12 +116,12 @@ void WgRect::shrink(int left, int top, int right, int bottom)
 		h = 0;
 }
 
-void WgRect::shrink(const WgBorders &_borders)
+void WgRect::Shrink(const WgBorders &_borders)
 {
 	x += _borders.left;
 	y += _borders.top;
-	w -= _borders.width();
-	h -= _borders.height();
+	w -= _borders.Width();
+	h -= _borders.Height();
 
 	if( w < 0 )
 		w = 0;
@@ -130,9 +130,9 @@ void WgRect::shrink(const WgBorders &_borders)
 		h = 0;
 }
 
-//____ grow() _____________________________________________________________
+//____ Grow() _____________________________________________________________
 
-void WgRect::grow(int left, int top, int right, int bottom)
+void WgRect::Grow(int left, int top, int right, int bottom)
 {
 	x -= left;
 	y -= top;
@@ -140,17 +140,17 @@ void WgRect::grow(int left, int top, int right, int bottom)
 	h += bottom + top;
 }
 
-void WgRect::grow(const WgBorders &_borders)
+void WgRect::Grow(const WgBorders &_borders)
 {
 	x -= _borders.left;
 	y -= _borders.top;
-	w += _borders.width();
-	h += _borders.height();
+	w += _borders.Width();
+	h += _borders.Height();
 }
 
-//____ growToContain() _______________________________________________________
+//____ GrowToContain() _______________________________________________________
 
-void WgRect::growToContain( int _x, int _y )
+void WgRect::GrowToContain( int _x, int _y )
 {
 	if( _x < x )
 	{
@@ -173,7 +173,7 @@ void WgRect::growToContain( int _x, int _y )
 	}
 }
 
-void WgRect::growToContain( const WgCoord& _coord )
+void WgRect::GrowToContain( const WgCoord& _coord )
 {
 	if( _coord.x < x )
 	{
@@ -197,7 +197,7 @@ void WgRect::growToContain( const WgCoord& _coord )
 }
 
 
-void WgRect::growToContain( const WgRect& r )
+void WgRect::GrowToContain( const WgRect& r )
 {
 	if( r.x < x )
 	{

@@ -77,7 +77,7 @@ void WgGizmoPixmap::SetSource( const WgBlockSetPtr& pBlockSet )
 WgSize WgGizmoPixmap::BestSize() const
 {
 	if( m_pGfx )
-		return m_pGfx->GetSize();
+		return m_pGfx->Size();
 
 	return MinSize();
 }

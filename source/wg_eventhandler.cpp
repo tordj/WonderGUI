@@ -1418,7 +1418,7 @@ void WgEventHandler::_processMouseButtonRelease( WgEvent::MouseButtonRelease * p
 		WgGizmo * pGizmo = m_latestPressGizmos[button][i].GetRealPtr();
 		if( pGizmo )
 		{
-			bool bIsInside = pGizmo->ScreenGeo().contains(pEvent->PointerPos());
+			bool bIsInside = pGizmo->ScreenGeo().Contains(pEvent->PointerPos());
 			QueueEvent( new WgEvent::MouseButtonRelease( button, pGizmo, true, bIsInside ) );
 		}
 	}
@@ -1432,7 +1432,7 @@ void WgEventHandler::_processMouseButtonRelease( WgEvent::MouseButtonRelease * p
 		{
 			if( !_isGizmoInList( pGizmo, m_latestPressGizmos[button] ) )
 			{
-				bool bIsInside = pGizmo->ScreenGeo().contains(pEvent->PointerPos());
+				bool bIsInside = pGizmo->ScreenGeo().Contains(pEvent->PointerPos());
 				QueueEvent( new WgEvent::MouseButtonRelease( button, pGizmo, false, bIsInside ) );
 			}
 		}
