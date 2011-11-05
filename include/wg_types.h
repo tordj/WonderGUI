@@ -175,9 +175,11 @@ enum WgExtChar
 	// Code inside WonderGUI assumes these are all
 	// in the range 0x80-0xA0, but that might change in the future.
 
-	WG_BREAK_PERMITTED		= 0x82,
-	WG_HYPHEN_BREAK_PERMITTED= 0x83,
-	WG_NO_BREAK_SPACE		= 0xA0,
+	WG_BREAK_PERMITTED			= 0x82,
+	WG_HYPHEN_BREAK_PERMITTED	= 0x83,
+	WG_NO_BREAK_SPACE			= 0xA0,
+
+	WG_ELLIPSIS					= 0x2026
 };
 
 //____ WgCodePage ______________________________________________________________
@@ -572,6 +574,29 @@ struct WgSortContext
 {
 public:
 	bool	bAscend;
+};
+
+//____ WgPixelFormat __________________________________________________________
+
+struct WgPixelFormat
+{
+	Uint8	type;				///< Enum specifying the format if it exacty matches a predefined format, otherwise set to UNSPECIFIED.
+	Uint8	bits;				///< Number of bits for the pixel, includes any non-used padding bits.
+
+	Uint32	R_mask;				///< bitmask for getting the red bits out of the pixel
+	Uint32	G_mask;				///< bitmask for getting the green bits out of the pixel
+	Uint32	B_mask;				///< bitmask for getting the blue bits out of the pixel
+	Uint32	A_mask;				///< bitmask for getting the alpha bits out of the pixel
+
+	int		R_shift;			///< amount to shift the red bits to get an 8-bit representation of red. This can be negative.
+	int		G_shift;			///< amount to shift the green bits to get an 8-bit representation of red. This can be negative.
+	int		B_shift;			///< amount to shift the blue bits to get an 8-bit representation of red. This can be negative.
+	int		A_shift;			///< amount to shift the alpha bits to get an 8-bit representation of red. This can be negative.
+
+	Uint8	R_bits;				///< number of bits for red in the pixel
+	Uint8	G_bits;				///< number of bits for green in the pixel
+	Uint8	B_bits;				///< number of bits for blue in the pixel
+	Uint8	A_bits;				///< number of bits for alpha in the pixel
 };
 
 #endif // WG_TYPES_DOT_H

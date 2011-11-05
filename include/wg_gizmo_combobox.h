@@ -27,8 +27,8 @@
 #	include <wg_gizmo.h>
 #endif
 
-#ifndef	WG_INTERFACE_TEXTHOLDER_DOT_H
-#	include <wg_interface_textholder.h>
+#ifndef	WG_INTERFACE_EDITTEXT_DOT_H
+#	include <wg_interface_edittext.h>
 #endif
 
 #ifndef WG_BLOCKSET_DOT_H
@@ -41,7 +41,7 @@ class Wdg_Menu;
 class WgMenuItem;
 
 
-class WgGizmoCombobox : public WgGizmo, public Wg_Interface_TextHolder
+class WgGizmoCombobox : public WgGizmo, public WgInterfaceEditText
 {
 public:
 	WgGizmoCombobox();
@@ -57,10 +57,25 @@ public:
 
 	WgMenuItem*		GetSelectedItem() const { return m_pSelectedItem; }
 
-	void			SetEditable( bool bEditable );
-
 	void			SetTextFormat( const WgCharSeq& str );
 	WgString		GetTextFormat() const { return m_textFormat; }
+
+	void			SetPlaceholderText( const WgCharSeq& str );
+	WgString		GetPlaceholderText() const { return m_placeholderText; }
+
+
+	void			SetEditMode(WgTextEditMode mode);
+	WgTextEditMode	GetEditMode() const { return m_editMode; }
+
+	Uint32			InsertTextAtCursor( const WgCharSeq& str );
+	bool			InsertCharAtCursor( Uint16 c );
+
+	void			goBOL();
+	void			goEOL();
+	void			goBOF() { goBOL(); }
+	void			goEOF() { goEOL(); }
+
+	virtual Wg_Interface_TextHolder* TempGetText(){ return this; }
 
 	// Press in textfield:
 	//		Editable - Grab input focus.
@@ -78,6 +93,7 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onRefresh();
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	void	_onUpdate( const WgUpdateInfo& _updateInfo );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onEnable();
 	void	_onDisable();
@@ -85,8 +101,11 @@ protected:
 	void	_onLostInputFocus();
 
 private:
+	bool	_isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
+	bool	_isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
 
 	void	_textModified();
+	void	_adjustViewOfs();
 
 	void	EntrySelected(WgMenuItem * pItem);
 	static void cbEntrySelected( void * pWdg, WgMenuItem * pItem ) { ((WgGizmoCombobox*)pWdg)->EntrySelected(pItem); }
@@ -96,6 +115,7 @@ private:
 	
 
 	WgString		m_textFormat;
+	WgString		m_placeholderText;		// Text displayed when field is empty and has no cursor.
 
 	WgBlockSetPtr	m_pTextBoxBg;
 
@@ -103,7 +123,11 @@ private:
 	Wdg_Menu *		m_pMenu;
 	WgMenuItem*		m_pSelectedItem;
 	WgText			m_text;
-	bool			m_bEditable;
+	WgTextEditMode	m_editMode;
+	bool			m_bResetCursorOnFocus;
+	bool			m_bPressInInputRect;
+	int				m_maxCharacters;
+	int				m_viewOfs;
 
 };
 

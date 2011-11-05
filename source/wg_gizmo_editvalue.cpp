@@ -48,6 +48,7 @@ WgGizmoEditvalue::WgGizmoEditvalue()
 	m_pointerStyle	= WG_POINTER_IBEAM;
 
 	m_text.SetWrap(false);
+	m_text.SetAutoEllipsis(false);
 }
 
 //____ ~WgGizmoEditvalue() ___________________________________________________________

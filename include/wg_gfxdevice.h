@@ -161,7 +161,7 @@ public:
 
 	// High-level print methods
 
-	virtual void		PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest );
+	virtual bool		PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest );
 
 	// Low-level print methods
 
@@ -174,6 +174,7 @@ protected:
 	WgGfxDevice();
 
 	void	_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, bool bLineEnding );
+	void	_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, int endX );
 
 	void	_drawTextBg( const WgRect& clip, const WgText * pText, const WgRect& dest );
 	void	_drawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect,

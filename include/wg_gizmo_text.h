@@ -74,10 +74,10 @@ public:
 	virtual WgTextEditMode	GetEditMode() const { return m_editMode; }
 
 	WgPointerStyle		GetPointerStyle() const;
+	WgString			GetTooltipString() const;
 
 	virtual bool TempIsInputField() const { return IsEditable(); }
 	virtual Wg_Interface_TextHolder* TempGetText() { return this; }
-
 
 	int		HeightForWidth( int width ) const;
 	WgSize	BestSize() const;

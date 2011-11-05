@@ -14,7 +14,8 @@
 		void	SetTooltipString( const WgChar* pString )	{ m_tooltipString.Set( pString ); }	\
 		void	SetTooltipString( const Uint16* pString )	{ m_tooltipString.Set( pString ); }	\
 		void	SetTooltipString( const char* pString )		{ m_tooltipString.Set( pString ); }	\
-		virtual WgString	GetTooltipString() const	{ return m_tooltipString; }
+		virtual WgString GetTooltipString() const	{ return m_tooltipString; } \
+		WgString GetRealTooltipString() const	{ return m_tooltipString; }
 
 
 #endif //WG_TOOLTIP_DOT_H

@@ -809,10 +809,10 @@ void WgGfxDevice::BlitVertBar(	const WgSurface * _pSurf, const WgRect& _src,
 
 //____ PrintText() ____________________________________________________________
 
-void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest )
+bool WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest )
 {
 	if( !pText )
-		return;
+		return false;
 
 	_drawTextBg(clip, pText, dest);
 
@@ -824,11 +824,13 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 	pText->GetBaseAttr(attr);
 
 	if( attr.pFont == 0 )
-		return;
+		return false;
 
 	pen.SetAttributes(attr);
 
-	if( dest.h < (int) pText->height() || dest.w < (int) pText->width() || !clip.contains( dest ) || pText->isCursorShowing() )
+	WgSize	textSize( pText->width(), pText->height() );
+
+	if( dest.h < (int) textSize.h || dest.w < (int) textSize.w || !clip.contains( dest ) || pText->isCursorShowing() )
 		pen.SetClipRect( clip );
 
 	const WgCursorInstance* pCursor = 0;
@@ -839,6 +841,10 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 		pCursor = pText->GetCursor();
 		pCursor->getSoftPos( cursLine, cursCol );
 	}
+
+	bool bEllipsisActive = false;
+	if( pText->IsAutoEllipsis() && !pText->isCursorShowing() && (textSize.w > dest.w || textSize.h > dest.h) )
+		bEllipsisActive = true;
 
 	WgCoord	pos;
 	pos.y = pText->LineStartY( 0, dest ) + pText->getSoftLine(0)->baseline;
@@ -852,6 +858,10 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 		pen.SetOrigo( pos );		// So tab positions will start counting from start of line.
 		pen.SetPos( pos );
 		pen.FlushChar();			// Remove kerning info for previous char.
+
+		bool bLastFullyVisibleLine = false;
+		if( (i < nLines-1) && (pos.y + pLines[i].lineSpacing + pLines[i+1].height - pLines[i+1].baseline > dest.y + dest.h) )
+			bLastFullyVisibleLine = true;
 
 		if( cursLine == i )
 		{
@@ -871,11 +881,19 @@ void WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 		}
 		else
 		{
-			_printTextSpan( pen, pText, pLines[i].ofs, pLines[i].nChars, true );
+			if( bEllipsisActive && (bLastFullyVisibleLine || pLines[i].width > dest.w) )
+				_printEllipsisTextSpan( pen, pText, pLines[i].ofs, pLines[i].nChars, dest.x + dest.w );
+			else
+				_printTextSpan( pen, pText, pLines[i].ofs, pLines[i].nChars, true );
 		}
 
 		pos.y += pLines[i].lineSpacing;
 	}
+
+	if( dest.w >= textSize.w && dest.h >= textSize.h )
+		return true;
+	else
+		return false;
 }
 
 //____ _printTextSpan() ________________________________________________________
@@ -965,6 +983,98 @@ void WgGfxDevice::_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int
 		// TODO: print LF-character if there is one following and properties says it should be displayed.
 
 	}
+
+	// Restore tint color.
+
+	if( m_tintColor != baseCol )
+		SetTintColor(baseCol);
+}
+
+
+//____ _printEllipsisTextSpan() ________________________________________________________
+
+void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, int endX )
+{
+	WgColor baseCol	= m_tintColor;
+	WgColor	color	= baseCol;
+
+	const WgChar * pChars = pText->getText();
+	Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
+	WgTextAttr		attr;
+
+	int		ellipsisWidth = 0;
+
+	// Print loop
+
+	for( int i = ofs ; i < ofs + len ; i++ )
+ 	{
+		// Act on possible change of character attributes.
+
+		if( pChars[i].PropHandle() != hProp )
+		{
+			bool bWasUnderlined = attr.bUnderlined;
+
+			hProp = pChars[i].PropHandle();
+
+			pText->GetCharAttr( attr, i );
+			pen.SetAttributes(attr);
+			if( !pen.GetGlyphSet() )
+				return;											// Better not to print than to crash...
+
+			// Set tint colors (if changed)
+
+			if( pen.GetColor() != color )
+			{
+				color = pen.GetColor();
+				SetTintColor( baseCol * color );
+			}
+
+			// Check if this is start of underlined text and in that case draw the underline.
+
+			if( attr.bUnderlined && (i==0 || !bWasUnderlined) )
+			{
+				WgRect clip = pen.HasClipRect()?pen.GetClipRect():WgRect(0,0,65535,65535);
+				_drawUnderline( clip, pText, pen.GetPosX(), pen.GetPosY(), i, (ofs+len)-i );
+			}
+
+			// Get the width of an ellipsis
+		
+			WgGlyphPtr pEllipsis = pen.GetFont()->GetGlyph( WG_ELLIPSIS, pen.GetStyle(), pen.GetSize() );
+			const WgGlyphBitmap * pBitmap = pEllipsis->GetBitmap();
+			if( pBitmap )
+				ellipsisWidth = pBitmap->rect.w + pBitmap->bearingX;
+			else
+				ellipsisWidth = 0;
+		}
+
+		// Calculate position and blit the glyph.
+
+		Uint16 ch = pChars[i].Glyph();
+
+		bool bBlit = pen.SetChar( ch );
+
+		WgCoord savedPos = pen.GetPos();
+		pen.ApplyKerning();
+		WgGlyphPtr pGlyph = pen.GetGlyph();
+		if( pen.GetPosX() +  pGlyph->Advance() + ellipsisWidth > endX )
+		{
+			pen.SetPos( savedPos );
+			break;
+		}
+
+		if( bBlit )
+			pen.BlitChar();
+
+		pen.AdvancePos();
+
+ 	}
+
+	// Render ellipsis.
+
+	pen.SetChar( WG_ELLIPSIS );
+								// We could have kerning here but we have screwed up previous glyph...
+	pen.BlitChar();
+
 
 	// Restore tint color.
 

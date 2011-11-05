@@ -141,7 +141,10 @@ public:
 	Sint8				GetLineSpaceAdjustment() const;
 
 	virtual bool		SetTextWrap(bool bWrap);
-	bool				GetTextWrap() const { return m_pText->IsWrap(); }
+	inline bool			GetTextWrap() const { return m_pText->IsWrap(); }
+
+	bool				SetAutoEllipsis(bool bAutoEllipsis);
+	inline bool			GetAutoEllipsis() const { return m_pText->IsAutoEllipsis(); }
 
 	inline WgMode		TextMode() const { return m_pText->mode(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }

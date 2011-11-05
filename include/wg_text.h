@@ -129,6 +129,8 @@ public:
 	int			nbChars() const;
 	int			nbLines() const;
 
+	inline bool	IsEmpty() const { return nbChars()==0?true:false; }
+
 	inline const WgChar * getText() const { return m_buffer.Chars(); }
 	inline WgCharBuffer * getBuffer() { return &m_buffer; }
 	inline const WgCharBuffer * getBuffer() const { return &m_buffer; }
@@ -266,6 +268,8 @@ public:
 	void				SetWrap( bool bWrap );
 	bool				IsWrap() const { return m_bWrap; }
 
+	void				SetAutoEllipsis( bool bAutoEllipsis );
+	bool				IsAutoEllipsis() const { return m_bAutoEllipsis; }
 
 
 	inline void			setMode( WgMode mode ) { m_mode = mode; }
@@ -454,6 +458,7 @@ protected:
 	int				m_newCursorPos;
 
 	bool			m_bWrap;
+	bool			m_bAutoEllipsis;	// Use ellipsis for text that doesn't fit.
 
 	WgTextHolder *	m_pHolder;
 
@@ -462,4 +467,3 @@ protected:
 
 
 #endif // WG_TEXT_DOT_H
-

@@ -47,12 +47,11 @@ public:
 
 	// Methods needed by WgSurface
 
-	Uint32		Width() const;
-	Uint32		Height() const;
+	WgSize		Size() const;
 	bool		IsOpaque() const;
 
-	Uint32		GetPixel( Uint32 x, Uint32 y ) const;
-	Uint8		GetOpacity( Uint32 x, Uint32 y ) const;
+	Uint32		GetPixel( WgCoord coord ) const;
+	Uint8		GetOpacity( WgCoord coord ) const;
 
 	void *		Lock( LockStatus mode );
 	void *		LockRegion( LockStatus mode, const WgRect& region );

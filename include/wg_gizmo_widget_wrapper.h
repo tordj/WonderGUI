@@ -216,7 +216,7 @@ private:
 template<class T> class Wdg_Widget : public WgWidget, public T
 {
 public:
-	Wdg_Widget( WgWidget* pParent = 0 ) : WgWidget(pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); }
+	Wdg_Widget( WgWidget* pParent = 0 ) : WgWidget(pParent) { m_container.m_pWidget = this; m_container.SetRadioGroup(true); m_pHook = new WgWidgetHook(this,&m_container,this); }
 	Wdg_Widget( const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget(geometry, pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); }
 	Wdg_Widget( WgOrigo origo, const WgRect& geometry, WgWidget * pParent = 0 ) : WgWidget( origo, geometry, pParent ) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); }
 	Wdg_Widget( WgOrigo upperLeft, Sint32 x1, Sint32 y1, WgOrigo lowerRight, Sint32 x2, Sint32 y2, WgWidget * pParent = 0 ) : WgWidget(upperLeft,x1, y1, lowerRight, x2, y2, pParent) { m_container.m_pWidget = this; m_pHook = new WgWidgetHook(this,&m_container,this); }

@@ -465,9 +465,9 @@ void WgVectorGlyphs::CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 
 	unsigned char * pDest = (unsigned char*) pSurf->LockRegion( WgSurface::WRITE_ONLY, pSlot->bitmap.rect );
 	assert( pDest != 0 );
-	assert( pSurf->GetPixelFormat()->type == WgSurface::RGBA_8 );
+	assert( pSurf->PixelFormat()->type == WgSurface::RGBA_8 );
 
-	int dest_pitch = pSurf->GetPitch();
+	int dest_pitch = pSurf->Pitch();
 
 	// Copy glyph bitmap into alpha channel of slot, making sure to clear any
 	// left over area of slots alpha channel.

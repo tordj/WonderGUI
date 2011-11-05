@@ -71,6 +71,7 @@ WgItemWrapText::WgItemWrapText( Sint64 id, const WgText * pText, Uint32 startwid
 void WgItemWrapText::Init()
 {
 	m_bEnabled = true;
+	m_bAllFitInArea = true;
 	m_pText = &m_text;
 
 	m_width = m_text.width() + m_margin.left + m_margin.right;
@@ -199,12 +200,12 @@ void WgItemWrapText::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction ac
 void WgItemWrapText::Render( const WgRect& _window, const WgRect& _clip )
 {
 	WgRect r = _window;
-
+/*
 	if( r.w < (Sint32) m_width )
 		r.w = m_width;
 	if( r.h < (Sint32) m_height )
 		r.h = m_height;
-
+*/
 	if( m_bgFill.a != 0 )
 		WgGfx::fillRect( WgRect(r, _clip), m_bgFill );
 
@@ -216,7 +217,7 @@ void WgItemWrapText::Render( const WgRect& _window, const WgRect& _clip )
 	if( GetMode() != m_pText->mode() )
 		m_pText->setMode( GetMode() );
 
-	WgGfx::printText( _clip, m_pText, r );
+	m_bAllFitInArea = WgGfx::printText( _clip, m_pText, r );
 }
 
 //____ Clone() ________________________________________________________________
@@ -279,3 +280,14 @@ void WgItemWrapText::AdaptToWidth( Uint32 displayed_width )
 	UpdateSize();
 }
 
+//____ GetTooltipString() _____________________________________________________
+
+WgString WgItemWrapText::GetTooltipString() const
+{
+	if( !m_tooltipString.IsEmpty() )
+		return m_tooltipString;
+	else if( m_text.IsAutoEllipsis() && !m_bAllFitInArea )
+		return WgString( m_text.getBuffer() );
+
+	return 0;
+}

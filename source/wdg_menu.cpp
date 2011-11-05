@@ -1354,10 +1354,10 @@ void Wdg_Menu::AdjustSize()
 {
 	WgBorders contentBorders = GetContentBorders();
 
-	Uint32  w = contentBorders.width();
-	Uint32	h = contentBorders.height();
+	int  w = contentBorders.width();
+	int	 h = contentBorders.height();
 
-	Uint32 minSep = m_sepBorders.width();
+	int minSep = m_sepBorders.width();
 	if( m_pSepGfx )
 		minSep += m_pSepGfx->GetMinWidth();
 
@@ -1376,7 +1376,7 @@ void Wdg_Menu::AdjustSize()
 			{
 				h += m_entryHeight;
 
-				Uint32 minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorders.width() + m_iconFieldWidth + m_arrowFieldWidth;
+				int minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorders.width() + m_iconFieldWidth + m_arrowFieldWidth;
 
 				if( w < minW )
 					w = minW;
@@ -1392,7 +1392,7 @@ void Wdg_Menu::AdjustSize()
 	if( h < m_entryHeight + contentBorders.height() )
 		h = m_entryHeight + contentBorders.height();
 
-	if( h > (Uint32) MaxHeight() )
+	if( h > MaxHeight() )
 	{
 		h = MaxHeight();
 
@@ -1445,7 +1445,7 @@ void Wdg_Menu::AdjustSize()
 	}
 
 
-	if( w < (Uint32) MinWidth() )
+	if( w < MinWidth() )
 		w = MinWidth();
 
 	if( w < m_menuMinW )

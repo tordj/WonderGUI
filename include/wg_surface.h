@@ -75,15 +75,18 @@ public:
 
 	// Methods for reading dimensions and abilities.
 
-	virtual	WgRect		Dimensions() const;
-	virtual	Uint32		Width() const = 0;
-	virtual	Uint32		Height() const = 0;
+	virtual	WgSize		Size() const = 0;
+	virtual	int			Width() const;
+	virtual	int			Height() const;
 	virtual bool		IsOpaque() const = 0;
 
 	// Slow, simple methods for reading and parsing individual pixels.
 
-	virtual Uint32		GetPixel( Uint32 x, Uint32 y ) const = 0;
-	virtual Uint8		GetOpacity( Uint32 x, Uint32 y ) const = 0;
+	
+	virtual Uint32		GetPixel( WgCoord coord ) const = 0;
+	inline Uint32		GetPixel( int x, int y ) const;
+	virtual Uint8		GetOpacity( WgCoord coord ) const = 0;
+	inline Uint8		GetOpacity( int x, int y ) const;
 	virtual	Uint32		Col2Pixel( const WgColor& col ) const;
 	virtual	WgColor		Pixel2Col( Uint32 pixel ) const;
 
@@ -105,37 +108,14 @@ public:
 		RGBA_8						///< One byte of red, green, blue and alpha respectively in exactly that order.
 	};
 
-
-	struct PixelFormat
-	{
-		Uint8	type;				///< Enum specifying the format if it exacty matches a predefined format, otherwise set to UNSPECIFIED.
-		Uint8	bits;				///< Number of bits for the pixel, includes any non-used padding bits.
-
-		Uint32	R_mask;				///< bitmask for getting the red bits out of the pixel
-		Uint32	G_mask;				///< bitmask for getting the green bits out of the pixel
-		Uint32	B_mask;				///< bitmask for getting the blue bits out of the pixel
-		Uint32	A_mask;				///< bitmask for getting the alpha bits out of the pixel
-
-		int		R_shift;			///< amount to shift the red bits to get an 8-bit representation of red. This can be negative.
-		int		G_shift;			///< amount to shift the green bits to get an 8-bit representation of red. This can be negative.
-		int		B_shift;			///< amount to shift the blue bits to get an 8-bit representation of red. This can be negative.
-		int		A_shift;			///< amount to shift the alpha bits to get an 8-bit representation of red. This can be negative.
-
-		Uint8	R_bits;				///< number of bits for red in the pixel
-		Uint8	G_bits;				///< number of bits for green in the pixel
-		Uint8	B_bits;				///< number of bits for blue in the pixel
-		Uint8	A_bits;				///< number of bits for alpha in the pixel
-	};
-
-
 	virtual void *		Lock( LockStatus mode ) = 0;
 	virtual void *		LockRegion( LockStatus mode, const WgRect& region ) = 0;
 	virtual void		Unlock() = 0;
 	inline 	bool		IsLocked() const { return (m_lockStatus != UNLOCKED); }
 	inline	LockStatus	GetLockStatus() const { return m_lockStatus; }
 	inline  WgRect		GetLockRegion() const { return m_lockRegion; }
-	inline Uint32		GetPitch() const;						// of locked surface
-	inline const PixelFormat *GetPixelFormat() const;					// of locked surface
+	inline  int			Pitch() const;									// of locked surface
+	inline const WgPixelFormat *PixelFormat() const;					// of locked surface
 
 
 	// Methods for modifying surface content
@@ -200,7 +180,7 @@ protected:
 	WgSurface();
 
 	WgRectChain 			m_dirtyRects;
-	PixelFormat				m_pixelFormat;
+	WgPixelFormat			m_pixelFormat;
 	LockStatus				m_lockStatus;
 	Uint32					m_pitch;
 	Uint8 *					m_pPixels;			// Pointer at pixels when surface locked.
@@ -236,9 +216,9 @@ inline void WgSurface::AddDirtyRect( const WgRect& rect )
 }
 
 
-//____ WgSurface::GetPitch() _______________________________________________
+//____ WgSurface::Pitch() _______________________________________________
 
-Uint32 WgSurface::GetPitch() const
+int WgSurface::Pitch() const
 {
 	if( m_lockStatus == UNLOCKED )
 		return 0;
@@ -247,9 +227,9 @@ Uint32 WgSurface::GetPitch() const
 }
 
 
-//____ WgSurface::GetPixelFormat() _______________________________________________
+//____ WgSurface::PixelFormat() _______________________________________________
 
-const WgSurface::PixelFormat *  WgSurface::GetPixelFormat() const
+const WgPixelFormat *  WgSurface::PixelFormat() const
 {
 	if( m_lockStatus == UNLOCKED )
 		return 0;
@@ -257,6 +237,16 @@ const WgSurface::PixelFormat *  WgSurface::GetPixelFormat() const
 	return &m_pixelFormat;
 }
 
+
+Uint32 WgSurface::GetPixel( int x, int y ) const
+{
+	return GetPixel( WgCoord(x,y) );
+}
+
+Uint8 WgSurface::GetOpacity( int x, int y ) const
+{
+	return GetOpacity( WgCoord(x,y) );
+}
 
 
 //==============================================================================

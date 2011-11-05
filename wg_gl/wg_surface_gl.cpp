@@ -40,9 +40,9 @@ PFNGLMAPBUFFERARBPROC				pglMapBufferARB			= 0;
 PFNGLUNMAPBUFFERARBPROC				pglUnmapBufferARB		= 0;
 
 
-//____ InitGlExtensions() ______________________________________________________
+//____ _initGlExtensions() ______________________________________________________
 
-bool WgSurfaceGL::InitGlExtensions()
+bool WgSurfaceGL::_initGlExtensions()
 {
 #ifdef WIN32
 	pglBufferDataARB = (PFNGLBUFFERDATAARBPROC) wglGetProcAddress("glBufferData");
@@ -71,29 +71,28 @@ bool WgSurfaceGL::InitGlExtensions()
 //____ Constructor _____________________________________________________________
 
 
-WgSurfaceGL::WgSurfaceGL( GLint _format, Uint32 _width, Uint32 _height, void * _pPixels )
+WgSurfaceGL::WgSurfaceGL( GLint _format, WgSize dimensions, void * _pPixels )
 {
 	if( pglBufferDataARB == 0 )
-		InitGlExtensions();
+		_initGlExtensions();
 
-	SetPixelFormat( _format );
+	_setPixelFormat( _format );
 
 	m_format = _format;
-	m_width	 = _width;
-	m_height = _height;
+	m_size	 = dimensions;
 	m_pAlpha = 0;
 	m_pPixels = (Uint8*)_pPixels;
 	m_buffer = 0;
-	m_pitch = _width*m_pixelFormat.bits/8;
+	m_pitch = dimensions.w*m_pixelFormat.bits/8;
 
-	InitBuffer();
+	_initBuffer();
 
 
 	glGenTextures( 1, &m_texture );
 	glBindTexture( GL_TEXTURE_2D, m_texture );
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexImage2D( GL_TEXTURE_2D, 0, _format, _width, _height, 0,
+	glTexImage2D( GL_TEXTURE_2D, 0, _format, m_size.w, m_size.h, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
@@ -103,9 +102,9 @@ WgSurfaceGL::WgSurfaceGL( GLint _format, Uint32 _width, Uint32 _height, void * _
 WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint8 * _pAlpha )
 {
 	if( pglBufferDataARB == 0 )
-		InitGlExtensions();
+		_initGlExtensions();
 
-	SetPixelFormat( m_format );
+	_setPixelFormat( m_format );
 
 	GLint width = 0;
 	GLint height = 0;
@@ -113,25 +112,24 @@ WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint8 * _pAlpha )
 	glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height );
 
 	m_texture	= _texture;
-	m_width = width;
-	m_height = height;
+	m_size = WgSize(width, height);
 	glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &m_format );
 	m_pAlpha	= _pAlpha;
 	m_pPixels	= 0;
 	m_buffer = 0;
 	m_pitch = width*m_pixelFormat.bits/8;
 
-	InitBuffer();
+	_initBuffer();
 
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
 }
 
-void WgSurfaceGL::InitBuffer()
+void WgSurfaceGL::_initBuffer()
 {
 	if( m_pPixels == 0 )
 		return;
 
-	int size = m_width*m_height;
+	int size = m_size.w*m_size.h;
 
 	size *= m_pixelSize;
 	if( size == 0 )
@@ -145,7 +143,7 @@ void WgSurfaceGL::InitBuffer()
 	pglBufferDataARB( GL_PIXEL_UNPACK_BUFFER_ARB, size, m_pPixels, GL_STREAM_DRAW_ARB );
 }
 
-void WgSurfaceGL::SetPixelFormat( GLint _format )
+void WgSurfaceGL::_setPixelFormat( GLint _format )
 {
 	switch( _format )
 	{
@@ -233,18 +231,11 @@ WgSurfaceGL::~WgSurfaceGL()
 	glDeleteTextures( 1, &m_texture );
 }
 
-//____ Width() ______________________________________________________________
+//____ Size() ______________________________________________________________
 
-Uint32 WgSurfaceGL::Width() const
+WgSize WgSurfaceGL::Size() const
 {
-	return m_width;
-}
-
-//____ Height() _____________________________________________________________
-
-Uint32 WgSurfaceGL::Height() const
-{
-	return m_height;
+	return m_size;
 }
 
 //____ IsOpaque() ______________________________________________________________
@@ -284,7 +275,7 @@ void * WgSurfaceGL::Lock( LockStatus mode )
 			break;	// Should never happen, just here to avoid compiler warnings...
 	}
 
-	m_lockRegion = WgRect(0,0,m_width,m_height);
+	m_lockRegion = WgRect(0,0,m_size);
 	m_lockStatus = mode;
 	return m_pPixels;
 }
@@ -296,7 +287,7 @@ void * WgSurfaceGL::LockRegion( LockStatus mode, const WgRect& region )
 	if( m_format == 0 || m_lockStatus != UNLOCKED || mode == UNLOCKED )
 		return 0;
 
-	if( region.x + region.w > m_width || region.y + region.w > m_height || region.x < 0 || region.y < 0 )
+	if( region.x + region.w > m_size.w || region.y + region.w > m_size.h || region.x < 0 || region.y < 0 )
 		return 0;
 
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
@@ -318,7 +309,7 @@ void * WgSurfaceGL::LockRegion( LockStatus mode, const WgRect& region )
 
 	m_lockRegion = region;
 	m_lockStatus = mode;
-	return m_pPixels += (m_width*region.y+region.x)*m_pixelSize;
+	return m_pPixels += (m_size.w*region.y+region.x)*m_pixelSize;
 }
 
 
@@ -335,7 +326,7 @@ void WgSurfaceGL::Unlock()
 	{
 		glBindTexture( GL_TEXTURE_2D, m_texture );
 //		pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
-		glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+		glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_size.w, m_size.h, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 //		glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 	}
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
@@ -348,7 +339,7 @@ void WgSurfaceGL::Unlock()
 
 //____ GetPixel() ______________________________________________________________
 
-Uint32 WgSurfaceGL::GetPixel( Uint32 x, Uint32 y ) const
+Uint32 WgSurfaceGL::GetPixel( WgCoord coord ) const
 {
 	if( m_format != 0 && m_buffer && m_lockStatus != WRITE_ONLY )
 	{
@@ -363,7 +354,7 @@ Uint32 WgSurfaceGL::GetPixel( Uint32 x, Uint32 y ) const
 
 			//
 
-			 pPixel += (m_width*y+x)*m_pixelSize;
+			 pPixel += (m_size.w*coord.y+coord.x)*m_pixelSize;
 			switch( m_pixelSize )
 			{
 				case 1:
@@ -383,7 +374,7 @@ Uint32 WgSurfaceGL::GetPixel( Uint32 x, Uint32 y ) const
 		}
 		else
 		{
-			Uint8 * pPixel = m_pPixels + (m_width*y+x)*m_pixelSize;
+			Uint8 * pPixel = m_pPixels + (m_size.w*coord.y+coord.x)*m_pixelSize;
 			switch( m_pixelSize )
 			{
 				case 1:
@@ -407,7 +398,7 @@ Uint32 WgSurfaceGL::GetPixel( Uint32 x, Uint32 y ) const
 
 //____ GetOpacity() ____________________________________________________________
 
-Uint8 WgSurfaceGL::GetOpacity( Uint32 x, Uint32 y ) const
+Uint8 WgSurfaceGL::GetOpacity( WgCoord coord ) const
 {
 	return 255;
 
@@ -426,7 +417,7 @@ Uint8 WgSurfaceGL::GetOpacity( Uint32 x, Uint32 y ) const
 
 				//
 
-				a = pPixel[(m_width*y+x)*m_pixelSize+3];
+				a = pPixel[(m_size.w*coord.y+coord.x)*m_pixelSize+3];
 
 				// Quick unlock of surface
 
@@ -436,7 +427,7 @@ Uint8 WgSurfaceGL::GetOpacity( Uint32 x, Uint32 y ) const
 			}
 			else
 			{
-				a = m_pPixels[(m_width*y+x)*m_pixelSize+3];
+				a = m_pPixels[(m_size.w*coord.y+coord.x)*m_pixelSize+3];
 			}
 
 			return a;
@@ -445,7 +436,7 @@ Uint8 WgSurfaceGL::GetOpacity( Uint32 x, Uint32 y ) const
 	}
 	else if( m_pAlpha )
 	{
-		return m_pAlpha[y*m_width+x];
+		return m_pAlpha[coord.y*m_size.w+coord.x];
 	}
 
 	return 255;
@@ -482,7 +473,7 @@ WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgSurface::Pi
 	char * pBuffer = new char[buffSize];
 	memset( pBuffer, 0, buffSize );
 
-	WgSurfaceGL * p = new WgSurfaceGL( format, size.w, size.h, pBuffer );
+	WgSurfaceGL * p = new WgSurfaceGL( format, size, pBuffer );
 
 	delete pBuffer;
 	return 	p;
