@@ -55,6 +55,9 @@ class WgGizmoContainer : public WgGizmoParent
 		void		SetRadioGroup( bool bRadioGroup ) { m_bRadioGroup = bRadioGroup; }
 		bool		IsRadioGroup() const { return m_bRadioGroup; }
 
+		void		SetTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
+		bool		IsTooltipGroup() const { return m_bTooltipGroup; }
+
 		bool		IsGizmo() const;
 		bool		IsRoot() const;
 
@@ -63,7 +66,7 @@ class WgGizmoContainer : public WgGizmoParent
 		WgRoot *	CastToRoot();
 
 	protected:
-		WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false) {}
+		WgGizmoContainer();
 		virtual ~WgGizmoContainer() {};
 
 		virtual void	_onEnable();
@@ -80,6 +83,7 @@ class WgGizmoContainer : public WgGizmoParent
 
 		bool		m_bFocusGroup;
 		bool		m_bRadioGroup;
+		bool		m_bTooltipGroup;	// All Children+ belongs to the same tooltip group.
 };
 
 

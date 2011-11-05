@@ -47,6 +47,16 @@ void WgBase::Init()
 	s_pData->pDefaultCursor = 0;
 	s_pData->pWeakPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
 
+	s_pData->doubleClickTimeTreshold 		= 250;
+	s_pData->doubleClickDistanceTreshold 	= 2;
+
+	s_pData->buttonRepeatDelay 	= 300;
+	s_pData->buttonRepeatRate 	= 200;
+
+	s_pData->keyRepeatDelay 	= 300;
+	s_pData->keyRepeatRate 		= 150;
+
+
 #ifdef WG_USE_FREETYPE
 	s_pData->bFreeTypeInitialized = false;
 #endif
@@ -172,4 +182,89 @@ void WgBase::SetDefaultTextLinkHandler( WgTextLinkHandler * pHandler )
 	s_pData->pDefaultTextLinkHandler = pHandler;
 }
 
+//____ SetDoubleClickTresholds() _______________________________________________
 
+bool WgBase::SetDoubleClickTresholds( int time, int distance )
+{
+	assert( s_pData != 0 );
+	if( time <= 0 || distance <= 0 )
+		return false;
+
+	s_pData->doubleClickTimeTreshold		= time;
+	s_pData->doubleClickDistanceTreshold	= distance;
+	return true;
+}
+
+//____ SetMouseButtonRepeat() ______________________________________________________
+
+bool WgBase::SetMouseButtonRepeat( int delay, int rate )
+{
+	assert( s_pData != 0 );
+	if( delay <= 0 || rate <= 0 )
+		return false;
+
+	s_pData->buttonRepeatDelay	= delay;
+	s_pData->buttonRepeatRate	= rate;
+	return true;
+}
+
+//____ SetKeyRepeat() _________________________________________________________
+
+bool WgBase::SetKeyRepeat( int delay, int rate )
+{
+	assert( s_pData != 0 );
+	if( delay <= 0 || rate <= 0 )
+		return false;
+
+	s_pData->keyRepeatDelay	= delay;
+	s_pData->keyRepeatRate	= rate;
+	return true;
+}
+
+//____ MapKey() _______________________________________________________________
+
+void WgBase::MapKey( WgKey translated_keycode, int native_keycode )
+{
+	assert( s_pData != 0 );
+	s_pData->keycodeMap[native_keycode] = translated_keycode;
+}
+
+
+//____ UnmapKey() _____________________________________________________________
+
+void WgBase::UnmapKey( WgKey translated_keycode )
+{
+	assert( s_pData != 0 );
+	std::map<int,WgKey>::iterator it = s_pData->keycodeMap.begin();
+
+	while( it != s_pData->keycodeMap.end() )
+	{
+		if( it->second == translated_keycode )
+		{
+			std::map<int,WgKey>::iterator it2 = it++;
+			s_pData->keycodeMap.erase(it2);
+		}
+		else
+			++it;
+	}
+}
+
+//____ ClearKeyMap() __________________________________________________________
+
+void WgBase::ClearKeyMap()
+{
+	assert( s_pData != 0 );
+	s_pData->keycodeMap.clear();
+}
+
+//____ TranslateKey() __________________________________________________________
+
+WgKey WgBase::TranslateKey( int native_keycode )
+{
+	assert( s_pData != 0 );	
+	std::map<int,WgKey>::iterator it = s_pData->keycodeMap.find(native_keycode);
+	if( it != s_pData->keycodeMap.end() )
+		return  it->second;
+	else
+		return WG_KEY_UNMAPPED;
+}

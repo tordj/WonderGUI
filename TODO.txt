@@ -7,7 +7,7 @@ FOCUS
 * Wdg_Layout.
 * Cut/Copy/Paste-support.
 * Pointermask+displacement i blockset.
-
+* WgCharBuffer m.fl. saknar metoder för Size, Link och kanske mer...
 
 FIX GIZMOS
 ==========

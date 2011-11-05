@@ -66,23 +66,6 @@ public:
 
 	//----
 
-	void	MapKey( WgKey translated_keycode, int native_keycode );
-	void	UnmapKey( WgKey translated_keycode );
-	void	ClearKeyMap();
-
-	//----
-
-	bool	SetMouseButtonRepeat( int delay, int rate );
-	bool	SetKeyRepeat( int delay, int rate );
-
-	int		MouseButtonRepeatDelay() const { return m_buttonRepeatDelay; }
-	int		MouseButtonRepeatRate() const { return m_buttonRepeatRate; }
-
-	int		KeyRepeatDelay() const { return m_keyRepeatDelay; }
-	int		KeyRepeatRate() const { return m_keyRepeatRate; }
-
-	//----
-
 	bool	SetFocusGroup( WgGizmoContainer * pFocusGroup );
 	bool	SetKeyboardFocus( WgGizmo * pFocus );
 
@@ -185,20 +168,6 @@ private:
 	WgModifierKeys	m_modKeys;
 
 	std::vector<WgGizmoWeakPtr>	m_vTickGizmos;		// Gizmos that have requested periodic tick-events (i.e. on every processEvents() ).
-
-	// Settings for keyboard/pointer input
-
-	int				m_doubleClickTimeTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
-	int				m_doubleClickDistanceTreshold;	// Maximum distance the pointer may move between first and second press to count as a doubleclick.
-
-	int				m_buttonRepeatDelay;
-	int				m_buttonRepeatRate;
-
-	int				m_keyRepeatDelay;
-	int				m_keyRepeatRate;
-
-
-	std::map<int,WgKey>	m_keycodeMap;		// Maps native keycodes to WgKey.
 
 	// Current mouse state
 

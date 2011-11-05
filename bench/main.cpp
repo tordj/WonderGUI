@@ -69,29 +69,29 @@ int main ( int argc, char** argv )
 //	pEventLogger->LogMouseButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
 
-	pEventHandler->MapKey( WG_KEY_SHIFT, SDLK_LSHIFT );
-	pEventHandler->MapKey( WG_KEY_SHIFT, SDLK_RSHIFT );
-	pEventHandler->MapKey( WG_KEY_CONTROL, SDLK_LCTRL );
-	pEventHandler->MapKey( WG_KEY_CONTROL, SDLK_RCTRL );
-	pEventHandler->MapKey( WG_KEY_ALT, SDLK_LALT );
-	pEventHandler->MapKey( WG_KEY_ALT, SDLK_RALT );
+	WgBase::MapKey( WG_KEY_SHIFT, SDLK_LSHIFT );
+	WgBase::MapKey( WG_KEY_SHIFT, SDLK_RSHIFT );
+	WgBase::MapKey( WG_KEY_CONTROL, SDLK_LCTRL );
+	WgBase::MapKey( WG_KEY_CONTROL, SDLK_RCTRL );
+	WgBase::MapKey( WG_KEY_ALT, SDLK_LALT );
+	WgBase::MapKey( WG_KEY_ALT, SDLK_RALT );
 
 
-	pEventHandler->MapKey( WG_KEY_LEFT, SDLK_LEFT );
-	pEventHandler->MapKey( WG_KEY_RIGHT, SDLK_RIGHT );
-	pEventHandler->MapKey( WG_KEY_UP, SDLK_UP );
-	pEventHandler->MapKey( WG_KEY_DOWN, SDLK_DOWN );
+	WgBase::MapKey( WG_KEY_LEFT, SDLK_LEFT );
+	WgBase::MapKey( WG_KEY_RIGHT, SDLK_RIGHT );
+	WgBase::MapKey( WG_KEY_UP, SDLK_UP );
+	WgBase::MapKey( WG_KEY_DOWN, SDLK_DOWN );
 
-	pEventHandler->MapKey( WG_KEY_HOME, SDLK_HOME );
-	pEventHandler->MapKey( WG_KEY_END, SDLK_END );
-	pEventHandler->MapKey( WG_KEY_PAGEUP, SDLK_PAGEUP );
-	pEventHandler->MapKey( WG_KEY_PAGEDOWN, SDLK_PAGEDOWN );
+	WgBase::MapKey( WG_KEY_HOME, SDLK_HOME );
+	WgBase::MapKey( WG_KEY_END, SDLK_END );
+	WgBase::MapKey( WG_KEY_PAGEUP, SDLK_PAGEUP );
+	WgBase::MapKey( WG_KEY_PAGEDOWN, SDLK_PAGEDOWN );
 
-	pEventHandler->MapKey( WG_KEY_RETURN, SDLK_RETURN );
-	pEventHandler->MapKey( WG_KEY_BACKSPACE, SDLK_BACKSPACE );
-	pEventHandler->MapKey( WG_KEY_DELETE, SDLK_DELETE );
-	pEventHandler->MapKey( WG_KEY_TAB, SDLK_TAB );
-	pEventHandler->MapKey( WG_KEY_ESCAPE, SDLK_ESCAPE );
+	WgBase::MapKey( WG_KEY_RETURN, SDLK_RETURN );
+	WgBase::MapKey( WG_KEY_BACKSPACE, SDLK_BACKSPACE );
+	WgBase::MapKey( WG_KEY_DELETE, SDLK_DELETE );
+	WgBase::MapKey( WG_KEY_TAB, SDLK_TAB );
+	WgBase::MapKey( WG_KEY_ESCAPE, SDLK_ESCAPE );
 
 
 
