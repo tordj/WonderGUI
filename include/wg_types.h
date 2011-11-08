@@ -462,7 +462,7 @@ enum WgSizePolicy
 {
 	WG_SIZE_SPECIFIED = 0,
 	WG_SIZE_MIN,
-	WG_SIZE_BEST,
+	WG_SIZE_DEFAULT,
 	WG_SIZE_MAX,
 };
 

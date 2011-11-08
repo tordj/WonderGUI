@@ -107,9 +107,9 @@ protected:
 
 	protected:
 
-		void			RequestRender();
-		void			RequestRender( const WgRect& rect );
-		void			RequestResize();
+		void			_requestRender();
+		void			_requestRender( const WgRect& rect );
+		void			_requestResize();
 
 		WgHook *	_prevHook() const;
 		WgHook *	_nextHook() const;

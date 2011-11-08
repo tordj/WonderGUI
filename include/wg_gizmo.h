@@ -131,8 +131,8 @@ public:
 	inline WgRect		Geo() const { if( m_pHook ) return m_pHook->Geo(); return WgRect(0,0,256,256); }
 	inline WgCoord		ScreenPos() const { if( m_pHook ) return m_pHook->ScreenPos(); return WgCoord(0,0); }
 	inline WgRect		ScreenGeo() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
-	inline bool			GrabFocus() { if( m_pHook ) return m_pHook->RequestFocus(); return false; }
-	inline bool			ReleaseFocus() { if( m_pHook ) return m_pHook->ReleaseFocus(); return false; }
+	inline bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
+	inline bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
 	inline bool			IsFocused() { return m_bFocused; }
 	inline WgGizmoParent * ParentX() { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
 
@@ -149,9 +149,7 @@ public:
 	virtual int		HeightForWidth( int width ) const;
 	virtual int		WidthForHeight( int height ) const;
 
-	virtual WgSize	MinSize() const;
-	virtual WgSize	BestSize() const;
-	virtual WgSize	MaxSize() const;
+	virtual WgSize	DefaultSize() const = 0;
 
 	virtual bool	IsView() const { return false; }
 	virtual bool	IsContainer() const { return false; }
@@ -181,9 +179,9 @@ protected:
 
 	// Convenient calls to hook
 
-	inline void		RequestRender() { if( m_pHook ) m_pHook->RequestRender(); }
-	inline void		RequestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->RequestRender( rect ); }
-	inline void		RequestResize() { if( m_pHook ) m_pHook->RequestResize(); }
+	inline void		RequestRender() { if( m_pHook ) m_pHook->_requestRender(); }
+	inline void		RequestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
+	inline void		RequestResize() { if( m_pHook ) m_pHook->_requestResize(); }
 
 	// To be overloaded by Gizmo
 

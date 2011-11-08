@@ -74,12 +74,12 @@ protected:
 
 	// To be called by Gizmo
 
-	virtual void	RequestRender() = 0;
-	virtual void	RequestRender( const WgRect& rect ) = 0;
-	virtual void	RequestResize() = 0;
+	virtual void	_requestRender() = 0;
+	virtual void	_requestRender( const WgRect& rect ) = 0;
+	virtual void	_requestResize() = 0;
 
-	virtual bool	RequestFocus();
-	virtual bool	ReleaseFocus();
+	virtual bool	_requestFocus();
+	virtual bool	_releaseFocus();
 
 	//
 

@@ -79,9 +79,7 @@ public:
 	int		HeightForWidth( int width ) const;
 	int		WidthForHeight( int height ) const;
 
-	WgSize	MinSize() const;
-	WgSize	BestSize() const;
-	WgSize	MaxSize() const;
+	WgSize	DefaultSize() const;
 
 protected:
 
@@ -111,8 +109,8 @@ protected:
 	// Internal to WgVBoxLayout
 
 	void	_adaptChildrenToWidth( int width );
-	void 	_refreshBestSize();
-	void	_refreshBestWidth();
+	void 	_refreshDefaultSize();
+	void	_refreshDefaultWidth();
 	void	_renderFromChildOnward( WgOrderedHook * pHook );
 
 

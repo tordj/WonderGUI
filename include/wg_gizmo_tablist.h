@@ -197,7 +197,7 @@ public:
 	WgTab* 			GetFirstVisibleTab() const;
 	WgTab* 			GetLastVisibleTab() const;
 
-	WgSize			BestSize() const;
+	WgSize			DefaultSize() const;
 
 protected:
 	void	_onCloneContent( const WgGizmo * _pOrg );

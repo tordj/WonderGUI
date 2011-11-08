@@ -86,9 +86,9 @@ protected:
 
 	bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 
-	void		RequestRender();
-	void		RequestRender( const WgRect& rect );
-	void		RequestResize();
+	void		_requestRender();
+	void		_requestRender( const WgRect& rect );
+	void		_requestResize();
 
 	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
 
@@ -103,7 +103,7 @@ protected:
 	WgRect		m_realGeo;			// Gizmos geo relative parent
 
 	WgLocation	m_origo;
-	WgRect		m_placementGeo;		// Gizmos geo relative anchor and hotspot. Setting width and height to 0 uses Gizmos BestSize() dynamically.
+	WgRect		m_placementGeo;		// Gizmos geo relative anchor and hotspot. Setting width and height to 0 uses Gizmos DefaultSize() dynamically.
 									// Setting just one of them to 0 uses Gizmos HeightForWidth() or WidthForHeight() dynamically.
 
 	WgRectChain	m_dirt;		// Dirty areas to be rendered, in screen coordinates!
@@ -150,9 +150,7 @@ public:
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
 
-	WgSize			MinSize() const;
-	WgSize			BestSize() const;
-	WgSize			MaxSize() const;
+	WgSize			DefaultSize() const;
 
 	bool			IsView() const { return false; }
 	bool			IsContainer() const { return true; }
@@ -190,9 +188,9 @@ private:
 	protected:
 		BaseHook( WgGizmoModal * pParent ) : m_pParent(pParent) {}
 
-		void		RequestRender();
-		void		RequestRender( const WgRect& rect );
-		void		RequestResize();
+		void		_requestRender();
+		void		_requestRender( const WgRect& rect );
+		void		_requestResize();
 
 		WgHook *	_prevHook() const { return 0; }
 		WgHook *	_nextHook() const { return m_pParent->FirstModal(); }

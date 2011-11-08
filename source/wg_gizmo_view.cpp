@@ -486,7 +486,7 @@ bool WgGizmoView::SetContent( WgGizmo * pContent )
 {
 	m_elements[WINDOW]._attachGizmo(pContent);
 
-	UpdateElementGeo( Size(), pContent->BestSize() );
+	UpdateElementGeo( Size(), pContent->DefaultSize() );
 	RequestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 
@@ -737,7 +737,7 @@ void WgGizmoView::UpdateElementGeo( const WgSize& mySize, const WgSize& newConte
 
 	if( m_elements[XDRAG].Gizmo() )
 	{
-		newDragX.h = m_elements[XDRAG].Gizmo()->BestSize().h;
+		newDragX.h = m_elements[XDRAG].Gizmo()->DefaultSize().h;
 		newDragX.w = newWindow.w;
 		newDragX.x = 0;
 
@@ -749,7 +749,7 @@ void WgGizmoView::UpdateElementGeo( const WgSize& mySize, const WgSize& newConte
 
 	if( m_elements[YDRAG].Gizmo() )
 	{
-		newDragY.w = m_elements[YDRAG].Gizmo()->BestSize().w;
+		newDragY.w = m_elements[YDRAG].Gizmo()->DefaultSize().w;
 		newDragY.h = newWindow.h;
 		newDragY.y = 0;
 
@@ -1117,23 +1117,23 @@ WgWidget* WgViewHook::GetRoot()
 	return false;
 }
 
-//____ WgViewHook::RequestRender() ______________________________________________
+//____ WgViewHook::_requestRender() ______________________________________________
 
-void WgViewHook::RequestRender()
+void WgViewHook::_requestRender()
 {
 	m_pView->RequestRender( m_geo );
 }
 
-void WgViewHook::RequestRender( const WgRect& rect )
+void WgViewHook::_requestRender( const WgRect& rect )
 {
 	WgRect r = rect;
 	r += m_geo.Pos();
 	m_pView->RequestRender( r );
 }
 
-//____ WgViewHook::RequestResize() ______________________________________________
+//____ WgViewHook::_requestResize() ______________________________________________
 
-void WgViewHook::RequestResize()
+void WgViewHook::_requestResize()
 {
 	//TODO: Figure out how this should work and implement.
 }

@@ -67,16 +67,16 @@ WgGizmo* WgHook::_releaseGizmo()
 	return p;
 }
 
-//____ RequestFocus() _________________________________________________________
+//____ _requestFocus() _________________________________________________________
 
-bool WgHook::RequestFocus()
+bool WgHook::_requestFocus()
 {
 	return Parent()->_focusRequested(this, m_pGizmo);
 }
 
-//____ ReleaseFocus() _________________________________________________________
+//____ _releaseFocus() _________________________________________________________
 
-bool WgHook::ReleaseFocus()
+bool WgHook::_releaseFocus()
 {
 	return Parent()->_focusReleased(this, m_pGizmo);
 }

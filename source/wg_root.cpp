@@ -330,17 +330,17 @@ WgRoot* WgRoot::Hook::Root() const
 	return m_pRoot;
 }
 
-void WgRoot::Hook::RequestRender()
+void WgRoot::Hook::_requestRender()
 {
 	m_pRoot->AddDirtyRect( Geo() );
 }
 
-void WgRoot::Hook::RequestRender( const WgRect& rect )
+void WgRoot::Hook::_requestRender( const WgRect& rect )
 {
 	m_pRoot->AddDirtyRect( WgRect( Pos() + rect.Pos(), rect.Size() ) );
 }
 
-void WgRoot::Hook::RequestResize()
+void WgRoot::Hook::_requestResize()
 {
 	// Do nothing, root ignores size requests.
 }

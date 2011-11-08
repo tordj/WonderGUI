@@ -118,9 +118,9 @@ int WgGizmoText::HeightForWidth( int width ) const
 	return m_text.heightForWidth( width );
 }
 
-//____ BestSize() _____________________________________________________________
+//____ DefaultSize() _____________________________________________________________
 
-WgSize WgGizmoText::BestSize() const
+WgSize WgGizmoText::DefaultSize() const
 {
 	//TODO: Fix this so we don't return current size (after wraptext is adapted to width) but size for unwrapped lines.
 

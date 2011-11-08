@@ -32,7 +32,7 @@ static const char	c_gizmoType[] = {"Modal"};
 void WgModalHook::Top()
 {
 	_moveLast();
-	RequestRender();
+	_requestRender();
 }
 
 //_____________________________________________________________________________
@@ -167,7 +167,7 @@ bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly t
 	WgSize sz = m_placementGeo.Size();
 
 	if( sz.w == 0 && sz.h == 0 )
-		sz = m_pGizmo->BestSize();
+		sz = m_pGizmo->DefaultSize();
 	else if( sz.w == 0 )
 		sz.w = m_pGizmo->WidthForHeight(sz.h);
 	else if( sz.h == 0 )
@@ -185,28 +185,28 @@ bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly t
 
 	if( newGeo != m_realGeo )
 	{
-		RequestRender();
+		_requestRender();
 		m_realGeo = WgRect( ofs, sz );
-		RequestRender();
+		_requestRender();
 	}
 
 	return true;
 }
 
 //_____________________________________________________________________________
-void WgModalHook::RequestRender()
+void WgModalHook::_requestRender()
 {
 	m_pParent->_onRequestRender( m_realGeo, this );
 }
 
 //_____________________________________________________________________________
-void WgModalHook::RequestRender( const WgRect& rect )
+void WgModalHook::_requestRender( const WgRect& rect )
 {
 	m_pParent->_onRequestRender( rect + m_realGeo.Pos(), this );
 }
 
 //_____________________________________________________________________________
-void WgModalHook::RequestResize()
+void WgModalHook::_requestResize()
 {
 	_refreshRealGeo();
 }
@@ -311,19 +311,19 @@ WgGizmoContainer * WgModalHook::_parent() const
 
 
 //_____________________________________________________________________________
-void WgGizmoModal::BaseHook::RequestRender()
+void WgGizmoModal::BaseHook::_requestRender()
 {
 	m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
 }
 
 //_____________________________________________________________________________
-void WgGizmoModal::BaseHook::RequestRender( const WgRect& rect )
+void WgGizmoModal::BaseHook::_requestRender( const WgRect& rect )
 {
 	m_pParent->_onRequestRender( rect, 0 );
 }
 
 //_____________________________________________________________________________
-void WgGizmoModal::BaseHook::RequestResize()
+void WgGizmoModal::BaseHook::_requestResize()
 {
 	m_pParent->RequestResize();					// Just forward to our parent
 }
@@ -465,7 +465,7 @@ bool WgGizmoModal::DeleteChild( WgGizmo * pGizmo )
 	else
 	{
 		WgModalHook * pHook = (WgModalHook *) pGizmo->Hook();
-		pHook->RequestRender();
+		pHook->_requestRender();
 		delete pHook;
 		return true;
 	}
@@ -483,7 +483,7 @@ WgGizmo * WgGizmoModal::ReleaseChild( WgGizmo * pGizmo )
 	else
 	{
 		WgModalHook * pHook = (WgModalHook *) pGizmo->Hook();
-		pHook->RequestRender();
+		pHook->_requestRender();
 		pHook->_releaseGizmo();
 		delete pHook;
 		return pGizmo;
@@ -543,34 +543,14 @@ int WgGizmoModal::WidthForHeight( int height ) const
 		return WgGizmo::WidthForHeight(height);
 }
 
-//____ MinSize() ______________________________________________________________
+//____ DefaultSize() _____________________________________________________________
 
-WgSize WgGizmoModal::MinSize() const
+WgSize WgGizmoModal::DefaultSize() const
 {
 	if( m_baseHook.Gizmo() )
-		return m_baseHook.Gizmo()->MinSize();
+		return m_baseHook.Gizmo()->DefaultSize();
 	else
-		return WgGizmo::MinSize();
-}
-
-//____ BestSize() _____________________________________________________________
-
-WgSize WgGizmoModal::BestSize() const
-{
-	if( m_baseHook.Gizmo() )
-		return m_baseHook.Gizmo()->BestSize();
-	else
-		return WgGizmo::BestSize();
-}
-
-//____ MaxSize() ______________________________________________________________
-
-WgSize WgGizmoModal::MaxSize() const
-{
-	if( m_baseHook.Gizmo() )
-		return m_baseHook.Gizmo()->MaxSize();
-	else
-		return WgGizmo::MaxSize();
+		return WgSize(1,1);
 }
 
 //____ FindGizmo() ____________________________________________________________

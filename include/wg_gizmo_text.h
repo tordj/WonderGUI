@@ -80,7 +80,7 @@ public:
 	virtual Wg_Interface_TextHolder* TempGetText() { return this; }
 
 	int		HeightForWidth( int width ) const;
-	WgSize	BestSize() const;
+	WgSize	DefaultSize() const;
 
 protected:
 

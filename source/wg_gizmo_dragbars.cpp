@@ -342,17 +342,9 @@ void WgGizmoDragbar::_onRefresh( void )
 	RequestRender();
 }
 
+//____ DefaultSize() _____________________________________________________________
 
-//____ MinSize() ___________________________________________________________
-
- WgSize WgGizmoDragbar::MinSize() const
-{
-	return m_minSize;
-}
-
-//____ BestSize() _____________________________________________________________
-
-WgSize WgGizmoDragbar::BestSize() const
+WgSize WgGizmoDragbar::DefaultSize() const
 {
 	WgSize sz = m_minSize;
 

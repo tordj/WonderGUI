@@ -54,14 +54,15 @@ public:
 
 	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
 
-	void	RequestRender();
-	void	RequestRender( const WgRect& rect );
-	void	RequestResize();
 
 protected:
 	WgViewHook() : m_pView(0), m_bShow(false) {};				// So we can make them members and then make placement new...
 	~WgViewHook();
 	inline void			_setParent( WgGizmoView * pParent ) { m_pView = pParent; }
+
+	void	_requestRender();
+	void	_requestRender( const WgRect& rect );
+	void	_requestResize();
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
@@ -236,9 +237,7 @@ public:
 	int		HeightForWidth( int width ) const;	//
 	int		WidthForHeight( int height ) const;
 
-	WgSize	MinSize() const;				// Defined by dragbars minsize...
-	WgSize	BestSize() const;				// = size of content if dragbars autohide, otherwise content+dragbars
-	WgSize	MaxSize() const;				// Unlimited
+	WgSize	DefaultSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
 
 	bool	IsView() const { return true; }
 */

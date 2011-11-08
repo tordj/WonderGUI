@@ -51,9 +51,7 @@ public:
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
 
-	WgSize			MinSize() const;
-	WgSize			BestSize() const;
-	WgSize			MaxSize() const;
+	WgSize			DefaultSize() const;
 
 	bool			IsView() const { return false; }
 	bool			IsContainer() const { return true; }
@@ -90,9 +88,9 @@ private:
 	protected:
 		Hook( WgMonotainer * pParent ) : m_pParent(pParent) {}
 
-		inline void		RequestRender() { return m_pParent->RequestRender(); }
-		inline void		RequestRender( const WgRect& rect ) { return m_pParent->RequestRender(rect); }
-		inline void		RequestResize() { return m_pParent->RequestResize(); }
+		inline void		_requestRender() { return m_pParent->RequestRender(); }
+		inline void		_requestRender( const WgRect& rect ) { return m_pParent->RequestRender(rect); }
+		inline void		_requestResize() { return m_pParent->RequestResize(); }
 
 		WgHook *	_prevHook() const { return 0; }
 		WgHook *	_nextHook() const { return 0; }

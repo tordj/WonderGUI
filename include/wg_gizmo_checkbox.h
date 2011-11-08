@@ -95,7 +95,7 @@ public:
 
 	DECLARE_TOOLTIP_SUPPORT();
 
-	WgSize			BestSize() const;
+	WgSize			DefaultSize() const;
 	
 
 protected:

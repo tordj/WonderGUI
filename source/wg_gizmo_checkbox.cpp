@@ -164,9 +164,9 @@ bool WgGizmoCheckbox::SetState( bool _state )
 	return true;
 }
 
-//____ BestSize() __________________________________________________
+//____ DefaultSize() __________________________________________________
 
-WgSize WgGizmoCheckbox::BestSize() const
+WgSize WgGizmoCheckbox::DefaultSize() const
 {
 	WgSize iconBestSize;
 	WgSize bgBestSize;

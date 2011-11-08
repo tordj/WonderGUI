@@ -86,56 +86,14 @@ int WgVBoxLayout::HeightForWidth( int width ) const
 
 int WgVBoxLayout::WidthForHeight( int height ) const
 {
-	return -1; // No recommendation. Should this maybe be BestSize().w instead?
+	return -1; // No recommendation. Should this maybe be DefaultSize().w instead?
 }
 
-//____ MinSize() ______________________________________________________________
+//____ DefaultSize() _____________________________________________________________
 
-WgSize WgVBoxLayout::MinSize() const
-{
-	WgSize	minBox;
-	WgVBoxHook * pHook = FirstHook();
-
-	while( pHook )
-	{
-		WgSize minGizmo = pHook->Gizmo()->MinSize();
-
-		minBox.h += minGizmo.h;
-		if( minBox.w < minGizmo.w )
-			minBox.w = minGizmo.w;
-
-		pHook = pHook->Next();
-	}
-
-	return minBox;
-}
-
-//____ BestSize() _____________________________________________________________
-
-WgSize WgVBoxLayout::BestSize() const
+WgSize WgVBoxLayout::DefaultSize() const
 {
 	return m_bestSize;
-}
-
-//____ MaxSize() ______________________________________________________________
-
-WgSize WgVBoxLayout::MaxSize() const
-{
-	WgSize	maxBox;
-	WgVBoxHook * pHook = FirstHook();
-
-	while( pHook )
-	{
-		WgSize maxGizmo = pHook->Gizmo()->BestSize();
-
-		maxBox.h += maxGizmo.h;
-		if( maxBox.w < maxGizmo.w )
-			maxBox.w = maxGizmo.w;
-
-		pHook = pHook->Next();
-	}
-
-	return maxBox;
 }
 
 //____ _onNewSize() ___________________________________________________________
@@ -354,7 +312,7 @@ void WgVBoxLayout::_onResizeRequested( WgOrderedHook * _pHook )
 	// Update BestSize
 
 	WgSize oldBestSize = pHook->m_bestSize;
-	pHook->m_bestSize = pHook->Gizmo()->BestSize();
+	pHook->m_bestSize = pHook->Gizmo()->DefaultSize();
 
 	m_bestSize.h += pHook->m_bestSize.h - oldBestSize.h;
 
@@ -369,7 +327,7 @@ void WgVBoxLayout::_onResizeRequested( WgOrderedHook * _pHook )
 		{
 			m_nBestWidth--;
 			if( m_nBestWidth == 0 )
-				_refreshBestWidth();
+				_refreshDefaultWidth();
 		}
 	}
 
@@ -384,7 +342,7 @@ void WgVBoxLayout::_onResizeRequested( WgOrderedHook * _pHook )
 	m_size.h += newHeight - pHook->m_height;
 	pHook->m_height = newHeight;
 
-	// Now we have up-to-date data for HeightForWidth() and BestSize() requests,
+	// Now we have up-to-date data for HeightForWidth() and DefaultSize() requests,
 	// we notify our parent that we might need a resize.
 
 	RequestResize();
@@ -420,7 +378,7 @@ void  WgVBoxLayout::_onGizmoAppeared( WgOrderedHook * pInserted )
 
 	// Update stored BestSize
 
-	pHook->m_bestSize = pHook->Gizmo()->BestSize();
+	pHook->m_bestSize = pHook->Gizmo()->DefaultSize();
 
 	if( m_bestSize.w == pHook->m_bestSize.w )
 	{
@@ -472,7 +430,7 @@ void WgVBoxLayout::_onGizmoDisappeared( WgOrderedHook * pToBeRemoved )
 
 			int w = pHook->m_bestSize.w;
 			pHook->m_bestSize.w = 0;
-			_refreshBestWidth();
+			_refreshDefaultWidth();
 			pHook->m_bestSize.w = w;
 		}
 	}
@@ -517,11 +475,11 @@ void WgVBoxLayout::_adaptChildrenToWidth( int width )
 	}
 }
 
-//____ _refreshBestWidth() ______________________________________________________
+//____ _refreshDefaultWidth() ______________________________________________________
 // Updates m_bestSize.w and m_nBestWidth. Relies on m_bestSize of the visible
 // hooks to have up-to-date data.
 
-void WgVBoxLayout::_refreshBestWidth()
+void WgVBoxLayout::_refreshDefaultWidth()
 {
 	m_bestSize.w = 0;
 	m_nBestWidth = 0;
@@ -543,11 +501,11 @@ void WgVBoxLayout::_refreshBestWidth()
 	}
 }
 
-//____ _refreshBestSize() ______________________________________________________
+//____ _refreshDefaultSize() ______________________________________________________
 // Refreshes m_bestSize for all visible hooks, m_bestSize and m_nBestWidth with fresh
 // info straight from the children.
 
-void WgVBoxLayout::_refreshBestSize()
+void WgVBoxLayout::_refreshDefaultSize()
 {
 	m_bestSize.Clear();
 	m_nBestWidth = 0;
@@ -557,7 +515,7 @@ void WgVBoxLayout::_refreshBestSize()
 	{
 		if( !pHook->m_bHidden )
 		{
-			pHook->m_bestSize = pHook->Gizmo()->BestSize();
+			pHook->m_bestSize = pHook->Gizmo()->DefaultSize();
 
 			if( pHook->m_bestSize.w > m_bestSize.w )
 			{
@@ -579,7 +537,7 @@ void WgVBoxLayout::_refreshBestSize()
 
 void  WgVBoxLayout::_refreshAllGizmos()
 {
-	_refreshBestSize();
+	_refreshDefaultSize();
 	_adaptChildrenToWidth( m_size.w );
 	RequestResize();
 	RequestRender();

@@ -72,14 +72,14 @@ void WgGizmoPixmap::SetSource( const WgBlockSetPtr& pBlockSet )
 	}
 }
 
-//____ BestSize() _____________________________________________________________
+//____ DefaultSize() _____________________________________________________________
 
-WgSize WgGizmoPixmap::BestSize() const
+WgSize WgGizmoPixmap::DefaultSize() const
 {
 	if( m_pGfx )
 		return m_pGfx->Size();
 
-	return MinSize();
+	return WgSize(1,1);
 }
 
 

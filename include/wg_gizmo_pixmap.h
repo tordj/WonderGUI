@@ -50,7 +50,7 @@ public:
 	void			SetSource( const WgBlockSetPtr& pBlockSet );
 	WgBlockSetPtr	GetSource() const { return m_pGfx; }
 
-	WgSize			BestSize() const;
+	WgSize			DefaultSize() const;
 
 	DECLARE_TOOLTIP_SUPPORT();
 

@@ -73,12 +73,9 @@ public:
 	Uint32			GetTextAreaWidth();
 
 	virtual int		HeightForWidth( int width ) const;
-/*	virtual int		WidthForHeight( int height ) const;
+//	virtual int		WidthForHeight( int height ) const;
 
-	virtual WgSize	MinSize() const;
-	virtual WgSize	MaxSize() const;
-*/
-	WgSize			BestSize() const;
+	WgSize			DefaultSize() const;
 
 protected:
 

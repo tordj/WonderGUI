@@ -242,9 +242,9 @@ bool WgGizmoAnimation::Stop()
 	return true;
 }
 
-//____ BestSize() ______________________________________________________________
+//____ DefaultSize() ______________________________________________________________
 
-WgSize WgGizmoAnimation::BestSize() const
+WgSize WgGizmoAnimation::DefaultSize() const
 {
 	return m_src.Size();
 }

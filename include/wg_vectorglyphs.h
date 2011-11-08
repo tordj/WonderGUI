@@ -147,19 +147,19 @@ private:
 	};
 
 
-	void				CopyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, Uint8 * pDest, int dest_width, int dest_height, int dest_pitch );
-	void				CopyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, Uint8 * pDest, int dest_width, int dest_height, int dest_pitch );
+	void				_copyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, Uint8 * pDest, int dest_width, int dest_height, int dest_pitch );
+	void				_copyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, Uint8 * pDest, int dest_width, int dest_height, int dest_pitch );
 
 
-	bool				SetCharSize( int size );
+	bool				_setCharSize( int size );
 
-	CacheSlot *			GenerateBitmap( Glyph * pGlyph );
-	void				CopyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot );
+	CacheSlot *			_generateBitmap( Glyph * pGlyph );
+	void				_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot );
 
-	Glyph *				AddGlyph( Uint16 ch, int size, int advance, Uint32 kerningIndex );
-	inline Glyph *		FindGlyph( Uint16 glyph, int size ) const;
+	Glyph *				_addGlyph( Uint16 ch, int size, int advance, Uint32 kerningIndex );
+	inline Glyph *		_findGlyph( Uint16 glyph, int size ) const;
 
-	inline void			TouchSlot( CacheSlot * pSlot );
+	inline void			_touchSlot( CacheSlot * pSlot );
 
 
 	FT_Face				m_ftFace;
@@ -191,9 +191,9 @@ private:
 
 };
 
-//____ FindGlyphInIndex() _______________________________________________________
+//____ _findGlyphInIndex() _______________________________________________________
 
-WgVectorGlyphs::Glyph * WgVectorGlyphs::FindGlyph( Uint16 ch, int size ) const
+WgVectorGlyphs::Glyph * WgVectorGlyphs::_findGlyph( Uint16 ch, int size ) const
 {
 	if( m_cachedGlyphsIndex[size] != 0 && m_cachedGlyphsIndex[size][ch>>8] != 0 && m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].IsInitialized() )
 		return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
@@ -201,9 +201,9 @@ WgVectorGlyphs::Glyph * WgVectorGlyphs::FindGlyph( Uint16 ch, int size ) const
 	return 0;
 }
 
-//____ TouchSlot() _________________________________________________________
+//____ _touchSlot() _________________________________________________________
 
-void WgVectorGlyphs::TouchSlot( CacheSlot * pSlot )
+void WgVectorGlyphs::_touchSlot( CacheSlot * pSlot )
 {
 	pSlot->MoveFirst();								// Move slot to the top
 

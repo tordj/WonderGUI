@@ -121,28 +121,12 @@ int WgMonotainer::WidthForHeight( int height ) const
 		return WgGizmo::WidthForHeight(height);
 }
 
-WgSize WgMonotainer::MinSize() const
+WgSize WgMonotainer::DefaultSize() const
 {
 	if( m_hook.Gizmo() )
-		return m_hook.Gizmo()->MinSize();
+		return m_hook.Gizmo()->DefaultSize();
 	else
-		return WgGizmo::MinSize();
-}
-
-WgSize WgMonotainer::BestSize() const
-{
-	if( m_hook.Gizmo() )
-		return m_hook.Gizmo()->BestSize();
-	else
-		return WgGizmo::BestSize();
-}
-
-WgSize WgMonotainer::MaxSize() const
-{
-	if( m_hook.Gizmo() )
-		return m_hook.Gizmo()->MaxSize();
-	else
-		return WgGizmo::MaxSize();
+		return WgSize(1,1);
 }
 
 WgGizmo * WgMonotainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )

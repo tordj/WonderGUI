@@ -155,19 +155,19 @@ WgOrderedHook::~WgOrderedHook()
 }
 
 
-void WgOrderedHook::RequestRender()
+void WgOrderedHook::_requestRender()
 {
 	WgOrderedLayout * p = Parent();
 
 	p->_onRenderRequested(this);
 }
 
-void WgOrderedHook::RequestRender( const WgRect& rect )
+void WgOrderedHook::_requestRender( const WgRect& rect )
 {
 	Parent()->_onRenderRequested(this, rect);
 }
 
-void WgOrderedHook::RequestResize()
+void WgOrderedHook::_requestResize()
 {
 	Parent()->_onResizeRequested(this);
 }

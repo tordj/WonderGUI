@@ -114,49 +114,12 @@ int WgGizmoStack::WidthForHeight( int height ) const
 	return width;
 }
 
-//____ MinSize() ______________________________________________________________
 
-WgSize WgGizmoStack::MinSize() const
-{
-	WgSize minSize;
+//____ DefaultSize() _____________________________________________________________
 
-	WgStackHook * pHook = FirstHook();
-	while( pHook )
-	{
-		WgSize sz = pHook->Gizmo()->MinSize();
-		if( sz.w > minSize.w )
-			minSize.w = sz.w;
-		if( sz.h > minSize.h )
-			minSize.h = sz.h;
-		pHook = pHook->Next();
-	}
-	return minSize;
-}
-
-//____ BestSize() _____________________________________________________________
-
-WgSize WgGizmoStack::BestSize() const
+WgSize WgGizmoStack::DefaultSize() const
 {
 	return m_bestSize;
-}
-
-//____ MaxSize() ______________________________________________________________
-
-WgSize WgGizmoStack::MaxSize() const
-{
-	WgSize maxSize(INT_MAX,INT_MAX);
-
-	WgStackHook * pHook = FirstHook();
-	while( pHook )
-	{
-		WgSize sz = pHook->Gizmo()->MaxSize();
-		if( sz.w < maxSize.w )
-			maxSize.w = sz.w;
-		if( sz.h < maxSize.h )
-			maxSize.h = sz.h;
-		pHook = pHook->Next();
-	}
-	return maxSize;
 }
 
 //____ _onNewSize() ___________________________________________________________
@@ -190,8 +153,28 @@ void WgGizmoStack::_advanceGeoToHook( WgRect& prevHookGeo, const WgOrderedHook *
 	return;
 }
 
-void WgGizmoStack::_onResizeRequested( WgOrderedHook * pHook )
+//____ _onResizeRequested() ____________________________________________________
+
+void WgGizmoStack::_onResizeRequested( WgOrderedHook * _pHook )
 {
+	WgSize	bestSize;
+
+	WgStackHook * pHook = FirstHook();
+	while( pHook )
+	{
+		WgSize sz = pHook->Gizmo()->DefaultSize();
+		if( sz.w > bestSize.w )
+			bestSize.w = sz.w;
+		if( sz.h > bestSize.h )
+			bestSize.h = sz.h;
+		pHook = pHook->Next();
+	}
+
+	if( bestSize != m_bestSize )
+	{
+		m_bestSize = bestSize;
+		RequestResize();
+	}
 }
 
 void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook )
@@ -217,7 +200,7 @@ void WgGizmoStack::_onGizmoAppeared( WgOrderedHook * pInserted )
 
 	// Update bestSize
 
-	WgSize best = pInserted->Gizmo()->BestSize();
+	WgSize best = pInserted->Gizmo()->DefaultSize();
 
 	if( best.w > m_bestSize.w )
 	{
@@ -260,7 +243,7 @@ void WgGizmoStack::_onGizmoDisappeared( WgOrderedHook * pToBeRemoved )
 	{
 		if( pHook != pToBeRemoved )
 		{
-			WgSize sz = pHook->Gizmo()->BestSize();
+			WgSize sz = pHook->Gizmo()->DefaultSize();
 			if( sz.w > bestSize.w )
 				bestSize.w = sz.w;
 			if( sz.h > bestSize.h )
@@ -297,7 +280,7 @@ void WgGizmoStack::_onGizmosReordered()
 
 void WgGizmoStack::_refreshAllGizmos()
 {
-	_refreshBestSize();
+	_refreshDefaultSize();
 	_adaptChildrenToSize();
 	RequestResize();
 	RequestRender();
@@ -310,16 +293,16 @@ WgOrderedHook * WgGizmoStack::_newHook()
 	return new WgStackHook(this);
 }
 
-//____ _refreshBestSize() _____________________________________________________
+//____ _refreshDefaultSize() _____________________________________________________
 
-void WgGizmoStack::_refreshBestSize()
+void WgGizmoStack::_refreshDefaultSize()
 {
 	WgSize	bestSize;
 
 	WgStackHook * pHook = FirstHook();
 	while( pHook )
 	{
-		WgSize sz = pHook->Gizmo()->BestSize();
+		WgSize sz = pHook->Gizmo()->DefaultSize();
 		if( sz.w > bestSize.w )
 			bestSize.w = sz.w;
 		if( sz.h > bestSize.h )

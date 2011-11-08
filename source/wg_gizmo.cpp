@@ -233,35 +233,14 @@ WgEventHandler * WgGizmo::EventHandler() const
 
 int WgGizmo::HeightForWidth( int width ) const
 {
-	return BestSize().h;		// Default is to stick with best height no matter what width.
+	return DefaultSize().h;		// Default is to stick with best height no matter what width.
 }
 
 //____ WidthForHeight() _______________________________________________________
 
 int WgGizmo::WidthForHeight( int height ) const
 {
-	return BestSize().w;		// Default is to stick with best width no matter what height.
-}
-
-//____ MinSize() ______________________________________________________________
-
-WgSize WgGizmo::MinSize() const
-{
-	return WgSize(1,1);
-}
-
-//____ BestSize() _____________________________________________________________
-
-WgSize WgGizmo::BestSize() const
-{
-	return WgSize(0,0);		// No recommendation.
-}
-
-//____ MaxSize() ______________________________________________________________
-
-WgSize WgGizmo::MaxSize() const
-{
-	return WgSize(65535,65535);
+	return DefaultSize().w;		// Default is to stick with best width no matter what height.
 }
 
 //____ SetMarked() ____________________________________________________________

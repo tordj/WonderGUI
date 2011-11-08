@@ -138,9 +138,9 @@ protected:
 
 	bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 
-	void		RequestRender();
-	void		RequestRender( const WgRect& rect );
-	void		RequestResize();
+	void		_requestRender();
+	void		_requestRender( const WgRect& rect );
+	void		_requestResize();
 
 	bool		_limitPlacementSize();
 	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
@@ -187,13 +187,13 @@ class WgFlexAnchor
 	friend class WgGizmoFlexGeo;
 
 public:
-	inline float	relativeX() const { return m_xRelative; }
-	inline float	relativeY() const { return m_yRelative; }
-	inline int		offsetX() const { return m_pixelOfs.x; }
-	inline int		offsetY() const { return m_pixelOfs.y; }
-	inline WgCoord	offset() const { return m_pixelOfs; }
+	inline float	RelativeX() const { return m_xRelative; }
+	inline float	RelativeY() const { return m_yRelative; }
+	inline int		OffsetX() const { return m_pixelOfs.x; }
+	inline int		OffsetY() const { return m_pixelOfs.y; }
+	inline WgCoord	Offset() const { return m_pixelOfs; }
 
-	inline WgCoord	position( const WgSize& parentSize ) const { return WgCoord((int)(m_xRelative*parentSize.w), (int)(m_yRelative*parentSize.h)) + m_pixelOfs; }
+	inline WgCoord	Position( const WgSize& parentSize ) const { return WgCoord((int)(m_xRelative*parentSize.w), (int)(m_yRelative*parentSize.h)) + m_pixelOfs; }
 
 private:
 	WgFlexAnchor() : m_xRelative(0.f), m_yRelative(0.f), m_pixelOfs(0,0) {};
@@ -257,12 +257,7 @@ public:
 
 	// Overloaded from WgGizmo
 
-	int				HeightForWidth( int width ) const;
-	int				WidthForHeight( int height ) const;
-
-	WgSize			MinSize() const;
-	WgSize			BestSize() const;
-	WgSize			MaxSize() const;
+	WgSize			DefaultSize() const;
 
 	bool			IsView() const { return false; }
 	bool			IsContainer() const { return true; }

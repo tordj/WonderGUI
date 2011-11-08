@@ -90,9 +90,9 @@ protected:
 	WgTableHook( WgTableRow2 * pRow );
 	~WgTableHook();
 
-	void	RequestRender();
-	void	RequestRender( const WgRect& rect );
-	void	RequestResize();
+	void	_requestRender();
+	void	_requestRender( const WgRect& rect );
+	void	_requestResize();
 
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
@@ -140,6 +140,9 @@ public:
 	void SetSortFunction( fpGizmoCmp pFunc );
 	inline fpGizmoCmp SortFunction() const { return m_fpCompare; }
 
+	void			SetTextObj(WgText *text);
+	const WgText*	GetTextObj() const;
+
 private:
 	WgTableColumn2( WgGizmoTable * pOwner );
 	~WgTableColumn2();
@@ -148,9 +151,7 @@ private:
 	WgHook*	_lastHook() const { return LastHook(); }
 
 	void			_textModified();
-	void			SetTextObj(WgText *text);
-	const WgText*	GetTextObj() const;
-	WgText *		GetTextObj();
+	WgText *		_getTextObj();
 
 
 	Sint64			m_id;
@@ -217,7 +218,7 @@ private:
 	WgHook*	_firstHook() const { return FirstHook(); }
 	WgHook*	_lastHook() const { return LastHook(); }
 
-	void			GrowCellsArray( int nCells );
+	void			_growCellsArray( int nCells );
 
 	int				m_nCells;
 	WgTableHook*	m_pCells;
@@ -349,9 +350,7 @@ public:
 	int		HeightForWidth( int width ) const;
 	int		WidthForHeight( int height ) const;
 
-	WgSize	MinSize() const;
-	WgSize	BestSize() const;
-	WgSize	MaxSize() const;
+	WgSize	DefaultSize() const;
 
 	bool	IsView() const { return false; }
 	bool	IsContainer() const { return true; }
@@ -394,23 +393,23 @@ private:
 	WgHook*	_firstHook() const { return FirstHook(); }
 	WgHook*	_lastHook() const { return LastHook(); }
 
-	void		refreshRows();
-	void		RowModified( WgTableRow2* pRow, int widthDiff , int heightDiff );
-	void		RowMarkChanged( WgTableRow2* pRow, bool bMarked );
-	WgTableRow2*	GetMarkedRow( int x, int y );
+	void		_refreshRows();
+	void		_rowModified( WgTableRow2* pRow, int widthDiff , int heightDiff );
+	void		_rowMarkChanged( WgTableRow2* pRow, bool bMarked );
+	WgTableRow2*	_getMarkedRow( int x, int y );
 
-	void		ConnectRow( WgTableRow2* pRow, WgTableRow2* pPlaceBefore = 0 );
-	void		DisconnectRow( WgTableRow2* pRow );
-	WgTableRow2* FindRowInsertSpot( WgTableRow2* pFirst, WgTableRow2* pLast, WgTableRow2* pRow, Uint32 nRows );
+	void		_connectRow( WgTableRow2* pRow, WgTableRow2* pPlaceBefore = 0 );
+	void		_disconnectRow( WgTableRow2* pRow );
+	WgTableRow2* _findRowInsertSpot( WgTableRow2* pFirst, WgTableRow2* pLast, WgTableRow2* pRow, Uint32 nRows );
 
-	int			GetMarkedColumn( int x, int& saveXOfs );
-	int			GetMarkedRow( int y, WgTableRow2*& pSaveRow, int& saveYOfs );
+	int			_getMarkedColumn( int x, int& saveXOfs );
+	int			_getMarkedRow( int y, WgTableRow2*& pSaveRow, int& saveYOfs );
 
-	void		UpdateContentSize();
-	void		UpdateColumnWidths();
-	void		UpdateMarkedRowColumn( int row, int column );
+	void		_updateContentSize();
+	void		_updateColumnWidths();
+	void		_updateMarkedRowColumn( int row, int column );
 
-	void		SetContentSize( const WgSize& size );
+	void		_setContentSize( const WgSize& size );
 
 	struct SortInfo
 	{
@@ -483,7 +482,7 @@ private:
 
 	WgBlockSetPtr	m_pHeaderGfx;
 
-	WgTableColumn2*	GetHeaderColumnAt( const WgCoord& pos );
+	WgTableColumn2*	_getHeaderColumnAt( const WgCoord& pos );
 	WgTableColumn2*	m_pMarkedHeader;						// Header currently marked by mouse
 
 

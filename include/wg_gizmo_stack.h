@@ -80,7 +80,7 @@ public:
 	int		WidthForHeight( int height ) const;
 
 	WgSize	MinSize() const;
-	WgSize	BestSize() const;
+	WgSize	DefaultSize() const;
 	WgSize	MaxSize() const;
 
 protected:
@@ -110,7 +110,7 @@ protected:
 
 	// Internal to WgGizmoStack
 
-	void 	_refreshBestSize();
+	void 	_refreshDefaultSize();
 	void	_adaptChildrenToSize();
 	void	_renderFromChildOnward( WgOrderedHook * pHook );
 

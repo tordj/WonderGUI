@@ -621,9 +621,9 @@ WgMode	WgGizmoTablist::GetTabMode(const WgTab& tab) const
 		return WG_MODE_NORMAL;
 }
 
-//____ BestSize() ______________________________________________________________
+//____ DefaultSize() ______________________________________________________________
 
-WgSize WgGizmoTablist::BestSize() const
+WgSize WgGizmoTablist::DefaultSize() const
 {
 	if( m_tabs.Size() == 0 )
 		return WgSize(0,0);

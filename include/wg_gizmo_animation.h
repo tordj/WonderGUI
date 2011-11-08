@@ -64,7 +64,7 @@ public:
 	bool		Stop();
 	bool		IsPlaying() { return m_bPlaying; };
 
-	WgSize			BestSize() const;
+	WgSize			DefaultSize() const;
 
 protected:
 	void	_onCloneContent( const WgGizmo * _pOrg );

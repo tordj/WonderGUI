@@ -100,12 +100,7 @@ class	WgGizmoDragbar : public WgGizmo
 		bool	SetSource( WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx, WgBlockSetPtr pBtnBwdGfx, WgBlockSetPtr pBtnFwdGfx );
 		bool	SetButtonLayout(  ButtonLayout layout );
 
-
-
-		WgSize	MinSize() const;
-		WgSize	BestSize() const;
-//		WgSize	MaxSize() const;
-
+		WgSize	DefaultSize() const;
 
 		DECLARE_TOOLTIP_SUPPORT();
 

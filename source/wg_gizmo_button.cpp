@@ -193,9 +193,9 @@ int WgGizmoButton::HeightForWidth( int width ) const
 }
 
 
-//____ BestSize() _____________________________________________________________
+//____ DefaultSize() _____________________________________________________________
 
-WgSize WgGizmoButton::BestSize() const
+WgSize WgGizmoButton::DefaultSize() const
 {
 	WgSize bestSize;
 
