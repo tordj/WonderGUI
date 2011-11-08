@@ -186,7 +186,7 @@ void WgItemWrapText::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction ac
 	// Let text object handle its actions.
 
 	WgRect	r = m_pMyHolder->RequestItemGeo(this);
-	r.shrink( m_margin );
+	r.Shrink( m_margin );
 
 	bool bRender = m_text.OnAction( action, button_key, r, WgCoord(info.x, info.y) );
 	if( bRender )

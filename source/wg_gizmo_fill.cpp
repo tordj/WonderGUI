@@ -81,6 +81,14 @@ void WgGizmoFill::SetColor( const WgColor& enabled, const WgColor& disabled )
 	RequestRender();
 }
 
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoFill::DefaultSize() const
+{
+	return WgSize(1,1);
+}
+
+
 //____ _onCloneContent() _______________________________________________________
 
 void WgGizmoFill::_onCloneContent( const WgGizmo * _pOrg )

@@ -303,7 +303,7 @@ WgRect WgTableRow::RequestItemGeo( WgItem * pItem )
 	WgRect cellGeo = ((Wdg_TableView*)m_pMyHolder)->GetCellGeo(rowNb,colNb);
 	WgRect screenGeo = ((Wdg_TableView*)m_pMyHolder)->ScreenGeometry();
 
-	return cellGeo + screenGeo.pos();
+	return cellGeo + screenGeo.Pos();
 }
 
 
@@ -1098,10 +1098,10 @@ int Wdg_TableView::GetHeaderHeight()
 	int h = 0;
 
 	if( m_pHeaderGfxNormal )
-		h = m_pHeaderGfxNormal->GetHeight();
+		h = m_pHeaderGfxNormal->Height();
 
-	if( m_pHeaderGfxSelected && m_pHeaderGfxSelected->GetHeight() > h )
-		h = m_pHeaderGfxSelected->GetHeight();
+	if( m_pHeaderGfxSelected && m_pHeaderGfxSelected->Height() > h )
+		h = m_pHeaderGfxSelected->Height();
 
 	return h;
 }
@@ -1529,20 +1529,20 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 				else
 					block = m_pDescendGfx->GetBlock(mode);
 
-				Sint32 dx = (Sint32) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.GetWidth() * m_sortMarkerOrigo.hotspotX());
-				Sint32 dy = (Sint32) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.GetHeight() * m_sortMarkerOrigo.hotspotY());
+				Sint32 dx = (Sint32) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.Width() * m_sortMarkerOrigo.hotspotX());
+				Sint32 dy = (Sint32) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.Height() * m_sortMarkerOrigo.hotspotY());
 
-				WgGfx::clipBlitBlock( _clip, block, WgRect( dx, dy, block.GetWidth(), block.GetHeight()) );
+				WgGfx::clipBlitBlock( _clip, block, WgRect( dx, dy, block.Width(), block.Height()) );
 			}
 
 			// Print text
 
 			if( pHeaderGfx )
-				m_pColumns[i].SetTextBaseColors(pHeaderGfx->GetTextColors());
+				m_pColumns[i].SetTextBaseColors(pHeaderGfx->TextColors());
 
 			WgRect rText = r2;
 			if( pHeaderGfx )
-				rText.shrink( pHeaderGfx->GetContentBorders() );
+				rText.Shrink( pHeaderGfx->ContentBorders() );
 
 			m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
 			WgGfx::printText( _clip, m_pColumns[i].GetTextObj(), rText );
@@ -1609,7 +1609,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 		r.h = pRow->Height() + m_cellPaddingY*2;
 
 		WgRect	u;
-		if( u.intersection( r, clipView ) )
+		if( u.Intersection( r, clipView ) )
 		{
 			DrawRowBg( u, pRow, iVisibleRowNb, iRealRowNb, r );
 		}
@@ -1672,7 +1672,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			r.h = m_emptyRowHeight;
 
 			WgRect	u;
-			if( u.intersection( r, clipView ) )
+			if( u.Intersection( r, clipView ) )
 				DrawRowBg( u, pRow, iVisibleRowNb, iVisibleRowNb, r );
 
 			r.y += r.h;
@@ -1708,7 +1708,7 @@ void Wdg_TableView::DrawRowBg( const WgRect& clip, WgTableRow * pRow, int iVisib
 	{
 		WgBlockSetPtr p = m_pRowBlocks[iVisibleRowNb%2];
 		if( p && !p->IsModeSkipable(mode) )
-			WgGfx::clipBlitBlock(clip, p->GetBlock(mode, dest.size() ), dest );
+			WgGfx::clipBlitBlock(clip, p->GetBlock(mode, dest.Size() ), dest );
 	}
 }
 

@@ -255,3 +255,12 @@ EVector3 WgGizmoViewport3D::WorldToScreen( const EVector3& kWorld, ECameraPtr sp
 
 	return kScreen;
 }
+
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoViewport3D::DefaultSize() const
+{
+	//TODO: Implement!
+
+	return WgSize(1,1);
+}

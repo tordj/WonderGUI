@@ -355,7 +355,7 @@ void Wdg_ListView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 		if( p->IsSelected() )
 		{
 			WgRect	u;
-			if( u.intersection( r, _clip ) )
+			if( u.Intersection( r, _clip ) )
 			{
 				WgGfx::fillRect( u, m_itemMarkColor );
 				if(HasLineMarkSource() == true)

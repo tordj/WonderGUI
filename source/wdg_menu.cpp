@@ -140,7 +140,7 @@ bool Wdg_Menu::SetSeparatorSource( const WgBlockSetPtr pGfx, const WgBorders& bo
 
 	m_pSepGfx		= pGfx;
 	m_sepBorders	= borders;
-	m_sepHeight		= m_pSepGfx->GetHeight() + m_sepBorders.height();
+	m_sepHeight		= m_pSepGfx->Height() + m_sepBorders.Height();
 
 	AdjustSize();
 	RequestRender();
@@ -538,7 +538,7 @@ void Wdg_Menu::CalcEntryMinWidth( WgMenuEntry * pEntry )
 WgBorders Wdg_Menu::GetContentBorders() const
 {
 	if( m_pBgGfx )
-		return m_pBgGfx->GetContentBorders();
+		return m_pBgGfx->ContentBorders();
 	else
 		return WgBorders(0);
 }
@@ -630,7 +630,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 	Uint32	yPos = window.y + contentBorders.top - m_contentOfs;
 	Uint32	xPosText = window.x + contentBorders.left + m_iconFieldWidth;
 	Uint32	xPosIcon = window.x + contentBorders.left;
-	Uint32	textFieldLen = window.w - contentBorders.width() - m_iconFieldWidth - m_arrowFieldWidth;
+	Uint32	textFieldLen = window.w - contentBorders.Width() - m_iconFieldWidth - m_arrowFieldWidth;
 
 	WgPen	entryPen( WgGfx::GetDevice(), WgCoord( xPosText, yPos ), clip );
 	WgPen	accelPen( WgGfx::GetDevice(), WgCoord( xPosText, yPos ), clip );
@@ -646,10 +646,10 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				if( m_pSepGfx )
 				{
 					WgRect sepClip(clip);
-					sepClip.shrink(0, contentBorders.top, 0, contentBorders.bottom);
+					sepClip.Shrink(0, contentBorders.top, 0, contentBorders.bottom);
 
 					WgRect	dest( window.x + m_sepBorders.left, yPos + m_sepBorders.top,
-									window.w - m_sepBorders.width(), m_pSepGfx->GetHeight() );
+									window.w - m_sepBorders.Width(), m_pSepGfx->Height() );
 
 					WgGfx::clipBlitBlock( sepClip, m_pSepGfx->GetBlock(WG_MODE_NORMAL,dest), dest );
 					yPos += m_sepHeight;
@@ -667,13 +667,13 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				if( item == m_markedItem )
 				{
 					WgRect markClip(clip);
-					markClip.shrink(0, contentBorders.top, 0, contentBorders.bottom);
+					markClip.Shrink(0, contentBorders.top, 0, contentBorders.bottom);
 
 					WgRect dest(
 						window.x + m_markBorders.left,
 						yPos + m_markBorders.top,
-						window.w - m_markBorders.width(),
-						m_entryHeight - m_markBorders.height() );
+						window.w - m_markBorders.Width(),
+						m_entryHeight - m_markBorders.Height() );
 					WgGfx::clipBlitBlock( markClip, m_pMarkGfx->GetBlock(WG_MODE_MARKED,dest), dest );
 
 					mode = WG_MODE_MARKED;
@@ -688,7 +688,7 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 					WgTextAttr	attr;
 					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), mode );
 					if( m_pBgGfx )
-						WgTextTool::SetAttrColor( attr, m_pBgGfx->GetTextColors(), mode );
+						WgTextTool::SetAttrColor( attr, m_pBgGfx->TextColors(), mode );
 					WgTextTool::AddPropAttributes( attr, m_pEntryProp, mode );
 					entryPen.SetAttributes( attr );
 					int y = yPos + (m_entryHeight - entryPen.GetLineHeight())/2 + entryPen.GetBaseline();
@@ -723,8 +723,8 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 						WgBlockSetPtr pIcon = ((WgMenuEntry*)pItem)->GetIcon();
 						if( pIcon )
 						{
-							int w = pIcon->GetWidth();
-							int h = pIcon->GetHeight();
+							int w = pIcon->Width();
+							int h = pIcon->Height();
 
 							//
 
@@ -752,8 +752,8 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 
 						if( pGfx )
 						{
-							int w = pGfx->GetWidth();
-							int h = pGfx->GetHeight();
+							int w = pGfx->Width();
+							int h = pGfx->Height();
 
 							int y = yPos + (m_entryHeight - h)/2;
 							int x = xPosIcon + (m_iconFieldWidth - w)/2;
@@ -773,8 +773,8 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 
 						if( pGfx )
 						{
-							int w = pGfx->GetWidth();
-							int h = pGfx->GetHeight();
+							int w = pGfx->Width();
+							int h = pGfx->Height();
 
 							int y = yPos + (m_entryHeight - h)/2;
 							int x = xPosIcon + (m_iconFieldWidth - w)/2;
@@ -895,7 +895,7 @@ void Wdg_Menu::DoMyOwnActionRespond( WgInput::UserAction action, int button_key,
 				break;
 			}
 
-			if( !m_btnReleaseArea.contains( _info.x, _info.y ) )
+			if( !m_btnReleaseArea.Contains( _info.x, _info.y ) )
 			{
 				Close();
 
@@ -1324,7 +1324,7 @@ WgMenuItem * Wdg_Menu::GetItemAtAbsPos( int x, int y )
 
 	y += m_contentOfs;
 
-	if( y > 0 && x > 0 && x < (int) (m_geo.w - contentBorders.width() ) )
+	if( y > 0 && x > 0 && x < (int) (m_geo.w - contentBorders.Width() ) )
 	{
 		WgMenuItem * pItem = m_items.First();
 		while( pItem )
@@ -1354,12 +1354,12 @@ void Wdg_Menu::AdjustSize()
 {
 	WgBorders contentBorders = GetContentBorders();
 
-	int  w = contentBorders.width();
-	int	 h = contentBorders.height();
+	int  w = contentBorders.Width();
+	int	 h = contentBorders.Height();
 
-	int minSep = m_sepBorders.width();
+	int minSep = m_sepBorders.Width();
 	if( m_pSepGfx )
-		minSep += m_pSepGfx->GetMinWidth();
+		minSep += m_pSepGfx->MinWidth();
 
 	WgMenuItem * pItem = m_items.First();
 	while( pItem )
@@ -1376,7 +1376,7 @@ void Wdg_Menu::AdjustSize()
 			{
 				h += m_entryHeight;
 
-				int minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorders.width() + m_iconFieldWidth + m_arrowFieldWidth;
+				int minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorders.Width() + m_iconFieldWidth + m_arrowFieldWidth;
 
 				if( w < minW )
 					w = minW;
@@ -1387,10 +1387,10 @@ void Wdg_Menu::AdjustSize()
 		pItem = pItem->Next();
 	}
 
-	m_contentHeight = h - contentBorders.height();
+	m_contentHeight = h - contentBorders.Height();
 
-	if( h < m_entryHeight + contentBorders.height() )
-		h = m_entryHeight + contentBorders.height();
+	if( h < m_entryHeight + contentBorders.Height() )
+		h = m_entryHeight + contentBorders.Height();
 
 	if( h > MaxHeight() )
 	{
@@ -1423,9 +1423,9 @@ void Wdg_Menu::AdjustSize()
 
 		w += sliderWidth;
 
-		if( h < sliderHeight + contentBorders.height() )
+		if( h < sliderHeight + contentBorders.Height() )
 		{
-			h = sliderHeight + contentBorders.height();
+			h = sliderHeight + contentBorders.Height();
 			WgWidget::SetHeight(h);							// Need to change height before we can add slider...
 		}
 
@@ -1461,7 +1461,7 @@ void Wdg_Menu::AdjustSize()
 
 float Wdg_Menu::GetViewOfs()
 {
-	return ((float)m_contentOfs) / (m_contentHeight-(Height()-GetContentBorders().height()));
+	return ((float)m_contentOfs) / (m_contentHeight-(Height()-GetContentBorders().Height()));
 }
 
 //____ GetViewSize() __________________________________________________________
@@ -1475,7 +1475,7 @@ float Wdg_Menu::GetViewSize()
 
 int Wdg_Menu::GetViewSizePixels()
 {
-	return Height()-GetContentBorders().height();
+	return Height()-GetContentBorders().Height();
 }
 
 
@@ -1489,7 +1489,7 @@ void Wdg_Menu::SetView(float pos)
 	if( pos > 1.f )
 		pos = 1.f;
 
-	int viewHeight = Height() - GetContentBorders().height();
+	int viewHeight = Height() - GetContentBorders().Height();
 
 	int ofs = (int) (pos * (m_contentHeight-viewHeight));
 
@@ -1509,7 +1509,7 @@ void Wdg_Menu::SetViewPixels(int pos)
 	if( pos < 0 )
 		pos = 0;
 
-	int viewHeight = Height() - GetContentBorders().height();
+	int viewHeight = Height() - GetContentBorders().Height();
 
 	if( pos + viewHeight > (int) m_contentHeight )
 		pos = m_contentHeight - viewHeight;
@@ -1552,7 +1552,7 @@ void Wdg_Menu::StepViewUp()
 
 void Wdg_Menu::StepViewPageDown()
 {
-	int viewHeight = Height() - GetContentBorders().height();
+	int viewHeight = Height() - GetContentBorders().Height();
 	SetViewPixels( m_contentOfs + (viewHeight - m_entryHeight) );
 }
 
@@ -1560,7 +1560,7 @@ void Wdg_Menu::StepViewPageDown()
 
 void Wdg_Menu::StepViewPageUp()
 {
-	int viewHeight = Height() - GetContentBorders().height();
+	int viewHeight = Height() - GetContentBorders().Height();
 	SetViewPixels( m_contentOfs - (viewHeight - m_entryHeight) );
 }
 

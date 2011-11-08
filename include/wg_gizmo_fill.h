@@ -47,6 +47,8 @@ public:
 	const WgColor&	GetEnabledColor() const		{ return m_colEnabled; }
 	const WgColor&	GetDisabledColor() const	{ return m_colDisabled; }
 
+	WgSize	DefaultSize() const;
+
 protected:
 
 	void	_onCloneContent( const WgGizmo * _pOrg );

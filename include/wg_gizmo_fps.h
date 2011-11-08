@@ -44,7 +44,8 @@ class WgGizmoFps:public WgGizmo
 
 		//____ Methods __________________________________________
 
-		void SetTextProperties( const WgTextPropPtr& pProp );
+		void	SetTextProperties( const WgTextPropPtr& pProp );
+		WgSize	DefaultSize() const;
 
 	protected:
 		void	_onUpdate( const WgUpdateInfo& _updateInfo );

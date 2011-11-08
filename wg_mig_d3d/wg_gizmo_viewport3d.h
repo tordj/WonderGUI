@@ -26,6 +26,7 @@ class WgGizmoViewport3D:public WgGizmo
 		inline const ESGObjectPtr& GetScene() { return m_spScene; };
 
 		EVector3 WorldToScreen( const EVector3& kWorld, ECameraPtr spCamera = NULL );
+		WgSize	DefaultSize() const;
 
 	protected:
 		void	_onCloneContent( const WgGizmo * _pOrg );

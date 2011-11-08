@@ -71,7 +71,8 @@ class WgGizmoCirclemeter : public WgGizmo, public Wg_Interface_ValueHolder
 		const WgValueFormat& GetFormat() const  { return m_format; }
 
 		void SetFullRangeDistance(Uint32 pixels);
-
+		
+		WgSize	DefaultSize() const;
 
 	protected:
 

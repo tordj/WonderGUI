@@ -82,6 +82,16 @@ void WgGizmoValue::SetFormat( const WgValueFormat& format )
 	RequestRender();
 }
 
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoValue::DefaultSize() const
+{
+	//TODO: Implement!
+
+	return WgSize(1,1);
+}
+
+
 //____ _valueModified() ________________________________________________________
 
 void WgGizmoValue::_valueModified()

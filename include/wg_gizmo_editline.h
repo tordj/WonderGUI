@@ -75,6 +75,9 @@ public:
 
 	bool		SetTextWrap(bool bWrap);						// Overloading SetTextWrap since we don't support wrapping text.
 
+	WgSize		DefaultSize() const;
+
+
 protected:
 
 	bool	_isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }

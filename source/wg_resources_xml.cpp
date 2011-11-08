@@ -2395,7 +2395,7 @@ void WgBorderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 
 	WgBlockSetPtr blockSet = blockSetRes->GetBlockSet();
 
-	m_Borders.set(WgUtil::ToSint32(xmlNode["all"], 0));
+	m_Borders.Set(WgUtil::ToSint32(xmlNode["all"], 0));
 	m_Borders.left = WgUtil::ToSint32(xmlNode["left"]);
 	m_Borders.top = WgUtil::ToSint32(xmlNode["top"]);
 	m_Borders.right = WgUtil::ToSint32(xmlNode["right"]);
@@ -2619,19 +2619,19 @@ void WgBlockSetRes::Serialize(WgResourceSerializerXML& s)
 
 	WriteBlockSetAttr(s, m_pBlockSet, "id");
 
-	WgBorderRes::Serialize(s, xmlNode, "borders", m_pBlockSet->GetGfxBorders());
-	WgBorderRes::Serialize(s, xmlNode, "content_borders", m_pBlockSet->GetContentBorders());
+	WgBorderRes::Serialize(s, xmlNode, "borders", m_pBlockSet->GfxBorders());
+	WgBorderRes::Serialize(s, xmlNode, "content_borders", m_pBlockSet->ContentBorders());
 
-	Uint32 tileFlags = m_pBlockSet->GetFlags() & WG_TILE_ALL;
+	Uint32 tileFlags = m_pBlockSet->Flags() & WG_TILE_ALL;
 	if(xmlNode.HasAttribute("tile") && (tileFlags == WG_TILE_ALL || tileFlags == 0))
 		s.AddAttribute("tile", WgUtil::ToString(tileFlags ? true : false));
 	else if(tileFlags)
 		WgTileRes(this, tileFlags).Serialize(s);
 
-	WriteDiffAttr(s, xmlNode, "scale", (m_pBlockSet->GetFlags() & WG_SCALE_CENTER) != 0, false);
-	WriteDiffAttr(s, xmlNode, "fixed_size", (m_pBlockSet->GetFlags() & WG_FIXED_CENTER) != 0, false);
+	WriteDiffAttr(s, xmlNode, "scale", (m_pBlockSet->Flags() & WG_SCALE_CENTER) != 0, false);
+	WriteDiffAttr(s, xmlNode, "fixed_size", (m_pBlockSet->Flags() & WG_FIXED_CENTER) != 0, false);
 
-	Uint32 flags = m_pBlockSet->GetFlags();
+	Uint32 flags = m_pBlockSet->Flags();
 	if( flags & WG_SKIP_NORMAL )
 		s.AddAttribute("skip_normal", "true" );
 	if( flags & WG_SKIP_MARKED )
@@ -2643,14 +2643,14 @@ void WgBlockSetRes::Serialize(WgResourceSerializerXML& s)
 	if( flags & WG_SKIP_SPECIAL )
 		s.AddAttribute("skip_special", "true" );
 
-	WriteColorSetAttr(s, m_pBlockSet->GetTextColors(), "textcolors" );
+	WriteColorSetAttr(s, m_pBlockSet->TextColors(), "textcolors" );
 
 	WgRect rect[5];
-	rect[WG_MODE_NORMAL] = m_pBlockSet->GetRect(WG_MODE_NORMAL);
-	rect[WG_MODE_MARKED] = m_pBlockSet->GetRect(WG_MODE_MARKED);
-	rect[WG_MODE_SELECTED] = m_pBlockSet->GetRect(WG_MODE_SELECTED);
-	rect[WG_MODE_DISABLED] = m_pBlockSet->GetRect(WG_MODE_DISABLED);
-	rect[WG_MODE_SPECIAL] = m_pBlockSet->GetRect(WG_MODE_SPECIAL);
+	rect[WG_MODE_NORMAL] = m_pBlockSet->Rect(WG_MODE_NORMAL);
+	rect[WG_MODE_MARKED] = m_pBlockSet->Rect(WG_MODE_MARKED);
+	rect[WG_MODE_SELECTED] = m_pBlockSet->Rect(WG_MODE_SELECTED);
+	rect[WG_MODE_DISABLED] = m_pBlockSet->Rect(WG_MODE_DISABLED);
+	rect[WG_MODE_SPECIAL] = m_pBlockSet->Rect(WG_MODE_SPECIAL);
 
 	bool bUsed[5] =
 	{
@@ -2704,7 +2704,7 @@ void WgBlockSetRes::Serialize(WgResourceSerializerXML& s)
 	}
 	else
 	{
-		WriteSurfaceAttr(s, m_pBlockSet->GetSurface(), "surface");
+		WriteSurfaceAttr(s, m_pBlockSet->Surface(), "surface");
 
 		WgRectRes::Serialize(s, xmlNode, rect[WG_MODE_NORMAL]);
 
@@ -2888,7 +2888,7 @@ void WgAltRes::Serialize(WgResourceSerializerXML& s, int altNb )
 
 	const WgXmlNode& xmlNode = XmlNode();
 
-	WgSize actSize = pBlockSet->GetActivationSize(altNb);
+	WgSize actSize = pBlockSet->ActivationSize(altNb);
 
 	if( actSize.w !=0 && actSize.h != 0 )
 		s.AddAttribute( "activation_size", WgUtil::ToString( actSize.w, actSize.h ));
@@ -2899,16 +2899,16 @@ void WgAltRes::Serialize(WgResourceSerializerXML& s, int altNb )
 	else
 		assert(0);		// Invalid activation size, both set to 0!
 
-	WgBorderRes::Serialize(s, xmlNode, "borders", pBlockSet->GetGfxBorders(altNb));
-	WgBorderRes::Serialize(s, xmlNode, "content_borders", pBlockSet->GetContentBorders(altNb));
+	WgBorderRes::Serialize(s, xmlNode, "borders", pBlockSet->GfxBorders(altNb));
+	WgBorderRes::Serialize(s, xmlNode, "content_borders", pBlockSet->ContentBorders(altNb));
 
 
 	WgRect rect[5];
-	rect[WG_MODE_NORMAL] = pBlockSet->GetRect(WG_MODE_NORMAL,altNb);
-	rect[WG_MODE_MARKED] = pBlockSet->GetRect(WG_MODE_MARKED,altNb);
-	rect[WG_MODE_SELECTED] = pBlockSet->GetRect(WG_MODE_SELECTED,altNb);
-	rect[WG_MODE_DISABLED] = pBlockSet->GetRect(WG_MODE_DISABLED,altNb);
-	rect[WG_MODE_SPECIAL] = pBlockSet->GetRect(WG_MODE_SPECIAL,altNb);
+	rect[WG_MODE_NORMAL] = pBlockSet->Rect(WG_MODE_NORMAL,altNb);
+	rect[WG_MODE_MARKED] = pBlockSet->Rect(WG_MODE_MARKED,altNb);
+	rect[WG_MODE_SELECTED] = pBlockSet->Rect(WG_MODE_SELECTED,altNb);
+	rect[WG_MODE_DISABLED] = pBlockSet->Rect(WG_MODE_DISABLED,altNb);
+	rect[WG_MODE_SPECIAL] = pBlockSet->Rect(WG_MODE_SPECIAL,altNb);
 
 	bool bUsed[5] =
 	{
@@ -2962,7 +2962,7 @@ void WgAltRes::Serialize(WgResourceSerializerXML& s, int altNb )
 	}
 	else
 	{
-		WriteSurfaceAttr(s, pBlockSet->GetSurface(altNb), "surface");
+		WriteSurfaceAttr(s, pBlockSet->Surface(altNb), "surface");
 
 		WgRectRes::Serialize(s, xmlNode, rect[WG_MODE_NORMAL]);
 

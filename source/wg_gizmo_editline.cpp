@@ -178,6 +178,16 @@ bool WgGizmoEditline::SetTextWrap(bool bWrap)
 	return !bWrap;
 }
 
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoEditline::DefaultSize() const
+{
+	//TODO: Implement!
+
+	return WgSize(1,1);
+}
+
+
 //____ _onUpdate() _____________________________________________________________
 
 void WgGizmoEditline::_onUpdate( const WgUpdateInfo& _updateInfo )

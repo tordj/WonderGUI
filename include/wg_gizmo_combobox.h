@@ -63,6 +63,7 @@ public:
 	void			SetPlaceholderText( const WgCharSeq& str );
 	WgString		GetPlaceholderText() const { return m_placeholderText; }
 
+	WgSize			DefaultSize() const;
 
 	void			SetEditMode(WgTextEditMode mode);
 	WgTextEditMode	GetEditMode() const { return m_editMode; }

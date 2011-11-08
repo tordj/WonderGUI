@@ -132,6 +132,9 @@ public:
 	bool			ShowMenu(Wdg_Menu * pMenu);
 	bool			HideMenu(Wdg_Menu * pMenu);
 
+	WgSize			DefaultSize() const;
+
+
 protected:
 	//TODO: Should handle disable/enable (close open menu?) and cloning.
 

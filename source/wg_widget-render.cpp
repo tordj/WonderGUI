@@ -325,7 +325,7 @@ void WgWidget::AddDirtToNonOpaqueCovering( WgRectChain * _pDirtObj, int _ofsX, i
 
 		while( pTmp )
 		{
-			if( clipped.intersection( *pTmp, clip ) )
+			if( clipped.Intersection( *pTmp, clip ) )
 				m_dirtyRects.Add( clipped.x, clipped.y, clipped.w, clipped.h );
 			pTmp = pTmp->pNext;
 		}
@@ -521,7 +521,7 @@ void	WgWidget::PushDirtSub( WgRectChain * _pDirtObj, int _ofsX, int _ofsY )
 
 		while( pTmp )
 		{
-			if( clipped.intersection( *pTmp, clip ) )
+			if( clipped.Intersection( *pTmp, clip ) )
 				m_dirtyRects.Add( clipped.x, clipped.y, clipped.w, clipped.h );
 			pTmp = pTmp->pNext;
 		}
