@@ -58,6 +58,10 @@ public:
 	inline WgFont *		Fonts() { return m_pFonts; }
 	inline WgValueFormat	Format() { return m_format; }
 	virtual const WgValueFormat&	GetFormat() const { return m_format; }
+
+	WgSize	DefaultSize() const;
+
+
 protected:
 	void	_onRefresh();
 	void	_onCloneContent( const WgGizmo * _pOrg );

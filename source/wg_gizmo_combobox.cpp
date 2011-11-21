@@ -84,6 +84,16 @@ void WgGizmoCombobox::SetSource( const WgBlockSetPtr& pTextBox )
 	RequestRender();
 }
 
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoCombobox::DefaultSize() const
+{
+	//TODO: Implement!!!
+
+	return WgSize(1,1);
+}
+
+
 //____ SetMenu() ______________________________________________________________
 
 void WgGizmoCombobox::SetMenu( Wdg_Menu * pMenu )
@@ -249,14 +259,20 @@ void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, con
 		case	WgInput::POINTER_OVER:
 		{
 			WgRect gizmoRect( Local2abs(WgCoord(0,0)), Size() );
-			WgRect inputRect = gizmoRect - m_pTextBoxBg->GetContentBorders();
+			WgRect inputRect = gizmoRect - m_pTextBoxBg->ContentBorders();
 
-			if( _isSelectable() && inputRect.contains(info.x,info.y) )
+			if( _isSelectable() && inputRect.Contains(info.x,info.y) )
+			{
 				m_pointerStyle = WG_POINTER_IBEAM;
+			}
 			else
+			{
 				m_pointerStyle = WG_POINTER_DEFAULT;
+			}
 			break;
 		}
+
+
 
 		case WgInput::BUTTON_PRESS:
 			if( button_key == 1 )
@@ -264,13 +280,17 @@ void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, con
 				WgRect gizmoRect( Local2abs(WgCoord(0,0)), Size() );
 				WgRect inputRect = gizmoRect;
 				if( m_pTextBoxBg )
-					inputRect -= m_pTextBoxBg->GetContentBorders();
+					inputRect -= m_pTextBoxBg->ContentBorders();
 
-				if( _isEditable() && inputRect.contains(info.x,info.y) )
+				if( _isEditable() && inputRect.Contains(info.x,info.y) )
 				{
 					if( !m_bFocused )
+					{
 						GrabFocus();
-					
+						if( m_bFocused )
+							m_bFocusPress = true;		// Current button press brought focus.
+					}
+
 					m_bPressInInputRect = true;
 
 					if( m_bFocused )
@@ -333,7 +353,7 @@ void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, con
 
 				int leftBorder = 0;
 				if( m_pTextBoxBg )
-					leftBorder = m_pTextBoxBg->GetContentBorders().left;
+					leftBorder = m_pTextBoxBg->ContentBorders().left;
 
 				m_pText->CursorGotoCoord( WgCoord(x, 0), WgRect(leftBorder,0,1000000,1000000) );
 				_adjustViewOfs();
@@ -345,7 +365,15 @@ void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, con
 		case WgInput::BUTTON_RELEASE_OUTSIDE:
 		{
 			if( m_bFocused && button_key == 1 )
+			{
 				m_pText->setSelectionMode(false);
+				if( m_bFocusPress )
+				{
+					m_bFocusPress = false;
+					if( !m_pText->hasSelection() )
+						m_pText->selectAll();
+				}
+			}
 			break;
 		}
 
@@ -531,7 +559,7 @@ void WgGizmoCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	// Render the textbox
 	if(m_pTextBoxBg)
 	{
-		const WgBlock&	block = m_pTextBoxBg->GetBlock( m_mode, _canvas.size() );
+		const WgBlock&	block = m_pTextBoxBg->GetBlock( m_mode, _canvas.Size() );
 		WgRect			dest( _canvas );
 		pDevice->ClipBlitBlock( _clip, block, dest );
 	}
@@ -540,12 +568,12 @@ void WgGizmoCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 	WgRect r( _canvas );
 	if( m_pTextBoxBg )
-		r.shrink( m_pTextBoxBg->GetContentBorders() );
+		r.Shrink( m_pTextBoxBg->ContentBorders() );
 
 	WgRect	textClip( r, _clip );
 
 	if(m_pTextBoxBg)
-		m_text.SetBgBlockColors(m_pTextBoxBg->GetTextColors());
+		m_text.SetBgBlockColors(m_pTextBoxBg->TextColors());
 
 	bool bPlaceholder = false;
 	if( !m_placeholderText.IsEmpty() && m_text.IsEmpty() && !m_text.isCursorShowing() )
@@ -608,7 +636,7 @@ void WgGizmoCombobox::_adjustViewOfs()
 
 		int geoWidth = Size().w;
 		if( m_pTextBoxBg )
-			geoWidth -= m_pTextBoxBg->GetContentBorders().width();
+			geoWidth -= m_pTextBoxBg->ContentBorders().Width();
 
 		int	lineWidth = m_pText->getSoftLineWidth( 0 ) + cursBearing+cursWidth;
 
@@ -684,7 +712,7 @@ void WgGizmoCombobox::_onGotInputFocus()
 void WgGizmoCombobox::_onLostInputFocus()
 {
 	m_bFocused = false;
-	m_bResetCursorOnFocus = false;
+	m_bResetCursorOnFocus = true;
 	m_text.hideCursor();
 	m_text.clearSelection();
 }

@@ -207,6 +207,16 @@ bool WgGizmoMenubar::HideMenu(Wdg_Menu * pMenu)
 	return false;
 }
 
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoMenubar::DefaultSize() const
+{
+	//TODO: Implement!
+
+	return WgSize(1,1);
+}
+
+
 //____ _onRender() ________________________________________________________
 
 void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
@@ -218,9 +228,9 @@ void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		WgBlock block;
 
 		if( m_bEnabled )
-			block = m_pBgGfx->GetBlock(WG_MODE_NORMAL,_canvas.size());
+			block = m_pBgGfx->GetBlock(WG_MODE_NORMAL,_canvas.Size());
 		else
-			block = m_pBgGfx->GetBlock(WG_MODE_DISABLED,_canvas.size());
+			block = m_pBgGfx->GetBlock(WG_MODE_DISABLED,_canvas.Size());
 
 		pDevice->ClipBlitBlock( _clip, block, _canvas );
 	}
@@ -232,8 +242,8 @@ void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 	if( m_pBgGfx )
 	{
-		window.shrink( m_pBgGfx->GetContentBorders() );
-		clip.intersection( window, _clip );
+		window.Shrink( m_pBgGfx->ContentBorders() );
+		clip.Intersection( window, _clip );
 	}
 	else
 		clip = _clip;
@@ -274,14 +284,14 @@ void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 			WgBorders b = GetEntryBorders();
 
-			WgColorSetPtr pTextColors = m_pBgGfx->GetTextColors();
+			WgColorSetPtr pTextColors = m_pBgGfx->TextColors();
 
 			if( m_pEntryGfx )
 			{
-				WgRect	dest( posX, window.y, pI->m_width + b.width(), window.h );
+				WgRect	dest( posX, window.y, pI->m_width + b.Width(), window.h );
 				pDevice->ClipBlitBlock( clip, m_pEntryGfx->GetBlock(mode,dest), dest );
 
-				pTextColors = m_pEntryGfx->GetTextColors();
+				pTextColors = m_pEntryGfx->TextColors();
 			}
 
 			pen.SetPos( WgCoord(posX + b.left, printPosY) );
@@ -294,7 +304,7 @@ void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 			pDevice->PrintLine( pen, attr, pI->m_pText );
 
-			posX += pI->m_width + b.width();
+			posX += pI->m_width + b.Width();
 		}
 		itemNb++;
 		pI = pI->Next();
@@ -382,7 +392,7 @@ void WgGizmoMenubar::_onCloneContent( const WgGizmo * _pOrg )
 WgBorders WgGizmoMenubar::GetEntryBorders() const
 {
 	if( m_pEntryGfx )
-		return m_pEntryGfx->GetContentBorders();
+		return m_pEntryGfx->ContentBorders();
 	else
 		return WgBorders(10,10,0,0);		// 10 pixels on each side as default margin. Should do something more intelligent here, like taking fonts avgSpacing into account...
 }
@@ -404,11 +414,11 @@ bool WgGizmoMenubar::OpenMenu( Uint32 nb )
 
 	if( m_pBgGfx )
 	{
-		pos.x += m_pBgGfx->GetContentBorders().left;
-		pos.y += m_pBgGfx->GetContentBorders().top;
+		pos.x += m_pBgGfx->ContentBorders().left;
+		pos.y += m_pBgGfx->ContentBorders().top;
 	}
 
-	int bordersWidth = GetEntryBorders().width();
+	int bordersWidth = GetEntryBorders().Width();
 
 	WgMenuBarItem * pI = m_items.First();
 	while( pI != pItem )
@@ -462,13 +472,13 @@ Uint32 WgGizmoMenubar::GetItemAtAbsPos( int x, int y )
 
 	if( m_pBgGfx )
 	{
-		pos.x -= m_pBgGfx->GetContentBorders().left;
-		pos.y -= m_pBgGfx->GetContentBorders().top;
+		pos.x -= m_pBgGfx->ContentBorders().left;
+		pos.y -= m_pBgGfx->ContentBorders().top;
 	}
 
 	if( y > 0 && x > 0 && y < (int) Size().h )
 	{
-		int bordersWidth = GetEntryBorders().width();
+		int bordersWidth = GetEntryBorders().Width();
 
 		WgMenuBarItem * pItem = m_items.First();
 		int		item = 1;

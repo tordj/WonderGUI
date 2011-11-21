@@ -164,6 +164,16 @@ void WgGizmoEditvalue::Clear()
 	m_useFormat.decimals = 0;
 }
 
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoEditvalue::DefaultSize() const
+{
+	//TODO: Implement!
+
+	return WgSize(1,1);
+}
+
+
 //____ _valueModified() ________________________________________________________
 
 void WgGizmoEditvalue::_valueModified()

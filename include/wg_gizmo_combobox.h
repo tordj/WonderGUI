@@ -63,6 +63,7 @@ public:
 	void			SetPlaceholderText( const WgCharSeq& str );
 	WgString		GetPlaceholderText() const { return m_placeholderText; }
 
+	WgSize			DefaultSize() const;
 
 	void			SetEditMode(WgTextEditMode mode);
 	WgTextEditMode	GetEditMode() const { return m_editMode; }
@@ -126,6 +127,7 @@ private:
 	WgTextEditMode	m_editMode;
 	bool			m_bResetCursorOnFocus;
 	bool			m_bPressInInputRect;
+	bool			m_bFocusPress;
 	int				m_maxCharacters;
 	int				m_viewOfs;
 

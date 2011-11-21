@@ -70,6 +70,9 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 
 		bool	SelectAllText();
 
+		WgSize	DefaultSize() const;
+
+
 //		virtual bool		IsInputField() const	{ return true; }
 		virtual bool		IsInputField() const	{ return (m_text.nbChars() > 0); }
 

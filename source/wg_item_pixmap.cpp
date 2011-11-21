@@ -116,12 +116,12 @@ void WgItemPixmap::UpdateSize()
 	if( m_forcedSize.w > 0 )
 		width += m_forcedSize.w;
 	else
-		width += m_block->GetWidth();
+		width += m_block->Width();
 
 	if( m_forcedSize.h > 0 )
 		height += m_forcedSize.h;
 	else
-		height += m_block->GetHeight();
+		height += m_block->Height();
 
 	Sint32 widthModif = width - m_width;
 	Sint32 heightModif = height - m_height;
@@ -136,7 +136,7 @@ void WgItemPixmap::UpdateSize()
 //____ Render() _______________________________________________________________
 void WgItemPixmap::Render( const WgRect& _window, const WgRect& _clip )
 {
-	if( m_block && m_block->GetSurface() )
+	if( m_block && m_block->Surface() )
 	{
 		WgRect r = _window;
 		r.x += m_margin.left;

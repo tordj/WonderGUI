@@ -42,13 +42,21 @@ const char * WgGizmoProfiler::GetMyType( void )
 	return s_type;
 }
 
-
 //____ SetTextProperties() ____________________________________________________
 
 void WgGizmoProfiler::SetTextProperties( WgTextPropPtr& pProp )
 {
 	m_pProp = pProp;
 	RequestRender();
+}
+
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoProfiler::DefaultSize() const
+{
+	//TODO: Implement!
+
+	return WgSize(1,1);
 }
 
 

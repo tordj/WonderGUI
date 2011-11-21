@@ -39,6 +39,8 @@ public:
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
 
+	WgSize			DefaultSize() const;
+
 protected:
 
 	void	_onCloneContent( const WgGizmo * _pOrg );

@@ -23,7 +23,8 @@ namespace WgUtil
 
 	bool		MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area );
 
-	WgCoord 		LocationToOfs( WgLocation location, WgSize base );
+	WgCoord 		OrientationToOfs( WgOrientation orientation, WgSize base );
+	WgRect			OrientationToRect( WgOrientation orientation, WgSize base, WgSize rect );
 
 	template <class T> inline T Max (T a, T b) {return (a>b?a:b); }
 	template <class T> inline T Min (T a, T b) {return (a<b?a:b); }
@@ -92,6 +93,35 @@ namespace WgUtil
 
 		return ToString(value.anchorX(), value.anchorY(), value.hotspotX(), value.hotspotY());
 	}
+
+	template<>
+	inline std::string ToString(WgOrientation value)
+	{
+		switch( value )
+		{
+			case WG_NORTHWEST:
+				return "northwest";
+			case WG_NORTH:
+				return "north";
+			case WG_NORTHEAST:
+				return "northeast";
+			case WG_EAST:
+				return "east";
+			case WG_SOUTHEAST:
+				return "southeast";
+			case WG_SOUTH:
+				return "south";
+			case WG_SOUTHWEST:
+				return "southwest";
+			case WG_WEST:
+				return "west";
+			case WG_CENTER:
+				return "center";
+		}
+
+		return "northwest";				// Should never get here!!!
+	}
+
 
 	template<typename T0, typename T1>
 	inline std::string ToString(const T0& a, const T1& b)
@@ -204,6 +234,27 @@ namespace WgUtil
 		}
 		return true;
 	}
+
+	template<>
+	inline bool FromString(const std::string& str, WgOrientation& a)
+	{
+		if(str.empty() || str == "northwest") a = WG_NORTHWEST;
+		else if(str == "north") a = WG_NORTH;
+		else if(str == "northeast") a = WG_NORTHEAST;
+		else if(str == "east") a = WG_EAST;
+		else if(str == "southeast") a = WG_SOUTHEAST;
+		else if(str == "south") a = WG_SOUTH;
+		else if(str == "southwest") a = WG_SOUTHWEST;
+		else if(str == "west") a = WG_WEST;
+		else if(str == "center") a = WG_CENTER;
+		else
+		{
+			a = WG_NORTHWEST;
+			return false;
+		}
+		return true;
+	}
+
 
 	inline bool 	ToBool(const std::string& value, bool def = false)	{ bool 	 v = def; FromString(value, v); return v; }
 	inline Sint8	ToSint8(const std::string& value, Sint8 def = 0)	{ Sint8	 v = def; FromString(value, v); return v; }

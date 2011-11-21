@@ -103,23 +103,16 @@ public:
 
 protected:
 
-	void	RequestRender() { m_pWidget->RequestRender(); }
-	void	RequestRender( const WgRect& rect ) { m_pWidget->RequestRender( rect ); }
+	void	_requestRender() { m_pWidget->RequestRender(); }
+	void	_requestRender( const WgRect& rect ) { m_pWidget->RequestRender( rect ); }
 
-	void	RequestResize()
+	void	_requestResize()
 	{
-		// Refresh size limits
-
-		WgSize sz = m_pGizmo->MinSize();
-
-		m_pWidget->m_sizeLimit_self.minW = sz.w;
-		m_pWidget->m_sizeLimit_self.minH = sz.h;
-
 		m_pWidget->RefreshSizeLimit();
 	}
 
-	bool	RequestFocus() { return m_pWidget->GrabInputFocus(); }
-	bool	ReleaseFocus() { return m_pWidget->RemoveInputFocus(); }
+	bool	_requestFocus() { return m_pWidget->GrabInputFocus(); }
+	bool	_releaseFocus() { return m_pWidget->RemoveInputFocus(); }
 
 
 	WgWidget *			m_pWidget;

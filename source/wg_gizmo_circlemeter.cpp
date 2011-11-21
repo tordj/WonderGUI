@@ -198,6 +198,14 @@ void WgGizmoCirclemeter::SetFormat( const WgValueFormat& format )
 	RequestRender();
 }
 
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoCirclemeter::DefaultSize() const
+{
+	//TODO: Implement!
+
+	return WgSize(1,1);
+}
 
 
 //____ _onAction() _________________________________________________

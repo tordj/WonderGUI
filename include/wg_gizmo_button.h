@@ -38,10 +38,13 @@
 #	include <wg_interface_textholder.h>
 #endif
 
+#ifndef	WG_ICONHOLDER_DOT_H
+#	include <wg_iconholder.h>
+#endif
 
 //____ WgGizmoButton ____________________________________________________________
 
-class WgGizmoButton : public WgGizmo, public Wg_Interface_TextHolder
+class WgGizmoButton : public WgGizmo, public Wg_Interface_TextHolder, public WgIconHolder
 {
 public:
 	WgGizmoButton();
@@ -55,17 +58,12 @@ public:
 	void			SetPressAnim( bool button1, bool button2, bool button3, bool bDownWhenMouseOutside = false );
 	void			GetPressAnim( bool& button1, bool& button2, bool& button3, bool& bDownWhenMouseOutside );
 
-	void			SetIcon( const WgBlockSetPtr& pIconGfx, const WgOrigo& origo, Sint8 xOfs, Sint8 yOfs );
+	bool			SetIcon( const WgBlockSetPtr& pIconGfx, WgOrientation orientation, WgBorders borders = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
+	void			SetIcon( const WgBlockSetPtr& pIconGfx );
 	WgBlockSetPtr	GetIconSource() const { return m_pIconGfx; }
-	WgOrigo			GetIconOrigo() const { return m_iconOrigo; }
-	Sint8			GetIconOfsX() const { return m_iconOfs.x; }
-	Sint8			GetIconOfsY() const { return m_iconOfs.y; }
 
 	bool			SetSource( const WgBlockSetPtr& pGfx );
 	WgBlockSetPtr	GetSource() const { return m_pBgGfx; }
-
-	void			SetIconAlignment( WgOrigo alignment );
-	void			SetIconOffset( Sint8 xOfs, Sint8 yOfs );
 
     bool			SetDisplacement( Sint8 xUp = 0, Sint8 yUp = 0, Sint8 xOver = 0, Sint8 yOver = 0, Sint8 xDown = 0, Sint8 yDown = 0 );
 	void			GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sint8& yOver, Sint8& xDown, Sint8& yDown ) const;
@@ -93,6 +91,7 @@ protected:
 
 
 	void			_textModified();
+	void			_iconModified();
 
 	virtual WgMode	_getRenderMode();
 
@@ -104,12 +103,9 @@ protected:
 
 	WgMode			m_mode;
 
-	WgOrigo			m_iconOrigo;
-	WgCoord8			m_iconOfs;
-
 	bool			m_bRenderDown[WG_MAX_BUTTONS];	// Render down-version if [button] pressed?
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
-	WgCoord8			m_aDisplace[4];			// Text displacement for up, mouse_over, down and disabled.
+	WgCoord8		m_aDisplace[4];			// Text displacement for up, mouse_over, down and disabled.
 
 	bool			m_bPressedInside[WG_MAX_BUTTONS];
 	bool			m_bReturnPressed;

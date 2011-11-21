@@ -101,6 +101,17 @@ void WgResourceSerializerXML::Warning(const std::string& warn)
 	printf( "%s\n", warn.c_str() );
 }
 
+void WgResourceSerializerXML::Warning(const std::string& warn, const char* pFile, int iLine)
+{
+	m_Err += warn + "\n";
+	std::stringstream ss;
+	ss << pFile << "(" << iLine << "): " << warn << std::endl;
+#ifdef WIN32
+	OutputDebugStringA(ss.str().c_str());
+#endif
+}
+
+
 namespace
 {
 	inline std::string GetIndent(Uint32 nstack) { return std::string(2 * nstack, ' '); }

@@ -441,7 +441,7 @@ void Wg_Interface_ItemHolder::SetItemMarkColor( const WgColor& color )
 
 void Wg_Interface_ItemHolder::SetItemSpacing( Uint32 spacing, bool bCellInclusive )
 {
-	if( spacing != m_itemSpacing && bCellInclusive != m_bCellInclusiveItemSpacing )
+	if( spacing != m_itemSpacing || bCellInclusive != m_bCellInclusiveItemSpacing )
 	{
 		m_itemSpacing = spacing;
 		m_bCellInclusiveItemSpacing = bCellInclusive;

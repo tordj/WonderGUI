@@ -52,6 +52,14 @@ const char * WgGizmoDummy::GetMyType()
 	return c_gizmoType;
 }
 
+
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoDummy::DefaultSize() const
+{
+	return WgSize(1,1);
+}
+
 //____ _onCloneContent() _______________________________________________________
 
 void WgGizmoDummy::_onCloneContent( const WgGizmo * _pOrg )

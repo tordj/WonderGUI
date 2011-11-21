@@ -39,28 +39,34 @@ public:
 	WgItemRow( Sint64 id );
 	virtual ~WgItemRow();
 
-	DECLARE_TOOLTIP_SUPPORT();
-
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
+
+	enum ScaleOp
+	{
+		SCALE_NONE,
+		SCALE_FIRST,
+		SCALE_LAST
+	};
 
 
 	void	SetHeightModify( int pixels );
 	void	SetMarkChildren( bool bMarkChildren );
-	void	SetStretchLastItem( bool bStretch );
+
+	void	SetScaleOp( ScaleOp scaleOperation );
+
 	void	SetUseAllHeight( bool bUseAllHeight );
-	void	SetWidthExpandUsage( float usage );		// 0.f -> 1.f, how much of extra width the items should grow into.
 	void	SetMinWidthFraction( float fraction, int limit );	// Minimum width of contained items in fractions of rows width.
 
 	inline bool	GrabInputFocus() { return WgItem::GrabInputFocus(); }
 	inline bool	RemoveInputFocus() { return WgItem::GrabInputFocus(); }
 
+	WgString	GetTooltipString() const;
+
 protected:
 
 	void	AdaptToHeight( Uint32 displayed_height );
 	void	AdaptToWidth( Uint32 displayed_width );
-
-	float	WidthExpandFactor( int screen_width ); // Factor to expand each items width with.
 
 	void	ActionRespond( WgEmitter * pEmitter, WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
  	void	Render( const WgRect& _window, const WgRect& _clip );
@@ -79,19 +85,17 @@ protected:
 	WgItem* GetMarkedItem( Uint32 x, Uint32 y );
 
 	virtual WgRect	RequestItemGeo( WgItem * pItem );
-	float	WidthExpandPercentage( int screen_width );
 	int		ItemWidth( WgItem * pItem, int screen_width );
 
-
+	WgItem * m_pMarkedItem;
 
 	int		m_heightModify;
 	bool	m_bMarkChildren;
 
-	bool	m_bStretchLastItem;
+	ScaleOp	m_scaleOp;
 	bool	m_bUseAllHeight;
 	float	m_minWidthFraction;
 	int		m_minWidthFractionLimit;
-	float	m_widthExpandUsage;
 };
 
 

@@ -94,6 +94,7 @@ void WgText::Init()
 	m_pHardLines->nChars = 0;
 	m_pHardLines->ofs = 0;
 
+	m_maxChars		= INT_MAX;
 	m_lineWidth		= INT_MAX;
 	m_bWrap			= true;
 	m_bAutoEllipsis = true;
@@ -213,7 +214,11 @@ void WgText::clear()
 void WgText::setText( const WgCharSeq& seq )
 {
 	m_buffer.Clear();
-	m_buffer.PushBack( seq );
+
+	if( seq.Length() <= m_maxChars )
+		m_buffer.PushBack( seq );
+	else
+		m_buffer.PushBack( WgCharSeq(seq, 0, m_maxChars) );
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -225,6 +230,8 @@ void WgText::setText( const WgCharSeq& seq )
 void WgText::setText( const WgCharBuffer * buffer )
 {
 	m_buffer = * buffer;
+	if( (int) m_buffer.Length() > m_maxChars )
+		m_buffer.Delete( m_maxChars, INT_MAX );
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -236,7 +243,11 @@ void WgText::setText( const WgCharBuffer * buffer )
 
 void WgText::setText( const WgString& str )
 {
-	m_buffer = str;
+	if( (int) str.Length() <= m_maxChars )
+		m_buffer = str;
+	else
+		m_buffer = WgCharSeq(str,0,m_maxChars);
+
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -251,6 +262,9 @@ void WgText::setText( const WgText * pText )
 	// TODO: Optimize, we can simply copy the hardlines array. Softlines needs to be generated though.
 
 	m_buffer = * pText->getBuffer();
+	if( (int) m_buffer.Length() > m_maxChars )
+		m_buffer.Delete( m_maxChars, INT_MAX );
+
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -1163,6 +1177,9 @@ void WgText::refresh()
 
 int WgText::addChar( const WgChar& character )
 {
+	if( m_buffer.Length() == m_maxChars )
+		return 0;
+
 	int nAdded = m_buffer.PushBack( character );
 	_regenHardLines();
 	_regenSoftLines();
@@ -1176,7 +1193,12 @@ int WgText::addChar( const WgChar& character )
 
 int WgText::addText( const WgCharSeq& seq )
 {
-	int nAdded = m_buffer.PushBack( seq );
+	int nAdded;
+	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() )
+		nAdded = m_buffer.PushBack( WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() ) );
+	else	
+		nAdded = m_buffer.PushBack( seq );
+
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -1190,7 +1212,12 @@ int WgText::addText( const WgCharSeq& seq )
 
 int WgText::insertText( int ofs, const WgCharSeq& seq )
 {
-	int nInserted = m_buffer.Insert( ofs, seq );
+	int nInserted;
+	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() )
+		nInserted = m_buffer.Insert( ofs, WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() ) );
+	else	
+		nInserted = m_buffer.Insert( ofs, seq );
+
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -1200,12 +1227,16 @@ int WgText::insertText( int ofs, const WgCharSeq& seq )
 	return nInserted;
 }
 
-
 //____ replaceText() __________________________________________________________
 
 int WgText::replaceText( int ofs, int nDelete, const WgCharSeq& seq )
 {
-	int nInserted = m_buffer.Replace( ofs, nDelete, seq );
+	int nInserted;
+	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() - nDelete )
+		nInserted = m_buffer.Replace( ofs, nDelete, WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() - nDelete ) );
+	else	
+		nInserted = m_buffer.Replace( ofs, nDelete, seq );	
+
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -1243,6 +1274,9 @@ int WgText::replaceChar( int ofs, const WgChar& character )
 
 int WgText::insertChar( int ofs, const WgChar& character )
 {
+	if( m_buffer.Length() == m_maxChars )
+		return 0;
+
 	int nInserted = m_buffer.Insert( ofs, character );
 	_regenHardLines();
 	_regenSoftLines();
@@ -1382,6 +1416,22 @@ void WgText::SetAutoEllipsis( bool bAutoEllipsis )
 		_regenSoftLines();
 		_refreshAllLines();
 	}
+}
+
+//____ SetMaxChars() __________________________________________________________
+
+bool WgText::SetMaxChars( int max )
+{
+	if( max <= 0 )
+		return false;
+
+	if( max != m_maxChars )
+	{
+		m_maxChars = max;
+		if( m_maxChars > (int) m_buffer.Length() )
+			deleteText(m_maxChars, INT_MAX);
+	}
+	return true;
 }
 
 //____ setLineWidth() _________________________________________________________

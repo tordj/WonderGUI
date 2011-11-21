@@ -186,7 +186,7 @@ void WgItemWrapText::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction ac
 	// Let text object handle its actions.
 
 	WgRect	r = m_pMyHolder->RequestItemGeo(this);
-	r.shrink( m_margin );
+	r.Shrink( m_margin );
 
 	bool bRender = m_text.OnAction( action, button_key, r, WgCoord(info.x, info.y) );
 	if( bRender )
@@ -209,10 +209,7 @@ void WgItemWrapText::Render( const WgRect& _window, const WgRect& _clip )
 	if( m_bgFill.a != 0 )
 		WgGfx::fillRect( WgRect(r, _clip), m_bgFill );
 
-	r.x += m_margin.left;
-	r.y += m_margin.top;
-	r.w -= ( m_margin.left + m_margin.right );
-	r.h -= ( m_margin.top + m_margin.bottom );
+	r -= m_margin;
 
 	if( GetMode() != m_pText->mode() )
 		m_pText->setMode( GetMode() );

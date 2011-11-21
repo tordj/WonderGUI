@@ -54,6 +54,13 @@ public:
 	inline void		SetID( Uint32 id ) { m_id = id; }
 	inline Uint32	GetID() const { return m_id; }
 
+	void			SetItem( WgItem * pItem );
+	inline WgItem * GetItem() const { return m_pItem; }
+
+	void			SetItemPos( const WgOrigo& origo, WgCoord ofs );
+	WgCoord			GetItemOfs() const { return m_itemOfs; }
+	inline WgOrigo	GetItemOrigo() const { return m_itemOrigo; }
+
 	void			SetWidth( int pixels );
 	inline Uint32	GetWidth() const { return (Uint32) m_pixelWidth; }
 
@@ -107,6 +114,10 @@ private:
 	bool			m_bInitialAscend;
 	Wdg_TableView *	m_pOwner;
 
+	WgItem *		m_pItem;
+	WgOrigo			m_itemOrigo;
+	WgCoord			m_itemOfs;
+
 };
 
 
@@ -147,11 +158,12 @@ public:
 	void	SetItem( WgItem * pItem, Uint32 col );
 	void	AddItem( WgItem * pItem );
 
-
-	void	SetTooltipString( const WgString& str )		{ WgItemRow::SetTooltipString( str ); }	\
-	void	SetTooltipString( const WgChar* pString )	{ WgItemRow::SetTooltipString( pString ); }	\
-	void	SetTooltipString( const Uint16* pString )	{ WgItemRow::SetTooltipString( pString ); }	\
-	void	SetTooltipString( const char* pString )		{ WgItemRow::SetTooltipString( pString ); }	\
+/*
+	void	SetTooltipString( const WgString& str )		{ WgItemRow::SetTooltipString( str ); }
+	void	SetTooltipString( const WgChar* pString )	{ WgItemRow::SetTooltipString( pString ); }
+	void	SetTooltipString( const Uint16* pString )	{ WgItemRow::SetTooltipString( pString ); }
+	void	SetTooltipString( const char* pString )		{ WgItemRow::SetTooltipString( pString ); }
+*/
 protected:
 	virtual WgRect	RequestItemGeo( WgItem * pItem );		// Overloading version from WgItemRow
 
@@ -199,7 +211,7 @@ public:
 	void	SetAutoScaleHeaders(bool autoScaleHeaders);
 	bool	GetAutoScaleHeaders() const { return m_bAutoScaleHeader; }
 
-	int		GetHeaderHeight();
+	int		GetHeaderHeight() const;
 
 	void	SetEmptyRowHeight( Uint32 height );
 	Uint32	GetEmptyRowHeight() { return m_emptyRowHeight; }
@@ -266,6 +278,7 @@ public:
 	bool	ShowHeader() const { return m_bShowHeader; }
 
 	WgRect	GetCellGeo( int row, int column );
+	WgRect	GetHeaderGeo( int column );
 
 	WgItem*	GetCell( Uint32 row, Uint32 column );
 
@@ -290,7 +303,9 @@ protected:
 private:
 	void 	Init();
 
-	int		GetColumnAtPosition( int position );
+	WgRect	_headerItemGeo( WgTableColumn * pHeader, const WgRect& headerGeo ) const;
+
+	int		GetColumnAtPosition( int position ) const;
 	WgItem * GetItemAtPosition( int position, WgTableRow * pRow );
 	int		GetPositionOfColumn( int col );
 	WgItem *GetExtendedCellContent( WgTableRow * pRow, int col );
@@ -308,6 +323,9 @@ private:
 	WgItem*		GetMarkedItem( Uint32 x, Uint32 y );
 	Sint32		CompareItems(WgItem * pItem1, WgItem * pItem2 );
 	void		ItemAdded( WgItem * pItem );
+
+	WgItem*		GetMarkedHeaderItem( int x, int y ) const;
+
 
 	int			GetMarkedColumn( Uint32 x, Uint32& saveXOfs );
 	int			GetMarkedRow( Uint32 y, WgTableRow*& pSaveRow, Uint32& saveYOfs );
@@ -361,6 +379,7 @@ private:
 	Uint8			m_lastSortColumn;
 	bool			m_lastSortColumnAscendStatus;
 
+	WgItem *		m_pLastMarkedHeaderItem;
 
 	WgItem *		m_pLastMarkedItem;
 	int				m_lastClickedRow;
@@ -382,7 +401,7 @@ private:
 	WgBlockSetPtr	m_pHeaderGfxNormal;
 	WgBlockSetPtr	m_pHeaderGfxSelected;
 
-	WgTableColumn*	GetHeaderColumnAt(int x, int y);
+	WgTableColumn*	GetHeaderColumnAt(int x, int y, int * wpOfsX = 0) const;
 	WgTableColumn*	m_pMarkedHeader;						// Header currently marked by mouse
 	WgTableColumn*	m_pPressedHeader;						// Header who have received current mouse button press
 

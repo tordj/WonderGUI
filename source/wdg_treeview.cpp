@@ -126,7 +126,7 @@ void Wdg_TreeView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butto
 				if( pEntry )
 				{
 					WgRect expander = GetExpanderRect(pEntry);
-					if( expander.contains( x + m_viewPixOfsX, ofs ) )
+					if( expander.Contains( x + m_viewPixOfsX, ofs ) )
 					{
 						if( pEntry->IsOpen() )
 							CloseEntry( pEntry );
@@ -198,9 +198,9 @@ WgRect Wdg_TreeView::GetExpanderRect( WgTreeEntry * pEntry )
 	WgRect r;
 
 	if( pEntry->bOpen )
-		r = m_pExpanderOpen->GetSize();
+		r = m_pExpanderOpen->Size();
 	else
-		r = m_pExpanderClosed->GetSize();
+		r = m_pExpanderClosed->Size();
 
 	r.x = pEntry->GetLevel() * m_indentation;
 	r.x += (m_indentation-r.w)/2;
@@ -366,7 +366,7 @@ void Wdg_TreeView::SetExpanderSource( const WgBlockSetPtr& pGfxOpen, const WgBlo
 	m_pExpanderOpen = pGfxOpen;
 	m_pExpanderClosed = pGfxClosed;
 
-	WgSize sz = WgSize::max( pGfxOpen->GetSize(), pGfxClosed->GetSize() );
+	WgSize sz = WgSize::Max( pGfxOpen->Size(), pGfxClosed->Size() );
 
 	if( sz != m_expanderSize )
 	{

@@ -25,6 +25,8 @@ WgTableColumn::WgTableColumn()
 	m_maxWidth			= INT_MAX;
 	m_scaleWeight		= 1.f;
 	m_pixelWidth		= 4;
+	m_pItem				= 0;
+	m_itemOrigo			= WgOrigo::midLeft();
 }
 
 
@@ -43,6 +45,8 @@ WgTableColumn::WgTableColumn( Wdg_TableView * pOwner )
 	m_maxWidth			= INT_MAX;
 	m_scaleWeight		= 1.f;
 	m_pixelWidth		= 4;
+	m_pItem				= 0;
+	m_itemOrigo			= WgOrigo::midLeft();
 }
 
 
@@ -60,6 +64,8 @@ WgTableColumn::WgTableColumn(const WgTableColumn& column)
 	m_maxWidth			= column.m_maxWidth;
 	m_scaleWeight		= column.m_scaleWeight;
 	m_pixelWidth		= column.m_pixelWidth;
+	m_pItem				= column.m_pItem;
+	m_itemOrigo			= column.m_itemOrigo;
 
 	if(column.m_pText)
 	{
@@ -243,7 +249,20 @@ void WgTableColumn::_textModified()
 		m_pOwner->RequestRender();
 }
 
+void WgTableColumn::SetItem( WgItem * pItem )
+{
+	m_pItem = pItem;
+	if( m_bVisible && m_pOwner )
+		m_pOwner->RequestRender();
+}
 
+void WgTableColumn::SetItemPos( const WgOrigo& origo, WgCoord ofs )
+{
+	m_itemOrigo = origo;
+	m_itemOfs = ofs;
+	if( m_bVisible && m_pOwner )
+		m_pOwner->RequestRender();
+}
 
 void WgTableRow::SetItem( WgItem * pItem, Uint32 col )
 {
@@ -303,7 +322,7 @@ WgRect WgTableRow::RequestItemGeo( WgItem * pItem )
 	WgRect cellGeo = ((Wdg_TableView*)m_pMyHolder)->GetCellGeo(rowNb,colNb);
 	WgRect screenGeo = ((Wdg_TableView*)m_pMyHolder)->ScreenGeometry();
 
-	return cellGeo + screenGeo.pos();
+	return cellGeo + screenGeo.Pos();
 }
 
 
@@ -333,6 +352,8 @@ void Wdg_TableView::Init( void )
 
 	m_cellPaddingX		= 0;
 	m_cellPaddingY		= 0;
+
+	m_pLastMarkedHeaderItem = 0;
 
 	m_pLastMarkedItem = 0;
 	m_lastClickedRow = -1;
@@ -758,7 +779,7 @@ WgTableColumn* Wdg_TableView::FindColumn(Uint32 id) const
 
 //____ GetColumnAtPosition() ___________________________________________________
 
-int Wdg_TableView::GetColumnAtPosition( int position )
+int Wdg_TableView::GetColumnAtPosition( int position ) const
 {
 	return m_columnOrder[position];
 }
@@ -875,6 +896,36 @@ WgRect Wdg_TableView::GetCellGeo( int row, int column )
 
 	return r;
 }
+
+//____ GetHeaderGeo() _________________________________________________________
+
+WgRect Wdg_TableView::GetHeaderGeo( int column )
+{
+	if( column >= (int) m_nColumns )
+		return WgRect();							// Invalid column;
+
+
+	WgRect	r( 0 - m_viewPixOfsX, 0 - m_viewPixOfsY, 0, GetHeaderHeight() );
+
+	// Go through columns, determine x-pos and width. 
+
+	for( int i = 0 ; i <= column ; i++ )
+	{
+		if( m_pColumns[i].m_bVisible )
+		{
+			r.w = (int) m_pColumns[i].m_pixelWidth;
+
+			r.x += m_cellPaddingX;
+			r.w -= m_cellPaddingX*2;
+
+			if( i != column )
+				r.x += ((int) m_pColumns[i].m_pixelWidth) - m_cellPaddingX;		// One cellpadding already added...
+		}
+	}
+
+	return r;
+}
+
 
 
 WgTableRow *	Wdg_TableView::RemoveRow( Uint32 pos )
@@ -1090,7 +1141,7 @@ void Wdg_TableView::ShowHeader( bool bShow )
 
 //____ GetHeaderHeight() ______________________________________________________
 
-int Wdg_TableView::GetHeaderHeight()
+int Wdg_TableView::GetHeaderHeight() const
 {
 	if( !m_bShowHeader )
 		return 0;
@@ -1098,10 +1149,10 @@ int Wdg_TableView::GetHeaderHeight()
 	int h = 0;
 
 	if( m_pHeaderGfxNormal )
-		h = m_pHeaderGfxNormal->GetHeight();
+		h = m_pHeaderGfxNormal->Height();
 
-	if( m_pHeaderGfxSelected && m_pHeaderGfxSelected->GetHeight() > h )
-		h = m_pHeaderGfxSelected->GetHeight();
+	if( m_pHeaderGfxSelected && m_pHeaderGfxSelected->Height() > h )
+		h = m_pHeaderGfxSelected->Height();
 
 	return h;
 }
@@ -1469,6 +1520,23 @@ void Wdg_TableView::SetAutoScaleHeaders(bool autoScaleHeaders)
 	}
 }
 
+//____ _headerItemGeo() _____________________________________________________________
+
+WgRect Wdg_TableView::_headerItemGeo( WgTableColumn * pHeader, const WgRect& headerGeo ) const
+{
+	WgRect itemGeo;
+	if( pHeader && pHeader->m_pItem && headerGeo.w >0 && headerGeo.h > 0 )
+	{
+		itemGeo.w = pHeader->m_pItem->Width();
+		itemGeo.h = pHeader->m_pItem->Height();
+
+		itemGeo.x = pHeader->m_itemOrigo.calcOfsX(headerGeo.w, itemGeo.w) + pHeader->m_itemOfs.x + headerGeo.x;
+		itemGeo.y = pHeader->m_itemOrigo.calcOfsY(headerGeo.h, itemGeo.h) + pHeader->m_itemOfs.y + headerGeo.y;
+	}
+
+	return itemGeo;
+}
+
 //____ DoMyOwnRender() ________________________________________________________
 void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
@@ -1520,6 +1588,31 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			
 			WgGfx::clipBlitBlock( _clip, pHeaderGfx->GetBlock(mode,r2), r2 );
 
+			// Print text
+
+			if( pHeaderGfx )
+				m_pColumns[i].SetTextBaseColors(pHeaderGfx->TextColors());
+
+			WgRect rText = r2;
+			if( pHeaderGfx )
+				rText.Shrink( pHeaderGfx->ContentBorders() );
+
+			m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
+			WgGfx::printText( _clip, m_pColumns[i].GetTextObj(), rText );
+
+			// Draw header item
+
+			if( m_pColumns[i].GetItem() )
+			{
+				WgRect window = rText;
+				WgRect itemRect = _headerItemGeo( &m_pColumns[i], window );
+
+				WgItem * pItem = m_pColumns[i].GetItem();
+				pItem->Render( itemRect, WgRect( window, _clip ) );
+			}
+
+			// Draw sorting arrows
+
 			if( i == m_lastSortColumn && m_pAscendGfx && m_pDescendGfx )
 			{
 				WgBlock block;
@@ -1529,23 +1622,11 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 				else
 					block = m_pDescendGfx->GetBlock(mode);
 
-				Sint32 dx = (Sint32) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.GetWidth() * m_sortMarkerOrigo.hotspotX());
-				Sint32 dy = (Sint32) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.GetHeight() * m_sortMarkerOrigo.hotspotY());
+				Sint32 dx = (Sint32) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.Width() * m_sortMarkerOrigo.hotspotX());
+				Sint32 dy = (Sint32) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.Height() * m_sortMarkerOrigo.hotspotY());
 
-				WgGfx::clipBlitBlock( _clip, block, WgRect( dx, dy, block.GetWidth(), block.GetHeight()) );
+				WgGfx::clipBlitBlock( _clip, block, WgRect( dx, dy, block.Width(), block.Height()) );
 			}
-
-			// Print text
-
-			if( pHeaderGfx )
-				m_pColumns[i].SetTextBaseColors(pHeaderGfx->GetTextColors());
-
-			WgRect rText = r2;
-			if( pHeaderGfx )
-				rText.shrink( pHeaderGfx->GetContentBorders() );
-
-			m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
-			WgGfx::printText( _clip, m_pColumns[i].GetTextObj(), rText );
 
 			//
 
@@ -1609,7 +1690,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 		r.h = pRow->Height() + m_cellPaddingY*2;
 
 		WgRect	u;
-		if( u.intersection( r, clipView ) )
+		if( u.Intersection( r, clipView ) )
 		{
 			DrawRowBg( u, pRow, iVisibleRowNb, iRealRowNb, r );
 		}
@@ -1672,7 +1753,7 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			r.h = m_emptyRowHeight;
 
 			WgRect	u;
-			if( u.intersection( r, clipView ) )
+			if( u.Intersection( r, clipView ) )
 				DrawRowBg( u, pRow, iVisibleRowNb, iVisibleRowNb, r );
 
 			r.y += r.h;
@@ -1708,7 +1789,7 @@ void Wdg_TableView::DrawRowBg( const WgRect& clip, WgTableRow * pRow, int iVisib
 	{
 		WgBlockSetPtr p = m_pRowBlocks[iVisibleRowNb%2];
 		if( p && !p->IsModeSkipable(mode) )
-			WgGfx::clipBlitBlock(clip, p->GetBlock(mode, dest.size() ), dest );
+			WgGfx::clipBlitBlock(clip, p->GetBlock(mode, dest.Size() ), dest );
 	}
 }
 
@@ -1771,7 +1852,7 @@ void Wdg_TableView::DoMyOwnDisOrEnable( void )
 
 //____ GetHeaderColumnAt() ____________________________________________________
 
-WgTableColumn *Wdg_TableView::GetHeaderColumnAt(int x, int y)
+WgTableColumn *Wdg_TableView::GetHeaderColumnAt(int x, int y, int * wpOfsX ) const
 {
 	if(x < 0 || y < 0)
 		return NULL;
@@ -1787,7 +1868,11 @@ WgTableColumn *Wdg_TableView::GetHeaderColumnAt(int x, int y)
 			{
 				int w = (int) m_pColumns[col].m_pixelWidth;
 				if( xOfs < w )
+				{
+					if( wpOfsX )
+						wpOfsX[0] = xOfs;
 					return &m_pColumns[col];
+				}
 				xOfs -= w - 1;
 			}
 		}
@@ -1811,6 +1896,9 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 			WgTableColumn * pCol = GetHeaderColumnAt( x, y );			// Press on header?
 			if( pCol )
 			{
+				if( GetMarkedHeaderItem( x, y ) )
+					break;
+
 				m_pPressedHeader = pCol;
 
 				int col = pCol - m_pColumns;
@@ -1920,6 +2008,10 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 			WgTableColumn *col = GetHeaderColumnAt(x, y);
 			if( col && col->IsDisabled() )
 				col = NULL;
+
+			if( col && GetMarkedHeaderItem( x, y ) )
+				col = NULL;
+
 			if( m_pMarkedHeader != col )
 			{
 				m_pMarkedHeader = col;
@@ -1985,39 +2077,79 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 	}
 
 
-
-
-	WgItem * pItem = GetMarkedItem( (Uint32) x, (Uint32) y );
-
-	if( pItem != m_pLastMarkedItem && m_pLastMarkedItem != 0 )
 	{
-		m_pLastMarkedItem->ActionRespond( this, WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
-		m_pLastMarkedItem = 0;
-		return;	// hmmm... should this return really be here?
-	}
 
-	if( pItem )
-	{
-		pItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
+		WgItem * pItem = GetMarkedItem( (Uint32) x, (Uint32) y );
 
-		// HACK. Remove when message loop is implemented
-		// pItem can be deleted in the ActionResponse callback. Make sure it still exist // Martin
-		m_pLastMarkedItem = 0;
-		WgTableRow* pRow = (WgTableRow*)m_items.First();
-		while( pRow )
+		if( pItem != m_pLastMarkedItem && m_pLastMarkedItem != 0 )
 		{
-			if( pRow->HasItem( pItem ) )
+			m_pLastMarkedItem->ActionRespond( this, WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
+			m_pLastMarkedItem = 0;
+//			pItem = 0;	// Is this correct???
+//			return;	// hmmm... should this return really be here?
+		}
+
+		if( pItem )
+		{
+			pItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
+
+			// HACK. Remove when message loop is implemented
+			// pItem can be deleted in the ActionResponse callback. Make sure it still exist // Martin
+			m_pLastMarkedItem = 0;
+			WgTableRow* pRow = (WgTableRow*)m_items.First();
+			while( pRow )
 			{
-				m_pLastMarkedItem = pItem;
-				break;
+				if( pRow->HasItem( pItem ) )
+				{
+					m_pLastMarkedItem = pItem;
+					break;
+				}
+				pRow = pRow->GetNext();
 			}
-			pRow = pRow->GetNext();
+		}
+		else
+		{
+			m_pLastMarkedItem = 0;
 		}
 	}
-	else
+
+	// Action respond for header items
+
+	WgItem * pItem = GetMarkedHeaderItem( x, y );
+
+	if( pItem != m_pLastMarkedHeaderItem && m_pLastMarkedHeaderItem != 0 )
+		m_pLastMarkedHeaderItem->ActionRespond( this, WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
+
+	if( pItem && m_pLastMarkedHeaderItem != pItem )
+		pItem->ActionRespond( this, WgInput::POINTER_ENTER, _button_key, _info, _inputObj );
+
+	if( pItem && _action != WgInput::POINTER_ENTER )							// Pointer enter already handled above.
+		pItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
+
+	m_pLastMarkedHeaderItem = pItem;
+
+}
+
+//____ GetMarkedHeaderItem() __________________________________________________
+
+WgItem * Wdg_TableView::GetMarkedHeaderItem( int x, int y ) const
+{
+	int ofsX;
+	WgTableColumn * pHeader = GetHeaderColumnAt( x, y, &ofsX );
+
+	if( pHeader )
 	{
-		m_pLastMarkedItem = 0;
+		WgRect	headerGeo( 0, 0, (int) pHeader->m_pixelWidth, GetHeaderHeight() );
+		if( m_pHeaderGfxNormal )
+			headerGeo -= m_pHeaderGfxNormal->ContentBorders();
+
+		WgRect	itemGeo = _headerItemGeo( pHeader, headerGeo );
+
+		if( itemGeo.Contains(ofsX,y) )
+			return pHeader->m_pItem;
 	}
+
+	return 0;
 }
 
 //____ UpdateMarkedRowColumn() ________________________________________________

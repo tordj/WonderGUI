@@ -80,6 +80,14 @@ void WgGizmoFps::SetTextProperties( const WgTextPropPtr& pProp )
 	RequestRender();
 }
 
+//____ DefaultSize() __________________________________________________________
+
+WgSize WgGizmoFps::DefaultSize() const
+{
+	//TODO: Implement!
+
+	return WgSize(1,1);
+}
 
 
 //____ DoMyOwnRender() ________________________________________________________

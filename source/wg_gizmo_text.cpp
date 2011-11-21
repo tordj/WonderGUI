@@ -36,7 +36,6 @@ WgGizmoText::WgGizmoText()
 {
 	m_pText			= &m_text;
 	m_pText->CreateCursor();
-	m_maxCharacters	= 0;
 	m_maxLines		= 0;
 
 	m_text.setLineWidth( Size().w );
@@ -582,18 +581,7 @@ Uint32 WgGizmoText::InsertTextAtCursor( const WgCharSeq& str )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
-	Uint32 nChars = 0;
-
-	if( m_maxCharacters == 0 || str.Length() < m_maxCharacters - m_pText->nbChars() )
-	{
-		m_pText->putText( str );
-		nChars = str.Length();
-	}
-	else
-	{
-		nChars = m_maxCharacters - m_pText->nbChars();
-		m_pText->putText( WgCharSeq( str, 0, nChars) );
-	}
+	Uint32 nChars = m_pText->putText( str );
 
 	if( m_maxLines != 0 && m_maxLines < (int) m_pText->nbSoftLines() )
 	{
@@ -624,10 +612,8 @@ bool WgGizmoText::InsertCharAtCursorInternal( Uint16 c )
 		m_pText->delSelection();
 	m_pText->setSelectionMode(false);
 
-	if( m_maxCharacters != 0 && m_maxCharacters < (int) m_pText->nbChars() )
+	if( m_pText->putChar( c ) == false )
 		return false;
-
-	m_pText->putChar( c );
 
 	if( m_maxLines != 0 && m_maxLines < (int) m_pText->nbSoftLines() )
 	{

@@ -45,7 +45,7 @@ WgGfxAnim::WgGfxAnim( Uint32 width, Uint32 height )
 
 bool WgGfxAnim::insertFrame( Uint32 pos, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration )
 {
-	if( pSurf->Width() < xOfs + m_width || pSurf->Height() < yOfs + m_height )
+	if( pSurf->Width() < (int)(xOfs + m_width) || pSurf->Height() < (int)(yOfs + m_height) )
 		return false;
 
 
@@ -83,7 +83,7 @@ bool WgGfxAnim::insertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, Uint16 xOf
 
 bool WgGfxAnim::addFrame( WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration )
 {
-	if( pSurf->Width() < xOfs + m_width || pSurf->Height() < yOfs + m_height )
+	if( pSurf->Width() < (int)(xOfs + m_width) || pSurf->Height() < (int)(yOfs + m_height) )
 		return false;
 
 	WgGfxFrame * pFrame = new WgGfxFrame;
@@ -108,7 +108,7 @@ Uint32 WgGfxAnim::addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 
 	if( nFrames == 0 )
 		nFrames = (pSurf->Width() - xOfs) / m_width;				// Put in as many as fits along surface width.
 
-	if( pSurf->Width() < xOfs + (m_width+spacing) * nFrames || pSurf->Height() < yOfs + m_height )
+	if( pSurf->Width() < (int)(xOfs + (m_width+spacing) * nFrames) || pSurf->Height() < (int)(yOfs + m_height) )
 		return 0;
 
 	for( Uint32 i = 0 ; i < nFrames ; i++ )
@@ -139,7 +139,7 @@ Uint32 WgGfxAnim::addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 
 	if( nFrames == 0 )
 		nFrames = (pSurf->Height() - yOfs) / m_height;			// Put in as many as fits along surface width.
 
-	if( pSurf->Width() < xOfs + m_width || pSurf->Height() < yOfs + (m_height+spacing)*nFrames )
+	if( pSurf->Width() < (int)(xOfs + m_width) || pSurf->Height() < (int)(yOfs + (m_height+spacing)*nFrames) )
 		return 0;
 
 	for( Uint32 i = 0 ; i < nFrames ; i++ )

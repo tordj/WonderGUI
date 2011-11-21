@@ -384,7 +384,7 @@ bool WgCursorInstance::putChar( Uint16 character )
 		line++;
 		column = 0;
 	}
-	else
+	else if( ret == 1 )
 		column++;
 
 

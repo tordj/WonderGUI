@@ -361,7 +361,7 @@ WgItem* Wdg_GridView::GetMarkedItem( Uint32 x, Uint32 y )
 
 	while(bSuccess)
 	{
-		if(itemArray.rect.contains(x, y))
+		if(itemArray.rect.Contains(x, y))
 		{
 			WgRect itemRect(itemArray.rect.x, itemArray.rect.y, 0, 0);
 			for(WgItem* p = itemArray.pFirstItem; p != itemArray.pNextFirst; p = p->Next())
@@ -370,7 +370,7 @@ WgItem* Wdg_GridView::GetMarkedItem( Uint32 x, Uint32 y )
 				itemRect.w = itemSize.w;
 				itemRect.h = itemSize.h;
 
-				if(itemRect.contains(x, y))
+				if(itemRect.Contains(x, y))
 					return p->GetMarkedItem(x-itemRect.x, y-itemRect.y);
 
 				if(m_layout == Vertical)
@@ -461,7 +461,7 @@ void Wdg_GridView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 	while(bSuccess)
 	{
 		WgRect itemRect(itemArray.rect.x + r.x, itemArray.rect.y + r.y, itemArray.rect.w, itemArray.rect.h);
-		if(itemRect.intersectsWith(_clip))
+		if(itemRect.IntersectsWith(_clip))
 		{
 			for(WgItem* p = itemArray.pFirstItem; p != itemArray.pNextFirst; p = p->Next())
 			{
@@ -469,7 +469,7 @@ void Wdg_GridView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Ui
 				itemRect.w = itemSize.w;
 				itemRect.h = itemSize.h;
 
-				if(itemRect.intersectsWith(_clip))
+				if(itemRect.IntersectsWith(_clip))
 					RenderItem(p, _clip, itemRect);
 
 				if(m_layout == Vertical)
@@ -579,7 +579,7 @@ void Wdg_GridView::CalcBiggestCell()
 		p = p->GetNext();
 	}
 
-	z.constrainTo( m_cellSize );
+	z.ConstrainTo( m_cellSize );
 	m_biggestCell = z;
 }
 
@@ -592,7 +592,7 @@ WgSize Wdg_GridView::CalcPackedCellSize( const WgItem * pItem )
 	z.w = pItem->Width() + m_cellPaddingX*2;
 	z.h = pItem->Height() + m_cellPaddingY*2;
 
-	z.constrainTo( m_cellSize );
+	z.ConstrainTo( m_cellSize );
 
 	return z;
 }

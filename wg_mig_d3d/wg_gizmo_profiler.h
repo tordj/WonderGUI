@@ -18,9 +18,8 @@ class WgGizmoProfiler:public WgGizmo
 		virtual const char * Type() const;
 		static const char * GetMyType();
 		
-
-
-		void SetTextProperties( WgTextPropPtr& pProp );
+		void	SetTextProperties( WgTextPropPtr& pProp );
+		WgSize	DefaultSize() const;
 
 	protected:
 
