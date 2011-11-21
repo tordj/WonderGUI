@@ -224,7 +224,7 @@ void WgGizmoRefreshButton::_onUpdate( const WgUpdateInfo& _updateInfo )
 
 void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
-	// Render background
+	// Render background or animation
 
 	if( m_bRefreshing && m_pRefreshAnim && m_animTarget != ICON )
 	{
@@ -259,12 +259,22 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode,_canvas.Size()), _canvas );
 	}
 
-	// Get displacement offset
+	// Get content rect with displacement.
 
-    int   xOfs = m_aDisplace[m_mode].x;
-    int   yOfs = m_aDisplace[m_mode].y;
+	WgRect contentRect = _canvas;
+	if( m_pBgGfx )
+		contentRect -= m_pBgGfx->ContentBorders();
 
-	// Render icon (with displacement).
+	contentRect.x += m_aDisplace[m_mode].x;
+	contentRect.y += m_aDisplace[m_mode].y;
+
+	// Get icon and text rect from content rect
+
+	WgRect iconRect = _getIconRect( contentRect, m_pIconGfx );
+	WgRect textRect = _getTextRect( contentRect, iconRect );
+
+
+	// Render icon or animation
 
 	if( m_bRefreshing && m_pRefreshAnim && m_animTarget == ICON )
 	{
@@ -273,26 +283,13 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 		int w = m_pRefreshAnim->width();;
 		int h = m_pRefreshAnim->height();
 
-		int dx = (int)( m_iconOrigo.anchorX() * _canvas.w - m_iconOrigo.hotspotX() * w + m_iconOfs.x + xOfs );
-		int dy = (int)( m_iconOrigo.anchorY() * _canvas.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
-
 		WgGfxFrame * pFrame = m_pRefreshAnim->getFrame( m_animTimer );
-		//pDevice->ClipBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), _canvas.x + dx, _canvas.y + dy );
-		pDevice->ClipStretchBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), _canvas );
+		pDevice->ClipStretchBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), iconRect );
 	}
 	else if( m_pIconGfx )
-	{
-		int w = m_pIconGfx->Width();
-		int h = m_pIconGfx->Height();
+		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, iconRect.Size()), iconRect );
 
-		int dx = (int)( m_iconOrigo.anchorX() * _canvas.w - m_iconOrigo.hotspotX() * w + m_iconOfs.x + xOfs );
-		int dy = (int)( m_iconOrigo.anchorY() * _canvas.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
-
-		WgRect dest( _canvas.x + dx, _canvas.y + dy, w, h );
-		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode,dest), dest );
-	}
-
-	// Print text (with displacement).
+	// Print text
 
 	WgText * pText;
 
@@ -301,17 +298,15 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 	else
 		pText = &m_text;
 
- 	if( pText->nbLines()!= 0 )
+ 	if( !pText->IsEmpty() )
 	{
 		pText->setMode(m_mode);
 
-		WgRect printWindow( _canvas.x + xOfs, _canvas.y + yOfs, _canvas.w, _canvas.h );
 		if( m_pBgGfx )
-		{
-			printWindow.Shrink( m_pBgGfx->ContentBorders() );
 			pText->SetBgBlockColors( m_pBgGfx->TextColors() );
-		}
-		pDevice->PrintText( _clip, pText, printWindow );
+
+		WgRect clip(textRect,_clip);
+		pDevice->PrintText( clip, pText, textRect );
 	}
 }
 

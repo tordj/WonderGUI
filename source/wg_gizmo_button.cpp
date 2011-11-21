@@ -52,10 +52,6 @@ WgGizmoButton::WgGizmoButton()
 	}
 	m_bRenderDown[0] = true;			// Default is first mouse button...
 
-	m_iconOrigo			= WgOrigo::midLeft();
-	m_iconOfs.x			= 0;
-	m_iconOfs.y			= 0;
-
 	m_bReturnPressed = false;
 	m_bPointerInside = false;
 }
@@ -95,46 +91,42 @@ bool WgGizmoButton::SetSource( const WgBlockSetPtr& pGfx )
 	return true;
 }
 
+//____ SetIcon() ______________________________________________________________
+
+void WgGizmoButton::SetIcon( const WgBlockSetPtr& pIconGfx )
+{
+	m_pIconGfx = pIconGfx;
+	_iconModified();
+}
+
+bool WgGizmoButton::SetIcon( const WgBlockSetPtr& pIconGfx, WgOrientation orientation, WgBorders borders, float scale, bool bPushText )
+{
+	if( scale < 0 || scale > 1.f )
+		return false;
+
+	m_pIconGfx = pIconGfx;
+	m_iconOrientation = orientation;
+	m_iconBorders = borders;
+	m_iconScale = scale;
+	m_bIconPushText = bPushText;
+
+	_iconModified();
+	return true;
+}
+
+
 //____ GetTextAreaWidth() _____________________________________________________
 
 Uint32 WgGizmoButton::GetTextAreaWidth()
 {
-	int w = Size().w;
+	WgRect	contentRect(0,0,Size());
 
 	if( m_pBgGfx )
-		w -= m_pBgGfx->ContentBorders().Width();
+		contentRect.Shrink(m_pBgGfx->ContentBorders());
 
-	return w;
-}
+	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx ) );
 
-//____ SetIcon() ______________________________________________________________
-
-void WgGizmoButton::SetIcon( const WgBlockSetPtr& pGfx, const WgOrigo& origo, Sint8 xOfs, Sint8 yOfs )
-{
-	m_pIconGfx = pGfx;
-
-	m_iconOrigo = origo;
-	m_iconOfs.x = xOfs;
-	m_iconOfs.y = yOfs;
-
-	RequestRender();
-}
-
-//____ SetIconAlignment() _____________________________________________________
-
-void WgGizmoButton::SetIconAlignment( WgOrigo alignment )
-{
-	m_iconOrigo = alignment;
-	RequestRender();
-}
-
-//____ SetIconOffset() ________________________________________________________
-
-void WgGizmoButton::SetIconOffset( Sint8 xOfs, Sint8 yOfs )
-{
-	m_iconOfs.x = xOfs;
-	m_iconOfs.y = yOfs;
-	RequestRender();
+	return textRect.w;
 }
 
 //____ SetDisplacement() _______________________________________________________
@@ -187,7 +179,7 @@ int WgGizmoButton::HeightForWidth( int width ) const
 			height = heightForText;
 	}
 
-	//TODO: Take icon with origo, offset and size into account.
+	//TODO: Take icon into account.
 
 	return height;
 }
@@ -216,7 +208,7 @@ WgSize WgGizmoButton::DefaultSize() const
 			bestSize.h = textSize.h;
 	}
 
-	//TODO: Take icon with origo, offset and size into account.
+	//TODO: Take icon into account.
 
 	return bestSize;
 }
@@ -242,12 +234,14 @@ void WgGizmoButton::_onDisable()
 
 void WgGizmoButton::_onNewSize( const WgSize& size )
 {
-	Uint32 w = size.w;
+	WgRect	contentRect(0,0,Size());
 
 	if( m_pBgGfx )
-		w -= m_pBgGfx->ContentBorders().Width();
+		contentRect.Shrink(m_pBgGfx->ContentBorders());
 
-	m_text.setLineWidth(w);
+	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx ) );
+
+	m_text.setLineWidth(textRect.w);
 }
 
 
@@ -264,43 +258,36 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	if( m_pBgGfx )
 		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode, _canvas), _canvas );
 
-	// Get displacement offset
+	// Get content rect with displacement.
 
-    int   xOfs = m_aDisplace[m_mode].x;
-    int   yOfs = m_aDisplace[m_mode].y;
+	WgRect contentRect = _canvas;
+	if( m_pBgGfx )
+		contentRect -= m_pBgGfx->ContentBorders();
 
-	// Render icon (with displacement).
+	contentRect.x += m_aDisplace[m_mode].x;
+	contentRect.y += m_aDisplace[m_mode].y;
+
+	// Get icon and text rect from content rect
+
+	WgRect iconRect = _getIconRect( contentRect, m_pIconGfx );
+	WgRect textRect = _getTextRect( contentRect, iconRect );
+
+	// Render icon
 
 	if( m_pIconGfx )
-	{
-		int w = m_pIconGfx->Width();
-		int h = m_pIconGfx->Height();
+		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, iconRect.Size()), iconRect );
 
-		int dx = (int)( m_iconOrigo.anchorX() * _canvas.w - m_iconOrigo.hotspotX() * w + m_iconOfs.x + xOfs );
-		int dy = (int)( m_iconOrigo.anchorY() * _canvas.h - m_iconOrigo.hotspotY() * h + m_iconOfs.y + yOfs );
+	// Print text
 
-		WgRect dest( _canvas.x + dx, _canvas.y + dy, w, h );
-		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, dest.Size()), dest );
-	}
-
-	// Print text (with displacement).
-
- 	if( m_text.nbLines()!= 0 )
+ 	if( !m_text.IsEmpty() )
 	{
 		m_text.setMode(m_mode);
 
 		if( m_pBgGfx )
 			m_text.SetBgBlockColors( m_pBgGfx->TextColors() );
 
-		WgRect printWindow( _canvas.x + xOfs, _canvas.y + yOfs, _canvas.w, _canvas.h );
-
-		if( m_pBgGfx )
-			printWindow.Shrink( m_pBgGfx->ContentBorders() );
-
-		WgRect c = _clip;
-		WgRect printW = printWindow;
-
-		pDevice->PrintText( _clip, &m_text, printWindow );
+		WgRect clip(textRect,_clip);
+		pDevice->PrintText( clip, &m_text, textRect );
 	}
 }
 
@@ -508,9 +495,6 @@ void WgGizmoButton::_onCloneContent( const WgGizmo * _pOrg )
 	m_pIconGfx		= pOrg->m_pIconGfx;
 	m_mode			= pOrg->m_mode;
 
-	m_iconOrigo		= pOrg->m_iconOrigo;
-	m_iconOfs		= pOrg->m_iconOfs;
-
 	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
 		m_aDisplace[i]	= pOrg->m_aDisplace[i];
 
@@ -526,6 +510,8 @@ bool WgGizmoButton::_onAlphaTest( const WgCoord& ofs )
 		return false;
 
 	WgSize	sz = Size();
+
+	//TODO: Take icon into account.
 
 	return	WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode,sz), WgRect(0,0,sz) );
 }
@@ -552,5 +538,13 @@ void WgGizmoButton::_onLostInputFocus()
 
 void WgGizmoButton::_textModified()
 {
+	RequestRender();
+}
+
+//____ _iconModified() __________________________________________________________
+
+void WgGizmoButton::_iconModified()
+{
+	//TODO: Should possibly refresh size too.
 	RequestRender();
 }

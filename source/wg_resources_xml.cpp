@@ -84,6 +84,7 @@
 #	endif
 #endif
 #define VERIFY(expr, str) do { if(!(expr)) { s.Error(str, __FILE__, __LINE__); return; } } while(0)
+#define WARNIF(expr, str) do { if(expr) { s.Warning(str, __FILE__, __LINE__); } } while(0)
 
 namespace
 {
@@ -2428,6 +2429,32 @@ WgBorders WgBorderRes::Deserialize(WgResourceSerializerXML& s, const std::string
 	return borders;
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+/// WgOrientationRes /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+void WgOrientationRes::Serialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode, const std::string& attr, WgOrientation orientation, WgOrientation def)
+{
+	if( xmlNode.HasAttribute(attr) || orientation != def )
+	{
+		s.AddAttribute(attr, WgUtil::ToString(orientation));
+	}
+}
+
+WgOrientation WgOrientationRes::Deserialize(WgResourceSerializerXML& s, const std::string& value, WgOrientation def)
+{
+	WgOrientation orientation;
+
+	if( value.empty() )
+		return def;
+
+	bool b = WgUtil::FromString(value, orientation);
+	WARNIF(!b, "invalid value for orientation. defaulting to northwest" );
+
+	return orientation;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 /// WgTileRes ////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -3089,6 +3116,33 @@ void WgAltRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 
 
 //////////////////////////////////////////////////////////////////////////
+/// WgIconHolderRes //////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//
+//	icon_borders		= [borders]
+//	icon_orientation	= [orientation]
+//	icon_scale			= [0 - 1.0]
+//	icon_push_text		= [bool]
+
+void WgIconHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgIconHolder* holder)
+{
+	WgBorderRes::Serialize(s, xmlNode, "icon_borders", holder->IconBorders());
+	WgOrientationRes::Serialize(s, xmlNode, "icon_orientation", holder->IconOrientation());
+	WriteDiffAttr(s, xmlNode, "icon_scale", holder->IconScale(), 0.f);
+	WriteDiffAttr(s, xmlNode, "icon_push_text", holder->IsIconPushingText(), true);
+}
+
+void WgIconHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgIconHolder* holder)
+{
+	holder->SetIconBorders(WgBorderRes::Deserialize(s, xmlNode["icon_borders"]));
+	holder->SetIconOrientation(WgOrientationRes::Deserialize(s, xmlNode["icon_orientation"]));
+
+	holder->SetIconScale(WgUtil::ToFloat(xmlNode["icon_scale"], 0.f));
+	holder->SetIconPushingText(WgUtil::ToBool(xmlNode["icon_push_text"], true));
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 /// WgTextHolderRes //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, WgResourceSerializerXML& s, Wg_Interface_TextHolder* holder)
@@ -3141,9 +3195,8 @@ void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, 
 	}
 
 	WriteDiffAttr<Sint8>(s, xmlNode, "linespaceadjustment", holder->GetLineSpaceAdjustment(), 0);
-
+	WriteDiffAttr(s, xmlNode, "max_chars", holder->MaxChars(), INT_MAX);
 	WriteDiffAttr(s, xmlNode, "wrap", holder->GetTextWrap(), true);
-	
 	WriteDiffAttr(s, xmlNode, "ellipsis", holder->GetAutoEllipsis(), !holder->GetAutoEllipsis() );	//Ugly to always save it, but we have different defaults...
 
 	WriteTextManager(holder, s);
@@ -3229,6 +3282,9 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 
 	holder->SetLineSpaceAdjustment(WgUtil::ToSint8(xmlNode["linespaceadjustment"]));
 	holder->SetTextWrap(WgUtil::ToBool(xmlNode["wrap"], true));
+
+	if( xmlNode.HasAttribute("max_chars") )
+		holder->SetMaxChars(WgUtil::ToSint32(xmlNode["max_chars"]));
 
 	if( xmlNode.HasAttribute("ellipsis"))
 		holder->SetAutoEllipsis(WgUtil::ToBool(xmlNode["ellipsis"]));
@@ -3645,6 +3701,7 @@ void Wdg_Button_Res::Serialize(WgResourceSerializerXML& s)
 	WgWidgetRes::Serialize(s);
 
 	WgTextHolderRes::Serialize(this, xmlNode, s, widget);
+	WgIconHolderRes::Serialize(this, xmlNode, s, widget);
 
 	WriteBlockSetAttr(s, widget->GetSource(), "blockset");
 
@@ -3656,8 +3713,8 @@ void Wdg_Button_Res::Serialize(WgResourceSerializerXML& s)
 	widget->GetPressAnim( b1, b2, b3, bo );
 	WriteDiffAttr<bool>(s, xmlNode, "pressanim", b1, b2, b3, bo, true, false, false, false);
 	WriteBlockSetAttr(s, widget->GetIconSource(), "icon");
-	WriteDiffAttr(s, xmlNode, "iconorigo", widget->GetIconOrigo(), WgOrigo::topLeft());
-	WriteDiffAttr<Sint8>(s, xmlNode, "iconofs", widget->GetIconOfsX(), widget->GetIconOfsY(), 0, 0);
+//	WriteDiffAttr(s, xmlNode, "iconorigo", widget->GetIconOrigo(), WgOrigo::topLeft());
+//	WriteDiffAttr<Sint8>(s, xmlNode, "iconofs", widget->GetIconOfsX(), widget->GetIconOfsY(), 0, 0);
 	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
 
 	s.EndTag();
@@ -3670,6 +3727,7 @@ void Wdg_Button_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerX
 	WgWidgetRes::Deserialize(xmlNode, s);
 
 	WgTextHolderRes::Deserialize(xmlNode, s, widget);
+	WgIconHolderRes::Deserialize(xmlNode, s, widget);
 
 	widget->SetSource(s.ResDb()->GetBlockSet(xmlNode["blockset"]));
 //	widget->SetText(xmlNode["text"].c_str());
@@ -3683,8 +3741,7 @@ void Wdg_Button_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerX
 	widget->SetPressAnim(b1, b2, b3, bo);
 
 	Sint8 xOfs = 0, yOfs = 0;
-	WgUtil::FromString(xmlNode["iconofs"], xOfs, yOfs);
-	widget->SetIcon(s.ResDb()->GetBlockSet(xmlNode["icon"]), WgUtil::ToOrigo(xmlNode["iconorigo"]), xOfs, yOfs);
+	widget->SetIcon(s.ResDb()->GetBlockSet(xmlNode["icon"]));
 	widget->SetTooltipString( WgCharSeq(ReadLocalizedString(xmlNode["tooltip"], s).c_str()));
 }
 
@@ -3733,6 +3790,7 @@ void Wdg_RefreshButton_Res::Serialize(WgResourceSerializerXML& s)
 	WgWidgetRes::Serialize(s);
 
 	WgTextHolderRes::Serialize(this, xmlNode, s, widget);
+	WgIconHolderRes::Serialize(this, xmlNode, s, widget);
 
 	WriteBlockSetAttr(s, widget->GetSource(), "blockset");
 
@@ -3744,8 +3802,6 @@ void Wdg_RefreshButton_Res::Serialize(WgResourceSerializerXML& s)
 	widget->GetPressAnim( b1, b2, b3, bo );
 	WriteDiffAttr<bool>(s, xmlNode, "pressanim", b1, b2, b3, bo, true, false, false, false);
 	WriteBlockSetAttr(s, widget->GetIconSource(), "icon");
-	WriteDiffAttr(s, xmlNode, "iconorigo", widget->GetIconOrigo(), WgOrigo::topLeft());
-	WriteDiffAttr<Sint8>(s, xmlNode, "iconofs", widget->GetIconOfsX(), widget->GetIconOfsY(), 0, 0);
 	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
 
 	if( widget->GetRefreshAnimation() )
@@ -3787,6 +3843,7 @@ void Wdg_RefreshButton_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeri
 	WgWidgetRes::Deserialize(xmlNode, s);
 
 	WgTextHolderRes::Deserialize(xmlNode, s, widget);
+	WgIconHolderRes::Deserialize(xmlNode, s, widget);
 
 	widget->SetSource(s.ResDb()->GetBlockSet(xmlNode["blockset"]));
 //	widget->SetText(xmlNode["text"].c_str());
@@ -3799,9 +3856,7 @@ void Wdg_RefreshButton_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeri
 	WgUtil::FromString(xmlNode["pressanim"], b1, b2, b3, bo);
 	widget->SetPressAnim(b1, b2, b3, bo);
 
-	Sint8 xOfs = 0, yOfs = 0;
-	WgUtil::FromString(xmlNode["iconofs"], xOfs, yOfs);
-	widget->SetIcon(s.ResDb()->GetBlockSet(xmlNode["icon"]), WgUtil::ToOrigo(xmlNode["iconorigo"]), xOfs, yOfs);
+	widget->SetIcon(s.ResDb()->GetBlockSet(xmlNode["icon"]));
 	widget->SetTooltipString( WgCharSeq(ReadLocalizedString(xmlNode["tooltip"], s).c_str()));
 
 
@@ -5415,7 +5470,6 @@ void Wdg_Text_Res::Serialize(WgResourceSerializerXML& s)
 	WgWidgetRes::Serialize(s);
 	WgEditTextRes::Serialize(this, xmlNode, s, widget);
 	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
-	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), 0);
 	WriteDiffAttr(s, xmlNode, "max_rows", widget->MaxLines(), 0);
 	s.EndTag();
 }
@@ -5427,7 +5481,6 @@ void Wdg_Text_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML
 	WgWidgetRes::Deserialize(xmlNode, s);
 	WgEditTextRes::Deserialize(xmlNode, s, widget);
 	widget->SetTooltipString(WgCharSeq(ReadLocalizedString(xmlNode["tooltip"], s).c_str()));
-	widget->SetMaxCharacters(WgUtil::ToUint32(xmlNode["max_length"]));
 	widget->SetMaxLines(WgUtil::ToUint32(xmlNode["max_rows"]));
 }
 
@@ -5470,7 +5523,6 @@ void Wdg_EditLine_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteDiffAttr(s, xmlNode, "password", widget->PasswordMode(), false);
 	WriteDiffAttr(s, xmlNode, "pwd_glyph", widget->PasswordGlyph(), (Uint16)'*');
-	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), (int)0);
 
 	s.EndTag();
 }
@@ -5484,7 +5536,6 @@ void Wdg_EditLine_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 
 	widget->SetPasswordMode(WgUtil::ToBool(xmlNode["password"]));
 	widget->SetPasswordGlyph(WgUtil::ToUint16(xmlNode["pwd_glyph"], (Uint16)'*'));
-	widget->SetMaxCharacters(WgUtil::ToUint32(xmlNode["max_length"]));
 }
 
 WgCharBuffer* Wdg_EditLine_Res::GetCharBuffer()
@@ -5527,8 +5578,6 @@ void Wdg_TextView_Res::Serialize(WgResourceSerializerXML& s)
 	WgBaseViewRes::Serialize(xmlNode, s, widget);
 	WgEditTextRes::Serialize(this, xmlNode, s, widget);
 
-	WriteDiffAttr(s, xmlNode, "max_length", widget->MaxCharacters(), (int)0);
-
 	s.EndTag();
 }
 
@@ -5541,7 +5590,6 @@ void Wdg_TextView_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 	WgBaseViewRes::Deserialize(xmlNode, s, widget);
 	WgEditTextRes::Deserialize(xmlNode, s, widget);
 
-	widget->SetMaxCharacters(WgUtil::ToUint32(xmlNode["max_length"]));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -5701,7 +5749,7 @@ void WgItemRowRes::Serialize(WgResourceSerializerXML& s)
 	s.BeginTag(TagName(), XmlNode());
 	WgItemRes::Serialize(s);
 	WgItemHolderRes::Serialize(this, xmlNode, s, item);
-	WriteTextAttrib(s, item->GetRealTooltipString().Chars(), "tooltip");
+//	WriteTextAttrib(s, item->GetRealTooltipString().Chars(), "tooltip");
 	s.EndTag();
 }
 
@@ -5711,7 +5759,7 @@ void WgItemRowRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML
 	m_item = item;
 	WgItemRes::Deserialize(xmlNode, s);
 	WgItemHolderRes::Deserialize(xmlNode, s, item);
-	item->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
+//	item->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
 }
 
 //////////////////////////////////////////////////////////////////////////

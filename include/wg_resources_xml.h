@@ -84,6 +84,7 @@ class WgResourceSerializerXML;
 class WgAnim;
 class WgGfxFrame;
 class WgSkinManager;
+class WgIconHolder;
 
 //////////////////////////////////////////////////////////////////////////
 /// WgXMLMetaData ////////////////////////////////////////////////////////
@@ -447,6 +448,17 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
+/// WgOrientationRes /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+class WgOrientationRes : public WgResourceXML
+{
+public:
+	static void Serialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode, const std::string& attr, WgOrientation orientation, WgOrientation def = WG_NORTHWEST);
+	static WgOrientation Deserialize(WgResourceSerializerXML& s, const std::string& value, WgOrientation def = WG_NORTHWEST);
+};
+
+
+//////////////////////////////////////////////////////////////////////////
 /// WgColorRes ///////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 class WgColorRes : public WgResourceXML
@@ -808,7 +820,20 @@ private:
 
 };
 
+//////////////////////////////////////////////////////////////////////////
+/// WgIconHolderRes //////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+class WgIconHolderRes
+{
+public:
 
+	WgIconHolderRes() {}
+	virtual ~WgIconHolderRes() {}
+
+	void	Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgIconHolder* holder);
+	void	Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgIconHolder* holder);
+
+};
 
 //////////////////////////////////////////////////////////////////////////
 /// WgTextHolderRes //////////////////////////////////////////////////////
@@ -963,7 +988,7 @@ protected:
 };
 
 /// Wdg_Button_Res ///////////////////////////////////////////////////////
-class Wdg_Button_Res : public WgWidgetRes, public WgTextHolderRes
+class Wdg_Button_Res : public WgWidgetRes, public WgTextHolderRes, public WgIconHolderRes
 {
 public:
 	Wdg_Button_Res(WgResourceXML* parent, class Wdg_Button* widget = 0);
@@ -982,7 +1007,7 @@ private:
 };
 
 /// Wdg_RefreshButton_Res ///////////////////////////////////////////////////////
-class Wdg_RefreshButton_Res : public WgWidgetRes, public WgTextHolderRes
+class Wdg_RefreshButton_Res : public WgWidgetRes, public WgTextHolderRes, public WgIconHolderRes
 {
 public:
 	Wdg_RefreshButton_Res(WgResourceXML* parent, class Wdg_RefreshButton* widget = 0);

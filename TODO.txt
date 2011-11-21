@@ -8,6 +8,9 @@ FOCUS
 * Cut/Copy/Paste-support.
 * Pointermask+displacement i blockset.
 * WgCharBuffer m.fl. saknar metoder för Size, Link och kanske mer...
+* Checkbox and Radiobutton should inherit WgIconHolder (fix XML-loader too!)
+* Make menu hold vdrag as a Gizmo. Hide/show instead of remove.
+
 
 FIX GIZMOS
 ==========
@@ -66,6 +69,7 @@ PAPERCUTS
 * Gizmos needs more constructors for convenience! WgGizmoPixmap could take the WgBlockSetPtr directly.
 * More versions of WgSurface::defineBlockSet(), no need to force user to specify borders etc.
 * Should rename all SetSource() to SetBlocks().
+
 
 FONT SYSTEM
 ===========

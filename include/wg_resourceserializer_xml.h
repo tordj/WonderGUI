@@ -99,6 +99,7 @@ public:
 	void				Error(const std::string& err)	{ m_Err += err + "\n"; }
 	void				Warning(const std::string& warn);
 	void				Error(const std::string& err, const char* pFile, int iLine);
+	void				Warning(const std::string& warn, const char* pFile, int iLine);
 
 	void				BeginTag(const std::string& tagName);
 	void				BeginTag(const std::string& tagName, const WgXmlNode& oldNode);

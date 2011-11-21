@@ -439,9 +439,9 @@ enum WgMarkPolicy
 	WG_MARKPOLICY_TRANSPARENT
 };
 
-//____ WgLocation _____________________________________________________________
+//____ WgOrientation _____________________________________________________________
 
-enum WgLocation
+enum WgOrientation
 {
 	// Clockwise from upper left corner, center last. Must be in range 0-8
 

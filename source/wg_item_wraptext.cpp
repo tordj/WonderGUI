@@ -209,10 +209,7 @@ void WgItemWrapText::Render( const WgRect& _window, const WgRect& _clip )
 	if( m_bgFill.a != 0 )
 		WgGfx::fillRect( WgRect(r, _clip), m_bgFill );
 
-	r.x += m_margin.left;
-	r.y += m_margin.top;
-	r.w -= ( m_margin.left + m_margin.right );
-	r.h -= ( m_margin.top + m_margin.bottom );
+	r -= m_margin;
 
 	if( GetMode() != m_pText->mode() )
 		m_pText->setMode( GetMode() );

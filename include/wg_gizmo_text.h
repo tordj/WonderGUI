@@ -56,9 +56,6 @@ public:
 
 	//____ Methods __________________________________________
 
-	inline void		SetMaxCharacters( int characters ) { m_maxCharacters = characters; }
-	inline int		MaxCharacters() { return m_maxCharacters; }
-
 	inline void		SetMaxLines( int nLines ) { m_maxLines = nLines; }
 	inline int		MaxLines() { return m_maxLines; }
 
@@ -107,7 +104,6 @@ private:
 
 	WgText				m_text;
 	bool				m_bHasFocus;
-	int					m_maxCharacters;
 	int					m_maxLines;
 	WgTextEditMode		m_editMode;
 	bool				m_bResetCursorOnFocus;

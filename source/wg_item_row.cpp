@@ -39,22 +39,22 @@ const char * WgItemRow::GetMyType()
 
 WgItemRow::WgItemRow()
 {
+	m_pMarkedItem = 0;
 	m_heightModify = 0;
-	m_bMarkChildren = false;
-	m_bStretchLastItem = false;
+	m_bMarkChildren = true;
+	m_scaleOp = SCALE_NONE;
 	m_bUseAllHeight = false;
-	m_widthExpandUsage = 0.f;
 	m_minWidthFraction = 0.f;
 	m_minWidthFractionLimit = INT_MAX;
 }
 
 WgItemRow::WgItemRow( Sint64 id ) : WgItem( id )
 {
+	m_pMarkedItem = 0;
 	m_heightModify = 0;
-	m_bMarkChildren = false;
-	m_bStretchLastItem = false;
+	m_bMarkChildren = true;
+	m_scaleOp = SCALE_NONE;
 	m_bUseAllHeight = false;
-	m_widthExpandUsage = 0.f;
 	m_minWidthFraction = 0.f;
 	m_minWidthFractionLimit = INT_MAX;
 }
@@ -73,11 +73,11 @@ void WgItemRow::SetMarkChildren( bool bMarkChildren )
 	m_bMarkChildren = bMarkChildren;
 }
 
-//____ SetStretchLastItem() ___________________________________________________
+//____ SetScaleOp() ___________________________________________________
 
-void WgItemRow::SetStretchLastItem( bool bStretch )
+void WgItemRow::SetScaleOp( ScaleOp scaleOperation )
 {
-	m_bStretchLastItem = bStretch;
+	m_scaleOp = scaleOperation;
 }
 
 //____ SetUseAllHeight() ___________________________________________________
@@ -87,13 +87,6 @@ void WgItemRow::SetUseAllHeight( bool bUseAllHeight )
 	m_bUseAllHeight = bUseAllHeight;
 }
 
-//____ SetWidthExpandUsage() __________________________________________________
-
-void WgItemRow::SetWidthExpandUsage( float usage )
-{
-	LIMIT(usage,0.f,1.f);
-	m_widthExpandUsage = usage;
-}
 
 //____ SetMinWidthFraction() __________________________________________________
 
@@ -113,19 +106,55 @@ void WgItemRow::SetHeightModify( int pixels )
 	refreshItems();
 }
 
+//____ GetTooltipString() _____________________________________________________
+
+WgString WgItemRow::GetTooltipString() const
+{
+	if( m_pMarkedItem )
+		return m_pMarkedItem->GetTooltipString();
+	else
+		return WgString();
+}
+
+
 //____ ItemWidth() ___________________________________________________________
 
 int WgItemRow::ItemWidth( WgItem * pItem, int screen_width )
 {
+	int width;
+	switch( m_scaleOp )
+	{
+		case SCALE_NONE:
+			width = pItem->Width();
+			break;
+		case SCALE_FIRST:
+			if( pItem->Prev() == 0 )
+				width = pItem->Width() + screen_width - m_width;
+			else
+				width = pItem->Width();
+			break;
+		case SCALE_LAST:
+			if( pItem->Next() == 0 )
+				width = pItem->Width() + screen_width - m_width;
+			else
+				width = pItem->Width();
+			break;
+
+	}
+
+
+
+
 	int minWidth = (int) (m_minWidthFraction*screen_width);
 	if( minWidth > m_minWidthFractionLimit )
 		minWidth = m_minWidthFractionLimit;
 
-
-	int width = pItem->Width();
 	if( width < minWidth )
 		width = minWidth;
-/*
+	
+	
+	
+	/*
 	// Very naive implementation of maxWidth, doesn't work under all circumstances.
 
 	int maxWidth = screen_width - minWidth*m_nItems;
@@ -133,32 +162,6 @@ int WgItemRow::ItemWidth( WgItem * pItem, int screen_width )
 		width = maxWidth;
 */
 	return width;
-}
-
-//____ WidthExpandFactor() ________________________________________________
-
-float WgItemRow::WidthExpandFactor( int screen_width )
-{
-	return 1.f;
-/*
-	//TODO: Take item_spacing into account.
-
-	int totalWidth = 0;
-	WgItem * p = m_items.First();
-
-	while( p )
-	{
-		totalWidth += p->Width();
-		p = p->Next();
-	}			
-
-	if( totalWidth == 0 || totalWidth >= screen_width )
-		return 1.f;
-
-	float	expand_factor = (screen_width-totalWidth)/totalWidth*m_widthExpandUsage + 1.f;
-
-	return expand_factor;
-*/
 }
 
 //____ AdaptToHeight() ________________________________________________________
@@ -185,12 +188,7 @@ void WgItemRow::AdaptToWidth( Uint32 displayed_width )
 
 	while( p )
 	{
-		int width;
-
-		if( m_bStretchLastItem && p->Next() == 0 )
-			width = displayed_width - totalWidth;
-		else
-			width =  ItemWidth(p, displayed_width);					// Get items wanted width.
+		int width =  ItemWidth(p, displayed_width);					// Get items wanted width.
 
 		totalWidth += width;
 		p->AdaptToWidth(width);
@@ -207,10 +205,10 @@ void WgItemRow::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction _action
 {
 
 /*
-	if( _action == WgInput::POINTER_EXIT && m_pLastMarkedItem != 0 )
+	if( _action == WgInput::POINTER_EXIT && m_pMarkedItem != 0 )
 	{
-		m_pLastMarkedItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
-		m_pLastMarkedItem = 0;
+		m_pMarkedItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
+		m_pMarkedItem = 0;
 		return;
 	}
 */
@@ -235,13 +233,39 @@ void WgItemRow::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction _action
 
 
 
+	WgCoord mousePos = WgCoord(_info.x, _info.y) - m_pMyHolder->RequestItemGeo(this).Pos();
+//	int x = _info.x;
+//	int y = _info.y;
+	
+	
+	//	Abs2local( &x, &y );
+
+	if( !HasItem( m_pMarkedItem ) )
+		m_pMarkedItem = 0;
+
+	WgItem * pItem = GetMarkedItem( mousePos.x, mousePos.y );
+	if( pItem != this )
+	{
+		if( pItem != m_pMarkedItem && m_pMarkedItem != 0 )
+			m_pMarkedItem->ActionRespond( pEmitter, WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
+
+		if( pItem && m_pMarkedItem != pItem )
+			pItem->ActionRespond( pEmitter, WgInput::POINTER_ENTER, _button_key, _info, _inputObj );
+
+		if( pItem && _action != WgInput::POINTER_ENTER )							// Pointer enter already handled above.
+			pItem->ActionRespond( pEmitter, _action, _button_key, _info, _inputObj );
+
+		m_pMarkedItem = pItem;
+	}
+	else
+		m_pMarkedItem = 0;
 /*
 	WgItem * pItem = GetMarkedItem( (Uint32) x, (Uint32) y );
 
-	if( pItem != m_pLastMarkedItem && m_pLastMarkedItem != 0 )
+	if( pItem != m_pMarkedItem && m_pMarkedItem != 0 )
 	{
-		m_pLastMarkedItem->ActionRespond( this, WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
-		m_pLastMarkedItem = 0;
+		m_pMarkedItem->ActionRespond( this, WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
+		m_pMarkedItem = 0;
 		return;	// hmmm... should this return really be here?
 	}
 
@@ -253,13 +277,13 @@ void WgItemRow::ActionRespond( WgEmitter * pEmitter, WgInput::UserAction _action
 		WgItem* p = m_items.First();
 		while(p && p != pItem) p = p->GetNext();
 		if(p == pItem)
-			m_pLastMarkedItem = pItem;
+			m_pMarkedItem = pItem;
 		else
-			m_pLastMarkedItem = 0;
+			m_pMarkedItem = 0;
 	}
 	else
 	{
-		m_pLastMarkedItem = 0;
+		m_pMarkedItem = 0;
 	}
 
 */
@@ -286,10 +310,7 @@ void WgItemRow::Render( const WgRect& _window, const WgRect& _clip )
 		if( !m_bUseAllHeight )
 			r.h = p->Height();
 		
-		if( m_bStretchLastItem && p->Next() == 0 )
-			r.w = _window.x + _window.w - r.x;
-		else
-			r.w = ItemWidth(p, _window.w);
+		r.w = ItemWidth(p, _window.w);
 
 		p->Render( r, _clip );
 		r.x += r.w + m_itemSpacing;
@@ -381,15 +402,15 @@ void WgItemRow::ItemVisibilityModified( WgItem * pItem, bool bVisible )
 
 WgItem* WgItemRow::GetMarkedItem( Uint32 x, Uint32 y )
 {
-	//TODO: Does not take WidthExpandFactor into account.
-
 	if( m_bMarkChildren )
 	{
+		int screen_width = GetHolder()->RequestItemGeo(this).w;
+
 		Uint32 itemX1 = 0;
 		WgItem * p = m_items.First();
 		while( p )
 		{
-			Uint32 itemX2 = itemX1 + p->Width();
+			Uint32 itemX2 = itemX1 + ItemWidth(p, screen_width);
 			if( x >= itemX1 && x < itemX2 )
 				return p->GetMarkedItem( x, y );
 

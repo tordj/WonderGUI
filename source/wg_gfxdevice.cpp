@@ -882,7 +882,10 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 		else
 		{
 			if( bEllipsisActive && (bLastFullyVisibleLine || pLines[i].width > dest.w) )
+			{			
 				_printEllipsisTextSpan( pen, pText, pLines[i].ofs, pLines[i].nChars, dest.x + dest.w );
+				break;
+			}
 			else
 				_printTextSpan( pen, pText, pLines[i].ofs, pLines[i].nChars, true );
 		}
@@ -890,7 +893,7 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 		pos.y += pLines[i].lineSpacing;
 	}
 
-	if( dest.w >= textSize.w && dest.h >= textSize.h )
+	if( dest.w >= textSize.w && (dest.h >= textSize.h || nLines == 1) )
 		return true;
 	else
 		return false;

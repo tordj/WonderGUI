@@ -56,8 +56,6 @@ public:
 	inline void	SetPasswordMode( bool on_off ) { m_bPasswordMode = on_off; };
 	inline bool PasswordMode() {return m_bPasswordMode;};
 	inline Uint16 PasswordGlyph() const				 { return m_pwGlyph; };
-	inline void SetMaxCharacters( int characters ) { m_maxCharacters = characters; }
-	inline int MaxCharacters() { return m_maxCharacters; }
 	void		SetPasswordGlyph( Uint16 glyph );
 
 	void		goBOL();
@@ -105,7 +103,6 @@ private:
 
 	bool				m_bResetCursorOnFocus;
 	bool				m_bPasswordMode;
-	int					m_maxCharacters;
 	Uint16				m_pwGlyph;
 	int					m_viewOfs;
 	WgTextEditMode		m_editMode;

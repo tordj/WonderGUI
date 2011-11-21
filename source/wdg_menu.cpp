@@ -1418,18 +1418,17 @@ void Wdg_Menu::AdjustSize()
 			AddCallback(WgSignal::WheelRoll(1), cbWheelRoll, this);
 		}
 
-		int sliderWidth = m_pSlider->MinWidth();
-		int sliderHeight = m_pSlider->MinHeight();
+		WgSize sliderSize = m_pSlider->DefaultSize();
 
-		w += sliderWidth;
+		w += sliderSize.w;
 
-		if( h < sliderHeight + contentBorders.Height() )
+		if( h < sliderSize.h + contentBorders.Height() )
 		{
-			h = sliderHeight + contentBorders.Height();
+			h = sliderSize.h + contentBorders.Height();
 			WgWidget::SetHeight(h);							// Need to change height before we can add slider...
 		}
 
-		m_pSlider->SetGeometry( WgOrigo::topRight(), -(contentBorders.right+sliderWidth), contentBorders.top,
+		m_pSlider->SetGeometry( WgOrigo::topRight(), -(contentBorders.right+sliderSize.w), contentBorders.top,
 								WgOrigo::bottomRight(), -contentBorders.right, -contentBorders.bottom );
 
 		if( !m_pSlider->Parent() )

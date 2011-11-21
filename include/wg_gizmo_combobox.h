@@ -127,6 +127,7 @@ private:
 	WgTextEditMode	m_editMode;
 	bool			m_bResetCursorOnFocus;
 	bool			m_bPressInInputRect;
+	bool			m_bFocusPress;
 	int				m_maxCharacters;
 	int				m_viewOfs;
 

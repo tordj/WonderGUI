@@ -40,7 +40,6 @@ WgWidget * Wdg_TextView::NewOfMyType() const
 void Wdg_TextView::Init()
 {
 	m_pText			= &m_text;
-	m_maxCharacters = 0;
 	m_editMode		= WG_TEXT_STATIC;
 
 	m_newlineKey	= WG_KEY_RETURN;
@@ -364,18 +363,7 @@ Uint32 Wdg_TextView::InsertTextAtCursor( const WgCharSeq& str )
 		if( !GrabInputFocus() )
 			return 0;				// Couldn't get input focus...
 
-	Uint32 retVal = 0;
-
-	if( m_maxCharacters == 0 || str.Length() < m_maxCharacters - m_pText->nbChars() )
-	{
-		m_pText->putText( str );
-		retVal = str.Length();
-	}
-	else
-	{
-		retVal = m_maxCharacters - m_pText->nbChars();
-		m_pText->putText( WgCharSeq( str, 0, retVal ) );
-	}
+	Uint32 retVal = m_pText->putText( str );
 
 	AdjustViewOfs();
 
@@ -402,12 +390,11 @@ bool Wdg_TextView::InsertCharAtCursorInternal( Uint16 c )
 		m_pText->delSelection();
 	m_pText->setSelectionMode(false);
 
-	if( m_maxCharacters != 0 && m_maxCharacters < m_pText->nbChars() )
-		return false;
-
-	m_pText->putChar( c );
-	SetContentSize( m_text.width(), m_text.height() );
-	AdjustViewOfs();
+	if( m_pText->putChar( c ) )
+	{
+		SetContentSize( m_text.width(), m_text.height() );
+		AdjustViewOfs();
+	}
 	return true;
 }
 

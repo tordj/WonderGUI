@@ -51,9 +51,6 @@ public:
 
 	//____ Methods __________________________________________
 
-	inline void SetMaxCharacters( int characters ) { m_maxCharacters = characters; }
-	inline int MaxCharacters() { return m_maxCharacters; }
-
 	Uint32	InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
@@ -95,8 +92,6 @@ private:
 	void	AdjustViewOfs();
 
 	WgText				m_text;
-
-	int					m_maxCharacters;
 
 	WgKey				m_newlineKey;
 	WgModifierKeys		m_newlineModif;

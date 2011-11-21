@@ -111,6 +111,11 @@ public:
 	inline void			SetTextBaseColors( const WgColorSetPtr& pColors ) { m_pText->SetBaseColors(pColors); }
 	inline WgColorSetPtr TextBaseColors() const { return m_pText->BaseColors(); }
 
+//	-----------
+
+	inline bool			SetMaxChars( int max ) { bool ret = m_pText->SetMaxChars(max); _textModified(); return ret; }
+	inline int			MaxChars() const { return m_pText->MaxChars(); }
+
 
 //	inline void			SetSelectionColor( WgColor color )							{ m_pText->setSelectionBgColor(color); }
 //	inline WgColor		GetSelectionColor() const									{ return m_pText->getSelectionBgColor(); }

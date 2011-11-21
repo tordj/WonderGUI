@@ -263,11 +263,11 @@ Uint32 WgUtil::DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
 	return nChar;
 }
 
-//____ LocationToOfs() ________________________________________________________
+//____ OrientationToOfs() ________________________________________________________
 
-WgCoord WgUtil::LocationToOfs( WgLocation location, WgSize base )
+WgCoord WgUtil::OrientationToOfs( WgOrientation orientation, WgSize base )
 {
-	switch( location )
+	switch( orientation )
 	{
 		default:
 		case WG_NORTHWEST:
@@ -296,5 +296,41 @@ WgCoord WgUtil::LocationToOfs( WgLocation location, WgSize base )
 
 		case WG_CENTER:
 			return WgCoord( base.w/2, base.h/2 );
+	}
+}
+
+//____ OrientationToRect() ________________________________________________________
+
+WgRect WgUtil::OrientationToRect( WgOrientation orientation, WgSize base, WgSize rect )
+{
+	switch( orientation )
+	{
+		default:
+		case WG_NORTHWEST:
+			return WgRect(0,0, rect);
+
+		case WG_NORTH:
+			return WgRect( base.w/2 - rect.w/2, 0, rect );
+
+		case WG_NORTHEAST:
+			return WgRect( base.w - rect.w, 0, rect );
+
+		case WG_EAST:
+			return WgRect( base.w - rect.w, base.h/2 - rect.h/2, rect );
+
+		case WG_SOUTHEAST:
+			return WgRect( base.w - rect.w, base.h - rect.h, rect );
+
+		case WG_SOUTH:
+			return WgRect( base.w/2 - rect.w/2, base.h - rect.h, rect );
+
+		case WG_SOUTHWEST:
+			return WgRect( 0, base.h - rect.h, rect );
+
+		case WG_WEST:
+			return WgRect( 0, base.h/2 - rect.h/2, rect );
+
+		case WG_CENTER:
+			return WgRect( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
 	}
 }

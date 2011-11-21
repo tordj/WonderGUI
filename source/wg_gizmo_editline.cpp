@@ -42,7 +42,6 @@ WgGizmoEditline::WgGizmoEditline()
 	m_bPasswordMode = false;
 	m_pwGlyph		= '*';
 	m_viewOfs		= 0;
-	m_maxCharacters = 0;
 	m_editMode		= WG_TEXT_EDITABLE;
 	m_pointerStyle	= WG_POINTER_IBEAM;
 	m_bResetCursorOnFocus = true;
@@ -122,18 +121,7 @@ Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
-	Uint32 retVal = 0;
-
-	if( m_maxCharacters == 0 || str.Length() < m_maxCharacters - m_pText->nbChars() )
-	{
-		m_pText->putText( str );
-		retVal = str.Length();
-	}
-	else
-	{
-		retVal = m_maxCharacters - m_pText->nbChars();
-		m_pText->putText( WgCharSeq( str, 0, retVal ) );
-	}
+	Uint32 retVal = m_pText->putText( str );
 
 	WgEventHandler * pHandler = EventHandler();		
 	if( pHandler )
@@ -156,10 +144,8 @@ bool WgGizmoEditline::InsertCharAtCursor( Uint16 c )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
-	if( m_maxCharacters != 0 && m_maxCharacters < m_pText->nbChars() )
+	if( !m_pText->putChar( c ) )
 		return false;
-
-	m_pText->putChar( c );
 
 	WgEventHandler * pHandler = EventHandler();		
 	if( pHandler )
@@ -345,11 +331,8 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 				m_pText->delSelection();
 			m_pText->setSelectionMode(false);
 
-			// by default - no max limit
-			if( m_maxCharacters == 0 || m_maxCharacters > m_pText->nbChars() )
+			if( m_pText->putChar( ch ) )
 			{
-				m_pText->putChar( ch );
-
 				WgEventHandler * pHandler = EventHandler();		
 				if( pHandler )
 					pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
@@ -568,12 +551,11 @@ void WgGizmoEditline::_onAction( WgInput::UserAction action, int button_key, con
 				m_pText->delSelection();
 			m_pText->setSelectionMode(false);
 
-			// by default - no max limit
-			if( m_maxCharacters == 0 || m_maxCharacters > m_pText->nbChars() )
-				m_pText->putChar( button_key );
-
-			Emit( WgSignal::TextChanged() );
-			_adjustViewOfs();
+			if( m_pText->putChar( button_key ) )
+			{
+				Emit( WgSignal::TextChanged() );
+				_adjustViewOfs();
+			}
 		}
 	}
 

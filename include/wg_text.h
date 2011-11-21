@@ -271,6 +271,8 @@ public:
 	void				SetAutoEllipsis( bool bAutoEllipsis );
 	bool				IsAutoEllipsis() const { return m_bAutoEllipsis; }
 
+	bool				SetMaxChars( int max );
+	int					MaxChars() const { return m_maxChars; }
 
 	inline void			setMode( WgMode mode ) { m_mode = mode; }
 	inline void			setAlignment( const WgOrigo& origo ) { m_origo = origo; }
@@ -456,6 +458,8 @@ protected:
 	int				m_lineWidth;
 
 	int				m_newCursorPos;
+
+	int				m_maxChars;			// Maximum number of characters allowed.
 
 	bool			m_bWrap;
 	bool			m_bAutoEllipsis;	// Use ellipsis for text that doesn't fit.

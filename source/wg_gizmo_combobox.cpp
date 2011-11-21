@@ -262,11 +262,17 @@ void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, con
 			WgRect inputRect = gizmoRect - m_pTextBoxBg->ContentBorders();
 
 			if( _isSelectable() && inputRect.Contains(info.x,info.y) )
+			{
 				m_pointerStyle = WG_POINTER_IBEAM;
+			}
 			else
+			{
 				m_pointerStyle = WG_POINTER_DEFAULT;
+			}
 			break;
 		}
+
+
 
 		case WgInput::BUTTON_PRESS:
 			if( button_key == 1 )
@@ -279,8 +285,12 @@ void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, con
 				if( _isEditable() && inputRect.Contains(info.x,info.y) )
 				{
 					if( !m_bFocused )
+					{
 						GrabFocus();
-					
+						if( m_bFocused )
+							m_bFocusPress = true;		// Current button press brought focus.
+					}
+
 					m_bPressInInputRect = true;
 
 					if( m_bFocused )
@@ -355,7 +365,15 @@ void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, con
 		case WgInput::BUTTON_RELEASE_OUTSIDE:
 		{
 			if( m_bFocused && button_key == 1 )
+			{
 				m_pText->setSelectionMode(false);
+				if( m_bFocusPress )
+				{
+					m_bFocusPress = false;
+					if( !m_pText->hasSelection() )
+						m_pText->selectAll();
+				}
+			}
 			break;
 		}
 
@@ -694,7 +712,7 @@ void WgGizmoCombobox::_onGotInputFocus()
 void WgGizmoCombobox::_onLostInputFocus()
 {
 	m_bFocused = false;
-	m_bResetCursorOnFocus = false;
+	m_bResetCursorOnFocus = true;
 	m_text.hideCursor();
 	m_text.clearSelection();
 }
