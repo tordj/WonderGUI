@@ -884,6 +884,30 @@ WgHook* WgGizmoModal::_lastHook() const
 	return m_modalHooks.Last();
 }
 
+//____ _firstHookWithGeo() _____________________________________________________
+
+WgHook * WgGizmoModal::_firstHookWithGeo( WgRect& geo ) const
+{
+	if( m_baseHook.Gizmo() )
+	{
+		geo = WgRect(0,0,m_size);
+		return const_cast<BaseHook*>(&m_baseHook);
+	}
+	else
+	{
+		WgModalHook * p = m_modalHooks.First();
+		if( p )
+			geo = p->m_realGeo;
+
+		return p;
+	}
+}
+
+//____ _nextHookWithGeo) _______________________________________________________
+
+WgHook * WgGizmoModal::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+}
 
 
 

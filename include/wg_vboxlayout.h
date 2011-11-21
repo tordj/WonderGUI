@@ -95,8 +95,10 @@ protected:
 
 	// Overloaded from WgOrderedLayout
 
+	WgHook *	_firstHookWithGeo( WgRect& writeGeo ) const;
+	WgHook *	_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
+
 	WgRect	_hookGeo( const WgOrderedHook * pHook );
-	void	_advanceGeoToHook( WgRect& prevHookGeo, const WgOrderedHook * pHook );	// geo (assumed to be for previous hook) is advanced to specified hook.
 	void	_onResizeRequested( WgOrderedHook * pHook );
 	void	_onRenderRequested( WgOrderedHook * pHook );
 	void	_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect );

@@ -128,8 +128,9 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 
 	// Initialize stuff
 
-	WgVBoxHook * pHook = FirstHook();
-	WgRect geo = _hookGeo(pHook) + _geo.Pos();
+	WgRect geo;
+	WgHook * pHook = _firstHookWithGeo(geo);
+	geo += _geo.Pos();
 
 	int y1 = WgMax(clip.y, pDirtIn->y);
 	int y2 = WgMin(clip.y+clip.h,pDirtIn->y+pDirtIn->h);
@@ -137,15 +138,14 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 
 	// Step forward to first non-hidden container within geometric boundaries.
 
-	while( (geo.y + geo.h < y1 || pHook->Hidden() || !pHook->Gizmo()->IsContainer()) && geo.y < y2 )
+	while( (geo.y + geo.h < y1 || ((WgVBoxHook*)pHook)->Hidden() || !pHook->Gizmo()->IsContainer()) && geo.y < y2 )
 	{
-		pHook = pHook->Next();
+		pHook = _nextHookWithGeo(geo,pHook);
 		if( !pHook )
 		{
 			pDirtOut->PushExistingRect(pDirtIn);	// We return the rectangle intact since no children have cut it up.
 			return;
 		}
-		_advanceGeoToHook( geo, pHook );
 	}
 
 	// We have found at least one non-hidden container within geometric boundaries
@@ -158,11 +158,11 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 
 	pDirtInChain->PushExistingRect(pDirtIn);
 
-	while( geo.y < y2 )
+	while( pHook && geo.y < y2 )
 	{
 		// Process dirty rects if child is an unhidden container.
 
-		if( !pHook->Hidden() && pHook->Gizmo()->IsContainer() )
+		if( !((WgVBoxHook*)pHook)->Hidden() && pHook->Gizmo()->IsContainer() )
 		{
 			WgRectLink * pDirt = pDirtInChain->Pop();
 
@@ -181,11 +181,7 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 
 		// Forward to next child
 
-		pHook = pHook->Next();
-		if( !pHook )
-			break;
-
-		_advanceGeoToHook( geo, pHook );
+		pHook = (WgVBoxHook*) _nextHookWithGeo(geo,pHook);
 	}
 
 	// pDirtInChain now contains the dirty rects that remains after
@@ -205,25 +201,21 @@ void WgVBoxLayout::_castDirtyRect( const WgRect& _geo, const WgRect& clip, WgRec
 
 void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
 {
-	WgVBoxHook * pHook = FirstHook();
-	if( !pHook )
-		return;
+	WgRect geo;
+	WgHook * pHook = _firstHookWithGeo(geo);
+	geo += _canvas.Pos();
 
 	// Loop through children above window, stop at first visible
 
-	WgRect	geo = _hookGeo(pHook) + _canvas.Pos();
-	while( geo.y + geo.h < _window.y )
-	{
-		pHook = pHook->Next();
-		if( !pHook )
-			return;							//
+	while( pHook && geo.y + geo.h < _window.y )
+		pHook = _nextHookWithGeo(geo,pHook);
 
-		_advanceGeoToHook( geo, pHook );
-	}
+	if( !pHook )
+		return;							//
 
 	// Save info about first visible, so we can resume from here
 
-	WgVBoxHook* pFirstVisible	= pHook;
+	WgHook* 	pFirstVisible	= pHook;
 	WgRect		firstVisibleGeo = geo;
 
 	// Loop through our dirty rects and render our (non-container) children.
@@ -237,23 +229,15 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 
 		// Skip forward to first child whose geo overlaps dirty rect
 
-		while( geo.y + geo.h <= pDirt->y )
-		{
-			pHook = pHook->Next();
-			if( !pHook )
-				break;
-			_advanceGeoToHook( geo, pHook );
-		}
+		while( pHook && geo.y + geo.h <= pDirt->y )
+			pHook = _nextHookWithGeo(geo,pHook);
 
-		while( geo.y < pDirt->y + pDirt->h )
+		while( pHook && geo.y < pDirt->y + pDirt->h )
 		{
-			if( !pHook->m_bHidden && !pHook->Gizmo()->IsContainer() )
+			if( !((WgVBoxHook*)pHook)->m_bHidden && !pHook->Gizmo()->IsContainer() )
 				pHook->Gizmo()->_onRender( pDevice, geo, geo, WgRect(geo,*pDirt), _layer );
 
-			pHook = pHook->Next();
-			if( !pHook )
-				break;
-			_advanceGeoToHook( geo, pHook );
+			pHook = _nextHookWithGeo(geo,pHook);
 		}
 
 		pDirt = pDirt->pNext;
@@ -265,15 +249,12 @@ void WgVBoxLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canv
 	pHook = pFirstVisible;
 	geo = firstVisibleGeo;
 
-	while( geo.y < _window.y + _window.h  )
+	while( pHook && geo.y < _window.y + _window.h  )
 	{
 		if( pHook->Gizmo()->IsContainer() )
 			pHook->Gizmo()->CastToContainer()->_renderDirtyRects( pDevice, geo, geo, _layer );
 
-		pHook = pHook->Next();
-		if( !pHook )
-			break;
-		_advanceGeoToHook( geo, pHook );
+		pHook = _nextHookWithGeo(geo,pHook);
 	}
 
 
@@ -295,12 +276,28 @@ WgRect WgVBoxLayout::_hookGeo( const WgOrderedHook * pHook )
 	return WgRect(0,ofs,m_size.w,p->m_height);
 }
 
-//____ _advanceGeoToHook() ____________________________________________________
+//____ _firstHookWithGeo() _____________________________________________________
 
-void  WgVBoxLayout::_advanceGeoToHook( WgRect& prevHookGeo, const WgOrderedHook * pHook )
+WgHook * WgVBoxLayout::_firstHookWithGeo( WgRect& geo ) const
 {
-	prevHookGeo.y += prevHookGeo.h;
-	prevHookGeo.h = static_cast<const WgVBoxHook*>(pHook)->m_height;
+	WgVBoxHook * p = FirstHook();
+	if( p )
+		geo = WgRect(0,0,m_size.w,p->m_height);
+
+	return p;
+}
+
+//____ _nextHookWithGeo() ______________________________________________________
+
+WgHook * WgVBoxLayout::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+	WgVBoxHook * p = (WgVBoxHook*) pHook->Next();
+	if( p )
+	{
+		geo.y += geo.h;
+		geo.h = p->m_height;
+	}	
+	return p;
 }
 
 //____ _onResizeRequested() ___________________________________________________

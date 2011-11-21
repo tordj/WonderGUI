@@ -1436,3 +1436,26 @@ bool WgGizmoFlexGeo::_onAlphaTest( const WgCoord& ofs )
 {
 	return false;
 }
+
+//____ _firstHookWithGeo() _____________________________________________________
+
+WgHook * WgGizmoFlexGeo::_firstHookWithGeo( WgRect& writeGeo ) const
+{
+	WgFlexHook * p = m_hooks.First();
+	if( p )
+		writeGeo = p->m_realGeo;
+
+	return p;
+}
+
+//____ _nextHookWithGeo() ______________________________________________________
+
+WgHook * WgGizmoFlexGeo::_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
+{
+	WgFlexHook * p = ((WgFlexHook*)pHook)->_next();
+	if( p )
+		writeGeo = p->m_realGeo;
+	
+	return p;
+}
+

@@ -92,7 +92,6 @@ protected:
 
 	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
 
-
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
 	WgGizmoContainer * _parent() const;
@@ -224,6 +223,8 @@ private:
 	WgHook*	_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
 	WgHook*	_lastHook() const;		//
 
+	WgHook *	_firstHookWithGeo( WgRect& geo ) const;
+	WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
 	BaseHook				m_baseHook;
 	WgChain<WgModalHook>	m_modalHooks;		// First modal gizmo lies at the bottom.

@@ -100,6 +100,8 @@ private:
 
 	};
 
+	WgHook *		_firstHookWithGeo( WgRect& geo ) const;
+	WgHook *		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );

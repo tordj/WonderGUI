@@ -21,37 +21,15 @@
 =========================================================================*/
 
 #include <wg_gizmo_container.h>
+#include <wg_rectchain.h>
 
-//____ () __________________________________________________
+//____ Constructor _____________________________________________________________
 
-WgGizmoContainer::WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false) 
+WgGizmoContainer::WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE)
 {
 }
 
 
-//____ () _________________________________________________
-
-void WgGizmoContainer::_onEnable()
-{
-	WgGizmo * p = FirstGizmo();
-	while( p )
-	{
-		p->Enable();
-		p = p->NextSibling();
-	}
-}
-
-//____ () _________________________________________________
-
-void WgGizmoContainer::_onDisable()
-{
-	WgGizmo * p = FirstGizmo();
-	while( p )
-	{
-		p->Disable();
-		p = p->NextSibling();
-	}
-}
 
 //____ IsGizmo() ______________________________________________________________
 
@@ -67,7 +45,7 @@ bool WgGizmoContainer::IsRoot() const
 	return false;
 }
 
-//____ CastToContainer() ___________________________________________________________
+//____ CastToContainer() _______________________________________________________
 
 WgGizmoContainer * WgGizmoContainer::CastToContainer()
 {
@@ -80,6 +58,17 @@ WgGizmoContainer * WgGizmoContainer::CastToContainer()
 WgRoot * WgGizmoContainer::CastToRoot()
 {
 	return 0;
+}
+
+//____ SetMaskOp() _____________________________________________________________
+
+void WgGizmoContainer::SetMaskOp( WgMaskOp operation )
+{
+	if( operation != m_maskOp )
+	{
+		m_maskOp = operation;
+		CastToGizmo()->RequestRender();
+	}
 }
 
 //____ _focusRequested() _______________________________________________________
@@ -105,3 +94,52 @@ bool WgGizmoContainer::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasi
 }
 
 
+//____ _onEnable() _____________________________________________________________
+
+void WgGizmoContainer::_onEnable()
+{
+	WgGizmo * p = FirstGizmo();
+	while( p )
+	{
+		p->Enable();
+		p = p->NextSibling();
+	}
+}
+
+//____ _onDisable() ____________________________________________________________
+
+void WgGizmoContainer::_onDisable()
+{
+	WgGizmo * p = FirstGizmo();
+	while( p )
+	{
+		p->Disable();
+		p = p->NextSibling();
+	}
+}
+
+//____ _onMaskRects() __________________________________________________________
+
+void WgGizmoContainer::_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+{
+	switch( m_maskOp )
+	{
+		case WG_MASKOP_RECURSE:
+		{
+			WgRect childGeo;
+			WgHook * p = _firstHookWithGeo( childGeo );
+
+			while(p)
+			{
+				p->Gizmo()->_onMaskRects( rects, childGeo, clip );
+				p = _nextHookWithGeo( childGeo, p );
+			}
+			break;
+		}	
+		case WG_MASKOP_SKIP:
+			break;
+		case WG_MASKOP_MASK:
+			rects.Sub( WgRect(geo,clip) );
+			break;
+	}
+}

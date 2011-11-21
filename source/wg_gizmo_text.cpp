@@ -38,7 +38,6 @@ WgGizmoText::WgGizmoText()
 	m_pText->CreateCursor();
 	m_maxCharacters	= 0;
 	m_maxLines		= 0;
-	m_bTabLock		= true;
 
 	m_text.setLineWidth( Size().w );
 	m_editMode = WG_TEXT_STATIC;

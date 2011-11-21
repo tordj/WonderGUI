@@ -599,4 +599,15 @@ struct WgPixelFormat
 	Uint8	A_bits;				///< number of bits for alpha in the pixel
 };
 
+
+//____ WgMaskOp ____________________________________________________________
+
+enum WgMaskOp
+{
+	WG_MASKOP_RECURSE = 0,	///< Recurse through children, let them mask background individually.
+	WG_MASKOP_SKIP = 1,		///< Do not mask background against container or children.
+	WG_MASKOP_MASK = 2		///< Mask background against whole container.
+};
+
+
 #endif // WG_TYPES_DOT_H

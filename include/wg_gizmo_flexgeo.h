@@ -292,9 +292,11 @@ private:
 	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
 	void			_clearDirtyRects();
 
-
 	WgHook*	_firstHook() const { return FirstHook(); }
 	WgHook*	_lastHook() const { return LastHook(); }
+
+	WgHook *	_firstHookWithGeo( WgRect& writeGeo ) const;
+	WgHook *	_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
 
 	WgChain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;

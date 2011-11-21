@@ -160,7 +160,6 @@ protected:
 	// To be overloaded by subclasses
 
 	virtual WgRect	_hookGeo( const WgOrderedHook * pHook ) = 0;
-	virtual void	_advanceGeoToHook( WgRect& prevHookGeo, const WgOrderedHook * pHook ) = 0;	// geo (assumed to be for previous hook) is advanced to specified hook.
 	virtual void	_onResizeRequested( WgOrderedHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgOrderedHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect ) = 0;

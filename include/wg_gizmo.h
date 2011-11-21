@@ -83,6 +83,7 @@ friend class WgGizmoView;
 friend class WgVBoxLayout;
 friend class WgMonotainer;
 friend class WgGizmoStack;
+friend class WgGizmoContainer;
 
 friend class WgTableRow2;
 
