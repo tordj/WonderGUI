@@ -43,8 +43,8 @@ public:
 
 	void	Top();								// Put us ontop of all our silbings.
 
-	bool	SetGeo( const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
-	bool	SetGeo( const WgCoord& ofs, WgLocation origo = WG_NORTHWEST );
+	bool	SetGeo( const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
+	bool	SetGeo( const WgCoord& ofs, WgOrientation origo = WG_NORTHWEST );
 
 	bool	SetOfs( const WgCoord& ofs );
 	bool	SetOfsX( int x );
@@ -99,13 +99,13 @@ protected:
 
 	WgGizmoModal * m_pParent;
 
-	WgRect		m_realGeo;			// Gizmos geo relative parent
+	WgRect			m_realGeo;			// Gizmos geo relative parent
 
-	WgLocation	m_origo;
-	WgRect		m_placementGeo;		// Gizmos geo relative anchor and hotspot. Setting width and height to 0 uses Gizmos DefaultSize() dynamically.
-									// Setting just one of them to 0 uses Gizmos HeightForWidth() or WidthForHeight() dynamically.
+	WgOrientation	m_origo;
+	WgRect			m_placementGeo;		// Gizmos geo relative anchor and hotspot. Setting width and height to 0 uses Gizmos DefaultSize() dynamically.
+										// Setting just one of them to 0 uses Gizmos HeightForWidth() or WidthForHeight() dynamically.
 
-	WgRectChain	m_dirt;		// Dirty areas to be rendered, in screen coordinates!
+	WgRectChain		m_dirt;				// Dirty areas to be rendered, in screen coordinates!
 };
 
 
@@ -128,8 +128,8 @@ public:
 	WgGizmo *		ReleaseBase();
 
 
-	WgModalHook *	AddModal( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
-	WgModalHook *	AddModal( WgGizmo * pGizmo, const WgCoord& pos, WgLocation origo = WG_NORTHWEST ) { return AddModal( pGizmo, WgRect(pos,0,0), origo); }
+	WgModalHook *	AddModal( WgGizmo * pGizmo, const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
+	WgModalHook *	AddModal( WgGizmo * pGizmo, const WgCoord& pos, WgOrientation origo = WG_NORTHWEST ) { return AddModal( pGizmo, WgRect(pos,0,0), origo); }
 
 	bool			DeleteAllModal();
 	bool			ReleaseAllModal();

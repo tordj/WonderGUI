@@ -84,6 +84,7 @@
     <File Name="source/wg_base.cpp"/>
     <File Name="source/wg_anim.cpp"/>
     <File Name="source/wg_hook.cpp"/>
+    <File Name="source/wg_iconholder.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="include/wg_anim.h"/>
@@ -178,6 +179,7 @@
     <File Name="include/wg_vectorglyphs.h"/>
     <File Name="include/wondergui.h"/>
     <File Name="include/wg_hook.h"/>
+    <File Name="include/wg_iconholder.h"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -199,6 +201,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       ]]>
@@ -238,6 +241,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       ]]>
