@@ -334,7 +334,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 	//
 
 
-	WgBlock block( pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, pAnim->width(), pAnim->height()), pCursor->stretchBorders(mode), 0, blockFlags );
+	WgBlock block( pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, pAnim->width(), pAnim->height()), pCursor->stretchBorders(mode), 0, WgCoord8(), blockFlags );
 
 	if( m_bClip )
 		m_pDevice->ClipBlitBlock( m_clipRect, block, WgRect(m_pos + bearing, size) );

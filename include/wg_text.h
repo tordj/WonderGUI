@@ -172,12 +172,12 @@ public:
 //  --------------
 
 	inline const WgTextPropPtr&	getProperties() const { return m_pBaseProp; }
-	inline WgColor				getColor() const { return m_pBaseProp->GetColor(); }
-	inline WgColor				getColor(WgMode mode) const { return m_pBaseProp->GetColor(mode); }
-	inline WgFontStyle			getStyle(WgMode mode) const { return m_pBaseProp->GetStyle(mode); }
-	inline int					getBreakLevel() const { return m_pBaseProp->GetBreakLevel(); }
-	inline WgFont *				getFont() const { return m_pBaseProp->GetFont(); }
-	inline WgTextLinkPtr		getLink() const { return m_pBaseProp->GetLink(); }
+	inline WgColor				getColor() const { return m_pBaseProp->Color(); }
+	inline WgColor				getColor(WgMode mode) const { return m_pBaseProp->Color(mode); }
+	inline WgFontStyle			getStyle(WgMode mode) const { return m_pBaseProp->Style(mode); }
+	inline int					getBreakLevel() const { return m_pBaseProp->BreakLevel(); }
+	inline WgFont *				getFont() const { return m_pBaseProp->Font(); }
+	inline WgTextLinkPtr		getLink() const { return m_pBaseProp->Link(); }
 
 //	--------------
 
@@ -222,7 +222,7 @@ public:
 // -------------
 
 	void				setSelectionBgColor(WgColor c);
-	inline WgColor		getSelectionBgColor() const { return m_pSelectionProp->GetColor(); }
+	inline WgColor		getSelectionBgColor() const { return m_pSelectionProp->Color(); }
 
 // -------------
 

@@ -168,7 +168,7 @@ public:
 class WgBlock
 {
 public:
-	WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags );
+	WgBlock( const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, WgCoord8 contentDisplacement, Uint32 flags );
 	WgBlock() : m_pSurf(0), m_flags(0) { }
 
 	inline const WgRect&		Rect() const { return m_rect; }
@@ -237,6 +237,7 @@ protected:
 		WgBorders			gfxBorders;
 		WgBorders			contentBorders;
 
+		WgCoord8			contentDisplacement[WG_NB_MODES];		// Displacement for WG_MODE_NORMAL is ignored.
 		Uint16				x[WG_NB_MODES];
 		Uint16				y[WG_NB_MODES];
 		Uint16				w;
@@ -258,8 +259,8 @@ public:
 										const WgRect& selected, const WgRect& disabled, const WgRect& special,
 										const WgBorders& gfxBorders, const WgBorders& contentBorders );
 
-	inline WgBlock		GetBlock( WgMode mode, WgSize destSize ) const { return GetBlock( mode, GetAlt(destSize) ); }
-	inline WgBlock		GetBlock( WgMode mode, int alt = 0 ) const { return GetBlock( mode, GetAlt(alt) ); }
+	inline WgBlock		GetBlock( WgMode mode, WgSize destSize ) const { return _getBlock( mode, _getAlt(destSize) ); }
+	inline WgBlock		GetBlock( WgMode mode, int alt = 0 ) const { return _getBlock( mode, _getAlt(alt) ); }
 	inline bool			HasBlock( WgMode mode, int alt = 0 ) const;
 
 	int					NbAlternatives() const;
@@ -284,6 +285,8 @@ public:
 	void				SetGfxBorders( const WgBorders& borders, int alt = 0 );
 	WgBorders			ContentBorders( int alt = 0 ) const;
 	void				SetContentBorders( const WgBorders& borders, int alt = 0 );
+	WgCoord				ContentDisplacement( WgMode mode ) const;
+	bool				SetContentDisplacement( WgMode mode, WgCoord ofs );
 	inline Uint32		Flags() const { return m_flags; }
 
 	inline bool			IsOpaque() const { return ((m_flags & WG_OPAQUE) != 0); }
@@ -310,14 +313,14 @@ public:
 
 
 private:
-	static Uint32	VerifyFlags(Uint32 flags);
+	static Uint32	_verifyFlags(Uint32 flags);
 
-	Alt_Data *		GetAlt( int n );
-	Alt_Data *		GetAlt( WgSize destSize );
-	const Alt_Data*	GetAlt( int n ) const;
-	const Alt_Data*	GetAlt( WgSize destSize ) const;
+	Alt_Data *		_getAlt( int n );
+	Alt_Data *		_getAlt( WgSize destSize );
+	const Alt_Data*	_getAlt( int n ) const;
+	const Alt_Data*	_getAlt( WgSize destSize ) const;
 
-	inline WgBlock	GetBlock( WgMode mode, const Alt_Data * pAlt ) const;
+	inline WgBlock	_getBlock( WgMode mode, const Alt_Data * pAlt ) const;
 
 	WgColorSetPtr				m_pTextColors;		// Default colors for text placed on this block.
 	Uint32						m_flags;
@@ -328,7 +331,7 @@ private:
 };
 
 
-inline WgBlock WgBlockSet::GetBlock(WgMode m, const Alt_Data * p) const
+inline WgBlock WgBlockSet::_getBlock(WgMode m, const Alt_Data * p) const
 {
 	if( !p )
 		return WgBlock();
@@ -336,12 +339,12 @@ inline WgBlock WgBlockSet::GetBlock(WgMode m, const Alt_Data * p) const
 	const Uint32 SKIP_MASK = WG_SKIP_NORMAL | WG_SKIP_MARKED | WG_SKIP_SELECTED | WG_SKIP_DISABLED | WG_SKIP_SPECIAL;
 	Uint32 flags = m_flags & ~SKIP_MASK;
 	flags |= IsModeSkipable(m) ? WG_SKIP_NORMAL : 0;	// reuse bit
-	return WgBlock( p->pSurf, WgRect(p->x[m], p->y[m], p->w, p->h), p->gfxBorders, p->contentBorders, flags );
+	return WgBlock( p->pSurf, WgRect(p->x[m], p->y[m], p->w, p->h), p->gfxBorders, p->contentBorders, p->contentDisplacement[m], flags );
 }
 
 inline bool WgBlockSet::HasBlock(WgMode m, int alt) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return false;
 

@@ -1133,7 +1133,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 
 	if( selStart != selEnd && pSelProp->IsBgColored() )
 	{
-		_drawTextSectionBg( clip, pText, dest, selStart, selEnd, pSelProp->GetBgColor(mode) );
+		_drawTextSectionBg( clip, pText, dest, selStart, selEnd, pSelProp->BgColor(mode) );
 	}
 	else
 	{

@@ -165,7 +165,7 @@ public:
 							/// @return If the character has a color specified for the given mode that will be returned,
 							///			otherwise an unspecified value will be returned.
 
-	inline const WgColor	Color( WgMode mode ) const { return GetPropRef().GetColor(mode); }
+	inline const WgColor	Color( WgMode mode ) const { return GetPropRef().Color(mode); }
 
 							/// Checks if the character has a background color specified for the given mode.
 
@@ -187,19 +187,19 @@ public:
 							/// @return If the character has a background color specified for the given mode that will be returned,
 							///			otherwise an unspecified value will be returned.
 
-	inline const WgColor	BgColor( WgMode mode ) const { return GetPropRef().GetBgColor(mode); }
+	inline const WgColor	BgColor( WgMode mode ) const { return GetPropRef().BgColor(mode); }
 
 							/// Returns the text-link (weblink) this character links to, if any.
 							///
 							/// @return Pointer to the WgTextLink this character is part of or NULL if none.
 
-	inline WgTextLinkPtr	Link() const { return GetPropRef().GetLink(); }
+	inline WgTextLinkPtr	Link() const { return GetPropRef().Link(); }
 
 							/// Returns the characters specified font (if any).
 							///
 							/// @return Pointer to the font specified for this character or NULL if none.
 
-	inline WgFont *			Font() const { return GetPropRef().GetFont(); }
+	inline WgFont *			Font() const { return GetPropRef().Font(); }
 
 
 //	inline WgGlyphSet *		GlyphSet( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombGlyphSet(pDefProp.GetHandle(), properties, mode); }
@@ -214,7 +214,7 @@ public:
 							///
 							/// @return Characters font size for the given mode.
 
-	inline int				Size( WgMode mode = WG_MODE_NORMAL ) const { return GetPropRef().GetSize(mode); }
+	inline int				Size( WgMode mode = WG_MODE_NORMAL ) const { return GetPropRef().Size(mode); }
 
 							/// Returns the characters font style specification for the given mode.
 							///
@@ -227,7 +227,7 @@ public:
 							/// @return Font style specified for the given mode.
 
 
-	inline WgFontStyle		Style( WgMode mode = WG_MODE_NORMAL ) const { return GetPropRef().GetStyle(mode); }
+	inline WgFontStyle		Style( WgMode mode = WG_MODE_NORMAL ) const { return GetPropRef().Style(mode); }
 
 							/// Checks if the character terminates the current line.
 							/// @return True if the glyph portion of the character contains End-Of-Line (\\n) or End-of-Text (null).
