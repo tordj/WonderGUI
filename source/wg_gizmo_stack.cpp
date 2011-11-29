@@ -184,6 +184,34 @@ void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook )
 
 void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect )
 {
+/*	if( pHook->IsHidden() )
+		return;
+
+	// Put our geometry and in a dirtyrect-list
+
+	WgRectChain rects;
+	rects.Add( rect );
+
+	// Remove portions of dirty rect that are covered by opaque upper siblings,
+	// possibly filling list with many small dirty rects instead.
+
+	WgOrderedHook * pCover = pHook->Next();
+	while( pCover )
+	{
+		pCover->Gizmo()->_onMaskRects( rects, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
+
+		pCover = pCover->Next();
+	}
+
+	// Make request render calls
+
+	WgRectLink * pRect = rects.pRectList;
+	while( pRect )
+	{
+		RequestRender( * pRect );
+		pRect = pRect->pNext;
+	}
+*/
 }
 
 //____ _onGizmoAppeared() _____________________________________________________

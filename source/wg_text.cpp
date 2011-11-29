@@ -349,7 +349,7 @@ int WgText::getSoftLineWidth( int line ) const
 
 int WgText::getSoftLineWidthPart( int _line, int startCol, int nCol ) const
 {
-	if( _line < 0 || _line >= nbSoftLines() || !m_pBaseProp->GetFont() )
+	if( _line < 0 || _line >= nbSoftLines() || !m_pBaseProp->Font() )
 		return 0;
 
 	const WgTextLine * pLine = getSoftLine(_line);
@@ -2349,9 +2349,9 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 
 	WgTextPropPtr pCharProp = m_buffer.Chars()[charOfs].Properties();
 
-	WgTextLinkPtr pLink = pCharProp->GetLink();
+	WgTextLinkPtr pLink = pCharProp->Link();
 	if( !pLink )
-		pLink = m_pBaseProp->GetLink();
+		pLink = m_pBaseProp->Link();
 
 	if( pLink )
 	{

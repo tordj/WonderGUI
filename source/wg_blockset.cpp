@@ -28,13 +28,33 @@
 
 
 
-WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, Uint32 flags )
+WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, WgCoord8 contentDisplacement, Uint32 flags )
 {
 	m_pSurf			= pSurf;
 	m_rect			= rect;
 	m_gfxBorders	= gfxBorders;
-	m_contentBorders= contentBorders;
 	m_flags			= flags;
+
+	int left = contentBorders.left;
+	left += contentDisplacement.x;
+	LIMIT(left,0,255);
+	m_contentBorders.left = left;
+
+	int right = contentBorders.right;
+	right += contentDisplacement.x;
+	LIMIT(right,0,255);
+	m_contentBorders.right = right;
+
+	int top = contentBorders.top;
+	top += contentDisplacement.y;
+	LIMIT(top,0,255);
+	m_contentBorders.top = top;
+
+	int bottom = contentBorders.bottom;
+	bottom += contentDisplacement.y;
+	LIMIT(bottom,0,255);
+	m_contentBorders.bottom = bottom;
+
 
 	if( m_gfxBorders.left || m_gfxBorders.right || m_gfxBorders.top || m_gfxBorders.bottom )
 		m_flags |= WG_HAS_BORDERS;
@@ -52,7 +72,7 @@ WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect
 					   const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags ) : WgRefCountedPooled(pPool)
 {
 	m_pTextColors				= pTextColors;
-	m_flags						= VerifyFlags(flags);
+	m_flags						= _verifyFlags(flags);
 
 	m_base.pSurf				= pSurf;
 	m_base.gfxBorders			= gfxBorders;
@@ -77,7 +97,7 @@ WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgBord
 						const WgColorSetPtr& pTextColors, Uint32 flags ) : WgRefCountedPooled(pPool)
 {
 	m_pTextColors				= pTextColors;
-	m_flags						= VerifyFlags(flags);
+	m_flags						= _verifyFlags(flags);
 
 	m_base.pSurf				= pSurf;
 	m_base.gfxBorders			= gfxBorders;
@@ -196,7 +216,7 @@ WgSize WgBlockSet::ActivationSize( int alt ) const
 
 //____ GetAlt() _______________________________________________________________
 
-WgBlockSet::Alt_Data* WgBlockSet::GetAlt( int n )
+WgBlockSet::Alt_Data* WgBlockSet::_getAlt( int n )
 {
 	if( n == 0 )
 		return &m_base;
@@ -214,7 +234,7 @@ WgBlockSet::Alt_Data* WgBlockSet::GetAlt( int n )
 	return 0;
 }
 
-WgBlockSet::Alt_Data* WgBlockSet::GetAlt( WgSize destSize )
+WgBlockSet::Alt_Data* WgBlockSet::_getAlt( WgSize destSize )
 {
 	Alt_Data * pData = &m_base;
 
@@ -230,7 +250,7 @@ WgBlockSet::Alt_Data* WgBlockSet::GetAlt( WgSize destSize )
 	return pData;
 }
 
-const WgBlockSet::Alt_Data* WgBlockSet::GetAlt( int n ) const
+const WgBlockSet::Alt_Data* WgBlockSet::_getAlt( int n ) const
 {
 	if( n == 0 )
 		return &m_base;
@@ -248,7 +268,7 @@ const WgBlockSet::Alt_Data* WgBlockSet::GetAlt( int n ) const
 	return 0;
 }
 
-const WgBlockSet::Alt_Data* WgBlockSet::GetAlt( WgSize destSize ) const
+const WgBlockSet::Alt_Data* WgBlockSet::_getAlt( WgSize destSize ) const
 {
 	const Alt_Data * pData = &m_base;
 
@@ -269,7 +289,7 @@ const WgBlockSet::Alt_Data* WgBlockSet::GetAlt( WgSize destSize ) const
 
 bool WgBlockSet::SetPos( WgMode mode, WgCoord pos, int alt )
 {
-	Alt_Data * p = GetAlt(alt);
+	Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return false;
 
@@ -282,7 +302,7 @@ bool WgBlockSet::SetPos( WgMode mode, WgCoord pos, int alt )
 
 bool WgBlockSet::SetSize( WgSize size, int alt )
 {
-	Alt_Data * p = GetAlt(alt);
+	Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return false;
 
@@ -306,7 +326,7 @@ WgColor WgBlockSet::TextColor( WgMode mode ) const
 
 WgRect WgBlockSet::Rect( WgMode mode, int alt ) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return WgRect();
 
@@ -317,7 +337,7 @@ WgRect WgBlockSet::Rect( WgMode mode, int alt ) const
 
 WgSize WgBlockSet::Size( int alt ) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return WgSize();
 
@@ -329,7 +349,7 @@ WgSize WgBlockSet::Size( int alt ) const
 
 int WgBlockSet::Width( int alt ) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return 0;
 
@@ -340,7 +360,7 @@ int WgBlockSet::Width( int alt ) const
 
 int WgBlockSet::Height( int alt ) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return 0;
 
@@ -351,7 +371,7 @@ int WgBlockSet::Height( int alt ) const
 
 WgSize WgBlockSet::MinSize( int alt ) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return WgSize();
 
@@ -362,7 +382,7 @@ WgSize WgBlockSet::MinSize( int alt ) const
 
 int WgBlockSet::MinWidth( int alt ) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return 0;
 
@@ -373,7 +393,7 @@ int WgBlockSet::MinWidth( int alt ) const
 
 int WgBlockSet::MinHeight( int alt ) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return 0;
 
@@ -384,7 +404,7 @@ int WgBlockSet::MinHeight( int alt ) const
 
 const WgSurface * WgBlockSet::Surface( int alt ) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return 0;
 
@@ -396,7 +416,7 @@ const WgSurface * WgBlockSet::Surface( int alt ) const
 
 WgBorders WgBlockSet::GfxBorders( int alt ) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return WgBorders();
 
@@ -407,7 +427,7 @@ WgBorders WgBlockSet::GfxBorders( int alt ) const
 
 void WgBlockSet::SetGfxBorders( const WgBorders& borders, int alt )
 {
-	Alt_Data * p = GetAlt(alt);
+	Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return;
 
@@ -418,7 +438,7 @@ void WgBlockSet::SetGfxBorders( const WgBorders& borders, int alt )
 
 WgBorders WgBlockSet::ContentBorders( int alt ) const
 {
-	const Alt_Data * p = GetAlt(alt);
+	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return WgBorders();
 
@@ -429,7 +449,7 @@ WgBorders WgBlockSet::ContentBorders( int alt ) const
 
 void WgBlockSet::SetContentBorders( const WgBorders& borders, int alt )
 {
-	Alt_Data * p = GetAlt(alt);
+	Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return;
 
@@ -490,7 +510,7 @@ bool WgBlockSet::SetFixedSize(bool bFixedSize)
 
 //____ VerifyFlags() __________________________________________________________
 
-Uint32 WgBlockSet::VerifyFlags(Uint32 _flags)
+Uint32 WgBlockSet::_verifyFlags(Uint32 _flags)
 {
 	// Make sure not more than one of SCALE/TILE/FIXED is set on center.
 
@@ -508,7 +528,7 @@ Uint32 WgBlockSet::VerifyFlags(Uint32 _flags)
 
 bool WgBlockSet::SameBlock( WgMode one, WgMode two, int alt )
 {
-	Alt_Data * p = GetAlt(alt);
+	Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return false;
 

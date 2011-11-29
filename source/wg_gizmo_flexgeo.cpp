@@ -84,12 +84,12 @@ bool WgFlexHook::SetFloating()
 	return true;
 }
 
-bool WgFlexHook::SetFloating( const WgCoord& pos, WgLocation origo )
+bool WgFlexHook::SetFloating( const WgCoord& pos, WgOrientation origo )
 {
 	return SetFloating( pos, origo, origo );
 }
 
-bool WgFlexHook::SetFloating( const WgCoord& pos, int anchor, WgLocation hotspot )
+bool WgFlexHook::SetFloating( const WgCoord& pos, int anchor, WgOrientation hotspot )
 {
 	if( anchor >= m_pParent->NbAnchors() )
 		return false;
@@ -105,12 +105,12 @@ bool WgFlexHook::SetFloating( const WgCoord& pos, int anchor, WgLocation hotspot
 	return true;
 }
 
-bool WgFlexHook::SetFloating( const WgRect& geometry, WgLocation origo )
+bool WgFlexHook::SetFloating( const WgRect& geometry, WgOrientation origo )
 {
 	return SetFloating( geometry, origo, origo );
 }
 
-bool WgFlexHook::SetFloating( const WgRect& geometry, int anchor, WgLocation hotspot )
+bool WgFlexHook::SetFloating( const WgRect& geometry, int anchor, WgOrientation hotspot )
 {
 	if( anchor >= m_pParent->NbAnchors() )
 		return false;
@@ -341,7 +341,7 @@ bool WgFlexHook::SetAnchor( int anchor )
 
 //____ WgFlexHook::SetHotspot() _______________________________________________
 
-bool WgFlexHook::SetHotspot( WgLocation hotspot )
+bool WgFlexHook::SetHotspot( WgOrientation hotspot )
 {
 	if( hotspot != m_hotspot )
 	{
@@ -675,7 +675,7 @@ bool WgFlexHook::_refreshRealGeo()
 		// Calculate position
 
 		WgCoord pos = m_pParent->Anchor(m_anchor)->Position( parentSize );	// Anchor,
-		pos -= WgUtil::LocationToOfs( m_hotspot, sz );						// hotspot
+		pos -= WgUtil::OrientationToOfs( m_hotspot, sz );						// hotspot
 		pos += m_placementGeo.Pos();										// and Offset.
 
 		// Limit size/pos according to parent
@@ -916,12 +916,12 @@ WgFlexHook * WgGizmoFlexGeo::AddChild( WgGizmo * pGizmo, int anchorTopLeft, int 
 	return p;
 }
 
-WgFlexHook * WgGizmoFlexGeo::AddChild( WgGizmo * pGizmo, const WgCoord& pos, WgLocation origo )
+WgFlexHook * WgGizmoFlexGeo::AddChild( WgGizmo * pGizmo, const WgCoord& pos, WgOrientation origo )
 {
 	return AddChild( pGizmo, pos, origo, origo );
 }
 
-WgFlexHook * WgGizmoFlexGeo::AddChild( WgGizmo * pGizmo, const WgCoord& pos, int anchor, WgLocation hotspot )
+WgFlexHook * WgGizmoFlexGeo::AddChild( WgGizmo * pGizmo, const WgCoord& pos, int anchor, WgOrientation hotspot )
 {
 	if( !pGizmo )
 		return 0;
@@ -935,12 +935,12 @@ WgFlexHook * WgGizmoFlexGeo::AddChild( WgGizmo * pGizmo, const WgCoord& pos, int
 	return p;
 }
 
-WgFlexHook * WgGizmoFlexGeo::AddChild( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo )
+WgFlexHook * WgGizmoFlexGeo::AddChild( WgGizmo * pGizmo, const WgRect& geometry, WgOrientation origo )
 {
 	return AddChild( pGizmo, geometry, origo, origo );
 }
 
-WgFlexHook * WgGizmoFlexGeo::AddChild( WgGizmo * pGizmo, const WgRect& geometry, int anchor, WgLocation hotspot )
+WgFlexHook * WgGizmoFlexGeo::AddChild( WgGizmo * pGizmo, const WgRect& geometry, int anchor, WgOrientation hotspot )
 {
 	if( !pGizmo )
 		return 0;
@@ -983,12 +983,12 @@ WgFlexHook * WgGizmoFlexGeo::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, 
 }
 
 
-WgFlexHook * WgGizmoFlexGeo::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgLocation origo )
+WgFlexHook * WgGizmoFlexGeo::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgOrientation origo )
 {
 	return InsertChild( pGizmo, pSibling, geometry, origo, origo );
 }
 
-WgFlexHook * WgGizmoFlexGeo::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, int anchor, WgLocation hotspot )
+WgFlexHook * WgGizmoFlexGeo::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, int anchor, WgOrientation hotspot )
 {
 	if( !pGizmo || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;
@@ -1000,12 +1000,12 @@ WgFlexHook * WgGizmoFlexGeo::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, 
 	return p;
 }
 
-WgFlexHook * WgGizmoFlexGeo::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, WgLocation origo )
+WgFlexHook * WgGizmoFlexGeo::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, WgOrientation origo )
 {
 	return InsertChild( pGizmo, pSibling, pos, origo, origo );
 }
 
-WgFlexHook * WgGizmoFlexGeo::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, int anchor, WgLocation hotspot )
+WgFlexHook * WgGizmoFlexGeo::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, int anchor, WgOrientation hotspot )
 {
 	if( !pGizmo || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;
@@ -1436,3 +1436,26 @@ bool WgGizmoFlexGeo::_onAlphaTest( const WgCoord& ofs )
 {
 	return false;
 }
+
+//____ _firstHookWithGeo() _____________________________________________________
+
+WgHook * WgGizmoFlexGeo::_firstHookWithGeo( WgRect& writeGeo ) const
+{
+	WgFlexHook * p = m_hooks.First();
+	if( p )
+		writeGeo = p->m_realGeo;
+
+	return p;
+}
+
+//____ _nextHookWithGeo() ______________________________________________________
+
+WgHook * WgGizmoFlexGeo::_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
+{
+	WgFlexHook * p = ((WgFlexHook*)pHook)->_next();
+	if( p )
+		writeGeo = p->m_realGeo;
+	
+	return p;
+}
+

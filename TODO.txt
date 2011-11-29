@@ -1,7 +1,7 @@
 
 FOCUS
 =====
-* Fixa TAB_ORDER och reservering av Tab.
+* Hur ska vi lösa _onMaskRects() ???
 * Keyboard focus vid modal.
 * Färdigställa WgStackGizmo.
 * Wdg_Layout.

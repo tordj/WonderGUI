@@ -53,10 +53,10 @@ public:
 	bool	SetAnchored( int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
 
 	bool	SetFloating();
-	bool	SetFloating( const WgCoord& pos, WgLocation origo = WG_NORTHWEST );
-	bool	SetFloating( const WgCoord& pos, int anchor, WgLocation hotspot );
-	bool	SetFloating( const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
-	bool	SetFloating( const WgRect& geometry, int anchor, WgLocation hotspot );
+	bool	SetFloating( const WgCoord& pos, WgOrientation origo = WG_NORTHWEST );
+	bool	SetFloating( const WgCoord& pos, int anchor, WgOrientation hotspot );
+	bool	SetFloating( const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
+	bool	SetFloating( const WgRect& geometry, int anchor, WgOrientation hotspot );
 
 
 	void	Top();								// Put us ontop all our silbings.
@@ -77,7 +77,7 @@ public:
 	// Methods for floating hooks
 
 	bool	SetAnchor( int anchor );
-	bool	SetHotspot( WgLocation hotspot );
+	bool	SetHotspot( WgOrientation hotspot );
 
 	bool	SetSizePolicy( WgSizePolicy policy );
 	bool	SetMinSize( const WgSize& size );
@@ -101,7 +101,7 @@ public:
 	inline WgSize		MinSize() const { return m_minSize; }
 	inline WgSizePolicy	SizePolicy() const { return m_sizePolicy; }
 	inline int			Origo() const { return m_anchor; }
-	inline WgLocation	Hotspot() const { return m_hotspot; }
+	inline WgOrientation	Hotspot() const { return m_hotspot; }
 	inline WgRect		FloatGeo() const { return m_placementGeo; }
 	inline WgCoord		FloatOfs() const { return m_placementGeo.Pos(); }
 	inline WgRect		FloatSize() const { return m_placementGeo.Size(); }
@@ -164,7 +164,7 @@ protected:
 	WgSize			m_maxSize;
 
 	int				m_anchor;
-	WgLocation		m_hotspot;
+	WgOrientation		m_hotspot;
 	WgRect			m_placementGeo;	// Gizmos geo relative anchor and hotspot.
 
 	//Only used for anchored hooks.
@@ -225,17 +225,17 @@ public:
 
 	WgFlexHook *	AddChild( WgGizmo * pGizmo );
 	WgFlexHook *	AddChild( WgGizmo * pGizmo, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
-	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgCoord& pos, WgLocation origo = WG_NORTHWEST );
-	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgCoord& pos, int anchor, WgLocation hotspot );
-	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
-	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgRect& geometry, int anchor, WgLocation hotspot );
+	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgCoord& pos, WgOrientation origo = WG_NORTHWEST );
+	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgCoord& pos, int anchor, WgOrientation hotspot );
+	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
+	WgFlexHook *	AddChild( WgGizmo * pGizmo, const WgRect& geometry, int anchor, WgOrientation hotspot );
 
 	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling );
 	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
-	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, WgLocation origo = WG_NORTHWEST );
-	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, int anchor, WgLocation hotspot );
-	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgLocation origo = WG_NORTHWEST );
-	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, int anchor, WgLocation hotspot );
+	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, WgOrientation origo = WG_NORTHWEST );
+	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, int anchor, WgOrientation hotspot );
+	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
+	WgFlexHook *	InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, int anchor, WgOrientation hotspot );
 
 	bool			DeleteChild( WgGizmo * pGizmo );
 	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
@@ -292,9 +292,11 @@ private:
 	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
 	void			_clearDirtyRects();
 
-
 	WgHook*	_firstHook() const { return FirstHook(); }
 	WgHook*	_lastHook() const { return LastHook(); }
+
+	WgHook *	_firstHookWithGeo( WgRect& writeGeo ) const;
+	WgHook *	_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
 
 	WgChain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;

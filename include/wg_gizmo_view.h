@@ -267,6 +267,8 @@ protected:
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 
+	WgHook *	_firstHookWithGeo( WgRect& geo ) const;
+	WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
 	void		SetContentSize( const WgSize& size );
 	void		UpdateElementGeo( const WgSize& mySize, const WgSize& newContentSize );
@@ -297,8 +299,8 @@ protected:
 
 private:
 
-	WgHook*	_firstHook() const { return const_cast<WgViewHook*>(&m_elements[0]); }
-	WgHook*	_lastHook() const { return const_cast<WgViewHook*>(&m_elements[2]); }
+	WgHook*	_firstHook() const;
+	WgHook*	_lastHook() const;
 
 
 	WgBlockSetPtr	m_pFillerBlocks;

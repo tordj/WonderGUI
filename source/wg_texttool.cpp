@@ -2670,31 +2670,31 @@ void WgTextTool::AddPropAttributes( WgTextAttr& attr, const WgTextPropPtr& pProp
 	if( !pProp )
 		return;
 
-	if( pProp->GetFont() )
-		attr.pFont = pProp->GetFont();
+	if( pProp->Font() )
+		attr.pFont = pProp->Font();
 
-	if( pProp->GetSize(mode) != 0 )
-		attr.size = pProp->GetSize(mode);
+	if( pProp->Size(mode) != 0 )
+		attr.size = pProp->Size(mode);
 
-	if( pProp->GetStyle(mode) != WG_STYLE_NORMAL )
-		attr.style = pProp->GetStyle(mode);
+	if( pProp->Style(mode) != WG_STYLE_NORMAL )
+		attr.style = pProp->Style(mode);
 
 	if( pProp->IsColored(mode) )
-		attr.color = pProp->GetColor(mode);
+		attr.color = pProp->Color(mode);
 
 	if( pProp->IsBgColored(mode) )
-		attr.bgColor = pProp->GetBgColor(mode);
+		attr.bgColor = pProp->BgColor(mode);
 
 	if( pProp->IsUnderlined(mode) )
 		attr.bUnderlined = true;
 
-	if( pProp->GetBreakLevel() != -1 )
-		attr.breakLevel = pProp->GetBreakLevel();
+	if( pProp->BreakLevel() != -1 )
+		attr.breakLevel = pProp->BreakLevel();
 
-	attr.visibilityFlags |= pProp->GetCharVisibilityFlags();
+	attr.visibilityFlags |= pProp->CharVisibilityFlags();
 
-	if( pProp->GetLink() )
-		attr.pLink = pProp->GetLink();
+	if( pProp->Link() )
+		attr.pLink = pProp->Link();
 }
 
 //____ SetAttrColor() _______________________________________________________
@@ -2770,7 +2770,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 
 	// First, see if we can do this using only current "baseprop" + style/color/size/underline settings.
 
-	if( pNewProp->GetFont() == m_pBaseProp->GetFont() && pNewProp->GetLink() == m_pBaseProp->GetLink() &&
+	if( pNewProp->Font() == m_pBaseProp->Font() && pNewProp->Link() == m_pBaseProp->Link() &&
 		((pNewProp->IsColored() && pNewProp->IsColorStatic()) || pNewProp->CompareColorTo( m_pBaseProp )) &&
 		(pNewProp->IsStyleStatic() || pNewProp->CompareStyleTo( m_pBaseProp )) &&
 		(pNewProp->IsSizeStatic() || pNewProp->CompareSizeTo( m_pBaseProp )) &&
@@ -2785,7 +2785,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 		// Secondly, if nullprop isn't our current baseprop we see if we can do this using only nullprop
 		// + style/color/size/underline settings.
 
-		if( !m_pBaseProp && pNewProp->GetFont() == 0 && !pNewProp->GetLink() &&
+		if( !m_pBaseProp && pNewProp->Font() == 0 && !pNewProp->Link() &&
 			pNewProp->IsColorStatic() && pNewProp->IsStyleStatic() && pNewProp->IsSizeStatic() && pNewProp->IsUnderlined() )
 		{
 			// Yes we can! Switch to nullprop as our baseprop
@@ -2822,7 +2822,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 				{
 					WgTextPropPtr pProp = pRes->res;
 
-					if( pNewProp->GetFont() == pProp->GetFont() && pNewProp->GetLink() == pProp->GetLink() &&
+					if( pNewProp->Font() == pProp->Font() && pNewProp->Link() == pProp->Link() &&
 						((pNewProp->IsColored() && pNewProp->IsColorStatic()) || pNewProp->CompareColorTo( pProp )) &&
 						(pNewProp->IsStyleStatic() || pNewProp->CompareStyleTo( pProp )) &&
 						(pNewProp->IsSizeStatic() || pNewProp->CompareSizeTo( pProp )) &&
@@ -2871,7 +2871,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 
 	if( !m_bColorTagOpen && pNewProp->IsColored() && !pNewProp->CompareColorTo( m_pBaseProp ) )
 	{
-		WgColor col = pNewProp->GetColor();
+		WgColor col = pNewProp->Color();
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '{';
 
@@ -2919,7 +2919,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 
-		switch( pNewProp->GetStyle() )
+		switch( pNewProp->Style() )
 		{
 			case WG_STYLE_NORMAL:
 				m_temp[i++] = 'd';
@@ -2948,7 +2948,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 			case WG_STYLE_HEADING_4:
 			case WG_STYLE_HEADING_5:
 				m_temp[i++] = 'h';
-				m_temp[i++] = '1' + (pNewProp->GetStyle() - WG_STYLE_HEADING_1);
+				m_temp[i++] = '1' + (pNewProp->Style() - WG_STYLE_HEADING_1);
 				break;
 			case WG_STYLE_USER_1:
 			case WG_STYLE_USER_2:
@@ -2956,7 +2956,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 			case WG_STYLE_USER_4:
 			case WG_STYLE_USER_5:
 				m_temp[i++] = 'u';
-				m_temp[i++] = '1' + (pNewProp->GetStyle() - WG_STYLE_USER_1);
+				m_temp[i++] = '1' + (pNewProp->Style() - WG_STYLE_USER_1);
 				break;
 		}
 
@@ -2975,7 +2975,7 @@ Uint32 WgTextTool::TextPropEncoder::SetProp( const WgTextPropPtr& pNewProp )
 
 	if( !m_bSizeTagOpen && !pNewProp->CompareSizeTo( m_pBaseProp ) && pNewProp->IsSizeStatic() )
 	{
-		int size = pNewProp->GetSize();
+		int size = pNewProp->Size();
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '[';
 
@@ -2997,7 +2997,7 @@ Uint32 WgTextTool::TextPropEncoder::EndString()
 {
 	Uint32 i = 0;
 
-	if( m_pActiveProp->GetStyle() != WG_STYLE_NORMAL )
+	if( m_pActiveProp->Style() != WG_STYLE_NORMAL )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '#';

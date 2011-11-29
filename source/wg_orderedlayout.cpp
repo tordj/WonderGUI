@@ -329,9 +329,10 @@ void WgOrderedLayout::ScrollIntoView( WgGizmo * pGizmo )
 
 WgGizmo * WgOrderedLayout::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
-	WgOrderedHook * pHook = m_hooks.First();
+	WgRect			rect;
+	WgHook * 		pHook = _firstHookWithGeo(rect);
 	WgGizmo * 		pResult = 0;
-	WgRect			rect = _hookGeo(pHook);
+
 
 
 	while( pHook && !pResult )
@@ -358,10 +359,7 @@ WgGizmo * WgOrderedLayout::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 				}
 			}
 		}
-		pHook = pHook->Next();
-
-		if( pHook )
-			_advanceGeoToHook( rect, pHook );
+		pHook = _nextHookWithGeo(rect,pHook);
 	}
 
 	if( !pResult && mode == WG_SEARCH_GEOMETRY )

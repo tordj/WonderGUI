@@ -37,7 +37,6 @@ WgGizmoText::WgGizmoText()
 	m_pText			= &m_text;
 	m_pText->CreateCursor();
 	m_maxLines		= 0;
-	m_bTabLock		= true;
 
 	m_text.setLineWidth( Size().w );
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	

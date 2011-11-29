@@ -122,17 +122,17 @@ public:
 
 	inline bool				IsUnderlined( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bUnderlined; }
 	inline bool				IsColored( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bColored; }
-	inline const WgColor&	GetColor( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_color; }
+	inline const WgColor&	Color( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_color; }
 	inline bool				IsBgColored( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bBgColor; }
-	inline const WgColor&	GetBgColor( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bgColor; }
-	inline WgFontStyle		GetStyle( WgMode mode = WG_MODE_NORMAL ) const { return (WgFontStyle) m_modeProp[mode].m_style; }
-	inline int				GetSize( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_size; }
-	bool					GetCharVisibility( Uint16 specialCharacter ) const;
-	inline int				GetCharVisibilityFlags() const { return m_visibilityFlags; }
+	inline const WgColor&	BgColor( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bgColor; }
+	inline WgFontStyle		Style( WgMode mode = WG_MODE_NORMAL ) const { return (WgFontStyle) m_modeProp[mode].m_style; }
+	inline int				Size( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_size; }
+	bool					CharVisibility( Uint16 specialCharacter ) const;
+	inline int				CharVisibilityFlags() const { return m_visibilityFlags; }
 
-	inline WgTextLinkPtr	GetLink() const { return m_pLink; }
-	inline WgFont *			GetFont() const { return m_pFont; }
-	inline int				GetBreakLevel() const { return m_breakLevel; }
+	inline WgTextLinkPtr	Link() const { return m_pLink; }
+	inline WgFont *			Font() const { return m_pFont; }
+	inline int				BreakLevel() const { return m_breakLevel; }
 
 	void					AssertIntegrity() const;
 

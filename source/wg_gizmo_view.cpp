@@ -1065,6 +1065,61 @@ bool WgGizmoView::SetAutoscroll( bool bAutoX, bool bAutoY )
 	return true;
 }
 
+
+//_____________________________________________________________________________
+WgHook*	WgGizmoView::_firstHook() const 
+{
+	for( int i = 0 ; i < 3 ; i++ )
+		if( m_elements[i].m_pGizmo )
+			return const_cast<WgViewHook*>(&m_elements[i]);
+
+	return 0;
+}
+
+//_____________________________________________________________________________
+WgHook*	WgGizmoView::_lastHook() const 
+{ 
+	for( int i = 2 ; i >= 0 ; i++ )
+		if( m_elements[i].m_pGizmo )
+			return const_cast<WgViewHook*>(&m_elements[i]);
+
+	return 0;
+}
+
+
+//_____________________________________________________________________________
+WgHook * WgGizmoView::_firstHookWithGeo( WgRect& geo ) const
+{
+	for( int i = 0 ; i < 3 ; i++ )
+		if( m_elements[i].m_pGizmo )
+		{
+			geo = m_elements[i].m_geo;
+			return const_cast<WgViewHook*>(&m_elements[i]);
+		}
+
+	return 0;	
+}
+
+//_____________________________________________________________________________
+WgHook * WgGizmoView::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+	const WgViewHook * pLast = &m_elements[2];
+	WgViewHook * p = (WgViewHook*) pHook;
+
+
+	while( p != pLast )
+	{
+		p++;
+		if( p->m_pGizmo )
+		{
+			geo = p->m_geo;
+			return const_cast<WgViewHook*>(p);
+		}
+	}	
+	return 0;	
+}
+
+
 //____ WgViewHook::Destructor ___________________________________________________
 
 WgViewHook::~WgViewHook()
@@ -1142,20 +1197,32 @@ void WgViewHook::_requestResize()
 
 WgHook * WgViewHook::_prevHook() const
 {
-	if( this == &m_pView->m_elements[0] )
-		return 0;
-	else
-		return (((WgViewHook*)this)-1);
+	const WgViewHook * pFirst = &m_pView->m_elements[0];
+	WgViewHook * p 		= const_cast<WgViewHook*>(this);
+	
+	while( p != pFirst )
+	{
+		p--;
+		if( p->m_pGizmo )
+			return p;
+	}	
+	return 0;
 }
 
 //____ WgViewHook::_nextHook() ___________________________________________________
 
 WgHook * WgViewHook::_nextHook() const
 {
-	if( this == &m_pView->m_elements[2] )
-		return 0;
-	else
-		return (((WgViewHook*)this)-1);
+	WgViewHook * pLast = &m_pView->m_elements[2];
+	WgViewHook * p 		= const_cast<WgViewHook*>(this);
+	
+	while( p != pLast )
+	{
+		p++;
+		if( p->m_pGizmo )
+			return p;
+	}	
+	return 0;
 }
 
 //____ WgViewHook::_parent() ___________________________________________________

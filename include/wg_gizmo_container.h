@@ -58,6 +58,10 @@ class WgGizmoContainer : public WgGizmoParent
 		void		SetTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
 		bool		IsTooltipGroup() const { return m_bTooltipGroup; }
 
+		void		SetMaskOp( WgMaskOp operation );
+		WgMaskOp	MaskOp() const { return m_maskOp; }
+		
+
 		bool		IsGizmo() const;
 		bool		IsRoot() const;
 
@@ -74,16 +78,22 @@ class WgGizmoContainer : public WgGizmoParent
 
 	private:
 
+		virtual WgHook *	_firstHookWithGeo( WgRect& geo ) const = 0;
+		virtual WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
+
 		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) = 0;
 		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) = 0;
 		virtual void	_clearDirtyRects() = 0;
 
-		bool 		_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inerits from WgGizmo
-		bool 		_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inerits from WgGizmo
+		bool 		_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
+		bool 		_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
+
+		void		_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 
 		bool		m_bFocusGroup;
 		bool		m_bRadioGroup;
 		bool		m_bTooltipGroup;	// All Children+ belongs to the same tooltip group.
+		WgMaskOp	m_maskOp;			// Specifies how container masks background.
 };
 
 
