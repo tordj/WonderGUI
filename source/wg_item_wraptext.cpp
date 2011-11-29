@@ -73,6 +73,7 @@ void WgItemWrapText::Init()
 	m_bEnabled = true;
 	m_bAllFitInArea = true;
 	m_pText = &m_text;
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
 
 	m_width = m_text.width() + m_margin.left + m_margin.right;
 	m_height = m_text.height() + m_margin.top + m_margin.bottom;

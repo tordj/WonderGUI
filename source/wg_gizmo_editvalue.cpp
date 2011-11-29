@@ -109,6 +109,7 @@ void WgGizmoEditvalue::SetFormat( const WgValueFormat& format )
 {
 	m_format		= format;
 	m_useFormat		= format;
+	_regenText();
 	RequestRender();
 }
 

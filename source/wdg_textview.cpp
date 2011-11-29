@@ -46,6 +46,8 @@ void Wdg_TextView::Init()
 	m_newlineModif	= WG_MODKEY_NONE;
 
 	m_text.setLineWidth( Width() );
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
+
 }
 
 

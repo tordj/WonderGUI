@@ -230,21 +230,13 @@ class WgInterceptRes : public WgResourceXML
 public:
 	WgInterceptRes(WgResourceXML* parent) : WgResourceXML(parent) { }
 
-	void SetSource(WgWidget::ActionSource source)	{ m_source = source; }
-	void SetRule(WgWidget::InterceptionRules rule)	{ m_rule = rule; }
-
-	WgWidget::ActionSource		GetSource() const	{ return m_source; }
-	WgWidget::InterceptionRules	GetRule() const	{ return m_rule; }
-
-	virtual void Serialize(WgResourceSerializerXML& s);
+	static void Serialize(WgResourceSerializerXML& s, WgWidget::ActionSource source, WgWidget::InterceptionRules rule );
+	virtual void Serialize(WgResourceSerializerXML& s) {};	// Dummy
 	virtual void Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
 
 	virtual void Accept(WgResourceVisitor* visitor)	{ visitor->Visit(this); }
 
 	static const char* TagName() { return "intercept"; }
-private:
-	WgWidget::ActionSource m_source;
-	WgWidget::InterceptionRules m_rule;
 };
 
 //////////////////////////////////////////////////////////////////////////

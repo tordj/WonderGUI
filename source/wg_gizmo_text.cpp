@@ -40,6 +40,7 @@ WgGizmoText::WgGizmoText()
 	m_bTabLock		= true;
 
 	m_text.setLineWidth( Size().w );
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
 	m_editMode = WG_TEXT_STATIC;
 	m_bResetCursorOnFocus = true;
 }

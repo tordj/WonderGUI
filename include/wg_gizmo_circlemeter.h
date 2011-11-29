@@ -73,6 +73,7 @@ class WgGizmoCirclemeter : public WgGizmo, public Wg_Interface_ValueHolder
 		void SetFullRangeDistance(Uint32 pixels);
 		
 		WgSize	DefaultSize() const;
+		bool	IsAutoEllipsisDefault() const { return false; };
 
 	protected:
 

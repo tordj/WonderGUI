@@ -149,7 +149,8 @@ public:
 	inline bool			GetTextWrap() const { return m_pText->IsWrap(); }
 
 	bool				SetAutoEllipsis(bool bAutoEllipsis);
-	inline bool			GetAutoEllipsis() const { return m_pText->IsAutoEllipsis(); }
+	inline bool			AutoEllipsis() const { return m_pText->IsAutoEllipsis(); }
+	virtual bool		IsAutoEllipsisDefault() const = 0;
 
 	inline WgMode		TextMode() const { return m_pText->mode(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }

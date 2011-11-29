@@ -64,6 +64,7 @@ public:
 	WgString		GetPlaceholderText() const { return m_placeholderText; }
 
 	WgSize			DefaultSize() const;
+	bool			IsAutoEllipsisDefault() const { return false; };
 
 	void			SetEditMode(WgTextEditMode mode);
 	WgTextEditMode	GetEditMode() const { return m_editMode; }

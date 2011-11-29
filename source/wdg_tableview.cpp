@@ -64,7 +64,8 @@ WgTableColumn::WgTableColumn(const WgTableColumn& column)
 	m_maxWidth			= column.m_maxWidth;
 	m_scaleWeight		= column.m_scaleWeight;
 	m_pixelWidth		= column.m_pixelWidth;
-	m_pItem				= column.m_pItem;
+	m_pItem				= 0;
+//	m_pItem				= column.m_pItem;			//NEEDS TO BE CLONED!
 	m_itemOrigo			= column.m_itemOrigo;
 
 	if(column.m_pText)
@@ -77,6 +78,7 @@ WgTableColumn::WgTableColumn(const WgTableColumn& column)
 		m_pText->setAlignment( column.m_pText->alignment() );
 		m_pText->setTintMode( column.m_pText->tintMode() );
 		m_pText->setLineSpaceAdjustment( column.m_pText->lineSpaceAdjustment() );
+		m_pText->SetAutoEllipsis( column.m_pText->IsAutoEllipsis() );
 	}
 	else
 	{
@@ -89,6 +91,9 @@ WgTableColumn::~WgTableColumn()
 {
 	if( m_pText )
 		delete m_pText;
+
+	if( m_pItem )
+		delete m_pItem;
 }
 
 
@@ -736,6 +741,7 @@ Uint32 Wdg_TableView::AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo&
 	{
 		pCol[i] = m_pColumns[i];
 		m_pColumns[i].m_pText = 0;			// To avoid deletion of text object further down.
+		m_pColumns[i].m_pItem = 0;
 	}
 	pCol[m_nColumns].m_defWidth = pixelwidth;
 

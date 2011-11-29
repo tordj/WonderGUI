@@ -314,6 +314,15 @@ bool WgText::getSelection( int& startLine, int& startCol, int& endLine, int& end
 }
 
 //_________________________________________________________
+WgRange WgText::getSelection() const
+{
+	int beg = LineColToOffset(m_selStartLine,m_selStartCol);
+	int end = LineColToOffset(m_selEndLine,m_selEndCol);
+
+	return WgRange(beg,end-beg);
+}
+
+//_________________________________________________________
 void WgText::clearSelection( )
 {
 	m_selStartLine = 0;

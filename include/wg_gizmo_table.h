@@ -133,6 +133,8 @@ public:
 
 	inline int		Index() const;
 
+	bool			IsAutoEllipsisDefault() const { return true; };
+
 
 	WgTableHook*	FirstHook() const;
 	WgTableHook*	LastHook() const;

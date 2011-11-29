@@ -75,6 +75,9 @@ public:
 
 	WgSize			DefaultSize() const;
 
+	bool			IsAutoEllipsisDefault() const { return false; };
+
+
 protected:
 
 	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );

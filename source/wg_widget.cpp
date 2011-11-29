@@ -1162,6 +1162,26 @@ bool  WgWidget::Intercept( ActionSource _actionGroup, InterceptionRules _rules )
   return  true;
 }
 
+//____ GetInterceptionRules() _________________________________________________
+
+WgWidget::InterceptionRules	WgWidget::GetInterceptionRules( ActionSource _actionSource )
+{
+	bool bBlock = (m_actionFilterBlock & _actionSource)?true:false;
+	bool bCopy = (m_actionFilterCopy & _actionSource)?true:false;
+
+	if( !bBlock && !bCopy )
+		return PASS;
+	else if( bBlock && !bCopy )
+		return BLOCK;
+	else if( !bBlock && bCopy )
+		return INTERCEPT_PASS;
+	else //if( bBlock && bCopy )
+		return INTERCEPT_BLOCK;
+
+
+}
+
+
 
 //____ GetInputObj() _______________________________________________________
 

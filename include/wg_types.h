@@ -568,6 +568,22 @@ public:
 	int col;
 };
 
+//____ WgRange ____________________________________________________________
+
+class WgRange
+{
+public:
+	WgRange() : ofs(0), len(0) {}
+	WgRange( int ofs, int len ) : ofs(ofs), len(len) {}
+
+	inline int	Begin() const { return ofs; }
+	inline int	End() const { return ofs+len; }
+
+	int ofs;
+	int len;
+};
+
+
 //____ WgSortContext __________________________________________________________
 
 struct WgSortContext

@@ -294,6 +294,8 @@ WgTableColumn2::WgTableColumn2(const WgTableColumn2& column)
 		m_pText->setAlignment( column.m_pText->alignment() );
 		m_pText->setTintMode( column.m_pText->tintMode() );
 		m_pText->setLineSpaceAdjustment( column.m_pText->lineSpaceAdjustment() );
+		m_pText->SetAutoEllipsis( column.m_pText->IsAutoEllipsis() );
+
 	}
 	else
 	{

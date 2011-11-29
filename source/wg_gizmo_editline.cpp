@@ -38,7 +38,7 @@ WgGizmoEditline::WgGizmoEditline()
 	m_pText->CreateCursor();
 	m_text.setHolder( this );
 	m_text.SetWrap(false);
-	m_text.SetAutoEllipsis(false);
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
 	m_bPasswordMode = false;
 	m_pwGlyph		= '*';
 	m_viewOfs		= 0;
