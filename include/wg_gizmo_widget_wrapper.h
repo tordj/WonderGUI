@@ -197,6 +197,8 @@ private:
 	WgHook*	_firstHook() const { return FirstHook(); }
 	WgHook*	_lastHook() const { return LastHook(); }
 
+	WgHook* _firstHookWithGeo( WgRect& rect ) const { WgHook * pHook = FirstHook(); if( pHook ) rect = pHook->Geo(); return pHook; }
+	WgHook* _nextHookWithGeo( WgRect& rect, WgHook * pHook ) const { pHook = pHook->Next(); if( pHook ) rect = pHook->Geo(); return pHook; }
 
 	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) {}
 	void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) {}

@@ -1036,17 +1036,17 @@ void WgModePropRes::Serialize(WgResourceSerializerXML& s)
 
 		WgTextProp* textProp = textPropRes->GetTextProp();
 
-		if(textProp->GetSize(m_mode) != textPropRes->GetSize())
-			s.AddAttribute("size", WgUtil::ToString(textProp->GetSize(m_mode)));
+		if(textProp->Size(m_mode) != textPropRes->GetSize())
+			s.AddAttribute("size", WgUtil::ToString(textProp->Size(m_mode)));
 
-		if(textProp->GetStyle(m_mode) != textPropRes->GetStyle())
-			s.AddAttribute("style", WgFontStyleRes::Serialize(textProp->GetStyle(m_mode), s));
+		if(textProp->Style(m_mode) != textPropRes->GetStyle())
+			s.AddAttribute("style", WgFontStyleRes::Serialize(textProp->Style(m_mode), s));
 
-		WgColor color = textProp->GetColor(m_mode);
+		WgColor color = textProp->Color(m_mode);
 		if(color != textPropRes->GetColor())
 			WgColorRes::Serialize(s, XmlNode(), "col", color, WgColor(0, color.a+1)); // force write by making color != default
 
-		WgColor bgColor = textProp->GetBgColor(m_mode);
+		WgColor bgColor = textProp->BgColor(m_mode);
 		if(bgColor != textPropRes->GetBgColor())
 			WgColorRes::Serialize(s, XmlNode(), "bg_col", bgColor, WgColor(0, bgColor.a+1)); // force write by making color != default
 
@@ -1117,17 +1117,17 @@ void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
 {
 	VERIFY(m_pProp, "no text prop defined");
-	WgResDB::FontRes* fontRes = s.ResDb()->FindResFont(m_pProp->GetFont());
+	WgResDB::FontRes* fontRes = s.ResDb()->FindResFont(m_pProp->Font());
 	VERIFY(fontRes, "font required by <textprop> does not exist in resdb");
 	VERIFY(fontRes->id.size(), "<textprop> id witth 0 length");
 
 	m_bColored = m_pProp->IsColored(WG_MODE_NORMAL);
 	m_bBgColor = m_pProp->IsBgColored(WG_MODE_NORMAL);
-	m_color = m_pProp->GetColor(WG_MODE_NORMAL);
-	m_bgColor = m_pProp->GetBgColor(WG_MODE_NORMAL);
-	m_style = m_pProp->GetStyle(WG_MODE_NORMAL);
+	m_color = m_pProp->Color(WG_MODE_NORMAL);
+	m_bgColor = m_pProp->BgColor(WG_MODE_NORMAL);
+	m_style = m_pProp->Style(WG_MODE_NORMAL);
 	m_underlined = m_pProp->IsUnderlined(WG_MODE_NORMAL);
-	m_size = m_pProp->GetSize(WG_MODE_NORMAL);
+	m_size = m_pProp->Size(WG_MODE_NORMAL);
 
 	s.BeginTag(TagName());
 
@@ -1135,8 +1135,8 @@ void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
 	s.AddAttribute("font", fontRes->id);
 	s.AddAttribute("size", WgUtil::ToString(m_size) );
 
-	if( m_pProp->GetBreakLevel() != -1 )
-		s.AddAttribute( "breaklevel", WgUtil::ToString(m_pProp->GetBreakLevel()) );
+	if( m_pProp->BreakLevel() != -1 )
+		s.AddAttribute( "breaklevel", WgUtil::ToString(m_pProp->BreakLevel()) );
 
 	if(m_style != WG_STYLE_NORMAL)
 		s.AddAttribute("style", WgFontStyleRes::Serialize(m_style, s));
@@ -3362,14 +3362,14 @@ void WgPropRes::Serialize(WgResourceSerializerXML& s)
 	}
 	else
 	{
-		if(m_pProp->GetFont() != m_pDefaultProp->GetFont())
+		if(m_pProp->Font() != m_pDefaultProp->Font())
 		{
-			WriteFontAttr(s, m_pProp->GetFont(), "font");
+			WriteFontAttr(s, m_pProp->Font(), "font");
 		}
 
-		if(m_pProp->GetStyle() != m_pDefaultProp->GetStyle())
+		if(m_pProp->Style() != m_pDefaultProp->Style())
 		{
-			s.AddAttribute("style", WgFontStyleRes::Serialize(m_pProp->GetStyle(), s));
+			s.AddAttribute("style", WgFontStyleRes::Serialize(m_pProp->Style(), s));
 		}
 
 		if(m_pProp->IsUnderlined() != m_pDefaultProp->IsUnderlined())
@@ -3380,7 +3380,7 @@ void WgPropRes::Serialize(WgResourceSerializerXML& s)
 		// have to write color if it's colored
 		if(m_pProp->IsColored())
 		{
-			WgColorRes::Serialize(s, XmlNode(), "col", m_pProp->GetColor(), WgColor(0, m_pProp->GetColor().a + 1));
+			WgColorRes::Serialize(s, XmlNode(), "col", m_pProp->Color(), WgColor(0, m_pProp->Color().a + 1));
 		}
 	}
 
