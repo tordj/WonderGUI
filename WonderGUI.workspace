@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeLite_Workspace Name="WonderGUI" Database="./WonderGUI.tags">
   <Project Name="wondergui" Path="wondergui.project" Active="No"/>
-  <Project Name="bench" Path="bench/bench.project" Active="Yes"/>
+  <Project Name="bench" Path="bench/bench.project" Active="No"/>
   <Project Name="wg_sdl" Path="wg_sdl/wg_sdl.project" Active="No"/>
+  <Project Name="WgDesigner" Path="/home/tord/Workspace/WgDesigner/WgDesigner.project" Active="No"/>
+  <Project Name="wg_simple" Path="/home/tord/Workspace/wg_simple/wg_simple.project"/>
+  <Project Name="WgLegacy" Path="WgLegacy.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="wondergui" ConfigName="Debug"/>
       <Project Name="bench" ConfigName="Debug"/>
       <Project Name="wg_sdl" ConfigName="Debug"/>
+      <Project Name="WgDesigner" ConfigName="Debug"/>
+      <Project Name="wg_simple" ConfigName="Debug"/>
+      <Project Name="WgLegacy" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="wondergui" ConfigName="Release"/>
       <Project Name="bench" ConfigName="Release"/>
       <Project Name="wg_sdl" ConfigName="Release"/>
+      <Project Name="WgDesigner" ConfigName="Release"/>
+      <Project Name="wg_simple" ConfigName="Release"/>
+      <Project Name="WgLegacy" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
