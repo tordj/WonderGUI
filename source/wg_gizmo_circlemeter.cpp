@@ -62,6 +62,7 @@ WgGizmoCirclemeter::WgGizmoCirclemeter( void )
 	m_numberBorders		= WgBorders(0);
 	m_text.setAlignment( WgOrigo::midCenter() );
 	m_text.SetWrap(false);
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
 	m_fullRangeDistance	= 0;
 	m_valueAtPress		= 0;
 }

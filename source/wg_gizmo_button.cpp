@@ -38,6 +38,7 @@ WgGizmoButton::WgGizmoButton()
 	m_pText = &m_text;
 	m_text.setAlignment( WgOrigo::midCenter() );
 	m_text.setLineWidth(Size().w);					// We start with no textborders...
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
 
  	m_mode				= WG_MODE_NORMAL;
 

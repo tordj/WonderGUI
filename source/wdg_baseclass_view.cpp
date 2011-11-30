@@ -537,8 +537,8 @@ bool Wdg_Baseclass_View::SetScrollbarX( Wdg_HDrag * pScrollbar )
 		else
 			m_pScrollbarX->HideBranch();
 
-		int height = m_pScrollbarX->MinHeight();
-		m_pScrollbarX->SetGeometry(WgOrigo::bottomLeft(),0,-height,WgOrigo::bottomRight(),0,-height);
+		int height = m_pScrollbarX->DefaultSize().h;
+		m_pScrollbarX->SetGeometry(WgOrigo::bottomLeft(),0,-height,WgOrigo::bottomRight(),0,0);
 
 		m_pScrollbarX->AddCallback( WgSignal::SliderPos(), Wdg_Baseclass_View::cbSetViewOfsX, this );
 		m_pScrollbarX->AddCallback( WgSignal::PrevPage(), Wdg_Baseclass_View::cbJumpLeft, this );
@@ -586,8 +586,8 @@ bool Wdg_Baseclass_View::SetScrollbarY( Wdg_VDrag * pScrollbar )
 		else
 			m_pScrollbarY->HideBranch();
 
-		int width = m_pScrollbarY->MinWidth();
-		m_pScrollbarY->SetGeometry(WgOrigo::topRight(),-width,0,WgOrigo::bottomRight(),-width,0);
+		int width = m_pScrollbarY->DefaultSize().w;
+		m_pScrollbarY->SetGeometry(WgOrigo::topRight(),-width,0,WgOrigo::bottomRight(),0,0);
 
 		m_pScrollbarY->AddCallback( WgSignal::SliderPos(), Wdg_Baseclass_View::cbSetViewOfsY, this );
 		m_pScrollbarY->AddCallback( WgSignal::PrevPage(), Wdg_Baseclass_View::cbJumpUp, this );

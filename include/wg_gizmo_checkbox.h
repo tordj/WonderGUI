@@ -96,6 +96,7 @@ public:
 	DECLARE_TOOLTIP_SUPPORT();
 
 	WgSize			DefaultSize() const;
+	bool			IsAutoEllipsisDefault() const { return false; };
 	
 
 protected:

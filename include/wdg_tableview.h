@@ -87,6 +87,7 @@ public:
 	inline void		SetInitialSortOrder( bool bAscend ) { m_bInitialAscend = bAscend; }
 	inline bool		IsInitialAscend() const { return m_bInitialAscend; }
 
+	bool	IsAutoEllipsisDefault() const { return true; };
 
 	void SetSortFunction( fpItemCmp pFunc );
 	inline fpItemCmp GetSortFunction() const { return m_fpCompare; }

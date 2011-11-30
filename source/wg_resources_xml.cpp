@@ -776,10 +776,11 @@ void WgReferenceRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerX
 //		source=[value]
 //		rule=[value]
 // />
-void WgInterceptRes::Serialize(WgResourceSerializerXML& s)
+
+void WgInterceptRes::Serialize(WgResourceSerializerXML& s, WgWidget::ActionSource source, WgWidget::InterceptionRules rule )
 {
-	s.BeginTag(TagName(), XmlNode());
-	switch(m_source)
+	s.BeginTag(TagName());
+	switch(source)
 	{
 	case WgWidget::POINTER: s.AddAttribute("source", "pointer"); break;
 	case WgWidget::BUTTON1: s.AddAttribute("source", "button1"); break;
@@ -793,7 +794,7 @@ void WgInterceptRes::Serialize(WgResourceSerializerXML& s)
 	case WgWidget::WHEEL3: 	s.AddAttribute("source", "wheel3"); break;
 	default: assert(0);
 	}
-	switch(m_rule)
+	switch(rule)
 	{
 	case WgWidget::PASS:			s.AddAttribute("rule", "pass"); break;
 	case WgWidget::BLOCK:			s.AddAttribute("rule", "block"); break;
@@ -809,29 +810,32 @@ void WgInterceptRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerX
 	WgWidgetRes* widgetRes = WgResourceXML::Cast<WgWidgetRes>(Parent());
 	VERIFY(widgetRes, "invalid parent for <intercept>. should be widget type");
 	WgWidget* widget = widgetRes->GetWidget();
-	const std::string& source = xmlNode["source"];
+	const std::string& strSource = xmlNode["source"];
 
-	if(source == "pointer")			m_source = WgWidget::POINTER;
-	else if(source == "button1")	m_source = WgWidget::BUTTON1;
-	else if(source == "button2")	m_source = WgWidget::BUTTON2;
-	else if(source == "button3")	m_source = WgWidget::BUTTON3;
-	else if(source == "button4")	m_source = WgWidget::BUTTON4;
-	else if(source == "button5")	m_source = WgWidget::BUTTON5;
-	else if(source == "keyboard")	m_source = WgWidget::KEYBOARD;
-	else if(source == "wheel1")		m_source = WgWidget::WHEEL1;
-	else if(source == "wheel2")		m_source = WgWidget::WHEEL2;
-	else if(source == "wheel3")		m_source = WgWidget::WHEEL3;
+	WgWidget::ActionSource source;
+	WgWidget::InterceptionRules rule;
+
+	if(strSource == "pointer")			source = WgWidget::POINTER;
+	else if(strSource == "button1")	source = WgWidget::BUTTON1;
+	else if(strSource == "button2")	source = WgWidget::BUTTON2;
+	else if(strSource == "button3")	source = WgWidget::BUTTON3;
+	else if(strSource == "button4")	source = WgWidget::BUTTON4;
+	else if(strSource == "button5")	source = WgWidget::BUTTON5;
+	else if(strSource == "keyboard")	source = WgWidget::KEYBOARD;
+	else if(strSource == "wheel1")		source = WgWidget::WHEEL1;
+	else if(strSource == "wheel2")		source = WgWidget::WHEEL2;
+	else if(strSource == "wheel3")		source = WgWidget::WHEEL3;
 	else ASSERT(0, "invalid intercept source");
 
-	const std::string& rule = xmlNode["rule"];
+	const std::string& strRule = xmlNode["rule"];
 
-	if(rule == "pass")					m_rule = WgWidget::PASS;
-	else if(rule == "block")			m_rule = WgWidget::BLOCK;
-	else if(rule == "intercept_pass")	m_rule = WgWidget::INTERCEPT_PASS;
-	else if(rule == "intercept_block")	m_rule = WgWidget::INTERCEPT_BLOCK;
+	if(strRule == "pass")					rule = WgWidget::PASS;
+	else if(strRule == "block")			rule = WgWidget::BLOCK;
+	else if(strRule == "intercept_pass")	rule = WgWidget::INTERCEPT_PASS;
+	else if(strRule == "intercept_block")	rule = WgWidget::INTERCEPT_BLOCK;
 	else ASSERT(0, "invalid intercept rule");
 
-	widget->Intercept(m_source, m_rule);
+	widget->Intercept(source, rule);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1032,17 +1036,17 @@ void WgModePropRes::Serialize(WgResourceSerializerXML& s)
 
 		WgTextProp* textProp = textPropRes->GetTextProp();
 
-		if(textProp->GetSize(m_mode) != textPropRes->GetSize())
-			s.AddAttribute("size", WgUtil::ToString(textProp->GetSize(m_mode)));
+		if(textProp->Size(m_mode) != textPropRes->GetSize())
+			s.AddAttribute("size", WgUtil::ToString(textProp->Size(m_mode)));
 
-		if(textProp->GetStyle(m_mode) != textPropRes->GetStyle())
-			s.AddAttribute("style", WgFontStyleRes::Serialize(textProp->GetStyle(m_mode), s));
+		if(textProp->Style(m_mode) != textPropRes->GetStyle())
+			s.AddAttribute("style", WgFontStyleRes::Serialize(textProp->Style(m_mode), s));
 
-		WgColor color = textProp->GetColor(m_mode);
+		WgColor color = textProp->Color(m_mode);
 		if(color != textPropRes->GetColor())
 			WgColorRes::Serialize(s, XmlNode(), "col", color, WgColor(0, color.a+1)); // force write by making color != default
 
-		WgColor bgColor = textProp->GetBgColor(m_mode);
+		WgColor bgColor = textProp->BgColor(m_mode);
 		if(bgColor != textPropRes->GetBgColor())
 			WgColorRes::Serialize(s, XmlNode(), "bg_col", bgColor, WgColor(0, bgColor.a+1)); // force write by making color != default
 
@@ -1113,17 +1117,17 @@ void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
 {
 	VERIFY(m_pProp, "no text prop defined");
-	WgResDB::FontRes* fontRes = s.ResDb()->FindResFont(m_pProp->GetFont());
+	WgResDB::FontRes* fontRes = s.ResDb()->FindResFont(m_pProp->Font());
 	VERIFY(fontRes, "font required by <textprop> does not exist in resdb");
 	VERIFY(fontRes->id.size(), "<textprop> id witth 0 length");
 
 	m_bColored = m_pProp->IsColored(WG_MODE_NORMAL);
 	m_bBgColor = m_pProp->IsBgColored(WG_MODE_NORMAL);
-	m_color = m_pProp->GetColor(WG_MODE_NORMAL);
-	m_bgColor = m_pProp->GetBgColor(WG_MODE_NORMAL);
-	m_style = m_pProp->GetStyle(WG_MODE_NORMAL);
+	m_color = m_pProp->Color(WG_MODE_NORMAL);
+	m_bgColor = m_pProp->BgColor(WG_MODE_NORMAL);
+	m_style = m_pProp->Style(WG_MODE_NORMAL);
 	m_underlined = m_pProp->IsUnderlined(WG_MODE_NORMAL);
-	m_size = m_pProp->GetSize(WG_MODE_NORMAL);
+	m_size = m_pProp->Size(WG_MODE_NORMAL);
 
 	s.BeginTag(TagName());
 
@@ -1131,8 +1135,8 @@ void WgTextPropRes::Serialize(WgResourceSerializerXML& s)
 	s.AddAttribute("font", fontRes->id);
 	s.AddAttribute("size", WgUtil::ToString(m_size) );
 
-	if( m_pProp->GetBreakLevel() != -1 )
-		s.AddAttribute( "breaklevel", WgUtil::ToString(m_pProp->GetBreakLevel()) );
+	if( m_pProp->BreakLevel() != -1 )
+		s.AddAttribute( "breaklevel", WgUtil::ToString(m_pProp->BreakLevel()) );
 
 	if(m_style != WG_STYLE_NORMAL)
 		s.AddAttribute("style", WgFontStyleRes::Serialize(m_style, s));
@@ -3197,10 +3201,9 @@ void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, 
 	WriteDiffAttr<Sint8>(s, xmlNode, "linespaceadjustment", holder->GetLineSpaceAdjustment(), 0);
 	WriteDiffAttr(s, xmlNode, "max_chars", holder->MaxChars(), INT_MAX);
 	WriteDiffAttr(s, xmlNode, "wrap", holder->GetTextWrap(), true);
-	WriteDiffAttr(s, xmlNode, "ellipsis", holder->GetAutoEllipsis(), !holder->GetAutoEllipsis() );	//Ugly to always save it, but we have different defaults...
+	WriteDiffAttr(s, xmlNode, "ellipsis", holder->AutoEllipsis(), holder->IsAutoEllipsisDefault() );
 
 	WriteTextManager(holder, s);
-
 
 /*	WgTextPropPtr pCurProp = 0;
 
@@ -3359,14 +3362,14 @@ void WgPropRes::Serialize(WgResourceSerializerXML& s)
 	}
 	else
 	{
-		if(m_pProp->GetFont() != m_pDefaultProp->GetFont())
+		if(m_pProp->Font() != m_pDefaultProp->Font())
 		{
-			WriteFontAttr(s, m_pProp->GetFont(), "font");
+			WriteFontAttr(s, m_pProp->Font(), "font");
 		}
 
-		if(m_pProp->GetStyle() != m_pDefaultProp->GetStyle())
+		if(m_pProp->Style() != m_pDefaultProp->Style())
 		{
-			s.AddAttribute("style", WgFontStyleRes::Serialize(m_pProp->GetStyle(), s));
+			s.AddAttribute("style", WgFontStyleRes::Serialize(m_pProp->Style(), s));
 		}
 
 		if(m_pProp->IsUnderlined() != m_pDefaultProp->IsUnderlined())
@@ -3377,7 +3380,7 @@ void WgPropRes::Serialize(WgResourceSerializerXML& s)
 		// have to write color if it's colored
 		if(m_pProp->IsColored())
 		{
-			WgColorRes::Serialize(s, XmlNode(), "col", m_pProp->GetColor(), WgColor(0, m_pProp->GetColor().a + 1));
+			WgColorRes::Serialize(s, XmlNode(), "col", m_pProp->Color(), WgColor(0, m_pProp->Color().a + 1));
 		}
 	}
 
@@ -3614,6 +3617,27 @@ void WgWidgetRes::Serialize(WgResourceSerializerXML& s)
 	//
 
 	WgConnectRes::Serialize(s, this);
+
+	if( m_Widget->GetInterceptionRules(WgWidget::POINTER) != WgWidget::PASS )
+		WgInterceptRes::Serialize(s, WgWidget::POINTER, m_Widget->GetInterceptionRules(WgWidget::POINTER));
+	if( m_Widget->GetInterceptionRules(WgWidget::BUTTON1) != WgWidget::PASS )
+		WgInterceptRes::Serialize(s, WgWidget::BUTTON1, m_Widget->GetInterceptionRules(WgWidget::POINTER));
+	if( m_Widget->GetInterceptionRules(WgWidget::BUTTON2) != WgWidget::PASS )
+		WgInterceptRes::Serialize(s, WgWidget::BUTTON2, m_Widget->GetInterceptionRules(WgWidget::POINTER));
+	if( m_Widget->GetInterceptionRules(WgWidget::BUTTON3) != WgWidget::PASS )
+		WgInterceptRes::Serialize(s, WgWidget::BUTTON3, m_Widget->GetInterceptionRules(WgWidget::POINTER));
+	if( m_Widget->GetInterceptionRules(WgWidget::BUTTON4) != WgWidget::PASS )
+		WgInterceptRes::Serialize(s, WgWidget::BUTTON4, m_Widget->GetInterceptionRules(WgWidget::POINTER));
+	if( m_Widget->GetInterceptionRules(WgWidget::BUTTON5) != WgWidget::PASS )
+		WgInterceptRes::Serialize(s, WgWidget::BUTTON5, m_Widget->GetInterceptionRules(WgWidget::POINTER));
+	if( m_Widget->GetInterceptionRules(WgWidget::KEYBOARD) != WgWidget::PASS )
+		WgInterceptRes::Serialize(s, WgWidget::KEYBOARD, m_Widget->GetInterceptionRules(WgWidget::POINTER));
+	if( m_Widget->GetInterceptionRules(WgWidget::WHEEL1) != WgWidget::PASS )
+		WgInterceptRes::Serialize(s, WgWidget::WHEEL1, m_Widget->GetInterceptionRules(WgWidget::POINTER));
+	if( m_Widget->GetInterceptionRules(WgWidget::WHEEL2) != WgWidget::PASS )
+		WgInterceptRes::Serialize(s, WgWidget::WHEEL2, m_Widget->GetInterceptionRules(WgWidget::POINTER));
+	if( m_Widget->GetInterceptionRules(WgWidget::WHEEL3) != WgWidget::PASS )
+		WgInterceptRes::Serialize(s, WgWidget::WHEEL3, m_Widget->GetInterceptionRules(WgWidget::POINTER));
 
 	for(WgWidget* child = m_Widget->FirstChild(); child; child = child->NextSibling())
 	{

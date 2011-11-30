@@ -78,6 +78,7 @@ public:
 
 	int		HeightForWidth( int width ) const;
 	WgSize	DefaultSize() const;
+	bool	IsAutoEllipsisDefault() const { return true; };
 
 protected:
 

@@ -54,6 +54,7 @@ public:
 protected:
 
 	WgRect			_getIconRect( const WgRect& contentRect, const WgBlockSetPtr& pBlockSet ) const;
+	WgRect			_getIconRect( const WgRect& contentRect, const WgSize& iconSize ) const;
 	WgRect			_getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
 	virtual void	_iconModified() = 0;
 

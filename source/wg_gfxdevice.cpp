@@ -910,13 +910,15 @@ void WgGfxDevice::_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int
 	Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
 	WgTextAttr		attr;
 
+	WgRange	selection = pText->getSelection();
+
 	// Print loop
 
 	for( int i = ofs ; i < ofs + len ; i++ )
  	{
 		// Act on possible change of character attributes.
 
-		if( pChars[i].PropHandle() != hProp )
+		if( pChars[i].PropHandle() != hProp || i == selection.Begin() || i == selection.End() )
 		{
 			bool bWasUnderlined = attr.bUnderlined;
 
@@ -1005,6 +1007,7 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 	Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
 	WgTextAttr		attr;
 
+	WgRange	selection = pText->getSelection();
 	int		ellipsisWidth = 0;
 
 	// Print loop
@@ -1013,7 +1016,7 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
  	{
 		// Act on possible change of character attributes.
 
-		if( pChars[i].PropHandle() != hProp )
+		if( pChars[i].PropHandle() != hProp || i == selection.Begin() || i == selection.End() )
 		{
 			bool bWasUnderlined = attr.bUnderlined;
 

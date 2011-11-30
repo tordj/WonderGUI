@@ -45,6 +45,7 @@ WgGizmoCheckbox::WgGizmoCheckbox()
 
 	m_pText				= &m_text;
 	m_text.setHolder( this );
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
 
 	m_iconAreaBorders	= WgBorders(0);
 	m_iconScale			= 0.f;

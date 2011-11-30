@@ -160,7 +160,10 @@ public:
 
 	void				selectText( int startLine, int startCol, int endLine, int endCol );
 	bool				getSelection( int& startLine, int& startCol, int& endLine, int& endCol ) const;
+	WgRange				getSelection() const;
 	void				clearSelection( );
+	
+	
 //  --------------
 
 	void				setManager( WgTextManager * pManager );

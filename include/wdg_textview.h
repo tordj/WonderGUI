@@ -68,6 +68,7 @@ public:
 
 	virtual Wg_Interface_TextHolder* GetText() { return this; }
 
+	bool	IsAutoEllipsisDefault() const { return true; };
 
 protected:
 	WgWidget * NewOfMyType() const;

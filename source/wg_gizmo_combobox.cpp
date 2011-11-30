@@ -38,7 +38,7 @@ WgGizmoCombobox::WgGizmoCombobox( void )
 	m_pText = &m_text;
 	m_text.setAlignment( WgOrigo::midLeft() );
 	m_text.SetWrap(false);
-	m_text.SetAutoEllipsis(false);
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
 //	m_textColor = m_text.color();
 //	m_textDisabledColor	= 0xFFFF;
 

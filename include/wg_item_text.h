@@ -45,6 +45,7 @@ public:
 
 	WgString GetTooltipString() const;
 
+	bool	IsAutoEllipsisDefault() const { return true; };
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();

@@ -251,8 +251,6 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 			default:
 				break;
 		}
-
-		// Render animation
 	}
 	else if( m_pBgGfx )
 	{
@@ -270,7 +268,13 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 
 	// Get icon and text rect from content rect
 
-	WgRect iconRect = _getIconRect( contentRect, m_pIconGfx );
+	WgSize iconSize;
+	if( m_pIconGfx )
+		iconSize = m_pIconGfx->Size();
+	else if( m_animTarget == ICON && m_pRefreshAnim )
+		iconSize = WgSize(m_pRefreshAnim->width(),m_pRefreshAnim->height());
+
+	WgRect iconRect = _getIconRect( contentRect, iconSize );
 	WgRect textRect = _getTextRect( contentRect, iconRect );
 
 

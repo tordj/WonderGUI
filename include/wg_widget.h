@@ -314,7 +314,10 @@ class	WgWidget
 
 		WgWidget * 		FindOccupant( int x, int y, bool bCheckModal, WgWidget * bestSoFar = 0, WgWidget ** wpBlockingModal = 0 );	// Return widget (me, child or 0) occupying position
 																									//  at x, y in PARENTS local cordinate system.
-		bool			Intercept( ActionSource _actionSource, InterceptionRules _rules );
+		bool				Intercept( ActionSource _actionSource, InterceptionRules _rules );
+
+		InterceptionRules	GetInterceptionRules( ActionSource _actionSource );
+                                                     
 
 		void			Local2abs( int * _pX, int * _pY ) const;		// Cordinate from local cordsys to global
 		void			Abs2local( int * _pX, int * _pY ) const; 		// Cordinate from global to local cordsys

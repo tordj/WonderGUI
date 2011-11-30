@@ -91,13 +91,21 @@ void WgIconHolder::SetIconPushingText( bool bPush )
 
 WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, const WgBlockSetPtr& pBlocks ) const
 {
+	if( pBlocks )
+		return _getIconRect(contentRect, WgSize(pBlocks->Size()));
+	else
+		return WgRect();
+}
+
+WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, const WgSize& iconSize ) const
+{
 	WgRect rect;
 
-	if( pBlocks )
-	{
-		int w = pBlocks->Width();
-		int h = pBlocks->Height();
+	int w = iconSize.w;
+	int h = iconSize.h;
 
+	if( w > 0 && h > 0 )
+	{
 		int bgW = contentRect.w - m_iconBorders.Width();
 		int bgH = contentRect.h - m_iconBorders.Height();
 
@@ -123,6 +131,8 @@ WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, const WgBlockSetPt
 
 	return rect;
 }
+
+
 
 //____ _getTextRect() _____________________________________________________
 
