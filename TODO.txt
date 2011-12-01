@@ -1,4 +1,12 @@
 
+ATT FIXA I LEGACY
+=================
+
+* wdg_profiler.cpp finns, men refererar wg_gizmo_profiler.h som saknas. Även wdg_profiler.h och wg_gizmo_profiler.cpp saknas.
+* wdg_widgetview.cpp/h
+
+
+
 FOCUS
 =====
 * Hur ska vi lösa _onMaskRects() ???

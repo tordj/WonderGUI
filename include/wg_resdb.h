@@ -32,11 +32,12 @@
 #	ifndef WG_WIDGET_DOT_H
 #	   include <wg_widget.h>
 #	endif
-#else
+#endif
+//#else
 #	ifndef WG_GIZMO_DOT_H
 #		include <wg_gizmo.h>
 #	endif
-#endif
+//#endif
 
 #ifndef WG_CHAIN_DOT_H
 #	include <wg_chain.h>

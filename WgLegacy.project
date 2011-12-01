@@ -13,13 +13,11 @@
     <File Name="source/wdg_listview.cpp"/>
     <File Name="source/wdg_lodder.cpp"/>
     <File Name="source/wdg_menu.cpp"/>
-    <File Name="source/wdg_profiler.cpp"/>
     <File Name="source/wdg_root.cpp"/>
     <File Name="source/wdg_shader.cpp"/>
     <File Name="source/wdg_tableview.cpp"/>
     <File Name="source/wdg_textview.cpp"/>
     <File Name="source/wdg_treeview.cpp"/>
-    <File Name="source/wdg_widgetview.cpp"/>
     <File Name="source/wdg_ysplitter.cpp"/>
     <File Name="source/wg_anim.cpp"/>
     <File Name="source/wg_base.cpp"/>
@@ -147,7 +145,6 @@
     <File Name="include/wdg_textview.h"/>
     <File Name="include/wdg_treeview.h"/>
     <File Name="include/wdg_value.h"/>
-    <File Name="include/wdg_widgetview.h"/>
     <File Name="include/wdg_ysplitter.h"/>
     <File Name="include/wg_anim.h"/>
     <File Name="include/wg_base.h"/>
@@ -271,7 +268,9 @@
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
-        <IncludePath Value="include"/>
+        <IncludePath Value="./include"/>
+        <IncludePath Value="/usr/include/freetype2/"/>
+        <Preprocessor Value="WG_LEGACY"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
@@ -313,7 +312,8 @@
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[]]>
+        <![CDATA[
+      ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
         <PostConnectCommands/>

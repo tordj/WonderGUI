@@ -3,9 +3,9 @@
   <Project Name="wondergui" Path="wondergui.project" Active="No"/>
   <Project Name="bench" Path="bench/bench.project" Active="No"/>
   <Project Name="wg_sdl" Path="wg_sdl/wg_sdl.project" Active="No"/>
-  <Project Name="WgDesigner" Path="/home/tord/Workspace/WgDesigner/WgDesigner.project" Active="No"/>
+  <Project Name="WgDesigner" Path="/home/tord/Workspace/WgDesigner/WgDesigner.project" Active="Yes"/>
   <Project Name="wg_simple" Path="/home/tord/Workspace/wg_simple/wg_simple.project"/>
-  <Project Name="WgLegacy" Path="WgLegacy.project" Active="Yes"/>
+  <Project Name="WgLegacy" Path="WgLegacy.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="wondergui" ConfigName="Debug"/>
