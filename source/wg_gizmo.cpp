@@ -24,8 +24,11 @@
 #include <wg_types.h>
 #include <wg_skinmanager.h>
 #include <wg_rectchain.h>
+
+#ifdef WG_TNG
 #include <wg_root.h>
 #include <wg_eventhandler.h>
+#endif
 
 static const char	s_type[] = {"Unspecified"};
 
@@ -156,14 +159,17 @@ void WgGizmo::_onNewHook( WgHook * pHook )
 
 //____ _onNewRoot() ___________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmo::_onNewRoot( WgRoot * pRoot )
 {
 	if( m_bReceiveTick && pRoot )
 		pRoot->EventHandler()->_addTickReceiver(this);
 }
+#endif
 
 //____ _startReceiveTicks() ___________________________________________________
 
+#ifdef WG_TNG
 void WgGizmo::_startReceiveTicks()
 {
 	if( !m_bReceiveTick )
@@ -178,15 +184,16 @@ void WgGizmo::_startReceiveTicks()
 		}
 	}
 }
+#endif
 
 //____ _stopReceiveTicks() ____________________________________________________
 
+#ifdef WG_TNG
 void WgGizmo::_stopReceiveTicks()
 {
 	m_bReceiveTick = false;
 }
-
-
+#endif
 
 //____ SetSkinNode() __________________________________________________________
 
@@ -217,6 +224,7 @@ WgCoord WgGizmo::Abs2local( const WgCoord& cord ) const
 
 //____ EventHandler() __________________________________________________________
 
+#ifdef WG_TNG
 WgEventHandler * WgGizmo::EventHandler() const
 {
 	if( m_pHook )
@@ -227,7 +235,7 @@ WgEventHandler * WgGizmo::EventHandler() const
 	}		
 	return 0;
 }
-
+#endif
 
 //____ HeightForWidth() _______________________________________________________
 
@@ -311,10 +319,12 @@ void WgGizmo::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
 }
 
+#ifdef WG_TNG
 void WgGizmo::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 
 }
+#endif
 
 void WgGizmo::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {

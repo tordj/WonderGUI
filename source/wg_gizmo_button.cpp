@@ -26,8 +26,10 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_key.h>
+#ifdef WG_TNG
 #include <wg_event.h>
 #include <wg_eventhandler.h>
+#endif
 
 static const char	c_gizmoType[] = {"Button"};
 
@@ -262,6 +264,7 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 //____ _onEvent() ______________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -326,7 +329,7 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 	}
 
 }
-
+#endif
 
 //____ _onAction() _____________________________________________________________
 

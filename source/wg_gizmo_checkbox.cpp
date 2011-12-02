@@ -25,8 +25,10 @@
 #include <wg_gfxdevice.h>
 #include <wg_font.h>
 #include <wg_util.h>
-#include <wg_root.h>
-#include <wg_eventhandler.h>
+#ifdef WG_TNG
+#	include <wg_root.h>
+#	include <wg_eventhandler.h>
+#endif
 #include <assert.h>
 
 using namespace WgSignal;
@@ -137,7 +139,7 @@ bool WgGizmoCheckbox::SetState( bool _state )
 			Emit( Unset() );
 
 		Emit( Flipped(), m_bChecked );
-
+#ifdef WG_TNG
 		WgEventHandler * pHandler = EventHandler();
 		if( pHandler )
 		{				
@@ -148,7 +150,7 @@ bool WgGizmoCheckbox::SetState( bool _state )
 				
 			pHandler->QueueEvent( new WgEvent::CheckboxToggle(this, _state ) );
 		}
-
+#endif
 		RequestRender();
 	}
 
@@ -202,6 +204,7 @@ void WgGizmoCheckbox::_onDisable()
 
 //____ _onEvent() _____________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -256,6 +259,7 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
             break;
 	}
 }
+#endif
 
 //____ _onAction() _________________________________________________
 

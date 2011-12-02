@@ -26,7 +26,9 @@
 #include	<wg_font.h>
 #include 	<wg_gfxdevice.h>
 #include 	<wg_pen.h>
-#include 	<wg_eventhandler.h>
+#ifdef WG_TNG
+#	include 	<wg_eventhandler.h>
+#endif
 
 static const char	c_gizmoType[] = {"Editline"};
 
@@ -123,9 +125,11 @@ Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 
 	Uint32 retVal = m_pText->putText( str );
 
+#ifdef WG_TNG
 	WgEventHandler * pHandler = EventHandler();		
 	if( pHandler )
 		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+#endif
 
 	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	_adjustViewOfs();
@@ -146,10 +150,11 @@ bool WgGizmoEditline::InsertCharAtCursor( Uint16 c )
 
 	if( !m_pText->putChar( c ) )
 		return false;
-
+#ifdef WG_TNG
 	WgEventHandler * pHandler = EventHandler();		
 	if( pHandler )
 		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+#endif
 
 	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	_adjustViewOfs();
@@ -248,6 +253,7 @@ void WgGizmoEditline::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 //____ _onEvent() ______________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	WgEventType event = pEvent->Type();
@@ -475,6 +481,7 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 		_adjustViewOfs();
 	}
 }
+#endif
 
 //____ _onAction() _____________________________________________________________
 
@@ -815,9 +822,11 @@ void WgGizmoEditline::_onLostInputFocus()
 
 	if( _isEditable() || m_viewOfs != 0 )
 	{
+#ifdef WG_TNG		
 		WgEventHandler * pHandler = EventHandler();
 		if( pHandler )
 			pHandler->QueueEvent( new WgEvent::TextSet(this, m_pText) );
+#endif
 		
 		m_viewOfs = 0;
 		RequestRender();

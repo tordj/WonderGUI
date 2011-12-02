@@ -192,6 +192,7 @@ void WgGizmoFps::_onUpdate( const WgUpdateInfo& _updateInfo )
 
 //____ _onEvent() _____________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmoFps::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -211,6 +212,7 @@ void WgGizmoFps::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHand
 			break;
 	}
 }
+#endif
 
 //____ DoMyOwnCloning() _______________________________________________________
 

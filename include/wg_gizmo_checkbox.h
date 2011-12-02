@@ -104,7 +104,9 @@ protected:
 
 	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+#ifdef WG_TNG
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+#endif
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
