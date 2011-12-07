@@ -7,113 +7,7 @@
   </Plugins>
   <Description/>
   <Dependencies/>
-  <VirtualDirectory Name="src">
-    <File Name="source/wdg_baseclass_view.cpp"/>
-    <File Name="source/wdg_gridview.cpp"/>
-    <File Name="source/wdg_listview.cpp"/>
-    <File Name="source/wdg_lodder.cpp"/>
-    <File Name="source/wdg_menu.cpp"/>
-    <File Name="source/wdg_root.cpp"/>
-    <File Name="source/wdg_shader.cpp"/>
-    <File Name="source/wdg_tableview.cpp"/>
-    <File Name="source/wdg_textview.cpp"/>
-    <File Name="source/wdg_treeview.cpp"/>
-    <File Name="source/wdg_ysplitter.cpp"/>
-    <File Name="source/wg_anim.cpp"/>
-    <File Name="source/wg_base.cpp"/>
-    <File Name="source/wg_bitmapglyphs.cpp"/>
-    <File Name="source/wg_blockset.cpp"/>
-    <File Name="source/wg_chain.cpp"/>
-    <File Name="source/wg_char.cpp"/>
-    <File Name="source/wg_charbuffer.cpp"/>
-    <File Name="source/wg_charseq.cpp"/>
-    <File Name="source/wg_codepages.cpp"/>
-    <File Name="source/wg_color.cpp"/>
-    <File Name="source/wg_colorset.cpp"/>
-    <File Name="source/wg_cursor.cpp"/>
-    <File Name="source/wg_cursorinstance.cpp"/>
-    <File Name="source/wg_emitter.cpp"/>
-    <File Name="source/wg_event.cpp"/>
-    <File Name="source/wg_eventfilter.cpp"/>
-    <File Name="source/wg_eventhandler.cpp"/>
-    <File Name="source/wg_eventlogger.cpp"/>
-    <File Name="source/wg_font.cpp"/>
-    <File Name="source/wg_geo.cpp"/>
-    <File Name="source/wg_gfx.cpp"/>
-    <File Name="source/wg_gfxanim.cpp"/>
-    <File Name="source/wg_gfxdevice.cpp"/>
-    <File Name="source/wg_gfxdevice_null.cpp"/>
-    <File Name="source/wg_gizmo.cpp"/>
-    <File Name="source/wg_gizmo_animation.cpp"/>
-    <File Name="source/wg_gizmo_button.cpp"/>
-    <File Name="source/wg_gizmo_checkbox.cpp"/>
-    <File Name="source/wg_gizmo_circlemeter.cpp"/>
-    <File Name="source/wg_gizmo_combobox.cpp"/>
-    <File Name="source/wg_gizmo_container.cpp"/>
-    <File Name="source/wg_gizmo_dragbars.cpp"/>
-    <File Name="source/wg_gizmo_dummy.cpp"/>
-    <File Name="source/wg_gizmo_editline.cpp"/>
-    <File Name="source/wg_gizmo_editvalue.cpp"/>
-    <File Name="source/wg_gizmo_fill.cpp"/>
-    <File Name="source/wg_gizmo_flexgeo.cpp"/>
-    <File Name="source/wg_gizmo_fps.cpp"/>
-    <File Name="source/wg_gizmo_menubar.cpp"/>
-    <File Name="source/wg_gizmo_modal.cpp"/>
-    <File Name="source/wg_gizmo_pixmap.cpp"/>
-    <File Name="source/wg_gizmo_radiobutton.cpp"/>
-    <File Name="source/wg_gizmo_refreshbutton.cpp"/>
-    <File Name="source/wg_gizmo_stack.cpp"/>
-    <File Name="source/wg_gizmo_table.cpp"/>
-    <File Name="source/wg_gizmo_tablist.cpp"/>
-    <File Name="source/wg_gizmo_taborder.cpp"/>
-    <File Name="source/wg_gizmo_text.cpp"/>
-    <File Name="source/wg_gizmo_value.cpp"/>
-    <File Name="source/wg_gizmo_view.cpp"/>
-    <File Name="source/wg_glyphset.cpp"/>
-    <File Name="source/wg_hook.cpp"/>
-    <File Name="source/wg_iconholder.cpp"/>
-    <File Name="source/wg_input.cpp"/>
-    <File Name="source/wg_interface_edittext.cpp"/>
-    <File Name="source/wg_interface_itemholder.cpp"/>
-    <File Name="source/wg_interface_textholder.cpp"/>
-    <File Name="source/wg_interface_valueholder.cpp"/>
-    <File Name="source/wg_item.cpp"/>
-    <File Name="source/wg_item_pixmap.cpp"/>
-    <File Name="source/wg_item_row.cpp"/>
-    <File Name="source/wg_item_stack.cpp"/>
-    <File Name="source/wg_item_text.cpp"/>
-    <File Name="source/wg_item_wraptext.cpp"/>
-    <File Name="source/wg_mempool.cpp"/>
-    <File Name="source/wg_menuitem.cpp"/>
-    <File Name="source/wg_monotainer.cpp"/>
-    <File Name="source/wg_orderedlayout.cpp"/>
-    <File Name="source/wg_orderedselectable.cpp"/>
-    <File Name="source/wg_origo.cpp"/>
-    <File Name="source/wg_pen.cpp"/>
-    <File Name="source/wg_rectchain.cpp"/>
-    <File Name="source/wg_resdb.cpp"/>
-    <File Name="source/wg_resource_factory_xml.cpp"/>
-    <File Name="source/wg_resourceserializer_xml.cpp"/>
-    <File Name="source/wg_resources_xml.cpp"/>
-    <File Name="source/wg_root.cpp"/>
-    <File Name="source/wg_skinmanager.cpp"/>
-    <File Name="source/wg_smartptr.cpp"/>
-    <File Name="source/wg_string.cpp"/>
-    <File Name="source/wg_surface.cpp"/>
-    <File Name="source/wg_text.cpp"/>
-    <File Name="source/wg_textlinkhandler.cpp"/>
-    <File Name="source/wg_textmanager.cpp"/>
-    <File Name="source/wg_textprop.cpp"/>
-    <File Name="source/wg_textpropmanager.cpp"/>
-    <File Name="source/wg_texttool.cpp"/>
-    <File Name="source/wg_util.cpp"/>
-    <File Name="source/wg_valueformat.cpp"/>
-    <File Name="source/wg_vboxlayout.cpp"/>
-    <File Name="source/wg_vectorglyphs.cpp"/>
-    <File Name="source/wg_widget.cpp"/>
-    <File Name="source/wg_widget-render.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
+  <VirtualDirectory Name="code">
     <File Name="include/wdg_animation.h"/>
     <File Name="include/wdg_baseclass_text.h"/>
     <File Name="include/wdg_baseclass_view.h"/>
@@ -255,6 +149,110 @@
     <File Name="include/wg_vectorglyphs.h"/>
     <File Name="include/wg_widget.h"/>
     <File Name="include/wondergui_legacy.h"/>
+    <File Name="source/wdg_baseclass_view.cpp"/>
+    <File Name="source/wdg_gridview.cpp"/>
+    <File Name="source/wdg_listview.cpp"/>
+    <File Name="source/wdg_lodder.cpp"/>
+    <File Name="source/wdg_menu.cpp"/>
+    <File Name="source/wdg_root.cpp"/>
+    <File Name="source/wdg_shader.cpp"/>
+    <File Name="source/wdg_tableview.cpp"/>
+    <File Name="source/wdg_textview.cpp"/>
+    <File Name="source/wdg_treeview.cpp"/>
+    <File Name="source/wdg_ysplitter.cpp"/>
+    <File Name="source/wg_anim.cpp"/>
+    <File Name="source/wg_base.cpp"/>
+    <File Name="source/wg_bitmapglyphs.cpp"/>
+    <File Name="source/wg_blockset.cpp"/>
+    <File Name="source/wg_chain.cpp"/>
+    <File Name="source/wg_char.cpp"/>
+    <File Name="source/wg_charbuffer.cpp"/>
+    <File Name="source/wg_charseq.cpp"/>
+    <File Name="source/wg_codepages.cpp"/>
+    <File Name="source/wg_color.cpp"/>
+    <File Name="source/wg_colorset.cpp"/>
+    <File Name="source/wg_cursor.cpp"/>
+    <File Name="source/wg_cursorinstance.cpp"/>
+    <File Name="source/wg_emitter.cpp"/>
+    <File Name="source/wg_event.cpp"/>
+    <File Name="source/wg_eventfilter.cpp"/>
+    <File Name="source/wg_eventhandler.cpp"/>
+    <File Name="source/wg_eventlogger.cpp"/>
+    <File Name="source/wg_font.cpp"/>
+    <File Name="source/wg_geo.cpp"/>
+    <File Name="source/wg_gfx.cpp"/>
+    <File Name="source/wg_gfxanim.cpp"/>
+    <File Name="source/wg_gfxdevice.cpp"/>
+    <File Name="source/wg_gfxdevice_null.cpp"/>
+    <File Name="source/wg_gizmo.cpp"/>
+    <File Name="source/wg_gizmo_animation.cpp"/>
+    <File Name="source/wg_gizmo_button.cpp"/>
+    <File Name="source/wg_gizmo_checkbox.cpp"/>
+    <File Name="source/wg_gizmo_circlemeter.cpp"/>
+    <File Name="source/wg_gizmo_combobox.cpp"/>
+    <File Name="source/wg_gizmo_container.cpp"/>
+    <File Name="source/wg_gizmo_dragbars.cpp"/>
+    <File Name="source/wg_gizmo_dummy.cpp"/>
+    <File Name="source/wg_gizmo_editline.cpp"/>
+    <File Name="source/wg_gizmo_editvalue.cpp"/>
+    <File Name="source/wg_gizmo_fill.cpp"/>
+    <File Name="source/wg_gizmo_flexgeo.cpp"/>
+    <File Name="source/wg_gizmo_fps.cpp"/>
+    <File Name="source/wg_gizmo_menubar.cpp"/>
+    <File Name="source/wg_gizmo_modal.cpp"/>
+    <File Name="source/wg_gizmo_pixmap.cpp"/>
+    <File Name="source/wg_gizmo_radiobutton.cpp"/>
+    <File Name="source/wg_gizmo_refreshbutton.cpp"/>
+    <File Name="source/wg_gizmo_stack.cpp"/>
+    <File Name="source/wg_gizmo_table.cpp"/>
+    <File Name="source/wg_gizmo_tablist.cpp"/>
+    <File Name="source/wg_gizmo_taborder.cpp"/>
+    <File Name="source/wg_gizmo_text.cpp"/>
+    <File Name="source/wg_gizmo_value.cpp"/>
+    <File Name="source/wg_gizmo_view.cpp"/>
+    <File Name="source/wg_glyphset.cpp"/>
+    <File Name="source/wg_hook.cpp"/>
+    <File Name="source/wg_iconholder.cpp"/>
+    <File Name="source/wg_input.cpp"/>
+    <File Name="source/wg_interface_edittext.cpp"/>
+    <File Name="source/wg_interface_itemholder.cpp"/>
+    <File Name="source/wg_interface_textholder.cpp"/>
+    <File Name="source/wg_interface_valueholder.cpp"/>
+    <File Name="source/wg_item.cpp"/>
+    <File Name="source/wg_item_pixmap.cpp"/>
+    <File Name="source/wg_item_row.cpp"/>
+    <File Name="source/wg_item_stack.cpp"/>
+    <File Name="source/wg_item_text.cpp"/>
+    <File Name="source/wg_item_wraptext.cpp"/>
+    <File Name="source/wg_mempool.cpp"/>
+    <File Name="source/wg_menuitem.cpp"/>
+    <File Name="source/wg_monotainer.cpp"/>
+    <File Name="source/wg_orderedlayout.cpp"/>
+    <File Name="source/wg_orderedselectable.cpp"/>
+    <File Name="source/wg_origo.cpp"/>
+    <File Name="source/wg_pen.cpp"/>
+    <File Name="source/wg_resdb.cpp"/>
+    <File Name="source/wg_rectchain.cpp"/>
+    <File Name="source/wg_resource_factory_xml.cpp"/>
+    <File Name="source/wg_resources_xml.cpp"/>
+    <File Name="source/wg_resourceserializer_xml.cpp"/>
+    <File Name="source/wg_root.cpp"/>
+    <File Name="source/wg_skinmanager.cpp"/>
+    <File Name="source/wg_smartptr.cpp"/>
+    <File Name="source/wg_string.cpp"/>
+    <File Name="source/wg_surface.cpp"/>
+    <File Name="source/wg_text.cpp"/>
+    <File Name="source/wg_textlinkhandler.cpp"/>
+    <File Name="source/wg_textmanager.cpp"/>
+    <File Name="source/wg_textprop.cpp"/>
+    <File Name="source/wg_textpropmanager.cpp"/>
+    <File Name="source/wg_texttool.cpp"/>
+    <File Name="source/wg_util.cpp"/>
+    <File Name="source/wg_valueformat.cpp"/>
+    <File Name="source/wg_vboxlayout.cpp"/>
+    <File Name="source/wg_vectorglyphs.cpp"/>
+    <File Name="source/wg_widget-render.cpp"/>
+    <File Name="source/wg_widget.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -277,6 +275,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -314,6 +313,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       ]]>
       </Environment>
