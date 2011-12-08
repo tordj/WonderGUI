@@ -30,6 +30,53 @@
 
 class WgRect;
 
+//____ Class: WgCoord8 _________________________________________________________
+
+class	WgCoord8
+{
+public:
+	WgCoord8() : x(0), y(0) {}
+	WgCoord8( Sint8 _x, Sint8 _y ) {x=_x;y=_y;};
+
+	inline WgCoord8 operator=(const WgCoord8& k)	{ x = k.x; y = k.y; return *this; }
+
+	inline bool operator==(const WgCoord8& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
+	inline bool operator!=(const WgCoord8& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
+
+	Sint8		x, y;
+};
+
+//____ Class: WgCoord16 ________________________________________________________
+
+class	WgCoord16
+{
+public:
+	WgCoord16() : x(0), y(0) {}
+	WgCoord16( Sint16 _x, Sint16 _y ) {x=_x;y=_y;};
+
+	inline WgCoord16 operator=(const WgCoord16& k)	{ x = k.x; y = k.y; return *this; }
+
+	inline bool operator==(const WgCoord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
+	inline bool operator!=(const WgCoord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
+
+	Sint16	x, y;
+};
+
+//____ Class: WgUCord16 _______________________________________________________
+
+class	WgUCord16
+{
+public:
+	WgUCord16() : x(0), y(0) {}
+	WgUCord16( Uint16 _x, Uint16 _y ) {x=_x;y=_y;};
+
+	inline WgUCord16 operator=(const WgUCord16& k)	{ x = k.x; y = k.y; return *this; }
+
+	inline bool operator==(const WgUCord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
+	inline bool operator!=(const WgUCord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
+
+	Uint16	x, y;
+};
 
 //____ Class: WgCoord ________________________________________________________
 /**
@@ -46,6 +93,8 @@ public:
 	WgCoord() : x(0), y(0) {}
 	WgCoord( int x, int y ) : x(x), y(y) {}
 	WgCoord( const WgRect& rect );
+	WgCoord( WgCoord8 coord8 ) : x(coord8.x), y(coord8.y) {}
+	WgCoord( WgCoord16 coord16 ) : x(coord16.x), y(coord16.y) {}
 
 	inline WgCoord operator=(const WgCoord& k)	{ x = k.x; y = k.y; return *this; }
 	inline WgCoord operator=(const WgRect& r);
@@ -78,56 +127,7 @@ public:
 	int	x, y;
 };
 
-typedef WgCoord	WgCoord;
 
-//____ Class: WgCoord16 ________________________________________________________
-
-class	WgCoord16
-{
-public:
-	WgCoord16() : x(0), y(0) {}
-	WgCoord16( Sint16 _x, Sint16 _y ) {x=_x;y=_y;};
-
-	inline WgCoord16 operator=(const WgCoord16& k)	{ x = k.x; y = k.y; return *this; }
-
-	inline bool operator==(const WgCoord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-	inline bool operator!=(const WgCoord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
-
-	Sint16	x, y;
-};
-
-//____ Class: WgCoord8 _________________________________________________________
-
-class	WgCoord8
-{
-public:
-	WgCoord8() : x(0), y(0) {}
-	WgCoord8( Sint8 _x, Sint8 _y ) {x=_x;y=_y;};
-
-	inline WgCoord8 operator=(const WgCoord8& k)	{ x = k.x; y = k.y; return *this; }
-
-	inline bool operator==(const WgCoord8& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-	inline bool operator!=(const WgCoord8& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
-
-	Sint8		x, y;
-};
-
-
-//____ Class: WgUCord16 _______________________________________________________
-
-class	WgUCord16
-{
-public:
-	WgUCord16() : x(0), y(0) {}
-	WgUCord16( Uint16 _x, Uint16 _y ) {x=_x;y=_y;};
-
-	inline WgUCord16 operator=(const WgUCord16& k)	{ x = k.x; y = k.y; return *this; }
-
-	inline bool operator==(const WgUCord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-	inline bool operator!=(const WgUCord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
-
-	Uint16	x, y;
-};
 
 class WgSize;
 

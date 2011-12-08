@@ -166,9 +166,9 @@ void WgGizmoRefreshButton::SetRefreshProgress( float fraction )
 
 		if( m_pRefreshAnim )
 		{
-			WgGfxFrame * pOldFrame = m_pRefreshAnim->getFrame( m_animTimer );
+			WgGfxFrame * pOldFrame = m_pRefreshAnim->GetFrame( m_animTimer );
 			m_animTimer = (Uint32) (fraction * m_pRefreshAnim->Duration());
-			WgGfxFrame * pNewFrame = m_pRefreshAnim->getFrame( m_animTimer );
+			WgGfxFrame * pNewFrame = m_pRefreshAnim->GetFrame( m_animTimer );
 
 			if( pOldFrame != pNewFrame )
 				RequestRender();
@@ -198,9 +198,9 @@ void WgGizmoRefreshButton::_onUpdate( const WgUpdateInfo& _updateInfo )
 	{
 		if( m_refreshMode != PROGRESS )
 		{
-			WgGfxFrame * pOldFrame = m_pRefreshAnim->getFrame( m_animTimer );
+			WgGfxFrame * pOldFrame = m_pRefreshAnim->GetFrame( m_animTimer );
 			m_animTimer += _updateInfo.msDiff;
-			WgGfxFrame * pNewFrame = m_pRefreshAnim->getFrame( m_animTimer );
+			WgGfxFrame * pNewFrame = m_pRefreshAnim->GetFrame( m_animTimer );
 
 			// RequestRender if animation has moved.
 
@@ -209,7 +209,7 @@ void WgGizmoRefreshButton::_onUpdate( const WgUpdateInfo& _updateInfo )
 
 			// Check if animation has ended.
 
-			if( m_bStopping && pNewFrame == m_pRefreshAnim->getLastFrame() )		//UGLY! Change when we have updated WgAnim!
+			if( m_bStopping && pNewFrame == m_pRefreshAnim->GetLastFrame() )		//UGLY! Change when we have updated WgAnim!
 			{
 				m_bRefreshing = false;
 				m_bStopping = false;
@@ -226,10 +226,14 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 {
 	// Render background or animation
 
+	WgBlock	bgBlock;
+	if( m_pBgGfx )
+		bgBlock = m_pBgGfx->GetBlock(m_mode,_canvas.Size());
+
 	if( m_bRefreshing && m_pRefreshAnim && m_animTarget != ICON )
 	{
-		WgGfxFrame * pFrame = m_pRefreshAnim->getFrame( m_animTimer );
-		WgRect src( pFrame->ofs.x, pFrame->ofs.y, m_pRefreshAnim->width(), m_pRefreshAnim->height() );
+		WgGfxFrame * pFrame = m_pRefreshAnim->GetFrame( m_animTimer );
+		WgRect src( pFrame->ofs, m_pRefreshAnim->Size() );
 
 		switch( m_animTarget )
 		{
@@ -252,19 +256,14 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 				break;
 		}
 	}
-	else if( m_pBgGfx )
+	else
 	{
-		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode,_canvas.Size()), _canvas );
+		pDevice->ClipBlitBlock( _clip, bgBlock, _canvas );
 	}
 
 	// Get content rect with displacement.
 
-	WgRect contentRect = _canvas;
-	if( m_pBgGfx )
-		contentRect -= m_pBgGfx->ContentBorders();
-
-	contentRect.x += m_aDisplace[m_mode].x;
-	contentRect.y += m_aDisplace[m_mode].y;
+	WgRect contentRect = bgBlock.ContentRect( _canvas );
 
 	// Get icon and text rect from content rect
 
@@ -272,7 +271,7 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 	if( m_pIconGfx )
 		iconSize = m_pIconGfx->Size();
 	else if( m_animTarget == ICON && m_pRefreshAnim )
-		iconSize = WgSize(m_pRefreshAnim->width(),m_pRefreshAnim->height());
+		iconSize = m_pRefreshAnim->Size();
 
 	WgRect iconRect = _getIconRect( contentRect, iconSize );
 	WgRect textRect = _getTextRect( contentRect, iconRect );
@@ -284,11 +283,8 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 	{
 		// Render animation
 
-		int w = m_pRefreshAnim->width();;
-		int h = m_pRefreshAnim->height();
-
-		WgGfxFrame * pFrame = m_pRefreshAnim->getFrame( m_animTimer );
-		pDevice->ClipStretchBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, w, h ), iconRect );
+		WgGfxFrame * pFrame = m_pRefreshAnim->GetFrame( m_animTimer );
+		pDevice->ClipStretchBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs, m_pRefreshAnim->Size() ), iconRect );
 	}
 	else if( m_pIconGfx )
 		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, iconRect.Size()), iconRect );

@@ -1,4 +1,14 @@
 
+
+ANIMATIONSSYSTEM / CURSOR
+=========================
+
+* Fixa XML så vi har bättre upplägg och alla nya parametrar.
+* Fixa cursor och pen så att vi utnyttjar det som finns i WgGfxAnimation och Block (stretch/tile, fixed_size/stretch/scale, borders)
+* Fixa WgGizmoAnimation så att den hämtar block till rendering alpha-test etc.
+* Fixa WgGizmoRefreshButton så att den hämtar block till rendering alpha-test etc.
+
+
 FOCUS
 =====
 * Hur ska vi lösa _onMaskRects() ???

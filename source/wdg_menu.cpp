@@ -703,6 +703,8 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				{
 					WgTextAttr	attr;
 					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), mode );
+					if( m_pBgGfx )
+						WgTextTool::SetAttrColor( attr, m_pBgGfx->TextColors(), mode );
 					WgTextTool::AddPropAttributes( attr, m_pKeyAccelProp, mode );
 					accelPen.SetAttributes( attr );
 

@@ -708,9 +708,9 @@ void WgGizmoEditline::_adjustViewOfs()
 		pen.AdvancePos();
 
 		int pwAdvance	= pen.GetPosX();
-		int cursAdvance	= pCursor->advance(m_pText->cursorMode() );
-		int cursBearing	= pCursor->bearingX(m_pText->cursorMode() );
-		int cursWidth	= pCursor->width(m_pText->cursorMode() );
+		int cursAdvance	= pCursor->Advance(m_pText->cursorMode() );
+		int cursBearing	= pCursor->BearingX(m_pText->cursorMode() );
+		int cursWidth	= pCursor->Width(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.

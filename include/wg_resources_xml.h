@@ -1019,7 +1019,7 @@ private:
 
 
 /// Wdg_CheckBox2_Res ////////////////////////////////////////////////////
-class Wdg_CheckBox2_Res : public WgWidgetRes, public WgTextHolderRes
+class Wdg_CheckBox2_Res : public WgWidgetRes, public WgTextHolderRes, public WgIconHolderRes
 {
 public:
 	Wdg_CheckBox2_Res(WgResourceXML* parent, class Wdg_CheckBox2* widget = 0);
@@ -1275,7 +1275,7 @@ public:
 };
 
 /// Wdg_RadioButton2_Res /////////////////////////////////////////////////
-class Wdg_RadioButton2_Res : public WgWidgetRes, public WgTextHolderRes
+class Wdg_RadioButton2_Res : public WgWidgetRes, public WgTextHolderRes, public WgIconHolderRes
 {
 public:
 	Wdg_RadioButton2_Res(WgResourceXML* parent, class Wdg_RadioButton2* widget = 0);

@@ -1939,11 +1939,11 @@ void WgAnimRes::Serialize(WgResourceSerializerXML& s)
 {
 	const int legoMargin = 2;
 	s.BeginTag(TagName(), XmlNode());
-	WriteDiffAttr<Uint32>(s, XmlNode(), "state_w", m_pAnim->width() - legoMargin, 0);
-	WriteDiffAttr<Uint32>(s, XmlNode(), "state_h", m_pAnim->height(), 0);
+	WriteDiffAttr<Uint32>(s, XmlNode(), "state_w", m_pAnim->Size().w - legoMargin, 0);
+	WriteDiffAttr<Uint32>(s, XmlNode(), "state_h", m_pAnim->Size().h, 0);
 	WriteDiffAttr(s, XmlNode(), "playmode", FromPlayMode(m_pAnim->PlayMode()), FromPlayMode(WG_FORWARD_ONCE));
 	WriteDiffAttr(s, XmlNode(), "timescale", m_pAnim->TimeScaler(), 1.f);
-	WriteDiffAttr(s, XmlNode(), "duration", m_pAnim->Duration(), (Uint32)0);
+	WriteDiffAttr(s, XmlNode(), "duration", (int) m_pAnim->Duration(), (int)0);
 
 	s.EndTag();
 }
@@ -1960,13 +1960,14 @@ void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 	WgResDB::LegoSource* source =  s.ResDb()->GetLegoSource(xmlNode["source"]);
 	if(source)
 	{
-		m_pAnim->setWidth(source->rect.w);
-		m_pAnim->setHeight(source->rect.h);
+		m_pAnim->SetSize( source->rect.Size());
 
 		WgSurface* pSurf = s.ResDb()->GetSurface(source->surface);
 		VERIFY(pSurf, "surface doesn't exist");
 
-		VERIFY(m_pAnim->addHorrTiledFrames(source->nStates, pSurf, source->rect.x, source->rect.y, duration, legoMargin), "could not add frame to anim");
+//		VERIFY(m_pAnim->addHorrTiledFrames(source->nStates, pSurf, source->rect.x, source->rect.y, duration, legoMargin), "could not add frame to anim");
+		VERIFY(m_pAnim->AddFrames(pSurf, source->rect.Pos(), WgSize(source->nStates,1), duration, source->nStates, WgSize(legoMargin,0) ), "could not add frame to anim");
+
 	}
 	else
 	{
@@ -1977,9 +1978,11 @@ void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 		int stateH = WgUtil::ToUint32(xmlNode["state_h"]);
 		int nStates = WgUtil::ToUint32(xmlNode["state_count"]);
 
-		m_pAnim->setWidth(stateW);
-		m_pAnim->setHeight(stateH);
+		m_pAnim->SetSize( WgSize(stateW, stateH) );
 
+
+		VERIFY(m_pAnim->AddFrames(pSurf, duration, nStates, WgSize(legoMargin,legoMargin) ), "could not add frame to anim");
+/*
 		int nHorStates = pSurf->Width() / (stateW + legoMargin);
 		for(int y = 0; nStates > 0; y += stateH + legoMargin, nStates -= nHorStates)
 		{
@@ -1988,6 +1991,7 @@ void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 			else
 				VERIFY(m_pAnim->addHorrTiledFrames(nStates, pSurf, 0, y, duration, legoMargin), "could not add frame to anim");
 		}
+*/
 	}
 
 	s.ResDb()->AddAnim(xmlNode["id"], m_pAnim, new WgXMLMetaData(xmlNode));
@@ -2051,7 +2055,8 @@ void WgKeyFrameRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	Uint32 duration = WgUtil::ToUint32(xmlNode["duration"]);
 
 	const int legoMargin = 2;
-	VERIFY(anim->addHorrTiledFrames(source->nStates, pSurf, source->rect.x, source->rect.y, duration, legoMargin), "could not add frame to anim");
+//	VERIFY(anim->addHorrTiledFrames(source->nStates, pSurf, source->rect.x, source->rect.y, duration, legoMargin), "could not add frame to anim");
+	VERIFY(anim->AddFrames(pSurf, source->rect.Pos(), WgSize(source->nStates,1), duration, source->nStates, WgSize(legoMargin,0) ), "could not add frame to anim");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -2061,11 +2066,11 @@ void WgCursorRes::Serialize(WgResourceSerializerXML& s)
 {
 	s.BeginTag(TagName(), XmlNode());
 
-	s.AddAttribute("eol", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::EOL)), m_pCursor->bearingX(WgCursor::EOL), m_pCursor->bearingY(WgCursor::EOL), m_pCursor->advance(WgCursor::EOL), ScaleModeToString(m_pCursor->scaleMode(WgCursor::EOL)) ));
-	s.AddAttribute("ins", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::INS)), m_pCursor->bearingX(WgCursor::INS), m_pCursor->bearingY(WgCursor::INS), m_pCursor->advance(WgCursor::INS), ScaleModeToString(m_pCursor->scaleMode(WgCursor::EOL)) ));
-	s.AddAttribute("ovr", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->anim(WgCursor::OVR)), m_pCursor->bearingX(WgCursor::OVR), m_pCursor->bearingY(WgCursor::OVR), m_pCursor->advance(WgCursor::OVR), ScaleModeToString(m_pCursor->scaleMode(WgCursor::EOL)) ));
+	s.AddAttribute("eol", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->Anim(WgCursor::EOL)), m_pCursor->BearingX(WgCursor::EOL), m_pCursor->BearingY(WgCursor::EOL), m_pCursor->Advance(WgCursor::EOL), ScaleModeToString(m_pCursor->GetScaleMode(WgCursor::EOL)) ));
+	s.AddAttribute("ins", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->Anim(WgCursor::INS)), m_pCursor->BearingX(WgCursor::INS), m_pCursor->BearingY(WgCursor::INS), m_pCursor->Advance(WgCursor::INS), ScaleModeToString(m_pCursor->GetScaleMode(WgCursor::EOL)) ));
+	s.AddAttribute("ovr", WgUtil::ToString(s.ResDb()->FindAnimId(m_pCursor->Anim(WgCursor::OVR)), m_pCursor->BearingX(WgCursor::OVR), m_pCursor->BearingY(WgCursor::OVR), m_pCursor->Advance(WgCursor::OVR), ScaleModeToString(m_pCursor->GetScaleMode(WgCursor::EOL)) ));
 
-	s.AddAttribute("blitmode", BlitModeToString(m_pCursor->blitMode()) );
+	s.AddAttribute("blitmode", BlitModeToString(m_pCursor->GetBlitMode()) );
 	s.EndTag();
 }
 
@@ -2079,15 +2084,15 @@ void WgCursorRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 	std::string scaleMode;
 
 	VERIFY(WgUtil::FromString(xmlNode["eol"], anim, bearing.x, bearing.y, spacing, scaleMode ) == 5, "invalid EOL spec");
-	m_pCursor->setMode(WgCursor::EOL, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing, StringToScaleMode(scaleMode) );
+	m_pCursor->SetMode(WgCursor::EOL, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing, StringToScaleMode(scaleMode) );
 
 	VERIFY(WgUtil::FromString(xmlNode["ins"], anim, bearing.x, bearing.y, spacing, scaleMode ) == 5, "invalid INS spec");
-	m_pCursor->setMode(WgCursor::INS, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing, StringToScaleMode(scaleMode) );
+	m_pCursor->SetMode(WgCursor::INS, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing, StringToScaleMode(scaleMode) );
 
 	VERIFY(WgUtil::FromString(xmlNode["ovr"], anim, bearing.x, bearing.y, spacing, scaleMode ) == 5, "invalid OVR spec");
-	m_pCursor->setMode(WgCursor::OVR, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing, StringToScaleMode(scaleMode));
+	m_pCursor->SetMode(WgCursor::OVR, (WgGfxAnim*)s.ResDb()->GetAnim(anim), bearing, spacing, StringToScaleMode(scaleMode));
 
-	m_pCursor->setBlitMode( StringToBlitMode(xmlNode["blitmode"]) );
+	m_pCursor->SetBlitMode( StringToBlitMode(xmlNode["blitmode"]) );
 
 	s.ResDb()->AddCursor(xmlNode["id"], m_pCursor, new WgXMLMetaData(xmlNode));
 }
@@ -2098,14 +2103,14 @@ std::string	WgCursorRes::ScaleModeToString( WgCursor::ScaleMode mode )
 	{
 		case WgCursor::FIXED_SIZE:
 			return "fixed_size";
-		case WgCursor::STRETCH_1D:
-			return "stretch_1d";
-		case WgCursor::STRETCH_2D:
-			return "stretch_2d";
-		case WgCursor::TILE_1D:
-			return "tile_1d";
-		case WgCursor::TILE_2D:
-			return "tile_2d";
+		case WgCursor::STRETCH_Y:
+			return "stretch_y";
+		case WgCursor::STRETCH_XY:
+			return "stretch_xy";
+		case WgCursor::TILE_Y:
+			return "tile_y";
+		case WgCursor::TILE_XY:
+			return "tile_xy";
 	}
 
 	return "fixed_size";
@@ -2119,19 +2124,19 @@ WgCursor::ScaleMode	WgCursorRes::StringToScaleMode( const std::string& str )
 	}
 	else if( str == "stretch_1d" )
 	{
-		return WgCursor::STRETCH_1D;
+		return WgCursor::STRETCH_Y;
 	}
 	else if( str == "stretch_2d" )
 	{
-		return WgCursor::STRETCH_2D;
+		return WgCursor::STRETCH_XY;
 	}
-	else if( str == "tile_1d" )
+	else if( str == "tile_y" )
 	{
-		return WgCursor::TILE_1D;
+		return WgCursor::TILE_Y;
 	}
-	else if( str == "tile_2d" )
+	else if( str == "tile_xy" )
 	{
-		return WgCursor::TILE_2D;
+		return WgCursor::TILE_XY;
 	}
 
 	return WgCursor::FIXED_SIZE;
@@ -2631,6 +2636,8 @@ void WgColorSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 //		borders=[left,right,top,bottom]
 //		content_borders=[all]
 //		content_borders=[left,right,top,bottom]
+//		content_shift_marked=[x,y]
+//		content_shift_pressed=[x,y]
 //		tile=[true | false]
 //		scale=[true | false]
 //		fixed_size=[true | false]
@@ -2638,7 +2645,8 @@ void WgColorSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 //		skip_marked=[true | false]
 //		skip_selected=[true | false]
 //		skip_disabled=[true | false]
-//		skip_specialal=[true | false]
+//		skip_special=[true | false]
+//		text_colors=[colorprop]
 // />
 void WgBlockSetRes::Serialize(WgResourceSerializerXML& s)
 {
@@ -2652,6 +2660,11 @@ void WgBlockSetRes::Serialize(WgResourceSerializerXML& s)
 
 	WgBorderRes::Serialize(s, xmlNode, "borders", m_pBlockSet->GfxBorders());
 	WgBorderRes::Serialize(s, xmlNode, "content_borders", m_pBlockSet->ContentBorders());
+
+	WgCoord shiftMarked = m_pBlockSet->ContentShift(WG_MODE_MARKED);
+	WriteDiffAttr<Sint32>(s, xmlNode, "content_shift_marked", shiftMarked.x, shiftMarked.y, 0, 0 );
+	WgCoord shiftPressed = m_pBlockSet->ContentShift(WG_MODE_SELECTED);
+	WriteDiffAttr<Sint32>(s, xmlNode, "content_shift_pressed", shiftPressed.x, shiftPressed.y, 0, 0 );
 
 	Uint32 tileFlags = m_pBlockSet->Flags() & WG_TILE_ALL;
 	if(xmlNode.HasAttribute("tile") && (tileFlags == WG_TILE_ALL || tileFlags == 0))
@@ -2674,7 +2687,7 @@ void WgBlockSetRes::Serialize(WgResourceSerializerXML& s)
 	if( flags & WG_SKIP_SPECIAL )
 		s.AddAttribute("skip_special", "true" );
 
-	WriteColorSetAttr(s, m_pBlockSet->TextColors(), "textcolors" );
+	WriteColorSetAttr(s, m_pBlockSet->TextColors(), "text_colors" );
 
 	WgRect rect[5];
 	rect[WG_MODE_NORMAL] = m_pBlockSet->Rect(WG_MODE_NORMAL);
@@ -2787,6 +2800,12 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	WgBorders gfxBorders = WgBorderRes::Deserialize(s, xmlNode["borders"]);
 	WgBorders contentBorders = WgBorderRes::Deserialize(s, xmlNode["content_borders"]);
 
+	WgCoord	shiftMarked;
+	WgUtil::FromString(xmlNode["content_shift_marked"], shiftMarked.x, shiftMarked.y);
+	
+	WgCoord	shiftPressed;
+	WgUtil::FromString(xmlNode["content_shift_pressed"], shiftPressed.x, shiftPressed.y);
+
 	Uint32 flags = WgUtil::ToBool(xmlNode["tile"]) ? WG_TILE_ALL : 0;
 	bool scale = WgUtil::ToBool(xmlNode["scale"]);
 	bool fixedSize = WgUtil::ToBool(xmlNode["fixed_size"]);
@@ -2807,7 +2826,7 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	if( WgUtil::ToBool(xmlNode["skip_special"]) )
 		flags |= WG_SKIP_SPECIAL;
 
-	WgColorSetPtr pTextColors =	s.ResDb()->GetColorSet(xmlNode["textcolors"]);
+	WgColorSetPtr pTextColors =	s.ResDb()->GetColorSet(xmlNode["text_colors"]);
 
 	if(xmlNode.HasAttribute("lego"))
 	{
@@ -2881,6 +2900,8 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 		m_pBlockSet->SetFixedSize(fixedSize);
 
 
+	m_pBlockSet->SetContentShift(WG_MODE_MARKED, shiftMarked);
+	m_pBlockSet->SetContentShift(WG_MODE_SELECTED, shiftPressed);
 
 	s.ResDb()->AddBlockSet( id, m_pBlockSet, new WgXMLMetaData(XmlNode()) );
 }
@@ -2905,6 +2926,9 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 //		borders=[left,right,top,bottom]
 //		content_borders=[all]
 //		content_borders=[left,right,top,bottom]
+//		content_shift_marked=[x,y]
+//		content_shift_pressed=[x,y]
+//		
 // />
 void WgAltRes::Serialize(WgResourceSerializerXML& s, int altNb )
 {
@@ -2933,6 +2957,10 @@ void WgAltRes::Serialize(WgResourceSerializerXML& s, int altNb )
 	WgBorderRes::Serialize(s, xmlNode, "borders", pBlockSet->GfxBorders(altNb));
 	WgBorderRes::Serialize(s, xmlNode, "content_borders", pBlockSet->ContentBorders(altNb));
 
+	WgCoord shiftMarked = pBlockSet->ContentShift(WG_MODE_MARKED,altNb);
+	WriteDiffAttr<Sint32>(s, xmlNode, "content_shift_marked", shiftMarked.x, shiftMarked.y, 0, 0 );
+	WgCoord shiftPressed = pBlockSet->ContentShift(WG_MODE_SELECTED,altNb);
+	WriteDiffAttr<Sint32>(s, xmlNode, "content_shift_pressed", shiftPressed.x, shiftPressed.y, 0, 0 );
 
 	WgRect rect[5];
 	rect[WG_MODE_NORMAL] = pBlockSet->Rect(WG_MODE_NORMAL,altNb);
@@ -3042,6 +3070,13 @@ void WgAltRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 	WgBorders gfxBorders = WgBorderRes::Deserialize(s, xmlNode["borders"]);
 	WgBorders contentBorders = WgBorderRes::Deserialize(s, xmlNode["content_borders"]);
 
+
+	WgCoord	shiftMarked;
+	WgUtil::FromString(xmlNode["content_shift_marked"], shiftMarked.x, shiftMarked.y);
+	
+	WgCoord	shiftPressed;
+	WgUtil::FromString(xmlNode["content_shift_pressed"], shiftPressed.x, shiftPressed.y);
+
 	//
 
 	WgSize activationSize = WgSize(0,0);
@@ -3115,7 +3150,7 @@ void WgAltRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 		rect[i] = rect[0];					// Fill up with normal for unspecified ones.
 
 	pBlockSet->AddAlternative( activationSize, pSurface, rect[0], rect[1], rect[2],
-							   rect[3], rect[4], gfxBorders, contentBorders);
+							   rect[3], rect[4], gfxBorders, contentBorders, shiftMarked, shiftPressed );
 }
 
 
@@ -3702,7 +3737,6 @@ void WgWidgetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML&
 // <button [widget-attribs]
 //		blockset=[name]
 //		text=[string]
-//		displacement=[xUp, yUp, xOver, yOver, xDown, yDown]
 //		pressanim=[button1, button2, button3, bDownWhenMouseOutside]
 //	/>
 Wdg_Button_Res::Wdg_Button_Res(WgResourceXML* parent, Wdg_Button* widget) :
@@ -3729,10 +3763,6 @@ void Wdg_Button_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteBlockSetAttr(s, widget->GetSource(), "blockset");
 
-	Sint8 disp[6] = {0};
-	widget->GetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
-	WriteDiffAttr<Sint8>(s, xmlNode, "displacement", disp[0], disp[1], disp[2], disp[3], disp[4], disp[5], 0, 0, 0, 0, 0, 0);
-
 	bool b1, b2, b3, bo;
 	widget->GetPressAnim( b1, b2, b3, bo );
 	WriteDiffAttr<bool>(s, xmlNode, "pressanim", b1, b2, b3, bo, true, false, false, false);
@@ -3755,10 +3785,6 @@ void Wdg_Button_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerX
 
 	widget->SetSource(s.ResDb()->GetBlockSet(xmlNode["blockset"]));
 //	widget->SetText(xmlNode["text"].c_str());
-
-	Sint32 disp[6] = {0};
-	WgUtil::FromString(xmlNode["displacement"], disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
-	widget->SetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
 
 	bool b1 = true, b2 = false, b3 = false, bo = false;
 	WgUtil::FromString(xmlNode["pressanim"], b1, b2, b3, bo);
@@ -3784,7 +3810,6 @@ WgCharBuffer* Wdg_Button_Res::GetCharBuffer()
 //		blockset=[name]
 //		normal_text=[string]
 //		textborder=[left, right, up, down]
-//		displacement=[xUp, yUp, xOver, yOver, xDown, yDown]
 //		pressanim=[button1, button2, button3, bDownWhenMouseOutside]
 //
 //		refresh_anim=[string]
@@ -3817,10 +3842,6 @@ void Wdg_RefreshButton_Res::Serialize(WgResourceSerializerXML& s)
 	WgIconHolderRes::Serialize(this, xmlNode, s, widget);
 
 	WriteBlockSetAttr(s, widget->GetSource(), "blockset");
-
-	Sint8 disp[6] = {0};
-	widget->GetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
-	WriteDiffAttr<Sint8>(s, xmlNode, "displacement", disp[0], disp[1], disp[2], disp[3], disp[4], disp[5], 0, 0, 0, 0, 0, 0);
 
 	bool b1, b2, b3, bo;
 	widget->GetPressAnim( b1, b2, b3, bo );
@@ -3871,10 +3892,6 @@ void Wdg_RefreshButton_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeri
 
 	widget->SetSource(s.ResDb()->GetBlockSet(xmlNode["blockset"]));
 //	widget->SetText(xmlNode["text"].c_str());
-
-	Sint32 disp[6] = {0};
-	WgUtil::FromString(xmlNode["displacement"], disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
-	widget->SetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
 
 	bool b1 = true, b2 = false, b3 = false, bo = false;
 	WgUtil::FromString(xmlNode["pressanim"], b1, b2, b3, bo);
@@ -3934,7 +3951,6 @@ WgCharBuffer* Wdg_RefreshButton_Res::GetCharBuffer()
 //		blockset_checked=[name]
 //		blockset_unchecked=[name]
 //		text=[string]
-//		displacement=[xUnchecked, yUnchecked, xOver, yOver, xChecked, yChecked]
 //
 //	/>
 Wdg_CheckBox2_Res::Wdg_CheckBox2_Res(WgResourceXML* parent, Wdg_CheckBox2* widget) :
@@ -3957,10 +3973,8 @@ void Wdg_CheckBox2_Res::Serialize(WgResourceSerializerXML& s)
 
 	WgWidgetRes::Serialize(s);
 	WgTextHolderRes::Serialize(this, xmlNode, s, widget);
+	WgIconHolderRes::Serialize(this, xmlNode, s, widget);
 
-	Sint8 disp[6] = {0};
-	widget->SetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
-	WriteDiffAttr<Sint8>(s, xmlNode, "displacement", disp[0], disp[1], disp[2], disp[3], disp[4], disp[5], 0, 0, 0, 0, 0, 0);
 	WriteDiffAttr(s, xmlNode, "checked", widget->IsChecked(), false);
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "blockset_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
@@ -3968,12 +3982,6 @@ void Wdg_CheckBox2_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteBlockSetAttr(s, widget->GetCheckedIcon(), "icon_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
-	WriteDiffAttr(s, xmlNode, "icon_scale", widget->GetIconScale(), 0.f );
-	WriteDiffAttr(s, xmlNode, "icon_origo", widget->GetIconOrigo(), WgOrigo::midLeft());
-	WriteDiffAttr(s, xmlNode, "icon_push_text", widget->IsIconPushingText(), true);
-
-	WgBorderRes::Serialize(s, xmlNode, "icon_borders", widget->GetIconBorders());
-
 
 	s.EndTag();
 }
@@ -3985,10 +3993,7 @@ void Wdg_CheckBox2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 
 	WgWidgetRes::Deserialize(xmlNode, s);
 	WgTextHolderRes::Deserialize(xmlNode, s, widget);
-
-	Sint32 disp[6] = {0};
-	WgUtil::FromString(xmlNode["displacement"], disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
-	widget->SetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
+	WgIconHolderRes::Deserialize(xmlNode, s, widget);
 
 	WgBlockSetPtr checked = s.ResDb()->GetBlockSet(xmlNode["blockset_checked"]);
 	WgBlockSetPtr unchecked = s.ResDb()->GetBlockSet(xmlNode["blockset_unchecked"]);
@@ -3998,12 +4003,8 @@ void Wdg_CheckBox2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 
 	WgBlockSetPtr icon_checked	= s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
 	WgBlockSetPtr icon_unchecked = s.ResDb()->GetBlockSet(xmlNode["icon_unchecked"]);
-	WgOrigo	iconOrigo			= WgUtil::ToOrigo(xmlNode["icon_origo"], WgOrigo::midLeft() );
-	WgBorders iconBorders		= WgBorderRes::Deserialize(s, xmlNode["icon_borders"]);
 
-	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo,
-					WgUtil::ToFloat(xmlNode["icon_scale"], 0.f),
-					WgUtil::ToBool(xmlNode["icon_push_text"], true) );
+	widget->SetIcons(icon_unchecked, icon_checked);
 }
 
 WgCharBuffer* Wdg_CheckBox2_Res::GetCharBuffer()
@@ -4891,7 +4892,6 @@ void Wdg_Lodder_Res::Deserialized(WgResourceSerializerXML& s)
 //		blockset_checked=[name]
 //		blockset_unchecked=[name]
 //		text=[string]
-//		displacement=[xUnchecked, yUnchecked, xOver, yOver, xChecked, yChecked]
 // />
 Wdg_RadioButton2_Res::Wdg_RadioButton2_Res(WgResourceXML* parent, Wdg_RadioButton2* widget) :
 	WgWidgetRes(parent, widget),
@@ -4921,10 +4921,8 @@ void Wdg_RadioButton2_Res::Serialize(WgResourceSerializerXML& s)
 
 	WgWidgetRes::Serialize(s);
 	WgTextHolderRes::Serialize(this, xmlNode, s, widget);
+	WgIconHolderRes::Serialize(this, xmlNode, s, widget);
 
-	Sint8 disp[6] = {0};
-	widget->SetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
-	WriteDiffAttr<Sint8>(s, xmlNode, "displacement", disp[0], disp[1], disp[2], disp[3], disp[4], disp[5], 0, 0, 0, 0, 0, 0);
 	WriteDiffAttr(s, xmlNode, "checked", widget->IsChecked(), false);
 	WriteDiffAttr(s, xmlNode, "allowuncheck", widget->AllowUnchecking(), false);
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "blockset_checked");
@@ -4933,10 +4931,6 @@ void Wdg_RadioButton2_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteBlockSetAttr(s, widget->GetCheckedIcon(), "icon_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedIcon(), "icon_unchecked");
-	WriteDiffAttr(s, xmlNode, "icon_scale", widget->GetIconScale(), 0.f );
-	WriteDiffAttr(s, xmlNode, "icon_origo", widget->GetIconOrigo(), WgOrigo::midLeft());
-	WriteDiffAttr(s, xmlNode, "icon_push_text", widget->IsIconPushingText(), true);
-	WgBorderRes::Serialize(s, xmlNode, "icon_borders", widget->GetIconBorders());
 
 	s.EndTag();
 }
@@ -4948,10 +4942,7 @@ void Wdg_RadioButton2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeria
 
 	WgWidgetRes::Deserialize(xmlNode, s);
 	WgTextHolderRes::Deserialize(xmlNode, s, widget);
-
-	Sint32 disp[6] = {0};
-	WgUtil::FromString(xmlNode["displacement"], disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
-	widget->SetDisplacement(disp[0], disp[1], disp[2], disp[3], disp[4], disp[5]);
+	WgIconHolderRes::Deserialize(xmlNode, s, widget);
 
 	WgBlockSetPtr checked = s.ResDb()->GetBlockSet(xmlNode["blockset_checked"]);
 	WgBlockSetPtr unchecked = s.ResDb()->GetBlockSet(xmlNode["blockset_unchecked"]);
@@ -4962,12 +4953,8 @@ void Wdg_RadioButton2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeria
 
 	WgBlockSetPtr icon_checked	= s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
 	WgBlockSetPtr icon_unchecked = s.ResDb()->GetBlockSet(xmlNode["icon_unchecked"]);
-	WgOrigo	iconOrigo			= WgUtil::ToOrigo(xmlNode["icon_origo"], WgOrigo::midLeft() );
-	WgBorders iconBorders		= WgBorderRes::Deserialize(s, xmlNode["icon_borders"]);
 
-	widget->SetIcon(icon_unchecked, icon_checked, iconBorders, iconOrigo,
-					WgUtil::ToFloat(xmlNode["icon_scale"], 0.f),
-					WgUtil::ToBool(xmlNode["icon_push_text"], true) );
+	widget->SetIcons(icon_unchecked, icon_checked);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -78,8 +78,8 @@ bool WgGizmoAnimation::SetSource( WgGfxAnim * _pAnim )
 	m_playPos		= 0.0;
 	m_bPlayPosIsNew = true;
 
-	m_src.w			= _pAnim->width();
-	m_src.h			= _pAnim->height();
+	m_src.w			= _pAnim->Size().w;
+	m_src.h			= _pAnim->Size().h;
 
 	return true;
 }
@@ -278,7 +278,7 @@ void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 			}
 
 
-			WgGfxFrame * pFrame = m_pAnim->getFrame( (Uint32) m_playPos );
+			WgGfxFrame * pFrame = m_pAnim->GetFrame( (int64_t) m_playPos );
 
 			if( pFrame->pSurf != m_pSurf )
 			{
@@ -329,7 +329,7 @@ void WgGizmoAnimation::_onUpdate( const WgUpdateInfo& _updateInfo )
 	}
 
 
-	WgGfxFrame * pFrame = m_pAnim->getFrame( (Uint32) m_playPos );
+	WgGfxFrame * pFrame = m_pAnim->GetFrame( (int64_t) m_playPos );
 
 	if( pFrame->pSurf != m_pSurf )
 	{

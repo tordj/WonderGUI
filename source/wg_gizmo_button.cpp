@@ -43,8 +43,6 @@ WgGizmoButton::WgGizmoButton()
  	m_mode				= WG_MODE_NORMAL;
 
 	m_bDownOutside		= false;
-	m_aDisplace[0].x	= m_aDisplace[0].y = 0;
-	m_aDisplace[1]		= m_aDisplace[2] = m_aDisplace[3] = m_aDisplace[0];
 
 	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
 	{
@@ -129,35 +127,6 @@ Uint32 WgGizmoButton::GetTextAreaWidth()
 
 	return textRect.w;
 }
-
-//____ SetDisplacement() _______________________________________________________
-
-bool WgGizmoButton::SetDisplacement( Sint8 _xUp, Sint8 _yUp, Sint8 _xOver, Sint8 _yOver, Sint8 _xDown, Sint8 _yDown )
-{
-  m_aDisplace[WG_MODE_NORMAL].x = _xUp;
-  m_aDisplace[WG_MODE_NORMAL].y = _yUp;
-
-  m_aDisplace[WG_MODE_MARKED].x = _xOver;
-  m_aDisplace[WG_MODE_MARKED].y = _yOver;
-
-  m_aDisplace[WG_MODE_SELECTED].x = _xDown;
-  m_aDisplace[WG_MODE_SELECTED].y = _yDown;
-
-  return  true;
-}
-
-void WgGizmoButton::GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sint8& yOver, Sint8& xDown, Sint8& yDown ) const
-{
-	xUp = m_aDisplace[WG_MODE_NORMAL].x;
-	yUp = m_aDisplace[WG_MODE_NORMAL].y;
-
-	xOver = m_aDisplace[WG_MODE_MARKED].x;
-	yOver = m_aDisplace[WG_MODE_MARKED].y;
-
-	xDown = m_aDisplace[WG_MODE_SELECTED].x;
-	yDown = m_aDisplace[WG_MODE_SELECTED].y;
-}
-
 
 //____ HeightForWidth() _______________________________________________________
 
@@ -254,19 +223,18 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	WgRect can = _canvas;
 	WgRect win = _window;
 
-	// Render background
+	WgBlock	block;
 
 	if( m_pBgGfx )
-		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode, _canvas), _canvas );
+		block = m_pBgGfx->GetBlock(m_mode, _canvas);
+
+	// Render background
+
+	pDevice->ClipBlitBlock( _clip, block, _canvas );
 
 	// Get content rect with displacement.
 
-	WgRect contentRect = _canvas;
-	if( m_pBgGfx )
-		contentRect -= m_pBgGfx->ContentBorders();
-
-	contentRect.x += m_aDisplace[m_mode].x;
-	contentRect.y += m_aDisplace[m_mode].y;
+	WgRect contentRect = block.ContentRect(_canvas );
 
 	// Get icon and text rect from content rect
 
@@ -495,9 +463,6 @@ void WgGizmoButton::_onCloneContent( const WgGizmo * _pOrg )
 	m_pBgGfx		= pOrg->m_pBgGfx;
 	m_pIconGfx		= pOrg->m_pIconGfx;
 	m_mode			= pOrg->m_mode;
-
-	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
-		m_aDisplace[i]	= pOrg->m_aDisplace[i];
 
 	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
 	 	m_bRenderDown[i] = pOrg->m_bRenderDown[i];

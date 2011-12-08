@@ -40,6 +40,7 @@ WgItem::WgItem()
 	m_mode		= WG_MODE_NORMAL;
 	m_pointerStyle = WG_POINTER_DEFAULT;
 	m_bVisible	= true;
+	m_markPolicy = WG_MARKPOLICY_OPAQUE;
 }
 
 WgItem::WgItem( Sint64 id )
@@ -51,6 +52,7 @@ WgItem::WgItem( Sint64 id )
 	m_mode		= WG_MODE_NORMAL;
 	m_pointerStyle = WG_POINTER_DEFAULT;
 	m_bVisible	= true;
+	m_markPolicy = WG_MARKPOLICY_OPAQUE;
 }
 
 

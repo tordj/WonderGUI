@@ -35,6 +35,10 @@
 #	include <wg_geo.h>
 #endif
 
+#ifndef WG_BLOCKSET_DOT_H
+#	include <wg_blockset.h>
+#endif
+
 class WgSurface;
 class WgGfxFrame;
 
@@ -45,31 +49,35 @@ class	WgGfxAnim : public WgAnim
 {
 public:
 	WgGfxAnim();
-	WgGfxAnim( Uint32 width, Uint32 height );
+	WgGfxAnim( WgSize size, WgBorders gfxBorders = WgBorders(), Uint32 blockFlags = 0 );
 
-	void	setWidth( Uint32 width ) { m_width = width; }
-	Uint32	width( void ) { return m_width; };
-	void	setHeight( Uint32 height ) { m_height = height; }
-	Uint32	height( void ) { return m_height; };
+	void		SetSize( WgSize size );
+	WgSize		Size() const { return m_size; }
 
-	bool	insertFrame( Uint32 pos, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration );
-	bool	insertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration );
-	bool	addFrame( WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration );
+	void		SetGfxBorders( WgBorders borders );
+	WgBorders	GfxBorders() const { return m_borders; }
 
+	void		SetBlockFlags( Uint32 flags );
+	Uint32		BlockFlags() const { return m_blockFlags; }
 
-	Uint32	addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration, int spacing = 0 );
-	Uint32	addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration, int spacing = 0 );
+	bool		InsertFrame( int pos, WgSurface * pSurf, WgCoord ofs, int duration );
+	bool		InsertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, WgCoord ofs, int duration );
+	bool		AddFrame( WgSurface * pSurf, WgCoord ofs, int duration );
+	int			AddFrames( WgSurface * pSurf, WgCoord arrayOfs, WgSize arraySize, int duration, int nFrames = 0, WgSize spacing = WgSize() );
+	int			AddFrames( WgSurface * pSurf, int duration, int nFrames = 0, WgSize spacing = WgSize() );
 
+	WgGfxFrame * GetFrame( int64_t ticks, WgGfxFrame * pProximity = 0 ) const;
 
-	WgGfxFrame * getFrame( Uint32 tick, WgGfxFrame * pProximity = 0 ) const;
+	WgGfxFrame * GetFirstFrame(void) {return (WgGfxFrame *) WgAnim::_firstKeyFrame(); };
+	WgGfxFrame * GetLastFrame(void) {return (WgGfxFrame *) WgAnim::_lastKeyFrame(); };
 
-	WgGfxFrame * getFirstFrame(void) {return (WgGfxFrame *) WgAnim::FirstKeyFrame(); };
-	WgGfxFrame * getLastFrame(void) {return (WgGfxFrame *) WgAnim::LastKeyFrame(); };
-
+	WgBlock		 GetBlock( int64_t tick, WgGfxFrame * pProximity = 0 ) const;
 
 protected:
-	Uint32		m_width;
-	Uint32		m_height;
+
+	WgSize		m_size;
+	WgBorders	m_borders;
+	Uint32		m_blockFlags;
 };
 
 //____ Class WgGfxFrame _______________________________________________________
@@ -79,11 +87,11 @@ class WgGfxFrame : public WgKeyFrame
 public:
 	// Derived from WgKeyFrame: Uint32	timestamp
 
-	WgGfxFrame * getNext(void) {return (WgGfxFrame *) WgKeyFrame::Next();};
-	WgGfxFrame * getPrev(void) {return (WgGfxFrame *) WgKeyFrame::Prev();};
+	WgGfxFrame * GetNext(void) {return (WgGfxFrame *) WgKeyFrame::Next();};
+	WgGfxFrame * GetPrev(void) {return (WgGfxFrame *) WgKeyFrame::Prev();};
 
-	WgSurface	* pSurf;
-	WgUCord16		ofs;
+	WgSurface *	pSurf;
+	WgCoord		ofs;
 };
 
 #endif //WG_GFXANIM_DOT_H

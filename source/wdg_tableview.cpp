@@ -1592,16 +1592,22 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			else
 				pHeaderGfx = m_pHeaderGfxNormal;
 			
-			WgGfx::clipBlitBlock( _clip, pHeaderGfx->GetBlock(mode,r2), r2 );
+			WgBlock	headerBg;
+			if( pHeaderGfx)
+				headerBg = pHeaderGfx->GetBlock(mode,r2);	
+
+			WgGfx::clipBlitBlock( _clip, headerBg, r2 );
 
 			// Print text
 
 			if( pHeaderGfx )
 				m_pColumns[i].SetTextBaseColors(pHeaderGfx->TextColors());
 
-			WgRect rText = r2;
+			WgRect rText;
 			if( pHeaderGfx )
-				rText.Shrink( pHeaderGfx->ContentBorders() );
+				rText = headerBg.ContentRect(r2);
+			else
+				rText = r2;
 
 			m_pColumns[i].GetTextObj()->setProperties( m_pHeaderProps );
 			WgGfx::printText( _clip, m_pColumns[i].GetTextObj(), rText );
@@ -1910,24 +1916,28 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 				int col = pCol - m_pColumns;
 				Emit( WgSignal::TableHeaderPress(_button_key), col );
 				bool	bAscend = pCol->m_bInitialAscend;
-				if( col == m_lastSortColumn )
+
+				if( pCol->m_fpCompare )
+				{
+					if( col == m_lastSortColumn )
 					bAscend = !m_lastSortColumnAscendStatus;
 
-				// If we have clicked on the header of a column that is higher than clickSortPrio, we
-				// should just flip bAscend right away since it's already sorted.
+					// If we have clicked on the header of a column that is higher than clickSortPrio, we
+					// should just flip bAscend right away since it's already sorted.
 
-				for( int i = 0 ; i < m_clickSortPrio ; i++ )
-				{
-					if( m_sortStack[i].column == col )
+					for( int i = 0 ; i < m_clickSortPrio ; i++ )
 					{
-						bAscend = !m_sortStack[i].bAscend;
-						break;
+						if( m_sortStack[i].column == col )
+						{
+							bAscend = !m_sortStack[i].bAscend;
+							break;
+						}
 					}
+
+					//
+
+					SortRows( col, bAscend, m_clickSortPrio );
 				}
-
-				//
-
-				SortRows( col, bAscend, m_clickSortPrio );
 			}
 
 
@@ -2224,6 +2234,22 @@ WgString Wdg_TableView::GetTooltipString() const
 			tooltip = p->GetTooltipString();
 	}
 	return tooltip;
+}
+
+//____ GetTooltipItem() _________________________________________________
+
+WgItem* Wdg_TableView::GetTooltipItem() const
+{
+	if( m_pLastMarkedItem != 0 && !m_pLastMarkedItem->GetTooltipString().IsEmpty() )
+		return m_pLastMarkedItem;
+	
+	if( m_markedRow != -1 )
+	{
+		const WgTableRow * p = GetRow(m_markedRow);
+		if( p )
+			return const_cast<WgTableRow*>(p);
+	}
+	return 0;
 }
 
 

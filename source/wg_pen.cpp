@@ -280,34 +280,34 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 	WgCursor::Mode mode = instance.cursorMode();
 
-	WgGfxAnim * pAnim	= pCursor->anim( mode );
+	WgGfxAnim * pAnim	= pCursor->Anim( mode );
 	if( pAnim == 0 )
 		return false;
 
-	WgGfxFrame * pFrame = pAnim->getFrame( instance.time(), 0 );
+	WgGfxFrame * pFrame = pAnim->GetFrame( instance.time(), 0 );
 
-	float	scaleValue = (pCursor->sizeRatio(mode) * GetLineSpacing())/pAnim->height();
+	float	scaleValue = (pCursor->SizeRatio(mode) * GetLineSpacing())/pAnim->Size().h;
 	
-	WgSize	size = WgSize( pAnim->width(), pAnim->height() );
-	WgCoord  bearing = pCursor->bearing( mode );
+	WgSize	size = pAnim->Size();
+	WgCoord  bearing = pCursor->Bearing( mode );
 
 	int blockFlags = 0;
 
-	switch( pCursor->scaleMode(mode) )
+	switch( pCursor->GetScaleMode(mode) )
 	{
 		case WgCursor::FIXED_SIZE:
 			break;
 
-		case WgCursor::TILE_1D:
+		case WgCursor::TILE_Y:
 			blockFlags |= WG_TILE_ALL;
-		case WgCursor::STRETCH_1D:
+		case WgCursor::STRETCH_Y:
 			size.h		= (int) (size.h * scaleValue);
 			bearing.y	= (int) (bearing.y * scaleValue);
 			break;
 
-		case WgCursor::TILE_2D:
+		case WgCursor::TILE_XY:
 			blockFlags |= WG_TILE_ALL;
-		case WgCursor::STRETCH_2D:
+		case WgCursor::STRETCH_XY:
 			size		*= scaleValue;
 			bearing		*= scaleValue;
 			break;
@@ -317,7 +317,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 	WgColor		tintColor;
 	WgBlendMode blendMode;
-	switch( pCursor->blitMode() )
+	switch( pCursor->GetBlitMode() )
 	{
 		case WgCursor::NORMAL:
 			break;
@@ -334,7 +334,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 	//
 
 
-	WgBlock block( pFrame->pSurf, WgRect( pFrame->ofs.x, pFrame->ofs.y, pAnim->width(), pAnim->height()), pCursor->stretchBorders(mode), 0, WgCoord8(), blockFlags );
+	WgBlock block( pFrame->pSurf, WgRect( pFrame->ofs, pAnim->Size()), pCursor->GfxBorders(mode), 0, WgCoord8(), blockFlags );
 
 	if( m_bClip )
 		m_pDevice->ClipBlitBlock( m_clipRect, block, WgRect(m_pos + bearing, size) );
@@ -343,7 +343,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 	// Restore tintcolor/blendmode.
 
-	switch( pCursor->blitMode() )
+	switch( pCursor->GetBlitMode() )
 	{
 		case WgCursor::NORMAL:
 			break;
@@ -372,15 +372,15 @@ void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 
 	WgCursor::Mode mode = instance.cursorMode();
 
-	WgGfxAnim * pAnim	= pCursor->anim( mode );
+	WgGfxAnim * pAnim	= pCursor->Anim( mode );
 	if( !pAnim )
 		return;
 
-	int advance = pCursor->advance(mode);
+	int advance = pCursor->Advance(mode);
 
-	if( pCursor->scaleMode(mode) == WgCursor::TILE_2D || pCursor->scaleMode(mode) == WgCursor::STRETCH_2D )
+	if( pCursor->GetScaleMode(mode) == WgCursor::TILE_XY || pCursor->GetScaleMode(mode) == WgCursor::STRETCH_XY )
 	{
-		float	scaleValue = (pCursor->sizeRatio(mode) * GetLineSpacing())/pAnim->height();
+		float	scaleValue = (pCursor->SizeRatio(mode) * GetLineSpacing())/pAnim->Size().h;
 		advance = (int) (advance * scaleValue);
 	}
 

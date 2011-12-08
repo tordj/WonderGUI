@@ -262,7 +262,7 @@ bool WgGizmoEditvalue::_parseValueFromInput( int64_t * wpResult )
 	int		nbChars = m_text.getBuffer()->NbChars();
 
 	int64_t	value = 0;
-	bool	bModified = false;
+	bool	bModified = false;			// Set when value displayed isn't fully acceptable (outside boundaries or has too many decimals)
 	int		nDecimals = 0;
 
 	if( nbChars > 0 )

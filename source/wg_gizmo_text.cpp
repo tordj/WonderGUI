@@ -607,6 +607,8 @@ bool WgGizmoText::InsertCharAtCursor( Uint16 c )
 	return InsertCharAtCursorInternal(c);
 }
 
+//____ InsertCharAtCursorInternal() ___________________________________________
+
 bool WgGizmoText::InsertCharAtCursorInternal( Uint16 c )
 {
 	if(m_pText->hasSelection())
