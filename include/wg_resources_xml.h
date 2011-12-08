@@ -303,7 +303,7 @@ private:
 class WgTextPropRes : public WgResourceXML
 {
 public:
-	WgTextPropRes(WgResourceXML* parent, WgTextPropPtr pProp = (Uint16) 0) :
+	WgTextPropRes(WgResourceXML* parent, WgTextPropPtr pProp = WgTextPropPtr() ) :
 		WgResourceXML(parent),
 		m_pProp(pProp),
 		m_bgColor(0),
