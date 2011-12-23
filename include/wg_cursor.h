@@ -56,15 +56,6 @@ public:
 		OVR
 	};
 	
-	enum ScaleMode
-	{
-		FIXED_SIZE,					// Size ratio is ignored.
-		STRETCH_Y,
-		STRETCH_XY,
-		TILE_Y,
-		TILE_XY
-	};
-
 	enum BlitMode
 	{
 		NORMAL,
@@ -73,14 +64,12 @@ public:
 	};
 
 
-	bool				SetMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing = WgCoord(), int advance = 0, ScaleMode mode = FIXED_SIZE, float size_ratio = 1.f, WgBorders gfxBorders = WgBorders(0)  );
+	bool				SetMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing = WgCoord(), int advance = 0, float size_ratio = 1.f  );
 
 	void				SetBearing( Mode m, WgCoord bearing );
 	void				SetAdvance( Mode m, int advance );
 	void				SetAnim( Mode m, WgGfxAnim * pAnim );
 
-	void				SetGfxBorders( Mode m, WgBorders borders );
-	void				SetScaleMode( Mode m, ScaleMode mode );
 	void				SetSizeRatio( Mode m, float ratio );
 
 	void				SetBlitMode( BlitMode mode );
@@ -92,8 +81,6 @@ public:
 	int					Advance( Mode m ) const { return m_advance[m]; };
 	int					Width( Mode m ) const { return m_pAnim[m]->Size().w; }
 	WgGfxAnim * 		Anim( Mode m ) const { return m_pAnim[m]; };
-	ScaleMode			GetScaleMode( Mode m ) const { return m_scaleMode[m]; }
-	WgBorders			GfxBorders( Mode m ) const { return m_gfxBorders[m]; }
 	float				SizeRatio(Mode m ) const { return m_sizeRatio[m]; }
 
 	
@@ -105,8 +92,6 @@ private:
 	WgCoord				m_bearing[N_MODES];
 	int					m_advance[N_MODES];
 
-	ScaleMode			m_scaleMode[N_MODES];
-	WgBorders			m_gfxBorders[N_MODES];
 	float				m_sizeRatio[N_MODES];			// ratio <= 1.f. Cursors height relative fonts lineheight.
 
 	BlitMode			m_blitMode;

@@ -30,7 +30,6 @@ WgCursor::WgCursor()
 	{
 		m_pAnim[i]	= 0;
 		m_advance[i] = 0;
-		m_scaleMode[i] = FIXED_SIZE;
 		m_sizeRatio[i]	= 1.f;
 	}
 	m_blitMode = NORMAL;
@@ -43,7 +42,6 @@ WgCursor::WgCursor(	WgCursor& in )
 		m_pAnim[i]		= in.m_pAnim[i];
 		m_bearing[i]	= in.m_bearing[i];
 		m_advance[i]	= in.m_advance[i];
-		m_scaleMode[i]	= in.m_scaleMode[i];
 		m_sizeRatio[i]	= in.m_sizeRatio[i];
 	}
 
@@ -58,26 +56,6 @@ void WgCursor::SetBlitMode( BlitMode mode )
 }
 
 
-//____ SetGfxBorders() ________________________________________________________
-
-void WgCursor::SetGfxBorders( Mode m, WgBorders borders )
-{
-	if( m < 0 || m >= (Mode) N_MODES )
-		return;
-
-	m_gfxBorders[m] = borders;
-}
-
-//____ SetScaleMode() _________________________________________________________
-
-void WgCursor::SetScaleMode( Mode m, ScaleMode mode )
-{
-	if( m < 0 || m >= (Mode) N_MODES )
-		return;
-
-	m_scaleMode[m] = mode;
-}
-
 //____ SetSizeRatio() _________________________________________________________
 
 void WgCursor::SetSizeRatio( Mode m, float ratio )
@@ -89,10 +67,9 @@ void WgCursor::SetSizeRatio( Mode m, float ratio )
 }
 
 
-
 //____ SetMode() ______________________________________________________________
 
-bool WgCursor::SetMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing, int advance, ScaleMode mode, float size_ratio, WgBorders gfxBorders )
+bool WgCursor::SetMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing, int advance, float size_ratio )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return false;
@@ -100,9 +77,7 @@ bool WgCursor::SetMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing, int advance,
 	m_pAnim[m]			= pAnim;
 	m_bearing[m]		= bearing;
 	m_advance[m]		= advance;
-	m_scaleMode[m]		= mode;
 	m_sizeRatio[m]		= size_ratio;
-	m_gfxBorders[m]		= gfxBorders;
 
 	return true;
 }

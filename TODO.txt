@@ -3,10 +3,8 @@
 ANIMATIONSSYSTEM / CURSOR
 =========================
 
-* Fixa XML så vi har bättre upplägg och alla nya parametrar.
-* Fixa cursor och pen så att vi utnyttjar det som finns i WgGfxAnimation och Block (stretch/tile, fixed_size/stretch/scale, borders)
-* Fixa WgGizmoAnimation så att den hämtar block till rendering alpha-test etc.
-* Fixa WgGizmoRefreshButton så att den hämtar block till rendering alpha-test etc.
+* Fixa WgGizmoAnimation så att den hämtar block till rendering, alpha-test etc.
+* Fixa WgGizmoRefreshButton så att den hämtar block till rendering, alpha-test etc.
 
 ATT FIXA I LEGACY
 =================
@@ -24,8 +22,10 @@ FOCUS
 * Cut/Copy/Paste-support.
 * Pointermask+displacement i blockset.
 * WgCharBuffer m.fl. saknar metoder för Size, Link och kanske mer...
-* Checkbox and Radiobutton should inherit WgIconHolder (fix XML-loader too!)
 * Make menu hold vdrag as a Gizmo. Hide/show instead of remove.
+
+v Checkbox and Radiobutton should inherit WgIconHolder (fix XML-loader too!)
+
 
 
 FIX GIZMOS

@@ -284,35 +284,25 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 	if( pAnim == 0 )
 		return false;
 
-	WgGfxFrame * pFrame = pAnim->GetFrame( instance.time(), 0 );
+	WgBlock	block =	pAnim->GetBlock( instance.time(), 0 );
 
-	float	scaleValue = (pCursor->SizeRatio(mode) * GetLineSpacing())/pAnim->Size().h;
-	
-	WgSize	size = pAnim->Size();
+	WgSize	size = block.Size();
 	WgCoord  bearing = pCursor->Bearing( mode );
 
-	int blockFlags = 0;
+	float	scaleValue = (pCursor->SizeRatio(mode)*GetLineHeight())/ size.h;
 
-	switch( pCursor->GetScaleMode(mode) )
+	if( block.IsScaled() )
 	{
-		case WgCursor::FIXED_SIZE:
-			break;
-
-		case WgCursor::TILE_Y:
-			blockFlags |= WG_TILE_ALL;
-		case WgCursor::STRETCH_Y:
-			size.h		= (int) (size.h * scaleValue);
-			bearing.y	= (int) (bearing.y * scaleValue);
-			break;
-
-		case WgCursor::TILE_XY:
-			blockFlags |= WG_TILE_ALL;
-		case WgCursor::STRETCH_XY:
-			size		*= scaleValue;
-			bearing		*= scaleValue;
-			break;
+		size		*= scaleValue;
+		bearing		*= scaleValue;
+		size.w += 1;				// So that scaled size won't be limited by width truncation.
 	}
-	
+	else if( !block.IsFixedSize() )
+	{
+		size.h		= (int) (size.h * scaleValue);
+		bearing.y	= (int) (bearing.y * scaleValue);
+	}
+
 	// Set tintcolor/blendmode. Save original modes so we can restore them.
 
 	WgColor		tintColor;
@@ -333,9 +323,6 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 	//
 
-
-	WgBlock block( pFrame->pSurf, WgRect( pFrame->ofs, pAnim->Size()), pCursor->GfxBorders(mode), 0, WgCoord8(), blockFlags );
-
 	if( m_bClip )
 		m_pDevice->ClipBlitBlock( m_clipRect, block, WgRect(m_pos + bearing, size) );
 	else
@@ -354,8 +341,6 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 			m_pDevice->SetBlendMode( blendMode );
 			break;
 	}
-
-
 
 	return true;
 }
@@ -378,7 +363,7 @@ void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 
 	int advance = pCursor->Advance(mode);
 
-	if( pCursor->GetScaleMode(mode) == WgCursor::TILE_XY || pCursor->GetScaleMode(mode) == WgCursor::STRETCH_XY )
+	if( pAnim->BlockFlags() & WG_SCALE_CENTER )
 	{
 		float	scaleValue = (pCursor->SizeRatio(mode) * GetLineSpacing())/pAnim->Size().h;
 		advance = (int) (advance * scaleValue);

@@ -785,7 +785,12 @@ void WgGizmoTablist::ResizeTabs()
 					pTab = pTab->Next();
 				}
 
-				float	growFactor = diff / (float) combWidth;
+				float growFactor;
+				if( combWidth )
+					growFactor = diff / (float) combWidth;
+				else
+					growFactor = 0;
+
 				float	fractions = 0.f;
 
 				pTab = m_tabs.First();
@@ -868,7 +873,12 @@ void WgGizmoTablist::ResizeTabs()
 				if( diff > totalExpand )
 					diff = totalExpand;
 
-				float	growFactor = diff / (float) totalExpand;
+				float	growFactor;
+				if( totalExpand )
+					growFactor = diff / (float)totalExpand;
+				else
+					growFactor = 0.f;
+
 				float	fractions = 0.f;
 
 				// 

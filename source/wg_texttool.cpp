@@ -665,6 +665,11 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 	WgColor		colorStack[16];
 	Uint32		nColorRecursions = 0;
 
+	WgChar *	pBeginSize = 0;
+	int			sizeStack[16];
+	Uint32		nSizeRecursions = 0;
+
+
 	WgChar		myChar;
 
 	const char * pSrc = _pSrc;		// We need a pointer that can be increased.
@@ -687,6 +692,30 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 						pDst[n++] = myChar;
 					}
 				break;
+
+				case '[':					// BEGIN SIZE
+					if( nSizeRecursions != 0 )
+						WgTextTool::SetSize( sizeStack[nSizeRecursions-1], pBeginSize, pDst + n - pBeginSize );
+
+					if( nSizeRecursions < 16 )
+					{
+						pBeginSize = &pDst[n];
+
+						int size = (pSrc[0] - '0') * 100 + (pSrc[1] - '0') * 10 + (pSrc[2] - '0');
+						sizeStack[nSizeRecursions++] = size;
+						pSrc+=3;
+					}
+				break;
+
+				case ']':					// END SIZE
+					if( nSizeRecursions > 0 )
+					{
+						nSizeRecursions--;
+						WgTextTool::SetSize( sizeStack[nSizeRecursions], pBeginSize, pDst + n - pBeginSize );
+						pBeginSize = &pDst[n];
+					}
+				break;
+
 
 				case '{':					// BEGIN COLOR
 					if( nColorRecursions != 0 )
@@ -903,6 +932,10 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 	WgColor		colorStack[16];
 	Uint32		nColorRecursions = 0;
 
+	WgChar *	pBeginSize = 0;
+	int			sizeStack[16];
+	Uint32		nSizeRecursions = 0;
+
 	WgChar		myChar;
 
 	const Uint16 * pSrc = _pSrc;		// We need a pointer that can be increased.
@@ -923,6 +956,29 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 					{
 						myChar.SetGlyph( '\n' );
 						pDst[n++] = myChar;
+					}
+				break;
+
+				case '[':					// BEGIN SIZE
+					if( nSizeRecursions != 0 )
+						WgTextTool::SetSize( sizeStack[nSizeRecursions-1], pBeginSize, pDst + n - pBeginSize );
+
+					if( nSizeRecursions < 16 )
+					{
+						pBeginSize = &pDst[n];
+
+						int size = (pSrc[0] - '0') * 100 + (pSrc[1] - '0') * 10 + (pSrc[2] - '0');
+						sizeStack[nSizeRecursions++] = size;
+						pSrc+=3;
+					}
+				break;
+
+				case ']':					// END SIZE
+					if( nSizeRecursions > 0 )
+					{
+						nSizeRecursions--;
+						WgTextTool::SetSize( sizeStack[nSizeRecursions], pBeginSize, pDst + n - pBeginSize );
+						pBeginSize = &pDst[n];
 					}
 				break;
 
@@ -2499,6 +2555,20 @@ int WgTextTool::stripTextCommandsConvert( const char* pSrc, Uint16* pDest, int m
 	}
 
 	return n;
+}
+
+//____ SetSize() _____________________________________________________________
+
+void WgTextTool::SetSize( int size, WgChar * pChar, Uint32 nb, WgMode mode )
+{
+	ModifyProperties( PropSizeModifier(size,mode), pChar, nb );
+}
+
+//____ ClearSize() ___________________________________________________________
+
+void WgTextTool::ClearSize( WgChar * pChar, Uint32 nb, WgMode mode )
+{
+	ModifyProperties( PropSizeClearer(mode), pChar, nb );
 }
 
 

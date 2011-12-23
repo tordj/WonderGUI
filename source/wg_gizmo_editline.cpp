@@ -795,7 +795,7 @@ void WgGizmoEditline::_onGotInputFocus()
 	if( _isEditable() )
 	{
 		if( m_bResetCursorOnFocus )
-			m_pText->GetCursor()->goEOL();
+			m_pText->goEOL();
 		RequestRender(); // render with cursor on
 	}
 }

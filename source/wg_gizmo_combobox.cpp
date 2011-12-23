@@ -715,7 +715,7 @@ void WgGizmoCombobox::_onGotInputFocus()
 		m_text.showCursor();
 		if( m_bResetCursorOnFocus )
 		{
-			m_text.GetCursor()->goEOL();
+			m_text.goEOL();
 			m_text.selectAll();
 		}
 	}

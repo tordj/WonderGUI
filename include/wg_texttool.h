@@ -195,6 +195,7 @@ public:
 	static void			SetLink( const WgTextLinkPtr& pLink, WgChar * pChar, Uint32 nb );
 	static void			SetFont( WgFont * pFont, WgChar * pChar, Uint32 nb );
 	static void			SetColor( const WgColor col, WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
+	static void			SetSize( int size, WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 	static void			SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 	static void			SetUnderlined( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 
@@ -202,6 +203,7 @@ public:
 	inline static void	ClearLink( WgChar * pChar, Uint32 nb ) { SetLink(0,pChar,nb); }
 	inline static void	ClearFont( WgChar * pChar, Uint32 nb ) { SetFont(0,pChar,nb); }
 	static void			ClearColor( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
+	static void			ClearSize( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 	static void			ClearStyle( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 	static void			ClearUnderlined( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 
@@ -257,6 +259,26 @@ public:
 	protected:
 		PropModifier() {};
 	};
+
+	class PropSizeModifier : public PropModifier
+	{
+	public:
+		PropSizeModifier( int size, WgMode mode ) { m_size = size; m_mode = mode; }
+		void Modify( WgTextProp& prop ) const { prop.SetSize(m_size,m_mode); }
+	private:
+		int		m_size;
+		WgMode	m_mode;
+	};
+
+	class PropSizeClearer : public PropModifier
+	{
+	public:
+		PropSizeClearer( WgMode mode ) { m_mode = mode; }
+		void Modify( WgTextProp& prop ) const { prop.ClearSize(m_mode); }
+	private:
+		WgMode	m_mode;
+	};
+
 
 	class PropColorModifier : public PropModifier
 	{
