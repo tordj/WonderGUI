@@ -449,6 +449,17 @@ public:
 	static WgOrientation Deserialize(WgResourceSerializerXML& s, const std::string& value, WgOrientation def = WG_NORTHWEST);
 };
 
+//////////////////////////////////////////////////////////////////////////
+/// WgBlockFlagsRes //////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+class WgBlockFlagsRes : public WgResourceXML
+{
+public:
+	static void Serialize(WgResourceSerializerXML& s, WgResourceXML* tag, const WgXmlNode& xmlNode, Uint32 flags);
+	static Uint32 Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
+};
+
+
 
 //////////////////////////////////////////////////////////////////////////
 /// WgColorRes ///////////////////////////////////////////////////////////
@@ -601,9 +612,6 @@ public:
 
 	static const char* TagName() { return "cursor"; }
 private:
-
-	std::string	ScaleModeToString( WgCursor::ScaleMode mode );
-	WgCursor::ScaleMode	StringToScaleMode( const std::string& str );
 
 	std::string	BlitModeToString( WgCursor::BlitMode mode );
 	WgCursor::BlitMode	StringToBlitMode( const std::string& str );
@@ -1019,7 +1027,7 @@ private:
 
 
 /// Wdg_CheckBox2_Res ////////////////////////////////////////////////////
-class Wdg_CheckBox2_Res : public WgWidgetRes, public WgTextHolderRes
+class Wdg_CheckBox2_Res : public WgWidgetRes, public WgTextHolderRes, public WgIconHolderRes
 {
 public:
 	Wdg_CheckBox2_Res(WgResourceXML* parent, class Wdg_CheckBox2* widget = 0);
@@ -1275,7 +1283,7 @@ public:
 };
 
 /// Wdg_RadioButton2_Res /////////////////////////////////////////////////
-class Wdg_RadioButton2_Res : public WgWidgetRes, public WgTextHolderRes
+class Wdg_RadioButton2_Res : public WgWidgetRes, public WgTextHolderRes, public WgIconHolderRes
 {
 public:
 	Wdg_RadioButton2_Res(WgResourceXML* parent, class Wdg_RadioButton2* widget = 0);

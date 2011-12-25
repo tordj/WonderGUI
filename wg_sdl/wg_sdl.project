@@ -7,13 +7,11 @@
   </Plugins>
   <Description/>
   <Dependencies/>
-  <VirtualDirectory Name="src">
-    <File Name="wg_gfxdevice_sdl.cpp"/>
-    <File Name="wg_surface_sdl.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
+  <VirtualDirectory Name="code">
     <File Name="wg_gfxdevice_sdl.h"/>
     <File Name="wg_surface_sdl.h"/>
+    <File Name="wg_gfxdevice_sdl.cpp"/>
+    <File Name="wg_surface_sdl.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

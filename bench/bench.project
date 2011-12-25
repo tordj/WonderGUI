@@ -7,7 +7,7 @@
   </Plugins>
   <Description/>
   <Dependencies/>
-  <VirtualDirectory Name="src">
+  <VirtualDirectory Name="code">
     <File Name="main.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release">

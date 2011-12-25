@@ -543,7 +543,7 @@ void WgGizmoText::_onGotInputFocus()
 	{
 		_startReceiveTicks();
 		if(	m_bResetCursorOnFocus )
-			m_pText->GetCursor()->goEOF();
+			m_pText->goEOF();
 		RequestRender();
 	}
 }
@@ -606,6 +606,8 @@ bool WgGizmoText::InsertCharAtCursor( Uint16 c )
 
 	return InsertCharAtCursorInternal(c);
 }
+
+//____ InsertCharAtCursorInternal() ___________________________________________
 
 bool WgGizmoText::InsertCharAtCursorInternal( Uint16 c )
 {

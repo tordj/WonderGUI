@@ -421,6 +421,9 @@ protected:
 
 	void			_refreshAllLines();
 	void			_refreshLineInfo( WgTextLine * pLine ) const;
+	
+	int				_cursorMaxWidth() const;
+
 
 
 	WgCharBuffer	m_buffer;

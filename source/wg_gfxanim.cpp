@@ -25,37 +25,58 @@
 #include <wg_surface.h>
 
 
-//____ WgGfxAnim() ____________________________________________________________
+//____ Constructor ____________________________________________________________
 
 WgGfxAnim::WgGfxAnim()
 {
-	m_width = 0;
-	m_height = 0;
+	m_blockFlags = 0;
 }
 
-//____ WgGfxAnim() ____________________________________________________________
 
-WgGfxAnim::WgGfxAnim( Uint32 width, Uint32 height )
+WgGfxAnim::WgGfxAnim( WgSize size, WgBorders gfxBorders, Uint32 blockFlags )
 {
-	m_width = width;
-	m_height = height;
+	m_size = size;
+	m_borders = gfxBorders;
+	m_blockFlags = blockFlags;
 }
 
-//____ insertKeyFrame() _______________________________________________________
+//____ SetSize() ______________________________________________________________
 
-bool WgGfxAnim::insertFrame( Uint32 pos, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration )
+void WgGfxAnim::SetSize( WgSize size )
 {
-	if( pSurf->Width() < (int)(xOfs + m_width) || pSurf->Height() < (int)(yOfs + m_height) )
+	m_size = size;
+}
+
+//____ SetGfxBorders() ________________________________________________________
+
+void WgGfxAnim::SetGfxBorders( WgBorders borders )
+{
+	m_borders = borders;
+}
+
+//____ SetBlockFlags() ________________________________________________________
+
+void WgGfxAnim::SetBlockFlags( Uint32 flags )
+{
+	m_blockFlags = flags;
+}
+
+
+
+//____ InsertFrame() __________________________________________________________
+
+bool WgGfxAnim::InsertFrame( int pos, WgSurface * pSurf, WgCoord ofs, int duration )
+{
+	if( pSurf->Width() < (int)(ofs.x + m_size.w) || pSurf->Height() < (int)(ofs.y + m_size.h) )
 		return false;
 
 
-	WgGfxFrame * pFrame = new WgGfxFrame;
+	WgGfxFrame * pFrame = new WgGfxFrame();
 
 	pFrame->pSurf = pSurf;
-	pFrame->ofs.x = xOfs;
-	pFrame->ofs.y = yOfs;
+	pFrame->ofs = ofs;
 
-	bool bOk = WgAnim::InsertKeyFrame( pos, pFrame, duration );
+	bool bOk = WgAnim::_insertKeyFrame( pos, pFrame, duration );
 
 	if( !bOk )
 		delete pFrame;
@@ -63,15 +84,14 @@ bool WgGfxAnim::insertFrame( Uint32 pos, WgSurface * pSurf, Uint16 xOfs, Uint16 
 	return bOk;
 }
 
-bool WgGfxAnim::insertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration )
+bool WgGfxAnim::InsertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, WgCoord ofs, int duration )
 {
 	WgGfxFrame * pFrame = new WgGfxFrame;
 
 	pFrame->pSurf = pSurf;
-	pFrame->ofs.x = xOfs;
-	pFrame->ofs.y = yOfs;
+	pFrame->ofs = ofs;
 
-	bool bOk = WgAnim::InsertKeyFrame( pBefore, pFrame, duration );
+	bool bOk = WgAnim::_insertKeyFrame( pBefore, pFrame, duration );
 
 	if( !bOk )
 		delete pFrame;
@@ -79,20 +99,19 @@ bool WgGfxAnim::insertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, Uint16 xOf
 	return bOk;
 }
 
-//____ addFrame() _____________________________________________________________
+//____ AddFrame() _____________________________________________________________
 
-bool WgGfxAnim::addFrame( WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration )
+bool WgGfxAnim::AddFrame( WgSurface * pSurf, WgCoord ofs, int duration )
 {
-	if( pSurf->Width() < (int)(xOfs + m_width) || pSurf->Height() < (int)(yOfs + m_height) )
+	if( pSurf->Width() < (int)(ofs.x + m_size.w) || pSurf->Height() < (int)(ofs.y + m_size.h) )
 		return false;
 
 	WgGfxFrame * pFrame = new WgGfxFrame;
 
 	pFrame->pSurf = pSurf;
-	pFrame->ofs.x = xOfs;
-	pFrame->ofs.y = yOfs;
+	pFrame->ofs = ofs;
 
-	bool bOk = WgAnim::AddKeyFrame( pFrame, duration );
+	bool bOk = WgAnim::_addKeyFrame( pFrame, duration );
 
 	if( !bOk )
 		delete pFrame;
@@ -101,73 +120,79 @@ bool WgGfxAnim::addFrame( WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 du
 }
 
 
-//____ addHorrTiledFrames() ___________________________________________________
+//____ AddFrames() ____________________________________________________________
 
-Uint32 WgGfxAnim::addHorrTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration, int spacing )
+int WgGfxAnim::AddFrames( WgSurface * pSurf, int duration, int nFrames, WgSize spacing )
 {
-	if( nFrames == 0 )
-		nFrames = (pSurf->Width() - xOfs) / m_width;				// Put in as many as fits along surface width.
-
-	if( pSurf->Width() < (int)(xOfs + (m_width+spacing) * nFrames) || pSurf->Height() < (int)(yOfs + m_height) )
+	if( pSurf == 0 )
 		return 0;
 
-	for( Uint32 i = 0 ; i < nFrames ; i++ )
-	{
-		WgGfxFrame * pFrame = new WgGfxFrame;
+	WgSize arraySize;
 
-		pFrame->pSurf = pSurf;
-		pFrame->ofs.x = xOfs + i*(m_width+spacing);
-		pFrame->ofs.y = yOfs;
+	arraySize.w = (pSurf->Width()+spacing.w) / (m_size.w+spacing.w);
+	arraySize.h = (pSurf->Height()+spacing.h) / (m_size.h+spacing.h);
 
-		bool bOk = WgAnim::AddKeyFrame( pFrame, duration );
-			
-		if( !bOk )
-		{
-			delete pFrame;
-			return i;
-		}
-	}
-
-	return nFrames;
+	return AddFrames( pSurf, WgCoord(0,0), arraySize, duration, nFrames, spacing );
 }
 
 
-//____ addVertTiledFrames() ___________________________________________________
-
-Uint32 WgGfxAnim::addVertTiledFrames( Uint32 nFrames, WgSurface * pSurf, Uint16 xOfs, Uint16 yOfs, Uint32 duration, int spacing )
+int WgGfxAnim::AddFrames( WgSurface * pSurf, WgCoord arrayOfs, WgSize arraySize, int duration, int nFrames, WgSize spacing )
 {
-	if( nFrames == 0 )
-		nFrames = (pSurf->Height() - yOfs) / m_height;			// Put in as many as fits along surface width.
+	int nFramesX = arraySize.w;
+	int nFramesY = arraySize.h;
 
-	if( pSurf->Width() < (int)(xOfs + m_width) || pSurf->Height() < (int)(yOfs + (m_height+spacing)*nFrames) )
+	if( pSurf == 0 || nFrames < 0 || nFrames > nFramesX*nFramesY || nFramesX <= 0 || nFramesY <= 0 ||
+		((nFramesX*m_size.w+(nFramesX-1)*spacing.w ) > pSurf->Width() - arrayOfs.x ) ||
+		((nFramesY*m_size.h+(nFramesY-1)*spacing.h ) > pSurf->Height() - arrayOfs.y ) )
 		return 0;
 
-	for( Uint32 i = 0 ; i < nFrames ; i++ )
+	if( nFrames == 0 )
+		nFrames = nFramesX*nFramesY;
+
+	int framesAdded = 0;
+	for( int y = 0 ; y < nFramesY ; y++ )
 	{
-		WgGfxFrame * pFrame = new WgGfxFrame;
-
-		pFrame->pSurf = pSurf;
-		pFrame->ofs.x = xOfs;
-		pFrame->ofs.y = yOfs + i*(m_height+spacing);
-
-		bool bOk = WgAnim::AddKeyFrame( pFrame, duration );
-			
-		if( !bOk )
+		for( int x = 0 ; x < nFramesX ; x++ )
 		{
-			delete pFrame;
-			return i;
+			if( framesAdded == nFrames )
+				break;
+
+			WgGfxFrame * pFrame = new WgGfxFrame;
+
+			pFrame->pSurf = pSurf;
+			pFrame->ofs.x = arrayOfs.x + x*(m_size.w+spacing.w);
+			pFrame->ofs.y = arrayOfs.y + y*(m_size.h+spacing.h);
+
+			bool bOk = WgAnim::_addKeyFrame( pFrame, duration );
+				
+			if( !bOk )
+			{
+				delete pFrame;
+				return framesAdded;
+			}
+
+			framesAdded++;
 		}
 	}
-
-	return nFrames;
+	return framesAdded;
 }
 
 
-//____ getFrame() _____________________________________________________________
+//____ GetFrame() _____________________________________________________________
 
-WgGfxFrame * WgGfxAnim::getFrame( Uint32 ticks, WgGfxFrame * pProximity ) const
+WgGfxFrame * WgGfxAnim::GetFrame( int64_t ticks, WgGfxFrame * pProximity ) const
 {
-	WgAnimPlayPos playPos = PlayPos( ticks, pProximity );
+	WgAnimPlayPos playPos = _playPos( ticks, pProximity );
 
 	return (WgGfxFrame *) playPos.pKeyFrame1;
+}
+
+//____ GetBlock() _____________________________________________________________
+
+WgBlock WgGfxAnim::GetBlock( int64_t ticks, WgGfxFrame * pProximity ) const
+{
+	WgAnimPlayPos playPos = _playPos( ticks, pProximity );
+	WgGfxFrame * pFrame = (WgGfxFrame*) playPos.pKeyFrame1;
+
+	return WgBlock( pFrame->pSurf, WgRect(pFrame->ofs,m_size), m_borders, WgBorders(), WgCoord(), m_blockFlags );
 }

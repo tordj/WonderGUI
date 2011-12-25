@@ -420,7 +420,7 @@ void Wdg_TextView::AdjustViewOfs()
 		if( !pCursor )
 			return;
 
-		int cursWidth	= pCursor->advance(m_pText->cursorMode() );
+		int cursWidth	= pCursor->Advance(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.

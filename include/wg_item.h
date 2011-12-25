@@ -71,6 +71,9 @@ public:
 	inline	bool	IsVisible() const { return m_bVisible; }
 	inline	bool	IsHidden() const { return !m_bVisible; }
 
+	inline	void	SetMarkPolicy( WgMarkPolicy policy ) { m_markPolicy = policy; }
+	inline WgMarkPolicy MarkPolicy() const { return m_markPolicy; }
+
 	bool Select();
 	void Unselect();
 	inline bool IsSelected() const { if( m_mode == WG_MODE_SELECTED ) return true; return false; }
@@ -121,6 +124,7 @@ protected:
 	Sint64			m_id;
 	WgMode			m_mode;
 	WgPointerStyle	m_pointerStyle;
+	WgMarkPolicy	m_markPolicy;
 
 	bool			m_bVisible;
 
