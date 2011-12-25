@@ -456,7 +456,7 @@ class WgBlockFlagsRes : public WgResourceXML
 {
 public:
 	static void Serialize(WgResourceSerializerXML& s, WgResourceXML* tag, const WgXmlNode& xmlNode, Uint32 flags);
-	static Uint32 Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
+	static Uint32 Deserialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode );
 };
 
 

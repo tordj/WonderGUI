@@ -56,10 +56,6 @@
     <File Name="include/wg_dynarray.h"/>
     <File Name="include/wg_emitter.h"/>
     <File Name="include/wg_emitterstanza.h"/>
-    <File Name="include/wg_event.h"/>
-    <File Name="include/wg_eventfilter.h"/>
-    <File Name="include/wg_eventhandler.h"/>
-    <File Name="include/wg_eventlogger.h"/>
     <File Name="include/wg_font.h"/>
     <File Name="include/wg_geo.h"/>
     <File Name="include/wg_gfx.h"/>
@@ -79,22 +75,16 @@
     <File Name="include/wg_gizmo_editline.h"/>
     <File Name="include/wg_gizmo_editvalue.h"/>
     <File Name="include/wg_gizmo_fill.h"/>
-    <File Name="include/wg_gizmo_flexgeo.h"/>
     <File Name="include/wg_gizmo_fps.h"/>
     <File Name="include/wg_gizmo_item_wrapper.h"/>
     <File Name="include/wg_gizmo_menubar.h"/>
-    <File Name="include/wg_gizmo_modal.h"/>
     <File Name="include/wg_gizmo_parent.h"/>
     <File Name="include/wg_gizmo_pixmap.h"/>
     <File Name="include/wg_gizmo_radiobutton.h"/>
     <File Name="include/wg_gizmo_refreshbutton.h"/>
-    <File Name="include/wg_gizmo_stack.h"/>
-    <File Name="include/wg_gizmo_table.h"/>
     <File Name="include/wg_gizmo_tablist.h"/>
-    <File Name="include/wg_gizmo_taborder.h"/>
     <File Name="include/wg_gizmo_text.h"/>
     <File Name="include/wg_gizmo_value.h"/>
-    <File Name="include/wg_gizmo_view.h"/>
     <File Name="include/wg_gizmo_widget_wrapper.h"/>
     <File Name="include/wg_glyphset.h"/>
     <File Name="include/wg_hook.h"/>
@@ -113,9 +103,6 @@
     <File Name="include/wg_key.h"/>
     <File Name="include/wg_mempool.h"/>
     <File Name="include/wg_menuitem.h"/>
-    <File Name="include/wg_monotainer.h"/>
-    <File Name="include/wg_orderedlayout.h"/>
-    <File Name="include/wg_orderedselectable.h"/>
     <File Name="include/wg_origo.h"/>
     <File Name="include/wg_pen.h"/>
     <File Name="include/wg_pointerspy.h"/>
@@ -145,7 +132,6 @@
     <File Name="include/wg_userdefines.h"/>
     <File Name="include/wg_util.h"/>
     <File Name="include/wg_valueformat.h"/>
-    <File Name="include/wg_vboxlayout.h"/>
     <File Name="include/wg_vectorglyphs.h"/>
     <File Name="include/wg_widget.h"/>
     <File Name="include/wondergui_legacy.h"/>
@@ -174,10 +160,6 @@
     <File Name="source/wg_cursor.cpp"/>
     <File Name="source/wg_cursorinstance.cpp"/>
     <File Name="source/wg_emitter.cpp"/>
-    <File Name="source/wg_event.cpp"/>
-    <File Name="source/wg_eventfilter.cpp"/>
-    <File Name="source/wg_eventhandler.cpp"/>
-    <File Name="source/wg_eventlogger.cpp"/>
     <File Name="source/wg_font.cpp"/>
     <File Name="source/wg_geo.cpp"/>
     <File Name="source/wg_gfx.cpp"/>
@@ -196,20 +178,14 @@
     <File Name="source/wg_gizmo_editline.cpp"/>
     <File Name="source/wg_gizmo_editvalue.cpp"/>
     <File Name="source/wg_gizmo_fill.cpp"/>
-    <File Name="source/wg_gizmo_flexgeo.cpp"/>
     <File Name="source/wg_gizmo_fps.cpp"/>
     <File Name="source/wg_gizmo_menubar.cpp"/>
-    <File Name="source/wg_gizmo_modal.cpp"/>
     <File Name="source/wg_gizmo_pixmap.cpp"/>
     <File Name="source/wg_gizmo_radiobutton.cpp"/>
     <File Name="source/wg_gizmo_refreshbutton.cpp"/>
-    <File Name="source/wg_gizmo_stack.cpp"/>
-    <File Name="source/wg_gizmo_table.cpp"/>
     <File Name="source/wg_gizmo_tablist.cpp"/>
-    <File Name="source/wg_gizmo_taborder.cpp"/>
     <File Name="source/wg_gizmo_text.cpp"/>
     <File Name="source/wg_gizmo_value.cpp"/>
-    <File Name="source/wg_gizmo_view.cpp"/>
     <File Name="source/wg_glyphset.cpp"/>
     <File Name="source/wg_hook.cpp"/>
     <File Name="source/wg_iconholder.cpp"/>
@@ -226,9 +202,6 @@
     <File Name="source/wg_item_wraptext.cpp"/>
     <File Name="source/wg_mempool.cpp"/>
     <File Name="source/wg_menuitem.cpp"/>
-    <File Name="source/wg_monotainer.cpp"/>
-    <File Name="source/wg_orderedlayout.cpp"/>
-    <File Name="source/wg_orderedselectable.cpp"/>
     <File Name="source/wg_origo.cpp"/>
     <File Name="source/wg_pen.cpp"/>
     <File Name="source/wg_resdb.cpp"/>
@@ -249,7 +222,6 @@
     <File Name="source/wg_texttool.cpp"/>
     <File Name="source/wg_util.cpp"/>
     <File Name="source/wg_valueformat.cpp"/>
-    <File Name="source/wg_vboxlayout.cpp"/>
     <File Name="source/wg_vectorglyphs.cpp"/>
     <File Name="source/wg_widget-render.cpp"/>
     <File Name="source/wg_widget.cpp"/>
@@ -275,6 +247,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       ]]>
       </Environment>
@@ -313,6 +286,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       ]]>
