@@ -11,6 +11,7 @@ FOCUS
 =====
 * Hur ska vi lösa _onMaskRects() ???
 * Keyboard focus vid modal.
+* No mouse enter/exit men locked on a Gizmo through press.
 * Färdigställa WgStackGizmo.
 * Wdg_Layout.
 * Cut/Copy/Paste-support.

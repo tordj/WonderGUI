@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeLite_Workspace Name="WonderGUI" Database="./WonderGUI.tags">
-  <Project Name="wondergui" Path="wondergui.project" Active="Yes"/>
-  <Project Name="bench" Path="bench/bench.project" Active="No"/>
+  <Project Name="wondergui" Path="wondergui.project" Active="No"/>
+  <Project Name="bench" Path="bench/bench.project" Active="Yes"/>
   <Project Name="wg_sdl" Path="wg_sdl/wg_sdl.project" Active="No"/>
   <Project Name="WgLegacy" Path="WgLegacy.project" Active="No"/>
   <Project Name="wg_gl" Path="wg_gl/wg_gl.project" Active="No"/>

@@ -17,6 +17,7 @@
 #include <wg_gfxdevice_sdl.h>
 #include <wg_eventlogger.h>
 #include <wg_bitmapglyphs.h>
+#include <wg_vectorglyphs.h>
 #include <wg_textprop.h>
 #include <iostream>
 
@@ -94,8 +95,20 @@ int main ( int argc, char** argv )
 	WgBase::MapKey( WG_KEY_ESCAPE, SDLK_ESCAPE );
 
 
+	// Load TTF-font
+/*	
+	WgVectorGlyphs::SetSurfaceFactory( new WgSurfaceFactorySDL() );
+	
+	char	ttfname[] = { "a.ttf" };
+	
+	int size = fileSize( ttfname );
+	char * pFontFile = (char*) loadFile( ttfname );
+	WgVectorGlyphs * pGlyphs = new WgVectorGlyphs( pFontFile , size, 0 );
 
-	// Load font
+	WgFont * pFont = new WgFont();
+	pFont->SetDefaultVectorGlyphs( pGlyphs );
+*/
+	// Load bitmap font
 
 	WgSurface * pFontImg = loadSurface("anuvverbubbla_8x8.png");
 	char * pFontSpec = (char*) loadFile( "anuvverbubbla_8x8.fnt" );
@@ -104,6 +117,9 @@ int main ( int argc, char** argv )
 
 	WgFont * pFont = new WgFont();
 	pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 8 );
+
+
+	// Load and setup cursor
 
 	WgSurface * pCursorImg = loadSurface("cursors.png");
 
@@ -132,6 +148,7 @@ int main ( int argc, char** argv )
 	WgTextProp prop;
 
 	prop.SetFont(pFont);
+	prop.SetColor( WgColor::white );
 	prop.SetSize(8);
 
 	WgBase::SetDefaultTextProp( prop.Register() );
@@ -219,7 +236,7 @@ int main ( int argc, char** argv )
 
 	WgGizmoButton * pButton2 = new WgGizmoButton();
 	pButton2->SetSource( pButtonBlock );
-	pButton2->SetText( "STANDARD BUTTON" );
+	pButton2->SetText( "მწვრთნელი" );
 
 	pVBox->AddChild(pButton2);
 
