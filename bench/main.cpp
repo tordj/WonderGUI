@@ -65,7 +65,8 @@ int main ( int argc, char** argv )
 
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
 	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_POSITION );
-	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_MOVE );
+	pEventLogger->IgnoreEvent( WG_EVENT_MOUSEBUTTON_REPEAT );
+	pEventLogger->IgnoreEvent( WG_EVENT_BUTTON_PRESS );
 //	pEventLogger->IgnoreAllEvents();
 //	pEventLogger->LogMouseButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
@@ -124,24 +125,22 @@ int main ( int argc, char** argv )
 	WgSurface * pCursorImg = loadSurface("cursors.png");
 
 	WgGfxAnim * pCursorEOL = new WgGfxAnim();
-	pCursorEOL->setHeight(8);
-	pCursorEOL->setWidth(8);
-	pCursorEOL->addHorrTiledFrames(2, pCursorImg, 0, 0, 200 );
+	pCursorEOL->SetSize( WgSize(8,8) );
+	pCursorEOL->AddFrames(pCursorImg, WgCoord(0,0), WgSize(2,1), 200 );
 	pCursorEOL->SetPlayMode( WG_FORWARD_LOOPING );
 
 	WgGfxAnim * pCursorINS = new WgGfxAnim();
-	pCursorINS->setHeight(8);
-	pCursorINS->setWidth(8);
-	pCursorINS->addHorrTiledFrames(2, pCursorImg, 0, 8, 200 );
+	pCursorINS->SetSize( WgSize(8,8) );
+	pCursorINS->AddFrames( pCursorImg, WgCoord(0,8), WgSize(2,1), 200 );
 	pCursorINS->SetPlayMode( WG_FORWARD_LOOPING );
 
 	WgCursor * pCursor = new WgCursor();
-	pCursor->setAnim(WgCursor::EOL, pCursorEOL);
-	pCursor->setAnim(WgCursor::INS, pCursorINS);
-	pCursor->setAnim(WgCursor::OVR, pCursorEOL);
-	pCursor->setBearing(WgCursor::EOL, WgCoord(0,-8));
-	pCursor->setBearing(WgCursor::INS, WgCoord(0,-8));
-	pCursor->setBearing(WgCursor::OVR, WgCoord(0,-8));
+	pCursor->SetAnim(WgCursor::EOL, pCursorEOL);
+	pCursor->SetAnim(WgCursor::INS, pCursorINS);
+	pCursor->SetAnim(WgCursor::OVR, pCursorEOL);
+	pCursor->SetBearing(WgCursor::EOL, WgCoord(0,-8));
+	pCursor->SetBearing(WgCursor::INS, WgCoord(0,-8));
+	pCursor->SetBearing(WgCursor::OVR, WgCoord(0,-8));
 
 	// Set default textprop
 
@@ -236,7 +235,7 @@ int main ( int argc, char** argv )
 
 	WgGizmoButton * pButton2 = new WgGizmoButton();
 	pButton2->SetSource( pButtonBlock );
-	pButton2->SetText( "მწვრთნელი" );
+	pButton2->SetText( "BUTTON TEXT" );
 
 	pVBox->AddChild(pButton2);
 
@@ -274,19 +273,19 @@ int main ( int argc, char** argv )
 	// Radiobuttons test
 	
 	WgGizmoRadiobutton * pRB1 = new WgGizmoRadiobutton();
-	pRB1->SetIcon( pRadioBlockUnselected, pRadioBlockSelected, WgBorders(0), WgOrigo::midLeft() );
+	pRB1->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
 	pVBox->AddChild(pRB1);
 	
 	WgGizmoRadiobutton * pRB2 = new WgGizmoRadiobutton();
-	pRB2->SetIcon( pRadioBlockUnselected, pRadioBlockSelected, WgBorders(0), WgOrigo::midLeft() );
+	pRB2->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
 	pVBox->AddChild(pRB2);
 
 	WgGizmoRadiobutton * pRB3 = new WgGizmoRadiobutton();
-	pRB3->SetIcon( pRadioBlockUnselected, pRadioBlockSelected, WgBorders(0), WgOrigo::midLeft() );
+	pRB3->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
 	pFlex->AddChild( pRB3, WgCoord(0,100) );
 
 	WgGizmoRadiobutton * pRB4 = new WgGizmoRadiobutton();
-	pRB4->SetIcon( pRadioBlockUnselected, pRadioBlockSelected, WgBorders(0), WgOrigo::midLeft() );
+	pRB4->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
 	pFlex->AddChild( pRB4, WgCoord(0,120) );
 
 	pVBox->SetRadioGroup(true);

@@ -78,17 +78,21 @@ class WgGizmoContainer : public WgGizmoParent
 
 	private:
 
-		virtual WgHook *	_firstHookWithGeo( WgRect& geo ) const = 0;
-		virtual WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
+		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
+		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
 
 		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) = 0;
 		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) = 0;
 		virtual void	_clearDirtyRects() = 0;
 
-		bool 		_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
-		bool 		_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
+		bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
+		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
 
-		void		_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+		virtual void	_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+		virtual void	_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+		virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+		virtual bool 	_onAlphaTest( const WgCoord& ofs );
+
 
 		bool		m_bFocusGroup;
 		bool		m_bRadioGroup;

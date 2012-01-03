@@ -118,6 +118,35 @@ void WgGizmoContainer::_onDisable()
 	}
 }
 
+//____ _onRender() ____________________________________________________________
+
+void WgGizmoContainer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+{
+	// Do nothing, we have nothing to display ourselves.
+}
+
+//____ _onAlphaTest() _________________________________________________________
+
+bool WgGizmoContainer::_onAlphaTest( const WgCoord& ofs )
+{
+	return false;		// We are a cointainer, we have nothing displayed ourselves.
+}
+
+
+//____ _onCollectRects() _______________________________________________________
+
+void WgGizmoContainer::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+{
+	WgRect childGeo;
+	WgHook * p = _firstHookWithGeo( childGeo );
+
+	while(p)
+	{
+		p->Gizmo()->_onCollectRects( rects, childGeo, clip );
+		p = _nextHookWithGeo( childGeo, p );
+	}	
+}
+
 //____ _onMaskRects() __________________________________________________________
 
 void WgGizmoContainer::_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )

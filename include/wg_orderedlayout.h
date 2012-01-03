@@ -140,11 +140,12 @@ public:
 protected:
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
-	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool			_onAlphaTest( const WgCoord& ofs );
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+	inline void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+									{ WgGizmoContainer::_onRender(pDevice, _canvas, _window, _clip, _layer ); }
+	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 	inline WgHook*	_firstHook() const { return m_hooks.First(); }
 	inline WgHook*	_lastHook() const { return m_hooks.Last(); }

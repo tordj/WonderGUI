@@ -4,7 +4,6 @@
   <Project Name="bench" Path="bench/bench.project" Active="Yes"/>
   <Project Name="wg_sdl" Path="wg_sdl/wg_sdl.project" Active="No"/>
   <Project Name="WgLegacy" Path="WgLegacy.project" Active="No"/>
-  <Project Name="WgDesigner" Path="../WgDesigner/WgDesigner.project" Active="Yes"/>
   <Project Name="wg_gl" Path="wg_gl/wg_gl.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">

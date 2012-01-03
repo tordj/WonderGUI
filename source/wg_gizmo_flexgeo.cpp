@@ -1294,31 +1294,6 @@ WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 	return pResult;
 }
 
-
-//____ _onCollectRects() _______________________________________________________
-
-void WgGizmoFlexGeo::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
-{
-	WgFlexHook * pHook = m_hooks.First();
-	while( pHook )
-	{
-		pHook->Gizmo()->_onCollectRects( rects, pHook->m_realGeo + geo.Pos(), clip );
-		pHook = pHook->Next();
-	}
-}
-
-//____ _onMaskRects() __________________________________________________________
-
-void WgGizmoFlexGeo::_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
-{
-	WgFlexHook * pHook = m_hooks.First();
-	while( pHook )
-	{
-		pHook->Gizmo()->_onMaskRects( rects, pHook->m_realGeo + geo.Pos(), clip );
-		pHook = pHook->Next();
-	}
-}
-
 //____ _onRequestRender() ______________________________________________________
 
 void WgGizmoFlexGeo::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook )
@@ -1351,13 +1326,6 @@ void WgGizmoFlexGeo::_onRequestRender( const WgRect& rect, const WgFlexHook * pH
 		RequestRender( * pRect );
 		pRect = pRect->pNext;
 	}
-}
-
-//____ _onRender() ____________________________________________________________
-
-void WgGizmoFlexGeo::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
-{
-	// Do nothing
 }
 
 //____ _onCloneContent() _______________________________________________________
@@ -1428,13 +1396,6 @@ void WgGizmoFlexGeo::_onNewSize( const WgSize& size )
 
 void WgGizmoFlexGeo::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
-}
-
-//____ _onAlphaTest() __________________________________________________________
-
-bool WgGizmoFlexGeo::_onAlphaTest( const WgCoord& ofs )
-{
-	return false;
 }
 
 //____ _firstHookWithGeo() _____________________________________________________
