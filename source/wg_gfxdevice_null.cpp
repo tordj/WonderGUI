@@ -22,9 +22,8 @@
 
 #include <wg_gfxdevice_null.h>
 
-WgGfxDeviceNull::WgGfxDeviceNull( WgSize size )
+WgGfxDeviceNull::WgGfxDeviceNull( WgSize size ) : WgGfxDevice(size)
 {
-	m_canvasSize = size;
 }
 
 WgGfxDeviceNull::~WgGfxDeviceNull()

@@ -70,7 +70,6 @@ bool WgSurfaceGL::_initGlExtensions()
 
 //____ Constructor _____________________________________________________________
 
-
 WgSurfaceGL::WgSurfaceGL( GLint _format, WgSize dimensions, void * _pPixels )
 {
 	if( pglBufferDataARB == 0 )
@@ -145,75 +144,26 @@ void WgSurfaceGL::_initBuffer()
 
 void WgSurfaceGL::_setPixelFormat( GLint _format )
 {
+	WgPixelType pixeltype = WG_PIXEL_UNKNOW;
+
 	switch( _format )
 	{
 	case GL_RGB8:
 		m_pixelSize = 3;
-
-		m_pixelFormat.type = WgSurface::RGB_8;
-		m_pixelFormat.bits = 24;
-
-		m_pixelFormat.R_mask = 0xFF;
-		m_pixelFormat.G_mask = 0xFF00;
-		m_pixelFormat.B_mask = 0xFF0000;
-		m_pixelFormat.A_mask = 0x0;
-
-		m_pixelFormat.R_shift = 0;
-		m_pixelFormat.G_shift = 8;
-		m_pixelFormat.B_shift = 16;
-		m_pixelFormat.A_shift = 0;
-
-		m_pixelFormat.R_bits = 8;
-		m_pixelFormat.G_bits = 8;
-		m_pixelFormat.B_bits = 8;
-		m_pixelFormat.A_bits = 0;
-
+		pixeltype = WG_PIXEL_RGB_8;
 		break;
 
 	case GL_RGBA8:
 		m_pixelSize = 4;
-
-		m_pixelFormat.type = WgSurface::RGBA_8;
-		m_pixelFormat.bits = 32;
-
-		m_pixelFormat.R_mask = 0xFF;
-		m_pixelFormat.G_mask = 0xFF00;
-		m_pixelFormat.B_mask = 0xFF0000;
-		m_pixelFormat.A_mask = 0xFF000000;
-
-		m_pixelFormat.R_shift = 0;
-		m_pixelFormat.G_shift = 8;
-		m_pixelFormat.B_shift = 16;
-		m_pixelFormat.A_shift = 24;
-
-		m_pixelFormat.R_bits = 8;
-		m_pixelFormat.G_bits = 8;
-		m_pixelFormat.B_bits = 8;
-		m_pixelFormat.A_bits = 8;
-
+		pixeltype = WG_PIXEL_RGBA_8;
 		break;
-
+		
 	default:
-		m_pixelFormat.type = WgSurface::UNSPECIFIED;
-		m_pixelFormat.bits = 0;
-
-		m_pixelFormat.R_mask = 0;
-		m_pixelFormat.G_mask = 0;
-		m_pixelFormat.B_mask = 0;
-		m_pixelFormat.A_mask = 0;
-
-		m_pixelFormat.R_shift = 0;
-		m_pixelFormat.G_shift = 0;
-		m_pixelFormat.B_shift = 0;
-		m_pixelFormat.A_shift = 0;
-
-		m_pixelFormat.R_bits = 0;
-		m_pixelFormat.G_bits = 0;
-		m_pixelFormat.B_bits = 0;
-		m_pixelFormat.A_bits = 0;
-
 		m_pixelSize = 0;		// Signal unknown pixelsize.
+		break;
 	}
+	
+	WgUtil::PixelTypeToFormat(pixeltype, m_pixelFormat);
 }
 
 //____ Destructor ______________________________________________________________

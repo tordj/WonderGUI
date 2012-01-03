@@ -39,7 +39,7 @@ class WgSurfaceSDL : public WgSurface
 {
 public:
 	WgSurfaceSDL(SDL_Surface * pSurf);
-	WgSurfaceSDL( WgSurface::PixelType type, WgSize size );
+	WgSurfaceSDL( WgPixelType type, WgSize size );
 
 	~WgSurfaceSDL();
 
@@ -53,8 +53,8 @@ public:
 	Uint32		GetPixel( WgCoord coord ) const;
 	Uint8		GetOpacity( WgCoord coord ) const;
 
-	void *		Lock( LockStatus mode );
-	void *		LockRegion( LockStatus mode, const WgRect& region );
+	void *		Lock( WgAccessMode mode );
+	void *		LockRegion( WgAccessMode mode, const WgRect& region );
 	void		Unlock();
 
 
@@ -69,7 +69,7 @@ private:
 class WgSurfaceFactorySDL : public WgSurfaceFactory
 {
 public:
-	virtual WgSurface * CreateSurface( const WgSize& size, WgSurface::PixelType type = WgSurface::RGBA_8 );
+	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 );
 };
 
 

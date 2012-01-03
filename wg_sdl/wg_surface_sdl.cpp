@@ -35,7 +35,7 @@ WgSurfaceSDL::WgSurfaceSDL( SDL_Surface * pSurf )
 
 	m_pitch = pSurf->pitch;
 
-	m_pixelFormat.type = SPECIFIED;
+	m_pixelFormat.type = WG_PIXEL_CUSTOM;
 	m_pixelFormat.bits = pSurf->format->BitsPerPixel;
 
 	m_pixelFormat.R_mask = pSurf->format->Rmask;
@@ -54,7 +54,7 @@ WgSurfaceSDL::WgSurfaceSDL( SDL_Surface * pSurf )
 	m_pixelFormat.A_bits = 8 - pSurf->format->Aloss;
 }
 
-WgSurfaceSDL::WgSurfaceSDL( WgSurface::PixelType type, WgSize size )
+WgSurfaceSDL::WgSurfaceSDL( WgPixelType type, WgSize size )
 {
 	int flags = SDL_HWSURFACE | SDL_SRCALPHA;
 
@@ -62,17 +62,17 @@ WgSurfaceSDL::WgSurfaceSDL( WgSurface::PixelType type, WgSize size )
 
 	switch( type )
 	{
-	case WgSurface::RGB_8:
+	case WG_PIXEL_RGB_8:
 		pSurf = SDL_CreateRGBSurface( flags, size.w, size.h, 24, 0xFF, 0xFF00, 0xFF0000, 0x00 );
-		m_pixelFormat.type = WgSurface::RGB_8;
+		m_pixelFormat.type = type;
 		break;
-	case WgSurface::RGBA_8:
+	case WG_PIXEL_RGBA_8:
 		pSurf = SDL_CreateRGBSurface( flags, size.w, size.h, 32, 0xFF, 0xFF00, 0xFF0000, 0xFF000000 );
-		m_pixelFormat.type = WgSurface::RGBA_8;
+		m_pixelFormat.type = type;
 		break;
 	default:
 		pSurf = 0;
-		m_pixelFormat.type = UNSPECIFIED;
+		m_pixelFormat.type = WG_PIXEL_UNKNOWN;
 		break;
 	}
 
@@ -132,14 +132,14 @@ bool WgSurfaceSDL::IsOpaque() const
 
 //____ Lock() __________________________________________________________________
 
-void * WgSurfaceSDL::Lock( LockStatus mode )
+void * WgSurfaceSDL::Lock( WgAccessMode mode )
 {
-	if( m_lockStatus != UNLOCKED || mode == UNLOCKED )
+	if( m_accessMode != WG_NO_ACCESS || mode == WG_NO_ACCESS )
 		return 0;
 
 	SDL_LockSurface(m_pSurface);
 
-	m_lockStatus = READ_WRITE;
+	m_accessMode = WG_READ_WRITE;
 
 	m_pPixels = (Uint8*) m_pSurface->pixels;
 	m_lockRegion = WgRect( 0, 0, m_pSurface->w, m_pSurface->h );
@@ -148,7 +148,7 @@ void * WgSurfaceSDL::Lock( LockStatus mode )
 
 //____ LockRegion() ___________________________________________________________
 
-void * WgSurfaceSDL::LockRegion( LockStatus mode, const WgRect& region )
+void * WgSurfaceSDL::LockRegion( WgAccessMode mode, const WgRect& region )
 {
 	if( !m_pSurface )
 		return 0;
@@ -175,11 +175,11 @@ void * WgSurfaceSDL::LockRegion( LockStatus mode, const WgRect& region )
 
 void WgSurfaceSDL::Unlock()
 {
-	if(m_lockStatus == UNLOCKED )
+	if(m_accessMode == WG_NO_ACCESS )
 		return;
 
 	SDL_UnlockSurface(m_pSurface);
-	m_lockStatus = UNLOCKED;
+	m_accessMode = WG_NO_ACCESS;
 	m_lockRegion.w = 0;
 	m_lockRegion.h = 0;
 	m_pPixels = 0;
@@ -252,7 +252,7 @@ Uint8 WgSurfaceSDL::GetOpacity( WgCoord coord ) const
 
 //____ WgSurfaceFactorySDL::CreateSurface() ___________________________________
 
-WgSurface * WgSurfaceFactorySDL::CreateSurface( const WgSize& size, WgSurface::PixelType type )
+WgSurface * WgSurfaceFactorySDL::CreateSurface( const WgSize& size, WgPixelType type )
 {
 	return new WgSurfaceSDL( type, size );
 }

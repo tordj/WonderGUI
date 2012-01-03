@@ -20,121 +20,103 @@
 
 =========================================================================*/
 
+#include <assert.h>
 #include "wg_surface_soft.h"
 #include "wg_geo.h"
 
-
+using namespace std;
 
 //____ Constructor ________________________________________________________________
 
-WgSurfaceSoft::WgSurfaceSoft( Uint32 iWidth, Uint32 iHeight, Uint32 iBitdepth )
+WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type )
 {
-	assert( iBitdepth == 24 || iBitdepth == 32 );
+	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
+	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
 	
- 	m_blitMode = BM_ALPHA;
+	m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
+	m_size = size;
+	m_pData = new Uint8[ m_pitch*size.h ];	
+	m_bOwnsData = true;
+	m_fScaleAlpha = 1.f;
+}
 
-	m_size = WgSize(iWidth, iHeight);
-	m_pData = new Uint8[ iWidth*iHeight*iBitdepth/8 ];
+WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgSurface::PixelType type, char * pPixels, int pitch )
+{
+	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
+	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
 	
-	for(int i = 0; i<iWidth*iHeight*iBitdepth/8;i++)
-		m_pData[i] = 0;
+	m_pitch = pitch;
+	m_size = size;
+	m_pData = pPixels;
+	m_bOwnsData = false;
+	m_fScaleAlpha = 1.f;
+}
 
-	m_fScaleAlpha = 1.0f;
-	m_pStoredAlpha = 0;
-
-	m_lockStatus 	= UNLOCKED;
-	m_pitch 		= iWidth*iBitdepth/8;
-	m_pPixels 		= 0;
-	m_lockRegion	= WgRect(0,0,0,0);
-
-	switch( iBitdepth )
-	{
-		case 3:
-			m_pixelFormat.type = WgSurface::RGB_8;
-			m_pixelFormat.bits = 24;
-
-			m_pixelFormat.R_mask = 0xFF;
-			m_pixelFormat.G_mask = 0xFF00;
-			m_pixelFormat.B_mask = 0xFF0000;
-			m_pixelFormat.A_mask = 0x0;
-
-			m_pixelFormat.R_shift = 0;
-			m_pixelFormat.G_shift = 8;
-			m_pixelFormat.B_shift = 16;
-			m_pixelFormat.A_shift = 0;
-
-			m_pixelFormat.R_bits = 8;
-			m_pixelFormat.G_bits = 8;
-			m_pixelFormat.B_bits = 8;
-			m_pixelFormat.A_bits = 0;
-
-			break;
-
-		case 24:
-			m_pixelFormat.type = WgSurface::RGBA_8;
-			m_pixelFormat.bits = 32;
-
-			m_pixelFormat.R_mask = 0xFF;
-			m_pixelFormat.G_mask = 0xFF00;
-			m_pixelFormat.B_mask = 0xFF0000;
-			m_pixelFormat.A_mask = 0xFF000000;
-
-			m_pixelFormat.R_shift = 0;
-			m_pixelFormat.G_shift = 8;
-			m_pixelFormat.B_shift = 16;
-			m_pixelFormat.A_shift = 24;
-
-			m_pixelFormat.R_bits = 8;
-			m_pixelFormat.G_bits = 8;
-			m_pixelFormat.B_bits = 8;
-			m_pixelFormat.A_bits = 8;
-
-			break;
-	}
+WgSurfaceSoft::WgSurfaceSoft( const WgSurfaceSoft * pOther )
+{
+	_copy( pOther );
 }
 
 //____ Destructor ______________________________________________________________
 
 WgSurfaceSoft::~WgSurfaceSoft()
 {
-	if(m_pStoredAlpha) 
-		delete m_pStoredAlpha;
+	if(m_bOwnsData) 
+		delete m_pData;
+}
 
-	delete m_pData;
+//____ _copy() _________________________________________________________________
+
+void WgSurfaceSoft::_copy(const WgSurfaceSoft * pOther)
+{
+	m_pixelFormat 	= other.m_pixelFormat;
+	m_pitch 		= ((other.m_size.w+3)&0xFFFFFFFC)*other.m_pixelFormat.bits/8;
+	m_size 			= other.m_size;
+	m_bOwnsData		= true;
+	m_fScaleAlpha 	= other.m_fScaleAlpha;
+
+	m_pData = new Uint8[ m_pitch*m_size.h ];
+	
+	int linebytes = m_size.w * m_pixelFormat.bits/8;
+	for( int y = 0 ; y < m_size.h ; y++ )
+		memcpy( m_pPixels+y*m_pitch, other.m_pPixels*other.m_pitch, linebytes );
 }
 
 //____ GetPixel() _________________________________________________________________
 
-Uint32	WgSurfaceSoft::GetPixel( WgCoord coord ) const
+Uint32 WgSurfaceSoft::GetPixel( WgCoord coord ) const
 {	
-  if( m_bitdepth == 32 )
+	if( coord.x >= m_size.w || coord.x < 0 ||
+		coord.y >= m_size.h || coord.y < 0  )
+		return 0;
+
+	if( m_pixelFormat.type == WG_PIXEL_RGBA_8 )
     {
-      Uint32 k = * ((Uint32*) &m_pData[ 4*(m_size.w*coord.y+coord.x) ]);
-      return k;
+		Uint32 k = * ((Uint32*) &m_pData[ m_pitch*coord.y+coord.x*4 ]);
+		return k;
     }
-  else 
+	else 
     {
-      Uint32 k = * ((Uint32*) &m_pData[ 3*(m_size.w*coord.y+coord.x) ]);
-      return k;
+		Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
+		
+		Uint32 k = pPixel[0] + ((Uint32)pPixel[1]) << 8 + ((Uint32)pPixel[2]) << 8;
+		return k;
     }
 
 }
 
 //____ GetOpacity() _______________________________________________________________
 
-Uint8	WgSurfaceSoft::GetOpacity( WgCoord coord ) const
+Uint8 WgSurfaceSoft::GetOpacity( WgCoord coord ) const
 {
-        WgColor color;
-
-	if( x >= m_width )
-		return 0;
-	if( y >= m_height )
+	if( coord.x >= m_size.w || coord.x < 0 ||
+		coord.y >= m_size.h || coord.y < 0  )
 		return 0;
 	
 	if( m_bitdepth == 32 ) 
 	  {
-	    color.argb = *((Uint32*) &m_pData[ 4*(m_size.w*coord.y+coord.x) ]);
-	    return (Uint8)(m_fScaleAlpha * (float)color.a);
+		Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
+	    return (Uint8)(m_fScaleAlpha * (float)pPixel[3]);
 	  } 
 	else
 	  return 0xff;
@@ -156,77 +138,45 @@ bool WgSurfaceSoft::IsOpaque() const
 
 //____ Lock() __________________________________________________________________
 
-void * WgSurfaceSoft::Lock( LockStatus mode )
+void * WgSurfaceSoft::Lock( WgAccessMode mode )
 {
-	m_lockStatus = mode;
+	m_accessMode = WG_READ_WRITE;
 	m_pPixels = m_pData;
 	m_lockRegion = WgRect(0,0,m_size);
+	return m_pPixels;
 }
 
 //____ LockRegion() ____________________________________________________________
 
-void * WgSurfaceSoft::LockRegion( LockStatus mode, const WgRect& region )
+void * WgSurfaceSoft::LockRegion( WgAccessMode mode, const WgRect& region )
 {
-	m_lockStatus = mode;
-	m_pPixels = m_pData + (m_size.w*region.y+region.x)*m_pixelFormat.bits/8;
-	m_lockRegion = region;
+	m_accessMode = mode;
+	m_pPixels = m_pData + m_pitch*region.y + region.x*m_pixelFormat.bits/8;
+	m_lockRegion = region;	
+	return m_pPixels;
 }
 
 //____ Unlock() ________________________________________________________________
 
 void WgSurfaceSoft::Unlock()
 {
-	m_lockStatus = UNLOCKED;
+	m_accessMode = WG_NO_ACCESS;
 	m_pPixels = 0;
 	m_lockRegion.Clear();
 }
 
 //____ SetScaleAlpha() _________________________________________________________
 
-void WgSurfaceSoft::setScaleAlpha(float fScaleAlpha)
+void WgSurfaceSoft::SetScaleAlpha(float fScaleAlpha)
 {
-        // This is slightly ugly and involves scaling all the alpha data, not sure if this could be done some other way / Oscar
-
         m_fScaleAlpha = fScaleAlpha;
-
-	// Only valid for 32-bit bitmaps
-	if( m_pixelFormat.type = RGBA_8 ) 
-	{
-		// If this is the first scaleAlpha change, allocate a backup copy of the alpha data for the entire surface
-		if(!m_pStoredAlpha)
-		{
-			m_pStoredAlpha = new Uint8[m_size.w*m_size.h];
-			for(int i=0; i<m_size.w*m_size.h; i++)
-			{
-				WgColor color;
-				color.argb = ((Uint32*)m_pData)[i];
-				m_pStoredAlpha[i] = color.a;
-			}
-		}
-
-	  // Apply alpha scaling
-		for(int j=0; j<m_size.w*m_size.h; j++)
-		{
-			WgColor color;
-			color.argb = ((Uint32*)m_pData)[j];
-			color.a = (Uint8)((float)m_pStoredAlpha[j] * m_fScaleAlpha);
-			((Uint32*)m_pData)[j] = color.argb;
-		}
-	}
 }
 
-//____ WgSurface::setBlitMode() ___________________________________________________________
-
-void WgSurface::setBlitMode( BlitMode mode )
-{
-	m_blitMode = mode;
-}
-
-//____ putPixels() _____________________________________________________________
+//____ PutPixels() _____________________________________________________________
 
 #define PCLIP(x,y) (((x)>(y))?(y):(x))
 
-void WgSurfaceSoft::putPixels(const vector<int> &x, const vector<int> &y, const vector<Uint32> &col, int length, bool replace)
+void WgSurfaceSoft::PutPixels(const vector<int> &x, const vector<int> &y, const vector<Uint32> &col, int length, bool replace)
 {
 	WgColor color1;
 	WgColor color2;
@@ -239,7 +189,7 @@ void WgSurfaceSoft::putPixels(const vector<int> &x, const vector<int> &y, const 
 		case RGBA_8:
 			for(int n=0; n<length; n++)
 			{
-			  ind = (y[n]*m_size.w + x[n])*4;
+			  ind = y[n]*m_pitch + x[n]*4;
 			  if(!replace) {
 				// Get old (1) and new (2) pixel
 				color1.argb = *((Uint32*)&m_pData[ind]);

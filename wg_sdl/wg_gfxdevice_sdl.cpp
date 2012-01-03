@@ -43,7 +43,7 @@ int SDL_SoftStretchModified( SDL_Surface *src , SDL_Rect *aSrcRect , SDL_Surface
 
 //____ Constructor _____________________________________________________________
 
-WgGfxDeviceSDL::WgGfxDeviceSDL( WgSurfaceSDL * pCanvas)
+WgGfxDeviceSDL::WgGfxDeviceSDL( WgSurfaceSDL * pCanvas) : WgGfxDevice(WgSize(0,0))
 {
 	SetCanvas( pCanvas );
 }

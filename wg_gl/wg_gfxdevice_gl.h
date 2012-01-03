@@ -22,8 +22,9 @@
 #ifndef WG_GFXDEVICE_GL_DOT_H
 #define WG_GFXDEVICE_GL_DOT_H
 
-
-#include <wg_geo.h>
+#ifndef WG_GEO_DOT_H
+#	include <wg_geo.h>
+#endif
 
 #ifdef WIN32
 #	include <windows.h>
@@ -53,8 +54,6 @@ public:
 	bool	BeginRender();
 	bool	EndRender();
 
-	WgSize	Size() const;
-
 	void	SetTintColor( WgColor color );
 	bool	SetBlendMode( WgBlendMode blendMode );
 	void	Fill( const WgRect& rect, const WgColor& col );
@@ -64,6 +63,8 @@ public:
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 
 protected:
+
+	void	_setBlendMode( WgBlendMode blendMode );
 
 	bool	m_bRendering;
 
@@ -82,5 +83,5 @@ protected:
 
 };
 
-#endif //WG_GFXDEVICE_SDL_DOT_H
+#endif //WG_GFXDEVICE_GL_DOT_H
 

@@ -6,6 +6,7 @@
   <Project Name="WgLegacy" Path="WgLegacy.project" Active="No"/>
   <Project Name="WgDesigner" Path="../WgDesigner/WgDesigner.project" Active="No"/>
   <Project Name="wg_gl" Path="wg_gl/wg_gl.project" Active="No"/>
+  <Project Name="wg_soft" Path="wg_soft/wg_soft.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="wondergui" ConfigName="Debug"/>
@@ -18,6 +19,7 @@
       <Project Name="wg_gl" ConfigName="Debug"/>
       <Project Name="WgDesigner" ConfigName="Debug"/>
       <Project Name="wg_gl" ConfigName="Debug"/>
+      <Project Name="wg_soft" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="wondergui" ConfigName="Release"/>
@@ -30,6 +32,7 @@
       <Project Name="wg_gl" ConfigName="Release"/>
       <Project Name="WgDesigner" ConfigName="Release"/>
       <Project Name="wg_gl" ConfigName="Release"/>
+      <Project Name="wg_soft" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

@@ -35,12 +35,13 @@
 
 //____ Constructor _____________________________________________________________
 
-WgGfxDevice::WgGfxDevice()
+WgGfxDevice::WgGfxDevice( WgSize canvasSize )
 {
 	m_tintColor 		= WgColor(255,255,255);
 	m_blendMode 		= WG_BLENDMODE_BLEND;
 	m_bSaveDirtyRects 	= false;
 	m_renderFlags		= 0;
+	m_canvasSize		= canvasSize;
 }
 
 //____ SetSaveDirtyRects() _____________________________________________________
