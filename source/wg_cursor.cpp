@@ -1,3 +1,24 @@
+/*=========================================================================
+
+                         >>> WonderGUI <<<
+
+  This file is part of Tord Jansson's WonderGUI Graphics Toolkit
+  and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
+
+                            -----------
+
+  The WonderGUI Graphics Toolkit is free software; you can redistribute
+  this file and/or modify it under the terms of the GNU General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+                            -----------
+	
+  The WonderGUI Graphics Toolkit is also available for use in commercial
+  closed-source projects under a separate license. Interested parties
+  should contact Tord Jansson [tord.jansson@gmail.com] for details.
+
+=========================================================================*/
 #include <wg_cursor.h>
 
 
@@ -9,7 +30,6 @@ WgCursor::WgCursor()
 	{
 		m_pAnim[i]	= 0;
 		m_advance[i] = 0;
-		m_scaleMode[i] = FIXED_SIZE;
 		m_sizeRatio[i]	= 1.f;
 	}
 	m_blitMode = NORMAL;
@@ -22,44 +42,23 @@ WgCursor::WgCursor(	WgCursor& in )
 		m_pAnim[i]		= in.m_pAnim[i];
 		m_bearing[i]	= in.m_bearing[i];
 		m_advance[i]	= in.m_advance[i];
-		m_scaleMode[i]	= in.m_scaleMode[i];
 		m_sizeRatio[i]	= in.m_sizeRatio[i];
 	}
 
 	m_blitMode = in.m_blitMode;
 }
 
-//____ setBlitMode() __________________________________________________________
+//____ SetBlitMode() __________________________________________________________
 
-void WgCursor::setBlitMode( BlitMode mode )
+void WgCursor::SetBlitMode( BlitMode mode )
 {
 	m_blitMode = mode;
 }
 
 
-//____ setStretchBorders() ____________________________________________________
+//____ SetSizeRatio() _________________________________________________________
 
-void WgCursor::setStretchBorders( Mode m, WgBorders borders )
-{
-	if( m < 0 || m >= (Mode) N_MODES )
-		return;
-
-	m_stretchBorders[m] = borders;
-}
-
-//____ setScaleMode() _________________________________________________________
-
-void WgCursor::setScaleMode( Mode m, ScaleMode mode )
-{
-	if( m < 0 || m >= (Mode) N_MODES )
-		return;
-
-	m_scaleMode[m] = mode;
-}
-
-//____ setSizeRatio() _________________________________________________________
-
-void WgCursor::setSizeRatio( Mode m, float ratio )
+void WgCursor::SetSizeRatio( Mode m, float ratio )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -68,10 +67,9 @@ void WgCursor::setSizeRatio( Mode m, float ratio )
 }
 
 
+//____ SetMode() ______________________________________________________________
 
-//____ setMode() ______________________________________________________________
-
-bool WgCursor::setMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing, int advance, ScaleMode mode, float size_ratio, WgBorders borders )
+bool WgCursor::SetMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing, int advance, float size_ratio )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return false;
@@ -79,16 +77,14 @@ bool WgCursor::setMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing, int advance,
 	m_pAnim[m]			= pAnim;
 	m_bearing[m]		= bearing;
 	m_advance[m]		= advance;
-	m_scaleMode[m]		= mode;
 	m_sizeRatio[m]		= size_ratio;
-	m_stretchBorders[m]	= borders;
 
 	return true;
 }
 
-//____ setBearing() ___________________________________________________________
+//____ SetBearing() ___________________________________________________________
 
-void WgCursor::setBearing( Mode m, WgCoord bearing )
+void WgCursor::SetBearing( Mode m, WgCoord bearing )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -97,9 +93,9 @@ void WgCursor::setBearing( Mode m, WgCoord bearing )
 }
 
 
-//____ setAdvance() ___________________________________________________________
+//____ SetAdvance() ___________________________________________________________
 
-void WgCursor::setAdvance( Mode m, int advance )
+void WgCursor::SetAdvance( Mode m, int advance )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -108,9 +104,9 @@ void WgCursor::setAdvance( Mode m, int advance )
 }
 
 
-//____ setAnim() ______________________________________________________________
+//____ SetAnim() ______________________________________________________________
 
-void WgCursor::setAnim( Mode m, WgGfxAnim * pAnim )
+void WgCursor::SetAnim( Mode m, WgGfxAnim * pAnim )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;

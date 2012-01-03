@@ -205,7 +205,9 @@ protected:
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
 	void	_onUpdate( const WgUpdateInfo& _updateInfo );
+#ifdef WG_TNG
 	void 	_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler );
+#endif	
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool	_onAlphaTest( const WgCoord& ofs );
 

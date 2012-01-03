@@ -769,13 +769,27 @@ bool Wdg_GridView::GetNextRowOrCol( ItemArray* pArray, const WgSize &contentSize
 	return true;
 }
 
+//____ GetTooltipString() _____________________________________________________
+
 WgString Wdg_GridView::GetTooltipString() const
 {
 	WgString tooltip;
 	if( m_pLastMarkedItem != 0 )
 		tooltip = m_pLastMarkedItem->GetTooltipString();
+
 	return tooltip;
 }
+
+//____ GetTooltipItem() _______________________________________________________
+
+WgItem* Wdg_GridView::GetTooltipItem() const
+{
+	if( m_pLastMarkedItem != 0 )
+		return m_pLastMarkedItem;
+
+	return 0;
+}
+
 
 //____ RequestItemGeo() _______________________________________________________
 

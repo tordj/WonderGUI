@@ -65,9 +65,6 @@ public:
 	bool			SetSource( const WgBlockSetPtr& pGfx );
 	WgBlockSetPtr	GetSource() const { return m_pBgGfx; }
 
-    bool			SetDisplacement( Sint8 xUp = 0, Sint8 yUp = 0, Sint8 xOver = 0, Sint8 yOver = 0, Sint8 xDown = 0, Sint8 yDown = 0 );
-	void			GetDisplacement( Sint8& xUp, Sint8& yUp, Sint8& xOver, Sint8& yOver, Sint8& xDown, Sint8& yDown ) const;
-
 	Uint32			GetTextAreaWidth();
 
 	virtual int		HeightForWidth( int width ) const;
@@ -81,7 +78,9 @@ public:
 protected:
 
 	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+#ifdef WG_TNG
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+#endif
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onRefresh();
 	virtual void	_onCloneContent( const WgGizmo * _pOrg );
@@ -108,7 +107,6 @@ protected:
 
 	bool			m_bRenderDown[WG_MAX_BUTTONS];	// Render down-version if [button] pressed?
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
-	WgCoord8		m_aDisplace[4];			// Text displacement for up, mouse_over, down and disabled.
 
 	bool			m_bPressedInside[WG_MAX_BUTTONS];
 	bool			m_bReturnPressed;

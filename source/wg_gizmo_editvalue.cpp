@@ -262,7 +262,7 @@ bool WgGizmoEditvalue::_parseValueFromInput( int64_t * wpResult )
 	int		nbChars = m_text.getBuffer()->NbChars();
 
 	int64_t	value = 0;
-	bool	bModified = false;
+	bool	bModified = false;			// Set when value displayed isn't fully acceptable (outside boundaries or has too many decimals)
 	int		nDecimals = 0;
 
 	if( nbChars > 0 )
@@ -428,7 +428,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 					Emit( Fraction(), FractionalValue() );
 
 					m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
-					m_text.GetCursor()->goEOL();
+					m_text.goEOL();
 				}
 				else
 				{
@@ -541,58 +541,61 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 		// A zero is inserted (always INSERTED even if mode is replace) if there is no number before it.
 
 		WgCursorInstance * pCursor = m_text.GetCursor();
-		if( button_key == m_format.period )
+		if( pCursor )
 		{
-			if( m_format.decimals > 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
-				(pCursor->column() != 0 || (*m_text.getBuffer())[0].glyph != '-' ) )
+			if( button_key == m_format.period )
 			{
-				if(m_text.hasSelection())
-					m_text.delSelection();
-				m_text.setSelectionMode(false);
-
-				if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].glyph == '-' ) )
+				if( m_format.decimals > 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
+					(pCursor->column() != 0 || (*m_text.getBuffer())[0].glyph != '-' ) )
 				{
-					m_text.insertChar( 0, WgChar('0') );
-					pCursor->goRight();
+					if(m_text.hasSelection())
+						m_text.delSelection();
+					m_text.setSelectionMode(false);
+
+					if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].glyph == '-' ) )
+					{
+						m_text.insertChar( 0, WgChar('0') );
+						pCursor->goRight();
+					}
+
+					pCursor->putChar( m_format.period );
+					bTextChanged = true;
 				}
-
-				pCursor->putChar( m_format.period );
-				bTextChanged = true;
 			}
-		}
 
-		// Handle minus
-		// Only allow minus at start of text and only if range allows negative values.
+			// Handle minus
+			// Only allow minus at start of text and only if range allows negative values.
 
-		if( button_key == '-' )
-		{
-			if( pCursor->column() == 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
-				m_rangeMin < 0 )
+			if( button_key == '-' )
 			{
-				if(m_text.hasSelection())
-					m_text.delSelection();
-				m_text.setSelectionMode(false);
+				if( pCursor->column() == 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
+					m_rangeMin < 0 )
+				{
+					if(m_text.hasSelection())
+						m_text.delSelection();
+					m_text.setSelectionMode(false);
 
-				pCursor->putChar( '-' );
-				bTextChanged = true;
+					pCursor->putChar( '-' );
+					bTextChanged = true;
+				}
 			}
-		}
 
-		// Take care of typed numbers 0 through 9.
+			// Take care of typed numbers 0 through 9.
 
-		if( button_key >= '0' && button_key <= '9' )
-		{
-			if( pCursor->column() == 0 && (*m_text.getBuffer())[0].glyph == '-' )
+			if( button_key >= '0' && button_key <= '9' )
 			{
-			}
-			else
-			{
-				if(m_text.hasSelection())
-					m_text.delSelection();
-				m_text.setSelectionMode(false);
+				if( pCursor->column() == 0 && (*m_text.getBuffer())[0].glyph == '-' )
+				{
+				}
+				else
+				{
+					if(m_text.hasSelection())
+						m_text.delSelection();
+					m_text.setSelectionMode(false);
 
-				pCursor->putChar( button_key );
-				bTextChanged = true;
+					pCursor->putChar( button_key );
+					bTextChanged = true;
+				}
 			}
 		}
 	}
@@ -651,7 +654,7 @@ void WgGizmoEditvalue::_onGotInputFocus()
 {
 	m_bFocused = true;
 	m_text.CreateCursor();
-	m_text.GetCursor()->goEOL();
+	m_text.goEOL();
 	m_useFormat = m_format;
 
 	if( m_format.decimals != 0 )

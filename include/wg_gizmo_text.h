@@ -91,7 +91,9 @@ protected:
 	void	_onRefresh();
 	void	_onUpdate( const WgUpdateInfo& _updateInfo );
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+#ifdef WG_TNG
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+#endif	
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onEnable();
 	void	_onDisable();

@@ -148,7 +148,7 @@ WgRect WgIconHolder::_getTextRect( const WgRect& contentRect, const WgRect& icon
 			case WG_SOUTHWEST:
 			case WG_WEST:
 			{
-				int diff = iconRect.x + iconRect.w + m_iconBorders.right;
+				int diff = iconRect.x - contentRect.x + iconRect.w + m_iconBorders.right;
 				textRect.x += diff;
 				textRect.w -= diff;
 				if( textRect.w < 0 )
@@ -159,7 +159,7 @@ WgRect WgIconHolder::_getTextRect( const WgRect& contentRect, const WgRect& icon
 			case WG_EAST:
 			case WG_SOUTHEAST:
 			{
-				textRect.w = iconRect.x - m_iconBorders.left;
+				textRect.w = iconRect.x - contentRect.x - m_iconBorders.left;
 				if( textRect.w < 0 )
 					textRect.w = 0;
 				break;
@@ -168,7 +168,7 @@ WgRect WgIconHolder::_getTextRect( const WgRect& contentRect, const WgRect& icon
 			case WG_NORTH:
 			case WG_CENTER:
 			{
-				int diff = iconRect.y + iconRect.h + m_iconBorders.bottom;
+				int diff = iconRect.y - contentRect.y + iconRect.h + m_iconBorders.bottom;
 				textRect.y += diff;
 				textRect.h -= diff;
 				if( textRect.h < 0 )
@@ -177,7 +177,7 @@ WgRect WgIconHolder::_getTextRect( const WgRect& contentRect, const WgRect& icon
 			}
 			case WG_SOUTH:
 			{
-				textRect.h = iconRect.y - m_iconBorders.top;
+				textRect.h = iconRect.y - contentRect.y - m_iconBorders.top;
 				if( textRect.h < 0 )
 					textRect.h = 0;
 				break;

@@ -4,6 +4,7 @@
   <Project Name="bench" Path="bench/bench.project" Active="Yes"/>
   <Project Name="wg_sdl" Path="wg_sdl/wg_sdl.project" Active="No"/>
   <Project Name="WgLegacy" Path="WgLegacy.project" Active="No"/>
+  <Project Name="WgDesigner" Path="../WgDesigner/WgDesigner.project" Active="Yes"/>
   <Project Name="wg_gl" Path="wg_gl/wg_gl.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
@@ -15,6 +16,8 @@
       <Project Name="WgLegacy" ConfigName="Debug"/>
       <Project Name="WgDesigner" ConfigName="Debug"/>
       <Project Name="wg_gl" ConfigName="Debug"/>
+      <Project Name="WgDesigner" ConfigName="Debug"/>
+      <Project Name="wg_gl" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="wondergui" ConfigName="Release"/>
@@ -23,6 +26,8 @@
       <Project Name="WgDesigner" ConfigName="Release"/>
       <Project Name="wg_simple" ConfigName="Release"/>
       <Project Name="WgLegacy" ConfigName="Release"/>
+      <Project Name="WgDesigner" ConfigName="Release"/>
+      <Project Name="wg_gl" ConfigName="Release"/>
       <Project Name="WgDesigner" ConfigName="Release"/>
       <Project Name="wg_gl" ConfigName="Release"/>
     </WorkspaceConfiguration>

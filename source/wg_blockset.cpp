@@ -28,33 +28,14 @@
 
 
 
-WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, WgCoord8 contentDisplacement, Uint32 flags )
+WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, WgCoord contentShift, Uint32 flags )
 {
 	m_pSurf			= pSurf;
 	m_rect			= rect;
 	m_gfxBorders	= gfxBorders;
 	m_flags			= flags;
-
-	int left = contentBorders.left;
-	left += contentDisplacement.x;
-	LIMIT(left,0,255);
-	m_contentBorders.left = left;
-
-	int right = contentBorders.right;
-	right += contentDisplacement.x;
-	LIMIT(right,0,255);
-	m_contentBorders.right = right;
-
-	int top = contentBorders.top;
-	top += contentDisplacement.y;
-	LIMIT(top,0,255);
-	m_contentBorders.top = top;
-
-	int bottom = contentBorders.bottom;
-	bottom += contentDisplacement.y;
-	LIMIT(bottom,0,255);
-	m_contentBorders.bottom = bottom;
-
+	m_contentBorders= contentBorders;
+	m_contentShift	= contentShift;
 
 	if( m_gfxBorders.left || m_gfxBorders.right || m_gfxBorders.top || m_gfxBorders.bottom )
 		m_flags |= WG_HAS_BORDERS;
@@ -122,7 +103,7 @@ WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgBord
 
 bool WgBlockSet::AddAlternative( WgSize activationSize, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked,
 						const WgRect& selected, const WgRect& disabled, const WgRect& special,
-						const WgBorders& gfxBorders, const WgBorders& contentBorders )
+						WgBorders gfxBorders, WgBorders contentBorders, WgCoord shiftMarked, WgCoord shiftPressed )
 {
 	if( activationSize.w == 0 && activationSize.h == 0 )
 		return false;
@@ -454,6 +435,31 @@ void WgBlockSet::SetContentBorders( const WgBorders& borders, int alt )
 		return;
 
 	p->contentBorders = borders;
+}
+
+
+//____ ContentShift() __________________________________________________
+
+WgCoord WgBlockSet::ContentShift( WgMode mode, int alt ) const
+{
+	const Alt_Data * p = _getAlt(alt);
+	if( !p )
+		return WgCoord();
+
+	return WgCoord(p->contentShift[mode]);
+}
+
+//____ SetContentShift() _______________________________________________
+
+bool WgBlockSet::SetContentShift( WgMode mode, WgCoord ofs, int alt )
+{
+	Alt_Data * p = _getAlt(alt);
+	if( !p || !(mode == WG_MODE_MARKED || mode == WG_MODE_SELECTED) )
+		return false;
+
+	p->contentShift[mode].x = ofs.x;
+	p->contentShift[mode].y = ofs.y;
+	return true;
 }
 
 

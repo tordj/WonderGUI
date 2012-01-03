@@ -138,8 +138,8 @@ void WgText::setCursorStyle( WgCursor * pCursor )
 	if( pCursor != m_pCursorStyle )
 	{
 		m_pCursorStyle = pCursor;
-		_regenSoftLines();					// Doesn't affect linelenght now, but should in the future,
-		_refreshAllLines();					// so let's call these two methods anyway.
+		_regenSoftLines();
+		_refreshAllLines();
 	}
 }
 
@@ -1531,6 +1531,8 @@ int WgText::_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLin
 	WgPen		pen;
 	WgTextAttr	attr;
 
+	maxWidth -= _cursorMaxWidth();
+
 	pen.SetTextNode( m_pManagerNode );
 
 	while( !bEndOfText )
@@ -1820,16 +1822,30 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 
 	// Fill in line struct.
 
-	pLine->width		= pen.GetPosX();
+	pLine->width		= pen.GetPosX() + _cursorMaxWidth();
 	pLine->height		= maxAscend + maxDescend;
 	pLine->lineSpacing	= maxAscend + maxLineDescend + m_lineSpaceAdj;
 	pLine->baseline		= maxAscend;
-
-	// Add cursor margin to width
-
-	//TODO: Take cursor margins into account.
-
 }
+
+//____ _cursorMaxWidth() ______________________________________________________
+
+int WgText::_cursorMaxWidth() const
+{
+	WgCursor * p = m_pCursorStyle?m_pCursorStyle:WgBase::GetDefaultCursor();
+
+	if( p )
+	{
+		int lenInsert = p->Advance(WgCursor::INS);
+		int lenOvr = p->Advance(WgCursor::OVR);
+		int lenEOL = p->BearingX(WgCursor::EOL) + p->Width(WgCursor::EOL);
+
+		return WgMax( lenEOL, WgMax(lenInsert,lenOvr) );
+	}
+	else
+		return 0;
+}
+
 
 //____ CursorGotoCoord() ________________________________________________________
 

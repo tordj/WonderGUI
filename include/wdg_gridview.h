@@ -72,6 +72,8 @@ public:
 	inline bool	RemoveInputFocus() { return WgWidget::GrabInputFocus(); }
 
 	WgString GetTooltipString() const;
+	WgItem* GetTooltipItem() const;
+
 
 
 protected:

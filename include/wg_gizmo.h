@@ -47,10 +47,11 @@
 #	include <wg_signals.h>
 #endif
 
+#ifdef WG_TNG
 #ifndef WG_EVENT_DOT_H
 #	include <wg_event.h>
 #endif
-
+#endif
 
 class WgUpdateInfo;
 class WgEmitter;
@@ -142,9 +143,9 @@ public:
 
 	WgCoord				Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
 	WgCoord				Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
-
+#ifdef WG_TNG
 	WgEventHandler *	EventHandler() const;
-
+#endif
 	// To be overloaded by Gizmo
 
 	virtual int		HeightForWidth( int width ) const;
@@ -171,12 +172,14 @@ public:
 protected:
 
 	void			_onNewHook( WgHook * pHook );
-	void			_onNewRoot( WgRoot * pRoot );
 	void			SetSkinNode( WgSkinNode * pNode );
 	WgSkinNode *	GetSkinNode() const { return m_pSkinNode; }
 
+#ifdef WG_TNG
+	void			_onNewRoot( WgRoot * pRoot );
 	void			_startReceiveTicks();
 	void			_stopReceiveTicks();
+#endif
 
 	// Convenient calls to hook
 
@@ -194,7 +197,10 @@ protected:
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_onRefresh();
 	virtual void	_onUpdate( const WgUpdateInfo& _updateInfo );
+
+#ifdef WG_TNG
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+#endif
 	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs );
 	virtual void	_onEnable();

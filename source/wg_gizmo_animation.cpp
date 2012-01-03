@@ -24,7 +24,9 @@
 #include <wg_gizmo_animation.h>
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
+#ifdef WG_TNG
 #include <wg_eventhandler.h>
+#endif
 
 #include <math.h>
 
@@ -78,8 +80,8 @@ bool WgGizmoAnimation::SetSource( WgGfxAnim * _pAnim )
 	m_playPos		= 0.0;
 	m_bPlayPosIsNew = true;
 
-	m_src.w			= _pAnim->width();
-	m_src.h			= _pAnim->height();
+	m_src.w			= _pAnim->Size().w;
+	m_src.h			= _pAnim->Size().h;
 
 	return true;
 }
@@ -251,6 +253,7 @@ WgSize WgGizmoAnimation::DefaultSize() const
 
 //____ _onEvent() ______________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -278,7 +281,7 @@ void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 			}
 
 
-			WgGfxFrame * pFrame = m_pAnim->getFrame( (Uint32) m_playPos );
+			WgGfxFrame * pFrame = m_pAnim->GetFrame( (int64_t) m_playPos );
 
 			if( pFrame->pSurf != m_pSurf )
 			{
@@ -307,6 +310,7 @@ void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 		break;
 	}
 }
+#endif
 
 //____ _onUpdate() ________________________________________________________
 
@@ -329,7 +333,7 @@ void WgGizmoAnimation::_onUpdate( const WgUpdateInfo& _updateInfo )
 	}
 
 
-	WgGfxFrame * pFrame = m_pAnim->getFrame( (Uint32) m_playPos );
+	WgGfxFrame * pFrame = m_pAnim->GetFrame( (int64_t) m_playPos );
 
 	if( pFrame->pSurf != m_pSurf )
 	{

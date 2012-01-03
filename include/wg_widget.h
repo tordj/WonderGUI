@@ -207,6 +207,7 @@ class	WgWidget
 		virtual Wg_Interface_TextHolder* GetText() { return 0; }
 
 		virtual WgString	GetTooltipString() const	{ return 0; }
+		virtual WgItem*		GetTooltipItem() const { return 0; }
 
 		virtual void			SetPointerStyle( WgPointerStyle style )		{ m_pointerStyle = style; }
 		virtual WgPointerStyle	GetPointerStyle() const					{ return m_pointerStyle; }

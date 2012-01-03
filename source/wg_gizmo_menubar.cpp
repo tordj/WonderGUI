@@ -223,30 +223,33 @@ void WgGizmoMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 {
 	// Render background
 
+	WgBlock bgBlock;
+
 	if( m_pBgGfx )
 	{
-		WgBlock block;
-
 		if( m_bEnabled )
-			block = m_pBgGfx->GetBlock(WG_MODE_NORMAL,_canvas.Size());
+			bgBlock = m_pBgGfx->GetBlock(WG_MODE_NORMAL,_canvas.Size());
 		else
-			block = m_pBgGfx->GetBlock(WG_MODE_DISABLED,_canvas.Size());
+			bgBlock = m_pBgGfx->GetBlock(WG_MODE_DISABLED,_canvas.Size());
 
-		pDevice->ClipBlitBlock( _clip, block, _canvas );
+		pDevice->ClipBlitBlock( _clip, bgBlock, _canvas );
 	}
 
 	// Take backgrounds content borders into account
 
-	WgRect	window	= _canvas;
+	WgRect	window;
 	WgRect	clip;
 
 	if( m_pBgGfx )
 	{
-		window.Shrink( m_pBgGfx->ContentBorders() );
+		window = bgBlock.ContentRect( _canvas );
 		clip.Intersection( window, _clip );
 	}
 	else
+	{
+		window = _canvas;
 		clip = _clip;
+	}
 
 	// Go throught the MenuBarItems and print their text and render their rectangles.
 

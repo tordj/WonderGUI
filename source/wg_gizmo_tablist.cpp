@@ -8,7 +8,9 @@
 #include <wg_gfxdevice.h>
 #include <wg_surface.h>
 #include <wg_util.h>
-#include <wg_eventhandler.h>
+#ifdef WG_TNG
+#	include <wg_eventhandler.h>
+#endif
 
 #include <wg_item_row.h>
 
@@ -365,11 +367,11 @@ bool WgGizmoTablist::SelectTab( int id )
 		RequestRender();
 
 		Emit( WgSignal::TabSelected(), pTab->m_id );
-
+#ifdef WG_TNG
 		WgEventHandler * pHandler = EventHandler();
 		if( pHandler )
 			pHandler->QueueEvent( new WgEvent::TabSelect(this, pTab->m_id) );
-
+#endif
 		return true;
 	}
 
@@ -785,7 +787,12 @@ void WgGizmoTablist::ResizeTabs()
 					pTab = pTab->Next();
 				}
 
-				float	growFactor = diff / (float) combWidth;
+				float growFactor;
+				if( combWidth )
+					growFactor = diff / (float) combWidth;
+				else
+					growFactor = 0;
+
 				float	fractions = 0.f;
 
 				pTab = m_tabs.First();
@@ -868,7 +875,12 @@ void WgGizmoTablist::ResizeTabs()
 				if( diff > totalExpand )
 					diff = totalExpand;
 
-				float	growFactor = diff / (float) totalExpand;
+				float	growFactor;
+				if( totalExpand )
+					growFactor = diff / (float)totalExpand;
+				else
+					growFactor = 0.f;
+
 				float	fractions = 0.f;
 
 				// 
@@ -1207,6 +1219,7 @@ void WgGizmoTablist::_onNewSize( const WgSize& size )
 
 //____ _onEvent() ______________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmoTablist::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	switch( _pEvent->Type() )
@@ -1281,7 +1294,7 @@ void WgGizmoTablist::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * 
             break;
 	}
 }
-
+#endif
 
 //____ _onAction() _____________________________________________________________
 

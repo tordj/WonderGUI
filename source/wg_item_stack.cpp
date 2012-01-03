@@ -291,7 +291,7 @@ void WgItemStack::ItemVisibilityModified( WgItem * pItem, bool bVisible )
 WgItem* WgItemStack::GetMarkedItem( Uint32 x, Uint32 y )
 {
 	WgItem * pReturnItem = this;
-/*
+
 	WgRect window(0,0,m_width,m_height);
 
 	WgItem * p = m_items.First();
@@ -304,12 +304,12 @@ WgItem* WgItemStack::GetMarkedItem( Uint32 x, Uint32 y )
 		r.x = window.x + m_itemOffsets[i].origo.calcOfsX(window.w, r.w) + m_itemOffsets[i].ofsX;
 		r.y = window.y + m_itemOffsets[i].origo.calcOfsY(window.h, r.h) + m_itemOffsets[i].ofsY;
 
-		if( r.contains(x,y) )
+		if( r.Contains(x,y) && p->MarkPolicy() == WG_MARKPOLICY_OPAQUE )
 			pReturnItem = p;
 
 		p = p->Next();
 	}
-*/
+
 	return pReturnItem;
 }
 

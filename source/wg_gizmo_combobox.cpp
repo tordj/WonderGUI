@@ -26,7 +26,9 @@
 #include <wg_geo.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
-#include <wg_eventhandler.h>
+#ifdef WG_TNG
+#	include <wg_eventhandler.h>
+#endif
 
 static const char	c_gizmoType[] = {"ComboBox"};
 
@@ -182,9 +184,11 @@ Uint32 WgGizmoCombobox::InsertTextAtCursor( const WgCharSeq& str )
 		m_pText->putText( WgCharSeq( str, 0, retVal ) );
 	}
 
+#ifdef WG_TNG
 	WgEventHandler * pHandler = EventHandler();		
 	if( pHandler )
 		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+#endif
 
 	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	_adjustViewOfs();
@@ -208,9 +212,11 @@ bool WgGizmoCombobox::InsertCharAtCursor( Uint16 c )
 
 	m_pText->putChar( c );
 
+#ifdef WG_TNG
 	WgEventHandler * pHandler = EventHandler();		
 	if( pHandler )
 		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+#endif
 
 	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	_adjustViewOfs();
@@ -378,26 +384,40 @@ void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, con
 		}
 
 		case WgInput::WHEEL_ROLL:
-			if( m_pSelectedItem )
+		if( !m_bFocused && m_pMenu && m_pMenu->GetItemCount() != 0 )
+		{
+			WgMenuItem * pItem = m_pSelectedItem;
+			int distance = info.rolldistance;
+
+			if( !pItem )
 			{
-				WgMenuItem * pItem = m_pSelectedItem;
-				int distance = info.rolldistance;
-
-				while( distance < 0 && pItem->Prev() )
+				if( distance > 0 )
 				{
-					pItem = pItem->Prev();
-					distance++;
+					pItem = m_pMenu->GetLastItem();
+					distance = 0; //distance--;			//TODO: Put back to distance-- once we have fixed Intobet client rolls a large distance for each step.
 				}
-
-				while( distance > 0 && pItem->Next() )
+				if( distance < 0 )
 				{
-					pItem = pItem->Next();
-					distance--;
+					pItem = m_pMenu->GetFirstItem();
+					distance = 0; //distance++;			//TODO: Put back to distance++ once we have fixed Intobet client rolls a large distance for each step.
 				}
-
-				m_pMenu->SelectItem( pItem );
 			}
-			break;
+
+			if( distance > 0 && pItem->Prev() )		//TODO: This used to be a while loop, but Intobet client rolls a large distance for each step.
+			{
+				pItem = pItem->Prev();
+				distance--;
+			}
+
+			if( distance < 0 && pItem->Next() )		//TODO: This used to be a while loop, but Intobet client rolls a large distance for each step.
+			{
+				pItem = pItem->Next();
+				distance++;
+			}
+
+			m_pMenu->SelectItem( pItem );
+		}
+		break;
 
 		case WgInput::CHARACTER:
 		{
@@ -626,9 +646,9 @@ void WgGizmoCombobox::_adjustViewOfs()
 		WgTextAttr	attr;
 		m_pText->GetBaseAttr( attr );
 
-		int cursAdvance	= pCursor->advance(m_pText->cursorMode() );
-		int cursBearing	= pCursor->bearingX(m_pText->cursorMode() );
-		int cursWidth	= pCursor->width(m_pText->cursorMode() );
+		int cursAdvance	= pCursor->Advance(m_pText->cursorMode() );
+		int cursBearing	= pCursor->BearingX(m_pText->cursorMode() );
+		int cursWidth	= pCursor->Width(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.
@@ -701,7 +721,7 @@ void WgGizmoCombobox::_onGotInputFocus()
 		m_text.showCursor();
 		if( m_bResetCursorOnFocus )
 		{
-			m_text.GetCursor()->goEOL();
+			m_text.goEOL();
 			m_text.selectAll();
 		}
 	}
