@@ -620,36 +620,6 @@ WgGizmo *  WgGizmoModal::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 	return 0;
 }
 
-//____ _onCollectRects() ______________________________________________________
-
-void WgGizmoModal::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
-{
-	if( m_baseHook.Gizmo() )
-		m_baseHook.Gizmo()->_onCollectRects( rects, geo, clip );
-
-	WgModalHook * pHook = m_modalHooks.First();
-	while( pHook )
-	{
-		pHook->Gizmo()->_onCollectRects( rects, pHook->m_realGeo + geo.Pos(), clip );
-		pHook = pHook->Next();
-	}
-}
-
-//____ _onMaskRects() _________________________________________________________
-
-void WgGizmoModal::_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
-{
-	if( m_baseHook.Gizmo() )
-		m_baseHook.Gizmo()->_onMaskRects( rects, geo, clip );
-
-	WgModalHook * pHook = m_modalHooks.First();
-	while( pHook )
-	{
-		pHook->Gizmo()->_onMaskRects( rects, pHook->m_realGeo + geo.Pos(), clip );
-		pHook = pHook->Next();
-	}
-}
-
 //____ _onRequestRender() _____________________________________________________
 
 void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHook )
@@ -848,23 +818,10 @@ void WgGizmoModal::_onCloneContent( const WgGizmo * _pOrg )
 {
 }
 
-//____ _onRender() ____________________________________________________________
-
-void WgGizmoModal::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
-{
-}
-
 //____ _onAction() ____________________________________________________________
 
 void WgGizmoModal::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 {
-}
-
-//____ _onAlphaTest() _________________________________________________________
-
-bool WgGizmoModal::_onAlphaTest( const WgCoord& ofs )
-{
-	return false;
 }
 
 //____ _firstHook() ___________________________________________________________

@@ -17,6 +17,7 @@
 #include <wg_gfxdevice_sdl.h>
 #include <wg_eventlogger.h>
 #include <wg_bitmapglyphs.h>
+#include <wg_vectorglyphs.h>
 #include <wg_textprop.h>
 #include <iostream>
 
@@ -64,7 +65,8 @@ int main ( int argc, char** argv )
 
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
 	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_POSITION );
-	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_MOVE );
+	pEventLogger->IgnoreEvent( WG_EVENT_MOUSEBUTTON_REPEAT );
+	pEventLogger->IgnoreEvent( WG_EVENT_BUTTON_PRESS );
 //	pEventLogger->IgnoreAllEvents();
 //	pEventLogger->LogMouseButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
@@ -94,8 +96,20 @@ int main ( int argc, char** argv )
 	WgBase::MapKey( WG_KEY_ESCAPE, SDLK_ESCAPE );
 
 
+	// Load TTF-font
+/*	
+	WgVectorGlyphs::SetSurfaceFactory( new WgSurfaceFactorySDL() );
+	
+	char	ttfname[] = { "a.ttf" };
+	
+	int size = fileSize( ttfname );
+	char * pFontFile = (char*) loadFile( ttfname );
+	WgVectorGlyphs * pGlyphs = new WgVectorGlyphs( pFontFile , size, 0 );
 
-	// Load font
+	WgFont * pFont = new WgFont();
+	pFont->SetDefaultVectorGlyphs( pGlyphs );
+*/
+	// Load bitmap font
 
 	WgSurface * pFontImg = loadSurface("anuvverbubbla_8x8.png");
 	char * pFontSpec = (char*) loadFile( "anuvverbubbla_8x8.fnt" );
@@ -105,16 +119,19 @@ int main ( int argc, char** argv )
 	WgFont * pFont = new WgFont();
 	pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 8 );
 
+
+	// Load and setup cursor
+
 	WgSurface * pCursorImg = loadSurface("cursors.png");
 
 	WgGfxAnim * pCursorEOL = new WgGfxAnim();
 	pCursorEOL->SetSize( WgSize(8,8) );
-	pCursorEOL->AddFrames( pCursorImg, WgCoord(0,0), WgSize(2,1), 200, 2);
+	pCursorEOL->AddFrames(pCursorImg, WgCoord(0,0), WgSize(2,1), 200 );
 	pCursorEOL->SetPlayMode( WG_FORWARD_LOOPING );
 
 	WgGfxAnim * pCursorINS = new WgGfxAnim();
 	pCursorINS->SetSize( WgSize(8,8) );
-	pCursorINS->AddFrames( pCursorImg, WgCoord(0,8), WgSize(2,1), 200, 2);
+	pCursorINS->AddFrames( pCursorImg, WgCoord(0,8), WgSize(2,1), 200 );
 	pCursorINS->SetPlayMode( WG_FORWARD_LOOPING );
 
 	WgCursor * pCursor = new WgCursor();
@@ -130,6 +147,7 @@ int main ( int argc, char** argv )
 	WgTextProp prop;
 
 	prop.SetFont(pFont);
+	prop.SetColor( WgColor::white );
 	prop.SetSize(8);
 
 	WgBase::SetDefaultTextProp( prop.Register() );
@@ -217,7 +235,7 @@ int main ( int argc, char** argv )
 
 	WgGizmoButton * pButton2 = new WgGizmoButton();
 	pButton2->SetSource( pButtonBlock );
-	pButton2->SetText( "STANDARD BUTTON" );
+	pButton2->SetText( "BUTTON TEXT" );
 
 	pVBox->AddChild(pButton2);
 
@@ -255,7 +273,7 @@ int main ( int argc, char** argv )
 	// Radiobuttons test
 	
 	WgGizmoRadiobutton * pRB1 = new WgGizmoRadiobutton();
-	pRB1->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST);
+	pRB1->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
 	pVBox->AddChild(pRB1);
 	
 	WgGizmoRadiobutton * pRB2 = new WgGizmoRadiobutton();

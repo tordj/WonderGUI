@@ -143,10 +143,6 @@ WgGizmo * WgMonotainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 }
 
 
-void WgMonotainer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
-{
-}
-
 void WgMonotainer::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
 {
 	if( m_hook.Gizmo() )

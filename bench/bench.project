@@ -14,6 +14,10 @@
     <Project Name="wondergui"/>
     <Project Name="wg_sdl"/>
   </Dependencies>
+  <Dependencies Name="Debug">
+    <Project Name="wondergui"/>
+    <Project Name="wg_sdl"/>
+  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="">
@@ -28,6 +32,7 @@
       <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
         <IncludePath Value="../include"/>
         <IncludePath Value="../wg_sdl"/>
+        <Preprocessor Value="WG_TNG"/>
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="../Debug"/>
@@ -41,9 +46,7 @@
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(IntermediateDirectory)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[
-      
-      ]]>
+        <![CDATA[]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
         <PostConnectCommands/>
@@ -114,8 +117,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="wondergui"/>
-    <Project Name="wg_sdl"/>
-  </Dependencies>
 </CodeLite_Project>

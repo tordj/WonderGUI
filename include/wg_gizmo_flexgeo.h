@@ -275,16 +275,15 @@ public:
 
 private:
 
-	void			_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	void			_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	void			_onCloneContent( const WgGizmo * _pOrg );
-	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onNewSize( const WgSize& size );
 	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool			_onAlphaTest( const WgCoord& ofs );
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }
+	inline void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+									{ WgGizmoContainer::_onRender(pDevice, _canvas, _window, _clip, _layer ); }
+	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 
