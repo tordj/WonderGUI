@@ -53,7 +53,7 @@ public:
 	WgRect					Geo() const;
 
 	inline WgGizmo *		Child() const { return m_hook.Gizmo(); }
-	bool					SetChild( WgGizmoContainer * pGizmo );
+	bool					SetChild( WgGizmo * pGizmo );
 	inline void				DeleteChild() { SetChild(0); }
 	WgGizmo * 				ReleaseChild();
 
@@ -79,8 +79,8 @@ public:
 	bool	Render();
 	bool	Render( const WgRect& clip );
 
-	bool	BeginRender( const WgRect& clip );
-	bool	RenderSection( int layer = 0xFF );
+	bool	BeginRender();
+	bool	RenderSection( const WgRect& clip, int layer = 0xFF );
 	bool	EndRender();
 
 	void	AddDirtyRect( WgRect rect );

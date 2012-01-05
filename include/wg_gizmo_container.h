@@ -81,9 +81,7 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
 		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
 
-		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) = 0;
-		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) = 0;
-		virtual void	_clearDirtyRects() = 0;
+		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgRectChain * _pChain, Uint8 _layer );
 
 		bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
 		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
@@ -97,6 +95,7 @@ class WgGizmoContainer : public WgGizmoParent
 		bool		m_bFocusGroup;
 		bool		m_bRadioGroup;
 		bool		m_bTooltipGroup;	// All Children+ belongs to the same tooltip group.
+		bool		m_bSiblingsOverlap;	// Set if siblings (might be) overlapping each other (special considerations to be taken during rendering).
 		WgMaskOp	m_maskOp;			// Specifies how container masks background.
 };
 
