@@ -39,6 +39,8 @@ PFNGLDELETEBUFFERSARBPROC			pglDeleteBuffersARB		= 0;
 PFNGLMAPBUFFERARBPROC				pglMapBufferARB			= 0;
 PFNGLUNMAPBUFFERARBPROC				pglUnmapBufferARB		= 0;
 
+static const char	c_surfaceType[] = {"OpenGL"};
+
 
 //____ _initGlExtensions() ______________________________________________________
 
@@ -180,6 +182,21 @@ WgSurfaceGL::~WgSurfaceGL()
 
 	glDeleteTextures( 1, &m_texture );
 }
+
+//____ Type() __________________________________________________________________
+
+const char WgSurfaceGL::*Type() const
+{
+	return GetMyType();
+}
+
+//____ GetMyType() _____________________________________________________________
+
+static const char * WgSurfaceGL::GetMyType()
+{
+	return c_surfaceType;
+}
+
 
 //____ Size() ______________________________________________________________
 

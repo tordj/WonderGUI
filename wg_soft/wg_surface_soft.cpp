@@ -21,10 +21,14 @@
 =========================================================================*/
 
 #include <assert.h>
-#include "wg_surface_soft.h"
-#include "wg_geo.h"
+#include <memory.h>
+#include <wg_surface_soft.h>
+#include <wg_util.h>
+
 
 using namespace std;
+
+static const char	c_surfaceType[] = {"Software"};
 
 //____ Constructor ________________________________________________________________
 
@@ -40,7 +44,7 @@ WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type )
 	m_fScaleAlpha = 1.f;
 }
 
-WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgSurface::PixelType type, char * pPixels, int pitch )
+WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
 	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
@@ -65,21 +69,36 @@ WgSurfaceSoft::~WgSurfaceSoft()
 		delete m_pData;
 }
 
+//____ Type() __________________________________________________________________
+
+const char WgSurfaceSoft::*Type() const
+{
+	return GetMyType();
+}
+
+//____ GetMyType() _____________________________________________________________
+
+static const char * WgSurfaceSoft::GetMyType()
+{
+	return c_surfaceType;
+}
+
+
 //____ _copy() _________________________________________________________________
 
 void WgSurfaceSoft::_copy(const WgSurfaceSoft * pOther)
 {
-	m_pixelFormat 	= other.m_pixelFormat;
-	m_pitch 		= ((other.m_size.w+3)&0xFFFFFFFC)*other.m_pixelFormat.bits/8;
-	m_size 			= other.m_size;
+	m_pixelFormat 	= pOther->m_pixelFormat;
+	m_pitch 		= ((pOther->m_size.w+3)&0xFFFFFFFC)*pOther->m_pixelFormat.bits/8;
+	m_size 			= pOther->m_size;
 	m_bOwnsData		= true;
-	m_fScaleAlpha 	= other.m_fScaleAlpha;
+	m_fScaleAlpha 	= pOther->m_fScaleAlpha;
 
 	m_pData = new Uint8[ m_pitch*m_size.h ];
 	
 	int linebytes = m_size.w * m_pixelFormat.bits/8;
 	for( int y = 0 ; y < m_size.h ; y++ )
-		memcpy( m_pPixels+y*m_pitch, other.m_pPixels*other.m_pitch, linebytes );
+		memcpy( m_pData+y*m_pitch, pOther->m_pData+y*pOther->m_pitch, linebytes );
 }
 
 //____ GetPixel() _________________________________________________________________
@@ -113,7 +132,7 @@ Uint8 WgSurfaceSoft::GetOpacity( WgCoord coord ) const
 		coord.y >= m_size.h || coord.y < 0  )
 		return 0;
 	
-	if( m_bitdepth == 32 ) 
+	if( m_pixelFormat.bits == 32 ) 
 	  {
 		Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
 	    return (Uint8)(m_fScaleAlpha * (float)pPixel[3]);
@@ -184,9 +203,9 @@ void WgSurfaceSoft::PutPixels(const vector<int> &x, const vector<int> &y, const 
 
 	switch(m_pixelFormat.type)
 	{
-		case RGB_8:
+		case WG_PIXEL_RGB_8:
 			break;
-		case RGBA_8:
+		case WG_PIXEL_RGBA_8:
 			for(int n=0; n<length; n++)
 			{
 			  ind = y[n]*m_pitch + x[n]*4;

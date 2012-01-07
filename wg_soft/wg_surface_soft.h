@@ -44,11 +44,16 @@
 
 class WgSurfaceSoft : public WgSurface
 {
+	friend class WgGfxDeviceSoft;
+	
  public:
 	WgSurfaceSoft( WgSize size, WgPixelType type );
-	WgSurfaceSoft( WgSize size, WgPixelType type, char * pPixels, int pitch );
+	WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch );
 	WgSurfaceSoft( const WgSurfaceSoft * pOther );
 	~WgSurfaceSoft();
+
+	const char *Type() const;
+	static const char * GetMyType();
 
 	WgSize		Size() const;
 	bool		IsOpaque() const;
@@ -56,8 +61,8 @@ class WgSurfaceSoft : public WgSurface
 	Uint32		GetPixel( WgCoord coord ) const;
 	Uint8		GetOpacity( WgCoord coord ) const;
 
-	void *		Lock( LockStatus mode );
-	void *		LockRegion( LockStatus mode, const WgRect& region );
+	void *		Lock( WgAccessMode mode );
+	void *		LockRegion( WgAccessMode mode, const WgRect& region );
 	void		Unlock();
 
 	inline float ScaleAlpha() { return m_fScaleAlpha; }
@@ -67,7 +72,7 @@ class WgSurfaceSoft : public WgSurface
 									   			               
 protected:
 	
-	_copy(const WgSurfaceSoft * pOther);
+	void _copy(const WgSurfaceSoft * pOther);
 	
 	WgSize		m_size;
 	float    	m_fScaleAlpha;

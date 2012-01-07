@@ -27,6 +27,8 @@
 #endif
 #include <wg_surface_sdl.h>
  
+static const char	c_surfaceType[] = {"SDL"};
+
 //____ Constructor _____________________________________________________________
 
 WgSurfaceSDL::WgSurfaceSDL( SDL_Surface * pSurf )
@@ -109,6 +111,21 @@ WgSurfaceSDL::~WgSurfaceSDL()
 
 	SDL_FreeSurface( m_pSurface );
 }
+
+//____ Type() __________________________________________________________________
+
+const char * WgSurfaceSDL::Type() const
+{
+	return GetMyType();
+}
+
+//____ GetMyType() _____________________________________________________________
+
+const char * WgSurfaceSDL::GetMyType()
+{
+	return c_surfaceType;
+}
+
 
 //____ Size() _________________________________________________________________
 

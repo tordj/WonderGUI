@@ -75,6 +75,7 @@ public:
 
 	// Methods for reading dimensions and abilities.
 
+	virtual const char *Type() const = 0;
 	virtual	WgSize		Size() const = 0;
 	virtual	int			Width() const;
 	virtual	int			Height() const;

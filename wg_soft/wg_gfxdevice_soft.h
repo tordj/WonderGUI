@@ -46,13 +46,17 @@ public:
 	//
 
 	void	Fill( const WgRect& rect, const WgColor& col );
-	void	Blit( const WgSurface* src, const WgRect& srcrect, int dx, int dy  );
+	void	Blit( const WgSurface* pSrc, const WgRect& srcrect, int dx, int dy  );
 
 	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 
 protected:
+
+	void	_initTables();
+
 	WgSurfaceSoft * m_pCanvas;
+	Uint8			m_limitTable[512];
 };
 
 #endif //WG_GFXDEVICE_SOFT_DOT_H
