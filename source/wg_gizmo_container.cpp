@@ -118,12 +118,42 @@ void WgGizmoContainer::_onDisable()
 	}
 }
 
-//____ _onRender() ____________________________________________________________
+//____ _renderDirtyRects() _____________________________________________________
 
-void WgGizmoContainer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoContainer::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgRectChain * _pChain, Uint8 _layer )
 {
-	// Do nothing, we have nothing to display ourselves.
+	// Default implementation for rendering dirty rectangles.
+	
+	WgRectChain chain;
+	
+	WgRectLink * pLink = _pChain->pRectList;
+	
+
+
+
+
+	if( m_bSiblingsOverlap )
+	{
+	}
+	else
+	{
+		WgRect childGeo;
+		WgHook * p = _firstHookWithGeo( childGeo );
+
+		while(p)
+		{
+			WgRect canvas = childGeo + _canvas.Pos();
+			
+			p->Gizmo()->_renderDirtyRects( pDevice, canvas, canvas, _pChain, _layer );
+			p = _nextHookWithGeo( childGeo, p );
+		}	
+		
+	}
+	
+	
 }
+
+
 
 //____ _onAlphaTest() _________________________________________________________
 

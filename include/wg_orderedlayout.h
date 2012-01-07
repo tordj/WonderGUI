@@ -121,8 +121,6 @@ public:
 	void			SetSortFunction( WgGizmoSortFunc pSortFunc );
 	WgGizmoSortFunc	SortFunction() const { return m_pSortFunc; }
 
-	void			ScrollIntoView( WgGizmo * pGizmo );
-
 	// Overloaded from WgGizmo
 
 	bool			IsView() const { return false; }

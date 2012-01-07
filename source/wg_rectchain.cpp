@@ -207,7 +207,7 @@ void WgRectChain::Transfer( WgRectChain * pDest )
 		pRect2 = pRect->pNext;
 		pDest->Addrect( pRect, pDest->pRectList );
 		pRect = pRect2;
-  }
+	}
 	pRectList = 0;
 }
 

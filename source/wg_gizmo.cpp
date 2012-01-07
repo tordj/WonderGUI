@@ -285,7 +285,19 @@ WgMode WgGizmo::Mode() const
 		return WG_MODE_DISABLED;
 }
 
+//____ _renderDirtyRects() _____________________________________________________
 
+void WgGizmo::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgRectChain * _pChain, Uint8 _layer )
+{
+		WgRectLink * pLink = _pChain->pRectList;
+		while( pLink )
+		{
+			WgRect clip( _canvas, *((WgRect*)pLink) );
+			if( clip.w > 0 || clip.h > 0 )
+				_onRender( pDevice, _canvas, _window, clip, _layer );
+			pLink = pLink->pNext;
+		}
+}
 
 
 //____ Fillers _______________________________________________________________
@@ -304,6 +316,9 @@ void WgGizmo::_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect&
 	}
 }
 
+void WgGizmo::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+{
+}
 
 void WgGizmo::_onNewSize( const WgSize& size )
 {

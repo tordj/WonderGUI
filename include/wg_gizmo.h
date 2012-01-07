@@ -189,11 +189,12 @@ protected:
 
 	// To be overloaded by Gizmo
 
+	virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgRectChain * _pChain, Uint8 _layer );
 
 	virtual void	_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	virtual void	_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	virtual void	_onCloneContent( const WgGizmo * _pOrg ) = 0;
-	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer ) = 0;
+	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_onRefresh();
 	virtual void	_onUpdate( const WgUpdateInfo& _updateInfo );

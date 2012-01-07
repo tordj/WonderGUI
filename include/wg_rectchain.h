@@ -57,9 +57,9 @@ public:
 
 	void	Add( const int _x, const int _y, const int _w, const int _h );
 	void 	Sub( const int _x, const int _y, const int _w, const int _h );
-	void	Transfer( WgRectChain * _pDest );						// Move rectangles to this container.
+	void	Transfer( WgRectChain * _pDest );						// Move rectangles to specified container.
 	void	ClipTransfer( WgRectChain * _pDest, const WgRect * _pClip );	// Transfer all that is within clip
-																																	// rectangle to pDest.
+																			// rectangle to pDest.
 	void	Clip( const WgRect * _pClip );
 
 	void	Clear( void );

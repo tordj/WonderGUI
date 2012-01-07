@@ -98,12 +98,8 @@ WgRect WgRoot::Geo() const
 
 //____ SetChild() _____________________________________________________________
 
-bool WgRoot::SetChild( WgGizmoContainer * _pGizmo )
+bool WgRoot::SetChild( WgGizmo * pGizmo )
 {
-	if( !_pGizmo )
-		return false;
-
-	WgGizmo * pGizmo = _pGizmo->CastToGizmo();
 	if( !pGizmo )
 		return false;
 
@@ -166,10 +162,10 @@ bool WgRoot::Render()
 
 bool WgRoot::Render( const WgRect& clip )
 {
-	if( !BeginRender( clip ) )
+	if( !BeginRender() )
 		return false;
 
-	if( !RenderSection() )
+	if( !RenderSection(clip) )
 	{
 		EndRender();
 		return false;
@@ -183,24 +179,10 @@ bool WgRoot::Render( const WgRect& clip )
 
 //____ BeginRender() __________________________________________________________
 
-bool WgRoot::BeginRender( const WgRect& clip )
+bool WgRoot::BeginRender()
 {
 	if( !m_pGfxDevice || !m_hook.Gizmo() )
 		return false;						// No GFX-device or no widgets to render.
-
-	WgRect canvas = Geo();
-	WgRect clip2( clip, canvas );
-	if( clip2.w == 0 || clip2.h == 0 )
-		return false;						// Invalid rect area.
-
-	WgRectLink * pRect = m_dirtyRects.Pop();
-	WgRectChain	outDummy;
-
-	while( pRect )
-	{
-		m_hook.Gizmo()->CastToContainer()->_castDirtyRect( canvas, clip, pRect, &outDummy );
-		pRect = m_dirtyRects.Pop();
-	}
 
 	return m_pGfxDevice->BeginRender();
 }
@@ -208,14 +190,32 @@ bool WgRoot::BeginRender( const WgRect& clip )
 
 //____ RenderSection() __________________________________________________________
 
-bool WgRoot::RenderSection( int layer )
+bool WgRoot::RenderSection( const WgRect& clip, int layer )
 {
 	if( !m_pGfxDevice || !m_hook.Gizmo() )
 		return false;						// No GFX-device or no widgets to render.
 
-	WgRect canvas = Geo();
+	// 
 
-	m_hook.Gizmo()->CastToContainer()->_renderDirtyRects( m_pGfxDevice, canvas, canvas, layer );
+	WgRect canvas = Geo();
+	WgRect clip2( clip, canvas );
+	if( clip2.w == 0 || clip2.h == 0 )
+		return false;						// Invalid rect area.
+
+	// Copy and clip our dirty rectangles
+	
+	WgRectChain dirtyRects;
+	
+	WgRectLink * pLink = m_dirtyRects.pRectList;
+	while( pLink )
+	{
+		dirtyRects.Add( WgRect(*((WgRect*)pLink),clip2 ) );
+		pLink = pLink->pNext;
+	}
+		
+	// Render the dirty rects recursively
+
+	m_hook.Gizmo()->_renderDirtyRects( m_pGfxDevice, canvas, canvas, &dirtyRects, layer );
 
 	return true;
 }
@@ -227,7 +227,7 @@ bool WgRoot::EndRender( void )
 	if( !m_pGfxDevice || !m_hook.Gizmo() )
 		return false;						// No GFX-device or no widgets to render.
 
-	m_hook.Gizmo()->CastToContainer()->_clearDirtyRects();
+	m_dirtyRects.Clear();
 
 	return m_pGfxDevice->EndRender();
 }

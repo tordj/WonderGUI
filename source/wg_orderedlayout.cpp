@@ -318,13 +318,6 @@ void WgOrderedLayout::SetSortFunction( WgGizmoSortFunc pSortFunc )
 	m_pSortFunc = pSortFunc;
 }
 
-//____ ScrollIntoView() _______________________________________________________
-
-void WgOrderedLayout::ScrollIntoView( WgGizmo * pGizmo )
-{
-	//TODO: Implement
-}
-
 //____ FindGizmo() ____________________________________________________________
 
 WgGizmo * WgOrderedLayout::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
