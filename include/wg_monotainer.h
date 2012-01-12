@@ -103,15 +103,13 @@ private:
 	WgHook *		_firstHookWithGeo( WgRect& geo ) const;
 	WgHook *		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
-	void			_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	void			_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onNewSize( const WgSize& size );
 
 	void			_onEnable();
 	void			_onDisable();
-	inline void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
-									{ WgGizmoContainer::_onRender(pDevice, _canvas, _window, _clip, _layer ); }
 	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );

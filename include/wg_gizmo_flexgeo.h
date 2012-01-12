@@ -29,11 +29,6 @@
 #	include <wg_gizmo_container.h>
 #endif
 
-
-#ifndef WG_DIRTYRECT_DOT_H
-#	include <wg_rectchain.h>
-#endif
-
 class WgGizmoFlexGeo;
 
 //____ WgFlexHook _____________________________________________________________
@@ -143,9 +138,6 @@ protected:
 	void		_requestResize();
 
 	bool		_limitPlacementSize();
-	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
-	void		_renderDirtyRects( WgGfxDevice * pDevice, const WgCoord& parentPos, Uint8 _layer );
-
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
@@ -172,10 +164,6 @@ protected:
 	int				m_anchorTopLeft;
 	int				m_anchorBottomRight;
 	WgBorders		m_borders;
-
-	//
-
-	WgRectChain		m_dirt;		// Dirty areas to be rendered, in screen coordinates!
 
 };
 
@@ -281,15 +269,9 @@ private:
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }
-	inline void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
-									{ WgGizmoContainer::_onRender(pDevice, _canvas, _window, _clip, _layer ); }
 	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
-
-	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
-	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
-	void			_clearDirtyRects();
 
 	WgHook*	_firstHook() const { return FirstHook(); }
 	WgHook*	_lastHook() const { return LastHook(); }

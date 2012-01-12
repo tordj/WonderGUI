@@ -22,8 +22,10 @@
 #ifndef WG_PATCHES_DOT_H
 #define WG_PATCHES_DOT_H
 
+#include <limits.h>
+
 #ifndef WG_GEO_DOT_H
-#	include WG_GEO_DOT_H
+#	include <wg_geo.h>
 #endif
 
 class WgPatches
@@ -38,15 +40,18 @@ public:
 	bool			SetCapacity( int capacity );
 	bool			SetArray( WgRect * pArray, int capacity );
 
-	void			Add( const WgRect& rect );											// Adds the area
+	inline void		Add( const WgRect& rect ) { if( rect.w > 0 && rect.h > 0 ) _add( rect, 0 ); }						// Adds the area
 	void			Add( const WgPatches * pSource, int ofs = 0, int len = INT_MAX );
 	
 	void			Sub( const WgRect& rect );											// Subtracts the area
 	void			Sub( const WgPatches * pSource, int ofs = 0, int len = INT_MAX );
 
-	inline void		Push( const WgRect& rect )											// Adds the rect (no optimizations, overlap may occur).
+	inline void		Push( const WgRect& rect );											// Adds the rect (no optimizations, overlap may occur).
 	int				Push( const WgPatches * pSource, int ofs = 0, int len = INT_MAX );
-	inline WgRect	Pop();																// Pops one rect from the patches.
+	inline WgRect	Pop();																// Pops last rect from the patches.
+
+	void			Delete( int ofs );													// Deletes specific rect from the patches.
+	int				Delete( int ofs, int len );											// Deletes range of rects from the patches.
 
 	inline void		Clear() { m_size = 0; }
 	void			Clip( const WgRect& clip );
@@ -59,11 +64,12 @@ public:
 	const WgRect *	End() const { return m_pFirst + m_size; }
 	int				Size() const { return m_size; }
 	int				Capacity() const { return m_capacity; }
-
+	bool			IsEmpty() const { return (m_size == 0); }
 
 private:
 	const static int	c_defaultCapacity = 64;
 
+	void		_add( const WgRect& rect, int startOffset );
 	void		_expand( int spaceNeeded );
 
 	WgRect * 	m_pFirst;
@@ -84,7 +90,7 @@ void WgPatches::Push( const WgRect& rect )
 WgRect WgPatches::Pop() 
 { 
 	if( m_size>0 )
-		return m_pFirst[--m_size]
+		return m_pFirst[--m_size];
 	else
 		return WgRect(); 
 }
