@@ -20,12 +20,15 @@
 
 =========================================================================*/
 
+#include <vector>
 #include <wg_gizmo_container.h>
 #include <wg_rectchain.h>
+#include <wg_patches.h>
+
 
 //____ Constructor _____________________________________________________________
 
-WgGizmoContainer::WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE)
+WgGizmoContainer::WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE), m_bSiblingsOverlap(false)
 {
 }
 
@@ -118,22 +121,78 @@ void WgGizmoContainer::_onDisable()
 	}
 }
 
-//____ _renderDirtyRects() _____________________________________________________
+//____ _renderPatches() _____________________________________________________
+// Default implementation for container rendering patches.
 
-void WgGizmoContainer::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgRectChain * _pChain, Uint8 _layer )
+class GizmoRenderContext
 {
-	// Default implementation for rendering dirty rectangles.
-	
-	WgRectChain chain;
-	
-	WgRectLink * pLink = _pChain->pRectList;
-	
+public:
+	GizmoRenderContext() : pGizmo(0) {}
+	GizmoRenderContext( WgGizmo * pGizmo, const WgRect& geo ) : pGizmo(pGizmo), geo(geo) {}
 
+	WgGizmo *	pGizmo;
+	WgRect		geo;
+	WgPatches	patches;
+};
 
+void WgGizmoContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+{
+	
+	// We start by eliminating rectangles outside our geometry
+	
+	WgPatches 	patches( _pPatches->Size() );								// TODO: Optimize by pre-allocating?
 
+	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ ) 
+	{
+		if( _canvas.IntersectsWith( *pRect ) )
+			patches.Push( *pRect );
+	}
+
+	//
+
+	WgRect	dirtBounds = patches.Union();
 
 	if( m_bSiblingsOverlap )
 	{
+
+		// Create GizmoRenderContext's for siblings that might get dirty patches
+		
+		std::vector<GizmoRenderContext> renderList;
+				
+		WgRect childGeo;
+		WgHook * p = _firstHookWithGeo( childGeo );
+		while(p)
+		{
+			WgRect geo = childGeo + _canvas.Pos();
+
+			if( geo.IntersectsWith( dirtBounds ) )
+				renderList.push_back( GizmoRenderContext(p->Gizmo(), geo ) );
+			
+			p = _nextHookWithGeo( childGeo, p );
+		}	
+		
+		// Go through GizmoRenderContexts in reverse order (topmost first), push and mask dirt
+		
+		for( int i = renderList.size()-1 ; i >= 0 ; i-- )
+		{
+			GizmoRenderContext * p = &renderList[i];
+			
+			p->patches.Push( &patches );
+
+			p->pGizmo->_onMaskPatches( patches, p->geo, p->geo );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+			
+			if( patches.IsEmpty() )
+				break;
+		}
+		
+		// Go through GizmoRenderContexts and render the patches
+		
+		for( int i = 0 ; i < renderList.size() ; i++ )
+		{
+			GizmoRenderContext * p = &renderList[i];
+			p->pGizmo->_renderPatches( pDevice, p->geo, p->geo, &p->patches, _layer );
+		}
+		
 	}
 	else
 	{
@@ -143,14 +202,12 @@ void WgGizmoContainer::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _
 		while(p)
 		{
 			WgRect canvas = childGeo + _canvas.Pos();
-			
-			p->Gizmo()->_renderDirtyRects( pDevice, canvas, canvas, _pChain, _layer );
+			if( canvas.IntersectsWith( dirtBounds ) )
+				p->Gizmo()->_renderPatches( pDevice, canvas, canvas, &patches, _layer );
 			p = _nextHookWithGeo( childGeo, p );
 		}	
 		
 	}
-	
-	
 }
 
 
@@ -163,23 +220,23 @@ bool WgGizmoContainer::_onAlphaTest( const WgCoord& ofs )
 }
 
 
-//____ _onCollectRects() _______________________________________________________
+//____ _onCollectPatches() _______________________________________________________
 
-void WgGizmoContainer::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmoContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	WgRect childGeo;
 	WgHook * p = _firstHookWithGeo( childGeo );
 
 	while(p)
 	{
-		p->Gizmo()->_onCollectRects( rects, childGeo, clip );
+		p->Gizmo()->_onCollectPatches( container, childGeo, clip );
 		p = _nextHookWithGeo( childGeo, p );
 	}	
 }
 
-//____ _onMaskRects() __________________________________________________________
+//____ _onMaskPatches() __________________________________________________________
 
-void WgGizmoContainer::_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmoContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
 {
 	switch( m_maskOp )
 	{
@@ -190,7 +247,7 @@ void WgGizmoContainer::_onMaskRects( WgRectChain& rects, const WgRect& geo, cons
 
 			while(p)
 			{
-				p->Gizmo()->_onMaskRects( rects, childGeo, clip );
+				p->Gizmo()->_onMaskPatches( patches, childGeo, clip );
 				p = _nextHookWithGeo( childGeo, p );
 			}
 			break;
@@ -198,7 +255,7 @@ void WgGizmoContainer::_onMaskRects( WgRectChain& rects, const WgRect& geo, cons
 		case WG_MASKOP_SKIP:
 			break;
 		case WG_MASKOP_MASK:
-			rects.Sub( WgRect(geo,clip) );
+			patches.Sub( WgRect(geo,clip) );
 			break;
 	}
 }

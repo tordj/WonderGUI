@@ -285,34 +285,32 @@ WgMode WgGizmo::Mode() const
 		return WG_MODE_DISABLED;
 }
 
-//____ _renderDirtyRects() _____________________________________________________
+//____ _renderPatches() ________________________________________________________
 
-void WgGizmo::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgRectChain * _pChain, Uint8 _layer )
+void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 {
-		WgRectLink * pLink = _pChain->pRectList;
-		while( pLink )
-		{
-			WgRect clip( _canvas, *((WgRect*)pLink) );
-			if( clip.w > 0 || clip.h > 0 )
-				_onRender( pDevice, _canvas, _window, clip, _layer );
-			pLink = pLink->pNext;
-		}
+	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ ) 
+	{
+		WgRect clip( _canvas, *pRect );
+		if( clip.w > 0 || clip.h > 0 )
+			_onRender( pDevice, _canvas, _window, clip, _layer );
+	}
 }
 
 
 //____ Fillers _______________________________________________________________
 
 
-void WgGizmo::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmo::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-	rects.Add( WgRect( geo, clip ) );
+	container.Add( WgRect( geo, clip ) );
 }
 
-void WgGizmo::_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgGizmo::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
 {
 	if( m_bOpaque )
 	{
-		rects.Sub( WgRect( geo, clip ) );
+		patches.Sub( WgRect( geo, clip ) );
 	}
 }
 

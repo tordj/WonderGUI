@@ -369,33 +369,3 @@ void WgOrderedLayout::_onCloneContent( const WgGizmo * _pOrg )
 {
 	//TODO: Implement
 }
-
-//____ _castDirtyRect() _______________________________________________________
-
-void WgOrderedLayout::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
-{
-}
-
-//____ _renderDirtyRects() ____________________________________________________
-
-void WgOrderedLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
-{
-
-}
-
-//____ _clearDirtyRects() _____________________________________________________
-
-void WgOrderedLayout::_clearDirtyRects()
-{
-	m_dirt.Clear();
-
-	WgOrderedHook *pHook	= m_hooks.First();
-
-	while( pHook )
-	{
-		if( pHook->Gizmo()->IsContainer() )
-			pHook->Gizmo()->CastToContainer()->_clearDirtyRects();
-
-		pHook = pHook->Next();
-	}
-}

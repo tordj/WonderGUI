@@ -61,7 +61,7 @@ class Wg_Interface_TextHolder;
 class WgGizmoContainer;
 class WgSkinNode;
 class WgEventHandler;
-
+class WgPatches;
 
 
 class WgGizmo : public WgEmitter, public WgWeakPtrTarget
@@ -189,10 +189,10 @@ protected:
 
 	// To be overloaded by Gizmo
 
-	virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgRectChain * _pChain, Uint8 _layer );
+	virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
 
-	virtual void	_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	virtual void	_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
 	virtual void	_onCloneContent( const WgGizmo * _pOrg ) = 0;
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	virtual void	_onNewSize( const WgSize& size );

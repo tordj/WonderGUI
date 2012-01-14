@@ -22,6 +22,7 @@
 
 #include <wg_gizmo_modal.h>
 #include <wg_util.h>
+#include <wg_patches.h>
 
 static const char	c_gizmoType[] = {"Modal"};
 
@@ -209,71 +210,6 @@ void WgModalHook::_requestRender( const WgRect& rect )
 void WgModalHook::_requestResize()
 {
 	_refreshRealGeo();
-}
-
-//_____________________________________________________________________________
-void WgModalHook::_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut )
-{
-	WgRectChain	siblingDirt;
-
-	// Recurse through the siblings ontop of us if there are any, filling dirt
-
-	if( Next() )
-	{
-		Next()->_castDirtRecursively( parentGeo, clip, pDirtIn, &siblingDirt );
-	}
-	else
-		siblingDirt.PushExistingRect( pDirtIn );
-
-	// Get our screen geometry and clippedArea.
-
-	WgRect screenGeo = m_realGeo + parentGeo.Pos();
-	WgRect clippedArea( screenGeo, clip );
-
-	// If we are outside visible bounds, we just transfer the dirt and return.
-
-	if( clippedArea.w == 0 || clippedArea.h == 0 )
-	{
-		siblingDirt.Transfer( pDirtOut) ;
-		return;
-	}
-
-	// Loop through dirty rects
-
-	WgRectLink * pRect = siblingDirt.Pop();;
-	while( pRect )
-	{
-		WgRect dirtyArea( clippedArea, *pRect );
-		if( dirtyArea.w != 0 && dirtyArea.h != 0 )
-		{
-
-			if( m_pGizmo->IsContainer() )
-			{
-				// This is a container, call CastDirt recursively,
-
-				m_pGizmo->CastToContainer()->_castDirtyRect( screenGeo, clippedArea, pRect, pDirtOut );
-			}
-			else
-			{
-				// Add dirtyArea to our list of what to render
-
-				m_dirt.Add( dirtyArea );
-
-				// Mask ourselves from the rectangle and move remains to dirtOut
-
-				WgRectChain temp;
-				temp.PushExistingRect( pRect );
-				m_pGizmo->_onMaskRects( temp, screenGeo, clippedArea );
-				temp.Transfer( pDirtOut);
-			}
-		}
-		else
-		{
-			pDirtOut->PushExistingRect( pRect );
-		}
-
-		pRect = siblingDirt.Pop();
-	}
 }
 
 //_____________________________________________________________________________
@@ -626,8 +562,8 @@ void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHo
 {
 	// Clip our geometry and put it in a dirtyrect-list
 
-	WgRectChain rects;
-	rects.Add( WgRect( rect, WgRect(0,0,m_size)) );
+	WgPatches patches;
+	patches.Add( WgRect( rect, WgRect(0,0,m_size)) );
 
 	// Remove portions of dirty rect that are covered by opaque upper siblings,
 	// possibly filling list with many small dirty rects instead.
@@ -642,152 +578,15 @@ void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHo
 	while( pCover )
 	{
 		if( pCover->m_realGeo.IntersectsWith( rect ) )
-			pCover->Gizmo()->_onMaskRects( rects, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
+			pCover->Gizmo()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
 
 		pCover = pCover->Next();
 	}
 
 	// Make request render calls
 
-	WgRectLink * pRect = rects.pRectList;
-	while( pRect )
-	{
+	for( const WgRect * pRect = patches.Begin() ; pRect < patches.End() ; pRect++ )
 		RequestRender( * pRect );
-		pRect = pRect->pNext;
-	}
-}
-
-//____ _castDirtyRect() _______________________________________________________
-
-void WgGizmoModal::_castDirtyRect( const WgRect& geo, const WgRect& _clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
-{
-	// Preparations
-
-	WgRectChain dirt;
-	WgRect 		clip(_clip,geo);
-
-	WgRect		c = _clip;
-	WgRect		g = geo;
-
-	if( clip.w == 0 || clip.h == 0 )
-		return;
-
-	// Handle modals recursively
-
-	WgModalHook * pHook = m_modalHooks.First();
-	if( pHook )
-	{
-		pHook->_castDirtRecursively( geo, clip, pDirtIn, &dirt );
-	}
-	else
-		dirt.PushExistingRect(pDirtIn);
-
-	// Handle base gizmo.
-
-	WgGizmo * pGizmo = m_baseHook.Gizmo();
-	if( pGizmo )
-	{
-		if( pGizmo->IsContainer() )
-		{
-			WgRectLink * pRect = dirt.Pop();;
-			while( pRect )
-			{
-				pGizmo->CastToContainer()->_castDirtyRect( geo, clip, pRect, pDirtOut );
-				pRect = dirt.Pop();
-			}
-		}
-		else
-		{
-			// Add dirtyAreas to our list of what to render
-
-			WgRectLink * pRect = dirt.Pop();;
-			while( pRect )
-			{
-				m_baseHook.m_dirt.Add( WgRect(clip,*pRect) );
-				pRect = dirt.Pop();
-			}
-
-			// Mask ourselves from the rectangle and move remains to dirtOut
-			pGizmo->_onMaskRects( dirt, geo, clip );
-		}
-	}
-
-	dirt.Transfer( pDirtOut);
-}
-
-
-//____ _renderDirtyRects() ____________________________________________________
-
-void WgGizmoModal::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
-{
-	// Render dirty rects belonging to base gizmo.
-
-	if( m_baseHook.Gizmo() )
-	{
-		if( m_baseHook.Gizmo()->IsContainer() )
-		{
-			m_baseHook.Gizmo()->CastToContainer()->_renderDirtyRects( pDevice, _canvas, _canvas, _layer );
-		}
-		else
-		{
-			WgRectLink * pDirt = m_baseHook.m_dirt.pRectList;
-			while( pDirt )
-			{
-				m_baseHook.Gizmo()->_onRender( pDevice, _canvas, _canvas, *pDirt, _layer );
-				pDirt = pDirt->pNext;
-			}
-		}
-	}
-
-	// Render dirty rects belonging to modal gizmos.
-
-	WgModalHook * pHook = m_modalHooks.First();
-
-	while( pHook )
-	{
-		WgRect geo = pHook->m_realGeo + _canvas.Pos();
-		if( pHook->Gizmo()->IsContainer() )
-		{
-			pHook->Gizmo()->CastToContainer()->_renderDirtyRects( pDevice, geo, geo, _layer );
-		}
-		else
-		{
-			WgRectLink * pDirt = pHook->m_dirt.pRectList;
-			while( pDirt )
-			{
-				pHook->Gizmo()->_onRender( pDevice, geo, geo, *pDirt, _layer );
-				pDirt = pDirt->pNext;
-			}
-		}
-
-		pHook = pHook->_next();
-	}
-
-}
-
-//____ _clearDirtyRects() _____________________________________________________
-
-void WgGizmoModal::_clearDirtyRects()
-{
-	// Clear dirty rects for modals
-
-	WgModalHook *pHook	= m_modalHooks.First();
-
-	while( pHook )
-	{
-		pHook->m_dirt.Clear();
-		if( pHook->Gizmo()->IsContainer() )
-			pHook->Gizmo()->CastToContainer()->_clearDirtyRects();
-
-		pHook = pHook->Next();
-	}
-
-	// Clear dirty rects for base
-
-	m_baseHook.m_dirt.Clear();
-	if( m_baseHook.Gizmo() && m_baseHook.Gizmo()->IsContainer() )
-		m_baseHook.Gizmo()->CastToContainer()->_clearDirtyRects();
-
 }
 
 //____ _onNewSize() ___________________________________________________________
@@ -860,10 +659,15 @@ WgHook * WgGizmoModal::_firstHookWithGeo( WgRect& geo ) const
 	}
 }
 
-//____ _nextHookWithGeo) _______________________________________________________
+//____ _nextHookWithGeo() _______________________________________________________
 
 WgHook * WgGizmoModal::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
+	WgModalHook * p = ((WgModalHook*)pHook)->_next();
+	if( p )
+		geo = p->m_realGeo;
+	
+	return p;
 }
 
 

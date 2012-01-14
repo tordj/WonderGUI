@@ -30,8 +30,8 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_RECTCHAIN_DOT_H
-#	include <wg_rectchain.h>
+#ifndef WG_PATCHES_DOT_H
+#	include <wg_patches.h>
 #endif
 
 class WgGfxDevice;
@@ -73,8 +73,8 @@ public:
 	WgRoot *				CastToRoot() { return this; }
 
 
-//	inline int	NbDirtyRects() const { return m_dirtyRects....  TODO: Implement when WgRectChain has a Size() method
-	int		ExportDirtyRects( WgRect * pDest, int maxRects ) const;
+	inline int				NbDirtyRects() const { return m_dirtyPatches.Size(); }
+	inline const WgRect*	FirstDirtyRect() const { return m_dirtyPatches.IsEmpty() ? 0 : m_dirtyPatches.Begin(); }
 
 	bool	Render();
 	bool	Render( const WgRect& clip );
@@ -83,7 +83,7 @@ public:
 	bool	RenderSection( const WgRect& clip, int layer = 0xFF );
 	bool	EndRender();
 
-	void	AddDirtyRect( WgRect rect );
+	inline void	AddDirtyPatch( const WgRect& rect ) { m_dirtyPatches.Add( rect ); }
 
 	WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
@@ -125,7 +125,7 @@ protected:
 	bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );
 	bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );
 
-	WgRectChain			m_dirtyRects;
+	WgPatches			m_dirtyPatches;
 
 	WgGfxDevice *		m_pGfxDevice;
 	WgEventHandler *	m_pEventHandler;
