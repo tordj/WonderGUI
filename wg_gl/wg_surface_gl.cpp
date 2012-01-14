@@ -23,6 +23,7 @@
 #include <memory.h>
 
 #include <wg_surface_gl.h>
+#include <wg_util.h>
 
 #ifdef WIN32
 #	include <glext.h>
@@ -146,7 +147,7 @@ void WgSurfaceGL::_initBuffer()
 
 void WgSurfaceGL::_setPixelFormat( GLint _format )
 {
-	WgPixelType pixeltype = WG_PIXEL_UNKNOW;
+	WgPixelType pixeltype = WG_PIXEL_UNKNOWN;
 
 	switch( _format )
 	{
@@ -185,14 +186,14 @@ WgSurfaceGL::~WgSurfaceGL()
 
 //____ Type() __________________________________________________________________
 
-const char WgSurfaceGL::*Type() const
+const char * WgSurfaceGL::Type() const
 {
 	return GetMyType();
 }
 
 //____ GetMyType() _____________________________________________________________
 
-static const char * WgSurfaceGL::GetMyType()
+const char * WgSurfaceGL::GetMyType()
 {
 	return c_surfaceType;
 }
@@ -220,22 +221,22 @@ bool WgSurfaceGL::IsOpaque() const
 
 //____ Lock() __________________________________________________________________
 
-void * WgSurfaceGL::Lock( LockStatus mode )
+void * WgSurfaceGL::Lock( WgAccessMode mode )
 {
-	if( m_format == 0 || m_lockStatus != UNLOCKED || mode == UNLOCKED )
+	if( m_format == 0 || m_accessMode != WG_NO_ACCESS || mode == WG_NO_ACCESS )
 		return 0;
 
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
 
 	switch( mode )
 	{
-		case READ_ONLY:
+		case WG_READ_ONLY:
 			m_pPixels = (Uint8*) pglMapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, GL_READ_ONLY_ARB );
 			break;
-		case WRITE_ONLY:
+		case WG_WRITE_ONLY:
 			m_pPixels = (Uint8*) pglMapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB );
 			break;
-		case READ_WRITE:
+		case WG_READ_WRITE:
 			m_pPixels = (Uint8*) pglMapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, GL_READ_WRITE_ARB );
 			break;
 		default:
@@ -243,15 +244,15 @@ void * WgSurfaceGL::Lock( LockStatus mode )
 	}
 
 	m_lockRegion = WgRect(0,0,m_size);
-	m_lockStatus = mode;
+	m_accessMode = mode;
 	return m_pPixels;
 }
 
 //____ LockRegion() __________________________________________________________________
 
-void * WgSurfaceGL::LockRegion( LockStatus mode, const WgRect& region )
+void * WgSurfaceGL::LockRegion( WgAccessMode mode, const WgRect& region )
 {
-	if( m_format == 0 || m_lockStatus != UNLOCKED || mode == UNLOCKED )
+	if( m_format == 0 || m_accessMode != WG_NO_ACCESS || mode == WG_NO_ACCESS )
 		return 0;
 
 	if( region.x + region.w > m_size.w || region.y + region.w > m_size.h || region.x < 0 || region.y < 0 )
@@ -261,13 +262,13 @@ void * WgSurfaceGL::LockRegion( LockStatus mode, const WgRect& region )
 
 	switch( mode )
 	{
-		case READ_ONLY:
+		case WG_READ_ONLY:
 			m_pPixels = (Uint8*) pglMapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, GL_READ_ONLY_ARB );
 			break;
-		case WRITE_ONLY:
+		case WG_WRITE_ONLY:
 			m_pPixels = (Uint8*) pglMapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB );
 			break;
-		case READ_WRITE:
+		case WG_READ_WRITE:
 			m_pPixels = (Uint8*) pglMapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, GL_READ_WRITE_ARB );
 			break;
 		default:
@@ -275,7 +276,7 @@ void * WgSurfaceGL::LockRegion( LockStatus mode, const WgRect& region )
 	}
 
 	m_lockRegion = region;
-	m_lockStatus = mode;
+	m_accessMode = mode;
 	return m_pPixels += (m_size.w*region.y+region.x)*m_pixelSize;
 }
 
@@ -284,12 +285,12 @@ void * WgSurfaceGL::LockRegion( LockStatus mode, const WgRect& region )
 
 void WgSurfaceGL::Unlock()
 {
-	if(m_lockStatus == UNLOCKED )
+	if(m_accessMode == WG_NO_ACCESS )
 		return;
 
 	pglUnmapBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB );
 
-	if( m_lockStatus != READ_ONLY )
+	if( m_accessMode != WG_READ_ONLY )
 	{
 		glBindTexture( GL_TEXTURE_2D, m_texture );
 //		pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, m_buffer );
@@ -297,7 +298,7 @@ void WgSurfaceGL::Unlock()
 //		glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 	}
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
-	m_lockStatus = UNLOCKED;
+	m_accessMode = WG_NO_ACCESS;
 	m_pPixels = 0;
 	m_lockRegion.w = 0;
 	m_lockRegion.h = 0;
@@ -308,11 +309,11 @@ void WgSurfaceGL::Unlock()
 
 Uint32 WgSurfaceGL::GetPixel( WgCoord coord ) const
 {
-	if( m_format != 0 && m_buffer && m_lockStatus != WRITE_ONLY )
+	if( m_format != 0 && m_buffer && m_accessMode != WG_WRITE_ONLY )
 	{
 		Uint32 val;
 
-		if( m_lockStatus == UNLOCKED )
+		if( m_accessMode == WG_NO_ACCESS )
 		{
 			// Quick lock of surface
 
@@ -371,11 +372,11 @@ Uint8 WgSurfaceGL::GetOpacity( WgCoord coord ) const
 
 	if( m_buffer )
 	{
-		if( m_format == GL_RGBA8 && m_lockStatus != WRITE_ONLY )
+		if( m_format == GL_RGBA8 && m_accessMode != WG_WRITE_ONLY )
 		{
 			Uint8 a;
 
-			if( m_lockStatus == UNLOCKED )
+			if( m_accessMode == WG_NO_ACCESS )
 			{
 				// Quick lock of surface
 
@@ -412,7 +413,7 @@ Uint8 WgSurfaceGL::GetOpacity( WgCoord coord ) const
 
 //____ WgSurfaceFactoryGL::CreateSurface() ___________________________________
 
-WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgSurface::PixelType type )
+WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgPixelType type )
 {
 
 	GLint	format;
@@ -422,12 +423,12 @@ WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgSurface::Pi
 
 	switch( type )
 	{
-	case WgSurface::RGB_8:
+	case WG_PIXEL_RGB_8:
 		format = GL_RGB8;
 		buffSize = 3*size.w*size.h;
 		break;
 
-	case WgSurface::RGBA_8:
+	case WG_PIXEL_RGBA_8:
 		format = GL_RGBA8;
 		buffSize = 4*size.w*size.h;
 		break;

@@ -71,14 +71,14 @@ WgSurfaceSoft::~WgSurfaceSoft()
 
 //____ Type() __________________________________________________________________
 
-const char WgSurfaceSoft::*Type() const
+const char * WgSurfaceSoft::Type() const
 {
 	return GetMyType();
 }
 
 //____ GetMyType() _____________________________________________________________
 
-static const char * WgSurfaceSoft::GetMyType()
+const char * WgSurfaceSoft::GetMyType()
 {
 	return c_surfaceType;
 }

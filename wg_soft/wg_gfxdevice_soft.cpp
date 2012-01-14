@@ -191,11 +191,14 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 
 //____ Blit() __________________________________________________________________
 
-void WgGfxDeviceSoft::Blit( const WgSurface* pSrcSurf, const WgRect& srcrect, int dx, int dy  )
+void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, int dx, int dy  )
 {
+	if( !_pSrcSurf || !m_pCanvas || _pSrcSurf->Type() != WgSurfaceSoft::GetMyType() )
+		return;
+		
+	WgSurfaceSoft * pSrcSurf = (WgSurfaceSoft*) _pSrcSurf;
 	
-	
-	if( !m_pCanvas || !m_pCanvas->m_pData || !pSrcSurf || !pSrcSurf->m_pData )
+	if( !m_pCanvas->m_pData || !pSrcSurf->m_pData )
 		return;
 
 	int srcPixelBytes = pSrcSurf->m_pixelFormat.bits/8;
@@ -204,20 +207,28 @@ void WgGfxDeviceSoft::Blit( const WgSurface* pSrcSurf, const WgRect& srcrect, in
 	int	srcPitchAdd = pSrcSurf->m_pitch - srcrect.w*srcPixelBytes;
 	int	dstPitchAdd = m_pCanvas->m_pitch - srcrect.w*dstPixelBytes;
 	
-	Uint8 * pDst = m_pCanvas->m_pData + dy * m_pCanvas->m_pitch + dx * pixelBytes;
-	Uint8 * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * pixelBytes;
+	Uint8 * pDst = m_pCanvas->m_pData + dy * m_pCanvas->m_pitch + dx * dstPixelBytes;
+	Uint8 * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
 
-	switch( m_blendMode )
+	WgBlendMode		blendMode = m_blendMode;
+	if( srcPixelBytes == 3 && blendMode == WG_BLENDMODE_BLEND )
+		blendMode = WG_BLENDMODE_OPAQUE;
+
+	switch( blendMode )
 	{
 		case WG_BLENDMODE_OPAQUE:
 		{
+			int tintRed = (int) m_tintColor.r;
+			int tintGreen = (int) m_tintColor.g;
+			int tintBlue = (int) m_tintColor.b;
+
 			for( int y = 0 ; y < srcrect.h ; y++ )
 			{
 				for( int x = 0 ; x < srcrect.w ; x++ )
 				{
-					pDst[0] = pSrc[0];
-					pDst[1] = pSrc[1];
-					pDst[2] = pSrc[2];
+					pDst[0] = (pSrc[0]*tintRed) >> 8;
+					pDst[1] = (pSrc[1]*tintGreen) >> 8;
+					pDst[2] = (pSrc[2]*tintBlue) >> 8;
 					pSrc += srcPixelBytes;
 					pDst += dstPixelBytes;
 				}
@@ -253,25 +264,49 @@ void WgGfxDeviceSoft::Blit( const WgSurface* pSrcSurf, const WgRect& srcrect, in
 		}
 		case WG_BLENDMODE_ADD:
 		{
-			int tintAlpha = (int) m_tintColor.a;
-			int tintRed = (int) m_tintColor.r;
-			int tintGreen = (int) m_tintColor.g;
-			int tintBlue = (int) m_tintColor.b;
-			
-			for( int y = 0 ; y < srcrect.h ; y++ )
+			if( srcPixelBytes == 4 )
 			{
-				for( int x = 0 ; x < srcrect.w ; x++ )
+				int tintAlpha = (int) m_tintColor.a;
+				int tintRed = (int) m_tintColor.r;
+				int tintGreen = (int) m_tintColor.g;
+				int tintBlue = (int) m_tintColor.b;
+
+				for( int y = 0 ; y < srcrect.h ; y++ )
 				{
-					int alpha = (pSrc[3]*tintAlpha) >> 8;
-					
-					pDst[0] = m_limitTable[(pDst[0] + (pSrc[0]*tintRed*alpha)>>16 )];
-					pDst[1] = m_limitTable[(pDst[1] + (pSrc[1]*tintGreen*alpha)>>16 )];
-					pDst[2] = m_limitTable[(pDst[2] + (pSrc[2]*tintBlue*alpha)>>16 )];
-					pSrc += srcPixelBytes;
-					pDst += dstPixelBytes;
+					for( int x = 0 ; x < srcrect.w ; x++ )
+					{
+						int alpha = (pSrc[3]*tintAlpha) >> 8;
+						
+						pDst[0] = m_limitTable[(pDst[0] + (pSrc[0]*tintRed*alpha)>>16 )];
+						pDst[1] = m_limitTable[(pDst[1] + (pSrc[1]*tintGreen*alpha)>>16 )];
+						pDst[2] = m_limitTable[(pDst[2] + (pSrc[2]*tintBlue*alpha)>>16 )];
+						pSrc += srcPixelBytes;
+						pDst += dstPixelBytes;
+					}
+					pSrc += srcPitchAdd;
+					pDst += dstPitchAdd;
 				}
-				pSrc += srcPitchAdd;
-				pDst += dstPitchAdd;
+			}
+			else
+			{				
+				int tintAlpha = (int) m_tintColor.a;
+				int tintRed = (int) m_tintColor.r * tintAlpha;
+				int tintGreen = (int) m_tintColor.g * tintAlpha;
+				int tintBlue = (int) m_tintColor.b * tintAlpha;
+
+				for( int y = 0 ; y < srcrect.h ; y++ )
+				{
+					for( int x = 0 ; x < srcrect.w ; x++ )
+					{
+						pDst[0] = m_limitTable[(pDst[0] + (pSrc[0]*tintRed)>>16 )];
+						pDst[1] = m_limitTable[(pDst[1] + (pSrc[1]*tintGreen)>>16 )];
+						pDst[2] = m_limitTable[(pDst[2] + (pSrc[2]*tintBlue)>>16 )];
+						pSrc += srcPixelBytes;
+						pDst += dstPixelBytes;
+					}
+					pSrc += srcPitchAdd;
+					pDst += dstPitchAdd;
+				}
 			}
 			break;
 		}
