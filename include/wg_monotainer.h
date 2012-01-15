@@ -103,6 +103,9 @@ private:
 	WgHook *		_firstHookWithGeo( WgRect& geo ) const;
 	WgHook *		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
+	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
+
 	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
 	void			_onCloneContent( const WgGizmo * _pOrg );
@@ -111,10 +114,6 @@ private:
 	void			_onEnable();
 	void			_onDisable();
 	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
-
-	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
-	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
-	void			_clearDirtyRects();
 
 
 	WgHook*	_firstHook() const;

@@ -160,6 +160,10 @@ int main ( int argc, char** argv )
 	WgSurface * pFlagImg = loadSurface("cb2.bmp");
 	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
 
+	WgSurface * pSplashImg = loadSurface("splash.png");
+	WgBlockSetPtr pSplashBlock = pSplashImg->defineBlockSet( WgRect(0,0,pSplashImg->Width(),pSplashImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
+
+
 	WgSurface * pBlocksImg = loadSurface("blocks.png");
 	WgBlockSetPtr pButtonBlock = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,0,8*4+6,8), 2), WgBorders(3), WgBorders(2), 0, WG_OPAQUE );
 
@@ -206,7 +210,7 @@ int main ( int argc, char** argv )
 	//
 
 	WgGizmoPixmap * pFlag1= new WgGizmoPixmap();
-	pFlag1->SetSource( pFlagBlock );
+	pFlag1->SetSource( pSplashBlock );
 
 	pHook = pFlex->AddChild( pFlag1, WgCoord(0,0), WG_CENTER );
 
@@ -252,6 +256,7 @@ int main ( int argc, char** argv )
 
 	WgVBoxLayout * pTabBox = new WgVBoxLayout();
 	pTabOrder->SetChild(pTabBox);
+//	pVBox->AddChild(pTabBox);
 
 	WgGizmoText * pText1 = new WgGizmoText();
 	pText1->SetText("TEXTA1");
@@ -267,8 +272,8 @@ int main ( int argc, char** argv )
 
 	pText1->GrabFocus();
 
-	pTabOrder->AddToTabOrder(pText1);
-	pTabOrder->AddToTabOrder(pText2);
+//	pTabOrder->AddToTabOrder(pText1);
+//	pTabOrder->AddToTabOrder(pText2);
 	
 	// Radiobuttons test
 	

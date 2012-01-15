@@ -261,78 +261,78 @@ void WgPatches::Sub( const WgPatches * pSource, int ofs, int len )
 		Sub( pSource->m_pFirst[ofs++] );	
 }
 
-void WgPatches::Sub( const WgRect& rect )
+void WgPatches::Sub( const WgRect& subR )
 {
-	if( rect.w == 0 || rect.h == 0 )
+	if( subR.w == 0 || subR.h == 0 )
 		return;
 
 	for( int i = 0 ; i < m_size ; i++ )
 	{
-		WgRect * pR = m_pFirst + i;
+		WgRect rect = m_pFirst[i];
 				
-		if( !(pR->x + pR->w > rect.x && pR->y + pR->h > rect.y && 
-			pR->x < rect.x + rect.w && pR->y < rect.y + rect.h) )
+		if( !(rect.x + rect.w > subR.x && rect.y + rect.h > subR.y && 
+			rect.x < subR.x + subR.w && rect.y < subR.y + subR.h) )
 			continue;												// No overlap at all.
 			
    		// Only partially covered by our subtract rectangle?
 
-   		if( rect.x > pR->x || rect.y > pR->y || rect.x + rect.w < pR->x + pR->w
-   				|| rect.y + rect.h < pR->y + pR->h )
-		{
+   		if( subR.x > rect.x || subR.y > rect.y || subR.x + subR.w < rect.x + rect.w
+   				|| subR.y + subR.h < rect.y + rect.h )
+		{			
 			// Handles partial coverage. Up to 4 new rectangles are created for
 			// the areas that aren't covered.
 
-			if( pR->y < rect.y )													// Top part
+			if( rect.y < subR.y )													// Top part
 			{
-				Push( WgRect( pR->x, pR->y, pR->w, rect.y - pR->y) );				// Not optimal, will cause unnecessary processing later.
+				Push( WgRect( rect.x, rect.y, rect.w, subR.y - rect.y) );				// Not optimal, will cause unnecessary processing later.
 			}
 
-			if( pR->x < rect.x )													// Left part
+			if( rect.x < subR.x )													// Left part
 			{
 				WgRect newR;
 
-				newR.x = pR->x;
-				newR.w = rect.x - pR->x;
+				newR.x = rect.x;
+				newR.w = subR.x - rect.x;
 
-				if( pR->y > rect.y )
-					newR.y = pR->y;
-				else
+				if( rect.y > subR.y )
 					newR.y = rect.y;
-
-				if( pR->y + pR->h < rect.y + rect.h )
-					newR.h = pR->y + pR->h - newR.y;
 				else
+					newR.y = subR.y;
+
+				if( rect.y + rect.h < subR.y + subR.h )
 					newR.h = rect.y + rect.h - newR.y;
+				else
+					newR.h = subR.y + subR.h - newR.y;
 					
 					Push( newR );													// Not optimal, will cause unnecessary processing later.
 			}
 
-			if( pR->x + pR->w > rect.x + rect.w )					// Right part
+			if( rect.x + rect.w > subR.x + subR.w )					// Right part
 			{
 				WgRect newR;
 
-				newR.x = rect.x + rect.w;
-				newR.w = pR->x + pR->w - ( rect.x + rect.w );
+				newR.x = subR.x + subR.w;
+				newR.w = rect.x + rect.w - ( subR.x + subR.w );
 
-				if( pR->y > rect.y )
-					newR.y = pR->y;
-				else
+				if( rect.y > subR.y )
 					newR.y = rect.y;
-
-				if( pR->y + pR->h < rect.y + rect.h )
-					newR.h = pR->y + pR->h - newR.y;
 				else
+					newR.y = subR.y;
+
+				if( rect.y + rect.h < subR.y + subR.h )
 					newR.h = rect.y + rect.h - newR.y;
+				else
+					newR.h = subR.y + subR.h - newR.y;
 
 					Push( newR );													// Not optimal, will cause unnecessary processing later.
 			}
 
-			if( pR->y + pR->h > rect.y + rect.h )					// Bottom part
+			if( rect.y + rect.h > subR.y + subR.h )					// Bottom part
 			{
-				Push( WgRect( pR->x, 
-							  rect.y + rect.h, 
-							  pR->w, 
-							  pR->y + pR->h - ( rect.y + rect.h )) );				// Not optimal, will cause unnecessary processing later.
+				Push( WgRect( rect.x, 
+							  subR.y + subR.h, 
+							  rect.w, 
+							  rect.y + rect.h - ( subR.y + subR.h )) );				// Not optimal, will cause unnecessary processing later.
 			}
 		}
 
@@ -355,7 +355,7 @@ int WgPatches::Push( const WgPatches * pSource, int ofs, int len )
 	if( m_capacity - m_size < len )
 		_expand(len);
 
-	memcpy( m_pFirst + m_size, pSource->m_pFirst + ofs, len );
+	memcpy( m_pFirst + m_size, pSource->m_pFirst + ofs, sizeof(WgRect)*len );
 	m_size += len;
 	return len;
 }

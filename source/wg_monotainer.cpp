@@ -187,7 +187,7 @@ WgHook* WgMonotainer::_lastHook() const
 
 WgHook * WgMonotainer::_firstHookWithGeo( WgRect& geo ) const
 {
-	geo = Geo();
+	geo = WgRect(0,0,Size());
 	return const_cast<Hook*>(&m_hook);
 }
 

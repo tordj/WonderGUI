@@ -136,6 +136,8 @@ public:
 	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );	// Default OrderedLayout implementation, assuming front-gizmos overlapping end-gizmos in case of overlap.
 
 protected:
+	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
 

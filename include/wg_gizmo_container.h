@@ -75,12 +75,12 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual void	_onEnable();
 		virtual void	_onDisable();
 
+		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
+
 	private:
 
 		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
 		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
-
-		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
 
 		bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
 		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo

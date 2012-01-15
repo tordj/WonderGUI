@@ -395,6 +395,9 @@ private:
 	WgHook*	_firstHook() const { return FirstHook(); }
 	WgHook*	_lastHook() const { return LastHook(); }
 
+	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
+
 	void		_refreshRows();
 	void		_rowModified( WgTableRow2* pRow, int widthDiff , int heightDiff );
 	void		_rowMarkChanged( WgTableRow2* pRow, bool bMarked );

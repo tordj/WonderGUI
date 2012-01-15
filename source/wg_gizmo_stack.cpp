@@ -131,14 +131,6 @@ void WgGizmoStack::_onNewSize( const WgSize& size )
 }
 
 
-void WgGizmoStack::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
-{
-}
-
-void WgGizmoStack::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
-{
-}
-
 //____ _hookGeo() _____________________________________________________________
 
 WgRect WgGizmoStack::_hookGeo( const WgOrderedHook * pHook )

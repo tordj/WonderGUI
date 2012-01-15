@@ -36,10 +36,6 @@ class WgVBoxHook : public WgOrderedHook
 public:
 	inline WgVBoxHook * Prev() const { return _prev(); }
 	inline WgVBoxHook * Next() const { return _next(); }
-
-//	inline WgVBoxHook * PrevSelectedHook() const { return static_cast<WgVBoxHook*>(_prevSelectedHook()); }
-//	inline WgVBoxHook * NextSelectedHook() const { return static_cast<WgVBoxHook*>(_nextSelectedHook()); }
-
 	inline WgVBoxLayout * Parent() const { return m_pParent; }
 
 protected:
@@ -70,10 +66,6 @@ public:
 	inline WgVBoxHook* FirstHook() const { return static_cast<WgVBoxHook*>(m_hooks.First()); }
 	inline WgVBoxHook* LastHook() const { return static_cast<WgVBoxHook*>(m_hooks.Last()); }
 
-//	inline WgVBoxHook* FirstSelectedHook() const { return static_cast<WgVBoxHook*>(_firstSelectedHook()); }
-//	inline WgVBoxHook* LastSelectedHook() const { return static_cast<WgVBoxHook*>(_lastSelectedHook()); }
-
-
 	// Overloaded from WgGizmo
 
 	int		HeightForWidth( int width ) const;
@@ -87,11 +79,6 @@ protected:
 
 //	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onNewSize( const WgSize& size );
-
-	// Overloaded from container
-
-	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
-	void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
 
 	// Overloaded from WgOrderedLayout
 

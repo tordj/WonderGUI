@@ -229,7 +229,7 @@ void WgGizmoContainer::_onCollectPatches( WgPatches& container, const WgRect& ge
 
 	while(p)
 	{
-		p->Gizmo()->_onCollectPatches( container, childGeo, clip );
+		p->Gizmo()->_onCollectPatches( container, childGeo + geo.Pos(), clip );
 		p = _nextHookWithGeo( childGeo, p );
 	}	
 }
@@ -247,7 +247,7 @@ void WgGizmoContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, co
 
 			while(p)
 			{
-				p->Gizmo()->_onMaskPatches( patches, childGeo, clip );
+				p->Gizmo()->_onMaskPatches( patches, childGeo + geo.Pos(), clip );
 				p = _nextHookWithGeo( childGeo, p );
 			}
 			break;
