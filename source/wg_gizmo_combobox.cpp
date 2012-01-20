@@ -44,7 +44,6 @@ WgGizmoCombobox::WgGizmoCombobox( void )
 
 	m_mode = WG_MODE_NORMAL;
 
-	m_editMode = WG_TEXT_STATIC;
 	m_bResetCursorOnFocus = true;
 	m_bPressInInputRect = false;
 	m_pMenu		= 0;
@@ -128,16 +127,7 @@ Wdg_Menu* WgGizmoCombobox::GetMenu() const
 
 void WgGizmoCombobox::SetEditMode(WgTextEditMode mode)
 {
-	m_editMode = mode;
-
-	if( _isEditable() )
-	{
-		m_text.CreateCursor();
-		m_text.hideCursor();
-	}
-	else
-		m_text.DestroyCursor();
-
+	m_text.SetEditMode(mode);
 }
 
 //____ SetTextFormat() ________________________________________________________

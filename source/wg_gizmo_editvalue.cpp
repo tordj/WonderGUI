@@ -49,6 +49,7 @@ WgGizmoEditvalue::WgGizmoEditvalue()
 
 	m_text.SetWrap(false);
 	m_text.SetAutoEllipsis(false);
+	m_text.SetEditMode( WG_TEXT_EDITABLE );
 }
 
 //____ ~WgGizmoEditvalue() ___________________________________________________________
@@ -653,7 +654,7 @@ void WgGizmoEditvalue::_onDisable( void )
 void WgGizmoEditvalue::_onGotInputFocus()
 {
 	m_bFocused = true;
-	m_text.CreateCursor();
+	m_text.showCursor();
 	m_text.goEOL();
 	m_useFormat = m_format;
 
@@ -673,7 +674,7 @@ void WgGizmoEditvalue::_onGotInputFocus()
 void WgGizmoEditvalue::_onLostInputFocus()
 {
 	m_bFocused = false;
-	m_text.DestroyCursor();
+	m_text.hideCursor();
 	m_useFormat = m_format;
 	_regenText();
 

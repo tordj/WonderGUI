@@ -67,7 +67,7 @@ public:
 	bool		InsertCharAtCursor( Uint16 c );
 
 	virtual void			SetEditMode(WgTextEditMode mode);
-	virtual WgTextEditMode	GetEditMode() const { return m_editMode; }
+	virtual WgTextEditMode	GetEditMode() const { return m_text.GetEditMode(); }
 	virtual bool			TempIsInputField() const	{ return _isEditable() && TextObj()->nbChars() > 0; }
 	virtual Wg_Interface_TextHolder* TempGetText(){ return this; }
 
@@ -79,8 +79,8 @@ public:
 
 protected:
 
-	bool	_isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
-	bool	_isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
+	bool	_isEditable() const { return m_text.IsEditable(); }
+	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
 	void	_onUpdate( const WgUpdateInfo& _updateInfo );
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
@@ -106,7 +106,6 @@ private:
 	bool				m_bPasswordMode;
 	Uint16				m_pwGlyph;
 	int					m_viewOfs;
-	WgTextEditMode		m_editMode;
 };
 
 

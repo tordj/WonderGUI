@@ -67,7 +67,7 @@ public:
 	bool			IsAutoEllipsisDefault() const { return false; };
 
 	void			SetEditMode(WgTextEditMode mode);
-	WgTextEditMode	GetEditMode() const { return m_editMode; }
+	WgTextEditMode	GetEditMode() const { return m_text.GetEditMode(); }
 
 	Uint32			InsertTextAtCursor( const WgCharSeq& str );
 	bool			InsertCharAtCursor( Uint16 c );
@@ -103,8 +103,8 @@ protected:
 	void	_onLostInputFocus();
 
 private:
-	bool	_isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
-	bool	_isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
+	bool	_isEditable() const { return m_text.IsEditable(); }
+	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
 	void	_textModified();
 	void	_adjustViewOfs();
@@ -125,7 +125,6 @@ private:
 	Wdg_Menu *		m_pMenu;
 	WgMenuItem*		m_pSelectedItem;
 	WgText			m_text;
-	WgTextEditMode	m_editMode;
 	bool			m_bResetCursorOnFocus;
 	bool			m_bPressInInputRect;
 	bool			m_bFocusPress;

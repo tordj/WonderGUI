@@ -41,7 +41,7 @@
 WgCursorInstance::WgCursorInstance( WgText& text )
 {
 	m_pText 		= &text;
-	m_bHidden		= false;
+	m_bHidden		= true;
 	m_bInsert		= true;
 	m_bSelectMode	= false;
 	m_wantedOfsX	= -1;
