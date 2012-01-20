@@ -219,9 +219,9 @@ enum WgBlendMode //: Uint8
 {
 	WG_BLENDMODE_OPAQUE,			///< Completely opaque blitting, ignoring alpha of source and tint-color.
 	WG_BLENDMODE_BLEND,				///< Normal mode, alpha of source and tint-color is taken into account.
-	WG_BLENDMODE_ADD,				///< RGBA Additive.
-	WG_BLENDMODE_MULTIPLY,			///< RGBA Multiply.
-	WG_BLENDMODE_INVERT
+	WG_BLENDMODE_ADD,				///< RGBA Additive, alpha of source and tint-color is taken into account.
+	WG_BLENDMODE_MULTIPLY,			///< RGBA Multiply, alpha of source and tint-color is taken into account.
+	WG_BLENDMODE_INVERT				///< Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
 };
 
 //____ WgFontStyle ____________________________________________________________
@@ -591,6 +591,27 @@ struct WgSortContext
 public:
 	bool	bAscend;
 };
+
+//____ WgAccessMode ____________________________________________________________
+
+enum WgAccessMode
+{
+	WG_NO_ACCESS,
+	WG_READ_ONLY,
+	WG_WRITE_ONLY,
+	WG_READ_WRITE
+};
+
+//____ WgPixelType _____________________________________________________________
+
+enum WgPixelType
+{
+	WG_PIXEL_UNKNOWN,			///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
+	WG_PIXEL_CUSTOM,			///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
+	WG_PIXEL_RGB_8,				///< One byte of red, green and blue respectively in exactly that order.
+	WG_PIXEL_RGBA_8				///< One byte of red, green, blue and alpha respectively in exactly that order.
+};
+
 
 //____ WgPixelFormat __________________________________________________________
 

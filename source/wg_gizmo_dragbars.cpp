@@ -26,7 +26,9 @@
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
-#include <wg_eventhandler.h>
+#ifdef WG_TNG
+#	include <wg_eventhandler.h>
+#endif
 
 using namespace WgSignal;
 using namespace WgUtil;
@@ -598,6 +600,7 @@ void WgGizmoDragbar::_unmarkReqRender()
 
 //____ _onEvent() ______________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmoDragbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	int		barPos, barLen;
@@ -787,7 +790,7 @@ void WgGizmoDragbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 	}
 
 }
-
+#endif
 
 
 //____ _onAction() _________________________________________________

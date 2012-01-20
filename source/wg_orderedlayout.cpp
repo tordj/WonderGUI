@@ -318,13 +318,6 @@ void WgOrderedLayout::SetSortFunction( WgGizmoSortFunc pSortFunc )
 	m_pSortFunc = pSortFunc;
 }
 
-//____ ScrollIntoView() _______________________________________________________
-
-void WgOrderedLayout::ScrollIntoView( WgGizmo * pGizmo )
-{
-	//TODO: Implement
-}
-
 //____ FindGizmo() ____________________________________________________________
 
 WgGizmo * WgOrderedLayout::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
@@ -375,48 +368,4 @@ WgGizmo * WgOrderedLayout::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 void WgOrderedLayout::_onCloneContent( const WgGizmo * _pOrg )
 {
 	//TODO: Implement
-}
-
-//____ _onRender() ____________________________________________________________
-
-void WgOrderedLayout::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
-{
-	//Do nothing, we are a container.
-}
-
-//____ _castDirtyRect() _______________________________________________________
-
-void WgOrderedLayout::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
-{
-}
-
-//____ _renderDirtyRects() ____________________________________________________
-
-void WgOrderedLayout::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
-{
-
-}
-
-//____ _clearDirtyRects() _____________________________________________________
-
-void WgOrderedLayout::_clearDirtyRects()
-{
-	m_dirt.Clear();
-
-	WgOrderedHook *pHook	= m_hooks.First();
-
-	while( pHook )
-	{
-		if( pHook->Gizmo()->IsContainer() )
-			pHook->Gizmo()->CastToContainer()->_clearDirtyRects();
-
-		pHook = pHook->Next();
-	}
-}
-
-//____ _onAlphaTest() _________________________________________________________
-
-bool WgOrderedLayout::_onAlphaTest( const WgCoord& ofs )
-{
-	return false;
 }

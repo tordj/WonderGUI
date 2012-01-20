@@ -256,6 +256,9 @@ protected:
 	WgGizmoView();
 	virtual void _onNewSize( const WgSize& size );
 
+	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
+
 	// Following method should be overridden by subclasses instead of _onNewSize()!
 	// Takes into account that scrollbars might decrease the visible area of the subclass.
 

@@ -24,7 +24,9 @@
 #include <wg_key.h>
 #include <wg_font.h>
 #include <wg_gfxdevice.h>
-#include <wg_eventhandler.h>
+#ifdef WG_TNG
+#	include <wg_eventhandler.h>
+#endif
 
 static const char	c_gizmoType[] = {"GizmoText"};
 
@@ -179,6 +181,7 @@ void WgGizmoText::_onRefresh( void )
 
 //____ _onEvent() ______________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	int type 				= pEvent->Type();
@@ -342,6 +345,7 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 		RequestRender();
 */
 }
+#endif
 
 //____ _onAction() _________________________________________________
 
@@ -540,7 +544,9 @@ void WgGizmoText::_onGotInputFocus()
 	m_bFocused = true;
 	if( IsEditable() ) // render with cursor on
 	{
+#ifdef WG_TNG
 		_startReceiveTicks();
+#endif		
 		if(	m_bResetCursorOnFocus )
 			m_pText->goEOF();
 		RequestRender();
@@ -555,7 +561,9 @@ void WgGizmoText::_onLostInputFocus()
 	m_bResetCursorOnFocus = false;
 	if( IsEditable() )
 	{
+#ifdef WG_TNG
 		_stopReceiveTicks();
+#endif		
 		RequestRender();
 	}
 }

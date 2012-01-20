@@ -463,9 +463,9 @@ void WgVectorGlyphs::_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 {
 	WgSurface * pSurf = pSlot->bitmap.pSurface;
 
-	unsigned char * pDest = (unsigned char*) pSurf->LockRegion( WgSurface::WRITE_ONLY, pSlot->bitmap.rect );
+	unsigned char * pDest = (unsigned char*) pSurf->LockRegion( WG_WRITE_ONLY, pSlot->bitmap.rect );
 	assert( pDest != 0 );
-	assert( pSurf->PixelFormat()->type == WgSurface::RGBA_8 );
+	assert( pSurf->PixelFormat()->type == WG_PIXEL_RGBA_8 );
 
 	int dest_pitch = pSurf->Pitch();
 

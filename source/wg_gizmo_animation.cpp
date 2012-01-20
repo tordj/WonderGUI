@@ -24,7 +24,9 @@
 #include <wg_gizmo_animation.h>
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
+#ifdef WG_TNG
 #include <wg_eventhandler.h>
+#endif
 
 #include <math.h>
 
@@ -251,6 +253,7 @@ WgSize WgGizmoAnimation::DefaultSize() const
 
 //____ _onEvent() ______________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -307,6 +310,7 @@ void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 		break;
 	}
 }
+#endif
 
 //____ _onUpdate() ________________________________________________________
 

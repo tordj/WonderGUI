@@ -75,6 +75,7 @@ public:
 
 	// Methods for reading dimensions and abilities.
 
+	virtual const char *Type() const = 0;
 	virtual	WgSize		Size() const = 0;
 	virtual	int			Width() const;
 	virtual	int			Height() const;
@@ -92,29 +93,13 @@ public:
 
 	// Enums and methods for locking/unlocking of surface.
 
-	enum LockStatus
-	{
-		UNLOCKED,
-		READ_ONLY,
-		WRITE_ONLY,
-		READ_WRITE
-	};
-
-	enum PixelType
-	{
-		UNSPECIFIED,				///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
-		SPECIFIED,					///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
-		RGB_8,						///< One byte of red, green and blue respectively in exactly that order.
-		RGBA_8						///< One byte of red, green, blue and alpha respectively in exactly that order.
-	};
-
-	virtual void *		Lock( LockStatus mode ) = 0;
-	virtual void *		LockRegion( LockStatus mode, const WgRect& region ) = 0;
-	virtual void		Unlock() = 0;
-	inline 	bool		IsLocked() const { return (m_lockStatus != UNLOCKED); }
-	inline	LockStatus	GetLockStatus() const { return m_lockStatus; }
-	inline  WgRect		GetLockRegion() const { return m_lockRegion; }
-	inline  int			Pitch() const;									// of locked surface
+	virtual void *			Lock( WgAccessMode mode ) = 0;
+	virtual void *			LockRegion( WgAccessMode mode, const WgRect& region ) = 0;
+	virtual void			Unlock() = 0;
+	inline 	bool			IsLocked() const { return (m_accessMode != WG_NO_ACCESS); }
+	inline	WgAccessMode 	GetLockStatus() const { return m_accessMode; }
+	inline  WgRect			GetLockRegion() const { return m_lockRegion; }
+	inline  int				Pitch() const;									// of locked surface
 	inline const WgPixelFormat *PixelFormat() const;					// of locked surface
 
 
@@ -179,10 +164,11 @@ public:
 protected:
 	WgSurface();
 
-	WgRectChain 			m_dirtyRects;
 	WgPixelFormat			m_pixelFormat;
-	LockStatus				m_lockStatus;
-	Uint32					m_pitch;
+	int						m_pitch;
+
+	WgRectChain 			m_dirtyRects;
+	WgAccessMode			m_accessMode;
 	Uint8 *					m_pPixels;			// Pointer at pixels when surface locked.
 	WgRect					m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 
@@ -195,7 +181,7 @@ protected:
 class WgSurfaceFactory
 {
 public:
-	virtual WgSurface * CreateSurface( const WgSize& size, WgSurface::PixelType type = WgSurface::RGBA_8 ) = 0;
+	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 ) = 0;
 };
 
 
@@ -220,7 +206,7 @@ inline void WgSurface::AddDirtyRect( const WgRect& rect )
 
 int WgSurface::Pitch() const
 {
-	if( m_lockStatus == UNLOCKED )
+	if( m_accessMode == WG_NO_ACCESS )
 		return 0;
 
 	return m_pitch;
@@ -231,7 +217,7 @@ int WgSurface::Pitch() const
 
 const WgPixelFormat *  WgSurface::PixelFormat() const
 {
-	if( m_lockStatus == UNLOCKED )
+	if( m_accessMode == WG_NO_ACCESS )
 		return 0;
 
 	return &m_pixelFormat;

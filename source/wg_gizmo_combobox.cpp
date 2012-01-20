@@ -26,7 +26,9 @@
 #include <wg_geo.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
-#include <wg_eventhandler.h>
+#ifdef WG_TNG
+#	include <wg_eventhandler.h>
+#endif
 
 static const char	c_gizmoType[] = {"ComboBox"};
 
@@ -172,9 +174,11 @@ Uint32 WgGizmoCombobox::InsertTextAtCursor( const WgCharSeq& str )
 		m_pText->putText( WgCharSeq( str, 0, retVal ) );
 	}
 
+#ifdef WG_TNG
 	WgEventHandler * pHandler = EventHandler();		
 	if( pHandler )
 		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+#endif
 
 	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	_adjustViewOfs();
@@ -198,9 +202,11 @@ bool WgGizmoCombobox::InsertCharAtCursor( Uint16 c )
 
 	m_pText->putChar( c );
 
+#ifdef WG_TNG
 	WgEventHandler * pHandler = EventHandler();		
 	if( pHandler )
 		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+#endif
 
 	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	_adjustViewOfs();

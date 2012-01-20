@@ -168,6 +168,77 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area )
 	else
 		return false;
 }
+
+//____ PixelTypeToFormat() _____________________________________________________
+
+bool WgUtil::PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
+{
+	switch( type )
+	{
+		case WG_PIXEL_RGB_8:
+			wFormat.type = type;
+			wFormat.bits = 24;
+
+			wFormat.R_mask = 0xFF;
+			wFormat.G_mask = 0xFF00;
+			wFormat.B_mask = 0xFF0000;
+			wFormat.A_mask = 0x0;
+
+			wFormat.R_shift = 0;
+			wFormat.G_shift = 8;
+			wFormat.B_shift = 16;
+			wFormat.A_shift = 0;
+
+			wFormat.R_bits = 8;
+			wFormat.G_bits = 8;
+			wFormat.B_bits = 8;
+			wFormat.A_bits = 0;
+			return true;
+
+		case WG_PIXEL_RGBA_8:
+			wFormat.type = type;
+			wFormat.bits = 32;
+
+			wFormat.R_mask = 0xFF;
+			wFormat.G_mask = 0xFF00;
+			wFormat.B_mask = 0xFF0000;
+			wFormat.A_mask = 0xFF000000;
+
+			wFormat.R_shift = 0;
+			wFormat.G_shift = 8;
+			wFormat.B_shift = 16;
+			wFormat.A_shift = 24;
+
+			wFormat.R_bits = 8;
+			wFormat.G_bits = 8;
+			wFormat.B_bits = 8;
+			wFormat.A_bits = 8;
+			return true;
+
+		default:
+			wFormat.type = WG_PIXEL_UNKNOWN;
+			wFormat.bits = 0;
+
+			wFormat.R_mask = 0;
+			wFormat.G_mask = 0;
+			wFormat.B_mask = 0;
+			wFormat.A_mask = 0;
+
+			wFormat.R_shift = 0;
+			wFormat.G_shift = 0;
+			wFormat.B_shift = 0;
+			wFormat.A_shift = 0;
+
+			wFormat.R_bits = 0;
+			wFormat.G_bits = 0;
+			wFormat.B_bits = 0;
+			wFormat.A_bits = 0;
+			return false;
+	}	
+}
+
+
+
 //____ Checksum8::Add() ________________________________________________________
 
 void WgUtil::Checksum8::Add( const void * pData, Uint32 nBytes )

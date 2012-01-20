@@ -103,18 +103,17 @@ private:
 	WgHook *		_firstHookWithGeo( WgRect& geo ) const;
 	WgHook *		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
-	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	void			_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	void			_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
+	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
+
+	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onNewSize( const WgSize& size );
 
 	void			_onEnable();
 	void			_onDisable();
-
-	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
-	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
-	void			_clearDirtyRects();
+	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 
 	WgHook*	_firstHook() const;

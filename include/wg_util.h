@@ -23,6 +23,8 @@ namespace WgUtil
 
 	bool		MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area );
 
+	bool		PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
+
 	WgCoord 		OrientationToOfs( WgOrientation orientation, WgSize base );
 	WgRect			OrientationToRect( WgOrientation orientation, WgSize base, WgSize rect );
 

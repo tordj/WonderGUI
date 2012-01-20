@@ -36,7 +36,7 @@ WgMemPool * WgSurface::g_pBlockSetMemPool = 0;
 
 WgSurface::WgSurface()
 {
-	m_lockStatus	= UNLOCKED;
+	m_accessMode	= WG_NO_ACCESS;
 	m_pPixels		= 0;
 
 	if( !g_pBlockSetMemPool )
@@ -97,11 +97,11 @@ WgColor WgSurface::Pixel2Col( Uint32 pixel ) const
 bool WgSurface::Fill( WgColor col )
 {
 
-	LockStatus oldLock = m_lockStatus;
+	WgAccessMode oldMode = m_accessMode;
 
-	if( oldLock != READ_WRITE && oldLock != WRITE_ONLY )
+	if( oldMode != WG_READ_WRITE && oldMode != WG_WRITE_ONLY )
 	{
-		Lock( WRITE_ONLY );
+		Lock( WG_WRITE_ONLY );
 		if( m_pPixels == 0 )
 			return false;
 	}	
@@ -166,10 +166,10 @@ bool WgSurface::Fill( WgColor col )
 
 	//
 
-	if( oldLock == UNLOCKED )
+	if( oldMode == WG_NO_ACCESS )
 		Unlock();
-	else if( oldLock == READ_ONLY )
-		Lock( oldLock );
+	else if( oldMode == WG_READ_ONLY )
+		Lock( oldMode );
 
 	return ret;
 }

@@ -48,14 +48,17 @@ public:
 
 	// Methods needed by WgSurface
 
+	const char *Type() const;
+	static const char * GetMyType();
+
 	WgSize		Size() const;
 	bool		IsOpaque() const;
 
 	Uint32		GetPixel( WgCoord coord ) const;
 	Uint8		GetOpacity( WgCoord coord ) const;
 
-	void *		Lock( LockStatus mode );
-	void *		LockRegion( LockStatus mode, const WgRect& region );
+	void *		Lock( WgAccessMode mode );
+	void *		LockRegion( WgAccessMode mode, const WgRect& region );
 	void		Unlock();
 
 private:
@@ -79,7 +82,7 @@ private:
 class WgSurfaceFactoryGL : public WgSurfaceFactory
 {
 public:
-	WgSurface * CreateSurface( const WgSize& size, WgSurface::PixelType type = WgSurface::RGBA_8 );
+	WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 );
 };
 
 

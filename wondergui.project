@@ -178,6 +178,8 @@
     <File Name="source/wg_valueformat.cpp"/>
     <File Name="source/wg_vboxlayout.cpp"/>
     <File Name="source/wg_vectorglyphs.cpp"/>
+    <File Name="include/wg_patches.h"/>
+    <File Name="source/wg_patches.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -193,6 +195,7 @@
       <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
         <IncludePath Value="./include"/>
         <IncludePath Value="/usr/include/freetype2/"/>
+        <Preprocessor Value="WG_TNG"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
@@ -246,6 +249,9 @@
       
       
       
+      
+      
+      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -276,4 +282,5 @@
     </Configuration>
   </Settings>
   <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

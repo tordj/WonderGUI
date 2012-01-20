@@ -121,8 +121,6 @@ public:
 	void			SetSortFunction( WgGizmoSortFunc pSortFunc );
 	WgGizmoSortFunc	SortFunction() const { return m_pSortFunc; }
 
-	void			ScrollIntoView( WgGizmo * pGizmo );
-
 	// Overloaded from WgGizmo
 
 	bool			IsView() const { return false; }
@@ -138,24 +136,19 @@ public:
 	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );	// Default OrderedLayout implementation, assuming front-gizmos overlapping end-gizmos in case of overlap.
 
 protected:
+	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
-	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	bool			_onAlphaTest( const WgCoord& ofs );
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
+	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 	inline WgHook*	_firstHook() const { return m_hooks.First(); }
 	inline WgHook*	_lastHook() const { return m_hooks.Last(); }
 
 	inline int		_compareGizmos(const WgGizmo * p1, const WgGizmo * p2) { return m_pSortFunc?m_pSortFunc(p1,p2):0; }
-
-	// Overloaded from container
-
-	virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
-	virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
-	virtual void	_clearDirtyRects();
 
 	// To be overloaded by subclasses
 

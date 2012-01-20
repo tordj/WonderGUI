@@ -31,8 +31,7 @@
 #	include <wg_gizmo_parent.h>
 #endif
 
-class WgRectLink;
-class WgRectChain;
+class WgPatches;
 
 class WgGizmoContainer : public WgGizmoParent
 {
@@ -76,23 +75,25 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual void	_onEnable();
 		virtual void	_onDisable();
 
+		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
+
 	private:
 
-		virtual WgHook *	_firstHookWithGeo( WgRect& geo ) const = 0;
-		virtual WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
+		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
+		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
 
-		virtual void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut ) = 0;
-		virtual void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer ) = 0;
-		virtual void	_clearDirtyRects() = 0;
+		bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
+		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
 
-		bool 		_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
-		bool 		_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
+		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
+		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+		virtual bool 	_onAlphaTest( const WgCoord& ofs );
 
-		void		_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 
 		bool		m_bFocusGroup;
 		bool		m_bRadioGroup;
 		bool		m_bTooltipGroup;	// All Children+ belongs to the same tooltip group.
+		bool		m_bSiblingsOverlap;	// Set if siblings (might be) overlapping each other (special considerations to be taken during rendering).
 		WgMaskOp	m_maskOp;			// Specifies how container masks background.
 };
 

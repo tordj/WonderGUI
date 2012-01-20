@@ -27,12 +27,8 @@
 #	include <wg_gizmo_container.h>
 #endif
 
-#ifndef WG_DIRTYRECT_DOT_H
-#	include <wg_rectchain.h>
-#endif
 
 class WgGizmoModal;
-
 
 class WgModalHook : public WgHook, protected WgLink
 {
@@ -90,8 +86,6 @@ protected:
 	void		_requestRender( const WgRect& rect );
 	void		_requestResize();
 
-	void		_castDirtRecursively( const WgRect& parentGeo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain * pDirtOut );
-
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
 	WgGizmoContainer * _parent() const;
@@ -104,8 +98,6 @@ protected:
 	WgOrientation	m_origo;
 	WgRect			m_placementGeo;		// Gizmos geo relative anchor and hotspot. Setting width and height to 0 uses Gizmos DefaultSize() dynamically.
 										// Setting just one of them to 0 uses Gizmos HeightForWidth() or WidthForHeight() dynamically.
-
-	WgRectChain		m_dirt;				// Dirty areas to be rendered, in screen coordinates!
 };
 
 
@@ -196,29 +188,22 @@ private:
 		WgGizmoParent * _parent() const { return m_pParent; }
 
 		WgGizmoModal * 	m_pParent;
-		WgRectChain		m_dirt;		// Dirty areas to be rendered, in screen coordinates!
 
 	};
 
+	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
 
 
-	void			_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
-	void			_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip );
 	void			_onCloneContent( const WgGizmo * _pOrg );
-	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onNewSize( const WgSize& size );
 	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-	bool			_onAlphaTest( const WgCoord& ofs );
 
 	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }
 	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }
+	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 	void			_onRequestRender( const WgRect& rect, const WgModalHook * pHook );	// rect is in our coordinate system.
-
-	void			_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
-	void			_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
-	void			_clearDirtyRects();
-
 
 	WgHook*	_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
 	WgHook*	_lastHook() const;		//

@@ -1981,7 +1981,7 @@ void WgAnimRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 	m_pAnim->SetTimeScaler(WgUtil::ToFloat(xmlNode["timescale"]));
 	m_pAnim->SetPlayMode(ToPlayMode(xmlNode["playmode"]));
 	m_pAnim->SetGfxBorders( WgBorderRes::Deserialize(s, xmlNode["borders"]) );
-	m_pAnim->SetBlockFlags( WgBlockFlagsRes::Deserialize(xmlNode,s) );
+	m_pAnim->SetBlockFlags( WgBlockFlagsRes::Deserialize(s, xmlNode) );
 
 	const int legoMargin = 2;
 	Uint32 duration = WgUtil::ToUint32(xmlNode["duration"]);
@@ -2438,7 +2438,7 @@ void WgBlockFlagsRes::Serialize(WgResourceSerializerXML& s, WgResourceXML* tag, 
 		s.AddAttribute("skip_special", "true" );
 }
 
-Uint32 WgBlockFlagsRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
+Uint32 WgBlockFlagsRes::Deserialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode)
 {
 	Uint32 flags = 0;WgUtil::ToBool(xmlNode["tile"]) ? WG_TILE_ALL : 0;
 	bool scale = WgUtil::ToBool(xmlNode["scale"]);
@@ -2839,7 +2839,7 @@ void WgBlockSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	WgCoord	shiftPressed;
 	WgUtil::FromString(xmlNode["content_shift_pressed"], shiftPressed.x, shiftPressed.y);
 
-	Uint32 flags = WgBlockFlagsRes::Deserialize(xmlNode,s);
+	Uint32 flags = WgBlockFlagsRes::Deserialize(s,xmlNode);
 /*
 	Uint32 flags = WgUtil::ToBool(xmlNode["tile"]) ? WG_TILE_ALL : 0;
 	bool scale = WgUtil::ToBool(xmlNode["scale"]);

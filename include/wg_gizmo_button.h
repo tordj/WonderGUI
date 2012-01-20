@@ -78,7 +78,9 @@ public:
 protected:
 
 	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+#ifdef WG_TNG
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+#endif
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onRefresh();
 	virtual void	_onCloneContent( const WgGizmo * _pOrg );

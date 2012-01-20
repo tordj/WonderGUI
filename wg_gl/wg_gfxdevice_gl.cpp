@@ -25,11 +25,9 @@
 
 //____ Constructor _____________________________________________________________
 
-WgGfxDeviceGL::WgGfxDeviceGL( WgSize canvas )
+WgGfxDeviceGL::WgGfxDeviceGL( WgSize canvas ) : WgGfxDevice(canvas)
 {
 	m_bRendering = false;
-
-	SetCanvas( canvas );
 }
 
 //____ Destructor ______________________________________________________________
@@ -59,33 +57,15 @@ void WgGfxDeviceGL::SetTintColor( WgColor color )
 
 bool WgGfxDeviceGL::SetBlendMode( WgBlendMode blendMode )
 {
-	switch( blendMode )
-	{
-		case WG_BLENDMODE_OPAQUE:
-			glDisable(GL_BLEND);
-			break;
-
-		case WG_BLENDMODE_BLEND:
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-			break;
-
-		case WG_BLENDMODE_ADD:
-		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-			break;
-		}
-		case WG_BLENDMODE_MULTIPLY:
-
-			// Not implemented yet.
-			break;
-
-		default:
+	if( blendMode != WG_BLENDMODE_BLEND && blendMode != WG_BLENDMODE_OPAQUE && 
+		blendMode != WG_BLENDMODE_ADD && blendMode != WG_BLENDMODE_MULTIPLY &&
+		blendMode != WG_BLENDMODE_INVERT )
 			return false;
-	}
-
+ 
 	WgGfxDevice::SetBlendMode(blendMode);
+	if( m_bRendering )
+		_setBlendMode(blendMode);
+
 	return true;
 }
 
@@ -121,27 +101,7 @@ bool WgGfxDeviceGL::BeginRender()
 
 	// Set correct blend mode
 
-	switch( m_blendMode )
-	{
-		case WG_BLENDMODE_OPAQUE:
-			glDisable(GL_BLEND);
-			break;
-
-		case WG_BLENDMODE_BLEND:
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-			break;
-
-		case WG_BLENDMODE_ADD:
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-			break;
-
-		case WG_BLENDMODE_MULTIPLY:
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_DST_COLOR, GL_ZERO);
-			break;
-	}
+	_setBlendMode(m_blendMode);
 
 	// Save matrixes and set Ortho mode
 
@@ -309,3 +269,37 @@ void WgGfxDeviceGL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float
 	glEnd();
 }
 
+//____ _setBlendMode() _________________________________________________________
+
+void WgGfxDeviceGL::_setBlendMode( WgBlendMode blendMode )
+{
+	switch( blendMode )
+	{
+		case WG_BLENDMODE_OPAQUE:
+			glDisable(GL_BLEND);
+			break;
+
+		case WG_BLENDMODE_BLEND:
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+			break;
+
+		case WG_BLENDMODE_ADD:
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			break;
+
+		case WG_BLENDMODE_MULTIPLY:
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_DST_COLOR, GL_ZERO);
+			break;
+
+		case WG_BLENDMODE_INVERT:
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
+			break;
+
+		default:
+			break;
+	}
+}

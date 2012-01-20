@@ -171,7 +171,7 @@ public:
 								   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f ) = 0;
 
 protected:
-	WgGfxDevice();
+	WgGfxDevice( WgSize canvasSize );
 
 	void	_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, bool bLineEnding );
 	void	_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, int endX );

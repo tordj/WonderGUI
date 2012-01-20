@@ -19,33 +19,38 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#ifndef WG_SURFACE_SOFT_DOT_H
+#define WG_SURFACE_SOFT_DOT_H
 
-#ifndef	WG_SURFACE_SDL_DOT_H
-#define	WG_SURFACE_SDL_DOT_H
+#ifndef WG_TYPES_DOT_H
+#include "wg_types.h"
+#endif
+
+#ifndef WG_COLOR_DOT_H
+#include "wg_color.h"
+#endif
+
+#ifndef WG_GEO_DOT_H
+#include "wg_geo.h"
+#endif
 
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>
 #endif
 
-#ifdef WIN32
-#	include <SDL.h>
-#else
-#	include <SDL/SDL.h>
-#endif
+#include <vector>
 
-//____ WgSurfaceSDL ___________________________________________________________
+//____ Class WgSurfaceSoft _____________________________________________________________________
 
-class WgSurfaceSDL : public WgSurface
+class WgSurfaceSoft : public WgSurface
 {
-public:
-	WgSurfaceSDL(SDL_Surface * pSurf);
-	WgSurfaceSDL( WgPixelType type, WgSize size );
-
-	~WgSurfaceSDL();
-
-	inline	SDL_Surface*	SDL_Surf() const { return m_pSurface; };
-
-	// Methods needed by WgSurface
+	friend class WgGfxDeviceSoft;
+	
+ public:
+	WgSurfaceSoft( WgSize size, WgPixelType type );
+	WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch );
+	WgSurfaceSoft( const WgSurfaceSoft * pOther );
+	~WgSurfaceSoft();
 
 	const char *Type() const;
 	static const char * GetMyType();
@@ -60,22 +65,20 @@ public:
 	void *		LockRegion( WgAccessMode mode, const WgRect& region );
 	void		Unlock();
 
-
-private:
-	SDL_Surface * 	m_pSurface;
-
+	inline float ScaleAlpha() { return m_fScaleAlpha; }
+	void SetScaleAlpha(float fScaleAlpha);
+   
+	void PutPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<Uint32> &col, int length, bool replace);
+									   			               
+protected:
+	
+	void _copy(const WgSurfaceSoft * pOther);
+	
+	WgSize		m_size;
+	float    	m_fScaleAlpha;
+	bool		m_bOwnsData;
+	Uint8 *		m_pData;
 };
 
-
-//____ WgSurfaceFactorySDL ____________________________________________________
-
-class WgSurfaceFactorySDL : public WgSurfaceFactory
-{
-public:
-	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 );
-};
-
-
-
-#endif //WG_SURFACE_SDL_DOT_H
-
+//========================================================================================
+#endif // WG_SURFACE_SOFT_DOT_H

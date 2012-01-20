@@ -90,11 +90,6 @@ protected:
 //	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onNewSize( const WgSize& size );
 
-	// Overloaded from container
-
-	void	_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut );
-	void	_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer );
-
 	// Overloaded from WgOrderedLayout
 
 	WgRect	_hookGeo( const WgOrderedHook * pHook );

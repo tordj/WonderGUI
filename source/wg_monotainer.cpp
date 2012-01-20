@@ -143,20 +143,16 @@ WgGizmo * WgMonotainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 }
 
 
-void WgMonotainer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
-{
-}
-
-void WgMonotainer::_onCollectRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgMonotainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	if( m_hook.Gizmo() )
-		m_hook.Gizmo()->_onCollectRects( rects, geo, clip );
+		m_hook.Gizmo()->_onCollectPatches( container, geo, clip );
 }
 
-void WgMonotainer::_onMaskRects( WgRectChain& rects, const WgRect& geo, const WgRect& clip )
+void WgMonotainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
 {
 	if( m_hook.Gizmo() )
-		m_hook.Gizmo()->_onMaskRects( rects, geo, clip );
+		m_hook.Gizmo()->_onMaskPatches( patches, geo, clip );
 }
 
 void WgMonotainer::_onCloneContent( const WgGizmo * _pOrg )
@@ -179,26 +175,6 @@ void WgMonotainer::_onDisable()
 	WgGizmoContainer::_onDisable();
 }
 
-void WgMonotainer::_castDirtyRect( const WgRect& geo, const WgRect& clip, WgRectLink * pDirtIn, WgRectChain* pDirtOut )
-{
-	if( m_hook.Gizmo() )
-		m_hook.Gizmo()->CastToContainer()->_castDirtyRect( geo, clip, pDirtIn, pDirtOut );
-	else
-		pDirtOut->PushExistingRect(pDirtIn);
-}
-
-void WgMonotainer::_renderDirtyRects( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, Uint8 _layer )
-{
-	if( m_hook.Gizmo() )
-		m_hook.Gizmo()->CastToContainer()->_renderDirtyRects( pDevice, _canvas, _window, _layer );
-}
-
-void WgMonotainer::_clearDirtyRects()
-{
-	if( m_hook.Gizmo() )
-		m_hook.Gizmo()->CastToContainer()->_clearDirtyRects();
-}
-
 WgHook* WgMonotainer::_firstHook() const
 {
 	return const_cast<Hook*>(&m_hook);
@@ -211,7 +187,7 @@ WgHook* WgMonotainer::_lastHook() const
 
 WgHook * WgMonotainer::_firstHookWithGeo( WgRect& geo ) const
 {
-	geo = Geo();
+	geo = WgRect(0,0,Size());
 	return const_cast<Hook*>(&m_hook);
 }
 

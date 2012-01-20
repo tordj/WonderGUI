@@ -19,69 +19,45 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_GFXDEVICE_GL_DOT_H
-#define WG_GFXDEVICE_GL_DOT_H
+#ifndef WG_GFXDEVICE_SOFT_DOT_H
+#define WG_GFXDEVICE_SOFT_DOT_H
 
 #ifndef WG_GEO_DOT_H
 #	include <wg_geo.h>
 #endif
-
-#ifdef WIN32
-#	include <windows.h>
-#endif
-
-#include <GL/gl.h>
-
 
 #ifndef	WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
 #endif
 
 
-class WgSurfaceGL;
+class WgSurfaceSoft;
 
 
-class WgGfxDeviceGL : public WgGfxDevice
+class WgGfxDeviceSoft : public WgGfxDevice
 {
 public:
-	WgGfxDeviceGL( WgSize canvas );
-	~WgGfxDeviceGL();
+	WgGfxDeviceSoft();
+	WgGfxDeviceSoft( WgSurfaceSoft * pCanvas );
+	~WgGfxDeviceSoft();
 
-	void	SetCanvas( WgSize canvas );
+	void	SetCanvas( WgSurfaceSoft * pCanvas );
 
 	//
 
-	bool	BeginRender();
-	bool	EndRender();
-
-	void	SetTintColor( WgColor color );
-	bool	SetBlendMode( WgBlendMode blendMode );
 	void	Fill( const WgRect& rect, const WgColor& col );
-	void	Blit( const WgSurface* src, const WgRect& srcrect, int dx, int dy  );
+	void	Blit( const WgSurface* pSrc, const WgRect& srcrect, int dx, int dy  );
 
 	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 
 protected:
 
-	void	_setBlendMode( WgBlendMode blendMode );
+	void	_initTables();
 
-	bool	m_bRendering;
-
-	// GL states saved between BeginRender() and EndRender().
-
-	GLboolean	m_glDepthTest;
-	GLboolean	m_glTexture2D;
-	GLboolean	m_glFog;
-	GLboolean	m_glLighting;
-	GLboolean	m_glBlendEnabled;
-	GLint		m_glBlendSrc;
-	GLint		m_glBlendDst;
-	GLint		m_glMatrixMode;
-	GLfloat		m_glColor[4];
-	WgSize		m_size;
-
+	WgSurfaceSoft * m_pCanvas;
+	Uint8			m_limitTable[512];
 };
 
-#endif //WG_GFXDEVICE_GL_DOT_H
+#endif //WG_GFXDEVICE_SOFT_DOT_H
 
