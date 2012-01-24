@@ -21,6 +21,7 @@
 =========================================================================*/
 #include <wg_surface_mig.h>
 
+static const char	c_surfaceType[] = {"MIG"};
 
 //____ Constructor _____________________________________________________________
 
@@ -42,7 +43,7 @@ void WgSurfaceMIG::_setPixelFormat( ETextureDataPtr pTexture )
 	{
 	case EPixelFormat::eRGBA32:
 
-		m_pixelFormat.type = WgSurface::RGBA_8;
+		m_pixelFormat.type = WG_PIXEL_RGBA_8;
 		m_pixelFormat.bits = 32;
 
 		m_pixelFormat.R_mask = 0xFF;
@@ -62,7 +63,7 @@ void WgSurfaceMIG::_setPixelFormat( ETextureDataPtr pTexture )
 		break;
 
 	case EPixelFormat::eRGB24:
-		m_pixelFormat.type = WgSurface::RGB_8;
+		m_pixelFormat.type = WG_PIXEL_RGB_8;
 		m_pixelFormat.bits = 24;
 
 		m_pixelFormat.R_mask = 0xFF;
@@ -82,7 +83,7 @@ void WgSurfaceMIG::_setPixelFormat( ETextureDataPtr pTexture )
 		break;
 
 	default:
-		m_pixelFormat.type = WgSurface::UNSPECIFIED;
+		m_pixelFormat.type = WG_PIXEL_UNKNOWN;
 		m_pixelFormat.bits = 0;
 
 		m_pixelFormat.R_mask = 0;
@@ -110,6 +111,21 @@ WgSurfaceMIG::~WgSurfaceMIG()
 	if( m_pPixels )
 		Unlock();
 }
+
+//____ Type() __________________________________________________________________
+
+const char * WgSurfaceMIG::Type() const
+{
+	return GetMyType();
+}
+
+//____ GetMyType() _____________________________________________________________
+
+const char * WgSurfaceMIG::GetMyType()
+{
+	return c_surfaceType;
+}
+
 
 //____ Size() ______________________________________________________________
 
@@ -178,16 +194,16 @@ Uint8 WgSurfaceMIG::GetOpacity( WgCoord coord ) const
 
 //____ WgSurfaceFactoryMIG::CreateSurface() ___________________________________
 
-WgSurface * WgSurfaceFactoryMIG::CreateSurface( const WgSize& size, WgSurface::PixelType type )
+WgSurface * WgSurfaceFactoryMIG::CreateSurface( const WgSize& size, WgPixelType type )
 {
 	EPixelFormat	format;
 
 	switch( type )
 	{
-	case WgSurface::RGB_8:
+	case WG_PIXEL_RGB_8:
 		format = EPixelFormat::eRGB24;
 		break;
-	case WgSurface::RGBA_8:
+	case WG_PIXEL_RGBA_8:
 		format = EPixelFormat::eRGBA32;
 		break;
 	default:

@@ -75,7 +75,9 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual void	_onEnable();
 		virtual void	_onDisable();
 
+#ifdef WG_TNG
 		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
+#endif
 
 	private:
 
@@ -85,10 +87,11 @@ class WgGizmoContainer : public WgGizmoParent
 		bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
 		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
 
+#ifdef WG_TNG
 		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
 		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+#endif
 		virtual bool 	_onAlphaTest( const WgCoord& ofs );
-
 
 		bool		m_bFocusGroup;
 		bool		m_bRadioGroup;

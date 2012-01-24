@@ -189,10 +189,11 @@ protected:
 
 	// To be overloaded by Gizmo
 
+#ifdef WG_TNG
 	virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
-
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
+#endif
 	virtual void	_onCloneContent( const WgGizmo * _pOrg ) = 0;
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	virtual void	_onNewSize( const WgSize& size );

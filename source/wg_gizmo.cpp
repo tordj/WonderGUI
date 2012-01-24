@@ -286,7 +286,7 @@ WgMode WgGizmo::Mode() const
 }
 
 //____ _renderPatches() ________________________________________________________
-
+#ifdef WG_TNG
 void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 {
 	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ ) 
@@ -296,11 +296,11 @@ void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 			_onRender( pDevice, _canvas, _window, clip, _layer );
 	}
 }
-
+#endif
 
 //____ Fillers _______________________________________________________________
 
-
+#ifdef WG_TNG
 void WgGizmo::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	container.Add( WgRect( geo, clip ) );
@@ -313,6 +313,7 @@ void WgGizmo::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 		patches.Sub( WgRect( geo, clip ) );
 	}
 }
+#endif
 
 void WgGizmo::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
