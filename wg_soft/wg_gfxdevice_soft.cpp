@@ -211,7 +211,7 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 	Uint8 * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
 
 	WgBlendMode		blendMode = m_blendMode;
-	if( srcPixelBytes == 3 && blendMode == WG_BLENDMODE_BLEND )
+	if( srcPixelBytes == 3 && blendMode == WG_BLENDMODE_BLEND && m_tintColor.a == 255 )
 		blendMode = WG_BLENDMODE_OPAQUE;
 
 	switch( blendMode )
@@ -239,26 +239,51 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 		}
 		case WG_BLENDMODE_BLEND:
 		{
-			int tintAlpha = (int) m_tintColor.a;
-			int tintRed = (int) m_tintColor.r;
-			int tintGreen = (int) m_tintColor.g;
-			int tintBlue = (int) m_tintColor.b;
-			
-			for( int y = 0 ; y < srcrect.h ; y++ )
+			if( srcPixelBytes == 4 )
 			{
-				for( int x = 0 ; x < srcrect.w ; x++ )
+				int tintAlpha = (int) m_tintColor.a;
+				int tintRed = (int) m_tintColor.r;
+				int tintGreen = (int) m_tintColor.g;
+				int tintBlue = (int) m_tintColor.b;
+				
+				for( int y = 0 ; y < srcrect.h ; y++ )
 				{
-					int alpha = (pSrc[3]*tintAlpha) >> 8;
-					int invAlpha = 255-alpha;
-					
-					pDst[0] = (pDst[0]*invAlpha + (pSrc[0]*tintRed*alpha)>>8 ) >> 8;
-					pDst[1] = (pDst[1]*invAlpha + (pSrc[1]*tintGreen*alpha)>>8 ) >> 8;
-					pDst[2] = (pDst[2]*invAlpha + (pSrc[2]*tintBlue*alpha)>>8 ) >> 8;
-					pSrc += srcPixelBytes;
-					pDst += dstPixelBytes;
+					for( int x = 0 ; x < srcrect.w ; x++ )
+					{
+						int alpha = (pSrc[3]*tintAlpha) >> 8;
+						int invAlpha = (255-alpha) << 8;
+						
+						pDst[0] = (pDst[0]*invAlpha + pSrc[0]*tintRed*alpha ) >> 16;
+						pDst[1] = (pDst[1]*invAlpha + pSrc[1]*tintGreen*alpha ) >> 16;
+						pDst[2] = (pDst[2]*invAlpha + pSrc[2]*tintBlue*alpha ) >> 16;
+						pSrc += srcPixelBytes;
+						pDst += dstPixelBytes;
+					}
+					pSrc += srcPitchAdd;
+					pDst += dstPitchAdd;
 				}
-				pSrc += srcPitchAdd;
-				pDst += dstPitchAdd;
+			}
+			else
+			{
+				int tintAlpha = (int) m_tintColor.a;
+				int tintRed = (int) m_tintColor.r * tintAlpha;
+				int tintGreen = (int) m_tintColor.g * tintAlpha;
+				int tintBlue = (int) m_tintColor.b * tintAlpha;
+				int invAlpha = (255-tintAlpha) << 8;
+				
+				for( int y = 0 ; y < srcrect.h ; y++ )
+				{
+					for( int x = 0 ; x < srcrect.w ; x++ )
+					{
+						pDst[0] = (pDst[0]*invAlpha + pSrc[0]*tintRed ) >> 16;
+						pDst[1] = (pDst[1]*invAlpha + pSrc[1]*tintGreen ) >> 16;
+						pDst[2] = (pDst[2]*invAlpha + pSrc[2]*tintBlue ) >> 16;
+						pSrc += srcPixelBytes;
+						pDst += dstPixelBytes;
+					}
+					pSrc += srcPitchAdd;
+					pDst += dstPitchAdd;
+				}
 			}
 			break;
 		}
@@ -363,9 +388,79 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 
 //____ StretchBlitSubPixel() ___________________________________________________
 
-void WgGfxDeviceSoft::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
-						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
+void WgGfxDeviceSoft::StretchBlitSubPixel( const WgSurface * _pSrcSurf, float sx, float sy, float sw, float sh,
+						   		 float _dx, float _dy, float _dw, float _dh, bool bTriLinear, float mipBias )
 {
+	if( !_pSrcSurf || !m_pCanvas || _pSrcSurf->Type() != WgSurfaceSoft::GetMyType() )
+		return;
+		
+	WgSurfaceSoft * pSrcSurf = (WgSurfaceSoft*) _pSrcSurf;
+	
+	if( !m_pCanvas->m_pData || !pSrcSurf->m_pData )
+		return;
+
+	int dx = (int) _dx;
+	int dy = (int) _dy;
+	int dw = (int) _dw;
+	int dh = (int) _dh;
+
+	int srcPixelBytes = pSrcSurf->m_pixelFormat.bits/8;
+	int dstPixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+	
+	int	srcPitch = pSrcSurf->m_pitch;
+	int	dstPitch = m_pCanvas->m_pitch;
+	
+	//...
+	int tintRed = (int) m_tintColor.r;
+	int tintGreen = (int) m_tintColor.g;
+	int tintBlue = (int) m_tintColor.b;	
+	//
+	
+	int ofsY = (int) (sy*32768);		// We use 15 binals for all calculations
+	int incY = (int) (sh*32768/dh);
+
+	for( int y = 0 ; y < dh ; y++ )
+	{		
+		int fracY2 = ofsY & 0x7FFF;
+		int fracY1 = 32768 - fracY2;
+
+		int ofsX = (int) (sx*32768);
+		int incX = (int) (sw*32768/dw);
+
+		Uint8 * pDst = m_pCanvas->m_pData + (dy+y) * m_pCanvas->m_pitch + dx * dstPixelBytes;
+		Uint8 * pSrc = pSrcSurf->m_pData + (ofsY>>15) * pSrcSurf->m_pitch;
+		
+		for( int x = 0 ; x < dw ; x++ )
+		{
+			int fracX2 = ofsX & 0x7FFF;
+			int fracX1 = 32768 - fracX2;
+			
+			Uint8 * p = pSrc + (ofsX >> 15)*srcPixelBytes;
+
+			int mul11 = fracX1*fracY1 >> 15;
+			int mul12 = fracX2*fracY1 >> 15;
+			int mul21 = fracX1*fracY2 >> 15;
+			int mul22 = fracX2*fracY2 >> 15;
+			
+			int srcRed = (p[0]*mul11 + p[srcPixelBytes]*mul12 + p[srcPitch]*mul21 + p[srcPitch+srcPixelBytes]*mul22) >> 15;
+			p++;
+			int srcGreen = (p[0]*mul11 + p[srcPixelBytes]*mul12 + p[srcPitch]*mul21 + p[srcPitch+srcPixelBytes]*mul22) >> 15;
+			p++;
+			int srcBlue = (p[0]*mul11 + p[srcPixelBytes]*mul12 + p[srcPitch]*mul21 + p[srcPitch+srcPixelBytes]*mul22) >> 15;
+			p++;
+			int srcAlpha = (p[0]*mul11 + p[srcPixelBytes]*mul12 + p[srcPitch]*mul21 + p[srcPitch+srcPixelBytes]*mul22) >> 15;
+
+			//...
+			pDst[0] = (srcRed*tintRed) >> 8;
+			pDst[1] = (srcGreen*tintGreen) >> 8;
+			pDst[2] = (srcBlue*tintBlue) >> 8;
+			//...		   
+			
+			ofsX += incX;
+			pDst += dstPixelBytes;
+		}		
+		ofsY += incY;
+	}
 }
 
 //____ _initTables() ___________________________________________________________

@@ -65,9 +65,9 @@ public:
 	void	Hide();
 	void	Show();
 
-	inline bool	IsFloating() const { return m_bFloating; }
-	inline bool	IsAnchored() const { return !m_bFloating; }
-	inline bool IsHidden() const { return m_bHidden; }
+	bool	IsFloating() const { return m_bFloating; }
+	bool	IsAnchored() const { return !m_bFloating; }
+	bool	IsHidden() const { return m_bHidden; }
 
 	// Methods for floating hooks
 
@@ -92,37 +92,39 @@ public:
 	bool	MoveX( int x );
 	bool	MoveY( int y );
 
-	inline WgSize		MaxSize() const { return m_maxSize; }
-	inline WgSize		MinSize() const { return m_minSize; }
-	inline WgSizePolicy	SizePolicy() const { return m_sizePolicy; }
-	inline int			Origo() const { return m_anchor; }
-	inline WgOrientation	Hotspot() const { return m_hotspot; }
-	inline WgRect		FloatGeo() const { return m_placementGeo; }
-	inline WgCoord		FloatOfs() const { return m_placementGeo.Pos(); }
-	inline WgRect		FloatSize() const { return m_placementGeo.Size(); }
+	WgSize			MaxSize() const { return m_maxSize; }
+	WgSize			MinSize() const { return m_minSize; }
+	WgSizePolicy	SizePolicy() const { return m_sizePolicy; }
+	int				Origo() const { return m_anchor; }
+	WgOrientation	Hotspot() const { return m_hotspot; }
+	WgRect			FloatGeo() const { return m_placementGeo; }
+	WgCoord			FloatOfs() const { return m_placementGeo.Pos(); }
+	WgRect			FloatSize() const { return m_placementGeo.Size(); }
 
 	// Methods for anchored hooks
 
-	inline int			AnchorTopLeft() const { return m_anchorTopLeft; }
-	inline int			AnchorBottomRight() const { return m_anchorBottomRight; }
-	inline WgBorders	Borders() const { return m_borders; }
+	int				AnchorTopLeft() const { return m_anchorTopLeft; }
+	int				AnchorBottomRight() const { return m_anchorBottomRight; }
+	WgBorders		Borders() const { return m_borders; }
 
 
 	// Standard Hook methods
 
-	inline WgCoord		Pos() const { return m_realGeo.Pos(); }
-	inline WgSize		Size() const { 	return m_realGeo.Size(); }
-	inline WgRect		Geo() const { return m_realGeo; }
+	WgCoord			Pos() const { return m_realGeo.Pos(); }
+	WgSize			Size() const { 	return m_realGeo.Size(); }
+	WgRect			Geo() const { return m_realGeo; }
 
-	WgCoord		ScreenPos() const;
-	WgRect		ScreenGeo() const;
 
-	inline WgFlexHook *	Prev() const { return _prev(); }
-	inline WgFlexHook *	Next() const { return _next(); }
+	WgCoord			ScreenPos() const;
+	WgRect			ScreenGeo() const;
 
-	inline WgGizmoFlexGeo * Parent() const { return m_pParent; }
+	WgFlexHook *	Prev() const { return _prev(); }
+	WgFlexHook *	Next() const { return _next(); }
 
-	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
+	void			SetHidden( bool bHide );
+	WgGizmoFlexGeo* Parent() const { return m_pParent; }
+
+	WgWidget*		GetRoot();			// Should in the future not return a widget, but a gizmo.
 
 protected:
 	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
@@ -156,7 +158,7 @@ protected:
 	WgSize			m_maxSize;
 
 	int				m_anchor;
-	WgOrientation		m_hotspot;
+	WgOrientation	m_hotspot;
 	WgRect			m_placementGeo;	// Gizmos geo relative anchor and hotspot.
 
 	//Only used for anchored hooks.
@@ -175,13 +177,13 @@ class WgFlexAnchor
 	friend class WgGizmoFlexGeo;
 
 public:
-	inline float	RelativeX() const { return m_xRelative; }
-	inline float	RelativeY() const { return m_yRelative; }
-	inline int		OffsetX() const { return m_pixelOfs.x; }
-	inline int		OffsetY() const { return m_pixelOfs.y; }
-	inline WgCoord	Offset() const { return m_pixelOfs; }
+	float	RelativeX() const { return m_xRelative; }
+	float	RelativeY() const { return m_yRelative; }
+	int		OffsetX() const { return m_pixelOfs.x; }
+	int		OffsetY() const { return m_pixelOfs.y; }
+	WgCoord	Offset() const { return m_pixelOfs; }
 
-	inline WgCoord	Position( const WgSize& parentSize ) const { return WgCoord((int)(m_xRelative*parentSize.w), (int)(m_yRelative*parentSize.h)) + m_pixelOfs; }
+	WgCoord	Position( const WgSize& parentSize ) const { return WgCoord((int)(m_xRelative*parentSize.w), (int)(m_yRelative*parentSize.h)) + m_pixelOfs; }
 
 private:
 	WgFlexAnchor() : m_xRelative(0.f), m_yRelative(0.f), m_pixelOfs(0,0) {};
@@ -208,7 +210,7 @@ public:
 	static const char * GetMyType();
 
 	void			SetConfineChildren( bool bRestrictChildren );
-	inline bool		IsConfiningChildren() const { return m_bConfineChildren; }
+	bool			IsConfiningChildren() const { return m_bConfineChildren; }
 
 
 	WgFlexHook *	AddChild( WgGizmo * pGizmo );
@@ -236,12 +238,12 @@ public:
 	bool			DeleteAnchor( int index );
 	void			DeleteAllAnchors();
 
-	inline int		NbAnchors() const { return m_anchors.size()+9; }
+	int				NbAnchors() const { return m_anchors.size()+9; }
 	const WgFlexAnchor *	Anchor( int index );
 
 
-	inline WgFlexHook*	FirstHook() const { return m_hooks.First(); }
-	inline WgFlexHook*	LastHook() const { return m_hooks.Last(); }
+	WgFlexHook*		FirstHook() const { return m_hooks.First(); }
+	WgFlexHook*		LastHook() const { return m_hooks.Last(); }
 
 	// Overloaded from WgGizmo
 
@@ -269,17 +271,17 @@ private:
 	void			_onNewSize( const WgSize& size );
 	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 
-	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }
-	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }
-	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
+	void			_onEnable() { WgGizmoContainer::_onEnable(); }
+	void			_onDisable() { WgGizmoContainer::_onDisable(); }
+	bool 			_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 
-	WgHook*	_firstHook() const { return FirstHook(); }
-	WgHook*	_lastHook() const { return LastHook(); }
+	WgHook*			_firstHook() const { return FirstHook(); }
+	WgHook*			_lastHook() const { return LastHook(); }
 
-	WgHook *	_firstHookWithGeo( WgRect& writeGeo ) const;
-	WgHook *	_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
+	WgHook *		_firstHookWithGeo( WgRect& writeGeo ) const;
+	WgHook *		_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
 
 	WgChain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;
