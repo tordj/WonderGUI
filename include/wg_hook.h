@@ -57,9 +57,9 @@ public:
 	inline WgHook *	Prev() const { return _prevHook(); }
 	inline WgHook *	Next() const { return _nextHook(); }
 
-	inline void		Hide() { SetHidden(true); }
-	inline void		Unhide() { SetHidden(false); }
-	virtual void	SetHidden( bool bHide ) = 0;
+	inline bool		Hide() { return SetHidden(true); }
+	inline bool		Unhide() { return SetHidden(false); }
+	virtual bool	SetHidden( bool bHide );
 	bool			Hidden() { return m_bHidden; }
 
 	inline	WgGizmo *			Gizmo() const { return m_pGizmo; }

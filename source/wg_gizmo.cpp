@@ -303,7 +303,7 @@ void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 #ifdef WG_TNG
 void WgGizmo::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-	container.Add( WgRect( geo, clip ) );
+		container.Add( WgRect( geo, clip ) );
 }
 
 void WgGizmo::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )

@@ -42,6 +42,9 @@ class WgGizmoContainer : public WgGizmoParent
 	friend class WgRoot;
 	friend class WgGizmoFlexGeo;
 	friend class WgGizmoModal;
+	friend class WgGizmoTable;
+	friend class WgGizmoView;
+	friend class WgGizmoStack;
 	friend class WgOrderedLayout;
 	friend class WgVBoxLayout;
 	friend class WgMonotainer;

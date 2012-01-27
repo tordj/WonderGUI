@@ -280,8 +280,8 @@
 #	include <wg_gizmo_view.h>
 #endif
 
-#ifndef WG_VBOXLAYOUT_DOT_H
-#	include <wg_vboxlayout.h>
+#ifndef WG_GIZMO_VBOX_DOT_H
+#	include <wg_gizmo_vbox.h>
 #endif
 
 #endif //WONDERGUI_DOT_H

@@ -101,7 +101,7 @@ protected:
 		WgCoord			ScreenPos() const;
 		WgRect			ScreenGeo() const;
 
-		void			SetHidden( bool bHide );
+		bool			SetHidden( bool bHide );
 		WgRoot*			Root() const;
 
 		WgWidget*		GetRoot();			// Should in the future be removed.

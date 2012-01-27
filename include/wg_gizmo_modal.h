@@ -55,19 +55,17 @@ public:
 	bool	MoveY( int y );
 
 
-
-
 	// Standard Hook methods
 
-	inline WgCoord		Pos() const { return m_realGeo.Pos(); }
-	inline WgSize		Size() const { 	return m_realGeo.Size(); }
-	inline WgRect		Geo() const { return m_realGeo; }
+	WgCoord			Pos() const { return m_realGeo.Pos(); }
+	WgSize			Size() const { 	return m_realGeo.Size(); }
+	WgRect			Geo() const { return m_realGeo; }
 
-	WgCoord		ScreenPos() const;
-	WgRect		ScreenGeo() const;
+	WgCoord			ScreenPos() const;
+	WgRect			ScreenGeo() const;
 
-	inline WgModalHook *	Prev() const { return _prev(); }
-	inline WgModalHook *	Next() const { return _next(); }
+	WgModalHook *	Prev() const { return _prev(); }
+	WgModalHook *	Next() const { return _next(); }
 
 	WgGizmoContainer* Parent() const;
 
@@ -165,16 +163,16 @@ private:
 	public:
 		// Standard Hook methods
 
-		inline WgCoord		Pos() const { return m_pParent->Pos(); }
-		inline WgSize		Size() const { 	return m_pParent->Size(); }
-		inline WgRect		Geo() const { return m_pParent->Geo(); }
+		WgCoord		Pos() const { return m_pParent->Pos(); }
+		WgSize		Size() const { 	return m_pParent->Size(); }
+		WgRect		Geo() const { return m_pParent->Geo(); }
 
-		inline WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
-		inline WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
+		WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
+		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		inline WgGizmoModal* Parent() const { return m_pParent; }
+		WgGizmoModal* Parent() const { return m_pParent; }
 
-		inline WgWidget*	GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
+		WgWidget*	GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
 
 	protected:
 		BaseHook( WgGizmoModal * pParent ) : m_pParent(pParent) {}
@@ -191,17 +189,23 @@ private:
 
 	};
 
+	// These are needed until WgGizmoContainer inherits from WgGizmo
+
 	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
+	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
+	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
+									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip); }
+	void			_onEnable() { WgGizmoContainer::_onEnable(); }
+	void			_onDisable() { WgGizmoContainer::_onDisable(); }
+	bool 			_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
+	//
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onNewSize( const WgSize& size );
 	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-
-	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }
-	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }
-	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 	void			_onRequestRender( const WgRect& rect, const WgModalHook * pHook );	// rect is in our coordinate system.
 

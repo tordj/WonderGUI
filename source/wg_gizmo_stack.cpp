@@ -171,7 +171,8 @@ void WgGizmoStack::_onResizeRequested( WgOrderedHook * _pHook )
 
 void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook )
 {
-	_onRenderRequested(pHook, WgRect(0,0,m_size));
+	if( !pHook->Hidden() )
+		_onRenderRequested(pHook, WgRect(0,0,m_size));
 }
 
 void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect )

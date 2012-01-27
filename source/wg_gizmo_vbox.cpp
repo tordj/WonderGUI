@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <assert.h>
-#include <wg_vboxlayout.h>
+#include <wg_gizmo_vbox.h>
 
 
 static const char	c_gizmoType[] = {"VBoxLayout"};
@@ -129,7 +129,11 @@ WgHook * WgVBoxLayout::_firstHookWithGeo( WgRect& geo ) const
 {
 	WgVBoxHook * p = FirstHook();
 	if( p )
+	{
 		geo = WgRect(0,0,m_size.w,p->m_height);
+		if( p->m_bHidden )
+			geo.h = 0;
+	}
 
 	return p;
 }
@@ -142,7 +146,11 @@ WgHook * WgVBoxLayout::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	if( p )
 	{
 		geo.y += geo.h;
-		geo.h = p->m_height;
+
+		if( p->m_bHidden )
+			geo.h = 0;
+		else
+			geo.h = p->m_height;
 	}	
 	return p;
 }
@@ -200,6 +208,9 @@ void WgVBoxLayout::_onResizeRequested( WgOrderedHook * _pHook )
 
 void  WgVBoxLayout::_onRenderRequested( WgOrderedHook * pHook )
 {
+	if( pHook->Hidden() )
+		return;
+	
 	WgRect rect = _hookGeo(pHook);
 	if( !rect.IsEmpty() )
 		RequestRender(rect);
@@ -207,6 +218,9 @@ void  WgVBoxLayout::_onRenderRequested( WgOrderedHook * pHook )
 
 void  WgVBoxLayout::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect )
 {
+	if( pHook->Hidden() )
+		return;
+
 	WgRect hookGeo = _hookGeo(pHook);
 	WgRect clippedRect( hookGeo, rect + hookGeo.Pos() );
 
@@ -375,8 +389,6 @@ void WgVBoxLayout::_refreshDefaultSize()
 	}
 }
 
-
-
 //____ _refreshAllGizmos() ____________________________________________________
 
 void  WgVBoxLayout::_refreshAllGizmos()
@@ -395,7 +407,6 @@ void WgVBoxLayout::_renderFromChildOnward( WgOrderedHook * pHook )
 	geo.h = m_size.h - geo.y;
 	RequestRender( geo );
 }
-
 
 //____ _newHook() _____________________________________________________________
 

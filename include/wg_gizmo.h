@@ -113,36 +113,36 @@ public:
 
 	void				CloneContent( const WgGizmo * _pOrg );
 
-	inline void				SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
+	void			SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
 	virtual WgPointerStyle	GetPointerStyle() const;
 
-	inline void			SetTabLock( bool bLock ) { m_bTabLock = bLock; }
-	inline bool			IsTabLocked() const { return m_bTabLock; }
+	void			SetTabLock( bool bLock ) { m_bTabLock = bLock; }
+	bool			IsTabLocked() const { return m_bTabLock; }
 
-	inline void			SetMarkPolicy( WgMarkPolicy policy ) { m_markPolicy = policy; }
-	inline WgMarkPolicy	GetMarkPolicy() const { return m_markPolicy; }
-	bool				MarkTest( const WgCoord& ofs );
+	void			SetMarkPolicy( WgMarkPolicy policy ) { m_markPolicy = policy; }
+	WgMarkPolicy	GetMarkPolicy() const { return m_markPolicy; }
+	bool			MarkTest( const WgCoord& ofs );
 
-	WgHook*		Hook() const { return m_pHook; }
+	WgHook*			Hook() const { return m_pHook; }
 
 
 	// Convenient calls to hook
 
-	inline WgCoord		Pos() const { if( m_pHook ) return m_pHook->Pos(); return WgCoord(0,0); }
-	inline WgSize		Size() const { if( m_pHook ) return m_pHook->Size(); return WgSize(256,256); }
-	inline WgRect		Geo() const { if( m_pHook ) return m_pHook->Geo(); return WgRect(0,0,256,256); }
-	inline WgCoord		ScreenPos() const { if( m_pHook ) return m_pHook->ScreenPos(); return WgCoord(0,0); }
-	inline WgRect		ScreenGeo() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
-	inline bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
-	inline bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
-	inline bool			IsFocused() { return m_bFocused; }
-	inline WgGizmoParent * ParentX() { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
+	WgCoord			Pos() const { if( m_pHook ) return m_pHook->Pos(); return WgCoord(0,0); }
+	WgSize			Size() const { if( m_pHook ) return m_pHook->Size(); return WgSize(256,256); }
+	WgRect			Geo() const { if( m_pHook ) return m_pHook->Geo(); return WgRect(0,0,256,256); }
+	WgCoord			ScreenPos() const { if( m_pHook ) return m_pHook->ScreenPos(); return WgCoord(0,0); }
+	WgRect			ScreenGeo() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
+	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
+	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
+	bool			IsFocused() { return m_bFocused; }
+	WgGizmoParent * ParentX() { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
 
-	inline WgGizmo *	NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
-	inline WgGizmo *	PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
+	WgGizmo *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
+	WgGizmo *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
 
-	WgCoord				Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
-	WgCoord				Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
+	WgCoord			Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
+	WgCoord			Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
 #ifdef WG_TNG
 	WgEventHandler *	EventHandler() const;
 #endif
@@ -183,9 +183,9 @@ protected:
 
 	// Convenient calls to hook
 
-	inline void		RequestRender() { if( m_pHook ) m_pHook->_requestRender(); }
-	inline void		RequestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
-	inline void		RequestResize() { if( m_pHook ) m_pHook->_requestResize(); }
+	void			RequestRender() { if( m_pHook ) m_pHook->_requestRender(); }
+	void			RequestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
+	void			RequestResize() { if( m_pHook ) m_pHook->_requestResize(); }
 
 	// To be overloaded by Gizmo
 

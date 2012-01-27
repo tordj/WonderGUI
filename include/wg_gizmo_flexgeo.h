@@ -121,7 +121,6 @@ public:
 	WgFlexHook *	Prev() const { return _prev(); }
 	WgFlexHook *	Next() const { return _next(); }
 
-	void			SetHidden( bool bHide );
 	WgGizmoFlexGeo* Parent() const { return m_pParent; }
 
 	WgWidget*		GetRoot();			// Should in the future not return a widget, but a gizmo.
@@ -264,16 +263,25 @@ public:
 
 
 private:
+
+	// These are needed until WgGizmoContainer inherits from WgGizmo
+
 	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
+	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
+	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
+									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip); }
+	void			_onEnable() { WgGizmoContainer::_onEnable(); }
+	void			_onDisable() { WgGizmoContainer::_onDisable(); }
+	bool 			_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
+
+	//
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onNewSize( const WgSize& size );
 	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 
-	void			_onEnable() { WgGizmoContainer::_onEnable(); }
-	void			_onDisable() { WgGizmoContainer::_onDisable(); }
-	bool 			_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 

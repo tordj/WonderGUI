@@ -96,7 +96,6 @@
     <File Name="include/wg_userdefines.h"/>
     <File Name="include/wg_util.h"/>
     <File Name="include/wg_valueformat.h"/>
-    <File Name="include/wg_vboxlayout.h"/>
     <File Name="include/wg_vectorglyphs.h"/>
     <File Name="include/wondergui.h"/>
     <File Name="include/wg_hook.h"/>
@@ -176,10 +175,11 @@
     <File Name="source/wg_texttool.cpp"/>
     <File Name="source/wg_util.cpp"/>
     <File Name="source/wg_valueformat.cpp"/>
-    <File Name="source/wg_vboxlayout.cpp"/>
     <File Name="source/wg_vectorglyphs.cpp"/>
     <File Name="include/wg_patches.h"/>
     <File Name="source/wg_patches.cpp"/>
+    <File Name="include/wg_gizmo_vbox.h"/>
+    <File Name="source/wg_gizmo_vbox.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -202,6 +202,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       
@@ -242,6 +243,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       

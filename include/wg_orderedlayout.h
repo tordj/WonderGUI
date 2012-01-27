@@ -59,9 +59,9 @@ public:
 	WgCoord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
-	inline WgOrderedHook*	Prev() const { return _prev(); }
-	inline WgOrderedHook*	Next() const { return _next(); }
-	inline WgOrderedLayout * Parent() const;
+	WgOrderedHook*	Prev() const { return _prev(); }
+	WgOrderedHook*	Next() const { return _next(); }
+	WgOrderedLayout * Parent() const;
 
 	bool			MoveUp();
 	bool			MoveDown();
@@ -70,7 +70,7 @@ public:
 	bool			MoveFirst();
 	bool			MoveLast();
 
-	void			SetHidden( bool bHide );
+	bool			SetHidden( bool bHide );
 
 	// Needs to be here for now since Emitters are inherrited by Widgets. Shouldn't be hooks business in the future...
 
@@ -111,7 +111,7 @@ public:
 
 	void			SortChildren();
 	void			SetSortOrder( WgSortOrder order );
-	inline WgSortOrder	GetSortOrder() const { return m_sortOrder; }
+	WgSortOrder		GetSortOrder() const { return m_sortOrder; }
 
 	void			SetSortFunction( WgGizmoSortFunc pSortFunc );
 	WgGizmoSortFunc	SortFunction() const { return m_pSortFunc; }
@@ -124,26 +124,34 @@ public:
 	WgGizmoContainer *	CastToContainer() { return this; }
 	const WgGizmoContainer *	CastToContainer() const { return this; }
 
-	inline WgGizmo*	CastToGizmo() { return this; }
+	WgGizmo*		CastToGizmo() { return this; }
 
 	// Overloaded from container
 
 	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );	// Default OrderedLayout implementation, assuming front-gizmos overlapping end-gizmos in case of overlap.
 
 protected:
+
+	// These are needed until WgGizmoContainer inherits from WgGizmo
+
 	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
+	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
+	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
+									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip); }
+	void			_onEnable() { WgGizmoContainer::_onEnable(); }
+	void			_onDisable() { WgGizmoContainer::_onDisable(); }
+	bool 			_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
+
+	//
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
 
-	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
-	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
-	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
+	WgHook*			_firstHook() const { return m_hooks.First(); }
+	WgHook*			_lastHook() const { return m_hooks.Last(); }
 
-	inline WgHook*	_firstHook() const { return m_hooks.First(); }
-	inline WgHook*	_lastHook() const { return m_hooks.Last(); }
-
-	inline int		_compareGizmos(const WgGizmo * p1, const WgGizmo * p2) { return m_pSortFunc?m_pSortFunc(p1,p2):0; }
+	int				_compareGizmos(const WgGizmo * p1, const WgGizmo * p2) { return m_pSortFunc?m_pSortFunc(p1,p2):0; }
 
 	// To be overloaded by subclasses
 

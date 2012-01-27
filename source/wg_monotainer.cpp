@@ -145,13 +145,13 @@ WgGizmo * WgMonotainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 void WgMonotainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-	if( m_hook.Gizmo() )
+	if( !m_hook.Hidden() && m_hook.Gizmo() )
 		m_hook.Gizmo()->_onCollectPatches( container, geo, clip );
 }
 
 void WgMonotainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
 {
-	if( m_hook.Gizmo() )
+	if( !m_hook.Hidden() && m_hook.Gizmo() )
 		m_hook.Gizmo()->_onMaskPatches( patches, geo, clip );
 }
 
@@ -195,3 +195,4 @@ WgHook * WgMonotainer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	return 0;
 }
+

@@ -98,3 +98,24 @@ WgRoot * WgHook::Root()
 
 	return 0;
 }
+
+//____ SetHidden() _____________________________________________________________
+
+bool WgHook::SetHidden( bool bHide )
+{
+	if( bHide != m_bHidden )
+	{
+		if( bHide )
+		{
+			_requestRender();
+			m_bHidden = true;
+		}
+		else
+		{
+			m_bHidden = false;
+			_requestRender();
+		}		
+	}
+	return true;
+}
+

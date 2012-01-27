@@ -223,6 +223,9 @@ WgTableHook::~WgTableHook()
 
 void WgTableHook::_requestRender()
 {
+	if( m_bHidden )
+		return;
+	
 	WgGizmoTable* pTable = Row()->Table();
 	if( pTable )
 		pTable->RequestRender( Geo() );
@@ -230,6 +233,9 @@ void WgTableHook::_requestRender()
 
 void WgTableHook::_requestRender( const WgRect& rect )
 {
+	if( m_bHidden )
+		return;
+
 	WgGizmoTable* pTable = Row()->Table();
 	if( pTable )
 		pTable->RequestRender( rect + Pos() );
@@ -1986,7 +1992,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 //			if( pHook == 0 )									//TODO: Make it right!
 //				pHook = m_pColumns[i].m_pDefaultGizmoHook;
 
-			if( m_pColumns[i].m_bVisible && pHook->Gizmo() != 0 )
+			if( m_pColumns[i].m_bVisible && !pHook->Hidden() && pHook->Gizmo() != 0 )
 			{
 				// don't draw columns that are outside of the window
 				if( rc.x >= _window.x + _window.w )
@@ -2344,13 +2350,5 @@ void WgGizmoTable::_updateMarkedRowColumn( int row, int column )
 		if( row != -1 && column != -1 )
 			Emit( WgSignal::TableCellMarked(), row, column );
 	}
-}
-
-
-//____ _onAlphaTest() ___________________________________________________
-
-bool WgGizmoTable::_onAlphaTest( const WgCoord& ofs )
-{
-	return true;
 }
 

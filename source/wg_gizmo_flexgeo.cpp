@@ -159,7 +159,7 @@ bool WgFlexHook::Up()
 
 	// Request render on potentially exposed area.
 
-	if( cover.w > 0 && cover.h > 0 )
+	if( !pNext->m_bHidden && cover.w > 0 && cover.h > 0 )
 	{
 		m_pParent->_onRequestRender( cover, this );
 	}
@@ -186,7 +186,7 @@ bool WgFlexHook::Down()
 
 	// Request render on potentially exposed area.
 
-	if( cover.w > 0 && cover.h > 0 )
+	if( !m_bHidden && cover.w > 0 && cover.h > 0 )
 	{
 		m_pParent->_onRequestRender( cover, pPrev );
 	}
@@ -217,14 +217,16 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 
 		// Request render on all areas covered by siblings we have skipped in front of.
 
-		while( p != this )
+		if( !m_bHidden )
 		{
-			WgRect cover( m_realGeo, p->m_realGeo );
+			while( p != this )
+			{
+				WgRect cover( m_realGeo, p->m_realGeo );
 
-			if( cover.w > 0 && cover.h > 0 )
-				m_pParent->_onRequestRender( cover, this );
-
-			p = p->_next();
+				if( !p->m_bHidden && cover.w > 0 && cover.h > 0 )
+					m_pParent->_onRequestRender( cover, this );
+				p = p->_next();
+			}
 		}
 	}
 	else							// Move us backward
@@ -234,14 +236,16 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 
 		// Request render on our siblings for the area we previously have covered.
 
-		while( p != this )
+		if( !m_bHidden )
 		{
-			WgRect cover( m_realGeo, p->m_realGeo );
+			while( p != this )
+			{
+				WgRect cover( m_realGeo, p->m_realGeo );
 
-			if( cover.w > 0 && cover.h > 0 )
-				m_pParent->_onRequestRender( cover, p );
-
-			p = p->_prev();
+				if( !p->m_bHidden && cover.w > 0 && cover.h > 0 )
+					m_pParent->_onRequestRender( cover, p );
+				p = p->_prev();
+			}
 		}
 	}
 
@@ -270,14 +274,17 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 
 		// Request render on all areas covered by siblings we have skipped in front of.
 
-		while( p != this )
+		if( !m_bHidden )
 		{
-			WgRect cover( m_realGeo, p->m_realGeo );
+			while( p != this )
+			{
+				WgRect cover( m_realGeo, p->m_realGeo );
 
-			if( cover.w > 0 && cover.h > 0 )
-				m_pParent->_onRequestRender( cover, this );
+				if( !p->m_bHidden && cover.w > 0 && cover.h > 0 )
+					m_pParent->_onRequestRender( cover, this );
 
-			p = p->_next();
+				p = p->_next();
+			}
 		}
 	}
 	else							// Move us backward
@@ -287,14 +294,17 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 
 		// Request render on our siblings for the area we previously have covered.
 
-		while( p != this )
+		if( !m_bHidden )
 		{
-			WgRect cover( m_realGeo, p->m_realGeo );
+			while( p != this )
+			{
+				WgRect cover( m_realGeo, p->m_realGeo );
 
-			if( cover.w > 0 && cover.h > 0 )
-				m_pParent->_onRequestRender( cover, p );
+				if( !p->m_bHidden && cover.w > 0 && cover.h > 0 )
+					m_pParent->_onRequestRender( cover, p );
 
-			p = p->_prev();
+				p = p->_prev();
+			}
 		}
 	}
 
@@ -526,7 +536,8 @@ bool WgFlexHook::MoveX( int x )
 	if( !_refreshRealGeo() )
 			return false;							// Return false if we could not get (exactly) the requested position.
 
-	return true;}
+	return true;
+}
 
 //____ WgFlexHook::MoveY() ____________________________________________________
 
@@ -579,18 +590,6 @@ WgGizmoParent * WgFlexHook::_parent() const
 {
 	return m_pParent;
 }
-
-//____ WgFlexHook::SetHidden() _________________________________________________
-
-void WgFlexHook::SetHidden( bool bHide )
-{
-	if( bHidden != m_bHidden )
-	{
-		m_bHidden = bHidden;
-		
-	}
-}
-
 
 //____ WgFlexHook::GetRoot() __________________________________________________
 
@@ -738,16 +737,14 @@ bool WgFlexHook::_refreshRealGeo()
 
 void WgFlexHook::_requestRender()
 {
-	if( !m_bHidden )
-		m_pParent->_onRequestRender( m_realGeo, this );
+	m_pParent->_onRequestRender( m_realGeo, this );
 }
 
 //____ WgFlexHook::_requestRender() ____________________________________________
 
 void WgFlexHook::_requestRender( const WgRect& rect )
 {
-	if( !m_bHidden )
-		m_pParent->_onRequestRender( rect + m_realGeo.Pos(), this );
+	m_pParent->_onRequestRender( rect + m_realGeo.Pos(), this );
 }
 
 //____ WgFlexHook::_requestResize() ____________________________________________
@@ -993,7 +990,8 @@ bool WgGizmoFlexGeo::DeleteAllChildren()
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		dirt.Add( pHook->m_realGeo );
+		if( !pHook->m_bHidden )
+			dirt.Add( pHook->m_realGeo );
 		WgFlexHook * pDelete = pHook;
 		pHook = pHook->Next();
 		delete pDelete; 
@@ -1219,7 +1217,7 @@ WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 void WgGizmoFlexGeo::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook )
 {
-	if( pHook->IsHidden() )
+	if( pHook->m_bHidden )
 		return;
 
 	// Clip our geometry and put it in a dirtyrect-list
@@ -1232,7 +1230,7 @@ void WgGizmoFlexGeo::_onRequestRender( const WgRect& rect, const WgFlexHook * pH
 	WgFlexHook * pCover = pHook->Next();
 	while( pCover )
 	{
-		if( pCover->m_realGeo.IntersectsWith( rect ) )
+		if( !pCover->m_bHidden && pCover->m_realGeo.IntersectsWith( rect ) )
 			pCover->Gizmo()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
 
 		pCover = pCover->Next();

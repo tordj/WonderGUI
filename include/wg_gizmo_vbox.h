@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_VBOXLAYOUT_DOT_H
-#define WG_VBOXLAYOUT_DOT_H
+#ifndef WG_GIZMO_VBOX_DOT_H
+#define WG_GIZMO_VBOX_DOT_H
 
 #ifndef WG_ORDERED_LAYOUT_DOT_H
 #	include <wg_orderedlayout.h>
@@ -111,4 +111,4 @@ protected:
 
 
 
-#endif //WG_VBOXLAYOUT_DOT_H
+#endif //WG_GIZMO_VBOX_DOT_H

@@ -308,7 +308,7 @@ WgWidget* WgRoot::Hook::GetRoot()
 	return 0;
 }
 
-void WgRoot::Hook::SetHidden( bool bHide )
+bool WgRoot::Hook::SetHidden( bool bHide )
 {
 	if( bHide != m_bHidden )
 	{

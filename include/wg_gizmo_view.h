@@ -41,16 +41,18 @@ class WgViewHook : public WgHook
 	friend class WgGizmoView;
 public:
 
-	WgCoord	Pos() const;
-	WgSize	Size() const;
-	WgRect	Geo() const;
-	WgCoord	ScreenPos() const;
-	WgRect	ScreenGeo() const;
+	WgCoord			Pos() const;
+	WgSize			Size() const;
+	WgRect			Geo() const;
+	WgCoord			ScreenPos() const;
+	WgRect			ScreenGeo() const;
 
-	inline WgHook * Prev() const { return _prevHook(); }
-	inline WgHook * Next() const { return _nextHook(); }
+	WgHook * 		Prev() const { return _prevHook(); }
+	WgHook * 		Next() const { return _nextHook(); }
 
-	inline WgGizmoView * Parent() const { return m_pView; }
+
+	bool			SetHidden( bool bHide ) { return false; }		// This gizmo handles hide/show of children according to its own rules.
+	WgGizmoView * 	Parent() const { return m_pView; }
 
 	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
 
@@ -58,15 +60,15 @@ public:
 protected:
 	WgViewHook() : m_pView(0), m_bShow(false) {};				// So we can make them members and then make placement new...
 	~WgViewHook();
-	inline void			_setParent( WgGizmoView * pParent ) { m_pView = pParent; }
+	void			_setParent( WgGizmoView * pParent ) { m_pView = pParent; }
 
-	void	_requestRender();
-	void	_requestRender( const WgRect& rect );
-	void	_requestResize();
+	void			_requestRender();
+	void			_requestRender( const WgRect& rect );
+	void			_requestResize();
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
-	WgGizmoParent *		_parent() const;
+	WgGizmoParent *	_parent() const;
 
 
 //	ElementType		m_type;
@@ -121,55 +123,55 @@ public:
 
 	//____ Methods _______________________________________________________________
 
-	bool	StepUp();
-	bool	StepDown();
-	bool	StepLeft();
-	bool	StepRight();
+	bool		StepUp();
+	bool		StepDown();
+	bool		StepLeft();
+	bool		StepRight();
 
-	bool	JumpUp();
-	bool	JumpDown();
-	bool	JumpLeft();
-	bool	JumpRight();
+	bool		JumpUp();
+	bool		JumpDown();
+	bool		JumpLeft();
+	bool		JumpRight();
 
-	bool	WheelRollX(int distance);
-	bool	WheelRollY(int distance);
+	bool		WheelRollX(int distance);
+	bool		WheelRollY(int distance);
 
-	inline void	SetStepSize( int pixX, int pixY ){ m_stepSizeX = pixX; m_stepSizeY = pixY; };
-	inline void	SetStepSizeX( int pixels ){ m_stepSizeX = pixels; };
-	inline void	SetStepSizeY( int pixels ){ m_stepSizeY = pixels; };
+	void		SetStepSize( int pixX, int pixY ) { m_stepSizeX = pixX; m_stepSizeY = pixY; };
+	void		SetStepSizeX( int pixels ) { m_stepSizeX = pixels; };
+	void		SetStepSizeY( int pixels ) { m_stepSizeY = pixels; };
 
-	inline Uint32 StepSizeX() { return m_stepSizeX; };
-	inline Uint32 StepSizeY() { return m_stepSizeY; };
+	Uint32 		StepSizeX() { return m_stepSizeX; };
+	Uint32 		StepSizeY() { return m_stepSizeY; };
 
-	inline void	SetJumpSize( float viewFractionX, float viewFractionY ){ SetJumpSizeX(viewFractionX); SetJumpSizeY(viewFractionY); };
-	void	SetJumpSizeX( float viewFraction );
-	void	SetJumpSizeY( float viewFraction );
-	float	JumpSizeX( ) const { return m_jumpSizeX; }
-	float	JumpSizeY( ) const { return m_jumpSizeY; }
+	void		SetJumpSize( float viewFractionX, float viewFractionY ) { SetJumpSizeX(viewFractionX); SetJumpSizeY(viewFractionY); };
+	void		SetJumpSizeX( float viewFraction );
+	void		SetJumpSizeY( float viewFraction );
+	float		JumpSizeX( ) const { return m_jumpSizeX; }
+	float		JumpSizeY( ) const { return m_jumpSizeY; }
 
-	inline int	ContentWidth() { return m_contentSize.w; };
-	inline int	ContentHeight() { return m_contentSize.h; };
-	inline WgSize	ContentSize() { return m_contentSize; };
+	int			ContentWidth() { return m_contentSize.w; };
+	int			ContentHeight() { return m_contentSize.h; };
+	WgSize		ContentSize() { return m_contentSize; };
 
-	inline Uint32	ViewPixelOfsX() { return m_viewPixOfs.x; };
-	inline Uint32	ViewPixelOfsY() { return m_viewPixOfs.y; };
-	inline WgCoord		ViewPixelOfs() { return m_viewPixOfs; };
+	Uint32		ViewPixelOfsX() { return m_viewPixOfs.x; };
+	Uint32		ViewPixelOfsY() { return m_viewPixOfs.y; };
+	WgCoord		ViewPixelOfs() { return m_viewPixOfs; };
 
-	Uint32	ViewPixelLenX();
-	Uint32	ViewPixelLenY();
+	Uint32		ViewPixelLenX();
+	Uint32		ViewPixelLenY();
 
-	float	ViewOfsX();
-	float	ViewOfsY();
-	float	ViewLenX();
-	float	ViewLenY();
+	float		ViewOfsX();
+	float		ViewOfsY();
+	float		ViewLenX();
+	float		ViewLenY();
 
-	bool	SetViewPixelOfs( int x, int y );
-	bool	SetViewPixelOfsX( int x );
-	bool	SetViewPixelOfsY( int y );
+	bool		SetViewPixelOfs( int x, int y );
+	bool		SetViewPixelOfsX( int x );
+	bool		SetViewPixelOfsY( int y );
 
-	bool	SetViewOfs( float x, float y );
-	bool	SetViewOfsX( float x );
-	bool	SetViewOfsY( float y );
+	bool		SetViewOfs( float x, float y );
+	bool		SetViewOfsX( float x );
+	bool		SetViewOfsY( float y );
 
 /*
 	bool	ViewCenterOnPixel( int x, int y );
@@ -181,22 +183,22 @@ public:
 	bool	ViewIncludeY( WgRect& rect );
 */
 
-	bool	SetAutoscroll( bool bAutoX, bool bAutoY	);
-	bool	AutoScrollX() const { return m_bAutoScrollX; }
-	bool	AutoScrollY() const { return m_bAutoScrollY; }
+	bool		SetAutoscroll( bool bAutoX, bool bAutoY	);
+	bool		AutoScrollX() const { return m_bAutoScrollX; }
+	bool		AutoScrollY() const { return m_bAutoScrollY; }
 
 	bool				SetScrollbarX( WgGizmoHDragbar * pScrollbar );
-	inline void			DeleteScrollbarX() {SetScrollbarX(0);}
+	void				DeleteScrollbarX() {SetScrollbarX(0);}
 	WgGizmoHDragbar *	GetScrollbarX() const { return (WgGizmoHDragbar*) m_elements[XDRAG].Gizmo(); }
 	WgGizmoHDragbar* 	ReleaseScrollbarX();
 
 	bool				SetScrollbarY( WgGizmoVDragbar * pScrollbar );
-	inline void			DeleteScrollbarY() {SetScrollbarY(0);}
+	void				DeleteScrollbarY() {SetScrollbarY(0);}
 	WgGizmoVDragbar *	GetScrollbarY() const { return (WgGizmoVDragbar*) m_elements[YDRAG].Gizmo(); }
 	WgGizmoVDragbar* 	ReleaseScrollbarY();
 
 	bool				SetContent( WgGizmo * pContent );
-	inline void			DeleteContent() {SetContent(0); }
+	void				DeleteContent() {SetContent(0); }
 	WgGizmo*			GetContent() const { return m_elements[WINDOW].Gizmo(); }
 	WgGizmo*			ReleaseContent();
 
@@ -206,18 +208,18 @@ public:
 	bool				DeleteAllChildren();
 	bool				ReleaseAllChildren();
 
-	void	SetScrollbarAutoHide( bool bHideX, bool bHideY );
-	bool	GetScrollbarAutoHideX() const { return m_bAutoHideScrollbarX; }
-	bool	GetScrollbarAutoHideY() const { return m_bAutoHideScrollbarY; }
+	void				SetScrollbarAutoHide( bool bHideX, bool bHideY );
+	bool				GetScrollbarAutoHideX() const { return m_bAutoHideScrollbarX; }
+	bool				GetScrollbarAutoHideY() const { return m_bAutoHideScrollbarY; }
 
-	void	SetScrollbarPositions( bool bBottom, bool bRight );
-	bool	GetScrollbarBottom() const { return m_bScrollbarBottom; }
-	bool	GetScrollbarRight() const { return m_bScrollbarRight; }
+	void				SetScrollbarPositions( bool bBottom, bool bRight );
+	bool				GetScrollbarBottom() const { return m_bScrollbarBottom; }
+	bool				GetScrollbarRight() const { return m_bScrollbarRight; }
 
-	bool	ScrollbarXVisible();
-	bool	ScrollbarYVisible();
+	bool				ScrollbarXVisible();
+	bool				ScrollbarYVisible();
 
-	void	SetFillerSource( const WgBlockSetPtr& pBlocks );
+	void				SetFillerSource( const WgBlockSetPtr& pBlocks );
 
 
 
@@ -256,8 +258,19 @@ protected:
 	WgGizmoView();
 	virtual void _onNewSize( const WgSize& size );
 
+
+	// These are needed until WgGizmoContainer inherits from WgGizmo
+
 	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
+	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
+	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
+									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip); }
+	void			_onEnable() { WgGizmoContainer::_onEnable(); }
+	void			_onDisable() { WgGizmoContainer::_onDisable(); }
+
+	//
 
 	// Following method should be overridden by subclasses instead of _onNewSize()!
 	// Takes into account that scrollbars might decrease the visible area of the subclass.
@@ -266,9 +279,6 @@ protected:
 	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	bool		_onAlphaTest( const WgCoord& ofs );
 	void		_onCloneContent( const WgGizmo * _pOrg );
-
-	inline void		_onEnable() { WgGizmoContainer::_onEnable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
-	inline void		_onDisable() { WgGizmoContainer::_onDisable(); }		// Needed until WgGizmoContainer inerits from WgGizmo
 
 	WgHook *	_firstHookWithGeo( WgRect& geo ) const;
 	WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;

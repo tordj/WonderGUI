@@ -244,18 +244,18 @@ WgGizmoContainer * WgModalHook::_parent() const
 	return m_pParent;
 }
 
-
-
 //_____________________________________________________________________________
 void WgGizmoModal::BaseHook::_requestRender()
 {
-	m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
+	if( !m_bHidden ) 
+		m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
 }
 
 //_____________________________________________________________________________
 void WgGizmoModal::BaseHook::_requestRender( const WgRect& rect )
 {
-	m_pParent->_onRequestRender( rect, 0 );
+	if( !m_bHidden )
+		m_pParent->_onRequestRender( rect, 0 );
 }
 
 //_____________________________________________________________________________
@@ -301,7 +301,8 @@ WgHook * WgGizmoModal::SetBase( WgGizmo * pGizmo )
 	if( pOldGizmo )
 		delete pOldGizmo;
 	m_baseHook._attachGizmo(pGizmo);
-	_onRequestRender( WgRect(0,0,m_size), 0 );
+	if( !m_baseHook.m_bHidden )
+		_onRequestRender( WgRect(0,0,m_size), 0 );
 
 	// Notify that we might want a new size now...
 
@@ -323,9 +324,10 @@ bool WgGizmoModal::DeleteBase()
 	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
 	if( pGizmo )
 	{
-		delete pGizmo;
-		_onRequestRender( WgRect(0,0,m_size), 0 );
+		if( !m_baseHook.m_bHidden )
+			_onRequestRender( WgRect(0,0,m_size), 0 );
 		RequestResize();
+		delete pGizmo;
 		return true;
 	}
 
@@ -339,7 +341,8 @@ WgGizmo * WgGizmoModal::ReleaseBase()
 	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
 	if( pGizmo )
 	{
-		_onRequestRender( WgRect(0,0,m_size), 0 );
+		if( !m_baseHook.m_bHidden )
+			_onRequestRender( WgRect(0,0,m_size), 0 );
 		RequestResize();
 	}
 
@@ -560,6 +563,9 @@ WgGizmo *  WgGizmoModal::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHook )
 {
+	if( pHook && pHook->m_bHidden )
+		return;
+
 	// Clip our geometry and put it in a dirtyrect-list
 
 	WgPatches patches;
@@ -577,7 +583,7 @@ void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHo
 
 	while( pCover )
 	{
-		if( pCover->m_realGeo.IntersectsWith( rect ) )
+		if( !pCover->m_bHidden && pCover->m_realGeo.IntersectsWith( rect ) )
 			pCover->Gizmo()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
 
 		pCover = pCover->Next();

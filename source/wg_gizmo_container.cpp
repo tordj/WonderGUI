@@ -166,7 +166,7 @@ void WgGizmoContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _can
 		{
 			WgRect geo = childGeo + _canvas.Pos();
 
-			if( geo.IntersectsWith( dirtBounds ) )
+			if( !p->Hidden() && geo.IntersectsWith( dirtBounds ) )
 				renderList.push_back( GizmoRenderContext(p->Gizmo(), geo ) );
 			
 			p = _nextHookWithGeo( childGeo, p );
@@ -203,7 +203,7 @@ void WgGizmoContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _can
 		while(p)
 		{
 			WgRect canvas = childGeo + _canvas.Pos();
-			if( canvas.IntersectsWith( dirtBounds ) )
+			if( !p->Hidden() && canvas.IntersectsWith( dirtBounds ) )
 				p->Gizmo()->_renderPatches( pDevice, canvas, canvas, &patches, _layer );
 			p = _nextHookWithGeo( childGeo, p );
 		}	
@@ -230,7 +230,8 @@ void WgGizmoContainer::_onCollectPatches( WgPatches& container, const WgRect& ge
 
 	while(p)
 	{
-		p->Gizmo()->_onCollectPatches( container, childGeo + geo.Pos(), clip );
+		if( !p->Hidden() )
+			p->Gizmo()->_onCollectPatches( container, childGeo + geo.Pos(), clip );
 		p = _nextHookWithGeo( childGeo, p );
 	}	
 }
@@ -249,7 +250,8 @@ void WgGizmoContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, co
 
 			while(p)
 			{
-				p->Gizmo()->_onMaskPatches( patches, childGeo + geo.Pos(), clip );
+				if( !p->Hidden() )
+					p->Gizmo()->_onMaskPatches( patches, childGeo + geo.Pos(), clip );
 				p = _nextHookWithGeo( childGeo, p );
 			}
 			break;

@@ -39,10 +39,10 @@ public:
 	void		Top();
 	void		Bottom();
 
-	inline WgStackHook * Prev() const { return _prev(); }
-	inline WgStackHook * Next() const { return _next(); }
+	WgStackHook * Prev() const { return _prev(); }
+	WgStackHook * Next() const { return _next(); }
 
-	inline WgGizmoStack * Parent() const { return m_pParent; }
+	WgGizmoStack * Parent() const { return m_pParent; }
 
 protected:
 	PROTECTED_LINK_METHODS( WgStackHook );
