@@ -190,18 +190,23 @@ bool WgRoot::BeginRender()
 
 //____ RenderSection() __________________________________________________________
 
-bool WgRoot::RenderSection( const WgRect& clip, int layer )
+bool WgRoot::RenderSection( const WgRect& _clip, int layer )
 {
 	if( !m_pGfxDevice || !m_hook.Gizmo() )
 		return false;						// No GFX-device or no widgets to render.
 
-	// 
+	// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
 	WgRect canvas = Geo();
-	WgRect clip2( clip, canvas );
-	if( clip2.w == 0 || clip2.h == 0 )
+	WgRect clip( _clip, canvas );
+	if( clip.w == 0 || clip.h == 0 )
 		return false;						// Invalid rect area.
 
+	// Nothing to render if our only child is hidden
+	
+	if( m_hook.m_bHidden )
+		return true;						// Not an error, just hidden.
+	
 	// Copy and clip our dirty patches
 	
 	WgPatches dirtyPatches( m_dirtyPatches.Size() );
@@ -209,7 +214,7 @@ bool WgRoot::RenderSection( const WgRect& clip, int layer )
 	WgRect clipped;
 	for( const WgRect * pRect = m_dirtyPatches.Begin() ; pRect != m_dirtyPatches.End() ; pRect++ ) 
 	{
-		if( clipped.Intersection( *pRect, clip2 ) )
+		if( clipped.Intersection( *pRect, clip ) )
 			dirtyPatches.Push( clipped );
 	}
 		
@@ -303,6 +308,15 @@ WgWidget* WgRoot::Hook::GetRoot()
 	return 0;
 }
 
+void WgRoot::Hook::SetHidden( bool bHide )
+{
+	if( bHide != m_bHidden )
+	{
+		m_bHidden = bHide;
+		m_pRoot->AddDirtyPatch( Geo() );
+	}
+}
+
 WgRoot* WgRoot::Hook::Root() const
 {
 	return m_pRoot;
@@ -310,12 +324,14 @@ WgRoot* WgRoot::Hook::Root() const
 
 void WgRoot::Hook::_requestRender()
 {
-	m_pRoot->AddDirtyPatch( Geo() );
+	if( !m_bHidden )
+		m_pRoot->AddDirtyPatch( Geo() );
 }
 
 void WgRoot::Hook::_requestRender( const WgRect& rect )
 {
-	m_pRoot->AddDirtyPatch( WgRect( Pos() + rect.Pos(), rect.Size() ) );
+	if( !m_bHidden )
+		m_pRoot->AddDirtyPatch( WgRect( Pos() + rect.Pos(), rect.Size() ) );
 }
 
 void WgRoot::Hook::_requestResize()

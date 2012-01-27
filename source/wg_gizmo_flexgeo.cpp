@@ -580,6 +580,18 @@ WgGizmoParent * WgFlexHook::_parent() const
 	return m_pParent;
 }
 
+//____ WgFlexHook::SetHidden() _________________________________________________
+
+void WgFlexHook::SetHidden( bool bHide )
+{
+	if( bHidden != m_bHidden )
+	{
+		m_bHidden = bHidden;
+		
+	}
+}
+
+
 //____ WgFlexHook::GetRoot() __________________________________________________
 
 WgWidget* WgFlexHook::GetRoot()
@@ -726,14 +738,16 @@ bool WgFlexHook::_refreshRealGeo()
 
 void WgFlexHook::_requestRender()
 {
-	m_pParent->_onRequestRender( m_realGeo, this );
+	if( !m_bHidden )
+		m_pParent->_onRequestRender( m_realGeo, this );
 }
 
 //____ WgFlexHook::_requestRender() ____________________________________________
 
 void WgFlexHook::_requestRender( const WgRect& rect )
 {
-	m_pParent->_onRequestRender( rect + m_realGeo.Pos(), this );
+	if( !m_bHidden )
+		m_pParent->_onRequestRender( rect + m_realGeo.Pos(), this );
 }
 
 //____ WgFlexHook::_requestResize() ____________________________________________

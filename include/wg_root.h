@@ -101,9 +101,10 @@ protected:
 		WgCoord			ScreenPos() const;
 		WgRect			ScreenGeo() const;
 
+		void			SetHidden( bool bHide );
 		WgRoot*			Root() const;
 
-		WgWidget*		GetRoot();			// Should in the future not return a widget, but a gizmo.
+		WgWidget*		GetRoot();			// Should in the future be removed.
 
 	protected:
 

@@ -70,10 +70,7 @@ public:
 	bool			MoveFirst();
 	bool			MoveLast();
 
-	inline void		Hide() { SetHidden(true); }
-	inline void		Unhide() { SetHidden(false); }
 	void			SetHidden( bool bHide );
-	bool			Hidden() { return m_bHidden; }
 
 	// Needs to be here for now since Emitters are inherrited by Widgets. Shouldn't be hooks business in the future...
 
@@ -91,8 +88,6 @@ protected:
 
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
-
-	bool				m_bHidden;
 };
 
 
