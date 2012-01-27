@@ -267,8 +267,8 @@ public:
 	inline void operator=( const WgRect& );
 	inline void operator=( const WgSize& sz) { x=0; y=0; w=sz.w; h=sz.h; }
 	inline void operator=( const WgCoord& c) { x=c.x; y=c.y; w=0; h=0; }
-	inline bool operator==( const WgRect& rect) { return x == rect.x && y == rect.y && w == rect.w && h == rect.h; }
-	inline bool operator!=( const WgRect& rect) { return !(*this == rect); }
+	inline bool operator==( const WgRect& rect) const { return x == rect.x && y == rect.y && w == rect.w && h == rect.h; }
+	inline bool operator!=( const WgRect& rect) const { return !(*this == rect); }
 
 	inline void operator+=(const WgSize& k)				{ w += k.w; h += k.h; }
 	inline void operator-=(const WgSize& k)				{ w -= k.w; h -= k.h; }
@@ -420,23 +420,6 @@ inline void WgRect::operator=( const WgRect& r2 )
 	w = r2.w;
 	h = r2.h;
 }
-
-//_____________________________________________________________________________
-inline bool operator==( const WgRect& r1, const WgRect& r2 )
-{
-	if( r1.x == r2.x && r1.y == r2.y && r1.w == r2.w && r1.h == r2.h )
-		return true;
-	return false;
-}
-
-//_____________________________________________________________________________
-inline bool operator!=( const WgRect& r1, const WgRect& r2 )
-{
-	if( r1.x == r2.x && r1.y == r2.y && r1.w == r2.w && r1.h == r2.h )
-		return false;
-	return true;
-}
-
 
 //=======================================================================================
 #endif	//WG_GEO_DOT_H

@@ -1,11 +1,5 @@
 
 
-ANIMATIONSSYSTEM / CURSOR
-=========================
-
-* Fixa WgGizmoAnimation så att den hämtar block till rendering, alpha-test etc.
-* Fixa WgGizmoRefreshButton så att den hämtar block till rendering, alpha-test etc.
-
 ATT FIXA I LEGACY
 =================
 
@@ -25,20 +19,17 @@ FOCUS
 * WgCharBuffer m.fl. saknar metoder för Size, Link och kanske mer...
 * Make menu hold vdrag as a Gizmo. Hide/show instead of remove.
 
-v Checkbox and Radiobutton should inherit WgIconHolder (fix XML-loader too!)
-
-
 
 FIX GIZMOS
 ==========
-v Animation	(untested, missing requesting TICKS!)
+v Animation	(untested)
 v Button
 v Checkbox	(still to fix: WidthForHeight() )
 v Dragbars	(untested)
 v Editline	(untested, missing requesting TICKS!)
   Editvalue
 v Radiobutton
-  Refreshbutton
+v Refreshbutton (untested)
   Table
 v Tablist	(untested, missing requesting TICKS!)
   Combobox

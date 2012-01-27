@@ -67,13 +67,13 @@ public:
 
 	bool				DeleteKeyFrame( int pos );
 	bool				DeleteKeyFrame( WgKeyFrame * pKeyFrame );
-	inline void			Clear( void ) { m_keyframes.Clear(); };
+	void				Clear( void ) { m_keyframes.Clear(); };
 
-	inline int			Duration( void ) { return m_duration; };
-	inline WgAnimMode	PlayMode( void ) { return m_playMode; };
-	inline float		TimeScaler( void ) { return m_scale; };
-	inline int			DurationScaled( void ) { return (int) (m_duration * m_scale); };
-	inline int			TimeToOfs( int64_t ticks );			/// Convert play-time to offset in animation by scaling with timeScaler and unwinding loops.
+	int					Duration( void ) { return m_duration; };
+	WgAnimMode			PlayMode( void ) { return m_playMode; };
+	float				TimeScaler( void ) { return m_scale; };
+	int					DurationScaled( void ) { return (int) (m_duration * m_scale); };
+	int					TimeToOfs( int64_t ticks );			/// Convert play-time to offset in animation by scaling with timeScaler and unwinding loops.
 
 protected:
 
@@ -86,8 +86,8 @@ protected:
 
 	// Meant to be overloaded with public methods returning right type.
 
-	inline WgKeyFrame *	_firstKeyFrame( void ) {return m_keyframes.First();};
-	inline WgKeyFrame *	_lastKeyFrame( void ) {return m_keyframes.Last();};
+	WgKeyFrame *		_firstKeyFrame( void ) {return m_keyframes.First();};
+	WgKeyFrame *		_lastKeyFrame( void ) {return m_keyframes.Last();};
 
 	//
 

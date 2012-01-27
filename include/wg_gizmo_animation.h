@@ -43,57 +43,54 @@ public:
 
 	//____ Methods __________________________________________
 
-	bool		SetSource( WgGfxAnim * pAnim );
-	inline WgGfxAnim *	GetSource() const { return m_pAnim; }
-	bool		DisableSource( WgSurface * pSurf, WgRect& rect );
+	bool			SetAnimation( WgGfxAnim * pAnim );
+	WgGfxAnim *		Animation() const { return m_pAnim; }
+
+	bool			SetSource( const WgBlockSetPtr& pStaticBlock );
+	WgBlockSetPtr	Source() const { return m_pStaticBlock; }
 		
-	Uint32		PlayPos();											/// Returns play position in ticks.
-	bool		SetPlayPos( Uint32 ticks );							/// Position in ticks for next update.
-	bool		SetPlayPosFractional( float fraction );				/// Position in fractions of duration.
+	int				PlayPos();										/// Returns play position in ticks.
+	bool			SetPlayPos( int ticks );						/// Position in ticks for next update.
+	bool			SetPlayPosFractional( float fraction );			/// Position in fractions of duration.
 	
-	void		Rewind( Uint32 ticks );
-	void		FastForward( Uint32 ticks );
+	bool			Rewind( int ticks );
+	bool			FastForward( int ticks );
 
-	Uint32		Duration();											/// Returns duration of animation (one-shot-through, no looping).
-	Uint32		DurationScaled();									/// Returns duration of animation, scaled by speed.
+	int				Duration();										/// Returns duration of animation (one-shot-through, no looping).
+	int				DurationScaled();								/// Returns duration of animation, scaled by speed.
 
-	float		Speed();
-	bool		SetSpeed( float speed );
+	float			Speed();
+	bool			SetSpeed( float speed );
 
-	bool		Play();
-	bool		Stop();
-	bool		IsPlaying() { return m_bPlaying; };
+	bool			Play();
+	bool			Stop();
+	bool			IsPlaying() { return m_bPlaying; };
 
 	WgSize			DefaultSize() const;
 
 protected:
-	void	_onCloneContent( const WgGizmo * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-	void	_onRefresh();
+	void			_onCloneContent( const WgGizmo * _pOrg );
+	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void			_onRefresh();
 #ifdef WG_TNG
-	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 #endif
-	void	_onUpdate( const WgUpdateInfo& _updateInfo );
-	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onEnable();
-	void	_onDisable();
+	void			_onUpdate( const WgUpdateInfo& _updateInfo );
+	bool			_onAlphaTest( const WgCoord& ofs );
+	void			_onEnable();
+	void			_onDisable();
+
+	void			_playPosUpdated();
 
 private:
 
-	WgSurface * m_pSurf;						// Surface currently used by animation.					
-	WgRect		m_src;							// Cordinates and width/height of source.
+	WgGfxAnim *		m_pAnim;
+	WgBlock			m_animFrame;			// Frame currently used by animation.
+	WgBlockSetPtr	m_pStaticBlock;			// Blockset used when no animation is displayed (not set or gizmo disabled).
 
-
-	WgSurface * m_pDisableSurf;
-	WgRect      m_dis_src;
-
-	WgGfxAnim *	m_pAnim;
-
-	double		m_playPos;
-
-	bool		m_bPlayPosIsNew;		// Set when we change play-pos, so we don't increase time before displaying.
-	bool		m_bPlaying;
-	float		m_speed;
+	bool			m_bPlaying;
+	double			m_playPos;
+	float			m_speed;
 };
 
 

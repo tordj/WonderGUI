@@ -132,6 +132,7 @@ void WgGizmoRefreshButton::StartRefresh()
 		m_animTimer = 0;
 		m_pRefreshAnim->SetPlayMode( WG_FORWARD_LOOPING );		//UGLY! Should change once the animation system has been updated.
 
+		_startReceiveTicks();
 		RequestRender();
 	}
 }
@@ -154,6 +155,8 @@ void WgGizmoRefreshButton::StopRefreshNow()
 {
 	m_refreshProgress = 1.f;
 	m_bRefreshing = false;
+
+	_stopReceiveTicks();
 	RequestRender();
 }
 
@@ -190,6 +193,72 @@ void WgGizmoRefreshButton::_onNewSize( const WgSize& size )
 
 	WgGizmoButton::_onNewSize( size );
 }
+
+
+//____ _onEvent() _____________________________________________________________
+
+void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+{
+	switch( pEvent->Type() )
+	{
+		case WG_EVENT_TICK:
+		{
+			if( m_bRefreshing && m_pRefreshAnim )
+			{
+				if( m_refreshMode != PROGRESS )
+				{
+					const WgEvent::Tick * pTick = static_cast<const WgEvent::Tick*>(pEvent);
+					
+					WgGfxFrame * pOldFrame = m_pRefreshAnim->GetFrame( m_animTimer );
+					m_animTimer += pTick->Millisec();
+					WgGfxFrame * pNewFrame = m_pRefreshAnim->GetFrame( m_animTimer );
+
+					// RequestRender if animation has moved.
+
+					if( pOldFrame != pNewFrame )
+						RequestRender();
+
+					// Check if animation has ended.
+
+					if( m_bStopping && pNewFrame == m_pRefreshAnim->GetLastFrame() )		//UGLY! Change when we have updated WgAnim!
+					{
+						m_bRefreshing = false;
+						m_bStopping = false;
+						_stopReceiveTicks();
+						RequestRender();
+					}
+				}
+			}
+			break;
+		}
+
+		case WG_EVENT_KEY_RELEASE:
+		{
+			const WgEvent::KeyRelease * pKeyRelease = static_cast<const WgEvent::KeyRelease*>(pEvent);
+
+			if( m_bAutoRefresh && pKeyRelease->TranslatedKeyCode() == WG_KEY_RETURN )
+				StartRefresh();
+
+			break;
+		}
+		
+		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		{
+			const WgEvent::MouseButtonRelease * pBtnRelease = static_cast<const WgEvent::MouseButtonRelease*>(pEvent);
+			
+			if( m_bAutoRefresh && m_bPressedInside[pBtnRelease->Button()-1] == true )
+				StartRefresh();
+
+			break;
+		}
+		
+		default:
+			break;
+	}
+
+	WgGizmoButton::_onEvent( pEvent, pHandler );
+}
+
 
 //_____________________________________________________________________________
 void WgGizmoRefreshButton::_onUpdate( const WgUpdateInfo& _updateInfo )
@@ -232,23 +301,23 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 
 	if( m_bRefreshing && m_pRefreshAnim && m_animTarget != ICON )
 	{
-		WgGfxFrame * pFrame = m_pRefreshAnim->GetFrame( m_animTimer );
-		WgRect src( pFrame->ofs, m_pRefreshAnim->Size() );
-
+		WgBlock animBlock = m_pRefreshAnim->GetBlock( m_animTimer );
+		
 		switch( m_animTarget )
 		{
 			case BUTTON_CENTERED:
 			{
-				int dx = (_canvas.w - src.w)/2;
-				int dy = (_canvas.h - src.h)/2;
+				WgRect dest = (	_canvas.x + (_canvas.w - animBlock.Width())/2,
+								_canvas.y + (_canvas.h - animBlock.Height())/2,
+								animBlock.Size() );
 
-				pDevice->ClipBlit( _clip, pFrame->pSurf, src, _canvas.x + dx, _canvas.y + dy );
+				pDevice->ClipBlitBlock( _clip, animBlock, dest );
 			}
 			break;
 
 			case BUTTON_STRETCHED:
 			{
-				pDevice->ClipStretchBlit( _clip, pFrame->pSurf, src, _canvas );
+				pDevice->ClipBlitBlock( _clip, animBlock, _canvas );
 			}
 			break;
 
@@ -283,8 +352,9 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 	{
 		// Render animation
 
-		WgGfxFrame * pFrame = m_pRefreshAnim->GetFrame( m_animTimer );
-		pDevice->ClipStretchBlit( _clip, pFrame->pSurf, WgRect( pFrame->ofs, m_pRefreshAnim->Size() ), iconRect );
+		WgBlock animBlock = m_pRefreshAnim->GetBlock( m_animTimer );
+
+		pDevice->ClipBlitBlock( _clip, animBlock, iconRect );
 	}
 	else if( m_pIconGfx )
 		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, iconRect.Size()), iconRect );
