@@ -68,7 +68,7 @@ public:
 	void		goEOF();
 
 	virtual void			SetEditMode(WgTextEditMode mode);
-	virtual WgTextEditMode	GetEditMode() const { return m_editMode; }
+	virtual WgTextEditMode	GetEditMode() const { return m_text.GetEditMode(); }
 
 	WgPointerStyle		GetPointerStyle() const;
 	WgString			GetTooltipString() const;
@@ -82,8 +82,8 @@ public:
 
 protected:
 
-	bool	IsEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
-	bool	IsSelectable() const { return m_editMode != WG_TEXT_STATIC; }
+	bool	IsEditable() const { return m_text.IsEditable(); }
+	bool	IsSelectable() const { return m_text.IsSelectable(); }
 
 	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
@@ -108,7 +108,6 @@ private:
 	WgText				m_text;
 	bool				m_bHasFocus;
 	int					m_maxLines;
-	WgTextEditMode		m_editMode;
 	bool				m_bResetCursorOnFocus;
 };
 

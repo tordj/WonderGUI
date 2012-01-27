@@ -2107,6 +2107,13 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 
 		if( pItem )
 		{
+			// Make sure item gets a POINTER_ENTER
+
+			if( pItem != m_pLastMarkedItem && _action != WgInput::POINTER_ENTER )
+				pItem->ActionRespond( this, WgInput::POINTER_ENTER, _button_key, _info, _inputObj );
+
+			// Let item handle its action
+
 			pItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
 
 			// HACK. Remove when message loop is implemented

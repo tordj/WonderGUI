@@ -125,8 +125,12 @@ WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, const WgSize& icon
 
 		// 
 
+		w += m_iconBorders.Width();
+		h += m_iconBorders.Height();
+
 		rect = WgUtil::OrientationToRect( m_iconOrientation, contentRect.Size(), WgSize(w,h) );
 		rect += contentRect.Pos();
+		rect -= m_iconBorders;
 	}
 
 	return rect;

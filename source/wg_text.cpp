@@ -99,6 +99,8 @@ void WgText::Init()
 	m_bWrap			= true;
 	m_bAutoEllipsis = true;
 
+	m_editMode		= WG_TEXT_STATIC;
+
 	_refreshAllLines();
 	clearSelection();
 }
@@ -1443,6 +1445,27 @@ bool WgText::SetMaxChars( int max )
 	return true;
 }
 
+//____ SetEditMode() __________________________________________________________
+
+void WgText::SetEditMode(WgTextEditMode mode)
+{
+	if( mode == m_editMode )
+		return;
+	
+	m_editMode = mode;
+
+	if( IsEditable() )
+	{
+		m_pCursor = new WgCursorInstance(*this);
+	}
+	else
+	{ 
+		delete m_pCursor; 
+		m_pCursor = 0; 
+	}
+}
+
+
 //____ setLineWidth() _________________________________________________________
 
 void WgText::setLineWidth( int width )
@@ -1829,12 +1852,13 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 }
 
 //____ _cursorMaxWidth() ______________________________________________________
+// Space that needs to be reserved for cursor on each line.
 
 int WgText::_cursorMaxWidth() const
 {
 	WgCursor * p = m_pCursorStyle?m_pCursorStyle:WgBase::GetDefaultCursor();
 
-	if( p )
+	if( p && m_editMode == WG_TEXT_EDITABLE )
 	{
 		int lenInsert = p->Advance(WgCursor::INS);
 		int lenOvr = p->Advance(WgCursor::OVR);

@@ -277,6 +277,13 @@ public:
 	bool				SetMaxChars( int max );
 	int					MaxChars() const { return m_maxChars; }
 
+	void					SetEditMode(WgTextEditMode mode);							// Maybe should be protected with Gizmos/Items as friends?
+	inline WgTextEditMode	GetEditMode() const { return m_editMode; }
+	inline bool				IsEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
+	inline bool				IsSelectable() const { return m_editMode != WG_TEXT_STATIC; }
+
+	
+
 	inline void			setMode( WgMode mode ) { m_mode = mode; }
 	inline void			setAlignment( const WgOrigo& origo ) { m_origo = origo; }
 	inline void			setTintMode( WgTintMode mode ) { m_tintMode = mode; }
@@ -305,8 +312,6 @@ public:
 
 
 	// cursor instance forwards. TODO: merge cursor instance with WgText
-	void			CreateCursor() { m_pCursor = new WgCursorInstance(*this); }
-	void			DestroyCursor() { delete m_pCursor; m_pCursor = 0; }
 	WgCursorInstance*GetCursor() const { return m_pCursor; }
 
 	void			CursorGotoCoord( const WgCoord& coord, const WgRect& container );
@@ -430,6 +435,8 @@ protected:
 	WgCursor*		m_pCursorStyle;
 	WgCursorInstance*	m_pCursor;
 	WgTextNode *	m_pManagerNode;
+
+	WgTextEditMode	m_editMode;
 
 
 	WgTintMode		m_tintMode;

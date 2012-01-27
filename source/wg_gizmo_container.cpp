@@ -22,9 +22,10 @@
 
 #include <vector>
 #include <wg_gizmo_container.h>
-#include <wg_rectchain.h>
-#include <wg_patches.h>
 
+#ifdef WG_TNG
+#	include <wg_patches.h>
+#endif
 
 //____ Constructor _____________________________________________________________
 
@@ -123,7 +124,7 @@ void WgGizmoContainer::_onDisable()
 
 //____ _renderPatches() _____________________________________________________
 // Default implementation for container rendering patches.
-
+#ifdef WG_TNG
 class GizmoRenderContext
 {
 public:
@@ -209,7 +210,7 @@ void WgGizmoContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _can
 		
 	}
 }
-
+#endif
 
 
 //____ _onAlphaTest() _________________________________________________________
@@ -221,7 +222,7 @@ bool WgGizmoContainer::_onAlphaTest( const WgCoord& ofs )
 
 
 //____ _onCollectPatches() _______________________________________________________
-
+#ifdef WG_TNG
 void WgGizmoContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	WgRect childGeo;
@@ -233,9 +234,10 @@ void WgGizmoContainer::_onCollectPatches( WgPatches& container, const WgRect& ge
 		p = _nextHookWithGeo( childGeo, p );
 	}	
 }
+#endif
 
 //____ _onMaskPatches() __________________________________________________________
-
+#ifdef WG_TNG
 void WgGizmoContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
 {
 	switch( m_maskOp )
@@ -259,3 +261,4 @@ void WgGizmoContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, co
 			break;
 	}
 }
+#endif

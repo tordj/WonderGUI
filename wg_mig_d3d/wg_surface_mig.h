@@ -40,12 +40,15 @@ public:
 	inline	ETextureDataPtr	MIG_Surf() const { return m_pTexture; };
 
 	inline	int		Pitch() const;				// Bytes per scanline, need to lock first.
-	inline	void*	Lock( LockStatus mode );
-	inline	void*	LockRegion( LockStatus mode, const WgRect& region );
+	inline	void*	Lock( WgAccessMode mode );
+	inline	void*	LockRegion( WgAccessMode mode, const WgRect& region );
 	inline	void	Unlock();
 
 
 	// Methods needed by WgSurface
+
+	const char *Type() const;
+	static const char * GetMyType();
 
 	WgSize		Size() const;
 	bool		IsOpaque() const;
@@ -71,17 +74,17 @@ private:
 class WgSurfaceFactoryMIG : public WgSurfaceFactory
 {
 public:
-	WgSurface * CreateSurface( const WgSize& size, WgSurface::PixelType type = WgSurface::RGBA_8 );
+	WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 );
 };
 
 
 //____ Lock() _________________________________________________________________
 
-inline void * WgSurfaceMIG::Lock( LockStatus mode )
+inline void * WgSurfaceMIG::Lock( WgAccessMode mode )
 {
 	bool bModify = true;
 
-	if( mode == READ_ONLY )
+	if( mode == WG_READ_ONLY )
 		bModify = false;
 
 	if(m_pTexture)
@@ -89,7 +92,7 @@ inline void * WgSurfaceMIG::Lock( LockStatus mode )
 
 	if( m_pPixels )
 	{
-		m_lockStatus = mode;
+		m_accessMode = mode;
 		m_lockRegion = WgRect( 0,0,m_pTexture->GetWidth(),m_pTexture->GetHeight() );
 	}
 	return m_pPixels;
@@ -97,7 +100,7 @@ inline void * WgSurfaceMIG::Lock( LockStatus mode )
 
 //____ LockRegion() ___________________________________________________________
 
-inline void * WgSurfaceMIG::LockRegion( LockStatus mode, const WgRect& region )
+inline void * WgSurfaceMIG::LockRegion( WgAccessMode mode, const WgRect& region )
 {
 	if( !m_pTexture )
 		return 0;
@@ -128,7 +131,7 @@ inline void WgSurfaceMIG::Unlock()
 		m_pTexture->Unlock();
 	m_pPixels = 0;
 	m_pitch = 0;
-	m_lockStatus = UNLOCKED;
+	m_accessMode = WG_NO_ACCESS;
 	m_lockRegion.w = 0;
 	m_lockRegion.h = 0;
 }

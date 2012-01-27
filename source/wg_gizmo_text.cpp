@@ -37,12 +37,11 @@ static const char	c_gizmoType[] = {"GizmoText"};
 WgGizmoText::WgGizmoText()
 {
 	m_pText			= &m_text;
-	m_pText->CreateCursor();
 	m_maxLines		= 0;
 
 	m_text.setLineWidth( Size().w );
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
-	m_editMode = WG_TEXT_STATIC;
+	m_text.SetEditMode( WG_TEXT_STATIC );
 	m_bResetCursorOnFocus = true;
 }
 
@@ -98,7 +97,7 @@ void WgGizmoText::goEOF()
 //_______________________________________________________________
 void WgGizmoText::SetEditMode(WgTextEditMode mode)
 {
-	m_editMode = mode;
+	m_text.SetEditMode(mode);
 }
 
 //____ _onUpdate() ________________________________________________________

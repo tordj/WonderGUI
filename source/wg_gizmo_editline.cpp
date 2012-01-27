@@ -37,14 +37,13 @@ static const char	c_gizmoType[] = {"Editline"};
 WgGizmoEditline::WgGizmoEditline()
 {
 	m_pText			= &m_text;
-	m_pText->CreateCursor();
 	m_text.setHolder( this );
 	m_text.SetWrap(false);
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
+	m_text.SetEditMode( WG_TEXT_EDITABLE );
 	m_bPasswordMode = false;
 	m_pwGlyph		= '*';
 	m_viewOfs		= 0;
-	m_editMode		= WG_TEXT_EDITABLE;
 	m_pointerStyle	= WG_POINTER_IBEAM;
 	m_bResetCursorOnFocus = true;
 }
@@ -73,7 +72,7 @@ const char * WgGizmoEditline::GetMyType()
 
 void WgGizmoEditline::SetEditMode(WgTextEditMode mode)
 {
-	m_editMode = mode;
+	m_text.SetEditMode( mode );
 
 	if( _isSelectable() )
 	{
@@ -226,7 +225,8 @@ void WgGizmoEditline::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 		pText->setSelectionProperties(m_text.getSelectionProperties());
 		pText->setMode(m_text.mode());
 
-		pText->CreateCursor();
+		pText->SetEditMode(m_text.GetEditMode());
+		pText->showCursor();
 		pText->gotoSoftPos( m_text.line(), m_text.column() );
 		pText->incTime( m_text.time() );
 

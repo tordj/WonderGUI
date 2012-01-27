@@ -28,7 +28,7 @@
 
 //____ Constructor _____________________________________________________________
 
-WgGfxDeviceMIG::WgGfxDeviceMIG()
+WgGfxDeviceMIG::WgGfxDeviceMIG():WgGfxDevice(WgSize(0,0))
 {
 	m_blendModeMIG		= ERenderer::eBlendModeBlend;
 	m_tintColorMIG		= EColor(1.f,1.f,1.f);

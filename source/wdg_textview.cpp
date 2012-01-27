@@ -40,7 +40,6 @@ WgWidget * Wdg_TextView::NewOfMyType() const
 void Wdg_TextView::Init()
 {
 	m_pText			= &m_text;
-	m_editMode		= WG_TEXT_STATIC;
 
 	m_newlineKey	= WG_KEY_RETURN;
 	m_newlineModif	= WG_MODKEY_NONE;
@@ -73,7 +72,7 @@ const char * Wdg_TextView::GetMyType( void )
 //______________________________________________________________
 void Wdg_TextView::SetEditMode(WgTextEditMode mode)
 {
-	m_editMode = mode;
+	m_text.SetEditMode( mode );
 }
 
 //____ goBOL() ________________________________________________________________
@@ -326,13 +325,13 @@ void Wdg_TextView::DoMyOwnInputFocusChange( bool _bFocus )
 	{
 		if( IsEditable() )
 		{
-			m_pText->CreateCursor();
+			m_pText->showCursor();
 			AdjustViewOfs();
 		}
 	}
 	else
 	{
-		m_pText->DestroyCursor();
+		m_pText->hideCursor();
 	}
 
 	RequestRender();
