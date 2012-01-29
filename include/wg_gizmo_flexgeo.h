@@ -256,11 +256,6 @@ public:
 
 	WgGizmo*		CastToGizmo() { return this; }
 
-	// Overloaded from container
-
-	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
-
-
 
 private:
 
@@ -290,6 +285,9 @@ private:
 
 	WgHook *		_firstHookWithGeo( WgRect& writeGeo ) const;
 	WgHook *		_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
+
+	WgHook *		_lastHookWithGeo( WgRect& writeGeo ) const;
+	WgHook *		_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
 
 	WgChain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;

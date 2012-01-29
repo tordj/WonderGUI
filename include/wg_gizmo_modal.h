@@ -215,6 +215,9 @@ private:
 	WgHook *	_firstHookWithGeo( WgRect& geo ) const;
 	WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
+	WgHook *	_lastHookWithGeo( WgRect& geo ) const;
+	WgHook *	_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
 	BaseHook				m_baseHook;
 	WgChain<WgModalHook>	m_modalHooks;		// First modal gizmo lies at the bottom.
 

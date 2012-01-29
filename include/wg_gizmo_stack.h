@@ -90,6 +90,14 @@ protected:
 //	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onNewSize( const WgSize& size );
 
+	// Overloaded from WgContainer
+
+	WgHook *	_firstHookWithGeo( WgRect& writeGeo ) const;
+	WgHook *	_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
+
+	WgHook *	_lastHookWithGeo( WgRect& writeGeo ) const;
+	WgHook *	_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
+
 	// Overloaded from WgOrderedLayout
 
 	WgRect	_hookGeo( const WgOrderedHook * pHook );

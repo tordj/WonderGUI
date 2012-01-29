@@ -283,6 +283,10 @@ protected:
 	WgHook *	_firstHookWithGeo( WgRect& geo ) const;
 	WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
+	WgHook *	_lastHookWithGeo( WgRect& geo ) const;
+	WgHook *	_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
+
 	void		SetContentSize( const WgSize& size );
 	void		UpdateElementGeo( const WgSize& mySize, const WgSize& newContentSize );
 

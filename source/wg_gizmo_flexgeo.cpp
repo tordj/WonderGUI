@@ -1174,45 +1174,6 @@ WgSize WgGizmoFlexGeo::DefaultSize() const
 	return WgSize(0,0);		// No recommendation.
 }
 
-//____ FindGizmo() ____________________________________________________________
-
-WgGizmo * WgGizmoFlexGeo::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
-{
-	WgFlexHook * pHook = m_hooks.Last();
-	WgGizmo * pResult = 0;
-
-	while( pHook && !pResult )
-	{
-		if( pHook->m_realGeo.Contains( ofs ) )
-		{
-			if( pHook->Gizmo()->IsContainer() )
-			{
-				pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_realGeo.Pos(), mode );
-			}
-			else
-			{
-				switch( mode )
-				{
-					case WG_SEARCH_ACTION_TARGET:
-					case WG_SEARCH_MARKPOLICY:
-						if( pHook->Gizmo()->MarkTest( ofs - pHook->m_realGeo.Pos() ) )
-							pResult = pHook->Gizmo();
-						break;
-					case WG_SEARCH_GEOMETRY:
-						pResult = pHook->Gizmo();
-						break;
-				}
-			}
-		}
-		pHook = pHook->Prev();
-	}
-
-	if( !pResult && mode == WG_SEARCH_GEOMETRY )
-		pResult = this;
-
-	return pResult;
-}
-
 //____ _onRequestRender() ______________________________________________________
 
 void WgGizmoFlexGeo::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook )
@@ -1284,6 +1245,28 @@ WgHook * WgGizmoFlexGeo::_firstHookWithGeo( WgRect& writeGeo ) const
 WgHook * WgGizmoFlexGeo::_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
 {
 	WgFlexHook * p = ((WgFlexHook*)pHook)->_next();
+	if( p )
+		writeGeo = p->m_realGeo;
+	
+	return p;
+}
+
+//____ _lastHookWithGeo() _____________________________________________________
+
+WgHook * WgGizmoFlexGeo::_lastHookWithGeo( WgRect& writeGeo ) const
+{
+	WgFlexHook * p = m_hooks.Last();
+	if( p )
+		writeGeo = p->m_realGeo;
+
+	return p;
+}
+
+//____ _prevHookWithGeo() ______________________________________________________
+
+WgHook * WgGizmoFlexGeo::_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
+{
+	WgFlexHook * p = ((WgFlexHook*)pHook)->_prev();
 	if( p )
 		writeGeo = p->m_realGeo;
 	

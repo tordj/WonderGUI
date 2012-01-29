@@ -27,7 +27,7 @@
 static const char	c_gizmoType[] = {"VBoxLayout"};
 
 
-WgVBoxHook::WgVBoxHook( WgVBoxLayout * pParent ) : m_pParent(pParent)
+WgVBoxHook::WgVBoxHook( WgGizmoVBox * pParent ) : m_pParent(pParent)
 {
 }
 
@@ -39,33 +39,33 @@ WgGizmoContainer* WgVBoxHook::_parent() const
 
 //____ Constructor ____________________________________________________________
 
-WgVBoxLayout::WgVBoxLayout() : m_nBestWidth(0)
+WgGizmoVBox::WgGizmoVBox() : m_nBestWidth(0)
 {
 }
 
 //____ Destructor _____________________________________________________________
 
-WgVBoxLayout::~WgVBoxLayout()
+WgGizmoVBox::~WgGizmoVBox()
 {
 }
 
 //____ Type() _________________________________________________________________
 
-const char * WgVBoxLayout::Type() const
+const char * WgGizmoVBox::Type() const
 {
 	return c_gizmoType;
 }
 
 //____ GetMyType() ____________________________________________________________
 
-const char * WgVBoxLayout::GetMyType()
+const char * WgGizmoVBox::GetMyType()
 {
 	return c_gizmoType;
 }
 
 //____ HeightForWidth() _______________________________________________________
 
-int WgVBoxLayout::HeightForWidth( int width ) const
+int WgGizmoVBox::HeightForWidth( int width ) const
 {
 	if( width == m_size.w )
 		return m_size.h;
@@ -84,21 +84,21 @@ int WgVBoxLayout::HeightForWidth( int width ) const
 
 //____ WidthForHeight() _______________________________________________________
 
-int WgVBoxLayout::WidthForHeight( int height ) const
+int WgGizmoVBox::WidthForHeight( int height ) const
 {
 	return -1; // No recommendation. Should this maybe be DefaultSize().w instead?
 }
 
 //____ DefaultSize() _____________________________________________________________
 
-WgSize WgVBoxLayout::DefaultSize() const
+WgSize WgGizmoVBox::DefaultSize() const
 {
 	return m_bestSize;
 }
 
 //____ _onNewSize() ___________________________________________________________
 
-void WgVBoxLayout::_onNewSize( const WgSize& size )
+void WgGizmoVBox::_onNewSize( const WgSize& size )
 {
 	if( size.w != m_size.w )
 	{
@@ -109,7 +109,7 @@ void WgVBoxLayout::_onNewSize( const WgSize& size )
 
 //____ _hookGeo() _____________________________________________________________
 
-WgRect WgVBoxLayout::_hookGeo( const WgOrderedHook * pHook )
+WgRect WgGizmoVBox::_hookGeo( const WgOrderedHook * pHook )
 {
 	WgVBoxHook * p = FirstHook();
 	int ofs = 0;
@@ -125,7 +125,7 @@ WgRect WgVBoxLayout::_hookGeo( const WgOrderedHook * pHook )
 
 //____ _firstHookWithGeo() _____________________________________________________
 
-WgHook * WgVBoxLayout::_firstHookWithGeo( WgRect& geo ) const
+WgHook * WgGizmoVBox::_firstHookWithGeo( WgRect& geo ) const
 {
 	WgVBoxHook * p = FirstHook();
 	if( p )
@@ -140,7 +140,7 @@ WgHook * WgVBoxLayout::_firstHookWithGeo( WgRect& geo ) const
 
 //____ _nextHookWithGeo() ______________________________________________________
 
-WgHook * WgVBoxLayout::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook * WgGizmoVBox::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	WgVBoxHook * p = (WgVBoxHook*) pHook->Next();
 	if( p )
@@ -155,9 +155,40 @@ WgHook * WgVBoxLayout::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	return p;
 }
 
+//____ _lastHookWithGeo() _____________________________________________________
+
+WgHook * WgGizmoVBox::_lastHookWithGeo( WgRect& geo ) const
+{
+	WgVBoxHook * p = LastHook();
+	if( p )
+	{
+		geo = WgRect(0,m_size.h - p->m_height,m_size.w,p->m_height);
+		if( p->m_bHidden )
+			geo.h = 0;
+	}
+
+	return p;
+}
+
+//____ _prevHookWithGeo() ______________________________________________________
+
+WgHook * WgGizmoVBox::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+	WgVBoxHook * p = (WgVBoxHook*) pHook->Prev();
+	if( p )
+	{
+		int h = p->m_bHidden ? 0 : p->m_height;
+		
+		geo.h = h;
+		geo.y -= h;
+	}	
+	return p;
+}
+
+
 //____ _onResizeRequested() ___________________________________________________
 
-void WgVBoxLayout::_onResizeRequested( WgOrderedHook * _pHook )
+void WgGizmoVBox::_onResizeRequested( WgOrderedHook * _pHook )
 {
 	WgVBoxHook * pHook = static_cast<WgVBoxHook*>(_pHook);
 
@@ -206,7 +237,7 @@ void WgVBoxLayout::_onResizeRequested( WgOrderedHook * _pHook )
 
 //____ _onRenderRequested() ___________________________________________________
 
-void  WgVBoxLayout::_onRenderRequested( WgOrderedHook * pHook )
+void  WgGizmoVBox::_onRenderRequested( WgOrderedHook * pHook )
 {
 	if( pHook->Hidden() )
 		return;
@@ -216,7 +247,7 @@ void  WgVBoxLayout::_onRenderRequested( WgOrderedHook * pHook )
 		RequestRender(rect);
 }
 
-void  WgVBoxLayout::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect )
+void  WgGizmoVBox::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect )
 {
 	if( pHook->Hidden() )
 		return;
@@ -230,7 +261,7 @@ void  WgVBoxLayout::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rec
 
 //____ _onGizmoAppeared() _____________________________________________________
 
-void  WgVBoxLayout::_onGizmoAppeared( WgOrderedHook * pInserted )
+void  WgGizmoVBox::_onGizmoAppeared( WgOrderedHook * pInserted )
 {
 	WgVBoxHook * pHook = static_cast<WgVBoxHook*>(pInserted);
 
@@ -271,7 +302,7 @@ void  WgVBoxLayout::_onGizmoAppeared( WgOrderedHook * pInserted )
 
 //____ _onGizmoDisappeared() __________________________________________________
 
-void WgVBoxLayout::_onGizmoDisappeared( WgOrderedHook * pToBeRemoved )
+void WgGizmoVBox::_onGizmoDisappeared( WgOrderedHook * pToBeRemoved )
 {
 	WgVBoxHook * pHook = static_cast<WgVBoxHook*>(pToBeRemoved);
 
@@ -303,7 +334,7 @@ void WgVBoxLayout::_onGizmoDisappeared( WgOrderedHook * pToBeRemoved )
 
 //____ _onGizmosReordered() ___________________________________________________
 
-void  WgVBoxLayout::_onGizmosReordered()
+void  WgGizmoVBox::_onGizmosReordered()
 {
 	RequestRender();
 }
@@ -311,7 +342,7 @@ void  WgVBoxLayout::_onGizmosReordered()
 //____ _adaptChildrenToWidth() ________________________________________________
 // Adapts all non-hidden gizmos to our width and updates m_size.
 
-void WgVBoxLayout::_adaptChildrenToWidth( int width )
+void WgGizmoVBox::_adaptChildrenToWidth( int width )
 {
 	m_size.h = 0;
 	m_size.w = width;
@@ -337,7 +368,7 @@ void WgVBoxLayout::_adaptChildrenToWidth( int width )
 // Updates m_bestSize.w and m_nBestWidth. Relies on m_bestSize of the visible
 // hooks to have up-to-date data.
 
-void WgVBoxLayout::_refreshDefaultWidth()
+void WgGizmoVBox::_refreshDefaultWidth()
 {
 	m_bestSize.w = 0;
 	m_nBestWidth = 0;
@@ -363,7 +394,7 @@ void WgVBoxLayout::_refreshDefaultWidth()
 // Refreshes m_bestSize for all visible hooks, m_bestSize and m_nBestWidth with fresh
 // info straight from the children.
 
-void WgVBoxLayout::_refreshDefaultSize()
+void WgGizmoVBox::_refreshDefaultSize()
 {
 	m_bestSize.Clear();
 	m_nBestWidth = 0;
@@ -391,7 +422,7 @@ void WgVBoxLayout::_refreshDefaultSize()
 
 //____ _refreshAllGizmos() ____________________________________________________
 
-void  WgVBoxLayout::_refreshAllGizmos()
+void  WgGizmoVBox::_refreshAllGizmos()
 {
 	_refreshDefaultSize();
 	_adaptChildrenToWidth( m_size.w );
@@ -401,7 +432,7 @@ void  WgVBoxLayout::_refreshAllGizmos()
 
 //____ _renderFromChildOnward() _______________________________________________
 
-void WgVBoxLayout::_renderFromChildOnward( WgOrderedHook * pHook )
+void WgGizmoVBox::_renderFromChildOnward( WgOrderedHook * pHook )
 {
 	WgRect geo = _hookGeo(pHook);
 	geo.h = m_size.h - geo.y;
@@ -410,7 +441,7 @@ void WgVBoxLayout::_renderFromChildOnward( WgOrderedHook * pHook )
 
 //____ _newHook() _____________________________________________________________
 
-WgOrderedHook *  WgVBoxLayout::_newHook()
+WgOrderedHook *  WgGizmoVBox::_newHook()
 {
 	return new WgVBoxHook( this );
 }

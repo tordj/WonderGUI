@@ -126,10 +126,6 @@ public:
 
 	WgGizmo*		CastToGizmo() { return this; }
 
-	// Overloaded from container
-
-	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );	// Default OrderedLayout implementation, assuming front-gizmos overlapping end-gizmos in case of overlap.
-
 protected:
 
 	// These are needed until WgGizmoContainer inherits from WgGizmo

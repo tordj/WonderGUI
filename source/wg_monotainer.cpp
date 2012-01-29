@@ -23,13 +23,8 @@
 #include <wg_monotainer.h>
 #include <wg_rectchain.h>
 
- WgMonotainer::WgMonotainer() : m_hook(this)
- {
- }
 
- WgMonotainer::~WgMonotainer()
- {
- }
+//____ SetChild() ______________________________________________________________
 
 WgHook * WgMonotainer::SetChild( WgGizmoContainer * _pGizmo )
 {
@@ -47,10 +42,7 @@ WgHook * WgMonotainer::SetChild( WgGizmoContainer * _pGizmo )
 	return &m_hook;
 }
 
-WgGizmo * WgMonotainer::Child()
-{
-	return m_hook.Gizmo();
-}
+//____ DeleteChild() ___________________________________________________________
 
 bool WgMonotainer::DeleteChild()
 {
@@ -66,6 +58,8 @@ bool WgMonotainer::DeleteChild()
 	return false;
 }
 
+//____ ReleaseChild() __________________________________________________________
+
 WgGizmo * WgMonotainer::ReleaseChild()
 {
 	WgGizmo * pGizmo = m_hook._releaseGizmo();
@@ -78,6 +72,8 @@ WgGizmo * WgMonotainer::ReleaseChild()
 	return pGizmo;
 }
 
+//____ DeleteChild() ___________________________________________________________
+
 bool WgMonotainer::DeleteChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_hook.Gizmo() )
@@ -85,6 +81,8 @@ bool WgMonotainer::DeleteChild( WgGizmo * pGizmo )
 
 	return false;
 }
+
+//____ ReleaseChild() __________________________________________________________
 
 WgGizmo * WgMonotainer::ReleaseChild( WgGizmo * pGizmo )
 {
@@ -94,16 +92,22 @@ WgGizmo * WgMonotainer::ReleaseChild( WgGizmo * pGizmo )
 	return 0;
 }
 
+//____ DeleteAllChildren() _____________________________________________________
+
 bool WgMonotainer::DeleteAllChildren()
 {
 	return DeleteChild();
 }
+
+//____ ReleaseAllChildren() ____________________________________________________
 
 bool WgMonotainer::ReleaseAllChildren()
 {
 	ReleaseChild();
 	return true;
 }
+
+//____ HeightForWidth() ________________________________________________________
 
 int WgMonotainer::HeightForWidth( int width ) const
 {
@@ -113,6 +117,8 @@ int WgMonotainer::HeightForWidth( int width ) const
 		return WgGizmo::HeightForWidth(width);
 }
 
+//____ WidthForHeight() ________________________________________________________
+
 int WgMonotainer::WidthForHeight( int height ) const
 {
 	if( m_hook.Gizmo() )
@@ -120,6 +126,8 @@ int WgMonotainer::WidthForHeight( int height ) const
 	else
 		return WgGizmo::WidthForHeight(height);
 }
+
+//____ DefaultSize() ___________________________________________________________
 
 WgSize WgMonotainer::DefaultSize() const
 {
@@ -129,9 +137,11 @@ WgSize WgMonotainer::DefaultSize() const
 		return WgSize(1,1);
 }
 
+//____ FindGizmo() _____________________________________________________________
+
 WgGizmo * WgMonotainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
-	if( m_hook.Gizmo() )
+	if( m_hook.Gizmo() && !m_hook.Hidden() )
 		return m_hook.Gizmo()->CastToContainer()->FindGizmo( ofs, mode );
 	else
 	{
@@ -142,6 +152,7 @@ WgGizmo * WgMonotainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 	return 0;
 }
 
+//____ _onCollectPatches() _____________________________________________________
 
 void WgMonotainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
@@ -149,15 +160,21 @@ void WgMonotainer::_onCollectPatches( WgPatches& container, const WgRect& geo, c
 		m_hook.Gizmo()->_onCollectPatches( container, geo, clip );
 }
 
+//____ _onMaskPatches() ________________________________________________________
+
 void WgMonotainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
 {
 	if( !m_hook.Hidden() && m_hook.Gizmo() )
 		m_hook.Gizmo()->_onMaskPatches( patches, geo, clip );
 }
 
+//____ _onCloneContent() _______________________________________________________
+
 void WgMonotainer::_onCloneContent( const WgGizmo * _pOrg )
 {
 }
+
+//____ _onNewSize() ____________________________________________________________
 
 void WgMonotainer::_onNewSize( const WgSize& size )
 {
@@ -165,25 +182,21 @@ void WgMonotainer::_onNewSize( const WgSize& size )
 		m_hook.Gizmo()->_onNewSize(size);
 }
 
-void WgMonotainer::_onEnable()
-{
-	WgGizmoContainer::_onEnable();
-}
-
-void WgMonotainer::_onDisable()
-{
-	WgGizmoContainer::_onDisable();
-}
+//____ _firstHook() ____________________________________________________________
 
 WgHook* WgMonotainer::_firstHook() const
 {
 	return const_cast<Hook*>(&m_hook);
 }
 
+//____ _lastHook() _____________________________________________________________
+
 WgHook* WgMonotainer::_lastHook() const
 {
 	return const_cast<Hook*>(&m_hook);
 }
+
+//____ _firstHookWithGeo() _____________________________________________________
 
 WgHook * WgMonotainer::_firstHookWithGeo( WgRect& geo ) const
 {
@@ -191,8 +204,24 @@ WgHook * WgMonotainer::_firstHookWithGeo( WgRect& geo ) const
 	return const_cast<Hook*>(&m_hook);
 }
 
+//____ _nextHookWithGeo() ______________________________________________________
+
 WgHook * WgMonotainer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	return 0;
 }
 
+//____ _lastHookWithGeo() ______________________________________________________
+
+WgHook * WgMonotainer::_lastHookWithGeo( WgRect& geo ) const
+{
+	geo = WgRect(0,0,Size());
+	return const_cast<Hook*>(&m_hook);
+}
+
+//_____ _prevHookWithGeo() _____________________________________________________
+
+WgHook * WgMonotainer::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+	return 0;
+}

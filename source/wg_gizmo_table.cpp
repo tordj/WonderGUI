@@ -1817,7 +1817,7 @@ WgGizmo * WgGizmoTable::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 	WgGizmo * pGizmo = 0;
 
-	if( col != -1 && row != -1 )
+	if( col != -1 && row != -1 && !pRow->GetHook(col)->Hidden() )
 	{
 		if( xOfs < m_cellPadding.left || xOfs >= m_pColumns[col].m_realWidth - m_cellPadding.right ||
 			yOfs < m_cellPadding.top || yOfs >= pRow->Height() - m_cellPadding.bottom )

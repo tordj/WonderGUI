@@ -682,7 +682,7 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCoord& pos, WgSearchMode mode )
 	// Check XDRAG
 
 	WgViewHook * p = &m_elements[XDRAG];
-	if( p->m_pGizmo && p->m_geo.Contains( pos ) )
+	if( !p->Hidden() && p->m_pGizmo && p->m_geo.Contains( pos ) )
 	{
 		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() ) )
 			return p->m_pGizmo;
@@ -691,7 +691,7 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCoord& pos, WgSearchMode mode )
 	// Check YDRAG
 
 	p = &m_elements[YDRAG];
-	if( p->m_pGizmo && p->m_geo.Contains( pos ) )
+	if( !p->Hidden() && p->m_pGizmo && p->m_geo.Contains( pos ) )
 	{
 		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() ) )
 			return p->m_pGizmo;
@@ -702,7 +702,7 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCoord& pos, WgSearchMode mode )
 	p = &m_elements[WINDOW];
 	WgRect geo( p->m_geo.Pos(), WgSize::Min(p->m_geo,m_contentSize) );
 
-	if( p->m_pGizmo && geo.Contains( pos ) )
+	if( !p->Hidden() && p->m_pGizmo && geo.Contains( pos ) )
 	{
 		if( p->m_pGizmo->IsContainer() )
 		{
@@ -721,8 +721,6 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCoord& pos, WgSearchMode mode )
 	else
 		return 0;
 }
-
-
 
 //____ UpdateElementGeo() _____________________________________________________
 
@@ -1118,6 +1116,39 @@ WgHook * WgGizmoView::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	}	
 	return 0;	
 }
+
+//_____________________________________________________________________________
+WgHook * WgGizmoView::_lastHookWithGeo( WgRect& geo ) const
+{
+	for( int i = 2 ; i >= 0 ; i++ )
+		if( m_elements[i].m_pGizmo )
+		{
+			geo = m_elements[i].m_geo;
+			return const_cast<WgViewHook*>(&m_elements[i]);
+		}
+
+	return 0;	
+}
+
+//_____________________________________________________________________________
+WgHook * WgGizmoView::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+	const WgViewHook * pFirst = &m_elements[0];
+	WgViewHook * p = (WgViewHook*) pHook;
+
+
+	while( p != pFirst )
+	{
+		p--;
+		if( p->m_pGizmo )
+		{
+			geo = p->m_geo;
+			return const_cast<WgViewHook*>(p);
+		}
+	}	
+	return 0;	
+}
+
 
 
 //____ WgViewHook::Destructor ___________________________________________________

@@ -75,6 +75,48 @@ void WgGizmoContainer::SetMaskOp( WgMaskOp operation )
 	}
 }
 
+//____ FindGizmo() ____________________________________________________________
+
+WgGizmo * WgGizmoContainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
+{
+	WgRect childGeo;
+	WgHook * pHook = _lastHookWithGeo( childGeo );
+	WgGizmo * pResult = 0;
+
+	while( pHook && !pResult )
+	{
+		if( !pHook->Hidden() && childGeo.Contains( ofs ) )
+		{
+			if( pHook->Gizmo()->IsContainer() )
+			{
+				pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - childGeo.Pos(), mode );
+			}
+			else
+			{
+				switch( mode )
+				{
+					case WG_SEARCH_ACTION_TARGET:
+					case WG_SEARCH_MARKPOLICY:
+						if( pHook->Gizmo()->MarkTest( ofs - childGeo.Pos() ) )
+							pResult = pHook->Gizmo();
+						break;
+					case WG_SEARCH_GEOMETRY:
+						pResult = pHook->Gizmo();
+						break;
+				}
+			}
+		}
+		pHook = _prevHookWithGeo( childGeo, pHook );
+	}
+
+	// Return us if search mode is GEOMETRY
+
+	if( !pResult && mode == WG_SEARCH_GEOMETRY )
+		pResult = CastToGizmo();
+
+	return pResult;
+}
+
 //____ _focusRequested() _______________________________________________________
 
 bool WgGizmoContainer::_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting )

@@ -46,7 +46,7 @@ class WgGizmoContainer : public WgGizmoParent
 	friend class WgGizmoView;
 	friend class WgGizmoStack;
 	friend class WgOrderedLayout;
-	friend class WgVBoxLayout;
+	friend class WgGizmoVBox;
 	friend class WgMonotainer;
 
 	public:
@@ -63,6 +63,7 @@ class WgGizmoContainer : public WgGizmoParent
 		void		SetMaskOp( WgMaskOp operation );
 		WgMaskOp	MaskOp() const { return m_maskOp; }
 		
+		WgGizmo * 	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 		bool		IsGizmo() const;
 		bool		IsRoot() const;
@@ -86,6 +87,9 @@ class WgGizmoContainer : public WgGizmoParent
 
 		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
 		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
+
+		virtual WgHook* _lastHookWithGeo( WgRect& geo ) const = 0;
+		virtual WgHook* _prevHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
 
 		bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
 		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo

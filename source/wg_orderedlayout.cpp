@@ -322,51 +322,6 @@ void WgOrderedLayout::SetSortFunction( WgGizmoSortFunc pSortFunc )
 	m_pSortFunc = pSortFunc;
 }
 
-//____ FindGizmo() ____________________________________________________________
-
-WgGizmo * WgOrderedLayout::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
-{
-	WgRect			rect;
-	WgHook * 		pHook = _firstHookWithGeo(rect);
-	WgGizmo * 		pResult = 0;
-
-
-
-	while( pHook && !pResult )
-	{
-		if( rect.Contains( ofs ) )
-		{
-			WgGizmo * pGizmo = pHook->Gizmo();
-			if( pGizmo->IsContainer() )
-			{
-				pResult = pGizmo->CastToContainer()->FindGizmo( ofs - rect.Pos(), mode );
-			}
-			else
-			{
-				switch( mode )
-				{
-					case WG_SEARCH_ACTION_TARGET:
-					case WG_SEARCH_MARKPOLICY:
-						if( pGizmo->MarkTest( ofs - rect.Pos() ) )
-							pResult = pGizmo;
-						break;
-					case WG_SEARCH_GEOMETRY:
-						pResult = pGizmo;
-						break;
-				}
-			}
-		}
-		pHook = _nextHookWithGeo(rect,pHook);
-	}
-
-	if( !pResult && mode == WG_SEARCH_GEOMETRY )
-		pResult = this;
-
-	return pResult;
-
-
-}
-
 //____ _onCloneContent() ______________________________________________________
 
 void WgOrderedLayout::_onCloneContent( const WgGizmo * _pOrg )

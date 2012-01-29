@@ -228,7 +228,7 @@ int main ( int argc, char** argv )
 	//
 
 
-	WgVBoxLayout * pVBox = new WgVBoxLayout();
+	WgGizmoVBox * pVBox = new WgGizmoVBox();
 //	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
 
 
@@ -254,7 +254,7 @@ int main ( int argc, char** argv )
 	WgGizmoTabOrder * pTabOrder = new WgGizmoTabOrder();
 	pVBox->AddChild(pTabOrder);
 
-	WgVBoxLayout * pTabBox = new WgVBoxLayout();
+	WgGizmoVBox * pTabBox = new WgGizmoVBox();
 	pTabOrder->SetChild(pTabBox);
 //	pVBox->AddChild(pTabBox);
 

@@ -347,3 +347,39 @@ void WgGizmoStack::_adaptChildrenToSize()
 	}
 }
 
+//____ _firstHookWithGeo() _____________________________________________________
+
+WgHook * WgGizmoStack::_firstHookWithGeo( WgRect& writeGeo ) const
+{
+	WgStackHook * p = FirstHook();
+	if( p )
+		writeGeo = WgRect(0,0,Size());
+
+	return p;
+}
+
+//____ _nextHookWithGeo() ______________________________________________________
+
+WgHook * WgGizmoStack::_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
+{
+	return pHook->Next();
+}
+
+//____ _lastHookWithGeo() ______________________________________________________
+
+WgHook * WgGizmoStack::_lastHookWithGeo( WgRect& writeGeo ) const
+{
+	WgStackHook * p = LastHook();
+	if( p )
+		writeGeo = WgRect(0,0,Size());
+
+	return p;
+}
+
+//____ _prevHookWithGeo() ______________________________________________________
+
+WgHook * WgGizmoStack::_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
+{
+	return pHook->Prev();
+}
+

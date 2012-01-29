@@ -81,7 +81,7 @@ friend class WgGizmoFlexGeo;
 friend class WgGizmoModal;
 friend class WgGizmoTable;
 friend class WgGizmoView;
-friend class WgVBoxLayout;
+friend class WgGizmoVBox;
 friend class WgMonotainer;
 friend class WgGizmoStack;
 friend class WgGizmoContainer;
