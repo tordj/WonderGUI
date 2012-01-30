@@ -247,7 +247,7 @@ WgGizmoContainer * WgModalHook::_parent() const
 //_____________________________________________________________________________
 void WgGizmoModal::BaseHook::_requestRender()
 {
-	if( !m_bHidden ) 
+	if( !m_bHidden )
 		m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
 }
 
@@ -521,7 +521,7 @@ WgGizmo *  WgGizmoModal::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 		{
 			if( m_baseHook.Gizmo()->IsContainer() )
 			{
-				WgGizmo * pResult = m_baseHook.Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->Pos(), mode );
+				WgGizmo * pResult = m_baseHook.Gizmo()->CastToContainer()->FindGizmo( ofs - m_baseHook.Pos(), mode );
 				if( pResult )
 					return pResult;
 			}
@@ -650,7 +650,7 @@ WgHook * WgGizmoModal::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	WgHook * p = pHook->Next();
 	if( p )
 		geo = ((WgModalHook*)p)->m_realGeo;
-	
+
 	return p;
 }
 
@@ -680,7 +680,7 @@ WgHook * WgGizmoModal::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	WgHook * p = pHook->Prev();
 	if( p )
 		geo = p->Geo();
-	
+
 	return p;
 }
 

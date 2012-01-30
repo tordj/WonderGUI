@@ -19,6 +19,7 @@
 #include <wg_bitmapglyphs.h>
 #include <wg_vectorglyphs.h>
 #include <wg_textprop.h>
+#include <wg_gizmo_stack.h>
 #include <iostream>
 
 extern std::ostream cout;
@@ -35,6 +36,10 @@ void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
 
 void cbOpenModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
 void cbCloseModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
+
+void addResizableContainer( WgGizmoFlexGeo * pParent, WgGizmo * pChild, WgBlockSetPtr& pBgBlock, WgEventHandler * pEventHandler );
+void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook );
+
 
 WgGizmoModal * g_pModal = 0;
 
@@ -97,11 +102,11 @@ int main ( int argc, char** argv )
 
 
 	// Load TTF-font
-/*	
+/*
 	WgVectorGlyphs::SetSurfaceFactory( new WgSurfaceFactorySDL() );
-	
+
 	char	ttfname[] = { "a.ttf" };
-	
+
 	int size = fileSize( ttfname );
 	char * pFontFile = (char*) loadFile( ttfname );
 	WgVectorGlyphs * pGlyphs = new WgVectorGlyphs( pFontFile , size, 0 );
@@ -182,6 +187,20 @@ int main ( int argc, char** argv )
 
 	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
 
+	//
+
+	{
+		WgGizmoStack * pStack = new WgGizmoStack();
+
+		WgGizmoPixmap * pSplash= new WgGizmoPixmap();
+		pSplash->SetSource( pSplashBlock );
+
+		WgStackHook * pHook = pStack->AddChild( pSplash );
+		pHook->SetSizePolicy( WgStackHook::DEFAULT );
+		pHook->SetOrientation( WG_CENTER );
+
+		addResizableContainer( pFlex, pStack, pButtonBlock, pEventHandler );
+	}
 
 	// Modal container
 
@@ -274,13 +293,13 @@ int main ( int argc, char** argv )
 
 //	pTabOrder->AddToTabOrder(pText1);
 //	pTabOrder->AddToTabOrder(pText2);
-	
+
 	// Radiobuttons test
-	
+
 	WgGizmoRadiobutton * pRB1 = new WgGizmoRadiobutton();
 	pRB1->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
 	pVBox->AddChild(pRB1);
-	
+
 	WgGizmoRadiobutton * pRB2 = new WgGizmoRadiobutton();
 	pRB2->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
 	pVBox->AddChild(pRB2);
@@ -353,7 +372,7 @@ SDL_Surface * initSDL( int w, int h )
         printf("Unable to set %dx%d video: %s\n", w, h, SDL_GetError());
         return 0;
     }
-	
+
 	SDL_EnableUNICODE(true);
 
 	return pScreen;
@@ -540,5 +559,43 @@ void cbCloseModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 {
 	g_pModal->ReleaseChild(pGizmo);
 }
+
+//____ cbResizeGizmo() _________________________________________________________
+
+void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook )
+{
+	WgFlexHook * pHook = static_cast<WgFlexHook*>(_pFlexHook);
+	const WgEvent::MouseButtonDrag* pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
+
+	WgCoord dragged = pEvent->DraggedNow();
+
+	pHook->SetSize( pHook->Size() + WgSize(dragged.x,dragged.y) );
+}
+
+
+
+//____ addResizableContainer() _________________________________________________
+
+void addResizableContainer( WgGizmoFlexGeo * pParent, WgGizmo * pChild, WgBlockSetPtr& pBgBlock, WgEventHandler * pEventHandler )
+{
+	WgGizmoStack * pRoot = new WgGizmoStack();
+
+	WgGizmoPixmap * pBg = new WgGizmoPixmap();
+	pBg->SetSource( pBgBlock );
+
+
+	pRoot->AddChild( pBg );
+	pRoot->AddChild( pChild );
+
+	WgHook * pHook = pParent->AddChild( pRoot );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pRoot, 2), cbResize, pHook );
+
+
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pRoot, 3), cbInitDrag, pRoot );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pRoot, 3), cbDragGizmo, pRoot );
+}
+
+
+
 
 

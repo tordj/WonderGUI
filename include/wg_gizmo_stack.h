@@ -32,17 +32,28 @@ class WgGizmoStack;
 class WgStackHook : public WgOrderedHook
 {
 	friend class WgGizmoStack;
-
 public:
-	bool		Up();
-	bool		Down();
-	void		Top();
-	void		Bottom();
 
-	WgStackHook * Prev() const { return _prev(); }
-	WgStackHook * Next() const { return _next(); }
+	enum SizePolicy
+	{
+		DEFAULT,
+		STRETCH,
+		SCALE
+	};
 
-	WgGizmoStack * Parent() const { return m_pParent; }
+	void			SetSizePolicy( SizePolicy policy );
+	SizePolicy		GetSizePolicy() const { return m_sizePolicy; }
+	
+	void			SetBorders( WgBorders borders );
+	WgBorders		Borders() const { return m_borders; }
+	
+	void			SetOrientation( WgOrientation orientation );
+	WgOrientation	Orientation() const { return m_orientation; }
+
+	WgStackHook * 	Prev() const { return _prev(); }
+	WgStackHook * 	Next() const { return _next(); }
+
+	WgGizmoStack * 	Parent() const { return m_pParent; }
 
 protected:
 	PROTECTED_LINK_METHODS( WgStackHook );
@@ -51,11 +62,20 @@ protected:
 
 	WgGizmoContainer * _parent() const;
 
+	WgRect			_getGeo( const WgRect& parentGeo ) const;
+
 	WgGizmoStack *	m_pParent;
+	
+	WgBorders		m_borders;
+	WgOrientation	m_orientation;
+	SizePolicy		m_sizePolicy;
+	
 };
 
 class WgGizmoStack : public WgOrderedLayout
 {
+friend class WgStackHook;	
+	
 public:
 	WgGizmoStack();
 	~WgGizmoStack();
@@ -101,7 +121,6 @@ protected:
 	// Overloaded from WgOrderedLayout
 
 	WgRect	_hookGeo( const WgOrderedHook * pHook );
-	void	_advanceGeoToHook( WgRect& prevHookGeo, const WgOrderedHook * pHook );	// geo (assumed to be for previous hook) is advanced to specified hook.
 	void	_onResizeRequested( WgOrderedHook * pHook );
 	void	_onRenderRequested( WgOrderedHook * pHook );
 	void	_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect );
