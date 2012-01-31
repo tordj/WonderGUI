@@ -53,10 +53,12 @@ public:
 
 protected:
 
+	virtual void	_iconModified() = 0;
+
 	WgRect			_getIconRect( const WgRect& contentRect, const WgBlockSetPtr& pBlockSet ) const;
 	WgRect			_getIconRect( const WgRect& contentRect, const WgSize& iconSize ) const;
 	WgRect			_getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
-	virtual void	_iconModified() = 0;
+	void			_cloneContent( const WgIconHolder * _pOrg );
 
 	WgOrientation	m_iconOrientation;
 	float			m_iconScale;					// Range: 0.f -> 1.f. 0.f = Fixed size.

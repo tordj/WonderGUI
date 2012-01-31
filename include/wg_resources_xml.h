@@ -85,6 +85,7 @@ class WgAnim;
 class WgGfxFrame;
 class WgSkinManager;
 class WgIconHolder;
+class WgTileHolder;
 
 //////////////////////////////////////////////////////////////////////////
 /// WgXMLMetaData ////////////////////////////////////////////////////////
@@ -836,6 +837,21 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
+/// WgTileHolderRes //////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+class WgTileHolderRes
+{
+public:
+
+	WgTileHolderRes() {}
+	virtual ~WgTileHolderRes() {}
+
+	void	Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgTileHolder* holder);
+	void	Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgTileHolder* holder);
+
+};
+
+//////////////////////////////////////////////////////////////////////////
 /// WgTextHolderRes //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 class WgTextHolderRes
@@ -1198,7 +1214,7 @@ private:
 };
 
 /// Wdg_Menu_Res /////////////////////////////////////////////////////////
-class Wdg_Menu_Res : public WgWidgetRes
+class Wdg_Menu_Res : public WgWidgetRes, WgTileHolderRes
 {
 public:
 	Wdg_Menu_Res(WgResourceXML* parent, class Wdg_Menu* widget = 0);
@@ -1351,7 +1367,7 @@ private:
 };
 
 /// Wdg_TableView_Res ////////////////////////////////////////////////////
-class Wdg_TableView_Res : public WgWidgetRes, WgBaseViewRes, WgItemHolderRes
+class Wdg_TableView_Res : public WgWidgetRes, WgBaseViewRes, WgItemHolderRes, WgTileHolderRes
 {
 public:
 	Wdg_TableView_Res(WgResourceXML* parent, class Wdg_TableView* widget = 0);

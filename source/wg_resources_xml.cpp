@@ -3215,6 +3215,53 @@ void WgIconHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	holder->SetIconPushingText(WgUtil::ToBool(xmlNode["icon_push_text"], true));
 }
 
+//////////////////////////////////////////////////////////////////////////
+/// WgTileHolderRes //////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//
+//	tile_colors			= [colorset]
+//	odd_tile_colors		= [colorset]
+//	even_tile_colors	= [colorset]
+//	tile_blocks			= [blockset]
+//	odd_tile_blocks		= [blockset]
+//	even_tile_blocks	= [blockset]
+
+void WgTileHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgTileHolder* holder)
+{
+	// row colors
+
+	if( holder->OddTileColors() == holder->EvenTileColors() )
+		WriteColorSetAttr(s, holder->OddTileColors(), "tile_colors" );
+	else
+	{
+		WriteColorSetAttr(s, holder->OddTileColors(), "odd_tile_colors" );
+		WriteColorSetAttr(s, holder->EvenTileColors(), "even_tile_colors" );
+	}
+
+	// row blocks
+
+	if( holder->OddTileBlocks() == holder->EvenTileBlocks() )
+		WriteBlockSetAttr(s, holder->OddTileBlocks(), "tile_blocks" );
+	else
+	{
+		WriteBlockSetAttr(s, holder->OddTileBlocks(), "odd_tile_blocks" );
+		WriteBlockSetAttr(s, holder->EvenTileBlocks(), "even_tile_blocks" );
+	}
+}
+
+void WgTileHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s, WgTileHolder* holder)
+{
+	if( xmlNode.HasAttribute("tile_blocks") )
+		holder->SetTileBlocks( s.ResDb()->GetBlockSet(xmlNode["tile_blocks"]) );
+	else
+		holder->SetTileBlocks( s.ResDb()->GetBlockSet(xmlNode["odd_tile_blocks"]), s.ResDb()->GetBlockSet(xmlNode["even_tile_blocks"]) );
+
+	if( xmlNode.HasAttribute("tile_colors") )
+		holder->SetTileColors( s.ResDb()->GetColorSet(xmlNode["tile_colors"]) );
+	else
+		holder->SetTileColors( s.ResDb()->GetColorSet(xmlNode["odd_tile_colors"]), s.ResDb()->GetColorSet(xmlNode["even_tile_colors"]) );
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 /// WgTextHolderRes //////////////////////////////////////////////////////
@@ -4593,14 +4640,12 @@ void Wdg_ListView_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerialize
 //////////////////////////////////////////////////////////////////////////
 /// Wdg_Menu_Res /////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-// <menu [widget-attribs]
+// <menu [widget-attribs] [tileholder-attribs]
 //	bkg=[blockset]
 //	iconFieldWidth=[integer]
 //	arrowFieldWidth=[integer]
 //	separator=[blockset]
 //	sepBorders=[WgBorders]
-//	mark=[blockset]
-//	markBorders=[WgBorders]
 //	checked=[blockset]
 //	unchecked=[blockset]
 //	checked_radio=[blockset]
@@ -4627,14 +4672,13 @@ void Wdg_Menu_Res::Serialize(WgResourceSerializerXML& s)
 	const WgXmlNode& xmlNode = XmlNode();
 	Wdg_Menu* widget = GetWidget();
 	WgWidgetRes::Serialize(s);
+	WgTileHolderRes::Serialize(this, xmlNode, s, widget);
 
 	WriteDiffAttr(s, xmlNode, "iconfieldwidth", widget->GetIconFieldWidth(), (Uint8)0);
 	WriteDiffAttr(s, xmlNode, "arrowfieldwidth", widget->GetArrowFieldWidth(), (Uint8)0);
 	WgBorderRes::Serialize(s, xmlNode, "sepBorders", widget->GetSeparatorBorders());
-	WgBorderRes::Serialize(s, xmlNode, "markBorders", widget->GetMarkBorders());
 	WriteBlockSetAttr(s, widget->GetBgSource(), "bkg");
 	WriteBlockSetAttr(s, widget->GetSeparatorSource(), "separator");
-	WriteBlockSetAttr(s, widget->GetMarkSource(), "mark");
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "unchecked");
 	WriteBlockSetAttr(s, widget->GetRadioCheckedSource(), "checked_radio");
@@ -4682,14 +4726,13 @@ void Wdg_Menu_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML
 	Wdg_Menu* widget  = new Wdg_Menu();
 	m_Widget = widget;
 	WgWidgetRes::Deserialize(xmlNode, s);
+	WgTileHolderRes::Deserialize(xmlNode, s, widget);
 
 	WgBlockSetPtr bkg = s.ResDb()->GetBlockSet(xmlNode["bkg"]);
 	Sint32 iconfieldwidth = WgUtil::ToSint32(xmlNode["iconfieldwidth"]);
 	Sint32 arrowfieldwidth = WgUtil::ToSint32(xmlNode["arrowfieldwidth"]);
 	WgBlockSetPtr separator = s.ResDb()->GetBlockSet(xmlNode["separator"]);
 	WgBorders sepBorders = WgBorderRes::Deserialize(s, xmlNode["sepBorders"]);
-	WgBlockSetPtr mark = s.ResDb()->GetBlockSet(xmlNode["mark"]);
-	WgBorders markBorders = WgBorderRes::Deserialize(s, xmlNode["markBorders"]);
 	WgBlockSetPtr checked = s.ResDb()->GetBlockSet(xmlNode["checked"]);
 	WgBlockSetPtr unchecked = s.ResDb()->GetBlockSet(xmlNode["unchecked"]);
 	WgBlockSetPtr checked_radio = s.ResDb()->GetBlockSet(xmlNode["checked_radio"]);
@@ -4707,7 +4750,6 @@ void Wdg_Menu_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML
 
 	widget->SetBgSource(bkg, iconfieldwidth, arrowfieldwidth );
 	widget->SetSeparatorSource(separator, sepBorders);
-	widget->SetMarkSource(mark, markBorders);
 	widget->SetCheckBoxSource(unchecked, checked);
 	widget->SetRadioButtonSource(unchecked_radio, checked_radio);
 	// widget->SetArrowSource( WgGfxAnim * pAnim );
@@ -5162,7 +5204,7 @@ WgCharBuffer* WgTableColumnRes::GetCharBuffer()
 //////////////////////////////////////////////////////////////////////////
 /// Wdg_TableView_Res ////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-// <table [widget-attribs] [listview-attribs]
+// <table [widget-attribs] [listview-attribs] [tileholder-attribs]
 //		header=[true/false]
 //		header_textprop=[name]
 //		header_blockset=[name]
@@ -5174,10 +5216,6 @@ WgCharBuffer* WgTableColumnRes::GetCharBuffer()
 //		arrow_pos=[x,y]
 //		cellpad=[x,y]
 //		sortprio=[prio] integer
-//		odd_row_colors=[colorset]
-//		even_row_colors=[colorset]
-//		odd_row_blocks=[blockset]
-//		even_row_blocks=[blockset]
 //		empty_row_height=[height]
 // />
 Wdg_TableView_Res::Wdg_TableView_Res(WgResourceXML* parent, Wdg_TableView* widget) :
@@ -5213,26 +5251,6 @@ void Wdg_TableView_Res::Serialize(WgResourceSerializerXML& s)
 	WriteDiffAttr(s, xmlNode, "cellpad", widget->GetCellPaddingX(), widget->GetCellPaddingY(), (Uint8)0, (Uint8)0);
 	WriteDiffAttr(s, xmlNode, "sortprio", widget->GetClickSortPrio(), (Uint8)0);
 
-	// row colors
-
-	if( widget->GetOddRowColors() == widget->GetEvenRowColors() )
-		WriteColorSetAttr(s, widget->GetOddRowColors(), "row_colors" );
-	else
-	{
-		WriteColorSetAttr(s, widget->GetOddRowColors(), "odd_row_colors" );
-		WriteColorSetAttr(s, widget->GetEvenRowColors(), "even_row_colors" );
-	}
-
-	// row blocks
-
-	if( widget->GetOddRowBlocks() == widget->GetEvenRowBlocks() )
-		WriteBlockSetAttr(s, widget->GetOddRowBlocks(), "row_blocks" );
-	else
-	{
-		WriteBlockSetAttr(s, widget->GetOddRowBlocks(), "odd_row_blocks" );
-		WriteBlockSetAttr(s, widget->GetEvenRowBlocks(), "even_row_blocks" );
-	}
-
 	// columns
 	for(Uint32 iColumn = 0; iColumn < widget->NbColumns(); iColumn++)
 	{
@@ -5240,6 +5258,7 @@ void Wdg_TableView_Res::Serialize(WgResourceSerializerXML& s)
 	}
 
 	WgItemHolderRes::Serialize(this, xmlNode, s, widget);
+	WgTileHolderRes::Serialize(this, xmlNode, s, widget);
 
 	s.EndTag();
 }
@@ -5251,6 +5270,7 @@ void Wdg_TableView_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 	WgWidgetRes::Deserialize(xmlNode, s);
 	WgBaseViewRes::Deserialize(xmlNode, s, widget);
 	WgItemHolderRes::Deserialize(xmlNode, s, widget);
+	WgTileHolderRes::Deserialize(xmlNode, s, widget);
 
 	Sint32 x,y;
 	if(WgUtil::FromString(xmlNode["arrow_pos"], x, y))
@@ -5283,17 +5303,6 @@ void Wdg_TableView_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 
 	widget->SetArrowOrigo(WgUtil::ToOrigo(xmlNode["arrow_origo"]));
 	widget->SetClickSortPrio(WgUtil::ToUint8(xmlNode["sortprio"]));
-
-	if( xmlNode.HasAttribute("row_blocks") )
-		widget->SetRowBlocks( s.ResDb()->GetBlockSet(xmlNode["row_blocks"]) );
-	else
-		widget->SetRowBlocks( s.ResDb()->GetBlockSet(xmlNode["odd_row_blocks"]), s.ResDb()->GetBlockSet(xmlNode["even_row_blocks"]) );
-
-	if( xmlNode.HasAttribute("row_colors") )
-		widget->SetRowColors( s.ResDb()->GetColorSet(xmlNode["row_colors"]) );
-	else
-		widget->SetRowColors( s.ResDb()->GetColorSet(xmlNode["odd_row_colors"]), s.ResDb()->GetColorSet(xmlNode["even_row_colors"]) );
-
 
 	WgBlockSetPtr pAscend = s.ResDb()->GetBlockSet(xmlNode["arrow_asc"]);
 	WgBlockSetPtr pDescend = s.ResDb()->GetBlockSet(xmlNode["arrow_dsc"]);

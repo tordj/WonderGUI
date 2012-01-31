@@ -192,3 +192,14 @@ WgRect WgIconHolder::_getTextRect( const WgRect& contentRect, const WgRect& icon
 	return textRect;
 }
 
+//____ _cloneContent() ________________________________________________________
+
+void WgIconHolder::_cloneContent( const WgIconHolder * _pOrg )
+{
+	m_iconOrientation	= _pOrg->m_iconOrientation;
+	m_iconScale			= _pOrg->m_iconScale;
+	m_bIconPushText		= _pOrg->m_bIconPushText;
+	m_iconBorders		= _pOrg->m_iconBorders;
+}
+
+

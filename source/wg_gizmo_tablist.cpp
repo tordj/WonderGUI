@@ -1328,7 +1328,7 @@ void WgGizmoTablist::_onAction( WgInput::UserAction action, int button_key, cons
 			int	y = pos.y;
 
 			WgTab * pTab = Pos2Tab( x, y );
-			if( pTab != m_pTabMarked )
+			if( pTab != m_pTabMarked && !inputObj.isButtonDown(1) )
 			{
 				m_pTabMarked = pTab;
 				RequestRender();

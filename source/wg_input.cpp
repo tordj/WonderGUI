@@ -36,6 +36,7 @@
 WgInput::WgInput()
 {
 	m_bHasFocus				= true;
+	m_bPointerGrabbed		= false;
 
 	m_pRootWidget			= 0;
 	m_pFocusedWidget		= 0;
@@ -98,6 +99,21 @@ WgInput::~WgInput()
 	if( m_pPointerSpies )
 		delete [] m_pPointerSpies;
 }
+
+//____ grabPointer() __________________________________________________________
+
+void WgInput::grabPointer()
+{
+	m_bPointerGrabbed = true;
+}
+
+//____ releasePointer() _______________________________________________________
+
+void WgInput::releasePointer()
+{
+	m_bPointerGrabbed = false;
+}
+
 
 //____ map_keycode() __________________________________________________________
 
@@ -231,6 +247,23 @@ void WgInput::flush_event_queue()
 	m_eventQueue.reserve(16);
 }
 
+
+//____ _filterWidgets() _____________________________________________
+
+void WgInput::_filterWidgets( WgActionDetails * pToBeFiltered, WgActionDetails * pWidgetsToKeep )
+{
+	for( unsigned int i = 0 ; i < pToBeFiltered->nWidgets ; i++ )
+	{
+		if( !widgetInStack( pToBeFiltered->aWidgets[i], * pWidgetsToKeep ) )
+		{
+			for( unsigned int j = i ; j < pToBeFiltered->nWidgets-1 ; j++ )
+				pToBeFiltered->aWidgets[j] = pToBeFiltered->aWidgets[j+1];
+
+			pToBeFiltered->aWidgets[--pToBeFiltered->nWidgets] = 0;
+		}
+	}
+}
+
 //____ end_events() ___________________________________________________________
 
 void WgInput::end_events()
@@ -276,6 +309,8 @@ start:
 	WgWidget * pWidget = m_pRootWidget->FindOccupant( m_currentPosition.x, m_currentPosition.y, true, 0, &pBlockingModal );
 	WgWidget * topMark = pWidget;
 
+	
+
 	// Viktor change:
 	// a widget should be sent to the pointerspy even if it's disabled
 	// (we want tooltips for disabled widgets...).
@@ -305,6 +340,11 @@ start:
 		}
 		pWidget = pWidget->m_pParent;
 	}
+
+	// If pointer is grabbed we need to remove all widgets that did not receive the press.
+
+	if( m_bPointerGrabbed )
+		_filterWidgets( &m_currentPosition, &m_pressed[0] );
 
 	// Possibly send button repeats.
 
@@ -532,6 +572,9 @@ void WgInput::button_press_( WgInputEventData ed )
 	if( button < 1 || button > WG_MAX_BUTTONS )
 		return;
 
+	if( button == 1 )
+		m_bPointerGrabbed = true;
+
 	WgActionDetails	myAction;
 
 	myAction.x 			= ed.pointerX;
@@ -608,8 +651,6 @@ void WgInput::button_press_( WgInputEventData ed )
 	}
 
 
-
-
 	// Update member structures
 
 	button--;
@@ -631,6 +672,10 @@ void WgInput::button_release_( WgInputEventData ed )
 
 	if( !m_bButtonDown[button-1] )
 		return;
+
+	if( button == 1 )
+		m_bPointerGrabbed = false;
+
 
 	WgActionDetails	myAction;
 

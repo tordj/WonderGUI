@@ -149,6 +149,9 @@ public:
 	void					addPointerSpy( WgPointerSpy * pSpy );
 	bool					removePointerSpy( WgPointerSpy * pSpy );
 
+	void				grabPointer();
+	void				releasePointer();
+
 	// If called during a widget-callback, The get...Info() methods returns the
 	// previous ActionDetails structures.
 
@@ -240,6 +243,9 @@ private:
 	void	widgetRemoved( WgWidget * pWidget );
 	void	gizmoRemoved( WgGizmo * pGizmo );
 
+	void	_filterWidgets( WgActionDetails * pToBeFiltered, WgActionDetails * pWidgetsToKeep );
+
+
 	bool			m_bHasFocus;
 
 	Wdg_Root	* 	m_pRootWidget;				///< Pointer at root widget which we are a part of.
@@ -259,6 +265,7 @@ private:
 	int			m_pointerX, m_pointerY;
 	WgModifierKeys	m_modifierKeys;
 
+	bool			m_bPointerGrabbed;
 	bool			m_bButtonDown[WG_MAX_BUTTONS];
 	Uint32			m_repeatTime[WG_MAX_BUTTONS];
 

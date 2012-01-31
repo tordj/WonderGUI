@@ -1216,6 +1216,18 @@ bool WgWidget::HasInputFocus( void )
 	return false;
 }
 
+//____ _releasePointer() _______________________________________________________
+
+void WgWidget::_releasePointer( void )
+{
+	WgInput * pInputObj = GetInputObj();
+
+	if( !pInputObj )
+		return;
+
+	pInputObj->releasePointer();
+}
+
 //____ GrabInputFocus() _______________________________________________________
 
 bool WgWidget::GrabInputFocus( void )

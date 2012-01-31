@@ -812,7 +812,7 @@ void WgGfxDevice::BlitVertBar(	const WgSurface * _pSurf, const WgRect& _src,
 
 bool WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest )
 {
-	if( !pText )
+	if( !pText || dest.w <= 0 )
 		return false;
 
 	_drawTextBg(clip, pText, dest);

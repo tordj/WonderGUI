@@ -44,6 +44,10 @@
 #	include <wg_textprop.h>
 #endif
 
+#ifndef WG_TILEHOLDER_DOT_H
+#	include	<wg_tileholder.h>
+#endif
+
 class	WgSurface;
 class	WgFont;
 class	WgGfxAnim;
@@ -51,8 +55,7 @@ class	WgText;
 class	Wdg_VDrag;
 
 
-
-class Wdg_Menu:public WgWidget, public WgEmitter
+class Wdg_Menu:public WgWidget, public WgEmitter, public WgTileHolder
 {
 	friend class WgMenuItem;
 	friend class WgMenuSubMenu;
@@ -79,9 +82,9 @@ public:
 	WgBlockSetPtr	GetSeparatorSource() const { return m_pSepGfx; }
 	WgBorders		GetSeparatorBorders() const { return m_sepBorders; }
 
-	bool			SetMarkSource( const WgBlockSetPtr pGfx, const WgBorders& markBorders = WgBorders() );
-	WgBlockSetPtr	GetMarkSource() const { return m_pMarkGfx; }
-	WgBorders		GetMarkBorders() const { return m_markBorders; }
+//	bool			SetMarkSource( const WgBlockSetPtr pGfx, const WgBorders& markBorders = WgBorders() );
+//	WgBlockSetPtr	GetMarkSource() const { return m_pMarkGfx; }
+//	WgBorders		GetMarkBorders() const { return m_markBorders; }
 
 	bool			SetCheckBoxSource( const WgBlockSetPtr pUnchecked, const WgBlockSetPtr pChecked );
 	WgBlockSetPtr	GetCheckedSource() const { return m_pCbGfxChecked; }
@@ -168,6 +171,9 @@ private:
 	void		DoMyOwnActionRespond( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	void		DoMyOwnInputFocusChange( bool _bFocus );
 	void		DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo );
+
+	void		_tilesModified();
+
 
 /*
 	void		DoMyOwnRefresh( void );
@@ -271,11 +277,6 @@ private:
 
 	WgBlockSetPtr			m_pSepGfx;
 	WgBorders				m_sepBorders;
-
-	// Members defining the mark-rectangle
-
-	WgBlockSetPtr			m_pMarkGfx;
-	WgBorders				m_markBorders;
 
 	// Members defining the arrow for submenus
 

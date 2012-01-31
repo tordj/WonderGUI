@@ -531,42 +531,11 @@ void Wdg_TableView::SetEmptyRowHeight( Uint32 height )
 	}
 }
 
-//____ SetRowColors() _________________________________________________________
+//____ _tilesModified() _______________________________________________________
 
-void Wdg_TableView::SetRowColors( const WgColorSetPtr& pOddColors, const WgColorSetPtr& pEvenColors )
+void Wdg_TableView::_tilesModified()
 {
-	m_pRowColors[0] = pOddColors;
-	m_pRowColors[1] = pEvenColors;
-
-	RequestRender();
-}
-
-//____ RemoveRowColors() ______________________________________________________
-void Wdg_TableView::RemoveRowColors()
-{
-	m_pRowColors[0] = 0;
-	m_pRowColors[1] = 0;
-
-	RequestRender();
-}
-
-//____ SetRowBlocks() _________________________________________________________
-
-void Wdg_TableView::SetRowBlocks( const WgBlockSetPtr& pOddBlocks, const WgBlockSetPtr& pEvenBlocks )
-{
-	m_pRowBlocks[0] = pOddBlocks;
-	m_pRowBlocks[1] = pEvenBlocks;
-
-	RequestRender();
-}
-
-//____ RemoveRowBlocks() ______________________________________________________
-void Wdg_TableView::RemoveRowBlocks()
-{
-	m_pRowBlocks[0] = 0;
-	m_pRowBlocks[1] = 0;
-
-	RequestRender();
+	RequestRender();				// Ok since we ignore minTileHeight.
 }
 
 
@@ -1790,19 +1759,7 @@ void Wdg_TableView::DrawRowBg( const WgRect& clip, WgTableRow * pRow, int iVisib
 	else if( iRealRowNb == m_markedRow )
 		mode = WG_MODE_MARKED;
 
-	if( m_pRowColors[iVisibleRowNb%2] )
-	{
-		WgColor color = m_pRowColors[iVisibleRowNb%2]->Color(mode);
-		if( 0 != color.a )
-			WgGfx::fillRect( clip, color );
-	}
-
-	if( m_pRowBlocks[iVisibleRowNb%2] )
-	{
-		WgBlockSetPtr p = m_pRowBlocks[iVisibleRowNb%2];
-		if( p && !p->IsModeSkipable(mode) )
-			WgGfx::clipBlitBlock(clip, p->GetBlock(mode, dest.Size() ), dest );
-	}
+	_renderTile( WgGfx::GetDevice(), clip, dest, iVisibleRowNb, mode );
 }
 
 //____ DoMyOwnCloning() _______________________________________________________
@@ -1814,6 +1771,7 @@ void Wdg_TableView::DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pClone
 	Wdg_TableView * pClone = (Wdg_TableView *) _pClone;
 
 	pClone->Wg_Interface_ItemHolder::DoMyOwnCloning(this);
+	pClone->WgTileHolder::_cloneContent(this);
 
 	pClone->m_clickSortPrio = m_clickSortPrio;
 	pClone->m_bShowHeader = m_bShowHeader;
@@ -1826,12 +1784,6 @@ void Wdg_TableView::DoMyOwnCloning( WgWidget * _pClone, const WgWidget * _pClone
 		for(int i = 0; i < m_nColumns; i++)
 			pClone->m_pColumns[i] = WgTableColumn(m_pColumns[i]);
 	}
-
-	pClone->m_pRowColors[0] = m_pRowColors[0];
-	pClone->m_pRowColors[1] = m_pRowColors[1];
-
-	pClone->m_pRowBlocks[0] = m_pRowBlocks[0];
-	pClone->m_pRowBlocks[1] = m_pRowBlocks[1];
 
 	pClone->m_pHeaderProps = m_pHeaderProps;
 	pClone->m_sortMarkerOrigo = m_sortMarkerOrigo;

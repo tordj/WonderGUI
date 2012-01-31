@@ -468,6 +468,8 @@ class	WgWidget
 												// extra big rectangle and possibly overdraws (not to be set if
 												// bRendersAll is set).
 
+		void _releasePointer( void );
+
     // Interface for derived classes.
 
 		void		RefreshSizeLimit( void );

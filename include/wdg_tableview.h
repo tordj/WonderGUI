@@ -28,6 +28,7 @@
 #endif
 
 #include <wg_interface_itemholder.h>
+#include <wg_tileholder.h>
 #include <wg_item_row.h>
 #include <wg_colorset.h>
 
@@ -170,7 +171,7 @@ protected:
 
 };
 
-class Wdg_TableView : public Wdg_Baseclass_View, public Wg_Interface_ItemHolder
+class Wdg_TableView : public Wdg_Baseclass_View, public Wg_Interface_ItemHolder, public WgTileHolder
 {
 friend class WgTableColumn;
 
@@ -216,18 +217,6 @@ public:
 
 	void	SetEmptyRowHeight( Uint32 height );
 	Uint32	GetEmptyRowHeight() { return m_emptyRowHeight; }
-
-	inline void	SetRowBlocks( const WgBlockSetPtr& pBlocks ) { SetRowBlocks(pBlocks,pBlocks); }
-	void	SetRowBlocks( const WgBlockSetPtr& pOddBlocks, const WgBlockSetPtr& pEvenBlocks );
-	WgBlockSetPtr GetOddRowBlocks() const { return m_pRowBlocks[0]; }
-	WgBlockSetPtr GetEvenRowBlocks() const { return m_pRowBlocks[1]; }
-	void	RemoveRowBlocks();
-
-	inline void	SetRowColors( const WgColorSetPtr& pColors ) { SetRowColors(pColors,pColors); }
-	void	SetRowColors( const WgColorSetPtr& pOddColors, const WgColorSetPtr& pEvenColors );
-	WgColorSetPtr GetOddRowColors() const { return m_pRowColors[0]; }
-	WgColorSetPtr GetEvenRowColors() const { return m_pRowColors[1]; }
-	void	RemoveRowColors();
 
 	Uint32	AddColumn( const char * pText, Uint32 pixelwidth, WgOrigo& origo = WgOrigo::midLeft(), fpItemCmp fpCompare = 0, bool bInitialAscend = true, bool bEnabled = true, int id = 0 );
 	void	RemoveColumns();
@@ -306,6 +295,7 @@ private:
 	void 	Init();
 
 	WgRect	_headerItemGeo( WgTableColumn * pHeader, const WgRect& headerGeo ) const;
+	void	_tilesModified();
 
 	int		GetColumnAtPosition( int position ) const;
 	WgItem * GetItemAtPosition( int position, WgTableRow * pRow );
@@ -361,9 +351,6 @@ private:
 	WgTableColumn *	m_pColumns;
 
 	std::vector<int> m_columnOrder;
-
-	WgColorSetPtr 	m_pRowColors[2];
-	WgBlockSetPtr	m_pRowBlocks[2];
 
 	Uint32			m_emptyRowHeight;						// Set if empty rows should fill out the view.
 

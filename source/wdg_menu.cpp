@@ -55,7 +55,6 @@ void Wdg_Menu::Init( void )
 
 	m_pBgGfx				= 0;
 	m_pSepGfx				= 0;
-	m_pMarkGfx				= 0;
 	m_pCbGfxChecked			= 0;
 	m_pCbGfxUnchecked		= 0;
 	m_pRbGfxSelected		= 0;
@@ -143,20 +142,6 @@ bool Wdg_Menu::SetSeparatorSource( const WgBlockSetPtr pGfx, const WgBorders& bo
 	m_sepHeight		= m_pSepGfx->Height() + m_sepBorders.Height();
 
 	AdjustSize();
-	RequestRender();
-	return true;
-}
-
-//____ SetMarkSource() ________________________________________________________
-
-bool Wdg_Menu::SetMarkSource( const WgBlockSetPtr pGfx, const WgBorders& borders )
-{
-	if( pGfx == WgBlockSetPtr(0) )
-		return false;
-
-	m_pMarkGfx		= pGfx;
-	m_markBorders	= borders;
-
 	RequestRender();
 	return true;
 }
@@ -662,8 +647,23 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 				if( ((WgMenuEntry*)pItem)->IsEnabled() )
 					mode = WG_MODE_NORMAL;
 
-				// Draw the marked rectangle and change mode if this menuitem is selected
+				if( item == m_markedItem )
+					mode = WG_MODE_MARKED;
 
+				// Render the tile for this entry
+
+				WgRect tileClip = clip - contentBorders;			// Why do we need this? Something to do with scrolled content?
+
+				WgRect tileDest(	window.x + contentBorders.left,
+									yPos,
+									window.w - contentBorders.Width(),
+									m_entryHeight );
+
+
+				_renderTile( WgGfx::GetDevice(), tileClip, tileDest, item-1, mode );
+
+				// Draw the marked rectangle and change mode if this menuitem is selected
+/*
 				if( item == m_markedItem )
 				{
 					WgRect markClip(clip);
@@ -676,9 +676,11 @@ void Wdg_Menu::DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _l
 						m_entryHeight - m_markBorders.Height() );
 					WgGfx::clipBlitBlock( markClip, m_pMarkGfx->GetBlock(WG_MODE_MARKED,dest), dest );
 
+
+
 					mode = WG_MODE_MARKED;
 				}
-
+*/
 				// Print the text (if any)
 
 				const WgChar * pText = ((WgMenuEntry*)pItem)->GetText().Chars();
@@ -1183,6 +1185,7 @@ void Wdg_Menu::Open( Wdg_Root * pRoot, Uint32 x, Uint32 y, Uint32 minW, WgMenuIt
 	SetPos( x, y );
 	Emit( MenuOpened() );
 
+	_releasePointer();	// Was pressed on other widget.
 	GrabInputFocus();
 	if( pMarkedItem && pMarkedItem->Chain() == &m_items )
 	{
@@ -1565,4 +1568,9 @@ void Wdg_Menu::StepViewPageUp()
 	SetViewPixels( m_contentOfs - (viewHeight - m_entryHeight) );
 }
 
+//____ _tilesModified() _______________________________________________________
 
+void Wdg_Menu::_tilesModified()
+{
+	RequestRender();
+}

@@ -286,6 +286,7 @@ void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, c
 		case WgInput::BUTTON_PRESS:
 			if( _button_key == 1 && !m_bPressed )
 			{
+				SetState( !m_bChecked );
 				m_bPressed = true;
 				RequestRender();
 			}
@@ -298,11 +299,6 @@ void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, c
 				m_bPressed = false;
 				RequestRender();
 			}
-			break;
-
-		case WgInput::BUTTON_CLICK:
-			if( _button_key == 1 )
-				SetState( !m_bChecked );
 			break;
 
         default:
@@ -443,6 +439,7 @@ void WgGizmoCheckbox::_onCloneContent( const WgGizmo * _pOrg )
 	m_clickArea			= pOrg->m_clickArea;
 
 	Wg_Interface_TextHolder::_onCloneContent( pOrg );
+	WgIconHolder::_cloneContent( pOrg );
 }
 
 //____ _textModified() _________________________________________________________
