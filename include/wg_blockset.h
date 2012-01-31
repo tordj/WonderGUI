@@ -202,6 +202,10 @@ public:
 
 	inline bool					IsValid() const { return (m_pSurf && m_rect.w != 0 && m_rect.h != 0 )?true:false; }
 
+	bool 						operator==( const WgBlock& b) const;
+	bool 						operator!=( const WgBlock& b) const;
+
+
 private:
 
 	const WgSurface *	m_pSurf;

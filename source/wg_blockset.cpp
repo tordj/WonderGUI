@@ -47,6 +47,28 @@ WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& 
 }
 
 
+bool WgBlock::operator==( const WgBlock& b) const
+{
+	if( m_pSurf == b.m_pSurf && m_rect == b.m_rect /*Ś&& m_gfxBorders == b.m_gfxBorders && 
+	    m_flags == b.m_flags && m_contentBorders == b.m_contentBorders &&
+		m_contentShift == b.m_contentShift*/ )
+		return true;
+
+	return false;
+}
+
+bool WgBlock::operator!=( const WgBlock& b) const
+{
+	if( m_pSurf == b.m_pSurf && m_rect == b.m_rect && m_gfxBorders == b.m_gfxBorders && 
+	    m_flags == b.m_flags && m_contentBorders == b.m_contentBorders &&
+		m_contentShift == b.m_contentShift )
+		return false;
+
+	return true;
+}
+
+
+
 WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect& normal,
 					   const WgRect& marked, const WgRect& selected, const WgRect& disabled,
 					   const WgRect& special, const WgBorders& gfxBorders,

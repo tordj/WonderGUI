@@ -21,27 +21,40 @@
 =========================================================================*/
 
 #include <wg_gizmo_stack.h>
+#include <wg_util.h>
+#include <wg_patches.h>
 
 static const char	c_gizmoType[] = {"Stack"};
 
 
-bool WgStackHook::Up()
+void WgStackHook::SetSizePolicy( SizePolicy policy )
 {
+	if( policy != m_sizePolicy )
+	{
+		m_pParent->_onRenderRequested(this);
+		m_sizePolicy = policy;
+		m_pParent->_onRenderRequested(this);
+	};
 }
 
-bool WgStackHook::Down()
+void WgStackHook::SetBorders( WgBorders borders )
 {
+	m_pParent->_onRenderRequested(this);
+	m_borders = borders;
+	m_pParent->_onRenderRequested(this);
 }
 
-void WgStackHook::Top()
+void WgStackHook::SetOrientation( WgOrientation orientation )
 {
+	if( orientation != m_orientation )
+	{
+		m_pParent->_onRenderRequested(this);
+		m_orientation = orientation;
+		m_pParent->_onRenderRequested(this);
+	}
 }
 
-void WgStackHook::Bottom()
-{
-}
-
-WgStackHook::WgStackHook( WgGizmoStack * pParent ): m_pParent(pParent)
+WgStackHook::WgStackHook( WgGizmoStack * pParent ): m_pParent(pParent), m_orientation( WG_NORTHWEST ), m_sizePolicy( STRETCH )
 {
 }
 
@@ -49,6 +62,60 @@ WgStackHook::WgStackHook( WgGizmoStack * pParent ): m_pParent(pParent)
 WgGizmoContainer * WgStackHook::_parent() const
 {
 	return m_pParent;
+}
+
+
+
+WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
+{
+	switch( m_sizePolicy )
+	{
+		case DEFAULT:
+		{
+			WgRect base = parentGeo - m_borders;
+			WgSize	size = m_pGizmo->DefaultSize();
+			WgRect geo = WgUtil::OrientationToRect( m_orientation, base, size );
+
+			if( geo.w > base.w )
+			{
+				geo.x = 0;
+				geo.w = base.w;
+			}
+
+			if( geo.y > base.h )
+			{
+				geo.y = 0;
+				geo.h = base.h;
+			}
+			return geo;
+		}
+		case STRETCH:
+		{
+			return parentGeo - m_borders;
+		}
+		case SCALE:
+		{
+			WgRect	base 	= parentGeo - m_borders;
+			WgSize	orgSize = m_pGizmo->DefaultSize();
+			WgSize	size;
+
+			float	fracX = orgSize.w / (float) base.w;
+			float	fracY = orgSize.h / (float) base.h;
+
+			if( fracX > fracY )
+			{
+				size.w = base.w;
+				size.h = base.h * base.w / orgSize.w;
+			}
+			else
+			{
+				size.h = base.h;
+				size.w = base.w * base.h / orgSize.h;
+			}
+
+			return WgUtil::OrientationToRect( m_orientation, base, size );
+		}
+	}
 }
 
 
@@ -135,14 +202,7 @@ void WgGizmoStack::_onNewSize( const WgSize& size )
 
 WgRect WgGizmoStack::_hookGeo( const WgOrderedHook * pHook )
 {
-	return WgRect(0,0,m_size);
-}
-
-//____ _advanceGeoToHook() ____________________________________________________
-
-void WgGizmoStack::_advanceGeoToHook( WgRect& prevHookGeo, const WgOrderedHook * pHook )
-{
-	return;
+	return ((WgStackHook*)pHook)->_getGeo(m_size);
 }
 
 //____ _onResizeRequested() ____________________________________________________
@@ -169,6 +229,8 @@ void WgGizmoStack::_onResizeRequested( WgOrderedHook * _pHook )
 	}
 }
 
+//____ _onRenderRequested() ____________________________________________________
+
 void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook )
 {
 	_onRenderRequested(pHook, WgRect(0,0,m_size));
@@ -176,34 +238,30 @@ void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook )
 
 void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect )
 {
-/*	if( pHook->IsHidden() )
+	if( pHook->Hidden() )
 		return;
 
-	// Put our geometry and in a dirtyrect-list
+	// Put our rectangle into patches
 
-	WgRectChain rects;
-	rects.Add( rect );
+	WgPatches patches;
+	patches.Add( rect );
 
-	// Remove portions of dirty rect that are covered by opaque upper siblings,
-	// possibly filling list with many small dirty rects instead.
+	// Remove portions of patches that are covered by opaque upper siblings
 
-	WgOrderedHook * pCover = pHook->Next();
+	WgStackHook * pCover = ((WgStackHook*)pHook)->Next();
 	while( pCover )
 	{
-		pCover->Gizmo()->_onMaskRects( rects, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
+		WgRect geo = pCover->_getGeo(m_size);
+		if( !pCover->Hidden() && geo.IntersectsWith( rect ) )
+			pCover->Gizmo()->_onMaskPatches( patches, geo, WgRect(0,0,65536,65536 ) );
 
 		pCover = pCover->Next();
 	}
 
 	// Make request render calls
 
-	WgRectLink * pRect = rects.pRectList;
-	while( pRect )
-	{
+	for( const WgRect * pRect = patches.Begin() ; pRect < patches.End() ; pRect++ )
 		RequestRender( * pRect );
-		pRect = pRect->pNext;
-	}
-*/
 }
 
 //____ _onGizmoAppeared() _____________________________________________________
@@ -333,7 +391,6 @@ void WgGizmoStack::_refreshDefaultSize()
 	m_bestSize = bestSize;
 }
 
-
 //____ _adaptChildrenToSize() ___________________________________________________________
 
 void WgGizmoStack::_adaptChildrenToSize()
@@ -344,5 +401,49 @@ void WgGizmoStack::_adaptChildrenToSize()
 		pHook->Gizmo()->_onNewSize( m_size );
 		pHook = pHook->Next();
 	}
+}
+
+//____ _firstHookWithGeo() _____________________________________________________
+
+WgHook * WgGizmoStack::_firstHookWithGeo( WgRect& writeGeo ) const
+{
+	WgStackHook * p = FirstHook();
+	if( p )
+		writeGeo = p->_getGeo(m_size);
+
+	return p;
+}
+
+//____ _nextHookWithGeo() ______________________________________________________
+
+WgHook * WgGizmoStack::_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
+{
+	WgStackHook * p = ((WgStackHook*)pHook)->Next();
+	if( p )
+		writeGeo = p->_getGeo(m_size);
+
+	return p;
+}
+
+//____ _lastHookWithGeo() ______________________________________________________
+
+WgHook * WgGizmoStack::_lastHookWithGeo( WgRect& writeGeo ) const
+{
+	WgStackHook * p = LastHook();
+	if( p )
+		writeGeo = p->_getGeo(m_size);
+
+	return p;
+}
+
+//____ _prevHookWithGeo() ______________________________________________________
+
+WgHook * WgGizmoStack::_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
+{
+	WgStackHook * p = ((WgStackHook*)pHook)->Prev();
+	if( p )
+		writeGeo = p->_getGeo(m_size);
+
+	return p;
 }
 

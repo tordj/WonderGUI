@@ -57,6 +57,11 @@ public:
 	inline WgHook *	Prev() const { return _prevHook(); }
 	inline WgHook *	Next() const { return _nextHook(); }
 
+	inline bool		Hide() { return SetHidden(true); }
+	inline bool		Unhide() { return SetHidden(false); }
+	virtual bool	SetHidden( bool bHide );
+	bool			Hidden() { return m_bHidden; }
+
 	inline	WgGizmo *			Gizmo() const { return m_pGizmo; }
 	inline  WgGizmoParent * 	Parent() const { return _parent(); }
 	virtual WgRoot *			Root();
@@ -65,7 +70,7 @@ public:
 
 protected:
 
-	WgHook() : m_pGizmo(0) {}
+	WgHook() : m_pGizmo(0), m_bHidden(false) {}
 	virtual ~WgHook();
 
 	virtual void	_attachGizmo( WgGizmo * pGizmo );				// Make sure Gizmo links us. Call when hook has been relocated.
@@ -89,6 +94,8 @@ protected:
 
 
 	WgGizmo *		m_pGizmo;
+	bool			m_bHidden;
+	
 };
 
 #endif //WG_HOOK_DOT_H

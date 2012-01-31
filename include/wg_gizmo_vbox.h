@@ -20,41 +20,41 @@
 
 =========================================================================*/
 
-#ifndef WG_VBOXLAYOUT_DOT_H
-#define WG_VBOXLAYOUT_DOT_H
+#ifndef WG_GIZMO_VBOX_DOT_H
+#define WG_GIZMO_VBOX_DOT_H
 
 #ifndef WG_ORDERED_LAYOUT_DOT_H
 #	include <wg_orderedlayout.h>
 #endif
 
-class WgVBoxLayout;
+class WgGizmoVBox;
 
 class WgVBoxHook : public WgOrderedHook
 {
-	friend class WgVBoxLayout;
+	friend class WgGizmoVBox;
 
 public:
 	inline WgVBoxHook * Prev() const { return _prev(); }
 	inline WgVBoxHook * Next() const { return _next(); }
-	inline WgVBoxLayout * Parent() const { return m_pParent; }
+	inline WgGizmoVBox * Parent() const { return m_pParent; }
 
 protected:
 	PROTECTED_LINK_METHODS( WgVBoxHook );
 
-	WgVBoxHook( WgVBoxLayout * pParent );
+	WgVBoxHook( WgGizmoVBox * pParent );
 
 	WgGizmoContainer * _parent() const;
 
-	WgVBoxLayout *	m_pParent;
+	WgGizmoVBox *	m_pParent;
 	int				m_height;
 	WgSize			m_bestSize;			// Cached best size from the child.
 };
 
-class WgVBoxLayout : public WgOrderedLayout
+class WgGizmoVBox : public WgOrderedLayout
 {
 public:
-	WgVBoxLayout();
-	~WgVBoxLayout();
+	WgGizmoVBox();
+	~WgGizmoVBox();
 
 	const char * Type() const;
 	static const char * GetMyType();
@@ -80,10 +80,15 @@ protected:
 //	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onNewSize( const WgSize& size );
 
-	// Overloaded from WgOrderedLayout
+	// Overloaded from WgContainer
 
 	WgHook *	_firstHookWithGeo( WgRect& writeGeo ) const;
 	WgHook *	_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
+
+	WgHook *	_lastHookWithGeo( WgRect& writeGeo ) const;
+	WgHook *	_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
+
+	// Overloaded from WgOrderedLayout
 
 	WgRect	_hookGeo( const WgOrderedHook * pHook );
 	void	_onResizeRequested( WgOrderedHook * pHook );
@@ -95,7 +100,7 @@ protected:
 	void	_refreshAllGizmos();
 	WgOrderedHook * _newHook();
 
-	// Internal to WgVBoxLayout
+	// Internal to WgGizmoVBox
 
 	void	_adaptChildrenToWidth( int width );
 	void 	_refreshDefaultSize();
@@ -111,4 +116,4 @@ protected:
 
 
 
-#endif //WG_VBOXLAYOUT_DOT_H
+#endif //WG_GIZMO_VBOX_DOT_H

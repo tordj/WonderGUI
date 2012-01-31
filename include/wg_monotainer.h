@@ -31,11 +31,11 @@
 class WgMonotainer : public WgGizmo, public WgGizmoContainer
 {
 public:
-	WgMonotainer();
-	~WgMonotainer();
+	WgMonotainer() : m_hook(this) {}
+	~WgMonotainer() {}
 
-	WgHook *	SetChild( WgGizmoContainer * pGizmo );
-	WgGizmo *		Child();
+	WgHook *		SetChild( WgGizmoContainer * pGizmo );
+	WgGizmo *		Child() { return m_hook.Gizmo(); }
 	bool			DeleteChild();
 	WgGizmo *		ReleaseChild();
 
@@ -74,26 +74,26 @@ private:
 	public:
 		// Standard Hook methods
 
-		inline WgCoord		Pos() const { return m_pParent->Pos(); }
-		inline WgSize		Size() const { 	return m_pParent->Size(); }
-		inline WgRect		Geo() const { return m_pParent->Geo(); }
+		WgCoord			Pos() const { return m_pParent->Pos(); }
+		WgSize			Size() const { 	return m_pParent->Size(); }
+		WgRect			Geo() const { return m_pParent->Geo(); }
 
-		inline WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
-		inline WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
+		WgCoord			ScreenPos() const { return m_pParent->ScreenPos(); }
+		WgRect			ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		inline WgMonotainer* Parent() const { return m_pParent; }
+		WgMonotainer* 	Parent() const { return m_pParent; }
 
-		inline WgWidget*	GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
+		WgWidget*		GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
 
 	protected:
 		Hook( WgMonotainer * pParent ) : m_pParent(pParent) {}
 
-		inline void		_requestRender() { return m_pParent->RequestRender(); }
-		inline void		_requestRender( const WgRect& rect ) { return m_pParent->RequestRender(rect); }
-		inline void		_requestResize() { return m_pParent->RequestResize(); }
+		void			_requestRender() { if( !m_bHidden ) m_pParent->RequestRender(); }
+		void			_requestRender( const WgRect& rect ) { if( !m_bHidden ) m_pParent->RequestRender(rect); }
+		void			_requestResize() { if( !m_bHidden ) m_pParent->RequestResize(); }
 
-		WgHook *	_prevHook() const { return 0; }
-		WgHook *	_nextHook() const { return 0; }
+		WgHook *		_prevHook() const { return 0; }
+		WgHook *		_nextHook() const { return 0; }
 		WgGizmoParent * _parent() const { return m_pParent; }
 
 		WgMonotainer * 	m_pParent;
@@ -103,17 +103,23 @@ private:
 	WgHook *		_firstHookWithGeo( WgRect& geo ) const;
 	WgHook *		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
+	WgHook *		_lastHookWithGeo( WgRect& geo ) const;
+	WgHook *		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
+	// These are needed until WgGizmoContainer inherits from WgGizmo
+
 	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
+	void			_onEnable() { WgGizmoContainer::_onEnable(); }
+	void			_onDisable() { WgGizmoContainer::_onDisable(); }
+	bool 			_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
+
+	//
 
 	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onNewSize( const WgSize& size );
-
-	void			_onEnable();
-	void			_onDisable();
-	inline bool 	_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
 
 
 	WgHook*	_firstHook() const;

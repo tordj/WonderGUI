@@ -119,7 +119,7 @@ bool WgOrderedHook::MoveLast()
 	return false;
 }
 
-void WgOrderedHook::SetHidden( bool bHide )
+bool WgOrderedHook::SetHidden( bool bHide )
 {
 	if( bHide != m_bHidden )
 	{
@@ -129,6 +129,8 @@ void WgOrderedHook::SetHidden( bool bHide )
 		else
 			Parent()->_onGizmoAppeared(this);
 	}
+
+	return true;
 }
 
 WgOrderedLayout * WgOrderedHook::Parent() const
@@ -146,7 +148,7 @@ WgWidget* WgOrderedHook::GetRoot()
 		return 0;
 }
 
-WgOrderedHook::WgOrderedHook() : m_bHidden(false)
+WgOrderedHook::WgOrderedHook()
 {
 }
 
@@ -224,7 +226,7 @@ WgOrderedHook * WgOrderedLayout::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibli
 	pHook->_moveBefore(static_cast<WgOrderedHook*>(pSibling->Hook()));
 
 	pHook->_attachGizmo( pGizmo );
-
+	
 	_onGizmoAppeared(pHook);
 	return pHook;
 }
@@ -250,7 +252,8 @@ bool WgOrderedLayout::DeleteChild( WgGizmo * pGizmo )
 	WgOrderedHook * pHook = (WgOrderedHook *) pGizmo->Hook();
 	pHook->_disconnect();
 
-	_onGizmoDisappeared( pHook );
+	if( !pHook->Hidden() )
+		_onGizmoDisappeared( pHook );
 
 	// Delete the gizmo and return
 
@@ -270,7 +273,8 @@ WgGizmo * WgOrderedLayout::ReleaseChild( WgGizmo * pGizmo )
 	WgOrderedHook * pHook = (WgOrderedHook *) pGizmo->Hook();
 	pHook->_disconnect();
 
-	_onGizmoDisappeared( pHook );
+	if( !pHook->Hidden() )
+		_onGizmoDisappeared( pHook );
 
 	return pGizmo;
 }
@@ -316,51 +320,6 @@ void WgOrderedLayout::SetSortOrder( WgSortOrder order )
 void WgOrderedLayout::SetSortFunction( WgGizmoSortFunc pSortFunc )
 {
 	m_pSortFunc = pSortFunc;
-}
-
-//____ FindGizmo() ____________________________________________________________
-
-WgGizmo * WgOrderedLayout::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
-{
-	WgRect			rect;
-	WgHook * 		pHook = _firstHookWithGeo(rect);
-	WgGizmo * 		pResult = 0;
-
-
-
-	while( pHook && !pResult )
-	{
-		if( rect.Contains( ofs ) )
-		{
-			WgGizmo * pGizmo = pHook->Gizmo();
-			if( pGizmo->IsContainer() )
-			{
-				pResult = pGizmo->CastToContainer()->FindGizmo( ofs - rect.Pos(), mode );
-			}
-			else
-			{
-				switch( mode )
-				{
-					case WG_SEARCH_ACTION_TARGET:
-					case WG_SEARCH_MARKPOLICY:
-						if( pGizmo->MarkTest( ofs - rect.Pos() ) )
-							pResult = pGizmo;
-						break;
-					case WG_SEARCH_GEOMETRY:
-						pResult = pGizmo;
-						break;
-				}
-			}
-		}
-		pHook = _nextHookWithGeo(rect,pHook);
-	}
-
-	if( !pResult && mode == WG_SEARCH_GEOMETRY )
-		pResult = this;
-
-	return pResult;
-
-
 }
 
 //____ _onCloneContent() ______________________________________________________

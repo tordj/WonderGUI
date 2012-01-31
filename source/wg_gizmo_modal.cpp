@@ -244,18 +244,18 @@ WgGizmoContainer * WgModalHook::_parent() const
 	return m_pParent;
 }
 
-
-
 //_____________________________________________________________________________
 void WgGizmoModal::BaseHook::_requestRender()
 {
-	m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
+	if( !m_bHidden )
+		m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
 }
 
 //_____________________________________________________________________________
 void WgGizmoModal::BaseHook::_requestRender( const WgRect& rect )
 {
-	m_pParent->_onRequestRender( rect, 0 );
+	if( !m_bHidden )
+		m_pParent->_onRequestRender( rect, 0 );
 }
 
 //_____________________________________________________________________________
@@ -301,7 +301,8 @@ WgHook * WgGizmoModal::SetBase( WgGizmo * pGizmo )
 	if( pOldGizmo )
 		delete pOldGizmo;
 	m_baseHook._attachGizmo(pGizmo);
-	_onRequestRender( WgRect(0,0,m_size), 0 );
+	if( !m_baseHook.m_bHidden )
+		_onRequestRender( WgRect(0,0,m_size), 0 );
 
 	// Notify that we might want a new size now...
 
@@ -323,9 +324,10 @@ bool WgGizmoModal::DeleteBase()
 	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
 	if( pGizmo )
 	{
-		delete pGizmo;
-		_onRequestRender( WgRect(0,0,m_size), 0 );
+		if( !m_baseHook.m_bHidden )
+			_onRequestRender( WgRect(0,0,m_size), 0 );
 		RequestResize();
+		delete pGizmo;
 		return true;
 	}
 
@@ -339,7 +341,8 @@ WgGizmo * WgGizmoModal::ReleaseBase()
 	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
 	if( pGizmo )
 	{
-		_onRequestRender( WgRect(0,0,m_size), 0 );
+		if( !m_baseHook.m_bHidden )
+			_onRequestRender( WgRect(0,0,m_size), 0 );
 		RequestResize();
 	}
 
@@ -493,73 +496,54 @@ WgSize WgGizmoModal::DefaultSize() const
 
 WgGizmo *  WgGizmoModal::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
+	// In search mode ACTION_TARGET we always return the topmost non-hidden modal Gizmo (or its children)
+	// no matter its geometry.
 
-
-	WgModalHook * pHook = m_modalHooks.Last();
-
-	// In search mode ACTION_TARGET we always return the topmost Gizmo or its children.
-
-	if( mode == WG_SEARCH_ACTION_TARGET && pHook )
+	if( mode == WG_SEARCH_ACTION_TARGET )
 	{
-		if( pHook->Gizmo()->IsContainer() )
-		{
-			WgGizmo * pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_realGeo.Pos(), mode );
-			if( pResult )
-				return pResult;
-		}
+		WgModalHook * pHook = m_modalHooks.Last();
 
-		return pHook->Gizmo();
-	}
+		while( pHook && pHook->Hidden() )
+			pHook = pHook->Prev();
 
-
-	// Test against all our modal gizmos
-
-	while( pHook )
-	{
-		if( pHook->m_realGeo.Contains(ofs) )
+		if( pHook )
 		{
 			if( pHook->Gizmo()->IsContainer() )
 			{
-				WgGizmo * pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_realGeo.Pos(), mode );
+				WgGizmo * pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->Pos(), mode );
 				if( pResult )
 					return pResult;
 			}
-			else if( mode == WG_SEARCH_GEOMETRY )
-				return pHook->Gizmo();
-			else if( pHook->Gizmo()->MarkTest( ofs - pHook->m_realGeo.Pos() ) )
+			else
 				return pHook->Gizmo();
 		}
-		pHook = pHook->_prev();
-	}
-
-	// Test against our base Gizmo.
-
-	if( m_baseHook.Gizmo() )
-	{
-		if( m_baseHook.Gizmo()->IsContainer() )
+		else if( m_baseHook.Gizmo() && !m_baseHook.Hidden() )
 		{
-			WgGizmo * pResult = m_baseHook.Gizmo()->CastToContainer()->FindGizmo( ofs, mode );
-			if( pResult )
-				return pResult;
-		}
-		else if( mode == WG_SEARCH_GEOMETRY )
-			return m_baseHook.Gizmo();
-		else if( m_baseHook.Gizmo()->MarkTest(ofs) )
+			if( m_baseHook.Gizmo()->IsContainer() )
+			{
+				WgGizmo * pResult = m_baseHook.Gizmo()->CastToContainer()->FindGizmo( ofs - m_baseHook.Pos(), mode );
+				if( pResult )
+					return pResult;
+			}
+			else
 				return m_baseHook.Gizmo();
+		}
+		else
+			return 0;
 	}
 
-	// Return us if search mode is GEOMETRY
+	// For the rest of the modes we can rely on the default method.
 
-	if( mode == WG_SEARCH_GEOMETRY )
-		return this;
-
-	return 0;
+	return WgGizmoContainer::FindGizmo( ofs, mode );
 }
 
 //____ _onRequestRender() _____________________________________________________
 
 void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHook )
 {
+	if( pHook && pHook->m_bHidden )
+		return;
+
 	// Clip our geometry and put it in a dirtyrect-list
 
 	WgPatches patches;
@@ -577,7 +561,7 @@ void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHo
 
 	while( pCover )
 	{
-		if( pCover->m_realGeo.IntersectsWith( rect ) )
+		if( !pCover->m_bHidden && pCover->m_realGeo.IntersectsWith( rect ) )
 			pCover->Gizmo()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ) );
 
 		pCover = pCover->Next();
@@ -663,12 +647,41 @@ WgHook * WgGizmoModal::_firstHookWithGeo( WgRect& geo ) const
 
 WgHook * WgGizmoModal::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
-	WgModalHook * p = ((WgModalHook*)pHook)->_next();
+	WgHook * p = pHook->Next();
 	if( p )
-		geo = p->m_realGeo;
-	
+		geo = ((WgModalHook*)p)->m_realGeo;
+
 	return p;
 }
 
+//____ _lastHookWithGeo() _____________________________________________________
+
+WgHook * WgGizmoModal::_lastHookWithGeo( WgRect& geo ) const
+{
+	WgModalHook * p = m_modalHooks.Last();
+	if( p )
+	{
+		geo = p->m_realGeo;
+		return p;
+	}
+	else if( m_baseHook.Gizmo() )
+	{
+		geo = WgRect(0,0,m_size);
+		return const_cast<BaseHook*>(&m_baseHook);
+	}
+	else
+		return 0;
+}
+
+//____ _prevHookWithGeo() _______________________________________________________
+
+WgHook * WgGizmoModal::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+	WgHook * p = pHook->Prev();
+	if( p )
+		geo = p->Geo();
+
+	return p;
+}
 
 
