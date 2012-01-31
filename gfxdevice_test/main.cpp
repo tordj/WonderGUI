@@ -9,6 +9,10 @@
 #endif
 
 #include <wondergui.h>
+#include <wg_surface_soft.h>
+#include <wg_gfxdevice_soft.h>
+//#include <wg_surface_gl.h>
+//#include <wg_gfxdevice_gl.h>
 
 int fileSize( const char * pPath );
 void * loadFile( const char * pPath );
@@ -34,8 +38,8 @@ int main(int argc, char **argv)
 
 	WgBase::Init();
 
-	WgSurfaceSDL * pCanvas = new WgSurfaceSDL( pScreen );
-	WgGfxDevice * pGfxDevice = new WgGfxDeviceSDL( pCanvas );
+	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(1024,800), WG_PIXEL_RGBA_8 );
+	WgGfxDevice * pGfxDevice = new WgGfxDeviceSoft( pCanvas );
 
 	WgRoot * pRoot = new WgRoot( pGfxDevice );
 	pRoot->SetGeo(WgRect(0,0,1024,800));
@@ -48,7 +52,7 @@ int main(int argc, char **argv)
 	WgBase::MapKey( WG_KEY_CONTROL, SDLK_RCTRL );
 	WgBase::MapKey( WG_KEY_ALT, SDLK_LALT );
 	WgBase::MapKey( WG_KEY_ALT, SDLK_RALT );
-	
+
 	WgBase::MapKey( WG_KEY_LEFT, SDLK_LEFT );
 	WgBase::MapKey( WG_KEY_RIGHT, SDLK_RIGHT );
 	WgBase::MapKey( WG_KEY_UP, SDLK_UP );
@@ -64,7 +68,7 @@ int main(int argc, char **argv)
 	WgBase::MapKey( WG_KEY_DELETE, SDLK_DELETE );
 	WgBase::MapKey( WG_KEY_TAB, SDLK_TAB );
 	WgBase::MapKey( WG_KEY_ESCAPE, SDLK_ESCAPE );
-	
+
 	// Load bitmap font
 
 	WgSurface * pFontImg = loadSurface("anuvverbubbla_8x8.png");
@@ -104,7 +108,7 @@ int main(int argc, char **argv)
 
     } // end main loop
 
-	
+
 	return 0;
 }
 
@@ -130,7 +134,7 @@ SDL_Surface * initSDL( int w, int h )
         printf("Unable to set %dx%d video: %s\n", w, h, SDL_GetError());
         return 0;
     }
-	
+
 	SDL_EnableUNICODE(true);
 
 	return pScreen;
