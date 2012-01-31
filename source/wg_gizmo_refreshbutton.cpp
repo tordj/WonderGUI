@@ -131,8 +131,9 @@ void WgGizmoRefreshButton::StartRefresh()
 		m_refreshProgress = 0.f;
 		m_animTimer = 0;
 		m_pRefreshAnim->SetPlayMode( WG_FORWARD_LOOPING );		//UGLY! Should change once the animation system has been updated.
-
+#ifdef WG_TNG
 		_startReceiveTicks();
+#endif
 		RequestRender();
 	}
 }
@@ -147,7 +148,11 @@ void WgGizmoRefreshButton::StopRefresh()
 		m_pRefreshAnim->SetPlayMode( WG_FORWARD_ONCE );	//UGLY! Should change once the animation system has been updated.
 	}
 	else
+	{
+#ifdef WG_TNG
 		StopRefreshNow();
+#endif
+	}
 }
 
 //_____________________________________________________________________________
@@ -155,8 +160,9 @@ void WgGizmoRefreshButton::StopRefreshNow()
 {
 	m_refreshProgress = 1.f;
 	m_bRefreshing = false;
-
+#ifdef WG_TNG
 	_stopReceiveTicks();
+#endif
 	RequestRender();
 }
 
@@ -197,6 +203,7 @@ void WgGizmoRefreshButton::_onNewSize( const WgSize& size )
 
 //____ _onEvent() _____________________________________________________________
 
+#ifdef WG_TNG
 void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -258,7 +265,7 @@ void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandl
 
 	WgGizmoButton::_onEvent( pEvent, pHandler );
 }
-
+#endif
 
 //_____________________________________________________________________________
 void WgGizmoRefreshButton::_onUpdate( const WgUpdateInfo& _updateInfo )

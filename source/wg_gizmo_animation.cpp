@@ -204,8 +204,9 @@ bool WgGizmoAnimation::Play()
 		return false;
 
 	m_bPlaying = true;
+#ifdef WG_TNG
 	_startReceiveTicks();
-	
+#endif	
 	return true;
 }
 
@@ -214,7 +215,9 @@ bool WgGizmoAnimation::Play()
 bool WgGizmoAnimation::Stop()
 {
 	m_bPlaying = false;
+#ifdef WG_TNG
 	_stopReceiveTicks();
+#endif
 	return true;
 }
 
@@ -246,8 +249,9 @@ void WgGizmoAnimation::_playPosUpdated()
 				
 		Emit( WgSignal::IntegerChanged(), static_cast<int>(m_playPos) );
 		Emit( WgSignal::Fraction(), (float)m_playPos/(float)m_pAnim->Duration()-1);
-				
+#ifdef WG_TGN				
 		EventHandler()->QueueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));		
+#endif
 	}
 }
 
@@ -354,7 +358,11 @@ bool WgGizmoAnimation::_onAlphaTest( const WgCoord& ofs )
 void WgGizmoAnimation::_onEnable( void )
 {
 	if( m_bPlaying )
+	{
+#ifdef WG_TNG
 		_startReceiveTicks();
+#endif
+	}
 	RequestRender();
 }
 
@@ -363,6 +371,10 @@ void WgGizmoAnimation::_onEnable( void )
 void WgGizmoAnimation::_onDisable( void )
 {
 	if( m_bPlaying )
+	{
+#ifdef WG_TNG
 		_stopReceiveTicks();
+#endif
+	}
 	RequestRender();
 }
