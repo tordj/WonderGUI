@@ -196,14 +196,17 @@ int main ( int argc, char** argv )
 		pSplash->SetSource( pSplashBlock );
 
 		WgStackHook * pHook = pStack->AddChild( pSplash );
-		pHook->SetSizePolicy( WgStackHook::DEFAULT );
+		pHook->SetSizePolicy( WgStackHook::SCALE );
 		pHook->SetOrientation( WG_CENTER );
+		pHook->SetBorders( WgBorders(2) );
 
 		addResizableContainer( pFlex, pStack, pButtonBlock, pEventHandler );
 	}
 
 	// Modal container
 
+	pRoot->SetChild(pFlex);
+/*
 	g_pModal = new WgGizmoModal();
 	g_pModal->SetBase( pFlex );
 
@@ -313,7 +316,7 @@ int main ( int argc, char** argv )
 	pFlex->AddChild( pRB4, WgCoord(0,120) );
 
 	pVBox->SetRadioGroup(true);
-
+*/
     // program main loop
 
     while (eventLoop( pEventHandler ))

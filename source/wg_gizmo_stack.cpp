@@ -68,11 +68,15 @@ WgGizmoContainer * WgStackHook::_parent() const
 
 WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 {
+	WgRect base = parentGeo - m_borders;
+	
+	if( base.w <= 0 || base.h <= 0 )
+		return WgRect(0,0,0,0);
+	
 	switch( m_sizePolicy )
 	{
 		case DEFAULT:
 		{
-			WgRect base = parentGeo - m_borders;
 			WgSize	size = m_pGizmo->DefaultSize();
 			WgRect geo = WgUtil::OrientationToRect( m_orientation, base, size );
 
@@ -82,7 +86,7 @@ WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 				geo.w = base.w;
 			}
 
-			if( geo.y > base.h )
+			if( geo.h > base.h )
 			{
 				geo.y = 0;
 				geo.h = base.h;
@@ -91,11 +95,10 @@ WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 		}
 		case STRETCH:
 		{
-			return parentGeo - m_borders;
+			return base;
 		}
 		case SCALE:
 		{
-			WgRect	base 	= parentGeo - m_borders;
 			WgSize	orgSize = m_pGizmo->DefaultSize();
 			WgSize	size;
 
@@ -105,12 +108,12 @@ WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 			if( fracX > fracY )
 			{
 				size.w = base.w;
-				size.h = base.h * base.w / orgSize.w;
+				size.h = int (orgSize.h / fracX);
 			}
 			else
 			{
 				size.h = base.h;
-				size.w = base.w * base.h / orgSize.h;
+				size.w = (int) (orgSize.w / fracY);
 			}
 
 			return WgUtil::OrientationToRect( m_orientation, base, size );
@@ -123,6 +126,7 @@ WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 
 WgGizmoStack::WgGizmoStack()
 {
+	m_bSiblingsOverlap = true;	
 }
 
 //____ Destructor _____________________________________________________________
