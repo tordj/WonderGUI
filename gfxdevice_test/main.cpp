@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 
 #ifdef WIN32
@@ -11,8 +12,7 @@
 #include <wondergui.h>
 #include <wg_surface_soft.h>
 #include <wg_gfxdevice_soft.h>
-//#include <wg_surface_gl.h>
-//#include <wg_gfxdevice_gl.h>
+#include <sdl_wglib.h>
 
 int fileSize( const char * pPath );
 void * loadFile( const char * pPath );
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
 	WgBase::Init();
 
-	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(1024,800), WG_PIXEL_RGBA_8 );
+	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WG_PIXEL_RGBA_8, WgSize(1024,800) );
 	WgGfxDevice * pGfxDevice = new WgGfxDeviceSoft( pCanvas );
 
 	WgRoot * pRoot = new WgRoot( pGfxDevice );
@@ -46,33 +46,14 @@ int main(int argc, char **argv)
 
 	WgEventHandler * pEventHandler = pRoot->EventHandler();
 
-	WgBase::MapKey( WG_KEY_SHIFT, SDLK_LSHIFT );
-	WgBase::MapKey( WG_KEY_SHIFT, SDLK_RSHIFT );
-	WgBase::MapKey( WG_KEY_CONTROL, SDLK_LCTRL );
-	WgBase::MapKey( WG_KEY_CONTROL, SDLK_RCTRL );
-	WgBase::MapKey( WG_KEY_ALT, SDLK_LALT );
-	WgBase::MapKey( WG_KEY_ALT, SDLK_RALT );
-
-	WgBase::MapKey( WG_KEY_LEFT, SDLK_LEFT );
-	WgBase::MapKey( WG_KEY_RIGHT, SDLK_RIGHT );
-	WgBase::MapKey( WG_KEY_UP, SDLK_UP );
-	WgBase::MapKey( WG_KEY_DOWN, SDLK_DOWN );
-
-	WgBase::MapKey( WG_KEY_HOME, SDLK_HOME );
-	WgBase::MapKey( WG_KEY_END, SDLK_END );
-	WgBase::MapKey( WG_KEY_PAGEUP, SDLK_PAGEUP );
-	WgBase::MapKey( WG_KEY_PAGEDOWN, SDLK_PAGEDOWN );
-
-	WgBase::MapKey( WG_KEY_RETURN, SDLK_RETURN );
-	WgBase::MapKey( WG_KEY_BACKSPACE, SDLK_BACKSPACE );
-	WgBase::MapKey( WG_KEY_DELETE, SDLK_DELETE );
-	WgBase::MapKey( WG_KEY_TAB, SDLK_TAB );
-	WgBase::MapKey( WG_KEY_ESCAPE, SDLK_ESCAPE );
+	sdl_wglib::mapKeys();
 
 	// Load bitmap font
 
-	WgSurface * pFontImg = loadSurface("anuvverbubbla_8x8.png");
-	char * pFontSpec = (char*) loadFile( "anuvverbubbla_8x8.fnt" );
+	WgSurface * pFontImg = loadSurface("../resources/anuvverbubbla_8x8.png");
+	pFontImg->defineBlockSet( WgRect(0,0,10,10), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );	//dummy!!!
+	
+	char * pFontSpec = (char*) loadFile( "../resources/anuvverbubbla_8x8.fnt" );
 
 	WgBitmapGlyphs * pGlyphs = new WgBitmapGlyphs( pFontImg, pFontSpec );
 
@@ -144,12 +125,8 @@ SDL_Surface * initSDL( int w, int h )
 
 bool eventLoop( WgEventHandler * pHandler )
 {
-	static int	prevTicks = 0;
-
-	int ticks = SDL_GetTicks();
-	pHandler->QueueEvent( new WgEvent::Tick( ticks - prevTicks ) );
-	prevTicks = ticks;
-
+	sdl_wglib::beginEvents( pHandler );
+	
    // message processing loop
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
@@ -167,48 +144,12 @@ bool eventLoop( WgEventHandler * pHandler )
 				// exit if ESCAPE is pressed
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 					return false;
-
-				pHandler->QueueEvent( new WgEvent::KeyPress( event.key.keysym.sym ) );
-				if( event.key.keysym.unicode != 0 )
-					pHandler->QueueEvent( new WgEvent::Character( event.key.keysym.unicode ) );
-				break;
 			}
+		} 
+		sdl_wglib::translateEvent( event );
+	}
 
-			case SDL_KEYUP:
-			{
-				pHandler->QueueEvent( new WgEvent::KeyRelease( event.key.keysym.sym ) );
-				break;
-			}
-
-			case	SDL_MOUSEMOTION:
-			{
-				pHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( event.motion.x, event.motion.y ) ) );
-				break;
-			}
-
-			case	SDL_MOUSEBUTTONDOWN:
-				if(event.button.button == 4 )
-					pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, 120 ) );
-				else if(event.button.button == 5)
-					pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, -120 ) );
-				else
-				{
-//					pHandler->QueueEvent( WgEvent::MouseMove( WgCoord( event.button.x, event.button.y )) );
-					pHandler->QueueEvent( new WgEvent::MouseButtonPress( event.button.button ) );
-				}
-				break;
-
-			case	SDL_MOUSEBUTTONUP:
-//				pHandler->QueueEvent( WgEvent::MouseMove( WgCoord( event.button.x, event.button.y ) ));
-				if( event.button.button != 4 && event.button.button != 5 )
-				pHandler->QueueEvent( new WgEvent::MouseButtonRelease( event.button.button ) );
-				break;
-
-
-		} // end switch
-	} // end of message processing
-
-	pHandler->ProcessEvents();
+	sdl_wglib::endEvents();
 
 	return true;
 }
@@ -218,6 +159,8 @@ bool eventLoop( WgEventHandler * pHandler )
 
 WgSurface * loadSurface( const char * path )
 {
+	//TODO: Lots of error handling and avoid memory leaks.
+
     // load an image
     SDL_Surface* bmp = IMG_Load(path);
     if (!bmp)
@@ -226,7 +169,17 @@ WgSurface * loadSurface( const char * path )
         return 0;
     }
 
-	return new WgSurfaceSDL(bmp);
+	WgSize size( bmp->w, bmp->h );
+	WgPixelType type;
+	
+	if( bmp->format->BitsPerPixel == 32 )
+		type = WG_PIXEL_RGBA_8;
+	else if( bmp->format->BitsPerPixel == 24 )
+		type = WG_PIXEL_RGB_8;
+	else
+		type = WG_PIXEL_UNKNOWN;
+
+	return new WgSurfaceSoft( type, size, (unsigned char *) bmp->pixels, bmp->pitch );
 
 }
 

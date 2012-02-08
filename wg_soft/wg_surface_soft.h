@@ -22,21 +22,10 @@
 #ifndef WG_SURFACE_SOFT_DOT_H
 #define WG_SURFACE_SOFT_DOT_H
 
-#ifndef WG_TYPES_DOT_H
-#include "wg_types.h"
-#endif
-
-#ifndef WG_COLOR_DOT_H
-#include "wg_color.h"
-#endif
-
-#ifndef WG_GEO_DOT_H
-#include "wg_geo.h"
-#endif
-
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>
 #endif
+
 
 #include <vector>
 
@@ -47,8 +36,8 @@ class WgSurfaceSoft : public WgSurface
 	friend class WgGfxDeviceSoft;
 	
  public:
-	WgSurfaceSoft( WgSize size, WgPixelType type );
-	WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch );
+	WgSurfaceSoft( WgPixelType type, WgSize size );
+	WgSurfaceSoft( WgPixelType type, WgSize size, Uint8 * pPixels, int pitch );
 	WgSurfaceSoft( const WgSurfaceSoft * pOther );
 	~WgSurfaceSoft();
 

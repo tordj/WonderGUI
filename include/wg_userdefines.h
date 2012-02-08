@@ -48,7 +48,7 @@
 								// that better handles broken unicode strings.
 								// Ignored if WG_USE_UTF8 isn't defined.
 
-#define WG_USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
+//#define WG_USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
 								// dependency on freetype.
 
 

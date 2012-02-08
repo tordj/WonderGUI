@@ -32,7 +32,7 @@ static const char	c_surfaceType[] = {"Software"};
 
 //____ Constructor ________________________________________________________________
 
-WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type )
+WgSurfaceSoft::WgSurfaceSoft( WgPixelType type, WgSize size )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
 	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
@@ -44,7 +44,7 @@ WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type )
 	m_fScaleAlpha = 1.f;
 }
 
-WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch )
+WgSurfaceSoft::WgSurfaceSoft( WgPixelType type, WgSize size, Uint8 * pPixels, int pitch )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
 	WgUtil::PixelTypeToFormat(type, m_pixelFormat);

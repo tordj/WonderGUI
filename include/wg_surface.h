@@ -108,16 +108,6 @@ public:
 	virtual bool		Fill( WgColor col );
 
 
-    // Deprecated legacy methods
-/*
-	inline Uint32		width() const { return GetWidth(); }
-	inline Uint32		height() const { return GetHeight(); }
-	inline bool			hasAlpha() const { return !IsOpaque(); }
-	inline Uint32		pixel( Uint32 x, Uint32 y ) const { return GetPixel(x,y); }
-	inline Uint8		opacity( Uint32 x, Uint32 y ) const { return GetOpacity(x,y); }
-	inline Uint32		col2pixel( const WgColor& col ) const { return Col2Pixel(col); }
-	inline WgColor		pixel2col( Uint32 pixel ) const { return Pixel2Col(pixel); }
-*/
 	// Methods for defining BlockSets
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& marked,

@@ -112,7 +112,7 @@ private:
 									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
 	void			_onEnable() { WgGizmoContainer::_onEnable(); }
 	void			_onDisable() { WgGizmoContainer::_onDisable(); }
-	bool 			_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
+	bool 			_onAlphaTest( const WgCoord& ofs ) { return WgGizmoContainer::_onAlphaTest(ofs); }
 
 	//
 
