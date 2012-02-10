@@ -91,20 +91,39 @@ WgColor WgSurface::Pixel2Col( Uint32 pixel ) const
 	return col;
 }
 
+//____ _lockAndAdjustRegion() __________________________________________________
+
+WgRect WgSurface::_lockAndAdjustRegion( WgAccessMode modeNeeded, const WgRect& region )
+{
+	if( m_accessMode == WG_NO_ACCESS )
+	{
+		Lock( modeNeeded );
+		return region;
+	}
+	else if( m_accessMode != WG_READ_WRITE && m_accessMode != modeNeeded )
+		return WgRect(0,0,0,0);
+
+	if( !m_lockRegion.Contains( region ) )
+		return WgRect(0,0,0,0);
+
+	return region - m_lockRegion.Pos();
+}
 
 //____ Fill() _________________________________________________________________
 
 bool WgSurface::Fill( WgColor col )
 {
+	return Fill( col, WgRect(0,0,Size()) );
+}
+
+bool WgSurface::Fill( WgColor col, const WgRect& _rect )
+{
 
 	WgAccessMode oldMode = m_accessMode;
+	WgRect rect = _lockAndAdjustRegion(WG_WRITE_ONLY,_rect);
 
-	if( oldMode != WG_READ_WRITE && oldMode != WG_WRITE_ONLY )
-	{
-		Lock( WG_WRITE_ONLY );
-		if( m_pPixels == 0 )
-			return false;
-	}	
+	if( rect.w == 0 )
+		return false;
 
 	//
 
@@ -168,18 +187,179 @@ bool WgSurface::Fill( WgColor col )
 
 	if( oldMode == WG_NO_ACCESS )
 		Unlock();
-	else if( oldMode == WG_READ_ONLY )
-		Lock( oldMode );
 
 	return ret;
 }
+
+//_____ CopyFrom() _____________________________________________________________
+
+bool WgSurface::CopyFrom( WgSurface * pSrcSurface, WgCoord dst )
+{
+	if( pSrcSurface == 0 )
+		return false;
+
+	return CopyFrom( pSrcSurface, WgRect(0,0,pSrcSurface->Size()), dst );
+}
+
+bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoord _dst )
+{
+	if( pSrcSurface == 0 || pSrcSurface->m_pixelFormat.type == WG_PIXEL_UNKNOWN || m_pixelFormat.type == WG_PIXEL_UNKNOWN )
+		return false;
+
+	// Save old locks and lock the way we want.
+
+	WgAccessMode 	dstOldMode 		= m_accessMode;
+	WgAccessMode 	srcOldMode 		= pSrcSurface->GetLockStatus();
+
+	WgRect srcRect = pSrcSurface->_lockAndAdjustRegion( WG_READ_ONLY, _srcRect );
+	WgRect dstRect = _lockAndAdjustRegion( WG_WRITE_ONLY, WgRect(_dst.x,_dst.y,srcRect.w,srcRect.h) );
+
+	// Do the copying
+
+	if( srcRect.w > 0 && dstRect.w > 0 )
+	{
+		const WgPixelFormat * pSrcFormat = pSrcSurface->PixelFormat();
+		const WgPixelFormat * pDstFormat = &m_pixelFormat;
+
+		int		srcPitch = pSrcSurface->Pitch();
+		int		dstPitch = m_pitch;
+
+		unsigned char *	pSrc = (unsigned char*) pSrcSurface->Pixels();
+		unsigned char *	pDst = (unsigned char*) m_pPixels;
+
+		pSrc += srcRect.y * srcPitch + srcRect.x * pSrcFormat->bits/8;
+		pDst += dstRect.y * dstPitch + dstRect.x * pDstFormat->bits/8;
+
+
+		if( (pSrcFormat->type == pDstFormat->type && pSrcFormat->type != WG_PIXEL_CUSTOM) ||
+			(pSrcFormat->bits == pDstFormat->bits && pSrcFormat->R_mask == pDstFormat->R_mask &&
+			 pSrcFormat->G_mask == pDstFormat->G_mask && pSrcFormat->B_mask == pDstFormat->B_mask &&
+			 pSrcFormat->A_mask == pDstFormat->A_mask) )
+		{
+			// We have identical formats so we can do a fast straight copy
+
+			int lineLength = srcRect.w * pSrcFormat->bits/8;
+			for( int y = 0 ; y < srcRect.h ; y++ )
+			{
+				memcpy( pDst, pSrc, lineLength );
+				pSrc += srcPitch;
+				pDst += dstPitch;
+			}
+		}
+		else if( (pSrcFormat->type == WG_PIXEL_RGBA_8 || pSrcFormat->type == WG_PIXEL_RGB_8) &&
+				 (pDstFormat->type == WG_PIXEL_RGBA_8 || pDstFormat->type == WG_PIXEL_RGB_8) )
+		{
+			// We are just switching between RGBA_8 and RGB_8, just copy RGB components and skip alpha
+
+			int		srcInc = pSrcFormat->bits/8;
+			int		dstInc = pDstFormat->bits/8;
+
+			int		srcLineInc = srcPitch - srcInc * srcRect.w;
+			int		dstLineInc = dstPitch - dstInc * srcRect.w;
+
+			for( int y = 0 ; y < srcRect.h ; y++ )
+			{
+				for( int x = 0 ; x < srcRect.w ; x++ )
+				{
+					pDst[0] = pSrc[0];
+					pDst[1] = pSrc[1];
+					pDst[2] = pSrc[2];
+					pSrc += srcInc;
+					pDst += dstInc;
+				}
+				pSrc += srcLineInc;
+				pDst += dstLineInc;
+			}
+
+		}
+		else
+		{
+			// We need to fully convert pixels when copying
+
+			//TODO: Optimize by making different loops for all 16 combinations of source and destination pixel-bits.
+
+			int		srcInc = pSrcFormat->bits/8;
+			int		dstInc = pDstFormat->bits/8;
+
+			int		srcLineInc = srcPitch - srcInc * srcRect.w;
+			int		dstLineInc = dstPitch - dstInc * srcRect.w;
+
+			unsigned int	R_mask = (((0xFFFFFFFF & pSrcFormat->R_mask) >> pSrcFormat->R_shift) << pDstFormat->R_shift) & pDstFormat->R_mask;
+			unsigned int	G_mask = (((0xFFFFFFFF & pSrcFormat->G_mask) >> pSrcFormat->G_shift) << pDstFormat->G_shift) & pDstFormat->G_mask;
+			unsigned int	B_mask = (((0xFFFFFFFF & pSrcFormat->B_mask) >> pSrcFormat->B_shift) << pDstFormat->B_shift) & pDstFormat->B_mask;
+			unsigned int	A_mask = (((0xFFFFFFFF & pSrcFormat->A_mask) >> pSrcFormat->A_shift) << pDstFormat->A_shift) & pDstFormat->A_mask;
+
+			int		R_shift = pSrcFormat->R_shift - pDstFormat->R_shift;
+			int		G_shift = pSrcFormat->G_shift - pDstFormat->G_shift;
+			int		B_shift = pSrcFormat->B_shift - pDstFormat->B_shift;
+			int		A_shift = pSrcFormat->A_shift - pDstFormat->A_shift;
+
+			for( int y = 0 ; y < srcRect.h ; y++ )
+			{
+				for( int x = 0 ; x < srcRect.w ; x++ )
+				{
+					unsigned int srcpixel;
+
+					switch( pSrcFormat->bits )
+					{
+						case 8:
+							srcpixel = pSrc[0];
+						break;
+						case 16:
+							srcpixel = * ((unsigned short*)pSrc);
+						case 24:
+							srcpixel = pSrc[0] + ((unsigned int)pSrc[1]) << 8 + ((unsigned int)pSrc[2]) << 16;
+						case 32:
+							srcpixel = * ((unsigned int*)pSrc);
+					}
+
+					unsigned int dstpixel = ((srcpixel >> R_shift) & R_mask) |
+											((srcpixel >> G_shift) & G_mask) |
+											((srcpixel >> B_shift) & B_mask) |
+											((srcpixel >> A_shift) & A_mask);
+
+					switch( pDstFormat->bits )
+					{
+						case 8:
+							pDst[0] = (unsigned char) dstpixel;
+						break;
+						case 16:
+							* ((unsigned short*)pDst) = (unsigned short) dstpixel;
+						case 24:
+							pDst[0] = (unsigned char) dstpixel;
+							pDst[1] = (unsigned char) (dstpixel >> 8);
+							pDst[2] = (unsigned char) (dstpixel >> 16);
+						case 32:
+							* ((unsigned int*)pDst) = dstpixel;
+					}
+
+					pSrc += srcInc;
+					pDst += dstInc;
+				}
+				pSrc += srcLineInc;
+				pDst += dstLineInc;
+			}
+		}
+	}
+
+	// Release any temporary locks
+
+	if( dstOldMode == WG_NO_ACCESS )
+		Unlock();
+
+	if( srcOldMode == WG_NO_ACCESS )
+		pSrcSurface->Unlock();
+}
+
+
+
 
 
 //____ defineBlockSet() ________________________________________________________
 
 WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& marked,
 											const WgRect& selected, const WgRect& disabled,
-											const WgRect& special, const WgBorders& gfxBorders, 
+											const WgRect& special, const WgBorders& gfxBorders,
 											const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 
@@ -192,7 +372,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 
 WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& marked,
 											const WgRect& selected, const WgRect& disabled,
-											const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+											const WgBorders& gfxBorders, const WgBorders& contentBorders,
 											const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 
@@ -205,7 +385,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 
 WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& marked,
 										const WgRect& selected, const WgBorders& gfxBorders,
-										const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, 
+										const WgBorders& contentBorders, const WgColorSetPtr& pTextColors,
 										Uint32 flags ) const
 {
 	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
@@ -216,7 +396,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 }
 
 WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgRect& disabled,
-										const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
@@ -226,7 +406,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgRect& dis
 	return WgBlockSetPtr(p);
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
@@ -236,7 +416,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgBorders& 
 	return WgBlockSetPtr(p);
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip*4) / 5;
@@ -251,7 +431,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile5& tile, const WgBorder
 							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip*3) / 4;
@@ -265,7 +445,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile4& tile, const WgBorder
 							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip*2) / 3;
@@ -278,7 +458,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile3& tile, const WgBorder
 							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = (tile.w - tile.skip) / 2;
@@ -290,7 +470,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgHorrTile2& tile, const WgBorder
 							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile5& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = tile.w;
@@ -305,7 +485,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile5& tile, const WgBorder
 							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile4& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = tile.w;
@@ -319,7 +499,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile4& tile, const WgBorder
 							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile3& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = tile.w;
@@ -332,7 +512,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile3& tile, const WgBorder
 							gfxBorders, contentBorders, pTextColors, flags );
 }
 
-WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+WgBlockSetPtr WgSurface::defineBlockSet( const WgVertTile2& tile, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 	int	w = tile.w;

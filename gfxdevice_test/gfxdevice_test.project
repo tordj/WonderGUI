@@ -32,15 +32,18 @@
         <IncludePath Value="../include"/>
         <IncludePath Value="../wg_soft"/>
         <IncludePath Value="../extras"/>
+        <IncludePath Value="../wg_sdl"/>
         <Preprocessor Value="WG_TNG"/>
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="../Debug"/>
         <LibraryPath Value="../wg_soft/Debug"/>
+        <LibraryPath Value="../wg_sdl/Debug"/>
         <Library Value="wondergui"/>
         <Library Value="SDL"/>
         <Library Value="SDL_image"/>
         <Library Value="wg_soft"/>
+        <Library Value="wg_sdl"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(IntermediateDirectory)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="" PauseExecWhenProcTerminates="yes"/>
@@ -82,6 +85,7 @@
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       

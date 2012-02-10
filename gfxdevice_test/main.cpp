@@ -20,6 +20,7 @@ void * loadFile( const char * pPath );
 WgSurface * 	loadSurface( const char * path );
 SDL_Surface *	initSDL( int w, int h );
 bool			eventLoop( WgEventHandler * pHandler );
+WgRoot * 		setupGUI( WgGfxDevice * pDevice );
 
 
 //____ main() __________________________________________________________________
@@ -28,31 +29,31 @@ int main(int argc, char **argv)
 {
 	// Init SDL
 
-	SDL_Surface * pScreen = initSDL(1024,800);
+	SDL_Surface * pScreen = initSDL(1024,640);
 	if(!pScreen )
 		return 1;
 
-	IMG_Init( IMG_INIT_PNG | IMG_INIT_JPG );
+	IMG_Init( IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF );
 
 	// Init WonderGUI
 
 	WgBase::Init();
 
-	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WG_PIXEL_RGBA_8, WgSize(1024,800) );
+	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(1024,640), WG_PIXEL_RGBA_8 );
 	WgGfxDevice * pGfxDevice = new WgGfxDeviceSoft( pCanvas );
 
 	WgRoot * pRoot = new WgRoot( pGfxDevice );
-	pRoot->SetGeo(WgRect(0,0,1024,800));
+	pRoot->SetGeo(WgRect(0,0,1024,640));
 
 	WgEventHandler * pEventHandler = pRoot->EventHandler();
 
-	sdl_wglib::mapKeys();
+	sdl_wglib::MapKeys();
 
 	// Load bitmap font
 
-	WgSurface * pFontImg = loadSurface("../resources/anuvverbubbla_8x8.png");
+	WgSurface * pFontImg = sdl_wglib::LoadSurface("../resources/anuvverbubbla_8x8.png", WgSurfaceFactorySoft() );
 	pFontImg->defineBlockSet( WgRect(0,0,10,10), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );	//dummy!!!
-	
+
 	char * pFontSpec = (char*) loadFile( "../resources/anuvverbubbla_8x8.fnt" );
 
 	WgBitmapGlyphs * pGlyphs = new WgBitmapGlyphs( pFontImg, pFontSpec );
@@ -94,6 +95,20 @@ int main(int argc, char **argv)
 }
 
 
+//____ setupGUI() ______________________________________________________________
+
+WgRoot * setupGUI( WgGfxDevice * pDevice )
+{
+	WgResDB * pDB = LoadStdGizmos( "../resources/blocks.png" );
+	if( !pDB )
+		return 0;
+
+	WgRoot * pRoot = new WgRoot( pGfxDevice );
+
+
+	return pRoot;
+}
+
 //____ initSDL() ______________________________________________________________
 
 SDL_Surface * initSDL( int w, int h )
@@ -125,8 +140,8 @@ SDL_Surface * initSDL( int w, int h )
 
 bool eventLoop( WgEventHandler * pHandler )
 {
-	sdl_wglib::beginEvents( pHandler );
-	
+	sdl_wglib::BeginEvents( pHandler );
+
    // message processing loop
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
@@ -145,43 +160,15 @@ bool eventLoop( WgEventHandler * pHandler )
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 					return false;
 			}
-		} 
-		sdl_wglib::translateEvent( event );
+		}
+		sdl_wglib::TranslateEvent( event );
 	}
 
-	sdl_wglib::endEvents();
+	sdl_wglib::EndEvents();
 
 	return true;
 }
 
-
-//____ loadSurface() __________________________________________________________
-
-WgSurface * loadSurface( const char * path )
-{
-	//TODO: Lots of error handling and avoid memory leaks.
-
-    // load an image
-    SDL_Surface* bmp = IMG_Load(path);
-    if (!bmp)
-    {
-        printf("Unable to load bitmap: %s\n", IMG_GetError());
-        return 0;
-    }
-
-	WgSize size( bmp->w, bmp->h );
-	WgPixelType type;
-	
-	if( bmp->format->BitsPerPixel == 32 )
-		type = WG_PIXEL_RGBA_8;
-	else if( bmp->format->BitsPerPixel == 24 )
-		type = WG_PIXEL_RGB_8;
-	else
-		type = WG_PIXEL_UNKNOWN;
-
-	return new WgSurfaceSoft( type, size, (unsigned char *) bmp->pixels, bmp->pitch );
-
-}
 
 //____ fileSize() _____________________________________________________________
 

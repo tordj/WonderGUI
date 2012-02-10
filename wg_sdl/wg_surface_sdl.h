@@ -39,7 +39,7 @@ class WgSurfaceSDL : public WgSurface
 {
 public:
 	WgSurfaceSDL(SDL_Surface * pSurf);
-	WgSurfaceSDL( WgPixelType type, WgSize size );
+	WgSurfaceSDL( WgSize size, WgPixelType type = WG_PIXEL_RGBA_8 );
 
 	~WgSurfaceSDL();
 
@@ -72,7 +72,7 @@ private:
 class WgSurfaceFactorySDL : public WgSurfaceFactory
 {
 public:
-	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 );
+	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 ) const;
 };
 
 

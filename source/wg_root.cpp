@@ -45,7 +45,7 @@ WgRoot::WgRoot()
 WgRoot::WgRoot( WgGfxDevice * pGfxDevice )
 {
 	m_bHasGeo = false;
-	m_geo = WgRect(0,0,0,0);
+	m_geo = pGfxDevice->CanvasSize();
 	m_pGfxDevice = pGfxDevice;
 	m_pEventHandler = new WgEventHandler(this);
 	m_hook.m_pRoot = this;
@@ -203,21 +203,21 @@ bool WgRoot::RenderSection( const WgRect& _clip, int layer )
 		return false;						// Invalid rect area.
 
 	// Nothing to render if our only child is hidden
-	
+
 	if( m_hook.m_bHidden )
 		return true;						// Not an error, just hidden.
-	
+
 	// Copy and clip our dirty patches
-	
+
 	WgPatches dirtyPatches( m_dirtyPatches.Size() );
 
 	WgRect clipped;
-	for( const WgRect * pRect = m_dirtyPatches.Begin() ; pRect != m_dirtyPatches.End() ; pRect++ ) 
+	for( const WgRect * pRect = m_dirtyPatches.Begin() ; pRect != m_dirtyPatches.End() ; pRect++ )
 	{
 		if( clipped.Intersection( *pRect, clip ) )
 			dirtyPatches.Push( clipped );
 	}
-		
+
 	// Render the dirty patches recursively
 
 	m_hook.Gizmo()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches, layer );

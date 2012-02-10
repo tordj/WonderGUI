@@ -73,7 +73,7 @@ bool WgSurfaceGL::_initGlExtensions()
 
 //____ Constructor _____________________________________________________________
 
-WgSurfaceGL::WgSurfaceGL( GLint _format, WgSize dimensions, void * _pPixels )
+WgSurfaceGL::WgSurfaceGL( WgSize dimensions, GLint _format, void * _pPixels )
 {
 	if( pglBufferDataARB == 0 )
 		_initGlExtensions();
@@ -160,12 +160,12 @@ void WgSurfaceGL::_setPixelFormat( GLint _format )
 		m_pixelSize = 4;
 		pixeltype = WG_PIXEL_RGBA_8;
 		break;
-		
+
 	default:
 		m_pixelSize = 0;		// Signal unknown pixelsize.
 		break;
 	}
-	
+
 	WgUtil::PixelTypeToFormat(pixeltype, m_pixelFormat);
 }
 
@@ -413,7 +413,7 @@ Uint8 WgSurfaceGL::GetOpacity( WgCoord coord ) const
 
 //____ WgSurfaceFactoryGL::CreateSurface() ___________________________________
 
-WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgPixelType type )
+WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgPixelType type ) const
 {
 
 	GLint	format;
@@ -441,7 +441,7 @@ WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgPixelType t
 	char * pBuffer = new char[buffSize];
 	memset( pBuffer, 0, buffSize );
 
-	WgSurfaceGL * p = new WgSurfaceGL( format, size, pBuffer );
+	WgSurfaceGL * p = new WgSurfaceGL( size, format, pBuffer );
 
 	delete pBuffer;
 	return 	p;

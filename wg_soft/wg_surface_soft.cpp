@@ -32,23 +32,23 @@ static const char	c_surfaceType[] = {"Software"};
 
 //____ Constructor ________________________________________________________________
 
-WgSurfaceSoft::WgSurfaceSoft( WgPixelType type, WgSize size )
+WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
 	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
-	
+
 	m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
 	m_size = size;
-	m_pData = new Uint8[ m_pitch*size.h ];	
+	m_pData = new Uint8[ m_pitch*size.h ];
 	m_bOwnsData = true;
 	m_fScaleAlpha = 1.f;
 }
 
-WgSurfaceSoft::WgSurfaceSoft( WgPixelType type, WgSize size, Uint8 * pPixels, int pitch )
+WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
 	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
-	
+
 	m_pitch = pitch;
 	m_size = size;
 	m_pData = pPixels;
@@ -65,7 +65,7 @@ WgSurfaceSoft::WgSurfaceSoft( const WgSurfaceSoft * pOther )
 
 WgSurfaceSoft::~WgSurfaceSoft()
 {
-	if(m_bOwnsData) 
+	if(m_bOwnsData)
 		delete m_pData;
 }
 
@@ -95,7 +95,7 @@ void WgSurfaceSoft::_copy(const WgSurfaceSoft * pOther)
 	m_fScaleAlpha 	= pOther->m_fScaleAlpha;
 
 	m_pData = new Uint8[ m_pitch*m_size.h ];
-	
+
 	int linebytes = m_size.w * m_pixelFormat.bits/8;
 	for( int y = 0 ; y < m_size.h ; y++ )
 		memcpy( m_pData+y*m_pitch, pOther->m_pData+y*pOther->m_pitch, linebytes );
@@ -104,7 +104,7 @@ void WgSurfaceSoft::_copy(const WgSurfaceSoft * pOther)
 //____ GetPixel() _________________________________________________________________
 
 Uint32 WgSurfaceSoft::GetPixel( WgCoord coord ) const
-{	
+{
 	if( coord.x >= m_size.w || coord.x < 0 ||
 		coord.y >= m_size.h || coord.y < 0  )
 		return 0;
@@ -114,10 +114,10 @@ Uint32 WgSurfaceSoft::GetPixel( WgCoord coord ) const
 		Uint32 k = * ((Uint32*) &m_pData[ m_pitch*coord.y+coord.x*4 ]);
 		return k;
     }
-	else 
+	else
     {
 		Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
-		
+
 		Uint32 k = pPixel[0] + ((Uint32)pPixel[1]) << 8 + ((Uint32)pPixel[2]) << 8;
 		return k;
     }
@@ -131,12 +131,12 @@ Uint8 WgSurfaceSoft::GetOpacity( WgCoord coord ) const
 	if( coord.x >= m_size.w || coord.x < 0 ||
 		coord.y >= m_size.h || coord.y < 0  )
 		return 0;
-	
-	if( m_pixelFormat.bits == 32 ) 
+
+	if( m_pixelFormat.bits == 32 )
 	  {
 		Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
 	    return (Uint8)(m_fScaleAlpha * (float)pPixel[3]);
-	  } 
+	  }
 	else
 	  return 0xff;
 }
@@ -171,7 +171,7 @@ void * WgSurfaceSoft::LockRegion( WgAccessMode mode, const WgRect& region )
 {
 	m_accessMode = mode;
 	m_pPixels = m_pData + m_pitch*region.y + region.x*m_pixelFormat.bits/8;
-	m_lockRegion = region;	
+	m_lockRegion = region;
 	return m_pPixels;
 }
 
@@ -228,6 +228,12 @@ void WgSurfaceSoft::PutPixels(const vector<int> &x, const vector<int> &y, const 
 			break;
 		default:
 			break;
-    }	
+    }
 }
 
+//____ WgSurfaceFactorySoft::CreateSurface() ___________________________________
+
+WgSurface * WgSurfaceFactorySoft::CreateSurface( const WgSize& size, WgPixelType type ) const
+{
+	return new WgSurfaceSoft( size, type );
+}

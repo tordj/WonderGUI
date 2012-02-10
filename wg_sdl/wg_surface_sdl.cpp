@@ -26,7 +26,7 @@
 #	include <SDL/SDL.h>
 #endif
 #include <wg_surface_sdl.h>
- 
+
 static const char	c_surfaceType[] = {"SDL"};
 
 //____ Constructor _____________________________________________________________
@@ -56,7 +56,7 @@ WgSurfaceSDL::WgSurfaceSDL( SDL_Surface * pSurf )
 	m_pixelFormat.A_bits = 8 - pSurf->format->Aloss;
 }
 
-WgSurfaceSDL::WgSurfaceSDL( WgPixelType type, WgSize size )
+WgSurfaceSDL::WgSurfaceSDL( WgSize size, WgPixelType type )
 {
 	int flags = SDL_HWSURFACE | SDL_SRCALPHA;
 
@@ -269,7 +269,7 @@ Uint8 WgSurfaceSDL::GetOpacity( WgCoord coord ) const
 
 //____ WgSurfaceFactorySDL::CreateSurface() ___________________________________
 
-WgSurface * WgSurfaceFactorySDL::CreateSurface( const WgSize& size, WgPixelType type )
+WgSurface * WgSurfaceFactorySDL::CreateSurface( const WgSize& size, WgPixelType type ) const
 {
-	return new WgSurfaceSDL( type, size );
+	return new WgSurfaceSDL( size, type );
 }

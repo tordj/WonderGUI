@@ -40,7 +40,7 @@
 class WgSurfaceGL : public WgSurface
 {
 public:
-	WgSurfaceGL( GLint format, WgSize dimensions, void * pPixels );
+	WgSurfaceGL( WgSize dimensions, GLint format, void * pPixels );
 	WgSurfaceGL( GLuint texture, Uint8 * pAlpha = 0 );
 	~WgSurfaceGL();
 
@@ -82,7 +82,7 @@ private:
 class WgSurfaceFactoryGL : public WgSurfaceFactory
 {
 public:
-	WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 );
+	WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 ) const;
 };
 
 
