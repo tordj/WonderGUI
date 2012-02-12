@@ -722,6 +722,16 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCoord& pos, WgSearchMode mode )
 		return 0;
 }
 
+//____ DefaultSize() ___________________________________________________________
+
+WgSize WgGizmoView::DefaultSize() const
+{
+	//TODO: Implement!!!
+		
+	return WgSize( 128,128 );
+}
+
+
 //____ UpdateElementGeo() _____________________________________________________
 
 void WgGizmoView::UpdateElementGeo( const WgSize& mySize, const WgSize& newContentSize )

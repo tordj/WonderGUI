@@ -260,6 +260,10 @@
 #	include <wg_gizmo_refreshbutton.h>
 #endif
 
+#ifndef WG_GIZMO_STACK_DOT_H
+#	include <wg_gizmo_stack.h>
+#endif
+
 #ifndef WG_GIZMO_TABLE_DOT_H
 #	include <wg_gizmo_table.h>
 #endif

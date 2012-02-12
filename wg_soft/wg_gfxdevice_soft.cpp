@@ -41,6 +41,7 @@ WgGfxDeviceSoft::WgGfxDeviceSoft( WgSurfaceSoft * pCanvas ) : WgGfxDevice( pCanv
 
 WgGfxDeviceSoft::~WgGfxDeviceSoft()
 {
+	delete m_pCanvas;
 }
 
 //____ SetCanvas() _______________________________________________________________
@@ -88,12 +89,11 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 		{
 			for( int y = 0 ; y < rect.h ; y++ )
 			{
-				for( int x = 0 ; x < rect.w*pixelBytes ; x++ )
+				for( int x = 0 ; x < rect.w*pixelBytes ; x+=pixelBytes )
 				{
-					pDst[x] = fillColor.r;
+					pDst[x] = fillColor.b;
 					pDst[x+1] = fillColor.g;
-					pDst[x+2] = fillColor.b;
-					x+= pixelBytes;
+					pDst[x+2] = fillColor.r;
 				}
 				pDst += m_pCanvas->m_pitch;
 			}
@@ -108,12 +108,11 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 
 			for( int y = 0 ; y < rect.h ; y++ )
 			{
-				for( int x = 0 ; x < rect.w*pixelBytes ; x++ )
+				for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
 				{
-					pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedRed) >> 8);
+					pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedBlue) >> 8);
 					pDst[x+1] = (Uint8) ((pDst[x+1]*invAlpha + storedGreen) >> 8);
-					pDst[x+2] = (Uint8) ((pDst[x+2]*invAlpha + storedBlue) >> 8);
-					x+= pixelBytes;
+					pDst[x+2] = (Uint8) ((pDst[x+2]*invAlpha + storedRed) >> 8);
 				}
 				pDst += m_pCanvas->m_pitch;
 			}
@@ -130,12 +129,11 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 				
 			for( int y = 0 ; y < rect.h ; y++ )
 			{
-				for( int x = 0 ; x < rect.w*pixelBytes ; x++ )
+				for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
 				{
-					pDst[x] = m_limitTable[pDst[x] + storedRed];
+					pDst[x] = m_limitTable[pDst[x] + storedBlue];
 					pDst[x+1] = m_limitTable[pDst[x+1] + storedGreen];
-					pDst[x+2] = m_limitTable[pDst[x+2] + storedBlue];
-					x+= pixelBytes;
+					pDst[x+2] = m_limitTable[pDst[x+2] + storedRed];
 				}
 				pDst += m_pCanvas->m_pitch;			
 			}
@@ -149,12 +147,11 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 
 			for( int y = 0 ; y < rect.h ; y++ )
 			{
-				for( int x = 0 ; x < rect.w*pixelBytes ; x++ )
+				for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
 				{
-					pDst[x] = (pDst[x] * storedRed) >> 8;
+					pDst[x] = (pDst[x] * storedBlue) >> 8;
 					pDst[x+1] = (pDst[x+1] * storedGreen) >> 8;
-					pDst[x+2] = (pDst[x+2] * storedBlue) >> 8;
-					x+= pixelBytes;
+					pDst[x+2] = (pDst[x+2] * storedRed) >> 8;
 				}
 				pDst += m_pCanvas->m_pitch;			
 			}
@@ -173,12 +170,11 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 
 			for( int y = 0 ; y < rect.h ; y++ )
 			{
-				for( int x = 0 ; x < rect.w*pixelBytes ; x++ )
+				for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
 				{
-					pDst[x] = ((255-pDst[x]) * storedRed + pDst[x] * invertRed) >> 8;
+					pDst[x] = ((255-pDst[x]) * storedBlue + pDst[x] * invertRed) >> 8;
 					pDst[x+1] = ((255-pDst[x+1]) * storedGreen + pDst[x+1] * invertGreen) >> 8;
-					pDst[x+2] = ((255-pDst[x+2]) * storedBlue + pDst[x+2] * invertBlue) >> 8;
-					x+= pixelBytes;
+					pDst[x+2] = ((255-pDst[x+2]) * storedRed + pDst[x+2] * invertBlue) >> 8;
 				}
 				pDst += m_pCanvas->m_pitch;			
 			}
@@ -226,9 +222,9 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 			{
 				for( int x = 0 ; x < srcrect.w ; x++ )
 				{
-					pDst[0] = (pSrc[0]*tintRed) >> 8;
+					pDst[0] = (pSrc[0]*tintBlue) >> 8;
 					pDst[1] = (pSrc[1]*tintGreen) >> 8;
-					pDst[2] = (pSrc[2]*tintBlue) >> 8;
+					pDst[2] = (pSrc[2]*tintRed) >> 8;
 					pSrc += srcPixelBytes;
 					pDst += dstPixelBytes;
 				}
@@ -253,9 +249,9 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 						int alpha = (pSrc[3]*tintAlpha) >> 8;
 						int invAlpha = (255-alpha) << 8;
 						
-						pDst[0] = (pDst[0]*invAlpha + pSrc[0]*tintRed*alpha ) >> 16;
+						pDst[0] = (pDst[0]*invAlpha + pSrc[0]*tintBlue*alpha ) >> 16;
 						pDst[1] = (pDst[1]*invAlpha + pSrc[1]*tintGreen*alpha ) >> 16;
-						pDst[2] = (pDst[2]*invAlpha + pSrc[2]*tintBlue*alpha ) >> 16;
+						pDst[2] = (pDst[2]*invAlpha + pSrc[2]*tintRed*alpha ) >> 16;
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -275,9 +271,9 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 				{
 					for( int x = 0 ; x < srcrect.w ; x++ )
 					{
-						pDst[0] = (pDst[0]*invAlpha + pSrc[0]*tintRed ) >> 16;
+						pDst[0] = (pDst[0]*invAlpha + pSrc[0]*tintBlue ) >> 16;
 						pDst[1] = (pDst[1]*invAlpha + pSrc[1]*tintGreen ) >> 16;
-						pDst[2] = (pDst[2]*invAlpha + pSrc[2]*tintBlue ) >> 16;
+						pDst[2] = (pDst[2]*invAlpha + pSrc[2]*tintRed ) >> 16;
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -302,9 +298,9 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 					{
 						int alpha = (pSrc[3]*tintAlpha) >> 8;
 						
-						pDst[0] = m_limitTable[(pDst[0] + (pSrc[0]*tintRed*alpha)>>16 )];
+						pDst[0] = m_limitTable[(pDst[0] + (pSrc[0]*tintBlue*alpha)>>16 )];
 						pDst[1] = m_limitTable[(pDst[1] + (pSrc[1]*tintGreen*alpha)>>16 )];
-						pDst[2] = m_limitTable[(pDst[2] + (pSrc[2]*tintBlue*alpha)>>16 )];
+						pDst[2] = m_limitTable[(pDst[2] + (pSrc[2]*tintRed*alpha)>>16 )];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -323,9 +319,9 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 				{
 					for( int x = 0 ; x < srcrect.w ; x++ )
 					{
-						pDst[0] = m_limitTable[(pDst[0] + (pSrc[0]*tintRed)>>16 )];
+						pDst[0] = m_limitTable[(pDst[0] + (pSrc[0]*tintBlue)>>16 )];
 						pDst[1] = m_limitTable[(pDst[1] + (pSrc[1]*tintGreen)>>16 )];
-						pDst[2] = m_limitTable[(pDst[2] + (pSrc[2]*tintBlue)>>16 )];
+						pDst[2] = m_limitTable[(pDst[2] + (pSrc[2]*tintRed)>>16 )];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -345,9 +341,9 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 			{
 				for( int x = 0 ; x < srcrect.w ; x++ )
 				{
-					pDst[0] = (tintRed*pDst[0]*pSrc[0]) >> 16;
+					pDst[0] = (tintBlue*pDst[0]*pSrc[0]) >> 16;
 					pDst[1] = (tintGreen*pDst[1]*pSrc[1]) >> 16;
-					pDst[2] = (tintBlue*pDst[2]*pSrc[2]) >> 16;
+					pDst[2] = (tintRed*pDst[2]*pSrc[2]) >> 16;
 					pSrc += srcPixelBytes;
 					pDst += dstPixelBytes;
 				}
@@ -366,13 +362,13 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 			{
 				for( int x = 0 ; x < srcrect.w ; x++ )
 				{
-					int srcRed = tintRed*pSrc[0];
+					int srcBlue = tintBlue*pSrc[0];
 					int srcGreen = tintGreen*pSrc[1];
-					int srcBlue = tintBlue*pSrc[2];
+					int srcRed = tintRed*pSrc[2];
 
-					pDst[0] = (srcRed*(255-pDst[0]) + pDst[0]*(255-srcRed)) >> 16;
+					pDst[0] = (srcBlue*(255-pDst[0]) + pDst[0]*(255-srcBlue)) >> 16;
 					pDst[1] = (srcGreen*(255-pDst[1]) + pDst[1]*(255-srcGreen)) >> 16;
-					pDst[2] = (srcBlue*(255-pDst[2]) + pDst[2]*(255-srcBlue)) >> 16;
+					pDst[2] = (srcRed*(255-pDst[2]) + pDst[2]*(255-srcRed)) >> 16;
 					pSrc += srcPixelBytes;
 					pDst += dstPixelBytes;
 				}
@@ -385,6 +381,92 @@ void WgGfxDeviceSoft::Blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, i
 			break;
 	}
 }
+
+//____ StretchBlit() ___________________________________________________________
+
+void WgGfxDeviceSoft::StretchBlit( const WgSurface * pSrc, bool bTriLinear, float mipmapBias )
+{
+	StretchBlit( pSrc, WgRect(0, 0, pSrc->Width(),pSrc->Height()), WgRect(0,0,m_canvasSize.w,m_canvasSize.h), bTriLinear, mipmapBias );
+}
+
+void WgGfxDeviceSoft::StretchBlit( const WgSurface * pSrc, const WgRect& dest, bool bTriLinear, float mipmapBias )
+{
+	StretchBlit( pSrc, WgRect(0, 0, pSrc->Width(),pSrc->Height()), dest, bTriLinear, mipmapBias );
+}
+
+void WgGfxDeviceSoft::StretchBlit( const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipmapBias )
+{
+	float srcW = src.w;
+	float srcH = src.h;
+
+	float destW = dest.w;
+	float destH = dest.h;
+
+	if( srcW < destW )
+		srcW--;
+		
+	if( srcH < destH )
+		srcH--;
+	
+	StretchBlitSubPixel( pSrc, (float) src.x, (float) src.y, srcW, srcH, (float) dest.x, (float) dest.y, destW, destH, bTriLinear, mipmapBias );
+}
+
+//____ ClipStretchBlit() _______________________________________________________
+
+void WgGfxDeviceSoft::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, bool bTriLinear, float mipBias )
+{
+	ClipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->Width(), pSrc->Height()), WgRect( 0,0,m_canvasSize), bTriLinear, mipBias );
+}
+
+void WgGfxDeviceSoft::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& dest, bool bTriLinear, float mipBias )
+{
+	ClipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->Width(), pSrc->Height()), dest, bTriLinear, mipBias );
+}
+
+void WgGfxDeviceSoft::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipBias )
+{
+	ClipStretchBlit( clip, pSrc, (float)src.x, (float)src.y, (float)src.w, (float)src.h, (float)dest.x, (float)dest.y, (float)dest.w, (float)dest.h, false );
+}
+
+void WgGfxDeviceSoft::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
+{
+	if( sw < dw )
+		sw--; 
+		
+	if( sh < dh )
+		sh--;
+
+	float cx = std::max(float(clip.x), dx);
+	float cy = std::max(float(clip.y), dy);
+	float cw = std::min(float(clip.x + clip.w), dx + dw) - cx;
+	float ch = std::min(float(clip.y + clip.h), dy + dh) - cy;
+
+	if(cw <= 0 || ch <= 0)
+		return;
+
+	if( dw > cw )
+	{
+		float	sdxr = sw / dw;			// Source/Destination X Ratio.
+
+		sw = sdxr * cw;
+
+		if( dx < cx )
+			sx += sdxr * (cx - dx);
+	}
+
+	if( dh > ch )
+	{
+		float	sdyr = sh / dh;			// Source/Destination Y Ratio.
+
+		sh = sdyr * ch;
+
+		if( dy < cy )
+			sy += sdyr * (cy - dy);
+	}
+
+	StretchBlitSubPixel( pSrc, sx, sy, sw, sh, cx, cy, cw, ch, bTriLinear, mipBias );
+}
+
 
 //____ StretchBlitSubPixel() ___________________________________________________
 
@@ -442,18 +524,18 @@ void WgGfxDeviceSoft::StretchBlitSubPixel( const WgSurface * _pSrcSurf, float sx
 			int mul21 = fracX1*fracY2 >> 15;
 			int mul22 = fracX2*fracY2 >> 15;
 			
-			int srcRed = (p[0]*mul11 + p[srcPixelBytes]*mul12 + p[srcPitch]*mul21 + p[srcPitch+srcPixelBytes]*mul22) >> 15;
+			int srcBlue = (p[0]*mul11 + p[srcPixelBytes]*mul12 + p[srcPitch]*mul21 + p[srcPitch+srcPixelBytes]*mul22) >> 15;
 			p++;
 			int srcGreen = (p[0]*mul11 + p[srcPixelBytes]*mul12 + p[srcPitch]*mul21 + p[srcPitch+srcPixelBytes]*mul22) >> 15;
 			p++;
-			int srcBlue = (p[0]*mul11 + p[srcPixelBytes]*mul12 + p[srcPitch]*mul21 + p[srcPitch+srcPixelBytes]*mul22) >> 15;
+			int srcRed = (p[0]*mul11 + p[srcPixelBytes]*mul12 + p[srcPitch]*mul21 + p[srcPitch+srcPixelBytes]*mul22) >> 15;
 			p++;
 			int srcAlpha = (p[0]*mul11 + p[srcPixelBytes]*mul12 + p[srcPitch]*mul21 + p[srcPitch+srcPixelBytes]*mul22) >> 15;
 
 			//...
-			pDst[0] = (srcRed*tintRed) >> 8;
+			pDst[0] = (srcBlue*tintBlue) >> 8;
 			pDst[1] = (srcGreen*tintGreen) >> 8;
-			pDst[2] = (srcBlue*tintBlue) >> 8;
+			pDst[2] = (srcRed*tintRed) >> 8;
 			//...		   
 			
 			ofsX += incX;

@@ -136,19 +136,32 @@ namespace sdl_wglib
 
 	WgResDB * LoadStdGizmos( const char * pImagePath, const WgSurfaceFactory& factory )
 	{
+		const int HDRAG_BTN_OFS = 1;
+		const int VDRAG_BTN_OFS = HDRAG_BTN_OFS + 19;
+		const int DRAGBAR_OFS = VDRAG_BTN_OFS + 19;
+		const int DRAGBAR_BACK_OFS = DRAGBAR_OFS + 10;
+		
 		const int BUTTON_OFS	= 110;
-		const int BUTTON_OFS	= BUTTON_OFS + 10;
+		const int PLATE_OFS	= BUTTON_OFS + 10;
 		const int TILES_OFS		= 192;
 
 		WgSurface * pSurface = LoadSurface( pImagePath, factory );
 		if( !pSurface )
 			return 0;
+		
+		WgBlockSetPtr pHDragBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,HDRAG_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pHDragBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,HDRAG_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 
+		WgBlockSetPtr pVDragBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,VDRAG_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pVDragBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,VDRAG_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+
+		WgBlockSetPtr pDragBarBlocks		= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,DRAGBAR_OFS,38,8), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
+		WgBlockSetPtr pDragBarBackBlocks	= pSurface->defineBlockSet( WgRect(1,DRAGBAR_BACK_OFS,5,5), WgBorders(2), WgBorders(2), 0, WG_OPAQUE );
 
 		WgBlockSetPtr pButtonBlocks 		= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,BUTTON_OFS,38,8), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 		WgBlockSetPtr pPlateBlocks 			= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,PLATE_OFS,38,8), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 
-		WgBlockSetPtr pBgCheckeredGreyBlocks= pSurface->defineBlockSet( WgRect(0,TILES_OFS,64,64), WgBorders(0), WgBorders(0), 0, WG_OPAQUE );
+		WgBlockSetPtr pBgCheckeredGreyBlocks= pSurface->defineBlockSet( WgRect(0,TILES_OFS,64,64), WgBorders(0), WgBorders(0), 0, WG_OPAQUE | WG_TILE_ALL );
 		WgBlockSetPtr pBgBlueGradientBlocks = pSurface->defineBlockSet( WgRect(1*64,TILES_OFS,64,64), WgBorders(0), WgBorders(0), 0, WG_OPAQUE );
 
 
@@ -166,6 +179,11 @@ namespace sdl_wglib
 		pPlate->SetSource( pPlateBlocks );
 		pDB->AddGizmo( "plate", pPlate );
 
+		// Create standard horizontal dragbar
+		
+		WgGizmoHDragbar * pHDrag = new WgGizmoHDragbar();
+		pHDrag->SetSource( pDragBarBackBlocks, pDragBarBlocks, pHDragBtnBwdBlocks, pHDragBtnFwdBlocks );
+		pDB->AddGizmo( "hdragbar", pHDrag );
 
 		// Create Background bitmaps
 
@@ -180,6 +198,67 @@ namespace sdl_wglib
 		return pDB;
 	}
 
+	//____ LoadBitmapFont() ____________________________________________________
+
+	WgFont * LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactory& factory )
+	{
+		//TODO: This leaks memory until we have ref-counted 
+		
+		WgSurface * pFontImg = sdl_wglib::LoadSurface( pImgPath, factory );
+
+		char * pFontSpec = (char*) LoadFile( pSpecPath );
+
+		WgBitmapGlyphs * pGlyphs = new WgBitmapGlyphs( pFontImg, pFontSpec );
+
+		WgFont * pFont = new WgFont();
+		pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 0 );
+
+		free( pFontSpec );
+		return pFont;
+	}
+
+	//____ FileSize() _____________________________________________________________
+
+	int FileSize( const char * pPath )
+	{
+		FILE * fp = fopen( pPath, "rb" );
+		if( !fp )
+			return 0;
+
+		fseek( fp, 0, SEEK_END );
+		int size = ftell(fp);
+		fseek( fp, 0, SEEK_SET );
+		fclose( fp );
+
+		return size;
+	}
+
+	//____ LoadFile() _____________________________________________________________
+
+	void * LoadFile( const char * pPath )
+	{
+		FILE * fp = fopen( pPath, "rb" );
+		if( !fp )
+			return 0;
+
+		fseek( fp, 0, SEEK_END );
+		int size = ftell(fp);
+		fseek( fp, 0, SEEK_SET );
+
+		char * pMem = (char*) malloc( size+1 );
+		pMem[size] = 0;
+		int nRead = fread( pMem, 1, size, fp );
+		fclose( fp );
+
+		if( nRead < size )
+		{
+			free( pMem );
+			return 0;
+		}
+
+		return pMem;
+
+	}
 
 
 };

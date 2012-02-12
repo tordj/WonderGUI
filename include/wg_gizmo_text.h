@@ -52,6 +52,8 @@ public:
 	virtual ~WgGizmoText();
 	virtual const char * Type() const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoText(); };
+	
 
 
 	//____ Methods __________________________________________

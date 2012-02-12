@@ -37,6 +37,8 @@ public:
 
 	virtual const char * Type() const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoRadiobutton(); };
+	
 	
 	bool	SetState( bool state );
 

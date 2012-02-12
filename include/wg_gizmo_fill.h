@@ -41,6 +41,7 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoFill(); };
 
 	void	SetColor( const WgColor& col );
 	void	SetColor( const WgColor& enabled, const WgColor& disabled );

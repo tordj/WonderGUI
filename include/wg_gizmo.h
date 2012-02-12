@@ -111,7 +111,7 @@ public:
 	void				Disable();
 	inline bool			IsEnabled() const { return m_bEnabled; }
 
-	void				CloneContent( const WgGizmo * _pOrg );
+	bool				CloneContent( const WgGizmo * _pOrg );
 
 	void			SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
 	virtual WgPointerStyle	GetPointerStyle() const;
@@ -125,6 +125,7 @@ public:
 
 	WgHook*			Hook() const { return m_pHook; }
 
+	virtual WgGizmo * NewOfMyType() const = 0;
 
 	// Convenient calls to hook
 

@@ -58,6 +58,8 @@ public:
 
 	const char * Type() const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoVBox(); };
+	
 
 	inline WgVBoxHook * AddChild( WgGizmo * pGizmo ) { return static_cast<WgVBoxHook*>(WgOrderedLayout::AddChild(pGizmo)); }
 	inline WgVBoxHook * InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling ) { return static_cast<WgVBoxHook*>(WgOrderedLayout::InsertChild(pGizmo,pSibling)); }

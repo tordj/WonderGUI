@@ -52,6 +52,7 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 
 		virtual const char * Type() const;
 		static const char * GetMyType();
+		virtual WgGizmo * NewOfMyType() const { return new WgGizmoEditvalue(); };
 
 
 		//____ Methods __________________________________________

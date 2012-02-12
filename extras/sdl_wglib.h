@@ -11,6 +11,7 @@ class WgEventHandler;
 class WgSurface;
 class WgSurfaceFactory;
 class WgResDB;
+class WgFont;
 
 namespace sdl_wglib
 {
@@ -23,4 +24,9 @@ namespace sdl_wglib
 
 	WgResDB *	LoadStdGizmos( const char * pImagePath, const WgSurfaceFactory& factory );
 
+	WgFont *	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactory& factory );
+	
+	int 		FileSize( const char * pPath );
+	void * 		LoadFile( const char * pPath );
+	
 };

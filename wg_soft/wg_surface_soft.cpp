@@ -132,9 +132,9 @@ Uint8 WgSurfaceSoft::GetOpacity( WgCoord coord ) const
 		coord.y >= m_size.h || coord.y < 0  )
 		return 0;
 
-	if( m_pixelFormat.bits == 32 )
+	if( m_pixelFormat.type == WG_PIXEL_RGBA_8 )
 	  {
-		Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
+		Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*4;
 	    return (Uint8)(m_fScaleAlpha * (float)pPixel[3]);
 	  }
 	else

@@ -289,11 +289,6 @@ bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoo
 			unsigned int	B_mask = (((0xFFFFFFFF & pSrcFormat->B_mask) >> pSrcFormat->B_shift) << pDstFormat->B_shift) & pDstFormat->B_mask;
 			unsigned int	A_mask = (((0xFFFFFFFF & pSrcFormat->A_mask) >> pSrcFormat->A_shift) << pDstFormat->A_shift) & pDstFormat->A_mask;
 
-			int		R_shift = pSrcFormat->R_shift - pDstFormat->R_shift;
-			int		G_shift = pSrcFormat->G_shift - pDstFormat->G_shift;
-			int		B_shift = pSrcFormat->B_shift - pDstFormat->B_shift;
-			int		A_shift = pSrcFormat->A_shift - pDstFormat->A_shift;
-
 			for( int y = 0 ; y < srcRect.h ; y++ )
 			{
 				for( int x = 0 ; x < srcRect.w ; x++ )
@@ -313,10 +308,10 @@ bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoo
 							srcpixel = * ((unsigned int*)pSrc);
 					}
 
-					unsigned int dstpixel = ((srcpixel >> R_shift) & R_mask) |
-											((srcpixel >> G_shift) & G_mask) |
-											((srcpixel >> B_shift) & B_mask) |
-											((srcpixel >> A_shift) & A_mask);
+					unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
+											(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
+											(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
+											(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
 
 					switch( pDstFormat->bits )
 					{
@@ -349,6 +344,8 @@ bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoo
 
 	if( srcOldMode == WG_NO_ACCESS )
 		pSrcSurface->Unlock();
+
+	return true;
 }
 
 

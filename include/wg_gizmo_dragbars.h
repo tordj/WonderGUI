@@ -70,7 +70,7 @@ class	WgGizmoDragbar : public WgGizmo
 			ALL			= HEADER_FWD | FOOTER_FWD | HEADER_BWD | FOOTER_BWD,
 
 
-			DEFAULT		= NONE
+			DEFAULT		= WINDOWS
 		};
 
 		enum BgPressMode
@@ -181,6 +181,8 @@ class WgGizmoHDragbar:public WgGizmoDragbar
 
 		virtual const char * Type() const;
 		static const char * GetMyType();
+		virtual WgGizmo * NewOfMyType() const { return new WgGizmoHDragbar(); };
+		
 };
 
 //____ Class: WgGizmoVDragbar _______________________________________________________
@@ -192,6 +194,7 @@ class WgGizmoVDragbar:public WgGizmoDragbar
 
 		virtual const char * Type() const;
 		static const char * GetMyType();
+		virtual WgGizmo * NewOfMyType() const { return new WgGizmoVDragbar(); };
 
 };
 

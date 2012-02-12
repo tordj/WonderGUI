@@ -245,6 +245,8 @@ public:
 	virtual ~WgGizmoTable();
 	virtual const char * Type() const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoTable(); };
+	
 
 	//____ Methods __________________________________________
 
@@ -394,6 +396,13 @@ protected:
 private:
 	WgHook*			_firstHook() const { return FirstHook(); }
 	WgHook*			_lastHook() const { return LastHook(); }
+
+	WgHook* 		_firstHookWithGeo( WgRect& geo ) const;
+	WgHook* 		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
+	WgHook* 		_lastHookWithGeo( WgRect& geo ) const;
+	WgHook* 		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
 
 	// These are needed until WgGizmoContainer inherits from WgGizmo
 

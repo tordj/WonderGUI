@@ -38,6 +38,8 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoDummy(); };
+	
 
 	WgSize			DefaultSize() const;
 

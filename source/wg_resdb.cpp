@@ -714,6 +714,24 @@ WgGizmo * WgResDB::GetGizmo( const std::string& id ) const
 	return gizmoRes ? gizmoRes->res : 0;
 }
 
+//____ () _________________________________________________________
+
+WgGizmo * WgResDB::CloneGizmo( const std::string& id ) const
+{
+	GizmoRes* gizmoRes = GetResGizmo(id);
+	
+	if( !gizmoRes )
+		return 0;
+
+	WgGizmo* pGizmo = gizmoRes->res;
+
+	WgGizmo* pClone = pGizmo->NewOfMyType();
+	pClone->CloneContent(pGizmo);
+	return pClone;
+}
+
+
+
 #ifdef WG_LEGACY
 //____ () _________________________________________________________
 

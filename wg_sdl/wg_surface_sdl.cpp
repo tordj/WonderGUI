@@ -142,9 +142,9 @@ WgSize WgSurfaceSDL::Size() const
 bool WgSurfaceSDL::IsOpaque() const
 {
   if( m_pSurface->flags & SDL_SRCALPHA || m_pSurface->flags & SDL_SRCCOLORKEY )
-		return true;
+		return false;
 
-	return false;
+	return true;
 }
 
 //____ Lock() __________________________________________________________________

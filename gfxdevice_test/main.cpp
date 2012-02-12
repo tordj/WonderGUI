@@ -14,8 +14,6 @@
 #include <wg_gfxdevice_soft.h>
 #include <sdl_wglib.h>
 
-int fileSize( const char * pPath );
-void * loadFile( const char * pPath );
 
 WgSurface * 	loadSurface( const char * path );
 SDL_Surface *	initSDL( int w, int h );
@@ -38,29 +36,12 @@ int main(int argc, char **argv)
 	// Init WonderGUI
 
 	WgBase::Init();
-
-	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(1024,640), WG_PIXEL_RGBA_8 );
-	WgGfxDevice * pGfxDevice = new WgGfxDeviceSoft( pCanvas );
-
-	WgRoot * pRoot = new WgRoot( pGfxDevice );
-	pRoot->SetGeo(WgRect(0,0,1024,640));
-
-	WgEventHandler * pEventHandler = pRoot->EventHandler();
-
 	sdl_wglib::MapKeys();
 
 	// Load bitmap font
 
-	WgSurface * pFontImg = sdl_wglib::LoadSurface("../resources/anuvverbubbla_8x8.png", WgSurfaceFactorySoft() );
-	pFontImg->defineBlockSet( WgRect(0,0,10,10), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );	//dummy!!!
-
-	char * pFontSpec = (char*) loadFile( "../resources/anuvverbubbla_8x8.fnt" );
-
-	WgBitmapGlyphs * pGlyphs = new WgBitmapGlyphs( pFontImg, pFontSpec );
-
-	WgFont * pFont = new WgFont();
-	pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 8 );
-
+	WgFont * pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", WgSurfaceFactorySoft() );
+	
 	// Set default textprop
 
 	WgTextProp prop;
@@ -71,18 +52,68 @@ int main(int argc, char **argv)
 
 	WgBase::SetDefaultTextProp( prop.Register() );
 
+	// Setup gfxdevice and gui
+	
+	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(1024,640), WG_PIXEL_RGBA_8, (unsigned char *) pScreen->pixels, pScreen->pitch );
+	WgGfxDevice * pDevice = new WgGfxDeviceSoft( pCanvas );
+
+	WgRoot * pRoot = setupGUI(pDevice);
+	if( !pRoot )
+	{
+		delete pDevice;
+		return -1;
+	}
+
+	WgEventHandler * pEventHandler = pRoot->EventHandler();
+
    // program main loop
 
     while (eventLoop( pEventHandler ))
     {
+
+		// GET DIRTY RECTS
+		
+		int nDirtyRects;
+		SDL_Rect	dirtyRects[100];
+		
+		if( pRoot->NbDirtyRects() <= 100 )
+		{
+			nDirtyRects = pRoot->NbDirtyRects();
+			for( int i = 0 ; i < nDirtyRects ; i++ )
+			{
+				const WgRect * pR = pRoot->FirstDirtyRect() + i;
+				
+				dirtyRects[i].x = pR->x;
+				dirtyRects[i].y = pR->y;
+				dirtyRects[i].w = pR->w;
+				dirtyRects[i].h = pR->h;
+			}
+		}
+		else
+		{
+			nDirtyRects = 1;
+
+			const WgRect r = pRoot->Geo();
+			
+			dirtyRects[0].x = r.x;
+			dirtyRects[0].y = r.y;
+			dirtyRects[0].w = r.w;
+			dirtyRects[0].h = r.h;
+		}
+			
+
         // DRAWING STARTS HERE
 
-		pRoot->Render( WgRect(0,0,pCanvas->Width(),pCanvas->Height()) );
+		SDL_LockSurface( pScreen );
+		pRoot->Render();
+		SDL_UnlockSurface( pScreen );
 
         // DRAWING ENDS HERE
 
         // finally, update the screen :)
-        SDL_Flip(pScreen);
+		
+		SDL_UpdateRects( pScreen, nDirtyRects, dirtyRects);
+
 
         // Pause for a while
 
@@ -99,12 +130,54 @@ int main(int argc, char **argv)
 
 WgRoot * setupGUI( WgGfxDevice * pDevice )
 {
-	WgResDB * pDB = LoadStdGizmos( "../resources/blocks.png" );
+	WgResDB * pDB = sdl_wglib::LoadStdGizmos( "../resources/blocks.png", WgSurfaceFactorySoft() );
 	if( !pDB )
 		return 0;
 
-	WgRoot * pRoot = new WgRoot( pGfxDevice );
+	WgRoot * pRoot = new WgRoot( pDevice );
 
+	WgGizmoFlexGeo * pMainContainer = new WgGizmoFlexGeo();
+
+	int hAnchorLeft = pMainContainer->AddAnchor( 0.f, 0.f, WgCoord(0,100) );
+	int hAnchorRight = pMainContainer->AddAnchor( 1.f, 0.f, WgCoord(0,100) );
+	
+	pRoot->SetChild(pMainContainer);
+
+
+	
+	WgGizmoStack * pPanelStack = new WgGizmoStack();
+	pMainContainer->AddChild( pPanelStack, WG_NORTHWEST, hAnchorRight );
+
+	WgGizmo * pCheckeredBack = pDB->CloneGizmo( "bg_blue_gradient" );
+	pMainContainer->AddChild( pCheckeredBack, hAnchorLeft, WG_SOUTHEAST );
+
+	
+	WgGizmo * pPanelBack = pDB->CloneGizmo( "plate" );
+	pPanelStack->AddChild( pPanelBack );
+
+	WgGizmoFill * pFill = new WgGizmoFill();
+	pFill->SetColor( WgColor(255,0,0) );
+	pMainContainer->AddChild( pFill, WgRect(100,100,100,100) );
+
+	WgGizmoFill * pFill2 = new WgGizmoFill();
+	pFill2->SetColor( WgColor(0,255,0) );
+	pMainContainer->AddChild( pFill2, WgRect(200,100,100,100) );
+
+	WgGizmoFill * pFill3 = new WgGizmoFill();
+	pFill3->SetColor( WgColor(0,0,255) );
+	pMainContainer->AddChild( pFill3, WgRect(300,100,100,100) );
+	
+	WgGizmoText * pText = new WgGizmoText();
+	pText->SetTextProperties( WgBase::GetDefaultTextProp() );
+	pText->SetText( "TESTING" );
+	pPanelStack->AddChild( pText );
+
+	WgGizmo * pSlider = pDB->CloneGizmo( "hdragbar" );
+	WgStackHook * pDragbarHook = pPanelStack->AddChild( pSlider );
+//	pDragbarHook->SetOrientation( WG_SOUTH );
+	pDragbarHook->SetBorders( WgBorders(0,0,81,0) );
+
+	//
 
 	return pRoot;
 }
@@ -124,7 +197,7 @@ SDL_Surface * initSDL( int w, int h )
     atexit(SDL_Quit);
 
     // create a new window
-    SDL_Surface* pScreen = SDL_SetVideoMode(w, h, 32, SDL_HWSURFACE|SDL_DOUBLEBUF);
+    SDL_Surface* pScreen = SDL_SetVideoMode(w, h, 32, SDL_SWSURFACE);
     if ( !pScreen )
     {
         printf("Unable to set %dx%d video: %s\n", w, h, SDL_GetError());
@@ -170,45 +243,3 @@ bool eventLoop( WgEventHandler * pHandler )
 }
 
 
-//____ fileSize() _____________________________________________________________
-
-int fileSize( const char * pPath )
-{
-	FILE * fp = fopen( pPath, "rb" );
-	if( !fp )
-		return 0;
-
-	fseek( fp, 0, SEEK_END );
-	int size = ftell(fp);
-	fseek( fp, 0, SEEK_SET );
-	fclose( fp );
-
-	return size;
-}
-
-//____ loadFile() _____________________________________________________________
-
-void * loadFile( const char * pPath )
-{
-	FILE * fp = fopen( pPath, "rb" );
-	if( !fp )
-		return 0;
-
-	fseek( fp, 0, SEEK_END );
-	int size = ftell(fp);
-	fseek( fp, 0, SEEK_SET );
-
-	char * pMem = (char*) malloc( size+1 );
-	pMem[size] = 0;
-	int nRead = fread( pMem, 1, size, fp );
-	fclose( fp );
-
-	if( nRead < size )
-	{
-		free( pMem );
-		return 0;
-	}
-
-	return pMem;
-
-}
