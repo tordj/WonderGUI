@@ -26,9 +26,9 @@
 
 static const char	Wdg_Type[] = {"TordJ/Shader"};
 
-//____ NewOfMyType() __________________________________________________________
+//____ NewWidgetOfMyType() __________________________________________________________
 
-WgWidget * Wdg_Shader::NewOfMyType() const
+WgWidget * Wdg_Shader::NewWidgetOfMyType() const
 {
 	return new Wdg_Shader;
 }

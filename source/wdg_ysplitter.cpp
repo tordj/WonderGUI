@@ -26,7 +26,7 @@ static const char	Wdg_Type[] = {"TordJ/YSplitter"};
 
 
 //_____________________________________________________________________________
-WgWidget * Wdg_YSplitter::NewOfMyType() const
+WgWidget * Wdg_YSplitter::NewWidgetOfMyType() const
 {
 	return new Wdg_YSplitter;
 }

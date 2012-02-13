@@ -96,7 +96,7 @@ public:
 	bool		IsPlaying() { return m_bPlaying; };
 
 protected:
-	WgWidget *	NewOfMyType() const;
+	WgWidget *	NewWidgetOfMyType() const;
 	void		DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _layer );	
 private:
 	void		Init();

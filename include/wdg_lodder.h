@@ -51,7 +51,7 @@ class Wdg_Lodder:public WgWidget, public WgEmitter
 		bool		IsLOD(WgWidget* pWidget) const;
 
 	protected:
-		WgWidget * NewOfMyType() const;
+		WgWidget * NewWidgetOfMyType() const;
 
 		WgEmitter * GetEmitter() { return this; }
 

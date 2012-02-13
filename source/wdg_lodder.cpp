@@ -25,7 +25,7 @@
 static const char	Wdg_Type[] = {"TordJ/Lodder"};
 
 //_____________________________________________________________________________
-WgWidget * Wdg_Lodder::NewOfMyType() const
+WgWidget * Wdg_Lodder::NewWidgetOfMyType() const
 {
 	return new Wdg_Lodder;
 }

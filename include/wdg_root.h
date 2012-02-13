@@ -78,7 +78,7 @@ public:
 
 
 protected:
-	virtual WgWidget * NewOfMyType() const;
+	virtual WgWidget * NewWidgetOfMyType() const;
 
 	bool	DoMyOwnMarkTest( int _x, int _y );
 	WgEmitter * GetEmitter() { return this; }

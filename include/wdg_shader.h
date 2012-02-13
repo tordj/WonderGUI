@@ -51,7 +51,7 @@ class Wdg_Shader:public WgWidget, public WgEmitter
 		inline WgTintMode	TintMode() { return m_tintMode; }
 
 	protected:
-		WgWidget * NewOfMyType() const;
+		WgWidget * NewWidgetOfMyType() const;
 
 		virtual void	RenderRecursively(Uint8 _layer, const WgRect& clip);
 		WgEmitter * GetEmitter() { return this; }

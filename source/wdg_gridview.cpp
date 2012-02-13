@@ -26,9 +26,9 @@
 static const char	Wdg_Type[] = {"TordJ/GridView"};
 
 
-//____ NewOfMyType() __________________________________________________________
+//____ NewWidgetOfMyType() __________________________________________________________
 
-WgWidget * Wdg_GridView::NewOfMyType() const
+WgWidget * Wdg_GridView::NewWidgetOfMyType() const
 {
 	return new Wdg_GridView;
 }

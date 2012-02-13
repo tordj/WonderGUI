@@ -332,9 +332,9 @@ WgRect WgTableRow::RequestItemGeo( WgItem * pItem )
 
 
 
-//____ NewOfMyType() __________________________________________________________
+//____ NewWidgetOfMyType() __________________________________________________________
 
-WgWidget * Wdg_TableView::NewOfMyType() const
+WgWidget * Wdg_TableView::NewWidgetOfMyType() const
 {
 	return new Wdg_TableView;
 }

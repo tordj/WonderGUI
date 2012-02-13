@@ -162,7 +162,7 @@ public:
 
 
 protected:
-	WgWidget * NewOfMyType() const;
+	WgWidget * NewWidgetOfMyType() const;
 	WgEmitter * GetEmitter() { return this; }
 private:
 	void		Init();

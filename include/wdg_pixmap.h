@@ -65,7 +65,7 @@ public:
 	WgBlockSetPtr	GetSource() { return m_pGfx; }
 
 protected:
-	WgWidget * NewOfMyType();
+	WgWidget * NewWidgetOfMyType();
 	void		Init();
 protected:
 	void		DoMyOwnRender( const WgRect& window, const WgRect& clip, Uint8 _layer );	

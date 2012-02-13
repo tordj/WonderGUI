@@ -69,7 +69,7 @@ public:
 	inline bool AllowUnchecking( ) const { return m_bAllowUnchecking; }
 
 protected:
-	WgWidget * NewOfMyType() const;
+	WgWidget * NewWidgetOfMyType() const;
 private:
 	void Init();
 

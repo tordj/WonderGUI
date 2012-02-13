@@ -71,7 +71,7 @@ public:
 	bool	IsAutoEllipsisDefault() const { return true; };
 
 protected:
-	WgWidget * NewOfMyType() const;
+	WgWidget * NewWidgetOfMyType() const;
 private:
 	bool	InsertCharAtCursorInternal( Uint16 c );
 

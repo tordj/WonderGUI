@@ -136,7 +136,7 @@ class Wdg_TreeView : public Wdg_Baseclass_View
 		WgTreeEntry *	FindEntry( long id );
 
 	protected:
-		WgWidget * NewOfMyType() const;
+		WgWidget * NewWidgetOfMyType() const;
 	private:
 		void	Init();
 		void	DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer );

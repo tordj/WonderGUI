@@ -53,7 +53,7 @@ public:
 
 
 protected:
-	WgWidget * NewOfMyType() const;
+	WgWidget * NewWidgetOfMyType() const;
 private:
 	void		Init();
 

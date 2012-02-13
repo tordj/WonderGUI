@@ -281,7 +281,7 @@ public:
 
 
 protected:
-	WgWidget *	NewOfMyType() const { return new Wdg_Widget<T>; }
+	WgWidget *	NewWidgetOfMyType() const { return new Wdg_Widget<T>; }
 
 	WgCoord		GizmoPos( const WgGizmo * pGizmo ) const
 	{

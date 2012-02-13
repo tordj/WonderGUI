@@ -27,9 +27,9 @@
 
 static const char	Wdg_Type[] = {"TordJ/EditTextView"};
 
-//____ NewOfMyType() __________________________________________________________
+//____ NewWidgetOfMyType() __________________________________________________________
 
-WgWidget * Wdg_TextView::NewOfMyType() const
+WgWidget * Wdg_TextView::NewWidgetOfMyType() const
 {
 	return new Wdg_TextView;
 }

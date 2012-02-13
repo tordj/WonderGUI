@@ -37,9 +37,9 @@ using namespace WgSignal;
 
 static const char	Wdg_Type[] = {"TordJ/Menu"};
 
-//____ NewOfMyType() __________________________________________________________
+//____ NewWidgetOfMyType() __________________________________________________________
 
-WgWidget * Wdg_Menu::NewOfMyType() const
+WgWidget * Wdg_Menu::NewWidgetOfMyType() const
 {
 	return new Wdg_Menu;
 }

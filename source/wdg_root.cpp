@@ -27,9 +27,9 @@
 
 static const char	Wdg_Type[] = {"TordJ/Root"};
 
-//____ NewOfMyType() __________________________________________________________
+//____ NewWidgetOfMyType() __________________________________________________________
 
-WgWidget * Wdg_Root::NewOfMyType() const
+WgWidget * Wdg_Root::NewWidgetOfMyType() const
 {
 	return new Wdg_Root;
 }

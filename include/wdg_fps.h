@@ -66,7 +66,7 @@ class Wdg_Fps:public WgWidget
 		void SetTextProperties( const WgTextPropPtr& pProp );
 
 	protected:
-		WgWidget * NewOfMyType() const;
+		WgWidget * NewWidgetOfMyType() const;
 	private:
 		void	Init();
 		void	DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer );

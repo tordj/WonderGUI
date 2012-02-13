@@ -2228,7 +2228,7 @@ void WgWidget::RefreshSizeLimit( void )
 
 WgWidget * WgWidget::Clone( void )
 {
-	WgWidget	* pClone = NewOfMyType();
+	WgWidget	* pClone = NewWidgetOfMyType();
 
 	CloneContent( pClone, pClone, 0 );
 
@@ -2326,7 +2326,7 @@ void	WgWidget::CloneContent( WgWidget * _pClone, WgWidget * _pCloneRoot, WgWidge
 
 WgWidget* WgWidget::BuildCloneBranch( const WgWidget * pSrc, WgWidget * pDstParent )
 {
-	WgWidget* pClone = pSrc->NewOfMyType();
+	WgWidget* pClone = pSrc->NewWidgetOfMyType();
 
 	pClone->m_pParent = pDstParent;
 
@@ -2354,7 +2354,7 @@ void	WgWidget::BuildCloneBranch( WgWidget ** _wpAddr, WgWidget * _pCloneParent )
 {
 	WgWidget	* pClone;
 
-	pClone = NewOfMyType();
+	pClone = NewWidgetOfMyType();
 	* _wpAddr = pClone;
 
 	pClone->m_pParent = _pCloneParent;

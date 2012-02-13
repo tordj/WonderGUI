@@ -931,7 +931,7 @@ void WgButtonLayoutRes::Serialize(WgResourceSerializerXML& s, const WgXmlNode& x
 	{
 		switch(layout)
 		{
-		case WgGizmoDragbar::DEFAULT:		s.AddAttribute(attr, "default"); break;
+		case WgGizmoDragbar::NONE:			s.AddAttribute(attr, "none"); break;
 		case WgGizmoDragbar::HEADER_FWD:	s.AddAttribute(attr, "head_fwd"); break;
 		case WgGizmoDragbar::HEADER_BWD:	s.AddAttribute(attr, "head_bwd"); break;
 		case WgGizmoDragbar::FOOTER_FWD:	s.AddAttribute(attr, "foot_fwd"); break;
@@ -940,7 +940,7 @@ void WgButtonLayoutRes::Serialize(WgResourceSerializerXML& s, const WgXmlNode& x
 		case WgGizmoDragbar::NEXT_VERT:	s.AddAttribute(attr, "next_vert"); break;
 		case WgGizmoDragbar::NEXT_HORR:	s.AddAttribute(attr, "next_horr"); break;
 		case WgGizmoDragbar::ALL:			s.AddAttribute(attr, "all"); break;
-		default:						s.AddAttribute(attr, "none"); break;
+		default:						s.AddAttribute(attr, "default"); break;
 		}
 	}
 }

@@ -18,6 +18,7 @@ class WgGizmoViewport3D:public WgGizmo
 
 		virtual const char * Type() const;
 		static const char * GetMyType();
+		virtual WgGizmo * NewOfMyType() const { return new WgGizmoViewport3D(); };
 
 		void	SetCamera( const ECameraPtr& spCamera );
 		inline const ECameraPtr& GetCamera() { return m_spCamera; };

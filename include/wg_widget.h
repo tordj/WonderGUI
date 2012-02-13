@@ -611,10 +611,10 @@ protected:
 
 		// Slightly clumsy solution to a cloning-related problem.
 		// Just put:
-		// WgWidget * NewOfMyType( int number ) { return new Wdg_Fill[number]; };
+		// WgWidget * NewWidgetOfMyType( int number ) { return new Wdg_Fill[number]; };
 		// as a protected method in the header file.
 
-		virtual WgWidget * NewOfMyType() const = 0;
+		virtual WgWidget * NewWidgetOfMyType() const = 0;
 
 };
 

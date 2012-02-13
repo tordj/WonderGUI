@@ -280,7 +280,7 @@ public:
 	inline bool	RemoveInputFocus() { return WgWidget::GrabInputFocus(); }
 
 protected:
-	WgWidget * NewOfMyType() const;
+	WgWidget * NewWidgetOfMyType() const;
 
 	void	DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo );
 	void	DoMyOwnGeometryChangeSubclass( WgRect& oldGeo, WgRect& newGeo );

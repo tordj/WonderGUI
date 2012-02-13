@@ -49,7 +49,7 @@ class Wdg_YSplitter:public WgWidget, public WgEmitter
 
 
 	protected:
-		WgWidget * NewOfMyType() const;
+		WgWidget * NewWidgetOfMyType() const;
 
 		WgEmitter * GetEmitter() { return this; }
 

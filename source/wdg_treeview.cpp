@@ -29,9 +29,9 @@
 
 static const char	Wdg_Type[] = {"TordJ/TreeView"};
 
-//____ NewOfMyType() __________________________________________________________
+//____ NewWidgetOfMyType() __________________________________________________________
 
-WgWidget * Wdg_TreeView::NewOfMyType() const
+WgWidget * Wdg_TreeView::NewWidgetOfMyType() const
 {
 	return new Wdg_TreeView;
 }

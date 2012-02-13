@@ -77,7 +77,7 @@ public:
 
 
 protected:
-	WgWidget * NewOfMyType() const;
+	WgWidget * NewWidgetOfMyType() const;
 
 	void refreshItems();
 	void ItemSizeModified( WgItem * pItem, Sint32 widthDiff , Sint32 heightDiff );

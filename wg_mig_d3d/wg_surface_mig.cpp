@@ -194,7 +194,7 @@ Uint8 WgSurfaceMIG::GetOpacity( WgCoord coord ) const
 
 //____ WgSurfaceFactoryMIG::CreateSurface() ___________________________________
 
-WgSurface * WgSurfaceFactoryMIG::CreateSurface( const WgSize& size, WgPixelType type )
+WgSurface * WgSurfaceFactoryMIG::CreateSurface( const WgSize& size, WgPixelType type ) const
 {
 	EPixelFormat	format;
 
