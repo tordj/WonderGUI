@@ -551,7 +551,7 @@ void WgGizmoEditline::_onAction( WgInput::UserAction action, int button_key, con
 
 	if( action == WgInput::CHARACTER )
 	{
-		if( _isEditable() && m_bFocused && button_key >= 32 && button_key != 127)
+		if( _isEditable() &&  m_bFocused && button_key >= 32 && button_key != 127)
 		{
 
 			if(m_pText->hasSelection())

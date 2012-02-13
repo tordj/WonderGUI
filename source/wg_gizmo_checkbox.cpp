@@ -230,6 +230,7 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
 			if( button == 1 && !m_bPressed )
 			{
+				SetState( !m_bChecked );
 				m_bPressed = true;
 				RequestRender();
 			}
@@ -246,15 +247,7 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 			}
 			break;
 		}
-		
-		case WG_EVENT_MOUSEBUTTON_CLICK:
-		{
-			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
-			if( button == 1 )
-				SetState( !m_bChecked );
-			break;
-		}
-		
+				
         default:
             break;
 	}
@@ -286,8 +279,8 @@ void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, c
 		case WgInput::BUTTON_PRESS:
 			if( _button_key == 1 && !m_bPressed )
 			{
-				SetState( !m_bChecked );
 				m_bPressed = true;
+				SetState( !m_bChecked );
 				RequestRender();
 			}
 			break;

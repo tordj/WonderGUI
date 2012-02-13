@@ -337,23 +337,23 @@ int WgAnim::TimeToOfs( int64_t ticks )
 			return m_duration - (int)ticks;
 	
 		case WG_FORWARD_LOOPING:
-			return ticks % m_duration;
+			return (int) (ticks % m_duration);
 
 		case WG_BACKWARD_LOOPING:
-			return m_duration - (ticks % m_duration);
+			return m_duration - (int)(ticks % m_duration);
 
 
 		case WG_FORWARD_PINGPONG:
 			if( ((ticks/m_duration) % 2) == 0 )
-				return ticks % m_duration;
+				return (int) (ticks % m_duration);
 			else
-				return m_duration - (ticks % m_duration);
+				return m_duration - (int)(ticks % m_duration);
 
 		case WG_BACKWARD_PINGPONG:
 			if( ((ticks/m_duration) % 2) == 1 )
-				return ticks % m_duration;
+				return (int) (ticks % m_duration);
 			else
-				return m_duration - (ticks % m_duration);
+				return m_duration - (int)(ticks % m_duration);
 
 	
 		default:

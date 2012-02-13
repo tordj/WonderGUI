@@ -429,15 +429,18 @@ start:
 	  {
 	    // Is this widget blocking this action source for its children?
 
-	    if( pWidget->m_actionFilterBlock & WgWidget::KEYBOARD )
-	      myKeyAction.nWidgets = 0;
-
-	    // Is this widget copying this action source from its children?
-
-	    if( pWidget == m_pFocusedWidget || (pWidget->m_actionFilterCopy & WgWidget::KEYBOARD) )
+		if( !pWidget->IsHidden() )
 		{
-			if( pWidget->IsEnabled() )
-				myKeyAction.aWidgets[myKeyAction.nWidgets++] = pWidget;
+			if( pWidget->m_actionFilterBlock & WgWidget::KEYBOARD )
+			  myKeyAction.nWidgets = 0;
+
+			// Is this widget copying this action source from its children?
+
+			if( pWidget == m_pFocusedWidget || (pWidget->m_actionFilterCopy & WgWidget::KEYBOARD) )
+			{
+				if( pWidget->IsEnabled() )
+					myKeyAction.aWidgets[myKeyAction.nWidgets++] = pWidget;
+			}
 		}
 	    pWidget = pWidget->m_pParent;
 	  }
@@ -710,7 +713,7 @@ void WgInput::button_release_( WgInputEventData ed )
 
 			if( pWidget == topMark || ((pWidget->m_actionFilterCopy & blockFilter) == blockFilter) ) // Must copy both POINTER and BUTTON actions to get a copy.
 			{
-				if( pWidget->IsEnabled() )
+				if( pWidget->IsEnabled() || widgetInStack( pWidget, m_pressed[button-1] ) )
 					myAction.aWidgets[myAction.nWidgets++] = pWidget;
 			}
 			pWidget = pWidget->m_pParent;
@@ -873,17 +876,21 @@ void WgInput::character_( WgInputEventData ed )
 
 	while( pWidget )
 	{
-    	// Is this widget blocking this action source for its children?
 
-		if( pWidget->m_actionFilterBlock & WgWidget::KEYBOARD )
-			myAction.nWidgets = 0;
-
-		// Is this widget copying this action source from its children?
-
-		if( pWidget == m_pFocusedWidget || (pWidget->m_actionFilterCopy & WgWidget::KEYBOARD) )
+		if( !pWidget->IsHidden() )
 		{
-			if( pWidget->IsEnabled() )
-				myAction.aWidgets[myAction.nWidgets++] = pWidget;
+			// Is this widget blocking this action source for its children?
+
+			if( pWidget->m_actionFilterBlock & WgWidget::KEYBOARD )
+				myAction.nWidgets = 0;
+
+			// Is this widget copying this action source from its children?
+
+			if( pWidget == m_pFocusedWidget || (pWidget->m_actionFilterCopy & WgWidget::KEYBOARD) )
+			{
+				if( pWidget->IsEnabled() )
+					myAction.aWidgets[myAction.nWidgets++] = pWidget;
+			}
 		}
 		pWidget = pWidget->m_pParent;
 	}
@@ -933,17 +940,20 @@ void WgInput::key_press_( WgInputEventData ed )
 
 	while( pWidget )
 	{
-    	// Is this widget blocking this action source for its children?
-
-		if( pWidget->m_actionFilterBlock & WgWidget::KEYBOARD )
-			myAction.nWidgets = 0;
-
-		// Is this widget copying this action source from its children?
-
-		if( pWidget == m_pFocusedWidget || (pWidget->m_actionFilterCopy & WgWidget::KEYBOARD) )
+		if( !pWidget->IsHidden() )
 		{
-			if( pWidget->IsEnabled() )
-				myAction.aWidgets[myAction.nWidgets++] = pWidget;
+    		// Is this widget blocking this action source for its children?
+
+			if( pWidget->m_actionFilterBlock & WgWidget::KEYBOARD )
+				myAction.nWidgets = 0;
+
+			// Is this widget copying this action source from its children?
+
+			if( pWidget == m_pFocusedWidget || (pWidget->m_actionFilterCopy & WgWidget::KEYBOARD) )
+			{
+				if( pWidget->IsEnabled() )
+					myAction.aWidgets[myAction.nWidgets++] = pWidget;
+			}
 		}
 		pWidget = pWidget->m_pParent;
 	}

@@ -1007,9 +1007,24 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 	const WgChar * pChars = pText->getText();
 	Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
 	WgTextAttr		attr;
+	WgTextAttr		baseAttr;
 
 	WgRange	selection = pText->getSelection();
 	int		ellipsisWidth = 0;
+
+
+	// Get the width of an ellipsis
+
+	pText->GetBaseAttr( baseAttr );	// Ellipsis are always rendered using the base attributes.
+	pen.SetAttributes( baseAttr );
+	
+	WgGlyphPtr pEllipsis = pen.GetFont()->GetGlyph( WG_ELLIPSIS, pen.GetStyle(), pen.GetSize() );
+	const WgGlyphBitmap * pBitmap = pEllipsis->GetBitmap();
+	if( pBitmap )
+		ellipsisWidth = pBitmap->rect.w + pBitmap->bearingX;
+	else
+		ellipsisWidth = 0;
+
 
 	// Print loop
 
@@ -1043,15 +1058,6 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 				WgRect clip = pen.HasClipRect()?pen.GetClipRect():WgRect(0,0,65535,65535);
 				_drawUnderline( clip, pText, pen.GetPosX(), pen.GetPosY(), i, (ofs+len)-i );
 			}
-
-			// Get the width of an ellipsis
-		
-			WgGlyphPtr pEllipsis = pen.GetFont()->GetGlyph( WG_ELLIPSIS, pen.GetStyle(), pen.GetSize() );
-			const WgGlyphBitmap * pBitmap = pEllipsis->GetBitmap();
-			if( pBitmap )
-				ellipsisWidth = pBitmap->rect.w + pBitmap->bearingX;
-			else
-				ellipsisWidth = 0;
 		}
 
 		// Calculate position and blit the glyph.
@@ -1078,7 +1084,17 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 
 	// Render ellipsis.
 
+	pen.SetAttributes(baseAttr);		// Ellipsis are always rendered using the base attributes.
 	pen.SetChar( WG_ELLIPSIS );
+
+	// Set tint colors (if changed)
+
+	if( pen.GetColor() != color )
+	{
+		color = pen.GetColor();
+		SetTintColor( baseCol * color );
+	}	
+	
 								// We could have kerning here but we have screwed up previous glyph...
 	pen.BlitChar();
 

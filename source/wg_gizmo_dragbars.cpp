@@ -665,6 +665,8 @@ void WgGizmoDragbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 			{
 				_unmarkReqRender();
 				m_mode[c] = WG_MODE_MARKED;
+				if( c == C_BAR )
+					m_mode[C_BG] = WG_MODE_MARKED;			// Always also mark bg if bar is marked.
 			}
 
 			break;
@@ -680,9 +682,11 @@ void WgGizmoDragbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 			_unmarkReqRender();
 			m_mode[c] = WG_MODE_SELECTED;
 
-
 			if( c == C_BAR )
-	  			m_dragBarPressOfs = pointerOfs - barPos;
+			{
+				m_dragBarPressOfs = pointerOfs - barPos;
+				m_mode[C_BG] = WG_MODE_MARKED;			// Always mark bg if bar is pressed.
+			}
 			else if( c == C_BG )
 			{
 				switch( m_bgPressMode )
@@ -701,7 +705,7 @@ void WgGizmoDragbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 					break;
 				case GOTO_POS:
 					m_mode[C_BAR] = WG_MODE_SELECTED;
-					m_mode[C_BG] = WG_MODE_NORMAL;
+					m_mode[C_BG] = WG_MODE_MARKED;
 					m_dragBarPressOfs = barLen/2;
 					SetSliderPosPxlOfs( pointerOfs );
 					break;
@@ -860,7 +864,12 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 			{
 				_unmarkReqRender();
 				m_mode[c] = WG_MODE_MARKED;
+				if( c == C_BAR )
+					m_mode[C_BG] = WG_MODE_MARKED;			// Always also mark bg if bar is marked.
+
 			}
+
+
 
 			break;
 		}
@@ -877,7 +886,10 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 
 
 			if( c == C_BAR )
-	  			m_dragBarPressOfs = pointerOfs - barPos;
+			{
+				m_dragBarPressOfs = pointerOfs - barPos;
+				m_mode[C_BG] = WG_MODE_MARKED;			// Always mark bg if bar is pressed.
+			}
 			else if( c == C_BG )
 			{
 				switch( m_bgPressMode )
@@ -890,7 +902,7 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 					break;
 				case GOTO_POS:
 					m_mode[C_BAR] = WG_MODE_SELECTED;
-					m_mode[C_BG] = WG_MODE_NORMAL;
+					m_mode[C_BG] = WG_MODE_MARKED;
 					m_dragBarPressOfs = barLen/2;
 					SetSliderPosPxlOfs( pointerOfs );
 					break;
