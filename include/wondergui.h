@@ -51,6 +51,10 @@
 #	include <wg_cursorinstance.h>
 #endif
 
+#ifndef WG_RESDB_DOT_H
+#	include <wg_resdb.h>
+#endif
+
 #ifndef WG_RECTCHAIN_DOT_H
 #	include <wg_rectchain.h>
 #endif
@@ -254,6 +258,10 @@
 
 #ifndef WG_GIZMO_REFRESHBUTTON_DOT_H
 #	include <wg_gizmo_refreshbutton.h>
+#endif
+
+#ifndef WG_GIZMO_STACK_DOT_H
+#	include <wg_gizmo_stack.h>
 #endif
 
 #ifndef WG_GIZMO_TABLE_DOT_H

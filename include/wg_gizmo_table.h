@@ -245,6 +245,8 @@ public:
 	virtual ~WgGizmoTable();
 	virtual const char * Type() const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoTable(); };
+	
 
 	//____ Methods __________________________________________
 
@@ -395,6 +397,13 @@ private:
 	WgHook*			_firstHook() const { return FirstHook(); }
 	WgHook*			_lastHook() const { return LastHook(); }
 
+	WgHook* 		_firstHookWithGeo( WgRect& geo ) const;
+	WgHook* 		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
+	WgHook* 		_lastHookWithGeo( WgRect& geo ) const;
+	WgHook* 		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
+
 	// These are needed until WgGizmoContainer inherits from WgGizmo
 
 	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
@@ -405,7 +414,7 @@ private:
 									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip); }
 	void			_onEnable() { WgGizmoContainer::_onEnable(); }
 	void			_onDisable() { WgGizmoContainer::_onDisable(); }
-	bool 			_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
+	bool 			_onAlphaTest( const WgCoord& ofs ) { return WgGizmoContainer::_onAlphaTest(ofs); }
 
 	//
 

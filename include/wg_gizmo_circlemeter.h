@@ -48,6 +48,8 @@ class WgGizmoCirclemeter : public WgGizmo, public Wg_Interface_ValueHolder
 		virtual ~WgGizmoCirclemeter();
 		virtual const char * Type() const;
 		static const char * GetMyType();
+		virtual WgGizmo * NewOfMyType() const { return new WgGizmoCirclemeter; };
+		
 
 		//____ Methods __________________________________________
 

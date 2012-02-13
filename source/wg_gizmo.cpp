@@ -134,20 +134,28 @@ bool WgGizmo::MarkTest( const WgCoord& ofs )
 
 //____ CloneContent() _________________________________________________________
 
-void WgGizmo::CloneContent( const WgGizmo * _pOrg )
+bool WgGizmo::CloneContent( const WgGizmo * _pOrg )
 {
+	if( _pOrg->Type() != Type() )
+		return false;
+	
 	m_id			= _pOrg->m_id;
+	
+	m_pSkinNode		= _pOrg->m_pSkinNode;
+	m_pointerStyle 	= _pOrg->m_pointerStyle;
+	
 	m_tooltip		= _pOrg->m_tooltip;
+	m_markPolicy	= _pOrg->m_markPolicy;
 
 	m_bEnabled		= _pOrg->m_bEnabled;
 	m_bOpaque		= _pOrg->m_bOpaque;
-	m_markPolicy	= _pOrg->m_markPolicy;
+	m_bTabLock		= _pOrg->m_bTabLock;
 
-	m_bRendersAll	= _pOrg->m_bRendersAll;
 	m_bRenderOne	= _pOrg->m_bRenderOne;
+	m_bRendersAll	= _pOrg->m_bRendersAll;
 
-	if( _pOrg->Type() == Type() )
-		_onCloneContent( _pOrg );
+	_onCloneContent( _pOrg );
+	return true;
 }
 
 //____ _onNewHook() ___________________________________________________________

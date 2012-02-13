@@ -252,6 +252,7 @@ public:
 	WgMenuItem *		GetMenuItem( const std::string& id ) const;
 	WgTab*				GetTab( const std::string& id ) const;
 	WgGizmo*			GetGizmo( const std::string& id ) const;
+	WgGizmo*			CloneGizmo( const std::string& id ) const;
 
 
 #ifdef WG_LEGACY

@@ -13,6 +13,7 @@
     <File Name="wg_surface_soft.cpp"/>
     <File Name="wg_surface_soft.h"/>
   </VirtualDirectory>
+  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="">
@@ -27,14 +28,13 @@
       <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
         <IncludePath Value="."/>
         <IncludePath Value="../include"/>
+        <Preprocessor Value="WG_TNG"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
-      
-      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -75,6 +75,9 @@
       
       
       
+      
+      
+      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -104,6 +107,7 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Release"/>
-  <Dependencies Name="Debug"/>
+  <Dependencies Name="Debug">
+    <Project Name="wondergui"/>
+  </Dependencies>
 </CodeLite_Project>

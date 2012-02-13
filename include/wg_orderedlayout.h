@@ -138,7 +138,7 @@ protected:
 									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip); }
 	void			_onEnable() { WgGizmoContainer::_onEnable(); }
 	void			_onDisable() { WgGizmoContainer::_onDisable(); }
-	bool 			_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
+	bool 			_onAlphaTest( const WgCoord& ofs ) { return WgGizmoContainer::_onAlphaTest(ofs); }
 
 	//
 

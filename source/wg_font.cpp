@@ -71,11 +71,13 @@ void WgFont::Init()
 
 WgFont::~WgFont()
 {
+#ifdef	WG_USE_FREETYPE	
 	for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
 	{
 		if( m_aVectorGlyphs[i] != 0 )
 			delete [] m_aVectorGlyphs[i];
 	}
+#endif
 
 	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 	{

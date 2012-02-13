@@ -22,21 +22,10 @@
 #ifndef WG_SURFACE_SOFT_DOT_H
 #define WG_SURFACE_SOFT_DOT_H
 
-#ifndef WG_TYPES_DOT_H
-#include "wg_types.h"
-#endif
-
-#ifndef WG_COLOR_DOT_H
-#include "wg_color.h"
-#endif
-
-#ifndef WG_GEO_DOT_H
-#include "wg_geo.h"
-#endif
-
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>
 #endif
+
 
 #include <vector>
 
@@ -45,9 +34,9 @@
 class WgSurfaceSoft : public WgSurface
 {
 	friend class WgGfxDeviceSoft;
-	
+
  public:
-	WgSurfaceSoft( WgSize size, WgPixelType type );
+	WgSurfaceSoft( WgSize size, WgPixelType type = WG_PIXEL_RGBA_8 );
 	WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch );
 	WgSurfaceSoft( const WgSurfaceSoft * pOther );
 	~WgSurfaceSoft();
@@ -67,18 +56,28 @@ class WgSurfaceSoft : public WgSurface
 
 	inline float ScaleAlpha() { return m_fScaleAlpha; }
 	void SetScaleAlpha(float fScaleAlpha);
-   
+
 	void PutPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<Uint32> &col, int length, bool replace);
-									   			               
+
 protected:
-	
+
 	void _copy(const WgSurfaceSoft * pOther);
-	
+
 	WgSize		m_size;
 	float    	m_fScaleAlpha;
 	bool		m_bOwnsData;
 	Uint8 *		m_pData;
 };
+
+//____ WgSurfaceFactorySoft _____________________________________________________
+
+class WgSurfaceFactorySoft : public WgSurfaceFactory
+{
+public:
+	WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 ) const;
+};
+
+
 
 //========================================================================================
 #endif // WG_SURFACE_SOFT_DOT_H

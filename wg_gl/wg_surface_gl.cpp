@@ -73,7 +73,7 @@ bool WgSurfaceGL::_initGlExtensions()
 
 //____ Constructor _____________________________________________________________
 
-WgSurfaceGL::WgSurfaceGL( GLint _format, WgSize dimensions, void * _pPixels )
+WgSurfaceGL::WgSurfaceGL( WgSize dimensions, GLint _format, void * _pPixels )
 {
 	if( pglBufferDataARB == 0 )
 		_initGlExtensions();
@@ -95,7 +95,7 @@ WgSurfaceGL::WgSurfaceGL( GLint _format, WgSize dimensions, void * _pPixels )
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexImage2D( GL_TEXTURE_2D, 0, _format, m_size.w, m_size.h, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+		GL_BGRA, GL_UNSIGNED_BYTE, NULL );
 
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
 
@@ -105,8 +105,6 @@ WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint8 * _pAlpha )
 {
 	if( pglBufferDataARB == 0 )
 		_initGlExtensions();
-
-	_setPixelFormat( m_format );
 
 	GLint width = 0;
 	GLint height = 0;
@@ -121,6 +119,7 @@ WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint8 * _pAlpha )
 	m_buffer = 0;
 	m_pitch = width*m_pixelFormat.bits/8;
 
+	_setPixelFormat( m_format );
 	_initBuffer();
 
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
@@ -160,12 +159,12 @@ void WgSurfaceGL::_setPixelFormat( GLint _format )
 		m_pixelSize = 4;
 		pixeltype = WG_PIXEL_RGBA_8;
 		break;
-		
+
 	default:
 		m_pixelSize = 0;		// Signal unknown pixelsize.
 		break;
 	}
-	
+
 	WgUtil::PixelTypeToFormat(pixeltype, m_pixelFormat);
 }
 
@@ -413,7 +412,7 @@ Uint8 WgSurfaceGL::GetOpacity( WgCoord coord ) const
 
 //____ WgSurfaceFactoryGL::CreateSurface() ___________________________________
 
-WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgPixelType type )
+WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgPixelType type ) const
 {
 
 	GLint	format;
@@ -441,7 +440,7 @@ WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgPixelType t
 	char * pBuffer = new char[buffSize];
 	memset( pBuffer, 0, buffSize );
 
-	WgSurfaceGL * p = new WgSurfaceGL( format, size, pBuffer );
+	WgSurfaceGL * p = new WgSurfaceGL( size, format, pBuffer );
 
 	delete pBuffer;
 	return 	p;

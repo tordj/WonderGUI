@@ -31,6 +31,7 @@
 
 WgGizmoContainer::WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE), m_bSiblingsOverlap(false)
 {
+	m_bSiblingsOverlap = true;
 }
 
 

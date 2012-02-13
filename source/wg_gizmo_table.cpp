@@ -2352,3 +2352,41 @@ void WgGizmoTable::_updateMarkedRowColumn( int row, int column )
 	}
 }
 
+//____ _firstHookWithGeo() _____________________________________________________
+
+WgHook* WgGizmoTable::_firstHookWithGeo( WgRect& geo ) const
+{
+	//TODO: Implement!!!
+	
+	return 0;
+}
+
+//____ _nextHookWithGeo() _____________________________________________________
+
+WgHook* WgGizmoTable::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+	//TODO: Implement!!!
+	
+	return 0;
+}
+
+//____ _lastHookWithGeo() _____________________________________________________
+
+WgHook* WgGizmoTable::_lastHookWithGeo( WgRect& geo ) const
+{
+	//TODO: Implement!!!
+	
+	return 0;
+}
+
+//____ _prevHookWithGeo() _____________________________________________________
+
+WgHook* WgGizmoTable::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+	//TODO: Implement!!!
+	
+	return 0;
+}
+
+
+

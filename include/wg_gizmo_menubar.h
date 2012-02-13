@@ -50,12 +50,12 @@ class	WgChar;
 
 class	WgGizmoMenubar;
 /*
-	Att stödja:
+	Att stÃ¶dja:
 
-	- Ikon/checkbox till vänster.
-	- Accelerator till höger (innan pilen).
+	- Ikon/checkbox till vÃ¤nster.
+	- Accelerator till hÃ¶ger (innan pilen).
 	- Separator.
-	- Cascading menus med pil till höger.
+	- Cascading menus med pil till hÃ¶ger.
 	- Disablade entries.
 	- Navigera menyerna med tangenter + keybindings.
 
@@ -63,11 +63,11 @@ class	WgGizmoMenubar;
 
 	- "End of menu"-section with info.
 	- Baloon help.
-	- Automatiskt öppna uppåt eller nedåt beroende på plats.
+	- Automatiskt Ã¶ppna uppÃ¥t eller nedÃ¥t beroende pÃ¥ plats.
 
-	* Press on head drar ner menyn, release på entry aktiverar entry (så fungerar alla fallen).
-	* Click på öppen header samt Release/press utanför menyn stänger menyn.
-	* Mouse over på annan header byter meny.
+	* Press on head drar ner menyn, release pÃ¥ entry aktiverar entry (sÃ¥ fungerar alla fallen).
+	* Click pÃ¥ Ã¶ppen header samt Release/press utanfÃ¶r menyn stÃ¤nger menyn.
+	* Mouse over pÃ¥ annan header byter meny.
 
 
 */
@@ -111,6 +111,8 @@ public:
 	~WgGizmoMenubar();
 	virtual const char * Type() const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoMenubar(); };
+	
 
 	//____ Methods __________________________________________
 

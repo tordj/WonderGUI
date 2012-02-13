@@ -207,6 +207,7 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoFlexGeo(); };
 
 	void			SetConfineChildren( bool bRestrictChildren );
 	bool			IsConfiningChildren() const { return m_bConfineChildren; }
@@ -269,7 +270,7 @@ private:
 									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip); }
 	void			_onEnable() { WgGizmoContainer::_onEnable(); }
 	void			_onDisable() { WgGizmoContainer::_onDisable(); }
-	bool 			_onAlphaTest( const WgCoord& ofs ) { WgGizmoContainer::_onAlphaTest(ofs); }
+	bool 			_onAlphaTest( const WgCoord& ofs ) { return WgGizmoContainer::_onAlphaTest(ofs); }
 
 	//
 

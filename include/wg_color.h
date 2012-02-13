@@ -49,7 +49,7 @@ public:
 	inline WgColor() {};
 	inline WgColor( const WgColor& col );
 	inline WgColor( Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255 );
-	inline WgColor( Uint32 rgba );
+	inline WgColor( Uint32 argb );
 	inline WgColor( Uint32 rgb, Uint8 a );
 
 	inline bool operator==( const WgColor& k ) const;
@@ -78,7 +78,7 @@ public:
 
 
 
-	const static WgColor	transparent;		// 0xFF000000
+	const static WgColor	transparent;		// 0x00FFFFFF
 
 	const static WgColor 	aliceblue;			// 0xF0F8FF
 	const static WgColor 	antiquewhite;		// 0xFAEBD7

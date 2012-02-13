@@ -48,6 +48,7 @@ public:
 	virtual ~WgGizmoCombobox();
 	virtual const char * Type() const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoCombobox(); };
 
 	void			SetSource( const WgBlockSetPtr& pTextBox );
 	WgBlockSetPtr	GetSource( ) const		{ return m_pTextBoxBg; }

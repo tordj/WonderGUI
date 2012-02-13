@@ -88,6 +88,8 @@ public:
 	virtual ~WgGizmoView();
 	virtual const char * Type() const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoView(); };
+	
 
 	//____ Callbacks _____________________________________________________________
 
@@ -221,7 +223,7 @@ public:
 
 	void				SetFillerSource( const WgBlockSetPtr& pBlocks );
 
-
+	
 
 	WgGizmoContainer * CastToContainer() { return this; }
 	const WgGizmoContainer * CastToContainer() const { return this; }
@@ -233,13 +235,16 @@ public:
 
 	WgGizmo * FindGizmo( const WgCoord& pos, WgSearchMode mode );
 
+	// Overloaded from Gizmo
+
+	WgSize				DefaultSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
+
+
 /*
 	NEED TO BE IMPLEMENTED!!!
 
 	int		HeightForWidth( int width ) const;	//
 	int		WidthForHeight( int height ) const;
-
-	WgSize	DefaultSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
 
 	bool	IsView() const { return true; }
 */

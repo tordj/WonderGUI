@@ -179,19 +179,19 @@ bool WgUtil::PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
 			wFormat.type = type;
 			wFormat.bits = 24;
 
-			wFormat.R_mask = 0xFF;
+			wFormat.B_mask = 0xFF;
 			wFormat.G_mask = 0xFF00;
-			wFormat.B_mask = 0xFF0000;
+			wFormat.R_mask = 0xFF0000;
 			wFormat.A_mask = 0x0;
 
-			wFormat.R_shift = 0;
+			wFormat.B_shift = 0;
 			wFormat.G_shift = 8;
-			wFormat.B_shift = 16;
+			wFormat.R_shift = 16;
 			wFormat.A_shift = 0;
 
-			wFormat.R_bits = 8;
-			wFormat.G_bits = 8;
 			wFormat.B_bits = 8;
+			wFormat.G_bits = 8;
+			wFormat.R_bits = 8;
 			wFormat.A_bits = 0;
 			return true;
 
@@ -199,19 +199,19 @@ bool WgUtil::PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
 			wFormat.type = type;
 			wFormat.bits = 32;
 
-			wFormat.R_mask = 0xFF;
+			wFormat.B_mask = 0xFF;
 			wFormat.G_mask = 0xFF00;
-			wFormat.B_mask = 0xFF0000;
+			wFormat.R_mask = 0xFF0000;
 			wFormat.A_mask = 0xFF000000;
 
-			wFormat.R_shift = 0;
+			wFormat.B_shift = 0;
 			wFormat.G_shift = 8;
-			wFormat.B_shift = 16;
+			wFormat.R_shift = 16;
 			wFormat.A_shift = 24;
 
-			wFormat.R_bits = 8;
-			wFormat.G_bits = 8;
 			wFormat.B_bits = 8;
+			wFormat.G_bits = 8;
+			wFormat.R_bits = 8;
 			wFormat.A_bits = 8;
 			return true;
 

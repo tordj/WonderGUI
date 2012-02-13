@@ -48,6 +48,17 @@ public:
 	void	Fill( const WgRect& rect, const WgColor& col );
 	void	Blit( const WgSurface* pSrc, const WgRect& srcrect, int dx, int dy  );
 
+
+	void	StretchBlit( const WgSurface * pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
+	void	StretchBlit( const WgSurface * pSrc, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
+	void	StretchBlit( const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
+
+	void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, bool bTriLinear = false, float mipBias = 0.f );
+	void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
+	void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
+	void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
+
+
 	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 

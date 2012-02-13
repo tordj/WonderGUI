@@ -82,6 +82,8 @@ public:
 
 	const char * Type() const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoStack(); };
+	
 
 	inline WgStackHook * AddChild( WgGizmo * pGizmo ) { return static_cast<WgStackHook*>(WgOrderedLayout::AddChild(pGizmo)); }
 	inline WgStackHook * InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling ) { return static_cast<WgStackHook*>(WgOrderedLayout::InsertChild(pGizmo,pSibling)); }

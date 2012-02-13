@@ -10,6 +10,10 @@
   <VirtualDirectory Name="code">
     <File Name="main.cpp"/>
   </VirtualDirectory>
+  <Dependencies Name="Release">
+    <Project Name="wondergui"/>
+    <Project Name="wg_sdl"/>
+  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="">
@@ -24,23 +28,24 @@
       <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
         <IncludePath Value="../include"/>
         <IncludePath Value="../wg_sdl"/>
+        <IncludePath Value="../wg_soft"/>
         <Preprocessor Value="WG_TNG"/>
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="../Debug"/>
         <LibraryPath Value="../wg_sdl/Debug"/>
+        <LibraryPath Value="../wg_soft/Debug"/>
         <Library Value="wondergui"/>
         <Library Value="SDL"/>
         <Library Value="freetype"/>
         <Library Value="SDL_image"/>
         <Library Value="wg_sdl"/>
+        <Library Value="wg_soft"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(IntermediateDirectory)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
-      
-      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -86,6 +91,9 @@
       
       
       
+      
+      
+      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -115,12 +123,9 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Release">
-    <Project Name="wondergui"/>
-    <Project Name="wg_sdl"/>
-  </Dependencies>
   <Dependencies Name="Debug">
     <Project Name="wondergui"/>
     <Project Name="wg_sdl"/>
+    <Project Name="wg_soft"/>
   </Dependencies>
 </CodeLite_Project>

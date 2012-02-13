@@ -45,10 +45,12 @@ class WgGizmoRefreshButton : public WgGizmoButton
 {
 public:
 	WgGizmoRefreshButton();
-	virtual ~WgGizmoRefreshButton();
+	~WgGizmoRefreshButton();
+	
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoRefreshButton(); };
 
 	//____ Methods __________________________________________
 

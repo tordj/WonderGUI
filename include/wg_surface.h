@@ -83,7 +83,7 @@ public:
 
 	// Slow, simple methods for reading and parsing individual pixels.
 
-	
+
 	virtual Uint32		GetPixel( WgCoord coord ) const = 0;
 	inline Uint32		GetPixel( int x, int y ) const;
 	virtual Uint8		GetOpacity( WgCoord coord ) const = 0;
@@ -100,80 +100,74 @@ public:
 	inline	WgAccessMode 	GetLockStatus() const { return m_accessMode; }
 	inline  WgRect			GetLockRegion() const { return m_lockRegion; }
 	inline  int				Pitch() const;									// of locked surface
-	inline const WgPixelFormat *PixelFormat() const;					// of locked surface
+	inline const WgPixelFormat *PixelFormat() const;						// of locked surface
+	inline void *			Pixels() const { return m_pPixels; }			// of locked surface
 
 
 	// Methods for modifying surface content
 
 	virtual bool		Fill( WgColor col );
+	virtual bool		Fill( WgColor col, const WgRect& rect );
+	virtual bool		CopyFrom( WgSurface * pSrcSurf, const WgRect& srcRect, WgCoord dst );
+	virtual bool		CopyFrom( WgSurface * pSrcSurf, WgCoord dst );
 
-
-    // Deprecated legacy methods
-/*
-	inline Uint32		width() const { return GetWidth(); }
-	inline Uint32		height() const { return GetHeight(); }
-	inline bool			hasAlpha() const { return !IsOpaque(); }
-	inline Uint32		pixel( Uint32 x, Uint32 y ) const { return GetPixel(x,y); }
-	inline Uint8		opacity( Uint32 x, Uint32 y ) const { return GetOpacity(x,y); }
-	inline Uint32		col2pixel( const WgColor& col ) const { return Col2Pixel(col); }
-	inline WgColor		pixel2col( Uint32 pixel ) const { return Pixel2Col(pixel); }
-*/
 	// Methods for defining BlockSets
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& marked,
 										const WgRect& selected, const WgRect& disabled,
-										const WgRect& special, const WgBorders& gfxBorders, 
-										const WgBorders& contentBorders, 
+										const WgRect& special, const WgBorders& gfxBorders,
+										const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& marked,
 										const WgRect& selected, const WgRect& disabled,
-										const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& marked,
-										const WgRect& selected, const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										const WgRect& selected, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
 	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgRect& disabled,
-										const WgBorders& gfxBorders, const WgBorders& contentBorders, 
+										const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
-	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgBorders& borders, const WgBorders& contentBorders, 
+	WgBlockSetPtr		defineBlockSet( const WgRect& normal, const WgBorders& borders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
-	WgBlockSetPtr		defineBlockSet( const WgHorrTile5& horrTile, const WgBorders& borders, const WgBorders& contentBorders, 
+	WgBlockSetPtr		defineBlockSet( const WgHorrTile5& horrTile, const WgBorders& borders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgHorrTile4& horrTile, const WgBorders& borders, const WgBorders& contentBorders, 
+	WgBlockSetPtr		defineBlockSet( const WgHorrTile4& horrTile, const WgBorders& borders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgHorrTile3& horrTile, const WgBorders& borders, const WgBorders& contentBorders, 
+	WgBlockSetPtr		defineBlockSet( const WgHorrTile3& horrTile, const WgBorders& borders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgHorrTile2& horrTile, const WgBorders& borders, const WgBorders& contentBorders, 
+	WgBlockSetPtr		defineBlockSet( const WgHorrTile2& horrTile, const WgBorders& borders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
-	WgBlockSetPtr		defineBlockSet( const WgVertTile5& vertTile, const WgBorders& borders, const WgBorders& contentBorders, 
+	WgBlockSetPtr		defineBlockSet( const WgVertTile5& vertTile, const WgBorders& borders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgVertTile4& vertTile, const WgBorders& borders, const WgBorders& contentBorders, 
+	WgBlockSetPtr		defineBlockSet( const WgVertTile4& vertTile, const WgBorders& borders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgVertTile3& vertTile, const WgBorders& borders, const WgBorders& contentBorders, 
+	WgBlockSetPtr		defineBlockSet( const WgVertTile3& vertTile, const WgBorders& borders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
-	WgBlockSetPtr		defineBlockSet( const WgVertTile2& vertTile, const WgBorders& borders, const WgBorders& contentBorders, 
+	WgBlockSetPtr		defineBlockSet( const WgVertTile2& vertTile, const WgBorders& borders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const;
 
 
 protected:
 	WgSurface();
+	WgRect				_lockAndAdjustRegion( WgAccessMode modeNeeded, const WgRect& region );
 
-	WgPixelFormat			m_pixelFormat;
-	int						m_pitch;
+	WgPixelFormat		m_pixelFormat;
+	int					m_pitch;
 
-	WgRectChain 			m_dirtyRects;
-	WgAccessMode			m_accessMode;
-	Uint8 *					m_pPixels;			// Pointer at pixels when surface locked.
-	WgRect					m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
+	WgRectChain 		m_dirtyRects;
+	WgAccessMode		m_accessMode;
+	Uint8 *				m_pPixels;			// Pointer at pixels when surface locked.
+	WgRect				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 
 
-	static WgMemPool *		g_pBlockSetMemPool;
+	static WgMemPool *	g_pBlockSetMemPool;
 };
 
 //____ WgSurfaceFactory _______________________________________________________
@@ -181,7 +175,7 @@ protected:
 class WgSurfaceFactory
 {
 public:
-	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 ) = 0;
+	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 ) const = 0;
 };
 
 

@@ -22,6 +22,10 @@
 #include <wg_gizmo_stack.h>
 #include <iostream>
 
+#include <wg_surface_soft.h>
+#include <wg_gfxdevice_soft.h>
+
+
 extern std::ostream cout;
 
 int fileSize( const char * pPath );
@@ -58,7 +62,7 @@ int main ( int argc, char** argv )
 	// Init WonderGUI
 
 	WgBase::Init();
-	WgBase::InitFreeType();
+//	WgBase::InitFreeType();
 
 	WgSurfaceSDL * pCanvas = new WgSurfaceSDL( pScreen );
 	WgGfxDevice * pGfxDevice = new WgGfxDeviceSDL( pCanvas );
@@ -116,8 +120,8 @@ int main ( int argc, char** argv )
 */
 	// Load bitmap font
 
-	WgSurface * pFontImg = loadSurface("anuvverbubbla_8x8.png");
-	char * pFontSpec = (char*) loadFile( "anuvverbubbla_8x8.fnt" );
+	WgSurface * pFontImg = loadSurface("../resources/anuvverbubbla_8x8.png");
+	char * pFontSpec = (char*) loadFile( "../resources/anuvverbubbla_8x8.fnt" );
 
 	WgBitmapGlyphs * pGlyphs = new WgBitmapGlyphs( pFontImg, pFontSpec );
 
@@ -127,7 +131,7 @@ int main ( int argc, char** argv )
 
 	// Load and setup cursor
 
-	WgSurface * pCursorImg = loadSurface("cursors.png");
+	WgSurface * pCursorImg = loadSurface("../resources/cursors.png");
 
 	WgGfxAnim * pCursorEOL = new WgGfxAnim();
 	pCursorEOL->SetSize( WgSize(8,8) );
@@ -159,17 +163,17 @@ int main ( int argc, char** argv )
 
 	// Load images and specify blocks
 
-	WgSurface * pBackImg = loadSurface("What-Goes-Up-3.bmp");
+	WgSurface * pBackImg = loadSurface("../resources/What-Goes-Up-3.bmp");
 	WgBlockSetPtr pBackBlock = pBackImg->defineBlockSet( WgRect(0,0,pBackImg->Width(),pBackImg->Height()), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );
 
 	WgSurface * pFlagImg = loadSurface("cb2.bmp");
 	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
 
-	WgSurface * pSplashImg = loadSurface("splash.png");
+	WgSurface * pSplashImg = loadSurface("../resources/splash.png");
 	WgBlockSetPtr pSplashBlock = pSplashImg->defineBlockSet( WgRect(0,0,pSplashImg->Width(),pSplashImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
 
 
-	WgSurface * pBlocksImg = loadSurface("blocks.png");
+	WgSurface * pBlocksImg = loadSurface("../resources/blocks.png");
 	WgBlockSetPtr pButtonBlock = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,0,8*4+6,8), 2), WgBorders(3), WgBorders(2), 0, WG_OPAQUE );
 
 	WgBlockSetPtr pRadioBlockUnselected = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,42,11*4+6,11), 2), WgBorders(3), WgBorders(2), 0, 0 );
@@ -196,14 +200,17 @@ int main ( int argc, char** argv )
 		pSplash->SetSource( pSplashBlock );
 
 		WgStackHook * pHook = pStack->AddChild( pSplash );
-		pHook->SetSizePolicy( WgStackHook::DEFAULT );
+		pHook->SetSizePolicy( WgStackHook::SCALE );
 		pHook->SetOrientation( WG_CENTER );
+		pHook->SetBorders( WgBorders(2) );
 
 		addResizableContainer( pFlex, pStack, pButtonBlock, pEventHandler );
 	}
 
 	// Modal container
 
+	pRoot->SetChild(pFlex);
+/*
 	g_pModal = new WgGizmoModal();
 	g_pModal->SetBase( pFlex );
 
@@ -313,7 +320,7 @@ int main ( int argc, char** argv )
 	pFlex->AddChild( pRB4, WgCoord(0,120) );
 
 	pVBox->SetRadioGroup(true);
-
+*/
     // program main loop
 
     while (eventLoop( pEventHandler ))
