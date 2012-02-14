@@ -140,7 +140,7 @@ namespace sdl_wglib
 		const int VDRAG_BTN_OFS = HDRAG_BTN_OFS + 19;
 		const int DRAGBAR_OFS = VDRAG_BTN_OFS + 19;
 		const int DRAGBAR_BACK_OFS = DRAGBAR_OFS + 10;
-		
+
 		const int BUTTON_OFS	= 110;
 		const int PLATE_OFS	= BUTTON_OFS + 10;
 		const int TILES_OFS		= 192;
@@ -148,7 +148,7 @@ namespace sdl_wglib
 		WgSurface * pSurface = LoadSurface( pImagePath, factory );
 		if( !pSurface )
 			return 0;
-		
+
 		WgBlockSetPtr pHDragBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,HDRAG_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 		WgBlockSetPtr pHDragBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,HDRAG_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 
@@ -180,7 +180,7 @@ namespace sdl_wglib
 		pDB->AddGizmo( "plate", pPlate );
 
 		// Create standard horizontal dragbar
-		
+
 		WgGizmoHDragbar * pHDrag = new WgGizmoHDragbar();
 		pHDrag->SetSource( pDragBarBackBlocks, pDragBarBlocks, pHDragBtnBwdBlocks, pHDragBtnFwdBlocks );
 		pDB->AddGizmo( "hdragbar", pHDrag );
@@ -202,8 +202,8 @@ namespace sdl_wglib
 
 	WgFont * LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactory& factory )
 	{
-		//TODO: This leaks memory until we have ref-counted 
-		
+		//TODO: This leaks memory until we have ref-counted
+
 		WgSurface * pFontImg = sdl_wglib::LoadSurface( pImgPath, factory );
 
 		char * pFontSpec = (char*) LoadFile( pSpecPath );

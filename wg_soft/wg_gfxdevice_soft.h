@@ -62,10 +62,47 @@ public:
 	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 
+	void	SetBilinearFiltering( bool bEnable ) { m_bBilinearFiltering = bEnable; }
+	bool	GetBilinearFiltering() const { return m_bBilinearFiltering; }
+
 protected:
 
 	void	_initTables();
 
+	void 	_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, int dx, int dy  );
+	void 	_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcrect, int dx, int dy  );
+
+	void	_stretchBlitTintedOpaque(	const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void	_stretchBlitTintedBlend32(	const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void 	_stretchBlitTintedBlend24(	const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void	_stretchBlitTintedAdd32(	const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void	_stretchBlitTintedAdd24(	const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void	_stretchBlitTintedMultiply(	const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void	_stretchBlitTintedInvert(	const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+
+	void	_stretchBlitOpaque(			const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void	_stretchBlitBlend32(		const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void 	_stretchBlitBlend24(		const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void	_stretchBlitAdd32(			const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void	_stretchBlitAdd24(			const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void	_stretchBlitMultiply(		const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+	void	_stretchBlitInvert(			const WgSurfaceSoft * pSrcSurf, float sx, float sy, float sw, float sh,
+										int dx, int dy, int dw, int dh );
+
+	bool			m_bBilinearFiltering;
 	WgSurfaceSoft * m_pCanvas;
 	Uint8			m_limitTable[512];
 };
