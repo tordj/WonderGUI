@@ -12,7 +12,6 @@ FOCUS
 * Hur ska vi lösa _onMaskRects() ???
 * Keyboard focus vid modal.
 * No mouse enter/exit men locked on a Gizmo through press.
-* Färdigställa WgStackGizmo.
 * Wdg_Layout.
 * Cut/Copy/Paste-support.
 * Pointermask+displacement i blockset.
@@ -59,6 +58,7 @@ BEFORE RELEASE
 * Debug/finish layout class Table.
 * Debug/finish layout class FlexGeo
 * Debug/finish WgGizmoView (delete child gizmos where appropriate, not use signals etc).
+* Kolla så att alla WgGizmo::CloneContent() fungerar.
 
 - Bitmap-fonter.
 
@@ -72,7 +72,6 @@ TO BE TESTED
 PAPERCUTS
 =========
 
-* WgSurface should have a Size() method returning WgSize.
 * WgGfxDeviceSDL should be able to take a SDL_Surface directly as canvas.
 * Gizmos needs more constructors for convenience! WgGizmoPixmap could take the WgBlockSetPtr directly.
 * More versions of WgSurface::defineBlockSet(), no need to force user to specify borders etc.
@@ -114,7 +113,6 @@ GFXDEVICES
 ==========
 
 * SDL: Correctly working tint.
-* Support locking of only a region of a surface, could speed up WgSurfaceGL::Unlock() in combination with VectorGlyph generation quite a bit.
 * Review WgSurfaceGL for consistency.
 
 
@@ -137,12 +135,3 @@ SKINMANAGER
   destSize as input. If not alternative is decided by destSize.
 * Use new GetBlock() from all Gizmos.
 * Implement WgSkinManager-methods/rules.
-
-
-GIZMO
-=====
-* Should not delete hook, just inform parent that it's disconnecting. Parent owns hook and it might not be a deletable object!
-
-SIGNALS
-=======
-* Create signals that emit on KeyPress/KeyDown/KeyRepeat/KeyRelease regardless of the key and modifier.

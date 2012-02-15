@@ -195,7 +195,7 @@ bool WgUtil::PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
 			wFormat.A_bits = 0;
 			return true;
 
-		case WG_PIXEL_RGBA_8:
+		case WG_PIXEL_ARGB_8:
 			wFormat.type = type;
 			wFormat.bits = 32;
 
@@ -234,7 +234,7 @@ bool WgUtil::PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
 			wFormat.B_bits = 0;
 			wFormat.A_bits = 0;
 			return false;
-	}	
+	}
 }
 
 

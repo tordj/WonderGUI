@@ -499,17 +499,17 @@ enum	WgEventType
 	WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL,
 
 	WG_EVENT_BUTTON_PRESS,					// Posted every time a button is pressed, either by left mouse button or enter key.
-	
+
 	WG_EVENT_CHECKBOX_CHECK,
 	WG_EVENT_CHECKBOX_UNCHECK,
 	WG_EVENT_CHECKBOX_TOGGLE,
-	
+
 	WG_EVENT_RADIOBUTTON_SELECT,
 	WG_EVENT_RADIOBUTTON_UNSELECT,
 	WG_EVENT_RADIOBUTTON_TOGGLE,
-	
+
 	WG_EVENT_ANIMATION_UPDATE,				// Posted every time the animation changes frame.
-	
+
 	WG_EVENT_TAB_SELECT,					// Posted when a new tab is selected.
 	WG_EVENT_TAB_PRESS,						// Posted every time any mousebutton is pressed on a widget.
 
@@ -608,8 +608,8 @@ enum WgPixelType
 {
 	WG_PIXEL_UNKNOWN,			///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
 	WG_PIXEL_CUSTOM,			///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
-	WG_PIXEL_RGB_8,				///< One byte of blue, green and red respectively in exactly that order.
-	WG_PIXEL_RGBA_8				///< One byte of blue, green, red and alpha respectively in exactly that order.
+	WG_PIXEL_RGB_8,				///< One byte of blue, green and red respectively in memory in exactly that order.
+	WG_PIXEL_ARGB_8				///< One byte of blue, green, red and alpha respectively in memory in exactly that order.
 };
 
 

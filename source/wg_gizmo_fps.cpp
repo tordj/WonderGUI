@@ -90,7 +90,7 @@ WgSize WgGizmoFps::DefaultSize() const
 }
 
 
-//____ DoMyOwnRender() ________________________________________________________
+//____ _onRender() ________________________________________________________
 
 void WgGizmoFps::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {

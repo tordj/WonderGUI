@@ -114,7 +114,7 @@ namespace sdl_wglib
 
 		WgSurfaceSDL	wrapper( bmp );
 
-		WgSurface * pSurf = factory.CreateSurface( wrapper.Size(), wrapper.IsOpaque()? WG_PIXEL_RGB_8 : WG_PIXEL_RGBA_8 );
+		WgSurface * pSurf = factory.CreateSurface( wrapper.Size(), wrapper.IsOpaque()? WG_PIXEL_RGB_8 : WG_PIXEL_ARGB_8 );
 
 		if( !pSurf )
 		{
@@ -136,14 +136,16 @@ namespace sdl_wglib
 
 	WgResDB * LoadStdGizmos( const char * pImagePath, const WgSurfaceFactory& factory )
 	{
-		const int HDRAG_BTN_OFS = 1;
-		const int VDRAG_BTN_OFS = HDRAG_BTN_OFS + 19;
-		const int DRAGBAR_OFS = VDRAG_BTN_OFS + 19;
-		const int DRAGBAR_BACK_OFS = DRAGBAR_OFS + 10;
-
-		const int BUTTON_OFS	= 110;
-		const int PLATE_OFS	= BUTTON_OFS + 10;
-		const int TILES_OFS		= 192;
+		const int HDRAG_BTN_OFS 	= 1;
+		const int VDRAG_BTN_OFS 	= HDRAG_BTN_OFS + 19;
+		const int DRAGBAR_OFS 		= VDRAG_BTN_OFS + 19;
+		const int DRAGBAR_BACK_OFS 	= DRAGBAR_OFS + 10;
+		const int RESIZE_BUTTON_OFS = DRAGBAR_BACK_OFS + 13;
+		const int CHECKBOX_OFS 		= RESIZE_BUTTON_OFS + 22;
+		const int RADIOBUTTON_OFS 	= CHECKBOX_OFS + 13;
+		const int BUTTON_OFS		= RADIOBUTTON_OFS + 13;
+		const int PLATE_OFS			= BUTTON_OFS + 10;
+		const int TILES_OFS			= 192;
 
 		WgSurface * pSurface = LoadSurface( pImagePath, factory );
 		if( !pSurface )
@@ -158,8 +160,15 @@ namespace sdl_wglib
 		WgBlockSetPtr pDragBarBlocks		= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,DRAGBAR_OFS,38,8), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
 		WgBlockSetPtr pDragBarBackBlocks	= pSurface->defineBlockSet( WgRect(1,DRAGBAR_BACK_OFS,5,5), WgBorders(2), WgBorders(2), 0, WG_OPAQUE );
 
+		WgBlockSetPtr pResizeButtonBlocks 	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,RESIZE_BUTTON_OFS,86,20), 2), WgBorders(3), WgBorders(0), 0, WG_OPAQUE );
+		WgBlockSetPtr pCheckboxUncheckedBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,CHECKBOX_OFS,50,11), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
+		WgBlockSetPtr pCheckboxCheckedBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(53,CHECKBOX_OFS,50,11), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
+		WgBlockSetPtr pRadiobuttonUncheckedBlocks = pSurface->defineBlockSet( WgHorrTile4( WgRect(1,RADIOBUTTON_OFS,50,11), 2), WgBorders(0), WgBorders(3), 0, WG_OPAQUE );
+		WgBlockSetPtr pRadiobuttonCheckedBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(53,RADIOBUTTON_OFS,50,11), 2), WgBorders(0), WgBorders(3), 0, WG_OPAQUE );
+
 		WgBlockSetPtr pButtonBlocks 		= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,BUTTON_OFS,38,8), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 		WgBlockSetPtr pPlateBlocks 			= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,PLATE_OFS,38,8), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+
 
 		WgBlockSetPtr pBgCheckeredGreyBlocks= pSurface->defineBlockSet( WgRect(0,TILES_OFS,64,64), WgBorders(0), WgBorders(0), 0, WG_OPAQUE | WG_TILE_ALL );
 		WgBlockSetPtr pBgBlueGradientBlocks = pSurface->defineBlockSet( WgRect(1*64,TILES_OFS,64,64), WgBorders(0), WgBorders(0), 0, WG_OPAQUE );
@@ -178,6 +187,18 @@ namespace sdl_wglib
 		WgGizmoPixmap * pPlate = new WgGizmoPixmap();
 		pPlate->SetSource( pPlateBlocks );
 		pDB->AddGizmo( "plate", pPlate );
+
+		// Create standard checkbox
+
+		WgGizmoCheckbox * pCheckbox = new WgGizmoCheckbox();
+		pCheckbox->SetSource( pCheckboxUncheckedBlocks, pCheckboxCheckedBlocks );
+		pDB->AddGizmo( "checkbox", pCheckbox );
+
+		// Create standard radiobutton
+
+		WgGizmoRadiobutton * pRadiobutton = new WgGizmoRadiobutton();
+		pRadiobutton->SetSource( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks );
+		pDB->AddGizmo( "radiobutton", pRadiobutton );
 
 		// Create standard horizontal dragbar
 
