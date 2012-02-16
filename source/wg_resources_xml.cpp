@@ -1058,6 +1058,7 @@ void WgModePropRes::Serialize(WgResourceSerializerXML& s)
 	}
 }
 
+
 void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s)
 {
 	WgTextPropRes* textPropRes = WgResourceXML::Cast<WgTextPropRes>(Parent());
@@ -1071,10 +1072,18 @@ void WgModePropRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	if( colorSetRes )
 	{
 		WgColorSetPtr pColorSet = colorSetRes->GetColorSet();
+		WgColor color;
 
 		if(xmlNode.HasAttribute("col"))
-			pColorSet->SetColor(WgColorRes::Deserialize(s, xmlNode["col"]), m_mode);
-
+			color = WgColorRes::Deserialize(s, xmlNode["col"]);
+		else
+		{
+			color.r = WgUtil::ToUint8(xmlNode["r"], 0);
+			color.g = WgUtil::ToUint8(xmlNode["g"], 0);
+			color.b = WgUtil::ToUint8(xmlNode["b"], 0);
+			color.a = WgUtil::ToUint8(xmlNode["a"], 0xff);
+		}
+		pColorSet->SetColor(color, m_mode);
 	}
 	else
 	{
@@ -2600,7 +2609,6 @@ void WgLegoRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s
 	s.ResDb()->AddLegoSource(name, surf, rect, nStates);
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 /// WgColorSetRes ////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -2642,8 +2650,14 @@ void WgColorSetRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXM
 	if(xmlNode.HasAttribute("col"))
 		m_pColorSet = WgColorSet::Create( WgColorRes::Deserialize(s, xmlNode["col"]) );
 	else
-		m_pColorSet = WgColorSet::Create();
-
+	{
+		WgColor color;
+		color.r = WgUtil::ToUint8(xmlNode["r"], 0);
+		color.g = WgUtil::ToUint8(xmlNode["g"], 0);
+		color.b = WgUtil::ToUint8(xmlNode["b"], 0);
+		color.a = WgUtil::ToUint8(xmlNode["a"], 0xff);
+		m_pColorSet = WgColorSet::Create(color);
+	}
 	s.ResDb()->AddColorSet( id, m_pColorSet, new WgXMLMetaData(XmlNode()) );
 }
 
@@ -4047,7 +4061,12 @@ WgCharBuffer* Wdg_RefreshButton_Res::GetCharBuffer()
 // <checkbox [widget-attribs]
 //		blockset_checked=[name]
 //		blockset_unchecked=[name]
+//		icon_checked=[name]
+//		icon_unchecked=[name]
 //		text=[string]
+//		checked=[bool]
+//		flip_on_release=[bool]
+//
 //
 //	/>
 Wdg_CheckBox2_Res::Wdg_CheckBox2_Res(WgResourceXML* parent, Wdg_CheckBox2* widget) :
@@ -4073,6 +4092,7 @@ void Wdg_CheckBox2_Res::Serialize(WgResourceSerializerXML& s)
 	WgIconHolderRes::Serialize(this, xmlNode, s, widget);
 
 	WriteDiffAttr(s, xmlNode, "checked", widget->IsChecked(), false);
+	WriteDiffAttr(s, xmlNode, "flip_on_release", widget->FlipOnRelease(), false);
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "blockset_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
 	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
@@ -4096,6 +4116,7 @@ void Wdg_CheckBox2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 	WgBlockSetPtr unchecked = s.ResDb()->GetBlockSet(xmlNode["blockset_unchecked"]);
 	widget->SetSource(unchecked, checked);
 	widget->SetState(WgUtil::ToBool(xmlNode["checked"]));
+	widget->SetFlipOnRelease(WgUtil::ToBool(xmlNode["flip_on_release"]));
 	widget->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
 
 	WgBlockSetPtr icon_checked	= s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);
@@ -4978,8 +4999,11 @@ void Wdg_Lodder_Res::Deserialized(WgResourceSerializerXML& s)
 // <radiobutton [widget-attribs]
 //		checked=[true/false]
 //		allowuncheck=[true/false]
+//		flip_on_release=[true/false]
 //		blockset_checked=[name]
 //		blockset_unchecked=[name]
+//		icon_checked=[name]
+//		icon_unchecked=[name]
 //		text=[string]
 // />
 Wdg_RadioButton2_Res::Wdg_RadioButton2_Res(WgResourceXML* parent, Wdg_RadioButton2* widget) :
@@ -5014,6 +5038,7 @@ void Wdg_RadioButton2_Res::Serialize(WgResourceSerializerXML& s)
 
 	WriteDiffAttr(s, xmlNode, "checked", widget->IsChecked(), false);
 	WriteDiffAttr(s, xmlNode, "allowuncheck", widget->AllowUnchecking(), false);
+	WriteDiffAttr(s, xmlNode, "flip_on_release", widget->FlipOnRelease(), false);
 	WriteBlockSetAttr(s, widget->GetCheckedSource(), "blockset_checked");
 	WriteBlockSetAttr(s, widget->GetUncheckedSource(), "blockset_unchecked");
 	WriteTextAttrib(s, widget->GetRealTooltipString().Chars(), "tooltip");
@@ -5038,6 +5063,7 @@ void Wdg_RadioButton2_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSeria
 	widget->SetSource(unchecked, checked);
 	widget->AllowUnchecking(WgUtil::ToBool(xmlNode["allowuncheck"]));
 	widget->SetState(WgUtil::ToBool(xmlNode["checked"]));
+	widget->SetFlipOnRelease(WgUtil::ToBool(xmlNode["flip_on_release"]));
 	widget->SetTooltipString(ReadLocalizedString(xmlNode["tooltip"], s).c_str());
 
 	WgBlockSetPtr icon_checked	= s.ResDb()->GetBlockSet(xmlNode["icon_checked"]);

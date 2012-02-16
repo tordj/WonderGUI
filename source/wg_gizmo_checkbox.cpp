@@ -44,6 +44,7 @@ WgGizmoCheckbox::WgGizmoCheckbox()
 	m_bChecked			= false;
 	m_bOver				= false;
 	m_bPressed			= false;
+	m_bFlipOnRelease	= false;
 
 	m_pText				= &m_text;
 	m_text.setHolder( this );
@@ -157,6 +158,14 @@ bool WgGizmoCheckbox::SetState( bool _state )
 	return true;
 }
 
+//____ SetFlipOnRelease() _____________________________________________________
+
+void WgGizmoCheckbox::SetFlipOnRelease( bool bFlipOnRelease )
+{
+	m_bFlipOnRelease = bFlipOnRelease;
+}
+
+
 //____ DefaultSize() __________________________________________________
 
 WgSize WgGizmoCheckbox::DefaultSize() const
@@ -230,7 +239,8 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
 			if( button == 1 && !m_bPressed )
 			{
-				SetState( !m_bChecked );
+				if( !m_bFlipOnRelease )
+					SetState( !m_bChecked );
 				m_bPressed = true;
 				RequestRender();
 			}
@@ -243,6 +253,8 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 			if( button == 1 && m_bPressed )
 			{
 				m_bPressed = false;
+				if( m_bFlipOnRelease )
+					SetState( !m_bChecked );
 				RequestRender();
 			}
 			break;
@@ -280,7 +292,8 @@ void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, c
 			if( _button_key == 1 && !m_bPressed )
 			{
 				m_bPressed = true;
-				SetState( !m_bChecked );
+				if( !m_bFlipOnRelease )
+					SetState( !m_bChecked );
 				RequestRender();
 			}
 			break;
@@ -290,6 +303,8 @@ void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, c
 			if( _button_key == 1 && m_bPressed )
 			{
 				m_bPressed = false;
+				if( m_bFlipOnRelease )
+					SetState( !m_bChecked );
 				RequestRender();
 			}
 			break;

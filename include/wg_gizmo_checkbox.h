@@ -93,6 +93,9 @@ public:
 	virtual bool	SetState( bool state );
 	inline bool		ChangeState( void ) { return SetState( !m_bChecked ); };
 
+	void			SetFlipOnRelease( bool bFlipOnRelease );
+	inline bool		FlipOnRelease() { return m_bFlipOnRelease; }
+
 	Uint32			GetTextAreaWidth();
 
 	DECLARE_TOOLTIP_SUPPORT();
@@ -130,6 +133,7 @@ private:
 
 	bool			m_bOver;						// Set when mouse is over.							
 	bool			m_bPressed;						// Set when mouse is pressed and over.
+	bool			m_bFlipOnRelease;				// Set if we want to flip checkbox on press (default), not click.
 
 	WgBlockSetPtr	m_pIconUnchecked;
 	WgBlockSetPtr	m_pIconChecked;

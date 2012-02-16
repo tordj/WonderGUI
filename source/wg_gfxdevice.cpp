@@ -1017,14 +1017,29 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 
 	pText->GetBaseAttr( baseAttr );	// Ellipsis are always rendered using the base attributes.
 	pen.SetAttributes( baseAttr );
-	
-	WgGlyphPtr pEllipsis = pen.GetFont()->GetGlyph( WG_ELLIPSIS, pen.GetStyle(), pen.GetSize() );
-	const WgGlyphBitmap * pBitmap = pEllipsis->GetBitmap();
-	if( pBitmap )
-		ellipsisWidth = pBitmap->rect.w + pBitmap->bearingX;
-	else
-		ellipsisWidth = 0;
 
+	Uint16	ellipsisChar = WG_ELLIPSIS;
+	ellipsisWidth = 0;
+
+	WgGlyphPtr pEllipsis = pen.GetFont()->GetGlyph( WG_ELLIPSIS, pen.GetStyle(), pen.GetSize() );
+
+	if( !pEllipsis )
+	{
+		pEllipsis = pen.GetFont()->GetGlyph( '.', pen.GetStyle(), pen.GetSize() );
+		ellipsisChar = '.';
+	}
+
+	if( pEllipsis )
+	{
+		const WgGlyphBitmap * pBitmap = pEllipsis->GetBitmap();
+		if( pBitmap )
+		{
+			if( ellipsisChar == WG_ELLIPSIS )
+				ellipsisWidth = pBitmap->rect.w + pBitmap->bearingX;
+			else
+				ellipsisWidth = pEllipsis->Advance()*2+pBitmap->rect.w + pBitmap->bearingX;
+		}
+	}
 
 	// Print loop
 
@@ -1085,7 +1100,7 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 	// Render ellipsis.
 
 	pen.SetAttributes(baseAttr);		// Ellipsis are always rendered using the base attributes.
-	pen.SetChar( WG_ELLIPSIS );
+	pen.SetChar( ellipsisChar );
 
 	// Set tint colors (if changed)
 
@@ -1095,8 +1110,19 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 		SetTintColor( baseCol * color );
 	}	
 	
-								// We could have kerning here but we have screwed up previous glyph...
-	pen.BlitChar();
+	if( ellipsisChar == '.' )
+	{
+		pen.SetChar( ellipsisChar );		// Set once more to get kerning between dots to work.
+		pen.BlitChar();
+		pen.AdvancePos();
+		pen.ApplyKerning();
+		pen.BlitChar();
+		pen.AdvancePos();
+		pen.ApplyKerning();
+		pen.BlitChar();
+	}
+	else
+		pen.BlitChar();						// We could have kerning here but we have screwed up previous glyph...
 
 
 	// Restore tint color.

@@ -1178,8 +1178,7 @@ void WgGizmoTablist::RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, 
 
 	pDevice->ClipBlitBlock( clip, block, dest );
 
-	WgRect	r = dest;
-	r.Shrink( pSrc->ContentBorders() );
+	WgRect	r = block.ContentRect( dest );
 
 	if( tab.m_pItemRow )
 	{

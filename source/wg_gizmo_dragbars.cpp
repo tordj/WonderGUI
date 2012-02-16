@@ -860,7 +860,7 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 
 			Component c = _findMarkedComponent(pos);
 
-			if( c != C_NONE && m_mode[c] == WG_MODE_NORMAL )
+			if( (c != C_NONE && m_mode[c] == WG_MODE_NORMAL) || (c == C_BG && m_mode[C_BAR] == WG_MODE_MARKED) )
 			{
 				_unmarkReqRender();
 				m_mode[c] = WG_MODE_MARKED;
@@ -868,9 +868,6 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
 					m_mode[C_BG] = WG_MODE_MARKED;			// Always also mark bg if bar is marked.
 
 			}
-
-
-
 			break;
 		}
 
