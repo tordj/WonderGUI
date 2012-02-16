@@ -51,14 +51,14 @@ void WgGizmoViewport3D::SetScene( const ESGObjectPtr& spScene )
 
 void WgGizmoViewport3D::_onRefresh( void )
 {
-    RequestRender();
+	_requestRender();
 }
 
 //____ _onUpdate() ________________________________________________________
 
 void	WgGizmoViewport3D::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
-	RequestRender();
+	_requestRender();
 }
 
 

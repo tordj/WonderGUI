@@ -83,7 +83,7 @@ bool WgGizmoMenubar::SetBgSource( const WgBlockSetPtr& pBlocks )
 {
 	m_pBgGfx	= pBlocks;
 
-	RequestRender();
+	_requestRender();
 	return true;
 }
 
@@ -94,7 +94,7 @@ bool WgGizmoMenubar::SetEntrySource( const WgBlockSetPtr& pBlocks, const WgTextP
 	m_pEntryGfx			= pBlocks;
 	m_pTextProp			= pTextProperties;
 
-	RequestRender();
+	_requestRender();
 	return true;
 }
 
@@ -148,7 +148,7 @@ bool WgGizmoMenubar::AddMenu( const char * pTitle, Wdg_Menu * pMenu, Uint16 navK
 	// Finish up
 
 	m_items.PushBack(pItem);
-	RequestRender();
+	_requestRender();
 	return true;
 }
 
@@ -161,7 +161,7 @@ bool WgGizmoMenubar::RemoveMenu( Wdg_Menu * pMenu )
 		{
 			pI->m_pMenu = 0;
 			delete pI;
-			RequestRender();
+			_requestRender();
 			return true;
 		}
 	}
@@ -332,7 +332,7 @@ void WgGizmoMenubar::_onAction( WgInput::UserAction _action, int _button_key, co
 			if(m_markedItem != item)
 			{
 				m_markedItem = item;
-				RequestRender();
+				_requestRender();
 			}
 
 			// If a menu entry already is selected we should
@@ -361,7 +361,7 @@ void WgGizmoMenubar::_onAction( WgInput::UserAction _action, int _button_key, co
 
 		case WgInput::POINTER_EXIT:
 			m_markedItem = 0;
-			RequestRender();
+			_requestRender();
 		break;
 
         default:
@@ -373,7 +373,7 @@ void WgGizmoMenubar::_onAction( WgInput::UserAction _action, int _button_key, co
 
 void WgGizmoMenubar::_onRefresh( void )
 {
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onAlphaTest() ___________________________________________________
@@ -523,7 +523,7 @@ void WgGizmoMenubar::MenuOpened( WgMenuBarItem * pItem )
 {
 	Uint32 item = pItem->Index()+1;
 	m_selectedItem = item;
-	RequestRender();
+	_requestRender();
 }
 
 //____ MenuClosed() ___________________________________________________________
@@ -531,7 +531,7 @@ void WgGizmoMenubar::MenuOpened( WgMenuBarItem * pItem )
 void WgGizmoMenubar::MenuClosed( WgMenuBarItem * pItem )
 {
 	m_selectedItem = 0;
-	RequestRender();
+	_requestRender();
 }
 
 
@@ -564,7 +564,7 @@ void WgMenuBarItem::Enable()
 	if( !m_bEnabled )
 	{
 		m_bEnabled = true;
-		m_pMenuBar->RequestRender();		//TODO: Only render what is needed...
+		m_pMenuBar->_requestRender();		//TODO: Only render what is needed...
 	}
 }
 
@@ -578,7 +578,7 @@ void WgMenuBarItem::Disable()
 
 		//TODO: Force unmark/unselect
 
-		m_pMenuBar->RequestRender();		//TODO: Only render what is needed...
+		m_pMenuBar->_requestRender();		//TODO: Only render what is needed...
 	}
 }
 
@@ -589,7 +589,7 @@ void WgMenuBarItem::Show()
 	if( !m_bVisible )
 	{
 		m_bVisible = true;
-		m_pMenuBar->RequestRender();		//TODO: Only render what is needed...
+		m_pMenuBar->_requestRender();		//TODO: Only render what is needed...
 	}
 }
 
@@ -603,6 +603,6 @@ void WgMenuBarItem::Hide()
 
 		//TODO: Force unmark/unselect
 
-		m_pMenuBar->RequestRender();		//TODO: Only render what is needed...
+		m_pMenuBar->_requestRender();		//TODO: Only render what is needed...
 	}
 }

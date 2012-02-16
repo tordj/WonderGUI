@@ -43,7 +43,7 @@ void WgSurfaceMIG::_setPixelFormat( ETextureDataPtr pTexture )
 	{
 	case EPixelFormat::eRGBA32:
 
-		m_pixelFormat.type = WG_PIXEL_RGBA_8;
+		m_pixelFormat.type = WG_PIXEL_ARGB_8;
 		m_pixelFormat.bits = 32;
 
 		m_pixelFormat.R_mask = 0xFF;
@@ -203,7 +203,7 @@ WgSurface * WgSurfaceFactoryMIG::CreateSurface( const WgSize& size, WgPixelType 
 	case WG_PIXEL_RGB_8:
 		format = EPixelFormat::eRGB24;
 		break;
-	case WG_PIXEL_RGBA_8:
+	case WG_PIXEL_ARGB_8:
 		format = EPixelFormat::eRGBA32;
 		break;
 	default:

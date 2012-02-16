@@ -47,7 +47,7 @@ const char * WgGizmoProfiler::GetMyType( void )
 void WgGizmoProfiler::SetTextProperties( WgTextPropPtr& pProp )
 {
 	m_pProp = pProp;
-	RequestRender();
+	_requestRender();
 }
 
 //____ DefaultSize() __________________________________________________________
@@ -205,7 +205,7 @@ void WgGizmoProfiler::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 void WgGizmoProfiler::_onUpdate( const WgUpdateInfo& _updateInfo )
 {
-	RequestRender();
+	_requestRender();
 }
 
 

@@ -46,7 +46,7 @@ WgItemStack::WgItemStack()
 
 	m_tintColor = WgColor(255,255,255);
 	m_blendMode = WG_BLENDMODE_BLEND;
-	m_tintMode	= TINTMODE_OPAQUE;
+	m_tintMode	= WG_TINTMODE_OPAQUE;
 }
 
 WgItemStack::WgItemStack( Sint64 id ) : WgItem( id )
@@ -56,7 +56,7 @@ WgItemStack::WgItemStack( Sint64 id ) : WgItem( id )
 
 	m_tintColor = WgColor(255,255,255);
 	m_blendMode = WG_BLENDMODE_BLEND;
-	m_tintMode	= TINTMODE_OPAQUE;
+	m_tintMode	= WG_TINTMODE_OPAQUE;
 }
 
 WgItemStack::WgItemStack( Sint64 id, int minW, int minH ) : WgItem( id )
@@ -66,7 +66,7 @@ WgItemStack::WgItemStack( Sint64 id, int minW, int minH ) : WgItem( id )
 
 	m_tintColor = WgColor(255,255,255);
 	m_blendMode = WG_BLENDMODE_BLEND;
-	m_tintMode	= TINTMODE_OPAQUE;
+	m_tintMode	= WG_TINTMODE_OPAQUE;
 }
 
 //____ ~WgItemStack() ___________________________________________________________
@@ -180,7 +180,7 @@ void WgItemStack::Render( const WgRect& _window, const WgRect& _clip )
 	
 	WgGfx::setBlendMode(m_blendMode);
 
-	if( m_tintMode == TINTMODE_OPAQUE )
+	if( m_tintMode == WG_TINTMODE_OPAQUE )
 		WgGfx::setTintColor(m_tintColor);
 	else	// MULTIPLY
 		WgGfx::setTintColor(m_tintColor*oldTC);

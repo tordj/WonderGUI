@@ -40,7 +40,7 @@ void Wdg_Shader::Init( void )
 {
 	m_tintColor = WgColor(255,255,255);
 	m_blendMode = WG_BLENDMODE_BLEND;
-	m_tintMode	= TINTMODE_OPAQUE;
+	m_tintMode	= WG_TINTMODE_OPAQUE;
 }
 
 //____ Destructor _____________________________________________________________
@@ -143,7 +143,7 @@ void Wdg_Shader::RenderRecursively(Uint8 _layer, const WgRect& clip )
 		WgGfx::setBlendMode(m_blendMode);
 
 
-		if( m_tintMode == TINTMODE_OPAQUE )
+		if( m_tintMode == WG_TINTMODE_OPAQUE )
 			WgGfx::setTintColor(m_tintColor);
 		else	// MULTIPLY
 			WgGfx::setTintColor(m_tintColor*oldTC);

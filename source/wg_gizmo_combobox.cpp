@@ -82,7 +82,7 @@ void WgGizmoCombobox::SetSource( const WgBlockSetPtr& pTextBox )
 {
 	m_pTextBoxBg	= pTextBox;
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ DefaultSize() __________________________________________________________
@@ -115,7 +115,7 @@ void WgGizmoCombobox::SetMenu( Wdg_Menu * pMenu )
 		pMenu->AddCallback( WgSignal::MenuClosed(), cbMenuClosed, this );
 	}
 	m_pMenu = pMenu;
-	EntrySelected(m_pMenu->GetSelectedItem());
+	_entrySelected(m_pMenu->GetSelectedItem());
 }
 
 //____ GetMenu() __________________________________________________________
@@ -138,7 +138,7 @@ void WgGizmoCombobox::SetTextFormat( const WgCharSeq& str )
 {
 	m_textFormat = str;
 	if( m_pMenu )
-		EntrySelected(m_pMenu->GetSelectedItem());
+		_entrySelected(m_pMenu->GetSelectedItem());
 }
 
 //____ SetPlaceholderText() ___________________________________________________
@@ -147,7 +147,7 @@ void WgGizmoCombobox::SetPlaceholderText( const WgCharSeq& str )
 {
 	m_placeholderText = str;
 	if( m_text.IsEmpty() && !m_text.isCursorShowing() )
-		RequestRender();
+		_requestRender();
 }
 
 //____ InsertTextAtCursor() ___________________________________________________
@@ -545,7 +545,7 @@ void WgGizmoCombobox::_onAction( WgInput::UserAction action, int button_key, con
 	if( newMode != m_mode )
 	{
 		m_mode = newMode;
-		RequestRender();
+		_requestRender();
 	}
 
 }
@@ -558,7 +558,7 @@ void WgGizmoCombobox::_onUpdate( const WgUpdateInfo& _updateInfo )
 	if( _isEditable() && m_bFocused )
 	{
 		m_text.incTime( _updateInfo.msDiff );
-		RequestRender();					//TODO: Should only render the cursor and selection!
+		_requestRender();					//TODO: Should only render the cursor and selection!
 	}
 }
 
@@ -742,7 +742,7 @@ void WgGizmoCombobox::_onEnable( void )
 
 	m_mode = newMode;
 	if( m_pTextBoxBg && !m_pTextBoxBg->SameBlock(newMode, oldMode) )
-		RequestRender();
+		_requestRender();
 }
 
 //____ _onDisable() ____________________________________________________________
@@ -759,7 +759,7 @@ void WgGizmoCombobox::_onDisable( void )
 
 	m_mode = newMode;
 	if( m_pTextBoxBg && !m_pTextBoxBg->SameBlock(newMode, oldMode) )
-		RequestRender();
+		_requestRender();
 }
 
 
@@ -769,22 +769,22 @@ void WgGizmoCombobox::_textModified()
 {
 	m_bResetCursorOnFocus = true;
 	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
-	RequestRender();
+	_requestRender();
 //	_adjustViewOfs();
 }
 
-//____ MenuClosed() ___________________________________________________________
+//____ _menuClosed() ___________________________________________________________
 
-void WgGizmoCombobox::MenuClosed()
+void WgGizmoCombobox::_menuClosed()
 {
 	m_mode = WG_MODE_NORMAL;
-	RequestRender();
+	_requestRender();
 }
 
 
-//____ EntrySelected() ________________________________________________________
+//____ _entrySelected() ________________________________________________________
 
-void WgGizmoCombobox::EntrySelected(WgMenuItem * pItem)
+void WgGizmoCombobox::_entrySelected(WgMenuItem * pItem)
 {
 	m_pSelectedItem = pItem;
 	if(pItem && pItem->GetType() != SEPARATOR)

@@ -3336,9 +3336,9 @@ void WgTextHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, 
 		defSel = colorRes->res;
 	WgColorRes::Serialize(s, xmlNode, "selection_color", holder->GetSelectionColor(), defSel);
 */
-	if(xmlNode.HasAttribute("tint") || holder->TextTintMode() != TINTMODE_MULTIPLY)
+	if(xmlNode.HasAttribute("tint") || holder->TextTintMode() != WG_TINTMODE_MULTIPLY)
 	{
-		if(holder->TextTintMode() == TINTMODE_MULTIPLY)
+		if(holder->TextTintMode() == WG_TINTMODE_MULTIPLY)
 			s.AddAttribute("tint", "mul");
 		else
 			s.AddAttribute("tint", "opaque");
@@ -3424,9 +3424,9 @@ void WgTextHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	else
 		holder->SetSelectionColor( WgColorRes::Deserialize(s, "#TextSelectionColor") );
 */
-	WgTintMode tint = TINTMODE_MULTIPLY;
+	WgTintMode tint = WG_TINTMODE_MULTIPLY;
 	if(xmlNode["tint"] == "opaque")
-		tint = TINTMODE_OPAQUE;
+		tint = WG_TINTMODE_OPAQUE;
 	holder->SetTextTintMode(tint);
 
 	holder->SetLineSpaceAdjustment(WgUtil::ToSint8(xmlNode["linespaceadjustment"]));
@@ -5119,9 +5119,9 @@ void Wdg_Shader_Res::Serialize(WgResourceSerializerXML& s)
 
 	WgColorRes::Serialize(s, xmlNode, "color", shader->Color(), WgColor(255,255,255));
 
-	if(xmlNode.HasAttribute("tint") || shader->TintMode() != TINTMODE_OPAQUE)
+	if(xmlNode.HasAttribute("tint") || shader->TintMode() != WG_TINTMODE_OPAQUE)
 	{
-		if(shader->TintMode() == TINTMODE_MULTIPLY)
+		if(shader->TintMode() == WG_TINTMODE_MULTIPLY)
 			s.AddAttribute("tint", "mul");
 		else
 			s.AddAttribute("tint", "opaque");
@@ -5152,9 +5152,9 @@ void Wdg_Shader_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerX
 	{
 		widget->SetColor(WgColorRes::Deserialize(s, xmlNode["color"]));
 	}
-	WgTintMode tint = TINTMODE_OPAQUE;
+	WgTintMode tint = WG_TINTMODE_OPAQUE;
 	if(xmlNode["tint"] == "mul")
-		tint = TINTMODE_MULTIPLY;
+		tint = WG_TINTMODE_MULTIPLY;
 	widget->SetTintMode(tint);
 
 	std::string blend = xmlNode["blend"];
