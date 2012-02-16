@@ -191,7 +191,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 	char	params[256]; params[0] = 0;			// Event specific parameters
 
 
-	timestamp = FormatTimestamp( _pEvent->Timestamp() );
+	timestamp = _formatTimestamp( _pEvent->Timestamp() );
 
 	switch( _pEvent->Type() )
 	{
@@ -311,7 +311,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, "wheel=%d distance=%d", pEvent->Wheel(), pEvent->Distance() );
 			break;
 		}
-		
+
 		case WG_EVENT_BUTTON_PRESS:
 			id = "ButtonPress";
 			break;
@@ -323,12 +323,12 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 		case WG_EVENT_CHECKBOX_UNCHECK:
 			id = "CheckboxUncheck";
 			break;
-			
+
 		case WG_EVENT_CHECKBOX_TOGGLE:
 			id = "CheckboxToggle";
 			sprintf( params, "checked=%d", (int) (static_cast<const WgEvent::CheckboxToggle*>(_pEvent)->IsChecked()) );
 			break;
-		
+
 		case WG_EVENT_RADIOBUTTON_SELECT:
 			id = "RadiobuttonSelect";
 			break;
@@ -341,7 +341,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			id = "RadiobuttonToggle";
 			sprintf( params, "selected=%d", (int) (static_cast<const WgEvent::RadiobuttonToggle*>(_pEvent)->IsSelected()) );
 			break;
-		
+
 		default:
 			id = "Unknown Event";
 			break;
@@ -385,10 +385,10 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 
 	};
 
-	gizmo = FormatGizmo( _pEvent );
+	gizmo = _formatGizmo( _pEvent );
 
-	modkeys = FormatModkeys( _pEvent );
-	pointerPos = FormatPointerPos( _pEvent );
+	modkeys = _formatModkeys( _pEvent );
+	pointerPos = _formatPointerPos( _pEvent );
 
 
 
@@ -400,9 +400,9 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 	 m_out << std::endl;
 }
 
-//____ FormatTimestamp() ______________________________________________________
+//____ _formatTimestamp() ______________________________________________________
 
-string WgEventLogger::FormatTimestamp( int64_t ms )
+string WgEventLogger::_formatTimestamp( int64_t ms )
 {
 	char	temp[20];
 
@@ -415,9 +415,9 @@ string WgEventLogger::FormatTimestamp( int64_t ms )
 	return string( temp );
 }
 
-//____ FormatGizmo() __________________________________________________________
+//____ _formatGizmo() __________________________________________________________
 
-string WgEventLogger::FormatGizmo( const WgEvent::Event * _pEvent )
+string WgEventLogger::_formatGizmo( const WgEvent::Event * _pEvent )
 {
 	std::string	out;
 
@@ -439,9 +439,9 @@ string WgEventLogger::FormatGizmo( const WgEvent::Event * _pEvent )
 	return out;
 }
 
-//____ FormatModkeys() __________________________________________________________
+//____ _formatModkeys() __________________________________________________________
 
-string WgEventLogger::FormatModkeys( const WgEvent::Event * _pEvent )
+string WgEventLogger::_formatModkeys( const WgEvent::Event * _pEvent )
 {
 	WgModifierKeys keys = _pEvent->ModKeys();
 
@@ -457,9 +457,9 @@ string WgEventLogger::FormatModkeys( const WgEvent::Event * _pEvent )
 	return out;
 }
 
-//____ FormatPointerPos() _____________________________________________________
+//____ _formatPointerPos() _____________________________________________________
 
-string WgEventLogger::FormatPointerPos( const WgEvent::Event * _pEvent )
+string WgEventLogger::_formatPointerPos( const WgEvent::Event * _pEvent )
 {
 	WgCoord localPos = _pEvent->PointerPos();
 	WgCoord globalPos = _pEvent->PointerScreenPos();

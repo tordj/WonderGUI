@@ -261,7 +261,7 @@ void WgGizmoModal::BaseHook::_requestRender( const WgRect& rect )
 //_____________________________________________________________________________
 void WgGizmoModal::BaseHook::_requestResize()
 {
-	m_pParent->RequestResize();					// Just forward to our parent
+	m_pParent->_requestResize();					// Just forward to our parent
 }
 
 //____ Constructor ____________________________________________________________
@@ -306,7 +306,7 @@ WgHook * WgGizmoModal::SetBase( WgGizmo * pGizmo )
 
 	// Notify that we might want a new size now...
 
-	RequestResize();
+	_requestResize();
 	return &m_baseHook;
 }
 
@@ -326,7 +326,7 @@ bool WgGizmoModal::DeleteBase()
 	{
 		if( !m_baseHook.m_bHidden )
 			_onRequestRender( WgRect(0,0,m_size), 0 );
-		RequestResize();
+		_requestResize();
 		delete pGizmo;
 		return true;
 	}
@@ -343,7 +343,7 @@ WgGizmo * WgGizmoModal::ReleaseBase()
 	{
 		if( !m_baseHook.m_bHidden )
 			_onRequestRender( WgRect(0,0,m_size), 0 );
-		RequestResize();
+		_requestResize();
 	}
 
 	return pGizmo;
@@ -372,7 +372,7 @@ WgModalHook * WgGizmoModal::AddModal( WgGizmo * pGizmo, const WgRect& geometry, 
 bool WgGizmoModal::DeleteAllModal()
 {
 	m_modalHooks.Clear();
-	RequestRender();
+	_requestRender();
 	return true;
 }
 
@@ -388,7 +388,7 @@ bool WgGizmoModal::ReleaseAllModal()
 	}
 
 	m_modalHooks.Clear();
-	RequestRender();
+	_requestRender();
 	return true;
 }
 
@@ -570,7 +570,7 @@ void WgGizmoModal::_onRequestRender( const WgRect& rect, const WgModalHook * pHo
 	// Make request render calls
 
 	for( const WgRect * pRect = patches.Begin() ; pRect < patches.End() ; pRect++ )
-		RequestRender( * pRect );
+		_requestRender( * pRect );
 }
 
 //____ _onNewSize() ___________________________________________________________

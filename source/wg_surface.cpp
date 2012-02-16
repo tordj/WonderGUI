@@ -474,7 +474,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 											const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 
-	WgBlockSet * p =new(g_pBlockSetMemPool->allocEntry())
+	WgBlockSet * p =new(g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, disabled, special, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
@@ -487,7 +487,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 											const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 
-	WgBlockSet * p =new(g_pBlockSetMemPool->allocEntry())
+	WgBlockSet * p =new(g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, disabled, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
@@ -499,7 +499,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 										const WgBorders& contentBorders, const WgColorSetPtr& pTextColors,
 										Uint32 flags ) const
 {
-	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
+	WgBlockSet * p = new( g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, normal, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
@@ -510,7 +510,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgRect& dis
 										const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
-	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
+	WgBlockSet * p = new( g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, normal, normal, disabled, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
@@ -520,7 +520,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgRect& dis
 WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
-	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
+	WgBlockSet * p = new( g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, normal, normal, normal, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );

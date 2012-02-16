@@ -143,7 +143,7 @@ public:
 	bool					IsSizeStatic() const;
 	bool					IsUnderlineStatic() const;
 
-	inline bool		CompareTo( const WgTextPropPtr& pProp ) const { return CompareTo( &(*pProp) ); }
+	inline bool		CompareTo( const WgTextPropPtr& pProp ) const { return _compareTo( &(*pProp) ); }
 	bool			CompareColorTo( const WgTextPropPtr& pProp ) const;
 	bool			CompareBgColorTo( const WgTextPropPtr& pProp ) const;
 	bool			CompareStyleTo( const WgTextPropPtr& pProp ) const;
@@ -151,9 +151,9 @@ public:
 	bool			CompareUnderlineTo( const WgTextPropPtr& pProp ) const;
 
 private:
-	bool			CompareTo( const WgTextProp * pProp ) const;
+	bool			_compareTo( const WgTextProp * pProp ) const;
 
-	Uint8			CalculateChecksum() const;
+	Uint8			_calculateChecksum() const;
 
 
 	// Struct holding WgMode-specific parameters.

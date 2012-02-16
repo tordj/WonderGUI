@@ -73,9 +73,9 @@ bool WgGizmoAnimation::SetAnimation( WgGfxAnim * pAnim )
 
 	WgSize	currSize = Size();
 	WgSize	wantedSize;
-	
-	RequestResize();
-	RequestRender();
+
+	_requestResize();
+	_requestRender();
 	return true;
 }
 
@@ -87,8 +87,8 @@ bool WgGizmoAnimation::SetSource( const WgBlockSetPtr& pBlocks )
 
 	if( !m_pAnim || !m_bEnabled )
 	{
-		RequestResize();
-		RequestRender();
+		_requestResize();
+		_requestRender();
 	}
 	return true;
 }
@@ -135,7 +135,7 @@ bool WgGizmoAnimation::Rewind( int _ticks )
 {
 	if( !m_pAnim )
 		return false;
-	
+
 	if( m_playPos - _ticks < 0 )
 		m_playPos = 0;
 	else
@@ -206,7 +206,7 @@ bool WgGizmoAnimation::Play()
 	m_bPlaying = true;
 #ifdef WG_TNG
 	_startReceiveTicks();
-#endif	
+#endif
 	return true;
 }
 
@@ -239,18 +239,18 @@ void WgGizmoAnimation::_playPosUpdated()
 {
 	if( !m_pAnim )
 		return;
-	
+
 	WgBlock block = m_pAnim->GetBlock( (int64_t) m_playPos );
 
 	if( block != m_animFrame )
 	{
 		m_animFrame = block;
-		RequestRender();
-				
+		_requestRender();
+
 		Emit( WgSignal::IntegerChanged(), static_cast<int>(m_playPos) );
 		Emit( WgSignal::Fraction(), (float)m_playPos/(float)m_pAnim->Duration()-1);
-#ifdef WG_TGN				
-		EventHandler()->QueueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));		
+#ifdef WG_TGN
+		EventHandler()->QueueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));
 #endif
 	}
 }
@@ -274,7 +274,7 @@ void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 
 		}
 		break;
-		
+
 		default:
 		break;
 	}
@@ -308,7 +308,7 @@ void WgGizmoAnimation::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, 
 		if( !m_bEnabled )
 			mode = WG_MODE_DISABLED;
 
-		pDevice->ClipBlitBlock( _clip, m_pStaticBlock->GetBlock(mode,_canvas.Size()), _canvas );		
+		pDevice->ClipBlitBlock( _clip, m_pStaticBlock->GetBlock(mode,_canvas.Size()), _canvas );
 	}
 }
 
@@ -316,7 +316,7 @@ void WgGizmoAnimation::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, 
 
 void WgGizmoAnimation::_onRefresh( void )
 {
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onCloneContent() _______________________________________________________
@@ -363,7 +363,7 @@ void WgGizmoAnimation::_onEnable( void )
 		_startReceiveTicks();
 #endif
 	}
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onDisable() ___________________________________________________
@@ -376,5 +376,5 @@ void WgGizmoAnimation::_onDisable( void )
 		_stopReceiveTicks();
 #endif
 	}
-	RequestRender();
+	_requestRender();
 }

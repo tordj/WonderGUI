@@ -40,7 +40,7 @@ WgGizmoButton::WgGizmoButton()
 	m_pText = &m_text;
 	m_text.setAlignment( WgOrigo::midCenter() );
 	m_text.setLineWidth(Size().w);					// We start with no textborders...
-	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 
  	m_mode				= WG_MODE_NORMAL;
 
@@ -88,7 +88,7 @@ bool WgGizmoButton::SetSource( const WgBlockSetPtr& pGfx )
 	else
 		m_bOpaque = false;
 
-	RequestRender();
+	_requestRender();
 	return true;
 }
 
@@ -191,7 +191,7 @@ WgSize WgGizmoButton::DefaultSize() const
 void WgGizmoButton::_onEnable()
 {
 	m_mode = WG_MODE_NORMAL;
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onDisable() ____________________________________________________________
@@ -199,7 +199,7 @@ void WgGizmoButton::_onEnable()
 void WgGizmoButton::_onDisable()
 {
 	m_mode = WG_MODE_DISABLED;
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onNewSize() ____________________________________________________________
@@ -307,15 +307,15 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			m_bPressedInside[button-1] = false;
 			break;
 		}
-		
+
 		case WG_EVENT_MOUSEBUTTON_CLICK:
 		{
 			const WgEvent::MouseButtonClick* pEv = static_cast<const WgEvent::MouseButtonClick*>(pEvent);
 			if( pEv->Button() == 1 )
-				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );			
+				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
 			break;
 		}
-		
+
         default:
             break;
 
@@ -325,7 +325,7 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 	if( newMode != m_mode )
 	{
 		m_mode = newMode;
-		RequestRender();
+		_requestRender();
 	}
 
 }
@@ -383,7 +383,7 @@ void WgGizmoButton::_onAction( WgInput::UserAction action, int button, const WgA
 	if( newMode != m_mode )
 	{
 		m_mode = newMode;
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -424,7 +424,7 @@ void WgGizmoButton::_onRefresh( void )
 		else
 			m_bOpaque = false;
 
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -491,7 +491,7 @@ bool WgGizmoButton::_onAlphaTest( const WgCoord& ofs )
 void WgGizmoButton::_onGotInputFocus()
 {
 	m_bFocused = true;
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onLostInputFocus() _____________________________________________________
@@ -500,7 +500,7 @@ void WgGizmoButton::_onLostInputFocus()
 {
 	m_bFocused = false;
 	m_bReturnPressed = false;
-	RequestRender();
+	_requestRender();
 }
 
 
@@ -508,7 +508,7 @@ void WgGizmoButton::_onLostInputFocus()
 
 void WgGizmoButton::_textModified()
 {
-	RequestRender();
+	_requestRender();
 }
 
 //____ _iconModified() __________________________________________________________
@@ -516,5 +516,5 @@ void WgGizmoButton::_textModified()
 void WgGizmoButton::_iconModified()
 {
 	//TODO: Should possibly refresh size too.
-	RequestRender();
+	_requestRender();
 }

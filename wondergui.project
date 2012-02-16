@@ -39,7 +39,6 @@
     <File Name="include/wg_gizmo_checkbox.h"/>
     <File Name="include/wg_gizmo_circlemeter.h"/>
     <File Name="include/wg_gizmo_collection.h"/>
-    <File Name="include/wg_gizmo_combobox.h"/>
     <File Name="include/wg_gizmo_container.h"/>
     <File Name="include/wg_gizmo_dragbars.h"/>
     <File Name="include/wg_gizmo_dummy.h"/>
@@ -48,7 +47,6 @@
     <File Name="include/wg_gizmo_fill.h"/>
     <File Name="include/wg_gizmo_flexgeo.h"/>
     <File Name="include/wg_gizmo_fps.h"/>
-    <File Name="include/wg_gizmo_menubar.h"/>
     <File Name="include/wg_gizmo_modal.h"/>
     <File Name="include/wg_gizmo_parent.h"/>
     <File Name="include/wg_gizmo_pixmap.h"/>
@@ -63,18 +61,15 @@
     <File Name="include/wg_gizmo_view.h"/>
     <File Name="include/wg_glyphset.h"/>
     <File Name="include/wg_interface_edittext.h"/>
-    <File Name="include/wg_interface_itemholder.h"/>
     <File Name="include/wg_interface_textholder.h"/>
     <File Name="include/wg_interface_valueholder.h"/>
     <File Name="include/wg_key.h"/>
     <File Name="include/wg_mempool.h"/>
-    <File Name="include/wg_menuitem.h"/>
     <File Name="include/wg_monotainer.h"/>
     <File Name="include/wg_orderedlayout.h"/>
     <File Name="include/wg_orderedselectable.h"/>
     <File Name="include/wg_origo.h"/>
     <File Name="include/wg_pen.h"/>
-    <File Name="include/wg_rectchain.h"/>
     <File Name="include/wg_refcounted.h"/>
     <File Name="include/wg_resdb.h"/>
     <File Name="include/wg_resloader.h"/>
@@ -160,7 +155,6 @@
     <File Name="source/wg_orderedselectable.cpp"/>
     <File Name="source/wg_origo.cpp"/>
     <File Name="source/wg_pen.cpp"/>
-    <File Name="source/wg_rectchain.cpp"/>
     <File Name="source/wg_resdb.cpp"/>
     <File Name="source/wg_root.cpp"/>
     <File Name="source/wg_skinmanager.cpp"/>
@@ -180,6 +174,8 @@
     <File Name="source/wg_patches.cpp"/>
     <File Name="include/wg_gizmo_vbox.h"/>
     <File Name="source/wg_gizmo_vbox.cpp"/>
+    <File Name="include/wg_gizmo_shader.h"/>
+    <File Name="source/wg_gizmo_shader.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -202,6 +198,8 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
+      
       
       
       
@@ -246,6 +244,8 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
+      
       
       
       

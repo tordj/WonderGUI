@@ -81,10 +81,10 @@ public:
 	inline float *	GetAllowedSizes() const { return m_pAllowedSizes; }
 
 private:
-	float	GetSize( WgTextNode * pNode, const WgFont * m_pFont, WgFontStyle style, int size );
+	float	_getSize( WgTextNode * pNode, const WgFont * m_pFont, WgFontStyle style, int size );
 
-	void		RefreshAll();
-	virtual WgTextNode *	NewNode( WgText * pText );
+	void		_refreshAll();
+	virtual WgTextNode *	_newNode( WgText * pText );
 	WgChain<WgTextNode>	m_nodes;
 
 	float		m_scale;
@@ -117,7 +117,7 @@ public:
 
 	LINK_METHODS( WgTextNode );
 
-	inline float	GetSize( const WgFont * pFont, WgFontStyle style, int size ) { return m_pManager->GetSize( this, pFont, style, size ); }
+	inline float	GetSize( const WgFont * pFont, WgFontStyle style, int size ) { return m_pManager->_getSize( this, pFont, style, size ); }
 	void	Refresh();
 
 	inline WgTextManager *	GetManager() const { return m_pManager; }

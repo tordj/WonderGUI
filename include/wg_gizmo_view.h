@@ -89,7 +89,7 @@ public:
 	virtual const char * Type() const;
 	static const char * GetMyType();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoView(); };
-	
+
 
 	//____ Callbacks _____________________________________________________________
 
@@ -223,7 +223,7 @@ public:
 
 	void				SetFillerSource( const WgBlockSetPtr& pBlocks );
 
-	
+
 
 	WgGizmoContainer * CastToContainer() { return this; }
 	const WgGizmoContainer * CastToContainer() const { return this; }
@@ -280,7 +280,6 @@ protected:
 	// Following method should be overridden by subclasses instead of _onNewSize()!
 	// Takes into account that scrollbars might decrease the visible area of the subclass.
 
-	void		OnNewViewSize( const WgSize& size ) {};
 	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	bool		_onAlphaTest( const WgCoord& ofs );
 	void		_onCloneContent( const WgGizmo * _pOrg );
@@ -292,8 +291,8 @@ protected:
 	WgHook *	_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
 
-	void		SetContentSize( const WgSize& size );
-	void		UpdateElementGeo( const WgSize& mySize, const WgSize& newContentSize );
+	void		_setContentSize( const WgSize& size );
+	void		_updateElementGeo( const WgSize& mySize, const WgSize& newContentSize );
 
 	WgSize		m_contentSize;
 

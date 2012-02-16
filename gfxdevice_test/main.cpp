@@ -124,6 +124,9 @@ int main(int argc, char **argv)
     } // end main loop
 
 
+	WgBase::Exit();
+	IMG_Quit();
+
 	return 0;
 }
 

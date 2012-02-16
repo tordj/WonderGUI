@@ -128,7 +128,7 @@ public:
 	virtual const char * Type() const;
 	static const char * GetMyType();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoTablist(); };
-	
+
 
 	//____ Methods __________________________________________
 
@@ -209,21 +209,21 @@ protected:
 	void	_onUpdate( const WgUpdateInfo& _updateInfo );
 #ifdef WG_TNG
 	void 	_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler );
-#endif	
+#endif
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool	_onAlphaTest( const WgCoord& ofs );
 
 private:
 
-	WgBlockSetPtr	GetTabSource( WgTab * pTab ) const;
-	WgMode			GetTabMode(const WgTab& tab) const;
-	WgTab*			FindTab( int id ) const;
-	WgTab*	 		Pos2Tab( int x, int y ) const;
-	
-	void			ResizeTabs();
-	int				CalcTabsWantedWidth( WgTab * pTab ) const;
+	WgBlockSetPtr	_getTabSource( WgTab * pTab ) const;
+	WgMode			_getTabMode(const WgTab& tab) const;
+	WgTab*			_findTab( int id ) const;
+	WgTab*	 		_pos2Tab( int x, int y ) const;
 
-	void	RenderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, const WgRect& clip );
+	void			_resizeTabs();
+	int				_calcTabsWantedWidth( WgTab * pTab ) const;
+
+	void			_renderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, const WgRect& clip );
 
 	WgChain<WgTab>	m_tabs;
 

@@ -23,11 +23,10 @@
 #include <wg_gizmo.h>
 #include <wg_types.h>
 #include <wg_skinmanager.h>
-#include <wg_rectchain.h>
 
 #ifdef WG_TNG
-#include <wg_root.h>
-#include <wg_eventhandler.h>
+#	include <wg_root.h>
+#	include <wg_eventhandler.h>
 #endif
 
 static const char	s_type[] = {"Unspecified"};
@@ -102,7 +101,7 @@ void WgGizmo::SetSkinManager( WgSkinManager * pManager )
 		delete m_pSkinNode;
 
 	if( pManager )
-		m_pSkinNode = pManager->NewNode( this );
+		m_pSkinNode = pManager->_newNode( this );
 	else
 		m_pSkinNode = 0;
 }
@@ -138,12 +137,12 @@ bool WgGizmo::CloneContent( const WgGizmo * _pOrg )
 {
 	if( _pOrg->Type() != Type() )
 		return false;
-	
+
 	m_id			= _pOrg->m_id;
-	
+
 	m_pSkinNode		= _pOrg->m_pSkinNode;
 	m_pointerStyle 	= _pOrg->m_pointerStyle;
-	
+
 	m_tooltip		= _pOrg->m_tooltip;
 	m_markPolicy	= _pOrg->m_markPolicy;
 
@@ -203,9 +202,9 @@ void WgGizmo::_stopReceiveTicks()
 }
 #endif
 
-//____ SetSkinNode() __________________________________________________________
+//____ _setSkinNode() __________________________________________________________
 
-void WgGizmo::SetSkinNode( WgSkinNode * pNode )
+void WgGizmo::_setSkinNode( WgSkinNode * pNode )
 {
 	m_pSkinNode = pNode;
 	_onRefresh();
@@ -240,7 +239,7 @@ WgEventHandler * WgGizmo::EventHandler() const
 		WgRoot * pRoot = m_pHook->Root();
 		if( pRoot )
 			return pRoot->EventHandler();
-	}		
+	}
 	return 0;
 }
 #endif
@@ -297,7 +296,7 @@ WgMode WgGizmo::Mode() const
 #ifdef WG_TNG
 void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 {
-	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ ) 
+	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
 	{
 		WgRect clip( _canvas, *pRect );
 		if( clip.w > 0 || clip.h > 0 )
@@ -329,12 +328,12 @@ void WgGizmo::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgR
 
 void WgGizmo::_onNewSize( const WgSize& size )
 {
-	RequestRender();
+	_requestRender();
 }
 
 void WgGizmo::_onRefresh()
 {
-	RequestRender();
+	_requestRender();
 }
 
 void WgGizmo::_onUpdate( const WgUpdateInfo& _updateInfo )
@@ -359,12 +358,12 @@ bool WgGizmo::_onAlphaTest( const WgCoord& ofs )
 
 void WgGizmo::_onEnable()
 {
-	RequestRender();
+	_requestRender();
 }
 
 void WgGizmo::_onDisable()
 {
-	RequestRender();
+	_requestRender();
 }
 
 void WgGizmo::_onGotInputFocus()

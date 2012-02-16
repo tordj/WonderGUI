@@ -60,10 +60,10 @@ public:
 	bool IsEventLogged( WgEventType event ) { return m_eventFilter[event]; }
 
 private:
-	std::string	FormatTimestamp( int64_t ms );
-	std::string FormatGizmo( const WgEvent::Event * _pEvent );
-	std::string FormatModkeys( const WgEvent::Event * _pEvent );
-	std::string FormatPointerPos( const WgEvent::Event * _pEvent );
+	std::string	_formatTimestamp( int64_t ms );
+	std::string _formatGizmo( const WgEvent::Event * _pEvent );
+	std::string _formatModkeys( const WgEvent::Event * _pEvent );
+	std::string _formatPointerPos( const WgEvent::Event * _pEvent );
 
 
 	bool			m_eventFilter[WG_EVENT_MAX];

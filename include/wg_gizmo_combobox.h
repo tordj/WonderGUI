@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -110,12 +110,12 @@ private:
 	void	_textModified();
 	void	_adjustViewOfs();
 
-	void	EntrySelected(WgMenuItem * pItem);
-	static void cbEntrySelected( void * pWdg, WgMenuItem * pItem ) { ((WgGizmoCombobox*)pWdg)->EntrySelected(pItem); }
+	void	_entrySelected(WgMenuItem * pItem);
+	static void cbEntrySelected( void * pWdg, WgMenuItem * pItem ) { ((WgGizmoCombobox*)pWdg)->_entrySelected(pItem); }
 
-	void	MenuClosed();
-	static void cbMenuClosed( void * pWdg ) { ((WgGizmoCombobox*)pWdg)->MenuClosed(); }
-	
+	void	_menuClosed();
+	static void cbMenuClosed( void * pWdg ) { ((WgGizmoCombobox*)pWdg)->_menuClosed(); }
+
 
 	WgString		m_textFormat;
 	WgString		m_placeholderText;		// Text displayed when field is empty and has no cursor.

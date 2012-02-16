@@ -65,7 +65,7 @@ public:
 
 	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
-private:
+protected:
 
 	class Hook : public WgHook
 	{
@@ -88,9 +88,9 @@ private:
 	protected:
 		Hook( WgMonotainer * pParent ) : m_pParent(pParent) {}
 
-		void			_requestRender() { if( !m_bHidden ) m_pParent->RequestRender(); }
-		void			_requestRender( const WgRect& rect ) { if( !m_bHidden ) m_pParent->RequestRender(rect); }
-		void			_requestResize() { if( !m_bHidden ) m_pParent->RequestResize(); }
+		void			_requestRender() { if( !m_bHidden ) m_pParent->_requestRender(); }
+		void			_requestRender( const WgRect& rect ) { if( !m_bHidden ) m_pParent->_requestRender(rect); }
+		void			_requestResize() { if( !m_bHidden ) m_pParent->_requestResize(); }
 
 		WgHook *		_prevHook() const { return 0; }
 		WgHook *		_nextHook() const { return 0; }
@@ -122,8 +122,8 @@ private:
 	void			_onNewSize( const WgSize& size );
 
 
-	WgHook*	_firstHook() const;
-	WgHook*	_lastHook() const;
+	WgHook*			_firstHook() const;
+	WgHook*			_lastHook() const;
 
 	Hook			m_hook;
 

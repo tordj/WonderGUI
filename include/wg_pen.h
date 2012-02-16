@@ -57,8 +57,8 @@ friend class WgFont;
 public:
 	WgPen();
 	WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip = WgRect() );
-//	WgPen( const WgTextPropPtr& pTextProp, const WgTextPropPtr& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextProp( pTextProp, pCharProp, mode ); } 
-//	WgPen( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextProp( hTextProp, hCharProp, mode ); } 
+//	WgPen( const WgTextPropPtr& pTextProp, const WgTextPropPtr& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextProp( pTextProp, pCharProp, mode ); }
+//	WgPen( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextProp( hTextProp, hCharProp, mode ); }
 	~WgPen() {}
 
 	void					SetClipRect( const WgRect& clip );
@@ -101,7 +101,7 @@ public:
 //	inline WgCoord			GetBlitPos() const { return WgCoord( m_pos.x + m_pGlyph->BearingX(), m_pos.y + m_pGlyph->BearingY() ); }
 //	inline int				GetBlitPosX() const { return m_pos.x + m_pGlyph->BearingX(); }
 //	inline int				GetBlitPosY() const { return m_pos.y + m_pGlyph->BearingY(); }
-	
+
 	inline const WgRect&	GetClipRect() const { return m_clipRect; }
 	inline bool				HasClipRect() const { return m_bClip; }
 
@@ -120,7 +120,7 @@ public:
 	bool					BlitCursor( const WgCursorInstance& instance ) const;
 
 private:
-	void Init();
+	void _init();
 
 	void _onAttrChanged();
 

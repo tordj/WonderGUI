@@ -62,7 +62,7 @@ WgGizmoCirclemeter::WgGizmoCirclemeter( void )
 	m_numberBorders		= WgBorders(0);
 	m_text.setAlignment( WgOrigo::midCenter() );
 	m_text.SetWrap(false);
-	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 	m_fullRangeDistance	= 0;
 	m_valueAtPress		= 0;
 }
@@ -140,7 +140,7 @@ void WgGizmoCirclemeter::SetSliceSource( WgSurface * pSurf, Uint8 blocksPerSlice
 		m_sliceOfs[3].x		= xOfsSlice4Blocks;
 		m_sliceOfs[3].y		= yOfsSlice4Blocks;
 
-		RequestRender();
+		_requestRender();
 }
 
 //____ SetStartSlice() ________________________________________________________
@@ -161,7 +161,7 @@ void WgGizmoCirclemeter::SetNumberPosition( WgBorders numberBorders, WgOrigo num
 	m_numberBorders			= numberBorders;
 	m_text.setAlignment( numberAlignment );
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ SetFullRangeDistance() _________________________________________________
@@ -171,7 +171,7 @@ void WgGizmoCirclemeter::SetFullRangeDistance(Uint32 pixels)
 	if( m_fullRangeDistance != pixels )
 	{
 		m_fullRangeDistance = pixels;
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -184,7 +184,7 @@ bool WgGizmoCirclemeter::SetFonts( WgFont * _pFonts )
 	{
 		m_text.setFont(_pFonts);
 		m_bRegenText	= true;
-		RequestRender();
+		_requestRender();
 	}
 
 	return true;
@@ -196,7 +196,7 @@ bool WgGizmoCirclemeter::SetFonts( WgFont * _pFonts )
 void WgGizmoCirclemeter::SetFormat( const WgValueFormat& format )
 {
 	m_format = format;
-	RequestRender();
+	_requestRender();
 }
 
 //____ DefaultSize() __________________________________________________________
@@ -263,7 +263,7 @@ void WgGizmoCirclemeter::_onAction( WgInput::UserAction action, int button_key, 
 	if( newRenderStyle != m_renderStyle )
 	{
 		m_renderStyle = newRenderStyle;
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -404,7 +404,7 @@ bool WgGizmoCirclemeter::_onAlphaTest( const WgCoord& ofs )
 void WgGizmoCirclemeter::_onEnable( void )
 {
 	m_renderStyle = 0;
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onDisable() ___________________________________________________
@@ -412,7 +412,7 @@ void WgGizmoCirclemeter::_onEnable( void )
 void WgGizmoCirclemeter::_onDisable( void )
 {
 	m_renderStyle = 3;
-	RequestRender();
+	_requestRender();
 }
 
 //____ _valueModified() ________________________________________________________
@@ -423,7 +423,7 @@ void WgGizmoCirclemeter::_valueModified()
 	Emit( Fraction(), FractionalValue() );
 
 	m_bRegenText = true;
-	RequestRender();
+	_requestRender();
 }
 
 //____ _rangeModified() ________________________________________________________
@@ -431,7 +431,7 @@ void WgGizmoCirclemeter::_valueModified()
 void WgGizmoCirclemeter::_rangeModified()
 {
 	Emit( Fraction(), FractionalValue() );
-	RequestRender();		// Since the indicator will move when range is modified...
+	_requestRender();		// Since the indicator will move when range is modified...
 }
 
 //____ _representationModified() _______________________________________________
@@ -439,7 +439,7 @@ void WgGizmoCirclemeter::_rangeModified()
 void WgGizmoCirclemeter::_representationModified()
 {
 	m_bRegenText = true;
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onRefresh() _______________________________________________________
@@ -453,6 +453,6 @@ void WgGizmoCirclemeter::_onRefresh( void )
 		else
 			m_bOpaque = false;
 
-		RequestRender();
+		_requestRender();
 	}
 }

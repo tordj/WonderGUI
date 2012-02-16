@@ -295,9 +295,9 @@ void WgGfxDeviceSoft::_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, 
 					{
 						int alpha = pSrc[3];
 
-						pDst[0] = m_limitTable[pDst[0] + (pSrc[0]*alpha)>>8];
-						pDst[1] = m_limitTable[pDst[1] + (pSrc[1]*alpha)>>8];
-						pDst[2] = m_limitTable[pDst[2] + (pSrc[2]*alpha)>>8];
+						pDst[0] = m_limitTable[pDst[0] + ((pSrc[0]*alpha)>>8)];
+						pDst[1] = m_limitTable[pDst[1] + ((pSrc[1]*alpha)>>8)];
+						pDst[2] = m_limitTable[pDst[2] + ((pSrc[2]*alpha)>>8)];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -477,9 +477,9 @@ void WgGfxDeviceSoft::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcre
 					{
 						int alpha = (pSrc[3]*tintAlpha) >> 8;
 
-						pDst[0] = m_limitTable[(pDst[0] + (pSrc[0]*tintBlue*alpha)>>16 )];
-						pDst[1] = m_limitTable[(pDst[1] + (pSrc[1]*tintGreen*alpha)>>16 )];
-						pDst[2] = m_limitTable[(pDst[2] + (pSrc[2]*tintRed*alpha)>>16 )];
+						pDst[0] = m_limitTable[pDst[0] + ((pSrc[0]*tintBlue*alpha)>>16)];
+						pDst[1] = m_limitTable[pDst[1] + ((pSrc[1]*tintGreen*alpha)>>16)];
+						pDst[2] = m_limitTable[pDst[2] + ((pSrc[2]*tintRed*alpha)>>16)];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -498,9 +498,9 @@ void WgGfxDeviceSoft::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcre
 				{
 					for( int x = 0 ; x < srcrect.w ; x++ )
 					{
-						pDst[0] = m_limitTable[(pDst[0] + (pSrc[0]*tintBlue)>>16 )];
-						pDst[1] = m_limitTable[(pDst[1] + (pSrc[1]*tintGreen)>>16 )];
-						pDst[2] = m_limitTable[(pDst[2] + (pSrc[2]*tintRed)>>16 )];
+						pDst[0] = m_limitTable[pDst[0] + ((pSrc[0]*tintBlue)>>16)];
+						pDst[1] = m_limitTable[pDst[1] + ((pSrc[1]*tintGreen)>>16)];
+						pDst[2] = m_limitTable[pDst[2] + ((pSrc[2]*tintRed)>>16)];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -909,9 +909,9 @@ void WgGfxDeviceSoft::_stretchBlitTintedAdd32( const WgSurfaceSoft * pSrcSurf, f
 
 	int alpha = (srcAlpha*tintAlpha) >> 8;
 
-	pDst[0] = m_limitTable[(pDst[0] + (srcBlue*tintBlue*alpha)>>16 )];
-	pDst[1] = m_limitTable[(pDst[1] + (srcGreen*tintGreen*alpha)>>16 )];
-	pDst[2] = m_limitTable[(pDst[2] + (srcRed*tintRed*alpha)>>16 )];
+	pDst[0] = m_limitTable[pDst[0] + ((srcBlue*tintBlue*alpha)>>16)];
+	pDst[1] = m_limitTable[pDst[1] + ((srcGreen*tintGreen*alpha)>>16)];
+	pDst[2] = m_limitTable[pDst[2] + ((srcRed*tintRed*alpha)>>16)];
 
 	)
 }
@@ -931,9 +931,9 @@ void WgGfxDeviceSoft::_stretchBlitTintedAdd24( const WgSurfaceSoft * pSrcSurf, f
 
 	,
 
-	pDst[0] = m_limitTable[(pDst[0] + (srcBlue*tintBlue)>>16 )];
-	pDst[1] = m_limitTable[(pDst[1] + (srcGreen*tintGreen)>>16 )];
-	pDst[2] = m_limitTable[(pDst[2] + (srcRed*tintRed)>>16 )];
+	pDst[0] = m_limitTable[pDst[0] + ((srcBlue*tintBlue)>>16)];
+	pDst[1] = m_limitTable[pDst[1] + ((srcGreen*tintGreen)>>16)];
+	pDst[2] = m_limitTable[pDst[2] + ((srcRed*tintRed)>>16)];
 
 	)
 }
@@ -1027,9 +1027,9 @@ void WgGfxDeviceSoft::_stretchBlitAdd32( const WgSurfaceSoft * pSrcSurf, float s
 
 	,
 
-	pDst[0] = m_limitTable[(pDst[0] + (srcBlue*srcAlpha)>>8 )];
-	pDst[1] = m_limitTable[(pDst[1] + (srcGreen*srcAlpha)>>8 )];
-	pDst[2] = m_limitTable[(pDst[2] + (srcRed*srcAlpha)>>8 )];
+	pDst[0] = m_limitTable[pDst[0] + ((srcBlue*srcAlpha)>>8 )];
+	pDst[1] = m_limitTable[pDst[1] + ((srcGreen*srcAlpha)>>8 )];
+	pDst[2] = m_limitTable[pDst[2] + ((srcRed*srcAlpha)>>8 )];
 
 	)
 }
@@ -1095,7 +1095,7 @@ void WgGfxDeviceSoft::_initTables()
 	for( int i = 0 ; i < 256 ; i++ )
 		m_limitTable[i] = i;
 
-	for( int i = 0 ; i < 256 ; i++ )
+	for( int i = 256 ; i < 512 ; i++ )
 		m_limitTable[i] = 255;
 
 }

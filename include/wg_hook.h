@@ -39,7 +39,6 @@ class WgGfxDevice;
 class WgGizmo;
 class WgRoot;
 class WgRectLink;
-class WgRectChain;
 
 class WgHook
 {
@@ -95,7 +94,7 @@ protected:
 
 	WgGizmo *		m_pGizmo;
 	bool			m_bHidden;
-	
+
 };
 
 #endif //WG_HOOK_DOT_H

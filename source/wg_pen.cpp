@@ -31,13 +31,13 @@
 #include <wg_base.h>
 
 WgPen::WgPen()
-{ 
-	Init();
+{
+	_init();
 }
 
 WgPen::WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip )
 {
-	Init();
+	_init();
 
 	m_pDevice	= pDevice;
 	m_origo		= origo;
@@ -45,37 +45,37 @@ WgPen::WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip )
 	SetClipRect( clip );
 }
 
-//____ Init() _________________________________________________________________
+//____ _init() _________________________________________________________________
 
-void WgPen::Init()
+void WgPen::_init()
 {
 	m_pDevice = 0;
 	m_pTextNode = 0;
 
-	m_pFont = 0; 
-	m_pGlyphs = 0; 
+	m_pFont = 0;
+	m_pGlyphs = 0;
 
-	m_size = 0; 
+	m_size = 0;
 	m_wantedSize = 0;
-	m_style = WG_STYLE_NORMAL; 
+	m_style = WG_STYLE_NORMAL;
 
-	m_pGlyph = &m_dummyGlyph; 
-	m_pPrevGlyph = &m_dummyGlyph; 
-	m_color = 0xFFFFFFFF, 
+	m_pGlyph = &m_dummyGlyph;
+	m_pPrevGlyph = &m_dummyGlyph;
+	m_color = 0xFFFFFFFF,
 
 	m_bShowSpace = true;
 	m_bShowCRLF = true;
 
-	m_tabWidth = 80; 
+	m_tabWidth = 80;
 
 	m_bClip = false;
 }
 
 //____ SetClipRect() __________________________________________________________
 
-void WgPen::SetClipRect( const WgRect& clip ) 
-{ 
-	m_clipRect = clip; 
+void WgPen::SetClipRect( const WgRect& clip )
+{
+	m_clipRect = clip;
 	if( m_clipRect.x == 0 && m_clipRect.y == 0 && m_clipRect.w == 0 && m_clipRect.h == 0 )
 		m_bClip = false;
 	else
@@ -173,19 +173,19 @@ bool WgPen::SetChar( Uint32 chr )
 			m_pGlyph = &m_dummyGlyph;
 			return false;
 		}
-		
+
 		if( chr == '\n' && !m_bShowCRLF )
 		{
 			m_dummyGlyph.SetAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
-			return false;		
+			return false;
 		}
 
 		if( chr == 0 )
 		{
 			m_dummyGlyph.SetAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
-			return false;		
+			return false;
 		}
 
 		if( chr == '\t' )
@@ -202,7 +202,7 @@ bool WgPen::SetChar( Uint32 chr )
 	{
 		m_dummyGlyph.SetAdvance(0);
 		m_pGlyph = &m_dummyGlyph;
-		return false;		
+		return false;
 	}
 
 	// Get the glyph from our GlyphSet.

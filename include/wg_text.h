@@ -162,8 +162,8 @@ public:
 	bool				getSelection( int& startLine, int& startCol, int& endLine, int& endCol ) const;
 	WgRange				getSelection() const;
 	void				clearSelection( );
-	
-	
+
+
 //  --------------
 
 	void				setManager( WgTextManager * pManager );
@@ -282,7 +282,7 @@ public:
 	inline bool				IsEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
 	inline bool				IsSelectable() const { return m_editMode != WG_TEXT_STATIC; }
 
-	
+
 
 	inline void			setMode( WgMode mode ) { m_mode = mode; }
 	inline void			setAlignment( const WgOrigo& origo ) { m_origo = origo; }
@@ -415,9 +415,9 @@ protected:
 
 
 
-	static const int	parseBufLen = 9+16+1+16+8;
-	WgChar *	parseValue( double value, const WgValueFormat& form, WgChar[parseBufLen] );
-	WgChar *	parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form, WgChar[parseBufLen] );
+	static const int	s_parseBufLen = 9+16+1+16+8;
+	WgChar *		_parseValue( double value, const WgValueFormat& form, WgChar[s_parseBufLen] );
+	WgChar *		_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form, WgChar[s_parseBufLen] );
 
 
 	void			_regenHardLines();		// regenerate the softlines-array (if necessary).
@@ -426,7 +426,7 @@ protected:
 
 	void			_refreshAllLines();
 	void			_refreshLineInfo( WgTextLine * pLine ) const;
-	
+
 	int				_cursorMaxWidth() const;
 
 

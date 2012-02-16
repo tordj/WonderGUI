@@ -67,7 +67,7 @@ bool WgGizmoValue::SetFonts( WgFont * _pFonts )
 	{
 		m_pFonts			= _pFonts;
 		m_bRegenText		= true;
-		RequestRender();
+		_requestRender();
 	}
 
 	return true;
@@ -79,7 +79,7 @@ bool WgGizmoValue::SetFonts( WgFont * _pFonts )
 void WgGizmoValue::SetFormat( const WgValueFormat& format )
 {
 	m_format = format;
-	RequestRender();
+	_requestRender();
 }
 
 //____ DefaultSize() __________________________________________________________
@@ -96,14 +96,14 @@ WgSize WgGizmoValue::DefaultSize() const
 
 void WgGizmoValue::_valueModified()
 {
-	// NOTE: We have decided to not post any event on _valueModified since it 
+	// NOTE: We have decided to not post any event on _valueModified since it
 	// can only be done through the API.
 
 	Emit( IntegerChanged(), m_value );
 	Emit( Fraction(), FractionalValue() );
 
 	m_bRegenText = true;
-	RequestRender();
+	_requestRender();
 }
 
 //____ _rangeModified() ________________________________________________________
@@ -121,7 +121,7 @@ void WgGizmoValue::_onRefresh( void )
 	if( m_pFonts != 0 )
 	{
 		m_bRegenText = true;
-		RequestRender();
+		_requestRender();
 	}
 
 }
@@ -159,7 +159,7 @@ void WgGizmoValue::_onCloneContent( const WgGizmo * _pOrg )
 void WgGizmoValue::_onEnable( void )
 {
 	m_text.setMode(WG_MODE_NORMAL);
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onDisable() ____________________________________________________________
@@ -167,5 +167,5 @@ void WgGizmoValue::_onEnable( void )
 void WgGizmoValue::_onDisable( void )
 {
 	m_text.setMode(WG_MODE_DISABLED);
-	RequestRender();
+	_requestRender();
 }

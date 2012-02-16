@@ -40,7 +40,7 @@ WgGizmoText::WgGizmoText()
 	m_maxLines		= 0;
 
 	m_text.setLineWidth( Size().w );
-	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 	m_text.SetEditMode( WG_TEXT_STATIC );
 	m_bResetCursorOnFocus = true;
 }
@@ -107,7 +107,7 @@ void WgGizmoText::_onUpdate( const WgUpdateInfo& _updateInfo )
 	if( IsSelectable() && m_bFocused )
 	{
 		m_pText->incTime( _updateInfo.msDiff );
-		RequestRender();					//TODO: Should only render the cursor and selection!
+		_requestRender();					//TODO: Should only render the cursor and selection!
 	}
 }
 
@@ -140,10 +140,10 @@ WgPointerStyle WgGizmoText::GetPointerStyle() const
 //____ GetTooltipString() _____________________________________________________
 
 WgString WgGizmoText::GetTooltipString() const
-{ 
+{
 	if( !m_tooltip.IsEmpty() )
-		return m_tooltip; 
-	else	
+		return m_tooltip;
+	else
 	{
 		WgSize sz = Size();
 		if( sz.w < m_text.width() || sz.h < m_text.height() )
@@ -176,7 +176,7 @@ void WgGizmoText::_onRefresh( void )
 {
 	//TODO: Implement more I believe...
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onEvent() ______________________________________________________________
@@ -192,7 +192,7 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 		if( IsSelectable() && m_bFocused )
 		{
 			m_pText->incTime( ((const WgEvent::Tick*)(pEvent))->Millisec() );
-			RequestRender();					//TODO: Should only render the cursor and selection!
+			_requestRender();					//TODO: Should only render the cursor and selection!
 		}
 		return;
 	}
@@ -234,15 +234,15 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 			if( chr >= 32 && chr != 127)
 			{
-				InsertCharAtCursorInternal(chr);
+				_insertCharAtCursor(chr);
 			}
 			else if( chr == 13 )
 			{
-				InsertCharAtCursorInternal('\n');
+				_insertCharAtCursor('\n');
 			}
 			else if( chr == '\t' && m_bTabLock )
 			{
-				InsertCharAtCursorInternal( '\t' );
+				_insertCharAtCursor( '\t' );
 			}
 		}
 	}
@@ -386,15 +386,15 @@ void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const W
 		{
 			if( button_key >= 32 && button_key != 127)
 			{
-				InsertCharAtCursorInternal(button_key);
+				_insertCharAtCursor(button_key);
 			}
 			else if( button_key == 13 )
 			{
-				InsertCharAtCursorInternal('\n');
+				_insertCharAtCursor('\n');
 			}
 			else if( button_key == '\t' )
 			{
-				InsertCharAtCursorInternal( '\t' );
+				_insertCharAtCursor( '\t' );
 			}
 		}
 	}
@@ -494,7 +494,7 @@ void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const W
 
 	bool bChanged = m_text.OnAction( action, button_key, ScreenGeo(), WgCoord(info.x, info.y) );
 	if( bChanged )
-		RequestRender();
+		_requestRender();
 
 #endif //WG_LEGACY
 }
@@ -518,7 +518,7 @@ bool WgGizmoText::_onAlphaTest( const WgCoord& ofs )
 void WgGizmoText::_onEnable( void )
 {
 	m_text.setMode(WG_MODE_NORMAL);
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onDisable() ___________________________________________________
@@ -526,7 +526,7 @@ void WgGizmoText::_onEnable( void )
 void WgGizmoText::_onDisable( void )
 {
 	m_text.setMode(WG_MODE_DISABLED);
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onNewSize() ________________________________________________
@@ -546,10 +546,10 @@ void WgGizmoText::_onGotInputFocus()
 	{
 #ifdef WG_TNG
 		_startReceiveTicks();
-#endif		
+#endif
 		if(	m_bResetCursorOnFocus )
 			m_pText->goEOF();
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -563,8 +563,8 @@ void WgGizmoText::_onLostInputFocus()
 	{
 #ifdef WG_TNG
 		_stopReceiveTicks();
-#endif		
-		RequestRender();
+#endif
+		_requestRender();
 	}
 }
 
@@ -575,7 +575,7 @@ void WgGizmoText::_onLostInputFocus()
 void WgGizmoText::_textModified()
 {
 	m_bResetCursorOnFocus = true;
-	RequestRender();
+	_requestRender();
 }
 
 //____ InsertTextAtCursor() ___________________________________________________
@@ -611,12 +611,12 @@ bool WgGizmoText::InsertCharAtCursor( Uint16 c )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
-	return InsertCharAtCursorInternal(c);
+	return _insertCharAtCursor(c);
 }
 
-//____ InsertCharAtCursorInternal() ___________________________________________
+//____ _insertCharAtCursor() ___________________________________________
 
-bool WgGizmoText::InsertCharAtCursorInternal( Uint16 c )
+bool WgGizmoText::_insertCharAtCursor( Uint16 c )
 {
 	if(m_pText->hasSelection())
 		m_pText->delSelection();

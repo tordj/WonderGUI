@@ -77,7 +77,7 @@ const char * WgGizmoFps::GetMyType( void )
 void WgGizmoFps::SetTextProperties( const WgTextPropPtr& pProp )
 {
 	m_pProp = pProp;
-	RequestRender();
+	_requestRender();
 }
 
 //____ DefaultSize() __________________________________________________________
@@ -186,7 +186,7 @@ void WgGizmoFps::_onUpdate( const WgUpdateInfo& _updateInfo )
 		m_pTickBuffer[m_tickBufferOfs] = _updateInfo.msDiff;
 	else
 		m_pTickBuffer[m_tickBufferOfs] = 1;
-	RequestRender();
+	_requestRender();
 }
 
 
@@ -206,7 +206,7 @@ void WgGizmoFps::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHand
 				m_pTickBuffer[m_tickBufferOfs] = msDiff;
 			else
 				m_pTickBuffer[m_tickBufferOfs] = 1;
-			RequestRender();
+			_requestRender();
 		}
 		default:
 			break;

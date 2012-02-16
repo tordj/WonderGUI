@@ -50,9 +50,9 @@ public:
 
 
 private:
-	int		GetAlternative( WgSkinNode * pNode, WgSize size );
+	int		_getAlternative( WgSkinNode * pNode, WgSize size );
 
-	virtual WgSkinNode *	NewNode( WgGizmo * pGizmo );
+	virtual WgSkinNode *	_newNode( WgGizmo * pGizmo );
 	WgChain<WgSkinNode>		m_nodes;
 
 
@@ -68,7 +68,7 @@ public:
 
 	LINK_METHODS( WgSkinNode );
 
-	inline int	GetAlternative( WgSize size ) { return m_pManager->GetAlternative( this, size ); }
+	inline int	GetAlternative( WgSize size ) { return m_pManager->_getAlternative( this, size ); }
 	void		Refresh();
 
 	inline WgSkinManager *	GetManager() const { return m_pManager; }

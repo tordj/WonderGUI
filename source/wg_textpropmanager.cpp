@@ -55,7 +55,7 @@ WgTextPropManager::WgTextPropManager()
 	g_nullProp.m_next			= -1;
 	g_nullProp.m_prev			= -1;
 
-	g_nullProp.m_indexOfs = g_nullProp.m_prop.CalculateChecksum();
+	g_nullProp.m_indexOfs = g_nullProp.m_prop._calculateChecksum();
 
 	// Initialize the index table
 
@@ -74,7 +74,7 @@ Uint16 WgTextPropManager::RegisterProp( const WgTextProp& prop )
 {
 	prop.AssertIntegrity();
 
-	Uint8 ofs = prop.CalculateChecksum();
+	Uint8 ofs = prop._calculateChecksum();
 
 	// Check s_propIndex for indentical property, increase ref and return if found.
 
@@ -84,7 +84,7 @@ Uint16 WgTextPropManager::RegisterProp( const WgTextProp& prop )
 	{
 		WgTextPropHolder * p = &g_pPropBuffer[h];
 
-		if( g_bMergeSimilar && prop.CompareTo( &p->m_prop ) )
+		if( g_bMergeSimilar && prop._compareTo( &p->m_prop ) )
 			return p->m_id;
 
 		h = (Sint16) p->m_next;

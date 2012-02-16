@@ -365,9 +365,9 @@ bool WgTextProp::CompareUnderlineTo( const WgTextPropPtr& pProp ) const
 }
 
 
-//____ CalculateChecksum() ____________________________________________________
+//____ _calculateChecksum() ____________________________________________________
 
-Uint8 WgTextProp::CalculateChecksum() const
+Uint8 WgTextProp::_calculateChecksum() const
 {
 	WgUtil::Checksum8	chk;
 
@@ -390,12 +390,12 @@ Uint8 WgTextProp::CalculateChecksum() const
 	return chk.GetChecksum();
 }
 
-//____ CompareTo() ____________________________________________________________
+//____ _compareTo() ____________________________________________________________
 
-bool WgTextProp::CompareTo( const WgTextProp * pProp ) const
+bool WgTextProp::_compareTo( const WgTextProp * pProp ) const
 {
 	if( m_pFont != pProp->m_pFont || m_pLink != pProp->m_pLink ||
-		m_visibilityFlags != pProp->m_visibilityFlags || 
+		m_visibilityFlags != pProp->m_visibilityFlags ||
 		m_breakLevel != pProp->m_breakLevel )
 		return false;
 
@@ -476,7 +476,7 @@ WgTextPropPtr::WgTextPropPtr( WgTextPropHolder * pProp )
 {
 	if( pProp )
 		m_hProp = pProp->m_id;
-	else 
+	else
 		m_hProp = 0;
 
 	WgTextPropManager::IncRef(m_hProp, 1);
@@ -558,6 +558,6 @@ bool WgTextProp::IsEqual(WgMode mode0, WgMode mode1) const
 			m_modeProp[mode0].m_bUnderlined == m_modeProp[mode1].m_bUnderlined &&
 			m_modeProp[mode0].m_color == m_modeProp[mode1].m_color &&
 			m_modeProp[mode0].m_bgColor == m_modeProp[mode1].m_bgColor &&
-			m_modeProp[mode0].m_style == m_modeProp[mode1].m_style &&			
-			m_modeProp[mode0].m_size == m_modeProp[mode1].m_size;			
+			m_modeProp[mode0].m_style == m_modeProp[mode1].m_style &&
+			m_modeProp[mode0].m_size == m_modeProp[mode1].m_size;
 }

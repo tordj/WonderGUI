@@ -97,7 +97,7 @@ public:
 
 
 protected:
-	void	Init();
+	void	_init();
 
 #ifdef	WG_USE_FREETYPE
 	WgVectorGlyphs *	m_pDefaultVectorGlyphs;

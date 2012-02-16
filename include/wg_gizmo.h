@@ -85,6 +85,7 @@ friend class WgGizmoVBox;
 friend class WgMonotainer;
 friend class WgGizmoStack;
 friend class WgGizmoContainer;
+friend class WgGizmoShader;
 
 friend class WgTableRow2;
 
@@ -95,7 +96,7 @@ public:
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
 
-	inline int		Id() const { return m_id; }
+	inline int			Id() const { return m_id; }
 	inline void			SetId( int id ) { m_id = id; }
 
 	virtual WgString	GetTooltipString() const { return m_tooltip; }
@@ -173,8 +174,8 @@ public:
 protected:
 
 	void			_onNewHook( WgHook * pHook );
-	void			SetSkinNode( WgSkinNode * pNode );
-	WgSkinNode *	GetSkinNode() const { return m_pSkinNode; }
+	void			_setSkinNode( WgSkinNode * pNode );
+	WgSkinNode *	_getSkinNode() const { return m_pSkinNode; }
 
 #ifdef WG_TNG
 	void			_onNewRoot( WgRoot * pRoot );
@@ -184,9 +185,9 @@ protected:
 
 	// Convenient calls to hook
 
-	void			RequestRender() { if( m_pHook ) m_pHook->_requestRender(); }
-	void			RequestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
-	void			RequestResize() { if( m_pHook ) m_pHook->_requestResize(); }
+	void			_requestRender() { if( m_pHook ) m_pHook->_requestRender(); }
+	void			_requestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
+	void			_requestResize() { if( m_pHook ) m_pHook->_requestResize(); }
 
 	// To be overloaded by Gizmo
 

@@ -21,7 +21,6 @@
 =========================================================================*/
 
 #include <wg_monotainer.h>
-#include <wg_rectchain.h>
 
 
 //____ SetChild() ______________________________________________________________
@@ -38,7 +37,7 @@ WgHook * WgMonotainer::SetChild( WgGizmoContainer * _pGizmo )
 	m_hook._attachGizmo(pGizmo);
 	pGizmo->_onNewSize(Size());
 
-	RequestRender();
+	_requestRender();
 	return &m_hook;
 }
 
@@ -50,8 +49,8 @@ bool WgMonotainer::DeleteChild()
 	if( pGizmo )
 	{
 		delete pGizmo;
-		RequestRender();
-		RequestResize();
+		_requestRender();
+		_requestResize();
 		return true;
 	}
 
@@ -65,8 +64,8 @@ WgGizmo * WgMonotainer::ReleaseChild()
 	WgGizmo * pGizmo = m_hook._releaseGizmo();
 	if( pGizmo )
 	{
-		RequestRender();
-		RequestResize();
+		_requestRender();
+		_requestResize();
 	}
 
 	return pGizmo;
@@ -186,22 +185,33 @@ void WgMonotainer::_onNewSize( const WgSize& size )
 
 WgHook* WgMonotainer::_firstHook() const
 {
-	return const_cast<Hook*>(&m_hook);
+	if( m_hook.Gizmo() )
+		return const_cast<Hook*>(&m_hook);
+	else
+		return 0;
 }
 
 //____ _lastHook() _____________________________________________________________
 
 WgHook* WgMonotainer::_lastHook() const
 {
-	return const_cast<Hook*>(&m_hook);
+	if( m_hook.Gizmo() )
+		return const_cast<Hook*>(&m_hook);
+	else
+		return 0;
 }
 
 //____ _firstHookWithGeo() _____________________________________________________
 
 WgHook * WgMonotainer::_firstHookWithGeo( WgRect& geo ) const
 {
-	geo = WgRect(0,0,Size());
-	return const_cast<Hook*>(&m_hook);
+	if( m_hook.Gizmo() )
+	{
+		geo = WgRect(0,0,Size());
+		return const_cast<Hook*>(&m_hook);
+	}
+
+	return 0;
 }
 
 //____ _nextHookWithGeo() ______________________________________________________
@@ -215,8 +225,13 @@ WgHook * WgMonotainer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 WgHook * WgMonotainer::_lastHookWithGeo( WgRect& geo ) const
 {
-	geo = WgRect(0,0,Size());
-	return const_cast<Hook*>(&m_hook);
+	if( m_hook.Gizmo() )
+	{
+		geo = WgRect(0,0,Size());
+		return const_cast<Hook*>(&m_hook);
+	}
+
+	return 0;
 }
 
 //_____ _prevHookWithGeo() _____________________________________________________

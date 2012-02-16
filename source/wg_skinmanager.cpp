@@ -36,9 +36,9 @@ WgSkinManager::~WgSkinManager()
 {
 }
 
-//____ NewNode() ______________________________________________________________
+//____ _newNode() ______________________________________________________________
 
-WgSkinNode * WgSkinManager::NewNode( WgGizmo * pGizmo )
+WgSkinNode * WgSkinManager::_newNode( WgGizmo * pGizmo )
 {
 	if( !pGizmo )
 		return 0;
@@ -56,16 +56,16 @@ WgSkinNode::WgSkinNode( WgSkinManager * pManager, WgGizmo * pGizmo )
 	m_pManager = pManager;
 	m_pGizmo = pGizmo;
 
-	if( pGizmo->GetSkinNode() )
-		delete pGizmo->GetSkinNode();
-	pGizmo->SetSkinNode(this);
+	if( pGizmo->_getSkinNode() )
+		delete pGizmo->_getSkinNode();
+	pGizmo->_setSkinNode(this);
 }
 
 //____ WgSkinNode::Destructor _________________________________________________
 
 WgSkinNode::~WgSkinNode()
 {
-	m_pGizmo->SetSkinNode(0);
+	m_pGizmo->_setSkinNode(0);
 }
 
 //____ WgSkinNode::Refresh() __________________________________________________

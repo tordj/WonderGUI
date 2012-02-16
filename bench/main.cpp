@@ -13,8 +13,6 @@
 
 
 #include <wondergui.h>
-#include <wg_surface_sdl.h>
-#include <wg_gfxdevice_sdl.h>
 #include <wg_eventlogger.h>
 #include <wg_bitmapglyphs.h>
 #include <wg_vectorglyphs.h>
@@ -24,14 +22,10 @@
 
 #include <wg_surface_soft.h>
 #include <wg_gfxdevice_soft.h>
-
+#include <sdl_wglib.h>
 
 extern std::ostream cout;
 
-int fileSize( const char * pPath );
-void * loadFile( const char * pPath );
-
-WgSurface * 	loadSurface( const char * path );
 SDL_Surface *	initSDL( int w, int h );
 bool			eventLoop( WgEventHandler * pHandler );
 
@@ -41,7 +35,7 @@ void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
 void cbOpenModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
 void cbCloseModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
 
-void addResizableContainer( WgGizmoFlexGeo * pParent, WgGizmo * pChild, WgBlockSetPtr& pBgBlock, WgEventHandler * pEventHandler );
+void addResizableContainer( WgGizmoFlexGeo * pParent, WgGizmo * pChild, WgEventHandler * pEventHandler );
 void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook );
 
 
@@ -62,13 +56,17 @@ int main ( int argc, char** argv )
 	// Init WonderGUI
 
 	WgBase::Init();
+	sdl_wglib::MapKeys();
+
 //	WgBase::InitFreeType();
 
-	WgSurfaceSDL * pCanvas = new WgSurfaceSDL( pScreen );
-	WgGfxDevice * pGfxDevice = new WgGfxDeviceSDL( pCanvas );
+	// Setup gfxdevice and gui
+
+	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(640,480), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch );
+	WgGfxDeviceSoft * pGfxDevice = new WgGfxDeviceSoft( pCanvas );
+	pGfxDevice->SetBilinearFiltering( true );
 
 	WgRoot * pRoot = new WgRoot( pGfxDevice );
-	pRoot->SetGeo(WgRect(0,0,640,480));
 
 	WgEventHandler * pEventHandler = pRoot->EventHandler();
 
@@ -79,31 +77,6 @@ int main ( int argc, char** argv )
 //	pEventLogger->IgnoreAllEvents();
 //	pEventLogger->LogMouseButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
-
-	WgBase::MapKey( WG_KEY_SHIFT, SDLK_LSHIFT );
-	WgBase::MapKey( WG_KEY_SHIFT, SDLK_RSHIFT );
-	WgBase::MapKey( WG_KEY_CONTROL, SDLK_LCTRL );
-	WgBase::MapKey( WG_KEY_CONTROL, SDLK_RCTRL );
-	WgBase::MapKey( WG_KEY_ALT, SDLK_LALT );
-	WgBase::MapKey( WG_KEY_ALT, SDLK_RALT );
-
-
-	WgBase::MapKey( WG_KEY_LEFT, SDLK_LEFT );
-	WgBase::MapKey( WG_KEY_RIGHT, SDLK_RIGHT );
-	WgBase::MapKey( WG_KEY_UP, SDLK_UP );
-	WgBase::MapKey( WG_KEY_DOWN, SDLK_DOWN );
-
-	WgBase::MapKey( WG_KEY_HOME, SDLK_HOME );
-	WgBase::MapKey( WG_KEY_END, SDLK_END );
-	WgBase::MapKey( WG_KEY_PAGEUP, SDLK_PAGEUP );
-	WgBase::MapKey( WG_KEY_PAGEDOWN, SDLK_PAGEDOWN );
-
-	WgBase::MapKey( WG_KEY_RETURN, SDLK_RETURN );
-	WgBase::MapKey( WG_KEY_BACKSPACE, SDLK_BACKSPACE );
-	WgBase::MapKey( WG_KEY_DELETE, SDLK_DELETE );
-	WgBase::MapKey( WG_KEY_TAB, SDLK_TAB );
-	WgBase::MapKey( WG_KEY_ESCAPE, SDLK_ESCAPE );
-
 
 	// Load TTF-font
 /*
@@ -120,18 +93,11 @@ int main ( int argc, char** argv )
 */
 	// Load bitmap font
 
-	WgSurface * pFontImg = loadSurface("../resources/anuvverbubbla_8x8.png");
-	char * pFontSpec = (char*) loadFile( "../resources/anuvverbubbla_8x8.fnt" );
-
-	WgBitmapGlyphs * pGlyphs = new WgBitmapGlyphs( pFontImg, pFontSpec );
-
-	WgFont * pFont = new WgFont();
-	pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 8 );
-
+	WgFont * pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", WgSurfaceFactorySoft() );
 
 	// Load and setup cursor
 
-	WgSurface * pCursorImg = loadSurface("../resources/cursors.png");
+	WgSurface * pCursorImg = sdl_wglib::LoadSurface("../resources/cursors.png", WgSurfaceFactorySoft() );
 
 	WgGfxAnim * pCursorEOL = new WgGfxAnim();
 	pCursorEOL->SetSize( WgSize(8,8) );
@@ -163,18 +129,18 @@ int main ( int argc, char** argv )
 
 	// Load images and specify blocks
 
-	WgSurface * pBackImg = loadSurface("../resources/What-Goes-Up-3.bmp");
+	WgSurface * pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", WgSurfaceFactorySoft() );
 	WgBlockSetPtr pBackBlock = pBackImg->defineBlockSet( WgRect(0,0,pBackImg->Width(),pBackImg->Height()), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );
 
-	WgSurface * pFlagImg = loadSurface("cb2.bmp");
+	WgSurface * pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", WgSurfaceFactorySoft() );
 	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
 
-	WgSurface * pSplashImg = loadSurface("../resources/splash.png");
+	WgSurface * pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", WgSurfaceFactorySoft() );
 	WgBlockSetPtr pSplashBlock = pSplashImg->defineBlockSet( WgRect(0,0,pSplashImg->Width(),pSplashImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
 
 
-	WgSurface * pBlocksImg = loadSurface("../resources/blocks.png");
-	WgBlockSetPtr pButtonBlock = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,0,8*4+6,8), 2), WgBorders(3), WgBorders(2), 0, WG_OPAQUE );
+	WgSurface * pBlocksImg = sdl_wglib::LoadSurface("../resources/blocks.png", WgSurfaceFactorySoft() );
+	WgBlockSetPtr pButtonBlock = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,0,8*4+6,8), 2), WgBorders(3), WgBorders(2), 0, 0 );
 
 	WgBlockSetPtr pRadioBlockUnselected = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,42,11*4+6,11), 2), WgBorders(3), WgBorders(2), 0, 0 );
 	WgBlockSetPtr pRadioBlockSelected = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(52,42,11*4+6,11), 2), WgBorders(3), WgBorders(2), 0, 0 );
@@ -194,17 +160,26 @@ int main ( int argc, char** argv )
 	//
 
 	{
+		WgGizmoShader * pShader = new WgGizmoShader();
+		pShader->SetBlendMode(WG_BLENDMODE_ADD);
+		pShader->SetColor( WgColor(0xFFFFFFFF) );
+
 		WgGizmoStack * pStack = new WgGizmoStack();
+		pShader->SetChild( pStack );
+
+		WgGizmoPixmap * pBg = new WgGizmoPixmap();
+		pBg->SetSource( pButtonBlock );
+		pStack->AddChild( pBg );
 
 		WgGizmoPixmap * pSplash= new WgGizmoPixmap();
 		pSplash->SetSource( pSplashBlock );
-
 		WgStackHook * pHook = pStack->AddChild( pSplash );
 		pHook->SetSizePolicy( WgStackHook::SCALE );
 		pHook->SetOrientation( WG_CENTER );
 		pHook->SetBorders( WgBorders(2) );
 
-		addResizableContainer( pFlex, pStack, pButtonBlock, pEventHandler );
+
+		addResizableContainer( pFlex, pShader, pEventHandler );
 	}
 
 	// Modal container
@@ -321,18 +296,55 @@ int main ( int argc, char** argv )
 
 	pVBox->SetRadioGroup(true);
 */
-    // program main loop
+
+   // program main loop
 
     while (eventLoop( pEventHandler ))
     {
+
+		// GET DIRTY RECTS
+
+		int nDirtyRects;
+		SDL_Rect	dirtyRects[100];
+
+		if( pRoot->NbDirtyRects() <= 100 )
+		{
+			nDirtyRects = pRoot->NbDirtyRects();
+			for( int i = 0 ; i < nDirtyRects ; i++ )
+			{
+				const WgRect * pR = pRoot->FirstDirtyRect() + i;
+
+				dirtyRects[i].x = pR->x;
+				dirtyRects[i].y = pR->y;
+				dirtyRects[i].w = pR->w;
+				dirtyRects[i].h = pR->h;
+			}
+		}
+		else
+		{
+			nDirtyRects = 1;
+
+			const WgRect r = pRoot->Geo();
+
+			dirtyRects[0].x = r.x;
+			dirtyRects[0].y = r.y;
+			dirtyRects[0].w = r.w;
+			dirtyRects[0].h = r.h;
+		}
+
+
         // DRAWING STARTS HERE
 
-		pRoot->Render( WgRect(0,0,pCanvas->Width(),pCanvas->Height()) );
+		SDL_LockSurface( pScreen );
+		pRoot->Render();
+		SDL_UnlockSurface( pScreen );
 
         // DRAWING ENDS HERE
 
         // finally, update the screen :)
-        SDL_Flip(pScreen);
+
+		SDL_UpdateRects( pScreen, nDirtyRects, dirtyRects);
+
 
         // Pause for a while
 
@@ -345,7 +357,6 @@ int main ( int argc, char** argv )
 
 	delete pRoot;
 	delete pGfxDevice;
-	delete pCanvas;
 	delete pBackImg;
 	delete pFlagImg;
 
@@ -459,64 +470,6 @@ bool eventLoop( WgEventHandler * pHandler )
 }
 
 
-//____ loadSurface() __________________________________________________________
-
-WgSurface * loadSurface( const char * path )
-{
-    // load an image
-    SDL_Surface* bmp = IMG_Load(path);
-    if (!bmp)
-    {
-        printf("Unable to load bitmap: %s\n", IMG_GetError());
-        return 0;
-    }
-
-	return new WgSurfaceSDL(bmp);
-
-}
-
-//____ fileSize() _____________________________________________________________
-
-int fileSize( const char * pPath )
-{
-	FILE * fp = fopen( pPath, "rb" );
-	if( !fp )
-		return 0;
-
-	fseek( fp, 0, SEEK_END );
-	int size = ftell(fp);
-	fseek( fp, 0, SEEK_SET );
-	fclose( fp );
-
-	return size;
-}
-
-//____ loadFile() _____________________________________________________________
-
-void * loadFile( const char * pPath )
-{
-	FILE * fp = fopen( pPath, "rb" );
-	if( !fp )
-		return 0;
-
-	fseek( fp, 0, SEEK_END );
-	int size = ftell(fp);
-	fseek( fp, 0, SEEK_SET );
-
-	char * pMem = (char*) malloc( size+1 );
-	pMem[size] = 0;
-	int nRead = fread( pMem, 1, size, fp );
-	fclose( fp );
-
-	if( nRead < size )
-	{
-		free( pMem );
-		return 0;
-	}
-
-	return pMem;
-
-}
 
 
 
@@ -583,23 +536,14 @@ void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook )
 
 //____ addResizableContainer() _________________________________________________
 
-void addResizableContainer( WgGizmoFlexGeo * pParent, WgGizmo * pChild, WgBlockSetPtr& pBgBlock, WgEventHandler * pEventHandler )
+void addResizableContainer( WgGizmoFlexGeo * pParent, WgGizmo * pChild, WgEventHandler * pEventHandler )
 {
-	WgGizmoStack * pRoot = new WgGizmoStack();
-
-	WgGizmoPixmap * pBg = new WgGizmoPixmap();
-	pBg->SetSource( pBgBlock );
+	WgHook * pHook = pParent->AddChild( pChild );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 2), cbResize, pHook );
 
 
-	pRoot->AddChild( pBg );
-	pRoot->AddChild( pChild );
-
-	WgHook * pHook = pParent->AddChild( pRoot );
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pRoot, 2), cbResize, pHook );
-
-
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pRoot, 3), cbInitDrag, pRoot );
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pRoot, 3), cbDragGizmo, pRoot );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pChild, 3), cbInitDrag, pChild );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 3), cbDragGizmo, pChild );
 }
 
 
