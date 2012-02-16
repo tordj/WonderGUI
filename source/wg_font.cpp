@@ -30,26 +30,26 @@
 WgFont::WgFont()
 {
 
-	Init();
+	_init();
 }
 
 #ifdef WG_USE_FREETYPE
 WgFont::WgFont( WgVectorGlyphs * pNormal )
 {
-	Init();
+	_init();
 	SetVectorGlyphs( pNormal, WG_STYLE_NORMAL );
 }
 #endif
 
 WgFont::WgFont( WgBitmapGlyphs * pNormal, int size )
 {
-	Init();
+	_init();
 	SetBitmapGlyphs( pNormal, WG_STYLE_NORMAL, size );
 }
 
-//____ Init() _________________________________________________________________
+//____ _init() _________________________________________________________________
 
-void WgFont::Init()
+void WgFont::_init()
 {
 #ifdef	WG_USE_FREETYPE
 	m_pDefaultVectorGlyphs = 0;
@@ -71,7 +71,7 @@ void WgFont::Init()
 
 WgFont::~WgFont()
 {
-#ifdef	WG_USE_FREETYPE	
+#ifdef	WG_USE_FREETYPE
 	for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
 	{
 		if( m_aVectorGlyphs[i] != 0 )

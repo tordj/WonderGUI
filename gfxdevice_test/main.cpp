@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 	// Load bitmap font
 
 	WgFont * pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", WgSurfaceFactorySoft() );
-	
+
 	// Set default textprop
 
 	WgTextProp prop;
@@ -53,9 +53,11 @@ int main(int argc, char **argv)
 	WgBase::SetDefaultTextProp( prop.Register() );
 
 	// Setup gfxdevice and gui
-	
-	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(1024,640), WG_PIXEL_RGBA_8, (unsigned char *) pScreen->pixels, pScreen->pitch );
-	WgGfxDevice * pDevice = new WgGfxDeviceSoft( pCanvas );
+
+	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(1024,640), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch );
+	WgGfxDeviceSoft * pDevice = new WgGfxDeviceSoft( pCanvas );
+	pDevice->SetBilinearFiltering( true );
+
 
 	WgRoot * pRoot = setupGUI(pDevice);
 	if( !pRoot )
@@ -72,17 +74,17 @@ int main(int argc, char **argv)
     {
 
 		// GET DIRTY RECTS
-		
+
 		int nDirtyRects;
 		SDL_Rect	dirtyRects[100];
-		
+
 		if( pRoot->NbDirtyRects() <= 100 )
 		{
 			nDirtyRects = pRoot->NbDirtyRects();
 			for( int i = 0 ; i < nDirtyRects ; i++ )
 			{
 				const WgRect * pR = pRoot->FirstDirtyRect() + i;
-				
+
 				dirtyRects[i].x = pR->x;
 				dirtyRects[i].y = pR->y;
 				dirtyRects[i].w = pR->w;
@@ -94,13 +96,13 @@ int main(int argc, char **argv)
 			nDirtyRects = 1;
 
 			const WgRect r = pRoot->Geo();
-			
+
 			dirtyRects[0].x = r.x;
 			dirtyRects[0].y = r.y;
 			dirtyRects[0].w = r.w;
 			dirtyRects[0].h = r.h;
 		}
-			
+
 
         // DRAWING STARTS HERE
 
@@ -111,7 +113,7 @@ int main(int argc, char **argv)
         // DRAWING ENDS HERE
 
         // finally, update the screen :)
-		
+
 		SDL_UpdateRects( pScreen, nDirtyRects, dirtyRects);
 
 
@@ -121,6 +123,9 @@ int main(int argc, char **argv)
 
     } // end main loop
 
+
+	WgBase::Exit();
+	IMG_Quit();
 
 	return 0;
 }
@@ -140,18 +145,19 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 
 	int hAnchorLeft = pMainContainer->AddAnchor( 0.f, 0.f, WgCoord(0,100) );
 	int hAnchorRight = pMainContainer->AddAnchor( 1.f, 0.f, WgCoord(0,100) );
-	
+
 	pRoot->SetChild(pMainContainer);
 
 
-	
+
 	WgGizmoStack * pPanelStack = new WgGizmoStack();
 	pMainContainer->AddChild( pPanelStack, WG_NORTHWEST, hAnchorRight );
 
-	WgGizmo * pCheckeredBack = pDB->CloneGizmo( "bg_blue_gradient" );
+//	WgGizmo * pCheckeredBack = pDB->CloneGizmo( "bg_blue_gradient" );
+	WgGizmo * pCheckeredBack = pDB->CloneGizmo( "bg_checkered_grey" );
 	pMainContainer->AddChild( pCheckeredBack, hAnchorLeft, WG_SOUTHEAST );
 
-	
+
 	WgGizmo * pPanelBack = pDB->CloneGizmo( "plate" );
 	pPanelStack->AddChild( pPanelBack );
 
@@ -166,7 +172,7 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	WgGizmoFill * pFill3 = new WgGizmoFill();
 	pFill3->SetColor( WgColor(0,0,255) );
 	pMainContainer->AddChild( pFill3, WgRect(300,100,100,100) );
-	
+
 	WgGizmoText * pText = new WgGizmoText();
 	pText->SetTextProperties( WgBase::GetDefaultTextProp() );
 	pText->SetText( "TESTING" );

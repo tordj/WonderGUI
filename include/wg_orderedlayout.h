@@ -39,10 +39,6 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_RECTCHAIN_DOT_H
-#	include <wg_rectchain.h>
-#endif
-
 class WgOrderedLayout;
 
 
@@ -164,7 +160,6 @@ protected:
 	//
 
 	WgChain<WgOrderedHook>	m_hooks;
-	WgRectChain				m_dirt;
 
 	WgSortOrder		m_sortOrder;
 	WgGizmoSortFunc	m_pSortFunc;

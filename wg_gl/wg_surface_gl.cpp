@@ -157,7 +157,7 @@ void WgSurfaceGL::_setPixelFormat( GLint _format )
 
 	case GL_RGBA8:
 		m_pixelSize = 4;
-		pixeltype = WG_PIXEL_RGBA_8;
+		pixeltype = WG_PIXEL_ARGB_8;
 		break;
 
 	default:
@@ -427,7 +427,7 @@ WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgPixelType t
 		buffSize = 3*size.w*size.h;
 		break;
 
-	case WG_PIXEL_RGBA_8:
+	case WG_PIXEL_ARGB_8:
 		format = GL_RGBA8;
 		buffSize = 4*size.w*size.h;
 		break;

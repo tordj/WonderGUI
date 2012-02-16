@@ -165,8 +165,6 @@ protected:
 
 	};
 
-	Uint32			CalcBlockChars() const;
-
 	SeqType			m_type;
 	const void * 	m_pChar;
 	int				m_nbChars;		// Length of sequence in number of characters.

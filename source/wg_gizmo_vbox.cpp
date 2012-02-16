@@ -103,7 +103,7 @@ void WgGizmoVBox::_onNewSize( const WgSize& size )
 	if( size.w != m_size.w )
 	{
 		_adaptChildrenToWidth( size.w );
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -151,7 +151,7 @@ WgHook * WgGizmoVBox::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 			geo.h = 0;
 		else
 			geo.h = p->m_height;
-	}	
+	}
 	return p;
 }
 
@@ -178,10 +178,10 @@ WgHook * WgGizmoVBox::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	if( p )
 	{
 		int h = p->m_bHidden ? 0 : p->m_height;
-		
+
 		geo.h = h;
 		geo.y -= h;
-	}	
+	}
 	return p;
 }
 
@@ -228,7 +228,7 @@ void WgGizmoVBox::_onResizeRequested( WgOrderedHook * _pHook )
 	// Now we have up-to-date data for HeightForWidth() and DefaultSize() requests,
 	// we notify our parent that we might need a resize.
 
-	RequestResize();
+	_requestResize();
 
 	// Force a render if since we can't know for sure if RequestResize() got us one.
 
@@ -241,10 +241,10 @@ void  WgGizmoVBox::_onRenderRequested( WgOrderedHook * pHook )
 {
 	if( pHook->Hidden() )
 		return;
-	
+
 	WgRect rect = _hookGeo(pHook);
 	if( !rect.IsEmpty() )
-		RequestRender(rect);
+		_requestRender(rect);
 }
 
 void  WgGizmoVBox::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect )
@@ -256,7 +256,7 @@ void  WgGizmoVBox::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect
 	WgRect clippedRect( hookGeo, rect + hookGeo.Pos() );
 
 	if( !clippedRect.IsEmpty() )
-		RequestRender(clippedRect);
+		_requestRender(clippedRect);
 }
 
 //____ _onGizmoAppeared() _____________________________________________________
@@ -293,7 +293,7 @@ void  WgGizmoVBox::_onGizmoAppeared( WgOrderedHook * pInserted )
 
 	// Request and handle possible resize.
 
-	RequestResize();
+	_requestResize();
 
 	// Request render on affected part.
 
@@ -329,14 +329,14 @@ void WgGizmoVBox::_onGizmoDisappeared( WgOrderedHook * pToBeRemoved )
 	_renderFromChildOnward(pHook);
 	m_size.h -= pHook->m_height;
 	pHook->m_height = 0;				// If gizmo is just being hidden it needs to have m_height set to 0.
-	RequestResize();
+	_requestResize();
 }
 
 //____ _onGizmosReordered() ___________________________________________________
 
 void  WgGizmoVBox::_onGizmosReordered()
 {
-	RequestRender();
+	_requestRender();
 }
 
 //____ _adaptChildrenToWidth() ________________________________________________
@@ -426,8 +426,8 @@ void  WgGizmoVBox::_refreshAllGizmos()
 {
 	_refreshDefaultSize();
 	_adaptChildrenToWidth( m_size.w );
-	RequestResize();
-	RequestRender();
+	_requestResize();
+	_requestRender();
 }
 
 //____ _renderFromChildOnward() _______________________________________________
@@ -436,7 +436,7 @@ void WgGizmoVBox::_renderFromChildOnward( WgOrderedHook * pHook )
 {
 	WgRect geo = _hookGeo(pHook);
 	geo.h = m_size.h - geo.y;
-	RequestRender( geo );
+	_requestRender( geo );
 }
 
 //____ _newHook() _____________________________________________________________

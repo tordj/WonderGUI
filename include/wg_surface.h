@@ -41,11 +41,6 @@
 #	include <wg_color.h>
 #endif
 
-
-#ifndef WG_RECTCHAIN_DOT_H
-#	include <wg_rectchain.h>
-#endif
-
 #ifndef WG_BLOCKSET_DOT_H
 #	include <wg_blockset.h>
 #endif
@@ -65,13 +60,7 @@ class WgSurface
 friend class WgGfx;
 
 public:
-
 	virtual ~WgSurface();
-
-	// Methods for keeping track of dirty rectangles
-
-	inline	void		ClearDirtyRects();
-	inline	void		AddDirtyRect( const WgRect& rect );
 
 	// Methods for reading dimensions and abilities.
 
@@ -161,7 +150,6 @@ protected:
 	WgPixelFormat		m_pixelFormat;
 	int					m_pitch;
 
-	WgRectChain 		m_dirtyRects;
 	WgAccessMode		m_accessMode;
 	Uint8 *				m_pPixels;			// Pointer at pixels when surface locked.
 	WgRect				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
@@ -175,25 +163,8 @@ protected:
 class WgSurfaceFactory
 {
 public:
-	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 ) const = 0;
+	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const = 0;
 };
-
-
-
-
-//____ WgSurface::ClearDirtyRects() ____________________________________________
-
-inline void WgSurface::ClearDirtyRects()
-{
-	m_dirtyRects.Clear();
-}
-
-//____ WgSurface::AddDirtyRect() _______________________________________________
-
-inline void WgSurface::AddDirtyRect( const WgRect& rect )
-{
-	m_dirtyRects.Add( rect );
-}
 
 
 //____ WgSurface::Pitch() _______________________________________________

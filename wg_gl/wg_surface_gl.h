@@ -82,7 +82,7 @@ private:
 class WgSurfaceFactoryGL : public WgSurfaceFactory
 {
 public:
-	WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 ) const;
+	WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
 };
 
 

@@ -66,7 +66,7 @@ void WgGizmoFill::SetColor( const WgColor& col )
 	else
 		m_bOpaque = false;
 
-	RequestRender();
+	_requestRender();
 }
 
 void WgGizmoFill::SetColor( const WgColor& enabled, const WgColor& disabled )
@@ -78,7 +78,7 @@ void WgGizmoFill::SetColor( const WgColor& enabled, const WgColor& disabled )
 
 	m_colEnabled	= enabled;
 	m_colDisabled	= disabled;
-	RequestRender();
+	_requestRender();
 }
 
 //____ DefaultSize() __________________________________________________________
@@ -130,7 +130,7 @@ void WgGizmoFill::_onEnable()
 		else
 			m_bOpaque = false;
 
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -145,7 +145,7 @@ void WgGizmoFill::_onDisable()
 		else
 			m_bOpaque = false;
 
-		RequestRender();
+		_requestRender();
 	}
 }
 

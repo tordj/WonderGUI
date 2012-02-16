@@ -64,15 +64,15 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 {
 	if( m_bChecked != _state )
 	{
-#ifdef WG_TNG		
-		WgEventHandler * pHandler = EventHandler();		
-#endif		
+#ifdef WG_TNG
+		WgEventHandler * pHandler = EventHandler();
+#endif
 		if( _state )
 		{
 			WgGizmoParent * pGroup = _findRadioGroup();
 			if( pGroup )
 				_unselectRecursively( pGroup );
-			
+
 			// Set and emit
 
 			m_bChecked = true;
@@ -80,7 +80,7 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 #ifdef WG_TNG
 			if( pHandler )
 				pHandler->QueueEvent( new WgEvent::RadiobuttonSelect(this) );
-#endif				
+#endif
 		}
 		else
 		{
@@ -92,15 +92,15 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 #ifdef WG_TNG
 			if( pHandler )
 				pHandler->QueueEvent( new WgEvent::RadiobuttonUnselect(this) );
-#endif				
+#endif
 		}
 
 		Emit( Flipped(), m_bChecked );
 #ifdef WG_TNG
 		if( pHandler )
 			pHandler->QueueEvent( new WgEvent::RadiobuttonToggle(this, m_bChecked) );
-#endif			
-		RequestRender();
+#endif
+		_requestRender();
 	}
 	return true;
 }
@@ -114,12 +114,12 @@ WgGizmoParent * WgGizmoRadiobutton::_findRadioGroup()
 	while( pParent )
 	{
 		pRadioGroup = pParent;
-		
+
 		if( pParent->IsGizmo() )
 		{
 			if( pParent->CastToContainer()->IsRadioGroup() )
 				break;
-				
+
 			pParent = pParent->CastToGizmo()->ParentX();
 		}
 		else break;
@@ -133,7 +133,7 @@ WgGizmoParent * WgGizmoRadiobutton::_findRadioGroup()
 void WgGizmoRadiobutton::_unselectRecursively( WgGizmoParent * pParent )
 {
 	WgGizmo * pGizmo = pParent->FirstGizmo();
-	
+
 	while( pGizmo )
 	{
 		if( pGizmo->Type() == WgGizmoRadiobutton::GetMyType() )
@@ -151,14 +151,14 @@ void WgGizmoRadiobutton::_unselectRecursively( WgGizmoParent * pParent )
 				{
 					pHandler->QueueEvent( new WgEvent::RadiobuttonUnselect(pRB) );
 					pHandler->QueueEvent( new WgEvent::RadiobuttonToggle(pRB, false) );
-				}	
-#endif				
-				pRB->RequestRender();
+				}
+#endif
+				pRB->_requestRender();
 			}
 		}
 		else if( pGizmo->IsContainer() && !pGizmo->CastToContainer()->IsRadioGroup() )
 			_unselectRecursively( pGizmo->CastToContainer() );
-			
+
 		pGizmo = pGizmo->NextSibling();
 	}
 }

@@ -105,8 +105,8 @@ public:
 	void			selectAll();
 
 protected:
-	void			gotoPos( int line, int col );
-	void			UpdateLocation(int line, int col);
+	void			_gotoPos( int line, int col );
+	void			_updateLocation(int line, int col);
 
 	WgText *		m_pText;
 	bool			m_bHidden;

@@ -68,7 +68,7 @@ void WgGizmoPixmap::SetSource( const WgBlockSetPtr& pBlockSet )
 		else
 			m_bOpaque = false;
 
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -132,7 +132,7 @@ void WgGizmoPixmap::_onEnable()
 	if( m_pGfx )
 	{
 		if( !m_pGfx->SameBlock(WG_MODE_NORMAL, WG_MODE_DISABLED) )
-			RequestRender();
+			_requestRender();
 	}
 }
 
@@ -143,7 +143,7 @@ void WgGizmoPixmap::_onDisable()
 	if( m_pGfx )
 	{
 		if( !m_pGfx->SameBlock(WG_MODE_NORMAL, WG_MODE_DISABLED) )
-			RequestRender();
+			_requestRender();
 	}
 }
 

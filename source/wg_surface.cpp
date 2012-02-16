@@ -246,8 +246,8 @@ bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoo
 				pDst += dstPitch;
 			}
 		}
-		else if( (pSrcFormat->type == WG_PIXEL_RGBA_8 || pSrcFormat->type == WG_PIXEL_RGB_8) &&
-				 (pDstFormat->type == WG_PIXEL_RGBA_8 || pDstFormat->type == WG_PIXEL_RGB_8) )
+		else if( (pSrcFormat->type == WG_PIXEL_ARGB_8 || pSrcFormat->type == WG_PIXEL_RGB_8) &&
+				 (pDstFormat->type == WG_PIXEL_ARGB_8 || pDstFormat->type == WG_PIXEL_RGB_8) )
 		{
 			// We are just switching between RGBA_8 and RGB_8, just copy RGB components and skip alpha
 
@@ -276,8 +276,6 @@ bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoo
 		{
 			// We need to fully convert pixels when copying
 
-			//TODO: Optimize by making different loops for all 16 combinations of source and destination pixel-bits.
-
 			int		srcInc = pSrcFormat->bits/8;
 			int		dstInc = pDstFormat->bits/8;
 
@@ -289,50 +287,166 @@ bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoo
 			unsigned int	B_mask = (((0xFFFFFFFF & pSrcFormat->B_mask) >> pSrcFormat->B_shift) << pDstFormat->B_shift) & pDstFormat->B_mask;
 			unsigned int	A_mask = (((0xFFFFFFFF & pSrcFormat->A_mask) >> pSrcFormat->A_shift) << pDstFormat->A_shift) & pDstFormat->A_mask;
 
-			for( int y = 0 ; y < srcRect.h ; y++ )
+
+			switch( (pSrcFormat->bits << 8) + pDstFormat->bits )
 			{
-				for( int x = 0 ; x < srcRect.w ; x++ )
-				{
-					unsigned int srcpixel;
-
-					switch( pSrcFormat->bits )
+				case 0x1010:
+					for( int y = 0 ; y < srcRect.h ; y++ )
 					{
-						case 8:
-							srcpixel = pSrc[0];
-						break;
-						case 16:
-							srcpixel = * ((unsigned short*)pSrc);
-						case 24:
-							srcpixel = pSrc[0] + ((unsigned int)pSrc[1]) << 8 + ((unsigned int)pSrc[2]) << 16;
-						case 32:
-							srcpixel = * ((unsigned int*)pSrc);
+						for( int x = 0 ; x < srcRect.w ; x++ )
+						{
+							unsigned int srcpixel = * ((unsigned short*)pSrc); pSrc+=2;
+							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
+													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
+													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
+													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							* ((unsigned short*)pDst) = (unsigned short) dstpixel; pDst+=2;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
 					}
-
-					unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
-											(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
-											(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
-											(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
-
-					switch( pDstFormat->bits )
+				break;
+				case 0x1810:
+					for( int y = 0 ; y < srcRect.h ; y++ )
 					{
-						case 8:
-							pDst[0] = (unsigned char) dstpixel;
-						break;
-						case 16:
-							* ((unsigned short*)pDst) = (unsigned short) dstpixel;
-						case 24:
+						for( int x = 0 ; x < srcRect.w ; x++ )
+						{
+							unsigned int srcpixel = pSrc[0] + ((unsigned int)pSrc[1]) << 8 + ((unsigned int)pSrc[2]) << 16; pSrc+=3;
+							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
+													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
+													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
+													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							* ((unsigned short*)pDst) = (unsigned short) dstpixel; pDst+=2;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x2010:
+					for( int y = 0 ; y < srcRect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcRect.w ; x++ )
+						{
+							unsigned int srcpixel = * ((unsigned int*)pSrc); pSrc+=4;
+							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
+													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
+													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
+													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							* ((unsigned short*)pDst) = (unsigned short) dstpixel; pDst+=2;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x1018:
+					for( int y = 0 ; y < srcRect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcRect.w ; x++ )
+						{
+							unsigned int srcpixel = * ((unsigned short*)pSrc); pSrc+=2;
+							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
+													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
+													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
+													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
 							pDst[0] = (unsigned char) dstpixel;
 							pDst[1] = (unsigned char) (dstpixel >> 8);
 							pDst[2] = (unsigned char) (dstpixel >> 16);
-						case 32:
-							* ((unsigned int*)pDst) = dstpixel;
+							pDst+=3;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+						pDst+=3;
 					}
+				break;
+				case 0x1818:
+					for( int y = 0 ; y < srcRect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcRect.w ; x++ )
+						{
+							unsigned int srcpixel = pSrc[0] + ((unsigned int)pSrc[1]) << 8 + ((unsigned int)pSrc[2]) << 16; pSrc+=3;
+							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
+													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
+													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
+													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							pDst[0] = (unsigned char) dstpixel;
+							pDst[1] = (unsigned char) (dstpixel >> 8);
+							pDst[2] = (unsigned char) (dstpixel >> 16);
+							pDst+=3;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x2018:
+					for( int y = 0 ; y < srcRect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcRect.w ; x++ )
+						{
+							unsigned int srcpixel = * ((unsigned int*)pSrc); pSrc+=4;
+							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
+													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
+													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
+													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							pDst[0] = (unsigned char) dstpixel;
+							pDst[1] = (unsigned char) (dstpixel >> 8);
+							pDst[2] = (unsigned char) (dstpixel >> 16);
+							pDst+=3;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x1020:
+					for( int y = 0 ; y < srcRect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcRect.w ; x++ )
+						{
+							unsigned int srcpixel = * ((unsigned short*)pSrc); pSrc+=2;
+							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
+													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
+													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
+													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							* ((unsigned int*)pDst) = dstpixel; pDst+=4;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x1820:
+					for( int y = 0 ; y < srcRect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcRect.w ; x++ )
+						{
+							unsigned int srcpixel = pSrc[0] + ((unsigned int)pSrc[1]) << 8 + ((unsigned int)pSrc[2]) << 16; pSrc+=3;
+							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
+													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
+													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
+													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							* ((unsigned int*)pDst) = dstpixel; pDst+=4;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x2020:
+					for( int y = 0 ; y < srcRect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcRect.w ; x++ )
+						{
+							unsigned int srcpixel = * ((unsigned int*)pSrc); pSrc+=4;
+							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
+													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
+													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
+													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							* ((unsigned int*)pDst) = dstpixel; pDst+=4;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
 
-					pSrc += srcInc;
-					pDst += dstInc;
-				}
-				pSrc += srcLineInc;
-				pDst += dstLineInc;
+				default:
+				break;
 			}
 		}
 	}
@@ -360,7 +474,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 											const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 
-	WgBlockSet * p =new(g_pBlockSetMemPool->allocEntry())
+	WgBlockSet * p =new(g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, disabled, special, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
@@ -373,7 +487,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 											const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
 
-	WgBlockSet * p =new(g_pBlockSetMemPool->allocEntry())
+	WgBlockSet * p =new(g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, disabled, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
@@ -385,7 +499,7 @@ WgBlockSetPtr WgSurface::defineBlockSet(	const WgRect& normal, const WgRect& mar
 										const WgBorders& contentBorders, const WgColorSetPtr& pTextColors,
 										Uint32 flags ) const
 {
-	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
+	WgBlockSet * p = new( g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, marked, selected, normal, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
@@ -396,7 +510,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgRect& dis
 										const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
-	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
+	WgBlockSet * p = new( g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, normal, normal, disabled, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );
@@ -406,7 +520,7 @@ WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgRect& dis
 WgBlockSetPtr WgSurface::defineBlockSet( const WgRect& normal, const WgBorders& gfxBorders, const WgBorders& contentBorders,
 										 const WgColorSetPtr& pTextColors, Uint32 flags ) const
 {
-	WgBlockSet * p = new( g_pBlockSetMemPool->allocEntry())
+	WgBlockSet * p = new( g_pBlockSetMemPool->AllocEntry())
 							WgBlockSet(g_pBlockSetMemPool, this, normal, normal, normal, normal, normal, gfxBorders, contentBorders, pTextColors, flags );
 
 //	m_blockSets.push_back( p );

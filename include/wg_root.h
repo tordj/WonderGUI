@@ -112,19 +112,19 @@ protected:
 		void			_requestRender( const WgRect& rect );
 		void			_requestResize();
 
-		WgHook *	_prevHook() const;
-		WgHook *	_nextHook() const;
+		WgHook *		_prevHook() const;
+		WgHook *		_nextHook() const;
 		WgGizmoParent * _parent() const;
 
 		WgRoot *		m_pRoot;
 	};
 
 
-	WgHook*	_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
-	WgHook*	_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*				_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*				_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
 
-	bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );
-	bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );
+	bool 				_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );
+	bool 				_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );
 
 	WgPatches			m_dirtyPatches;
 

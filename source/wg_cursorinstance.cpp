@@ -115,7 +115,7 @@ void WgCursorInstance::gotoSoftLine( int line, const WgRect& container )
 
 
 	m_pText->posSoft2Hard( ln, col );
-	UpdateLocation(ln, col);
+	_updateLocation(ln, col);
 }
 
 
@@ -169,7 +169,7 @@ void WgCursorInstance::gotoColumn( int col )
 		}
 	}
 
-	UpdateLocation(line, col);
+	_updateLocation(line, col);
 
 	m_wantedOfsX = -1;
 }
@@ -212,7 +212,7 @@ void WgCursorInstance::gotoPrevWord()
 		pText--;
 	}
 
-	UpdateLocation(line, col);
+	_updateLocation(line, col);
 	m_wantedOfsX = -1;
 }
 
@@ -251,7 +251,7 @@ void WgCursorInstance::gotoBeginningOfWord()
 		pText--;
 	}
 
-	UpdateLocation(line, col);
+	_updateLocation(line, col);
 	m_wantedOfsX = -1;
 }
 
@@ -281,7 +281,7 @@ void WgCursorInstance::gotoNextWord()
 		pText++;
 	}
 
-	UpdateLocation(line, col);
+	_updateLocation(line, col);
 	m_wantedOfsX = -1;
 }
 
@@ -308,7 +308,7 @@ void WgCursorInstance::gotoEndOfWord()
 		pText++;
 	}
 
-	UpdateLocation(line, col);
+	_updateLocation(line, col);
 	m_wantedOfsX = -1;
 }
 
@@ -316,14 +316,14 @@ void WgCursorInstance::gotoEndOfWord()
 
 void WgCursorInstance::gotoHardPos( int line, int col )
 {
-	gotoPos( line, col );
+	_gotoPos( line, col );
 	m_wantedOfsX = -1;
 }
 
 
-//____ gotoPos() ______________________________________________________________
+//____ _gotoPos() ______________________________________________________________
 
-void WgCursorInstance::gotoPos( int line, int col )
+void WgCursorInstance::_gotoPos( int line, int col )
 {
 	int maxLine = m_pText->nbLines()-1;
 	if( line > maxLine )
@@ -333,7 +333,7 @@ void WgCursorInstance::gotoPos( int line, int col )
 	if( col > maxCol )
 		col = maxCol;
 
-	UpdateLocation(line, col);
+	_updateLocation(line, col);
 }
 
 //____ gotoSoftPos() __________________________________________________________
@@ -342,7 +342,7 @@ void WgCursorInstance::gotoSoftPos( int line, int col )
 {
 	m_pText->posSoft2Hard( line, col );
 
-	UpdateLocation(line, col);
+	_updateLocation(line, col);
 
 	m_wantedOfsX = -1;
 }
@@ -388,7 +388,7 @@ bool WgCursorInstance::putChar( Uint16 character )
 		column++;
 
 
-	UpdateLocation(line, column);
+	_updateLocation(line, column);
 
 	return ret==1?true:false;
 }
@@ -411,7 +411,7 @@ int	WgCursorInstance::putText( const WgCharSeq& seq )
 
 	nLines = m_pText->nbLines() - nLines;
 
-	UpdateLocation(m_line + nLines, m_column + nInserted);
+	_updateLocation(m_line + nLines, m_column + nInserted);
 
 	return nInserted;
 }
@@ -445,7 +445,7 @@ void WgCursorInstance::delNextWord()
 	gotoNextWord();
 	int ofs2 = m_pText->LineColToOffset( m_line, m_column );
 	m_pText->deleteText(ofs1, ofs2-ofs1);
-	UpdateLocation(line, column);
+	_updateLocation(line, column);
 }
 
 //____ delPrevChar() __________________________________________________________
@@ -470,7 +470,7 @@ bool WgCursorInstance::delPrevChar()
 
 
 	int ret = m_pText->deleteChar( m_pText->LineColToOffset( m_line, m_column ) -1 );
-	UpdateLocation(line, column);
+	_updateLocation(line, column);
 	return ret==1?true:false;
 }
 
@@ -559,7 +559,7 @@ void WgCursorInstance::goEOL()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void WgCursorInstance::UpdateLocation(int line, int column)
+void WgCursorInstance::_updateLocation(int line, int column)
 {
 	m_line = line;
 	m_column = column;
@@ -610,7 +610,7 @@ void WgCursorInstance::delSelection()
 	m_selStartLine = line;
 	m_selStartColumn = column;
 
-	UpdateLocation(line, column);
+	_updateLocation(line, column);
 	clearSelection();
 }
 

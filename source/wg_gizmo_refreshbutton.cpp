@@ -75,7 +75,7 @@ void WgGizmoRefreshButton::SetRefreshAnimation( WgGfxAnim * pAnimation )
 	m_pRefreshAnim		= pAnimation;
 
 	if( m_bRefreshing )
-		RequestRender();
+		_requestRender();
 }
 
 //_____________________________________________________________________________
@@ -83,7 +83,7 @@ void WgGizmoRefreshButton::SetRefreshMode( RefreshMode mode )
 {
 	m_refreshMode = mode;
 	if( m_bRefreshing )
-		RequestRender();
+		_requestRender();
 }
 
 //_____________________________________________________________________________
@@ -91,7 +91,7 @@ void WgGizmoRefreshButton::SetAnimTarget( AnimTarget target )
 {
 	m_animTarget = target;
 	if( m_bRefreshing )
-		RequestRender();
+		_requestRender();
 }
 
 //_____________________________________________________________________________
@@ -103,7 +103,7 @@ void WgGizmoRefreshButton::SetRefreshText( const WgCharSeq& text )
 	m_refreshText.setAlignment(m_text.alignment());
 
 	if( m_bRefreshing )
-		RequestRender();
+		_requestRender();
 }
 
 //_____________________________________________________________________________
@@ -112,7 +112,7 @@ void WgGizmoRefreshButton::SetRefreshTextProperties( const WgTextPropPtr& pProp 
 	m_refreshText.setProperties(pProp);
 
 	if( m_bRefreshing )
-		RequestRender();
+		_requestRender();
 }
 
 //_____________________________________________________________________________
@@ -134,7 +134,7 @@ void WgGizmoRefreshButton::StartRefresh()
 #ifdef WG_TNG
 		_startReceiveTicks();
 #endif
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -163,7 +163,7 @@ void WgGizmoRefreshButton::StopRefreshNow()
 #ifdef WG_TNG
 	_stopReceiveTicks();
 #endif
-	RequestRender();
+	_requestRender();
 }
 
 //_____________________________________________________________________________
@@ -180,7 +180,7 @@ void WgGizmoRefreshButton::SetRefreshProgress( float fraction )
 			WgGfxFrame * pNewFrame = m_pRefreshAnim->GetFrame( m_animTimer );
 
 			if( pOldFrame != pNewFrame )
-				RequestRender();
+				_requestRender();
 		}
 
 	}
@@ -215,7 +215,7 @@ void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandl
 				if( m_refreshMode != PROGRESS )
 				{
 					const WgEvent::Tick * pTick = static_cast<const WgEvent::Tick*>(pEvent);
-					
+
 					WgGfxFrame * pOldFrame = m_pRefreshAnim->GetFrame( m_animTimer );
 					m_animTimer += pTick->Millisec();
 					WgGfxFrame * pNewFrame = m_pRefreshAnim->GetFrame( m_animTimer );
@@ -223,7 +223,7 @@ void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandl
 					// RequestRender if animation has moved.
 
 					if( pOldFrame != pNewFrame )
-						RequestRender();
+						_requestRender();
 
 					// Check if animation has ended.
 
@@ -232,7 +232,7 @@ void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandl
 						m_bRefreshing = false;
 						m_bStopping = false;
 						_stopReceiveTicks();
-						RequestRender();
+						_requestRender();
 					}
 				}
 			}
@@ -248,17 +248,17 @@ void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandl
 
 			break;
 		}
-		
+
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		{
 			const WgEvent::MouseButtonRelease * pBtnRelease = static_cast<const WgEvent::MouseButtonRelease*>(pEvent);
-			
+
 			if( m_bAutoRefresh && m_bPressedInside[pBtnRelease->Button()-1] == true )
 				StartRefresh();
 
 			break;
 		}
-		
+
 		default:
 			break;
 	}
@@ -281,7 +281,7 @@ void WgGizmoRefreshButton::_onUpdate( const WgUpdateInfo& _updateInfo )
 			// RequestRender if animation has moved.
 
 			if( pOldFrame != pNewFrame )
-				RequestRender();
+				_requestRender();
 
 			// Check if animation has ended.
 
@@ -289,7 +289,7 @@ void WgGizmoRefreshButton::_onUpdate( const WgUpdateInfo& _updateInfo )
 			{
 				m_bRefreshing = false;
 				m_bStopping = false;
-				RequestRender();
+				_requestRender();
 			}
 		}
 	}
@@ -309,7 +309,7 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 	if( m_bRefreshing && m_pRefreshAnim && m_animTarget != ICON )
 	{
 		WgBlock animBlock = m_pRefreshAnim->GetBlock( m_animTimer );
-		
+
 		switch( m_animTarget )
 		{
 			case BUTTON_CENTERED:

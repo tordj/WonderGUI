@@ -103,7 +103,7 @@ bool WgGizmoDragbar::SetSlider( float _pos, float _size )
 
 	Emit( SliderPos(), m_sliderPos );
 
-	RequestRender();
+	_requestRender();
 	return	true;
 }
 
@@ -120,7 +120,7 @@ bool WgGizmoDragbar::SetSliderPos( float pos )
 
 	Emit( SliderPos(), m_sliderPos );
 
-	RequestRender();
+	_requestRender();
 	return	true;
 }
 
@@ -159,7 +159,7 @@ bool WgGizmoDragbar::SetSliderSize( float _size )
 
 	m_sliderSize = _size;
 
-	RequestRender();
+	_requestRender();
 	return	true;
 }
 
@@ -176,7 +176,7 @@ bool WgGizmoDragbar::SetSource( WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx,
 
 	_headerFooterChanged();
 	_updateMinSize();
-	RequestRender();
+	_requestRender();
 	return true;
 }
 
@@ -234,7 +234,7 @@ void WgGizmoDragbar::_headerFooterChanged()
 		_updateMinSize();
 	}
 
-	RequestRender();
+	_requestRender();
 }
 
 
@@ -324,7 +324,7 @@ void WgGizmoDragbar::_onEnable( void )
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_NORMAL;
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onDisable() ___________________________________________________
@@ -334,14 +334,14 @@ void WgGizmoDragbar::_onDisable( void )
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_DISABLED;
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onRefresh() _______________________________________________________
 
 void WgGizmoDragbar::_onRefresh( void )
 {
-	RequestRender();
+	_requestRender();
 }
 
 //____ DefaultSize() _____________________________________________________________
@@ -416,7 +416,7 @@ void WgGizmoDragbar::_updateMinSize()
 		m_minSize.w = minW;
 		m_minSize.h = minH;
 
-		RequestResize();
+		_requestResize();
 	}
 }
 
@@ -595,7 +595,7 @@ void WgGizmoDragbar::_unmarkReqRender()
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_NORMAL;
 
-	RequestRender(); 
+	_requestRender();
 }
 
 //____ _onEvent() ______________________________________________________________
@@ -782,7 +782,7 @@ void WgGizmoDragbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 				if( sliderPos != m_sliderPos )
 				{
 					m_sliderPos = sliderPos;
-					RequestRender();
+					_requestRender();
 					pHandler->QueueEvent( new WgEvent::DragbarMove(this,m_sliderPos,m_sliderSize) );
 					Emit( SliderPos(), m_sliderPos );
 				}
@@ -969,7 +969,7 @@ void WgGizmoDragbar::_onAction( WgInput::UserAction action, int button_key, cons
   					if( sliderPos != m_sliderPos )
   					{
   						m_sliderPos = sliderPos;
-						RequestRender();
+						_requestRender();
  						Emit( SliderPos(), m_sliderPos );
 					}
 				}

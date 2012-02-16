@@ -69,10 +69,10 @@ WgGizmoContainer * WgStackHook::_parent() const
 WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 {
 	WgRect base = parentGeo - m_borders;
-	
+
 	if( base.w <= 0 || base.h <= 0 )
 		return WgRect(0,0,0,0);
-	
+
 	switch( m_sizePolicy )
 	{
 		case DEFAULT:
@@ -126,7 +126,7 @@ WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 
 WgGizmoStack::WgGizmoStack()
 {
-	m_bSiblingsOverlap = true;	
+	m_bSiblingsOverlap = true;
 }
 
 //____ Destructor _____________________________________________________________
@@ -229,7 +229,7 @@ void WgGizmoStack::_onResizeRequested( WgOrderedHook * _pHook )
 	if( bestSize != m_bestSize )
 	{
 		m_bestSize = bestSize;
-		RequestResize();
+		_requestResize();
 	}
 }
 
@@ -265,7 +265,7 @@ void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect
 	// Make request render calls
 
 	for( const WgRect * pRect = patches.Begin() ; pRect < patches.End() ; pRect++ )
-		RequestRender( * pRect );
+		_requestRender( * pRect );
 }
 
 //____ _onGizmoAppeared() _____________________________________________________
@@ -296,7 +296,7 @@ void WgGizmoStack::_onGizmoAppeared( WgOrderedHook * pInserted )
 	}
 
 	if( bRequestResize )
-		RequestResize();
+		_requestResize();
 
 	// Adapt inserted Gizmo to our size
 
@@ -348,14 +348,14 @@ void WgGizmoStack::_onGizmoDisappeared( WgOrderedHook * pToBeRemoved )
 	//
 
 	if( bRequestResize )
-		RequestResize();
+		_requestResize();
 }
 
 //____ _onGizmosReordered() ___________________________________________________
 
 void WgGizmoStack::_onGizmosReordered()
 {
-	RequestRender();
+	_requestRender();
 }
 
 //____ _refreshAllGizmos() ____________________________________________________
@@ -364,8 +364,8 @@ void WgGizmoStack::_refreshAllGizmos()
 {
 	_refreshDefaultSize();
 	_adaptChildrenToSize();
-	RequestResize();
-	RequestRender();
+	_requestResize();
+	_requestRender();
 }
 
 //____ _newHook() _____________________________________________________________

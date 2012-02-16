@@ -11,14 +11,14 @@ public:
 	WgMemPool( Uint32 entriesPerBlock, Uint32 entrySize );
 	virtual ~WgMemPool();
 
-	void *	allocEntry();
-	void	freeEntry( void * pEntry );
+	void *	AllocEntry();
+	void	FreeEntry( void * pEntry );
 
 private:
 
 	class Block;
 
-	Block *	addBlock();
+	Block *	_addBlock();
 
 
 

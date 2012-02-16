@@ -225,10 +225,10 @@ void WgTableHook::_requestRender()
 {
 	if( m_bHidden )
 		return;
-	
+
 	WgGizmoTable* pTable = Row()->Table();
 	if( pTable )
-		pTable->RequestRender( Geo() );
+		pTable->_requestRender( Geo() );
 }
 
 void WgTableHook::_requestRender( const WgRect& rect )
@@ -238,7 +238,7 @@ void WgTableHook::_requestRender( const WgRect& rect )
 
 	WgGizmoTable* pTable = Row()->Table();
 	if( pTable )
-		pTable->RequestRender( rect + Pos() );
+		pTable->_requestRender( rect + Pos() );
 }
 
 void WgTableHook::_requestResize()
@@ -329,7 +329,7 @@ void WgTableColumn2::SetWidth( int pixels )
 		if( m_bVisible && m_pTable )
 		{
 			m_pTable->_setContentSize( WgSize(m_pTable->m_contentSize.w + widthdiff, m_pTable->m_contentSize.h) );
-			m_pTable->RequestRender();
+			m_pTable->_requestRender();
 			m_pTable->_updateColumnWidths();
 		}
 	}
@@ -345,7 +345,7 @@ void WgTableColumn2::Hide()
 		if( m_pTable )
 		{
 			m_pTable->_setContentSize( WgSize( m_pTable->m_contentSize.w - m_realWidth, m_pTable->m_contentSize.h) );
-			m_pTable->RequestRender();
+			m_pTable->_requestRender();
 			m_pTable->_updateColumnWidths();
 		}
 	}
@@ -360,7 +360,7 @@ void WgTableColumn2::Show()
 		if( m_pTable )
 		{
 			m_pTable->_setContentSize( WgSize(m_pTable->m_contentSize.w + m_realWidth, m_pTable->m_contentSize.h) );
-			m_pTable->RequestRender();
+			m_pTable->_requestRender();
 			m_pTable->_updateColumnWidths();
 		}
 	}
@@ -372,7 +372,7 @@ void WgTableColumn2::Enable()
 	{
 		m_bEnabled = true;
 		if( m_bVisible && m_pTable )
-			m_pTable->RequestRender();
+			m_pTable->_requestRender();
 	}
 }
 
@@ -382,7 +382,7 @@ void WgTableColumn2::Disable()
 	{
 		m_bEnabled = false;
 		if( m_bVisible && m_pTable )
-			m_pTable->RequestRender();
+			m_pTable->_requestRender();
 	}
 }
 
@@ -411,7 +411,7 @@ WgText* WgTableColumn2::_getTextObj()
 void WgTableColumn2::_textModified()
 {
 	if( m_bVisible && m_pTable )
-		m_pTable->RequestRender();
+		m_pTable->_requestRender();
 }
 
 
@@ -710,7 +710,7 @@ bool WgGizmoTable::SetHeaderSource( const WgBlockSetPtr& pHeader )
 	m_pHeaderGfx		= pHeader;
 
 	if( m_bShowHeader )
-		RequestRender();
+		_requestRender();
 
 	return true;
 }
@@ -723,7 +723,7 @@ void WgGizmoTable::SetArrowSource( const WgBlockSetPtr& pAscend, const WgBlockSe
 	m_pDescendGfx	= pDescend;
 
 	if( m_bShowHeader )
-		RequestRender();
+		_requestRender();
 }
 
 //____ SetArrowPos() __________________________________________________________
@@ -735,7 +735,7 @@ void WgGizmoTable::SetArrowPos( const WgOrigo& origo, int xOfs, int yOfs )
 	m_sortMarkerOfs.y	= yOfs;
 
 	if( m_bShowHeader )
-		RequestRender();
+		_requestRender();
 }
 
 //____ SetArrowPos() __________________________________________________________
@@ -746,7 +746,7 @@ void WgGizmoTable::SetArrowPos( int xOfs, int yOfs )
 	m_sortMarkerOfs.y	= yOfs;
 
 	if( m_bShowHeader )
-		RequestRender();
+		_requestRender();
 }
 
 //____ SetArrowOrigo() __________________________________________________________
@@ -756,7 +756,7 @@ void WgGizmoTable::SetArrowOrigo( WgOrigo origo )
 	m_sortMarkerOrigo 	= origo;
 
 	if( m_bShowHeader )
-		RequestRender();
+		_requestRender();
 }
 
 //____ SetCellPadding() _______________________________________________________
@@ -767,7 +767,7 @@ void WgGizmoTable::SetCellPadding( WgBorders padding )
 
 	//TODO: This affects geometry of gizmos in cells!!!
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ SetEmptyRowHeight() ____________________________________________________
@@ -777,7 +777,7 @@ void WgGizmoTable::SetEmptyRowHeight( int height )
 	if( height != m_emptyRowHeight )
 	{
 		m_emptyRowHeight = height;
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -796,7 +796,7 @@ void WgGizmoTable::SetRowColors( WgColor * pRowColors, int nRowColors )
 		memcpy( m_pRowColors, pRowColors, sizeof( WgColor ) * m_nRowColors );
 	}
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ DeleteRowColors() ______________________________________________________
@@ -826,7 +826,7 @@ void WgGizmoTable::SetRowBlocks( WgBlockSetPtr * pRowBlocks, int nRowBlocks )
 			m_pRowBlocks[i] = pRowBlocks[i];
 	}
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ DeleteRowBlocks() ______________________________________________________
@@ -888,7 +888,7 @@ int WgGizmoTable::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrigo& hea
 
 	_setContentSize( WgSize(m_contentSize.w + pixelwidth, m_contentSize.h) );
 	_updateColumnWidths();
-	RequestRender();
+	_requestRender();
 	return m_nColumns;
 }
 
@@ -1252,8 +1252,8 @@ void WgGizmoTable::_connectRow( WgTableRow2* pRow, WgTableRow2* pPlaceBefore )
 
 	m_contentSize.h += pRow->Height();
 
-	RequestRender();			//TODO: Just request render on this row and following.
-	RequestResize();
+	_requestRender();			//TODO: Just request render on this row and following.
+	_requestResize();
 }
 
 //____ _disconnectRow() ___________________________________________________________
@@ -1266,8 +1266,8 @@ void WgGizmoTable::_disconnectRow( WgTableRow2* pRow )
 
 	m_contentSize.h -= pRow->Height();
 
-	RequestRender();			//TODO: Just request render on this row and following.
-	RequestResize();
+	_requestRender();			//TODO: Just request render on this row and following.
+	_requestResize();
 }
 
 
@@ -1311,7 +1311,7 @@ void WgGizmoTable::SetSelectedRowColor( WgColor c )
 	if( c != m_selectedRowColor )
 	{
 		m_selectedRowColor = c;
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -1322,7 +1322,7 @@ void WgGizmoTable::SetSelectedRowBg( WgBlockSetPtr pBlock )
 	if( pBlock != m_pSelectedRowGfx )
 	{
 		m_pSelectedRowGfx = pBlock;
-		RequestRender();							//TODO: More optimized handling...
+		_requestRender();							//TODO: More optimized handling...
 	}
 }
 
@@ -1405,7 +1405,7 @@ void WgGizmoTable::DeleteAllRows()
 	m_nRows = 0;
 
 	_updateContentSize();
-	RequestRender();
+	_requestRender();
 	return;
 }
 
@@ -1484,7 +1484,7 @@ bool WgGizmoTable::SortRows( int column, bool bAscend, int prio )
 		pRow = pNext;
 	}
 
-	RequestRender();
+	_requestRender();
 	return true;
 }
 
@@ -1538,7 +1538,7 @@ int WgGizmoTable::CompareRows( WgTableRow2* pRow1, WgTableRow2* pRow2 ) const
 bool WgGizmoTable::SetHeaderTextProp( const WgTextPropPtr& pProp )
 {
 	m_pHeaderProps = pProp;
-	RequestRender();
+	_requestRender();
 	return true;
 }
 
@@ -1562,7 +1562,7 @@ void WgGizmoTable::ShowHeader( bool bShow )
 		}
 
 		_setContentSize( WgSize( m_contentSize.w, newHeight ) );
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -1573,7 +1573,7 @@ void WgGizmoTable::_setContentSize( const WgSize& size )
 	if( m_contentSize != size )
 	{
 		m_contentSize = size;
-		RequestResize();
+		_requestResize();
 	}
 }
 
@@ -1620,7 +1620,7 @@ void WgGizmoTable::_rowModified( WgTableRow2 * pRow, int widthDiff , int heightD
 	//TODO: More specialized and optimized handling.
 
 	_updateContentSize();
-	RequestRender();
+	_requestRender();
 }
 
 //____ _rowMarkChanged() ________________________________________________
@@ -1678,7 +1678,7 @@ void WgGizmoTable::_onNewSize( const WgSize& newSize )
 	if( bWidthChanged )
 		_updateColumnWidths();
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ HeightForWidth() _______________________________________________________
@@ -1786,7 +1786,7 @@ void WgGizmoTable::SetAutoScaleHeaders(bool autoScaleHeaders)
 	if(m_bAutoScaleHeader != autoScaleHeaders)
 	{
 		m_bAutoScaleHeader = autoScaleHeaders;
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -2285,7 +2285,7 @@ void WgGizmoTable::_onAction( WgInput::UserAction _action, int _button_key, cons
 			if( m_pMarkedHeader != col )
 			{
 				m_pMarkedHeader = col;
-				RequestRender();
+				_requestRender();
 			}
 
 
@@ -2301,7 +2301,7 @@ void WgGizmoTable::_onAction( WgInput::UserAction _action, int _button_key, cons
 			if( m_pMarkedHeader != NULL )
 			{
 				m_pMarkedHeader = NULL;
-				RequestRender();
+				_requestRender();
 			}
 			_updateMarkedRowColumn( -1, -1 );
 
@@ -2357,7 +2357,7 @@ void WgGizmoTable::_updateMarkedRowColumn( int row, int column )
 WgHook* WgGizmoTable::_firstHookWithGeo( WgRect& geo ) const
 {
 	//TODO: Implement!!!
-	
+
 	return 0;
 }
 
@@ -2366,7 +2366,7 @@ WgHook* WgGizmoTable::_firstHookWithGeo( WgRect& geo ) const
 WgHook* WgGizmoTable::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	//TODO: Implement!!!
-	
+
 	return 0;
 }
 
@@ -2375,7 +2375,7 @@ WgHook* WgGizmoTable::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 WgHook* WgGizmoTable::_lastHookWithGeo( WgRect& geo ) const
 {
 	//TODO: Implement!!!
-	
+
 	return 0;
 }
 
@@ -2384,7 +2384,7 @@ WgHook* WgGizmoTable::_lastHookWithGeo( WgRect& geo ) const
 WgHook* WgGizmoTable::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	//TODO: Implement!!!
-	
+
 	return 0;
 }
 

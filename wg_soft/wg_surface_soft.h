@@ -36,7 +36,7 @@ class WgSurfaceSoft : public WgSurface
 	friend class WgGfxDeviceSoft;
 
  public:
-	WgSurfaceSoft( WgSize size, WgPixelType type = WG_PIXEL_RGBA_8 );
+	WgSurfaceSoft( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 );
 	WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch );
 	WgSurfaceSoft( const WgSurfaceSoft * pOther );
 	~WgSurfaceSoft();
@@ -74,7 +74,7 @@ protected:
 class WgSurfaceFactorySoft : public WgSurfaceFactory
 {
 public:
-	WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_RGBA_8 ) const;
+	WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
 };
 
 

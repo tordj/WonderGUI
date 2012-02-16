@@ -53,7 +53,7 @@ public:
 	virtual const char * Type() const;
 	static const char * GetMyType();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoText(); };
-	
+
 
 
 	//____ Methods __________________________________________
@@ -82,10 +82,10 @@ public:
 	WgSize	DefaultSize() const;
 	bool	IsAutoEllipsisDefault() const { return true; };
 
-protected:
-
 	bool	IsEditable() const { return m_text.IsEditable(); }
 	bool	IsSelectable() const { return m_text.IsSelectable(); }
+
+protected:
 
 	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
@@ -95,7 +95,7 @@ protected:
 	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 #ifdef WG_TNG
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-#endif	
+#endif
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onEnable();
 	void	_onDisable();
@@ -104,7 +104,7 @@ protected:
 
 private:
 	void	_textModified();
-	bool	InsertCharAtCursorInternal( Uint16 c );
+	bool	_insertCharAtCursor( Uint16 c );
 
 
 	WgText				m_text;

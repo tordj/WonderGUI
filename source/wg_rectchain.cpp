@@ -99,7 +99,7 @@ void WgRectChain::Clip( const WgRect * _pClip )
 					pTmp->pPrev->pNext = pRect;
 				else
 					pRectList = pRect;
-				g_pMemPool->freeEntry(pTmp);
+				g_pMemPool->FreeEntry(pTmp);
 			}
 			else
 				pRect = pRect->pNext;
@@ -117,7 +117,7 @@ void WgRectChain::Add( const WgRect& rect )
 	if( rect.w == 0 || rect.h == 0 )
 		return;
 
-	WgRectLink * pRect = (WgRectLink*) g_pMemPool->allocEntry();
+	WgRectLink * pRect = (WgRectLink*) g_pMemPool->AllocEntry();
 
 	*((WgRect*) pRect) = rect;
 	Addrect( pRect, pRectList );
@@ -128,7 +128,7 @@ void WgRectChain::Add( const int _x, const int _y, const int _w, const int _h )
 	if( _w == 0 || _h == 0 )
 		return;
 
-	WgRectLink * pRect = (WgRectLink*) g_pMemPool->allocEntry();
+	WgRectLink * pRect = (WgRectLink*) g_pMemPool->AllocEntry();
 	pRect->x = _x;
 	pRect->y = _y;
 	pRect->w = _w;
@@ -153,7 +153,7 @@ void	WgRectChain::Addrect( WgRectLink * pRect, WgRectLink * pOffset )
 		{
 			if( pReturn == pRect )
 			{        																				// Totally covered by pOffset.
-				g_pMemPool->freeEntry(pRect);
+				g_pMemPool->FreeEntry(pRect);
 				return;
 			}
 
@@ -168,7 +168,7 @@ void	WgRectChain::Addrect( WgRectLink * pRect, WgRectLink * pOffset )
 					pOffset->pNext->pPrev = pOffset->pPrev;
 
 				WgRectLink * pOffset2 = pOffset->pNext;
-				g_pMemPool->freeEntry(pOffset);
+				g_pMemPool->FreeEntry(pOffset);
 				pOffset = pOffset2;
 			}
 			else
@@ -281,7 +281,7 @@ void WgRectChain::Sub( const int _x, const int _y, const int _w, const int _h )
 
 				if( pRect->y < _y )													// Top part
 				{
-					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->AllocEntry();
 
 					pNew->x = pRect->x;
 					pNew->y = pRect->y;
@@ -296,7 +296,7 @@ void WgRectChain::Sub( const int _x, const int _y, const int _w, const int _h )
 
 				if( pRect->x < _x )													// Left part
 				{
-					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->AllocEntry();
 
 					pNew->x = pRect->x;
 					pNew->w = _x - pRect->x;
@@ -319,7 +319,7 @@ void WgRectChain::Sub( const int _x, const int _y, const int _w, const int _h )
 
 				if( pRect->x + pRect->w > _x + _w )					// Right part
 				{
-					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->AllocEntry();
 
 					pNew->x = _x + _w;
 					pNew->w = pRect->x + pRect->w - ( _x + _w );
@@ -342,7 +342,7 @@ void WgRectChain::Sub( const int _x, const int _y, const int _w, const int _h )
 
 				if( pRect->y + pRect->h > _y + _h )					// Bottom part
 				{
-					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->AllocEntry();
 
 					pNew->x = pRect->x;
 					pNew->y = _y + _h;
@@ -368,7 +368,7 @@ void WgRectChain::Sub( const int _x, const int _y, const int _w, const int _h )
 				pTmp->pPrev->pNext = pRect;
 			else
 				pRectList = pRect;
-			g_pMemPool->freeEntry(pTmp);
+			g_pMemPool->FreeEntry(pTmp);
 		}
 		else
 		{
@@ -404,7 +404,7 @@ void WgRectChain::ClipTransfer( WgRectChain * _pDest, const WgRect * _pClip )
 
 				if( pRect->y < _pClip->y )													// Top part
 				{
-					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->AllocEntry();
 
 					pNew->x = pRect->x;
 					pNew->y = pRect->y;
@@ -419,7 +419,7 @@ void WgRectChain::ClipTransfer( WgRectChain * _pDest, const WgRect * _pClip )
 
 				if( pRect->x < _pClip->x )													// Left part
 				{
-					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->AllocEntry();
 
 					pNew->x = pRect->x;
 					pNew->w = _pClip->x - pRect->x;
@@ -442,7 +442,7 @@ void WgRectChain::ClipTransfer( WgRectChain * _pDest, const WgRect * _pClip )
 
 				if( pRect->x + pRect->w > _pClip->x + _pClip->w )					// Right part
 				{
-					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->AllocEntry();
 
 					pNew->x = _pClip->x + _pClip->w;
 					pNew->w = pRect->x + pRect->w - ( _pClip->x + _pClip->w );
@@ -465,7 +465,7 @@ void WgRectChain::ClipTransfer( WgRectChain * _pDest, const WgRect * _pClip )
 
 				if( pRect->y + pRect->h > _pClip->y + _pClip->h )					// Bottom part
 				{
-					WgRectLink * pNew = (WgRectLink*) g_pMemPool->allocEntry();
+					WgRectLink * pNew = (WgRectLink*) g_pMemPool->AllocEntry();
 
 					pNew->x = pRect->x;
 					pNew->y = _pClip->y + _pClip->h;
@@ -518,7 +518,7 @@ void WgRectChain::Clear( void )
 	while( pRect != 0 )
 	{
 		pRect2 = pRect->pNext;
-		g_pMemPool->freeEntry(pRect);
+		g_pMemPool->FreeEntry(pRect);
 		pRect = pRect2;
 	}
 
@@ -603,7 +603,7 @@ WgRectLink * WgRectChain::ClipRectangles( WgRectLink * p1, WgRectLink * p2 )
 
 		if( p1->y < p2->y )
 		{
-			p3 = (WgRectLink*) g_pMemPool->allocEntry();
+			p3 = (WgRectLink*) g_pMemPool->AllocEntry();
 			p3->x = p1->x;
 			p3->w = p1->w;
 			p3->y = p1->y;
@@ -619,7 +619,7 @@ WgRectLink * WgRectChain::ClipRectangles( WgRectLink * p1, WgRectLink * p2 )
 		{
 			if( p3 == 0 )
 			{
-				p3 = (WgRectLink*) g_pMemPool->allocEntry();
+				p3 = (WgRectLink*) g_pMemPool->AllocEntry();
 				p3->x = p1->x;
 				p3->y = p1->y;
 				p3->w = p2->x - p1->x;
@@ -639,7 +639,7 @@ WgRectLink * WgRectChain::ClipRectangles( WgRectLink * p1, WgRectLink * p2 )
 		{
 			if( p3 == 0 )
 			{
-				p3 = (WgRectLink*) g_pMemPool->allocEntry();
+				p3 = (WgRectLink*) g_pMemPool->AllocEntry();
 				p3->x = p2->x + p2->w;
 				p3->y = p1->y;
 				p3->w = p1->x + p1->w - (p2->x + p2->w);
@@ -671,7 +671,7 @@ WgRectLink * WgRectChain::ClipRectangles( WgRectLink * p1, WgRectLink * p2 )
 		p1->y = p3->y;
 		p1->w = p3->w;
 		p1->h = p3->h;
-		g_pMemPool->freeEntry(p3);
+		g_pMemPool->FreeEntry(p3);
 		return	0;
 }
 
@@ -679,5 +679,5 @@ WgRectLink * WgRectChain::ClipRectangles( WgRectLink * p1, WgRectLink * p2 )
 
 void WgRectChain::Destroy( WgRectLink * pRect )
 {
-	g_pMemPool->freeEntry(pRect);
+	g_pMemPool->FreeEntry(pRect);
 }

@@ -76,7 +76,7 @@ void WgGizmoEditvalue::SetTextColor( WgColor col )
 {
 	m_text.setColor( col );
 	_regenText();			// Is this necessary?
-	RequestRender();
+	_requestRender();
 }
 
 WgColor WgGizmoEditvalue::GetTextColor() const
@@ -92,7 +92,7 @@ bool WgGizmoEditvalue::SetTextProp( const WgTextPropPtr& _pProp )
 	{
 		m_text.setProperties(_pProp);
 		_regenText();		// Is this necessary?
-		RequestRender();
+		_requestRender();
 	}
 
 	return true;
@@ -111,7 +111,7 @@ void WgGizmoEditvalue::SetFormat( const WgValueFormat& format )
 	m_format		= format;
 	m_useFormat		= format;
 	_regenText();
-	RequestRender();
+	_requestRender();
 }
 
 //____ SetTextAlignment() _____________________________________________________
@@ -121,7 +121,7 @@ void WgGizmoEditvalue::SetTextAlignment( const WgOrigo& origo )
 	if( m_text.alignment() != origo )
 	{
 		m_text.setAlignment(origo);
-		RequestRender();
+		_requestRender();
 	}
 }
 
@@ -192,7 +192,7 @@ void WgGizmoEditvalue::_valueModified()
 		m_useFormat.decimals = 0;
 	}
 	_regenText();
-	RequestRender();
+	_requestRender();
 }
 
 //____ _rangeModified() ________________________________________________________
@@ -210,7 +210,7 @@ void WgGizmoEditvalue::_onRefresh( void )
 	if( m_text.getFont() != 0 )
 	{
 		_regenText();
-		RequestRender();
+		_requestRender();
 	}
 
 }
@@ -222,7 +222,7 @@ void WgGizmoEditvalue::_onUpdate( const WgUpdateInfo& _updateInfo )
 	if( m_text.GetCursor() )
 	{
 		m_text.GetCursor()->incTime( _updateInfo.msDiff );
-		RequestRender();					//TODO: Should only render the cursor!
+		_requestRender();					//TODO: Should only render the cursor!
 	}
 }
 
@@ -297,7 +297,7 @@ bool WgGizmoEditvalue::_parseValueFromInput( int64_t * wpResult )
 					bModified = true;
 					break;
 				}
-				
+
 				int toAdd = glyph - '0';
 
 				if( value <= LLONG_MAX-toAdd )
@@ -347,7 +347,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 	if( action == WgInput::BUTTON_PRESS && button_key == 1 )
 	{
 		if( !m_bFocused )
-		{		
+		{
 			GrabFocus();
 			m_bSelectAllOnRelease = true;
 		}
@@ -360,7 +360,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
 		}
 		else
-		{		
+		{
 			m_text.setSelectionMode(false);
 			m_text.clearSelection();
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
@@ -637,7 +637,7 @@ void WgGizmoEditvalue::_onCloneContent( const WgGizmo * _pOrg )
 void WgGizmoEditvalue::_onEnable( void )
 {
 	m_text.setMode(WG_MODE_NORMAL);
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onDisable() ____________________________________________________________
@@ -645,7 +645,7 @@ void WgGizmoEditvalue::_onEnable( void )
 void WgGizmoEditvalue::_onDisable( void )
 {
 	m_text.setMode(WG_MODE_DISABLED);
-	RequestRender();
+	_requestRender();
 }
 
 
@@ -666,7 +666,7 @@ void WgGizmoEditvalue::_onGotInputFocus()
 
 	m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onLostInputFocus() _____________________________________________________
@@ -678,7 +678,7 @@ void WgGizmoEditvalue::_onLostInputFocus()
 	m_useFormat = m_format;
 	_regenText();
 
-	RequestRender();
+	_requestRender();
 }
 
 

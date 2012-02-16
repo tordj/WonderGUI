@@ -55,10 +55,6 @@
 #	include <wg_resdb.h>
 #endif
 
-#ifndef WG_RECTCHAIN_DOT_H
-#	include <wg_rectchain.h>
-#endif
-
 #ifndef WG_EMITTER_DOT_H
 #	include <wg_emitter.h>
 #endif
@@ -258,6 +254,10 @@
 
 #ifndef WG_GIZMO_REFRESHBUTTON_DOT_H
 #	include <wg_gizmo_refreshbutton.h>
+#endif
+
+#ifndef WG_GIZMO_SHADER_DOT_H
+#	include <wg_gizmo_shader.h>
 #endif
 
 #ifndef WG_GIZMO_STACK_DOT_H

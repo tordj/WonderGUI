@@ -994,13 +994,13 @@ bool WgGizmoFlexGeo::DeleteAllChildren()
 			dirt.Add( pHook->m_realGeo );
 		WgFlexHook * pDelete = pHook;
 		pHook = pHook->Next();
-		delete pDelete; 
+		delete pDelete;
 	}
 
 	// RequestRender on all dirty patches
 
-	for( const WgRect * pRect = dirt.Begin() ; pRect != dirt.End() ; pRect++ ) 
-		RequestRender( * pRect );
+	for( const WgRect * pRect = dirt.Begin() ; pRect != dirt.End() ; pRect++ )
+		_requestRender( * pRect );
 
 	return true;
 }
@@ -1170,7 +1170,7 @@ const WgFlexAnchor * WgGizmoFlexGeo::Anchor( int index )
 WgSize WgGizmoFlexGeo::DefaultSize() const
 {
 	//TODO: FIX THIS! DEFAULT SIZE SHOULD BE WHAT NEEDED TO FIT ALL IN!
-	
+
 	return WgSize(0,0);		// No recommendation.
 }
 
@@ -1200,7 +1200,7 @@ void WgGizmoFlexGeo::_onRequestRender( const WgRect& rect, const WgFlexHook * pH
 	// Make request render calls
 
 	for( const WgRect * pRect = patches.Begin() ; pRect < patches.End() ; pRect++ )
-		RequestRender( * pRect );
+		_requestRender( * pRect );
 }
 
 //____ _onCloneContent() _______________________________________________________
@@ -1247,7 +1247,7 @@ WgHook * WgGizmoFlexGeo::_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) co
 	WgFlexHook * p = ((WgFlexHook*)pHook)->_next();
 	if( p )
 		writeGeo = p->m_realGeo;
-	
+
 	return p;
 }
 
@@ -1269,7 +1269,7 @@ WgHook * WgGizmoFlexGeo::_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) co
 	WgFlexHook * p = ((WgFlexHook*)pHook)->_prev();
 	if( p )
 		writeGeo = p->m_realGeo;
-	
+
 	return p;
 }
 

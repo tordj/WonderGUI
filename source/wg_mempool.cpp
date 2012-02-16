@@ -18,15 +18,15 @@ WgMemPool::~WgMemPool()
 {
 }
 
-//____ allocEntry() ___________________________________________________________
+//____ AllocEntry() ___________________________________________________________
 
-void * WgMemPool::allocEntry()
+void * WgMemPool::AllocEntry()
 {
 	g_allocatedEver++;
 
 	Block * pBlock = m_blocks.First();
 	if(pBlock == 0)
-		pBlock = addBlock();
+		pBlock = _addBlock();
 
 	if( pBlock->nAllocEntries == pBlock->maxEntries )
 	{
@@ -35,7 +35,7 @@ void * WgMemPool::allocEntry()
 		pBlock = m_blocks.First();
 		if( pBlock->nAllocEntries == pBlock->maxEntries )
 		{
-			addBlock();						// We don't have any free entries left in any block.
+			_addBlock();					// We don't have any free entries left in any block.
 											// so we need to create a new one.
 			pBlock = m_blocks.First();
 		}
@@ -44,9 +44,9 @@ void * WgMemPool::allocEntry()
 	return pBlock->allocEntry();
 }
 
-//____ freeEntry() ____________________________________________________________
+//____ FreeEntry() ____________________________________________________________
 
-void WgMemPool::freeEntry( void * pEntry )
+void WgMemPool::FreeEntry( void * pEntry )
 {
 	if( pEntry == 0 )
 		return;
@@ -72,9 +72,9 @@ void WgMemPool::freeEntry( void * pEntry )
 		delete pBlock;
 }
 
-//____ addBlock() _____________________________________________________________
+//____ _addBlock() _____________________________________________________________
 
-WgMemPool::Block *WgMemPool::addBlock()
+WgMemPool::Block *WgMemPool::_addBlock()
 {
 	Block * pBlock = new Block( m_nEntriesPerBlock, m_entrySize );
 	m_blocks.PushFront( pBlock );

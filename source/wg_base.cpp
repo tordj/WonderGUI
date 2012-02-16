@@ -23,7 +23,11 @@
 
 
 #include <wg_base.h>
-#include <wg_rectchain.h>
+
+#ifdef WG_LEGACY
+#	include <wg_rectchain.h>
+#endif
+
 #include <wg_textpropmanager.h>
 #include <wg_texttool.h>
 
@@ -42,7 +46,7 @@ void WgBase::Init()
 {
 	assert( s_pData == 0 );
 	s_pData = new Data;
-	
+
 	s_pData->pDefaultTextLinkHandler = 0;
 	s_pData->pDefaultCursor = 0;
 	s_pData->pWeakPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
@@ -62,7 +66,10 @@ void WgBase::Init()
 #endif
 
 	WgTextTool::setDefaultBreakRules();
+
+#ifdef WG_LEGACY
 	WgRectChain::Init();
+#endif
 }
 
 //____ Exit() __________________________________________________________________
@@ -70,7 +77,7 @@ void WgBase::Init()
 void WgBase::Exit()
 {
 	assert( s_pData != 0 );
-	
+
 #ifdef WG_USE_FREETYPE
 
 	WgVectorGlyphs::SetSurfaceFactory(0);
@@ -79,8 +86,10 @@ void WgBase::Exit()
 	if( s_pData->bFreeTypeInitialized )
 		FT_Done_FreeType( s_pData->freeTypeLibrary );
 #endif
-	WgRectChain::Exit();
 
+#ifdef WG_LEGACY
+	WgRectChain::Exit();
+#endif
 	delete s_pData->pWeakPtrPool;
 	delete s_pData;
 	s_pData = 0;
@@ -91,7 +100,7 @@ void WgBase::Exit()
 WgWeakPtrHub * WgBase::AllocWeakPtrHub()
 {
 	assert( s_pData != 0 );
-	return (WgWeakPtrHub*) s_pData->pWeakPtrPool->allocEntry();
+	return (WgWeakPtrHub*) s_pData->pWeakPtrPool->AllocEntry();
 }
 
 //____ FreeWeakPtrHub() _______________________________________________________
@@ -99,7 +108,7 @@ WgWeakPtrHub * WgBase::AllocWeakPtrHub()
 void WgBase::FreeWeakPtrHub( WgWeakPtrHub * pHub )
 {
 	assert( s_pData != 0 );
-	s_pData->pWeakPtrPool->freeEntry( pHub );
+	s_pData->pWeakPtrPool->FreeEntry( pHub );
 }
 
 
@@ -145,7 +154,7 @@ const WgTextMgrPtr& WgBase::GetDefaultTextManager()
 
 void WgBase::SetDefaultTextProp( const WgTextPropPtr& pProp )
 {
-	assert( s_pData != 0 );	
+	assert( s_pData != 0 );
 	s_pData->pDefaultTextProp = pProp;
 }
 
@@ -261,7 +270,7 @@ void WgBase::ClearKeyMap()
 
 WgKey WgBase::TranslateKey( int native_keycode )
 {
-	assert( s_pData != 0 );	
+	assert( s_pData != 0 );
 	std::map<int,WgKey>::iterator it = s_pData->keycodeMap.find(native_keycode);
 	if( it != s_pData->keycodeMap.end() )
 		return  it->second;

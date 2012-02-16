@@ -55,7 +55,7 @@ WgGizmoView::WgGizmoView()
 	m_elements[XDRAG]._setParent(this);
 	m_elements[YDRAG]._setParent(this);
 
-	UpdateElementGeo( WgSize(256,256), WgSize(0,0) );
+	_updateElementGeo( WgSize(256,256), WgSize(0,0) );
 }
 
 //____ ~WgGizmoView() __________________________________________________
@@ -344,7 +344,7 @@ bool WgGizmoView::SetViewPixelOfs( int x, int y )
 		Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
 	}
 
-	RequestRender();
+	_requestRender();
 	return retVal;
 }
 
@@ -380,7 +380,7 @@ bool WgGizmoView::SetViewPixelOfsX( int x )
 	Emit( ViewPosSizeX(), ofsX, ViewLenX() );
 	Emit( ViewPosSizePixelX(), m_viewPixOfs.x, pixLenX );
 
-	RequestRender();
+	_requestRender();
 	return retVal;
 }
 
@@ -417,7 +417,7 @@ bool WgGizmoView::SetViewPixelOfsY( int y )
 	Emit( ViewPosSizeY(), ofsY, ViewLenY() );
 	Emit( ViewPosSizePixelY(), m_viewPixOfs.y, pixLenY );
 
-	RequestRender();
+	_requestRender();
 	return retVal;
 }
 
@@ -486,8 +486,8 @@ bool WgGizmoView::SetContent( WgGizmo * pContent )
 {
 	m_elements[WINDOW]._attachGizmo(pContent);
 
-	UpdateElementGeo( Size(), pContent->DefaultSize() );
-	RequestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
+	_updateElementGeo( Size(), pContent->DefaultSize() );
+	_requestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 
 }
@@ -518,9 +518,9 @@ bool WgGizmoView::SetScrollbarX( WgGizmoHDragbar* pScrollbar )
 		AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
 	}
 
-	UpdateElementGeo( Size(), m_contentSize );
+	_updateElementGeo( Size(), m_contentSize );
 	pScrollbar->SetSlider( ViewOfsX(), ViewLenX() );
-	RequestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
+	_requestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 }
 
@@ -552,9 +552,9 @@ bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
 		AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
 	}
 
-	UpdateElementGeo( Size(), m_contentSize );
+	_updateElementGeo( Size(), m_contentSize );
 	pScrollbar->SetSlider( ViewOfsY(), ViewLenY() );
-	RequestRender( m_elements[YDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
+	_requestRender( m_elements[YDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 }
 
@@ -563,7 +563,7 @@ bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
 WgGizmo* WgGizmoView::ReleaseContent()
 {
 	WgGizmo * p = m_elements[WINDOW]._releaseGizmo();
-	UpdateElementGeo( Size(), WgSize(0,0) );
+	_updateElementGeo( Size(), WgSize(0,0) );
 	return p;
 }
 
@@ -572,7 +572,7 @@ WgGizmo* WgGizmoView::ReleaseContent()
 WgGizmoHDragbar* WgGizmoView::ReleaseScrollbarX()
 {
 	WgGizmoHDragbar * p = (WgGizmoHDragbar*) m_elements[XDRAG]._releaseGizmo();
-	UpdateElementGeo( Size(), m_contentSize );
+	_updateElementGeo( Size(), m_contentSize );
 	return p;
 }
 
@@ -581,7 +581,7 @@ WgGizmoHDragbar* WgGizmoView::ReleaseScrollbarX()
 WgGizmoVDragbar* WgGizmoView::ReleaseScrollbarY()
 {
 	WgGizmoVDragbar * p = (WgGizmoVDragbar*) m_elements[YDRAG]._releaseGizmo();
-	UpdateElementGeo( Size(), m_contentSize );
+	_updateElementGeo( Size(), m_contentSize );
 	return p;
 }
 
@@ -651,7 +651,7 @@ void WgGizmoView::SetScrollbarAutoHide( bool bHideX, bool bHideY )
 	// Force a refresh of our subclass if its geometry has been affected.
 
 	if( ScrollbarXVisible() != bWasVisibleX || ScrollbarYVisible() != bWasVisibleY )
-		UpdateElementGeo( Size(), m_contentSize );
+		_updateElementGeo( Size(), m_contentSize );
 }
 
 //____ SetScrollbarPositions() ________________________________________________
@@ -664,7 +664,7 @@ void WgGizmoView::SetScrollbarPositions( bool bBottom, bool bRight )
 	m_bScrollbarBottom	= bBottom;
 	m_bScrollbarRight	= bRight;
 
-	UpdateElementGeo( Size(), m_contentSize );
+	_updateElementGeo( Size(), m_contentSize );
 }
 
 //____ SetFillerSource() ______________________________________________________
@@ -672,7 +672,7 @@ void WgGizmoView::SetScrollbarPositions( bool bBottom, bool bRight )
 void WgGizmoView::SetFillerSource( const WgBlockSetPtr& pBlocks )
 {
 	m_pFillerBlocks = pBlocks;
-	RequestRender( m_geoFiller );
+	_requestRender( m_geoFiller );
 }
 
 //____ FindGizmo() ____________________________________________________________
@@ -727,14 +727,14 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCoord& pos, WgSearchMode mode )
 WgSize WgGizmoView::DefaultSize() const
 {
 	//TODO: Implement!!!
-		
+
 	return WgSize( 128,128 );
 }
 
 
-//____ UpdateElementGeo() _____________________________________________________
+//____ _updateElementGeo() _____________________________________________________
 
-void WgGizmoView::UpdateElementGeo( const WgSize& mySize, const WgSize& newContentSize )
+void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newContentSize )
 {
 	WgRect	newDragX, newDragY, newWindow, newFiller;
 	bool	bShowDragX = false, bShowDragY = false;
@@ -886,7 +886,7 @@ void WgGizmoView::UpdateElementGeo( const WgSize& mySize, const WgSize& newConte
 		m_elements[XDRAG].m_bShow = bShowDragX;
 		m_elements[YDRAG].m_bShow = bShowDragY;
 
-		RequestRender();
+		_requestRender();
 
 		// Notify elements of their new size.
 
@@ -960,7 +960,7 @@ void WgGizmoView::UpdateElementGeo( const WgSize& mySize, const WgSize& newConte
 
 void WgGizmoView::_onNewSize( const WgSize& size )
 {
-	UpdateElementGeo( size, m_contentSize );
+	_updateElementGeo( size, m_contentSize );
 }
 
 
@@ -1060,9 +1060,9 @@ void WgGizmoView::_onCloneContent( const WgGizmo * _pOrg )
 }
 
 //_____________________________________________________________________________
-void WgGizmoView::SetContentSize( const WgSize& size )
+void WgGizmoView::_setContentSize( const WgSize& size )
 {
-	UpdateElementGeo( Size(), WgSize(size) );
+	_updateElementGeo( Size(), WgSize(size) );
 }
 
 //_____________________________________________________________________________
@@ -1075,7 +1075,7 @@ bool WgGizmoView::SetAutoscroll( bool bAutoX, bool bAutoY )
 
 
 //_____________________________________________________________________________
-WgHook*	WgGizmoView::_firstHook() const 
+WgHook*	WgGizmoView::_firstHook() const
 {
 	for( int i = 0 ; i < 3 ; i++ )
 		if( m_elements[i].m_pGizmo )
@@ -1085,8 +1085,8 @@ WgHook*	WgGizmoView::_firstHook() const
 }
 
 //_____________________________________________________________________________
-WgHook*	WgGizmoView::_lastHook() const 
-{ 
+WgHook*	WgGizmoView::_lastHook() const
+{
 	for( int i = 2 ; i >= 0 ; i++ )
 		if( m_elements[i].m_pGizmo )
 			return const_cast<WgViewHook*>(&m_elements[i]);
@@ -1105,7 +1105,7 @@ WgHook * WgGizmoView::_firstHookWithGeo( WgRect& geo ) const
 			return const_cast<WgViewHook*>(&m_elements[i]);
 		}
 
-	return 0;	
+	return 0;
 }
 
 //_____________________________________________________________________________
@@ -1123,8 +1123,8 @@ WgHook * WgGizmoView::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 			geo = p->m_geo;
 			return const_cast<WgViewHook*>(p);
 		}
-	}	
-	return 0;	
+	}
+	return 0;
 }
 
 //_____________________________________________________________________________
@@ -1137,7 +1137,7 @@ WgHook * WgGizmoView::_lastHookWithGeo( WgRect& geo ) const
 			return const_cast<WgViewHook*>(&m_elements[i]);
 		}
 
-	return 0;	
+	return 0;
 }
 
 //_____________________________________________________________________________
@@ -1155,8 +1155,8 @@ WgHook * WgGizmoView::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 			geo = p->m_geo;
 			return const_cast<WgViewHook*>(p);
 		}
-	}	
-	return 0;	
+	}
+	return 0;
 }
 
 
@@ -1217,14 +1217,14 @@ WgWidget* WgViewHook::GetRoot()
 
 void WgViewHook::_requestRender()
 {
-	m_pView->RequestRender( m_geo );
+	m_pView->_requestRender( m_geo );
 }
 
 void WgViewHook::_requestRender( const WgRect& rect )
 {
 	WgRect r = rect;
 	r += m_geo.Pos();
-	m_pView->RequestRender( r );
+	m_pView->_requestRender( r );
 }
 
 //____ WgViewHook::_requestResize() ______________________________________________
@@ -1240,13 +1240,13 @@ WgHook * WgViewHook::_prevHook() const
 {
 	const WgViewHook * pFirst = &m_pView->m_elements[0];
 	WgViewHook * p 		= const_cast<WgViewHook*>(this);
-	
+
 	while( p != pFirst )
 	{
 		p--;
 		if( p->m_pGizmo )
 			return p;
-	}	
+	}
 	return 0;
 }
 
@@ -1256,13 +1256,13 @@ WgHook * WgViewHook::_nextHook() const
 {
 	WgViewHook * pLast = &m_pView->m_elements[2];
 	WgViewHook * p 		= const_cast<WgViewHook*>(this);
-	
+
 	while( p != pLast )
 	{
 		p++;
 		if( p->m_pGizmo )
 			return p;
-	}	
+	}
 	return 0;
 }
 

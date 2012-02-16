@@ -57,9 +57,9 @@ WgTextManager::~WgTextManager()
 		delete [] m_pAllowedSizes;
 }
 
-//____ NewNode() ______________________________________________________________
+//____ _newNode() ______________________________________________________________
 
-WgTextNode * WgTextManager::NewNode( WgText * pText )
+WgTextNode * WgTextManager::_newNode( WgText * pText )
 {
 	if( !pText )
 		return 0;
@@ -70,9 +70,9 @@ WgTextNode * WgTextManager::NewNode( WgText * pText )
 	return p;
 }
 
-//____ RefreshAll() ___________________________________________________________
+//____ _refreshAll() ___________________________________________________________
 
-void WgTextManager::RefreshAll()
+void WgTextManager::_refreshAll()
 {
 	WgTextNode * p = m_nodes.First();
 	while( p )
@@ -94,7 +94,7 @@ bool WgTextManager::SetScaleValue( float scale )
 	if( scale != m_scale )
 	{
 		m_scale = scale;
-		RefreshAll();
+		_refreshAll();
 	}
 
 	return true;
@@ -110,7 +110,7 @@ bool WgTextManager::SetScaleMultiplier( float multi )
 	if( m_scaleMultiplier != multi )
 	{
 		m_scaleMultiplier = multi;
-		RefreshAll();
+		_refreshAll();
 	}
 	return true;
 }
@@ -146,7 +146,7 @@ bool WgTextManager::SetAllowedSizes( int nSizes, float sizes[] )
 
 		m_pAllowedSizes[nSizes] = 0;
 	}
-	RefreshAll();
+	_refreshAll();
 	return true;
 }
 
@@ -162,7 +162,7 @@ bool WgTextManager::SetGrowFormula( float treshold, float ratio, float limit )
 		m_growTreshold = treshold;
 		m_growRatio = ratio;
 		m_growLimit = limit;
-		RefreshAll();
+		_refreshAll();
 	}
 	return true;
 }
@@ -179,7 +179,7 @@ bool WgTextManager::SetShrinkFormula( float treshold, float ratio, float limit )
 		m_shrinkTreshold = treshold;
 		m_shrinkRatio = ratio;
 		m_shrinkLimit = limit;
-		RefreshAll();
+		_refreshAll();
 	}
 	return true;
 }
@@ -194,7 +194,7 @@ bool WgTextManager::SetSizeStepping( float stepping )
 	if( stepping != m_sizeStepping )
 	{
 		m_sizeStepping = stepping;
-		RefreshAll();
+		_refreshAll();
 	}
 	return true;
 }
@@ -206,12 +206,12 @@ void WgTextManager::SetSizeRounding( Rounding rounding )
 	if( rounding != m_sizeRounding )
 	{
 		m_sizeRounding = rounding;
-		RefreshAll();
+		_refreshAll();
 	}
 }
-//____ GetSize() __________________________________________________
+//____ _getSize() __________________________________________________
 
-float WgTextManager::GetSize( WgTextNode * pNode, const WgFont * m_pFont, WgFontStyle style, int size )
+float WgTextManager::_getSize( WgTextNode * pNode, const WgFont * m_pFont, WgFontStyle style, int size )
 {
 	float scale = m_scale;
 

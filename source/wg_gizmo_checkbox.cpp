@@ -48,7 +48,7 @@ WgGizmoCheckbox::WgGizmoCheckbox()
 
 	m_pText				= &m_text;
 	m_text.setHolder( this );
-	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 
 	m_clickArea			= DEFAULT;
 }
@@ -79,7 +79,7 @@ bool WgGizmoCheckbox::SetSource( const WgBlockSetPtr& pUnchecked, const WgBlockS
 {
 	m_pBlockUnchecked	= pUnchecked;
 	m_pBlockChecked		= pChecked;
-	
+
 	_onRefresh();
 	return true;
 }
@@ -101,7 +101,7 @@ void WgGizmoCheckbox::SetIcons( const WgBlockSetPtr& pUnchecked, const WgBlockSe
 
 //____ SetIcons() ______________________________________________________________
 
-void WgGizmoCheckbox::SetIcons( const WgBlockSetPtr& pUnchecked, const WgBlockSetPtr& pChecked )							
+void WgGizmoCheckbox::SetIcons( const WgBlockSetPtr& pUnchecked, const WgBlockSetPtr& pChecked )
 {
 	m_pIconUnchecked	= pUnchecked;
 	m_pIconChecked		= pChecked;
@@ -143,16 +143,16 @@ bool WgGizmoCheckbox::SetState( bool _state )
 #ifdef WG_TNG
 		WgEventHandler * pHandler = EventHandler();
 		if( pHandler )
-		{				
+		{
 			if( _state )
 				pHandler->QueueEvent( new WgEvent::CheckboxCheck( this ) );
 			else
 				pHandler->QueueEvent( new WgEvent::CheckboxUncheck( this ) );
-				
+
 			pHandler->QueueEvent( new WgEvent::CheckboxToggle(this, _state ) );
 		}
 #endif
-		RequestRender();
+		_requestRender();
 	}
 
 	return true;
@@ -173,7 +173,7 @@ WgSize WgGizmoCheckbox::DefaultSize() const
 	WgSize iconBestSize;
 	WgSize bgBestSize;
 	WgSize textBestSize;
-	
+
 	if( m_text.nbChars() > 0 )
 		textBestSize = m_text.unwrappedSize();
 
@@ -181,17 +181,17 @@ WgSize WgGizmoCheckbox::DefaultSize() const
 	{
 		bgBestSize = m_pBlockUnchecked->Size();
 		textBestSize += m_pBlockUnchecked->ContentBorders();
-	}	
+	}
 
 	if( m_pIconUnchecked )
 	{
 		iconBestSize = m_pIconUnchecked->Size() + m_iconBorders.Size();
-		
+
 		//TODO: Add magic for how icon influences textBestSize based on origo, iconBorders, iconScale and bgBestSize
 	}
 
 	WgSize bestSize = WgSize::Max( WgSize::Max(iconBestSize,bgBestSize), textBestSize);
-	
+
 	return bestSize;
 }
 
@@ -199,7 +199,7 @@ WgSize WgGizmoCheckbox::DefaultSize() const
 //____ _onEnable() _________________________________________________
 void WgGizmoCheckbox::_onEnable()
 {
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onDisable() _________________________________________________
@@ -208,7 +208,7 @@ void WgGizmoCheckbox::_onDisable()
 	m_bOver = false;
 	m_bPressed = false;
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onEvent() _____________________________________________________________
@@ -222,7 +222,7 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 			if( !m_bOver )
 			{
 				m_bOver = true;
-				RequestRender();
+				_requestRender();
 			}
 			break;
 
@@ -230,7 +230,7 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 			if( m_bOver )
 			{
 				m_bOver = false;
-				RequestRender();
+				_requestRender();
 			}
 			break;
 
@@ -242,11 +242,11 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 				if( !m_bFlipOnRelease )
 					SetState( !m_bChecked );
 				m_bPressed = true;
-				RequestRender();
+				_requestRender();
 			}
 			break;
 		}
-		
+
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		{
 			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
@@ -255,11 +255,11 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 				m_bPressed = false;
 				if( m_bFlipOnRelease )
 					SetState( !m_bChecked );
-				RequestRender();
+				_requestRender();
 			}
 			break;
 		}
-				
+
         default:
             break;
 	}
@@ -276,7 +276,7 @@ void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, c
 			if( !m_bOver )
 			{
 				m_bOver = true;
-				RequestRender();
+				_requestRender();
 			}
 			break;
 
@@ -284,7 +284,7 @@ void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, c
 			if( m_bOver )
 			{
 				m_bOver = false;
-				RequestRender();
+				_requestRender();
 			}
 			break;
 
@@ -294,7 +294,7 @@ void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, c
 				m_bPressed = true;
 				if( !m_bFlipOnRelease )
 					SetState( !m_bChecked );
-				RequestRender();
+				_requestRender();
 			}
 			break;
 
@@ -305,7 +305,7 @@ void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, c
 				m_bPressed = false;
 				if( m_bFlipOnRelease )
 					SetState( !m_bChecked );
-				RequestRender();
+				_requestRender();
 			}
 			break;
 
@@ -416,7 +416,7 @@ void WgGizmoCheckbox::_onRefresh( void )
 	else
 		m_bOpaque = false;
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ _onNewSize() _______________________________________________________
@@ -456,7 +456,7 @@ void WgGizmoCheckbox::_textModified()
 {
 	//TODO: Need to do more here, like possibly request resize.
 
-	RequestRender();
+	_requestRender();
 }
 
 //____ _iconModified() ________________________________________________________
@@ -465,7 +465,7 @@ void WgGizmoCheckbox::_iconModified()
 {
 	//TODO: Need to do more here, like possibly request resize.
 
-	RequestRender();
+	_requestRender();
 }
 
 

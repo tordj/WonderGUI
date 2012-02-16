@@ -80,7 +80,7 @@ void WgText::Init()
 	m_markedLinkMode = WG_MODE_NORMAL;
 
 	m_origo			= WgOrigo::topLeft();
-	m_tintMode		= TINTMODE_MULTIPLY;
+	m_tintMode		= WG_TINTMODE_MULTIPLY;
 	m_lineSpaceAdj	= 0;
 
 	m_mode		= WG_MODE_NORMAL;
@@ -128,7 +128,7 @@ void WgText::setManager( WgTextManager * pManager )
 		delete m_pManagerNode;
 
 	if( pManager )
-		m_pManagerNode = pManager->NewNode( this );
+		m_pManagerNode = pManager->_newNode( this );
 	else
 		m_pManagerNode = 0;
 }
@@ -898,8 +898,8 @@ int WgText::compareTo( const WgText * _pOther, bool bCheckCase ) const
 
 void WgText::setValue( double value, const WgValueFormat& form )
 {
-	WgChar	str[parseBufLen];
-	WgChar * pStr = parseValue( value, form, str );
+	WgChar	str[s_parseBufLen];
+	WgChar * pStr = _parseValue( value, form, str );
 	setText( pStr );
 }
 
@@ -907,21 +907,21 @@ void WgText::setValue( double value, const WgValueFormat& form )
 
 void WgText::setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form )
 {
-	WgChar	str[parseBufLen];
-	WgChar * pStr = parseScaledValue( value, scale, form, str );
+	WgChar	str[s_parseBufLen];
+	WgChar * pStr = _parseScaledValue( value, scale, form, str );
 	setText( pStr );
 }
 
 
-//____ parseValue() ___________________________________________________________
+//____ _parseValue() ___________________________________________________________
 
-WgChar * WgText::parseValue( double value, const WgValueFormat& f, WgChar tempstring[parseBufLen] )
+WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar tempstring[s_parseBufLen] )
 {
 
 	// Write period and decimal part
 
 	// length of buffer - decimals - suffix - end color - null terminator
-	int fractionOffset = parseBufLen - 16 - 4 - 1 - 1;
+	int fractionOffset = s_parseBufLen - 16 - 4 - 1 - 1;
 
 	WgChar * p = tempstring + fractionOffset;
 	if( f.decimals || f.bForcePeriod )
@@ -1038,14 +1038,14 @@ WgChar * WgText::parseValue( double value, const WgValueFormat& f, WgChar tempst
 	// Set character attributes
 
 	if( f.bSetTextProp )
-		WgTextTool::SetProperties( f.pTextProperties, tempstring, parseBufLen );
+		WgTextTool::SetProperties( f.pTextProperties, tempstring, s_parseBufLen );
 
 	return p;
 }
 
-//____ parseScaledValue() _____________________________________________________
+//____ _parseScaledValue() _____________________________________________________
 
-WgChar * WgText::parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& f, WgChar tempstring[parseBufLen] )
+WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& f, WgChar tempstring[s_parseBufLen] )
 {
 
 	Sint64 absVal = value >= 0 ? value : -value;
@@ -1056,7 +1056,7 @@ WgChar * WgText::parseScaledValue( Sint64 value, Uint32 scale, const WgValueForm
 	// Write period and decimal part
 
 	// length of buffer - decimals - suffix - end color - null terminator
-	int fractionOffset = parseBufLen - 16 - 4 - 1 - 1;
+	int fractionOffset = s_parseBufLen - 16 - 4 - 1 - 1;
 
 	WgChar * p = tempstring + fractionOffset;
 	if( f.decimals || f.bForcePeriod )
@@ -1148,7 +1148,7 @@ WgChar * WgText::parseScaledValue( Sint64 value, Uint32 scale, const WgValueForm
 	// Set character attributes
 
 	if( f.bSetTextProp )
-		WgTextTool::SetProperties(f.pTextProperties, tempstring, parseBufLen );
+		WgTextTool::SetProperties(f.pTextProperties, tempstring, s_parseBufLen );
 
 	return p;
 }
@@ -1207,7 +1207,7 @@ int WgText::addText( const WgCharSeq& seq )
 	int nAdded;
 	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() )
 		nAdded = m_buffer.PushBack( WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() ) );
-	else	
+	else
 		nAdded = m_buffer.PushBack( seq );
 
 	_regenHardLines();
@@ -1226,7 +1226,7 @@ int WgText::insertText( int ofs, const WgCharSeq& seq )
 	int nInserted;
 	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() )
 		nInserted = m_buffer.Insert( ofs, WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() ) );
-	else	
+	else
 		nInserted = m_buffer.Insert( ofs, seq );
 
 	_regenHardLines();
@@ -1245,8 +1245,8 @@ int WgText::replaceText( int ofs, int nDelete, const WgCharSeq& seq )
 	int nInserted;
 	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() - nDelete )
 		nInserted = m_buffer.Replace( ofs, nDelete, WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() - nDelete ) );
-	else	
-		nInserted = m_buffer.Replace( ofs, nDelete, seq );	
+	else
+		nInserted = m_buffer.Replace( ofs, nDelete, seq );
 
 	_regenHardLines();
 	_regenSoftLines();
@@ -1451,7 +1451,7 @@ void WgText::SetEditMode(WgTextEditMode mode)
 {
 	if( mode == m_editMode )
 		return;
-	
+
 	m_editMode = mode;
 
 	if( IsEditable() )
@@ -1459,9 +1459,9 @@ void WgText::SetEditMode(WgTextEditMode mode)
 		m_pCursor = new WgCursorInstance(*this);
 	}
 	else
-	{ 
-		delete m_pCursor; 
-		m_pCursor = 0; 
+	{
+		delete m_pCursor;
+		m_pCursor = 0;
 	}
 }
 

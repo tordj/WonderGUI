@@ -883,7 +883,7 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 		else
 		{
 			if( bEllipsisActive && (bLastFullyVisibleLine || pLines[i].width > dest.w) )
-			{			
+			{
 				_printEllipsisTextSpan( pen, pText, pLines[i].ofs, pLines[i].nChars, dest.x + dest.w );
 				break;
 			}
@@ -1020,7 +1020,6 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 
 	Uint16	ellipsisChar = WG_ELLIPSIS;
 	ellipsisWidth = 0;
-
 	WgGlyphPtr pEllipsis = pen.GetFont()->GetGlyph( WG_ELLIPSIS, pen.GetStyle(), pen.GetSize() );
 
 	if( !pEllipsis )
@@ -1124,7 +1123,6 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 	else
 		pen.BlitChar();						// We could have kerning here but we have screwed up previous glyph...
 
-
 	// Restore tint color.
 
 	if( m_tintColor != baseCol )
@@ -1132,12 +1130,11 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 }
 
 
-
 //____ _drawTextBg() ___________________________________________________________
 
 void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const WgRect& dest )
 {
-	WgRectChain	bgRects;
+//	WgRectChain	bgRects;
 //	WgColor		bgColor;
 //	bool		bBgColored;
 
