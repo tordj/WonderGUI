@@ -28,6 +28,8 @@ extern std::ostream cout;
 
 SDL_Surface *	initSDL( int w, int h );
 bool			eventLoop( WgEventHandler * pHandler );
+WgRoot * 		setupGUI( WgGfxDevice * pDevice );
+
 
 void cbInitDrag( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
 void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
@@ -65,18 +67,6 @@ int main ( int argc, char** argv )
 	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(640,480), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch );
 	WgGfxDeviceSoft * pGfxDevice = new WgGfxDeviceSoft( pCanvas );
 	pGfxDevice->SetBilinearFiltering( true );
-
-	WgRoot * pRoot = new WgRoot( pGfxDevice );
-
-	WgEventHandler * pEventHandler = pRoot->EventHandler();
-
-	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
-	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_POSITION );
-	pEventLogger->IgnoreEvent( WG_EVENT_MOUSEBUTTON_REPEAT );
-	pEventLogger->IgnoreEvent( WG_EVENT_BUTTON_PRESS );
-//	pEventLogger->IgnoreAllEvents();
-//	pEventLogger->LogMouseButtonEvents();
-	pEventHandler->AddCallback( pEventLogger );
 
 	// Load TTF-font
 /*
@@ -117,6 +107,8 @@ int main ( int argc, char** argv )
 	pCursor->SetBearing(WgCursor::INS, WgCoord(0,-8));
 	pCursor->SetBearing(WgCursor::OVR, WgCoord(0,-8));
 
+	WgBase::SetDefaultCursor( pCursor );
+
 	// Set default textprop
 
 	WgTextProp prop;
@@ -127,179 +119,12 @@ int main ( int argc, char** argv )
 
 	WgBase::SetDefaultTextProp( prop.Register() );
 
-	// Load images and specify blocks
 
-	WgSurface * pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", WgSurfaceFactorySoft() );
-	WgBlockSetPtr pBackBlock = pBackImg->defineBlockSet( WgRect(0,0,pBackImg->Width(),pBackImg->Height()), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );
-
-	WgSurface * pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", WgSurfaceFactorySoft() );
-	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
-
-	WgSurface * pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", WgSurfaceFactorySoft() );
-	WgBlockSetPtr pSplashBlock = pSplashImg->defineBlockSet( WgRect(0,0,pSplashImg->Width(),pSplashImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
-
-
-	WgSurface * pBlocksImg = sdl_wglib::LoadSurface("../resources/blocks.png", WgSurfaceFactorySoft() );
-	WgBlockSetPtr pButtonBlock = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,0,8*4+6,8), 2), WgBorders(3), WgBorders(2), 0, 0 );
-
-	WgBlockSetPtr pRadioBlockUnselected = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(0,42,11*4+6,11), 2), WgBorders(3), WgBorders(2), 0, 0 );
-	WgBlockSetPtr pRadioBlockSelected = pBlocksImg->defineBlockSet( WgHorrTile4( WgRect(52,42,11*4+6,11), 2), WgBorders(3), WgBorders(2), 0, 0 );
-
-	// Background
-
-	WgGizmoPixmap * pBackground = new WgGizmoPixmap();
-	pBackground->SetSource( pBackBlock );
-
-	// Main Flex
-
-	WgGizmoFlexGeo * pFlex = new WgGizmoFlexGeo();
-	WgFlexHook * pHook = pFlex->AddChild( pBackground );
-
-	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
-
-	//
-
-	{
-		WgGizmoShader * pShader = new WgGizmoShader();
-		pShader->SetBlendMode(WG_BLENDMODE_ADD);
-		pShader->SetColor( WgColor(0xFFFFFFFF) );
-
-		WgGizmoStack * pStack = new WgGizmoStack();
-		pShader->SetChild( pStack );
-
-		WgGizmoPixmap * pBg = new WgGizmoPixmap();
-		pBg->SetSource( pButtonBlock );
-		pStack->AddChild( pBg );
-
-		WgGizmoPixmap * pSplash= new WgGizmoPixmap();
-		pSplash->SetSource( pSplashBlock );
-		WgStackHook * pHook = pStack->AddChild( pSplash );
-		pHook->SetSizePolicy( WgStackHook::SCALE );
-		pHook->SetOrientation( WG_CENTER );
-		pHook->SetBorders( WgBorders(2) );
-
-
-		addResizableContainer( pFlex, pShader, pEventHandler );
-	}
-
-	// Modal container
-
-	pRoot->SetChild(pFlex);
-/*
-	g_pModal = new WgGizmoModal();
-	g_pModal->SetBase( pFlex );
-
-	pRoot->SetChild(g_pModal);
-
-
-	// Modal button
-
-	WgGizmoButton * pModalButton = new WgGizmoButton();
-	pModalButton->SetSource( pButtonBlock );
-
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonClick(pModalButton, 1), cbCloseModal, pModalButton );
-
-	//
-
-	WgGizmoButton * pButton = new WgGizmoButton();
-	pButton->SetSource( pButtonBlock );
-
-	pHook = pFlex->AddChild( pButton, WgRect(0,0,100,100), WG_NORTHWEST );
-
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pButton, 1), cbOpenModal, pModalButton );
-
-	//
-
-	WgGizmoPixmap * pFlag1= new WgGizmoPixmap();
-	pFlag1->SetSource( pSplashBlock );
-
-	pHook = pFlex->AddChild( pFlag1, WgCoord(0,0), WG_CENTER );
-
-
-
-	WgGizmoPixmap * pFlag2= new WgGizmoPixmap();
-	pFlag2->SetSource( pFlagBlock );
-
-	pHook = pFlex->AddChild( pFlag2, WgCoord(100,100), WG_CENTER );
-
-
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pFlag1, 1), cbInitDrag, pFlag1 );
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pFlag1, 1), cbDragGizmo, pFlag1 );
-
-	//
-
-
-	WgGizmoVBox * pVBox = new WgGizmoVBox();
-//	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
-
-
-	WgGizmoPixmap * pFlag3 = new WgGizmoPixmap();
-	pFlag3->SetSource( pFlagBlock );
-	WgGizmoPixmap * pFlag4= new WgGizmoPixmap();
-	pFlag4->SetSource( pFlagBlock );
-
-	WgGizmoButton * pButton2 = new WgGizmoButton();
-	pButton2->SetSource( pButtonBlock );
-	pButton2->SetText( "BUTTON TEXT" );
-
-	pVBox->AddChild(pButton2);
-
-	pVBox->AddChild(pFlag3);
-//	pVBox->AddChild(pFlag4);
-
-	pHook = pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
-	pHook->SetMaxSize( WgSize(120, INT_MAX) );
-
-	//
-
-	WgGizmoTabOrder * pTabOrder = new WgGizmoTabOrder();
-	pVBox->AddChild(pTabOrder);
-
-	WgGizmoVBox * pTabBox = new WgGizmoVBox();
-	pTabOrder->SetChild(pTabBox);
-//	pVBox->AddChild(pTabBox);
-
-	WgGizmoText * pText1 = new WgGizmoText();
-	pText1->SetText("TEXTA1");
-	pText1->SetEditMode(WG_TEXT_EDITABLE);
-	pText1->SetCursor(pCursor);
-	pTabBox->AddChild(pText1);
-
-	WgGizmoText * pText2 = new WgGizmoText();
-	pText2->SetText("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj");
-	pText2->SetEditMode(WG_TEXT_EDITABLE);
-	pText2->SetCursor(pCursor);
-	pTabBox->AddChild(pText2);
-
-	pText1->GrabFocus();
-
-//	pTabOrder->AddToTabOrder(pText1);
-//	pTabOrder->AddToTabOrder(pText2);
-
-	// Radiobuttons test
-
-	WgGizmoRadiobutton * pRB1 = new WgGizmoRadiobutton();
-	pRB1->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
-	pVBox->AddChild(pRB1);
-
-	WgGizmoRadiobutton * pRB2 = new WgGizmoRadiobutton();
-	pRB2->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
-	pVBox->AddChild(pRB2);
-
-	WgGizmoRadiobutton * pRB3 = new WgGizmoRadiobutton();
-	pRB3->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
-	pFlex->AddChild( pRB3, WgCoord(0,100) );
-
-	WgGizmoRadiobutton * pRB4 = new WgGizmoRadiobutton();
-	pRB4->SetIcons( pRadioBlockUnselected, pRadioBlockSelected, WG_WEST );
-	pFlex->AddChild( pRB4, WgCoord(0,120) );
-
-	pVBox->SetRadioGroup(true);
-*/
+	WgRoot * pRoot = setupGUI( pGfxDevice );
 
    // program main loop
 
-    while (eventLoop( pEventHandler ))
+    while (eventLoop( pRoot->EventHandler() ))
     {
 
 		// GET DIRTY RECTS
@@ -357,8 +182,6 @@ int main ( int argc, char** argv )
 
 	delete pRoot;
 	delete pGfxDevice;
-	delete pBackImg;
-	delete pFlagImg;
 
 	WgBase::Exit();
 
@@ -367,6 +190,172 @@ int main ( int argc, char** argv )
     // all is well ;)
     printf("Exited cleanly\n");
     return 0;
+}
+
+
+//____ setupGUI() ______________________________________________________________
+
+WgRoot * setupGUI( WgGfxDevice * pDevice )
+{
+	WgResDB * pDB = sdl_wglib::LoadStdGizmos( "../resources/blocks.png", WgSurfaceFactorySoft() );
+	if( !pDB )
+		return 0;
+
+	WgRoot * pRoot = new WgRoot( pDevice );
+
+	WgEventHandler * pEventHandler = pRoot->EventHandler();
+
+	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
+	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_POSITION );
+	pEventLogger->IgnoreEvent( WG_EVENT_MOUSEBUTTON_REPEAT );
+	pEventLogger->IgnoreEvent( WG_EVENT_BUTTON_PRESS );
+//	pEventLogger->IgnoreAllEvents();
+//	pEventLogger->LogMouseButtonEvents();
+	pEventHandler->AddCallback( pEventLogger );
+
+
+	// Load images and specify blocks
+
+	WgSurface * pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", WgSurfaceFactorySoft() );
+	WgBlockSetPtr pBackBlock = pBackImg->defineBlockSet( WgRect(0,0,pBackImg->Width(),pBackImg->Height()), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );
+
+	WgSurface * pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", WgSurfaceFactorySoft() );
+	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
+
+	WgSurface * pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", WgSurfaceFactorySoft() );
+	WgBlockSetPtr pSplashBlock = pSplashImg->defineBlockSet( WgRect(0,0,pSplashImg->Width(),pSplashImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
+
+	// Background
+
+	WgGizmoPixmap * pBackground = new WgGizmoPixmap();
+	pBackground->SetSource( pBackBlock );
+
+	// Main Flex
+
+	WgGizmoFlexGeo * pFlex = new WgGizmoFlexGeo();
+	WgFlexHook * pHook = pFlex->AddChild( pBackground );
+
+	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
+
+	//
+/*
+	{
+		WgGizmoShader * pShader = new WgGizmoShader();
+		pShader->SetBlendMode(WG_BLENDMODE_ADD);
+		pShader->SetColor( WgColor(0xFFFFFFFF) );
+
+		WgGizmoStack * pStack = new WgGizmoStack();
+		pShader->SetChild( pStack );
+
+		WgGizmoPixmap * pBg = new WgGizmoPixmap();
+		pBg->SetSource( pButtonBlock );
+		pStack->AddChild( pBg );
+
+		WgGizmoPixmap * pSplash= new WgGizmoPixmap();
+		pSplash->SetSource( pSplashBlock );
+		WgStackHook * pHook = pStack->AddChild( pSplash );
+		pHook->SetSizePolicy( WgStackHook::SCALE );
+		pHook->SetOrientation( WG_CENTER );
+		pHook->SetBorders( WgBorders(2) );
+
+
+		addResizableContainer( pFlex, pShader, pEventHandler );
+	}
+*/
+	// Modal container
+
+	g_pModal = new WgGizmoModal();
+	g_pModal->SetBase( pFlex );
+
+	pRoot->SetChild(g_pModal);
+
+
+	// Modal button
+
+	WgGizmoButton * pModalButton = (WgGizmoButton*) pDB->CloneGizmo( "button" );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonClick(pModalButton, 1), cbCloseModal, pModalButton );
+
+	//
+
+	WgGizmoButton * pButton = (WgGizmoButton*) pDB->CloneGizmo( "button" );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pButton, 1), cbOpenModal, pModalButton );
+
+	pHook = pFlex->AddChild( pButton, WgRect(0,0,100,100), WG_NORTHWEST );
+
+	//
+
+	WgGizmoPixmap * pFlag1= new WgGizmoPixmap();
+	pFlag1->SetSource( pSplashBlock );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pFlag1, 1), cbInitDrag, pFlag1 );
+
+	pHook = pFlex->AddChild( pFlag1, WgCoord(0,0), WG_CENTER );
+
+
+
+	WgGizmoPixmap * pFlag2= new WgGizmoPixmap();
+	pFlag2->SetSource( pFlagBlock );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pFlag1, 1), cbDragGizmo, pFlag1 );
+
+	pHook = pFlex->AddChild( pFlag2, WgCoord(100,100), WG_CENTER );
+
+	//
+
+
+	WgGizmoVBox * pVBox = new WgGizmoVBox();
+//	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
+
+
+	WgGizmoPixmap * pFlag3 = new WgGizmoPixmap();
+	pFlag3->SetSource( pFlagBlock );
+	WgGizmoPixmap * pFlag4= new WgGizmoPixmap();
+	pFlag4->SetSource( pFlagBlock );
+
+	WgGizmoButton * pButton2 = (WgGizmoButton*) pDB->CloneGizmo( "button" );
+	pButton2->SetText( "BUTTON TEXT" );
+
+	pVBox->AddChild(pButton2);
+
+	pVBox->AddChild(pFlag3);
+//	pVBox->AddChild(pFlag4);
+
+	pHook = pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
+	pHook->SetMaxSize( WgSize(120, INT_MAX) );
+
+	//
+
+	WgGizmoTabOrder * pTabOrder = new WgGizmoTabOrder();
+	pVBox->AddChild(pTabOrder);
+
+	WgGizmoVBox * pTabBox = new WgGizmoVBox();
+	pTabOrder->SetChild(pTabBox);
+//	pVBox->AddChild(pTabBox);
+
+	WgGizmoText * pText1 = new WgGizmoText();
+	pText1->SetText("TEXTA1");
+	pText1->SetEditMode(WG_TEXT_EDITABLE);
+	pTabBox->AddChild(pText1);
+
+	WgGizmoText * pText2 = new WgGizmoText();
+	pText2->SetText("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj");
+	pText2->SetEditMode(WG_TEXT_EDITABLE);
+	pTabBox->AddChild(pText2);
+
+	pText1->GrabFocus();
+
+//	pTabOrder->AddToTabOrder(pText1);
+//	pTabOrder->AddToTabOrder(pText2);
+
+	// Radiobuttons test
+
+	pVBox->AddChild( pDB->CloneGizmo( "radiobutton" ) );
+	pVBox->AddChild( pDB->CloneGizmo( "radiobutton" ) );
+
+	pFlex->AddChild( pDB->CloneGizmo( "radiobutton" ) );
+	pFlex->AddChild( pDB->CloneGizmo( "radiobutton" ) );
+
+	pVBox->SetRadioGroup(true);
+
+	return pRoot;
 }
 
 //____ initSDL() ______________________________________________________________
@@ -396,15 +385,12 @@ SDL_Surface * initSDL( int w, int h )
 	return pScreen;
 }
 
+
 //____ eventLoop() ____________________________________________________________
 
 bool eventLoop( WgEventHandler * pHandler )
 {
-	static int	prevTicks = 0;
-
-	int ticks = SDL_GetTicks();
-	pHandler->QueueEvent( new WgEvent::Tick( ticks - prevTicks ) );
-	prevTicks = ticks;
+	sdl_wglib::BeginEvents( pHandler );
 
    // message processing loop
 	SDL_Event event;
@@ -423,53 +409,15 @@ bool eventLoop( WgEventHandler * pHandler )
 				// exit if ESCAPE is pressed
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 					return false;
-
-				pHandler->QueueEvent( new WgEvent::KeyPress( event.key.keysym.sym ) );
-				if( event.key.keysym.unicode != 0 )
-					pHandler->QueueEvent( new WgEvent::Character( event.key.keysym.unicode ) );
-				break;
 			}
+		}
+		sdl_wglib::TranslateEvent( event );
+	}
 
-			case SDL_KEYUP:
-			{
-				pHandler->QueueEvent( new WgEvent::KeyRelease( event.key.keysym.sym ) );
-				break;
-			}
-
-			case	SDL_MOUSEMOTION:
-			{
-				pHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( event.motion.x, event.motion.y ) ) );
-				break;
-			}
-
-			case	SDL_MOUSEBUTTONDOWN:
-				if(event.button.button == 4 )
-					pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, 120 ) );
-				else if(event.button.button == 5)
-					pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, -120 ) );
-				else
-				{
-//					pHandler->QueueEvent( WgEvent::MouseMove( WgCoord( event.button.x, event.button.y )) );
-					pHandler->QueueEvent( new WgEvent::MouseButtonPress( event.button.button ) );
-				}
-				break;
-
-			case	SDL_MOUSEBUTTONUP:
-//				pHandler->QueueEvent( WgEvent::MouseMove( WgCoord( event.button.x, event.button.y ) ));
-				if( event.button.button != 4 && event.button.button != 5 )
-				pHandler->QueueEvent( new WgEvent::MouseButtonRelease( event.button.button ) );
-				break;
-
-
-		} // end switch
-	} // end of message processing
-
-	pHandler->ProcessEvents();
+	sdl_wglib::EndEvents();
 
 	return true;
 }
-
-
 
 
 

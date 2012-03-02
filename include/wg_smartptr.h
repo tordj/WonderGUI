@@ -250,8 +250,8 @@ public:
 	inline T & operator*() const { return * GetRealPtr(); }
 	inline T * operator->() const { return GetRealPtr(); }
 
-	inline bool operator==(const WgSmartPtrPooled<T>& other) const { return m_pHub == other.m_pHub; }
-	inline bool operator!=(const WgSmartPtrPooled<T>& other) const { return m_pHub != other.m_pHub; }
+	inline bool operator==(const WgWeakPtr<T>& other) const { return m_pHub == other.m_pHub; }
+	inline bool operator!=(const WgWeakPtr<T>& other) const { return m_pHub != other.m_pHub; }
 
 	inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 

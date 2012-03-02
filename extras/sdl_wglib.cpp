@@ -191,13 +191,13 @@ namespace sdl_wglib
 		// Create standard checkbox
 
 		WgGizmoCheckbox * pCheckbox = new WgGizmoCheckbox();
-		pCheckbox->SetSource( pCheckboxUncheckedBlocks, pCheckboxCheckedBlocks );
+		pCheckbox->SetIcons( pCheckboxUncheckedBlocks, pCheckboxCheckedBlocks );
 		pDB->AddGizmo( "checkbox", pCheckbox );
 
 		// Create standard radiobutton
 
 		WgGizmoRadiobutton * pRadiobutton = new WgGizmoRadiobutton();
-		pRadiobutton->SetSource( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks );
+		pRadiobutton->SetIcons( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks );
 		pDB->AddGizmo( "radiobutton", pRadiobutton );
 
 		// Create standard horizontal dragbar
