@@ -11,12 +11,14 @@ FOCUS
 =====
 * Hur ska vi lösa _onMaskRects() ???
 * Keyboard focus vid modal.
-* No mouse enter/exit when locked on a Gizmo through press.
 * Wdg_Layout.
 * Cut/Copy/Paste-support.
 * Pointermask+displacement i blockset.
 * WgCharBuffer m.fl. saknar metoder för Size, Link och kanske mer...
 * Make menu hold vdrag as a Gizmo. Hide/show instead of remove.
+
+
+v No mouse enter/exit when locked on a Gizmo through press.
 
 
 FIX GIZMOS
@@ -29,7 +31,7 @@ v Editline	(untested, missing requesting TICKS!)
   Editvalue
 v Radiobutton
 v Refreshbutton (untested)
-  Shader (untested)
+v Shader (untested)
   Table
 v Tablist	(untested, missing requesting TICKS!)
   Combobox

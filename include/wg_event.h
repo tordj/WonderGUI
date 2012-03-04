@@ -63,14 +63,14 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 
 		public:
-			inline WgEventType		Type() const { return m_type; }
-			inline int64_t			Timestamp() const { return m_timestamp; }
-					WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
-			inline WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
-			inline bool				IsForGizmo() const { return m_bIsForGizmo; }
-			inline WgModifierKeys	ModKeys() const { return m_modKeys; }
-			inline WgCoord			PointerPos() const { return m_pointerLocalPos; }
-			inline WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
+			WgEventType		Type() const { return m_type; }
+			int64_t			Timestamp() const { return m_timestamp; }
+			WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
+			WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
+			bool			IsForGizmo() const { return m_bIsForGizmo; }
+			WgModifierKeys	ModKeys() const { return m_modKeys; }
+			WgCoord			PointerPos() const { return m_pointerLocalPos; }
+			WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
 
 		protected:
 			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false) {}
@@ -89,7 +89,7 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	public:
-		inline int		Button() const { return m_button; }
+		int		Button() const { return m_button; }
 	protected:
 		MouseButtonEvent(int button) : m_button(button) {}
 
@@ -100,8 +100,8 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	public:
-		inline int		NativeKeyCode() const { return m_nativeKeyCode; }
-		inline int		TranslatedKeyCode() const { return m_translatedKeyCode; }
+		int		NativeKeyCode() const { return m_nativeKeyCode; }
+		int		TranslatedKeyCode() const { return m_translatedKeyCode; }
 	protected:
 		KeyEvent( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(0) {}
 
@@ -166,14 +166,14 @@ namespace WgEvent
 	public:
 		MouseButtonRelease( int button );
 
-		bool			PressInside() const;
-		bool			ReleaseInside() const;
+		bool	PressInside() const;
+		bool	ReleaseInside() const;
 
 	protected:
 		MouseButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside );
 
-		bool			m_bPressInside;
-		bool			m_bReleaseInside;
+		bool	m_bPressInside;
+		bool	m_bReleaseInside;
 	};
 
 	class KeyPress : public KeyEvent

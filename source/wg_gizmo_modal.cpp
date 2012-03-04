@@ -23,6 +23,7 @@
 #include <wg_gizmo_modal.h>
 #include <wg_util.h>
 #include <wg_patches.h>
+#include <wg_eventhandler.h>
 
 static const char	c_gizmoType[] = {"Modal"};
 
@@ -34,6 +35,7 @@ void WgModalHook::Top()
 {
 	_moveLast();
 	_requestRender();
+	m_pParent->_updateKeyboardFocus();
 }
 
 //_____________________________________________________________________________
@@ -364,6 +366,7 @@ WgModalHook * WgGizmoModal::AddModal( WgGizmo * pGizmo, const WgRect& geometry, 
 	// Refresh geometry and request render.
 
 	pHook->_refreshRealGeo();
+	_updateKeyboardFocus();
 	return pHook;
 }
 
@@ -373,6 +376,7 @@ bool WgGizmoModal::DeleteAllModal()
 {
 	m_modalHooks.Clear();
 	_requestRender();
+	_updateKeyboardFocus();	
 	return true;
 }
 
@@ -389,6 +393,7 @@ bool WgGizmoModal::ReleaseAllModal()
 
 	m_modalHooks.Clear();
 	_requestRender();
+	_updateKeyboardFocus();	
 	return true;
 }
 
@@ -406,6 +411,7 @@ bool WgGizmoModal::DeleteChild( WgGizmo * pGizmo )
 		WgModalHook * pHook = (WgModalHook *) pGizmo->Hook();
 		pHook->_requestRender();
 		delete pHook;
+		_updateKeyboardFocus();
 		return true;
 	}
 }
@@ -425,6 +431,7 @@ WgGizmo * WgGizmoModal::ReleaseChild( WgGizmo * pGizmo )
 		pHook->_requestRender();
 		pHook->_releaseGizmo();
 		delete pHook;
+		_updateKeyboardFocus();
 		return pGizmo;
 	}
 
@@ -535,6 +542,57 @@ WgGizmo *  WgGizmoModal::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 	// For the rest of the modes we can rely on the default method.
 
 	return WgGizmoContainer::FindGizmo( ofs, mode );
+}
+
+//____ _updateKeyboardFocus() _______________________________________________________
+
+void WgGizmoModal::_updateKeyboardFocus()
+{
+	// Get event handler, verify that we have a root
+	
+	if( !Hook() )
+		return;
+		
+	WgEventHandler * pHandler = Hook()->EventHandler();
+	if( !pHandler )
+		return;
+
+	// Retrieve focused Gizmo and verify it being a descendant to us.
+
+	WgGizmo * pFocused = pHandler->KeyboardFocus();
+
+	WgGizmo * p = pFocused;
+	while( p && p->ParentX() && p->ParentX() != this )
+		p = p->ParentX()->CastToGizmo();
+
+	if( p && p->ParentX() != this )
+		return;								// Focus belongs to a Gizmo that is not a descendant to us,
+											// so we can't save and shouldn't steal focus.
+
+	// Save old focus so we can return it properly in the future.
+	if( p )
+	{
+		if( p == m_baseHook.Gizmo() )
+			m_baseHook.m_pKeyFocus = pFocused;
+		else
+		{
+			WgModalHook * pHook = static_cast<WgModalHook*>(p->Hook());
+			pHook->m_pKeyFocus = pFocused;
+		}	
+	}
+	
+	// Find which child-branch to focus and switch to our previously saved focus
+	//TODO: Should verify that previously focused Gizmo still is within branch.
+	
+	WgModalHook * pHook = m_modalHooks.Last();
+	
+	while( pHook && pHook->Hidden() )
+		pHook = pHook->Prev();
+		
+	if( pHook )
+		pHandler->SetKeyboardFocus( pHook->m_pKeyFocus.GetRealPtr() );
+	else if( m_baseHook.Gizmo() && !m_baseHook.Hidden() )
+		pHandler->SetKeyboardFocus( m_baseHook.m_pKeyFocus.GetRealPtr() );		
 }
 
 //____ _onRequestRender() _____________________________________________________

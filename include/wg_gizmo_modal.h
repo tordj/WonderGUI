@@ -96,6 +96,8 @@ protected:
 	WgOrientation	m_origo;
 	WgRect			m_placementGeo;		// Gizmos geo relative anchor and hotspot. Setting width and height to 0 uses Gizmos DefaultSize() dynamically.
 										// Setting just one of them to 0 uses Gizmos HeightForWidth() or WidthForHeight() dynamically.
+
+	WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at child that held focus when this modal was last on top.
 };
 
 
@@ -188,8 +190,10 @@ private:
 		WgGizmoParent * _parent() const { return m_pParent; }
 
 		WgGizmoModal * 	m_pParent;
-
+		WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any modal was shown.
 	};
+
+	void			_updateKeyboardFocus();
 
 	// These are needed until WgGizmoContainer inherits from WgGizmo
 
