@@ -613,7 +613,7 @@ void WgEventHandler::_processEventQueue()
 		if( pEvent->IsForGizmo() )
 		{
 			WgGizmo * pGizmo = pEvent->Gizmo();
-			if( pGizmo && !_isEventLockedForOtherGizmo(pEvent) )
+			if( pGizmo )
 				pGizmo->_onEvent( pEvent, this );
 		}
 		else
@@ -630,39 +630,6 @@ void WgEventHandler::_processEventQueue()
 		if( pEvent->IsForGizmo() || (pEvent->Type() !=  WG_EVENT_MOUSEBUTTON_PRESS &&
 			pEvent->Type() != WG_EVENT_MOUSEBUTTON_RELEASE && pEvent->Type() != WG_EVENT_KEY_PRESS) )
 			delete pEvent;
-	}
-}
-
-//____ _isEventLockedForOtherGizmo() __________________________________________
-
-bool WgEventHandler::_isEventLockedForOtherGizmo( const WgEvent::Event * pEvent ) const
-{
-	switch( pEvent->Type() )
-	{
-		case WG_EVENT_MOUSE_ENTER:
-		case WG_EVENT_MOUSE_LEAVE:
-		case WG_EVENT_MOUSE_MOVE:
-		case WG_EVENT_MOUSEBUTTON_PRESS:
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
-		case WG_EVENT_MOUSEBUTTON_DRAG:
-		case WG_EVENT_MOUSEBUTTON_CLICK:
-		case WG_EVENT_MOUSEBUTTON_DOUBLECLICK:
-		case WG_EVENT_MOUSEBUTTON_REPEAT:
-		case WG_EVENT_MOUSEBUTTON_PRESS_OUTSIDE_MODAL:
-		case WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL:
-		case WG_EVENT_MOUSEWHEEL_ROLL:
-		{
-			const WgEvent::MouseEvent* p = static_cast<const WgEvent::MouseEvent*>(pEvent);
-
-			if( p->m_bMouseLocked && p->m_pMouseLockedGizmo != p->m_pGizmo )
-				return true;
-
-			return false;
-		}
-
-		default:
-			return false;
-
 	}
 }
 
@@ -766,42 +733,6 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 		}
 		break;
 
-		// Mouse events needs mouse-lock data.
-
-		case WG_EVENT_MOUSE_ENTER:
-		case WG_EVENT_MOUSE_LEAVE:
-		case WG_EVENT_MOUSE_MOVE:
-		case WG_EVENT_MOUSEBUTTON_PRESS:
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
-		case WG_EVENT_MOUSEBUTTON_DRAG:
-		case WG_EVENT_MOUSEBUTTON_CLICK:
-		case WG_EVENT_MOUSEBUTTON_DOUBLECLICK:
-		case WG_EVENT_MOUSEBUTTON_REPEAT:
-		case WG_EVENT_MOUSEBUTTON_PRESS_OUTSIDE_MODAL:
-		case WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL:
-		case WG_EVENT_MOUSEWHEEL_ROLL:
-		{
-			// Find the first pressed mouse button among the currently pressed
-
-			int lockBtn = 0;
-			for( int i = 1 ; i <= WG_MAX_BUTTONS ; i++ )
-			{
-				if( m_bButtonPressed[i] && (lockBtn==0 || m_pLatestPressEvents[i]->Timestamp() < m_pLatestPressEvents[lockBtn]->Timestamp()) )
-					lockBtn = i;
-			}
-
-			// Set mouse-lock parameters
-
-			if( lockBtn != 0 )
-			{
-				WgEvent::MouseEvent* p = static_cast<WgEvent::MouseEvent*>(pEvent);
-				p->m_bMouseLocked = true;
-
-				if( !m_latestPressGizmos[lockBtn].empty() )
-				p->m_pMouseLockedGizmo = m_latestPressGizmos[lockBtn][0];
-			}
-		}
-		break;
 
 		default:
 			break;
@@ -911,7 +842,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 		{
 			int buttonDelay = WgBase::MouseButtonRepeatDelay();
 			int buttonRate = WgBase::MouseButtonRepeatRate();
-
+			
 			int msSinceRepeatStart = (int) (m_time - m_pLatestPressEvents[button]->Timestamp() - buttonDelay );
 
 			// First BUTTON_REPEAT event posted separately.
@@ -1358,7 +1289,7 @@ void WgEventHandler::_processMouseButtonPress( WgEvent::MouseButtonPress * pEven
 
 	int doubleClickTimeTreshold = WgBase::DoubleClickTimeTreshold();
 	int doubleClickDistanceTreshold = WgBase::DoubleClickDistanceTreshold();
-
+	
 
 	if( m_pLatestPressEvents[button] && m_pLatestPressEvents[button]->Timestamp() + doubleClickTimeTreshold > pEvent->Timestamp() )
 	{

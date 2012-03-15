@@ -42,13 +42,6 @@ namespace WgEvent
 		return m_pGizmo.GetRealPtr();
 	}
 
-	//____ MouseEvent _________________________________________________________
-
-	WgGizmo * MouseEvent::MouseLockedGizmo() const
-	{
-		return m_pMouseLockedGizmo.GetRealPtr();
-	}
-
 	//____ FocusGained ________________________________________________________
 
 	FocusGained::FocusGained()
@@ -369,7 +362,7 @@ namespace WgEvent
 		else
 			return 0;
 	}
-
+		
 	CheckboxCheck::CheckboxCheck( WgGizmoCheckbox * pGizmo )
 	{
 		m_type = WG_EVENT_CHECKBOX_CHECK;
@@ -404,7 +397,7 @@ namespace WgEvent
 		else
 			return 0;
 	}
-
+		
 	RadiobuttonSelect::RadiobuttonSelect( WgGizmoRadiobutton * pGizmo )
 	{
 		m_type = WG_EVENT_RADIOBUTTON_SELECT;
@@ -430,7 +423,7 @@ namespace WgEvent
 	}
 
 	//____ Animation event methods _____________________________________________
-
+	
 	AnimationUpdate::AnimationUpdate( WgGizmoAnimation * pGizmo, int frame, float fraction )
 	{
 		m_type = WG_EVENT_ANIMATION_UPDATE;
@@ -447,19 +440,19 @@ namespace WgEvent
 		else
 			return 0;
 	}
-
+	
 	int AnimationUpdate::Frame() const
 	{
 		return m_frame;
 	}
-
+	
 	float AnimationUpdate::Fraction() const
 	{
 		return m_fraction;
 	}
-
+	
 	//____ Tablist event methods _______________________________________________
-
+	
 	WgGizmoTablist * TablistEvent::Tablist() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
@@ -475,7 +468,7 @@ namespace WgEvent
 		m_pGizmo 	= pGizmo;
 		m_tabId 	= tabId;
 	}
-
+	
 	int TabSelect::TabId() const
 	{
 		return m_tabId;
@@ -488,33 +481,33 @@ namespace WgEvent
 		m_tabId 	= tabId;
 		m_button	= mouseButton;
 	}
-
+	
 	int TabPress::TabId() const
 	{
 		return m_tabId;
 	}
-
+	
 	int TabPress::MouseButton() const
 	{
 		return m_button;
 	}
 
 	//____ Editvalue event methods ___________________________________________
-
+	
 	WgGizmoEditvalue * EditvalueEvent::Editvalue() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
 			return static_cast<WgGizmoEditvalue*>(pGizmo);
 		else
-			return 0;
+			return 0;			
 	}
-
+	
 	int64_t EditvalueEvent::Value() const
 	{
 		return m_value;
 	}
-
+	
 	double EditvalueEvent::Fraction() const
 	{
 		return m_fraction;
@@ -537,60 +530,60 @@ namespace WgEvent
 	}
 
 	//____ Dragbar event methods _______________________________________________
-
+	
 	DragbarEvent::DragbarEvent( WgGizmoDragbar * pGizmo, float pos, float length )
 	{
 		m_pGizmo 	= pGizmo;
 		m_pos 		= pos;
 		m_length 	= length;
 	}
-
+	
 	WgGizmoDragbar* DragbarEvent::Dragbar() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
 			return static_cast<WgGizmoDragbar*>(pGizmo);
 		else
-			return 0;
+			return 0;					
 	}
-
+	
 	float DragbarEvent::Pos() const
 	{
 		return m_pos;
 	}
-
+	
 	float DragbarEvent::Length() const
 	{
 		return m_length;
 	}
-
+	
 	DragbarMove::DragbarMove( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
 	{
 		m_type = WG_EVENT_DRAGBAR_MOVE;
 	}
-
+	
 	DragbarStepUp::DragbarStepUp( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
 	{
 		m_type = WG_EVENT_DRAGBAR_STEP_UP;
 	}
-
+	
 	DragbarStepDown::DragbarStepDown( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
 	{
 		m_type = WG_EVENT_DRAGBAR_STEP_DOWN;
 	}
-
+	
 	DragbarPageUp::DragbarPageUp( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
 	{
 		m_type = WG_EVENT_DRAGBAR_PAGE_UP;
 	}
-
+	
 	DragbarPageDown::DragbarPageDown( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
 	{
 		m_type = WG_EVENT_DRAGBAR_PAGE_DOWN;
 	}
 
 	//____ Text event methods __________________________________________________
-
+	
 	WgInterfaceEditText * TextEvent::Interface() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
@@ -601,16 +594,16 @@ namespace WgEvent
 			else if( pGizmo->Type() == WgGizmoEditline::GetMyType() )
 				return static_cast<WgGizmoEditline*>(pGizmo);
 		}
-		return 0;
+		return 0;					
 	}
-
+	
 	const WgText * TextEvent::Text() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
 			return m_pText;
 		else
-			return 0;
+			return 0;							
 	}
 
 	TextModify::TextModify( WgGizmo * pGizmo, WgText * pText )
@@ -619,15 +612,15 @@ namespace WgEvent
 		m_pGizmo 	= pGizmo;
 		m_pText 	= pText;
 	}
-
+	
 	TextSet::TextSet( WgGizmo * pGizmo, WgText * pText )
 	{
 		m_type 		= WG_EVENT_TEXT_SET;
 		m_pGizmo 	= pGizmo;
 		m_pText 	= pText;
 	}
-
-
+	
+	
 	//____ MousePosition _______________________________________________________
 
 	MousePosition::MousePosition()

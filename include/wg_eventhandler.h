@@ -147,7 +147,6 @@ private:
 	void	_processCharacter( WgEvent::Character * pEvent );
 
 	bool	_isGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
-	bool	_isEventLockedForOtherGizmo( const WgEvent::Event * pEvent ) const;
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
 	int		_deleteCallbacksTo( const void * pReceiver );
