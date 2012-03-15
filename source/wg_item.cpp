@@ -207,7 +207,17 @@ WgItem * WgItem::GetMarkedItem( Uint32 _x, Uint32 _y )
 //	if( _x >= m_width && _y >= m_height )
 //		return 0;
 
-	return this;
+	switch( m_markPolicy )
+	{
+		case WG_MARKPOLICY_TRANSPARENT:
+			return 0;
+		case WG_MARKPOLICY_OPAQUE:
+			return this;
+		case WG_MARKPOLICY_ALPHA:
+		default:		
+			return this;
+
+	}
 }
 
 //____ Enable() _______________________________________________________________

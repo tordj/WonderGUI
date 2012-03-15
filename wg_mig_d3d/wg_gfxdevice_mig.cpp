@@ -68,7 +68,7 @@ bool WgGfxDeviceMIG::SetBlendMode( WgBlendMode blendMode )
 			break;
 
 		case WG_BLENDMODE_ADD:
-			m_blendModeMIG = ERenderer::eBlendModeAlphaAdd;
+			m_blendModeMIG = ERenderer::eBlendModeAdd;
 			break;
 
 		case WG_BLENDMODE_MULTIPLY:

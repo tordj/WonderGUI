@@ -304,8 +304,8 @@ WgItem* WgItemStack::GetMarkedItem( Uint32 x, Uint32 y )
 		r.x = window.x + m_itemOffsets[i].origo.calcOfsX(window.w, r.w) + m_itemOffsets[i].ofsX;
 		r.y = window.y + m_itemOffsets[i].origo.calcOfsY(window.h, r.h) + m_itemOffsets[i].ofsY;
 
-		if( r.Contains(x,y) && p->MarkPolicy() == WG_MARKPOLICY_OPAQUE )
-			pReturnItem = p;
+		if( r.Contains(x,y) && p->GetMarkedItem(x-r.x,y-r.y) != 0 )
+			pReturnItem = p->GetMarkedItem(x-r.x,y-r.y);
 
 		p = p->Next();
 	}

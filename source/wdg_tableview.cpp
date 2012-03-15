@@ -361,6 +361,7 @@ void Wdg_TableView::Init( void )
 	m_pLastMarkedHeaderItem = 0;
 
 	m_pLastMarkedItem = 0;
+	m_pRowOfLastMarkedItem = 0;
 	m_lastClickedRow = -1;
 	m_lastClickedColumn = -1;
 
@@ -909,8 +910,11 @@ WgTableRow *	Wdg_TableView::RemoveRow( Uint32 pos )
 		UpdateMarkedRowColumn(-1,m_markedColumn);
 
 	WgTableRow* pRow = (WgTableRow*)RemoveItem(pos);
-	if(pRow == m_pLastMarkedItem)
+	if(pRow == m_pRowOfLastMarkedItem)
+	{
+		m_pRowOfLastMarkedItem = 0;
 		m_pLastMarkedItem = 0;
+	}
 	return pRow;
 }
 
@@ -919,8 +923,11 @@ bool Wdg_TableView::RemoveRow( WgTableRow * pRow )
 	if( GetRowNb(pRow) == m_markedRow )
 		UpdateMarkedRowColumn(-1,m_markedColumn);
 
-	if(pRow == m_pLastMarkedItem)
+	if(pRow == m_pRowOfLastMarkedItem)
+	{
+		m_pRowOfLastMarkedItem = 0;
 		m_pLastMarkedItem = 0;
+	}
 	return RemoveItem( pRow );
 }
 
@@ -929,6 +936,7 @@ void Wdg_TableView::RemoveAllRows()
 	UpdateMarkedRowColumn(-1,m_markedColumn);
 
 	m_pLastMarkedItem = 0;
+	m_pRowOfLastMarkedItem = 0;
 	return RemoveAllItems();
 }
 
@@ -937,8 +945,11 @@ bool Wdg_TableView::DeleteRow( Uint32 pos )
 	if( pos == m_markedRow )
 		UpdateMarkedRowColumn(-1,m_markedColumn);
 
-	if(m_pLastMarkedItem == m_items.Get(pos))
+	if(m_pRowOfLastMarkedItem == m_items.Get(pos))
+	{
+		m_pRowOfLastMarkedItem = 0;
 		m_pLastMarkedItem = 0;
+	}
 	return DeleteItem(pos);
 }
 
@@ -947,8 +958,11 @@ bool Wdg_TableView::DeleteRow( WgTableRow * pRow )
 	if( GetRowNb(pRow) == m_markedRow )
 		UpdateMarkedRowColumn(-1,m_markedColumn);
 
-	if(pRow == m_pLastMarkedItem)
+	if(pRow == m_pRowOfLastMarkedItem)
+	{
+		m_pRowOfLastMarkedItem = 0;
 		m_pLastMarkedItem = 0;
+	}
 	return DeleteItem(pRow);
 }
 
@@ -957,6 +971,7 @@ void Wdg_TableView::DeleteAllRows()
 	UpdateMarkedRowColumn(-1,m_markedColumn);
 
 	m_pLastMarkedItem = 0;
+	m_pRowOfLastMarkedItem = 0;
 	return DeleteAllItems();
 }
 
@@ -1189,7 +1204,7 @@ void Wdg_TableView::refreshItems()
 
 		while( p )
 		{
-			if( p == m_pLastMarkedItem )
+			if( p == m_pRowOfLastMarkedItem )
 			{
 				if( p->IsHidden() )
 					p = 0;
@@ -1198,7 +1213,10 @@ void Wdg_TableView::refreshItems()
 			p = p->Next();
 		}
 		if( p == 0 )
+		{
+			m_pRowOfLastMarkedItem = 0;
 			m_pLastMarkedItem = 0;
+		}
 	}
 
 	RequestRender();
@@ -1371,7 +1389,7 @@ WgItem* Wdg_TableView::GetMarkedItem( Uint32 x, Uint32 y )
 
 	// Return the item
 
-	return p;
+	return p->GetMarkedItem( xOfs - m_cellPaddingX, yOfs - m_cellPaddingY );
 }
 
 //____ GetMarkedRow() _________________________________________________________
@@ -1540,11 +1558,10 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 			if( r2.x >= _window.x + _window.w )
 				break;
 
-			r2.w = (int)m_pColumns[i].m_pixelWidth +1;		// +1 to compensate for pixel overlap-hack further down.
-			//if( i == m_nColumns-1 && r2.x + r2.w < _window.x + _window.w )
-			if( i == m_nColumns-1 )
-				r2.w = (int)m_pColumns[i].m_pixelWidth;		// Don't compensate on last column header
-//				r2.w = _window.x + _window.w - r2.x;		// Last column header stretches to end of tableview...
+			r2.w = (int)m_pColumns[i].m_pixelWidth;
+
+			if( r2.w == 0 )
+				continue;
 
 			WgMode mode = WG_MODE_NORMAL;
 
@@ -1560,12 +1577,16 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 				pHeaderGfx = m_pHeaderGfxSelected;
 			else
 				pHeaderGfx = m_pHeaderGfxNormal;
-			
+
+			WgRect	bgRect = r2;
+			if( i != m_nColumns-1 )
+				bgRect.w += 1;						// HACK: Overlap last pixel to avoid double separator graphics between two headers
+
 			WgBlock	headerBg;
 			if( pHeaderGfx)
-				headerBg = pHeaderGfx->GetBlock(mode,r2);	
+				headerBg = pHeaderGfx->GetBlock(mode,bgRect);	
 
-			WgGfx::clipBlitBlock( _clip, headerBg, r2 );
+			WgGfx::clipBlitBlock( _clip, headerBg, bgRect );
 
 			// Print text
 
@@ -1583,10 +1604,12 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 
 			// Draw header item
 
+			WgRect itemRect;
+
 			if( m_pColumns[i].GetItem() )
 			{
 				WgRect window = rText;
-				WgRect itemRect = _headerItemGeo( &m_pColumns[i], window );
+				itemRect = _headerItemGeo( &m_pColumns[i], window );
 
 				WgItem * pItem = m_pColumns[i].GetItem();
 				pItem->Render( itemRect, WgRect( window, _clip ) );
@@ -1606,12 +1629,17 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 				Sint32 dx = (Sint32) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.Width() * m_sortMarkerOrigo.hotspotX());
 				Sint32 dy = (Sint32) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.Height() * m_sortMarkerOrigo.hotspotY());
 
-				WgGfx::clipBlitBlock( _clip, block, WgRect( dx, dy, block.Width(), block.Height()) );
+				WgRect	dest( dx, dy, block.Width(), block.Height());
+
+				if( itemRect.w > 0 && itemRect.h > 0 && dest.IntersectsWith(itemRect) )
+					dest.x = itemRect.x - dest.w -1;
+
+				WgGfx::clipBlitBlock( _clip, block, dest );
 			}
 
 			//
 
-			r2.x += r2.w - 1;	// HACK: Overlap last pixel to avoid double separator graphics between two headers
+			r2.x += r2.w;	
 		}
 
 		r.y += headerHeight;
@@ -1749,16 +1777,18 @@ void Wdg_TableView::DoMyOwnRender( const WgRect& _window, const WgRect& _clip, U
 void Wdg_TableView::DrawRowBg( const WgRect& clip, WgTableRow * pRow, int iVisibleRowNb, int iRealRowNb, const WgRect& dest )
 {
 	WgMode mode = WG_MODE_NORMAL;
-	if( pRow->IsSelected() )
+	if( m_bSelectable )
 	{
-		if( iRealRowNb == m_markedRow )
-			mode = WG_MODE_SPECIAL;
-		else
-			mode = WG_MODE_SELECTED;
+		if( pRow->IsSelected() )
+		{
+			if( iRealRowNb == m_markedRow )
+				mode = WG_MODE_SPECIAL;
+			else
+				mode = WG_MODE_SELECTED;
+		}
+		else if( iRealRowNb == m_markedRow )
+			mode = WG_MODE_MARKED;
 	}
-	else if( iRealRowNb == m_markedRow )
-		mode = WG_MODE_MARKED;
-
 	_renderTile( WgGfx::GetDevice(), clip, dest, iVisibleRowNb, mode );
 }
 
@@ -1837,7 +1867,7 @@ WgTableColumn *Wdg_TableView::GetHeaderColumnAt(int x, int y, int * wpOfsX ) con
 						wpOfsX[0] = xOfs;
 					return &m_pColumns[col];
 				}
-				xOfs -= w - 1;
+				xOfs -= w;
 			}
 		}
 	}
@@ -2023,6 +2053,7 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 	{
 		m_pLastMarkedItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
 		m_pLastMarkedItem = 0;
+		m_pRowOfLastMarkedItem = 0;
 		return;
 	}
 
@@ -2048,13 +2079,16 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 	{
 
 		WgItem * pItem = GetMarkedItem( (Uint32) x, (Uint32) y );
+		Uint32 yOfs;	//DUMMY
+		WgTableRow * pRowOfMarkedItem;
+
+		GetMarkedRow( (Uint32) y, pRowOfMarkedItem, yOfs );
 
 		if( pItem != m_pLastMarkedItem && m_pLastMarkedItem != 0 )
 		{
 			m_pLastMarkedItem->ActionRespond( this, WgInput::POINTER_EXIT, _button_key, _info, _inputObj );
 			m_pLastMarkedItem = 0;
-//			pItem = 0;	// Is this correct???
-//			return;	// hmmm... should this return really be here?
+			m_pRowOfLastMarkedItem = 0;
 		}
 
 		if( pItem )
@@ -2069,14 +2103,15 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 			pItem->ActionRespond( this, _action, _button_key, _info, _inputObj );
 
 			// HACK. Remove when message loop is implemented
-			// pItem can be deleted in the ActionResponse callback. Make sure it still exist // Martin
+			// row of item can be deleted in the ActionResponse callback. Make sure it still exist // Martin
 			m_pLastMarkedItem = 0;
 			WgTableRow* pRow = (WgTableRow*)m_items.First();
 			while( pRow )
 			{
-				if( pRow->HasItem( pItem ) )
+				if( pRow == pRowOfMarkedItem )
 				{
 					m_pLastMarkedItem = pItem;
+					m_pRowOfLastMarkedItem = pRowOfMarkedItem;
 					break;
 				}
 				pRow = pRow->GetNext();
@@ -2085,6 +2120,7 @@ void Wdg_TableView::DoMyOwnActionRespond( WgInput::UserAction _action, int _butt
 		else
 		{
 			m_pLastMarkedItem = 0;
+			m_pRowOfLastMarkedItem = pRowOfMarkedItem;
 		}
 	}
 

@@ -44,6 +44,8 @@ WgGizmoEditvalue::WgGizmoEditvalue()
 	_regenText();
 	m_buttonDownOfs = 0;
 	m_bSelectAllOnRelease = false;
+	m_maxInputChars = 256;
+	m_viewOfs = WgCoord(0,0);
 
 	m_pointerStyle	= WG_POINTER_IBEAM;
 
@@ -110,6 +112,7 @@ void WgGizmoEditvalue::SetFormat( const WgValueFormat& format )
 {
 	m_format		= format;
 	m_useFormat		= format;
+
 	_regenText();
 	_requestRender();
 }
@@ -165,6 +168,17 @@ void WgGizmoEditvalue::Clear()
 	m_useFormat.bForcePeriod = false;
 	m_useFormat.decimals = 0;
 }
+
+//____ SetMaxInputChars() _____________________________________________________
+
+bool WgGizmoEditvalue::SetMaxInputChars( int max )
+{
+	if( max <= 0 )
+		return false;
+	m_maxInputChars = max;
+	return true;
+}
+
 
 //____ DefaultSize() __________________________________________________________
 
@@ -239,9 +253,25 @@ void WgGizmoEditvalue::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, 
 	if( m_text.nbLines() == 0 )
 		return;
 
+	// Adjust text canvas
+
+	WgRect	canvas = _canvas;
+
+	if( m_text.isCursorShowing() )
+	{
+		int textW = m_text.width();
+		if( textW > canvas.w )
+			canvas.w = textW;
+
+		WgCursorInstance * pCursor = m_text.GetCursor();
+		m_viewOfs = m_text.FocusWindowOnRange( canvas.Size(), WgRect(m_viewOfs,_canvas.Size()), WgRange( pCursor->column(),0 ) );
+	}
+	else
+		m_viewOfs = WgCoord(0,0);
+
 	// Print the text
 
-	pDevice->PrintText( _clip, &m_text, _canvas );
+	pDevice->PrintText( _clip, &m_text, canvas - m_viewOfs );
 }
 
 //____ _regenText() ____________________________________________________________
@@ -358,12 +388,14 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 		{
 			m_text.setSelectionMode(true);
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			_limitCursor();
 		}
 		else
 		{
 			m_text.setSelectionMode(false);
 			m_text.clearSelection();
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			_limitCursor();
 			m_text.setSelectionMode(true);
 		}
 
@@ -375,6 +407,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 		if( m_bFocused && ofs.x != m_buttonDownOfs )
 		{
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			_limitCursor();
 			m_buttonDownOfs = ofs.x;
 			m_bSelectAllOnRelease = false;
 		}
@@ -387,14 +420,14 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 			m_text.setSelectionMode(false);
 
 			if( m_bSelectAllOnRelease )
-				m_text.selectAll();
+				_selectAll();
 		}
 	}
 
 
 	if( action == WgInput::BUTTON_DOUBLECLICK && button_key == 1 )
 	{
-		m_text.selectAll();
+		_selectAll();
 		m_text.setSelectionMode(true);
 	}
 
@@ -430,6 +463,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 
 					m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
 					m_text.goEOL();
+					_limitCursor();
 				}
 				else
 				{
@@ -449,6 +483,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 					m_text.gotoPrevWord();
 				else
 					m_text.goLeft();
+				_limitCursor();
 				break;
 			case WG_KEY_RIGHT:
 				if( info.modifier & WG_MODKEY_SHIFT )
@@ -460,28 +495,70 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 					m_text.gotoNextWord();
 				else
 					m_text.goRight();
+				_limitCursor();
 				break;
 
 			case WG_KEY_BACKSPACE:
 				if(m_text.hasSelection())
+				{
 					m_text.delSelection();
+					bTextChanged = true;
+				}
 				else if( info.modifier & WG_MODKEY_CTRL )
-					m_text.delPrevWord();
-				else
-					m_text.delPrevChar();
+				{
+					int ofs1 = m_text.column();
+					m_text.gotoPrevWord();
+					_limitCursor();
+					int ofs2 = m_text.column();
 
-				bTextChanged = true;
+					if( ofs2 < ofs1 )
+					{
+						m_text.deleteText( ofs2, ofs1 - ofs2 );
+						bTextChanged = true;
+					}
+//					m_text.delPrevWord();
+				}
+				else
+				{
+					if( m_text.column() > m_format.getPrefix().Length() )
+					{
+						m_text.delPrevChar();
+						bTextChanged = true;
+					}
+				}
+
 				break;
 
 			case WG_KEY_DELETE:
 				if(m_text.hasSelection())
+				{
 					m_text.delSelection();
+					bTextChanged = true;
+				}
 				else if( info.modifier & WG_MODKEY_CTRL )
-					m_text.delNextWord();
-				else
-					m_text.delNextChar();
+				{
+					int ofs1 = m_text.column();
+					m_text.gotoNextWord();
+					_limitCursor();
+					int ofs2 = m_text.column();
 
-				bTextChanged = true;
+					if( ofs2 > ofs1 )
+					{
+						m_text.deleteText( ofs1, ofs2 - ofs1 );
+						bTextChanged = true;
+					}
+//					m_text.delNextWord();
+				}
+				else
+				{
+					if( m_text.column() < m_text.nbChars() - m_format.getSuffix().Length() )
+					{
+						m_text.delNextChar();
+						bTextChanged = true;
+					}
+//					m_text.delNextChar();
+				}
+
 				break;
 
 			case WG_KEY_HOME:
@@ -501,6 +578,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 						m_text.setSelectionMode(true);
 
 					m_text.goBOL();
+					_limitCursor();
 					break;
 				}
 
@@ -523,6 +601,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 						m_text.setSelectionMode(true);
 
 					m_text.goEOL();
+					_limitCursor();
 					break;
 				}
 
@@ -553,13 +632,16 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 						m_text.delSelection();
 					m_text.setSelectionMode(false);
 
-					if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].glyph == '-' ) )
+					if( m_text.nbChars() < m_maxInputChars )
 					{
-						m_text.insertChar( 0, WgChar('0') );
-						pCursor->goRight();
-					}
+						if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].glyph == '-' ) )
+						{
+							m_text.insertChar( 0, WgChar('0') );
+							pCursor->goRight();
+						}
 
-					pCursor->putChar( m_format.period );
+						pCursor->putChar( m_format.period );
+					}
 					bTextChanged = true;
 				}
 			}
@@ -569,14 +651,15 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 
 			if( button_key == '-' )
 			{
-				if( pCursor->column() == 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
+				if( pCursor->column() == m_format.getPrefix().Length() && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
 					m_rangeMin < 0 )
 				{
 					if(m_text.hasSelection())
 						m_text.delSelection();
 					m_text.setSelectionMode(false);
 
-					pCursor->putChar( '-' );
+					if( m_text.nbChars() < m_maxInputChars )
+						pCursor->putChar( '-' );
 					bTextChanged = true;
 				}
 			}
@@ -594,7 +677,8 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 						m_text.delSelection();
 					m_text.setSelectionMode(false);
 
-					pCursor->putChar( button_key );
+					if( m_text.nbChars() < m_maxInputChars )
+						pCursor->putChar( button_key );
 					bTextChanged = true;
 				}
 			}
@@ -617,6 +701,57 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 	}
 }
 
+//____ _selectAll() ___________________________________________________________
+
+void WgGizmoEditvalue::_selectAll()
+{
+	int min = m_format.getPrefix().Length();
+	int max = m_text.nbChars() - m_format.getSuffix().Length();
+
+	m_text.selectRange( WgRange( min, max-min ) );
+}
+
+//____ _limitCursor() _________________________________________________________
+
+void WgGizmoEditvalue::_limitCursor()
+{
+	int min = m_format.getPrefix().Length();
+	int max = m_text.nbChars() - m_format.getSuffix().Length();
+
+	WgCursorInstance * pCursor = m_text.GetCursor();
+
+	// Save selection (might get destroyed by moving cursor)
+
+//	bool bSelectionMode = pCursor->getSelectionMode();
+//	WgRange sel = pCursor->getSelection();
+
+	// Move cursor to within prefix/suffix
+
+	if( pCursor->column() < min )
+		pCursor->gotoColumn( min );
+	if( pCursor->column() > max )
+		pCursor->gotoColumn( max );
+
+	// Tweak selection if cursor was not in selection mode
+/*
+	if( !bSelectionMode )
+	{
+		if( sel.ofs < min )
+		{
+			sel.len -= min - sel.ofs;
+			sel.ofs = min;
+		}
+
+		if( sel.len < 0 )
+			sel.len = 0;
+
+		if( sel.ofs + sel.len > max )
+			sel.len = max - sel.ofs;
+
+		m_text.selectText( 0, sel.ofs, 0, sel.ofs + sel.len );
+	}
+*/
+}
 
 //____ _onCloneContent() _______________________________________________________
 
@@ -692,6 +827,6 @@ bool WgGizmoEditvalue::SelectAllText()
 			return false;				// Couldn't get cursor.
 	}
 
-	m_text.selectAll();
+	_selectAll();
 	return true;
 }

@@ -280,8 +280,6 @@ private:
 	WgPointerSpy**	m_pPointerSpies;
 	Uint32			m_nPointerSpies;
 
-	Uint32			m_hoverStartTime;
-
 	Uint16			m_keycodeMap[WG_KEY_ARRAYSIZE];
 
 };

@@ -57,6 +57,8 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 
 		//____ Methods __________________________________________
 		
+		bool	SetMaxInputChars( int max );
+		int		MaxInputChars() const { return m_maxInputChars; }
 		void	SetTextAlignment( const WgOrigo& origo );
 		WgOrigo	GetTextAlignment( ) const;
 		void	SetTextColor(WgColor color);
@@ -74,8 +76,7 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 		WgSize	DefaultSize() const;
 
 
-//		virtual bool		IsInputField() const	{ return true; }
-		virtual bool		IsInputField() const	{ return (m_text.nbChars() > 0); }
+		virtual bool		IsInputField() const	{ return true; }
 
 	protected:
 
@@ -90,6 +91,8 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 		void	_onRefresh();
 
 	private:
+		void	_limitCursor();					///< Make sure cursor or selection is not in prefix or suffix part of text.
+		void	_selectAll();					///< Our own select all that doesn't include prefix or suffix.
 
 		void	_valueModified();				///< Called when value has been modified.
 		void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
@@ -105,6 +108,8 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 		WgOrigo				m_textOrigo;
 		int					m_buttonDownOfs;
 		bool				m_bSelectAllOnRelease;
+		int					m_maxInputChars;
+		WgCoord				m_viewOfs;
 };
 
 

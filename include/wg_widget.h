@@ -199,7 +199,6 @@ class	WgWidget
 		inline void			SetLayer( Uint8 layer ) { m_layer = layer; }
 
 
-		// added by patrik for custom tooltip delay
 		inline Sint32		TooltipDelay() const { return m_tooltipDelay; }
 		inline void			SetTooltipDelay( Sint32 tooltipDelay ) { m_tooltipDelay = tooltipDelay; }
 
