@@ -292,6 +292,17 @@ WgMode WgGizmo::Mode() const
 		return WG_MODE_DISABLED;
 }
 
+//____ _getBlendMode() _________________________________________________________
+
+WgBlendMode WgGizmo::_getBlendMode() const
+{
+	WgGizmoParent * pParent = ParentX();
+	if( pParent->CastToGizmo() )
+		return pParent->CastToGizmo()->_getBlendMode();
+	else
+		return WG_BLENDMODE_BLEND;		// We always start out with WG_BLENDMODE_BLEND.
+}
+
 //____ _renderPatches() ________________________________________________________
 #ifdef WG_TNG
 void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
@@ -313,9 +324,9 @@ void WgGizmo::_onCollectPatches( WgPatches& container, const WgRect& geo, const 
 		container.Add( WgRect( geo, clip ) );
 }
 
-void WgGizmo::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
+void WgGizmo::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-	if( m_bOpaque )
+	if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
 	{
 		patches.Sub( WgRect( geo, clip ) );
 	}

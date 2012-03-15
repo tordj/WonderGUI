@@ -34,7 +34,7 @@ public:
 	WgMonotainer() : m_hook(this) {}
 	~WgMonotainer() {}
 
-	WgHook *		SetChild( WgGizmoContainer * pGizmo );
+	WgHook *		SetChild( WgGizmo * pGizmo );
 	WgGizmo *		Child() { return m_hook.Gizmo(); }
 	bool			DeleteChild();
 	WgGizmo *		ReleaseChild();
@@ -60,10 +60,6 @@ public:
 	const WgGizmoContainer * CastToContainer() const { return this; }
 
 	WgGizmo *		CastToGizmo() { return this; }
-
-	// Overloaded from container
-
-	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 protected:
 
@@ -117,7 +113,7 @@ protected:
 	//
 
 	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
+	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onNewSize( const WgSize& size );
 

@@ -25,12 +25,8 @@
 
 //____ SetChild() ______________________________________________________________
 
-WgHook * WgMonotainer::SetChild( WgGizmoContainer * _pGizmo )
+WgHook * WgMonotainer::SetChild( WgGizmo * pGizmo )
 {
-	if( !_pGizmo )
-		return false;
-
-	WgGizmo * pGizmo = _pGizmo->CastToGizmo();
 	if( !pGizmo )
 		return false;
 
@@ -38,6 +34,7 @@ WgHook * WgMonotainer::SetChild( WgGizmoContainer * _pGizmo )
 	pGizmo->_onNewSize(Size());
 
 	_requestRender();
+	_requestResize();
 	return &m_hook;
 }
 
@@ -136,21 +133,6 @@ WgSize WgMonotainer::DefaultSize() const
 		return WgSize(1,1);
 }
 
-//____ FindGizmo() _____________________________________________________________
-
-WgGizmo * WgMonotainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
-{
-	if( m_hook.Gizmo() && !m_hook.Hidden() )
-		return m_hook.Gizmo()->CastToContainer()->FindGizmo( ofs, mode );
-	else
-	{
-		if( mode == WG_SEARCH_GEOMETRY )
-			return this;
-	}
-
-	return 0;
-}
-
 //____ _onCollectPatches() _____________________________________________________
 
 void WgMonotainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
@@ -161,10 +143,10 @@ void WgMonotainer::_onCollectPatches( WgPatches& container, const WgRect& geo, c
 
 //____ _onMaskPatches() ________________________________________________________
 
-void WgMonotainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
+void WgMonotainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	if( !m_hook.Hidden() && m_hook.Gizmo() )
-		m_hook.Gizmo()->_onMaskPatches( patches, geo, clip );
+		m_hook.Gizmo()->_onMaskPatches( patches, geo, clip, blendMode );
 }
 
 //____ _onCloneContent() _______________________________________________________

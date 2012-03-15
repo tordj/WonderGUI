@@ -84,6 +84,23 @@ void WgGizmoShader::SetBlendMode( WgBlendMode mode )
 	}
 }
 
+
+//____ _getBlendMode() _________________________________________________________
+
+WgBlendMode WgGizmoShader::_getBlendMode() const
+{
+	return m_blendMode;
+}
+
+
+//____ _onMaskPatches() ________________________________________________________
+
+void WgGizmoShader::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+{
+	if( !m_hook.Hidden() && m_hook.Gizmo() )
+		m_hook.Gizmo()->_onMaskPatches( patches, geo, clip, m_blendMode );
+}
+
 //____ _renderPatches() ________________________________________________________
 
 void WgGizmoShader::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )

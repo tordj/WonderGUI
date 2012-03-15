@@ -138,7 +138,7 @@ public:
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
 	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_bFocused; }
-	WgGizmoParent * ParentX() { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
+	WgGizmoParent * ParentX() const { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
 
 	WgGizmo *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
 	WgGizmo *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
@@ -181,6 +181,7 @@ protected:
 	void			_onNewRoot( WgRoot * pRoot );
 	void			_startReceiveTicks();
 	void			_stopReceiveTicks();
+	virtual WgBlendMode	_getBlendMode() const;
 #endif
 
 	// Convenient calls to hook
@@ -194,7 +195,7 @@ protected:
 #ifdef WG_TNG
 	virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
+	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 #endif
 	virtual void	_onCloneContent( const WgGizmo * _pOrg ) = 0;
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );

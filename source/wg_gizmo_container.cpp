@@ -27,6 +27,10 @@
 #	include <wg_patches.h>
 #endif
 
+#ifndef WG_GFXDEVICE_DOT_H
+#	include <wg_gfxdevice.h>
+#endif
+
 //____ Constructor _____________________________________________________________
 
 WgGizmoContainer::WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE), m_bSiblingsOverlap(false)
@@ -223,7 +227,7 @@ void WgGizmoContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _can
 
 			p->patches.Push( &patches );
 
-			p->pGizmo->_onMaskPatches( patches, p->geo, p->geo );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+			p->pGizmo->_onMaskPatches( patches, p->geo, p->geo, pDevice->GetBlendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 			if( patches.IsEmpty() )
 				break;
@@ -282,7 +286,7 @@ void WgGizmoContainer::_onCollectPatches( WgPatches& container, const WgRect& ge
 
 //____ _onMaskPatches() __________________________________________________________
 #ifdef WG_TNG
-void WgGizmoContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
+void WgGizmoContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	switch( m_maskOp )
 	{
@@ -294,7 +298,7 @@ void WgGizmoContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, co
 			while(p)
 			{
 				if( !p->Hidden() )
-					p->Gizmo()->_onMaskPatches( patches, childGeo + geo.Pos(), clip );
+					p->Gizmo()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
 				p = _nextHookWithGeo( childGeo, p );
 			}
 			break;
