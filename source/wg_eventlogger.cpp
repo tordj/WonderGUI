@@ -203,17 +203,33 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, " millisec=%d", ((const WgEvent::Tick*)_pEvent)->Millisec() );
 			break;
 		case WG_EVENT_MOUSE_ENTER:
+		{
 			id = "MouseEnter";
+			const WgEvent::MouseEvent * pEvent = static_cast<const WgEvent::MouseEvent*>(_pEvent);
+			sprintf( params, " locked=%d lockedGizmo=%p", (int) pEvent->MouseLocked(), pEvent->MouseLockedGizmo() );
 			break;
+		}
 		case WG_EVENT_MOUSE_MOVE:
+		{
 			id = "MouseMove";
+			const WgEvent::MouseEvent * pEvent = static_cast<const WgEvent::MouseEvent*>(_pEvent);
+			sprintf( params, " locked=%d lockedGizmo=%p", (int) pEvent->MouseLocked(), pEvent->MouseLockedGizmo() );
 			break;
+		}
 		case WG_EVENT_MOUSE_POSITION:
+		{
 			id = "MousePosition";
+			const WgEvent::MouseEvent * pEvent = static_cast<const WgEvent::MouseEvent*>(_pEvent);
+			sprintf( params, " locked=%d lockedGizmo=%p", (int) pEvent->MouseLocked(), pEvent->MouseLockedGizmo() );
 			break;
+		}
 		case WG_EVENT_MOUSE_LEAVE:
+		{
 			id = "MouseLeave";
+			const WgEvent::MouseEvent * pEvent = static_cast<const WgEvent::MouseEvent*>(_pEvent);
+			sprintf( params, " locked=%d lockedGizmo=%p", (int) pEvent->MouseLocked(), pEvent->MouseLockedGizmo() );
 			break;
+		}
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 			id = "MouseButtonPress";
 			sprintf( params, " button=%d", ((const WgEvent::MouseButtonPress*)_pEvent)->Button() );

@@ -63,14 +63,14 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 
 		public:
-			inline WgEventType		Type() const { return m_type; }
-			inline int64_t			Timestamp() const { return m_timestamp; }
-					WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
-			inline WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
-			inline bool				IsForGizmo() const { return m_bIsForGizmo; }
-			inline WgModifierKeys	ModKeys() const { return m_modKeys; }
-			inline WgCoord			PointerPos() const { return m_pointerLocalPos; }
-			inline WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
+			WgEventType		Type() const { return m_type; }
+			int64_t			Timestamp() const { return m_timestamp; }
+			WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
+			WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
+			bool			IsForGizmo() const { return m_bIsForGizmo; }
+			WgModifierKeys	ModKeys() const { return m_modKeys; }
+			WgCoord			PointerPos() const { return m_pointerLocalPos; }
+			WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
 
 		protected:
 			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false) {}
@@ -85,11 +85,25 @@ namespace WgEvent
 			WgCoord			m_pointerScreenPos;	// Screen position of pointer.
 	};
 
-	class MouseButtonEvent : public Event
+	class MouseEvent : public Event
+	{
+		friend class::WgEventHandler;
+	public:
+		bool		MouseLocked() const { return m_bMouseLocked; }
+		WgGizmo *	MouseLockedGizmo() const;
+
+	protected:
+		MouseEvent() : m_bMouseLocked(false) {}
+
+		bool			m_bMouseLocked;
+		WgGizmoWeakPtr	m_pMouseLockedGizmo;
+	};
+
+	class MouseButtonEvent : public MouseEvent
 	{
 		friend class ::WgEventHandler;
 	public:
-		inline int		Button() const { return m_button; }
+		int		Button() const { return m_button; }
 	protected:
 		MouseButtonEvent(int button) : m_button(button) {}
 
@@ -100,8 +114,8 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	public:
-		inline int		NativeKeyCode() const { return m_nativeKeyCode; }
-		inline int		TranslatedKeyCode() const { return m_translatedKeyCode; }
+		int		NativeKeyCode() const { return m_nativeKeyCode; }
+		int		TranslatedKeyCode() const { return m_translatedKeyCode; }
 	protected:
 		KeyEvent( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(0) {}
 
@@ -123,7 +137,7 @@ namespace WgEvent
 		FocusLost();
 	};
 
-	class MouseEnter : public Event
+	class MouseEnter : public MouseEvent
 	{
 		friend class ::WgEventHandler;
 	public:
@@ -132,7 +146,7 @@ namespace WgEvent
 		MouseEnter( WgGizmo * pGizmo );
 	};
 
-	class MouseLeave : public Event
+	class MouseLeave : public MouseEvent
 	{
 		friend class ::WgEventHandler;
 	public:
@@ -142,7 +156,7 @@ namespace WgEvent
 	};
 
 
-	class MouseMove : public Event
+	class MouseMove : public MouseEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
@@ -166,14 +180,14 @@ namespace WgEvent
 	public:
 		MouseButtonRelease( int button );
 
-		bool			PressInside() const;
-		bool			ReleaseInside() const;
+		bool	PressInside() const;
+		bool	ReleaseInside() const;
 
 	protected:
 		MouseButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside );
 
-		bool			m_bPressInside;
-		bool			m_bReleaseInside;
+		bool	m_bPressInside;
+		bool	m_bReleaseInside;
 	};
 
 	class KeyPress : public KeyEvent
@@ -207,19 +221,19 @@ namespace WgEvent
 		unsigned short	m_char;
 	};
 
-	class MouseWheelRoll : public Event
+	class MouseWheelRoll : public MouseEvent
 	{
 		friend class ::WgEventHandler;
 	public:
 		MouseWheelRoll( int wheel, int distance );
 
-		int			Wheel() const;
-		int			Distance() const;
+		int		Wheel() const;
+		int		Distance() const;
 	protected:
 		MouseWheelRoll( int wheel, int distance, WgGizmo * pGizmo );
 
-		int			m_wheel;
-		int			m_distance;
+		int		m_wheel;
+		int		m_distance;
 	};
 
 	class Tick : public Event
@@ -228,11 +242,11 @@ namespace WgEvent
 	public:
 		Tick( int ms );
 
-		int				Millisec() const;
+		int		Millisec() const;
 	protected:
 		Tick( int ms, WgGizmo * pGizmo );
 
-		int			m_millisec;
+		int		m_millisec;
 	};
 
 	//____ WgGizmoButton events _______________________________________________
@@ -268,7 +282,7 @@ namespace WgEvent
 	{
 	public:
 		CheckboxToggle( WgGizmoCheckbox * pGizmo, bool bChecked );
-		bool		IsChecked() const;
+		bool	IsChecked() const;
 
 	private:
 		bool	m_bChecked;
@@ -318,13 +332,13 @@ namespace WgEvent
 	};
 
 	//____ WgGizmoTablist events _______________________________________________
-	
+
 	class TablistEvent : public Event
 	{
 	public:
 		WgGizmoTablist *	Tablist() const;
 	};
-	
+
 	class TabSelect : public TablistEvent
 	{
 	public:
@@ -380,11 +394,11 @@ namespace WgEvent
 		WgGizmoDragbar* Dragbar() const;
 		float			Pos() const;
 		float			Length() const;
-		
+
 	protected:
 		DragbarEvent( WgGizmoDragbar * pGizmo, float pos, float length );
-		float			m_pos;
-		float			m_length;
+		float		m_pos;
+		float		m_length;
 	};
 
 	class DragbarMove : public DragbarEvent
@@ -433,13 +447,13 @@ namespace WgEvent
 	public:
 		TextModify( WgGizmo * pGizmo, WgText * pText );
 	};
-	
+
 	class TextSet : public TextEvent
 	{
 	public:
 		TextSet( WgGizmo * pGizmo, WgText * pText );
 	};
-	
+
 
 	//____ Internally posted events ____________________________________________
 
@@ -457,15 +471,15 @@ namespace WgEvent
 		MouseButtonDrag( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos );
 		MouseButtonDrag( int button, WgGizmo * pGizmo, const WgCoord& orgPos, const WgCoord& prevPos, const WgCoord& currPos );
 	public:
-		WgCoord			DraggedTotal() const;
-		WgCoord			DraggedNow() const;
-		WgCoord			StartPos() const;
-		WgCoord			PrevPos() const;
-		WgCoord			CurrPos() const;
+		WgCoord		DraggedTotal() const;
+		WgCoord		DraggedNow() const;
+		WgCoord		StartPos() const;
+		WgCoord		PrevPos() const;
+		WgCoord		CurrPos() const;
 	protected:
-		WgCoord			m_startPos;
-		WgCoord			m_prevPos;
-		WgCoord			m_currPos;
+		WgCoord		m_startPos;
+		WgCoord		m_prevPos;
+		WgCoord		m_currPos;
 	};
 
 	class MouseButtonRepeat : public MouseButtonEvent
@@ -502,7 +516,7 @@ namespace WgEvent
 	};
 
 
-	class MouseMoveOutsideModal : public Event
+	class MouseMoveOutsideModal : public MouseEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
