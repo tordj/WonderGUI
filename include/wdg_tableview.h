@@ -371,6 +371,7 @@ private:
 	WgItem *		m_pLastMarkedHeaderItem;
 
 	WgItem *		m_pLastMarkedItem;
+	WgItem *		m_pRowOfLastMarkedItem;
 	int				m_lastClickedRow;
 	int				m_lastClickedColumn;
 

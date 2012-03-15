@@ -621,6 +621,19 @@ void WgCursorInstance::clearSelection()
 	m_selStartColumn = m_column;
 }
 
+void WgCursorInstance::selectRange( WgRange range )
+{
+	WgTextPos beg = m_pText->OfsToPos( range.ofs );
+	WgTextPos end = m_pText->OfsToPos( range.ofs + range.len );
+
+	m_pText->clearSelection();
+	setSelectionMode(true);
+	m_selStartLine = beg.line;
+	m_selStartColumn = beg.col;
+	gotoHardPos( end.line, end.col );
+	setSelectionMode(false);
+}
+
 void WgCursorInstance::selectAll()
 {
 	m_pText->clearSelection();

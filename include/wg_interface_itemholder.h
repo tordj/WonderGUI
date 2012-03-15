@@ -60,6 +60,9 @@ public:
 	void	SortItems();
 	void	SetSortOrder( bool bAscend );
 
+	void	SetSelectable( bool bSelectable );
+	bool	IsSelectable() const { return m_bSelectable; }
+
 	void	SetItemMarkColor( const WgColor& color );
 	WgColor	GetItemMarkColor() const { return m_itemMarkColor; }
 
@@ -110,6 +113,7 @@ protected:
 	Uint32			m_nItems;
 	WgColor			m_itemMarkColor;
 	bool			m_bSortAscend;
+	bool			m_bSelectable;
 
 	WgItem *		m_pFocusedItem;
 

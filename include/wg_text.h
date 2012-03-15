@@ -369,6 +369,7 @@ public:
 	void			delSelection(){ if(m_pCursor) m_pCursor->delSelection(); }
 
 	void			selectAll() { if(m_pCursor) m_pCursor->selectAll(); }
+	void			selectRange( WgRange range ) { if(m_pCursor) m_pCursor->selectRange(range); }
 
 	int				LineColToOffset(int line, int col) const;						// HARD LINES!!!!!
 //	void			OffsetToSoftLineCol(int ofs, int* wpLine, int* wpCol) const;
@@ -399,6 +400,9 @@ public:
 
 	WgTextPos		ClampPos( WgTextPos ) const;
 
+	//
+
+	WgCoord			FocusWindowOnRange( const WgSize& canvas, const WgRect& window, WgRange range ) const;
 
 	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
 

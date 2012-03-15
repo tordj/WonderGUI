@@ -40,9 +40,9 @@ const WgChar* WgString::Chars() const
 	return m_buffer.Chars();
 }
 
-Uint32 WgString::Length() const
+int WgString::Length() const
 {
-	return m_buffer.NbChars();
+	return (int) m_buffer.NbChars();
 }
 
 bool WgString::IsEmpty() const

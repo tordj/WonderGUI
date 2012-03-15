@@ -64,7 +64,7 @@ public:
 	void		goBOF();
 	void		goEOF();
 
-	virtual bool		IsInputField() const	{ return (m_text.nbChars() > 0); }
+	virtual bool		IsInputField() const	{ return m_text.IsEditable(); }
 
 	virtual Wg_Interface_TextHolder* GetText() { return this; }
 

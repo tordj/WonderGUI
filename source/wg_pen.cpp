@@ -190,10 +190,9 @@ bool WgPen::SetChar( Uint32 chr )
 
 		if( chr == '\t' )
 		{
-			int x = m_pos.x;
-			x += m_tabWidth;
-			x -= (x - m_origo.x) % m_tabWidth;
-			m_dummyGlyph.SetAdvance(x);
+			int newPos = m_origo.x + ((m_pos.x - m_origo.x + m_tabWidth) / m_tabWidth) * m_tabWidth;
+			m_dummyGlyph.SetAdvance(newPos - m_pos.x);
+			m_pGlyph = &m_dummyGlyph;
 			return false;
 		}
 	}

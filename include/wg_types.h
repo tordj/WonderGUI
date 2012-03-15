@@ -146,6 +146,10 @@ enum WgTxtAttr
 	_				begin underlined
 	| 				end underlined
 
+	:[0-4]			set break level 
+	;				end break level
+
+
 	-				break permitted
 	=				hyphen break permitted
 

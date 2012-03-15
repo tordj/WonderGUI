@@ -30,7 +30,7 @@ public:
 	~WgString();
 
 	const WgChar*	Chars() const;
-	Uint32			Length() const;
+	int				Length() const;
 	bool			IsEmpty() const;
 
 	void			Set( const WgString& str );

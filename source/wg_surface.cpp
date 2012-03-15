@@ -311,7 +311,7 @@ bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoo
 					{
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
-							unsigned int srcpixel = pSrc[0] + ((unsigned int)pSrc[1]) << 8 + ((unsigned int)pSrc[2]) << 16; pSrc+=3;
+							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1])<<8) + (((unsigned int)pSrc[2])<<16); pSrc+=3;
 							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
 													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
 													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
@@ -363,7 +363,7 @@ bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoo
 					{
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
-							unsigned int srcpixel = pSrc[0] + ((unsigned int)pSrc[1]) << 8 + ((unsigned int)pSrc[2]) << 16; pSrc+=3;
+							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1]) << 8) + (((unsigned int)pSrc[2]) << 16); pSrc+=3;
 							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
 													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
 													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
@@ -417,7 +417,7 @@ bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoo
 					{
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
-							unsigned int srcpixel = pSrc[0] + ((unsigned int)pSrc[1]) << 8 + ((unsigned int)pSrc[2]) << 16; pSrc+=3;
+							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1]) << 8) + (((unsigned int)pSrc[2]) << 16); pSrc+=3;
 							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
 													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
 													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
