@@ -186,14 +186,14 @@ public:
 void WgGizmoContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 {
 
-	// We start by eliminating rectangles outside our geometry
+	// We start by eliminating dirt outside our geometry
 
 	WgPatches 	patches( _pPatches->Size() );								// TODO: Optimize by pre-allocating?
 
 	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
 	{
 		if( _canvas.IntersectsWith( *pRect ) )
-			patches.Push( *pRect );
+			patches.Push( WgRect(*pRect,_canvas) );
 	}
 
 	//

@@ -50,7 +50,7 @@ class WgGizmoAnimation;
 class WgGizmoTablist;
 class WgGizmoValue;
 class WgGizmoEditvalue;
-class WgGizmoDragbar;
+class WgGizmoScrollbar;
 class WgInterfaceEditText;
 class WgText;
 
@@ -318,13 +318,13 @@ namespace WgEvent
 	};
 
 	//____ WgGizmoTablist events _______________________________________________
-	
+
 	class TablistEvent : public Event
 	{
 	public:
 		WgGizmoTablist *	Tablist() const;
 	};
-	
+
 	class TabSelect : public TablistEvent
 	{
 	public:
@@ -372,49 +372,49 @@ namespace WgEvent
 		EditvalueSet( WgGizmoEditvalue * pGizmo, int64_t value, double fraction );
 	};
 
-	//____ WgGizmoDragbar events ________________________________________________
+	//____ WgGizmoScrollbar events ________________________________________________
 
-	class DragbarEvent : public Event
+	class ScrollbarEvent : public Event
 	{
 	public:
-		WgGizmoDragbar* Dragbar() const;
+		WgGizmoScrollbar* Scrollbar() const;
 		float			Pos() const;
 		float			Length() const;
-		
+
 	protected:
-		DragbarEvent( WgGizmoDragbar * pGizmo, float pos, float length );
+		ScrollbarEvent( WgGizmoScrollbar * pGizmo, float pos, float length );
 		float			m_pos;
 		float			m_length;
 	};
 
-	class DragbarMove : public DragbarEvent
+	class ScrollbarMove : public ScrollbarEvent
 	{
 	public:
-		DragbarMove( WgGizmoDragbar* pGizmo, float pos, float length );
+		ScrollbarMove( WgGizmoScrollbar* pGizmo, float pos, float length );
 	};
 
-	class DragbarStepUp : public DragbarEvent
+	class ScrollbarStepFwd : public ScrollbarEvent
 	{
 	public:
-		DragbarStepUp( WgGizmoDragbar* pGizmo, float pos, float length );
+		ScrollbarStepFwd( WgGizmoScrollbar* pGizmo, float pos, float length );
 	};
 
-	class DragbarStepDown : public DragbarEvent
+	class ScrollbarStepBwd : public ScrollbarEvent
 	{
 	public:
-		DragbarStepDown( WgGizmoDragbar* pGizmo, float pos, float length );
+		ScrollbarStepBwd( WgGizmoScrollbar* pGizmo, float pos, float length );
 	};
 
-	class DragbarPageUp : public DragbarEvent
+	class ScrollbarJumpFwd : public ScrollbarEvent
 	{
 	public:
-		DragbarPageUp( WgGizmoDragbar* pGizmo, float pos, float length );
+		ScrollbarJumpFwd( WgGizmoScrollbar* pGizmo, float pos, float length );
 	};
 
-	class DragbarPageDown : public DragbarEvent
+	class ScrollbarJumpBwd : public ScrollbarEvent
 	{
 	public:
-		DragbarPageDown( WgGizmoDragbar* pGizmo, float pos, float length );
+		ScrollbarJumpBwd( WgGizmoScrollbar* pGizmo, float pos, float length );
 	};
 
 	//____ Text events ________________________________________
@@ -433,13 +433,13 @@ namespace WgEvent
 	public:
 		TextModify( WgGizmo * pGizmo, WgText * pText );
 	};
-	
+
 	class TextSet : public TextEvent
 	{
 	public:
 		TextSet( WgGizmo * pGizmo, WgText * pText );
 	};
-	
+
 
 	//____ Internally posted events ____________________________________________
 

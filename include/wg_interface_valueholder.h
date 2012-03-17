@@ -28,10 +28,14 @@
 #	include <wg_valueformat.h>
 #endif
 
+#ifndef WG_SLIDERTARGET_DOT_H
+#	include <wg_slidertarget.h>
+#endif
+
 class	WgFont;
 
 
-class Wg_Interface_ValueHolder
+class Wg_Interface_ValueHolder : protected WgSliderTarget
 {
 public:
 
@@ -39,16 +43,16 @@ public:
 
 	bool	SetFonts( WgFont * _pFonts );
 	bool	SetRange( Sint64 min, Sint64 max );
-	bool	SetUnitSize( Uint32 unitSize );
+	bool	SetUnitSize( int unitSize );
 
 	virtual void					SetFormat( const WgValueFormat& format ) = 0;
 	virtual const WgValueFormat&	GetFormat() const = 0;
 
 	bool	SetValue( Sint64 value );
 	bool	SetFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)
-	bool	SetFractionalRounding( Uint32 nValueDigits = 0, Uint32 lastDigitModulo = 1 );
+	bool	SetFractionalRounding( int nValueDigits = 0, int lastDigitModulo = 1 );
 
-	bool	SetStepSize( Uint32 size );						///< Step size for IncValue() and decValue().
+	bool	SetStepSize( int size );						///< Step size for IncValue() and decValue().
 	bool	IncValue();														///< Increase value by step size.
 	bool	DecValue();														///< Decrease value by step size.
 
@@ -71,14 +75,29 @@ protected:
 	void			_cloneInterface( Wg_Interface_ValueHolder * _pClone );
 	void			_onCloneContent( const Wg_Interface_ValueHolder * pOrg );
 
+	bool			_setValue( Sint64 value );
+	bool			_setFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)
+
+	// Inherited from slidertarget
+
+	float		_stepFwd();
+	float		_stepBwd();
+	float		_jumpFwd();
+	float		_jumpBwd();
+	float		_setPosition( float fraction );
+	float		_getSliderPosition();
+	float		_getSliderSize();
+
+	//
+
 	Sint64			m_rangeMin;
 	Sint64			m_rangeMax;
 	Sint64			m_value;
-	Uint32			m_stepSize;
-	Uint32			m_unitSize;
+	int				m_stepSize;
+	int				m_unitSize;
 
-	Uint32			m_nValueDigits;						///< Number of value digits to truncate a fractional value into. 0 = no runding.
-	Uint32			m_modulator;						///< Modulo for lowest value digit when truncating a fractional value. 1, 2 or 5.
+	int				m_nValueDigits;						///< Number of value digits to truncate a fractional value into. 0 = no runding.
+	int				m_modulator;						///< Modulo for lowest value digit when truncating a fractional value. 1, 2 or 5.
 };
 
 

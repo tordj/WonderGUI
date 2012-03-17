@@ -801,6 +801,9 @@ void WgGizmoEditline::_onGotInputFocus()
 
 	if( _isEditable() )
 	{
+#ifdef WG_TNG
+		_startReceiveTicks();
+#endif
 		if( m_bResetCursorOnFocus )
 			m_pText->goEOL();
 		_requestRender(); // render with cursor on
@@ -823,6 +826,7 @@ void WgGizmoEditline::_onLostInputFocus()
 	if( _isEditable() || m_viewOfs != 0 )
 	{
 #ifdef WG_TNG
+		_stopReceiveTicks();
 		WgEventHandler * pHandler = EventHandler();
 		if( pHandler )
 			pHandler->QueueEvent( new WgEvent::TextSet(this, m_pText) );

@@ -40,7 +40,6 @@
     <File Name="include/wg_gizmo_circlemeter.h"/>
     <File Name="include/wg_gizmo_collection.h"/>
     <File Name="include/wg_gizmo_container.h"/>
-    <File Name="include/wg_gizmo_dragbars.h"/>
     <File Name="include/wg_gizmo_dummy.h"/>
     <File Name="include/wg_gizmo_editline.h"/>
     <File Name="include/wg_gizmo_editvalue.h"/>
@@ -124,7 +123,6 @@
     <File Name="source/wg_gizmo_checkbox.cpp"/>
     <File Name="source/wg_gizmo_circlemeter.cpp"/>
     <File Name="source/wg_gizmo_container.cpp"/>
-    <File Name="source/wg_gizmo_dragbars.cpp"/>
     <File Name="source/wg_gizmo_editline.cpp"/>
     <File Name="source/wg_gizmo_editvalue.cpp"/>
     <File Name="source/wg_gizmo_dummy.cpp"/>
@@ -178,6 +176,10 @@
     <File Name="source/wg_gizmo_shader.cpp"/>
     <File Name="include/wg_menuitem.h"/>
     <File Name="source/wg_menuitem.cpp"/>
+    <File Name="include/wg_gizmo_scrollbars.h"/>
+    <File Name="source/wg_gizmo_scrollbars.cpp"/>
+    <File Name="include/wg_slidertarget.h"/>
+    <File Name="source/wg_slidertarget.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -200,6 +202,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       
@@ -248,6 +251,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       

@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -52,12 +52,12 @@ public:
 
 
 	//____ Methods __________________________________________
-			
+
 	bool	SetFonts( WgFont * _pFonts );
 	void	SetFormat( const WgValueFormat& format );
 
-	inline WgFont *		Fonts() { return m_pFonts; }
-	inline WgValueFormat	Format() { return m_format; }
+	WgFont *		Fonts() { return m_pFonts; }
+	WgValueFormat	Format() { return m_format; }
 	virtual const WgValueFormat&	GetFormat() const { return m_format; }
 
 	WgSize	DefaultSize() const;
@@ -69,6 +69,8 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onEnable();
 	void	_onDisable();
+
+	WgGizmo* _getGizmo() { return this; }	// Needed for WgSilderTarget.
 
 private:
 	void	_valueModified();				///< Called when value has been modified.

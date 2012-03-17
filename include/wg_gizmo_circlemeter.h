@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -49,20 +49,20 @@ class WgGizmoCirclemeter : public WgGizmo, public Wg_Interface_ValueHolder
 		virtual const char * Type() const;
 		static const char * GetMyType();
 		virtual WgGizmo * NewOfMyType() const { return new WgGizmoCirclemeter; };
-		
+
 
 		//____ Methods __________________________________________
 
-		void SetBackgroundSource(	WgSurface * pSurf, Uint32 xNormal, Uint32 yNormal, 
-									Uint32 xOver, Uint32 yOver, Uint32 xPress, Uint32 yPress, 
+		void SetBackgroundSource(	WgSurface * pSurf, Uint32 xNormal, Uint32 yNormal,
+									Uint32 xOver, Uint32 yOver, Uint32 xPress, Uint32 yPress,
 									Uint32 xDisable, Uint32 yDisable );
 
 		void SetForegroundSource(	WgSurface * pSurf, WgRect& src, Uint32 destOfsX, Uint32 destOfsY );
 
 		void SetSliceSource( WgSurface * pSurf, Uint8 blocksPerSlice, Uint8 slicePitch, bool bAscendingValue,
-							 Uint32 xOfsSlice1Blocks, Uint32 yOfsSlice1Blocks, 
-							 Uint32 xOfsSlice2Blocks, Uint32 yOfsSlice2Blocks, 
-							 Uint32 xOfsSlice3Blocks, Uint32 yOfsSlice3Blocks, 
+							 Uint32 xOfsSlice1Blocks, Uint32 yOfsSlice1Blocks,
+							 Uint32 xOfsSlice2Blocks, Uint32 yOfsSlice2Blocks,
+							 Uint32 xOfsSlice3Blocks, Uint32 yOfsSlice3Blocks,
 							 Uint32 xOfsSlice4Blocks, Uint32 yOfsSlice4Blocks );
 
 		bool SetStartSlice( Uint8 slice );
@@ -73,7 +73,7 @@ class WgGizmoCirclemeter : public WgGizmo, public Wg_Interface_ValueHolder
 		const WgValueFormat& GetFormat() const  { return m_format; }
 
 		void SetFullRangeDistance(Uint32 pixels);
-		
+
 		WgSize	DefaultSize() const;
 		bool	IsAutoEllipsisDefault() const { return false; };
 
@@ -92,6 +92,8 @@ class WgGizmoCirclemeter : public WgGizmo, public Wg_Interface_ValueHolder
 		void	_valueModified();				///< Called when value has been modified.
 		void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
 		void	_representationModified();		///< Called when fonts or value-format has been modified.
+
+		WgGizmo* _getGizmo() { return this; }	// Needed for WgSilderTarget.
 
 		WgValueFormat	m_format;
 

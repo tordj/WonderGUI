@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -56,7 +56,7 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 
 
 		//____ Methods __________________________________________
-		
+
 		bool	SetMaxInputChars( int max );
 		int		MaxInputChars() const { return m_maxInputChars; }
 		void	SetTextAlignment( const WgOrigo& origo );
@@ -84,11 +84,16 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 		void	_onCloneContent( const WgGizmo * _pOrg );
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 		void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+#ifdef WG_TNG
+		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+#endif
 		void	_onEnable();
 		void	_onDisable();
 		void	_onGotInputFocus();
 		void	_onLostInputFocus();
 		void	_onRefresh();
+
+		WgGizmo*	_getGizmo() { return this; }
 
 	private:
 		void	_limitCursor();					///< Make sure cursor or selection is not in prefix or suffix part of text.

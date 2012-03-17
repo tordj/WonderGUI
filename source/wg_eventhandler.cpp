@@ -842,7 +842,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 		{
 			int buttonDelay = WgBase::MouseButtonRepeatDelay();
 			int buttonRate = WgBase::MouseButtonRepeatRate();
-			
+
 			int msSinceRepeatStart = (int) (m_time - m_pLatestPressEvents[button]->Timestamp() - buttonDelay );
 
 			// First BUTTON_REPEAT event posted separately.
@@ -1091,11 +1091,6 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostMouseMoveEvents)
 
 void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
 {
-	// Sanity checks
-
-	if( !m_keyFocusGizmo )
-		return;
-
 	// Fill in the info-structure.
 
 	KeyDownInfo * pInfo = new KeyDownInfo();
@@ -1289,7 +1284,7 @@ void WgEventHandler::_processMouseButtonPress( WgEvent::MouseButtonPress * pEven
 
 	int doubleClickTimeTreshold = WgBase::DoubleClickTimeTreshold();
 	int doubleClickDistanceTreshold = WgBase::DoubleClickDistanceTreshold();
-	
+
 
 	if( m_pLatestPressEvents[button] && m_pLatestPressEvents[button]->Timestamp() + doubleClickTimeTreshold > pEvent->Timestamp() )
 	{

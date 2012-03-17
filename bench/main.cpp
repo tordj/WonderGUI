@@ -268,6 +268,31 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 
 	pRoot->SetChild( pFlex );
 
+
+	{
+		WgGizmoStack * pStack = new WgGizmoStack();
+
+		WgGizmoPixmap * pBg = (WgGizmoPixmap*) pDB->CloneGizmo( "plate" );
+		pStack->AddChild( pBg );
+
+		WgGizmoVBox * pVBox = new WgGizmoVBox();
+		WgStackHook * pHook = pStack->AddChild( pVBox );
+		pHook->SetBorders( WgBorders(10) );
+
+		WgGizmoEditvalue * pValue = new WgGizmoEditvalue();
+		pVBox->AddChild( pValue );
+
+		WgGizmoScrollbar * pScrollbar = (WgGizmoScrollbar*) pDB->CloneGizmo( "hscrollbar" );
+		pVBox->AddChild( pScrollbar );
+
+		addResizableContainer( pFlex, pStack, pEventHandler );
+
+		pValue->SetValue( 100 );
+		pValue->GrabFocus();
+
+	}
+
+
 	// Modal container
 /*
 	g_pModal = new WgGizmoModal();
