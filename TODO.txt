@@ -27,7 +27,7 @@ FIX GIZMOS
 v Animation	(untested)
 v Button
 v Checkbox	(still to fix: WidthForHeight() )
-v Dragbars	(untested)
+v Dragbars
 v Editline	(untested)
 v Editvalue
 v Radiobutton

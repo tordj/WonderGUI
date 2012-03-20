@@ -35,7 +35,7 @@
 class	WgFont;
 
 
-class Wg_Interface_ValueHolder : protected WgSliderTarget
+class Wg_Interface_ValueHolder : public WgSliderTarget
 {
 public:
 

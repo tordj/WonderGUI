@@ -213,39 +213,29 @@ WgRect WgGizmoStack::_hookGeo( const WgOrderedHook * pHook )
 
 void WgGizmoStack::_onResizeRequested( WgOrderedHook * _pHook )
 {
-	WgSize	bestSize;
-
-	WgStackHook * pHook = FirstHook();
-	while( pHook )
-	{
-		WgSize sz = pHook->Gizmo()->DefaultSize();
-		if( sz.w > bestSize.w )
-			bestSize.w = sz.w;
-		if( sz.h > bestSize.h )
-			bestSize.h = sz.h;
-		pHook = pHook->Next();
-	}
-
-	if( bestSize != m_bestSize )
-	{
-		m_bestSize = bestSize;
-		_requestResize();
-	}
+	_refreshDefaultSize();
 }
 
 //____ _onRenderRequested() ____________________________________________________
 
-void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook )
+void WgGizmoStack::_onRenderRequested( WgOrderedHook * _pHook )
 {
-	_onRenderRequested(pHook, WgRect(0,0,m_size));
+	WgStackHook * pHook = static_cast<WgStackHook*>(_pHook);
+
+	_onRenderRequested(pHook, pHook->_getGeo(WgRect(0,0,m_size)));
 }
 
-void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect )
+void WgGizmoStack::_onRenderRequested( WgOrderedHook * _pHook, const WgRect& _rect )
 {
+	WgStackHook * pHook = static_cast<WgStackHook*>(_pHook);
+
 	if( pHook->Hidden() )
 		return;
 
 	// Put our rectangle into patches
+
+	WgRect rect = _rect + pHook->_getGeo(WgRect(0,0,m_size)).Pos();
+
 
 	WgPatches patches;
 	patches.Add( rect );
@@ -364,7 +354,6 @@ void WgGizmoStack::_refreshAllGizmos()
 {
 	_refreshDefaultSize();
 	_adaptChildrenToSize();
-	_requestResize();
 	_requestRender();
 }
 
@@ -384,7 +373,7 @@ void WgGizmoStack::_refreshDefaultSize()
 	WgStackHook * pHook = FirstHook();
 	while( pHook )
 	{
-		WgSize sz = pHook->Gizmo()->DefaultSize();
+		WgSize sz = pHook->Gizmo()->DefaultSize() + pHook->m_borders;
 		if( sz.w > bestSize.w )
 			bestSize.w = sz.w;
 		if( sz.h > bestSize.h )
@@ -392,7 +381,11 @@ void WgGizmoStack::_refreshDefaultSize()
 		pHook = pHook->Next();
 	}
 
-	m_bestSize = bestSize;
+	if( m_bestSize != bestSize)
+	{
+		m_bestSize = bestSize;
+		_requestResize();
+	}
 }
 
 //____ _adaptChildrenToSize() ___________________________________________________________
@@ -402,7 +395,7 @@ void WgGizmoStack::_adaptChildrenToSize()
 	WgStackHook * pHook = FirstHook();
 	while( pHook )
 	{
-		pHook->Gizmo()->_onNewSize( m_size );
+		pHook->Gizmo()->_onNewSize( pHook->_getGeo(m_size) );
 		pHook = pHook->Next();
 	}
 }

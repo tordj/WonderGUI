@@ -509,6 +509,7 @@ void WgGizmoEditvalue::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 
 				if( bModified )
 				{
+					_updateSlider( FractionalValue(), 0.f );
 
 					WgEventHandler * pHandler = EventHandler();
 					if( pHandler )
@@ -743,7 +744,6 @@ void WgGizmoEditvalue::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 		}
 	}
 
-
 	if( bTextChanged )
 	{
 		int64_t		value;
@@ -757,6 +757,7 @@ void WgGizmoEditvalue::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 			if( pHandler )
 				pHandler->QueueEvent( new WgEvent::EditvalueModify(this,value,FractionalValue()) );
 
+			_updateSlider( FractionalValue(), 0.f );
 			Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 			Emit( IntegerChanged(), m_value );
 			Emit( Fraction(), FractionalValue() );

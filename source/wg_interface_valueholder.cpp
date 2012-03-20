@@ -169,28 +169,32 @@ bool Wg_Interface_ValueHolder::DecValue( int decrement )
 
 float Wg_Interface_ValueHolder::_stepFwd()
 {
-	return _setPosition( m_value + m_stepSize );
+	_setValue( m_value + m_stepSize );
+	return FractionalValue();
 }
 
 //____ _stepBwd() ______________________________________________________________
 
 float Wg_Interface_ValueHolder::_stepBwd()
 {
-	return _setPosition( m_value - m_stepSize );
+	_setValue( m_value - m_stepSize );
+	return FractionalValue();
 }
 
 //____ _jumpFwd() ______________________________________________________________
 
 float Wg_Interface_ValueHolder::_jumpFwd()
 {
-	return _setPosition( m_value + 10*m_stepSize );
+	_setValue( m_value + 10*m_stepSize );
+	return FractionalValue();
 }
 
 //____ _jumpBwd() ______________________________________________________________
 
 float Wg_Interface_ValueHolder::_jumpBwd()
 {
-	return _setPosition( m_value - 10*m_stepSize );
+	_setValue( m_value - 10*m_stepSize );
+	return FractionalValue();
 }
 
 //____ _setPosition() __________________________________________________________
@@ -222,7 +226,7 @@ bool Wg_Interface_ValueHolder::_setFractionalValue( float fraction )
 {
 	// Calculate new value and set it.
 
-	int value = (int)(fraction * (m_rangeMax - m_rangeMin) + m_rangeMin);
+	Sint64 value = (Sint64)(fraction * (m_rangeMax - m_rangeMin) + m_rangeMin);
 
 	if( m_nValueDigits != 0 && value != m_rangeMin && value != m_rangeMax )
 	{

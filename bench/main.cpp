@@ -283,6 +283,7 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 		pVBox->AddChild( pValue );
 
 		WgGizmoScrollbar * pScrollbar = (WgGizmoScrollbar*) pDB->CloneGizmo( "hscrollbar" );
+		pScrollbar->SetSliderTarget(pValue);
 		pVBox->AddChild( pScrollbar );
 
 		addResizableContainer( pFlex, pStack, pEventHandler );
