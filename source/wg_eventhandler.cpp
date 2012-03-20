@@ -284,8 +284,6 @@ int WgEventHandler::DeleteCallbacksOn( WgEventType type )
 }
 
 
-
-
 int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventType type )
 {
 	std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.find( WgGizmoWeakPtr(const_cast<WgGizmo*>(pGizmo)));
@@ -313,8 +311,6 @@ int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventType type 
 
 	return nDeleted;
 }
-
-
 
 
 
@@ -1000,15 +996,25 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostMouseMoveEvents)
 	WgGizmo * pGizmoPointed = m_pRoot->FindGizmo( m_pointerPos, WG_SEARCH_MARKPOLICY );
 	WgGizmo * pGizmoTarget = m_pRoot->FindGizmo( m_pointerPos, WG_SEARCH_ACTION_TARGET );
 
+	// Figure out which button of currently pressed has been pressed the longest.
+	// Mouse is only allowed to mark Gizmos that were marked on press of that button.
 
-	// Collect gizmos we now are inside (if we aren't outside our modal gizmo).
+	int button = 0;								// Button that has been pressed for longest, 0 = no button pressed
+	for( int i = 1 ; i <= WG_MAX_BUTTONS ; i++ )
+	{
+		if( m_bButtonPressed[i] && (button == 0 || m_pLatestPressEvents[i]->Timestamp() < m_pLatestPressEvents[button]->Timestamp()) )
+			button = i;
+	}
+
+	// Collect Gizmos we are now inside, unless we are pointing outside modal.
 
 	if( pGizmoPointed == pGizmoTarget )
 	{
 		WgGizmo * pGizmo = pGizmoPointed;
 		while( pGizmo )
 		{
-			vNowMarked.push_back(pGizmo);
+			if( button == 0 || _isGizmoInList( pGizmo, m_latestPressGizmos[button] ) )
+				vNowMarked.push_back(pGizmo);
 
 			pGizmo = pGizmo->ParentX()->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
 		}

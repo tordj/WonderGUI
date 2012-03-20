@@ -23,6 +23,7 @@
 #include <wg_hook.h>
 #include <wg_gizmo_container.h>
 #include <wg_gizmo.h>
+#include <wg_root.h>
 
 
 //____ Destructor _____________________________________________________________
@@ -83,7 +84,7 @@ bool WgHook::_releaseFocus()
 
 //____ Root() _________________________________________________________________
 
-WgRoot * WgHook::Root()
+WgRoot * WgHook::Root() const
 {
 	WgGizmoParent * pParent = _parent();
 
@@ -98,6 +99,18 @@ WgRoot * WgHook::Root()
 
 	return 0;
 }
+
+//____ EventHandler() __________________________________________________________
+
+WgEventHandler * WgHook::EventHandler() const
+{
+	WgRoot * pRoot = Root();
+	if( pRoot )
+		return pRoot->EventHandler();
+
+	return 0;
+}
+
 
 //____ SetHidden() _____________________________________________________________
 

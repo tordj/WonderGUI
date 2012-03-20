@@ -246,7 +246,6 @@ public:
 		return *this;
 	}
 
-
 	inline T & operator*() const { return * GetRealPtr(); }
 	inline T * operator->() const { return GetRealPtr(); }
 

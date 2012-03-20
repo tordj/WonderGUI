@@ -39,6 +39,7 @@ class WgGfxDevice;
 class WgGizmo;
 class WgRoot;
 class WgRectLink;
+class WgEventHandler;
 
 class WgHook
 {
@@ -53,17 +54,18 @@ public:
 	virtual WgCoord	ScreenPos() const = 0;
 	virtual WgRect	ScreenGeo() const = 0;
 
-	inline WgHook *	Prev() const { return _prevHook(); }
-	inline WgHook *	Next() const { return _nextHook(); }
+	WgHook *		Prev() const { return _prevHook(); }
+	WgHook *		Next() const { return _nextHook(); }
 
-	inline bool		Hide() { return SetHidden(true); }
-	inline bool		Unhide() { return SetHidden(false); }
+	bool			Hide() { return SetHidden(true); }
+	bool			Unhide() { return SetHidden(false); }
 	virtual bool	SetHidden( bool bHide );
 	bool			Hidden() { return m_bHidden; }
 
-	inline	WgGizmo *			Gizmo() const { return m_pGizmo; }
-	inline  WgGizmoParent * 	Parent() const { return _parent(); }
-	virtual WgRoot *			Root();
+	WgGizmo *			Gizmo() const { return m_pGizmo; }
+	WgGizmoParent * 	Parent() const { return _parent(); }
+	virtual WgRoot *	Root() const;
+	WgEventHandler *	EventHandler() const;
 
 	virtual WgWidget*	GetRoot() = 0;			// Remove once Widgets are gone...
 
