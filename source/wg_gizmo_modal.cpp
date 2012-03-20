@@ -582,17 +582,56 @@ void WgGizmoModal::_updateKeyboardFocus()
 	}
 	
 	// Find which child-branch to focus and switch to our previously saved focus
-	//TODO: Should verify that previously focused Gizmo still is within branch.
 	
 	WgModalHook * pHook = m_modalHooks.Last();
 	
 	while( pHook && pHook->Hidden() )
 		pHook = pHook->Prev();
+
+	WgGizmo * 	pSavedFocus = 0;
+	WgHook *	pBranch	= 0;
 		
 	if( pHook )
-		pHandler->SetKeyboardFocus( pHook->m_pKeyFocus.GetRealPtr() );
+	{
+		pSavedFocus = pHook->m_pKeyFocus.GetRealPtr();
+		pHook->m_pKeyFocus = 0;								// Needs to be cleared for the future.
+		pBranch = pHook;
+	}
 	else if( m_baseHook.Gizmo() && !m_baseHook.Hidden() )
-		pHandler->SetKeyboardFocus( m_baseHook.m_pKeyFocus.GetRealPtr() );		
+	{
+		pSavedFocus = m_baseHook.m_pKeyFocus.GetRealPtr();
+		m_baseHook.m_pKeyFocus = 0;							// Needs to be cleared for the future.
+		pBranch = &m_baseHook;
+	}
+
+	// Verify that saved focus still is within branch and is not hidden
+
+	if( pSavedFocus )
+	{
+		WgHook * p = pSavedFocus->Hook();
+		while( p && p != pBranch )
+		{
+			if( p->Hidden() )
+				p = 0;						// Branch is hidden so we can not focus saved Gizmo.
+			else
+			{
+				WgGizmoParent * pParent = p->Parent();
+				if( pParent && pParent->CastToGizmo() )
+					p = pParent->CastToGizmo()->Hook();
+				else
+					p = 0;
+			}
+		}
+
+		if( p != pBranch )
+			pSavedFocus = 0;				// Previously focused Gizmo is no longer a child of focused branch.
+	}	
+
+	// Switch to previously saved focus, or null if not applicable
+
+	pHandler->SetKeyboardFocus( pSavedFocus );
+
+
 }
 
 //____ _onRequestRender() _____________________________________________________
