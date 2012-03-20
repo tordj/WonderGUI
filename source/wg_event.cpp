@@ -29,7 +29,7 @@
 #include <wg_gizmo_tablist.h>
 #include <wg_gizmo_value.h>
 #include <wg_gizmo_editvalue.h>
-#include <wg_gizmo_dragbars.h>
+#include <wg_gizmo_scrollbars.h>
 #include <wg_gizmo_text.h>
 #include <wg_gizmo_editline.h>
 
@@ -40,13 +40,6 @@ namespace WgEvent
 	WgGizmo * Event::Gizmo() const
 	{
 		return m_pGizmo.GetRealPtr();
-	}
-
-	//____ MouseEvent _________________________________________________________
-
-	WgGizmo * MouseEvent::MouseLockedGizmo() const
-	{
-		return m_pMouseLockedGizmo.GetRealPtr();
 	}
 
 	//____ FocusGained ________________________________________________________
@@ -536,57 +529,57 @@ namespace WgEvent
 		m_fraction = fraction;
 	}
 
-	//____ Dragbar event methods _______________________________________________
+	//____ Scrollbar event methods _______________________________________________
 
-	DragbarEvent::DragbarEvent( WgGizmoDragbar * pGizmo, float pos, float length )
+	ScrollbarEvent::ScrollbarEvent( WgGizmoScrollbar * pGizmo, float pos, float length )
 	{
 		m_pGizmo 	= pGizmo;
 		m_pos 		= pos;
 		m_length 	= length;
 	}
 
-	WgGizmoDragbar* DragbarEvent::Dragbar() const
+	WgGizmoScrollbar* ScrollbarEvent::Scrollbar() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
-			return static_cast<WgGizmoDragbar*>(pGizmo);
+			return static_cast<WgGizmoScrollbar*>(pGizmo);
 		else
 			return 0;
 	}
 
-	float DragbarEvent::Pos() const
+	float ScrollbarEvent::Pos() const
 	{
 		return m_pos;
 	}
 
-	float DragbarEvent::Length() const
+	float ScrollbarEvent::Length() const
 	{
 		return m_length;
 	}
 
-	DragbarMove::DragbarMove( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
+	ScrollbarMove::ScrollbarMove( WgGizmoScrollbar* pGizmo, float pos, float length ) : ScrollbarEvent( pGizmo, pos, length )
 	{
-		m_type = WG_EVENT_DRAGBAR_MOVE;
+		m_type = WG_EVENT_SCROLLBAR_MOVE;
 	}
 
-	DragbarStepUp::DragbarStepUp( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
+	ScrollbarStepFwd::ScrollbarStepFwd( WgGizmoScrollbar* pGizmo, float pos, float length ) : ScrollbarEvent( pGizmo, pos, length )
 	{
-		m_type = WG_EVENT_DRAGBAR_STEP_UP;
+		m_type = WG_EVENT_SCROLLBAR_STEP_FWD;
 	}
 
-	DragbarStepDown::DragbarStepDown( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
+	ScrollbarStepBwd::ScrollbarStepBwd( WgGizmoScrollbar* pGizmo, float pos, float length ) : ScrollbarEvent( pGizmo, pos, length )
 	{
-		m_type = WG_EVENT_DRAGBAR_STEP_DOWN;
+		m_type = WG_EVENT_SCROLLBAR_STEP_BWD;
 	}
 
-	DragbarPageUp::DragbarPageUp( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
+	ScrollbarJumpFwd::ScrollbarJumpFwd( WgGizmoScrollbar* pGizmo, float pos, float length ) : ScrollbarEvent( pGizmo, pos, length )
 	{
-		m_type = WG_EVENT_DRAGBAR_PAGE_UP;
+		m_type = WG_EVENT_SCROLLBAR_JUMP_FWD;
 	}
 
-	DragbarPageDown::DragbarPageDown( WgGizmoDragbar* pGizmo, float pos, float length ) : DragbarEvent( pGizmo, pos, length )
+	ScrollbarJumpBwd::ScrollbarJumpBwd( WgGizmoScrollbar* pGizmo, float pos, float length ) : ScrollbarEvent( pGizmo, pos, length )
 	{
-		m_type = WG_EVENT_DRAGBAR_PAGE_DOWN;
+		m_type = WG_EVENT_SCROLLBAR_JUMP_BWD;
 	}
 
 	//____ Text event methods __________________________________________________

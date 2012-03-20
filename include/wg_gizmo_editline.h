@@ -70,7 +70,7 @@ public:
 
 	virtual void			SetEditMode(WgTextEditMode mode);
 	virtual WgTextEditMode	GetEditMode() const { return m_text.GetEditMode(); }
-	virtual bool			TempIsInputField() const	{ return _isEditable() && TextObj()->nbChars() > 0; }
+	virtual bool			TempIsInputField() const	{ return _isEditable(); }
 	virtual Wg_Interface_TextHolder* TempGetText(){ return this; }
 
 	bool		SetTextWrap(bool bWrap);						// Overloading SetTextWrap since we don't support wrapping text.

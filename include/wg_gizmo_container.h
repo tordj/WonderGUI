@@ -62,7 +62,7 @@ class WgGizmoContainer : public WgGizmoParent
 
 		void		SetMaskOp( WgMaskOp operation );
 		WgMaskOp	MaskOp() const { return m_maskOp; }
-		
+
 		WgGizmo * 	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 		bool		IsGizmo() const;
@@ -95,7 +95,7 @@ class WgGizmoContainer : public WgGizmoParent
 		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
 
 #ifdef WG_TNG
-		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip );
+		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 #endif
 		virtual bool 	_onAlphaTest( const WgCoord& ofs );

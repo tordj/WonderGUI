@@ -194,6 +194,7 @@ public:
 	static void			SetProperties( const WgTextPropPtr& pProp, WgChar * pChar, Uint32 nb );
 	static void			SetLink( const WgTextLinkPtr& pLink, WgChar * pChar, Uint32 nb );
 	static void			SetFont( WgFont * pFont, WgChar * pChar, Uint32 nb );
+	static void			SetBreakLevel( int breakLevel, WgChar * pChar, Uint32 nb );
 	static void			SetColor( const WgColor col, WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 	static void			SetSize( int size, WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 	static void			SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
@@ -202,10 +203,12 @@ public:
 	inline static void	ClearProperties( WgChar * pChar, Uint32 nb ) { SetProperties( 0, pChar, nb ); }
 	inline static void	ClearLink( WgChar * pChar, Uint32 nb ) { SetLink(0,pChar,nb); }
 	inline static void	ClearFont( WgChar * pChar, Uint32 nb ) { SetFont(0,pChar,nb); }
+	inline static void	ClearBreakLevel( WgChar * pChar, Uint32 nb ) { SetBreakLevel(-1,pChar,nb); }
 	static void			ClearColor( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 	static void			ClearSize( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 	static void			ClearStyle( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
 	static void			ClearUnderlined( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
+
 
 
 	static void			AddPropAttributes( WgTextAttr& attr, const WgTextPropPtr& pProp, WgMode mode = WG_MODE_NORMAL );
@@ -318,6 +321,15 @@ public:
 	private:
 		bool	m_bUnderlined;
 		WgMode	m_mode;
+	};
+
+	class PropBreakLevelModifier : public PropModifier
+	{
+	public:
+		PropBreakLevelModifier( int level ) { m_level = level; }
+		void Modify( WgTextProp& prop ) const { prop.SetBreakLevel(m_level); }
+	private:
+		int		m_level;
 	};
 
 

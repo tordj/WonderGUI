@@ -257,7 +257,7 @@ void WgGizmoStack::_onRenderRequested( WgOrderedHook * pHook, const WgRect& rect
 	{
 		WgRect geo = pCover->_getGeo(m_size);
 		if( !pCover->Hidden() && geo.IntersectsWith( rect ) )
-			pCover->Gizmo()->_onMaskPatches( patches, geo, WgRect(0,0,65536,65536 ) );
+			pCover->Gizmo()->_onMaskPatches( patches, geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();
 	}

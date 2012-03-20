@@ -34,6 +34,7 @@ Wg_Interface_ItemHolder::Wg_Interface_ItemHolder()
 	m_nItems		= 0;
 	m_itemMarkColor	= WgColor(0,0,0);
 	m_bSortAscend	= true;
+	m_bSelectable	= true;
 	m_pSortFunction = 0;
 	m_pFocusedItem	= 0;
 }
@@ -44,6 +45,12 @@ Wg_Interface_ItemHolder::~Wg_Interface_ItemHolder()
 		p->m_pMyHolder = 0;	// so the item doesn't remove itself in the destructor
 }
 
+//____ SetSelectable() ________________________________________________________
+
+void Wg_Interface_ItemHolder::SetSelectable( bool bSelectable )
+{
+	m_bSelectable = bSelectable;
+}
 
 //____ SetSortFunction() ______________________________________________________
 

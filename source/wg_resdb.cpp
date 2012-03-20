@@ -280,6 +280,9 @@ bool WgResDB::AddResDb( WgResDB* db, const std::string& file, MetaData * pMetaDa
 {
 	assert(GetResDbRes(file) == 0);
 
+	if( db == 0 )
+		return false;
+
 	if(GetResDbRes(file) == 0)
 	{
 		ResDBRes* p = new ResDBRes(file, db, file, pMetaData);

@@ -99,10 +99,13 @@ public:
 	WgCursor::Mode	cursorMode() const;
 
 	void			setSelectionMode(bool bOn);
+	bool			getSelectionMode() const { return m_bSelectMode; }
 	bool			hasSelection();
 	void			delSelection();
 	void			clearSelection();
 	void			selectAll();
+	void			selectRange( WgRange range );
+
 
 protected:
 	void			_gotoPos( int line, int col );

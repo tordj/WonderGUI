@@ -54,6 +54,14 @@ typedef unsigned __int64  uint64_t;
 	typedef int64_t			Sint64;
 #endif
 
+#ifndef INT64_MIN
+#define INT64_MIN (-(9223372036854775807 ## L)-1)
+#endif
+
+#ifndef INT64_MAX
+#define INT64_MAX ((9223372036854775807 ## L))
+#endif
+
 template<typename T> inline T WgMin(const T &a, const T &b) { return a < b ? a : b; }
 template<typename T> inline T WgMax(const T &a, const T &b) { return a > b ? a : b; }
 template<typename T> inline T WgAbs(T x)					{ return x >= 0 ? x : -x; }
@@ -145,6 +153,10 @@ enum WgTxtAttr
 
 	_				begin underlined
 	| 				end underlined
+
+	:[0-4]			set break level
+	;				end break level
+
 
 	-				break permitted
 	=				hyphen break permitted
@@ -516,11 +528,11 @@ enum	WgEventType
 	WG_EVENT_EDITVALUE_MODIFY,				// Posted for every change to value through keyboard (once for every accepted keystroke).
 	WG_EVENT_EDITVALUE_SET,					// Posted when edited value is 'set' by removing cursor.
 
-	WG_EVENT_DRAGBAR_MOVE,
-	WG_EVENT_DRAGBAR_STEP_UP,
-	WG_EVENT_DRAGBAR_STEP_DOWN,
-	WG_EVENT_DRAGBAR_PAGE_UP,
-	WG_EVENT_DRAGBAR_PAGE_DOWN,
+	WG_EVENT_SCROLLBAR_MOVE,
+	WG_EVENT_SCROLLBAR_STEP_FWD,
+	WG_EVENT_SCROLLBAR_STEP_BWD,
+	WG_EVENT_SCROLLBAR_JUMP_FWD,
+	WG_EVENT_SCROLLBAR_JUMP_BWD,
 
 	WG_EVENT_TEXT_MODIFY,					// Posted for every change to text through cursor/selection.
 	WG_EVENT_TEXT_SET,						// Posted when edited text is 'set' by removing cursor.

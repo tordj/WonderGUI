@@ -238,32 +238,63 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
 
 	//
-/*
+
 	{
 		WgGizmoShader * pShader = new WgGizmoShader();
-		pShader->SetBlendMode(WG_BLENDMODE_ADD);
-		pShader->SetColor( WgColor(0xFFFFFFFF) );
+		pShader->SetBlendMode(WG_BLENDMODE_MULTIPLY);
+		pShader->SetColor( WgColor(0xFF0000FF) );
 
 		WgGizmoStack * pStack = new WgGizmoStack();
 		pShader->SetChild( pStack );
 
-		WgGizmoPixmap * pBg = new WgGizmoPixmap();
-		pBg->SetSource( pButtonBlock );
+		WgGizmoPixmap * pBg = (WgGizmoPixmap*) pDB->CloneGizmo( "plate" );
 		pStack->AddChild( pBg );
 
-		WgGizmoPixmap * pSplash= new WgGizmoPixmap();
-		pSplash->SetSource( pSplashBlock );
-		WgStackHook * pHook = pStack->AddChild( pSplash );
+		WgGizmoShader * pShader2 = new WgGizmoShader();
+		pShader2->SetBlendMode(WG_BLENDMODE_ADD);
+		pShader2->SetColor( WgColor(0xFFFFFFFF) );
+		WgStackHook * pHook = pStack->AddChild( pShader2 );
 		pHook->SetSizePolicy( WgStackHook::SCALE );
 		pHook->SetOrientation( WG_CENTER );
 		pHook->SetBorders( WgBorders(2) );
 
 
+		WgGizmoPixmap * pSplash= new WgGizmoPixmap();
+		pSplash->SetSource( pSplashBlock );
+		pShader2->SetChild( pSplash );
+
 		addResizableContainer( pFlex, pShader, pEventHandler );
 	}
-*/
-	// Modal container
 
+	pRoot->SetChild( pFlex );
+
+
+	{
+		WgGizmoStack * pStack = new WgGizmoStack();
+
+		WgGizmoPixmap * pBg = (WgGizmoPixmap*) pDB->CloneGizmo( "plate" );
+		pStack->AddChild( pBg );
+
+		WgGizmoVBox * pVBox = new WgGizmoVBox();
+		WgStackHook * pHook = pStack->AddChild( pVBox );
+		pHook->SetBorders( WgBorders(10) );
+
+		WgGizmoEditvalue * pValue = new WgGizmoEditvalue();
+		pVBox->AddChild( pValue );
+
+		WgGizmoScrollbar * pScrollbar = (WgGizmoScrollbar*) pDB->CloneGizmo( "hscrollbar" );
+		pVBox->AddChild( pScrollbar );
+
+		addResizableContainer( pFlex, pStack, pEventHandler );
+
+		pValue->SetValue( 100 );
+		pValue->GrabFocus();
+
+	}
+
+
+	// Modal container
+/*
 	g_pModal = new WgGizmoModal();
 	g_pModal->SetBase( pFlex );
 
@@ -354,7 +385,7 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	pFlex->AddChild( pDB->CloneGizmo( "radiobutton" ) );
 
 	pVBox->SetRadioGroup(true);
-
+*/
 	return pRoot;
 }
 

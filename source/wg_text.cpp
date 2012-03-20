@@ -950,7 +950,7 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 
 	const WgChar * pSuffix = f.suffix.Chars();
 
-	for( unsigned int i = 0 ; i < f.suffix.Length() && i < 4 ; i++ )
+	for( int i = 0 ; i < f.suffix.Length() && i < 4 ; i++ )
 		* p++ = pSuffix[i];
 
 	// Terminate string
@@ -1079,7 +1079,7 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 
 	const WgChar * pSuffix = f.suffix.Chars();
 
-	for( unsigned int i = 0 ; i < f.suffix.Length() && i < 4 ; i++ )
+	for( int i = 0 ; i < f.suffix.Length() && i < 4 ; i++ )
 		* p++ = pSuffix[i];
 
 	// Terminate string
@@ -2017,6 +2017,7 @@ int WgText::CoordToColumn( int line, const WgCoord& coord, const WgRect& contain
 	Uint16	hProp = 0xFFFF;
 	WgPen pen;
 	pen.SetTextNode( m_pManagerNode );
+	pen.SetOrigo( WgCoord(xStart,0) );
 	pen.SetPosX(xStart);
 
 	for( int i = 0 ; i < pLine->nChars ; i++ )
@@ -2152,7 +2153,10 @@ int WgText::PosToCoordX( const WgTextPos& _pos, const WgRect& container ) const
 	Uint16	hProp = 0xFFFF;
 	WgPen pen;
 	pen.SetTextNode( m_pManagerNode );
-	pen.SetPosX(LineStartX( pos.line, container ) );
+	
+	int startX = LineStartX( pos.line, container );
+	pen.SetOrigo( WgCoord(startX,0) );
+	pen.SetPosX(startX);
 
 	for( int i = 0 ; i < pos.col ; i++ )
 	{
@@ -2218,6 +2222,180 @@ WgTextPos WgText::ClampPos( WgTextPos pos ) const
 
 	return pos;
 }
+
+//____ FocusRange() ___________________________________________________________
+
+WgCoord WgText::FocusWindowOnRange( const WgSize& canvas, const WgRect& _window, WgRange range ) const
+{
+	if( _window == canvas )
+		return _window.Pos();
+
+	// Move view so that range stays visible with:
+	// 1. At least one character displayed before and (if possible) after the range.
+	// 2. At least one line is displayed after the range (if possible) if text is multiline.
+	// 3. If range doesn't fit in view, beginning of view is prioritized
+
+	// Get rectangle we want to focus
+
+	WgTextPos	posBeg = OfsToPos(range.Begin());
+	WgTextPos	posEnd = OfsToPos(range.End());
+
+	posBeg.col--;							// We want at least one empty character before the range.
+	posEnd.col++;							// We want at least one empty character after the range.
+
+	WgCoord	rangeBegin = PosToCoord(posBeg,canvas);
+	WgCoord	rangeEnd = PosToCoord(posEnd,canvas);
+
+	rangeEnd.y += m_pSoftLines[posEnd.line].height;
+
+	if( posEnd.line < m_nSoftLines-1 )
+		rangeEnd.y += m_pSoftLines[posEnd.line+1].height;		// We want one empty line after the range if possible.
+
+	// We might need to adjust the begin/end coordinates
+	// if character range includes end of line 
+	// (add space for cursor) or multiple lines
+	// (make sure start and end of all lines are included)
+
+	for( int i = posBeg.line ; i <= posEnd.line ; i++ )
+	{
+		// Include beginning of all lines except the first.
+
+		int beg = LineStartX( i, canvas );
+		if( i != posBeg.line && beg < rangeBegin.x )
+			rangeBegin.x = beg;
+
+		// Include end of all lines except the last.
+		// Include end of last line if input range includes last character of the line.
+
+		int end = beg + m_pSoftLines[i].width;
+		if( i != posEnd.line || posEnd.col > m_pSoftLines[posEnd.line].nChars )
+			if( end > rangeEnd.x )
+				rangeEnd.x = end;
+	}
+
+	WgRect	rangeRect( rangeBegin, rangeEnd );
+
+	// Adjust window to contain range
+
+	WgRect window = _window;
+
+	if( rangeRect.Right() > window.Right() )
+		window.x = rangeRect.Right() - window.w;
+
+	if( rangeRect.Bottom() > window.Bottom() )
+		window.x = rangeRect.Bottom() - window.h;
+
+	if( rangeRect.x < window.x )
+		window.x = rangeRect.x;
+
+	if( rangeRect.y < window.y )
+		window.y = rangeRect.y;
+
+	// Adjust window to stay inside canvas
+
+	if( window.x < 0 )
+		window.x = 0;
+
+	if( window.y < 0 ) 
+		window.y = 0;
+
+	if( window.w > canvas.w )
+		window.x = 0;
+	else if( window.x + window.w > canvas.w )
+		window.x = canvas.w - window.w;
+
+	if( window.h > canvas.h )
+		window.y = 0;
+	else if( window.y + window.h > canvas.h )
+		window.y = canvas.h - window.h;
+
+	return window.Pos();
+
+/*
+	// Possibly move viewOfs so that:
+	//	1 Cursor remains inside view.
+	//  2 At least one character is displayed before the cursor
+	//  3 At least one character is displayed after the cursor (if there is one).
+
+	if( m_bFocused && m_pText->getFont() )
+	{
+		WgCursor * pCursor = WgTextTool::GetCursor( m_pText );
+		if( !pCursor )
+			return;
+
+		int cursCol	= m_pText->column();
+
+		WgTextAttr	attr;
+		m_pText->GetBaseAttr( attr );
+
+		WgPen	pen;
+		pen.SetAttributes( attr );
+		pen.SetChar(m_pwGlyph);
+		pen.AdvancePos();
+
+		int pwAdvance	= pen.GetPosX();
+		int cursAdvance	= pCursor->Advance(m_pText->cursorMode() );
+		int cursBearing	= pCursor->BearingX(m_pText->cursorMode() );
+		int cursWidth	= pCursor->Width(m_pText->cursorMode() );
+
+		int cursOfs;		// Cursor offset from beginning of line in pixels.
+		int maxOfs;			// Max allowed view offset in pixels.
+		int minOfs;			// Min allowed view offset in pixels.
+
+		int geoWidth = Size().w;
+		int	lineWidth = m_pText->getSoftLineWidth( 0 ) + cursBearing+cursWidth;
+
+		// Calculate cursOfs
+
+		if( m_bPasswordMode )
+			cursOfs = cursCol * pwAdvance;
+		else
+			cursOfs	= m_pText->getSoftLineWidthPart( 0, 0, cursCol );
+
+		// Calculate maxOfs
+
+		if( cursCol > 0 )
+		{
+			if( m_bPasswordMode )
+				maxOfs = (cursCol-1) * pwAdvance;
+			else
+				maxOfs = m_pText->getSoftLineWidthPart( 0, 0, cursCol-1 );
+
+			if( lineWidth < maxOfs + geoWidth )
+				maxOfs = WgMax( lineWidth - geoWidth, 0 );
+		}
+		else
+			maxOfs = cursOfs;
+
+
+		// Calculate minOfs
+
+		if( cursCol < m_pText->getLine(0)->nChars )
+		{
+			if( m_bPasswordMode )
+				minOfs = (cursCol+1) * pwAdvance + cursAdvance - geoWidth;
+			else
+				minOfs = m_pText->getSoftLineWidthPart( 0, 0, cursCol+1 ) + cursAdvance - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
+		}
+		else
+			minOfs = cursOfs + cursBearing + cursWidth - geoWidth;
+
+		// Check boundaries and update
+
+		if( m_viewOfs > maxOfs )
+			m_viewOfs = maxOfs;
+
+		if( m_viewOfs < minOfs )
+			m_viewOfs = minOfs;
+
+
+	}
+	else
+		m_viewOfs = 0;				// Show beginning of line when cursor disappears.
+
+*/		
+}
+
 
 //____ LineColToOffset() ______________________________________________________
 

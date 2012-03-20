@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -28,21 +28,21 @@
 #endif
 
 
-#ifndef WG_GIZMO_DRAGBARS_DOT_H
-#	include <wg_gizmo_dragbars.h>
+#ifndef WG_GIZMO_SCROLLBARS_DOT_H
+#	include <wg_gizmo_scrollbars.h>
 #endif
 
-class Wdg_VDrag : public Wdg_Widget<WgGizmoVDragbar>
+class Wdg_VDrag : public Wdg_Widget<WgGizmoVScrollbar>
 {
 public:
-	WIDGET_GIZMO_CONSTRUCTORS(Wdg_VDrag,WgGizmoVDragbar);
+	WIDGET_GIZMO_CONSTRUCTORS(Wdg_VDrag,WgGizmoVScrollbar);
 	virtual ~Wdg_VDrag() {};
 };
 
-class Wdg_HDrag : public Wdg_Widget<WgGizmoHDragbar>
+class Wdg_HDrag : public Wdg_Widget<WgGizmoHScrollbar>
 {
 public:
-	WIDGET_GIZMO_CONSTRUCTORS(Wdg_HDrag,WgGizmoHDragbar);
+	WIDGET_GIZMO_CONSTRUCTORS(Wdg_HDrag,WgGizmoHScrollbar);
 	virtual ~Wdg_HDrag() {};
 };
 

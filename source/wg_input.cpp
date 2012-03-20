@@ -83,8 +83,6 @@ WgInput::WgInput()
 
 	m_keys.nKeysDown = 0;
 
-	m_hoverStartTime = m_time;
-
 	m_pPointerSpies = 0;
 	m_nPointerSpies = 0;
 
@@ -295,8 +293,6 @@ void WgInput::end_events()
 				else if( p->aGizmos[wdg] )
 					p->aGizmos[wdg]->_onAction( BUTTON_DOWN, btn+1, m_currentPosition, *this );
 			}
-			// reset hover time if a button is down
-			m_hoverStartTime = m_time;
 		}
 	}
 
@@ -515,9 +511,6 @@ start:
 		WgWidget* pNewTopWidget = 0;
 		if( m_currentPosition.nWidgets > 0 )
             pNewTopWidget = m_currentPosition.aWidgets[0];
-
-		if( pOldTopWidget != pNewTopWidget )
-			m_hoverStartTime = m_time;
 	}
 
 	// Update member structures.
@@ -543,7 +536,7 @@ start:
 		}
 		
 		for( Uint32 i = 0; i < m_nPointerSpies; ++i )
-			m_pPointerSpies[ i ]->PointerPosition( m_position.x, m_position.y, pTopMarkSpy, m_time - m_hoverStartTime, pPressed );
+			m_pPointerSpies[ i ]->PointerPosition( m_position.x, m_position.y, pTopMarkSpy, m_time, pPressed );
 	}
 
 }
@@ -673,12 +666,11 @@ void WgInput::button_release_( WgInputEventData ed )
 	if( button < 1 || button > WG_MAX_BUTTONS )
 		return;
 
-	if( !m_bButtonDown[button-1] )
-		return;
-
 	if( button == 1 )
 		m_bPointerGrabbed = false;
 
+	if( !m_bButtonDown[button-1] )
+		return;
 
 	WgActionDetails	myAction;
 

@@ -9,6 +9,9 @@ ATT FIXA I LEGACY
 
 FOCUS
 =====
+
+* Fixa repeat på character input.
+
 * Hur ska vi lösa _onMaskRects() ???
 * Keyboard focus vid modal.
 * Wdg_Layout.
@@ -27,16 +30,16 @@ v Animation	(untested)
 v Button
 v Checkbox	(still to fix: WidthForHeight() )
 v Dragbars	(untested)
-v Editline	(untested, missing requesting TICKS!)
-  Editvalue
+v Editline	(untested)
+v Editvalue
 v Radiobutton
 v Refreshbutton (untested)
-v Shader (untested)
+v Shader 	(untested)
   Table
 v Tablist	(untested, missing requesting TICKS!)
   Combobox
   Text
-v Value
+v Value		(untested, needs event-posting!)
   Menu
   Menubar
   Treeview

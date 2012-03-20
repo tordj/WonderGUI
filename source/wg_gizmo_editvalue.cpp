@@ -30,6 +30,8 @@
 #include <wg_cursorinstance.h>
 #include <wg_key.h>
 #include <wg_textmanager.h>
+#include <wg_event.h>
+#include <wg_eventhandler.h>
 
 static const char Wdg_Type[] = {"EditValue"};
 
@@ -44,6 +46,8 @@ WgGizmoEditvalue::WgGizmoEditvalue()
 	_regenText();
 	m_buttonDownOfs = 0;
 	m_bSelectAllOnRelease = false;
+	m_maxInputChars = 256;
+	m_viewOfs = WgCoord(0,0);
 
 	m_pointerStyle	= WG_POINTER_IBEAM;
 
@@ -110,6 +114,7 @@ void WgGizmoEditvalue::SetFormat( const WgValueFormat& format )
 {
 	m_format		= format;
 	m_useFormat		= format;
+
 	_regenText();
 	_requestRender();
 }
@@ -166,13 +171,32 @@ void WgGizmoEditvalue::Clear()
 	m_useFormat.decimals = 0;
 }
 
+//____ SetMaxInputChars() _____________________________________________________
+
+bool WgGizmoEditvalue::SetMaxInputChars( int max )
+{
+	if( max <= 0 )
+		return false;
+	m_maxInputChars = max;
+	return true;
+}
+
+
 //____ DefaultSize() __________________________________________________________
 
 WgSize WgGizmoEditvalue::DefaultSize() const
 {
-	//TODO: Implement!
+	WgSize	sz;
 
-	return WgSize(1,1);
+	sz.h = m_text.height();
+	sz.w = 0;
+
+	WgTextAttr	attr;
+	m_text.GetBaseAttr( attr );
+	if( attr.pFont )
+		sz.w = attr.pFont->GetGlyphSet(attr.style,attr.size)->GetMaxGlyphAdvance(attr.size)*5;	// By default fit at least 5 characters
+
+	return sz;
 }
 
 
@@ -180,6 +204,12 @@ WgSize WgGizmoEditvalue::DefaultSize() const
 
 void WgGizmoEditvalue::_valueModified()
 {
+#ifdef WG_TNG
+	WgEventHandler * pHandler = EventHandler();
+	if( pHandler )
+		pHandler->QueueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
+#endif
+
 	Emit( IntegerChanged(), m_value );
 	Emit( Fraction(), FractionalValue() );
 
@@ -199,6 +229,11 @@ void WgGizmoEditvalue::_valueModified()
 
 void WgGizmoEditvalue::_rangeModified()
 {
+#ifdef WG_TNG
+	WgEventHandler * pHandler = EventHandler();
+	if( pHandler )
+		pHandler->QueueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
+#endif
 	Emit( Fraction(), FractionalValue() );
 }
 
@@ -231,17 +266,30 @@ void WgGizmoEditvalue::_onUpdate( const WgUpdateInfo& _updateInfo )
 
 void WgGizmoEditvalue::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
-	if( m_text.getFont() == 0 )
-		return;
-
 	// Leave if we have nothing to print
 
 	if( m_text.nbLines() == 0 )
 		return;
 
+	// Adjust text canvas
+
+	WgRect	canvas = _canvas;
+
+	if( m_text.isCursorShowing() )
+	{
+		int textW = m_text.width();
+		if( textW > canvas.w )
+			canvas.w = textW;
+
+		WgCursorInstance * pCursor = m_text.GetCursor();
+		m_viewOfs = m_text.FocusWindowOnRange( canvas.Size(), WgRect(m_viewOfs,_canvas.Size()), WgRange( pCursor->column(),0 ) );
+	}
+	else
+		m_viewOfs = WgCoord(0,0);
+
 	// Print the text
 
-	pDevice->PrintText( _clip, &m_text, _canvas );
+	pDevice->PrintText( _clip, &m_text, canvas - m_viewOfs );
 }
 
 //____ _regenText() ____________________________________________________________
@@ -326,7 +374,21 @@ bool WgGizmoEditvalue::_parseValueFromInput( int64_t * wpResult )
 		}
 
 		if( p[0].glyph == '-' )
-			value = -value;
+		{
+			if( value == LLONG_MAX )
+				value = m_rangeMin;
+			else
+			{
+				value = -value;
+				if( value < m_rangeMin )
+					value = m_rangeMin;
+			}
+		}
+		else
+		{
+			if( value > m_rangeMax )
+				value = m_rangeMax;
+		}
 
 	}
 
@@ -334,7 +396,374 @@ bool WgGizmoEditvalue::_parseValueFromInput( int64_t * wpResult )
 	return bModified;
 }
 
+//____ _onEvent() ______________________________________________________________
 
+#ifdef WG_TNG
+void WgGizmoEditvalue::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+{
+	WgEventType event = pEvent->Type();
+
+	if( event == WG_EVENT_TICK )
+	{
+		if( m_text.GetCursor() )
+		{
+			m_text.GetCursor()->incTime( static_cast<const WgEvent::Tick*>(pEvent)->Millisec() );
+			_requestRender();					//TODO: Should only render the cursor (and only when updated)!
+		}
+		return;
+	}
+
+
+	bool	bTextChanged = false;
+	int		mousebutton = 0;
+
+	if( event == WG_EVENT_MOUSEBUTTON_PRESS || event == WG_EVENT_MOUSEBUTTON_CLICK || event == WG_EVENT_MOUSEBUTTON_DOUBLECLICK ||
+		event == WG_EVENT_MOUSEBUTTON_DRAG || event == WG_EVENT_MOUSEBUTTON_RELEASE || event == WG_EVENT_MOUSEBUTTON_REPEAT ||
+		event == WG_EVENT_MOUSEBUTTON_PRESS_OUTSIDE_MODAL || WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL )
+		mousebutton = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
+
+	WgCoord ofs = pEvent->PointerPos();
+
+	if( event == WG_EVENT_MOUSEBUTTON_PRESS && mousebutton == 1 )
+	{
+		if( !m_bFocused )
+		{
+			GrabFocus();
+			m_bSelectAllOnRelease = true;
+		}
+		else
+			m_bSelectAllOnRelease = false;
+
+		if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+		{
+			m_text.setSelectionMode(true);
+			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			_limitCursor();
+		}
+		else
+		{
+			m_text.setSelectionMode(false);
+			m_text.clearSelection();
+			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			_limitCursor();
+			m_text.setSelectionMode(true);
+		}
+
+		m_buttonDownOfs = ofs.x;
+	}
+
+	if( event == WG_EVENT_MOUSEBUTTON_DRAG && mousebutton == 1 )
+	{
+		if( m_bFocused && ofs.x != m_buttonDownOfs )
+		{
+			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			_limitCursor();
+			m_buttonDownOfs = ofs.x;
+			m_bSelectAllOnRelease = false;
+		}
+	}
+
+	if( event == WG_EVENT_MOUSEBUTTON_RELEASE )
+	{
+		if( m_bFocused && mousebutton == 1 )
+		{
+			m_text.setSelectionMode(false);
+
+			if( m_bSelectAllOnRelease )
+				_selectAll();
+		}
+	}
+
+
+	if( event == WG_EVENT_MOUSEBUTTON_DOUBLECLICK && mousebutton == 1 )
+	{
+		_selectAll();
+		m_text.setSelectionMode(true);
+	}
+
+
+	if( event == WG_EVENT_KEY_PRESS || event == WG_EVENT_KEY_REPEAT )
+	{
+		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
+		switch( key )
+		{
+			case WG_KEY_RETURN:
+			{
+				// We already have correct value in m_value, but we want
+				// to set the bModified flag if value is entered in a weird way.
+
+				int64_t		value;
+				bool bModified = _parseValueFromInput( &value );
+
+				if( m_value < m_rangeMin )
+				{
+					m_value = m_rangeMin;
+					bModified = true;
+				}
+
+				if( m_value > m_rangeMax )
+				{
+					m_value = m_rangeMax;
+					bModified = true;
+				}
+
+				if( bModified )
+				{
+
+					WgEventHandler * pHandler = EventHandler();
+					if( pHandler )
+						pHandler->QueueEvent( new WgEvent::EditvalueModify(this, m_value, FractionalValue()) );
+
+					Emit( IntegerChanged(), m_value );
+					Emit( Fraction(), FractionalValue() );
+
+					m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
+					m_text.goEOL();
+					_limitCursor();
+				}
+				else
+				{
+					ReleaseFocus();
+				}
+
+			}
+			break;
+
+			case WG_KEY_LEFT:
+				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+					m_text.setSelectionMode(true);
+				else
+					m_text.setSelectionMode(false);
+
+				if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+					m_text.gotoPrevWord();
+				else
+					m_text.goLeft();
+				_limitCursor();
+				break;
+			case WG_KEY_RIGHT:
+				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+					m_text.setSelectionMode(true);
+				else
+					m_text.setSelectionMode(false);
+
+				if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+					m_text.gotoNextWord();
+				else
+					m_text.goRight();
+				_limitCursor();
+				break;
+
+			case WG_KEY_BACKSPACE:
+				if(m_text.hasSelection())
+				{
+					m_text.delSelection();
+					bTextChanged = true;
+				}
+				else if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+				{
+					int ofs1 = m_text.column();
+					m_text.gotoPrevWord();
+					_limitCursor();
+					int ofs2 = m_text.column();
+
+					if( ofs2 < ofs1 )
+					{
+						m_text.deleteText( ofs2, ofs1 - ofs2 );
+						bTextChanged = true;
+					}
+//					m_text.delPrevWord();
+				}
+				else
+				{
+					if( m_text.column() > m_format.getPrefix().Length() )
+					{
+						m_text.delPrevChar();
+						bTextChanged = true;
+					}
+				}
+
+				break;
+
+			case WG_KEY_DELETE:
+				if(m_text.hasSelection())
+				{
+					m_text.delSelection();
+					bTextChanged = true;
+				}
+				else if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+				{
+					int ofs1 = m_text.column();
+					m_text.gotoNextWord();
+					_limitCursor();
+					int ofs2 = m_text.column();
+
+					if( ofs2 > ofs1 )
+					{
+						m_text.deleteText( ofs1, ofs2 - ofs1 );
+						bTextChanged = true;
+					}
+//					m_text.delNextWord();
+				}
+				else
+				{
+					if( m_text.column() < m_text.nbChars() - m_format.getSuffix().Length() )
+					{
+						m_text.delNextChar();
+						bTextChanged = true;
+					}
+//					m_text.delNextChar();
+				}
+
+				break;
+
+			case WG_KEY_HOME:
+
+				/*
+				 *	I am not sure if this is the proper way to this, but in my opinion, the default
+				 *	"actions" has to be separated from any modifier key action combination
+				 */
+				switch( pEvent->ModKeys() )
+				{
+
+				case WG_MODKEY_CTRL:
+					break;
+
+				default: // no modifier key was pressed
+					if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+						m_text.setSelectionMode(true);
+
+					m_text.goBOL();
+					_limitCursor();
+					break;
+				}
+
+				break;
+
+			case WG_KEY_END:
+
+				/*
+			 	 *	I am not sure if this is the proper way to this, but in my opinion, the default
+		 		 *	"actions" has to be separated from any modifier key action combination
+				 */
+				switch( pEvent->ModKeys() )
+				{
+
+				case WG_MODKEY_CTRL:
+					break;
+
+				default: // no modifier key was pressed
+					if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+						m_text.setSelectionMode(true);
+
+					m_text.goEOL();
+					_limitCursor();
+					break;
+				}
+
+				break;
+
+
+
+			default:
+				break;
+		}
+	}
+
+	if( event == WG_EVENT_CHARACTER )
+	{
+		int character = static_cast<const WgEvent::Character*>(pEvent)->Char();
+
+		// Period is only allowed if it isn't displayed yet and value has decimals.
+		// It's not allowed before a minus sign.
+		// A zero is inserted (always INSERTED even if mode is replace) if there is no number before it.
+
+		WgCursorInstance * pCursor = m_text.GetCursor();
+		if( pCursor )
+		{
+			if( character == m_format.period )
+			{
+				if( m_format.decimals > 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
+					(pCursor->column() != 0 || (*m_text.getBuffer())[0].glyph != '-' ) )
+				{
+					if(m_text.hasSelection())
+						m_text.delSelection();
+					m_text.setSelectionMode(false);
+
+					if( m_text.nbChars() < m_maxInputChars )
+					{
+						if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].glyph == '-' ) )
+						{
+							m_text.insertChar( 0, WgChar('0') );
+							pCursor->goRight();
+						}
+
+						pCursor->putChar( m_format.period );
+					}
+					bTextChanged = true;
+				}
+			}
+
+			// Handle minus
+			// Only allow minus at start of text and only if range allows negative values.
+
+			if( character == '-' )
+			{
+				if( pCursor->column() == m_format.getPrefix().Length() && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
+					m_rangeMin < 0 )
+				{
+					if(m_text.hasSelection())
+						m_text.delSelection();
+					m_text.setSelectionMode(false);
+
+					if( m_text.nbChars() < m_maxInputChars )
+						pCursor->putChar( '-' );
+					bTextChanged = true;
+				}
+			}
+
+			// Take care of typed numbers 0 through 9.
+
+			if( character >= '0' && character <= '9' )
+			{
+				if( pCursor->column() == 0 && (*m_text.getBuffer())[0].glyph == '-' )
+				{
+				}
+				else
+				{
+					if(m_text.hasSelection())
+						m_text.delSelection();
+					m_text.setSelectionMode(false);
+
+					if( m_text.nbChars() < m_maxInputChars )
+						pCursor->putChar( character );
+					bTextChanged = true;
+				}
+			}
+		}
+	}
+
+
+	if( bTextChanged )
+	{
+		int64_t		value;
+		bool bModified = _parseValueFromInput( &value );
+
+		if( value != m_value )
+		{
+			m_value = value;
+
+			WgEventHandler * pHandler = EventHandler();
+			if( pHandler )
+				pHandler->QueueEvent( new WgEvent::EditvalueModify(this,value,FractionalValue()) );
+
+			Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
+			Emit( IntegerChanged(), m_value );
+			Emit( Fraction(), FractionalValue() );
+		}
+	}
+}
+#endif //WG_TNG
 
 //____ _onAction() _____________________________________________________________
 
@@ -358,12 +787,14 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 		{
 			m_text.setSelectionMode(true);
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			_limitCursor();
 		}
 		else
 		{
 			m_text.setSelectionMode(false);
 			m_text.clearSelection();
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			_limitCursor();
 			m_text.setSelectionMode(true);
 		}
 
@@ -375,6 +806,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 		if( m_bFocused && ofs.x != m_buttonDownOfs )
 		{
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
+			_limitCursor();
 			m_buttonDownOfs = ofs.x;
 			m_bSelectAllOnRelease = false;
 		}
@@ -387,14 +819,14 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 			m_text.setSelectionMode(false);
 
 			if( m_bSelectAllOnRelease )
-				m_text.selectAll();
+				_selectAll();
 		}
 	}
 
 
 	if( action == WgInput::BUTTON_DOUBLECLICK && button_key == 1 )
 	{
-		m_text.selectAll();
+		_selectAll();
 		m_text.setSelectionMode(true);
 	}
 
@@ -430,6 +862,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 
 					m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
 					m_text.goEOL();
+					_limitCursor();
 				}
 				else
 				{
@@ -449,6 +882,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 					m_text.gotoPrevWord();
 				else
 					m_text.goLeft();
+				_limitCursor();
 				break;
 			case WG_KEY_RIGHT:
 				if( info.modifier & WG_MODKEY_SHIFT )
@@ -460,28 +894,70 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 					m_text.gotoNextWord();
 				else
 					m_text.goRight();
+				_limitCursor();
 				break;
 
 			case WG_KEY_BACKSPACE:
 				if(m_text.hasSelection())
+				{
 					m_text.delSelection();
+					bTextChanged = true;
+				}
 				else if( info.modifier & WG_MODKEY_CTRL )
-					m_text.delPrevWord();
-				else
-					m_text.delPrevChar();
+				{
+					int ofs1 = m_text.column();
+					m_text.gotoPrevWord();
+					_limitCursor();
+					int ofs2 = m_text.column();
 
-				bTextChanged = true;
+					if( ofs2 < ofs1 )
+					{
+						m_text.deleteText( ofs2, ofs1 - ofs2 );
+						bTextChanged = true;
+					}
+//					m_text.delPrevWord();
+				}
+				else
+				{
+					if( m_text.column() > m_format.getPrefix().Length() )
+					{
+						m_text.delPrevChar();
+						bTextChanged = true;
+					}
+				}
+
 				break;
 
 			case WG_KEY_DELETE:
 				if(m_text.hasSelection())
+				{
 					m_text.delSelection();
+					bTextChanged = true;
+				}
 				else if( info.modifier & WG_MODKEY_CTRL )
-					m_text.delNextWord();
-				else
-					m_text.delNextChar();
+				{
+					int ofs1 = m_text.column();
+					m_text.gotoNextWord();
+					_limitCursor();
+					int ofs2 = m_text.column();
 
-				bTextChanged = true;
+					if( ofs2 > ofs1 )
+					{
+						m_text.deleteText( ofs1, ofs2 - ofs1 );
+						bTextChanged = true;
+					}
+//					m_text.delNextWord();
+				}
+				else
+				{
+					if( m_text.column() < m_text.nbChars() - m_format.getSuffix().Length() )
+					{
+						m_text.delNextChar();
+						bTextChanged = true;
+					}
+//					m_text.delNextChar();
+				}
+
 				break;
 
 			case WG_KEY_HOME:
@@ -501,6 +977,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 						m_text.setSelectionMode(true);
 
 					m_text.goBOL();
+					_limitCursor();
 					break;
 				}
 
@@ -523,6 +1000,7 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 						m_text.setSelectionMode(true);
 
 					m_text.goEOL();
+					_limitCursor();
 					break;
 				}
 
@@ -553,13 +1031,16 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 						m_text.delSelection();
 					m_text.setSelectionMode(false);
 
-					if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].glyph == '-' ) )
+					if( m_text.nbChars() < m_maxInputChars )
 					{
-						m_text.insertChar( 0, WgChar('0') );
-						pCursor->goRight();
-					}
+						if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].glyph == '-' ) )
+						{
+							m_text.insertChar( 0, WgChar('0') );
+							pCursor->goRight();
+						}
 
-					pCursor->putChar( m_format.period );
+						pCursor->putChar( m_format.period );
+					}
 					bTextChanged = true;
 				}
 			}
@@ -569,14 +1050,15 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 
 			if( button_key == '-' )
 			{
-				if( pCursor->column() == 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
+				if( pCursor->column() == m_format.getPrefix().Length() && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
 					m_rangeMin < 0 )
 				{
 					if(m_text.hasSelection())
 						m_text.delSelection();
 					m_text.setSelectionMode(false);
 
-					pCursor->putChar( '-' );
+					if( m_text.nbChars() < m_maxInputChars )
+						pCursor->putChar( '-' );
 					bTextChanged = true;
 				}
 			}
@@ -594,7 +1076,8 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 						m_text.delSelection();
 					m_text.setSelectionMode(false);
 
-					pCursor->putChar( button_key );
+					if( m_text.nbChars() < m_maxInputChars )
+						pCursor->putChar( button_key );
 					bTextChanged = true;
 				}
 			}
@@ -617,6 +1100,57 @@ void WgGizmoEditvalue::_onAction( WgInput::UserAction action, int button_key, co
 	}
 }
 
+//____ _selectAll() ___________________________________________________________
+
+void WgGizmoEditvalue::_selectAll()
+{
+	int min = m_format.getPrefix().Length();
+	int max = m_text.nbChars() - m_format.getSuffix().Length();
+
+	m_text.selectRange( WgRange( min, max-min ) );
+}
+
+//____ _limitCursor() _________________________________________________________
+
+void WgGizmoEditvalue::_limitCursor()
+{
+	int min = m_format.getPrefix().Length();
+	int max = m_text.nbChars() - m_format.getSuffix().Length();
+
+	WgCursorInstance * pCursor = m_text.GetCursor();
+
+	// Save selection (might get destroyed by moving cursor)
+
+//	bool bSelectionMode = pCursor->getSelectionMode();
+//	WgRange sel = pCursor->getSelection();
+
+	// Move cursor to within prefix/suffix
+
+	if( pCursor->column() < min )
+		pCursor->gotoColumn( min );
+	if( pCursor->column() > max )
+		pCursor->gotoColumn( max );
+
+	// Tweak selection if cursor was not in selection mode
+/*
+	if( !bSelectionMode )
+	{
+		if( sel.ofs < min )
+		{
+			sel.len -= min - sel.ofs;
+			sel.ofs = min;
+		}
+
+		if( sel.len < 0 )
+			sel.len = 0;
+
+		if( sel.ofs + sel.len > max )
+			sel.len = max - sel.ofs;
+
+		m_text.selectText( 0, sel.ofs, 0, sel.ofs + sel.len );
+	}
+*/
+}
 
 //____ _onCloneContent() _______________________________________________________
 
@@ -653,6 +1187,9 @@ void WgGizmoEditvalue::_onDisable( void )
 
 void WgGizmoEditvalue::_onGotInputFocus()
 {
+#ifdef WG_TNG
+	_startReceiveTicks();
+#endif
 	m_bFocused = true;
 	m_text.showCursor();
 	m_text.goEOL();
@@ -673,6 +1210,13 @@ void WgGizmoEditvalue::_onGotInputFocus()
 
 void WgGizmoEditvalue::_onLostInputFocus()
 {
+#ifdef WG_TNG
+	_stopReceiveTicks();
+
+	WgEventHandler * pHandler = EventHandler();
+	if( pHandler )
+		pHandler->QueueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
+#endif
 	m_bFocused = false;
 	m_text.hideCursor();
 	m_useFormat = m_format;
@@ -692,6 +1236,6 @@ bool WgGizmoEditvalue::SelectAllText()
 			return false;				// Couldn't get cursor.
 	}
 
-	m_text.selectAll();
+	_selectAll();
 	return true;
 }

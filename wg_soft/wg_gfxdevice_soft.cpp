@@ -233,7 +233,11 @@ void WgGfxDeviceSoft::_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, 
 				for( int y = 0 ; y < srcrect.h ; y++ )
 				{
 					for( int x = 0 ; x < srcrect.w ; x++ )
-						* pDst++ = (* pSrc++) & 0x00FFFFFF;
+					{
+						* ((Uint32*)pDst) = * ((Uint32*)pSrc) & 0x00FFFFFF;
+						pSrc += 4;
+						pDst += 4;
+					}
 
 					pSrc += srcPitchAdd;
 					pDst += dstPitchAdd;

@@ -41,6 +41,7 @@ WgGizmoContainer* WgVBoxHook::_parent() const
 
 WgGizmoVBox::WgGizmoVBox() : m_nBestWidth(0)
 {
+	m_bSiblingsOverlap = false;
 }
 
 //____ Destructor _____________________________________________________________

@@ -48,8 +48,10 @@ public:
 
 
 protected:
-	void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
-	void	_onCloneContent( const WgGizmo * _pOrg );
+	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
+	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+	void		_onCloneContent( const WgGizmo * _pOrg );
+	WgBlendMode _getBlendMode() const;
 
 private:
 	WgColor			m_tintColor;

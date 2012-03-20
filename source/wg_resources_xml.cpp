@@ -4355,6 +4355,8 @@ void Wdg_EditValue_Res::Serialize(WgResourceSerializerXML& s)
 	WriteTextPropAttr(s, widget->GetTextProp(), "prop");
 	WriteTextManager(widget, s);
 
+	WriteDiffAttr(s, xmlNode, "max_chars", widget->MaxInputChars(), 256);
+
 	s.EndTag();
 }
 
@@ -4370,6 +4372,9 @@ void Wdg_EditValue_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializ
 	WgTextPropPtr prop = s.ResDb()->GetTextProp(xmlNode["prop"]);
 	if(prop)
 		widget->SetTextProp(prop);
+
+	if( xmlNode.HasAttribute("max_chars") )
+		widget->SetMaxInputChars(WgUtil::ToSint32(xmlNode["max_chars"]));
 
 	ReadTextManager(widget, xmlNode, s);
 }
@@ -4512,6 +4517,7 @@ void WgItemHolderRes::Serialize(WgResourceXML* pThis, const WgXmlNode& xmlNode, 
 	WgColorRes::Serialize(s, xmlNode, "item_mark_color", holder->GetItemMarkColor(), WgColor(0, 0xff));
 
 	WriteDiffAttr(s, xmlNode, "item_spacing", holder->ItemSpacing(), (Uint32)0);
+	WriteDiffAttr(s, xmlNode, "items_selectable", holder->IsSelectable(), true);
 
 	for(WgItem* item = holder->GetFirstItem(); item; item = item->GetNext())
 	{
@@ -4535,6 +4541,8 @@ void WgItemHolderRes::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializer
 	m_holder = holder;
 	holder->SetItemMarkColor(WgColorRes::Deserialize(s, xmlNode["item_mark_color"]));
 	holder->SetItemSpacing(WgUtil::ToUint32(xmlNode["item_spacing"]));
+	holder->SetSelectable( WgUtil::ToBool(xmlNode["items_selectable"], true) );
+
 }
 
 //////////////////////////////////////////////////////////////////////////

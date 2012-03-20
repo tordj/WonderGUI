@@ -130,8 +130,8 @@ protected:
 									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
 	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
-	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
-									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip); }
+	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip, blendMode); }
 	void			_onEnable() { WgGizmoContainer::_onEnable(); }
 	void			_onDisable() { WgGizmoContainer::_onDisable(); }
 	bool 			_onAlphaTest( const WgCoord& ofs ) { return WgGizmoContainer::_onAlphaTest(ofs); }

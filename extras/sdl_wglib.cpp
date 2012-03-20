@@ -136,11 +136,11 @@ namespace sdl_wglib
 
 	WgResDB * LoadStdGizmos( const char * pImagePath, const WgSurfaceFactory& factory )
 	{
-		const int HDRAG_BTN_OFS 	= 1;
-		const int VDRAG_BTN_OFS 	= HDRAG_BTN_OFS + 19;
-		const int DRAGBAR_OFS 		= VDRAG_BTN_OFS + 19;
-		const int DRAGBAR_BACK_OFS 	= DRAGBAR_OFS + 10;
-		const int RESIZE_BUTTON_OFS = DRAGBAR_BACK_OFS + 13;
+		const int HSCROLL_BTN_OFS 	= 1;
+		const int VSCROLL_BTN_OFS 	= HSCROLL_BTN_OFS + 19;
+		const int SCROLLBAR_OFS 	= VSCROLL_BTN_OFS + 19;
+		const int SCROLLBAR_BACK_OFS= SCROLLBAR_OFS + 10;
+		const int RESIZE_BUTTON_OFS = SCROLLBAR_BACK_OFS + 13;
 		const int CHECKBOX_OFS 		= RESIZE_BUTTON_OFS + 22;
 		const int RADIOBUTTON_OFS 	= CHECKBOX_OFS + 13;
 		const int BUTTON_OFS		= RADIOBUTTON_OFS + 13;
@@ -151,14 +151,14 @@ namespace sdl_wglib
 		if( !pSurface )
 			return 0;
 
-		WgBlockSetPtr pHDragBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,HDRAG_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
-		WgBlockSetPtr pHDragBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,HDRAG_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pHScrollBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,HSCROLL_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pHScrollBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,HSCROLL_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 
-		WgBlockSetPtr pVDragBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,VDRAG_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
-		WgBlockSetPtr pVDragBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,VDRAG_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pVScrollBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,VSCROLL_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pVScrollBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,VSCROLL_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 
-		WgBlockSetPtr pDragBarBlocks		= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,DRAGBAR_OFS,38,8), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
-		WgBlockSetPtr pDragBarBackBlocks	= pSurface->defineBlockSet( WgRect(1,DRAGBAR_BACK_OFS,5,5), WgBorders(2), WgBorders(2), 0, WG_OPAQUE );
+		WgBlockSetPtr pScrollbarBlocks		= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,SCROLLBAR_OFS,38,8), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
+		WgBlockSetPtr pScrollbarBackBlocks	= pSurface->defineBlockSet( WgRect(1,SCROLLBAR_BACK_OFS,5,5), WgBorders(2), WgBorders(2), 0, WG_OPAQUE );
 
 		WgBlockSetPtr pResizeButtonBlocks 	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,RESIZE_BUTTON_OFS,86,20), 2), WgBorders(3), WgBorders(0), 0, WG_OPAQUE );
 		WgBlockSetPtr pCheckboxUncheckedBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,CHECKBOX_OFS,50,11), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
@@ -200,11 +200,18 @@ namespace sdl_wglib
 		pRadiobutton->SetIcons( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks );
 		pDB->AddGizmo( "radiobutton", pRadiobutton );
 
-		// Create standard horizontal dragbar
+		// Create standard horizontal scrollbar
 
-		WgGizmoHDragbar * pHDrag = new WgGizmoHDragbar();
-		pHDrag->SetSource( pDragBarBackBlocks, pDragBarBlocks, pHDragBtnBwdBlocks, pHDragBtnFwdBlocks );
-		pDB->AddGizmo( "hdragbar", pHDrag );
+		WgGizmoHScrollbar * pHScroll = new WgGizmoHScrollbar();
+		pHScroll->SetSource( pScrollbarBackBlocks, pScrollbarBlocks, pHScrollBtnBwdBlocks, pHScrollBtnFwdBlocks );
+		pDB->AddGizmo( "hscrollbar", pHScroll );
+
+		// Create standard vertical scrollbar
+
+		WgGizmoVScrollbar * pVScroll = new WgGizmoVScrollbar();
+		pVScroll->SetSource( pScrollbarBackBlocks, pScrollbarBlocks, pVScrollBtnBwdBlocks, pVScrollBtnFwdBlocks );
+		pDB->AddGizmo( "vscrollbar", pVScroll );
+
 
 		// Create Background bitmaps
 

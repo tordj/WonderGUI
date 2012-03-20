@@ -494,7 +494,7 @@ bool WgGizmoView::SetContent( WgGizmo * pContent )
 
 //____ SetScrollbarX() ________________________________________________________
 
-bool WgGizmoView::SetScrollbarX( WgGizmoHDragbar* pScrollbar )
+bool WgGizmoView::SetScrollbarX( WgGizmoHScrollbar* pScrollbar )
 {
 	// Remove callbacks to current scrollbar (if we have any)
 
@@ -514,7 +514,7 @@ bool WgGizmoView::SetScrollbarX( WgGizmoHDragbar* pScrollbar )
 		pScrollbar->AddCallback( WgSignal::Back(), WgGizmoView::cbStepLeft, this );
 		pScrollbar->AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
 
-		AddCallback( WgSignal::ViewPosSizeX(), WgGizmoHDragbar::cbSetSlider, pScrollbar );
+		AddCallback( WgSignal::ViewPosSizeX(), WgGizmoHScrollbar::cbSetSlider, pScrollbar );
 		AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
 	}
 
@@ -526,7 +526,7 @@ bool WgGizmoView::SetScrollbarX( WgGizmoHDragbar* pScrollbar )
 
 //____ SetScrollbarY() ________________________________________________________
 
-bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
+bool WgGizmoView::SetScrollbarY( WgGizmoVScrollbar* pScrollbar )
 {
 	// Remove callbacks to current scrollbar (if we have any)
 
@@ -548,7 +548,7 @@ bool WgGizmoView::SetScrollbarY( WgGizmoVDragbar* pScrollbar )
 		pScrollbar->AddCallback( WgSignal::Back(), WgGizmoView::cbStepUp, this );
 		pScrollbar->AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
 
-		AddCallback( WgSignal::ViewPosSizeY(), WgGizmoVDragbar::cbSetSlider, pScrollbar );
+		AddCallback( WgSignal::ViewPosSizeY(), WgGizmoVScrollbar::cbSetSlider, pScrollbar );
 		AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
 	}
 
@@ -569,18 +569,18 @@ WgGizmo* WgGizmoView::ReleaseContent()
 
 //____ ReleaseScrollbarX() ____________________________________________________
 
-WgGizmoHDragbar* WgGizmoView::ReleaseScrollbarX()
+WgGizmoHScrollbar* WgGizmoView::ReleaseScrollbarX()
 {
-	WgGizmoHDragbar * p = (WgGizmoHDragbar*) m_elements[XDRAG]._releaseGizmo();
+	WgGizmoHScrollbar * p = (WgGizmoHScrollbar*) m_elements[XDRAG]._releaseGizmo();
 	_updateElementGeo( Size(), m_contentSize );
 	return p;
 }
 
 //____ ReleaseScrollbarY() ____________________________________________________
 
-WgGizmoVDragbar* WgGizmoView::ReleaseScrollbarY()
+WgGizmoVScrollbar* WgGizmoView::ReleaseScrollbarY()
 {
-	WgGizmoVDragbar * p = (WgGizmoVDragbar*) m_elements[YDRAG]._releaseGizmo();
+	WgGizmoVScrollbar * p = (WgGizmoVScrollbar*) m_elements[YDRAG]._releaseGizmo();
 	_updateElementGeo( Size(), m_contentSize );
 	return p;
 }

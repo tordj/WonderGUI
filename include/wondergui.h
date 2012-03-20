@@ -212,10 +212,6 @@
 #	include <wg_gizmo_circlemeter.h>
 #endif
 
-#ifndef WG_GIZMO_DRAGBARS_DOT_H
-#	include <wg_gizmo_dragbars.h>
-#endif
-
 #ifndef WG_GIZMO_DUMMY_DOT_H
 #	include <wg_gizmo_dummy.h>
 #endif
@@ -254,6 +250,10 @@
 
 #ifndef WG_GIZMO_REFRESHBUTTON_DOT_H
 #	include <wg_gizmo_refreshbutton.h>
+#endif
+
+#ifndef WG_GIZMO_SCROLLBARS_DOT_H
+#	include <wg_gizmo_scrollbars.h>
 #endif
 
 #ifndef WG_GIZMO_SHADER_DOT_H

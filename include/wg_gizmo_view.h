@@ -28,8 +28,8 @@
 #	include <wg_gizmo_container.h>
 #endif
 
-#ifndef	WG_GIZMO_DRAGBARS_DOT_H
-#	include <wg_gizmo_dragbars.h>
+#ifndef	WG_GIZMO_SCROLLBARS_DOT_H
+#	include <wg_gizmo_scrollbars.h>
 #endif
 
 class WgGizmoView;
@@ -189,15 +189,15 @@ public:
 	bool		AutoScrollX() const { return m_bAutoScrollX; }
 	bool		AutoScrollY() const { return m_bAutoScrollY; }
 
-	bool				SetScrollbarX( WgGizmoHDragbar * pScrollbar );
+	bool				SetScrollbarX( WgGizmoHScrollbar * pScrollbar );
 	void				DeleteScrollbarX() {SetScrollbarX(0);}
-	WgGizmoHDragbar *	GetScrollbarX() const { return (WgGizmoHDragbar*) m_elements[XDRAG].Gizmo(); }
-	WgGizmoHDragbar* 	ReleaseScrollbarX();
+	WgGizmoHScrollbar *	GetScrollbarX() const { return (WgGizmoHScrollbar*) m_elements[XDRAG].Gizmo(); }
+	WgGizmoHScrollbar* 	ReleaseScrollbarX();
 
-	bool				SetScrollbarY( WgGizmoVDragbar * pScrollbar );
+	bool				SetScrollbarY( WgGizmoVScrollbar * pScrollbar );
 	void				DeleteScrollbarY() {SetScrollbarY(0);}
-	WgGizmoVDragbar *	GetScrollbarY() const { return (WgGizmoVDragbar*) m_elements[YDRAG].Gizmo(); }
-	WgGizmoVDragbar* 	ReleaseScrollbarY();
+	WgGizmoVScrollbar *	GetScrollbarY() const { return (WgGizmoVScrollbar*) m_elements[YDRAG].Gizmo(); }
+	WgGizmoVScrollbar* 	ReleaseScrollbarY();
 
 	bool				SetContent( WgGizmo * pContent );
 	void				DeleteContent() {SetContent(0); }
@@ -270,8 +270,8 @@ protected:
 									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
 	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
-	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
-									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip); }
+	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip, blendMode); }
 	void			_onEnable() { WgGizmoContainer::_onEnable(); }
 	void			_onDisable() { WgGizmoContainer::_onDisable(); }
 
@@ -303,8 +303,8 @@ protected:
 
 	WgCoord		m_viewPixOfs;
 
-//	WgGizmoHDragbar *	m_pScrollbarX;
-//	WgGizmoVDragbar *	m_pScrollbarY;
+//	WgGizmoHScrollbar *	m_pScrollbarX;
+//	WgGizmoVScrollbar *	m_pScrollbarY;
 
 	bool		m_bAutoHideScrollbarX;		// Should X-scrollbar autohide when not needed?
 	bool		m_bAutoHideScrollbarY;		// Should Y-scrollbar autohide when not needed?

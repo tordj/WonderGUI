@@ -669,6 +669,11 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 	int			sizeStack[16];
 	Uint32		nSizeRecursions = 0;
 
+	WgChar *	pBeginBreakLevel = 0;
+	int			breakLevelStack[16];
+	Uint32		nBreakLevelRecursions = 0;
+
+
 
 	WgChar		myChar;
 
@@ -692,6 +697,30 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 						pDst[n++] = myChar;
 					}
 				break;
+
+				case ':':					// BEGIN BREAK LEVEL
+					if( nBreakLevelRecursions != 0 )
+						WgTextTool::SetBreakLevel( breakLevelStack[nBreakLevelRecursions-1], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+
+					if( nBreakLevelRecursions < 16 )
+					{
+						pBeginBreakLevel = &pDst[n];
+
+						int level = pSrc[0] - '0';
+						breakLevelStack[nBreakLevelRecursions++] = level;
+						pSrc+=1;
+					}
+				break;
+
+				case ';':					// END BREAK LEVEL
+					if( nBreakLevelRecursions > 0 )
+					{
+						nBreakLevelRecursions--;
+						WgTextTool::SetBreakLevel( breakLevelStack[nBreakLevelRecursions], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+						pBeginSize = &pDst[n];
+					}
+				break;
+
 
 				case '[':					// BEGIN SIZE
 					if( nSizeRecursions != 0 )
@@ -936,6 +965,10 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 	int			sizeStack[16];
 	Uint32		nSizeRecursions = 0;
 
+	WgChar *	pBeginBreakLevel = 0;
+	int			breakLevelStack[16];
+	Uint32		nBreakLevelRecursions = 0;
+
 	WgChar		myChar;
 
 	const Uint16 * pSrc = _pSrc;		// We need a pointer that can be increased.
@@ -981,6 +1014,30 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 						pBeginSize = &pDst[n];
 					}
 				break;
+
+				case ':':					// BEGIN BREAK LEVEL
+					if( nBreakLevelRecursions != 0 )
+						WgTextTool::SetBreakLevel( breakLevelStack[nBreakLevelRecursions-1], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+
+					if( nBreakLevelRecursions < 16 )
+					{
+						pBeginBreakLevel = &pDst[n];
+
+						int level = pSrc[0] - '0';
+						breakLevelStack[nBreakLevelRecursions++] = level;
+						pSrc+=1;
+					}
+				break;
+
+				case ';':					// END BREAK LEVEL
+					if( nBreakLevelRecursions > 0 )
+					{
+						nBreakLevelRecursions--;
+						WgTextTool::SetBreakLevel( breakLevelStack[nBreakLevelRecursions], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+						pBeginSize = &pDst[n];
+					}
+				break;
+
 
 				case '{':					// BEGIN COLOR
 					if( nColorRecursions != 0 )
@@ -2612,6 +2669,13 @@ void WgTextTool::SetUnderlined( WgChar * pChar, Uint32 nb, WgMode mode )
 void WgTextTool::ClearUnderlined( WgChar * pChar, Uint32 nb, WgMode mode )
 {
 	ModifyProperties( PropUnderlinedModifier(false,mode), pChar, nb );
+}
+
+//____ SetBreakLevel() ________________________________________________________
+
+void WgTextTool::SetBreakLevel( int breakLevel, WgChar * pChar, Uint32 nb )
+{
+	ModifyProperties( PropBreakLevelModifier(breakLevel), pChar, nb );
 }
 
 //____ SetLink() ______________________________________________________________
