@@ -101,8 +101,8 @@ public:
 	WgTextPropPtr	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
 
 	bool	SetSliderSource(  WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx, WgBlockSetPtr pBtnBwdGfx, WgBlockSetPtr pBtnFwdGfx );
-	bool	SetSliderButtonLayout(  WgGizmoScrollbar::ButtonLayout layout );
-	WgGizmoScrollbar::ButtonLayout GetSliderButtonLayout() const { return m_sliderBtnLayout; }
+	bool	SetSliderButtonLayout(  WgGizmoSlider::ButtonLayout layout );
+	WgGizmoSlider::ButtonLayout GetSliderButtonLayout() const { return m_sliderBtnLayout; }
 	WgBlockSetPtr GetSliderBgSource() const { return m_pSliderBgGfx; }
 	WgBlockSetPtr GetSliderBarSource() const { return m_pSliderBarGfx; }
 	WgBlockSetPtr GetSliderBwdSource() const { return m_pSliderBtnBwdGfx; }
@@ -307,7 +307,7 @@ private:
 	WgBlockSetPtr				m_pSliderBarGfx;
 	WgBlockSetPtr				m_pSliderBtnFwdGfx;
 	WgBlockSetPtr				m_pSliderBtnBwdGfx;
-	WgGizmoScrollbar::ButtonLayout	m_sliderBtnLayout;
+	WgGizmoSlider::ButtonLayout	m_sliderBtnLayout;
 };
 
 

@@ -178,10 +178,10 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	pText->SetText( "TESTING" );
 	pPanelStack->AddChild( pText );
 
-	WgGizmo * pSlider = pDB->CloneGizmo( "hdragbar" );
-	WgStackHook * pDragbarHook = pPanelStack->AddChild( pSlider );
+	WgGizmo * pSlider = pDB->CloneGizmo( "hslider" );
+	WgStackHook * pSliderHook = pPanelStack->AddChild( pSlider );
 //	pDragbarHook->SetOrientation( WG_SOUTH );
-	pDragbarHook->SetBorders( WgBorders(0,0,81,0) );
+	pSliderHook->SetBorders( WgBorders(0,0,81,0) );
 
 	//
 

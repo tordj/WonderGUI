@@ -50,7 +50,8 @@ class WgGizmoAnimation;
 class WgGizmoTablist;
 class WgGizmoValue;
 class WgGizmoEditvalue;
-class WgGizmoScrollbar;
+class WgGizmoSlider;
+class WgGizmoMenu;
 class WgInterfaceEditText;
 class WgText;
 
@@ -372,49 +373,49 @@ namespace WgEvent
 		EditvalueSet( WgGizmoEditvalue * pGizmo, int64_t value, double fraction );
 	};
 
-	//____ WgGizmoScrollbar events ________________________________________________
+	//____ WgGizmoSlider events ________________________________________________
 
-	class ScrollbarEvent : public Event
+	class SliderEvent : public Event
 	{
 	public:
-		WgGizmoScrollbar* Scrollbar() const;
+		WgGizmoSlider* Slider() const;
 		float			Pos() const;
 		float			Length() const;
 
 	protected:
-		ScrollbarEvent( WgGizmoScrollbar * pGizmo, float pos, float length );
+		SliderEvent( WgGizmoSlider * pGizmo, float pos, float length );
 		float			m_pos;
 		float			m_length;
 	};
 
-	class ScrollbarMove : public ScrollbarEvent
+	class SliderMove : public SliderEvent
 	{
 	public:
-		ScrollbarMove( WgGizmoScrollbar* pGizmo, float pos, float length );
+		SliderMove( WgGizmoSlider* pGizmo, float pos, float length );
 	};
 
-	class ScrollbarStepFwd : public ScrollbarEvent
+	class SliderStepFwd : public SliderEvent
 	{
 	public:
-		ScrollbarStepFwd( WgGizmoScrollbar* pGizmo, float pos, float length );
+		SliderStepFwd( WgGizmoSlider* pGizmo, float pos, float length );
 	};
 
-	class ScrollbarStepBwd : public ScrollbarEvent
+	class SliderStepBwd : public SliderEvent
 	{
 	public:
-		ScrollbarStepBwd( WgGizmoScrollbar* pGizmo, float pos, float length );
+		SliderStepBwd( WgGizmoSlider* pGizmo, float pos, float length );
 	};
 
-	class ScrollbarJumpFwd : public ScrollbarEvent
+	class SliderJumpFwd : public SliderEvent
 	{
 	public:
-		ScrollbarJumpFwd( WgGizmoScrollbar* pGizmo, float pos, float length );
+		SliderJumpFwd( WgGizmoSlider* pGizmo, float pos, float length );
 	};
 
-	class ScrollbarJumpBwd : public ScrollbarEvent
+	class SliderJumpBwd : public SliderEvent
 	{
 	public:
-		ScrollbarJumpBwd( WgGizmoScrollbar* pGizmo, float pos, float length );
+		SliderJumpBwd( WgGizmoSlider* pGizmo, float pos, float length );
 	};
 
 	//____ Text events ________________________________________
@@ -438,6 +439,36 @@ namespace WgEvent
 	{
 	public:
 		TextSet( WgGizmo * pGizmo, WgText * pText );
+	};
+
+	//____ WgGizmoMenu events __________________________________________________
+
+	class MenuItemEvent : public Event
+	{
+	public:
+		WgGizmoMenu *	Menu() const;
+		int				ItemId() const;
+
+	protected:
+		int				m_itemId;
+	};
+
+	class MenuItemSelected : public MenuItemEvent
+	{
+	public:
+		MenuItemSelected( WgGizmoMenu * pMenu, int menuItemId );
+	};
+
+	class MenuItemChecked : public MenuItemEvent
+	{
+	public:
+		MenuItemChecked( WgGizmoMenu * pMenu, int menuItemId );
+	};
+
+	class MenuItemUnchecked : public MenuItemEvent
+	{
+	public:
+		MenuItemUnchecked( WgGizmoMenu * pMenu, int menuItemId );
 	};
 
 

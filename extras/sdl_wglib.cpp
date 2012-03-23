@@ -136,29 +136,30 @@ namespace sdl_wglib
 
 	WgResDB * LoadStdGizmos( const char * pImagePath, const WgSurfaceFactory& factory )
 	{
-		const int HSCROLL_BTN_OFS 	= 1;
-		const int VSCROLL_BTN_OFS 	= HSCROLL_BTN_OFS + 19;
-		const int SCROLLBAR_OFS 	= VSCROLL_BTN_OFS + 19;
-		const int SCROLLBAR_BACK_OFS= SCROLLBAR_OFS + 10;
-		const int RESIZE_BUTTON_OFS = SCROLLBAR_BACK_OFS + 13;
-		const int CHECKBOX_OFS 		= RESIZE_BUTTON_OFS + 22;
-		const int RADIOBUTTON_OFS 	= CHECKBOX_OFS + 13;
-		const int BUTTON_OFS		= RADIOBUTTON_OFS + 13;
-		const int PLATE_OFS			= BUTTON_OFS + 10;
-		const int TILES_OFS			= 192;
+		const int HSLIDER_BTN_OFS 		= 1;
+		const int VSLIDER_BTN_OFS 		= HSLIDER_BTN_OFS + 19;
+		const int SLIDER_OFS 			= VSLIDER_BTN_OFS + 19;
+		const int SLIDER_BACK_OFS		= SLIDER_OFS + 10;
+		const int RESIZE_BUTTON_OFS 	= SLIDER_BACK_OFS + 13;
+		const int CHECKBOX_OFS 			= RESIZE_BUTTON_OFS + 22;
+		const int RADIOBUTTON_OFS 		= CHECKBOX_OFS + 13;
+		const int BUTTON_OFS			= RADIOBUTTON_OFS + 13;
+		const int PLATE_OFS				= BUTTON_OFS + 10;
+		const int SPLITS_AND_FRAME_OFS	= PLATE_OFS + 10;
+		const int TILES_OFS				= 192;
 
 		WgSurface * pSurface = LoadSurface( pImagePath, factory );
 		if( !pSurface )
 			return 0;
 
-		WgBlockSetPtr pHScrollBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,HSCROLL_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
-		WgBlockSetPtr pHScrollBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,HSCROLL_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pHSliderBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,HSLIDER_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pHSliderBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,HSLIDER_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 
-		WgBlockSetPtr pVScrollBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,VSCROLL_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
-		WgBlockSetPtr pVScrollBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,VSCROLL_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pVSliderBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,VSLIDER_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pVSliderBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,VSLIDER_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 
-		WgBlockSetPtr pScrollbarBlocks		= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,SCROLLBAR_OFS,38,8), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
-		WgBlockSetPtr pScrollbarBackBlocks	= pSurface->defineBlockSet( WgRect(1,SCROLLBAR_BACK_OFS,5,5), WgBorders(2), WgBorders(2), 0, WG_OPAQUE );
+		WgBlockSetPtr pSliderBlocks			= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,SLIDER_OFS,38,8), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
+		WgBlockSetPtr pSliderBackBlocks		= pSurface->defineBlockSet( WgRect(1,SLIDER_BACK_OFS,5,5), WgBorders(2), WgBorders(2), 0, WG_OPAQUE );
 
 		WgBlockSetPtr pResizeButtonBlocks 	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,RESIZE_BUTTON_OFS,86,20), 2), WgBorders(3), WgBorders(0), 0, WG_OPAQUE );
 		WgBlockSetPtr pCheckboxUncheckedBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,CHECKBOX_OFS,50,11), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
@@ -169,9 +170,14 @@ namespace sdl_wglib
 		WgBlockSetPtr pButtonBlocks 		= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,BUTTON_OFS,38,8), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 		WgBlockSetPtr pPlateBlocks 			= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,PLATE_OFS,38,8), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
 
+		WgBlockSetPtr pHSplitBlocks			= pSurface->defineBlockSet( WgRect(1,SPLITS_AND_FRAME_OFS,8,2), WgBorders(0), WgBorders(0), 0, WG_OPAQUE );
+		WgBlockSetPtr pVSplitBlocks			= pSurface->defineBlockSet( WgRect(11,SPLITS_AND_FRAME_OFS,2,8), WgBorders(0), WgBorders(0), 0, WG_OPAQUE );
+		WgBlockSetPtr pFrameBlocks			= pSurface->defineBlockSet( WgRect(15,SPLITS_AND_FRAME_OFS,8,8), WgBorders(2), WgBorders(3), 0, 0 );
 
 		WgBlockSetPtr pBgCheckeredGreyBlocks= pSurface->defineBlockSet( WgRect(0,TILES_OFS,64,64), WgBorders(0), WgBorders(0), 0, WG_OPAQUE | WG_TILE_ALL );
 		WgBlockSetPtr pBgBlueGradientBlocks = pSurface->defineBlockSet( WgRect(1*64,TILES_OFS,64,64), WgBorders(0), WgBorders(0), 0, WG_OPAQUE );
+
+		WgColorSetPtr pSelectionColors = WgColorSet::Create( WgColor(0x0), WgColor(0x40FFFFFF), WgColor(0x80FFFFFF), WgColor(0x40000000), WgColor(0x0) );
 
 
 		WgResDB * pDB = new WgResDB();
@@ -200,17 +206,17 @@ namespace sdl_wglib
 		pRadiobutton->SetIcons( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks );
 		pDB->AddGizmo( "radiobutton", pRadiobutton );
 
-		// Create standard horizontal scrollbar
+		// Create standard horizontal slider
 
-		WgGizmoHScrollbar * pHScroll = new WgGizmoHScrollbar();
-		pHScroll->SetSource( pScrollbarBackBlocks, pScrollbarBlocks, pHScrollBtnBwdBlocks, pHScrollBtnFwdBlocks );
-		pDB->AddGizmo( "hscrollbar", pHScroll );
+		WgGizmoHSlider * pHSlider = new WgGizmoHSlider();
+		pHSlider->SetSource( pSliderBackBlocks, pSliderBlocks, pHSliderBtnBwdBlocks, pHSliderBtnFwdBlocks );
+		pDB->AddGizmo( "hslider", pHSlider );
 
-		// Create standard vertical scrollbar
+		// Create standard vertical slider
 
-		WgGizmoVScrollbar * pVScroll = new WgGizmoVScrollbar();
-		pVScroll->SetSource( pScrollbarBackBlocks, pScrollbarBlocks, pVScrollBtnBwdBlocks, pVScrollBtnFwdBlocks );
-		pDB->AddGizmo( "vscrollbar", pVScroll );
+		WgGizmoVSlider * pVSlider = new WgGizmoVSlider();
+		pVSlider->SetSource( pSliderBackBlocks, pSliderBlocks, pVSliderBtnBwdBlocks, pVSliderBtnFwdBlocks );
+		pDB->AddGizmo( "vslider", pVSlider );
 
 
 		// Create Background bitmaps
@@ -222,6 +228,17 @@ namespace sdl_wglib
 		WgGizmoPixmap * pBgBlueGradient = new WgGizmoPixmap();
 		pBgBlueGradient->SetSource( pBgBlueGradientBlocks );
 		pDB->AddGizmo( "bg_blue_gradient", pBgBlueGradient );
+
+		// Create standard menu
+
+		WgGizmoMenu * pMenu = new WgGizmoMenu();
+		pMenu->SetBgSource( pPlateBlocks, 16, 16 );
+		pMenu->SetSeparatorSource( pHSplitBlocks, WgBorders(1) );
+		pMenu->SetCheckBoxSource( pCheckboxUncheckedBlocks, pCheckboxCheckedBlocks);
+		pMenu->SetRadioButtonSource( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks);
+		pMenu->SetSliderSource( pSliderBackBlocks, pSliderBlocks, pVSliderBtnBwdBlocks, pVSliderBtnFwdBlocks );
+		pMenu->SetTileColors( pSelectionColors );
+		pDB->AddGizmo( "menu", pMenu );
 
 		return pDB;
 	}

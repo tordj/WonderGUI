@@ -38,25 +38,27 @@
 
 class WgSurface;
 class WgSliderTarget;
+class WgGizmoMenu;
 
-//____ Class: WgGizmoScrollbar _____________________________________________________
+//____ Class: WgGizmoSlider _____________________________________________________
 
-class	WgGizmoScrollbar : public WgGizmo
+class	WgGizmoSlider : public WgGizmo
 {
 	friend class WgSliderTarget;
+	friend class WgGizmoMenu;
 
 	public:
-		WgGizmoScrollbar();
-		virtual	~WgGizmoScrollbar();
+		WgGizmoSlider();
+		virtual	~WgGizmoSlider();
 		virtual const char * Type() const;
 		static const char * GetMyType();
 
 		//____ Callbacks ________________________________________
 
-		static void cbSetSlider				(void * pGizmo, float pos, float size) { ((WgGizmoScrollbar*)pGizmo)->SetSlider(pos,size); }
-		static void cbSetSliderPos			(void * pGizmo, float pos) { ((WgGizmoScrollbar*)pGizmo)->SetSliderPos(pos); }
-		static void cbSetSliderSize			(void * pGizmo, float size) { ((WgGizmoScrollbar*)pGizmo)->SetSliderSize(size); }
-		static void cbSetSliderPosPxlOfs	(void * pGizmo, int x) { ((WgGizmoScrollbar*)pGizmo)->SetSliderPosPxlOfs(x); }
+		static void cbSetSlider				(void * pGizmo, float pos, float size) { ((WgGizmoSlider*)pGizmo)->SetSlider(pos,size); }
+		static void cbSetSliderPos			(void * pGizmo, float pos) { ((WgGizmoSlider*)pGizmo)->SetSliderPos(pos); }
+		static void cbSetSliderSize			(void * pGizmo, float size) { ((WgGizmoSlider*)pGizmo)->SetSliderSize(size); }
+		static void cbSetSliderPosPxlOfs	(void * pGizmo, int x) { ((WgGizmoSlider*)pGizmo)->SetSliderPosPxlOfs(x); }
 
 		//____ Enums ____________________________________________
 
@@ -179,29 +181,29 @@ class	WgGizmoScrollbar : public WgGizmo
 		void		_unmarkReqRender();
 };
 
-//____ Class: WgGizmoHScrollbar _______________________________________________________
+//____ Class: WgGizmoHSlider _______________________________________________________
 
-class WgGizmoHScrollbar:public WgGizmoScrollbar
+class WgGizmoHSlider:public WgGizmoSlider
 {
 	public:
-		WgGizmoHScrollbar();
+		WgGizmoHSlider();
 
 		virtual const char * Type() const;
 		static const char * GetMyType();
-		virtual WgGizmo * NewOfMyType() const { return new WgGizmoHScrollbar(); };
+		virtual WgGizmo * NewOfMyType() const { return new WgGizmoHSlider(); };
 
 };
 
-//____ Class: WgGizmoVScrollbar _______________________________________________________
+//____ Class: WgGizmoVSlider _______________________________________________________
 
-class WgGizmoVScrollbar:public WgGizmoScrollbar
+class WgGizmoVSlider:public WgGizmoSlider
 {
 	public:
-		WgGizmoVScrollbar();
+		WgGizmoVSlider();
 
 		virtual const char * Type() const;
 		static const char * GetMyType();
-		virtual WgGizmo * NewOfMyType() const { return new WgGizmoVScrollbar(); };
+		virtual WgGizmo * NewOfMyType() const { return new WgGizmoVSlider(); };
 
 };
 

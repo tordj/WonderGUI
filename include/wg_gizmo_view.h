@@ -28,8 +28,8 @@
 #	include <wg_gizmo_container.h>
 #endif
 
-#ifndef	WG_GIZMO_SCROLLBARS_DOT_H
-#	include <wg_gizmo_scrollbars.h>
+#ifndef	WG_GIZMO_SLIDER_DOT_H
+#	include <wg_gizmo_slider.h>
 #endif
 
 class WgGizmoView;
@@ -189,15 +189,15 @@ public:
 	bool		AutoScrollX() const { return m_bAutoScrollX; }
 	bool		AutoScrollY() const { return m_bAutoScrollY; }
 
-	bool				SetScrollbarX( WgGizmoHScrollbar * pScrollbar );
-	void				DeleteScrollbarX() {SetScrollbarX(0);}
-	WgGizmoHScrollbar *	GetScrollbarX() const { return (WgGizmoHScrollbar*) m_elements[XDRAG].Gizmo(); }
-	WgGizmoHScrollbar* 	ReleaseScrollbarX();
+	bool				SetSliderX( WgGizmoHSlider * pSlider );
+	void				DeleteSliderX() {SetSliderX(0);}
+	WgGizmoHSlider *	GetSliderX() const { return (WgGizmoHSlider*) m_elements[XDRAG].Gizmo(); }
+	WgGizmoHSlider* 	ReleaseSliderX();
 
-	bool				SetScrollbarY( WgGizmoVScrollbar * pScrollbar );
-	void				DeleteScrollbarY() {SetScrollbarY(0);}
-	WgGizmoVScrollbar *	GetScrollbarY() const { return (WgGizmoVScrollbar*) m_elements[YDRAG].Gizmo(); }
-	WgGizmoVScrollbar* 	ReleaseScrollbarY();
+	bool				SetSliderY( WgGizmoVSlider * pSlider );
+	void				DeleteSliderY() {SetSliderY(0);}
+	WgGizmoVSlider *	GetSliderY() const { return (WgGizmoVSlider*) m_elements[YDRAG].Gizmo(); }
+	WgGizmoVSlider* 	ReleaseSliderY();
 
 	bool				SetContent( WgGizmo * pContent );
 	void				DeleteContent() {SetContent(0); }
@@ -210,16 +210,16 @@ public:
 	bool				DeleteAllChildren();
 	bool				ReleaseAllChildren();
 
-	void				SetScrollbarAutoHide( bool bHideX, bool bHideY );
-	bool				GetScrollbarAutoHideX() const { return m_bAutoHideScrollbarX; }
-	bool				GetScrollbarAutoHideY() const { return m_bAutoHideScrollbarY; }
+	void				SetSliderAutoHide( bool bHideX, bool bHideY );
+	bool				GetSliderAutoHideX() const { return m_bAutoHideSliderX; }
+	bool				GetSliderAutoHideY() const { return m_bAutoHideSliderY; }
 
-	void				SetScrollbarPositions( bool bBottom, bool bRight );
-	bool				GetScrollbarBottom() const { return m_bScrollbarBottom; }
-	bool				GetScrollbarRight() const { return m_bScrollbarRight; }
+	void				SetSliderPositions( bool bBottom, bool bRight );
+	bool				GetSliderBottom() const { return m_bSliderBottom; }
+	bool				GetSliderRight() const { return m_bSliderRight; }
 
-	bool				ScrollbarXVisible();
-	bool				ScrollbarYVisible();
+	bool				SliderXVisible();
+	bool				SliderYVisible();
 
 	void				SetFillerSource( const WgBlockSetPtr& pBlocks );
 
@@ -278,7 +278,7 @@ protected:
 	//
 
 	// Following method should be overridden by subclasses instead of _onNewSize()!
-	// Takes into account that scrollbars might decrease the visible area of the subclass.
+	// Takes into account that sliders might decrease the visible area of the subclass.
 
 	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	bool		_onAlphaTest( const WgCoord& ofs );
@@ -303,14 +303,14 @@ protected:
 
 	WgCoord		m_viewPixOfs;
 
-//	WgGizmoHScrollbar *	m_pScrollbarX;
-//	WgGizmoVScrollbar *	m_pScrollbarY;
+//	WgGizmoHSlider *	m_pScrollbarX;
+//	WgGizmoVSlider *	m_pScrollbarY;
 
-	bool		m_bAutoHideScrollbarX;		// Should X-scrollbar autohide when not needed?
-	bool		m_bAutoHideScrollbarY;		// Should Y-scrollbar autohide when not needed?
+	bool		m_bAutoHideSliderX;		// Should X-slider autohide when not needed?
+	bool		m_bAutoHideSliderY;		// Should Y-slider autohide when not needed?
 
-	bool		m_bScrollbarBottom;		// True if X-scrollbar should be at the bottom, otherwise at the top.
-	bool		m_bScrollbarRight;		// True if Y-scrollbar should be at the right, otherwise at the left.
+	bool		m_bSliderBottom;		// True if X-slider should be at the bottom, otherwise at the top.
+	bool		m_bSliderRight;			// True if Y-slider should be at the right, otherwise at the left.
 
 	bool		m_bAutoScrollX;
 	bool		m_bAutoScrollY;

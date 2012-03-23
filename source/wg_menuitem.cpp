@@ -1,11 +1,15 @@
-
 #include <wg_menuitem.h>
 
 #include <wg_char.h>
 #include <wg_texttool.h>
-#include <wdg_menu.h>
 
-//____ WgMenuItem::Show ___________________________________________
+#ifdef WG_TNG
+#	include <wg_gizmo_menu.h>
+#else
+#	include <wdg_menu.h>
+#endif
+
+//____ WgMenuItem::Show() ___________________________________________
 
 void WgMenuItem::Show()
 {
@@ -16,7 +20,7 @@ void WgMenuItem::Show()
 	}
 }
 
-//____ WgMenuItem::Hide ___________________________________________
+//____ WgMenuItem::Hide() ___________________________________________
 
 void WgMenuItem::Hide()
 {
@@ -27,12 +31,14 @@ void WgMenuItem::Hide()
 	}
 }
 
+//____ WgMenuItem::Modified() ___________________________________________
+
 void WgMenuItem::Modified()
 {
 	if(m_pMyMenu)
 	{
-		m_pMyMenu->AdjustSize();
-		m_pMyMenu->RequestRender();
+		m_pMyMenu->_adjustSize();
+		m_pMyMenu->_requestRender();
 	}
 }
 
@@ -145,7 +151,7 @@ WgMenuRadioButton::WgMenuRadioButton()
 	m_bSelected = false;
 }
 
-WgMenuRadioButton::WgMenuRadioButton(	const WgString& text, const WgString& helpText, 
+WgMenuRadioButton::WgMenuRadioButton(	const WgString& text, const WgString& helpText,
 										Uint16 navKey, bool bSelected,
 										WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText )
 						:WgMenuEntry( text, helpText, 0, navKey, accelModif, accelKey, accelText )
@@ -176,7 +182,7 @@ bool WgMenuRadioButton::Select()
 		pItem = pItem->Prev();
 	}
 
-	
+
 	//TODO: Need to force a redraw here...
 
 	return true;
@@ -191,8 +197,9 @@ WgMenuSubMenu::WgMenuSubMenu()
 	m_pSubMenu = 0;
 }
 
-WgMenuSubMenu::WgMenuSubMenu(	const WgString& text, const WgString& helpText, 
-								const WgBlockSetPtr& pIcon, Uint16 navKey, Wdg_Menu * pSubMenu,
+
+WgMenuSubMenu::WgMenuSubMenu(	const WgString& text, const WgString& helpText,
+								const WgBlockSetPtr& pIcon, Uint16 navKey, WgMenuClass * pSubMenu,
 								WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText )
 						:WgMenuEntry( text, helpText, pIcon, navKey, accelModif, accelKey, accelText )
 {
@@ -200,26 +207,38 @@ WgMenuSubMenu::WgMenuSubMenu(	const WgString& text, const WgString& helpText,
 	m_pSubMenu = pSubMenu;
 }
 
+#ifdef WG_TNG
+	void WgMenuSubMenu::SetSubMenu(WgGizmoMenu* subMenu)
+	{
+		m_pSubMenu= subMenu;
+	};
 
-void WgMenuSubMenu::SetSubMenu(Wdg_Menu* subMenu)	
-{
-	if( m_pSubMenu && m_pMyMenu )
-		m_pSubMenu->RemoveCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, m_pMyMenu );
+	void WgMenuSubMenu::SetMyMenu( WgGizmoMenu * pMenu )
+	{
+		WgMenuItem::SetMyMenu( pMenu );
+	}
 
-	m_pSubMenu= subMenu;
+#else
+	void WgMenuSubMenu::SetSubMenu(Wdg_Menu* subMenu)
+	{
+		if( m_pSubMenu && m_pMyMenu )
+			m_pSubMenu->RemoveCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, m_pMyMenu );
 
-	if( subMenu && m_pMyMenu )
-		subMenu->AddCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, m_pMyMenu );
+		m_pSubMenu= subMenu;
 
-};
+		if( subMenu && m_pMyMenu )
+			subMenu->AddCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, m_pMyMenu );
 
-void WgMenuSubMenu::SetMyMenu( Wdg_Menu * pMenu )
-{
-	if( m_pSubMenu && m_pMyMenu )
-		m_pSubMenu->RemoveCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, m_pMyMenu );
+	};
 
-	if( m_pSubMenu && pMenu )
-		m_pSubMenu->AddCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, pMenu );
+	void WgMenuSubMenu::SetMyMenu( Wdg_Menu * pMenu )
+	{
+		if( m_pSubMenu && m_pMyMenu )
+			m_pSubMenu->RemoveCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, m_pMyMenu );
 
-	WgMenuItem::SetMyMenu( pMenu );
-}
+		if( m_pSubMenu && pMenu )
+			m_pSubMenu->AddCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, pMenu );
+
+		WgMenuItem::SetMyMenu( pMenu );
+	}
+#endif

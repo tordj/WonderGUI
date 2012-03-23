@@ -20,7 +20,14 @@ class WgChar;
 
 class WgText;
 class WgGfxAnim;
-class Wdg_Menu;
+
+#ifdef WG_TNG
+	class WgGizmoMenu;
+	typedef class WgGizmoMenu WgMenuClass;
+#else
+	class Wdg_Menu;
+	typedef class Wdg_Menu WgMenuClass;
+#endif
 
 
 enum WgMenuItemType
@@ -38,6 +45,7 @@ enum WgMenuItemType
 class WgMenuItem : public WgLink
 {
 	friend class Wdg_Menu;
+	friend class WgGizmoMenu;
 public:
 	virtual ~WgMenuItem() {};
 	LINK_METHODS( WgMenuItem );
@@ -58,13 +66,13 @@ public:
 protected:
 	WgMenuItem(WgMenuItemType _type) {m_type = _type; m_id = 0; m_pMyMenu = 0; m_bVisible = true; }
 
-	virtual void SetMyMenu( Wdg_Menu * pMenu ) { m_pMyMenu = pMenu; }
-
+	virtual void SetMyMenu( WgMenuClass * pMenu ) { m_pMyMenu = pMenu; }
 
 	WgMenuItemType	m_type;
     int				m_id;
 	bool			m_bVisible;
-	Wdg_Menu *		m_pMyMenu;
+
+	WgMenuClass *	m_pMyMenu;
 };
 
 //____ WgMenuSeparator ________________________________________________________
@@ -81,6 +89,7 @@ public:
 class WgMenuEntry : public WgMenuItem
 {
 	friend class Wdg_Menu;
+	friend class WgGizmoMenu;
 public:
 	WgMenuEntry();
 	WgMenuEntry( const WgString& text, const WgString& helpText, const WgBlockSetPtr& pIcon, Uint16 navKey,
@@ -163,20 +172,19 @@ private:
 
 class WgMenuSubMenu : public WgMenuEntry
 {
-
 public:
 	WgMenuSubMenu();
-	WgMenuSubMenu(	const WgString& text, const WgString& helpText, const WgBlockSetPtr& pIcon, Uint16 navKey, Wdg_Menu * pSubMenu,
+	WgMenuSubMenu(	const WgString& text, const WgString& helpText, const WgBlockSetPtr& pIcon, Uint16 navKey, WgMenuClass * pSubMenu,
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuSubMenu() {};
 
-	inline Wdg_Menu *	GetSubMenu()					{return m_pSubMenu;};
-	void				SetSubMenu(Wdg_Menu* subMenu);
+	inline WgMenuClass *GetSubMenu()					{return m_pSubMenu;};
+	void				SetSubMenu(WgMenuClass * subMenu);
 
 private:
-	void				SetMyMenu( Wdg_Menu * pMenu );
+	void				SetMyMenu( WgMenuClass * pMenu );
 
-	Wdg_Menu *		m_pSubMenu;
+	WgMenuClass *		m_pSubMenu;
 };
 
 

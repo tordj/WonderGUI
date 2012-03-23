@@ -24,8 +24,8 @@
 #define	WG_GIZMO_MENU_DOT_H
 
 
-#ifndef	WG_WIDGET_DOT_H
-#	include <wg_widget.h>
+#ifndef	WG_GIZMO_DOT_H
+#	include <wg_gizmo.h>
 #endif
 
 #ifndef	WG_MENUITEM_DOT_H
@@ -36,10 +36,6 @@
 #	include <wg_blockset.h>
 #endif
 
-#ifndef WG_GIZMO_DRAGBARS_DOT_H
-#	include <wg_gizmo_dragbars.h>
-#endif
-
 #ifndef WG_TEXTPROP_DOT_H
 #	include <wg_textprop.h>
 #endif
@@ -48,18 +44,25 @@
 #	include	<wg_tileholder.h>
 #endif
 
+#ifndef WG_GIZMO_SLIDER_DOT_H
+#	include <wg_gizmo_slider.h>
+#endif
+
 #ifndef WG_GIZMO_CONTAINER_DOT_H
 #	include <wg_gizmo_container.h>
+#endif
+
+#ifndef WG_SLIDERTARGET_DOT_H
+#	include <wg_slidertarget.h>
 #endif
 
 class	WgSurface;
 class	WgFont;
 class	WgGfxAnim;
 class	WgText;
-class	WgGizmoVDrag;
 
 
-class Wg_GizmoMenu:public WgGizmo, public WgGizmoContainer, public WgTileHolder
+class WgGizmoMenu:public WgGizmo, public WgGizmoContainer, public WgTileHolder, private WgSliderTarget
 {
 	friend class WgMenuItem;
 	friend class WgMenuSubMenu;
@@ -98,8 +101,8 @@ public:
 	WgTextPropPtr	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
 
 	bool			SetSliderSource(  WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx, WgBlockSetPtr pBtnBwdGfx, WgBlockSetPtr pBtnFwdGfx );
-	bool			SetSliderButtonLayout(  WgGizmoDragbar::ButtonLayout layout );
-	WgGizmoDragbar::ButtonLayout GetSliderButtonLayout() const { return m_sliderBtnLayout; }
+	bool			SetSliderButtonLayout(  WgGizmoSlider::ButtonLayout layout );
+	WgGizmoSlider::ButtonLayout GetSliderButtonLayout() const { return m_sliderBtnLayout; }
 	WgBlockSetPtr 	GetSliderBgSource() const { return m_pSliderBgGfx; }
 	WgBlockSetPtr 	GetSliderBarSource() const { return m_pSliderBarGfx; }
 	WgBlockSetPtr 	GetSliderBwdSource() const { return m_pSliderBtnBwdGfx; }
@@ -131,28 +134,32 @@ public:
 	WgMenuItem *GetLastItem() const { return m_items.Last(); }
 	WgMenuItem *GetSelectedItem() const { return m_pSelectedItem; }
 
-	void	SelectItem(WgMenuItem* pItem);
+	void		SelectItem(WgMenuItem* pItem);
 
 	//____ Overloaded from WgGizmo & WgGizmoContainer ___________________________
 
-	int		HeightForWidth( int width ) const;
-	int		WidthForHeight( int height ) const;
+	bool		DeleteChild(WgGizmo* pChild ) { return false; }
+	WgGizmo*	ReleaseChild(WgGizmo* pChild ) { return 0; }
+	bool		DeleteAllChildren() { return false; }
+	bool		ReleaseAllChildren() { return false; }
 
-	WgSize	DefaultSize() const = 0;
+	int			WidthForHeight( int height ) const;
 
-	bool	IsView() const { return false; }
-	bool	IsContainer() const { return true; }
+	WgSize		DefaultSize() const;
+
+	bool		IsView() const { return false; }
+	bool		IsContainer() const { return true; }
 	WgGizmoContainer * 	CastToContainer() { return this; }
 	const WgGizmoContainer * CastToContainer() const { return this; }
 
-	WgGizmo*		CastToGizmo() { return this; }
+	WgGizmo*	CastToGizmo() { return this; }
 
 	//
 
 
 private:
 
-	class DragbarHook : public WgHook
+	class SliderHook : public WgHook
 	{
 		friend class WgGizmoMenu;
 
@@ -167,12 +174,12 @@ private:
 		WgRect		ScreenGeo() const;
 
 		bool		SetHidden( bool bHidden ) { return false; }
-		WgGizmoModal* Parent() const { return m_pParent; }
+		WgGizmoMenu* Parent() const { return m_pParent; }
 
 		WgWidget*	GetRoot() { return 0; }			// To be removed once we are rid of Widgets alltogether.
 
 	protected:
-		DragbarHook() : m_pParent(0) {}
+		SliderHook() : m_pParent(0) {}
 
 		void		_requestRender();
 		void		_requestRender( const WgRect& rect );
@@ -189,17 +196,15 @@ private:
 
 	//
 
-	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
-	void		_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
-	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip )
+	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
+	void		_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	void		_onCloneContent( const WgGizmo * _pOrg );
 	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void		_onNewSize( const WgSize& size );
 	void		_onRefresh();
-	void		_onUpdate( const WgUpdateInfo& _updateInfo );
 
 	void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-	void		_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool		_onAlphaTest( const WgCoord& ofs );
 
 	void		_onEnable();			// We are a container, but we also have our own graphics.
@@ -207,14 +212,14 @@ private:
 
 	//
 
-	WgHook*			_firstHook() const;
-	WgHook*			_lastHook() const { return _firstHook(); }
+	WgHook*		_firstHook() const;
+	WgHook*		_lastHook() const { return _firstHook(); }
 
-	WgHook *		_firstHookWithGeo( WgRect& writeGeo ) const;
-	WgHook *		_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const { return 0; }
+	WgHook *	_firstHookWithGeo( WgRect& writeGeo ) const;
+	WgHook *	_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const { return 0; }
 
-	WgHook *		_lastHookWithGeo( WgRect& writeGeo ) const { return _firstHookWithGeo(writeGeo); }
-	WgHook *		_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const { return 0; }
+	WgHook *	_lastHookWithGeo( WgRect& writeGeo ) const { return _firstHookWithGeo(writeGeo); }
+	WgHook *	_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const { return 0; }
 
 	//
 
@@ -222,37 +227,43 @@ private:
 	void		_tilesModified();
 
 
+	// Overriden for WgSliderTarget
 
+	float		_stepFwd();
+	float		_stepBwd();
+	float		_jumpFwd();
+	float		_jumpBwd();
 
-	WgMenuItem *GetItemAtAbsPos( int absX, int absY );
-	void		CalcEntryMinWidth( WgMenuEntry * pEntry );
-	void		OpenSubMenu( WgMenuSubMenu * pItem );
+	float		_setPosition( float fraction );
 
+	WgGizmo*	_getGizmo();
+	float		_getSliderPosition();
+	float		_getSliderSize();
 
-	WgBorders	GetContentBorders() const;
+	//
 
-	void		ScrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop = false );
-	void		MarkFirstFilteredEntry();
+	WgMenuItem *_getItemAtPos( int posX, int posY );
+	void		_calcEntryMinWidth( WgMenuEntry * pEntry );
+	void		_openSubMenu( WgMenuSubMenu * pItem );
 
-	float		GetViewOfs();
-	float		GetViewSize();
-	int			GetViewSizePixels();
+	void		_requestClose() {};
+	void		_requestCloseAll() {};
+	void		_openMenu( const WgRect& laucherGeo, WgOrientation orientation ) {};
 
-	void		SetView(float pos);
-	void		SetViewPixels(int pos);
+	WgBorders	_getContentBorders() const;
+
+	void		_scrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop = false );
+	void		_markFirstFilteredEntry();
+
+	int			_getViewSize();
+	void		_setViewOfs(int pos);
 
 	void		StepWheelRoll(int distance);
-	void		StepViewDown();
-	void		StepViewUp();
-	void		StepViewPageDown();
-	void		StepViewPageUp();
 
 	//____ Members ___________________________________________
 
-	bool			m_bIsOpeningSubMenu;				// Lets us know if we lose focus due to submenu opening or not.
-
-	DragbarHook		m_dragbarHook;
-
+	SliderHook				m_sliderHook;
+	WgSize					m_defaultSize;
 
 	// Members defining items.
 
@@ -263,11 +274,9 @@ private:
 
 	// Members holding data for open menu
 
-	WgGizmoVDrag *			m_pSlider;
+	WgGizmoVSlider *		m_pSlider;
 	int						m_contentHeight;	// Total height of content in pixels.
 	int						m_contentOfs;		// Offset in pixels of content displayed.
-	bool					m_bPressOnSlider;	// Set if button 1 is down and was pressed on slider.
-	WgCoord					m_savedMousePos;	// Holds absolute mouse position so we know when it has moved (only highlight item under pointer when it's moved).
 
 	const static int		c_maxSelectorKeys = 20;
 	const static int		c_selectorCountdownStart = 1000;
@@ -319,7 +328,7 @@ private:
 	WgBlockSetPtr				m_pSliderBarGfx;
 	WgBlockSetPtr				m_pSliderBtnFwdGfx;
 	WgBlockSetPtr				m_pSliderBtnBwdGfx;
-	WgGizmoDragbar::ButtonLayout	m_sliderBtnLayout;
+	WgGizmoSlider::ButtonLayout	m_sliderBtnLayout;
 };
 
 

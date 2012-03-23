@@ -63,6 +63,10 @@
 #	include <wg_eventhandler.h>
 #endif
 
+#ifndef WG_EVENTLOGGER_DOT_H
+#	include <wg_eventlogger.h>
+#endif
+
 #ifndef WG_FONT_DOT_H
 #	include <wg_font.h>
 #endif
@@ -236,6 +240,10 @@
 #	include <wg_gizmo_fps.h>
 #endif
 
+#ifndef WG_GIZMO_MENU_DOT_H
+#	include <wg_gizmo_menu.h>
+#endif
+
 #ifndef WG_GIZMO_MODAL_DOT_H
 #	include <wg_gizmo_modal.h>
 #endif
@@ -252,12 +260,12 @@
 #	include <wg_gizmo_refreshbutton.h>
 #endif
 
-#ifndef WG_GIZMO_SCROLLBARS_DOT_H
-#	include <wg_gizmo_scrollbars.h>
-#endif
-
 #ifndef WG_GIZMO_SHADER_DOT_H
 #	include <wg_gizmo_shader.h>
+#endif
+
+#ifndef WG_GIZMO_SLIDER_DOT_H
+#	include <wg_gizmo_slider.h>
 #endif
 
 #ifndef WG_GIZMO_STACK_DOT_H

@@ -176,10 +176,15 @@
     <File Name="source/wg_gizmo_shader.cpp"/>
     <File Name="include/wg_menuitem.h"/>
     <File Name="source/wg_menuitem.cpp"/>
-    <File Name="include/wg_gizmo_scrollbars.h"/>
-    <File Name="source/wg_gizmo_scrollbars.cpp"/>
     <File Name="include/wg_slidertarget.h"/>
     <File Name="source/wg_slidertarget.cpp"/>
+    <File Name="source/wg_gizmo_parent.cpp"/>
+    <File Name="include/wg_gizmo_menu.h"/>
+    <File Name="source/wg_gizmo_menu.cpp"/>
+    <File Name="source/wg_gizmo_slider.cpp"/>
+    <File Name="include/wg_gizmo_slider.h"/>
+    <File Name="include/wg_tileholder.h"/>
+    <File Name="source/wg_tileholder.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -202,6 +207,9 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
+      
+      
       
       
       
@@ -251,6 +259,9 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
+      
+      
       
       
       

@@ -34,7 +34,7 @@
 
 class WgSliderTarget
 {
-	friend class WgGizmoScrollbar;
+	friend class WgGizmoSlider;
 
 protected:
 

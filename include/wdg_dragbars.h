@@ -28,21 +28,21 @@
 #endif
 
 
-#ifndef WG_GIZMO_SCROLLBARS_DOT_H
-#	include <wg_gizmo_scrollbars.h>
+#ifndef WG_GIZMO_SLIDER_DOT_H
+#	include <wg_gizmo_slider.h>
 #endif
 
-class Wdg_VDrag : public Wdg_Widget<WgGizmoVScrollbar>
+class Wdg_VDrag : public Wdg_Widget<WgGizmoVSlider>
 {
 public:
-	WIDGET_GIZMO_CONSTRUCTORS(Wdg_VDrag,WgGizmoVScrollbar);
+	WIDGET_GIZMO_CONSTRUCTORS(Wdg_VDrag,WgGizmoVSlider);
 	virtual ~Wdg_VDrag() {};
 };
 
-class Wdg_HDrag : public Wdg_Widget<WgGizmoHScrollbar>
+class Wdg_HDrag : public Wdg_Widget<WgGizmoHSlider>
 {
 public:
-	WIDGET_GIZMO_CONSTRUCTORS(Wdg_HDrag,WgGizmoHScrollbar);
+	WIDGET_GIZMO_CONSTRUCTORS(Wdg_HDrag,WgGizmoHSlider);
 	virtual ~Wdg_HDrag() {};
 };
 

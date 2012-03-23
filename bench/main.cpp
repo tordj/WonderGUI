@@ -13,11 +13,8 @@
 
 
 #include <wondergui.h>
-#include <wg_eventlogger.h>
 #include <wg_bitmapglyphs.h>
 #include <wg_vectorglyphs.h>
-#include <wg_textprop.h>
-#include <wg_gizmo_stack.h>
 #include <iostream>
 
 #include <wg_surface_soft.h>
@@ -237,8 +234,10 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 
 	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
 
-	//
+	pRoot->SetChild( pFlex );
 
+	//
+/*
 	{
 		WgGizmoShader * pShader = new WgGizmoShader();
 		pShader->SetBlendMode(WG_BLENDMODE_MULTIPLY);
@@ -265,10 +264,9 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 
 		addResizableContainer( pFlex, pShader, pEventHandler );
 	}
+*/
 
-	pRoot->SetChild( pFlex );
-
-
+/*
 	{
 		WgGizmoStack * pStack = new WgGizmoStack();
 
@@ -282,15 +280,25 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 		WgGizmoEditvalue * pValue = new WgGizmoEditvalue();
 		pVBox->AddChild( pValue );
 
-		WgGizmoScrollbar * pScrollbar = (WgGizmoScrollbar*) pDB->CloneGizmo( "hscrollbar" );
-		pScrollbar->SetSliderTarget(pValue);
-		pVBox->AddChild( pScrollbar );
+		WgGizmoSlider * pSlider = (WgGizmoSlider*) pDB->CloneGizmo( "hslider" );
+		pSlider->SetSliderTarget(pValue);
+		pVBox->AddChild( pSlider );
 
 		addResizableContainer( pFlex, pStack, pEventHandler );
 
 		pValue->SetValue( 100 );
 		pValue->GrabFocus();
 
+	}
+*/
+
+	{
+		WgGizmoMenu * pMenu = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
+		pMenu->AddItem( new WgMenuEntry( WgString("Entry 1"), WgString("Help text for entry 1"), WgBlockSetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuSeparator() );
+		pMenu->AddItem( new WgMenuEntry( WgString("Entry 2"), WgString("Help text for entry 2"), WgBlockSetPtr(), 0 ));
+
+		addResizableContainer( pFlex, pMenu, pEventHandler );
 	}
 
 

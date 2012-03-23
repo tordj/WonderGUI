@@ -29,9 +29,10 @@
 #include <wg_gizmo_tablist.h>
 #include <wg_gizmo_value.h>
 #include <wg_gizmo_editvalue.h>
-#include <wg_gizmo_scrollbars.h>
+#include <wg_gizmo_slider.h>
 #include <wg_gizmo_text.h>
 #include <wg_gizmo_editline.h>
+#include <wg_gizmo_menu.h>
 
 namespace WgEvent
 {
@@ -529,57 +530,57 @@ namespace WgEvent
 		m_fraction = fraction;
 	}
 
-	//____ Scrollbar event methods _______________________________________________
+	//____ Slider event methods _______________________________________________
 
-	ScrollbarEvent::ScrollbarEvent( WgGizmoScrollbar * pGizmo, float pos, float length )
+	SliderEvent::SliderEvent( WgGizmoSlider * pGizmo, float pos, float length )
 	{
 		m_pGizmo 	= pGizmo;
 		m_pos 		= pos;
 		m_length 	= length;
 	}
 
-	WgGizmoScrollbar* ScrollbarEvent::Scrollbar() const
+	WgGizmoSlider* SliderEvent::Slider() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
-			return static_cast<WgGizmoScrollbar*>(pGizmo);
+			return static_cast<WgGizmoSlider*>(pGizmo);
 		else
 			return 0;
 	}
 
-	float ScrollbarEvent::Pos() const
+	float SliderEvent::Pos() const
 	{
 		return m_pos;
 	}
 
-	float ScrollbarEvent::Length() const
+	float SliderEvent::Length() const
 	{
 		return m_length;
 	}
 
-	ScrollbarMove::ScrollbarMove( WgGizmoScrollbar* pGizmo, float pos, float length ) : ScrollbarEvent( pGizmo, pos, length )
+	SliderMove::SliderMove( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
 	{
-		m_type = WG_EVENT_SCROLLBAR_MOVE;
+		m_type = WG_EVENT_SLIDER_MOVE;
 	}
 
-	ScrollbarStepFwd::ScrollbarStepFwd( WgGizmoScrollbar* pGizmo, float pos, float length ) : ScrollbarEvent( pGizmo, pos, length )
+	SliderStepFwd::SliderStepFwd( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
 	{
-		m_type = WG_EVENT_SCROLLBAR_STEP_FWD;
+		m_type = WG_EVENT_SLIDER_STEP_FWD;
 	}
 
-	ScrollbarStepBwd::ScrollbarStepBwd( WgGizmoScrollbar* pGizmo, float pos, float length ) : ScrollbarEvent( pGizmo, pos, length )
+	SliderStepBwd::SliderStepBwd( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
 	{
-		m_type = WG_EVENT_SCROLLBAR_STEP_BWD;
+		m_type = WG_EVENT_SLIDER_STEP_BWD;
 	}
 
-	ScrollbarJumpFwd::ScrollbarJumpFwd( WgGizmoScrollbar* pGizmo, float pos, float length ) : ScrollbarEvent( pGizmo, pos, length )
+	SliderJumpFwd::SliderJumpFwd( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
 	{
-		m_type = WG_EVENT_SCROLLBAR_JUMP_FWD;
+		m_type = WG_EVENT_SLIDER_JUMP_FWD;
 	}
 
-	ScrollbarJumpBwd::ScrollbarJumpBwd( WgGizmoScrollbar* pGizmo, float pos, float length ) : ScrollbarEvent( pGizmo, pos, length )
+	SliderJumpBwd::SliderJumpBwd( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
 	{
-		m_type = WG_EVENT_SCROLLBAR_JUMP_BWD;
+		m_type = WG_EVENT_SLIDER_JUMP_BWD;
 	}
 
 	//____ Text event methods __________________________________________________
@@ -618,6 +619,43 @@ namespace WgEvent
 		m_type 		= WG_EVENT_TEXT_SET;
 		m_pGizmo 	= pGizmo;
 		m_pText 	= pText;
+	}
+
+	//____ Menu event methods __________________________________________________
+
+	WgGizmoMenu *	MenuItemEvent::Menu() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo && pGizmo->Type() == WgGizmoMenu::GetMyType() )
+			return static_cast<WgGizmoMenu*>(pGizmo);
+
+		return 0;
+	}
+
+	int MenuItemEvent::ItemId() const
+	{
+		return m_itemId;
+	}
+
+	MenuItemSelected::MenuItemSelected( WgGizmoMenu * pMenu, int menuItemId )
+	{
+		m_type		= WG_EVENT_MENUITEM_SELECTED;
+		m_pGizmo	= pMenu;
+		m_itemId	= menuItemId;
+	}
+
+	MenuItemChecked::MenuItemChecked( WgGizmoMenu * pMenu, int menuItemId )
+	{
+		m_type		= WG_EVENT_MENUITEM_CHECKED;
+		m_pGizmo	= pMenu;
+		m_itemId	= menuItemId;
+	}
+
+	MenuItemUnchecked::MenuItemUnchecked( WgGizmoMenu * pMenu, int menuItemId )
+	{
+		m_type		= WG_EVENT_MENUITEM_UNCHECKED;
+		m_pGizmo	= pMenu;
+		m_itemId	= menuItemId;
 	}
 
 

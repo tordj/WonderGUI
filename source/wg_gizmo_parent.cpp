@@ -20,19 +20,23 @@
 
 =========================================================================*/
 
-#include <wg_slidertarget.h>
-#include <wg_gizmo_slider.h>
+#include <wg_gizmo_parent.h>
+#include <wg_gizmo.h>
 
-
-void WgSliderTarget::_updateSlider( float pos, float size )
+bool WgGizmoParent::IsAncestorTo( const WgGizmo * pGizmo ) const
 {
-		WgGizmo * pGizmo = m_pSlider.GetRealPtr();
+	while( pGizmo )
+	{
+		WgGizmoParent * pParent = pGizmo->ParentX();
+		if( !pParent )
+			return false;
 
-		if( pGizmo )
-		{
-			if( pGizmo->Type() == WgGizmoVSlider::GetMyType() ||
-				pGizmo->Type() == WgGizmoHSlider::GetMyType() )
-					static_cast<WgGizmoSlider*>(pGizmo)->_setSlider(pos,size);
-		}
+		if( pParent == this )
+			return true;
 
+		pGizmo = pParent->CastToGizmo();
+	}
+
+	return false;
 }
+

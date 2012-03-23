@@ -24,7 +24,7 @@
 #define	WG_GIZMO_PARENT_DOT_H
 
 #ifndef WG_TYPES_DOT_H
-#	include <wg_gizmo_types.h>
+#	include <wg_types.h>
 #endif
 
 #ifndef WG_GIZMO_COLLECTION_DOT_H
@@ -56,6 +56,8 @@ class WgGizmoParent : public WgGizmoCollection
 
 		virtual bool		IsGizmo() const = 0;
 		virtual bool		IsRoot() const = 0;
+
+		virtual bool		IsAncestorTo( const WgGizmo * pGizmo ) const;
 
 	protected:
 

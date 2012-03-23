@@ -42,11 +42,11 @@ WgGizmoView::WgGizmoView()
 	m_viewPixOfs.x	= 0;
 	m_viewPixOfs.y	= 0;
 
-	m_bAutoHideScrollbarX = false;
-	m_bAutoHideScrollbarY = false;
+	m_bAutoHideSliderX = false;
+	m_bAutoHideSliderY = false;
 
-	m_bScrollbarBottom	= true;
-	m_bScrollbarRight	= true;
+	m_bSliderBottom	= true;
+	m_bSliderRight	= true;
 
 	m_bAutoScrollX		= false;
 	m_bAutoScrollY		= false;
@@ -198,16 +198,16 @@ void WgGizmoView::SetJumpSizeY( float viewFraction )
 	m_jumpSizeY = viewFraction;
 }
 
-//____ ScrollbarXVisible() ____________________________________________________
+//____ SliderXVisible() ____________________________________________________
 
-bool WgGizmoView::ScrollbarXVisible()
+bool WgGizmoView::SliderXVisible()
 {
 	return m_elements[XDRAG].m_bShow;
 }
 
-//____ ScrollbarYVisible() ____________________________________________________
+//____ SliderYVisible() ____________________________________________________
 
-bool WgGizmoView::ScrollbarYVisible()
+bool WgGizmoView::SliderYVisible()
 {
 	return m_elements[YDRAG].m_bShow;
 }
@@ -492,68 +492,68 @@ bool WgGizmoView::SetContent( WgGizmo * pContent )
 
 }
 
-//____ SetScrollbarX() ________________________________________________________
+//____ SetSliderX() ________________________________________________________
 
-bool WgGizmoView::SetScrollbarX( WgGizmoHScrollbar* pScrollbar )
+bool WgGizmoView::SetSliderX( WgGizmoHSlider* pSlider )
 {
-	// Remove callbacks to current scrollbar (if we have any)
+	// Remove callbacks to current Slider (if we have any)
 
 	if( m_elements[XDRAG].Gizmo() )
 		RemoveCallbacks(m_elements[XDRAG].Gizmo());
 
 	//
 
-	m_elements[XDRAG]._attachGizmo(pScrollbar);
+	m_elements[XDRAG]._attachGizmo(pSlider);
 
-	if( pScrollbar )
+	if( pSlider )
 	{
-		pScrollbar->AddCallback( WgSignal::SliderPos(), WgGizmoView::cbSetViewOfsX, this );
-		pScrollbar->AddCallback( WgSignal::PrevPage(), WgGizmoView::cbJumpLeft, this );
-		pScrollbar->AddCallback( WgSignal::NextPage(), WgGizmoView::cbJumpRight, this );
-		pScrollbar->AddCallback( WgSignal::Forward(), WgGizmoView::cbStepRight, this );
-		pScrollbar->AddCallback( WgSignal::Back(), WgGizmoView::cbStepLeft, this );
-		pScrollbar->AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
+		pSlider->AddCallback( WgSignal::SliderPos(), WgGizmoView::cbSetViewOfsX, this );
+		pSlider->AddCallback( WgSignal::PrevPage(), WgGizmoView::cbJumpLeft, this );
+		pSlider->AddCallback( WgSignal::NextPage(), WgGizmoView::cbJumpRight, this );
+		pSlider->AddCallback( WgSignal::Forward(), WgGizmoView::cbStepRight, this );
+		pSlider->AddCallback( WgSignal::Back(), WgGizmoView::cbStepLeft, this );
+		pSlider->AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
 
-		AddCallback( WgSignal::ViewPosSizeX(), WgGizmoHScrollbar::cbSetSlider, pScrollbar );
+		AddCallback( WgSignal::ViewPosSizeX(), WgGizmoHSlider::cbSetSlider, pSlider );
 		AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
 	}
 
 	_updateElementGeo( Size(), m_contentSize );
-	pScrollbar->SetSlider( ViewOfsX(), ViewLenX() );
+	pSlider->SetSlider( ViewOfsX(), ViewLenX() );
 	_requestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 }
 
-//____ SetScrollbarY() ________________________________________________________
+//____ SetSliderY() ________________________________________________________
 
-bool WgGizmoView::SetScrollbarY( WgGizmoVScrollbar* pScrollbar )
+bool WgGizmoView::SetSliderY( WgGizmoVSlider* pSlider )
 {
-	// Remove callbacks to current scrollbar (if we have any)
+	// Remove callbacks to current Slider (if we have any)
 
 	if( m_elements[YDRAG].Gizmo() )
 		RemoveCallbacks(m_elements[YDRAG].Gizmo());
 
 	//
 
-	m_elements[YDRAG]._attachGizmo(pScrollbar);
+	m_elements[YDRAG]._attachGizmo(pSlider);
 
 	//
 
-	if( pScrollbar )
+	if( pSlider )
 	{
-		pScrollbar->AddCallback( WgSignal::SliderPos(), WgGizmoView::cbSetViewOfsY, this );
-		pScrollbar->AddCallback( WgSignal::PrevPage(), WgGizmoView::cbJumpUp, this );
-		pScrollbar->AddCallback( WgSignal::NextPage(), WgGizmoView::cbJumpDown, this );
-		pScrollbar->AddCallback( WgSignal::Forward(), WgGizmoView::cbStepDown, this );
-		pScrollbar->AddCallback( WgSignal::Back(), WgGizmoView::cbStepUp, this );
-		pScrollbar->AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
+		pSlider->AddCallback( WgSignal::SliderPos(), WgGizmoView::cbSetViewOfsY, this );
+		pSlider->AddCallback( WgSignal::PrevPage(), WgGizmoView::cbJumpUp, this );
+		pSlider->AddCallback( WgSignal::NextPage(), WgGizmoView::cbJumpDown, this );
+		pSlider->AddCallback( WgSignal::Forward(), WgGizmoView::cbStepDown, this );
+		pSlider->AddCallback( WgSignal::Back(), WgGizmoView::cbStepUp, this );
+		pSlider->AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
 
-		AddCallback( WgSignal::ViewPosSizeY(), WgGizmoVScrollbar::cbSetSlider, pScrollbar );
+		AddCallback( WgSignal::ViewPosSizeY(), WgGizmoVSlider::cbSetSlider, pSlider );
 		AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
 	}
 
 	_updateElementGeo( Size(), m_contentSize );
-	pScrollbar->SetSlider( ViewOfsY(), ViewLenY() );
+	pSlider->SetSlider( ViewOfsY(), ViewLenY() );
 	_requestRender( m_elements[YDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 }
@@ -567,20 +567,20 @@ WgGizmo* WgGizmoView::ReleaseContent()
 	return p;
 }
 
-//____ ReleaseScrollbarX() ____________________________________________________
+//____ ReleaseSliderX() ____________________________________________________
 
-WgGizmoHScrollbar* WgGizmoView::ReleaseScrollbarX()
+WgGizmoHSlider* WgGizmoView::ReleaseSliderX()
 {
-	WgGizmoHScrollbar * p = (WgGizmoHScrollbar*) m_elements[XDRAG]._releaseGizmo();
+	WgGizmoHSlider * p = (WgGizmoHSlider*) m_elements[XDRAG]._releaseGizmo();
 	_updateElementGeo( Size(), m_contentSize );
 	return p;
 }
 
-//____ ReleaseScrollbarY() ____________________________________________________
+//____ ReleaseSliderY() ____________________________________________________
 
-WgGizmoVScrollbar* WgGizmoView::ReleaseScrollbarY()
+WgGizmoVSlider* WgGizmoView::ReleaseSliderY()
 {
-	WgGizmoVScrollbar * p = (WgGizmoVScrollbar*) m_elements[YDRAG]._releaseGizmo();
+	WgGizmoVSlider * p = (WgGizmoVSlider*) m_elements[YDRAG]._releaseGizmo();
 	_updateElementGeo( Size(), m_contentSize );
 	return p;
 }
@@ -590,9 +590,9 @@ WgGizmoVScrollbar* WgGizmoView::ReleaseScrollbarY()
 bool WgGizmoView::DeleteChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_elements[XDRAG].Gizmo() )
-		return SetScrollbarX(0);
+		return SetSliderX(0);
 	else if( pGizmo == m_elements[YDRAG].Gizmo() )
-		return SetScrollbarY(0);
+		return SetSliderY(0);
 	else if( pGizmo == m_elements[WINDOW].Gizmo() )
 		return SetContent(0);
 
@@ -604,9 +604,9 @@ bool WgGizmoView::DeleteChild( WgGizmo * pGizmo )
 WgGizmo * WgGizmoView::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_elements[XDRAG].Gizmo() )
-		return ReleaseScrollbarX();
+		return ReleaseSliderX();
 	else if( pGizmo == m_elements[YDRAG].Gizmo() )
-		return ReleaseScrollbarY();
+		return ReleaseSliderY();
 	else if( pGizmo == m_elements[WINDOW].Gizmo() )
 		return ReleaseContent();
 
@@ -617,8 +617,8 @@ WgGizmo * WgGizmoView::ReleaseChild( WgGizmo * pGizmo )
 
 bool WgGizmoView::DeleteAllChildren()
 {
-	SetScrollbarX(0);
-	SetScrollbarY(0);
+	SetSliderX(0);
+	SetSliderY(0);
 	SetContent(0);
 	return true;
 }
@@ -627,42 +627,42 @@ bool WgGizmoView::DeleteAllChildren()
 
 bool WgGizmoView::ReleaseAllChildren()
 {
-	ReleaseScrollbarX();
-	ReleaseScrollbarY();
+	ReleaseSliderX();
+	ReleaseSliderY();
 	ReleaseContent();
 	return true;
 }
 
 
 
-//____ SetScrollbarAutoHide() _________________________________________________
+//____ SetSliderAutoHide() _________________________________________________
 
-void WgGizmoView::SetScrollbarAutoHide( bool bHideX, bool bHideY )
+void WgGizmoView::SetSliderAutoHide( bool bHideX, bool bHideY )
 {
-	if( bHideX == m_bAutoHideScrollbarX && bHideY == m_bAutoHideScrollbarY )
+	if( bHideX == m_bAutoHideSliderX && bHideY == m_bAutoHideSliderY )
 		return;
 
-	bool	bWasVisibleX = ScrollbarXVisible();
-	bool	bWasVisibleY = ScrollbarYVisible();
+	bool	bWasVisibleX = SliderXVisible();
+	bool	bWasVisibleY = SliderYVisible();
 
-	m_bAutoHideScrollbarX = bHideX;
-	m_bAutoHideScrollbarY = bHideY;
+	m_bAutoHideSliderX = bHideX;
+	m_bAutoHideSliderY = bHideY;
 
 	// Force a refresh of our subclass if its geometry has been affected.
 
-	if( ScrollbarXVisible() != bWasVisibleX || ScrollbarYVisible() != bWasVisibleY )
+	if( SliderXVisible() != bWasVisibleX || SliderYVisible() != bWasVisibleY )
 		_updateElementGeo( Size(), m_contentSize );
 }
 
-//____ SetScrollbarPositions() ________________________________________________
+//____ SetSliderPositions() ________________________________________________
 
-void WgGizmoView::SetScrollbarPositions( bool bBottom, bool bRight )
+void WgGizmoView::SetSliderPositions( bool bBottom, bool bRight )
 {
-	if( bBottom == m_bScrollbarBottom && bRight == m_bScrollbarRight )
+	if( bBottom == m_bSliderBottom && bRight == m_bSliderRight )
 		return;
 
-	m_bScrollbarBottom	= bBottom;
-	m_bScrollbarRight	= bRight;
+	m_bSliderBottom	= bBottom;
+	m_bSliderRight	= bRight;
 
 	_updateElementGeo( Size(), m_contentSize );
 }
@@ -749,7 +749,7 @@ void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newCont
 		newDragX.w = newWindow.w;
 		newDragX.x = 0;
 
-		if( m_bScrollbarBottom )
+		if( m_bSliderBottom )
 			newDragX.y = newWindow.h - newDragX.h;
 		else
 			newDragX.y = 0;
@@ -761,7 +761,7 @@ void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newCont
 		newDragY.h = newWindow.h;
 		newDragY.y = 0;
 
-		if( m_bScrollbarRight )
+		if( m_bSliderRight )
 			newDragY.x = newWindow.w - newDragY.w;
 		else
 			newDragY.x = 0;
@@ -769,10 +769,10 @@ void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newCont
 
 	// Determine which dragbars we need to show, using basic rules
 
-	if( m_elements[XDRAG].Gizmo() && (newContentSize.w > newWindow.w || !m_bAutoHideScrollbarX) )
+	if( m_elements[XDRAG].Gizmo() && (newContentSize.w > newWindow.w || !m_bAutoHideSliderX) )
 		bShowDragX = true;
 
-	if( m_elements[YDRAG].Gizmo() && (newContentSize.h > newWindow.h || !m_bAutoHideScrollbarY) )
+	if( m_elements[YDRAG].Gizmo() && (newContentSize.h > newWindow.h || !m_bAutoHideSliderY) )
 		bShowDragY = true;
 
 	// See if showing one forces us to show the other
@@ -789,14 +789,14 @@ void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newCont
 	if( bShowDragY )
 	{
 		newWindow.w -= newDragY.w;
-		if( !m_bScrollbarRight )
+		if( !m_bSliderRight )
 			newWindow.x += newDragY.w;
 	}
 
 	if( bShowDragX )
 	{
 		newWindow.h -= newDragX.h;
-		if( !m_bScrollbarBottom )
+		if( !m_bSliderBottom )
 			newWindow.y += newDragX.h;
 	}
 
@@ -1033,27 +1033,27 @@ void WgGizmoView::_onCloneContent( const WgGizmo * _pOrg )
 	m_viewPixOfs	= pOrg->m_viewPixOfs;
 
 /*
-	m_pScrollbarX	= 0;
-	m_pScrollbarY	= 0;
+	m_pSliderX	= 0;
+	m_pSliderY	= 0;
 
 	//TODO: Needs to have real hooks and stuff, needs to have callbacks etc set.
-	if( pOrg->m_pScrollbarX )
+	if( pOrg->m_pSliderX )
 	{
-		m_pScrollbarX = new WgGizmoHDragbar();
-		m_pScrollbarX->CloneContent( pOrg->m_pScrollbarX );
+		m_pSliderX = new WgGizmoHDragbar();
+		m_pSliderX->CloneContent( pOrg->m_pSliderX );
 	}
 
-	if( pOrg->m_pScrollbarY )
+	if( pOrg->m_pSliderY )
 	{
-		m_pScrollbarY = new WgGizmoVDragbar();
-		m_pScrollbarY->CloneContent( pOrg->m_pScrollbarY );
+		m_pSliderY = new WgGizmoVDragbar();
+		m_pSliderY->CloneContent( pOrg->m_pSliderY );
 	}
 */
-	m_bAutoHideScrollbarX	= pOrg->m_bAutoHideScrollbarX;
-	m_bAutoHideScrollbarY	= pOrg->m_bAutoHideScrollbarY;
+	m_bAutoHideSliderX	= pOrg->m_bAutoHideSliderX;
+	m_bAutoHideSliderY	= pOrg->m_bAutoHideSliderY;
 
-	m_bScrollbarBottom		= pOrg->m_bScrollbarBottom;
-	m_bScrollbarRight		= pOrg->m_bScrollbarRight;
+	m_bSliderBottom		= pOrg->m_bSliderBottom;
+	m_bSliderRight		= pOrg->m_bSliderRight;
 
 	m_bAutoScrollX			= pOrg->m_bAutoScrollX;
 	m_bAutoScrollY			= pOrg->m_bAutoScrollY;
