@@ -383,21 +383,91 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		}
 
+		case WG_EVENT_SLIDER_MOVE:
+		{
+			id = "SliderMove";
+			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
+			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
+			break;
+		}
+				
+		case WG_EVENT_SLIDER_STEP_FWD:
+		{
+			id = "SliderStepFwd";
+			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
+			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
+			break;
+		}
+
+		case WG_EVENT_SLIDER_STEP_BWD:
+		{
+			id = "SliderStepBwd";
+			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
+			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
+			break;
+		}
+
+		case WG_EVENT_SLIDER_JUMP_FWD:
+		{
+			id = "SliderJumpFwd";
+			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
+			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
+			break;
+		}
+
+		case WG_EVENT_SLIDER_JUMP_BWD:
+		{
+			id = "SliderJumpBwd";
+			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
+			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
+			break;
+		}
+
+		case WG_EVENT_TEXT_MODIFY:
+		{
+			id = "TextModify";
+			const WgEvent::TextEvent * pEvent = static_cast<const WgEvent::TextEvent*>(_pEvent);
+			break;
+		}
+
+		case WG_EVENT_TEXT_SET:
+		{
+			id = "TextSet";
+			const WgEvent::TextEvent * pEvent = static_cast<const WgEvent::TextEvent*>(_pEvent);
+			break;
+		}
+
+		case WG_EVENT_MENUITEM_SELECTED:
+		{
+			id = "MenuItemSelected";
+			const WgEvent::MenuItemEvent * pEvent = static_cast<const WgEvent::MenuItemEvent*>(_pEvent);
+			sprintf( params, "itemId=%d", pEvent->ItemId() );
+			break;
+		}
+
+		case WG_EVENT_MENUITEM_CHECKED:
+		{
+			id = "MenuItemChecked";
+			const WgEvent::MenuItemEvent * pEvent = static_cast<const WgEvent::MenuItemEvent*>(_pEvent);
+			sprintf( params, "itemId=%d", pEvent->ItemId() );
+			break;
+		}
+
+		case WG_EVENT_MENUITEM_UNCHECKED:
+		{
+			id = "MenuItemUnchecked";
+			const WgEvent::MenuItemEvent * pEvent = static_cast<const WgEvent::MenuItemEvent*>(_pEvent);
+			sprintf( params, "itemId=%d", pEvent->ItemId() );
+			break;
+		}
 	};
 
 	gizmo = _formatGizmo( _pEvent );
-
 	modkeys = _formatModkeys( _pEvent );
 	pointerPos = _formatPointerPos( _pEvent );
 
-
-
-
 	m_out << timestamp << " - " << id << " - " << gizmo << pointerPos << modkeys << params;
-
-
-
-	 m_out << std::endl;
+	m_out << std::endl;
 }
 
 //____ _formatTimestamp() ______________________________________________________

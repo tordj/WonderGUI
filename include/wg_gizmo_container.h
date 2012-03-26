@@ -63,7 +63,7 @@ class WgGizmoContainer : public WgGizmoParent
 		void		SetMaskOp( WgMaskOp operation );
 		WgMaskOp	MaskOp() const { return m_maskOp; }
 
-		WgGizmo * 	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
+		virtual WgGizmo * 	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 		bool		IsGizmo() const;
 		bool		IsRoot() const;

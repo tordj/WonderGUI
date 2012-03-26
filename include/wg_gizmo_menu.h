@@ -136,6 +136,9 @@ public:
 
 	void		SelectItem(WgMenuItem* pItem);
 
+	WgGizmo * 	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
+
+
 	//____ Overloaded from WgGizmo & WgGizmoContainer ___________________________
 
 	bool		DeleteChild(WgGizmo* pChild ) { return false; }
@@ -251,6 +254,7 @@ private:
 	void		_openMenu( const WgRect& laucherGeo, WgOrientation orientation ) {};
 
 	WgBorders	_getContentBorders() const;
+	void		_refreshEntryHeight();
 
 	void		_scrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop = false );
 	void		_markFirstFilteredEntry();

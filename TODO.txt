@@ -11,7 +11,6 @@ FOCUS
 =====
 
 * Fixa repeat på character input.
-
 * Hur ska vi lösa _onMaskRects() ???
 * Keyboard focus vid modal.
 * Wdg_Layout.
@@ -19,9 +18,6 @@ FOCUS
 * Pointermask+displacement i blockset.
 * WgCharBuffer m.fl. saknar metoder för Size, Link och kanske mer...
 * Make menu hold vdrag as a Gizmo. Hide/show instead of remove.
-
-
-v No mouse enter/exit when locked on a Gizmo through press.
 
 
 FIX GIZMOS
@@ -51,9 +47,7 @@ BEFORE RELEASE
 ==============
 
 * Sort function in WgOrderedLayout.
-
 * Layout Class HBox.
-* Layout Class Stack.
 * Layout Class Grid.
 * Layout Class VList (selectable).
 * VList work with View (scroll_into_view etc).
@@ -67,11 +61,11 @@ BEFORE RELEASE
 * Kolla så att alla WgGizmo::CloneContent() fungerar.
 
 - Bitmap-fonter.
+- Layout Class Stack.
 
 TO BE TESTED
 ============
 
-* Layout Class Modal.
 * Tangentbordshantering i WgEventHandler.
 * Tab-order.
 

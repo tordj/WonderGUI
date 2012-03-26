@@ -58,7 +58,7 @@ WgGizmoMenu::WgGizmoMenu()
 	m_pArrowAnim			= 0;
 	m_arrowAnimCount		= 0;
 
-	m_entryHeight			= 4;
+	m_entryHeight			= 0;
 	m_sepHeight				= 2;
 
 	m_sliderBtnLayout		= WgGizmoSlider::DEFAULT;
@@ -71,6 +71,8 @@ WgGizmoMenu::WgGizmoMenu()
 	m_selectorCountdown		= 0;
 
 	m_sliderHook.m_pParent = this;
+	
+	_refreshEntryHeight();
 }
 
 //____ ~WgGizmoMenu() __________________________________________________________
@@ -148,10 +150,28 @@ bool WgGizmoMenu::SetTextProperties( const WgTextPropPtr& pEntryProp, const WgTe
 	m_pEntryProp 	= pEntryProp;
 	m_pKeyAccelProp = pKeyAccelProp;
 
-	// Make sure that m_entryHeight is high enough since fonts might have changed...
+	// We need to modify MinWidth now that fonts might have changed
 
-	if( m_pEntryProp )
+	WgMenuItem * pItem = m_items.First();
+	while( pItem )
 	{
+		if( pItem->GetType() != SEPARATOR )
+			_calcEntryMinWidth( (WgMenuEntry*) pItem );
+		pItem = pItem->Next();
+	}
+
+	// Refresh everything affected...
+
+	_refreshEntryHeight();
+	_adjustSize();
+	_requestRender();
+	return true;
+}
+
+//____ refreshEntryHeight() ____________________________________________________
+
+void WgGizmoMenu::_refreshEntryHeight()
+{
 		WgPen		pen;
 		WgTextAttr	attr;
 		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL );
@@ -180,23 +200,14 @@ bool WgGizmoMenu::SetTextProperties( const WgTextPropPtr& pEntryProp, const WgTe
 
 		if( m_entryHeight < heightDisabled )
 			m_entryHeight = heightDisabled;
-	}
 
-	// We need to modify MinWidth now that fonts might have changed
+		//
 
-	WgMenuItem * pItem = m_items.First();
-	while( pItem )
-	{
-		if( pItem->GetType() != SEPARATOR )
-			_calcEntryMinWidth( (WgMenuEntry*) pItem );
-		pItem = pItem->Next();
-	}
+		if( m_pTileBlocks[0] )
+			m_entryHeight +=  m_pTileBlocks[0]->ContentBorders().Height();
 
-	// Refresh everything affected...
-
-	_adjustSize();
-	_requestRender();
-	return true;
+		if( m_entryHeight < m_minTileSize.h )
+			m_entryHeight = m_minTileSize.h;
 }
 
 
@@ -633,13 +644,12 @@ void WgGizmoMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const 
 
 				// Render the tile for this entry
 
-				WgRect tileClip = clip - contentBorders;			// Why do we need this? Something to do with scrolled content?
-
 				WgRect tileDest(	window.x + contentBorders.left,
 									yPos,
 									window.w - contentBorders.Width(),
 									m_entryHeight );
 
+				WgRect tileClip( clip - contentBorders, tileDest);
 
 				_renderTile( pDevice, tileClip, tileDest, item-1, mode );
 
@@ -1059,6 +1069,15 @@ void WgGizmoMenu::SelectItem(WgMenuItem* pItem)
 	}
 }
 
+//____ FindGizmo() _____________________________________________________________
+
+WgGizmo * WgGizmoMenu::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
+{
+	WgGizmo * pGizmo = WgGizmoContainer::FindGizmo(ofs, mode);
+	if( !pGizmo && _onAlphaTest( ofs ) )
+		return this;
+}
+
 //____ _openSubMenu() __________________________________________________________
 
 void WgGizmoMenu::_openSubMenu( WgMenuSubMenu * pItem )
@@ -1170,6 +1189,8 @@ void WgGizmoMenu::_onCloneContent( const WgGizmo * _pOrg )
 	m_pSliderBtnFwdGfx	= pOrg->m_pSliderBtnFwdGfx;
 	m_pSliderBtnBwdGfx	= pOrg->m_pSliderBtnBwdGfx;
 	m_sliderBtnLayout	= pOrg->m_sliderBtnLayout;
+
+	WgTileHolder::_cloneContent( pOrg );
 
 	//TODO: Implement cloning of menu items!
 }
@@ -1479,6 +1500,8 @@ void WgGizmoMenu::StepWheelRoll(int distance)
 
 void WgGizmoMenu::_tilesModified()
 {
+	_refreshEntryHeight();
+	_adjustSize();
 	_requestRender();
 }
 
