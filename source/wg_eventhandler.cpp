@@ -1016,7 +1016,14 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostMouseMoveEvents)
 			if( button == 0 || _isGizmoInList( pGizmo, m_latestPressGizmos[button] ) )
 				vNowMarked.push_back(pGizmo);
 
-			pGizmo = pGizmo->ParentX()->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
+			WgGizmoParent * pParent = pGizmo->ParentX();
+			while( pParent && pParent->CastToContainer() && !pParent->CastToContainer()->m_bChildEvents )
+				pParent = pParent->CastToGizmo()->ParentX();
+
+			if( !pParent )
+				break;
+
+			pGizmo = pParent->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
 		}
 	}
 
@@ -1109,7 +1116,15 @@ void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
 	{
 		QueueEvent( new WgEvent::KeyPress( pEvent->NativeKeyCode(), pGizmo ) );
 		pInfo->vGizmos.push_back(WgGizmoWeakPtr(pGizmo));
-		pGizmo = pGizmo->ParentX()->CastToGizmo();
+
+		WgGizmoParent * pParent = pGizmo->ParentX();
+		while( pParent && pParent->CastToContainer() && !pParent->CastToContainer()->m_bChildEvents )
+			pParent = pParent->CastToGizmo()->ParentX();
+
+		if( !pParent )
+			break;
+
+		pGizmo = pParent->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
 	}
 
 	// Push the info-structure onto m_keysDown.

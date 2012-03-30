@@ -297,8 +297,13 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 		pMenu->AddItem( new WgMenuEntry( WgString("Entry 1"), WgString("Help text for entry 1"), WgBlockSetPtr(), 0 ));
 		pMenu->AddItem( new WgMenuSeparator() );
 		pMenu->AddItem( new WgMenuEntry( WgString("Entry 2"), WgString("Help text for entry 2"), WgBlockSetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( WgString("Entry 3"), WgString("Help text for entry 3"), WgBlockSetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( WgString("Entry 4"), WgString("Help text for entry 4"), WgBlockSetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( WgString("Entry 5"), WgString("Help text for entry 5"), WgBlockSetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( WgString("Entry 6"), WgString("Help text for entry 6"), WgBlockSetPtr(), 0 ));
 
 		addResizableContainer( pFlex, pMenu, pEventHandler );
+		pMenu->GrabFocus();
 	}
 
 

@@ -41,6 +41,8 @@ static const char	c_gizmoType[] = {"Menu"};
 
 WgGizmoMenu::WgGizmoMenu()
 {
+	m_bChildEvents			= false;	// We should not receive any child events.
+
 	m_nItems				= 0;
 	m_markedItem			= 0;
 	m_pSelectedItem			= 0;
@@ -62,7 +64,6 @@ WgGizmoMenu::WgGizmoMenu()
 	m_sepHeight				= 2;
 
 	m_sliderBtnLayout		= WgGizmoSlider::DEFAULT;
-	m_pSlider				= 0;
 
 	m_contentHeight			= 0;
 	m_contentOfs			= 0;
@@ -71,7 +72,7 @@ WgGizmoMenu::WgGizmoMenu()
 	m_selectorCountdown		= 0;
 
 	m_sliderHook.m_pParent = this;
-	
+
 	_refreshEntryHeight();
 }
 
@@ -79,8 +80,6 @@ WgGizmoMenu::WgGizmoMenu()
 
 WgGizmoMenu::~WgGizmoMenu()
 {
-	if( m_pSlider )
-		delete m_pSlider;
 }
 
 
@@ -220,11 +219,11 @@ bool WgGizmoMenu::SetSliderSource(  WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx,
 	m_pSliderBtnFwdGfx	= pBtnFwdGfx;
 	m_pSliderBtnBwdGfx	= pBtnBwdGfx;
 
-	if( m_pSlider )
+	if( m_sliderHook.Slider() )
 	{
 		//TODO: Adapt to changes in sliders minimum width.
 
-		m_pSlider->SetSource( pBgGfx, pBarGfx, pBtnBwdGfx, pBtnFwdGfx );
+		m_sliderHook.Slider()->SetSource( pBgGfx, pBarGfx, pBtnBwdGfx, pBtnFwdGfx );
 	}
 	return true;
 }
@@ -235,8 +234,8 @@ bool WgGizmoMenu::SetSliderButtonLayout(  WgGizmoSlider::ButtonLayout layout )
 {
 	m_sliderBtnLayout = layout;
 
-	if( m_pSlider )
-		m_pSlider->SetButtonLayout( layout );
+	if( m_sliderHook.Slider() )
+		m_sliderHook.Slider()->SetButtonLayout( layout );
 
 	return true;
 }
@@ -269,20 +268,6 @@ bool WgGizmoMenu::SetRadioButtonSource( const WgBlockSetPtr pUnselected, const W
 int WgGizmoMenu::GetEntryHeight() const
 {
 	return m_entryHeight;
-}
-
-//____ SetEntryHeight() _______________________________________________________
-
-bool WgGizmoMenu::SetEntryHeight( Uint8 height )
-{
-	if( height < 4 )
-		return false;
-
-	m_entryHeight = height;
-
-	_adjustSize();
-	_requestRender();
-	return true;
 }
 
 //____ AddItem() ______________________________________________________________
@@ -601,6 +586,7 @@ void WgGizmoMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const 
 	// Render the menu-items
 
 	WgBorders	contentBorders = _getContentBorders();
+	WgRect		contentClip( canvas - contentBorders, clip );		// A clip rectangle for content.
 
 	WgMenuItem * pItem = m_items.First();
 
@@ -609,8 +595,8 @@ void WgGizmoMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const 
 	Uint32	xPosIcon = window.x + contentBorders.left;
 	Uint32	textFieldLen = window.w - contentBorders.Width() - m_iconFieldWidth - m_arrowFieldWidth;
 
-	WgPen	entryPen( pDevice, WgCoord( xPosText, yPos ), clip );
-	WgPen	accelPen( pDevice, WgCoord( xPosText, yPos ), clip );
+	WgPen	entryPen( pDevice, WgCoord( xPosText, yPos ), contentClip );
+	WgPen	accelPen( pDevice, WgCoord( xPosText, yPos ), contentClip );
 
 
 	unsigned int	item = 1;
@@ -622,8 +608,7 @@ void WgGizmoMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const 
 			{
 				if( m_pSepGfx )
 				{
-					WgRect sepClip(clip);
-					sepClip.Shrink(0, contentBorders.top, 0, contentBorders.bottom);
+					WgRect sepClip(clip, WgRect(canvas.x, canvas.y + contentBorders.top, canvas.w, canvas.h - contentBorders.Height() ) );
 
 					WgRect	dest( window.x + m_sepBorders.left, yPos + m_sepBorders.top,
 									window.w - m_sepBorders.Width(), m_pSepGfx->Height() );
@@ -649,7 +634,7 @@ void WgGizmoMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const 
 									window.w - contentBorders.Width(),
 									m_entryHeight );
 
-				WgRect tileClip( clip - contentBorders, tileDest);
+				WgRect tileClip( contentClip, tileDest);
 
 				_renderTile( pDevice, tileClip, tileDest, item-1, mode );
 
@@ -858,6 +843,18 @@ void WgGizmoMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 		}
 		break;
 
+		case WG_EVENT_MOUSEWHEEL_ROLL:
+		{
+			const WgEvent::MouseWheelRoll * pEv = static_cast<const WgEvent::MouseWheelRoll*>(pEvent);
+
+			if( pEv->Wheel() == 1 )
+			{
+				int distance = pEv->Distance();
+
+				_setViewOfs( m_contentOfs - m_entryHeight*distance );
+				_updateSlider( _getSliderPosition(), _getSliderSize() );
+			}
+		}
 
 		case WG_EVENT_CHARACTER:
 		{
@@ -882,7 +879,7 @@ void WgGizmoMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 			if( m_markedItem != 0 )
 				pItem = m_items.Get( m_markedItem-1 );
 
-			int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->NativeKeyCode();
+			int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 			switch( key )
 			{
 				case WG_KEY_ESCAPE:
@@ -1076,6 +1073,8 @@ WgGizmo * WgGizmoMenu::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 	WgGizmo * pGizmo = WgGizmoContainer::FindGizmo(ofs, mode);
 	if( !pGizmo && _onAlphaTest( ofs ) )
 		return this;
+
+	return pGizmo;
 }
 
 //____ _openSubMenu() __________________________________________________________
@@ -1119,7 +1118,7 @@ void WgGizmoMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 void WgGizmoMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 {
-	WgRect sliderGeo = WgRect( _canvas.x + _canvas.w - m_sliderHook.m_size.w, _canvas.y, m_sliderHook.m_size.w, _canvas.h );	//TODO: Slider is now hardcoded to right side.
+	WgRect sliderGeo = _sliderGeo( _canvas );
 
 	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
 	{
@@ -1247,20 +1246,28 @@ WgHook * WgGizmoMenu::_firstHook() const
 		return 0;
 }
 
+//____ _sliderGeo() ___________________________________________________________
+
+WgRect WgGizmoMenu::_sliderGeo( const WgRect& menuGeo ) const
+{
+	if( m_sliderHook.Gizmo() )
+	{
+		WgRect contentGeo = menuGeo - _getContentBorders();
+		WgRect sliderGeo( contentGeo.x + contentGeo.w - m_sliderHook.m_size.w, contentGeo.y, m_sliderHook.m_size.w, contentGeo.h );	//TODO: Slider is now hardcoded to right side.
+		return sliderGeo;
+	}
+	else
+		return WgRect();
+}
+
+
 //____ _firstHookWithGeo() _____________________________________________________
 
 WgHook * WgGizmoMenu::_firstHookWithGeo( WgRect& writeGeo ) const
 {
 	if( m_sliderHook.Gizmo() )
 	{
-		WgSize 	menuSize = Size();
-		int 	dragbarWidth = m_sliderHook.Gizmo()->DefaultSize().w;
-
-		writeGeo.x = menuSize.w - dragbarWidth;
-		writeGeo.y = 0;
-		writeGeo.w = dragbarWidth;
-		writeGeo.h = menuSize.h;
-
+		writeGeo = _sliderGeo( Size() );
 		return const_cast<SliderHook*>(&m_sliderHook);
 	}
 	else
@@ -1354,32 +1361,34 @@ void WgGizmoMenu::_adjustSize()
 		_requestResize();
 	}
 
-	if( h < Size().h )
+	if( h > Size().h )
 	{
-		if( !m_pSlider )
+		WgGizmoSlider * pSlider = m_sliderHook.Slider();
+		if( !pSlider )
 		{
-			m_pSlider = new WgGizmoVSlider();
-			m_pSlider->SetSource( m_pSliderBgGfx, m_pSliderBarGfx, m_pSliderBtnBwdGfx, m_pSliderBtnFwdGfx );
-			m_pSlider->SetButtonLayout( m_sliderBtnLayout );
+			pSlider = new WgGizmoVSlider();
+			pSlider->SetSource( m_pSliderBgGfx, m_pSliderBarGfx, m_pSliderBtnBwdGfx, m_pSliderBtnFwdGfx );
+			pSlider->SetButtonLayout( m_sliderBtnLayout );
+			pSlider->SetSliderTarget(this);
 		}
-		WgSize sliderSize = m_pSlider->DefaultSize();
+		WgSize sliderSize = pSlider->DefaultSize();
 
 		m_sliderHook.m_size.w = sliderSize.w;
-		m_sliderHook.m_size.h = h - contentBorders.Height();
+		m_sliderHook.m_size.h = Size().h - contentBorders.Height();
 
-		m_sliderHook._attachGizmo(m_pSlider);
+		m_sliderHook._attachGizmo(pSlider);
+
+		_updateSlider( _getSliderPosition(), _getSliderSize() );
 	}
 	else
 	{
 		if( m_sliderHook.Gizmo() )
 		{
-			m_sliderHook._releaseGizmo();
+			delete m_sliderHook._releaseGizmo();
 		}
 	}
 
-
-
-	_updateSlider( _getSliderPosition(), _getSliderSize() );
+	_setViewOfs(m_contentOfs);		// Refresh offset.
 }
 
 
@@ -1469,30 +1478,19 @@ int WgGizmoMenu::_getViewSize()
 
 void WgGizmoMenu::_setViewOfs(int pos)
 {
-	if( pos < 0 )
-		pos = 0;
-
 	int viewHeight = Size().h - _getContentBorders().Height();
 
-	if( pos + viewHeight > (int) m_contentHeight )
+	if( pos + viewHeight > m_contentHeight )
 		pos = m_contentHeight - viewHeight;
+
+	if( pos < 0 )
+		pos = 0;
 
 	if( pos != (int) m_contentOfs )
 	{
 		m_contentOfs = pos;
 		_requestRender();
 	}
-}
-
-//____ StepWheelRoll() _________________________________________________________
-
-void WgGizmoMenu::StepWheelRoll(int distance)
-{
-	distance /= 40;
-	while(distance++ < 0)
-		_stepFwd();
-	while(--distance > 0)
-		_stepBwd();
 }
 
 

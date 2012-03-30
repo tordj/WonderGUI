@@ -33,9 +33,9 @@
 
 //____ Constructor _____________________________________________________________
 
-WgGizmoContainer::WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE), m_bSiblingsOverlap(false)
+WgGizmoContainer::WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE),
+	m_bSiblingsOverlap(true), m_bChildEvents(true)
 {
-	m_bSiblingsOverlap = true;
 }
 
 

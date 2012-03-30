@@ -35,6 +35,8 @@ class WgPatches;
 
 class WgGizmoContainer : public WgGizmoParent
 {
+	friend class WgEventHandler;
+
 	friend class WgHook;
 	friend class WgFlexHook;
 	friend class WgModalHook;
@@ -83,8 +85,6 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
 #endif
 
-	private:
-
 		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
 		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
 
@@ -102,8 +102,9 @@ class WgGizmoContainer : public WgGizmoParent
 
 		bool		m_bFocusGroup;
 		bool		m_bRadioGroup;
-		bool		m_bTooltipGroup;	// All Children+ belongs to the same tooltip group.
-		bool		m_bSiblingsOverlap;	// Set if siblings (might be) overlapping each other (special considerations to be taken during rendering).
+		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
+		bool		m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
+		bool		m_bChildEvents;		// Receive mouse/keyboard events even when descendants have the mouse/keyboard focus.
 		WgMaskOp	m_maskOp;			// Specifies how container masks background.
 };
 

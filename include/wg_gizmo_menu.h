@@ -108,10 +108,7 @@ public:
 	WgBlockSetPtr 	GetSliderBwdSource() const { return m_pSliderBtnBwdGfx; }
 	WgBlockSetPtr 	GetSliderFwdSource() const { return m_pSliderBtnFwdGfx; }
 
-
 	int			GetEntryHeight() const;
-	bool		SetEntryHeight( Uint8 height );
-
 
 	int			AddItem( WgMenuItem * pEntry );
 	int			InsertItem( WgMenuItem * pEntry, int pos );
@@ -181,6 +178,9 @@ private:
 
 		WgWidget*	GetRoot() { return 0; }			// To be removed once we are rid of Widgets alltogether.
 
+		WgGizmoVSlider * Slider() { return m_pGizmo?static_cast<WgGizmoVSlider*>(m_pGizmo):0; }
+
+
 	protected:
 		SliderHook() : m_pParent(0) {}
 
@@ -228,7 +228,7 @@ private:
 
 	void		_adjustSize();
 	void		_tilesModified();
-
+	WgRect		_sliderGeo( const WgRect& menuGeo ) const;
 
 	// Overriden for WgSliderTarget
 
@@ -262,8 +262,6 @@ private:
 	int			_getViewSize();
 	void		_setViewOfs(int pos);
 
-	void		StepWheelRoll(int distance);
-
 	//____ Members ___________________________________________
 
 	SliderHook				m_sliderHook;
@@ -278,7 +276,6 @@ private:
 
 	// Members holding data for open menu
 
-	WgGizmoVSlider *		m_pSlider;
 	int						m_contentHeight;	// Total height of content in pixels.
 	int						m_contentOfs;		// Offset in pixels of content displayed.
 
