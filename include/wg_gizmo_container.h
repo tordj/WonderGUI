@@ -43,7 +43,7 @@ class WgGizmoContainer : public WgGizmoParent
 
 	friend class WgRoot;
 	friend class WgGizmoFlexGeo;
-	friend class WgGizmoModal;
+	friend class WgGizmoModalLayer;
 	friend class WgGizmoTable;
 	friend class WgGizmoView;
 	friend class WgGizmoStack;
@@ -72,7 +72,9 @@ class WgGizmoContainer : public WgGizmoParent
 
 //		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
 		WgGizmoContainer *	CastToContainer();
+		const WgGizmoContainer *	CastToContainer() const;
 		WgRoot *	CastToRoot();
+		const WgRoot *	CastToRoot() const;
 
 	protected:
 		WgGizmoContainer();
@@ -93,6 +95,9 @@ class WgGizmoContainer : public WgGizmoParent
 
 		bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
 		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
+
+		WgGizmoModalLayer *		_getModalLayer() const;
+		WgGizmoMenuLayer*	_getMenuLayer() const;
 
 #ifdef WG_TNG
 		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );

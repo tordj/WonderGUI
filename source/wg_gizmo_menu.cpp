@@ -23,6 +23,7 @@
 #include	<wctype.h>
 
 #include	<wg_gizmo_menu.h>
+#include	<wg_gizmo_menulayer.h>
 #include	<wg_gizmo_slider.h>
 #include	<wg_surface.h>
 #include	<wg_gfxdevice.h>
@@ -882,21 +883,12 @@ void WgGizmoMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 			int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 			switch( key )
 			{
-				case WG_KEY_ESCAPE:
-					_requestClose();
-					pItem = 0;				// So we won't mark an item in the closed menu.
-					break;
-
 				case WG_KEY_RIGHT:
 					if( pItem )
 					{
 						if( pItem->GetType() == SUBMENU )
 							_openSubMenu( (WgMenuSubMenu*) pItem );
 					}
-					break;
-
-				case WG_KEY_LEFT:
-					_requestClose();
 					break;
 
 				case WG_KEY_RETURN:
@@ -1034,7 +1026,7 @@ void WgGizmoMenu::SelectItem(WgMenuItem* pItem)
 		case ENTRY:
 			m_pSelectedItem = pItem;
 			EventHandler()->QueueEvent( new WgEvent::MenuItemSelected(this,pItem->GetId()));
-			_requestCloseAll();
+			_itemSelected();
 		break;
 		case CHECKBOX:
 		{
@@ -1051,14 +1043,14 @@ void WgGizmoMenu::SelectItem(WgMenuItem* pItem)
 				EventHandler()->QueueEvent( new WgEvent::MenuItemChecked(this,pItem->GetId()));
 			}
 
-			_requestCloseAll();
+			_itemSelected();
 		}
 		break;
 		case RADIOBUTTON:
 			m_pSelectedItem = pItem;
 			((WgMenuRadioButton*)pItem)->Select();
 			EventHandler()->QueueEvent( new WgEvent::MenuItemSelected(this,pItem->GetId()));
-			_requestCloseAll();
+			_itemSelected();
 		break;
 
 		default:
@@ -1106,11 +1098,47 @@ void WgGizmoMenu::_openSubMenu( WgMenuSubMenu * pItem )
 	// Calculate itemArea
 
 	WgRect	geo = ScreenGeo();
-	WgRect itemArea( geo.y + yOfs, geo.x, m_entryHeight, geo.w );
+	WgRect itemArea( geo.x, geo.y + yOfs, geo.w, m_entryHeight );
 
 	// Position at entry and downwards (prefered) or upwards.
 
-	_openMenu( geo, WG_NORTHEAST );
+	_openSubMenu( pMenu, itemArea, WG_NORTHEAST );
+}
+
+//____ _openSubMenu() __________________________________________________________
+
+void WgGizmoMenu::_openSubMenu( WgGizmoMenu * pMenu, const WgRect& launcherGeo, WgOrientation orientation )
+{
+	WgGizmoMenuLayer * pLayer = 0;
+
+	if( ParentX() )
+		pLayer = ParentX()->_getMenuLayer();
+
+	if( pLayer )
+	{
+		WgCoord posDiff = ScreenPos() - pLayer->ScreenPos();
+		pLayer->OpenMenu( pMenu, launcherGeo + posDiff, orientation );
+	}
+}
+
+//____ _itemSelected() ______________________________________________________
+
+void WgGizmoMenu::_itemSelected()
+{
+	WgGizmoMenuLayer * pLayer = 0;
+
+	if( ParentX() )
+		pLayer = ParentX()->_getMenuLayer();
+
+	if( pLayer )
+		pLayer->CloseAllMenus();
+}
+
+//____ _closeSubMenu() _________________________________________________________
+
+void WgGizmoMenu::_closeSubMenu()
+{
+
 }
 
 

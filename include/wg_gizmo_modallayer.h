@@ -20,19 +20,19 @@
 
 =========================================================================*/
 
-#ifndef WG_GIZMO_MODAL_DOT_H
-#define WG_GIZMO_MODAL_DOT_H
+#ifndef WG_GIZMO_MODALLAYER_DOT_H
+#define WG_GIZMO_MODALLAYER_DOT_H
 
 #ifndef WG_GIZMO_CONTAINER_DOT_H
 #	include <wg_gizmo_container.h>
 #endif
 
 
-class WgGizmoModal;
+class WgGizmoModalLayer;
 
 class WgModalHook : public WgHook, protected WgLink
 {
-	friend class WgGizmoModal;
+	friend class WgGizmoModalLayer;
 	friend class WgChain<WgModalHook>;
 
 public:
@@ -76,7 +76,7 @@ protected:
 
 	PROTECTED_LINK_METHODS( WgModalHook );
 
-	WgModalHook( WgGizmoModal * pParent );
+	WgModalHook( WgGizmoModalLayer * pParent );
 
 	bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 
@@ -89,7 +89,7 @@ protected:
 	WgGizmoContainer * _parent() const;
 
 
-	WgGizmoModal * m_pParent;
+	WgGizmoModalLayer * m_pParent;
 
 	WgRect			m_realGeo;			// Gizmos geo relative parent
 
@@ -102,18 +102,18 @@ protected:
 
 
 
-class WgGizmoModal : public WgGizmo, public WgGizmoContainer
+class WgGizmoModalLayer : public WgGizmo, public WgGizmoContainer
 {
 	friend class BaseHook;
 	friend class WgModalHook;
 
 public:
-	WgGizmoModal();
-	~WgGizmoModal();
+	WgGizmoModalLayer();
+	~WgGizmoModalLayer();
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
-	virtual WgGizmo * NewOfMyType() const { return new WgGizmoModal(); };
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoModalLayer(); };
 
 
 	WgHook *	SetBase( WgGizmo * pGizmo );
@@ -152,6 +152,7 @@ public:
 	const WgGizmoContainer * CastToContainer() const { return this; }
 
 	WgGizmo*		CastToGizmo() { return this; }
+	const WgGizmo*	CastToGizmo() const { return this; }
 
 
 	// Overloaded from container
@@ -162,7 +163,7 @@ private:
 
 	class BaseHook : public WgHook
 	{
-		friend class WgGizmoModal;
+		friend class WgGizmoModalLayer;
 
 	public:
 		// Standard Hook methods
@@ -174,12 +175,12 @@ private:
 		WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
 		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		WgGizmoModal* Parent() const { return m_pParent; }
+		WgGizmoModalLayer* Parent() const { return m_pParent; }
 
 		WgWidget*	GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
 
 	protected:
-		BaseHook( WgGizmoModal * pParent ) : m_pParent(pParent) {}
+		BaseHook( WgGizmoModalLayer * pParent ) : m_pParent(pParent) {}
 
 		void		_requestRender();
 		void		_requestRender( const WgRect& rect );
@@ -189,9 +190,13 @@ private:
 		WgHook *	_nextHook() const { return m_pParent->FirstModal(); }
 		WgGizmoParent * _parent() const { return m_pParent; }
 
-		WgGizmoModal * 	m_pParent;
+		WgGizmoModalLayer * 	m_pParent;
 		WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any modal was shown.
 	};
+
+
+	WgGizmoModalLayer *		_getModalLayer() const { return const_cast<WgGizmoModalLayer*>(this); }
+
 
 	void			_updateKeyboardFocus();
 
@@ -212,6 +217,7 @@ private:
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onNewSize( const WgSize& size );
 	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 
 	void			_onRequestRender( const WgRect& rect, const WgModalHook * pHook );	// rect is in our coordinate system.
 
@@ -231,4 +237,4 @@ private:
 
 };
 
-#endif //WG_GIZMO_MODAL_DOT_H
+#endif //WG_GIZMO_MODALLAYER_DOT_H

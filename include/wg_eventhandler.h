@@ -173,8 +173,6 @@ private:
 
 	std::vector<WgGizmoWeakPtr>	m_vMarkedGizmos;	// Gizmos the pointer currently is "inside". Empty if outside a modal gizmo.
 
-	std::vector<WgGizmoWeakPtr>	m_vModalGizmos;		// Current modal gizmo with parents when pointer is outside a modal gizmo, otherwise empty.
-
 	// Current button states
 
 	bool						m_bButtonPressed[WG_MAX_BUTTONS+1];

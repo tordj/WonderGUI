@@ -69,8 +69,11 @@ public:
 	bool					IsRoot() const { return true; }
 
 	WgGizmo *				CastToGizmo() { return 0; }
+	const WgGizmo *			CastToGizmo() const { return 0; }
 	WgGizmoContainer *		CastToContainer() { return 0; }
+	const WgGizmoContainer *CastToContainer() const { return 0; }
 	WgRoot *				CastToRoot() { return this; }
+	const WgRoot *			CastToRoot() const { return this; }
 
 
 	inline int				NbDirtyRects() const { return m_dirtyPatches.Size(); }
@@ -125,6 +128,9 @@ protected:
 
 	bool 				_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );
 	bool 				_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );
+
+	WgGizmoModalLayer *		_getModalLayer() const { return 0; }
+	WgGizmoMenuLayer*	_getMenuLayer() const { return 0; }
 
 	WgPatches			m_dirtyPatches;
 

@@ -40,3 +40,4 @@ bool WgGizmoParent::IsAncestorTo( const WgGizmo * pGizmo ) const
 	return false;
 }
 
+

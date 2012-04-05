@@ -38,7 +38,7 @@ void addResizableContainer( WgGizmoFlexGeo * pParent, WgGizmo * pChild, WgEventH
 void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook );
 
 
-WgGizmoModal * g_pModal = 0;
+WgGizmoModalLayer * g_pModal = 0;
 
 //____ main() _________________________________________________________________
 
@@ -222,19 +222,23 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	WgSurface * pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", WgSurfaceFactorySoft() );
 	WgBlockSetPtr pSplashBlock = pSplashImg->defineBlockSet( WgRect(0,0,pSplashImg->Width(),pSplashImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
 
+	// MenuLayer
+
+	WgGizmoMenuLayer * pMenuLayer = new WgGizmoMenuLayer();
+	pRoot->SetChild( pMenuLayer );
+
+	// Main Flex
+
+	WgGizmoFlexGeo * pFlex = new WgGizmoFlexGeo();
+	pMenuLayer->SetBase( pFlex );
+
 	// Background
 
 	WgGizmoPixmap * pBackground = new WgGizmoPixmap();
 	pBackground->SetSource( pBackBlock );
 
-	// Main Flex
-
-	WgGizmoFlexGeo * pFlex = new WgGizmoFlexGeo();
 	WgFlexHook * pHook = pFlex->AddChild( pBackground );
-
 	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
-
-	pRoot->SetChild( pFlex );
 
 	//
 /*
@@ -293,6 +297,16 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 */
 
 	{
+		WgGizmoMenu * pSubMenu1 = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
+		pSubMenu1->AddItem( new WgMenuEntry( WgString("Entry 7"), WgString("Help text for entry 7"), WgBlockSetPtr(), 0 ));
+		pSubMenu1->AddItem( new WgMenuSeparator() );
+		pSubMenu1->AddItem( new WgMenuEntry( WgString("Entry 8"), WgString("Help text for entry 8"), WgBlockSetPtr(), 0 ));
+
+		WgGizmoMenu * pSubMenu2 = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
+		pSubMenu2->AddItem( new WgMenuEntry( WgString("Entry 9"), WgString("Help text for entry 9"), WgBlockSetPtr(), 0 ));
+		pSubMenu2->AddItem( new WgMenuSeparator() );
+		pSubMenu2->AddItem( new WgMenuEntry( WgString("Entry 10"), WgString("Help text for entry 10"), WgBlockSetPtr(), 0 ));
+
 		WgGizmoMenu * pMenu = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
 		pMenu->AddItem( new WgMenuEntry( WgString("Entry 1"), WgString("Help text for entry 1"), WgBlockSetPtr(), 0 ));
 		pMenu->AddItem( new WgMenuSeparator() );
@@ -302,8 +316,14 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 		pMenu->AddItem( new WgMenuEntry( WgString("Entry 5"), WgString("Help text for entry 5"), WgBlockSetPtr(), 0 ));
 		pMenu->AddItem( new WgMenuEntry( WgString("Entry 6"), WgString("Help text for entry 6"), WgBlockSetPtr(), 0 ));
 
+		pMenu->AddItem( new WgMenuSubMenu( WgString("Submenu 1"), WgString("Help text for submenu 1"), WgBlockSetPtr(), 0, pSubMenu1 ) );
+		pMenu->AddItem( new WgMenuSubMenu( WgString("Submenu 2"), WgString("Help text for submenu 2"), WgBlockSetPtr(), 0, pSubMenu2 ) );
+
 		addResizableContainer( pFlex, pMenu, pEventHandler );
 		pMenu->GrabFocus();
+
+//		pMenuLayer->OpenMenu( pMenu, WgRect(10,10,100,10), WG_SOUTHWEST );
+
 	}
 
 
@@ -452,8 +472,8 @@ bool eventLoop( WgEventHandler * pHandler )
 			case SDL_KEYDOWN:
 			{
 				// exit if ESCAPE is pressed
-				if (event.key.keysym.sym == SDLK_ESCAPE)
-					return false;
+//				if (event.key.keysym.sym == SDLK_ESCAPE)
+//					return false;
 			}
 		}
 		sdl_wglib::TranslateEvent( event );
