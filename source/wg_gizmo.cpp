@@ -293,7 +293,7 @@ WgMode WgGizmo::Mode() const
 }
 
 //____ _getBlendMode() _________________________________________________________
-
+#ifdef WG_TNG
 WgBlendMode WgGizmo::_getBlendMode() const
 {
 	WgGizmoParent * pParent = ParentX();
@@ -302,6 +302,7 @@ WgBlendMode WgGizmo::_getBlendMode() const
 	else
 		return WG_BLENDMODE_BLEND;		// We always start out with WG_BLENDMODE_BLEND.
 }
+#endif
 
 //____ _renderPatches() ________________________________________________________
 #ifdef WG_TNG

@@ -925,41 +925,41 @@ WgPointerStyle WgPointerStyleRes::Deserialize(const WgXmlNode& xmlNode, const st
 /// WgButtonLayoutRes ////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 // layout=[value]
-void WgButtonLayoutRes::Serialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode, const std::string& attr, WgGizmoDragbar::ButtonLayout layout, WgGizmoDragbar::ButtonLayout def)
+void WgButtonLayoutRes::Serialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode, const std::string& attr, WgGizmoSlider::ButtonLayout layout, WgGizmoSlider::ButtonLayout def)
 {
 	if(xmlNode.HasAttribute(attr) || layout != def)
 	{
 		switch(layout)
 		{
-		case WgGizmoDragbar::NONE:			s.AddAttribute(attr, "none"); break;
-		case WgGizmoDragbar::HEADER_FWD:	s.AddAttribute(attr, "head_fwd"); break;
-		case WgGizmoDragbar::HEADER_BWD:	s.AddAttribute(attr, "head_bwd"); break;
-		case WgGizmoDragbar::FOOTER_FWD:	s.AddAttribute(attr, "foot_fwd"); break;
-		case WgGizmoDragbar::FOOTER_BWD:	s.AddAttribute(attr, "foot_bwd"); break;
-		case WgGizmoDragbar::WINDOWS:		s.AddAttribute(attr, "windows"); break;
-		case WgGizmoDragbar::NEXT_VERT:	s.AddAttribute(attr, "next_vert"); break;
-		case WgGizmoDragbar::NEXT_HORR:	s.AddAttribute(attr, "next_horr"); break;
-		case WgGizmoDragbar::ALL:			s.AddAttribute(attr, "all"); break;
-		default:						s.AddAttribute(attr, "default"); break;
+		case WgGizmoSlider::NONE:			s.AddAttribute(attr, "none"); break;
+		case WgGizmoSlider::HEADER_FWD:		s.AddAttribute(attr, "head_fwd"); break;
+		case WgGizmoSlider::HEADER_BWD:		s.AddAttribute(attr, "head_bwd"); break;
+		case WgGizmoSlider::FOOTER_FWD:		s.AddAttribute(attr, "foot_fwd"); break;
+		case WgGizmoSlider::FOOTER_BWD:		s.AddAttribute(attr, "foot_bwd"); break;
+		case WgGizmoSlider::WINDOWS:		s.AddAttribute(attr, "windows"); break;
+		case WgGizmoSlider::NEXT_VERT:		s.AddAttribute(attr, "next_vert"); break;
+		case WgGizmoSlider::NEXT_HORR:		s.AddAttribute(attr, "next_horr"); break;
+		case WgGizmoSlider::ALL:			s.AddAttribute(attr, "all"); break;
+		default:							s.AddAttribute(attr, "default"); break;
 		}
 	}
 }
 
-WgGizmoDragbar::ButtonLayout WgButtonLayoutRes::Deserialize(const WgXmlNode& xmlNode, const std::string& attr)
+WgGizmoSlider::ButtonLayout WgButtonLayoutRes::Deserialize(const WgXmlNode& xmlNode, const std::string& attr)
 {
-	WgGizmoDragbar::ButtonLayout layout = WgGizmoDragbar::DEFAULT;
+	WgGizmoSlider::ButtonLayout layout = WgGizmoSlider::DEFAULT;
 	const std::string& val = xmlNode[attr];
-	if(val.empty() || val == "default") layout = WgGizmoDragbar::DEFAULT;
-	else if(val == "none")		layout = WgGizmoDragbar::NONE;
-	else if(val == "default")	layout = WgGizmoDragbar::DEFAULT;
-	else if(val == "head_fwd")	layout = WgGizmoDragbar::HEADER_FWD;
-	else if(val == "head_bwd")	layout = WgGizmoDragbar::HEADER_BWD;
-	else if(val == "foot_fwd")	layout = WgGizmoDragbar::FOOTER_FWD;
-	else if(val == "foot_bwd")	layout = WgGizmoDragbar::FOOTER_BWD;
-	else if(val == "windows")	layout = WgGizmoDragbar::WINDOWS;
-	else if(val == "next_vert")	layout = WgGizmoDragbar::NEXT_VERT;
-	else if(val == "next_horr")	layout = WgGizmoDragbar::NEXT_HORR;
-	else if(val == "all")		layout = WgGizmoDragbar::ALL;
+	if(val.empty() || val == "default") layout = WgGizmoSlider::DEFAULT;
+	else if(val == "none")		layout = WgGizmoSlider::NONE;
+	else if(val == "default")	layout = WgGizmoSlider::DEFAULT;
+	else if(val == "head_fwd")	layout = WgGizmoSlider::HEADER_FWD;
+	else if(val == "head_bwd")	layout = WgGizmoSlider::HEADER_BWD;
+	else if(val == "foot_fwd")	layout = WgGizmoSlider::FOOTER_FWD;
+	else if(val == "foot_bwd")	layout = WgGizmoSlider::FOOTER_BWD;
+	else if(val == "windows")	layout = WgGizmoSlider::WINDOWS;
+	else if(val == "next_vert")	layout = WgGizmoSlider::NEXT_VERT;
+	else if(val == "next_horr")	layout = WgGizmoSlider::NEXT_HORR;
+	else if(val == "all")		layout = WgGizmoSlider::ALL;
 	else assert(0);
 	return layout;
 }
@@ -4772,7 +4772,7 @@ void Wdg_Menu_Res::Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML
 	WgBlockSetPtr slider_bar = s.ResDb()->GetBlockSet(xmlNode["slider_bar"]);
 	WgBlockSetPtr slider_bwd = s.ResDb()->GetBlockSet(xmlNode["slider_bwd"]);
 	WgBlockSetPtr slider_fwd = s.ResDb()->GetBlockSet(xmlNode["slider_fwd"]);
-	WgGizmoDragbar::ButtonLayout slider_layout = WgButtonLayoutRes::Deserialize(xmlNode, "slider_layout");
+	WgGizmoSlider::ButtonLayout slider_layout = WgButtonLayoutRes::Deserialize(xmlNode, "slider_layout");
 	Uint32 entryheight = WgUtil::ToUint32(xmlNode["entryheight"]);
 
 	VERIFY(entry_prop && accel_prop, "required text property not found");

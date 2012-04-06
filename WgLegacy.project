@@ -21,8 +21,6 @@
     <File Name="include/wdg_editvalue.h"/>
     <File Name="include/wdg_fill.h"/>
     <File Name="include/wdg_fps.h"/>
-    <File Name="include/wdg_gizmotable.h"/>
-    <File Name="include/wdg_gizmoview.h"/>
     <File Name="include/wdg_gridview.h"/>
     <File Name="include/wdg_listview.h"/>
     <File Name="include/wdg_lodder.h"/>
@@ -70,7 +68,6 @@
     <File Name="include/wg_gizmo_collection.h"/>
     <File Name="include/wg_gizmo_combobox.h"/>
     <File Name="include/wg_gizmo_container.h"/>
-    <File Name="include/wg_gizmo_dragbars.h"/>
     <File Name="include/wg_gizmo_dummy.h"/>
     <File Name="include/wg_gizmo_editline.h"/>
     <File Name="include/wg_gizmo_editvalue.h"/>
@@ -114,7 +111,6 @@
     <File Name="include/wg_resourceserializer_xml.h"/>
     <File Name="include/wg_resources_xml.h"/>
     <File Name="include/wg_resource_visitor.h"/>
-    <File Name="include/wg_root.h"/>
     <File Name="include/wg_signals.h"/>
     <File Name="include/wg_signalstanza.h"/>
     <File Name="include/wg_skinmanager.h"/>
@@ -173,7 +169,6 @@
     <File Name="source/wg_gizmo_circlemeter.cpp"/>
     <File Name="source/wg_gizmo_combobox.cpp"/>
     <File Name="source/wg_gizmo_container.cpp"/>
-    <File Name="source/wg_gizmo_dragbars.cpp"/>
     <File Name="source/wg_gizmo_dummy.cpp"/>
     <File Name="source/wg_gizmo_editline.cpp"/>
     <File Name="source/wg_gizmo_editvalue.cpp"/>
@@ -209,7 +204,6 @@
     <File Name="source/wg_resource_factory_xml.cpp"/>
     <File Name="source/wg_resources_xml.cpp"/>
     <File Name="source/wg_resourceserializer_xml.cpp"/>
-    <File Name="source/wg_root.cpp"/>
     <File Name="source/wg_skinmanager.cpp"/>
     <File Name="source/wg_smartptr.cpp"/>
     <File Name="source/wg_string.cpp"/>
@@ -225,7 +219,18 @@
     <File Name="source/wg_vectorglyphs.cpp"/>
     <File Name="source/wg_widget-render.cpp"/>
     <File Name="source/wg_widget.cpp"/>
+    <File Name="softube_widgets/wdg_angleline.cpp"/>
+    <File Name="softube_widgets/wdg_angleline.h"/>
+    <File Name="softube_widgets/wdg_clickarea.cpp"/>
+    <File Name="softube_widgets/wdg_clickarea.h"/>
+    <File Name="softube_widgets/wdg_hilight.cpp"/>
+    <File Name="softube_widgets/wdg_hilight.h"/>
+    <File Name="softube_widgets/wdg_knob.cpp"/>
+    <File Name="softube_widgets/wdg_knob.h"/>
+    <File Name="include/wg_gizmo_slider.h"/>
+    <File Name="source/wg_gizmo_slider.cpp"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="">
@@ -240,6 +245,7 @@
       <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
         <IncludePath Value="./include"/>
         <IncludePath Value="/usr/include/freetype2/"/>
+        <IncludePath Value="./softube_widgets"/>
         <Preprocessor Value="WG_LEGACY"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
@@ -288,6 +294,8 @@
       
       
       
+      
+      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -317,5 +325,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
 </CodeLite_Project>

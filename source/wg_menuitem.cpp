@@ -36,10 +36,7 @@ void WgMenuItem::Hide()
 void WgMenuItem::Modified()
 {
 	if(m_pMyMenu)
-	{
-		m_pMyMenu->_adjustSize();
-		m_pMyMenu->_requestRender();
-	}
+		m_pMyMenu->_itemModified();
 }
 
 //____ WgMenuSeparator::Constructor ___________________________________________

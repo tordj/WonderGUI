@@ -173,7 +173,7 @@ private:
 	void		DoMyOwnGeometryChange( WgRect& oldGeo, WgRect& newGeo );
 
 	void		_tilesModified();
-
+	void		_itemModified();
 
 /*
 	void		DoMyOwnRefresh( void );

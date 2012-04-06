@@ -76,7 +76,7 @@ void Wdg_Menu::Init( void )
 	m_menuMinW				= 0;
 	m_btnReleaseArea		= WgRect(0, 0, 0, 0);
 
-	m_sliderBtnLayout		= WgGizmoDragbar::DEFAULT;
+	m_sliderBtnLayout		= WgGizmoSlider::DEFAULT;
 	m_pSlider				= 0;
 
 	m_contentHeight			= 0;
@@ -240,7 +240,7 @@ bool Wdg_Menu::SetSliderSource(  WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx, Wg
 
 //____ SetSliderButtonLayout() ________________________________________________
 
-bool Wdg_Menu::SetSliderButtonLayout(  WgGizmoDragbar::ButtonLayout layout )
+bool Wdg_Menu::SetSliderButtonLayout(  WgGizmoSlider::ButtonLayout layout )
 {
 	m_sliderBtnLayout = layout;
 
@@ -1419,7 +1419,7 @@ void Wdg_Menu::AdjustSize()
 			m_pSlider->AddCallback( WgSignal::ButtonPress(1), cbPressOnSlider, this );
 			m_pSlider->AddCallback( WgSignal::ButtonRelease(1), cbReleasedSlider, this );
 
-			AddCallback( WgSignal::ViewPosY(), WgGizmoDragbar::cbSetSliderPos, (WgGizmoDragbar*) m_pSlider );
+			AddCallback( WgSignal::ViewPosY(), WgGizmoSlider::cbSetSliderPos, (WgGizmoSlider*) m_pSlider );
 			AddCallback(WgSignal::WheelRoll(1), cbWheelRoll, this);
 		}
 
@@ -1566,6 +1566,14 @@ void Wdg_Menu::StepViewPageUp()
 {
 	int viewHeight = Height() - GetContentBorders().Height();
 	SetViewPixels( m_contentOfs - (viewHeight - m_entryHeight) );
+}
+
+//____ _itemModified() _________________________________________________________
+
+void Wdg_Menu::_itemModified()
+{
+	AdjustSize();
+	RequestRender();
 }
 
 //____ _tilesModified() _______________________________________________________

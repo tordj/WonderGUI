@@ -276,8 +276,8 @@ public:
 class WgButtonLayoutRes
 {
 public:
-	static void Serialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode, const std::string& attr, WgGizmoDragbar::ButtonLayout layout, WgGizmoDragbar::ButtonLayout def = WgGizmoDragbar::DEFAULT);
-	static WgGizmoDragbar::ButtonLayout Deserialize(const WgXmlNode& xmlNode, const std::string& attr);
+	static void Serialize(WgResourceSerializerXML& s, const WgXmlNode& xmlNode, const std::string& attr, WgGizmoSlider::ButtonLayout layout, WgGizmoSlider::ButtonLayout def = WgGizmoSlider::DEFAULT);
+	static WgGizmoSlider::ButtonLayout Deserialize(const WgXmlNode& xmlNode, const std::string& attr);
 };
 
 //////////////////////////////////////////////////////////////////////////

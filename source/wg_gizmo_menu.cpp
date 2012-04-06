@@ -1309,6 +1309,14 @@ WgMenuItem * WgGizmoMenu::_getItemAtPos( int x, int y )
 	return 0;
 }
 
+//____ _itemModified() _________________________________________________________
+
+void WgGizmoMenu::_itemModified()
+{
+	_adjustSize();
+	_requestRender();
+}
+
 //____ _adjustSize() ___________________________________________________________
 
 void WgGizmoMenu::_adjustSize()

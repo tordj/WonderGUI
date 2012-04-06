@@ -293,14 +293,11 @@ protected:
 		return this;
 	}
 
-
-
-private:
-
 	void DoMyOwnRender( const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 	{
 		T::_onRender( WgGfx::GetDevice(), _window, _window, _clip, _layer );
 	}
+
 
 	void DoMyOwnActionRespond( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
 	{
@@ -349,6 +346,8 @@ private:
 		else
 			T::_onLostInputFocus();
 	};
+
+private:
 
 	WgWidgetHook *	m_pHook;
 	WgWidgetContainer m_container;

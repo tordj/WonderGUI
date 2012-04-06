@@ -226,6 +226,7 @@ private:
 
 	//
 
+	void		_itemModified();
 	void		_adjustSize();
 	void		_tilesModified();
 	WgRect		_sliderGeo( const WgRect& menuGeo ) const;
