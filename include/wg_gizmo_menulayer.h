@@ -46,8 +46,8 @@ public:
 	WgCoord			ScreenPos() const;
 	WgRect			ScreenGeo() const;
 
-	WgModalHook *	Prev() const { return _prev(); }
-	WgModalHook *	Next() const { return _next(); }
+	WgMenuHook *	Prev() const { return _prev(); }
+	WgMenuHook *	Next() const { return _next(); }
 
 	WgGizmoContainer* Parent() const;
 
@@ -58,7 +58,7 @@ protected:
 
 	PROTECTED_LINK_METHODS( WgMenuHook );
 
-	WgMenuHook( WgGizmoMenuLayer * pParent );
+	WgMenuHook( WgGizmoMenuLayer * pParent, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize );
 
 	void		_requestRender();
 	void		_requestRender( const WgRect& rect );
@@ -68,13 +68,16 @@ protected:
 	WgHook *	_nextHook() const;
 	WgGizmoContainer * _parent() const;
 
+	bool		_updateGeo();
 
-	WgGizmoModal * m_pParent;
+
+	WgGizmoMenuLayer * m_pParent;
 
 	WgRect			m_geo;				// Gizmos geo relative parent
-
-	WgRect			m_launcherGeo;		// Used if this is a menu.
-	WgMenuHolder *	m_pHolder;			// Gizmo owning the menu displayed.
+	WgRect			m_launcherGeo;		// Launcher geo relative sibling or parent.
+	WgOrientation	m_attachPoint;
+	WgSize			m_maxSize;
+	WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at gizmo that held focus when this menu was ontop.
 };
 
 
@@ -98,7 +101,7 @@ public:
 	bool			DeleteBase();
 	WgGizmo *		ReleaseBase();
 
-	WgModalHook *	OpenMenu( WgGizmo * pMenu, const WgRect& launcherGeo, WgOrientation attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
+	WgMenuHook *	OpenMenu( WgGizmo * pMenu, const WgRect& launcherGeo, WgOrientation attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
 
 	bool			CloseMenu( WgGizmo * pMenu );
 	bool			CloseAllMenus();
@@ -130,12 +133,13 @@ public:
 	bool			ReleaseAllChildren() { return 0; }
 
 	WgGizmo*		CastToGizmo() { return this; }
+	const WgGizmo*	CastToGizmo() const { return this; }
 
 private:
 
 	class BaseHook : public WgHook
 	{
-		friend class WgGizmoModal;
+		friend class WgGizmoMenuLayer;
 
 	public:
 		// Standard Hook methods
@@ -147,26 +151,30 @@ private:
 		WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
 		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		WgGizmoModal* Parent() const { return m_pParent; }
+		WgGizmoMenuLayer* Parent() const { return m_pParent; }
 
 		WgWidget*	GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
 
 	protected:
-		BaseHook( WgGizmoModal * pParent ) : m_pParent(pParent) {}
+		BaseHook( WgGizmoMenuLayer * pParent ) : m_pParent(pParent) {}
 
 		void		_requestRender();
 		void		_requestRender( const WgRect& rect );
 		void		_requestResize();
 
 		WgHook *	_prevHook() const { return 0; }
-		WgHook *	_nextHook() const { return m_pParent->FirstModal(); }
+		WgHook *	_nextHook() const { return m_pParent->FirstMenu(); }
 		WgGizmoParent * _parent() const { return m_pParent; }
 
-		WgGizmoModal * 	m_pParent;
-		WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any modal was shown.
+		WgGizmoMenuLayer * 	m_pParent;
 	};
 
-	WgRect			_decideMenuGeo( WgSize menuSize, const WgRect& launcherGeo, WgOrientation attachPoint );
+
+	WgGizmoMenuLayer *	_getMenuLayer() const { return const_cast<WgGizmoMenuLayer*>(this); }
+
+	void			_stealKeyboardFocus();
+	void			_restoreKeyboardFocus();
+
 
 	// These are needed until WgGizmoContainer inherits from WgGizmo
 
@@ -186,7 +194,7 @@ private:
 	void			_onNewSize( const WgSize& size );
 	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 
-	void			_onRequestRender( const WgRect& rect, const WgModalHook * pHook );	// rect is in our coordinate system.
+	void			_onRequestRender( const WgRect& rect, const WgMenuHook * pHook );	// rect is in our coordinate system.
 
 	WgHook*			_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
 	WgHook*			_lastHook() const;		//
@@ -198,9 +206,11 @@ private:
 	WgHook *		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
 	BaseHook		m_baseHook;
-	WgChain<WgMenuHook>		m_menuHooks;		// First modal gizmo lies at the bottom.
+	WgChain<WgMenuHook>		m_menuHooks;		// First menu lies at the bottom.
 
 	WgSize			m_size;
+	WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any menu was opened.
+
 
 };
 

@@ -46,7 +46,6 @@
     <File Name="include/wg_gizmo_fill.h"/>
     <File Name="include/wg_gizmo_flexgeo.h"/>
     <File Name="include/wg_gizmo_fps.h"/>
-    <File Name="include/wg_gizmo_modal.h"/>
     <File Name="include/wg_gizmo_parent.h"/>
     <File Name="include/wg_gizmo_pixmap.h"/>
     <File Name="include/wg_gizmo_radiobutton.h"/>
@@ -129,7 +128,6 @@
     <File Name="source/wg_gizmo_fill.cpp"/>
     <File Name="source/wg_gizmo_flexgeo.cpp"/>
     <File Name="source/wg_gizmo_fps.cpp"/>
-    <File Name="source/wg_gizmo_modal.cpp"/>
     <File Name="source/wg_gizmo_pixmap.cpp"/>
     <File Name="source/wg_gizmo_radiobutton.cpp"/>
     <File Name="source/wg_gizmo_refreshbutton.cpp"/>
@@ -187,6 +185,8 @@
     <File Name="source/wg_tileholder.cpp"/>
     <File Name="include/wg_gizmo_menulayer.h"/>
     <File Name="source/wg_gizmo_menulayer.cpp"/>
+    <File Name="include/wg_gizmo_modallayer.h"/>
+    <File Name="source/wg_gizmo_modallayer.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -209,6 +209,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       
@@ -262,6 +263,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       

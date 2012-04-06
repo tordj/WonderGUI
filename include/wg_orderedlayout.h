@@ -121,6 +121,7 @@ public:
 	const WgGizmoContainer *	CastToContainer() const { return this; }
 
 	WgGizmo*		CastToGizmo() { return this; }
+	const WgGizmo*	CastToGizmo() const { return this; }
 
 protected:
 

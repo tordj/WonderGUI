@@ -954,7 +954,6 @@ void WgEventHandler::_processMouseLeave( WgEvent::MouseLeave * pEvent )
 	}
 
 	m_vMarkedGizmos.clear();
-	m_vModalGizmos.clear();
 }
 
 
@@ -993,7 +992,6 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostMouseMoveEvents)
 {
 	std::vector<WgGizmo*>	vNowMarked;
 
-	WgGizmo * pGizmoPointed = m_pRoot->FindGizmo( m_pointerPos, WG_SEARCH_MARKPOLICY );
 	WgGizmo * pGizmoTarget = m_pRoot->FindGizmo( m_pointerPos, WG_SEARCH_ACTION_TARGET );
 
 	// Figure out which button of currently pressed has been pressed the longest.
@@ -1006,25 +1004,22 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostMouseMoveEvents)
 			button = i;
 	}
 
-	// Collect Gizmos we are now inside, unless we are pointing outside modal.
+	// Collect Gizmos we are now inside.
 
-	if( pGizmoPointed == pGizmoTarget )
+	WgGizmo * pGizmo = pGizmoTarget;
+	while( pGizmo )
 	{
-		WgGizmo * pGizmo = pGizmoPointed;
-		while( pGizmo )
-		{
-			if( button == 0 || _isGizmoInList( pGizmo, m_latestPressGizmos[button] ) )
-				vNowMarked.push_back(pGizmo);
+		if( button == 0 || _isGizmoInList( pGizmo, m_latestPressGizmos[button] ) )
+			vNowMarked.push_back(pGizmo);
 
-			WgGizmoParent * pParent = pGizmo->ParentX();
-			while( pParent && pParent->CastToContainer() && !pParent->CastToContainer()->m_bChildEvents )
-				pParent = pParent->CastToGizmo()->ParentX();
+		WgGizmoParent * pParent = pGizmo->ParentX();
+		while( pParent && pParent->CastToContainer() && !pParent->CastToContainer()->m_bChildEvents )
+			pParent = pParent->CastToGizmo()->ParentX();
 
-			if( !pParent )
-				break;
+		if( !pParent )
+			break;
 
-			pGizmo = pParent->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
-		}
+		pGizmo = pParent->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
 	}
 
 	// Post POINTER_EXIT events for gizmos no longer marked
@@ -1071,32 +1066,6 @@ void WgEventHandler::_updateMarkedGizmos(bool bPostMouseMoveEvents)
 	m_vMarkedGizmos.clear();
 	for( size_t i = 0 ; i < vNowMarked.size() ; i++ )
 		m_vMarkedGizmos.push_back( vNowMarked[i] );
-
-
-
-	// **** HANDLING OF MODAL GIZMOS ****
-	// This is a bit easier and more straight forward since:
-	// a) We don't have pointer enter/exit events, just move.
-	// b) Press/release outside do not neeed to be matched. We can get release outside
-	//    even if press was inside and have a press outside that gets an release inside.
-	//	  The modal gizmo still gets the corresponding event if it knows what to listen for.
-
-
-	// Update m_vModalGizmos and queue outside modal events.
-
-	m_vModalGizmos.clear();
-	if( pGizmoTarget != pGizmoPointed )
-	{
-		WgGizmo * pGizmo = pGizmoTarget;
-		while( pGizmo )
-		{
-			m_vModalGizmos.push_back(pGizmo);
-			if( bPostMouseMoveEvents )
-				QueueEvent( new WgEvent::MouseMoveOutsideModal(pGizmo) );
-
-			pGizmo = pGizmo->ParentX()->CastToGizmo();		// This is safe since all Gizmos upwards towards root is guaranteed to have a hook.
-		}
-	}
 }
 
 
@@ -1324,19 +1293,6 @@ void WgEventHandler::_processMouseButtonPress( WgEvent::MouseButtonPress * pEven
 	m_pLatestPressEvents[button] = pEvent;
 
 	m_bButtonPressed[button] = true;
-
-	// If m_vModalGizmos has content then we have the press outside a modal
-	// gizmo and should inform.
-
-	for( size_t i = 0 ; i < m_vModalGizmos.size() ; i++ )
-	{
-		WgGizmo * pGizmo = m_vModalGizmos[i].GetRealPtr();
-
-		if( pGizmo )
-			QueueEvent( new WgEvent::MouseButtonPressOutsideModal( button, pGizmo ) );
-	}
-
-
 }
 
 
@@ -1407,19 +1363,6 @@ void WgEventHandler::_processMouseButtonRelease( WgEvent::MouseButtonRelease * p
 	delete m_pLatestReleaseEvents[button];		// Delete previous saved event.
 	m_pLatestReleaseEvents[button] = pEvent;
 	m_bButtonPressed[button] = false;
-
-	// If m_vModalGizmos has content then we have the release outside a modal
-	// gizmo and should inform.
-
-	for( size_t i = 0 ; i < m_vModalGizmos.size() ; i++ )
-	{
-		WgGizmo * pGizmo = m_vModalGizmos[i].GetRealPtr();
-
-		if( pGizmo )
-			QueueEvent( new WgEvent::MouseButtonReleaseOutsideModal( button, pGizmo ) );
-	}
-
-
 }
 
 //____ _processMouseButtonDrag() ____________________________________________________

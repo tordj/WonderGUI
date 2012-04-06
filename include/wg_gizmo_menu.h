@@ -153,6 +153,7 @@ public:
 	const WgGizmoContainer * CastToContainer() const { return this; }
 
 	WgGizmo*	CastToGizmo() { return this; }
+	const WgGizmo*	CastToGizmo() const { return this; }
 
 	//
 
@@ -250,9 +251,9 @@ private:
 	void		_calcEntryMinWidth( WgMenuEntry * pEntry );
 	void		_openSubMenu( WgMenuSubMenu * pItem );
 
-	void		_requestClose() {};
-	void		_requestCloseAll() {};
-	void		_openMenu( const WgRect& laucherGeo, WgOrientation orientation ) {};
+	void		_itemSelected();
+	void		_openSubMenu( WgGizmoMenu * pMenu, const WgRect& laucherGeo, WgOrientation orientation );
+	void		_closeSubMenu();
 
 	WgBorders	_getContentBorders() const;
 	void		_refreshEntryHeight();

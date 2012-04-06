@@ -52,9 +52,12 @@ WgWidget* WgMenuHook::GetRoot()
 }
 
 //_____________________________________________________________________________
-WgMenuHook::WgMenuHook( WgGizmoMenuLayer * pParent )
+WgMenuHook::WgMenuHook( WgGizmoMenuLayer * pParent, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
 {
-	m_pParent = pParent;
+	m_pParent 		= pParent;
+	m_launcherGeo	= launcherGeo;
+	m_attachPoint 	= attachPoint;
+	m_maxSize 		= maxSize;
 }
 
 //_____________________________________________________________________________
@@ -72,7 +75,7 @@ void WgMenuHook::_requestRender( const WgRect& rect )
 //_____________________________________________________________________________
 void WgMenuHook::_requestResize()
 {
-	_refreshRealGeo();
+	_updateGeo();					// Just update this menus geo, don't recursively update children, their position should remain where it is.
 }
 
 //_____________________________________________________________________________
@@ -107,6 +110,176 @@ WgGizmoContainer * WgMenuHook::_parent() const
 	return m_pParent;
 }
 
+//____ _updateGeo() __________________________________________________________
+
+bool WgMenuHook::_updateGeo()
+{
+	// Get size of parent and correct launcherGeo
+
+	WgRect 	parentSize = m_pParent->Size();
+
+	//
+
+	WgRect geo(0,0,WgSize::Min(Gizmo()->DefaultSize(),WgSize::Min(m_maxSize,parentSize)));
+
+	switch( m_attachPoint )
+	{
+		case WG_NORTHEAST:					// Right side of launcherGeo, going down.
+		{
+			geo.x = m_launcherGeo.Right();
+			geo.y = m_launcherGeo.Top();
+			break;
+		}
+
+		case WG_SOUTHEAST:					// Right side of launcherGeo, going up.
+		{
+			geo.x = m_launcherGeo.Right();
+			geo.y = m_launcherGeo.Bottom() - geo.h;
+			break;
+		}
+
+		case WG_NORTHWEST:					// Left-aligned above launcher.
+		{
+			geo.x = m_launcherGeo.Left();
+			geo.y = m_launcherGeo.Top() - geo.h;
+			break;
+		}
+
+		case WG_SOUTHWEST:					// Left-aligned below launcher.
+		{
+			geo.x = m_launcherGeo.Left();
+			geo.y = m_launcherGeo.Bottom();
+			break;
+		}
+
+		case WG_EAST:						// Centered left of launcherGeo.
+		{
+			geo.x = m_launcherGeo.Left() - geo.w;
+			geo.y = m_launcherGeo.Top() + m_launcherGeo.h/2 - geo.h/2;
+			break;
+		}
+
+		case WG_NORTH:						// Centered above launcherGeo.
+		{
+			geo.x = m_launcherGeo.Left() + m_launcherGeo.w/2 + geo.w/2;
+			geo.y = m_launcherGeo.Top() - geo.h;
+			break;
+		}
+
+		case WG_WEST:						// Centered right of launcherGeo.
+		{
+			geo.x = m_launcherGeo.Right();
+			geo.y = m_launcherGeo.Top() + m_launcherGeo.h/2 - geo.h/2;
+			break;
+		}
+
+		case WG_SOUTH:						// Centered below launcherGeo.
+		{
+			geo.x = m_launcherGeo.Left() + m_launcherGeo.w/2 + geo.w/2;
+			geo.y = m_launcherGeo.Bottom();
+			break;
+		}
+
+	}
+
+	// Adjust geometry to fit inside parent.
+
+	if( geo.Right() > parentSize.w )
+	{
+		if( geo.Left() == m_launcherGeo.Right() )
+		{
+			if( m_launcherGeo.Left() > parentSize.w - m_launcherGeo.Right() )
+			{
+				geo.x = m_launcherGeo.Left() - geo.w;
+				if( geo.x < 0 )
+				{
+					geo.x = 0;
+					geo.w = m_launcherGeo.Left();
+				}
+			}
+			else
+				geo.w = parentSize.w - geo.x;
+		}
+		else
+			geo.x = parentSize.w - geo.w;
+	}
+
+	if( geo.Left() < 0 )
+	{
+		if( geo.Right() == m_launcherGeo.Left() )
+		{
+			if( m_launcherGeo.Left() < parentSize.w - m_launcherGeo.Right() )
+			{
+				geo.x = m_launcherGeo.Right();
+				if( geo.Right() > parentSize.w )
+					geo.w = parentSize.w - geo.x;
+			}
+			else
+			{
+				geo.x = 0;
+				geo.w = m_launcherGeo.Left();
+			}
+
+		}
+		else
+			geo.x = 0;
+	}
+
+	if( geo.Bottom() > parentSize.h )
+	{
+		if( geo.Top() == m_launcherGeo.Bottom() )
+		{
+			if( m_launcherGeo.Top() > parentSize.h - m_launcherGeo.Bottom() )
+			{
+				geo.y = m_launcherGeo.Top() - geo.h;
+				if( geo.y < 0 )
+				{
+					geo.y = 0;
+					geo.h = m_launcherGeo.Top();
+				}
+			}
+			else
+				geo.h = parentSize.h - geo.y;
+		}
+		else
+			geo.y = parentSize.h - geo.h;
+	}
+
+	if( geo.Top() < 0 )
+	{
+		if( geo.Bottom() == m_launcherGeo.Top() )
+		{
+			if( m_launcherGeo.Top() < parentSize.h - m_launcherGeo.Bottom() )
+			{
+				geo.y = m_launcherGeo.Bottom();
+				if( geo.Bottom() > parentSize.h )
+					geo.h = parentSize.h - geo.y;
+			}
+			else
+			{
+				geo.y = 0;
+				geo.h = m_launcherGeo.Bottom();
+			}
+		}
+		else
+			geo.y = 0;
+	}
+
+	// Update geometry if it has changed.
+
+	if( geo != m_geo )
+	{
+		_requestRender();
+		m_geo = geo;
+		_requestRender();
+
+		return true;
+	}
+	else
+		return false;
+}
+
+
 //_____________________________________________________________________________
 void WgGizmoMenuLayer::BaseHook::_requestRender()
 {
@@ -137,7 +310,15 @@ WgGizmoMenuLayer::WgGizmoMenuLayer() : m_baseHook(this)
 
 WgGizmoMenuLayer::~WgGizmoMenuLayer()
 {
-	// Children are deleted automaticallly when their hooks are deteled.
+	// In contrast to all other containers we only delete our base child on exit.
+	// Menus don't belong to us, we just display them, so they are not ours to delete.
+
+	WgMenuHook * pHook = m_menuHooks.First();
+	while( pHook )
+	{
+		pHook->_releaseGizmo();
+		pHook = pHook->_next();
+	}
 }
 
 //____ Type() _________________________________________________________________
@@ -212,41 +393,24 @@ WgGizmo * WgGizmoMenuLayer::ReleaseBase()
 	return pGizmo;
 }
 
-//____ AddMenu() _______________________________________________________________
+//____ OpenMenu() _______________________________________________________________
 
-WgMenuHook * WgGizmoMenuLayer::AddMenu( WgGizmo * pMenu, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
+WgMenuHook * WgGizmoMenuLayer::OpenMenu( WgGizmo * pMenu, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
 {
 	// Create Hook and fill in members.
 
-	WgMenuHook * pHook = new WgMenuHook( this );
+	WgMenuHook * pHook = new WgMenuHook( this, launcherGeo, attachPoint, maxSize );
 	pHook->_attachGizmo(pMenu);
-	pHook->m_bIsMenu = true;
-	pHook->m_origo = WG_NORTHWEST;
-
-	WgSize menuSize = pMenu->DefaultSize();
-
-	if( maxSize.w < menuSize.w )
-		menuSize.w = maxSize.w;
-
-	if( maxSize.h < menuSize.h )
-		menuSize.h = maxSize.h;
-
-	pHook->m_placementGeo = _decideMenuGeo( menuSize, launcherGeo, attachPoint );
 	m_menuHooks.PushBack(pHook);
-
-	// Refresh geometry and request render.
-
-	pHook->_refreshRealGeo();
-	_updateKeyboardFocus();
+	pHook->_updateGeo();
+	_stealKeyboardFocus();
 	return pHook;
-
 }
 
 
+//____ CloseAllMenus() ________________________________________________
 
-//____ ReleaseAllModal() ________________________________________________
-
-bool WgGizmoMenuLayer::ReleaseAllModal()
+bool WgGizmoMenuLayer::CloseAllMenus()
 {
 	WgMenuHook * pHook = m_menuHooks.First();
 	while( pHook )
@@ -257,39 +421,32 @@ bool WgGizmoMenuLayer::ReleaseAllModal()
 
 	m_menuHooks.Clear();
 	_requestRender();
-	_updateKeyboardFocus();
+	_restoreKeyboardFocus();
 	return true;
 }
 
 
-//____ ReleaseChild() _________________________________________________________
+//____ CloseMenu() _________________________________________________________
 
-WgGizmo * WgGizmoMenuLayer::ReleaseChild( WgGizmo * pGizmo )
+bool WgGizmoMenuLayer::CloseMenu( WgGizmo * pGizmo )
 {
-	if( !pGizmo || pGizmo->ParentX() != this )
-		return 0;
+	if( !pGizmo || pGizmo->ParentX() != this || pGizmo == m_baseHook.Gizmo() )
+		return false;
 
-	if( pGizmo == m_baseHook.Gizmo() )
-		return ReleaseBase();
-	else
+	WgMenuHook * pHook = (WgMenuHook *) pGizmo->Hook();
+
+	while( pHook )
 	{
-		WgMenuHook * pHook = (WgMenuHook *) pGizmo->Hook();
-		pHook->_requestRender();
-		pHook->_releaseGizmo();
-		delete pHook;
-		_updateKeyboardFocus();
-		return pGizmo;
+		WgMenuHook * p = pHook;
+		pHook = pHook->Next();
+
+		p->_requestRender();
+		p->_releaseGizmo();
+		delete p;
 	}
-
-}
-
-//____ ReleaseAllChildren() _____________________________________________________
-
-bool WgGizmoMenuLayer::ReleaseAllChildren()
-{
-	ReleaseBase();
-	ReleaseAllModal();
+	_restoreKeyboardFocus();
 	return true;
+
 }
 
 //____ FirstMenu() ______________________________________________________
@@ -340,298 +497,41 @@ WgSize WgGizmoMenuLayer::DefaultSize() const
 
 WgGizmo *  WgGizmoMenuLayer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
-	// In search mode ACTION_TARGET we always return the topmost non-hidden modal Gizmo (or its children)
-	// no matter its geometry.
+	// MenuLayer has its own FindGizmo() method since we need special treatment of
+	// searchmode ACTION_TARGET when a menu is open.
 
-	if( mode == WG_SEARCH_ACTION_TARGET )
+	if( mode == WG_SEARCH_ACTION_TARGET && !m_menuHooks.IsEmpty() )
 	{
+		// In search mode ACTION_TARGET we limit our target to us and our menu-branches if a menu is open.
+
 		WgMenuHook * pHook = m_menuHooks.Last();
+		WgGizmo * pResult = 0;
 
-		while( pHook && pHook->Hidden() )
+		while( pHook && !pResult )
+		{
+			if( !pHook->Hidden() && pHook->m_geo.Contains( ofs ) )
+			{
+				if( pHook->Gizmo()->IsContainer() )
+					pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->m_geo.Pos(), mode );
+				else if( pHook->Gizmo()->MarkTest( ofs - pHook->m_geo.Pos() ) )
+					pResult = pHook->Gizmo();
+			}
 			pHook = pHook->Prev();
+		}
 
-		if( pHook )
-		{
-			if( pHook->Gizmo()->IsContainer() )
-			{
-				WgGizmo * pResult = pHook->Gizmo()->CastToContainer()->FindGizmo( ofs - pHook->Pos(), mode );
-				if( pResult )
-					return pResult;
-			}
-			else
-				return pHook->Gizmo();
-		}
-		else if( m_baseHook.Gizmo() && !m_baseHook.Hidden() )
-		{
-			if( m_baseHook.Gizmo()->IsContainer() )
-			{
-				WgGizmo * pResult = m_baseHook.Gizmo()->CastToContainer()->FindGizmo( ofs - m_baseHook.Pos(), mode );
-				if( pResult )
-					return pResult;
-			}
-			else
-				return m_baseHook.Gizmo();
-		}
-		else
-			return 0;
+		if( pResult == 0 )
+			pResult = this;
+
+		return pResult;
 	}
+	else
+	{
+		// For the rest of the modes we can rely on the default method.
 
-	// For the rest of the modes we can rely on the default method.
-
-	return WgGizmoContainer::FindGizmo( ofs, mode );
+		return WgGizmoContainer::FindGizmo( ofs, mode );
+	}
 }
 
-//____ _decideMenuGeo() __________________________________________________________
-
-WgRect WgGizmoMenuLayer::_decideMenuGeo( WgSize menuSize, const WgRect& launcherGeo, WgOrientation attachPoint )
-{
-	WgRect parentSize = Size();
-
-	WgRect geo(0,0,menuSize);
-
-	if( geo.w > parentSize.w)
-		geo.w = parentSize.w;
-
-	if(geo.h > parentSize.h)
-		geo.h = parentSize.h;
-
-	switch( attachPoint )
-	{
-		case WG_NORTHEAST:					// Right side of launcherGeo, going down.
-		{
-			geo.x = launcherGeo.Right();
-			geo.y = launcherGeo.Top();
-			break;
-		}
-
-		case WG_SOUTHEAST:					// Right side of launcherGeo, going up.
-		{
-			geo.x = launcherGeo.Right();
-			geo.y = launcherGeo.Bottom() - geo.h;
-			break;
-		}
-
-		case WG_NORTHWEST:					// Left-aligned above launcher.
-		{
-			geo.x = launcherGeo.Left();
-			geo.y = launcherGeo.Top() - geo.h;
-			break;
-		}
-
-		case WG_SOUTHWEST:					// Left-aligned below launcher.
-		{
-			geo.x = launcherGeo.Left();
-			geo.y = launcherGeo.Bottom();
-			break;
-		}
-
-		case WG_EAST:						// Centered left of launcherGeo.
-		{
-			geo.x = launcherGeo.Left() - geo.w;
-			geo.y = launcherGeo.Top() + launcherGeo.h/2 - geo.h/2;
-			break;
-		}
-
-		case WG_NORTH:						// Centered above launcherGeo.
-		{
-			geo.x = launcherGeo.Left() + launcherGeo.w/2 + geo.w/2;
-			geo.y = launcherGeo.Top() - geo.h;
-			break;
-		}
-
-		case WG_WEST:						// Centered right of launcherGeo.
-		{
-			geo.x = launcherGeo.Right();
-			geo.y = launcherGeo.Top() + launcherGeo.h/2 - geo.h/2;
-			break;
-		}
-
-		case WG_SOUTH:						// Centered below launcherGeo.
-		{
-			geo.x = launcherGeo.Left() + launcherGeo.w/2 + geo.w/2;
-			geo.y = launcherGeo.Bottom();
-			break;
-		}
-
-	}
-
-	// Adjust geometry to fit inside parent.
-
-	if( geo.Right() > parentSize.w )
-	{
-		if( geo.Left() == launcherGeo.Right() )
-		{
-			if( launcherGeo.Left() > parentSize.w - launcherGeo.Right() )
-			{
-				geo.x = launcherGeo.Left() - geo.w;
-				if( geo.x < 0 )
-				{
-					geo.x = 0;
-					geo.w = launcherGeo.Left();
-				}
-			}
-			else
-				geo.w = parentSize.w - geo.x;
-		}
-		else
-			geo.x = parentSize.w - geo.w;
-	}
-
-	if( geo.Left() < 0 )
-	{
-		if( geo.Right() == launcherGeo.Left() )
-		{
-			if( launcherGeo.Left() < parentSize.w - launcherGeo.Right() )
-			{
-				geo.x = launcherGeo.Right();
-				if( geo.Right() > parentSize.w )
-					geo.w = parentSize.w - geo.x;
-			}
-			else
-			{
-				geo.x = 0;
-				geo.w = launcherGeo.Left();
-			}
-
-		}
-		else
-			geo.x = 0;
-	}
-
-	if( geo.Bottom() > parentSize.h )
-	{
-		if( geo.Top() == launcherGeo.Bottom() )
-		{
-			if( launcherGeo.Top() > parentSize.h - launcherGeo.Bottom() )
-			{
-				geo.y = launcherGeo.Top() - geo.h;
-				if( geo.y < 0 )
-				{
-					geo.y = 0;
-					geo.h = launcherGeo.Top();
-				}
-			}
-			else
-				geo.h = parentSize.h - geo.y;
-		}
-		else
-			geo.y = parentSize.h - geo.h;
-	}
-
-	if( geo.Top() < 0 )
-	{
-		if( geo.Bottom() == launcherGeo.Top() )
-		{
-			if( launcherGeo.Top() < parentSize.h - launcherGeo.Bottom() )
-			{
-				geo.y = launcherGeo.Bottom();
-				if( geo.Bottom() > parentSize.h )
-					geo.h = parentSize.h - geo.y;
-			}
-			else
-			{
-				geo.y = 0;
-				geo.h = launcherGeo.Bottom();
-			}
-		}
-		else
-			geo.y = 0;
-	}
-
-	//
-
-	return geo;
-}
-
-//____ _updateKeyboardFocus() _______________________________________________________
-
-void WgGizmoMenuLayer::_updateKeyboardFocus()
-{
-	// Get event handler, verify that we have a root
-
-	if( !Hook() )
-		return;
-
-	WgEventHandler * pHandler = Hook()->EventHandler();
-	if( !pHandler )
-		return;
-
-	// Retrieve focused Gizmo and verify it being a descendant to us.
-
-	WgGizmo * pFocused = pHandler->KeyboardFocus();
-
-	WgGizmo * p = pFocused;
-	while( p && p->ParentX() && p->ParentX() != this )
-		p = p->ParentX()->CastToGizmo();
-
-	if( p && p->ParentX() != this )
-		return;								// Focus belongs to a Gizmo that is not a descendant to us,
-											// so we can't save and shouldn't steal focus.
-
-	// Save old focus so we can return it properly in the future.
-	if( p )
-	{
-		if( p == m_baseHook.Gizmo() )
-			m_baseHook.m_pKeyFocus = pFocused;
-		else
-		{
-			WgMenuHook * pHook = static_cast<WgMenuHook*>(p->Hook());
-			pHook->m_pKeyFocus = pFocused;
-		}
-	}
-
-	// Find which child-branch to focus and switch to our previously saved focus
-
-	WgMenuHook * pHook = m_menuHooks.Last();
-
-	while( pHook && pHook->Hidden() )
-		pHook = pHook->Prev();
-
-	WgGizmo * 	pSavedFocus = 0;
-	WgHook *	pBranch	= 0;
-
-	if( pHook )
-	{
-		pSavedFocus = pHook->m_pKeyFocus.GetRealPtr();
-		pHook->m_pKeyFocus = 0;								// Needs to be cleared for the future.
-		pBranch = pHook;
-	}
-	else if( m_baseHook.Gizmo() && !m_baseHook.Hidden() )
-	{
-		pSavedFocus = m_baseHook.m_pKeyFocus.GetRealPtr();
-		m_baseHook.m_pKeyFocus = 0;							// Needs to be cleared for the future.
-		pBranch = &m_baseHook;
-	}
-
-	// Verify that saved focus still is within branch and is not hidden
-
-	if( pSavedFocus )
-	{
-		WgHook * p = pSavedFocus->Hook();
-		while( p && p != pBranch )
-		{
-			if( p->Hidden() )
-				p = 0;						// Branch is hidden so we can not focus saved Gizmo.
-			else
-			{
-				WgGizmoParent * pParent = p->Parent();
-				if( pParent && pParent->CastToGizmo() )
-					p = pParent->CastToGizmo()->Hook();
-				else
-					p = 0;
-			}
-		}
-
-		if( p != pBranch )
-			pSavedFocus = 0;				// Previously focused Gizmo is no longer a child of focused branch.
-	}
-
-	// Switch to previously saved focus, or null if not applicable
-
-	pHandler->SetKeyboardFocus( pSavedFocus );
-
-
-}
 
 //____ _onRequestRender() _____________________________________________________
 
@@ -679,16 +579,6 @@ void WgGizmoMenuLayer::_onNewSize( const WgSize& sz )
 
 	if( m_baseHook.Gizmo() )
 		m_baseHook.Gizmo()->_onNewSize(sz);
-
-	// Refresh modal gizmos geometry, their positions might have changed.
-
-	WgMenuHook * pHook = m_menuHooks.First();
-
-	while( pHook )
-	{
-		pHook->_refreshRealGeo();
-		pHook = pHook->_next();
-	}
 }
 
 //____ _onCloneContent() ______________________________________________________
@@ -706,43 +596,92 @@ void WgGizmoMenuLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler 
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 		{
-			WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
+			const WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
 
-
-
-		}
-		break;
-
-		case WG_EVENT_MOUSE_ENTER:
-		case WG_EVENT_MOUSE_LEAVE:
-		{
-			WgEvent::MouseEvent * pEvent = static_cast<const WgEvent::MouseEvent*>(_pEvent);
+			WgCoord ofs = pEvent->PointerPos();
+			WgGizmo * p = FindGizmo( ofs, WG_SEARCH_ACTION_TARGET );
+			if( p == this )
+				CloseAllMenus();
 		}
 		break;
 
 		case WG_EVENT_KEY_PRESS:
 		case WG_EVENT_KEY_REPEAT:
 		{
-			WgEvent::KeyEvent * pEvent = static_cast<const WgEvent::KeyEvent*>(_pEvent);
+			const WgEvent::KeyEvent * pEvent = static_cast<const WgEvent::KeyEvent*>(_pEvent);
 
 			int key = pEvent->TranslatedKeyCode();
 			switch( key )
 			{
 				case WG_KEY_ESCAPE:
-					if( _getModalMenu() )
-						_getModalMenu()->ReleaseChild( _getModalMenu()->Gizmo() );
+					if( !m_menuHooks.IsEmpty() )
+						CloseMenu( m_menuHooks.Last()->Gizmo() );
 				break;
 				case WG_KEY_LEFT:
 				break;
-				case WG_KEY_RIGHT;
+				case WG_KEY_RIGHT:
 				break;
 
 				default:
+				break;
 			}
 
 		}
 		break;
+	}
 }
+
+//____ _stealKeyboardFocus() _________________________________________________
+
+void WgGizmoMenuLayer::_stealKeyboardFocus()
+{
+	// Get event handler, verify that we have a root
+
+	if( !Hook() )
+		return;
+
+	WgEventHandler * pHandler = Hook()->EventHandler();
+	if( !pHandler )
+		return;
+
+	// Save old keyboard focus, which we assume belonged to previous menu in hierarchy.
+
+	if( m_menuHooks.Size() < 2 )
+		m_pKeyFocus = pHandler->KeyboardFocus();
+	else
+		m_menuHooks.Last()->Prev()->m_pKeyFocus = pHandler->KeyboardFocus();
+
+	// Steal keyboard focus to top menu
+
+	WgGizmo * pGizmo = m_menuHooks.Last()->Gizmo();
+
+	if( pGizmo->IsContainer() && pGizmo->CastToContainer()->IsFocusGroup() )
+		pHandler->SetFocusGroup(pGizmo->CastToContainer());
+	else
+		pHandler->SetKeyboardFocus(pGizmo);
+}
+
+//____ _restoreKeyboardFocus() _________________________________________________
+
+void WgGizmoMenuLayer::_restoreKeyboardFocus()
+{
+	// Get event handler, verify that we have a root
+
+	if( !Hook() )
+		return;
+
+	WgEventHandler * pHandler = Hook()->EventHandler();
+	if( !pHandler )
+		return;
+
+	//
+
+	if( m_menuHooks.IsEmpty() )
+		pHandler->SetKeyboardFocus( m_pKeyFocus.GetRealPtr() );
+	else
+		pHandler->SetKeyboardFocus( m_menuHooks.Last()->m_pKeyFocus.GetRealPtr() );
+}
+
 
 //____ _firstHook() ___________________________________________________________
 

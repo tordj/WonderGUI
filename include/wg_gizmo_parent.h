@@ -35,10 +35,13 @@ class WgGizmo;
 class WgRoot;
 class WgHook;
 class WgGizmoContainer;
+class WgGizmoModalLayer;
+class WgGizmoMenuLayer;
 
 class WgGizmoParent : public WgGizmoCollection
 {
 	friend class WgGizmoContainer;
+	friend class WgGizmoMenu;
 	friend class WgHook;
 	public:
 
@@ -51,8 +54,11 @@ class WgGizmoParent : public WgGizmoCollection
 		virtual bool		ReleaseAllChildren() = 0;
 
 		virtual WgGizmo *			CastToGizmo() = 0;
+		virtual const WgGizmo *		CastToGizmo() const = 0;
 		virtual WgGizmoContainer *	CastToContainer() = 0;
+		virtual const WgGizmoContainer *	CastToContainer() const = 0;
 		virtual WgRoot *			CastToRoot() = 0;
+		virtual const WgRoot *		CastToRoot() const = 0;
 
 		virtual bool		IsGizmo() const = 0;
 		virtual bool		IsRoot() const = 0;
@@ -61,8 +67,12 @@ class WgGizmoParent : public WgGizmoCollection
 
 	protected:
 
-		virtual bool _focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
-		virtual bool _focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;
+		virtual bool 		_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
+		virtual bool 		_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;
+
+		virtual WgGizmoModalLayer *		_getModalLayer() const = 0;
+		virtual WgGizmoMenuLayer*	_getMenuLayer() const = 0;
+
 };
 
 

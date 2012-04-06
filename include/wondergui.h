@@ -244,8 +244,12 @@
 #	include <wg_gizmo_menu.h>
 #endif
 
-#ifndef WG_GIZMO_MODAL_DOT_H
-#	include <wg_gizmo_modal.h>
+#ifndef WG_GIZMO_MENULAYER_DOT_H
+#	include <wg_gizmo_menulayer.h>
+#endif
+
+#ifndef WG_GIZMO_MODALLAYER_DOT_H
+#	include <wg_gizmo_modallayer.h>
 #endif
 
 #ifndef WG_GIZMO_PIXMAP_DOT_H

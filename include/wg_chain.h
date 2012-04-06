@@ -40,7 +40,7 @@ protected:
 	WgLink* PopBack();									///< Retrieve link from end of chain (disconnects it).
 
 	WgLink* Get( int index ) const;
-	
+
 	/*
 	void	PushBack( WgChainImp * pChain );	///< Push all links from specified chain to back of us.
 	void	PushFront( WgChainImp * pChain );	///< Push all links from specified chain to our front.
@@ -78,6 +78,8 @@ public:
 	inline T*		Get( int index ) const { return (T*) WgChainImp::Get(index); };
 
 	inline int		Size() const { return m_size; }
+
+	inline int		IsEmpty() const { return (m_size==0); }
 };
 
 

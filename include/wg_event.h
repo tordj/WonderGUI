@@ -52,6 +52,7 @@ class WgGizmoValue;
 class WgGizmoEditvalue;
 class WgGizmoSlider;
 class WgGizmoMenu;
+class WgGizmoModalLayer;
 class WgInterfaceEditText;
 class WgText;
 
@@ -471,6 +472,29 @@ namespace WgEvent
 		MenuItemUnchecked( WgGizmoMenu * pMenu, int menuItemId );
 	};
 
+	//____ WgGizmoModalLayer events _________________________________________________
+
+	class MouseMoveOutsideModal : public Event
+	{
+		friend class ::WgGizmoModalLayer;
+	protected:
+		MouseMoveOutsideModal( WgGizmo * pGizmo );
+	};
+
+	class MouseButtonPressOutsideModal : public MouseButtonEvent
+	{
+		friend class ::WgGizmoModalLayer;
+	protected:
+		MouseButtonPressOutsideModal( int button, WgGizmo * pModalGizmo );
+	};
+
+	class MouseButtonReleaseOutsideModal : public MouseButtonEvent
+	{
+		friend class ::WgGizmoModalLayer;
+	protected:
+		MouseButtonReleaseOutsideModal( int button, WgGizmo * pModalGizmo );
+	};
+
 
 	//____ Internally posted events ____________________________________________
 
@@ -530,29 +554,6 @@ namespace WgEvent
 	protected:
 		KeyRepeat( int native_keycode );
 		KeyRepeat( int native_keycode, WgGizmo * pGizmo );
-	};
-
-
-	class MouseMoveOutsideModal : public Event
-	{
-		friend class ::WgEventHandler;
-	protected:
-		MouseMoveOutsideModal( WgGizmo * pGizmo );
-	};
-
-	class MouseButtonPressOutsideModal : public MouseButtonEvent
-	{
-		friend class ::WgEventHandler;
-	protected:
-		MouseButtonPressOutsideModal( int button, WgGizmo * pModalGizmo );
-	};
-
-	class MouseButtonReleaseOutsideModal : public MouseButtonEvent
-	{
-		friend class ::WgEventHandler;
-	protected:
-		MouseButtonReleaseOutsideModal( int button, WgGizmo * pModalGizmo );
-
 	};
 
 }

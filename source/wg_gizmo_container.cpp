@@ -61,10 +61,20 @@ WgGizmoContainer * WgGizmoContainer::CastToContainer()
 	return this;
 }
 
+const WgGizmoContainer * WgGizmoContainer::CastToContainer() const
+{
+	return this;
+}
+
 
 //____ CastToRoot() ___________________________________________________________
 
 WgRoot * WgGizmoContainer::CastToRoot()
+{
+	return 0;
+}
+
+const WgRoot * WgGizmoContainer::CastToRoot() const
 {
 	return 0;
 }
@@ -143,6 +153,28 @@ bool WgGizmoContainer::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasi
 	else
 		return false;
 }
+
+
+WgGizmoModalLayer *  WgGizmoContainer::_getModalLayer() const
+{
+	const WgGizmoParent * p = CastToGizmo()->ParentX();
+
+	if( p )
+		return p->_getModalLayer();
+	else
+		return 0;
+}
+
+WgGizmoMenuLayer * WgGizmoContainer::_getMenuLayer() const
+{
+	const WgGizmoParent * p = CastToGizmo()->ParentX();
+
+	if( p )
+		return p->_getMenuLayer();
+	else
+		return 0;
+}
+
 
 
 //____ _onEnable() _____________________________________________________________
