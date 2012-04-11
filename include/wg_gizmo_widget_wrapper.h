@@ -187,6 +187,15 @@ public:
 			return 0;
 	}
 
+	const WgGizmo *	CastToGizmo() const
+	{
+		const WgWidget * pRealParent = m_pWidget->Parent();
+
+		if( pRealParent )
+			return pRealParent->GetGizmo();
+		else
+			return 0;
+	}
 
 
 
