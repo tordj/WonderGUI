@@ -13,6 +13,7 @@
 
 class WgBlock;
 class WgRect;
+class WgGizmo;
 
 
 //____ WgUtil _________________________________________________________________
@@ -25,8 +26,12 @@ namespace WgUtil
 
 	bool		PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
 
-	WgCoord 		OrientationToOfs( WgOrientation orientation, WgSize base );
-	WgRect			OrientationToRect( WgOrientation orientation, WgSize base, WgSize rect );
+	WgCoord 	OrientationToOfs( WgOrientation orientation, WgSize base );
+	WgRect		OrientationToRect( WgOrientation orientation, WgSize base, WgSize rect );
+
+	int 		SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy );
+	WgSize		SizeFromPolicy( const WgGizmo * pGizmo, WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy );
+
 
 	template <class T> inline T Max (T a, T b) {return (a>b?a:b); }
 	template <class T> inline T Min (T a, T b) {return (a<b?a:b); }

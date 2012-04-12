@@ -39,8 +39,8 @@ WgFlexAnchor		WgGizmoFlexGeo::g_baseAnchors[9] = { WgFlexAnchor(0.f, 0.f, WgCoor
 //____ WgFlexHook::Constructor ________________________________________________
 
 WgFlexHook::WgFlexHook( WgGizmoFlexGeo * pParent, const WgRect& placementGeo ) : m_pParent(pParent), m_bHidden(false),
-	m_bFloating(false), m_sizePolicy(WG_SIZE_SPECIFIED),
-	m_minSize(0,0), m_maxSize(65536,65536), m_anchor(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
+	m_bFloating(false), m_widthPolicy(WG_BOUND), m_heightPolicy(WG_BOUND),
+	m_anchor(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
 	m_placementGeo(placementGeo), m_anchorTopLeft(WG_NORTHWEST),
 	m_anchorBottomRight(WG_SOUTHEAST), m_borders(0)
 {
@@ -94,13 +94,13 @@ bool WgFlexHook::SetFloating( const WgCoord& pos, int anchor, WgOrientation hots
 	if( anchor >= m_pParent->NbAnchors() )
 		return false;
 
-	m_sizePolicy	= WG_SIZE_DEFAULT;
+	m_widthPolicy	= WG_DEFAULT;
+	m_heightPolicy	= WG_DEFAULT;
 	m_bFloating		= true;
 	m_anchor		= anchor;
 	m_hotspot		= hotspot;
 	m_placementGeo.SetPos(pos);
 
-	_limitPlacementSize();
 	_refreshRealGeo();
 	return true;
 }
@@ -115,13 +115,13 @@ bool WgFlexHook::SetFloating( const WgRect& geometry, int anchor, WgOrientation 
 	if( anchor >= m_pParent->NbAnchors() )
 		return false;
 
-	m_sizePolicy	= WG_SIZE_SPECIFIED;
+	m_widthPolicy	= WG_BOUND;
+	m_heightPolicy	= WG_BOUND;
 	m_bFloating		= true;
 	m_anchor		= anchor;
 	m_hotspot		= hotspot;
 	m_placementGeo	= geometry;
 
-	_limitPlacementSize();
 	_refreshRealGeo();
 	return true;
 }
@@ -364,42 +364,15 @@ bool WgFlexHook::SetHotspot( WgOrientation hotspot )
 
 //____ WgFlexHook::SetSizePolicy() ____________________________________________
 
-bool WgFlexHook::SetSizePolicy( WgSizePolicy policy )
+bool WgFlexHook::SetSizePolicy( WgSizePolicy width, WgSizePolicy height )
 {
-	if( policy != m_sizePolicy )
+	if( width != m_widthPolicy || height != m_heightPolicy )
 	{
-		m_sizePolicy = policy;
+		m_widthPolicy = width;
+		m_heightPolicy = height;
 		if( m_bFloating )
 			_refreshRealGeo();
 	}
-	return true;
-}
-
-//____ WgFlexHook::SetMinSize() _______________________________________________
-
-bool WgFlexHook::SetMinSize( const WgSize& size )
-{
-	if( size.w < 0 || size.h < 0 || size.w > m_maxSize.w || size.h > m_maxSize.h )
-		return false;
-
-	m_minSize = size;
-	_limitPlacementSize();
-	if( m_bFloating )
-		_refreshRealGeo();
-	return true;
-}
-
-//____ WgFlexHook::SetMaxSize() _______________________________________________
-
-bool WgFlexHook::SetMaxSize( const WgSize& size )
-{
-	if( size.w < m_minSize.w || size.h < m_minSize.h )
-		return false;
-
-	m_maxSize = size;
-	_limitPlacementSize();
-	if( m_bFloating )
-		_refreshRealGeo();
 	return true;
 }
 
@@ -407,15 +380,10 @@ bool WgFlexHook::SetMaxSize( const WgSize& size )
 
 bool WgFlexHook::SetGeo( const WgRect& geometry )
 {
-	m_sizePolicy = WG_SIZE_SPECIFIED;
 	m_placementGeo = geometry;
-	bool ret = _limitPlacementSize();				// Return false if size of geometry was affected by limits.
 	if( m_bFloating )
-	{
-		if( !_refreshRealGeo() )
-			ret = false;							// Return false if we could not get (exactly) the requested geometry.
-	}
-	return ret;
+		_refreshRealGeo();
+	return true;
 }
 
 //____ WgFlexHook::SetOfs() ___________________________________________________
@@ -425,10 +393,7 @@ bool WgFlexHook::SetOfs( const WgCoord& ofs )
 	m_placementGeo.x = ofs.x;
 	m_placementGeo.y = ofs.y;
 	if( m_bFloating )
-	{
-		if( !_refreshRealGeo() )
-			return false;
-	}
+		_refreshRealGeo();
 	return true;
 }
 
@@ -438,10 +403,7 @@ bool WgFlexHook::SetOfsX( int x )
 {
 	m_placementGeo.x = x;
 	if( m_bFloating )
-	{
-		if( !_refreshRealGeo() )
-			return false;
-	}
+		_refreshRealGeo();
 	return true;
 }
 
@@ -451,10 +413,7 @@ bool WgFlexHook::SetOfsY( int y )
 {
 	m_placementGeo.y = y;
 	if( m_bFloating )
-	{
-		if( !_refreshRealGeo() )
-			return false;
-	}
+		_refreshRealGeo();
 	return true;
 }
 
@@ -462,14 +421,10 @@ bool WgFlexHook::SetOfsY( int y )
 
 bool WgFlexHook::SetSize( const WgSize& size )
 {
-	m_sizePolicy = WG_SIZE_SPECIFIED;
 	m_placementGeo.w = size.w;
 	m_placementGeo.h = size.h;
 	if( m_bFloating )
-	{
-		if( !_refreshRealGeo() )
-			return false;
-	}
+		_refreshRealGeo();
 	return true;
 }
 
@@ -477,15 +432,9 @@ bool WgFlexHook::SetSize( const WgSize& size )
 
 bool WgFlexHook::SetWidth( int width )
 {
-	m_sizePolicy = WG_SIZE_SPECIFIED;
-
-	//TODO: Set height to something that makes sense...
 	m_placementGeo.w = width;
 	if( m_bFloating )
-	{
-		if( !_refreshRealGeo() )
-			return false;
-	}
+		_refreshRealGeo();
 	return true;
 }
 
@@ -493,15 +442,9 @@ bool WgFlexHook::SetWidth( int width )
 
 bool WgFlexHook::SetHeight( int height )
 {
-	m_sizePolicy = WG_SIZE_SPECIFIED;
-
-	//TODO: Set width to something that makes sense...
 	m_placementGeo.h = height;
 	if( m_bFloating )
-	{
-		if( !_refreshRealGeo() )
-			return false;
-	}
+		_refreshRealGeo();
 	return true;
 }
 
@@ -516,9 +459,7 @@ bool WgFlexHook::Move( const WgCoord& ofs )
 	m_placementGeo -= m_pParent->Anchor(m_anchor)->Position(m_pParent->Size());
 	m_placementGeo += ofs;
 
-	if( !_refreshRealGeo() )
-			return false;							// Return false if we could not get (exactly) the requested position.
-
+	_refreshRealGeo();
 	return true;
 }
 
@@ -533,9 +474,7 @@ bool WgFlexHook::MoveX( int x )
 	m_placementGeo -= m_pParent->Anchor(m_anchor)->Position(m_pParent->Size());
 	m_placementGeo.x += x;
 
-	if( !_refreshRealGeo() )
-			return false;							// Return false if we could not get (exactly) the requested position.
-
+	_refreshRealGeo();
 	return true;
 }
 
@@ -550,9 +489,7 @@ bool WgFlexHook::MoveY( int y )
 	m_placementGeo -= m_pParent->Anchor(m_anchor)->Position(m_pParent->Size());
 	m_placementGeo.y += y;
 
-	if( !_refreshRealGeo() )
-			return false;							// Return false if we could not get (exactly) the requested position.
-
+	_refreshRealGeo();
 	return true;
 }
 
@@ -602,86 +539,18 @@ WgWidget* WgFlexHook::GetRoot()
 		return 0;
 }
 
-//____ WgFlexHook::_limitPlacementSize() _______________________________________
-
-bool WgFlexHook::_limitPlacementSize()
-{
-	bool ret = true;
-
-	if( m_placementGeo.w > m_maxSize.w )
-	{
-		m_placementGeo.w = m_maxSize.w;
-		ret = false;
-	}
-
-	if( m_placementGeo.h > m_maxSize.h )
-	{
-		m_placementGeo.h = m_maxSize.h;
-		ret = false;
-	}
-
-	if( m_placementGeo.w < m_minSize.w )
-	{
-		m_placementGeo.w = m_minSize.w;
-		ret = false;
-	}
-
-	if( m_placementGeo.h < m_minSize.h )
-	{
-		m_placementGeo.h = m_minSize.h;
-		ret = false;
-	}
-
-	return ret;
-}
-
 //____ WgFlexHook::_refreshRealGeo() ___________________________________________
 
-bool WgFlexHook::_refreshRealGeo()
+void WgFlexHook::_refreshRealGeo()
 {
 	WgRect	newGeo;
 	WgSize	parentSize = m_pParent->Size();
-
 
 	if( m_bFloating )
 	{
 		// Calculate size
 
-		WgSize sz;
-
-		switch( m_sizePolicy )
-		{
-			case WG_SIZE_SPECIFIED:
-				sz = m_placementGeo.Size();
-				break;
-			case WG_SIZE_MIN:
-				sz = m_minSize;
-				break;
-			case WG_SIZE_DEFAULT:
-				sz = m_pGizmo->DefaultSize();
-
-				if( sz.w > m_maxSize.w )
-				{
-					sz.w = m_maxSize.w;
-					sz.h = m_pGizmo->HeightForWidth(m_maxSize.w);
-				}
-
-				break;
-			case WG_SIZE_MAX:
-				sz = m_maxSize;
-				break;
-		};
-
-
-		if( sz.w < m_minSize.w )
-			sz.w = m_minSize.w;
-		if( sz.h < m_minSize.h )
-			sz.h = m_minSize.h;
-
-		if( sz.w > m_maxSize.w )
-			sz.w = m_maxSize.w;
-		if( sz.h > m_maxSize.h )
-			sz.h = m_maxSize.h;
+		WgSize sz = WgUtil::SizeFromPolicy( m_pGizmo, m_placementGeo.Size(), m_widthPolicy, m_heightPolicy );
 
 		// Calculate position
 
@@ -715,22 +584,15 @@ bool WgFlexHook::_refreshRealGeo()
 		newGeo.Shrink( m_borders );
 	}
 
-	// Return now if there was no change
-
-	if( newGeo == m_realGeo )
-		return true;
-
 	// Request render and update positions.
 
-	_requestRender();
-	m_realGeo = newGeo;
-	m_pGizmo->_onNewSize(newGeo);
-	_requestRender();
-
-	//
-
-	return true;
-
+	if( newGeo != m_realGeo )
+	{
+		_requestRender();
+		m_realGeo = newGeo;
+		m_pGizmo->_onNewSize(newGeo);
+		_requestRender();
+	}
 }
 
 //____ WgFlexHook::_requestRender() ____________________________________________
@@ -751,7 +613,7 @@ void WgFlexHook::_requestRender( const WgRect& rect )
 
 void WgFlexHook::_requestResize()
 {
-	if( m_sizePolicy != WG_SIZE_SPECIFIED )
+	if( m_widthPolicy != WG_BOUND || m_heightPolicy != WG_BOUND )
 		_refreshRealGeo();
 }
 

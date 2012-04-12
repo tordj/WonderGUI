@@ -12,15 +12,6 @@
     <File Name="../extras/sdl_wglib.cpp"/>
     <File Name="../extras/sdl_wglib.h"/>
   </VirtualDirectory>
-  <Dependencies Name="Release">
-    <Project Name="wondergui"/>
-    <Project Name="wg_sdl"/>
-  </Dependencies>
-  <Dependencies Name="Debug">
-    <Project Name="wondergui"/>
-    <Project Name="wg_sdl"/>
-    <Project Name="wg_soft"/>
-  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="">
@@ -53,7 +44,8 @@
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(IntermediateDirectory)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[]]>
+        <![CDATA[
+      ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
         <PostConnectCommands/>
@@ -102,6 +94,7 @@
       
       
       
+      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -131,4 +124,13 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="wondergui"/>
+    <Project Name="wg_sdl"/>
+    <Project Name="wg_soft"/>
+  </Dependencies>
+  <Dependencies Name="Release">
+    <Project Name="wondergui"/>
+    <Project Name="wg_sdl"/>
+  </Dependencies>
 </CodeLite_Project>

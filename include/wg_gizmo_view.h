@@ -32,6 +32,10 @@
 #	include <wg_gizmo_slider.h>
 #endif
 
+#ifndef WG_SLIDERTARGET_DOT_H
+#	include <wg_slidertarget.h>
+#endif
+
 class WgGizmoView;
 
 //____ WgViewHook _____________________________________________________________
@@ -58,7 +62,7 @@ public:
 
 
 protected:
-	WgViewHook() : m_pView(0), m_bShow(false) {};				// So we can make them members and then make placement new...
+	WgViewHook() : m_pView(0) {};				// So we can make them members and then make placement new...
 	~WgViewHook();
 	void			_setParent( WgGizmoView * pParent ) { m_pView = pParent; }
 
@@ -73,8 +77,8 @@ protected:
 
 //	ElementType		m_type;
 	WgGizmoView *	m_pView;
-	WgRect			m_geo;
-	bool			m_bShow;
+	WgRect			m_windowGeo;		// Geometry of Gizmos window inside parent.
+	WgRect			m_canvasGeo;		// Geometry of Gizmos canvas. Same as m_windowGeo for sliders.
 };
 
 
@@ -85,42 +89,11 @@ class WgGizmoView : public WgGizmo, public WgGizmoContainer
 {
 	friend class WgViewHook;
 public:
+	WgGizmoView();
 	virtual ~WgGizmoView();
 	virtual const char * Type() const;
 	static const char * GetMyType();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoView(); };
-
-
-	//____ Callbacks _____________________________________________________________
-
-	static void cbStepUp	(void * pGizmo) { ((WgGizmoView*)pGizmo)->StepUp(); }
-	static void cbStepDown	(void * pGizmo) { ((WgGizmoView*)pGizmo)->StepDown(); }
-	static void cbStepLeft	(void * pGizmo) { ((WgGizmoView*)pGizmo)->StepLeft(); }
-	static void cbStepRight	(void * pGizmo) { ((WgGizmoView*)pGizmo)->StepRight(); }
-
-	static void cbJumpUp	(void * pGizmo) { ((WgGizmoView*)pGizmo)->JumpUp(); }
-	static void cbJumpDown	(void * pGizmo) { ((WgGizmoView*)pGizmo)->JumpDown(); }
-	static void cbJumpLeft	(void * pGizmo) { ((WgGizmoView*)pGizmo)->JumpLeft(); }
-	static void cbJumpRight	(void * pGizmo) { ((WgGizmoView*)pGizmo)->JumpRight(); }
-
-	static void cbSetStepSize	(void * pGizmo, int x, int y) { ((WgGizmoView*)pGizmo)->SetStepSize(x,y); }
-	static void cbSetStepSizeX	(void * pGizmo, int x) { ((WgGizmoView*)pGizmo)->SetStepSizeX(x); }
-	static void cbSetStepSizeY	(void * pGizmo, int y) { ((WgGizmoView*)pGizmo)->SetStepSizeY(y); }
-
-	static void cbSetJumpSize	(void * pGizmo, float x, float y) { ((WgGizmoView*)pGizmo)->SetJumpSize(x,y); }
-	static void cbSetJumpSizeX	(void * pGizmo, float x) { ((WgGizmoView*)pGizmo)->SetJumpSizeX(x); }
-	static void cbSetJumpSizeY	(void * pGizmo, float y) { ((WgGizmoView*)pGizmo)->SetJumpSizeY(y); }
-
-	static void cbSetViewPixelOfs	(void * pGizmo, int x, int y) { ((WgGizmoView*)pGizmo)->SetViewPixelOfs(x,y); }
-	static void cbSetViewPixelOfsX	(void * pGizmo, int x) { ((WgGizmoView*)pGizmo)->SetViewPixelOfsX(x); }
-	static void cbSetViewPixelOfsY	(void * pGizmo, int y) { ((WgGizmoView*)pGizmo)->SetViewPixelOfsY(y); }
-
-	static void cbSetViewOfs	(void * pGizmo, float x, float y) { ((WgGizmoView*)pGizmo)->SetViewOfs(x,y); }
-	static void cbSetViewOfsX	(void * pGizmo, float x) { ((WgGizmoView*)pGizmo)->SetViewOfsX(x); }
-	static void cbSetViewOfsY	(void * pGizmo, float y) { ((WgGizmoView*)pGizmo)->SetViewOfsY(y); }
-
-	static void cbWheelRollX(void * pGizmo, int distance) { ((WgGizmoView*)pGizmo)->WheelRollX(distance); }
-	static void cbWheelRollY(void * pGizmo, int distance) { ((WgGizmoView*)pGizmo)->WheelRollY(distance); }
 
 
 	//____ Methods _______________________________________________________________
@@ -134,9 +107,6 @@ public:
 	bool		JumpDown();
 	bool		JumpLeft();
 	bool		JumpRight();
-
-	bool		WheelRollX(int distance);
-	bool		WheelRollY(int distance);
 
 	void		SetStepSize( int pixX, int pixY ) { m_stepSizeX = pixX; m_stepSizeY = pixY; };
 	void		SetStepSizeX( int pixels ) { m_stepSizeX = pixels; };
@@ -154,6 +124,17 @@ public:
 	int			ContentWidth() { return m_contentSize.w; };
 	int			ContentHeight() { return m_contentSize.h; };
 	WgSize		ContentSize() { return m_contentSize; };
+
+	void		SetBgColor( WgColor color );
+	WgColor		BgColor() const { return m_bgColor; }
+
+	void		SetContentOrientation( WgOrientation orientation );
+	WgOrientation ContentOrientation() const { return m_contentOrientation; }
+
+	void		SetContentSizePolicy( WgSizePolicy widthPolicy, WgSizePolicy heightPolicy );
+	WgSizePolicy	ContentWidthPolicy() const { return m_widthPolicy; }
+	WgSizePolicy	ContentHeightPolicy() const { return m_heightPolicy; }
+
 
 	Uint32		ViewPixelOfsX() { return m_viewPixOfs.x; };
 	Uint32		ViewPixelOfsY() { return m_viewPixOfs.y; };
@@ -189,15 +170,15 @@ public:
 	bool		AutoScrollX() const { return m_bAutoScrollX; }
 	bool		AutoScrollY() const { return m_bAutoScrollY; }
 
-	bool				SetSliderX( WgGizmoHSlider * pSlider );
-	void				DeleteSliderX() {SetSliderX(0);}
-	WgGizmoHSlider *	GetSliderX() const { return (WgGizmoHSlider*) m_elements[XDRAG].Gizmo(); }
-	WgGizmoHSlider* 	ReleaseSliderX();
+	bool				SetHSlider( WgGizmoHSlider * pSlider );
+	void				DeleteHSlider() {SetVSlider(0);}
+	WgGizmoHSlider *	GetHSlider() const { return (WgGizmoHSlider*) m_elements[XDRAG].Gizmo(); }
+	WgGizmoHSlider* 	ReleaseHSlider();
 
-	bool				SetSliderY( WgGizmoVSlider * pSlider );
-	void				DeleteSliderY() {SetSliderY(0);}
-	WgGizmoVSlider *	GetSliderY() const { return (WgGizmoVSlider*) m_elements[YDRAG].Gizmo(); }
-	WgGizmoVSlider* 	ReleaseSliderY();
+	bool				SetVSlider( WgGizmoVSlider * pSlider );
+	void				DeleteVSlider() {SetVSlider(0);}
+	WgGizmoVSlider *	GetVSlider() const { return (WgGizmoVSlider*) m_elements[YDRAG].Gizmo(); }
+	WgGizmoVSlider* 	ReleaseVSlider();
 
 	bool				SetContent( WgGizmo * pContent );
 	void				DeleteContent() {SetContent(0); }
@@ -210,26 +191,18 @@ public:
 	bool				DeleteAllChildren();
 	bool				ReleaseAllChildren();
 
-	void				SetSliderAutoHide( bool bHideX, bool bHideY );
-	bool				GetSliderAutoHideX() const { return m_bAutoHideSliderX; }
-	bool				GetSliderAutoHideY() const { return m_bAutoHideSliderY; }
+	void				SetSliderAutoHide( bool bHideVSlider, bool bHideHSlider );
+	bool				GetHSliderAutoHide() const { return m_bAutoHideSliderX; }
+	bool				GetVSliderAutoHide() const { return m_bAutoHideSliderY; }
 
 	void				SetSliderPositions( bool bBottom, bool bRight );
 	bool				GetSliderBottom() const { return m_bSliderBottom; }
 	bool				GetSliderRight() const { return m_bSliderRight; }
 
-	bool				SliderXVisible();
-	bool				SliderYVisible();
+	bool				IsVSliderVisible();
+	bool				IsHSliderVisible();
 
 	void				SetFillerSource( const WgBlockSetPtr& pBlocks );
-
-
-
-	WgGizmoContainer * CastToContainer() { return this; }
-	const WgGizmoContainer * CastToContainer() const { return this; }
-
-	WgGizmo* 		CastToGizmo() { return this; }
-	const WgGizmo* 	CastToGizmo() const { return this; }
 
 
 	// Overloaded from container
@@ -239,6 +212,17 @@ public:
 	// Overloaded from Gizmo
 
 	WgSize				DefaultSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
+
+	bool			IsView() const { return false; }
+	bool			IsContainer() const { return true; }
+
+	WgGizmoContainer * CastToContainer() { return this; }
+	const WgGizmoContainer * CastToContainer() const { return this; }
+
+	WgGizmo*		CastToGizmo() { return this; }
+	const WgGizmo*	CastToGizmo() const { return this; }
+
+
 
 
 /*
@@ -259,29 +243,45 @@ protected:
 		YDRAG
 	};
 
+
+	class SliderTarget : public WgSliderTarget
+	{
+	public:
+		float		_stepFwd();
+		float		_stepBwd();
+		float		_jumpFwd();
+		float		_jumpBwd();
+
+		float		_setPosition( float fraction );
+
+		WgGizmo*	_getGizmo();
+		float		_getSliderPosition();
+		float		_getSliderSize();
+
+		void		_updateSlider( float pos, float size ) { WgSliderTarget::_updateSlider(pos,size); }
+
+		bool		m_bHorizontal;
+		WgGizmoView *	m_pParent;
+	};
+
+
 	static const int	MAX_ELEMENTS = 3;
 
-	WgGizmoView();
 	virtual void _onNewSize( const WgSize& size );
 
 
 	// These are needed until WgGizmoContainer inherits from WgGizmo
 
-	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
-									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
-	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
-									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
-	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
-									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip, blendMode); }
-	void			_onEnable() { WgGizmoContainer::_onEnable(); }
-	void			_onDisable() { WgGizmoContainer::_onDisable(); }
+	void		_onEnable() { WgGizmoContainer::_onEnable(); }
+	void		_onDisable() { WgGizmoContainer::_onDisable(); }
 
 	//
 
-	// Following method should be overridden by subclasses instead of _onNewSize()!
-	// Takes into account that sliders might decrease the visible area of the subclass.
+	void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
+	void		_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 
-	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	bool		_onAlphaTest( const WgCoord& ofs );
 	void		_onCloneContent( const WgGizmo * _pOrg );
 
@@ -292,8 +292,14 @@ protected:
 	WgHook *	_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
 
-	void		_setContentSize( const WgSize& size );
-	void		_updateElementGeo( const WgSize& mySize, const WgSize& newContentSize );
+	WgSize		_calcContentSize( WgSize mySize );
+	void		_updateElementGeo( WgSize mySize );
+
+	WgRect		_genContentCanvasGeo( const WgRect& window, WgSize contentSize, WgOrientation orientation, WgCoord viewOfs );
+
+	bool		_wheelRollX(int distance);
+	bool		_wheelRollY(int distance);
+
 
 	WgSize		m_contentSize;
 
@@ -303,9 +309,6 @@ protected:
 	float		m_jumpSizeY;
 
 	WgCoord		m_viewPixOfs;
-
-//	WgGizmoHSlider *	m_pScrollbarX;
-//	WgGizmoVSlider *	m_pScrollbarY;
 
 	bool		m_bAutoHideSliderX;		// Should X-slider autohide when not needed?
 	bool		m_bAutoHideSliderY;		// Should Y-slider autohide when not needed?
@@ -318,6 +321,13 @@ protected:
 
 //	ViewGizmoCollection	m_elementsCollection;	// WgGizmoCollection for the elements gizmos.
 	WgViewHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag gizmos in that order.
+
+	WgColor			m_bgColor;
+	WgSizePolicy	m_widthPolicy;
+	WgSizePolicy	m_heightPolicy;
+	WgOrientation	m_contentOrientation;		// Orientation when content is smaller than window
+
+	SliderTarget	m_sliderTargets[2];			// Order: Vertical, horizontal
 
 private:
 

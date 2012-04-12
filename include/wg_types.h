@@ -472,10 +472,10 @@ enum WgOrientation
 
 enum WgSizePolicy
 {
-	WG_SIZE_SPECIFIED = 0,
-	WG_SIZE_MIN,
-	WG_SIZE_DEFAULT,
-	WG_SIZE_MAX,
+	WG_DEFAULT = 0,
+	WG_BOUND,
+	WG_CONFINED,
+	WG_EXPANDED,
 };
 
 //____ WgEventType ______________________________________________________________

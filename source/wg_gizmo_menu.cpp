@@ -1063,7 +1063,7 @@ void WgGizmoMenu::SelectItem(WgMenuItem* pItem)
 WgGizmo * WgGizmoMenu::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
 	WgGizmo * pGizmo = WgGizmoContainer::FindGizmo(ofs, mode);
-	if( !pGizmo && _onAlphaTest( ofs ) )
+	if( !pGizmo && MarkTest( ofs ) )
 		return this;
 
 	return pGizmo;

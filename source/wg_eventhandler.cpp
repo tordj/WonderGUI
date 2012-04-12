@@ -1172,7 +1172,7 @@ void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 		it++;
 	}
 
-	assert( pInfo != 0 );			// KEY_RELEASE without a matching KEY_PRESS preceding.
+//	assert( pInfo != 0 );			// KEY_RELEASE without a matching KEY_PRESS preceding.
 	if( !pInfo )
 		return;
 

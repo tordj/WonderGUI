@@ -74,9 +74,7 @@ public:
 	bool	SetAnchor( int anchor );
 	bool	SetHotspot( WgOrientation hotspot );
 
-	bool	SetSizePolicy( WgSizePolicy policy );
-	bool	SetMinSize( const WgSize& size );
-	bool	SetMaxSize( const WgSize& size );
+	bool	SetSizePolicy( WgSizePolicy width, WgSizePolicy height );
 
 	bool	SetGeo( const WgRect& geometry );
 
@@ -92,9 +90,8 @@ public:
 	bool	MoveX( int x );
 	bool	MoveY( int y );
 
-	WgSize			MaxSize() const { return m_maxSize; }
-	WgSize			MinSize() const { return m_minSize; }
-	WgSizePolicy	SizePolicy() const { return m_sizePolicy; }
+	WgSizePolicy	WidthPolicy() const { return m_widthPolicy; }
+	WgSizePolicy	HeightPolicy() const { return m_heightPolicy; }
 	int				Origo() const { return m_anchor; }
 	WgOrientation	Hotspot() const { return m_hotspot; }
 	WgRect			FloatGeo() const { return m_placementGeo; }
@@ -132,13 +129,11 @@ protected:
 
 	WgFlexHook( WgGizmoFlexGeo * pParent, const WgRect& placementGeo );
 
-	bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
+	void		_refreshRealGeo();
 
 	void		_requestRender();
 	void		_requestRender( const WgRect& rect );
 	void		_requestResize();
-
-	bool		_limitPlacementSize();
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
@@ -152,9 +147,8 @@ protected:
 
 	// Only used for floating hooks.
 
-	WgSizePolicy	m_sizePolicy;
-	WgSize			m_minSize;
-	WgSize			m_maxSize;
+	WgSizePolicy	m_widthPolicy;
+	WgSizePolicy	m_heightPolicy;
 
 	int				m_anchor;
 	WgOrientation	m_hotspot;

@@ -23,6 +23,8 @@
 #include <wg_gizmo_view.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
+#include <wg_patches.h>
+#include <wg_event.h>
 
 
 using namespace WgSignal;
@@ -34,6 +36,18 @@ static const char	c_gizmoType[] = {"View"};
 
 WgGizmoView::WgGizmoView()
 {
+	m_sliderTargets[0].m_bHorizontal = false;
+	m_sliderTargets[0].m_pParent = this;
+
+	m_sliderTargets[1].m_bHorizontal = true;
+	m_sliderTargets[1].m_pParent = this;
+
+	m_bgColor = WgColor::white;
+	m_contentOrientation = WG_NORTHWEST;
+	m_widthPolicy = WG_DEFAULT;
+	m_heightPolicy = WG_DEFAULT;
+
+
 	m_stepSizeX		= 1;
 	m_stepSizeY		= 1;
 	m_jumpSizeX		= 0.75f;
@@ -55,7 +69,7 @@ WgGizmoView::WgGizmoView()
 	m_elements[XDRAG]._setParent(this);
 	m_elements[YDRAG]._setParent(this);
 
-	_updateElementGeo( WgSize(256,256), WgSize(0,0) );
+	_updateElementGeo( WgSize(256,256) );
 }
 
 //____ ~WgGizmoView() __________________________________________________
@@ -150,11 +164,11 @@ bool WgGizmoView::JumpRight()
 	return SetViewPixelOfsX( (Uint32)(m_viewPixOfs.x + ViewPixelLenX() * m_jumpSizeX) );
 }
 
-//____ WheelRollX() ___________________________________________________________
+//____ _wheelRollX() ___________________________________________________________
 
-bool WgGizmoView::WheelRollX(int distance)
+bool WgGizmoView::_wheelRollX(int distance)
 {
-	int ofs = int(m_viewPixOfs.x) - int(m_stepSizeX) * distance * 3 / 120;
+	int ofs = m_viewPixOfs.x - (m_stepSizeX * distance * 3);
 
 	if( ofs < 0 )
 		ofs = 0;
@@ -162,11 +176,11 @@ bool WgGizmoView::WheelRollX(int distance)
 	return SetViewPixelOfsX( ofs );
 }
 
-//____ WheelRollY() ___________________________________________________________
+//____ _wheelRollY() ___________________________________________________________
 
-bool WgGizmoView::WheelRollY(int distance)
+bool WgGizmoView::_wheelRollY(int distance)
 {
-	int ofs = int(m_viewPixOfs.y) - int(m_stepSizeY) * distance * 3 / 120;
+	int ofs = m_viewPixOfs.y - (m_stepSizeY * distance * 3);
 
 	if( ofs < 0 )
 		ofs = 0;
@@ -198,18 +212,18 @@ void WgGizmoView::SetJumpSizeY( float viewFraction )
 	m_jumpSizeY = viewFraction;
 }
 
-//____ SliderXVisible() ____________________________________________________
+//____ IsHSliderVisible() ____________________________________________________
 
-bool WgGizmoView::SliderXVisible()
+bool WgGizmoView::IsHSliderVisible()
 {
-	return m_elements[XDRAG].m_bShow;
+	return !m_elements[XDRAG].m_bHidden;
 }
 
-//____ SliderYVisible() ____________________________________________________
+//____ IsVSliderVisible() ____________________________________________________
 
-bool WgGizmoView::SliderYVisible()
+bool WgGizmoView::IsVSliderVisible()
 {
-	return m_elements[YDRAG].m_bShow;
+	return !m_elements[YDRAG].m_bHidden;
 }
 
 
@@ -217,14 +231,14 @@ bool WgGizmoView::SliderYVisible()
 
 Uint32 WgGizmoView::ViewPixelLenX()
 {
-	return m_elements[WINDOW].m_geo.w;
+	return m_elements[WINDOW].m_windowGeo.w;
 }
 
 //____ ViewPixelLenY() ________________________________________________________
 
 Uint32 WgGizmoView::ViewPixelLenY()
 {
-	return m_elements[WINDOW].m_geo.h;
+	return m_elements[WINDOW].m_windowGeo.h;
 }
 
 //____ ViewOfsX() _____________________________________________________________
@@ -322,29 +336,20 @@ bool WgGizmoView::SetViewPixelOfs( int x, int y )
 
 	if( bChangedX )
 	{
-		Emit( ViewPosX(), ofsX );
-		Emit( ViewPosPixelX(), m_viewPixOfs.x );
-
-		Emit( ViewPosSizeX(), ofsX, ViewLenX() );
-		Emit( ViewPosSizePixelX(), m_viewPixOfs.x, pixLenX );
+		m_sliderTargets[1]._updateSlider( ViewOfsX(), ViewLenX() );
 	}
 
 	if( bChangedY )
 	{
-		Emit( ViewPosY(), ofsY );
-		Emit( ViewPosPixelY(), m_viewPixOfs.y );
-
-		Emit( ViewPosSizeY(), ofsY, ViewLenY() );
-		Emit( ViewPosSizePixelY(), m_viewPixOfs.y, pixLenY );
+		m_sliderTargets[0]._updateSlider( ViewOfsY(), ViewLenY() );
 	}
 
 	if( bChangedX || bChangedY )
 	{
-		Emit( ViewPos(), ofsX, ViewOfsY() );
-		Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
+		m_elements[WINDOW].m_canvasGeo = _genContentCanvasGeo( m_elements[WINDOW].m_windowGeo, m_contentSize, m_contentOrientation, m_viewPixOfs );
+		_requestRender( m_elements[WINDOW].m_windowGeo );
 	}
 
-	_requestRender();
 	return retVal;
 }
 
@@ -352,73 +357,14 @@ bool WgGizmoView::SetViewPixelOfs( int x, int y )
 
 bool WgGizmoView::SetViewPixelOfsX( int x )
 {
-	if( x == m_viewPixOfs.x )
-		return true;
-
-	int pixLenX = ViewPixelLenX();
-
-	if( pixLenX > (int)m_contentSize.w )
-		return false;							// Can't scroll, content is smaller than view.
-
-	bool retVal = true;
-	if( x > m_contentSize.w - pixLenX )
-	{
-		x = m_contentSize.w - pixLenX;
-		retVal = false;
-	}
-
-	m_viewPixOfs.x = x;
-
-	float	ofsX = ViewOfsX();
-
-	Emit( ViewPosX(), ofsX );
-	Emit( ViewPosPixelX(), m_viewPixOfs.x );
-
-	Emit( ViewPos(), ofsX, ViewOfsY() );
-	Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
-
-	Emit( ViewPosSizeX(), ofsX, ViewLenX() );
-	Emit( ViewPosSizePixelX(), m_viewPixOfs.x, pixLenX );
-
-	_requestRender();
-	return retVal;
+	return SetViewPixelOfs(x, m_viewPixOfs.y);
 }
 
 //____ SetViewPixelOfsY() _____________________________________________________
 
 bool WgGizmoView::SetViewPixelOfsY( int y )
 {
-
-	if( y == m_viewPixOfs.y )
-		return true;
-
-	int pixLenY = ViewPixelLenY();
-
-	if( pixLenY > (int)m_contentSize.h )
-		return false;							// Can't scroll, content is smaller than view.
-
-	bool retVal = true;
-	if( y > m_contentSize.h - pixLenY )
-	{
-		y = m_contentSize.h - pixLenY;
-		retVal = false;
-	}
-
-	m_viewPixOfs.y = y;
-
-	float	ofsY = ViewOfsY();
-
-	Emit( ViewPosY(), ofsY );
-	Emit( ViewPosPixelY(), m_viewPixOfs.y );
-
-	Emit( ViewPos(), ViewOfsX(), ofsY );
-	Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
-
-	Emit( ViewPosSizeY(), ofsY, ViewLenY() );
-	Emit( ViewPosSizePixelY(), m_viewPixOfs.y, pixLenY );
-
-	_requestRender();
-	return retVal;
+	return SetViewPixelOfs(m_viewPixOfs.x, y);
 }
 
 //____ SetViewOfs() ___________________________________________________________
@@ -486,52 +432,42 @@ bool WgGizmoView::SetContent( WgGizmo * pContent )
 {
 	m_elements[WINDOW]._attachGizmo(pContent);
 
-	_updateElementGeo( Size(), pContent->DefaultSize() );
-	_requestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
+	_updateElementGeo( Size() );
+	_requestRender( m_elements[WINDOW].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 
 }
 
-//____ SetSliderX() ________________________________________________________
+//____ SetHSlider() ________________________________________________________
 
-bool WgGizmoView::SetSliderX( WgGizmoHSlider* pSlider )
+bool WgGizmoView::SetHSlider( WgGizmoHSlider* pSlider )
 {
-	// Remove callbacks to current Slider (if we have any)
+	// Remove us as target target from current Slider (if we have any)
 
 	if( m_elements[XDRAG].Gizmo() )
-		RemoveCallbacks(m_elements[XDRAG].Gizmo());
+		((WgGizmoSlider*)m_elements[XDRAG].Gizmo())->SetSliderTarget(0);
 
 	//
 
 	m_elements[XDRAG]._attachGizmo(pSlider);
 
 	if( pSlider )
-	{
-		pSlider->AddCallback( WgSignal::SliderPos(), WgGizmoView::cbSetViewOfsX, this );
-		pSlider->AddCallback( WgSignal::PrevPage(), WgGizmoView::cbJumpLeft, this );
-		pSlider->AddCallback( WgSignal::NextPage(), WgGizmoView::cbJumpRight, this );
-		pSlider->AddCallback( WgSignal::Forward(), WgGizmoView::cbStepRight, this );
-		pSlider->AddCallback( WgSignal::Back(), WgGizmoView::cbStepLeft, this );
-		pSlider->AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
+		pSlider->SetSliderTarget( &m_sliderTargets[1] );
 
-		AddCallback( WgSignal::ViewPosSizeX(), WgGizmoHSlider::cbSetSlider, pSlider );
-		AddCallback( WgSignal::WheelRoll(2), WgGizmoView::cbWheelRollX, this );
-	}
-
-	_updateElementGeo( Size(), m_contentSize );
+	_updateElementGeo( Size() );
 	pSlider->SetSlider( ViewOfsX(), ViewLenX() );
-	_requestRender( m_elements[XDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
+	_requestRender( m_elements[XDRAG].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 }
 
-//____ SetSliderY() ________________________________________________________
+//____ SetVSlider() ________________________________________________________
 
-bool WgGizmoView::SetSliderY( WgGizmoVSlider* pSlider )
+bool WgGizmoView::SetVSlider( WgGizmoVSlider* pSlider )
 {
-	// Remove callbacks to current Slider (if we have any)
+	// Remove us as target target from current Slider (if we have any)
 
 	if( m_elements[YDRAG].Gizmo() )
-		RemoveCallbacks(m_elements[YDRAG].Gizmo());
+		((WgGizmoSlider*)m_elements[YDRAG].Gizmo())->SetSliderTarget(0);
 
 	//
 
@@ -540,21 +476,11 @@ bool WgGizmoView::SetSliderY( WgGizmoVSlider* pSlider )
 	//
 
 	if( pSlider )
-	{
-		pSlider->AddCallback( WgSignal::SliderPos(), WgGizmoView::cbSetViewOfsY, this );
-		pSlider->AddCallback( WgSignal::PrevPage(), WgGizmoView::cbJumpUp, this );
-		pSlider->AddCallback( WgSignal::NextPage(), WgGizmoView::cbJumpDown, this );
-		pSlider->AddCallback( WgSignal::Forward(), WgGizmoView::cbStepDown, this );
-		pSlider->AddCallback( WgSignal::Back(), WgGizmoView::cbStepUp, this );
-		pSlider->AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
+		pSlider->SetSliderTarget( &m_sliderTargets[0] );
 
-		AddCallback( WgSignal::ViewPosSizeY(), WgGizmoVSlider::cbSetSlider, pSlider );
-		AddCallback( WgSignal::WheelRoll(1), WgGizmoView::cbWheelRollY, this );
-	}
-
-	_updateElementGeo( Size(), m_contentSize );
+	_updateElementGeo( Size() );
 	pSlider->SetSlider( ViewOfsY(), ViewLenY() );
-	_requestRender( m_elements[YDRAG].m_geo );		// If geometry is same as the old one, we need to request render ourselves.
+	_requestRender( m_elements[YDRAG].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
 	return true;
 }
 
@@ -563,25 +489,25 @@ bool WgGizmoView::SetSliderY( WgGizmoVSlider* pSlider )
 WgGizmo* WgGizmoView::ReleaseContent()
 {
 	WgGizmo * p = m_elements[WINDOW]._releaseGizmo();
-	_updateElementGeo( Size(), WgSize(0,0) );
+	_updateElementGeo( Size() );
 	return p;
 }
 
-//____ ReleaseSliderX() ____________________________________________________
+//____ ReleaseHSlider() ____________________________________________________
 
-WgGizmoHSlider* WgGizmoView::ReleaseSliderX()
+WgGizmoHSlider* WgGizmoView::ReleaseHSlider()
 {
 	WgGizmoHSlider * p = (WgGizmoHSlider*) m_elements[XDRAG]._releaseGizmo();
-	_updateElementGeo( Size(), m_contentSize );
+	_updateElementGeo( Size() );
 	return p;
 }
 
-//____ ReleaseSliderY() ____________________________________________________
+//____ ReleaseVSlider() ____________________________________________________
 
-WgGizmoVSlider* WgGizmoView::ReleaseSliderY()
+WgGizmoVSlider* WgGizmoView::ReleaseVSlider()
 {
 	WgGizmoVSlider * p = (WgGizmoVSlider*) m_elements[YDRAG]._releaseGizmo();
-	_updateElementGeo( Size(), m_contentSize );
+	_updateElementGeo( Size() );
 	return p;
 }
 
@@ -590,9 +516,9 @@ WgGizmoVSlider* WgGizmoView::ReleaseSliderY()
 bool WgGizmoView::DeleteChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_elements[XDRAG].Gizmo() )
-		return SetSliderX(0);
+		return SetHSlider(0);
 	else if( pGizmo == m_elements[YDRAG].Gizmo() )
-		return SetSliderY(0);
+		return SetVSlider(0);
 	else if( pGizmo == m_elements[WINDOW].Gizmo() )
 		return SetContent(0);
 
@@ -604,9 +530,9 @@ bool WgGizmoView::DeleteChild( WgGizmo * pGizmo )
 WgGizmo * WgGizmoView::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( pGizmo == m_elements[XDRAG].Gizmo() )
-		return ReleaseSliderX();
+		return ReleaseHSlider();
 	else if( pGizmo == m_elements[YDRAG].Gizmo() )
-		return ReleaseSliderY();
+		return ReleaseVSlider();
 	else if( pGizmo == m_elements[WINDOW].Gizmo() )
 		return ReleaseContent();
 
@@ -617,8 +543,8 @@ WgGizmo * WgGizmoView::ReleaseChild( WgGizmo * pGizmo )
 
 bool WgGizmoView::DeleteAllChildren()
 {
-	SetSliderX(0);
-	SetSliderY(0);
+	SetHSlider(0);
+	SetVSlider(0);
 	SetContent(0);
 	return true;
 }
@@ -627,8 +553,8 @@ bool WgGizmoView::DeleteAllChildren()
 
 bool WgGizmoView::ReleaseAllChildren()
 {
-	ReleaseSliderX();
-	ReleaseSliderY();
+	ReleaseHSlider();
+	ReleaseVSlider();
 	ReleaseContent();
 	return true;
 }
@@ -637,21 +563,21 @@ bool WgGizmoView::ReleaseAllChildren()
 
 //____ SetSliderAutoHide() _________________________________________________
 
-void WgGizmoView::SetSliderAutoHide( bool bHideX, bool bHideY )
+void WgGizmoView::SetSliderAutoHide( bool bHideHSlider, bool bHideVSlider )
 {
-	if( bHideX == m_bAutoHideSliderX && bHideY == m_bAutoHideSliderY )
+	if( bHideHSlider == m_bAutoHideSliderX && bHideVSlider == m_bAutoHideSliderY )
 		return;
 
-	bool	bWasVisibleX = SliderXVisible();
-	bool	bWasVisibleY = SliderYVisible();
+	bool	bWasVisibleX = IsHSliderVisible();
+	bool	bWasVisibleY = IsVSliderVisible();
 
-	m_bAutoHideSliderX = bHideX;
-	m_bAutoHideSliderY = bHideY;
+	m_bAutoHideSliderX = bHideHSlider;
+	m_bAutoHideSliderY = bHideVSlider;
 
 	// Force a refresh of our subclass if its geometry has been affected.
 
-	if( SliderXVisible() != bWasVisibleX || SliderYVisible() != bWasVisibleY )
-		_updateElementGeo( Size(), m_contentSize );
+	if( IsHSliderVisible() != bWasVisibleX || IsVSliderVisible() != bWasVisibleY )
+		_updateElementGeo( Size() );
 }
 
 //____ SetSliderPositions() ________________________________________________
@@ -664,7 +590,7 @@ void WgGizmoView::SetSliderPositions( bool bBottom, bool bRight )
 	m_bSliderBottom	= bBottom;
 	m_bSliderRight	= bRight;
 
-	_updateElementGeo( Size(), m_contentSize );
+	_updateElementGeo( Size() );
 }
 
 //____ SetFillerSource() ______________________________________________________
@@ -682,44 +608,50 @@ WgGizmo * WgGizmoView::FindGizmo( const WgCoord& pos, WgSearchMode mode )
 	// Check XDRAG
 
 	WgViewHook * p = &m_elements[XDRAG];
-	if( !p->Hidden() && p->m_pGizmo && p->m_geo.Contains( pos ) )
+	if( !p->Hidden() && p->m_pGizmo && p->m_windowGeo.Contains( pos ) )
 	{
-		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() ) )
+		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_windowGeo.Pos() ) )
 			return p->m_pGizmo;
 	}
 
 	// Check YDRAG
 
 	p = &m_elements[YDRAG];
-	if( !p->Hidden() && p->m_pGizmo && p->m_geo.Contains( pos ) )
+	if( !p->Hidden() && p->m_pGizmo && p->m_windowGeo.Contains( pos ) )
 	{
-		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() ) )
+		if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_windowGeo.Pos() ) )
 			return p->m_pGizmo;
 	}
 
 	// Check WINDOW
 
 	p = &m_elements[WINDOW];
-	WgRect geo( p->m_geo.Pos(), WgSize::Min(p->m_geo,m_contentSize) );
-
-	if( !p->Hidden() && p->m_pGizmo && geo.Contains( pos ) )
+	if( !p->Hidden() && p->m_pGizmo && p->m_windowGeo.Contains( pos ) && p->m_canvasGeo.Contains( pos ) )
 	{
 		if( p->m_pGizmo->IsContainer() )
 		{
-			WgGizmo * pFound = p->m_pGizmo->CastToContainer()->FindGizmo( pos - p->m_geo.Pos() + m_viewPixOfs, mode );
+			WgGizmo * pFound = p->m_pGizmo->CastToContainer()->FindGizmo( pos - p->m_canvasGeo.Pos(), mode );
 			if( pFound )
 				return pFound;
 		}
-		else if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_geo.Pos() + m_viewPixOfs ) )
+		else if( mode != WG_SEARCH_MARKPOLICY || p->m_pGizmo->MarkTest( pos - p->m_canvasGeo.Pos() ) )
 			return p->m_pGizmo;
 	}
+
+	// Check window background color
+
+	if( m_bgColor.a != 0 && p->m_windowGeo.Contains( pos ) )
+		return this;
+
 
 	// Check our little corner square and geometry
 
 	if( mode == WG_SEARCH_GEOMETRY || MarkTest( pos ) )
 		return this;
-	else
-		return 0;
+
+	//
+
+	return 0;
 }
 
 //____ DefaultSize() ___________________________________________________________
@@ -731,11 +663,100 @@ WgSize WgGizmoView::DefaultSize() const
 	return WgSize( 128,128 );
 }
 
+//____ SetBgColor() ____________________________________________________________
+
+void  WgGizmoView::SetBgColor( WgColor color )
+{
+	if( color != m_bgColor )
+	{
+		m_bgColor = color;
+		_requestRender( m_elements[WINDOW].m_windowGeo );
+	}
+}
+
+//____ SetContentOrientation() _________________________________________________
+
+void  WgGizmoView::SetContentOrientation( WgOrientation orientation )
+{
+	m_contentOrientation = orientation;
+
+	WgViewHook * p = &m_elements[WINDOW];
+	WgRect geo = _genContentCanvasGeo( p->m_windowGeo, m_contentSize, m_contentOrientation, m_viewPixOfs );
+
+	if( geo != p->m_canvasGeo )
+	{
+		p->m_canvasGeo = geo;
+		_requestRender( p->m_windowGeo );
+	}
+}
+
+//____ SetContentSizePolicy() __________________________________________________
+
+void  WgGizmoView::SetContentSizePolicy( WgSizePolicy widthPolicy, WgSizePolicy heightPolicy )
+{
+	if( widthPolicy != m_widthPolicy || heightPolicy != m_heightPolicy )
+	{
+		m_widthPolicy = widthPolicy;
+		m_heightPolicy = heightPolicy;
+
+		_updateElementGeo( Size() );
+	}
+}
+
+//____ _calcContentSize() ______________________________________________________
+
+WgSize WgGizmoView::_calcContentSize( WgSize mySize )
+{
+	WgGizmo * pContent = m_elements[WINDOW].Gizmo();
+
+	if( !pContent )
+		return WgSize(0,0);
+
+	//
+
+	if( !m_bAutoHideSliderX && m_elements[XDRAG].Gizmo() )
+		mySize.h -= m_elements[XDRAG].Gizmo()->DefaultSize().h;
+
+	if( !m_bAutoHideSliderY && m_elements[YDRAG].Gizmo() )
+		mySize.w -= m_elements[YDRAG].Gizmo()->DefaultSize().w;
+
+	//
+
+	WgSize contentSize = WgUtil::SizeFromPolicy( pContent, mySize, m_widthPolicy, m_heightPolicy );
+
+	if( contentSize.h > mySize.h && m_bAutoHideSliderY && m_elements[YDRAG].Gizmo() )
+	{
+		mySize.w -= m_elements[YDRAG].Gizmo()->DefaultSize().w;
+		contentSize = WgUtil::SizeFromPolicy( pContent, mySize, m_widthPolicy, m_heightPolicy );
+
+		if( contentSize.w > mySize.w && m_bAutoHideSliderX && m_elements[XDRAG].Gizmo() )
+		{
+			mySize.h -= m_elements[XDRAG].Gizmo()->DefaultSize().h;
+			contentSize = WgUtil::SizeFromPolicy( pContent, mySize, m_widthPolicy, m_heightPolicy );
+		}
+	}
+	else if( contentSize.w > mySize.w && m_bAutoHideSliderX && m_elements[XDRAG].Gizmo() )
+	{
+		mySize.h -= m_elements[XDRAG].Gizmo()->DefaultSize().h;
+		contentSize = WgUtil::SizeFromPolicy( pContent, mySize, m_widthPolicy, m_heightPolicy );
+
+		if( contentSize.h > mySize.h && m_bAutoHideSliderY && m_elements[YDRAG].Gizmo() )
+		{
+			mySize.w -= m_elements[YDRAG].Gizmo()->DefaultSize().w;
+			contentSize = WgUtil::SizeFromPolicy( pContent, mySize, m_widthPolicy, m_heightPolicy );
+		}
+	}
+
+	return contentSize;
+}
 
 //____ _updateElementGeo() _____________________________________________________
 
-void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newContentSize )
+void WgGizmoView::_updateElementGeo( WgSize mySize )
 {
+
+	WgSize newContentSize = _calcContentSize( mySize );
+
 	WgRect	newDragX, newDragY, newWindow, newFiller;
 	bool	bShowDragX = false, bShowDragY = false;
 
@@ -826,16 +847,16 @@ void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newCont
 	bool	bNewWidth = false;
 	bool	bNewHeight = false;
 
-	if( newWindow.h != m_elements[WINDOW].m_geo.h )
+	if( newWindow.h != m_elements[WINDOW].m_windowGeo.h )
 		bNewHeight = true;
 
-	if( newWindow.w != m_elements[WINDOW].m_geo.w )
+	if( newWindow.w != m_elements[WINDOW].m_windowGeo.w )
 		bNewWidth = true;
 
 
 	if( m_bAutoScrollX )
 	{
-		if( m_viewPixOfs.x + m_elements[WINDOW].m_geo.w >= m_contentSize.w && newWindow.w < newContentSize.w )
+		if( m_viewPixOfs.x + m_elements[WINDOW].m_windowGeo.w >= m_contentSize.w && newWindow.w < newContentSize.w )
 		{
 			bNewOfsX = true;
 			m_viewPixOfs.x = newContentSize.w - newWindow.w;
@@ -844,7 +865,7 @@ void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newCont
 
 	if( m_bAutoScrollY )
 	{
-		if( m_viewPixOfs.y + m_elements[WINDOW].m_geo.h >= m_contentSize.h && newWindow.h < newContentSize.h )
+		if( m_viewPixOfs.y + m_elements[WINDOW].m_windowGeo.h >= m_contentSize.h && newWindow.h < newContentSize.h )
 		{
 			bNewOfsY = true;
 			m_viewPixOfs.y = newContentSize.h - newWindow.h;
@@ -878,19 +899,21 @@ void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newCont
 	// If something visible has changed we need to update element geometry and request render.
 	// This is more optimized than it looks like...
 
-	if( newWindow != m_elements[WINDOW].m_geo || bShowDragX != m_elements[XDRAG].m_bShow || bShowDragY != m_elements[YDRAG].m_bShow )
+	if( newWindow != m_elements[WINDOW].m_windowGeo || (!bShowDragX) != m_elements[XDRAG].m_bHidden || (!bShowDragY) != m_elements[YDRAG].m_bHidden || newContentSize != m_contentSize )
 	{
-		m_elements[WINDOW].m_geo = newWindow;
-		m_elements[XDRAG].m_geo = newDragX;
-		m_elements[YDRAG].m_geo = newDragY;
-		m_elements[XDRAG].m_bShow = bShowDragX;
-		m_elements[YDRAG].m_bShow = bShowDragY;
+		m_elements[WINDOW].m_windowGeo = newWindow;
+		m_elements[XDRAG].m_windowGeo = newDragX;
+		m_elements[YDRAG].m_windowGeo = newDragY;
+		m_elements[WINDOW].m_canvasGeo = _genContentCanvasGeo( newWindow, newContentSize, m_contentOrientation, m_viewPixOfs );
+		m_elements[XDRAG].m_canvasGeo = newDragX;
+		m_elements[YDRAG].m_canvasGeo = newDragY;
+		m_elements[XDRAG].m_bHidden = !bShowDragX;
+		m_elements[YDRAG].m_bHidden = !bShowDragY;
 
 		_requestRender();
 
-		// Notify elements of their new size.
+		// Notify sliders of their new size.
 
-		m_elements[WINDOW].Gizmo()->_onNewSize(newWindow.Size());
 		if( bShowDragX )
 			m_elements[XDRAG].Gizmo()->_onNewSize(newDragX.Size());
 		if( bShowDragY )
@@ -908,9 +931,25 @@ void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newCont
 	if( newContentSize.h != m_contentSize.h )
 		bNewContentHeight = true;
 
-	m_contentSize = newContentSize;
+	if( bNewContentWidth || bNewContentHeight )
+	{
+		m_contentSize = newContentSize;
 
+		// Notify content of its new size.
 
+		if( m_elements[WINDOW].Gizmo() )
+			m_elements[WINDOW].Gizmo()->_onNewSize(newContentSize);
+	}
+
+	// Notify sliders of any change to content size, view size or view offset.
+
+	if( bNewOfsX || bNewWidth || bNewContentWidth )
+		m_sliderTargets[1]._updateSlider( ViewOfsX(), ViewLenX() );
+
+	if( bNewOfsY || bNewHeight || bNewContentHeight )
+		m_sliderTargets[0]._updateSlider( ViewOfsY(), ViewLenY() );
+
+/*
 	// Send signals if views size or position over content has changed
 	// or contents size has changed.
 
@@ -953,53 +992,175 @@ void WgGizmoView::_updateElementGeo( const WgSize& mySize, const WgSize& newCont
 		Emit( ViewSize(), ViewLenX(), ViewLenY() );
 	if( bNewWidth || bNewHeight )
 		Emit( ViewSizePixel(), ViewPixelLenX(), ViewPixelLenY() );
+*/
 }
 
+//____ _genContentCanvasGeo() __________________________________________________
+
+WgRect WgGizmoView::_genContentCanvasGeo( const WgRect& window, WgSize contentSize, WgOrientation orientation, WgCoord viewOfs )
+{
+	WgRect	out( window.Pos() - viewOfs, contentSize);
+
+	if( window.w > contentSize.w )
+	{
+		WgRect r = WgUtil::OrientationToRect( orientation, WgSize(window.w,1), WgSize(contentSize.w,1) );
+		out.x = window.x + r.x;
+	}
+
+	if( window.h > contentSize.h )
+	{
+		WgRect r = WgUtil::OrientationToRect( orientation, WgSize(1,window.h), WgSize(1,contentSize.h) );
+		out.y = window.y + r.y;
+	}
+
+	return out;
+}
 
 //____ _onNewSize() ____________________________________________________________
 
 void WgGizmoView::_onNewSize( const WgSize& size )
 {
-	_updateElementGeo( size, m_contentSize );
+	_updateElementGeo( size );
 }
 
+//____ _onEvent() ______________________________________________________________
 
-//____ _onRender() _____________________________________________________________
-
-void WgGizmoView::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoView::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
+	switch( _pEvent->Type() )
+	{
+		case WG_EVENT_MOUSEWHEEL_ROLL:
+		{
+			const WgEvent::MouseWheelRoll * pEvent = static_cast<const WgEvent::MouseWheelRoll*>(_pEvent);
+
+			int wheel = pEvent->Wheel();
+
+			if( wheel == 1 )
+				_wheelRollY( pEvent->Distance() );
+			else if( wheel == 2 )
+				_wheelRollX( pEvent->Distance() );
+		}
+		break;
+
+		default:
+		break;
+	}
+}
+
+//____ _renderPatches() ________________________________________________________
+
+void WgGizmoView::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+{
+
+	// We start by eliminating dirt outside our geometry
+
+	WgPatches 	patches( _pPatches->Size() );								// TODO: Optimize by pre-allocating?
+
+	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
+	{
+		if( _window.IntersectsWith( *pRect ) )
+			patches.Push( WgRect(*pRect,_window) );
+	}
+
+	//
+
+	WgRect	dirtBounds = patches.Union();
+
+	// Render Window background color
+
+	if( m_bgColor.a != 0 )
+	{
+		WgRect window = m_elements[WINDOW].m_windowGeo + _canvas.Pos();
+
+		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
+			pDevice->ClipFill(*pRect, window, m_bgColor );
+	}
+
+	//
+
 	if( m_elements[WINDOW].Gizmo() )
 	{
-		WgRect window = m_elements[WINDOW].m_geo + _canvas.Pos();
-		WgRect canvas( window.Pos() - m_viewPixOfs, m_contentSize );
-		WgRect clip( window, _clip );
+		WgRect canvas = m_elements[WINDOW].m_canvasGeo + _canvas.Pos();
+		WgRect window( canvas, m_elements[WINDOW].m_windowGeo + _canvas.Pos() );	// Use intersection in case canvas is smaller than window.
 
-		if( clip.w > 0 && clip.h > 0 )
-			m_elements[WINDOW].Gizmo()->_onRender( pDevice, canvas, window, clip, _layer );
+		if( window.IntersectsWith(dirtBounds) )
+			m_elements[WINDOW].Gizmo()->_renderPatches( pDevice, canvas, window, &patches, _layer );
 	}
-	if( m_elements[XDRAG].m_bShow )
+	if( !m_elements[XDRAG].m_bHidden )
 	{
-		WgRect window = m_elements[XDRAG].m_geo + _canvas.Pos();
-		WgRect clip( window, _clip );
-
-		if( clip.w > 0 && clip.h > 0 )
-			m_elements[XDRAG].Gizmo()->_onRender( pDevice, window, window, clip, _layer );
+		WgRect canvas = m_elements[XDRAG].m_windowGeo + _canvas.Pos();
+		if( canvas.IntersectsWith(dirtBounds) )
+			m_elements[XDRAG].Gizmo()->_renderPatches( pDevice, canvas, canvas, &patches, _layer );
 	}
-	if( m_elements[YDRAG].m_bShow )
+	if( !m_elements[YDRAG].m_bHidden )
 	{
-		WgRect window = m_elements[YDRAG].m_geo + _canvas.Pos();
-		WgRect clip( window, _clip );
-
-		if( clip.w > 0 && clip.h > 0 )
-			m_elements[YDRAG].Gizmo()->_onRender( pDevice, window, window, clip, _layer );
+		WgRect canvas = m_elements[YDRAG].m_windowGeo + _canvas.Pos();
+		if( canvas.IntersectsWith(dirtBounds) )
+			m_elements[YDRAG].Gizmo()->_renderPatches( pDevice, canvas, canvas, &patches, _layer );
 	}
 
 	WgMode mode = m_bEnabled?WG_MODE_NORMAL:WG_MODE_DISABLED;
 	if( m_pFillerBlocks && m_geoFiller.w != 0 && m_geoFiller.h != 0 )
 	{
-		WgRect window = m_geoFiller + _canvas.Pos();
-		WgRect clip( window, _clip );
-		pDevice->ClipBlitBlock( clip, m_pFillerBlocks->GetBlock( mode, m_geoFiller ), window );
+		WgRect canvas = m_geoFiller + _canvas.Pos();
+
+		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
+		{
+			WgRect clip( canvas, *pRect );
+			if( clip.w > 0 || clip.h > 0 )
+				pDevice->ClipBlitBlock( clip, m_pFillerBlocks->GetBlock( mode, m_geoFiller ), canvas );
+		}
+
+	}
+}
+
+
+//____ _onCollectPatches() _______________________________________________________
+
+void WgGizmoView::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+{
+	container.Add( WgRect(geo,clip) );
+}
+
+//____ _onMaskPatches() __________________________________________________________
+
+void WgGizmoView::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+{
+	switch( m_maskOp )
+	{
+		case WG_MASKOP_RECURSE:
+		{
+			// Mask against view
+
+			WgViewHook * p = &m_elements[WINDOW];
+
+			if( m_bgColor.a == 255 )
+				patches.Sub( WgRect( p->m_windowGeo + geo.Pos(), clip) );
+			else if( p->Gizmo() )
+				p->Gizmo()->_onMaskPatches( patches, p->m_canvasGeo + geo.Pos(), WgRect(p->m_windowGeo + geo.Pos(), clip), blendMode );
+
+			// Mask against dragbars
+
+			p = &m_elements[XDRAG];
+			if( !p->Hidden() )
+				p->Gizmo()->_onMaskPatches( patches, p->m_windowGeo + geo.Pos(), clip, blendMode );
+
+			p = &m_elements[YDRAG];
+			if( !p->Hidden() )
+				p->Gizmo()->_onMaskPatches( patches, p->m_windowGeo + geo.Pos(), clip, blendMode );
+
+			// Maska against corner piece
+
+			if( !m_geoFiller.IsEmpty() && m_pFillerBlocks && m_pFillerBlocks->IsOpaque() )
+				patches.Sub( WgRect(m_geoFiller + geo.Pos(), clip) );
+
+			break;
+		}
+		case WG_MASKOP_SKIP:
+			break;
+		case WG_MASKOP_MASK:
+			patches.Sub( WgRect(geo,clip) );
+			break;
 	}
 }
 
@@ -1060,12 +1221,6 @@ void WgGizmoView::_onCloneContent( const WgGizmo * _pOrg )
 }
 
 //_____________________________________________________________________________
-void WgGizmoView::_setContentSize( const WgSize& size )
-{
-	_updateElementGeo( Size(), WgSize(size) );
-}
-
-//_____________________________________________________________________________
 bool WgGizmoView::SetAutoscroll( bool bAutoX, bool bAutoY )
 {
 	m_bAutoScrollX = bAutoX;
@@ -1101,7 +1256,7 @@ WgHook * WgGizmoView::_firstHookWithGeo( WgRect& geo ) const
 	for( int i = 0 ; i < 3 ; i++ )
 		if( m_elements[i].m_pGizmo )
 		{
-			geo = m_elements[i].m_geo;
+			geo = m_elements[i].m_canvasGeo;
 			return const_cast<WgViewHook*>(&m_elements[i]);
 		}
 
@@ -1120,7 +1275,7 @@ WgHook * WgGizmoView::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 		p++;
 		if( p->m_pGizmo )
 		{
-			geo = p->m_geo;
+			geo = p->m_canvasGeo;
 			return const_cast<WgViewHook*>(p);
 		}
 	}
@@ -1133,7 +1288,7 @@ WgHook * WgGizmoView::_lastHookWithGeo( WgRect& geo ) const
 	for( int i = 2 ; i >= 0 ; i++ )
 		if( m_elements[i].m_pGizmo )
 		{
-			geo = m_elements[i].m_geo;
+			geo = m_elements[i].m_canvasGeo;
 			return const_cast<WgViewHook*>(&m_elements[i]);
 		}
 
@@ -1152,7 +1307,7 @@ WgHook * WgGizmoView::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 		p--;
 		if( p->m_pGizmo )
 		{
-			geo = p->m_geo;
+			geo = p->m_canvasGeo;
 			return const_cast<WgViewHook*>(p);
 		}
 	}
@@ -1165,42 +1320,41 @@ WgHook * WgGizmoView::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 WgViewHook::~WgViewHook()
 {
-	delete m_pGizmo;
 }
 
 //____ WgViewHook::Pos() ________________________________________________________
 
 WgCoord WgViewHook::Pos() const
 {
-	return m_geo.Pos();
+	return m_canvasGeo.Pos();
 }
 
 //____ WgViewHook::Size() _______________________________________________________
 
 WgSize WgViewHook::Size() const
 {
-	return m_geo.Size();
+	return m_canvasGeo.Size();
 }
 
 //____ WgViewHook::Geo() ________________________________________________________
 
 WgRect WgViewHook::Geo() const
 {
-	return m_geo;
+	return m_canvasGeo;
 }
 
 //____ WgViewHook::ScreenPos() __________________________________________________
 
 WgCoord WgViewHook::ScreenPos() const
 {
-	return m_pView->ScreenPos() + m_geo.Pos();
+	return m_pView->ScreenPos() + m_canvasGeo.Pos();
 }
 
 //____ WgViewHook::ScreenGeo() __________________________________________________
 
 WgRect WgViewHook::ScreenGeo() const
 {
-	return m_geo + m_pView->ScreenPos();
+	return m_canvasGeo + m_pView->ScreenPos();
 }
 
 
@@ -1217,14 +1371,19 @@ WgWidget* WgViewHook::GetRoot()
 
 void WgViewHook::_requestRender()
 {
-	m_pView->_requestRender( m_geo );
+	if( !m_bHidden )
+		m_pView->_requestRender( m_windowGeo );
 }
 
 void WgViewHook::_requestRender( const WgRect& rect )
 {
-	WgRect r = rect;
-	r += m_geo.Pos();
-	m_pView->_requestRender( r );
+	if( !m_bHidden )
+	{
+		WgRect r( m_windowGeo, rect + m_canvasGeo.Pos() );
+
+		if( !r.IsEmpty() )
+			m_pView->_requestRender( r );
+	}
 }
 
 //____ WgViewHook::_requestResize() ______________________________________________
@@ -1272,5 +1431,99 @@ WgGizmoParent * WgViewHook::_parent() const
 {
 	return m_pView;
 }
+
+//____ SliderTarget methods ____________________________________________________
+
+float WgGizmoView::SliderTarget::_stepFwd()
+{
+	if( m_bHorizontal )
+	{
+		m_pParent->StepRight();
+		return m_pParent->ViewOfsX();
+	}
+	else
+	{
+		m_pParent->StepDown();
+		return m_pParent->ViewOfsY();
+	}
+}
+
+float WgGizmoView::SliderTarget::_stepBwd()
+{
+	if( m_bHorizontal )
+	{
+		m_pParent->StepLeft();
+		return m_pParent->ViewOfsX();
+	}
+	else
+	{
+		m_pParent->StepUp();
+		return m_pParent->ViewOfsY();
+	}
+}
+
+float WgGizmoView::SliderTarget::_jumpFwd()
+{
+	if( m_bHorizontal )
+	{
+		m_pParent->JumpRight();
+		return m_pParent->ViewOfsX();
+	}
+	else
+	{
+		m_pParent->JumpDown();
+		return m_pParent->ViewOfsY();
+	}
+}
+
+float WgGizmoView::SliderTarget::_jumpBwd()
+{
+	if( m_bHorizontal )
+	{
+		m_pParent->JumpLeft();
+		return m_pParent->ViewOfsX();
+	}
+	else
+	{
+		m_pParent->JumpUp();
+		return m_pParent->ViewOfsY();
+	}
+}
+
+float WgGizmoView::SliderTarget::_setPosition( float fraction )
+{
+	if( m_bHorizontal )
+	{
+		m_pParent->SetViewOfsX(fraction);
+		return m_pParent->ViewOfsX();
+	}
+	else
+	{
+		m_pParent->SetViewOfsY(fraction);
+		return m_pParent->ViewOfsY();
+	}
+}
+
+WgGizmo* WgGizmoView::SliderTarget::_getGizmo()
+{
+	return m_pParent;
+}
+
+float WgGizmoView::SliderTarget::_getSliderPosition()
+{
+	if( m_bHorizontal )
+		return m_pParent->ViewOfsX();
+	else
+		return m_pParent->ViewOfsY();
+}
+
+float WgGizmoView::SliderTarget::_getSliderSize()
+{
+	if( m_bHorizontal )
+		return m_pParent->ViewLenX();
+	else
+		return m_pParent->ViewLenY();
+}
+
 
 

@@ -198,11 +198,15 @@ bool WgGizmoSlider::SetButtonLayout(  ButtonLayout layout )
 
 bool WgGizmoSlider::SetSliderTarget( WgSliderTarget * pTarget )
 {
+	// Release previous target (if any)
+
+	if( m_pSliderTargetGizmo )
+		m_pSliderTargetInterface->m_pSlider = 0;
+
+	// Set new target
+
 	if( pTarget == 0 )
 	{
-		if( pTarget->_getGizmo() )
-			m_pSliderTargetInterface->m_pSlider = 0;
-
 		m_pSliderTargetInterface	= 0;
 		m_pSliderTargetGizmo		= 0;
 	}
@@ -218,7 +222,6 @@ bool WgGizmoSlider::SetSliderTarget( WgSliderTarget * pTarget )
 	}
 	return true;
 }
-
 
 //____ _headerFooterChanged() _______________________________________________
 

@@ -3,7 +3,7 @@
 #include <wg_geo.h>
 #include <wg_blockset.h>
 #include <wg_surface.h>
-
+#include <wg_gizmo.h>
 
 bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 {
@@ -235,6 +235,78 @@ bool WgUtil::PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
 			wFormat.A_bits = 0;
 			return false;
 	}
+}
+
+//____ SizeFromPolicy() __________________________________________________________
+
+int WgUtil::SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy )
+{
+	switch( policy )
+	{
+		case WG_DEFAULT:
+			return defaultSize;
+		case WG_BOUND:
+			return specifiedSize;
+		case WG_CONFINED:
+			if( defaultSize > specifiedSize )
+				return specifiedSize;
+		case WG_EXPANDED:
+			if( defaultSize < specifiedSize )
+				return specifiedSize;
+	}
+}
+
+//____ SizeFromPolicy() ________________________________________________________
+
+WgSize WgUtil::SizeFromPolicy( const WgGizmo * pGizmo, WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy )
+{
+	WgSize	defaultSize = pGizmo->DefaultSize();
+
+	WgSize	sz;
+
+	switch( widthPolicy )
+	{
+		case WG_DEFAULT:
+		{
+			sz.h = SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
+			sz.w = pGizmo->WidthForHeight(sz.h);
+			break;
+		case WG_BOUND:
+			sz.w = specifiedSize.w;
+			sz.h = SizeFromPolicy( pGizmo->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+			break;
+		case WG_CONFINED:
+			if( defaultSize.w > specifiedSize.w )
+			{
+				sz.w = specifiedSize.w;
+				sz.h = SizeFromPolicy( pGizmo->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+			}
+			else
+			{
+				sz.h = SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
+				sz.w = pGizmo->WidthForHeight(sz.h);
+				if( sz.w > specifiedSize.w )
+					sz.w = specifiedSize.w;
+			}
+			break;
+		case WG_EXPANDED:
+			if( defaultSize.w < specifiedSize.w )
+			{
+				sz.w = specifiedSize.w;
+				sz.h = SizeFromPolicy( pGizmo->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+			}
+			else
+			{
+				sz.h = SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
+				sz.w = pGizmo->WidthForHeight(sz.h);
+				if( sz.w < specifiedSize.w )
+					sz.w = specifiedSize.w;
+			}
+			break;
+		}
+	}
+
+	return sz;
 }
 
 

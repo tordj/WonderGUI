@@ -119,6 +119,8 @@ int main ( int argc, char** argv )
 
 	WgRoot * pRoot = setupGUI( pGfxDevice );
 
+	pRoot->FindGizmo( WgCoord(10,10), WG_SEARCH_ACTION_TARGET );
+
    // program main loop
 
     while (eventLoop( pRoot->EventHandler() ))
@@ -222,6 +224,9 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	WgSurface * pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", WgSurfaceFactorySoft() );
 	WgBlockSetPtr pSplashBlock = pSplashImg->defineBlockSet( WgRect(0,0,pSplashImg->Width(),pSplashImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
 
+	WgSurface * pBigImg = sdl_wglib::LoadSurface("../resources/frog.jpg", WgSurfaceFactorySoft() );
+	WgBlockSetPtr pBigBlock = pBigImg->defineBlockSet( WgRect(0,0,pBigImg->Width(),pBigImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
+
 	// MenuLayer
 
 	WgGizmoMenuLayer * pMenuLayer = new WgGizmoMenuLayer();
@@ -296,6 +301,8 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	}
 */
 
+	// Test menus and MenuLayer.
+/*
 	{
 		WgGizmoMenu * pSubMenu1 = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
 		pSubMenu1->AddItem( new WgMenuEntry( WgString("Entry 7"), WgString("Help text for entry 7"), WgBlockSetPtr(), 0 ));
@@ -323,13 +330,35 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 		pMenu->GrabFocus();
 
 //		pMenuLayer->OpenMenu( pMenu, WgRect(10,10,100,10), WG_SOUTHWEST );
+	}
+*/
 
+	// Test view
+
+	{
+
+		WgGizmoView * pView = new WgGizmoView();
+
+		WgGizmoHSlider * pHSlider = (WgGizmoHSlider*) pDB->CloneGizmo( "hslider" );
+		WgGizmoVSlider * pVSlider = (WgGizmoVSlider*) pDB->CloneGizmo( "vslider" );
+
+		WgGizmoPixmap * pImage = new WgGizmoPixmap();
+		pImage->SetSource( pBigBlock );
+
+		pView->SetHSlider( pHSlider );
+		pView->SetVSlider( pVSlider );
+		pView->SetContent( pImage );
+
+		addResizableContainer( pFlex, pView, pEventHandler );
+
+		pView->SetContentOrientation( WG_CENTER );
+		pView->SetContentSizePolicy( WG_DEFAULT, WG_DEFAULT );
 	}
 
-
-	// Modal container
 /*
-	g_pModal = new WgGizmoModal();
+	// Modal container
+
+	g_pModal = new WgGizmoModalLayer();
 	g_pModal->SetBase( pFlex );
 
 	pRoot->SetChild(g_pModal);

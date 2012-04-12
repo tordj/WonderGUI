@@ -310,7 +310,7 @@ void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 {
 	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
 	{
-		WgRect clip( _canvas, *pRect );
+		WgRect clip( _window, *pRect );
 		if( clip.w > 0 || clip.h > 0 )
 			_onRender( pDevice, _canvas, _window, clip, _layer );
 	}
