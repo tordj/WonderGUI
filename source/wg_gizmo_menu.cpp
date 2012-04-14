@@ -1462,6 +1462,16 @@ float WgGizmoMenu::_jumpBwd()
 	return _getSliderPosition();
 }
 
+//____ _wheelRolled() ______________________________________________________________
+
+float WgGizmoMenu::_wheelRolled( int distance )
+{
+	int viewHeight = Size().h - _getContentBorders().Height();
+	_setViewOfs( m_contentOfs + m_entryHeight*distance );
+	return _getSliderPosition();
+}
+
+
 //____ _setPosition() __________________________________________________________
 
 float WgGizmoMenu::_setPosition( float fraction )

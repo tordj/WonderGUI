@@ -238,6 +238,7 @@ private:
 	float		_stepBwd();
 	float		_jumpFwd();
 	float		_jumpBwd();
+	float		_wheelRolled( int distance );
 
 	float		_setPosition( float fraction );
 

@@ -240,6 +240,23 @@ namespace sdl_wglib
 		pMenu->SetTileColors( pSelectionColors );
 		pDB->AddGizmo( "menu", pMenu );
 
+		// Create standard view
+		
+		{
+			WgGizmoView * pView = new WgGizmoView();
+			
+			WgGizmo * pHSlider = pDB->CloneGizmo( "hslider" );
+			WgGizmo * pVSlider = pDB->CloneGizmo( "vslider" );
+
+			if( pHSlider )
+				pView->SetHSlider( static_cast<WgGizmoHSlider*>(pHSlider) );
+			if( pVSlider )
+				pView->SetVSlider( static_cast<WgGizmoVSlider*>(pVSlider) );
+
+			pView->SetFillerBlocks( pPlateBlocks );
+			pDB->AddGizmo( "view", pView );
+		}
+
 		return pDB;
 	}
 

@@ -296,9 +296,20 @@ void WgGizmoContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _can
 
 bool WgGizmoContainer::_onAlphaTest( const WgCoord& ofs )
 {
-	return false;		// We are a cointainer, we have nothing displayed ourselves.
+	return false;		// By default cointainers have nothing to display themselves.
 }
 
+//____ _onCloneContent() _______________________________________________________
+
+void WgGizmoContainer::_onCloneContent( const WgGizmoContainer * _pOrg )
+{
+	m_bFocusGroup 		= _pOrg->m_bFocusGroup;
+	m_bRadioGroup 		= _pOrg->m_bRadioGroup;
+	m_bTooltipGroup 	= _pOrg->m_bTooltipGroup;
+	m_bSiblingsOverlap 	= _pOrg->m_bSiblingsOverlap;
+	m_bChildEvents 		= _pOrg->m_bChildEvents;
+	m_maskOp 			= _pOrg->m_maskOp;
+}
 
 //____ _onCollectPatches() _______________________________________________________
 #ifdef WG_TNG

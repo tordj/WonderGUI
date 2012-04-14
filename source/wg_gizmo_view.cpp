@@ -593,9 +593,9 @@ void WgGizmoView::SetSliderPositions( bool bBottom, bool bRight )
 	_updateElementGeo( Size() );
 }
 
-//____ SetFillerSource() ______________________________________________________
+//____ SetFillerBlocks() ______________________________________________________
 
-void WgGizmoView::SetFillerSource( const WgBlockSetPtr& pBlocks )
+void WgGizmoView::SetFillerBlocks( const WgBlockSetPtr& pBlocks )
 {
 	m_pFillerBlocks = pBlocks;
 	_requestRender( m_geoFiller );
@@ -1030,15 +1030,18 @@ void WgGizmoView::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 	switch( _pEvent->Type() )
 	{
 		case WG_EVENT_MOUSEWHEEL_ROLL:
-		{
+		{			
 			const WgEvent::MouseWheelRoll * pEvent = static_cast<const WgEvent::MouseWheelRoll*>(_pEvent);
 
-			int wheel = pEvent->Wheel();
+			if( m_elements[WINDOW].m_windowGeo.Contains(pEvent->PointerPos()) )
+			{
+				int wheel = pEvent->Wheel();
 
-			if( wheel == 1 )
-				_wheelRollY( pEvent->Distance() );
-			else if( wheel == 2 )
-				_wheelRollX( pEvent->Distance() );
+				if( wheel == 1 )
+					_wheelRollY( pEvent->Distance() );
+				else if( wheel == 2 )
+					_wheelRollX( pEvent->Distance() );
+			}
 		}
 		break;
 
@@ -1185,39 +1188,67 @@ void WgGizmoView::_onCloneContent( const WgGizmo * _pOrg )
 {
 	WgGizmoView* pOrg = (WgGizmoView*)_pOrg;
 
-	m_contentSize	= pOrg->m_contentSize;
-	m_stepSizeX		= pOrg->m_stepSizeX;
-	m_stepSizeY		= pOrg->m_stepSizeY;
-	m_jumpSizeX		= pOrg->m_jumpSizeX;
-	m_jumpSizeY		= pOrg->m_jumpSizeY;
+	WgGizmoContainer::_onCloneContent(pOrg);
+	
 
-	m_viewPixOfs	= pOrg->m_viewPixOfs;
+	m_contentSize = pOrg->m_contentSize;
 
-/*
-	m_pSliderX	= 0;
-	m_pSliderY	= 0;
+	m_stepSizeX = pOrg->m_stepSizeX;
+	m_stepSizeY = pOrg->m_stepSizeY;
+	m_jumpSizeX = pOrg->m_jumpSizeX;
+	m_jumpSizeY = pOrg->m_jumpSizeY;
 
-	//TODO: Needs to have real hooks and stuff, needs to have callbacks etc set.
-	if( pOrg->m_pSliderX )
+	m_viewPixOfs = pOrg->m_viewPixOfs;
+
+	m_bAutoHideSliderX = pOrg->m_bAutoHideSliderX;
+	m_bAutoHideSliderY = pOrg->m_bAutoHideSliderY;
+
+	m_bSliderBottom = pOrg->m_bSliderBottom;
+	m_bSliderRight = pOrg->m_bSliderRight;
+
+	m_bAutoScrollX = pOrg->m_bAutoScrollX;
+	m_bAutoScrollY = pOrg->m_bAutoScrollY;
+	
+	m_bgColor = pOrg->m_bgColor;
+	m_widthPolicy = pOrg->m_widthPolicy;
+	m_heightPolicy = pOrg->m_heightPolicy;
+	m_contentOrientation = pOrg->m_contentOrientation;
+
+	m_pFillerBlocks = pOrg->m_pFillerBlocks;
+	m_geoFiller = pOrg->m_geoFiller;
+
+	//
+
+	m_elements[WINDOW].m_windowGeo = pOrg->m_elements[WINDOW].m_windowGeo;
+	// Canvas geo for WINDOW should remain as it is since we don't have any content.
+	
+	//
+	
+	m_elements[XDRAG].m_windowGeo = pOrg->m_elements[XDRAG].m_windowGeo;
+	m_elements[XDRAG].m_canvasGeo = pOrg->m_elements[XDRAG].m_canvasGeo;
+	m_elements[XDRAG].m_bHidden = pOrg->m_elements[XDRAG].m_bHidden;
+	if( pOrg->m_elements[XDRAG].m_pGizmo )
 	{
-		m_pSliderX = new WgGizmoHDragbar();
-		m_pSliderX->CloneContent( pOrg->m_pSliderX );
+		WgGizmoHSlider * pSlider = (WgGizmoHSlider*) pOrg->m_elements[XDRAG].m_pGizmo->NewOfMyType();
+		pSlider->CloneContent( pOrg->m_elements[XDRAG].m_pGizmo );
+		pSlider->SetSliderTarget(&m_sliderTargets[1]);
+		m_elements[XDRAG]._attachGizmo(pSlider);		
 	}
 
-	if( pOrg->m_pSliderY )
+	//
+	
+	m_elements[YDRAG].m_windowGeo = pOrg->m_elements[YDRAG].m_windowGeo;
+	m_elements[YDRAG].m_canvasGeo = pOrg->m_elements[YDRAG].m_canvasGeo;
+	m_elements[YDRAG].m_bHidden = pOrg->m_elements[YDRAG].m_bHidden;
+	if( pOrg->m_elements[YDRAG].m_pGizmo )
 	{
-		m_pSliderY = new WgGizmoVDragbar();
-		m_pSliderY->CloneContent( pOrg->m_pSliderY );
+		WgGizmoVSlider * pSlider = (WgGizmoVSlider*) pOrg->m_elements[YDRAG].m_pGizmo->NewOfMyType();
+		pSlider->CloneContent( pOrg->m_elements[YDRAG].m_pGizmo );
+		pSlider->SetSliderTarget(&m_sliderTargets[0]);
+		m_elements[YDRAG]._attachGizmo(pSlider);
 	}
-*/
-	m_bAutoHideSliderX	= pOrg->m_bAutoHideSliderX;
-	m_bAutoHideSliderY	= pOrg->m_bAutoHideSliderY;
 
-	m_bSliderBottom		= pOrg->m_bSliderBottom;
-	m_bSliderRight		= pOrg->m_bSliderRight;
-
-	m_bAutoScrollX			= pOrg->m_bAutoScrollX;
-	m_bAutoScrollY			= pOrg->m_bAutoScrollY;
+	//
 }
 
 //_____________________________________________________________________________
@@ -1486,6 +1517,20 @@ float WgGizmoView::SliderTarget::_jumpBwd()
 	else
 	{
 		m_pParent->JumpUp();
+		return m_pParent->ViewOfsY();
+	}
+}
+
+float WgGizmoView::SliderTarget::_wheelRolled( int distance )
+{
+	if( m_bHorizontal )
+	{
+		m_pParent->_wheelRollX(distance);
+		return m_pParent->ViewOfsX();
+	}
+	else
+	{	
+		m_pParent->_wheelRollY(distance);
 		return m_pParent->ViewOfsY();
 	}
 }

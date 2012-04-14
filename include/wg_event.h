@@ -419,6 +419,16 @@ namespace WgEvent
 		SliderJumpBwd( WgGizmoSlider* pGizmo, float pos, float length );
 	};
 
+	class SliderWheelRolled : public SliderEvent
+	{
+	public:
+		SliderWheelRolled( WgGizmoSlider* pGizmo, int distance, float pos, float length );
+		int			Distance() const;
+	protected:
+		float		m_distance;
+	};
+
+
 	//____ Text events ________________________________________
 
 	class TextEvent : public Event

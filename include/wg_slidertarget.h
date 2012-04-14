@@ -45,6 +45,8 @@ protected:
 	virtual float	_jumpFwd() = 0;
 	virtual float	_jumpBwd() = 0;
 
+	virtual float	_wheelRolled( int distance ) = 0;
+
 	virtual float	_setPosition( float fraction ) = 0;
 
 	virtual WgGizmo*_getGizmo() = 0;

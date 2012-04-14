@@ -533,6 +533,7 @@ enum	WgEventType
 	WG_EVENT_SLIDER_STEP_BWD,
 	WG_EVENT_SLIDER_JUMP_FWD,
 	WG_EVENT_SLIDER_JUMP_BWD,
+	WG_EVENT_SLIDER_WHEEL_ROLL,
 
 	WG_EVENT_TEXT_MODIFY,					// Posted for every change to text through cursor/selection.
 	WG_EVENT_TEXT_SET,						// Posted when edited text is 'set' by removing cursor.

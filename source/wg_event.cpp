@@ -583,6 +583,17 @@ namespace WgEvent
 		m_type = WG_EVENT_SLIDER_JUMP_BWD;
 	}
 
+	SliderWheelRolled::SliderWheelRolled( WgGizmoSlider* pGizmo, int distance, float pos, float length )  : SliderEvent( pGizmo, pos, length )
+	{
+		m_type = WG_EVENT_SLIDER_WHEEL_ROLL;
+		m_distance = distance;
+	}
+	
+	int SliderWheelRolled::Distance() const
+	{
+		return m_distance;
+	}
+
 	//____ Text event methods __________________________________________________
 
 	WgInterfaceEditText * TextEvent::Interface() const

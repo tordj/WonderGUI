@@ -58,7 +58,7 @@ public:
 	bool			SetHidden( bool bHide ) { return false; }		// This gizmo handles hide/show of children according to its own rules.
 	WgGizmoView * 	Parent() const { return m_pView; }
 
-	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
+	WgWidget*		GetRoot();			// Should in the future not return a widget, but a gizmo.
 
 
 protected:
@@ -74,8 +74,6 @@ protected:
 	WgHook *		_nextHook() const;
 	WgGizmoParent *	_parent() const;
 
-
-//	ElementType		m_type;
 	WgGizmoView *	m_pView;
 	WgRect			m_windowGeo;		// Geometry of Gizmos window inside parent.
 	WgRect			m_canvasGeo;		// Geometry of Gizmos canvas. Same as m_windowGeo for sliders.
@@ -172,17 +170,17 @@ public:
 
 	bool				SetHSlider( WgGizmoHSlider * pSlider );
 	void				DeleteHSlider() {SetVSlider(0);}
-	WgGizmoHSlider *	GetHSlider() const { return (WgGizmoHSlider*) m_elements[XDRAG].Gizmo(); }
+	WgGizmoHSlider *	HSlider() const { return (WgGizmoHSlider*) m_elements[XDRAG].Gizmo(); }
 	WgGizmoHSlider* 	ReleaseHSlider();
 
 	bool				SetVSlider( WgGizmoVSlider * pSlider );
 	void				DeleteVSlider() {SetVSlider(0);}
-	WgGizmoVSlider *	GetVSlider() const { return (WgGizmoVSlider*) m_elements[YDRAG].Gizmo(); }
+	WgGizmoVSlider *	VSlider() const { return (WgGizmoVSlider*) m_elements[YDRAG].Gizmo(); }
 	WgGizmoVSlider* 	ReleaseVSlider();
 
 	bool				SetContent( WgGizmo * pContent );
 	void				DeleteContent() {SetContent(0); }
-	WgGizmo*			GetContent() const { return m_elements[WINDOW].Gizmo(); }
+	WgGizmo*			Content() const { return m_elements[WINDOW].Gizmo(); }
 	WgGizmo*			ReleaseContent();
 
 	bool				DeleteChild( WgGizmo * pGizmo );
@@ -196,14 +194,14 @@ public:
 	bool				GetVSliderAutoHide() const { return m_bAutoHideSliderY; }
 
 	void				SetSliderPositions( bool bBottom, bool bRight );
-	bool				GetSliderBottom() const { return m_bSliderBottom; }
-	bool				GetSliderRight() const { return m_bSliderRight; }
+	bool				IsSliderAtBottom() const { return m_bSliderBottom; }
+	bool				IsSliderAtRight() const { return m_bSliderRight; }
 
 	bool				IsVSliderVisible();
 	bool				IsHSliderVisible();
 
-	void				SetFillerSource( const WgBlockSetPtr& pBlocks );
-
+	void				SetFillerBlocks( const WgBlockSetPtr& pBlocks );
+	WgBlockSetPtr		FillerBlocks() const { return m_pFillerBlocks; }
 
 	// Overloaded from container
 
@@ -251,6 +249,7 @@ protected:
 		float		_stepBwd();
 		float		_jumpFwd();
 		float		_jumpBwd();
+		float		_wheelRolled( int distance );
 
 		float		_setPosition( float fraction );
 

@@ -447,7 +447,7 @@ void WgGizmoCheckbox::_onCloneContent( const WgGizmo * _pOrg )
 	m_clickArea			= pOrg->m_clickArea;
 
 	Wg_Interface_TextHolder::_onCloneContent( pOrg );
-	WgIconHolder::_cloneContent( pOrg );
+	WgIconHolder::_onCloneContent( pOrg );
 }
 
 //____ _textModified() _________________________________________________________

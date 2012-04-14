@@ -336,23 +336,12 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	// Test view
 
 	{
-
-		WgGizmoView * pView = new WgGizmoView();
-
-		WgGizmoHSlider * pHSlider = (WgGizmoHSlider*) pDB->CloneGizmo( "hslider" );
-		WgGizmoVSlider * pVSlider = (WgGizmoVSlider*) pDB->CloneGizmo( "vslider" );
+		WgGizmoView * pView = (WgGizmoView*) pDB->CloneGizmo( "view" );
 
 		WgGizmoPixmap * pImage = new WgGizmoPixmap();
 		pImage->SetSource( pBigBlock );
-
-		pView->SetHSlider( pHSlider );
-		pView->SetVSlider( pVSlider );
 		pView->SetContent( pImage );
-
 		addResizableContainer( pFlex, pView, pEventHandler );
-
-		pView->SetContentOrientation( WG_CENTER );
-		pView->SetContentSizePolicy( WG_DEFAULT, WG_DEFAULT );
 	}
 
 /*

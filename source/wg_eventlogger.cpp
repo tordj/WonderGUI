@@ -423,6 +423,14 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		}
 
+		case WG_EVENT_SLIDER_WHEEL_ROLL:
+		{
+			id = "SliderWheelRolled";
+			const WgEvent::SliderWheelRolled * pEvent = static_cast<const WgEvent::SliderWheelRolled*>(_pEvent);
+			sprintf( params, "distance=%d pos=%f length=%f", pEvent->Distance(), pEvent->Pos(), pEvent->Length() );
+			break;
+		}
+
 		case WG_EVENT_TEXT_MODIFY:
 		{
 			id = "TextModify";

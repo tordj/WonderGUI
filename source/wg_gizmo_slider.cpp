@@ -851,7 +851,23 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 					_requestRender();
 				}
 			}
+			break;
 		}
+		
+		case WG_EVENT_MOUSEWHEEL_ROLL:
+		{
+			const WgEvent::MouseWheelRoll * p = static_cast<const WgEvent::MouseWheelRoll*>(pEvent);
+
+			if( p->Wheel() == 1 )
+			{
+				int distance = p->Distance();
+				if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+					SetSliderPos( m_pSliderTargetInterface->_wheelRolled(distance) );
+				
+				pHandler->QueueEvent( new WgEvent::SliderWheelRolled(this,distance,m_sliderPos,m_sliderSize) );
+			}
+		}
+		
         default:
             break;
 

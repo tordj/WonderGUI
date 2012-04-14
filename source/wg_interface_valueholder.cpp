@@ -197,6 +197,14 @@ float Wg_Interface_ValueHolder::_jumpBwd()
 	return FractionalValue();
 }
 
+//____ _wheelRolled() __________________________________________________________
+
+float Wg_Interface_ValueHolder::_wheelRolled( int distance )
+{
+	_setValue( m_value + distance*m_stepSize );
+	return FractionalValue();
+}
+
 //____ _setPosition() __________________________________________________________
 
 float Wg_Interface_ValueHolder::_setPosition( float fraction )

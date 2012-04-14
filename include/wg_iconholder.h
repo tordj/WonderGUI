@@ -58,7 +58,7 @@ protected:
 	WgRect			_getIconRect( const WgRect& contentRect, const WgBlockSetPtr& pBlockSet ) const;
 	WgRect			_getIconRect( const WgRect& contentRect, const WgSize& iconSize ) const;
 	WgRect			_getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
-	void			_cloneContent( const WgIconHolder * _pOrg );
+	void			_onCloneContent( const WgIconHolder * _pOrg );
 
 	WgOrientation	m_iconOrientation;
 	float			m_iconScale;					// Range: 0.f -> 1.f. 0.f = Fixed size.

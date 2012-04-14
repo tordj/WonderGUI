@@ -104,6 +104,7 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 #endif
 		virtual bool 	_onAlphaTest( const WgCoord& ofs );
+		virtual void	_onCloneContent( const WgGizmoContainer * _pOrg );
 
 		bool		m_bFocusGroup;
 		bool		m_bRadioGroup;
