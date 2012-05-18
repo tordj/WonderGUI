@@ -34,7 +34,7 @@
 //____ Constructor _____________________________________________________________
 
 WgGizmoContainer::WgGizmoContainer() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE),
-	m_bSiblingsOverlap(true), m_bChildEvents(true)
+	m_bSiblingsOverlap(true)
 {
 }
 
@@ -307,7 +307,6 @@ void WgGizmoContainer::_onCloneContent( const WgGizmoContainer * _pOrg )
 	m_bRadioGroup 		= _pOrg->m_bRadioGroup;
 	m_bTooltipGroup 	= _pOrg->m_bTooltipGroup;
 	m_bSiblingsOverlap 	= _pOrg->m_bSiblingsOverlap;
-	m_bChildEvents 		= _pOrg->m_bChildEvents;
 	m_maskOp 			= _pOrg->m_maskOp;
 }
 

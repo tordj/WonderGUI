@@ -65,24 +65,31 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 
 		public:
-			inline WgEventType		Type() const { return m_type; }
-			inline int64_t			Timestamp() const { return m_timestamp; }
-					WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
-			inline WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
-			inline bool				IsForGizmo() const { return m_bIsForGizmo; }
-			inline WgModifierKeys	ModKeys() const { return m_modKeys; }
-			inline WgCoord			PointerPos() const { return m_pointerLocalPos; }
-			inline WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
+			WgEventType		Type() const { return m_type; }
+			int64_t			Timestamp() const { return m_timestamp; }
+			bool			IsForGizmo() const { return m_bIsForGizmo; }
+			WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
+			WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
+			WgModifierKeys	ModKeys() const { return m_modKeys; }
+			WgCoord			PointerPos() const { return m_pointerLocalPos; }
+			WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
+			
+			bool			IsMouseEvent() const;
+			bool			IsMouseButtonEvent() const;
+			bool			IsKeyEvent() const;
 
 		protected:
 			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false) {}
 			virtual ~Event() {}
 
+			virtual void 	_cloneContentFrom( const Event * pOrg );			// Only subclassed for the standard event types.
+			
 			WgEventType		m_type;				// Type of event
 			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
 			int64_t			m_timestamp;		// Timestamp of posting this event
 			bool			m_bIsForGizmo;		// Set if this event is for a specific Gizmo (m_pGizmo set at creation, even if weak pointer now is null).
 			WgGizmoWeakPtr	m_pGizmo;			// Gizmo to receive this event.
+			WgGizmoWeakPtr	m_pForwardedFrom;	// Gizmo this event was forwarded from.
 			WgCoord			m_pointerLocalPos;	// Gizmo-relative position of pointer. Same as m_pointerScreenPos if Gizmo not set.
 			WgCoord			m_pointerScreenPos;	// Screen position of pointer.
 	};
@@ -91,9 +98,10 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	public:
-		inline int		Button() const { return m_button; }
+		int		Button() const { return m_button; }
 	protected:
 		MouseButtonEvent(int button) : m_button(button) {}
+		virtual void 	_cloneContentFrom( const MouseButtonEvent * pOrg );
 
 		int		m_button;
 	};
@@ -102,10 +110,13 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	public:
-		inline int		NativeKeyCode() const { return m_nativeKeyCode; }
-		inline int		TranslatedKeyCode() const { return m_translatedKeyCode; }
+		int		NativeKeyCode() const { return m_nativeKeyCode; }
+		int		TranslatedKeyCode() const { return m_translatedKeyCode; }
+		bool	IsCursorKey() const;
+		bool	IsMovementKey() const;
 	protected:
 		KeyEvent( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(0) {}
+		virtual void 	_cloneContentFrom( const KeyEvent * pOrg );
 
 		int		m_nativeKeyCode;
 		int		m_translatedKeyCode;
@@ -173,6 +184,7 @@ namespace WgEvent
 
 	protected:
 		MouseButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside );
+		virtual void 	_cloneContentFrom( const MouseButtonRelease * pOrg );
 
 		bool			m_bPressInside;
 		bool			m_bReleaseInside;
@@ -205,6 +217,7 @@ namespace WgEvent
 		unsigned short	Char() const;
 	protected:
 		Character( unsigned short character, WgGizmo * pGizmo );
+		virtual void 	_cloneContentFrom( const Character * pOrg );
 	protected:
 		unsigned short	m_char;
 	};
@@ -219,6 +232,7 @@ namespace WgEvent
 		int			Distance() const;
 	protected:
 		MouseWheelRoll( int wheel, int distance, WgGizmo * pGizmo );
+		virtual void 	_cloneContentFrom( const MouseWheelRoll * pOrg );
 
 		int			m_wheel;
 		int			m_distance;
@@ -233,6 +247,7 @@ namespace WgEvent
 		int				Millisec() const;
 	protected:
 		Tick( int ms, WgGizmo * pGizmo );
+		virtual void 	_cloneContentFrom( const Tick * pOrg );
 
 		int			m_millisec;
 	};
@@ -484,25 +499,25 @@ namespace WgEvent
 
 	//____ WgGizmoModalLayer events _________________________________________________
 
-	class MouseMoveOutsideModal : public Event
+	class ModalMoveOutside : public Event
 	{
 		friend class ::WgGizmoModalLayer;
 	protected:
-		MouseMoveOutsideModal( WgGizmo * pGizmo );
+		ModalMoveOutside( WgGizmo * pGizmo );
 	};
 
-	class MouseButtonPressOutsideModal : public MouseButtonEvent
+	class ModalBlockedPress : public MouseButtonEvent
 	{
 		friend class ::WgGizmoModalLayer;
 	protected:
-		MouseButtonPressOutsideModal( int button, WgGizmo * pModalGizmo );
+		ModalBlockedPress( int button, WgGizmo * pModalGizmo );
 	};
 
-	class MouseButtonReleaseOutsideModal : public MouseButtonEvent
+	class ModalBlockedRelease : public MouseButtonEvent
 	{
 		friend class ::WgGizmoModalLayer;
 	protected:
-		MouseButtonReleaseOutsideModal( int button, WgGizmo * pModalGizmo );
+		ModalBlockedRelease( int button, WgGizmo * pModalGizmo );
 	};
 
 

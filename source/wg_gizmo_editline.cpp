@@ -324,7 +324,7 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 	{
 		if( m_bFocused && static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() == 1 )
 			m_pText->setSelectionMode(false);
-	}
+	}		
 
 	if( event == WG_EVENT_CHARACTER )
 	{
@@ -480,6 +480,25 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 		}
 		_adjustViewOfs();
 	}
+
+	// Forward event depending on rules.
+
+	if( pEvent->IsMouseButtonEvent() )
+	{
+		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+			pHandler->ForwardEvent( pEvent );
+	}
+	else if( pEvent->IsKeyEvent() )
+	{
+		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
+		if( static_cast<const WgEvent::KeyEvent*>(pEvent)->IsMovementKey() == false &&
+			key != WG_KEY_DELETE && key != WG_KEY_BACKSPACE )
+				pHandler->ForwardEvent( pEvent );
+		
+		//TODO: Would be good if we didn't forward any character-creating keys either...
+	}
+	else if( event != WG_EVENT_CHARACTER )
+		pHandler->ForwardEvent( pEvent );
 }
 #endif
 

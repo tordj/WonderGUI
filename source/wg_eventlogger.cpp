@@ -267,17 +267,6 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			id = "MouseButtonDoubleClick";
 			sprintf( params, " button=%d", static_cast<const WgEvent::MouseButtonDoubleClick*>(_pEvent)->Button() );
 			break;
-		case WG_EVENT_MOUSE_MOVE_OUTSIDE_MODAL:
-			id = "MouseMoveOutsideModal";
-			break;
-		case WG_EVENT_MOUSEBUTTON_PRESS_OUTSIDE_MODAL:
-			id = "MouseButtonPressOutsideModal";
-			sprintf( params, " button=%d", ((const WgEvent::MouseButtonPressOutsideModal*)_pEvent)->Button() );
-			break;
-		case WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL:
-			id = "MouseButtonReleaseOutsideModal";
-			sprintf( params, " button=%d", ((const WgEvent::MouseButtonReleaseOutsideModal*)_pEvent)->Button() );
-			break;
 
 		case WG_EVENT_KEY_PRESS:
 		{
@@ -468,6 +457,20 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, "itemId=%d", pEvent->ItemId() );
 			break;
 		}
+
+		case WG_EVENT_MODAL_MOVE_OUTSIDE:
+			id = "ModalMoveOutside";
+			break;
+		case WG_EVENT_MODAL_BLOCKED_PRESS:
+			id = "ModalBlockedPress";
+			sprintf( params, " button=%d", ((const WgEvent::ModalBlockedPress*)_pEvent)->Button() );
+			break;
+		case WG_EVENT_MODAL_BLOCKED_RELEASE:
+			id = "ModalBlockedRelease";
+			sprintf( params, " button=%d", ((const WgEvent::ModalBlockedRelease*)_pEvent)->Button() );
+			break;
+
+
 	};
 
 	gizmo = _formatGizmo( _pEvent );

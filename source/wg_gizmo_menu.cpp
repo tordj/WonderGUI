@@ -42,8 +42,6 @@ static const char	c_gizmoType[] = {"Menu"};
 
 WgGizmoMenu::WgGizmoMenu()
 {
-	m_bChildEvents			= false;	// We should not receive any child events.
-
 	m_nItems				= 0;
 	m_markedItem			= 0;
 	m_pSelectedItem			= 0;

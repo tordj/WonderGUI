@@ -355,7 +355,7 @@ void WgGizmo::_onUpdate( const WgUpdateInfo& _updateInfo )
 #ifdef WG_TNG
 void WgGizmo::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
-
+	pHandler->ForwardEvent( pEvent );
 }
 #endif
 

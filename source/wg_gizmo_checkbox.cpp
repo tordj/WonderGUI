@@ -237,30 +237,52 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 		{
 			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
-			if( button == 1 && !m_bPressed )
+			if( button == 1 )
 			{
-				if( !m_bFlipOnRelease )
-					SetState( !m_bChecked );
-				m_bPressed = true;
-				_requestRender();
+				if( !m_bPressed )
+				{
+					if( !m_bFlipOnRelease )
+						SetState( !m_bChecked );
+					m_bPressed = true;
+					_requestRender();
+				}
 			}
+			else
+				pHandler->ForwardEvent( pEvent );
+			break;
+		}
+
+		case WG_EVENT_MOUSEBUTTON_CLICK:
+		case WG_EVENT_MOUSEBUTTON_DOUBLECLICK:
+		case WG_EVENT_MOUSEBUTTON_REPEAT:
+		case WG_EVENT_MOUSEBUTTON_DRAG:
+		{
+			int button = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
+			if( button != 1 )
+				pHandler->ForwardEvent( pEvent );
 			break;
 		}
 
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		{
 			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
-			if( button == 1 && m_bPressed )
+			if( button == 1 )
 			{
-				m_bPressed = false;
-				if( m_bFlipOnRelease )
-					SetState( !m_bChecked );
-				_requestRender();
+				if( !m_bPressed )
+				{
+					m_bPressed = false;
+					if( m_bFlipOnRelease )
+						SetState( !m_bChecked );
+					_requestRender();
+				}
 			}
+			else
+				pHandler->ForwardEvent( pEvent );
 			break;
 		}
 
         default:
+			pHandler->ForwardEvent( pEvent );
             break;
 	}
 }

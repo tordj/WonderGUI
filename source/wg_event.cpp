@@ -43,6 +43,90 @@ namespace WgEvent
 		return m_pGizmo.GetRealPtr();
 	}
 
+	bool Event::IsMouseEvent() const
+	{
+		if( m_type == WG_EVENT_MOUSEWHEEL_ROLL ||
+			m_type == WG_EVENT_MOUSE_ENTER ||
+			m_type == WG_EVENT_MOUSE_LEAVE ||	
+			m_type == WG_EVENT_MOUSE_MOVE ||	
+			m_type == WG_EVENT_MOUSE_POSITION ||
+			IsMouseButtonEvent() )
+			return true;
+		else
+			return false;
+			
+	}
+	
+	bool Event::IsMouseButtonEvent() const
+	{
+		if( m_type == WG_EVENT_MOUSEBUTTON_CLICK ||
+			m_type == WG_EVENT_MOUSEBUTTON_DOUBLECLICK ||
+			m_type == WG_EVENT_MOUSEBUTTON_DRAG ||
+			m_type == WG_EVENT_MOUSEBUTTON_PRESS ||
+			m_type == WG_EVENT_MOUSEBUTTON_RELEASE ||
+			m_type == WG_EVENT_MOUSEBUTTON_REPEAT )
+			return true;
+		else
+			return false;
+	}
+	
+	bool Event::IsKeyEvent() const
+	{
+		if( m_type == WG_EVENT_KEY_PRESS ||
+			m_type == WG_EVENT_KEY_RELEASE ||
+			m_type == WG_EVENT_KEY_REPEAT )
+			return true;
+		else
+			return false;
+	}
+
+	void Event::_cloneContentFrom( const Event * pOrg )
+	{
+		m_type				= pOrg->m_type;
+		m_modKeys			= pOrg->m_modKeys;
+		m_timestamp			= pOrg->m_timestamp;
+		m_bIsForGizmo		= pOrg->m_bIsForGizmo;
+		m_pGizmo			= pOrg->m_pGizmo;
+		m_pointerLocalPos	= pOrg->m_pointerLocalPos;
+		m_pointerScreenPos	= pOrg->m_pointerScreenPos;
+	}
+
+	//____ MouseButtonEvent ____________________________________________________
+
+	void MouseButtonEvent::_cloneContentFrom( const MouseButtonEvent * pOrg )
+	{
+		m_button = pOrg->m_button;
+		Event::_cloneContentFrom( pOrg );
+	}
+
+	//____ KeyEvent ____________________________________________________________
+
+	bool KeyEvent::IsCursorKey() const
+	{
+		if( m_translatedKeyCode == WG_KEY_UP || m_translatedKeyCode == WG_KEY_DOWN ||
+			m_translatedKeyCode == WG_KEY_LEFT || m_translatedKeyCode == WG_KEY_RIGHT )
+			return true;
+		else
+			return false;
+	}
+	
+	bool KeyEvent::IsMovementKey() const
+	{
+		if( m_translatedKeyCode == WG_KEY_PAGEUP || m_translatedKeyCode == WG_KEY_PAGEDOWN ||
+			m_translatedKeyCode == WG_KEY_HOME || m_translatedKeyCode == WG_KEY_END ||
+			IsCursorKey() )
+			return true;
+		else
+			return false;
+	}
+
+	void KeyEvent::_cloneContentFrom( const KeyEvent * pOrg )
+	{
+		m_nativeKeyCode		= pOrg->m_nativeKeyCode;
+		m_translatedKeyCode	= pOrg->m_translatedKeyCode;
+		Event::_cloneContentFrom( pOrg );
+	}
+	
 	//____ FocusGained ________________________________________________________
 
 	FocusGained::FocusGained()
@@ -153,6 +237,14 @@ namespace WgEvent
 		m_bReleaseInside = bReleaseInside;
 	}
 
+	void MouseButtonRelease::_cloneContentFrom( const MouseButtonRelease * pOrg )
+	{
+		m_bPressInside		= pOrg->m_bPressInside;
+		m_bReleaseInside	= pOrg->m_bReleaseInside;
+		Event::_cloneContentFrom( pOrg );
+	}
+
+
 	bool MouseButtonRelease::PressInside() const
 	{
 		return m_bPressInside;
@@ -190,33 +282,6 @@ namespace WgEvent
 	MouseButtonDoubleClick::MouseButtonDoubleClick( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
 	{
 		m_type = WG_EVENT_MOUSEBUTTON_DOUBLECLICK;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
-	}
-
-	//____ MouseMoveOutsideModal ___________________________________________________
-
-	MouseMoveOutsideModal::MouseMoveOutsideModal( WgGizmo * pGizmo )
-	{
-		m_type = WG_EVENT_MOUSE_MOVE_OUTSIDE_MODAL;
-		m_bIsForGizmo	= true;
-		m_pGizmo		= pGizmo;
-	}
-
-	//____ MouseButtonPressOutsideModal ______________________________________________________
-
-	MouseButtonPressOutsideModal::MouseButtonPressOutsideModal( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
-	{
-		m_type			= WG_EVENT_MOUSEBUTTON_PRESS_OUTSIDE_MODAL;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
-	}
-
-	//____ MouseButtonReleaseOutsideModal _____________________________________________________
-
-	MouseButtonReleaseOutsideModal::MouseButtonReleaseOutsideModal( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
-	{
-		m_type			= WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
@@ -279,6 +344,12 @@ namespace WgEvent
 		m_pGizmo		= pGizmo;
 	}
 
+	void Character::_cloneContentFrom( const Character * pOrg )
+	{
+		m_char			= pOrg->m_char;
+		Event::_cloneContentFrom( pOrg );
+	}
+
 	unsigned short Character::Char() const
 	{
 		return m_char;
@@ -300,6 +371,13 @@ namespace WgEvent
 		m_distance		= distance;
 		m_bIsForGizmo	= true;
 		m_pGizmo		= pGizmo;
+	}
+
+	void MouseWheelRoll::_cloneContentFrom( const MouseWheelRoll * pOrg )
+	{
+		m_wheel			= pOrg->m_wheel;
+		m_distance		= pOrg->m_distance;
+		Event::_cloneContentFrom( pOrg );
 	}
 
 
@@ -329,7 +407,12 @@ namespace WgEvent
 		m_pGizmo 		= pGizmo;
 	}
 
-
+	void Tick::_cloneContentFrom( const Tick * pOrg )
+	{
+		m_millisec = pOrg->m_millisec;
+		Event::_cloneContentFrom( pOrg );
+	}
+	
 	int Tick::Millisec() const
 	{
 		return m_millisec;
@@ -667,6 +750,30 @@ namespace WgEvent
 		m_type		= WG_EVENT_MENUITEM_UNCHECKED;
 		m_pGizmo	= pMenu;
 		m_itemId	= menuItemId;
+	}
+
+
+	//____ Modal event methods ___________________________________________________
+
+	ModalMoveOutside::ModalMoveOutside( WgGizmo * pGizmo )
+	{
+		m_type = WG_EVENT_MODAL_MOVE_OUTSIDE;
+		m_bIsForGizmo	= true;
+		m_pGizmo		= pGizmo;
+	}
+
+	ModalBlockedPress::ModalBlockedPress( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
+	{
+		m_type			= WG_EVENT_MODAL_BLOCKED_PRESS;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
+	}
+
+	ModalBlockedRelease::ModalBlockedRelease( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
+	{
+		m_type			= WG_EVENT_MODAL_BLOCKED_RELEASE;
+		m_bIsForGizmo	= true;
+		m_pGizmo 		= pGizmo;
 	}
 
 

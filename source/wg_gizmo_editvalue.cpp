@@ -417,9 +417,7 @@ void WgGizmoEditvalue::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 	bool	bTextChanged = false;
 	int		mousebutton = 0;
 
-	if( event == WG_EVENT_MOUSEBUTTON_PRESS || event == WG_EVENT_MOUSEBUTTON_CLICK || event == WG_EVENT_MOUSEBUTTON_DOUBLECLICK ||
-		event == WG_EVENT_MOUSEBUTTON_DRAG || event == WG_EVENT_MOUSEBUTTON_RELEASE || event == WG_EVENT_MOUSEBUTTON_REPEAT ||
-		event == WG_EVENT_MOUSEBUTTON_PRESS_OUTSIDE_MODAL || WG_EVENT_MOUSEBUTTON_RELEASE_OUTSIDE_MODAL )
+	if( pEvent->IsMouseButtonEvent() )
 		mousebutton = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
 
 	WgCoord ofs = pEvent->PointerPos();
@@ -763,6 +761,25 @@ void WgGizmoEditvalue::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 			Emit( Fraction(), FractionalValue() );
 		}
 	}
+	
+	// Forward event depending on rules.
+
+	if( pEvent->IsMouseButtonEvent() )
+	{
+		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+			pHandler->ForwardEvent( pEvent );
+	}
+	else if( pEvent->IsKeyEvent() )
+	{
+		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
+		if( static_cast<const WgEvent::KeyEvent*>(pEvent)->IsMovementKey() == false &&
+			key != WG_KEY_DELETE && key != WG_KEY_BACKSPACE )
+				pHandler->ForwardEvent( pEvent );
+		
+		//TODO: Would be good if we didn't forward any character-creating keys either...
+	}
+	else if( event != WG_EVENT_CHARACTER )
+		pHandler->ForwardEvent( pEvent );
 }
 #endif //WG_TNG
 

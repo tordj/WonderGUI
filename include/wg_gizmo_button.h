@@ -56,8 +56,8 @@ public:
 
 	//____ Methods __________________________________________
 
-	void			SetPressAnim( bool button1, bool button2, bool button3, bool bDownWhenMouseOutside = false );
-	void			GetPressAnim( bool& button1, bool& button2, bool& button3, bool& bDownWhenMouseOutside );
+	void			SetDownWhenMouseOutside( bool bDown );
+	bool			DownWhenMouseOutside() const { return m_bDownOutside; }
 
 	bool			SetIcon( const WgBlockSetPtr& pIconGfx, WgOrientation orientation, WgBorders borders = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
 	void			SetIcon( const WgBlockSetPtr& pIconGfx );
@@ -106,10 +106,9 @@ protected:
 
 	WgMode			m_mode;
 
-	bool			m_bRenderDown[WG_MAX_BUTTONS];	// Render down-version if [button] pressed?
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 
-	bool			m_bPressedInside[WG_MAX_BUTTONS];
+	bool			m_bPressed;				// Set when left mousebutton was pressed inside.
 	bool			m_bReturnPressed;
 	bool			m_bPointerInside;
 };

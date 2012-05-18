@@ -109,6 +109,10 @@ public:
 	int		DeleteAllCallbacks();
 	int		DeleteDeadCallbacks();
 
+	//----
+
+	bool	ForwardEvent( const WgEvent::Event * pEvent );
+	bool	ForwardEvent( const WgEvent::Event * pEvent, WgGizmo * pRecipient );
 
 private:
 	class	Callback;
@@ -153,8 +157,9 @@ private:
 	int		_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain );
 	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
-	void 	_updateMarkedGizmos(bool bPostMouseMoveEvents);
+	void 	_updateMarkedGizmo(bool bPostMouseMoveEvents);
 	void	_addTickReceiver( WgGizmo * pGizmo );
+		
 	//
 
 	WgRoot *		m_pRoot;
@@ -171,25 +176,25 @@ private:
 
 	// Current mouse state
 
-	std::vector<WgGizmoWeakPtr>	m_vMarkedGizmos;	// Gizmos the pointer currently is "inside". Empty if outside a modal gizmo.
+	WgGizmoWeakPtr				m_pMarkedGizmo;		// Gizmo the pointer currently is "inside". Empty if outside a modal gizmo.
 
 	// Current button states
 
 	bool						m_bButtonPressed[WG_MAX_BUTTONS+1];
 
-	WgEvent::MouseButtonPress *		m_pLatestPressEvents[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
-	WgEvent::MouseButtonRelease *	m_pLatestReleaseEvents[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was released.
+	WgEvent::MouseButtonPress *	m_pLatestPressEvents[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
+	WgEvent::MouseButtonRelease *	m_pLatestReleaseEvents[WG_MAX_BUTTONS+1];	// Saved info for the last time each button was released.
 
-	std::vector<WgGizmoWeakPtr>	m_latestPressGizmos[WG_MAX_BUTTONS+1];		// List of gizmos who received the latest press, for each button.
-	std::vector<WgGizmoWeakPtr>	m_previousPressGizmos[WG_MAX_BUTTONS+1];	// List of gizmos who received the second latest press, for each button,
+	WgGizmoWeakPtr				m_latestPressGizmos[WG_MAX_BUTTONS+1];		// Gizmo that received the latest press, for each button.
+	WgGizmoWeakPtr				m_previousPressGizmos[WG_MAX_BUTTONS+1];	// Gizmo that received the second latest press, for each button,
 																			// used for double-click handling.
 
 	// Current keyboard state
 
 	struct KeyDownInfo
 	{
-		WgEvent::KeyPress * 		pEvent;
-		std::vector<WgGizmoWeakPtr>	vGizmos;				// Gizmos who received the press event.
+		WgEvent::KeyPress * 	pEvent;
+		WgGizmoWeakPtr			pGizmo;					// Gizmo that received the press event.
 	};
 
 	std::vector<KeyDownInfo*>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.

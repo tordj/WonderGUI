@@ -44,15 +44,8 @@ WgGizmoButton::WgGizmoButton()
 
  	m_mode				= WG_MODE_NORMAL;
 
-	m_bDownOutside		= false;
-
-	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
-	{
-		m_bRenderDown[i] = 0;
-		m_bPressedInside[i] = 0;
-	}
-	m_bRenderDown[0] = true;			// Default is first mouse button...
-
+	m_bDownOutside	 = false;
+	m_bPressed 		 = false;
 	m_bReturnPressed = false;
 	m_bPointerInside = false;
 }
@@ -273,8 +266,21 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		{
 			if( static_cast<const WgEvent::KeyPress*>(pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 				m_bReturnPressed = true;
+			else
+				pHandler->ForwardEvent( pEvent );
 			break;
 		}
+
+		case	WG_EVENT_KEY_REPEAT:
+		{
+			if( static_cast<const WgEvent::KeyPress*>(pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+			{
+			}
+			else
+				pHandler->ForwardEvent( pEvent );
+			break;
+		}
+
 
 		case	WG_EVENT_KEY_RELEASE:
 		{
@@ -283,6 +289,8 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				m_bReturnPressed = false;
 				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
 			}
+			else
+				pHandler->ForwardEvent( pEvent );
 			break;
 		}
 
@@ -297,26 +305,45 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 		{
 			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
-			m_bPressedInside[button-1] = true;
+			if( button == 1 )
+				m_bPressed = true;
+			else
+				pHandler->ForwardEvent( pEvent );
 			break;
 		}
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		{
-			const WgEvent::MouseButtonRelease* pEv = static_cast<const WgEvent::MouseButtonRelease*>(pEvent);
-			int button = pEv->Button();
-			m_bPressedInside[button-1] = false;
+			int button = static_cast<const WgEvent::MouseButtonRelease*>(pEvent)->Button();
+			if( button == 1 )
+				m_bPressed = false;
+			else
+				pHandler->ForwardEvent( pEvent );
 			break;
 		}
 
 		case WG_EVENT_MOUSEBUTTON_CLICK:
 		{
-			const WgEvent::MouseButtonClick* pEv = static_cast<const WgEvent::MouseButtonClick*>(pEvent);
-			if( pEv->Button() == 1 )
+			int button = static_cast<const WgEvent::MouseButtonClick*>(pEvent)->Button();
+			if( button == 1 )
 				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
+			else
+				pHandler->ForwardEvent( pEvent );
 			break;
 		}
 
+		case WG_EVENT_MOUSEBUTTON_DOUBLECLICK:
+		case WG_EVENT_MOUSEBUTTON_REPEAT:
+		case WG_EVENT_MOUSEBUTTON_DRAG:
+		{
+			int button = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
+			if( button != 1 )
+				pHandler->ForwardEvent( pEvent );
+			break;
+		}
+
+
         default:
+			pHandler->ForwardEvent( pEvent );
             break;
 
 	}
@@ -365,13 +392,15 @@ void WgGizmoButton::_onAction( WgInput::UserAction action, int button, const WgA
 			break;
 
 		case WgInput::BUTTON_PRESS:
-			m_bPressedInside[button-1] = true;
+			if( button == 1 )
+				m_bPressed = true;
 			break;
 
 		case WgInput::BUTTON_RELEASE:
 			//TODO: Send signal if right button was released!
 		case WgInput::BUTTON_RELEASE_OUTSIDE:
-			m_bPressedInside[button-1] = false;
+			if( button == 1 )
+				m_bPressed = false;
 			break;
 
         default:
@@ -394,17 +423,8 @@ WgMode WgGizmoButton::_getRenderMode()
 	if( !IsEnabled() )
 		return WG_MODE_DISABLED;
 
-	if( m_bReturnPressed )
+	if( m_bReturnPressed || (m_bPressed && (m_bPointerInside || m_bDownOutside)) )
 		return WG_MODE_SELECTED;
-
-	if( m_bPointerInside || m_bDownOutside )
-	{
-		for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
-		{
-			if( m_bRenderDown[i] && m_bPressedInside[i] )
-				return WG_MODE_SELECTED;
-		}
-	}
 
 	if( m_bPointerInside )
 		return WG_MODE_MARKED;
@@ -428,27 +448,12 @@ void WgGizmoButton::_onRefresh( void )
 	}
 }
 
+//____ SetDownWhenMouseOutside() _______________________________________________
 
-//____ SetPressAnim() __________________________________________________________
-
-void	WgGizmoButton::SetPressAnim( bool _button1, bool _button2, bool _button3, bool _bDownOutside )
+void WgGizmoButton::SetDownWhenMouseOutside( bool bDown )
 {
-		m_bRenderDown[0]	= _button1;
-		m_bRenderDown[1]	= _button2;
-		m_bRenderDown[2]	= _button3;
-		m_bDownOutside		= _bDownOutside;
+		m_bDownOutside		= bDown;
 }
-
-//____ GetPressAnim() _________________________________________________________
-
-void WgGizmoButton::GetPressAnim( bool& button1, bool& button2, bool& button3, bool& bDownWhenMouseOutside )
-{
-	button1 = m_bRenderDown[0];
-	button2 = m_bRenderDown[1];
-	button3 = m_bRenderDown[2];
-	bDownWhenMouseOutside = m_bDownOutside;
-}
-
 
 //____ _onCloneContent() _______________________________________________________
 
@@ -467,9 +472,6 @@ void WgGizmoButton::_onCloneContent( const WgGizmo * _pOrg )
 	m_pBgGfx		= pOrg->m_pBgGfx;
 	m_pIconGfx		= pOrg->m_pIconGfx;
 	m_mode			= pOrg->m_mode;
-
-	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
-	 	m_bRenderDown[i] = pOrg->m_bRenderDown[i];
 }
 
 //____ _onAlphaTest() ___________________________________________________________

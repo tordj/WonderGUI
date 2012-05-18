@@ -302,7 +302,7 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 */
 
 	// Test menus and MenuLayer.
-/*
+
 	{
 		WgGizmoMenu * pSubMenu1 = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
 		pSubMenu1->AddItem( new WgMenuEntry( WgString("Entry 7"), WgString("Help text for entry 7"), WgBlockSetPtr(), 0 ));
@@ -331,10 +331,10 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 
 //		pMenuLayer->OpenMenu( pMenu, WgRect(10,10,100,10), WG_SOUTHWEST );
 	}
-*/
+
 
 	// Test view
-
+/*
 	{
 		WgGizmoView * pView = (WgGizmoView*) pDB->CloneGizmo( "view" );
 
@@ -343,10 +343,11 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 		pView->SetContent( pImage );
 		addResizableContainer( pFlex, pView, pEventHandler );
 	}
+*/
 
-/*
+
 	// Modal container
-
+/*
 	g_pModal = new WgGizmoModalLayer();
 	g_pModal->SetBase( pFlex );
 

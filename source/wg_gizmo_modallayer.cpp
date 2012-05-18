@@ -713,20 +713,20 @@ void WgGizmoModalLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler
 			case WG_EVENT_MOUSEBUTTON_PRESS:
 			{
 				const WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
-				pHandler->QueueEvent( new WgEvent::MouseButtonPressOutsideModal( pEvent->Button(), this) );
+				pHandler->QueueEvent( new WgEvent::ModalBlockedPress( pEvent->Button(), this) );
 			}
 			break;
 
 			case WG_EVENT_MOUSEBUTTON_RELEASE:
 			{
 				const WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
-				pHandler->QueueEvent( new WgEvent::MouseButtonReleaseOutsideModal( pEvent->Button(), this) );
+				pHandler->QueueEvent( new WgEvent::ModalBlockedPress( pEvent->Button(), this) );
 			}
 			break;
 
 			case WG_EVENT_MOUSE_MOVE:
 			{
-				pHandler->QueueEvent( new WgEvent::MouseMoveOutsideModal(this) );
+				pHandler->QueueEvent( new WgEvent::ModalMoveOutside(this) );
 			}
 			break;
 		}

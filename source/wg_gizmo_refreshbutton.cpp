@@ -253,7 +253,7 @@ void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandl
 		{
 			const WgEvent::MouseButtonRelease * pBtnRelease = static_cast<const WgEvent::MouseButtonRelease*>(pEvent);
 
-			if( m_bAutoRefresh && m_bPressedInside[pBtnRelease->Button()-1] == true )
+			if( m_bAutoRefresh && m_bPressed && pBtnRelease->Button() == 1 )
 				StartRefresh();
 
 			break;
@@ -403,7 +403,7 @@ void WgGizmoRefreshButton::_onAction( WgInput::UserAction action, int button, co
 
 		case WgInput::BUTTON_RELEASE:
 
-			if( m_bAutoRefresh && m_bPressedInside[button-1] == true )
+			if( m_bAutoRefresh && button == 1 && m_bPressed )
 				StartRefresh();
         default:
             break;
@@ -422,17 +422,9 @@ WgMode WgGizmoRefreshButton::_getRenderMode()
 	if( m_bRefreshing && !m_bRestartable )
 		return WG_MODE_SPECIAL;					// Not restartable, so we shouldn't show any MARKED/SELECTED modes.
 
-	if( m_bReturnPressed )
-		return WG_MODE_SELECTED;
 
-	if( m_bPointerInside || m_bDownOutside )
-	{
-		for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
-		{
-			if( m_bRenderDown[i] && m_bPressedInside[i] )
-				return WG_MODE_SELECTED;
-		}
-	}
+	if( m_bReturnPressed || (m_bPressed && (m_bPointerInside || m_bDownOutside)) )
+		return WG_MODE_SELECTED;
 
 	if( m_bPointerInside )
 		return WG_MODE_MARKED;

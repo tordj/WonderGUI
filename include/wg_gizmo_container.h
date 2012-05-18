@@ -96,7 +96,7 @@ class WgGizmoContainer : public WgGizmoParent
 		bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
 		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
 
-		WgGizmoModalLayer *		_getModalLayer() const;
+		WgGizmoModalLayer *	_getModalLayer() const;
 		WgGizmoMenuLayer*	_getMenuLayer() const;
 
 #ifdef WG_TNG
@@ -110,7 +110,6 @@ class WgGizmoContainer : public WgGizmoParent
 		bool		m_bRadioGroup;
 		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
 		bool		m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
-		bool		m_bChildEvents;		// Receive mouse/keyboard events even when descendants have the mouse/keyboard focus.
 		WgMaskOp	m_maskOp;			// Specifies how container masks background.
 };
 

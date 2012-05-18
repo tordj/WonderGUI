@@ -276,6 +276,7 @@ void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 		break;
 
 		default:
+			pHandler->ForwardEvent( pEvent );
 		break;
 	}
 }
