@@ -873,6 +873,16 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	}
 
+	// Forward event depending on rules.
+
+	if( pEvent->IsMouseButtonEvent() )
+	{
+		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+			pHandler->ForwardEvent( pEvent );
+	}
+	else if( pEvent->Type() != WG_EVENT_MOUSEWHEEL_ROLL )
+		pHandler->ForwardEvent( pEvent );
+
 }
 #endif
 

@@ -1009,6 +1009,22 @@ void WgGizmoMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 	}
 
+	// Forward event depending on rules.
+
+	if( pEvent->IsMouseButtonEvent() )
+	{
+		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+			pHandler->ForwardEvent( pEvent );
+	}
+	else if( pEvent->IsKeyEvent() )
+	{
+		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
+		if( key != WG_KEY_RIGHT && key != WG_KEY_RETURN && key != WG_KEY_UP && key != WG_KEY_DOWN &&
+			key != WG_KEY_HOME && key != WG_KEY_END && key != WG_KEY_PAGEUP && key != WG_KEY_PAGEDOWN )
+			pHandler->ForwardEvent( pEvent );		
+	}
+	else if( pEvent->Type() != WG_EVENT_CHARACTER && pEvent->Type() != WG_EVENT_MOUSEWHEEL_ROLL )
+		pHandler->ForwardEvent( pEvent );
 }
 
 //____ SelectItem() _________________________________________________

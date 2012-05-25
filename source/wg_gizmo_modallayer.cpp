@@ -731,6 +731,10 @@ void WgGizmoModalLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler
 			break;
 		}
 	}
+	
+	// Forward all events
+	
+	pHandler->ForwardEvent( _pEvent );
 }
 
 //____ _onAction() ____________________________________________________________

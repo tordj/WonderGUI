@@ -45,23 +45,20 @@ v Value		(untested, needs event-posting!)
 
 BEFORE RELEASE
 ==============
+* Debug/finish layout class Table.
+* WgGizmoMenu/MenuBar/ComboBox work with Layout Class Modal. Reintroduce MenuBar!
+* Layout Classes VBox/HBox.
+* Layout Classes VList/HList (selectable).
 
+* Replace WG_TNG with !WG_LEGACY.
 * Sort function in WgOrderedLayout.
-* Layout Class HBox.
 * Layout Class Grid.
-* Layout Class VList (selectable).
-* VList work with View (scroll_into_view etc).
+* VList/HList/Table work with View (scroll_into_view etc).
 * Debug dirty rects.
 * WgBlockSet externa från surface.
-* WgGizmoMenu/MenuBar/ComboBox work with Layout Class Modal.
-* All Gizmos use events instead of signals.
-* Debug/finish layout class Table.
-* Debug/finish layout class FlexGeo
-* Debug/finish WgGizmoView (delete child gizmos where appropriate, not use signals etc).
 * Kolla så att alla WgGizmo::CloneContent() fungerar.
 
 - Bitmap-fonter.
-- Layout Class Stack.
 
 TO BE TESTED
 ============
@@ -76,6 +73,13 @@ PAPERCUTS
 * Gizmos needs more constructors for convenience! WgGizmoPixmap could take the WgBlockSetPtr directly.
 * More versions of WgSurface::defineBlockSet(), no need to force user to specify borders etc.
 * Should rename all SetSource() to SetBlocks().
+
+
+KEYBOARD SUPPORT
+================
+
+* Sliders should have support for arrow keys (up/down or left/right depending on orientation)
+  and home/end.
 
 
 FONT SYSTEM

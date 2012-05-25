@@ -574,7 +574,7 @@ bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent )
 		return false;
 	
 	WgGizmo * p = _pEvent->Gizmo();
-	if( p && p->ParentX() )	
+	if( p && p->ParentX() )
 		return ForwardEvent( _pEvent, p->ParentX()->CastToGizmo() );
 	else
 		return false;				
@@ -587,7 +587,7 @@ bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent, WgGizmo * pRe
 
 	WgEvent::Event * pEvent = 0;
 
-	switch( pEvent->Type() )
+	switch( _pEvent->Type() ) 
 	{
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 			pEvent = new WgEvent::MouseButtonPress(0);

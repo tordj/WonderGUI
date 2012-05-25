@@ -25,6 +25,7 @@
 #include <wg_util.h>
 #include <wg_patches.h>
 #include <wg_event.h>
+#include <wg_eventhandler.h>
 
 
 using namespace WgSignal;
@@ -1046,6 +1047,7 @@ void WgGizmoView::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 		break;
 
 		default:
+			pHandler->ForwardEvent(_pEvent);
 		break;
 	}
 }

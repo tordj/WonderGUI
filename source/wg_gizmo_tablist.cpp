@@ -1292,6 +1292,17 @@ void WgGizmoTablist::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * 
         default:
             break;
 	}
+
+	// Forward event depending on rules.
+
+	if( _pEvent->IsMouseButtonEvent() )
+	{
+		if( static_cast<const WgEvent::MouseButtonEvent*>(_pEvent)->Button() != 1 )
+			pHandler->ForwardEvent( _pEvent );
+	}
+	else
+		pHandler->ForwardEvent( _pEvent );
+
 }
 #endif
 

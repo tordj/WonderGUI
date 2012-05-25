@@ -252,10 +252,13 @@ void WgGizmoTabOrder::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler *
 					pHandler->SetKeyboardFocus(pEntry->pGizmo.GetRealPtr() );
 				}
 			}
+			else
+				pHandler->ForwardEvent(_pEvent);
 		}
 		break;
 
 		default:
+			pHandler->ForwardEvent(_pEvent);
 			break;
 	}
 
