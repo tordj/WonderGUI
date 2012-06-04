@@ -131,9 +131,7 @@ void WgGizmoRefreshButton::StartRefresh()
 		m_refreshProgress = 0.f;
 		m_animTimer = 0;
 		m_pRefreshAnim->SetPlayMode( WG_FORWARD_LOOPING );		//UGLY! Should change once the animation system has been updated.
-#ifdef WG_TNG
 		_startReceiveTicks();
-#endif
 		_requestRender();
 	}
 }
@@ -149,9 +147,7 @@ void WgGizmoRefreshButton::StopRefresh()
 	}
 	else
 	{
-#ifdef WG_TNG
 		StopRefreshNow();
-#endif
 	}
 }
 
@@ -160,9 +156,7 @@ void WgGizmoRefreshButton::StopRefreshNow()
 {
 	m_refreshProgress = 1.f;
 	m_bRefreshing = false;
-#ifdef WG_TNG
 	_stopReceiveTicks();
-#endif
 	_requestRender();
 }
 
@@ -203,7 +197,6 @@ void WgGizmoRefreshButton::_onNewSize( const WgSize& size )
 
 //____ _onEvent() _____________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -264,35 +257,6 @@ void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandl
 	}
 
 	WgGizmoButton::_onEvent( pEvent, pHandler );
-}
-#endif
-
-//_____________________________________________________________________________
-void WgGizmoRefreshButton::_onUpdate( const WgUpdateInfo& _updateInfo )
-{
-	if( m_bRefreshing && m_pRefreshAnim )
-	{
-		if( m_refreshMode != PROGRESS )
-		{
-			WgGfxFrame * pOldFrame = m_pRefreshAnim->GetFrame( m_animTimer );
-			m_animTimer += _updateInfo.msDiff;
-			WgGfxFrame * pNewFrame = m_pRefreshAnim->GetFrame( m_animTimer );
-
-			// RequestRender if animation has moved.
-
-			if( pOldFrame != pNewFrame )
-				_requestRender();
-
-			// Check if animation has ended.
-
-			if( m_bStopping && pNewFrame == m_pRefreshAnim->GetLastFrame() )		//UGLY! Change when we have updated WgAnim!
-			{
-				m_bRefreshing = false;
-				m_bStopping = false;
-				_requestRender();
-			}
-		}
-	}
 }
 
 
@@ -387,30 +351,6 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 	}
 }
 
-//____ _onAction() _____________________________________________________________
-
-void WgGizmoRefreshButton::_onAction( WgInput::UserAction action, int button, const WgActionDetails& info, const WgInput& inputObj )
-{
-	switch( action )
-	{
-		case	WgInput::KEY_RELEASE:
-		{
-			if( m_bAutoRefresh && button == WG_KEY_RETURN )
-				StartRefresh();
-
-			break;
-		}
-
-		case WgInput::BUTTON_RELEASE:
-
-			if( m_bAutoRefresh && button == 1 && m_bPressed )
-				StartRefresh();
-        default:
-            break;
-	}
-
-	WgGizmoButton::_onAction( action, button, info, inputObj );
-}
 
 //_____ _getRenderMode() ________________________________________________________
 

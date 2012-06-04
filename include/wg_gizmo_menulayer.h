@@ -51,8 +51,6 @@ public:
 
 	WgGizmoContainer* Parent() const;
 
-	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
-
 protected:
 	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
 
@@ -82,7 +80,7 @@ protected:
 
 
 
-class WgGizmoMenuLayer : public WgGizmo, public WgGizmoContainer
+class WgGizmoMenuLayer : public WgGizmoContainer
 {
 	friend class BaseHook;
 	friend class WgMenuHook;
@@ -117,11 +115,6 @@ public:
 
 	WgSize			DefaultSize() const;
 
-	bool			IsView() const { return false; }
-	bool			IsContainer() const { return true; }
-	WgGizmoContainer * CastToContainer() { return this; }
-	const WgGizmoContainer * CastToContainer() const { return this; }
-
 	// Overloaded from container
 
 	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
@@ -131,9 +124,6 @@ public:
 
 	bool			DeleteAllChildren() { return 0; }
 	bool			ReleaseAllChildren() { return 0; }
-
-	WgGizmo*		CastToGizmo() { return this; }
-	const WgGizmo*	CastToGizmo() const { return this; }
 
 private:
 
@@ -152,8 +142,6 @@ private:
 		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
 		WgGizmoMenuLayer* Parent() const { return m_pParent; }
-
-		WgWidget*	GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
 
 	protected:
 		BaseHook( WgGizmoMenuLayer * pParent ) : m_pParent(pParent) {}
@@ -174,19 +162,6 @@ private:
 
 	void			_stealKeyboardFocus();
 	void			_restoreKeyboardFocus();
-
-
-	// These are needed until WgGizmoContainer inherits from WgGizmo
-
-	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
-									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
-	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
-									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
-	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
-									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip, blendMode); }
-	void			_onEnable() { WgGizmoContainer::_onEnable(); }
-	void			_onDisable() { WgGizmoContainer::_onDisable(); }
-	bool 			_onAlphaTest( const WgCoord& ofs ) { return WgGizmoContainer::_onAlphaTest(ofs); }
 
 	//
 

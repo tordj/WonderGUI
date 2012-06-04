@@ -26,9 +26,7 @@
 #include	<wg_font.h>
 #include 	<wg_gfxdevice.h>
 #include 	<wg_pen.h>
-#ifdef WG_TNG
-#	include 	<wg_eventhandler.h>
-#endif
+#include 	<wg_eventhandler.h>
 
 static const char	c_gizmoType[] = {"Editline"};
 
@@ -124,13 +122,10 @@ Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 
 	Uint32 retVal = m_pText->putText( str );
 
-#ifdef WG_TNG
 	WgEventHandler * pHandler = EventHandler();
 	if( pHandler )
 		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
-#endif
 
-	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	_adjustViewOfs();
 
 	return retVal;
@@ -149,13 +144,11 @@ bool WgGizmoEditline::InsertCharAtCursor( Uint16 c )
 
 	if( !m_pText->putChar( c ) )
 		return false;
-#ifdef WG_TNG
+
 	WgEventHandler * pHandler = EventHandler();
 	if( pHandler )
 		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
-#endif
 
-	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	_adjustViewOfs();
 	return true;
 }
@@ -175,18 +168,6 @@ WgSize WgGizmoEditline::DefaultSize() const
 	//TODO: Implement!
 
 	return WgSize(1,1);
-}
-
-
-//____ _onUpdate() _____________________________________________________________
-
-void WgGizmoEditline::_onUpdate( const WgUpdateInfo& _updateInfo )
-{
-	if( _isSelectable() && m_bFocused )
-	{
-		m_pText->incTime( _updateInfo.msDiff );
-		_requestRender();					//TODO: Should only render the cursor and selection!
-	}
 }
 
 
@@ -253,7 +234,6 @@ void WgGizmoEditline::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 //____ _onEvent() ______________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	WgEventType event = pEvent->Type();
@@ -343,7 +323,6 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 				if( pHandler )
 					pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
 
-				Emit( WgSignal::TextChanged() );
 				_adjustViewOfs();
 			}
 		}
@@ -411,7 +390,6 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 				WgEventHandler * pHandler = EventHandler();
 				if( pHandler )
 					pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
-				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 				break;
 			}
 
@@ -427,7 +405,6 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 				WgEventHandler * pHandler = EventHandler();
 				if( pHandler )
 					pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
-				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 				break;
 			}
 
@@ -499,212 +476,6 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 	}
 	else if( event != WG_EVENT_CHARACTER )
 		pHandler->ForwardEvent( pEvent );
-}
-#endif
-
-//____ _onAction() _____________________________________________________________
-
-void WgGizmoEditline::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
-{
-#ifdef WG_LEGACY
-
-	if( (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
-	{
-		if( !m_bFocused )
-			GrabFocus();
-
-		if( m_bFocused )
-		{
-			if( _isSelectable() && (info.modifier & WG_MODKEY_SHIFT) )
-			{
-				m_pText->setSelectionMode(true);
-			}
-
-			WgCoord ofs = Abs2local(WgCoord(info.x,0));
-
-			int x = ofs.x;
-			int y = ofs.y;
-			x += m_viewOfs;
-
-			if( m_bPasswordMode )
-			{
-				WgTextAttr	attr;
-				m_pText->GetBaseAttr( attr );
-
-				WgPen	pen;
-				pen.SetAttributes( attr );
-				pen.SetChar(m_pwGlyph);
-				pen.AdvancePos();
-
-				int spacing = pen.GetPosX();
-				int height = pen.GetLineSpacing();
-
-				int line = y/height;
-				int col = (x+spacing/2)/spacing;
-				if(col < 0)
-				{
-					col = 0;
-					line = 0;
-				}
-				m_pText->gotoSoftPos(line,col);
-			}
-			else
-			{
-				m_pText->CursorGotoCoord( WgCoord(x, 0), WgRect(0,0,1000000,1000000) );
-			}
-
-			if(_isSelectable() && action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
-			{
-				m_pText->clearSelection();
-				m_pText->setSelectionMode(true);
-			}
-		}
-		_adjustViewOfs();
-	}
-
-	if( action == WgInput::BUTTON_RELEASE || action == WgInput::BUTTON_RELEASE_OUTSIDE )
-	{
-		if( m_bFocused && button_key == 1 )
-			m_pText->setSelectionMode(false);
-	}
-
-	if( action == WgInput::CHARACTER )
-	{
-		if( _isEditable() &&  m_bFocused && button_key >= 32 && button_key != 127)
-		{
-
-			if(m_pText->hasSelection())
-				m_pText->delSelection();
-			m_pText->setSelectionMode(false);
-
-			if( m_pText->putChar( button_key ) )
-			{
-				Emit( WgSignal::TextChanged() );
-				_adjustViewOfs();
-			}
-		}
-	}
-
-	if( action == WgInput::KEY_RELEASE && m_bFocused )
-	{
-		switch( button_key )
-		{
-			case WG_KEY_SHIFT:
-				if(!inputObj.isButtonDown(1))
-					m_pText->setSelectionMode(false);
-			break;
-		}
-	}
-
-	if( (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) && _isEditable() && m_bFocused )
-	{
-		switch( button_key )
-		{
-			case WG_KEY_LEFT:
-				if( info.modifier & WG_MODKEY_SHIFT )
-					m_pText->setSelectionMode(true);
-
-				if( info.modifier & WG_MODKEY_CTRL )
-				{
-					if( m_bPasswordMode )
-						m_pText->goBOL();
-					else
-						m_pText->gotoPrevWord();
-				}
-				else
-				{
-					m_pText->goLeft();
-				}
-				break;
-			case WG_KEY_RIGHT:
-				if( info.modifier & WG_MODKEY_SHIFT )
-					m_pText->setSelectionMode(true);
-
-				if( info.modifier & WG_MODKEY_CTRL )
-				{
-					if( m_bPasswordMode )
-						m_pText->goEOL();
-					else
-						m_pText->gotoNextWord();
-				}
-				else
-				{
-					m_pText->goRight();
-				}
-				break;
-
-			case WG_KEY_BACKSPACE:
-				if(m_pText->hasSelection())
-					m_pText->delSelection();
-				else if( (info.modifier & WG_MODKEY_CTRL) && !m_bPasswordMode)
-					m_pText->delPrevWord();
-				else
-					m_pText->delPrevChar();
-				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
-				break;
-
-			case WG_KEY_DELETE:
-				if(m_pText->hasSelection())
-					m_pText->delSelection();
-				else if( (info.modifier & WG_MODKEY_CTRL) && !m_bPasswordMode)
-					m_pText->delNextWord();
-				else
-					m_pText->delNextChar();
-				Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
-				break;
-
-			case WG_KEY_HOME:
-
-				/*
-				 *	I am not sure if this is the proper way to this, but in my opinion, the default
-				 *	"actions" has to be separated from any modifier key action combination
-				 */
-				switch( info.modifier )
-				{
-
-				case WG_MODKEY_CTRL:
-					break;
-
-				default: // no modifier key was pressed
-					if( info.modifier & WG_MODKEY_SHIFT )
-						m_pText->setSelectionMode(true);
-
-					m_pText->goBOL();
-					break;
-				}
-
-				break;
-
-			case WG_KEY_END:
-
-				/*
-			 	 *	I am not sure if this is the proper way to this, but in my opinion, the default
-		 		 *	"actions" has to be separated from any modifier key action combination
-				 */
-				switch( info.modifier )
-				{
-
-				case WG_MODKEY_CTRL:
-					break;
-
-				default: // no modifier key was pressed
-					if( info.modifier & WG_MODKEY_SHIFT )
-						m_pText->setSelectionMode(true);
-
-					m_pText->goEOL();
-					break;
-				}
-
-				break;
-
-			default:
-				break;
-		}
-		_adjustViewOfs();
-	}
-
-#endif //WG_LEGACY
-
 }
 
 
@@ -820,9 +591,7 @@ void WgGizmoEditline::_onGotInputFocus()
 
 	if( _isEditable() )
 	{
-#ifdef WG_TNG
 		_startReceiveTicks();
-#endif
 		if( m_bResetCursorOnFocus )
 			m_pText->goEOL();
 		_requestRender(); // render with cursor on
@@ -844,12 +613,10 @@ void WgGizmoEditline::_onLostInputFocus()
 
 	if( _isEditable() || m_viewOfs != 0 )
 	{
-#ifdef WG_TNG
 		_stopReceiveTicks();
 		WgEventHandler * pHandler = EventHandler();
 		if( pHandler )
 			pHandler->QueueEvent( new WgEvent::TextSet(this, m_pText) );
-#endif
 
 		m_viewOfs = 0;
 		_requestRender();
@@ -870,7 +637,6 @@ void WgGizmoEditline::_onNewSize( const WgSize& size )
 void WgGizmoEditline::_textModified()
 {
 	m_bResetCursorOnFocus = true;			// Any change to text while we don't have focus resets the position.
-	Emit( WgSignal::TextChanged() );		//TODO: Should only emit if text really has changed
 	_requestRender();
 	_adjustViewOfs();
 }

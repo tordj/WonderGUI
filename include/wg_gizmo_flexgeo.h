@@ -120,8 +120,6 @@ public:
 
 	WgGizmoFlexGeo* Parent() const { return m_pParent; }
 
-	WgWidget*		GetRoot();			// Should in the future not return a widget, but a gizmo.
-
 protected:
 	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
 
@@ -190,7 +188,7 @@ private:
 
 //____ WgGizmoFlexGeo _________________________________________________________
 
-class WgGizmoFlexGeo : public WgGizmo, public WgGizmoContainer
+class WgGizmoFlexGeo : public WgGizmoContainer
 {
 friend class WgFlexHook;
 
@@ -243,35 +241,10 @@ public:
 
 	WgSize			DefaultSize() const;
 
-	bool			IsView() const { return false; }
-	bool			IsContainer() const { return true; }
-
-	WgGizmoContainer * CastToContainer() { return this; }
-	const WgGizmoContainer * CastToContainer() const { return this; }
-
-	WgGizmo*		CastToGizmo() { return this; }
-	const WgGizmo*	CastToGizmo() const { return this; }
-
-
 private:
-
-	// These are needed until WgGizmoContainer inherits from WgGizmo
-
-	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
-									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
-	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
-									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
-	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
-									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip, blendMode ); }
-	void			_onEnable() { WgGizmoContainer::_onEnable(); }
-	void			_onDisable() { WgGizmoContainer::_onDisable(); }
-	bool 			_onAlphaTest( const WgCoord& ofs ) { return WgGizmoContainer::_onAlphaTest(ofs); }
-
-	//
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onNewSize( const WgSize& size );
-	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 
 
 	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.

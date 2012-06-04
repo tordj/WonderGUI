@@ -58,9 +58,6 @@ public:
 	bool			SetHidden( bool bHide ) { return false; }		// This gizmo handles hide/show of children according to its own rules.
 	WgGizmoView * 	Parent() const { return m_pView; }
 
-	WgWidget*		GetRoot();			// Should in the future not return a widget, but a gizmo.
-
-
 protected:
 	WgViewHook() : m_pView(0) {};				// So we can make them members and then make placement new...
 	~WgViewHook();
@@ -83,7 +80,7 @@ protected:
 
 //____ WgGizmoView ________________________________________________________
 
-class WgGizmoView : public WgGizmo, public WgGizmoContainer
+class WgGizmoView : public WgGizmoContainer
 {
 	friend class WgViewHook;
 public:
@@ -211,16 +208,6 @@ public:
 
 	WgSize				DefaultSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
 
-	bool			IsView() const { return false; }
-	bool			IsContainer() const { return true; }
-
-	WgGizmoContainer * CastToContainer() { return this; }
-	const WgGizmoContainer * CastToContainer() const { return this; }
-
-	WgGizmo*		CastToGizmo() { return this; }
-	const WgGizmo*	CastToGizmo() const { return this; }
-
-
 
 
 /*
@@ -267,12 +254,6 @@ protected:
 	static const int	MAX_ELEMENTS = 3;
 
 	virtual void _onNewSize( const WgSize& size );
-
-
-	// These are needed until WgGizmoContainer inherits from WgGizmo
-
-	void		_onEnable() { WgGizmoContainer::_onEnable(); }
-	void		_onDisable() { WgGizmoContainer::_onDisable(); }
 
 	//
 

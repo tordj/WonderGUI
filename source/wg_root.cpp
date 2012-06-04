@@ -303,11 +303,6 @@ WgRect WgRoot::Hook::ScreenGeo() const
 	return m_pRoot->Geo();
 }
 
-WgWidget* WgRoot::Hook::GetRoot()
-{
-	return 0;
-}
-
 bool WgRoot::Hook::SetHidden( bool bHide )
 {
 	if( bHide != m_bHidden )

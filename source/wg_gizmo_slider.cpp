@@ -22,17 +22,12 @@
 
 #include <memory.h>
 #include <wg_gizmo_slider.h>
-#include <wg_signals.h>
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_slidertarget.h>
+#include <wg_eventhandler.h>
 
-#ifdef WG_TNG
-#	include <wg_eventhandler.h>
-#endif
-
-using namespace WgSignal;
 using namespace WgUtil;
 
 static const char	c_gizmoType[] = {"Unspecified type derived from Slider"};
@@ -104,9 +99,6 @@ bool WgGizmoSlider::SetSlider( float _pos, float _size )
 	m_sliderPos		= _pos;
 	m_sliderSize 	= _size;
 
-
-	Emit( SliderPos(), m_sliderPos );
-
 	_requestRender();
 	return	true;
 }
@@ -121,8 +113,6 @@ bool WgGizmoSlider::SetSliderPos( float pos )
 		return true;
 
 	m_sliderPos = pos;
-
-	Emit( SliderPos(), m_sliderPos );
 
 	_requestRender();
 	return	true;
@@ -635,7 +625,6 @@ void WgGizmoSlider::_unmarkReqRender()
 
 //____ _onEvent() ______________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	int		barPos, barLen;
@@ -733,7 +722,6 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 							SetSliderPos( m_pSliderTargetInterface->_jumpBwd() );
 
 						pHandler->QueueEvent( new WgEvent::SliderJumpBwd(this,m_sliderPos,m_sliderSize) );
-						Emit( PrevPage() );
 					}
 					else
 					{
@@ -741,7 +729,6 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 							SetSliderPos( m_pSliderTargetInterface->_jumpFwd() );
 
 						pHandler->QueueEvent( new WgEvent::SliderJumpFwd(this,m_sliderPos,m_sliderSize) );
-						Emit( NextPage() );
 					}
 					break;
 				case GOTO_POS:
@@ -762,7 +749,6 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 					SetSliderPos( m_pSliderTargetInterface->_stepFwd() );
 
 				pHandler->QueueEvent( new WgEvent::SliderStepFwd(this,m_sliderPos,m_sliderSize) );
-				Emit( Forward() );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
@@ -770,7 +756,6 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 					SetSliderPos( m_pSliderTargetInterface->_stepBwd() );
 
 				pHandler->QueueEvent( new WgEvent::SliderStepBwd(this,m_sliderPos,m_sliderSize) );
-				Emit( Back() );
 			}
 			break;
 		}
@@ -793,7 +778,6 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 						SetSliderPos( m_pSliderTargetInterface->_jumpBwd() );
 
 					pHandler->QueueEvent( new WgEvent::SliderJumpBwd(this,m_sliderPos,m_sliderSize) );
-					Emit( PrevPage() );
 				}
 				else
 				{
@@ -801,7 +785,6 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 						SetSliderPos( m_pSliderTargetInterface->_jumpFwd() );
 
 					pHandler->QueueEvent( new WgEvent::SliderJumpFwd(this,m_sliderPos,m_sliderSize) );
-					Emit( NextPage() );
 				}
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
@@ -810,7 +793,6 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 					SetSliderPos( m_pSliderTargetInterface->_stepFwd() );
 
 				pHandler->QueueEvent( new WgEvent::SliderJumpFwd(this,m_sliderPos,m_sliderSize) );
-				Emit( Forward() );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
@@ -818,7 +800,6 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 					SetSliderPos( m_pSliderTargetInterface->_stepBwd() );
 
 				pHandler->QueueEvent( new WgEvent::SliderJumpBwd(this,m_sliderPos,m_sliderSize) );
-				Emit( Back() );
 			}
 
 			break;
@@ -846,7 +827,6 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 						m_sliderPos = m_pSliderTargetInterface->_setPosition(m_sliderPos);
 
 					pHandler->QueueEvent( new WgEvent::SliderMove(this,m_sliderPos,m_sliderSize) );
-					Emit( SliderPos(), m_sliderPos );
 
 					_requestRender();
 				}
@@ -884,192 +864,7 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		pHandler->ForwardEvent( pEvent );
 
 }
-#endif
 
-
-//____ _onAction() _________________________________________________
-
-void WgGizmoSlider::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
-{
-	int		barPos, barLen;
-	_viewToPosLen( &barPos, &barLen );
-
-	WgCoord pos = Abs2local( WgCoord(info.x, info.y) );
-	int		x = pos.x;
-	int		y = pos.y;
-
-	int		pointerOfs;
-	int		length;
-	if( m_bHorizontal )
-	{
-		pointerOfs = x;
-		length = Size().w;
-	}
-	else
-	{
-		pointerOfs = y;
-		length = Size().h;
-	}
-
-	length -= m_headerLen + m_footerLen;
-	pointerOfs -= m_headerLen;
-
-	switch( action )
-	{
-		case WgInput::BUTTON_RELEASE:
-		case WgInput::BUTTON_RELEASE_OUTSIDE:
-		{
-			if( button_key != 1 )
-				return;
-
-			// Just put them all to NORMAL and request render.
-			// Release is followed by over before render anyway so right one will be highlighted.
-
-			_unmarkReqRender();
-			break;
-		}
-
-		case WgInput::POINTER_EXIT:
-		{
-			// Turn any MARKED/SELECTED button/bg back to NORMAL.
-			// Turn bar back to NORMAL only if MARKED (selected bar should remain selected).
-			// Request render only if something changed (which it has unless bar was SELECTED...).
-
-			if( m_mode[C_BAR] == WG_MODE_SELECTED )
-				return;
-
-			_unmarkReqRender();
-			break;
-		}
-
-		case WgInput::POINTER_ENTER:
-		case WgInput::POINTER_OVER:
-		{
-			if( m_mode[C_BAR] == WG_MODE_SELECTED )
-				return;
-
-			Component c = _findMarkedComponent(pos);
-
-			if( (c != C_NONE && m_mode[c] == WG_MODE_NORMAL) || (c == C_BG && m_mode[C_BAR] == WG_MODE_MARKED) )
-			{
-				_unmarkReqRender();
-				m_mode[c] = WG_MODE_MARKED;
-				if( c == C_BAR )
-					m_mode[C_BG] = WG_MODE_MARKED;			// Always also mark bg if bar is marked.
-
-			}
-			break;
-		}
-
-		case WgInput::BUTTON_PRESS:
-		{
-			if( button_key != 1 )
-				return;
-
-			Component c = _findMarkedComponent(pos);
-
-			_unmarkReqRender();
-			m_mode[c] = WG_MODE_SELECTED;
-
-
-			if( c == C_BAR )
-			{
-				m_dragBarPressOfs = pointerOfs - barPos;
-				m_mode[C_BG] = WG_MODE_MARKED;			// Always mark bg if bar is pressed.
-			}
-			else if( c == C_BG )
-			{
-				switch( m_bgPressMode )
-				{
-				case SKIP_PAGE:
-					if( pointerOfs - barPos < barLen/2 )
-						Emit( PrevPage() );
-					else
-						Emit( NextPage() );
-					break;
-				case GOTO_POS:
-					m_mode[C_BAR] = WG_MODE_SELECTED;
-					m_mode[C_BG] = WG_MODE_MARKED;
-					m_dragBarPressOfs = barLen/2;
-					SetSliderPosPxlOfs( pointerOfs );
-					break;
-				default:
-//					assert( false );
-					break;
-				}
-
-			}
-			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
-				Emit( Forward() );
-			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
-				Emit( Back() );
-
-			break;
-		}
-
-		case WgInput::BUTTON_REPEAT:
-		{
-			if( button_key != 1 )
-				return;
-
-			if( m_mode[C_BAR] == WG_MODE_SELECTED )
-				return;
-
-			Component c = _findMarkedComponent(pos);
-
-			if( c == C_BG )
-			{
-				if( pointerOfs - barPos < barLen/2 )
-					Emit( PrevPage() );
-				else
-					Emit( NextPage() );
-			}
-			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
-				Emit( Forward() );
-
-			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
-				Emit( Back() );
-
-			break;
-		}
-
-
-		case WgInput::BUTTON_DOWN:
-		{
-			if( button_key != 1 )
-				return;
-
-			if( m_mode[C_BAR] == WG_MODE_SELECTED )
-			{
-				// Don't update the scroll position unless the cursor was moved
-				// This prevents views from scrolling if content is added while the dragbar is pressed
-				// Martin
-				WgCoord cursorPos = WgCoord(info.x, info.y);
-				if(cursorPos != m_lastCursorDownPos)
-				{
-					m_lastCursorDownPos = cursorPos;
-
-					float	sliderPos = 0.f;
-
-					if( m_sliderSize < 1.f)
-						sliderPos = ((float)(pointerOfs - m_dragBarPressOfs)) / (length - barLen);
-
-					LIMIT( sliderPos, 0.f, 1.f );
-
-  					if( sliderPos != m_sliderPos )
-  					{
-  						m_sliderPos = sliderPos;
-						_requestRender();
- 						Emit( SliderPos(), m_sliderPos );
-					}
-				}
-			}
-		}
-        default:
-            break;
-
-	}
-}
 
 //____ _markTestSlider() _______________________________________________________
 
@@ -1111,9 +906,6 @@ bool WgGizmoSlider::_setSlider( float _pos, float _size )
 
 	m_sliderPos		= _pos;
 	m_sliderSize 	= _size;
-
-
-	Emit( SliderPos(), m_sliderPos );
 
 	_requestRender();
 	return	true;

@@ -3,11 +3,7 @@
 #include <wg_char.h>
 #include <wg_texttool.h>
 
-#ifdef WG_TNG
-#	include <wg_gizmo_menu.h>
-#else
-#	include <wdg_menu.h>
-#endif
+#include <wg_gizmo_menu.h>
 
 //____ WgMenuItem::Show() ___________________________________________
 
@@ -196,7 +192,7 @@ WgMenuSubMenu::WgMenuSubMenu()
 
 
 WgMenuSubMenu::WgMenuSubMenu(	const WgString& text, const WgString& helpText,
-								const WgBlockSetPtr& pIcon, Uint16 navKey, WgMenuClass * pSubMenu,
+								const WgBlockSetPtr& pIcon, Uint16 navKey, WgGizmoMenu * pSubMenu,
 								WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText )
 						:WgMenuEntry( text, helpText, pIcon, navKey, accelModif, accelKey, accelText )
 {
@@ -204,38 +200,13 @@ WgMenuSubMenu::WgMenuSubMenu(	const WgString& text, const WgString& helpText,
 	m_pSubMenu = pSubMenu;
 }
 
-#ifdef WG_TNG
-	void WgMenuSubMenu::SetSubMenu(WgGizmoMenu* subMenu)
-	{
-		m_pSubMenu= subMenu;
-	};
+void WgMenuSubMenu::SetSubMenu(WgGizmoMenu* subMenu)
+{
+	m_pSubMenu= subMenu;
+};
 
-	void WgMenuSubMenu::SetMyMenu( WgGizmoMenu * pMenu )
-	{
-		WgMenuItem::SetMyMenu( pMenu );
-	}
+void WgMenuSubMenu::SetMyMenu( WgGizmoMenu * pMenu )
+{
+	WgMenuItem::SetMyMenu( pMenu );
+}
 
-#else
-	void WgMenuSubMenu::SetSubMenu(Wdg_Menu* subMenu)
-	{
-		if( m_pSubMenu && m_pMyMenu )
-			m_pSubMenu->RemoveCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, m_pMyMenu );
-
-		m_pSubMenu= subMenu;
-
-		if( subMenu && m_pMyMenu )
-			subMenu->AddCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, m_pMyMenu );
-
-	};
-
-	void WgMenuSubMenu::SetMyMenu( Wdg_Menu * pMenu )
-	{
-		if( m_pSubMenu && m_pMyMenu )
-			m_pSubMenu->RemoveCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, m_pMyMenu );
-
-		if( m_pSubMenu && pMenu )
-			m_pSubMenu->AddCallback( WgSignal::PointerOutsideModalPos(), Wdg_Menu::cbMoveOutsideModal, pMenu );
-
-		WgMenuItem::SetMyMenu( pMenu );
-	}
-#endif

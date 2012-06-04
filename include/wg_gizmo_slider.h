@@ -27,10 +27,6 @@
 #	include <wg_gizmo.h>
 #endif
 
-#ifndef	WG_TOOLTIP_DOT_H
-#	include <wg_tooltip.h>
-#endif
-
 #ifndef WG_BLOCKSET_DOT_H
 #	include <wg_blockset.h>
 #endif
@@ -109,15 +105,10 @@ class	WgGizmoSlider : public WgGizmo
 
 		WgSize	DefaultSize() const;
 
-		DECLARE_TOOLTIP_SUPPORT();
-
 	protected:
 		void	_onCloneContent( const WgGizmo * _pOrg );
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-		void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-#ifdef WG_TNG
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-#endif
 		void	_onRefresh();
 		bool	_onAlphaTest( const WgCoord& ofs );
 		void	_onEnable();

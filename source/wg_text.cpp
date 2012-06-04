@@ -37,7 +37,6 @@
 #include <wg_charbuffer.h>
 #include <wg_pen.h>
 #include <wg_interface_textholder.h>
-#include <wg_input.h>
 #include <wg_base.h>
 #include <wg_textlinkhandler.h>
 #include <wg_string.h>
@@ -2405,7 +2404,7 @@ int WgText::LineColToOffset(int line, int col) const
 }
 
 //____ OnAction() _____________________________________________________________
-
+/*
 bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCoord& pointerOfs )
 {
 	bool bRefresh = false;
@@ -2522,6 +2521,7 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 
 	return bRefresh;
 }
+*/
 
 //____ GetBaseAttr() __________________________________________________________
 

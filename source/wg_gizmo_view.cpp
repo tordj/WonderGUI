@@ -28,8 +28,6 @@
 #include <wg_eventhandler.h>
 
 
-using namespace WgSignal;
-
 static const char	c_gizmoType[] = {"View"};
 
 
@@ -1390,15 +1388,6 @@ WgRect WgViewHook::ScreenGeo() const
 	return m_canvasGeo + m_pView->ScreenPos();
 }
 
-
-//____ WgViewHook::GetRoot() ____________________________________________________
-
-WgWidget* WgViewHook::GetRoot()
-{
-	//TODO: Figure out how this should work and implement.
-
-	return false;
-}
 
 //____ WgViewHook::_requestRender() ______________________________________________
 

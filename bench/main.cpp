@@ -522,7 +522,7 @@ void cbInitDrag( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 
 void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 {
-	if( _pEvent->Type() != WG_EVENT_MOUSEBUTTON_DRAG || !pGizmo->ParentX() )
+	if( _pEvent->Type() != WG_EVENT_MOUSEBUTTON_DRAG || !pGizmo->Parent() )
 		return;
 
 	const WgEvent::MouseButtonDrag* pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);

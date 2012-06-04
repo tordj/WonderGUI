@@ -25,13 +25,9 @@
 #include <wg_gfxdevice.h>
 #include <wg_font.h>
 #include <wg_util.h>
-#ifdef WG_TNG
-#	include <wg_root.h>
-#	include <wg_eventhandler.h>
-#endif
+#include <wg_root.h>
+#include <wg_eventhandler.h>
 #include <assert.h>
-
-using namespace WgSignal;
 
 static const char	c_gizmoType[] = {"CheckBox"};
 
@@ -134,13 +130,6 @@ bool WgGizmoCheckbox::SetState( bool _state )
 	{
 		m_bChecked = _state;
 
-		if( _state )
-			Emit( Set() );
-		else
-			Emit( Unset() );
-
-		Emit( Flipped(), m_bChecked );
-#ifdef WG_TNG
 		WgEventHandler * pHandler = EventHandler();
 		if( pHandler )
 		{
@@ -151,7 +140,6 @@ bool WgGizmoCheckbox::SetState( bool _state )
 
 			pHandler->QueueEvent( new WgEvent::CheckboxToggle(this, _state ) );
 		}
-#endif
 		_requestRender();
 	}
 
@@ -213,7 +201,6 @@ void WgGizmoCheckbox::_onDisable()
 
 //____ _onEvent() _____________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -284,56 +271,6 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
         default:
 			pHandler->ForwardEvent( pEvent );
             break;
-	}
-}
-#endif
-
-//____ _onAction() _________________________________________________
-
-void WgGizmoCheckbox::_onAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
-{
-	switch( _action )
-	{
-		case WgInput::POINTER_ENTER:
-			if( !m_bOver )
-			{
-				m_bOver = true;
-				_requestRender();
-			}
-			break;
-
-		case WgInput::POINTER_EXIT:
-			if( m_bOver )
-			{
-				m_bOver = false;
-				_requestRender();
-			}
-			break;
-
-		case WgInput::BUTTON_PRESS:
-			if( _button_key == 1 && !m_bPressed )
-			{
-				m_bPressed = true;
-				if( !m_bFlipOnRelease )
-					SetState( !m_bChecked );
-				_requestRender();
-			}
-			break;
-
-		case WgInput::BUTTON_RELEASE:
-		case WgInput::BUTTON_RELEASE_OUTSIDE:
-			if( _button_key == 1 && m_bPressed )
-			{
-				m_bPressed = false;
-				if( m_bFlipOnRelease )
-					SetState( !m_bChecked );
-				_requestRender();
-			}
-			break;
-
-        default:
-            break;
-
 	}
 }
 

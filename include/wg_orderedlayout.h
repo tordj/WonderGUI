@@ -70,8 +70,6 @@ public:
 
 	// Needs to be here for now since Emitters are inherrited by Widgets. Shouldn't be hooks business in the future...
 
-	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
-
 protected:
 	PROTECTED_LINK_METHODS( WgOrderedHook );
 
@@ -87,7 +85,7 @@ protected:
 };
 
 
-class WgOrderedLayout : public WgGizmo, public WgGizmoContainer
+class WgOrderedLayout : public WgGizmoContainer
 {
 	friend class WgOrderedHook;
 public:
@@ -112,32 +110,8 @@ public:
 	void			SetSortFunction( WgGizmoSortFunc pSortFunc );
 	WgGizmoSortFunc	SortFunction() const { return m_pSortFunc; }
 
-	// Overloaded from WgGizmo
-
-	bool			IsView() const { return false; }
-	bool			IsContainer() const { return true; }
-
-	WgGizmoContainer *	CastToContainer() { return this; }
-	const WgGizmoContainer *	CastToContainer() const { return this; }
-
-	WgGizmo*		CastToGizmo() { return this; }
-	const WgGizmo*	CastToGizmo() const { return this; }
 
 protected:
-
-	// These are needed until WgGizmoContainer inherits from WgGizmo
-
-	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
-									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
-	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
-									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
-	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
-									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip, blendMode); }
-	void			_onEnable() { WgGizmoContainer::_onEnable(); }
-	void			_onDisable() { WgGizmoContainer::_onDisable(); }
-	bool 			_onAlphaTest( const WgCoord& ofs ) { return WgGizmoContainer::_onAlphaTest(ofs); }
-
-	//
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
 

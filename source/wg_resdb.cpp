@@ -61,10 +61,6 @@ void WgResDB::Clear()
 	m_mapLegoSources.clear();
 	m_mapBlockSets.clear();
 	m_mapGizmos.clear();
-#ifdef WG_LEGACY
-	m_mapWidgets.clear();
-	m_mapItems.clear();
-#endif
 	m_mapMenuItems.clear();
 	m_mapTabs.clear();
 	m_mapTextManagers.clear();
@@ -88,10 +84,6 @@ void WgResDB::Clear()
 	m_legos.Clear();
 	m_blockSets.Clear();
 	m_gizmos.Clear();
-#ifdef WG_LEGACY
-	m_widgets.Clear();
-	m_items.Clear();
-#endif
 	m_menuItems.Clear();
 	m_tabs.Clear();
 	m_textManagers.Clear();
@@ -129,20 +121,6 @@ void WgResDB::ClearGizmos()
 	m_mapGizmos.clear();
 	m_gizmos.Clear();
 }
-
-#ifdef WG_LEGACY
-void WgResDB::ClearWidgets()
-{
-	m_mapWidgets.clear();
-	m_widgets.Clear();
-}
-
-void WgResDB::ClearConnects()
-{
-	m_connects.Clear();
-	m_mapConnects.clear();
-}
-#endif
 
 //____ () _________________________________________________________
 
@@ -216,22 +194,6 @@ std::string	WgResDB::GenerateName( const WgGizmo* data )
 	char pBuf[100];
 	return std::string("_gizmo__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
-
-#ifdef WG_LEGACY
-std::string	WgResDB::GenerateName( const WgWidget* data )
-{
-	static int nGenerated = 0;
-	char pBuf[100];
-	return std::string("_widget__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
-}
-
-std::string	WgResDB::GenerateName( const WgItem* data )
-{
-	static int nGenerated = 0;
-	char pBuf[100];
-	return std::string("_item__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
-}
-#endif
 
 std::string	WgResDB::GenerateName( const WgMenuItem* data )
 {
@@ -478,19 +440,6 @@ bool WgResDB::AddLegoSource( const std::string& id, const std::string& surface, 
 	return false;
 }
 
-#ifdef WG_LEGACY
-bool WgResDB::Connect( const std::string& id, WgWidget* emitter, const std::string& action, WgWidget* receiver)
-{
-	assert(m_pResLoader);
-	if(m_pResLoader)
-	{
-		m_pResLoader->LoadCallback(id, emitter, receiver);
-		return true;
-	}
-	return false;
-}
-#endif
-
 std::string WgResDB::LoadString( const std::string& token )
 {
 	return m_pResLoader->LoadString(token);
@@ -527,41 +476,6 @@ bool WgResDB::AddGizmo( const std::string& id, WgGizmo * pGizmo, MetaData * pMet
 	}
 	return false;
 }
-
-
-#ifdef WG_LEGACY
-//____ () _________________________________________________________
-
-bool WgResDB::AddWidget( const std::string& id, WgWidget * pWidget, MetaData * pMetaData )
-{
-	assert(m_mapWidgets.find(id) == m_mapWidgets.end());
-	if(m_mapWidgets.find(id) == m_mapWidgets.end())
-	{
-		WidgetRes* p = new WidgetRes(id, pWidget, pMetaData);
-		m_widgets.PushBack(p);
-		if(id.size())
-			m_mapWidgets[id] = p;
-		return true;
-	}
-	return false;
-}
-
-//____ () _________________________________________________________
-
-bool WgResDB::AddItem( const std::string& id, WgItem * pItem, MetaData * pMetaData )
-{
-	assert(m_mapItems.find(id) == m_mapItems.end());
-	if(m_mapItems.find(id) == m_mapItems.end())
-	{
-		ItemRes* p = new ItemRes(id, pItem, pMetaData);
-		m_items.PushBack(p);
-		if(id.size())
-			m_mapItems[id] = p;
-		return true;
-	}
-	return false;
-}
-#endif
 
 //____ () _________________________________________________________
 
@@ -732,26 +646,6 @@ WgGizmo * WgResDB::CloneGizmo( const std::string& id ) const
 	pClone->CloneContent(pGizmo);
 	return pClone;
 }
-
-
-
-#ifdef WG_LEGACY
-//____ () _________________________________________________________
-
-WgWidget * WgResDB::GetWidget( const std::string& id ) const
-{
-	WidgetRes* widgetRes = GetResWidget(id);
-	return widgetRes ? widgetRes->res : 0;
-}
-
-//____ () _________________________________________________________
-
-WgItem * WgResDB::GetItem( const std::string& id ) const
-{
-	ItemRes* itemRes = GetResItem(id);
-	return itemRes ? itemRes->res : 0;
-}
-#endif
 
 //____ () _________________________________________________________
 
@@ -989,43 +883,6 @@ WgResDB::GizmoRes * WgResDB::GetResGizmo( const std::string& id ) const
 	GizmoMap::const_iterator it = m_mapGizmos.find(id);
 	return it == m_mapGizmos.end() ? 0 : it->second;
 }
-
-
-#ifdef WG_LEGACY
-//____ () _________________________________________________________
-
-WgResDB::WidgetRes * WgResDB::GetResWidget( const std::string& id ) const
-{
-	WidgetRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
-	{
-		if(db->res)
-		{
-			if((res = db->res->GetResWidget(id)))
-				return res;
-		}
-	}
-	WdgMap::const_iterator it = m_mapWidgets.find(id);
-	return it == m_mapWidgets.end() ? 0 : it->second;
-}
-
-//____ () _________________________________________________________
-
-WgResDB::ItemRes * WgResDB::GetResItem( const std::string& id ) const
-{
-	ItemRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
-	{
-		if(db->res)
-		{
-			if((res = db->res->GetResItem(id)))
-				return res;
-		}
-	}
-	ItemMap::const_iterator it = m_mapItems.find(id);
-	return it == m_mapItems.end() ? 0 : it->second;
-}
-#endif
 
 //____ () _________________________________________________________
 
@@ -1321,46 +1178,6 @@ WgResDB::GizmoRes* WgResDB::FindResGizmo( const WgGizmo* meta ) const
 			return res;
 	return 0;
 }
-
-#ifdef WG_LEGACY
-//____ () _________________________________________________________
-
-WgResDB::WidgetRes* WgResDB::FindResWidget( const WgWidget* meta ) const
-{
-	WidgetRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
-	{
-		if(db->res)
-		{
-			if((res = db->res->FindResWidget(meta)))
-				return res;
-		}
-	}
-	for(res = GetFirstResWidget(); res; res = res->Next())
-		if(res->res == meta)
-			return res;
-	return 0;
-}
-
-//____ () _________________________________________________________
-
-WgResDB::ItemRes* WgResDB::FindResItem( const WgItem* meta ) const
-{
-	ItemRes * res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
-	{
-		if(db->res)
-		{
-			if((res = db->res->FindResItem(meta)))
-				return res;
-		}
-	}
-	for(res = GetFirstResItem(); res; res = res->Next())
-		if(res->res == meta)
-			return res;
-	return 0;
-}
-#endif
 
 //____ () _________________________________________________________
 
@@ -1787,72 +1604,6 @@ bool WgResDB::RemoveGizmo( WgResDB::GizmoRes * pRes )
 	delete pRes;
 	return true;
 }
-
-
-#ifdef WG_LEGACY
-//____ RemoveWidget() _________________________________________________________
-
-bool WgResDB::RemoveWidget( const std::string& id )
-{
-	WdgMap::iterator it = m_mapWidgets.find( id );
-
-	if( it == m_mapWidgets.end() )
-		return false;
-
-	WidgetRes * pRes = it->second;
-	m_mapWidgets.erase(it);
-	delete pRes;
-
-	return true;
-}
-
-bool WgResDB::RemoveWidget( WgResDB::WidgetRes * pRes )
-{
-	if( !pRes )
-		return false;
-
-	if( pRes->id.length() > 0 )
-	{
-		WdgMap::iterator it = m_mapWidgets.find( pRes->id );
-		assert( it != m_mapWidgets.end() );
-		m_mapWidgets.erase(it);
-	}
-	delete pRes;
-	return true;
-}
-
-
-//____ RemoveItem() ___________________________________________________________
-
-bool WgResDB::RemoveItem( const std::string& id )
-{
-	ItemMap::iterator it = m_mapItems.find( id );
-
-	if( it == m_mapItems.end() )
-		return false;
-
-	ItemRes * pRes = it->second;
-	m_mapItems.erase(it);
-	delete pRes;
-
-	return true;
-}
-
-bool WgResDB::RemoveItem( WgResDB::ItemRes * pRes )
-{
-	if( !pRes )
-		return false;
-
-	if( pRes->id.length() > 0 )
-	{
-		ItemMap::iterator it = m_mapItems.find( pRes->id );
-		assert( it != m_mapItems.end() );
-		m_mapItems.erase(it);
-	}
-	delete pRes;
-	return true;
-}
-#endif
 
 //____ RemoveMenuItem() _______________________________________________________
 

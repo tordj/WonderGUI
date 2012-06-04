@@ -84,11 +84,7 @@ protected:
 	bool	_isEditable() const { return m_text.IsEditable(); }
 	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
-	void	_onUpdate( const WgUpdateInfo& _updateInfo );
-	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
-#ifdef WG_TNG
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-#endif
 	void	_onGotInputFocus();
 	void	_onLostInputFocus();
 	void	_onCloneContent( const WgGizmo * _pOrg );

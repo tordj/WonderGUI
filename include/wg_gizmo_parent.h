@@ -61,6 +61,7 @@ class WgGizmoParent : public WgGizmoCollection
 		virtual const WgRoot *		CastToRoot() const = 0;
 
 		virtual bool		IsGizmo() const = 0;
+		virtual bool		IsContainer() const = 0;
 		virtual bool		IsRoot() const = 0;
 
 		virtual bool		IsAncestorTo( const WgGizmo * pGizmo ) const;

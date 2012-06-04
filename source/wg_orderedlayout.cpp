@@ -139,15 +139,6 @@ WgOrderedLayout * WgOrderedHook::Parent() const
 }
 
 
-WgWidget* WgOrderedHook::GetRoot()
-{
-	WgHook * p = Parent()->Hook();
-	if( p )
-		return p->GetRoot();
-	else
-		return 0;
-}
-
 WgOrderedHook::WgOrderedHook()
 {
 }
@@ -219,7 +210,7 @@ WgOrderedHook * WgOrderedLayout::AddChild( WgGizmo * pGizmo )
 
 WgOrderedHook * WgOrderedLayout::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling )
 {
-	if( !pGizmo || !pSibling || !pSibling->ParentX() || pSibling->ParentX() != this )
+	if( !pGizmo || !pSibling || !pSibling->Parent() || pSibling->Parent() != this )
 		return 0;
 
 	WgOrderedHook * pHook = _newHook();

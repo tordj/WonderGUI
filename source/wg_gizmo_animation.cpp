@@ -26,10 +26,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 
-#ifdef WG_TNG
 #include <wg_eventhandler.h>
-#endif
-
 #include <math.h>
 
 static const char	c_gizmoType[] = {"Animation"};
@@ -204,9 +201,7 @@ bool WgGizmoAnimation::Play()
 		return false;
 
 	m_bPlaying = true;
-#ifdef WG_TNG
 	_startReceiveTicks();
-#endif
 	return true;
 }
 
@@ -215,9 +210,7 @@ bool WgGizmoAnimation::Play()
 bool WgGizmoAnimation::Stop()
 {
 	m_bPlaying = false;
-#ifdef WG_TNG
 	_stopReceiveTicks();
-#endif
 	return true;
 }
 
@@ -247,18 +240,13 @@ void WgGizmoAnimation::_playPosUpdated()
 		m_animFrame = block;
 		_requestRender();
 
-		Emit( WgSignal::IntegerChanged(), static_cast<int>(m_playPos) );
-		Emit( WgSignal::Fraction(), (float)m_playPos/(float)m_pAnim->Duration()-1);
-#ifdef WG_TGN
 		EventHandler()->QueueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));
-#endif
 	}
 }
 
 
 //____ _onEvent() ______________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -278,21 +266,6 @@ void WgGizmoAnimation::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 		default:
 			pHandler->ForwardEvent( pEvent );
 		break;
-	}
-}
-#endif
-
-//____ _onUpdate() ________________________________________________________
-
-void WgGizmoAnimation::_onUpdate( const WgUpdateInfo& _updateInfo )
-{
-	if( !m_pAnim && !m_bEnabled )
-		return;
-
-	if( m_bPlaying )
-	{
-		m_playPos += _updateInfo.msDiff * m_speed;
-		_playPosUpdated();
 	}
 }
 
@@ -359,11 +332,8 @@ bool WgGizmoAnimation::_onAlphaTest( const WgCoord& ofs )
 void WgGizmoAnimation::_onEnable( void )
 {
 	if( m_bPlaying )
-	{
-#ifdef WG_TNG
 		_startReceiveTicks();
-#endif
-	}
+
 	_requestRender();
 }
 
@@ -372,10 +342,7 @@ void WgGizmoAnimation::_onEnable( void )
 void WgGizmoAnimation::_onDisable( void )
 {
 	if( m_bPlaying )
-	{
-#ifdef WG_TNG
 		_stopReceiveTicks();
-#endif
-	}
+
 	_requestRender();
 }

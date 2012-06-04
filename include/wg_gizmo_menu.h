@@ -62,7 +62,7 @@ class	WgGfxAnim;
 class	WgText;
 
 
-class WgGizmoMenu:public WgGizmo, public WgGizmoContainer, public WgTileHolder, private WgSliderTarget
+class WgGizmoMenu:public WgGizmoContainer, public WgTileHolder, private WgSliderTarget
 {
 	friend class WgMenuItem;
 	friend class WgMenuSubMenu;
@@ -147,14 +147,6 @@ public:
 
 	WgSize		DefaultSize() const;
 
-	bool		IsView() const { return false; }
-	bool		IsContainer() const { return true; }
-	WgGizmoContainer * 	CastToContainer() { return this; }
-	const WgGizmoContainer * CastToContainer() const { return this; }
-
-	WgGizmo*	CastToGizmo() { return this; }
-	const WgGizmo*	CastToGizmo() const { return this; }
-
 	//
 
 
@@ -176,8 +168,6 @@ private:
 
 		bool		SetHidden( bool bHidden ) { return false; }
 		WgGizmoMenu* Parent() const { return m_pParent; }
-
-		WgWidget*	GetRoot() { return 0; }			// To be removed once we are rid of Widgets alltogether.
 
 		WgGizmoVSlider * Slider() { return m_pGizmo?static_cast<WgGizmoVSlider*>(m_pGizmo):0; }
 

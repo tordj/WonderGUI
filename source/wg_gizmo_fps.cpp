@@ -176,23 +176,9 @@ void WgGizmoFps::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 	pDevice->PrintLine( pen, attr, temp2 );
 }
 
-//____ _onUpdate() ________________________________________________________
-
-void WgGizmoFps::_onUpdate( const WgUpdateInfo& _updateInfo )
-{
-	m_tickBufferOfs = (++m_tickBufferOfs) % TICK_BUFFER;
-
-	if( _updateInfo.msDiff > 0 )
-		m_pTickBuffer[m_tickBufferOfs] = _updateInfo.msDiff;
-	else
-		m_pTickBuffer[m_tickBufferOfs] = 1;
-	_requestRender();
-}
-
 
 //____ _onEvent() _____________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmoFps::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -212,7 +198,6 @@ void WgGizmoFps::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHand
 			break;
 	}
 }
-#endif
 
 //____ DoMyOwnCloning() _______________________________________________________
 

@@ -153,12 +153,6 @@ WgGizmoContainer* WgModalHook::Parent() const
 }
 
 //_____________________________________________________________________________
-WgWidget* WgModalHook::GetRoot()
-{
-	return 0;
-}
-
-//_____________________________________________________________________________
 WgModalHook::WgModalHook( WgGizmoModalLayer * pParent )
 {
 	m_pParent = pParent;
@@ -401,7 +395,7 @@ bool WgGizmoModalLayer::ReleaseAllModal()
 
 bool WgGizmoModalLayer::DeleteChild( WgGizmo * pGizmo )
 {
-	if( !pGizmo || pGizmo->ParentX() != this )
+	if( !pGizmo || pGizmo->Parent() != this )
 		return false;
 
 	if( pGizmo == m_baseHook.Gizmo() )
@@ -420,7 +414,7 @@ bool WgGizmoModalLayer::DeleteChild( WgGizmo * pGizmo )
 
 WgGizmo * WgGizmoModalLayer::ReleaseChild( WgGizmo * pGizmo )
 {
-	if( !pGizmo || pGizmo->ParentX() != this )
+	if( !pGizmo || pGizmo->Parent() != this )
 		return 0;
 
 	if( pGizmo == m_baseHook.Gizmo() )
@@ -567,10 +561,10 @@ void WgGizmoModalLayer::_updateKeyboardFocus()
 	WgGizmo * pFocused = pHandler->KeyboardFocus();
 
 	WgGizmo * p = pFocused;
-	while( p && p->ParentX() && p->ParentX() != this )
-		p = p->ParentX()->CastToGizmo();
+	while( p && p->Parent() && p->Parent() != this )
+		p = p->Parent()->CastToGizmo();
 
-	if( p && p->ParentX() != this )
+	if( p && p->Parent() != this )
 		return;								// Focus belongs to a Gizmo that is not a descendant to us,
 											// so we can't save and shouldn't steal focus.
 
@@ -621,7 +615,7 @@ void WgGizmoModalLayer::_updateKeyboardFocus()
 			else
 			{
 				WgGizmoParent * pParent = p->Parent();
-				if( pParent && pParent->CastToGizmo() )
+				if( pParent && pParent->IsGizmo() )
 					p = pParent->CastToGizmo()->Hook();
 				else
 					p = 0;
@@ -735,12 +729,6 @@ void WgGizmoModalLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler
 	// Forward all events
 	
 	pHandler->ForwardEvent( _pEvent );
-}
-
-//____ _onAction() ____________________________________________________________
-
-void WgGizmoModalLayer::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
-{
 }
 
 //____ _firstHook() ___________________________________________________________

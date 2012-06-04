@@ -28,8 +28,6 @@
 
 static const char c_gizmoType[] = {"Value"};
 
-using namespace WgSignal;
-
 
 //____ WgGizmoValue() _________________________________________________________________
 
@@ -99,9 +97,6 @@ void WgGizmoValue::_valueModified()
 	// NOTE: We have decided to not post any event on _valueModified since it
 	// can only be done through the API.
 
-	Emit( IntegerChanged(), m_value );
-	Emit( Fraction(), FractionalValue() );
-
 	m_bRegenText = true;
 	_requestRender();
 }
@@ -110,7 +105,6 @@ void WgGizmoValue::_valueModified()
 
 void WgGizmoValue::_rangeModified()
 {
-	Emit( Fraction(), FractionalValue() );
 }
 
 

@@ -33,7 +33,7 @@
 
 class WgPatches;
 
-class WgGizmoContainer : public WgGizmoParent
+class WgGizmoContainer : public WgGizmoParent, public WgGizmo
 {
 	friend class WgEventHandler;
 
@@ -68,13 +68,15 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual WgGizmo * 	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
 		bool		IsGizmo() const;
+		bool		IsContainer() const;
 		bool		IsRoot() const;
 
-//		WgGizmo *	_castToGizmo();	TODO: Implement once we inherit from WgGizmo as we are supposed to.
+		WgGizmo *			CastToGizmo();
+		const WgGizmo *		CastToGizmo() const;
 		WgGizmoContainer *	CastToContainer();
-		const WgGizmoContainer *	CastToContainer() const;
-		WgRoot *	CastToRoot();
-		const WgRoot *	CastToRoot() const;
+		const WgGizmoContainer * CastToContainer() const;
+		WgRoot *			CastToRoot();
+		const WgRoot *		CastToRoot() const;
 
 	protected:
 		WgGizmoContainer();
@@ -83,10 +85,7 @@ class WgGizmoContainer : public WgGizmoParent
 		virtual void	_onEnable();
 		virtual void	_onDisable();
 
-#ifdef WG_TNG
 		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
-#endif
-
 		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
 		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
 
@@ -99,10 +98,8 @@ class WgGizmoContainer : public WgGizmoParent
 		WgGizmoModalLayer *	_getModalLayer() const;
 		WgGizmoMenuLayer*	_getMenuLayer() const;
 
-#ifdef WG_TNG
 		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-#endif
 		virtual bool 	_onAlphaTest( const WgCoord& ofs );
 		virtual void	_onCloneContent( const WgGizmoContainer * _pOrg );
 
@@ -115,4 +112,4 @@ class WgGizmoContainer : public WgGizmoParent
 
 
 
-#endif //WG_GIZMO_PARENT_DOT_H
+#endif //WG_GIZMO_CONTAINER_DOT_H

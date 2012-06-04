@@ -418,21 +418,6 @@ inline bool operator!=( const WgMinMax2D& r1, const WgMinMax2D& r2 )
 }
 
 
-//____ WgUpdateInfo ___________________________________________________________
-
-class		WgUpdateInfo
-{
-	public:
-		WgUpdateInfo();
-
-		bool	  bQuit;					// Have we received an order to quit?
-		bool	  bKbd, bMouse, bActive;	// Are we having these focuses?
-
-		Uint32  msTime;						// Counter in milliseconds since start of program (or something).
-		Uint32	msDiff;						// Milliseconds between current and previous Update() call.
-};
-
-
 //____ WgSearchMode _____________________________________________________________
 
 enum WgSearchMode
@@ -541,6 +526,9 @@ enum	WgEventType
 	WG_EVENT_MODAL_MOVE_OUTSIDE,
 	WG_EVENT_MODAL_BLOCKED_PRESS,
 	WG_EVENT_MODAL_BLOCKED_RELEASE,
+
+	WG_EVENT_TABLE_CELL_MARKED,
+	WG_EVENT_TABLE_CELL_UNMARKED,
 
 	WG_EVENT_MAX
 };

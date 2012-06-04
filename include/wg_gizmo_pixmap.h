@@ -27,10 +27,6 @@
 #	include <wg_gizmo.h>
 #endif
 
-#ifndef	WG_TOOLTIP_DOT_H
-#	include <wg_tooltip.h>
-#endif
-
 #ifndef WG_BLOCKSET_DOT_H
 #	include <wg_blockset.h>
 #endif
@@ -53,8 +49,6 @@ public:
 	WgBlockSetPtr	GetSource() const { return m_pGfx; }
 
 	WgSize			DefaultSize() const;
-
-	DECLARE_TOOLTIP_SUPPORT();
 
 protected:
 

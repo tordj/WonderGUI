@@ -66,6 +66,7 @@ public:
 	bool					ReleaseAllChildren();
 
 	bool					IsGizmo() const { return false; }
+	bool					IsContainer() const { return false; }
 	bool					IsRoot() const { return true; }
 
 	WgGizmo *				CastToGizmo() { return 0; }
@@ -106,8 +107,6 @@ protected:
 
 		bool			SetHidden( bool bHide );
 		WgRoot*			Root() const;
-
-		WgWidget*		GetRoot();			// Should in the future be removed.
 
 	protected:
 

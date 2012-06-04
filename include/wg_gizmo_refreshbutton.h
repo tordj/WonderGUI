@@ -99,11 +99,7 @@ public:
 
 protected:
 
-#ifdef WG_TNG
-	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-#endif
-		void		_onUpdate( const WgUpdateInfo& _updateInfo );
-		void		_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
+		void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 		void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 		void		_onCloneContent( const WgGizmo * _pOrg );
 		virtual void _onNewSize( const WgSize& size );

@@ -22,10 +22,7 @@
 
 #include <wg_gizmo_radiobutton.h>
 #include <wg_gizmo_container.h>
-#ifdef WG_TNG
-#	include <wg_eventhandler.h>
-#endif
-using namespace WgSignal;
+#include <wg_eventhandler.h>
 
 static const char	c_gizmoType[] = {"RadioButton"};
 
@@ -64,23 +61,18 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 {
 	if( m_bChecked != _state )
 	{
-#ifdef WG_TNG
 		WgEventHandler * pHandler = EventHandler();
-#endif
 		if( _state )
 		{
 			WgGizmoParent * pGroup = _findRadioGroup();
 			if( pGroup )
 				_unselectRecursively( pGroup );
 
-			// Set and emit
+			// Set and queue event
 
 			m_bChecked = true;
-			Emit( Set() );
-#ifdef WG_TNG
 			if( pHandler )
 				pHandler->QueueEvent( new WgEvent::RadiobuttonSelect(this) );
-#endif
 		}
 		else
 		{
@@ -88,18 +80,12 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 				return false;
 
 			m_bChecked = false;
-			Emit( Unset() );
-#ifdef WG_TNG
 			if( pHandler )
 				pHandler->QueueEvent( new WgEvent::RadiobuttonUnselect(this) );
-#endif
 		}
 
-		Emit( Flipped(), m_bChecked );
-#ifdef WG_TNG
 		if( pHandler )
 			pHandler->QueueEvent( new WgEvent::RadiobuttonToggle(this, m_bChecked) );
-#endif
 		_requestRender();
 	}
 	return true;
@@ -110,7 +96,7 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 WgGizmoParent * WgGizmoRadiobutton::_findRadioGroup()
 {
 	WgGizmoParent * pRadioGroup = 0;
-	WgGizmoParent * pParent = ParentX();
+	WgGizmoParent * pParent = Parent();
 	while( pParent )
 	{
 		pRadioGroup = pParent;
@@ -120,7 +106,7 @@ WgGizmoParent * WgGizmoRadiobutton::_findRadioGroup()
 			if( pParent->CastToContainer()->IsRadioGroup() )
 				break;
 
-			pParent = pParent->CastToGizmo()->ParentX();
+			pParent = pParent->CastToGizmo()->Parent();
 		}
 		else break;
 	}
@@ -142,17 +128,13 @@ void WgGizmoRadiobutton::_unselectRecursively( WgGizmoParent * pParent )
 			if( pRB->m_bChecked )
 			{
 				pRB->m_bChecked = false;
-				pRB->Emit( Unset() );
-				pRB->Emit( Flipped(), false );
 
-#ifdef WG_TNG
 				WgEventHandler * pHandler = EventHandler();
 				if( pHandler )
 				{
 					pHandler->QueueEvent( new WgEvent::RadiobuttonUnselect(pRB) );
 					pHandler->QueueEvent( new WgEvent::RadiobuttonToggle(pRB, false) );
 				}
-#endif
 				pRB->_requestRender();
 			}
 		}

@@ -21,14 +21,8 @@ class WgChar;
 class WgText;
 class WgGfxAnim;
 
-#ifdef WG_TNG
-	class WgGizmoMenu;
-	typedef class WgGizmoMenu WgMenuClass;
-#else
-	class Wdg_Menu;
-	typedef class Wdg_Menu WgMenuClass;
-#endif
-
+class WgGizmoMenu;
+typedef class WgGizmoMenu WgGizmoMenu;
 
 enum WgMenuItemType
 {
@@ -66,13 +60,13 @@ public:
 protected:
 	WgMenuItem(WgMenuItemType _type) {m_type = _type; m_id = 0; m_pMyMenu = 0; m_bVisible = true; }
 
-	virtual void SetMyMenu( WgMenuClass * pMenu ) { m_pMyMenu = pMenu; }
+	virtual void SetMyMenu( WgGizmoMenu * pMenu ) { m_pMyMenu = pMenu; }
 
 	WgMenuItemType	m_type;
     int				m_id;
 	bool			m_bVisible;
 
-	WgMenuClass *	m_pMyMenu;
+	WgGizmoMenu *	m_pMyMenu;
 };
 
 //____ WgMenuSeparator ________________________________________________________
@@ -174,17 +168,17 @@ class WgMenuSubMenu : public WgMenuEntry
 {
 public:
 	WgMenuSubMenu();
-	WgMenuSubMenu(	const WgString& text, const WgString& helpText, const WgBlockSetPtr& pIcon, Uint16 navKey, WgMenuClass * pSubMenu,
+	WgMenuSubMenu(	const WgString& text, const WgString& helpText, const WgBlockSetPtr& pIcon, Uint16 navKey, WgGizmoMenu * pSubMenu,
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuSubMenu() {};
 
-	inline WgMenuClass *GetSubMenu()					{return m_pSubMenu;};
-	void				SetSubMenu(WgMenuClass * subMenu);
+	inline WgGizmoMenu *GetSubMenu()					{return m_pSubMenu;};
+	void				SetSubMenu(WgGizmoMenu * subMenu);
 
 private:
-	void				SetMyMenu( WgMenuClass * pMenu );
+	void				SetMyMenu( WgGizmoMenu * pMenu );
 
-	WgMenuClass *		m_pSubMenu;
+	WgGizmoMenu *		m_pSubMenu;
 };
 
 

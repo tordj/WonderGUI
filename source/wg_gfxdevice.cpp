@@ -1134,35 +1134,10 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 
 void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const WgRect& dest )
 {
-//	WgRectChain	bgRects;
-//	WgColor		bgColor;
-//	bool		bBgColored;
-
 	WgRect		clip(_clip,dest);		// Make sure clipping rect is inside dest.
 
 	WgMode mode = pText->mode();
-/*
-	// First take care of general background color
 
-	WgTextAttr	attr;
-	pText->GetBaseAttr(attr);
-
-	if( attr.bgColor.a != 0 )
-	{
-		bBgColored = true;
-		bgColor = attr.bgColor;
-		bgRects.Add( clip );
-	}
-
-	// Draw blocks of general background (should be done last once we cut out the other rectangles)
-
-	WgRectLink * pBgRect = bgRects.pRectList;
-	while( pBgRect )
-	{
-		Fill( *pBgRect, bgColor );
-		pBgRect = pBgRect->pNext;
-	}
-*/
 	// Take care of selection background color (if we have any)
 
 	int selStart, selEnd;

@@ -47,8 +47,8 @@
 class WgText;
 class WgFont;
 class WgGizmoTable;
-class WgTableRow2;
-class WgTableColumn2;
+class WgTableRow;
+class WgTableColumn;
 
 typedef int(*fpGizmoCmp)(WgGizmo*,WgGizmo*);
 
@@ -58,7 +58,7 @@ typedef int(*fpGizmoCmp)(WgGizmo*,WgGizmo*);
 
 class WgTableHook : public WgHook
 {
-	friend class WgTableRow2;
+	friend class WgTableRow;
 	friend class WgGizmoTable;
 
 	WgCoord			Pos() const;
@@ -76,18 +76,16 @@ class WgTableHook : public WgHook
 	WgTableHook*	PrevInColumn() const;
 	WgTableHook*	NextInColumn() const;
 
-	WgTableRow2*	Row() const { return m_pRow; }
-	WgTableColumn2*	Column() const;
+	WgTableRow*	Row() const { return m_pRow; }
+	WgTableColumn*	Column() const;
 	inline int		ColumnNb() const;
 
 	inline WgGizmoTable *	Parent() const;
 
 	// Needs to be here for now since Emitters are inherrited by Widgets. Shouldn't be hooks business in the future...
 
-	WgWidget*	GetRoot();			// Should in the future not return a widget, but a gizmo.
-
 protected:
-	WgTableHook( WgTableRow2 * pRow );
+	WgTableHook( WgTableRow * pRow );
 	~WgTableHook();
 
 	void	_requestRender();
@@ -99,19 +97,19 @@ protected:
 	WgGizmoParent * _parent() const;
 
 	int				m_height;		// Minimum height needed for this Gizmo.
-	WgTableRow2 *	m_pRow;			//
+	WgTableRow *	m_pRow;			//
 };
 
-//____ WgTableColumn2 _________________________________________________________
+//____ WgTableColumn _________________________________________________________
 
-class WgTableColumn2 : public Wg_Interface_TextHolder, public WgGizmoCollection
+class WgTableColumn : public Wg_Interface_TextHolder, public WgGizmoCollection
 {
 friend class WgGizmoTable;
 friend class WgTableHook;
 
 public:
-	WgTableColumn2();
-	WgTableColumn2(const WgTableColumn2& column);
+	WgTableColumn();
+	WgTableColumn(const WgTableColumn& column);
 
 	void			SetId( Sint64 id ) { m_id = id; }
 	Sint64			Id() const { return m_id; }
@@ -146,8 +144,8 @@ public:
 	const WgText*	GetTextObj() const;
 
 private:
-	WgTableColumn2( WgGizmoTable * pOwner );
-	~WgTableColumn2();
+	WgTableColumn( WgGizmoTable * pOwner );
+	~WgTableColumn();
 
 	WgHook*	_firstHook() const { return FirstHook(); }
 	WgHook*	_lastHook() const { return LastHook(); }
@@ -173,17 +171,17 @@ private:
 
 };
 
-//____ WgTableRow2 ____________________________________________________________
+//____ WgTableRow ____________________________________________________________
 
-class WgTableRow2 : protected WgLink, public WgGizmoCollection
+class WgTableRow : protected WgLink, public WgGizmoCollection
 {
 friend class WgGizmoTable;
 friend class WgTableHook;
-friend class WgChain<WgTableRow2>;
+friend class WgChain<WgTableRow>;
 
 public:
-	WgTableRow2( Sint64 id = 0, int nCells = 2 );
-	virtual ~WgTableRow2();
+	WgTableRow( Sint64 id = 0, int nCells = 2 );
+	virtual ~WgTableRow();
 
 	Sint64	Id() const	{ return m_id; };
 	int		Height() const { return m_height; }
@@ -192,8 +190,8 @@ public:
 	void 			Unselect();
 	bool 			IsSelected() const { if( m_mode == WG_MODE_SELECTED ) return true; return false; }
 
-	WgTableRow2* 	Next() const	{ return (WgTableRow2*) WgLink::m_pNext; };
-	WgTableRow2* 	Prev() const	{ return (WgTableRow2*) WgLink::m_pNext; };
+	WgTableRow* 	Next() const	{ return (WgTableRow*) WgLink::m_pNext; };
+	WgTableRow* 	Prev() const	{ return (WgTableRow*) WgLink::m_pNext; };
 
 	void			SetVisible(bool bVisible);
 	void			Show() { SetVisible(true); }
@@ -213,7 +211,7 @@ public:
 
 	WgGizmoTable*	Table() const { return m_pTable; }
 protected:
-//		PROTECTED_LINK_METHODS( WgTableRow2 );
+//		PROTECTED_LINK_METHODS( WgTableRow );
 
 private:
 
@@ -234,10 +232,10 @@ private:
 
 //____ WgGizmoTable ___________________________________________________________
 
-class WgGizmoTable : public WgGizmo, public WgGizmoContainer
+class WgGizmoTable : public WgGizmoContainer
 {
-friend class WgTableColumn2;
-friend class WgTableRow2;
+friend class WgTableColumn;
+friend class WgTableRow;
 friend class WgTableHook;
 
 public:
@@ -295,8 +293,8 @@ public:
 //	bool	SetColumnVisible( Uint32 column, bool bVisible );
 
 	int				NbColumns() const	{ return m_nColumns; }
-	WgTableColumn2* GetColumn(int index) const { return (index<m_nColumns)?&m_pColumns[index]:0; }
-	WgTableColumn2* FindColumn(Sint64 id) const;
+	WgTableColumn* GetColumn(int index) const { return (index<m_nColumns)?&m_pColumns[index]:0; }
+	WgTableColumn* FindColumn(Sint64 id) const;
 
 	bool			SortRows( int column, bool bAscend, int prio = 0 );
 	bool			SetClickSortPrio( int prio );
@@ -305,28 +303,28 @@ public:
 	int				GetSortColumns() const { return c_nSortColumns; }
 	bool			GetSortColumn( int order, int& columnIndex, bool& bAscend ) const;
 
-	int				AddRow( WgTableRow2* pRow );
-	int				InsertRow( WgTableRow2* pRow, int pos );
-	void			InsertRowSorted( WgTableRow2* pRow );
-	int				GetRowNb( WgTableRow2* pRow ) const;
-	WgTableRow2*	GetRow( int pos );
-	WgTableRow2*	ReleaseRow( int pos );
-	bool			ReleaseRow( WgTableRow2* pRow );
+	int				AddRow( WgTableRow* pRow );
+	int				InsertRow( WgTableRow* pRow, int pos );
+	void			InsertRowSorted( WgTableRow* pRow );
+	int				GetRowNb( WgTableRow* pRow ) const;
+	WgTableRow*	GetRow( int pos );
+	WgTableRow*	ReleaseRow( int pos );
+	bool			ReleaseRow( WgTableRow* pRow );
 	void			ReleaseAllRows();
 	bool			DeleteRow( int pos );
-	bool			DeleteRow( WgTableRow2* pRow );
+	bool			DeleteRow( WgTableRow* pRow );
 	void			DeleteAllRows();
-	WgTableRow2*	FindRow( int id );
+	WgTableRow*	FindRow( int id );
 	void			SetSelectedRowColor( WgColor c );
 	void			SetSelectedRowBg( WgBlockSetPtr pBlock );
 	bool			HasSelectedRowBg() const { if( m_pSelectedRowGfx ) return true; return false; }
 	WgBlockSetPtr	GetSelectedRowBg() const { return m_pSelectedRowGfx; }
 	WgColor			GetSelectedRowColor() const { return m_selectedRowColor; }
 
-	WgTableRow2*	FirstRow() const { return m_rows.First(); }
-	WgTableRow2*	LastRow() const { return m_rows.Last(); }
+	WgTableRow*	FirstRow() const { return m_rows.First(); }
+	WgTableRow*	LastRow() const { return m_rows.Last(); }
 	int				NbRows() const { return m_nRows; }
-	int				CompareRows(WgTableRow2* p1, WgTableRow2* p2) const;
+	int				CompareRows(WgTableRow* p1, WgTableRow* p2) const;
 
 	// Overloaded from WgGizmoParent
 
@@ -336,7 +334,7 @@ public:
 	bool			DeleteAllChildren();
 	bool			ReleaseAllChildren();
 
-//	void	ScrollIntoView( WgTableRow2* pRow );
+//	void	ScrollIntoView( WgTableRow* pRow );
 
 	void			SetAutoScrollMarked( bool bAutoScroll )			{ m_bAutoScrollMarked = bAutoScroll; }
 	bool			GetAutoScrollMarked() const						{ return m_bAutoScrollMarked; }
@@ -344,7 +342,6 @@ public:
 	void			ShowHeader( bool bShow );
 	bool			GetShowHeader() const { return m_bShowHeader; }
 
-//	WgItem	GetCell( Uint32 row, Uint32 column );
 
 	WgTableHook*	FirstHook() const;
 	WgTableHook*	LastHook() const;
@@ -355,15 +352,6 @@ public:
 	int				WidthForHeight( int height ) const;
 
 	WgSize			DefaultSize() const;
-
-	bool			IsView() const { return false; }
-	bool			IsContainer() const { return true; }
-
-	WgGizmoContainer * CastToContainer() { return this; }
-	const WgGizmoContainer * CastToContainer() const { return this; }
-
-	WgGizmo*		CastToGizmo() { return this; }
-	const WgGizmo*	CastToGizmo() const { return this; }
 
 	// Overloaded from container
 
@@ -385,13 +373,13 @@ public:
 	SelectMode		GetSelectMode() const { return m_selectMode; }
 
 	WgRect			GetCellGeo( int row, int column );
+	WgGizmo *		GetCellContent( int row, int column );
 
 protected:
 
 	void			_onCloneContent( const WgGizmo * _pOrg );
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onNewSize( const WgSize& size );
-	void			_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 //	bool			_onAlphaTest( const WgCoord& ofs );		//TODO: Implement for performance!
 
 private:
@@ -404,32 +392,19 @@ private:
 	WgHook* 		_lastHookWithGeo( WgRect& geo ) const;
 	WgHook* 		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
-
-	// These are needed until WgGizmoContainer inherits from WgGizmo
-
-	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
-									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
-	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
-									{ WgGizmoContainer::_onCollectPatches(container, geo, clip); }
-	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
-									{ WgGizmoContainer::_onMaskPatches(patches, geo, clip, blendMode); }
-	void			_onEnable() { WgGizmoContainer::_onEnable(); }
-	void			_onDisable() { WgGizmoContainer::_onDisable(); }
-	bool 			_onAlphaTest( const WgCoord& ofs ) { return WgGizmoContainer::_onAlphaTest(ofs); }
-
 	//
 
 	void			_refreshRows();
-	void			_rowModified( WgTableRow2* pRow, int widthDiff , int heightDiff );
-	void			_rowMarkChanged( WgTableRow2* pRow, bool bMarked );
-	WgTableRow2*	_getMarkedRow( int x, int y );
+	void			_rowModified( WgTableRow* pRow, int widthDiff , int heightDiff );
+	void			_rowMarkChanged( WgTableRow* pRow, bool bMarked );
+	WgTableRow*	_getMarkedRow( int x, int y );
 
-	void			_connectRow( WgTableRow2* pRow, WgTableRow2* pPlaceBefore = 0 );
-	void			_disconnectRow( WgTableRow2* pRow );
-	WgTableRow2* 	_findRowInsertSpot( WgTableRow2* pFirst, WgTableRow2* pLast, WgTableRow2* pRow, Uint32 nRows );
+	void			_connectRow( WgTableRow* pRow, WgTableRow* pPlaceBefore = 0 );
+	void			_disconnectRow( WgTableRow* pRow );
+	WgTableRow* 	_findRowInsertSpot( WgTableRow* pFirst, WgTableRow* pLast, WgTableRow* pRow, Uint32 nRows );
 
 	int				_getMarkedColumn( int x, int& saveXOfs );
-	int				_getMarkedRow( int y, WgTableRow2*& pSaveRow, int& saveYOfs );
+	int				_getMarkedRow( int y, WgTableRow*& pSaveRow, int& saveYOfs );
 
 	void			_updateContentSize();
 	void			_updateColumnWidths();
@@ -445,7 +420,7 @@ private:
 		bool		bAscend;
 	};
 
-	WgChain<WgTableRow2>	m_rows;
+	WgChain<WgTableRow>	m_rows;
 	int						m_nRows;
 
 	WgSize			m_gizmoSize;					// Current size of this table, as decided by our parent.
@@ -465,7 +440,7 @@ private:
 	bool			m_bAutoScrollMarked;
 
 	int				m_nColumns;
-	WgTableColumn2*	m_pColumns;
+	WgTableColumn*	m_pColumns;
 
 	int				m_nRowColors;
 	WgColor*		m_pRowColors;
@@ -489,7 +464,7 @@ private:
 	bool			m_lastSortColumnAscendStatus;
 
 
-	WgTableRow2*	m_pLastMarkedRow;
+	WgTableRow*	m_pLastMarkedRow;
 	int				m_lastClickedRow;
 	int				m_lastClickedColumn;
 	int				m_markedRow;
@@ -508,8 +483,8 @@ private:
 
 	WgBlockSetPtr	m_pHeaderGfx;
 
-	WgTableColumn2*	_getHeaderColumnAt( const WgCoord& pos );
-	WgTableColumn2*	m_pMarkedHeader;						// Header currently marked by mouse
+	WgTableColumn*	_getHeaderColumnAt( const WgCoord& pos );
+	WgTableColumn*	m_pMarkedHeader;						// Header currently marked by mouse
 
 
 	WgBlockSetPtr	m_pSelectedRowGfx;
@@ -529,7 +504,7 @@ WgGizmoTable * WgTableHook::Parent() const
 	return m_pRow->m_pTable;
 }
 
-int WgTableColumn2::Index() const
+int WgTableColumn::Index() const
 {
 	return this - m_pTable->m_pColumns;
 }

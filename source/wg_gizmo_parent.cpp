@@ -27,7 +27,7 @@ bool WgGizmoParent::IsAncestorTo( const WgGizmo * pGizmo ) const
 {
 	while( pGizmo )
 	{
-		WgGizmoParent * pParent = pGizmo->ParentX();
+		WgGizmoParent * pParent = pGizmo->Parent();
 		if( !pParent )
 			return false;
 

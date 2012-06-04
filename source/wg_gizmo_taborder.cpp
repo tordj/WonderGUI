@@ -160,11 +160,11 @@ bool WgGizmoTabOrder::_isValidForTabOrderInsertion( WgGizmo * pGizmo ) const
 {
 	// Check so it's an ancestor to us.
 
-	WgGizmoParent * p = pGizmo->ParentX();
+	WgGizmoParent * p = pGizmo->Parent();
 
 	while( p && p->IsGizmo() && p != this )
 	{
-		p = p->CastToGizmo()->ParentX();
+		p = p->CastToGizmo()->Parent();
 	}
 
 	if( !p )

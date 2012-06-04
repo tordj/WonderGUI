@@ -42,7 +42,6 @@
 class WgFont;
 class WgSurface;
 class WgCharSeq;
-class WgItemRow;
 
 class WgTab : public WgLink
 {
@@ -74,7 +73,7 @@ private:
 	bool			m_bAlert;
 	WgBlockSetPtr	m_pGfx;
 
-	WgItemRow*		m_pItemRow;
+//	WgItemRow*		m_pItemRow;
 	bool			m_bLockedContent;
 	bool			m_bVisible;
 };
@@ -190,7 +189,7 @@ public:
 
 	bool HasTab( int id ) const;
 
-	WgItemRow*	LockTabContent( int id );
+//	WgItemRow*	LockTabContent( int id );
 	void		UnlockTabContent( int id );
 
 	WgTab*			GetSelectedTab() const;
@@ -206,11 +205,7 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
-	void	_onUpdate( const WgUpdateInfo& _updateInfo );
-#ifdef WG_TNG
 	void 	_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler );
-#endif
-	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	bool	_onAlphaTest( const WgCoord& ofs );
 
 private:

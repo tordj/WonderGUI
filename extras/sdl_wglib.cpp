@@ -26,8 +26,8 @@ namespace sdl_wglib
 
 		WgBase::MapKey( WG_KEY_HOME, SDLK_HOME );
 		WgBase::MapKey( WG_KEY_END, SDLK_END );
-		WgBase::MapKey( WG_KEY_PAGEUP, SDLK_PAGEUP );
-		WgBase::MapKey( WG_KEY_PAGEDOWN, SDLK_PAGEDOWN );
+		WgBase::MapKey( WG_KEY_PAGE_UP, SDLK_PAGEUP );
+		WgBase::MapKey( WG_KEY_PAGE_DOWN, SDLK_PAGEDOWN );
 
 		WgBase::MapKey( WG_KEY_RETURN, SDLK_RETURN );
 		WgBase::MapKey( WG_KEY_BACKSPACE, SDLK_BACKSPACE );

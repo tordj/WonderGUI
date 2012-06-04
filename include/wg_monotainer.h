@@ -28,7 +28,7 @@
 #endif
 
 
-class WgMonotainer : public WgGizmo, public WgGizmoContainer
+class WgMonotainer : public WgGizmoContainer
 {
 public:
 	WgMonotainer() : m_hook(this) {}
@@ -53,15 +53,6 @@ public:
 
 	WgSize			DefaultSize() const;
 
-	bool			IsView() const { return false; }
-	bool			IsContainer() const { return true; }
-
-	WgGizmoContainer * CastToContainer() { return this; }
-	const WgGizmoContainer * CastToContainer() const { return this; }
-
-	WgGizmo *		CastToGizmo() { return this; }
-	const WgGizmo*	CastToGizmo() const { return this; }
-
 protected:
 
 	class Hook : public WgHook
@@ -79,8 +70,6 @@ protected:
 		WgRect			ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
 		WgMonotainer* 	Parent() const { return m_pParent; }
-
-		WgWidget*		GetRoot() { return 0; }			// Should in the future not return a widget, but a gizmo.
 
 	protected:
 		Hook( WgMonotainer * pParent ) : m_pParent(pParent) {}
@@ -102,14 +91,6 @@ protected:
 
 	WgHook *		_lastHookWithGeo( WgRect& geo ) const;
 	WgHook *		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
-
-	// These are needed until WgGizmoContainer inherits from WgGizmo
-
-	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
-									{ WgGizmoContainer::_renderPatches( pDevice, _canvas, _window, _pPatches, _layer ); }
-	void			_onEnable() { WgGizmoContainer::_onEnable(); }
-	void			_onDisable() { WgGizmoContainer::_onDisable(); }
-	bool 			_onAlphaTest( const WgCoord& ofs ) { return WgGizmoContainer::_onAlphaTest(ofs); }
 
 	//
 

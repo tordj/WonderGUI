@@ -9,18 +9,13 @@
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="wondergui" ConfigName="Debug"/>
-      <Project Name="bench" ConfigName="Debug"/>
-      <Project Name="wg_sdl" ConfigName="Debug"/>
-      <Project Name="WgDesigner" ConfigName="Debug"/>
-      <Project Name="wg_simple" ConfigName="Debug"/>
-      <Project Name="WgDesigner" ConfigName="Debug"/>
-      <Project Name="wg_gl" ConfigName="Debug"/>
-      <Project Name="WgDesigner" ConfigName="Debug"/>
-      <Project Name="wg_gl" ConfigName="Debug"/>
       <Project Name="wg_soft" ConfigName="Debug"/>
+      <Project Name="wg_sdl" ConfigName="Debug"/>
+      <Project Name="wg_gl" ConfigName="Debug"/>
       <Project Name="gfxdevice_test" ConfigName="Debug"/>
+      <Project Name="bench" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="yes">
+    <WorkspaceConfiguration Name="Release" Selected="no">
       <Project Name="wondergui" ConfigName="Release"/>
       <Project Name="bench" ConfigName="Release"/>
       <Project Name="wg_sdl" ConfigName="Release"/>

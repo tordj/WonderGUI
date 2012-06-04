@@ -933,7 +933,7 @@ void WgGizmoMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 						pItem = pItem->Prev();
 					break;
 
-				case WG_KEY_PAGEUP:
+				case WG_KEY_PAGE_UP:
 				{
 					int viewHeight = _getViewSize();
 
@@ -960,7 +960,7 @@ void WgGizmoMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 					break;
 				}
-				case WG_KEY_PAGEDOWN:
+				case WG_KEY_PAGE_DOWN:
 				{
 					int viewHeight = _getViewSize();
 
@@ -1020,7 +1020,7 @@ void WgGizmoMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 	{
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 		if( key != WG_KEY_RIGHT && key != WG_KEY_RETURN && key != WG_KEY_UP && key != WG_KEY_DOWN &&
-			key != WG_KEY_HOME && key != WG_KEY_END && key != WG_KEY_PAGEUP && key != WG_KEY_PAGEDOWN )
+			key != WG_KEY_HOME && key != WG_KEY_END && key != WG_KEY_PAGE_UP && key != WG_KEY_PAGE_DOWN )
 			pHandler->ForwardEvent( pEvent );		
 	}
 	else if( pEvent->Type() != WG_EVENT_CHARACTER && pEvent->Type() != WG_EVENT_MOUSEWHEEL_ROLL )
@@ -1125,8 +1125,8 @@ void WgGizmoMenu::_openSubMenu( WgGizmoMenu * pMenu, const WgRect& launcherGeo, 
 {
 	WgGizmoMenuLayer * pLayer = 0;
 
-	if( ParentX() )
-		pLayer = ParentX()->_getMenuLayer();
+	if( Parent() )
+		pLayer = Parent()->_getMenuLayer();
 
 	if( pLayer )
 	{
@@ -1141,8 +1141,8 @@ void WgGizmoMenu::_itemSelected()
 {
 	WgGizmoMenuLayer * pLayer = 0;
 
-	if( ParentX() )
-		pLayer = ParentX()->_getMenuLayer();
+	if( Parent() )
+		pLayer = Parent()->_getMenuLayer();
 
 	if( pLayer )
 		pLayer->CloseAllMenus();

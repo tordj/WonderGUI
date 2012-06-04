@@ -31,30 +31,14 @@
 #	include <wg_string.h>
 #endif
 
-#ifndef WG_INPUT_DOT_H
-#	include <wg_input.h>
-#endif
-
 #ifndef WG_HOOK_DOT_H
 #	include <wg_hook.h>
 #endif
 
-#ifndef WG_EMITTER_DOT_H
-#	include <wg_emitter.h>
-#endif
-
-#ifndef WG_SIGNALS_DOT_H
-#	include <wg_signals.h>
-#endif
-
-#ifdef WG_TNG
 #ifndef WG_EVENT_DOT_H
 #	include <wg_event.h>
 #endif
-#endif
 
-class WgUpdateInfo;
-class WgEmitter;
 class WgGfxDevice;
 class WgSkinManager;
 class Wg_Interface_TextHolder;
@@ -64,7 +48,7 @@ class WgEventHandler;
 class WgPatches;
 
 
-class WgGizmo : public WgEmitter, public WgWeakPtrTarget
+class WgGizmo : public WgWeakPtrTarget
 {
 friend class WgSkinNode;
 friend class WgInput;
@@ -88,7 +72,7 @@ friend class WgGizmoContainer;
 friend class WgGizmoShader;
 friend class WgGizmoMenuLayer;
 
-friend class WgTableRow2;
+friend class WgTableRow;
 
 public:
 	WgGizmo();
@@ -139,16 +123,15 @@ public:
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
 	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_bFocused; }
-	WgGizmoParent * ParentX() const { if( m_pHook ) return m_pHook->_parent(); return 0; }		// Name currently conflicts with WgWidget, hence the stupid X.
+	WgGizmoParent * Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 
 	WgGizmo *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
 	WgGizmo *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
 
 	WgCoord			Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
 	WgCoord			Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
-#ifdef WG_TNG
 	WgEventHandler *	EventHandler() const;
-#endif
+
 	// To be overloaded by Gizmo
 
 	virtual int		HeightForWidth( int width ) const;
@@ -178,12 +161,10 @@ protected:
 	void			_setSkinNode( WgSkinNode * pNode );
 	WgSkinNode *	_getSkinNode() const { return m_pSkinNode; }
 
-#ifdef WG_TNG
 	void			_onNewRoot( WgRoot * pRoot );
 	void			_startReceiveTicks();
 	void			_stopReceiveTicks();
 	virtual WgBlendMode	_getBlendMode() const;
-#endif
 
 	// Convenient calls to hook
 
@@ -193,21 +174,15 @@ protected:
 
 	// To be overloaded by Gizmo
 
-#ifdef WG_TNG
 	virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-#endif
 	virtual void	_onCloneContent( const WgGizmo * _pOrg ) = 0;
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_onRefresh();
-	virtual void	_onUpdate( const WgUpdateInfo& _updateInfo );
 
-#ifdef WG_TNG
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-#endif
-	virtual void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs );
 	virtual void	_onEnable();
 	virtual void	_onDisable();

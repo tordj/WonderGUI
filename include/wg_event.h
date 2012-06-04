@@ -53,6 +53,7 @@ class WgGizmoEditvalue;
 class WgGizmoSlider;
 class WgGizmoMenu;
 class WgGizmoModalLayer;
+class WgGizmoTable;
 class WgInterfaceEditText;
 class WgText;
 
@@ -518,6 +519,36 @@ namespace WgEvent
 		friend class ::WgGizmoModalLayer;
 	protected:
 		ModalBlockedRelease( int button, WgGizmo * pModalGizmo );
+	};
+
+	//____ WgGizmoTable events _________________________________________________
+
+	class TableCellEvent : public Event
+	{
+	public:
+		WgGizmoTable * 	Table() const;
+		int				Row() const;
+		int				Column() const;
+		WgGizmo *		CellContent() const;
+		
+	protected:
+		int				m_row;
+		int				m_column;
+		WgGizmoWeakPtr	m_pCellContent;
+	};
+
+	class TableCellMarked : public TableCellEvent
+	{
+		friend class ::WgGizmoTable;
+	protected:
+		TableCellMarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent );
+	};
+
+	class TableCellUnmarked : public TableCellEvent
+	{
+		friend class ::WgGizmoTable;
+	protected:
+		TableCellUnmarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent );
 	};
 
 

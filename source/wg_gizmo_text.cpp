@@ -24,9 +24,7 @@
 #include <wg_key.h>
 #include <wg_font.h>
 #include <wg_gfxdevice.h>
-#ifdef WG_TNG
-#	include <wg_eventhandler.h>
-#endif
+#include <wg_eventhandler.h>
 
 static const char	c_gizmoType[] = {"GizmoText"};
 
@@ -100,17 +98,6 @@ void WgGizmoText::SetEditMode(WgTextEditMode mode)
 	m_text.SetEditMode(mode);
 }
 
-//____ _onUpdate() ________________________________________________________
-
-void WgGizmoText::_onUpdate( const WgUpdateInfo& _updateInfo )
-{
-	if( IsSelectable() && m_bFocused )
-	{
-		m_pText->incTime( _updateInfo.msDiff );
-		_requestRender();					//TODO: Should only render the cursor and selection!
-	}
-}
-
 //____ HeightForWidth() _______________________________________________________
 
 int WgGizmoText::HeightForWidth( int width ) const
@@ -181,7 +168,6 @@ void WgGizmoText::_onRefresh( void )
 
 //____ _onEvent() ______________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	int type 				= pEvent->Type();
@@ -365,159 +351,7 @@ void WgGizmoText::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 		pHandler->ForwardEvent( pEvent );
 
 }
-#endif
 
-//____ _onAction() _________________________________________________
-
-void WgGizmoText::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
-{
-#ifdef WG_LEGACY
-
-	if( m_bFocused && (action == WgInput::BUTTON_PRESS || action == WgInput::BUTTON_DOWN) && button_key == 1 )
-	{
-
-		if( IsSelectable() && (info.modifier & WG_MODKEY_SHIFT) )
-		{
-			m_pText->setSelectionMode(true);
-		}
-
-		m_pText->CursorGotoCoord( WgCoord(info.x, info.y), ScreenGeo() );
-
-		if(IsSelectable() && action == WgInput::BUTTON_PRESS && !(info.modifier & WG_MODKEY_SHIFT))
-		{
-			m_pText->clearSelection();
-			m_pText->setSelectionMode(true);
-		}
-	}
-	else if( action == WgInput::BUTTON_RELEASE || action == WgInput::BUTTON_RELEASE_OUTSIDE )
-	{
-		if(m_bFocused && button_key == 1)
-			m_pText->setSelectionMode(false);
-	}
-	else if( !m_bFocused && IsEditable() && action == WgInput::BUTTON_PRESS && button_key == 1 )
-	{
-		GrabFocus();
-	}
-
-
-	if( action == WgInput::CHARACTER )
-	{
-		if( IsEditable() && m_bFocused )
-		{
-			if( button_key >= 32 && button_key != 127)
-			{
-				_insertCharAtCursor(button_key);
-			}
-			else if( button_key == 13 )
-			{
-				_insertCharAtCursor('\n');
-			}
-			else if( button_key == '\t' )
-			{
-				_insertCharAtCursor( '\t' );
-			}
-		}
-	}
-
-	if( action == WgInput::KEY_RELEASE && m_bFocused )
-	{
-		switch( button_key )
-		{
-			case WG_KEY_SHIFT:
-				if(!inputObj.isButtonDown(1))
-					m_pText->setSelectionMode(false);
-			break;
-		}
-	}
-
-	if( (action == WgInput::KEY_PRESS || action == WgInput::KEY_REPEAT) && IsEditable() && m_bFocused )
-	{
-		switch( button_key )
-		{
-			case WG_KEY_LEFT:
-				if( info.modifier & WG_MODKEY_SHIFT )
-					m_pText->setSelectionMode(true);
-
-				if( info.modifier & WG_MODKEY_CTRL )
-					m_pText->gotoPrevWord();
-				else
-					m_pText->goLeft();
-				break;
-			case WG_KEY_RIGHT:
-				if( info.modifier & WG_MODKEY_SHIFT )
-					m_pText->setSelectionMode(true);
-
-				if( info.modifier & WG_MODKEY_CTRL )
-					m_pText->gotoNextWord();
-				else
-					m_pText->goRight();
-				break;
-
-			case WG_KEY_UP:
-				if( info.modifier & WG_MODKEY_SHIFT )
-					m_pText->setSelectionMode(true);
-
-				m_pText->CursorGoUp( 1, ScreenGeo() );
-				break;
-
-			case WG_KEY_DOWN:
-				if( info.modifier & WG_MODKEY_SHIFT )
-					m_pText->setSelectionMode(true);
-
-				m_pText->CursorGoDown( 1, ScreenGeo() );
-				break;
-
-			case WG_KEY_BACKSPACE:
-				if(m_pText->hasSelection())
-					m_pText->delSelection();
-				else if( info.modifier & WG_MODKEY_CTRL )
-					m_pText->delPrevWord();
-				else
-					m_pText->delPrevChar();
-				break;
-
-			case WG_KEY_DELETE:
-				if(m_pText->hasSelection())
-					m_pText->delSelection();
-				else if( info.modifier & WG_MODKEY_CTRL )
-					m_pText->delNextWord();
-				else
-					m_pText->delNextChar();
-				break;
-
-			case WG_KEY_HOME:
-				if( info.modifier & WG_MODKEY_SHIFT )
-					m_pText->setSelectionMode(true);
-
-				if( info.modifier & WG_MODKEY_CTRL )
-					m_pText->goBOF();
-				else
-					m_pText->goBOL();
-				break;
-
-			case WG_KEY_END:
-				if( info.modifier & WG_MODKEY_SHIFT )
-					m_pText->setSelectionMode(true);
-
-				if( info.modifier & WG_MODKEY_CTRL )
-					m_pText->goEOF();
-				else
-					m_pText->goEOL();
-				break;
-
-			default:
-				break;
-		}
-	}
-
-	// Let text object handle its actions.
-
-	bool bChanged = m_text.OnAction( action, button_key, ScreenGeo(), WgCoord(info.x, info.y) );
-	if( bChanged )
-		_requestRender();
-
-#endif //WG_LEGACY
-}
 
 //____ _onCloneContent() _______________________________________________________
 
@@ -564,9 +398,7 @@ void WgGizmoText::_onGotInputFocus()
 	m_bFocused = true;
 	if( IsEditable() ) // render with cursor on
 	{
-#ifdef WG_TNG
 		_startReceiveTicks();
-#endif
 		if(	m_bResetCursorOnFocus )
 			m_pText->goEOF();
 		_requestRender();
@@ -581,9 +413,7 @@ void WgGizmoText::_onLostInputFocus()
 	m_bResetCursorOnFocus = false;
 	if( IsEditable() )
 	{
-#ifdef WG_TNG
 		_stopReceiveTicks();
-#endif
 		_requestRender();
 	}
 }

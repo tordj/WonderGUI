@@ -26,7 +26,6 @@
 class WgSurface;
 class WgGlyphSet;
 class WgResDB;
-class WgWidget;
 
 class WgResLoader
 {
@@ -35,7 +34,6 @@ public:
 	virtual WgGlyphSet*	LoadGlyphSet( const std::string& filename ) = 0;
 	virtual WgResDB*	LoadDb( const std::string& filename, WgResDB * pDependencies = 0 ) = 0;
 	virtual std::string	LoadString( const std::string& token ) = 0;
-	virtual void		LoadCallback( const std::string& id, WgWidget* emitter, WgWidget* receiver ) = 0;
 };
 
 

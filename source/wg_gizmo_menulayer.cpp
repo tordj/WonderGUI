@@ -46,12 +46,6 @@ WgGizmoContainer* WgMenuHook::Parent() const
 }
 
 //_____________________________________________________________________________
-WgWidget* WgMenuHook::GetRoot()
-{
-	return 0;
-}
-
-//_____________________________________________________________________________
 WgMenuHook::WgMenuHook( WgGizmoMenuLayer * pParent, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
 {
 	m_pParent 		= pParent;
@@ -430,7 +424,7 @@ bool WgGizmoMenuLayer::CloseAllMenus()
 
 bool WgGizmoMenuLayer::CloseMenu( WgGizmo * pGizmo )
 {
-	if( !pGizmo || pGizmo->ParentX() != this || pGizmo == m_baseHook.Gizmo() )
+	if( !pGizmo || pGizmo->Parent() != this || pGizmo == m_baseHook.Gizmo() )
 		return false;
 
 	WgMenuHook * pHook = (WgMenuHook *) pGizmo->Hook();

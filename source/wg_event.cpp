@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_event.h>
+#include <wg_key.h>
 #include <wg_gizmo.h>
 #include <wg_gizmo_button.h>
 #include <wg_gizmo_checkbox.h>
@@ -33,6 +34,7 @@
 #include <wg_gizmo_text.h>
 #include <wg_gizmo_editline.h>
 #include <wg_gizmo_menu.h>
+#include <wg_gizmo_table.h>
 
 namespace WgEvent
 {
@@ -112,7 +114,7 @@ namespace WgEvent
 	
 	bool KeyEvent::IsMovementKey() const
 	{
-		if( m_translatedKeyCode == WG_KEY_PAGEUP || m_translatedKeyCode == WG_KEY_PAGEDOWN ||
+		if( m_translatedKeyCode == WG_KEY_PAGE_UP || m_translatedKeyCode == WG_KEY_PAGE_DOWN ||
 			m_translatedKeyCode == WG_KEY_HOME || m_translatedKeyCode == WG_KEY_END ||
 			IsCursorKey() )
 			return true;
@@ -774,6 +776,50 @@ namespace WgEvent
 		m_type			= WG_EVENT_MODAL_BLOCKED_RELEASE;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
+	}
+
+	//____ Table event methods _________________________________________________
+
+	WgGizmoTable * TableCellEvent::Table() const
+	{
+		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
+		if( pGizmo && pGizmo->Type() == WgGizmoMenu::GetMyType() )
+			return static_cast<WgGizmoTable*>(pGizmo);
+
+		return 0;		
+	}
+	
+	int TableCellEvent::Row() const
+	{
+		return m_row;
+	}
+	
+	int TableCellEvent::Column() const
+	{
+		return m_column;
+	}
+	
+	WgGizmo * TableCellEvent::CellContent() const
+	{
+		return m_pCellContent.GetRealPtr();
+	}
+		
+	TableCellMarked::TableCellMarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent )
+	{
+		m_type 			= WG_EVENT_TABLE_CELL_MARKED;
+		m_pGizmo 		= pTable;
+		m_row 			= row;
+		m_column 		= column;
+		m_pCellContent 	= pCellContent;
+	}
+
+	TableCellUnmarked::TableCellUnmarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent )
+	{
+		m_type 			= WG_EVENT_TABLE_CELL_UNMARKED;
+		m_pGizmo 		= pTable;
+		m_row 			= row;
+		m_column 		= column;
+		m_pCellContent 	= pCellContent;
 	}
 
 

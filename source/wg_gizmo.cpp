@@ -24,10 +24,8 @@
 #include <wg_types.h>
 #include <wg_skinmanager.h>
 
-#ifdef WG_TNG
 #	include <wg_root.h>
 #	include <wg_eventhandler.h>
-#endif
 
 static const char	s_type[] = {"Unspecified"};
 
@@ -166,17 +164,14 @@ void WgGizmo::_onNewHook( WgHook * pHook )
 
 //____ _onNewRoot() ___________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmo::_onNewRoot( WgRoot * pRoot )
 {
 	if( m_bReceiveTick && pRoot )
 		pRoot->EventHandler()->_addTickReceiver(this);
 }
-#endif
 
 //____ _startReceiveTicks() ___________________________________________________
 
-#ifdef WG_TNG
 void WgGizmo::_startReceiveTicks()
 {
 	if( !m_bReceiveTick )
@@ -191,16 +186,13 @@ void WgGizmo::_startReceiveTicks()
 		}
 	}
 }
-#endif
 
 //____ _stopReceiveTicks() ____________________________________________________
 
-#ifdef WG_TNG
 void WgGizmo::_stopReceiveTicks()
 {
 	m_bReceiveTick = false;
 }
-#endif
 
 //____ _setSkinNode() __________________________________________________________
 
@@ -231,7 +223,6 @@ WgCoord WgGizmo::Abs2local( const WgCoord& cord ) const
 
 //____ EventHandler() __________________________________________________________
 
-#ifdef WG_TNG
 WgEventHandler * WgGizmo::EventHandler() const
 {
 	if( m_pHook )
@@ -242,7 +233,6 @@ WgEventHandler * WgGizmo::EventHandler() const
 	}
 	return 0;
 }
-#endif
 
 //____ HeightForWidth() _______________________________________________________
 
@@ -293,19 +283,18 @@ WgMode WgGizmo::Mode() const
 }
 
 //____ _getBlendMode() _________________________________________________________
-#ifdef WG_TNG
+
 WgBlendMode WgGizmo::_getBlendMode() const
 {
-	WgGizmoParent * pParent = ParentX();
-	if( pParent->CastToGizmo() )
+	WgGizmoParent * pParent = Parent();
+	if( pParent->IsGizmo() )
 		return pParent->CastToGizmo()->_getBlendMode();
 	else
 		return WG_BLENDMODE_BLEND;		// We always start out with WG_BLENDMODE_BLEND.
 }
-#endif
 
 //____ _renderPatches() ________________________________________________________
-#ifdef WG_TNG
+
 void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 {
 	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
@@ -315,11 +304,9 @@ void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 			_onRender( pDevice, _canvas, _window, clip, _layer );
 	}
 }
-#endif
 
 //____ Fillers _______________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmo::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 		container.Add( WgRect( geo, clip ) );
@@ -332,7 +319,6 @@ void WgGizmo::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 		patches.Sub( WgRect( geo, clip ) );
 	}
 }
-#endif
 
 void WgGizmo::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
@@ -348,19 +334,9 @@ void WgGizmo::_onRefresh()
 	_requestRender();
 }
 
-void WgGizmo::_onUpdate( const WgUpdateInfo& _updateInfo )
-{
-}
-
-#ifdef WG_TNG
 void WgGizmo::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	pHandler->ForwardEvent( pEvent );
-}
-#endif
-
-void WgGizmo::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
-{
 }
 
 bool WgGizmo::_onAlphaTest( const WgCoord& ofs )

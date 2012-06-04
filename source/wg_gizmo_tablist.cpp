@@ -8,11 +8,8 @@
 #include <wg_gfxdevice.h>
 #include <wg_surface.h>
 #include <wg_util.h>
-#ifdef WG_TNG
-#	include <wg_eventhandler.h>
-#endif
+#include <wg_eventhandler.h>
 
-#include <wg_item_row.h>
 
 
 static const char	c_gizmoType[] = {"TabList"};
@@ -366,12 +363,9 @@ bool WgGizmoTablist::SelectTab( int id )
 		_resizeTabs();				// fonts have changed
 		_requestRender();
 
-		Emit( WgSignal::TabSelected(), pTab->m_id );
-#ifdef WG_TNG
 		WgEventHandler * pHandler = EventHandler();
 		if( pHandler )
 			pHandler->QueueEvent( new WgEvent::TabSelect(this, pTab->m_id) );
-#endif
 		return true;
 	}
 
@@ -1218,7 +1212,6 @@ void WgGizmoTablist::_onNewSize( const WgSize& size )
 
 //____ _onEvent() ______________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmoTablist::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	switch( _pEvent->Type() )
@@ -1303,60 +1296,6 @@ void WgGizmoTablist::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * 
 	else
 		pHandler->ForwardEvent( _pEvent );
 
-}
-#endif
-
-//____ _onAction() _____________________________________________________________
-
-void WgGizmoTablist::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
-{
-	switch( action )
-	{
-		case WgInput::BUTTON_PRESS:
-		{
-			WgCoord pos = Abs2local( WgCoord(info.x, info.y) );
-
-			int	x = pos.x;
-			int	y = pos.y;
-
-			WgTab * pTab = _pos2Tab( x, y );
-			if( pTab && pTab != m_pTabSelected )
-			{
-				if( button_key == 1 )
-					SelectTab(pTab->m_id);
-
-				Emit( WgSignal::TabPressed(), pTab->m_id );
-			}
-		}
-		break;
-
-		case WgInput::POINTER_OVER:
-		{
-			WgCoord pos = Abs2local( WgCoord(info.x, info.y) );
-
-			int	x = pos.x;
-			int	y = pos.y;
-
-			WgTab * pTab = _pos2Tab( x, y );
-			if( pTab != m_pTabMarked && !inputObj.isButtonDown(1) )
-			{
-				m_pTabMarked = pTab;
-				_requestRender();
-			}
-		}
-		break;
-
-		case WgInput::POINTER_EXIT:
-			if( m_pTabMarked )
-			{
-				m_pTabMarked = 0;
-				_requestRender();
-			}
-		break;
-
-        default:
-            break;
-	}
 }
 
 //____ _onCloneContent() _______________________________________________________

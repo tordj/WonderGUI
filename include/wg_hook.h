@@ -27,14 +27,9 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_EMITTER_DOT_H
-#	include <wg_emitter.h>
-#endif
-
 
 
 class WgGizmoParent;
-class WgWidget;
 class WgGfxDevice;
 class WgGizmo;
 class WgRoot;
@@ -66,8 +61,6 @@ public:
 	WgGizmoParent * 	Parent() const { return _parent(); }
 	virtual WgRoot *	Root() const;
 	WgEventHandler *	EventHandler() const;
-
-	virtual WgWidget*	GetRoot() = 0;			// Remove once Widgets are gone...
 
 protected:
 

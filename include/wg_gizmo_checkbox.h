@@ -35,10 +35,6 @@
 #	include <wg_text.h>
 #endif
 
-#ifndef	WG_TOOLTIP_DOT_H
-#	include <wg_tooltip.h>
-#endif
-
 #ifndef WG_BLOCKSET_DOT_H
 #	include <wg_blockset.h>
 #endif
@@ -98,8 +94,6 @@ public:
 
 	Uint32			GetTextAreaWidth();
 
-	DECLARE_TOOLTIP_SUPPORT();
-
 	WgSize			DefaultSize() const;
 	bool			IsAutoEllipsisDefault() const { return false; };
 	
@@ -108,10 +102,7 @@ protected:
 
 	void	_onCloneContent( const WgGizmo * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-#ifdef WG_TNG
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-#endif
-	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
 	bool	_onAlphaTest( const WgCoord& ofs );

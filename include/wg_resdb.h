@@ -28,16 +28,9 @@
 #include <map>
 
 
-#ifdef WG_LEGACY
-#	ifndef WG_WIDGET_DOT_H
-#	   include <wg_widget.h>
-#	endif
+#ifndef WG_GIZMO_DOT_H
+#	include <wg_gizmo.h>
 #endif
-//#else
-#	ifndef WG_GIZMO_DOT_H
-#		include <wg_gizmo.h>
-#	endif
-//#endif
 
 #ifndef WG_CHAIN_DOT_H
 #	include <wg_chain.h>
@@ -65,6 +58,7 @@ class WgResLoader;
 class WgTab;
 class WgTextManager;
 class WgSkinManager;
+class WgMenuItem;
 
 class WgResDB
 {
@@ -167,13 +161,6 @@ public:
 
 	void				ClearGizmos();// debug function
 
-#ifdef WG_LEGACY
-	void				ClearWidgets();// debug function
-	void				ClearConnects();// debug function
-
-	bool				Connect( const std::string& id, WgWidget* emitter, const std::string& action, WgWidget* receiver);
-#endif
-
 	std::string			LoadString( const std::string& token );
 
 	bool				AddResDb( const std::string& file, MetaData * pMetaData = 0 );
@@ -253,50 +240,6 @@ public:
 	WgTab*				GetTab( const std::string& id ) const;
 	WgGizmo*			GetGizmo( const std::string& id ) const;
 	WgGizmo*			CloneGizmo( const std::string& id ) const;
-
-
-#ifdef WG_LEGACY
-	typedef ResWrapper<WgWidget*>		WidgetRes;
-	typedef ResWrapper<WgItem*>			ItemRes;
-
-	static std::string	GenerateName( const WgWidget* data );
-	static std::string	GenerateName( const WgItem* data );
-
-	bool				AddWidget( const std::string& id, WgWidget * pWidget, MetaData * pMetaData = 0 );
-	bool				AddItem( const std::string& id, WgItem * pItem, MetaData * pMetaData = 0 );
-
-	bool				RemoveWidget( const std::string& id );
-	bool				RemoveItem( const std::string& id );
-
-	bool				RemoveWidget( WidgetRes * pRes );
-	bool				RemoveItem( ItemRes * pRes );
-
-	WgWidget *			GetWidget( const std::string& id ) const;
-	WgItem *			GetItem( const std::string& id ) const;
-
-	WidgetRes *			GetResWidget( const std::string& id ) const;
-	ItemRes *			GetResItem( const std::string& id ) const;
-
-	WidgetRes *			FindResWidget( const WgWidget* data ) const;
-	ItemRes *			FindResItem( const WgItem* data ) const;
-
-	std::string			FindWidgetId( const WgWidget* data ) const			{ WidgetRes *r =	FindResWidget(data); return r ? r->id : ""; }
-	std::string			FindItemId( const WgItem* data ) const				{ ItemRes *	r =		FindResItem(data); return r ? r->id : ""; }
-
-	inline WidgetRes *		GetFirstResWidget() const { return m_widgets.First(); }
-	inline ItemRes *		GetFirstResItem() const { return m_items.First(); }
-
-	template<typename T> T* GetCastWidget(const std::string& id) const
-	{
-		WgWidget * widget = GetWidget(id);
-		if(widget)
-		{
-			if(T::GetMyType() == widget->Type())
-				return static_cast<T*>(widget);
-		}
-		return 0;
-	}
-#endif
 
 
 	ResDBRes *			GetResDbRes( const std::string& id ) const;
@@ -379,17 +322,6 @@ public:
 
 
 private:
-
-#ifdef WG_LEGACY
-	typedef std::map<std::string, WidgetRes*>		WdgMap;
-	typedef std::map<std::string, ItemRes*>			ItemMap;
-
-	WgChain<WidgetRes>		m_widgets;
-	WgChain<ItemRes>		m_items;
-
-	WdgMap			m_mapWidgets;
-	ItemMap			m_mapItems;
-#endif
 
 	typedef std::map<std::string, ResDBRes*>		ResDBMap;
 	typedef std::map<std::string, SurfaceRes*>		SurfMap;

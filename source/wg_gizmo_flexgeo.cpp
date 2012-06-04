@@ -528,17 +528,6 @@ WgGizmoParent * WgFlexHook::_parent() const
 	return m_pParent;
 }
 
-//____ WgFlexHook::GetRoot() __________________________________________________
-
-WgWidget* WgFlexHook::GetRoot()
-{
-	WgHook * p = m_pParent->Hook();
-	if( p )
-		return p->GetRoot();
-	else
-		return 0;
-}
-
 //____ WgFlexHook::_refreshRealGeo() ___________________________________________
 
 void WgFlexHook::_refreshRealGeo()
@@ -1083,12 +1072,6 @@ void WgGizmoFlexGeo::_onNewSize( const WgSize& size )
 		pHook->_refreshRealGeo();
 		pHook = pHook->Prev();
 	}
-}
-
-//____ _onAction() _____________________________________________________________
-
-void WgGizmoFlexGeo::_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj )
-{
 }
 
 //____ _firstHookWithGeo() _____________________________________________________

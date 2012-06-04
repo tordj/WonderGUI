@@ -22,8 +22,6 @@
     <File Name="include/wg_cursor.h"/>
     <File Name="include/wg_cursorinstance.h"/>
     <File Name="include/wg_dynarray.h"/>
-    <File Name="include/wg_emitter.h"/>
-    <File Name="include/wg_emitterstanza.h"/>
     <File Name="include/wg_event.h"/>
     <File Name="include/wg_eventfilter.h"/>
     <File Name="include/wg_eventhandler.h"/>
@@ -37,7 +35,6 @@
     <File Name="include/wg_gizmo_animation.h"/>
     <File Name="include/wg_gizmo_button.h"/>
     <File Name="include/wg_gizmo_checkbox.h"/>
-    <File Name="include/wg_gizmo_circlemeter.h"/>
     <File Name="include/wg_gizmo_collection.h"/>
     <File Name="include/wg_gizmo_container.h"/>
     <File Name="include/wg_gizmo_dummy.h"/>
@@ -52,7 +49,6 @@
     <File Name="include/wg_gizmo_refreshbutton.h"/>
     <File Name="include/wg_gizmo_stack.h"/>
     <File Name="include/wg_gizmo_table.h"/>
-    <File Name="include/wg_gizmo_tablist.h"/>
     <File Name="include/wg_gizmo_taborder.h"/>
     <File Name="include/wg_gizmo_text.h"/>
     <File Name="include/wg_gizmo_value.h"/>
@@ -72,8 +68,6 @@
     <File Name="include/wg_resdb.h"/>
     <File Name="include/wg_resloader.h"/>
     <File Name="include/wg_root.h"/>
-    <File Name="include/wg_signals.h"/>
-    <File Name="include/wg_signalstanza.h"/>
     <File Name="include/wg_skinmanager.h"/>
     <File Name="include/wg_smartptr.h"/>
     <File Name="include/wg_string.h"/>
@@ -84,7 +78,6 @@
     <File Name="include/wg_textprop.h"/>
     <File Name="include/wg_textpropmanager.h"/>
     <File Name="include/wg_texttool.h"/>
-    <File Name="include/wg_tooltip.h"/>
     <File Name="include/wg_types.h"/>
     <File Name="include/wg_userdefines.h"/>
     <File Name="include/wg_util.h"/>
@@ -106,7 +99,6 @@
     <File Name="source/wg_colorset.cpp"/>
     <File Name="source/wg_cursor.cpp"/>
     <File Name="source/wg_cursorinstance.cpp"/>
-    <File Name="source/wg_emitter.cpp"/>
     <File Name="source/wg_event.cpp"/>
     <File Name="source/wg_eventfilter.cpp"/>
     <File Name="source/wg_eventhandler.cpp"/>
@@ -120,7 +112,6 @@
     <File Name="source/wg_gizmo_animation.cpp"/>
     <File Name="source/wg_gizmo_button.cpp"/>
     <File Name="source/wg_gizmo_checkbox.cpp"/>
-    <File Name="source/wg_gizmo_circlemeter.cpp"/>
     <File Name="source/wg_gizmo_container.cpp"/>
     <File Name="source/wg_gizmo_editline.cpp"/>
     <File Name="source/wg_gizmo_editvalue.cpp"/>
@@ -133,7 +124,6 @@
     <File Name="source/wg_gizmo_refreshbutton.cpp"/>
     <File Name="source/wg_gizmo_stack.cpp"/>
     <File Name="source/wg_gizmo_table.cpp"/>
-    <File Name="source/wg_gizmo_tablist.cpp"/>
     <File Name="source/wg_gizmo_taborder.cpp"/>
     <File Name="source/wg_gizmo_text.cpp"/>
     <File Name="source/wg_gizmo_value.cpp"/>
@@ -141,7 +131,6 @@
     <File Name="source/wg_glyphset.cpp"/>
     <File Name="source/wg_hook.cpp"/>
     <File Name="source/wg_iconholder.cpp"/>
-    <File Name="source/wg_input.cpp"/>
     <File Name="source/wg_interface_edittext.cpp"/>
     <File Name="source/wg_interface_textholder.cpp"/>
     <File Name="source/wg_interface_valueholder.cpp"/>
@@ -227,6 +216,8 @@
       
       
       
+      
+      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -264,6 +255,8 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
+      
       
       
       

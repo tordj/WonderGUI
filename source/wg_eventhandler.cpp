@@ -61,13 +61,13 @@ bool WgEventHandler::SetFocusGroup( WgGizmoContainer * pFocusGroup )
 
 	if( pFocusGroup )
 	{
-		if( pFocusGroup->CastToGizmo() == m_keyFocusGroup.GetRealPtr() )
+		if( pFocusGroup == m_keyFocusGroup.GetRealPtr() )
 			return true;									// Not an error, but we don't need to do anything
 
 		if( !pFocusGroup->IsFocusGroup() )
 			return false;									// Container is not a focus group
 
-		if( !pFocusGroup->CastToGizmo()->Hook() || pFocusGroup->CastToGizmo()->Hook()->Root() != m_pRoot )
+		if( !pFocusGroup->Hook() || pFocusGroup->Hook()->Root() != m_pRoot )
 			return false;									// pFocusGroup is not a child of our root.
 	}
 
@@ -76,8 +76,8 @@ bool WgEventHandler::SetFocusGroup( WgGizmoContainer * pFocusGroup )
 	WgGizmoWeakPtr pNewFocusGizmo;
 
 	if( pFocusGroup )
-		if( m_focusGroupMap.find(pFocusGroup->CastToGizmo()) != m_focusGroupMap.end() )
-			pNewFocusGizmo = m_focusGroupMap[pFocusGroup->CastToGizmo()];
+		if( m_focusGroupMap.find(pFocusGroup) != m_focusGroupMap.end() )
+			pNewFocusGizmo = m_focusGroupMap[pFocusGroup];
 
 	if( m_keyFocusGizmo )
 		m_keyFocusGizmo->_onLostInputFocus();
@@ -88,7 +88,7 @@ bool WgEventHandler::SetFocusGroup( WgGizmoContainer * pFocusGroup )
 	// Set members and exit
 
 	m_keyFocusGizmo = pNewFocusGizmo;
-	m_keyFocusGroup = pFocusGroup->CastToGizmo();
+	m_keyFocusGroup = pFocusGroup;
 
 	return true;
 }
@@ -118,12 +118,12 @@ bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
 	{
 		// Check what focus group (if any) this Gizmo belongs to.
 
-		WgGizmoContainer * p = pFocus->ParentX()->CastToContainer();
+		WgGizmoContainer * p = pFocus->Parent()->CastToContainer();
 		while( p && !p->IsFocusGroup() )
-			p = p->CastToGizmo()->ParentX()->CastToContainer();
+			p = p->Parent()->CastToContainer();
 
 		if( p )
-			m_keyFocusGroup = p->CastToGizmo();
+			m_keyFocusGroup = p;
 		else
 			m_keyFocusGroup = 0;
 
@@ -574,8 +574,8 @@ bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent )
 		return false;
 	
 	WgGizmo * p = _pEvent->Gizmo();
-	if( p && p->ParentX() )
-		return ForwardEvent( _pEvent, p->ParentX()->CastToGizmo() );
+	if( p && p->Parent() )
+		return ForwardEvent( _pEvent, p->Parent()->CastToGizmo() );
 	else
 		return false;				
 }

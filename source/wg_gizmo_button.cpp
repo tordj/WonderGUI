@@ -26,10 +26,8 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_key.h>
-#ifdef WG_TNG
 #include <wg_event.h>
 #include <wg_eventhandler.h>
-#endif
 
 static const char	c_gizmoType[] = {"Button"};
 
@@ -257,7 +255,6 @@ void WgGizmoButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 //____ _onEvent() ______________________________________________________________
 
-#ifdef WG_TNG
 void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
@@ -356,65 +353,7 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 	}
 
 }
-#endif
 
-//____ _onAction() _____________________________________________________________
-
-void WgGizmoButton::_onAction( WgInput::UserAction action, int button, const WgActionDetails& info, const WgInput& inputObj )
-{
-//	if( !m_bEnabled )
-//		return;
-
-	switch( action )
-	{
-		case	WgInput::KEY_PRESS:
-		{
-			if( button == WG_KEY_RETURN )
-				m_bReturnPressed = true;
-			break;
-		}
-
-		case	WgInput::KEY_RELEASE:
-		{
-			if( button == WG_KEY_RETURN )
-				m_bReturnPressed = false;
-			break;
-
-			//TODO: Send signal!
-		}
-
-		case	WgInput::POINTER_ENTER:
-			m_bPointerInside = true;
-			break;
-
-		case	WgInput::POINTER_EXIT:
-			m_bPointerInside = false;
-			break;
-
-		case WgInput::BUTTON_PRESS:
-			if( button == 1 )
-				m_bPressed = true;
-			break;
-
-		case WgInput::BUTTON_RELEASE:
-			//TODO: Send signal if right button was released!
-		case WgInput::BUTTON_RELEASE_OUTSIDE:
-			if( button == 1 )
-				m_bPressed = false;
-			break;
-
-        default:
-            break;
-
-	}
-
-	WgMode newMode = _getRenderMode();
-	if( newMode != m_mode )
-	{
-		m_mode = newMode;
-		_requestRender();
-	}
-}
 
 //_____ _getRenderMode() ________________________________________________________
 

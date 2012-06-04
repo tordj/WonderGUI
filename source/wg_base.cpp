@@ -24,10 +24,6 @@
 
 #include <wg_base.h>
 
-#ifdef WG_LEGACY
-#	include <wg_rectchain.h>
-#endif
-
 #include <wg_textpropmanager.h>
 #include <wg_texttool.h>
 
@@ -66,10 +62,6 @@ void WgBase::Init()
 #endif
 
 	WgTextTool::setDefaultBreakRules();
-
-#ifdef WG_LEGACY
-	WgRectChain::Init();
-#endif
 }
 
 //____ Exit() __________________________________________________________________
@@ -87,9 +79,6 @@ void WgBase::Exit()
 		FT_Done_FreeType( s_pData->freeTypeLibrary );
 #endif
 
-#ifdef WG_LEGACY
-	WgRectChain::Exit();
-#endif
 	delete s_pData->pWeakPtrPool;
 	delete s_pData;
 	s_pData = 0;

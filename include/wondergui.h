@@ -55,10 +55,6 @@
 #	include <wg_resdb.h>
 #endif
 
-#ifndef WG_EMITTER_DOT_H
-#	include <wg_emitter.h>
-#endif
-
 #ifndef WG_EVENTHANDLER_DOT_H
 #	include <wg_eventhandler.h>
 #endif
@@ -107,20 +103,12 @@
 #	include <wg_pen.h>
 #endif
 
-#ifndef WG_POINTERSPY_DOT_H
-#	include <wg_pointerspy.h>
-#endif
-
 #ifndef WG_REFCOUNTED_DOT_H
 #	include <wg_refcounted.h>
 #endif
 
 #ifndef WG_ROOT_DOT_H
 #	include <wg_root.h>
-#endif
-
-#ifndef WG_SIGNALS_DOT_H
-#	include <wg_signals.h>
 #endif
 
 #ifndef WG_SKINMANAGER_DOT_H
@@ -157,10 +145,6 @@
 
 #ifndef WG_TEXTTOOL_DOT_H
 #	include <wg_texttool.h>
-#endif
-
-#ifndef WG_TOOLTIP_DOT_H
-#	include <wg_tooltip.h>
 #endif
 
 #ifndef WG_TYPES_DOT_H
@@ -210,10 +194,6 @@
 
 #ifndef WG_GIZMO_CHECKBOX_DOT_H
 #	include <wg_gizmo_checkbox.h>
-#endif
-
-#ifndef WG_GIZMO_CIRCLEMETER_DOT_H
-#	include <wg_gizmo_circlemeter.h>
 #endif
 
 #ifndef WG_GIZMO_DUMMY_DOT_H

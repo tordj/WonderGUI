@@ -23,9 +23,7 @@
 #include <vector>
 #include <wg_gizmo_container.h>
 
-#ifdef WG_TNG
-#	include <wg_patches.h>
-#endif
+#include <wg_patches.h>
 
 #ifndef WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
@@ -47,12 +45,33 @@ bool WgGizmoContainer::IsGizmo() const
 	return true;
 }
 
+//____ IsContainer() ______________________________________________________________
+
+bool WgGizmoContainer::IsContainer() const
+{
+	return true;
+}
+
+
 //____ IsRoot() _______________________________________________________________
 
 bool WgGizmoContainer::IsRoot() const
 {
 	return false;
 }
+
+//____ CastToGizmo() _______________________________________________________
+
+WgGizmo * WgGizmoContainer::CastToGizmo()
+{
+	return this;
+}
+
+const WgGizmo * WgGizmoContainer::CastToGizmo() const
+{
+	return this;
+}
+
 
 //____ CastToContainer() _______________________________________________________
 
@@ -86,7 +105,7 @@ void WgGizmoContainer::SetMaskOp( WgMaskOp operation )
 	if( operation != m_maskOp )
 	{
 		m_maskOp = operation;
-		CastToGizmo()->_requestRender();
+		_requestRender();
 	}
 }
 
@@ -127,7 +146,7 @@ WgGizmo * WgGizmoContainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 	// Return us if search mode is GEOMETRY
 
 	if( !pResult && mode == WG_SEARCH_GEOMETRY )
-		pResult = CastToGizmo();
+		pResult = this;
 
 	return pResult;
 }
@@ -136,7 +155,7 @@ WgGizmo * WgGizmoContainer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 bool WgGizmoContainer::_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting )
 {
-	WgHook * p = CastToGizmo()->Hook();
+	WgHook * p = Hook();
 	if( p )
 		return p->Parent()->_focusRequested( p, pGizmoRequesting );
 	else
@@ -147,7 +166,7 @@ bool WgGizmoContainer::_focusRequested( WgHook * pBranch, WgGizmo * pGizmoReques
 
 bool WgGizmoContainer::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing )
 {
-	WgHook * p = CastToGizmo()->Hook();
+	WgHook * p = Hook();
 	if( p )
 		return p->Parent()->_focusReleased( p, pGizmoReleasing );
 	else
@@ -157,7 +176,7 @@ bool WgGizmoContainer::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasi
 
 WgGizmoModalLayer *  WgGizmoContainer::_getModalLayer() const
 {
-	const WgGizmoParent * p = CastToGizmo()->ParentX();
+	const WgGizmoParent * p = Parent();
 
 	if( p )
 		return p->_getModalLayer();
@@ -167,7 +186,7 @@ WgGizmoModalLayer *  WgGizmoContainer::_getModalLayer() const
 
 WgGizmoMenuLayer * WgGizmoContainer::_getMenuLayer() const
 {
-	const WgGizmoParent * p = CastToGizmo()->ParentX();
+	const WgGizmoParent * p = Parent();
 
 	if( p )
 		return p->_getMenuLayer();
@@ -203,7 +222,6 @@ void WgGizmoContainer::_onDisable()
 
 //____ _renderPatches() _____________________________________________________
 // Default implementation for container rendering patches.
-#ifdef WG_TNG
 class GizmoRenderContext
 {
 public:
@@ -289,7 +307,6 @@ void WgGizmoContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _can
 
 	}
 }
-#endif
 
 
 //____ _onAlphaTest() _________________________________________________________
@@ -311,7 +328,7 @@ void WgGizmoContainer::_onCloneContent( const WgGizmoContainer * _pOrg )
 }
 
 //____ _onCollectPatches() _______________________________________________________
-#ifdef WG_TNG
+
 void WgGizmoContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	WgRect childGeo;
@@ -324,10 +341,9 @@ void WgGizmoContainer::_onCollectPatches( WgPatches& container, const WgRect& ge
 		p = _nextHookWithGeo( childGeo, p );
 	}
 }
-#endif
 
 //____ _onMaskPatches() __________________________________________________________
-#ifdef WG_TNG
+
 void WgGizmoContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	switch( m_maskOp )
@@ -352,4 +368,3 @@ void WgGizmoContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, co
 			break;
 	}
 }
-#endif

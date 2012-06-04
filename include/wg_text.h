@@ -55,10 +55,6 @@
 	#include <wg_cursorinstance.h>
 #endif
 
-#ifndef WG_INPUT_DOT_H
-#	include <wg_input.h>
-#endif
-
 class	WgValueFormat;
 class	WgFont;
 
@@ -404,7 +400,7 @@ public:
 
 	WgCoord			FocusWindowOnRange( const WgSize& canvas, const WgRect& window, WgRange range ) const;
 
-	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
+//	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
 
 	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }
 	WgMode			GetMarkedLinkMode() const { return m_markedLinkMode; }

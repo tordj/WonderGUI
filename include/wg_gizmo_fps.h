@@ -50,10 +50,7 @@ class WgGizmoFps:public WgGizmo
 		WgSize	DefaultSize() const;
 
 	protected:
-		void	_onUpdate( const WgUpdateInfo& _updateInfo );
-#ifdef WG_TNG
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-#endif		
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 		void	_onCloneContent( const WgGizmo * _pOrg );
 
