@@ -4,7 +4,6 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <wg_origo.h>
 #include <wg_geo.h>
 
 #ifndef WG_TYPES_DOT_H
@@ -84,22 +83,6 @@ namespace WgUtil
 
 	template<typename T0, typename T1, typename T2, typename T3>
 	inline std::string ToString(const T0& a, const T1& b, const T2& c, const T3& d);
-
-	template<>
-	inline std::string ToString(WgOrigo value)
-	{
-		if(value == WgOrigo::topLeft()) return "topleft";
-		if(value == WgOrigo::topCenter()) return "topcenter";
-		if(value == WgOrigo::topRight()) return "topright";
-		if(value == WgOrigo::midLeft()) return "midleft";
-		if(value == WgOrigo::midCenter()) return "midcenter";
-		if(value == WgOrigo::midRight()) return "midright";
-		if(value == WgOrigo::bottomLeft()) return "bottomleft";
-		if(value == WgOrigo::bottomCenter()) return "bottomcenter";
-		if(value == WgOrigo::bottomRight()) return "bottomright";
-
-		return ToString(value.anchorX(), value.anchorY(), value.hotspotX(), value.hotspotY());
-	}
 
 	template<>
 	inline std::string ToString(WgOrientation value)
@@ -222,27 +205,6 @@ namespace WgUtil
 	inline int FromString(const std::string& str, T0& a, T1& b, T2& c, T3& d);
 
 	template<>
-	inline bool FromString(const std::string& str, WgOrigo& a)
-	{
-		if(str.empty() || str == "topleft") a = WgOrigo::topLeft();
-		else if(str == "topcenter") a = WgOrigo::topCenter();
-		else if(str == "topright") a = WgOrigo::topRight();
-		else if(str == "midleft") a = WgOrigo::midLeft();
-		else if(str == "midcenter") a = WgOrigo::midCenter();
-		else if(str == "midright") a = WgOrigo::midRight();
-		else if(str == "bottomleft") a = WgOrigo::bottomLeft();
-		else if(str == "bottomcenter") a = WgOrigo::bottomCenter();
-		else if(str == "bottomright") a = WgOrigo::bottomRight();
-		else
-		{
-			float anchorx = 0, anchory = 0, hotspotx = 0, hotspoty = 0;
-			FromString(str, anchorx, anchory, hotspotx, hotspoty);
-			a = WgOrigo::specific(anchorx, anchory, hotspotx, hotspoty);
-		}
-		return true;
-	}
-
-	template<>
 	inline bool FromString(const std::string& str, WgOrientation& a)
 	{
 		if(str.empty() || str == "northwest") a = WG_NORTHWEST;
@@ -272,15 +234,6 @@ namespace WgUtil
 	inline Uint16	ToUint16(const std::string& value, Uint16 def = 0)	{ Uint16 v = def; FromString(value, v); return v; }
 	inline Uint32	ToUint32(const std::string& value, Uint32 def = 0)	{ Uint32 v = def; FromString(value, v); return v; }
 	inline float	ToFloat(const std::string& value, float def = 0)	{ float	 v = def; FromString(value, v); return v; }
-
-	inline WgOrigo ToOrigo(const std::string& value, WgOrigo def = WgOrigo::topLeft())
-	{
-		if(value.empty())
-			return def;
-		WgOrigo o = def;
-		FromString(value, o);
-		return o;
-	}
 
 	inline void Tokenize(const std::string& str, std::vector<std::string>& tokens)
 	{

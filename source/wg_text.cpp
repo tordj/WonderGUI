@@ -40,6 +40,10 @@
 #include <wg_base.h>
 #include <wg_textlinkhandler.h>
 #include <wg_string.h>
+#include <wg_event.h>
+#include <wg_eventhandler.h>
+#include <wg_gizmo.h>
+#include <wg_util.h>
 
 //____ Constructor ____________________________________________________________
 
@@ -78,7 +82,7 @@ void WgText::Init()
 
 	m_markedLinkMode = WG_MODE_NORMAL;
 
-	m_origo			= WgOrigo::topLeft();
+	m_alignment		= WG_NORTHWEST;
 	m_tintMode		= WG_TINTMODE_MULTIPLY;
 	m_lineSpaceAdj	= 0;
 
@@ -1931,9 +1935,10 @@ void WgText::CursorGoDown( int nbLines, const WgRect& container )
 int WgText::LineStartY( int line, const WgRect& container ) const
 {
 	int		ofs = 0;
-	if( m_origo.anchorY() != 0 || m_origo.hotspotY() != 0 )
+
+	if( m_alignment != WG_NORTHWEST && m_alignment != WG_NORTH && m_alignment != WG_NORTHEAST )
 	{
-		ofs = m_origo.calcOfsY( container.h, height() );
+		ofs = WgUtil::OrientationToRect( m_alignment, container.Size(), WgSize(0,height() )).y;
 		if( ofs < 0 )
 			ofs = 0;
 	}
@@ -1952,9 +1957,9 @@ int WgText::LineStartX( int line, const WgRect& container ) const
 {
 	int		ofs = 0;
 
-	if( m_origo.anchorX() != 0 || m_origo.hotspotX() != 0 )
+	if( m_alignment != WG_NORTHWEST && m_alignment != WG_WEST && m_alignment != WG_SOUTHWEST )
 	{
-		ofs = m_origo.calcOfsX( container.w, getSoftLineWidth(line) );
+		ofs = WgUtil::OrientationToRect( m_alignment, container.Size(), WgSize(getSoftLineWidth(line),0 )).x;
 		if( ofs < 0 )
 			ofs = 0;
 	}
@@ -2403,6 +2408,107 @@ int WgText::LineColToOffset(int line, int col) const
 	return m_pHardLines[line].ofs + col;
 }
 
+
+//____ OnEvent() _____________________________________________________________
+
+bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHandler, const WgRect& container )
+{
+	bool bRefresh = false;
+
+	switch( pEvent->Type() )
+	{
+		case WG_EVENT_MOUSE_ENTER:
+		case WG_EVENT_MOUSE_MOVE:
+		{
+			WgCoord pointerOfs = pEvent->PointerPos();
+			
+			WgTextLinkPtr pLink = CoordToLink( pointerOfs, container );
+			if( m_pMarkedLink && pLink != m_pMarkedLink )
+			{
+				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Gizmo(), m_pMarkedLink->Link()) );
+				m_pMarkedLink = 0;
+				bRefresh = true;
+			}
+
+			if( pLink )
+			{
+				if( pLink != m_pMarkedLink )
+				{
+					pEventHandler->QueueEvent( new WgEvent::LinkMark(pEvent->Gizmo(), pLink->Link() ));
+
+					m_pMarkedLink = pLink;
+					m_markedLinkMode = WG_MODE_MARKED;
+					bRefresh = true;
+				}
+			}
+			break;
+		}
+
+
+		case WG_EVENT_MOUSE_LEAVE:
+		{
+			if( m_pMarkedLink )
+			{
+				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Gizmo(), m_pMarkedLink->Link()));
+				m_pMarkedLink = 0;
+				bRefresh = true;
+			}
+			break;
+		}
+
+		case WG_EVENT_MOUSEBUTTON_PRESS:
+		{
+			if( m_pMarkedLink )
+			{
+				pEventHandler->QueueEvent( new WgEvent::LinkPress(pEvent->Gizmo(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				m_markedLinkMode = WG_MODE_SELECTED;
+				bRefresh = true;
+			}
+			break;
+		}
+
+		case WG_EVENT_MOUSEBUTTON_REPEAT:
+		{
+			if( m_pMarkedLink )
+			{
+				pEventHandler->QueueEvent( new WgEvent::LinkRepeat(pEvent->Gizmo(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+			}
+			break;
+		}
+
+		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		{
+			if( m_pMarkedLink )
+			{
+				pEventHandler->QueueEvent( new WgEvent::LinkRelease(pEvent->Gizmo(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+
+				if( m_markedLinkMode == WG_MODE_SELECTED )
+					pEventHandler->QueueEvent( new WgEvent::LinkClick(pEvent->Gizmo(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+
+				m_markedLinkMode = WG_MODE_MARKED;
+				bRefresh = true;
+			}
+			break;
+		}
+
+		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
+			if( m_pMarkedLink )
+				pEventHandler->QueueEvent( new WgEvent::LinkDoubleClick(pEvent->Gizmo(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+			break;
+
+		default:
+			break;
+	}
+
+	//TODO: Optimize, we don't always need a complete refresh, sometimes just a render.
+
+	if( bRefresh )
+		refresh();
+
+	return bRefresh;
+}
+
+
 //____ OnAction() _____________________________________________________________
 /*
 bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCoord& pointerOfs )
@@ -2505,7 +2611,7 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 			break;
 		}
 
-		case WgInput::BUTTON_DOUBLECLICK:
+		case WgInput::BUTTON_DOUBLE_CLICK:
 			if( m_pMarkedLink && pHandler )
 				pHandler->OnButtonDoubleClick( button_key, m_pMarkedLink, pointerOfs );
 			break;

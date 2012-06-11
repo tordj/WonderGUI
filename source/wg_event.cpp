@@ -62,7 +62,7 @@ namespace WgEvent
 	bool Event::IsMouseButtonEvent() const
 	{
 		if( m_type == WG_EVENT_MOUSEBUTTON_CLICK ||
-			m_type == WG_EVENT_MOUSEBUTTON_DOUBLECLICK ||
+			m_type == WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK ||
 			m_type == WG_EVENT_MOUSEBUTTON_DRAG ||
 			m_type == WG_EVENT_MOUSEBUTTON_PRESS ||
 			m_type == WG_EVENT_MOUSEBUTTON_RELEASE ||
@@ -278,12 +278,12 @@ namespace WgEvent
 
 	MouseButtonDoubleClick::MouseButtonDoubleClick( int button ) : MouseButtonEvent(button)
 	{
-		m_type = WG_EVENT_MOUSEBUTTON_DOUBLECLICK;
+		m_type = WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK;
 	}
 
 	MouseButtonDoubleClick::MouseButtonDoubleClick( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
 	{
-		m_type = WG_EVENT_MOUSEBUTTON_DOUBLECLICK;
+		m_type = WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK;
 		m_bIsForGizmo	= true;
 		m_pGizmo 		= pGizmo;
 	}
@@ -735,21 +735,21 @@ namespace WgEvent
 
 	MenuItemSelected::MenuItemSelected( WgGizmoMenu * pMenu, int menuItemId )
 	{
-		m_type		= WG_EVENT_MENUITEM_SELECTED;
+		m_type		= WG_EVENT_MENUITEM_SELECT;
 		m_pGizmo	= pMenu;
 		m_itemId	= menuItemId;
 	}
 
 	MenuItemChecked::MenuItemChecked( WgGizmoMenu * pMenu, int menuItemId )
 	{
-		m_type		= WG_EVENT_MENUITEM_CHECKED;
+		m_type		= WG_EVENT_MENUITEM_CHECK;
 		m_pGizmo	= pMenu;
 		m_itemId	= menuItemId;
 	}
 
 	MenuItemUnchecked::MenuItemUnchecked( WgGizmoMenu * pMenu, int menuItemId )
 	{
-		m_type		= WG_EVENT_MENUITEM_UNCHECKED;
+		m_type		= WG_EVENT_MENUITEM_UNCHECK;
 		m_pGizmo	= pMenu;
 		m_itemId	= menuItemId;
 	}
@@ -806,7 +806,7 @@ namespace WgEvent
 		
 	TableCellMarked::TableCellMarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent )
 	{
-		m_type 			= WG_EVENT_TABLE_CELL_MARKED;
+		m_type 			= WG_EVENT_TABLE_CELL_MARK;
 		m_pGizmo 		= pTable;
 		m_row 			= row;
 		m_column 		= column;
@@ -815,11 +815,77 @@ namespace WgEvent
 
 	TableCellUnmarked::TableCellUnmarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent )
 	{
-		m_type 			= WG_EVENT_TABLE_CELL_UNMARKED;
+		m_type 			= WG_EVENT_TABLE_CELL_UNMARK;
 		m_pGizmo 		= pTable;
 		m_row 			= row;
 		m_column 		= column;
 		m_pCellContent 	= pCellContent;
+	}
+
+	//____ Link event methods __________________________________________________
+
+	std::string LinkEvent::Link() const
+	{
+		return m_link;
+	}
+
+	LinkMark::LinkMark( WgGizmo * pGizmo, std::string link )
+	{
+		m_type			= WG_EVENT_LINK_MARK;
+		m_pGizmo		= pGizmo;
+		m_link			= link;
+	}
+
+	LinkUnmark::LinkUnmark( WgGizmo * pGizmo, std::string link )
+	{
+		m_type			= WG_EVENT_LINK_UNMARK;
+		m_pGizmo		= pGizmo;
+		m_link			= link;
+	}
+
+	int LinkButtonEvent::Button() const
+	{
+		return m_button;
+	}
+
+	LinkPress::LinkPress( WgGizmo * pGizmo, std::string link, int button )
+	{
+		m_type			= WG_EVENT_LINK_PRESS;
+		m_pGizmo		= pGizmo;
+		m_link			= link;
+		m_button		= button;
+	}
+
+	LinkRepeat::LinkRepeat( WgGizmo * pGizmo, std::string link, int button )
+	{
+		m_type			= WG_EVENT_LINK_REPEAT;
+		m_pGizmo		= pGizmo;
+		m_link			= link;
+		m_button		= button;
+	}
+
+	LinkRelease::LinkRelease( WgGizmo * pGizmo, std::string link, int button )
+	{
+		m_type			= WG_EVENT_LINK_RELEASE;
+		m_pGizmo		= pGizmo;
+		m_link			= link;
+		m_button		= button;
+	}
+
+	LinkClick::LinkClick( WgGizmo * pGizmo, std::string link, int button )
+	{
+		m_type			= WG_EVENT_LINK_CLICK;
+		m_pGizmo		= pGizmo;
+		m_link			= link;
+		m_button		= button;
+	}
+
+	LinkDoubleClick::LinkDoubleClick( WgGizmo * pGizmo, std::string link, int button )
+	{
+		m_type			= WG_EVENT_LINK_DOUBLE_CLICK;
+		m_pGizmo		= pGizmo;
+		m_link			= link;
+		m_button		= button;
 	}
 
 

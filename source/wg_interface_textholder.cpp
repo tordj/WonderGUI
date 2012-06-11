@@ -65,11 +65,11 @@ bool Wg_Interface_TextHolder::SetAutoEllipsis( bool bAutoEllipsis )
 
 //____ SetTextAlignment() _____________________________________________________
 
-void Wg_Interface_TextHolder::SetTextAlignment( const WgOrigo& origo )
+void Wg_Interface_TextHolder::SetTextAlignment( const WgOrientation alignment )
 {
-	if( origo != m_pText->alignment() )
+	if( alignment != m_pText->alignment() )
 	{
-		m_pText->setAlignment(origo);
+		m_pText->setAlignment(alignment);
 		_textModified();
 	}
 }

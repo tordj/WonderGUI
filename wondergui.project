@@ -62,7 +62,6 @@
     <File Name="include/wg_monotainer.h"/>
     <File Name="include/wg_orderedlayout.h"/>
     <File Name="include/wg_orderedselectable.h"/>
-    <File Name="include/wg_origo.h"/>
     <File Name="include/wg_pen.h"/>
     <File Name="include/wg_refcounted.h"/>
     <File Name="include/wg_resdb.h"/>
@@ -138,7 +137,6 @@
     <File Name="source/wg_monotainer.cpp"/>
     <File Name="source/wg_orderedlayout.cpp"/>
     <File Name="source/wg_orderedselectable.cpp"/>
-    <File Name="source/wg_origo.cpp"/>
     <File Name="source/wg_pen.cpp"/>
     <File Name="source/wg_resdb.cpp"/>
     <File Name="source/wg_root.cpp"/>
@@ -218,6 +216,7 @@
       
       
       
+      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -255,6 +254,7 @@
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
+      
       
       
       

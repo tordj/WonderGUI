@@ -118,18 +118,18 @@ void WgGizmoEditvalue::SetFormat( const WgValueFormat& format )
 
 //____ SetTextAlignment() _____________________________________________________
 
-void WgGizmoEditvalue::SetTextAlignment( const WgOrigo& origo )
+void WgGizmoEditvalue::SetTextAlignment( const WgOrientation alignment )
 {
-	if( m_text.alignment() != origo )
+	if( m_text.alignment() != alignment )
 	{
-		m_text.setAlignment(origo);
+		m_text.setAlignment(alignment);
 		_requestRender();
 	}
 }
 
 //____ GetTextAlignment() _____________________________________________________
 
-WgOrigo	WgGizmoEditvalue::GetTextAlignment( ) const
+WgOrientation WgGizmoEditvalue::GetTextAlignment( ) const
 {
 	return m_text.alignment();
 }
@@ -450,7 +450,7 @@ void WgGizmoEditvalue::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 	}
 
 
-	if( event == WG_EVENT_MOUSEBUTTON_DOUBLECLICK && mousebutton == 1 )
+	if( event == WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK && mousebutton == 1 )
 	{
 		_selectAll();
 		m_text.setSelectionMode(true);
@@ -816,7 +816,7 @@ void WgGizmoEditvalue::_onCloneContent( const WgGizmo * _pOrg )
 	m_format		= pOrg->m_format;
 	m_text.setText(&pOrg->m_text);
 	m_text.setFont(pOrg->m_text.getFont());
-	m_textOrigo	= pOrg->m_textOrigo;
+	m_text.setAlignment(pOrg->m_text.alignment());
 }
 
 //____ _onEnable() _____________________________________________________________

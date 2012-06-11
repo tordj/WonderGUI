@@ -257,13 +257,13 @@ public:
 	void			SetArrowSource( const WgBlockSetPtr& pAscend, const WgBlockSetPtr& pDescend );
 	WgBlockSetPtr	GetArrowAscend() const { return m_pAscendGfx; }
 	WgBlockSetPtr	GetArrowDescend() const { return m_pDescendGfx; }
-	void			SetArrowPos( const WgOrigo& origo, int xOfs, int yOfs );
+	void			SetArrowPos( const WgOrientation alignment, int xOfs, int yOfs );
 	void			SetArrowPos( int xOfs, int yOfs );
 	int				GetArrowPosX() const { return m_sortMarkerOfs.x; }
 	int				GetArrowPosY() const { return m_sortMarkerOfs.y; }
 
-	void			SetArrowOrigo( WgOrigo origo );
-	WgOrigo			GetArrowOrigo() const { return m_sortMarkerOrigo; }
+	void			SetArrowAlignment( WgOrientation alignment );
+	WgOrientation	GetArrowAlignment() const { return m_sortMarkerAlignment; }
 
 	void			SetCellPadding( WgBorders padding );
 	WgBorders		GetCellPadding() const	{ return m_cellPadding; }
@@ -287,7 +287,7 @@ public:
 	WgColor*		GetRowColors( ) { return m_pRowColors; }
 	void			DeleteRowColors();
 
-	int				AddColumn( const WgCharSeq& text, int pixelwidth, WgOrigo& origo = WgOrigo::midLeft(), int(*fpCompare)(WgGizmo*,WgGizmo*) = 0, bool bInitialAscend = true, bool bEnabled = true, Sint64 id = 0, WgGizmo * pDefaultGizmo = 0 );
+	int				AddColumn( const WgCharSeq& text, int pixelwidth, WgOrientation headerAlign = WG_WEST, int(*fpCompare)(WgGizmo*,WgGizmo*) = 0, bool bInitialAscend = true, bool bEnabled = true, Sint64 id = 0, WgGizmo * pDefaultGizmo = 0 );
 	void			DeleteColumns();
 //	bool	SetColumnWidth( Uint32 column, Uint32 pixelwidth );
 //	bool	SetColumnVisible( Uint32 column, bool bVisible );
@@ -452,8 +452,8 @@ private:
 
 	WgTextPropPtr	m_pHeaderProps;
 
-	WgOrigo			m_sortMarkerOrigo;
-	WgCoord8			m_sortMarkerOfs;
+	WgOrientation	m_sortMarkerAlignment;
+	WgCoord8		m_sortMarkerOfs;
 
 	WgBorders		m_cellPadding;
 

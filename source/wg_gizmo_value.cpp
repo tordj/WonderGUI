@@ -35,7 +35,7 @@ WgGizmoValue::WgGizmoValue()
 {
 	m_bRegenText	= true;
 	m_pFonts		= 0;
-	m_text.setAlignment( WgOrigo::midRight() );
+	m_text.setAlignment( WG_EAST );
 	m_text.SetWrap(false);
 }
 

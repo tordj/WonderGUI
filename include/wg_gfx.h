@@ -31,10 +31,6 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef	WG_ORIGO_DOT_H
-#	include <wg_origo.h>
-#endif
-
 #ifndef	WG_BLOCKSET_DOT_H
 #	include <wg_blockset.h>
 #endif

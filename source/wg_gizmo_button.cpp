@@ -36,7 +36,7 @@ static const char	c_gizmoType[] = {"Button"};
 WgGizmoButton::WgGizmoButton()
 {
 	m_pText = &m_text;
-	m_text.setAlignment( WgOrigo::midCenter() );
+	m_text.setAlignment( WG_CENTER );
 	m_text.setLineWidth(Size().w);					// We start with no textborders...
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 
@@ -328,7 +328,7 @@ void WgGizmoButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_DOUBLECLICK:
+		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 		case WG_EVENT_MOUSEBUTTON_REPEAT:
 		case WG_EVENT_MOUSEBUTTON_DRAG:
 		{

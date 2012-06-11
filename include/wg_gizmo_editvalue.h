@@ -59,8 +59,8 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 
 		bool	SetMaxInputChars( int max );
 		int		MaxInputChars() const { return m_maxInputChars; }
-		void	SetTextAlignment( const WgOrigo& origo );
-		WgOrigo	GetTextAlignment( ) const;
+		void	SetTextAlignment( const WgOrientation alignment );
+		WgOrientation GetTextAlignment( ) const;
 		void	SetTextColor(WgColor color);
 		WgColor GetTextColor() const;
 		bool	SetTextProp( const WgTextPropPtr& _pProp );
@@ -106,7 +106,6 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 		WgValueFormat		m_format;			///< Value format specified by user
 		WgValueFormat		m_useFormat;		///< Value format currently used (affected by user typing in values).
 		WgText				m_text;
-		WgOrigo				m_textOrigo;
 		int					m_buttonDownOfs;
 		bool				m_bSelectAllOnRelease;
 		int					m_maxInputChars;

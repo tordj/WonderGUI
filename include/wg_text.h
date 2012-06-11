@@ -35,10 +35,6 @@
 #	include <wg_colorset.h>
 #endif
 
-#ifndef WG_ORIGO_DOT_H
-#	include <wg_origo.h>
-#endif
-
 #ifndef WG_CHAR_DOT_H
 #	include <wg_char.h>
 #endif
@@ -53,6 +49,10 @@
 
 #ifndef	WG_CURSORINSTANCE_DOT_H
 	#include <wg_cursorinstance.h>
+#endif
+
+#ifndef WG_EVENT_DOT_H
+#	include <wg_event.h>
 #endif
 
 class	WgValueFormat;
@@ -281,13 +281,13 @@ public:
 
 
 	inline void			setMode( WgMode mode ) { m_mode = mode; }
-	inline void			setAlignment( const WgOrigo& origo ) { m_origo = origo; }
+	inline void			setAlignment( const WgOrientation alignment ) { m_alignment = alignment; }
 	inline void			setTintMode( WgTintMode mode ) { m_tintMode = mode; }
 	inline void			setLineSpaceAdjustment( Sint8 adjustment ) { m_lineSpaceAdj = adjustment; }
 
 
 	inline WgMode		mode() const { return m_mode; }
-	inline const WgOrigo& alignment() const { return m_origo; }
+	inline const WgOrientation alignment() const { return m_alignment; }
 	inline WgTintMode	tintMode() const { return m_tintMode; }
 	inline Sint8		lineSpaceAdjustment() const { return m_lineSpaceAdj; }
 
@@ -400,6 +400,7 @@ public:
 
 	WgCoord			FocusWindowOnRange( const WgSize& canvas, const WgRect& window, WgRange range ) const;
 
+	bool 			OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHandler, const WgRect& container );
 //	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
 
 	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }
@@ -440,7 +441,7 @@ protected:
 
 
 	WgTintMode		m_tintMode;
-	WgOrigo			m_origo;
+	WgOrientation	m_alignment;
 	WgMode			m_mode;
 
 	WgTextLinkPtr	m_pMarkedLink;

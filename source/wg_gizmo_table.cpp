@@ -28,6 +28,7 @@
 #include	<wg_text.h>
 #include	<wg_font.h>
 #include	<wg_gfx.h>
+#include	<wg_util.h>
 
 
 static const char	c_gizmoType[] = {"Table"};
@@ -640,7 +641,7 @@ WgGizmoTable::WgGizmoTable()
 	m_pRowBlocks		= 0;
 
 
-	m_sortMarkerOrigo	= WgOrigo::midRight();
+	m_sortMarkerAlignment = WG_EAST;
 	m_sortMarkerOfs.x	= 0;
 	m_sortMarkerOfs.y	= 0;
 	m_clickSortPrio		= 0;
@@ -717,9 +718,9 @@ void WgGizmoTable::SetArrowSource( const WgBlockSetPtr& pAscend, const WgBlockSe
 
 //____ SetArrowPos() __________________________________________________________
 
-void WgGizmoTable::SetArrowPos( const WgOrigo& origo, int xOfs, int yOfs )
+void WgGizmoTable::SetArrowPos( const WgOrientation alignment, int xOfs, int yOfs )
 {
-	m_sortMarkerOrigo 	= origo;
+	m_sortMarkerAlignment = alignment;
 	m_sortMarkerOfs.x	= xOfs;
 	m_sortMarkerOfs.y	= yOfs;
 
@@ -738,11 +739,11 @@ void WgGizmoTable::SetArrowPos( int xOfs, int yOfs )
 		_requestRender();
 }
 
-//____ SetArrowOrigo() __________________________________________________________
+//____ SetArrowAlignment() __________________________________________________________
 
-void WgGizmoTable::SetArrowOrigo( WgOrigo origo )
+void WgGizmoTable::SetArrowAlignment( WgOrientation alignment )
 {
-	m_sortMarkerOrigo 	= origo;
+	m_sortMarkerAlignment = alignment;
 
 	if( m_bShowHeader )
 		_requestRender();
@@ -845,7 +846,7 @@ void WgGizmoTable::DeleteColumns()
 
 //TODO: Add default gizmo to parameters
 
-int WgGizmoTable::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrigo& headerAlign, int(*fpCompare)(WgGizmo *,WgGizmo *),
+int WgGizmoTable::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrientation headerAlign, int(*fpCompare)(WgGizmo *,WgGizmo *),
 							 bool bInitialAscend, bool bEnabled, Sint64 id, WgGizmo * pDefaultGizmo )
 {
 	WgTableColumn * pCol = new WgTableColumn[m_nColumns+1];
@@ -1884,10 +1885,10 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 				else
 					block = m_pDescendGfx->GetBlock(mode);
 
-				int dx = (int) (r2.x + m_sortMarkerOfs.x + r2.w * m_sortMarkerOrigo.anchorX() - block.Width() * m_sortMarkerOrigo.hotspotX());
-				int dy = (int) (r2.y + m_sortMarkerOfs.y + r2.h * m_sortMarkerOrigo.anchorY() - block.Height() * m_sortMarkerOrigo.hotspotY());
-
-				pDevice->ClipBlitBlock( _clip, block, WgRect( dx, dy, block.Size()) );
+				WgRect dest = WgUtil::OrientationToRect( m_sortMarkerAlignment, r2.Size(), block.Size() );
+				dest += m_sortMarkerOfs;
+				
+				pDevice->ClipBlitBlock( _clip, block, dest );
 			}
 
 			WgRect rText = r2;
@@ -2114,7 +2115,7 @@ void WgGizmoTable::_onCloneContent( const WgGizmo * _pOrg )
 
 	m_pHeaderProps		= pOrg->m_pHeaderProps;
 
-	m_sortMarkerOrigo	= pOrg->m_sortMarkerOrigo;
+	m_sortMarkerAlignment= pOrg->m_sortMarkerAlignment;
 	m_sortMarkerOfs		= pOrg->m_sortMarkerOfs;
 
 	m_cellPadding		= pOrg->m_cellPadding;

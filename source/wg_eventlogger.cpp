@@ -85,7 +85,7 @@ void WgEventLogger::IgnoreMouseButtonEvents()
 	m_eventFilter[WG_EVENT_MOUSEBUTTON_DRAG] = false;
 	m_eventFilter[WG_EVENT_MOUSEBUTTON_RELEASE] = false;
 	m_eventFilter[WG_EVENT_MOUSEBUTTON_CLICK] = false;
-	m_eventFilter[WG_EVENT_MOUSEBUTTON_DOUBLECLICK] = false;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK] = false;
 }
 
 //____ LogMouseButtonEvents _______________________________________________________________
@@ -97,7 +97,7 @@ void WgEventLogger::LogMouseButtonEvents()
 	m_eventFilter[WG_EVENT_MOUSEBUTTON_DRAG] = true;
 	m_eventFilter[WG_EVENT_MOUSEBUTTON_RELEASE] = true;
 	m_eventFilter[WG_EVENT_MOUSEBUTTON_CLICK] = true;
-	m_eventFilter[WG_EVENT_MOUSEBUTTON_DOUBLECLICK] = true;
+	m_eventFilter[WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK] = true;
 }
 
 //____ IgnoreKeyboardEvents ____________________________________________________________
@@ -263,7 +263,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			id = "MouseButtonClick";
 			sprintf( params, " button=%d", static_cast<const WgEvent::MouseButtonClick*>(_pEvent)->Button() );
 			break;
-		case WG_EVENT_MOUSEBUTTON_DOUBLECLICK:
+		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 			id = "MouseButtonDoubleClick";
 			sprintf( params, " button=%d", static_cast<const WgEvent::MouseButtonDoubleClick*>(_pEvent)->Button() );
 			break;
@@ -434,25 +434,25 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		}
 
-		case WG_EVENT_MENUITEM_SELECTED:
+		case WG_EVENT_MENUITEM_SELECT:
 		{
-			id = "MenuItemSelected";
+			id = "MenuItemSelect";
 			const WgEvent::MenuItemEvent * pEvent = static_cast<const WgEvent::MenuItemEvent*>(_pEvent);
 			sprintf( params, "itemId=%d", pEvent->ItemId() );
 			break;
 		}
 
-		case WG_EVENT_MENUITEM_CHECKED:
+		case WG_EVENT_MENUITEM_CHECK:
 		{
-			id = "MenuItemChecked";
+			id = "MenuItemCheck";
 			const WgEvent::MenuItemEvent * pEvent = static_cast<const WgEvent::MenuItemEvent*>(_pEvent);
 			sprintf( params, "itemId=%d", pEvent->ItemId() );
 			break;
 		}
 
-		case WG_EVENT_MENUITEM_UNCHECKED:
+		case WG_EVENT_MENUITEM_UNCHECK:
 		{
-			id = "MenuItemUnchecked";
+			id = "MenuItemUncheck";
 			const WgEvent::MenuItemEvent * pEvent = static_cast<const WgEvent::MenuItemEvent*>(_pEvent);
 			sprintf( params, "itemId=%d", pEvent->ItemId() );
 			break;

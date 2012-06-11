@@ -483,7 +483,7 @@ enum	WgEventType
 	WG_EVENT_MOUSEBUTTON_DRAG,
 	WG_EVENT_MOUSEBUTTON_RELEASE,
 	WG_EVENT_MOUSEBUTTON_CLICK,
-	WG_EVENT_MOUSEBUTTON_DOUBLECLICK,
+	WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK,
 
 	WG_EVENT_KEY_PRESS,
 	WG_EVENT_KEY_REPEAT,
@@ -519,17 +519,25 @@ enum	WgEventType
 	WG_EVENT_TEXT_MODIFY,					// Posted for every change to text through cursor/selection.
 	WG_EVENT_TEXT_SET,						// Posted when edited text is 'set' by removing cursor.
 
-	WG_EVENT_MENUITEM_SELECTED,				// Posted when a WgMenuEntry or WgMenuRadioButton is selected.
-	WG_EVENT_MENUITEM_CHECKED,				// Posted when a WgMenuCheckBox is checked.
-	WG_EVENT_MENUITEM_UNCHECKED,			// Posted when a WgMenuCheckBox is unchecked.
+	WG_EVENT_MENUITEM_SELECT,				// Posted when a WgMenuEntry or WgMenuRadioButton is selected.
+	WG_EVENT_MENUITEM_CHECK,				// Posted when a WgMenuCheckBox is checked.
+	WG_EVENT_MENUITEM_UNCHECK,				// Posted when a WgMenuCheckBox is unchecked.
 
 	WG_EVENT_MODAL_MOVE_OUTSIDE,
 	WG_EVENT_MODAL_BLOCKED_PRESS,
 	WG_EVENT_MODAL_BLOCKED_RELEASE,
 
-	WG_EVENT_TABLE_CELL_MARKED,
-	WG_EVENT_TABLE_CELL_UNMARKED,
-
+	WG_EVENT_TABLE_CELL_MARK,
+	WG_EVENT_TABLE_CELL_UNMARK,
+	
+	WG_EVENT_LINK_MARK,
+	WG_EVENT_LINK_UNMARK,
+	WG_EVENT_LINK_PRESS,
+	WG_EVENT_LINK_REPEAT,
+	WG_EVENT_LINK_RELEASE,
+	WG_EVENT_LINK_CLICK,
+	WG_EVENT_LINK_DOUBLE_CLICK,
+	
 	WG_EVENT_MAX
 };
 

@@ -23,6 +23,8 @@
 #ifndef WG_EVENT_DOT_H
 #define WG_EVENT_DOT_H
 
+#include <string>
+
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
 #endif
@@ -551,6 +553,65 @@ namespace WgEvent
 		TableCellUnmarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent );
 	};
 
+	//____ Link events _________________________________________________________
+
+	class LinkEvent : public Event
+	{
+	public:
+		std::string		Link() const;
+	protected:
+		std::string		m_link;
+	};
+
+	class LinkMark : public LinkEvent
+	{
+	public:
+		LinkMark( WgGizmo * pGizmo, std::string link );
+	};
+
+	class LinkUnmark : public LinkEvent
+	{
+	public:
+		LinkUnmark( WgGizmo * pGizmo, std::string link );
+	};
+
+	class LinkButtonEvent : public LinkEvent
+	{
+	public:
+		int			Button() const;
+	protected:
+		int			m_button;
+	};
+
+	class LinkPress : public LinkButtonEvent
+	{
+	public:
+		LinkPress( WgGizmo * pGizmo, std::string link, int button );
+	};
+
+	class LinkRepeat : public LinkButtonEvent
+	{
+	public:
+		LinkRepeat( WgGizmo * pGizmo, std::string link, int button );
+	};
+
+	class LinkRelease : public LinkButtonEvent
+	{
+	public:
+		LinkRelease( WgGizmo * pGizmo, std::string link, int button );
+	};
+
+	class LinkClick : public LinkButtonEvent
+	{
+	public:
+		LinkClick( WgGizmo * pGizmo, std::string link, int button );
+	};
+
+	class LinkDoubleClick : public LinkButtonEvent
+	{
+	public:
+		LinkDoubleClick( WgGizmo * pGizmo, std::string link, int button );
+	};
 
 	//____ Internally posted events ____________________________________________
 

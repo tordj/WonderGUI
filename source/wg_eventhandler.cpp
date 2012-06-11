@@ -609,7 +609,7 @@ bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent, WgGizmo * pRe
 			pEvent =  new WgEvent::MouseButtonClick(0);
 			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseButtonClick*>(_pEvent) );
 			break;
-		case WG_EVENT_MOUSEBUTTON_DOUBLECLICK:
+		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 			pEvent =  new WgEvent::MouseButtonDoubleClick(0);
 			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseButtonDoubleClick*>(_pEvent) );
 			break;
@@ -868,7 +868,7 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 			_processMouseButtonClick( (WgEvent::MouseButtonClick*) pEvent );
 			break;
 
-		case WG_EVENT_MOUSEBUTTON_DOUBLECLICK:
+		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 			_processMouseButtonDoubleClick( (WgEvent::MouseButtonDoubleClick*) pEvent );
 			break;
 
@@ -1400,7 +1400,7 @@ void WgEventHandler::_processMouseButtonDoubleClick( WgEvent::MouseButtonDoubleC
 {
 	int button = pEvent->Button();
 
-	// Post BUTTON_DOUBLECLICK event if gizom received both this and previous press.
+	// Post BUTTON_DOUBLE_CLICK event if gizom received both this and previous press.
 
 	WgGizmo * pGizmo = m_latestPressGizmos[button].GetRealPtr();
 	if( pGizmo && pGizmo ==  m_previousPressGizmos[button].GetRealPtr() )

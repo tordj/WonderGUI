@@ -95,10 +95,6 @@
 #	include <wg_mempool.h>
 #endif
 
-#ifndef WG_ORIGO_DOT_H
-#	include <wg_origo.h>
-#endif
-
 #ifndef WG_PEN_DOT_H
 #	include <wg_pen.h>
 #endif

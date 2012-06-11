@@ -240,7 +240,7 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 		}
 
 		case WG_EVENT_MOUSEBUTTON_CLICK:
-		case WG_EVENT_MOUSEBUTTON_DOUBLECLICK:
+		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 		case WG_EVENT_MOUSEBUTTON_REPEAT:
 		case WG_EVENT_MOUSEBUTTON_DRAG:
 		{

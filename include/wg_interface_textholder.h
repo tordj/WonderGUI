@@ -27,10 +27,6 @@
 #	include <wg_text.h>
 #endif
 
-#ifndef WG_ORIGO_DOT_H
-#	include <wg_origo.h>
-#endif
-
 #ifndef WG_COLOR_DOT_H
 #	include <wg_color.h>
 #endif
@@ -121,7 +117,7 @@ public:
 //	inline WgColor		GetSelectionColor() const									{ return m_pText->getSelectionBgColor(); }
 
 	void				SetTextMode( WgMode mode );
-	void				SetTextAlignment( const WgOrigo& origo );
+	void				SetTextAlignment( const WgOrientation alignment );
 	void				SetTextTintMode( WgTintMode mode );
 
 	void				ClearText();
@@ -154,7 +150,7 @@ public:
 
 	inline WgMode		TextMode() const { return m_pText->mode(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }
-	inline WgOrigo 		TextAlignment() const;
+	inline WgOrientation TextAlignment() const;
 	inline WgText *		TextObj() const;
 	inline void			SetTextObj(WgText* text) const;
 	inline int			TextLines() const;
@@ -177,7 +173,7 @@ protected:
 //____ inline methods __________________________________________________________
 
 
-WgOrigo Wg_Interface_TextHolder::TextAlignment() const
+WgOrientation Wg_Interface_TextHolder::TextAlignment() const
 {
 	return m_pText->alignment();
 }
