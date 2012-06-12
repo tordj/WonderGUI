@@ -32,8 +32,8 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef WG_TEXTLINKHANDLER_DOT_H
-#	include <wg_textlinkhandler.h>
+#ifndef WG_TEXTLINK_DOT_H
+#	include <wg_textlink.h>
 #endif
 
 

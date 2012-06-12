@@ -38,7 +38,7 @@
 #include <wg_pen.h>
 #include <wg_interface_textholder.h>
 #include <wg_base.h>
-#include <wg_textlinkhandler.h>
+#include <wg_textlink.h>
 #include <wg_string.h>
 #include <wg_event.h>
 #include <wg_eventhandler.h>

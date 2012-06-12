@@ -72,7 +72,6 @@
     <File Name="include/wg_string.h"/>
     <File Name="include/wg_surface.h"/>
     <File Name="include/wg_text.h"/>
-    <File Name="include/wg_textlinkhandler.h"/>
     <File Name="include/wg_textmanager.h"/>
     <File Name="include/wg_textprop.h"/>
     <File Name="include/wg_textpropmanager.h"/>
@@ -145,7 +144,6 @@
     <File Name="source/wg_string.cpp"/>
     <File Name="source/wg_surface.cpp"/>
     <File Name="source/wg_text.cpp"/>
-    <File Name="source/wg_textlinkhandler.cpp"/>
     <File Name="source/wg_textmanager.cpp"/>
     <File Name="source/wg_textprop.cpp"/>
     <File Name="source/wg_textpropmanager.cpp"/>
@@ -174,6 +172,7 @@
     <File Name="source/wg_gizmo_menulayer.cpp"/>
     <File Name="include/wg_gizmo_modallayer.h"/>
     <File Name="source/wg_gizmo_modallayer.cpp"/>
+    <File Name="include/wg_textlink.h"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

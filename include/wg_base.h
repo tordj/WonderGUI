@@ -44,10 +44,6 @@
 #	include <wg_textprop.h>
 #endif
 
-#ifndef WG_TEXTLINKHANDLER_DOT_H
-#	include <wg_textlinkhandler.h>
-#endif
-
 
 
 #ifdef WG_USE_FREETYPE
@@ -92,9 +88,6 @@ public:
 	static void 	SetDefaultCursor( WgCursor * pCursor );
 	static WgCursor * GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
 
-	static void 	SetDefaultTextLinkHandler( WgTextLinkHandler * pHandler );
-	static WgTextLinkHandler * GetDefaultTextLinkHandler() { assert(s_pData!=0); return s_pData->pDefaultTextLinkHandler; }
-
 	static void		MapKey( WgKey translated_keycode, int native_keycode );
 	static void		UnmapKey( WgKey translated_keycode );
 	static void		ClearKeyMap();
@@ -125,7 +118,6 @@ private:
 		WgTextPropPtr		pDefaultTextProp;
 		WgTextPropPtr		pDefaultSelectionProp;
 		WgTextPropPtr		pDefaultLinkProp;
-		WgTextLinkHandler * pDefaultTextLinkHandler;
 		WgCursor *			pDefaultCursor;
 
 		// Settings for keyboard/pointer input

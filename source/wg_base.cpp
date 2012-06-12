@@ -43,7 +43,6 @@ void WgBase::Init()
 	assert( s_pData == 0 );
 	s_pData = new Data;
 
-	s_pData->pDefaultTextLinkHandler = 0;
 	s_pData->pDefaultCursor = 0;
 	s_pData->pWeakPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
 
@@ -170,14 +169,6 @@ void WgBase::SetDefaultCursor( WgCursor * pCursor )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultCursor = pCursor;
-}
-
-//____ SetDefaultTextLinkHandler() ____________________________________________
-
-void WgBase::SetDefaultTextLinkHandler( WgTextLinkHandler * pHandler )
-{
-	assert( s_pData != 0 );
-	s_pData->pDefaultTextLinkHandler = pHandler;
 }
 
 //____ SetDoubleClickTresholds() _______________________________________________
