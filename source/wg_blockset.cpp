@@ -20,12 +20,16 @@
 
 =========================================================================*/
 
+#include <new>
+
 #include <wg_blockset.h>
 #include <wg_colorset.h>
 #include <wg_geo.h>
 #include <wg_surface.h>
 #include <assert.h>
+#include <wg_mempool.h>
 
+WgMemPool * WgBlockSet::g_pMemPool = 0;
 
 
 WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, WgCoord contentShift, Uint32 flags )
@@ -67,59 +71,224 @@ bool WgBlock::operator!=( const WgBlock& b) const
 	return true;
 }
 
+//____ CreateFromSurface() _____________________________________________________
 
-
-WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect& normal,
-					   const WgRect& marked, const WgRect& selected, const WgRect& disabled,
-					   const WgRect& special, const WgBorders& gfxBorders,
-					   const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags ) : WgRefCountedPooled(pPool)
+WgBlockSetPtr WgBlockSet::CreateFromSurface( WgSurface * pSurf, int flags )
 {
-	m_pTextColors				= pTextColors;
-	m_flags						= _verifyFlags(flags);
+	WgBlockSet * p = _alloc( pSurf, flags );
+	
+	p->m_base.w						= pSurf->Width();
+	p->m_base.h						= pSurf->Height();
 
-	m_base.pSurf				= pSurf;
-	m_base.gfxBorders			= gfxBorders;
-	m_base.contentBorders		= contentBorders;
-	m_base.w					= normal.w;
-	m_base.h					= normal.h;
+	p->m_base.x[WG_MODE_NORMAL]		= 0;
+	p->m_base.x[WG_MODE_MARKED]		= 0;
+	p->m_base.x[WG_MODE_SELECTED]	= 0;
+	p->m_base.x[WG_MODE_DISABLED]	= 0;
+	p->m_base.x[WG_MODE_SPECIAL]	= 0;
 
-	m_base.x[WG_MODE_NORMAL]	= normal.x;
-	m_base.x[WG_MODE_MARKED]	= marked.x;
-	m_base.x[WG_MODE_SELECTED]	= selected.x;
-	m_base.x[WG_MODE_DISABLED]	= disabled.x;
-	m_base.x[WG_MODE_SPECIAL]	= special.x;
-
-	m_base.y[WG_MODE_NORMAL]	= normal.y;
-	m_base.y[WG_MODE_MARKED]	= marked.y;
-	m_base.y[WG_MODE_SELECTED]	= selected.y;
-	m_base.y[WG_MODE_DISABLED]	= disabled.y;
-	m_base.y[WG_MODE_SPECIAL]	= special.y;
+	p->m_base.y[WG_MODE_NORMAL]		= 0;
+	p->m_base.y[WG_MODE_MARKED]		= 0;
+	p->m_base.y[WG_MODE_SELECTED]	= 0;
+	p->m_base.y[WG_MODE_DISABLED]	= 0;
+	p->m_base.y[WG_MODE_SPECIAL]	= 0;	
+	
+	return WgBlockSetPtr(p);
 }
 
-WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgBorders& gfxBorders, const WgBorders& contentBorders,
-						const WgColorSetPtr& pTextColors, Uint32 flags ) : WgRefCountedPooled(pPool)
+//____ CreateFromRect() ________________________________________________________
+
+WgBlockSetPtr WgBlockSet::CreateFromRect( WgSurface * pSurf, const WgRect& normal, int flags )
 {
-	m_pTextColors				= pTextColors;
-	m_flags						= _verifyFlags(flags);
+	WgBlockSet * p = _alloc( pSurf, flags );
 
-	m_base.pSurf				= pSurf;
-	m_base.gfxBorders			= gfxBorders;
-	m_base.contentBorders		= contentBorders;
-	m_base.w					= 0;
-	m_base.h					= 0;
+	p->m_base.w						= normal.w;
+	p->m_base.h						= normal.h;
 
-	m_base.x[WG_MODE_NORMAL]	= 0;
-	m_base.x[WG_MODE_MARKED]	= 0;
-	m_base.x[WG_MODE_SELECTED]	= 0;
-	m_base.x[WG_MODE_DISABLED]	= 0;
-	m_base.x[WG_MODE_SPECIAL]	= 0;
+	p->m_base.x[WG_MODE_NORMAL]		= normal.x;
+	p->m_base.x[WG_MODE_MARKED]		= normal.x;
+	p->m_base.x[WG_MODE_SELECTED]	= normal.x;
+	p->m_base.x[WG_MODE_DISABLED]	= normal.x;
+	p->m_base.x[WG_MODE_SPECIAL]	= normal.x;
 
-	m_base.y[WG_MODE_NORMAL]	= 0;
-	m_base.y[WG_MODE_MARKED]	= 0;
-	m_base.y[WG_MODE_SELECTED]	= 0;
-	m_base.y[WG_MODE_DISABLED]	= 0;
-	m_base.y[WG_MODE_SPECIAL]	= 0;
+	p->m_base.y[WG_MODE_NORMAL]		= normal.y;
+	p->m_base.y[WG_MODE_MARKED]		= normal.y;
+	p->m_base.y[WG_MODE_SELECTED]	= normal.y;
+	p->m_base.y[WG_MODE_DISABLED]	= normal.y;
+	p->m_base.y[WG_MODE_SPECIAL]	= normal.y;
+
+	return WgBlockSetPtr(p);
 }
+
+//____ CreateFromRects() _______________________________________________________
+
+WgBlockSetPtr WgBlockSet::CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, int flags )
+{
+	WgBlockSet * p = _alloc( pSurf, flags );
+
+	p->m_base.w						= normal.w;
+	p->m_base.h						= normal.h;
+
+	p->m_base.x[WG_MODE_NORMAL]		= normal.x;
+	p->m_base.x[WG_MODE_MARKED]		= marked.x;
+	p->m_base.x[WG_MODE_SELECTED]	= selected.x;
+	p->m_base.x[WG_MODE_DISABLED]	= normal.x;
+	p->m_base.x[WG_MODE_SPECIAL]	= normal.x;
+
+	p->m_base.y[WG_MODE_NORMAL]		= normal.y;
+	p->m_base.y[WG_MODE_MARKED]		= marked.y;
+	p->m_base.y[WG_MODE_SELECTED]	= selected.y;
+	p->m_base.y[WG_MODE_DISABLED]	= normal.y;
+	p->m_base.y[WG_MODE_SPECIAL]	= normal.y;
+
+	return WgBlockSetPtr(p);
+}
+
+WgBlockSetPtr WgBlockSet::CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, int flags )
+{
+	WgBlockSet * p = _alloc( pSurf, flags );
+
+	p->m_base.w						= normal.w;
+	p->m_base.h						= normal.h;
+
+	p->m_base.x[WG_MODE_NORMAL]		= normal.x;
+	p->m_base.x[WG_MODE_MARKED]		= marked.x;
+	p->m_base.x[WG_MODE_SELECTED]	= selected.x;
+	p->m_base.x[WG_MODE_DISABLED]	= disabled.x;
+	p->m_base.x[WG_MODE_SPECIAL]	= normal.x;
+
+	p->m_base.y[WG_MODE_NORMAL]		= normal.y;
+	p->m_base.y[WG_MODE_MARKED]		= marked.y;
+	p->m_base.y[WG_MODE_SELECTED]	= selected.y;
+	p->m_base.y[WG_MODE_DISABLED]	= disabled.y;
+	p->m_base.y[WG_MODE_SPECIAL]	= normal.y;
+
+	return WgBlockSetPtr(p);
+}
+
+WgBlockSetPtr WgBlockSet::CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, const WgCoord& special, int flags )
+{
+	WgBlockSet * p = _alloc( pSurf, flags );
+
+	p->m_base.w						= normal.w;
+	p->m_base.h						= normal.h;
+
+	p->m_base.x[WG_MODE_NORMAL]		= normal.x;
+	p->m_base.x[WG_MODE_MARKED]		= marked.x;
+	p->m_base.x[WG_MODE_SELECTED]	= selected.x;
+	p->m_base.x[WG_MODE_DISABLED]	= disabled.x;
+	p->m_base.x[WG_MODE_SPECIAL]	= special.x;
+
+	p->m_base.y[WG_MODE_NORMAL]		= normal.y;
+	p->m_base.y[WG_MODE_MARKED]		= marked.y;
+	p->m_base.y[WG_MODE_SELECTED]	= selected.y;
+	p->m_base.y[WG_MODE_DISABLED]	= disabled.y;
+	p->m_base.y[WG_MODE_SPECIAL]	= special.y;
+
+	return WgBlockSetPtr(p);
+}
+
+//____ CreateFromRow() _________________________________________________________
+
+WgBlockSetPtr WgBlockSet::CreateFromRow( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding, int flags )
+{
+	int w = (rect.w - (nBlocks-1)*padding)/nBlocks;
+	int h = rect.h;
+
+	int ofs = w + padding;
+
+	WgBlockSet * p = _alloc( pSurf, flags );
+
+	p->m_base.w						= w;
+	p->m_base.h						= h;
+
+	p->m_base.x[WG_MODE_NORMAL]		= rect.x;
+	p->m_base.x[WG_MODE_MARKED]		= rect.x;
+	p->m_base.x[WG_MODE_SELECTED]	= rect.x;
+	p->m_base.x[WG_MODE_DISABLED]	= rect.x;
+	p->m_base.x[WG_MODE_SPECIAL]	= rect.x;
+
+	p->m_base.y[WG_MODE_NORMAL]		= rect.y;
+	p->m_base.y[WG_MODE_MARKED]		= rect.y;
+	p->m_base.y[WG_MODE_SELECTED]	= rect.y;
+	p->m_base.y[WG_MODE_DISABLED]	= rect.y;
+	p->m_base.y[WG_MODE_SPECIAL]	= rect.y;
+
+	if( nBlocks > 1 )
+		p->m_base.x[WG_MODE_MARKED]	= rect.x + ofs;
+
+	if( nBlocks > 2 )
+		p->m_base.x[WG_MODE_SELECTED]	= rect.x + ofs*2;
+
+	if( nBlocks > 3 )
+		p->m_base.x[WG_MODE_DISABLED]	= rect.x + ofs*3;
+
+	if( nBlocks > 4 )
+		p->m_base.x[WG_MODE_SPECIAL]	= rect.x + ofs*4;
+
+	return WgBlockSetPtr(p);
+}
+
+//____ CreateFromColumn() ______________________________________________________
+
+WgBlockSetPtr WgBlockSet::CreateFromColumn( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding, int flags )
+{
+	int w = rect.w;
+	int h = (rect.h - (nBlocks-1)*padding)/nBlocks;
+
+	int ofs = h + padding;
+
+	WgBlockSet * p = _alloc( pSurf, flags );
+
+	p->m_base.w						= w;
+	p->m_base.h						= h;
+
+	p->m_base.x[WG_MODE_NORMAL]		= rect.x;
+	p->m_base.x[WG_MODE_MARKED]		= rect.x;
+	p->m_base.x[WG_MODE_SELECTED]	= rect.x;
+	p->m_base.x[WG_MODE_DISABLED]	= rect.x;
+	p->m_base.x[WG_MODE_SPECIAL]	= rect.x;
+
+	p->m_base.y[WG_MODE_NORMAL]		= rect.y;
+	p->m_base.y[WG_MODE_MARKED]		= rect.y;
+	p->m_base.y[WG_MODE_SELECTED]	= rect.y;
+	p->m_base.y[WG_MODE_DISABLED]	= rect.y;
+	p->m_base.y[WG_MODE_SPECIAL]	= rect.y;
+
+	if( nBlocks > 1 )
+		p->m_base.y[WG_MODE_MARKED]	= rect.y + ofs;
+
+	if( nBlocks > 2 )
+		p->m_base.y[WG_MODE_SELECTED]	= rect.y + ofs*2;
+
+	if( nBlocks > 3 )
+		p->m_base.y[WG_MODE_DISABLED]	= rect.y + ofs*3;
+
+	if( nBlocks > 4 )
+		p->m_base.y[WG_MODE_SPECIAL]	= rect.y + ofs*4;
+
+	return WgBlockSetPtr(p);
+}
+
+
+//____ _alloc() ________________________________________________________________
+
+WgBlockSet * WgBlockSet::_alloc( const WgSurface * pSurf, int flags )
+{
+	if( !g_pMemPool )
+		g_pMemPool = new WgMemPool( 16, sizeof(WgBlockSet) );
+
+	return new(g_pMemPool->AllocEntry())WgBlockSet(g_pMemPool, pSurf, (Uint32) flags );
+}
+
+
+//____ Constructor() ___________________________________________________________
+
+WgBlockSet::WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, Uint32 flags ) : WgRefCountedPooled(pPool)
+{
+	m_flags						= _verifyFlags(flags);
+	m_base.pSurf				= pSurf;
+}
+
 
 //____ AddAlternative() _______________________________________________________________
 
@@ -484,6 +653,12 @@ bool WgBlockSet::SetContentShift( WgMode mode, WgCoord ofs, int alt )
 	return true;
 }
 
+//____ SetTextColors() _________________________________________________________
+
+void WgBlockSet::SetTextColors( const WgColorSetPtr& colors )
+{
+	m_pTextColors = colors;
+}
 
 //____ SetTile() ______________________________________________________________
 

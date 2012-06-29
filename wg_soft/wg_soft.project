@@ -35,6 +35,7 @@
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[
       
+      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -79,6 +80,7 @@
       
       
       
+      
       ]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
@@ -108,8 +110,8 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Release"/>
   <Dependencies Name="Debug">
     <Project Name="wondergui"/>
   </Dependencies>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

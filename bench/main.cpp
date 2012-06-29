@@ -216,16 +216,16 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	// Load images and specify blocks
 
 	WgSurface * pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", WgSurfaceFactorySoft() );
-	WgBlockSetPtr pBackBlock = pBackImg->defineBlockSet( WgRect(0,0,pBackImg->Width(),pBackImg->Height()), WgBorders(0), WgBorders(0), 0, WG_TILE_ALL );
+	WgBlockSetPtr pBackBlock = WgBlockSet::CreateFromSurface(pBackImg, WG_TILE_ALL );
 
 	WgSurface * pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", WgSurfaceFactorySoft() );
-	WgBlockSetPtr pFlagBlock = pFlagImg->defineBlockSet( WgRect(0,0,pFlagImg->Width(),pFlagImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
+	WgBlockSetPtr pFlagBlock = WgBlockSet::CreateFromSurface( pFlagImg );
 
 	WgSurface * pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", WgSurfaceFactorySoft() );
-	WgBlockSetPtr pSplashBlock = pSplashImg->defineBlockSet( WgRect(0,0,pSplashImg->Width(),pSplashImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
+	WgBlockSetPtr pSplashBlock = WgBlockSet::CreateFromSurface( pSplashImg );
 
 	WgSurface * pBigImg = sdl_wglib::LoadSurface("../resources/frog.jpg", WgSurfaceFactorySoft() );
-	WgBlockSetPtr pBigBlock = pBigImg->defineBlockSet( WgRect(0,0,pBigImg->Width(),pBigImg->Height()), WgBorders(0), WgBorders(0), 0, 0 );
+	WgBlockSetPtr pBigBlock = WgBlockSet::CreateFromSurface( pBigImg );
 
 	// MenuLayer
 
