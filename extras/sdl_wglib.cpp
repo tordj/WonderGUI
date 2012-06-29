@@ -152,30 +152,65 @@ namespace sdl_wglib
 		if( !pSurface )
 			return 0;
 
-		WgBlockSetPtr pHSliderBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,HSLIDER_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
-		WgBlockSetPtr pHSliderBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,HSLIDER_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pHSliderBtnBwdBlocks	= WgBlockSet::CreateFromRow(pSurface, WgRect(1,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pHSliderBtnBwdBlocks->SetGfxBorders(WgBorders(3));
+		pHSliderBtnBwdBlocks->SetContentBorders(WgBorders(4));
 
-		WgBlockSetPtr pVSliderBtnBwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,VSLIDER_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
-		WgBlockSetPtr pVSliderBtnFwdBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(77,VSLIDER_BTN_OFS,74,17), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pHSliderBtnFwdBlocks	= WgBlockSet::CreateFromRow(pSurface, WgRect(77,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pHSliderBtnFwdBlocks->SetGfxBorders(WgBorders(3));
+		pHSliderBtnFwdBlocks->SetContentBorders(WgBorders(4));
 
-		WgBlockSetPtr pSliderBlocks			= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,SLIDER_OFS,38,8), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
-		WgBlockSetPtr pSliderBackBlocks		= pSurface->defineBlockSet( WgRect(1,SLIDER_BACK_OFS,5,5), WgBorders(2), WgBorders(2), 0, WG_OPAQUE );
+		WgBlockSetPtr pVSliderBtnBwdBlocks	= WgBlockSet::CreateFromRow(pSurface, WgRect(1,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pVSliderBtnBwdBlocks->SetGfxBorders(WgBorders(3));
+		pVSliderBtnBwdBlocks->SetContentBorders(WgBorders(4));
 
-		WgBlockSetPtr pResizeButtonBlocks 	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,RESIZE_BUTTON_OFS,86,20), 2), WgBorders(3), WgBorders(0), 0, WG_OPAQUE );
-		WgBlockSetPtr pCheckboxUncheckedBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,CHECKBOX_OFS,50,11), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
-		WgBlockSetPtr pCheckboxCheckedBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(53,CHECKBOX_OFS,50,11), 2), WgBorders(2), WgBorders(3), 0, WG_OPAQUE );
-		WgBlockSetPtr pRadiobuttonUncheckedBlocks = pSurface->defineBlockSet( WgHorrTile4( WgRect(1,RADIOBUTTON_OFS,50,11), 2), WgBorders(0), WgBorders(3), 0, WG_OPAQUE );
-		WgBlockSetPtr pRadiobuttonCheckedBlocks	= pSurface->defineBlockSet( WgHorrTile4( WgRect(53,RADIOBUTTON_OFS,50,11), 2), WgBorders(0), WgBorders(3), 0, WG_OPAQUE );
+		WgBlockSetPtr pVSliderBtnFwdBlocks	= WgBlockSet::CreateFromRow(pSurface, WgRect(77,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pVSliderBtnFwdBlocks->SetGfxBorders(WgBorders(3));
+		pVSliderBtnFwdBlocks->SetContentBorders(WgBorders(4));
 
-		WgBlockSetPtr pButtonBlocks 		= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,BUTTON_OFS,38,8), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
-		WgBlockSetPtr pPlateBlocks 			= pSurface->defineBlockSet( WgHorrTile4( WgRect(1,PLATE_OFS,38,8), 2), WgBorders(3), WgBorders(4), 0, WG_OPAQUE );
+		WgBlockSetPtr pSliderBlocks	= WgBlockSet::CreateFromRow(pSurface, WgRect(1,SLIDER_OFS,38,8), 4, 2, WG_OPAQUE);
+		pVSliderBtnFwdBlocks->SetGfxBorders(WgBorders(2));
+		pVSliderBtnFwdBlocks->SetContentBorders(WgBorders(3));
 
-		WgBlockSetPtr pHSplitBlocks			= pSurface->defineBlockSet( WgRect(1,SPLITS_AND_FRAME_OFS,8,2), WgBorders(0), WgBorders(0), 0, WG_OPAQUE );
-		WgBlockSetPtr pVSplitBlocks			= pSurface->defineBlockSet( WgRect(11,SPLITS_AND_FRAME_OFS,2,8), WgBorders(0), WgBorders(0), 0, WG_OPAQUE );
-		WgBlockSetPtr pFrameBlocks			= pSurface->defineBlockSet( WgRect(15,SPLITS_AND_FRAME_OFS,8,8), WgBorders(2), WgBorders(3), 0, 0 );
+		WgBlockSetPtr pSliderBackBlocks	= WgBlockSet::CreateFromRect(pSurface, WgRect(1,SLIDER_BACK_OFS,5,5), WG_OPAQUE );
+		pSliderBackBlocks->SetGfxBorders(WgBorders(2));
+		pSliderBackBlocks->SetContentBorders(WgBorders(2));
 
-		WgBlockSetPtr pBgCheckeredGreyBlocks= pSurface->defineBlockSet( WgRect(0,TILES_OFS,64,64), WgBorders(0), WgBorders(0), 0, WG_OPAQUE | WG_TILE_ALL );
-		WgBlockSetPtr pBgBlueGradientBlocks = pSurface->defineBlockSet( WgRect(1*64,TILES_OFS,64,64), WgBorders(0), WgBorders(0), 0, WG_OPAQUE );
+		WgBlockSetPtr pResizeButtonBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(1,RESIZE_BUTTON_OFS,86,20), 4, 2, WG_OPAQUE);
+		pResizeButtonBlocks->SetGfxBorders(WgBorders(3));
+
+		WgBlockSetPtr pCheckboxUncheckedBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(1,CHECKBOX_OFS,50,11), 4, 2, WG_OPAQUE);
+		pCheckboxUncheckedBlocks->SetGfxBorders(WgBorders(2));
+		pCheckboxUncheckedBlocks->SetContentBorders(WgBorders(3));
+
+		WgBlockSetPtr pCheckboxCheckedBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(53,CHECKBOX_OFS,50,11), 4, 2, WG_OPAQUE);
+		pCheckboxCheckedBlocks->SetGfxBorders(WgBorders(2));
+		pCheckboxCheckedBlocks->SetContentBorders(WgBorders(3));
+
+		WgBlockSetPtr pRadiobuttonUncheckedBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(1,RADIOBUTTON_OFS,50,11), 4, 2, WG_OPAQUE);
+		pRadiobuttonUncheckedBlocks->SetContentBorders(WgBorders(3));
+
+		WgBlockSetPtr pRadiobuttonCheckedBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(53,RADIOBUTTON_OFS,50,11), 4, 2, WG_OPAQUE);
+		pRadiobuttonCheckedBlocks->SetContentBorders(WgBorders(3));
+
+		WgBlockSetPtr pButtonBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(1,BUTTON_OFS,38,8), 4, 2, WG_OPAQUE);
+		pButtonBlocks->SetGfxBorders(WgBorders(3));
+		pButtonBlocks->SetContentBorders(WgBorders(4));
+
+		WgBlockSetPtr pPlateBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(1,PLATE_OFS,38,8), 4, 2, WG_OPAQUE);
+		pPlateBlocks->SetGfxBorders(WgBorders(3));
+		pPlateBlocks->SetContentBorders(WgBorders(4));
+
+		WgBlockSetPtr pHSplitBlocks = WgBlockSet::CreateFromRect(pSurface, WgRect(1,SPLITS_AND_FRAME_OFS,8,2), WG_OPAQUE);
+
+		WgBlockSetPtr pVSplitBlocks = WgBlockSet::CreateFromRect(pSurface, WgRect(11,SPLITS_AND_FRAME_OFS,2,8), WG_OPAQUE);
+
+		WgBlockSetPtr pFrameBlocks = WgBlockSet::CreateFromRect(pSurface, WgRect(15,SPLITS_AND_FRAME_OFS,8,8), WG_OPAQUE);
+		pFrameBlocks->SetGfxBorders(WgBorders(2));
+		pFrameBlocks->SetContentBorders(WgBorders(3));
+
+		WgBlockSetPtr pBgCheckeredGreyBlocks = WgBlockSet::CreateFromRect( pSurface, WgRect(0,TILES_OFS,64,64), WG_OPAQUE | WG_TILE_ALL );
+		WgBlockSetPtr pBgBlueGradientBlocks = WgBlockSet::CreateFromRect( pSurface, WgRect(1*64,TILES_OFS,64,64), WG_OPAQUE );
 
 		WgColorSetPtr pSelectionColors = WgColorSet::Create( WgColor(0x0), WgColor(0x40FFFFFF), WgColor(0x80FFFFFF), WgColor(0x40000000), WgColor(0x0) );
 

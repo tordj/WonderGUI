@@ -78,91 +78,6 @@ enum WgBlockFlags
 };
 
 
-//____ WgHorrTileX ____________________________________________________________
-
-class	WgHorrTile2 : public WgRect
-{
-public:
-	WgHorrTile2() {};
-	WgHorrTile2( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
-	WgHorrTile2( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
-
-	Uint32	skip;
-};
-
-class	WgHorrTile3 : public WgRect
-{
-public:
-	WgHorrTile3() {};
-	WgHorrTile3( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
-	WgHorrTile3( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
-
-	Uint32	skip;
-};
-
-class	WgHorrTile4 : public WgRect
-{
-public:
-	WgHorrTile4() {};
-	WgHorrTile4( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
-	WgHorrTile4( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
-
-	Uint32	skip;
-};
-
-class	WgHorrTile5 : public WgRect
-{
-public:
-	WgHorrTile5() {};
-	WgHorrTile5( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
-	WgHorrTile5( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
-
-	Uint32	skip;
-};
-
-//____ WgVertTileX ____________________________________________________________
-
-class	WgVertTile2 : public WgRect
-{
-public:
-	WgVertTile2() {};
-	WgVertTile2( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
-	WgVertTile2( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
-
-	Uint32	skip;
-};
-
-class	WgVertTile3 : public WgRect
-{
-public:
-	WgVertTile3() {};
-	WgVertTile3( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
-	WgVertTile3( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
-
-	Uint32	skip;
-};
-
-class	WgVertTile4 : public WgRect
-{
-public:
-	WgVertTile4() {};
-	WgVertTile4( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
-	WgVertTile4( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
-
-	Uint32	skip;
-};
-
-class	WgVertTile5 : public WgRect
-{
-public:
-	WgVertTile5() {};
-	WgVertTile5( int _x, int _y, int _w, int _h, Uint32 _skip = 0 ) { x = _x; y = _y; w = _w; h = _h; skip = _skip; }
-	WgVertTile5( const WgRect& _r, Uint32 _skip = 0 ) { x = _r.x; y = _r.y; w = _r.w; h = _r.h; skip = _skip; }
-
-	Uint32	skip;
-};
-
-
 //____ WgBlock ________________________________________________________________
 
 class WgBlock
@@ -231,10 +146,7 @@ class WgBlockSet : private WgLink, public WgRefCountedPooled
 	friend class WgSurface;
 
 protected:
-	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked, 
-				const WgRect& selected, const WgRect& disabled, const WgRect& special, 
-				const WgBorders& gfxBorders, const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags );
-	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, const WgBorders& gfxBorders, const WgBorders& contentBorders, const WgColorSetPtr& pTextColors, Uint32 flags );
+	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, Uint32 flags );
 
 	struct Alt_Data
 	{
@@ -260,9 +172,31 @@ protected:
 	};
 
 public:
+	static WgBlockSetPtr CreateFromSurface( WgSurface * pSurf, int flags = 0 );
+	static WgBlockSetPtr CreateFromRect( WgSurface * pSurf, const WgRect& normal, int flags = 0 );
+	static WgBlockSetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, int flags = 0 );
+	static WgBlockSetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, int flags = 0 );
+	static WgBlockSetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, const WgCoord& special, int flags = 0 );
+	static WgBlockSetPtr CreateFromRow( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding=0, int flags = 0 );
+	static WgBlockSetPtr CreateFromColumn( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding=0, int flags = 0 );
+
+
 	bool				AddAlternative( WgSize activationSize, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked,
 										const WgRect& selected, const WgRect& disabled, const WgRect& special,
 										WgBorders gfxBorders, WgBorders contentBorders, WgCoord shiftMarked, WgCoord shiftPressed );
+
+	bool				SetSize( WgSize size, int alt = 0 );
+	bool				SetPos( WgMode mode, WgCoord pos, int alt = 0 );
+
+	void				SetTextColors( const WgColorSetPtr& colors );
+	void				SetGfxBorders( const WgBorders& borders, int alt = 0 );
+	void				SetContentBorders( const WgBorders& borders, int alt = 0 );
+	bool				SetContentShift( WgMode mode, WgCoord ofs, int alt = 0 );
+	bool				SetTile(Uint32 place, bool bTile);
+	bool				SetScale(bool bScale);
+	bool				SetFixedSize(bool bFixedSize);						//TODO: Make center-mode enum of fixed-size/tile/stretch/scale.
+
+
 
 	inline WgBlock		GetBlock( WgMode mode, WgSize destSize ) const { return _getBlock( mode, _getAlt(destSize) ); }
 	inline WgBlock		GetBlock( WgMode mode, int alt = 0 ) const { return _getBlock( mode, _getAlt(alt) ); }
@@ -271,8 +205,6 @@ public:
 	int					NbAlternatives() const;
 	WgSize				ActivationSize( int alt ) const;
 
-	bool				SetSize( WgSize size, int alt = 0 );
-	bool				SetPos( WgMode mode, WgCoord pos, int alt = 0 );
 
 	inline WgColorSetPtr	TextColors() const { return m_pTextColors; }
 	WgColor				TextColor( WgMode mode ) const;
@@ -287,11 +219,8 @@ public:
 
 	const WgSurface *	Surface( int alt = 0 ) const;
 	WgBorders			GfxBorders( int alt = 0 ) const;
-	void				SetGfxBorders( const WgBorders& borders, int alt = 0 );
 	WgBorders			ContentBorders( int alt = 0 ) const;
-	void				SetContentBorders( const WgBorders& borders, int alt = 0 );
 	WgCoord				ContentShift( WgMode mode, int alt = 0 ) const;
-	bool				SetContentShift( WgMode mode, WgCoord ofs, int alt = 0 );
 	inline Uint32		Flags() const { return m_flags; }
 
 	inline bool			IsOpaque() const { return ((m_flags & WG_OPAQUE) != 0); }
@@ -305,13 +234,10 @@ public:
 	inline bool			HasTiledLeftBorder() const { return ((m_flags & WG_TILE_LEFT) != 0); }
 	inline bool			HasTiledRightBorder() const { return ((m_flags & WG_TILE_RIGHT) != 0); }
 
-	bool				SetTile(Uint32 place, bool bTile);
 
 	bool				IsScaled() const { return ((m_flags & WG_SCALE_CENTER) != 0); }
-	bool				SetScale(bool bScale);
 
 	bool				IsFixedSize() const { return ((m_flags & WG_FIXED_CENTER) != 0); }
-	bool				SetFixedSize(bool bFixedSize);						//TODO: Make center-mode enum of fixed-size/tile/stretch/scale.
 
 	bool				SameBlock( WgMode one, WgMode two, int alt = 0 );
 	inline bool			IsModeSkipable( WgMode m ) const;
@@ -319,6 +245,7 @@ public:
 
 private:
 	static Uint32	_verifyFlags(Uint32 flags);
+	static WgBlockSet * _alloc( const WgSurface * pSurf, int flags );
 
 	Alt_Data *		_getAlt( int n );
 	Alt_Data *		_getAlt( WgSize destSize );
@@ -333,6 +260,8 @@ private:
 
 	WgChain<LinkedAlt>			m_altChain;			// Blocks for Alts 1+.
 
+
+	static WgMemPool *	g_pMemPool;
 };
 
 
