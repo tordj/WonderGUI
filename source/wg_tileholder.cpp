@@ -35,7 +35,7 @@ void WgTileHolder::SetMinTileSize( WgSize size )
 
 //____ SetTileBlocks() ________________________________________________________
 
-void WgTileHolder::SetTileBlocks( const WgBlockSetPtr& pOddBlocks, const WgBlockSetPtr& pEvenBlocks )
+void WgTileHolder::SetTileBlocks( const WgBlocksetPtr& pOddBlocks, const WgBlocksetPtr& pEvenBlocks )
 {
 	m_pTileBlocks[0] = pEvenBlocks;
 	m_pTileBlocks[1] = pOddBlocks;
@@ -53,7 +53,7 @@ void WgTileHolder::RemoveTileBlocks()
 
 //____ SetTileColors() ________________________________________________________
 
-void WgTileHolder::SetTileColors( const WgColorSetPtr& pOddColors, const WgColorSetPtr& pEvenColors )
+void WgTileHolder::SetTileColors( const WgColorsetPtr& pOddColors, const WgColorsetPtr& pEvenColors )
 {
 	m_pTileColors[0] = pEvenColors;
 	m_pTileColors[1] = pOddColors;
@@ -97,7 +97,7 @@ void WgTileHolder::_renderTile( WgGfxDevice * pDevice, const WgRect& clip, const
 
 	if( m_pTileBlocks[tileNb] )
 	{
-		WgBlockSetPtr p = m_pTileBlocks[tileNb];
+		WgBlocksetPtr p = m_pTileBlocks[tileNb];
 		if( p && !p->IsModeSkipable(mode) )
 			pDevice->ClipBlitBlock(clip, p->GetBlock(mode, dest.Size() ), dest );
 	}

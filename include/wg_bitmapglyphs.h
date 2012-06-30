@@ -34,7 +34,7 @@ class	WgSurface;
 
 //____ WgBitmapGlyphs _____________________________________________________________
 
-class WgBitmapGlyphs : public WgGlyphSet
+class WgBitmapGlyphs : public WgGlyphset
 {
 public:
 	WgBitmapGlyphs( WgSurface * pSurf, char * pGlyphSpec, bool binaryFile=false );
@@ -43,7 +43,7 @@ public:
 	inline Type	GetType() const { return BITMAP; }
 
 	void					InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool binaryFile=false );
-	void					CopyGlyphs( WgBitmapGlyphs* pOtherGlyphSet );
+	void					CopyGlyphs( WgBitmapGlyphs* pOtherGlyphset );
 
 
 	WgGlyphPtr				GetGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
@@ -65,7 +65,7 @@ private:
 	{
 	public:
 		Glyph();
-		Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphSet * pGlyphSet, WgSurface * pSurf, const WgRect& rect );
+		Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, WgSurface * pSurf, const WgRect& rect );
 
 		const WgGlyphBitmap * GetBitmap() { return &m_src; }
 

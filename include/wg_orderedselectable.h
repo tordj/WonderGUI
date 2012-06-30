@@ -96,15 +96,15 @@ public:
 	inline WgOrdSelHook *	LastSelectedHook() const { return _lastSelectedHook(); }
 
 
-	inline void		SetBgBlocks( const WgBlockSetPtr& pBg ) { SetBgBlocks( pBg, pBg ); }
-	void			SetBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg );
-	void			SetFgBlocks( const WgBlockSetPtr& pFg );
+	inline void		SetBgBlocks( const WgBlocksetPtr& pBg ) { SetBgBlocks( pBg, pBg ); }
+	void			SetBgBlocks( const WgBlocksetPtr& pOddBg, const WgBlocksetPtr& pEvenBg );
+	void			SetFgBlocks( const WgBlocksetPtr& pFg );
 
-	inline void		SetBgColors( const WgColorSetPtr& pBg ) { SetBgColors( pBg, pBg ); }
-	void			SetBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg );
+	inline void		SetBgColors( const WgColorsetPtr& pBg ) { SetBgColors( pBg, pBg ); }
+	void			SetBgColors( const WgColorsetPtr& pOddBg, const WgColorsetPtr& pEvenBg );
 
-	inline WgBlockSetPtr	BgBlocksEven() const { return m_pEvenBgBlocks; }
-	inline WgBlockSetPtr	BgBlocksOdd() const { return m_pOddBgBlocks; }
+	inline WgBlocksetPtr	BgBlocksEven() const { return m_pEvenBgBlocks; }
+	inline WgBlocksetPtr	BgBlocksOdd() const { return m_pOddBgBlocks; }
 
 
 protected:
@@ -120,11 +120,11 @@ protected:
 	virtual void	_onGizmoUnselected( WgOrdSelHook * pUnselected );		// so parent can do what it needs to.
 
 
-	WgColorSetPtr	m_pOddBgColors;
-	WgColorSetPtr	m_pEvenBgColors;
-	WgBlockSetPtr	m_pOddBgBlocks;
-	WgBlockSetPtr	m_pEvenBgBlocks;
-	WgBlockSetPtr	m_pFgBlocks;
+	WgColorsetPtr	m_pOddBgColors;
+	WgColorsetPtr	m_pEvenBgColors;
+	WgBlocksetPtr	m_pOddBgBlocks;
+	WgBlocksetPtr	m_pEvenBgBlocks;
+	WgBlocksetPtr	m_pFgBlocks;
 
 	bool			m_bScrollOnSelect;
 	WgSelectMode	m_selectMode;

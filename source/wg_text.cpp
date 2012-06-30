@@ -545,7 +545,7 @@ int WgText::softLineSpacing( int line )
 }
 
 
-void WgText::setLinkProperties( const WgTextPropPtr& pProp )
+void WgText::setLinkProperties( const WgTextpropPtr& pProp )
 {
 	if( m_pLinkProp != pProp )
 	{
@@ -565,7 +565,7 @@ void WgText::clearLinkProperties()
 	}
 }
 
-void WgText::setSelectionProperties( const WgTextPropPtr& pProp )
+void WgText::setSelectionProperties( const WgTextpropPtr& pProp )
 {
 	if( m_pSelectionProp != pProp )
 	{
@@ -588,13 +588,13 @@ void WgText::clearSelectionProperties()
 
 void WgText::setSelectionBgColor(WgColor color )
 {
-	WgTextProp	prop = * m_pSelectionProp;
+	WgTextprop	prop = * m_pSelectionProp;
 	prop.SetBgColor(color);
 	m_pSelectionProp = prop.Register();
 }
 
 
-void WgText::setProperties( const WgTextPropPtr& pProp )
+void WgText::setProperties( const WgTextpropPtr& pProp )
 {
 	m_pBaseProp = pProp;
 	_regenSoftLines();
@@ -603,21 +603,21 @@ void WgText::setProperties( const WgTextPropPtr& pProp )
 
 void WgText::setColor( const WgColor color )
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.SetColor(color);
 	m_pBaseProp = prop.Register();
 }
 
 void WgText::setColor( const WgColor color, WgMode mode )
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.SetColor(color,mode);
 	m_pBaseProp = prop.Register();
 }
 
 void WgText::setStyle( WgFontStyle style )
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.SetStyle(style);
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
@@ -626,7 +626,7 @@ void WgText::setStyle( WgFontStyle style )
 
 void WgText::setStyle( WgFontStyle style, WgMode mode )
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.SetStyle(style,mode);
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
@@ -635,7 +635,7 @@ void WgText::setStyle( WgFontStyle style, WgMode mode )
 
 void WgText::setFont( WgFont * pFont )
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.SetFont(pFont);
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
@@ -644,7 +644,7 @@ void WgText::setFont( WgFont * pFont )
 
 void WgText::setLink( const WgTextLinkPtr& pLink )
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.SetLink(pLink);
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
@@ -653,7 +653,7 @@ void WgText::setLink( const WgTextLinkPtr& pLink )
 
 void WgText::setBreakLevel( int level )
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.SetBreakLevel(level);
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
@@ -672,21 +672,21 @@ void WgText::clearProperties()
 
 void WgText::clearColor()
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.ClearColor();
 	m_pBaseProp = prop.Register();
 }
 
 void WgText::clearColor( WgMode mode )
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.ClearColor(mode);
 	m_pBaseProp = prop.Register();
 }
 
 void WgText::clearStyle()
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.ClearStyle();
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
@@ -695,7 +695,7 @@ void WgText::clearStyle()
 
 void WgText::clearStyle( WgMode mode )
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.ClearStyle(mode);
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
@@ -704,7 +704,7 @@ void WgText::clearStyle( WgMode mode )
 
 void WgText::clearBreakLevel()
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.ClearBreakLevel();
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
@@ -713,7 +713,7 @@ void WgText::clearBreakLevel()
 
 void WgText::clearFont()
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.ClearFont();
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
@@ -722,7 +722,7 @@ void WgText::clearFont()
 
 void WgText::clearLink()
 {
-	WgTextProp	prop = * m_pBaseProp;
+	WgTextprop	prop = * m_pBaseProp;
 	prop.ClearLink();
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
@@ -1040,7 +1040,7 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 
 	// Set character attributes
 
-	if( f.bSetTextProp )
+	if( f.bSetTextprop )
 		WgTextTool::SetProperties( f.pTextProperties, tempstring, s_parseBufLen );
 
 	return p;
@@ -1150,7 +1150,7 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 
 	// Set character attributes
 
-	if( f.bSetTextProp )
+	if( f.bSetTextprop )
 		WgTextTool::SetProperties(f.pTextProperties, tempstring, s_parseBufLen );
 
 	return p;
@@ -1622,7 +1622,7 @@ int WgText::_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLin
 					// Check so a hyphen will fit on the line as well, otherwise we can't break here.
 					// We don't take kerning into account here, not so important.
 
-					WgGlyphPtr pHyphen = pen.GetGlyphSet()->GetGlyph( '-', pen.GetSize() );
+					WgGlyphPtr pHyphen = pen.GetGlyphset()->GetGlyph( '-', pen.GetSize() );
 					if( !pHyphen || (pen.GetPosX() + pHyphen->Advance()) > maxWidth )
 						break;			// Can't break here, hyphen wouldn't fit on line.
 				}
@@ -1798,7 +1798,7 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 		GetBaseAttr( attr );
 		pen.SetAttributes( attr );
 
-		if( pen.GetGlyphSet() != 0 )
+		if( pen.GetGlyphset() != 0 )
 		{
 			int height		= pen.GetLineHeight();
 			int baseline	= pen.GetBaseline();
@@ -1823,7 +1823,7 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 
 				hProp = pChars[i].PropHandle();
 
-				if( pen.GetGlyphSet() == 0 )
+				if( pen.GetGlyphset() == 0 )
 					break;									// Bail out instead of crashing.
 
 				int height		= pen.GetLineHeight();
@@ -2634,7 +2634,7 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 void WgText::GetBaseAttr( WgTextAttr& attr ) const
 {
 	attr.Clear();
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), m_mode );
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), m_mode );
 	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_mode );
 	WgTextTool::SetAttrColor( attr, m_pBaseColors, m_mode );
 	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_mode );
@@ -2648,7 +2648,7 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 		return false;
 
 	attr.Clear();
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), m_mode );
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), m_mode );
 	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_mode );
 	WgTextTool::SetAttrColor( attr, m_pBaseColors, m_mode );
 	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_mode );
@@ -2671,7 +2671,7 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 
 	// Add link properties if character is part of a link
 
-	WgTextPropPtr pCharProp = m_buffer.Chars()[charOfs].Properties();
+	WgTextpropPtr pCharProp = m_buffer.Chars()[charOfs].Properties();
 
 	WgTextLinkPtr pLink = pCharProp->Link();
 	if( !pLink )
@@ -2679,7 +2679,7 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 
 	if( pLink )
 	{
-		WgTextPropPtr pProp = m_pLinkProp?m_pLinkProp:WgBase::GetDefaultLinkProp();
+		WgTextpropPtr pProp = m_pLinkProp?m_pLinkProp:WgBase::GetDefaultLinkProp();
 
 		WgMode	mode;
 

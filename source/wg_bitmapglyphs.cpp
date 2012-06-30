@@ -568,8 +568,8 @@ WgBitmapGlyphs::Glyph::Glyph()
 	m_src.pSurface = 0;
 }
 
-WgBitmapGlyphs::Glyph::Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphSet * pGlyphSet, WgSurface * pSurf, const WgRect& rect )
-: WgGlyph( advance, kerningIndex, pGlyphSet )
+WgBitmapGlyphs::Glyph::Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, WgSurface * pSurf, const WgRect& rect )
+: WgGlyph( advance, kerningIndex, pGlyphset )
 {
 		m_src.pSurface	= pSurf;
 		m_src.rect		= rect;

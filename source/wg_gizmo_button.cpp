@@ -70,7 +70,7 @@ const char * WgGizmoButton::GetMyType()
 
 //____ SetSource() ____________________________________________________________
 
-bool WgGizmoButton::SetSource( const WgBlockSetPtr& pGfx )
+bool WgGizmoButton::SetSource( const WgBlocksetPtr& pGfx )
 {
 	m_pBgGfx = pGfx;
 
@@ -85,13 +85,13 @@ bool WgGizmoButton::SetSource( const WgBlockSetPtr& pGfx )
 
 //____ SetIcon() ______________________________________________________________
 
-void WgGizmoButton::SetIcon( const WgBlockSetPtr& pIconGfx )
+void WgGizmoButton::SetIcon( const WgBlocksetPtr& pIconGfx )
 {
 	m_pIconGfx = pIconGfx;
 	_iconModified();
 }
 
-bool WgGizmoButton::SetIcon( const WgBlockSetPtr& pIconGfx, WgOrientation orientation, WgBorders borders, float scale, bool bPushText )
+bool WgGizmoButton::SetIcon( const WgBlocksetPtr& pIconGfx, WgOrientation orientation, WgBorders borders, float scale, bool bPushText )
 {
 	if( scale < 0 || scale > 1.f )
 		return false;

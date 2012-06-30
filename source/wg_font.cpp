@@ -87,9 +87,9 @@ WgFont::~WgFont()
 }
 
 
-//____ GetGlyphSet() _______________________________________________________________
+//____ GetGlyphset() _______________________________________________________________
 
-WgGlyphSet * WgFont::GetGlyphSet( WgFontStyle style, int size ) const
+WgGlyphset * WgFont::GetGlyphset( WgFontStyle style, int size ) const
 {
 	// Find the right glyphset to the following priorities:
 	//

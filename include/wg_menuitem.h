@@ -86,13 +86,13 @@ class WgMenuEntry : public WgMenuItem
 	friend class WgGizmoMenu;
 public:
 	WgMenuEntry();
-	WgMenuEntry( const WgString& text, const WgString& helpText, const WgBlockSetPtr& pIcon, Uint16 navKey,
+	WgMenuEntry( const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey,
 		WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuEntry();
 
 	void 	SetText(const WgString& text);
 	void 	SetHelpText(const WgString& helpText);
-	void 	SetIcon(const WgBlockSetPtr& pIcon);
+	void 	SetIcon(const WgBlocksetPtr& pIcon);
 	void 	SetNavKey(Uint16 navKey);
 	void 	SetAccelModifier(WgModifierKeys accelModif);
 	void 	SetAccelKey(Uint16 accelKey);
@@ -106,7 +106,7 @@ public:
 	inline WgString GetHelpText() { return m_helpText; }
 	inline WgString GetAccelText() { return m_accelText; }
 
-	inline const WgBlockSetPtr GetIcon() { return m_pIcon; }
+	inline const WgBlocksetPtr GetIcon() { return m_pIcon; }
 	inline Uint16			GetNavKey()		{ return m_navKey; }
 	inline WgModifierKeys	GetAccelModif()	{ return m_accelModif; }
 	inline Uint16			GetAccelKey()	{ return m_accelKey; }
@@ -118,7 +118,7 @@ private:
 	WgString		m_accelText;
 	WgString		m_helpText;
 
-	WgBlockSetPtr	m_pIcon;
+	WgBlocksetPtr	m_pIcon;
 	bool			m_bEnabled;
 
 	Uint16			m_navKey;
@@ -168,7 +168,7 @@ class WgMenuSubMenu : public WgMenuEntry
 {
 public:
 	WgMenuSubMenu();
-	WgMenuSubMenu(	const WgString& text, const WgString& helpText, const WgBlockSetPtr& pIcon, Uint16 navKey, WgGizmoMenu * pSubMenu,
+	WgMenuSubMenu(	const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey, WgGizmoMenu * pSubMenu,
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuSubMenu() {};
 

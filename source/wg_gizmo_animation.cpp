@@ -78,7 +78,7 @@ bool WgGizmoAnimation::SetAnimation( WgGfxAnim * pAnim )
 
 //____ SetSource() ________________________________________________________
 
-bool WgGizmoAnimation::SetSource( const WgBlockSetPtr& pBlocks )
+bool WgGizmoAnimation::SetSource( const WgBlocksetPtr& pBlocks )
 {
 	m_pStaticBlock = pBlocks;
 

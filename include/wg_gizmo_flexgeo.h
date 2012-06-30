@@ -29,7 +29,7 @@
 #	include <wg_gizmo_container.h>
 #endif
 
-class WgGizmoFlexGeo;
+class WgGizmoFlexgeo;
 
 //____ WgFlexHook _____________________________________________________________
 
@@ -37,7 +37,7 @@ class WgFlexHook : public WgHook, protected WgLink
 {
 	friend class WgGizmo;
 	friend class WgGizmoContainer;
-	friend class WgGizmoFlexGeo;
+	friend class WgGizmoFlexgeo;
 	friend class WgChain<WgFlexHook>;
 
 public:
@@ -118,14 +118,14 @@ public:
 	WgFlexHook *	Prev() const { return _prev(); }
 	WgFlexHook *	Next() const { return _next(); }
 
-	WgGizmoFlexGeo* Parent() const { return m_pParent; }
+	WgGizmoFlexgeo* Parent() const { return m_pParent; }
 
 protected:
 	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
 
 	PROTECTED_LINK_METHODS( WgFlexHook );
 
-	WgFlexHook( WgGizmoFlexGeo * pParent, const WgRect& placementGeo );
+	WgFlexHook( WgGizmoFlexgeo * pParent, const WgRect& placementGeo );
 
 	void		_refreshRealGeo();
 
@@ -137,7 +137,7 @@ protected:
 	WgHook *		_nextHook() const;
 	WgGizmoParent * _parent() const;
 
-	WgGizmoFlexGeo* m_pParent;
+	WgGizmoFlexgeo* m_pParent;
 
 	bool			m_bHidden;
 	bool			m_bFloating;		// true = floating, false = anchored
@@ -165,7 +165,7 @@ protected:
 
 class WgFlexAnchor
 {
-	friend class WgGizmoFlexGeo;
+	friend class WgGizmoFlexgeo;
 
 public:
 	float	RelativeX() const { return m_xRelative; }
@@ -188,18 +188,18 @@ private:
 
 //____ WgGizmoFlexGeo _________________________________________________________
 
-class WgGizmoFlexGeo : public WgGizmoContainer
+class WgGizmoFlexgeo : public WgGizmoContainer
 {
 friend class WgFlexHook;
 
 public:
 
-	WgGizmoFlexGeo();
-	virtual ~WgGizmoFlexGeo();
+	WgGizmoFlexgeo();
+	virtual ~WgGizmoFlexgeo();
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
-	virtual WgGizmo * NewOfMyType() const { return new WgGizmoFlexGeo(); };
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoFlexgeo(); };
 
 	void			SetConfineChildren( bool bRestrictChildren );
 	bool			IsConfiningChildren() const { return m_bConfineChildren; }

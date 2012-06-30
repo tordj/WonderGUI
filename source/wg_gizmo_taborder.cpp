@@ -23,67 +23,67 @@
 #include <wg_gizmo_taborder.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"TabOrder"};
+static const char	c_gizmoType[] = {"Taborder"};
 
 //____ Constructor ____________________________________________________________
 
-WgGizmoTabOrder::WgGizmoTabOrder()
+WgGizmoTaborder::WgGizmoTaborder()
 {
 }
 
 //____ Destructor _____________________________________________________________
 
-WgGizmoTabOrder::~WgGizmoTabOrder()
+WgGizmoTaborder::~WgGizmoTaborder()
 {
 }
 
 //____ Type() _________________________________________________________________
 
-const char * WgGizmoTabOrder::Type( void ) const
+const char * WgGizmoTaborder::Type( void ) const
 {
 	return GetMyType();
 }
 
 //____ GetMyType() ____________________________________________________________
 
-const char * WgGizmoTabOrder::GetMyType()
+const char * WgGizmoTaborder::GetMyType()
 {
 	return c_gizmoType;
 }
 
-//____ AddToTabOrder() ________________________________________________________
+//____ AddToTaborder() ________________________________________________________
 
-bool WgGizmoTabOrder::AddToTabOrder( WgGizmo * pGizmo )
+bool WgGizmoTaborder::AddToTaborder( WgGizmo * pGizmo )
 {
-	if( !_isValidForTabOrderInsertion(pGizmo) )
+	if( !_isValidForTaborderInsertion(pGizmo) )
 		return false;
 
-	m_tabOrder.PushBack( new TabOrderEntry(pGizmo) );
+	m_tabOrder.PushBack( new TaborderEntry(pGizmo) );
 	return true;
 }
 
-//____ InsertInTabOrder() _____________________________________________________
+//____ InsertInTaborder() _____________________________________________________
 
-bool WgGizmoTabOrder::InsertInTabOrder( WgGizmo * pGizmo, WgGizmo * _pBefore )
+bool WgGizmoTaborder::InsertInTaborder( WgGizmo * pGizmo, WgGizmo * _pBefore )
 {
-	if( !_pBefore || !_isValidForTabOrderInsertion(pGizmo) )
+	if( !_pBefore || !_isValidForTaborderInsertion(pGizmo) )
 		return false;
 
-	TabOrderEntry * pBefore = _findInTabOrder(_pBefore);
+	TaborderEntry * pBefore = _findInTaborder(_pBefore);
 	if( !pBefore )
 		return false;
 
-	TabOrderEntry * pEntry = new TabOrderEntry(pGizmo);
+	TaborderEntry * pEntry = new TaborderEntry(pGizmo);
 
 	pEntry->MoveBefore(pBefore);
 	return true;
 }
 
-//____ RemoveFromTabOrder() ___________________________________________________
+//____ RemoveFromTaborder() ___________________________________________________
 
-bool WgGizmoTabOrder::RemoveFromTabOrder( WgGizmo * pGizmo )
+bool WgGizmoTaborder::RemoveFromTaborder( WgGizmo * pGizmo )
 {
-	TabOrderEntry * pEntry = _findInTabOrder(pGizmo);
+	TaborderEntry * pEntry = _findInTaborder(pGizmo);
 	if( !pEntry )
 		return false;
 
@@ -91,18 +91,18 @@ bool WgGizmoTabOrder::RemoveFromTabOrder( WgGizmo * pGizmo )
 	return true;
 }
 
-//____ ClearTabOrder() ________________________________________________________
+//____ ClearTaborder() ________________________________________________________
 
-void WgGizmoTabOrder::ClearTabOrder()
+void WgGizmoTaborder::ClearTaborder()
 {
 	m_tabOrder.Clear();
 }
 
-//____ FirstInTabOrder() ______________________________________________________
+//____ FirstInTaborder() ______________________________________________________
 
-WgGizmo * WgGizmoTabOrder::FirstInTabOrder() const
+WgGizmo * WgGizmoTaborder::FirstInTaborder() const
 {
-	TabOrderEntry * pEntry = _validateEntryForward( m_tabOrder.First() );
+	TaborderEntry * pEntry = _validateEntryForward( m_tabOrder.First() );
 
 	if( pEntry )
 		return pEntry->pGizmo.GetRealPtr();
@@ -110,11 +110,11 @@ WgGizmo * WgGizmoTabOrder::FirstInTabOrder() const
 	return 0;
 }
 
-//____ NextInTabOrder() _______________________________________________________
+//____ NextInTaborder() _______________________________________________________
 
-WgGizmo * WgGizmoTabOrder::NextInTabOrder( WgGizmo * pCurrGizmo ) const
+WgGizmo * WgGizmoTaborder::NextInTaborder( WgGizmo * pCurrGizmo ) const
 {
-	TabOrderEntry * pEntry = _findInTabOrder(pCurrGizmo);
+	TaborderEntry * pEntry = _findInTaborder(pCurrGizmo);
 	if( !pEntry )
 		return 0;
 
@@ -126,11 +126,11 @@ WgGizmo * WgGizmoTabOrder::NextInTabOrder( WgGizmo * pCurrGizmo ) const
 	return 0;
 }
 
-//____ PrevInTabOrder() _______________________________________________________
+//____ PrevInTaborder() _______________________________________________________
 
-WgGizmo * WgGizmoTabOrder::PrevInTabOrder( WgGizmo * pCurrGizmo ) const
+WgGizmo * WgGizmoTaborder::PrevInTaborder( WgGizmo * pCurrGizmo ) const
 {
-	TabOrderEntry * pEntry = _findInTabOrder(pCurrGizmo);
+	TaborderEntry * pEntry = _findInTaborder(pCurrGizmo);
 	if( !pEntry )
 		return 0;
 
@@ -142,11 +142,11 @@ WgGizmo * WgGizmoTabOrder::PrevInTabOrder( WgGizmo * pCurrGizmo ) const
 	return 0;
 }
 
-//____ LastInTabOrder() _______________________________________________________
+//____ LastInTaborder() _______________________________________________________
 
-WgGizmo * WgGizmoTabOrder::LastInTabOrder() const
+WgGizmo * WgGizmoTaborder::LastInTaborder() const
 {
-	TabOrderEntry * pEntry = _validateEntryBackward( m_tabOrder.Last() );
+	TaborderEntry * pEntry = _validateEntryBackward( m_tabOrder.Last() );
 
 	if( pEntry )
 		return pEntry->pGizmo.GetRealPtr();
@@ -154,9 +154,9 @@ WgGizmo * WgGizmoTabOrder::LastInTabOrder() const
 	return 0;
 }
 
-//____ _isValidForTabOrderInsertion() _________________________________________
+//____ _isValidForTaborderInsertion() _________________________________________
 
-bool WgGizmoTabOrder::_isValidForTabOrderInsertion( WgGizmo * pGizmo ) const
+bool WgGizmoTaborder::_isValidForTaborderInsertion( WgGizmo * pGizmo ) const
 {
 	// Check so it's an ancestor to us.
 
@@ -172,7 +172,7 @@ bool WgGizmoTabOrder::_isValidForTabOrderInsertion( WgGizmo * pGizmo ) const
 
 	// Check so we don't already have this Gizmo in our tab-order
 
-	if( _findInTabOrder( pGizmo ) )
+	if( _findInTaborder( pGizmo ) )
 		return false;
 
 	// All seems ok
@@ -180,11 +180,11 @@ bool WgGizmoTabOrder::_isValidForTabOrderInsertion( WgGizmo * pGizmo ) const
 	return true;
 }
 
-//____ _findInTabOrder() ______________________________________________________
+//____ _findInTaborder() ______________________________________________________
 
-WgGizmoTabOrder::TabOrderEntry * WgGizmoTabOrder::_findInTabOrder( WgGizmo * pGizmo ) const
+WgGizmoTaborder::TaborderEntry * WgGizmoTaborder::_findInTaborder( WgGizmo * pGizmo ) const
 {
-	TabOrderEntry * p = m_tabOrder.First();
+	TaborderEntry * p = m_tabOrder.First();
 	while( p )
 	{
 		if( p->pGizmo.GetRealPtr() == pGizmo )
@@ -197,7 +197,7 @@ WgGizmoTabOrder::TabOrderEntry * WgGizmoTabOrder::_findInTabOrder( WgGizmo * pGi
 
 //____ _validateEntryForward() ________________________________________________
 
-WgGizmoTabOrder::TabOrderEntry * WgGizmoTabOrder::_validateEntryForward( WgGizmoTabOrder::TabOrderEntry * pEntry ) const
+WgGizmoTaborder::TaborderEntry * WgGizmoTaborder::_validateEntryForward( WgGizmoTaborder::TaborderEntry * pEntry ) const
 {
 	while( pEntry && !pEntry->pGizmo )
 		pEntry = pEntry->Next();
@@ -207,7 +207,7 @@ WgGizmoTabOrder::TabOrderEntry * WgGizmoTabOrder::_validateEntryForward( WgGizmo
 
 //____ _validateEntryBackward() _______________________________________________
 
-WgGizmoTabOrder::TabOrderEntry * WgGizmoTabOrder::_validateEntryBackward( WgGizmoTabOrder::TabOrderEntry * pEntry ) const
+WgGizmoTaborder::TaborderEntry * WgGizmoTaborder::_validateEntryBackward( WgGizmoTaborder::TaborderEntry * pEntry ) const
 {
 	while( pEntry && !pEntry->pGizmo )
 		pEntry = pEntry->Prev();
@@ -217,7 +217,7 @@ WgGizmoTabOrder::TabOrderEntry * WgGizmoTabOrder::_validateEntryBackward( WgGizm
 
 //____ _onEvent() _____________________________________________________________
 
-void WgGizmoTabOrder::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgGizmoTaborder::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	switch( _pEvent->Type() )
 	{
@@ -231,7 +231,7 @@ void WgGizmoTabOrder::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler *
 				if( pFocused->IsTabLocked() )
 					break;
 
-				TabOrderEntry * pEntry = _findInTabOrder( pFocused );
+				TaborderEntry * pEntry = _findInTaborder( pFocused );
 
 				if( pEntry )
 				{

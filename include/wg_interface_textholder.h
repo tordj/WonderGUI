@@ -46,7 +46,7 @@ public:
 
 // -------------
 
-	inline WgTextPropPtr GetTextProperties() { return m_pText->getProperties(); }
+	inline WgTextpropPtr GetTextProperties() { return m_pText->getProperties(); }
 
 	inline WgColor			GetTextColor() const { return m_pText->getColor(); }
 	inline WgColor			GetTextColor(WgMode mode) const { return m_pText->getColor(mode); }
@@ -57,7 +57,7 @@ public:
 
 // -------------
 
-	inline void			SetTextProperties( const WgTextPropPtr& pProp )		{ m_pText->setProperties(pProp); _textModified(); }
+	inline void			SetTextProperties( const WgTextpropPtr& pProp )		{ m_pText->setProperties(pProp); _textModified(); }
 
 	inline void			SetTextColor( const WgColor color )					{ m_pText->setColor(color); _textModified(); }
 	inline void			SetTextColor( const WgColor color, WgMode mode )		{ m_pText->setColor(color,mode); _textModified(); }
@@ -87,14 +87,14 @@ public:
 
 //	-----------
 
-	inline void			SetSelectionProperties( const WgTextPropPtr& pProp ) { m_pText->setSelectionProperties(pProp); _textModified(); }
-	inline WgTextPropPtr GetSelectionProperties() const { return m_pText->getSelectionProperties(); }
+	inline void			SetSelectionProperties( const WgTextpropPtr& pProp ) { m_pText->setSelectionProperties(pProp); _textModified(); }
+	inline WgTextpropPtr GetSelectionProperties() const { return m_pText->getSelectionProperties(); }
 	inline void			ClearSelectionProperties() { m_pText->clearSelectionProperties(); _textModified(); }
 
 //	-----------
 
-	inline void			SetLinkProperties( const WgTextPropPtr& pProp ) { m_pText->setLinkProperties(pProp); _textModified(); }
-	inline WgTextPropPtr GetLinkProperties() const { return m_pText->getLinkProperties(); }
+	inline void			SetLinkProperties( const WgTextpropPtr& pProp ) { m_pText->setLinkProperties(pProp); _textModified(); }
+	inline WgTextpropPtr GetLinkProperties() const { return m_pText->getLinkProperties(); }
 	inline void			ClearLinkProperties() { m_pText->clearLinkProperties(); _textModified(); }
 
 //	-----------
@@ -104,8 +104,8 @@ public:
 
 //	-----------
 
-	inline void			SetTextBaseColors( const WgColorSetPtr& pColors ) { m_pText->SetBaseColors(pColors); }
-	inline WgColorSetPtr TextBaseColors() const { return m_pText->BaseColors(); }
+	inline void			SetTextBaseColors( const WgColorsetPtr& pColors ) { m_pText->SetBaseColors(pColors); }
+	inline WgColorsetPtr TextBaseColors() const { return m_pText->BaseColors(); }
 
 //	-----------
 

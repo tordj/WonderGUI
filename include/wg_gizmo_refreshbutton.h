@@ -41,16 +41,16 @@
 
 //____ WgGizmoRefreshButton ____________________________________________________________
 
-class WgGizmoRefreshButton : public WgGizmoButton
+class WgGizmoRefreshbutton : public WgGizmoButton
 {
 public:
-	WgGizmoRefreshButton();
-	~WgGizmoRefreshButton();
+	WgGizmoRefreshbutton();
+	~WgGizmoRefreshbutton();
 	
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
-	virtual WgGizmo * NewOfMyType() const { return new WgGizmoRefreshButton(); };
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoRefreshbutton(); };
 
 	//____ Methods __________________________________________
 
@@ -79,8 +79,8 @@ public:
 		void			SetRefreshText( const WgCharSeq& text );
 		const WgChar*	GetRefreshText() const { return m_refreshText.getText(); }
 
-		void			SetRefreshTextProperties( const WgTextPropPtr& pProp );
-		WgTextPropPtr	GetRefreshTextProperties() const { return m_refreshText.getProperties(); }
+		void			SetRefreshTextProperties( const WgTextpropPtr& pProp );
+		WgTextpropPtr	GetRefreshTextProperties() const { return m_refreshText.getProperties(); }
 
 		void			SetRestartable( bool bRestartable );
 		bool			IsRestartable() const { return m_bRestartable; }

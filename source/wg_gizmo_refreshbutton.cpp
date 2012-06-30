@@ -29,11 +29,11 @@
 #include <wg_util.h>
 #include <wg_key.h>
 
-static const char	c_gizmoType[] = {"RefreshButton"};
+static const char	c_gizmoType[] = {"Refreshbutton"};
 
 //____ Constructor ____________________________________________________________
 
-WgGizmoRefreshButton::WgGizmoRefreshButton()
+WgGizmoRefreshbutton::WgGizmoRefreshbutton()
 {
 	m_pRefreshAnim		= 0;
 	m_animTarget		= BUTTON_CENTERED;
@@ -50,27 +50,27 @@ WgGizmoRefreshButton::WgGizmoRefreshButton()
 
 //____ Destructor _____________________________________________________________
 
-WgGizmoRefreshButton::~WgGizmoRefreshButton()
+WgGizmoRefreshbutton::~WgGizmoRefreshbutton()
 {
 }
 
 //____ Type() _________________________________________________________________
 
-const char * WgGizmoRefreshButton::Type( void ) const
+const char * WgGizmoRefreshbutton::Type( void ) const
 {
 	return GetMyType();
 }
 
 //____ GetMyType() ____________________________________________________________
 
-const char * WgGizmoRefreshButton::GetMyType()
+const char * WgGizmoRefreshbutton::GetMyType()
 {
 	return c_gizmoType;
 }
 
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::SetRefreshAnimation( WgGfxAnim * pAnimation )
+void WgGizmoRefreshbutton::SetRefreshAnimation( WgGfxAnim * pAnimation )
 {
 	m_pRefreshAnim		= pAnimation;
 
@@ -79,7 +79,7 @@ void WgGizmoRefreshButton::SetRefreshAnimation( WgGfxAnim * pAnimation )
 }
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::SetRefreshMode( RefreshMode mode )
+void WgGizmoRefreshbutton::SetRefreshMode( RefreshMode mode )
 {
 	m_refreshMode = mode;
 	if( m_bRefreshing )
@@ -87,7 +87,7 @@ void WgGizmoRefreshButton::SetRefreshMode( RefreshMode mode )
 }
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::SetAnimTarget( AnimTarget target )
+void WgGizmoRefreshbutton::SetAnimTarget( AnimTarget target )
 {
 	m_animTarget = target;
 	if( m_bRefreshing )
@@ -95,7 +95,7 @@ void WgGizmoRefreshButton::SetAnimTarget( AnimTarget target )
 }
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::SetRefreshText( const WgCharSeq& text )
+void WgGizmoRefreshbutton::SetRefreshText( const WgCharSeq& text )
 {
 	m_refreshText.setText( text );
 
@@ -107,7 +107,7 @@ void WgGizmoRefreshButton::SetRefreshText( const WgCharSeq& text )
 }
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::SetRefreshTextProperties( const WgTextPropPtr& pProp )
+void WgGizmoRefreshbutton::SetRefreshTextProperties( const WgTextpropPtr& pProp )
 {
 	m_refreshText.setProperties(pProp);
 
@@ -116,13 +116,13 @@ void WgGizmoRefreshButton::SetRefreshTextProperties( const WgTextPropPtr& pProp 
 }
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::SetRestartable( bool bRestartable )
+void WgGizmoRefreshbutton::SetRestartable( bool bRestartable )
 {
 	m_bRestartable = bRestartable;
 }
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::StartRefresh()
+void WgGizmoRefreshbutton::StartRefresh()
 {
 	if( m_pRefreshAnim && (!m_bRefreshing || m_bRestartable) )
 	{
@@ -137,7 +137,7 @@ void WgGizmoRefreshButton::StartRefresh()
 }
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::StopRefresh()
+void WgGizmoRefreshbutton::StopRefresh()
 {
 	if( m_pRefreshAnim && m_pRefreshAnim->DurationScaled())
 	{
@@ -152,7 +152,7 @@ void WgGizmoRefreshButton::StopRefresh()
 }
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::StopRefreshNow()
+void WgGizmoRefreshbutton::StopRefreshNow()
 {
 	m_refreshProgress = 1.f;
 	m_bRefreshing = false;
@@ -161,7 +161,7 @@ void WgGizmoRefreshButton::StopRefreshNow()
 }
 
 //_____________________________________________________________________________
-void WgGizmoRefreshButton::SetRefreshProgress( float fraction )
+void WgGizmoRefreshbutton::SetRefreshProgress( float fraction )
 {
 	if( m_refreshMode == PROGRESS )
 	{
@@ -183,7 +183,7 @@ void WgGizmoRefreshButton::SetRefreshProgress( float fraction )
 
 //____ _onNewSize() ____________________________________________________________
 
-void WgGizmoRefreshButton::_onNewSize( const WgSize& size )
+void WgGizmoRefreshbutton::_onNewSize( const WgSize& size )
 {
 	Uint32 w = size.w;
 
@@ -197,7 +197,7 @@ void WgGizmoRefreshButton::_onNewSize( const WgSize& size )
 
 //____ _onEvent() _____________________________________________________________
 
-void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgGizmoRefreshbutton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
 	{
@@ -262,7 +262,7 @@ void WgGizmoRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandl
 
 //____ _onRender() _____________________________________________________________
 
-void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgGizmoRefreshbutton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	// Render background or animation
 
@@ -354,7 +354,7 @@ void WgGizmoRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canv
 
 //_____ _getRenderMode() ________________________________________________________
 
-WgMode WgGizmoRefreshButton::_getRenderMode()
+WgMode WgGizmoRefreshbutton::_getRenderMode()
 {
 	if( !IsEnabled() )
 		return WG_MODE_DISABLED;
@@ -378,9 +378,9 @@ WgMode WgGizmoRefreshButton::_getRenderMode()
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgGizmoRefreshButton::_onCloneContent( const WgGizmo * _pOrg )
+void WgGizmoRefreshbutton::_onCloneContent( const WgGizmo * _pOrg )
 {
-	WgGizmoRefreshButton * pOrg = (WgGizmoRefreshButton *) _pOrg;
+	WgGizmoRefreshbutton * pOrg = (WgGizmoRefreshbutton *) _pOrg;
 
 	WgGizmoButton::_onCloneContent( _pOrg );
 
@@ -396,7 +396,7 @@ void WgGizmoRefreshButton::_onCloneContent( const WgGizmo * _pOrg )
 	m_bStopping			= pOrg->m_bStopping;
 }
 
-void WgGizmoRefreshButton::SetTextManager( WgTextManager * pManager )
+void WgGizmoRefreshbutton::SetTextManager( WgTextManager * pManager )
 {
 	m_refreshText.setManager( pManager );
 	WgGizmoButton::SetTextManager(pManager);

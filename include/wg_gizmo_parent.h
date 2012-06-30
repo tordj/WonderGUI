@@ -35,8 +35,8 @@ class WgGizmo;
 class WgRoot;
 class WgHook;
 class WgGizmoContainer;
-class WgGizmoModalLayer;
-class WgGizmoMenuLayer;
+class WgGizmoModallayer;
+class WgGizmoMenulayer;
 
 class WgGizmoParent : public WgGizmoCollection
 {
@@ -71,8 +71,8 @@ class WgGizmoParent : public WgGizmoCollection
 		virtual bool 		_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
 		virtual bool 		_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;
 
-		virtual WgGizmoModalLayer *		_getModalLayer() const = 0;
-		virtual WgGizmoMenuLayer*	_getMenuLayer() const = 0;
+		virtual WgGizmoModallayer *		_getModalLayer() const = 0;
+		virtual WgGizmoMenulayer*	_getMenuLayer() const = 0;
 
 };
 

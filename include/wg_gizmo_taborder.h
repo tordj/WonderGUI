@@ -30,28 +30,28 @@
 #endif
 
 
-class WgGizmoTabOrder : public WgMonotainer
+class WgGizmoTaborder : public WgMonotainer
 {
 public:
-	WgGizmoTabOrder();
-	~WgGizmoTabOrder();
+	WgGizmoTaborder();
+	~WgGizmoTaborder();
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
-	virtual WgGizmo * NewOfMyType() const { return new WgGizmoTabOrder(); };
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoTaborder(); };
 	
 
-	bool	AddToTabOrder( WgGizmo * pGizmo );
-	bool	InsertInTabOrder( WgGizmo * pGizmo, WgGizmo * pBefore );
+	bool	AddToTaborder( WgGizmo * pGizmo );
+	bool	InsertInTaborder( WgGizmo * pGizmo, WgGizmo * pBefore );
 
-	bool	RemoveFromTabOrder( WgGizmo * pGizmo );
-	void	ClearTabOrder();
+	bool	RemoveFromTaborder( WgGizmo * pGizmo );
+	void	ClearTaborder();
 
 
-	WgGizmo * FirstInTabOrder() const;
-	WgGizmo * NextInTabOrder( WgGizmo * pCurrGizmo ) const;
-	WgGizmo * PrevInTabOrder( WgGizmo * pCurrGizmo ) const;
-	WgGizmo * LastInTabOrder() const;
+	WgGizmo * FirstInTaborder() const;
+	WgGizmo * NextInTaborder( WgGizmo * pCurrGizmo ) const;
+	WgGizmo * PrevInTaborder( WgGizmo * pCurrGizmo ) const;
+	WgGizmo * LastInTaborder() const;
 
 protected:
 
@@ -59,23 +59,23 @@ protected:
 
 private:
 
-	class TabOrderEntry : public WgLink
+	class TaborderEntry : public WgLink
 	{
 	public:
-		LINK_METHODS( TabOrderEntry );
+		LINK_METHODS( TaborderEntry );
 
-		TabOrderEntry(WgGizmo* p) { pGizmo = p; }
+		TaborderEntry(WgGizmo* p) { pGizmo = p; }
 		WgGizmoWeakPtr 	pGizmo;
 	};
 
-	bool 								_isValidForTabOrderInsertion( WgGizmo * pGizmo ) const;
-	WgGizmoTabOrder::TabOrderEntry * 	_findInTabOrder( WgGizmo * pGizmo ) const;
-	WgGizmoTabOrder::TabOrderEntry * 	_validateEntryForward( WgGizmoTabOrder::TabOrderEntry * pEntry ) const;
-	WgGizmoTabOrder::TabOrderEntry * 	_validateEntryBackward( WgGizmoTabOrder::TabOrderEntry * pEntry ) const;
+	bool 								_isValidForTaborderInsertion( WgGizmo * pGizmo ) const;
+	WgGizmoTaborder::TaborderEntry * 	_findInTaborder( WgGizmo * pGizmo ) const;
+	WgGizmoTaborder::TaborderEntry * 	_validateEntryForward( WgGizmoTaborder::TaborderEntry * pEntry ) const;
+	WgGizmoTaborder::TaborderEntry * 	_validateEntryBackward( WgGizmoTaborder::TaborderEntry * pEntry ) const;
 
 
 
-	WgChain<TabOrderEntry> 	m_tabOrder;
+	WgChain<TaborderEntry> 	m_tabOrder;
 };
 
 #endif //WG_GIZMO_TABORDER_DOT_H

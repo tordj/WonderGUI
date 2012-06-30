@@ -128,8 +128,8 @@ protected:
 	bool 				_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );
 	bool 				_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );
 
-	WgGizmoModalLayer *		_getModalLayer() const { return 0; }
-	WgGizmoMenuLayer*	_getMenuLayer() const { return 0; }
+	WgGizmoModallayer *		_getModalLayer() const { return 0; }
+	WgGizmoMenulayer*	_getMenuLayer() const { return 0; }
 
 	WgPatches			m_dirtyPatches;
 

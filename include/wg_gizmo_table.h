@@ -248,15 +248,15 @@ public:
 
 	//____ Methods __________________________________________
 
-	bool			SetHeaderTextProp( const WgTextPropPtr& pProp );
-	WgTextPropPtr 	GetHeaderTextProp() const { return m_pHeaderProps; };
+	bool			SetHeaderTextprop( const WgTextpropPtr& pProp );
+	WgTextpropPtr 	GetHeaderTextprop() const { return m_pHeaderProps; };
 
-	bool			SetHeaderSource( const WgBlockSetPtr& pHeader );
-	WgBlockSetPtr 	GetHeaderSource() const { return m_pHeaderGfx; }
+	bool			SetHeaderSource( const WgBlocksetPtr& pHeader );
+	WgBlocksetPtr 	GetHeaderSource() const { return m_pHeaderGfx; }
 
-	void			SetArrowSource( const WgBlockSetPtr& pAscend, const WgBlockSetPtr& pDescend );
-	WgBlockSetPtr	GetArrowAscend() const { return m_pAscendGfx; }
-	WgBlockSetPtr	GetArrowDescend() const { return m_pDescendGfx; }
+	void			SetArrowSource( const WgBlocksetPtr& pAscend, const WgBlocksetPtr& pDescend );
+	WgBlocksetPtr	GetArrowAscend() const { return m_pAscendGfx; }
+	WgBlocksetPtr	GetArrowDescend() const { return m_pDescendGfx; }
 	void			SetArrowPos( const WgOrientation alignment, int xOfs, int yOfs );
 	void			SetArrowPos( int xOfs, int yOfs );
 	int				GetArrowPosX() const { return m_sortMarkerOfs.x; }
@@ -277,9 +277,9 @@ public:
 	void			SetEmptyRowHeight( int height );
 	int				GetEmptyRowHeight() const { return m_emptyRowHeight; }
 
-	void			SetRowBlocks( WgBlockSetPtr * pRowBlocks, int nRowSource );
+	void			SetRowBlocks( WgBlocksetPtr * pRowBlocks, int nRowSource );
 	int				GetRowBlockCount() const { return m_nRowBlocks; }
-	WgBlockSetPtr* 	GetRowBlocks( ) { return m_pRowBlocks; }
+	WgBlocksetPtr* 	GetRowBlocks( ) { return m_pRowBlocks; }
 	void			DeleteRowBlocks();
 
 	void			SetRowColors( WgColor * pRowColors, int nRowColors );
@@ -316,9 +316,9 @@ public:
 	void			DeleteAllRows();
 	WgTableRow*	FindRow( int id );
 	void			SetSelectedRowColor( WgColor c );
-	void			SetSelectedRowBg( WgBlockSetPtr pBlock );
+	void			SetSelectedRowBg( WgBlocksetPtr pBlock );
 	bool			HasSelectedRowBg() const { if( m_pSelectedRowGfx ) return true; return false; }
-	WgBlockSetPtr	GetSelectedRowBg() const { return m_pSelectedRowGfx; }
+	WgBlocksetPtr	GetSelectedRowBg() const { return m_pSelectedRowGfx; }
 	WgColor			GetSelectedRowColor() const { return m_selectedRowColor; }
 
 	WgTableRow*	FirstRow() const { return m_rows.First(); }
@@ -446,19 +446,19 @@ private:
 	WgColor*		m_pRowColors;
 
 	int				m_nRowBlocks;
-	WgBlockSetPtr*	m_pRowBlocks;
+	WgBlocksetPtr*	m_pRowBlocks;
 
 	int				m_emptyRowHeight;						// Set if empty rows should fill out the view.
 
-	WgTextPropPtr	m_pHeaderProps;
+	WgTextpropPtr	m_pHeaderProps;
 
 	WgOrientation	m_sortMarkerAlignment;
 	WgCoord8		m_sortMarkerOfs;
 
 	WgBorders		m_cellPadding;
 
-	WgBlockSetPtr	m_pAscendGfx;
-	WgBlockSetPtr	m_pDescendGfx;
+	WgBlocksetPtr	m_pAscendGfx;
+	WgBlocksetPtr	m_pDescendGfx;
 
 	int				m_lastSortColumn;
 	bool			m_lastSortColumnAscendStatus;
@@ -481,13 +481,13 @@ private:
 		HEADER_SRC_HIGHLIGHT,
 	};
 
-	WgBlockSetPtr	m_pHeaderGfx;
+	WgBlocksetPtr	m_pHeaderGfx;
 
 	WgTableColumn*	_getHeaderColumnAt( const WgCoord& pos );
 	WgTableColumn*	m_pMarkedHeader;						// Header currently marked by mouse
 
 
-	WgBlockSetPtr	m_pSelectedRowGfx;
+	WgBlocksetPtr	m_pSelectedRowGfx;
 	WgColor			m_selectedRowColor;
 };
 

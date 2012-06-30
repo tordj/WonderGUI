@@ -59,12 +59,12 @@ public:
 	void			SetDownWhenMouseOutside( bool bDown );
 	bool			DownWhenMouseOutside() const { return m_bDownOutside; }
 
-	bool			SetIcon( const WgBlockSetPtr& pIconGfx, WgOrientation orientation, WgBorders borders = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
-	void			SetIcon( const WgBlockSetPtr& pIconGfx );
-	WgBlockSetPtr	GetIconSource() const { return m_pIconGfx; }
+	bool			SetIcon( const WgBlocksetPtr& pIconGfx, WgOrientation orientation, WgBorders borders = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
+	void			SetIcon( const WgBlocksetPtr& pIconGfx );
+	WgBlocksetPtr	GetIconSource() const { return m_pIconGfx; }
 
-	bool			SetSource( const WgBlockSetPtr& pGfx );
-	WgBlockSetPtr	GetSource() const { return m_pBgGfx; }
+	bool			SetSource( const WgBlocksetPtr& pGfx );
+	WgBlocksetPtr	GetSource() const { return m_pBgGfx; }
 
 	Uint32			GetTextAreaWidth();
 
@@ -98,8 +98,8 @@ protected:
 
 	WgText			m_text;
 
-	WgBlockSetPtr	m_pIconGfx;
-	WgBlockSetPtr	m_pBgGfx;
+	WgBlocksetPtr	m_pIconGfx;
+	WgBlocksetPtr	m_pBgGfx;
 
 	WgMode			m_mode;
 

@@ -174,7 +174,7 @@ bool WgGizmoContainer::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasi
 }
 
 
-WgGizmoModalLayer *  WgGizmoContainer::_getModalLayer() const
+WgGizmoModallayer *  WgGizmoContainer::_getModalLayer() const
 {
 	const WgGizmoParent * p = Parent();
 
@@ -184,7 +184,7 @@ WgGizmoModalLayer *  WgGizmoContainer::_getModalLayer() const
 		return 0;
 }
 
-WgGizmoMenuLayer * WgGizmoContainer::_getMenuLayer() const
+WgGizmoMenulayer * WgGizmoContainer::_getMenuLayer() const
 {
 	const WgGizmoParent * p = Parent();
 

@@ -25,7 +25,7 @@
 #include <wg_patches.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"Modal"};
+static const char	c_gizmoType[] = {"Modallayer"};
 
 // Improve WgModalHook geometry handling, should be able to run on BestSize by default, answering to resize-requests.
 
@@ -153,7 +153,7 @@ WgGizmoContainer* WgModalHook::Parent() const
 }
 
 //_____________________________________________________________________________
-WgModalHook::WgModalHook( WgGizmoModalLayer * pParent )
+WgModalHook::WgModalHook( WgGizmoModallayer * pParent )
 {
 	m_pParent = pParent;
 }
@@ -241,55 +241,55 @@ WgGizmoContainer * WgModalHook::_parent() const
 }
 
 //_____________________________________________________________________________
-void WgGizmoModalLayer::BaseHook::_requestRender()
+void WgGizmoModallayer::BaseHook::_requestRender()
 {
 	if( !m_bHidden )
 		m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
 }
 
 //_____________________________________________________________________________
-void WgGizmoModalLayer::BaseHook::_requestRender( const WgRect& rect )
+void WgGizmoModallayer::BaseHook::_requestRender( const WgRect& rect )
 {
 	if( !m_bHidden )
 		m_pParent->_onRequestRender( rect, 0 );
 }
 
 //_____________________________________________________________________________
-void WgGizmoModalLayer::BaseHook::_requestResize()
+void WgGizmoModallayer::BaseHook::_requestResize()
 {
 	m_pParent->_requestResize();					// Just forward to our parent
 }
 
 //____ Constructor ____________________________________________________________
 
-WgGizmoModalLayer::WgGizmoModalLayer() : m_baseHook(this)
+WgGizmoModallayer::WgGizmoModallayer() : m_baseHook(this)
 {
 }
 
 //____ Destructor _____________________________________________________________
 
-WgGizmoModalLayer::~WgGizmoModalLayer()
+WgGizmoModallayer::~WgGizmoModallayer()
 {
 	// Children are deleted automaticallly when their hooks are deteled.
 }
 
 //____ Type() _________________________________________________________________
 
-const char *WgGizmoModalLayer::Type( void ) const
+const char *WgGizmoModallayer::Type( void ) const
 {
 	return GetMyType();
 }
 
 //____ GetMyType() ____________________________________________________________
 
-const char * WgGizmoModalLayer::GetMyType()
+const char * WgGizmoModallayer::GetMyType()
 {
 	return c_gizmoType;
 }
 
 //____ SetBase() _________________________________________________________
 
-WgHook * WgGizmoModalLayer::SetBase( WgGizmo * pGizmo )
+WgHook * WgGizmoModallayer::SetBase( WgGizmo * pGizmo )
 {
 	// Replace Gizmo
 
@@ -308,14 +308,14 @@ WgHook * WgGizmoModalLayer::SetBase( WgGizmo * pGizmo )
 
 //____ Base() ____________________________________________________________
 
-WgGizmo * WgGizmoModalLayer::Base()
+WgGizmo * WgGizmoModallayer::Base()
 {
 	return m_baseHook.Gizmo();
 }
 
 //____ DeleteBase() ______________________________________________________
 
-bool WgGizmoModalLayer::DeleteBase()
+bool WgGizmoModallayer::DeleteBase()
 {
 	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
 	if( pGizmo )
@@ -332,7 +332,7 @@ bool WgGizmoModalLayer::DeleteBase()
 
 //____ ReleaseBase() _____________________________________________________
 
-WgGizmo * WgGizmoModalLayer::ReleaseBase()
+WgGizmo * WgGizmoModallayer::ReleaseBase()
 {
 	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
 	if( pGizmo )
@@ -347,7 +347,7 @@ WgGizmo * WgGizmoModalLayer::ReleaseBase()
 
 //____ AddModal() ________________________________________________________
 
-WgModalHook * WgGizmoModalLayer::AddModal( WgGizmo * pGizmo, const WgRect& geometry, WgOrientation origo )
+WgModalHook * WgGizmoModallayer::AddModal( WgGizmo * pGizmo, const WgRect& geometry, WgOrientation origo )
 {
 	// Create Hook and fill in members.
 
@@ -366,7 +366,7 @@ WgModalHook * WgGizmoModalLayer::AddModal( WgGizmo * pGizmo, const WgRect& geome
 
 //____ DeleteAllModal() _________________________________________________
 
-bool WgGizmoModalLayer::DeleteAllModal()
+bool WgGizmoModallayer::DeleteAllModal()
 {
 	m_modalHooks.Clear();
 	_requestRender();
@@ -376,7 +376,7 @@ bool WgGizmoModalLayer::DeleteAllModal()
 
 //____ ReleaseAllModal() ________________________________________________
 
-bool WgGizmoModalLayer::ReleaseAllModal()
+bool WgGizmoModallayer::ReleaseAllModal()
 {
 	WgModalHook * pHook = m_modalHooks.First();
 	while( pHook )
@@ -393,7 +393,7 @@ bool WgGizmoModalLayer::ReleaseAllModal()
 
 //____ DeleteChild() __________________________________________________________
 
-bool WgGizmoModalLayer::DeleteChild( WgGizmo * pGizmo )
+bool WgGizmoModallayer::DeleteChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo || pGizmo->Parent() != this )
 		return false;
@@ -412,7 +412,7 @@ bool WgGizmoModalLayer::DeleteChild( WgGizmo * pGizmo )
 
 //____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgGizmoModalLayer::ReleaseChild( WgGizmo * pGizmo )
+WgGizmo * WgGizmoModallayer::ReleaseChild( WgGizmo * pGizmo )
 {
 	if( !pGizmo || pGizmo->Parent() != this )
 		return 0;
@@ -433,7 +433,7 @@ WgGizmo * WgGizmoModalLayer::ReleaseChild( WgGizmo * pGizmo )
 
 //____ DeleteAllChildren() ______________________________________________________
 
-bool WgGizmoModalLayer::DeleteAllChildren()
+bool WgGizmoModallayer::DeleteAllChildren()
 {
 	DeleteBase();
 	DeleteAllModal();
@@ -442,7 +442,7 @@ bool WgGizmoModalLayer::DeleteAllChildren()
 
 //____ ReleaseAllChildren() _____________________________________________________
 
-bool WgGizmoModalLayer::ReleaseAllChildren()
+bool WgGizmoModallayer::ReleaseAllChildren()
 {
 	ReleaseBase();
 	ReleaseAllModal();
@@ -451,21 +451,21 @@ bool WgGizmoModalLayer::ReleaseAllChildren()
 
 //____ FirstModal() ______________________________________________________
 
-WgModalHook * WgGizmoModalLayer::FirstModal()
+WgModalHook * WgGizmoModallayer::FirstModal()
 {
 	return m_modalHooks.First();
 }
 
 //____ LastModal() _______________________________________________________
 
-WgModalHook * WgGizmoModalLayer::LastModal()
+WgModalHook * WgGizmoModallayer::LastModal()
 {
 	return m_modalHooks.Last();
 }
 
 //____ HeightForWidth() _______________________________________________________
 
-int WgGizmoModalLayer::HeightForWidth( int width ) const
+int WgGizmoModallayer::HeightForWidth( int width ) const
 {
 	if( m_baseHook.Gizmo() )
 		return m_baseHook.Gizmo()->HeightForWidth( width );
@@ -475,7 +475,7 @@ int WgGizmoModalLayer::HeightForWidth( int width ) const
 
 //____ WidthForHeight() _______________________________________________________
 
-int WgGizmoModalLayer::WidthForHeight( int height ) const
+int WgGizmoModallayer::WidthForHeight( int height ) const
 {
 	if( m_baseHook.Gizmo() )
 		return m_baseHook.Gizmo()->WidthForHeight( height );
@@ -485,7 +485,7 @@ int WgGizmoModalLayer::WidthForHeight( int height ) const
 
 //____ DefaultSize() _____________________________________________________________
 
-WgSize WgGizmoModalLayer::DefaultSize() const
+WgSize WgGizmoModallayer::DefaultSize() const
 {
 	if( m_baseHook.Gizmo() )
 		return m_baseHook.Gizmo()->DefaultSize();
@@ -495,7 +495,7 @@ WgSize WgGizmoModalLayer::DefaultSize() const
 
 //____ FindGizmo() ____________________________________________________________
 
-WgGizmo *  WgGizmoModalLayer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
+WgGizmo *  WgGizmoModallayer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
 	// In search mode ACTION_TARGET we always return either the topmost non-hidden modal Gizmo (or its children),
 	// or us.
@@ -545,7 +545,7 @@ WgGizmo *  WgGizmoModalLayer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 //____ _updateKeyboardFocus() _______________________________________________________
 
-void WgGizmoModalLayer::_updateKeyboardFocus()
+void WgGizmoModallayer::_updateKeyboardFocus()
 {
 	// Get event handler, verify that we have a root
 
@@ -633,7 +633,7 @@ void WgGizmoModalLayer::_updateKeyboardFocus()
 
 //____ _onRequestRender() _____________________________________________________
 
-void WgGizmoModalLayer::_onRequestRender( const WgRect& rect, const WgModalHook * pHook )
+void WgGizmoModallayer::_onRequestRender( const WgRect& rect, const WgModalHook * pHook )
 {
 	if( pHook && pHook->m_bHidden )
 		return;
@@ -669,7 +669,7 @@ void WgGizmoModalLayer::_onRequestRender( const WgRect& rect, const WgModalHook 
 
 //____ _onNewSize() ___________________________________________________________
 
-void WgGizmoModalLayer::_onNewSize( const WgSize& sz )
+void WgGizmoModallayer::_onNewSize( const WgSize& sz )
 {
 	m_size = sz;
 
@@ -691,13 +691,13 @@ void WgGizmoModalLayer::_onNewSize( const WgSize& sz )
 
 //____ _onCloneContent() ______________________________________________________
 
-void WgGizmoModalLayer::_onCloneContent( const WgGizmo * _pOrg )
+void WgGizmoModallayer::_onCloneContent( const WgGizmo * _pOrg )
 {
 }
 
 //____ _onEvent() ______________________________________________________________
 
-void WgGizmoModalLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgGizmoModallayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 
 	if( !m_modalHooks.IsEmpty() && FindGizmo( _pEvent->PointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
@@ -733,7 +733,7 @@ void WgGizmoModalLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler
 
 //____ _firstHook() ___________________________________________________________
 
-WgHook* WgGizmoModalLayer::_firstHook() const
+WgHook* WgGizmoModallayer::_firstHook() const
 {
 	if( m_baseHook.Gizmo() )
 		return const_cast<BaseHook*>(&m_baseHook);
@@ -743,14 +743,14 @@ WgHook* WgGizmoModalLayer::_firstHook() const
 
 //____ _lastHook() ____________________________________________________________
 
-WgHook* WgGizmoModalLayer::_lastHook() const
+WgHook* WgGizmoModallayer::_lastHook() const
 {
 	return m_modalHooks.Last();
 }
 
 //____ _firstHookWithGeo() _____________________________________________________
 
-WgHook * WgGizmoModalLayer::_firstHookWithGeo( WgRect& geo ) const
+WgHook * WgGizmoModallayer::_firstHookWithGeo( WgRect& geo ) const
 {
 	if( m_baseHook.Gizmo() )
 	{
@@ -769,7 +769,7 @@ WgHook * WgGizmoModalLayer::_firstHookWithGeo( WgRect& geo ) const
 
 //____ _nextHookWithGeo() _______________________________________________________
 
-WgHook * WgGizmoModalLayer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook * WgGizmoModallayer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	WgHook * p = pHook->Next();
 	if( p )
@@ -780,7 +780,7 @@ WgHook * WgGizmoModalLayer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) cons
 
 //____ _lastHookWithGeo() _____________________________________________________
 
-WgHook * WgGizmoModalLayer::_lastHookWithGeo( WgRect& geo ) const
+WgHook * WgGizmoModallayer::_lastHookWithGeo( WgRect& geo ) const
 {
 	WgModalHook * p = m_modalHooks.Last();
 	if( p )
@@ -799,7 +799,7 @@ WgHook * WgGizmoModalLayer::_lastHookWithGeo( WgRect& geo ) const
 
 //____ _prevHookWithGeo() _______________________________________________________
 
-WgHook * WgGizmoModalLayer::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook * WgGizmoModallayer::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	WgHook * p = pHook->Prev();
 	if( p )

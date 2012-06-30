@@ -44,13 +44,13 @@ int main(int argc, char **argv)
 
 	// Set default textprop
 
-	WgTextProp prop;
+	WgTextprop prop;
 
 	prop.SetFont(pFont);
 	prop.SetColor( WgColor::white );
 	prop.SetSize(8);
 
-	WgBase::SetDefaultTextProp( prop.Register() );
+	WgBase::SetDefaultTextprop( prop.Register() );
 
 	// Setup gfxdevice and gui
 
@@ -141,7 +141,7 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 
 	WgRoot * pRoot = new WgRoot( pDevice );
 
-	WgGizmoFlexGeo * pMainContainer = new WgGizmoFlexGeo();
+	WgGizmoFlexgeo * pMainContainer = new WgGizmoFlexgeo();
 
 	int hAnchorLeft = pMainContainer->AddAnchor( 0.f, 0.f, WgCoord(0,100) );
 	int hAnchorRight = pMainContainer->AddAnchor( 1.f, 0.f, WgCoord(0,100) );
@@ -174,7 +174,7 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	pMainContainer->AddChild( pFill3, WgRect(300,100,100,100) );
 
 	WgGizmoText * pText = new WgGizmoText();
-	pText->SetTextProperties( WgBase::GetDefaultTextProp() );
+	pText->SetTextProperties( WgBase::GetDefaultTextprop() );
 	pText->SetText( "TESTING" );
 	pPanelStack->AddChild( pText );
 

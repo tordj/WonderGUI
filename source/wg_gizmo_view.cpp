@@ -594,7 +594,7 @@ void WgGizmoView::SetSliderPositions( bool bBottom, bool bRight )
 
 //____ SetFillerBlocks() ______________________________________________________
 
-void WgGizmoView::SetFillerBlocks( const WgBlockSetPtr& pBlocks )
+void WgGizmoView::SetFillerBlocks( const WgBlocksetPtr& pBlocks )
 {
 	m_pFillerBlocks = pBlocks;
 	_requestRender( m_geoFiller );

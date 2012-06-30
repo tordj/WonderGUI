@@ -24,14 +24,14 @@
 
 #include <string>
 class WgSurface;
-class WgGlyphSet;
+class WgGlyphset;
 class WgResDB;
 
 class WgResLoader
 {
 public:
 	virtual WgSurface*	LoadSurface( const std::string& filename, bool bRequired ) = 0;
-	virtual WgGlyphSet*	LoadGlyphSet( const std::string& filename ) = 0;
+	virtual WgGlyphset*	LoadGlyphset( const std::string& filename ) = 0;
 	virtual WgResDB*	LoadDb( const std::string& filename, WgResDB * pDependencies = 0 ) = 0;
 	virtual std::string	LoadString( const std::string& token ) = 0;
 };

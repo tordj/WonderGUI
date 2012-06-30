@@ -63,7 +63,7 @@
 class WgChar
 {
 friend class WgText;
-friend class WgTextProp;
+friend class WgTextprop;
 friend class WgTextTool;
 friend class WgCharBuffer;
 
@@ -74,7 +74,7 @@ public:
 
 	/// Initializes a character to contain the glyph and properties of the specified character.
 
-	WgChar( const WgChar& r ) { all = r.all; if( properties) WgTextPropManager::IncRef(properties,1); }
+	WgChar( const WgChar& r ) { all = r.all; if( properties) WgTextpropManager::IncRef(properties,1); }
 
 	/// Initializes a character to contain the specified glyph and no properties.
 
@@ -82,8 +82,8 @@ public:
 
 	/// Initializes a character to contain the glyph and properties as specified.
 
-	WgChar( Uint16 _glyph, const WgTextPropPtr& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; WgTextPropManager::IncRef(properties,1); }
-	~WgChar() { if( properties ) WgTextPropManager::DecRef(properties,1); };
+	WgChar( Uint16 _glyph, const WgTextpropPtr& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; WgTextpropManager::IncRef(properties,1); }
+	~WgChar() { if( properties ) WgTextpropManager::DecRef(properties,1); };
 
 	inline WgChar & operator=(const WgChar &ref)
 	{
@@ -94,10 +94,10 @@ public:
 		else
 		{
 			if(properties)
-				WgTextPropManager::DecRef(properties,1);
+				WgTextpropManager::DecRef(properties,1);
 			all = ref.all;
 			if(properties)
-				WgTextPropManager::IncRef(properties,1);
+				WgTextpropManager::IncRef(properties,1);
 		}
 		return *this;
 	}
@@ -116,7 +116,7 @@ public:
 
 							/// Sets the properties of the character.
 
-	inline void				SetProperties( const WgTextPropPtr& pProperties ) { if(properties) WgTextPropManager::DecRef(properties,1); properties = pProperties.m_hProp; WgTextPropManager::IncRef(properties,1); }
+	inline void				SetProperties( const WgTextpropPtr& pProperties ) { if(properties) WgTextpropManager::DecRef(properties,1); properties = pProperties.m_hProp; WgTextpropManager::IncRef(properties,1); }
 
 							/// Gets the characters properties as a handle.
 							///
@@ -132,10 +132,10 @@ public:
 							///
 							/// Characters with identical properties always returns identical pointers.
 							///
-							/// @return Read-only pointer to a WgTextProp specifying the properties of the character. A valid pointer
-							/// is always returned, if the character has no properties set a pointer to an empty default WgTextProp is returned.
+							/// @return Read-only pointer to a WgTextprop specifying the properties of the character. A valid pointer
+							/// is always returned, if the character has no properties set a pointer to an empty default WgTextprop is returned.
 
-	inline WgTextPropPtr	Properties() const { return WgTextPropPtr(properties); }
+	inline WgTextpropPtr	Properties() const { return WgTextpropPtr(properties); }
 
 							/// Checks if the character is set to be underlined in the given mode.
 
@@ -202,7 +202,7 @@ public:
 	inline WgFont *			Font() const { return GetPropRef().Font(); }
 
 
-//	inline WgGlyphSet *		GlyphSet( const WgTextPropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombGlyphSet(pDefProp.GetHandle(), properties, mode); }
+//	inline WgGlyphset *		Glyphset( const WgTextpropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombGlyphset(pDefProp.GetHandle(), properties, mode); }
 
 							/// Returns the characters font size for the given mode.
 							///
@@ -246,7 +246,7 @@ public:
 
 protected:
 
-	inline const WgTextProp&	GetPropRef() const { return WgTextPropManager::GetProp(properties); }		// Use with caution! Not safe if adding/removing
+	inline const WgTextprop&	GetPropRef() const { return WgTextpropManager::GetProp(properties); }		// Use with caution! Not safe if adding/removing
 
 private:
 

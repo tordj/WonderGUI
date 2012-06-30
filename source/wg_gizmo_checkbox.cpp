@@ -29,7 +29,7 @@
 #include <wg_eventhandler.h>
 #include <assert.h>
 
-static const char	c_gizmoType[] = {"CheckBox"};
+static const char	c_gizmoType[] = {"Checkbox"};
 
 
 
@@ -71,7 +71,7 @@ const char * WgGizmoCheckbox::GetMyType( void )
 
 //____ SetSource() ____________________________________________________________
 
-bool WgGizmoCheckbox::SetSource( const WgBlockSetPtr& pUnchecked, const WgBlockSetPtr& pChecked )
+bool WgGizmoCheckbox::SetSource( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked )
 {
 	m_pBlockUnchecked	= pUnchecked;
 	m_pBlockChecked		= pChecked;
@@ -82,7 +82,7 @@ bool WgGizmoCheckbox::SetSource( const WgBlockSetPtr& pUnchecked, const WgBlockS
 
 //____ SetIcons() ______________________________________________________________
 
-void WgGizmoCheckbox::SetIcons( const WgBlockSetPtr& pUnchecked, const WgBlockSetPtr& pChecked,
+void WgGizmoCheckbox::SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked,
 								const WgOrientation& orientation, WgBorders borders, float scale,
 								bool bPushText )
 {
@@ -97,7 +97,7 @@ void WgGizmoCheckbox::SetIcons( const WgBlockSetPtr& pUnchecked, const WgBlockSe
 
 //____ SetIcons() ______________________________________________________________
 
-void WgGizmoCheckbox::SetIcons( const WgBlockSetPtr& pUnchecked, const WgBlockSetPtr& pChecked )
+void WgGizmoCheckbox::SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked )
 {
 	m_pIconUnchecked	= pUnchecked;
 	m_pIconChecked		= pChecked;
@@ -106,7 +106,7 @@ void WgGizmoCheckbox::SetIcons( const WgBlockSetPtr& pUnchecked, const WgBlockSe
 
 //____ SetCheckedIcon() _______________________________________________________
 
-void WgGizmoCheckbox::SetCheckedIcon( const WgBlockSetPtr& pChecked )
+void WgGizmoCheckbox::SetCheckedIcon( const WgBlocksetPtr& pChecked )
 {
 	m_pIconChecked		= pChecked;
 	_onRefresh();
@@ -114,7 +114,7 @@ void WgGizmoCheckbox::SetCheckedIcon( const WgBlockSetPtr& pChecked )
 
 //____ SetUncheckedIcon() _____________________________________________________
 
-void WgGizmoCheckbox::SetUncheckedIcon( const WgBlockSetPtr& pUnchecked )
+void WgGizmoCheckbox::SetUncheckedIcon( const WgBlocksetPtr& pUnchecked )
 {
 	m_pIconUnchecked	= pUnchecked;
 	_onRefresh();
@@ -309,25 +309,25 @@ void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 	// Get blocksets for background and icon
 
-	WgBlockSetPtr	pBgBlockSet, pIconBlockSet;
+	WgBlocksetPtr	pBgBlockset, pIconBlockset;
 
 	if( m_bChecked )
 	{
-		pBgBlockSet = m_pBlockChecked;
-		pIconBlockSet = m_pIconChecked;
+		pBgBlockset = m_pBlockChecked;
+		pIconBlockset = m_pIconChecked;
 	}
 	else
 	{
-		pBgBlockSet = m_pBlockUnchecked;
-		pIconBlockSet = m_pIconUnchecked;
+		pBgBlockset = m_pBlockUnchecked;
+		pIconBlockset = m_pIconUnchecked;
 	}
 
 	// Get block for background
 
 	WgBlock			bgBlock;
 
-	if( pBgBlockSet )
-		bgBlock = pBgBlockSet->GetBlock(mode,_canvas);
+	if( pBgBlockset )
+		bgBlock = pBgBlockset->GetBlock(mode,_canvas);
 
 	// Blit background
 
@@ -336,14 +336,14 @@ void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	// Get the content rect and icon rect
 
 	WgRect contentRect	= bgBlock.ContentRect(_canvas);
-	WgRect iconRect		= _getIconRect( contentRect, pIconBlockSet );
+	WgRect iconRect		= _getIconRect( contentRect, pIconBlockset );
 
 	// Get block for icon
 
 	WgBlock		iconBlock;
 
-	if( pIconBlockSet )
-		iconBlock = pIconBlockSet->GetBlock(mode,iconRect);
+	if( pIconBlockset )
+		iconBlock = pIconBlockset->GetBlock(mode,iconRect);
 
 	// Blit icon
 
@@ -357,8 +357,8 @@ void WgGizmoCheckbox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 		WgRect	textRect = _getTextRect( contentRect, iconRect );
 		m_pText->setMode( mode );
 
-		if( pBgBlockSet )
-			m_text.SetBgBlockColors( pBgBlockSet->TextColors() );
+		if( pBgBlockset )
+			m_text.SetBgBlockColors( pBgBlockset->TextColors() );
 
 
 		pDevice->PrintText( _clip, m_pText, textRect );
@@ -433,9 +433,9 @@ void WgGizmoCheckbox::_iconModified()
 
 bool WgGizmoCheckbox::_markTestTextArea( int _x, int _y )
 {
-	WgBlockSetPtr	pIconBlockSet = m_bChecked?m_pIconChecked:m_pIconUnchecked;
+	WgBlocksetPtr	pIconBlockset = m_bChecked?m_pIconChecked:m_pIconUnchecked;
 
-	WgRect	contentRect = _getTextRect( Size(), _getIconRect( Size(), pIconBlockSet ) );
+	WgRect	contentRect = _getTextRect( Size(), _getIconRect( Size(), pIconBlockset ) );
 
 	if( m_text.CoordToOfs( WgCoord(_x,_y), contentRect ) != -1 )
 		return true;
@@ -460,17 +460,17 @@ bool WgGizmoCheckbox::_onAlphaTest( const WgCoord& ofs )
 
 	// Get blocksets for background and icon
 
-	WgBlockSetPtr	pBgBlockSet, pIconBlockSet;
+	WgBlocksetPtr	pBgBlockset, pIconBlockset;
 
 	if( m_bChecked )
 	{
-		pBgBlockSet = m_pBlockChecked;
-		pIconBlockSet = m_pIconChecked;
+		pBgBlockset = m_pBlockChecked;
+		pIconBlockset = m_pIconChecked;
 	}
 	else
 	{
-		pBgBlockSet = m_pBlockUnchecked;
-		pIconBlockSet = m_pIconUnchecked;
+		pBgBlockset = m_pBlockUnchecked;
+		pIconBlockset = m_pIconUnchecked;
 	}
 
 
@@ -478,7 +478,7 @@ bool WgGizmoCheckbox::_onAlphaTest( const WgCoord& ofs )
 	WgBlock iconBlock;
 
 	WgSize	bgSize		= Size();
-	WgRect	iconRect	= _getIconRect( bgSize, pIconBlockSet );
+	WgRect	iconRect	= _getIconRect( bgSize, pIconBlockset );
 
 	if( m_bChecked )
 	{

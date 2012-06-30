@@ -927,7 +927,7 @@ void WgGfxDevice::_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int
 
 			pText->GetCharAttr( attr, i );
 			pen.SetAttributes(attr);
-			if( !pen.GetGlyphSet() )
+			if( !pen.GetGlyphset() )
 				return;											// Better not to print than to crash...
 
 			// Set tint colors (if changed)
@@ -1054,7 +1054,7 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 
 			pText->GetCharAttr( attr, i );
 			pen.SetAttributes(attr);
-			if( !pen.GetGlyphSet() )
+			if( !pen.GetGlyphset() )
 				return;											// Better not to print than to crash...
 
 			// Set tint colors (if changed)
@@ -1147,7 +1147,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 	selStart = pText->LineColToOffset(startLine, startCol);
 	selEnd = pText->LineColToOffset(endLine,endCol);
 
-	WgTextPropPtr pSelProp = WgTextTool::GetSelectionProperties(pText);
+	WgTextpropPtr pSelProp = WgTextTool::GetSelectionProperties(pText);
 
 	if( selStart != selEnd && pSelProp->IsBgColored() )
 	{
@@ -1294,7 +1294,7 @@ void WgGfxDevice::PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgCha
 			hProp = _pLine[i].PropHandle();
 
 			pen.SetAttributes( attr );
-			if( !pen.GetGlyphSet() )
+			if( !pen.GetGlyphset() )
 				return;											// No glyphset, better to leave than to crash...
 
 			// Set tint colors (if changed)

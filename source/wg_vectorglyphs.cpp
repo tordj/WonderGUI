@@ -740,8 +740,8 @@ WgVectorGlyphs::Glyph::Glyph()
 }
 
 
-WgVectorGlyphs::Glyph::Glyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, WgGlyphSet * pGlyphSet )
-: WgGlyph( advance, kerningIndex, pGlyphSet )
+WgVectorGlyphs::Glyph::Glyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, WgGlyphset * pGlyphset )
+: WgGlyph( advance, kerningIndex, pGlyphset )
 {
 	m_pSlot = 0;
 	m_size = size;
@@ -763,10 +763,10 @@ const WgGlyphBitmap * WgVectorGlyphs::Glyph::GetBitmap()
 {
 	if( !m_pSlot )
 	{
-		m_pSlot = ((WgVectorGlyphs*)m_pGlyphSet)->_generateBitmap( this );
+		m_pSlot = ((WgVectorGlyphs*)m_pGlyphset)->_generateBitmap( this );
 	}
 
-	((WgVectorGlyphs*)m_pGlyphSet)->_touchSlot(m_pSlot);
+	((WgVectorGlyphs*)m_pGlyphset)->_touchSlot(m_pSlot);
 	return &m_pSlot->bitmap;
 }
 

@@ -28,11 +28,11 @@
 #endif
 
 
-class WgGizmoModalLayer;
+class WgGizmoModallayer;
 
 class WgModalHook : public WgHook, protected WgLink
 {
-	friend class WgGizmoModalLayer;
+	friend class WgGizmoModallayer;
 	friend class WgChain<WgModalHook>;
 
 public:
@@ -74,7 +74,7 @@ protected:
 
 	PROTECTED_LINK_METHODS( WgModalHook );
 
-	WgModalHook( WgGizmoModalLayer * pParent );
+	WgModalHook( WgGizmoModallayer * pParent );
 
 	bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 
@@ -87,7 +87,7 @@ protected:
 	WgGizmoContainer * _parent() const;
 
 
-	WgGizmoModalLayer * m_pParent;
+	WgGizmoModallayer * m_pParent;
 
 	WgRect			m_realGeo;			// Gizmos geo relative parent
 
@@ -100,18 +100,18 @@ protected:
 
 
 
-class WgGizmoModalLayer : public WgGizmoContainer
+class WgGizmoModallayer : public WgGizmoContainer
 {
 	friend class BaseHook;
 	friend class WgModalHook;
 
 public:
-	WgGizmoModalLayer();
-	~WgGizmoModalLayer();
+	WgGizmoModallayer();
+	~WgGizmoModallayer();
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
-	virtual WgGizmo * NewOfMyType() const { return new WgGizmoModalLayer(); };
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoModallayer(); };
 
 
 	WgHook *	SetBase( WgGizmo * pGizmo );
@@ -151,7 +151,7 @@ private:
 
 	class BaseHook : public WgHook
 	{
-		friend class WgGizmoModalLayer;
+		friend class WgGizmoModallayer;
 
 	public:
 		// Standard Hook methods
@@ -163,10 +163,10 @@ private:
 		WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
 		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		WgGizmoModalLayer* Parent() const { return m_pParent; }
+		WgGizmoModallayer* Parent() const { return m_pParent; }
 
 	protected:
-		BaseHook( WgGizmoModalLayer * pParent ) : m_pParent(pParent) {}
+		BaseHook( WgGizmoModallayer * pParent ) : m_pParent(pParent) {}
 
 		void		_requestRender();
 		void		_requestRender( const WgRect& rect );
@@ -176,12 +176,12 @@ private:
 		WgHook *	_nextHook() const { return m_pParent->FirstModal(); }
 		WgGizmoParent * _parent() const { return m_pParent; }
 
-		WgGizmoModalLayer * 	m_pParent;
+		WgGizmoModallayer * 	m_pParent;
 		WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any modal was shown.
 	};
 
 
-	WgGizmoModalLayer *		_getModalLayer() const { return const_cast<WgGizmoModalLayer*>(this); }
+	WgGizmoModallayer *		_getModalLayer() const { return const_cast<WgGizmoModallayer*>(this); }
 
 
 	void			_updateKeyboardFocus();

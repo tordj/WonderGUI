@@ -52,16 +52,16 @@ public:
 	int				MinTileWidth() const { return m_minTileSize.w; }
 	int				MinTileHeight() const { return m_minTileSize.h; }
 
-	void			SetTileBlocks( const WgBlockSetPtr& pBlocks ) { SetTileBlocks(pBlocks,pBlocks); }
-	void			SetTileBlocks( const WgBlockSetPtr& pOddBlocks, const WgBlockSetPtr& pEvenBlocks );
-	WgBlockSetPtr	OddTileBlocks() const { return m_pTileBlocks[0]; }
-	WgBlockSetPtr	EvenTileBlocks() const { return m_pTileBlocks[1]; }
+	void			SetTileBlocks( const WgBlocksetPtr& pBlocks ) { SetTileBlocks(pBlocks,pBlocks); }
+	void			SetTileBlocks( const WgBlocksetPtr& pOddBlocks, const WgBlocksetPtr& pEvenBlocks );
+	WgBlocksetPtr	OddTileBlocks() const { return m_pTileBlocks[0]; }
+	WgBlocksetPtr	EvenTileBlocks() const { return m_pTileBlocks[1]; }
 	void			RemoveTileBlocks();
 
-	void			SetTileColors( const WgColorSetPtr& pColors ) { SetTileColors(pColors,pColors); }
-	void			SetTileColors( const WgColorSetPtr& pOddColors, const WgColorSetPtr& pEvenColors );
-	WgColorSetPtr	OddTileColors() const { return m_pTileColors[0]; }
-	WgColorSetPtr	EvenTileColors() const { return m_pTileColors[1]; }
+	void			SetTileColors( const WgColorsetPtr& pColors ) { SetTileColors(pColors,pColors); }
+	void			SetTileColors( const WgColorsetPtr& pOddColors, const WgColorsetPtr& pEvenColors );
+	WgColorsetPtr	OddTileColors() const { return m_pTileColors[0]; }
+	WgColorsetPtr	EvenTileColors() const { return m_pTileColors[1]; }
 	void			RemoveTileColors();
 
 protected:
@@ -71,8 +71,8 @@ protected:
 	void			_renderTile( WgGfxDevice * pDevice, const WgRect& clip, const WgRect& dest, int tileNb, WgMode mode );
 	void			_cloneContent( const WgTileHolder * _pOrg );
 
-	WgColorSetPtr 	m_pTileColors[2];
-	WgBlockSetPtr	m_pTileBlocks[2];
+	WgColorsetPtr 	m_pTileColors[2];
+	WgBlocksetPtr	m_pTileBlocks[2];
 
 	WgSize			m_minTileSize;			// Set minimum size of a tile.
 };

@@ -53,7 +53,7 @@ WgMenuEntry::WgMenuEntry() : WgMenuItem(ENTRY)
 	m_id			= 0;
 }
 
-WgMenuEntry::WgMenuEntry(	const WgString& text, const WgString& helpText, const WgBlockSetPtr& pIcon, Uint16 navKey,
+WgMenuEntry::WgMenuEntry(	const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey,
 							WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText ):WgMenuItem(ENTRY)
 {
 
@@ -83,7 +83,7 @@ void WgMenuEntry::SetHelpText(const WgString& helpText)
 	Modified();
 }
 
-void WgMenuEntry::SetIcon(const WgBlockSetPtr& pIcon)
+void WgMenuEntry::SetIcon(const WgBlocksetPtr& pIcon)
 {
 	m_pIcon		= pIcon;
 	Modified();
@@ -192,7 +192,7 @@ WgMenuSubMenu::WgMenuSubMenu()
 
 
 WgMenuSubMenu::WgMenuSubMenu(	const WgString& text, const WgString& helpText,
-								const WgBlockSetPtr& pIcon, Uint16 navKey, WgGizmoMenu * pSubMenu,
+								const WgBlocksetPtr& pIcon, Uint16 navKey, WgGizmoMenu * pSubMenu,
 								WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText )
 						:WgMenuEntry( text, helpText, pIcon, navKey, accelModif, accelKey, accelText )
 {

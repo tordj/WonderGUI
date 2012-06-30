@@ -25,7 +25,7 @@
 #include <wg_patches.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"MenuLayer"};
+static const char	c_gizmoType[] = {"Menulayer"};
 
 //_____________________________________________________________________________
 WgCoord WgMenuHook::ScreenPos() const
@@ -46,7 +46,7 @@ WgGizmoContainer* WgMenuHook::Parent() const
 }
 
 //_____________________________________________________________________________
-WgMenuHook::WgMenuHook( WgGizmoMenuLayer * pParent, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
+WgMenuHook::WgMenuHook( WgGizmoMenulayer * pParent, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
 {
 	m_pParent 		= pParent;
 	m_launcherGeo	= launcherGeo;
@@ -275,34 +275,34 @@ bool WgMenuHook::_updateGeo()
 
 
 //_____________________________________________________________________________
-void WgGizmoMenuLayer::BaseHook::_requestRender()
+void WgGizmoMenulayer::BaseHook::_requestRender()
 {
 	if( !m_bHidden )
 		m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
 }
 
 //_____________________________________________________________________________
-void WgGizmoMenuLayer::BaseHook::_requestRender( const WgRect& rect )
+void WgGizmoMenulayer::BaseHook::_requestRender( const WgRect& rect )
 {
 	if( !m_bHidden )
 		m_pParent->_onRequestRender( rect, 0 );
 }
 
 //_____________________________________________________________________________
-void WgGizmoMenuLayer::BaseHook::_requestResize()
+void WgGizmoMenulayer::BaseHook::_requestResize()
 {
 	m_pParent->_requestResize();					// Just forward to our parent
 }
 
 //____ Constructor ____________________________________________________________
 
-WgGizmoMenuLayer::WgGizmoMenuLayer() : m_baseHook(this)
+WgGizmoMenulayer::WgGizmoMenulayer() : m_baseHook(this)
 {
 }
 
 //____ Destructor _____________________________________________________________
 
-WgGizmoMenuLayer::~WgGizmoMenuLayer()
+WgGizmoMenulayer::~WgGizmoMenulayer()
 {
 	// In contrast to all other containers we only delete our base child on exit.
 	// Menus don't belong to us, we just display them, so they are not ours to delete.
@@ -317,21 +317,21 @@ WgGizmoMenuLayer::~WgGizmoMenuLayer()
 
 //____ Type() _________________________________________________________________
 
-const char *WgGizmoMenuLayer::Type( void ) const
+const char *WgGizmoMenulayer::Type( void ) const
 {
 	return GetMyType();
 }
 
 //____ GetMyType() ____________________________________________________________
 
-const char * WgGizmoMenuLayer::GetMyType()
+const char * WgGizmoMenulayer::GetMyType()
 {
 	return c_gizmoType;
 }
 
 //____ SetBase() _________________________________________________________
 
-WgHook * WgGizmoMenuLayer::SetBase( WgGizmo * pGizmo )
+WgHook * WgGizmoMenulayer::SetBase( WgGizmo * pGizmo )
 {
 	// Replace Gizmo
 
@@ -350,14 +350,14 @@ WgHook * WgGizmoMenuLayer::SetBase( WgGizmo * pGizmo )
 
 //____ Base() ____________________________________________________________
 
-WgGizmo * WgGizmoMenuLayer::Base()
+WgGizmo * WgGizmoMenulayer::Base()
 {
 	return m_baseHook.Gizmo();
 }
 
 //____ DeleteBase() ______________________________________________________
 
-bool WgGizmoMenuLayer::DeleteBase()
+bool WgGizmoMenulayer::DeleteBase()
 {
 	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
 	if( pGizmo )
@@ -374,7 +374,7 @@ bool WgGizmoMenuLayer::DeleteBase()
 
 //____ ReleaseBase() _____________________________________________________
 
-WgGizmo * WgGizmoMenuLayer::ReleaseBase()
+WgGizmo * WgGizmoMenulayer::ReleaseBase()
 {
 	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
 	if( pGizmo )
@@ -389,7 +389,7 @@ WgGizmo * WgGizmoMenuLayer::ReleaseBase()
 
 //____ OpenMenu() _______________________________________________________________
 
-WgMenuHook * WgGizmoMenuLayer::OpenMenu( WgGizmo * pMenu, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
+WgMenuHook * WgGizmoMenulayer::OpenMenu( WgGizmo * pMenu, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
 {
 	// Create Hook and fill in members.
 
@@ -404,7 +404,7 @@ WgMenuHook * WgGizmoMenuLayer::OpenMenu( WgGizmo * pMenu, const WgRect& launcher
 
 //____ CloseAllMenus() ________________________________________________
 
-bool WgGizmoMenuLayer::CloseAllMenus()
+bool WgGizmoMenulayer::CloseAllMenus()
 {
 	WgMenuHook * pHook = m_menuHooks.First();
 	while( pHook )
@@ -422,7 +422,7 @@ bool WgGizmoMenuLayer::CloseAllMenus()
 
 //____ CloseMenu() _________________________________________________________
 
-bool WgGizmoMenuLayer::CloseMenu( WgGizmo * pGizmo )
+bool WgGizmoMenulayer::CloseMenu( WgGizmo * pGizmo )
 {
 	if( !pGizmo || pGizmo->Parent() != this || pGizmo == m_baseHook.Gizmo() )
 		return false;
@@ -445,21 +445,21 @@ bool WgGizmoMenuLayer::CloseMenu( WgGizmo * pGizmo )
 
 //____ FirstMenu() ______________________________________________________
 
-WgMenuHook * WgGizmoMenuLayer::FirstMenu()
+WgMenuHook * WgGizmoMenulayer::FirstMenu()
 {
 	return m_menuHooks.First();
 }
 
 //____ LastMenu() _______________________________________________________
 
-WgMenuHook * WgGizmoMenuLayer::LastMenu()
+WgMenuHook * WgGizmoMenulayer::LastMenu()
 {
 	return m_menuHooks.Last();
 }
 
 //____ HeightForWidth() _______________________________________________________
 
-int WgGizmoMenuLayer::HeightForWidth( int width ) const
+int WgGizmoMenulayer::HeightForWidth( int width ) const
 {
 	if( m_baseHook.Gizmo() )
 		return m_baseHook.Gizmo()->HeightForWidth( width );
@@ -469,7 +469,7 @@ int WgGizmoMenuLayer::HeightForWidth( int width ) const
 
 //____ WidthForHeight() _______________________________________________________
 
-int WgGizmoMenuLayer::WidthForHeight( int height ) const
+int WgGizmoMenulayer::WidthForHeight( int height ) const
 {
 	if( m_baseHook.Gizmo() )
 		return m_baseHook.Gizmo()->WidthForHeight( height );
@@ -479,7 +479,7 @@ int WgGizmoMenuLayer::WidthForHeight( int height ) const
 
 //____ DefaultSize() _____________________________________________________________
 
-WgSize WgGizmoMenuLayer::DefaultSize() const
+WgSize WgGizmoMenulayer::DefaultSize() const
 {
 	if( m_baseHook.Gizmo() )
 		return m_baseHook.Gizmo()->DefaultSize();
@@ -489,7 +489,7 @@ WgSize WgGizmoMenuLayer::DefaultSize() const
 
 //____ FindGizmo() ____________________________________________________________
 
-WgGizmo *  WgGizmoMenuLayer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
+WgGizmo *  WgGizmoMenulayer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 {
 	// MenuLayer has its own FindGizmo() method since we need special treatment of
 	// searchmode ACTION_TARGET when a menu is open.
@@ -529,7 +529,7 @@ WgGizmo *  WgGizmoMenuLayer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 //____ _onRequestRender() _____________________________________________________
 
-void WgGizmoMenuLayer::_onRequestRender( const WgRect& rect, const WgMenuHook * pHook )
+void WgGizmoMenulayer::_onRequestRender( const WgRect& rect, const WgMenuHook * pHook )
 {
 	if( pHook && pHook->m_bHidden )
 		return;
@@ -565,7 +565,7 @@ void WgGizmoMenuLayer::_onRequestRender( const WgRect& rect, const WgMenuHook * 
 
 //____ _onNewSize() ___________________________________________________________
 
-void WgGizmoMenuLayer::_onNewSize( const WgSize& sz )
+void WgGizmoMenulayer::_onNewSize( const WgSize& sz )
 {
 	m_size = sz;
 
@@ -577,13 +577,13 @@ void WgGizmoMenuLayer::_onNewSize( const WgSize& sz )
 
 //____ _onCloneContent() ______________________________________________________
 
-void WgGizmoMenuLayer::_onCloneContent( const WgGizmo * _pOrg )
+void WgGizmoMenulayer::_onCloneContent( const WgGizmo * _pOrg )
 {
 }
 
 //____ _onEvent() ______________________________________________________________
 
-void WgGizmoMenuLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgGizmoMenulayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	switch( _pEvent->Type() )
 	{
@@ -627,7 +627,7 @@ void WgGizmoMenuLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler 
 
 //____ _stealKeyboardFocus() _________________________________________________
 
-void WgGizmoMenuLayer::_stealKeyboardFocus()
+void WgGizmoMenulayer::_stealKeyboardFocus()
 {
 	// Get event handler, verify that we have a root
 
@@ -657,7 +657,7 @@ void WgGizmoMenuLayer::_stealKeyboardFocus()
 
 //____ _restoreKeyboardFocus() _________________________________________________
 
-void WgGizmoMenuLayer::_restoreKeyboardFocus()
+void WgGizmoMenulayer::_restoreKeyboardFocus()
 {
 	// Get event handler, verify that we have a root
 
@@ -679,7 +679,7 @@ void WgGizmoMenuLayer::_restoreKeyboardFocus()
 
 //____ _firstHook() ___________________________________________________________
 
-WgHook* WgGizmoMenuLayer::_firstHook() const
+WgHook* WgGizmoMenulayer::_firstHook() const
 {
 	if( m_baseHook.Gizmo() )
 		return const_cast<BaseHook*>(&m_baseHook);
@@ -689,14 +689,14 @@ WgHook* WgGizmoMenuLayer::_firstHook() const
 
 //____ _lastHook() ____________________________________________________________
 
-WgHook* WgGizmoMenuLayer::_lastHook() const
+WgHook* WgGizmoMenulayer::_lastHook() const
 {
 	return m_menuHooks.Last();
 }
 
 //____ _firstHookWithGeo() _____________________________________________________
 
-WgHook * WgGizmoMenuLayer::_firstHookWithGeo( WgRect& geo ) const
+WgHook * WgGizmoMenulayer::_firstHookWithGeo( WgRect& geo ) const
 {
 	if( m_baseHook.Gizmo() )
 	{
@@ -715,7 +715,7 @@ WgHook * WgGizmoMenuLayer::_firstHookWithGeo( WgRect& geo ) const
 
 //____ _nextHookWithGeo() _______________________________________________________
 
-WgHook * WgGizmoMenuLayer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook * WgGizmoMenulayer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	WgHook * p = pHook->Next();
 	if( p )
@@ -726,7 +726,7 @@ WgHook * WgGizmoMenuLayer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 //____ _lastHookWithGeo() _____________________________________________________
 
-WgHook * WgGizmoMenuLayer::_lastHookWithGeo( WgRect& geo ) const
+WgHook * WgGizmoMenulayer::_lastHookWithGeo( WgRect& geo ) const
 {
 	WgMenuHook * p = m_menuHooks.Last();
 	if( p )
@@ -745,7 +745,7 @@ WgHook * WgGizmoMenuLayer::_lastHookWithGeo( WgRect& geo ) const
 
 //____ _prevHookWithGeo() _______________________________________________________
 
-WgHook * WgGizmoMenuLayer::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook * WgGizmoMenulayer::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	WgHook * p = pHook->Prev();
 	if( p )

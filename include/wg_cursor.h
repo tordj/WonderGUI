@@ -36,14 +36,14 @@
 #endif
 
 //class WgGfxAnim;
-class WgGlyphSet;
+class WgGlyphset;
 
 
 //____ WgCursor _______________________________________________________________
 
 class WgCursor
 {
-	friend class WgGlyphSet;
+	friend class WgGlyphset;
 
 public:
 	WgCursor();

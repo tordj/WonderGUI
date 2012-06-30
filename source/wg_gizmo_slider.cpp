@@ -160,8 +160,8 @@ bool WgGizmoSlider::SetSliderSize( float _size )
 
 //____ SetSource() ____________________________________________________________
 
-bool WgGizmoSlider::SetSource( WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx,
-							 WgBlockSetPtr pBtnBwdGfx, WgBlockSetPtr pBtnFwdGfx )
+bool WgGizmoSlider::SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx,
+							 WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx )
 {
 	m_pBgGfx		= pBgGfx;
 	m_pBarGfx		= pBarGfx;

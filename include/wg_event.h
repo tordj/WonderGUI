@@ -54,7 +54,7 @@ class WgGizmoValue;
 class WgGizmoEditvalue;
 class WgGizmoSlider;
 class WgGizmoMenu;
-class WgGizmoModalLayer;
+class WgGizmoModallayer;
 class WgGizmoTable;
 class WgInterfaceEditText;
 class WgText;
@@ -504,21 +504,21 @@ namespace WgEvent
 
 	class ModalMoveOutside : public Event
 	{
-		friend class ::WgGizmoModalLayer;
+		friend class ::WgGizmoModallayer;
 	protected:
 		ModalMoveOutside( WgGizmo * pGizmo );
 	};
 
 	class ModalBlockedPress : public MouseButtonEvent
 	{
-		friend class ::WgGizmoModalLayer;
+		friend class ::WgGizmoModallayer;
 	protected:
 		ModalBlockedPress( int button, WgGizmo * pModalGizmo );
 	};
 
 	class ModalBlockedRelease : public MouseButtonEvent
 	{
-		friend class ::WgGizmoModalLayer;
+		friend class ::WgGizmoModallayer;
 	protected:
 		ModalBlockedRelease( int button, WgGizmo * pModalGizmo );
 	};

@@ -65,9 +65,9 @@ class WgValueFormat
 		void setSuffix( const WgCharSeq& seq );
 		inline const WgString& getSuffix() const { return suffix; }
 
-		inline void setTextProperties( WgTextPropPtr& _pProperties ) { pTextProperties = _pProperties; bSetTextProp = true; }
-		inline void clearTextProperties() { bSetTextProp = false; }
-		inline WgTextPropPtr getTextProperties() const { return pTextProperties; }
+		inline void setTextProperties( WgTextpropPtr& _pProperties ) { pTextProperties = _pProperties; bSetTextprop = true; }
+		inline void clearTextProperties() { bSetTextprop = false; }
+		inline WgTextpropPtr getTextProperties() const { return pTextProperties; }
 
 		inline void setNoDecimalThreshold( int maxValue ) { noDecimalThreshold = maxValue; }
 		inline void clearNoDecimalThreshold() { noDecimalThreshold = 0; }
@@ -106,13 +106,13 @@ class WgValueFormat
 		Uint8		grouping;			/// Number of integers to group together. 0 = no grouping
 		Uint16		separator;			/// Character to separate integer groups with.
 		Uint16		period;				/// Character used for separating integer and decimal part
-		WgString	prefix;				/// Characters preceding the value, like $, £ or similar.
+		WgString	prefix;				/// Characters preceding the value, like $, Â£ or similar.
 		WgString	suffix;				/// Characters following the value.
 		bool		bPlus;				/// Set if a plus sign should be preceding positive value.
 		bool		bZeroIsNegative;	/// Set if zero value should be deemed negative and be preceeded by minus.
 		bool		bForcePeriod;		/// Display period even if there are no decimals?
-		WgTextPropPtr pTextProperties;	/// Text properties for generated text.
-		bool		bSetTextProp;		/// Set if properties should be set for text.
+	WgTextpropPtr 	pTextProperties;	/// Text properties for generated text.
+		bool		bSetTextprop;		/// Set if properties should be set for text.
 		bool		bForceDecimals;		/// Display decimals even if they are 0
 		int			noDecimalThreshold;	/// If the value is >= this, no decimals will be displayed.
 		int			scale;				/// Value is scaled by this value before being formatted.
@@ -142,7 +142,7 @@ class WgValueFormat
 			* Support hex-values (choose upper/lower).
 			* Setting for round off or truncate decimals.
 
-			* Skip bForcePeriod, bZeroIsNegative, bSetTextProp and pTextProperties.
+			* Skip bForcePeriod, bZeroIsNegative, bSetTextprop and pTextProperties.
 			* Replace noDecimalTreshold with "value digits"?
 */
 

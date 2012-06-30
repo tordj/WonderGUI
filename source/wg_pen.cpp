@@ -99,7 +99,7 @@ void WgPen::_onAttrChanged()
 	else
 		m_size = m_wantedSize;
 
-	m_pGlyphs = m_pFont->GetGlyphSet( m_style, m_size );
+	m_pGlyphs = m_pFont->GetGlyphset( m_style, m_size );
 }
 
 //____ SetAttributes() ________________________________________________________
@@ -204,7 +204,7 @@ bool WgPen::SetChar( Uint32 chr )
 		return false;
 	}
 
-	// Get the glyph from our GlyphSet.
+	// Get the glyph from our Glyphset.
 
 	if( !m_pGlyphs )
 	{
@@ -212,7 +212,7 @@ bool WgPen::SetChar( Uint32 chr )
 		return false;
 	}
 
-	// First we try to get the glyph from our GlyphSet.
+	// First we try to get the glyph from our Glyphset.
 
 	WgGlyphPtr p = m_pGlyphs->GetGlyph( chr, m_size );
 	if( !p )
@@ -244,7 +244,7 @@ bool WgPen::SetChar( Uint32 chr )
 		}
 	}
 
-	if( m_pPrevGlyph->GlyphSet() != p->GlyphSet() )
+	if( m_pPrevGlyph->Glyphset() != p->Glyphset() )
 		m_pPrevGlyph = &m_dummyGlyph; // We can't do kerning between glyphs from different glyphsets.
 
 	m_pGlyph = p;

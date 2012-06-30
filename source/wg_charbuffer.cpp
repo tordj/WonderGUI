@@ -343,7 +343,7 @@ Uint32 WgCharBuffer::PushFront( const WgChar& character )
 	*((Uint32*)_ptr(0)) = character.all;
 
 	if( character.properties )
-		WgTextPropManager::IncRef(character.properties, 1 );
+		WgTextpropManager::IncRef(character.properties, 1 );
 
 	return 1;
 }
@@ -429,7 +429,7 @@ Uint32 WgCharBuffer::PushBack( const WgChar& character )
 	*((Uint32*)_ptr( m_pHead->m_len - 1)) = character.all;
 
 	if( character.properties )
-		WgTextPropManager::IncRef(character.properties, 1 );
+		WgTextpropManager::IncRef(character.properties, 1 );
 
 	return 1;
 }
@@ -1054,7 +1054,7 @@ void WgCharBuffer::SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len )
 /// properties for the characters, like font, color, style, and underlined.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetProperties( const WgTextPropPtr& pProp, Uint32 ofs, Uint32 len  )
+void WgCharBuffer::SetProperties( const WgTextpropPtr& pProp, Uint32 ofs, Uint32 len  )
 {
 	if( ofs >= m_pHead->m_len )
 		return;

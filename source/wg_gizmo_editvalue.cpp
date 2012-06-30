@@ -33,7 +33,7 @@
 #include <wg_event.h>
 #include <wg_eventhandler.h>
 
-static const char Wdg_Type[] = {"EditValue"};
+static const char Wdg_Type[] = {"Editvalue"};
 
 
 //____ WgGizmoEditvalue() _________________________________________________________________
@@ -85,9 +85,9 @@ WgColor WgGizmoEditvalue::GetTextColor() const
 	return m_text.getColor(WG_MODE_NORMAL);
 }
 
-//____ SetTextProp() __________________________________________________________
+//____ SetTextprop() __________________________________________________________
 
-bool WgGizmoEditvalue::SetTextProp( const WgTextPropPtr& _pProp )
+bool WgGizmoEditvalue::SetTextprop( const WgTextpropPtr& _pProp )
 {
 	if( _pProp != m_text.getProperties() )
 	{
@@ -99,7 +99,7 @@ bool WgGizmoEditvalue::SetTextProp( const WgTextPropPtr& _pProp )
 	return true;
 }
 
-WgTextPropPtr WgGizmoEditvalue::GetTextProp( ) const
+WgTextpropPtr WgGizmoEditvalue::GetTextprop( ) const
 {
 	return m_text.getProperties();
 }
@@ -191,7 +191,7 @@ WgSize WgGizmoEditvalue::DefaultSize() const
 	WgTextAttr	attr;
 	m_text.GetBaseAttr( attr );
 	if( attr.pFont )
-		sz.w = attr.pFont->GetGlyphSet(attr.style,attr.size)->GetMaxGlyphAdvance(attr.size)*5;	// By default fit at least 5 characters
+		sz.w = attr.pFont->GetGlyphset(attr.style,attr.size)->GetMaxGlyphAdvance(attr.size)*5;	// By default fit at least 5 characters
 
 	return sz;
 }

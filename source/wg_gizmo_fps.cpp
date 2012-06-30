@@ -74,7 +74,7 @@ const char * WgGizmoFps::GetMyType( void )
 
 //____ SetTextProperties() ____________________________________________________
 
-void WgGizmoFps::SetTextProperties( const WgTextPropPtr& pProp )
+void WgGizmoFps::SetTextProperties( const WgTextpropPtr& pProp )
 {
 	m_pProp = pProp;
 	_requestRender();
@@ -140,7 +140,7 @@ void WgGizmoFps::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 	WgPen	pen( pDevice, _canvas, _clip );
 	WgTextAttr attr;
 
-	WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextProp());
+	WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop());
 	WgTextTool::AddPropAttributes(attr, m_pProp);
 
 	pen.SetAttributes( attr );

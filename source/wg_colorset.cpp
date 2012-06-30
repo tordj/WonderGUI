@@ -23,14 +23,14 @@
 #include <wg_colorset.h>
 
 
-WgColorSetPtr WgColorSet::Create()
+WgColorsetPtr WgColorset::Create()
 {
-	return WgColorSetPtr(new WgColorSet());
+	return WgColorsetPtr(new WgColorset());
 }
 
-WgColorSetPtr WgColorSet::Create( WgColor allModes )
+WgColorsetPtr WgColorset::Create( WgColor allModes )
 {
-	WgColorSet * p = new WgColorSet();
+	WgColorset * p = new WgColorset();
 
 	p->m_color[WG_MODE_NORMAL] = allModes;
 	p->m_color[WG_MODE_MARKED] = allModes;
@@ -38,12 +38,12 @@ WgColorSetPtr WgColorSet::Create( WgColor allModes )
 	p->m_color[WG_MODE_DISABLED] = allModes;
 	p->m_color[WG_MODE_SPECIAL] = allModes;
 
-	return WgColorSetPtr(p);
+	return WgColorsetPtr(p);
 }
 
-WgColorSetPtr  WgColorSet::Create( WgColor normal, WgColor over, WgColor selected, WgColor disabled, WgColor special )
+WgColorsetPtr  WgColorset::Create( WgColor normal, WgColor over, WgColor selected, WgColor disabled, WgColor special )
 {
-	WgColorSet * p = new WgColorSet();
+	WgColorset * p = new WgColorset();
 
 	p->m_color[WG_MODE_NORMAL] = normal;
 	p->m_color[WG_MODE_MARKED] = over;
@@ -51,10 +51,10 @@ WgColorSetPtr  WgColorSet::Create( WgColor normal, WgColor over, WgColor selecte
 	p->m_color[WG_MODE_DISABLED] = disabled;
 	p->m_color[WG_MODE_SPECIAL] = special;
 
-	return WgColorSetPtr(p);
+	return WgColorsetPtr(p);
 }
 
-void WgColorSet::SetColor( WgColor color, WgMode mode )
+void WgColorset::SetColor( WgColor color, WgMode mode )
 { 
 	if( mode == WG_MODE_ALL )
 	{

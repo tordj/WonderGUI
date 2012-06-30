@@ -98,7 +98,7 @@ const char * WgGizmoMenu::GetMyType( void )
 
 //____ SetBgSource() __________________________________________________________
 
-bool WgGizmoMenu::SetBgSource( const WgBlockSetPtr pBgGfx, Uint8 iconFieldWidth, Uint8 arrowFieldWidth )
+bool WgGizmoMenu::SetBgSource( const WgBlocksetPtr pBgGfx, Uint8 iconFieldWidth, Uint8 arrowFieldWidth )
 {
 	m_pBgGfx			= pBgGfx;
 
@@ -113,9 +113,9 @@ bool WgGizmoMenu::SetBgSource( const WgBlockSetPtr pBgGfx, Uint8 iconFieldWidth,
 
 //____ SetSeparatorSource() ___________________________________________________
 
-bool WgGizmoMenu::SetSeparatorSource( const WgBlockSetPtr pGfx, const WgBorders& borders )
+bool WgGizmoMenu::SetSeparatorSource( const WgBlocksetPtr pGfx, const WgBorders& borders )
 {
-	if( pGfx == WgBlockSetPtr(0) )
+	if( pGfx == WgBlocksetPtr(0) )
 		return false;
 
 	m_pSepGfx		= pGfx;
@@ -143,7 +143,7 @@ bool WgGizmoMenu::SetArrowSource( WgGfxAnim * pAnim )
 
 //____ SetTextProperties() _____________________________________________________
 
-bool WgGizmoMenu::SetTextProperties( const WgTextPropPtr& pEntryProp, const WgTextPropPtr& pKeyAccelProp )
+bool WgGizmoMenu::SetTextProperties( const WgTextpropPtr& pEntryProp, const WgTextpropPtr& pKeyAccelProp )
 {
 	m_pEntryProp 	= pEntryProp;
 	m_pKeyAccelProp = pKeyAccelProp;
@@ -172,20 +172,20 @@ void WgGizmoMenu::_refreshEntryHeight()
 {
 		WgPen		pen;
 		WgTextAttr	attr;
-		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL );
+		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_MODE_NORMAL );
 		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_MODE_NORMAL );
 
 		pen.SetAttributes( attr );
 		int	heightNormal	= pen.GetLineSpacing();
 
 		attr.Clear();
-		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextProp(), WG_MODE_MARKED );
+		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_MODE_MARKED );
 		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_MODE_MARKED );
 		pen.SetAttributes( attr );
 		int heightMarked	= pen.GetLineSpacing();
 
 		attr.Clear();
-		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextProp(), WG_MODE_DISABLED );
+		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_MODE_DISABLED );
 		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_MODE_DISABLED );
 		pen.SetAttributes( attr );
 		int heightDisabled	= pen.GetLineSpacing();
@@ -211,7 +211,7 @@ void WgGizmoMenu::_refreshEntryHeight()
 
 //____ SetSliderSource() ______________________________________________________
 
-bool WgGizmoMenu::SetSliderSource(  WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx, WgBlockSetPtr pBtnBwdGfx, WgBlockSetPtr pBtnFwdGfx )
+bool WgGizmoMenu::SetSliderSource(  WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx )
 {
 	m_pSliderBgGfx		= pBgGfx;
 	m_pSliderBarGfx		= pBarGfx;
@@ -242,7 +242,7 @@ bool WgGizmoMenu::SetSliderButtonLayout(  WgGizmoSlider::ButtonLayout layout )
 
 //____ SetCheckBoxSource() ____________________________________________________
 
-bool WgGizmoMenu::SetCheckBoxSource( const WgBlockSetPtr pUnchecked, const WgBlockSetPtr pChecked )
+bool WgGizmoMenu::SetCheckBoxSource( const WgBlocksetPtr pUnchecked, const WgBlocksetPtr pChecked )
 {
 	m_pCbGfxChecked		= pChecked;
 	m_pCbGfxUnchecked	= pUnchecked;
@@ -253,7 +253,7 @@ bool WgGizmoMenu::SetCheckBoxSource( const WgBlockSetPtr pUnchecked, const WgBlo
 
 //____ SetRadioButtonSource() _________________________________________________
 
-bool WgGizmoMenu::SetRadioButtonSource( const WgBlockSetPtr pUnselected, const WgBlockSetPtr pSelected )
+bool WgGizmoMenu::SetRadioButtonSource( const WgBlocksetPtr pUnselected, const WgBlocksetPtr pSelected )
 {
 	m_pRbGfxSelected			= pSelected;
 	m_pRbGfxUnselected			= pUnselected;
@@ -463,10 +463,10 @@ int  WgGizmoMenu::WidthForHeight( int height ) const
 void WgGizmoMenu::_calcEntryMinWidth( WgMenuEntry * pEntry )
 {
 	WgTextAttr	entryAttr;
-	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL );
+	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextprop(), WG_MODE_NORMAL );
 	WgTextTool::AddPropAttributes(entryAttr, m_pEntryProp, WG_MODE_NORMAL);
 	WgTextAttr	accelAttr;
-	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextProp(), WG_MODE_NORMAL );
+	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextprop(), WG_MODE_NORMAL );
 	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_MODE_NORMAL);
 
 	int wNormal = WgTextTool::lineWidth( 0, entryAttr, "  " );
@@ -476,10 +476,10 @@ void WgGizmoMenu::_calcEntryMinWidth( WgMenuEntry * pEntry )
 	wNormal += WgTextTool::lineWidth( 0, accelAttr, WG_MODE_NORMAL, pEntry->GetAccelText().Chars() );
 
 	entryAttr.Clear();
-	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextProp(), WG_MODE_MARKED );
+	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextprop(), WG_MODE_MARKED );
 	WgTextTool::AddPropAttributes(entryAttr, m_pEntryProp, WG_MODE_MARKED);
 	accelAttr.Clear();
-	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextProp(), WG_MODE_MARKED );
+	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextprop(), WG_MODE_MARKED );
 	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_MODE_MARKED);
 
 	wMarked += WgTextTool::lineWidth( 0, entryAttr, WG_MODE_NORMAL, pEntry->GetText().Chars() );
@@ -644,7 +644,7 @@ void WgGizmoMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const 
 				{
 
 					WgTextAttr	attr;
-					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), mode );
+					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), mode );
 					if( m_pBgGfx )
 						WgTextTool::SetAttrColor( attr, m_pBgGfx->TextColors(), mode );
 					WgTextTool::AddPropAttributes( attr, m_pEntryProp, mode );
@@ -660,7 +660,7 @@ void WgGizmoMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const 
 				if( pAccelText->Glyph() != 0 )
 				{
 					WgTextAttr	attr;
-					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextProp(), mode );
+					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), mode );
 					if( m_pBgGfx )
 						WgTextTool::SetAttrColor( attr, m_pBgGfx->TextColors(), mode );
 					WgTextTool::AddPropAttributes( attr, m_pKeyAccelProp, mode );
@@ -680,7 +680,7 @@ void WgGizmoMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const 
 				{
 					case ENTRY:
 					{
-						WgBlockSetPtr pIcon = ((WgMenuEntry*)pItem)->GetIcon();
+						WgBlocksetPtr pIcon = ((WgMenuEntry*)pItem)->GetIcon();
 						if( pIcon )
 						{
 							int w = pIcon->Width();
@@ -703,7 +703,7 @@ void WgGizmoMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const 
 
 					case CHECKBOX:
 					{
-						WgBlockSetPtr	pGfx;
+						WgBlocksetPtr	pGfx;
 
 						if( ((WgMenuCheckBox*)pItem)->IsChecked() )
 							pGfx = m_pCbGfxChecked;
@@ -724,7 +724,7 @@ void WgGizmoMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const 
 					break;
 					case RADIOBUTTON:
 					{
-						WgBlockSetPtr	pGfx;
+						WgBlocksetPtr	pGfx;
 
 						if( ((WgMenuRadioButton*)pItem)->IsSelected() )
 							pGfx = m_pRbGfxSelected;
@@ -1123,7 +1123,7 @@ void WgGizmoMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 void WgGizmoMenu::_openSubMenu( WgGizmoMenu * pMenu, const WgRect& launcherGeo, WgOrientation orientation )
 {
-	WgGizmoMenuLayer * pLayer = 0;
+	WgGizmoMenulayer * pLayer = 0;
 
 	if( Parent() )
 		pLayer = Parent()->_getMenuLayer();
@@ -1139,7 +1139,7 @@ void WgGizmoMenu::_openSubMenu( WgGizmoMenu * pMenu, const WgRect& launcherGeo, 
 
 void WgGizmoMenu::_itemSelected()
 {
-	WgGizmoMenuLayer * pLayer = 0;
+	WgGizmoMenulayer * pLayer = 0;
 
 	if( Parent() )
 		pLayer = Parent()->_getMenuLayer();

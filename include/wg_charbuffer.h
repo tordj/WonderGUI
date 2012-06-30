@@ -182,8 +182,8 @@ public:
 	inline void			SetGlyphs( Uint16 glyph );
 	void			    SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len );
 
-	inline void			SetProperties( const WgTextPropPtr& pProp );
-	void				SetProperties( const WgTextPropPtr& pProp, Uint32 ofs, Uint32 len);
+	inline void			SetProperties( const WgTextpropPtr& pProp );
+	void				SetProperties( const WgTextpropPtr& pProp, Uint32 ofs, Uint32 len);
 
 	inline void			SetFont( WgFont * pFont );
 	void				SetFont( WgFont * pFont, Uint32 ofs, Uint32 len );
@@ -453,7 +453,7 @@ void WgCharBuffer::SetGlyphs( Uint16 glyph )
 /// By setting the properties you erase all previous settings of individual
 /// properties for the characters, like font, color, style and underlined.
 
-void WgCharBuffer::SetProperties( const WgTextPropPtr& pProp )
+void WgCharBuffer::SetProperties( const WgTextpropPtr& pProp )
 {
 	SetProperties( pProp, 0, INT_MAX );
 }

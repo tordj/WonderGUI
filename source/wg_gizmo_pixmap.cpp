@@ -57,11 +57,11 @@ const char * WgGizmoPixmap::GetMyType()
 
 //____ SetSource() _____________________________________________________________
 
-void WgGizmoPixmap::SetSource( const WgBlockSetPtr& pBlockSet )
+void WgGizmoPixmap::SetSource( const WgBlocksetPtr& pBlockset )
 {
-	if( m_pGfx != pBlockSet )
+	if( m_pGfx != pBlockset )
 	{
-		m_pGfx = pBlockSet;
+		m_pGfx = pBlockset;
 
 		if( m_pGfx && m_pGfx->IsOpaque() )
 			m_bOpaque = true;

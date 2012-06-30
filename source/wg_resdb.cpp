@@ -51,15 +51,15 @@ void WgResDB::Clear()
 
 	m_mapColors.clear();
 	m_mapSurfaces.clear();
-	m_mapGlyphSets.clear();
+	m_mapGlyphsets.clear();
 	m_mapFonts.clear();
 	m_mapAnims.clear();
 	m_mapCursors.clear();
 	m_mapColors.clear();
-	m_mapColorSets.clear();
-	m_mapTextProps.clear();
+	m_mapColorsets.clear();
+	m_mapTextprops.clear();
 	m_mapLegoSources.clear();
-	m_mapBlockSets.clear();
+	m_mapBlocksets.clear();
 	m_mapGizmos.clear();
 	m_mapMenuItems.clear();
 	m_mapTabs.clear();
@@ -74,12 +74,12 @@ void WgResDB::Clear()
 	// with smartpointers.
 
 	m_surfaces.Clear();
-	m_glyphSets.Clear();
+	m_glyphsets.Clear();
 	m_fonts.Clear();
 	m_anims.Clear();
 	m_cursors.Clear();
 	m_textProps.Clear();
-	m_colorSets.Clear();
+	m_colorsets.Clear();
 	m_colors.Clear();
 	m_legos.Clear();
 	m_blockSets.Clear();
@@ -131,7 +131,7 @@ std::string	WgResDB::GenerateName( const WgSurface * data )
 	return std::string("_surf__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgGlyphSet * data )
+std::string	WgResDB::GenerateName( const WgGlyphset * data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -166,7 +166,7 @@ std::string	WgResDB::GenerateName( const WgColor data )
 	return std::string("_color__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgColorSetPtr& data )
+std::string	WgResDB::GenerateName( const WgColorsetPtr& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -174,14 +174,14 @@ std::string	WgResDB::GenerateName( const WgColorSetPtr& data )
 }
 
 
-std::string	WgResDB::GenerateName( const WgTextPropPtr& data )
+std::string	WgResDB::GenerateName( const WgTextpropPtr& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_textprop__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgBlockSetPtr& data )
+std::string	WgResDB::GenerateName( const WgBlocksetPtr& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -294,34 +294,34 @@ bool WgResDB::AddSurface( const std::string& id, WgSurface * pSurface, const std
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddGlyphSet( const std::string& id, const std::string& file, MetaData * pMetaData )
+bool WgResDB::AddGlyphset( const std::string& id, const std::string& file, MetaData * pMetaData )
 {
-	assert(m_mapGlyphSets.find(id) == m_mapGlyphSets.end());
+	assert(m_mapGlyphsets.find(id) == m_mapGlyphsets.end());
 
-	if(m_mapGlyphSets.find(id) == m_mapGlyphSets.end() && m_pResLoader)
+	if(m_mapGlyphsets.find(id) == m_mapGlyphsets.end() && m_pResLoader)
 	{
-		WgGlyphSet* pGlyphSet = m_pResLoader->LoadGlyphSet( file );
-		if( !pGlyphSet )
+		WgGlyphset* pGlyphset = m_pResLoader->LoadGlyphset( file );
+		if( !pGlyphset )
 			return false;
 
-		GlyphSetRes* p = new GlyphSetRes(id, pGlyphSet, file, pMetaData);
-		m_glyphSets.PushBack(p);
+		GlyphsetRes* p = new GlyphsetRes(id, pGlyphset, file, pMetaData);
+		m_glyphsets.PushBack(p);
 		if(id.size())
-			m_mapGlyphSets[id] = p;
+			m_mapGlyphsets[id] = p;
 		return true;
 	}
 	return false;
 }
 
-bool WgResDB::AddGlyphSet( const std::string& id, WgGlyphSet * pGlyphSet, const std::string& file, MetaData * pMetaData )
+bool WgResDB::AddGlyphset( const std::string& id, WgGlyphset * pGlyphset, const std::string& file, MetaData * pMetaData )
 {
-	assert(m_mapGlyphSets.find(id) == m_mapGlyphSets.end());
-	if(m_mapGlyphSets.find(id) == m_mapGlyphSets.end())
+	assert(m_mapGlyphsets.find(id) == m_mapGlyphsets.end());
+	if(m_mapGlyphsets.find(id) == m_mapGlyphsets.end())
 	{
-		GlyphSetRes* p = new GlyphSetRes(id, pGlyphSet, file, pMetaData);
-		m_glyphSets.PushBack(p);
+		GlyphsetRes* p = new GlyphsetRes(id, pGlyphset, file, pMetaData);
+		m_glyphsets.PushBack(p);
 		if(id.size())
-			m_mapGlyphSets[id] = p;
+			m_mapGlyphsets[id] = p;
 		return true;
 	}
 	return false;
@@ -377,15 +377,15 @@ bool WgResDB::AddCursor( const std::string& id, WgCursor * pCursor, MetaData * p
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddTextProp( const std::string& id, const WgTextPropPtr& pProp, MetaData * pMetaData )
+bool WgResDB::AddTextprop( const std::string& id, const WgTextpropPtr& pProp, MetaData * pMetaData )
 {
-	//assert(m_mapTextProps.find(id) == m_mapTextProps.end());
-	if(m_mapTextProps.find(id) == m_mapTextProps.end())
+	//assert(m_mapTextprops.find(id) == m_mapTextprops.end());
+	if(m_mapTextprops.find(id) == m_mapTextprops.end())
 	{
-		TextPropRes* p = new TextPropRes(id, pProp, pMetaData);
+		TextpropRes* p = new TextpropRes(id, pProp, pMetaData);
 		m_textProps.PushBack(p);
 		if(id.size())
-			m_mapTextProps[id] = p;
+			m_mapTextprops[id] = p;
 		return true;
 	}
 	return false;
@@ -409,15 +409,15 @@ bool WgResDB::AddColor( const std::string& id, WgColor col, MetaData * pMetaData
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddColorSet( const std::string& id, const WgColorSetPtr& pColorSet, MetaData * pMetaData )
+bool WgResDB::AddColorset( const std::string& id, const WgColorsetPtr& pColorset, MetaData * pMetaData )
 {
-	assert(m_mapColorSets.find(id) == m_mapColorSets.end());
-	if(m_mapColorSets.find(id) == m_mapColorSets.end())
+	assert(m_mapColorsets.find(id) == m_mapColorsets.end());
+	if(m_mapColorsets.find(id) == m_mapColorsets.end())
 	{
-		ColorSetRes* p = new ColorSetRes(id, pColorSet, pMetaData);
-		m_colorSets.PushBack(p);
+		ColorsetRes* p = new ColorsetRes(id, pColorset, pMetaData);
+		m_colorsets.PushBack(p);
 		if(id.size())
-			m_mapColorSets[id] = p;
+			m_mapColorsets[id] = p;
 		return true;
 	}
 	return false;
@@ -447,15 +447,15 @@ std::string WgResDB::LoadString( const std::string& token )
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddBlockSet( const std::string& id, const WgBlockSetPtr& pBlockSet, MetaData * pMetaData )
+bool WgResDB::AddBlockset( const std::string& id, const WgBlocksetPtr& pBlockset, MetaData * pMetaData )
 {
-	assert(m_mapBlockSets.find(id) == m_mapBlockSets.end());
-	if(m_mapBlockSets.find(id) == m_mapBlockSets.end())
+	assert(m_mapBlocksets.find(id) == m_mapBlocksets.end());
+	if(m_mapBlocksets.find(id) == m_mapBlocksets.end())
 	{
-		BlockSetRes* p = new BlockSetRes(id, pBlockSet, pMetaData);
+		BlocksetRes* p = new BlocksetRes(id, pBlockset, pMetaData);
 		m_blockSets.PushBack(p);
 		if(id.size())
-			m_mapBlockSets[id] = p;
+			m_mapBlocksets[id] = p;
 		return true;
 	}
 	return false;
@@ -561,9 +561,9 @@ WgSurface * WgResDB::GetSurface( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgGlyphSet * WgResDB::GetGlyphSet( const std::string& id ) const
+WgGlyphset * WgResDB::GetGlyphset( const std::string& id ) const
 {
-	GlyphSetRes* glyphRes = GetResGlyphSet(id);
+	GlyphsetRes* glyphRes = GetResGlyphset(id);
 	return glyphRes ? glyphRes->res : 0;
 }
 
@@ -593,10 +593,10 @@ WgCursor * WgResDB::GetCursor( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgTextPropPtr WgResDB::GetTextProp( const std::string& id ) const
+WgTextpropPtr WgResDB::GetTextprop( const std::string& id ) const
 {
-	TextPropRes* propRes = GetResTextProp(id);
-	return propRes ? propRes->res : WgTextPropPtr();
+	TextpropRes* propRes = GetResTextprop(id);
+	return propRes ? propRes->res : WgTextpropPtr();
 }
 
 //____ () _________________________________________________________
@@ -609,18 +609,18 @@ WgColor WgResDB::GetColor( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgColorSetPtr WgResDB::GetColorSet( const std::string& id ) const
+WgColorsetPtr WgResDB::GetColorset( const std::string& id ) const
 {
-	ColorSetRes* colorSetRes = GetResColorSet(id);
-	return colorSetRes ? colorSetRes->res : WgColorSetPtr();
+	ColorsetRes* colorsetRes = GetResColorset(id);
+	return colorsetRes ? colorsetRes->res : WgColorsetPtr();
 }
 
 //____ () _________________________________________________________
 
-WgBlockSetPtr WgResDB::GetBlockSet( const std::string& id ) const
+WgBlocksetPtr WgResDB::GetBlockset( const std::string& id ) const
 {
-	BlockSetRes* blockRes = GetResBlockSet(id);
-	return blockRes ? blockRes->res : WgBlockSetPtr();
+	BlocksetRes* blockRes = GetResBlockset(id);
+	return blockRes ? blockRes->res : WgBlocksetPtr();
 }
 
 //____ () _________________________________________________________
@@ -717,19 +717,19 @@ WgResDB::SurfaceRes * WgResDB::GetResSurface( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgResDB::GlyphSetRes * WgResDB::GetResGlyphSet( const std::string& id ) const
+WgResDB::GlyphsetRes * WgResDB::GetResGlyphset( const std::string& id ) const
 {
-	GlyphSetRes* res = 0;
+	GlyphsetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->GetResGlyphSet(id)))
+			if((res = db->res->GetResGlyphset(id)))
 				return res;
 		}
 	}
-	GlyphMap::const_iterator it = m_mapGlyphSets.find(id);
-	return it == m_mapGlyphSets.end() ? 0 : it->second;
+	GlyphMap::const_iterator it = m_mapGlyphsets.find(id);
+	return it == m_mapGlyphsets.end() ? 0 : it->second;
 }
 
 //____ () _________________________________________________________
@@ -785,19 +785,19 @@ WgResDB::CursorRes * WgResDB::GetResCursor( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgResDB::TextPropRes * WgResDB::GetResTextProp( const std::string& id ) const
+WgResDB::TextpropRes * WgResDB::GetResTextprop( const std::string& id ) const
 {
-	TextPropRes* res = 0;
+	TextpropRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->GetResTextProp(id)))
+			if((res = db->res->GetResTextprop(id)))
 				return res;
 		}
 	}
-	PropMap::const_iterator it = m_mapTextProps.find(id);
-	return it == m_mapTextProps.end() ? 0 : it->second;
+	PropMap::const_iterator it = m_mapTextprops.find(id);
+	return it == m_mapTextprops.end() ? 0 : it->second;
 }
 
 //____ () _________________________________________________________
@@ -819,19 +819,19 @@ WgResDB::ColorRes * WgResDB::GetResColor( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgResDB::ColorSetRes * WgResDB::GetResColorSet( const std::string& id ) const
+WgResDB::ColorsetRes * WgResDB::GetResColorset( const std::string& id ) const
 {
-	ColorSetRes* res = 0;
+	ColorsetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->GetResColorSet(id)))
+			if((res = db->res->GetResColorset(id)))
 				return res;
 		}
 	}
-	ColSetMap::const_iterator it = m_mapColorSets.find(id);
-	return it == m_mapColorSets.end() ? 0 : it->second;
+	ColSetMap::const_iterator it = m_mapColorsets.find(id);
+	return it == m_mapColorsets.end() ? 0 : it->second;
 }
 
 
@@ -852,19 +852,19 @@ WgResDB::LegoSource * WgResDB::GetLegoSource( const std::string& id ) const
 	return it == m_mapLegoSources.end() ? 0 : it->second;
 }
 
-WgResDB::BlockSetRes * WgResDB::GetResBlockSet( const std::string& id ) const
+WgResDB::BlocksetRes * WgResDB::GetResBlockset( const std::string& id ) const
 {
-	BlockSetRes* res = 0;
+	BlocksetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->GetResBlockSet(id)))
+			if((res = db->res->GetResBlockset(id)))
 				return res;
 		}
 	}
-	BlockMap::const_iterator it = m_mapBlockSets.find(id);
-	return it == m_mapBlockSets.end() ? 0 : it->second;
+	BlockMap::const_iterator it = m_mapBlocksets.find(id);
+	return it == m_mapBlocksets.end() ? 0 : it->second;
 }
 
 //____ () _________________________________________________________
@@ -1010,18 +1010,18 @@ WgResDB::SurfaceRes* WgResDB::FindResSurface( const WgSurface* surf ) const
 
 //____ () _________________________________________________________
 
-WgResDB::GlyphSetRes* WgResDB::FindResGlyphSet( const WgGlyphSet* meta ) const
+WgResDB::GlyphsetRes* WgResDB::FindResGlyphset( const WgGlyphset* meta ) const
 {
-	GlyphSetRes* res = 0;
+	GlyphsetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->FindResGlyphSet(meta)))
+			if((res = db->res->FindResGlyphset(meta)))
 				return res;
 		}
 	}
-	for(res = GetFirstResGlyphSet(); res; res = res->Next())
+	for(res = GetFirstResGlyphset(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1086,18 +1086,18 @@ WgResDB::CursorRes* WgResDB::FindResCursor( const WgCursor* meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::TextPropRes* WgResDB::FindResTextProp( const WgTextPropPtr& meta ) const
+WgResDB::TextpropRes* WgResDB::FindResTextprop( const WgTextpropPtr& meta ) const
 {
-	TextPropRes* res = 0;
+	TextpropRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->FindResTextProp(meta)))
+			if((res = db->res->FindResTextprop(meta)))
 				return res;
 		}
 	}
-	for(res = GetFirstResTextProp(); res; res = res->Next())
+	for(res = GetFirstResTextprop(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1124,18 +1124,18 @@ WgResDB::ColorRes* WgResDB::FindResColor( const WgColor meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::ColorSetRes* WgResDB::FindResColorSet( const WgColorSetPtr& meta ) const
+WgResDB::ColorsetRes* WgResDB::FindResColorset( const WgColorsetPtr& meta ) const
 {
-	ColorSetRes* res = 0;
+	ColorsetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->FindResColorSet(meta)))
+			if((res = db->res->FindResColorset(meta)))
 				return res;
 		}
 	}
-	for(res = GetFirstResColorSet(); res; res = res->Next())
+	for(res = GetFirstResColorset(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1143,18 +1143,18 @@ WgResDB::ColorSetRes* WgResDB::FindResColorSet( const WgColorSetPtr& meta ) cons
 
 //____ () _________________________________________________________
 
-WgResDB::BlockSetRes* WgResDB::FindResBlockSet( const WgBlockSetPtr& meta ) const
+WgResDB::BlocksetRes* WgResDB::FindResBlockset( const WgBlocksetPtr& meta ) const
 {
-	BlockSetRes* res = 0;
+	BlocksetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->FindResBlockSet(meta)))
+			if((res = db->res->FindResBlockset(meta)))
 				return res;
 		}
 	}
-	for(res = GetFirstResBlockSet(); res; res = res->Next())
+	for(res = GetFirstResBlockset(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1289,32 +1289,32 @@ bool WgResDB::RemoveSurface( WgResDB::SurfaceRes * pRes )
 }
 
 
-//____ RemoveGlyphSet() _______________________________________________________
+//____ RemoveGlyphset() _______________________________________________________
 
-bool WgResDB::RemoveGlyphSet( const std::string& id )
+bool WgResDB::RemoveGlyphset( const std::string& id )
 {
-	GlyphMap::iterator it = m_mapGlyphSets.find( id );
+	GlyphMap::iterator it = m_mapGlyphsets.find( id );
 
-	if( it == m_mapGlyphSets.end() )
+	if( it == m_mapGlyphsets.end() )
 		return false;
 
-	GlyphSetRes * pRes = it->second;
-	m_mapGlyphSets.erase(it);
+	GlyphsetRes * pRes = it->second;
+	m_mapGlyphsets.erase(it);
 	delete pRes;
 
 	return true;
 }
 
-bool WgResDB::RemoveGlyphSet( WgResDB::GlyphSetRes * pRes )
+bool WgResDB::RemoveGlyphset( WgResDB::GlyphsetRes * pRes )
 {
 	if( !pRes )
 		return false;
 
 	if( pRes->id.length() > 0 )
 	{
-		GlyphMap::iterator it = m_mapGlyphSets.find( pRes->id );
-		assert( it != m_mapGlyphSets.end() );
-		m_mapGlyphSets.erase(it);
+		GlyphMap::iterator it = m_mapGlyphsets.find( pRes->id );
+		assert( it != m_mapGlyphsets.end() );
+		m_mapGlyphsets.erase(it);
 	}
 	delete pRes;
 	return true;
@@ -1417,32 +1417,32 @@ bool WgResDB::RemoveCursor( WgResDB::CursorRes * pRes )
 }
 
 
-//____ RemoveTextProp() _______________________________________________________
+//____ RemoveTextprop() _______________________________________________________
 
-bool WgResDB::RemoveTextProp( const std::string& id )
+bool WgResDB::RemoveTextprop( const std::string& id )
 {
-	PropMap::iterator it = m_mapTextProps.find( id );
+	PropMap::iterator it = m_mapTextprops.find( id );
 
-	if( it == m_mapTextProps.end() )
+	if( it == m_mapTextprops.end() )
 		return false;
 
-	TextPropRes * pRes = it->second;
-	m_mapTextProps.erase(it);
+	TextpropRes * pRes = it->second;
+	m_mapTextprops.erase(it);
 	delete pRes;
 
 	return true;
 }
 
-bool WgResDB::RemoveTextProp( WgResDB::TextPropRes * pRes )
+bool WgResDB::RemoveTextprop( WgResDB::TextpropRes * pRes )
 {
 	if( !pRes )
 		return false;
 
 	if( pRes->id.length() > 0 )
 	{
-		PropMap::iterator it = m_mapTextProps.find( pRes->id );
-		assert( it != m_mapTextProps.end() );
-		m_mapTextProps.erase(it);
+		PropMap::iterator it = m_mapTextprops.find( pRes->id );
+		assert( it != m_mapTextprops.end() );
+		m_mapTextprops.erase(it);
 	}
 	delete pRes;
 	return true;
@@ -1480,32 +1480,32 @@ bool WgResDB::RemoveColor( WgResDB::ColorRes * pRes )
 	return true;
 }
 
-//____ RemoveColorSet() _______________________________________________________
+//____ RemoveColorset() _______________________________________________________
 
-bool WgResDB::RemoveColorSet( const std::string& id )
+bool WgResDB::RemoveColorset( const std::string& id )
 {
-	ColSetMap::iterator it = m_mapColorSets.find( id );
+	ColSetMap::iterator it = m_mapColorsets.find( id );
 
-	if( it == m_mapColorSets.end() )
+	if( it == m_mapColorsets.end() )
 		return false;
 
-	ColorSetRes * pRes = it->second;
-	m_mapColorSets.erase(it);
+	ColorsetRes * pRes = it->second;
+	m_mapColorsets.erase(it);
 	delete pRes;
 
 	return true;
 }
 
-bool WgResDB::RemoveColorSet( WgResDB::ColorSetRes * pRes )
+bool WgResDB::RemoveColorset( WgResDB::ColorsetRes * pRes )
 {
 	if( !pRes )
 		return false;
 
 	if( pRes->id.length() > 0 )
 	{
-		ColSetMap::iterator it = m_mapColorSets.find( pRes->id );
-		assert( it != m_mapColorSets.end() );
-		m_mapColorSets.erase(it);
+		ColSetMap::iterator it = m_mapColorsets.find( pRes->id );
+		assert( it != m_mapColorsets.end() );
+		m_mapColorsets.erase(it);
 	}
 	delete pRes;
 	return true;
@@ -1543,32 +1543,32 @@ bool WgResDB::RemoveLegoSource( WgResDB::LegoSource * pRes )
 	return true;
 }
 
-//____ RemoveBlockSet() _______________________________________________________
+//____ RemoveBlockset() _______________________________________________________
 
-bool WgResDB::RemoveBlockSet( const std::string& id )
+bool WgResDB::RemoveBlockset( const std::string& id )
 {
-	BlockMap::iterator it = m_mapBlockSets.find( id );
+	BlockMap::iterator it = m_mapBlocksets.find( id );
 
-	if( it == m_mapBlockSets.end() )
+	if( it == m_mapBlocksets.end() )
 		return false;
 
-	BlockSetRes * pRes = it->second;
-	m_mapBlockSets.erase(it);
+	BlocksetRes * pRes = it->second;
+	m_mapBlocksets.erase(it);
 	delete pRes;
 
 	return true;
 }
 
-bool WgResDB::RemoveBlockSet( WgResDB::BlockSetRes * pRes )
+bool WgResDB::RemoveBlockset( WgResDB::BlocksetRes * pRes )
 {
 	if( !pRes )
 		return false;
 
 	if( pRes->id.length() > 0 )
 	{
-		BlockMap::iterator it = m_mapBlockSets.find( pRes->id );
-		assert( it != m_mapBlockSets.end() );
-		m_mapBlockSets.erase(it);
+		BlockMap::iterator it = m_mapBlocksets.find( pRes->id );
+		assert( it != m_mapBlocksets.end() );
+		m_mapBlocksets.erase(it);
 	}
 	delete pRes;
 	return true;

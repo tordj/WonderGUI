@@ -42,8 +42,8 @@ class WgGizmoContainer : public WgGizmoParent, public WgGizmo
 	friend class WgModalHook;
 
 	friend class WgRoot;
-	friend class WgGizmoFlexGeo;
-	friend class WgGizmoModalLayer;
+	friend class WgGizmoFlexgeo;
+	friend class WgGizmoModallayer;
 	friend class WgGizmoTable;
 	friend class WgGizmoView;
 	friend class WgGizmoStack;
@@ -95,8 +95,8 @@ class WgGizmoContainer : public WgGizmoParent, public WgGizmo
 		bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgGizmoContainer inherits from WgGizmo
 		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgGizmoContainer inherits from WgGizmo
 
-		WgGizmoModalLayer *	_getModalLayer() const;
-		WgGizmoMenuLayer*	_getMenuLayer() const;
+		WgGizmoModallayer *	_getModalLayer() const;
+		WgGizmoMenulayer*	_getMenuLayer() const;
 
 		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );

@@ -46,7 +46,7 @@ class WgGizmoFps:public WgGizmo
 
 		//____ Methods __________________________________________
 
-		void	SetTextProperties( const WgTextPropPtr& pProp );
+		void	SetTextProperties( const WgTextpropPtr& pProp );
 		WgSize	DefaultSize() const;
 
 	protected:
@@ -56,7 +56,7 @@ class WgGizmoFps:public WgGizmo
 
 	private:
 
-		WgTextPropPtr	m_pProp;
+		WgTextpropPtr	m_pProp;
 
 
 		Uint32 *		m_pTickBuffer;

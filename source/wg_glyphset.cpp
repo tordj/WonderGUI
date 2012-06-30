@@ -41,16 +41,16 @@
 
 WgGlyph::WgGlyph()
 {
-	m_pGlyphSet = 0;
+	m_pGlyphset = 0;
 	m_advance = 0;
 	m_kerningIndex = 0;
 }
 
 //____ WgGlyph::WgGlyph() _______________________________________________________
 
-WgGlyph::WgGlyph( int advance, Uint32 kerningIndex, WgGlyphSet * pGlyphSet )
+WgGlyph::WgGlyph( int advance, Uint32 kerningIndex, WgGlyphset * pGlyphset )
 {
-	m_pGlyphSet = pGlyphSet;
+	m_pGlyphset = pGlyphset;
 	m_advance = advance;
 	m_kerningIndex = kerningIndex;
 }

@@ -47,8 +47,8 @@ public:
 	bool			SetAnimation( WgGfxAnim * pAnim );
 	WgGfxAnim *		Animation() const { return m_pAnim; }
 
-	bool			SetSource( const WgBlockSetPtr& pStaticBlock );
-	WgBlockSetPtr	Source() const { return m_pStaticBlock; }
+	bool			SetSource( const WgBlocksetPtr& pStaticBlock );
+	WgBlocksetPtr	Source() const { return m_pStaticBlock; }
 		
 	int				PlayPos();										/// Returns play position in ticks.
 	bool			SetPlayPos( int ticks );						/// Position in ticks for next update.
@@ -84,7 +84,7 @@ private:
 
 	WgGfxAnim *		m_pAnim;
 	WgBlock			m_animFrame;			// Frame currently used by animation.
-	WgBlockSetPtr	m_pStaticBlock;			// Blockset used when no animation is displayed (not set or gizmo disabled).
+	WgBlocksetPtr	m_pStaticBlock;			// Blockset used when no animation is displayed (not set or gizmo disabled).
 
 	bool			m_bPlaying;
 	double			m_playPos;

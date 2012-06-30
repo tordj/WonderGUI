@@ -57,8 +57,8 @@ friend class WgFont;
 public:
 	WgPen();
 	WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip = WgRect() );
-//	WgPen( const WgTextPropPtr& pTextProp, const WgTextPropPtr& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextProp( pTextProp, pCharProp, mode ); }
-//	WgPen( Uint16 hTextProp, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextProp( hTextProp, hCharProp, mode ); }
+//	WgPen( const WgTextpropPtr& pTextprop, const WgTextpropPtr& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextprop( pTextprop, pCharProp, mode ); }
+//	WgPen( Uint16 hTextprop, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextprop( hTextprop, hCharProp, mode ); }
 	~WgPen() {}
 
 	void					SetClipRect( const WgRect& clip );
@@ -109,7 +109,7 @@ public:
 	inline int				GetSize() const { return m_size; }
 	inline WgFontStyle		GetStyle() const { return m_style; }
 	inline WgColor			GetColor() const { return m_color; }
-	inline WgGlyphSet *		GetGlyphSet() const { return m_pGlyphs; }
+	inline WgGlyphset *		GetGlyphset() const { return m_pGlyphs; }
 
 
 	inline int				GetLineSpacing() const { return m_pGlyphs->GetLineSpacing(m_size); }
@@ -137,7 +137,7 @@ private:
 
 	//
 
-	WgGlyphSet *m_pGlyphs;			// Pointer at our glyphs.
+	WgGlyphset *m_pGlyphs;			// Pointer at our glyphs.
 
 	WgGlyphPtr		m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
 	WgGlyphPtr		m_pGlyph;		// Current glyph.

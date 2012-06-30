@@ -695,7 +695,7 @@ const char * WgGizmoTable::GetMyType( void )
 
 //____ SetHeaderSource() ______________________________________________________
 
-bool WgGizmoTable::SetHeaderSource( const WgBlockSetPtr& pHeader )
+bool WgGizmoTable::SetHeaderSource( const WgBlocksetPtr& pHeader )
 {
 	m_pHeaderGfx		= pHeader;
 
@@ -707,7 +707,7 @@ bool WgGizmoTable::SetHeaderSource( const WgBlockSetPtr& pHeader )
 
 //____ SetArrowSource() _______________________________________________________
 
-void WgGizmoTable::SetArrowSource( const WgBlockSetPtr& pAscend, const WgBlockSetPtr& pDescend )
+void WgGizmoTable::SetArrowSource( const WgBlocksetPtr& pAscend, const WgBlocksetPtr& pDescend )
 {
 	m_pAscendGfx	= pAscend;
 	m_pDescendGfx	= pDescend;
@@ -802,7 +802,7 @@ void WgGizmoTable::DeleteRowColors()
 
 //____ SetRowBlocks() _________________________________________________________
 
-void WgGizmoTable::SetRowBlocks( WgBlockSetPtr * pRowBlocks, int nRowBlocks )
+void WgGizmoTable::SetRowBlocks( WgBlocksetPtr * pRowBlocks, int nRowBlocks )
 {
 	if( m_pRowBlocks )
 		DeleteRowBlocks();
@@ -810,7 +810,7 @@ void WgGizmoTable::SetRowBlocks( WgBlockSetPtr * pRowBlocks, int nRowBlocks )
 	if( nRowBlocks > 0 && pRowBlocks )
 	{
 		m_nRowBlocks = nRowBlocks;
-		m_pRowBlocks = new WgBlockSetPtr[ m_nRowBlocks ];
+		m_pRowBlocks = new WgBlocksetPtr[ m_nRowBlocks ];
 
 		for( int i = 0 ; i < nRowBlocks ; i++ )
 			m_pRowBlocks[i] = pRowBlocks[i];
@@ -1317,7 +1317,7 @@ void WgGizmoTable::SetSelectedRowColor( WgColor c )
 
 //____ SetSelectedRowBg() _________________________________________________
 
-void WgGizmoTable::SetSelectedRowBg( WgBlockSetPtr pBlock )
+void WgGizmoTable::SetSelectedRowBg( WgBlocksetPtr pBlock )
 {
 	if( pBlock != m_pSelectedRowGfx )
 	{
@@ -1533,9 +1533,9 @@ int WgGizmoTable::CompareRows( WgTableRow* pRow1, WgTableRow* pRow2 ) const
 }
 
 
-//____ SetHeaderTextProp() ____________________________________________________
+//____ SetHeaderTextprop() ____________________________________________________
 
-bool WgGizmoTable::SetHeaderTextProp( const WgTextPropPtr& pProp )
+bool WgGizmoTable::SetHeaderTextprop( const WgTextpropPtr& pProp )
 {
 	m_pHeaderProps = pProp;
 	_requestRender();
@@ -1971,7 +1971,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 				if( m_nRowBlocks > 0 )
 				{
-					WgBlockSetPtr p = m_pRowBlocks[ iRowColor % m_nRowBlocks ];
+					WgBlocksetPtr p = m_pRowBlocks[ iRowColor % m_nRowBlocks ];
 					if( p )
 						pDevice->ClipBlitBlock(u, p->GetBlock(WG_MODE_NORMAL,r), r );
 				}
@@ -2039,7 +2039,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 				if( m_nRowBlocks > 0 )
 				{
-					WgBlockSetPtr p = m_pRowBlocks[ iRowColor % m_nRowBlocks ];
+					WgBlocksetPtr p = m_pRowBlocks[ iRowColor % m_nRowBlocks ];
 					if( p )
 						pDevice->ClipBlitBlock(u, p->GetBlock(WG_MODE_NORMAL), r );
 				}
@@ -2103,7 +2103,7 @@ void WgGizmoTable::_onCloneContent( const WgGizmo * _pOrg )
 	m_nRowBlocks = pOrg->m_nRowBlocks;
 	if( m_nRowBlocks > 0 && m_pRowBlocks )
 	{
-		m_pRowBlocks = new WgBlockSetPtr[ m_nRowBlocks ];
+		m_pRowBlocks = new WgBlocksetPtr[ m_nRowBlocks ];
 		for( int i = 0 ; i < m_nRowBlocks ; i++ )
 			m_pRowBlocks[i] = pOrg->m_pRowBlocks[i];					// Can't memcpy this... smartpointers...
 	}

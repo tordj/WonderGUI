@@ -31,19 +31,19 @@
 #endif
 
 class WgText;
-class WgTextLink;
+class WgTextlink;
 class WgCoord;
 
-typedef	WgSmartPtr<class WgTextLink> WgTextLinkPtr;
+typedef	WgSmartPtr<class WgTextlink> WgTextLinkPtr;
 
 
 //____ WgTextLink _____________________________________________________________
 
 
-class WgTextLink : public WgRefCounted
+class WgTextlink : public WgRefCounted
 {
 public:
-	static WgTextLinkPtr Create( const std::string& link ) { return new WgTextLink(link); }
+	static WgTextLinkPtr Create( const std::string& link ) { return new WgTextlink(link); }
 
 	const std::string&		Link() const { return m_link; }
 	bool					HasBeenAccessed() const { return m_bAccessed; }
@@ -52,8 +52,8 @@ private:
 	bool					m_bAccessed;
 	std::string				m_link;
 
-	WgTextLink( const std::string& link ) : m_bAccessed(false), m_link(link) {}
-	~WgTextLink() {}
+	WgTextlink( const std::string& link ) : m_bAccessed(false), m_link(link) {}
+	~WgTextlink() {}
 };
 
 #endif //WG_TEXTLINK_DOT_H

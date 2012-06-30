@@ -197,8 +197,8 @@ public:
 	bool				IsVSliderVisible();
 	bool				IsHSliderVisible();
 
-	void				SetFillerBlocks( const WgBlockSetPtr& pBlocks );
-	WgBlockSetPtr		FillerBlocks() const { return m_pFillerBlocks; }
+	void				SetFillerBlocks( const WgBlocksetPtr& pBlocks );
+	WgBlocksetPtr		FillerBlocks() const { return m_pFillerBlocks; }
 
 	// Overloaded from container
 
@@ -315,7 +315,7 @@ private:
 	WgHook*	_lastHook() const;
 
 
-	WgBlockSetPtr	m_pFillerBlocks;
+	WgBlocksetPtr	m_pFillerBlocks;
 	WgRect			m_geoFiller;
 };
 

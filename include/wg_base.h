@@ -54,7 +54,7 @@ typedef struct FT_LibraryRec_  *FT_Library;
 
 
 class WgFont;
-class WgTextPropManager;
+class WgTextpropManager;
 class WgMemPool;
 class WgWeakPtrHub;
 class WgCursor;
@@ -76,14 +76,14 @@ public:
 //	static void SetDefaultTextManager( const WgTextMgrPtr& pManager );
 //	static const WgTextMgrPtr& GetDefaultTextManager();
 
-	static void 	SetDefaultTextProp( const WgTextPropPtr& pProp );
-	static WgTextPropPtr GetDefaultTextProp() { assert(s_pData!=0); return s_pData->pDefaultTextProp; }
+	static void 	SetDefaultTextprop( const WgTextpropPtr& pProp );
+	static WgTextpropPtr GetDefaultTextprop() { assert(s_pData!=0); return s_pData->pDefaultTextprop; }
 
-	static void 	SetDefaultSelectionProp( const WgTextPropPtr& pProp );
-	static WgTextPropPtr GetDefaultSelectionProp() { assert(s_pData!=0); return s_pData->pDefaultSelectionProp; }
+	static void 	SetDefaultSelectionProp( const WgTextpropPtr& pProp );
+	static WgTextpropPtr GetDefaultSelectionProp() { assert(s_pData!=0); return s_pData->pDefaultSelectionProp; }
 
-	static void 	SetDefaultLinkProp( const WgTextPropPtr& pProp );
-	static WgTextPropPtr GetDefaultLinkProp() { assert(s_pData!=0); return s_pData->pDefaultLinkProp; }
+	static void 	SetDefaultLinkProp( const WgTextpropPtr& pProp );
+	static WgTextpropPtr GetDefaultLinkProp() { assert(s_pData!=0); return s_pData->pDefaultLinkProp; }
 
 	static void 	SetDefaultCursor( WgCursor * pCursor );
 	static WgCursor * GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
@@ -115,9 +115,9 @@ private:
 
 	struct Data
 	{
-		WgTextPropPtr		pDefaultTextProp;
-		WgTextPropPtr		pDefaultSelectionProp;
-		WgTextPropPtr		pDefaultLinkProp;
+		WgTextpropPtr		pDefaultTextprop;
+		WgTextpropPtr		pDefaultSelectionProp;
+		WgTextpropPtr		pDefaultLinkProp;
 		WgCursor *			pDefaultCursor;
 
 		// Settings for keyboard/pointer input

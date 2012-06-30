@@ -138,17 +138,17 @@ const WgTextMgrPtr& WgBase::GetDefaultTextManager()
 }
 */
 
-//____ SetDefaultTextProp() ___________________________________________________
+//____ SetDefaultTextprop() ___________________________________________________
 
-void WgBase::SetDefaultTextProp( const WgTextPropPtr& pProp )
+void WgBase::SetDefaultTextprop( const WgTextpropPtr& pProp )
 {
 	assert( s_pData != 0 );
-	s_pData->pDefaultTextProp = pProp;
+	s_pData->pDefaultTextprop = pProp;
 }
 
 //____ SetDefaultSelectionProp() ___________________________________________________
 
-void WgBase::SetDefaultSelectionProp( const WgTextPropPtr& pProp )
+void WgBase::SetDefaultSelectionProp( const WgTextpropPtr& pProp )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultSelectionProp = pProp;
@@ -156,7 +156,7 @@ void WgBase::SetDefaultSelectionProp( const WgTextPropPtr& pProp )
 
 //____ SetDefaultLinkProp() ___________________________________________________
 
-void WgBase::SetDefaultLinkProp( const WgTextPropPtr& pProp )
+void WgBase::SetDefaultLinkProp( const WgTextpropPtr& pProp )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultLinkProp = pProp;

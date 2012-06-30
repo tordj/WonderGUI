@@ -69,7 +69,7 @@ public:
 
 
 
-	WgGlyphSet *		GetGlyphSet( WgFontStyle style, int size ) const;
+	WgGlyphset *		GetGlyphset( WgFontStyle style, int size ) const;
 	WgGlyphPtr			GetGlyph( Uint32 chr, WgFontStyle style, int size ) const;
 	GlyphProvided		IsGlyphProvided( Uint32 chr, WgFontStyle style, int size ) const;
 

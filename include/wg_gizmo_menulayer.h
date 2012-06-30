@@ -28,11 +28,11 @@
 #endif
 
 
-class WgGizmoMenuLayer;
+class WgGizmoMenulayer;
 
 class WgMenuHook : public WgHook, protected WgLink
 {
-	friend class WgGizmoMenuLayer;
+	friend class WgGizmoMenulayer;
 	friend class WgChain<WgMenuHook>;
 
 public:
@@ -56,7 +56,7 @@ protected:
 
 	PROTECTED_LINK_METHODS( WgMenuHook );
 
-	WgMenuHook( WgGizmoMenuLayer * pParent, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize );
+	WgMenuHook( WgGizmoMenulayer * pParent, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize );
 
 	void		_requestRender();
 	void		_requestRender( const WgRect& rect );
@@ -69,7 +69,7 @@ protected:
 	bool		_updateGeo();
 
 
-	WgGizmoMenuLayer * m_pParent;
+	WgGizmoMenulayer * m_pParent;
 
 	WgRect			m_geo;				// Gizmos geo relative parent
 	WgRect			m_launcherGeo;		// Launcher geo relative sibling or parent.
@@ -80,18 +80,18 @@ protected:
 
 
 
-class WgGizmoMenuLayer : public WgGizmoContainer
+class WgGizmoMenulayer : public WgGizmoContainer
 {
 	friend class BaseHook;
 	friend class WgMenuHook;
 
 public:
-	WgGizmoMenuLayer();
-	~WgGizmoMenuLayer();
+	WgGizmoMenulayer();
+	~WgGizmoMenulayer();
 
 	virtual const char *Type( void ) const;
 	static const char * GetMyType();
-	virtual WgGizmo * NewOfMyType() const { return new WgGizmoMenuLayer(); };
+	virtual WgGizmo * NewOfMyType() const { return new WgGizmoMenulayer(); };
 
 
 	WgHook *		SetBase( WgGizmo * pGizmo );
@@ -129,7 +129,7 @@ private:
 
 	class BaseHook : public WgHook
 	{
-		friend class WgGizmoMenuLayer;
+		friend class WgGizmoMenulayer;
 
 	public:
 		// Standard Hook methods
@@ -141,10 +141,10 @@ private:
 		WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
 		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		WgGizmoMenuLayer* Parent() const { return m_pParent; }
+		WgGizmoMenulayer* Parent() const { return m_pParent; }
 
 	protected:
-		BaseHook( WgGizmoMenuLayer * pParent ) : m_pParent(pParent) {}
+		BaseHook( WgGizmoMenulayer * pParent ) : m_pParent(pParent) {}
 
 		void		_requestRender();
 		void		_requestRender( const WgRect& rect );
@@ -154,11 +154,11 @@ private:
 		WgHook *	_nextHook() const { return m_pParent->FirstMenu(); }
 		WgGizmoParent * _parent() const { return m_pParent; }
 
-		WgGizmoMenuLayer * 	m_pParent;
+		WgGizmoMenulayer * 	m_pParent;
 	};
 
 
-	WgGizmoMenuLayer *	_getMenuLayer() const { return const_cast<WgGizmoMenuLayer*>(this); }
+	WgGizmoMenulayer *	_getMenuLayer() const { return const_cast<WgGizmoMenulayer*>(this); }
 
 	void			_stealKeyboardFocus();
 	void			_restoreKeyboardFocus();

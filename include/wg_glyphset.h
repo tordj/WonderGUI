@@ -32,7 +32,7 @@
 #endif
 
 class	WgSurface;
-class	WgGlyphSet;
+class	WgGlyphset;
 
 
 
@@ -59,13 +59,13 @@ public:
 
 	inline int		Advance() { return m_advance; }
 	inline Uint32	KerningIndex() { return m_kerningIndex; }
-	inline WgGlyphSet *	GlyphSet() { return m_pGlyphSet; }
+	inline WgGlyphset *	Glyphset() { return m_pGlyphset; }
 
 protected:
 	WgGlyph();
-	WgGlyph( int advance, Uint32 _kerningIndex, WgGlyphSet * pGlyphSet );
+	WgGlyph( int advance, Uint32 _kerningIndex, WgGlyphset * pGlyphset );
 
-	WgGlyphSet *	m_pGlyphSet;	// glyphset that this glyph belongs to
+	WgGlyphset *	m_pGlyphset;	// glyphset that this glyph belongs to
 	int				m_advance;		// spacing to next glyph
 	Uint32			m_kerningIndex;	// index into kerning table (WgBitmapGlyphs) or glyph_index (WgVectorGlyphs)
 };
@@ -87,13 +87,13 @@ struct WgUnderline
 	Uint8		rightBorder;
 };
 
-//____ WgGlyphSet _____________________________________________________________
+//____ WgGlyphset _____________________________________________________________
 
-class WgGlyphSet
+class WgGlyphset
 {
 public:
-	WgGlyphSet() {}
-	virtual ~WgGlyphSet() {}
+	WgGlyphset() {}
+	virtual ~WgGlyphset() {}
 
 	enum Type
 	{

@@ -35,23 +35,23 @@
 #	include <wg_smartptr.h>
 #endif
 
-class WgColorSet;
+class WgColorset;
 
-typedef	WgSmartPtr<WgColorSet>	WgColorSetPtr;
+typedef	WgSmartPtr<WgColorset>	WgColorsetPtr;
 
-class WgColorSet : public WgRefCounted
+class WgColorset : public WgRefCounted
 {
 public:
-	static WgColorSetPtr	Create();
-	static WgColorSetPtr	Create( WgColor allModes );
-	static WgColorSetPtr	Create( WgColor normal, WgColor over, WgColor selected, WgColor disabled, WgColor special );
+	static WgColorsetPtr	Create();
+	static WgColorsetPtr	Create( WgColor allModes );
+	static WgColorsetPtr	Create( WgColor normal, WgColor over, WgColor selected, WgColor disabled, WgColor special );
 
 	inline WgColor	Color(WgMode mode) const { return m_color[mode]; }
 	void			SetColor(WgColor color, WgMode mode = WG_MODE_ALL);
 
 private:
-	WgColorSet() {};
-	virtual ~WgColorSet() {};
+	WgColorset() {};
+	virtual ~WgColorset() {};
 
 	WgColor		m_color[WG_NB_MODES];
 };

@@ -84,10 +84,10 @@ class	WgGizmoSlider : public WgGizmo
 
 		float			GetSliderPos() const { return m_sliderPos; }
 		float			GetSliderSize() const { return m_sliderSize; }
-		WgBlockSetPtr 	GetBgSource() const { return m_pBgGfx; }
-		WgBlockSetPtr 	GetBarSource() const { return m_pBarGfx; }
-		WgBlockSetPtr 	GetBwdSource() const { return m_pBtnBwdGfx; }
-		WgBlockSetPtr 	GetFwdSource() const { return m_pBtnFwdGfx; }
+		WgBlocksetPtr 	GetBgSource() const { return m_pBgGfx; }
+		WgBlocksetPtr 	GetBarSource() const { return m_pBarGfx; }
+		WgBlocksetPtr 	GetBwdSource() const { return m_pBtnBwdGfx; }
+		WgBlocksetPtr 	GetFwdSource() const { return m_pBtnFwdGfx; }
 		ButtonLayout	GetButtonLayout() const { return m_btnLayout; }
 
 		void	SetBgPressMode( BgPressMode mode );
@@ -98,7 +98,7 @@ class	WgGizmoSlider : public WgGizmo
 		bool	SetSliderPosPxlOfs( int x );
 		bool	SetSliderSize( float size );
 
-		bool	SetSource( WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx, WgBlockSetPtr pBtnBwdGfx, WgBlockSetPtr pBtnFwdGfx );
+		bool	SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx );
 		bool	SetButtonLayout(  ButtonLayout layout );
 
 		bool	SetSliderTarget( WgSliderTarget * pTarget );
@@ -130,10 +130,10 @@ class	WgGizmoSlider : public WgGizmo
 
 		};
 
-		WgBlockSetPtr	m_pBgGfx;
-		WgBlockSetPtr	m_pBarGfx;
-		WgBlockSetPtr	m_pBtnFwdGfx;
-		WgBlockSetPtr	m_pBtnBwdGfx;
+		WgBlocksetPtr	m_pBgGfx;
+		WgBlocksetPtr	m_pBarGfx;
+		WgBlocksetPtr	m_pBtnFwdGfx;
+		WgBlocksetPtr	m_pBtnBwdGfx;
 
 		float			m_sliderPos;
 		float			m_sliderSize;

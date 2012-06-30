@@ -45,8 +45,8 @@ public:
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoPixmap(); };
 	
 
-	void			SetSource( const WgBlockSetPtr& pBlockSet );
-	WgBlockSetPtr	GetSource() const { return m_pGfx; }
+	void			SetSource( const WgBlocksetPtr& pBlockset );
+	WgBlocksetPtr	GetSource() const { return m_pGfx; }
 
 	WgSize			DefaultSize() const;
 
@@ -60,7 +60,7 @@ protected:
 
 private:
 
-	WgBlockSetPtr	m_pGfx;
+	WgBlocksetPtr	m_pGfx;
 };
 
 

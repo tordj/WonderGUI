@@ -63,8 +63,8 @@ class WgGizmoEditvalue : public WgGizmo, public Wg_Interface_ValueHolder
 		WgOrientation GetTextAlignment( ) const;
 		void	SetTextColor(WgColor color);
 		WgColor GetTextColor() const;
-		bool	SetTextProp( const WgTextPropPtr& _pProp );
-		WgTextPropPtr GetTextProp( ) const;
+		bool	SetTextprop( const WgTextpropPtr& _pProp );
+		WgTextpropPtr GetTextprop( ) const;
 		void	SetTextManager(WgTextManager * _pManager);
 		WgTextManager * GetTextManager() const;
 		void	SetFormat( const WgValueFormat& format );

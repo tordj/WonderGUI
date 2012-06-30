@@ -152,67 +152,67 @@ namespace sdl_wglib
 		if( !pSurface )
 			return 0;
 
-		WgBlockSetPtr pHSliderBtnBwdBlocks	= WgBlockSet::CreateFromRow(pSurface, WgRect(1,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pHSliderBtnBwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
 		pHSliderBtnBwdBlocks->SetGfxBorders(WgBorders(3));
 		pHSliderBtnBwdBlocks->SetContentBorders(WgBorders(4));
 
-		WgBlockSetPtr pHSliderBtnFwdBlocks	= WgBlockSet::CreateFromRow(pSurface, WgRect(77,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pHSliderBtnFwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(77,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
 		pHSliderBtnFwdBlocks->SetGfxBorders(WgBorders(3));
 		pHSliderBtnFwdBlocks->SetContentBorders(WgBorders(4));
 
-		WgBlockSetPtr pVSliderBtnBwdBlocks	= WgBlockSet::CreateFromRow(pSurface, WgRect(1,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pVSliderBtnBwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
 		pVSliderBtnBwdBlocks->SetGfxBorders(WgBorders(3));
 		pVSliderBtnBwdBlocks->SetContentBorders(WgBorders(4));
 
-		WgBlockSetPtr pVSliderBtnFwdBlocks	= WgBlockSet::CreateFromRow(pSurface, WgRect(77,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pVSliderBtnFwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(77,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
 		pVSliderBtnFwdBlocks->SetGfxBorders(WgBorders(3));
 		pVSliderBtnFwdBlocks->SetContentBorders(WgBorders(4));
 
-		WgBlockSetPtr pSliderBlocks	= WgBlockSet::CreateFromRow(pSurface, WgRect(1,SLIDER_OFS,38,8), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pSliderBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,SLIDER_OFS,38,8), 4, 2, WG_OPAQUE);
 		pVSliderBtnFwdBlocks->SetGfxBorders(WgBorders(2));
 		pVSliderBtnFwdBlocks->SetContentBorders(WgBorders(3));
 
-		WgBlockSetPtr pSliderBackBlocks	= WgBlockSet::CreateFromRect(pSurface, WgRect(1,SLIDER_BACK_OFS,5,5), WG_OPAQUE );
+		WgBlocksetPtr pSliderBackBlocks	= WgBlockset::CreateFromRect(pSurface, WgRect(1,SLIDER_BACK_OFS,5,5), WG_OPAQUE );
 		pSliderBackBlocks->SetGfxBorders(WgBorders(2));
 		pSliderBackBlocks->SetContentBorders(WgBorders(2));
 
-		WgBlockSetPtr pResizeButtonBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(1,RESIZE_BUTTON_OFS,86,20), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pResizeButtonBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,RESIZE_BUTTON_OFS,86,20), 4, 2, WG_OPAQUE);
 		pResizeButtonBlocks->SetGfxBorders(WgBorders(3));
 
-		WgBlockSetPtr pCheckboxUncheckedBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(1,CHECKBOX_OFS,50,11), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pCheckboxUncheckedBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,CHECKBOX_OFS,50,11), 4, 2, WG_OPAQUE);
 		pCheckboxUncheckedBlocks->SetGfxBorders(WgBorders(2));
 		pCheckboxUncheckedBlocks->SetContentBorders(WgBorders(3));
 
-		WgBlockSetPtr pCheckboxCheckedBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(53,CHECKBOX_OFS,50,11), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pCheckboxCheckedBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(53,CHECKBOX_OFS,50,11), 4, 2, WG_OPAQUE);
 		pCheckboxCheckedBlocks->SetGfxBorders(WgBorders(2));
 		pCheckboxCheckedBlocks->SetContentBorders(WgBorders(3));
 
-		WgBlockSetPtr pRadiobuttonUncheckedBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(1,RADIOBUTTON_OFS,50,11), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pRadiobuttonUncheckedBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,RADIOBUTTON_OFS,50,11), 4, 2, WG_OPAQUE);
 		pRadiobuttonUncheckedBlocks->SetContentBorders(WgBorders(3));
 
-		WgBlockSetPtr pRadiobuttonCheckedBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(53,RADIOBUTTON_OFS,50,11), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pRadiobuttonCheckedBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(53,RADIOBUTTON_OFS,50,11), 4, 2, WG_OPAQUE);
 		pRadiobuttonCheckedBlocks->SetContentBorders(WgBorders(3));
 
-		WgBlockSetPtr pButtonBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(1,BUTTON_OFS,38,8), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pButtonBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,BUTTON_OFS,38,8), 4, 2, WG_OPAQUE);
 		pButtonBlocks->SetGfxBorders(WgBorders(3));
 		pButtonBlocks->SetContentBorders(WgBorders(4));
 
-		WgBlockSetPtr pPlateBlocks = WgBlockSet::CreateFromRow(pSurface, WgRect(1,PLATE_OFS,38,8), 4, 2, WG_OPAQUE);
+		WgBlocksetPtr pPlateBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,PLATE_OFS,38,8), 4, 2, WG_OPAQUE);
 		pPlateBlocks->SetGfxBorders(WgBorders(3));
 		pPlateBlocks->SetContentBorders(WgBorders(4));
 
-		WgBlockSetPtr pHSplitBlocks = WgBlockSet::CreateFromRect(pSurface, WgRect(1,SPLITS_AND_FRAME_OFS,8,2), WG_OPAQUE);
+		WgBlocksetPtr pHSplitBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(1,SPLITS_AND_FRAME_OFS,8,2), WG_OPAQUE);
 
-		WgBlockSetPtr pVSplitBlocks = WgBlockSet::CreateFromRect(pSurface, WgRect(11,SPLITS_AND_FRAME_OFS,2,8), WG_OPAQUE);
+		WgBlocksetPtr pVSplitBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(11,SPLITS_AND_FRAME_OFS,2,8), WG_OPAQUE);
 
-		WgBlockSetPtr pFrameBlocks = WgBlockSet::CreateFromRect(pSurface, WgRect(15,SPLITS_AND_FRAME_OFS,8,8), WG_OPAQUE);
+		WgBlocksetPtr pFrameBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(15,SPLITS_AND_FRAME_OFS,8,8), WG_OPAQUE);
 		pFrameBlocks->SetGfxBorders(WgBorders(2));
 		pFrameBlocks->SetContentBorders(WgBorders(3));
 
-		WgBlockSetPtr pBgCheckeredGreyBlocks = WgBlockSet::CreateFromRect( pSurface, WgRect(0,TILES_OFS,64,64), WG_OPAQUE | WG_TILE_ALL );
-		WgBlockSetPtr pBgBlueGradientBlocks = WgBlockSet::CreateFromRect( pSurface, WgRect(1*64,TILES_OFS,64,64), WG_OPAQUE );
+		WgBlocksetPtr pBgCheckeredGreyBlocks = WgBlockset::CreateFromRect( pSurface, WgRect(0,TILES_OFS,64,64), WG_OPAQUE | WG_TILE_ALL );
+		WgBlocksetPtr pBgBlueGradientBlocks = WgBlockset::CreateFromRect( pSurface, WgRect(1*64,TILES_OFS,64,64), WG_OPAQUE );
 
-		WgColorSetPtr pSelectionColors = WgColorSet::Create( WgColor(0x0), WgColor(0x40FFFFFF), WgColor(0x80FFFFFF), WgColor(0x40000000), WgColor(0x0) );
+		WgColorsetPtr pSelectionColors = WgColorset::Create( WgColor(0x0), WgColor(0x40FFFFFF), WgColor(0x80FFFFFF), WgColor(0x40000000), WgColor(0x0) );
 
 
 		WgResDB * pDB = new WgResDB();

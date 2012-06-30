@@ -31,12 +31,12 @@
 
 //____ Constructor ____________________________________________________________
 
-WgTextProp::WgTextProp()
+WgTextprop::WgTextprop()
 {
 	ClearAll();
 }
 
-WgTextProp::WgTextProp( const WgTextPropPtr& pProp )
+WgTextprop::WgTextprop( const WgTextpropPtr& pProp )
 {
 	m_pLink				= pProp->m_pLink;
 	m_pFont				= pProp->m_pFont;
@@ -58,14 +58,14 @@ WgTextProp::WgTextProp( const WgTextPropPtr& pProp )
 
 //____ Register() _____________________________________________________________
 
-WgTextPropPtr WgTextProp::Register() const
+WgTextpropPtr WgTextprop::Register() const
 {
-	return	WgTextPropPtr(WgTextPropManager::RegisterProp(*this));
+	return	WgTextpropPtr(WgTextpropManager::RegisterProp(*this));
 }
 
 //____ ClearAll() _____________________________________________________________
 
-void WgTextProp::ClearAll()
+void WgTextprop::ClearAll()
 {
 	m_visibilityFlags = 0;
 	m_pFont = 0;
@@ -90,7 +90,7 @@ void WgTextProp::ClearAll()
 
 //____ SetColor() _____________________________________________________________
 
-void WgTextProp::SetColor( WgColor col, WgMode mode )
+void WgTextprop::SetColor( WgColor col, WgMode mode )
 {
 	if( mode == WG_MODE_ALL )
 	{
@@ -109,7 +109,7 @@ void WgTextProp::SetColor( WgColor col, WgMode mode )
 
 //____ SetBgColor() ___________________________________________________________
 
-void WgTextProp::SetBgColor( WgColor col, WgMode mode )
+void WgTextprop::SetBgColor( WgColor col, WgMode mode )
 {
 	if( mode == WG_MODE_ALL )
 	{
@@ -129,7 +129,7 @@ void WgTextProp::SetBgColor( WgColor col, WgMode mode )
 
 //____ SetStyle() _____________________________________________________________
 
-void WgTextProp::SetStyle( WgFontStyle style, WgMode mode )
+void WgTextprop::SetStyle( WgFontStyle style, WgMode mode )
 {
 	assert( style<WG_NB_FONTSTYLES );
 
@@ -144,7 +144,7 @@ void WgTextProp::SetStyle( WgFontStyle style, WgMode mode )
 
 //____ SetSize() ______________________________________________________________
 
-void WgTextProp::SetSize( int size, WgMode mode )
+void WgTextprop::SetSize( int size, WgMode mode )
 {
 	assert( size >= 0 && size < 2048 );
 
@@ -161,7 +161,7 @@ void WgTextProp::SetSize( int size, WgMode mode )
 
 //____ SetUnderlined() ________________________________________________________
 
-void WgTextProp::SetUnderlined( WgMode mode )
+void WgTextprop::SetUnderlined( WgMode mode )
 {
 	if( mode == WG_MODE_ALL )
 	{
@@ -174,7 +174,7 @@ void WgTextProp::SetUnderlined( WgMode mode )
 
 //____ ClearColor() _____________________________________________________________
 
-void WgTextProp::ClearColor( WgMode mode )
+void WgTextprop::ClearColor( WgMode mode )
 {
 	if( mode == WG_MODE_ALL )
 	{
@@ -193,7 +193,7 @@ void WgTextProp::ClearColor( WgMode mode )
 
 //____ ClearBgColor() _________________________________________________________
 
-void WgTextProp::ClearBgColor( WgMode mode )
+void WgTextprop::ClearBgColor( WgMode mode )
 {
 	if( mode == WG_MODE_ALL )
 	{
@@ -213,7 +213,7 @@ void WgTextProp::ClearBgColor( WgMode mode )
 
 //____ ClearStyle() _____________________________________________________________
 
-void WgTextProp::ClearStyle( WgMode mode )
+void WgTextprop::ClearStyle( WgMode mode )
 {
 	if( mode == WG_MODE_ALL )
 	{
@@ -226,7 +226,7 @@ void WgTextProp::ClearStyle( WgMode mode )
 
 //____ ClearSize() ______________________________________________________________
 
-void WgTextProp::ClearSize( WgMode mode )
+void WgTextprop::ClearSize( WgMode mode )
 {
 	if( mode == WG_MODE_ALL )
 	{
@@ -240,7 +240,7 @@ void WgTextProp::ClearSize( WgMode mode )
 
 //____ ClearUnderlined() ________________________________________________________
 
-void WgTextProp::ClearUnderlined( WgMode mode )
+void WgTextprop::ClearUnderlined( WgMode mode )
 {
 	if( mode == WG_MODE_ALL )
 	{
@@ -253,7 +253,7 @@ void WgTextProp::ClearUnderlined( WgMode mode )
 
 //____ IsColorStatic() _________________________________________________________
 
-bool WgTextProp::IsColorStatic() const
+bool WgTextprop::IsColorStatic() const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
 		if( m_modeProp[0].m_bColored != m_modeProp[i].m_bColored || m_modeProp[0].m_color != m_modeProp[i].m_color )
@@ -264,7 +264,7 @@ bool WgTextProp::IsColorStatic() const
 
 //____ IsBgColorStatic() _______________________________________________________
 
-bool WgTextProp::IsBgColorStatic() const
+bool WgTextprop::IsBgColorStatic() const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
 		if( m_modeProp[0].m_bBgColor != m_modeProp[i].m_bBgColor || m_modeProp[0].m_bgColor != m_modeProp[i].m_bgColor )
@@ -276,7 +276,7 @@ bool WgTextProp::IsBgColorStatic() const
 
 //____ IsStyleStatic() _________________________________________________________
 
-bool WgTextProp::IsStyleStatic() const
+bool WgTextprop::IsStyleStatic() const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
 		if( m_modeProp[0].m_style != m_modeProp[i].m_style )
@@ -287,7 +287,7 @@ bool WgTextProp::IsStyleStatic() const
 
 //____ IsSizeStatic() __________________________________________________________
 
-bool WgTextProp::IsSizeStatic() const
+bool WgTextprop::IsSizeStatic() const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
 		if( m_modeProp[0].m_size != m_modeProp[i].m_size )
@@ -299,7 +299,7 @@ bool WgTextProp::IsSizeStatic() const
 
 //____ IsUnderlineStatic() _____________________________________________________
 
-bool WgTextProp::IsUnderlineStatic() const
+bool WgTextprop::IsUnderlineStatic() const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
 		if( m_modeProp[0].m_bUnderlined != m_modeProp[i].m_bUnderlined )
@@ -310,7 +310,7 @@ bool WgTextProp::IsUnderlineStatic() const
 
 //____ CompareColorTo() ________________________________________________________
 
-bool WgTextProp::CompareColorTo( const WgTextPropPtr& pProp ) const
+bool WgTextprop::CompareColorTo( const WgTextpropPtr& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
 		if( m_modeProp[i].m_bColored != pProp->m_modeProp[i].m_bColored || m_modeProp[i].m_color != pProp->m_modeProp[i].m_color )
@@ -321,7 +321,7 @@ bool WgTextProp::CompareColorTo( const WgTextPropPtr& pProp ) const
 
 //____ CompareBgColorTo() ______________________________________________________
 
-bool WgTextProp::CompareBgColorTo( const WgTextPropPtr& pProp ) const
+bool WgTextprop::CompareBgColorTo( const WgTextpropPtr& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
 		if( m_modeProp[i].m_bBgColor != pProp->m_modeProp[i].m_bBgColor || m_modeProp[i].m_bgColor != pProp->m_modeProp[i].m_bgColor )
@@ -333,7 +333,7 @@ bool WgTextProp::CompareBgColorTo( const WgTextPropPtr& pProp ) const
 
 //____ CompareStyleTo() ________________________________________________________
 
-bool WgTextProp::CompareStyleTo( const WgTextPropPtr& pProp ) const
+bool WgTextprop::CompareStyleTo( const WgTextpropPtr& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
 		if( m_modeProp[i].m_style != pProp->m_modeProp[i].m_style )
@@ -344,7 +344,7 @@ bool WgTextProp::CompareStyleTo( const WgTextPropPtr& pProp ) const
 
 //____ CompareSizeTo() _________________________________________________________
 
-bool WgTextProp::CompareSizeTo( const WgTextPropPtr& pProp ) const
+bool WgTextprop::CompareSizeTo( const WgTextpropPtr& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
 		if( m_modeProp[i].m_size != pProp->m_modeProp[i].m_size )
@@ -355,7 +355,7 @@ bool WgTextProp::CompareSizeTo( const WgTextPropPtr& pProp ) const
 
 
 //____ CompareUnderlineTo() ____________________________________________________
-bool WgTextProp::CompareUnderlineTo( const WgTextPropPtr& pProp ) const
+bool WgTextprop::CompareUnderlineTo( const WgTextpropPtr& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_MODES ; i++ )
 		if( m_modeProp[i].m_bUnderlined != pProp->m_modeProp[i].m_bUnderlined )
@@ -367,7 +367,7 @@ bool WgTextProp::CompareUnderlineTo( const WgTextPropPtr& pProp ) const
 
 //____ _calculateChecksum() ____________________________________________________
 
-Uint8 WgTextProp::_calculateChecksum() const
+Uint8 WgTextprop::_calculateChecksum() const
 {
 	WgUtil::Checksum8	chk;
 
@@ -392,7 +392,7 @@ Uint8 WgTextProp::_calculateChecksum() const
 
 //____ _compareTo() ____________________________________________________________
 
-bool WgTextProp::_compareTo( const WgTextProp * pProp ) const
+bool WgTextprop::_compareTo( const WgTextprop * pProp ) const
 {
 	if( m_pFont != pProp->m_pFont || m_pLink != pProp->m_pLink ||
 		m_visibilityFlags != pProp->m_visibilityFlags ||
@@ -416,7 +416,7 @@ bool WgTextProp::_compareTo( const WgTextProp * pProp ) const
 
 //____ SetCharVisibility() ____________________________________________________
 
-bool WgTextProp::SetCharVisibility( Uint16 specialCharacter, bool bVisible )
+bool WgTextprop::SetCharVisibility( Uint16 specialCharacter, bool bVisible )
 {
 	switch( specialCharacter )
 	{
@@ -445,7 +445,7 @@ bool WgTextProp::SetCharVisibility( Uint16 specialCharacter, bool bVisible )
 
 //____ CharVisibility() ________________________________________________________
 
-bool WgTextProp::CharVisibility( Uint16 specialCharacter ) const
+bool WgTextprop::CharVisibility( Uint16 specialCharacter ) const
 {
 	switch( specialCharacter )
 	{
@@ -467,83 +467,83 @@ bool WgTextProp::CharVisibility( Uint16 specialCharacter ) const
 }
 
 //=============================================================================
-//							>>> WgTextPropPtr <<<
+//							>>> WgTextpropPtr <<<
 //=============================================================================
 
 //____ Constructor ____________________________________________________________
 
-WgTextPropPtr::WgTextPropPtr( WgTextPropHolder * pProp )
+WgTextpropPtr::WgTextpropPtr( WgTextpropHolder * pProp )
 {
 	if( pProp )
 		m_hProp = pProp->m_id;
 	else
 		m_hProp = 0;
 
-	WgTextPropManager::IncRef(m_hProp, 1);
+	WgTextpropManager::IncRef(m_hProp, 1);
 }
 
-WgTextPropPtr::WgTextPropPtr( Uint16 hProp )
+WgTextpropPtr::WgTextpropPtr( Uint16 hProp )
 {
 	m_hProp = hProp;
-	WgTextPropManager::IncRef(m_hProp);
+	WgTextpropManager::IncRef(m_hProp);
 }
 
 
-WgTextPropPtr::WgTextPropPtr(const WgTextPropPtr& r)
+WgTextpropPtr::WgTextpropPtr(const WgTextpropPtr& r)
 {
 	m_hProp = r.m_hProp;
-	WgTextPropManager::IncRef(m_hProp);
+	WgTextpropManager::IncRef(m_hProp);
 }
 
 
 //____ Destructor _____________________________________________________________
 
-WgTextPropPtr::~WgTextPropPtr()
+WgTextpropPtr::~WgTextpropPtr()
 {
-	WgTextPropManager::DecRef(m_hProp, 1);
+	WgTextpropManager::DecRef(m_hProp, 1);
 }
 
 
 //____ operator= ______________________________________________________________
 
-WgTextPropPtr& WgTextPropPtr::operator=(const WgTextPropPtr& ref)
+WgTextpropPtr& WgTextpropPtr::operator=(const WgTextpropPtr& ref)
 {
 	if(m_hProp != ref.m_hProp)
 	{
-		WgTextPropManager::DecRef(m_hProp);
+		WgTextpropManager::DecRef(m_hProp);
 		m_hProp = ref.m_hProp;
-		WgTextPropManager::IncRef(m_hProp);
+		WgTextpropManager::IncRef(m_hProp);
 	}
 	return *this;
 }
 
-WgTextPropPtr& WgTextPropPtr::operator=(int handle)
+WgTextpropPtr& WgTextpropPtr::operator=(int handle)
 {
 	if(m_hProp != handle)
 	{
-		WgTextPropManager::DecRef(m_hProp);
+		WgTextpropManager::DecRef(m_hProp);
 		m_hProp = handle;
-		WgTextPropManager::IncRef(m_hProp);
+		WgTextpropManager::IncRef(m_hProp);
 	}
 	return *this;
 }
 
 //____ operator* ______________________________________________________________
 
-const WgTextProp & WgTextPropPtr::operator*() const
+const WgTextprop & WgTextpropPtr::operator*() const
 {
-	return WgTextPropManager::GetProp(m_hProp);
+	return WgTextpropManager::GetProp(m_hProp);
 }
 
 //____ operator-> _____________________________________________________________
 
-const WgTextProp * WgTextPropPtr::operator->() const
+const WgTextprop * WgTextpropPtr::operator->() const
 {
-	return WgTextPropManager::GetPropPtr(m_hProp);
+	return WgTextpropManager::GetPropPtr(m_hProp);
 }
 
 //_____________________________________________________________________________
-void WgTextProp::AssertIntegrity() const
+void WgTextprop::AssertIntegrity() const
 {
 	for( int i = 0; i<WG_NB_MODES; i++ )
 		assert( m_modeProp[i].m_style<WG_NB_FONTSTYLES );
@@ -551,7 +551,7 @@ void WgTextProp::AssertIntegrity() const
 
 //_____________________________________________________________________________
 
-bool WgTextProp::IsEqual(WgMode mode0, WgMode mode1) const
+bool WgTextprop::IsEqual(WgMode mode0, WgMode mode1) const
 {
 	return	m_modeProp[mode0].m_bColored == m_modeProp[mode1].m_bColored &&
 			m_modeProp[mode0].m_bBgColor == m_modeProp[mode1].m_bBgColor &&

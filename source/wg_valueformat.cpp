@@ -191,7 +191,7 @@ WgValueFormat::WgValueFormat()
 	bPlus			= false;
 	bZeroIsNegative = false;
 	bForcePeriod	= false;
-	bSetTextProp	= false;
+	bSetTextprop	= false;
 	bForceDecimals	= true;
 	noDecimalThreshold	= 0;
 	scale			= 1;
@@ -221,7 +221,7 @@ WgValueFormat::WgValueFormat( const WgValueFormat& in )
 	bZeroIsNegative = in.bZeroIsNegative;
 	bForcePeriod	= in.bForcePeriod;
 	pTextProperties	= in.pTextProperties;
-	bSetTextProp	= in.bSetTextProp;
+	bSetTextprop	= in.bSetTextprop;
 	bForceDecimals	= in.bForceDecimals;
 	noDecimalThreshold = in.noDecimalThreshold;
 	scale			= in.scale;
@@ -236,7 +236,7 @@ WgValueFormat::WgValueFormat( int nInt, int nDec, int grouping, bool bPlus,
 	separator		= _separator /*0xA0=NO_BREAK_SPACE*/;
 	period			= 0x2e;
 
-	bSetTextProp	= false;
+	bSetTextprop	= false;
 	bForceDecimals	= true;
 	bZeroIsNegative = false;
 	noDecimalThreshold	= 0;
@@ -260,7 +260,7 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 	bPlus			= false;
 	bZeroIsNegative = false;
 	bForcePeriod	= false;
-	bSetTextProp	= false;
+	bSetTextprop	= false;
 	bForceDecimals	= true;
 	noDecimalThreshold	= 0;
 	scale			= 1;

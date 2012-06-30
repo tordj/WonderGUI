@@ -170,7 +170,7 @@ public:
 
 //  --------------
 
-	inline const WgTextPropPtr&	getProperties() const { return m_pBaseProp; }
+	inline const WgTextpropPtr&	getProperties() const { return m_pBaseProp; }
 	inline WgColor				getColor() const { return m_pBaseProp->Color(); }
 	inline WgColor				getColor(WgMode mode) const { return m_pBaseProp->Color(mode); }
 	inline WgFontStyle			getStyle(WgMode mode) const { return m_pBaseProp->Style(mode); }
@@ -180,7 +180,7 @@ public:
 
 //	--------------
 
-	void				setProperties( const WgTextPropPtr& pProp );
+	void				setProperties( const WgTextpropPtr& pProp );
 
 	void				setColor( const WgColor color );
 	void				setColor( const WgColor color, WgMode mode );
@@ -210,13 +210,13 @@ public:
 
 // -------------
 
-	void				setLinkProperties( const WgTextPropPtr& pProp );
+	void				setLinkProperties( const WgTextpropPtr& pProp );
 	void				clearLinkProperties();
-	WgTextPropPtr		getLinkProperties() const { return m_pLinkProp; }
+	WgTextpropPtr		getLinkProperties() const { return m_pLinkProp; }
 
-	void				setSelectionProperties( const WgTextPropPtr& pProp );
+	void				setSelectionProperties( const WgTextpropPtr& pProp );
 	void				clearSelectionProperties();
-	WgTextPropPtr		getSelectionProperties() const { return m_pSelectionProp; }
+	WgTextpropPtr		getSelectionProperties() const { return m_pSelectionProp; }
 
 // -------------
 
@@ -238,7 +238,7 @@ public:
 	WgFontStyle			GetCharStyle(		int charOfs ) const;
 	int					GetCharSize(		int charOfs ) const;
 	WgFont *			GetCharFont(		int charOfs ) const;
-//	WgGlyphSet *		GetCharGlyphSet(	int charOfs ) const;
+//	WgGlyphset *		GetCharGlyphset(	int charOfs ) const;
 //	bool				GetCharVisibility(	int charOfs ) const;
 	int					GetCharBreakLevel(	int charOfs ) const;
 	WgTextLinkPtr		GetCharLink(		int charOfs ) const;
@@ -406,11 +406,11 @@ public:
 	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }
 	WgMode			GetMarkedLinkMode() const { return m_markedLinkMode; }
 
-	inline void		SetBaseColors( const WgColorSetPtr& pColors ) { m_pBaseColors = pColors; }
-	inline WgColorSetPtr BaseColors() const { return m_pBaseColors; }
+	inline void		SetBaseColors( const WgColorsetPtr& pColors ) { m_pBaseColors = pColors; }
+	inline WgColorsetPtr BaseColors() const { return m_pBaseColors; }
 
-	inline void		SetBgBlockColors( const WgColorSetPtr& pColors ) { m_pBgBlockColors = pColors; }
-	inline WgColorSetPtr BgBlockColors() const { return m_pBgBlockColors; }
+	inline void		SetBgBlockColors( const WgColorsetPtr& pColors ) { m_pBgBlockColors = pColors; }
+	inline WgColorsetPtr BgBlockColors() const { return m_pBgBlockColors; }
 
 protected:
 
@@ -455,13 +455,13 @@ protected:
 	int				m_selEndCol;
 	Sint8			m_lineSpaceAdj;		// Adjustment of linespacing for this text.
 
-	WgColorSetPtr	m_pBgBlockColors;	// Textcolors as defined by background blockset (lowest prio).
+	WgColorsetPtr	m_pBgBlockColors;	// Textcolors as defined by background blockset (lowest prio).
 
-	WgColorSetPtr	m_pBaseColors;		// Default colors for this text (prio between m_pBgBlockColors and m_pBaseProp).
-	WgTextPropPtr	m_pBaseProp;		// Default properties for this text. Used for all characters who have
+	WgColorsetPtr	m_pBaseColors;		// Default colors for this text (prio between m_pBgBlockColors and m_pBaseProp).
+	WgTextpropPtr	m_pBaseProp;		// Default properties for this text. Used for all characters who have
 										// properties set to 0.
-	WgTextPropPtr	m_pLinkProp;		// Props used for links, overriding certain text and char properties.
-	WgTextPropPtr	m_pSelectionProp;	// Props used for selected text, overriding certain text, char and link properties.
+	WgTextpropPtr	m_pLinkProp;		// Props used for links, overriding certain text and char properties.
+	WgTextpropPtr	m_pSelectionProp;	// Props used for selected text, overriding certain text, char and link properties.
 
 	WgTextLine*		m_pHardLines;
 	WgTextLine*		m_pSoftLines;

@@ -67,20 +67,20 @@ public:
 	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
 
-	bool			SetSource( const WgBlockSetPtr& pUnchecked, const WgBlockSetPtr& pChecked );
+	bool			SetSource( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked );
 
-	WgBlockSetPtr	GetCheckedSource() const { return m_pBlockChecked; }
-	WgBlockSetPtr	GetUncheckedSource() const { return m_pBlockUnchecked; }
+	WgBlocksetPtr	GetCheckedSource() const { return m_pBlockChecked; }
+	WgBlocksetPtr	GetUncheckedSource() const { return m_pBlockUnchecked; }
 
-	void			SetIcons( const WgBlockSetPtr& pUnchecked, const WgBlockSetPtr& pChecked, 
+	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked, 
 							  const WgOrientation& orientation, WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
-	void			SetIcons( const WgBlockSetPtr& pUnchecked, const WgBlockSetPtr& pChecked );
-	void			SetCheckedIcon( const WgBlockSetPtr& pChecked );
-	void			SetUncheckedIcon( const WgBlockSetPtr& pUnchecked );
+	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked );
+	void			SetCheckedIcon( const WgBlocksetPtr& pChecked );
+	void			SetUncheckedIcon( const WgBlocksetPtr& pUnchecked );
 
 
-	WgBlockSetPtr	GetCheckedIcon() const { return m_pIconChecked; }
-	WgBlockSetPtr	GetUncheckedIcon() const { return m_pIconUnchecked; }
+	WgBlocksetPtr	GetCheckedIcon() const { return m_pIconChecked; }
+	WgBlocksetPtr	GetUncheckedIcon() const { return m_pIconUnchecked; }
 
 	inline bool		IsChecked() { return m_bChecked; };
 
@@ -126,11 +126,11 @@ private:
 	bool			m_bPressed;						// Set when mouse is pressed and over.
 	bool			m_bFlipOnRelease;				// Set if we want to flip checkbox on press (default), not click.
 
-	WgBlockSetPtr	m_pIconUnchecked;
-	WgBlockSetPtr	m_pIconChecked;
+	WgBlocksetPtr	m_pIconUnchecked;
+	WgBlocksetPtr	m_pIconChecked;
 
-	WgBlockSetPtr	m_pBlockUnchecked;
-	WgBlockSetPtr	m_pBlockChecked;
+	WgBlocksetPtr	m_pBlockUnchecked;
+	WgBlocksetPtr	m_pBlockChecked;
 	WgText			m_text;
 
 	ClickArea		m_clickArea;

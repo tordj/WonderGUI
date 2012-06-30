@@ -77,36 +77,36 @@ public:
 
 	//____ Methods ___________________________________________
 
-	bool			SetBgSource( const WgBlockSetPtr pBgGfx, Uint8 iconFieldWidth, Uint8 arrowFieldWidth );
-	WgBlockSetPtr	GetBgSource() const				{ return m_pBgGfx; }
+	bool			SetBgSource( const WgBlocksetPtr pBgGfx, Uint8 iconFieldWidth, Uint8 arrowFieldWidth );
+	WgBlocksetPtr	GetBgSource() const				{ return m_pBgGfx; }
 	Uint8			GetIconFieldWidth() const		{ return m_iconFieldWidth; }
 	Uint8			GetArrowFieldWidth() const		{ return m_arrowFieldWidth; }
 
-	bool			SetSeparatorSource( const WgBlockSetPtr pGfx, const WgBorders& sepBorders = WgBorders() );
-	WgBlockSetPtr	GetSeparatorSource() const { return m_pSepGfx; }
+	bool			SetSeparatorSource( const WgBlocksetPtr pGfx, const WgBorders& sepBorders = WgBorders() );
+	WgBlocksetPtr	GetSeparatorSource() const { return m_pSepGfx; }
 	WgBorders		GetSeparatorBorders() const { return m_sepBorders; }
 
-	bool			SetCheckBoxSource( const WgBlockSetPtr pUnchecked, const WgBlockSetPtr pChecked );
-	WgBlockSetPtr	GetCheckedSource() const { return m_pCbGfxChecked; }
-	WgBlockSetPtr	GetUncheckedSource() const { return m_pCbGfxUnchecked; }
+	bool			SetCheckBoxSource( const WgBlocksetPtr pUnchecked, const WgBlocksetPtr pChecked );
+	WgBlocksetPtr	GetCheckedSource() const { return m_pCbGfxChecked; }
+	WgBlocksetPtr	GetUncheckedSource() const { return m_pCbGfxUnchecked; }
 
-	bool			SetRadioButtonSource( const WgBlockSetPtr pUnchecked, const WgBlockSetPtr pChecked );
-	WgBlockSetPtr 	GetRadioCheckedSource() const { return m_pRbGfxSelected; }
-	WgBlockSetPtr 	GetRadioUncheckedSource() const { return m_pRbGfxUnselected; }
+	bool			SetRadioButtonSource( const WgBlocksetPtr pUnchecked, const WgBlocksetPtr pChecked );
+	WgBlocksetPtr 	GetRadioCheckedSource() const { return m_pRbGfxSelected; }
+	WgBlocksetPtr 	GetRadioUncheckedSource() const { return m_pRbGfxUnselected; }
 
 	bool			SetArrowSource( WgGfxAnim * pAnim );
 
-	bool			SetTextProperties( const WgTextPropPtr& pEntryProperties, const WgTextPropPtr& pKeyAccelProperties );
-	WgTextPropPtr	GetTextEntryProperties() const { return m_pEntryProp; }
-	WgTextPropPtr	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
+	bool			SetTextProperties( const WgTextpropPtr& pEntryProperties, const WgTextpropPtr& pKeyAccelProperties );
+	WgTextpropPtr	GetTextEntryProperties() const { return m_pEntryProp; }
+	WgTextpropPtr	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
 
-	bool			SetSliderSource(  WgBlockSetPtr pBgGfx, WgBlockSetPtr pBarGfx, WgBlockSetPtr pBtnBwdGfx, WgBlockSetPtr pBtnFwdGfx );
+	bool			SetSliderSource(  WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx );
 	bool			SetSliderButtonLayout(  WgGizmoSlider::ButtonLayout layout );
 	WgGizmoSlider::ButtonLayout GetSliderButtonLayout() const { return m_sliderBtnLayout; }
-	WgBlockSetPtr 	GetSliderBgSource() const { return m_pSliderBgGfx; }
-	WgBlockSetPtr 	GetSliderBarSource() const { return m_pSliderBarGfx; }
-	WgBlockSetPtr 	GetSliderBwdSource() const { return m_pSliderBtnBwdGfx; }
-	WgBlockSetPtr 	GetSliderFwdSource() const { return m_pSliderBtnFwdGfx; }
+	WgBlocksetPtr 	GetSliderBgSource() const { return m_pSliderBgGfx; }
+	WgBlocksetPtr 	GetSliderBarSource() const { return m_pSliderBarGfx; }
+	WgBlocksetPtr 	GetSliderBwdSource() const { return m_pSliderBtnBwdGfx; }
+	WgBlocksetPtr 	GetSliderFwdSource() const { return m_pSliderBtnFwdGfx; }
 
 	int			GetEntryHeight() const;
 
@@ -281,7 +281,7 @@ private:
 
 	// Members defining background
 
-	WgBlockSetPtr			m_pBgGfx;
+	WgBlocksetPtr			m_pBgGfx;
 
 	// Members defining content layout
 
@@ -290,7 +290,7 @@ private:
 
 	// Members defining separators
 
-	WgBlockSetPtr			m_pSepGfx;
+	WgBlocksetPtr			m_pSepGfx;
 	WgBorders				m_sepBorders;
 
 	// Members defining the arrow for submenus
@@ -303,25 +303,25 @@ private:
 	Uint8					m_entryHeight;		// Height of a menu entry >= font height.
 	Uint8					m_sepHeight;		// Height of a separator menu entry.
 
-	WgTextPropPtr			m_pEntryProp;		// Default text properties for entry.
-	WgTextPropPtr			m_pKeyAccelProp;	// Default text properties for keyboard shortcuts.
+	WgTextpropPtr			m_pEntryProp;		// Default text properties for entry.
+	WgTextpropPtr			m_pKeyAccelProp;	// Default text properties for keyboard shortcuts.
 
 	// Members defining checkbox entries
 
-	WgBlockSetPtr			m_pCbGfxChecked;
-	WgBlockSetPtr			m_pCbGfxUnchecked;
+	WgBlocksetPtr			m_pCbGfxChecked;
+	WgBlocksetPtr			m_pCbGfxUnchecked;
 
 	// Members defining radiobutton entries.
 
-	WgBlockSetPtr			m_pRbGfxSelected;
-	WgBlockSetPtr			m_pRbGfxUnselected;
+	WgBlocksetPtr			m_pRbGfxSelected;
+	WgBlocksetPtr			m_pRbGfxUnselected;
 
 	// Members defining dragbar.
 
-	WgBlockSetPtr				m_pSliderBgGfx;
-	WgBlockSetPtr				m_pSliderBarGfx;
-	WgBlockSetPtr				m_pSliderBtnFwdGfx;
-	WgBlockSetPtr				m_pSliderBtnBwdGfx;
+	WgBlocksetPtr				m_pSliderBgGfx;
+	WgBlocksetPtr				m_pSliderBarGfx;
+	WgBlocksetPtr				m_pSliderBtnFwdGfx;
+	WgBlocksetPtr				m_pSliderBtnBwdGfx;
 	WgGizmoSlider::ButtonLayout	m_sliderBtnLayout;
 };
 

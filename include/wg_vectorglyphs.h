@@ -53,7 +53,7 @@ typedef struct FT_FaceRec_*	FT_Face;
 typedef struct  FT_Bitmap_ FT_Bitmap;
 
 
-class WgVectorGlyphs : public WgGlyphSet
+class WgVectorGlyphs : public WgGlyphset
 {
 public:
 
@@ -105,12 +105,12 @@ private:
 	{
 	public:
 		Glyph();
-		Glyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, WgGlyphSet * pGlyphSet );
+		Glyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, WgGlyphset * pGlyphset );
 		~Glyph();
 		const WgGlyphBitmap * GetBitmap();
 
 		void	SlotLost() { m_pSlot = 0; }
-		bool	IsInitialized() { return m_pGlyphSet?true:false; }
+		bool	IsInitialized() { return m_pGlyphset?true:false; }
 
 		CacheSlot * m_pSlot;
 		Uint16		m_size;			// size of character in points.

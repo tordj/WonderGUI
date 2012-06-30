@@ -215,7 +215,7 @@ void WgOrdSelLayout::SetSelectMode( WgSelectMode mode )
 
 //____ SetBgBlocks() _____________________________________________________
 
-void WgOrdSelLayout::SetBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetPtr& pEvenBg )
+void WgOrdSelLayout::SetBgBlocks( const WgBlocksetPtr& pOddBg, const WgBlocksetPtr& pEvenBg )
 {
 	m_pOddBgBlocks = pOddBg;
 	m_pEvenBgBlocks = pEvenBg;
@@ -224,7 +224,7 @@ void WgOrdSelLayout::SetBgBlocks( const WgBlockSetPtr& pOddBg, const WgBlockSetP
 
 //____ SetFgBlocks() _____________________________________________________
 
-void WgOrdSelLayout::SetFgBlocks( const WgBlockSetPtr& pFg )
+void WgOrdSelLayout::SetFgBlocks( const WgBlocksetPtr& pFg )
 {
 	m_pFgBlocks = pFg;
 	_refreshAllGizmos();
@@ -232,7 +232,7 @@ void WgOrdSelLayout::SetFgBlocks( const WgBlockSetPtr& pFg )
 
 //____ SetBgColors() _____________________________________________________
 
-void WgOrdSelLayout::SetBgColors( const WgColorSetPtr& pOddBg, const WgColorSetPtr& pEvenBg )
+void WgOrdSelLayout::SetBgColors( const WgColorsetPtr& pOddBg, const WgColorsetPtr& pEvenBg )
 {
 	m_pOddBgColors = pOddBg;
 	m_pEvenBgColors = pEvenBg;

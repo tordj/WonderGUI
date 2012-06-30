@@ -40,36 +40,36 @@
 
 class WgChar;
 class WgFont;
-class WgGlyphSet;
-class WgTextProp;
-class WgTextPropPtr;
-class WgTextLink;
-class WgTextPropHolder;
-class WgTextPropManager;
+class WgGlyphset;
+class WgTextprop;
+class WgTextpropPtr;
+class WgTextlink;
+class WgTextpropHolder;
+class WgTextpropManager;
 
-//____ WgTextPropPtr __________________________________________________________
+//____ WgTextpropPtr __________________________________________________________
 
-class WgTextPropPtr
+class WgTextpropPtr
 {
 public:
 	friend class WgChar;
 	friend class WgText;
 	friend class WgPen;
 
-	WgTextPropPtr( WgTextPropHolder * pProp = 0 );
-	explicit WgTextPropPtr( Uint16 hProp );
-	WgTextPropPtr(const WgTextPropPtr& r);
-	~WgTextPropPtr();
+	WgTextpropPtr( WgTextpropHolder * pProp = 0 );
+	explicit WgTextpropPtr( Uint16 hProp );
+	WgTextpropPtr(const WgTextpropPtr& r);
+	~WgTextpropPtr();
 
 
-	WgTextPropPtr& operator=(const WgTextPropPtr& ref);
-	WgTextPropPtr& operator=(int handle);
+	WgTextpropPtr& operator=(const WgTextpropPtr& ref);
+	WgTextpropPtr& operator=(int handle);
 
-	inline bool operator==(const WgTextPropPtr& other) const { return m_hProp == other.m_hProp; }
-	inline bool operator!=(const WgTextPropPtr& other) const { return m_hProp != other.m_hProp; }
+	inline bool operator==(const WgTextpropPtr& other) const { return m_hProp == other.m_hProp; }
+	inline bool operator!=(const WgTextpropPtr& other) const { return m_hProp != other.m_hProp; }
 
-	const WgTextProp & operator*() const;
-	const WgTextProp * operator->() const;
+	const WgTextprop & operator*() const;
+	const WgTextprop * operator->() const;
 	inline operator bool() const { return (m_hProp != 0); }
 
 	inline	Uint16 GetHandle() const { return m_hProp; }
@@ -79,22 +79,22 @@ private:
 };
 
 
-//____ WgTextProp _____________________________________________________________
+//____ WgTextprop _____________________________________________________________
 
-class WgTextProp
+class WgTextprop
 {
 	friend class WgChar;
 	friend class WgTextTool;
 	friend class WgGfxDevice;
-	friend class WgTextPropManager;
+	friend class WgTextpropManager;
 
 public:
 
-	WgTextProp();
-	WgTextProp( const WgTextPropPtr& pProp );
-//	~WgTextProp();
+	WgTextprop();
+	WgTextprop( const WgTextpropPtr& pProp );
+//	~WgTextprop();
 
-	WgTextPropPtr	Register() const;
+	WgTextpropPtr	Register() const;
 
 	void			SetColor( WgColor col, WgMode mode = WG_MODE_ALL );
 	void			SetBgColor( WgColor col, WgMode mode = WG_MODE_ALL );
@@ -143,15 +143,15 @@ public:
 	bool					IsSizeStatic() const;
 	bool					IsUnderlineStatic() const;
 
-	inline bool		CompareTo( const WgTextPropPtr& pProp ) const { return _compareTo( &(*pProp) ); }
-	bool			CompareColorTo( const WgTextPropPtr& pProp ) const;
-	bool			CompareBgColorTo( const WgTextPropPtr& pProp ) const;
-	bool			CompareStyleTo( const WgTextPropPtr& pProp ) const;
-	bool			CompareSizeTo( const WgTextPropPtr& pProp ) const;
-	bool			CompareUnderlineTo( const WgTextPropPtr& pProp ) const;
+	inline bool		CompareTo( const WgTextpropPtr& pProp ) const { return _compareTo( &(*pProp) ); }
+	bool			CompareColorTo( const WgTextpropPtr& pProp ) const;
+	bool			CompareBgColorTo( const WgTextpropPtr& pProp ) const;
+	bool			CompareStyleTo( const WgTextpropPtr& pProp ) const;
+	bool			CompareSizeTo( const WgTextpropPtr& pProp ) const;
+	bool			CompareUnderlineTo( const WgTextpropPtr& pProp ) const;
 
 private:
-	bool			_compareTo( const WgTextProp * pProp ) const;
+	bool			_compareTo( const WgTextprop * pProp ) const;
 
 	Uint8			_calculateChecksum() const;
 

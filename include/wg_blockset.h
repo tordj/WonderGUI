@@ -131,22 +131,22 @@ private:
 	WgCoord				m_contentShift;
 };
 
-//____ WgBlockSet _____________________________________________________________
+//____ WgBlockset _____________________________________________________________
 
-class WgColorSet;
-class WgBlockSet;
+class WgColorset;
+class WgBlockset;
 class WgMemPool;
 
-typedef	WgSmartPtr<WgColorSet>			WgColorSetPtr;
-typedef	WgSmartPtrPooled<WgBlockSet>	WgBlockSetPtr;
+typedef	WgSmartPtr<WgColorset>			WgColorsetPtr;
+typedef	WgSmartPtrPooled<WgBlockset>	WgBlocksetPtr;
 
 
-class WgBlockSet : private WgLink, public WgRefCountedPooled
+class WgBlockset : private WgLink, public WgRefCountedPooled
 {
 	friend class WgSurface;
 
 protected:
-	WgBlockSet(	WgMemPool * pPool, const WgSurface * pSurf, Uint32 flags );
+	WgBlockset(	WgMemPool * pPool, const WgSurface * pSurf, Uint32 flags );
 
 	struct Alt_Data
 	{
@@ -172,13 +172,13 @@ protected:
 	};
 
 public:
-	static WgBlockSetPtr CreateFromSurface( WgSurface * pSurf, int flags = 0 );
-	static WgBlockSetPtr CreateFromRect( WgSurface * pSurf, const WgRect& normal, int flags = 0 );
-	static WgBlockSetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, int flags = 0 );
-	static WgBlockSetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, int flags = 0 );
-	static WgBlockSetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, const WgCoord& special, int flags = 0 );
-	static WgBlockSetPtr CreateFromRow( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding=0, int flags = 0 );
-	static WgBlockSetPtr CreateFromColumn( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding=0, int flags = 0 );
+	static WgBlocksetPtr CreateFromSurface( WgSurface * pSurf, int flags = 0 );
+	static WgBlocksetPtr CreateFromRect( WgSurface * pSurf, const WgRect& normal, int flags = 0 );
+	static WgBlocksetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, int flags = 0 );
+	static WgBlocksetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, int flags = 0 );
+	static WgBlocksetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, const WgCoord& special, int flags = 0 );
+	static WgBlocksetPtr CreateFromRow( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding=0, int flags = 0 );
+	static WgBlocksetPtr CreateFromColumn( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding=0, int flags = 0 );
 
 
 	bool				AddAlternative( WgSize activationSize, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked,
@@ -188,7 +188,7 @@ public:
 	bool				SetSize( WgSize size, int alt = 0 );
 	bool				SetPos( WgMode mode, WgCoord pos, int alt = 0 );
 
-	void				SetTextColors( const WgColorSetPtr& colors );
+	void				SetTextColors( const WgColorsetPtr& colors );
 	void				SetGfxBorders( const WgBorders& borders, int alt = 0 );
 	void				SetContentBorders( const WgBorders& borders, int alt = 0 );
 	bool				SetContentShift( WgMode mode, WgCoord ofs, int alt = 0 );
@@ -206,7 +206,7 @@ public:
 	WgSize				ActivationSize( int alt ) const;
 
 
-	inline WgColorSetPtr	TextColors() const { return m_pTextColors; }
+	inline WgColorsetPtr	TextColors() const { return m_pTextColors; }
 	WgColor				TextColor( WgMode mode ) const;
 	WgRect				Rect( WgMode mode, int alt = 0 ) const;
 	WgSize				Size( int alt = 0 ) const;
@@ -245,7 +245,7 @@ public:
 
 private:
 	static Uint32	_verifyFlags(Uint32 flags);
-	static WgBlockSet * _alloc( const WgSurface * pSurf, int flags );
+	static WgBlockset * _alloc( const WgSurface * pSurf, int flags );
 
 	Alt_Data *		_getAlt( int n );
 	Alt_Data *		_getAlt( WgSize destSize );
@@ -254,7 +254,7 @@ private:
 
 	inline WgBlock	_getBlock( WgMode mode, const Alt_Data * pAlt ) const;
 
-	WgColorSetPtr				m_pTextColors;		// Default colors for text placed on this block.
+	WgColorsetPtr				m_pTextColors;		// Default colors for text placed on this block.
 	Uint32						m_flags;
 	Alt_Data					m_base;				// Original blocks (Alt=0)
 
@@ -265,7 +265,7 @@ private:
 };
 
 
-inline WgBlock WgBlockSet::_getBlock(WgMode m, const Alt_Data * p) const
+inline WgBlock WgBlockset::_getBlock(WgMode m, const Alt_Data * p) const
 {
 	if( !p )
 		return WgBlock();
@@ -276,7 +276,7 @@ inline WgBlock WgBlockSet::_getBlock(WgMode m, const Alt_Data * p) const
 	return WgBlock( p->pSurf, WgRect(p->x[m], p->y[m], p->w, p->h), p->gfxBorders, p->contentBorders, p->contentShift[m], flags );
 }
 
-inline bool WgBlockSet::HasBlock(WgMode m, int alt) const
+inline bool WgBlockset::HasBlock(WgMode m, int alt) const
 {
 	const Alt_Data * p = _getAlt(alt);
 	if( !p )
@@ -288,7 +288,7 @@ inline bool WgBlockSet::HasBlock(WgMode m, int alt) const
 	return false;
 }
 
-inline bool WgBlockSet::IsModeSkipable(WgMode m) const
+inline bool WgBlockset::IsModeSkipable(WgMode m) const
 {
 	// NOTE: This code is depending on WG_SKIP_* and WgMode being in sync...
 

@@ -24,7 +24,7 @@
 #include <wg_gizmo_container.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"RadioButton"};
+static const char	c_gizmoType[] = {"Radiobutton"};
 
 
 
