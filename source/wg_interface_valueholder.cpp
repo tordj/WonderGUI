@@ -25,7 +25,7 @@
 #include <wg_string.h>
 
 #include <math.h>
-#include <stdint.h>
+//#include <stdint.h>
 
 //____ Constructor ____________________________________________________________
 

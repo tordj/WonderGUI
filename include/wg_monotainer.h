@@ -60,6 +60,10 @@ protected:
 		friend class WgMonotainer;
 
 	public:
+
+		const char *Type( void ) const;
+		static const char * ClassType();
+
 		// Standard Hook methods
 
 		WgCoord			Pos() const { return m_pParent->Pos(); }

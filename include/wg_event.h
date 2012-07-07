@@ -400,6 +400,7 @@ namespace WgEvent
 		WgGizmoSlider* Slider() const;
 		float			Pos() const;
 		float			Length() const;
+		float			Value() const;
 
 	protected:
 		SliderEvent( WgGizmoSlider * pGizmo, float pos, float length );
@@ -446,6 +447,19 @@ namespace WgEvent
 		float		m_distance;
 	};
 
+	//____ WgGizmoKnob events _________________________________________________
+
+	class KnobTurn : public Event
+	{
+	public:
+		KnobTurn( WgGizmo * pGizmo, int pos, float fraction ); //TODO: Change to WgGizmoKnob* when we have impoted WgGizmoKnob to main code.
+//		WgGizmoKnob * Knob() const;		TODO: Add when we have imported WgGizmoKnob to main code.
+		float	Fraction() const;
+		int		Pos() const;
+	private:
+		float	m_fraction;
+		float	m_pos;
+	};
 
 	//____ Text events ________________________________________
 

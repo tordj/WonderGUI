@@ -643,6 +643,16 @@ namespace WgEvent
 		return m_length;
 	}
 
+	float SliderEvent::Value() const
+	{
+		int max = 1.f - m_length;
+
+		if( max == 0.f )
+			return 0.5f;		// is this logically correct?
+		else
+			return m_pos / max;
+	}
+
 	SliderMove::SliderMove( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
 	{
 		m_type = WG_EVENT_SLIDER_MOVE;
@@ -887,6 +897,27 @@ namespace WgEvent
 		m_link			= link;
 		m_button		= button;
 	}
+
+	//____ Knob event methods ____________________________________________________
+
+	KnobTurn::KnobTurn( WgGizmo * pGizmo, int pos, float fraction )
+	{
+		m_type		= WG_EVENT_KNOB_TURN;
+		m_pGizmo	= pGizmo;
+		m_pos		= pos;
+		m_fraction	= fraction;
+	}
+
+	float KnobTurn::Fraction() const
+	{
+		return m_fraction;
+	}
+
+	int KnobTurn::Pos() const
+	{
+		return m_pos;
+	}
+
 
 
 	//____ MousePosition _______________________________________________________

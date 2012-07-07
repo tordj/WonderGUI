@@ -25,6 +25,7 @@
 #include <wg_patches.h>
 
 static const char	c_gizmoType[] = {"Stack"};
+static const char	c_hookType[] = {"StackHook"};
 
 
 void WgStackHook::SetSizePolicy( SizePolicy policy )
@@ -56,6 +57,17 @@ void WgStackHook::SetOrientation( WgOrientation orientation )
 
 WgStackHook::WgStackHook( WgGizmoStack * pParent ): m_pParent(pParent), m_orientation( WG_NORTHWEST ), m_sizePolicy( STRETCH )
 {
+}
+
+
+const char * WgStackHook::Type( void ) const
+{
+	return ClassType();
+}
+
+const char * WgStackHook::ClassType()
+{
+	return c_hookType;
 }
 
 

@@ -37,7 +37,7 @@
 class WgGfxDevice;
 class WgGizmo;
 
-class WgRoot : private WgGizmoParent
+class WgRoot : public WgGizmoParent
 {
 public:
 	WgRoot();
@@ -80,6 +80,10 @@ public:
 	inline int				NbDirtyRects() const { return m_dirtyPatches.Size(); }
 	inline const WgRect*	FirstDirtyRect() const { return m_dirtyPatches.IsEmpty() ? 0 : m_dirtyPatches.Begin(); }
 
+	inline int				NbUpdatedRects() const { return m_updatedPatches.Size(); }
+	inline const WgRect*	FirstUpdatedRect() const { return m_updatedPatches.IsEmpty() ? 0 : m_updatedPatches.Begin(); }
+
+
 	bool	Render();
 	bool	Render( const WgRect& clip );
 
@@ -98,6 +102,9 @@ protected:
 	public:
 		Hook() : m_pRoot(0) {};				// So we can make them members and then make placement new...
 		~Hook();
+
+		const char *Type( void ) const;
+		static const char * ClassType();
 
 		WgCoord			Pos() const;
 		WgSize			Size() const;
@@ -131,7 +138,8 @@ protected:
 	WgGizmoModallayer *		_getModalLayer() const { return 0; }
 	WgGizmoMenulayer*	_getMenuLayer() const { return 0; }
 
-	WgPatches			m_dirtyPatches;
+	WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
+	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
 	WgGfxDevice *		m_pGfxDevice;
 	WgEventHandler *	m_pEventHandler;

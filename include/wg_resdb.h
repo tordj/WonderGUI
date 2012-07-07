@@ -154,12 +154,14 @@ public:
 	void				SetResLoader( WgResLoader * pLoader );
 	void				Clear();
 
+	void				DestroySurfaces();
 	void				DestroyFonts();
 	void				DestroyAnims();
 	void				DestroyCursors();
 	void				DestroyTextManagers();
 
-	void				ClearGizmos();// debug function
+	void				ClearSurfaces();
+	void				ClearGizmos();
 
 	std::string			LoadString( const std::string& token );
 

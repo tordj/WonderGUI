@@ -254,6 +254,7 @@ int WgUtil::SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy pol
 			if( defaultSize < specifiedSize )
 				return specifiedSize;
 	}
+	return defaultSize;
 }
 
 //____ SizeFromPolicy() ________________________________________________________

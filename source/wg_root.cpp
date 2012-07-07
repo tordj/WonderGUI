@@ -29,6 +29,9 @@
 
 #include <wg_eventhandler.h>
 
+static const char	c_hookType[] = {"RootHook"};
+
+
 //____ Constructor ____________________________________________________________
 
 WgRoot::WgRoot()
@@ -90,7 +93,12 @@ WgRect WgRoot::Geo() const
 	if( m_bHasGeo )
 		return m_geo;
 	else if( m_pGfxDevice )
-		return  WgRect( WgCoord(0,0), m_pGfxDevice->CanvasSize() );
+	{
+		WgRect r( WgCoord(0,0), m_pGfxDevice->CanvasSize() );
+		if( r.w == 0 || r.h == 0 )
+			int x = 0;
+		return r;
+	}
 	else
 		return WgRect(0,0,0,0);
 }
@@ -232,6 +240,11 @@ bool WgRoot::EndRender( void )
 	if( !m_pGfxDevice || !m_hook.Gizmo() )
 		return false;						// No GFX-device or no widgets to render.
 
+	// Turn dirty patches into update patches
+	//TODO: Optimize by just making a swap.
+
+	m_updatedPatches.Clear();
+	m_updatedPatches.Add(&m_dirtyPatches);
 	m_dirtyPatches.Clear();
 
 	return m_pGfxDevice->EndRender();
@@ -278,6 +291,16 @@ WgRoot::Hook::~Hook()
 {
 }
 
+const char * WgRoot::Hook::Type( void ) const
+{
+	return ClassType();
+}
+
+const char * WgRoot::Hook::ClassType()
+{
+	return c_hookType;
+}
+
 WgCoord WgRoot::Hook::Pos() const
 {
 	return m_pRoot->Geo();
@@ -310,6 +333,7 @@ bool WgRoot::Hook::SetHidden( bool bHide )
 		m_bHidden = bHide;
 		m_pRoot->AddDirtyPatch( Geo() );
 	}
+	return true;
 }
 
 WgRoot* WgRoot::Hook::Root() const

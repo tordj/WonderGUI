@@ -412,9 +412,9 @@ void WgEventHandler::_addCallback( const WgEventFilter& filter, Callback * pCall
 	{
 		WgGizmoWeakPtr pGizmo = filter.Gizmo();
 
-		WgChain<Callback>*	pChain = &m_gizmoCallbacks[pGizmo];
+		WgChain<Callback>& chain = m_gizmoCallbacks[pGizmo];
 
-		pChain->PushBack(pCallback);
+		chain.PushBack(pCallback);
 	}
 	else
 		m_globalCallbacks.PushBack( pCallback );
@@ -755,11 +755,17 @@ void WgEventHandler::_processEventCallbacks( WgEvent::Event * pEvent )
 
 	WgChain<Callback> * pChain = 0;
 
-	if( pEvent->IsForGizmo() && pEvent->Gizmo() )
-		pChain = &m_gizmoCallbacks[pEvent->GizmoWeakPtr()];
-	else
-		return;	// Event was for a Gizmo that now has disappeared.
+	if( pEvent->Gizmo() )
+	{
+		std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it;
 
+		it = m_gizmoCallbacks.find(pEvent->GizmoWeakPtr());
+		if( it != m_gizmoCallbacks.end() )
+			pChain = &(it->second);
+	}
+
+	if( !pChain )
+		return;
 
 	pCallback = pChain->First();
 
@@ -1094,10 +1100,13 @@ void WgEventHandler::_updateMarkedGizmo(bool bPostMouseMoveEvents)
 
 	if( pNowMarked != m_pMarkedGizmo.GetRealPtr() )
 	{
-		QueueEvent( new WgEvent::MouseLeave( m_pMarkedGizmo.GetRealPtr() ) );
-		QueueEvent( new WgEvent::MouseEnter( pNowMarked ) );
+		if( m_pMarkedGizmo )
+			QueueEvent( new WgEvent::MouseLeave( m_pMarkedGizmo.GetRealPtr() ) );
+	
+		if( pNowMarked )
+			QueueEvent( new WgEvent::MouseEnter( pNowMarked ) );
 	}
-	else if( bPostMouseMoveEvents )
+	else if( bPostMouseMoveEvents && pNowMarked )
 		QueueEvent( new WgEvent::MouseMove( pNowMarked ) );
 
 	// Copy content of pNowMarked to m_pMarkedGizmo

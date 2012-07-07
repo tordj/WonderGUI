@@ -538,6 +538,8 @@ enum	WgEventType
 	WG_EVENT_LINK_CLICK,
 	WG_EVENT_LINK_DOUBLE_CLICK,
 	
+	WG_EVENT_KNOB_TURN,
+
 	WG_EVENT_MAX
 };
 
@@ -630,8 +632,8 @@ enum WgPixelType
 
 struct WgPixelFormat
 {
-	Uint8	type;				///< Enum specifying the format if it exacty matches a predefined format, otherwise set to UNSPECIFIED.
-	Uint8	bits;				///< Number of bits for the pixel, includes any non-used padding bits.
+	WgPixelType	type;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
+	int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
 
 	Uint32	R_mask;				///< bitmask for getting the red bits out of the pixel
 	Uint32	G_mask;				///< bitmask for getting the green bits out of the pixel

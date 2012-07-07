@@ -27,8 +27,6 @@
 #	include <wg_root.h>
 #	include <wg_eventhandler.h>
 
-static const char	s_type[] = {"Unspecified"};
-
 //____ Constructor ____________________________________________________________
 
 WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_pointerStyle(WG_POINTER_DEFAULT),
@@ -45,20 +43,6 @@ WgGizmo::~WgGizmo()
 	delete m_pSkinNode;
 }
 
-
-//____ Type() _________________________________________________________________
-
-const char * WgGizmo::Type( void ) const
-{
-	return GetMyType();
-}
-
-//____ GetMyType() ____________________________________________________________
-
-const char * WgGizmo::GetMyType()
-{
-	return s_type;
-}
 
 //____ GetPointerStyle() ________________________________________
 
@@ -287,7 +271,7 @@ WgMode WgGizmo::Mode() const
 WgBlendMode WgGizmo::_getBlendMode() const
 {
 	WgGizmoParent * pParent = Parent();
-	if( pParent->IsGizmo() )
+	if( pParent && pParent->IsGizmo() )
 		return pParent->CastToGizmo()->_getBlendMode();
 	else
 		return WG_BLENDMODE_BLEND;		// We always start out with WG_BLENDMODE_BLEND.

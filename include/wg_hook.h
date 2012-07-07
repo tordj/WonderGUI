@@ -62,6 +62,8 @@ public:
 	virtual WgRoot *	Root() const;
 	WgEventHandler *	EventHandler() const;
 
+	virtual const char *Type( void ) const = 0;
+	
 protected:
 
 	WgHook() : m_pGizmo(0), m_bHidden(false) {}
@@ -91,5 +93,15 @@ protected:
 	bool			m_bHidden;
 
 };
+
+template<typename T> T* WgCast(WgHook * pHook)
+{
+	if(pHook)
+	{
+		if(T::ClassType() == pHook->Type())
+			return static_cast<T*>(pHook);
+	}
+	return 0;
+}
 
 #endif //WG_HOOK_DOT_H

@@ -255,7 +255,7 @@ void WgGizmoCheckbox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
 			if( button == 1 )
 			{
-				if( !m_bPressed )
+				if( m_bPressed )
 				{
 					m_bPressed = false;
 					if( m_bFlipOnRelease )

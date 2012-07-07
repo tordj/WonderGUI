@@ -34,6 +34,9 @@ class WgVBoxHook : public WgOrderedHook
 	friend class WgGizmoVBox;
 
 public:
+	const char *Type( void ) const;
+	static const char * ClassType();
+
 	inline WgVBoxHook * Prev() const { return _prev(); }
 	inline WgVBoxHook * Next() const { return _next(); }
 	inline WgGizmoVBox * Parent() const { return m_pParent; }

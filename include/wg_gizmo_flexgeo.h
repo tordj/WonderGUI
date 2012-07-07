@@ -42,6 +42,9 @@ class WgFlexHook : public WgHook, protected WgLink
 
 public:
 
+	const char *Type( void ) const;
+	static const char * ClassType();
+
 	// Flex-specific methods
 
 	bool	SetAnchored();

@@ -29,6 +29,7 @@
 
 
 static const char	c_gizmoType[] = {"View"};
+static const char	c_hookType[] = {"ViewHook"};
 
 
 //____ Constructor ____________________________________________________________
@@ -1352,6 +1353,21 @@ WgHook * WgGizmoView::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 WgViewHook::~WgViewHook()
 {
 }
+
+//____ WgViewHook::Type _______________________________________________________
+
+const char * WgViewHook::Type( void ) const
+{
+	return ClassType();
+}
+
+//____ WgViewHook::ClassType __________________________________________________
+
+const char * WgViewHook::ClassType()
+{
+	return c_hookType;
+}
+
 
 //____ WgViewHook::Pos() ________________________________________________________
 

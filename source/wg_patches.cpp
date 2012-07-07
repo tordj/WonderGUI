@@ -442,6 +442,8 @@ WgRect WgPatches::Union() const
 int WgPatches::Repair()
 {
 	//TODO: Implement
+
+	return 0;
 }
 
 //____ Optimize() ______________________________________________________________
@@ -449,6 +451,8 @@ int WgPatches::Repair()
 int WgPatches::Optimize()
 {
 	//TODO: Implement
+
+	return 0;
 }
 
 //____ _expand() _______________________________________________________________

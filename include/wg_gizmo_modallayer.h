@@ -36,6 +36,8 @@ class WgModalHook : public WgHook, protected WgLink
 	friend class WgChain<WgModalHook>;
 
 public:
+	const char *Type( void ) const;
+	static const char * ClassType();
 
 	void	Top();								// Put us ontop of all our silbings.
 
@@ -154,6 +156,10 @@ private:
 		friend class WgGizmoModallayer;
 
 	public:
+
+		const char *Type( void ) const;
+		static const char * ClassType();
+
 		// Standard Hook methods
 
 		WgCoord		Pos() const { return m_pParent->Pos(); }

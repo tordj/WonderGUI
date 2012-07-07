@@ -116,13 +116,13 @@ public:
 
 	//____ Methods __________________________________________
 
-	bool			SetBgSource( const WgBlockSetPtr& pBlocks );
-	WgBlockSetPtr	GetBgSource() const { return m_pBgGfx; }
+	bool			SetBgSource( const WgBlocksetPtr& pBlocks );
+	WgBlocksetPtr	GetBgSource() const { return m_pBgGfx; }
 
-	bool			SetEntrySource( const WgBlockSetPtr& pBlocks, const WgTextPropPtr& pTextProperties );
+	bool			SetEntrySource( const WgBlocksetPtr& pBlocks, const WgTextpropPtr& pTextProperties );
 
-	WgBlockSetPtr	GetEntrySource() const { return m_pEntryGfx; }
-	WgTextPropPtr	GetTextProp() const { return m_pTextProp; }
+	WgBlocksetPtr	GetEntrySource() const { return m_pEntryGfx; }
+	WgTextpropPtr	GetTextProp() const { return m_pTextProp; }
 
 	bool			AddMenu( const char * pTitle, Wdg_Menu * pMenu, Uint16 navKey = 0 );
 	bool			RemoveMenu( Wdg_Menu * pMenu );
@@ -167,9 +167,9 @@ private:
 	Uint32					m_selectedItem;		// 0 = no item is selected.
 	Uint32					m_markedItem;		// 0 = no item is marked:
 
-	WgBlockSetPtr			m_pBgGfx;
-	WgBlockSetPtr			m_pEntryGfx;
-	WgTextPropPtr			m_pTextProp;
+	WgBlocksetPtr			m_pBgGfx;
+	WgBlocksetPtr			m_pEntryGfx;
+	WgTextpropPtr			m_pTextProp;
 };
 
 

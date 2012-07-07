@@ -32,6 +32,7 @@
 
 
 static const char	c_gizmoType[] = {"Table"};
+static const char	c_hookType[] = {"TableHook"};
 
 
 WgCoord WgTableHook::Pos() const
@@ -210,6 +211,17 @@ WgTableHook::WgTableHook( WgTableRow * pRow )
 WgTableHook::~WgTableHook()
 {
 }
+
+const char * WgTableHook::Type( void ) const
+{
+	return ClassType();
+}
+
+const char * WgTableHook::ClassType()
+{
+	return c_hookType;
+}
+
 
 void WgTableHook::_requestRender()
 {

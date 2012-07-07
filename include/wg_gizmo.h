@@ -78,8 +78,7 @@ public:
 	WgGizmo();
 	virtual ~WgGizmo();
 
-	virtual const char *Type( void ) const;
-	static const char * GetMyType();
+	virtual const char *Type( void ) const = 0;
 
 	inline int			Id() const { return m_id; }
 	inline void			SetId( int id ) { m_id = id; }
@@ -218,6 +217,17 @@ protected:
 typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
 
 typedef	int(*WgGizmoSortFunc)(const WgGizmo *,const WgGizmo *);
+
+template<typename T> T* WgCast(WgGizmo * pGizmo)
+{
+	if(pGizmo)
+	{
+		if(T::GetMyType() == pGizmo->Type())
+			return static_cast<T*>(pGizmo);
+	}
+	return 0;
+}
+
 
 
 #endif

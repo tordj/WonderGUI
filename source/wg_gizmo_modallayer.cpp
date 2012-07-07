@@ -26,9 +26,23 @@
 #include <wg_eventhandler.h>
 
 static const char	c_gizmoType[] = {"Modallayer"};
+static const char	c_hookType[] = {"ModalHook"};
+static const char	c_basehookType[] = {"ModallayerBasehook"};
 
 // Improve WgModalHook geometry handling, should be able to run on BestSize by default, answering to resize-requests.
 
+
+//_____________________________________________________________________________
+const char * WgModalHook::Type( void ) const
+{
+	return ClassType();
+}
+
+//_____________________________________________________________________________
+const char * WgModalHook::ClassType()
+{
+	return c_hookType;
+}
 
 //_____________________________________________________________________________
 void WgModalHook::Top()
@@ -808,4 +822,15 @@ WgHook * WgGizmoModallayer::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) cons
 	return p;
 }
 
+//_____________________________________________________________________________
+const char * WgGizmoModallayer::BaseHook::Type( void ) const
+{
+	return ClassType();
+}
+
+//_____________________________________________________________________________
+const char * WgGizmoModallayer::BaseHook::ClassType()
+{
+	return c_basehookType;
+}
 

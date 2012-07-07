@@ -37,6 +37,9 @@ class WgMenuHook : public WgHook, protected WgLink
 
 public:
 
+	const char *Type( void ) const;
+	static const char * ClassType();
+
 	// Standard Hook methods
 
 	WgCoord			Pos() const { return m_geo.Pos(); }
@@ -132,6 +135,10 @@ private:
 		friend class WgGizmoMenulayer;
 
 	public:
+
+		const char *Type( void ) const;
+		static const char * ClassType();
+
 		// Standard Hook methods
 
 		WgCoord		Pos() const { return m_pParent->Pos(); }

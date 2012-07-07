@@ -26,6 +26,8 @@
 #include <wg_eventhandler.h>
 
 static const char	c_gizmoType[] = {"Menulayer"};
+static const char	c_hookType[] = {"MenuHook"};
+static const char	c_basehookType[] = {"MenulayerBasehook"};
 
 //_____________________________________________________________________________
 WgCoord WgMenuHook::ScreenPos() const
@@ -53,6 +55,19 @@ WgMenuHook::WgMenuHook( WgGizmoMenulayer * pParent, const WgRect& launcherGeo, W
 	m_attachPoint 	= attachPoint;
 	m_maxSize 		= maxSize;
 }
+
+//_____________________________________________________________________________
+const char * WgMenuHook::Type( void ) const
+{
+	return ClassType();
+}
+
+//_____________________________________________________________________________
+const char * WgMenuHook::ClassType()
+{
+	return c_hookType;
+}
+
 
 //_____________________________________________________________________________
 void WgMenuHook::_requestRender()
@@ -754,4 +769,15 @@ WgHook * WgGizmoMenulayer::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	return p;
 }
 
+//_____________________________________________________________________________
+const char * WgGizmoMenulayer::BaseHook::Type( void ) const
+{
+	return ClassType();
+}
+
+//_____________________________________________________________________________
+const char * WgGizmoMenulayer::BaseHook::ClassType()
+{
+	return c_basehookType;
+}
 

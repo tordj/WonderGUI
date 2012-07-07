@@ -249,8 +249,13 @@ public:
 	inline T & operator*() const { return * GetRealPtr(); }
 	inline T * operator->() const { return GetRealPtr(); }
 
+	//TODO: Fix so that we get right value if both are null-pointers, but have different hubs.
 	inline bool operator==(const WgWeakPtr<T>& other) const { return m_pHub == other.m_pHub; }
 	inline bool operator!=(const WgWeakPtr<T>& other) const { return m_pHub != other.m_pHub; }
+	inline bool operator<(const WgWeakPtr<T>& other) const { return m_pHub < other.m_pHub ? true : false; }
+	inline bool operator>(const WgWeakPtr<T>& other) const { return m_pHub > other.m_pHub ? true : false; }
+	inline bool operator<=(const WgWeakPtr<T>& other) const { return m_pHub <= other.m_pHub ? true : false; }
+	inline bool operator>=(const WgWeakPtr<T>& other) const { return m_pHub >= other.m_pHub ? true : false; }
 
 	inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 

@@ -52,6 +52,12 @@ class WgEventFilter
 {
 	friend class WgEventHandler;
 public:
+
+	static WgEventFilter	Tick();
+
+	static WgEventFilter	FocusGained();
+	static WgEventFilter	FocusLost();
+
 	static WgEventFilter	MouseEnter();
 	static WgEventFilter	MouseEnter( WgGizmo * pGizmo );
 
@@ -125,7 +131,19 @@ public:
 	static WgEventFilter	MouseWheelRoll( WgGizmo * pGizmo );
 	static WgEventFilter	MouseWheelRoll( int wheel, WgGizmo * pGizmo );
 
-	static WgEventFilter	Tick();
+	static WgEventFilter	ButtonPress();
+	static WgEventFilter	ButtonPress( WgGizmo * pGizmo );
+
+	//TODO: Add missing filters!
+
+	static WgEventFilter	CheckboxToggle();
+	static WgEventFilter	CheckboxToggle( WgGizmoCheckbox * pGizmo );
+
+	static WgEventFilter	SliderMove();
+	static WgEventFilter	SliderMove( WgGizmoSlider * pGizmo );
+
+	static WgEventFilter	KnobTurn();
+	static WgEventFilter	KnobTurn( WgGizmo * pGizmo );
 
 
 	inline bool			FilterEvent( const WgEvent::Event * pEvent ) const { return m_pFilterFunc( pEvent, *this ); }
@@ -146,17 +164,15 @@ private:
 
 
 	static bool _filterDummy( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterType( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterTypeGizmo( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+
 	static bool _filterPointerEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterMouseButtonEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterNativeKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterCharacterEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterMouseWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterTickEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-
-
-
-
 };
 
 

@@ -22,6 +22,21 @@
 
 #include <wg_monotainer.h>
 
+static const char	c_hookType[] = {"MonotainerHook"};
+
+
+//_____________________________________________________________________________
+const char * WgMonotainer::Hook::Type( void ) const
+{
+	return ClassType();
+}
+
+//_____________________________________________________________________________
+const char * WgMonotainer::Hook::ClassType()
+{
+	return c_hookType;
+}
+
 
 //____ SetChild() ______________________________________________________________
 

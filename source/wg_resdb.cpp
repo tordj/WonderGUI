@@ -27,6 +27,7 @@
 #include <assert.h>
 #include <wg_font.h>
 #include <wg_textmanager.h>
+#include <wg_surface.h>
 
 //____ () _________________________________________________________
 
@@ -92,6 +93,16 @@ void WgResDB::Clear()
 	m_resDbs.Clear();
 }
 
+void WgResDB::DestroySurfaces()
+{
+	for(SurfaceRes* res = GetFirstResSurface(); res; res = res->Next())
+		delete res->res;
+
+	m_mapSurfaces.clear();
+	m_surfaces.Clear();
+}
+
+
 void WgResDB::DestroyFonts()
 {
 	for(FontRes* res = GetFirstResFont(); res; res = res->Next())
@@ -114,6 +125,13 @@ void WgResDB::DestroyTextManagers()
 {
 	for(TextManagerRes* res = GetFirstResTextManager(); res; res = res->Next())
 		delete res->res;
+}
+
+
+void WgResDB::ClearSurfaces()
+{
+	m_mapSurfaces.clear();
+	m_surfaces.Clear();
 }
 
 void WgResDB::ClearGizmos()

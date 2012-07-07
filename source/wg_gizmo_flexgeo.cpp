@@ -25,6 +25,7 @@
 #include <wg_util.h>
 
 static const char	c_gizmoType[] = {"Flexgeo"};
+static const char	c_hookType[] = {"FlexHook"};
 
 WgFlexAnchor		WgGizmoFlexgeo::g_baseAnchors[9] = { WgFlexAnchor(0.f, 0.f, WgCoord(0,0)),
 														 WgFlexAnchor(0.5f, 0.f, WgCoord(0,0)),
@@ -45,6 +46,21 @@ WgFlexHook::WgFlexHook( WgGizmoFlexgeo * pParent, const WgRect& placementGeo ) :
 	m_anchorBottomRight(WG_SOUTHEAST), m_borders(0)
 {
 }
+
+//____ WgFlexHook::Type() _____________________________________________________
+
+const char * WgFlexHook::Type( void ) const
+{
+	return ClassType();
+}
+
+//____ WgFlexHook::ClassType() ________________________________________________
+
+const char * WgFlexHook::ClassType()
+{
+	return c_hookType;
+}
+
 
 //____ WgFlexHook::SetAnchored() ______________________________________________
 

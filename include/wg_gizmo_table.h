@@ -60,6 +60,9 @@ class WgTableHook : public WgHook
 {
 	friend class WgTableRow;
 	friend class WgGizmoTable;
+public:
+	const char *Type( void ) const;
+	static const char * ClassType();
 
 	WgCoord			Pos() const;
 	WgSize			Size() const;

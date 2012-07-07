@@ -25,10 +25,21 @@
 
 
 static const char	c_gizmoType[] = {"VBoxLayout"};
+static const char	c_hookType[] = {"VBoxHook"};
 
 
 WgVBoxHook::WgVBoxHook( WgGizmoVBox * pParent ) : m_pParent(pParent)
 {
+}
+
+const char * WgVBoxHook::Type( void ) const
+{
+	return ClassType();
+}
+
+const char * WgVBoxHook::ClassType()
+{
+	return c_hookType;
 }
 
 

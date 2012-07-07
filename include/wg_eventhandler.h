@@ -76,6 +76,7 @@ public:
 
 	bool	IsMouseButtonPressed( int button );
 	bool	IsKeyPressed( int native_keycode );
+	WgModifierKeys ModKeys() const { return m_modKeys; }
 
 	bool	IsWindowFocused() const { return m_bWindowFocus; }
 

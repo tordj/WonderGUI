@@ -50,8 +50,8 @@ public:
 	static const char * GetMyType();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoCombobox(); };
 
-	void			SetSource( const WgBlockSetPtr& pTextBox );
-	WgBlockSetPtr	GetSource( ) const		{ return m_pTextBoxBg; }
+	void			SetSource( const WgBlocksetPtr& pTextBox );
+	WgBlocksetPtr	GetSource( ) const		{ return m_pTextBoxBg; }
 
 	void			SetMenu( Wdg_Menu * pMenu );
 	Wdg_Menu*		GetMenu( ) const;
@@ -120,7 +120,7 @@ private:
 	WgString		m_textFormat;
 	WgString		m_placeholderText;		// Text displayed when field is empty and has no cursor.
 
-	WgBlockSetPtr	m_pTextBoxBg;
+	WgBlocksetPtr	m_pTextBoxBg;
 
 	WgMode			m_mode;
 	Wdg_Menu *		m_pMenu;

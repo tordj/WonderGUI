@@ -25,41 +25,64 @@
 #include <wg_event.h>
 #include <wg_eventfilter.h>
 #include <wg_gizmo.h>
+#include <wg_gizmo_slider.h>
+#include <wg_gizmo_checkbox.h>
+
+//____ Tick() _________________________________________________________________
+
+WgEventFilter	WgEventFilter::Tick()
+{
+	return WgEventFilter( WG_EVENT_TICK, 0, _filterType );
+}
+
+//____ FocusGained() __________________________________________________________
+
+WgEventFilter	WgEventFilter::FocusGained()
+{
+	return WgEventFilter( WG_EVENT_FOCUS_GAINED, 0, _filterType );
+}
+
+//____ FocusGained() __________________________________________________________
+
+WgEventFilter	WgEventFilter::FocusLost()
+{
+	return WgEventFilter( WG_EVENT_FOCUS_LOST, 0, _filterType );
+}
 
 //____ MouseEnter() _________________________________________________________
 
 WgEventFilter	WgEventFilter::MouseEnter()
 {
-	return WgEventFilter( WG_EVENT_MOUSE_ENTER, 0, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_ENTER, 0, _filterTypeGizmo );
 }
 
 WgEventFilter	WgEventFilter::MouseEnter( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_MOUSE_ENTER, pGizmo, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_ENTER, pGizmo, _filterTypeGizmo );
 }
 
 //____ MouseLeave() _________________________________________________________
 
 WgEventFilter	WgEventFilter::MouseLeave()
 {
-	return WgEventFilter( WG_EVENT_MOUSE_LEAVE, 0, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_LEAVE, 0, _filterTypeGizmo );
 }
 
 WgEventFilter	WgEventFilter::MouseLeave( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_MOUSE_LEAVE, pGizmo, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_LEAVE, pGizmo, _filterTypeGizmo );
 }
 
 //____ MouseMove() _________________________________________________________
 
 WgEventFilter	WgEventFilter::MouseMove()
 {
-	return WgEventFilter( WG_EVENT_MOUSE_MOVE, 0, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_MOVE, 0, _filterTypeGizmo );
 }
 
 WgEventFilter	WgEventFilter::MouseMove( WgGizmo * pGizmo )
 {
-	return WgEventFilter( WG_EVENT_MOUSE_MOVE, pGizmo, _filterPointerEvents );
+	return WgEventFilter( WG_EVENT_MOUSE_MOVE, pGizmo, _filterTypeGizmo );
 }
 
 //____ MouseButtonPress() _________________________________________________________
@@ -340,12 +363,55 @@ WgEventFilter	WgEventFilter::MouseWheelRoll( int wheel, WgGizmo * pGizmo )
 	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, pGizmo, _filterMouseWheelRollEvents, wheel );
 }
 
-//____ Tick() _________________________________________________________________
+//____ ButtonPress() __________________________________________________________
 
-WgEventFilter	WgEventFilter::Tick()
+WgEventFilter	WgEventFilter::ButtonPress()
 {
-	return WgEventFilter( WG_EVENT_TICK, 0, _filterTickEvents );
+	return WgEventFilter( WG_EVENT_BUTTON_PRESS, 0, _filterTypeGizmo );
 }
+
+WgEventFilter	WgEventFilter::ButtonPress( WgGizmo * pGizmo )
+{
+	return WgEventFilter( WG_EVENT_BUTTON_PRESS, pGizmo, _filterTypeGizmo );
+}
+
+//____ CheckboxToggle() __________________________________________________________
+
+WgEventFilter	WgEventFilter::CheckboxToggle()
+{
+	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, 0, _filterTypeGizmo );
+}
+
+WgEventFilter	WgEventFilter::CheckboxToggle( WgGizmoCheckbox * pGizmo )
+{
+	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, pGizmo, _filterTypeGizmo );
+}
+
+
+//____ SliderMove() __________________________________________________________
+
+WgEventFilter	WgEventFilter::SliderMove()
+{
+	return WgEventFilter( WG_EVENT_SLIDER_MOVE, 0, _filterTypeGizmo );
+}
+
+WgEventFilter	WgEventFilter::SliderMove( WgGizmoSlider * pGizmo )
+{
+	return WgEventFilter( WG_EVENT_SLIDER_MOVE, pGizmo, _filterTypeGizmo );
+}
+
+//____ KnobTurn() __________________________________________________________
+
+WgEventFilter	WgEventFilter::KnobTurn()
+{
+	return WgEventFilter( WG_EVENT_KNOB_TURN, 0, _filterTypeGizmo );
+}
+
+WgEventFilter	WgEventFilter::KnobTurn( WgGizmo * pGizmo )
+{
+	return WgEventFilter( WG_EVENT_KNOB_TURN, pGizmo, _filterTypeGizmo );
+}
+
 
 //_____________________________________________________________________________
 
@@ -354,8 +420,15 @@ bool WgEventFilter::_filterDummy( const WgEvent::Event * pEvent, const WgEventFi
 	return true;
 }
 
+bool WgEventFilter::_filterType( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+{
+	if( pEvent->Type() == filter.EventType() )
+		return true;
 
-bool WgEventFilter::_filterPointerEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+	return false;
+}
+
+bool WgEventFilter::_filterTypeGizmo( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
 		return true;
@@ -432,13 +505,4 @@ bool WgEventFilter::_filterMouseWheelRollEvents( const WgEvent::Event * pEvent, 
 	}
 	return false;
 }
-
-bool WgEventFilter::_filterTickEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
-{
-	if( pEvent->Type() == filter.EventType() )
-		return true;
-
-	return false;
-}
-
 

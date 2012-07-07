@@ -36,6 +36,7 @@
 #include	<wg_patches.h>
 
 static const char	c_gizmoType[] = {"Menu"};
+static const char	c_hookType[] = {"MenuSliderHook"};
 
 
 //____ Constructor _____________________________________________________________
@@ -454,6 +455,8 @@ int  WgGizmoMenu::WidthForHeight( int height ) const
 
 	if( m_pSliderBtnBwdGfx && m_pSliderBtnBwdGfx->Width() > sliderWidth )
 		sliderWidth = m_pSliderBtnBwdGfx->Width();
+
+	return m_defaultSize.w + sliderWidth;
 }
 
 
@@ -1565,6 +1568,16 @@ void WgGizmoMenu::_tilesModified()
 
 
 
+
+const char * WgGizmoMenu::SliderHook::Type( void ) const
+{
+	return ClassType();
+}
+
+const char * WgGizmoMenu::SliderHook::ClassType()
+{
+	return c_hookType;
+}
 
 WgCoord WgGizmoMenu::SliderHook::Pos() const
 {

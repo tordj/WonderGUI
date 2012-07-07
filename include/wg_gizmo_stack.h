@@ -33,6 +33,8 @@ class WgStackHook : public WgOrderedHook
 {
 	friend class WgGizmoStack;
 public:
+	const char *Type( void ) const;
+	static const char * ClassType();
 
 	enum SizePolicy
 	{
