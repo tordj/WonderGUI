@@ -334,12 +334,12 @@ WgGizmoMenulayer::~WgGizmoMenulayer()
 
 const char *WgGizmoMenulayer::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoMenulayer::GetMyType()
+const char * WgGizmoMenulayer::GetClass()
 {
 	return c_gizmoType;
 }

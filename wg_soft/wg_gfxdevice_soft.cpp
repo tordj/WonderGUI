@@ -203,7 +203,7 @@ void WgGfxDeviceSoft::Blit( const WgSurface* pSrcSurf, const WgRect& srcrect, in
 
 void WgGfxDeviceSoft::_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, int dx, int dy  )
 {
-	if( !_pSrcSurf || !m_pCanvas || _pSrcSurf->Type() != WgSurfaceSoft::GetMyType() )
+	if( !_pSrcSurf || !m_pCanvas || _pSrcSurf->Type() != WgSurfaceSoft::GetClass() )
 		return;
 
 	WgSurfaceSoft * pSrcSurf = (WgSurfaceSoft*) _pSrcSurf;
@@ -372,7 +372,7 @@ void WgGfxDeviceSoft::_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, 
 
 void WgGfxDeviceSoft::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcrect, int dx, int dy  )
 {
-	if( !_pSrcSurf || !m_pCanvas || _pSrcSurf->Type() != WgSurfaceSoft::GetMyType() )
+	if( !_pSrcSurf || !m_pCanvas || _pSrcSurf->Type() != WgSurfaceSoft::GetClass() )
 		return;
 
 	WgSurfaceSoft * pSrcSurf = (WgSurfaceSoft*) _pSrcSurf;
@@ -662,7 +662,7 @@ void WgGfxDeviceSoft::ClipStretchBlit( const WgRect& clip, const WgSurface * pSr
 void WgGfxDeviceSoft::StretchBlitSubPixel( const WgSurface * _pSrcSurf, float sx, float sy, float sw, float sh,
 						   		 float _dx, float _dy, float _dw, float _dh, bool bTriLinear, float mipBias )
 {
-	if( !_pSrcSurf || !m_pCanvas || _pSrcSurf->Type() != WgSurfaceSoft::GetMyType() )
+	if( !_pSrcSurf || !m_pCanvas || _pSrcSurf->Type() != WgSurfaceSoft::GetClass() )
 		return;
 
 	WgSurfaceSoft * pSrcSurf = (WgSurfaceSoft*) _pSrcSurf;

@@ -202,6 +202,10 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			id = "Tick";
 			sprintf( params, " millisec=%d", ((const WgEvent::Tick*)_pEvent)->Millisec() );
 			break;
+		case WG_EVENT_POINTER_CHANGE:
+			id = "PointerChange";
+			sprintf( params, " style=%s", _formatPointerStyle( (const WgEvent::PointerChange*)_pEvent).c_str() );
+			break;
 		case WG_EVENT_MOUSE_ENTER:
 			id = "MouseEnter";
 			break;
@@ -414,7 +418,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 
 		case WG_EVENT_SLIDER_WHEEL_ROLL:
 		{
-			id = "SliderWheelRolled";
+			id = "SliderWheelRoll";
 			const WgEvent::SliderWheelRolled * pEvent = static_cast<const WgEvent::SliderWheelRolled*>(_pEvent);
 			sprintf( params, "distance=%d pos=%f length=%f", pEvent->Distance(), pEvent->Pos(), pEvent->Length() );
 			break;
@@ -436,24 +440,24 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 
 		case WG_EVENT_MENUITEM_SELECT:
 		{
-			id = "MenuItemSelect";
-			const WgEvent::MenuItemEvent * pEvent = static_cast<const WgEvent::MenuItemEvent*>(_pEvent);
+			id = "MenuitemSelect";
+			const WgEvent::MenuitemEvent * pEvent = static_cast<const WgEvent::MenuitemEvent*>(_pEvent);
 			sprintf( params, "itemId=%d", pEvent->ItemId() );
 			break;
 		}
 
 		case WG_EVENT_MENUITEM_CHECK:
 		{
-			id = "MenuItemCheck";
-			const WgEvent::MenuItemEvent * pEvent = static_cast<const WgEvent::MenuItemEvent*>(_pEvent);
+			id = "MenuitemCheck";
+			const WgEvent::MenuitemEvent * pEvent = static_cast<const WgEvent::MenuitemEvent*>(_pEvent);
 			sprintf( params, "itemId=%d", pEvent->ItemId() );
 			break;
 		}
 
 		case WG_EVENT_MENUITEM_UNCHECK:
 		{
-			id = "MenuItemUncheck";
-			const WgEvent::MenuItemEvent * pEvent = static_cast<const WgEvent::MenuItemEvent*>(_pEvent);
+			id = "MenuitemUncheck";
+			const WgEvent::MenuitemEvent * pEvent = static_cast<const WgEvent::MenuitemEvent*>(_pEvent);
 			sprintf( params, "itemId=%d", pEvent->ItemId() );
 			break;
 		}
@@ -554,5 +558,49 @@ string WgEventLogger::_formatPointerPos( const WgEvent::Event * _pEvent )
 		sprintf( temp, " pointer=%d,%d (%d,%d)", localPos.x, localPos.y, globalPos.x, globalPos.y );
 
 	return string(temp);
+}
+
+//____ _formatPointerStyle() _____________________________________________________
+
+string WgEventLogger::_formatPointerStyle( const WgEvent::PointerChange * _pEvent )
+{
+	switch( _pEvent->Style() )
+	{
+		case WG_POINTER_ARROW:
+			return "WG_POINTER_ARROW";
+		case WG_POINTER_HOURGLASS:
+			return "WG_POINTER_HOURGLASS";
+		case WG_POINTER_HAND:
+			return "WG_POINTER_HAND";
+		case WG_POINTER_CROSSHAIR:
+			return "WG_POINTER_CROSSHAIR";
+		case WG_POINTER_HELP:
+			return "WG_POINTER_HELP";
+		case WG_POINTER_IBEAM:
+			return "WG_POINTER_IBEAM";
+		case WG_POINTER_STOP:
+			return "WG_POINTER_STOP";
+		case WG_POINTER_UP_ARROW:
+			return "WG_POINTER_UP_ARROW";
+		case WG_POINTER_SIZE_ALL:
+			return "WG_POINTER_SIZE_ALL";
+		case WG_POINTER_SIZE_NE_SW:
+			return "WG_POINTER_SIZE_NE_SW";
+		case WG_POINTER_SIZE_NW_SE:
+			return "WG_POINTER_SIZE_NW_SE";
+		case WG_POINTER_SIZE_N_S:
+			return "WG_POINTER_SIZE_N_S";
+		case WG_POINTER_SIZE_W_E:
+			return "WG_POINTER_SIZE_W_E";
+		default:
+		{
+			char	temp[64];
+			sprintf( temp, "%d (unkown enum)", _pEvent->Style() );
+			return string(temp);
+		}
+	}
+
+	
+
 }
 

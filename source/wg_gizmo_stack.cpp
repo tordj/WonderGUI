@@ -151,12 +151,12 @@ WgGizmoStack::~WgGizmoStack()
 
 const char * WgGizmoStack::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoStack::GetMyType()
+const char * WgGizmoStack::GetClass()
 {
 	return c_gizmoType;
 }

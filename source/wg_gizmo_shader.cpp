@@ -41,12 +41,12 @@ WgGizmoShader::~WgGizmoShader()
 
 const char * WgGizmoShader::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoShader::GetMyType()
+const char * WgGizmoShader::GetClass()
 {
 	return c_gizmoType;
 }

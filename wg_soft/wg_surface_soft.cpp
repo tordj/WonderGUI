@@ -73,12 +73,12 @@ WgSurfaceSoft::~WgSurfaceSoft()
 
 const char * WgSurfaceSoft::Type() const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() _____________________________________________________________
+//____ GetClass() _____________________________________________________________
 
-const char * WgSurfaceSoft::GetMyType()
+const char * WgSurfaceSoft::GetClass()
 {
 	return c_surfaceType;
 }

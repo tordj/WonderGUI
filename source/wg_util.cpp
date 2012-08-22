@@ -34,7 +34,7 @@ bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 	if(!block.IsScaled())
 		return false;
 
-	const WgBorders& borders = block.GfxBorders();
+	const WgBorders& borders = block.Frame();
 
 	int areaW = area.w - borders.Width();
 	int areaH = area.h - borders.Height();
@@ -86,7 +86,7 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area )
 	ofs.y -= area.y;
 
 
-	const WgBorders& borders = block.GfxBorders();
+	const WgBorders& borders = block.Frame();
 
 	// Determine in which section the cordinate is (0-2 for x and y).
 

@@ -41,12 +41,12 @@ WgGizmoTaborder::~WgGizmoTaborder()
 
 const char * WgGizmoTaborder::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoTaborder::GetMyType()
+const char * WgGizmoTaborder::GetClass()
 {
 	return c_gizmoType;
 }

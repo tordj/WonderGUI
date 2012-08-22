@@ -62,13 +62,14 @@ void WgResDB::Clear()
 	m_mapLegoSources.clear();
 	m_mapBlocksets.clear();
 	m_mapGizmos.clear();
-	m_mapMenuItems.clear();
+	m_mapMenuitems.clear();
 	m_mapTabs.clear();
 	m_mapTextManagers.clear();
 	m_mapSkinManagers.clear();
 	m_mapConnects.clear();
 	m_mapResDBs.clear();
-
+	m_mapDataSets.clear();
+	
 	// Clear the linked lists, this will also delete the ResWrapper objects
 	// along with their meta-data but NOT the resources themselves.
 	// This will cause memory leaks until all resources are properly equipped
@@ -91,6 +92,7 @@ void WgResDB::Clear()
 	m_skinManagers.Clear();
 	m_connects.Clear();
 	m_resDbs.Clear();
+	m_dataSets.Clear();
 }
 
 void WgResDB::DestroySurfaces()
@@ -213,7 +215,7 @@ std::string	WgResDB::GenerateName( const WgGizmo* data )
 	return std::string("_gizmo__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgMenuItem* data )
+std::string	WgResDB::GenerateName( const WgMenuitem* data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -481,6 +483,23 @@ bool WgResDB::AddBlockset( const std::string& id, const WgBlocksetPtr& pBlockset
 
 //____ () _________________________________________________________
 
+bool WgResDB::AddDataSet( const std::string& id, MetaData * pMetaData )
+{
+	assert(m_mapDataSets.find(id) == m_mapDataSets.end());
+	if(m_mapDataSets.find(id) == m_mapDataSets.end())
+	{
+		DataSetRes* p = new DataSetRes(id, 0, pMetaData);
+		m_dataSets.PushBack(p);
+		if(id.size())
+			m_mapDataSets[id] = p;
+		return true;
+	}
+	return false;
+}
+
+
+//____ () _________________________________________________________
+
 bool WgResDB::AddGizmo( const std::string& id, WgGizmo * pGizmo, MetaData * pMetaData )
 {
 	assert(m_mapGizmos.find(id) == m_mapGizmos.end());
@@ -497,15 +516,15 @@ bool WgResDB::AddGizmo( const std::string& id, WgGizmo * pGizmo, MetaData * pMet
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddMenuItem( const std::string& id, WgMenuItem * pItem, MetaData * pMetaData )
+bool WgResDB::AddMenuitem( const std::string& id, WgMenuitem * pItem, MetaData * pMetaData )
 {
-	assert(m_mapMenuItems.find(id) == m_mapMenuItems.end());
-	if(m_mapMenuItems.find(id) == m_mapMenuItems.end())
+	assert(m_mapMenuitems.find(id) == m_mapMenuitems.end());
+	if(m_mapMenuitems.find(id) == m_mapMenuitems.end())
 	{
-		MenuItemRes* p = new MenuItemRes(id, pItem, pMetaData);
+		MenuitemRes* p = new MenuitemRes(id, pItem, pMetaData);
 		m_menuItems.PushBack(p);
 		if(id.size())
-			m_mapMenuItems[id] = p;
+			m_mapMenuitems[id] = p;
 		return true;
 	}
 	return false;
@@ -643,6 +662,14 @@ WgBlocksetPtr WgResDB::GetBlockset( const std::string& id ) const
 
 //____ () _________________________________________________________
 
+WgResDB::MetaData * WgResDB::GetDataSet( const std::string& id ) const
+{
+	DataSetRes* dataSetRes = GetResDataSet(id);
+	return dataSetRes ? dataSetRes->meta : 0;
+}
+
+//____ () _________________________________________________________
+
 WgGizmo * WgResDB::GetGizmo( const std::string& id ) const
 {
 	GizmoRes* gizmoRes = GetResGizmo(id);
@@ -667,9 +694,9 @@ WgGizmo * WgResDB::CloneGizmo( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgMenuItem * WgResDB::GetMenuItem( const std::string& id ) const
+WgMenuitem * WgResDB::GetMenuitem( const std::string& id ) const
 {
-	MenuItemRes* itemRes = GetResMenuItem(id);
+	MenuitemRes* itemRes = GetResMenuitem(id);
 	return itemRes ? itemRes->res : 0;
 }
 
@@ -904,19 +931,36 @@ WgResDB::GizmoRes * WgResDB::GetResGizmo( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgResDB::MenuItemRes * WgResDB::GetResMenuItem( const std::string& id ) const
+WgResDB::DataSetRes * WgResDB::GetResDataSet( const std::string& id ) const
 {
-	MenuItemRes* res = 0;
+	DataSetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->GetResMenuItem(id)))
+			if((res = db->res->GetResDataSet(id)))
 				return res;
 		}
 	}
-	MenuItemMap::const_iterator it = m_mapMenuItems.find(id);
-	return it == m_mapMenuItems.end() ? 0 : it->second;
+	DataSetMap::const_iterator it = m_mapDataSets.find(id);
+	return it == m_mapDataSets.end() ? 0 : it->second;
+}
+
+//____ () _________________________________________________________
+
+WgResDB::MenuitemRes * WgResDB::GetResMenuitem( const std::string& id ) const
+{
+	MenuitemRes* res = 0;
+	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
+	{
+		if(db->res)
+		{
+			if((res = db->res->GetResMenuitem(id)))
+				return res;
+		}
+	}
+	MenuitemMap::const_iterator it = m_mapMenuitems.find(id);
+	return it == m_mapMenuitems.end() ? 0 : it->second;
 }
 
 //____ () _________________________________________________________
@@ -1199,18 +1243,18 @@ WgResDB::GizmoRes* WgResDB::FindResGizmo( const WgGizmo* meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::MenuItemRes* WgResDB::FindResMenuItem( const WgMenuItem* meta ) const
+WgResDB::MenuitemRes* WgResDB::FindResMenuitem( const WgMenuitem* meta ) const
 {
-	MenuItemRes * res = 0;
+	MenuitemRes * res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->FindResMenuItem(meta)))
+			if((res = db->res->FindResMenuitem(meta)))
 				return res;
 		}
 	}
-	for(res = GetFirstResMenuItem(); res; res = res->Next())
+	for(res = GetFirstResMenuitem(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1592,6 +1636,38 @@ bool WgResDB::RemoveBlockset( WgResDB::BlocksetRes * pRes )
 	return true;
 }
 
+//____ RemoveDataSet() _________________________________________________________
+
+bool WgResDB::RemoveDataSet( const std::string& id )
+{
+	DataSetMap::iterator it = m_mapDataSets.find( id );
+
+	if( it == m_mapDataSets.end() )
+		return false;
+
+	DataSetRes * pRes = it->second;
+	m_mapDataSets.erase(it);
+	delete pRes;
+
+	return true;
+}
+
+bool WgResDB::RemoveDataSet( WgResDB::DataSetRes * pRes )
+{
+	if( !pRes )
+		return false;
+
+	if( pRes->id.length() > 0 )
+	{
+		DataSetMap::iterator it = m_mapDataSets.find( pRes->id );
+		assert( it != m_mapDataSets.end() );
+		m_mapDataSets.erase(it);
+	}
+	delete pRes;
+	return true;
+}
+
+
 //____ RemoveGizmo() _________________________________________________________
 
 bool WgResDB::RemoveGizmo( const std::string& id )
@@ -1623,32 +1699,32 @@ bool WgResDB::RemoveGizmo( WgResDB::GizmoRes * pRes )
 	return true;
 }
 
-//____ RemoveMenuItem() _______________________________________________________
+//____ RemoveMenuitem() _______________________________________________________
 
-bool WgResDB::RemoveMenuItem( const std::string& id )
+bool WgResDB::RemoveMenuitem( const std::string& id )
 {
-	MenuItemMap::iterator it = m_mapMenuItems.find( id );
+	MenuitemMap::iterator it = m_mapMenuitems.find( id );
 
-	if( it == m_mapMenuItems.end() )
+	if( it == m_mapMenuitems.end() )
 		return false;
 
-	MenuItemRes * pRes = it->second;
-	m_mapMenuItems.erase(it);
+	MenuitemRes * pRes = it->second;
+	m_mapMenuitems.erase(it);
 	delete pRes;
 
 	return true;
 }
 
-bool WgResDB::RemoveMenuItem( WgResDB::MenuItemRes * pRes )
+bool WgResDB::RemoveMenuitem( WgResDB::MenuitemRes * pRes )
 {
 	if( !pRes )
 		return false;
 
 	if( pRes->id.length() > 0 )
 	{
-		MenuItemMap::iterator it = m_mapMenuItems.find( pRes->id );
-		assert( it != m_mapMenuItems.end() );
-		m_mapMenuItems.erase(it);
+		MenuitemMap::iterator it = m_mapMenuitems.find( pRes->id );
+		assert( it != m_mapMenuitems.end() );
+		m_mapMenuitems.erase(it);
 	}
 	delete pRes;
 	return true;

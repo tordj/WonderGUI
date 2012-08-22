@@ -53,10 +53,10 @@ WgGizmoAnimation::~WgGizmoAnimation()
 
 const char * WgGizmoAnimation::Type() const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoAnimation::GetMyType( void )
+const char * WgGizmoAnimation::GetClass( void )
 {
 	return c_gizmoType;
 }

@@ -255,6 +255,20 @@ namespace WgEvent
 		int			m_millisec;
 	};
 
+	class PointerChange : public Event
+	{
+		friend class ::WgEventHandler;
+	public:
+		WgPointerStyle	Style() const;
+		
+	protected:
+		PointerChange( WgPointerStyle style );
+		virtual void 	_cloneContentFrom( const PointerChange * pOrg );
+		
+		WgPointerStyle	m_style;
+	};
+
+
 	//____ WgGizmoButton events _______________________________________________
 
 	class ButtonPress : public Event
@@ -486,7 +500,7 @@ namespace WgEvent
 
 	//____ WgGizmoMenu events __________________________________________________
 
-	class MenuItemEvent : public Event
+	class MenuitemEvent : public Event
 	{
 	public:
 		WgGizmoMenu *	Menu() const;
@@ -496,22 +510,22 @@ namespace WgEvent
 		int				m_itemId;
 	};
 
-	class MenuItemSelected : public MenuItemEvent
+	class MenuitemSelect : public MenuitemEvent
 	{
 	public:
-		MenuItemSelected( WgGizmoMenu * pMenu, int menuItemId );
+		MenuitemSelect( WgGizmoMenu * pMenu, int menuItemId );
 	};
 
-	class MenuItemChecked : public MenuItemEvent
+	class MenuitemCheck : public MenuitemEvent
 	{
 	public:
-		MenuItemChecked( WgGizmoMenu * pMenu, int menuItemId );
+		MenuitemCheck( WgGizmoMenu * pMenu, int menuItemId );
 	};
 
-	class MenuItemUnchecked : public MenuItemEvent
+	class MenuitemUncheck : public MenuitemEvent
 	{
 	public:
-		MenuItemUnchecked( WgGizmoMenu * pMenu, int menuItemId );
+		MenuitemUncheck( WgGizmoMenu * pMenu, int menuItemId );
 	};
 
 	//____ WgGizmoModalLayer events _________________________________________________

@@ -339,9 +339,9 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 
 		pValue->SetValue( 100 );
 		pValue->GrabFocus();
-
 	}
 */
+
 
 	// Test menus and MenuLayer.
 
@@ -373,7 +373,6 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 
 //		pMenuLayer->OpenMenu( pMenu, WgRect(10,10,100,10), WG_SOUTHWEST );
 	}
-
 
 	// Test view
 /*

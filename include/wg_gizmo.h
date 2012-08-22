@@ -222,7 +222,7 @@ template<typename T> T* WgCast(WgGizmo * pGizmo)
 {
 	if(pGizmo)
 	{
-		if(T::GetMyType() == pGizmo->Type())
+		if(T::GetClass() == pGizmo->Type())
 			return static_cast<T*>(pGizmo);
 	}
 	return 0;

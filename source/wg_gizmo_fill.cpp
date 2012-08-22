@@ -45,12 +45,12 @@ WgGizmoFill::~WgGizmoFill()
 
 const char * WgGizmoFill::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoFill::GetMyType()
+const char * WgGizmoFill::GetClass()
 {
 	return c_gizmoType;
 }

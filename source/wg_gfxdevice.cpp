@@ -400,19 +400,19 @@ void WgGfxDevice::BlitBlock( const WgBlock& _block, const WgRect& _dest2, bool b
 
 	if( src.w == _dest.w )
 	{
-		BlitVertBar( pSurf, src, _block.GfxBorders(),
+		BlitVertBar( pSurf, src, _block.Frame(),
 					 _block.HasTiledCenter(), _dest.x, _dest.y, _dest.h );
 		return;
 	}
 
 	if( src.h == _dest.h )
 	{
-		BlitHorrBar( pSurf, src, _block.GfxBorders(),
+		BlitHorrBar( pSurf, src, _block.Frame(),
 					 _block.HasTiledCenter(), _dest.x, _dest.y, _dest.w );
 		return;
 	}
 
-	const WgBorders& borders = _block.GfxBorders();
+	const WgBorders& borders = _block.Frame();
 
 	// Render upper row (top-left corner, top stretch area and top-right corner)
 
@@ -496,7 +496,7 @@ void WgGfxDevice::ClipBlitBlock( const WgRect& _clip, const WgBlock& _block, con
 
 	// Shortcuts & optimizations for common special cases.
 
-	WgSize borderSize = _block.GfxBorders().Size();
+	WgSize borderSize = _block.Frame().Size();
 
 	if( _clip.Contains( _dest2 ) && borderSize.w <= _dest2.Size().w && borderSize.h <= _dest2.Size().h )
 	{
@@ -527,19 +527,19 @@ void WgGfxDevice::ClipBlitBlock( const WgRect& _clip, const WgBlock& _block, con
 
 	if( src.w == _dest.w )
 	{
-		ClipBlitVertBar( _clip, pSurf, src, _block.GfxBorders(),
+		ClipBlitVertBar( _clip, pSurf, src, _block.Frame(),
 						 _block.HasTiledCenter(), _dest.x, _dest.y, _dest.h );
 		return;
 	}
 
 	if( src.h == _dest.h )
 	{
-		ClipBlitHorrBar( _clip, pSurf, src, _block.GfxBorders(),
+		ClipBlitHorrBar( _clip, pSurf, src, _block.Frame(),
 						 _block.HasTiledCenter(), _dest.x, _dest.y, _dest.w );
 		return;
 	}
 
-	const WgBorders& borders = _block.GfxBorders();
+	const WgBorders& borders = _block.Frame();
 
 	// Render upper row (top-left corner, top stretch area and top-right corner)
 

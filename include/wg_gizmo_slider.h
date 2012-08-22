@@ -47,7 +47,7 @@ class	WgGizmoSlider : public WgGizmo
 		WgGizmoSlider();
 		virtual	~WgGizmoSlider();
 		virtual const char * Type() const;
-		static const char * GetMyType();
+		static const char * GetClass();
 
 		//____ Callbacks ________________________________________
 
@@ -180,7 +180,7 @@ class WgGizmoHSlider:public WgGizmoSlider
 		WgGizmoHSlider();
 
 		virtual const char * Type() const;
-		static const char * GetMyType();
+		static const char * GetClass();
 		virtual WgGizmo * NewOfMyType() const { return new WgGizmoHSlider(); };
 
 };
@@ -193,7 +193,7 @@ class WgGizmoVSlider:public WgGizmoSlider
 		WgGizmoVSlider();
 
 		virtual const char * Type() const;
-		static const char * GetMyType();
+		static const char * GetClass();
 		virtual WgGizmo * NewOfMyType() const { return new WgGizmoVSlider(); };
 
 };

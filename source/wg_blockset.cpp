@@ -32,16 +32,16 @@
 WgMemPool * WgBlockset::g_pMemPool = 0;
 
 
-WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, WgCoord contentShift, Uint32 flags )
+WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& frame, const WgBorders& padding, WgCoord contentShift, Uint32 flags )
 {
 	m_pSurf			= pSurf;
 	m_rect			= rect;
-	m_gfxBorders	= gfxBorders;
+	m_frame			= frame;
 	m_flags			= flags;
-	m_contentBorders= contentBorders;
+	m_padding		= padding;
 	m_contentShift	= contentShift;
 
-	if( m_gfxBorders.left || m_gfxBorders.right || m_gfxBorders.top || m_gfxBorders.bottom )
+	if( m_frame.left || m_frame.right || m_frame.top || m_frame.bottom )
 		m_flags |= WG_HAS_BORDERS;
 
 	if(m_rect.x + m_rect.w > (int)m_pSurf->Width())
@@ -53,8 +53,8 @@ WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& 
 
 bool WgBlock::operator==( const WgBlock& b) const
 {
-	if( m_pSurf == b.m_pSurf && m_rect == b.m_rect /*Ś&& m_gfxBorders == b.m_gfxBorders && 
-	    m_flags == b.m_flags && m_contentBorders == b.m_contentBorders &&
+	if( m_pSurf == b.m_pSurf && m_rect == b.m_rect /*Ś&& m_frame == b.m_frame && 
+	    m_flags == b.m_flags && m_padding == b.m_padding &&
 		m_contentShift == b.m_contentShift*/ )
 		return true;
 
@@ -63,8 +63,8 @@ bool WgBlock::operator==( const WgBlock& b) const
 
 bool WgBlock::operator!=( const WgBlock& b) const
 {
-	if( m_pSurf == b.m_pSurf && m_rect == b.m_rect && m_gfxBorders == b.m_gfxBorders && 
-	    m_flags == b.m_flags && m_contentBorders == b.m_contentBorders &&
+	if( m_pSurf == b.m_pSurf && m_rect == b.m_rect && m_frame == b.m_frame && 
+	    m_flags == b.m_flags && m_padding == b.m_padding &&
 		m_contentShift == b.m_contentShift )
 		return false;
 
@@ -294,7 +294,7 @@ WgBlockset::WgBlockset(	WgMemPool * pPool, const WgSurface * pSurf, Uint32 flags
 
 bool WgBlockset::AddAlternative( WgSize activationSize, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked,
 						const WgRect& selected, const WgRect& disabled, const WgRect& special,
-						WgBorders gfxBorders, WgBorders contentBorders, WgCoord shiftMarked, WgCoord shiftPressed )
+						WgBorders frame, WgBorders padding, WgCoord shiftMarked, WgCoord shiftPressed )
 {
 	if( activationSize.w == 0 && activationSize.h == 0 )
 		return false;
@@ -302,8 +302,8 @@ bool WgBlockset::AddAlternative( WgSize activationSize, const WgSurface * pSurf,
 	LinkedAlt * p = new LinkedAlt();
 
 	p->activationSize		= activationSize;
-	p->data.contentBorders	= contentBorders;
-	p->data.gfxBorders		= gfxBorders;
+	p->data.padding			= padding;
+	p->data.frame			= frame;
 	p->data.w				= normal.w;
 	p->data.h				= normal.h;
 	p->data.pSurf			= pSurf;
@@ -547,7 +547,7 @@ WgSize WgBlockset::MinSize( int alt ) const
 	if( !p )
 		return WgSize();
 
-	return p->gfxBorders.Size();
+	return p->frame.Size();
 }
 
 //____ MinWidth() ______________________________________________________________
@@ -558,7 +558,7 @@ int WgBlockset::MinWidth( int alt ) const
 	if( !p )
 		return 0;
 
-	return p->gfxBorders.Width();
+	return p->frame.Width();
 }
 
 //____ MinHeight() _____________________________________________________________
@@ -569,7 +569,7 @@ int WgBlockset::MinHeight( int alt ) const
 	if( !p )
 		return 0;
 
-	return p->gfxBorders.Height();
+	return p->frame.Height();
 }
 
 //____ Surface() _______________________________________________________________
@@ -584,48 +584,48 @@ const WgSurface * WgBlockset::Surface( int alt ) const
 }
 
 
-//____ GfxBorders() ____________________________________________________________
+//____ Frame() ____________________________________________________________
 
-WgBorders WgBlockset::GfxBorders( int alt ) const
+WgBorders WgBlockset::Frame( int alt ) const
 {
 	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return WgBorders();
 
-	return p->gfxBorders;
+	return p->frame;
 }
 
-//____ SetGfxBorders() ________________________________________________________
+//____ SetFrame() ________________________________________________________
 
-void WgBlockset::SetGfxBorders( const WgBorders& borders, int alt )
+void WgBlockset::SetFrame( const WgBorders& frame, int alt )
 {
 	Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return;
 
-	p->gfxBorders = borders;
+	p->frame = frame;
 }
 
-//____ ContentBorders() ____________________________________________________
+//____ Padding() ____________________________________________________
 
-WgBorders WgBlockset::ContentBorders( int alt ) const
+WgBorders WgBlockset::Padding( int alt ) const
 {
 	const Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return WgBorders();
 
-	return p->contentBorders;
+	return p->padding;
 }
 
-//____ SetContentBorders() ____________________________________________________
+//____ SetPadding() ____________________________________________________
 
-void WgBlockset::SetContentBorders( const WgBorders& borders, int alt )
+void WgBlockset::SetPadding( const WgBorders& padding, int alt )
 {
 	Alt_Data * p = _getAlt(alt);
 	if( !p )
 		return;
 
-	p->contentBorders = borders;
+	p->padding = padding;
 }
 
 

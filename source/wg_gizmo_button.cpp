@@ -58,12 +58,12 @@ WgGizmoButton::~WgGizmoButton()
 
 const char * WgGizmoButton::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoButton::GetMyType()
+const char * WgGizmoButton::GetClass()
 {
 	return c_gizmoType;
 }
@@ -114,7 +114,7 @@ Uint32 WgGizmoButton::GetTextAreaWidth()
 	WgRect	contentRect(0,0,Size());
 
 	if( m_pBgGfx )
-		contentRect.Shrink(m_pBgGfx->ContentBorders());
+		contentRect.Shrink(m_pBgGfx->Padding());
 
 	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx ) );
 
@@ -132,12 +132,12 @@ int WgGizmoButton::HeightForWidth( int width ) const
 
 	if( m_text.nbChars() != 0 )
 	{
-		WgBorders borders;
+		WgBorders padding;
 
 		if( m_pBgGfx )
-			borders = m_pBgGfx->ContentBorders();
+			padding = m_pBgGfx->Padding();
 
-		int heightForText = m_text.heightForWidth(width-borders.Width()) + borders.Height();
+		int heightForText = m_text.heightForWidth(width-padding.Width()) + padding.Height();
 		if( heightForText > height )
 			height = heightForText;
 	}
@@ -162,7 +162,7 @@ WgSize WgGizmoButton::DefaultSize() const
 		WgSize textSize = m_text.unwrappedSize();
 
 		if( m_pBgGfx )
-			textSize += m_pBgGfx->ContentBorders();
+			textSize += m_pBgGfx->Padding();
 
 		if( textSize.w > bestSize.w )
 			bestSize.w = textSize.w;
@@ -200,7 +200,7 @@ void WgGizmoButton::_onNewSize( const WgSize& size )
 	WgRect	contentRect(0,0,Size());
 
 	if( m_pBgGfx )
-		contentRect.Shrink(m_pBgGfx->ContentBorders());
+		contentRect.Shrink(m_pBgGfx->Padding());
 
 	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx ) );
 

@@ -35,6 +35,7 @@ WgEventHandler::WgEventHandler( WgRoot * pRoot )
 	m_pRoot					= pRoot;
 	m_time					= 0;
 	m_modKeys				= WG_MODKEY_NONE;
+	m_pointerStyle			= WG_POINTER_DEFAULT;
 
 	m_bIsProcessing			= false;
 	m_bWindowFocus			= true;
@@ -1112,6 +1113,17 @@ void WgEventHandler::_updateMarkedGizmo(bool bPostMouseMoveEvents)
 	// Copy content of pNowMarked to m_pMarkedGizmo
 
 	m_pMarkedGizmo = pNowMarked;
+	
+	// Update PointerStyle
+	
+	WgPointerStyle newStyle = pNowMarked? pNowMarked->GetPointerStyle():WG_POINTER_DEFAULT;
+	
+	if( newStyle != m_pointerStyle )
+	{
+		QueueEvent( new WgEvent::PointerChange( newStyle ) );
+		m_pointerStyle = newStyle;
+	}	
+	
 }
 
 

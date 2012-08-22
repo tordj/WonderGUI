@@ -47,7 +47,7 @@ public:
 	WgGizmoValue();
 	virtual ~WgGizmoValue();
 	virtual const char * Type() const;
-	static const char * GetMyType();
+	static const char * GetClass();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoValue(); };
 
 

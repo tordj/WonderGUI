@@ -60,10 +60,10 @@ WgGizmoCheckbox::~WgGizmoCheckbox()
 
 const char * WgGizmoCheckbox::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoCheckbox::GetMyType( void )
+const char * WgGizmoCheckbox::GetClass( void )
 {
 	return c_gizmoType;
 }
@@ -168,7 +168,7 @@ WgSize WgGizmoCheckbox::DefaultSize() const
 	if( m_pBlockUnchecked )
 	{
 		bgBestSize = m_pBlockUnchecked->Size();
-		textBestSize += m_pBlockUnchecked->ContentBorders();
+		textBestSize += m_pBlockUnchecked->Padding();
 	}
 
 	if( m_pIconUnchecked )

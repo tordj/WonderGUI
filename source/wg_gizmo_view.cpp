@@ -82,10 +82,10 @@ WgGizmoView::~WgGizmoView()
 
 const char * WgGizmoView::Type() const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoView::GetMyType( void )
+const char * WgGizmoView::GetClass( void )
 {
 	return c_gizmoType;
 }

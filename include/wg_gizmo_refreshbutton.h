@@ -49,7 +49,7 @@ public:
 	
 
 	virtual const char *Type( void ) const;
-	static const char * GetMyType();
+	static const char * GetClass();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoRefreshbutton(); };
 
 	//____ Methods __________________________________________

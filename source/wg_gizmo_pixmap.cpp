@@ -45,12 +45,12 @@ WgGizmoPixmap::~WgGizmoPixmap()
 
 const char * WgGizmoPixmap::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoPixmap::GetMyType()
+const char * WgGizmoPixmap::GetClass()
 {
 	return c_gizmoType;
 }

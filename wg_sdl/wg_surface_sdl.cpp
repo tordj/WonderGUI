@@ -116,12 +116,12 @@ WgSurfaceSDL::~WgSurfaceSDL()
 
 const char * WgSurfaceSDL::Type() const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() _____________________________________________________________
+//____ GetClass() _____________________________________________________________
 
-const char * WgSurfaceSDL::GetMyType()
+const char * WgSurfaceSDL::GetClass()
 {
 	return c_surfaceType;
 }

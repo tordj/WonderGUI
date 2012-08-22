@@ -39,7 +39,7 @@ public:
 	const char *Type( void ) const;
 	static const char * ClassType();
 
-	void	Top();								// Put us ontop of all our silbings.
+	void	Top();								// Put us ontop of all our siblings.
 
 	bool	SetGeo( const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
 	bool	SetGeo( const WgCoord& ofs, WgOrientation origo = WG_NORTHWEST );
@@ -112,7 +112,7 @@ public:
 	~WgGizmoModallayer();
 
 	virtual const char *Type( void ) const;
-	static const char * GetMyType();
+	static const char * GetClass();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoModallayer(); };
 
 

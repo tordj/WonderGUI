@@ -68,9 +68,9 @@ const char * WgGizmoVBox::Type() const
 	return c_gizmoType;
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoVBox::GetMyType()
+const char * WgGizmoVBox::GetClass()
 {
 	return c_gizmoType;
 }

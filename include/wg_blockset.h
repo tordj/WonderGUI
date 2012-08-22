@@ -83,21 +83,21 @@ enum WgBlockFlags
 class WgBlock
 {
 public:
-	WgBlock( const WgSurface * pSurf, const WgRect& rect, const WgBorders& gfxBorders, const WgBorders& contentBorders, WgCoord contentShift, Uint32 flags );
+	WgBlock( const WgSurface * pSurf, const WgRect& rect, const WgBorders& frame, const WgBorders& padding, WgCoord contentShift, Uint32 flags );
 	WgBlock() : m_pSurf(0), m_flags(0) { }
 
 	inline const WgRect&		Rect() const { return m_rect; }
 	inline const WgSurface *	Surface() const { return m_pSurf; }
-	inline const WgBorders&		GfxBorders() const { return m_gfxBorders; }
-	inline const WgRect			ContentRect( const WgRect& blockGeo ) const { return (blockGeo + m_contentShift) - m_contentBorders; }
+	inline const WgBorders&		Frame() const { return m_frame; }
+	inline const WgRect			ContentRect( const WgRect& blockGeo ) const { return (blockGeo + m_contentShift) - m_padding; }
 	inline Uint32				Flags() const { return m_flags; }
 	inline int					Width() const { return m_rect.w; }
 	inline int					Height() const { return m_rect.h; }
 	inline WgSize				Size() const { return WgSize(m_rect.w, m_rect.h); }
 
-	inline int					MinWidth() const { return m_gfxBorders.Width(); }
-	inline int					MinHeight() const { return m_gfxBorders.Height(); }
-	inline WgSize				MinSize() const { return m_gfxBorders.Size(); }
+	inline int					MinWidth() const { return m_frame.Width(); }
+	inline int					MinHeight() const { return m_frame.Height(); }
+	inline WgSize				MinSize() const { return m_frame.Size(); }
 
 	inline bool					IsOpaque() const { return ((m_flags & WG_OPAQUE) != 0); }
 	inline bool					HasOpaqueCenter() const { return ((m_flags & WG_OPAQUE_CENTER) != 0); }
@@ -125,10 +125,10 @@ private:
 
 	const WgSurface *	m_pSurf;
 	WgRect				m_rect;
-	WgBorders			m_gfxBorders;
-	Uint32				m_flags;
-	WgBorders			m_contentBorders;
+	WgBorders			m_frame;
+	WgBorders			m_padding;
 	WgCoord				m_contentShift;
+	Uint32				m_flags;
 };
 
 //____ WgBlockset _____________________________________________________________
@@ -151,8 +151,8 @@ protected:
 	struct Alt_Data
 	{
 		const WgSurface *	pSurf;
-		WgBorders			gfxBorders;
-		WgBorders			contentBorders;
+		WgBorders			frame;
+		WgBorders			padding;
 
 		WgCoord8			contentShift[WG_NB_MODES];		// Only shift for WG_MODE_MARKED and WG_MODE_SELECTED are used.
 		Uint16				x[WG_NB_MODES];
@@ -177,20 +177,20 @@ public:
 	static WgBlocksetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, int flags = 0 );
 	static WgBlocksetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, int flags = 0 );
 	static WgBlocksetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, const WgCoord& special, int flags = 0 );
-	static WgBlocksetPtr CreateFromRow( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding=0, int flags = 0 );
-	static WgBlocksetPtr CreateFromColumn( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding=0, int flags = 0 );
+	static WgBlocksetPtr CreateFromRow( WgSurface * pSurf, const WgRect& rect, int nBlocks, int spacing=0, int flags = 0 );
+	static WgBlocksetPtr CreateFromColumn( WgSurface * pSurf, const WgRect& rect, int nBlocks, int spacing=0, int flags = 0 );
 
 
 	bool				AddAlternative( WgSize activationSize, const WgSurface * pSurf, const WgRect& normal, const WgRect& marked,
 										const WgRect& selected, const WgRect& disabled, const WgRect& special,
-										WgBorders gfxBorders, WgBorders contentBorders, WgCoord shiftMarked, WgCoord shiftPressed );
+										WgBorders frame, WgBorders padding, WgCoord shiftMarked, WgCoord shiftPressed );
 
 	bool				SetSize( WgSize size, int alt = 0 );
 	bool				SetPos( WgMode mode, WgCoord pos, int alt = 0 );
 
 	void				SetTextColors( const WgColorsetPtr& colors );
-	void				SetGfxBorders( const WgBorders& borders, int alt = 0 );
-	void				SetContentBorders( const WgBorders& borders, int alt = 0 );
+	void				SetFrame( const WgBorders& frame, int alt = 0 );
+	void				SetPadding( const WgBorders& padding, int alt = 0 );
 	bool				SetContentShift( WgMode mode, WgCoord ofs, int alt = 0 );
 	bool				SetTile(Uint32 place, bool bTile);
 	bool				SetScale(bool bScale);
@@ -218,8 +218,8 @@ public:
 	WgSize				MinSize( int alt = 0 ) const;
 
 	const WgSurface *	Surface( int alt = 0 ) const;
-	WgBorders			GfxBorders( int alt = 0 ) const;
-	WgBorders			ContentBorders( int alt = 0 ) const;
+	WgBorders			Frame( int alt = 0 ) const;
+	WgBorders			Padding( int alt = 0 ) const;
 	WgCoord				ContentShift( WgMode mode, int alt = 0 ) const;
 	inline Uint32		Flags() const { return m_flags; }
 
@@ -273,7 +273,7 @@ inline WgBlock WgBlockset::_getBlock(WgMode m, const Alt_Data * p) const
 	const Uint32 SKIP_MASK = WG_SKIP_NORMAL | WG_SKIP_MARKED | WG_SKIP_SELECTED | WG_SKIP_DISABLED | WG_SKIP_SPECIAL;
 	Uint32 flags = m_flags & ~SKIP_MASK;
 	flags |= IsModeSkipable(m) ? WG_SKIP_NORMAL : 0;	// reuse bit
-	return WgBlock( p->pSurf, WgRect(p->x[m], p->y[m], p->w, p->h), p->gfxBorders, p->contentBorders, p->contentShift[m], flags );
+	return WgBlock( p->pSurf, WgRect(p->x[m], p->y[m], p->w, p->h), p->frame, p->padding, p->contentShift[m], flags );
 }
 
 inline bool WgBlockset::HasBlock(WgMode m, int alt) const

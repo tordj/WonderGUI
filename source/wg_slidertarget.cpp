@@ -30,8 +30,8 @@ void WgSliderTarget::_updateSlider( float pos, float size )
 
 		if( pGizmo )
 		{
-			if( pGizmo->Type() == WgGizmoVSlider::GetMyType() ||
-				pGizmo->Type() == WgGizmoHSlider::GetMyType() )
+			if( pGizmo->Type() == WgGizmoVSlider::GetClass() ||
+				pGizmo->Type() == WgGizmoHSlider::GetClass() )
 					static_cast<WgGizmoSlider*>(pGizmo)->_setSlider(pos,size);
 		}
 

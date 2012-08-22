@@ -64,7 +64,7 @@ class	WgText;
 
 class WgGizmoMenu:public WgGizmoContainer, public WgTileHolder, private WgSliderTarget
 {
-	friend class WgMenuItem;
+	friend class WgMenuitem;
 	friend class WgMenuSubMenu;
 
 public:
@@ -72,7 +72,7 @@ public:
 	virtual ~WgGizmoMenu();
 
 	virtual const char * Type() const;
-	static const char * GetMyType();
+	static const char * GetClass();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoMenu(); };
 
 	//____ Methods ___________________________________________
@@ -110,28 +110,28 @@ public:
 
 	int			GetEntryHeight() const;
 
-	int			AddItem( WgMenuItem * pEntry );
-	int			InsertItem( WgMenuItem * pEntry, int pos );
+	int			AddItem( WgMenuitem * pEntry );
+	int			InsertItem( WgMenuitem * pEntry, int pos );
 
-	bool		RemoveItem( WgMenuItem * pEntry );
-	WgMenuItem*	RemoveItem( int pos );
+	bool		RemoveItem( WgMenuitem * pEntry );
+	WgMenuitem*	RemoveItem( int pos );
 	void		RemoveAllItems();
 
-	bool		DeleteItem( WgMenuItem * pEntry );
+	bool		DeleteItem( WgMenuitem * pEntry );
 	bool		DeleteItem( int pos );
 	void		DeleteAllItems();
 
-	int			GetItemPos( WgMenuItem* pEntry );
-	WgMenuItem*	GetItem( int pos );
+	int			GetItemPos( WgMenuitem* pEntry );
+	WgMenuitem*	GetItem( int pos );
 	int			GetItemCount() const { return (int)m_items.Size(); }
 
 
-	WgMenuItem *FindItem( int id );
-	WgMenuItem *GetFirstItem() const { return m_items.First(); }
-	WgMenuItem *GetLastItem() const { return m_items.Last(); }
-	WgMenuItem *GetSelectedItem() const { return m_pSelectedItem; }
+	WgMenuitem *FindItem( int id );
+	WgMenuitem *GetFirstItem() const { return m_items.First(); }
+	WgMenuitem *GetLastItem() const { return m_items.Last(); }
+	WgMenuitem *GetSelectedItem() const { return m_pSelectedItem; }
 
-	void		SelectItem(WgMenuItem* pItem);
+	void		SelectItem(WgMenuitem* pItem);
 
 	WgGizmo * 	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
 
@@ -241,7 +241,7 @@ private:
 
 	//
 
-	WgMenuItem *_getItemAtPos( int posX, int posY );
+	WgMenuitem *_getItemAtPos( int posX, int posY );
 	void		_calcEntryMinWidth( WgMenuEntry * pEntry );
 	void		_openSubMenu( WgMenuSubMenu * pItem );
 
@@ -249,10 +249,10 @@ private:
 	void		_openSubMenu( WgGizmoMenu * pMenu, const WgRect& laucherGeo, WgOrientation orientation );
 	void		_closeSubMenu();
 
-	WgBorders	_getContentBorders() const;
+	WgBorders	_getPadding() const;
 	void		_refreshEntryHeight();
 
-	void		_scrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop = false );
+	void		_scrollItemIntoView( WgMenuitem * pItem, bool bForceAtTop = false );
 	void		_markFirstFilteredEntry();
 
 	int			_getViewSize();
@@ -265,10 +265,10 @@ private:
 
 	// Members defining items.
 
-	WgChain<WgMenuItem>		m_items;
+	WgChain<WgMenuitem>		m_items;
 	Uint32					m_nItems;
 	Uint32					m_markedItem;		// 0 = no item is selected.
-	WgMenuItem*				m_pSelectedItem;
+	WgMenuitem*				m_pSelectedItem;
 
 	// Members holding data for open menu
 

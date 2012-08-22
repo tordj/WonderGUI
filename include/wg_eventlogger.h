@@ -64,6 +64,7 @@ private:
 	std::string _formatGizmo( const WgEvent::Event * _pEvent );
 	std::string _formatModkeys( const WgEvent::Event * _pEvent );
 	std::string _formatPointerPos( const WgEvent::Event * _pEvent );
+	std::string _formatPointerStyle( const WgEvent::PointerChange * _pEvent );
 
 
 	bool			m_eventFilter[WG_EVENT_MAX];

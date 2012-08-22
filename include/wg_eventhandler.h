@@ -171,6 +171,7 @@ private:
 
 	int64_t			m_time;
 	WgCoord			m_pointerPos;
+	WgPointerStyle	m_pointerStyle;
 	WgModifierKeys	m_modKeys;
 
 	std::vector<WgGizmoWeakPtr>	m_vTickGizmos;		// Gizmos that have requested periodic tick-events (i.e. on every processEvents() ).

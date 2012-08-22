@@ -69,10 +69,10 @@ WgGizmoSlider::~WgGizmoSlider( void )
 
 const char * WgGizmoSlider::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoSlider::GetMyType( void )
+const char * WgGizmoSlider::GetClass( void )
 {
 	return c_gizmoType;
 }
@@ -931,10 +931,10 @@ WgGizmoHSlider::WgGizmoHSlider( void )
 
 const char * WgGizmoHSlider::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoHSlider::GetMyType( void )
+const char * WgGizmoHSlider::GetClass( void )
 {
 	return c_gizmoTypeH;
 }
@@ -961,10 +961,10 @@ WgGizmoVSlider::WgGizmoVSlider( void )
 
 const char * WgGizmoVSlider::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoVSlider::GetMyType( void )
+const char * WgGizmoVSlider::GetClass( void )
 {
 	return c_gizmoTypeV;
 }

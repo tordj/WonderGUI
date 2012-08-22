@@ -56,12 +56,12 @@ WgGizmoEditline::~WgGizmoEditline()
 
 const char * WgGizmoEditline::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoEditline::GetMyType()
+const char * WgGizmoEditline::GetClass()
 {
 	return c_gizmoType;
 }

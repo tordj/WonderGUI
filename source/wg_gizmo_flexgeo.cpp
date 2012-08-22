@@ -644,12 +644,12 @@ WgGizmoFlexgeo::~WgGizmoFlexgeo()
 
 const char * WgGizmoFlexgeo::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoFlexgeo::GetMyType()
+const char * WgGizmoFlexgeo::GetClass()
 {
 	return c_gizmoType;
 }

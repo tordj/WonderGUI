@@ -49,10 +49,10 @@ WgGizmoValue::~WgGizmoValue()
 
 const char * WgGizmoValue::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoValue::GetMyType( void )
+const char * WgGizmoValue::GetClass( void )
 {
 	return c_gizmoType;
 }

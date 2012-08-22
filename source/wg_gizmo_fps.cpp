@@ -63,10 +63,10 @@ WgGizmoFps::~WgGizmoFps( void )
 
 const char * WgGizmoFps::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoFps::GetMyType( void )
+const char * WgGizmoFps::GetClass( void )
 {
 	return c_gizmoType;
 }

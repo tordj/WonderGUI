@@ -42,12 +42,12 @@ WgGizmoDummy::~WgGizmoDummy()
 
 const char * WgGizmoDummy::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoDummy::GetMyType()
+const char * WgGizmoDummy::GetClass()
 {
 	return c_gizmoType;
 }

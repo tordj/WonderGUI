@@ -46,10 +46,10 @@ WgGizmoRadiobutton::~WgGizmoRadiobutton()
 
 const char * WgGizmoRadiobutton::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoRadiobutton::GetMyType( void )
+const char * WgGizmoRadiobutton::GetClass( void )
 {
 	return c_gizmoType;
 }
@@ -122,7 +122,7 @@ void WgGizmoRadiobutton::_unselectRecursively( WgGizmoParent * pParent )
 
 	while( pGizmo )
 	{
-		if( pGizmo->Type() == WgGizmoRadiobutton::GetMyType() )
+		if( pGizmo->Type() == WgGizmoRadiobutton::GetClass() )
 		{
 			WgGizmoRadiobutton * pRB = (WgGizmoRadiobutton*) pGizmo;
 			if( pRB->m_bChecked )

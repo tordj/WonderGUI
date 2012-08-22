@@ -38,7 +38,7 @@ public:
 	WgGizmoAnimation();
 	~WgGizmoAnimation();
 	virtual const char * Type() const;
-	static const char * GetMyType();
+	static const char * GetClass();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoAnimation(); };
 
 

@@ -48,7 +48,7 @@ public:
 	// Methods needed by WgSurface
 
 	const char *Type() const;
-	static const char * GetMyType();
+	static const char * GetClass();
 
 	WgSize		Size() const;
 	bool		IsOpaque() const;

@@ -63,10 +63,10 @@ WgGizmoEditvalue::~WgGizmoEditvalue()
 
 const char * WgGizmoEditvalue::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoEditvalue::GetMyType( void )
+const char * WgGizmoEditvalue::GetClass( void )
 {
 	return Wdg_Type;
 }

@@ -40,7 +40,7 @@ public:
 	virtual ~WgGizmoFill();
 
 	virtual const char *Type( void ) const;
-	static const char * GetMyType();
+	static const char * GetClass();
 	virtual WgGizmo * NewOfMyType() const { return new WgGizmoFill(); };
 
 	void	SetColor( const WgColor& col );

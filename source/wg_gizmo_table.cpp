@@ -27,8 +27,8 @@
 #include	<wg_eventhandler.h>
 #include	<wg_text.h>
 #include	<wg_font.h>
-#include	<wg_gfx.h>
 #include	<wg_util.h>
+#include	<wg_gfxdevice.h>
 
 
 static const char	c_gizmoType[] = {"Table"};
@@ -697,10 +697,10 @@ WgGizmoTable::~WgGizmoTable( void )
 
 const char * WgGizmoTable::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-const char * WgGizmoTable::GetMyType( void )
+const char * WgGizmoTable::GetClass( void )
 {
 	return c_gizmoType;
 }
@@ -1905,7 +1905,7 @@ void WgGizmoTable::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 			WgRect rText = r2;
 			if( m_pHeaderGfx )
-				rText.Shrink( m_pHeaderGfx->ContentBorders() );
+				rText.Shrink( m_pHeaderGfx->Padding() );
 
 			m_pColumns[i]._getTextObj()->setProperties( m_pHeaderProps );
 			pDevice->PrintText( _clip, m_pColumns[i]._getTextObj(), rText );

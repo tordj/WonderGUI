@@ -58,12 +58,12 @@ WgGizmoRefreshbutton::~WgGizmoRefreshbutton()
 
 const char * WgGizmoRefreshbutton::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoRefreshbutton::GetMyType()
+const char * WgGizmoRefreshbutton::GetClass()
 {
 	return c_gizmoType;
 }
@@ -188,7 +188,7 @@ void WgGizmoRefreshbutton::_onNewSize( const WgSize& size )
 	Uint32 w = size.w;
 
 	if( m_pBgGfx )
-		w -= m_pBgGfx->ContentBorders().Width();
+		w -= m_pBgGfx->Padding().Width();
 	m_refreshText.setLineWidth(w);
 
 	WgGizmoButton::_onNewSize( size );

@@ -42,7 +42,7 @@ class WgSurfaceSoft : public WgSurface
 	~WgSurfaceSoft();
 
 	const char *Type() const;
-	static const char * GetMyType();
+	static const char * GetClass();
 
 	WgSize		Size() const;
 	bool		IsOpaque() const;

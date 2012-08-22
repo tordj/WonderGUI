@@ -420,6 +420,26 @@ namespace WgEvent
 		return m_millisec;
 	}
 
+	//____ PointerChange _______________________________________________________________
+
+	PointerChange::PointerChange( WgPointerStyle style )
+	{
+		m_type = WG_EVENT_POINTER_CHANGE;
+		m_style = style;
+	}
+
+	void PointerChange::_cloneContentFrom( const PointerChange * pOrg )
+	{
+		m_style = pOrg->m_style;
+		Event::_cloneContentFrom( pOrg );
+	}
+	
+	WgPointerStyle PointerChange::Style() const
+	{
+		return m_style;
+	}
+
+
 	//____ ButtonPress _________________________________________________________
 
 	ButtonPress::ButtonPress( WgGizmoButton * pGizmo )
@@ -696,9 +716,9 @@ namespace WgEvent
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
 		{
-			if( pGizmo->Type() == WgGizmoText::GetMyType() )
+			if( pGizmo->Type() == WgGizmoText::GetClass() )
 				return static_cast<WgGizmoText*>(pGizmo);
-			else if( pGizmo->Type() == WgGizmoEditline::GetMyType() )
+			else if( pGizmo->Type() == WgGizmoEditline::GetClass() )
 				return static_cast<WgGizmoEditline*>(pGizmo);
 		}
 		return 0;
@@ -729,35 +749,35 @@ namespace WgEvent
 
 	//____ Menu event methods __________________________________________________
 
-	WgGizmoMenu *	MenuItemEvent::Menu() const
+	WgGizmoMenu *	MenuitemEvent::Menu() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo && pGizmo->Type() == WgGizmoMenu::GetMyType() )
+		if( pGizmo && pGizmo->Type() == WgGizmoMenu::GetClass() )
 			return static_cast<WgGizmoMenu*>(pGizmo);
 
 		return 0;
 	}
 
-	int MenuItemEvent::ItemId() const
+	int MenuitemEvent::ItemId() const
 	{
 		return m_itemId;
 	}
 
-	MenuItemSelected::MenuItemSelected( WgGizmoMenu * pMenu, int menuItemId )
+	MenuitemSelect::MenuitemSelect( WgGizmoMenu * pMenu, int menuItemId )
 	{
 		m_type		= WG_EVENT_MENUITEM_SELECT;
 		m_pGizmo	= pMenu;
 		m_itemId	= menuItemId;
 	}
 
-	MenuItemChecked::MenuItemChecked( WgGizmoMenu * pMenu, int menuItemId )
+	MenuitemCheck::MenuitemCheck( WgGizmoMenu * pMenu, int menuItemId )
 	{
 		m_type		= WG_EVENT_MENUITEM_CHECK;
 		m_pGizmo	= pMenu;
 		m_itemId	= menuItemId;
 	}
 
-	MenuItemUnchecked::MenuItemUnchecked( WgGizmoMenu * pMenu, int menuItemId )
+	MenuitemUncheck::MenuitemUncheck( WgGizmoMenu * pMenu, int menuItemId )
 	{
 		m_type		= WG_EVENT_MENUITEM_UNCHECK;
 		m_pGizmo	= pMenu;
@@ -793,7 +813,7 @@ namespace WgEvent
 	WgGizmoTable * TableCellEvent::Table() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo && pGizmo->Type() == WgGizmoMenu::GetMyType() )
+		if( pGizmo && pGizmo->Type() == WgGizmoMenu::GetClass() )
 			return static_cast<WgGizmoTable*>(pGizmo);
 
 		return 0;		

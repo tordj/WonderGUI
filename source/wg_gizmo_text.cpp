@@ -55,10 +55,10 @@ WgGizmoText::~WgGizmoText()
 
 const char * WgGizmoText::Type() const
 {
-	return WgGizmoText::GetMyType();
+	return WgGizmoText::GetClass();
 }
 
-const char * WgGizmoText::GetMyType()
+const char * WgGizmoText::GetClass()
 {
 	return c_gizmoType;
 }

@@ -5,9 +5,9 @@
 
 #include <wg_gizmo_menu.h>
 
-//____ WgMenuItem::Show() ___________________________________________
+//____ WgMenuitem::Show() ___________________________________________
 
-void WgMenuItem::Show()
+void WgMenuitem::Show()
 {
 	if( m_pMyMenu && !m_bVisible )
 	{
@@ -16,9 +16,9 @@ void WgMenuItem::Show()
 	}
 }
 
-//____ WgMenuItem::Hide() ___________________________________________
+//____ WgMenuitem::Hide() ___________________________________________
 
-void WgMenuItem::Hide()
+void WgMenuitem::Hide()
 {
 	if( m_pMyMenu && m_bVisible )
 	{
@@ -27,9 +27,9 @@ void WgMenuItem::Hide()
 	}
 }
 
-//____ WgMenuItem::Modified() ___________________________________________
+//____ WgMenuitem::Modified() ___________________________________________
 
-void WgMenuItem::Modified()
+void WgMenuitem::Modified()
 {
 	if(m_pMyMenu)
 		m_pMyMenu->_itemModified();
@@ -37,14 +37,14 @@ void WgMenuItem::Modified()
 
 //____ WgMenuSeparator::Constructor ___________________________________________
 
-WgMenuSeparator::WgMenuSeparator():WgMenuItem(SEPARATOR)
+WgMenuSeparator::WgMenuSeparator():WgMenuitem(SEPARATOR)
 {
 }
 
 
 //____ WgMenuEntry::Constructor _______________________________________________
 
-WgMenuEntry::WgMenuEntry() : WgMenuItem(ENTRY)
+WgMenuEntry::WgMenuEntry() : WgMenuitem(ENTRY)
 {
 	m_bEnabled		= true;
 	m_navKey		= 0;
@@ -54,7 +54,7 @@ WgMenuEntry::WgMenuEntry() : WgMenuItem(ENTRY)
 }
 
 WgMenuEntry::WgMenuEntry(	const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey,
-							WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText ):WgMenuItem(ENTRY)
+							WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText ):WgMenuitem(ENTRY)
 {
 
 	m_text			= text;
@@ -161,7 +161,7 @@ bool WgMenuRadioButton::Select()
 
 	m_bSelected = true;
 
-	WgMenuItem * pItem = this->Next();
+	WgMenuitem * pItem = this->Next();
 	while( pItem && pItem->GetType() == RADIOBUTTON )
 	{
 		((WgMenuRadioButton*)pItem)->m_bSelected = false;
@@ -207,6 +207,6 @@ void WgMenuSubMenu::SetSubMenu(WgGizmoMenu* subMenu)
 
 void WgMenuSubMenu::SetMyMenu( WgGizmoMenu * pMenu )
 {
-	WgMenuItem::SetMyMenu( pMenu );
+	WgMenuitem::SetMyMenu( pMenu );
 }
 

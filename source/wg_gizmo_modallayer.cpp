@@ -291,12 +291,12 @@ WgGizmoModallayer::~WgGizmoModallayer()
 
 const char *WgGizmoModallayer::Type( void ) const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() ____________________________________________________________
+//____ GetClass() ____________________________________________________________
 
-const char * WgGizmoModallayer::GetMyType()
+const char * WgGizmoModallayer::GetClass()
 {
 	return c_gizmoType;
 }

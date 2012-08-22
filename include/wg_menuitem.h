@@ -24,7 +24,7 @@ class WgGfxAnim;
 class WgGizmoMenu;
 typedef class WgGizmoMenu WgGizmoMenu;
 
-enum WgMenuItemType
+enum WgMenuitemType
 {
 		ENTRY,
 		CHECKBOX,
@@ -34,17 +34,17 @@ enum WgMenuItemType
 };
 
 
-//____ WgMenuItem _____________________________________________________________
+//____ WgMenuitem _____________________________________________________________
 
-class WgMenuItem : public WgLink
+class WgMenuitem : public WgLink
 {
 	friend class Wdg_Menu;
 	friend class WgGizmoMenu;
 public:
-	virtual ~WgMenuItem() {};
-	LINK_METHODS( WgMenuItem );
+	virtual ~WgMenuitem() {};
+	LINK_METHODS( WgMenuitem );
 
-	inline WgMenuItemType GetType() const { return m_type; }
+	inline WgMenuitemType GetType() const { return m_type; }
 	inline void SetId(int id) { m_id = id; }
 	inline int GetId() const { return m_id; }
 
@@ -58,11 +58,11 @@ public:
 	void Modified();
 
 protected:
-	WgMenuItem(WgMenuItemType _type) {m_type = _type; m_id = 0; m_pMyMenu = 0; m_bVisible = true; }
+	WgMenuitem(WgMenuitemType _type) {m_type = _type; m_id = 0; m_pMyMenu = 0; m_bVisible = true; }
 
 	virtual void SetMyMenu( WgGizmoMenu * pMenu ) { m_pMyMenu = pMenu; }
 
-	WgMenuItemType	m_type;
+	WgMenuitemType	m_type;
     int				m_id;
 	bool			m_bVisible;
 
@@ -71,7 +71,7 @@ protected:
 
 //____ WgMenuSeparator ________________________________________________________
 
-class WgMenuSeparator : public WgMenuItem
+class WgMenuSeparator : public WgMenuitem
 {
 public:
 	WgMenuSeparator();
@@ -80,7 +80,7 @@ public:
 
 //____ WgMenuEntry ____________________________________________________________
 
-class WgMenuEntry : public WgMenuItem
+class WgMenuEntry : public WgMenuitem
 {
 	friend class Wdg_Menu;
 	friend class WgGizmoMenu;

@@ -187,12 +187,12 @@ WgSurfaceGL::~WgSurfaceGL()
 
 const char * WgSurfaceGL::Type() const
 {
-	return GetMyType();
+	return GetClass();
 }
 
-//____ GetMyType() _____________________________________________________________
+//____ GetClass() _____________________________________________________________
 
-const char * WgSurfaceGL::GetMyType()
+const char * WgSurfaceGL::GetClass()
 {
 	return c_surfaceType;
 }

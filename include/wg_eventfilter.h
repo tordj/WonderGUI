@@ -54,6 +54,7 @@ class WgEventFilter
 public:
 
 	static WgEventFilter	Tick();
+	static WgEventFilter	PointerChange();
 
 	static WgEventFilter	FocusGained();
 	static WgEventFilter	FocusLost();
@@ -129,18 +130,90 @@ public:
 	static WgEventFilter	MouseWheelRoll();
 	static WgEventFilter	MouseWheelRoll( int wheel );
 	static WgEventFilter	MouseWheelRoll( WgGizmo * pGizmo );
-	static WgEventFilter	MouseWheelRoll( int wheel, WgGizmo * pGizmo );
+	static WgEventFilter	MouseWheelRoll( WgGizmo * pGizmo, int wheel );
 
 	static WgEventFilter	ButtonPress();
 	static WgEventFilter	ButtonPress( WgGizmo * pGizmo );
 
-	//TODO: Add missing filters!
+	static WgEventFilter	CheckboxCheck();
+	static WgEventFilter	CheckboxCheck( WgGizmoCheckbox * pGizmo );
+
+	static WgEventFilter	CheckboxUncheck();
+	static WgEventFilter	CheckboxUncheck( WgGizmoCheckbox * pGizmo );
 
 	static WgEventFilter	CheckboxToggle();
 	static WgEventFilter	CheckboxToggle( WgGizmoCheckbox * pGizmo );
 
+	static WgEventFilter	RadiobuttonSelect();
+	static WgEventFilter	RadiobuttonSelect( WgGizmoRadiobutton * pGizmo );
+
+	static WgEventFilter	RadiobuttonUnselect();
+	static WgEventFilter	RadiobuttonUnselect( WgGizmoRadiobutton * pGizmo );
+
+	static WgEventFilter	RadiobuttonToggle();
+	static WgEventFilter	RadiobuttonToggle( WgGizmoRadiobutton * pGizmo );
+
+	static WgEventFilter	AnimationUpdate();
+	static WgEventFilter	AnimationUpdate( WgGizmoAnimation * pGizmo );
+
+	static WgEventFilter	TabSelect();
+	static WgEventFilter	TabSelect( WgGizmoTablist * pGizmo );
+	static WgEventFilter	TabSelect( WgGizmoTablist * pGizmo, int id );
+
+	static WgEventFilter	TabPress();
+	static WgEventFilter	TabPress( int button );
+	static WgEventFilter	TabPress( WgGizmoTablist * pGizmo );
+	static WgEventFilter	TabPress( WgGizmoTablist * pGizmo, int button );
+	static WgEventFilter	TabPress( WgGizmoTablist * pGizmo, int button, int id );
+
+	static WgEventFilter	EditvalueModify();
+	static WgEventFilter	EditvalueModify( WgGizmoEditvalue * pGizmo );
+
+	static WgEventFilter	EditvalueSet();
+	static WgEventFilter	EditvalueSet( WgGizmoEditvalue * pGizmo );
+
 	static WgEventFilter	SliderMove();
 	static WgEventFilter	SliderMove( WgGizmoSlider * pGizmo );
+
+	static WgEventFilter	SliderStepFwd();
+	static WgEventFilter	SliderStepFwd( WgGizmoSlider * pGizmo );
+
+	static WgEventFilter	SliderStepBwd();
+	static WgEventFilter	SliderStepBwd( WgGizmoSlider * pGizmo );
+
+	static WgEventFilter	SliderJumpFwd();
+	static WgEventFilter	SliderJumpFwd( WgGizmoSlider * pGizmo );
+
+	static WgEventFilter	SliderJumpBwd();
+	static WgEventFilter	SliderJumpBwd( WgGizmoSlider * pGizmo );
+
+	static WgEventFilter	SliderWheelRoll();
+	static WgEventFilter	SliderWheelRoll( WgGizmoSlider * pGizmo );
+
+	static WgEventFilter	TextModify();
+	static WgEventFilter	TextModify( WgGizmo * pGizmo );
+
+	static WgEventFilter	TextSet();
+	static WgEventFilter	TextSet( WgGizmo * pGizmo );
+
+	static WgEventFilter	MenuitemSelect();
+	static WgEventFilter	MenuitemSelect( int itemId );
+	static WgEventFilter	MenuitemSelect( WgGizmoMenu * pGizmo );
+	static WgEventFilter	MenuitemSelect( WgGizmoMenu * pGizmo, int itemId );
+
+	static WgEventFilter	MenuitemCheck();
+	static WgEventFilter	MenuitemCheck( int itemId );
+	static WgEventFilter	MenuitemCheck( WgGizmoMenu * pGizmo );
+	static WgEventFilter	MenuitemCheck( WgGizmoMenu * pGizmo, int itemId );
+
+	static WgEventFilter	MenuitemUncheck();
+	static WgEventFilter	MenuitemUncheck( int itemId );
+	static WgEventFilter	MenuitemUncheck( WgGizmoMenu * pGizmo );
+	static WgEventFilter	MenuitemUncheck( WgGizmoMenu * pGizmo, int itemId );
+
+
+	//TODO: Add missing filters!
+
 
 	static WgEventFilter	KnobTurn();
 	static WgEventFilter	KnobTurn( WgGizmo * pGizmo );
@@ -173,6 +246,9 @@ private:
 	static bool _filterNativeKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterCharacterEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 	static bool _filterMouseWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterTabSelect( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterTabPress( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterMenuitemEvent( const WgEvent::Event * pEvent, const WgEventFilter& filter );
 };
 
 
