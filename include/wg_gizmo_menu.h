@@ -243,11 +243,10 @@ private:
 
 	WgMenuitem *_getItemAtPos( int posX, int posY );
 	void		_calcEntryMinWidth( WgMenuEntry * pEntry );
-	void		_openSubMenu( WgMenuSubMenu * pItem );
-
 	void		_itemSelected();
-	void		_openSubMenu( WgGizmoMenu * pMenu, const WgRect& laucherGeo, WgOrientation orientation );
-	void		_closeSubMenu();
+
+	void		_openSubMenu( WgMenuSubMenu * pItem );
+	void		_closeSubMenu( WgMenuSubMenu * pItem );
 
 	WgBorders	_getPadding() const;
 	void		_refreshEntryHeight();
@@ -269,6 +268,7 @@ private:
 	Uint32					m_nItems;
 	Uint32					m_markedItem;		// 0 = no item is selected.
 	WgMenuitem*				m_pSelectedItem;
+	WgMenuSubMenu*			m_pOpenSubMenu;		// Pointer at open submenu (if any).
 
 	// Members holding data for open menu
 

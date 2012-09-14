@@ -59,7 +59,7 @@ protected:
 
 	PROTECTED_LINK_METHODS( WgMenuHook );
 
-	WgMenuHook( WgGizmoMenulayer * pParent, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize );
+	WgMenuHook( WgGizmoMenulayer * pParent, WgGizmo * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize );
 
 	void		_requestRender();
 	void		_requestRender( const WgRect& rect );
@@ -78,6 +78,7 @@ protected:
 	WgRect			m_launcherGeo;		// Launcher geo relative sibling or parent.
 	WgOrientation	m_attachPoint;
 	WgSize			m_maxSize;
+	WgGizmoWeakPtr	m_pOpener;			// Gizmo that opened this menu.
 	WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at gizmo that held focus when this menu was ontop.
 };
 
@@ -102,7 +103,7 @@ public:
 	bool			DeleteBase();
 	WgGizmo *		ReleaseBase();
 
-	WgMenuHook *	OpenMenu( WgGizmo * pMenu, const WgRect& launcherGeo, WgOrientation attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
+	WgMenuHook *	OpenMenu( WgGizmo * pMenu, WgGizmo * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
 
 	bool			CloseMenu( WgGizmo * pMenu );
 	bool			CloseAllMenus();

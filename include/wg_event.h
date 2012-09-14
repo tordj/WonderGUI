@@ -73,6 +73,7 @@ namespace WgEvent
 			bool			IsForGizmo() const { return m_bIsForGizmo; }
 			WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
 			WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
+			WgGizmo *		ForwardedFrom() const;
 			WgModifierKeys	ModKeys() const { return m_modKeys; }
 			WgCoord			PointerPos() const { return m_pointerLocalPos; }
 			WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
@@ -104,7 +105,7 @@ namespace WgEvent
 		int		Button() const { return m_button; }
 	protected:
 		MouseButtonEvent(int button) : m_button(button) {}
-		virtual void 	_cloneContentFrom( const MouseButtonEvent * pOrg );
+		virtual void 	_cloneContentFrom( const Event * pOrg );
 
 		int		m_button;
 	};
@@ -119,7 +120,7 @@ namespace WgEvent
 		bool	IsMovementKey() const;
 	protected:
 		KeyEvent( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(0) {}
-		virtual void 	_cloneContentFrom( const KeyEvent * pOrg );
+		virtual void 	_cloneContentFrom( const Event * pOrg );
 
 		int		m_nativeKeyCode;
 		int		m_translatedKeyCode;
@@ -187,7 +188,7 @@ namespace WgEvent
 
 	protected:
 		MouseButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside );
-		virtual void 	_cloneContentFrom( const MouseButtonRelease * pOrg );
+		virtual void 	_cloneContentFrom( const Event * pOrg );
 
 		bool			m_bPressInside;
 		bool			m_bReleaseInside;
@@ -220,7 +221,7 @@ namespace WgEvent
 		unsigned short	Char() const;
 	protected:
 		Character( unsigned short character, WgGizmo * pGizmo );
-		virtual void 	_cloneContentFrom( const Character * pOrg );
+		virtual void 	_cloneContentFrom( const Event * pOrg );
 	protected:
 		unsigned short	m_char;
 	};
@@ -235,7 +236,7 @@ namespace WgEvent
 		int			Distance() const;
 	protected:
 		MouseWheelRoll( int wheel, int distance, WgGizmo * pGizmo );
-		virtual void 	_cloneContentFrom( const MouseWheelRoll * pOrg );
+		virtual void 	_cloneContentFrom( const Event * pOrg );
 
 		int			m_wheel;
 		int			m_distance;
@@ -250,7 +251,7 @@ namespace WgEvent
 		int				Millisec() const;
 	protected:
 		Tick( int ms, WgGizmo * pGizmo );
-		virtual void 	_cloneContentFrom( const Tick * pOrg );
+		virtual void 	_cloneContentFrom( const Event * pOrg );
 
 		int			m_millisec;
 	};
@@ -263,7 +264,7 @@ namespace WgEvent
 		
 	protected:
 		PointerChange( WgPointerStyle style );
-		virtual void 	_cloneContentFrom( const PointerChange * pOrg );
+		virtual void 	_cloneContentFrom( const Event * pOrg );
 		
 		WgPointerStyle	m_style;
 	};

@@ -346,10 +346,15 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 	// Test menus and MenuLayer.
 
 	{
+		WgGizmoMenu * pSubMenu1_1 = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
+		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("Entry 11"), WgString("Help text for entry 11"), WgBlocksetPtr(), 0 ));
+		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("Entry 12"), WgString("Help text for entry 12"), WgBlocksetPtr(), 0 ));
+		
 		WgGizmoMenu * pSubMenu1 = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
 		pSubMenu1->AddItem( new WgMenuEntry( WgString("Entry 7"), WgString("Help text for entry 7"), WgBlocksetPtr(), 0 ));
-		pSubMenu1->AddItem( new WgMenuSeparator() );
 		pSubMenu1->AddItem( new WgMenuEntry( WgString("Entry 8"), WgString("Help text for entry 8"), WgBlocksetPtr(), 0 ));
+		pSubMenu1->AddItem( new WgMenuSeparator() );
+		pSubMenu1->AddItem( new WgMenuSubMenu( WgString("Submenu 1_1"), WgString("Help text for submenu 1_1"), WgBlocksetPtr(), 0, pSubMenu1_1 ) );
 
 		WgGizmoMenu * pSubMenu2 = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
 		pSubMenu2->AddItem( new WgMenuEntry( WgString("Entry 9"), WgString("Help text for entry 9"), WgBlocksetPtr(), 0 ));

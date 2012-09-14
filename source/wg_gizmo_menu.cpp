@@ -72,6 +72,7 @@ WgGizmoMenu::WgGizmoMenu()
 	m_selectorCountdown		= 0;
 
 	m_sliderHook.m_pParent = this;
+	m_pOpenSubMenu			= 0;
 
 	_refreshEntryHeight();
 }
@@ -817,15 +818,32 @@ void WgGizmoMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 				}
 			}
 
-			m_markedItem = markedItem;
-
-			_requestRender();
-
-			// Open submenu if we are over a submenu entry.
-
-			if( pItem && pItem->GetType() == SUBMENU )
+			if( m_markedItem != markedItem )
 			{
-				_openSubMenu( (WgMenuSubMenu*) pItem );
+				// Mark and request render
+	
+				m_markedItem = markedItem;
+				_requestRender();
+
+				// Open/close submenus depending on what item we have marked.
+
+				if( pItem && pItem->GetType() == SUBMENU )
+				{
+					WgMenuSubMenu * pSubMenu = (WgMenuSubMenu*) pItem;
+					
+					if( pSubMenu != m_pOpenSubMenu )
+					{
+						if( m_pOpenSubMenu )
+							_closeSubMenu( m_pOpenSubMenu );
+							
+						_openSubMenu( pSubMenu );
+					}
+						
+				}
+				else if( m_pOpenSubMenu )
+				{
+					_closeSubMenu( m_pOpenSubMenu );
+				}
 			}
 		}
 		break;
@@ -877,6 +895,20 @@ void WgGizmoMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 			int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 			switch( key )
 			{
+				case WG_KEY_ESCAPE:
+					if( m_pOpenSubMenu )
+						_closeSubMenu( m_pOpenSubMenu );
+					else
+						pHandler->ForwardEvent( pEvent );								
+					break;
+					
+				case WG_KEY_LEFT:
+					if( m_pOpenSubMenu )
+						_closeSubMenu( m_pOpenSubMenu );
+					else
+						pHandler->ForwardEvent( pEvent );								
+					break;
+				
 				case WG_KEY_RIGHT:
 					if( pItem )
 					{
@@ -1016,7 +1048,8 @@ void WgGizmoMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 	{
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 		if( key != WG_KEY_RIGHT && key != WG_KEY_RETURN && key != WG_KEY_UP && key != WG_KEY_DOWN &&
-			key != WG_KEY_HOME && key != WG_KEY_END && key != WG_KEY_PAGE_UP && key != WG_KEY_PAGE_DOWN )
+			key != WG_KEY_HOME && key != WG_KEY_END && key != WG_KEY_PAGE_UP && key != WG_KEY_PAGE_DOWN &&
+			key != WG_KEY_ESCAPE && key != WG_KEY_LEFT )
 			pHandler->ForwardEvent( pEvent );		
 	}
 	else if( pEvent->Type() != WG_EVENT_CHARACTER && pEvent->Type() != WG_EVENT_MOUSEWHEEL_ROLL )
@@ -1083,14 +1116,14 @@ WgGizmo * WgGizmoMenu::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 void WgGizmoMenu::_openSubMenu( WgMenuSubMenu * pItem )
 {
-	WgGizmoMenu * pMenu = pItem->GetSubMenu();
+	WgGizmo * pMenu = pItem->GetSubMenu();
 
 	if( !pMenu )
 		return;
 
 	// Figure out Y-offset for pItem
 
-	Uint32 yOfs = _getPadding().top;
+	Uint32 yOfs = 0;
 
 	WgMenuitem * p = m_items.First();
 	while( p != pItem )
@@ -1107,18 +1140,11 @@ void WgGizmoMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 	// Calculate itemArea
 
-	WgRect	geo = ScreenGeo();
+	WgRect	geo = ScreenGeo() - _getPadding();
 	WgRect itemArea( geo.x, geo.y + yOfs, geo.w, m_entryHeight );
 
-	// Position at entry and downwards (prefered) or upwards.
+	// 
 
-	_openSubMenu( pMenu, itemArea, WG_NORTHEAST );
-}
-
-//____ _openSubMenu() __________________________________________________________
-
-void WgGizmoMenu::_openSubMenu( WgGizmoMenu * pMenu, const WgRect& launcherGeo, WgOrientation orientation )
-{
 	WgGizmoMenulayer * pLayer = 0;
 
 	if( Parent() )
@@ -1126,10 +1152,29 @@ void WgGizmoMenu::_openSubMenu( WgGizmoMenu * pMenu, const WgRect& launcherGeo, 
 
 	if( pLayer )
 	{
-		WgCoord posDiff = ScreenPos() - pLayer->ScreenPos();
-		pLayer->OpenMenu( pMenu, launcherGeo + posDiff, orientation );
+		pLayer->OpenMenu( pMenu, this, itemArea - pLayer->ScreenPos(), WG_NORTHEAST );
+		m_pOpenSubMenu = pItem;
 	}
 }
+
+
+//____ _closeSubMenu() _________________________________________________________
+
+void WgGizmoMenu::_closeSubMenu( WgMenuSubMenu * pItem )
+{
+	WgGizmoMenulayer * pLayer = 0;
+	WgGizmo * pMenu = pItem->GetSubMenu();
+
+	if( Parent() )
+		pLayer = Parent()->_getMenuLayer();
+
+	if( pLayer && pMenu )
+	{	
+		pLayer->CloseMenu( pMenu );
+		m_pOpenSubMenu = 0;
+	}
+}
+
 
 //____ _itemSelected() ______________________________________________________
 
@@ -1143,14 +1188,6 @@ void WgGizmoMenu::_itemSelected()
 	if( pLayer )
 		pLayer->CloseAllMenus();
 }
-
-//____ _closeSubMenu() _________________________________________________________
-
-void WgGizmoMenu::_closeSubMenu()
-{
-
-}
-
 
 //____ _renderPatches() ________________________________________________________
 

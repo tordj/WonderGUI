@@ -45,6 +45,12 @@ namespace WgEvent
 		return m_pGizmo.GetRealPtr();
 	}
 
+	WgGizmo * Event::ForwardedFrom() const
+	{
+		return m_pForwardedFrom.GetRealPtr();
+	}
+
+
 	bool Event::IsMouseEvent() const
 	{
 		if( m_type == WG_EVENT_MOUSEWHEEL_ROLL ||
@@ -95,8 +101,10 @@ namespace WgEvent
 
 	//____ MouseButtonEvent ____________________________________________________
 
-	void MouseButtonEvent::_cloneContentFrom( const MouseButtonEvent * pOrg )
+	void MouseButtonEvent::_cloneContentFrom( const Event * _pOrg )
 	{
+		const MouseButtonEvent * pOrg = static_cast<const MouseButtonEvent*>(_pOrg);
+		
 		m_button = pOrg->m_button;
 		Event::_cloneContentFrom( pOrg );
 	}
@@ -122,8 +130,10 @@ namespace WgEvent
 			return false;
 	}
 
-	void KeyEvent::_cloneContentFrom( const KeyEvent * pOrg )
+	void KeyEvent::_cloneContentFrom( const Event * _pOrg )
 	{
+		const KeyEvent * pOrg = static_cast<const KeyEvent*>(_pOrg);
+
 		m_nativeKeyCode		= pOrg->m_nativeKeyCode;
 		m_translatedKeyCode	= pOrg->m_translatedKeyCode;
 		Event::_cloneContentFrom( pOrg );
@@ -239,8 +249,10 @@ namespace WgEvent
 		m_bReleaseInside = bReleaseInside;
 	}
 
-	void MouseButtonRelease::_cloneContentFrom( const MouseButtonRelease * pOrg )
+	void MouseButtonRelease::_cloneContentFrom( const Event * _pOrg )
 	{
+		const MouseButtonRelease * pOrg = static_cast<const MouseButtonRelease*>(_pOrg);
+		
 		m_bPressInside		= pOrg->m_bPressInside;
 		m_bReleaseInside	= pOrg->m_bReleaseInside;
 		Event::_cloneContentFrom( pOrg );
@@ -346,8 +358,10 @@ namespace WgEvent
 		m_pGizmo		= pGizmo;
 	}
 
-	void Character::_cloneContentFrom( const Character * pOrg )
+	void Character::_cloneContentFrom( const Event * _pOrg )
 	{
+		const Character * pOrg = static_cast<const Character*>(_pOrg);
+		
 		m_char			= pOrg->m_char;
 		Event::_cloneContentFrom( pOrg );
 	}
@@ -375,8 +389,10 @@ namespace WgEvent
 		m_pGizmo		= pGizmo;
 	}
 
-	void MouseWheelRoll::_cloneContentFrom( const MouseWheelRoll * pOrg )
+	void MouseWheelRoll::_cloneContentFrom( const Event * _pOrg )
 	{
+		const MouseWheelRoll * pOrg = static_cast<const MouseWheelRoll*>(_pOrg);
+
 		m_wheel			= pOrg->m_wheel;
 		m_distance		= pOrg->m_distance;
 		Event::_cloneContentFrom( pOrg );
@@ -409,8 +425,10 @@ namespace WgEvent
 		m_pGizmo 		= pGizmo;
 	}
 
-	void Tick::_cloneContentFrom( const Tick * pOrg )
+	void Tick::_cloneContentFrom( const Event * _pOrg )
 	{
+		const Tick * pOrg = static_cast<const Tick*>(_pOrg);
+				
 		m_millisec = pOrg->m_millisec;
 		Event::_cloneContentFrom( pOrg );
 	}
@@ -428,8 +446,10 @@ namespace WgEvent
 		m_style = style;
 	}
 
-	void PointerChange::_cloneContentFrom( const PointerChange * pOrg )
+	void PointerChange::_cloneContentFrom( const Event * _pOrg )
 	{
+		const PointerChange * pOrg = static_cast<const PointerChange*>(_pOrg);
+
 		m_style = pOrg->m_style;
 		Event::_cloneContentFrom( pOrg );
 	}

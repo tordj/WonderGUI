@@ -48,9 +48,10 @@ WgGizmoContainer* WgMenuHook::Parent() const
 }
 
 //_____________________________________________________________________________
-WgMenuHook::WgMenuHook( WgGizmoMenulayer * pParent, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
+WgMenuHook::WgMenuHook( WgGizmoMenulayer * pParent, WgGizmo * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
 {
 	m_pParent 		= pParent;
+	m_pOpener		= pOpener;
 	m_launcherGeo	= launcherGeo;
 	m_attachPoint 	= attachPoint;
 	m_maxSize 		= maxSize;
@@ -103,7 +104,7 @@ WgHook * WgMenuHook::_prevHook() const
 //_____________________________________________________________________________
 WgHook * WgMenuHook::_nextHook() const
 {
-	WgMenuHook * p = _prev();
+	WgMenuHook * p = _next();
 
 	// We have multiple inheritance, so lets make the cast in a safe way, preserving NULL-pointer as NULL.
 
@@ -404,11 +405,11 @@ WgGizmo * WgGizmoMenulayer::ReleaseBase()
 
 //____ OpenMenu() _______________________________________________________________
 
-WgMenuHook * WgGizmoMenulayer::OpenMenu( WgGizmo * pMenu, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
+WgMenuHook * WgGizmoMenulayer::OpenMenu( WgGizmo * pMenu, WgGizmo * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
 {
 	// Create Hook and fill in members.
 
-	WgMenuHook * pHook = new WgMenuHook( this, launcherGeo, attachPoint, maxSize );
+	WgMenuHook * pHook = new WgMenuHook( this, pOpener, launcherGeo, attachPoint, maxSize );
 	pHook->_attachGizmo(pMenu);
 	m_menuHooks.PushBack(pHook);
 	pHook->_updateGeo();
@@ -511,7 +512,7 @@ WgGizmo *  WgGizmoMenulayer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 	if( mode == WG_SEARCH_ACTION_TARGET && !m_menuHooks.IsEmpty() )
 	{
-		// In search mode ACTION_TARGET we limit our target to us and our menu-branches if a menu is open.
+		// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
 
 		WgMenuHook * pHook = m_menuHooks.Last();
 		WgGizmo * pResult = 0;
@@ -529,8 +530,26 @@ WgGizmo *  WgGizmoMenulayer::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 		}
 
 		if( pResult == 0 )
-			pResult = this;
+		{
+			// Check the first opener
+			
+			WgMenuHook * pHook = m_menuHooks.First();
+			if( pHook && pHook->m_pOpener )
+			{
+				WgGizmo * pOpener = pHook->m_pOpener.GetRealPtr();
 
+				WgCoord absPos 		= ofs + ScreenPos();
+				WgRect	openerGeo 	= pOpener->ScreenGeo();
+
+				if( openerGeo.Contains(absPos) && pOpener->MarkTest( absPos - openerGeo.Pos() ) )
+					pResult = pOpener;
+			}
+			
+			// Fall back to us.
+			
+			if( pResult == 0 )
+				pResult = this;
+		}
 		return pResult;
 	}
 	else
@@ -600,8 +619,50 @@ void WgGizmoMenulayer::_onCloneContent( const WgGizmo * _pOrg )
 
 void WgGizmoMenulayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
+	WgGizmo * pOpener = 0;
+
+	// Try to find an opener
+
+	WgGizmo * pForwardedFrom = _pEvent->ForwardedFrom();
+	if( pForwardedFrom )
+	{
+		WgMenuHook * pHook = m_menuHooks.First();
+		while( pHook && pHook->Gizmo() != pForwardedFrom )
+			pHook = pHook->Next();
+			
+		if( pHook && pHook->m_pOpener )
+			pOpener = pHook->m_pOpener.GetRealPtr();
+	}
+	
+	// First we try to forward event to opener (if any)
+
+	if( pOpener )
+	{
+		pHandler->ForwardEvent( _pEvent, pOpener );
+		return;
+	}	
+
+	// Secondly we take care of event ourselves if it is addressed to one of our menus or us.
+
 	switch( _pEvent->Type() )
 	{
+/*
+		case WG_EVENT_MOUSE_POSITION:
+
+			if( !m_menuHooks.IsEmpty() )							// Process only if we have at least one open menu.
+			{
+				WgCoord ofs = _pEvent->PointerPos();
+				WgGizmo * p = FindGizmo( ofs, WG_SEARCH_ACTION_TARGET );
+				if( p != this )
+				{
+					while( p->Parent() != this )
+						p = p->Parent()->CastToGizmo();
+						
+					if( p != m_menuHooks.	
+				}	
+			}
+		break;
+*/		
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 		{
@@ -610,7 +671,10 @@ void WgGizmoMenulayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler 
 			WgCoord ofs = pEvent->PointerPos();
 			WgGizmo * p = FindGizmo( ofs, WG_SEARCH_ACTION_TARGET );
 			if( p == this )
+			{
 				CloseAllMenus();
+				return;
+			}
 		}
 		break;
 
@@ -619,25 +683,22 @@ void WgGizmoMenulayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler 
 		{
 			const WgEvent::KeyEvent * pEvent = static_cast<const WgEvent::KeyEvent*>(_pEvent);
 
-			int key = pEvent->TranslatedKeyCode();
-			switch( key )
+			if( pEvent->TranslatedKeyCode() == WG_KEY_ESCAPE )
 			{
-				case WG_KEY_ESCAPE:
-					if( !m_menuHooks.IsEmpty() )
-						CloseMenu( m_menuHooks.Last()->Gizmo() );
-				break;
-				case WG_KEY_LEFT:
-				break;
-				case WG_KEY_RIGHT:
-				break;
-
-				default:
-				break;
+				if( !m_menuHooks.IsEmpty() )
+				{
+					CloseMenu( m_menuHooks.Last()->Gizmo() );
+					return;
+				}
 			}
 
 		}
 		break;
 	}
+
+	// Final solution: forward to our parent.
+
+	pHandler->ForwardEvent( _pEvent );
 }
 
 //____ _stealKeyboardFocus() _________________________________________________
