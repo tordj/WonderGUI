@@ -61,7 +61,6 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 {
 	if( m_bChecked != _state )
 	{
-		WgEventHandler * pHandler = EventHandler();
 		if( _state )
 		{
 			WgGizmoParent * pGroup = _findRadioGroup();
@@ -71,8 +70,7 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 			// Set and queue event
 
 			m_bChecked = true;
-			if( pHandler )
-				pHandler->QueueEvent( new WgEvent::RadiobuttonSelect(this) );
+			_queueEvent( new WgEvent::RadiobuttonSelect(this) );
 		}
 		else
 		{
@@ -80,12 +78,10 @@ bool WgGizmoRadiobutton::SetState( bool _state )
 				return false;
 
 			m_bChecked = false;
-			if( pHandler )
-				pHandler->QueueEvent( new WgEvent::RadiobuttonUnselect(this) );
+			_queueEvent( new WgEvent::RadiobuttonUnselect(this) );
 		}
 
-		if( pHandler )
-			pHandler->QueueEvent( new WgEvent::RadiobuttonToggle(this, m_bChecked) );
+		_queueEvent( new WgEvent::RadiobuttonToggle(this, m_bChecked) );
 		_requestRender();
 	}
 	return true;
@@ -129,7 +125,7 @@ void WgGizmoRadiobutton::_unselectRecursively( WgGizmoParent * pParent )
 			{
 				pRB->m_bChecked = false;
 
-				WgEventHandler * pHandler = EventHandler();
+				WgEventHandler * pHandler = _eventHandler();
 				if( pHandler )
 				{
 					pHandler->QueueEvent( new WgEvent::RadiobuttonUnselect(pRB) );

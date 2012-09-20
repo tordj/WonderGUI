@@ -129,7 +129,6 @@ public:
 
 	WgCoord			Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
 	WgCoord			Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
-	WgEventHandler *	EventHandler() const;
 
 	// To be overloaded by Gizmo
 
@@ -164,6 +163,10 @@ protected:
 	void			_startReceiveTicks();
 	void			_stopReceiveTicks();
 	virtual WgBlendMode	_getBlendMode() const;
+
+	WgEventHandler* _eventHandler() const;
+	void			_queueEvent( WgEvent::Event * pEvent );
+
 
 	// Convenient calls to hook
 

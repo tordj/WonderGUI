@@ -163,6 +163,12 @@ public:
 	bool	ViewIncludeY( WgRect& rect );
 */
 
+	bool		SetScrollWheels( int wheelForX, int wheelForY );
+	int			ScrollWheelX() const { return m_wheelForScrollX; }
+	int			ScrollWheelY() const { return m_wheelForScrollY; }
+
+
+
 	bool		SetAutoscroll( bool bAutoX, bool bAutoY	);
 	bool		AutoScrollX() const { return m_bAutoScrollX; }
 	bool		AutoScrollY() const { return m_bAutoScrollY; }
@@ -300,6 +306,10 @@ protected:
 
 	bool		m_bAutoScrollX;
 	bool		m_bAutoScrollY;
+
+	int			m_wheelForScrollX;		// What wheel should be used for horizontal scrolling. (0=none)
+	int			m_wheelForScrollY;		// What wheel should be used for vertical scrolling. (0=none)
+	
 
 //	ViewGizmoCollection	m_elementsCollection;	// WgGizmoCollection for the elements gizmos.
 	WgViewHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag gizmos in that order.

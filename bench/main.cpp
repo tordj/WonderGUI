@@ -347,31 +347,31 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 
 	{
 		WgGizmoMenu * pSubMenu1_1 = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
-		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("Entry 11"), WgString("Help text for entry 11"), WgBlocksetPtr(), 0 ));
-		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("Entry 12"), WgString("Help text for entry 12"), WgBlocksetPtr(), 0 ));
+		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("ENTRY 11"), WgString("Help text for entry 11"), WgBlocksetPtr(), 0 ));
+		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("ENTRY 12"), WgString("Help text for entry 12"), WgBlocksetPtr(), 0 ));
 		
 		WgGizmoMenu * pSubMenu1 = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
-		pSubMenu1->AddItem( new WgMenuEntry( WgString("Entry 7"), WgString("Help text for entry 7"), WgBlocksetPtr(), 0 ));
-		pSubMenu1->AddItem( new WgMenuEntry( WgString("Entry 8"), WgString("Help text for entry 8"), WgBlocksetPtr(), 0 ));
+		pSubMenu1->AddItem( new WgMenuEntry( WgString("ENTRY 7"), WgString("Help text for entry 7"), WgBlocksetPtr(), 0 ));
+		pSubMenu1->AddItem( new WgMenuEntry( WgString("ENTRY 8"), WgString("Help text for entry 8"), WgBlocksetPtr(), 0 ));
 		pSubMenu1->AddItem( new WgMenuSeparator() );
-		pSubMenu1->AddItem( new WgMenuSubMenu( WgString("Submenu 1_1"), WgString("Help text for submenu 1_1"), WgBlocksetPtr(), 0, pSubMenu1_1 ) );
+		pSubMenu1->AddItem( new WgMenuSubMenu( WgString("SUBMENU 1_1"), WgString("Help text for submenu 1_1"), WgBlocksetPtr(), 0, pSubMenu1_1 ) );
 
 		WgGizmoMenu * pSubMenu2 = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
-		pSubMenu2->AddItem( new WgMenuEntry( WgString("Entry 9"), WgString("Help text for entry 9"), WgBlocksetPtr(), 0 ));
+		pSubMenu2->AddItem( new WgMenuEntry( WgString("ENTRY 9"), WgString("Help text for entry 9"), WgBlocksetPtr(), 0 ));
 		pSubMenu2->AddItem( new WgMenuSeparator() );
-		pSubMenu2->AddItem( new WgMenuEntry( WgString("Entry 10"), WgString("Help text for entry 10"), WgBlocksetPtr(), 0 ));
+		pSubMenu2->AddItem( new WgMenuEntry( WgString("ENTRY 10"), WgString("Help text for entry 10"), WgBlocksetPtr(), 0 ));
 
 		WgGizmoMenu * pMenu = (WgGizmoMenu*) pDB->CloneGizmo( "menu" );
-		pMenu->AddItem( new WgMenuEntry( WgString("Entry 1"), WgString("Help text for entry 1"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 1"), WgString("Help text for entry 1"), WgBlocksetPtr(), 0 ));
 		pMenu->AddItem( new WgMenuSeparator() );
-		pMenu->AddItem( new WgMenuEntry( WgString("Entry 2"), WgString("Help text for entry 2"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("Entry 3"), WgString("Help text for entry 3"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("Entry 4"), WgString("Help text for entry 4"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("Entry 5"), WgString("Help text for entry 5"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("Entry 6"), WgString("Help text for entry 6"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 2"), WgString("Help text for entry 2"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 3"), WgString("Help text for entry 3"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 4"), WgString("Help text for entry 4"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 5"), WgString("Help text for entry 5"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 6"), WgString("Help text for entry 6"), WgBlocksetPtr(), 0 ));
 
-		pMenu->AddItem( new WgMenuSubMenu( WgString("Submenu 1"), WgString("Help text for submenu 1"), WgBlocksetPtr(), 0, pSubMenu1 ) );
-		pMenu->AddItem( new WgMenuSubMenu( WgString("Submenu 2"), WgString("Help text for submenu 2"), WgBlocksetPtr(), 0, pSubMenu2 ) );
+		pMenu->AddItem( new WgMenuSubMenu( WgString("SUBMENU 1"), WgString("Help text for submenu 1"), WgBlocksetPtr(), 0, pSubMenu1 ) );
+		pMenu->AddItem( new WgMenuSubMenu( WgString("SUBMENU 2"), WgString("Help text for submenu 2"), WgBlocksetPtr(), 0, pSubMenu2 ) );
 
 		addResizableContainer( pFlex, pMenu, pEventHandler );
 		pMenu->GrabFocus();

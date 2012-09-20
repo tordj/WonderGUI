@@ -240,7 +240,7 @@ void WgGizmoAnimation::_playPosUpdated()
 		m_animFrame = block;
 		_requestRender();
 
-		EventHandler()->QueueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));
+		_queueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));
 	}
 }
 

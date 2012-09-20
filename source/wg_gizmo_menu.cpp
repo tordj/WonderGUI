@@ -1068,7 +1068,7 @@ void WgGizmoMenu::SelectItem(WgMenuitem* pItem)
 	{
 		case ENTRY:
 			m_pSelectedItem = pItem;
-			EventHandler()->QueueEvent( new WgEvent::MenuitemSelect(this,pItem->GetId()));
+			_queueEvent( new WgEvent::MenuitemSelect(this,pItem->GetId()));
 			_itemSelected();
 		break;
 		case CHECKBOX:
@@ -1078,12 +1078,12 @@ void WgGizmoMenu::SelectItem(WgMenuitem* pItem)
 			if( pCheckBox->IsChecked() )
 			{
 				pCheckBox->Uncheck();
-				EventHandler()->QueueEvent( new WgEvent::MenuitemUncheck(this,pItem->GetId()));
+				_queueEvent( new WgEvent::MenuitemUncheck(this,pItem->GetId()));
 			}
 			else
 			{
 				pCheckBox->Check();
-				EventHandler()->QueueEvent( new WgEvent::MenuitemCheck(this,pItem->GetId()));
+				_queueEvent( new WgEvent::MenuitemCheck(this,pItem->GetId()));
 			}
 
 			_itemSelected();
@@ -1092,7 +1092,7 @@ void WgGizmoMenu::SelectItem(WgMenuitem* pItem)
 		case RADIOBUTTON:
 			m_pSelectedItem = pItem;
 			((WgMenuRadioButton*)pItem)->Select();
-			EventHandler()->QueueEvent( new WgEvent::MenuitemSelect(this,pItem->GetId()));
+			_queueEvent( new WgEvent::MenuitemSelect(this,pItem->GetId()));
 			_itemSelected();
 		break;
 

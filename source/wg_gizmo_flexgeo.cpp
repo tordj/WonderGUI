@@ -600,6 +600,62 @@ void WgFlexHook::_refreshRealGeo()
 	}
 }
 
+//____ WgFlexHook::_sizeNeededForGeo() ________________________________________
+
+WgSize WgFlexHook::_sizeNeededForGeo()
+{
+	WgSize sz;
+
+	if( m_bFloating )
+	{
+		const WgFlexAnchor * pa = m_pParent->Anchor(m_anchor);
+
+		WgCoord hotspot = WgUtil::OrientationToOfs(m_hotspot,m_placementGeo.Size());
+		WgCoord offset = pa->Offset() + m_placementGeo.Pos() - hotspot;
+
+		int leftOfAnchor = 0 - offset.x;
+		int rightOfAnchor = offset.x + m_placementGeo.w;
+		int aboveAnchor = 0 - offset.y;
+		int belowAnchor = offset.y + m_placementGeo.h;
+
+		if( leftOfAnchor > 0 )
+			sz.w = (int) (leftOfAnchor / pa->RelativeX());
+
+		if( rightOfAnchor > 0 )
+		{
+			int w = (int) (rightOfAnchor / (1.f - pa->RelativeX()) );
+			if( sz.w < w )
+				sz.w = w;
+		}
+
+		if( aboveAnchor > 0 )
+			sz.h = (int) (aboveAnchor / pa->RelativeY());
+
+		if( belowAnchor > 0 )
+		{
+			int h = (int) (belowAnchor / (1.f - pa->RelativeY()) );
+			if( sz.h < h )
+				sz.h = h;
+		}
+	}
+	else
+	{
+		sz = m_pGizmo->DefaultSize() + m_borders;
+
+		const WgFlexAnchor * pa1 = m_pParent->Anchor(m_anchorTopLeft);
+		const WgFlexAnchor * pa2 = m_pParent->Anchor(m_anchorBottomRight);
+
+		sz += WgSize(pa1->OffsetX(),pa1->OffsetY());
+		sz -= WgSize(pa2->OffsetX(),pa2->OffsetY());
+
+		sz.w /= (float) (pa2->RelativeX() - pa1->RelativeX());
+		sz.h /= (float) (pa2->RelativeY() - pa1->RelativeY());
+	}
+
+	return sz;
+}
+
+
 //____ WgFlexHook::_requestRender() ____________________________________________
 
 void WgFlexHook::_requestRender()
@@ -1036,9 +1092,16 @@ const WgFlexAnchor * WgGizmoFlexgeo::Anchor( int index )
 
 WgSize WgGizmoFlexgeo::DefaultSize() const
 {
-	//TODO: FIX THIS! DEFAULT SIZE SHOULD BE WHAT NEEDED TO FIT ALL IN!
+	WgSize minSize;
 
-	return WgSize(0,0);		// No recommendation.
+	WgFlexHook * pHook = m_hooks.First();
+	while( pHook )
+	{
+		WgSize sz = pHook->_sizeNeededForGeo();
+		minSize = WgSize::Max(minSize,sz);
+		pHook = pHook->Next();
+	}
+	return minSize;
 }
 
 //____ _onRequestRender() ______________________________________________________

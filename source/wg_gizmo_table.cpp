@@ -2188,7 +2188,7 @@ void WgGizmoTable::_updateMarkedRowColumn( int row, int column )
 
 	//
 
-	WgEventHandler * pHandler = EventHandler();
+	WgEventHandler * pHandler = _eventHandler();
 
 	if( pHandler && (column != oldColumn || row != oldRow) )
 	{

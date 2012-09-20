@@ -64,6 +64,9 @@ WgGizmoView::WgGizmoView()
 
 	m_bAutoScrollX		= false;
 	m_bAutoScrollY		= false;
+	
+	m_wheelForScrollX	= 2;
+	m_wheelForScrollY	= 1;
 
 	m_elements[WINDOW]._setParent(this);
 	m_elements[XDRAG]._setParent(this);
@@ -1037,9 +1040,9 @@ void WgGizmoView::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 			{
 				int wheel = pEvent->Wheel();
 
-				if( wheel == 1 )
+				if( wheel == m_wheelForScrollY )
 					_wheelRollY( pEvent->Distance() );
-				else if( wheel == 2 )
+				else if( wheel == m_wheelForScrollX )
 					_wheelRollX( pEvent->Distance() );
 			}
 		}
@@ -1250,6 +1253,14 @@ void WgGizmoView::_onCloneContent( const WgGizmo * _pOrg )
 	}
 
 	//
+}
+
+//______________________________________________________________________________
+bool WgGizmoView::SetScrollWheels( int wheelForX, int wheelForY )
+{
+	m_wheelForScrollX = wheelForX;
+	m_wheelForScrollY = wheelForY;
+	return true;
 }
 
 //_____________________________________________________________________________

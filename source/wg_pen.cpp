@@ -63,8 +63,8 @@ void WgPen::_init()
 	m_pPrevGlyph = &m_dummyGlyph;
 	m_color = 0xFFFFFFFF,
 
-	m_bShowSpace = true;
-	m_bShowCRLF = true;
+	m_bShowSpace = false;
+	m_bShowCRLF = false;
 
 	m_tabWidth = 80;
 

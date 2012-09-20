@@ -205,9 +205,9 @@ WgCoord WgGizmo::Abs2local( const WgCoord& cord ) const
 	return WgCoord( cord.x - c.x, cord.y - c.y );
 }
 
-//____ EventHandler() __________________________________________________________
+//____ _eventHandler() __________________________________________________________
 
-WgEventHandler * WgGizmo::EventHandler() const
+WgEventHandler * WgGizmo::_eventHandler() const
 {
 	if( m_pHook )
 	{
@@ -276,6 +276,24 @@ WgBlendMode WgGizmo::_getBlendMode() const
 	else
 		return WG_BLENDMODE_BLEND;		// We always start out with WG_BLENDMODE_BLEND.
 }
+
+//____ _queueEvent() __________________________________________________________
+
+void WgGizmo::_queueEvent( WgEvent::Event * pEvent )
+{
+	if( m_pHook )
+	{
+		WgRoot * pRoot = m_pHook->Root();
+		if( pRoot )
+		{
+			pRoot->EventHandler()->QueueEvent(pEvent);
+			return;
+		}
+	}
+
+	delete pEvent;		// Can't queue event, silently delete it.
+}
+
 
 //____ _renderPatches() ________________________________________________________
 

@@ -66,6 +66,7 @@ namespace WgEvent
 	class Event
 	{
 		friend class ::WgEventHandler;
+		friend class ::WgGizmo;
 
 		public:
 			WgEventType		Type() const { return m_type; }
@@ -657,6 +658,7 @@ namespace WgEvent
 	protected:
 		MouseButtonDrag( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos );
 		MouseButtonDrag( int button, WgGizmo * pGizmo, const WgCoord& orgPos, const WgCoord& prevPos, const WgCoord& currPos );
+		virtual void 	_cloneContentFrom( const Event * pOrg );
 	public:
 		WgCoord			DraggedTotal() const;
 		WgCoord			DraggedNow() const;

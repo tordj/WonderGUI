@@ -130,7 +130,7 @@ bool WgGizmoCheckbox::SetState( bool _state )
 	{
 		m_bChecked = _state;
 
-		WgEventHandler * pHandler = EventHandler();
+		WgEventHandler * pHandler = _eventHandler();
 		if( pHandler )
 		{
 			if( _state )

@@ -201,9 +201,7 @@ WgSize WgGizmoEditvalue::DefaultSize() const
 
 void WgGizmoEditvalue::_valueModified()
 {
-	WgEventHandler * pHandler = EventHandler();
-	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
+	_queueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
 
 	m_useFormat	= m_format;
 
@@ -221,9 +219,7 @@ void WgGizmoEditvalue::_valueModified()
 
 void WgGizmoEditvalue::_rangeModified()
 {
-	WgEventHandler * pHandler = EventHandler();
-	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
+		_queueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
 }
 
 
@@ -485,10 +481,7 @@ void WgGizmoEditvalue::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 				if( bModified )
 				{
 					_updateSlider( FractionalValue(), 0.f );
-
-					WgEventHandler * pHandler = EventHandler();
-					if( pHandler )
-						pHandler->QueueEvent( new WgEvent::EditvalueModify(this, m_value, FractionalValue()) );
+					_queueEvent( new WgEvent::EditvalueModify(this, m_value, FractionalValue()) );
 
 					m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
 					m_text.goEOL();
@@ -725,7 +718,6 @@ void WgGizmoEditvalue::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 		{
 			m_value = value;
 
-			WgEventHandler * pHandler = EventHandler();
 			if( pHandler )
 				pHandler->QueueEvent( new WgEvent::EditvalueModify(this,value,FractionalValue()) );
 
@@ -862,10 +854,7 @@ void WgGizmoEditvalue::_onGotInputFocus()
 void WgGizmoEditvalue::_onLostInputFocus()
 {
 	_stopReceiveTicks();
-
-	WgEventHandler * pHandler = EventHandler();
-	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
+	_queueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
 
 	m_bFocused = false;
 	m_text.hideCursor();

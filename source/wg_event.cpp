@@ -990,6 +990,17 @@ namespace WgEvent
 		m_currPos = currPos;
 	}
 
+	void MouseButtonDrag::_cloneContentFrom( const Event * _pOrg )
+	{
+		const MouseButtonDrag * pOrg = static_cast<const MouseButtonDrag*>(_pOrg);
+		
+		m_startPos = pOrg->m_startPos;
+		m_prevPos = pOrg->m_prevPos;
+		m_currPos = pOrg->m_currPos;
+		MouseButtonEvent::_cloneContentFrom( pOrg );
+	}
+
+
 	WgCoord MouseButtonDrag::DraggedTotal() const
 	{
 		return m_currPos - m_startPos;

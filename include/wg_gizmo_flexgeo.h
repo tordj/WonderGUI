@@ -131,6 +131,7 @@ protected:
 	WgFlexHook( WgGizmoFlexgeo * pParent, const WgRect& placementGeo );
 
 	void		_refreshRealGeo();
+	WgSize		_sizeNeededForGeo();
 
 	void		_requestRender();
 	void		_requestRender( const WgRect& rect );

@@ -122,9 +122,7 @@ Uint32 WgGizmoEditline::InsertTextAtCursor( const WgCharSeq& str )
 
 	Uint32 retVal = m_pText->putText( str );
 
-	WgEventHandler * pHandler = EventHandler();
-	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+	_queueEvent( new WgEvent::TextModify(this,m_pText) );
 
 	_adjustViewOfs();
 
@@ -145,9 +143,7 @@ bool WgGizmoEditline::InsertCharAtCursor( Uint16 c )
 	if( !m_pText->putChar( c ) )
 		return false;
 
-	WgEventHandler * pHandler = EventHandler();
-	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+	_queueEvent( new WgEvent::TextModify(this,m_pText) );
 
 	_adjustViewOfs();
 	return true;
@@ -319,7 +315,6 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 
 			if( m_pText->putChar( ch ) )
 			{
-				WgEventHandler * pHandler = EventHandler();
 				if( pHandler )
 					pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
 
@@ -387,7 +382,6 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 				else
 					m_pText->delPrevChar();
 
-				WgEventHandler * pHandler = EventHandler();
 				if( pHandler )
 					pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
 				break;
@@ -402,7 +396,6 @@ void WgGizmoEditline::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 				else
 					m_pText->delNextChar();
 
-				WgEventHandler * pHandler = EventHandler();
 				if( pHandler )
 					pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
 				break;
@@ -614,9 +607,7 @@ void WgGizmoEditline::_onLostInputFocus()
 	if( _isEditable() || m_viewOfs != 0 )
 	{
 		_stopReceiveTicks();
-		WgEventHandler * pHandler = EventHandler();
-		if( pHandler )
-			pHandler->QueueEvent( new WgEvent::TextSet(this, m_pText) );
+		_queueEvent( new WgEvent::TextSet(this, m_pText) );
 
 		m_viewOfs = 0;
 		_requestRender();
