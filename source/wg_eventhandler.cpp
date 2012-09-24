@@ -1090,8 +1090,6 @@ void WgEventHandler::_updateMarkedGizmo(bool bPostMouseMoveEvents)
 	// We are only marking the Gizmo if no mouse button is pressed or the first pressed button
 	// was pressed on it.
 
-	WgGizmo * pGizmo = pGizmoTarget;
-
 	if( button == 0 || pGizmoTarget == m_latestPressGizmos[button].GetRealPtr() )
 		pNowMarked = pGizmoTarget;
 
@@ -1116,8 +1114,15 @@ void WgEventHandler::_updateMarkedGizmo(bool bPostMouseMoveEvents)
 	
 	// Update PointerStyle
 	
-	WgPointerStyle newStyle = pNowMarked? pNowMarked->GetPointerStyle():WG_POINTER_DEFAULT;
+	WgPointerStyle newStyle;
 	
+	if( pNowMarked && pNowMarked->IsEnabled() )
+		newStyle = pNowMarked->GetPointerStyle();
+	else if( button != 0 )
+		newStyle = m_pointerStyle;
+	else
+		newStyle = WG_POINTER_DEFAULT;
+
 	if( newStyle != m_pointerStyle )
 	{
 		QueueEvent( new WgEvent::PointerChange( newStyle ) );

@@ -24,6 +24,7 @@
 #include <wg_gizmo_container.h>
 #include <wg_gizmo.h>
 #include <wg_root.h>
+#include <assert.h>
 
 
 //____ Destructor _____________________________________________________________
@@ -31,13 +32,18 @@
 WgHook::~WgHook()
 {
 	if( m_pGizmo )
+	{
+		m_pGizmo->m_pHook = 0;
 		delete m_pGizmo;
+	}
 }
 
 //____ _attachGizmo() __________________________________________________________
 
 void WgHook::_attachGizmo( WgGizmo * pGizmo )
 {
+	assert( pGizmo->Parent() == 0 );
+
 	if( m_pGizmo )
 		m_pGizmo->m_pHook = 0;
 

@@ -40,6 +40,11 @@ WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_pointerStyle(WG_POINTE
 
 WgGizmo::~WgGizmo()
 {
+	if( m_pHook )
+	{
+		m_pHook->Parent()->ReleaseChild(this);
+	}
+
 	delete m_pSkinNode;
 }
 
