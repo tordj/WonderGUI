@@ -24,7 +24,7 @@
 #include <wg_types.h>
 #include <wg_skinmanager.h>
 
-#	include <wg_root.h>
+#	include <wg_rootpanel.h>
 #	include <wg_eventhandler.h>
 
 //____ Constructor ____________________________________________________________
@@ -56,27 +56,17 @@ WgPointerStyle WgGizmo::GetPointerStyle() const
 	return m_pointerStyle;
 }
 
+//____ SetEnabled() _______________________________________________________________
 
-
-//____ Enable() _______________________________________________________________
-
-void WgGizmo::Enable()
+void WgGizmo::SetEnabled( bool bEnabled )
 {
-	if( !m_bEnabled || IsContainer() )
+	if( m_bEnabled != bEnabled || IsPanel() )
 	{
-		m_bEnabled = true;
-		_onEnable();
-	}
-}
-
-//____ Disable() ______________________________________________________________
-
-void WgGizmo::Disable()
-{
-	if( m_bEnabled || IsContainer() )
-	{
-		m_bEnabled = false;
-		_onDisable();
+		m_bEnabled = bEnabled;
+		if( bEnabled )
+			_onEnable();
+		else
+			_onDisable();
 	}
 }
 
@@ -153,7 +143,7 @@ void WgGizmo::_onNewHook( WgHook * pHook )
 
 //____ _onNewRoot() ___________________________________________________________
 
-void WgGizmo::_onNewRoot( WgRoot * pRoot )
+void WgGizmo::_onNewRoot( WgRootPanel * pRoot )
 {
 	if( m_bReceiveTick && pRoot )
 		pRoot->EventHandler()->_addTickReceiver(this);
@@ -169,7 +159,7 @@ void WgGizmo::_startReceiveTicks()
 
 		if( m_pHook )
 		{
-			WgRoot * pRoot = m_pHook->Root();
+			WgRootPanel * pRoot = m_pHook->Root();
 			if( pRoot )
 				pRoot->EventHandler()->_addTickReceiver(this);
 		}
@@ -216,7 +206,7 @@ WgEventHandler * WgGizmo::_eventHandler() const
 {
 	if( m_pHook )
 	{
-		WgRoot * pRoot = m_pHook->Root();
+		WgRootPanel * pRoot = m_pHook->Root();
 		if( pRoot )
 			return pRoot->EventHandler();
 	}
@@ -275,7 +265,7 @@ WgMode WgGizmo::Mode() const
 
 WgBlendMode WgGizmo::_getBlendMode() const
 {
-	WgGizmoParent * pParent = Parent();
+	WgGizmoContainer * pParent = Parent();
 	if( pParent && pParent->IsGizmo() )
 		return pParent->CastToGizmo()->_getBlendMode();
 	else
@@ -288,7 +278,7 @@ void WgGizmo::_queueEvent( WgEvent::Event * pEvent )
 {
 	if( m_pHook )
 	{
-		WgRoot * pRoot = m_pHook->Root();
+		WgRootPanel * pRoot = m_pHook->Root();
 		if( pRoot )
 		{
 			pRoot->EventHandler()->QueueEvent(pEvent);

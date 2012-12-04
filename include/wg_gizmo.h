@@ -42,7 +42,7 @@
 class WgGfxDevice;
 class WgSkinManager;
 class Wg_Interface_TextHolder;
-class WgGizmoContainer;
+class WgPanel;
 class WgSkinNode;
 class WgEventHandler;
 class WgPatches;
@@ -57,20 +57,20 @@ friend class WgEventHandler;
 friend class WgHook;
 friend class WgFlexHook;
 friend class WgModalHook;
-friend class WgVBoxHook;
+friend class WgVHook;
 friend class WgStackHook;
 
-friend class WgRoot;
-friend class WgGizmoFlexgeo;
-friend class WgGizmoModallayer;
-friend class WgGizmoTable;
-friend class WgGizmoView;
-friend class WgGizmoVBox;
-friend class WgMonotainer;
-friend class WgGizmoStack;
-friend class WgGizmoContainer;
-friend class WgGizmoShader;
-friend class WgGizmoMenulayer;
+friend class WgRootPanel;
+friend class WgFlexPanel;
+friend class WgModalPanel;
+friend class WgTablePanel;
+friend class WgScrollPanel;
+friend class WgVPanel;
+friend class WgMonoPanel;
+friend class WgStackPanel;
+friend class WgPanel;
+friend class WgShaderPanel;
+friend class WgMenuPanel;
 
 friend class WgTableRow;
 
@@ -92,8 +92,7 @@ public:
 
 
 	inline void			Refresh() { _onRefresh(); }
-	void				Enable();
-	void				Disable();
+	void				SetEnabled(bool bEnabled);
 	inline bool			IsEnabled() const { return m_bEnabled; }
 
 	bool				CloneContent( const WgGizmo * _pOrg );
@@ -122,7 +121,7 @@ public:
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
 	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_bFocused; }
-	WgGizmoParent * Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
+	WgGizmoContainer * Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 
 	WgGizmo *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
 	WgGizmo *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
@@ -138,9 +137,9 @@ public:
 	virtual WgSize	DefaultSize() const = 0;
 
 	virtual bool	IsView() const { return false; }
-	virtual bool	IsContainer() const { return false; }
-	virtual WgGizmoContainer * CastToContainer() { return 0; }
-	virtual const WgGizmoContainer * CastToContainer() const { return 0; }
+	virtual bool	IsPanel() const { return false; }
+	virtual WgPanel * CastToPanel() { return 0; }
+	virtual const WgPanel * CastToPanel() const { return 0; }
 
 
 	virtual bool	SetMarked();					// Switch to WG_MODE_MARKED unless we are disabled or widget controls mode itself.
@@ -149,17 +148,13 @@ public:
 	virtual WgMode	Mode() const;
 
 
-
-//	virtual WgGizmoManager*	GetView() const { return 0; }
-//	virtual WgGizmoManager*	GetContainer() const { return 0; }
-
 protected:
 
 	void			_onNewHook( WgHook * pHook );
 	void			_setSkinNode( WgSkinNode * pNode );
 	WgSkinNode *	_getSkinNode() const { return m_pSkinNode; }
 
-	void			_onNewRoot( WgRoot * pRoot );
+	void			_onNewRoot( WgRootPanel * pRoot );
 	void			_startReceiveTicks();
 	void			_stopReceiveTicks();
 	virtual WgBlendMode	_getBlendMode() const;
@@ -231,6 +226,15 @@ template<typename T> T* WgCast(WgGizmo * pGizmo)
 	return 0;
 }
 
+template<typename T> const T* WgCast(const WgGizmo * pGizmo)
+{
+	if(pGizmo)
+	{
+		if(T::GetClass() == pGizmo->Type())
+			return static_cast<const T*>(pGizmo);
+	}
+	return 0;
+}
 
 
 #endif

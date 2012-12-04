@@ -215,7 +215,7 @@ std::string	WgResDB::GenerateName( const WgGizmo* data )
 	return std::string("_gizmo__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgMenuitem* data )
+std::string	WgResDB::GenerateName( const WgMenuItem* data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -516,7 +516,7 @@ bool WgResDB::AddGizmo( const std::string& id, WgGizmo * pGizmo, MetaData * pMet
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddMenuitem( const std::string& id, WgMenuitem * pItem, MetaData * pMetaData )
+bool WgResDB::AddMenuitem( const std::string& id, WgMenuItem * pItem, MetaData * pMetaData )
 {
 	assert(m_mapMenuitems.find(id) == m_mapMenuitems.end());
 	if(m_mapMenuitems.find(id) == m_mapMenuitems.end())
@@ -694,7 +694,7 @@ WgGizmo * WgResDB::CloneGizmo( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgMenuitem * WgResDB::GetMenuitem( const std::string& id ) const
+WgMenuItem * WgResDB::GetMenuitem( const std::string& id ) const
 {
 	MenuitemRes* itemRes = GetResMenuitem(id);
 	return itemRes ? itemRes->res : 0;
@@ -1243,7 +1243,7 @@ WgResDB::GizmoRes* WgResDB::FindResGizmo( const WgGizmo* meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::MenuitemRes* WgResDB::FindResMenuitem( const WgMenuitem* meta ) const
+WgResDB::MenuitemRes* WgResDB::FindResMenuitem( const WgMenuItem* meta ) const
 {
 	MenuitemRes * res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())

@@ -23,18 +23,18 @@
 #include <wg_event.h>
 #include <wg_key.h>
 #include <wg_gizmo.h>
-#include <wg_gizmo_button.h>
-#include <wg_gizmo_checkbox.h>
-#include <wg_gizmo_radiobutton.h>
-#include <wg_gizmo_animation.h>
-#include <wg_gizmo_tablist.h>
-#include <wg_gizmo_value.h>
-#include <wg_gizmo_editvalue.h>
-#include <wg_gizmo_slider.h>
-#include <wg_gizmo_text.h>
-#include <wg_gizmo_editline.h>
-#include <wg_gizmo_menu.h>
-#include <wg_gizmo_table.h>
+#include <wg_button.h>
+#include <wg_checkbox.h>
+#include <wg_radiobutton.h>
+#include <wg_animplayer.h>
+#include <wg_tablist.h>
+#include <wg_valuedisplay.h>
+#include <wg_valueeditor.h>
+#include <wg_slider.h>
+#include <wg_textdisplay.h>
+#include <wg_lineeditor.h>
+#include <wg_menu.h>
+#include <wg_tablepanel.h>
 
 namespace WgEvent
 {
@@ -462,17 +462,17 @@ namespace WgEvent
 
 	//____ ButtonPress _________________________________________________________
 
-	ButtonPress::ButtonPress( WgGizmoButton * pGizmo )
+	ButtonPress::ButtonPress( WgButton * pGizmo )
 	{
 		m_type 			= WG_EVENT_BUTTON_PRESS;
 		m_pGizmo 		= pGizmo;
 	}
 
-	WgGizmoButton * ButtonPress::Button() const
+	WgButton * ButtonPress::Button() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
-			return static_cast<WgGizmoButton*>(pGizmo);
+			return static_cast<WgButton*>(pGizmo);
 		else
 			return 0;
 	}
@@ -480,28 +480,28 @@ namespace WgEvent
 
 	//____ Checkbox event methods ______________________________________________
 
-	WgGizmoCheckbox * CheckboxEvent::Checkbox() const
+	WgCheckBox * CheckboxEvent::Checkbox() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
-			return static_cast<WgGizmoCheckbox*>(pGizmo);
+			return static_cast<WgCheckBox*>(pGizmo);
 		else
 			return 0;
 	}
 
-	CheckboxCheck::CheckboxCheck( WgGizmoCheckbox * pGizmo )
+	CheckboxCheck::CheckboxCheck( WgCheckBox * pGizmo )
 	{
 		m_type = WG_EVENT_CHECKBOX_CHECK;
 		m_pGizmo = pGizmo;
 	}
 
-	CheckboxUncheck::CheckboxUncheck( WgGizmoCheckbox * pGizmo )
+	CheckboxUncheck::CheckboxUncheck( WgCheckBox * pGizmo )
 	{
 		m_type = WG_EVENT_CHECKBOX_UNCHECK;
 		m_pGizmo = pGizmo;
 	}
 
-	CheckboxToggle::CheckboxToggle( WgGizmoCheckbox * pGizmo, bool bChecked )
+	CheckboxToggle::CheckboxToggle( WgCheckBox * pGizmo, bool bChecked )
 	{
 		m_type = WG_EVENT_CHECKBOX_TOGGLE;
 		m_pGizmo = pGizmo;
@@ -515,28 +515,28 @@ namespace WgEvent
 
 	//____ Radiobutton event methods ___________________________________________
 
-	WgGizmoRadiobutton * RadiobuttonEvent::Radiobutton() const
+	WgRadioButton * RadiobuttonEvent::Radiobutton() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
-			return static_cast<WgGizmoRadiobutton*>(pGizmo);
+			return static_cast<WgRadioButton*>(pGizmo);
 		else
 			return 0;
 	}
 
-	RadiobuttonSelect::RadiobuttonSelect( WgGizmoRadiobutton * pGizmo )
+	RadiobuttonSelect::RadiobuttonSelect( WgRadioButton * pGizmo )
 	{
 		m_type = WG_EVENT_RADIOBUTTON_SELECT;
 		m_pGizmo = pGizmo;
 	}
 
-	RadiobuttonUnselect::RadiobuttonUnselect( WgGizmoRadiobutton * pGizmo )
+	RadiobuttonUnselect::RadiobuttonUnselect( WgRadioButton * pGizmo )
 	{
 		m_type = WG_EVENT_RADIOBUTTON_UNSELECT;
 		m_pGizmo = pGizmo;
 	}
 
-	RadiobuttonToggle::RadiobuttonToggle( WgGizmoRadiobutton * pGizmo, bool bSelected )
+	RadiobuttonToggle::RadiobuttonToggle( WgRadioButton * pGizmo, bool bSelected )
 	{
 		m_type = WG_EVENT_RADIOBUTTON_TOGGLE;
 		m_pGizmo = pGizmo;
@@ -550,7 +550,7 @@ namespace WgEvent
 
 	//____ Animation event methods _____________________________________________
 
-	AnimationUpdate::AnimationUpdate( WgGizmoAnimation * pGizmo, int frame, float fraction )
+	AnimationUpdate::AnimationUpdate( WgAnimPlayer * pGizmo, int frame, float fraction )
 	{
 		m_type = WG_EVENT_ANIMATION_UPDATE;
 		m_pGizmo = pGizmo;
@@ -558,11 +558,11 @@ namespace WgEvent
 		m_fraction = fraction;
 	}
 
-	WgGizmoAnimation * AnimationUpdate::Animation() const
+	WgAnimPlayer * AnimationUpdate::Animation() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
-			return static_cast<WgGizmoAnimation*>(pGizmo);
+			return static_cast<WgAnimPlayer*>(pGizmo);
 		else
 			return 0;
 	}
@@ -579,16 +579,16 @@ namespace WgEvent
 
 	//____ Tablist event methods _______________________________________________
 
-	WgGizmoTablist * TablistEvent::Tablist() const
+	WgTablist * TablistEvent::Tablist() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
-			return static_cast<WgGizmoTablist*>(pGizmo);
+			return static_cast<WgTablist*>(pGizmo);
 		else
 			return 0;
 	}
 
-	TabSelect::TabSelect( WgGizmoTablist * pGizmo, int tabId )
+	TabSelect::TabSelect( WgTablist * pGizmo, int tabId )
 	{
 		m_type 		= WG_EVENT_TAB_SELECT;
 		m_pGizmo 	= pGizmo;
@@ -600,7 +600,7 @@ namespace WgEvent
 		return m_tabId;
 	}
 
-	TabPress::TabPress( WgGizmoTablist * pGizmo, int tabId, int mouseButton )
+	TabPress::TabPress( WgTablist * pGizmo, int tabId, int mouseButton )
 	{
 		m_type 		= WG_EVENT_TAB_PRESS;
 		m_pGizmo 	= pGizmo;
@@ -620,11 +620,11 @@ namespace WgEvent
 
 	//____ Editvalue event methods ___________________________________________
 
-	WgGizmoEditvalue * EditvalueEvent::Editvalue() const
+	WgValueEditor * EditvalueEvent::Editvalue() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
-			return static_cast<WgGizmoEditvalue*>(pGizmo);
+			return static_cast<WgValueEditor*>(pGizmo);
 		else
 			return 0;
 	}
@@ -639,7 +639,7 @@ namespace WgEvent
 		return m_fraction;
 	}
 
-	EditvalueModify::EditvalueModify( WgGizmoEditvalue * pGizmo, int64_t value, double fraction )
+	EditvalueModify::EditvalueModify( WgValueEditor * pGizmo, int64_t value, double fraction )
 	{
 		m_type = WG_EVENT_EDITVALUE_MODIFY;
 		m_pGizmo = pGizmo;
@@ -647,7 +647,7 @@ namespace WgEvent
 		m_fraction = fraction;
 	}
 
-	EditvalueSet::EditvalueSet( WgGizmoEditvalue * pGizmo, int64_t value, double fraction )
+	EditvalueSet::EditvalueSet( WgValueEditor * pGizmo, int64_t value, double fraction )
 	{
 		m_type = WG_EVENT_EDITVALUE_SET;
 		m_pGizmo = pGizmo;
@@ -736,10 +736,10 @@ namespace WgEvent
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
 		if( pGizmo )
 		{
-			if( pGizmo->Type() == WgGizmoText::GetClass() )
-				return static_cast<WgGizmoText*>(pGizmo);
-			else if( pGizmo->Type() == WgGizmoEditline::GetClass() )
-				return static_cast<WgGizmoEditline*>(pGizmo);
+			if( pGizmo->Type() == WgTextDisplay::GetClass() )
+				return static_cast<WgTextDisplay*>(pGizmo);
+			else if( pGizmo->Type() == WgLineEditor::GetClass() )
+				return static_cast<WgLineEditor*>(pGizmo);
 		}
 		return 0;
 	}
@@ -769,11 +769,11 @@ namespace WgEvent
 
 	//____ Menu event methods __________________________________________________
 
-	WgGizmoMenu *	MenuitemEvent::Menu() const
+	WgMenu *	MenuitemEvent::Menu() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo && pGizmo->Type() == WgGizmoMenu::GetClass() )
-			return static_cast<WgGizmoMenu*>(pGizmo);
+		if( pGizmo && pGizmo->Type() == WgMenu::GetClass() )
+			return static_cast<WgMenu*>(pGizmo);
 
 		return 0;
 	}
@@ -783,21 +783,21 @@ namespace WgEvent
 		return m_itemId;
 	}
 
-	MenuitemSelect::MenuitemSelect( WgGizmoMenu * pMenu, int menuItemId )
+	MenuitemSelect::MenuitemSelect( WgMenu * pMenu, int menuItemId )
 	{
 		m_type		= WG_EVENT_MENUITEM_SELECT;
 		m_pGizmo	= pMenu;
 		m_itemId	= menuItemId;
 	}
 
-	MenuitemCheck::MenuitemCheck( WgGizmoMenu * pMenu, int menuItemId )
+	MenuitemCheck::MenuitemCheck( WgMenu * pMenu, int menuItemId )
 	{
 		m_type		= WG_EVENT_MENUITEM_CHECK;
 		m_pGizmo	= pMenu;
 		m_itemId	= menuItemId;
 	}
 
-	MenuitemUncheck::MenuitemUncheck( WgGizmoMenu * pMenu, int menuItemId )
+	MenuitemUncheck::MenuitemUncheck( WgMenu * pMenu, int menuItemId )
 	{
 		m_type		= WG_EVENT_MENUITEM_UNCHECK;
 		m_pGizmo	= pMenu;
@@ -830,11 +830,11 @@ namespace WgEvent
 
 	//____ Table event methods _________________________________________________
 
-	WgGizmoTable * TableCellEvent::Table() const
+	WgTablePanel * TableCellEvent::Table() const
 	{
 		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo && pGizmo->Type() == WgGizmoMenu::GetClass() )
-			return static_cast<WgGizmoTable*>(pGizmo);
+		if( pGizmo && pGizmo->Type() == WgMenu::GetClass() )
+			return static_cast<WgTablePanel*>(pGizmo);
 
 		return 0;		
 	}
@@ -854,7 +854,7 @@ namespace WgEvent
 		return m_pCellContent.GetRealPtr();
 	}
 		
-	TableCellMarked::TableCellMarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent )
+	TableCellMarked::TableCellMarked( WgTablePanel * pTable, int row, int column, WgGizmo * pCellContent )
 	{
 		m_type 			= WG_EVENT_TABLE_CELL_MARK;
 		m_pGizmo 		= pTable;
@@ -863,7 +863,7 @@ namespace WgEvent
 		m_pCellContent 	= pCellContent;
 	}
 
-	TableCellUnmarked::TableCellUnmarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent )
+	TableCellUnmarked::TableCellUnmarked( WgTablePanel * pTable, int row, int column, WgGizmo * pCellContent )
 	{
 		m_type 			= WG_EVENT_TABLE_CELL_UNMARK;
 		m_pGizmo 		= pTable;

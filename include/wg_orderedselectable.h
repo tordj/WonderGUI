@@ -23,8 +23,8 @@
 #ifndef WG_ORDERED_SELECTABLE_DOT_H
 #define WG_ORDERED_SELECTABLE_DOT_H
 
-#ifndef WG_ORDERED_LAYOUT_DOT_H
-#	include <wg_orderedlayout.h>
+#ifndef WG_SORTABLEPANEL_DOT_H
+#	include <wg_sortablepanel.h>
 #endif
 
 #ifndef WG_BLOCKSET_DOT_H
@@ -39,7 +39,7 @@
 class WgOrdSelLayout;
 
 
-class WgOrdSelHook : public WgOrderedHook
+class WgOrdSelHook : public WgSortableHook
 {
 	friend class WgOrdSelLayout;
 
@@ -74,7 +74,7 @@ protected:
 	bool			m_bSelected;
 };
 
-class WgOrdSelLayout : public WgOrderedLayout
+class WgOrdSelLayout : public WgSortablePanel
 {
 	friend class WgOrdSelHook;
 public:

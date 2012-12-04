@@ -57,6 +57,7 @@ class WgFont;
 class WgTextpropManager;
 class WgMemPool;
 class WgWeakPtrHub;
+class WgMemStack;
 class WgCursor;
 
 class WgBase
@@ -106,6 +107,10 @@ public:
 	static int		DoubleClickTimeTreshold() { assert(s_pData!=0); return s_pData->doubleClickTimeTreshold; }
 	static int		DoubleClickDistanceTreshold() { assert(s_pData!=0); return s_pData->doubleClickDistanceTreshold; }
 
+	static char *	MemStackAlloc( int bytes );
+	static void		MemStackRelease( int bytes );
+
+
 	//____
 
 	static WgWeakPtrHub *	AllocWeakPtrHub();
@@ -136,6 +141,7 @@ private:
 		//
 
 		WgMemPool *			pWeakPtrPool;
+		WgMemStack *		pMemStack;
 
 #ifdef WG_USE_FREETYPE
 		bool				bFreeTypeInitialized;

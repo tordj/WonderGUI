@@ -54,39 +54,9 @@ public:
 	inline WgHook *	FirstHook() const { return _firstHook(); }
 	inline WgHook *	LastHook() const { return _lastHook(); }
 
-
-//	dynamic_cast<WgGizmoStackHook*>(w->GetHook())
-
-//  WgGizmoStackHook * h = m->GetHookCasted(w);
-
-//	b->AddGizmo( a->ReleaseGizmo( 0 ), .... );
-
-
-/* TO BE PART OF ALL GIZMO MANAGERS ONCE WE ARE RID OF WIDGETS.
-
-//	virtual WgHook *	AddGizmo( WgGizmo * pGizmo ) = 0;
-//	virtual WgHook *	InsertGizmo( WgGizmo * pGizmo, Uint32 pos ) = 0;
-
-//	virtual WgHook *	InsertGizmoBefore( WgGizmo * pGizmo, WgGizmo * pBefore ) = 0;
-//	virtual WgHook *	InsertGizmoAfter( WgGizmo * pGizmo, WgGizmo * pAfter ) = 0;
-
-
-
-
-	virtual WgGizmo *		ReleaseGizmo( WgGizmo * pGizmo ) = 0;
-	virtual int				ReleaseGizmos( WgGizmo * pFirst, WgGizmo * pLast ) = 0;
-	virtual int				ReleaseAllGizmos() = 0;
-
-	virtual bool			DeleteGizmo( WgGizmo * pGizmo ) = 0;
-	virtual int				DeleteGizmos( WgGizmo * pFirst, WgGizmo * pLast ) = 0;
-	virtual int				DeleteAllGizmos() = 0;
-*/
-
 protected:
 	virtual WgHook*	_firstHook() const = 0;
 	virtual WgHook*	_lastHook() const = 0;
-
-
 };
 
 

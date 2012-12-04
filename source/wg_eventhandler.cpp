@@ -25,12 +25,12 @@
 #include <wg_eventfilter.h>
 #include <wg_eventhandler.h>
 #include <wg_base.h>
-#include <wg_root.h>
-#include <wg_gizmo_container.h>
+#include <wg_rootpanel.h>
+#include <wg_panel.h>
 
 //____ Constructor ____________________________________________________________
 
-WgEventHandler::WgEventHandler( WgRoot * pRoot )
+WgEventHandler::WgEventHandler( WgRootPanel * pRoot )
 {
 	m_pRoot					= pRoot;
 	m_time					= 0;
@@ -56,7 +56,7 @@ WgEventHandler::~WgEventHandler()
 
 //____ SetFocusGroup() ________________________________________________________
 
-bool WgEventHandler::SetFocusGroup( WgGizmoContainer * pFocusGroup )
+bool WgEventHandler::SetFocusGroup( WgPanel * pFocusGroup )
 {
 	// Sanity checks
 
@@ -66,7 +66,7 @@ bool WgEventHandler::SetFocusGroup( WgGizmoContainer * pFocusGroup )
 			return true;									// Not an error, but we don't need to do anything
 
 		if( !pFocusGroup->IsFocusGroup() )
-			return false;									// Container is not a focus group
+			return false;									// Panel is not a focus group
 
 		if( !pFocusGroup->Hook() || pFocusGroup->Hook()->Root() != m_pRoot )
 			return false;									// pFocusGroup is not a child of our root.
@@ -119,9 +119,9 @@ bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
 	{
 		// Check what focus group (if any) this Gizmo belongs to.
 
-		WgGizmoContainer * p = pFocus->Parent()->CastToContainer();
+		WgPanel * p = pFocus->Parent()->CastToPanel();
 		while( p && !p->IsFocusGroup() )
-			p = p->Parent()->CastToContainer();
+			p = p->Parent()->CastToPanel();
 
 		if( p )
 			m_keyFocusGroup = p;
@@ -143,11 +143,11 @@ bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
 
 //____ FocusGroup() ___________________________________________________________
 
-WgGizmoContainer * WgEventHandler::FocusGroup() const
+WgPanel * WgEventHandler::FocusGroup() const
 {
 	WgGizmo * pGizmo = m_keyFocusGroup.GetRealPtr();
 	if( pGizmo )
-		return pGizmo->CastToContainer();
+		return pGizmo->CastToPanel();
 
 	return 0;
 }

@@ -3,33 +3,24 @@
 #include <wg_char.h>
 #include <wg_texttool.h>
 
-#include <wg_gizmo_menu.h>
+#include <wg_menu.h>
 
-//____ WgMenuitem::Show() ___________________________________________
 
-void WgMenuitem::Show()
+
+//____ WgMenuItem::SetVisible() _______________________________________________
+
+void WgMenuItem::SetVisible( bool bVisible )
 {
-	if( m_pMyMenu && !m_bVisible )
+	if( m_pMyMenu && m_bVisible != bVisible )
 	{
-		m_bVisible = true;
+		m_bVisible = bVisible;
 		Modified();
 	}
 }
 
-//____ WgMenuitem::Hide() ___________________________________________
+//____ WgMenuItem::Modified() ___________________________________________
 
-void WgMenuitem::Hide()
-{
-	if( m_pMyMenu && m_bVisible )
-	{
-		m_bVisible = false;
-		Modified();
-	}
-}
-
-//____ WgMenuitem::Modified() ___________________________________________
-
-void WgMenuitem::Modified()
+void WgMenuItem::Modified()
 {
 	if(m_pMyMenu)
 		m_pMyMenu->_itemModified();
@@ -37,14 +28,14 @@ void WgMenuitem::Modified()
 
 //____ WgMenuSeparator::Constructor ___________________________________________
 
-WgMenuSeparator::WgMenuSeparator():WgMenuitem(SEPARATOR)
+WgMenuSeparator::WgMenuSeparator():WgMenuItem(SEPARATOR)
 {
 }
 
 
 //____ WgMenuEntry::Constructor _______________________________________________
 
-WgMenuEntry::WgMenuEntry() : WgMenuitem(ENTRY)
+WgMenuEntry::WgMenuEntry() : WgMenuItem(ENTRY)
 {
 	m_bEnabled		= true;
 	m_navKey		= 0;
@@ -54,7 +45,7 @@ WgMenuEntry::WgMenuEntry() : WgMenuitem(ENTRY)
 }
 
 WgMenuEntry::WgMenuEntry(	const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey,
-							WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText ):WgMenuitem(ENTRY)
+							WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText ):WgMenuItem(ENTRY)
 {
 
 	m_text			= text;
@@ -161,7 +152,7 @@ bool WgMenuRadioButton::Select()
 
 	m_bSelected = true;
 
-	WgMenuitem * pItem = this->Next();
+	WgMenuItem * pItem = this->Next();
 	while( pItem && pItem->GetType() == RADIOBUTTON )
 	{
 		((WgMenuRadioButton*)pItem)->m_bSelected = false;
@@ -192,7 +183,7 @@ WgMenuSubMenu::WgMenuSubMenu()
 
 
 WgMenuSubMenu::WgMenuSubMenu(	const WgString& text, const WgString& helpText,
-								const WgBlocksetPtr& pIcon, Uint16 navKey, WgGizmoMenu * pSubMenu,
+								const WgBlocksetPtr& pIcon, Uint16 navKey, WgMenu * pSubMenu,
 								WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText )
 						:WgMenuEntry( text, helpText, pIcon, navKey, accelModif, accelKey, accelText )
 {
@@ -200,13 +191,13 @@ WgMenuSubMenu::WgMenuSubMenu(	const WgString& text, const WgString& helpText,
 	m_pSubMenu = pSubMenu;
 }
 
-void WgMenuSubMenu::SetSubMenu(WgGizmoMenu* subMenu)
+void WgMenuSubMenu::SetSubMenu(WgMenu* subMenu)
 {
 	m_pSubMenu= subMenu;
 };
 
-void WgMenuSubMenu::SetMyMenu( WgGizmoMenu * pMenu )
+void WgMenuSubMenu::SetMyMenu( WgMenu * pMenu )
 {
-	WgMenuitem::SetMyMenu( pMenu );
+	WgMenuItem::SetMyMenu( pMenu );
 }
 

@@ -150,7 +150,7 @@ class WgBorders
 {
 public:
 	WgBorders() : left(0), right(0), top(0), bottom(0) {}
-	WgBorders( Uint8 _left, Uint8 _right, Uint8 _top, Uint8 _bottom ) : left(_left), right(_right), top(_top), bottom(_bottom) {}
+	WgBorders( Uint8 _left, Uint8 _top, Uint8 _right, Uint8 _bottom ) : left(_left), top(_top), right(_right), bottom(_bottom) {}
 	WgBorders( Uint8 _all ) : left(_all), right(_all), top(_all), bottom(_all) {}
 
 	inline void		Set( Uint8 _all ) { left = right = top = bottom = _all; }
@@ -167,8 +167,7 @@ public:
 	bool			operator!=(const WgBorders& borders) const { return !(*this == borders); }
 
 
-	Uint8	left, right;
-	Uint8	top, bottom;
+	Uint8	left, top, right, bottom;
 };
 
 //____ Class: WgSize ________________________________________________________

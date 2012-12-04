@@ -579,11 +579,11 @@ void WgGfxDeviceSoft::StretchBlit( const WgSurface * pSrc, const WgRect& dest, b
 
 void WgGfxDeviceSoft::StretchBlit( const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipmapBias )
 {
-	float srcW = src.w;
-	float srcH = src.h;
+	float srcW = (float) src.w;
+	float srcH = (float) src.h;
 
-	float destW = dest.w;
-	float destH = dest.h;
+	float destW = (float) dest.w;
+	float destH = (float) dest.h;
 
 	if( m_bBilinearFiltering )
 	{

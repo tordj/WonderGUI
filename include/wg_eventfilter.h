@@ -136,41 +136,41 @@ public:
 	static WgEventFilter	ButtonPress( WgGizmo * pGizmo );
 
 	static WgEventFilter	CheckboxCheck();
-	static WgEventFilter	CheckboxCheck( WgGizmoCheckbox * pGizmo );
+	static WgEventFilter	CheckboxCheck( WgCheckBox * pGizmo );
 
 	static WgEventFilter	CheckboxUncheck();
-	static WgEventFilter	CheckboxUncheck( WgGizmoCheckbox * pGizmo );
+	static WgEventFilter	CheckboxUncheck( WgCheckBox * pGizmo );
 
 	static WgEventFilter	CheckboxToggle();
-	static WgEventFilter	CheckboxToggle( WgGizmoCheckbox * pGizmo );
+	static WgEventFilter	CheckboxToggle( WgCheckBox * pGizmo );
 
 	static WgEventFilter	RadiobuttonSelect();
-	static WgEventFilter	RadiobuttonSelect( WgGizmoRadiobutton * pGizmo );
+	static WgEventFilter	RadiobuttonSelect( WgRadioButton * pGizmo );
 
 	static WgEventFilter	RadiobuttonUnselect();
-	static WgEventFilter	RadiobuttonUnselect( WgGizmoRadiobutton * pGizmo );
+	static WgEventFilter	RadiobuttonUnselect( WgRadioButton * pGizmo );
 
 	static WgEventFilter	RadiobuttonToggle();
-	static WgEventFilter	RadiobuttonToggle( WgGizmoRadiobutton * pGizmo );
+	static WgEventFilter	RadiobuttonToggle( WgRadioButton * pGizmo );
 
 	static WgEventFilter	AnimationUpdate();
-	static WgEventFilter	AnimationUpdate( WgGizmoAnimation * pGizmo );
+	static WgEventFilter	AnimationUpdate( WgAnimPlayer * pGizmo );
 
 	static WgEventFilter	TabSelect();
-	static WgEventFilter	TabSelect( WgGizmoTablist * pGizmo );
-	static WgEventFilter	TabSelect( WgGizmoTablist * pGizmo, int id );
+	static WgEventFilter	TabSelect( WgTablist * pGizmo );
+	static WgEventFilter	TabSelect( WgTablist * pGizmo, int id );
 
 	static WgEventFilter	TabPress();
 	static WgEventFilter	TabPress( int button );
-	static WgEventFilter	TabPress( WgGizmoTablist * pGizmo );
-	static WgEventFilter	TabPress( WgGizmoTablist * pGizmo, int button );
-	static WgEventFilter	TabPress( WgGizmoTablist * pGizmo, int button, int id );
+	static WgEventFilter	TabPress( WgTablist * pGizmo );
+	static WgEventFilter	TabPress( WgTablist * pGizmo, int button );
+	static WgEventFilter	TabPress( WgTablist * pGizmo, int button, int id );
 
 	static WgEventFilter	EditvalueModify();
-	static WgEventFilter	EditvalueModify( WgGizmoEditvalue * pGizmo );
+	static WgEventFilter	EditvalueModify( WgValueEditor * pGizmo );
 
 	static WgEventFilter	EditvalueSet();
-	static WgEventFilter	EditvalueSet( WgGizmoEditvalue * pGizmo );
+	static WgEventFilter	EditvalueSet( WgValueEditor * pGizmo );
 
 	static WgEventFilter	SliderMove();
 	static WgEventFilter	SliderMove( WgGizmoSlider * pGizmo );
@@ -198,18 +198,18 @@ public:
 
 	static WgEventFilter	MenuitemSelect();
 	static WgEventFilter	MenuitemSelect( int itemId );
-	static WgEventFilter	MenuitemSelect( WgGizmoMenu * pGizmo );
-	static WgEventFilter	MenuitemSelect( WgGizmoMenu * pGizmo, int itemId );
+	static WgEventFilter	MenuitemSelect( WgMenu * pGizmo );
+	static WgEventFilter	MenuitemSelect( WgMenu * pGizmo, int itemId );
 
 	static WgEventFilter	MenuitemCheck();
 	static WgEventFilter	MenuitemCheck( int itemId );
-	static WgEventFilter	MenuitemCheck( WgGizmoMenu * pGizmo );
-	static WgEventFilter	MenuitemCheck( WgGizmoMenu * pGizmo, int itemId );
+	static WgEventFilter	MenuitemCheck( WgMenu * pGizmo );
+	static WgEventFilter	MenuitemCheck( WgMenu * pGizmo, int itemId );
 
 	static WgEventFilter	MenuitemUncheck();
 	static WgEventFilter	MenuitemUncheck( int itemId );
-	static WgEventFilter	MenuitemUncheck( WgGizmoMenu * pGizmo );
-	static WgEventFilter	MenuitemUncheck( WgGizmoMenu * pGizmo, int itemId );
+	static WgEventFilter	MenuitemUncheck( WgMenu * pGizmo );
+	static WgEventFilter	MenuitemUncheck( WgMenu * pGizmo, int itemId );
 
 
 	//TODO: Add missing filters!

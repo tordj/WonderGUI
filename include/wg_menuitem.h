@@ -1,3 +1,24 @@
+/*=========================================================================
+
+                         >>> WonderGUI <<<
+
+  This file is part of Tord Jansson's WonderGUI Graphics Toolkit
+  and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
+
+                            -----------
+
+  The WonderGUI Graphics Toolkit is free software; you can redistribute
+  this file and/or modify it under the terms of the GNU General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+                            -----------
+
+  The WonderGUI Graphics Toolkit is also available for use in commercial
+  closed-source projects under a separate license. Interested parties
+  should contact Tord Jansson [tord.jansson@gmail.com] for details.
+
+=========================================================================*/
 #ifndef	WG_MENUITEM_DOT_H
 #define	WG_MENUITEM_DOT_H
 #ifndef	WG_CHAIN_DOT_H
@@ -21,10 +42,10 @@ class WgChar;
 class WgText;
 class WgGfxAnim;
 
-class WgGizmoMenu;
-typedef class WgGizmoMenu WgGizmoMenu;
+class WgMenu;
+typedef class WgMenu WgMenu;
 
-enum WgMenuitemType
+enum WgMenuItemType
 {
 		ENTRY,
 		CHECKBOX,
@@ -34,44 +55,40 @@ enum WgMenuitemType
 };
 
 
-//____ WgMenuitem _____________________________________________________________
+//____ WgMenuItem _____________________________________________________________
 
-class WgMenuitem : public WgLink
+class WgMenuItem : public WgLink
 {
 	friend class Wdg_Menu;
-	friend class WgGizmoMenu;
+	friend class WgMenu;
 public:
-	virtual ~WgMenuitem() {};
-	LINK_METHODS( WgMenuitem );
+	virtual ~WgMenuItem() {};
+	LINK_METHODS( WgMenuItem );
 
-	inline WgMenuitemType GetType() const { return m_type; }
+	inline WgMenuItemType GetType() const { return m_type; }
 	inline void SetId(int id) { m_id = id; }
 	inline int GetId() const { return m_id; }
 
-	inline bool IsSetToVisible() const { return m_bVisible; }
+	inline bool IsVisible() const { return m_bVisible; }
 
-	inline void SetVisible(bool bVisible) { bVisible ? Show() : Hide(); }
-
-
-	void Show();
-	void Hide();
+	void SetVisible(bool bVisible);
 	void Modified();
 
 protected:
-	WgMenuitem(WgMenuitemType _type) {m_type = _type; m_id = 0; m_pMyMenu = 0; m_bVisible = true; }
+	WgMenuItem(WgMenuItemType _type) {m_type = _type; m_id = 0; m_pMyMenu = 0; m_bVisible = true; }
 
-	virtual void SetMyMenu( WgGizmoMenu * pMenu ) { m_pMyMenu = pMenu; }
+	virtual void SetMyMenu( WgMenu * pMenu ) { m_pMyMenu = pMenu; }
 
-	WgMenuitemType	m_type;
+	WgMenuItemType	m_type;
     int				m_id;
 	bool			m_bVisible;
 
-	WgGizmoMenu *	m_pMyMenu;
+	WgMenu *	m_pMyMenu;
 };
 
 //____ WgMenuSeparator ________________________________________________________
 
-class WgMenuSeparator : public WgMenuitem
+class WgMenuSeparator : public WgMenuItem
 {
 public:
 	WgMenuSeparator();
@@ -80,10 +97,10 @@ public:
 
 //____ WgMenuEntry ____________________________________________________________
 
-class WgMenuEntry : public WgMenuitem
+class WgMenuEntry : public WgMenuItem
 {
 	friend class Wdg_Menu;
-	friend class WgGizmoMenu;
+	friend class WgMenu;
 public:
 	WgMenuEntry();
 	WgMenuEntry( const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey,
@@ -99,8 +116,7 @@ public:
 	void 	SetAccelText(const WgString& accelText);
 
 	inline bool IsEnabled() { return m_bEnabled; }
-	inline void	Enable() { m_bEnabled = true; }			// Need to force a redraw here...
-	inline void Disable() { m_bEnabled = false; }		// Need to force a redraw here...
+	inline void	SetEnabled(bool bEnabled) { m_bEnabled = bEnabled; }			// Need to force a redraw here...
 
 	inline WgString GetText() { return m_text; }
 	inline WgString GetHelpText() { return m_helpText; }
@@ -168,17 +184,17 @@ class WgMenuSubMenu : public WgMenuEntry
 {
 public:
 	WgMenuSubMenu();
-	WgMenuSubMenu(	const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey, WgGizmoMenu * pSubMenu,
+	WgMenuSubMenu(	const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey, WgMenu * pSubMenu,
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuSubMenu() {};
 
-	inline WgGizmoMenu *GetSubMenu()					{return m_pSubMenu;};
-	void				SetSubMenu(WgGizmoMenu * subMenu);
+	inline WgMenu *GetSubMenu()					{return m_pSubMenu;};
+	void				SetSubMenu(WgMenu * subMenu);
 
 private:
-	void				SetMyMenu( WgGizmoMenu * pMenu );
+	void				SetMyMenu( WgMenu * pMenu );
 
-	WgGizmoMenu *		m_pSubMenu;
+	WgMenu *		m_pSubMenu;
 };
 
 

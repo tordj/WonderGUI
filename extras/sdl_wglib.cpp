@@ -146,6 +146,7 @@ namespace sdl_wglib
 		const int BUTTON_OFS			= RADIOBUTTON_OFS + 13;
 		const int PLATE_OFS				= BUTTON_OFS + 10;
 		const int SPLITS_AND_FRAME_OFS	= PLATE_OFS + 10;
+		const int COMBOBOX_OFS			= SPLITS_AND_FRAME_OFS + 10;
 		const int TILES_OFS				= 192;
 
 		WgSurface * pSurface = LoadSurface( pImagePath, factory );
@@ -205,9 +206,13 @@ namespace sdl_wglib
 
 		WgBlocksetPtr pVSplitBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(11,SPLITS_AND_FRAME_OFS,2,8), WG_OPAQUE);
 
-		WgBlocksetPtr pFrameBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(15,SPLITS_AND_FRAME_OFS,8,8), WG_OPAQUE);
+		WgBlocksetPtr pFrameBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(1,SPLITS_AND_FRAME_OFS,8,8), WG_OPAQUE);
 		pFrameBlocks->SetFrame(WgBorders(2));
 		pFrameBlocks->SetPadding(WgBorders(3));
+
+		WgBlocksetPtr pComboboxBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,COMBOBOX_OFS,98,20), 4, 2, WG_OPAQUE);
+		pComboboxBlocks->SetFrame(WgBorders(1,1,20,1));
+		pComboboxBlocks->SetPadding(WgBorders(2,2,21,2));
 
 		WgBlocksetPtr pBgCheckeredGreyBlocks = WgBlockset::CreateFromRect( pSurface, WgRect(0,TILES_OFS,64,64), WG_OPAQUE | WG_TILE_ALL );
 		WgBlocksetPtr pBgBlueGradientBlocks = WgBlockset::CreateFromRect( pSurface, WgRect(1*64,TILES_OFS,64,64), WG_OPAQUE );
@@ -219,54 +224,59 @@ namespace sdl_wglib
 
 		// Create standard button
 
-		WgGizmoButton * pButton = new WgGizmoButton();
+		WgButton * pButton = new WgButton();
 		pButton->SetSource( pButtonBlocks );
 		pDB->AddGizmo( "button", pButton );
 
 		// Create standard plate
 
-		WgGizmoPixmap * pPlate = new WgGizmoPixmap();
+		WgImage * pPlate = new WgImage();
 		pPlate->SetSource( pPlateBlocks );
 		pDB->AddGizmo( "plate", pPlate );
 
 		// Create standard checkbox
 
-		WgGizmoCheckbox * pCheckbox = new WgGizmoCheckbox();
+		WgCheckBox * pCheckbox = new WgCheckBox();
 		pCheckbox->SetIcons( pCheckboxUncheckedBlocks, pCheckboxCheckedBlocks );
 		pDB->AddGizmo( "checkbox", pCheckbox );
 
 		// Create standard radiobutton
 
-		WgGizmoRadiobutton * pRadiobutton = new WgGizmoRadiobutton();
+		WgRadioButton * pRadiobutton = new WgRadioButton();
 		pRadiobutton->SetIcons( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks );
 		pDB->AddGizmo( "radiobutton", pRadiobutton );
 
 		// Create standard horizontal slider
 
-		WgGizmoHSlider * pHSlider = new WgGizmoHSlider();
+		WgHSlider * pHSlider = new WgHSlider();
 		pHSlider->SetSource( pSliderBackBlocks, pSliderBlocks, pHSliderBtnBwdBlocks, pHSliderBtnFwdBlocks );
 		pDB->AddGizmo( "hslider", pHSlider );
 
 		// Create standard vertical slider
 
-		WgGizmoVSlider * pVSlider = new WgGizmoVSlider();
+		WgVSlider * pVSlider = new WgVSlider();
 		pVSlider->SetSource( pSliderBackBlocks, pSliderBlocks, pVSliderBtnBwdBlocks, pVSliderBtnFwdBlocks );
 		pDB->AddGizmo( "vslider", pVSlider );
 
+		// Create standard menubar
+
+		WgMenubar * pMenubar = new WgMenubar();
+		pMenubar->SetBgSource( pPlateBlocks );
+		pDB->AddGizmo( "menubar", pMenubar );
 
 		// Create Background bitmaps
 
-		WgGizmoPixmap * pBgCheckeredGrey = new WgGizmoPixmap();
+		WgImage * pBgCheckeredGrey = new WgImage();
 		pBgCheckeredGrey->SetSource( pBgCheckeredGreyBlocks );
 		pDB->AddGizmo( "bg_checkered_grey", pBgCheckeredGrey );
 
-		WgGizmoPixmap * pBgBlueGradient = new WgGizmoPixmap();
+		WgImage * pBgBlueGradient = new WgImage();
 		pBgBlueGradient->SetSource( pBgBlueGradientBlocks );
 		pDB->AddGizmo( "bg_blue_gradient", pBgBlueGradient );
 
 		// Create standard menu
 
-		WgGizmoMenu * pMenu = new WgGizmoMenu();
+		WgMenu * pMenu = new WgMenu();
 		pMenu->SetBgSource( pPlateBlocks, 16, 16 );
 		pMenu->SetSeparatorSource( pHSplitBlocks, WgBorders(1) );
 		pMenu->SetCheckBoxSource( pCheckboxUncheckedBlocks, pCheckboxCheckedBlocks);
@@ -275,18 +285,24 @@ namespace sdl_wglib
 		pMenu->SetTileColors( pSelectionColors );
 		pDB->AddGizmo( "menu", pMenu );
 
+		// Create standard combobox
+
+		WgCombobox * pCombobox = new WgCombobox();
+		pCombobox->SetSource( pComboboxBlocks );
+		pDB->AddGizmo( "combobox", pCombobox );
+
 		// Create standard view
 		
 		{
-			WgGizmoView * pView = new WgGizmoView();
+			WgScrollPanel * pView = new WgScrollPanel();
 			
 			WgGizmo * pHSlider = pDB->CloneGizmo( "hslider" );
 			WgGizmo * pVSlider = pDB->CloneGizmo( "vslider" );
 
 			if( pHSlider )
-				pView->SetHSlider( static_cast<WgGizmoHSlider*>(pHSlider) );
+				pView->SetHSlider( static_cast<WgHSlider*>(pHSlider) );
 			if( pVSlider )
-				pView->SetVSlider( static_cast<WgGizmoVSlider*>(pVSlider) );
+				pView->SetVSlider( static_cast<WgVSlider*>(pVSlider) );
 
 			pView->SetFillerBlocks( pPlateBlocks );
 			pDB->AddGizmo( "view", pView );

@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_slidertarget.h>
-#include <wg_gizmo_slider.h>
+#include <wg_slider.h>
 
 
 void WgSliderTarget::_updateSlider( float pos, float size )
@@ -30,8 +30,8 @@ void WgSliderTarget::_updateSlider( float pos, float size )
 
 		if( pGizmo )
 		{
-			if( pGizmo->Type() == WgGizmoVSlider::GetClass() ||
-				pGizmo->Type() == WgGizmoHSlider::GetClass() )
+			if( pGizmo->Type() == WgVSlider::GetClass() ||
+				pGizmo->Type() == WgHSlider::GetClass() )
 					static_cast<WgGizmoSlider*>(pGizmo)->_setSlider(pos,size);
 		}
 

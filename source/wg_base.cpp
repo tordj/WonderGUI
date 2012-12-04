@@ -26,6 +26,7 @@
 
 #include <wg_textpropmanager.h>
 #include <wg_texttool.h>
+#include <wg_memstack.h>
 
 #ifdef WG_USE_FREETYPE
 #	include <ft2build.h>
@@ -45,6 +46,7 @@ void WgBase::Init()
 
 	s_pData->pDefaultCursor = 0;
 	s_pData->pWeakPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
+	s_pData->pMemStack = new WgMemStack( 4096 );
 
 	s_pData->doubleClickTimeTreshold 		= 250;
 	s_pData->doubleClickDistanceTreshold 	= 2;
@@ -79,6 +81,7 @@ void WgBase::Exit()
 #endif
 
 	delete s_pData->pWeakPtrPool;
+	delete s_pData->pMemStack;
 	delete s_pData;
 	s_pData = 0;
 }
@@ -256,4 +259,19 @@ WgKey WgBase::TranslateKey( int native_keycode )
 		return  it->second;
 	else
 		return WG_KEY_UNMAPPED;
+}
+
+//____ MemStackAlloc() ________________________________________________________
+
+char * WgBase::MemStackAlloc( int bytes )
+{ 
+	assert(s_pData!=0); 
+	return s_pData->pMemStack->Alloc(bytes);
+}
+
+//____ MemStackRelease() ______________________________________________________
+
+void WgBase::MemStackRelease( int bytes )
+{	assert(s_pData!=0); 
+	return s_pData->pMemStack->Release(bytes); 
 }

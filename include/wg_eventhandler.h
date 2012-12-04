@@ -39,8 +39,8 @@
 #	include <wg_key.h>
 #endif
 
-class WgRoot;
-class WgGizmoContainer;
+class WgRootPanel;
+class WgPanel;
 
 class WgEventListener
 {
@@ -57,7 +57,7 @@ class WgEventHandler
 friend class WgGizmo;
 
 public:
-	WgEventHandler( WgRoot * pRoot );
+	WgEventHandler( WgRootPanel * pRoot );
 	~WgEventHandler();
 
 	bool	QueueEvent( WgEvent::Event * pEvent );
@@ -66,10 +66,10 @@ public:
 
 	//----
 
-	bool	SetFocusGroup( WgGizmoContainer * pFocusGroup );
+	bool	SetFocusGroup( WgPanel * pFocusGroup );
 	bool	SetKeyboardFocus( WgGizmo * pFocus );
 
-	WgGizmoContainer *	FocusGroup() const;
+	WgPanel *	FocusGroup() const;
 	WgGizmo *			KeyboardFocus() const { return m_keyFocusGizmo.GetRealPtr(); }
 
 	//----
@@ -163,7 +163,7 @@ private:
 		
 	//
 
-	WgRoot *		m_pRoot;
+	WgRootPanel *		m_pRoot;
 
 	std::deque<WgEvent::Event*>				m_eventQueue;
 	bool									m_bIsProcessing;	// Set when we are inside ProcessEvents().

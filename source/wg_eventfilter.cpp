@@ -25,13 +25,13 @@
 #include <wg_event.h>
 #include <wg_eventfilter.h>
 #include <wg_gizmo.h>
-#include <wg_gizmo_slider.h>
-#include <wg_gizmo_checkbox.h>
-#include <wg_gizmo_radiobutton.h>
-#include <wg_gizmo_animation.h>
-#include <wg_gizmo_tablist.h>
-#include <wg_gizmo_editvalue.h>
-#include <wg_gizmo_menu.h>
+#include <wg_slider.h>
+#include <wg_checkbox.h>
+#include <wg_radiobutton.h>
+#include <wg_animplayer.h>
+#include <wg_tablist.h>
+#include <wg_valueeditor.h>
+#include <wg_menu.h>
 
 
 
@@ -397,7 +397,7 @@ WgEventFilter	WgEventFilter::CheckboxCheck()
 	return WgEventFilter( WG_EVENT_CHECKBOX_CHECK, 0, _filterTypeGizmo );
 }
 
-WgEventFilter	WgEventFilter::CheckboxCheck( WgGizmoCheckbox * pGizmo )
+WgEventFilter	WgEventFilter::CheckboxCheck( WgCheckBox * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_CHECKBOX_CHECK, pGizmo, _filterTypeGizmo );
 }
@@ -409,7 +409,7 @@ WgEventFilter	WgEventFilter::CheckboxUncheck()
 	return WgEventFilter( WG_EVENT_CHECKBOX_UNCHECK, 0, _filterTypeGizmo );
 }
 
-WgEventFilter	WgEventFilter::CheckboxUncheck( WgGizmoCheckbox * pGizmo )
+WgEventFilter	WgEventFilter::CheckboxUncheck( WgCheckBox * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_CHECKBOX_UNCHECK, pGizmo, _filterTypeGizmo );
 }
@@ -422,7 +422,7 @@ WgEventFilter	WgEventFilter::CheckboxToggle()
 	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, 0, _filterTypeGizmo );
 }
 
-WgEventFilter	WgEventFilter::CheckboxToggle( WgGizmoCheckbox * pGizmo )
+WgEventFilter	WgEventFilter::CheckboxToggle( WgCheckBox * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, pGizmo, _filterTypeGizmo );
 }
@@ -434,7 +434,7 @@ WgEventFilter	WgEventFilter::RadiobuttonSelect()
 	return WgEventFilter( WG_EVENT_RADIOBUTTON_SELECT, 0, _filterTypeGizmo );
 }
 
-WgEventFilter	WgEventFilter::RadiobuttonSelect( WgGizmoRadiobutton * pGizmo )
+WgEventFilter	WgEventFilter::RadiobuttonSelect( WgRadioButton * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_RADIOBUTTON_SELECT, pGizmo, _filterTypeGizmo );
 }
@@ -446,7 +446,7 @@ WgEventFilter	WgEventFilter::RadiobuttonUnselect()
 	return WgEventFilter( WG_EVENT_RADIOBUTTON_UNSELECT, 0, _filterTypeGizmo );
 }
 
-WgEventFilter	WgEventFilter::RadiobuttonUnselect( WgGizmoRadiobutton * pGizmo )
+WgEventFilter	WgEventFilter::RadiobuttonUnselect( WgRadioButton * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_RADIOBUTTON_UNSELECT, pGizmo, _filterTypeGizmo );
 }
@@ -459,7 +459,7 @@ WgEventFilter	WgEventFilter::RadiobuttonToggle()
 	return WgEventFilter( WG_EVENT_RADIOBUTTON_TOGGLE, 0, _filterTypeGizmo );
 }
 
-WgEventFilter	WgEventFilter::RadiobuttonToggle( WgGizmoRadiobutton * pGizmo )
+WgEventFilter	WgEventFilter::RadiobuttonToggle( WgRadioButton * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_RADIOBUTTON_TOGGLE, pGizmo, _filterTypeGizmo );
 }
@@ -471,7 +471,7 @@ WgEventFilter	WgEventFilter::AnimationUpdate()
 	return WgEventFilter( WG_EVENT_ANIMATION_UPDATE, 0, _filterTypeGizmo );
 }
 
-WgEventFilter	WgEventFilter::AnimationUpdate( WgGizmoAnimation * pGizmo )
+WgEventFilter	WgEventFilter::AnimationUpdate( WgAnimPlayer * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_ANIMATION_UPDATE, pGizmo, _filterTypeGizmo );
 }
@@ -483,12 +483,12 @@ WgEventFilter	WgEventFilter::TabSelect()
 	return WgEventFilter( WG_EVENT_TAB_SELECT, 0, _filterTabSelect );
 }
 
-WgEventFilter	WgEventFilter::TabSelect( WgGizmoTablist * pGizmo )
+WgEventFilter	WgEventFilter::TabSelect( WgTablist * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_TAB_SELECT, pGizmo, _filterTabSelect );
 }
 
-WgEventFilter	WgEventFilter::TabSelect( WgGizmoTablist * pGizmo, int id )
+WgEventFilter	WgEventFilter::TabSelect( WgTablist * pGizmo, int id )
 {
 	return WgEventFilter( WG_EVENT_TAB_SELECT, pGizmo, _filterTabSelect, id );
 }
@@ -505,17 +505,17 @@ WgEventFilter	WgEventFilter::TabPress( int button )
 	return WgEventFilter( WG_EVENT_TAB_PRESS, 0, _filterTabPress, button );
 }
 
-WgEventFilter	WgEventFilter::TabPress( WgGizmoTablist * pGizmo )
+WgEventFilter	WgEventFilter::TabPress( WgTablist * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_TAB_PRESS, pGizmo, _filterTabPress );
 }
 
-WgEventFilter	WgEventFilter::TabPress( WgGizmoTablist * pGizmo, int button )
+WgEventFilter	WgEventFilter::TabPress( WgTablist * pGizmo, int button )
 {
 	return WgEventFilter( WG_EVENT_TAB_PRESS, pGizmo, _filterTabPress, button );
 }
 
-WgEventFilter	WgEventFilter::TabPress( WgGizmoTablist * pGizmo, int button, int id )
+WgEventFilter	WgEventFilter::TabPress( WgTablist * pGizmo, int button, int id )
 {
 	return WgEventFilter( WG_EVENT_TAB_PRESS, pGizmo, _filterTabPress, button, id );
 }
@@ -527,7 +527,7 @@ WgEventFilter	WgEventFilter::EditvalueModify()
 	return WgEventFilter( WG_EVENT_EDITVALUE_MODIFY, 0, _filterTypeGizmo );
 }
 
-WgEventFilter	WgEventFilter::EditvalueModify( WgGizmoEditvalue * pGizmo )
+WgEventFilter	WgEventFilter::EditvalueModify( WgValueEditor * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_EDITVALUE_MODIFY, pGizmo, _filterTypeGizmo );
 }
@@ -539,7 +539,7 @@ WgEventFilter	WgEventFilter::EditvalueSet()
 	return WgEventFilter( WG_EVENT_EDITVALUE_SET, 0, _filterTypeGizmo );
 }
 
-WgEventFilter	WgEventFilter::EditvalueSet( WgGizmoEditvalue * pGizmo )
+WgEventFilter	WgEventFilter::EditvalueSet( WgValueEditor * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_EDITVALUE_SET, pGizmo, _filterTypeGizmo );
 }
@@ -665,12 +665,12 @@ WgEventFilter	WgEventFilter::MenuitemSelect( int itemId )
 	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, 0, _filterMenuitemEvent, itemId );
 }
 
-WgEventFilter	WgEventFilter::MenuitemSelect( WgGizmoMenu * pGizmo )
+WgEventFilter	WgEventFilter::MenuitemSelect( WgMenu * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pGizmo, _filterMenuitemEvent );
 }
 
-WgEventFilter	WgEventFilter::MenuitemSelect( WgGizmoMenu * pGizmo, int itemId )
+WgEventFilter	WgEventFilter::MenuitemSelect( WgMenu * pGizmo, int itemId )
 {
 	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pGizmo, _filterMenuitemEvent, itemId );
 }
@@ -687,12 +687,12 @@ WgEventFilter	WgEventFilter::MenuitemCheck( int itemId )
 	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, 0, _filterMenuitemEvent, itemId );
 }
 
-WgEventFilter	WgEventFilter::MenuitemCheck( WgGizmoMenu * pGizmo )
+WgEventFilter	WgEventFilter::MenuitemCheck( WgMenu * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, pGizmo, _filterMenuitemEvent );
 }
 
-WgEventFilter	WgEventFilter::MenuitemCheck( WgGizmoMenu * pGizmo, int itemId )
+WgEventFilter	WgEventFilter::MenuitemCheck( WgMenu * pGizmo, int itemId )
 {
 	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, pGizmo, _filterMenuitemEvent, itemId );
 }
@@ -709,12 +709,12 @@ WgEventFilter	WgEventFilter::MenuitemUncheck( int itemId )
 	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, 0, _filterMenuitemEvent, itemId );
 }
 
-WgEventFilter	WgEventFilter::MenuitemUncheck( WgGizmoMenu * pGizmo )
+WgEventFilter	WgEventFilter::MenuitemUncheck( WgMenu * pGizmo )
 {
 	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, pGizmo, _filterMenuitemEvent );
 }
 
-WgEventFilter	WgEventFilter::MenuitemUncheck( WgGizmoMenu * pGizmo, int itemId )
+WgEventFilter	WgEventFilter::MenuitemUncheck( WgMenu * pGizmo, int itemId )
 {
 	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, pGizmo, _filterMenuitemEvent, itemId );
 }

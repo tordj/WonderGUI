@@ -37,7 +37,7 @@ public:
 	virtual void Visit(class WgGlyphSetRes*) {}
 	virtual void Visit(class WgFontRes*) {}
 	virtual void Visit(class WgAnimRes*) {}
-	virtual void Visit(class WgBlockSetRes*) {}
+	virtual void Visit(class WgBlocksetRes*) {}
 	virtual void Visit(class WgAltRes*) {}
 	virtual void Visit(class WgWidgetRes*) {}
 	virtual void Visit(class WgItemRes*) {}

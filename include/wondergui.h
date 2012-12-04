@@ -103,8 +103,8 @@
 #	include <wg_refcounted.h>
 #endif
 
-#ifndef WG_ROOT_DOT_H
-#	include <wg_root.h>
+#ifndef WG_ROOTPANEL_DOT_H
+#	include <wg_rootpanel.h>
 #endif
 
 #ifndef WG_SKINMANAGER_DOT_H
@@ -167,117 +167,121 @@
 #	include <wg_gizmo_collection.h>
 #endif
 
-#ifndef WG_GIZMO_CONTAINER_DOT_H
-#	include <wg_gizmo_container.h>
+#ifndef WG_PANEL_DOT_H
+#	include <wg_panel.h>
 #endif
 
 #ifndef WG_HOOK_DOT_H
 #	include <wg_hook.h>
 #endif
 
-#ifndef WG_GIZMO_PARENT_DOT_H
-#	include <wg_gizmo_parent.h>
+#ifndef WG_GIZMOCONTAINER_DOT_H
+#	include <wg_gizmocontainer.h>
 #endif
 
 
-#ifndef WG_GIZMO_ANIMATION_DOT_H
-#	include <wg_gizmo_animation.h>
+#ifndef WG_ANIMPLAYER_DOT_H
+#	include <wg_animplayer.h>
 #endif
 
-#ifndef WG_GIZMO_BUTTON_DOT_H
-#	include <wg_gizmo_button.h>
+#ifndef WG_BUTTON_DOT_H
+#	include <wg_button.h>
 #endif
 
-#ifndef WG_GIZMO_CHECKBOX_DOT_H
-#	include <wg_gizmo_checkbox.h>
+#ifndef WG_CHECKBOX_DOT_H
+#	include <wg_checkbox.h>
 #endif
 
-#ifndef WG_GIZMO_DUMMY_DOT_H
-#	include <wg_gizmo_dummy.h>
+#ifndef WG_COMBOBOX_DOT_H
+#	include <wg_combobox.h>
 #endif
 
-#ifndef WG_GIZMO_EDITLINE_DOT_H
-#	include <wg_gizmo_editline.h>
+#ifndef WG_LINEEDITOR_DOT_H
+#	include <wg_lineeditor.h>
 #endif
 
-#ifndef WG_GIZMO_EDITVALUE_DOT_H
-#	include <wg_gizmo_editvalue.h>
+#ifndef WG_VALUEEDITOR_DOT_H
+#	include <wg_valueeditor.h>
 #endif
 
-#ifndef WG_GIZMO_FILL_DOT_H
-#	include <wg_gizmo_fill.h>
+#ifndef WG_FILL_DOT_H
+#	include <wg_filler.h>
 #endif
 
-#ifndef WG_GIZMO_FLEXGEO_DOT_H
-#	include <wg_gizmo_flexgeo.h>
+#ifndef WG_FLEXPANEL_DOT_H
+#	include <wg_flexpanel.h>
 #endif
 
-#ifndef WG_GIZMO_FPS_DOT_H
-#	include <wg_gizmo_fps.h>
+#ifndef WG_FPSDISPLAY_DOT_H
+#	include <wg_fpsdisplay.h>
 #endif
 
-#ifndef WG_GIZMO_MENU_DOT_H
-#	include <wg_gizmo_menu.h>
+#ifndef WG_MENU_DOT_H
+#	include <wg_menu.h>
 #endif
 
-#ifndef WG_GIZMO_MENULAYER_DOT_H
-#	include <wg_gizmo_menulayer.h>
+#ifndef WG_MENUBAR_DOT_H
+#	include <wg_menubar.h>
 #endif
 
-#ifndef WG_GIZMO_MODALLAYER_DOT_H
-#	include <wg_gizmo_modallayer.h>
+#ifndef WG_MENUPANEL_DOT_H
+#	include <wg_menupanel.h>
 #endif
 
-#ifndef WG_GIZMO_PIXMAP_DOT_H
-#	include <wg_gizmo_pixmap.h>
+#ifndef WG_MODAL_LAYER_DOT_H
+#	include <wg_modalpanel.h>
 #endif
 
-#ifndef WG_GIZMO_RADIOBUTTON_DOT_H
-#	include <wg_gizmo_radiobutton.h>
+#ifndef WG_IMAGE_DOT_H
+#	include <wg_image.h>
 #endif
 
-#ifndef WG_GIZMO_REFRESHBUTTON_DOT_H
-#	include <wg_gizmo_refreshbutton.h>
+#ifndef WG_RADIOBUTTON_DOT_H
+#	include <wg_radiobutton.h>
 #endif
 
-#ifndef WG_GIZMO_SHADER_DOT_H
-#	include <wg_gizmo_shader.h>
+#ifndef WG_REFRESHBUTTON_DOT_H
+#	include <wg_refreshbutton.h>
+#endif
+
+#ifndef WG_SHADERPANEL_DOT_H
+#	include <wg_shaderpanel.h>
 #endif
 
 #ifndef WG_GIZMO_SLIDER_DOT_H
-#	include <wg_gizmo_slider.h>
+#	include <wg_slider.h>
 #endif
 
-#ifndef WG_GIZMO_STACK_DOT_H
-#	include <wg_gizmo_stack.h>
+#ifndef WG_STACKPANEL_DOT_H
+#	include <wg_stackpanel.h>
 #endif
 
-#ifndef WG_GIZMO_TABLE_DOT_H
-#	include <wg_gizmo_table.h>
+#ifndef WG_TABLEPANEL_DOT_H
+#	include <wg_tablepanel.h>
 #endif
 
-#ifndef WG_GIZMO_TABLIST_DOT_H
-#	include <wg_gizmo_tablist.h>
+#ifndef WG_TABLIST_DOT_H
+#	include <wg_tablist.h>
 #endif
 
-#ifndef WG_GIZMO_TABORDER_DOT_H
-#	include <wg_gizmo_taborder.h>
+#ifndef WG_TABORDERPANEL_DOT_H
+#	include <wg_taborderpanel.h>
 #endif
 
-#ifndef WG_GIZMO_TEXT_DOT_H
-#	include <wg_gizmo_text.h>
+#ifndef WG_TEXTDISPLAY_DOT_H
+#	include <wg_textdisplay.h>
 #endif
 
-#ifndef WG_GIZMO_VALUE_DOT_H
-#	include <wg_gizmo_value.h>
+#ifndef WG_VALUEDISPLAY_DOT_H
+#	include <wg_valuedisplay.h>
 #endif
 
-#ifndef WG_GIZMO_VIEW_DOT_H
-#	include <wg_gizmo_view.h>
+#ifndef WG_SCROLLPANEL_DOT_H
+#	include <wg_scrollpanel.h>
 #endif
 
-#ifndef WG_GIZMO_VBOX_DOT_H
-#	include <wg_gizmo_vbox.h>
+#ifndef WG_VPANEL_DOT_H
+#	include <wg_vpanel.h>
 #endif
 
 #endif //WONDERGUI_DOT_H

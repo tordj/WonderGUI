@@ -118,7 +118,7 @@ Uint32 WgSurfaceSoft::GetPixel( WgCoord coord ) const
     {
 		Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
 
-		Uint32 k = pPixel[0] + ((Uint32)pPixel[1]) << 8 + ((Uint32)pPixel[2]) << 8;
+		Uint32 k = pPixel[0] + (((Uint32)pPixel[1]) << 8) + (((Uint32)pPixel[2]) << 8);
 		return k;
     }
 

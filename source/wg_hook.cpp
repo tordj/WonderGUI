@@ -21,9 +21,9 @@
 =========================================================================*/
 
 #include <wg_hook.h>
-#include <wg_gizmo_container.h>
+#include <wg_panel.h>
 #include <wg_gizmo.h>
-#include <wg_root.h>
+#include <wg_rootpanel.h>
 #include <assert.h>
 
 
@@ -90,9 +90,9 @@ bool WgHook::_releaseFocus()
 
 //____ Root() _________________________________________________________________
 
-WgRoot * WgHook::Root() const
+WgRootPanel * WgHook::Root() const
 {
-	WgGizmoParent * pParent = _parent();
+	WgGizmoContainer * pParent = _parent();
 
 	if( pParent->IsGizmo() )
 	{
@@ -110,7 +110,7 @@ WgRoot * WgHook::Root() const
 
 WgEventHandler * WgHook::EventHandler() const
 {
-	WgRoot * pRoot = Root();
+	WgRootPanel * pRoot = Root();
 	if( pRoot )
 		return pRoot->EventHandler();
 
@@ -118,21 +118,21 @@ WgEventHandler * WgHook::EventHandler() const
 }
 
 
-//____ SetHidden() _____________________________________________________________
+//____ SetVisible() _____________________________________________________________
 
-bool WgHook::SetHidden( bool bHide )
+bool WgHook::SetVisible( bool bVisible )
 {
-	if( bHide != m_bHidden )
+	if( bVisible != m_bVisible )
 	{
-		if( bHide )
+		if( bVisible )
 		{
+			m_bVisible = true;
 			_requestRender();
-			m_bHidden = true;
 		}
 		else
 		{
-			m_bHidden = false;
 			_requestRender();
+			m_bVisible = false;
 		}		
 	}
 	return true;

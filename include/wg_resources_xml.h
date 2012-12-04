@@ -304,7 +304,7 @@ private:
 class WgTextPropRes : public WgResourceXML
 {
 public:
-	WgTextPropRes(WgResourceXML* parent, WgTextPropPtr pProp = WgTextPropPtr() ) :
+	WgTextPropRes(WgResourceXML* parent, WgTextpropPtr pProp = WgTextpropPtr() ) :
 		WgResourceXML(parent),
 		m_pProp(pProp),
 		m_bgColor(0),
@@ -334,7 +334,7 @@ public:
 
 private:
 	WgTextProp		m_prop;
-	WgTextPropPtr	m_pProp;
+	WgTextpropPtr	m_pProp;
 	WgColor			m_bgColor;
 //	std::string		m_bgColorName;
 	bool			m_bBgColor;
@@ -777,27 +777,27 @@ private:
 
 
 //////////////////////////////////////////////////////////////////////////
-/// WgBlockSetRes ////////////////////////////////////////////////////////
+/// WgBlocksetRes ////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-typedef	WgSmartPtrPooled<class WgBlockSet> WgBlockSetPtr;
-class WgBlockSetRes : public WgResourceXML
+typedef	WgSmartPtrPooled<class WgBlockset> WgBlocksetPtr;
+class WgBlocksetRes : public WgResourceXML
 {
 public:
-	WgBlockSetRes(WgResourceXML* parent, WgBlockSetPtr block = 0) : WgResourceXML(parent), m_pBlockSet(block) { }
+	WgBlocksetRes(WgResourceXML* parent, WgBlocksetPtr block = 0) : WgResourceXML(parent), m_pBlockSet(block) { }
 
 	virtual void Serialize(WgResourceSerializerXML& s);
 	virtual void Deserialize(const WgXmlNode& xmlNode, WgResourceSerializerXML& s);
 
 	virtual void Accept(WgResourceVisitor* visitor)	{ visitor->Visit(this); }
 
-	WgBlockSetPtr	GetBlockSet() { return m_pBlockSet; }
+	WgBlocksetPtr	GetBlockSet() { return m_pBlockSet; }
 
 	static const char* TagName() { return "blockset"; }
 private:
 	WgRect	StateRect(const WgRect& src, int iState);
 	int		StateFromRect(const WgRect& src, const WgRect& stateRect);
 
-	WgBlockSetPtr	m_pBlockSet;
+	WgBlocksetPtr	m_pBlockSet;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -896,7 +896,7 @@ public:
 class WgPropRes : public WgResourceXML, public WgTextHolderRes
 {
 public:
-	WgPropRes(WgResourceXML* parent, WgTextPropPtr pDefaultProp = 0, WgTextPropPtr pProp = 0, const Uint16* text = 0) :
+	WgPropRes(WgResourceXML* parent, WgTextpropPtr pDefaultProp = 0, WgTextpropPtr pProp = 0, const Uint16* text = 0) :
 		WgResourceXML(parent),
 		m_pDefaultProp(pDefaultProp),
 		m_pProp(pProp),
@@ -914,8 +914,8 @@ public:
 	static const char* TagName() { return "prop"; }
 
 private:
-	WgTextPropPtr	m_pDefaultProp;
-	WgTextPropPtr	m_pProp;
+	WgTextpropPtr	m_pDefaultProp;
+	WgTextpropPtr	m_pProp;
 	WgTextProp		m_prop;
 	const Uint16*	m_textOut;
 	std::string		m_textIn;

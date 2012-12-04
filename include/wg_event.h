@@ -45,17 +45,17 @@
 
 class WgEventHandler;
 class WgGizmo;
-class WgGizmoButton;
-class WgGizmoCheckbox;
-class WgGizmoRadiobutton;
-class WgGizmoAnimation;
-class WgGizmoTablist;
-class WgGizmoValue;
-class WgGizmoEditvalue;
+class WgButton;
+class WgCheckBox;
+class WgRadioButton;
+class WgAnimPlayer;
+class WgTablist;
+class WgValueDisplay;
+class WgValueEditor;
 class WgGizmoSlider;
-class WgGizmoMenu;
-class WgGizmoModallayer;
-class WgGizmoTable;
+class WgMenu;
+class WgModalPanel;
+class WgTablePanel;
 class WgInterfaceEditText;
 class WgText;
 
@@ -271,81 +271,81 @@ namespace WgEvent
 	};
 
 
-	//____ WgGizmoButton events _______________________________________________
+	//____ WgButton events _______________________________________________
 
 	class ButtonPress : public Event
 	{
 	public:
-		ButtonPress( WgGizmoButton * pGizmo );
-		WgGizmoButton *	Button() const;
+		ButtonPress( WgButton * pGizmo );
+		WgButton *	Button() const;
 	};
 
-	//____ WgGizmoCheckbox events ______________________________________________
+	//____ WgCheckBox events ______________________________________________
 
 	class CheckboxEvent : public Event
 	{
 	public:
-		WgGizmoCheckbox * Checkbox() const;
+		WgCheckBox * Checkbox() const;
 	};
 
 	class CheckboxCheck : public CheckboxEvent
 	{
 	public:
-		CheckboxCheck( WgGizmoCheckbox * pGizmo );
+		CheckboxCheck( WgCheckBox * pGizmo );
 	};
 
 	class CheckboxUncheck : public CheckboxEvent
 	{
 	public:
-		CheckboxUncheck( WgGizmoCheckbox * pGizmo );
+		CheckboxUncheck( WgCheckBox * pGizmo );
 	};
 
 	class CheckboxToggle : public CheckboxEvent
 	{
 	public:
-		CheckboxToggle( WgGizmoCheckbox * pGizmo, bool bChecked );
+		CheckboxToggle( WgCheckBox * pGizmo, bool bChecked );
 		bool		IsChecked() const;
 
 	private:
 		bool	m_bChecked;
 	};
 
-	//____ WgGizmoRadiobutton events ___________________________________________
+	//____ WgRadioButton events ___________________________________________
 
 	class RadiobuttonEvent : public Event
 	{
 	public:
-		WgGizmoRadiobutton * Radiobutton() const;
+		WgRadioButton * Radiobutton() const;
 	};
 
 	class RadiobuttonSelect : public RadiobuttonEvent
 	{
 	public:
-		RadiobuttonSelect( WgGizmoRadiobutton * pGizmo );
+		RadiobuttonSelect( WgRadioButton * pGizmo );
 	};
 
 	class RadiobuttonUnselect : public RadiobuttonEvent
 	{
 	public:
-		RadiobuttonUnselect( WgGizmoRadiobutton * pGizmo );
+		RadiobuttonUnselect( WgRadioButton * pGizmo );
 	};
 
 	class RadiobuttonToggle : public RadiobuttonEvent
 	{
 	public:
-		RadiobuttonToggle( WgGizmoRadiobutton * pGizmo, bool bSelected );
+		RadiobuttonToggle( WgRadioButton * pGizmo, bool bSelected );
 		bool	IsSelected() const;
 	private:
 		bool	m_bSelected;
 	};
 
-	//____ WgGizmoAnimation events _____________________________________________
+	//____ WgAnimPlayer events _____________________________________________
 
 	class AnimationUpdate : public Event
 	{
 	public:
-		AnimationUpdate( WgGizmoAnimation * pGizmo, int frame, float fraction );
-		WgGizmoAnimation * Animation() const;
+		AnimationUpdate( WgAnimPlayer * pGizmo, int frame, float fraction );
+		WgAnimPlayer * Animation() const;
 		int		Frame() const;
 		float	Fraction() const;
 	private:
@@ -353,18 +353,18 @@ namespace WgEvent
 		float	m_fraction;
 	};
 
-	//____ WgGizmoTablist events _______________________________________________
+	//____ WgTablist events _______________________________________________
 
 	class TablistEvent : public Event
 	{
 	public:
-		WgGizmoTablist *	Tablist() const;
+		WgTablist *	Tablist() const;
 	};
 
 	class TabSelect : public TablistEvent
 	{
 	public:
-		TabSelect( WgGizmoTablist * pGizmo, int tabId );
+		TabSelect( WgTablist * pGizmo, int tabId );
 		int		TabId() const;
 	private:
 		int		m_tabId;
@@ -373,7 +373,7 @@ namespace WgEvent
 	class TabPress : public TablistEvent
 	{
 	public:
-		TabPress( WgGizmoTablist * pGizmo, int tabId, int mouseButton );
+		TabPress( WgTablist * pGizmo, int tabId, int mouseButton );
 		int		TabId() const;
 		int		MouseButton() const;
 	private:
@@ -381,14 +381,14 @@ namespace WgEvent
 		int		m_button;
 	};
 
-	//____ WgGizmoEditvalue events _____________________________________
+	//____ WgValueEditor events _____________________________________
 
 	class EditvalueEvent : public Event
 	{
 		friend class EditvalueModify;
 		friend class EditvalueSet;
 	public:
-		WgGizmoEditvalue * Editvalue() const;
+		WgValueEditor * Editvalue() const;
 		int64_t		Value() const;
 		double		Fraction() const;
 	protected:
@@ -399,13 +399,13 @@ namespace WgEvent
 	class EditvalueModify : public EditvalueEvent
 	{
 	public:
-		EditvalueModify( WgGizmoEditvalue * pGizmo, int64_t value, double fraction );
+		EditvalueModify( WgValueEditor * pGizmo, int64_t value, double fraction );
 	};
 
 	class EditvalueSet : public EditvalueEvent
 	{
 	public:
-		EditvalueSet( WgGizmoEditvalue * pGizmo, int64_t value, double fraction );
+		EditvalueSet( WgValueEditor * pGizmo, int64_t value, double fraction );
 	};
 
 	//____ WgGizmoSlider events ________________________________________________
@@ -500,12 +500,12 @@ namespace WgEvent
 		TextSet( WgGizmo * pGizmo, WgText * pText );
 	};
 
-	//____ WgGizmoMenu events __________________________________________________
+	//____ WgMenu events __________________________________________________
 
 	class MenuitemEvent : public Event
 	{
 	public:
-		WgGizmoMenu *	Menu() const;
+		WgMenu *	Menu() const;
 		int				ItemId() const;
 
 	protected:
@@ -515,50 +515,50 @@ namespace WgEvent
 	class MenuitemSelect : public MenuitemEvent
 	{
 	public:
-		MenuitemSelect( WgGizmoMenu * pMenu, int menuItemId );
+		MenuitemSelect( WgMenu * pMenu, int menuItemId );
 	};
 
 	class MenuitemCheck : public MenuitemEvent
 	{
 	public:
-		MenuitemCheck( WgGizmoMenu * pMenu, int menuItemId );
+		MenuitemCheck( WgMenu * pMenu, int menuItemId );
 	};
 
 	class MenuitemUncheck : public MenuitemEvent
 	{
 	public:
-		MenuitemUncheck( WgGizmoMenu * pMenu, int menuItemId );
+		MenuitemUncheck( WgMenu * pMenu, int menuItemId );
 	};
 
 	//____ WgGizmoModalLayer events _________________________________________________
 
 	class ModalMoveOutside : public Event
 	{
-		friend class ::WgGizmoModallayer;
+		friend class ::WgModalPanel;
 	protected:
 		ModalMoveOutside( WgGizmo * pGizmo );
 	};
 
 	class ModalBlockedPress : public MouseButtonEvent
 	{
-		friend class ::WgGizmoModallayer;
+		friend class ::WgModalPanel;
 	protected:
 		ModalBlockedPress( int button, WgGizmo * pModalGizmo );
 	};
 
 	class ModalBlockedRelease : public MouseButtonEvent
 	{
-		friend class ::WgGizmoModallayer;
+		friend class ::WgModalPanel;
 	protected:
 		ModalBlockedRelease( int button, WgGizmo * pModalGizmo );
 	};
 
-	//____ WgGizmoTable events _________________________________________________
+	//____ WgTablePanel events _________________________________________________
 
 	class TableCellEvent : public Event
 	{
 	public:
-		WgGizmoTable * 	Table() const;
+		WgTablePanel * 	Table() const;
 		int				Row() const;
 		int				Column() const;
 		WgGizmo *		CellContent() const;
@@ -571,16 +571,16 @@ namespace WgEvent
 
 	class TableCellMarked : public TableCellEvent
 	{
-		friend class ::WgGizmoTable;
+		friend class ::WgTablePanel;
 	protected:
-		TableCellMarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent );
+		TableCellMarked( WgTablePanel * pTable, int row, int column, WgGizmo * pCellContent );
 	};
 
 	class TableCellUnmarked : public TableCellEvent
 	{
-		friend class ::WgGizmoTable;
+		friend class ::WgTablePanel;
 	protected:
-		TableCellUnmarked( WgGizmoTable * pTable, int row, int column, WgGizmo * pCellContent );
+		TableCellUnmarked( WgTablePanel * pTable, int row, int column, WgGizmo * pCellContent );
 	};
 
 	//____ Link events _________________________________________________________
