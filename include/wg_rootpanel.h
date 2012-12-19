@@ -37,7 +37,7 @@
 class WgGfxDevice;
 class WgWidget;
 
-class WgRootPanel : public WgWidgetContainer
+class WgRootPanel : public WgWidgetHolder
 {
 public:
 	WgRootPanel();
@@ -57,7 +57,7 @@ public:
 	inline void				DeleteChild() { SetChild(0); }
 	WgWidget * 				ReleaseChild();
 
-	// Inherited from WgWidgetContainer
+	// Inherited from WgWidgetHolder
 
 	bool					DeleteChild( WgWidget * pWidget );
 	WgWidget *				ReleaseChild( WgWidget * pWidget );
@@ -123,7 +123,7 @@ protected:
 
 		WgHook *		_prevHook() const;
 		WgHook *		_nextHook() const;
-		WgWidgetContainer * _parent() const;
+		WgWidgetHolder * _parent() const;
 
 		WgRootPanel *		m_pRoot;
 	};

@@ -184,7 +184,7 @@ private:
 
 		WgHook *	_prevHook() const { return 0; }
 		WgHook *	_nextHook() const { return 0; }
-		WgWidgetContainer * _parent() const { return m_pParent; }
+		WgWidgetHolder * _parent() const { return m_pParent; }
 
 		WgMenu * 	m_pParent;
 		WgSize			m_size;

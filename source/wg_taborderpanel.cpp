@@ -160,7 +160,7 @@ bool WgTaborderPanel::_isValidForTaborderInsertion( WgWidget * pWidget ) const
 {
 	// Check so it's an ancestor to us.
 
-	WgWidgetContainer * p = pWidget->Parent();
+	WgWidgetHolder * p = pWidget->Parent();
 
 	while( p && p->IsWidget() && p != this )
 	{

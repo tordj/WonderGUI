@@ -517,7 +517,7 @@ WgHook * WgFlexHook::_nextHook() const
 
 //____ WgFlexHook::_parent() __________________________________________________
 
-WgWidgetContainer * WgFlexHook::_parent() const
+WgWidgetHolder * WgFlexHook::_parent() const
 {
 	return m_pParent;
 }

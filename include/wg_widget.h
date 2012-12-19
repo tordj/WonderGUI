@@ -121,7 +121,7 @@ public:
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
 	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_bFocused; }
-	WgWidgetContainer * Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
+	WgWidgetHolder * Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 
 	WgWidget *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Widget(); } return 0; }
 	WgWidget *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Widget(); } return 0; }

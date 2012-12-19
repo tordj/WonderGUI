@@ -92,7 +92,7 @@ bool WgHook::_releaseFocus()
 
 WgRootPanel * WgHook::Root() const
 {
-	WgWidgetContainer * pParent = _parent();
+	WgWidgetHolder * pParent = _parent();
 
 	if( pParent->IsWidget() )
 	{

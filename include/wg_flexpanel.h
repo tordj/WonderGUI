@@ -136,7 +136,7 @@ protected:
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
-	WgWidgetContainer * _parent() const;
+	WgWidgetHolder * _parent() const;
 
 	WgFlexPanel* m_pParent;
 

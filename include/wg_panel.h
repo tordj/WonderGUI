@@ -27,13 +27,13 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_WIDGETCONTAINER_DOT_H
-#	include <wg_widgetcontainer.h>
+#ifndef WG_WIDGETHOLDER_DOT_H
+#	include <wg_widgetholder.h>
 #endif
 
 class WgPatches;
 
-class WgPanel : public WgWidgetContainer, public WgWidget
+class WgPanel : public WgWidgetHolder, public WgWidget
 {
 	friend class WgEventHandler;
 

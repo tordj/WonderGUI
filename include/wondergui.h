@@ -175,8 +175,8 @@
 #	include <wg_hook.h>
 #endif
 
-#ifndef WG_WIDGETCONTAINER_DOT_H
-#	include <wg_widgetcontainer.h>
+#ifndef WG_WIDGETHOLDER_DOT_H
+#	include <wg_widgetholder.h>
 #endif
 
 

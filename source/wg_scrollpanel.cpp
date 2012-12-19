@@ -1476,7 +1476,7 @@ WgHook * WgScrollHook::_nextHook() const
 
 //____ WgScrollHook::_parent() ___________________________________________________
 
-WgWidgetContainer * WgScrollHook::_parent() const
+WgWidgetHolder * WgScrollHook::_parent() const
 {
 	return m_pView;
 }

@@ -176,7 +176,7 @@ bool WgPanel::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing )
 
 WgModalPanel *  WgPanel::_getModalPanel() const
 {
-	const WgWidgetContainer * p = Parent();
+	const WgWidgetHolder * p = Parent();
 
 	if( p )
 		return p->_getModalPanel();
@@ -186,7 +186,7 @@ WgModalPanel *  WgPanel::_getModalPanel() const
 
 WgMenuPanel * WgPanel::_getMenuPanel() const
 {
-	const WgWidgetContainer * p = Parent();
+	const WgWidgetHolder * p = Parent();
 
 	if( p )
 		return p->_getMenuPanel();

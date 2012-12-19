@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_WIDGETCONTAINER_DOT_H
-#define	WG_WIDGETCONTAINER_DOT_H
+#ifndef	WG_WIDGETHOLDER_DOT_H
+#define	WG_WIDGETHOLDER_DOT_H
 
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -38,7 +38,7 @@ class WgPanel;
 class WgModalPanel;
 class WgMenuPanel;
 
-class WgWidgetContainer : public WgWidgetCollection
+class WgWidgetHolder : public WgWidgetCollection
 {
 	friend class WgPanel;
 	friend class WgMenu;
@@ -78,4 +78,4 @@ class WgWidgetContainer : public WgWidgetCollection
 };
 
 
-#endif //WG_WIDGETCONTAINER_DOT_H
+#endif //WG_WIDGETHOLDER_DOT_H

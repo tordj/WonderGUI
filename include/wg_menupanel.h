@@ -160,7 +160,7 @@ private:
 
 		WgHook *	_prevHook() const { return 0; }
 		WgHook *	_nextHook() const { return m_pParent->FirstMenu(); }
-		WgWidgetContainer * _parent() const { return m_pParent; }
+		WgWidgetHolder * _parent() const { return m_pParent; }
 
 		WgMenuPanel * 	m_pParent;
 	};

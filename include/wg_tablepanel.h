@@ -97,7 +97,7 @@ protected:
 
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
-	WgWidgetContainer * _parent() const;
+	WgWidgetHolder * _parent() const;
 
 	int				m_height;		// Minimum height needed for this Widget.
 	WgTableRow *	m_pRow;			//
@@ -324,7 +324,7 @@ public:
 	int				NbRows() const { return m_nRows; }
 	int				CompareRows(WgTableRow* p1, WgTableRow* p2) const;
 
-	// Overloaded from WgWidgetContainer
+	// Overloaded from WgWidgetHolder
 
 	bool			DeleteChild( WgWidget * pWidget );
 	WgWidget *		ReleaseChild( WgWidget * pWidget );

@@ -71,7 +71,7 @@ protected:
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
-	WgWidgetContainer *	_parent() const;
+	WgWidgetHolder *	_parent() const;
 
 	WgScrollPanel *	m_pView;
 	WgRect			m_windowGeo;		// Geometry of Widgets window inside parent.

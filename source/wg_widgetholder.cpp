@@ -20,14 +20,14 @@
 
 =========================================================================*/
 
-#include <wg_widgetcontainer.h>
+#include <wg_widgetholder.h>
 #include <wg_widget.h>
 
-bool WgWidgetContainer::IsAncestorTo( const WgWidget * pWidget ) const
+bool WgWidgetHolder::IsAncestorTo( const WgWidget * pWidget ) const
 {
 	while( pWidget )
 	{
-		WgWidgetContainer * pParent = pWidget->Parent();
+		WgWidgetHolder * pParent = pWidget->Parent();
 		if( !pParent )
 			return false;
 

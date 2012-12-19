@@ -626,7 +626,7 @@ void WgModalPanel::_updateKeyboardFocus()
 		{
 			if( p->IsVisible() )
 			{
-				WgWidgetContainer * pParent = p->Parent();
+				WgWidgetHolder * pParent = p->Parent();
 				if( pParent && pParent->IsWidget() )
 					p = pParent->CastToWidget()->Hook();
 				else

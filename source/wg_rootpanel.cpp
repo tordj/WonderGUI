@@ -368,7 +368,7 @@ WgHook * WgRootPanel::Hook::_nextHook() const
 	return 0;
 }
 
-WgWidgetContainer * WgRootPanel::Hook::_parent() const
+WgWidgetHolder * WgRootPanel::Hook::_parent() const
 {
 	return m_pRoot;
 }

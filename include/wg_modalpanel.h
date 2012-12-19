@@ -180,7 +180,7 @@ private:
 
 		WgHook *	_prevHook() const { return 0; }
 		WgHook *	_nextHook() const { return m_pParent->FirstModal(); }
-		WgWidgetContainer * _parent() const { return m_pParent; }
+		WgWidgetHolder * _parent() const { return m_pParent; }
 
 		WgModalPanel * 	m_pParent;
 		WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any modal was shown.

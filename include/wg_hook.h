@@ -29,7 +29,7 @@
 
 
 
-class WgWidgetContainer;
+class WgWidgetHolder;
 class WgGfxDevice;
 class WgWidget;
 class WgRootPanel;
@@ -56,7 +56,7 @@ public:
 	bool			IsVisible() { return m_bVisible; }
 
 	WgWidget *			Widget() const { return m_pWidget; }
-	WgWidgetContainer * 	Parent() const { return _parent(); }
+	WgWidgetHolder * 	Parent() const { return _parent(); }
 	virtual WgRootPanel *	Root() const;
 	WgEventHandler *	EventHandler() const;
 
@@ -84,7 +84,7 @@ protected:
 
 	virtual WgHook *	_prevHook() const = 0;
 	virtual WgHook *	_nextHook() const = 0;
-	virtual WgWidgetContainer * _parent() const = 0;
+	virtual WgWidgetHolder * _parent() const = 0;
 
 
 	WgWidget *		m_pWidget;
