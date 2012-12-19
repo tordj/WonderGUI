@@ -23,7 +23,7 @@
 #include <wg_taborderpanel.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"Taborder"};
+static const char	c_widgetType[] = {"Taborder"};
 
 //____ Constructor ____________________________________________________________
 
@@ -48,32 +48,32 @@ const char * WgTaborderPanel::Type( void ) const
 
 const char * WgTaborderPanel::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ AddToTaborder() ________________________________________________________
 
-bool WgTaborderPanel::AddToTaborder( WgGizmo * pGizmo )
+bool WgTaborderPanel::AddToTaborder( WgWidget * pWidget )
 {
-	if( !_isValidForTaborderInsertion(pGizmo) )
+	if( !_isValidForTaborderInsertion(pWidget) )
 		return false;
 
-	m_tabOrder.PushBack( new TaborderEntry(pGizmo) );
+	m_tabOrder.PushBack( new TaborderEntry(pWidget) );
 	return true;
 }
 
 //____ InsertInTaborder() _____________________________________________________
 
-bool WgTaborderPanel::InsertInTaborder( WgGizmo * pGizmo, WgGizmo * _pBefore )
+bool WgTaborderPanel::InsertInTaborder( WgWidget * pWidget, WgWidget * _pBefore )
 {
-	if( !_pBefore || !_isValidForTaborderInsertion(pGizmo) )
+	if( !_pBefore || !_isValidForTaborderInsertion(pWidget) )
 		return false;
 
 	TaborderEntry * pBefore = _findInTaborder(_pBefore);
 	if( !pBefore )
 		return false;
 
-	TaborderEntry * pEntry = new TaborderEntry(pGizmo);
+	TaborderEntry * pEntry = new TaborderEntry(pWidget);
 
 	pEntry->MoveBefore(pBefore);
 	return true;
@@ -81,9 +81,9 @@ bool WgTaborderPanel::InsertInTaborder( WgGizmo * pGizmo, WgGizmo * _pBefore )
 
 //____ RemoveFromTaborder() ___________________________________________________
 
-bool WgTaborderPanel::RemoveFromTaborder( WgGizmo * pGizmo )
+bool WgTaborderPanel::RemoveFromTaborder( WgWidget * pWidget )
 {
-	TaborderEntry * pEntry = _findInTaborder(pGizmo);
+	TaborderEntry * pEntry = _findInTaborder(pWidget);
 	if( !pEntry )
 		return false;
 
@@ -100,79 +100,79 @@ void WgTaborderPanel::ClearTaborder()
 
 //____ FirstInTaborder() ______________________________________________________
 
-WgGizmo * WgTaborderPanel::FirstInTaborder() const
+WgWidget * WgTaborderPanel::FirstInTaborder() const
 {
 	TaborderEntry * pEntry = _validateEntryForward( m_tabOrder.First() );
 
 	if( pEntry )
-		return pEntry->pGizmo.GetRealPtr();
+		return pEntry->pWidget.GetRealPtr();
 
 	return 0;
 }
 
 //____ NextInTaborder() _______________________________________________________
 
-WgGizmo * WgTaborderPanel::NextInTaborder( WgGizmo * pCurrGizmo ) const
+WgWidget * WgTaborderPanel::NextInTaborder( WgWidget * pCurrWidget ) const
 {
-	TaborderEntry * pEntry = _findInTaborder(pCurrGizmo);
+	TaborderEntry * pEntry = _findInTaborder(pCurrWidget);
 	if( !pEntry )
 		return 0;
 
 	pEntry = _validateEntryForward( pEntry->Next() );
 
 	if( pEntry )
-		return pEntry->pGizmo.GetRealPtr();
+		return pEntry->pWidget.GetRealPtr();
 
 	return 0;
 }
 
 //____ PrevInTaborder() _______________________________________________________
 
-WgGizmo * WgTaborderPanel::PrevInTaborder( WgGizmo * pCurrGizmo ) const
+WgWidget * WgTaborderPanel::PrevInTaborder( WgWidget * pCurrWidget ) const
 {
-	TaborderEntry * pEntry = _findInTaborder(pCurrGizmo);
+	TaborderEntry * pEntry = _findInTaborder(pCurrWidget);
 	if( !pEntry )
 		return 0;
 
 	pEntry = _validateEntryBackward( pEntry->Prev() );
 
 	if( pEntry )
-		return pEntry->pGizmo.GetRealPtr();
+		return pEntry->pWidget.GetRealPtr();
 
 	return 0;
 }
 
 //____ LastInTaborder() _______________________________________________________
 
-WgGizmo * WgTaborderPanel::LastInTaborder() const
+WgWidget * WgTaborderPanel::LastInTaborder() const
 {
 	TaborderEntry * pEntry = _validateEntryBackward( m_tabOrder.Last() );
 
 	if( pEntry )
-		return pEntry->pGizmo.GetRealPtr();
+		return pEntry->pWidget.GetRealPtr();
 
 	return 0;
 }
 
 //____ _isValidForTaborderInsertion() _________________________________________
 
-bool WgTaborderPanel::_isValidForTaborderInsertion( WgGizmo * pGizmo ) const
+bool WgTaborderPanel::_isValidForTaborderInsertion( WgWidget * pWidget ) const
 {
 	// Check so it's an ancestor to us.
 
-	WgGizmoContainer * p = pGizmo->Parent();
+	WgWidgetContainer * p = pWidget->Parent();
 
-	while( p && p->IsGizmo() && p != this )
+	while( p && p->IsWidget() && p != this )
 	{
-		p = p->CastToGizmo()->Parent();
+		p = p->CastToWidget()->Parent();
 	}
 
 	if( !p )
 		return false;
 
-	// Check so we don't already have this Gizmo in our tab-order
+	// Check so we don't already have this Widget in our tab-order
 
-	if( _findInTaborder( pGizmo ) )
+	if( _findInTaborder( pWidget ) )
 		return false;
 
 	// All seems ok
@@ -182,12 +182,12 @@ bool WgTaborderPanel::_isValidForTaborderInsertion( WgGizmo * pGizmo ) const
 
 //____ _findInTaborder() ______________________________________________________
 
-WgTaborderPanel::TaborderEntry * WgTaborderPanel::_findInTaborder( WgGizmo * pGizmo ) const
+WgTaborderPanel::TaborderEntry * WgTaborderPanel::_findInTaborder( WgWidget * pWidget ) const
 {
 	TaborderEntry * p = m_tabOrder.First();
 	while( p )
 	{
-		if( p->pGizmo.GetRealPtr() == pGizmo )
+		if( p->pWidget.GetRealPtr() == pWidget )
 			return p;
 		p = p->Next();
 	}
@@ -199,7 +199,7 @@ WgTaborderPanel::TaborderEntry * WgTaborderPanel::_findInTaborder( WgGizmo * pGi
 
 WgTaborderPanel::TaborderEntry * WgTaborderPanel::_validateEntryForward( WgTaborderPanel::TaborderEntry * pEntry ) const
 {
-	while( pEntry && !pEntry->pGizmo )
+	while( pEntry && !pEntry->pWidget )
 		pEntry = pEntry->Next();
 
 	return pEntry;
@@ -209,7 +209,7 @@ WgTaborderPanel::TaborderEntry * WgTaborderPanel::_validateEntryForward( WgTabor
 
 WgTaborderPanel::TaborderEntry * WgTaborderPanel::_validateEntryBackward( WgTaborderPanel::TaborderEntry * pEntry ) const
 {
-	while( pEntry && !pEntry->pGizmo )
+	while( pEntry && !pEntry->pWidget )
 		pEntry = pEntry->Prev();
 
 	return pEntry;
@@ -227,7 +227,7 @@ void WgTaborderPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler *
 			const WgEvent::KeyEvent * pEvent = static_cast<const WgEvent::KeyEvent*>(_pEvent);
 			if( pEvent->TranslatedKeyCode() == WG_KEY_TAB )
 			{
-				WgGizmo * pFocused = pHandler->KeyboardFocus();
+				WgWidget * pFocused = pHandler->KeyboardFocus();
 				if( pFocused->IsTabLocked() )
 					break;
 
@@ -249,7 +249,7 @@ void WgTaborderPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler *
 							pEntry = _validateEntryBackward( m_tabOrder.Last() );
 					}
 
-					pHandler->SetKeyboardFocus(pEntry->pGizmo.GetRealPtr() );
+					pHandler->SetKeyboardFocus(pEntry->pWidget.GetRealPtr() );
 				}
 			}
 			else

@@ -25,7 +25,7 @@
 #include <wg_patches.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"ModalPanel"};
+static const char	c_widgetType[] = {"ModalPanel"};
 static const char	c_hookType[] = {"ModalHook"};
 static const char	c_basehookType[] = {"ModalPanelBasehook"};
 
@@ -178,11 +178,11 @@ bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly t
 	WgSize sz = m_placementGeo.Size();
 
 	if( sz.w == 0 && sz.h == 0 )
-		sz = m_pGizmo->DefaultSize();
+		sz = m_pWidget->DefaultSize();
 	else if( sz.w == 0 )
-		sz.w = m_pGizmo->WidthForHeight(sz.h);
+		sz.w = m_pWidget->WidthForHeight(sz.h);
 	else if( sz.h == 0 )
-		sz.h = m_pGizmo->HeightForWidth(sz.w);
+		sz.h = m_pWidget->HeightForWidth(sz.w);
 
 	if( sz.w <= 0 )
 		sz.w = 1;
@@ -229,7 +229,7 @@ WgHook * WgModalHook::_prevHook() const
 
 	if( p )
 		return p;
-	else if( m_pParent->m_baseHook.Gizmo() )
+	else if( m_pParent->m_baseHook.Widget() )
 		return &m_pParent->m_baseHook;
 	else
 		return 0;
@@ -298,19 +298,19 @@ const char *WgModalPanel::Type( void ) const
 
 const char * WgModalPanel::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetBase() _________________________________________________________
 
-WgHook * WgModalPanel::SetBase( WgGizmo * pGizmo )
+WgHook * WgModalPanel::SetBase( WgWidget * pWidget )
 {
-	// Replace Gizmo
+	// Replace Widget
 
-	WgGizmo * pOldGizmo = m_baseHook._releaseGizmo();
-	if( pOldGizmo )
-		delete pOldGizmo;
-	m_baseHook._attachGizmo(pGizmo);
+	WgWidget * pOldWidget = m_baseHook._releaseWidget();
+	if( pOldWidget )
+		delete pOldWidget;
+	m_baseHook._attachWidget(pWidget);
 	if( m_baseHook.m_bVisible )
 		_onRequestRender( WgRect(0,0,m_size), 0 );
 
@@ -322,22 +322,22 @@ WgHook * WgModalPanel::SetBase( WgGizmo * pGizmo )
 
 //____ Base() ____________________________________________________________
 
-WgGizmo * WgModalPanel::Base()
+WgWidget * WgModalPanel::Base()
 {
-	return m_baseHook.Gizmo();
+	return m_baseHook.Widget();
 }
 
 //____ DeleteBase() ______________________________________________________
 
 bool WgModalPanel::DeleteBase()
 {
-	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
-	if( pGizmo )
+	WgWidget * pWidget = m_baseHook._releaseWidget();
+	if( pWidget )
 	{
 		if( m_baseHook.m_bVisible )
 			_onRequestRender( WgRect(0,0,m_size), 0 );
 		_requestResize();
-		delete pGizmo;
+		delete pWidget;
 		return true;
 	}
 
@@ -346,27 +346,27 @@ bool WgModalPanel::DeleteBase()
 
 //____ ReleaseBase() _____________________________________________________
 
-WgGizmo * WgModalPanel::ReleaseBase()
+WgWidget * WgModalPanel::ReleaseBase()
 {
-	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
-	if( pGizmo )
+	WgWidget * pWidget = m_baseHook._releaseWidget();
+	if( pWidget )
 	{
 		if( m_baseHook.m_bVisible )
 			_onRequestRender( WgRect(0,0,m_size), 0 );
 		_requestResize();
 	}
 
-	return pGizmo;
+	return pWidget;
 }
 
 //____ AddModal() ________________________________________________________
 
-WgModalHook * WgModalPanel::AddModal( WgGizmo * pGizmo, const WgRect& geometry, WgOrientation origo )
+WgModalHook * WgModalPanel::AddModal( WgWidget * pWidget, const WgRect& geometry, WgOrientation origo )
 {
 	// Create Hook and fill in members.
 
 	WgModalHook * pHook = new WgModalHook( this );
-	pHook->_attachGizmo(pGizmo);
+	pHook->_attachWidget(pWidget);
 	pHook->m_origo = origo;
 	pHook->m_placementGeo = geometry;
 	m_modalHooks.PushBack(pHook);
@@ -395,7 +395,7 @@ bool WgModalPanel::ReleaseAllModal()
 	WgModalHook * pHook = m_modalHooks.First();
 	while( pHook )
 	{
-		pHook->_releaseGizmo();
+		pHook->_releaseWidget();
 		pHook = pHook->_next();
 	}
 
@@ -407,16 +407,16 @@ bool WgModalPanel::ReleaseAllModal()
 
 //____ DeleteChild() __________________________________________________________
 
-bool WgModalPanel::DeleteChild( WgGizmo * pGizmo )
+bool WgModalPanel::DeleteChild( WgWidget * pWidget )
 {
-	if( !pGizmo || pGizmo->Parent() != this )
+	if( !pWidget || pWidget->Parent() != this )
 		return false;
 
-	if( pGizmo == m_baseHook.Gizmo() )
+	if( pWidget == m_baseHook.Widget() )
 		return DeleteBase();
 	else
 	{
-		WgModalHook * pHook = (WgModalHook *) pGizmo->Hook();
+		WgModalHook * pHook = (WgModalHook *) pWidget->Hook();
 		pHook->_requestRender();
 		delete pHook;
 		_updateKeyboardFocus();
@@ -426,21 +426,21 @@ bool WgModalPanel::DeleteChild( WgGizmo * pGizmo )
 
 //____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgModalPanel::ReleaseChild( WgGizmo * pGizmo )
+WgWidget * WgModalPanel::ReleaseChild( WgWidget * pWidget )
 {
-	if( !pGizmo || pGizmo->Parent() != this )
+	if( !pWidget || pWidget->Parent() != this )
 		return 0;
 
-	if( pGizmo == m_baseHook.Gizmo() )
+	if( pWidget == m_baseHook.Widget() )
 		return ReleaseBase();
 	else
 	{
-		WgModalHook * pHook = (WgModalHook *) pGizmo->Hook();
+		WgModalHook * pHook = (WgModalHook *) pWidget->Hook();
 		pHook->_requestRender();
-		pHook->_releaseGizmo();
+		pHook->_releaseWidget();
 		delete pHook;
 		_updateKeyboardFocus();
-		return pGizmo;
+		return pWidget;
 	}
 
 }
@@ -481,37 +481,37 @@ WgModalHook * WgModalPanel::LastModal()
 
 int WgModalPanel::HeightForWidth( int width ) const
 {
-	if( m_baseHook.Gizmo() )
-		return m_baseHook.Gizmo()->HeightForWidth( width );
+	if( m_baseHook.Widget() )
+		return m_baseHook.Widget()->HeightForWidth( width );
 	else
-		return WgGizmo::HeightForWidth(width);
+		return WgWidget::HeightForWidth(width);
 }
 
 //____ WidthForHeight() _______________________________________________________
 
 int WgModalPanel::WidthForHeight( int height ) const
 {
-	if( m_baseHook.Gizmo() )
-		return m_baseHook.Gizmo()->WidthForHeight( height );
+	if( m_baseHook.Widget() )
+		return m_baseHook.Widget()->WidthForHeight( height );
 	else
-		return WgGizmo::WidthForHeight(height);
+		return WgWidget::WidthForHeight(height);
 }
 
 //____ DefaultSize() _____________________________________________________________
 
 WgSize WgModalPanel::DefaultSize() const
 {
-	if( m_baseHook.Gizmo() )
-		return m_baseHook.Gizmo()->DefaultSize();
+	if( m_baseHook.Widget() )
+		return m_baseHook.Widget()->DefaultSize();
 	else
 		return WgSize(1,1);
 }
 
-//____ FindGizmo() ____________________________________________________________
+//____ FindWidget() ____________________________________________________________
 
-WgGizmo *  WgModalPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
+WgWidget *  WgModalPanel::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 {
-	// In search mode ACTION_TARGET we always return either the topmost non-hidden modal Gizmo (or its children),
+	// In search mode ACTION_TARGET we always return either the topmost non-hidden modal Widget (or its children),
 	// or us.
 
 	if( mode == WG_SEARCH_ACTION_TARGET )
@@ -523,30 +523,30 @@ WgGizmo *  WgModalPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 		if( pHook )
 		{
-			if( pHook->Gizmo()->IsPanel() )
+			if( pHook->Widget()->IsPanel() )
 			{
-				WgGizmo * pResult = pHook->Gizmo()->CastToPanel()->FindGizmo( ofs - pHook->Pos(), mode );
+				WgWidget * pResult = pHook->Widget()->CastToPanel()->FindWidget( ofs - pHook->Pos(), mode );
 				if( pResult )
 					return pResult;
 			}
 			else
 			{
-				if( pHook->Gizmo()->MarkTest(ofs - pHook->Pos()) )
-					return pHook->Gizmo();
+				if( pHook->Widget()->MarkTest(ofs - pHook->Pos()) )
+					return pHook->Widget();
 				else
 					return this;
 			}
 		}
-		else if( m_baseHook.Gizmo() && m_baseHook.IsVisible() )
+		else if( m_baseHook.Widget() && m_baseHook.IsVisible() )
 		{
-			if( m_baseHook.Gizmo()->IsPanel() )
+			if( m_baseHook.Widget()->IsPanel() )
 			{
-				WgGizmo * pResult = m_baseHook.Gizmo()->CastToPanel()->FindGizmo( ofs - m_baseHook.Pos(), mode );
+				WgWidget * pResult = m_baseHook.Widget()->CastToPanel()->FindWidget( ofs - m_baseHook.Pos(), mode );
 				if( pResult )
 					return pResult;
 			}
 			else
-				return m_baseHook.Gizmo();
+				return m_baseHook.Widget();
 		}
 		else
 			return 0;
@@ -554,7 +554,7 @@ WgGizmo *  WgModalPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 	// For the rest of the modes we can rely on the default method.
 
-	return WgPanel::FindGizmo( ofs, mode );
+	return WgPanel::FindWidget( ofs, mode );
 }
 
 //____ _updateKeyboardFocus() _______________________________________________________
@@ -570,22 +570,22 @@ void WgModalPanel::_updateKeyboardFocus()
 	if( !pHandler )
 		return;
 
-	// Retrieve focused Gizmo and verify it being a descendant to us.
+	// Retrieve focused Widget and verify it being a descendant to us.
 
-	WgGizmo * pFocused = pHandler->KeyboardFocus();
+	WgWidget * pFocused = pHandler->KeyboardFocus();
 
-	WgGizmo * p = pFocused;
+	WgWidget * p = pFocused;
 	while( p && p->Parent() && p->Parent() != this )
-		p = p->Parent()->CastToGizmo();
+		p = p->Parent()->CastToWidget();
 
 	if( p && p->Parent() != this )
-		return;								// Focus belongs to a Gizmo that is not a descendant to us,
+		return;								// Focus belongs to a Widget that is not a descendant to us,
 											// so we can't save and shouldn't steal focus.
 
 	// Save old focus so we can return it properly in the future.
 	if( p )
 	{
-		if( p == m_baseHook.Gizmo() )
+		if( p == m_baseHook.Widget() )
 			m_baseHook.m_pKeyFocus = pFocused;
 		else
 		{
@@ -601,7 +601,7 @@ void WgModalPanel::_updateKeyboardFocus()
 	while( pHook && !pHook->IsVisible() )
 		pHook = pHook->Prev();
 
-	WgGizmo * 	pSavedFocus = 0;
+	WgWidget * 	pSavedFocus = 0;
 	WgHook *	pBranch	= 0;
 
 	if( pHook )
@@ -610,7 +610,7 @@ void WgModalPanel::_updateKeyboardFocus()
 		pHook->m_pKeyFocus = 0;								// Needs to be cleared for the future.
 		pBranch = pHook;
 	}
-	else if( m_baseHook.Gizmo() && m_baseHook.IsVisible() )
+	else if( m_baseHook.Widget() && m_baseHook.IsVisible() )
 	{
 		pSavedFocus = m_baseHook.m_pKeyFocus.GetRealPtr();
 		m_baseHook.m_pKeyFocus = 0;							// Needs to be cleared for the future.
@@ -626,18 +626,18 @@ void WgModalPanel::_updateKeyboardFocus()
 		{
 			if( p->IsVisible() )
 			{
-				WgGizmoContainer * pParent = p->Parent();
-				if( pParent && pParent->IsGizmo() )
-					p = pParent->CastToGizmo()->Hook();
+				WgWidgetContainer * pParent = p->Parent();
+				if( pParent && pParent->IsWidget() )
+					p = pParent->CastToWidget()->Hook();
 				else
 					p = 0;
 			}
 			else
-				p = 0;						// Branch is hidden so we can not focus saved Gizmo.
+				p = 0;						// Branch is hidden so we can not focus saved Widget.
 		}
 
 		if( p != pBranch )
-			pSavedFocus = 0;				// Previously focused Gizmo is no longer a child of focused branch.
+			pSavedFocus = 0;				// Previously focused Widget is no longer a child of focused branch.
 	}
 
 	// Switch to previously saved focus, or null if not applicable
@@ -670,7 +670,7 @@ void WgModalPanel::_onRequestRender( const WgRect& rect, const WgModalHook * pHo
 	while( pCover )
 	{
 		if( pCover->m_bVisible && pCover->m_realGeo.IntersectsWith( rect ) )
-			pCover->Gizmo()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ), _getBlendMode() );
+			pCover->Widget()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();
 	}
@@ -687,12 +687,12 @@ void WgModalPanel::_onNewSize( const WgSize& sz )
 {
 	m_size = sz;
 
-	// Update size of base gizmo
+	// Update size of base widget
 
-	if( m_baseHook.Gizmo() )
-		m_baseHook.Gizmo()->_onNewSize(sz);
+	if( m_baseHook.Widget() )
+		m_baseHook.Widget()->_onNewSize(sz);
 
-	// Refresh modal gizmos geometry, their positions might have changed.
+	// Refresh modal widgets geometry, their positions might have changed.
 
 	WgModalHook * pHook = m_modalHooks.First();
 
@@ -705,7 +705,7 @@ void WgModalPanel::_onNewSize( const WgSize& sz )
 
 //____ _onCloneContent() ______________________________________________________
 
-void WgModalPanel::_onCloneContent( const WgGizmo * _pOrg )
+void WgModalPanel::_onCloneContent( const WgWidget * _pOrg )
 {
 }
 
@@ -714,7 +714,7 @@ void WgModalPanel::_onCloneContent( const WgGizmo * _pOrg )
 void WgModalPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 
-	if( !m_modalHooks.IsEmpty() && FindGizmo( _pEvent->PointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
+	if( !m_modalHooks.IsEmpty() && FindWidget( _pEvent->PointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
 	{
 		switch( _pEvent->Type() )
 		{
@@ -749,7 +749,7 @@ void WgModalPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pH
 
 WgHook* WgModalPanel::_firstHook() const
 {
-	if( m_baseHook.Gizmo() )
+	if( m_baseHook.Widget() )
 		return const_cast<BaseHook*>(&m_baseHook);
 	else
 		return m_modalHooks.First();
@@ -766,7 +766,7 @@ WgHook* WgModalPanel::_lastHook() const
 
 WgHook * WgModalPanel::_firstHookWithGeo( WgRect& geo ) const
 {
-	if( m_baseHook.Gizmo() )
+	if( m_baseHook.Widget() )
 	{
 		geo = WgRect(0,0,m_size);
 		return const_cast<BaseHook*>(&m_baseHook);
@@ -802,7 +802,7 @@ WgHook * WgModalPanel::_lastHookWithGeo( WgRect& geo ) const
 		geo = p->m_realGeo;
 		return p;
 	}
-	else if( m_baseHook.Gizmo() )
+	else if( m_baseHook.Widget() )
 	{
 		geo = WgRect(0,0,m_size);
 		return const_cast<BaseHook*>(&m_baseHook);

@@ -24,8 +24,8 @@
 #define	WG_TEXTDISPLAY_DOT_H
 
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef	WG_INTERFACE_EDITTEXT_DOT_H
@@ -40,14 +40,14 @@
 #	include <wg_cursorinstance.h>
 #endif
 
-class WgTextDisplay:public WgGizmo, public WgInterfaceEditText
+class WgTextDisplay:public WgWidget, public WgInterfaceEditText
 {
 public:
 	WgTextDisplay();
 	virtual ~WgTextDisplay();
 	virtual const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgTextDisplay(); };
+	virtual WgWidget * NewOfMyType() const { return new WgTextDisplay(); };
 
 
 
@@ -82,7 +82,7 @@ public:
 
 protected:
 
-	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onNewSize( const WgSize& size );
 	void	_onRefresh();

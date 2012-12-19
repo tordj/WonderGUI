@@ -23,8 +23,8 @@
 #ifndef	WG_VALUEEDITOR_DOT_H
 #define	WG_VALUEEDITOR_DOT_H
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef	WG_TEXT_DOT_H
@@ -44,7 +44,7 @@ class	WgCursorInstance;
 class	WgFont;
 class	WgTextManager;
 
-class WgValueEditor : public WgGizmo, public Wg_Interface_ValueHolder
+class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder
 {
 	public:
 		WgValueEditor();
@@ -52,7 +52,7 @@ class WgValueEditor : public WgGizmo, public Wg_Interface_ValueHolder
 
 		virtual const char * Type() const;
 		static const char * GetClass();
-		virtual WgGizmo * NewOfMyType() const { return new WgValueEditor(); };
+		virtual WgWidget * NewOfMyType() const { return new WgValueEditor(); };
 
 
 		//____ Methods __________________________________________
@@ -80,7 +80,7 @@ class WgValueEditor : public WgGizmo, public Wg_Interface_ValueHolder
 
 	protected:
 
-		void	_onCloneContent( const WgGizmo * _pOrg );
+		void	_onCloneContent( const WgWidget * _pOrg );
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 		void	_onEnable();
@@ -89,7 +89,7 @@ class WgValueEditor : public WgGizmo, public Wg_Interface_ValueHolder
 		void	_onLostInputFocus();
 		void	_onRefresh();
 
-		WgGizmo*	_getGizmo() { return this; }
+		WgWidget*	_getWidget() { return this; }
 
 	private:
 		void	_limitCursor();					///< Make sure cursor or selection is not in prefix or suffix part of text.

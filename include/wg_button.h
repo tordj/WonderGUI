@@ -22,8 +22,8 @@
 #ifndef WG_BUTTON_DOT_H
 #define WG_BUTTON_DOT_H
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef WG_BLOCKSET_DOT_H
@@ -44,7 +44,7 @@
 
 //____ WgButton ____________________________________________________________
 
-class WgButton : public WgGizmo, public Wg_Interface_TextHolder, public WgIconHolder
+class WgButton : public WgWidget, public Wg_Interface_TextHolder, public WgIconHolder
 {
 public:
 	WgButton();
@@ -52,7 +52,7 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgButton(); };
+	virtual WgWidget * NewOfMyType() const { return new WgButton(); };
 
 	//____ Methods __________________________________________
 
@@ -81,7 +81,7 @@ protected:
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onRefresh();
-	virtual void	_onCloneContent( const WgGizmo * _pOrg );
+	virtual void	_onCloneContent( const WgWidget * _pOrg );
 	bool			_onAlphaTest( const WgCoord& ofs );
 	void			_onEnable();
 	void			_onDisable();

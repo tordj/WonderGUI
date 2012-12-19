@@ -273,7 +273,7 @@ public:
 	bool				SetMaxChars( int max );
 	int					MaxChars() const { return m_maxChars; }
 
-	void					SetEditMode(WgTextEditMode mode);							// Maybe should be protected with Gizmos/Items as friends?
+	void					SetEditMode(WgTextEditMode mode);							// Maybe should be protected with Widgets/Items as friends?
 	inline WgTextEditMode	GetEditMode() const { return m_editMode; }
 	inline bool				IsEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
 	inline bool				IsSelectable() const { return m_editMode != WG_TEXT_STATIC; }

@@ -36,7 +36,7 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgShaderPanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgShaderPanel(); };
 
 	void		SetColor( const WgColor& color);
 	void		SetTintMode( WgTintMode mode );
@@ -50,7 +50,7 @@ public:
 protected:
 	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
 	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-	void		_onCloneContent( const WgGizmo * _pOrg );
+	void		_onCloneContent( const WgWidget * _pOrg );
 	WgBlendMode _getBlendMode() const;
 
 private:

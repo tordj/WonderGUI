@@ -55,11 +55,11 @@ public:
 	WgPanel* Parent() const;
 
 protected:
-	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
+	// TODO: Constructor should in the future call SetHook() on Widget, once we are totally rid of widgets...
 
 	PROTECTED_LINK_METHODS( WgMenuHook );
 
-	WgMenuHook( WgMenuPanel * pParent, WgGizmo * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize );
+	WgMenuHook( WgMenuPanel * pParent, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize );
 
 	void		_requestRender();
 	void		_requestRender( const WgRect& rect );
@@ -74,12 +74,12 @@ protected:
 
 	WgMenuPanel * m_pParent;
 
-	WgRect			m_geo;				// Gizmos geo relative parent
+	WgRect			m_geo;				// Widgets geo relative parent
 	WgRect			m_launcherGeo;		// Launcher geo relative sibling or parent.
 	WgOrientation	m_attachPoint;
 	WgSize			m_maxSize;
-	WgGizmoWeakPtr	m_pOpener;			// Gizmo that opened this menu.
-	WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at gizmo that held focus when this menu was ontop.
+	WgWidgetWeakPtr	m_pOpener;			// Widget that opened this menu.
+	WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at widget that held focus when this menu was ontop.
 };
 
 
@@ -95,24 +95,24 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgMenuPanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgMenuPanel(); };
 
 
-	WgHook *		SetBase( WgGizmo * pGizmo );
-	WgGizmo *		Base();
+	WgHook *		SetBase( WgWidget * pWidget );
+	WgWidget *		Base();
 	bool			DeleteBase();
-	WgGizmo *		ReleaseBase();
+	WgWidget *		ReleaseBase();
 
-	WgMenuHook *	OpenMenu( WgGizmo * pMenu, WgGizmo * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
+	WgMenuHook *	OpenMenu( WgWidget * pMenu, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
 
-	bool			CloseMenu( WgGizmo * pMenu );
+	bool			CloseMenu( WgWidget * pMenu );
 	bool			CloseAllMenus();
 
 	WgMenuHook *	FirstMenu();
 	WgMenuHook *	LastMenu();
 
 
-	// Overloaded from WgGizmo
+	// Overloaded from WgWidget
 
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
@@ -121,10 +121,10 @@ public:
 
 	// Overloaded from WgPanel
 
-	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
+	WgWidget *		FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
-	bool			DeleteChild( WgGizmo * pGizmo ) { return 0; }
-	WgGizmo *		ReleaseChild( WgGizmo * pGizmo ) { return 0; }
+	bool			DeleteChild( WgWidget * pWidget ) { return 0; }
+	WgWidget *		ReleaseChild( WgWidget * pWidget ) { return 0; }
 
 	bool			DeleteAllChildren() { return 0; }
 	bool			ReleaseAllChildren() { return 0; }
@@ -160,7 +160,7 @@ private:
 
 		WgHook *	_prevHook() const { return 0; }
 		WgHook *	_nextHook() const { return m_pParent->FirstMenu(); }
-		WgGizmoContainer * _parent() const { return m_pParent; }
+		WgWidgetContainer * _parent() const { return m_pParent; }
 
 		WgMenuPanel * 	m_pParent;
 	};
@@ -173,7 +173,7 @@ private:
 
 	//
 
-	void			_onCloneContent( const WgGizmo * _pOrg );
+	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
 	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 
@@ -192,7 +192,7 @@ private:
 	WgChain<WgMenuHook>		m_menuHooks;		// First menu lies at the bottom.
 
 	WgSize			m_size;
-	WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any menu was opened.
+	WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any menu was opened.
 
 
 };

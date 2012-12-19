@@ -39,7 +39,7 @@
 #endif
 
 
-//____ WgGizmoRefreshButton ____________________________________________________________
+//____ WgWidgetRefreshButton ____________________________________________________________
 
 class WgRefreshButton : public WgButton
 {
@@ -50,7 +50,7 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgRefreshButton(); };
+	virtual WgWidget * NewOfMyType() const { return new WgRefreshButton(); };
 
 	//____ Methods __________________________________________
 
@@ -101,7 +101,7 @@ protected:
 
 		void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 		void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-		void		_onCloneContent( const WgGizmo * _pOrg );
+		void		_onCloneContent( const WgWidget * _pOrg );
 		virtual void _onNewSize( const WgSize& size );
 
 		WgMode		_getRenderMode();

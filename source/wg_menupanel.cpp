@@ -25,7 +25,7 @@
 #include <wg_patches.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"MenuPanel"};
+static const char	c_widgetType[] = {"MenuPanel"};
 static const char	c_hookType[] = {"MenuHook"};
 static const char	c_basehookType[] = {"MenuPanelBasehook"};
 
@@ -48,7 +48,7 @@ WgPanel* WgMenuHook::Parent() const
 }
 
 //_____________________________________________________________________________
-WgMenuHook::WgMenuHook( WgMenuPanel * pParent, WgGizmo * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
+WgMenuHook::WgMenuHook( WgMenuPanel * pParent, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
 {
 	m_pParent 		= pParent;
 	m_pOpener		= pOpener;
@@ -95,7 +95,7 @@ WgHook * WgMenuHook::_prevHook() const
 
 	if( p )
 		return p;
-	else if( m_pParent->m_baseHook.Gizmo() )
+	else if( m_pParent->m_baseHook.Widget() )
 		return &m_pParent->m_baseHook;
 	else
 		return 0;
@@ -130,7 +130,7 @@ bool WgMenuHook::_updateGeo()
 
 	//
 
-	WgRect geo(0,0,WgSize::Min(Gizmo()->DefaultSize(),WgSize::Min(m_maxSize,parentSize)));
+	WgRect geo(0,0,WgSize::Min(Widget()->DefaultSize(),WgSize::Min(m_maxSize,parentSize)));
 
 	switch( m_attachPoint )
 	{
@@ -326,7 +326,7 @@ WgMenuPanel::~WgMenuPanel()
 	WgMenuHook * pHook = m_menuHooks.First();
 	while( pHook )
 	{
-		pHook->_releaseGizmo();
+		pHook->_releaseWidget();
 		pHook = pHook->_next();
 	}
 }
@@ -342,19 +342,19 @@ const char *WgMenuPanel::Type( void ) const
 
 const char * WgMenuPanel::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetBase() _________________________________________________________
 
-WgHook * WgMenuPanel::SetBase( WgGizmo * pGizmo )
+WgHook * WgMenuPanel::SetBase( WgWidget * pWidget )
 {
-	// Replace Gizmo
+	// Replace Widget
 
-	WgGizmo * pOldGizmo = m_baseHook._releaseGizmo();
-	if( pOldGizmo )
-		delete pOldGizmo;
-	m_baseHook._attachGizmo(pGizmo);
+	WgWidget * pOldWidget = m_baseHook._releaseWidget();
+	if( pOldWidget )
+		delete pOldWidget;
+	m_baseHook._attachWidget(pWidget);
 	if( m_baseHook.m_bVisible )
 		_onRequestRender( WgRect(0,0,m_size), 0 );
 
@@ -366,22 +366,22 @@ WgHook * WgMenuPanel::SetBase( WgGizmo * pGizmo )
 
 //____ Base() ____________________________________________________________
 
-WgGizmo * WgMenuPanel::Base()
+WgWidget * WgMenuPanel::Base()
 {
-	return m_baseHook.Gizmo();
+	return m_baseHook.Widget();
 }
 
 //____ DeleteBase() ______________________________________________________
 
 bool WgMenuPanel::DeleteBase()
 {
-	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
-	if( pGizmo )
+	WgWidget * pWidget = m_baseHook._releaseWidget();
+	if( pWidget )
 	{
 		if( m_baseHook.m_bVisible )
 			_onRequestRender( WgRect(0,0,m_size), 0 );
 		_requestResize();
-		delete pGizmo;
+		delete pWidget;
 		return true;
 	}
 
@@ -390,27 +390,27 @@ bool WgMenuPanel::DeleteBase()
 
 //____ ReleaseBase() _____________________________________________________
 
-WgGizmo * WgMenuPanel::ReleaseBase()
+WgWidget * WgMenuPanel::ReleaseBase()
 {
-	WgGizmo * pGizmo = m_baseHook._releaseGizmo();
-	if( pGizmo )
+	WgWidget * pWidget = m_baseHook._releaseWidget();
+	if( pWidget )
 	{
 		if( m_baseHook.m_bVisible )
 			_onRequestRender( WgRect(0,0,m_size), 0 );
 		_requestResize();
 	}
 
-	return pGizmo;
+	return pWidget;
 }
 
 //____ OpenMenu() _______________________________________________________________
 
-WgMenuHook * WgMenuPanel::OpenMenu( WgGizmo * pMenu, WgGizmo * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
+WgMenuHook * WgMenuPanel::OpenMenu( WgWidget * pMenu, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
 {
 	// Create Hook and fill in members.
 
 	WgMenuHook * pHook = new WgMenuHook( this, pOpener, launcherGeo, attachPoint, maxSize );
-	pHook->_attachGizmo(pMenu);
+	pHook->_attachWidget(pMenu);
 	m_menuHooks.PushBack(pHook);
 	pHook->_updateGeo();
 	_stealKeyboardFocus();
@@ -425,7 +425,7 @@ bool WgMenuPanel::CloseAllMenus()
 	WgMenuHook * pHook = m_menuHooks.First();
 	while( pHook )
 	{
-		pHook->_releaseGizmo();
+		pHook->_releaseWidget();
 		pHook = pHook->_next();
 	}
 
@@ -438,12 +438,12 @@ bool WgMenuPanel::CloseAllMenus()
 
 //____ CloseMenu() _________________________________________________________
 
-bool WgMenuPanel::CloseMenu( WgGizmo * pGizmo )
+bool WgMenuPanel::CloseMenu( WgWidget * pWidget )
 {
-	if( !pGizmo || pGizmo->Parent() != this || pGizmo == m_baseHook.Gizmo() )
+	if( !pWidget || pWidget->Parent() != this || pWidget == m_baseHook.Widget() )
 		return false;
 
-	WgMenuHook * pHook = (WgMenuHook *) pGizmo->Hook();
+	WgMenuHook * pHook = (WgMenuHook *) pWidget->Hook();
 
 	while( pHook )
 	{
@@ -451,7 +451,7 @@ bool WgMenuPanel::CloseMenu( WgGizmo * pGizmo )
 		pHook = pHook->Next();
 
 		p->_requestRender();
-		p->_releaseGizmo();
+		p->_releaseWidget();
 		delete p;
 	}
 	_restoreKeyboardFocus();
@@ -477,37 +477,37 @@ WgMenuHook * WgMenuPanel::LastMenu()
 
 int WgMenuPanel::HeightForWidth( int width ) const
 {
-	if( m_baseHook.Gizmo() )
-		return m_baseHook.Gizmo()->HeightForWidth( width );
+	if( m_baseHook.Widget() )
+		return m_baseHook.Widget()->HeightForWidth( width );
 	else
-		return WgGizmo::HeightForWidth(width);
+		return WgWidget::HeightForWidth(width);
 }
 
 //____ WidthForHeight() _______________________________________________________
 
 int WgMenuPanel::WidthForHeight( int height ) const
 {
-	if( m_baseHook.Gizmo() )
-		return m_baseHook.Gizmo()->WidthForHeight( height );
+	if( m_baseHook.Widget() )
+		return m_baseHook.Widget()->WidthForHeight( height );
 	else
-		return WgGizmo::WidthForHeight(height);
+		return WgWidget::WidthForHeight(height);
 }
 
 //____ DefaultSize() _____________________________________________________________
 
 WgSize WgMenuPanel::DefaultSize() const
 {
-	if( m_baseHook.Gizmo() )
-		return m_baseHook.Gizmo()->DefaultSize();
+	if( m_baseHook.Widget() )
+		return m_baseHook.Widget()->DefaultSize();
 	else
 		return WgSize(1,1);
 }
 
-//____ FindGizmo() ____________________________________________________________
+//____ FindWidget() ____________________________________________________________
 
-WgGizmo *  WgMenuPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
+WgWidget *  WgMenuPanel::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 {
-	// MenuPanel has its own FindGizmo() method since we need special treatment of
+	// MenuPanel has its own FindWidget() method since we need special treatment of
 	// searchmode ACTION_TARGET when a menu is open.
 
 	if( mode == WG_SEARCH_ACTION_TARGET && !m_menuHooks.IsEmpty() )
@@ -515,16 +515,16 @@ WgGizmo *  WgMenuPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 		// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
 
 		WgMenuHook * pHook = m_menuHooks.Last();
-		WgGizmo * pResult = 0;
+		WgWidget * pResult = 0;
 
 		while( pHook && !pResult )
 		{
 			if( pHook->IsVisible() && pHook->m_geo.Contains( ofs ) )
 			{
-				if( pHook->Gizmo()->IsPanel() )
-					pResult = pHook->Gizmo()->CastToPanel()->FindGizmo( ofs - pHook->m_geo.Pos(), mode );
-				else if( pHook->Gizmo()->MarkTest( ofs - pHook->m_geo.Pos() ) )
-					pResult = pHook->Gizmo();
+				if( pHook->Widget()->IsPanel() )
+					pResult = pHook->Widget()->CastToPanel()->FindWidget( ofs - pHook->m_geo.Pos(), mode );
+				else if( pHook->Widget()->MarkTest( ofs - pHook->m_geo.Pos() ) )
+					pResult = pHook->Widget();
 			}
 			pHook = pHook->Prev();
 		}
@@ -536,7 +536,7 @@ WgGizmo *  WgMenuPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 			WgMenuHook * pHook = m_menuHooks.First();
 			if( pHook && pHook->m_pOpener )
 			{
-				WgGizmo * pOpener = pHook->m_pOpener.GetRealPtr();
+				WgWidget * pOpener = pHook->m_pOpener.GetRealPtr();
 
 				WgCoord absPos 		= ofs + ScreenPos();
 				WgRect	openerGeo 	= pOpener->ScreenGeo();
@@ -556,7 +556,7 @@ WgGizmo *  WgMenuPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 	{
 		// For the rest of the modes we can rely on the default method.
 
-		return WgPanel::FindGizmo( ofs, mode );
+		return WgPanel::FindWidget( ofs, mode );
 	}
 }
 
@@ -586,7 +586,7 @@ void WgMenuPanel::_onRequestRender( const WgRect& rect, const WgMenuHook * pHook
 	while( pCover )
 	{
 		if( pCover->m_bVisible && pCover->m_geo.IntersectsWith( rect ) )
-			pCover->Gizmo()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
+			pCover->Widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();
 	}
@@ -603,15 +603,15 @@ void WgMenuPanel::_onNewSize( const WgSize& sz )
 {
 	m_size = sz;
 
-	// Update size of base gizmo
+	// Update size of base widget
 
-	if( m_baseHook.Gizmo() )
-		m_baseHook.Gizmo()->_onNewSize(sz);
+	if( m_baseHook.Widget() )
+		m_baseHook.Widget()->_onNewSize(sz);
 }
 
 //____ _onCloneContent() ______________________________________________________
 
-void WgMenuPanel::_onCloneContent( const WgGizmo * _pOrg )
+void WgMenuPanel::_onCloneContent( const WgWidget * _pOrg )
 {
 }
 
@@ -619,15 +619,15 @@ void WgMenuPanel::_onCloneContent( const WgGizmo * _pOrg )
 
 void WgMenuPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
-	WgGizmo * pOpener = 0;
+	WgWidget * pOpener = 0;
 
 	// Try to find an opener
 
-	WgGizmo * pForwardedFrom = _pEvent->ForwardedFrom();
+	WgWidget * pForwardedFrom = _pEvent->ForwardedFrom();
 	if( pForwardedFrom )
 	{
 		WgMenuHook * pHook = m_menuHooks.First();
-		while( pHook && pHook->Gizmo() != pForwardedFrom )
+		while( pHook && pHook->Widget() != pForwardedFrom )
 			pHook = pHook->Next();
 			
 		if( pHook && pHook->m_pOpener )
@@ -652,11 +652,11 @@ void WgMenuPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 			if( !m_menuHooks.IsEmpty() )							// Process only if we have at least one open menu.
 			{
 				WgCoord ofs = _pEvent->PointerPos();
-				WgGizmo * p = FindGizmo( ofs, WG_SEARCH_ACTION_TARGET );
+				WgWidget * p = FindWidget( ofs, WG_SEARCH_ACTION_TARGET );
 				if( p != this )
 				{
 					while( p->Parent() != this )
-						p = p->Parent()->CastToGizmo();
+						p = p->Parent()->CastToWidget();
 						
 					if( p != m_menuHooks.	
 				}	
@@ -669,7 +669,7 @@ void WgMenuPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 			const WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
 
 			WgCoord ofs = pEvent->PointerPos();
-			WgGizmo * p = FindGizmo( ofs, WG_SEARCH_ACTION_TARGET );
+			WgWidget * p = FindWidget( ofs, WG_SEARCH_ACTION_TARGET );
 			if( p == this )
 			{
 				CloseAllMenus();
@@ -687,7 +687,7 @@ void WgMenuPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 			{
 				if( !m_menuHooks.IsEmpty() )
 				{
-					CloseMenu( m_menuHooks.Last()->Gizmo() );
+					CloseMenu( m_menuHooks.Last()->Widget() );
 					return;
 				}
 			}
@@ -723,12 +723,12 @@ void WgMenuPanel::_stealKeyboardFocus()
 
 	// Steal keyboard focus to top menu
 
-	WgGizmo * pGizmo = m_menuHooks.Last()->Gizmo();
+	WgWidget * pWidget = m_menuHooks.Last()->Widget();
 
-	if( pGizmo->IsPanel() && pGizmo->CastToPanel()->IsFocusGroup() )
-		pHandler->SetFocusGroup(pGizmo->CastToPanel());
+	if( pWidget->IsPanel() && pWidget->CastToPanel()->IsFocusGroup() )
+		pHandler->SetFocusGroup(pWidget->CastToPanel());
 	else
-		pHandler->SetKeyboardFocus(pGizmo);
+		pHandler->SetKeyboardFocus(pWidget);
 }
 
 //____ _restoreKeyboardFocus() _________________________________________________
@@ -757,7 +757,7 @@ void WgMenuPanel::_restoreKeyboardFocus()
 
 WgHook* WgMenuPanel::_firstHook() const
 {
-	if( m_baseHook.Gizmo() )
+	if( m_baseHook.Widget() )
 		return const_cast<BaseHook*>(&m_baseHook);
 	else
 		return m_menuHooks.First();
@@ -774,7 +774,7 @@ WgHook* WgMenuPanel::_lastHook() const
 
 WgHook * WgMenuPanel::_firstHookWithGeo( WgRect& geo ) const
 {
-	if( m_baseHook.Gizmo() )
+	if( m_baseHook.Widget() )
 	{
 		geo = WgRect(0,0,m_size);
 		return const_cast<BaseHook*>(&m_baseHook);
@@ -810,7 +810,7 @@ WgHook * WgMenuPanel::_lastHookWithGeo( WgRect& geo ) const
 		geo = p->m_geo;
 		return p;
 	}
-	else if( m_baseHook.Gizmo() )
+	else if( m_baseHook.Widget() )
 	{
 		geo = WgRect(0,0,m_size);
 		return const_cast<BaseHook*>(&m_baseHook);

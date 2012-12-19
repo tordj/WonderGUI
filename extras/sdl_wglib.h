@@ -22,7 +22,7 @@ namespace sdl_wglib
 
 	WgSurface * LoadSurface( const char * path, const WgSurfaceFactory& factory );
 
-	WgResDB *	LoadStdGizmos( const char * pImagePath, const WgSurfaceFactory& factory );
+	WgResDB *	LoadStdWidgets( const char * pImagePath, const WgSurfaceFactory& factory );
 
 	WgFont *	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactory& factory );
 	

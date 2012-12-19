@@ -23,8 +23,8 @@
 #define WG_LINEEDITOR_DOT_H
 
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef	WG_INTERFACE_EDITTEXT_DOT_H
@@ -42,7 +42,7 @@
 
 //____ WgLineEditor ____________________________________________________________
 
-class WgLineEditor : public WgGizmo, public WgInterfaceEditText
+class WgLineEditor : public WgWidget, public WgInterfaceEditText
 {
 public:
 	WgLineEditor();
@@ -50,7 +50,7 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgLineEditor(); };
+	virtual WgWidget * NewOfMyType() const { return new WgLineEditor(); };
 
 
 	//____ Methods __________________________________________
@@ -87,7 +87,7 @@ protected:
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void	_onGotInputFocus();
 	void	_onLostInputFocus();
-	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onEnable();
 	void	_onDisable();

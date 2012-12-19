@@ -24,8 +24,8 @@
 #define	WG_MENUBAR_DOT_H
 
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef	WG_CHAIN_DOT_H
@@ -99,7 +99,7 @@ public:
 
 //____ WgMenubar ____________________________________________________________
 
-class WgMenubar:public WgGizmo
+class WgMenubar:public WgWidget
 {
 	friend class WgMenuBarItem;
 
@@ -109,7 +109,7 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgMenubar(); };	
+	virtual WgWidget * NewOfMyType() const { return new WgMenubar(); };	
 
 	//____ Methods __________________________________________
 
@@ -142,7 +142,7 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onRefresh();
-	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onCloneContent( const WgWidget * _pOrg );
 
 
 private:

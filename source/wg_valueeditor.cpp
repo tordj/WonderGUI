@@ -799,7 +799,7 @@ void WgValueEditor::_limitCursor()
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgValueEditor::_onCloneContent( const WgGizmo * _pOrg )
+void WgValueEditor::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgValueEditor * pOrg = (WgValueEditor *) _pOrg;
 

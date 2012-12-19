@@ -29,7 +29,7 @@
 #include <wg_eventhandler.h>
 #include <math.h>
 
-static const char	c_gizmoType[] = {"AnimPlayer"};
+static const char	c_widgetType[] = {"AnimPlayer"};
 
 
 //____ Constructor _________________________________________________________________
@@ -58,7 +58,7 @@ const char * WgAnimPlayer::Type() const
 
 const char * WgAnimPlayer::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetAnimation() ____________________________________________________________
@@ -295,7 +295,7 @@ void WgAnimPlayer::_onRefresh( void )
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgAnimPlayer::_onCloneContent( const WgGizmo * _pOrg )
+void WgAnimPlayer::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgAnimPlayer * pOrg = (WgAnimPlayer *) _pOrg;
 

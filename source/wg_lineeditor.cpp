@@ -28,7 +28,7 @@
 #include 	<wg_pen.h>
 #include 	<wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"LineEditor"};
+static const char	c_widgetType[] = {"LineEditor"};
 
 //____ Constructor ____________________________________________________________
 
@@ -63,7 +63,7 @@ const char * WgLineEditor::Type( void ) const
 
 const char * WgLineEditor::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetEditMode() __________________________________________________________
@@ -170,7 +170,7 @@ WgSize WgLineEditor::DefaultSize() const
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgLineEditor::_onCloneContent( const WgGizmo * _pOrg )
+void WgLineEditor::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgLineEditor * pOrg = (WgLineEditor*) _pOrg;
 

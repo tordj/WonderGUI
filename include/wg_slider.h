@@ -23,8 +23,8 @@
 #ifndef	WG_SLIDER_DOT_H
 #define	WG_SLIDER_DOT_H
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef WG_BLOCKSET_DOT_H
@@ -36,25 +36,25 @@ class WgSurface;
 class WgSliderTarget;
 class WgMenu;
 
-//____ Class: WgGizmoSlider _____________________________________________________
+//____ Class: WgWidgetSlider _____________________________________________________
 
-class	WgGizmoSlider : public WgGizmo
+class	WgWidgetSlider : public WgWidget
 {
 	friend class WgSliderTarget;
 	friend class WgMenu;
 
 	public:
-		WgGizmoSlider();
-		virtual	~WgGizmoSlider();
+		WgWidgetSlider();
+		virtual	~WgWidgetSlider();
 		virtual const char * Type() const;
 		static const char * GetClass();
 
 		//____ Callbacks ________________________________________
 
-		static void cbSetSlider				(void * pGizmo, float pos, float size) { ((WgGizmoSlider*)pGizmo)->SetSlider(pos,size); }
-		static void cbSetSliderPos			(void * pGizmo, float pos) { ((WgGizmoSlider*)pGizmo)->SetSliderPos(pos); }
-		static void cbSetSliderSize			(void * pGizmo, float size) { ((WgGizmoSlider*)pGizmo)->SetSliderSize(size); }
-		static void cbSetSliderPosPxlOfs	(void * pGizmo, int x) { ((WgGizmoSlider*)pGizmo)->SetSliderPosPxlOfs(x); }
+		static void cbSetSlider				(void * pWidget, float pos, float size) { ((WgWidgetSlider*)pWidget)->SetSlider(pos,size); }
+		static void cbSetSliderPos			(void * pWidget, float pos) { ((WgWidgetSlider*)pWidget)->SetSliderPos(pos); }
+		static void cbSetSliderSize			(void * pWidget, float size) { ((WgWidgetSlider*)pWidget)->SetSliderSize(size); }
+		static void cbSetSliderPosPxlOfs	(void * pWidget, int x) { ((WgWidgetSlider*)pWidget)->SetSliderPosPxlOfs(x); }
 
 		//____ Enums ____________________________________________
 
@@ -106,7 +106,7 @@ class	WgGizmoSlider : public WgGizmo
 		WgSize	DefaultSize() const;
 
 	protected:
-		void	_onCloneContent( const WgGizmo * _pOrg );
+		void	_onCloneContent( const WgWidget * _pOrg );
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 		void	_onRefresh();
@@ -153,7 +153,7 @@ class	WgGizmoSlider : public WgGizmo
 		WgSize			m_minSize;
 
 		WgSliderTarget *m_pSliderTargetInterface;			// So we can access our target.
-		WgGizmoWeakPtr	m_pSliderTargetGizmo;				// So we can check if target has been deleted.
+		WgWidgetWeakPtr	m_pSliderTargetWidget;				// So we can check if target has been deleted.
 
 
 	private:
@@ -174,27 +174,27 @@ class	WgGizmoSlider : public WgGizmo
 
 //____ Class: WgHSlider _______________________________________________________
 
-class WgHSlider:public WgGizmoSlider
+class WgHSlider:public WgWidgetSlider
 {
 	public:
 		WgHSlider();
 
 		virtual const char * Type() const;
 		static const char * GetClass();
-		virtual WgGizmo * NewOfMyType() const { return new WgHSlider(); };
+		virtual WgWidget * NewOfMyType() const { return new WgHSlider(); };
 
 };
 
 //____ Class: WgVSlider _______________________________________________________
 
-class WgVSlider:public WgGizmoSlider
+class WgVSlider:public WgWidgetSlider
 {
 	public:
 		WgVSlider();
 
 		virtual const char * Type() const;
 		static const char * GetClass();
-		virtual WgGizmo * NewOfMyType() const { return new WgVSlider(); };
+		virtual WgWidget * NewOfMyType() const { return new WgVSlider(); };
 
 };
 

@@ -42,7 +42,7 @@
 #include <wg_string.h>
 #include <wg_event.h>
 #include <wg_eventhandler.h>
-#include <wg_gizmo.h>
+#include <wg_widget.h>
 #include <wg_util.h>
 
 //____ Constructor ____________________________________________________________
@@ -2425,7 +2425,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 			WgTextLinkPtr pLink = CoordToLink( pointerOfs, container );
 			if( m_pMarkedLink && pLink != m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Gizmo(), m_pMarkedLink->Link()) );
+				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Widget(), m_pMarkedLink->Link()) );
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2434,7 +2434,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 			{
 				if( pLink != m_pMarkedLink )
 				{
-					pEventHandler->QueueEvent( new WgEvent::LinkMark(pEvent->Gizmo(), pLink->Link() ));
+					pEventHandler->QueueEvent( new WgEvent::LinkMark(pEvent->Widget(), pLink->Link() ));
 
 					m_pMarkedLink = pLink;
 					m_markedLinkMode = WG_MODE_MARKED;
@@ -2449,7 +2449,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Gizmo(), m_pMarkedLink->Link()));
+				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Widget(), m_pMarkedLink->Link()));
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2460,7 +2460,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkPress(pEvent->Gizmo(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgEvent::LinkPress(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 				m_markedLinkMode = WG_MODE_SELECTED;
 				bRefresh = true;
 			}
@@ -2471,7 +2471,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkRepeat(pEvent->Gizmo(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgEvent::LinkRepeat(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 			}
 			break;
 		}
@@ -2480,10 +2480,10 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkRelease(pEvent->Gizmo(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgEvent::LinkRelease(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 
 				if( m_markedLinkMode == WG_MODE_SELECTED )
-					pEventHandler->QueueEvent( new WgEvent::LinkClick(pEvent->Gizmo(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+					pEventHandler->QueueEvent( new WgEvent::LinkClick(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 
 				m_markedLinkMode = WG_MODE_MARKED;
 				bRefresh = true;
@@ -2493,7 +2493,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 
 		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 			if( m_pMarkedLink )
-				pEventHandler->QueueEvent( new WgEvent::LinkDoubleClick(pEvent->Gizmo(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgEvent::LinkDoubleClick(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 			break;
 
 		default:

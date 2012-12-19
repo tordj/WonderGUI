@@ -26,7 +26,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"TextDisplay"};
+static const char	c_widgetType[] = {"TextDisplay"};
 
 
 
@@ -60,7 +60,7 @@ const char * WgTextDisplay::Type() const
 
 const char * WgTextDisplay::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ goBOL() ________________________________________________________________
@@ -355,7 +355,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgTextDisplay::_onCloneContent( const WgGizmo * _pOrg )
+void WgTextDisplay::_onCloneContent( const WgWidget * _pOrg )
 {
 	//TODO: Implement!
 }

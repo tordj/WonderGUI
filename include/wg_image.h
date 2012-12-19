@@ -23,8 +23,8 @@
 #define WG_IMAGE_DOT_H
 
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef WG_BLOCKSET_DOT_H
@@ -34,7 +34,7 @@
 
 //____ WgImage __________________________________________________________
 
-class WgImage : public WgGizmo
+class WgImage : public WgWidget
 {
 public:
 	WgImage();
@@ -42,7 +42,7 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgImage(); };
+	virtual WgWidget * NewOfMyType() const { return new WgImage(); };
 	
 
 	void			SetSource( const WgBlocksetPtr& pBlockset );
@@ -52,7 +52,7 @@ public:
 
 protected:
 
-	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onEnable();

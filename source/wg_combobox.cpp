@@ -28,7 +28,7 @@
 #include <wg_util.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"Combobox"};
+static const char	c_widgetType[] = {"Combobox"};
 
 
 //____ WgCombobox() _________________________________________________________________
@@ -72,7 +72,7 @@ const char * WgCombobox::Type( void ) const
 
 const char * WgCombobox::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 
@@ -258,8 +258,8 @@ void WgCombobox::_onAction( WgInput::UserAction action, int button_key, const Wg
 
 		case	WgInput::POINTER_OVER:
 		{
-			WgRect gizmoRect( Local2abs(WgCoord(0,0)), Size() );
-			WgRect inputRect = gizmoRect - m_pTextBoxBg->ContentBorders();
+			WgRect widgetRect( Local2abs(WgCoord(0,0)), Size() );
+			WgRect inputRect = widgetRect - m_pTextBoxBg->ContentBorders();
 
 			if( _isSelectable() && inputRect.Contains(info.x,info.y) )
 			{
@@ -277,8 +277,8 @@ void WgCombobox::_onAction( WgInput::UserAction action, int button_key, const Wg
 		case WgInput::BUTTON_PRESS:
 			if( button_key == 1 )
 			{
-				WgRect gizmoRect( Local2abs(WgCoord(0,0)), Size() );
-				WgRect inputRect = gizmoRect;
+				WgRect widgetRect( Local2abs(WgCoord(0,0)), Size() );
+				WgRect inputRect = widgetRect;
 				if( m_pTextBoxBg )
 					inputRect -= m_pTextBoxBg->ContentBorders();
 
@@ -306,7 +306,7 @@ void WgCombobox::_onAction( WgInput::UserAction action, int button_key, const Wg
 						int y = ofs.y;
 						x += m_viewOfs;
 
-						m_pText->CursorGotoCoord( WgCoord(x, 0), WgRect(inputRect.x - gizmoRect.x,0,1000000,1000000) );
+						m_pText->CursorGotoCoord( WgCoord(x, 0), WgRect(inputRect.x - widgetRect.x,0,1000000,1000000) );
 				
 						if(_isSelectable() && !(info.modifier & WG_MODKEY_SHIFT))
 						{
@@ -325,12 +325,12 @@ void WgCombobox::_onAction( WgInput::UserAction action, int button_key, const Wg
 						WgWidget * pRoot = m_pHook->GetRoot();
 						int yPos;
 
-						if( pRoot->Height() < gizmoRect.y + gizmoRect.h + m_pMenu->Height() )
-							yPos = gizmoRect.y-m_pMenu->Height();
+						if( pRoot->Height() < widgetRect.y + widgetRect.h + m_pMenu->Height() )
+							yPos = widgetRect.y-m_pMenu->Height();
 						else
-							yPos = gizmoRect.y+gizmoRect.h;
+							yPos = widgetRect.y+widgetRect.h;
 
-						m_pMenu->Open( (Wdg_Root*) pRoot, gizmoRect.x, yPos, gizmoRect.w, m_pSelectedItem, &gizmoRect );
+						m_pMenu->Open( (Wdg_Root*) pRoot, widgetRect.x, yPos, widgetRect.w, m_pSelectedItem, &widgetRect );
 					}
 					newMode = WG_MODE_SELECTED;
 				}
@@ -615,7 +615,7 @@ void WgCombobox::_onRefresh( void )
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgCombobox::_onCloneContent( const WgGizmo * _pOrg )
+void WgCombobox::_onCloneContent( const WgWidget * _pOrg )
 {
 	const WgCombobox * pOrg = WgCast<WgCombobox>(_pOrg);
 	if( pOrg )

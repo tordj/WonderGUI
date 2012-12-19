@@ -12,7 +12,7 @@
 
 class WgBlock;
 class WgRect;
-class WgGizmo;
+class WgWidget;
 
 
 //____ WgUtil _________________________________________________________________
@@ -29,7 +29,7 @@ namespace WgUtil
 	WgRect		OrientationToRect( WgOrientation orientation, WgSize base, WgSize rect );
 
 	int 		SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy );
-	WgSize		SizeFromPolicy( const WgGizmo * pGizmo, WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy );
+	WgSize		SizeFromPolicy( const WgWidget * pWidget, WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy );
 
 
 	template <class T> inline T Max (T a, T b) {return (a>b?a:b); }

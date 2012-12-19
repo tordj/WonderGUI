@@ -23,8 +23,8 @@
 #ifndef	WG_TABLIST_DOT_H
 #define	WG_TABLIST_DOT_H
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef WG_CHAIN_DOT_H
@@ -75,7 +75,7 @@ private:
 	bool			m_bVisible;
 };
 
-class WgTablist : public WgGizmo
+class WgTablist : public WgWidget
 {
 public:
 	// It's possible to specify different sources for leftmost, rightmost, and middle tabs
@@ -123,7 +123,7 @@ public:
 	~WgTablist();
 	virtual const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgTablist(); };
+	virtual WgWidget * NewOfMyType() const { return new WgTablist(); };
 
 
 	//____ Methods __________________________________________
@@ -195,7 +195,7 @@ public:
 	WgSize			DefaultSize() const;
 
 protected:
-	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );

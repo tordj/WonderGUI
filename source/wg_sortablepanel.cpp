@@ -53,7 +53,7 @@ bool WgSortableHook::MoveUp()
 {
 	if( _moveUp() )
 	{
-		Parent()->_onGizmosReordered();
+		Parent()->_onWidgetsReordered();
 		return true;
 	}
 
@@ -64,7 +64,7 @@ bool WgSortableHook::MoveDown()
 {
 	if( _moveDown() )
 	{
-		Parent()->_onGizmosReordered();
+		Parent()->_onWidgetsReordered();
 		return true;
 	}
 
@@ -77,7 +77,7 @@ bool WgSortableHook::MoveBefore( WgSortableHook * pSibling )
 	{
 		if( _moveBefore(pSibling) )
 		{
-			Parent()->_onGizmosReordered();
+			Parent()->_onWidgetsReordered();
 			return true;
 		}
 	}
@@ -90,7 +90,7 @@ bool WgSortableHook::MoveAfter( WgSortableHook * pSibling )
 	{
 		if( _moveAfter(pSibling) )
 		{
-			Parent()->_onGizmosReordered();
+			Parent()->_onWidgetsReordered();
 			return true;
 		}
 	}
@@ -101,7 +101,7 @@ bool WgSortableHook::MoveFirst()
 {
 	if( _moveFirst() )
 	{
-		Parent()->_onGizmosReordered();
+		Parent()->_onWidgetsReordered();
 		return true;
 	}
 
@@ -112,7 +112,7 @@ bool WgSortableHook::MoveLast()
 {
 	if( _moveLast() )
 	{
-		Parent()->_onGizmosReordered();
+		Parent()->_onWidgetsReordered();
 		return true;
 	}
 
@@ -125,9 +125,9 @@ bool WgSortableHook::SetVisible( bool bVisible )
 	{
 		m_bVisible = bVisible;
 		if( bVisible )
-			Parent()->_onGizmoAppeared(this);
+			Parent()->_onWidgetAppeared(this);
 		else
-			Parent()->_onGizmoDisappeared(this);
+			Parent()->_onWidgetDisappeared(this);
 	}
 
 	return true;
@@ -193,38 +193,38 @@ WgSortablePanel::~WgSortablePanel()
 
 //____ AddChild() _____________________________________________________________
 
-WgSortableHook * WgSortablePanel::AddChild( WgGizmo * pGizmo )
+WgSortableHook * WgSortablePanel::AddChild( WgWidget * pWidget )
 {
-	if( !pGizmo )
+	if( !pWidget )
 		return 0;
 
 	WgSortableHook * pHook = _newHook();
 	m_hooks.PushBack(pHook);
-	pHook->_attachGizmo( pGizmo );
+	pHook->_attachWidget( pWidget );
 
-	_onGizmoAppeared(pHook);
+	_onWidgetAppeared(pHook);
 	return pHook;
 }
 
 //____ InsertChild() __________________________________________________________
 
-WgSortableHook * WgSortablePanel::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling )
+WgSortableHook * WgSortablePanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling )
 {
-	if( !pGizmo || !pSibling || !pSibling->Parent() || pSibling->Parent() != this )
+	if( !pWidget || !pSibling || !pSibling->Parent() || pSibling->Parent() != this )
 		return 0;
 
 	WgSortableHook * pHook = _newHook();
 	pHook->_moveBefore(static_cast<WgSortableHook*>(pSibling->Hook()));
 
-	pHook->_attachGizmo( pGizmo );
+	pHook->_attachWidget( pWidget );
 	
-	_onGizmoAppeared(pHook);
+	_onWidgetAppeared(pHook);
 	return pHook;
 }
 
 //____ InsertChildSorted() ____________________________________________________
 
-WgSortableHook * WgSortablePanel::InsertChildSorted( WgGizmo * pGizmo )
+WgSortableHook * WgSortablePanel::InsertChildSorted( WgWidget * pWidget )
 {
 	//TODO: Implement
 
@@ -233,20 +233,20 @@ WgSortableHook * WgSortablePanel::InsertChildSorted( WgGizmo * pGizmo )
 
 //____ DeleteChild() __________________________________________________________
 
-bool WgSortablePanel::DeleteChild( WgGizmo * pGizmo )
+bool WgSortablePanel::DeleteChild( WgWidget * pWidget )
 {
-	if( !pGizmo || !pGizmo->Hook() || pGizmo->Hook()->Parent() != this )
+	if( !pWidget || !pWidget->Hook() || pWidget->Hook()->Parent() != this )
 		return false;
 
-	// Disconnect and notify subclass that gizmo has disappeared
+	// Disconnect and notify subclass that widget has disappeared
 
-	WgSortableHook * pHook = (WgSortableHook *) pGizmo->Hook();
+	WgSortableHook * pHook = (WgSortableHook *) pWidget->Hook();
 	pHook->_disconnect();
 
 	if( pHook->IsVisible() )
-		_onGizmoDisappeared( pHook );
+		_onWidgetDisappeared( pHook );
 
-	// Delete the gizmo and return
+	// Delete the widget and return
 
 	delete pHook;
 	return true;
@@ -254,20 +254,20 @@ bool WgSortablePanel::DeleteChild( WgGizmo * pGizmo )
 
 //____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgSortablePanel::ReleaseChild( WgGizmo * pGizmo )
+WgWidget * WgSortablePanel::ReleaseChild( WgWidget * pWidget )
 {
-	if( !pGizmo || !pGizmo->Hook() || pGizmo->Hook()->Parent() != this )
+	if( !pWidget || !pWidget->Hook() || pWidget->Hook()->Parent() != this )
 		return 0;
 
-	// Disconnect and notify subclass that gizmo has disappeared
+	// Disconnect and notify subclass that widget has disappeared
 
-	WgSortableHook * pHook = (WgSortableHook *) pGizmo->Hook();
+	WgSortableHook * pHook = (WgSortableHook *) pWidget->Hook();
 	pHook->_disconnect();
 
 	if( pHook->IsVisible() )
-		_onGizmoDisappeared( pHook );
+		_onWidgetDisappeared( pHook );
 
-	return pGizmo;
+	return pWidget;
 }
 
 //____ DeleteAllChildren() ______________________________________________________
@@ -275,7 +275,7 @@ WgGizmo * WgSortablePanel::ReleaseChild( WgGizmo * pGizmo )
 bool WgSortablePanel::DeleteAllChildren()
 {
 	m_hooks.Clear();
-	_refreshAllGizmos();
+	_refreshAllWidgets();
 
 	return true;
 }
@@ -287,7 +287,7 @@ bool WgSortablePanel::ReleaseAllChildren()
 	while( m_hooks.First() )
 		m_hooks.PopFront();
 
-	_refreshAllGizmos();
+	_refreshAllWidgets();
 
 	return true;
 }
@@ -308,14 +308,14 @@ void WgSortablePanel::SetSortOrder( WgSortOrder order )
 
 //____ SetSortFunction() ______________________________________________________
 
-void WgSortablePanel::SetSortFunction( WgGizmoSortFunc pSortFunc )
+void WgSortablePanel::SetSortFunction( WgWidgetSortFunc pSortFunc )
 {
 	m_pSortFunc = pSortFunc;
 }
 
 //____ _onCloneContent() ______________________________________________________
 
-void WgSortablePanel::_onCloneContent( const WgGizmo * _pOrg )
+void WgSortablePanel::_onCloneContent( const WgWidget * _pOrg )
 {
 	//TODO: Implement
 }

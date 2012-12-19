@@ -24,8 +24,8 @@
 #define	WG_MENU_DOT_H
 
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef	WG_MENUITEM_DOT_H
@@ -44,7 +44,7 @@
 #	include	<wg_tileholder.h>
 #endif
 
-#ifndef WG_GIZMO_SLIDER_DOT_H
+#ifndef WG_WIDGET_SLIDER_DOT_H
 #	include <wg_slider.h>
 #endif
 
@@ -73,7 +73,7 @@ public:
 
 	virtual const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgMenu(); };
+	virtual WgWidget * NewOfMyType() const { return new WgMenu(); };
 
 	//____ Methods ___________________________________________
 
@@ -101,8 +101,8 @@ public:
 	WgTextpropPtr	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
 
 	bool			SetSliderSource(  WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx );
-	bool			SetSliderButtonLayout(  WgGizmoSlider::ButtonLayout layout );
-	WgGizmoSlider::ButtonLayout GetSliderButtonLayout() const { return m_sliderBtnLayout; }
+	bool			SetSliderButtonLayout(  WgWidgetSlider::ButtonLayout layout );
+	WgWidgetSlider::ButtonLayout GetSliderButtonLayout() const { return m_sliderBtnLayout; }
 	WgBlocksetPtr 	GetSliderBgSource() const { return m_pSliderBgGfx; }
 	WgBlocksetPtr 	GetSliderBarSource() const { return m_pSliderBarGfx; }
 	WgBlocksetPtr 	GetSliderBwdSource() const { return m_pSliderBtnBwdGfx; }
@@ -133,13 +133,13 @@ public:
 
 	void		SelectItem(WgMenuItem* pItem);
 
-	WgGizmo * 	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
+	WgWidget * 	FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
 
-	//____ Overloaded from WgGizmo & WgPanel ___________________________
+	//____ Overloaded from WgWidget & WgPanel ___________________________
 
-	bool		DeleteChild(WgGizmo* pChild ) { return false; }
-	WgGizmo*	ReleaseChild(WgGizmo* pChild ) { return 0; }
+	bool		DeleteChild(WgWidget* pChild ) { return false; }
+	WgWidget*	ReleaseChild(WgWidget* pChild ) { return 0; }
 	bool		DeleteAllChildren() { return false; }
 	bool		ReleaseAllChildren() { return false; }
 
@@ -172,7 +172,7 @@ private:
 		bool		SetVisible( bool bVisible ) { return false; }
 		WgMenu* Parent() const { return m_pParent; }
 
-		WgVSlider * Slider() { return m_pGizmo?static_cast<WgVSlider*>(m_pGizmo):0; }
+		WgVSlider * Slider() { return m_pWidget?static_cast<WgVSlider*>(m_pWidget):0; }
 
 
 	protected:
@@ -184,7 +184,7 @@ private:
 
 		WgHook *	_prevHook() const { return 0; }
 		WgHook *	_nextHook() const { return 0; }
-		WgGizmoContainer * _parent() const { return m_pParent; }
+		WgWidgetContainer * _parent() const { return m_pParent; }
 
 		WgMenu * 	m_pParent;
 		WgSize			m_size;
@@ -196,7 +196,7 @@ private:
 	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
 	void		_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-	void		_onCloneContent( const WgGizmo * _pOrg );
+	void		_onCloneContent( const WgWidget * _pOrg );
 	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void		_onNewSize( const WgSize& size );
 	void		_onRefresh();
@@ -235,7 +235,7 @@ private:
 
 	float		_setPosition( float fraction );
 
-	WgGizmo*	_getGizmo();
+	WgWidget*	_getWidget();
 	float		_getSliderPosition();
 	float		_getSliderSize();
 
@@ -325,7 +325,7 @@ private:
 	WgBlocksetPtr				m_pSliderBarGfx;
 	WgBlocksetPtr				m_pSliderBtnFwdGfx;
 	WgBlocksetPtr				m_pSliderBtnBwdGfx;
-	WgGizmoSlider::ButtonLayout	m_sliderBtnLayout;
+	WgWidgetSlider::ButtonLayout	m_sliderBtnLayout;
 };
 
 

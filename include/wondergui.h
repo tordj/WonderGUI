@@ -83,8 +83,8 @@
 #	include <wg_gfxdevice_null.h>
 #endif
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef WG_KEY_DOT_H
@@ -163,8 +163,8 @@
 #	include <wg_vectorglyphs.h>
 #endif
 
-#ifndef WG_GIZMO_COLLECTION_DOT_H
-#	include <wg_gizmo_collection.h>
+#ifndef WG_WIDGET_COLLECTION_DOT_H
+#	include <wg_widget_collection.h>
 #endif
 
 #ifndef WG_PANEL_DOT_H
@@ -175,8 +175,8 @@
 #	include <wg_hook.h>
 #endif
 
-#ifndef WG_GIZMOCONTAINER_DOT_H
-#	include <wg_gizmocontainer.h>
+#ifndef WG_WIDGETCONTAINER_DOT_H
+#	include <wg_widgetcontainer.h>
 #endif
 
 
@@ -248,7 +248,7 @@
 #	include <wg_shaderpanel.h>
 #endif
 
-#ifndef WG_GIZMO_SLIDER_DOT_H
+#ifndef WG_WIDGET_SLIDER_DOT_H
 #	include <wg_slider.h>
 #endif
 

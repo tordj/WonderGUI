@@ -61,17 +61,17 @@ public:
 
 	const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgVPanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgVPanel(); };
 	
 
-	inline WgVHook * AddChild( WgGizmo * pGizmo ) { return static_cast<WgVHook*>(WgSortablePanel::AddChild(pGizmo)); }
-	inline WgVHook * InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling ) { return static_cast<WgVHook*>(WgSortablePanel::InsertChild(pGizmo,pSibling)); }
-	inline WgVHook * InsertChildSorted( WgGizmo * pGizmo ) { return static_cast<WgVHook*>(WgSortablePanel::InsertChildSorted(pGizmo)); }
+	inline WgVHook * AddChild( WgWidget * pWidget ) { return static_cast<WgVHook*>(WgSortablePanel::AddChild(pWidget)); }
+	inline WgVHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgVHook*>(WgSortablePanel::InsertChild(pWidget,pSibling)); }
+	inline WgVHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgVHook*>(WgSortablePanel::InsertChildSorted(pWidget)); }
 
 	inline WgVHook* FirstHook() const { return static_cast<WgVHook*>(m_hooks.First()); }
 	inline WgVHook* LastHook() const { return static_cast<WgVHook*>(m_hooks.Last()); }
 
-	// Overloaded from WgGizmo
+	// Overloaded from WgWidget
 
 	int		HeightForWidth( int width ) const;
 	int		WidthForHeight( int height ) const;
@@ -80,9 +80,9 @@ public:
 
 protected:
 
-	// Overloaded from Gizmo
+	// Overloaded from Widget
 
-//	void	_onCloneContent( const WgGizmo * _pOrg );
+//	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onNewSize( const WgSize& size );
 
 	// Overloaded from WgPanel
@@ -99,10 +99,10 @@ protected:
 	void	_onResizeRequested( WgSortableHook * pHook );
 	void	_onRenderRequested( WgSortableHook * pHook );
 	void	_onRenderRequested( WgSortableHook * pHook, const WgRect& rect );
-	void	_onGizmoAppeared( WgSortableHook * pInserted );				// so parent can update geometry and possibly request render.
-	void	_onGizmoDisappeared( WgSortableHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
-	void	_onGizmosReordered();
-	void	_refreshAllGizmos();
+	void	_onWidgetAppeared( WgSortableHook * pInserted );				// so parent can update geometry and possibly request render.
+	void	_onWidgetDisappeared( WgSortableHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+	void	_onWidgetsReordered();
+	void	_refreshAllWidgets();
 	WgSortableHook * _newHook();
 
 	// Overloaded from WgBoxLayout
@@ -119,7 +119,7 @@ protected:
 
 	WgSize	m_size;
 	WgSize	m_bestSize;
-	int		m_nBestWidth;				// Number of Gizmos who have exactly m_bestSize.w as their prefered width.
+	int		m_nBestWidth;				// Number of Widgets who have exactly m_bestSize.w as their prefered width.
 
 	
 

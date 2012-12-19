@@ -3,7 +3,7 @@
 #include <wg_geo.h>
 #include <wg_blockset.h>
 #include <wg_surface.h>
-#include <wg_gizmo.h>
+#include <wg_widget.h>
 
 bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 {
@@ -259,9 +259,9 @@ int WgUtil::SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy pol
 
 //____ SizeFromPolicy() ________________________________________________________
 
-WgSize WgUtil::SizeFromPolicy( const WgGizmo * pGizmo, WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy )
+WgSize WgUtil::SizeFromPolicy( const WgWidget * pWidget, WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy )
 {
-	WgSize	defaultSize = pGizmo->DefaultSize();
+	WgSize	defaultSize = pWidget->DefaultSize();
 
 	WgSize	sz;
 
@@ -270,22 +270,22 @@ WgSize WgUtil::SizeFromPolicy( const WgGizmo * pGizmo, WgSize specifiedSize, WgS
 		case WG_DEFAULT:
 		{
 			sz.h = SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
-			sz.w = pGizmo->WidthForHeight(sz.h);
+			sz.w = pWidget->WidthForHeight(sz.h);
 			break;
 		case WG_BOUND:
 			sz.w = specifiedSize.w;
-			sz.h = SizeFromPolicy( pGizmo->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+			sz.h = SizeFromPolicy( pWidget->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
 			break;
 		case WG_CONFINED:
 			if( defaultSize.w > specifiedSize.w )
 			{
 				sz.w = specifiedSize.w;
-				sz.h = SizeFromPolicy( pGizmo->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+				sz.h = SizeFromPolicy( pWidget->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
 			}
 			else
 			{
 				sz.h = SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
-				sz.w = pGizmo->WidthForHeight(sz.h);
+				sz.w = pWidget->WidthForHeight(sz.h);
 				if( sz.w > specifiedSize.w )
 					sz.w = specifiedSize.w;
 			}
@@ -294,12 +294,12 @@ WgSize WgUtil::SizeFromPolicy( const WgGizmo * pGizmo, WgSize specifiedSize, WgS
 			if( defaultSize.w < specifiedSize.w )
 			{
 				sz.w = specifiedSize.w;
-				sz.h = SizeFromPolicy( pGizmo->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+				sz.h = SizeFromPolicy( pWidget->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
 			}
 			else
 			{
 				sz.h = SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
-				sz.w = pGizmo->WidthForHeight(sz.h);
+				sz.w = pWidget->WidthForHeight(sz.h);
 				if( sz.w < specifiedSize.w )
 					sz.w = specifiedSize.w;
 			}

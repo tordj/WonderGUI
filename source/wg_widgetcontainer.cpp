@@ -20,21 +20,21 @@
 
 =========================================================================*/
 
-#include <wg_gizmocontainer.h>
-#include <wg_gizmo.h>
+#include <wg_widgetcontainer.h>
+#include <wg_widget.h>
 
-bool WgGizmoContainer::IsAncestorTo( const WgGizmo * pGizmo ) const
+bool WgWidgetContainer::IsAncestorTo( const WgWidget * pWidget ) const
 {
-	while( pGizmo )
+	while( pWidget )
 	{
-		WgGizmoContainer * pParent = pGizmo->Parent();
+		WgWidgetContainer * pParent = pWidget->Parent();
 		if( !pParent )
 			return false;
 
 		if( pParent == this )
 			return true;
 
-		pGizmo = pParent->CastToGizmo();
+		pWidget = pParent->CastToWidget();
 	}
 
 	return false;

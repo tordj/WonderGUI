@@ -29,16 +29,16 @@
 
 
 
-class WgGizmoContainer;
+class WgWidgetContainer;
 class WgGfxDevice;
-class WgGizmo;
+class WgWidget;
 class WgRootPanel;
 class WgRectLink;
 class WgEventHandler;
 
 class WgHook
 {
-	friend class WgGizmo;
+	friend class WgWidget;
 	friend class WgPanel;
 	friend class WgSortablePanel;
 
@@ -55,8 +55,8 @@ public:
 	virtual bool	SetVisible( bool bVisible );
 	bool			IsVisible() { return m_bVisible; }
 
-	WgGizmo *			Gizmo() const { return m_pGizmo; }
-	WgGizmoContainer * 	Parent() const { return _parent(); }
+	WgWidget *			Widget() const { return m_pWidget; }
+	WgWidgetContainer * 	Parent() const { return _parent(); }
 	virtual WgRootPanel *	Root() const;
 	WgEventHandler *	EventHandler() const;
 
@@ -64,14 +64,14 @@ public:
 	
 protected:
 
-	WgHook() : m_pGizmo(0), m_bVisible(true) {}
+	WgHook() : m_pWidget(0), m_bVisible(true) {}
 	virtual ~WgHook();
 
-	virtual void	_attachGizmo( WgGizmo * pGizmo );				// Make sure Gizmo links us. Call when hook has been relocated.
-	void			_relinkGizmo();
-	WgGizmo*		_releaseGizmo();								//
+	virtual void	_attachWidget( WgWidget * pWidget );				// Make sure Widget links us. Call when hook has been relocated.
+	void			_relinkWidget();
+	WgWidget*		_releaseWidget();								//
 
-	// To be called by Gizmo
+	// To be called by Widget
 
 	virtual void	_requestRender() = 0;
 	virtual void	_requestRender( const WgRect& rect ) = 0;
@@ -84,10 +84,10 @@ protected:
 
 	virtual WgHook *	_prevHook() const = 0;
 	virtual WgHook *	_nextHook() const = 0;
-	virtual WgGizmoContainer * _parent() const = 0;
+	virtual WgWidgetContainer * _parent() const = 0;
 
 
-	WgGizmo *		m_pGizmo;
+	WgWidget *		m_pWidget;
 	bool			m_bVisible;
 
 };

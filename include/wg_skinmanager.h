@@ -36,13 +36,13 @@
 #endif
 
 class WgSkinNode;
-class WgGizmo;
+class WgWidget;
 
 class WgSkinManager
 {
 
 friend class WgSkinNode;
-friend class WgGizmo;
+friend class WgWidget;
 
 public:
 	WgSkinManager();
@@ -52,7 +52,7 @@ public:
 private:
 	int		_getAlternative( WgSkinNode * pNode, WgSize size );
 
-	virtual WgSkinNode *	_newNode( WgGizmo * pGizmo );
+	virtual WgSkinNode *	_newNode( WgWidget * pWidget );
 	WgChain<WgSkinNode>		m_nodes;
 
 
@@ -63,7 +63,7 @@ class WgSkinNode : public WgLink
 {
 
 public:
-	WgSkinNode( WgSkinManager * pManager, WgGizmo * pGizmo );
+	WgSkinNode( WgSkinManager * pManager, WgWidget * pWidget );
 	virtual ~WgSkinNode();
 
 	LINK_METHODS( WgSkinNode );
@@ -72,11 +72,11 @@ public:
 	void		Refresh();
 
 	inline WgSkinManager *	GetManager() const { return m_pManager; }
-	inline WgGizmo *		GetGizmo() const { return m_pGizmo; }
+	inline WgWidget *		GetWidget() const { return m_pWidget; }
 
 private:
 	WgSkinManager	* m_pManager;
-	WgGizmo			* m_pGizmo;
+	WgWidget			* m_pWidget;
 };
 
 

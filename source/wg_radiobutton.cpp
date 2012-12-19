@@ -24,7 +24,7 @@
 #include <wg_panel.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"RadioButton"};
+static const char	c_widgetType[] = {"RadioButton"};
 
 
 
@@ -51,7 +51,7 @@ const char * WgRadioButton::Type( void ) const
 
 const char * WgRadioButton::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 
@@ -63,7 +63,7 @@ bool WgRadioButton::SetState( bool _state )
 	{
 		if( _state )
 		{
-			WgGizmoContainer * pGroup = _findRadioGroup();
+			WgWidgetContainer * pGroup = _findRadioGroup();
 			if( pGroup )
 				_unselectRecursively( pGroup );
 
@@ -89,20 +89,20 @@ bool WgRadioButton::SetState( bool _state )
 
 //____ _findRadioGroup() _______________________________________________________
 
-WgGizmoContainer * WgRadioButton::_findRadioGroup()
+WgWidgetContainer * WgRadioButton::_findRadioGroup()
 {
-	WgGizmoContainer * pRadioGroup = 0;
-	WgGizmoContainer * pParent = Parent();
+	WgWidgetContainer * pRadioGroup = 0;
+	WgWidgetContainer * pParent = Parent();
 	while( pParent )
 	{
 		pRadioGroup = pParent;
 
-		if( pParent->IsGizmo() )
+		if( pParent->IsWidget() )
 		{
 			if( pParent->CastToPanel()->IsRadioGroup() )
 				break;
 
-			pParent = pParent->CastToGizmo()->Parent();
+			pParent = pParent->CastToWidget()->Parent();
 		}
 		else break;
 	}
@@ -112,15 +112,15 @@ WgGizmoContainer * WgRadioButton::_findRadioGroup()
 
 //____ _unselectRecursively() __________________________________________________
 
-void WgRadioButton::_unselectRecursively( WgGizmoContainer * pParent )
+void WgRadioButton::_unselectRecursively( WgWidgetContainer * pParent )
 {
-	WgGizmo * pGizmo = pParent->FirstGizmo();
+	WgWidget * pWidget = pParent->FirstWidget();
 
-	while( pGizmo )
+	while( pWidget )
 	{
-		if( pGizmo->Type() == WgRadioButton::GetClass() )
+		if( pWidget->Type() == WgRadioButton::GetClass() )
 		{
-			WgRadioButton * pRB = (WgRadioButton*) pGizmo;
+			WgRadioButton * pRB = (WgRadioButton*) pWidget;
 			if( pRB->m_bChecked )
 			{
 				pRB->m_bChecked = false;
@@ -134,16 +134,16 @@ void WgRadioButton::_unselectRecursively( WgGizmoContainer * pParent )
 				pRB->_requestRender();
 			}
 		}
-		else if( pGizmo->IsPanel() && !pGizmo->CastToPanel()->IsRadioGroup() )
-			_unselectRecursively( pGizmo->CastToPanel() );
+		else if( pWidget->IsPanel() && !pWidget->CastToPanel()->IsRadioGroup() )
+			_unselectRecursively( pWidget->CastToPanel() );
 
-		pGizmo = pGizmo->NextSibling();
+		pWidget = pWidget->NextSibling();
 	}
 }
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgRadioButton::_onCloneContent( const WgGizmo * _pOrg )
+void WgRadioButton::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgCheckBox::_onCloneContent( _pOrg );
 

@@ -20,25 +20,25 @@
 
 =========================================================================*/
 
-#ifndef	WG_GIZMOCONTAINER_DOT_H
-#define	WG_GIZMOCONTAINER_DOT_H
+#ifndef	WG_WIDGETCONTAINER_DOT_H
+#define	WG_WIDGETCONTAINER_DOT_H
 
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_GIZMO_COLLECTION_DOT_H
-#	include <wg_gizmo_collection.h>
+#ifndef WG_WIDGET_COLLECTION_DOT_H
+#	include <wg_widgetcollection.h>
 #endif
 
-class WgGizmo;
+class WgWidget;
 class WgRootPanel;
 class WgHook;
 class WgPanel;
 class WgModalPanel;
 class WgMenuPanel;
 
-class WgGizmoContainer : public WgGizmoCollection
+class WgWidgetContainer : public WgWidgetCollection
 {
 	friend class WgPanel;
 	friend class WgMenu;
@@ -46,31 +46,31 @@ class WgGizmoContainer : public WgGizmoCollection
 	friend class WgHook;
 	public:
 
-		virtual WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode ) = 0;
+		virtual WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode ) = 0;
 
-		virtual bool		DeleteChild( WgGizmo * pGizmo ) = 0;
-		virtual WgGizmo *	ReleaseChild( WgGizmo * pGizmo ) = 0;
+		virtual bool		DeleteChild( WgWidget * pWidget ) = 0;
+		virtual WgWidget *	ReleaseChild( WgWidget * pWidget ) = 0;
 
 		virtual bool		DeleteAllChildren() = 0;
 		virtual bool		ReleaseAllChildren() = 0;
 
-		virtual WgGizmo *			CastToGizmo() = 0;
-		virtual const WgGizmo *		CastToGizmo() const = 0;
+		virtual WgWidget *			CastToWidget() = 0;
+		virtual const WgWidget *		CastToWidget() const = 0;
 		virtual WgPanel *	CastToPanel() = 0;
 		virtual const WgPanel *	CastToPanel() const = 0;
 		virtual WgRootPanel *			CastToRoot() = 0;
 		virtual const WgRootPanel *		CastToRoot() const = 0;
 
-		virtual bool		IsGizmo() const = 0;
+		virtual bool		IsWidget() const = 0;
 		virtual bool		IsPanel() const = 0;
 		virtual bool		IsRoot() const = 0;
 
-		virtual bool		IsAncestorTo( const WgGizmo * pGizmo ) const;
+		virtual bool		IsAncestorTo( const WgWidget * pWidget ) const;
 
 	protected:
 
-		virtual bool 		_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting ) = 0;
-		virtual bool 		_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing ) = 0;
+		virtual bool 		_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting ) = 0;
+		virtual bool 		_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing ) = 0;
 
 		virtual WgModalPanel *		_getModalPanel() const = 0;
 		virtual WgMenuPanel*	_getMenuPanel() const = 0;
@@ -78,4 +78,4 @@ class WgGizmoContainer : public WgGizmoCollection
 };
 
 
-#endif //WG_GIZMOCONTAINER_DOT_H
+#endif //WG_WIDGETCONTAINER_DOT_H

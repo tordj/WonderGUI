@@ -72,23 +72,23 @@ bool WgEventHandler::SetFocusGroup( WgPanel * pFocusGroup )
 			return false;									// pFocusGroup is not a child of our root.
 	}
 
-	// Set new focus gizmo as specified by group
+	// Set new focus widget as specified by group
 
-	WgGizmoWeakPtr pNewFocusGizmo;
+	WgWidgetWeakPtr pNewFocusWidget;
 
 	if( pFocusGroup )
 		if( m_focusGroupMap.find(pFocusGroup) != m_focusGroupMap.end() )
-			pNewFocusGizmo = m_focusGroupMap[pFocusGroup];
+			pNewFocusWidget = m_focusGroupMap[pFocusGroup];
 
-	if( m_keyFocusGizmo )
-		m_keyFocusGizmo->_onLostInputFocus();
+	if( m_keyFocusWidget )
+		m_keyFocusWidget->_onLostInputFocus();
 
-	if( pNewFocusGizmo )
-		pNewFocusGizmo->_onGotInputFocus();
+	if( pNewFocusWidget )
+		pNewFocusWidget->_onGotInputFocus();
 
 	// Set members and exit
 
-	m_keyFocusGizmo = pNewFocusGizmo;
+	m_keyFocusWidget = pNewFocusWidget;
 	m_keyFocusGroup = pFocusGroup;
 
 	return true;
@@ -96,16 +96,16 @@ bool WgEventHandler::SetFocusGroup( WgPanel * pFocusGroup )
 
 //____ SetKeyboardFocus() _____________________________________________________
 
-bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
+bool WgEventHandler::SetKeyboardFocus( WgWidget * pFocus )
 {
-	// Return if Gizmo is not child of our root.
+	// Return if Widget is not child of our root.
 
 	if( pFocus && (!pFocus->Hook() || pFocus->Hook()->Root() != m_pRoot) )
 		return false;
 
 	// Handle old focus.
 
-	WgGizmo * pOldFocus = m_keyFocusGizmo.GetRealPtr();
+	WgWidget * pOldFocus = m_keyFocusWidget.GetRealPtr();
 
 	if( pFocus == pOldFocus )
 		return true;
@@ -117,7 +117,7 @@ bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
 
 	if( pFocus )
 	{
-		// Check what focus group (if any) this Gizmo belongs to.
+		// Check what focus group (if any) this Widget belongs to.
 
 		WgPanel * p = pFocus->Parent()->CastToPanel();
 		while( p && !p->IsFocusGroup() )
@@ -135,7 +135,7 @@ bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
 
 	// Set members and exit.
 
-	m_keyFocusGizmo = pFocus;
+	m_keyFocusWidget = pFocus;
 	m_focusGroupMap[m_keyFocusGroup] = pFocus;
 
 	return true;
@@ -145,9 +145,9 @@ bool WgEventHandler::SetKeyboardFocus( WgGizmo * pFocus )
 
 WgPanel * WgEventHandler::FocusGroup() const
 {
-	WgGizmo * pGizmo = m_keyFocusGroup.GetRealPtr();
-	if( pGizmo )
-		return pGizmo->CastToPanel();
+	WgWidget * pWidget = m_keyFocusGroup.GetRealPtr();
+	if( pWidget )
+		return pWidget->CastToPanel();
 
 	return 0;
 }
@@ -189,9 +189,9 @@ void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event * pEvent, void 
 	m_globalCallbacks.PushBack( p );
 }
 
-void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event * pEvent, WgGizmo * pDest), WgGizmo * pDest )
+void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event * pEvent, WgWidget * pDest), WgWidget * pDest )
 {
-	Callback * p = new GizmoCallback( WgEventFilter(), fp, pDest );
+	Callback * p = new WidgetCallback( WgEventFilter(), fp, pDest );
 	m_globalCallbacks.PushBack( p );
 }
 
@@ -213,9 +213,9 @@ void WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const W
 	_addCallback( filter, p );
 }
 
-void WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent, WgGizmo * pDest), WgGizmo * pDest )
+void WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent, WgWidget * pDest), WgWidget * pDest )
 {
-	Callback * p = new GizmoCallback( filter, fp, pDest );
+	Callback * p = new WidgetCallback( filter, fp, pDest );
 	_addCallback( filter, p );
 }
 
@@ -227,11 +227,11 @@ void WgEventHandler::AddCallback( const WgEventFilter& filter, WgEventListener *
 
 //____ DeleteCallbacksTo() _______________________________________________________
 
-int WgEventHandler::DeleteCallbacksTo( const WgGizmo * pGizmo )
+int WgEventHandler::DeleteCallbacksTo( const WgWidget * pWidget )
 {
-	// Delete all callbacks with the specified Gizmo as recipient.
+	// Delete all callbacks with the specified Widget as recipient.
 
-	return _deleteCallbacksTo(pGizmo);
+	return _deleteCallbacksTo(pWidget);
 }
 
 int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEvent::Event * pEvent) )
@@ -251,15 +251,15 @@ int WgEventHandler::DeleteCallbacksTo( const WgEventListener * pListener )
 
 //____ DeleteCallbacksOn() _______________________________________________________
 
-int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo )
+int WgEventHandler::DeleteCallbacksOn( const WgWidget * pWidget )
 {
-	std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.find(WgGizmoWeakPtr( const_cast<WgGizmo*>(pGizmo) ));
+	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr( const_cast<WgWidget*>(pWidget) ));
 
-	if( it == m_gizmoCallbacks.end() )
+	if( it == m_widgetCallbacks.end() )
 		return 0;
 
 	int nDeleted = it->second.Size();
-	m_gizmoCallbacks.erase(it);
+	m_widgetCallbacks.erase(it);
 	return nDeleted;
 }
 
@@ -269,15 +269,15 @@ int WgEventHandler::DeleteCallbacksOn( WgEventType type )
 
 	int nDeleted = _deleteCallbacksOnType( type, &m_globalCallbacks );
 
-	// Delete Gizmo-specific callbacks on this event type
+	// Delete Widget-specific callbacks on this event type
 
-	std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.begin();
-	while( it != m_gizmoCallbacks.end() )
+	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.begin();
+	while( it != m_widgetCallbacks.end() )
 	{
 		nDeleted += _deleteCallbacksOnType( type, &it->second );
 
 		if( it->second.Size() == 0 )
-			m_gizmoCallbacks.erase(it++);
+			m_widgetCallbacks.erase(it++);
 		else
 			++it;
 	}
@@ -285,11 +285,11 @@ int WgEventHandler::DeleteCallbacksOn( WgEventType type )
 }
 
 
-int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventType type )
+int WgEventHandler::DeleteCallbacksOn( const WgWidget * pWidget, WgEventType type )
 {
-	std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.find( WgGizmoWeakPtr(const_cast<WgGizmo*>(pGizmo)));
+	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find( WgWidgetWeakPtr(const_cast<WgWidget*>(pWidget)));
 
-	if( it == m_gizmoCallbacks.end() )
+	if( it == m_widgetCallbacks.end() )
 		return 0;
 
 	int nDeleted = 0;
@@ -308,7 +308,7 @@ int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventType type 
 	}
 
 	if( it->second.Size() == 0 )
-		m_gizmoCallbacks.erase(it);
+		m_widgetCallbacks.erase(it);
 
 	return nDeleted;
 }
@@ -317,9 +317,9 @@ int WgEventHandler::DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventType type 
 
 //____ DeleteCallbacks() ______________________________________________________
 
-int WgEventHandler::DeleteCallback( const WgEventFilter& filter,const  WgGizmo * pGizmo )
+int WgEventHandler::DeleteCallback( const WgEventFilter& filter,const  WgWidget * pWidget )
 {
-	return _deleteCallback( filter, pGizmo );
+	return _deleteCallback( filter, pWidget );
 }
 
 int WgEventHandler::DeleteCallback( const WgEventFilter& filter, const WgEventListener * pListener )
@@ -344,7 +344,7 @@ int WgEventHandler::DeleteCallback( const WgEventFilter& filter, void(*fp)( cons
 int WgEventHandler::DeleteAllCallbacks()
 {
 	m_globalCallbacks.Clear();
-	m_gizmoCallbacks.clear();
+	m_widgetCallbacks.clear();
 	return false;
 }
 
@@ -370,17 +370,17 @@ int WgEventHandler::DeleteDeadCallbacks()
 		}
 	}
 
-	// Delete any dead Gizmo-specific callbacks.
+	// Delete any dead Widget-specific callbacks.
 	// These can be dead by either sender or receiver having been deleted.
 
-	std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.begin();
+	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.begin();
 
-	while( it != m_gizmoCallbacks.end() )
+	while( it != m_widgetCallbacks.end() )
 	{
 		if( !it->first )
 		{
 			nDeleted += it->second.Size();
-			m_gizmoCallbacks.erase(it++);		// Sender is dead, delete whole branch of callbacks.
+			m_widgetCallbacks.erase(it++);		// Sender is dead, delete whole branch of callbacks.
 		}
 		else
 		{
@@ -409,11 +409,11 @@ int WgEventHandler::DeleteDeadCallbacks()
 
 void WgEventHandler::_addCallback( const WgEventFilter& filter, Callback * pCallback )
 {
-	if( filter.FiltersGizmo() )
+	if( filter.FiltersWidget() )
 	{
-		WgGizmoWeakPtr pGizmo = filter.Gizmo();
+		WgWidgetWeakPtr pWidget = filter.Widget();
 
-		WgChain<Callback>& chain = m_gizmoCallbacks[pGizmo];
+		WgChain<Callback>& chain = m_widgetCallbacks[pWidget];
 
 		chain.PushBack(pCallback);
 	}
@@ -444,11 +444,11 @@ int WgEventHandler::_deleteCallbacksTo( const void * pReceiver )
 		}
 	}
 
-	// Delete any Gizmo-specific callbacks for this receiver.
+	// Delete any Widget-specific callbacks for this receiver.
 
-	std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.begin();
+	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.begin();
 
-	while( it != m_gizmoCallbacks.end() )
+	while( it != m_widgetCallbacks.end() )
 	{
 		Callback * p = it->second.First();
 		while( p )
@@ -501,12 +501,12 @@ int WgEventHandler::_deleteCallback( const WgEventFilter& filter, const void * p
 	int nDeleted = 0;
 	WgChain<Callback>*	pChain;
 
-	if( filter.FiltersGizmo() )
+	if( filter.FiltersWidget() )
 	{
-		std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.find(WgGizmoWeakPtr(filter.Gizmo()));
+		std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr(filter.Widget()));
 
-		if( it == m_gizmoCallbacks.end() )
-			return 0;					// No callbacks for Gizmo
+		if( it == m_widgetCallbacks.end() )
+			return 0;					// No callbacks for Widget
 
 		pChain = &it->second;
 	}
@@ -533,8 +533,8 @@ int WgEventHandler::_deleteCallback( const WgEventFilter& filter, const void * p
 
 	if( pChain->Size() == 0 && pChain != &m_globalCallbacks )
 	{
-		std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it = m_gizmoCallbacks.find(WgGizmoWeakPtr(filter.Gizmo()));
-		m_gizmoCallbacks.erase(it);
+		std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr(filter.Widget()));
+		m_widgetCallbacks.erase(it);
 
 	}
 
@@ -574,14 +574,14 @@ bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent )
 	if( !_pEvent )
 		return false;
 	
-	WgGizmo * p = _pEvent->Gizmo();
+	WgWidget * p = _pEvent->Widget();
 	if( p && p->Parent() )
-		return ForwardEvent( _pEvent, p->Parent()->CastToGizmo() );
+		return ForwardEvent( _pEvent, p->Parent()->CastToWidget() );
 	else
 		return false;				
 }
 
-bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent, WgGizmo * pRecipient )
+bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent, WgWidget * pRecipient )
 {
 	if( !_pEvent || !pRecipient )
 		return false;
@@ -639,8 +639,8 @@ bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent, WgGizmo * pRe
 			return false;
 	}
 
-	pEvent->m_pGizmo = pRecipient;
-	pEvent->m_pForwardedFrom = _pEvent->m_pGizmo;
+	pEvent->m_pWidget = pRecipient;
+	pEvent->m_pForwardedFrom = _pEvent->m_pWidget;
 	QueueEvent( pEvent );
 	return true;
 }
@@ -654,20 +654,20 @@ void WgEventHandler::ProcessEvents()
 
 	m_bIsProcessing = true;
 
-	// First thing: we make sure that we know what Gizmos pointer is inside, in case that has changed.
+	// First thing: we make sure that we know what Widgets pointer is inside, in case that has changed.
 
 	m_insertPos = m_eventQueue.begin();	// Insert any POINTER_ENTER/EXIT right at beginning.
-	_updateMarkedGizmo(false);
+	_updateMarkedWidget(false);
 
 	// Process all the events in the queue
 
 	_processEventQueue();
 
-	// Post Gizmo-specific tick events now we know how much time has passed
+	// Post Widget-specific tick events now we know how much time has passed
 
 	_postTickEvents( (int) (m_time-time) );
 
-	// Process Gizmo-specific tick events (and any events they might trigger)
+	// Process Widget-specific tick events (and any events they might trigger)
 
 	_processEventQueue();
 
@@ -686,11 +686,11 @@ void WgEventHandler::_processEventQueue()
 
 		_finalizeEvent( pEvent );
 
-		if( pEvent->IsForGizmo() )
+		if( pEvent->IsForWidget() )
 		{
-			WgGizmo * pGizmo = pEvent->Gizmo();
-			if( pGizmo )
-				pGizmo->_onEvent( pEvent, this );
+			WgWidget * pWidget = pEvent->Widget();
+			if( pWidget )
+				pWidget->_onEvent( pEvent, this );
 		}
 		else
 		{
@@ -700,10 +700,10 @@ void WgEventHandler::_processEventQueue()
 
 		m_eventQueue.pop_front();
 
-		// Delete event object unless its a BUTTON_PRESS, BUTTON_RELEASE or KEY_PRESS event for NO SPECIFIC GIZMO,
+		// Delete event object unless its a BUTTON_PRESS, BUTTON_RELEASE or KEY_PRESS event for NO SPECIFIC WIDGET,
 		// which are kept in m_pLatestPressEvents, m_pLatestReleaseEvents and m_keysDown respectively.
 
-		if( pEvent->IsForGizmo() || (pEvent->Type() !=  WG_EVENT_MOUSEBUTTON_PRESS &&
+		if( pEvent->IsForWidget() || (pEvent->Type() !=  WG_EVENT_MOUSEBUTTON_PRESS &&
 			pEvent->Type() != WG_EVENT_MOUSEBUTTON_RELEASE && pEvent->Type() != WG_EVENT_KEY_PRESS) )
 			delete pEvent;
 	}
@@ -713,28 +713,28 @@ void WgEventHandler::_processEventQueue()
 
 void WgEventHandler::_postTickEvents( int ticks )
 {
-	std::vector<WgGizmoWeakPtr>::iterator it = m_vTickGizmos.begin();
+	std::vector<WgWidgetWeakPtr>::iterator it = m_vTickWidgets.begin();
 
-	while( it != m_vTickGizmos.end() )
+	while( it != m_vTickWidgets.end() )
 	{
-		WgGizmo * pGizmo = (*it).GetRealPtr();
+		WgWidget * pWidget = (*it).GetRealPtr();
 
-		if( pGizmo && pGizmo->Hook() && pGizmo->Hook()->Root() == m_pRoot && pGizmo->m_bReceiveTick )
+		if( pWidget && pWidget->Hook() && pWidget->Hook()->Root() == m_pRoot && pWidget->m_bReceiveTick )
 		{
-			QueueEvent( new WgEvent::Tick( ticks, pGizmo ) );
+			QueueEvent( new WgEvent::Tick( ticks, pWidget ) );
 			++it;
 		}
 		else
-			it = m_vTickGizmos.erase(it);
+			it = m_vTickWidgets.erase(it);
 	}
 }
 
 //____ _addTickReceiver() _____________________________________________________
 
-void WgEventHandler::_addTickReceiver( WgGizmo * pGizmo )
+void WgEventHandler::_addTickReceiver( WgWidget * pWidget )
 {
-	if( pGizmo && !_isGizmoInList( pGizmo, m_vTickGizmos ) )
-		m_vTickGizmos.push_back( WgGizmoWeakPtr(pGizmo) );
+	if( pWidget && !_isWidgetInList( pWidget, m_vTickWidgets ) )
+		m_vTickWidgets.push_back( WgWidgetWeakPtr(pWidget) );
 }
 
 
@@ -752,16 +752,16 @@ void WgEventHandler::_processEventCallbacks( WgEvent::Event * pEvent )
 		pCallback = pCallback->Next();
 	}
 
-	// Call all Gizmo-specific callbacks
+	// Call all Widget-specific callbacks
 
 	WgChain<Callback> * pChain = 0;
 
-	if( pEvent->Gizmo() )
+	if( pEvent->Widget() )
 	{
-		std::map<WgGizmoWeakPtr,WgChain<Callback> >::iterator it;
+		std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it;
 
-		it = m_gizmoCallbacks.find(pEvent->GizmoWeakPtr());
-		if( it != m_gizmoCallbacks.end() )
+		it = m_widgetCallbacks.find(pEvent->WidgetWeakPtr());
+		if( it != m_widgetCallbacks.end() )
 			pChain = &(it->second);
 	}
 
@@ -790,13 +790,13 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 	// Only global POINTER_ENTER & POINTER_MOVE events have these members
 	// set, the rest needs to have them filled in.
 
-	if( pEvent->IsForGizmo() || (pEvent->Type() != WG_EVENT_MOUSE_MOVE && pEvent->Type() != WG_EVENT_MOUSE_ENTER) )
+	if( pEvent->IsForWidget() || (pEvent->Type() != WG_EVENT_MOUSE_MOVE && pEvent->Type() != WG_EVENT_MOUSE_ENTER) )
 	{
 		pEvent->m_pointerScreenPos = m_pointerPos;
 		pEvent->m_pointerLocalPos = m_pointerPos;
 
-		if( pEvent->Gizmo() )
-			pEvent->m_pointerLocalPos -= pEvent->Gizmo()->ScreenPos();
+		if( pEvent->Widget() )
+			pEvent->m_pointerLocalPos -= pEvent->Widget()->ScreenPos();
 	}
 
 	// Event specific finalizations
@@ -987,8 +987,8 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 
 void WgEventHandler::_processFocusGained( WgEvent::FocusGained * pEvent )
 {
-	if( !m_bWindowFocus && m_keyFocusGizmo )
-		m_keyFocusGizmo.GetRealPtr()->_onGotInputFocus();
+	if( !m_bWindowFocus && m_keyFocusWidget )
+		m_keyFocusWidget.GetRealPtr()->_onGotInputFocus();
 
 	m_bWindowFocus = true;
 }
@@ -997,8 +997,8 @@ void WgEventHandler::_processFocusGained( WgEvent::FocusGained * pEvent )
 
 void WgEventHandler::_processFocusLost( WgEvent::FocusLost * pEvent )
 {
-	if( m_bWindowFocus && m_keyFocusGizmo )
-		m_keyFocusGizmo.GetRealPtr()->_onLostInputFocus();
+	if( m_bWindowFocus && m_keyFocusWidget )
+		m_keyFocusWidget.GetRealPtr()->_onLostInputFocus();
 
 	m_bWindowFocus = false;
 }
@@ -1029,14 +1029,14 @@ void WgEventHandler::_processMouseEnter( WgEvent::MouseEnter * pEvent )
 
 void WgEventHandler::_processMouseLeave( WgEvent::MouseLeave * pEvent )
 {
-	// Post POINTER_EXIT event to marked gizmo
+	// Post POINTER_EXIT event to marked widget
 
-	WgGizmo * pGizmo = m_pMarkedGizmo.GetRealPtr();
+	WgWidget * pWidget = m_pMarkedWidget.GetRealPtr();
 
-	if( pGizmo )
-		QueueEvent( new WgEvent::MouseLeave( pGizmo ) );
+	if( pWidget )
+		QueueEvent( new WgEvent::MouseLeave( pWidget ) );
 
-	m_pMarkedGizmo = 0;
+	m_pMarkedWidget = 0;
 }
 
 
@@ -1065,20 +1065,20 @@ void WgEventHandler::_processMouseMove( WgEvent::MouseMove * pEvent )
 
 void WgEventHandler::_processMousePosition( WgEvent::MousePosition * pEvent )
 {
-	_updateMarkedGizmo(true);
+	_updateMarkedWidget(true);
 
 }
 
-//____ _updateMarkedGizmo() _______________________________________________
+//____ _updateMarkedWidget() _______________________________________________
 
-void WgEventHandler::_updateMarkedGizmo(bool bPostMouseMoveEvents)
+void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 {
-	WgGizmo*  pNowMarked = 0;
+	WgWidget*  pNowMarked = 0;
 
-	WgGizmo * pGizmoTarget = m_pRoot->FindGizmo( m_pointerPos, WG_SEARCH_ACTION_TARGET );
+	WgWidget * pWidgetTarget = m_pRoot->FindWidget( m_pointerPos, WG_SEARCH_ACTION_TARGET );
 
 	// Figure out which button of currently pressed has been pressed the longest.
-	// Mouse is only allowed to mark Gizmos that were marked on press of that button.
+	// Mouse is only allowed to mark Widgets that were marked on press of that button.
 
 	int button = 0;								// Button that has been pressed for longest, 0 = no button pressed
 	for( int i = 1 ; i <= WG_MAX_BUTTONS ; i++ )
@@ -1087,20 +1087,20 @@ void WgEventHandler::_updateMarkedGizmo(bool bPostMouseMoveEvents)
 			button = i;
 	}
 
-	// We are only marking the Gizmo if no mouse button is pressed or the first pressed button
+	// We are only marking the Widget if no mouse button is pressed or the first pressed button
 	// was pressed on it.
 
-	if( button == 0 || pGizmoTarget == m_latestPressGizmos[button].GetRealPtr() )
-		pNowMarked = pGizmoTarget;
+	if( button == 0 || pWidgetTarget == m_latestPressWidgets[button].GetRealPtr() )
+		pNowMarked = pWidgetTarget;
 
-	// Post POINTER_EXIT events for gizmos no longer marked,
-	// Post POINTER_ENTER events for new marked gizmos
+	// Post POINTER_EXIT events for widgets no longer marked,
+	// Post POINTER_ENTER events for new marked widgets
 	// and POINTER_MOVE events for those already marked
 
-	if( pNowMarked != m_pMarkedGizmo.GetRealPtr() )
+	if( pNowMarked != m_pMarkedWidget.GetRealPtr() )
 	{
-		if( m_pMarkedGizmo )
-			QueueEvent( new WgEvent::MouseLeave( m_pMarkedGizmo.GetRealPtr() ) );
+		if( m_pMarkedWidget )
+			QueueEvent( new WgEvent::MouseLeave( m_pMarkedWidget.GetRealPtr() ) );
 	
 		if( pNowMarked )
 			QueueEvent( new WgEvent::MouseEnter( pNowMarked ) );
@@ -1108,9 +1108,9 @@ void WgEventHandler::_updateMarkedGizmo(bool bPostMouseMoveEvents)
 	else if( bPostMouseMoveEvents && pNowMarked )
 		QueueEvent( new WgEvent::MouseMove( pNowMarked ) );
 
-	// Copy content of pNowMarked to m_pMarkedGizmo
+	// Copy content of pNowMarked to m_pMarkedWidget
 
-	m_pMarkedGizmo = pNowMarked;
+	m_pMarkedWidget = pNowMarked;
 	
 	// Update PointerStyle
 	
@@ -1141,11 +1141,11 @@ void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
 	KeyDownInfo * pInfo = new KeyDownInfo();
 	pInfo->pEvent = pEvent;
 
-	// Post KEY_PRESS events for gizmos and remember which ones we have posted it for
+	// Post KEY_PRESS events for widgets and remember which ones we have posted it for
 
-	WgGizmo * pGizmo = m_keyFocusGizmo.GetRealPtr();
-	QueueEvent( new WgEvent::KeyPress( pEvent->NativeKeyCode(), pGizmo ) );
-	pInfo->pGizmo = pGizmo;
+	WgWidget * pWidget = m_keyFocusWidget.GetRealPtr();
+	QueueEvent( new WgEvent::KeyPress( pEvent->NativeKeyCode(), pWidget ) );
+	pInfo->pWidget = pWidget;
 
 	// Push the info-structure onto m_keysDown.
 
@@ -1193,10 +1193,10 @@ void WgEventHandler::_processKeyRepeat( WgEvent::KeyRepeat * pEvent )
 	if( pInfo == 0 )
 		return;
 
-	// Post KEY_REPEAT event for gizmo
+	// Post KEY_REPEAT event for widget
 
-		if( pInfo->pGizmo )
-			QueueEvent( new WgEvent::KeyRepeat( pEvent->NativeKeyCode(), pInfo->pGizmo.GetRealPtr() ));
+		if( pInfo->pWidget )
+			QueueEvent( new WgEvent::KeyRepeat( pEvent->NativeKeyCode(), pInfo->pWidget.GetRealPtr() ));
 }
 
 //____ _processKeyRelease() ___________________________________________________
@@ -1223,10 +1223,10 @@ void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 	if( !pInfo )
 		return;
 
-	// Post KEY_RELEASE event for gizmo
+	// Post KEY_RELEASE event for widget
 
-	if( pInfo->pGizmo )
-		QueueEvent( new WgEvent::KeyRelease( pEvent->NativeKeyCode(), pInfo->pGizmo.GetRealPtr() ));
+	if( pInfo->pWidget )
+		QueueEvent( new WgEvent::KeyRelease( pEvent->NativeKeyCode(), pInfo->pWidget.GetRealPtr() ));
 
 	// Delete the KeyPress-message and KeyDownInfo-structure
 
@@ -1258,49 +1258,49 @@ void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 
 void WgEventHandler::_processCharacter( WgEvent::Character * pEvent )
 {
-	WgGizmo * pGizmo = m_keyFocusGizmo.GetRealPtr();
+	WgWidget * pWidget = m_keyFocusWidget.GetRealPtr();
 
-	if( pGizmo )
-		QueueEvent( new WgEvent::Character( pEvent->Char(), pGizmo ) );
+	if( pWidget )
+		QueueEvent( new WgEvent::Character( pEvent->Char(), pWidget ) );
 }
 
 //____ _processMouseWheelRoll() ____________________________________________________
 
 void WgEventHandler::_processMouseWheelRoll( WgEvent::MouseWheelRoll * pEvent )
 {
-	_updateMarkedGizmo(false);
+	_updateMarkedWidget(false);
 
-	WgGizmo * pGizmo = m_pMarkedGizmo.GetRealPtr();
+	WgWidget * pWidget = m_pMarkedWidget.GetRealPtr();
 
-	if( pGizmo )
-		QueueEvent( new WgEvent::MouseWheelRoll( pEvent->Wheel(), pEvent->Distance(), pGizmo ) );
+	if( pWidget )
+		QueueEvent( new WgEvent::MouseWheelRoll( pEvent->Wheel(), pEvent->Distance(), pWidget ) );
 }
 
 //____ _processMouseButtonPress() ___________________________________________________
 
 void WgEventHandler::_processMouseButtonPress( WgEvent::MouseButtonPress * pEvent )
 {
-	_updateMarkedGizmo(false);
+	_updateMarkedWidget(false);
 
 	int button = pEvent->Button();
 
-	// Update m_previousPressGizmos
+	// Update m_previousPressWidgets
 
-	m_previousPressGizmos[button] = 0;
+	m_previousPressWidgets[button] = 0;
 
-	WgGizmo * pGizmo = m_latestPressGizmos[button].GetRealPtr();
-	if( pGizmo )
-		m_previousPressGizmos[button] = pGizmo;
+	WgWidget * pWidget = m_latestPressWidgets[button].GetRealPtr();
+	if( pWidget )
+		m_previousPressWidgets[button] = pWidget;
 
-	// Post BUTTON_PRESS events for marked gizmos and remember which one we have posted it for
+	// Post BUTTON_PRESS events for marked widgets and remember which one we have posted it for
 
-	m_latestPressGizmos[button] = 0;
+	m_latestPressWidgets[button] = 0;
 
-	pGizmo = m_pMarkedGizmo.GetRealPtr();
-	if( pGizmo )
+	pWidget = m_pMarkedWidget.GetRealPtr();
+	if( pWidget )
 	{
-		QueueEvent( new WgEvent::MouseButtonPress( button, pGizmo ) );
-		m_latestPressGizmos[button] = pGizmo;
+		QueueEvent( new WgEvent::MouseButtonPress( button, pWidget ) );
+		m_latestPressWidgets[button] = pWidget;
 	}
 
 	// Handle possible double-click
@@ -1333,15 +1333,15 @@ void WgEventHandler::_processMouseButtonPress( WgEvent::MouseButtonPress * pEven
 
 void WgEventHandler::_processMouseButtonRepeat( WgEvent::MouseButtonRepeat * pEvent )
 {
-	_updateMarkedGizmo(false);
+	_updateMarkedWidget(false);
 
 	int button = pEvent->Button();
 
-	// Post BUTTON_REPEAT event for gizmo that received the press if we are still inside.
+	// Post BUTTON_REPEAT event for widget that received the press if we are still inside.
 
-	WgGizmo * pGizmo = m_latestPressGizmos[button].GetRealPtr();
-	if( pGizmo && pGizmo == m_pMarkedGizmo.GetRealPtr() )
-		QueueEvent( new WgEvent::MouseButtonRepeat(button, pGizmo) );
+	WgWidget * pWidget = m_latestPressWidgets[button].GetRealPtr();
+	if( pWidget && pWidget == m_pMarkedWidget.GetRealPtr() )
+		QueueEvent( new WgEvent::MouseButtonRepeat(button, pWidget) );
 }
 
 
@@ -1350,28 +1350,28 @@ void WgEventHandler::_processMouseButtonRepeat( WgEvent::MouseButtonRepeat * pEv
 
 void WgEventHandler::_processMouseButtonRelease( WgEvent::MouseButtonRelease * pEvent )
 {
-	_updateMarkedGizmo(false);
+	_updateMarkedWidget(false);
 
 	int button = pEvent->Button();
 
-	// Post BUTTON_RELEASE events for gizmo that was pressed
+	// Post BUTTON_RELEASE events for widget that was pressed
 
-	WgGizmo * pGizmo = m_latestPressGizmos[button].GetRealPtr();
-	if( pGizmo )
+	WgWidget * pWidget = m_latestPressWidgets[button].GetRealPtr();
+	if( pWidget )
 	{
-		bool bIsInside = pGizmo->ScreenGeo().Contains(pEvent->PointerPos());
-		QueueEvent( new WgEvent::MouseButtonRelease( button, pGizmo, true, bIsInside ) );
+		bool bIsInside = pWidget->ScreenGeo().Contains(pEvent->PointerPos());
+		QueueEvent( new WgEvent::MouseButtonRelease( button, pWidget, true, bIsInside ) );
 	}
 
-	// Post BUTTON_RELEASE events for marked gizmo that was NOT pressed
+	// Post BUTTON_RELEASE events for marked widget that was NOT pressed
 
-	pGizmo = m_pMarkedGizmo.GetRealPtr();
-	if( pGizmo )
+	pWidget = m_pMarkedWidget.GetRealPtr();
+	if( pWidget )
 	{
-		if( pGizmo != m_latestPressGizmos[button].GetRealPtr() )
+		if( pWidget != m_latestPressWidgets[button].GetRealPtr() )
 		{
-			bool bIsInside = pGizmo->ScreenGeo().Contains(pEvent->PointerPos());
-			QueueEvent( new WgEvent::MouseButtonRelease( button, pGizmo, false, bIsInside ) );
+			bool bIsInside = pWidget->ScreenGeo().Contains(pEvent->PointerPos());
+			QueueEvent( new WgEvent::MouseButtonRelease( button, pWidget, false, bIsInside ) );
 		}
 	}
 
@@ -1394,14 +1394,14 @@ void WgEventHandler::_processMouseButtonDrag( WgEvent::MouseButtonDrag * pEvent 
 {
 	int button = pEvent->Button();
 
-	// Post POINTER_DRAG event for pressed gizmo
+	// Post POINTER_DRAG event for pressed widget
 
-	WgGizmo * pGizmo = m_latestPressGizmos[button].GetRealPtr();
+	WgWidget * pWidget = m_latestPressWidgets[button].GetRealPtr();
 
-	if( pGizmo )
+	if( pWidget )
 	{
-		WgCoord	ofs = pGizmo->ScreenPos();
-		QueueEvent( new WgEvent::MouseButtonDrag( button, pGizmo, pEvent->StartPos() - ofs, pEvent->PrevPos() - ofs, pEvent->CurrPos() - ofs ) );
+		WgCoord	ofs = pWidget->ScreenPos();
+		QueueEvent( new WgEvent::MouseButtonDrag( button, pWidget, pEvent->StartPos() - ofs, pEvent->PrevPos() - ofs, pEvent->CurrPos() - ofs ) );
 	}
 
 }
@@ -1412,12 +1412,12 @@ void WgEventHandler::_processMouseButtonClick( WgEvent::MouseButtonClick * pEven
 {
 	int button = pEvent->Button();
 
-	// Post BUTTON_CLICK events for gizmo that received the press if we
+	// Post BUTTON_CLICK events for widget that received the press if we
 	// still are inside.
 
-	WgGizmo * pGizmo = m_latestPressGizmos[button].GetRealPtr();
-	if( pGizmo && pGizmo == m_pMarkedGizmo.GetRealPtr() )
-		QueueEvent( new WgEvent::MouseButtonClick(button, pGizmo) );
+	WgWidget * pWidget = m_latestPressWidgets[button].GetRealPtr();
+	if( pWidget && pWidget == m_pMarkedWidget.GetRealPtr() )
+		QueueEvent( new WgEvent::MouseButtonClick(button, pWidget) );
 }
 
 //____ _processMouseButtonDoubleClick() _________________________________________________
@@ -1428,17 +1428,17 @@ void WgEventHandler::_processMouseButtonDoubleClick( WgEvent::MouseButtonDoubleC
 
 	// Post BUTTON_DOUBLE_CLICK event if gizom received both this and previous press.
 
-	WgGizmo * pGizmo = m_latestPressGizmos[button].GetRealPtr();
-	if( pGizmo && pGizmo ==  m_previousPressGizmos[button].GetRealPtr() )
-		QueueEvent( new WgEvent::MouseButtonDoubleClick(button, pGizmo) );
+	WgWidget * pWidget = m_latestPressWidgets[button].GetRealPtr();
+	if( pWidget && pWidget ==  m_previousPressWidgets[button].GetRealPtr() )
+		QueueEvent( new WgEvent::MouseButtonDoubleClick(button, pWidget) );
 }
 
-//____ _isGizmoInList() ________________________________________________________
+//____ _isWidgetInList() ________________________________________________________
 
-bool WgEventHandler::_isGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list )
+bool WgEventHandler::_isWidgetInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list )
 {
 	for( size_t i = 0 ; i < list.size() ; i++ )
-		if( list[i].GetRealPtr() == pGizmo )
+		if( list[i].GetRealPtr() == pWidget )
 			return true;
 
 	return false;
@@ -1448,28 +1448,28 @@ bool WgEventHandler::_isGizmoInList( const WgGizmo * pGizmo, const std::vector<W
 
 
 
-WgEventHandler::GizmoCallback::GizmoCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent, WgGizmo * pDest), WgGizmo * pDest )
+WgEventHandler::WidgetCallback::WidgetCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent, WgWidget * pDest), WgWidget * pDest )
 {
 	m_filter = filter;
 	m_pFunction = fp;
-	m_pGizmo = pDest;
+	m_pWidget = pDest;
 }
 
-void WgEventHandler::GizmoCallback::ProcessEvent( const WgEvent::Event * pEvent )
+void WgEventHandler::WidgetCallback::ProcessEvent( const WgEvent::Event * pEvent )
 {
-	WgGizmo * p = m_pGizmo.GetRealPtr();
+	WgWidget * p = m_pWidget.GetRealPtr();
 	if( p && m_filter.FilterEvent(pEvent) )
 		m_pFunction(pEvent,p);
 }
 
-bool WgEventHandler::GizmoCallback::IsAlive() const
+bool WgEventHandler::WidgetCallback::IsAlive() const
 {
-	return m_pGizmo?true:false;
+	return m_pWidget?true:false;
 }
 
-void * WgEventHandler::GizmoCallback::Receiver() const
+void * WgEventHandler::WidgetCallback::Receiver() const
 {
-	return m_pGizmo.GetRealPtr();
+	return m_pWidget.GetRealPtr();
 }
 
 

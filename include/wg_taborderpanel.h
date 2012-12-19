@@ -38,20 +38,20 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgTaborderPanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgTaborderPanel(); };
 	
 
-	bool	AddToTaborder( WgGizmo * pGizmo );
-	bool	InsertInTaborder( WgGizmo * pGizmo, WgGizmo * pBefore );
+	bool	AddToTaborder( WgWidget * pWidget );
+	bool	InsertInTaborder( WgWidget * pWidget, WgWidget * pBefore );
 
-	bool	RemoveFromTaborder( WgGizmo * pGizmo );
+	bool	RemoveFromTaborder( WgWidget * pWidget );
 	void	ClearTaborder();
 
 
-	WgGizmo * FirstInTaborder() const;
-	WgGizmo * NextInTaborder( WgGizmo * pCurrGizmo ) const;
-	WgGizmo * PrevInTaborder( WgGizmo * pCurrGizmo ) const;
-	WgGizmo * LastInTaborder() const;
+	WgWidget * FirstInTaborder() const;
+	WgWidget * NextInTaborder( WgWidget * pCurrWidget ) const;
+	WgWidget * PrevInTaborder( WgWidget * pCurrWidget ) const;
+	WgWidget * LastInTaborder() const;
 
 protected:
 
@@ -64,12 +64,12 @@ private:
 	public:
 		LINK_METHODS( TaborderEntry );
 
-		TaborderEntry(WgGizmo* p) { pGizmo = p; }
-		WgGizmoWeakPtr 	pGizmo;
+		TaborderEntry(WgWidget* p) { pWidget = p; }
+		WgWidgetWeakPtr 	pWidget;
 	};
 
-	bool 								_isValidForTaborderInsertion( WgGizmo * pGizmo ) const;
-	WgTaborderPanel::TaborderEntry * 	_findInTaborder( WgGizmo * pGizmo ) const;
+	bool 								_isValidForTaborderInsertion( WgWidget * pWidget ) const;
+	WgTaborderPanel::TaborderEntry * 	_findInTaborder( WgWidget * pWidget ) const;
 	WgTaborderPanel::TaborderEntry * 	_validateEntryForward( WgTaborderPanel::TaborderEntry * pEntry ) const;
 	WgTaborderPanel::TaborderEntry * 	_validateEntryBackward( WgTaborderPanel::TaborderEntry * pEntry ) const;
 

@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_gizmo.h>
+#include <wg_widget.h>
 #include <wg_types.h>
 #include <wg_skinmanager.h>
 
@@ -29,7 +29,7 @@
 
 //____ Constructor ____________________________________________________________
 
-WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_pointerStyle(WG_POINTER_DEFAULT),
+WgWidget::WgWidget():m_id(0), m_pHook(0), m_pSkinNode(0), m_pointerStyle(WG_POINTER_DEFAULT),
 					m_markPolicy( WG_MARKPOLICY_ALPHA ), m_bEnabled(true), m_bOpaque(false),
 					m_bFocused(false), m_bTabLock(false), m_bReceiveTick(false),
 					m_bRenderOne(false), m_bRendersAll(false)
@@ -38,7 +38,7 @@ WgGizmo::WgGizmo():m_id(0), m_pHook(0), m_pSkinNode(0), m_pointerStyle(WG_POINTE
 
 //____ Destructor _____________________________________________________________
 
-WgGizmo::~WgGizmo()
+WgWidget::~WgWidget()
 {
 	if( m_pHook )
 	{
@@ -51,14 +51,14 @@ WgGizmo::~WgGizmo()
 
 //____ GetPointerStyle() ________________________________________
 
-WgPointerStyle WgGizmo::GetPointerStyle() const
+WgPointerStyle WgWidget::GetPointerStyle() const
 {
 	return m_pointerStyle;
 }
 
 //____ SetEnabled() _______________________________________________________________
 
-void WgGizmo::SetEnabled( bool bEnabled )
+void WgWidget::SetEnabled( bool bEnabled )
 {
 	if( m_bEnabled != bEnabled || IsPanel() )
 	{
@@ -72,7 +72,7 @@ void WgGizmo::SetEnabled( bool bEnabled )
 
 //____ SetSkinManager() _______________________________________________________
 
-void WgGizmo::SetSkinManager( WgSkinManager * pManager )
+void WgWidget::SetSkinManager( WgSkinManager * pManager )
 {
 	if( m_pSkinNode )
 		delete m_pSkinNode;
@@ -85,7 +85,7 @@ void WgGizmo::SetSkinManager( WgSkinManager * pManager )
 
 //____ GetSkinManager() _______________________________________________________
 
-WgSkinManager *	WgGizmo::GetSkinManager() const
+WgSkinManager *	WgWidget::GetSkinManager() const
 {
 	if( m_pSkinNode )
 		return m_pSkinNode->GetManager();
@@ -95,7 +95,7 @@ WgSkinManager *	WgGizmo::GetSkinManager() const
 
 //____ MarkTest() _____________________________________________________________
 
-bool WgGizmo::MarkTest( const WgCoord& ofs )
+bool WgWidget::MarkTest( const WgCoord& ofs )
 {
 	switch( m_markPolicy )
 	{
@@ -110,7 +110,7 @@ bool WgGizmo::MarkTest( const WgCoord& ofs )
 
 //____ CloneContent() _________________________________________________________
 
-bool WgGizmo::CloneContent( const WgGizmo * _pOrg )
+bool WgWidget::CloneContent( const WgWidget * _pOrg )
 {
 	if( _pOrg->Type() != Type() )
 		return false;
@@ -136,14 +136,14 @@ bool WgGizmo::CloneContent( const WgGizmo * _pOrg )
 
 //____ _onNewHook() ___________________________________________________________
 
-void WgGizmo::_onNewHook( WgHook * pHook )
+void WgWidget::_onNewHook( WgHook * pHook )
 {
 	m_pHook = pHook;
 }
 
 //____ _onNewRoot() ___________________________________________________________
 
-void WgGizmo::_onNewRoot( WgRootPanel * pRoot )
+void WgWidget::_onNewRoot( WgRootPanel * pRoot )
 {
 	if( m_bReceiveTick && pRoot )
 		pRoot->EventHandler()->_addTickReceiver(this);
@@ -151,7 +151,7 @@ void WgGizmo::_onNewRoot( WgRootPanel * pRoot )
 
 //____ _startReceiveTicks() ___________________________________________________
 
-void WgGizmo::_startReceiveTicks()
+void WgWidget::_startReceiveTicks()
 {
 	if( !m_bReceiveTick )
 	{
@@ -168,14 +168,14 @@ void WgGizmo::_startReceiveTicks()
 
 //____ _stopReceiveTicks() ____________________________________________________
 
-void WgGizmo::_stopReceiveTicks()
+void WgWidget::_stopReceiveTicks()
 {
 	m_bReceiveTick = false;
 }
 
 //____ _setSkinNode() __________________________________________________________
 
-void WgGizmo::_setSkinNode( WgSkinNode * pNode )
+void WgWidget::_setSkinNode( WgSkinNode * pNode )
 {
 	m_pSkinNode = pNode;
 	_onRefresh();
@@ -184,7 +184,7 @@ void WgGizmo::_setSkinNode( WgSkinNode * pNode )
 
 //____ Local2abs() ____________________________________________________________
 
-WgCoord WgGizmo::Local2abs( const WgCoord& cord ) const
+WgCoord WgWidget::Local2abs( const WgCoord& cord ) const
 {
 	WgCoord c = ScreenPos();
 	c.x += cord.x;
@@ -194,7 +194,7 @@ WgCoord WgGizmo::Local2abs( const WgCoord& cord ) const
 
 //____ Abs2local() ____________________________________________________________
 
-WgCoord WgGizmo::Abs2local( const WgCoord& cord ) const
+WgCoord WgWidget::Abs2local( const WgCoord& cord ) const
 {
 	WgCoord c = ScreenPos();
 	return WgCoord( cord.x - c.x, cord.y - c.y );
@@ -202,7 +202,7 @@ WgCoord WgGizmo::Abs2local( const WgCoord& cord ) const
 
 //____ _eventHandler() __________________________________________________________
 
-WgEventHandler * WgGizmo::_eventHandler() const
+WgEventHandler * WgWidget::_eventHandler() const
 {
 	if( m_pHook )
 	{
@@ -215,35 +215,35 @@ WgEventHandler * WgGizmo::_eventHandler() const
 
 //____ HeightForWidth() _______________________________________________________
 
-int WgGizmo::HeightForWidth( int width ) const
+int WgWidget::HeightForWidth( int width ) const
 {
 	return DefaultSize().h;		// Default is to stick with best height no matter what width.
 }
 
 //____ WidthForHeight() _______________________________________________________
 
-int WgGizmo::WidthForHeight( int height ) const
+int WgWidget::WidthForHeight( int height ) const
 {
 	return DefaultSize().w;		// Default is to stick with best width no matter what height.
 }
 
 //____ SetMarked() ____________________________________________________________
 
-bool WgGizmo::SetMarked()
+bool WgWidget::SetMarked()
 {
 	return false;
 }
 
 //____ SetSelected() __________________________________________________________
 
-bool WgGizmo::SetSelected()
+bool WgWidget::SetSelected()
 {
 	return false;
 }
 
 //____ SetNormal() ____________________________________________________________
 
-bool WgGizmo::SetNormal()
+bool WgWidget::SetNormal()
 {
 	if( m_bEnabled )
 		return true;
@@ -253,7 +253,7 @@ bool WgGizmo::SetNormal()
 
 //____ Mode() _________________________________________________________________
 
-WgMode WgGizmo::Mode() const
+WgMode WgWidget::Mode() const
 {
 	if( m_bEnabled )
 		return WG_MODE_NORMAL;
@@ -263,18 +263,18 @@ WgMode WgGizmo::Mode() const
 
 //____ _getBlendMode() _________________________________________________________
 
-WgBlendMode WgGizmo::_getBlendMode() const
+WgBlendMode WgWidget::_getBlendMode() const
 {
-	WgGizmoContainer * pParent = Parent();
-	if( pParent && pParent->IsGizmo() )
-		return pParent->CastToGizmo()->_getBlendMode();
+	WgWidgetContainer * pParent = Parent();
+	if( pParent && pParent->IsWidget() )
+		return pParent->CastToWidget()->_getBlendMode();
 	else
 		return WG_BLENDMODE_BLEND;		// We always start out with WG_BLENDMODE_BLEND.
 }
 
 //____ _queueEvent() __________________________________________________________
 
-void WgGizmo::_queueEvent( WgEvent::Event * pEvent )
+void WgWidget::_queueEvent( WgEvent::Event * pEvent )
 {
 	if( m_pHook )
 	{
@@ -292,7 +292,7 @@ void WgGizmo::_queueEvent( WgEvent::Event * pEvent )
 
 //____ _renderPatches() ________________________________________________________
 
-void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+void WgWidget::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 {
 	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
 	{
@@ -304,12 +304,12 @@ void WgGizmo::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 //____ Fillers _______________________________________________________________
 
-void WgGizmo::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+void WgWidget::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 		container.Add( WgRect( geo, clip ) );
 }
 
-void WgGizmo::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
 	{
@@ -317,56 +317,56 @@ void WgGizmo::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 	}
 }
 
-void WgGizmo::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgWidget::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 }
 
-void WgGizmo::_onNewSize( const WgSize& size )
-{
-	_requestRender();
-}
-
-void WgGizmo::_onRefresh()
+void WgWidget::_onNewSize( const WgSize& size )
 {
 	_requestRender();
 }
 
-void WgGizmo::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgWidget::_onRefresh()
+{
+	_requestRender();
+}
+
+void WgWidget::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	pHandler->ForwardEvent( pEvent );
 }
 
-bool WgGizmo::_onAlphaTest( const WgCoord& ofs )
+bool WgWidget::_onAlphaTest( const WgCoord& ofs )
 {
 	return true;
 }
 
-void WgGizmo::_onEnable()
+void WgWidget::_onEnable()
 {
 	_requestRender();
 }
 
-void WgGizmo::_onDisable()
+void WgWidget::_onDisable()
 {
 	_requestRender();
 }
 
-void WgGizmo::_onGotInputFocus()
+void WgWidget::_onGotInputFocus()
 {
 	m_bFocused = true;
 }
 
-void WgGizmo::_onLostInputFocus()
+void WgWidget::_onLostInputFocus()
 {
 	m_bFocused = false;
 }
 
-bool WgGizmo::TempIsInputField() const
+bool WgWidget::TempIsInputField() const
 {
 	return false;
 }
 
-Wg_Interface_TextHolder* WgGizmo::TempGetText()
+Wg_Interface_TextHolder* WgWidget::TempGetText()
 {
 	return 0;
 }

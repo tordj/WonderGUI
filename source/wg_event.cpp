@@ -22,7 +22,7 @@
 
 #include <wg_event.h>
 #include <wg_key.h>
-#include <wg_gizmo.h>
+#include <wg_widget.h>
 #include <wg_button.h>
 #include <wg_checkbox.h>
 #include <wg_radiobutton.h>
@@ -40,12 +40,12 @@ namespace WgEvent
 {
 	//____ Event ______________________________________________________________
 
-	WgGizmo * Event::Gizmo() const
+	WgWidget * Event::Widget() const
 	{
-		return m_pGizmo.GetRealPtr();
+		return m_pWidget.GetRealPtr();
 	}
 
-	WgGizmo * Event::ForwardedFrom() const
+	WgWidget * Event::ForwardedFrom() const
 	{
 		return m_pForwardedFrom.GetRealPtr();
 	}
@@ -93,8 +93,8 @@ namespace WgEvent
 		m_type				= pOrg->m_type;
 		m_modKeys			= pOrg->m_modKeys;
 		m_timestamp			= pOrg->m_timestamp;
-		m_bIsForGizmo		= pOrg->m_bIsForGizmo;
-		m_pGizmo			= pOrg->m_pGizmo;
+		m_bIsForWidget		= pOrg->m_bIsForWidget;
+		m_pWidget			= pOrg->m_pWidget;
 		m_pointerLocalPos	= pOrg->m_pointerLocalPos;
 		m_pointerScreenPos	= pOrg->m_pointerScreenPos;
 	}
@@ -163,11 +163,11 @@ namespace WgEvent
 		m_pointerScreenPos = pos;
 	}
 
-	MouseEnter::MouseEnter( WgGizmo * pGizmo )
+	MouseEnter::MouseEnter( WgWidget * pWidget )
 	{
 		m_type = WG_EVENT_MOUSE_ENTER;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
 	//____ MouseLeave ________________________________________________________
@@ -177,11 +177,11 @@ namespace WgEvent
 		m_type = WG_EVENT_MOUSE_LEAVE;
 	}
 
-	MouseLeave::MouseLeave( WgGizmo * pGizmo )
+	MouseLeave::MouseLeave( WgWidget * pWidget )
 	{
 		m_type = WG_EVENT_MOUSE_LEAVE;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
 	//____ MouseMove __________________________________________________________
@@ -194,11 +194,11 @@ namespace WgEvent
 		m_pointerScreenPos = pos;
 	}
 
-	MouseMove::MouseMove( WgGizmo * pGizmo )
+	MouseMove::MouseMove( WgWidget * pWidget )
 	{
 		m_type = WG_EVENT_MOUSE_MOVE;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
 	//____ MouseButtonPress ______________________________________________________
@@ -208,11 +208,11 @@ namespace WgEvent
 		m_type = WG_EVENT_MOUSEBUTTON_PRESS;
 	}
 
-	MouseButtonPress::MouseButtonPress( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
+	MouseButtonPress::MouseButtonPress( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
 	{
 		m_type			= WG_EVENT_MOUSEBUTTON_PRESS;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
 	//____ MouseButtonRepeat ______________________________________________________
@@ -222,11 +222,11 @@ namespace WgEvent
 		m_type = WG_EVENT_MOUSEBUTTON_REPEAT;
 	}
 
-	MouseButtonRepeat::MouseButtonRepeat( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
+	MouseButtonRepeat::MouseButtonRepeat( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
 	{
 		m_type			= WG_EVENT_MOUSEBUTTON_REPEAT;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
 	//____ MouseButtonRelease _____________________________________________________
@@ -239,11 +239,11 @@ namespace WgEvent
 		m_bReleaseInside = true;			// Always assumed to be inside our window now.
 	}
 
-	MouseButtonRelease::MouseButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside ) : MouseButtonEvent(button)
+	MouseButtonRelease::MouseButtonRelease( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside ) : MouseButtonEvent(button)
 	{
 		m_type			= WG_EVENT_MOUSEBUTTON_RELEASE;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 
 		m_bPressInside = bPressInside;
 		m_bReleaseInside = bReleaseInside;
@@ -278,11 +278,11 @@ namespace WgEvent
 		m_type = WG_EVENT_MOUSEBUTTON_CLICK;
 	}
 
-	MouseButtonClick::MouseButtonClick( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
+	MouseButtonClick::MouseButtonClick( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
 	{
 		m_type = WG_EVENT_MOUSEBUTTON_CLICK;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
 
@@ -293,11 +293,11 @@ namespace WgEvent
 		m_type = WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK;
 	}
 
-	MouseButtonDoubleClick::MouseButtonDoubleClick( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
+	MouseButtonDoubleClick::MouseButtonDoubleClick( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
 	{
 		m_type = WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
 	//____ KeyPress ___________________________________________________________
@@ -307,11 +307,11 @@ namespace WgEvent
 		m_type 			= WG_EVENT_KEY_PRESS;
 	}
 
-	KeyPress::KeyPress( int native_keycode, WgGizmo * pGizmo ) : KeyEvent(native_keycode)
+	KeyPress::KeyPress( int native_keycode, WgWidget * pWidget ) : KeyEvent(native_keycode)
 	{
 		m_type 			= WG_EVENT_KEY_PRESS;
-		m_bIsForGizmo	= true;
-		m_pGizmo		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget		= pWidget;
 	}
 
 	//____ KeyRepeat ___________________________________________________________
@@ -321,11 +321,11 @@ namespace WgEvent
 		m_type 			= WG_EVENT_KEY_REPEAT;
 	}
 
-	KeyRepeat::KeyRepeat( int native_keycode, WgGizmo * pGizmo ) : KeyEvent(native_keycode)
+	KeyRepeat::KeyRepeat( int native_keycode, WgWidget * pWidget ) : KeyEvent(native_keycode)
 	{
 		m_type 			= WG_EVENT_KEY_REPEAT;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
 	//____ KeyRelease ________________________________________________________
@@ -335,11 +335,11 @@ namespace WgEvent
 		m_type 		= WG_EVENT_KEY_RELEASE;
 	}
 
-	KeyRelease::KeyRelease( int native_keycode, WgGizmo * pGizmo ) : KeyEvent(native_keycode)
+	KeyRelease::KeyRelease( int native_keycode, WgWidget * pWidget ) : KeyEvent(native_keycode)
 	{
 		m_type 			= WG_EVENT_KEY_RELEASE;
-		m_bIsForGizmo	= true;
-		m_pGizmo		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget		= pWidget;
 	}
 
 	//____ Character __________________________________________________________
@@ -350,12 +350,12 @@ namespace WgEvent
 		m_char = character;
 	}
 
-	Character::Character( unsigned short character, WgGizmo * pGizmo )
+	Character::Character( unsigned short character, WgWidget * pWidget )
 	{
 		m_type			= WG_EVENT_CHARACTER;
 		m_char			= character;
-		m_bIsForGizmo	= true;
-		m_pGizmo		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget		= pWidget;
 	}
 
 	void Character::_cloneContentFrom( const Event * _pOrg )
@@ -380,13 +380,13 @@ namespace WgEvent
 		m_distance = distance;
 	}
 
-	MouseWheelRoll::MouseWheelRoll( int wheel, int distance, WgGizmo * pGizmo )
+	MouseWheelRoll::MouseWheelRoll( int wheel, int distance, WgWidget * pWidget )
 	{
 		m_type			= WG_EVENT_MOUSEWHEEL_ROLL;
 		m_wheel			= wheel;
 		m_distance		= distance;
-		m_bIsForGizmo	= true;
-		m_pGizmo		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget		= pWidget;
 	}
 
 	void MouseWheelRoll::_cloneContentFrom( const Event * _pOrg )
@@ -417,12 +417,12 @@ namespace WgEvent
 		m_millisec = ms;
 	}
 
-	Tick::Tick( int ms, WgGizmo * pGizmo )
+	Tick::Tick( int ms, WgWidget * pWidget )
 	{
 		m_type 			= WG_EVENT_TICK;
 		m_millisec 		= ms;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
 	void Tick::_cloneContentFrom( const Event * _pOrg )
@@ -462,17 +462,17 @@ namespace WgEvent
 
 	//____ ButtonPress _________________________________________________________
 
-	ButtonPress::ButtonPress( WgButton * pGizmo )
+	ButtonPress::ButtonPress( WgButton * pWidget )
 	{
 		m_type 			= WG_EVENT_BUTTON_PRESS;
-		m_pGizmo 		= pGizmo;
+		m_pWidget 		= pWidget;
 	}
 
 	WgButton * ButtonPress::Button() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo )
-			return static_cast<WgButton*>(pGizmo);
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget )
+			return static_cast<WgButton*>(pWidget);
 		else
 			return 0;
 	}
@@ -482,29 +482,29 @@ namespace WgEvent
 
 	WgCheckBox * CheckboxEvent::Checkbox() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo )
-			return static_cast<WgCheckBox*>(pGizmo);
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget )
+			return static_cast<WgCheckBox*>(pWidget);
 		else
 			return 0;
 	}
 
-	CheckboxCheck::CheckboxCheck( WgCheckBox * pGizmo )
+	CheckboxCheck::CheckboxCheck( WgCheckBox * pWidget )
 	{
 		m_type = WG_EVENT_CHECKBOX_CHECK;
-		m_pGizmo = pGizmo;
+		m_pWidget = pWidget;
 	}
 
-	CheckboxUncheck::CheckboxUncheck( WgCheckBox * pGizmo )
+	CheckboxUncheck::CheckboxUncheck( WgCheckBox * pWidget )
 	{
 		m_type = WG_EVENT_CHECKBOX_UNCHECK;
-		m_pGizmo = pGizmo;
+		m_pWidget = pWidget;
 	}
 
-	CheckboxToggle::CheckboxToggle( WgCheckBox * pGizmo, bool bChecked )
+	CheckboxToggle::CheckboxToggle( WgCheckBox * pWidget, bool bChecked )
 	{
 		m_type = WG_EVENT_CHECKBOX_TOGGLE;
-		m_pGizmo = pGizmo;
+		m_pWidget = pWidget;
 		m_bChecked = bChecked;
 	}
 
@@ -517,29 +517,29 @@ namespace WgEvent
 
 	WgRadioButton * RadiobuttonEvent::Radiobutton() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo )
-			return static_cast<WgRadioButton*>(pGizmo);
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget )
+			return static_cast<WgRadioButton*>(pWidget);
 		else
 			return 0;
 	}
 
-	RadiobuttonSelect::RadiobuttonSelect( WgRadioButton * pGizmo )
+	RadiobuttonSelect::RadiobuttonSelect( WgRadioButton * pWidget )
 	{
 		m_type = WG_EVENT_RADIOBUTTON_SELECT;
-		m_pGizmo = pGizmo;
+		m_pWidget = pWidget;
 	}
 
-	RadiobuttonUnselect::RadiobuttonUnselect( WgRadioButton * pGizmo )
+	RadiobuttonUnselect::RadiobuttonUnselect( WgRadioButton * pWidget )
 	{
 		m_type = WG_EVENT_RADIOBUTTON_UNSELECT;
-		m_pGizmo = pGizmo;
+		m_pWidget = pWidget;
 	}
 
-	RadiobuttonToggle::RadiobuttonToggle( WgRadioButton * pGizmo, bool bSelected )
+	RadiobuttonToggle::RadiobuttonToggle( WgRadioButton * pWidget, bool bSelected )
 	{
 		m_type = WG_EVENT_RADIOBUTTON_TOGGLE;
-		m_pGizmo = pGizmo;
+		m_pWidget = pWidget;
 		m_bSelected = bSelected;
 	}
 
@@ -550,19 +550,19 @@ namespace WgEvent
 
 	//____ Animation event methods _____________________________________________
 
-	AnimationUpdate::AnimationUpdate( WgAnimPlayer * pGizmo, int frame, float fraction )
+	AnimationUpdate::AnimationUpdate( WgAnimPlayer * pWidget, int frame, float fraction )
 	{
 		m_type = WG_EVENT_ANIMATION_UPDATE;
-		m_pGizmo = pGizmo;
+		m_pWidget = pWidget;
 		m_frame = frame;
 		m_fraction = fraction;
 	}
 
 	WgAnimPlayer * AnimationUpdate::Animation() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo )
-			return static_cast<WgAnimPlayer*>(pGizmo);
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget )
+			return static_cast<WgAnimPlayer*>(pWidget);
 		else
 			return 0;
 	}
@@ -581,17 +581,17 @@ namespace WgEvent
 
 	WgTablist * TablistEvent::Tablist() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo )
-			return static_cast<WgTablist*>(pGizmo);
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget )
+			return static_cast<WgTablist*>(pWidget);
 		else
 			return 0;
 	}
 
-	TabSelect::TabSelect( WgTablist * pGizmo, int tabId )
+	TabSelect::TabSelect( WgTablist * pWidget, int tabId )
 	{
 		m_type 		= WG_EVENT_TAB_SELECT;
-		m_pGizmo 	= pGizmo;
+		m_pWidget 	= pWidget;
 		m_tabId 	= tabId;
 	}
 
@@ -600,10 +600,10 @@ namespace WgEvent
 		return m_tabId;
 	}
 
-	TabPress::TabPress( WgTablist * pGizmo, int tabId, int mouseButton )
+	TabPress::TabPress( WgTablist * pWidget, int tabId, int mouseButton )
 	{
 		m_type 		= WG_EVENT_TAB_PRESS;
-		m_pGizmo 	= pGizmo;
+		m_pWidget 	= pWidget;
 		m_tabId 	= tabId;
 		m_button	= mouseButton;
 	}
@@ -622,9 +622,9 @@ namespace WgEvent
 
 	WgValueEditor * EditvalueEvent::Editvalue() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo )
-			return static_cast<WgValueEditor*>(pGizmo);
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget )
+			return static_cast<WgValueEditor*>(pWidget);
 		else
 			return 0;
 	}
@@ -639,36 +639,36 @@ namespace WgEvent
 		return m_fraction;
 	}
 
-	EditvalueModify::EditvalueModify( WgValueEditor * pGizmo, int64_t value, double fraction )
+	EditvalueModify::EditvalueModify( WgValueEditor * pWidget, int64_t value, double fraction )
 	{
 		m_type = WG_EVENT_EDITVALUE_MODIFY;
-		m_pGizmo = pGizmo;
+		m_pWidget = pWidget;
 		m_value = value;
 		m_fraction = fraction;
 	}
 
-	EditvalueSet::EditvalueSet( WgValueEditor * pGizmo, int64_t value, double fraction )
+	EditvalueSet::EditvalueSet( WgValueEditor * pWidget, int64_t value, double fraction )
 	{
 		m_type = WG_EVENT_EDITVALUE_SET;
-		m_pGizmo = pGizmo;
+		m_pWidget = pWidget;
 		m_value = value;
 		m_fraction = fraction;
 	}
 
 	//____ Slider event methods _______________________________________________
 
-	SliderEvent::SliderEvent( WgGizmoSlider * pGizmo, float pos, float length )
+	SliderEvent::SliderEvent( WgWidgetSlider * pWidget, float pos, float length )
 	{
-		m_pGizmo 	= pGizmo;
+		m_pWidget 	= pWidget;
 		m_pos 		= pos;
 		m_length 	= length;
 	}
 
-	WgGizmoSlider* SliderEvent::Slider() const
+	WgWidgetSlider* SliderEvent::Slider() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo )
-			return static_cast<WgGizmoSlider*>(pGizmo);
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget )
+			return static_cast<WgWidgetSlider*>(pWidget);
 		else
 			return 0;
 	}
@@ -693,32 +693,32 @@ namespace WgEvent
 			return m_pos / max;
 	}
 
-	SliderMove::SliderMove( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
+	SliderMove::SliderMove( WgWidgetSlider* pWidget, float pos, float length ) : SliderEvent( pWidget, pos, length )
 	{
 		m_type = WG_EVENT_SLIDER_MOVE;
 	}
 
-	SliderStepFwd::SliderStepFwd( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
+	SliderStepFwd::SliderStepFwd( WgWidgetSlider* pWidget, float pos, float length ) : SliderEvent( pWidget, pos, length )
 	{
 		m_type = WG_EVENT_SLIDER_STEP_FWD;
 	}
 
-	SliderStepBwd::SliderStepBwd( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
+	SliderStepBwd::SliderStepBwd( WgWidgetSlider* pWidget, float pos, float length ) : SliderEvent( pWidget, pos, length )
 	{
 		m_type = WG_EVENT_SLIDER_STEP_BWD;
 	}
 
-	SliderJumpFwd::SliderJumpFwd( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
+	SliderJumpFwd::SliderJumpFwd( WgWidgetSlider* pWidget, float pos, float length ) : SliderEvent( pWidget, pos, length )
 	{
 		m_type = WG_EVENT_SLIDER_JUMP_FWD;
 	}
 
-	SliderJumpBwd::SliderJumpBwd( WgGizmoSlider* pGizmo, float pos, float length ) : SliderEvent( pGizmo, pos, length )
+	SliderJumpBwd::SliderJumpBwd( WgWidgetSlider* pWidget, float pos, float length ) : SliderEvent( pWidget, pos, length )
 	{
 		m_type = WG_EVENT_SLIDER_JUMP_BWD;
 	}
 
-	SliderWheelRolled::SliderWheelRolled( WgGizmoSlider* pGizmo, int distance, float pos, float length )  : SliderEvent( pGizmo, pos, length )
+	SliderWheelRolled::SliderWheelRolled( WgWidgetSlider* pWidget, int distance, float pos, float length )  : SliderEvent( pWidget, pos, length )
 	{
 		m_type = WG_EVENT_SLIDER_WHEEL_ROLL;
 		m_distance = distance;
@@ -733,37 +733,37 @@ namespace WgEvent
 
 	WgInterfaceEditText * TextEvent::Interface() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo )
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget )
 		{
-			if( pGizmo->Type() == WgTextDisplay::GetClass() )
-				return static_cast<WgTextDisplay*>(pGizmo);
-			else if( pGizmo->Type() == WgLineEditor::GetClass() )
-				return static_cast<WgLineEditor*>(pGizmo);
+			if( pWidget->Type() == WgTextDisplay::GetClass() )
+				return static_cast<WgTextDisplay*>(pWidget);
+			else if( pWidget->Type() == WgLineEditor::GetClass() )
+				return static_cast<WgLineEditor*>(pWidget);
 		}
 		return 0;
 	}
 
 	const WgText * TextEvent::Text() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo )
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget )
 			return m_pText;
 		else
 			return 0;
 	}
 
-	TextModify::TextModify( WgGizmo * pGizmo, WgText * pText )
+	TextModify::TextModify( WgWidget * pWidget, WgText * pText )
 	{
 		m_type 		= WG_EVENT_TEXT_MODIFY;
-		m_pGizmo 	= pGizmo;
+		m_pWidget 	= pWidget;
 		m_pText 	= pText;
 	}
 
-	TextSet::TextSet( WgGizmo * pGizmo, WgText * pText )
+	TextSet::TextSet( WgWidget * pWidget, WgText * pText )
 	{
 		m_type 		= WG_EVENT_TEXT_SET;
-		m_pGizmo 	= pGizmo;
+		m_pWidget 	= pWidget;
 		m_pText 	= pText;
 	}
 
@@ -771,9 +771,9 @@ namespace WgEvent
 
 	WgMenu *	MenuitemEvent::Menu() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo && pGizmo->Type() == WgMenu::GetClass() )
-			return static_cast<WgMenu*>(pGizmo);
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget && pWidget->Type() == WgMenu::GetClass() )
+			return static_cast<WgMenu*>(pWidget);
 
 		return 0;
 	}
@@ -786,55 +786,55 @@ namespace WgEvent
 	MenuitemSelect::MenuitemSelect( WgMenu * pMenu, int menuItemId )
 	{
 		m_type		= WG_EVENT_MENUITEM_SELECT;
-		m_pGizmo	= pMenu;
+		m_pWidget	= pMenu;
 		m_itemId	= menuItemId;
 	}
 
 	MenuitemCheck::MenuitemCheck( WgMenu * pMenu, int menuItemId )
 	{
 		m_type		= WG_EVENT_MENUITEM_CHECK;
-		m_pGizmo	= pMenu;
+		m_pWidget	= pMenu;
 		m_itemId	= menuItemId;
 	}
 
 	MenuitemUncheck::MenuitemUncheck( WgMenu * pMenu, int menuItemId )
 	{
 		m_type		= WG_EVENT_MENUITEM_UNCHECK;
-		m_pGizmo	= pMenu;
+		m_pWidget	= pMenu;
 		m_itemId	= menuItemId;
 	}
 
 
 	//____ Modal event methods ___________________________________________________
 
-	ModalMoveOutside::ModalMoveOutside( WgGizmo * pGizmo )
+	ModalMoveOutside::ModalMoveOutside( WgWidget * pWidget )
 	{
 		m_type = WG_EVENT_MODAL_MOVE_OUTSIDE;
-		m_bIsForGizmo	= true;
-		m_pGizmo		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget		= pWidget;
 	}
 
-	ModalBlockedPress::ModalBlockedPress( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
+	ModalBlockedPress::ModalBlockedPress( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
 	{
 		m_type			= WG_EVENT_MODAL_BLOCKED_PRESS;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
-	ModalBlockedRelease::ModalBlockedRelease( int button, WgGizmo * pGizmo ) : MouseButtonEvent(button)
+	ModalBlockedRelease::ModalBlockedRelease( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
 	{
 		m_type			= WG_EVENT_MODAL_BLOCKED_RELEASE;
-		m_bIsForGizmo	= true;
-		m_pGizmo 		= pGizmo;
+		m_bIsForWidget	= true;
+		m_pWidget 		= pWidget;
 	}
 
 	//____ Table event methods _________________________________________________
 
 	WgTablePanel * TableCellEvent::Table() const
 	{
-		WgGizmo * pGizmo = m_pGizmo.GetRealPtr();
-		if( pGizmo && pGizmo->Type() == WgMenu::GetClass() )
-			return static_cast<WgTablePanel*>(pGizmo);
+		WgWidget * pWidget = m_pWidget.GetRealPtr();
+		if( pWidget && pWidget->Type() == WgMenu::GetClass() )
+			return static_cast<WgTablePanel*>(pWidget);
 
 		return 0;		
 	}
@@ -849,24 +849,24 @@ namespace WgEvent
 		return m_column;
 	}
 	
-	WgGizmo * TableCellEvent::CellContent() const
+	WgWidget * TableCellEvent::CellContent() const
 	{
 		return m_pCellContent.GetRealPtr();
 	}
 		
-	TableCellMarked::TableCellMarked( WgTablePanel * pTable, int row, int column, WgGizmo * pCellContent )
+	TableCellMarked::TableCellMarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent )
 	{
 		m_type 			= WG_EVENT_TABLE_CELL_MARK;
-		m_pGizmo 		= pTable;
+		m_pWidget 		= pTable;
 		m_row 			= row;
 		m_column 		= column;
 		m_pCellContent 	= pCellContent;
 	}
 
-	TableCellUnmarked::TableCellUnmarked( WgTablePanel * pTable, int row, int column, WgGizmo * pCellContent )
+	TableCellUnmarked::TableCellUnmarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent )
 	{
 		m_type 			= WG_EVENT_TABLE_CELL_UNMARK;
-		m_pGizmo 		= pTable;
+		m_pWidget 		= pTable;
 		m_row 			= row;
 		m_column 		= column;
 		m_pCellContent 	= pCellContent;
@@ -879,17 +879,17 @@ namespace WgEvent
 		return m_link;
 	}
 
-	LinkMark::LinkMark( WgGizmo * pGizmo, std::string link )
+	LinkMark::LinkMark( WgWidget * pWidget, std::string link )
 	{
 		m_type			= WG_EVENT_LINK_MARK;
-		m_pGizmo		= pGizmo;
+		m_pWidget		= pWidget;
 		m_link			= link;
 	}
 
-	LinkUnmark::LinkUnmark( WgGizmo * pGizmo, std::string link )
+	LinkUnmark::LinkUnmark( WgWidget * pWidget, std::string link )
 	{
 		m_type			= WG_EVENT_LINK_UNMARK;
-		m_pGizmo		= pGizmo;
+		m_pWidget		= pWidget;
 		m_link			= link;
 	}
 
@@ -898,52 +898,52 @@ namespace WgEvent
 		return m_button;
 	}
 
-	LinkPress::LinkPress( WgGizmo * pGizmo, std::string link, int button )
+	LinkPress::LinkPress( WgWidget * pWidget, std::string link, int button )
 	{
 		m_type			= WG_EVENT_LINK_PRESS;
-		m_pGizmo		= pGizmo;
+		m_pWidget		= pWidget;
 		m_link			= link;
 		m_button		= button;
 	}
 
-	LinkRepeat::LinkRepeat( WgGizmo * pGizmo, std::string link, int button )
+	LinkRepeat::LinkRepeat( WgWidget * pWidget, std::string link, int button )
 	{
 		m_type			= WG_EVENT_LINK_REPEAT;
-		m_pGizmo		= pGizmo;
+		m_pWidget		= pWidget;
 		m_link			= link;
 		m_button		= button;
 	}
 
-	LinkRelease::LinkRelease( WgGizmo * pGizmo, std::string link, int button )
+	LinkRelease::LinkRelease( WgWidget * pWidget, std::string link, int button )
 	{
 		m_type			= WG_EVENT_LINK_RELEASE;
-		m_pGizmo		= pGizmo;
+		m_pWidget		= pWidget;
 		m_link			= link;
 		m_button		= button;
 	}
 
-	LinkClick::LinkClick( WgGizmo * pGizmo, std::string link, int button )
+	LinkClick::LinkClick( WgWidget * pWidget, std::string link, int button )
 	{
 		m_type			= WG_EVENT_LINK_CLICK;
-		m_pGizmo		= pGizmo;
+		m_pWidget		= pWidget;
 		m_link			= link;
 		m_button		= button;
 	}
 
-	LinkDoubleClick::LinkDoubleClick( WgGizmo * pGizmo, std::string link, int button )
+	LinkDoubleClick::LinkDoubleClick( WgWidget * pWidget, std::string link, int button )
 	{
 		m_type			= WG_EVENT_LINK_DOUBLE_CLICK;
-		m_pGizmo		= pGizmo;
+		m_pWidget		= pWidget;
 		m_link			= link;
 		m_button		= button;
 	}
 
 	//____ Knob event methods ____________________________________________________
 
-	KnobTurn::KnobTurn( WgGizmo * pGizmo, int pos, float fraction )
+	KnobTurn::KnobTurn( WgWidget * pWidget, int pos, float fraction )
 	{
 		m_type		= WG_EVENT_KNOB_TURN;
-		m_pGizmo	= pGizmo;
+		m_pWidget	= pWidget;
 		m_pos		= pos;
 		m_fraction	= fraction;
 	}
@@ -979,11 +979,11 @@ namespace WgEvent
 		m_currPos = currPos;
 	}
 
-	MouseButtonDrag::MouseButtonDrag( int button, WgGizmo * pGizmo, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : MouseButtonEvent(button)
+	MouseButtonDrag::MouseButtonDrag( int button, WgWidget * pWidget, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : MouseButtonEvent(button)
 	{
 		m_type = WG_EVENT_MOUSEBUTTON_DRAG;
-		m_bIsForGizmo		= true;
-		m_pGizmo 			= pGizmo;
+		m_bIsForWidget		= true;
+		m_pWidget 			= pWidget;
 
 		m_startPos = startPos;
 		m_prevPos = prevPos;

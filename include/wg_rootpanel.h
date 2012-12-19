@@ -35,9 +35,9 @@
 #endif
 
 class WgGfxDevice;
-class WgGizmo;
+class WgWidget;
 
-class WgRootPanel : public WgGizmoContainer
+class WgRootPanel : public WgWidgetContainer
 {
 public:
 	WgRootPanel();
@@ -52,25 +52,25 @@ public:
 	bool					SetGeo( const WgRect& geo );
 	WgRect					Geo() const;
 
-	inline WgGizmo *		Child() const { return m_hook.Gizmo(); }
-	bool					SetChild( WgGizmo * pGizmo );
+	inline WgWidget *		Child() const { return m_hook.Widget(); }
+	bool					SetChild( WgWidget * pWidget );
 	inline void				DeleteChild() { SetChild(0); }
-	WgGizmo * 				ReleaseChild();
+	WgWidget * 				ReleaseChild();
 
-	// Inherited from WgGizmoContainer
+	// Inherited from WgWidgetContainer
 
-	bool					DeleteChild( WgGizmo * pGizmo );
-	WgGizmo *				ReleaseChild( WgGizmo * pGizmo );
+	bool					DeleteChild( WgWidget * pWidget );
+	WgWidget *				ReleaseChild( WgWidget * pWidget );
 
 	bool					DeleteAllChildren();
 	bool					ReleaseAllChildren();
 
-	bool					IsGizmo() const { return false; }
+	bool					IsWidget() const { return false; }
 	bool					IsPanel() const { return false; }
 	bool					IsRoot() const { return true; }
 
-	WgGizmo *				CastToGizmo() { return 0; }
-	const WgGizmo *			CastToGizmo() const { return 0; }
+	WgWidget *				CastToWidget() { return 0; }
+	const WgWidget *			CastToWidget() const { return 0; }
 	WgPanel *		CastToPanel() { return 0; }
 	const WgPanel *CastToPanel() const { return 0; }
 	WgRootPanel *				CastToRoot() { return this; }
@@ -93,7 +93,7 @@ public:
 
 	inline void	AddDirtyPatch( const WgRect& rect ) { m_dirtyPatches.Add( rect ); }
 
-	WgGizmo *	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
+	WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
 protected:
 	class Hook : public WgHook
@@ -123,17 +123,17 @@ protected:
 
 		WgHook *		_prevHook() const;
 		WgHook *		_nextHook() const;
-		WgGizmoContainer * _parent() const;
+		WgWidgetContainer * _parent() const;
 
 		WgRootPanel *		m_pRoot;
 	};
 
 
-	WgHook*				_firstHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
-	WgHook*				_lastHook() const { return m_hook.Gizmo()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*				_firstHook() const { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*				_lastHook() const { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
 
-	bool 				_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );
-	bool 				_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );
+	bool 				_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );
+	bool 				_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );
 
 	WgModalPanel *		_getModalPanel() const { return 0; }
 	WgMenuPanel*	_getMenuPanel() const { return 0; }

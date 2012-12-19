@@ -204,7 +204,7 @@ Sint8 Wg_Interface_TextHolder::GetLineSpaceAdjustment() const
 
 //____ _cloneInterface() _______________________________________________________
 
-//DEPRECATED! To be removed once all widgets and items are gizmos.
+//DEPRECATED! To be removed once all widgets and items are widgets.
 
 void Wg_Interface_TextHolder::_cloneInterface( Wg_Interface_TextHolder * _pClone )
 {

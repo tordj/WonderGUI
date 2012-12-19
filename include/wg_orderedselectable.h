@@ -111,13 +111,13 @@ protected:
 	WgOrdSelLayout();
 	~WgOrdSelLayout();
 
-	void			_onCloneContent( const WgGizmo * _pOrg );
+	void			_onCloneContent( const WgWidget * _pOrg );
 
 	WgOrdSelHook *	_firstSelectedHook() const;
 	WgOrdSelHook *	_lastSelectedHook() const;
 
-	virtual void	_onGizmoSelected( WgOrdSelHook * pSelected );			// so parent can do what it needs to.
-	virtual void	_onGizmoUnselected( WgOrdSelHook * pUnselected );		// so parent can do what it needs to.
+	virtual void	_onWidgetSelected( WgOrdSelHook * pSelected );			// so parent can do what it needs to.
+	virtual void	_onWidgetUnselected( WgOrdSelHook * pUnselected );		// so parent can do what it needs to.
 
 
 	WgColorsetPtr	m_pOddBgColors;

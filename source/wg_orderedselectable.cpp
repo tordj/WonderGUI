@@ -49,17 +49,17 @@ bool WgOrdSelHook::SetSelected( bool bSelected )
 						if( p )
 						{
 							p->m_bSelected = false;
-							Parent()->_onGizmoUnselected(this);
+							Parent()->_onWidgetUnselected(this);
 						}
 					}
 
 					m_bSelected = true;
-					Parent()->_onGizmoSelected(this);
+					Parent()->_onWidgetSelected(this);
 				}
 				else
 				{
 					m_bSelected = false;
-					Parent()->_onGizmoUnselected(this);
+					Parent()->_onWidgetUnselected(this);
 				}
 			}
 			break;
@@ -73,9 +73,9 @@ bool WgOrdSelHook::SetSelected( bool bSelected )
 			{
 				m_bSelected = bSelected;
 				if( bSelected )
-					Parent()->_onGizmoSelected(this);
+					Parent()->_onWidgetSelected(this);
 				else
-					Parent()->_onGizmoUnselected(this);
+					Parent()->_onWidgetUnselected(this);
 			}
 			break;
 		}
@@ -90,7 +90,7 @@ void WgOrdSelHook::SetSelectable( bool bSelectable )
 	if( !bSelectable && m_bSelected )
 	{
 		m_bSelected = false;
-		Parent()->_onGizmoUnselected(this);
+		Parent()->_onWidgetUnselected(this);
 	}
 
 	m_bSelectable = bSelectable;
@@ -161,7 +161,7 @@ int WgOrdSelLayout::SelectAll()
 				if( p->m_bSelectable )
 				{
 					p->m_bSelected = true;
-					_onGizmoSelected( p );
+					_onWidgetSelected( p );
 				}
 				p = p->_next();
 			}
@@ -178,7 +178,7 @@ int WgOrdSelLayout::SelectAll()
 
 				p = p->_next();
 			}
-			_refreshAllGizmos();
+			_refreshAllWidgets();
 			break;
 		}
 	}
@@ -198,7 +198,7 @@ void WgOrdSelLayout::UnselectAll()
 			p = p->_next();
 		}
 
-		_refreshAllGizmos();
+		_refreshAllWidgets();
 	}
 }
 
@@ -219,7 +219,7 @@ void WgOrdSelLayout::SetBgBlocks( const WgBlocksetPtr& pOddBg, const WgBlocksetP
 {
 	m_pOddBgBlocks = pOddBg;
 	m_pEvenBgBlocks = pEvenBg;
-	_refreshAllGizmos();
+	_refreshAllWidgets();
 }
 
 //____ SetFgBlocks() _____________________________________________________
@@ -227,7 +227,7 @@ void WgOrdSelLayout::SetBgBlocks( const WgBlocksetPtr& pOddBg, const WgBlocksetP
 void WgOrdSelLayout::SetFgBlocks( const WgBlocksetPtr& pFg )
 {
 	m_pFgBlocks = pFg;
-	_refreshAllGizmos();
+	_refreshAllWidgets();
 }
 
 //____ SetBgColors() _____________________________________________________
@@ -240,7 +240,7 @@ void WgOrdSelLayout::SetBgColors( const WgColorsetPtr& pOddBg, const WgColorsetP
 
 //____ _onCloneContent() ______________________________________________________
 
-void WgOrdSelLayout::_onCloneContent( const WgGizmo * _pOrg )
+void WgOrdSelLayout::_onCloneContent( const WgWidget * _pOrg )
 {
 }
 

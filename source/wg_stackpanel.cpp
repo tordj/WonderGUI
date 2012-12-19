@@ -24,7 +24,7 @@
 #include <wg_util.h>
 #include <wg_patches.h>
 
-static const char	c_gizmoType[] = {"StackPanel"};
+static const char	c_widgetType[] = {"StackPanel"};
 static const char	c_hookType[] = {"StackHook"};
 
 
@@ -89,7 +89,7 @@ WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 	{
 		case DEFAULT:
 		{
-			WgSize	size = m_pGizmo->DefaultSize();
+			WgSize	size = m_pWidget->DefaultSize();
 			WgRect geo = WgUtil::OrientationToRect( m_orientation, base, size );
 
 			if( geo.w > base.w )
@@ -111,7 +111,7 @@ WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 		}
 		case SCALE:
 		{
-			WgSize	orgSize = m_pGizmo->DefaultSize();
+			WgSize	orgSize = m_pWidget->DefaultSize();
 			WgSize	size;
 
 			float	fracX = orgSize.w / (float) base.w;
@@ -158,7 +158,7 @@ const char * WgStackPanel::Type( void ) const
 
 const char * WgStackPanel::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ HeightForWidth() _______________________________________________________
@@ -170,7 +170,7 @@ int WgStackPanel::HeightForWidth( int width ) const
 	WgStackHook * pHook = FirstHook();
 	while( pHook )
 	{
-		int h = pHook->Gizmo()->HeightForWidth(width);
+		int h = pHook->Widget()->HeightForWidth(width);
 		if( h > height )
 			height = h;
 		pHook = pHook->Next();
@@ -188,7 +188,7 @@ int WgStackPanel::WidthForHeight( int height ) const
 	WgStackHook * pHook = FirstHook();
 	while( pHook )
 	{
-		int w = pHook->Gizmo()->WidthForHeight(height);
+		int w = pHook->Widget()->WidthForHeight(height);
 		if( w > width )
 			width = w;
 		pHook = pHook->Next();
@@ -259,7 +259,7 @@ void WgStackPanel::_onRenderRequested( WgSortableHook * _pHook, const WgRect& _r
 	{
 		WgRect geo = pCover->_getGeo(m_size);
 		if( pCover->IsVisible() && geo.IntersectsWith( rect ) )
-			pCover->Gizmo()->_onMaskPatches( patches, geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
+			pCover->Widget()->_onMaskPatches( patches, geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();
 	}
@@ -270,21 +270,21 @@ void WgStackPanel::_onRenderRequested( WgSortableHook * _pHook, const WgRect& _r
 		_requestRender( * pRect );
 }
 
-//____ _onGizmoAppeared() _____________________________________________________
+//____ _onWidgetAppeared() _____________________________________________________
 
-void WgStackPanel::_onGizmoAppeared( WgSortableHook * pInserted )
+void WgStackPanel::_onWidgetAppeared( WgSortableHook * pInserted )
 {
 	bool	bRequestResize = false;
 
-	// Check if we need to resize to fit Gizmo in current width
+	// Check if we need to resize to fit Widget in current width
 
-	int height = pInserted->Gizmo()->HeightForWidth(m_size.w);
+	int height = pInserted->Widget()->HeightForWidth(m_size.w);
 	if( height > m_size.h )
 		bRequestResize = true;
 
 	// Update bestSize
 
-	WgSize best = pInserted->Gizmo()->DefaultSize();
+	WgSize best = pInserted->Widget()->DefaultSize();
 
 	if( best.w > m_bestSize.w )
 	{
@@ -300,18 +300,18 @@ void WgStackPanel::_onGizmoAppeared( WgSortableHook * pInserted )
 	if( bRequestResize )
 		_requestResize();
 
-	// Adapt inserted Gizmo to our size
+	// Adapt inserted Widget to our size
 
-	pInserted->Gizmo()->_onNewSize(m_size);
+	pInserted->Widget()->_onNewSize(m_size);
 
 	// Force a render.
 
 	_onRenderRequested( pInserted );
 }
 
-//____ _onGizmoDisappeared() __________________________________________________
+//____ _onWidgetDisappeared() __________________________________________________
 
-void WgStackPanel::_onGizmoDisappeared( WgSortableHook * pToBeRemoved )
+void WgStackPanel::_onWidgetDisappeared( WgSortableHook * pToBeRemoved )
 {
 	bool	bRequestResize = false;
 
@@ -327,7 +327,7 @@ void WgStackPanel::_onGizmoDisappeared( WgSortableHook * pToBeRemoved )
 	{
 		if( pHook != pToBeRemoved )
 		{
-			WgSize sz = pHook->Gizmo()->DefaultSize();
+			WgSize sz = pHook->Widget()->DefaultSize();
 			if( sz.w > bestSize.w )
 				bestSize.w = sz.w;
 			if( sz.h > bestSize.h )
@@ -343,7 +343,7 @@ void WgStackPanel::_onGizmoDisappeared( WgSortableHook * pToBeRemoved )
 
 	// Check if removal might affect height for current width
 
-	int height = pToBeRemoved->Gizmo()->HeightForWidth(m_size.w);
+	int height = pToBeRemoved->Widget()->HeightForWidth(m_size.w);
 	if( height >= m_size.h )
 		bRequestResize = true;
 
@@ -353,16 +353,16 @@ void WgStackPanel::_onGizmoDisappeared( WgSortableHook * pToBeRemoved )
 		_requestResize();
 }
 
-//____ _onGizmosReordered() ___________________________________________________
+//____ _onWidgetsReordered() ___________________________________________________
 
-void WgStackPanel::_onGizmosReordered()
+void WgStackPanel::_onWidgetsReordered()
 {
 	_requestRender();
 }
 
-//____ _refreshAllGizmos() ____________________________________________________
+//____ _refreshAllWidgets() ____________________________________________________
 
-void WgStackPanel::_refreshAllGizmos()
+void WgStackPanel::_refreshAllWidgets()
 {
 	_refreshDefaultSize();
 	_adaptChildrenToSize();
@@ -385,7 +385,7 @@ void WgStackPanel::_refreshDefaultSize()
 	WgStackHook * pHook = FirstHook();
 	while( pHook )
 	{
-		WgSize sz = pHook->Gizmo()->DefaultSize() + pHook->m_borders;
+		WgSize sz = pHook->Widget()->DefaultSize() + pHook->m_borders;
 		if( sz.w > bestSize.w )
 			bestSize.w = sz.w;
 		if( sz.h > bestSize.h )
@@ -407,7 +407,7 @@ void WgStackPanel::_adaptChildrenToSize()
 	WgStackHook * pHook = FirstHook();
 	while( pHook )
 	{
-		pHook->Gizmo()->_onNewSize( pHook->_getGeo(m_size) );
+		pHook->Widget()->_onNewSize( pHook->_getGeo(m_size) );
 		pHook = pHook->Next();
 	}
 }

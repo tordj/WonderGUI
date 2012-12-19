@@ -31,7 +31,7 @@
 #include	<wg_gfxdevice.h>
 
 
-static const char	c_gizmoType[] = {"TablePanel"};
+static const char	c_widgetType[] = {"TablePanel"};
 static const char	c_hookType[] = {"TableHook"};
 
 
@@ -88,7 +88,7 @@ WgHook* WgTableHook::_nextHook() const
 	return NextInTable();
 }
 
-WgGizmoContainer * WgTableHook::_parent() const
+WgWidgetContainer * WgTableHook::_parent() const
 {
 	return m_pRow->m_pTable;
 }
@@ -135,7 +135,7 @@ WgTableHook * WgTableHook::PrevInRow() const
 
 	while( col >= 0 )
 	{
-		if( pRow->m_pCells[col].Gizmo() )
+		if( pRow->m_pCells[col].Widget() )
 			return &pRow->m_pCells[col];
 		col--;
 	}
@@ -150,7 +150,7 @@ WgTableHook * WgTableHook::NextInRow() const
 
 	while( col < pRow->m_nCells )
 	{
-		if( pRow->m_pCells[col].Gizmo() )
+		if( pRow->m_pCells[col].Widget() )
 			return &pRow->m_pCells[col];
 		col++;
 	}
@@ -166,7 +166,7 @@ WgTableHook * WgTableHook::PrevInColumn() const
 
 	while( pRow )
 	{
-		if( pRow->m_nCells > col && pRow->m_pCells[col].Gizmo() )
+		if( pRow->m_nCells > col && pRow->m_pCells[col].Widget() )
 			return &pRow->m_pCells[col];
 
 		pRow = pRow->Prev();
@@ -182,7 +182,7 @@ WgTableHook * WgTableHook::NextInColumn() const
 
 	while( pRow )
 	{
-		if( pRow->m_nCells > col && pRow->m_pCells[col].Gizmo() )
+		if( pRow->m_nCells > col && pRow->m_pCells[col].Widget() )
 			return &pRow->m_pCells[col];
 
 		pRow = pRow->Next();
@@ -260,7 +260,7 @@ WgTableColumn::WgTableColumn()
 	m_id				= 0;
 	m_pTable			= 0;
 	m_pText				= 0;
-	m_pDefaultGizmo		= 0;
+	m_pDefaultWidget		= 0;
 }
 
 
@@ -276,7 +276,7 @@ WgTableColumn::WgTableColumn( WgTablePanel * pOwner )
 	m_id				= 0;
 	m_pTable			= pOwner;
 	m_pText				= 0;
-	m_pDefaultGizmo		= 0;
+	m_pDefaultWidget		= 0;
 }
 
 
@@ -290,7 +290,7 @@ WgTableColumn::WgTableColumn(const WgTableColumn& column)
 	m_bInitialAscend = column.m_bInitialAscend;
 	m_id = column.m_id;
 	m_pTable = 0;
-	m_pDefaultGizmo = column.m_pDefaultGizmo;			//TODO: WRONG!!!!!!!!!!!!!
+	m_pDefaultWidget = column.m_pDefaultWidget;			//TODO: WRONG!!!!!!!!!!!!!
 
 	if(column.m_pText)
 	{
@@ -372,7 +372,7 @@ void WgTableColumn::SetEnabled(bool bEnabled)
 }
 
 
-void WgTableColumn::SetSortFunction( fpGizmoCmp pFunc )
+void WgTableColumn::SetSortFunction( fpWidgetCmp pFunc )
 {
 	m_fpCompare = pFunc;
 }
@@ -458,23 +458,23 @@ WgTableRow::~WgTableRow()
 }
 
 
-void WgTableRow::SetGizmo( WgGizmo * pGizmo, int cell )
+void WgTableRow::SetWidget( WgWidget * pWidget, int cell )
 {
 	if( m_nCells <= cell )
 		_growCellsArray(cell+1);
 
-	if( m_pCells[cell].Gizmo() )
+	if( m_pCells[cell].Widget() )
 		m_pCells[cell].~WgTableHook();
 
 	new (&m_pCells[cell])WgTableHook(this);
 
-	m_pCells[cell]._attachGizmo(pGizmo);
+	m_pCells[cell]._attachWidget(pWidget);
 
 	int width = m_pTable->m_pColumns[cell].RealWidth();
-	int height = pGizmo->HeightForWidth(width);
+	int height = pWidget->HeightForWidth(width);
 
 	m_pCells[cell].m_height = height;
-	pGizmo->_onNewSize( WgSize(width, height) );
+	pWidget->_onNewSize( WgSize(width, height) );
 
 	if( height > m_height )
 	{
@@ -487,37 +487,37 @@ void WgTableRow::SetGizmo( WgGizmo * pGizmo, int cell )
 	//TODO: Meddela table att rad har ändrats.
 }
 
-int WgTableRow::AddGizmo( WgGizmo * pGizmo )
+int WgTableRow::AddWidget( WgWidget * pWidget )
 {
 	// Look for the last empty cell
 
 	int cell = m_nCells;
 
-	while( cell > 0 && m_pCells[cell-1].Gizmo() == 0 )
+	while( cell > 0 && m_pCells[cell-1].Widget() == 0 )
 		cell--;
 
 	//
 
-	SetGizmo( pGizmo, cell );
+	SetWidget( pWidget, cell );
 	return cell;
 }
 
-WgGizmo * WgTableRow::ReleaseGizmo( int cell )
+WgWidget * WgTableRow::ReleaseWidget( int cell )
 {
-	if( m_nCells <= cell || !m_pCells[cell].Gizmo() )
+	if( m_nCells <= cell || !m_pCells[cell].Widget() )
 		return false;
 
-	WgGizmo * pReleased = m_pCells[cell].Gizmo();
-	m_pCells[cell]._attachGizmo(0);
+	WgWidget * pReleased = m_pCells[cell].Widget();
+	m_pCells[cell]._attachWidget(0);
 	m_pCells[cell].~WgTableHook();
 	new (&m_pCells[cell])WgTableHook(this);		// Is this really necessary?
 
 	return pReleased;
 }
 
-bool WgTableRow::DeleteGizmo( int cell )
+bool WgTableRow::DeleteWidget( int cell )
 {
-	if( m_nCells <= cell || !m_pCells[cell].Gizmo() )
+	if( m_nCells <= cell || !m_pCells[cell].Widget() )
 		return false;
 
 	m_pCells[cell].~WgTableHook();
@@ -537,10 +537,10 @@ void WgTableRow::_growCellsArray( int nCells )
 	if( m_nCells > 0 )
 		memcpy( p, m_pCells, m_nCells*sizeof(WgTableHook) );
 
-	// Go through gizmos and update their hook pointers
+	// Go through widgets and update their hook pointers
 
 	for( int i = 0 ; i < m_nCells ; i++ )
-			p[i]._relinkGizmo();
+			p[i]._relinkWidget();
 
 	// Delte old array and set pointers
 
@@ -563,7 +563,7 @@ bool WgTableRow::Select()
 		m_mode = WG_MODE_SELECTED;
 
 		for( int i = 0 ; i < m_nCells ; i++ )
-			m_pCells[i].Gizmo()->SetSelected();
+			m_pCells[i].Widget()->SetSelected();
 	}
 	return true;
 }
@@ -576,7 +576,7 @@ void WgTableRow::Unselect()
 		m_mode = WG_MODE_NORMAL;
 
 		for( int i = 0 ; i < m_nCells ; i++ )
-			m_pCells[i].Gizmo()->SetNormal();
+			m_pCells[i].Widget()->SetNormal();
 	}
 }
 
@@ -585,7 +585,7 @@ void WgTableRow::Unselect()
 WgTableHook* WgTableRow::FirstHook() const
 {
 	for( int i = 0 ; i < m_nCells ; i++ )
-		if( m_pCells[i].Gizmo() )
+		if( m_pCells[i].Widget() )
 			return &m_pCells[i];
 
 	return 0;
@@ -594,7 +594,7 @@ WgTableHook* WgTableRow::FirstHook() const
 WgTableHook* WgTableRow::LastHook() const
 {
 	for( int i = m_nCells-1 ; i >= 0 ; i-- )
-		if( m_pCells[i].Gizmo() )
+		if( m_pCells[i].Widget() )
 			return &m_pCells[i];
 
 	return 0;
@@ -602,16 +602,16 @@ WgTableHook* WgTableRow::LastHook() const
 
 WgTableHook* WgTableRow::GetHook( int cell )
 {
-	if( cell < m_nCells && m_pCells[cell].Gizmo() )
+	if( cell < m_nCells && m_pCells[cell].Widget() )
 		return &m_pCells[cell];
 
 	return 0;
 }
 
-WgGizmo* WgTableRow::GetGizmo( int cell )
+WgWidget* WgTableRow::GetWidget( int cell )
 {
-	if( cell < m_nCells && m_pCells[cell].Gizmo() )
-		return m_pCells[cell].Gizmo();
+	if( cell < m_nCells && m_pCells[cell].Widget() )
+		return m_pCells[cell].Widget();
 
 	return 0;
 }
@@ -685,7 +685,7 @@ const char * WgTablePanel::Type( void ) const
 
 const char * WgTablePanel::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetHeaderSource() ______________________________________________________
@@ -750,7 +750,7 @@ void WgTablePanel::SetCellPadding( WgBorders padding )
 {
 	m_cellPadding = padding;
 
-	//TODO: This affects geometry of gizmos in cells!!!
+	//TODO: This affects geometry of widgets in cells!!!
 
 	_requestRender();
 }
@@ -839,10 +839,10 @@ void WgTablePanel::DeleteColumns()
 
 //____ AddColumn() ____________________________________________________________
 
-//TODO: Add default gizmo to parameters
+//TODO: Add default widget to parameters
 
-int WgTablePanel::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrientation headerAlign, int(*fpCompare)(WgGizmo *,WgGizmo *),
-							 bool bInitialAscend, bool bEnabled, Sint64 id, WgGizmo * pDefaultGizmo )
+int WgTablePanel::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrientation headerAlign, int(*fpCompare)(WgWidget *,WgWidget *),
+							 bool bInitialAscend, bool bEnabled, Sint64 id, WgWidget * pDefaultWidget )
 {
 	WgTableColumn * pCol = new WgTableColumn[m_nColumns+1];
 
@@ -863,7 +863,7 @@ int WgTablePanel::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrientatio
 	pCol[m_nColumns].m_bEnabled = bEnabled;
 	pCol[m_nColumns].m_bInitialAscend = bInitialAscend;
 	pCol[m_nColumns].m_id = id;
-	pCol[m_nColumns].m_pDefaultGizmo = pDefaultGizmo;
+	pCol[m_nColumns].m_pDefaultWidget = pDefaultWidget;
 
 
 	if( m_pColumns )
@@ -887,7 +887,7 @@ void WgTablePanel::_updateColumnWidths()
 	bool  bAnyColumnWidthChanged = false;
 
 	if( m_bAutoScaleHeader && m_contentSize.w != 0 )
-		scaleFactor = (float)m_gizmoSize.w / (float)m_contentSize.w;
+		scaleFactor = (float)m_widgetSize.w / (float)m_contentSize.w;
 
 	// Set m_realWidth for each column, flag if changed.
 
@@ -907,7 +907,7 @@ void WgTablePanel::_updateColumnWidths()
 			m_pColumns[i].m_realWidth = 0;
 	}
 
-	// Go through rows, notify gizmos of new width, update row height and content height.
+	// Go through rows, notify widgets of new width, update row height and content height.
 
 	WgTableRow* pRow = m_rows.First();
 	while( pRow )
@@ -917,11 +917,11 @@ void WgTablePanel::_updateColumnWidths()
 		for( int n = 0 ; n < pRow->m_nCells ; n++ )
 		{
 			WgTableHook * pHook = &pRow->m_pCells[n];
-			if( m_pColumns[n].m_bWidthChanged && pHook->Gizmo() )
+			if( m_pColumns[n].m_bWidthChanged && pHook->Widget() )
 			{
 				int w = m_pColumns[n].m_realWidth;
-				int h = pHook->Gizmo()->HeightForWidth(w);
-				pHook->Gizmo()->_onNewSize( WgSize( w, h ) );
+				int h = pHook->Widget()->HeightForWidth(w);
+				pHook->Widget()->_onNewSize( WgSize( w, h ) );
 
 				if( h != pHook->m_height )
 				{
@@ -1023,11 +1023,11 @@ WgTableHook* WgTablePanel::LastHook() const
 
 //____ GetCellContent() ________________________________________________________
 
-WgGizmo * WgTablePanel::GetCellContent( int row, int column )
+WgWidget * WgTablePanel::GetCellContent( int row, int column )
 {
 	WgTableRow * pRow = m_rows.Get(row);
 	if( pRow )
-		return pRow->GetGizmo(column);
+		return pRow->GetWidget(column);
 	else
 		return 0;
 }
@@ -1080,8 +1080,8 @@ WgRect WgTablePanel::GetCellGeo( int row, int column )
 	// Determine width
 
 	r.w = m_pColumns[column].m_realWidth;
-	if( column == m_nColumns-1 && r.x + r.w < m_gizmoSize.w )
-		r.w =  m_gizmoSize.w - r.x;		// Last column stretches to end of tableview...
+	if( column == m_nColumns-1 && r.x + r.w < m_widgetSize.w )
+		r.w =  m_widgetSize.w - r.x;		// Last column stretches to end of tableview...
 
 
 	// Apply padding
@@ -1097,28 +1097,28 @@ WgRect WgTablePanel::GetCellGeo( int row, int column )
 
 //____ DeleteChild() __________________________________________________________
 
-bool WgTablePanel::DeleteChild( WgGizmo * pGizmo )
+bool WgTablePanel::DeleteChild( WgWidget * pWidget )
 {
-	if( !pGizmo || pGizmo->Parent() != this )
+	if( !pWidget || pWidget->Parent() != this )
 		return false;
 
-	WgTableHook * pHook = static_cast<WgTableHook*>(pGizmo->Hook());
+	WgTableHook * pHook = static_cast<WgTableHook*>(pWidget->Hook());
 	WgTableRow * pRow = pHook->Row();
 
-	return pRow->DeleteGizmo( pHook->ColumnNb() );
+	return pRow->DeleteWidget( pHook->ColumnNb() );
 }
 
 //____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgTablePanel::ReleaseChild( WgGizmo * pGizmo )
+WgWidget * WgTablePanel::ReleaseChild( WgWidget * pWidget )
 {
-	if( !pGizmo || pGizmo->Parent() != this )
+	if( !pWidget || pWidget->Parent() != this )
 		return 0;
 
-	WgTableHook * pHook = static_cast<WgTableHook*>(pGizmo->Hook());
+	WgTableHook * pHook = static_cast<WgTableHook*>(pWidget->Hook());
 	WgTableRow * pRow = pHook->Row();
 
-	return pRow->ReleaseGizmo( pHook->ColumnNb() );
+	return pRow->ReleaseWidget( pHook->ColumnNb() );
 }
 
 //____ DeleteAllChildren() ______________________________________________________
@@ -1493,15 +1493,15 @@ int WgTablePanel::CompareRows( WgTableRow* pRow1, WgTableRow* pRow2 ) const
 
 		if( col < m_nColumns && m_pColumns[col].m_fpCompare != 0 )
 		{
-			WgGizmo* p1 = 0;
-			WgGizmo* p2 = 0;
+			WgWidget* p1 = 0;
+			WgWidget* p2 = 0;
 			int diff;
 
 			if( pRow1->m_nCells >= col )
-				p1 = pRow1->m_pCells[col].Gizmo();
+				p1 = pRow1->m_pCells[col].Widget();
 
 			if( pRow2->m_nCells >= col )
-				p2 = pRow2->m_pCells[col].Gizmo();
+				p2 = pRow2->m_pCells[col].Widget();
 
 			if( p1 == p2 )
 				diff = 0;
@@ -1666,9 +1666,9 @@ void WgTablePanel::ScrollIntoView( WgTableRow* pRow )
 
 void WgTablePanel::_onNewSize( const WgSize& newSize )
 {
-	bool bWidthChanged = (newSize.w!=m_gizmoSize.w)?true:false;
+	bool bWidthChanged = (newSize.w!=m_widgetSize.w)?true:false;
 
-	m_gizmoSize = newSize;
+	m_widgetSize = newSize;
 
 	if( bWidthChanged )
 		_updateColumnWidths();
@@ -1680,7 +1680,7 @@ void WgTablePanel::_onNewSize( const WgSize& newSize )
 
 int WgTablePanel::HeightForWidth( int width ) const
 {
-	//TODO: Implement, should recurse through lines and their gizmos checking height needed.
+	//TODO: Implement, should recurse through lines and their widgets checking height needed.
 
 	return DefaultSize().h;		// No recommendation, for the moment
 }
@@ -1794,12 +1794,12 @@ float WgTablePanel::CalcHeaderScaleFactor() const
 	if(m_contentSize.w == 0)
 		return 1.f;
 
-	return (float)m_gizmoSize.w / (float)m_contentSize.w;
+	return (float)m_widgetSize.w / (float)m_contentSize.w;
 }
 
-//____ FindGizmo() ____________________________________________________________
+//____ FindWidget() ____________________________________________________________
 
-WgGizmo * WgTablePanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
+WgWidget * WgTablePanel::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 {
 	// Check cell content
 
@@ -1810,16 +1810,16 @@ WgGizmo * WgTablePanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 	int col = _getMarkedColumn( ofs.x, xOfs );
 	int	row = _getMarkedRow( ofs.y, pRow, yOfs );
 
-	WgGizmo * pGizmo = 0;
+	WgWidget * pWidget = 0;
 
 	if( col != -1 && row != -1 && pRow->GetHook(col)->IsVisible() )
 	{
 		if( xOfs < m_cellPadding.left || xOfs >= m_pColumns[col].m_realWidth - m_cellPadding.right ||
 			yOfs < m_cellPadding.top || yOfs >= pRow->Height() - m_cellPadding.bottom )
 		{
-			pGizmo = pRow->GetGizmo(col);
-			if( mode == WG_SEARCH_GEOMETRY || pGizmo->MarkTest( WgCoord( xOfs-m_cellPadding.left, yOfs-m_cellPadding.top) )  )
-				return pGizmo;
+			pWidget = pRow->GetWidget(col);
+			if( mode == WG_SEARCH_GEOMETRY || pWidget->MarkTest( WgCoord( xOfs-m_cellPadding.left, yOfs-m_cellPadding.top) )  )
+				return pWidget;
 		}
 	}
 
@@ -1981,13 +1981,13 @@ void WgTablePanel::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		for( int i = 0 ; i < m_nColumns ; i++ )
 		{
 			WgTableHook * pHook = 0;
-			if( pRow->m_nCells > i && pRow->m_pCells[i].Gizmo() != 0 )
+			if( pRow->m_nCells > i && pRow->m_pCells[i].Widget() != 0 )
 				pHook = &pRow->m_pCells[i];
 
 //			if( pHook == 0 )									//TODO: Make it right!
-//				pHook = m_pColumns[i].m_pDefaultGizmoHook;
+//				pHook = m_pColumns[i].m_pDefaultWidgetHook;
 
-			if( m_pColumns[i].m_bVisible && pHook->IsVisible() && pHook->Gizmo() != 0 )
+			if( m_pColumns[i].m_bVisible && pHook->IsVisible() && pHook->Widget() != 0 )
 			{
 				// don't draw columns that are outside of the window
 				if( rc.x >= _window.x + _window.w )
@@ -2004,7 +2004,7 @@ void WgTablePanel::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 				//
 
-				pHook->Gizmo()->_onRender( pDevice, rc, rc, clip2, _layer );
+				pHook->Widget()->_onRender( pDevice, rc, rc, clip2, _layer );
 				rc.x += m_pColumns[i].m_realWidth - m_cellPadding.left;		// Left cellpadding already added...
 			}
 		}
@@ -2049,7 +2049,7 @@ void WgTablePanel::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgTablePanel::_onCloneContent( const WgGizmo * _pOrg )
+void WgTablePanel::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgTablePanel * pOrg = (WgTablePanel *) _pOrg;
 

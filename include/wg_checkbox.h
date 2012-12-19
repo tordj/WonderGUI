@@ -23,8 +23,8 @@
 #ifndef	WG_CHECKBOX_DOT_H
 #define	WG_CHECKBOX_DOT_H
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef WG_INTERFACE_TEXTHOLDER_DOT_H
@@ -45,7 +45,7 @@
 
 class	WgSurface;
 
-class	WgCheckBox : public WgGizmo, public Wg_Interface_TextHolder, public WgIconHolder
+class	WgCheckBox : public WgWidget, public Wg_Interface_TextHolder, public WgIconHolder
 {
 public:
 	WgCheckBox();
@@ -53,13 +53,13 @@ public:
 
 	virtual const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgCheckBox(); };
+	virtual WgWidget * NewOfMyType() const { return new WgCheckBox(); };
 
 	enum ClickArea
 	{
 		DEFAULT,		// Full geometry of icon (no alpha test) + text + area between + alpha test on background.
 		ALPHA,			// Alpha test on background and icon.
-		GEO,			// Full geometry of Gizmo is clickable.
+		GEO,			// Full geometry of Widget is clickable.
 		ICON,			// Only the icon (alpha test) is clickable.
 		TEXT			// Only the text is clickable.
 	};
@@ -100,7 +100,7 @@ public:
 
 protected:
 
-	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void	_onRefresh();

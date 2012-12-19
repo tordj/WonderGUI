@@ -72,7 +72,7 @@ public:
 	WgPanel* Parent() const;
 
 protected:
-	// TODO: Constructor should in the future call SetHook() on Gizmo, once we are totally rid of widgets...
+	// TODO: Constructor should in the future call SetHook() on Widget, once we are totally rid of widgets...
 
 	PROTECTED_LINK_METHODS( WgModalHook );
 
@@ -91,13 +91,13 @@ protected:
 
 	WgModalPanel * m_pParent;
 
-	WgRect			m_realGeo;			// Gizmos geo relative parent
+	WgRect			m_realGeo;			// Widgets geo relative parent
 
 	WgOrientation	m_origo;
-	WgRect			m_placementGeo;		// Gizmos geo relative anchor and hotspot. Setting width and height to 0 uses Gizmos DefaultSize() dynamically.
-										// Setting just one of them to 0 uses Gizmos HeightForWidth() or WidthForHeight() dynamically.
+	WgRect			m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets DefaultSize() dynamically.
+										// Setting just one of them to 0 uses Widgets HeightForWidth() or WidthForHeight() dynamically.
 
-	WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at child that held focus when this modal was last on top.
+	WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at child that held focus when this modal was last on top.
 };
 
 
@@ -113,23 +113,23 @@ public:
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgModalPanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgModalPanel(); };
 
 
-	WgHook *	SetBase( WgGizmo * pGizmo );
-	WgGizmo *		Base();
+	WgHook *	SetBase( WgWidget * pWidget );
+	WgWidget *		Base();
 	bool			DeleteBase();
-	WgGizmo *		ReleaseBase();
+	WgWidget *		ReleaseBase();
 
 
-	WgModalHook *	AddModal( WgGizmo * pGizmo, const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
-	WgModalHook *	AddModal( WgGizmo * pGizmo, const WgCoord& pos, WgOrientation origo = WG_NORTHWEST ) { return AddModal( pGizmo, WgRect(pos,0,0), origo); }
+	WgModalHook *	AddModal( WgWidget * pWidget, const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
+	WgModalHook *	AddModal( WgWidget * pWidget, const WgCoord& pos, WgOrientation origo = WG_NORTHWEST ) { return AddModal( pWidget, WgRect(pos,0,0), origo); }
 
 	bool			DeleteAllModal();
 	bool			ReleaseAllModal();
 
-	bool			DeleteChild( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
+	bool			DeleteChild( WgWidget * pWidget );
+	WgWidget *		ReleaseChild( WgWidget * pWidget );
 
 	bool			DeleteAllChildren();
 	bool			ReleaseAllChildren();
@@ -138,7 +138,7 @@ public:
 	WgModalHook *	LastModal();
 
 
-	// Overloaded from WgGizmo
+	// Overloaded from WgWidget
 
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
@@ -147,7 +147,7 @@ public:
 
 	// Overloaded from WgPanel
 
-	WgGizmo *		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
+	WgWidget *		FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
 private:
 
@@ -180,10 +180,10 @@ private:
 
 		WgHook *	_prevHook() const { return 0; }
 		WgHook *	_nextHook() const { return m_pParent->FirstModal(); }
-		WgGizmoContainer * _parent() const { return m_pParent; }
+		WgWidgetContainer * _parent() const { return m_pParent; }
 
 		WgModalPanel * 	m_pParent;
-		WgGizmoWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any modal was shown.
+		WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any modal was shown.
 	};
 
 
@@ -194,7 +194,7 @@ private:
 
 	//
 
-	void			_onCloneContent( const WgGizmo * _pOrg );
+	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
 	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 
@@ -210,7 +210,7 @@ private:
 	WgHook *	_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
 	BaseHook				m_baseHook;
-	WgChain<WgModalHook>	m_modalHooks;		// First modal gizmo lies at the bottom.
+	WgChain<WgModalHook>	m_modalHooks;		// First modal widget lies at the bottom.
 
 	WgSize					m_size;
 

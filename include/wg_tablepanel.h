@@ -50,7 +50,7 @@ class WgTablePanel;
 class WgTableRow;
 class WgTableColumn;
 
-typedef int(*fpGizmoCmp)(WgGizmo*,WgGizmo*);
+typedef int(*fpWidgetCmp)(WgWidget*,WgWidget*);
 
 
 
@@ -97,15 +97,15 @@ protected:
 
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
-	WgGizmoContainer * _parent() const;
+	WgWidgetContainer * _parent() const;
 
-	int				m_height;		// Minimum height needed for this Gizmo.
+	int				m_height;		// Minimum height needed for this Widget.
 	WgTableRow *	m_pRow;			//
 };
 
 //____ WgTableColumn _________________________________________________________
 
-class WgTableColumn : public Wg_Interface_TextHolder, public WgGizmoCollection
+class WgTableColumn : public Wg_Interface_TextHolder, public WgWidgetCollection
 {
 friend class WgTablePanel;
 friend class WgTableHook;
@@ -138,8 +138,8 @@ public:
 	WgTableHook*	FirstHook() const;
 	WgTableHook*	LastHook() const;
 
-	void 			SetSortFunction( fpGizmoCmp pFunc );
-	fpGizmoCmp 		SortFunction() const { return m_fpCompare; }
+	void 			SetSortFunction( fpWidgetCmp pFunc );
+	fpWidgetCmp 		SortFunction() const { return m_fpCompare; }
 
 	void			SetTextObj(WgText *text);
 	const WgText*	GetTextObj() const;
@@ -160,21 +160,21 @@ private:
 	int				m_realWidth;			// Columns real current width in pixels.
 
 //	int				m_pixelWidth;
-	fpGizmoCmp		m_fpCompare;
+	fpWidgetCmp		m_fpCompare;
 	bool			m_bVisible;
 	bool			m_bEnabled;
 	bool			m_bInitialAscend;
 	bool			m_bWidthChanged;
 	WgTablePanel *	m_pTable;
 
-	WgGizmo *		m_pDefaultGizmo;
+	WgWidget *		m_pDefaultWidget;
 
 
 };
 
 //____ WgTableRow ____________________________________________________________
 
-class WgTableRow : protected WgLink, public WgGizmoCollection
+class WgTableRow : protected WgLink, public WgWidgetCollection
 {
 friend class WgTablePanel;
 friend class WgTableHook;
@@ -197,15 +197,15 @@ public:
 	void			SetVisible(bool bVisible);
 	bool			IsVisible() const { return m_bVisible; }
 
-	WgTableHook*	FirstHook() const;		// Gets first hook with a gizmo.
-	WgTableHook*	LastHook() const;		// Gets last hook with a gizmo.
-	WgTableHook*	GetHook( int cell );	// Returns 0 if hook has no gizmo.
-	WgGizmo*		GetGizmo( int cell );
+	WgTableHook*	FirstHook() const;		// Gets first hook with a widget.
+	WgTableHook*	LastHook() const;		// Gets last hook with a widget.
+	WgTableHook*	GetHook( int cell );	// Returns 0 if hook has no widget.
+	WgWidget*		GetWidget( int cell );
 
-	void			SetGizmo( WgGizmo * pGizmo, int cell );
-	int				AddGizmo( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseGizmo( int cell );
-	bool			DeleteGizmo( int cell );
+	void			SetWidget( WgWidget * pWidget, int cell );
+	int				AddWidget( WgWidget * pWidget );
+	WgWidget *		ReleaseWidget( int cell );
+	bool			DeleteWidget( int cell );
 
 	WgTablePanel*	Table() const { return m_pTable; }
 protected:
@@ -241,7 +241,7 @@ public:
 	virtual ~WgTablePanel();
 	virtual const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgTablePanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgTablePanel(); };
 
 
 	//____ Methods __________________________________________
@@ -285,7 +285,7 @@ public:
 	WgColor*		GetRowColors( ) { return m_pRowColors; }
 	void			DeleteRowColors();
 
-	int				AddColumn( const WgCharSeq& text, int pixelwidth, WgOrientation headerAlign = WG_WEST, int(*fpCompare)(WgGizmo*,WgGizmo*) = 0, bool bInitialAscend = true, bool bEnabled = true, Sint64 id = 0, WgGizmo * pDefaultGizmo = 0 );
+	int				AddColumn( const WgCharSeq& text, int pixelwidth, WgOrientation headerAlign = WG_WEST, int(*fpCompare)(WgWidget*,WgWidget*) = 0, bool bInitialAscend = true, bool bEnabled = true, Sint64 id = 0, WgWidget * pDefaultWidget = 0 );
 	void			DeleteColumns();
 //	bool	SetColumnWidth( Uint32 column, Uint32 pixelwidth );
 //	bool	SetColumnVisible( Uint32 column, bool bVisible );
@@ -324,10 +324,10 @@ public:
 	int				NbRows() const { return m_nRows; }
 	int				CompareRows(WgTableRow* p1, WgTableRow* p2) const;
 
-	// Overloaded from WgGizmoContainer
+	// Overloaded from WgWidgetContainer
 
-	bool			DeleteChild( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
+	bool			DeleteChild( WgWidget * pWidget );
+	WgWidget *		ReleaseChild( WgWidget * pWidget );
 
 	bool			DeleteAllChildren();
 	bool			ReleaseAllChildren();
@@ -344,7 +344,7 @@ public:
 	WgTableHook*	FirstHook() const;
 	WgTableHook*	LastHook() const;
 
-	// Overloaded from WgGizmo
+	// Overloaded from WgWidget
 
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
@@ -353,7 +353,7 @@ public:
 
 	// Overloaded from WgPanel
 
-	WgGizmo * 		FindGizmo( const WgCoord& ofs, WgSearchMode mode );
+	WgWidget * 		FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
 	// New methods!
 
@@ -371,11 +371,11 @@ public:
 	SelectMode		GetSelectMode() const { return m_selectMode; }
 
 	WgRect			GetCellGeo( int row, int column );
-	WgGizmo *		GetCellContent( int row, int column );
+	WgWidget *		GetCellContent( int row, int column );
 
 protected:
 
-	void			_onCloneContent( const WgGizmo * _pOrg );
+	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onNewSize( const WgSize& size );
 //	bool			_onAlphaTest( const WgCoord& ofs );		//TODO: Implement for performance!
@@ -421,8 +421,8 @@ private:
 	WgChain<WgTableRow>	m_rows;
 	int						m_nRows;
 
-	WgSize			m_gizmoSize;					// Current size of this table, as decided by our parent.
-	WgSize			m_contentSize;					// Size of the content of the table, considered best size for gizmo.
+	WgSize			m_widgetSize;					// Current size of this table, as decided by our parent.
+	WgSize			m_contentSize;					// Size of the content of the table, considered best size for widget.
 
 	SelectMode		m_selectMode;
 

@@ -37,7 +37,7 @@ public:
 
 	virtual const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgRadioButton(); };
+	virtual WgWidget * NewOfMyType() const { return new WgRadioButton(); };
 	
 	
 	bool	SetState( bool state );
@@ -47,9 +47,9 @@ public:
 
 private:
 
-	void			_onCloneContent( const WgGizmo * _pOrg );
-	WgGizmoContainer * _findRadioGroup();
-	void			_unselectRecursively( WgGizmoContainer * pParent );
+	void			_onCloneContent( const WgWidget * _pOrg );
+	WgWidgetContainer * _findRadioGroup();
+	void			_unselectRecursively( WgWidgetContainer * pParent );
 	
 	
 	bool			m_bAllowUnchecking;

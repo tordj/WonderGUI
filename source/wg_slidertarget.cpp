@@ -26,13 +26,13 @@
 
 void WgSliderTarget::_updateSlider( float pos, float size )
 {
-		WgGizmo * pGizmo = m_pSlider.GetRealPtr();
+		WgWidget * pWidget = m_pSlider.GetRealPtr();
 
-		if( pGizmo )
+		if( pWidget )
 		{
-			if( pGizmo->Type() == WgVSlider::GetClass() ||
-				pGizmo->Type() == WgHSlider::GetClass() )
-					static_cast<WgGizmoSlider*>(pGizmo)->_setSlider(pos,size);
+			if( pWidget->Type() == WgVSlider::GetClass() ||
+				pWidget->Type() == WgHSlider::GetClass() )
+					static_cast<WgWidgetSlider*>(pWidget)->_setSlider(pos,size);
 		}
 
 }

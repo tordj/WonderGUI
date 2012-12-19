@@ -29,7 +29,7 @@
 #include <wg_eventhandler.h>
 #include <assert.h>
 
-static const char	c_gizmoType[] = {"Checkbox"};
+static const char	c_widgetType[] = {"Checkbox"};
 
 
 
@@ -65,7 +65,7 @@ const char * WgCheckBox::Type( void ) const
 
 const char * WgCheckBox::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 
@@ -278,7 +278,7 @@ void WgCheckBox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHand
 
 Uint32 WgCheckBox::GetTextAreaWidth()
 {
-	WgSize gizmoSize = Size();
+	WgSize widgetSize = Size();
 
 	WgSize	iconSize;
 
@@ -287,7 +287,7 @@ Uint32 WgCheckBox::GetTextAreaWidth()
 	else if( m_pIconChecked )
 		iconSize = m_pIconChecked->Size();
 
-	return _getTextRect( gizmoSize, _getIconRect( WgRect(0,0,gizmoSize), iconSize ) ).w;
+	return _getTextRect( widgetSize, _getIconRect( WgRect(0,0,widgetSize), iconSize ) ).w;
 }
 
 
@@ -388,7 +388,7 @@ void WgCheckBox::_onNewSize( const WgSize& size )
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgCheckBox::_onCloneContent( const WgGizmo * _pOrg )
+void WgCheckBox::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgCheckBox * pOrg = (WgCheckBox *) _pOrg;
 
@@ -541,7 +541,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 
 			return false;
 		}
-		case GEO:			// Full geometry of Gizmo is clickable.
+		case GEO:			// Full geometry of Widget is clickable.
 			return true;
 		case ICON:			// Only the icon (alpha test) is clickable.
 		{

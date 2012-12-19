@@ -24,22 +24,22 @@
 #define	WG_ANIMPLAYER_DOT_H
 
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef	WG_GFXANIM_DOT_H
 #	include <wg_gfxanim.h>
 #endif
 
-class WgAnimPlayer:public WgGizmo
+class WgAnimPlayer:public WgWidget
 {
 public:
 	WgAnimPlayer();
 	~WgAnimPlayer();
 	virtual const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgAnimPlayer(); };
+	virtual WgWidget * NewOfMyType() const { return new WgAnimPlayer(); };
 
 
 	//____ Methods __________________________________________
@@ -70,7 +70,7 @@ public:
 	WgSize			DefaultSize() const;
 
 protected:
-	void			_onCloneContent( const WgGizmo * _pOrg );
+	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void			_onRefresh();
 	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
@@ -84,7 +84,7 @@ private:
 
 	WgGfxAnim *		m_pAnim;
 	WgBlock			m_animFrame;			// Frame currently used by animation.
-	WgBlocksetPtr	m_pStaticBlock;			// Blockset used when no animation is displayed (not set or gizmo disabled).
+	WgBlocksetPtr	m_pStaticBlock;			// Blockset used when no animation is displayed (not set or widget disabled).
 
 	bool			m_bPlaying;
 	double			m_playPos;

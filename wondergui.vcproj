@@ -347,26 +347,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\wg_gizmo.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_gizmo.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_gizmo_collection.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\wg_gizmocontainer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_gizmocontainer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\wg_glyphset.cpp"
 				>
 			</File>
@@ -636,6 +616,26 @@
 			</File>
 			<File
 				RelativePath=".\include\wg_vectorglyphs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\wg_widget.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_widget.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_widgetcollection.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\wg_widgetcontainer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_widgetcontainer.h"
 				>
 			</File>
 			<File

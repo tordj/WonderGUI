@@ -22,7 +22,7 @@
 
 #include <wg_hook.h>
 #include <wg_panel.h>
-#include <wg_gizmo.h>
+#include <wg_widget.h>
 #include <wg_rootpanel.h>
 #include <assert.h>
 
@@ -31,42 +31,42 @@
 
 WgHook::~WgHook()
 {
-	if( m_pGizmo )
+	if( m_pWidget )
 	{
-		m_pGizmo->m_pHook = 0;
-		delete m_pGizmo;
+		m_pWidget->m_pHook = 0;
+		delete m_pWidget;
 	}
 }
 
-//____ _attachGizmo() __________________________________________________________
+//____ _attachWidget() __________________________________________________________
 
-void WgHook::_attachGizmo( WgGizmo * pGizmo )
+void WgHook::_attachWidget( WgWidget * pWidget )
 {
-	assert( pGizmo->Parent() == 0 );
+	assert( pWidget->Parent() == 0 );
 
-	if( m_pGizmo )
-		m_pGizmo->m_pHook = 0;
+	if( m_pWidget )
+		m_pWidget->m_pHook = 0;
 
-	m_pGizmo = pGizmo;
+	m_pWidget = pWidget;
 
-	if( pGizmo )
-		pGizmo->m_pHook = this;
+	if( pWidget )
+		pWidget->m_pHook = this;
 }
 
-//____ _relinkGizmo() __________________________________________________________
+//____ _relinkWidget() __________________________________________________________
 
-void WgHook::_relinkGizmo()
+void WgHook::_relinkWidget()
 {
-	if( m_pGizmo )
-		m_pGizmo->m_pHook = this;
+	if( m_pWidget )
+		m_pWidget->m_pHook = this;
 }
 
-//____ _releaseGizmo() _________________________________________________________
+//____ _releaseWidget() _________________________________________________________
 
-WgGizmo* WgHook::_releaseGizmo()
+WgWidget* WgHook::_releaseWidget()
 {
-	WgGizmo * p = m_pGizmo;
-	m_pGizmo = 0;
+	WgWidget * p = m_pWidget;
+	m_pWidget = 0;
 
 	if( p )
 		p->m_pHook = 0;
@@ -78,25 +78,25 @@ WgGizmo* WgHook::_releaseGizmo()
 
 bool WgHook::_requestFocus()
 {
-	return Parent()->_focusRequested(this, m_pGizmo);
+	return Parent()->_focusRequested(this, m_pWidget);
 }
 
 //____ _releaseFocus() _________________________________________________________
 
 bool WgHook::_releaseFocus()
 {
-	return Parent()->_focusReleased(this, m_pGizmo);
+	return Parent()->_focusReleased(this, m_pWidget);
 }
 
 //____ Root() _________________________________________________________________
 
 WgRootPanel * WgHook::Root() const
 {
-	WgGizmoContainer * pParent = _parent();
+	WgWidgetContainer * pParent = _parent();
 
-	if( pParent->IsGizmo() )
+	if( pParent->IsWidget() )
 	{
-		WgHook * pHook = pParent->CastToGizmo()->Hook();
+		WgHook * pHook = pParent->CastToWidget()->Hook();
 		if( pHook )
 			return pHook->Root();
 	}

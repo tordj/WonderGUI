@@ -27,14 +27,14 @@
 #	include <wg_smartptr.h>
 #endif
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 
 class WgSliderTarget
 {
-	friend class WgGizmoSlider;
+	friend class WgWidgetSlider;
 
 protected:
 
@@ -49,7 +49,7 @@ protected:
 
 	virtual float	_setPosition( float fraction ) = 0;
 
-	virtual WgGizmo*_getGizmo() = 0;
+	virtual WgWidget*_getWidget() = 0;
 	virtual float	_getSliderPosition() = 0;
 	virtual float	_getSliderSize() = 0;
 
@@ -59,7 +59,7 @@ protected:
 
 	//
 
-	WgGizmoWeakPtr	m_pSlider;
+	WgWidgetWeakPtr	m_pSlider;
 };
 
 

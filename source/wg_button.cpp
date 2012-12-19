@@ -29,7 +29,7 @@
 #include <wg_event.h>
 #include <wg_eventhandler.h>
 
-static const char	c_gizmoType[] = {"Button"};
+static const char	c_widgetType[] = {"Button"};
 
 //____ Constructor ____________________________________________________________
 
@@ -65,7 +65,7 @@ const char * WgButton::Type( void ) const
 
 const char * WgButton::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetSource() ____________________________________________________________
@@ -396,7 +396,7 @@ void WgButton::SetDownWhenMouseOutside( bool bDown )
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgButton::_onCloneContent( const WgGizmo * _pOrg )
+void WgButton::_onCloneContent( const WgWidget * _pOrg )
 {
 
 	WgButton * pOrg = (WgButton *) _pOrg;

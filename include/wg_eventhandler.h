@@ -54,7 +54,7 @@ public:
 
 class WgEventHandler
 {
-friend class WgGizmo;
+friend class WgWidget;
 
 public:
 	WgEventHandler( WgRootPanel * pRoot );
@@ -67,10 +67,10 @@ public:
 	//----
 
 	bool	SetFocusGroup( WgPanel * pFocusGroup );
-	bool	SetKeyboardFocus( WgGizmo * pFocus );
+	bool	SetKeyboardFocus( WgWidget * pFocus );
 
 	WgPanel *	FocusGroup() const;
-	WgGizmo *			KeyboardFocus() const { return m_keyFocusGizmo.GetRealPtr(); }
+	WgWidget *			KeyboardFocus() const { return m_keyFocusWidget.GetRealPtr(); }
 
 	//----
 
@@ -84,24 +84,24 @@ public:
 
 	void	AddCallback( void(*fp)( const WgEvent::Event * pEvent) );
 	void	AddCallback( void(*fp)( const WgEvent::Event * pEvent, void * pParam), void * pParam );
-	void	AddCallback( void(*fp)( const WgEvent::Event * pEvent, WgGizmo * pDest), WgGizmo * pDest );
+	void	AddCallback( void(*fp)( const WgEvent::Event * pEvent, WgWidget * pDest), WgWidget * pDest );
 	void	AddCallback( WgEventListener * pListener );
 
 	void	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event * pEvent) );
 	void	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event * pEvent, void * pParam), void * pParam );
-	void	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event * pEvent, WgGizmo * pDest), WgGizmo * pDest );
+	void	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event * pEvent, WgWidget * pDest), WgWidget * pDest );
 	void	AddCallback( const WgEventFilter& filter, WgEventListener * pListener );
 
-	int		DeleteCallbacksTo( const WgGizmo * pGizmo );
+	int		DeleteCallbacksTo( const WgWidget * pWidget );
 	int		DeleteCallbacksTo( const WgEventListener * pListener );
 	int		DeleteCallbacksTo( void(*fp)( const WgEvent::Event * pEvent) );
 	int		DeleteCallbacksTo( void(*fp)( const WgEvent::Event * pEvent, void * pParam) );
 
-	int		DeleteCallbacksOn( const WgGizmo * pGizmo );
+	int		DeleteCallbacksOn( const WgWidget * pWidget );
 	int		DeleteCallbacksOn( const WgEventType type );
-	int		DeleteCallbacksOn( const WgGizmo * pGizmo, WgEventType type );
+	int		DeleteCallbacksOn( const WgWidget * pWidget, WgEventType type );
 
-	int		DeleteCallback( const WgEventFilter& filter, const WgGizmo * pGizmo );
+	int		DeleteCallback( const WgEventFilter& filter, const WgWidget * pWidget );
 	int		DeleteCallback( const WgEventFilter& filter, const WgEventListener * pListener );
 	int		DeleteCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event * pEvent) );
 	int		DeleteCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event * pEvent, void * pParam) );
@@ -113,7 +113,7 @@ public:
 	//----
 
 	bool	ForwardEvent( const WgEvent::Event * pEvent );
-	bool	ForwardEvent( const WgEvent::Event * pEvent, WgGizmo * pRecipient );
+	bool	ForwardEvent( const WgEvent::Event * pEvent, WgWidget * pRecipient );
 
 private:
 	class	Callback;
@@ -151,15 +151,15 @@ private:
 
 	void	_processCharacter( WgEvent::Character * pEvent );
 
-	bool	_isGizmoInList( const WgGizmo * pGizmo, const std::vector<WgGizmoWeakPtr>& list );
+	bool	_isWidgetInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list );
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
 	int		_deleteCallbacksTo( const void * pReceiver );
 	int		_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain );
 	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
-	void 	_updateMarkedGizmo(bool bPostMouseMoveEvents);
-	void	_addTickReceiver( WgGizmo * pGizmo );
+	void 	_updateMarkedWidget(bool bPostMouseMoveEvents);
+	void	_addTickReceiver( WgWidget * pWidget );
 		
 	//
 
@@ -174,11 +174,11 @@ private:
 	WgPointerStyle	m_pointerStyle;
 	WgModifierKeys	m_modKeys;
 
-	std::vector<WgGizmoWeakPtr>	m_vTickGizmos;		// Gizmos that have requested periodic tick-events (i.e. on every processEvents() ).
+	std::vector<WgWidgetWeakPtr>	m_vTickWidgets;		// Widgets that have requested periodic tick-events (i.e. on every processEvents() ).
 
 	// Current mouse state
 
-	WgGizmoWeakPtr				m_pMarkedGizmo;		// Gizmo the pointer currently is "inside". Empty if outside a modal gizmo.
+	WgWidgetWeakPtr				m_pMarkedWidget;		// Widget the pointer currently is "inside". Empty if outside a modal widget.
 
 	// Current button states
 
@@ -187,8 +187,8 @@ private:
 	WgEvent::MouseButtonPress *	m_pLatestPressEvents[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
 	WgEvent::MouseButtonRelease *	m_pLatestReleaseEvents[WG_MAX_BUTTONS+1];	// Saved info for the last time each button was released.
 
-	WgGizmoWeakPtr				m_latestPressGizmos[WG_MAX_BUTTONS+1];		// Gizmo that received the latest press, for each button.
-	WgGizmoWeakPtr				m_previousPressGizmos[WG_MAX_BUTTONS+1];	// Gizmo that received the second latest press, for each button,
+	WgWidgetWeakPtr				m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
+	WgWidgetWeakPtr				m_previousPressWidgets[WG_MAX_BUTTONS+1];	// Widget that received the second latest press, for each button,
 																			// used for double-click handling.
 
 	// Current keyboard state
@@ -196,16 +196,16 @@ private:
 	struct KeyDownInfo
 	{
 		WgEvent::KeyPress * 	pEvent;
-		WgGizmoWeakPtr			pGizmo;					// Gizmo that received the press event.
+		WgWidgetWeakPtr			pWidget;					// Widget that received the press event.
 	};
 
 	std::vector<KeyDownInfo*>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.
 
 	bool						m_bWindowFocus;			// Set if we have window focus.
-	WgGizmoWeakPtr				m_keyFocusGroup;		// Current focus group (if any).
-	WgGizmoWeakPtr				m_keyFocusGizmo;		// Gizmo currently having the keyboard focus.
+	WgWidgetWeakPtr				m_keyFocusGroup;		// Current focus group (if any).
+	WgWidgetWeakPtr				m_keyFocusWidget;		// Widget currently having the keyboard focus.
 
-	std::map<WgGizmoWeakPtr,WgGizmoWeakPtr>	m_focusGroupMap;	// Mapping focus groups (key) with their currently focused Gizmo (value).
+	std::map<WgWidgetWeakPtr,WgWidgetWeakPtr>	m_focusGroupMap;	// Mapping focus groups (key) with their currently focused Widget (value).
 
 
 	// Callbacks
@@ -227,18 +227,18 @@ private:
 	};
 
 
-	class GizmoCallback : public Callback
+	class WidgetCallback : public Callback
 	{
 	public:
-		GizmoCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent, WgGizmo * pDest), WgGizmo * pDest );
+		WidgetCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent, WgWidget * pDest), WgWidget * pDest );
 
 		void 	ProcessEvent( const WgEvent::Event * pEvent );
 		bool 	IsAlive() const;
 		void *	Receiver() const;
 
 	private:
-		void(*m_pFunction)(const WgEvent::Event * pEvent, WgGizmo * pDest);
-		WgGizmoWeakPtr	m_pGizmo;		// Destination Gizmo, not source as in the event.
+		void(*m_pFunction)(const WgEvent::Event * pEvent, WgWidget * pDest);
+		WgWidgetWeakPtr	m_pWidget;		// Destination Widget, not source as in the event.
 	};
 
 	class FunctionCallbackParam : public Callback
@@ -284,7 +284,7 @@ private:
 
 	WgChain<Callback>						m_globalCallbacks;	// Callbacks called for every event.
 
-	std::map<WgGizmoWeakPtr,WgChain<Callback> >	m_gizmoCallbacks;	// Callbacks for Gizmo-specific events.
+	std::map<WgWidgetWeakPtr,WgChain<Callback> >	m_widgetCallbacks;	// Callbacks for Widget-specific events.
 
 
 };

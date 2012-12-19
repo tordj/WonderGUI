@@ -24,7 +24,7 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
-static const char	c_gizmoType[] = {"FlexPanel"};
+static const char	c_widgetType[] = {"FlexPanel"};
 static const char	c_hookType[] = {"FlexHook"};
 
 WgFlexAnchor		WgFlexPanel::g_baseAnchors[9] = { WgFlexAnchor(0.f, 0.f, WgCoord(0,0)),
@@ -517,7 +517,7 @@ WgHook * WgFlexHook::_nextHook() const
 
 //____ WgFlexHook::_parent() __________________________________________________
 
-WgGizmoContainer * WgFlexHook::_parent() const
+WgWidgetContainer * WgFlexHook::_parent() const
 {
 	return m_pParent;
 }
@@ -533,7 +533,7 @@ void WgFlexHook::_refreshRealGeo()
 	{
 		// Calculate size
 
-		WgSize sz = WgUtil::SizeFromPolicy( m_pGizmo, m_placementGeo.Size(), m_widthPolicy, m_heightPolicy );
+		WgSize sz = WgUtil::SizeFromPolicy( m_pWidget, m_placementGeo.Size(), m_widthPolicy, m_heightPolicy );
 
 		// Calculate position
 
@@ -573,7 +573,7 @@ void WgFlexHook::_refreshRealGeo()
 	{
 		_requestRender();
 		m_realGeo = newGeo;
-		m_pGizmo->_onNewSize(newGeo);
+		m_pWidget->_onNewSize(newGeo);
 		_requestRender();
 	}
 }
@@ -618,7 +618,7 @@ WgSize WgFlexHook::_sizeNeededForGeo()
 	}
 	else
 	{
-		sz = m_pGizmo->DefaultSize() + m_borders;
+		sz = m_pWidget->DefaultSize() + m_borders;
 
 		const WgFlexAnchor * pa1 = m_pParent->Anchor(m_anchorTopLeft);
 		const WgFlexAnchor * pa2 = m_pParent->Anchor(m_anchorBottomRight);
@@ -670,7 +670,7 @@ WgFlexPanel::~WgFlexPanel()
 {
 // This is done automatically now, calls like these in destructor are forbidden.
 
-//	DeleteAllGizmos();
+//	DeleteAllWidgets();
 //	DeleteAllAnchors();
 }
 
@@ -685,7 +685,7 @@ const char * WgFlexPanel::Type( void ) const
 
 const char * WgFlexPanel::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetConfineChildren() ___________________________________________________
@@ -709,13 +709,13 @@ void WgFlexPanel::SetConfineChildren( bool bConfineChildren )
 
 //____ AddChild() _____________________________________________________________
 
-WgFlexHook * WgFlexPanel::AddChild( WgGizmo * pGizmo )
+WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget )
 {
-	if( !pGizmo )
+	if( !pWidget )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pGizmo->DefaultSize()) );
-	p->_attachGizmo( pGizmo );
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->DefaultSize()) );
+	p->_attachWidget( pWidget );
 
 	m_hooks.PushBack(p);
 
@@ -725,13 +725,13 @@ WgFlexHook * WgFlexPanel::AddChild( WgGizmo * pGizmo )
 
 //____ AddChild() _____________________________________________________________
 
-WgFlexHook * WgFlexPanel::AddChild( WgGizmo * pGizmo, int anchorTopLeft, int anchorBottomRight, WgBorders borders )
+WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, int anchorTopLeft, int anchorBottomRight, WgBorders borders )
 {
-	if( !pGizmo )
+	if( !pWidget )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pGizmo->DefaultSize()) );
-	p->_attachGizmo( pGizmo );
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->DefaultSize()) );
+	p->_attachWidget( pWidget );
 
 	m_hooks.PushBack(p);
 
@@ -739,37 +739,37 @@ WgFlexHook * WgFlexPanel::AddChild( WgGizmo * pGizmo, int anchorTopLeft, int anc
 	return p;
 }
 
-WgFlexHook * WgFlexPanel::AddChild( WgGizmo * pGizmo, const WgCoord& pos, WgOrientation origo )
+WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrientation origo )
 {
-	return AddChild( pGizmo, pos, origo, origo );
+	return AddChild( pWidget, pos, origo, origo );
 }
 
-WgFlexHook * WgFlexPanel::AddChild( WgGizmo * pGizmo, const WgCoord& pos, int anchor, WgOrientation hotspot )
+WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgCoord& pos, int anchor, WgOrientation hotspot )
 {
-	if( !pGizmo )
+	if( !pWidget )
 		return 0;
 
-	WgSize bestSize = pGizmo->DefaultSize();
+	WgSize bestSize = pWidget->DefaultSize();
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,bestSize) );
-	p->_attachGizmo( pGizmo );
+	p->_attachWidget( pWidget );
 	m_hooks.PushBack(p);
 	p->SetFloating( pos, anchor, hotspot );
 	return p;
 }
 
-WgFlexHook * WgFlexPanel::AddChild( WgGizmo * pGizmo, const WgRect& geometry, WgOrientation origo )
+WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrientation origo )
 {
-	return AddChild( pGizmo, geometry, origo, origo );
+	return AddChild( pWidget, geometry, origo, origo );
 }
 
-WgFlexHook * WgFlexPanel::AddChild( WgGizmo * pGizmo, const WgRect& geometry, int anchor, WgOrientation hotspot )
+WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgRect& geometry, int anchor, WgOrientation hotspot )
 {
-	if( !pGizmo )
+	if( !pWidget )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pGizmo->DefaultSize()) );
-	p->_attachGizmo( pGizmo );
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->DefaultSize()) );
+	p->_attachWidget( pWidget );
 
 	m_hooks.PushBack(p);
 
@@ -780,61 +780,61 @@ WgFlexHook * WgFlexPanel::AddChild( WgGizmo * pGizmo, const WgRect& geometry, in
 
 //____ InsertChild() _________________________________________________
 
-WgFlexHook * WgFlexPanel::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling )
+WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling )
 {
-	if( !pGizmo || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
+	if( !pWidget || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pGizmo->DefaultSize()) );
-	p->_attachGizmo( pGizmo );
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->DefaultSize()) );
+	p->_attachWidget( pWidget );
 	p->_moveBefore( (WgFlexHook*)pSibling->Hook() );
 	p->SetFloating();
 	return p;
 }
 
 
-WgFlexHook * WgFlexPanel::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders borders )
+WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders borders )
 {
-	if( !pGizmo || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
+	if( !pWidget || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pGizmo->DefaultSize()) );
-	p->_attachGizmo( pGizmo );
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->DefaultSize()) );
+	p->_attachWidget( pWidget );
 	p->_moveBefore( (WgFlexHook*)pSibling->Hook() );
 	p->SetAnchored( anchorTopLeft, anchorBottomRight, borders );
 	return p;
 }
 
 
-WgFlexHook * WgFlexPanel::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, WgOrientation origo )
+WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrientation origo )
 {
-	return InsertChild( pGizmo, pSibling, geometry, origo, origo );
+	return InsertChild( pWidget, pSibling, geometry, origo, origo );
 }
 
-WgFlexHook * WgFlexPanel::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgRect& geometry, int anchor, WgOrientation hotspot )
+WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, int anchor, WgOrientation hotspot )
 {
-	if( !pGizmo || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
+	if( !pWidget || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pGizmo->DefaultSize()) );
-	p->_attachGizmo( pGizmo );
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->DefaultSize()) );
+	p->_attachWidget( pWidget );
 	p->_moveBefore( (WgFlexHook*)pSibling->Hook() );
 	p->SetFloating( geometry, anchor, hotspot );
 	return p;
 }
 
-WgFlexHook * WgFlexPanel::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, WgOrientation origo )
+WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrientation origo )
 {
-	return InsertChild( pGizmo, pSibling, pos, origo, origo );
+	return InsertChild( pWidget, pSibling, pos, origo, origo );
 }
 
-WgFlexHook * WgFlexPanel::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, const WgCoord& pos, int anchor, WgOrientation hotspot )
+WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, int anchor, WgOrientation hotspot )
 {
-	if( !pGizmo || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
+	if( !pWidget || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pGizmo->DefaultSize()) );
-	p->_attachGizmo( pGizmo );
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->DefaultSize()) );
+	p->_attachWidget( pWidget );
 	p->_moveBefore( (WgFlexHook*)pSibling->Hook() );
 	p->SetFloating( pos, anchor, hotspot );
 	return p;
@@ -845,17 +845,17 @@ WgFlexHook * WgFlexPanel::InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling, con
 
 //____ DeleteChild() _________________________________________________
 
-bool WgFlexPanel::DeleteChild( WgGizmo * pGizmo )
+bool WgFlexPanel::DeleteChild( WgWidget * pWidget )
 {
-	if( !pGizmo || !pGizmo->Hook() || pGizmo->Hook()->Parent() != this )
+	if( !pWidget || !pWidget->Hook() || pWidget->Hook()->Parent() != this )
 		return false;
 
-	// Force rendering of the area the gizmo was covering
+	// Force rendering of the area the widget was covering
 
-	WgFlexHook * pHook = (WgFlexHook *) pGizmo->Hook();
+	WgFlexHook * pHook = (WgFlexHook *) pWidget->Hook();
 	_onRequestRender( pHook->m_realGeo, pHook );
 
-	// Delete the gizmo and return
+	// Delete the widget and return
 
 	delete pHook;
 	return true;
@@ -863,21 +863,21 @@ bool WgFlexPanel::DeleteChild( WgGizmo * pGizmo )
 
 //____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgFlexPanel::ReleaseChild( WgGizmo * pGizmo )
+WgWidget * WgFlexPanel::ReleaseChild( WgWidget * pWidget )
 {
-	if( !pGizmo || !pGizmo->Hook() || pGizmo->Hook()->Parent() != this )
+	if( !pWidget || !pWidget->Hook() || pWidget->Hook()->Parent() != this )
 		return 0;
 
-	// Force rendering of the area the gizmo was covering
+	// Force rendering of the area the widget was covering
 
-	WgFlexHook * pHook = (WgFlexHook *) pGizmo->Hook();
+	WgFlexHook * pHook = (WgFlexHook *) pWidget->Hook();
 	_onRequestRender( pHook->m_realGeo, pHook );
 
-	// Delete the gizmo and return
+	// Delete the widget and return
 
-	pHook->_releaseGizmo();
+	pHook->_releaseWidget();
 	delete pHook;
-	return pGizmo;
+	return pWidget;
 }
 
 //____ DeleteAllChildren() ______________________________________________________
@@ -886,7 +886,7 @@ bool WgFlexPanel::DeleteAllChildren()
 {
 	WgPatches	dirt;
 
-	// Collect dirty areas and delete hooks, taking any connected gizmos with them.
+	// Collect dirty areas and delete hooks, taking any connected widgets with them.
 
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
@@ -913,7 +913,7 @@ bool WgFlexPanel::ReleaseAllChildren()
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		pHook->_releaseGizmo();
+		pHook->_releaseWidget();
 		pHook = pHook->Next();
 	}
 
@@ -939,7 +939,7 @@ bool WgFlexPanel::ReplaceAnchor( int index, float relativeX, float relativeY, co
 
 	m_anchors[index-9] = WgFlexAnchor( relativeX, relativeY, pixelOfs );
 
-	// Update geometry for all gizmos using this anchor.
+	// Update geometry for all widgets using this anchor.
 
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
@@ -971,7 +971,7 @@ bool WgFlexPanel::DeleteAnchor( int index )
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		// Check if this gizmo will have its geometry altered.
+		// Check if this widget will have its geometry altered.
 
 		if( (pHook->m_bFloating && pHook->m_anchor == index) ||
 			(!pHook->m_bFloating && (pHook->m_anchorTopLeft == index || pHook->m_anchorBottomRight == index)) )
@@ -1022,7 +1022,7 @@ void WgFlexPanel::DeleteAllAnchors()
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		// Check if this gizmo will have its geometry altered.
+		// Check if this widget will have its geometry altered.
 
 		if( (pHook->m_bFloating && pHook->m_anchor >= 9) ||
 			(!pHook->m_bFloating && (pHook->m_anchorTopLeft >= 9 || pHook->m_anchorBottomRight >= 9)) )
@@ -1100,7 +1100,7 @@ void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook
 	while( pCover )
 	{
 		if( !pCover->m_bHidden && pCover->m_realGeo.IntersectsWith( rect ) )
-			pCover->Gizmo()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ), _getBlendMode() );
+			pCover->Widget()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();
 	}
@@ -1113,7 +1113,7 @@ void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgFlexPanel::_onCloneContent( const WgGizmo * _pOrg )
+void WgFlexPanel::_onCloneContent( const WgWidget * _pOrg )
 {
 	//TODO: Implement
 }

@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_GIZMO_DOT_H
-#define WG_GIZMO_DOT_H
+#ifndef WG_WIDGET_DOT_H
+#define WG_WIDGET_DOT_H
 
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -48,7 +48,7 @@ class WgEventHandler;
 class WgPatches;
 
 
-class WgGizmo : public WgWeakPtrTarget
+class WgWidget : public WgWeakPtrTarget
 {
 friend class WgSkinNode;
 friend class WgInput;
@@ -75,8 +75,8 @@ friend class WgMenuPanel;
 friend class WgTableRow;
 
 public:
-	WgGizmo();
-	virtual ~WgGizmo();
+	WgWidget();
+	virtual ~WgWidget();
 
 	virtual const char *Type( void ) const = 0;
 
@@ -95,7 +95,7 @@ public:
 	void				SetEnabled(bool bEnabled);
 	inline bool			IsEnabled() const { return m_bEnabled; }
 
-	bool				CloneContent( const WgGizmo * _pOrg );
+	bool				CloneContent( const WgWidget * _pOrg );
 
 	void			SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
 	virtual WgPointerStyle	GetPointerStyle() const;
@@ -109,7 +109,7 @@ public:
 
 	WgHook*			Hook() const { return m_pHook; }
 
-	virtual WgGizmo * NewOfMyType() const = 0;
+	virtual WgWidget * NewOfMyType() const = 0;
 
 	// Convenient calls to hook
 
@@ -121,15 +121,15 @@ public:
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
 	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_bFocused; }
-	WgGizmoContainer * Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
+	WgWidgetContainer * Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 
-	WgGizmo *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Gizmo(); } return 0; }
-	WgGizmo *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Gizmo(); } return 0; }
+	WgWidget *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Widget(); } return 0; }
+	WgWidget *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Widget(); } return 0; }
 
 	WgCoord			Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
 	WgCoord			Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
 
-	// To be overloaded by Gizmo
+	// To be overloaded by Widget
 
 	virtual int		HeightForWidth( int width ) const;
 	virtual int		WidthForHeight( int height ) const;
@@ -169,12 +169,12 @@ protected:
 	void			_requestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
 	void			_requestResize() { if( m_pHook ) m_pHook->_requestResize(); }
 
-	// To be overloaded by Gizmo
+	// To be overloaded by Widget
 
 	virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-	virtual void	_onCloneContent( const WgGizmo * _pOrg ) = 0;
+	virtual void	_onCloneContent( const WgWidget * _pOrg ) = 0;
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_onRefresh();
@@ -186,7 +186,7 @@ protected:
 	virtual void	_onGotInputFocus();
 	virtual void	_onLostInputFocus();
 
-	// rename when gizmos are done
+	// rename when widgets are done
 	virtual bool	TempIsInputField() const;
 	virtual Wg_Interface_TextHolder*	TempGetText();
 
@@ -204,34 +204,34 @@ protected:
 
 	bool			m_bEnabled;
 	bool			m_bOpaque;
-	bool			m_bFocused;		// Set when Gizmo has keyborard focus.
-	bool			m_bTabLock;		// If set, the gizmo prevents focus shifting away from it with tab.
-	bool			m_bReceiveTick;	// Set if Gizmo should reveive periodic Tick() events.
+	bool			m_bFocused;		// Set when Widget has keyborard focus.
+	bool			m_bTabLock;		// If set, the widget prevents focus shifting away from it with tab.
+	bool			m_bReceiveTick;	// Set if Widget should reveive periodic Tick() events.
 
 	bool			m_bRenderOne;
 	bool			m_bRendersAll;
 };
 
-typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
+typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;
 
-typedef	int(*WgGizmoSortFunc)(const WgGizmo *,const WgGizmo *);
+typedef	int(*WgWidgetSortFunc)(const WgWidget *,const WgWidget *);
 
-template<typename T> T* WgCast(WgGizmo * pGizmo)
+template<typename T> T* WgCast(WgWidget * pWidget)
 {
-	if(pGizmo)
+	if(pWidget)
 	{
-		if(T::GetClass() == pGizmo->Type())
-			return static_cast<T*>(pGizmo);
+		if(T::GetClass() == pWidget->Type())
+			return static_cast<T*>(pWidget);
 	}
 	return 0;
 }
 
-template<typename T> const T* WgCast(const WgGizmo * pGizmo)
+template<typename T> const T* WgCast(const WgWidget * pWidget)
 {
-	if(pGizmo)
+	if(pWidget)
 	{
-		if(T::GetClass() == pGizmo->Type())
-			return static_cast<const T*>(pGizmo);
+		if(T::GetClass() == pWidget->Type())
+			return static_cast<const T*>(pWidget);
 	}
 	return 0;
 }

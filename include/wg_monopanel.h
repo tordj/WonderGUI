@@ -34,19 +34,19 @@ public:
 	WgMonoPanel() : m_hook(this) {}
 	~WgMonoPanel() {}
 
-	WgHook *		SetChild( WgGizmo * pGizmo );
-	WgGizmo *		Child() { return m_hook.Gizmo(); }
+	WgHook *		SetChild( WgWidget * pWidget );
+	WgWidget *		Child() { return m_hook.Widget(); }
 	bool			DeleteChild();
-	WgGizmo *		ReleaseChild();
+	WgWidget *		ReleaseChild();
 
-	bool			DeleteChild( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
+	bool			DeleteChild( WgWidget * pWidget );
+	WgWidget *		ReleaseChild( WgWidget * pWidget );
 
 	bool			DeleteAllChildren();
 	bool			ReleaseAllChildren();
 
 
-	// Overloaded from WgGizmo
+	// Overloaded from WgWidget
 
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
@@ -84,7 +84,7 @@ protected:
 
 		WgHook *		_prevHook() const { return 0; }
 		WgHook *		_nextHook() const { return 0; }
-		WgGizmoContainer * _parent() const { return m_pParent; }
+		WgWidgetContainer * _parent() const { return m_pParent; }
 
 		WgMonoPanel * 	m_pParent;
 
@@ -100,7 +100,7 @@ protected:
 
 	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-	void			_onCloneContent( const WgGizmo * _pOrg );
+	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
 
 

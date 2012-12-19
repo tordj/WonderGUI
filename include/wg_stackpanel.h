@@ -84,17 +84,17 @@ public:
 
 	const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgStackPanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgStackPanel(); };
 	
 
-	inline WgStackHook * AddChild( WgGizmo * pGizmo ) { return static_cast<WgStackHook*>(WgSortablePanel::AddChild(pGizmo)); }
-	inline WgStackHook * InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling ) { return static_cast<WgStackHook*>(WgSortablePanel::InsertChild(pGizmo,pSibling)); }
-	inline WgStackHook * InsertChildSorted( WgGizmo * pGizmo ) { return static_cast<WgStackHook*>(WgSortablePanel::InsertChildSorted(pGizmo)); }
+	inline WgStackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgSortablePanel::AddChild(pWidget)); }
+	inline WgStackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgStackHook*>(WgSortablePanel::InsertChild(pWidget,pSibling)); }
+	inline WgStackHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgSortablePanel::InsertChildSorted(pWidget)); }
 
 	inline WgStackHook* FirstHook() const { return static_cast<WgStackHook*>(m_hooks.First()); }
 	inline WgStackHook* LastHook() const { return static_cast<WgStackHook*>(m_hooks.Last()); }
 
-	// Overloaded from WgGizmo
+	// Overloaded from WgWidget
 
 	int		HeightForWidth( int width ) const;
 	int		WidthForHeight( int height ) const;
@@ -105,9 +105,9 @@ public:
 
 protected:
 
-	// Overloaded from Gizmo
+	// Overloaded from Widget
 
-//	void	_onCloneContent( const WgGizmo * _pOrg );
+//	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onNewSize( const WgSize& size );
 
 	// Overloaded from WgPanel
@@ -124,10 +124,10 @@ protected:
 	void	_onResizeRequested( WgSortableHook * pHook );
 	void	_onRenderRequested( WgSortableHook * pHook );
 	void	_onRenderRequested( WgSortableHook * pHook, const WgRect& rect );
-	void	_onGizmoAppeared( WgSortableHook * pInserted );				// so parent can update geometry and possibly request render.
-	void	_onGizmoDisappeared( WgSortableHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
-	void	_onGizmosReordered();
-	void	_refreshAllGizmos();
+	void	_onWidgetAppeared( WgSortableHook * pInserted );				// so parent can update geometry and possibly request render.
+	void	_onWidgetDisappeared( WgSortableHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+	void	_onWidgetsReordered();
+	void	_refreshAllWidgets();
 	WgSortableHook * _newHook();
 
 	// Internal to WgStackPanel

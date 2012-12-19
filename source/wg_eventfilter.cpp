@@ -24,7 +24,7 @@
 #include <wg_key.h>
 #include <wg_event.h>
 #include <wg_eventfilter.h>
-#include <wg_gizmo.h>
+#include <wg_widget.h>
 #include <wg_slider.h>
 #include <wg_checkbox.h>
 #include <wg_radiobutton.h>
@@ -68,36 +68,36 @@ WgEventFilter	WgEventFilter::FocusLost()
 
 WgEventFilter	WgEventFilter::MouseEnter()
 {
-	return WgEventFilter( WG_EVENT_MOUSE_ENTER, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_MOUSE_ENTER, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::MouseEnter( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseEnter( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSE_ENTER, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_MOUSE_ENTER, pWidget, _filterTypeWidget );
 }
 
 //____ MouseLeave() _________________________________________________________
 
 WgEventFilter	WgEventFilter::MouseLeave()
 {
-	return WgEventFilter( WG_EVENT_MOUSE_LEAVE, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_MOUSE_LEAVE, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::MouseLeave( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseLeave( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSE_LEAVE, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_MOUSE_LEAVE, pWidget, _filterTypeWidget );
 }
 
 //____ MouseMove() _________________________________________________________
 
 WgEventFilter	WgEventFilter::MouseMove()
 {
-	return WgEventFilter( WG_EVENT_MOUSE_MOVE, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_MOUSE_MOVE, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::MouseMove( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseMove( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSE_MOVE, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_MOUSE_MOVE, pWidget, _filterTypeWidget );
 }
 
 //____ MouseButtonPress() _________________________________________________________
@@ -112,14 +112,14 @@ WgEventFilter	WgEventFilter::MouseButtonPress( int button)
 	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonPress( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonPress( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, pGizmo, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, pWidget, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonPress( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonPress( WgWidget * pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, pGizmo, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, pWidget, _filterMouseButtonEvents, button );
 }
 
 //____ MouseButtonRelease() ________________________________________________________
@@ -134,14 +134,14 @@ WgEventFilter	WgEventFilter::MouseButtonRelease( int button)
 	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonRelease( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonRelease( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, pGizmo, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, pWidget, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonRelease( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonRelease( WgWidget * pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, pGizmo, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, pWidget, _filterMouseButtonEvents, button );
 }
 
 //____ MouseButtonDrag() ___________________________________________________________
@@ -156,14 +156,14 @@ WgEventFilter	WgEventFilter::MouseButtonDrag( int button)
 	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonDrag( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonDrag( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, pGizmo, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, pWidget, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonDrag( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonDrag( WgWidget * pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, pGizmo, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, pWidget, _filterMouseButtonEvents, button );
 }
 
 //____ MouseButtonRepeat() ________________________________________________________
@@ -178,14 +178,14 @@ WgEventFilter	WgEventFilter::MouseButtonRepeat( int button)
 	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonRepeat( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonRepeat( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, pGizmo, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, pWidget, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonRepeat( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonRepeat( WgWidget * pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, pGizmo, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, pWidget, _filterMouseButtonEvents, button );
 }
 
 //____ MouseButtonClick() ________________________________________________________
@@ -200,14 +200,14 @@ WgEventFilter	WgEventFilter::MouseButtonClick( int button)
 	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonClick( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonClick( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pGizmo, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pWidget, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonClick( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonClick( WgWidget * pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pGizmo, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pWidget, _filterMouseButtonEvents, button );
 }
 
 //____ MouseButtonDoubleClick() ________________________________________________________
@@ -222,14 +222,14 @@ WgEventFilter	WgEventFilter::MouseButtonDoubleClick( int button)
 	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, 0, _filterMouseButtonEvents, button );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonDoubleClick( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseButtonDoubleClick( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pGizmo, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pWidget, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseButtonDoubleClick( WgGizmo * pGizmo, int button )
+WgEventFilter	WgEventFilter::MouseButtonDoubleClick( WgWidget * pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pGizmo, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pWidget, _filterMouseButtonEvents, button );
 }
 
 //____ KeyPress() _____________________________________________________________
@@ -239,9 +239,9 @@ WgEventFilter	WgEventFilter::KeyPress()
 	return WgEventFilter( WG_EVENT_KEY_PRESS, 0, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
-WgEventFilter	WgEventFilter::KeyPress( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::KeyPress( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_KEY_PRESS, pGizmo, _filterKeyEvents, WG_KEY_UNMAPPED );
+	return WgEventFilter( WG_EVENT_KEY_PRESS, pWidget, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
 WgEventFilter	WgEventFilter::KeyPress( WgKey keycode )
@@ -249,9 +249,9 @@ WgEventFilter	WgEventFilter::KeyPress( WgKey keycode )
 	return WgEventFilter( WG_EVENT_KEY_PRESS, 0, _filterKeyEvents, keycode );
 }
 
-WgEventFilter	WgEventFilter::KeyPress( WgGizmo * pGizmo, WgKey keycode )
+WgEventFilter	WgEventFilter::KeyPress( WgWidget * pWidget, WgKey keycode )
 {
-	return WgEventFilter( WG_EVENT_KEY_PRESS, pGizmo, _filterKeyEvents, keycode );
+	return WgEventFilter( WG_EVENT_KEY_PRESS, pWidget, _filterKeyEvents, keycode );
 }
 
 //____ KeyRelease() ___________________________________________________________
@@ -261,9 +261,9 @@ WgEventFilter	WgEventFilter::KeyRelease()
 	return WgEventFilter( WG_EVENT_KEY_RELEASE, 0, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
-WgEventFilter	WgEventFilter::KeyRelease( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::KeyRelease( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_KEY_RELEASE, pGizmo, _filterKeyEvents, WG_KEY_UNMAPPED );
+	return WgEventFilter( WG_EVENT_KEY_RELEASE, pWidget, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
 WgEventFilter	WgEventFilter::KeyRelease( WgKey keycode )
@@ -271,9 +271,9 @@ WgEventFilter	WgEventFilter::KeyRelease( WgKey keycode )
 	return WgEventFilter( WG_EVENT_KEY_RELEASE, 0, _filterKeyEvents, keycode );
 }
 
-WgEventFilter	WgEventFilter::KeyRelease( WgGizmo * pGizmo, WgKey keycode )
+WgEventFilter	WgEventFilter::KeyRelease( WgWidget * pWidget, WgKey keycode )
 {
-	return WgEventFilter( WG_EVENT_KEY_RELEASE, pGizmo, _filterKeyEvents, keycode );
+	return WgEventFilter( WG_EVENT_KEY_RELEASE, pWidget, _filterKeyEvents, keycode );
 }
 
 //____ KeyRepeat() ____________________________________________________________
@@ -283,9 +283,9 @@ WgEventFilter	WgEventFilter::KeyRepeat()
 	return WgEventFilter( WG_EVENT_KEY_REPEAT, 0, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
-WgEventFilter	WgEventFilter::KeyRepeat( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::KeyRepeat( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_KEY_REPEAT, pGizmo, _filterKeyEvents, WG_KEY_UNMAPPED );
+	return WgEventFilter( WG_EVENT_KEY_REPEAT, pWidget, _filterKeyEvents, WG_KEY_UNMAPPED );
 }
 
 WgEventFilter	WgEventFilter::KeyRepeat( WgKey keycode )
@@ -293,9 +293,9 @@ WgEventFilter	WgEventFilter::KeyRepeat( WgKey keycode )
 	return WgEventFilter( WG_EVENT_KEY_REPEAT, 0, _filterKeyEvents, keycode );
 }
 
-WgEventFilter	WgEventFilter::KeyRepeat( WgGizmo * pGizmo, WgKey keycode )
+WgEventFilter	WgEventFilter::KeyRepeat( WgWidget * pWidget, WgKey keycode )
 {
-	return WgEventFilter( WG_EVENT_KEY_REPEAT, pGizmo, _filterKeyEvents, keycode );
+	return WgEventFilter( WG_EVENT_KEY_REPEAT, pWidget, _filterKeyEvents, keycode );
 }
 
 //____ KeyPressNative() _______________________________________________________
@@ -305,9 +305,9 @@ WgEventFilter	WgEventFilter::KeyPressNative( int native_keycode )
 	return WgEventFilter( WG_EVENT_KEY_PRESS, 0, _filterNativeKeyEvents, native_keycode );
 }
 
-WgEventFilter	WgEventFilter::KeyPressNative( WgGizmo * pGizmo, int native_keycode )
+WgEventFilter	WgEventFilter::KeyPressNative( WgWidget * pWidget, int native_keycode )
 {
-	return WgEventFilter( WG_EVENT_KEY_PRESS, pGizmo, _filterNativeKeyEvents, native_keycode );
+	return WgEventFilter( WG_EVENT_KEY_PRESS, pWidget, _filterNativeKeyEvents, native_keycode );
 }
 
 //____ KeyReleaseNative() _____________________________________________________
@@ -317,9 +317,9 @@ WgEventFilter	WgEventFilter::KeyReleaseNative( int native_keycode )
 	return WgEventFilter( WG_EVENT_KEY_RELEASE, 0, _filterNativeKeyEvents, native_keycode );
 }
 
-WgEventFilter	WgEventFilter::KeyReleaseNative( WgGizmo * pGizmo, int native_keycode )
+WgEventFilter	WgEventFilter::KeyReleaseNative( WgWidget * pWidget, int native_keycode )
 {
-	return WgEventFilter( WG_EVENT_KEY_RELEASE, pGizmo, _filterNativeKeyEvents, native_keycode );
+	return WgEventFilter( WG_EVENT_KEY_RELEASE, pWidget, _filterNativeKeyEvents, native_keycode );
 }
 
 //____ KeyRepeatNative() ______________________________________________________
@@ -329,9 +329,9 @@ WgEventFilter	WgEventFilter::KeyRepeatNative( int native_keycode )
 	return WgEventFilter( WG_EVENT_KEY_REPEAT, 0, _filterNativeKeyEvents, native_keycode );
 }
 
-WgEventFilter	WgEventFilter::KeyRepeatNative( WgGizmo * pGizmo, int native_keycode )
+WgEventFilter	WgEventFilter::KeyRepeatNative( WgWidget * pWidget, int native_keycode )
 {
-	return WgEventFilter( WG_EVENT_KEY_REPEAT, pGizmo, _filterNativeKeyEvents, native_keycode );
+	return WgEventFilter( WG_EVENT_KEY_REPEAT, pWidget, _filterNativeKeyEvents, native_keycode );
 }
 
 //____ Character() ____________________________________________________________
@@ -346,14 +346,14 @@ WgEventFilter	WgEventFilter::Character( unsigned short character)
 	return WgEventFilter( WG_EVENT_CHARACTER, 0, _filterCharacterEvents, character );
 }
 
-WgEventFilter	WgEventFilter::Character( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::Character( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_CHARACTER, pGizmo, _filterCharacterEvents, 0 );
+	return WgEventFilter( WG_EVENT_CHARACTER, pWidget, _filterCharacterEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::Character( WgGizmo * pGizmo, unsigned short character )
+WgEventFilter	WgEventFilter::Character( WgWidget * pWidget, unsigned short character )
 {
-	return WgEventFilter( WG_EVENT_CHARACTER, pGizmo, _filterCharacterEvents, character );
+	return WgEventFilter( WG_EVENT_CHARACTER, pWidget, _filterCharacterEvents, character );
 }
 
 //____ MouseWheelRoll() ____________________________________________________________
@@ -368,50 +368,50 @@ WgEventFilter	WgEventFilter::MouseWheelRoll( int wheel )
 	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, 0, _filterMouseWheelRollEvents, wheel );
 }
 
-WgEventFilter	WgEventFilter::MouseWheelRoll( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::MouseWheelRoll( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, pGizmo, _filterMouseWheelRollEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, pWidget, _filterMouseWheelRollEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseWheelRoll( WgGizmo * pGizmo, int wheel )
+WgEventFilter	WgEventFilter::MouseWheelRoll( WgWidget * pWidget, int wheel )
 {
-	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, pGizmo, _filterMouseWheelRollEvents, wheel );
+	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, pWidget, _filterMouseWheelRollEvents, wheel );
 }
 
 //____ ButtonPress() __________________________________________________________
 
 WgEventFilter	WgEventFilter::ButtonPress()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_PRESS, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_BUTTON_PRESS, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::ButtonPress( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::ButtonPress( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_PRESS, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_BUTTON_PRESS, pWidget, _filterTypeWidget );
 }
 
 //____ CheckboxCheck() __________________________________________________________
 
 WgEventFilter	WgEventFilter::CheckboxCheck()
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_CHECK, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_CHECKBOX_CHECK, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::CheckboxCheck( WgCheckBox * pGizmo )
+WgEventFilter	WgEventFilter::CheckboxCheck( WgCheckBox * pWidget )
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_CHECK, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_CHECKBOX_CHECK, pWidget, _filterTypeWidget );
 }
 
 //____ CheckboxUncheck() __________________________________________________________
 
 WgEventFilter	WgEventFilter::CheckboxUncheck()
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_UNCHECK, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_CHECKBOX_UNCHECK, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::CheckboxUncheck( WgCheckBox * pGizmo )
+WgEventFilter	WgEventFilter::CheckboxUncheck( WgCheckBox * pWidget )
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_UNCHECK, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_CHECKBOX_UNCHECK, pWidget, _filterTypeWidget );
 }
 
 
@@ -419,36 +419,36 @@ WgEventFilter	WgEventFilter::CheckboxUncheck( WgCheckBox * pGizmo )
 
 WgEventFilter	WgEventFilter::CheckboxToggle()
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::CheckboxToggle( WgCheckBox * pGizmo )
+WgEventFilter	WgEventFilter::CheckboxToggle( WgCheckBox * pWidget )
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, pWidget, _filterTypeWidget );
 }
 
 //____ RadiobuttonSelect() __________________________________________________________
 
 WgEventFilter	WgEventFilter::RadiobuttonSelect()
 {
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_SELECT, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_RADIOBUTTON_SELECT, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::RadiobuttonSelect( WgRadioButton * pGizmo )
+WgEventFilter	WgEventFilter::RadiobuttonSelect( WgRadioButton * pWidget )
 {
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_SELECT, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_RADIOBUTTON_SELECT, pWidget, _filterTypeWidget );
 }
 
 //____ RadiobuttonUnselect() __________________________________________________________
 
 WgEventFilter	WgEventFilter::RadiobuttonUnselect()
 {
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_UNSELECT, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_RADIOBUTTON_UNSELECT, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::RadiobuttonUnselect( WgRadioButton * pGizmo )
+WgEventFilter	WgEventFilter::RadiobuttonUnselect( WgRadioButton * pWidget )
 {
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_UNSELECT, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_RADIOBUTTON_UNSELECT, pWidget, _filterTypeWidget );
 }
 
 
@@ -456,24 +456,24 @@ WgEventFilter	WgEventFilter::RadiobuttonUnselect( WgRadioButton * pGizmo )
 
 WgEventFilter	WgEventFilter::RadiobuttonToggle()
 {
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_TOGGLE, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_RADIOBUTTON_TOGGLE, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::RadiobuttonToggle( WgRadioButton * pGizmo )
+WgEventFilter	WgEventFilter::RadiobuttonToggle( WgRadioButton * pWidget )
 {
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_TOGGLE, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_RADIOBUTTON_TOGGLE, pWidget, _filterTypeWidget );
 }
 
 //____ AnimationUpdate() _______________________________________________________
 
 WgEventFilter	WgEventFilter::AnimationUpdate()
 {
-	return WgEventFilter( WG_EVENT_ANIMATION_UPDATE, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_ANIMATION_UPDATE, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::AnimationUpdate( WgAnimPlayer * pGizmo )
+WgEventFilter	WgEventFilter::AnimationUpdate( WgAnimPlayer * pWidget )
 {
-	return WgEventFilter( WG_EVENT_ANIMATION_UPDATE, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_ANIMATION_UPDATE, pWidget, _filterTypeWidget );
 }
 
 //____ TabSelect() _____________________________________________________________
@@ -483,14 +483,14 @@ WgEventFilter	WgEventFilter::TabSelect()
 	return WgEventFilter( WG_EVENT_TAB_SELECT, 0, _filterTabSelect );
 }
 
-WgEventFilter	WgEventFilter::TabSelect( WgTablist * pGizmo )
+WgEventFilter	WgEventFilter::TabSelect( WgTablist * pWidget )
 {
-	return WgEventFilter( WG_EVENT_TAB_SELECT, pGizmo, _filterTabSelect );
+	return WgEventFilter( WG_EVENT_TAB_SELECT, pWidget, _filterTabSelect );
 }
 
-WgEventFilter	WgEventFilter::TabSelect( WgTablist * pGizmo, int id )
+WgEventFilter	WgEventFilter::TabSelect( WgTablist * pWidget, int id )
 {
-	return WgEventFilter( WG_EVENT_TAB_SELECT, pGizmo, _filterTabSelect, id );
+	return WgEventFilter( WG_EVENT_TAB_SELECT, pWidget, _filterTabSelect, id );
 }
 
 //____ TabPress() _____________________________________________________________
@@ -505,43 +505,43 @@ WgEventFilter	WgEventFilter::TabPress( int button )
 	return WgEventFilter( WG_EVENT_TAB_PRESS, 0, _filterTabPress, button );
 }
 
-WgEventFilter	WgEventFilter::TabPress( WgTablist * pGizmo )
+WgEventFilter	WgEventFilter::TabPress( WgTablist * pWidget )
 {
-	return WgEventFilter( WG_EVENT_TAB_PRESS, pGizmo, _filterTabPress );
+	return WgEventFilter( WG_EVENT_TAB_PRESS, pWidget, _filterTabPress );
 }
 
-WgEventFilter	WgEventFilter::TabPress( WgTablist * pGizmo, int button )
+WgEventFilter	WgEventFilter::TabPress( WgTablist * pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_TAB_PRESS, pGizmo, _filterTabPress, button );
+	return WgEventFilter( WG_EVENT_TAB_PRESS, pWidget, _filterTabPress, button );
 }
 
-WgEventFilter	WgEventFilter::TabPress( WgTablist * pGizmo, int button, int id )
+WgEventFilter	WgEventFilter::TabPress( WgTablist * pWidget, int button, int id )
 {
-	return WgEventFilter( WG_EVENT_TAB_PRESS, pGizmo, _filterTabPress, button, id );
+	return WgEventFilter( WG_EVENT_TAB_PRESS, pWidget, _filterTabPress, button, id );
 }
 
 //____ EditvalueModify() _______________________________________________________
 
 WgEventFilter	WgEventFilter::EditvalueModify()
 {
-	return WgEventFilter( WG_EVENT_EDITVALUE_MODIFY, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_EDITVALUE_MODIFY, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::EditvalueModify( WgValueEditor * pGizmo )
+WgEventFilter	WgEventFilter::EditvalueModify( WgValueEditor * pWidget )
 {
-	return WgEventFilter( WG_EVENT_EDITVALUE_MODIFY, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_EDITVALUE_MODIFY, pWidget, _filterTypeWidget );
 }
 
 //____ EditvalueSet() _______________________________________________________
 
 WgEventFilter	WgEventFilter::EditvalueSet()
 {
-	return WgEventFilter( WG_EVENT_EDITVALUE_SET, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_EDITVALUE_SET, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::EditvalueSet( WgValueEditor * pGizmo )
+WgEventFilter	WgEventFilter::EditvalueSet( WgValueEditor * pWidget )
 {
-	return WgEventFilter( WG_EVENT_EDITVALUE_SET, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_EDITVALUE_SET, pWidget, _filterTypeWidget );
 }
 
 
@@ -549,108 +549,108 @@ WgEventFilter	WgEventFilter::EditvalueSet( WgValueEditor * pGizmo )
 
 WgEventFilter	WgEventFilter::SliderMove()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_MOVE, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_MOVE, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderMove( WgGizmoSlider * pGizmo )
+WgEventFilter	WgEventFilter::SliderMove( WgWidgetSlider * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_MOVE, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_MOVE, pWidget, _filterTypeWidget );
 }
 
 //____ SliderStepFwd() __________________________________________________________
 
 WgEventFilter	WgEventFilter::SliderStepFwd()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_STEP_FWD, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_STEP_FWD, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderStepFwd( WgGizmoSlider * pGizmo )
+WgEventFilter	WgEventFilter::SliderStepFwd( WgWidgetSlider * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_STEP_FWD, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_STEP_FWD, pWidget, _filterTypeWidget );
 }
 
 //____ SliderStepBwd() __________________________________________________________
 
 WgEventFilter	WgEventFilter::SliderStepBwd()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_STEP_BWD, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_STEP_BWD, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderStepBwd( WgGizmoSlider * pGizmo )
+WgEventFilter	WgEventFilter::SliderStepBwd( WgWidgetSlider * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_STEP_BWD, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_STEP_BWD, pWidget, _filterTypeWidget );
 }
 
 //____ SliderJumpFwd() __________________________________________________________
 
 WgEventFilter	WgEventFilter::SliderJumpFwd()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_JUMP_FWD, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_JUMP_FWD, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderJumpFwd( WgGizmoSlider * pGizmo )
+WgEventFilter	WgEventFilter::SliderJumpFwd( WgWidgetSlider * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_JUMP_FWD, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_JUMP_FWD, pWidget, _filterTypeWidget );
 }
 
 //____ SliderJumpBwd() __________________________________________________________
 
 WgEventFilter	WgEventFilter::SliderJumpBwd()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_JUMP_BWD, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_JUMP_BWD, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderJumpBwd( WgGizmoSlider * pGizmo )
+WgEventFilter	WgEventFilter::SliderJumpBwd( WgWidgetSlider * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_JUMP_BWD, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_JUMP_BWD, pWidget, _filterTypeWidget );
 }
 
 //____ SliderWheelRoll() __________________________________________________________
 
 WgEventFilter	WgEventFilter::SliderWheelRoll()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_WHEEL_ROLL, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_WHEEL_ROLL, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderWheelRoll( WgGizmoSlider * pGizmo )
+WgEventFilter	WgEventFilter::SliderWheelRoll( WgWidgetSlider * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_WHEEL_ROLL, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_SLIDER_WHEEL_ROLL, pWidget, _filterTypeWidget );
 }
 
 //____ TextModify() _______________________________________________________
 
 WgEventFilter	WgEventFilter::TextModify()
 {
-	return WgEventFilter( WG_EVENT_TEXT_MODIFY, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_TEXT_MODIFY, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::TextModify( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::TextModify( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_TEXT_MODIFY, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_TEXT_MODIFY, pWidget, _filterTypeWidget );
 }
 
 //____ TextSet() _______________________________________________________
 
 WgEventFilter	WgEventFilter::TextSet()
 {
-	return WgEventFilter( WG_EVENT_TEXT_SET, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_TEXT_SET, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::TextSet( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::TextSet( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_TEXT_SET, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_TEXT_SET, pWidget, _filterTypeWidget );
 }
 
 //____ KnobTurn() __________________________________________________________
 
 WgEventFilter	WgEventFilter::KnobTurn()
 {
-	return WgEventFilter( WG_EVENT_KNOB_TURN, 0, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_KNOB_TURN, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::KnobTurn( WgGizmo * pGizmo )
+WgEventFilter	WgEventFilter::KnobTurn( WgWidget * pWidget )
 {
-	return WgEventFilter( WG_EVENT_KNOB_TURN, pGizmo, _filterTypeGizmo );
+	return WgEventFilter( WG_EVENT_KNOB_TURN, pWidget, _filterTypeWidget );
 }
 
 //____ MenuitemSelect() __________________________________________________________
@@ -665,14 +665,14 @@ WgEventFilter	WgEventFilter::MenuitemSelect( int itemId )
 	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, 0, _filterMenuitemEvent, itemId );
 }
 
-WgEventFilter	WgEventFilter::MenuitemSelect( WgMenu * pGizmo )
+WgEventFilter	WgEventFilter::MenuitemSelect( WgMenu * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pGizmo, _filterMenuitemEvent );
+	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pWidget, _filterMenuitemEvent );
 }
 
-WgEventFilter	WgEventFilter::MenuitemSelect( WgMenu * pGizmo, int itemId )
+WgEventFilter	WgEventFilter::MenuitemSelect( WgMenu * pWidget, int itemId )
 {
-	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pGizmo, _filterMenuitemEvent, itemId );
+	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pWidget, _filterMenuitemEvent, itemId );
 }
 
 //____ MenuitemCheck() __________________________________________________________
@@ -687,14 +687,14 @@ WgEventFilter	WgEventFilter::MenuitemCheck( int itemId )
 	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, 0, _filterMenuitemEvent, itemId );
 }
 
-WgEventFilter	WgEventFilter::MenuitemCheck( WgMenu * pGizmo )
+WgEventFilter	WgEventFilter::MenuitemCheck( WgMenu * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, pGizmo, _filterMenuitemEvent );
+	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, pWidget, _filterMenuitemEvent );
 }
 
-WgEventFilter	WgEventFilter::MenuitemCheck( WgMenu * pGizmo, int itemId )
+WgEventFilter	WgEventFilter::MenuitemCheck( WgMenu * pWidget, int itemId )
 {
-	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, pGizmo, _filterMenuitemEvent, itemId );
+	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, pWidget, _filterMenuitemEvent, itemId );
 }
 
 //____ MenuitemUncheck() __________________________________________________________
@@ -709,14 +709,14 @@ WgEventFilter	WgEventFilter::MenuitemUncheck( int itemId )
 	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, 0, _filterMenuitemEvent, itemId );
 }
 
-WgEventFilter	WgEventFilter::MenuitemUncheck( WgMenu * pGizmo )
+WgEventFilter	WgEventFilter::MenuitemUncheck( WgMenu * pWidget )
 {
-	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, pGizmo, _filterMenuitemEvent );
+	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, pWidget, _filterMenuitemEvent );
 }
 
-WgEventFilter	WgEventFilter::MenuitemUncheck( WgMenu * pGizmo, int itemId )
+WgEventFilter	WgEventFilter::MenuitemUncheck( WgMenu * pWidget, int itemId )
 {
-	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, pGizmo, _filterMenuitemEvent, itemId );
+	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, pWidget, _filterMenuitemEvent, itemId );
 }
 
 
@@ -735,9 +735,9 @@ bool WgEventFilter::_filterType( const WgEvent::Event * pEvent, const WgEventFil
 	return false;
 }
 
-bool WgEventFilter::_filterTypeGizmo( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterTypeWidget( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 		return true;
 
 	return false;
@@ -745,7 +745,7 @@ bool WgEventFilter::_filterTypeGizmo( const WgEvent::Event * pEvent, const WgEve
 
 bool WgEventFilter::_filterMouseButtonEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
 		if( filter.m_data1 == 0 )
 			return true;
@@ -762,7 +762,7 @@ bool WgEventFilter::_filterMouseButtonEvents( const WgEvent::Event * pEvent, con
 
 bool WgEventFilter::_filterKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
 		if( filter.m_data1 == 0 )
 			return true;
@@ -779,7 +779,7 @@ bool WgEventFilter::_filterKeyEvents( const WgEvent::Event * pEvent, const WgEve
 
 bool WgEventFilter::_filterNativeKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
 		const WgEvent::KeyEvent * p = static_cast<const WgEvent::KeyEvent*>(pEvent);
 
@@ -791,7 +791,7 @@ bool WgEventFilter::_filterNativeKeyEvents( const WgEvent::Event * pEvent, const
 
 bool WgEventFilter::_filterCharacterEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
 		int chr = (static_cast<const WgEvent::Character *>(pEvent))->Char();
 
@@ -803,7 +803,7 @@ bool WgEventFilter::_filterCharacterEvents( const WgEvent::Event * pEvent, const
 
 bool WgEventFilter::_filterMouseWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
 		int chr = (static_cast<const WgEvent::MouseWheelRoll *>(pEvent))->Wheel();
 
@@ -815,7 +815,7 @@ bool WgEventFilter::_filterMouseWheelRollEvents( const WgEvent::Event * pEvent, 
 
 bool WgEventFilter::_filterTabSelect( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
 		if( filter.m_data1 == 0 )
 			return true;
@@ -832,7 +832,7 @@ bool WgEventFilter::_filterTabSelect( const WgEvent::Event * pEvent, const WgEve
 
 bool WgEventFilter::_filterTabPress( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
 		const WgEvent::TabPress * p = static_cast<const WgEvent::TabPress*>(pEvent);
 
@@ -844,7 +844,7 @@ bool WgEventFilter::_filterTabPress( const WgEvent::Event * pEvent, const WgEven
 
 bool WgEventFilter::_filterMenuitemEvent( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {
-	if( pEvent->Type() == filter.EventType() && (!filter.Gizmo() || filter.Gizmo() == pEvent->Gizmo()) )
+	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
 		if( filter.m_data1 == 0 )
 			return true;

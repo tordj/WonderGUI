@@ -28,7 +28,7 @@
 #	include <wg_panel.h>
 #endif
 
-#ifndef	WG_GIZMO_SLIDER_DOT_H
+#ifndef	WG_WIDGET_SLIDER_DOT_H
 #	include <wg_slider.h>
 #endif
 
@@ -57,7 +57,7 @@ public:
 	WgHook * 		Next() const { return _nextHook(); }
 
 
-	bool			SetVisible( bool bVisible ) { return false; }		// This gizmo handles hide/show of children according to its own rules.
+	bool			SetVisible( bool bVisible ) { return false; }		// This widget handles hide/show of children according to its own rules.
 	WgScrollPanel * 	Parent() const { return m_pView; }
 
 protected:
@@ -71,11 +71,11 @@ protected:
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
-	WgGizmoContainer *	_parent() const;
+	WgWidgetContainer *	_parent() const;
 
 	WgScrollPanel *	m_pView;
-	WgRect			m_windowGeo;		// Geometry of Gizmos window inside parent.
-	WgRect			m_canvasGeo;		// Geometry of Gizmos canvas. Same as m_windowGeo for sliders.
+	WgRect			m_windowGeo;		// Geometry of Widgets window inside parent.
+	WgRect			m_canvasGeo;		// Geometry of Widgets canvas. Same as m_windowGeo for sliders.
 };
 
 
@@ -90,7 +90,7 @@ public:
 	virtual ~WgScrollPanel();
 	virtual const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgScrollPanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgScrollPanel(); };
 
 
 	//____ Methods _______________________________________________________________
@@ -175,21 +175,21 @@ public:
 
 	bool				SetHSlider( WgHSlider * pSlider );
 	void				DeleteHSlider() {SetVSlider(0);}
-	WgHSlider *	HSlider() const { return (WgHSlider*) m_elements[XDRAG].Gizmo(); }
+	WgHSlider *	HSlider() const { return (WgHSlider*) m_elements[XDRAG].Widget(); }
 	WgHSlider* 	ReleaseHSlider();
 
 	bool				SetVSlider( WgVSlider * pSlider );
 	void				DeleteVSlider() {SetVSlider(0);}
-	WgVSlider *	VSlider() const { return (WgVSlider*) m_elements[YDRAG].Gizmo(); }
+	WgVSlider *	VSlider() const { return (WgVSlider*) m_elements[YDRAG].Widget(); }
 	WgVSlider* 	ReleaseVSlider();
 
-	bool				SetContent( WgGizmo * pContent );
+	bool				SetContent( WgWidget * pContent );
 	void				DeleteContent() {SetContent(0); }
-	WgGizmo*			Content() const { return m_elements[WINDOW].Gizmo(); }
-	WgGizmo*			ReleaseContent();
+	WgWidget*			Content() const { return m_elements[WINDOW].Widget(); }
+	WgWidget*			ReleaseContent();
 
-	bool				DeleteChild( WgGizmo * pGizmo );
-	WgGizmo *			ReleaseChild( WgGizmo * pGizmo );
+	bool				DeleteChild( WgWidget * pWidget );
+	WgWidget *			ReleaseChild( WgWidget * pWidget );
 
 	bool				DeleteAllChildren();
 	bool				ReleaseAllChildren();
@@ -210,9 +210,9 @@ public:
 
 	// Overloaded from WgPanel
 
-	WgGizmo * FindGizmo( const WgCoord& pos, WgSearchMode mode );
+	WgWidget * FindWidget( const WgCoord& pos, WgSearchMode mode );
 
-	// Overloaded from Gizmo
+	// Overloaded from Widget
 
 	WgSize				DefaultSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
 
@@ -248,7 +248,7 @@ protected:
 
 		float		_setPosition( float fraction );
 
-		WgGizmo*	_getGizmo();
+		WgWidget*	_getWidget();
 		float		_getSliderPosition();
 		float		_getSliderSize();
 
@@ -271,7 +271,7 @@ protected:
 	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 
 	bool		_onAlphaTest( const WgCoord& ofs );
-	void		_onCloneContent( const WgGizmo * _pOrg );
+	void		_onCloneContent( const WgWidget * _pOrg );
 
 	WgHook *	_firstHookWithGeo( WgRect& geo ) const;
 	WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
@@ -311,8 +311,8 @@ protected:
 	int			m_wheelForScrollY;		// What wheel should be used for vertical scrolling. (0=none)
 	
 
-//	ViewGizmoCollection	m_elementsCollection;	// WgGizmoCollection for the elements gizmos.
-	WgScrollHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag gizmos in that order.
+//	ViewWidgetCollection	m_elementsCollection;	// WgWidgetCollection for the elements widgets.
+	WgScrollHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag widgets in that order.
 
 	WgColor			m_bgColor;
 	WgSizePolicy	m_widthPolicy;

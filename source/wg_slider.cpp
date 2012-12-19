@@ -30,14 +30,14 @@
 
 using namespace WgUtil;
 
-static const char	c_gizmoType[] = {"Unspecified type derived from Slider"};
-static const char c_gizmoTypeH[] = {"HSlider"};
-static const char c_gizmoTypeV[] = {"VSlider"};
+static const char	c_widgetType[] = {"Unspecified type derived from Slider"};
+static const char c_widgetTypeH[] = {"HSlider"};
+static const char c_widgetTypeV[] = {"VSlider"};
 
 
-//____ WgGizmoSlider() ____________________________________________________
+//____ WgWidgetSlider() ____________________________________________________
 
-WgGizmoSlider::WgGizmoSlider()
+WgWidgetSlider::WgWidgetSlider()
 {
 	m_pSliderTargetInterface = 0;
 
@@ -58,28 +58,28 @@ WgGizmoSlider::WgGizmoSlider()
 		m_mode[i] = WG_MODE_NORMAL;
 }
 
-//____ ~WgGizmoSlider() _________________________________________________________
+//____ ~WgWidgetSlider() _________________________________________________________
 
-WgGizmoSlider::~WgGizmoSlider( void )
+WgWidgetSlider::~WgWidgetSlider( void )
 {
 }
 
 
 //____ Type() _________________________________________________________________
 
-const char * WgGizmoSlider::Type( void ) const
+const char * WgWidgetSlider::Type( void ) const
 {
 	return GetClass();
 }
 
-const char * WgGizmoSlider::GetClass( void )
+const char * WgWidgetSlider::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetBgPressMode() _______________________________________________________
 
-void WgGizmoSlider::SetBgPressMode( BgPressMode mode )
+void WgWidgetSlider::SetBgPressMode( BgPressMode mode )
 {
 	m_bgPressMode = mode;
 }
@@ -88,7 +88,7 @@ void WgGizmoSlider::SetBgPressMode( BgPressMode mode )
 
 //____ SetSlider() ____________________________________________________________
 
-bool WgGizmoSlider::SetSlider( float _pos, float _size )
+bool WgWidgetSlider::SetSlider( float _pos, float _size )
 {
 	LIMIT( _size, 0.0001f, 1.f );
 	LIMIT( _pos, 0.f, 1.f );
@@ -105,7 +105,7 @@ bool WgGizmoSlider::SetSlider( float _pos, float _size )
 
 //____ SetSliderPos() _________________________________________________________
 
-bool WgGizmoSlider::SetSliderPos( float pos )
+bool WgWidgetSlider::SetSliderPos( float pos )
 {
 	LIMIT( pos, 0.f, 1.f );
 
@@ -118,7 +118,7 @@ bool WgGizmoSlider::SetSliderPos( float pos )
 	return	true;
 }
 
-bool WgGizmoSlider::SetSliderPosPxlOfs( int x )
+bool WgWidgetSlider::SetSliderPosPxlOfs( int x )
 {
 	int		barPos, barLen;
 	_viewToPosLen( &barPos, &barLen );
@@ -144,7 +144,7 @@ bool WgGizmoSlider::SetSliderPosPxlOfs( int x )
 
 //____ SetSliderSize() ________________________________________________________
 
-bool WgGizmoSlider::SetSliderSize( float _size )
+bool WgWidgetSlider::SetSliderSize( float _size )
 {
 	LIMIT( _size, 0.0001f, 1.f );
 
@@ -160,7 +160,7 @@ bool WgGizmoSlider::SetSliderSize( float _size )
 
 //____ SetSource() ____________________________________________________________
 
-bool WgGizmoSlider::SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx,
+bool WgWidgetSlider::SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx,
 							 WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx )
 {
 	m_pBgGfx		= pBgGfx;
@@ -176,7 +176,7 @@ bool WgGizmoSlider::SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx,
 
 //____ SetButtonLayout() ______________________________________________________
 
-bool WgGizmoSlider::SetButtonLayout(  ButtonLayout layout )
+bool WgWidgetSlider::SetButtonLayout(  ButtonLayout layout )
 {
 	m_btnLayout = layout;
 
@@ -186,11 +186,11 @@ bool WgGizmoSlider::SetButtonLayout(  ButtonLayout layout )
 
 //____ SetSliderTarget() _______________________________________________________
 
-bool WgGizmoSlider::SetSliderTarget( WgSliderTarget * pTarget )
+bool WgWidgetSlider::SetSliderTarget( WgSliderTarget * pTarget )
 {
 	// Release previous target (if any)
 
-	if( m_pSliderTargetGizmo )
+	if( m_pSliderTargetWidget )
 		m_pSliderTargetInterface->m_pSlider = 0;
 
 	// Set new target
@@ -198,7 +198,7 @@ bool WgGizmoSlider::SetSliderTarget( WgSliderTarget * pTarget )
 	if( pTarget == 0 )
 	{
 		m_pSliderTargetInterface	= 0;
-		m_pSliderTargetGizmo		= 0;
+		m_pSliderTargetWidget		= 0;
 	}
 	else
 	{
@@ -206,7 +206,7 @@ bool WgGizmoSlider::SetSliderTarget( WgSliderTarget * pTarget )
 			return false;									// Target is already controlled by another slider.
 
 		m_pSliderTargetInterface 	= pTarget;
-		m_pSliderTargetGizmo		= pTarget->_getGizmo();
+		m_pSliderTargetWidget		= pTarget->_getWidget();
 		m_pSliderTargetInterface->m_pSlider = this;
 		_setSlider( pTarget->_getSliderPosition(), pTarget->_getSliderSize() );
 	}
@@ -215,7 +215,7 @@ bool WgGizmoSlider::SetSliderTarget( WgSliderTarget * pTarget )
 
 //____ _headerFooterChanged() _______________________________________________
 
-void WgGizmoSlider::_headerFooterChanged()
+void WgWidgetSlider::_headerFooterChanged()
 {
 	int	fwdLen = 0, bwdLen = 0;
 
@@ -264,9 +264,9 @@ void WgGizmoSlider::_headerFooterChanged()
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgGizmoSlider::_onCloneContent( const WgGizmo * _pOrg )
+void WgWidgetSlider::_onCloneContent( const WgWidget * _pOrg )
 {
-	WgGizmoSlider * pOrg = (WgGizmoSlider *) _pOrg;
+	WgWidgetSlider * pOrg = (WgWidgetSlider *) _pOrg;
 
 	m_pBgGfx			= pOrg->m_pBgGfx;
 	m_pBarGfx			= pOrg->m_pBarGfx;
@@ -291,7 +291,7 @@ void WgGizmoSlider::_onCloneContent( const WgGizmo * _pOrg )
 
 //____ _viewToPosLen() _________________________________________________________
 
-void	WgGizmoSlider::_viewToPosLen( int * _wpPos, int * _wpLen )
+void	WgWidgetSlider::_viewToPosLen( int * _wpPos, int * _wpLen )
 {
 	// changes by Viktor.
 
@@ -344,7 +344,7 @@ void	WgGizmoSlider::_viewToPosLen( int * _wpPos, int * _wpLen )
 
 //____ _onEnable() ___________________________________________________
 
-void WgGizmoSlider::_onEnable( void )
+void WgWidgetSlider::_onEnable( void )
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_NORMAL;
@@ -354,7 +354,7 @@ void WgGizmoSlider::_onEnable( void )
 
 //____ _onDisable() ___________________________________________________
 
-void WgGizmoSlider::_onDisable( void )
+void WgWidgetSlider::_onDisable( void )
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_DISABLED;
@@ -364,14 +364,14 @@ void WgGizmoSlider::_onDisable( void )
 
 //____ _onRefresh() _______________________________________________________
 
-void WgGizmoSlider::_onRefresh( void )
+void WgWidgetSlider::_onRefresh( void )
 {
 	_requestRender();
 }
 
 //____ DefaultSize() _____________________________________________________________
 
-WgSize WgGizmoSlider::DefaultSize() const
+WgSize WgWidgetSlider::DefaultSize() const
 {
 	WgSize sz = m_minSize;
 
@@ -388,7 +388,7 @@ WgSize WgGizmoSlider::DefaultSize() const
 
 //____ _updateMinSize() ________________________________________________________
 
-void WgGizmoSlider::_updateMinSize()
+void WgWidgetSlider::_updateMinSize()
 {
 	int	minW = 4;
 	int	minH = 4;
@@ -447,7 +447,7 @@ void WgGizmoSlider::_updateMinSize()
 
 //____ _renderButton() _________________________________________________________
 
-void WgGizmoSlider::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block )
+void WgWidgetSlider::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block )
 {
 		if( m_bHorizontal )
 			_dest.w = _block.Width();
@@ -464,7 +464,7 @@ void WgGizmoSlider::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, W
 
 //____ _onRender() ________________________________________________________
 
-void WgGizmoSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgWidgetSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
 	WgRect	dest = _canvas;
 
@@ -519,7 +519,7 @@ void WgGizmoSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgGizmoSlider::_onAlphaTest( const WgCoord& ofs )
+bool WgWidgetSlider::_onAlphaTest( const WgCoord& ofs )
 {
 	if( _findMarkedComponent( ofs ) == C_NONE )
 		return false;
@@ -529,7 +529,7 @@ bool WgGizmoSlider::_onAlphaTest( const WgCoord& ofs )
 
 //____ _markTestButton() _______________________________________________________
 
-bool WgGizmoSlider::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block )
+bool WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block )
 {
 		if( m_bHorizontal )
 			_dest.w = _block.Width();
@@ -548,7 +548,7 @@ bool WgGizmoSlider::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& 
 
 //____ _findMarkedComponent() __________________________________________________
 
-WgGizmoSlider::Component WgGizmoSlider::_findMarkedComponent( WgCoord ofs )
+WgWidgetSlider::Component WgWidgetSlider::_findMarkedComponent( WgCoord ofs )
 {
 	// First of all, do a mark test against the header buttons...
 
@@ -615,7 +615,7 @@ WgGizmoSlider::Component WgGizmoSlider::_findMarkedComponent( WgCoord ofs )
 
 //____ _unmarkReqRender() ______________________________________________________
 
-void WgGizmoSlider::_unmarkReqRender()
+void WgWidgetSlider::_unmarkReqRender()
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_NORMAL;
@@ -625,7 +625,7 @@ void WgGizmoSlider::_unmarkReqRender()
 
 //____ _onEvent() ______________________________________________________________
 
-void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	int		barPos, barLen;
 	_viewToPosLen( &barPos, &barLen );
@@ -718,14 +718,14 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				case SKIP_PAGE:
 					if( pointerOfs - barPos < barLen/2 )
 					{
-						if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+						if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 							SetSliderPos( m_pSliderTargetInterface->_jumpBwd() );
 
 						pHandler->QueueEvent( new WgEvent::SliderJumpBwd(this,m_sliderPos,m_sliderSize) );
 					}
 					else
 					{
-						if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+						if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 							SetSliderPos( m_pSliderTargetInterface->_jumpFwd() );
 
 						pHandler->QueueEvent( new WgEvent::SliderJumpFwd(this,m_sliderPos,m_sliderSize) );
@@ -745,14 +745,14 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 			{
-				if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 					SetSliderPos( m_pSliderTargetInterface->_stepFwd() );
 
 				pHandler->QueueEvent( new WgEvent::SliderStepFwd(this,m_sliderPos,m_sliderSize) );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
-				if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 					SetSliderPos( m_pSliderTargetInterface->_stepBwd() );
 
 				pHandler->QueueEvent( new WgEvent::SliderStepBwd(this,m_sliderPos,m_sliderSize) );
@@ -774,14 +774,14 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			{
 				if( pointerOfs - barPos < barLen/2 )
 				{
-					if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+					if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 						SetSliderPos( m_pSliderTargetInterface->_jumpBwd() );
 
 					pHandler->QueueEvent( new WgEvent::SliderJumpBwd(this,m_sliderPos,m_sliderSize) );
 				}
 				else
 				{
-					if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+					if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 						SetSliderPos( m_pSliderTargetInterface->_jumpFwd() );
 
 					pHandler->QueueEvent( new WgEvent::SliderJumpFwd(this,m_sliderPos,m_sliderSize) );
@@ -789,14 +789,14 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 			{
-				if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 					SetSliderPos( m_pSliderTargetInterface->_stepFwd() );
 
 				pHandler->QueueEvent( new WgEvent::SliderJumpFwd(this,m_sliderPos,m_sliderSize) );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
-				if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 					SetSliderPos( m_pSliderTargetInterface->_stepBwd() );
 
 				pHandler->QueueEvent( new WgEvent::SliderJumpBwd(this,m_sliderPos,m_sliderSize) );
@@ -823,7 +823,7 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				{
 					m_sliderPos = sliderPos;
 
-					if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+					if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 						m_sliderPos = m_pSliderTargetInterface->_setPosition(m_sliderPos);
 
 					pHandler->QueueEvent( new WgEvent::SliderMove(this,m_sliderPos,m_sliderSize) );
@@ -841,7 +841,7 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			if( p->Wheel() == 1 )
 			{
 				int distance = p->Distance();
-				if( m_pSliderTargetGizmo.GetRealPtr() != 0 )
+				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 					SetSliderPos( m_pSliderTargetInterface->_wheelRolled(distance) );
 				
 				pHandler->QueueEvent( new WgEvent::SliderWheelRolled(this,distance,m_sliderPos,m_sliderSize) );
@@ -868,7 +868,7 @@ void WgGizmoSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 //____ _markTestSlider() _______________________________________________________
 
-bool WgGizmoSlider::_markTestSlider( WgCoord ofs )
+bool WgWidgetSlider::_markTestSlider( WgCoord ofs )
 {
 	if( !m_pBarGfx )
 		return false;
@@ -896,7 +896,7 @@ bool WgGizmoSlider::_markTestSlider( WgCoord ofs )
 
 //____ _setSlider() ____________________________________________________________
 
-bool WgGizmoSlider::_setSlider( float _pos, float _size )
+bool WgWidgetSlider::_setSlider( float _pos, float _size )
 {
 	LIMIT( _size, 0.0001f, 1.f );
 	LIMIT( _pos, 0.f, 1.f );
@@ -936,7 +936,7 @@ const char * WgHSlider::Type( void ) const
 
 const char * WgHSlider::GetClass( void )
 {
-	return c_gizmoTypeH;
+	return c_widgetTypeH;
 }
 
 
@@ -966,6 +966,6 @@ const char * WgVSlider::Type( void ) const
 
 const char * WgVSlider::GetClass( void )
 {
-	return c_gizmoTypeV;
+	return c_widgetTypeV;
 }
 

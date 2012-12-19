@@ -29,7 +29,7 @@
 #include <wg_util.h>
 #include <wg_key.h>
 
-static const char	c_gizmoType[] = {"RefreshButton"};
+static const char	c_widgetType[] = {"RefreshButton"};
 
 //____ Constructor ____________________________________________________________
 
@@ -65,7 +65,7 @@ const char * WgRefreshButton::Type( void ) const
 
 const char * WgRefreshButton::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 
@@ -378,7 +378,7 @@ WgMode WgRefreshButton::_getRenderMode()
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgRefreshButton::_onCloneContent( const WgGizmo * _pOrg )
+void WgRefreshButton::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgRefreshButton * pOrg = (WgRefreshButton *) _pOrg;
 

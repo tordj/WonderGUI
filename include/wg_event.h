@@ -44,7 +44,7 @@
 
 
 class WgEventHandler;
-class WgGizmo;
+class WgWidget;
 class WgButton;
 class WgCheckBox;
 class WgRadioButton;
@@ -52,29 +52,29 @@ class WgAnimPlayer;
 class WgTablist;
 class WgValueDisplay;
 class WgValueEditor;
-class WgGizmoSlider;
+class WgWidgetSlider;
 class WgMenu;
 class WgModalPanel;
 class WgTablePanel;
 class WgInterfaceEditText;
 class WgText;
 
-typedef class WgWeakPtr<WgGizmo> WgGizmoWeakPtr;
+typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;
 
 namespace WgEvent
 {
 	class Event
 	{
 		friend class ::WgEventHandler;
-		friend class ::WgGizmo;
+		friend class ::WgWidget;
 
 		public:
 			WgEventType		Type() const { return m_type; }
 			int64_t			Timestamp() const { return m_timestamp; }
-			bool			IsForGizmo() const { return m_bIsForGizmo; }
-			WgGizmo *		Gizmo() const;									// Inlining this would demand include of wg_gizmo.h.
-			WgGizmoWeakPtr	GizmoWeakPtr() const { return m_pGizmo; }
-			WgGizmo *		ForwardedFrom() const;
+			bool			IsForWidget() const { return m_bIsForWidget; }
+			WgWidget *		Widget() const;									// Inlining this would demand include of wg_widget.h.
+			WgWidgetWeakPtr	WidgetWeakPtr() const { return m_pWidget; }
+			WgWidget *		ForwardedFrom() const;
 			WgModifierKeys	ModKeys() const { return m_modKeys; }
 			WgCoord			PointerPos() const { return m_pointerLocalPos; }
 			WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
@@ -84,7 +84,7 @@ namespace WgEvent
 			bool			IsKeyEvent() const;
 
 		protected:
-			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForGizmo(false) {}
+			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForWidget(false) {}
 			virtual ~Event() {}
 
 			virtual void 	_cloneContentFrom( const Event * pOrg );			// Only subclassed for the standard event types.
@@ -92,10 +92,10 @@ namespace WgEvent
 			WgEventType		m_type;				// Type of event
 			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
 			int64_t			m_timestamp;		// Timestamp of posting this event
-			bool			m_bIsForGizmo;		// Set if this event is for a specific Gizmo (m_pGizmo set at creation, even if weak pointer now is null).
-			WgGizmoWeakPtr	m_pGizmo;			// Gizmo to receive this event.
-			WgGizmoWeakPtr	m_pForwardedFrom;	// Gizmo this event was forwarded from.
-			WgCoord			m_pointerLocalPos;	// Gizmo-relative position of pointer. Same as m_pointerScreenPos if Gizmo not set.
+			bool			m_bIsForWidget;		// Set if this event is for a specific Widget (m_pWidget set at creation, even if weak pointer now is null).
+			WgWidgetWeakPtr	m_pWidget;			// Widget to receive this event.
+			WgWidgetWeakPtr	m_pForwardedFrom;	// Widget this event was forwarded from.
+			WgCoord			m_pointerLocalPos;	// Widget-relative position of pointer. Same as m_pointerScreenPos if Widget not set.
 			WgCoord			m_pointerScreenPos;	// Screen position of pointer.
 	};
 
@@ -147,7 +147,7 @@ namespace WgEvent
 	public:
 		MouseEnter( const WgCoord& pos );
 	protected:
-		MouseEnter( WgGizmo * pGizmo );
+		MouseEnter( WgWidget * pWidget );
 	};
 
 	class MouseLeave : public Event
@@ -156,7 +156,7 @@ namespace WgEvent
 	public:
 		MouseLeave();
 	protected:
-		MouseLeave( WgGizmo * pGizmo );
+		MouseLeave( WgWidget * pWidget );
 	};
 
 
@@ -164,7 +164,7 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
-		MouseMove( WgGizmo * pGizmo );
+		MouseMove( WgWidget * pWidget );
 	public:
 		MouseMove( const WgCoord& pos );
 	};
@@ -173,7 +173,7 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
-		MouseButtonPress( int button, WgGizmo * pGizmo );
+		MouseButtonPress( int button, WgWidget * pWidget );
 	public:
 		MouseButtonPress( int button );
 	};
@@ -188,7 +188,7 @@ namespace WgEvent
 		bool			ReleaseInside() const;
 
 	protected:
-		MouseButtonRelease( int button, WgGizmo * pGizmo, bool bPressInside, bool bReleaseInside );
+		MouseButtonRelease( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside );
 		virtual void 	_cloneContentFrom( const Event * pOrg );
 
 		bool			m_bPressInside;
@@ -201,7 +201,7 @@ namespace WgEvent
 	public:
 		KeyPress( int native_keycode );
 	protected:
-		KeyPress( int native_keycode, WgGizmo * pGizmo );
+		KeyPress( int native_keycode, WgWidget * pWidget );
 	};
 
 	class KeyRelease : public KeyEvent
@@ -210,7 +210,7 @@ namespace WgEvent
 	public:
 		KeyRelease( int native_keycode );
 	protected:
-		KeyRelease( int native_keycode, WgGizmo * pGizmo );
+		KeyRelease( int native_keycode, WgWidget * pWidget );
 	};
 
 	class Character : public Event
@@ -221,7 +221,7 @@ namespace WgEvent
 
 		unsigned short	Char() const;
 	protected:
-		Character( unsigned short character, WgGizmo * pGizmo );
+		Character( unsigned short character, WgWidget * pWidget );
 		virtual void 	_cloneContentFrom( const Event * pOrg );
 	protected:
 		unsigned short	m_char;
@@ -236,7 +236,7 @@ namespace WgEvent
 		int			Wheel() const;
 		int			Distance() const;
 	protected:
-		MouseWheelRoll( int wheel, int distance, WgGizmo * pGizmo );
+		MouseWheelRoll( int wheel, int distance, WgWidget * pWidget );
 		virtual void 	_cloneContentFrom( const Event * pOrg );
 
 		int			m_wheel;
@@ -251,7 +251,7 @@ namespace WgEvent
 
 		int				Millisec() const;
 	protected:
-		Tick( int ms, WgGizmo * pGizmo );
+		Tick( int ms, WgWidget * pWidget );
 		virtual void 	_cloneContentFrom( const Event * pOrg );
 
 		int			m_millisec;
@@ -276,7 +276,7 @@ namespace WgEvent
 	class ButtonPress : public Event
 	{
 	public:
-		ButtonPress( WgButton * pGizmo );
+		ButtonPress( WgButton * pWidget );
 		WgButton *	Button() const;
 	};
 
@@ -291,19 +291,19 @@ namespace WgEvent
 	class CheckboxCheck : public CheckboxEvent
 	{
 	public:
-		CheckboxCheck( WgCheckBox * pGizmo );
+		CheckboxCheck( WgCheckBox * pWidget );
 	};
 
 	class CheckboxUncheck : public CheckboxEvent
 	{
 	public:
-		CheckboxUncheck( WgCheckBox * pGizmo );
+		CheckboxUncheck( WgCheckBox * pWidget );
 	};
 
 	class CheckboxToggle : public CheckboxEvent
 	{
 	public:
-		CheckboxToggle( WgCheckBox * pGizmo, bool bChecked );
+		CheckboxToggle( WgCheckBox * pWidget, bool bChecked );
 		bool		IsChecked() const;
 
 	private:
@@ -321,19 +321,19 @@ namespace WgEvent
 	class RadiobuttonSelect : public RadiobuttonEvent
 	{
 	public:
-		RadiobuttonSelect( WgRadioButton * pGizmo );
+		RadiobuttonSelect( WgRadioButton * pWidget );
 	};
 
 	class RadiobuttonUnselect : public RadiobuttonEvent
 	{
 	public:
-		RadiobuttonUnselect( WgRadioButton * pGizmo );
+		RadiobuttonUnselect( WgRadioButton * pWidget );
 	};
 
 	class RadiobuttonToggle : public RadiobuttonEvent
 	{
 	public:
-		RadiobuttonToggle( WgRadioButton * pGizmo, bool bSelected );
+		RadiobuttonToggle( WgRadioButton * pWidget, bool bSelected );
 		bool	IsSelected() const;
 	private:
 		bool	m_bSelected;
@@ -344,7 +344,7 @@ namespace WgEvent
 	class AnimationUpdate : public Event
 	{
 	public:
-		AnimationUpdate( WgAnimPlayer * pGizmo, int frame, float fraction );
+		AnimationUpdate( WgAnimPlayer * pWidget, int frame, float fraction );
 		WgAnimPlayer * Animation() const;
 		int		Frame() const;
 		float	Fraction() const;
@@ -364,7 +364,7 @@ namespace WgEvent
 	class TabSelect : public TablistEvent
 	{
 	public:
-		TabSelect( WgTablist * pGizmo, int tabId );
+		TabSelect( WgTablist * pWidget, int tabId );
 		int		TabId() const;
 	private:
 		int		m_tabId;
@@ -373,7 +373,7 @@ namespace WgEvent
 	class TabPress : public TablistEvent
 	{
 	public:
-		TabPress( WgTablist * pGizmo, int tabId, int mouseButton );
+		TabPress( WgTablist * pWidget, int tabId, int mouseButton );
 		int		TabId() const;
 		int		MouseButton() const;
 	private:
@@ -399,27 +399,27 @@ namespace WgEvent
 	class EditvalueModify : public EditvalueEvent
 	{
 	public:
-		EditvalueModify( WgValueEditor * pGizmo, int64_t value, double fraction );
+		EditvalueModify( WgValueEditor * pWidget, int64_t value, double fraction );
 	};
 
 	class EditvalueSet : public EditvalueEvent
 	{
 	public:
-		EditvalueSet( WgValueEditor * pGizmo, int64_t value, double fraction );
+		EditvalueSet( WgValueEditor * pWidget, int64_t value, double fraction );
 	};
 
-	//____ WgGizmoSlider events ________________________________________________
+	//____ WgWidgetSlider events ________________________________________________
 
 	class SliderEvent : public Event
 	{
 	public:
-		WgGizmoSlider* Slider() const;
+		WgWidgetSlider* Slider() const;
 		float			Pos() const;
 		float			Length() const;
 		float			Value() const;
 
 	protected:
-		SliderEvent( WgGizmoSlider * pGizmo, float pos, float length );
+		SliderEvent( WgWidgetSlider * pWidget, float pos, float length );
 		float			m_pos;
 		float			m_length;
 	};
@@ -427,49 +427,49 @@ namespace WgEvent
 	class SliderMove : public SliderEvent
 	{
 	public:
-		SliderMove( WgGizmoSlider* pGizmo, float pos, float length );
+		SliderMove( WgWidgetSlider* pWidget, float pos, float length );
 	};
 
 	class SliderStepFwd : public SliderEvent
 	{
 	public:
-		SliderStepFwd( WgGizmoSlider* pGizmo, float pos, float length );
+		SliderStepFwd( WgWidgetSlider* pWidget, float pos, float length );
 	};
 
 	class SliderStepBwd : public SliderEvent
 	{
 	public:
-		SliderStepBwd( WgGizmoSlider* pGizmo, float pos, float length );
+		SliderStepBwd( WgWidgetSlider* pWidget, float pos, float length );
 	};
 
 	class SliderJumpFwd : public SliderEvent
 	{
 	public:
-		SliderJumpFwd( WgGizmoSlider* pGizmo, float pos, float length );
+		SliderJumpFwd( WgWidgetSlider* pWidget, float pos, float length );
 	};
 
 	class SliderJumpBwd : public SliderEvent
 	{
 	public:
-		SliderJumpBwd( WgGizmoSlider* pGizmo, float pos, float length );
+		SliderJumpBwd( WgWidgetSlider* pWidget, float pos, float length );
 	};
 
 	class SliderWheelRolled : public SliderEvent
 	{
 	public:
-		SliderWheelRolled( WgGizmoSlider* pGizmo, int distance, float pos, float length );
+		SliderWheelRolled( WgWidgetSlider* pWidget, int distance, float pos, float length );
 		int			Distance() const;
 	protected:
 		float		m_distance;
 	};
 
-	//____ WgGizmoKnob events _________________________________________________
+	//____ WgWidgetKnob events _________________________________________________
 
 	class KnobTurn : public Event
 	{
 	public:
-		KnobTurn( WgGizmo * pGizmo, int pos, float fraction ); //TODO: Change to WgGizmoKnob* when we have impoted WgGizmoKnob to main code.
-//		WgGizmoKnob * Knob() const;		TODO: Add when we have imported WgGizmoKnob to main code.
+		KnobTurn( WgWidget * pWidget, int pos, float fraction ); //TODO: Change to WgWidgetKnob* when we have impoted WgWidgetKnob to main code.
+//		WgWidgetKnob * Knob() const;		TODO: Add when we have imported WgWidgetKnob to main code.
 		float	Fraction() const;
 		int		Pos() const;
 	private:
@@ -491,13 +491,13 @@ namespace WgEvent
 	class TextModify : public TextEvent
 	{
 	public:
-		TextModify( WgGizmo * pGizmo, WgText * pText );
+		TextModify( WgWidget * pWidget, WgText * pText );
 	};
 
 	class TextSet : public TextEvent
 	{
 	public:
-		TextSet( WgGizmo * pGizmo, WgText * pText );
+		TextSet( WgWidget * pWidget, WgText * pText );
 	};
 
 	//____ WgMenu events __________________________________________________
@@ -530,27 +530,27 @@ namespace WgEvent
 		MenuitemUncheck( WgMenu * pMenu, int menuItemId );
 	};
 
-	//____ WgGizmoModalLayer events _________________________________________________
+	//____ WgWidgetModalLayer events _________________________________________________
 
 	class ModalMoveOutside : public Event
 	{
 		friend class ::WgModalPanel;
 	protected:
-		ModalMoveOutside( WgGizmo * pGizmo );
+		ModalMoveOutside( WgWidget * pWidget );
 	};
 
 	class ModalBlockedPress : public MouseButtonEvent
 	{
 		friend class ::WgModalPanel;
 	protected:
-		ModalBlockedPress( int button, WgGizmo * pModalGizmo );
+		ModalBlockedPress( int button, WgWidget * pModalWidget );
 	};
 
 	class ModalBlockedRelease : public MouseButtonEvent
 	{
 		friend class ::WgModalPanel;
 	protected:
-		ModalBlockedRelease( int button, WgGizmo * pModalGizmo );
+		ModalBlockedRelease( int button, WgWidget * pModalWidget );
 	};
 
 	//____ WgTablePanel events _________________________________________________
@@ -561,26 +561,26 @@ namespace WgEvent
 		WgTablePanel * 	Table() const;
 		int				Row() const;
 		int				Column() const;
-		WgGizmo *		CellContent() const;
+		WgWidget *		CellContent() const;
 		
 	protected:
 		int				m_row;
 		int				m_column;
-		WgGizmoWeakPtr	m_pCellContent;
+		WgWidgetWeakPtr	m_pCellContent;
 	};
 
 	class TableCellMarked : public TableCellEvent
 	{
 		friend class ::WgTablePanel;
 	protected:
-		TableCellMarked( WgTablePanel * pTable, int row, int column, WgGizmo * pCellContent );
+		TableCellMarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent );
 	};
 
 	class TableCellUnmarked : public TableCellEvent
 	{
 		friend class ::WgTablePanel;
 	protected:
-		TableCellUnmarked( WgTablePanel * pTable, int row, int column, WgGizmo * pCellContent );
+		TableCellUnmarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent );
 	};
 
 	//____ Link events _________________________________________________________
@@ -596,13 +596,13 @@ namespace WgEvent
 	class LinkMark : public LinkEvent
 	{
 	public:
-		LinkMark( WgGizmo * pGizmo, std::string link );
+		LinkMark( WgWidget * pWidget, std::string link );
 	};
 
 	class LinkUnmark : public LinkEvent
 	{
 	public:
-		LinkUnmark( WgGizmo * pGizmo, std::string link );
+		LinkUnmark( WgWidget * pWidget, std::string link );
 	};
 
 	class LinkButtonEvent : public LinkEvent
@@ -616,31 +616,31 @@ namespace WgEvent
 	class LinkPress : public LinkButtonEvent
 	{
 	public:
-		LinkPress( WgGizmo * pGizmo, std::string link, int button );
+		LinkPress( WgWidget * pWidget, std::string link, int button );
 	};
 
 	class LinkRepeat : public LinkButtonEvent
 	{
 	public:
-		LinkRepeat( WgGizmo * pGizmo, std::string link, int button );
+		LinkRepeat( WgWidget * pWidget, std::string link, int button );
 	};
 
 	class LinkRelease : public LinkButtonEvent
 	{
 	public:
-		LinkRelease( WgGizmo * pGizmo, std::string link, int button );
+		LinkRelease( WgWidget * pWidget, std::string link, int button );
 	};
 
 	class LinkClick : public LinkButtonEvent
 	{
 	public:
-		LinkClick( WgGizmo * pGizmo, std::string link, int button );
+		LinkClick( WgWidget * pWidget, std::string link, int button );
 	};
 
 	class LinkDoubleClick : public LinkButtonEvent
 	{
 	public:
-		LinkDoubleClick( WgGizmo * pGizmo, std::string link, int button );
+		LinkDoubleClick( WgWidget * pWidget, std::string link, int button );
 	};
 
 	//____ Internally posted events ____________________________________________
@@ -657,7 +657,7 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	protected:
 		MouseButtonDrag( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos );
-		MouseButtonDrag( int button, WgGizmo * pGizmo, const WgCoord& orgPos, const WgCoord& prevPos, const WgCoord& currPos );
+		MouseButtonDrag( int button, WgWidget * pWidget, const WgCoord& orgPos, const WgCoord& prevPos, const WgCoord& currPos );
 		virtual void 	_cloneContentFrom( const Event * pOrg );
 	public:
 		WgCoord			DraggedTotal() const;
@@ -675,7 +675,7 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 	protected:
-		MouseButtonRepeat( int button, WgGizmo * pGizmo );
+		MouseButtonRepeat( int button, WgWidget * pWidget );
 	public:
 		MouseButtonRepeat( int button );
 	};
@@ -685,7 +685,7 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	protected:
 		MouseButtonClick( int button );
-		MouseButtonClick( int button, WgGizmo * pGizmo );
+		MouseButtonClick( int button, WgWidget * pWidget );
 	};
 
 	class MouseButtonDoubleClick : public MouseButtonEvent
@@ -693,7 +693,7 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	protected:
 		MouseButtonDoubleClick( int button );
-		MouseButtonDoubleClick( int button, WgGizmo * pGizmo );
+		MouseButtonDoubleClick( int button, WgWidget * pWidget );
 	};
 
 	class KeyRepeat : public KeyEvent
@@ -701,7 +701,7 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	protected:
 		KeyRepeat( int native_keycode );
-		KeyRepeat( int native_keycode, WgGizmo * pGizmo );
+		KeyRepeat( int native_keycode, WgWidget * pWidget );
 	};
 
 }

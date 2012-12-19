@@ -23,8 +23,8 @@
 #ifndef	WG_FPSDISPLAY_DOT_H
 #define WG_FPSDISPLAY_DOT_H
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef WG_TEXTPROP_DOT_H
@@ -34,14 +34,14 @@
 class WgFont;
 
 
-class WgFpsDisplay:public WgGizmo
+class WgFpsDisplay:public WgWidget
 {
 	public:
 		WgFpsDisplay();
 		virtual ~WgFpsDisplay();
 		virtual const char * Type() const;
 		static const char * GetClass();
-		virtual WgGizmo * NewOfMyType() const { return new WgFpsDisplay(); };
+		virtual WgWidget * NewOfMyType() const { return new WgFpsDisplay(); };
 		
 
 		//____ Methods __________________________________________
@@ -52,7 +52,7 @@ class WgFpsDisplay:public WgGizmo
 	protected:
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
-		void	_onCloneContent( const WgGizmo * _pOrg );
+		void	_onCloneContent( const WgWidget * _pOrg );
 
 	private:
 

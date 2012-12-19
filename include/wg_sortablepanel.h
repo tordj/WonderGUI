@@ -31,8 +31,8 @@
 #	include <wg_panel.h>
 #endif
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef WG_CHAIN_DOT_H
@@ -91,12 +91,12 @@ public:
 	virtual ~WgSortablePanel();
 
 
-	WgSortableHook * AddChild( WgGizmo * pGizmo );
-	WgSortableHook * InsertChild( WgGizmo * pGizmo, WgGizmo * pSibling );
-	WgSortableHook * InsertChildSorted( WgGizmo * pGizmo );
+	WgSortableHook * AddChild( WgWidget * pWidget );
+	WgSortableHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling );
+	WgSortableHook * InsertChildSorted( WgWidget * pWidget );
 
-	bool			DeleteChild( WgGizmo * pGizmo );
-	WgGizmo *		ReleaseChild( WgGizmo * pGizmo );
+	bool			DeleteChild( WgWidget * pWidget );
+	WgWidget *		ReleaseChild( WgWidget * pWidget );
 
 	bool			DeleteAllChildren();
 	bool			ReleaseAllChildren();
@@ -105,18 +105,18 @@ public:
 	void			SetSortOrder( WgSortOrder order );
 	WgSortOrder		GetSortOrder() const { return m_sortOrder; }
 
-	void			SetSortFunction( WgGizmoSortFunc pSortFunc );
-	WgGizmoSortFunc	SortFunction() const { return m_pSortFunc; }
+	void			SetSortFunction( WgWidgetSortFunc pSortFunc );
+	WgWidgetSortFunc	SortFunction() const { return m_pSortFunc; }
 
 
 protected:
 
-	void			_onCloneContent( const WgGizmo * _pOrg );
+	void			_onCloneContent( const WgWidget * _pOrg );
 
 	WgHook*			_firstHook() const { return m_hooks.First(); }
 	WgHook*			_lastHook() const { return m_hooks.Last(); }
 
-	int				_compareGizmos(const WgGizmo * p1, const WgGizmo * p2) { return m_pSortFunc?m_pSortFunc(p1,p2):0; }
+	int				_compareWidgets(const WgWidget * p1, const WgWidget * p2) { return m_pSortFunc?m_pSortFunc(p1,p2):0; }
 
 	// To be overloaded by subclasses
 
@@ -124,10 +124,10 @@ protected:
 	virtual void	_onResizeRequested( WgSortableHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgSortableHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgSortableHook * pHook, const WgRect& rect ) = 0;
-	virtual void	_onGizmoAppeared( WgSortableHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.
-	virtual void	_onGizmoDisappeared( WgSortableHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
-	virtual void	_onGizmosReordered() = 0;
-	virtual void	_refreshAllGizmos() = 0;
+	virtual void	_onWidgetAppeared( WgSortableHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.
+	virtual void	_onWidgetDisappeared( WgSortableHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
+	virtual void	_onWidgetsReordered() = 0;
+	virtual void	_refreshAllWidgets() = 0;
 	virtual WgSortableHook * _newHook() = 0;
 
 	//
@@ -135,7 +135,7 @@ protected:
 	WgChain<WgSortableHook>	m_hooks;
 
 	WgSortOrder		m_sortOrder;
-	WgGizmoSortFunc	m_pSortFunc;
+	WgWidgetSortFunc	m_pSortFunc;
 	int				m_nChildPanels;					// Number of VISIBLE children that are panels.
 };
 

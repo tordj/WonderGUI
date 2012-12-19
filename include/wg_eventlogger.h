@@ -61,7 +61,7 @@ public:
 
 private:
 	std::string	_formatTimestamp( int64_t ms );
-	std::string _formatGizmo( const WgEvent::Event * _pEvent );
+	std::string _formatWidget( const WgEvent::Event * _pEvent );
 	std::string _formatModkeys( const WgEvent::Event * _pEvent );
 	std::string _formatPointerPos( const WgEvent::Event * _pEvent );
 	std::string _formatPointerStyle( const WgEvent::PointerChange * _pEvent );

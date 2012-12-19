@@ -422,7 +422,7 @@ inline bool operator!=( const WgMinMax2D& r1, const WgMinMax2D& r2 )
 
 enum WgSearchMode
 {
-	WG_SEARCH_MARKPOLICY,			// Perform a mark test on Gizmo.
+	WG_SEARCH_MARKPOLICY,			// Perform a mark test on Widget.
 	WG_SEARCH_GEOMETRY,				// Goes strictly on geometry, ignores alpha.
 	WG_SEARCH_ACTION_TARGET,		// Like MARKPOLICY, but takes modality into account.
 };

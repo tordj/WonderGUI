@@ -23,17 +23,17 @@
 #ifndef	WG_PANEL_DOT_H
 #define	WG_PANEL_DOT_H
 
-#ifndef WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
-#ifndef WG_GIZMOCONTAINER_DOT_H
-#	include <wg_gizmocontainer.h>
+#ifndef WG_WIDGETCONTAINER_DOT_H
+#	include <wg_widgetcontainer.h>
 #endif
 
 class WgPatches;
 
-class WgPanel : public WgGizmoContainer, public WgGizmo
+class WgPanel : public WgWidgetContainer, public WgWidget
 {
 	friend class WgEventHandler;
 
@@ -65,14 +65,14 @@ class WgPanel : public WgGizmoContainer, public WgGizmo
 		void		SetMaskOp( WgMaskOp operation );
 		WgMaskOp	MaskOp() const { return m_maskOp; }
 
-		virtual WgGizmo * 	FindGizmo( const WgCoord& ofs, WgSearchMode mode );
+		virtual WgWidget * 	FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
-		bool		IsGizmo() const;
+		bool		IsWidget() const;
 		bool		IsPanel() const;
 		bool		IsRoot() const;
 
-		WgGizmo *			CastToGizmo();
-		const WgGizmo *		CastToGizmo() const;
+		WgWidget *			CastToWidget();
+		const WgWidget *		CastToWidget() const;
 		WgPanel *	CastToPanel();
 		const WgPanel * CastToPanel() const;
 		WgRootPanel *			CastToRoot();
@@ -92,8 +92,8 @@ class WgPanel : public WgGizmoContainer, public WgGizmo
 		virtual WgHook* _lastHookWithGeo( WgRect& geo ) const = 0;
 		virtual WgHook* _prevHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
 
-		bool 			_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting );	// Needed until WgPanel inherits from WgGizmo
-		bool 			_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing );		// Needed until WgPanel inherits from WgGizmo
+		bool 			_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );	// Needed until WgPanel inherits from WgWidget
+		bool 			_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );		// Needed until WgPanel inherits from WgWidget
 
 		WgModalPanel *	_getModalPanel() const;
 		WgMenuPanel*	_getMenuPanel() const;

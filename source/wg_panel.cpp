@@ -38,9 +38,9 @@ WgPanel::WgPanel() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup
 
 
 
-//____ IsGizmo() ______________________________________________________________
+//____ IsWidget() ______________________________________________________________
 
-bool WgPanel::IsGizmo() const
+bool WgPanel::IsWidget() const
 {
 	return true;
 }
@@ -60,14 +60,14 @@ bool WgPanel::IsRoot() const
 	return false;
 }
 
-//____ CastToGizmo() _______________________________________________________
+//____ CastToWidget() _______________________________________________________
 
-WgGizmo * WgPanel::CastToGizmo()
+WgWidget * WgPanel::CastToWidget()
 {
 	return this;
 }
 
-const WgGizmo * WgPanel::CastToGizmo() const
+const WgWidget * WgPanel::CastToWidget() const
 {
 	return this;
 }
@@ -109,21 +109,21 @@ void WgPanel::SetMaskOp( WgMaskOp operation )
 	}
 }
 
-//____ FindGizmo() ____________________________________________________________
+//____ FindWidget() ____________________________________________________________
 
-WgGizmo * WgPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
+WgWidget * WgPanel::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 {
 	WgRect childGeo;
 	WgHook * pHook = _lastHookWithGeo( childGeo );
-	WgGizmo * pResult = 0;
+	WgWidget * pResult = 0;
 
 	while( pHook && !pResult )
 	{
 		if( pHook->IsVisible() && childGeo.Contains( ofs ) )
 		{
-			if( pHook->Gizmo()->IsPanel() )
+			if( pHook->Widget()->IsPanel() )
 			{
-				pResult = pHook->Gizmo()->CastToPanel()->FindGizmo( ofs - childGeo.Pos(), mode );
+				pResult = pHook->Widget()->CastToPanel()->FindWidget( ofs - childGeo.Pos(), mode );
 			}
 			else
 			{
@@ -131,11 +131,11 @@ WgGizmo * WgPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 				{
 					case WG_SEARCH_ACTION_TARGET:
 					case WG_SEARCH_MARKPOLICY:
-						if( pHook->Gizmo()->MarkTest( ofs - childGeo.Pos() ) )
-							pResult = pHook->Gizmo();
+						if( pHook->Widget()->MarkTest( ofs - childGeo.Pos() ) )
+							pResult = pHook->Widget();
 						break;
 					case WG_SEARCH_GEOMETRY:
-						pResult = pHook->Gizmo();
+						pResult = pHook->Widget();
 						break;
 				}
 			}
@@ -153,22 +153,22 @@ WgGizmo * WgPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
 
 //____ _focusRequested() _______________________________________________________
 
-bool WgPanel::_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting )
+bool WgPanel::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting )
 {
 	WgHook * p = Hook();
 	if( p )
-		return p->Parent()->_focusRequested( p, pGizmoRequesting );
+		return p->Parent()->_focusRequested( p, pWidgetRequesting );
 	else
 		return false;
 }
 
 //____ _focusReleased() ________________________________________________________
 
-bool WgPanel::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing )
+bool WgPanel::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing )
 {
 	WgHook * p = Hook();
 	if( p )
-		return p->Parent()->_focusReleased( p, pGizmoReleasing );
+		return p->Parent()->_focusReleased( p, pWidgetReleasing );
 	else
 		return false;
 }
@@ -176,7 +176,7 @@ bool WgPanel::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing )
 
 WgModalPanel *  WgPanel::_getModalPanel() const
 {
-	const WgGizmoContainer * p = Parent();
+	const WgWidgetContainer * p = Parent();
 
 	if( p )
 		return p->_getModalPanel();
@@ -186,7 +186,7 @@ WgModalPanel *  WgPanel::_getModalPanel() const
 
 WgMenuPanel * WgPanel::_getMenuPanel() const
 {
-	const WgGizmoContainer * p = Parent();
+	const WgWidgetContainer * p = Parent();
 
 	if( p )
 		return p->_getMenuPanel();
@@ -200,7 +200,7 @@ WgMenuPanel * WgPanel::_getMenuPanel() const
 
 void WgPanel::_onEnable()
 {
-	WgGizmo * p = FirstGizmo();
+	WgWidget * p = FirstWidget();
 	while( p )
 	{
 		p->SetEnabled(true);
@@ -212,7 +212,7 @@ void WgPanel::_onEnable()
 
 void WgPanel::_onDisable()
 {
-	WgGizmo * p = FirstGizmo();
+	WgWidget * p = FirstWidget();
 	while( p )
 	{
 		p->SetEnabled(false);
@@ -222,13 +222,13 @@ void WgPanel::_onDisable()
 
 //____ _renderPatches() _____________________________________________________
 // Default implementation for panel rendering patches.
-class GizmoRenderContext
+class WidgetRenderContext
 {
 public:
-	GizmoRenderContext() : pGizmo(0) {}
-	GizmoRenderContext( WgGizmo * pGizmo, const WgRect& geo ) : pGizmo(pGizmo), geo(geo) {}
+	WidgetRenderContext() : pWidget(0) {}
+	WidgetRenderContext( WgWidget * pWidget, const WgRect& geo ) : pWidget(pWidget), geo(geo) {}
 
-	WgGizmo *	pGizmo;
+	WgWidget *	pWidget;
 	WgRect		geo;
 	WgPatches	patches;
 };
@@ -253,9 +253,9 @@ void WgPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	if( m_bSiblingsOverlap )
 	{
 
-		// Create GizmoRenderContext's for siblings that might get dirty patches
+		// Create WidgetRenderContext's for siblings that might get dirty patches
 
-		std::vector<GizmoRenderContext> renderList;
+		std::vector<WidgetRenderContext> renderList;
 
 		WgRect childGeo;
 		WgHook * p = _firstHookWithGeo( childGeo );
@@ -264,31 +264,31 @@ void WgPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 			WgRect geo = childGeo + _canvas.Pos();
 
 			if( p->IsVisible() && geo.IntersectsWith( dirtBounds ) )
-				renderList.push_back( GizmoRenderContext(p->Gizmo(), geo ) );
+				renderList.push_back( WidgetRenderContext(p->Widget(), geo ) );
 
 			p = _nextHookWithGeo( childGeo, p );
 		}
 
-		// Go through GizmoRenderContexts in reverse order (topmost first), push and mask dirt
+		// Go through WidgetRenderContexts in reverse order (topmost first), push and mask dirt
 
 		for( int i = renderList.size()-1 ; i >= 0 ; i-- )
 		{
-			GizmoRenderContext * p = &renderList[i];
+			WidgetRenderContext * p = &renderList[i];
 
 			p->patches.Push( &patches );
 
-			p->pGizmo->_onMaskPatches( patches, p->geo, p->geo, pDevice->GetBlendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+			p->pWidget->_onMaskPatches( patches, p->geo, p->geo, pDevice->GetBlendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 			if( patches.IsEmpty() )
 				break;
 		}
 
-		// Go through GizmoRenderContexts and render the patches
+		// Go through WidgetRenderContexts and render the patches
 
 		for( int i = 0 ; i < (int) renderList.size() ; i++ )
 		{
-			GizmoRenderContext * p = &renderList[i];
-			p->pGizmo->_renderPatches( pDevice, p->geo, p->geo, &p->patches, _layer );
+			WidgetRenderContext * p = &renderList[i];
+			p->pWidget->_renderPatches( pDevice, p->geo, p->geo, &p->patches, _layer );
 		}
 
 	}
@@ -301,7 +301,7 @@ void WgPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		{
 			WgRect canvas = childGeo + _canvas.Pos();
 			if( p->IsVisible() && canvas.IntersectsWith( dirtBounds ) )
-				p->Gizmo()->_renderPatches( pDevice, canvas, canvas, &patches, _layer );
+				p->Widget()->_renderPatches( pDevice, canvas, canvas, &patches, _layer );
 			p = _nextHookWithGeo( childGeo, p );
 		}
 
@@ -337,7 +337,7 @@ void WgPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const 
 	while(p)
 	{
 		if( p->IsVisible() )
-			p->Gizmo()->_onCollectPatches( container, childGeo + geo.Pos(), clip );
+			p->Widget()->_onCollectPatches( container, childGeo + geo.Pos(), clip );
 		p = _nextHookWithGeo( childGeo, p );
 	}
 }
@@ -356,7 +356,7 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 			while(p)
 			{
 				if( p->IsVisible() )
-					p->Gizmo()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
+					p->Widget()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
 				p = _nextHookWithGeo( childGeo, p );
 			}
 			break;

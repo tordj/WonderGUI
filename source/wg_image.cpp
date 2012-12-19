@@ -27,7 +27,7 @@
 #include <wg_util.h>
 
 
-static const char	c_gizmoType[] = {"Image"};
+static const char	c_widgetType[] = {"Image"};
 
 //____ Constructor ____________________________________________________________
 
@@ -52,7 +52,7 @@ const char * WgImage::Type( void ) const
 
 const char * WgImage::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetSource() _____________________________________________________________
@@ -86,7 +86,7 @@ WgSize WgImage::DefaultSize() const
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgImage::_onCloneContent( const WgGizmo * _pOrg )
+void WgImage::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgImage * pOrg = (WgImage*) _pOrg;
 

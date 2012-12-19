@@ -23,8 +23,8 @@
 #ifndef	WG_COMBOBOX_DOT_H
 #define WG_COMBOBOX_DOT_H
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef	WG_INTERFACE_EDITTEXT_DOT_H
@@ -41,14 +41,14 @@ class WgMenu;
 class WgMenuItem;
 
 
-class WgCombobox : public WgGizmo, public WgInterfaceEditText
+class WgCombobox : public WgWidget, public WgInterfaceEditText
 {
 public:
 	WgCombobox();
 	virtual ~WgCombobox();
 	virtual const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgCombobox(); };
+	virtual WgWidget * NewOfMyType() const { return new WgCombobox(); };
 
 	void			SetSource( const WgBlocksetPtr& pTextBox );
 	WgBlocksetPtr	GetSource( ) const		{ return m_pTextBoxBg; }
@@ -92,7 +92,7 @@ public:
 
 
 protected:
-	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onRefresh();
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );

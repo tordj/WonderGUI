@@ -24,7 +24,7 @@
 #include <wg_vpanel.h>
 
 
-static const char	c_gizmoType[] = {"VPanel"};
+static const char	c_widgetType[] = {"VPanel"};
 static const char	c_hookType[] = {"VHook"};
 
 
@@ -65,14 +65,14 @@ WgVPanel::~WgVPanel()
 
 const char * WgVPanel::Type() const
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ GetClass() ____________________________________________________________
 
 const char * WgVPanel::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ HeightForWidth() _______________________________________________________
@@ -87,7 +87,7 @@ int WgVPanel::HeightForWidth( int width ) const
 
 	while( pHook )
 	{
-		height += pHook->Gizmo()->HeightForWidth(width);
+		height += pHook->Widget()->HeightForWidth(width);
 		pHook = pHook->Next();
 	}
 
@@ -207,7 +207,7 @@ void WgVPanel::_onResizeRequested( WgSortableHook * _pHook )
 	// Update BestSize
 
 	WgSize oldBestSize = pHook->m_bestSize;
-	pHook->m_bestSize = pHook->Gizmo()->DefaultSize();
+	pHook->m_bestSize = pHook->Widget()->DefaultSize();
 
 	m_bestSize.h += pHook->m_bestSize.h - oldBestSize.h;
 
@@ -228,7 +228,7 @@ void WgVPanel::_onResizeRequested( WgSortableHook * _pHook )
 
 	// We accept any change to height for current width ourselves
 
-	int newHeight = pHook->Gizmo()->HeightForWidth(m_size.w);
+	int newHeight = pHook->Widget()->HeightForWidth(m_size.w);
 
 	bool bRequestRender = false;
 	if( newHeight != m_size.h )
@@ -271,15 +271,15 @@ void  WgVPanel::_onRenderRequested( WgSortableHook * pHook, const WgRect& rect )
 		_requestRender(clippedRect);
 }
 
-//____ _onGizmoAppeared() _____________________________________________________
+//____ _onWidgetAppeared() _____________________________________________________
 
-void  WgVPanel::_onGizmoAppeared( WgSortableHook * pInserted )
+void  WgVPanel::_onWidgetAppeared( WgSortableHook * pInserted )
 {
 	WgVHook * pHook = static_cast<WgVHook*>(pInserted);
 
 	// Update stored BestSize
 
-	pHook->m_bestSize = pHook->Gizmo()->DefaultSize();
+	pHook->m_bestSize = pHook->Widget()->DefaultSize();
 
 	if( m_bestSize.w == pHook->m_bestSize.w )
 	{
@@ -293,15 +293,15 @@ void  WgVPanel::_onGizmoAppeared( WgSortableHook * pInserted )
 
 	m_bestSize.h += pHook->m_bestSize.h;
 
-	// We set Gizmo to same width as ours to start with, our parent will
+	// We set Widget to same width as ours to start with, our parent will
 	// expand us in RequestResize() if it wants to.
 
-	int	height = pHook->Gizmo()->HeightForWidth(m_size.w);
+	int	height = pHook->Widget()->HeightForWidth(m_size.w);
 
 	pHook->m_height = height;
 	m_size.h += height;
 
-	pHook->Gizmo()->_onNewSize( WgSize(m_size.w,height) );
+	pHook->Widget()->_onNewSize( WgSize(m_size.w,height) );
 
 	// Request and handle possible resize.
 
@@ -312,9 +312,9 @@ void  WgVPanel::_onGizmoAppeared( WgSortableHook * pInserted )
 	_renderFromChildOnward(pHook);
 }
 
-//____ _onGizmoDisappeared() __________________________________________________
+//____ _onWidgetDisappeared() __________________________________________________
 
-void WgVPanel::_onGizmoDisappeared( WgSortableHook * pToBeRemoved )
+void WgVPanel::_onWidgetDisappeared( WgSortableHook * pToBeRemoved )
 {
 	WgVHook * pHook = static_cast<WgVHook*>(pToBeRemoved);
 
@@ -327,7 +327,7 @@ void WgVPanel::_onGizmoDisappeared( WgSortableHook * pToBeRemoved )
 		m_nBestWidth--;
 		if( m_nBestWidth == 0 )
 		{
-			// Refresh best size, ignoring Gizmo to be removed.
+			// Refresh best size, ignoring Widget to be removed.
 
 			int w = pHook->m_bestSize.w;
 			pHook->m_bestSize.w = 0;
@@ -340,13 +340,13 @@ void WgVPanel::_onGizmoDisappeared( WgSortableHook * pToBeRemoved )
 
 	_renderFromChildOnward(pHook);
 	m_size.h -= pHook->m_height;
-	pHook->m_height = 0;				// If gizmo is just being hidden it needs to have m_height set to 0.
+	pHook->m_height = 0;				// If widget is just being hidden it needs to have m_height set to 0.
 	_requestResize();
 }
 
-//____ _onGizmosReordered() ___________________________________________________
+//____ _onWidgetsReordered() ___________________________________________________
 
-void  WgVPanel::_onGizmosReordered()
+void  WgVPanel::_onWidgetsReordered()
 {
 	_requestRender();
 }
@@ -359,7 +359,7 @@ void WgVPanel::_onSpaceReallocated()
 }
 
 //____ _adaptChildrenToWidth() ________________________________________________
-// Adapts all non-hidden gizmos to our width and updates m_size.
+// Adapts all non-hidden widgets to our width and updates m_size.
 
 void WgVPanel::_adaptChildrenToWidth( int width )
 {
@@ -371,11 +371,11 @@ void WgVPanel::_adaptChildrenToWidth( int width )
 	{
 		if( pHook->m_bVisible )
 		{
-			int height = pHook->Gizmo()->HeightForWidth( width );
+			int height = pHook->Widget()->HeightForWidth( width );
 			if( height == -1 )
 				height = pHook->m_bestSize.h;
 
-			pHook->Gizmo()->_onNewSize( WgSize(width,height) );
+			pHook->Widget()->_onNewSize( WgSize(width,height) );
 			pHook->m_height = height;
 			m_size.h += height;
 		}
@@ -423,7 +423,7 @@ void WgVPanel::_refreshDefaultSize()
 	{
 		if( pHook->m_bVisible )
 		{
-			pHook->m_bestSize = pHook->Gizmo()->DefaultSize();
+			pHook->m_bestSize = pHook->Widget()->DefaultSize();
 
 			if( pHook->m_bestSize.w > m_bestSize.w )
 			{
@@ -439,9 +439,9 @@ void WgVPanel::_refreshDefaultSize()
 	}
 }
 
-//____ _refreshAllGizmos() ____________________________________________________
+//____ _refreshAllWidgets() ____________________________________________________
 
-void  WgVPanel::_refreshAllGizmos()
+void  WgVPanel::_refreshAllWidgets()
 {
 	_refreshDefaultSize();
 	_adaptChildrenToWidth( m_size.w );

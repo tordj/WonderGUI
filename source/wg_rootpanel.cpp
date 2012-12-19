@@ -67,8 +67,8 @@ bool WgRootPanel::SetGfxDevice( WgGfxDevice * pDevice )
 {
 	m_pGfxDevice = pDevice;
 
-	if( m_pGfxDevice && !m_bHasGeo && m_hook.Gizmo() )
-		m_hook.Gizmo()->_onNewSize( m_pGfxDevice->CanvasSize() );
+	if( m_pGfxDevice && !m_bHasGeo && m_hook.Widget() )
+		m_hook.Widget()->_onNewSize( m_pGfxDevice->CanvasSize() );
 
 	return true;
 }
@@ -106,29 +106,29 @@ WgRect WgRootPanel::Geo() const
 
 //____ SetChild() _____________________________________________________________
 
-bool WgRootPanel::SetChild( WgGizmo * pGizmo )
+bool WgRootPanel::SetChild( WgWidget * pWidget )
 {
-	if( !pGizmo )
+	if( !pWidget )
 		return false;
 
-	m_hook._attachGizmo(pGizmo);
-	m_hook.Gizmo()->_onNewSize(m_geo.Size());
+	m_hook._attachWidget(pWidget);
+	m_hook.Widget()->_onNewSize(m_geo.Size());
 
-	m_hook.Gizmo()->_onCollectPatches( m_dirtyPatches, Geo(), Geo() );
+	m_hook.Widget()->_onCollectPatches( m_dirtyPatches, Geo(), Geo() );
 
 	return true;
 }
 
 //____ ReleaseChild() _________________________________________________________
 
-WgGizmo * WgRootPanel::ReleaseChild()
+WgWidget * WgRootPanel::ReleaseChild()
 {
-	return m_hook._releaseGizmo();
+	return m_hook._releaseWidget();
 }
 
-WgGizmo * WgRootPanel::ReleaseChild( WgGizmo * pGizmo )
+WgWidget * WgRootPanel::ReleaseChild( WgWidget * pWidget )
 {
-	if( pGizmo == m_hook.Gizmo() )
+	if( pWidget == m_hook.Widget() )
 		return ReleaseChild();
 
 	return false;
@@ -137,9 +137,9 @@ WgGizmo * WgRootPanel::ReleaseChild( WgGizmo * pGizmo )
 
 //____ DeleteChild() __________________________________________________________
 
-bool WgRootPanel::DeleteChild( WgGizmo * pGizmo )
+bool WgRootPanel::DeleteChild( WgWidget * pWidget )
 {
-	if( pGizmo == m_hook.Gizmo() )
+	if( pWidget == m_hook.Widget() )
 		return SetChild(0);
 
 	return false;
@@ -189,7 +189,7 @@ bool WgRootPanel::Render( const WgRect& clip )
 
 bool WgRootPanel::BeginRender()
 {
-	if( !m_pGfxDevice || !m_hook.Gizmo() )
+	if( !m_pGfxDevice || !m_hook.Widget() )
 		return false;						// No GFX-device or no widgets to render.
 
 	return m_pGfxDevice->BeginRender();
@@ -200,7 +200,7 @@ bool WgRootPanel::BeginRender()
 
 bool WgRootPanel::RenderSection( const WgRect& _clip, int layer )
 {
-	if( !m_pGfxDevice || !m_hook.Gizmo() )
+	if( !m_pGfxDevice || !m_hook.Widget() )
 		return false;						// No GFX-device or no widgets to render.
 
 	// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
@@ -228,7 +228,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip, int layer )
 
 	// Render the dirty patches recursively
 
-	m_hook.Gizmo()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches, layer );
+	m_hook.Widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches, layer );
 
 	return true;
 }
@@ -237,7 +237,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip, int layer )
 
 bool WgRootPanel::EndRender( void )
 {
-	if( !m_pGfxDevice || !m_hook.Gizmo() )
+	if( !m_pGfxDevice || !m_hook.Widget() )
 		return false;						// No GFX-device or no widgets to render.
 
 	// Turn dirty patches into update patches
@@ -251,33 +251,33 @@ bool WgRootPanel::EndRender( void )
 }
 
 
-//____ FindGizmo() _____________________________________________________________
+//____ FindWidget() _____________________________________________________________
 
-WgGizmo * WgRootPanel::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
+WgWidget * WgRootPanel::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 {
-	if( !Geo().Contains(ofs) || !m_hook.Gizmo() )
+	if( !Geo().Contains(ofs) || !m_hook.Widget() )
 		return 0;
 
-	if( m_hook.Gizmo() && m_hook.Gizmo()->IsPanel() )
-		return m_hook.Gizmo()->CastToPanel()->FindGizmo( ofs, mode );
+	if( m_hook.Widget() && m_hook.Widget()->IsPanel() )
+		return m_hook.Widget()->CastToPanel()->FindWidget( ofs, mode );
 
-	return m_hook.Gizmo();
+	return m_hook.Widget();
 }
 
 
 //____ _focusRequested() _______________________________________________________
 
-bool WgRootPanel::_focusRequested( WgHook * pBranch, WgGizmo * pGizmoRequesting )
+bool WgRootPanel::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting )
 {
 	if( m_pEventHandler )
-		return m_pEventHandler->SetKeyboardFocus(pGizmoRequesting);
+		return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
 	else
 		return false;
 }
 
 //____ _focusReleased() ________________________________________________________
 
-bool WgRootPanel::_focusReleased( WgHook * pBranch, WgGizmo * pGizmoReleasing )
+bool WgRootPanel::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing )
 {
 	if( m_pEventHandler )
 		return m_pEventHandler->SetKeyboardFocus(0);
@@ -368,7 +368,7 @@ WgHook * WgRootPanel::Hook::_nextHook() const
 	return 0;
 }
 
-WgGizmoContainer * WgRootPanel::Hook::_parent() const
+WgWidgetContainer * WgRootPanel::Hook::_parent() const
 {
 	return m_pRoot;
 }

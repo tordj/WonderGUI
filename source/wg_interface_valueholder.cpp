@@ -288,7 +288,7 @@ bool Wg_Interface_ValueHolder::_setValue( Sint64 value )
 
 //____ _cloneInterface() _______________________________________________________
 
-// DEPRECATED! To be removed once all widgets/items have been turned into gizmos.
+// DEPRECATED! To be removed once all widgets/items have been turned into widgets.
 
 void Wg_Interface_ValueHolder::_cloneInterface( Wg_Interface_ValueHolder * _pClone )
 {

@@ -40,13 +40,13 @@ const char * WgMonoPanel::Hook::ClassType()
 
 //____ SetChild() ______________________________________________________________
 
-WgHook * WgMonoPanel::SetChild( WgGizmo * pGizmo )
+WgHook * WgMonoPanel::SetChild( WgWidget * pWidget )
 {
-	if( !pGizmo )
+	if( !pWidget )
 		return false;
 
-	m_hook._attachGizmo(pGizmo);
-	pGizmo->_onNewSize(Size());
+	m_hook._attachWidget(pWidget);
+	pWidget->_onNewSize(Size());
 
 	_requestRender();
 	_requestResize();
@@ -57,10 +57,10 @@ WgHook * WgMonoPanel::SetChild( WgGizmo * pGizmo )
 
 bool WgMonoPanel::DeleteChild()
 {
-	WgGizmo * pGizmo = m_hook._releaseGizmo();
-	if( pGizmo )
+	WgWidget * pWidget = m_hook._releaseWidget();
+	if( pWidget )
 	{
-		delete pGizmo;
+		delete pWidget;
 		_requestRender();
 		_requestResize();
 		return true;
@@ -71,23 +71,23 @@ bool WgMonoPanel::DeleteChild()
 
 //____ ReleaseChild() __________________________________________________________
 
-WgGizmo * WgMonoPanel::ReleaseChild()
+WgWidget * WgMonoPanel::ReleaseChild()
 {
-	WgGizmo * pGizmo = m_hook._releaseGizmo();
-	if( pGizmo )
+	WgWidget * pWidget = m_hook._releaseWidget();
+	if( pWidget )
 	{
 		_requestRender();
 		_requestResize();
 	}
 
-	return pGizmo;
+	return pWidget;
 }
 
 //____ DeleteChild() ___________________________________________________________
 
-bool WgMonoPanel::DeleteChild( WgGizmo * pGizmo )
+bool WgMonoPanel::DeleteChild( WgWidget * pWidget )
 {
-	if( pGizmo == m_hook.Gizmo() )
+	if( pWidget == m_hook.Widget() )
 		return DeleteChild();
 
 	return false;
@@ -95,9 +95,9 @@ bool WgMonoPanel::DeleteChild( WgGizmo * pGizmo )
 
 //____ ReleaseChild() __________________________________________________________
 
-WgGizmo * WgMonoPanel::ReleaseChild( WgGizmo * pGizmo )
+WgWidget * WgMonoPanel::ReleaseChild( WgWidget * pWidget )
 {
-	if(pGizmo == m_hook.Gizmo() )
+	if(pWidget == m_hook.Widget() )
 		return ReleaseChild();
 
 	return 0;
@@ -122,28 +122,28 @@ bool WgMonoPanel::ReleaseAllChildren()
 
 int WgMonoPanel::HeightForWidth( int width ) const
 {
-	if( m_hook.Gizmo() )
-		return m_hook.Gizmo()->HeightForWidth( width );
+	if( m_hook.Widget() )
+		return m_hook.Widget()->HeightForWidth( width );
 	else
-		return WgGizmo::HeightForWidth(width);
+		return WgWidget::HeightForWidth(width);
 }
 
 //____ WidthForHeight() ________________________________________________________
 
 int WgMonoPanel::WidthForHeight( int height ) const
 {
-	if( m_hook.Gizmo() )
-		return m_hook.Gizmo()->WidthForHeight( height );
+	if( m_hook.Widget() )
+		return m_hook.Widget()->WidthForHeight( height );
 	else
-		return WgGizmo::WidthForHeight(height);
+		return WgWidget::WidthForHeight(height);
 }
 
 //____ DefaultSize() ___________________________________________________________
 
 WgSize WgMonoPanel::DefaultSize() const
 {
-	if( m_hook.Gizmo() )
-		return m_hook.Gizmo()->DefaultSize();
+	if( m_hook.Widget() )
+		return m_hook.Widget()->DefaultSize();
 	else
 		return WgSize(1,1);
 }
@@ -152,21 +152,21 @@ WgSize WgMonoPanel::DefaultSize() const
 
 void WgMonoPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-	if( m_hook.IsVisible() && m_hook.Gizmo() )
-		m_hook.Gizmo()->_onCollectPatches( container, geo, clip );
+	if( m_hook.IsVisible() && m_hook.Widget() )
+		m_hook.Widget()->_onCollectPatches( container, geo, clip );
 }
 
 //____ _onMaskPatches() ________________________________________________________
 
 void WgMonoPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-	if( m_hook.IsVisible() && m_hook.Gizmo() )
-		m_hook.Gizmo()->_onMaskPatches( patches, geo, clip, blendMode );
+	if( m_hook.IsVisible() && m_hook.Widget() )
+		m_hook.Widget()->_onMaskPatches( patches, geo, clip, blendMode );
 }
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgMonoPanel::_onCloneContent( const WgGizmo * _pOrg )
+void WgMonoPanel::_onCloneContent( const WgWidget * _pOrg )
 {
 }
 
@@ -174,15 +174,15 @@ void WgMonoPanel::_onCloneContent( const WgGizmo * _pOrg )
 
 void WgMonoPanel::_onNewSize( const WgSize& size )
 {
-	if( m_hook.Gizmo() )
-		m_hook.Gizmo()->_onNewSize(size);
+	if( m_hook.Widget() )
+		m_hook.Widget()->_onNewSize(size);
 }
 
 //____ _firstHook() ____________________________________________________________
 
 WgHook* WgMonoPanel::_firstHook() const
 {
-	if( m_hook.Gizmo() )
+	if( m_hook.Widget() )
 		return const_cast<Hook*>(&m_hook);
 	else
 		return 0;
@@ -192,7 +192,7 @@ WgHook* WgMonoPanel::_firstHook() const
 
 WgHook* WgMonoPanel::_lastHook() const
 {
-	if( m_hook.Gizmo() )
+	if( m_hook.Widget() )
 		return const_cast<Hook*>(&m_hook);
 	else
 		return 0;
@@ -202,7 +202,7 @@ WgHook* WgMonoPanel::_lastHook() const
 
 WgHook * WgMonoPanel::_firstHookWithGeo( WgRect& geo ) const
 {
-	if( m_hook.Gizmo() )
+	if( m_hook.Widget() )
 	{
 		geo = WgRect(0,0,Size());
 		return const_cast<Hook*>(&m_hook);
@@ -222,7 +222,7 @@ WgHook * WgMonoPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 WgHook * WgMonoPanel::_lastHookWithGeo( WgRect& geo ) const
 {
-	if( m_hook.Gizmo() )
+	if( m_hook.Widget() )
 	{
 		geo = WgRect(0,0,Size());
 		return const_cast<Hook*>(&m_hook);

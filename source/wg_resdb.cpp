@@ -61,7 +61,7 @@ void WgResDB::Clear()
 	m_mapTextprops.clear();
 	m_mapLegoSources.clear();
 	m_mapBlocksets.clear();
-	m_mapGizmos.clear();
+	m_mapWidgets.clear();
 	m_mapMenuitems.clear();
 	m_mapTabs.clear();
 	m_mapTextManagers.clear();
@@ -85,7 +85,7 @@ void WgResDB::Clear()
 	m_colors.Clear();
 	m_legos.Clear();
 	m_blockSets.Clear();
-	m_gizmos.Clear();
+	m_widgets.Clear();
 	m_menuItems.Clear();
 	m_tabs.Clear();
 	m_textManagers.Clear();
@@ -136,10 +136,10 @@ void WgResDB::ClearSurfaces()
 	m_surfaces.Clear();
 }
 
-void WgResDB::ClearGizmos()
+void WgResDB::ClearWidgets()
 {
-	m_mapGizmos.clear();
-	m_gizmos.Clear();
+	m_mapWidgets.clear();
+	m_widgets.Clear();
 }
 
 //____ () _________________________________________________________
@@ -208,11 +208,11 @@ std::string	WgResDB::GenerateName( const WgBlocksetPtr& data )
 	return std::string("_blockset__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgGizmo* data )
+std::string	WgResDB::GenerateName( const WgWidget* data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
-	return std::string("_gizmo__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
+	return std::string("_widget__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
 std::string	WgResDB::GenerateName( const WgMenuItem* data )
@@ -500,15 +500,15 @@ bool WgResDB::AddDataSet( const std::string& id, MetaData * pMetaData )
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddGizmo( const std::string& id, WgGizmo * pGizmo, MetaData * pMetaData )
+bool WgResDB::AddWidget( const std::string& id, WgWidget * pWidget, MetaData * pMetaData )
 {
-	assert(m_mapGizmos.find(id) == m_mapGizmos.end());
-	if(m_mapGizmos.find(id) == m_mapGizmos.end())
+	assert(m_mapWidgets.find(id) == m_mapWidgets.end());
+	if(m_mapWidgets.find(id) == m_mapWidgets.end())
 	{
-		GizmoRes* p = new GizmoRes(id, pGizmo, pMetaData);
-		m_gizmos.PushBack(p);
+		WidgetRes* p = new WidgetRes(id, pWidget, pMetaData);
+		m_widgets.PushBack(p);
 		if(id.size())
-			m_mapGizmos[id] = p;
+			m_mapWidgets[id] = p;
 		return true;
 	}
 	return false;
@@ -670,25 +670,25 @@ WgResDB::MetaData * WgResDB::GetDataSet( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgGizmo * WgResDB::GetGizmo( const std::string& id ) const
+WgWidget * WgResDB::GetWidget( const std::string& id ) const
 {
-	GizmoRes* gizmoRes = GetResGizmo(id);
-	return gizmoRes ? gizmoRes->res : 0;
+	WidgetRes* widgetRes = GetResWidget(id);
+	return widgetRes ? widgetRes->res : 0;
 }
 
 //____ () _________________________________________________________
 
-WgGizmo * WgResDB::CloneGizmo( const std::string& id ) const
+WgWidget * WgResDB::CloneWidget( const std::string& id ) const
 {
-	GizmoRes* gizmoRes = GetResGizmo(id);
+	WidgetRes* widgetRes = GetResWidget(id);
 	
-	if( !gizmoRes )
+	if( !widgetRes )
 		return 0;
 
-	WgGizmo* pGizmo = gizmoRes->res;
+	WgWidget* pWidget = widgetRes->res;
 
-	WgGizmo* pClone = pGizmo->NewOfMyType();
-	pClone->CloneContent(pGizmo);
+	WgWidget* pClone = pWidget->NewOfMyType();
+	pClone->CloneContent(pWidget);
 	return pClone;
 }
 
@@ -914,19 +914,19 @@ WgResDB::BlocksetRes * WgResDB::GetResBlockset( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgResDB::GizmoRes * WgResDB::GetResGizmo( const std::string& id ) const
+WgResDB::WidgetRes * WgResDB::GetResWidget( const std::string& id ) const
 {
-	GizmoRes* res = 0;
+	WidgetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->GetResGizmo(id)))
+			if((res = db->res->GetResWidget(id)))
 				return res;
 		}
 	}
-	GizmoMap::const_iterator it = m_mapGizmos.find(id);
-	return it == m_mapGizmos.end() ? 0 : it->second;
+	WidgetMap::const_iterator it = m_mapWidgets.find(id);
+	return it == m_mapWidgets.end() ? 0 : it->second;
 }
 
 //____ () _________________________________________________________
@@ -1224,18 +1224,18 @@ WgResDB::BlocksetRes* WgResDB::FindResBlockset( const WgBlocksetPtr& meta ) cons
 
 //____ () _________________________________________________________
 
-WgResDB::GizmoRes* WgResDB::FindResGizmo( const WgGizmo* meta ) const
+WgResDB::WidgetRes* WgResDB::FindResWidget( const WgWidget* meta ) const
 {
-	GizmoRes* res = 0;
+	WidgetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->FindResGizmo(meta)))
+			if((res = db->res->FindResWidget(meta)))
 				return res;
 		}
 	}
-	for(res = GetFirstResGizmo(); res; res = res->Next())
+	for(res = GetFirstResWidget(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1668,32 +1668,32 @@ bool WgResDB::RemoveDataSet( WgResDB::DataSetRes * pRes )
 }
 
 
-//____ RemoveGizmo() _________________________________________________________
+//____ RemoveWidget() _________________________________________________________
 
-bool WgResDB::RemoveGizmo( const std::string& id )
+bool WgResDB::RemoveWidget( const std::string& id )
 {
-	GizmoMap::iterator it = m_mapGizmos.find( id );
+	WidgetMap::iterator it = m_mapWidgets.find( id );
 
-	if( it == m_mapGizmos.end() )
+	if( it == m_mapWidgets.end() )
 		return false;
 
-	GizmoRes * pRes = it->second;
-	m_mapGizmos.erase(it);
+	WidgetRes * pRes = it->second;
+	m_mapWidgets.erase(it);
 	delete pRes;
 
 	return true;
 }
 
-bool WgResDB::RemoveGizmo( WgResDB::GizmoRes * pRes )
+bool WgResDB::RemoveWidget( WgResDB::WidgetRes * pRes )
 {
 	if( !pRes )
 		return false;
 
 	if( pRes->id.length() > 0 )
 	{
-		GizmoMap::iterator it = m_mapGizmos.find( pRes->id );
-		assert( it != m_mapGizmos.end() );
-		m_mapGizmos.erase(it);
+		WidgetMap::iterator it = m_mapWidgets.find( pRes->id );
+		assert( it != m_mapWidgets.end() );
+		m_mapWidgets.erase(it);
 	}
 	delete pRes;
 	return true;

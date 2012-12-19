@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_skinmanager.h>
-#include <wg_gizmo.h>
+#include <wg_widget.h>
 
 
 //____ Constructor ____________________________________________________________
@@ -38,12 +38,12 @@ WgSkinManager::~WgSkinManager()
 
 //____ _newNode() ______________________________________________________________
 
-WgSkinNode * WgSkinManager::_newNode( WgGizmo * pGizmo )
+WgSkinNode * WgSkinManager::_newNode( WgWidget * pWidget )
 {
-	if( !pGizmo )
+	if( !pWidget )
 		return 0;
 
-	WgSkinNode * p = new WgSkinNode( this, pGizmo );
+	WgSkinNode * p = new WgSkinNode( this, pWidget );
 	m_nodes.PushBack( p );
 	return p;
 }
@@ -51,26 +51,26 @@ WgSkinNode * WgSkinManager::_newNode( WgGizmo * pGizmo )
 
 //____ WgSkinNode::Constructor ________________________________________________
 
-WgSkinNode::WgSkinNode( WgSkinManager * pManager, WgGizmo * pGizmo )
+WgSkinNode::WgSkinNode( WgSkinManager * pManager, WgWidget * pWidget )
 {
 	m_pManager = pManager;
-	m_pGizmo = pGizmo;
+	m_pWidget = pWidget;
 
-	if( pGizmo->_getSkinNode() )
-		delete pGizmo->_getSkinNode();
-	pGizmo->_setSkinNode(this);
+	if( pWidget->_getSkinNode() )
+		delete pWidget->_getSkinNode();
+	pWidget->_setSkinNode(this);
 }
 
 //____ WgSkinNode::Destructor _________________________________________________
 
 WgSkinNode::~WgSkinNode()
 {
-	m_pGizmo->_setSkinNode(0);
+	m_pWidget->_setSkinNode(0);
 }
 
 //____ WgSkinNode::Refresh() __________________________________________________
 
 void WgSkinNode::Refresh()
 {
-	m_pGizmo->Refresh();
+	m_pWidget->Refresh();
 }

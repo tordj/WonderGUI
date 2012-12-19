@@ -12,7 +12,7 @@
 
 
 
-static const char	c_gizmoType[] = {"Tablist"};
+static const char	c_widgetType[] = {"Tablist"};
 
 //____ WgTab::Constructor __________________________________________________________
 
@@ -83,7 +83,7 @@ const char * WgTablist::Type( void ) const
 
 const char * WgTablist::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetTextProperties() ____________________________________________________
@@ -1263,7 +1263,7 @@ void WgTablist::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHand
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgTablist::_onCloneContent( const WgGizmo * _pOrg )
+void WgTablist::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgTablist * pOrg = (WgTablist *) _pOrg;
 

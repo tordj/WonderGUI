@@ -35,7 +35,7 @@
 #include	<wg_eventhandler.h>
 #include	<wg_patches.h>
 
-static const char	c_gizmoType[] = {"Menu"};
+static const char	c_widgetType[] = {"Menu"};
 static const char	c_hookType[] = {"MenuSliderHook"};
 
 
@@ -63,7 +63,7 @@ WgMenu::WgMenu()
 	m_entryHeight			= 0;
 	m_sepHeight				= 2;
 
-	m_sliderBtnLayout		= WgGizmoSlider::DEFAULT;
+	m_sliderBtnLayout		= WgWidgetSlider::DEFAULT;
 
 	m_contentHeight			= 0;
 	m_contentOfs			= 0;
@@ -95,7 +95,7 @@ const char * WgMenu::Type() const
 
 const char * WgMenu::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetBgSource() __________________________________________________________
@@ -231,7 +231,7 @@ bool WgMenu::SetSliderSource(  WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBl
 
 //____ SetSliderButtonLayout() ________________________________________________
 
-bool WgMenu::SetSliderButtonLayout(  WgGizmoSlider::ButtonLayout layout )
+bool WgMenu::SetSliderButtonLayout(  WgWidgetSlider::ButtonLayout layout )
 {
 	m_sliderBtnLayout = layout;
 
@@ -1101,22 +1101,22 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 	}
 }
 
-//____ FindGizmo() _____________________________________________________________
+//____ FindWidget() _____________________________________________________________
 
-WgGizmo * WgMenu::FindGizmo( const WgCoord& ofs, WgSearchMode mode )
+WgWidget * WgMenu::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 {
-	WgGizmo * pGizmo = WgPanel::FindGizmo(ofs, mode);
-	if( !pGizmo && MarkTest( ofs ) )
+	WgWidget * pWidget = WgPanel::FindWidget(ofs, mode);
+	if( !pWidget && MarkTest( ofs ) )
 		return this;
 
-	return pGizmo;
+	return pWidget;
 }
 
 //____ _openSubMenu() __________________________________________________________
 
 void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 {
-	WgGizmo * pMenu = pItem->GetSubMenu();
+	WgWidget * pMenu = pItem->GetSubMenu();
 
 	if( !pMenu )
 		return;
@@ -1163,7 +1163,7 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 void WgMenu::_closeSubMenu( WgMenuSubMenu * pItem )
 {
 	WgMenuPanel * pLayer = 0;
-	WgGizmo * pMenu = pItem->GetSubMenu();
+	WgWidget * pMenu = pItem->GetSubMenu();
 
 	if( Parent() )
 		pLayer = Parent()->_getMenuPanel();
@@ -1205,11 +1205,11 @@ void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 		// Render slider if present.
 
-		if( m_sliderHook.Gizmo() )
+		if( m_sliderHook.Widget() )
 		{
 			WgRect clip( sliderGeo, *pRect );
 			if( clip.w > 0 || clip.h > 0 )
-				((WgGizmoSlider*)m_sliderHook.Gizmo())->_onRender( pDevice, sliderGeo, sliderGeo, clip, _layer );
+				((WgWidgetSlider*)m_sliderHook.Widget())->_onRender( pDevice, sliderGeo, sliderGeo, clip, _layer );
 		}
 	}
 }
@@ -1240,7 +1240,7 @@ void WgMenu::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgMenu::_onCloneContent( const WgGizmo * _pOrg )
+void WgMenu::_onCloneContent( const WgWidget * _pOrg )
 {
 	const WgMenu * pOrg = static_cast<const WgMenu*>(_pOrg);
 
@@ -1294,8 +1294,8 @@ bool WgMenu::_onAlphaTest( const WgCoord& ofs )
 
 void WgMenu::_onEnable()
 {
-	if( m_sliderHook.Gizmo() )
-		m_sliderHook.Gizmo()->SetEnabled(true);
+	if( m_sliderHook.Widget() )
+		m_sliderHook.Widget()->SetEnabled(true);
 
 	_requestRender();
 }
@@ -1304,8 +1304,8 @@ void WgMenu::_onEnable()
 
 void WgMenu::_onDisable()
 {
-	if( m_sliderHook.Gizmo() )
-		m_sliderHook.Gizmo()->SetEnabled(false);
+	if( m_sliderHook.Widget() )
+		m_sliderHook.Widget()->SetEnabled(false);
 
 	_requestRender();
 }
@@ -1315,7 +1315,7 @@ void WgMenu::_onDisable()
 
 WgHook * WgMenu::_firstHook() const
 {
-	if( m_sliderHook.Gizmo() )
+	if( m_sliderHook.Widget() )
 		return const_cast<SliderHook*>(&m_sliderHook);
 	else
 		return 0;
@@ -1325,7 +1325,7 @@ WgHook * WgMenu::_firstHook() const
 
 WgRect WgMenu::_sliderGeo( const WgRect& menuGeo ) const
 {
-	if( m_sliderHook.Gizmo() )
+	if( m_sliderHook.Widget() )
 	{
 		WgRect contentGeo = menuGeo - _getPadding();
 		WgRect sliderGeo( contentGeo.x + contentGeo.w - m_sliderHook.m_size.w, contentGeo.y, m_sliderHook.m_size.w, contentGeo.h );	//TODO: Slider is now hardcoded to right side.
@@ -1340,7 +1340,7 @@ WgRect WgMenu::_sliderGeo( const WgRect& menuGeo ) const
 
 WgHook * WgMenu::_firstHookWithGeo( WgRect& writeGeo ) const
 {
-	if( m_sliderHook.Gizmo() )
+	if( m_sliderHook.Widget() )
 	{
 		writeGeo = _sliderGeo( Size() );
 		return const_cast<SliderHook*>(&m_sliderHook);
@@ -1446,7 +1446,7 @@ void WgMenu::_adjustSize()
 
 	if( h > Size().h )
 	{
-		WgGizmoSlider * pSlider = m_sliderHook.Slider();
+		WgWidgetSlider * pSlider = m_sliderHook.Slider();
 		if( !pSlider )
 		{
 			pSlider = new WgVSlider();
@@ -1459,15 +1459,15 @@ void WgMenu::_adjustSize()
 		m_sliderHook.m_size.w = sliderSize.w;
 		m_sliderHook.m_size.h = Size().h - contentBorders.Height();
 
-		m_sliderHook._attachGizmo(pSlider);
+		m_sliderHook._attachWidget(pSlider);
 
 		_updateSlider( _getSliderPosition(), _getSliderSize() );
 	}
 	else
 	{
-		if( m_sliderHook.Gizmo() )
+		if( m_sliderHook.Widget() )
 		{
-			delete m_sliderHook._releaseGizmo();
+			delete m_sliderHook._releaseWidget();
 		}
 	}
 
@@ -1539,9 +1539,9 @@ float WgMenu::_setPosition( float fraction )
 }
 
 
-//____ _getGizmo() _____________________________________________________________
+//____ _getWidget() _____________________________________________________________
 
-WgGizmo* WgMenu::_getGizmo()
+WgWidget* WgMenu::_getWidget()
 {
 	return this;
 }

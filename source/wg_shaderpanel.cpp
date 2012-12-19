@@ -23,7 +23,7 @@
 #include <wg_shaderpanel.h>
 #include <wg_gfxdevice.h>
 
-static const char	c_gizmoType[] = {"ShaderPanel"};
+static const char	c_widgetType[] = {"ShaderPanel"};
 
 //____ Constructor ____________________________________________________________
 
@@ -48,7 +48,7 @@ const char * WgShaderPanel::Type( void ) const
 
 const char * WgShaderPanel::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetColor() ______________________________________________________________
@@ -97,8 +97,8 @@ WgBlendMode WgShaderPanel::_getBlendMode() const
 
 void WgShaderPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-	if( m_hook.IsVisible() && m_hook.Gizmo() )
-		m_hook.Gizmo()->_onMaskPatches( patches, geo, clip, m_blendMode );
+	if( m_hook.IsVisible() && m_hook.Widget() )
+		m_hook.Widget()->_onMaskPatches( patches, geo, clip, m_blendMode );
 }
 
 //____ _renderPatches() ________________________________________________________
@@ -126,8 +126,8 @@ void WgShaderPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 
 	// Render children recursively
 
-	if( m_hook.Gizmo() && m_hook.IsVisible() )
-		m_hook.Gizmo()->_renderPatches( pDevice, _canvas, _canvas, _pPatches, _layer );
+	if( m_hook.Widget() && m_hook.IsVisible() )
+		m_hook.Widget()->_renderPatches( pDevice, _canvas, _canvas, _pPatches, _layer );
 
 	// Reset old blend mode and tint color
 
@@ -140,7 +140,7 @@ void WgShaderPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgShaderPanel::_onCloneContent( const WgGizmo * _pOrg )
+void WgShaderPanel::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgShaderPanel * pOrg = (WgShaderPanel*) _pOrg;
 

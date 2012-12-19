@@ -37,7 +37,7 @@
 #include	<wg_texttool.h>
 #include	<wg_menupanel.h>
 
-static const char	c_gizmoType[] = {"Menubar"};
+static const char	c_widgetType[] = {"Menubar"};
 
 
 //____ WgMenubar() _________________________________________________________________
@@ -69,7 +69,7 @@ const char * WgMenubar::Type( void ) const
 
 const char * WgMenubar::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetBgSource() __________________________________________________________
@@ -436,7 +436,7 @@ bool WgMenubar::_onAlphaTest( const WgCoord& ofs )
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgMenubar::_onCloneContent( const WgGizmo * _pOrg )
+void WgMenubar::_onCloneContent( const WgWidget * _pOrg )
 {
 	const WgMenubar * pOrg = (const WgMenubar *) _pOrg;
 
@@ -515,7 +515,7 @@ bool WgMenubar::CloseMenu( Uint32 nb )
 
 
 	WgMenuPanel * pLayer = 0;
-	WgGizmo * pMenu = pItem->m_pMenu;
+	WgWidget * pMenu = pItem->m_pMenu;
 	if( Parent() )
 		pLayer = Parent()->_getMenuPanel();
 

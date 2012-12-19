@@ -25,7 +25,7 @@
 #include <wg_filler.h>
 #include <wg_gfxdevice.h>
 
-static const char	c_gizmoType[] = {"Filler"};
+static const char	c_widgetType[] = {"Filler"};
 
 //____ Constructor ____________________________________________________________
 
@@ -53,7 +53,7 @@ const char * WgFiller::Type( void ) const
 
 const char * WgFiller::GetClass()
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetDefaultSize() _______________________________________________________
@@ -93,7 +93,7 @@ WgSize WgFiller::DefaultSize() const
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgFiller::_onCloneContent( const WgGizmo * _pOrg )
+void WgFiller::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgFiller * pOrg = (WgFiller*) _pOrg;
 

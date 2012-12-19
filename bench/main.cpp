@@ -26,15 +26,15 @@ extern std::ostream cout;
 SDL_Surface *	initSDL( int w, int h );
 bool			eventLoop( WgEventHandler * pHandler );
 WgRootPanel * 		setupGUI( WgGfxDevice * pDevice );
-void			printGizmoSizes();
+void			printWidgetSizes();
 
-void cbInitDrag( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
-void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
+void cbInitDrag( const WgEvent::Event* _pEvent, WgWidget * pWidget );
+void cbDragWidget( const WgEvent::Event* _pEvent, WgWidget * pWidget );
 
-void cbOpenModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
-void cbCloseModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo );
+void cbOpenModal( const WgEvent::Event* _pEvent, WgWidget * pWidget );
+void cbCloseModal( const WgEvent::Event* _pEvent, WgWidget * pWidget );
 
-void addResizablePanel( WgFlexPanel * pParent, WgGizmo * pChild, WgEventHandler * pEventHandler );
+void addResizablePanel( WgFlexPanel * pParent, WgWidget * pChild, WgEventHandler * pEventHandler );
 void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook );
 
 
@@ -46,7 +46,7 @@ int main ( int argc, char** argv )
 {
 	// Dump some info
 	
-	printGizmoSizes();
+	printWidgetSizes();
 	
 	
 	// Init SDL
@@ -124,7 +124,7 @@ int main ( int argc, char** argv )
 
 	WgRootPanel * pRoot = setupGUI( pGfxDevice );
 
-	pRoot->FindGizmo( WgCoord(10,10), WG_SEARCH_ACTION_TARGET );
+	pRoot->FindWidget( WgCoord(10,10), WG_SEARCH_ACTION_TARGET );
 
    // program main loop
 
@@ -196,9 +196,9 @@ int main ( int argc, char** argv )
     return 0;
 }
 
-//____ printGizmoSizes() _______________________________________________________
+//____ printWidgetSizes() _______________________________________________________
 
-void printGizmoSizes()
+void printWidgetSizes()
 {
 	printf( "WgAnimPlayer: %d bytes\n", (int) sizeof(WgAnimPlayer) );
 	printf( "WgButton: %d bytes\n", (int) sizeof(WgButton) );
@@ -215,7 +215,7 @@ void printGizmoSizes()
 	printf( "WgRadioButton: %d bytes\n", (int) sizeof(WgRadioButton) );
 	printf( "WgRefreshButton: %d bytes\n", (int) sizeof(WgRefreshButton) );
 	printf( "WgShaderPanel: %d bytes\n", (int) sizeof(WgShaderPanel) );
-	printf( "WgGizmoSlider: %d bytes\n", (int) sizeof(WgGizmoSlider) );
+	printf( "WgWidgetSlider: %d bytes\n", (int) sizeof(WgWidgetSlider) );
 	printf( "WgStackPanel: %d bytes\n", (int) sizeof(WgStackPanel) );
 	printf( "WgTablePanel: %d bytes\n", (int) sizeof(WgTablePanel) );
 	printf( "WgTaborderPanel: %d bytes\n", (int) sizeof(WgTaborderPanel) );
@@ -237,7 +237,7 @@ void printGizmoSizes()
 
 WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 {
-	WgResDB * pDB = sdl_wglib::LoadStdGizmos( "../resources/blocks.png", WgSurfaceFactorySoft() );
+	WgResDB * pDB = sdl_wglib::LoadStdWidgets( "../resources/blocks.png", WgSurfaceFactorySoft() );
 	if( !pDB )
 		return 0;
 
@@ -296,7 +296,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 		WgStackPanel * pStack = new WgStackPanel();
 		pShader->SetChild( pStack );
 
-		WgImage * pBg = (WgImage*) pDB->CloneGizmo( "plate" );
+		WgImage * pBg = (WgImage*) pDB->CloneWidget( "plate" );
 		pStack->AddChild( pBg );
 
 		WgShaderPanel * pShader2 = new WgShaderPanel();
@@ -320,7 +320,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	{
 		WgStackPanel * pStack = new WgStackPanel();
 
-		WgImage * pBg = (WgImage*) pDB->CloneGizmo( "plate" );
+		WgImage * pBg = (WgImage*) pDB->CloneWidget( "plate" );
 		pStack->AddChild( pBg );
 
 		WgVPanel * pVBox = new WgVPanel();
@@ -330,7 +330,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 		WgValueEditor * pValue = new WgValueEditor();
 		pVBox->AddChild( pValue );
 
-		WgGizmoSlider * pSlider = (WgGizmoSlider*) pDB->CloneGizmo( "hslider" );
+		WgWidgetSlider * pSlider = (WgWidgetSlider*) pDB->CloneWidget( "hslider" );
 		pSlider->SetSliderTarget(pValue);
 		pVBox->AddChild( pSlider );
 
@@ -345,22 +345,22 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	// Test menus and MenuPanel.
 /*
 	{
-		WgMenu * pSubMenu1_1 = (WgMenu*) pDB->CloneGizmo( "menu" );
+		WgMenu * pSubMenu1_1 = (WgMenu*) pDB->CloneWidget( "menu" );
 		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("ENTRY 11"), WgString("Help text for entry 11"), WgBlocksetPtr(), 0 ));
 		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("ENTRY 12"), WgString("Help text for entry 12"), WgBlocksetPtr(), 0 ));
 		
-		WgMenu * pSubMenu1 = (WgMenu*) pDB->CloneGizmo( "menu" );
+		WgMenu * pSubMenu1 = (WgMenu*) pDB->CloneWidget( "menu" );
 		pSubMenu1->AddItem( new WgMenuEntry( WgString("ENTRY 7"), WgString("Help text for entry 7"), WgBlocksetPtr(), 0 ));
 		pSubMenu1->AddItem( new WgMenuEntry( WgString("ENTRY 8"), WgString("Help text for entry 8"), WgBlocksetPtr(), 0 ));
 		pSubMenu1->AddItem( new WgMenuSeparator() );
 		pSubMenu1->AddItem( new WgMenuSubMenu( WgString("SUBMENU 1_1"), WgString("Help text for submenu 1_1"), WgBlocksetPtr(), 0, pSubMenu1_1 ) );
 
-		WgMenu * pSubMenu2 = (WgMenu*) pDB->CloneGizmo( "menu" );
+		WgMenu * pSubMenu2 = (WgMenu*) pDB->CloneWidget( "menu" );
 		pSubMenu2->AddItem( new WgMenuEntry( WgString("ENTRY 9"), WgString("Help text for entry 9"), WgBlocksetPtr(), 0 ));
 		pSubMenu2->AddItem( new WgMenuSeparator() );
 		pSubMenu2->AddItem( new WgMenuEntry( WgString("ENTRY 10"), WgString("Help text for entry 10"), WgBlocksetPtr(), 0 ));
 
-		WgMenu * pMenu = (WgMenu*) pDB->CloneGizmo( "menu" );
+		WgMenu * pMenu = (WgMenu*) pDB->CloneWidget( "menu" );
 		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 1"), WgString("Help text for entry 1"), WgBlocksetPtr(), 0 ));
 		pMenu->AddItem( new WgMenuSeparator() );
 		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 2"), WgString("Help text for entry 2"), WgBlocksetPtr(), 0 ));
@@ -381,16 +381,16 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	// Test menubar and menus
 /*
 	{
-		WgMenubar * pMenubar = WgCast<WgMenubar>(pDB->CloneGizmo("menubar"));
+		WgMenubar * pMenubar = WgCast<WgMenubar>(pDB->CloneWidget("menubar"));
 
-		WgMenu * pFileMenu = (WgMenu*) pDB->CloneGizmo( "menu" );
+		WgMenu * pFileMenu = (WgMenu*) pDB->CloneWidget( "menu" );
 		pFileMenu->AddItem( new WgMenuEntry( WgString("Open..."), WgString("Open a file"), WgBlocksetPtr(), 0 ));
 		pFileMenu->AddItem( new WgMenuEntry( WgString("Save"), WgString("Save the file"), WgBlocksetPtr(), 0 ));
 		pFileMenu->AddItem( new WgMenuSeparator() );
 		pFileMenu->AddItem( new WgMenuEntry( WgString("Quit"), WgString("Quit this program"), WgBlocksetPtr(), 0 ));
 		pMenubar->AddMenu( "FILE", pFileMenu );
 	
-		WgMenu * pHelpMenu = (WgMenu*) pDB->CloneGizmo( "menu" );
+		WgMenu * pHelpMenu = (WgMenu*) pDB->CloneWidget( "menu" );
 		pHelpMenu->AddItem( new WgMenuEntry( WgString("Help"), WgString("Get some help"), WgBlocksetPtr(), 0 ));
 		pHelpMenu->AddItem( new WgMenuSeparator() );
 		pHelpMenu->AddItem( new WgMenuEntry( WgString("About"), WgString("About this program"), WgBlocksetPtr(), 0 ));
@@ -403,9 +403,9 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	// Test combobox
 
 	{
-		WgCombobox * pCombobox = WgCast<WgCombobox>(pDB->CloneGizmo("combobox"));
+		WgCombobox * pCombobox = WgCast<WgCombobox>(pDB->CloneWidget("combobox"));
 
-		WgMenu * pComboMenu = (WgMenu*) pDB->CloneGizmo( "menu" );
+		WgMenu * pComboMenu = (WgMenu*) pDB->CloneWidget( "menu" );
 		pComboMenu->AddItem( new WgMenuEntry( WgString("Alfa"), WgString("First"), WgBlocksetPtr(), 0 ) );
 		pComboMenu->AddItem( new WgMenuEntry( WgString("Beta"), WgString("Second"), WgBlocksetPtr(), 0 ) );
 		pCombobox->SetMenu( pComboMenu );
@@ -418,7 +418,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	// Test view
 /*
 	{
-		WgScrollPanel * pView = (WgScrollPanel*) pDB->CloneGizmo( "view" );
+		WgScrollPanel * pView = (WgScrollPanel*) pDB->CloneWidget( "view" );
 
 		WgImage * pImage = new WgImage();
 		pImage->SetSource( pBigBlock );
@@ -430,7 +430,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	// Modal panel
 /*
-	g_pModal = new WgGizmoModalLayer();
+	g_pModal = new WgWidgetModalLayer();
 	g_pModal->SetBase( pFlex );
 
 	pRoot->SetChild(g_pModal);
@@ -438,12 +438,12 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	// Modal button
 
-	WgButton * pModalButton = (WgButton*) pDB->CloneGizmo( "button" );
+	WgButton * pModalButton = (WgButton*) pDB->CloneWidget( "button" );
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonClick(pModalButton, 1), cbCloseModal, pModalButton );
 
 	//
 
-	WgButton * pButton = (WgButton*) pDB->CloneGizmo( "button" );
+	WgButton * pButton = (WgButton*) pDB->CloneWidget( "button" );
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pButton, 1), cbOpenModal, pModalButton );
 
 	pHook = pFlex->AddChild( pButton, WgRect(0,0,100,100), WG_NORTHWEST );
@@ -460,7 +460,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	WgImage * pFlag2= new WgImage();
 	pFlag2->SetSource( pFlagBlock );
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pFlag1, 1), cbDragGizmo, pFlag1 );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pFlag1, 1), cbDragWidget, pFlag1 );
 
 	pHook = pFlex->AddChild( pFlag2, WgCoord(100,100), WG_CENTER );
 
@@ -476,7 +476,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	WgImage * pFlag4= new WgImage();
 	pFlag4->SetSource( pFlagBlock );
 
-	WgButton * pButton2 = (WgButton*) pDB->CloneGizmo( "button" );
+	WgButton * pButton2 = (WgButton*) pDB->CloneWidget( "button" );
 	pButton2->SetText( "BUTTON TEXT" );
 
 	pVBox->AddChild(pButton2);
@@ -489,7 +489,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	//
 
-	WgGizmoTabOrder * pTabOrder = new WgGizmoTabOrder();
+	WgWidgetTabOrder * pTabOrder = new WgWidgetTabOrder();
 	pVBox->AddChild(pTabOrder);
 
 	WgVPanel * pTabBox = new WgVPanel();
@@ -513,11 +513,11 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	// Radiobuttons test
 
-	pVBox->AddChild( pDB->CloneGizmo( "radiobutton" ) );
-	pVBox->AddChild( pDB->CloneGizmo( "radiobutton" ) );
+	pVBox->AddChild( pDB->CloneWidget( "radiobutton" ) );
+	pVBox->AddChild( pDB->CloneWidget( "radiobutton" ) );
 
-	pFlex->AddChild( pDB->CloneGizmo( "radiobutton" ) );
-	pFlex->AddChild( pDB->CloneGizmo( "radiobutton" ) );
+	pFlex->AddChild( pDB->CloneWidget( "radiobutton" ) );
+	pFlex->AddChild( pDB->CloneWidget( "radiobutton" ) );
 
 	pVBox->SetRadioGroup(true);
 */
@@ -591,20 +591,20 @@ WgCoord dragStartPos;
 
 //____ cbInitDrag() ___________________________________________________________
 
-void cbInitDrag( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
+void cbInitDrag( const WgEvent::Event* _pEvent, WgWidget * pWidget )
 {
-	WgFlexHook * pHook = static_cast<WgFlexHook*>(pGizmo->Hook());
+	WgFlexHook * pHook = static_cast<WgFlexHook*>(pWidget->Hook());
 
 
 	dragStartPos = pHook->FloatOfs();
 	printf( "DRAG START!\n" );
 }
 
-//____ cbDragGizmo() __________________________________________________________
+//____ cbDragWidget() __________________________________________________________
 
-void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
+void cbDragWidget( const WgEvent::Event* _pEvent, WgWidget * pWidget )
 {
-	if( _pEvent->Type() != WG_EVENT_MOUSEBUTTON_DRAG || !pGizmo->Parent() )
+	if( _pEvent->Type() != WG_EVENT_MOUSEBUTTON_DRAG || !pWidget->Parent() )
 		return;
 
 	const WgEvent::MouseButtonDrag* pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
@@ -616,25 +616,25 @@ void cbDragGizmo( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
 //	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
 	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
 
-	WgFlexHook * pHook = static_cast<WgFlexHook*>(pGizmo->Hook());
+	WgFlexHook * pHook = static_cast<WgFlexHook*>(pWidget->Hook());
 	pHook->SetOfs(dragStartPos+dragDistance);
 }
 
 //____ cbOpenModal() __________________________________________________________
 
-void cbOpenModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
+void cbOpenModal( const WgEvent::Event* _pEvent, WgWidget * pWidget )
 {
-	g_pModal->AddModal( pGizmo, WgCoord(), WG_SOUTHEAST );
+	g_pModal->AddModal( pWidget, WgCoord(), WG_SOUTHEAST );
 }
 
 //____ cbCloseModal() __________________________________________________________
 
-void cbCloseModal( const WgEvent::Event* _pEvent, WgGizmo * pGizmo )
+void cbCloseModal( const WgEvent::Event* _pEvent, WgWidget * pWidget )
 {
-	g_pModal->ReleaseChild(pGizmo);
+	g_pModal->ReleaseChild(pWidget);
 }
 
-//____ cbResizeGizmo() _________________________________________________________
+//____ cbResizeWidget() _________________________________________________________
 
 void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook )
 {
@@ -650,14 +650,14 @@ void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook )
 
 //____ addResizablePanel() _________________________________________________
 
-void addResizablePanel( WgFlexPanel * pParent, WgGizmo * pChild, WgEventHandler * pEventHandler )
+void addResizablePanel( WgFlexPanel * pParent, WgWidget * pChild, WgEventHandler * pEventHandler )
 {
 	WgHook * pHook = pParent->AddChild( pChild );
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 2), cbResize, pHook );
 
 
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pChild, 3), cbInitDrag, pChild );
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 3), cbDragGizmo, pChild );
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 3), cbDragWidget, pChild );
 }
 
 

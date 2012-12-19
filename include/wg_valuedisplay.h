@@ -23,8 +23,8 @@
 #ifndef	WG_VALUEDISPLAY_DOT_H
 #define	WG_VALUEDISPLAY_DOT_H
 
-#ifndef	WG_GIZMO_DOT_H
-#	include <wg_gizmo.h>
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef	WG_TEXT_DOT_H
@@ -41,14 +41,14 @@
 
 class	WgFont;
 
-class WgValueDisplay : public WgGizmo, public Wg_Interface_ValueHolder
+class WgValueDisplay : public WgWidget, public Wg_Interface_ValueHolder
 {
 public:
 	WgValueDisplay();
 	virtual ~WgValueDisplay();
 	virtual const char * Type() const;
 	static const char * GetClass();
-	virtual WgGizmo * NewOfMyType() const { return new WgValueDisplay(); };
+	virtual WgWidget * NewOfMyType() const { return new WgValueDisplay(); };
 
 
 	//____ Methods __________________________________________
@@ -65,12 +65,12 @@ public:
 
 protected:
 	void	_onRefresh();
-	void	_onCloneContent( const WgGizmo * _pOrg );
+	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	void	_onEnable();
 	void	_onDisable();
 
-	WgGizmo* _getGizmo() { return this; }	// Needed for WgSilderTarget.
+	WgWidget* _getWidget() { return this; }	// Needed for WgSilderTarget.
 
 private:
 	void	_valueModified();				///< Called when value has been modified.

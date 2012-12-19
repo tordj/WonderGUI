@@ -23,7 +23,7 @@
 #include <cstdio>
 
 #include <wg_eventlogger.h>
-#include <wg_gizmo.h>
+#include <wg_widget.h>
 
 using std::string;
 
@@ -184,7 +184,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 
 	string	timestamp;
 	string	id;
-	string	gizmo;
+	string	widget;
 	string	modkeys;
 	string	pointerPos;
 
@@ -477,11 +477,11 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 
 	};
 
-	gizmo = _formatGizmo( _pEvent );
+	widget = _formatWidget( _pEvent );
 	modkeys = _formatModkeys( _pEvent );
 	pointerPos = _formatPointerPos( _pEvent );
 
-	m_out << timestamp << " - " << id << " - " << gizmo << pointerPos << modkeys << params;
+	m_out << timestamp << " - " << id << " - " << widget << pointerPos << modkeys << params;
 	m_out << std::endl;
 }
 
@@ -500,24 +500,24 @@ string WgEventLogger::_formatTimestamp( int64_t ms )
 	return string( temp );
 }
 
-//____ _formatGizmo() __________________________________________________________
+//____ _formatWidget() __________________________________________________________
 
-string WgEventLogger::_formatGizmo( const WgEvent::Event * _pEvent )
+string WgEventLogger::_formatWidget( const WgEvent::Event * _pEvent )
 {
 	std::string	out;
 
-	if( _pEvent->IsForGizmo() || _pEvent->Gizmo() )
+	if( _pEvent->IsForWidget() || _pEvent->Widget() )
 	{
 		char	temp[64];
-		WgGizmo * pGizmo = _pEvent->Gizmo();
+		WgWidget * pWidget = _pEvent->Widget();
 
 		static const char def_type[] = "deleted";
 		const char * pType = def_type;
 
-		if( pGizmo )
-			pType = pGizmo->Type();
+		if( pWidget )
+			pType = pWidget->Type();
 
-		sprintf( temp, " gizmo=%p (%s)", pGizmo, pType );
+		sprintf( temp, " widget=%p (%s)", pWidget, pType );
 		out = temp;
 	}
 

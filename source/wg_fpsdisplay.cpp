@@ -28,7 +28,7 @@
 #include	<wg_pen.h>
 #include	<wg_base.h>
 
-static const char	c_gizmoType[] = {"FpsDisplay"};
+static const char	c_widgetType[] = {"FpsDisplay"};
 
 
 #define		TICK_BUFFER			64
@@ -68,7 +68,7 @@ const char * WgFpsDisplay::Type( void ) const
 
 const char * WgFpsDisplay::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 
@@ -201,7 +201,7 @@ void WgFpsDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 //____ DoMyOwnCloning() _______________________________________________________
 
-void WgFpsDisplay::_onCloneContent( const WgGizmo * _pOrg )
+void WgFpsDisplay::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgFpsDisplay * pOrg		= (WgFpsDisplay *) _pOrg;
 

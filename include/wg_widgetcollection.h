@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_GIZMO_COLLECTION_DOT_H
-#define WG_GIZMO_COLLECTION_DOT_H
+#ifndef WG_WIDGET_COLLECTION_DOT_H
+#define WG_WIDGET_COLLECTION_DOT_H
 
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -36,20 +36,20 @@
 #endif
 
 
-class WgGizmo;
+class WgWidget;
 class WgEmitter;
 
 
-class WgGizmoCollection
+class WgWidgetCollection
 {
-	friend class WgGizmo;
+	friend class WgWidget;
 
 public:
-	WgGizmoCollection() {};
-	virtual ~WgGizmoCollection() {};
+	WgWidgetCollection() {};
+	virtual ~WgWidgetCollection() {};
 
-	inline WgGizmo *	FirstGizmo() const { WgHook * p = FirstHook(); if( p ) return p->Gizmo(); else return 0; }
-	inline WgGizmo *	LastGizmo() const { WgHook * p = LastHook(); if( p ) return p->Gizmo(); else return 0; }
+	inline WgWidget *	FirstWidget() const { WgHook * p = FirstHook(); if( p ) return p->Widget(); else return 0; }
+	inline WgWidget *	LastWidget() const { WgHook * p = LastHook(); if( p ) return p->Widget(); else return 0; }
 
 	inline WgHook *	FirstHook() const { return _firstHook(); }
 	inline WgHook *	LastHook() const { return _lastHook(); }
@@ -62,5 +62,5 @@ protected:
 
 
 
-#endif //WG_GIZMO_COLLECTION_DOT_H
+#endif //WG_WIDGET_COLLECTION_DOT_H
 

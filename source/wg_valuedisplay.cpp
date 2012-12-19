@@ -26,7 +26,7 @@
 #include	<wg_gfxdevice.h>
 
 
-static const char c_gizmoType[] = {"ValueDisplay"};
+static const char c_widgetType[] = {"ValueDisplay"};
 
 
 //____ WgValueDisplay() _________________________________________________________________
@@ -54,7 +54,7 @@ const char * WgValueDisplay::Type( void ) const
 
 const char * WgValueDisplay::GetClass( void )
 {
-	return c_gizmoType;
+	return c_widgetType;
 }
 
 //____ SetFonts() _____________________________________________________________
@@ -135,7 +135,7 @@ void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgValueDisplay::_onCloneContent( const WgGizmo * _pOrg )
+void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgValueDisplay * pOrg = (WgValueDisplay *) _pOrg;
 
