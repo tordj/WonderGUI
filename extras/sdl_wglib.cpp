@@ -170,8 +170,8 @@ namespace sdl_wglib
 		pVSliderBtnFwdBlocks->SetPadding(WgBorders(4));
 
 		WgBlocksetPtr pSliderBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,SLIDER_OFS,38,8), 4, 2, WG_OPAQUE);
-		pVSliderBtnFwdBlocks->SetFrame(WgBorders(2));
-		pVSliderBtnFwdBlocks->SetPadding(WgBorders(3));
+		pSliderBlocks->SetFrame(WgBorders(2));
+		pSliderBlocks->SetPadding(WgBorders(3));
 
 		WgBlocksetPtr pSliderBackBlocks	= WgBlockset::CreateFromRect(pSurface, WgRect(1,SLIDER_BACK_OFS,5,5), WG_OPAQUE );
 		pSliderBackBlocks->SetFrame(WgBorders(2));

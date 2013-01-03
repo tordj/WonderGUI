@@ -34,9 +34,12 @@
 class WgWidget;
 class WgRootPanel;
 class WgHook;
+class WgContainer;
 class WgPanel;
-class WgModalPanel;
-class WgMenuPanel;
+class WgCapsule;
+class WgLayer;
+class WgModalLayer;
+class WgMenuLayer;
 
 class WgWidgetHolder : public WgWidgetCollection
 {
@@ -44,6 +47,7 @@ class WgWidgetHolder : public WgWidgetCollection
 	friend class WgMenu;
 	friend class WgMenubar;
 	friend class WgHook;
+	friend class WgContainer;
 	public:
 
 		virtual WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode ) = 0;
@@ -54,16 +58,25 @@ class WgWidgetHolder : public WgWidgetCollection
 		virtual bool		DeleteAllChildren() = 0;
 		virtual bool		ReleaseAllChildren() = 0;
 
-		virtual WgWidget *			CastToWidget() = 0;
-		virtual const WgWidget *		CastToWidget() const = 0;
-		virtual WgPanel *	CastToPanel() = 0;
-		virtual const WgPanel *	CastToPanel() const = 0;
-		virtual WgRootPanel *			CastToRoot() = 0;
-		virtual const WgRootPanel *		CastToRoot() const = 0;
+		virtual WgWidget *					CastToWidget();
+		virtual const WgWidget *			CastToWidget() const;
+		virtual WgContainer *			CastToContainer();
+		virtual const WgContainer *	CastToContainer() const;
+		virtual WgPanel *					CastToPanel();
+		virtual const WgPanel *				CastToPanel() const;
+		virtual WgCapsule *					CastToCapsule();
+		virtual const WgCapsule *			CastToCapsule() const;
+		virtual WgLayer *					CastToLayer();
+		virtual const WgLayer *				CastToLayer() const;
+		virtual WgRootPanel *				CastToRoot();
+		virtual const WgRootPanel *			CastToRoot() const;
 
-		virtual bool		IsWidget() const = 0;
-		virtual bool		IsPanel() const = 0;
-		virtual bool		IsRoot() const = 0;
+		virtual bool		IsRoot() const;
+		virtual bool		IsWidget() const;
+		virtual bool		IsContainer() const;
+		virtual bool		IsPanel() const;
+		virtual bool		IsCapsule() const;
+		virtual bool		IsLayer() const;
 
 		virtual bool		IsAncestorTo( const WgWidget * pWidget ) const;
 
@@ -72,8 +85,8 @@ class WgWidgetHolder : public WgWidgetCollection
 		virtual bool 		_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting ) = 0;
 		virtual bool 		_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing ) = 0;
 
-		virtual WgModalPanel *		_getModalPanel() const = 0;
-		virtual WgMenuPanel*	_getMenuPanel() const = 0;
+		virtual WgModalLayer *	_getModalLayer() const = 0;
+		virtual WgMenuLayer*	_getMenuLayer() const = 0;
 
 };
 

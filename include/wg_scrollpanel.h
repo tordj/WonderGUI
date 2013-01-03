@@ -224,7 +224,6 @@ public:
 	int		HeightForWidth( int width ) const;	//
 	int		WidthForHeight( int height ) const;
 
-	bool	IsView() const { return true; }
 */
 
 protected:

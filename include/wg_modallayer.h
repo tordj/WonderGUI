@@ -20,19 +20,19 @@
 
 =========================================================================*/
 
-#ifndef WG_MODALPANEL_DOT_H
-#define WG_MODALPANEL_DOT_H
+#ifndef WG_MODALLAYER_DOT_H
+#define WG_MODALLAYER_DOT_H
 
-#ifndef WG_PANEL_DOT_H
-#	include <wg_panel.h>
+#ifndef WG_LAYER_DOT_H
+#	include <wg_layer.h>
 #endif
 
 
-class WgModalPanel;
+class WgModalLayer;
 
-class WgModalHook : public WgHook, protected WgLink
+class WgModalHook : public WgLayerHook, protected WgLink
 {
-	friend class WgModalPanel;
+	friend class WgModalLayer;
 	friend class WgChain<WgModalHook>;
 
 public:
@@ -59,39 +59,27 @@ public:
 
 	// Standard Hook methods
 
-	WgCoord			Pos() const { return m_realGeo.Pos(); }
-	WgSize			Size() const { 	return m_realGeo.Size(); }
-	WgRect			Geo() const { return m_realGeo; }
-
-	WgCoord			ScreenPos() const;
-	WgRect			ScreenGeo() const;
-
 	WgModalHook *	Prev() const { return _prev(); }
 	WgModalHook *	Next() const { return _next(); }
 
-	WgPanel* Parent() const;
+	WgModalLayer*	Parent() const;
 
 protected:
 	// TODO: Constructor should in the future call SetHook() on Widget, once we are totally rid of widgets...
 
 	PROTECTED_LINK_METHODS( WgModalHook );
 
-	WgModalHook( WgModalPanel * pParent );
+	WgModalHook( WgModalLayer * pParent );
 
 	bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
-
-	void		_requestRender();
-	void		_requestRender( const WgRect& rect );
 	void		_requestResize();
 
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
-	WgPanel * _parent() const;
+	WgWidgetHolder * _parent() const;
 
 
-	WgModalPanel * m_pParent;
-
-	WgRect			m_realGeo;			// Widgets geo relative parent
+	WgModalLayer *	m_pParent;
 
 	WgOrientation	m_origo;
 	WgRect			m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets DefaultSize() dynamically.
@@ -102,25 +90,17 @@ protected:
 
 
 
-class WgModalPanel : public WgPanel
+class WgModalLayer : public WgLayer
 {
-	friend class BaseHook;
 	friend class WgModalHook;
 
 public:
-	WgModalPanel();
-	~WgModalPanel();
+	WgModalLayer();
+	~WgModalLayer();
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgModalPanel(); };
-
-
-	WgHook *	SetBase( WgWidget * pWidget );
-	WgWidget *		Base();
-	bool			DeleteBase();
-	WgWidget *		ReleaseBase();
-
+	virtual WgWidget * NewOfMyType() const { return new WgModalLayer(); };
 
 	WgModalHook *	AddModal( WgWidget * pWidget, const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
 	WgModalHook *	AddModal( WgWidget * pWidget, const WgCoord& pos, WgOrientation origo = WG_NORTHWEST ) { return AddModal( pWidget, WgRect(pos,0,0), origo); }
@@ -151,46 +131,13 @@ public:
 
 private:
 
-	class BaseHook : public WgHook
-	{
-		friend class WgModalPanel;
-
-	public:
-
-		const char *Type( void ) const;
-		static const char * ClassType();
-
-		// Standard Hook methods
-
-		WgCoord		Pos() const { return m_pParent->Pos(); }
-		WgSize		Size() const { 	return m_pParent->Size(); }
-		WgRect		Geo() const { return m_pParent->Geo(); }
-
-		WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
-		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
-
-		WgModalPanel* Parent() const { return m_pParent; }
-
-	protected:
-		BaseHook( WgModalPanel * pParent ) : m_pParent(pParent) {}
-
-		void		_requestRender();
-		void		_requestRender( const WgRect& rect );
-		void		_requestResize();
-
-		WgHook *	_prevHook() const { return 0; }
-		WgHook *	_nextHook() const { return m_pParent->FirstModal(); }
-		WgWidgetHolder * _parent() const { return m_pParent; }
-
-		WgModalPanel * 	m_pParent;
-		WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any modal was shown.
-	};
-
-
-	WgModalPanel *		_getModalPanel() const { return const_cast<WgModalPanel*>(this); }
-
+	WgModalLayer *	_getModalLayer() const { return const_cast<WgModalLayer*>(this); }
 
 	void			_updateKeyboardFocus();
+
+	// Overloaded from WgLayer
+
+	WgLayerHook *	_firstLayerHook() const { return m_modalHooks.First(); }
 
 	//
 
@@ -198,10 +145,8 @@ private:
 	void			_onNewSize( const WgSize& size );
 	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 
-	void			_onRequestRender( const WgRect& rect, const WgModalHook * pHook );	// rect is in our coordinate system.
-
-	WgHook*	_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
-	WgHook*	_lastHook() const;		//
+	WgHook*		_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
+	WgHook*		_lastHook() const;		//
 
 	WgHook *	_firstHookWithGeo( WgRect& geo ) const;
 	WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
@@ -209,11 +154,10 @@ private:
 	WgHook *	_lastHookWithGeo( WgRect& geo ) const;
 	WgHook *	_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
-	BaseHook				m_baseHook;
 	WgChain<WgModalHook>	m_modalHooks;		// First modal widget lies at the bottom.
 
-	WgSize					m_size;
+	WgWidgetWeakPtr			m_pBaseKeyFocus;
 
 };
 
-#endif //WG_MODALPANEL_DOT_H
+#endif //WG_MODALLAYER_DOT_H

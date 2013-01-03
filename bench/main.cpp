@@ -38,7 +38,7 @@ void addResizablePanel( WgFlexPanel * pParent, WgWidget * pChild, WgEventHandler
 void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook );
 
 
-WgModalPanel * g_pModal = 0;
+WgModalLayer * g_pModal = 0;
 
 //____ main() _________________________________________________________________
 
@@ -209,16 +209,16 @@ void printWidgetSizes()
 	printf( "WgFlexPanel: %d bytes\n", (int) sizeof(WgFlexPanel) );
 	printf( "WgFpsDisplay: %d bytes\n", (int) sizeof(WgFpsDisplay) );
 	printf( "WgMenu: %d bytes\n", (int) sizeof(WgMenu) );
-	printf( "WgMenuPanel: %d bytes\n", (int) sizeof(WgMenuPanel) );
-	printf( "WgModalPanel: %d bytes\n", (int) sizeof(WgModalPanel) );
+	printf( "WgMenuLayer: %d bytes\n", (int) sizeof(WgMenuLayer) );
+	printf( "WgModalLayer: %d bytes\n", (int) sizeof(WgModalLayer) );
 	printf( "WgImage: %d bytes\n", (int) sizeof(WgImage) );
 	printf( "WgRadioButton: %d bytes\n", (int) sizeof(WgRadioButton) );
 	printf( "WgRefreshButton: %d bytes\n", (int) sizeof(WgRefreshButton) );
-	printf( "WgShaderPanel: %d bytes\n", (int) sizeof(WgShaderPanel) );
+	printf( "WgShaderCapsule: %d bytes\n", (int) sizeof(WgShaderCapsule) );
 	printf( "WgWidgetSlider: %d bytes\n", (int) sizeof(WgWidgetSlider) );
 	printf( "WgStackPanel: %d bytes\n", (int) sizeof(WgStackPanel) );
 	printf( "WgTablePanel: %d bytes\n", (int) sizeof(WgTablePanel) );
-	printf( "WgTaborderPanel: %d bytes\n", (int) sizeof(WgTaborderPanel) );
+	printf( "WgTaborderCapsule: %d bytes\n", (int) sizeof(WgTaborderCapsule) );
 	printf( "WgTextDisplay: %d bytes\n", (int) sizeof(WgTextDisplay) );
 	printf( "WgValueDisplay: %d bytes\n", (int) sizeof(WgValueDisplay) );
 	printf( "WgVPanel: %d bytes\n", (int) sizeof(WgVPanel) );
@@ -270,7 +270,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	// MenuPanel
 
-	WgMenuPanel * pMenuPanel = new WgMenuPanel();
+	WgMenuLayer * pMenuPanel = new WgMenuLayer();
 	pRoot->SetChild( pMenuPanel );
 
 	// Main Flex
@@ -289,7 +289,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	//
 /*
 	{
-		WgShaderPanel * pShader = new WgShaderPanel();
+		WgShaderCapsule * pShader = new WgShaderCapsule();
 		pShader->SetBlendMode(WG_BLENDMODE_MULTIPLY);
 		pShader->SetColor( WgColor(0xFF0000FF) );
 
@@ -299,7 +299,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 		WgImage * pBg = (WgImage*) pDB->CloneWidget( "plate" );
 		pStack->AddChild( pBg );
 
-		WgShaderPanel * pShader2 = new WgShaderPanel();
+		WgShaderCapsule * pShader2 = new WgShaderCapsule();
 		pShader2->SetBlendMode(WG_BLENDMODE_ADD);
 		pShader2->SetColor( WgColor(0xFFFFFFFF) );
 		WgStackHook * pHook = pStack->AddChild( pShader2 );
@@ -379,7 +379,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	}
 */
 	// Test menubar and menus
-/*
+
 	{
 		WgMenubar * pMenubar = WgCast<WgMenubar>(pDB->CloneWidget("menubar"));
 
@@ -398,10 +398,10 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 		addResizablePanel( pFlex, pMenubar, pEventHandler );
 	}
-*/
+
 
 	// Test combobox
-
+/*
 	{
 		WgCombobox * pCombobox = WgCast<WgCombobox>(pDB->CloneWidget("combobox"));
 
@@ -413,7 +413,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 		addResizablePanel( pFlex, pCombobox, pEventHandler );
 
 	}
-
+*/
 
 	// Test view
 /*

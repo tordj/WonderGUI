@@ -39,6 +39,7 @@ class WgEventHandler;
 class WgHook
 {
 	friend class WgWidget;
+	friend class WgLayer;
 	friend class WgPanel;
 	friend class WgSortablePanel;
 

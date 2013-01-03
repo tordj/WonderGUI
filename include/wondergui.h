@@ -224,12 +224,12 @@
 #	include <wg_menubar.h>
 #endif
 
-#ifndef WG_MENUPANEL_DOT_H
-#	include <wg_menupanel.h>
+#ifndef WG_MENULAYER_DOT_H
+#	include <wg_menulayer.h>
 #endif
 
 #ifndef WG_MODAL_LAYER_DOT_H
-#	include <wg_modalpanel.h>
+#	include <wg_modallayer.h>
 #endif
 
 #ifndef WG_IMAGE_DOT_H
@@ -244,8 +244,8 @@
 #	include <wg_refreshbutton.h>
 #endif
 
-#ifndef WG_SHADERPANEL_DOT_H
-#	include <wg_shaderpanel.h>
+#ifndef WG_SHADERCAPSULE_DOT_H
+#	include <wg_shadercapsule.h>
 #endif
 
 #ifndef WG_WIDGET_SLIDER_DOT_H
@@ -264,8 +264,8 @@
 #	include <wg_tablist.h>
 #endif
 
-#ifndef WG_TABORDERPANEL_DOT_H
-#	include <wg_taborderpanel.h>
+#ifndef WG_TABORDERCAPSULE_DOT_H
+#	include <wg_tabordercapsule.h>
 #endif
 
 #ifndef WG_TEXTDISPLAY_DOT_H

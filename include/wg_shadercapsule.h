@@ -20,23 +20,23 @@
 
 =========================================================================*/
 
-#ifndef WG_SHADERPANEL_DOT_H
-#define WG_SHADERPANEL_DOT_H
+#ifndef WG_SHADERCAPSULE_DOT_H
+#define WG_SHADERCAPSULE_DOT_H
 
-#ifndef WG_MONOPANEL_DOT_H
-#	include <wg_monopanel.h>
+#ifndef WG_CAPSULE_DOT_H
+#	include <wg_capsule.h>
 #endif
 
 
-class WgShaderPanel : public WgMonoPanel
+class WgShaderCapsule : public WgCapsule
 {
 public:
-	WgShaderPanel();
-	~WgShaderPanel();
+	WgShaderCapsule();
+	~WgShaderCapsule();
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgShaderPanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgShaderCapsule(); };
 
 	void		SetColor( const WgColor& color);
 	void		SetTintMode( WgTintMode mode );
@@ -49,7 +49,6 @@ public:
 
 protected:
 	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
-	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	void		_onCloneContent( const WgWidget * _pOrg );
 	WgBlendMode _getBlendMode() const;
 
@@ -60,4 +59,4 @@ private:
 
 };
 
-#endif //WG_SHADERPANEL_DOT_H
+#endif //WG_SHADERCAPSULE_DOT_H

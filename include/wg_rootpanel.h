@@ -22,8 +22,8 @@
 #ifndef WG_ROOTPANEL_DOT_H
 #define WG_ROOTPANEL_DOT_H
 
-#ifndef WG_PANEL_DOT_H
-#	include <wg_panel.h>
+#ifndef WG_CONTAINER_DOT_H
+#	include <wg_container.h>
 #endif
 
 #ifndef WG_GEO_DOT_H
@@ -65,16 +65,10 @@ public:
 	bool					DeleteAllChildren();
 	bool					ReleaseAllChildren();
 
-	bool					IsWidget() const { return false; }
-	bool					IsPanel() const { return false; }
 	bool					IsRoot() const { return true; }
 
-	WgWidget *				CastToWidget() { return 0; }
-	const WgWidget *			CastToWidget() const { return 0; }
-	WgPanel *		CastToPanel() { return 0; }
-	const WgPanel *CastToPanel() const { return 0; }
-	WgRootPanel *				CastToRoot() { return this; }
-	const WgRootPanel *			CastToRoot() const { return this; }
+	WgRootPanel *			CastToRoot() { return this; }
+	const WgRootPanel *		CastToRoot() const { return this; }
 
 
 	inline int				NbDirtyRects() const { return m_dirtyPatches.Size(); }
@@ -135,8 +129,8 @@ protected:
 	bool 				_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );
 	bool 				_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );
 
-	WgModalPanel *		_getModalPanel() const { return 0; }
-	WgMenuPanel*	_getMenuPanel() const { return 0; }
+	WgModalLayer *		_getModalLayer() const { return 0; }
+	WgMenuLayer*		_getMenuLayer() const { return 0; }
 
 	WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
 	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.

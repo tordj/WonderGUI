@@ -22,23 +22,23 @@
 
 #include <vector>
 
-#ifndef WG_TABORDERPANEL_DOT_H
-#define WG_TABORDERPANEL_DOT_H
+#ifndef WG_TABORDERCAPSULE_DOT_H
+#define WG_TABORDERCAPSULE_DOT_H
 
-#ifndef WG_MONOPANEL_DOT_H
-#	include <wg_monopanel.h>
+#ifndef WG_CAPSULE_DOT_H
+#	include <wg_capsule.h>
 #endif
 
 
-class WgTaborderPanel : public WgMonoPanel
+class WgTaborderCapsule : public WgCapsule
 {
 public:
-	WgTaborderPanel();
-	~WgTaborderPanel();
+	WgTaborderCapsule();
+	~WgTaborderCapsule();
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgTaborderPanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgTaborderCapsule(); };
 	
 
 	bool	AddToTaborder( WgWidget * pWidget );
@@ -69,13 +69,13 @@ private:
 	};
 
 	bool 								_isValidForTaborderInsertion( WgWidget * pWidget ) const;
-	WgTaborderPanel::TaborderEntry * 	_findInTaborder( WgWidget * pWidget ) const;
-	WgTaborderPanel::TaborderEntry * 	_validateEntryForward( WgTaborderPanel::TaborderEntry * pEntry ) const;
-	WgTaborderPanel::TaborderEntry * 	_validateEntryBackward( WgTaborderPanel::TaborderEntry * pEntry ) const;
+	WgTaborderCapsule::TaborderEntry * 	_findInTaborder( WgWidget * pWidget ) const;
+	WgTaborderCapsule::TaborderEntry * 	_validateEntryForward( WgTaborderCapsule::TaborderEntry * pEntry ) const;
+	WgTaborderCapsule::TaborderEntry * 	_validateEntryBackward( WgTaborderCapsule::TaborderEntry * pEntry ) const;
 
 
 
 	WgChain<TaborderEntry> 	m_tabOrder;
 };
 
-#endif //WG_TABORDERPANEL_DOT_H
+#endif //WG_TABORDERCAPSULE_DOT_H

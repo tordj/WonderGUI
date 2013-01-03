@@ -20,40 +20,40 @@
 
 =========================================================================*/
 
-#include <wg_taborderpanel.h>
+#include <wg_tabordercapsule.h>
 #include <wg_eventhandler.h>
 
-static const char	c_widgetType[] = {"Taborder"};
+static const char	c_widgetType[] = {"TaborderCapsule"};
 
 //____ Constructor ____________________________________________________________
 
-WgTaborderPanel::WgTaborderPanel()
+WgTaborderCapsule::WgTaborderCapsule()
 {
 }
 
 //____ Destructor _____________________________________________________________
 
-WgTaborderPanel::~WgTaborderPanel()
+WgTaborderCapsule::~WgTaborderCapsule()
 {
 }
 
 //____ Type() _________________________________________________________________
 
-const char * WgTaborderPanel::Type( void ) const
+const char * WgTaborderCapsule::Type( void ) const
 {
 	return GetClass();
 }
 
 //____ GetClass() ____________________________________________________________
 
-const char * WgTaborderPanel::GetClass()
+const char * WgTaborderCapsule::GetClass()
 {
 	return c_widgetType;
 }
 
 //____ AddToTaborder() ________________________________________________________
 
-bool WgTaborderPanel::AddToTaborder( WgWidget * pWidget )
+bool WgTaborderCapsule::AddToTaborder( WgWidget * pWidget )
 {
 	if( !_isValidForTaborderInsertion(pWidget) )
 		return false;
@@ -64,7 +64,7 @@ bool WgTaborderPanel::AddToTaborder( WgWidget * pWidget )
 
 //____ InsertInTaborder() _____________________________________________________
 
-bool WgTaborderPanel::InsertInTaborder( WgWidget * pWidget, WgWidget * _pBefore )
+bool WgTaborderCapsule::InsertInTaborder( WgWidget * pWidget, WgWidget * _pBefore )
 {
 	if( !_pBefore || !_isValidForTaborderInsertion(pWidget) )
 		return false;
@@ -81,7 +81,7 @@ bool WgTaborderPanel::InsertInTaborder( WgWidget * pWidget, WgWidget * _pBefore 
 
 //____ RemoveFromTaborder() ___________________________________________________
 
-bool WgTaborderPanel::RemoveFromTaborder( WgWidget * pWidget )
+bool WgTaborderCapsule::RemoveFromTaborder( WgWidget * pWidget )
 {
 	TaborderEntry * pEntry = _findInTaborder(pWidget);
 	if( !pEntry )
@@ -93,14 +93,14 @@ bool WgTaborderPanel::RemoveFromTaborder( WgWidget * pWidget )
 
 //____ ClearTaborder() ________________________________________________________
 
-void WgTaborderPanel::ClearTaborder()
+void WgTaborderCapsule::ClearTaborder()
 {
 	m_tabOrder.Clear();
 }
 
 //____ FirstInTaborder() ______________________________________________________
 
-WgWidget * WgTaborderPanel::FirstInTaborder() const
+WgWidget * WgTaborderCapsule::FirstInTaborder() const
 {
 	TaborderEntry * pEntry = _validateEntryForward( m_tabOrder.First() );
 
@@ -112,7 +112,7 @@ WgWidget * WgTaborderPanel::FirstInTaborder() const
 
 //____ NextInTaborder() _______________________________________________________
 
-WgWidget * WgTaborderPanel::NextInTaborder( WgWidget * pCurrWidget ) const
+WgWidget * WgTaborderCapsule::NextInTaborder( WgWidget * pCurrWidget ) const
 {
 	TaborderEntry * pEntry = _findInTaborder(pCurrWidget);
 	if( !pEntry )
@@ -128,7 +128,7 @@ WgWidget * WgTaborderPanel::NextInTaborder( WgWidget * pCurrWidget ) const
 
 //____ PrevInTaborder() _______________________________________________________
 
-WgWidget * WgTaborderPanel::PrevInTaborder( WgWidget * pCurrWidget ) const
+WgWidget * WgTaborderCapsule::PrevInTaborder( WgWidget * pCurrWidget ) const
 {
 	TaborderEntry * pEntry = _findInTaborder(pCurrWidget);
 	if( !pEntry )
@@ -144,7 +144,7 @@ WgWidget * WgTaborderPanel::PrevInTaborder( WgWidget * pCurrWidget ) const
 
 //____ LastInTaborder() _______________________________________________________
 
-WgWidget * WgTaborderPanel::LastInTaborder() const
+WgWidget * WgTaborderCapsule::LastInTaborder() const
 {
 	TaborderEntry * pEntry = _validateEntryBackward( m_tabOrder.Last() );
 
@@ -156,7 +156,7 @@ WgWidget * WgTaborderPanel::LastInTaborder() const
 
 //____ _isValidForTaborderInsertion() _________________________________________
 
-bool WgTaborderPanel::_isValidForTaborderInsertion( WgWidget * pWidget ) const
+bool WgTaborderCapsule::_isValidForTaborderInsertion( WgWidget * pWidget ) const
 {
 	// Check so it's an ancestor to us.
 
@@ -182,7 +182,7 @@ bool WgTaborderPanel::_isValidForTaborderInsertion( WgWidget * pWidget ) const
 
 //____ _findInTaborder() ______________________________________________________
 
-WgTaborderPanel::TaborderEntry * WgTaborderPanel::_findInTaborder( WgWidget * pWidget ) const
+WgTaborderCapsule::TaborderEntry * WgTaborderCapsule::_findInTaborder( WgWidget * pWidget ) const
 {
 	TaborderEntry * p = m_tabOrder.First();
 	while( p )
@@ -197,7 +197,7 @@ WgTaborderPanel::TaborderEntry * WgTaborderPanel::_findInTaborder( WgWidget * pW
 
 //____ _validateEntryForward() ________________________________________________
 
-WgTaborderPanel::TaborderEntry * WgTaborderPanel::_validateEntryForward( WgTaborderPanel::TaborderEntry * pEntry ) const
+WgTaborderCapsule::TaborderEntry * WgTaborderCapsule::_validateEntryForward( WgTaborderCapsule::TaborderEntry * pEntry ) const
 {
 	while( pEntry && !pEntry->pWidget )
 		pEntry = pEntry->Next();
@@ -207,7 +207,7 @@ WgTaborderPanel::TaborderEntry * WgTaborderPanel::_validateEntryForward( WgTabor
 
 //____ _validateEntryBackward() _______________________________________________
 
-WgTaborderPanel::TaborderEntry * WgTaborderPanel::_validateEntryBackward( WgTaborderPanel::TaborderEntry * pEntry ) const
+WgTaborderCapsule::TaborderEntry * WgTaborderCapsule::_validateEntryBackward( WgTaborderCapsule::TaborderEntry * pEntry ) const
 {
 	while( pEntry && !pEntry->pWidget )
 		pEntry = pEntry->Prev();
@@ -217,7 +217,7 @@ WgTaborderPanel::TaborderEntry * WgTaborderPanel::_validateEntryBackward( WgTabo
 
 //____ _onEvent() _____________________________________________________________
 
-void WgTaborderPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgTaborderCapsule::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	switch( _pEvent->Type() )
 	{

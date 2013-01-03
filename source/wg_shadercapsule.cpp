@@ -20,40 +20,40 @@
 
 =========================================================================*/
 
-#include <wg_shaderpanel.h>
+#include <wg_shadercapsule.h>
 #include <wg_gfxdevice.h>
 
-static const char	c_widgetType[] = {"ShaderPanel"};
+static const char	c_widgetType[] = {"ShaderCapsule"};
 
 //____ Constructor ____________________________________________________________
 
-WgShaderPanel::WgShaderPanel() : m_tintColor(0xFFFFFFFF), m_tintMode(WG_TINTMODE_OPAQUE), m_blendMode(WG_BLENDMODE_BLEND)
+WgShaderCapsule::WgShaderCapsule() : m_tintColor(0xFFFFFFFF), m_tintMode(WG_TINTMODE_OPAQUE), m_blendMode(WG_BLENDMODE_BLEND)
 {
 }
 
 //____ Destructor _____________________________________________________________
 
-WgShaderPanel::~WgShaderPanel()
+WgShaderCapsule::~WgShaderCapsule()
 {
 }
 
 //____ Type() _________________________________________________________________
 
-const char * WgShaderPanel::Type( void ) const
+const char * WgShaderCapsule::Type( void ) const
 {
 	return GetClass();
 }
 
 //____ GetClass() ____________________________________________________________
 
-const char * WgShaderPanel::GetClass()
+const char * WgShaderCapsule::GetClass()
 {
 	return c_widgetType;
 }
 
 //____ SetColor() ______________________________________________________________
 
-void WgShaderPanel::SetColor( const WgColor& color)
+void WgShaderCapsule::SetColor( const WgColor& color)
 {
 	if( color != m_tintColor )
 	{
@@ -64,7 +64,7 @@ void WgShaderPanel::SetColor( const WgColor& color)
 
 //____ SetTintMode() ___________________________________________________________
 
-void WgShaderPanel::SetTintMode( WgTintMode mode )
+void WgShaderCapsule::SetTintMode( WgTintMode mode )
 {
 	if( mode != m_tintMode )
 	{
@@ -75,7 +75,7 @@ void WgShaderPanel::SetTintMode( WgTintMode mode )
 
 //____ SetBlendMode() __________________________________________________________
 
-void WgShaderPanel::SetBlendMode( WgBlendMode mode )
+void WgShaderCapsule::SetBlendMode( WgBlendMode mode )
 {
 	if( mode != m_blendMode )
 	{
@@ -87,23 +87,14 @@ void WgShaderPanel::SetBlendMode( WgBlendMode mode )
 
 //____ _getBlendMode() _________________________________________________________
 
-WgBlendMode WgShaderPanel::_getBlendMode() const
+WgBlendMode WgShaderCapsule::_getBlendMode() const
 {
 	return m_blendMode;
 }
 
-
-//____ _onMaskPatches() ________________________________________________________
-
-void WgShaderPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
-{
-	if( m_hook.IsVisible() && m_hook.Widget() )
-		m_hook.Widget()->_onMaskPatches( patches, geo, clip, m_blendMode );
-}
-
 //____ _renderPatches() ________________________________________________________
 
-void WgShaderPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
 {
 	// Set our tint color and blend mode.
 
@@ -140,9 +131,9 @@ void WgShaderPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgShaderPanel::_onCloneContent( const WgWidget * _pOrg )
+void WgShaderCapsule::_onCloneContent( const WgWidget * _pOrg )
 {
-	WgShaderPanel * pOrg = (WgShaderPanel*) _pOrg;
+	WgShaderCapsule * pOrg = (WgShaderCapsule*) _pOrg;
 
 	m_tintColor		= pOrg->m_tintColor;
 	m_blendMode		= pOrg->m_blendMode;

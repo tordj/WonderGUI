@@ -23,7 +23,7 @@
 #include	<wctype.h>
 
 #include	<wg_menu.h>
-#include	<wg_menupanel.h>
+#include	<wg_menulayer.h>
 #include	<wg_slider.h>
 #include	<wg_surface.h>
 #include	<wg_gfxdevice.h>
@@ -1145,10 +1145,10 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 	// 
 
-	WgMenuPanel * pLayer = 0;
+	WgMenuLayer * pLayer = 0;
 
 	if( Parent() )
-		pLayer = Parent()->_getMenuPanel();
+		pLayer = Parent()->_getMenuLayer();
 
 	if( pLayer )
 	{
@@ -1162,11 +1162,11 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 void WgMenu::_closeSubMenu( WgMenuSubMenu * pItem )
 {
-	WgMenuPanel * pLayer = 0;
+	WgMenuLayer * pLayer = 0;
 	WgWidget * pMenu = pItem->GetSubMenu();
 
 	if( Parent() )
-		pLayer = Parent()->_getMenuPanel();
+		pLayer = Parent()->_getMenuLayer();
 
 	if( pLayer && pMenu )
 	{	
@@ -1180,10 +1180,10 @@ void WgMenu::_closeSubMenu( WgMenuSubMenu * pItem )
 
 void WgMenu::_itemSelected()
 {
-	WgMenuPanel * pLayer = 0;
+	WgMenuLayer * pLayer = 0;
 
 	if( Parent() )
-		pLayer = Parent()->_getMenuPanel();
+		pLayer = Parent()->_getMenuLayer();
 
 	if( pLayer )
 		pLayer->CloseAllMenus();

@@ -40,4 +40,120 @@ bool WgWidgetHolder::IsAncestorTo( const WgWidget * pWidget ) const
 	return false;
 }
 
+//____ IsWidget() ______________________________________________________________
+
+bool WgWidgetHolder::IsWidget() const
+{
+	return false;
+}
+
+//____ IsContainer() ______________________________________________________________
+
+bool WgWidgetHolder::IsContainer() const
+{
+	return false;
+}
+
+//____ IsPanel() ______________________________________________________________
+
+bool WgWidgetHolder::IsPanel() const
+{
+	return false;
+}
+
+//____ IsCapsule() ______________________________________________________________
+
+bool WgWidgetHolder::IsCapsule() const
+{
+	return false;
+}
+
+//____ IsLayer() ______________________________________________________________
+
+bool WgWidgetHolder::IsLayer() const
+{
+	return false;
+}
+
+//____ IsRoot() _______________________________________________________________
+
+bool WgWidgetHolder::IsRoot() const
+{
+	return false;
+}
+
+//____ CastToWidget() _______________________________________________________
+
+WgWidget * WgWidgetHolder::CastToWidget()
+{
+	return 0;
+}
+
+const WgWidget * WgWidgetHolder::CastToWidget() const
+{
+	return 0;
+}
+
+
+//____ CastToContainer() _______________________________________________________
+
+WgContainer * WgWidgetHolder::CastToContainer()
+{
+	return 0;
+}
+
+const WgContainer * WgWidgetHolder::CastToContainer() const
+{
+	return 0;
+}
+
+
+//____ CastToPanel() _______________________________________________________
+
+WgPanel * WgWidgetHolder::CastToPanel()
+{
+	return 0;
+}
+
+const WgPanel * WgWidgetHolder::CastToPanel() const
+{
+	return 0;
+}
+
+//____ CastToCapsule() _______________________________________________________
+
+WgCapsule * WgWidgetHolder::CastToCapsule()
+{
+	return 0;
+}
+
+const WgCapsule * WgWidgetHolder::CastToCapsule() const
+{
+	return 0;
+}
+
+//____ CastToLayer() _______________________________________________________
+
+WgLayer * WgWidgetHolder::CastToLayer()
+{
+	return 0;
+}
+
+const WgLayer * WgWidgetHolder::CastToLayer() const
+{
+	return 0;
+}
+
+//____ CastToRoot() ___________________________________________________________
+
+WgRootPanel * WgWidgetHolder::CastToRoot()
+{
+	return 0;
+}
+
+const WgRootPanel * WgWidgetHolder::CastToRoot() const
+{
+	return 0;
+}
+
 

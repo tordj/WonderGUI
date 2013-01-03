@@ -20,27 +20,46 @@
 
 =========================================================================*/
 
-#include <wg_monopanel.h>
+#include <wg_capsule.h>
 
-static const char	c_hookType[] = {"MonoHook"};
+static const char	c_hookType[] = {"Capsule"};
 
 
 //_____________________________________________________________________________
-const char * WgMonoPanel::Hook::Type( void ) const
+const char * WgCapsule::Hook::Type( void ) const
 {
 	return ClassType();
 }
 
 //_____________________________________________________________________________
-const char * WgMonoPanel::Hook::ClassType()
+const char * WgCapsule::Hook::ClassType()
 {
 	return c_hookType;
 }
 
 
+//____ IsCapsule() ______________________________________________________________
+
+bool WgCapsule::IsCapsule() const
+{
+	return true;
+}
+
+//____ CastToCapsule() _______________________________________________________
+
+WgCapsule * WgCapsule::CastToCapsule()
+{
+	return this;
+}
+
+const WgCapsule * WgCapsule::CastToCapsule() const
+{
+	return this;
+}
+
 //____ SetChild() ______________________________________________________________
 
-WgHook * WgMonoPanel::SetChild( WgWidget * pWidget )
+WgHook * WgCapsule::SetChild( WgWidget * pWidget )
 {
 	if( !pWidget )
 		return false;
@@ -55,7 +74,7 @@ WgHook * WgMonoPanel::SetChild( WgWidget * pWidget )
 
 //____ DeleteChild() ___________________________________________________________
 
-bool WgMonoPanel::DeleteChild()
+bool WgCapsule::DeleteChild()
 {
 	WgWidget * pWidget = m_hook._releaseWidget();
 	if( pWidget )
@@ -71,7 +90,7 @@ bool WgMonoPanel::DeleteChild()
 
 //____ ReleaseChild() __________________________________________________________
 
-WgWidget * WgMonoPanel::ReleaseChild()
+WgWidget * WgCapsule::ReleaseChild()
 {
 	WgWidget * pWidget = m_hook._releaseWidget();
 	if( pWidget )
@@ -85,7 +104,7 @@ WgWidget * WgMonoPanel::ReleaseChild()
 
 //____ DeleteChild() ___________________________________________________________
 
-bool WgMonoPanel::DeleteChild( WgWidget * pWidget )
+bool WgCapsule::DeleteChild( WgWidget * pWidget )
 {
 	if( pWidget == m_hook.Widget() )
 		return DeleteChild();
@@ -95,7 +114,7 @@ bool WgMonoPanel::DeleteChild( WgWidget * pWidget )
 
 //____ ReleaseChild() __________________________________________________________
 
-WgWidget * WgMonoPanel::ReleaseChild( WgWidget * pWidget )
+WgWidget * WgCapsule::ReleaseChild( WgWidget * pWidget )
 {
 	if(pWidget == m_hook.Widget() )
 		return ReleaseChild();
@@ -105,14 +124,14 @@ WgWidget * WgMonoPanel::ReleaseChild( WgWidget * pWidget )
 
 //____ DeleteAllChildren() _____________________________________________________
 
-bool WgMonoPanel::DeleteAllChildren()
+bool WgCapsule::DeleteAllChildren()
 {
 	return DeleteChild();
 }
 
 //____ ReleaseAllChildren() ____________________________________________________
 
-bool WgMonoPanel::ReleaseAllChildren()
+bool WgCapsule::ReleaseAllChildren()
 {
 	ReleaseChild();
 	return true;
@@ -120,7 +139,7 @@ bool WgMonoPanel::ReleaseAllChildren()
 
 //____ HeightForWidth() ________________________________________________________
 
-int WgMonoPanel::HeightForWidth( int width ) const
+int WgCapsule::HeightForWidth( int width ) const
 {
 	if( m_hook.Widget() )
 		return m_hook.Widget()->HeightForWidth( width );
@@ -130,7 +149,7 @@ int WgMonoPanel::HeightForWidth( int width ) const
 
 //____ WidthForHeight() ________________________________________________________
 
-int WgMonoPanel::WidthForHeight( int height ) const
+int WgCapsule::WidthForHeight( int height ) const
 {
 	if( m_hook.Widget() )
 		return m_hook.Widget()->WidthForHeight( height );
@@ -140,7 +159,7 @@ int WgMonoPanel::WidthForHeight( int height ) const
 
 //____ DefaultSize() ___________________________________________________________
 
-WgSize WgMonoPanel::DefaultSize() const
+WgSize WgCapsule::DefaultSize() const
 {
 	if( m_hook.Widget() )
 		return m_hook.Widget()->DefaultSize();
@@ -150,7 +169,7 @@ WgSize WgMonoPanel::DefaultSize() const
 
 //____ _onCollectPatches() _____________________________________________________
 
-void WgMonoPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+void WgCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	if( m_hook.IsVisible() && m_hook.Widget() )
 		m_hook.Widget()->_onCollectPatches( container, geo, clip );
@@ -158,7 +177,7 @@ void WgMonoPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, co
 
 //____ _onMaskPatches() ________________________________________________________
 
-void WgMonoPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	if( m_hook.IsVisible() && m_hook.Widget() )
 		m_hook.Widget()->_onMaskPatches( patches, geo, clip, blendMode );
@@ -166,13 +185,13 @@ void WgMonoPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const W
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgMonoPanel::_onCloneContent( const WgWidget * _pOrg )
+void WgCapsule::_onCloneContent( const WgWidget * _pOrg )
 {
 }
 
 //____ _onNewSize() ____________________________________________________________
 
-void WgMonoPanel::_onNewSize( const WgSize& size )
+void WgCapsule::_onNewSize( const WgSize& size )
 {
 	if( m_hook.Widget() )
 		m_hook.Widget()->_onNewSize(size);
@@ -180,7 +199,7 @@ void WgMonoPanel::_onNewSize( const WgSize& size )
 
 //____ _firstHook() ____________________________________________________________
 
-WgHook* WgMonoPanel::_firstHook() const
+WgHook* WgCapsule::_firstHook() const
 {
 	if( m_hook.Widget() )
 		return const_cast<Hook*>(&m_hook);
@@ -190,7 +209,7 @@ WgHook* WgMonoPanel::_firstHook() const
 
 //____ _lastHook() _____________________________________________________________
 
-WgHook* WgMonoPanel::_lastHook() const
+WgHook* WgCapsule::_lastHook() const
 {
 	if( m_hook.Widget() )
 		return const_cast<Hook*>(&m_hook);
@@ -200,7 +219,7 @@ WgHook* WgMonoPanel::_lastHook() const
 
 //____ _firstHookWithGeo() _____________________________________________________
 
-WgHook * WgMonoPanel::_firstHookWithGeo( WgRect& geo ) const
+WgHook * WgCapsule::_firstHookWithGeo( WgRect& geo ) const
 {
 	if( m_hook.Widget() )
 	{
@@ -213,14 +232,14 @@ WgHook * WgMonoPanel::_firstHookWithGeo( WgRect& geo ) const
 
 //____ _nextHookWithGeo() ______________________________________________________
 
-WgHook * WgMonoPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook * WgCapsule::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	return 0;
 }
 
 //____ _lastHookWithGeo() ______________________________________________________
 
-WgHook * WgMonoPanel::_lastHookWithGeo( WgRect& geo ) const
+WgHook * WgCapsule::_lastHookWithGeo( WgRect& geo ) const
 {
 	if( m_hook.Widget() )
 	{
@@ -233,7 +252,7 @@ WgHook * WgMonoPanel::_lastHookWithGeo( WgRect& geo ) const
 
 //_____ _prevHookWithGeo() _____________________________________________________
 
-WgHook * WgMonoPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook * WgCapsule::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
 	return 0;
 }

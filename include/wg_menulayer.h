@@ -20,19 +20,19 @@
 
 =========================================================================*/
 
-#ifndef WG_MENUPANEL_DOT_H
-#define WG_MENUPANEL_DOT_H
+#ifndef WG_MENULAYER_DOT_H
+#define WG_MENULAYER_DOT_H
 
-#ifndef WG_PANEL_DOT_H
-#	include <wg_panel.h>
+#ifndef WG_LAYER_DOT_H
+#	include <wg_layer.h>
 #endif
 
 
-class WgMenuPanel;
+class WgMenuLayer;
 
-class WgMenuHook : public WgHook, protected WgLink
+class WgMenuHook : public WgLayerHook, protected WgLink
 {
-	friend class WgMenuPanel;
+	friend class WgMenuLayer;
 	friend class WgChain<WgMenuHook>;
 
 public:
@@ -42,24 +42,17 @@ public:
 
 	// Standard Hook methods
 
-	WgCoord			Pos() const { return m_geo.Pos(); }
-	WgSize			Size() const { 	return m_geo.Size(); }
-	WgRect			Geo() const { return m_geo; }
-
-	WgCoord			ScreenPos() const;
-	WgRect			ScreenGeo() const;
-
 	WgMenuHook *	Prev() const { return _prev(); }
 	WgMenuHook *	Next() const { return _next(); }
 
-	WgPanel* Parent() const;
+	WgMenuLayer *	Parent() const;
 
 protected:
 	// TODO: Constructor should in the future call SetHook() on Widget, once we are totally rid of widgets...
 
 	PROTECTED_LINK_METHODS( WgMenuHook );
 
-	WgMenuHook( WgMenuPanel * pParent, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize );
+	WgMenuHook( WgMenuLayer * pParent, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize );
 
 	void		_requestRender();
 	void		_requestRender( const WgRect& rect );
@@ -67,14 +60,13 @@ protected:
 
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
-	WgPanel * _parent() const;
+	WgWidgetHolder * _parent() const;
 
 	bool		_updateGeo();
 
 
-	WgMenuPanel * m_pParent;
+	WgMenuLayer * m_pParent;
 
-	WgRect			m_geo;				// Widgets geo relative parent
 	WgRect			m_launcherGeo;		// Launcher geo relative sibling or parent.
 	WgOrientation	m_attachPoint;
 	WgSize			m_maxSize;
@@ -84,24 +76,17 @@ protected:
 
 
 
-class WgMenuPanel : public WgPanel
+class WgMenuLayer : public WgLayer
 {
-	friend class BaseHook;
 	friend class WgMenuHook;
 
 public:
-	WgMenuPanel();
-	~WgMenuPanel();
+	WgMenuLayer();
+	~WgMenuLayer();
 
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgMenuPanel(); };
-
-
-	WgHook *		SetBase( WgWidget * pWidget );
-	WgWidget *		Base();
-	bool			DeleteBase();
-	WgWidget *		ReleaseBase();
+	virtual WgWidget * NewOfMyType() const { return new WgMenuLayer(); };
 
 	WgMenuHook *	OpenMenu( WgWidget * pMenu, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
 
@@ -110,14 +95,6 @@ public:
 
 	WgMenuHook *	FirstMenu();
 	WgMenuHook *	LastMenu();
-
-
-	// Overloaded from WgWidget
-
-	int				HeightForWidth( int width ) const;
-	int				WidthForHeight( int height ) const;
-
-	WgSize			DefaultSize() const;
 
 	// Overloaded from WgPanel
 
@@ -131,42 +108,13 @@ public:
 
 private:
 
-	class BaseHook : public WgHook
-	{
-		friend class WgMenuPanel;
+	// Overloaded from WgLayer
 
-	public:
+	WgLayerHook *	_firstLayerHook() const { return m_menuHooks.First(); }
 
-		const char *Type( void ) const;
-		static const char * ClassType();
+	//
 
-		// Standard Hook methods
-
-		WgCoord		Pos() const { return m_pParent->Pos(); }
-		WgSize		Size() const { 	return m_pParent->Size(); }
-		WgRect		Geo() const { return m_pParent->Geo(); }
-
-		WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
-		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
-
-		WgMenuPanel* Parent() const { return m_pParent; }
-
-	protected:
-		BaseHook( WgMenuPanel * pParent ) : m_pParent(pParent) {}
-
-		void		_requestRender();
-		void		_requestRender( const WgRect& rect );
-		void		_requestResize();
-
-		WgHook *	_prevHook() const { return 0; }
-		WgHook *	_nextHook() const { return m_pParent->FirstMenu(); }
-		WgWidgetHolder * _parent() const { return m_pParent; }
-
-		WgMenuPanel * 	m_pParent;
-	};
-
-
-	WgMenuPanel *	_getMenuPanel() const { return const_cast<WgMenuPanel*>(this); }
+	WgMenuLayer *	_getMenuLayer() const { return const_cast<WgMenuLayer*>(this); }
 
 	void			_stealKeyboardFocus();
 	void			_restoreKeyboardFocus();
@@ -188,13 +136,11 @@ private:
 	WgHook *		_lastHookWithGeo( WgRect& geo ) const;
 	WgHook *		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
-	BaseHook		m_baseHook;
 	WgChain<WgMenuHook>		m_menuHooks;		// First menu lies at the bottom.
 
-	WgSize			m_size;
 	WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any menu was opened.
 
 
 };
 
-#endif //WG_MENUPANEL_DOT_H
+#endif //WG_MENULAYER_DOT_H

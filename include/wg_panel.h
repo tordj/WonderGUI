@@ -28,86 +28,46 @@
 #endif
 
 #ifndef WG_WIDGETHOLDER_DOT_H
-#	include <wg_widgetholder.h>
+#	include <wg_container.h>
 #endif
 
 class WgPatches;
 
-class WgPanel : public WgWidgetHolder, public WgWidget
+class WgPanel : public WgContainer
 {
-	friend class WgEventHandler;
+public:
+	void		SetFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
+	bool		IsFocusGroup() const { return m_bFocusGroup; }
 
-	friend class WgHook;
-	friend class WgFlexHook;
-	friend class WgModalHook;
+	void		SetRadioGroup( bool bRadioGroup ) { m_bRadioGroup = bRadioGroup; }
+	bool		IsRadioGroup() const { return m_bRadioGroup; }
 
-	friend class WgRootPanel;
-	friend class WgFlexPanel;
-	friend class WgModalPanel;
-	friend class WgTablePanel;
-	friend class WgScrollPanel;
-	friend class WgStackPanel;
-	friend class WgSortablePanel;
-	friend class WgVPanel;
-	friend class WgMonoPanel;
+	void		SetTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
+	bool		IsTooltipGroup() const { return m_bTooltipGroup; }
 
-	public:
+	void		SetMaskOp( WgMaskOp operation );
+	WgMaskOp	MaskOp() const { return m_maskOp; }
 
-		void		SetFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
-		bool		IsFocusGroup() const { return m_bFocusGroup; }
+	// Overloaded from WgWidgetHolder
 
-		void		SetRadioGroup( bool bRadioGroup ) { m_bRadioGroup = bRadioGroup; }
-		bool		IsRadioGroup() const { return m_bRadioGroup; }
+	bool				IsPanel() const;
 
-		void		SetTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
-		bool		IsTooltipGroup() const { return m_bTooltipGroup; }
+	WgPanel *			CastToPanel();
+	const WgPanel *		CastToPanel() const;
 
-		void		SetMaskOp( WgMaskOp operation );
-		WgMaskOp	MaskOp() const { return m_maskOp; }
+protected:
+	WgPanel();
+	virtual ~WgPanel() {};
 
-		virtual WgWidget * 	FindWidget( const WgCoord& ofs, WgSearchMode mode );
+	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+	virtual bool 	_onAlphaTest( const WgCoord& ofs );
+	virtual void	_onCloneContent( const WgPanel * _pOrg );
 
-		bool		IsWidget() const;
-		bool		IsPanel() const;
-		bool		IsRoot() const;
 
-		WgWidget *			CastToWidget();
-		const WgWidget *		CastToWidget() const;
-		WgPanel *	CastToPanel();
-		const WgPanel * CastToPanel() const;
-		WgRootPanel *			CastToRoot();
-		const WgRootPanel *		CastToRoot() const;
-
-	protected:
-		WgPanel();
-		virtual ~WgPanel() {};
-
-		virtual void	_onEnable();
-		virtual void	_onDisable();
-
-		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
-		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
-		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
-
-		virtual WgHook* _lastHookWithGeo( WgRect& geo ) const = 0;
-		virtual WgHook* _prevHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
-
-		bool 			_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );	// Needed until WgPanel inherits from WgWidget
-		bool 			_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );		// Needed until WgPanel inherits from WgWidget
-
-		WgModalPanel *	_getModalPanel() const;
-		WgMenuPanel*	_getMenuPanel() const;
-
-		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-		virtual bool 	_onAlphaTest( const WgCoord& ofs );
-		virtual void	_onCloneContent( const WgPanel * _pOrg );
-
-		bool		m_bFocusGroup;
-		bool		m_bRadioGroup;
-		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
-		bool		m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
-		WgMaskOp	m_maskOp;			// Specifies how container masks background.
+	bool		m_bFocusGroup;
+	bool		m_bRadioGroup;
+	bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
+	WgMaskOp	m_maskOp;			// Specifies how container masks background.
 };
 
 

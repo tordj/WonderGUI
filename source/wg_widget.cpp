@@ -60,7 +60,7 @@ WgPointerStyle WgWidget::GetPointerStyle() const
 
 void WgWidget::SetEnabled( bool bEnabled )
 {
-	if( m_bEnabled != bEnabled || IsPanel() )
+	if( m_bEnabled != bEnabled || IsContainer() )
 	{
 		m_bEnabled = bEnabled;
 		if( bEnabled )

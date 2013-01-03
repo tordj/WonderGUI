@@ -258,8 +258,8 @@ WgWidget * WgRootPanel::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 	if( !Geo().Contains(ofs) || !m_hook.Widget() )
 		return 0;
 
-	if( m_hook.Widget() && m_hook.Widget()->IsPanel() )
-		return m_hook.Widget()->CastToPanel()->FindWidget( ofs, mode );
+	if( m_hook.Widget() && m_hook.Widget()->IsContainer() )
+		return m_hook.Widget()->CastToContainer()->FindWidget( ofs, mode );
 
 	return m_hook.Widget();
 }

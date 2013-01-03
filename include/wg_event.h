@@ -54,7 +54,7 @@ class WgValueDisplay;
 class WgValueEditor;
 class WgWidgetSlider;
 class WgMenu;
-class WgModalPanel;
+class WgModalLayer;
 class WgTablePanel;
 class WgInterfaceEditText;
 class WgText;
@@ -534,21 +534,21 @@ namespace WgEvent
 
 	class ModalMoveOutside : public Event
 	{
-		friend class ::WgModalPanel;
+		friend class ::WgModalLayer;
 	protected:
 		ModalMoveOutside( WgWidget * pWidget );
 	};
 
 	class ModalBlockedPress : public MouseButtonEvent
 	{
-		friend class ::WgModalPanel;
+		friend class ::WgModalLayer;
 	protected:
 		ModalBlockedPress( int button, WgWidget * pModalWidget );
 	};
 
 	class ModalBlockedRelease : public MouseButtonEvent
 	{
-		friend class ::WgModalPanel;
+		friend class ::WgModalLayer;
 	protected:
 		ModalBlockedRelease( int button, WgWidget * pModalWidget );
 	};

@@ -20,19 +20,18 @@
 
 =========================================================================*/
 
-#ifndef WG_MONOPANEL_DOT_H
-#define WG_MONOPANEL_DOT_H
+#ifndef WG_CAPSULE_DOT_H
+#define WG_CAPSULE_DOT_H
 
-#ifndef WG_PANEL_DOT_H
-#	include <wg_panel.h>
+#ifndef WG_CONTAINER_DOT_H
+#	include <wg_container.h>
 #endif
 
 
-class WgMonoPanel : public WgPanel
+class WgCapsule : public WgContainer
 {
 public:
-	WgMonoPanel() : m_hook(this) {}
-	~WgMonoPanel() {}
+	~WgCapsule() {}
 
 	WgHook *		SetChild( WgWidget * pWidget );
 	WgWidget *		Child() { return m_hook.Widget(); }
@@ -46,6 +45,10 @@ public:
 	bool			ReleaseAllChildren();
 
 
+	bool			IsCapsule() const;
+	WgCapsule *		CastToCapsule();
+	const WgCapsule *	CastToCapsule() const;
+
 	// Overloaded from WgWidget
 
 	int				HeightForWidth( int width ) const;
@@ -54,10 +57,11 @@ public:
 	WgSize			DefaultSize() const;
 
 protected:
+	WgCapsule() : m_hook(this) {}
 
 	class Hook : public WgHook
 	{
-		friend class WgMonoPanel;
+		friend class WgCapsule;
 
 	public:
 
@@ -73,10 +77,10 @@ protected:
 		WgCoord			ScreenPos() const { return m_pParent->ScreenPos(); }
 		WgRect			ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		WgMonoPanel* 	Parent() const { return m_pParent; }
+		WgCapsule* 	Parent() const { return m_pParent; }
 
 	protected:
-		Hook( WgMonoPanel * pParent ) : m_pParent(pParent) {}
+		Hook( WgCapsule * pParent ) : m_pParent(pParent) {}
 
 		void			_requestRender() { if( m_bVisible ) m_pParent->_requestRender(); }
 		void			_requestRender( const WgRect& rect ) { if( m_bVisible ) m_pParent->_requestRender(rect); }
@@ -86,7 +90,7 @@ protected:
 		WgHook *		_nextHook() const { return 0; }
 		WgWidgetHolder * _parent() const { return m_pParent; }
 
-		WgMonoPanel * 	m_pParent;
+		WgCapsule * 	m_pParent;
 
 	};
 
@@ -111,4 +115,4 @@ protected:
 
 };
 
-#endif //WG_MONOPANEL_DOT_H
+#endif //WG_CAPSULE_DOT_H

@@ -631,9 +631,9 @@ WgWidget * WgScrollPanel::FindWidget( const WgCoord& pos, WgSearchMode mode )
 	p = &m_elements[WINDOW];
 	if( p->IsVisible() && p->m_pWidget && p->m_windowGeo.Contains( pos ) && p->m_canvasGeo.Contains( pos ) )
 	{
-		if( p->m_pWidget->IsPanel() )
+		if( p->m_pWidget->IsContainer() )
 		{
-			WgWidget * pFound = p->m_pWidget->CastToPanel()->FindWidget( pos - p->m_canvasGeo.Pos(), mode );
+			WgWidget * pFound = p->m_pWidget->CastToContainer()->FindWidget( pos - p->m_canvasGeo.Pos(), mode );
 			if( pFound )
 				return pFound;
 		}

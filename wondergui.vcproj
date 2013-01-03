@@ -247,6 +247,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\wg_container.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_container.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\wg_cursor.cpp"
 				>
 			</File>
@@ -420,14 +428,6 @@
 			</File>
 			<File
 				RelativePath=".\include\wg_menuitem.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\wg_monopanel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_monopanel.h"
 				>
 			</File>
 			<File
@@ -644,7 +644,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Containers"
+			Name="Panels"
 			>
 			<File
 				RelativePath=".\source\wg_flexpanel.cpp"
@@ -652,22 +652,6 @@
 			</File>
 			<File
 				RelativePath=".\include\wg_flexpanel.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\wg_menupanel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_menupanel.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\wg_modalpanel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_modalpanel.h"
 				>
 			</File>
 			<File
@@ -695,14 +679,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\wg_shaderpanel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_shaderpanel.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\wg_stackpanel.cpp"
 				>
 			</File>
@@ -719,14 +695,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\wg_taborderpanel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_taborderpanel.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\wg_vpanel.cpp"
 				>
 			</File>
@@ -736,7 +704,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Gizmos"
+			Name="Widgets"
 			>
 			<File
 				RelativePath=".\source\wg_animplayer.cpp"
@@ -872,6 +840,62 @@
 			</File>
 			<File
 				RelativePath=".\include\wg_valueeditor.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Capsules"
+			>
+			<File
+				RelativePath=".\source\wg_capsule.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_capsule.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\wg_shadercapsule.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_shadercapsule.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\wg_tabordercapsule.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_tabordercapsule.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Layers"
+			>
+			<File
+				RelativePath=".\source\wg_layer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_layer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\wg_menulayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_menulayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\wg_modallayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_modallayer.h"
 				>
 			</File>
 		</Filter>

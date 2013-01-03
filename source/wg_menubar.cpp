@@ -35,7 +35,7 @@
 #include	<wg_surface.h>
 #include	<wg_gfxdevice.h>
 #include	<wg_texttool.h>
-#include	<wg_menupanel.h>
+#include	<wg_menulayer.h>
 
 static const char	c_widgetType[] = {"Menubar"};
 
@@ -492,9 +492,9 @@ bool WgMenubar::OpenMenu( Uint32 nb )
 	WgRect	r(pos, pI->m_width+bordersWidth, Size().h );
 
 
-	WgMenuPanel * pLayer = 0;
+	WgMenuLayer * pLayer = 0;
 	if( Parent() )
-		pLayer = Parent()->_getMenuPanel();
+		pLayer = Parent()->_getMenuLayer();
 	if( !pLayer )
 		return false;
 
@@ -514,10 +514,10 @@ bool WgMenubar::CloseMenu( Uint32 nb )
 		return false;
 
 
-	WgMenuPanel * pLayer = 0;
+	WgMenuLayer * pLayer = 0;
 	WgWidget * pMenu = pItem->m_pMenu;
 	if( Parent() )
-		pLayer = Parent()->_getMenuPanel();
+		pLayer = Parent()->_getMenuLayer();
 
 	if( !pLayer || !pMenu )
 		return false;

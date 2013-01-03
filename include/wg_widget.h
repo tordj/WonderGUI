@@ -42,7 +42,10 @@
 class WgGfxDevice;
 class WgSkinManager;
 class Wg_Interface_TextHolder;
+class WgContainer;
 class WgPanel;
+class WgCapsule;
+class WgLayer;
 class WgSkinNode;
 class WgEventHandler;
 class WgPatches;
@@ -62,15 +65,17 @@ friend class WgStackHook;
 
 friend class WgRootPanel;
 friend class WgFlexPanel;
-friend class WgModalPanel;
+friend class WgModalLayer;
 friend class WgTablePanel;
 friend class WgScrollPanel;
 friend class WgVPanel;
-friend class WgMonoPanel;
+friend class WgCapsule;
+friend class WgLayer;
 friend class WgStackPanel;
+friend class WgContainer;
 friend class WgPanel;
-friend class WgShaderPanel;
-friend class WgMenuPanel;
+friend class WgShaderCapsule;
+friend class WgMenuLayer;
 
 friend class WgTableRow;
 
@@ -136,10 +141,18 @@ public:
 
 	virtual WgSize	DefaultSize() const = 0;
 
-	virtual bool	IsView() const { return false; }
+	virtual bool	IsContainer() const { return false; }
 	virtual bool	IsPanel() const { return false; }
+	virtual bool	IsCapsule() const { return false; }
+	virtual bool	IsLayer() const { return false; }
+	virtual WgContainer * CastToContainer() { return 0; }
+	virtual const WgContainer * CastToContainer() const { return 0; }
 	virtual WgPanel * CastToPanel() { return 0; }
 	virtual const WgPanel * CastToPanel() const { return 0; }
+	virtual WgCapsule * CastToCapsule() { return 0; }
+	virtual const WgCapsule * CastToCapsule() const { return 0; }
+	virtual WgLayer * CastToLayer() { return 0; }
+	virtual const WgLayer * CastToLayer() const { return 0; }
 
 
 	virtual bool	SetMarked();					// Switch to WG_MODE_MARKED unless we are disabled or widget controls mode itself.

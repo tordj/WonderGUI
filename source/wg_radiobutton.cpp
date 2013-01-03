@@ -97,12 +97,12 @@ WgWidgetHolder * WgRadioButton::_findRadioGroup()
 	{
 		pRadioGroup = pParent;
 
-		if( pParent->IsWidget() )
+		if( pParent->IsContainer() )
 		{
-			if( pParent->CastToPanel()->IsRadioGroup() )
+			if( pParent->IsPanel() && pParent->CastToPanel()->IsRadioGroup() )
 				break;
 
-			pParent = pParent->CastToWidget()->Parent();
+			pParent = pParent->CastToContainer()->Parent();
 		}
 		else break;
 	}
@@ -134,8 +134,8 @@ void WgRadioButton::_unselectRecursively( WgWidgetHolder * pParent )
 				pRB->_requestRender();
 			}
 		}
-		else if( pWidget->IsPanel() && !pWidget->CastToPanel()->IsRadioGroup() )
-			_unselectRecursively( pWidget->CastToPanel() );
+		else if( pWidget->IsContainer() && (!pWidget->IsPanel() || !pWidget->CastToPanel()->IsRadioGroup()) )
+			_unselectRecursively( pWidget->CastToContainer() );
 
 		pWidget = pWidget->NextSibling();
 	}
