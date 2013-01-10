@@ -52,6 +52,9 @@ public:
 	bool					SetGeo( const WgRect& geo );
 	WgRect					Geo() const;
 
+	bool					SetVisible( bool bVisible );
+	bool					IsVisible() const { return m_bVisible; }
+
 	inline WgWidget *		Child() const { return m_hook.Widget(); }
 	bool					SetChild( WgWidget * pWidget );
 	inline void				DeleteChild() { SetChild(0); }
@@ -106,7 +109,6 @@ protected:
 		WgCoord			ScreenPos() const;
 		WgRect			ScreenGeo() const;
 
-		bool			SetVisible( bool bVisible );
 		WgRootPanel*			Root() const;
 
 	protected:
@@ -140,6 +142,7 @@ protected:
 	Hook				m_hook;
 	WgRect				m_geo;
 	bool				m_bHasGeo;
+	bool				m_bVisible;
 };
 
 

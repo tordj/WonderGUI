@@ -160,6 +160,18 @@ bool WgRootPanel::ReleaseAllChildren()
 	return ReleaseChild()==0?false:true;
 }
 
+//____ SetVisible() ___________________________________________________________
+
+bool WgRootPanel::SetVisible( bool bVisible )
+{
+	if( bVisible != m_bVisible )
+	{
+		m_bVisible = bVisible;
+		AddDirtyPatch( Geo() );
+	}
+	return true;
+}
+
 
 //____ Render() _______________________________________________________________
 
@@ -212,7 +224,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip, int layer )
 
 	// Nothing to render if our only child is hidden
 
-	if( !m_hook.m_bVisible )
+	if( !m_bVisible )
 		return true;						// Not an error, just hidden.
 
 	// Copy and clip our dirty patches
@@ -326,16 +338,6 @@ WgRect WgRootPanel::Hook::ScreenGeo() const
 	return m_pRoot->Geo();
 }
 
-bool WgRootPanel::Hook::SetVisible( bool bVisible )
-{
-	if( bVisible != m_bVisible )
-	{
-		m_bVisible = bVisible;
-		m_pRoot->AddDirtyPatch( Geo() );
-	}
-	return true;
-}
-
 WgRootPanel* WgRootPanel::Hook::Root() const
 {
 	return m_pRoot;
@@ -343,13 +345,13 @@ WgRootPanel* WgRootPanel::Hook::Root() const
 
 void WgRootPanel::Hook::_requestRender()
 {
-	if( m_bVisible )
+	if( m_pRoot->m_bVisible )
 		m_pRoot->AddDirtyPatch( Geo() );
 }
 
 void WgRootPanel::Hook::_requestRender( const WgRect& rect )
 {
-	if( m_bVisible )
+	if( m_pRoot->m_bVisible )
 		m_pRoot->AddDirtyPatch( WgRect( Pos() + rect.Pos(), rect.Size() ) );
 }
 

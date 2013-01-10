@@ -105,9 +105,9 @@ int WgTextDisplay::HeightForWidth( int width ) const
 	return m_text.heightForWidth( width );
 }
 
-//____ DefaultSize() _____________________________________________________________
+//____ PreferredSize() _____________________________________________________________
 
-WgSize WgTextDisplay::DefaultSize() const
+WgSize WgTextDisplay::PreferredSize() const
 {
 	//TODO: Fix this so we don't return current size (after wraptext is adapted to width) but size for unwrapped lines.
 

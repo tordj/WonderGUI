@@ -685,7 +685,7 @@ namespace WgEvent
 
 	float SliderEvent::Value() const
 	{
-		int max = 1.f - m_length;
+		float max = 1.f - m_length;
 
 		if( max == 0.f )
 			return 0.5f;		// is this logically correct?

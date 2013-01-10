@@ -33,6 +33,35 @@
 
 class WgPatches;
 
+
+class WgPanelHook : public WgHook
+{
+public:
+	WgPanelHook *	Prev() const { return static_cast<WgPanelHook*>(_prevHook()); }
+	WgPanelHook *	Next() const { return static_cast<WgPanelHook*>(_nextHook()); }
+	WgPanel*		Parent() const;
+
+	virtual bool	SetVisible( bool bVisible );
+	bool			IsVisible() { return m_bVisible; }
+
+	virtual bool	SetPadding( WgBorders padding );
+	WgBorders		Padding() const;
+
+protected:
+	WgPanelHook() : m_bVisible(true) {}
+	 virtual ~WgPanelHook() {};
+
+	WgSize		_paddedPreferredSize() const { return m_pWidget->PreferredSize() + m_padding; }
+	int			_paddedWidthForHeight( int paddedHeight ) const { return m_pWidget->WidthForHeight( paddedHeight - m_padding.Height() ) + m_padding.Width(); }
+	int			_paddedHeightForWidth( int paddedWidth ) const { return m_pWidget->HeightForWidth( paddedWidth - m_padding.Width() ) + m_padding.Height(); }
+
+	WgSize		_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy ) const;
+
+	bool			m_bVisible;
+	WgBorders		m_padding;
+};
+
+
 class WgPanel : public WgContainer
 {
 public:
@@ -47,6 +76,11 @@ public:
 
 	void		SetMaskOp( WgMaskOp operation );
 	WgMaskOp	MaskOp() const { return m_maskOp; }
+
+
+
+	inline WgPanelHook *	FirstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
+	inline WgPanelHook *	LastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
 
 	// Overloaded from WgWidgetHolder
 

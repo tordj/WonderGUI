@@ -19,41 +19,54 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_GEOBROKER_DOT_H
-#define	WG_GEOBROKER_DOT_H
 
+#include <wg_packpanel.h>
 
-class WgGeoBroker
+WgPackHook::WgPackHook()
 {
-public:
-	struct ItemData
+	m_weight = 1.f;
+}
+
+WgPackPanel * WgPackHook::Parent() const 
+{ 
+	return static_cast<WgPackPanel*>(_parent()); 
+}
+
+
+bool WgPackHook::SetWeight( float weight )
+{
+	if( weight < 0 )
+		return false;
+
+	if( weight != m_weight )
 	{
-		int		def;			// Default space for this item (input)
-		int		min;			// Min space for this item (input)
-		int		max;			// Max space for this item (input)
-		int		weight;			// Weight for this item (input)
-		int		ofs_out;		// Offset for this item (output)
-		int		size_out;		// Size for this item (output)
-	};
-
-	WgGeoBroker();
-	WgGeoBroker( int(*fp)(ItemData*,int,int) );
-	~WgGeoBroker() {}
+		m_weight = weight;
+		Parent()->_reallocateSpace();
+	}
+	return true;
+}
 
 
-	int Allocate( ItemData * pItems, int nItems, int totalSpace ) const { return m_function(pItems,nItems,totalSpace); }
 
-	static const WgGeoBroker none;
-//	static const WgGeoBroker even;
-//	static const WgGeoBroker overlap;
-//	static const WgGeoBroker weighted;
+void WgPackPanel::SetSizeBroker( WgSizeBroker& broker )
+{
+	m_contractionBroker = broker;
+	m_expansionBroker = broker;
+	_reallocateSpace();
+}
 
+void WgPackPanel::SetContractionBroker( WgSizeBroker& broker )
+{
+	m_contractionBroker = broker;
+	_reallocateSpace();
+}
 
-private:
+void WgPackPanel::SetExpansionBroker( WgSizeBroker& broker )
+{
+	m_expansionBroker = broker;
+	_reallocateSpace();
+}
 
-	int(*m_function)(ItemData*,int,int);
-
-};
-
-
-#endif //WG_GEOBROKER_DOT_H
+void WgPackPanel::_reallocateSpace()
+{
+}

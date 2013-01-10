@@ -94,7 +94,7 @@ public:
 
 	Uint32			GetTextAreaWidth();
 
-	WgSize			DefaultSize() const;
+	WgSize			PreferredSize() const;
 	bool			IsAutoEllipsisDefault() const { return false; };
 	
 

@@ -148,9 +148,9 @@ int WgButton::HeightForWidth( int width ) const
 }
 
 
-//____ DefaultSize() _____________________________________________________________
+//____ PreferredSize() _____________________________________________________________
 
-WgSize WgButton::DefaultSize() const
+WgSize WgButton::PreferredSize() const
 {
 	WgSize bestSize;
 

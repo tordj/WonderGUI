@@ -23,6 +23,14 @@
 #include <wg_layer.h>
 #include <wg_patches.h>
 
+
+//____ Constructor ____________________________________________________________
+
+WgLayer::WgLayer()
+{
+	m_baseHook.m_pParent = this;
+}
+
 //____ IsLayer() ______________________________________________________________
 
 bool WgLayer::IsLayer() const
@@ -109,12 +117,12 @@ int WgLayer::WidthForHeight( int height ) const
 		return WgWidget::WidthForHeight(height);
 }
 
-//____ DefaultSize() _____________________________________________________________
+//____ PreferredSize() _____________________________________________________________
 
-WgSize WgLayer::DefaultSize() const
+WgSize WgLayer::PreferredSize() const
 {
 	if( m_baseHook.Widget() )
-		return m_baseHook.Widget()->DefaultSize();
+		return m_baseHook.Widget()->PreferredSize();
 	else
 		return WgSize(1,1);
 }
@@ -124,9 +132,6 @@ WgSize WgLayer::DefaultSize() const
 
 void WgLayer::_onRequestRender( const WgRect& rect, const WgLayerHook * pHook )
 {
-	if( pHook && !pHook->m_bVisible )
-		return;
-
 	// Clip our geometry and put it in a dirtyrect-list
 
 	WgPatches patches;
@@ -144,7 +149,7 @@ void WgLayer::_onRequestRender( const WgRect& rect, const WgLayerHook * pHook )
 
 	while( pCover )
 	{
-		if( pCover->m_bVisible && pCover->m_geo.IntersectsWith( rect ) )
+		if( pCover->m_geo.IntersectsWith( rect ) )
 			pCover->Widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();
@@ -168,15 +173,13 @@ void WgLayer::_onBaseChanged()
 //_____________________________________________________________________________
 void WgLayer::BaseHook::_requestRender()
 {
-	if( m_bVisible )
-		m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
+	m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
 }
 
 //_____________________________________________________________________________
 void WgLayer::BaseHook::_requestRender( const WgRect& rect )
 {
-	if( m_bVisible )
-		m_pParent->_onRequestRender( rect, 0 );
+	m_pParent->_onRequestRender( rect, 0 );
 }
 
 //_____________________________________________________________________________

@@ -50,7 +50,7 @@ WgPanel* WgVHook::_parent() const
 
 //____ Constructor ____________________________________________________________
 
-WgVPanel::WgVPanel() : m_nBestWidth(0)
+WgVPanel::WgVPanel() : m_nPreferredWidth(0)
 {
 	m_bSiblingsOverlap = false;
 }
@@ -98,14 +98,14 @@ int WgVPanel::HeightForWidth( int width ) const
 
 int WgVPanel::WidthForHeight( int height ) const
 {
-	return -1; // No recommendation. Should this maybe be DefaultSize().w instead?
+	return -1; // No recommendation. Should this maybe be PreferredSize().w instead?
 }
 
-//____ DefaultSize() _____________________________________________________________
+//____ PreferredSize() _____________________________________________________________
 
-WgSize WgVPanel::DefaultSize() const
+WgSize WgVPanel::PreferredSize() const
 {
-	return m_bestSize;
+	return m_preferredSize;
 }
 
 //____ _onNewSize() ___________________________________________________________
@@ -121,7 +121,7 @@ void WgVPanel::_onNewSize( const WgSize& size )
 
 //____ _hookGeo() _____________________________________________________________
 
-WgRect WgVPanel::_hookGeo( const WgSortableHook * pHook )
+WgRect WgVPanel::_hookGeo( const WgVectorHook * pHook )
 {
 	WgVHook * p = FirstHook();
 	int ofs = 0;
@@ -200,28 +200,28 @@ WgHook * WgVPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 //____ _onResizeRequested() ___________________________________________________
 
-void WgVPanel::_onResizeRequested( WgSortableHook * _pHook )
+void WgVPanel::_onResizeRequested( WgVectorHook * _pHook )
 {
 	WgVHook * pHook = static_cast<WgVHook*>(_pHook);
 
-	// Update BestSize
+	// Update PreferredSize
 
-	WgSize oldBestSize = pHook->m_bestSize;
-	pHook->m_bestSize = pHook->Widget()->DefaultSize();
+	WgSize oldPreferredSize = pHook->m_preferredSize;
+	pHook->m_preferredSize = pHook->Widget()->PreferredSize();
 
-	m_bestSize.h += pHook->m_bestSize.h - oldBestSize.h;
+	m_preferredSize.h += pHook->m_preferredSize.h - oldPreferredSize.h;
 
-	if( pHook->m_bestSize.w != oldBestSize.w )
+	if( pHook->m_preferredSize.w != oldPreferredSize.w )
 	{
-		if( pHook->m_bestSize.w > m_bestSize.w )				// Is new best size bigger than previous?
+		if( pHook->m_preferredSize.w > m_preferredSize.w )				// Is new best size bigger than previous?
 		{
-			m_bestSize.w = pHook->m_bestSize.w;
-			m_nBestWidth = 1;
+			m_preferredSize.w = pHook->m_preferredSize.w;
+			m_nPreferredWidth = 1;
 		}
-		else if( oldBestSize.w == m_bestSize.w )			// Was this our widest child (or one of them)?
+		else if( oldPreferredSize.w == m_preferredSize.w )			// Was this our widest child (or one of them)?
 		{
-			m_nBestWidth--;
-			if( m_nBestWidth == 0 )
+			m_nPreferredWidth--;
+			if( m_nPreferredWidth == 0 )
 				_refreshDefaultWidth();
 		}
 	}
@@ -237,7 +237,7 @@ void WgVPanel::_onResizeRequested( WgSortableHook * _pHook )
 	m_size.h += newHeight - pHook->m_height;
 	pHook->m_height = newHeight;
 
-	// Now we have up-to-date data for HeightForWidth() and DefaultSize() requests,
+	// Now we have up-to-date data for HeightForWidth() and PreferredSize() requests,
 	// we notify our parent that we might need a resize.
 
 	_requestResize();
@@ -249,7 +249,7 @@ void WgVPanel::_onResizeRequested( WgSortableHook * _pHook )
 
 //____ _onRenderRequested() ___________________________________________________
 
-void  WgVPanel::_onRenderRequested( WgSortableHook * pHook )
+void  WgVPanel::_onRenderRequested( WgVectorHook * pHook )
 {
 	if( !pHook->IsVisible() )
 		return;
@@ -259,7 +259,7 @@ void  WgVPanel::_onRenderRequested( WgSortableHook * pHook )
 		_requestRender(rect);
 }
 
-void  WgVPanel::_onRenderRequested( WgSortableHook * pHook, const WgRect& rect )
+void  WgVPanel::_onRenderRequested( WgVectorHook * pHook, const WgRect& rect )
 {
 	if( !pHook->IsVisible() )
 		return;
@@ -273,25 +273,25 @@ void  WgVPanel::_onRenderRequested( WgSortableHook * pHook, const WgRect& rect )
 
 //____ _onWidgetAppeared() _____________________________________________________
 
-void  WgVPanel::_onWidgetAppeared( WgSortableHook * pInserted )
+void  WgVPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 {
 	WgVHook * pHook = static_cast<WgVHook*>(pInserted);
 
-	// Update stored BestSize
+	// Update stored PreferredSize
 
-	pHook->m_bestSize = pHook->Widget()->DefaultSize();
+	pHook->m_preferredSize = pHook->Widget()->PreferredSize();
 
-	if( m_bestSize.w == pHook->m_bestSize.w )
+	if( m_preferredSize.w == pHook->m_preferredSize.w )
 	{
-		m_nBestWidth++;
+		m_nPreferredWidth++;
 	}
-	else if( m_bestSize.w < pHook->m_bestSize.w )
+	else if( m_preferredSize.w < pHook->m_preferredSize.w )
 	{
-		m_bestSize.w = pHook->m_bestSize.w;
-		m_nBestWidth = 1;
+		m_preferredSize.w = pHook->m_preferredSize.w;
+		m_nPreferredWidth = 1;
 	}
 
-	m_bestSize.h += pHook->m_bestSize.h;
+	m_preferredSize.h += pHook->m_preferredSize.h;
 
 	// We set Widget to same width as ours to start with, our parent will
 	// expand us in RequestResize() if it wants to.
@@ -314,25 +314,25 @@ void  WgVPanel::_onWidgetAppeared( WgSortableHook * pInserted )
 
 //____ _onWidgetDisappeared() __________________________________________________
 
-void WgVPanel::_onWidgetDisappeared( WgSortableHook * pToBeRemoved )
+void WgVPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
 {
 	WgVHook * pHook = static_cast<WgVHook*>(pToBeRemoved);
 
-	// Update stored BestSize
+	// Update stored PreferredSize
 
-	m_bestSize.h -= pHook->m_bestSize.h;
+	m_preferredSize.h -= pHook->m_preferredSize.h;
 
-	if( m_bestSize.w == pHook->m_bestSize.w )
+	if( m_preferredSize.w == pHook->m_preferredSize.w )
 	{
-		m_nBestWidth--;
-		if( m_nBestWidth == 0 )
+		m_nPreferredWidth--;
+		if( m_nPreferredWidth == 0 )
 		{
 			// Refresh best size, ignoring Widget to be removed.
 
-			int w = pHook->m_bestSize.w;
-			pHook->m_bestSize.w = 0;
+			int w = pHook->m_preferredSize.w;
+			pHook->m_preferredSize.w = 0;
 			_refreshDefaultWidth();
-			pHook->m_bestSize.w = w;
+			pHook->m_preferredSize.w = w;
 		}
 	}
 
@@ -373,7 +373,7 @@ void WgVPanel::_adaptChildrenToWidth( int width )
 		{
 			int height = pHook->Widget()->HeightForWidth( width );
 			if( height == -1 )
-				height = pHook->m_bestSize.h;
+				height = pHook->m_preferredSize.h;
 
 			pHook->Widget()->_onNewSize( WgSize(width,height) );
 			pHook->m_height = height;
@@ -384,56 +384,56 @@ void WgVPanel::_adaptChildrenToWidth( int width )
 }
 
 //____ _refreshDefaultWidth() ______________________________________________________
-// Updates m_bestSize.w and m_nBestWidth. Relies on m_bestSize of the visible
+// Updates m_preferredSize.w and m_nPreferredWidth. Relies on m_preferredSize of the visible
 // hooks to have up-to-date data.
 
 void WgVPanel::_refreshDefaultWidth()
 {
-	m_bestSize.w = 0;
-	m_nBestWidth = 0;
+	m_preferredSize.w = 0;
+	m_nPreferredWidth = 0;
 	WgVHook * pHook = FirstHook();
 
 	while( pHook )
 	{
-		if( pHook->m_bVisible && pHook->m_bestSize.w >= m_bestSize.w )
+		if( pHook->m_bVisible && pHook->m_preferredSize.w >= m_preferredSize.w )
 		{
-			if( pHook->m_bestSize.w > m_bestSize.w )
+			if( pHook->m_preferredSize.w > m_preferredSize.w )
 			{
-				m_bestSize.w = pHook->m_bestSize.w;
-				m_nBestWidth = 1;
+				m_preferredSize.w = pHook->m_preferredSize.w;
+				m_nPreferredWidth = 1;
 			}
 			else
-				m_nBestWidth++;
+				m_nPreferredWidth++;
 		}
 		pHook = pHook->Next();
 	}
 }
 
-//____ _refreshDefaultSize() ______________________________________________________
-// Refreshes m_bestSize for all visible hooks, m_bestSize and m_nBestWidth with fresh
+//____ _refreshPreferredSize() ______________________________________________________
+// Refreshes m_preferredSize for all visible hooks, m_preferredSize and m_nPreferredWidth with fresh
 // info straight from the children.
 
-void WgVPanel::_refreshDefaultSize()
+void WgVPanel::_refreshPreferredSize()
 {
-	m_bestSize.Clear();
-	m_nBestWidth = 0;
+	m_preferredSize.Clear();
+	m_nPreferredWidth = 0;
 	WgVHook * pHook = FirstHook();
 
 	while( pHook )
 	{
 		if( pHook->m_bVisible )
 		{
-			pHook->m_bestSize = pHook->Widget()->DefaultSize();
+			pHook->m_preferredSize = pHook->Widget()->PreferredSize();
 
-			if( pHook->m_bestSize.w > m_bestSize.w )
+			if( pHook->m_preferredSize.w > m_preferredSize.w )
 			{
-				m_bestSize.w = pHook->m_bestSize.w;
-				m_nBestWidth = 1;
+				m_preferredSize.w = pHook->m_preferredSize.w;
+				m_nPreferredWidth = 1;
 			}
-			else if( pHook->m_bestSize.w == m_bestSize.w )
-				m_nBestWidth++;
+			else if( pHook->m_preferredSize.w == m_preferredSize.w )
+				m_nPreferredWidth++;
 
-			m_bestSize.h += pHook->m_bestSize.h;
+			m_preferredSize.h += pHook->m_preferredSize.h;
 		}
 		pHook = pHook->Next();
 	}
@@ -443,7 +443,7 @@ void WgVPanel::_refreshDefaultSize()
 
 void  WgVPanel::_refreshAllWidgets()
 {
-	_refreshDefaultSize();
+	_refreshPreferredSize();
 	_adaptChildrenToWidth( m_size.w );
 	_requestResize();
 	_requestRender();
@@ -451,7 +451,7 @@ void  WgVPanel::_refreshAllWidgets()
 
 //____ _renderFromChildOnward() _______________________________________________
 
-void WgVPanel::_renderFromChildOnward( WgSortableHook * pHook )
+void WgVPanel::_renderFromChildOnward( WgVectorHook * pHook )
 {
 	WgRect geo = _hookGeo(pHook);
 	geo.h = m_size.h - geo.y;
@@ -460,7 +460,7 @@ void WgVPanel::_renderFromChildOnward( WgSortableHook * pHook )
 
 //____ _newHook() _____________________________________________________________
 
-WgSortableHook *  WgVPanel::_newHook()
+WgVectorHook *  WgVPanel::_newHook()
 {
 	return new WgVHook( this );
 }

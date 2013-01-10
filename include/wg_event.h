@@ -460,7 +460,7 @@ namespace WgEvent
 		SliderWheelRolled( WgWidgetSlider* pWidget, int distance, float pos, float length );
 		int			Distance() const;
 	protected:
-		float		m_distance;
+		int			m_distance;
 	};
 
 	//____ WgWidgetKnob events _________________________________________________
@@ -474,7 +474,7 @@ namespace WgEvent
 		int		Pos() const;
 	private:
 		float	m_fraction;
-		float	m_pos;
+		int		m_pos;
 	};
 
 	//____ Text events ________________________________________

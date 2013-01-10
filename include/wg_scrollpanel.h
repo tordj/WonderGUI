@@ -40,7 +40,7 @@ class WgScrollPanel;
 
 //____ WgScrollHook _____________________________________________________________
 
-class WgScrollHook : public WgHook
+class WgScrollHook : public WgPanelHook
 {
 	friend class WgScrollPanel;
 public:
@@ -214,7 +214,7 @@ public:
 
 	// Overloaded from Widget
 
-	WgSize				DefaultSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
+	WgSize				PreferredSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
 
 
 

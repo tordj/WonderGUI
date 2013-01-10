@@ -1682,7 +1682,7 @@ int WgTablePanel::HeightForWidth( int width ) const
 {
 	//TODO: Implement, should recurse through lines and their widgets checking height needed.
 
-	return DefaultSize().h;		// No recommendation, for the moment
+	return PreferredSize().h;		// No recommendation, for the moment
 }
 
 //____ WidthForHeight() _______________________________________________________
@@ -1692,9 +1692,9 @@ int WgTablePanel::WidthForHeight( int height ) const
 	return m_contentSize.w;		// Width remains the same independent of height.
 }
 
-//____ DefaultSize() _____________________________________________________________
+//____ PreferredSize() _____________________________________________________________
 
-WgSize WgTablePanel::DefaultSize() const
+WgSize WgTablePanel::PreferredSize() const
 {
 	return m_contentSize;
 }

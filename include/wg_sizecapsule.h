@@ -19,35 +19,45 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_geobroker.h>
+
+#include <vector>
+
+#ifndef WG_SIZECAPSULE_DOT_H
+#define WG_SIZECAPSULE_DOT_H
+
+#ifndef WG_CAPSULE_DOT_H
+#	include <wg_capsule.h>
+#endif
 
 
-
-int default_broker(WgGeoBroker::ItemData* pItems, int nItems, int totalSpace)
+class WgSizeCapsule : public WgCapsule
 {
-	int nUsedSpace = 0;
-	for( int i = 0 ; i < nItems ; i++ )
-	{
-		pItems[i].ofs_out = nUsedSpace;
-		nUsedSpace += pItems[i].def;
-		pItems[i].size_out = pItems[i].def;
-	}
-	return nUsedSpace;
-}
+public:
+	WgSizeCapsule();
+	~WgSizeCapsule();
 
+	virtual const char *Type( void ) const;
+	static const char * GetClass();
+	virtual WgWidget * NewOfMyType() const { return new WgSizeCapsule(); };
 
+	void	SetSizes( WgSize min, WgSize preferred, WgSize max );
 
+	void	SetPreferredSize( WgSize size );
+	void	SetMinSize( WgSize size );
+	void	SetMaxSize( WgSize size );
 
-WgGeoBroker::WgGeoBroker() : m_function(default_broker) {}
-WgGeoBroker::WgGeoBroker( int(*fp)(ItemData*,int,int) ) : m_function(fp) {}
+	WgSize	PreferredSize() const;
+	WgSize	MinSize() const;
+	WgSize	MaxSize() const;
 
+	int		HeightForWidth( int width ) const;
+	int		WidthForHeight( int height ) const;
 
-const WgGeoBroker	WgGeoBroker::none = WgGeoBroker(default_broker);
+private:
 
+	WgSize	m_min;
+	WgSize	m_max;
+	WgSize	m_preferred;
+};
 
-
-
-
-
-
-
+#endif //WG_SIZECAPSULE_DOT_H

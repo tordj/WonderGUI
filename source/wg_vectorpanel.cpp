@@ -20,36 +20,36 @@
 
 =========================================================================*/
 
-#include <wg_sortablepanel.h>
+#include <wg_vectorpanel.h>
 
 
-WgCoord WgSortableHook::Pos() const
+WgCoord WgVectorHook::Pos() const
 {
 	return Parent()->_hookGeo(this).Pos();
 }
 
-WgSize WgSortableHook::Size() const
+WgSize WgVectorHook::Size() const
 {
 	return Parent()->_hookGeo(this).Size();
 }
 
-WgRect WgSortableHook::Geo() const
+WgRect WgVectorHook::Geo() const
 {
 	return Parent()->_hookGeo(this);
 }
 
-WgCoord WgSortableHook::ScreenPos() const
+WgCoord WgVectorHook::ScreenPos() const
 {
 	return Parent()->_hookGeo(this).Pos() + Parent()->ScreenPos();
 
 }
 
-WgRect WgSortableHook::ScreenGeo() const
+WgRect WgVectorHook::ScreenGeo() const
 {
 	return Parent()->_hookGeo(this) + Parent()->ScreenPos();
 }
 
-bool WgSortableHook::MoveUp()
+bool WgVectorHook::MoveForward()
 {
 	if( _moveUp() )
 	{
@@ -60,7 +60,7 @@ bool WgSortableHook::MoveUp()
 	return false;
 }
 
-bool WgSortableHook::MoveDown()
+bool WgVectorHook::MoveBackward()
 {
 	if( _moveDown() )
 	{
@@ -71,7 +71,7 @@ bool WgSortableHook::MoveDown()
 	return false;
 }
 
-bool WgSortableHook::MoveBefore( WgSortableHook * pSibling )
+bool WgVectorHook::MoveBefore( WgVectorHook * pSibling )
 {
 	if( pSibling && pSibling->Parent() == Parent() )
 	{
@@ -84,7 +84,7 @@ bool WgSortableHook::MoveBefore( WgSortableHook * pSibling )
 	return false;
 }
 
-bool WgSortableHook::MoveAfter( WgSortableHook * pSibling )
+bool WgVectorHook::MoveAfter( WgVectorHook * pSibling )
 {
 	if( pSibling && pSibling->Parent() == Parent() )
 	{
@@ -97,7 +97,7 @@ bool WgSortableHook::MoveAfter( WgSortableHook * pSibling )
 	return false;
 }
 
-bool WgSortableHook::MoveFirst()
+bool WgVectorHook::MoveFirst()
 {
 	if( _moveFirst() )
 	{
@@ -108,7 +108,7 @@ bool WgSortableHook::MoveFirst()
 	return false;
 }
 
-bool WgSortableHook::MoveLast()
+bool WgVectorHook::MoveLast()
 {
 	if( _moveLast() )
 	{
@@ -119,7 +119,7 @@ bool WgSortableHook::MoveLast()
 	return false;
 }
 
-bool WgSortableHook::SetVisible( bool bVisible )
+bool WgVectorHook::SetVisible( bool bVisible )
 {
 	if( bVisible != m_bVisible )
 	{
@@ -133,52 +133,52 @@ bool WgSortableHook::SetVisible( bool bVisible )
 	return true;
 }
 
-WgSortablePanel * WgSortableHook::Parent() const
+WgVectorPanel * WgVectorHook::Parent() const
 {
-	return static_cast<WgSortablePanel*>(_parent());
+	return static_cast<WgVectorPanel*>(_parent());
 }
 
 
-WgSortableHook::WgSortableHook()
+WgVectorHook::WgVectorHook()
 {
 }
 
-WgSortableHook::~WgSortableHook()
+WgVectorHook::~WgVectorHook()
 {
 }
 
 
-void WgSortableHook::_requestRender()
+void WgVectorHook::_requestRender()
 {
-	WgSortablePanel * p = Parent();
+	WgVectorPanel * p = Parent();
 
 	p->_onRenderRequested(this);
 }
 
-void WgSortableHook::_requestRender( const WgRect& rect )
+void WgVectorHook::_requestRender( const WgRect& rect )
 {
 	Parent()->_onRenderRequested(this, rect);
 }
 
-void WgSortableHook::_requestResize()
+void WgVectorHook::_requestResize()
 {
 	Parent()->_onResizeRequested(this);
 }
 
 
-WgHook * WgSortableHook::_prevHook() const
+WgHook * WgVectorHook::_prevHook() const
 {
 	return _prev();
 }
 
-WgHook * WgSortableHook::_nextHook() const
+WgHook * WgVectorHook::_nextHook() const
 {
 	return _next();
 }
 
 //____ Constructor() __________________________________________________________
 
-WgSortablePanel::WgSortablePanel() : m_sortOrder(WG_SORT_ASCENDING), m_pSortFunc(0), m_nChildPanels(0)
+WgVectorPanel::WgVectorPanel() : m_sortOrder(WG_SORT_ASCENDING), m_pSortFunc(0), m_nChildPanels(0)
 {
 
 }
@@ -186,19 +186,19 @@ WgSortablePanel::WgSortablePanel() : m_sortOrder(WG_SORT_ASCENDING), m_pSortFunc
 
 //____ Destructor() ___________________________________________________________
 
-WgSortablePanel::~WgSortablePanel()
+WgVectorPanel::~WgVectorPanel()
 {
 }
 
 
 //____ AddChild() _____________________________________________________________
 
-WgSortableHook * WgSortablePanel::AddChild( WgWidget * pWidget )
+WgVectorHook * WgVectorPanel::AddChild( WgWidget * pWidget )
 {
 	if( !pWidget )
 		return 0;
 
-	WgSortableHook * pHook = _newHook();
+	WgVectorHook * pHook = _newHook();
 	m_hooks.PushBack(pHook);
 	pHook->_attachWidget( pWidget );
 
@@ -208,13 +208,13 @@ WgSortableHook * WgSortablePanel::AddChild( WgWidget * pWidget )
 
 //____ InsertChild() __________________________________________________________
 
-WgSortableHook * WgSortablePanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling )
+WgVectorHook * WgVectorPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling )
 {
 	if( !pWidget || !pSibling || !pSibling->Parent() || pSibling->Parent() != this )
 		return 0;
 
-	WgSortableHook * pHook = _newHook();
-	pHook->_moveBefore(static_cast<WgSortableHook*>(pSibling->Hook()));
+	WgVectorHook * pHook = _newHook();
+	pHook->_moveBefore(static_cast<WgVectorHook*>(pSibling->Hook()));
 
 	pHook->_attachWidget( pWidget );
 	
@@ -224,7 +224,7 @@ WgSortableHook * WgSortablePanel::InsertChild( WgWidget * pWidget, WgWidget * pS
 
 //____ InsertChildSorted() ____________________________________________________
 
-WgSortableHook * WgSortablePanel::InsertChildSorted( WgWidget * pWidget )
+WgVectorHook * WgVectorPanel::InsertChildSorted( WgWidget * pWidget )
 {
 	//TODO: Implement
 
@@ -233,14 +233,14 @@ WgSortableHook * WgSortablePanel::InsertChildSorted( WgWidget * pWidget )
 
 //____ DeleteChild() __________________________________________________________
 
-bool WgSortablePanel::DeleteChild( WgWidget * pWidget )
+bool WgVectorPanel::DeleteChild( WgWidget * pWidget )
 {
 	if( !pWidget || !pWidget->Hook() || pWidget->Hook()->Parent() != this )
 		return false;
 
 	// Disconnect and notify subclass that widget has disappeared
 
-	WgSortableHook * pHook = (WgSortableHook *) pWidget->Hook();
+	WgVectorHook * pHook = (WgVectorHook *) pWidget->Hook();
 	pHook->_disconnect();
 
 	if( pHook->IsVisible() )
@@ -254,14 +254,14 @@ bool WgSortablePanel::DeleteChild( WgWidget * pWidget )
 
 //____ ReleaseChild() _________________________________________________________
 
-WgWidget * WgSortablePanel::ReleaseChild( WgWidget * pWidget )
+WgWidget * WgVectorPanel::ReleaseChild( WgWidget * pWidget )
 {
 	if( !pWidget || !pWidget->Hook() || pWidget->Hook()->Parent() != this )
 		return 0;
 
 	// Disconnect and notify subclass that widget has disappeared
 
-	WgSortableHook * pHook = (WgSortableHook *) pWidget->Hook();
+	WgVectorHook * pHook = (WgVectorHook *) pWidget->Hook();
 	pHook->_disconnect();
 
 	if( pHook->IsVisible() )
@@ -272,7 +272,7 @@ WgWidget * WgSortablePanel::ReleaseChild( WgWidget * pWidget )
 
 //____ DeleteAllChildren() ______________________________________________________
 
-bool WgSortablePanel::DeleteAllChildren()
+bool WgVectorPanel::DeleteAllChildren()
 {
 	m_hooks.Clear();
 	_refreshAllWidgets();
@@ -282,7 +282,7 @@ bool WgSortablePanel::DeleteAllChildren()
 
 //____ ReleaseAllChildren() _____________________________________________________
 
-bool WgSortablePanel::ReleaseAllChildren()
+bool WgVectorPanel::ReleaseAllChildren()
 {
 	while( m_hooks.First() )
 		m_hooks.PopFront();
@@ -294,28 +294,28 @@ bool WgSortablePanel::ReleaseAllChildren()
 
 //____ SortChildren() ___________________________________________________________
 
-void WgSortablePanel::SortChildren()
+void WgVectorPanel::SortChildren()
 {
 	//TODO: Implement
 }
 
 //____ SetSortOrder() _________________________________________________________
 
-void WgSortablePanel::SetSortOrder( WgSortOrder order )
+void WgVectorPanel::SetSortOrder( WgSortOrder order )
 {
 	m_sortOrder = order;
 }
 
 //____ SetSortFunction() ______________________________________________________
 
-void WgSortablePanel::SetSortFunction( WgWidgetSortFunc pSortFunc )
+void WgVectorPanel::SetSortFunction( WgWidgetSortFunc pSortFunc )
 {
 	m_pSortFunc = pSortFunc;
 }
 
 //____ _onCloneContent() ______________________________________________________
 
-void WgSortablePanel::_onCloneContent( const WgWidget * _pOrg )
+void WgVectorPanel::_onCloneContent( const WgWidget * _pOrg )
 {
 	//TODO: Implement
 }

@@ -80,9 +80,9 @@ void WgValueDisplay::SetFormat( const WgValueFormat& format )
 	_requestRender();
 }
 
-//____ DefaultSize() __________________________________________________________
+//____ PreferredSize() __________________________________________________________
 
-WgSize WgValueDisplay::DefaultSize() const
+WgSize WgValueDisplay::PreferredSize() const
 {
 	//TODO: Implement!
 

@@ -4,6 +4,7 @@
 #include <wg_blockset.h>
 #include <wg_surface.h>
 #include <wg_widget.h>
+#include <wg_panel.h>
 
 bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 {
@@ -256,61 +257,6 @@ int WgUtil::SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy pol
 	}
 	return defaultSize;
 }
-
-//____ SizeFromPolicy() ________________________________________________________
-
-WgSize WgUtil::SizeFromPolicy( const WgWidget * pWidget, WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy )
-{
-	WgSize	defaultSize = pWidget->DefaultSize();
-
-	WgSize	sz;
-
-	switch( widthPolicy )
-	{
-		case WG_DEFAULT:
-		{
-			sz.h = SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
-			sz.w = pWidget->WidthForHeight(sz.h);
-			break;
-		case WG_BOUND:
-			sz.w = specifiedSize.w;
-			sz.h = SizeFromPolicy( pWidget->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
-			break;
-		case WG_CONFINED:
-			if( defaultSize.w > specifiedSize.w )
-			{
-				sz.w = specifiedSize.w;
-				sz.h = SizeFromPolicy( pWidget->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
-			}
-			else
-			{
-				sz.h = SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
-				sz.w = pWidget->WidthForHeight(sz.h);
-				if( sz.w > specifiedSize.w )
-					sz.w = specifiedSize.w;
-			}
-			break;
-		case WG_EXPANDED:
-			if( defaultSize.w < specifiedSize.w )
-			{
-				sz.w = specifiedSize.w;
-				sz.h = SizeFromPolicy( pWidget->HeightForWidth(sz.w), specifiedSize.h, heightPolicy );
-			}
-			else
-			{
-				sz.h = SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
-				sz.w = pWidget->WidthForHeight(sz.h);
-				if( sz.w < specifiedSize.w )
-					sz.w = specifiedSize.w;
-			}
-			break;
-		}
-	}
-
-	return sz;
-}
-
-
 
 //____ Checksum8::Add() ________________________________________________________
 

@@ -38,13 +38,6 @@ void WgStackHook::SetSizePolicy( SizePolicy policy )
 	};
 }
 
-void WgStackHook::SetBorders( WgBorders borders )
-{
-	m_pParent->_onRenderRequested(this);
-	m_borders = borders;
-	m_pParent->_onRenderRequested(this);
-}
-
 void WgStackHook::SetOrientation( WgOrientation orientation )
 {
 	if( orientation != m_orientation )
@@ -80,16 +73,17 @@ WgPanel * WgStackHook::_parent() const
 
 WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 {
-	WgRect base = parentGeo - m_borders;
+	WgRect base = parentGeo - m_padding;
 
 	if( base.w <= 0 || base.h <= 0 )
 		return WgRect(0,0,0,0);
 
 	switch( m_sizePolicy )
 	{
+		default:
 		case DEFAULT:
 		{
-			WgSize	size = m_pWidget->DefaultSize();
+			WgSize	size = m_pWidget->PreferredSize();
 			WgRect geo = WgUtil::OrientationToRect( m_orientation, base, size );
 
 			if( geo.w > base.w )
@@ -111,7 +105,7 @@ WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 		}
 		case SCALE:
 		{
-			WgSize	orgSize = m_pWidget->DefaultSize();
+			WgSize	orgSize = m_pWidget->PreferredSize();
 			WgSize	size;
 
 			float	fracX = orgSize.w / (float) base.w;
@@ -198,11 +192,11 @@ int WgStackPanel::WidthForHeight( int height ) const
 }
 
 
-//____ DefaultSize() _____________________________________________________________
+//____ PreferredSize() _____________________________________________________________
 
-WgSize WgStackPanel::DefaultSize() const
+WgSize WgStackPanel::PreferredSize() const
 {
-	return m_bestSize;
+	return m_preferredSize;
 }
 
 //____ _onNewSize() ___________________________________________________________
@@ -216,28 +210,28 @@ void WgStackPanel::_onNewSize( const WgSize& size )
 
 //____ _hookGeo() _____________________________________________________________
 
-WgRect WgStackPanel::_hookGeo( const WgSortableHook * pHook )
+WgRect WgStackPanel::_hookGeo( const WgVectorHook * pHook )
 {
 	return ((WgStackHook*)pHook)->_getGeo(m_size);
 }
 
 //____ _onResizeRequested() ____________________________________________________
 
-void WgStackPanel::_onResizeRequested( WgSortableHook * _pHook )
+void WgStackPanel::_onResizeRequested( WgVectorHook * _pHook )
 {
-	_refreshDefaultSize();
+	_refreshPreferredSize();
 }
 
 //____ _onRenderRequested() ____________________________________________________
 
-void WgStackPanel::_onRenderRequested( WgSortableHook * _pHook )
+void WgStackPanel::_onRenderRequested( WgVectorHook * _pHook )
 {
 	WgStackHook * pHook = static_cast<WgStackHook*>(_pHook);
 
 	_onRenderRequested(pHook, pHook->_getGeo(WgRect(0,0,m_size)));
 }
 
-void WgStackPanel::_onRenderRequested( WgSortableHook * _pHook, const WgRect& _rect )
+void WgStackPanel::_onRenderRequested( WgVectorHook * _pHook, const WgRect& _rect )
 {
 	WgStackHook * pHook = static_cast<WgStackHook*>(_pHook);
 
@@ -272,7 +266,7 @@ void WgStackPanel::_onRenderRequested( WgSortableHook * _pHook, const WgRect& _r
 
 //____ _onWidgetAppeared() _____________________________________________________
 
-void WgStackPanel::_onWidgetAppeared( WgSortableHook * pInserted )
+void WgStackPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 {
 	bool	bRequestResize = false;
 
@@ -284,16 +278,16 @@ void WgStackPanel::_onWidgetAppeared( WgSortableHook * pInserted )
 
 	// Update bestSize
 
-	WgSize best = pInserted->Widget()->DefaultSize();
+	WgSize preferred = pInserted->Widget()->PreferredSize();
 
-	if( best.w > m_bestSize.w )
+	if( preferred.w > m_preferredSize.w )
 	{
-		m_bestSize.w = best.w;
+		m_preferredSize.w = preferred.w;
 		bRequestResize = true;
 	}
-	if( best.h > m_bestSize.h )
+	if( preferred.h > m_preferredSize.h )
 	{
-		m_bestSize.h = best.h;
+		m_preferredSize.h = preferred.h;
 		bRequestResize = true;
 	}
 
@@ -311,7 +305,7 @@ void WgStackPanel::_onWidgetAppeared( WgSortableHook * pInserted )
 
 //____ _onWidgetDisappeared() __________________________________________________
 
-void WgStackPanel::_onWidgetDisappeared( WgSortableHook * pToBeRemoved )
+void WgStackPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
 {
 	bool	bRequestResize = false;
 
@@ -319,27 +313,27 @@ void WgStackPanel::_onWidgetDisappeared( WgSortableHook * pToBeRemoved )
 
 	_onRenderRequested( pToBeRemoved );
 
-	// Update m_bestSize, skiping pToBeRemoved
+	// Update m_preferredSize, skiping pToBeRemoved
 
-	WgSize	bestSize;
+	WgSize	preferredSize;
 	WgStackHook * pHook = FirstHook();
 	while( pHook )
 	{
 		if( pHook != pToBeRemoved )
 		{
-			WgSize sz = pHook->Widget()->DefaultSize();
-			if( sz.w > bestSize.w )
-				bestSize.w = sz.w;
-			if( sz.h > bestSize.h )
-				bestSize.h = sz.h;
+			WgSize sz = pHook->Widget()->PreferredSize();
+			if( sz.w > preferredSize.w )
+				preferredSize.w = sz.w;
+			if( sz.h > preferredSize.h )
+				preferredSize.h = sz.h;
 		}
 		pHook = pHook->Next();
 	}
 
-	if( bestSize != m_bestSize )
+	if( preferredSize != m_preferredSize )
 		bRequestResize = true;
 
-	m_bestSize = bestSize;
+	m_preferredSize = preferredSize;
 
 	// Check if removal might affect height for current width
 
@@ -364,38 +358,38 @@ void WgStackPanel::_onWidgetsReordered()
 
 void WgStackPanel::_refreshAllWidgets()
 {
-	_refreshDefaultSize();
+	_refreshPreferredSize();
 	_adaptChildrenToSize();
 	_requestRender();
 }
 
 //____ _newHook() _____________________________________________________________
 
-WgSortableHook * WgStackPanel::_newHook()
+WgVectorHook * WgStackPanel::_newHook()
 {
 	return new WgStackHook(this);
 }
 
-//____ _refreshDefaultSize() _____________________________________________________
+//____ _refreshPreferredSize() _____________________________________________________
 
-void WgStackPanel::_refreshDefaultSize()
+void WgStackPanel::_refreshPreferredSize()
 {
-	WgSize	bestSize;
+	WgSize	preferredSize;
 
 	WgStackHook * pHook = FirstHook();
 	while( pHook )
 	{
-		WgSize sz = pHook->Widget()->DefaultSize() + pHook->m_borders;
-		if( sz.w > bestSize.w )
-			bestSize.w = sz.w;
-		if( sz.h > bestSize.h )
-			bestSize.h = sz.h;
+		WgSize sz = pHook->_paddedPreferredSize();
+		if( sz.w > preferredSize.w )
+			preferredSize.w = sz.w;
+		if( sz.h > preferredSize.h )
+			preferredSize.h = sz.h;
 		pHook = pHook->Next();
 	}
 
-	if( m_bestSize != bestSize)
+	if( m_preferredSize != preferredSize)
 	{
-		m_bestSize = bestSize;
+		m_preferredSize = preferredSize;
 		_requestResize();
 	}
 }

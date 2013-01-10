@@ -154,33 +154,33 @@ void WgCheckBox::SetFlipOnRelease( bool bFlipOnRelease )
 }
 
 
-//____ DefaultSize() __________________________________________________
+//____ PreferredSize() __________________________________________________
 
-WgSize WgCheckBox::DefaultSize() const
+WgSize WgCheckBox::PreferredSize() const
 {
-	WgSize iconBestSize;
-	WgSize bgBestSize;
-	WgSize textBestSize;
+	WgSize iconPreferredSize;
+	WgSize bgPreferredSize;
+	WgSize textPreferredSize;
 
 	if( m_text.nbChars() > 0 )
-		textBestSize = m_text.unwrappedSize();
+		textPreferredSize = m_text.unwrappedSize();
 
 	if( m_pBlockUnchecked )
 	{
-		bgBestSize = m_pBlockUnchecked->Size();
-		textBestSize += m_pBlockUnchecked->Padding();
+		bgPreferredSize = m_pBlockUnchecked->Size();
+		textPreferredSize += m_pBlockUnchecked->Padding();
 	}
 
 	if( m_pIconUnchecked )
 	{
-		iconBestSize = m_pIconUnchecked->Size() + m_iconBorders.Size();
+		iconPreferredSize = m_pIconUnchecked->Size() + m_iconBorders.Size();
 
-		//TODO: Add magic for how icon influences textBestSize based on origo, iconBorders, iconScale and bgBestSize
+		//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorders, iconScale and bgPreferredSize
 	}
 
-	WgSize bestSize = WgSize::Max( WgSize::Max(iconBestSize,bgBestSize), textBestSize);
+	WgSize preferredSize = WgSize::Max( WgSize::Max(iconPreferredSize,bgPreferredSize), textPreferredSize);
 
-	return bestSize;
+	return preferredSize;
 }
 
 

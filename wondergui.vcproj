@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -106,7 +106,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -180,14 +180,6 @@
 			</File>
 			<File
 				RelativePath=".\include\wg_blockset.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\wg_boxlayout.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_boxlayout.h"
 				>
 			</File>
 			<File
@@ -320,14 +312,6 @@
 			</File>
 			<File
 				RelativePath=".\include\wg_geo.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\wg_geobroker.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_geobroker.h"
 				>
 			</File>
 			<File
@@ -471,19 +455,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\wg_resource_factory_xml.h"
+				RelativePath=".\source\wg_sizebroker.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\include\wg_resource_visitor.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_resources_xml.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_resourceserializer_xml.h"
+				RelativePath=".\include\wg_sizebroker.h"
 				>
 			</File>
 			<File
@@ -508,14 +484,6 @@
 			</File>
 			<File
 				RelativePath=".\include\wg_smartptr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\wg_sortablepanel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wg_sortablepanel.h"
 				>
 			</File>
 			<File
@@ -655,6 +623,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\wg_packpanel.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_packpanel.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\wg_panel.cpp"
 				>
 			</File>
@@ -692,6 +668,14 @@
 			</File>
 			<File
 				RelativePath=".\include\wg_tablepanel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\wg_vectorpanel.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wg_vectorpanel.h"
 				>
 			</File>
 			<File
@@ -863,11 +847,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\wg_tabordercapsule.cpp"
+				RelativePath=".\source\wg_sizecapsule.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\include\wg_tabordercapsule.h"
+				RelativePath=".\include\wg_sizecapsule.h"
 				>
 			</File>
 		</Filter>

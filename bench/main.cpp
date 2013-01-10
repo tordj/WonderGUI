@@ -218,7 +218,7 @@ void printWidgetSizes()
 	printf( "WgWidgetSlider: %d bytes\n", (int) sizeof(WgWidgetSlider) );
 	printf( "WgStackPanel: %d bytes\n", (int) sizeof(WgStackPanel) );
 	printf( "WgTablePanel: %d bytes\n", (int) sizeof(WgTablePanel) );
-	printf( "WgTaborderCapsule: %d bytes\n", (int) sizeof(WgTaborderCapsule) );
+	printf( "WgSizeCapsule: %d bytes\n", (int) sizeof(WgSizeCapsule) );
 	printf( "WgTextDisplay: %d bytes\n", (int) sizeof(WgTextDisplay) );
 	printf( "WgValueDisplay: %d bytes\n", (int) sizeof(WgValueDisplay) );
 	printf( "WgVPanel: %d bytes\n", (int) sizeof(WgVPanel) );

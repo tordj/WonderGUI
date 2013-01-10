@@ -54,10 +54,10 @@ public:
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
 
-	WgSize			DefaultSize() const;
+	WgSize			PreferredSize() const;
 
 protected:
-	WgCapsule() : m_hook(this) {}
+	WgCapsule();
 
 	class Hook : public WgHook
 	{
@@ -80,11 +80,9 @@ protected:
 		WgCapsule* 	Parent() const { return m_pParent; }
 
 	protected:
-		Hook( WgCapsule * pParent ) : m_pParent(pParent) {}
-
-		void			_requestRender() { if( m_bVisible ) m_pParent->_requestRender(); }
-		void			_requestRender( const WgRect& rect ) { if( m_bVisible ) m_pParent->_requestRender(rect); }
-		void			_requestResize() { if( m_bVisible ) m_pParent->_requestResize(); }
+		void			_requestRender() { m_pParent->_requestRender(); }
+		void			_requestRender( const WgRect& rect ) { m_pParent->_requestRender(rect); }
+		void			_requestResize() { m_pParent->_requestResize(); }
 
 		WgHook *		_prevHook() const { return 0; }
 		WgHook *		_nextHook() const { return 0; }

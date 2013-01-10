@@ -582,16 +582,16 @@ WgMode	WgTablist::_getTabMode(const WgTab& tab) const
 		return WG_MODE_NORMAL;
 }
 
-//____ DefaultSize() ______________________________________________________________
+//____ PreferredSize() ______________________________________________________________
 
-WgSize WgTablist::DefaultSize() const
+WgSize WgTablist::PreferredSize() const
 {
 	if( m_tabs.Size() == 0 )
 		return WgSize(0,0);
 
-	// Calculate best width
+	// Calculate preferred width
 
-	int bestWidth = 0;
+	int preferredWidth = 0;
 
 	switch( m_tabWidthMode )
 	{
@@ -609,7 +609,7 @@ WgSize WgTablist::DefaultSize() const
 				pTab = pTab->Next();
 			}
 
-			bestWidth = widest*nTabs - m_overlap*(nTabs-1);
+			preferredWidth = widest*nTabs - m_overlap*(nTabs-1);
 			break;
 		}
 
@@ -621,12 +621,12 @@ WgSize WgTablist::DefaultSize() const
 			WgTab * pTab = m_tabs.First();
 			while( pTab )
 			{
-				bestWidth += _calcTabsWantedWidth(pTab);
+				preferredWidth += _calcTabsWantedWidth(pTab);
 				nTabs++;
 				pTab = pTab->Next();
 			}
 
-			bestWidth -= m_overlap*(nTabs-1);
+			preferredWidth -= m_overlap*(nTabs-1);
 
 			break;
 		}
@@ -634,7 +634,7 @@ WgSize WgTablist::DefaultSize() const
 
 	// Calculate best height
 
-	int bestHeight = 0;
+	int preferredHeight = 0;
 	WgTab * pTab = m_tabs.First();
 	while( pTab )
 	{
@@ -651,15 +651,15 @@ WgSize WgTablist::DefaultSize() const
 		else
 			h = pTab->m_text.height();
 
-		if( h > bestHeight )
-			bestHeight = h;
+		if( h > preferredHeight )
+			preferredHeight = h;
 
 		pTab = pTab->Next();
 	}
 
 	//
 
-	return WgSize( bestWidth, bestHeight );
+	return WgSize( preferredWidth, preferredHeight );
 
 }
 

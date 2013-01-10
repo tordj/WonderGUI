@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <wg_container.h>
+#include <wg_panel.h>
 
 #include <wg_patches.h>
 
@@ -144,7 +145,9 @@ WgWidget * WgContainer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 
 	while( pHook && !pResult )
 	{
-		if( pHook->IsVisible() && childGeo.Contains( ofs ) )
+		bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(pHook)->IsVisible():true;
+
+		if( bVisibleHook && childGeo.Contains( ofs ) )
 		{
 			if( pHook->Widget()->IsContainer() )
 			{
@@ -288,7 +291,9 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 		{
 			WgRect geo = childGeo + _canvas.Pos();
 
-			if( p->IsVisible() && geo.IntersectsWith( dirtBounds ) )
+			bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
+
+			if( bVisibleHook && geo.IntersectsWith( dirtBounds ) )
 				renderList.push_back( WidgetRenderContext(p->Widget(), geo ) );
 
 			p = _nextHookWithGeo( childGeo, p );
@@ -325,7 +330,8 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 		while(p)
 		{
 			WgRect canvas = childGeo + _canvas.Pos();
-			if( p->IsVisible() && canvas.IntersectsWith( dirtBounds ) )
+			bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
+			if( bVisibleHook && canvas.IntersectsWith( dirtBounds ) )
 				p->Widget()->_renderPatches( pDevice, canvas, canvas, &patches, _layer );
 			p = _nextHookWithGeo( childGeo, p );
 		}
@@ -357,7 +363,8 @@ void WgContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, co
 
 	while(p)
 	{
-		if( p->IsVisible() )
+		bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
+		if( bVisibleHook )
 			p->Widget()->_onCollectPatches( container, childGeo + geo.Pos(), clip );
 		p = _nextHookWithGeo( childGeo, p );
 	}
@@ -374,7 +381,8 @@ void WgContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const W
 
 	while(p)
 	{
-		if( p->IsVisible() )
+		bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
+		if( bVisibleHook )
 			p->Widget()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
 		p = _nextHookWithGeo( childGeo, p );
 	}

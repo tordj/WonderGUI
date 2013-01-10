@@ -19,67 +19,65 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_BOXLAYOUT_DOT_H
-#define WG_BOXLAYOUT_DOT_H
+#ifndef WG_PACKPANEL_DOT_H
+#define WG_PACKPANEL_DOT_H
 
-#ifndef	WG_GEOBROKER_DOT_H
-#	include <wg_geobroker.h>
+#ifndef	WG_SIZEBROKER_DOT_H
+#	include <wg_sizebroker.h>
 #endif
 
-#ifndef WG_SORTABLEPANEL_DOT_H
-#	include <wg_sortablepanel.h>
+#ifndef WG_VECTORPANEL_DOT_H
+#	include <wg_vectorpanel.h>
 #endif
 
 
-class WgBoxLayoutHook : public WgSortableHook
+class WgPackHook : public WgVectorHook
 {
-	friend class WgBoxLayout;
+	friend class WgPackPanel;
 
 public:
 
 	bool	SetWeight( float weight );
 	float	Weight() { return m_weight; }
 
-	WgBoxLayoutHook *	Prev() const { return _prev(); }
-	WgBoxLayoutHook *	Next() const { return _next(); }
-	WgBoxLayout*		Parent() const;
+	WgPackHook *	Prev() const { return _prev(); }
+	WgPackHook *	Next() const { return _next(); }
+	WgPackPanel*		Parent() const;
 
 protected:
-	PROTECTED_LINK_METHODS( WgBoxLayoutHook );
+	PROTECTED_LINK_METHODS( WgPackHook );
 
-	WgBoxLayoutHook();
+	WgPackHook();
 
 	int				m_length;			// Width or height, depending on orientation.
-	int				m_maxLength;
-	int				m_minLength;
 	float			m_weight;			// Weight for space allocation.
-	WgSize			m_bestSize;			// Cached best size from the child.
+	WgSize			m_preferredSize;	// Cached best size from the child.
 };
 
 
 
 
-class WgBoxLayout : public WgSortablePanel
+class WgPackPanel : public WgVectorPanel
 {
-	friend class WgBoxLayoutHook;
+	friend class WgPackHook;
 
 public:
-	void	SetGeoBroker( WgGeoBroker& broker );
-	void	SetExpansionBroker( WgGeoBroker& broker );
-	void	SetContractionBroker( WgGeoBroker& broker );
+	void	SetSizeBroker( WgSizeBroker& broker );
+	void	SetExpansionBroker( WgSizeBroker& broker );
+	void	SetContractionBroker( WgSizeBroker& broker );
 
-	WgGeoBroker& ExpansionBroker() { return m_expansionBroker; }
-	WgGeoBroker& ContractionBroker() { return m_contractionBroker; }
+	WgSizeBroker& ExpansionBroker() { return m_expansionBroker; }
+	WgSizeBroker& ContractionBroker() { return m_contractionBroker; }
 
 protected:
 	void	_reallocateSpace();
 
 	virtual void	_onSpaceReallocated() = 0;
 
-	WgGeoBroker 	m_expansionBroker;
-	WgGeoBroker 	m_contractionBroker;
+	WgSizeBroker 	m_expansionBroker;
+	WgSizeBroker 	m_contractionBroker;
 
 };
 
 
-#endif //WG_BOXLAYOUT_DOT_H
+#endif //WG_PACKPANEL_DOT_H

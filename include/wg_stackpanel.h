@@ -23,13 +23,13 @@
 #ifndef WG_STACKPANEL_DOT_H
 #define WG_STACKPANEL_DOT_H
 
-#ifndef WG_SORTABLEPANEL_DOT_H
-#	include <wg_sortablepanel.h>
+#ifndef WG_VECTORPANEL_DOT_H
+#	include <wg_vectorpanel.h>
 #endif
 
 class WgStackPanel;
 
-class WgStackHook : public WgSortableHook
+class WgStackHook : public WgVectorHook
 {
 	friend class WgStackPanel;
 public:
@@ -45,10 +45,7 @@ public:
 
 	void			SetSizePolicy( SizePolicy policy );
 	SizePolicy		GetSizePolicy() const { return m_sizePolicy; }
-	
-	void			SetBorders( WgBorders borders );
-	WgBorders		Borders() const { return m_borders; }
-	
+		
 	void			SetOrientation( WgOrientation orientation );
 	WgOrientation	Orientation() const { return m_orientation; }
 
@@ -68,13 +65,12 @@ protected:
 
 	WgStackPanel *	m_pParent;
 	
-	WgBorders		m_borders;
 	WgOrientation	m_orientation;
 	SizePolicy		m_sizePolicy;
 	
 };
 
-class WgStackPanel : public WgSortablePanel
+class WgStackPanel : public WgVectorPanel
 {
 friend class WgStackHook;	
 	
@@ -87,9 +83,9 @@ public:
 	virtual WgWidget * NewOfMyType() const { return new WgStackPanel(); };
 	
 
-	inline WgStackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgSortablePanel::AddChild(pWidget)); }
-	inline WgStackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgStackHook*>(WgSortablePanel::InsertChild(pWidget,pSibling)); }
-	inline WgStackHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgSortablePanel::InsertChildSorted(pWidget)); }
+	inline WgStackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::AddChild(pWidget)); }
+	inline WgStackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
+	inline WgStackHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 
 	inline WgStackHook* FirstHook() const { return static_cast<WgStackHook*>(m_hooks.First()); }
 	inline WgStackHook* LastHook() const { return static_cast<WgStackHook*>(m_hooks.Last()); }
@@ -100,7 +96,7 @@ public:
 	int		WidthForHeight( int height ) const;
 
 	WgSize	MinSize() const;
-	WgSize	DefaultSize() const;
+	WgSize	PreferredSize() const;
 	WgSize	MaxSize() const;
 
 protected:
@@ -118,27 +114,27 @@ protected:
 	WgHook *	_lastHookWithGeo( WgRect& writeGeo ) const;
 	WgHook *	_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
 
-	// Overloaded from WgSortablePanel
+	// Overloaded from WgVectorPanel
 
-	WgRect	_hookGeo( const WgSortableHook * pHook );
-	void	_onResizeRequested( WgSortableHook * pHook );
-	void	_onRenderRequested( WgSortableHook * pHook );
-	void	_onRenderRequested( WgSortableHook * pHook, const WgRect& rect );
-	void	_onWidgetAppeared( WgSortableHook * pInserted );				// so parent can update geometry and possibly request render.
-	void	_onWidgetDisappeared( WgSortableHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+	WgRect	_hookGeo( const WgVectorHook * pHook );
+	void	_onResizeRequested( WgVectorHook * pHook );
+	void	_onRenderRequested( WgVectorHook * pHook );
+	void	_onRenderRequested( WgVectorHook * pHook, const WgRect& rect );
+	void	_onWidgetAppeared( WgVectorHook * pInserted );				// so parent can update geometry and possibly request render.
+	void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
 	void	_onWidgetsReordered();
 	void	_refreshAllWidgets();
-	WgSortableHook * _newHook();
+	WgVectorHook * _newHook();
 
 	// Internal to WgStackPanel
 
-	void 	_refreshDefaultSize();
+	void 	_refreshPreferredSize();
 	void	_adaptChildrenToSize();
-	void	_renderFromChildOnward( WgSortableHook * pHook );
+	void	_renderFromChildOnward( WgVectorHook * pHook );
 
 
 	WgSize	m_size;
-	WgSize	m_bestSize;
+	WgSize	m_preferredSize;
 
 };
 

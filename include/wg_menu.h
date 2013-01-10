@@ -145,7 +145,7 @@ public:
 
 	int			WidthForHeight( int height ) const;
 
-	WgSize		DefaultSize() const;
+	WgSize		PreferredSize() const;
 
 	//
 

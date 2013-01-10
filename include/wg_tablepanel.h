@@ -56,7 +56,7 @@ typedef int(*fpWidgetCmp)(WgWidget*,WgWidget*);
 
 //____ WgTableHook ____________________________________________________________
 
-class WgTableHook : public WgHook
+class WgTableHook : public WgPanelHook
 {
 	friend class WgTableRow;
 	friend class WgTablePanel;
@@ -349,7 +349,7 @@ public:
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
 
-	WgSize			DefaultSize() const;
+	WgSize			PreferredSize() const;
 
 	// Overloaded from WgPanel
 

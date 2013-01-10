@@ -75,7 +75,7 @@ public:
 
 	bool		SetTextWrap(bool bWrap);						// Overloading SetTextWrap since we don't support wrapping text.
 
-	WgSize		DefaultSize() const;
+	WgSize		PreferredSize() const;
 	bool		IsAutoEllipsisDefault() const { return false; };
 
 

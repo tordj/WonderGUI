@@ -214,9 +214,9 @@ bool WgAnimPlayer::Stop()
 	return true;
 }
 
-//____ DefaultSize() ___________________________________________________________
+//____ PreferredSize() ___________________________________________________________
 
-WgSize WgAnimPlayer::DefaultSize() const
+WgSize WgAnimPlayer::PreferredSize() const
 {
 	if( m_pAnim )
 		return m_pAnim->Size();

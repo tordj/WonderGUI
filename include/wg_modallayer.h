@@ -82,7 +82,7 @@ protected:
 	WgModalLayer *	m_pParent;
 
 	WgOrientation	m_origo;
-	WgRect			m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets DefaultSize() dynamically.
+	WgRect			m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets PreferredSize() dynamically.
 										// Setting just one of them to 0 uses Widgets HeightForWidth() or WidthForHeight() dynamically.
 
 	WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at child that held focus when this modal was last on top.
@@ -123,7 +123,7 @@ public:
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
 
-	WgSize			DefaultSize() const;
+	WgSize			PreferredSize() const;
 
 	// Overloaded from WgPanel
 

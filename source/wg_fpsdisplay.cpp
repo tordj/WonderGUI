@@ -80,9 +80,9 @@ void WgFpsDisplay::SetTextProperties( const WgTextpropPtr& pProp )
 	_requestRender();
 }
 
-//____ DefaultSize() __________________________________________________________
+//____ PreferredSize() __________________________________________________________
 
-WgSize WgFpsDisplay::DefaultSize() const
+WgSize WgFpsDisplay::PreferredSize() const
 {
 	//TODO: Implement!
 

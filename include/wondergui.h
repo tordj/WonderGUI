@@ -264,8 +264,8 @@
 #	include <wg_tablist.h>
 #endif
 
-#ifndef WG_TABORDERCAPSULE_DOT_H
-#	include <wg_tabordercapsule.h>
+#ifndef WG_SIZECAPSULE_DOT_H
+#	include <wg_sizecapsule.h>
 #endif
 
 #ifndef WG_TEXTDISPLAY_DOT_H

@@ -71,7 +71,7 @@ public:
 	virtual int		HeightForWidth( int width ) const;
 //	virtual int		WidthForHeight( int height ) const;
 
-	WgSize			DefaultSize() const;
+	WgSize			PreferredSize() const;
 
 	bool			IsAutoEllipsisDefault() const { return false; };
 

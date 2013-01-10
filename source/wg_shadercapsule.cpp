@@ -117,7 +117,7 @@ void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canv
 
 	// Render children recursively
 
-	if( m_hook.Widget() && m_hook.IsVisible() )
+	if( m_hook.Widget() )
 		m_hook.Widget()->_renderPatches( pDevice, _canvas, _canvas, _pPatches, _layer );
 
 	// Reset old blend mode and tint color

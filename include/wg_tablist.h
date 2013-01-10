@@ -192,7 +192,7 @@ public:
 	WgTab* 			GetFirstVisibleTab() const;
 	WgTab* 			GetLastVisibleTab() const;
 
-	WgSize			DefaultSize() const;
+	WgSize			PreferredSize() const;
 
 protected:
 	void	_onCloneContent( const WgWidget * _pOrg );

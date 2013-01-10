@@ -74,7 +74,7 @@ public:
 	virtual Wg_Interface_TextHolder* TempGetText() { return this; }
 
 	int		HeightForWidth( int width ) const;
-	WgSize	DefaultSize() const;
+	WgSize	PreferredSize() const;
 	bool	IsAutoEllipsisDefault() const { return true; };
 
 	bool	IsEditable() const { return m_text.IsEditable(); }

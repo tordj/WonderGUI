@@ -47,7 +47,7 @@ class WgFpsDisplay:public WgWidget
 		//____ Methods __________________________________________
 
 		void	SetTextProperties( const WgTextpropPtr& pProp );
-		WgSize	DefaultSize() const;
+		WgSize	PreferredSize() const;
 
 	protected:
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );

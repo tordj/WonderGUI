@@ -60,7 +60,7 @@ public:
 	WgValueFormat	Format() { return m_format; }
 	virtual const WgValueFormat&	GetFormat() const { return m_format; }
 
-	WgSize	DefaultSize() const;
+	WgSize	PreferredSize() const;
 
 
 protected:

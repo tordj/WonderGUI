@@ -56,9 +56,9 @@ const char * WgFiller::GetClass()
 	return c_widgetType;
 }
 
-//____ SetDefaultSize() _______________________________________________________
+//____ SetPreferredSize() _______________________________________________________
 
-void WgFiller::SetDefaultSize( const WgSize& size )
+void WgFiller::SetPreferredSize( const WgSize& size )
 {
 	if( size != m_defaultSize )
 	{
@@ -83,9 +83,9 @@ void WgFiller::SetColors( const WgColorsetPtr& pColors )
 	}
 }
 
-//____ DefaultSize() __________________________________________________________
+//____ PreferredSize() __________________________________________________________
 
-WgSize WgFiller::DefaultSize() const
+WgSize WgFiller::PreferredSize() const
 {
 	return m_defaultSize;
 }

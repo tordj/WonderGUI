@@ -33,7 +33,7 @@ class WgFlexPanel;
 
 //____ WgFlexHook _____________________________________________________________
 
-class WgFlexHook : public WgHook, protected WgLink
+class WgFlexHook : public WgPanelHook, protected WgLink
 {
 	friend class WgWidget;
 	friend class WgPanel;
@@ -48,7 +48,7 @@ public:
 	// Flex-specific methods
 
 	bool	SetAnchored();
-	bool	SetAnchored( int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
+	bool	SetAnchored( int anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 );
 
 	bool	SetFloating();
 	bool	SetFloating( const WgCoord& pos, WgOrientation origo = WG_NORTHWEST );
@@ -102,8 +102,6 @@ public:
 
 	int				AnchorTopLeft() const { return m_anchorTopLeft; }
 	int				AnchorBottomRight() const { return m_anchorBottomRight; }
-	WgBorders		Borders() const { return m_borders; }
-
 
 	// Standard Hook methods
 
@@ -157,7 +155,6 @@ protected:
 
 	int				m_anchorTopLeft;
 	int				m_anchorBottomRight;
-	WgBorders		m_borders;
 
 };
 
@@ -240,7 +237,7 @@ public:
 
 	// Overloaded from WgWidget
 
-	WgSize			DefaultSize() const;
+	WgSize			PreferredSize() const;
 
 private:
 

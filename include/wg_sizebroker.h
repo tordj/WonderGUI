@@ -19,56 +19,40 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#ifndef	WG_SIZEBROKER_DOT_H
+#define	WG_SIZEBROKER_DOT_H
 
-#include <wg_boxlayout.h>
 
-WgBoxLayoutHook::WgBoxLayoutHook()
+class WgSizeBroker
 {
-	m_maxLength = INT_MAX;
-	m_minLength = 0;
-	m_weight = 1.f;
-}
-
-WgBoxLayout * WgBoxLayoutHook::Parent() const 
-{ 
-	return static_cast<WgBoxLayout*>(_parent()); 
-}
-
-
-bool WgBoxLayoutHook::SetWeight( float weight )
-{
-	if( weight < 0 )
-		return false;
-
-	if( weight != m_weight )
+public:
+	struct ItemData
 	{
-		m_weight = weight;
-		Parent()->_reallocateSpace();
-	}
-	return true;
-}
+		int		pref;			// Preferred size for this item (input)
+		int		min;			// Min size for this item (input)
+		int		max;			// Max size for this item (input)
+		int		weight;			// Weight for this item (input)
+		int		size_out;		// Size for this item (output)
+	};
+
+	WgSizeBroker();
+	WgSizeBroker( int(*fp)(ItemData*,int,int) );
+	~WgSizeBroker() {}
 
 
+	int Allocate( ItemData * pItems, int nItems, int totalSpace ) const { return m_function(pItems,nItems,totalSpace); }
 
-void WgBoxLayout::SetGeoBroker( WgGeoBroker& broker )
-{
-	m_contractionBroker = broker;
-	m_expansionBroker = broker;
-	_reallocateSpace();
-}
+	static const WgSizeBroker none;
+//	static const WgSizeBroker even;
+//	static const WgSizeBroker overlap;
+//	static const WgSizeBroker weighted;
 
-void WgBoxLayout::SetContractionBroker( WgGeoBroker& broker )
-{
-	m_contractionBroker = broker;
-	_reallocateSpace();
-}
 
-void WgBoxLayout::SetExpansionBroker( WgGeoBroker& broker )
-{
-	m_expansionBroker = broker;
-	_reallocateSpace();
-}
+private:
 
-void WgBoxLayout::_reallocateSpace()
-{
-}
+	int(*m_function)(ItemData*,int,int);
+
+};
+
+
+#endif //WG_SIZEBROKER_DOT_H

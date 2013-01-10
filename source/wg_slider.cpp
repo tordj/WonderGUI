@@ -369,9 +369,9 @@ void WgWidgetSlider::_onRefresh( void )
 	_requestRender();
 }
 
-//____ DefaultSize() _____________________________________________________________
+//____ PreferredSize() _____________________________________________________________
 
-WgSize WgWidgetSlider::DefaultSize() const
+WgSize WgWidgetSlider::PreferredSize() const
 {
 	WgSize sz = m_minSize;
 

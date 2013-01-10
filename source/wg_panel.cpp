@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <wg_panel.h>
+#include <wg_util.h>
 
 #include <wg_patches.h>
 
@@ -66,7 +67,6 @@ void WgPanel::SetMaskOp( WgMaskOp operation )
 }
 
 
-
 //____ _onAlphaTest() _________________________________________________________
 
 bool WgPanel::_onAlphaTest( const WgCoord& ofs )
@@ -95,13 +95,13 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 		case WG_MASKOP_RECURSE:
 		{
 			WgRect childGeo;
-			WgHook * p = _firstHookWithGeo( childGeo );
+			WgPanelHook * p = static_cast<WgPanelHook*>(_firstHookWithGeo( childGeo ));
 
 			while(p)
 			{
 				if( p->IsVisible() )
 					p->Widget()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
-				p = _nextHookWithGeo( childGeo, p );
+				p = static_cast<WgPanelHook*>(_nextHookWithGeo( childGeo, p ));
 			}
 			break;
 		}
@@ -111,4 +111,91 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 			patches.Sub( WgRect(geo,clip) );
 			break;
 	}
+}
+
+
+
+//____ WgPanelHook::SetVisible() _____________________________________________________________
+
+bool WgPanelHook::SetVisible( bool bVisible )
+{
+	if( bVisible != m_bVisible )
+	{
+		if( bVisible )
+		{
+			m_bVisible = true;
+			_requestRender();
+		}
+		else
+		{
+			_requestRender();
+			m_bVisible = false;
+		}		
+	}
+	return true;
+}
+
+//____ WgPanelHook::SetPadding() ______________________________________________
+
+bool WgPanelHook::SetPadding( WgBorders padding )
+{
+	if( padding != m_padding )
+	{
+		m_padding = padding;
+		_requestResize();
+	}
+	return true;
+}
+
+//____ WgPanelHook::_sizeFromPolicy() ________________________________________________________
+
+WgSize WgPanelHook::_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy ) const
+{
+	WgSize	defaultSize = _paddedPreferredSize();
+
+	WgSize	sz;
+
+	switch( widthPolicy )
+	{
+		case WG_DEFAULT:
+		{
+			sz.h = WgUtil::SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
+			sz.w = _paddedWidthForHeight(sz.h);
+			break;
+		case WG_BOUND:
+			sz.w = specifiedSize.w;
+			sz.h = WgUtil::SizeFromPolicy( _paddedHeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+			break;
+		case WG_CONFINED:
+			if( defaultSize.w > specifiedSize.w )
+			{
+				sz.w = specifiedSize.w;
+				sz.h = WgUtil::SizeFromPolicy( _paddedHeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+			}
+			else
+			{
+				sz.h = WgUtil::SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
+				sz.w = _paddedWidthForHeight(sz.h);
+				if( sz.w > specifiedSize.w )
+					sz.w = specifiedSize.w;
+			}
+			break;
+		case WG_EXPANDED:
+			if( defaultSize.w < specifiedSize.w )
+			{
+				sz.w = specifiedSize.w;
+				sz.h = WgUtil::SizeFromPolicy( _paddedHeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+			}
+			else
+			{
+				sz.h = WgUtil::SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
+				sz.w = _paddedWidthForHeight(sz.h);
+				if( sz.w < specifiedSize.w )
+					sz.w = specifiedSize.w;
+			}
+			break;
+		}
+	}
+
+	return sz;
 }

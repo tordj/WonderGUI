@@ -139,7 +139,9 @@ public:
 	virtual int		HeightForWidth( int width ) const;
 	virtual int		WidthForHeight( int height ) const;
 
-	virtual WgSize	DefaultSize() const = 0;
+	virtual WgSize	PreferredSize() const = 0;
+	virtual WgSize	MinSize() const;
+	virtual WgSize	MaxSize() const;
 
 	virtual bool	IsContainer() const { return false; }
 	virtual bool	IsPanel() const { return false; }

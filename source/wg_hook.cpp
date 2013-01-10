@@ -117,24 +117,3 @@ WgEventHandler * WgHook::EventHandler() const
 	return 0;
 }
 
-
-//____ SetVisible() _____________________________________________________________
-
-bool WgHook::SetVisible( bool bVisible )
-{
-	if( bVisible != m_bVisible )
-	{
-		if( bVisible )
-		{
-			m_bVisible = true;
-			_requestRender();
-		}
-		else
-		{
-			_requestRender();
-			m_bVisible = false;
-		}		
-	}
-	return true;
-}
-

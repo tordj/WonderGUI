@@ -120,7 +120,7 @@ bool WgMenuHook::_updateGeo()
 
 	//
 
-	WgRect geo(0,0,WgSize::Min(Widget()->DefaultSize(),WgSize::Min(m_maxSize,parentSize)));
+	WgRect geo(0,0,WgSize::Min(Widget()->PreferredSize(),WgSize::Min(m_maxSize,parentSize)));
 
 	switch( m_attachPoint )
 	{
@@ -400,7 +400,7 @@ WgWidget *  WgMenuLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 
 		while( pHook && !pResult )
 		{
-			if( pHook->IsVisible() && pHook->m_geo.Contains( ofs ) )
+			if( pHook->m_geo.Contains( ofs ) )
 			{
 				if( pHook->Widget()->IsContainer() )
 					pResult = pHook->Widget()->CastToContainer()->FindWidget( ofs - pHook->m_geo.Pos(), mode );
@@ -445,9 +445,6 @@ WgWidget *  WgMenuLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 
 void WgMenuLayer::_onRequestRender( const WgRect& rect, const WgMenuHook * pHook )
 {
-	if( pHook && !pHook->m_bVisible )
-		return;
-
 	// Clip our geometry and put it in a dirtyrect-list
 
 	WgPatches patches;
@@ -465,7 +462,7 @@ void WgMenuLayer::_onRequestRender( const WgRect& rect, const WgMenuHook * pHook
 
 	while( pCover )
 	{
-		if( pCover->m_bVisible && pCover->m_geo.IntersectsWith( rect ) )
+		if( pCover->m_geo.IntersectsWith( rect ) )
 			pCover->Widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();

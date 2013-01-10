@@ -41,7 +41,7 @@ class WgHook
 	friend class WgWidget;
 	friend class WgLayer;
 	friend class WgPanel;
-	friend class WgSortablePanel;
+	friend class WgVectorPanel;
 
 public:
 	virtual WgCoord	Pos() const = 0;
@@ -53,9 +53,6 @@ public:
 	WgHook *		Prev() const { return _prevHook(); }
 	WgHook *		Next() const { return _nextHook(); }
 
-	virtual bool	SetVisible( bool bVisible );
-	bool			IsVisible() { return m_bVisible; }
-
 	WgWidget *			Widget() const { return m_pWidget; }
 	WgWidgetHolder * 	Parent() const { return _parent(); }
 	virtual WgRootPanel *	Root() const;
@@ -65,7 +62,7 @@ public:
 	
 protected:
 
-	WgHook() : m_pWidget(0), m_bVisible(true) {}
+	WgHook() : m_pWidget(0) {}
 	virtual ~WgHook();
 
 	virtual void	_attachWidget( WgWidget * pWidget );				// Make sure Widget links us. Call when hook has been relocated.
@@ -89,8 +86,6 @@ protected:
 
 
 	WgWidget *		m_pWidget;
-	bool			m_bVisible;
-
 };
 
 template<typename T> T* WgCast(WgHook * pHook)

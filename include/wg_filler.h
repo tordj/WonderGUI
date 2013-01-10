@@ -46,8 +46,8 @@ public:
 	void	SetColors( const WgColorsetPtr& pColors );
 	const	WgColorsetPtr	GetColors() const		{ return m_pColors; }
 
-	void	SetDefaultSize( const WgSize& size );
-	WgSize	DefaultSize() const;
+	void	SetPreferredSize( const WgSize& size );
+	WgSize	PreferredSize() const;
 
 protected:
 

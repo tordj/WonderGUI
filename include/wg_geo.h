@@ -187,7 +187,7 @@ public:
 	WgSize( const WgSize& size ) : w(size.w), h(size.h) {}
 	WgSize( const WgRect& rect );
 	WgSize( const WgCoord& c1, const WgCoord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
-	inline void ConstrainTo( const WgMinMax2D& minmax );
+	inline void ConstrainTo( const WgSize& min, const WgSize& max );
 	inline void Clear()		{ w = 0; h = 0; }
 
 
@@ -363,17 +363,17 @@ inline WgSize WgSize::operator=(const WgRect& k)
 }
 
 //_____________________________________________________________________________
-inline void WgSize::ConstrainTo( const WgMinMax2D& c )
+inline void WgSize::ConstrainTo( const WgSize& min, const WgSize& max )
 {
-	if( w < c.minW )
-		w = c.minW;
-	if( h < c.minH )
-		h = c.minH;
+	if( w < min.w )
+		w = min.w;
+	if( h < min.h )
+		h = min.h;
 
-	if( w > c.maxW )
-		w = c.maxW;
-	if( h > c.maxH )
-		h = c.maxH;
+	if( w > max.w )
+		w = max.w;
+	if( h > max.h )
+		h = max.h;
 }
 
 //_____________________________________________________________________________

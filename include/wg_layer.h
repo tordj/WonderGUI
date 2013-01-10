@@ -65,15 +65,19 @@ public:
 	bool			DeleteBase();
 	WgWidget *		ReleaseBase();
 
+
+	inline WgLayerHook *	FirstHook() const { return static_cast<WgLayerHook*>(_firstHook()); }
+	inline WgLayerHook *	LastHook() const { return static_cast<WgLayerHook*>(_lastHook()); }
+
 	// Overloaded from WgWidget
 
 	int				HeightForWidth( int width ) const;
 	int				WidthForHeight( int height ) const;
 
-	WgSize			DefaultSize() const;
+	WgSize			PreferredSize() const;
 
 protected:
-	WgLayer() : m_baseHook(this) {}
+	WgLayer();
 
 	class BaseHook : public WgHook
 	{
@@ -96,8 +100,6 @@ protected:
 		WgLayer *		Parent() const { return m_pParent; }
 
 	protected:
-		BaseHook( WgLayer * pParent ) : m_pParent(pParent) {}
-
 		void		_requestRender();
 		void		_requestRender( const WgRect& rect );
 		void		_requestResize();

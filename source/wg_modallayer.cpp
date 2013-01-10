@@ -29,7 +29,7 @@ static const char	c_widgetType[] = {"ModalLayer"};
 static const char	c_hookType[] = {"ModalHook"};
 static const char	c_basehookType[] = {"ModalLayerBasehook"};
 
-// Improve WgModalHook geometry handling, should be able to run on BestSize by default, answering to resize-requests.
+// Improve WgModalHook geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
 
 
 //_____________________________________________________________________________
@@ -166,7 +166,7 @@ bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly t
 	WgSize sz = m_placementGeo.Size();
 
 	if( sz.w == 0 && sz.h == 0 )
-		sz = m_pWidget->DefaultSize();
+		sz = m_pWidget->PreferredSize();
 	else if( sz.w == 0 )
 		sz.w = m_pWidget->WidthForHeight(sz.h);
 	else if( sz.h == 0 )
@@ -395,12 +395,12 @@ int WgModalLayer::WidthForHeight( int height ) const
 		return WgWidget::WidthForHeight(height);
 }
 
-//____ DefaultSize() _____________________________________________________________
+//____ PreferredSize() _____________________________________________________________
 
-WgSize WgModalLayer::DefaultSize() const
+WgSize WgModalLayer::PreferredSize() const
 {
 	if( m_baseHook.Widget() )
-		return m_baseHook.Widget()->DefaultSize();
+		return m_baseHook.Widget()->PreferredSize();
 	else
 		return WgSize(1,1);
 }
@@ -415,9 +415,6 @@ WgWidget *  WgModalLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 	if( mode == WG_SEARCH_ACTION_TARGET )
 	{
 		WgModalHook * pHook = m_modalHooks.Last();
-
-		while( pHook && !pHook->IsVisible() )
-			pHook = pHook->Prev();
 
 		if( pHook )
 		{
@@ -435,7 +432,7 @@ WgWidget *  WgModalLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 					return this;
 			}
 		}
-		else if( m_baseHook.Widget() && m_baseHook.IsVisible() )
+		else if( m_baseHook.Widget() )
 		{
 			if( m_baseHook.Widget()->IsContainer() )
 			{
@@ -496,9 +493,6 @@ void WgModalLayer::_updateKeyboardFocus()
 
 	WgModalHook * pHook = m_modalHooks.Last();
 
-	while( pHook && !pHook->IsVisible() )
-		pHook = pHook->Prev();
-
 	WgWidget * 	pSavedFocus = 0;
 	WgHook *	pBranch	= 0;
 
@@ -508,7 +502,7 @@ void WgModalLayer::_updateKeyboardFocus()
 		pHook->m_pKeyFocus = 0;								// Needs to be cleared for the future.
 		pBranch = pHook;
 	}
-	else if( m_baseHook.Widget() && m_baseHook.IsVisible() )
+	else if( m_baseHook.Widget() )
 	{
 		pSavedFocus = m_pBaseKeyFocus.GetRealPtr();
 		m_pBaseKeyFocus = 0;								// Needs to be cleared for the future.
@@ -522,16 +516,11 @@ void WgModalLayer::_updateKeyboardFocus()
 		WgHook * p = pSavedFocus->Hook();
 		while( p && p != pBranch )
 		{
-			if( p->IsVisible() )
-			{
-				WgWidgetHolder * pParent = p->Parent();
-				if( pParent && pParent->IsWidget() )
-					p = pParent->CastToWidget()->Hook();
-				else
-					p = 0;
-			}
+			WgWidgetHolder * pParent = p->Parent();
+			if( pParent && pParent->IsWidget() )
+				p = pParent->CastToWidget()->Hook();
 			else
-				p = 0;						// Branch is hidden so we can not focus saved Widget.
+				p = 0;
 		}
 
 		if( p != pBranch )

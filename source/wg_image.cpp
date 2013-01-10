@@ -72,9 +72,9 @@ void WgImage::SetSource( const WgBlocksetPtr& pBlockset )
 	}
 }
 
-//____ DefaultSize() _____________________________________________________________
+//____ PreferredSize() _____________________________________________________________
 
-WgSize WgImage::DefaultSize() const
+WgSize WgImage::PreferredSize() const
 {
 	if( m_pGfx )
 		return m_pGfx->Size();

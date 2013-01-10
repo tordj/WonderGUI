@@ -37,6 +37,14 @@ const char * WgCapsule::Hook::ClassType()
 	return c_hookType;
 }
 
+//____ Constructor ____________________________________________________________
+
+WgCapsule::WgCapsule()
+{
+	m_hook.m_pParent = this;
+}
+
+
 
 //____ IsCapsule() ______________________________________________________________
 
@@ -157,12 +165,12 @@ int WgCapsule::WidthForHeight( int height ) const
 		return WgWidget::WidthForHeight(height);
 }
 
-//____ DefaultSize() ___________________________________________________________
+//____ PreferredSize() ___________________________________________________________
 
-WgSize WgCapsule::DefaultSize() const
+WgSize WgCapsule::PreferredSize() const
 {
 	if( m_hook.Widget() )
-		return m_hook.Widget()->DefaultSize();
+		return m_hook.Widget()->PreferredSize();
 	else
 		return WgSize(1,1);
 }
@@ -171,7 +179,7 @@ WgSize WgCapsule::DefaultSize() const
 
 void WgCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-	if( m_hook.IsVisible() && m_hook.Widget() )
+	if( m_hook.Widget() )
 		m_hook.Widget()->_onCollectPatches( container, geo, clip );
 }
 
@@ -179,7 +187,7 @@ void WgCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, cons
 
 void WgCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-	if( m_hook.IsVisible() && m_hook.Widget() )
+	if( m_hook.Widget() )
 		m_hook.Widget()->_onMaskPatches( patches, geo, clip, blendMode );
 }
 

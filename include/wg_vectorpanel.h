@@ -20,12 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_SORTABLEPANEL_DOT_H
-#define WG_SORTABLEPANEL_DOT_H
-
-#ifndef WG_HOOK_DOT_H
-#	include <wg_hook.h>
-#endif
+#ifndef WG_VECTORPANEL_DOT_H
+#define WG_VECTORPANEL_DOT_H
 
 #ifndef WG_PANEL_DOT_H
 #	include <wg_panel.h>
@@ -39,13 +35,13 @@
 #	include <wg_chain.h>
 #endif
 
-class WgSortablePanel;
+class WgVectorPanel;
 
 
-class WgSortableHook : public WgHook, protected WgLink
+class WgVectorHook : public WgPanelHook, protected WgLink
 {
-	friend class WgSortablePanel;
-	friend class WgChain<WgSortableHook>;
+	friend class WgVectorPanel;
+	friend class WgChain<WgVectorHook>;
 
 
 public:
@@ -55,24 +51,24 @@ public:
 	WgCoord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
-	WgSortableHook*	Prev() const { return _prev(); }
-	WgSortableHook*	Next() const { return _next(); }
-	WgSortablePanel * Parent() const;
+	WgVectorHook*	Prev() const { return _prev(); }
+	WgVectorHook*	Next() const { return _next(); }
+	WgVectorPanel * Parent() const;
 
-	bool			MoveUp();
-	bool			MoveDown();
-	bool			MoveBefore( WgSortableHook * pSibling );
-	bool			MoveAfter( WgSortableHook * pSibling );
+	bool			MoveForward();
+	bool			MoveBackward();
+	bool			MoveBefore( WgVectorHook * pSibling );
+	bool			MoveAfter( WgVectorHook * pSibling );
 	bool			MoveFirst();
 	bool			MoveLast();
 
 	bool			SetVisible( bool bVisible );
 
 protected:
-	PROTECTED_LINK_METHODS( WgSortableHook );
+	PROTECTED_LINK_METHODS( WgVectorHook );
 
-	WgSortableHook();
-	~WgSortableHook();
+	WgVectorHook();
+	~WgVectorHook();
 
 	void	_requestRender();
 	void	_requestRender( const WgRect& rect );
@@ -83,17 +79,17 @@ protected:
 };
 
 
-class WgSortablePanel : public WgPanel
+class WgVectorPanel : public WgPanel
 {
-	friend class WgSortableHook;
+	friend class WgVectorHook;
 public:
-	WgSortablePanel();
-	virtual ~WgSortablePanel();
+	WgVectorPanel();
+	virtual ~WgVectorPanel();
 
 
-	WgSortableHook * AddChild( WgWidget * pWidget );
-	WgSortableHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling );
-	WgSortableHook * InsertChildSorted( WgWidget * pWidget );
+	WgVectorHook * AddChild( WgWidget * pWidget );
+	WgVectorHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling );
+	WgVectorHook * InsertChildSorted( WgWidget * pWidget );
 
 	bool			DeleteChild( WgWidget * pWidget );
 	WgWidget *		ReleaseChild( WgWidget * pWidget );
@@ -120,19 +116,19 @@ protected:
 
 	// To be overloaded by subclasses
 
-	virtual WgRect	_hookGeo( const WgSortableHook * pHook ) = 0;
-	virtual void	_onResizeRequested( WgSortableHook * pHook ) = 0;
-	virtual void	_onRenderRequested( WgSortableHook * pHook ) = 0;
-	virtual void	_onRenderRequested( WgSortableHook * pHook, const WgRect& rect ) = 0;
-	virtual void	_onWidgetAppeared( WgSortableHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.
-	virtual void	_onWidgetDisappeared( WgSortableHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
+	virtual WgRect	_hookGeo( const WgVectorHook * pHook ) = 0;
+	virtual void	_onResizeRequested( WgVectorHook * pHook ) = 0;
+	virtual void	_onRenderRequested( WgVectorHook * pHook ) = 0;
+	virtual void	_onRenderRequested( WgVectorHook * pHook, const WgRect& rect ) = 0;
+	virtual void	_onWidgetAppeared( WgVectorHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.
+	virtual void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
 	virtual void	_onWidgetsReordered() = 0;
 	virtual void	_refreshAllWidgets() = 0;
-	virtual WgSortableHook * _newHook() = 0;
+	virtual WgVectorHook * _newHook() = 0;
 
 	//
 
-	WgChain<WgSortableHook>	m_hooks;
+	WgChain<WgVectorHook>	m_hooks;
 
 	WgSortOrder		m_sortOrder;
 	WgWidgetSortFunc	m_pSortFunc;
@@ -141,4 +137,4 @@ protected:
 
 
 
-#endif //WG_SORTABLEPANEL_DOT_H
+#endif //WG_VECTORPANEL_DOT_H

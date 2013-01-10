@@ -47,7 +47,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 	friend class WgTablePanel;
 	friend class WgScrollPanel;
 	friend class WgStackPanel;
-	friend class WgSortablePanel;
+	friend class WgVectorPanel;
 	friend class WgVPanel;
 	friend class WgCapsule;
 
