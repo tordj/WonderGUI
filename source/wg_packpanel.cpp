@@ -41,32 +41,76 @@ bool WgPackHook::SetWeight( float weight )
 	if( weight != m_weight )
 	{
 		m_weight = weight;
-		Parent()->_reallocateSpace();
+		Parent()->_setChildLengths();
 	}
 	return true;
 }
 
 
 
-void WgPackPanel::SetSizeBroker( WgSizeBroker& broker )
+void WgPackPanel::SetSizeBroker( WgSizeBroker * pBroker )
 {
-	m_contractionBroker = broker;
-	m_expansionBroker = broker;
-	_reallocateSpace();
+	if( m_pSizeBroker != pBroker )
+	{
+		m_pSizeBroker = pBroker;
+		_setChildLengths();
+	}
 }
 
-void WgPackPanel::SetContractionBroker( WgSizeBroker& broker )
+WgSize WgPackPanel::_preferredSize()
 {
-	m_contractionBroker = broker;
-	_reallocateSpace();
+	int length = 0;
+	int breadth = 0;
+
+	if( !m_pSizeBroker )
+	{
+		WgPackHook * p = FirstHook();
+
+		if( m_bHorizontal )
+		{
+			length += p->m_preferredSize.w;
+			if( p->m_preferredSize.h > breadth )
+				breadth = p->m_preferredSize.h;
+			p = p->Next();
+		}
+		else
+		{
+			length += p->m_preferredSize.h;
+			if( p->m_preferredSize.w > breadth )
+				breadth = p->m_preferredSize.w;
+			p = p->Next();
+		}
+	}
+	else
+	{
+		//TODO: Implement!
+	}
+
+	if( m_bHorizontal )
+		return WgSize(length,breadth);
+	else
+		return WgSize(breadth,length);
 }
 
-void WgPackPanel::SetExpansionBroker( WgSizeBroker& broker )
+void WgPackPanel::_setChildLengths()
 {
-	m_expansionBroker = broker;
-	_reallocateSpace();
-}
+	int wantedLength = m_bHorizontal?m_preferredSize.w:m_preferredSize.h;
+	int givenLength = m_bHorizontal?Geo().w:Geo().h;
 
-void WgPackPanel::_reallocateSpace()
-{
+	// Optimized special case, just copy preferred to length.
+
+	if( !m_pSizeBroker || wantedLength == givenLength )
+	{
+		WgPackHook * p = FirstHook();
+		while( p )
+		{
+			p->m_length = m_bHorizontal?p->m_preferredSize.w:m_preferredSize.h;
+			p = p->Next();
+		}
+	}
+	else
+	{
+		//TODO: Implement!
+	}
+
 }

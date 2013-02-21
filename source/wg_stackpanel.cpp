@@ -38,17 +38,17 @@ void WgStackHook::SetSizePolicy( SizePolicy policy )
 	};
 }
 
-void WgStackHook::SetOrientation( WgOrientation orientation )
+void WgStackHook::SetOrigo( WgOrigo origo )
 {
-	if( orientation != m_orientation )
+	if( origo != m_origo )
 	{
 		m_pParent->_onRenderRequested(this);
-		m_orientation = orientation;
+		m_origo = origo;
 		m_pParent->_onRenderRequested(this);
 	}
 }
 
-WgStackHook::WgStackHook( WgStackPanel * pParent ): m_pParent(pParent), m_orientation( WG_NORTHWEST ), m_sizePolicy( STRETCH )
+WgStackHook::WgStackHook( WgStackPanel * pParent ): m_pParent(pParent), m_origo( WG_NORTHWEST ), m_sizePolicy( STRETCH )
 {
 }
 
@@ -64,7 +64,7 @@ const char * WgStackHook::ClassType()
 }
 
 
-WgPanel * WgStackHook::_parent() const
+WgContainer * WgStackHook::_parent() const
 {
 	return m_pParent;
 }
@@ -84,7 +84,7 @@ WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 		case DEFAULT:
 		{
 			WgSize	size = m_pWidget->PreferredSize();
-			WgRect geo = WgUtil::OrientationToRect( m_orientation, base, size );
+			WgRect geo = WgUtil::OrigoToRect( m_origo, base, size );
 
 			if( geo.w > base.w )
 			{
@@ -122,7 +122,7 @@ WgRect WgStackHook::_getGeo( const WgRect& parentGeo ) const
 				size.w = (int) (orgSize.w / fracY);
 			}
 
-			return WgUtil::OrientationToRect( m_orientation, base, size );
+			return WgUtil::OrigoToRect( m_origo, base, size );
 		}
 	}
 }

@@ -41,6 +41,10 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 	friend class WgFlexHook;
 	friend class WgModalHook;
 
+	friend class WgMenu;
+	friend class WgMenubar;
+	friend class WgCombobox;
+
 	friend class WgRootPanel;
 	friend class WgFlexPanel;
 	friend class WgModalLayer;
@@ -48,7 +52,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 	friend class WgScrollPanel;
 	friend class WgStackPanel;
 	friend class WgVectorPanel;
-	friend class WgVPanel;
+	friend class WgListPanel;
 	friend class WgCapsule;
 
 	public:
@@ -96,8 +100,8 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 		bool 			_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );	// Needed until WgPanel inherits from WgWidget
 		bool 			_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );		// Needed until WgPanel inherits from WgWidget
 
-		WgModalLayer *	_getModalLayer() const;
-		WgMenuLayer*	_getMenuLayer() const;
+		virtual WgModalLayer *	_getModalLayer() const;
+		virtual WgMenuLayer*	_getMenuLayer() const;
 
 		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );

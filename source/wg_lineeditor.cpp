@@ -82,17 +82,17 @@ void WgLineEditor::SetEditMode(WgTextEditMode mode)
 	}
 }
 
-//____ goBOL() ________________________________________________________________
+//____ GoBOL() ________________________________________________________________
 
-void WgLineEditor::goBOL()
+void WgLineEditor::GoBOL()
 {
 	if( _isEditable() && m_bFocused )
 		m_pText->goBOL();
 }
 
-//____ goEOL() ________________________________________________________________
+//____ GoEOL() ________________________________________________________________
 
-void WgLineEditor::goEOL()
+void WgLineEditor::GoEOL()
 {
 	if( _isEditable() && m_bFocused )
 		m_pText->goEOL();

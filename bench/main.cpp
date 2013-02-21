@@ -221,7 +221,7 @@ void printWidgetSizes()
 	printf( "WgSizeCapsule: %d bytes\n", (int) sizeof(WgSizeCapsule) );
 	printf( "WgTextDisplay: %d bytes\n", (int) sizeof(WgTextDisplay) );
 	printf( "WgValueDisplay: %d bytes\n", (int) sizeof(WgValueDisplay) );
-	printf( "WgVPanel: %d bytes\n", (int) sizeof(WgVPanel) );
+	printf( "WgListPanel: %d bytes\n", (int) sizeof(WgListPanel) );
 	printf( "WgScrollPanel: %d bytes\n", (int) sizeof(WgScrollPanel) );
 	printf( "\n" );
 	printf( "WgFlexHook: %d bytes\n", (int) sizeof(WgFlexHook) );
@@ -229,7 +229,7 @@ void printWidgetSizes()
 	printf( "WgModalHook: %d bytes\n", (int) sizeof(WgModalHook) );
 	printf( "WgStackHook: %d bytes\n", (int) sizeof(WgStackHook) );
 	printf( "WgTableHook: %d bytes\n", (int) sizeof(WgTableHook) );
-	printf( "WgVHook: %d bytes\n", (int) sizeof(WgVHook) );
+	printf( "WgListHook: %d bytes\n", (int) sizeof(WgListHook) );
 	printf( "WgScrollHook: %d bytes\n", (int) sizeof(WgScrollHook) );
 }
 
@@ -304,7 +304,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 		pShader2->SetColor( WgColor(0xFFFFFFFF) );
 		WgStackHook * pHook = pStack->AddChild( pShader2 );
 		pHook->SetSizePolicy( WgStackHook::SCALE );
-		pHook->SetOrientation( WG_CENTER );
+		pHook->SetOrigo( WG_CENTER );
 		pHook->SetBorders( WgBorders(2) );
 
 
@@ -316,30 +316,38 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	}
 */
 
-/*
+
 	{
 		WgStackPanel * pStack = new WgStackPanel();
 
 		WgImage * pBg = (WgImage*) pDB->CloneWidget( "plate" );
 		pStack->AddChild( pBg );
 
-		WgVPanel * pVBox = new WgVPanel();
+		WgListPanel * pVBox = new WgListPanel();
 		WgStackHook * pHook = pStack->AddChild( pVBox );
-		pHook->SetBorders( WgBorders(10) );
+		pHook->SetPadding( WgBorders(4) );
 
+		for( int i = 0 ; i < 10 ; i++ )
+		{
+			WgValueDisplay * pV = new WgValueDisplay();
+			pV->SetValue( 1000 + i );
+			pVBox->AddChild( pV );
+		}
+		
+/*
 		WgValueEditor * pValue = new WgValueEditor();
 		pVBox->AddChild( pValue );
 
 		WgWidgetSlider * pSlider = (WgWidgetSlider*) pDB->CloneWidget( "hslider" );
 		pSlider->SetSliderTarget(pValue);
 		pVBox->AddChild( pSlider );
-
+*/
 		addResizablePanel( pFlex, pStack, pEventHandler );
 
-		pValue->SetValue( 100 );
-		pValue->GrabFocus();
+//		pValue->SetValue( 100 );
+//		pValue->GrabFocus();
 	}
-*/
+
 
 
 	// Test menus and MenuPanel.
@@ -379,7 +387,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	}
 */
 	// Test menubar and menus
-
+/*
 	{
 		WgMenubar * pMenubar = WgCast<WgMenubar>(pDB->CloneWidget("menubar"));
 
@@ -398,7 +406,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 		addResizablePanel( pFlex, pMenubar, pEventHandler );
 	}
-
+*/
 
 	// Test combobox
 /*
@@ -406,8 +414,8 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 		WgCombobox * pCombobox = WgCast<WgCombobox>(pDB->CloneWidget("combobox"));
 
 		WgMenu * pComboMenu = (WgMenu*) pDB->CloneWidget( "menu" );
-		pComboMenu->AddItem( new WgMenuEntry( WgString("Alfa"), WgString("First"), WgBlocksetPtr(), 0 ) );
-		pComboMenu->AddItem( new WgMenuEntry( WgString("Beta"), WgString("Second"), WgBlocksetPtr(), 0 ) );
+		pComboMenu->AddItem( new WgMenuEntry( 1, WgString("Alfa"), WgString("First"), WgBlocksetPtr(), 0 ) );
+		pComboMenu->AddItem( new WgMenuEntry( 2, WgString("Beta"), WgString("Second"), WgBlocksetPtr(), 0 ) );
 		pCombobox->SetMenu( pComboMenu );
 
 		addResizablePanel( pFlex, pCombobox, pEventHandler );
@@ -467,7 +475,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	//
 
 
-	WgVPanel * pVBox = new WgVPanel();
+	WgListPanel * pVBox = new WgListPanel();
 //	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
 
 
@@ -492,7 +500,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	WgWidgetTabOrder * pTabOrder = new WgWidgetTabOrder();
 	pVBox->AddChild(pTabOrder);
 
-	WgVPanel * pTabBox = new WgVPanel();
+	WgListPanel * pTabBox = new WgListPanel();
 	pTabOrder->SetChild(pTabBox);
 //	pVBox->AddChild(pTabBox);
 

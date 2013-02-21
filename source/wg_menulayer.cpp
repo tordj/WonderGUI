@@ -38,7 +38,7 @@ WgMenuLayer* WgMenuHook::Parent() const
 }
 
 //_____________________________________________________________________________
-WgMenuHook::WgMenuHook( WgMenuLayer * pParent, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
+WgMenuHook::WgMenuHook( WgMenuLayer * pParent, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize )
 {
 	m_pParent 		= pParent;
 	m_pOpener		= pOpener;
@@ -105,7 +105,7 @@ WgHook * WgMenuHook::_nextHook() const
 }
 
 //_____________________________________________________________________________
-WgWidgetHolder * WgMenuHook::_parent() const
+WgContainer * WgMenuHook::_parent() const
 {
 	return m_pParent;
 }
@@ -316,7 +316,7 @@ const char * WgMenuLayer::GetClass()
 
 //____ OpenMenu() _______________________________________________________________
 
-WgMenuHook * WgMenuLayer::OpenMenu( WgWidget * pMenu, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize )
+WgMenuHook * WgMenuLayer::OpenMenu( WgWidget * pMenu, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize )
 {
 	// Create Hook and fill in members.
 
@@ -334,15 +334,9 @@ WgMenuHook * WgMenuLayer::OpenMenu( WgWidget * pMenu, WgWidget * pOpener, const 
 bool WgMenuLayer::CloseAllMenus()
 {
 	WgMenuHook * pHook = m_menuHooks.First();
-	while( pHook )
-	{
-		pHook->_releaseWidget();
-		pHook = pHook->_next();
-	}
+	if( pHook )
+		CloseMenu( pHook->Widget() );
 
-	m_menuHooks.Clear();
-	_requestRender();
-	_restoreKeyboardFocus();
 	return true;
 }
 
@@ -354,6 +348,8 @@ bool WgMenuLayer::CloseMenu( WgWidget * pWidget )
 	if( !pWidget || pWidget->Parent() != this || pWidget == m_baseHook.Widget() )
 		return false;
 
+	WgEventHandler * pEH = _eventHandler();
+
 	WgMenuHook * pHook = (WgMenuHook *) pWidget->Hook();
 
 	while( pHook )
@@ -361,13 +357,15 @@ bool WgMenuLayer::CloseMenu( WgWidget * pWidget )
 		WgMenuHook * p = pHook;
 		pHook = pHook->Next();
 
+		if( pEH )
+			pEH->QueueEvent( new WgEvent::MenuClosed( p->Widget(), p->m_pOpener ) );
+
 		p->_requestRender();
 		p->_releaseWidget();
 		delete p;
 	}
 	_restoreKeyboardFocus();
 	return true;
-
 }
 
 //____ FirstMenu() ______________________________________________________

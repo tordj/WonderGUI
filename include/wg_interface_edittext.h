@@ -36,10 +36,10 @@ public:
 	virtual Uint32	InsertTextAtCursor( const WgCharSeq& str ) = 0;
 	virtual bool	InsertCharAtCursor( Uint16 c ) = 0;
 
-	virtual void	goBOL() = 0;
-	virtual void	goEOL() = 0;
-	virtual void	goBOF() = 0;
-	virtual void	goEOF() = 0;
+	virtual void	GoBOL() = 0;
+	virtual void	GoEOL() = 0;
+	virtual void	GoBOF() = 0;
+	virtual void	GoEOF() = 0;
 };
 
 

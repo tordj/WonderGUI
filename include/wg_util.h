@@ -26,8 +26,8 @@ namespace WgUtil
 
 	bool		PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
 
-	WgCoord 	OrientationToOfs( WgOrientation orientation, WgSize base );
-	WgRect		OrientationToRect( WgOrientation orientation, WgSize base, WgSize rect );
+	WgCoord 	OrigoToOfs( WgOrigo origo, WgSize base );
+	WgRect		OrigoToRect( WgOrigo origo, WgSize base, WgSize rect );
 
 	int 		SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy );
 
@@ -85,7 +85,7 @@ namespace WgUtil
 	inline std::string ToString(const T0& a, const T1& b, const T2& c, const T3& d);
 
 	template<>
-	inline std::string ToString(WgOrientation value)
+	inline std::string ToString(WgOrigo value)
 	{
 		switch( value )
 		{
@@ -205,7 +205,7 @@ namespace WgUtil
 	inline int FromString(const std::string& str, T0& a, T1& b, T2& c, T3& d);
 
 	template<>
-	inline bool FromString(const std::string& str, WgOrientation& a)
+	inline bool FromString(const std::string& str, WgOrigo& a)
 	{
 		if(str.empty() || str == "northwest") a = WG_NORTHWEST;
 		else if(str == "north") a = WG_NORTH;

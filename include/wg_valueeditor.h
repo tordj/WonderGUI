@@ -59,8 +59,8 @@ class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder
 
 		bool	SetMaxInputChars( int max );
 		int		MaxInputChars() const { return m_maxInputChars; }
-		void	SetTextAlignment( const WgOrientation alignment );
-		WgOrientation GetTextAlignment( ) const;
+		void	SetTextAlignment( const WgOrigo alignment );
+		WgOrigo GetTextAlignment( ) const;
 		void	SetTextColor(WgColor color);
 		WgColor GetTextColor() const;
 		bool	SetTextprop( const WgTextpropPtr& _pProp );

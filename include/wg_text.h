@@ -281,13 +281,13 @@ public:
 
 
 	inline void			setMode( WgMode mode ) { m_mode = mode; }
-	inline void			setAlignment( const WgOrientation alignment ) { m_alignment = alignment; }
+	inline void			setAlignment( const WgOrigo alignment ) { m_alignment = alignment; }
 	inline void			setTintMode( WgTintMode mode ) { m_tintMode = mode; }
 	inline void			setLineSpaceAdjustment( Sint8 adjustment ) { m_lineSpaceAdj = adjustment; }
 
 
 	inline WgMode		mode() const { return m_mode; }
-	inline const WgOrientation alignment() const { return m_alignment; }
+	inline const WgOrigo alignment() const { return m_alignment; }
 	inline WgTintMode	tintMode() const { return m_tintMode; }
 	inline Sint8		lineSpaceAdjustment() const { return m_lineSpaceAdj; }
 
@@ -441,7 +441,7 @@ protected:
 
 
 	WgTintMode		m_tintMode;
-	WgOrientation	m_alignment;
+	WgOrigo	m_alignment;
 	WgMode			m_mode;
 
 	WgTextLinkPtr	m_pMarkedLink;

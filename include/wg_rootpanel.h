@@ -119,7 +119,8 @@ protected:
 
 		WgHook *		_prevHook() const;
 		WgHook *		_nextHook() const;
-		WgWidgetHolder * _parent() const;
+		WgWidgetHolder * _holder() const;
+		WgContainer *	_parent() const;
 
 		WgRootPanel *		m_pRoot;
 	};
@@ -130,9 +131,6 @@ protected:
 
 	bool 				_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );
 	bool 				_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );
-
-	WgModalLayer *		_getModalLayer() const { return 0; }
-	WgMenuLayer*		_getMenuLayer() const { return 0; }
 
 	WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
 	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.

@@ -118,7 +118,7 @@ void WgValueEditor::SetFormat( const WgValueFormat& format )
 
 //____ SetTextAlignment() _____________________________________________________
 
-void WgValueEditor::SetTextAlignment( const WgOrientation alignment )
+void WgValueEditor::SetTextAlignment( const WgOrigo alignment )
 {
 	if( m_text.alignment() != alignment )
 	{
@@ -129,7 +129,7 @@ void WgValueEditor::SetTextAlignment( const WgOrientation alignment )
 
 //____ GetTextAlignment() _____________________________________________________
 
-WgOrientation WgValueEditor::GetTextAlignment( ) const
+WgOrigo WgValueEditor::GetTextAlignment( ) const
 {
 	return m_text.alignment();
 }

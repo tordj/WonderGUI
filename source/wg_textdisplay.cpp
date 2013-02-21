@@ -63,29 +63,29 @@ const char * WgTextDisplay::GetClass()
 	return c_widgetType;
 }
 
-//____ goBOL() ________________________________________________________________
-void WgTextDisplay::goBOL()
+//____ GoBOL() ________________________________________________________________
+void WgTextDisplay::GoBOL()
 {
 	if( IsEditable() && m_bFocused )
 		m_pText->goBOL();
 }
 
-//____ goEOL() ________________________________________________________________
-void WgTextDisplay::goEOL()
+//____ GoEOL() ________________________________________________________________
+void WgTextDisplay::GoEOL()
 {
 	if( IsEditable() && m_bFocused )
 		m_pText->goEOL();
 }
 
-//____ goBOF() ________________________________________________________________
-void WgTextDisplay::goBOF()
+//____ GoBOF() ________________________________________________________________
+void WgTextDisplay::GoBOF()
 {
 	if( IsEditable() && m_bFocused )
 		m_pText->goBOF();
 }
 
-//____ goEOF() ________________________________________________________________
-void WgTextDisplay::goEOF()
+//____ GoEOF() ________________________________________________________________
+void WgTextDisplay::GoEOF()
 {
 	if( IsEditable() && m_bFocused )
 		m_pText->goEOF();

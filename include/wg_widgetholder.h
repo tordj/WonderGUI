@@ -44,8 +44,6 @@ class WgMenuLayer;
 class WgWidgetHolder : public WgWidgetCollection
 {
 	friend class WgPanel;
-	friend class WgMenu;
-	friend class WgMenubar;
 	friend class WgHook;
 	friend class WgContainer;
 	public:
@@ -60,8 +58,8 @@ class WgWidgetHolder : public WgWidgetCollection
 
 		virtual WgWidget *					CastToWidget();
 		virtual const WgWidget *			CastToWidget() const;
-		virtual WgContainer *			CastToContainer();
-		virtual const WgContainer *	CastToContainer() const;
+		virtual WgContainer *				CastToContainer();
+		virtual const WgContainer *			CastToContainer() const;
 		virtual WgPanel *					CastToPanel();
 		virtual const WgPanel *				CastToPanel() const;
 		virtual WgCapsule *					CastToCapsule();
@@ -78,16 +76,10 @@ class WgWidgetHolder : public WgWidgetCollection
 		virtual bool		IsCapsule() const;
 		virtual bool		IsLayer() const;
 
-		virtual bool		IsAncestorTo( const WgWidget * pWidget ) const;
-
 	protected:
 
 		virtual bool 		_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting ) = 0;
 		virtual bool 		_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing ) = 0;
-
-		virtual WgModalLayer *	_getModalLayer() const = 0;
-		virtual WgMenuLayer*	_getMenuLayer() const = 0;
-
 };
 
 

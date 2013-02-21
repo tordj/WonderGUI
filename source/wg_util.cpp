@@ -353,11 +353,11 @@ Uint32 WgUtil::DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
 	return nChar;
 }
 
-//____ OrientationToOfs() ________________________________________________________
+//____ OrigoToOfs() ________________________________________________________
 
-WgCoord WgUtil::OrientationToOfs( WgOrientation orientation, WgSize base )
+WgCoord WgUtil::OrigoToOfs( WgOrigo origo, WgSize base )
 {
-	switch( orientation )
+	switch( origo )
 	{
 		default:
 		case WG_NORTHWEST:
@@ -389,11 +389,11 @@ WgCoord WgUtil::OrientationToOfs( WgOrientation orientation, WgSize base )
 	}
 }
 
-//____ OrientationToRect() ________________________________________________________
+//____ OrigoToRect() ________________________________________________________
 
-WgRect WgUtil::OrientationToRect( WgOrientation orientation, WgSize base, WgSize rect )
+WgRect WgUtil::OrigoToRect( WgOrigo origo, WgSize base, WgSize rect )
 {
-	switch( orientation )
+	switch( origo )
 	{
 		default:
 		case WG_NORTHWEST:

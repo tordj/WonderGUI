@@ -97,7 +97,7 @@ protected:
 
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
-	WgWidgetHolder * _parent() const;
+	WgContainer * _parent() const;
 
 	int				m_height;		// Minimum height needed for this Widget.
 	WgTableRow *	m_pRow;			//
@@ -255,13 +255,13 @@ public:
 	void			SetArrowSource( const WgBlocksetPtr& pAscend, const WgBlocksetPtr& pDescend );
 	WgBlocksetPtr	GetArrowAscend() const { return m_pAscendGfx; }
 	WgBlocksetPtr	GetArrowDescend() const { return m_pDescendGfx; }
-	void			SetArrowPos( const WgOrientation alignment, int xOfs, int yOfs );
+	void			SetArrowPos( const WgOrigo alignment, int xOfs, int yOfs );
 	void			SetArrowPos( int xOfs, int yOfs );
 	int				GetArrowPosX() const { return m_sortMarkerOfs.x; }
 	int				GetArrowPosY() const { return m_sortMarkerOfs.y; }
 
-	void			SetArrowAlignment( WgOrientation alignment );
-	WgOrientation	GetArrowAlignment() const { return m_sortMarkerAlignment; }
+	void			SetArrowAlignment( WgOrigo alignment );
+	WgOrigo	GetArrowAlignment() const { return m_sortMarkerAlignment; }
 
 	void			SetCellPadding( WgBorders padding );
 	WgBorders		GetCellPadding() const	{ return m_cellPadding; }
@@ -285,7 +285,7 @@ public:
 	WgColor*		GetRowColors( ) { return m_pRowColors; }
 	void			DeleteRowColors();
 
-	int				AddColumn( const WgCharSeq& text, int pixelwidth, WgOrientation headerAlign = WG_WEST, int(*fpCompare)(WgWidget*,WgWidget*) = 0, bool bInitialAscend = true, bool bEnabled = true, Sint64 id = 0, WgWidget * pDefaultWidget = 0 );
+	int				AddColumn( const WgCharSeq& text, int pixelwidth, WgOrigo headerAlign = WG_WEST, int(*fpCompare)(WgWidget*,WgWidget*) = 0, bool bInitialAscend = true, bool bEnabled = true, Sint64 id = 0, WgWidget * pDefaultWidget = 0 );
 	void			DeleteColumns();
 //	bool	SetColumnWidth( Uint32 column, Uint32 pixelwidth );
 //	bool	SetColumnVisible( Uint32 column, bool bVisible );
@@ -450,7 +450,7 @@ private:
 
 	WgTextpropPtr	m_pHeaderProps;
 
-	WgOrientation	m_sortMarkerAlignment;
+	WgOrigo	m_sortMarkerAlignment;
 	WgCoord8		m_sortMarkerOfs;
 
 	WgBorders		m_cellPadding;

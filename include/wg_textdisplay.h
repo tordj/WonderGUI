@@ -59,10 +59,10 @@ public:
 	Uint32	InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
-	void		goBOL();
-	void		goEOL();
-	void		goBOF();
-	void		goEOF();
+	void		GoBOL();
+	void		GoEOL();
+	void		GoBOF();
+	void		GoEOF();
 
 	virtual void			SetEditMode(WgTextEditMode mode);
 	virtual WgTextEditMode	GetEditMode() const { return m_text.GetEditMode(); }

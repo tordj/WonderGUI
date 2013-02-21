@@ -23,22 +23,6 @@
 #include <wg_widgetholder.h>
 #include <wg_widget.h>
 
-bool WgWidgetHolder::IsAncestorTo( const WgWidget * pWidget ) const
-{
-	while( pWidget )
-	{
-		WgWidgetHolder * pParent = pWidget->Parent();
-		if( !pParent )
-			return false;
-
-		if( pParent == this )
-			return true;
-
-		pWidget = pParent->CastToWidget();
-	}
-
-	return false;
-}
 
 //____ IsWidget() ______________________________________________________________
 

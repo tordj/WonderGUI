@@ -30,6 +30,7 @@
 
 
 class WgWidgetHolder;
+class WgContainer;
 class WgGfxDevice;
 class WgWidget;
 class WgRootPanel;
@@ -53,8 +54,10 @@ public:
 	WgHook *		Prev() const { return _prevHook(); }
 	WgHook *		Next() const { return _nextHook(); }
 
-	WgWidget *			Widget() const { return m_pWidget; }
-	WgWidgetHolder * 	Parent() const { return _parent(); }
+	WgWidget *				Widget() const { return m_pWidget; }
+	WgWidgetHolder * 		Holder() const { return _holder(); }
+	WgContainer * 			Parent() const { return _parent(); }
+
 	virtual WgRootPanel *	Root() const;
 	WgEventHandler *	EventHandler() const;
 
@@ -82,8 +85,8 @@ protected:
 
 	virtual WgHook *	_prevHook() const = 0;
 	virtual WgHook *	_nextHook() const = 0;
-	virtual WgWidgetHolder * _parent() const = 0;
-
+	virtual WgWidgetHolder * _holder() const = 0;
+	virtual WgContainer * _parent() const = 0;
 
 	WgWidget *		m_pWidget;
 };

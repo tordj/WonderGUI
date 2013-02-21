@@ -27,7 +27,7 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_WIDGETHOLDER_DOT_H
+#ifndef WG_CONTAINER_DOT_H
 #	include <wg_container.h>
 #endif
 
@@ -50,6 +50,8 @@ public:
 protected:
 	WgPanelHook() : m_bVisible(true) {}
 	 virtual ~WgPanelHook() {};
+
+	 WgWidgetHolder* _holder() const { return _parent(); }
 
 	WgSize		_paddedPreferredSize() const { return m_pWidget->PreferredSize() + m_padding; }
 	int			_paddedWidthForHeight( int paddedHeight ) const { return m_pWidget->WidthForHeight( paddedHeight - m_padding.Height() ) + m_padding.Width(); }

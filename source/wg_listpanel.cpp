@@ -21,69 +21,69 @@
 =========================================================================*/
 
 #include <assert.h>
-#include <wg_vpanel.h>
+#include <wg_listpanel.h>
 
 
-static const char	c_widgetType[] = {"VPanel"};
-static const char	c_hookType[] = {"VHook"};
+static const char	c_widgetType[] = {"ListPanel"};
+static const char	c_hookType[] = {"ListHook"};
 
 
-WgVHook::WgVHook( WgVPanel * pParent ) : m_pParent(pParent)
+WgListHook::WgListHook( WgListPanel * pParent ) : m_pParent(pParent)
 {
 }
 
-const char * WgVHook::Type( void ) const
+const char * WgListHook::Type( void ) const
 {
 	return ClassType();
 }
 
-const char * WgVHook::ClassType()
+const char * WgListHook::ClassType()
 {
 	return c_hookType;
 }
 
 
-WgPanel* WgVHook::_parent() const
+WgContainer* WgListHook::_parent() const
 {
 	return m_pParent;
 }
 
 //____ Constructor ____________________________________________________________
 
-WgVPanel::WgVPanel() : m_nPreferredWidth(0)
+WgListPanel::WgListPanel() : m_nPreferredWidth(0)
 {
 	m_bSiblingsOverlap = false;
 }
 
 //____ Destructor _____________________________________________________________
 
-WgVPanel::~WgVPanel()
+WgListPanel::~WgListPanel()
 {
 }
 
 //____ Type() _________________________________________________________________
 
-const char * WgVPanel::Type() const
+const char * WgListPanel::Type() const
 {
 	return c_widgetType;
 }
 
 //____ GetClass() ____________________________________________________________
 
-const char * WgVPanel::GetClass()
+const char * WgListPanel::GetClass()
 {
 	return c_widgetType;
 }
 
 //____ HeightForWidth() _______________________________________________________
 
-int WgVPanel::HeightForWidth( int width ) const
+int WgListPanel::HeightForWidth( int width ) const
 {
 	if( width == m_size.w )
 		return m_size.h;
 
 	int height = 0;
-	WgVHook * pHook = FirstHook();
+	WgListHook * pHook = FirstHook();
 
 	while( pHook )
 	{
@@ -96,21 +96,21 @@ int WgVPanel::HeightForWidth( int width ) const
 
 //____ WidthForHeight() _______________________________________________________
 
-int WgVPanel::WidthForHeight( int height ) const
+int WgListPanel::WidthForHeight( int height ) const
 {
-	return -1; // No recommendation. Should this maybe be PreferredSize().w instead?
+	return PreferredSize().w;
 }
 
 //____ PreferredSize() _____________________________________________________________
 
-WgSize WgVPanel::PreferredSize() const
+WgSize WgListPanel::PreferredSize() const
 {
 	return m_preferredSize;
 }
 
 //____ _onNewSize() ___________________________________________________________
 
-void WgVPanel::_onNewSize( const WgSize& size )
+void WgListPanel::_onNewSize( const WgSize& size )
 {
 	if( size.w != m_size.w )
 	{
@@ -121,9 +121,9 @@ void WgVPanel::_onNewSize( const WgSize& size )
 
 //____ _hookGeo() _____________________________________________________________
 
-WgRect WgVPanel::_hookGeo( const WgVectorHook * pHook )
+WgRect WgListPanel::_hookGeo( const WgVectorHook * pHook )
 {
-	WgVHook * p = FirstHook();
+	WgListHook * p = FirstHook();
 	int ofs = 0;
 
 	while( p != pHook )
@@ -137,9 +137,9 @@ WgRect WgVPanel::_hookGeo( const WgVectorHook * pHook )
 
 //____ _firstHookWithGeo() _____________________________________________________
 
-WgHook * WgVPanel::_firstHookWithGeo( WgRect& geo ) const
+WgHook * WgListPanel::_firstHookWithGeo( WgRect& geo ) const
 {
-	WgVHook * p = FirstHook();
+	WgListHook * p = FirstHook();
 	if( p )
 	{
 		geo = WgRect(0,0,m_size.w,p->m_height);
@@ -152,9 +152,9 @@ WgHook * WgVPanel::_firstHookWithGeo( WgRect& geo ) const
 
 //____ _nextHookWithGeo() ______________________________________________________
 
-WgHook * WgVPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook * WgListPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
-	WgVHook * p = (WgVHook*) pHook->Next();
+	WgListHook * p = (WgListHook*) pHook->Next();
 	if( p )
 	{
 		geo.y += geo.h;
@@ -169,9 +169,9 @@ WgHook * WgVPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 //____ _lastHookWithGeo() _____________________________________________________
 
-WgHook * WgVPanel::_lastHookWithGeo( WgRect& geo ) const
+WgHook * WgListPanel::_lastHookWithGeo( WgRect& geo ) const
 {
-	WgVHook * p = LastHook();
+	WgListHook * p = LastHook();
 	if( p )
 	{
 		geo = WgRect(0,m_size.h - p->m_height,m_size.w,p->m_height);
@@ -184,9 +184,9 @@ WgHook * WgVPanel::_lastHookWithGeo( WgRect& geo ) const
 
 //____ _prevHookWithGeo() ______________________________________________________
 
-WgHook * WgVPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook * WgListPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
-	WgVHook * p = (WgVHook*) pHook->Prev();
+	WgListHook * p = (WgListHook*) pHook->Prev();
 	if( p )
 	{
 		int h = p->m_bVisible ? p->m_height : 0;
@@ -200,9 +200,9 @@ WgHook * WgVPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 //____ _onResizeRequested() ___________________________________________________
 
-void WgVPanel::_onResizeRequested( WgVectorHook * _pHook )
+void WgListPanel::_onResizeRequested( WgVectorHook * _pHook )
 {
-	WgVHook * pHook = static_cast<WgVHook*>(_pHook);
+	WgListHook * pHook = static_cast<WgListHook*>(_pHook);
 
 	// Update PreferredSize
 
@@ -249,7 +249,7 @@ void WgVPanel::_onResizeRequested( WgVectorHook * _pHook )
 
 //____ _onRenderRequested() ___________________________________________________
 
-void  WgVPanel::_onRenderRequested( WgVectorHook * pHook )
+void  WgListPanel::_onRenderRequested( WgVectorHook * pHook )
 {
 	if( !pHook->IsVisible() )
 		return;
@@ -259,7 +259,7 @@ void  WgVPanel::_onRenderRequested( WgVectorHook * pHook )
 		_requestRender(rect);
 }
 
-void  WgVPanel::_onRenderRequested( WgVectorHook * pHook, const WgRect& rect )
+void  WgListPanel::_onRenderRequested( WgVectorHook * pHook, const WgRect& rect )
 {
 	if( !pHook->IsVisible() )
 		return;
@@ -273,9 +273,9 @@ void  WgVPanel::_onRenderRequested( WgVectorHook * pHook, const WgRect& rect )
 
 //____ _onWidgetAppeared() _____________________________________________________
 
-void  WgVPanel::_onWidgetAppeared( WgVectorHook * pInserted )
+void  WgListPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 {
-	WgVHook * pHook = static_cast<WgVHook*>(pInserted);
+	WgListHook * pHook = static_cast<WgListHook*>(pInserted);
 
 	// Update stored PreferredSize
 
@@ -314,9 +314,9 @@ void  WgVPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 
 //____ _onWidgetDisappeared() __________________________________________________
 
-void WgVPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
+void WgListPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
 {
-	WgVHook * pHook = static_cast<WgVHook*>(pToBeRemoved);
+	WgListHook * pHook = static_cast<WgListHook*>(pToBeRemoved);
 
 	// Update stored PreferredSize
 
@@ -346,26 +346,19 @@ void WgVPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
 
 //____ _onWidgetsReordered() ___________________________________________________
 
-void  WgVPanel::_onWidgetsReordered()
+void  WgListPanel::_onWidgetsReordered()
 {
 	_requestRender();
-}
-
-//____ _onSpaceReallocated() _____________________________________________
-
-void WgVPanel::_onSpaceReallocated()
-{
-
 }
 
 //____ _adaptChildrenToWidth() ________________________________________________
 // Adapts all non-hidden widgets to our width and updates m_size.
 
-void WgVPanel::_adaptChildrenToWidth( int width )
+void WgListPanel::_adaptChildrenToWidth( int width )
 {
 	m_size.h = 0;
 	m_size.w = width;
-	WgVHook * pHook = FirstHook();
+	WgListHook * pHook = FirstHook();
 
 	while( pHook )
 	{
@@ -387,11 +380,11 @@ void WgVPanel::_adaptChildrenToWidth( int width )
 // Updates m_preferredSize.w and m_nPreferredWidth. Relies on m_preferredSize of the visible
 // hooks to have up-to-date data.
 
-void WgVPanel::_refreshDefaultWidth()
+void WgListPanel::_refreshDefaultWidth()
 {
 	m_preferredSize.w = 0;
 	m_nPreferredWidth = 0;
-	WgVHook * pHook = FirstHook();
+	WgListHook * pHook = FirstHook();
 
 	while( pHook )
 	{
@@ -413,11 +406,11 @@ void WgVPanel::_refreshDefaultWidth()
 // Refreshes m_preferredSize for all visible hooks, m_preferredSize and m_nPreferredWidth with fresh
 // info straight from the children.
 
-void WgVPanel::_refreshPreferredSize()
+void WgListPanel::_refreshPreferredSize()
 {
 	m_preferredSize.Clear();
 	m_nPreferredWidth = 0;
-	WgVHook * pHook = FirstHook();
+	WgListHook * pHook = FirstHook();
 
 	while( pHook )
 	{
@@ -441,7 +434,7 @@ void WgVPanel::_refreshPreferredSize()
 
 //____ _refreshAllWidgets() ____________________________________________________
 
-void  WgVPanel::_refreshAllWidgets()
+void  WgListPanel::_refreshAllWidgets()
 {
 	_refreshPreferredSize();
 	_adaptChildrenToWidth( m_size.w );
@@ -451,7 +444,7 @@ void  WgVPanel::_refreshAllWidgets()
 
 //____ _renderFromChildOnward() _______________________________________________
 
-void WgVPanel::_renderFromChildOnward( WgVectorHook * pHook )
+void WgListPanel::_renderFromChildOnward( WgVectorHook * pHook )
 {
 	WgRect geo = _hookGeo(pHook);
 	geo.h = m_size.h - geo.y;
@@ -460,8 +453,8 @@ void WgVPanel::_renderFromChildOnward( WgVectorHook * pHook )
 
 //____ _newHook() _____________________________________________________________
 
-WgVectorHook *  WgVPanel::_newHook()
+WgVectorHook *  WgListPanel::_newHook()
 {
-	return new WgVHook( this );
+	return new WgListHook( this );
 }
 

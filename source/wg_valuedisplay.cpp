@@ -33,8 +33,6 @@ static const char c_widgetType[] = {"ValueDisplay"};
 
 WgValueDisplay::WgValueDisplay()
 {
-	m_bRegenText	= true;
-	m_pFonts		= 0;
 	m_text.setAlignment( WG_EAST );
 	m_text.SetWrap(false);
 }
@@ -57,18 +55,16 @@ const char * WgValueDisplay::GetClass( void )
 	return c_widgetType;
 }
 
-//____ SetFonts() _____________________________________________________________
+//____ SetTextProperties() _____________________________________________________________
 
-bool WgValueDisplay::SetFonts( WgFont * _pFonts )
+void WgValueDisplay::SetTextProperties( const WgTextpropPtr& _pProp )
 {
-  if( _pFonts != m_pFonts )
+	if( _pProp != m_text.getProperties() )
 	{
-		m_pFonts			= _pFonts;
-		m_bRegenText		= true;
+		m_text.setProperties(_pProp);
+		_regenText();
 		_requestRender();
 	}
-
-	return true;
 }
 
 
@@ -84,9 +80,7 @@ void WgValueDisplay::SetFormat( const WgValueFormat& format )
 
 WgSize WgValueDisplay::PreferredSize() const
 {
-	//TODO: Implement!
-
-	return WgSize(1,1);
+	return WgSize(m_text.width(),m_text.height());
 }
 
 
@@ -97,7 +91,7 @@ void WgValueDisplay::_valueModified()
 	// NOTE: We have decided to not post any event on _valueModified since it
 	// can only be done through the API.
 
-	m_bRegenText = true;
+	_regenText();
 	_requestRender();
 }
 
@@ -112,24 +106,21 @@ void WgValueDisplay::_rangeModified()
 
 void WgValueDisplay::_onRefresh( void )
 {
-	if( m_pFonts != 0 )
-	{
-		m_bRegenText = true;
-		_requestRender();
-	}
+	_regenText();
+	_requestRender();
+}
 
+//____ _regenText() ____________________________________________________________
+
+void WgValueDisplay::_regenText()
+{
+		m_text.setScaledValue( m_value, m_format.scale, m_format );
 }
 
 //____ _onRender() _____________________________________________________________
 
 void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
-	if( m_bRegenText )
-	{
-		m_text.setScaledValue( m_value, m_format.scale, m_format );
-		m_bRegenText = false;
-	}
-
 	pDevice->PrintText( _clip, &m_text, _canvas );
 }
 
@@ -141,11 +132,10 @@ void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 
 	Wg_Interface_ValueHolder::_onCloneContent( pOrg );
 
-	m_pFonts		= pOrg->m_pFonts;
 	m_format		= pOrg->m_format;
 	m_text.setText(&pOrg->m_text);
 	m_text.setAlignment(pOrg->m_text.alignment());
-
+	m_text.setProperties(pOrg->m_text.getProperties());
 }
 
 //____ _onEnable() _____________________________________________________________

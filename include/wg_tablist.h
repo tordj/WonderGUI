@@ -146,8 +146,8 @@ public:
 	void 	SetAlertRate( int millisec );
 	int		GetAlertRate() const { return m_alertRate; }
 
-	void 	SetTextAlignment( WgOrientation alignment );
-	WgOrientation GetTextAlignment() const { return m_textAlignment; }
+	void 	SetTextAlignment( WgOrigo alignment );
+	WgOrigo GetTextAlignment() const { return m_textAlignment; }
 
 	void			SetTabExpandMode( TabExpandMode mode );
 	TabExpandMode	GetTabExpandMode() const { return m_tabExpandMode; }
@@ -218,7 +218,7 @@ private:
 
 	WgTextpropPtr	m_pProp;
 
-	WgOrientation	m_textAlignment;
+	WgOrigo	m_textAlignment;
 	WgBlocksetPtr	m_sources[m_nSourceTypes];
 
 	WgTab *		m_pTabSelected;

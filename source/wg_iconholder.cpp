@@ -27,7 +27,7 @@
 
 WgIconHolder::WgIconHolder()
 {
-	m_iconOrientation	= WG_NORTHWEST;
+	m_iconOrigo	= WG_NORTHWEST;
 	m_iconScale			= 0.f;
 	m_bIconPushText		= true;
 }
@@ -48,13 +48,13 @@ bool WgIconHolder::SetIconScale( float scaleFactor )
 	return true;
 }
 
-//____ SetIconOrientation() ___________________________________________________
+//____ SetIconOrigo() ___________________________________________________
 
-void WgIconHolder::SetIconOrientation( WgOrientation orientation )
+void WgIconHolder::SetIconOrigo( WgOrigo origo )
 {
-	if( orientation != m_iconOrientation )
+	if( origo != m_iconOrigo )
 	{
-		m_iconOrientation = orientation;
+		m_iconOrigo = origo;
 		_iconModified();
 	}
 }
@@ -128,7 +128,7 @@ WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, const WgSize& icon
 		w += m_iconBorders.Width();
 		h += m_iconBorders.Height();
 
-		rect = WgUtil::OrientationToRect( m_iconOrientation, contentRect.Size(), WgSize(w,h) );
+		rect = WgUtil::OrigoToRect( m_iconOrigo, contentRect.Size(), WgSize(w,h) );
 		rect += contentRect.Pos();
 		rect -= m_iconBorders;
 	}
@@ -146,7 +146,7 @@ WgRect WgIconHolder::_getTextRect( const WgRect& contentRect, const WgRect& icon
 
 	if( m_bIconPushText && iconRect.w > 0 && iconRect.h > 0 )
 	{
-		switch( m_iconOrientation )
+		switch( m_iconOrigo )
 		{
 			case WG_NORTHWEST:
 			case WG_SOUTHWEST:
@@ -196,7 +196,7 @@ WgRect WgIconHolder::_getTextRect( const WgRect& contentRect, const WgRect& icon
 
 void WgIconHolder::_onCloneContent( const WgIconHolder * _pOrg )
 {
-	m_iconOrientation	= _pOrg->m_iconOrientation;
+	m_iconOrigo	= _pOrg->m_iconOrigo;
 	m_iconScale			= _pOrg->m_iconScale;
 	m_bIconPushText		= _pOrg->m_bIconPushText;
 	m_iconBorders		= _pOrg->m_iconBorders;

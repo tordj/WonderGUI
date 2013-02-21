@@ -91,13 +91,13 @@ void WgButton::SetIcon( const WgBlocksetPtr& pIconGfx )
 	_iconModified();
 }
 
-bool WgButton::SetIcon( const WgBlocksetPtr& pIconGfx, WgOrientation orientation, WgBorders borders, float scale, bool bPushText )
+bool WgButton::SetIcon( const WgBlocksetPtr& pIconGfx, WgOrigo origo, WgBorders borders, float scale, bool bPushText )
 {
 	if( scale < 0 || scale > 1.f )
 		return false;
 
 	m_pIconGfx = pIconGfx;
-	m_iconOrientation = orientation;
+	m_iconOrigo = origo;
 	m_iconBorders = borders;
 	m_iconScale = scale;
 	m_bIconPushText = bPushText;

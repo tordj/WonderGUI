@@ -117,7 +117,7 @@ public:
 //	inline WgColor		GetSelectionColor() const									{ return m_pText->getSelectionBgColor(); }
 
 	void				SetTextMode( WgMode mode );
-	void				SetTextAlignment( const WgOrientation alignment );
+	void				SetTextAlignment( const WgOrigo alignment );
 	void				SetTextTintMode( WgTintMode mode );
 
 	void				ClearText();
@@ -150,7 +150,7 @@ public:
 
 	inline WgMode		TextMode() const { return m_pText->mode(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }
-	inline WgOrientation TextAlignment() const;
+	inline WgOrigo TextAlignment() const;
 	inline WgText *		TextObj() const;
 	inline void			SetTextObj(WgText* text) const;
 	inline int			TextLines() const;
@@ -173,7 +173,7 @@ protected:
 //____ inline methods __________________________________________________________
 
 
-WgOrientation Wg_Interface_TextHolder::TextAlignment() const
+WgOrigo Wg_Interface_TextHolder::TextAlignment() const
 {
 	return m_pText->alignment();
 }

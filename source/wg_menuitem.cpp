@@ -28,24 +28,23 @@ void WgMenuItem::Modified()
 
 //____ WgMenuSeparator::Constructor ___________________________________________
 
-WgMenuSeparator::WgMenuSeparator():WgMenuItem(SEPARATOR)
+WgMenuSeparator::WgMenuSeparator():WgMenuItem(SEPARATOR,0)
 {
 }
 
 
 //____ WgMenuEntry::Constructor _______________________________________________
 
-WgMenuEntry::WgMenuEntry() : WgMenuItem(ENTRY)
+WgMenuEntry::WgMenuEntry() : WgMenuItem(ENTRY,INT_MIN)
 {
 	m_bEnabled		= true;
 	m_navKey		= 0;
 	m_accelModif	= WG_MODKEY_NONE;
 	m_accelKey		= 0;
-	m_id			= 0;
 }
 
-WgMenuEntry::WgMenuEntry(	const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey,
-							WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText ):WgMenuItem(ENTRY)
+WgMenuEntry::WgMenuEntry(	int id, const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey,
+							WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText ):WgMenuItem(ENTRY,id)
 {
 
 	m_text			= text;
@@ -58,8 +57,6 @@ WgMenuEntry::WgMenuEntry(	const WgString& text, const WgString& helpText, const 
 	m_navKey		= navKey;
 	m_accelModif	= accelModif;
 	m_accelKey		= accelKey;
-
-	m_id = 0;
 }
 
 void WgMenuEntry::SetText(const WgString& text)
@@ -119,9 +116,9 @@ WgMenuCheckBox::WgMenuCheckBox()
 	m_bChecked = false;
 }
 
-WgMenuCheckBox::WgMenuCheckBox(	const WgString& text, const WgString& helpText, Uint16 navKey, bool bChecked,
+WgMenuCheckBox::WgMenuCheckBox(	int id, const WgString& text, const WgString& helpText, Uint16 navKey, bool bChecked,
 								WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText )
-						:WgMenuEntry( text, helpText, 0, navKey, accelModif, accelKey, accelText )
+						:WgMenuEntry( id, text, helpText, 0, navKey, accelModif, accelKey, accelText )
 {
 	m_type = CHECKBOX;
 	m_bChecked = bChecked;
@@ -135,10 +132,10 @@ WgMenuRadioButton::WgMenuRadioButton()
 	m_bSelected = false;
 }
 
-WgMenuRadioButton::WgMenuRadioButton(	const WgString& text, const WgString& helpText,
+WgMenuRadioButton::WgMenuRadioButton(	int id, const WgString& text, const WgString& helpText,
 										Uint16 navKey, bool bSelected,
 										WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText )
-						:WgMenuEntry( text, helpText, 0, navKey, accelModif, accelKey, accelText )
+						:WgMenuEntry( id, text, helpText, 0, navKey, accelModif, accelKey, accelText )
 {
 	m_type = RADIOBUTTON;
 	m_bSelected = bSelected;
@@ -182,10 +179,10 @@ WgMenuSubMenu::WgMenuSubMenu()
 }
 
 
-WgMenuSubMenu::WgMenuSubMenu(	const WgString& text, const WgString& helpText,
+WgMenuSubMenu::WgMenuSubMenu(	int id, const WgString& text, const WgString& helpText,
 								const WgBlocksetPtr& pIcon, Uint16 navKey, WgMenu * pSubMenu,
 								WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText )
-						:WgMenuEntry( text, helpText, pIcon, navKey, accelModif, accelKey, accelText )
+						:WgMenuEntry( id, text, helpText, pIcon, navKey, accelModif, accelKey, accelText )
 {
 	m_type = SUBMENU;
 	m_pSubMenu = pSubMenu;

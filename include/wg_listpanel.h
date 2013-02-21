@@ -20,56 +20,56 @@
 
 =========================================================================*/
 
-#ifndef WG_VPANEL_DOT_H
-#define WG_VPANEL_DOT_H
+#ifndef WG_LISTPANEL_DOT_H
+#define WG_LISTPANEL_DOT_H
 
-#ifndef WG_PACKPANEL_DOT_H
-#	include <wg_packpanel.h>
+#ifndef WG_VECTORPANEL_DOT_H
+#	include <wg_vectorpanel.h>
 #endif
 
-class WgVPanel;
+class WgListPanel;
 
-class WgVHook : public WgVectorHook
+class WgListHook : public WgVectorHook
 {
-	friend class WgVPanel;
+	friend class WgListPanel;
 
 public:
 	const char *Type( void ) const;
 	static const char * ClassType();
 
-	inline WgVHook * Prev() const { return _prev(); }
-	inline WgVHook * Next() const { return _next(); }
-	inline WgVPanel * Parent() const { return m_pParent; }
+	inline WgListHook * Prev() const { return _prev(); }
+	inline WgListHook * Next() const { return _next(); }
+	inline WgListPanel * Parent() const { return m_pParent; }
 
 protected:
-	PROTECTED_LINK_METHODS( WgVHook );
+	PROTECTED_LINK_METHODS( WgListHook );
 
-	WgVHook( WgVPanel * pParent );
+	WgListHook( WgListPanel * pParent );
 
-	WgPanel * _parent() const;
+	WgContainer * _parent() const;
 
-	WgVPanel *	m_pParent;
+	WgListPanel *		m_pParent;
 	int				m_height;
 	WgSize			m_preferredSize;			// Cached best size from the child.
 };
 
-class WgVPanel : public WgPackPanel
+class WgListPanel : public WgVectorPanel
 {
 public:
-	WgVPanel();
-	~WgVPanel();
+	WgListPanel();
+	~WgListPanel();
 
 	const char * Type() const;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgVPanel(); };
+	virtual WgWidget * NewOfMyType() const { return new WgListPanel(); };
 	
 
-	inline WgVHook * AddChild( WgWidget * pWidget ) { return static_cast<WgVHook*>(WgVectorPanel::AddChild(pWidget)); }
-	inline WgVHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgVHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
-	inline WgVHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgVHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
+	inline WgListHook * AddChild( WgWidget * pWidget ) { return static_cast<WgListHook*>(WgVectorPanel::AddChild(pWidget)); }
+	inline WgListHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgListHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
+	inline WgListHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgListHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 
-	inline WgVHook* FirstHook() const { return static_cast<WgVHook*>(m_hooks.First()); }
-	inline WgVHook* LastHook() const { return static_cast<WgVHook*>(m_hooks.Last()); }
+	inline WgListHook* FirstHook() const { return static_cast<WgListHook*>(m_hooks.First()); }
+	inline WgListHook* LastHook() const { return static_cast<WgListHook*>(m_hooks.Last()); }
 
 	// Overloaded from WgWidget
 
@@ -105,11 +105,7 @@ protected:
 	void	_refreshAllWidgets();
 	WgVectorHook * _newHook();
 
-	// Overloaded from WgPackPanel
-
-	void	_onSpaceReallocated();
-
-	// Internal to WgVPanel
+	// Internal to WgListPanel
 
 	void	_adaptChildrenToWidth( int width );
 	void 	_refreshPreferredSize();
@@ -127,4 +123,4 @@ protected:
 
 
 
-#endif //WG_VPANEL_DOT_H
+#endif //WG_LISTPANEL_DOT_H

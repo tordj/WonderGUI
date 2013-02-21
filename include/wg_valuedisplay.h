@@ -35,6 +35,10 @@
 #	include <wg_valueformat.h>
 #endif
 
+#ifndef WG_TEXTPROP_DOT_H
+#	include <wg_textprop.h>
+#endif
+
 #ifndef WG_INTERFACE_VALUEHOLDER_DOT_H
 #	include <wg_interface_valueholder.h>
 #endif
@@ -53,10 +57,10 @@ public:
 
 	//____ Methods __________________________________________
 
-	bool	SetFonts( WgFont * _pFonts );
+	void	SetTextProperties( const WgTextpropPtr& _pProps );
 	void	SetFormat( const WgValueFormat& format );
 
-	WgFont *		Fonts() { return m_pFonts; }
+	WgTextpropPtr	TextProperties() { return m_text.getProperties(); }
 	WgValueFormat	Format() { return m_format; }
 	virtual const WgValueFormat&	GetFormat() const { return m_format; }
 
@@ -70,20 +74,17 @@ protected:
 	void	_onEnable();
 	void	_onDisable();
 
+	void	_regenText();
+
 	WgWidget* _getWidget() { return this; }	// Needed for WgSilderTarget.
 
 private:
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
 
-
-
-	WgFont *		m_pFonts;
-	bool			m_bRegenText;
 	WgValueFormat	m_format;
 	WgText			m_text;
 };
-
 
 
 #endif // WG_VALUEDISPLAY_DOT_H

@@ -43,7 +43,7 @@ WgScrollPanel::WgScrollPanel()
 	m_sliderTargets[1].m_pParent = this;
 
 	m_bgColor = WgColor::white;
-	m_contentOrientation = WG_NORTHWEST;
+	m_contentOrigo = WG_NORTHWEST;
 	m_widthPolicy = WG_DEFAULT;
 	m_heightPolicy = WG_DEFAULT;
 
@@ -349,7 +349,7 @@ bool WgScrollPanel::SetViewPixelOfs( int x, int y )
 
 	if( bChangedX || bChangedY )
 	{
-		m_elements[WINDOW].m_canvasGeo = _genContentCanvasGeo( m_elements[WINDOW].m_windowGeo, m_contentSize, m_contentOrientation, m_viewPixOfs );
+		m_elements[WINDOW].m_canvasGeo = _genContentCanvasGeo( m_elements[WINDOW].m_windowGeo, m_contentSize, m_contentOrigo, m_viewPixOfs );
 		_requestRender( m_elements[WINDOW].m_windowGeo );
 	}
 
@@ -677,14 +677,14 @@ void  WgScrollPanel::SetBgColor( WgColor color )
 	}
 }
 
-//____ SetContentOrientation() _________________________________________________
+//____ SetContentOrigo() _________________________________________________
 
-void  WgScrollPanel::SetContentOrientation( WgOrientation orientation )
+void  WgScrollPanel::SetContentOrigo( WgOrigo origo )
 {
-	m_contentOrientation = orientation;
+	m_contentOrigo = origo;
 
 	WgScrollHook * p = &m_elements[WINDOW];
-	WgRect geo = _genContentCanvasGeo( p->m_windowGeo, m_contentSize, m_contentOrientation, m_viewPixOfs );
+	WgRect geo = _genContentCanvasGeo( p->m_windowGeo, m_contentSize, m_contentOrigo, m_viewPixOfs );
 
 	if( geo != p->m_canvasGeo )
 	{
@@ -907,7 +907,7 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 		m_elements[WINDOW].m_windowGeo = newWindow;
 		m_elements[XDRAG].m_windowGeo = newDragX;
 		m_elements[YDRAG].m_windowGeo = newDragY;
-		m_elements[WINDOW].m_canvasGeo = _genContentCanvasGeo( newWindow, newContentSize, m_contentOrientation, m_viewPixOfs );
+		m_elements[WINDOW].m_canvasGeo = _genContentCanvasGeo( newWindow, newContentSize, m_contentOrigo, m_viewPixOfs );
 		m_elements[XDRAG].m_canvasGeo = newDragX;
 		m_elements[YDRAG].m_canvasGeo = newDragY;
 		m_elements[XDRAG].m_bVisible = bShowDragX;
@@ -1000,19 +1000,19 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 
 //____ _genContentCanvasGeo() __________________________________________________
 
-WgRect WgScrollPanel::_genContentCanvasGeo( const WgRect& window, WgSize contentSize, WgOrientation orientation, WgCoord viewOfs )
+WgRect WgScrollPanel::_genContentCanvasGeo( const WgRect& window, WgSize contentSize, WgOrigo origo, WgCoord viewOfs )
 {
 	WgRect	out( window.Pos() - viewOfs, contentSize);
 
 	if( window.w > contentSize.w )
 	{
-		WgRect r = WgUtil::OrientationToRect( orientation, WgSize(window.w,1), WgSize(contentSize.w,1) );
+		WgRect r = WgUtil::OrigoToRect( origo, WgSize(window.w,1), WgSize(contentSize.w,1) );
 		out.x = window.x + r.x;
 	}
 
 	if( window.h > contentSize.h )
 	{
-		WgRect r = WgUtil::OrientationToRect( orientation, WgSize(1,window.h), WgSize(1,contentSize.h) );
+		WgRect r = WgUtil::OrigoToRect( origo, WgSize(1,window.h), WgSize(1,contentSize.h) );
 		out.y = window.y + r.y;
 	}
 
@@ -1216,7 +1216,7 @@ void WgScrollPanel::_onCloneContent( const WgWidget * _pOrg )
 	m_bgColor = pOrg->m_bgColor;
 	m_widthPolicy = pOrg->m_widthPolicy;
 	m_heightPolicy = pOrg->m_heightPolicy;
-	m_contentOrientation = pOrg->m_contentOrientation;
+	m_contentOrigo = pOrg->m_contentOrigo;
 
 	m_pFillerBlocks = pOrg->m_pFillerBlocks;
 	m_geoFiller = pOrg->m_geoFiller;
@@ -1476,7 +1476,7 @@ WgHook * WgScrollHook::_nextHook() const
 
 //____ WgScrollHook::_parent() ___________________________________________________
 
-WgWidgetHolder * WgScrollHook::_parent() const
+WgContainer * WgScrollHook::_parent() const
 {
 	return m_pView;
 }

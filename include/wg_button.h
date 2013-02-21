@@ -59,7 +59,7 @@ public:
 	void			SetDownWhenMouseOutside( bool bDown );
 	bool			DownWhenMouseOutside() const { return m_bDownOutside; }
 
-	bool			SetIcon( const WgBlocksetPtr& pIconGfx, WgOrientation orientation, WgBorders borders = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
+	bool			SetIcon( const WgBlocksetPtr& pIconGfx, WgOrigo origo, WgBorders borders = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
 	void			SetIcon( const WgBlocksetPtr& pIconGfx );
 	WgBlocksetPtr	GetIconSource() const { return m_pIconGfx; }
 

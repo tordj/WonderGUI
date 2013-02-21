@@ -198,7 +198,7 @@ void WgTablist::SetAlertRate( int millisec )
 
 //____ SetTextAlignment() _________________________________________________________
 
-void WgTablist::SetTextAlignment( WgOrientation alignment )
+void WgTablist::SetTextAlignment( WgOrigo alignment )
 {
 	m_textAlignment = alignment;
 	_requestRender();

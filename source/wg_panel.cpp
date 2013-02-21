@@ -113,6 +113,12 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 	}
 }
 
+//____ WgPanelHook::Parent() __________________________________________________
+
+WgPanel* WgPanelHook::Parent() const 
+{ 
+	return static_cast<WgPanel*>(_parent()); 
+}
 
 
 //____ WgPanelHook::SetVisible() _____________________________________________________________

@@ -73,10 +73,10 @@ public:
 	Uint32			InsertTextAtCursor( const WgCharSeq& str );
 	bool			InsertCharAtCursor( Uint16 c );
 
-	void			goBOL();
-	void			goEOL();
-	void			goBOF() { goBOL(); }
-	void			goEOF() { goEOL(); }
+	void			GoBOL();
+	void			GoEOL();
+	void			GoBOF() { GoBOL(); }
+	void			GoEOF() { GoEOL(); }
 
 	virtual Wg_Interface_TextHolder* TempGetText(){ return this; }
 
@@ -108,13 +108,10 @@ private:
 
 	void	_textModified();
 	void	_adjustViewOfs();
+	void	_closeMenu();
 
-	void	_entrySelected(WgMenuItem * pItem);
-	static void cbEntrySelected( void * pWdg, WgMenuItem * pItem ) { ((WgCombobox*)pWdg)->_entrySelected(pItem); }
-
-	void	_menuClosed();
-	static void cbMenuClosed( void * pWdg ) { ((WgCombobox*)pWdg)->_menuClosed(); }
-
+	void	_entrySelected(int itemId);
+	static void cbEntrySelected( const WgEvent::Event * pEvent, WgWidget * pWdg) { ((WgCombobox*)pWdg)->_entrySelected(static_cast<const WgEvent::MenuitemSelect*>(pEvent)->ItemId() ); }
 
 	WgString		m_textFormat;
 	WgString		m_placeholderText;		// Text displayed when field is empty and has no cursor.

@@ -185,7 +185,7 @@ bool WgContainer::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequestin
 {
 	WgHook * p = Hook();
 	if( p )
-		return p->Parent()->_focusRequested( p, pWidgetRequesting );
+		return p->Holder()->_focusRequested( p, pWidgetRequesting );
 	else
 		return false;
 }
@@ -196,7 +196,7 @@ bool WgContainer::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing 
 {
 	WgHook * p = Hook();
 	if( p )
-		return p->Parent()->_focusReleased( p, pWidgetReleasing );
+		return p->Holder()->_focusReleased( p, pWidgetReleasing );
 	else
 		return false;
 }
@@ -204,7 +204,7 @@ bool WgContainer::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing 
 
 WgModalLayer *  WgContainer::_getModalLayer() const
 {
-	const WgWidgetHolder * p = Parent();
+	const WgContainer * p = Parent();
 
 	if( p )
 		return p->_getModalLayer();
@@ -214,7 +214,7 @@ WgModalLayer *  WgContainer::_getModalLayer() const
 
 WgMenuLayer * WgContainer::_getMenuLayer() const
 {
-	const WgWidgetHolder * p = Parent();
+	const WgContainer * p = Parent();
 
 	if( p )
 		return p->_getMenuLayer();

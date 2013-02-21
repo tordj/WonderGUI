@@ -51,10 +51,10 @@ public:
 	bool	SetAnchored( int anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 );
 
 	bool	SetFloating();
-	bool	SetFloating( const WgCoord& pos, WgOrientation origo = WG_NORTHWEST );
-	bool	SetFloating( const WgCoord& pos, int anchor, WgOrientation hotspot );
-	bool	SetFloating( const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
-	bool	SetFloating( const WgRect& geometry, int anchor, WgOrientation hotspot );
+	bool	SetFloating( const WgCoord& pos, WgOrigo origo = WG_NORTHWEST );
+	bool	SetFloating( const WgCoord& pos, int anchor, WgOrigo hotspot );
+	bool	SetFloating( const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
+	bool	SetFloating( const WgRect& geometry, int anchor, WgOrigo hotspot );
 
 
 	void	Top();								// Put us ontop all our silbings.
@@ -72,7 +72,7 @@ public:
 	// Methods for floating hooks
 
 	bool	SetAnchor( int anchor );
-	bool	SetHotspot( WgOrientation hotspot );
+	bool	SetHotspot( WgOrigo hotspot );
 
 	bool	SetSizePolicy( WgSizePolicy width, WgSizePolicy height );
 
@@ -93,7 +93,7 @@ public:
 	WgSizePolicy	WidthPolicy() const { return m_widthPolicy; }
 	WgSizePolicy	HeightPolicy() const { return m_heightPolicy; }
 	int				Origo() const { return m_anchor; }
-	WgOrientation	Hotspot() const { return m_hotspot; }
+	WgOrigo	Hotspot() const { return m_hotspot; }
 	WgRect			FloatGeo() const { return m_placementGeo; }
 	WgCoord			FloatOfs() const { return m_placementGeo.Pos(); }
 	WgRect			FloatSize() const { return m_placementGeo.Size(); }
@@ -134,7 +134,7 @@ protected:
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
-	WgWidgetHolder * _parent() const;
+	WgContainer * _parent() const;
 
 	WgFlexPanel* m_pParent;
 
@@ -148,7 +148,7 @@ protected:
 	WgSizePolicy	m_heightPolicy;
 
 	int				m_anchor;
-	WgOrientation	m_hotspot;
+	WgOrigo	m_hotspot;
 	WgRect			m_placementGeo;	// Widgets geo relative anchor and hotspot.
 
 	//Only used for anchored hooks.
@@ -205,17 +205,17 @@ public:
 
 	WgFlexHook *	AddChild( WgWidget * pWidget );
 	WgFlexHook *	AddChild( WgWidget * pWidget, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
-	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrientation origo = WG_NORTHWEST );
-	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, int anchor, WgOrientation hotspot );
-	WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
-	WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, int anchor, WgOrientation hotspot );
+	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST );
+	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, int anchor, WgOrigo hotspot );
+	WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
+	WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, int anchor, WgOrigo hotspot );
 
 	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling );
 	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
-	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrientation origo = WG_NORTHWEST );
-	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, int anchor, WgOrientation hotspot );
-	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
-	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, int anchor, WgOrientation hotspot );
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST );
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, int anchor, WgOrigo hotspot );
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, int anchor, WgOrigo hotspot );
 
 	bool			DeleteChild( WgWidget * pWidget );
 	WgWidget *		ReleaseChild( WgWidget * pWidget );

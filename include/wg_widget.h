@@ -60,7 +60,7 @@ friend class WgEventHandler;
 friend class WgHook;
 friend class WgFlexHook;
 friend class WgModalHook;
-friend class WgVHook;
+friend class WgListHook;
 friend class WgStackHook;
 
 friend class WgRootPanel;
@@ -68,7 +68,7 @@ friend class WgFlexPanel;
 friend class WgModalLayer;
 friend class WgTablePanel;
 friend class WgScrollPanel;
-friend class WgVPanel;
+friend class WgListPanel;
 friend class WgCapsule;
 friend class WgLayer;
 friend class WgStackPanel;
@@ -126,7 +126,8 @@ public:
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
 	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_bFocused; }
-	WgWidgetHolder * Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
+	WgContainer *	Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
+	WgWidgetHolder* Holder() const { if( m_pHook ) return m_pHook->_holder(); return 0; }
 
 	WgWidget *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Widget(); } return 0; }
 	WgWidget *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Widget(); } return 0; }

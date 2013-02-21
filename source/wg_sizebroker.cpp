@@ -23,30 +23,32 @@
 
 
 
-int default_broker(WgSizeBroker::ItemData* pItems, int nItems, int totalSpace)
+
+WgSizeBroker::WgSizeBroker()
+{
+}
+
+WgSizeBroker::~WgSizeBroker()
+{
+}
+
+int WgSizeBroker::SetItemLengths( ItemData * pItems, int nItems, int totalLength ) const
 {
 	int nUsedSpace = 0;
 	for( int i = 0 ; i < nItems ; i++ )
 	{
-		nUsedSpace += pItems[i].pref;
-		pItems[i].size_out = pItems[i].pref;
+		nUsedSpace += pItems[i].preferred;
+		pItems[i].length = pItems[i].preferred;
 	}
 	return nUsedSpace;
 }
 
+int WgSizeBroker::PreferredLength( const ItemData * pItems, int nItems ) const
+{
+	int length = 0;
+	for( int i = 0 ; i < nItems ; i++ )
+		length += pItems[i].preferred;
 
-
-
-WgSizeBroker::WgSizeBroker() : m_function(default_broker) {}
-WgSizeBroker::WgSizeBroker( int(*fp)(ItemData*,int,int) ) : m_function(fp) {}
-
-
-const WgSizeBroker	WgSizeBroker::none = WgSizeBroker(default_broker);
-
-
-
-
-
-
-
+	return length;
+}
 

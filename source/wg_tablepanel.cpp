@@ -88,7 +88,7 @@ WgHook* WgTableHook::_nextHook() const
 	return NextInTable();
 }
 
-WgWidgetHolder * WgTableHook::_parent() const
+WgContainer * WgTableHook::_parent() const
 {
 	return m_pRow->m_pTable;
 }
@@ -713,7 +713,7 @@ void WgTablePanel::SetArrowSource( const WgBlocksetPtr& pAscend, const WgBlockse
 
 //____ SetArrowPos() __________________________________________________________
 
-void WgTablePanel::SetArrowPos( const WgOrientation alignment, int xOfs, int yOfs )
+void WgTablePanel::SetArrowPos( const WgOrigo alignment, int xOfs, int yOfs )
 {
 	m_sortMarkerAlignment = alignment;
 	m_sortMarkerOfs.x	= xOfs;
@@ -736,7 +736,7 @@ void WgTablePanel::SetArrowPos( int xOfs, int yOfs )
 
 //____ SetArrowAlignment() __________________________________________________________
 
-void WgTablePanel::SetArrowAlignment( WgOrientation alignment )
+void WgTablePanel::SetArrowAlignment( WgOrigo alignment )
 {
 	m_sortMarkerAlignment = alignment;
 
@@ -841,7 +841,7 @@ void WgTablePanel::DeleteColumns()
 
 //TODO: Add default widget to parameters
 
-int WgTablePanel::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrientation headerAlign, int(*fpCompare)(WgWidget *,WgWidget *),
+int WgTablePanel::AddColumn( const WgCharSeq& text, int pixelwidth, WgOrigo headerAlign, int(*fpCompare)(WgWidget *,WgWidget *),
 							 bool bInitialAscend, bool bEnabled, Sint64 id, WgWidget * pDefaultWidget )
 {
 	WgTableColumn * pCol = new WgTableColumn[m_nColumns+1];
@@ -1880,7 +1880,7 @@ void WgTablePanel::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 				else
 					block = m_pDescendGfx->GetBlock(mode);
 
-				WgRect dest = WgUtil::OrientationToRect( m_sortMarkerAlignment, r2.Size(), block.Size() );
+				WgRect dest = WgUtil::OrigoToRect( m_sortMarkerAlignment, r2.Size(), block.Size() );
 				dest += m_sortMarkerOfs;
 				
 				pDevice->ClipBlitBlock( _clip, block, dest );

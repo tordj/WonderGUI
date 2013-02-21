@@ -804,6 +804,25 @@ namespace WgEvent
 		m_itemId	= menuItemId;
 	}
 
+	//____ MenuLayer event methods ____________________________________________
+
+	MenuClosed::MenuClosed( WgWidget * pMenu, const WgWidgetWeakPtr& pCaller )
+	{
+		m_type		= WG_EVENT_MENU_CLOSED;
+		m_pWidget	= pCaller;
+		m_bIsForWidget	= true;
+		m_pMenu		= pMenu;
+	}
+
+	WgWidget * MenuClosed::Menu() const
+	{
+		return m_pMenu.GetRealPtr();
+	}
+
+	WgWidget * MenuClosed::Caller() const
+	{
+		return m_pWidget.GetRealPtr();
+	}
 
 	//____ Modal event methods ___________________________________________________
 

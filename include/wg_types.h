@@ -355,9 +355,9 @@ enum WgMarkPolicy
 	WG_MARKPOLICY_TRANSPARENT
 };
 
-//____ WgOrientation _____________________________________________________________
+//____ WgOrigo _____________________________________________________________
 
-enum WgOrientation
+enum WgOrigo
 {
 	// Clockwise from upper left corner, center last. Must be in range 0-8
 
@@ -442,6 +442,8 @@ enum	WgEventType
 	WG_EVENT_MENUITEM_SELECT,				// Posted when a WgMenuEntry or WgMenuRadioButton is selected.
 	WG_EVENT_MENUITEM_CHECK,				// Posted when a WgMenuCheckBox is checked.
 	WG_EVENT_MENUITEM_UNCHECK,				// Posted when a WgMenuCheckBox is unchecked.
+
+	WG_EVENT_MENU_CLOSED,
 
 	WG_EVENT_MODAL_MOVE_OUTSIDE,
 	WG_EVENT_MODAL_BLOCKED_PRESS,

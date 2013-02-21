@@ -279,9 +279,9 @@ WgMode WgWidget::Mode() const
 
 WgBlendMode WgWidget::_getBlendMode() const
 {
-	WgWidgetHolder * pParent = Parent();
-	if( pParent && pParent->IsWidget() )
-		return pParent->CastToWidget()->_getBlendMode();
+	WgContainer * pParent = Parent();
+	if( pParent )
+		return pParent->_getBlendMode();
 	else
 		return WG_BLENDMODE_BLEND;		// We always start out with WG_BLENDMODE_BLEND.
 }

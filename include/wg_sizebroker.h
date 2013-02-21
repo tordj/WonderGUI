@@ -28,29 +28,20 @@ class WgSizeBroker
 public:
 	struct ItemData
 	{
-		int		pref;			// Preferred size for this item (input)
-		int		min;			// Min size for this item (input)
-		int		max;			// Max size for this item (input)
+		int		preferred;		// Preferred length for this item (input)
+		int		min;			// Min length for this item (input)
+		int		max;			// Max length for this item (input)
 		int		weight;			// Weight for this item (input)
-		int		size_out;		// Size for this item (output)
+		int		length;			// Length for this item (output)
 	};
 
 	WgSizeBroker();
-	WgSizeBroker( int(*fp)(ItemData*,int,int) );
-	~WgSizeBroker() {}
+	virtual ~WgSizeBroker();
 
-
-	int Allocate( ItemData * pItems, int nItems, int totalSpace ) const { return m_function(pItems,nItems,totalSpace); }
-
-	static const WgSizeBroker none;
-//	static const WgSizeBroker even;
-//	static const WgSizeBroker overlap;
-//	static const WgSizeBroker weighted;
-
+	virtual int SetItemLengths( ItemData * pItems, int nItems, int totalLength ) const;
+	virtual int PreferredLength( const ItemData * pItems, int nItems ) const;
 
 private:
-
-	int(*m_function)(ItemData*,int,int);
 
 };
 

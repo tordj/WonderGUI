@@ -53,7 +53,7 @@ void WgModalHook::Top()
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetGeo( const WgRect& geometry, WgOrientation origo )
+bool WgModalHook::SetGeo( const WgRect& geometry, WgOrigo origo )
 {
 	m_placementGeo 	= geometry;
 	m_origo 		= origo;
@@ -68,7 +68,7 @@ bool WgModalHook::SetGeo( const WgRect& geometry, WgOrientation origo )
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetGeo( const WgCoord& ofs, WgOrientation origo )
+bool WgModalHook::SetGeo( const WgCoord& ofs, WgOrigo origo )
 {
 	m_placementGeo.SetPos(ofs);
 	m_origo	= origo;
@@ -177,7 +177,7 @@ bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly t
 	if( sz.h <= 0 )
 		sz.h = 1;
 
-	WgCoord ofs = WgUtil::OrientationToOfs( m_origo, m_pParent->Size() ) - WgUtil::OrientationToOfs( m_origo, sz );
+	WgCoord ofs = WgUtil::OrigoToOfs( m_origo, m_pParent->Size() ) - WgUtil::OrigoToOfs( m_origo, sz );
 	ofs += m_placementGeo.Pos();
 
 	WgRect newGeo( ofs, sz );
@@ -225,7 +225,7 @@ WgHook * WgModalHook::_nextHook() const
 }
 
 //_____________________________________________________________________________
-WgWidgetHolder * WgModalHook::_parent() const
+WgContainer * WgModalHook::_parent() const
 {
 	return m_pParent;
 }
@@ -259,7 +259,7 @@ const char * WgModalLayer::GetClass()
 
 //____ AddModal() ________________________________________________________
 
-WgModalHook * WgModalLayer::AddModal( WgWidget * pWidget, const WgRect& geometry, WgOrientation origo )
+WgModalHook * WgModalLayer::AddModal( WgWidget * pWidget, const WgRect& geometry, WgOrigo origo )
 {
 	// Create Hook and fill in members.
 

@@ -83,12 +83,12 @@ bool WgCheckBox::SetSource( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr
 //____ SetIcons() ______________________________________________________________
 
 void WgCheckBox::SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked,
-								const WgOrientation& orientation, WgBorders borders, float scale,
+								const WgOrigo& origo, WgBorders borders, float scale,
 								bool bPushText )
 {
 	m_pIconUnchecked	= pUnchecked;
 	m_pIconChecked		= pChecked;
-	m_iconOrientation	= orientation;
+	m_iconOrigo	= origo;
 	m_iconScale			= scale;
 	m_bIconPushText		= bPushText;
 	m_iconBorders		= borders;

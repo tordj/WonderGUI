@@ -77,7 +77,7 @@ protected:
 		WgCoord			ScreenPos() const { return m_pParent->ScreenPos(); }
 		WgRect			ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		WgCapsule* 	Parent() const { return m_pParent; }
+		WgCapsule* 		Parent() const { return m_pParent; }
 
 	protected:
 		void			_requestRender() { m_pParent->_requestRender(); }
@@ -86,7 +86,8 @@ protected:
 
 		WgHook *		_prevHook() const { return 0; }
 		WgHook *		_nextHook() const { return 0; }
-		WgWidgetHolder * _parent() const { return m_pParent; }
+		WgContainer *	_parent() const { return m_pParent; }
+		WgWidgetHolder*	_holder() const { return m_pParent; }
 
 		WgCapsule * 	m_pParent;
 

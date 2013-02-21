@@ -46,8 +46,8 @@ public:
 	void			SetSizePolicy( SizePolicy policy );
 	SizePolicy		GetSizePolicy() const { return m_sizePolicy; }
 		
-	void			SetOrientation( WgOrientation orientation );
-	WgOrientation	Orientation() const { return m_orientation; }
+	void			SetOrigo( WgOrigo origo );
+	WgOrigo	Origo() const { return m_origo; }
 
 	WgStackHook * 	Prev() const { return _prev(); }
 	WgStackHook * 	Next() const { return _next(); }
@@ -59,13 +59,13 @@ protected:
 
 	WgStackHook( WgStackPanel * pParent );
 
-	WgPanel * _parent() const;
+	WgContainer * _parent() const;
 
 	WgRect			_getGeo( const WgRect& parentGeo ) const;
 
 	WgStackPanel *	m_pParent;
 	
-	WgOrientation	m_orientation;
+	WgOrigo	m_origo;
 	SizePolicy		m_sizePolicy;
 	
 };
@@ -95,9 +95,7 @@ public:
 	int		HeightForWidth( int width ) const;
 	int		WidthForHeight( int height ) const;
 
-	WgSize	MinSize() const;
 	WgSize	PreferredSize() const;
-	WgSize	MaxSize() const;
 
 protected:
 

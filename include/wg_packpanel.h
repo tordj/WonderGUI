@@ -49,7 +49,8 @@ protected:
 
 	WgPackHook();
 
-	int				m_length;			// Width or height, depending on orientation.
+	int				m_length;			// Width or height, depending on origo, as decided by SizeBroker.
+	int				m_breadth;			// Width or height, depending on origo, as decided by SizeBroker.
 	float			m_weight;			// Weight for space allocation.
 	WgSize			m_preferredSize;	// Cached best size from the child.
 };
@@ -62,20 +63,23 @@ class WgPackPanel : public WgVectorPanel
 	friend class WgPackHook;
 
 public:
-	void	SetSizeBroker( WgSizeBroker& broker );
-	void	SetExpansionBroker( WgSizeBroker& broker );
-	void	SetContractionBroker( WgSizeBroker& broker );
+	inline WgPackHook *	FirstHook() const { return static_cast<WgPackHook*>(_firstHook()); }
+	inline WgPackHook *	LastHook() const { return static_cast<WgPackHook*>(_lastHook()); }
 
-	WgSizeBroker& ExpansionBroker() { return m_expansionBroker; }
-	WgSizeBroker& ContractionBroker() { return m_contractionBroker; }
+	void			SetSizeBroker( WgSizeBroker* pBroker );
+	WgSizeBroker *	SizeBroker() const { return m_pSizeBroker; }
 
 protected:
-	void	_reallocateSpace();
+	
+	void		_setChildLengths();
+	WgSize		_preferredSize();
 
-	virtual void	_onSpaceReallocated() = 0;
+	virtual void	_onChildLengthsChanged() = 0;
 
-	WgSizeBroker 	m_expansionBroker;
-	WgSizeBroker 	m_contractionBroker;
+	WgSizeBroker * 	m_pSizeBroker;
+
+	bool			m_bHorizontal;
+	WgSize			m_preferredSize;
 
 };
 

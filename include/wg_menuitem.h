@@ -75,7 +75,7 @@ public:
 	void Modified();
 
 protected:
-	WgMenuItem(WgMenuItemType _type) {m_type = _type; m_id = 0; m_pMyMenu = 0; m_bVisible = true; }
+	WgMenuItem(WgMenuItemType _type, int id) {m_type = _type; m_id = id; m_pMyMenu = 0; m_bVisible = true; }
 
 	virtual void SetMyMenu( WgMenu * pMenu ) { m_pMyMenu = pMenu; }
 
@@ -103,7 +103,7 @@ class WgMenuEntry : public WgMenuItem
 	friend class WgMenu;
 public:
 	WgMenuEntry();
-	WgMenuEntry( const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey,
+	WgMenuEntry( int id, const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey,
 		WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuEntry();
 
@@ -148,7 +148,7 @@ class WgMenuCheckBox : public WgMenuEntry
 {
 public:
 	WgMenuCheckBox();
-	WgMenuCheckBox(	const WgString& text, const WgString& helpText, Uint16 navKey, bool bChecked,
+	WgMenuCheckBox(	int id, const WgString& text, const WgString& helpText, Uint16 navKey, bool bChecked,
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuCheckBox() {};
 
@@ -166,7 +166,7 @@ class WgMenuRadioButton : public WgMenuEntry
 {
 public:
 	WgMenuRadioButton();
-	WgMenuRadioButton(	const WgString& text, const WgString& helpText, Uint16 navKey, bool bSelected,
+	WgMenuRadioButton(	int id, const WgString& text, const WgString& helpText, Uint16 navKey, bool bSelected,
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuRadioButton() {};
 
@@ -184,7 +184,7 @@ class WgMenuSubMenu : public WgMenuEntry
 {
 public:
 	WgMenuSubMenu();
-	WgMenuSubMenu(	const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey, WgMenu * pSubMenu,
+	WgMenuSubMenu(	int id, const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey, WgMenu * pSubMenu,
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuSubMenu() {};
 

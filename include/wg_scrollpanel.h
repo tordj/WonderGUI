@@ -71,7 +71,7 @@ protected:
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
-	WgWidgetHolder *	_parent() const;
+	WgContainer *	_parent() const;
 
 	WgScrollPanel *	m_pView;
 	WgRect			m_windowGeo;		// Geometry of Widgets window inside parent.
@@ -125,8 +125,8 @@ public:
 	void		SetBgColor( WgColor color );
 	WgColor		BgColor() const { return m_bgColor; }
 
-	void		SetContentOrientation( WgOrientation orientation );
-	WgOrientation ContentOrientation() const { return m_contentOrientation; }
+	void		SetContentOrigo( WgOrigo origo );
+	WgOrigo ContentOrigo() const { return m_contentOrigo; }
 
 	void		SetContentSizePolicy( WgSizePolicy widthPolicy, WgSizePolicy heightPolicy );
 	WgSizePolicy	ContentWidthPolicy() const { return m_widthPolicy; }
@@ -282,7 +282,7 @@ protected:
 	WgSize		_calcContentSize( WgSize mySize );
 	void		_updateElementGeo( WgSize mySize );
 
-	WgRect		_genContentCanvasGeo( const WgRect& window, WgSize contentSize, WgOrientation orientation, WgCoord viewOfs );
+	WgRect		_genContentCanvasGeo( const WgRect& window, WgSize contentSize, WgOrigo origo, WgCoord viewOfs );
 
 	bool		_wheelRollX(int distance);
 	bool		_wheelRollY(int distance);
@@ -316,7 +316,7 @@ protected:
 	WgColor			m_bgColor;
 	WgSizePolicy	m_widthPolicy;
 	WgSizePolicy	m_heightPolicy;
-	WgOrientation	m_contentOrientation;		// Orientation when content is smaller than window
+	WgOrigo	m_contentOrigo;		// Origo when content is smaller than window
 
 	SliderTarget	m_sliderTargets[2];			// Order: Vertical, horizontal
 

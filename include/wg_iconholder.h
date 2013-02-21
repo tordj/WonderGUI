@@ -42,12 +42,12 @@ public:
 	virtual ~WgIconHolder() {};
 
 	bool			SetIconScale( float scaleFactor );
-	void			SetIconOrientation( WgOrientation orientation );
+	void			SetIconOrigo( WgOrigo origo );
 	void			SetIconBorders( WgBorders borders );
 	void			SetIconPushingText( bool bPush );
 
 	float			IconScale() const { return m_iconScale; }
-	WgOrientation	IconOrientation() const { return m_iconOrientation; }
+	WgOrigo	IconOrigo() const { return m_iconOrigo; }
 	WgBorders		IconBorders() const { return m_iconBorders; }
 	bool			IsIconPushingText() const { return m_bIconPushText; }
 
@@ -60,7 +60,7 @@ protected:
 	WgRect			_getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
 	void			_onCloneContent( const WgIconHolder * _pOrg );
 
-	WgOrientation	m_iconOrientation;
+	WgOrigo	m_iconOrigo;
 	float			m_iconScale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 	bool			m_bIconPushText;
 	WgBorders		m_iconBorders;

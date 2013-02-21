@@ -120,16 +120,16 @@ bool WgEventHandler::SetKeyboardFocus( WgWidget * pFocus )
 		// Check what focus group (if any) this Widget belongs to.
 
 		m_keyFocusGroup = 0;
-		WgContainer * p = pFocus->Parent()->CastToContainer();
+		WgContainer * p = pFocus->Parent();
 		while( p )
 		{
 			if( p->IsPanel() && p->CastToPanel()->IsFocusGroup() )
 			{
-				m_keyFocusGroup = p->CastToWidget();
+				m_keyFocusGroup = p;
 				break;
 			}
 
-			p = p->Parent()->CastToContainer();
+			p = p->Parent();
 		}
 
 		// Activate focus
@@ -580,7 +580,7 @@ bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent )
 	
 	WgWidget * p = _pEvent->Widget();
 	if( p && p->Parent() )
-		return ForwardEvent( _pEvent, p->Parent()->CastToWidget() );
+		return ForwardEvent( _pEvent, p->Parent() );
 	else
 		return false;				
 }
@@ -703,6 +703,7 @@ void WgEventHandler::_processEventQueue()
 		_processEventCallbacks( pEvent );
 
 		m_eventQueue.pop_front();
+		m_insertPos = m_eventQueue.begin();		// Insert position set right to start.
 
 		// Delete event object unless its a BUTTON_PRESS, BUTTON_RELEASE or KEY_PRESS event for NO SPECIFIC WIDGET,
 		// which are kept in m_pLatestPressEvents, m_pLatestReleaseEvents and m_keysDown respectively.

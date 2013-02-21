@@ -54,6 +54,7 @@ class WgValueDisplay;
 class WgValueEditor;
 class WgWidgetSlider;
 class WgMenu;
+class WgMenuLayer;
 class WgModalLayer;
 class WgTablePanel;
 class WgInterfaceEditText;
@@ -528,6 +529,27 @@ namespace WgEvent
 	{
 	public:
 		MenuitemUncheck( WgMenu * pMenu, int menuItemId );
+	};
+
+	//____ WgMenuLayer events __________________________________________________
+
+	class MenuClosed : public Event
+	{
+		friend class ::WgMenuLayer;
+	public:
+		WgWidget *		Menu() const;									// Inlining this would demand include of wg_widget.h.
+		WgWidgetWeakPtr	MenuWeakPtr() const { return m_pMenu; }
+
+		// Caller is the same as m_pWidget, since m_pWidget should receive
+		// the event.
+
+		WgWidget *		Caller() const;									// Inlining this would demand include of wg_widget.h.
+		WgWidgetWeakPtr	CallerWeakPtr() const { return m_pWidget; }
+
+	protected:
+		MenuClosed( WgWidget * pMenu, const WgWidgetWeakPtr& pCaller );
+
+		WgWidgetWeakPtr m_pMenu;
 	};
 
 	//____ WgWidgetModalLayer events _________________________________________________

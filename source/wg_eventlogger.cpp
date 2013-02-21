@@ -462,6 +462,14 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		}
 
+		case WG_EVENT_MENU_CLOSED:
+		{
+			id = "MenuClosed";
+			const WgEvent::MenuClosed * pEvent = static_cast<const WgEvent::MenuClosed*>(_pEvent);
+			sprintf( params, "menu=%d", pEvent->Menu() );
+			break;
+		}
+
 		case WG_EVENT_MODAL_MOVE_OUTSIDE:
 			id = "ModalMoveOutside";
 			break;

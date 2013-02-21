@@ -92,16 +92,16 @@ bool WgHook::_releaseFocus()
 
 WgRootPanel * WgHook::Root() const
 {
-	WgWidgetHolder * pParent = _parent();
+	WgWidgetHolder * pHolder = _holder();
 
-	if( pParent->IsWidget() )
+	if( pHolder->IsWidget() )
 	{
-		WgHook * pHook = pParent->CastToWidget()->Hook();
+		WgHook * pHook = pHolder->CastToWidget()->Hook();
 		if( pHook )
 			return pHook->Root();
 	}
-	else if( pParent->IsRoot() )
-		return pParent->CastToRoot();
+	else if( pHolder->IsRoot() )
+		return pHolder->CastToRoot();
 
 	return 0;
 }

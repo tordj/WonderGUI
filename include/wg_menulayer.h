@@ -52,7 +52,7 @@ protected:
 
 	PROTECTED_LINK_METHODS( WgMenuHook );
 
-	WgMenuHook( WgMenuLayer * pParent, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint, WgSize maxSize );
+	WgMenuHook( WgMenuLayer * pParent, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize );
 
 	void		_requestRender();
 	void		_requestRender( const WgRect& rect );
@@ -60,7 +60,7 @@ protected:
 
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
-	WgWidgetHolder * _parent() const;
+	WgContainer* _parent() const;
 
 	bool		_updateGeo();
 
@@ -68,7 +68,7 @@ protected:
 	WgMenuLayer * m_pParent;
 
 	WgRect			m_launcherGeo;		// Launcher geo relative sibling or parent.
-	WgOrientation	m_attachPoint;
+	WgOrigo	m_attachPoint;
 	WgSize			m_maxSize;
 	WgWidgetWeakPtr	m_pOpener;			// Widget that opened this menu.
 	WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at widget that held focus when this menu was ontop.
@@ -88,7 +88,7 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgMenuLayer(); };
 
-	WgMenuHook *	OpenMenu( WgWidget * pMenu, WgWidget * pOpener, const WgRect& launcherGeo, WgOrientation attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
+	WgMenuHook *	OpenMenu( WgWidget * pMenu, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
 
 	bool			CloseMenu( WgWidget * pMenu );
 	bool			CloseAllMenus();

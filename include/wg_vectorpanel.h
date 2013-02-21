@@ -130,9 +130,9 @@ protected:
 
 	WgChain<WgVectorHook>	m_hooks;
 
-	WgSortOrder		m_sortOrder;
+	WgSortOrder			m_sortOrder;
 	WgWidgetSortFunc	m_pSortFunc;
-	int				m_nChildPanels;					// Number of VISIBLE children that are panels.
+	int					m_nChildPanels;					// Number of VISIBLE children that are panels.
 };
 
 

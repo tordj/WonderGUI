@@ -41,8 +41,8 @@ public:
 
 	void	Top();								// Put us ontop of all our siblings.
 
-	bool	SetGeo( const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
-	bool	SetGeo( const WgCoord& ofs, WgOrientation origo = WG_NORTHWEST );
+	bool	SetGeo( const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
+	bool	SetGeo( const WgCoord& ofs, WgOrigo origo = WG_NORTHWEST );
 
 	bool	SetOfs( const WgCoord& ofs );
 	bool	SetOfsX( int x );
@@ -76,12 +76,12 @@ protected:
 
 	WgHook *	_prevHook() const;
 	WgHook *	_nextHook() const;
-	WgWidgetHolder * _parent() const;
+	WgContainer* _parent() const;
 
 
 	WgModalLayer *	m_pParent;
 
-	WgOrientation	m_origo;
+	WgOrigo	m_origo;
 	WgRect			m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets PreferredSize() dynamically.
 										// Setting just one of them to 0 uses Widgets HeightForWidth() or WidthForHeight() dynamically.
 
@@ -102,8 +102,8 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgModalLayer(); };
 
-	WgModalHook *	AddModal( WgWidget * pWidget, const WgRect& geometry, WgOrientation origo = WG_NORTHWEST );
-	WgModalHook *	AddModal( WgWidget * pWidget, const WgCoord& pos, WgOrientation origo = WG_NORTHWEST ) { return AddModal( pWidget, WgRect(pos,0,0), origo); }
+	WgModalHook *	AddModal( WgWidget * pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
+	WgModalHook *	AddModal( WgWidget * pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST ) { return AddModal( pWidget, WgRect(pos,0,0), origo); }
 
 	bool			DeleteAllModal();
 	bool			ReleaseAllModal();

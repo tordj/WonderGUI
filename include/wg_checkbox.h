@@ -73,7 +73,7 @@ public:
 	WgBlocksetPtr	GetUncheckedSource() const { return m_pBlockUnchecked; }
 
 	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked, 
-							  const WgOrientation& orientation, WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
+							  const WgOrigo& origo, WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
 	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked );
 	void			SetCheckedIcon( const WgBlocksetPtr& pChecked );
 	void			SetUncheckedIcon( const WgBlocksetPtr& pUnchecked );

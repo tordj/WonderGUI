@@ -60,10 +60,10 @@ public:
 	inline Uint16 PasswordGlyph() const				 { return m_pwGlyph; };
 	void		SetPasswordGlyph( Uint16 glyph );
 
-	void		goBOL();
-	void		goEOL();
-	void		goBOF() { goBOL(); }
-	void		goEOF() { goEOL(); }
+	void		GoBOL();
+	void		GoEOL();
+	void		GoBOF() { GoBOL(); }
+	void		GoEOF() { GoEOL(); }
 
 	Uint32		InsertTextAtCursor( const WgCharSeq& str );
 	bool		InsertCharAtCursor( Uint16 c );

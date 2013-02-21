@@ -280,8 +280,8 @@
 #	include <wg_scrollpanel.h>
 #endif
 
-#ifndef WG_VPANEL_DOT_H
-#	include <wg_vpanel.h>
+#ifndef WG_LISTPANEL_DOT_H
+#	include <wg_listpanel.h>
 #endif
 
 #endif //WONDERGUI_DOT_H

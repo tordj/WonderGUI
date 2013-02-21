@@ -100,12 +100,12 @@ bool WgFlexHook::SetFloating()
 	return true;
 }
 
-bool WgFlexHook::SetFloating( const WgCoord& pos, WgOrientation origo )
+bool WgFlexHook::SetFloating( const WgCoord& pos, WgOrigo origo )
 {
 	return SetFloating( pos, origo, origo );
 }
 
-bool WgFlexHook::SetFloating( const WgCoord& pos, int anchor, WgOrientation hotspot )
+bool WgFlexHook::SetFloating( const WgCoord& pos, int anchor, WgOrigo hotspot )
 {
 	if( anchor >= m_pParent->NbAnchors() )
 		return false;
@@ -121,12 +121,12 @@ bool WgFlexHook::SetFloating( const WgCoord& pos, int anchor, WgOrientation hots
 	return true;
 }
 
-bool WgFlexHook::SetFloating( const WgRect& geometry, WgOrientation origo )
+bool WgFlexHook::SetFloating( const WgRect& geometry, WgOrigo origo )
 {
 	return SetFloating( geometry, origo, origo );
 }
 
-bool WgFlexHook::SetFloating( const WgRect& geometry, int anchor, WgOrientation hotspot )
+bool WgFlexHook::SetFloating( const WgRect& geometry, int anchor, WgOrigo hotspot )
 {
 	if( anchor >= m_pParent->NbAnchors() )
 		return false;
@@ -345,7 +345,7 @@ bool WgFlexHook::SetAnchor( int anchor )
 
 //____ WgFlexHook::SetHotspot() _______________________________________________
 
-bool WgFlexHook::SetHotspot( WgOrientation hotspot )
+bool WgFlexHook::SetHotspot( WgOrigo hotspot )
 {
 	if( hotspot != m_hotspot )
 	{
@@ -517,7 +517,7 @@ WgHook * WgFlexHook::_nextHook() const
 
 //____ WgFlexHook::_parent() __________________________________________________
 
-WgWidgetHolder * WgFlexHook::_parent() const
+WgContainer * WgFlexHook::_parent() const
 {
 	return m_pParent;
 }
@@ -538,7 +538,7 @@ void WgFlexHook::_refreshRealGeo()
 		// Calculate position
 
 		WgCoord pos = m_pParent->Anchor(m_anchor)->Position( parentSize );	// Anchor,
-		pos -= WgUtil::OrientationToOfs( m_hotspot, sz );						// hotspot
+		pos -= WgUtil::OrigoToOfs( m_hotspot, sz );						// hotspot
 		pos += m_placementGeo.Pos();										// and Offset.
 
 		// Limit size/pos according to parent
@@ -589,7 +589,7 @@ WgSize WgFlexHook::_sizeNeededForGeo()
 	{
 		const WgFlexAnchor * pa = m_pParent->Anchor(m_anchor);
 
-		WgCoord hotspot = WgUtil::OrientationToOfs(m_hotspot,m_placementGeo.Size());
+		WgCoord hotspot = WgUtil::OrigoToOfs(m_hotspot,m_placementGeo.Size());
 		WgCoord offset = pa->Offset() + m_placementGeo.Pos() - hotspot;
 
 		int leftOfAnchor = 0 - offset.x;
@@ -740,12 +740,12 @@ WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, int anchorTopLeft, int a
 	return p;
 }
 
-WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrientation origo )
+WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrigo origo )
 {
 	return AddChild( pWidget, pos, origo, origo );
 }
 
-WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgCoord& pos, int anchor, WgOrientation hotspot )
+WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgCoord& pos, int anchor, WgOrigo hotspot )
 {
 	if( !pWidget )
 		return 0;
@@ -759,12 +759,12 @@ WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgCoord& pos, int 
 	return p;
 }
 
-WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrientation origo )
+WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrigo origo )
 {
 	return AddChild( pWidget, geometry, origo, origo );
 }
 
-WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgRect& geometry, int anchor, WgOrientation hotspot )
+WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgRect& geometry, int anchor, WgOrigo hotspot )
 {
 	if( !pWidget )
 		return 0;
@@ -807,12 +807,12 @@ WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, 
 }
 
 
-WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrientation origo )
+WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrigo origo )
 {
 	return InsertChild( pWidget, pSibling, geometry, origo, origo );
 }
 
-WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, int anchor, WgOrientation hotspot )
+WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, int anchor, WgOrigo hotspot )
 {
 	if( !pWidget || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;
@@ -824,12 +824,12 @@ WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, 
 	return p;
 }
 
-WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrientation origo )
+WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrigo origo )
 {
 	return InsertChild( pWidget, pSibling, pos, origo, origo );
 }
 
-WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, int anchor, WgOrientation hotspot )
+WgFlexHook * WgFlexPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, int anchor, WgOrigo hotspot )
 {
 	if( !pWidget || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;

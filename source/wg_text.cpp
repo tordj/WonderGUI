@@ -1938,7 +1938,7 @@ int WgText::LineStartY( int line, const WgRect& container ) const
 
 	if( m_alignment != WG_NORTHWEST && m_alignment != WG_NORTH && m_alignment != WG_NORTHEAST )
 	{
-		ofs = WgUtil::OrientationToRect( m_alignment, container.Size(), WgSize(0,height() )).y;
+		ofs = WgUtil::OrigoToRect( m_alignment, container.Size(), WgSize(0,height() )).y;
 		if( ofs < 0 )
 			ofs = 0;
 	}
@@ -1959,7 +1959,7 @@ int WgText::LineStartX( int line, const WgRect& container ) const
 
 	if( m_alignment != WG_NORTHWEST && m_alignment != WG_WEST && m_alignment != WG_SOUTHWEST )
 	{
-		ofs = WgUtil::OrientationToRect( m_alignment, container.Size(), WgSize(getSoftLineWidth(line),0 )).x;
+		ofs = WgUtil::OrigoToRect( m_alignment, container.Size(), WgSize(getSoftLineWidth(line),0 )).x;
 		if( ofs < 0 )
 			ofs = 0;
 	}
