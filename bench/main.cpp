@@ -408,6 +408,39 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	}
 */
 
+	// Test oscilloscope
+
+	{
+		WgSurface * pImg = sdl_wglib::LoadSurface("../resources/blocks.png", WgSurfaceFactorySoft() );
+
+		WgBlocksetPtr pMarkerBlock = WgBlockset::CreateFromRect( pImg, WgRect(1,120,8,8) );
+
+		WgOscilloscope * pOsc = new WgOscilloscope();
+
+		pOsc->SetBackground( WgColorSkin::Create( WgColor(0,0,96) ) );
+
+		float grid[] = {-1.f,-0.5f,0.f,0.5f,1.f};
+		pOsc->SetHGridLines( 5, grid );
+		pOsc->SetVGridLines( 5, grid );
+		pOsc->SetGridColor( WgColor(64,64,64) );
+
+		pOsc->SetMarkerGfx( pMarkerBlock );
+		pOsc->AddMarker( 30, 0.f );
+
+
+		float points[256];
+
+		for( int i = 0 ; i < 256 ; i++ )
+		{
+			points[i] = (float) sin(i/25.f)*0.90f;
+		}
+
+		pOsc->SetLinePoints(256,points);
+
+
+		addResizablePanel( pFlex, pOsc, pEventHandler );
+	}
+
 	// Test combobox
 /*
 	{

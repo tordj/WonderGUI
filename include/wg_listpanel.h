@@ -27,6 +27,10 @@
 #	include <wg_vectorpanel.h>
 #endif
 
+#ifndef WG_WIDGETCOLLECTION_DOT_H
+#	include <wg_widgetcollection.h>
+#endif
+
 class WgListPanel;
 
 class WgListHook : public WgVectorHook
@@ -41,6 +45,11 @@ public:
 	inline WgListHook * Next() const { return _next(); }
 	inline WgListPanel * Parent() const { return m_pParent; }
 
+	void	SetSelected(bool bSelected);
+	bool	IsSelected() const { return m_bSelected; }
+	void	SetSelectable(bool bSelectable);
+	bool	IsSelectable() const { return m_bSelectable; }
+
 protected:
 	PROTECTED_LINK_METHODS( WgListHook );
 
@@ -48,9 +57,11 @@ protected:
 
 	WgContainer * _parent() const;
 
-	WgListPanel *		m_pParent;
+	WgListPanel *	m_pParent;
 	int				m_height;
 	WgSize			m_preferredSize;			// Cached best size from the child.
+	bool			m_bSelected;
+	bool			m_bSelectable;
 };
 
 class WgListPanel : public WgVectorPanel
@@ -70,6 +81,18 @@ public:
 
 	inline WgListHook* FirstHook() const { return static_cast<WgListHook*>(m_hooks.First()); }
 	inline WgListHook* LastHook() const { return static_cast<WgListHook*>(m_hooks.Last()); }
+
+
+	void	SetSelectMode( WgSelectMode mode );
+	inline WgSelectMode SelectMode() const { return m_selectMode; }
+
+	WgWidgetCollectionPtr GetSelected() const;
+
+	void	SetRowBlocks( const WgBlocksetPtr& pRowBlocks );
+	void	SetRowBlocks( const WgBlocksetPtr& pOddRowBlocks, const WgBlocksetPtr& pEvenRowBlocks );
+
+	WgBlocksetPtr OddRowBlocks() const { return m_pRowBlocks[0]; };
+	WgBlocksetPtr EvenRowBlocks() const { return m_pRowBlocks[1]; };
 
 	// Overloaded from WgWidget
 
@@ -117,7 +140,8 @@ protected:
 	WgSize	m_preferredSize;
 	int		m_nPreferredWidth;				// Number of Widgets who have exactly m_preferredSize.w as their prefered width.
 
-	
+	WgBlocksetPtr	m_pRowBlocks[2];
+	WgSelectMode	m_selectMode;
 
 };
 

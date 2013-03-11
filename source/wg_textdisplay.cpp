@@ -36,6 +36,7 @@ WgTextDisplay::WgTextDisplay()
 {
 	m_pText			= &m_text;
 	m_maxLines		= 0;
+    m_text.setHolder( this );
 
 	m_text.setLineWidth( Size().w );
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
@@ -425,6 +426,7 @@ void WgTextDisplay::_onLostInputFocus()
 void WgTextDisplay::_textModified()
 {
 	m_bResetCursorOnFocus = true;
+    _requestResize();
 	_requestRender();
 }
 

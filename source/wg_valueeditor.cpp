@@ -292,7 +292,7 @@ bool WgValueEditor::_parseValueFromInput( int64_t * wpResult )
 	{
 		for( int i = 0 ; i < nbChars ; i++ )
 		{
-			Uint16 glyph = p[i].glyph;
+			Uint16 glyph = p[i].Glyph();
 
 			if( glyph == '-' )
 				continue;
@@ -347,7 +347,7 @@ bool WgValueEditor::_parseValueFromInput( int64_t * wpResult )
 			}
 		}
 
-		if( p[0].glyph == '-' )
+		if( p[0].Glyph() == '-' )
 		{
 			if( value == LLONG_MAX )
 				value = m_rangeMin;
@@ -650,7 +650,7 @@ void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			if( character == m_format.period )
 			{
 				if( m_format.decimals > 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
-					(pCursor->column() != 0 || (*m_text.getBuffer())[0].glyph != '-' ) )
+					(pCursor->column() != 0 || (*m_text.getBuffer())[0].Glyph() != '-' ) )
 				{
 					if(m_text.hasSelection())
 						m_text.delSelection();
@@ -658,7 +658,7 @@ void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 					if( m_text.nbChars() < m_maxInputChars )
 					{
-						if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].glyph == '-' ) )
+						if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].Glyph() == '-' ) )
 						{
 							m_text.insertChar( 0, WgChar('0') );
 							pCursor->goRight();
@@ -692,7 +692,7 @@ void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 			if( character >= '0' && character <= '9' )
 			{
-				if( pCursor->column() == 0 && (*m_text.getBuffer())[0].glyph == '-' )
+				if( pCursor->column() == 0 && (*m_text.getBuffer())[0].Glyph() == '-' )
 				{
 				}
 				else

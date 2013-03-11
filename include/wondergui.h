@@ -163,8 +163,8 @@
 #	include <wg_vectorglyphs.h>
 #endif
 
-#ifndef WG_WIDGET_COLLECTION_DOT_H
-#	include <wg_widget_collection.h>
+#ifndef WG_WIDGETCOLLECTION_DOT_H
+#	include <wg_widgetcollection.h>
 #endif
 
 #ifndef WG_PANEL_DOT_H
@@ -192,6 +192,10 @@
 #	include <wg_checkbox.h>
 #endif
 
+#ifndef WG_COLORSKIN_DOT_H
+#	include <wg_colorskin.h>
+#endif
+
 #ifndef WG_COMBOBOX_DOT_H
 #	include <wg_combobox.h>
 #endif
@@ -204,7 +208,7 @@
 #	include <wg_valueeditor.h>
 #endif
 
-#ifndef WG_FILL_DOT_H
+#ifndef WG_FILLER_DOT_H
 #	include <wg_filler.h>
 #endif
 
@@ -230,6 +234,10 @@
 
 #ifndef WG_MODAL_LAYER_DOT_H
 #	include <wg_modallayer.h>
+#endif
+
+#ifndef WG_OSCILLOSCOPE_DOT_H
+#	include <wg_oscilloscope.h>
 #endif
 
 #ifndef WG_IMAGE_DOT_H

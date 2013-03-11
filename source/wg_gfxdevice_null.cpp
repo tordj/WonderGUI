@@ -42,6 +42,10 @@ void WgGfxDeviceNull::TileBlit( const WgSurface* src, const WgRect& srcrect, con
 {
 }
 
+void WgGfxDeviceNullFillSubPixel( const WgRectF& rect, const WgColor& col )
+{
+}
+
 void WgGfxDeviceNull::StretchBlitSubPixel( 	const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 						   		 			float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
 {

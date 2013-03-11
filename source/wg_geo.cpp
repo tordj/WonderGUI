@@ -222,3 +222,51 @@ void WgRect::GrowToContain( const WgRect& r )
 	}
 }
 
+
+WgRectF::WgRectF( const WgRectF& r1, const WgRectF& r2 )
+{
+	Intersection( r1, r2 );
+}
+
+//____ Intersection() ________________________________________________________________
+
+bool WgRectF::Intersection( const WgRectF& _r1, const WgRectF& _r2 )
+{
+	float	x1, y1;						// So we can use ourself as inparameter.
+	float	x2, y2;
+	
+	if( _r1.x > _r2.x )
+		x1 = _r1.x;
+	else
+		x1 = _r2.x;
+	
+	if( _r1.y > _r2.y )
+		y1 = _r1.y;
+	else
+		y1 = _r2.y;
+	
+	if( _r1.x + _r1.w < _r2.x + _r2.w )
+		x2 = _r1.x + _r1.w;
+	else
+		x2 = _r2.x + _r2.w;
+	
+	if( _r1.y + _r1.h < _r2.y + _r2.h )
+		y2 = _r1.y + _r1.h;
+	else
+		y2 = _r2.y + _r2.h;
+	
+	x = x1;
+	y = y1;
+	w = x2 - x;
+	h = y2 - y;
+	
+	if( w <= 0.f || h <= 0.f )
+	{
+		w = 0.f;
+		h = 0.f;
+		return	false;
+	}
+	
+	return	true;
+}
+

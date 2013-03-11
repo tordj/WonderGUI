@@ -64,6 +64,7 @@ public:
 protected:
 	WgGlyph();
 	WgGlyph( int advance, Uint32 _kerningIndex, WgGlyphset * pGlyphset );
+	virtual ~WgGlyph() {}
 
 	WgGlyphset *	m_pGlyphset;	// glyphset that this glyph belongs to
 	int				m_advance;		// spacing to next glyph

@@ -28,7 +28,7 @@ static const char	c_widgetType[] = {"ListPanel"};
 static const char	c_hookType[] = {"ListHook"};
 
 
-WgListHook::WgListHook( WgListPanel * pParent ) : m_pParent(pParent)
+WgListHook::WgListHook( WgListPanel * pParent ) : m_pParent(pParent), m_height(0), m_bSelected(false), m_bSelectable(true)
 {
 }
 
@@ -107,6 +107,46 @@ WgSize WgListPanel::PreferredSize() const
 {
 	return m_preferredSize;
 }
+
+//____ SetSelectMode() ________________________________________________________
+
+void WgListPanel::SetSelectMode( WgSelectMode mode )
+{
+	if( mode == m_selectMode )
+		return;
+
+	m_selectMode = mode;
+}
+
+//____ GetSelected() __________________________________________________________
+
+WgWidgetCollectionPtr WgListPanel::GetSelected() const
+{
+	return WgWidgetCollectionPtr();
+}
+
+//____ SetRowBlocks() _________________________________________________________
+
+void WgListPanel::SetRowBlocks( const WgBlocksetPtr& pRowBlocks )
+{
+	if( pRowBlocks == m_pRowBlocks[0] && pRowBlocks == m_pRowBlocks[1] )
+		return;
+
+	m_pRowBlocks[0] = pRowBlocks;
+	m_pRowBlocks[1] = pRowBlocks;
+	_requestRender();
+}
+
+void WgListPanel::SetRowBlocks( const WgBlocksetPtr& pOddRowBlocks, const WgBlocksetPtr& pEvenRowBlocks )
+{
+	if( pOddRowBlocks == m_pRowBlocks[0] && pEvenRowBlocks == m_pRowBlocks[1] )
+		return;
+
+	m_pRowBlocks[0] = pOddRowBlocks;
+	m_pRowBlocks[1] = pEvenRowBlocks;
+	_requestRender();
+}
+
 
 //____ _onNewSize() ___________________________________________________________
 

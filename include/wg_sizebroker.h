@@ -23,27 +23,63 @@
 #define	WG_SIZEBROKER_DOT_H
 
 
+class WgSizeBrokerItem
+{
+public:	
+	int		preferred;		// Preferred length for this item (input)
+	int		min;			// Min length for this item (input)
+	int		max;			// Max length for this item (input)
+	float	weight;			// Weight for this item (input)
+	int		output;			// Length or preferred length for this item (output)
+};
+
+
 class WgSizeBroker
 {
 public:
-	struct ItemData
-	{
-		int		preferred;		// Preferred length for this item (input)
-		int		min;			// Min length for this item (input)
-		int		max;			// Max length for this item (input)
-		int		weight;			// Weight for this item (input)
-		int		length;			// Length for this item (output)
-	};
-
-	WgSizeBroker();
 	virtual ~WgSizeBroker();
+    
+	virtual int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const = 0;
+	virtual int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const = 0;
+	virtual bool MayAlterPreferredLengths() const = 0;
 
-	virtual int SetItemLengths( ItemData * pItems, int nItems, int totalLength ) const;
-	virtual int PreferredLength( const ItemData * pItems, int nItems ) const;
-
-private:
-
+protected:
+	WgSizeBroker();
 };
+
+
+class WgUniformSizeBroker : public WgSizeBroker
+{
+public:
+    WgUniformSizeBroker() {};
+    ~WgUniformSizeBroker() {};
+    
+	int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
+	int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
+	bool MayAlterPreferredLengths() const;
+
+protected:
+    int     _findLongestUnified( WgSizeBrokerItem * pItems, int nItems ) const;
+    void    _setOutputs( WgSizeBrokerItem * pItems, int nItems, int value ) const;
+
+    
+};
+
+
+class WgScalePreferredSizeBroker : public WgSizeBroker
+{
+public:
+    WgScalePreferredSizeBroker() {};
+    ~WgScalePreferredSizeBroker() {};
+    
+	int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
+	int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
+	bool MayAlterPreferredLengths() const;
+    
+protected:
+    
+};
+
 
 
 #endif //WG_SIZEBROKER_DOT_H

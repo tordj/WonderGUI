@@ -54,7 +54,7 @@ protected:
 
 class WgLayer : public WgContainer
 {
-	friend WgLayerHook;
+	friend class WgLayerHook;
 
 public:
 	bool			IsLayer() const;

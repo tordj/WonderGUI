@@ -19,41 +19,41 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#ifndef WG_SWITCH_DOT_H
+#define WG_SWITCH_DOT_H
 
-#ifndef WG_WIDGETCOLLECTION_DOT_H
-#define WG_WIDGETCOLLECTION_DOT_H
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
-class WgWidget;
-class WgWidgetCollection;
 
-typedef	WgSmartPtr<WgWidgetCollection>	WgWidgetCollectionPtr;
+//____ WgSwitch ____________________________________________________________
 
-class WgWidgetCollection : public WgRefCounted
+class WgSwitch : public WgWidget
 {
 public:
-	virtual int			Size() const = 0;
-	virtual bool		IsEmpty() const = 0;
+	WgSwitch();
+	virtual ~WgSwitch();
 
-	virtual WgWidget *	First() const = 0;
-	virtual WgWidget *	Last() const = 0;
+	virtual const char *Type( void ) const;
+	static const char * GetClass();
+	virtual WgWidget * NewOfMyType() const { return new WgSwitch(); };
 
-	virtual WgWidget *	Get( int index ) const = 0;
-	virtual	int			Find( WgWidget * pWidget ) const = 0;
-	virtual WgWidget *	Next( WgWidget * pWidget ) const = 0;
-	virtual WgWidget *	Prev( WgWidget * pWidget ) const = 0;
+    void    SetValue( int value );
+    
+	WgSize	PreferredSize() const;
+
 protected:
-	WgWidgetCollection() {};
-	virtual ~WgWidgetCollection() {};
+	void	_onCloneContent( const WgWidget * _pOrg );
+	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	bool	_onAlphaTest( const WgCoord& ofs );
+	void	_onEnable();
+	void	_onDisable();
 
+private:
 
 };
 
 
-
-
-#endif //WG_WIDGETCOLLECTION_DOT_H
-
+#endif //WG_SWITCH_DOT_H

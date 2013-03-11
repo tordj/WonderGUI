@@ -123,7 +123,7 @@ protected:
 
 	PROTECTED_LINK_METHODS( WgFlexHook );
 
-	WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo );
+	WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo, WgBorders padding );
 
 	void		_refreshRealGeo();
 	WgSize		_sizeNeededForGeo();
@@ -204,18 +204,18 @@ public:
 
 
 	WgFlexHook *	AddChild( WgWidget * pWidget );
-	WgFlexHook *	AddChild( WgWidget * pWidget, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
-	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST );
-	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, int anchor, WgOrigo hotspot );
-	WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
-	WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, int anchor, WgOrigo hotspot );
+	WgFlexHook *	AddChild( WgWidget * pWidget, int anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 );
+	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST, WgBorders padding = 0 );
+	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, int anchor, WgOrigo hotspot, WgBorders padding = 0 );
+	WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST, WgBorders padding = 0 );
+	WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, int anchor, WgOrigo hotspot, WgBorders padding = 0 );
 
 	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling );
-	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders borders = 0 );
-	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST );
-	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, int anchor, WgOrigo hotspot );
-	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
-	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, int anchor, WgOrigo hotspot );
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 );
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST, WgBorders padding = 0  );
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, int anchor, WgOrigo hotspot, WgBorders padding = 0  );
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST, WgBorders padding = 0  );
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, int anchor, WgOrigo hotspot, WgBorders padding = 0  );
 
 	bool			DeleteChild( WgWidget * pWidget );
 	WgWidget *		ReleaseChild( WgWidget * pWidget );
@@ -223,8 +223,8 @@ public:
 	bool			DeleteAllChildren();
 	bool			ReleaseAllChildren();
 
-	int				AddAnchor( float relativeX, float relativeY, const WgCoord& pixelOfs );
-	bool			ReplaceAnchor( int index, float relativeX, float relativeY, const WgCoord& pixelOfs );
+	int				AddAnchor( float relativeX, float relativeY, const WgCoord& pixelOfs = WgCoord(0,0) );
+	bool			ReplaceAnchor( int index, float relativeX, float relativeY, const WgCoord& pixelOfs = WgCoord(0,0) );
 	bool			DeleteAnchor( int index );
 	void			DeleteAllAnchors();
 

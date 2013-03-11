@@ -216,7 +216,7 @@ public:
 	int					MinWidth( int alt = 0 ) const;
 	int					MinHeight( int alt = 0 ) const;
 	WgSize				MinSize( int alt = 0 ) const;
-
+		
 	const WgSurface *	Surface( int alt = 0 ) const;
 	WgBorders			Frame( int alt = 0 ) const;
 	WgBorders			Padding( int alt = 0 ) const;

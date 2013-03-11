@@ -47,6 +47,7 @@ public:
 	void	Blit( const WgSurface* src, const WgRect& srcrect, int dx, int dy  );
 	void	TileBlit( const WgSurface* src, const WgRect& srcrect, const WgRect& dest );
 
+	void	FillSubPixel( const WgRectF& rect, const WgColor& col );
 	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 

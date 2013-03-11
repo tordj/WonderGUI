@@ -84,7 +84,7 @@ void WgText::Init()
 
 	m_alignment		= WG_NORTHWEST;
 	m_tintMode		= WG_TINTMODE_MULTIPLY;
-	m_lineSpaceAdj	= 0;
+	m_lineSpaceAdj	= 1.f;
 
 	m_mode		= WG_MODE_NORMAL;
 
@@ -1850,7 +1850,7 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 
 	pLine->width		= pen.GetPosX() + _cursorMaxWidth();
 	pLine->height		= maxAscend + maxDescend;
-	pLine->lineSpacing	= maxAscend + maxLineDescend + m_lineSpaceAdj;
+	pLine->lineSpacing	= (int) ((maxAscend + maxLineDescend)*m_lineSpaceAdj);
 	pLine->baseline		= maxAscend;
 }
 

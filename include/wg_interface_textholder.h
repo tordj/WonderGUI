@@ -138,8 +138,8 @@ public:
 	int			ReplaceChar( int ofs, const WgChar& character );
 	int			DeleteChar( int ofs );
 
-	void				SetLineSpaceAdjustment( Sint8 adjustment );
-	Sint8				GetLineSpaceAdjustment() const;
+	void				SetLineSpaceAdjustment( float adjustment );
+	float				GetLineSpaceAdjustment() const;
 
 	virtual bool		SetTextWrap(bool bWrap);
 	inline bool			GetTextWrap() const { return m_pText->IsWrap(); }

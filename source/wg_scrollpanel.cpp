@@ -310,12 +310,22 @@ bool WgScrollPanel::SetViewPixelOfs( int x, int y )
 	bool	bChangedY = false;
 
 	bool retVal = true;
-	if( y > m_contentSize.h - pixLenY )
+    if( y < 0 )
+    {
+        y = 0;
+        retVal = false;
+    }
+    if( y > m_contentSize.h - pixLenY )
 	{
 		y = m_contentSize.h - pixLenY;
 		retVal = false;
 	}
 
+    if( x < 0 )
+    {
+        x = 0;
+        retVal = false;
+    }
 	if( x > m_contentSize.w - pixLenX )
 	{
 		x = m_contentSize.w - pixLenX;

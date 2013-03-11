@@ -188,7 +188,7 @@ int Wg_Interface_TextHolder::DeleteChar( int ofs )
 
 //____ SetLineSpaceAdjustment() __________________________________________________
 
-void Wg_Interface_TextHolder::SetLineSpaceAdjustment( Sint8 adjustment )
+void Wg_Interface_TextHolder::SetLineSpaceAdjustment( float adjustment )
 {
 	m_pText->setLineSpaceAdjustment( adjustment );
 	_textModified();
@@ -196,7 +196,7 @@ void Wg_Interface_TextHolder::SetLineSpaceAdjustment( Sint8 adjustment )
 
 //____ GetLineSpaceAdjustment() __________________________________________________
 
-Sint8 Wg_Interface_TextHolder::GetLineSpaceAdjustment() const
+float Wg_Interface_TextHolder::GetLineSpaceAdjustment() const
 {
 	return m_pText->lineSpaceAdjustment();
 }

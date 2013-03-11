@@ -74,6 +74,7 @@ friend class WgLayer;
 friend class WgStackPanel;
 friend class WgContainer;
 friend class WgPanel;
+friend class WgPackPanel;
 friend class WgShaderCapsule;
 friend class WgMenuLayer;
 

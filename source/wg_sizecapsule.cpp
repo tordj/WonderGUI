@@ -147,14 +147,14 @@ int WgSizeCapsule::HeightForWidth( int width ) const
 		{
 			int max = m_hook.Widget()->MaxSize().h;
 			int min = m_hook.Widget()->MinSize().h;
-			LIMIT( h, min, max );
+			WG_LIMIT( h, min, max );
 		}
 		return h;
 	}
 	else if( m_hook.Widget() )
 	{
 		int h = m_hook.Widget()->HeightForWidth(width);
-		LIMIT( h, m_min.h, m_max.h );
+		WG_LIMIT( h, m_min.h, m_max.h );
 		return h;
 	}
 	else
@@ -172,14 +172,14 @@ int WgSizeCapsule::WidthForHeight( int height ) const
 		{
 			int max = m_hook.Widget()->MaxSize().w;
 			int min = m_hook.Widget()->MinSize().w;
-			LIMIT( w, min, max );
+			WG_LIMIT( w, min, max );
 		}
 		return w;
 	}
 	else if( m_hook.Widget() )
 	{
 		int w = m_hook.Widget()->WidthForHeight(height);
-		LIMIT( w, m_min.w, m_max.w );
+		WG_LIMIT( w, m_min.w, m_max.w );
 		return w;
 	}
 	else

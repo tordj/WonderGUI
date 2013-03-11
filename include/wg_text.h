@@ -283,13 +283,13 @@ public:
 	inline void			setMode( WgMode mode ) { m_mode = mode; }
 	inline void			setAlignment( const WgOrigo alignment ) { m_alignment = alignment; }
 	inline void			setTintMode( WgTintMode mode ) { m_tintMode = mode; }
-	inline void			setLineSpaceAdjustment( Sint8 adjustment ) { m_lineSpaceAdj = adjustment; }
+	inline void			setLineSpaceAdjustment( float adjustment ) { m_lineSpaceAdj = adjustment; }
 
 
 	inline WgMode		mode() const { return m_mode; }
 	inline const WgOrigo alignment() const { return m_alignment; }
 	inline WgTintMode	tintMode() const { return m_tintMode; }
-	inline Sint8		lineSpaceAdjustment() const { return m_lineSpaceAdj; }
+	inline float		lineSpaceAdjustment() const { return m_lineSpaceAdj; }
 
 
 	// Get-methods
@@ -453,7 +453,7 @@ protected:
 	int				m_selEndLine;
 	int				m_selStartCol;
 	int				m_selEndCol;
-	Sint8			m_lineSpaceAdj;		// Adjustment of linespacing for this text.
+	float			m_lineSpaceAdj;		// Adjustment of linespacing for this text.
 
 	WgColorsetPtr	m_pBgBlockColors;	// Textcolors as defined by background blockset (lowest prio).
 

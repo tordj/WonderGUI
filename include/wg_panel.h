@@ -31,6 +31,10 @@
 #	include <wg_container.h>
 #endif
 
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
+#endif
+
 class WgPatches;
 
 
@@ -44,23 +48,27 @@ public:
 	virtual bool	SetVisible( bool bVisible );
 	bool			IsVisible() { return m_bVisible; }
 
-	virtual bool	SetPadding( WgBorders padding );
-	WgBorders		Padding() const;
+	virtual bool	SetPadding( WgBorders padding, WgUnit mode = WG_PIXELS );
+	WgBorders		Padding() const { return m_padding; }
+    WgUnit          PaddingUnit() const { return m_paddingUnit; }
 
 protected:
-	WgPanelHook() : m_bVisible(true) {}
+	WgPanelHook() : m_bVisible(true), m_paddingUnit(WG_PIXELS) {}
 	 virtual ~WgPanelHook() {};
 
 	 WgWidgetHolder* _holder() const { return _parent(); }
 
-	WgSize		_paddedPreferredSize() const { return m_pWidget->PreferredSize() + m_padding; }
-	int			_paddedWidthForHeight( int paddedHeight ) const { return m_pWidget->WidthForHeight( paddedHeight - m_padding.Height() ) + m_padding.Width(); }
-	int			_paddedHeightForWidth( int paddedWidth ) const { return m_pWidget->HeightForWidth( paddedWidth - m_padding.Width() ) + m_padding.Height(); }
+	WgSize		_paddedPreferredSize() const;
+	WgSize		_paddedMinSize() const;
+	WgSize		_paddedMaxSize() const;
+	int			_paddedWidthForHeight( int paddedHeight ) const;
+	int			_paddedHeightForWidth( int paddedWidth ) const;
 
 	WgSize		_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy ) const;
 
 	bool			m_bVisible;
 	WgBorders		m_padding;
+    WgUnit          m_paddingUnit;
 };
 
 
@@ -79,7 +87,8 @@ public:
 	void		SetMaskOp( WgMaskOp operation );
 	WgMaskOp	MaskOp() const { return m_maskOp; }
 
-
+	void		SetSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr	Skin() const { return m_pSkin; }
 
 	inline WgPanelHook *	FirstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
 	inline WgPanelHook *	LastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
@@ -96,7 +105,9 @@ protected:
 	virtual ~WgPanel() {};
 
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-	virtual bool 	_onAlphaTest( const WgCoord& ofs );
+	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+	virtual bool	_onAlphaTest( const WgCoord& ofs );	
+	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
 	virtual void	_onCloneContent( const WgPanel * _pOrg );
 
 
@@ -104,6 +115,7 @@ protected:
 	bool		m_bRadioGroup;
 	bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
 	WgMaskOp	m_maskOp;			// Specifies how container masks background.
+	WgSkinPtr	m_pSkin;
 };
 
 

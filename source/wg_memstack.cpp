@@ -26,7 +26,7 @@ WgMemStack::BlockHeader::BlockHeader(int bytes)
 {
 	pBlock = new char[bytes];
 	size = bytes;
-	allocated = bytes;
+	allocated = 0;
 }
 
 WgMemStack::BlockHeader::~BlockHeader()

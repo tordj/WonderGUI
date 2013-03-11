@@ -101,6 +101,7 @@ class WgSurfaceFactory
 {
 public:
 	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const = 0;
+	virtual ~WgSurfaceFactory() {}
 };
 
 

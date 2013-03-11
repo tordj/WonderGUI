@@ -90,8 +90,8 @@ void WgWidgetSlider::SetBgPressMode( BgPressMode mode )
 
 bool WgWidgetSlider::SetSlider( float _pos, float _size )
 {
-	LIMIT( _size, 0.0001f, 1.f );
-	LIMIT( _pos, 0.f, 1.f );
+	WG_LIMIT( _size, 0.0001f, 1.f );
+	WG_LIMIT( _pos, 0.f, 1.f );
 
 	if( m_sliderPos == _pos && m_sliderSize == _size )
 		return true;
@@ -107,7 +107,7 @@ bool WgWidgetSlider::SetSlider( float _pos, float _size )
 
 bool WgWidgetSlider::SetSliderPos( float pos )
 {
-	LIMIT( pos, 0.f, 1.f );
+	WG_LIMIT( pos, 0.f, 1.f );
 
 	if( pos > m_sliderPos-0.000001 && pos < m_sliderPos+0.000001 )
 		return true;
@@ -146,7 +146,7 @@ bool WgWidgetSlider::SetSliderPosPxlOfs( int x )
 
 bool WgWidgetSlider::SetSliderSize( float _size )
 {
-	LIMIT( _size, 0.0001f, 1.f );
+	WG_LIMIT( _size, 0.0001f, 1.f );
 
 	if( _size == m_sliderSize )
 		return true;
@@ -817,7 +817,7 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 				if( m_sliderSize < 1.f)
 					sliderPos = ((float)(pointerOfs - m_dragBarPressOfs)) / (length - barLen);
 
-				LIMIT( sliderPos, 0.f, 1.f );
+				WG_LIMIT( sliderPos, 0.f, 1.f );
 
 				if( sliderPos != m_sliderPos )
 				{
@@ -898,8 +898,8 @@ bool WgWidgetSlider::_markTestSlider( WgCoord ofs )
 
 bool WgWidgetSlider::_setSlider( float _pos, float _size )
 {
-	LIMIT( _size, 0.0001f, 1.f );
-	LIMIT( _pos, 0.f, 1.f );
+	WG_LIMIT( _size, 0.0001f, 1.f );
+	WG_LIMIT( _pos, 0.f, 1.f );
 
 	if( m_sliderPos == _pos && m_sliderSize == _size )
 		return true;

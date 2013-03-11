@@ -105,7 +105,7 @@ protected:
 
 //____ WgTableColumn _________________________________________________________
 
-class WgTableColumn : public Wg_Interface_TextHolder, public WgWidgetCollection
+class WgTableColumn : public Wg_Interface_TextHolder
 {
 friend class WgTablePanel;
 friend class WgTableHook;
@@ -134,12 +134,14 @@ public:
 
 	bool			IsAutoEllipsisDefault() const { return true; };
 
+	WgWidget *		FirstWidget() const;
+	WgWidget *		LastWidget() const;
 
 	WgTableHook*	FirstHook() const;
 	WgTableHook*	LastHook() const;
 
 	void 			SetSortFunction( fpWidgetCmp pFunc );
-	fpWidgetCmp 		SortFunction() const { return m_fpCompare; }
+	fpWidgetCmp 	SortFunction() const { return m_fpCompare; }
 
 	void			SetTextObj(WgText *text);
 	const WgText*	GetTextObj() const;
@@ -174,7 +176,7 @@ private:
 
 //____ WgTableRow ____________________________________________________________
 
-class WgTableRow : protected WgLink, public WgWidgetCollection
+class WgTableRow : protected WgLink
 {
 friend class WgTablePanel;
 friend class WgTableHook;
@@ -196,6 +198,9 @@ public:
 
 	void			SetVisible(bool bVisible);
 	bool			IsVisible() const { return m_bVisible; }
+
+	WgWidget *	FirstWidget() const;
+	WgWidget *	LastWidget() const;
 
 	WgTableHook*	FirstHook() const;		// Gets first hook with a widget.
 	WgTableHook*	LastHook() const;		// Gets last hook with a widget.

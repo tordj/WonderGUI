@@ -36,6 +36,7 @@ static const char	c_hookType[] = {"RootHook"};
 
 WgRootPanel::WgRootPanel()
 {
+	m_bVisible = true;
 	m_bHasGeo = false;
 	m_geo = WgRect(0,0,0,0);
 	m_pGfxDevice = 0;
@@ -47,6 +48,7 @@ WgRootPanel::WgRootPanel()
 
 WgRootPanel::WgRootPanel( WgGfxDevice * pGfxDevice )
 {
+	m_bVisible = true;
 	m_bHasGeo = false;
 	m_geo = pGfxDevice->CanvasSize();
 	m_pGfxDevice = pGfxDevice;

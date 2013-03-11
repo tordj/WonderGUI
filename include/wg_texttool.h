@@ -261,6 +261,7 @@ public:
 
 	protected:
 		PropModifier() {};
+		virtual ~PropModifier() {}
 	};
 
 	class PropSizeModifier : public PropModifier

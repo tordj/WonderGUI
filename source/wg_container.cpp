@@ -274,10 +274,17 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 			patches.Push( WgRect(*pRect,_canvas) );
 	}
 
-	//
+
+	// Render container itself
+	
+	for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
+		_onRender(pDevice, _canvas, _window, *pRect, _layer );
+		
+	
+	// Render children
 
 	WgRect	dirtBounds = patches.Union();
-
+	
 	if( m_bSiblingsOverlap )
 	{
 

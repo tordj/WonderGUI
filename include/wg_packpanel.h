@@ -30,13 +30,16 @@
 #	include <wg_vectorpanel.h>
 #endif
 
+class WgPackPanel;
 
 class WgPackHook : public WgVectorHook
 {
 	friend class WgPackPanel;
 
 public:
-
+	const char *Type( void ) const;
+	static const char * ClassType();
+	
 	bool	SetWeight( float weight );
 	float	Weight() { return m_weight; }
 
@@ -47,12 +50,14 @@ public:
 protected:
 	PROTECTED_LINK_METHODS( WgPackHook );
 
-	WgPackHook();
+	WgPackHook( WgPackPanel * pParent );
 
-	int				m_length;			// Width or height, depending on origo, as decided by SizeBroker.
-	int				m_breadth;			// Width or height, depending on origo, as decided by SizeBroker.
+	WgContainer * _parent() const;
+	
 	float			m_weight;			// Weight for space allocation.
-	WgSize			m_preferredSize;	// Cached best size from the child.
+	WgRect			m_geo;				// Real geo of child (no padding included).
+	WgSize			m_preferredSize;	// Cached padded preferred size from the child.
+	WgPackPanel *	m_pParent;
 };
 
 
@@ -63,22 +68,65 @@ class WgPackPanel : public WgVectorPanel
 	friend class WgPackHook;
 
 public:
-	inline WgPackHook *	FirstHook() const { return static_cast<WgPackHook*>(_firstHook()); }
-	inline WgPackHook *	LastHook() const { return static_cast<WgPackHook*>(_lastHook()); }
+	WgPackPanel();
+	virtual ~WgPackPanel();
+	
+	virtual const char *Type( void ) const;
+	static const char * GetClass();
+	virtual WgWidget * NewOfMyType() const { return new WgPackPanel(); };
+
+	inline WgPackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChild(pWidget)); }
+	inline WgPackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
+	inline WgPackHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
+	
+    
+	void			SetOrientation( WgOrientation orientaiton );
+	WgOrientation	Orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
+	
+	WgPackHook *	FirstHook() const { return static_cast<WgPackHook*>(_firstHook()); }
+	WgPackHook *	LastHook() const { return static_cast<WgPackHook*>(_lastHook()); }
 
 	void			SetSizeBroker( WgSizeBroker* pBroker );
 	WgSizeBroker *	SizeBroker() const { return m_pSizeBroker; }
 
-protected:
+	WgSize			PreferredSize() const;
 	
-	void		_setChildLengths();
-	WgSize		_preferredSize();
+protected:
 
-	virtual void	_onChildLengthsChanged() = 0;
-
-	WgSizeBroker * 	m_pSizeBroker;
+    // Overloaded from Widget
+    
+	void			_onNewSize( const WgSize& size );
+ 
+    
+	// Overloaded from Container
+	
+	WgHook*			_firstHookWithGeo( WgRect& geo ) const;
+	WgHook*			_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+	
+	WgHook*			_lastHookWithGeo( WgRect& geo ) const;
+	WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+	
+	
+	// Overloaded from VectorPanel
+	
+	WgRect			_hookGeo( const WgVectorHook * pHook );
+	void			_onResizeRequested( WgVectorHook * pHook );
+	void			_onRenderRequested( WgVectorHook * pHook );
+	void			_onRenderRequested( WgVectorHook * pHook, const WgRect& rect );
+	void			_onWidgetAppeared( WgVectorHook * pInserted );				// so parent can update geometry and possibly request render.
+	void			_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+	void			_onWidgetsReordered();
+	void			_refreshAllWidgets();
+	WgVectorHook *	_newHook();
+	
+	//
+	
+	void			_refreshChildGeo();
+	void			_updatePreferredSize();
+	int				_populateSizeBrokerArray( WgSizeBrokerItem * pArray );
 
 	bool			m_bHorizontal;
+	WgSizeBroker * 	m_pSizeBroker;
 	WgSize			m_preferredSize;
 
 };

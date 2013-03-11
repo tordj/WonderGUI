@@ -67,7 +67,7 @@ template<typename T> inline T WgMax(const T &a, const T &b) { return a > b ? a :
 template<typename T> inline T WgAbs(T x)					{ return x >= 0 ? x : -x; }
 template<typename T> inline void WgSwap(T &a, T &b) { T c = a; a = b; b = c; }
 
-#define		LIMIT(x, min, max)	if( x < min) x = min; if( x > max) x = max;
+#define		WG_LIMIT(x, min, max)	if( x < min) x = min; if( x > max) x = max;
 
 //____ WgMode _________________________________________________________________
 
@@ -372,6 +372,24 @@ enum WgOrigo
 	WG_CENTER		= 8
 };
 
+//____ WgDirection ____________________________________________________________
+
+enum WgDirection
+{
+	WG_UP,
+	WG_DOWN,
+	WG_LEFT,
+	WG_RIGHT
+};
+
+//____ WgOrientation __________________________________________________________
+
+enum WgOrientation
+{
+	WG_HORIZONTAL,
+	WG_VERTICAL
+};
+
 //____ WgSizePolicy ___________________________________________________________
 
 enum WgSizePolicy
@@ -473,6 +491,15 @@ enum WgSortOrder
 	WG_SORT_ASCENDING,
 	WG_SORT_DESCENDING
 };
+
+//____ WgUnit ____________________________________________________________
+
+enum WgUnit
+{
+	WG_PIXELS,
+	WG_FRACTION
+};
+
 
 //____ WgSelectMode ___________________________________________________________
 

@@ -1,6 +1,6 @@
 
 #include <wg_mempool.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 Uint32	WgMemPool::g_allocatedEver = 0;
 

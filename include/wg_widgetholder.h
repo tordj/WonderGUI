@@ -27,9 +27,6 @@
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_WIDGET_COLLECTION_DOT_H
-#	include <wg_widgetcollection.h>
-#endif
 
 class WgWidget;
 class WgRootPanel;
@@ -40,13 +37,19 @@ class WgCapsule;
 class WgLayer;
 class WgModalLayer;
 class WgMenuLayer;
+class WgCoord;
 
-class WgWidgetHolder : public WgWidgetCollection
+class WgWidgetHolder
 {
 	friend class WgPanel;
 	friend class WgHook;
 	friend class WgContainer;
 	public:
+		WgWidget *	FirstWidget() const;
+		WgWidget *	LastWidget() const;	
+
+		inline WgHook *	FirstHook() const { return _firstHook(); }
+		inline WgHook *	LastHook() const { return _lastHook(); }
 
 		virtual WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode ) = 0;
 
@@ -80,6 +83,9 @@ class WgWidgetHolder : public WgWidgetCollection
 
 		virtual bool 		_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting ) = 0;
 		virtual bool 		_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing ) = 0;
+
+		virtual WgHook*	_firstHook() const = 0;
+		virtual WgHook*	_lastHook() const = 0;
 };
 
 

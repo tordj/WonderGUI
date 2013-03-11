@@ -176,9 +176,9 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 			{
 				for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
 				{
-					pDst[x] = ((255-pDst[x]) * storedBlue + pDst[x] * invertRed) >> 8;
+					pDst[x] = ((255-pDst[x]) * storedBlue + pDst[x] * invertBlue) >> 8;
 					pDst[x+1] = ((255-pDst[x+1]) * storedGreen + pDst[x+1] * invertGreen) >> 8;
-					pDst[x+2] = ((255-pDst[x+2]) * storedRed + pDst[x+2] * invertBlue) >> 8;
+					pDst[x+2] = ((255-pDst[x+2]) * storedRed + pDst[x+2] * invertRed) >> 8;
 				}
 				pDst += m_pCanvas->m_pitch;
 			}
@@ -188,6 +188,536 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 			break;
 	}
 }
+
+//____ FillSubPixel() ____________________________________________________________________
+
+void WgGfxDeviceSoft::FillSubPixel( const WgRectF& rect, const WgColor& col )
+{
+	if( !m_pCanvas || !m_pCanvas->m_pData )
+		return;
+	
+	WgColor fillColor = col * m_tintColor;
+	
+	// Skip calls that won't affect destination
+	
+	if( fillColor.a == 0 && (m_blendMode == WG_BLENDMODE_BLEND || m_blendMode == WG_BLENDMODE_ADD) )
+		return;
+	
+	// Fill all but anti-aliased edges
+	
+	int x1 = (int) (rect.x + 0.999f);
+	int y1 = (int) (rect.y + 0.999f);
+	int x2 = (int) (rect.x + rect.w);
+	int y2 = (int) (rect.y + rect.h);
+		
+	Fill( WgRect( x1,y1,x2-x1,y2-y1 ), col );
+	
+	// Optimize calls
+	
+	WgBlendMode blendMode = m_blendMode;
+	if( blendMode == WG_BLENDMODE_BLEND && fillColor.a == 255 )
+		blendMode = WG_BLENDMODE_OPAQUE;
+	
+	// Draw the sides
+		
+	int aaLeft = (256 - (int)(rect.x * 256)) & 0xFF;
+	int aaTop = (256 - (int)(rect.y * 256)) & 0xFF;
+	int aaRight = ((int)((rect.x + rect.w) * 256)) & 0xFF;
+	int aaBottom = ((int)((rect.y + rect.h) * 256)) & 0xFF;
+	
+	if( aaTop != 0 )
+		_drawHorrVertLineAA( x1, (int) rect.y, x2-x1, fillColor, blendMode, aaTop, WG_HORIZONTAL );
+	
+	if( aaBottom != 0 )
+		_drawHorrVertLineAA( x1, (int) y2, x2-x1, fillColor, blendMode, aaBottom, WG_HORIZONTAL );
+	
+	if( aaLeft != 0 )
+		_drawHorrVertLineAA( (int) rect.x, y1, y2-y1, fillColor, blendMode, aaLeft, WG_VERTICAL );
+	
+	if( aaRight != 0 )
+		_drawHorrVertLineAA( (int) x2, y1, y2-y1, fillColor, blendMode, aaRight, WG_VERTICAL );	
+	
+	// Draw corner pieces
+	
+	int aaTopLeft = aaTop * aaLeft / 256;
+	int aaTopRight = aaTop * aaRight / 256;
+	int aaBottomLeft = aaBottom * aaLeft / 256;
+	int aaBottomRight = aaBottom * aaRight / 256;
+	
+	if( aaTopLeft != 0 )
+		_plotAA( (int) rect.x, (int) rect.y, fillColor, blendMode, aaTopLeft );
+
+	if( aaTopRight != 0 )
+		_plotAA( x2, (int) rect.y, fillColor, blendMode, aaTopRight );
+
+	if( aaBottomLeft != 0 )
+		_plotAA( (int) rect.x, y2, fillColor, blendMode, aaBottomLeft );
+
+	if( aaBottomRight != 0 )
+		_plotAA( x2, y2, fillColor, blendMode, aaBottomRight );
+}
+
+//____ ClipDrawHorrLine() _____________________________________________________
+
+void WgGfxDeviceSoft::ClipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col )
+{
+	if( start.y < clip.y || start.y >= clip.y + clip.h || start.x >= clip.x + clip.w || start.x + length <= clip.x )
+		return;
+
+	int x = start.x;
+
+	if( x < clip.x )
+	{
+		length = start.x + length - clip.x;
+		x = clip.x;
+	}
+
+	if( x + length > clip.x + clip.w )
+		length = clip.x + clip.w - x;
+
+	_drawHorrVertLine( x, start.y, length, col, WG_HORIZONTAL );
+}
+
+//____ ClipDrawVertLine() _____________________________________________________
+
+void WgGfxDeviceSoft::ClipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col )
+{
+	if( start.x < clip.x || start.x >= clip.x + clip.w || start.y >= clip.y + clip.h || start.y + length <= clip.y )
+		return;
+
+	int y = start.y;
+
+	if( y < clip.y )
+	{
+		length = start.y + length - clip.y;
+		y = clip.y;
+	}
+
+	if( y + length > clip.y + clip.h )
+		length = clip.y + clip.h - y;
+
+	_drawHorrVertLine( start.x, y, length, col, WG_VERTICAL );
+}
+
+//____ ClipPlotSoftPixels() _______________________________________________________
+
+void WgGfxDeviceSoft::ClipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness )
+{
+	int pitch = m_pCanvas->m_pitch;
+	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+
+	int offset[4];
+
+	offset[0] = -pixelBytes;
+	offset[1] = -pitch;
+	offset[2] = pixelBytes;
+	offset[3] = pitch;
+
+	int alpha = (int) (256*(thickness - 1.f)/2);
+
+	int storedRed = ((int)col.r) * alpha;
+	int storedGreen = ((int)col.g) * alpha;
+	int storedBlue = ((int)col.b) * alpha;
+	int invAlpha = 255-alpha;
+
+	int yp = pCoords[0].y;
+
+	for( int i = 0 ; i < nCoords ; i++ )
+	{
+		int x = pCoords[i].x;
+		int begY;
+		int endY;
+
+		if( yp > pCoords[i].y )
+		{
+			begY = pCoords[i].y;
+			endY = yp-1;
+		}
+		else if( pCoords[i].y > yp )
+		{
+			begY = yp+1;
+			endY = pCoords[i].y;
+		}
+		else
+		{
+			begY = endY = yp;
+		}
+
+		for( int y = begY ; y <= endY ; y++ )
+		{
+			Uint8 * pDst = m_pCanvas->m_pData + y * m_pCanvas->m_pitch + pCoords[i].x * pixelBytes;
+
+			if( y > clip.y && y < clip.y + clip.h -1 && x > clip.x && x < clip.x + clip.w -1 )
+			{
+				pDst[0] = col.b;
+				pDst[1] = col.g;
+				pDst[2] = col.r;
+
+				for( int x = 0 ; x < 4 ; x++ )
+				{
+					int ofs = offset[x];
+					pDst[ofs] = (Uint8) ((pDst[ofs]*invAlpha + storedBlue) >> 8);
+					pDst[ofs+1] = (Uint8) ((pDst[ofs+1]*invAlpha + storedGreen) >> 8);
+					pDst[ofs+2] = (Uint8) ((pDst[ofs+2]*invAlpha + storedRed) >> 8);
+				}
+			}
+		}
+
+		yp = pCoords[i].y;
+	}
+}
+/*
+void WgGfxDeviceSoft::ClipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness )
+{
+	int pitch = m_pCanvas->m_pitch;
+	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+
+	int offset[4];
+
+	offset[0] = -pixelBytes;
+	offset[1] = -pitch;
+	offset[2] = pixelBytes;
+	offset[3] = pitch;
+
+	int alpha = (int) (256*(thickness - 1.f)/2);
+
+	int storedRed = ((int)col.r) * alpha;
+	int storedGreen = ((int)col.g) * alpha;
+	int storedBlue = ((int)col.b) * alpha;
+	int invAlpha = 255-alpha;
+
+
+	for( int i = 0 ; i < nCoords ; i++ )
+	{
+		Uint8 * pDst = m_pCanvas->m_pData + pCoords[i].y * m_pCanvas->m_pitch + pCoords[i].x * pixelBytes;
+
+		pDst[0] = col.b;
+		pDst[1] = col.g;
+		pDst[2] = col.r;
+
+		for( int x = 0 ; x < 4 ; x++ )
+		{
+			int ofs = offset[x];
+			pDst[ofs] = (Uint8) ((pDst[ofs]*invAlpha + storedBlue) >> 8);
+			pDst[ofs+1] = (Uint8) ((pDst[ofs+1]*invAlpha + storedGreen) >> 8);
+			pDst[ofs+2] = (Uint8) ((pDst[ofs+2]*invAlpha + storedRed) >> 8);
+		}
+	}
+}
+*/
+
+//____ _drawHorrVertLine() ________________________________________________
+
+void WgGfxDeviceSoft::_drawHorrVertLine( int _x, int _y, int _length, const WgColor& _col, WgOrientation orientation  )
+{
+	if( !m_pCanvas || !m_pCanvas->m_pData || _length <= 0  )
+		return;
+	
+	WgColor fillColor = _col * m_tintColor;
+
+	// Skip calls that won't affect destination
+
+	if( fillColor.a == 0 && (m_blendMode == WG_BLENDMODE_BLEND || m_blendMode == WG_BLENDMODE_ADD) )
+		return;
+
+	// Optimize calls
+
+	WgBlendMode blendMode = m_blendMode;
+	if( blendMode == WG_BLENDMODE_BLEND && fillColor.a == 255 )
+		blendMode = WG_BLENDMODE_OPAQUE;
+
+	//
+
+	int pitch = m_pCanvas->m_pitch;
+	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+	Uint8 * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
+
+	int inc;
+
+	if( orientation == WG_HORIZONTAL )
+		inc = pixelBytes;
+	else
+		inc = pitch;
+
+	//
+
+	switch( blendMode )
+	{
+		case WG_BLENDMODE_OPAQUE:
+		{
+			for( int x = 0 ; x < _length*inc ; x+=inc )
+			{
+				pDst[x] = fillColor.b;
+				pDst[x+1] = fillColor.g;
+				pDst[x+2] = fillColor.r;
+			}
+		}
+		break;
+		case WG_BLENDMODE_BLEND:
+		{
+			int storedRed = ((int)fillColor.r) * fillColor.a;
+			int storedGreen = ((int)fillColor.g) * fillColor.a;
+			int storedBlue = ((int)fillColor.b) * fillColor.a;
+			int invAlpha = 255-fillColor.a;
+
+			for( int x = 0 ; x < _length*inc ; x+=inc )
+			{
+				pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedBlue) >> 8);
+				pDst[x+1] = (Uint8) ((pDst[x+1]*invAlpha + storedGreen) >> 8);
+				pDst[x+2] = (Uint8) ((pDst[x+2]*invAlpha + storedRed) >> 8);
+			}
+
+			break;
+		}
+		case WG_BLENDMODE_ADD:
+		{
+			int storedRed = (((int)fillColor.r) * fillColor.a) >> 8;
+			int storedGreen = (((int)fillColor.g) * fillColor.a) >> 8;
+			int storedBlue = (((int)fillColor.b) * fillColor.a) >> 8;
+
+			if( storedRed + storedGreen + storedBlue == 0 )
+				return;
+
+			for( int x = 0 ; x < _length*inc ; x+= inc )
+			{
+				pDst[x] = m_limitTable[pDst[x] + storedBlue];
+				pDst[x+1] = m_limitTable[pDst[x+1] + storedGreen];
+				pDst[x+2] = m_limitTable[pDst[x+2] + storedRed];
+			}
+			break;
+		}
+		case WG_BLENDMODE_MULTIPLY:
+		{
+			int storedRed = (int)fillColor.r;
+			int storedGreen = (int)fillColor.g;
+			int storedBlue = (int)fillColor.b;
+
+			for( int x = 0 ; x < _length*inc ; x+= inc )
+			{
+				pDst[x] = (pDst[x] * storedBlue) >> 8;
+				pDst[x+1] = (pDst[x+1] * storedGreen) >> 8;
+				pDst[x+2] = (pDst[x+2] * storedRed) >> 8;
+			}
+			break;
+		}
+		case WG_BLENDMODE_INVERT:
+		{
+			int storedRed = (int)fillColor.r;
+			int storedGreen = (int)fillColor.g;
+			int storedBlue = (int)fillColor.b;
+
+			int invertRed = 255 - (int)fillColor.r;
+			int invertGreen = 255 - (int)fillColor.g;
+			int invertBlue = 255 - (int)fillColor.b;
+
+
+			for( int x = 0 ; x < _length*inc ; x+= inc )
+			{
+				pDst[x] = ((255-pDst[x]) * storedBlue + pDst[x] * invertBlue) >> 8;
+				pDst[x+1] = ((255-pDst[x+1]) * storedGreen + pDst[x+1] * invertGreen) >> 8;
+				pDst[x+2] = ((255-pDst[x+2]) * storedRed + pDst[x+2] * invertRed) >> 8;
+			}
+			break;
+		}
+		default:
+			break;
+	}
+}
+
+//____ _drawHorrVertLineAA() ________________________________________________
+
+void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const WgColor& _col, WgBlendMode blendMode, int _aa, WgOrientation orientation )
+{
+	int pitch = m_pCanvas->m_pitch;
+	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+	Uint8 * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
+	
+	int inc;
+	if( orientation == WG_HORIZONTAL )
+		inc = pixelBytes;
+	else
+		inc = pitch;
+
+	switch( blendMode )
+	{
+		case WG_BLENDMODE_OPAQUE:
+		{
+			int storedRed = ((int)_col.r) * _aa;
+			int storedGreen = ((int)_col.g) * _aa;
+			int storedBlue = ((int)_col.b) * _aa;
+			int invAlpha = 255- _aa;
+			
+			for( int x = 0 ; x < _length*inc ; x+= inc )
+			{
+				pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedBlue) >> 8);
+				pDst[x+1] = (Uint8) ((pDst[x+1]*invAlpha + storedGreen) >> 8);
+				pDst[x+2] = (Uint8) ((pDst[x+2]*invAlpha + storedRed) >> 8);
+			}
+			break;
+		}
+		case WG_BLENDMODE_BLEND:
+		{
+			int aa = _col.a * _aa;
+			
+			int storedRed = (((int)_col.r) * aa) >> 8;
+			int storedGreen = (((int)_col.g) * aa) >> 8;
+			int storedBlue = (((int)_col.b) * aa) >> 8;
+			int invAlpha = 255-(aa>>8);
+			
+			for( int x = 0 ; x < _length*inc ; x+= inc )
+			{
+				pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedBlue) >> 8);
+				pDst[x+1] = (Uint8) ((pDst[x+1]*invAlpha + storedGreen) >> 8);
+				pDst[x+2] = (Uint8) ((pDst[x+2]*invAlpha + storedRed) >> 8);
+			}
+			break;
+		}
+		case WG_BLENDMODE_ADD:
+		{
+			int aa = _col.a * _aa;
+			
+			int storedRed = (((int)_col.r) * aa) >> 16;
+			int storedGreen = (((int)_col.g) * aa) >> 16;
+			int storedBlue = (((int)_col.b) * aa) >> 16;
+			
+			if( storedRed + storedGreen + storedBlue == 0 )
+				return;
+			
+			for( int x = 0 ; x < _length*inc ; x+= inc )
+			{
+				pDst[x] = m_limitTable[pDst[x] + storedBlue];
+				pDst[x+1] = m_limitTable[pDst[x+1] + storedGreen];
+				pDst[x+2] = m_limitTable[pDst[x+2] + storedRed];
+			}
+			break;
+		}
+		case WG_BLENDMODE_MULTIPLY:
+		{
+			int storedRed = (int)_col.r;
+			int storedGreen = (int)_col.g;
+			int storedBlue = (int)_col.b;
+			
+			int invAlpha = (255 - _aa) << 8;
+			
+			for( int x = 0 ; x < _length*inc ; x+= inc )
+			{
+				pDst[x] = ( (pDst[x]*invAlpha) + (_aa * pDst[x] * storedBlue) ) >> 16;
+				pDst[x+1] = ( (pDst[x+1]*invAlpha) + (_aa * pDst[x+1] * storedGreen) ) >> 16;
+				pDst[x+2] = ( (pDst[x+2]*invAlpha) + (_aa * pDst[x+2] * storedRed) ) >> 16;
+			}
+			break;
+		}
+		case WG_BLENDMODE_INVERT:
+		{
+			int storedRed = (int)_col.r;
+			int storedGreen = (int)_col.g;
+			int storedBlue = (int)_col.b;
+			
+			int invertRed = 255 - (int)_col.r;
+			int invertGreen = 255 - (int)_col.g;
+			int invertBlue = 255 - (int)_col.b;
+			
+			int invAlpha = (255 - _aa) << 8;
+			
+			for( int x = 0 ; x < _length*inc ; x+= inc )
+			{
+				pDst[x] = ( (pDst[x]*invAlpha) + _aa * ((255-pDst[x]) * storedBlue + pDst[x] * invertBlue) ) >> 16;
+				pDst[x+1] = ( (pDst[x+1]*invAlpha) + _aa * ((255-pDst[x+1]) * storedGreen + pDst[x+1] * invertGreen) )  >> 16;
+				pDst[x+2] = ( (pDst[x+2]*invAlpha) + _aa * ((255-pDst[x+2]) * storedRed + pDst[x+2] * invertRed) ) >> 16;
+			}
+			break;
+		}
+		default:
+			break;
+	}	
+}
+
+//____ _plotAA() ________________________________________________
+
+void WgGfxDeviceSoft::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode blendMode, int _aa )
+{
+	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+	Uint8 * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
+	
+	switch( blendMode )
+	{
+		case WG_BLENDMODE_OPAQUE:
+		{
+			int storedRed = ((int)_col.r) * _aa;
+			int storedGreen = ((int)_col.g) * _aa;
+			int storedBlue = ((int)_col.b) * _aa;
+			int invAlpha = 255- _aa;
+			
+			pDst[0] = (Uint8) ((pDst[0]*invAlpha + storedBlue) >> 8);
+			pDst[1] = (Uint8) ((pDst[1]*invAlpha + storedGreen) >> 8);
+			pDst[2] = (Uint8) ((pDst[2]*invAlpha + storedRed) >> 8);
+			break;
+		}
+		case WG_BLENDMODE_BLEND:
+		{
+			int aa = _col.a * _aa;
+			
+			int storedRed = (((int)_col.r) * aa) >> 8;
+			int storedGreen = (((int)_col.g) * aa) >> 8;
+			int storedBlue = (((int)_col.b) * aa) >> 8;
+			int invAlpha = 255-(aa>>8);
+			
+			pDst[0] = (Uint8) ((pDst[0]*invAlpha + storedBlue) >> 8);
+			pDst[1] = (Uint8) ((pDst[1]*invAlpha + storedGreen) >> 8);
+			pDst[2] = (Uint8) ((pDst[2]*invAlpha + storedRed) >> 8);
+			break;
+		}
+		case WG_BLENDMODE_ADD:
+		{
+			int aa = _col.a * _aa;
+			
+			int storedRed = (((int)_col.r) * aa) >> 16;
+			int storedGreen = (((int)_col.g) * aa) >> 16;
+			int storedBlue = (((int)_col.b) * aa) >> 16;
+			
+			if( storedRed + storedGreen + storedBlue == 0 )
+				return;
+			
+			pDst[0] = m_limitTable[pDst[0] + storedBlue];
+			pDst[1] = m_limitTable[pDst[1] + storedGreen];
+			pDst[2] = m_limitTable[pDst[2] + storedRed];
+			break;
+		}
+		case WG_BLENDMODE_MULTIPLY:
+		{
+			int storedRed = (int)_col.r;
+			int storedGreen = (int)_col.g;
+			int storedBlue = (int)_col.b;
+			
+			int invAlpha = (255 - _aa) << 8;
+			
+			pDst[0] = ( (pDst[0]*invAlpha) + (_aa * pDst[0] * storedBlue) ) >> 16;
+			pDst[1] = ( (pDst[1]*invAlpha) + (_aa * pDst[1] * storedGreen) ) >> 16;
+			pDst[2] = ( (pDst[2]*invAlpha) + (_aa * pDst[2] * storedRed) ) >> 16;
+			break;
+		}
+		case WG_BLENDMODE_INVERT:
+		{
+			int storedRed = (int)_col.r;
+			int storedGreen = (int)_col.g;
+			int storedBlue = (int)_col.b;
+			
+			int invertRed = 255 - (int)_col.r;
+			int invertGreen = 255 - (int)_col.g;
+			int invertBlue = 255 - (int)_col.b;
+			
+			int invAlpha = (255 - _aa) << 8;
+			
+			pDst[0] = ( (pDst[0]*invAlpha) + _aa * ((255-pDst[0]) * storedBlue + pDst[0] * invertBlue) ) >> 16;
+			pDst[1] = ( (pDst[1]*invAlpha) + _aa * ((255-pDst[1]) * storedGreen + pDst[1] * invertGreen) )  >> 16;
+			pDst[2] = ( (pDst[2]*invAlpha) + _aa * ((255-pDst[2]) * storedRed + pDst[2] * invertRed) ) >> 16;
+			break;
+		}
+		default:
+			break;
+	}	
+}
+
 
 //____ Blit() __________________________________________________________________
 

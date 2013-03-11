@@ -102,6 +102,10 @@ public:
 
 	virtual void	Fill( const WgRect& rect, const WgColor& col ) = 0;
 
+	virtual void	ClipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col ) = 0;
+	virtual void	ClipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col ) = 0;
+	virtual void	ClipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness ) = 0;
+
 	virtual void	Blit( const WgSurface* pSrc );
 	virtual void	Blit( const WgSurface* pSrc, int dx, int dy );
 	virtual void	Blit( const WgSurface* pSrc, const WgRect& src, int dx, int dy ) = 0;
@@ -167,9 +171,12 @@ public:
 
 	virtual void		PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars = INT_MAX, WgMode mode = WG_MODE_NORMAL );
 
+	virtual void	FillSubPixel( const WgRectF& rect, const WgColor& col ) = 0;
 	virtual void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 								   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f ) = 0;
 
+
+	
 protected:
 	WgGfxDevice( WgSize canvasSize );
 
@@ -181,7 +188,6 @@ protected:
 							  int iStartOfs, int iEndOfs, WgColor color );
 
 
-//	virtual void	FillSubPixel( float dx, float dy, float dw, float dh, const WgColor& col ) = 0;
 //
 //	virtual void	BlitSubPixel( const WgSurface * pSrc, const WgRect& srcrect,
 //								  float dx, float dy ) = 0;

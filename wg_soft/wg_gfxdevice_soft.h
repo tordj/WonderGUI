@@ -48,6 +48,9 @@ public:
 	void	Fill( const WgRect& rect, const WgColor& col );
 	void	Blit( const WgSurface* pSrc, const WgRect& srcrect, int dx, int dy  );
 
+	void	ClipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
+	void	ClipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
+	void	ClipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness );
 
 	void	StretchBlit( const WgSurface * pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
 	void	StretchBlit( const WgSurface * pSrc, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
@@ -58,16 +61,20 @@ public:
 	void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
 	void	ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
 
-
+	void	FillSubPixel( const WgRectF& rect, const WgColor& col );
 	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
-
+	
 	void	SetBilinearFiltering( bool bEnable ) { m_bBilinearFiltering = bEnable; }
 	bool	GetBilinearFiltering() const { return m_bBilinearFiltering; }
 
 protected:
 
 	void	_initTables();
+
+	void	_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode blendMode, int _aa );
+	void	_drawHorrVertLineAA( int _x, int _y, int _length, const WgColor& _col, WgBlendMode blendMode, int _aa, WgOrientation orientation );
+	void	_drawHorrVertLine( int _x, int _y, int _length, const WgColor& _col, WgOrientation orientation );
 
 	void 	_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, int dx, int dy  );
 	void 	_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcrect, int dx, int dy  );

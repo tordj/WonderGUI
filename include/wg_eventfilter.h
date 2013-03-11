@@ -51,8 +51,10 @@ typedef	bool(*WgFilterFuncPtr)(const WgEvent::Event *, const WgEventFilter& );
 class WgEventFilter
 {
 	friend class WgEventHandler;
+	
 public:
-
+	WgEventFilter() : m_eventType(WG_EVENT_DUMMY), m_pFilterFunc(_filterDummy) {}	//Not meant to be public, but has to for compatibility with older compilers.
+	
 	static WgEventFilter	Tick();
 	static WgEventFilter	PointerChange();
 
@@ -224,7 +226,6 @@ public:
 	inline bool			FiltersWidget() const { return m_pWidget?true:false; }
 	inline WgWidget *	Widget() const { return m_pWidget; }
 private:
-	WgEventFilter() : m_eventType(WG_EVENT_DUMMY), m_pFilterFunc(_filterDummy) {}
 	WgEventFilter( WgEventType eventType, WgWidget * pWidget, WgFilterFuncPtr pFunc, int data1 = 0, int data2 = 0 )
 				: m_eventType(eventType), m_pWidget(pWidget), m_pFilterFunc(pFunc), m_data1(data1), m_data2(data2) {}
 
