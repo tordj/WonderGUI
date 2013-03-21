@@ -80,14 +80,18 @@ void WgKnob::_onCloneContent( const WgWidget * _pOrg )
 
 void WgKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
-    pDevice->Fill( _clip, WgColor::red );
+//    pDevice->Fill( _clip, WgColor::black );
+
+	if( _window.h > 1 )
+		pDevice->ClipDrawElipse( _clip, _canvas, WgColor::pink );
+
 }
 
 //____ _onAlphaTest() ___________________________________________________________
 
 bool WgKnob::_onAlphaTest( const WgCoord& ofs )
 {
-	return false;
+	return true;
 }
 
 

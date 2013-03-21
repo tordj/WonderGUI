@@ -51,3 +51,26 @@ void WgGfxDeviceNull::StretchBlitSubPixel( 	const WgSurface * pSrc, float sx, fl
 {
 }
 
+void WgGfxDeviceNull::DrawArcNE( const WgRect& rect, WgColor color )
+{
+}
+
+void WgGfxDeviceNull::DrawElipse( const WgRect& rect, WgColor color )
+{
+}
+
+void WgGfxDeviceNull::DrawFilledElipse( const WgRect& rect, WgColor color )
+{
+}
+
+void WgGfxDeviceNull::ClipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color )
+{
+}
+
+void WgGfxDeviceNull::ClipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color )
+{
+}
+
+void WgGfxDeviceNull::ClipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color )
+{
+}

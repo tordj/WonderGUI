@@ -25,6 +25,9 @@
 
 #include <assert.h>
 
+#define NB_CURVETAB_ENTRIES	1024
+
+
 //____ Constructor _____________________________________________________________
 
 WgGfxDeviceSoft::WgGfxDeviceSoft() : WgGfxDevice(WgSize(0,0))
@@ -32,6 +35,7 @@ WgGfxDeviceSoft::WgGfxDeviceSoft() : WgGfxDevice(WgSize(0,0))
 	m_bBilinearFiltering = true;
 	m_pCanvas = 0;
 	_initTables();
+	_genCurveTab();
 }
 
 WgGfxDeviceSoft::WgGfxDeviceSoft( WgSurfaceSoft * pCanvas ) : WgGfxDevice( pCanvas?pCanvas->Size():WgSize() )
@@ -39,6 +43,7 @@ WgGfxDeviceSoft::WgGfxDeviceSoft( WgSurfaceSoft * pCanvas ) : WgGfxDevice( pCanv
 	m_bBilinearFiltering = true;
 	m_pCanvas = pCanvas;
 	_initTables();
+	_genCurveTab();
 }
 
 //____ Destructor ______________________________________________________________
@@ -46,6 +51,7 @@ WgGfxDeviceSoft::WgGfxDeviceSoft( WgSurfaceSoft * pCanvas ) : WgGfxDevice( pCanv
 WgGfxDeviceSoft::~WgGfxDeviceSoft()
 {
 	delete m_pCanvas;
+	delete m_pCurveTab;
 }
 
 //____ SetCanvas() _______________________________________________________________
@@ -716,6 +722,375 @@ void WgGfxDeviceSoft::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode 
 		default:
 			break;
 	}	
+}
+
+
+//____ _genCurveTab() ___________________________________________________________
+
+void WgGfxDeviceSoft::_genCurveTab()
+{
+	m_pCurveTab = new int[NB_CURVETAB_ENTRIES];
+
+	double factor = 3.14159265 / (2.0 * NB_CURVETAB_ENTRIES); 
+
+	for( int i = 0 ; i < NB_CURVETAB_ENTRIES ; i++ )
+	{
+		double y = 1.f - i/(double)NB_CURVETAB_ENTRIES;
+		m_pCurveTab[i] = (int) (sqrt(1.f - y*y)*65536.f);
+	}		
+}
+
+
+//____ DrawElipse() _______________________________________________________________
+
+void WgGfxDeviceSoft::DrawElipse( const WgRect& rect, WgColor color )
+{
+	if( rect.h < 2 || rect.w < 1 )
+		return;
+
+	int sectionHeight = rect.h/2;
+	int maxWidth = rect.w/2;
+
+	Uint8 * pLineBeg = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch;
+	int pitch = m_pCanvas->m_pitch;
+
+	int center = (rect.x + rect.w/2) << 8;
+
+	int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / sectionHeight;
+	int sinOfs = 0;
+
+	int begOfs = 0;
+	int peakOfs = 0;
+	int endOfs = 0;
+
+	for( int i = 0 ; i < sectionHeight ; i++ )
+	{
+		peakOfs = ((m_pCurveTab[sinOfs>>16] * maxWidth) >> 8);
+		endOfs = (m_pCurveTab[(sinOfs+(sinOfsInc-1))>>16] * maxWidth) >> 8;
+
+		_drawHorrFadeLine( pLineBeg + i*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, color );
+		_drawHorrFadeLine( pLineBeg + i*pitch, center - endOfs, center - peakOfs, center - begOfs +256, color );
+
+		_drawHorrFadeLine( pLineBeg + (sectionHeight*2-i-1)*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, color );
+		_drawHorrFadeLine( pLineBeg + (sectionHeight*2-i-1)*pitch, center - endOfs, center - peakOfs, center - begOfs +256, color );
+
+		begOfs = peakOfs;
+		sinOfs += sinOfsInc;
+	}
+}
+
+//____ _clipDrawHorrFadeLine() _______________________________________________________________
+
+void WgGfxDeviceSoft::_clipDrawHorrFadeLine( int clipX1, int clipX2, Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, WgColor color )
+{
+	int pitch = m_pCanvas->m_pitch;
+	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+	Uint8 * p = pLineStart + (begOfs>>8) * pixelBytes;
+	Uint8 * pClip1 = pLineStart + clipX1*pixelBytes;
+	Uint8 * pClip2 = pLineStart + clipX2*pixelBytes;
+
+	int alphaInc, alpha, len;
+
+	if( (peakOfs>>8) == (begOfs>>8) )
+	{
+		alphaInc = 0;
+		alpha = (256-(peakOfs&0xff) + (peakOfs-begOfs)/2) << 14;
+		len = 1;
+	}
+	else
+	{
+		alphaInc = (255 << 22) / (peakOfs - begOfs);			// alpha inc per pixel with 14 binals.
+		alpha = ((256 - (begOfs&0xff)) * alphaInc) >> 9;		// alpha for ramp up start pixel with 14 binals.
+		len = ((peakOfs+256) >> 8) - (begOfs >> 8);
+	}
+
+	for( int i = 0 ; i < len ; i++ )
+	{
+		if( p >= pClip1 && p < pClip2 )
+		{
+			int invAlpha = (255 << 14) - alpha;
+
+			p[0] = ((color.b * alpha) + (p[0]*invAlpha)) >> 22;
+			p[1] = ((color.g * alpha) + (p[1]*invAlpha)) >> 22;
+			p[2] = ((color.r * alpha) + (p[2]*invAlpha)) >> 22;
+		}
+		alpha += alphaInc;
+		if( alpha > 255 << 14 )
+			alpha = 255 << 14;
+
+		p += pixelBytes;
+	}
+
+	if( (endOfs>>8) == ((peakOfs + 256)>>8) )
+	{
+		alphaInc = 0;
+		alpha = ((peakOfs&0xff)+(endOfs-peakOfs-256)/2) << 14;
+		len = 1;
+	}
+	else
+	{
+		alphaInc = (255 << 22) / (endOfs - (peakOfs+256));						// alpha dec per pixel with 14 binals.
+		alpha = (255 << 14) - (((256 - (peakOfs&0xff)) * alphaInc) >> 9);	// alpha for ramp down start pixel with 14 binals.
+		len = (endOfs >> 8) - ((peakOfs+256) >> 8);
+		alphaInc = -alphaInc;
+	}
+
+	for( int i = 0 ; i < len ; i++ )
+	{
+		if( p >= pClip1 && p < pClip2 )
+		{
+			int invAlpha = (255 << 14) - alpha;
+
+			p[0] = ((color.b * alpha) + (p[0]*invAlpha)) >> 22;
+			p[1] = ((color.g * alpha) + (p[1]*invAlpha)) >> 22;
+			p[2] = ((color.r * alpha) + (p[2]*invAlpha)) >> 22;
+		}
+		alpha += alphaInc;
+		p += pixelBytes;
+	}
+}
+
+
+//____ _drawHorrFadeLine() _______________________________________________________________
+
+void WgGfxDeviceSoft::_drawHorrFadeLine( Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, WgColor color )
+{
+	int pitch = m_pCanvas->m_pitch;
+	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+	Uint8 * p = pLineStart + (begOfs>>8) * pixelBytes;
+
+	int alphaInc, alpha, len;
+
+	if( (peakOfs>>8) == (begOfs>>8) )
+	{
+		alphaInc = 0;
+		alpha = (256-(peakOfs&0xff) + (peakOfs-begOfs)/2) << 14;
+		len = 1;
+	}
+	else
+	{
+		alphaInc = (255 << 22) / (peakOfs - begOfs);			// alpha inc per pixel with 14 binals.
+		alpha = ((256 - (begOfs&0xff)) * alphaInc) >> 9;		// alpha for ramp up start pixel with 14 binals.
+		len = ((peakOfs+256) >> 8) - (begOfs >> 8);
+	}
+
+	for( int i = 0 ; i < len ; i++ )
+	{
+		int invAlpha = (255 << 14) - alpha;
+
+		p[0] = ((color.b * alpha) + (p[0]*invAlpha)) >> 22;
+		p[1] = ((color.g * alpha) + (p[1]*invAlpha)) >> 22;
+		p[2] = ((color.r * alpha) + (p[2]*invAlpha)) >> 22;
+		alpha += alphaInc;
+		if( alpha > 255 << 14 )
+			alpha = 255 << 14;
+
+		p += pixelBytes;
+	}
+
+	if( (endOfs>>8) == ((peakOfs + 256)>>8) )
+	{
+		alphaInc = 0;
+		alpha = ((peakOfs&0xff)+(endOfs-peakOfs-256)/2) << 14;
+		len = 1;
+	}
+	else
+	{
+		alphaInc = (255 << 22) / (endOfs - (peakOfs+256));						// alpha dec per pixel with 14 binals.
+		alpha = (255 << 14) - (((256 - (peakOfs&0xff)) * alphaInc) >> 9);	// alpha for ramp down start pixel with 14 binals.
+		len = (endOfs >> 8) - ((peakOfs+256) >> 8);
+		alphaInc = -alphaInc;
+	}
+
+	for( int i = 0 ; i < len ; i++ )
+	{
+		int invAlpha = (255 << 14) - alpha;
+
+		p[0] = ((color.b * alpha) + (p[0]*invAlpha)) >> 22;
+		p[1] = ((color.g * alpha) + (p[1]*invAlpha)) >> 22;
+		p[2] = ((color.r * alpha) + (p[2]*invAlpha)) >> 22;
+		alpha += alphaInc;
+		p += pixelBytes;
+	}
+	
+}
+
+//____ ClipDrawElipse() _______________________________________________________________
+
+void WgGfxDeviceSoft::ClipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color )
+{
+	if( rect.h < 2 || rect.w < 1 )
+		return;
+
+	if( !rect.IntersectsWith(clip) )
+		return;
+
+	if( clip.Contains(rect) )
+		return DrawElipse(rect,color);
+
+	int sectionHeight = rect.h/2;
+	int maxWidth = rect.w/2;
+
+	Uint8 * pLineBeg = m_pCanvas->m_pData + rect.y*m_pCanvas->m_pitch;
+	int pitch = m_pCanvas->m_pitch;
+
+	int center = (rect.x + rect.w/2) << 8;
+
+	int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / sectionHeight;
+	int sinOfs = 0;
+
+	int begOfs = 0;
+	int peakOfs = 0;
+	int endOfs = 0;
+
+	for( int i = 0 ; i < sectionHeight ; i++ )
+	{
+		peakOfs = ((m_pCurveTab[sinOfs>>16] * maxWidth) >> 8);
+		endOfs = (m_pCurveTab[(sinOfs+(sinOfsInc-1))>>16] * maxWidth) >> 8;
+
+		if( rect.y + i >= clip.y && rect.y + i < clip.y + clip.h ) 
+		{		
+			_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + i*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, color );
+			_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + i*pitch, center - endOfs, center - peakOfs, center - begOfs +256, color );
+		}
+
+		int y2 = sectionHeight*2-i-1;
+		if( rect.y + y2 >= clip.y && rect.y + y2 < clip.y + clip.h ) 
+		{
+			_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + y2*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, color );
+			_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + y2*pitch, center - endOfs, center - peakOfs, center - begOfs +256, color );
+		}
+
+		begOfs = peakOfs;
+		sinOfs += sinOfsInc;
+	}
+}
+
+//____ DrawFilledElipse() _____________________________________________________
+
+void WgGfxDeviceSoft::DrawFilledElipse( const WgRect& rect, WgColor color )
+{
+	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+
+	Uint8 * pLineCenter = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + (rect.x+rect.w/2) * pixelBytes;
+
+	int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / (rect.h/2);
+	int sinOfs = sinOfsInc >> 1;
+
+	for( int j = 0 ; j < 2 ; j++ )
+	{
+		for( int i = 0 ; i < rect.h/2 ; i++ )
+		{
+			int lineLen = ((m_pCurveTab[sinOfs>>16] * rect.w/2 + 32768)>>16)*pixelBytes;
+			Uint8 * pLineBeg = pLineCenter - lineLen;
+			Uint8 * pLineEnd = pLineCenter + lineLen;
+
+			for( Uint8 * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
+			{
+				p[0] = color.b;
+				p[1] = color.g;
+				p[2] = color.r;
+			}
+
+			sinOfs += sinOfsInc;
+			pLineCenter += m_pCanvas->m_pitch;
+		}
+		sinOfsInc = -sinOfsInc;
+		sinOfs = (NB_CURVETAB_ENTRIES << 16) + (sinOfsInc >> 1);
+	}
+}
+
+//____ ClipDrawFilledElipse() _____________________________________________________
+
+void WgGfxDeviceSoft::ClipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color )
+{
+	if( !rect.IntersectsWith(clip) )
+		return;
+
+	if( clip.Contains(rect) )
+		return DrawFilledElipse(rect,color);
+
+	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+
+	Uint8 * pLine = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch;
+
+	int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / (rect.h/2);
+	int sinOfs = sinOfsInc >> 1;
+
+	for( int j = 0 ; j < 2 ; j++ )
+	{
+		for( int i = 0 ; i < rect.h/2 ; i++ )
+		{
+			if( rect.y + j*(rect.h/2) + i >= clip.y && rect.y + j*(rect.h/2) + i < clip.y + clip.h )
+			{
+				int lineLen = ((m_pCurveTab[sinOfs>>16] * rect.w/2 + 32768)>>16);
+	
+				int beg = rect.x + rect.w/2 - lineLen;
+				int end = rect.x + rect.w/2 + lineLen;
+
+				if( beg < clip.x )
+					beg = clip.x;
+
+				if( end > clip.x + clip.w )
+					end = clip.x + clip.w;
+
+				if( beg < end )
+				{
+					Uint8 * pLineBeg = pLine + beg * pixelBytes;	
+					Uint8 * pLineEnd = pLine + end * pixelBytes;			
+
+					for( Uint8 * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
+					{
+						p[0] = color.b;
+						p[1] = color.g;
+						p[2] = color.r;
+					}
+				}
+			}
+
+			sinOfs += sinOfsInc;
+			pLine += m_pCanvas->m_pitch;
+		}
+
+		sinOfsInc = -sinOfsInc;
+		sinOfs = (NB_CURVETAB_ENTRIES << 16) + (sinOfsInc >> 1);
+	}
+}
+
+
+//____ DrawArcNE() ____________________________________________________________
+
+void WgGfxDeviceSoft::DrawArcNE( const WgRect& rect, WgColor color )
+{
+	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+
+	Uint8 * pLineBeg = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + rect.x * pixelBytes;
+
+	int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / rect.h;
+	int sinOfs = sinOfsInc >> 1;
+
+	for( int i = 0 ; i < rect.h ; i++ )
+	{
+		Uint8 * pLineEnd = pLineBeg + ((m_pCurveTab[sinOfs>>16] * rect.w + 32768)>>16)*pixelBytes;
+
+		for( Uint8 * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
+		{
+			p[0] = color.b;
+			p[1] = color.g;
+			p[2] = color.r;
+		}
+
+		sinOfs += sinOfsInc;
+		pLineBeg += m_pCanvas->m_pitch;
+	}
+
+}
+
+//____ ClipDrawArcNE() _________________________________________________________
+
+void WgGfxDeviceSoft::ClipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color )
+{
+	//TODO: Implement!!!
 }
 
 

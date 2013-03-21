@@ -48,6 +48,14 @@ public:
 	void	Fill( const WgRect& rect, const WgColor& col );
 	void	Blit( const WgSurface* pSrc, const WgRect& srcrect, int dx, int dy  );
 
+	void	DrawArcNE( const WgRect& rect, WgColor color );
+	void	DrawElipse( const WgRect& rect, WgColor color );
+	void	DrawFilledElipse( const WgRect& rect, WgColor color );
+
+	void	ClipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color );
+	void	ClipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color );
+	void	ClipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color );
+
 	void	ClipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
 	void	ClipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
 	void	ClipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness );
@@ -71,6 +79,10 @@ public:
 protected:
 
 	void	_initTables();
+	void	_genCurveTab();
+
+	void	_drawHorrFadeLine( Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, WgColor color );
+	void	_clipDrawHorrFadeLine( int clipX1, int clipX2, Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, WgColor color );
 
 	void	_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode blendMode, int _aa );
 	void	_drawHorrVertLineAA( int _x, int _y, int _length, const WgColor& _col, WgBlendMode blendMode, int _aa, WgOrientation orientation );
@@ -112,6 +124,7 @@ protected:
 	bool			m_bBilinearFiltering;
 	WgSurfaceSoft * m_pCanvas;
 	Uint8			m_limitTable[512];
+	int *			m_pCurveTab;
 };
 
 #endif //WG_GFXDEVICE_SOFT_DOT_H

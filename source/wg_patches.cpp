@@ -19,7 +19,6 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
 #include <memory.h>
 #include <wg_patches.h>
 
@@ -74,7 +73,6 @@ bool WgPatches::SetCapacity( int capacity )
 	if( m_bOwnsArray )
 	{
 		delete [] m_pFirst;
-		m_bOwnsArray = false;
 	}
 	
 	m_pFirst = pNew;
@@ -353,7 +351,7 @@ int WgPatches::Push( const WgPatches * pSource, int ofs, int len )
 		len = pSource->m_size - ofs;
 	
 	if( m_capacity - m_size < len )
-		_expand(len);
+		_expandMem(len);
 
 	memcpy( m_pFirst + m_size, pSource->m_pFirst + ofs, sizeof(WgRect)*len );
 	m_size += len;
@@ -457,7 +455,7 @@ int WgPatches::Optimize()
 
 //____ _expand() _______________________________________________________________
 
-void WgPatches::_expand( int spaceNeeded )
+void WgPatches::_expandMem( int spaceNeeded )
 {
 	int capacity = m_capacity==0?c_defaultCapacity:m_capacity;
 	

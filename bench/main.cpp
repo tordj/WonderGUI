@@ -15,6 +15,7 @@
 #include <wondergui.h>
 #include <wg_bitmapglyphs.h>
 #include <wg_vectorglyphs.h>
+#include <wg_knob.h>
 #include <iostream>
 
 #include <wg_surface_soft.h>
@@ -270,13 +271,19 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	// MenuPanel
 
-	WgMenuLayer * pMenuPanel = new WgMenuLayer();
-	pRoot->SetChild( pMenuPanel );
+	WgMenuLayer * pMenuLayer = new WgMenuLayer();
+	pRoot->SetChild( pMenuLayer );
+
+	// Bottom Flex
+
+	WgFlexPanel * pBottom = new WgFlexPanel();
+	pMenuLayer->SetBase( pBottom );
+	pBottom->SetSkin( WgColorSkin::Create( WgColor::black ) );
 
 	// Main Flex
 
 	WgFlexPanel * pFlex = new WgFlexPanel();
-	pMenuPanel->SetBase( pFlex );
+	pBottom->AddChild( pFlex, WG_NORTHWEST, WG_SOUTHEAST, WgBorders(10) );
 
 	// Background
 
@@ -285,6 +292,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	WgFlexHook * pHook = pFlex->AddChild( pBackground );
 	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
+
 
 	//
 /*
@@ -316,7 +324,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	}
 */
 
-
+/*
 	{
 		WgStackPanel * pStack = new WgStackPanel();
 
@@ -334,21 +342,25 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 			pVBox->AddChild( pV );
 		}
 		
-/*
-		WgValueEditor * pValue = new WgValueEditor();
-		pVBox->AddChild( pValue );
 
-		WgWidgetSlider * pSlider = (WgWidgetSlider*) pDB->CloneWidget( "hslider" );
-		pSlider->SetSliderTarget(pValue);
-		pVBox->AddChild( pSlider );
-*/
+//		WgValueEditor * pValue = new WgValueEditor();
+//		pVBox->AddChild( pValue );
+
+//		WgWidgetSlider * pSlider = (WgWidgetSlider*) pDB->CloneWidget( "hslider" );
+//		pSlider->SetSliderTarget(pValue);
+//		pVBox->AddChild( pSlider );
+
 		addResizablePanel( pFlex, pStack, pEventHandler );
 
 //		pValue->SetValue( 100 );
 //		pValue->GrabFocus();
 	}
+*/
 
-
+	{
+		WgKnob * pKnob = new WgKnob();
+		addResizablePanel( pFlex, pKnob, pEventHandler );
+	}
 
 	// Test menus and MenuPanel.
 /*
@@ -409,7 +421,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 */
 
 	// Test oscilloscope
-
+/*
 	{
 		WgSurface * pImg = sdl_wglib::LoadSurface("../resources/blocks.png", WgSurfaceFactorySoft() );
 
@@ -440,7 +452,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 		addResizablePanel( pFlex, pOsc, pEventHandler );
 	}
-
+*/
 	// Test combobox
 /*
 	{

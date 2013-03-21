@@ -51,6 +51,15 @@ public:
 	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 
+
+	void	DrawArcNE( const WgRect& rect, WgColor color );
+	void	DrawElipse( const WgRect& rect, WgColor color );
+	void	DrawFilledElipse( const WgRect& rect, WgColor color );
+
+	void	ClipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color );
+	void	ClipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color );
+	void	ClipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color );
+
 protected:
 
 };

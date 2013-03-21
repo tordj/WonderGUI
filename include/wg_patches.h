@@ -70,7 +70,7 @@ private:
 	const static int	c_defaultCapacity = 64;
 
 	void		_add( const WgRect& rect, int startOffset );
-	void		_expand( int spaceNeeded );
+	void		_expandMem( int spaceNeeded );
 
 	WgRect * 	m_pFirst;
 	int			m_size;
@@ -83,7 +83,7 @@ private:
 void WgPatches::Push( const WgRect& rect ) 
 { 
 	if(m_size==m_capacity)
-		_expand(1);
+		_expandMem(1);
 	m_pFirst[m_size++]=rect;
 }
 

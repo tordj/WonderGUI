@@ -106,6 +106,15 @@ public:
 	virtual void	ClipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col ) = 0;
 	virtual void	ClipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness ) = 0;
 
+	virtual void	DrawArcNE( const WgRect& rect, WgColor color ) = 0;
+	virtual void	DrawElipse( const WgRect& rect, WgColor color ) = 0;
+	virtual void	DrawFilledElipse( const WgRect& rect, WgColor color ) = 0;
+
+	virtual void	ClipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color ) = 0;
+	virtual void	ClipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color ) = 0;
+	virtual void	ClipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color ) = 0;
+
+
 	virtual void	Blit( const WgSurface* pSrc );
 	virtual void	Blit( const WgSurface* pSrc, int dx, int dy );
 	virtual void	Blit( const WgSurface* pSrc, const WgRect& src, int dx, int dy ) = 0;
@@ -174,7 +183,6 @@ public:
 	virtual void	FillSubPixel( const WgRectF& rect, const WgColor& col ) = 0;
 	virtual void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
 								   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f ) = 0;
-
 
 	
 protected:
