@@ -26,9 +26,9 @@
 
 
 
-WgSkinPtr WgColorSkin::Create( WgColor col )
+WgColorSkinPtr WgColorSkin::Create( WgColor col )
 {
-	return WgSkinPtr(new WgColorSkin(col));
+	return WgColorSkinPtr(new WgColorSkin(col));
 }
 
 

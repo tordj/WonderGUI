@@ -83,6 +83,57 @@ enum WgMode //: Uint8
 
 #define	WG_NB_MODES		5		// Number of modes (excluding WG_MODE_ALL )
 
+/*
+enum WgModeEnum
+{
+	WG_MODE_NORMAL					= 0,
+	WG_MODE_DISABLED				= 1,
+	WG_MODE_SELECTED				= 2,
+	WG_MODE_FOCUSED					= 4,
+	WG_MODE_FOCUSED_SELECTED		= 4+2,
+	WG_MODE_HOVER					= 8,
+	WG_MODE_HOVER_SELECTED			= 8+2,
+	WG_MODE_HOVER_FOCUSED			= 8+4,
+	WG_MODE_HOVER_FOCUSED_SELECTED	= 8+4+2,
+	WG_MODE_PRESSED					= 16+8,
+	WG_MODE_PRESSED_SELECTED		= 16+8+2,
+	WG_MODE_PRESSED_FOCUSED			= 16+8+4,
+	WG_MODE_PRESSED_FOCUSED_SELECTED = 16+8+4+2
+};
+
+class WgMode 
+{
+public:
+	WgMode() { m_mode = WG_MODE_NORMAL; }
+	WgMode( WgModeEnum mode ) { m_mode = mode; }
+
+//	void		set( WgModeEnum mode ) { m_mode = mode; }
+//	WgModeEnum	getEnum() const { return (WgModeEnum) m_mode; }
+
+	bool	setEnabled(bool bEnabled) { if(bEnabled) m_mode &= ~WG_MODE_DISABLED; else m_mode = WG_MODE_DISABLED; return true; }
+	bool	setSelected(bool bSelected) { if( m_mode == WG_MODE_DISABLED ) return false; if(bSelected) m_mode |= WG_MODE_SELECTED; else m_mode &= ~WG_MODE_SELECTED; return true; }
+	bool	setFocused(bool bFocused) { if( m_mode == WG_MODE_DISABLED ) return false; if(bFocused) m_mode |= WG_MODE_FOCUSED; else m_mode &= ~WG_MODE_FOCUSED; return true; }
+	bool	setHovered(bool bHovered) { if( m_mode == WG_MODE_DISABLED ) return false; if(bHovered) m_mode |= WG_MODE_HOVER; else m_mode &= ~WG_MODE_PRESSED; return true; }
+	bool	setPressed(bool bPressed) { if( m_mode == WG_MODE_DISABLED ) return false; if(bPressed) m_mode |= WG_MODE_PRESSED; else m_mode &= ~(WG_MODE_PRESSED - WG_MODE_HOVER); return true; }
+
+
+	bool	isEnabled() { return (m_mode & WG_MODE_DISABLED) == WG_MODE_NORMAL; }
+	bool	isSelected() { return (m_mode & WG_MODE_SELECTED) == WG_MODE_SELECTED; }
+	bool	isFocused() { return (m_mode & WG_MODE_FOCUSED) == WG_MODE_FOCUSED; }
+	bool	isHovered() { return (m_mode & WG_MODE_HOVER) == WG_MODE_HOVER; }
+	bool	isPressed() { return (m_mode & WG_MODE_PRESSED) == WG_MODE_PRESSED; }
+
+	inline bool operator==(WgModeEnum mode) const { return m_mode == mode; }
+	inline bool operator!=(WgModeEnum mode) const { return m_mode != mode; }
+
+	inline void operator=(WgModeEnum mode) { m_mode = mode; }
+
+	operator WgModeEnum() const { return (WgModeEnum) m_mode; }
+
+private:
+	int		m_mode;
+};
+*/
 
 //____ WgTxtAttr ______________________________________________________________
 

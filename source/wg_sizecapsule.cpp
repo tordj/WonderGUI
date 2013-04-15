@@ -102,16 +102,30 @@ WgSize WgSizeCapsule::PreferredSize() const
 		WgSize pref = m_hook.Widget()->PreferredSize();
 
 		if( m_preferred.w != 0 )
+		{
 			pref.w = m_preferred.w;
-
+			if( m_pScaler )
+				pref.w *= m_pScaler->ScaleX();
+		}
 		if( m_preferred.h != 0 )
+		{
 			pref.h = m_preferred.h;
-
+			if( m_pScaler )
+				pref.h *= m_pScaler->ScaleY();
+		}
 		pref.ConstrainTo( MinSize(), MaxSize() );
 		return pref;
 	}
 	else
-		return m_preferred;
+	{
+		WgSize pref = m_preferred;
+		if( m_pScaler )
+		{
+			pref.w *= m_pScaler->ScaleX();
+			pref.h *= m_pScaler->ScaleY();
+		}
+		return pref;
+	}
 }
 
 //____ MinSize() ______________________________________________________________
@@ -143,6 +157,9 @@ int WgSizeCapsule::HeightForWidth( int width ) const
 	{
 		int h = m_preferred.h;
 		
+		if( m_pScaler )
+			h *= m_pScaler->ScaleY();
+
 		if( m_hook.Widget() )
 		{
 			int max = m_hook.Widget()->MaxSize().h;
@@ -168,6 +185,10 @@ int WgSizeCapsule::WidthForHeight( int height ) const
 	if( m_preferred.w != 0 )
 	{
 		int w = m_preferred.w;		
+
+		if( m_pScaler )
+			w *= m_pScaler->ScaleX();
+
 		if( m_hook.Widget() )
 		{
 			int max = m_hook.Widget()->MaxSize().w;
@@ -184,4 +205,11 @@ int WgSizeCapsule::WidthForHeight( int height ) const
 	}
 	else
 		return m_min.w;
+}
+
+//____ _onScaleChanged() ______________________________________________________
+
+void WgSizeCapsule::_onScaleChanged()
+{
+	_requestResize();
 }

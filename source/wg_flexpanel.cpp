@@ -39,7 +39,7 @@ WgFlexAnchor		WgFlexPanel::g_baseAnchors[9] = { WgFlexAnchor(0.f, 0.f, WgCoord(0
 
 //____ WgFlexHook::Constructor ________________________________________________
 
-WgFlexHook::WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo, WgBorders padding ) : m_pParent(pParent), m_bHidden(false),
+WgFlexHook::WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo, WgBorders padding ) : m_pParent(pParent),
 	m_bFloating(false), m_widthPolicy(WG_BOUND), m_heightPolicy(WG_BOUND),
 	m_anchor(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
 	m_placementGeo(placementGeo), m_anchorTopLeft(WG_NORTHWEST),
@@ -176,7 +176,7 @@ bool WgFlexHook::Up()
 
 	// Request render on potentially exposed area.
 
-	if( !pNext->m_bHidden && cover.w > 0 && cover.h > 0 )
+	if( pNext->m_bVisible && cover.w > 0 && cover.h > 0 )
 	{
 		m_pParent->_onRequestRender( cover, this );
 	}
@@ -203,7 +203,7 @@ bool WgFlexHook::Down()
 
 	// Request render on potentially exposed area.
 
-	if( !m_bHidden && cover.w > 0 && cover.h > 0 )
+	if( m_bVisible && cover.w > 0 && cover.h > 0 )
 	{
 		m_pParent->_onRequestRender( cover, pPrev );
 	}
@@ -234,13 +234,13 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 
 		// Request render on all areas covered by siblings we have skipped in front of.
 
-		if( !m_bHidden )
+		if( m_bVisible )
 		{
 			while( p != this )
 			{
 				WgRect cover( m_realGeo, p->m_realGeo );
 
-				if( !p->m_bHidden && cover.w > 0 && cover.h > 0 )
+				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, this );
 				p = p->_next();
 			}
@@ -253,13 +253,13 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 
 		// Request render on our siblings for the area we previously have covered.
 
-		if( !m_bHidden )
+		if( m_bVisible )
 		{
 			while( p != this )
 			{
 				WgRect cover( m_realGeo, p->m_realGeo );
 
-				if( !p->m_bHidden && cover.w > 0 && cover.h > 0 )
+				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, p );
 				p = p->_prev();
 			}
@@ -291,13 +291,13 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 
 		// Request render on all areas covered by siblings we have skipped in front of.
 
-		if( !m_bHidden )
+		if( m_bVisible )
 		{
 			while( p != this )
 			{
 				WgRect cover( m_realGeo, p->m_realGeo );
 
-				if( !p->m_bHidden && cover.w > 0 && cover.h > 0 )
+				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, this );
 
 				p = p->_next();
@@ -311,13 +311,13 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 
 		// Request render on our siblings for the area we previously have covered.
 
-		if( !m_bHidden )
+		if( m_bVisible )
 		{
 			while( p != this )
 			{
 				WgRect cover( m_realGeo, p->m_realGeo );
 
-				if( !p->m_bHidden && cover.w > 0 && cover.h > 0 )
+				if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 					m_pParent->_onRequestRender( cover, p );
 
 				p = p->_prev();
@@ -895,7 +895,7 @@ bool WgFlexPanel::DeleteAllChildren()
 	WgFlexHook * pHook = m_hooks.First();
 	while( pHook )
 	{
-		if( !pHook->m_bHidden )
+		if( pHook->m_bVisible )
 			dirt.Add( pHook->m_realGeo );
 		WgFlexHook * pDelete = pHook;
 		pHook = pHook->Next();
@@ -1090,7 +1090,7 @@ WgSize WgFlexPanel::PreferredSize() const
 
 void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook )
 {
-	if( pHook->m_bHidden )
+	if( !pHook->m_bVisible )
 		return;
 
 	// Clip our geometry and put it in a dirtyrect-list
@@ -1103,7 +1103,7 @@ void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook
 	WgFlexHook * pCover = pHook->Next();
 	while( pCover )
 	{
-		if( !pCover->m_bHidden && pCover->m_realGeo.IntersectsWith( rect ) )
+		if( pCover->m_bVisible && pCover->m_realGeo.IntersectsWith( rect ) )
 			pCover->Widget()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();

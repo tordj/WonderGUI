@@ -40,20 +40,17 @@
 #endif
 
 class WgGfxDevice;
-class WgSkinManager;
 class Wg_Interface_TextHolder;
 class WgContainer;
 class WgPanel;
 class WgCapsule;
 class WgLayer;
-class WgSkinNode;
 class WgEventHandler;
 class WgPatches;
 
 
 class WgWidget : public WgWeakPtrTarget
 {
-friend class WgSkinNode;
 friend class WgInput;
 friend class WgEventHandler;
 
@@ -92,10 +89,6 @@ public:
 	virtual WgString	GetTooltipString() const { return m_tooltip; }
 	WgString			GetRealTooltipString() const { return m_tooltip; }
 	inline void			SetTooltipString( const WgString& str ) { m_tooltip = str; }
-
-	void				SetSkinManager( WgSkinManager * pManager );
-	WgSkinManager *		GetSkinManager() const;
-
 
 	inline void			Refresh() { _onRefresh(); }
 	void				SetEnabled(bool bEnabled);
@@ -168,8 +161,6 @@ public:
 protected:
 
 	void			_onNewHook( WgHook * pHook );
-	void			_setSkinNode( WgSkinNode * pNode );
-	WgSkinNode *	_getSkinNode() const { return m_pSkinNode; }
 
 	void			_onNewRoot( WgRootPanel * pRoot );
 	void			_startReceiveTicks();
@@ -212,21 +203,17 @@ protected:
 	Uint32			m_id;
 	WgHook *		m_pHook;
 
-	WgSkinNode *	m_pSkinNode;
-
 	WgPointerStyle	m_pointerStyle;
 
 	WgString		m_tooltip;
 	WgMarkPolicy	m_markPolicy;
 
-	bool			m_bEnabled;
 	bool			m_bOpaque;
-	bool			m_bFocused;		// Set when Widget has keyborard focus.
 	bool			m_bTabLock;		// If set, the widget prevents focus shifting away from it with tab.
 	bool			m_bReceiveTick;	// Set if Widget should reveive periodic Tick() events.
 
-	bool			m_bRenderOne;
-	bool			m_bRendersAll;
+	bool			m_bEnabled;		// Set when object is not disabled
+	bool			m_bFocused;		// Set when object is enabled and has keyboard focus
 };
 
 typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;

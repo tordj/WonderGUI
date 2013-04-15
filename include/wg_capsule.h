@@ -59,7 +59,7 @@ public:
 protected:
 	WgCapsule();
 
-	class Hook : public WgHook
+	class CapsuleHook : public WgHook
 	{
 		friend class WgCapsule;
 
@@ -110,7 +110,7 @@ protected:
 	WgHook*			_firstHook() const;
 	WgHook*			_lastHook() const;
 
-	Hook			m_hook;
+	CapsuleHook		m_hook;
 
 };
 

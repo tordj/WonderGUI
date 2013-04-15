@@ -30,11 +30,15 @@
 #	include <wg_color.h>
 #endif
 
+class WgColorSkin;
+
+typedef	WgSmartChildPtr<WgColorSkin,WgSkinPtr>	WgColorSkinPtr;
+
 
 class WgColorSkin : public WgSkin
 {
 public:
-	static WgSkinPtr Create( WgColor col );
+	static WgColorSkinPtr Create( WgColor col );
 	
 	~WgColorSkin() {};
 	

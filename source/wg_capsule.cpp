@@ -26,13 +26,13 @@ static const char	c_hookType[] = {"Capsule"};
 
 
 //_____________________________________________________________________________
-const char * WgCapsule::Hook::Type( void ) const
+const char * WgCapsule::CapsuleHook::Type( void ) const
 {
 	return ClassType();
 }
 
 //_____________________________________________________________________________
-const char * WgCapsule::Hook::ClassType()
+const char * WgCapsule::CapsuleHook::ClassType()
 {
 	return c_hookType;
 }
@@ -210,7 +210,7 @@ void WgCapsule::_onNewSize( const WgSize& size )
 WgHook* WgCapsule::_firstHook() const
 {
 	if( m_hook.Widget() )
-		return const_cast<Hook*>(&m_hook);
+		return const_cast<CapsuleHook*>(&m_hook);
 	else
 		return 0;
 }
@@ -220,7 +220,7 @@ WgHook* WgCapsule::_firstHook() const
 WgHook* WgCapsule::_lastHook() const
 {
 	if( m_hook.Widget() )
-		return const_cast<Hook*>(&m_hook);
+		return const_cast<CapsuleHook*>(&m_hook);
 	else
 		return 0;
 }
@@ -232,7 +232,7 @@ WgHook * WgCapsule::_firstHookWithGeo( WgRect& geo ) const
 	if( m_hook.Widget() )
 	{
 		geo = WgRect(0,0,Size());
-		return const_cast<Hook*>(&m_hook);
+		return const_cast<CapsuleHook*>(&m_hook);
 	}
 
 	return 0;
@@ -252,7 +252,7 @@ WgHook * WgCapsule::_lastHookWithGeo( WgRect& geo ) const
 	if( m_hook.Widget() )
 	{
 		geo = WgRect(0,0,Size());
-		return const_cast<Hook*>(&m_hook);
+		return const_cast<CapsuleHook*>(&m_hook);
 	}
 
 	return 0;

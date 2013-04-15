@@ -22,17 +22,15 @@
 
 #include <wg_widget.h>
 #include <wg_types.h>
-#include <wg_skinmanager.h>
 
 #	include <wg_rootpanel.h>
 #	include <wg_eventhandler.h>
 
 //____ Constructor ____________________________________________________________
 
-WgWidget::WgWidget():m_id(0), m_pHook(0), m_pSkinNode(0), m_pointerStyle(WG_POINTER_DEFAULT),
+WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WG_POINTER_DEFAULT),
 					m_markPolicy( WG_MARKPOLICY_ALPHA ), m_bEnabled(true), m_bOpaque(false),
-					m_bFocused(false), m_bTabLock(false), m_bReceiveTick(false),
-					m_bRenderOne(false), m_bRendersAll(false)
+					m_bFocused(false), m_bTabLock(false), m_bReceiveTick(false)
 {
 }
 
@@ -44,8 +42,6 @@ WgWidget::~WgWidget()
 	{
 		m_pHook->Parent()->ReleaseChild(this);
 	}
-
-	delete m_pSkinNode;
 }
 
 
@@ -68,29 +64,6 @@ void WgWidget::SetEnabled( bool bEnabled )
 		else
 			_onDisable();
 	}
-}
-
-//____ SetSkinManager() _______________________________________________________
-
-void WgWidget::SetSkinManager( WgSkinManager * pManager )
-{
-	if( m_pSkinNode )
-		delete m_pSkinNode;
-
-	if( pManager )
-		m_pSkinNode = pManager->_newNode( this );
-	else
-		m_pSkinNode = 0;
-}
-
-//____ GetSkinManager() _______________________________________________________
-
-WgSkinManager *	WgWidget::GetSkinManager() const
-{
-	if( m_pSkinNode )
-		return m_pSkinNode->GetManager();
-
-	return 0;
 }
 
 //____ MarkTest() _____________________________________________________________
@@ -117,7 +90,6 @@ bool WgWidget::CloneContent( const WgWidget * _pOrg )
 
 	m_id			= _pOrg->m_id;
 
-	m_pSkinNode		= _pOrg->m_pSkinNode;
 	m_pointerStyle 	= _pOrg->m_pointerStyle;
 
 	m_tooltip		= _pOrg->m_tooltip;
@@ -126,9 +98,6 @@ bool WgWidget::CloneContent( const WgWidget * _pOrg )
 	m_bEnabled		= _pOrg->m_bEnabled;
 	m_bOpaque		= _pOrg->m_bOpaque;
 	m_bTabLock		= _pOrg->m_bTabLock;
-
-	m_bRenderOne	= _pOrg->m_bRenderOne;
-	m_bRendersAll	= _pOrg->m_bRendersAll;
 
 	_onCloneContent( _pOrg );
 	return true;
@@ -172,15 +141,6 @@ void WgWidget::_stopReceiveTicks()
 {
 	m_bReceiveTick = false;
 }
-
-//____ _setSkinNode() __________________________________________________________
-
-void WgWidget::_setSkinNode( WgSkinNode * pNode )
-{
-	m_pSkinNode = pNode;
-	_onRefresh();
-}
-
 
 //____ Local2abs() ____________________________________________________________
 

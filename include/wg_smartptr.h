@@ -83,6 +83,34 @@ public:
 };
 
 
+template<class T,class P> class WgSmartChildPtr : public P
+{
+public:
+	WgSmartChildPtr(T* p=0) : P( p ) {};
+	WgSmartChildPtr(const WgSmartChildPtr<T,P>& r) : P( r.m_pObj ) {};
+	~WgSmartChildPtr() {};
+
+/*
+    inline WgSmartChildPtr<T,P> & operator=( WgSmartChildPtr<T,P> const & r)
+	{
+		copy( r );
+		return *this;
+	}
+*/
+	inline T & operator*() const { return * (T*) m_pObj; }
+	inline T * operator->() const{ return (T*) m_pObj; }
+
+	inline bool operator==(const WgSmartChildPtr<T,P>& other) const { return m_pObj == other.m_pObj; }
+	inline bool operator!=(const WgSmartChildPtr<T,P>& other) const { return m_pObj != other.m_pObj; }
+
+	inline operator bool() const { return (m_pObj != 0); }
+
+	inline T * GetRealPtr() const { return (T*) m_pObj; }
+};
+
+
+
+
 
 //____ WgSmartPtrPooled _______________________________________________________
 

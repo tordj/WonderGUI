@@ -291,11 +291,13 @@ void WgPackPanel::_updatePreferredSize()
 		WgSizeBrokerItem * pI = pItemArea;
 		while( pH )
 		{
-			int b = m_bHorizontal?pH->_paddedHeightForWidth(pI->output):pH->_paddedWidthForHeight(pI->output);
-			if( b > breadth )
-				breadth = b;
-			
-			pI++;
+			if( pH->IsVisible() )
+			{
+				int b = m_bHorizontal?pH->_paddedHeightForWidth(pI->output):pH->_paddedWidthForHeight(pI->output);
+				if( b > breadth )
+					breadth = b;			
+				pI++;
+			}
 			pH = pH->Next();
 		}
 		
@@ -312,19 +314,25 @@ void WgPackPanel::_updatePreferredSize()
 		{
             while( p )
             {
-                length += p->m_preferredSize.w;
-                if( p->m_preferredSize.h > breadth )
-                    breadth = p->m_preferredSize.h;
-                p = p->Next();
+				if( p->IsVisible() )
+				{
+					length += p->m_preferredSize.w;
+	                if( p->m_preferredSize.h > breadth )
+	                    breadth = p->m_preferredSize.h;
+				}
+				p = p->Next();
             }
 		}
 		else
 		{
             while( p )
             {
-                length += p->m_preferredSize.h;
-                if( p->m_preferredSize.w > breadth )
-                    breadth = p->m_preferredSize.w;
+				if( p->IsVisible() )
+				{
+					length += p->m_preferredSize.h;
+					if( p->m_preferredSize.w > breadth )
+					    breadth = p->m_preferredSize.w;
+				}
                 p = p->Next();
             }
 		}
@@ -361,35 +369,55 @@ void WgPackPanel::_refreshChildGeo()
         WgRect geo;
 		while( p )
 		{
-      		geo.x = pos.x;
-			geo.y = pos.y;
-			if( m_bHorizontal )
+			if( p->IsVisible() )
 			{
-				geo.w = p->m_preferredSize.w;
-				geo.h = size.h;
-				pos.x += p->m_preferredSize.w;
+				geo.x = pos.x;
+				geo.y = pos.y;
+				if( m_bHorizontal )
+				{
+					geo.w = p->m_preferredSize.w;
+					geo.h = size.h;
+					pos.x += p->m_preferredSize.w;
+				}
+				else
+				{
+					geo.w = size.w;
+					geo.h = p->m_preferredSize.h;
+					pos.y += p->m_preferredSize.h;
+				}
+				geo -= p->m_padding;
+            
+				if( geo != p->m_geo )
+				{
+					_requestRender(geo);
+        
+					int oldW = p->m_geo.w;
+					int oldH = p->m_geo.h;
+					p->m_geo = geo;
+					if( geo.w != oldW || geo.h != oldH )
+						p->m_pWidget->_onNewSize( geo.Size() );
+                
+				}
 			}
 			else
 			{
-				geo.w = size.w;
-				geo.h = p->m_preferredSize.h;
-				pos.y += p->m_preferredSize.h;
+				if( p->m_geo.w != 0 && p->m_geo.h != 0 )
+					_requestRender(p->m_geo);
+
+				p->m_geo.x = pos.x;
+				p->m_geo.y = pos.y;
+				if( m_bHorizontal )
+				{
+					geo.w = 0;
+					geo.h = size.h;
+				}
+				else
+				{
+					geo.w = size.w;
+					geo.h = 0;
+				}
 			}
-			geo -= p->m_padding;
-            
-			if( geo != p->m_geo )
-			{
-				_requestRender(geo);
-				_requestRender(p->m_geo);
-        
-                int oldW = p->m_geo.w;
-                int oldH = p->m_geo.h;
-				p->m_geo = geo;
-				if( geo.w != oldW || geo.h != oldH )
-                    p->m_pWidget->_onNewSize( geo.Size() );
-                
-			}
-            
+
 			p = p->Next();
 		}
 	}
@@ -413,36 +441,55 @@ void WgPackPanel::_refreshChildGeo()
 		WgRect geo;
 		while( pH )
 		{
-			geo.x = pos.x;
-			geo.y = pos.y;
-			if( m_bHorizontal )
-			{	
-				geo.w = pI->output;
-				geo.h = size.h;
-				pos.x += pI->output;
+			if( pH->IsVisible() )
+			{
+				geo.x = pos.x;
+				geo.y = pos.y;
+				if( m_bHorizontal )
+				{	
+					geo.w = pI->output;
+					geo.h = size.h;
+					pos.x += pI->output;
+				}
+				else
+				{	
+					geo.w = size.w;
+					geo.h = pI->output;
+					pos.y += pI->output;
+				}
+				geo -= pH->m_padding;
+			
+				if( geo != pH->m_geo )
+				{					
+					_requestRender(geo);
+					_requestRender(pH->m_geo);
+
+					int oldW = pH->m_geo.w;
+					int oldH = pH->m_geo.h;
+					pH->m_geo = geo;
+					if( geo.w != oldW || geo.h != oldH )
+						pH->m_pWidget->_onNewSize( geo.Size() );
+				}
+				pI++;
 			}
 			else
-			{	
-				geo.w = size.w;
-				geo.h = pI->output;
-				pos.y += pI->output;
-			}
-			geo -= pH->m_padding;
-			
-			if( geo != pH->m_geo )
-			{					
-				_requestRender(geo);
-				_requestRender(pH->m_geo);
+			{
+				if( pH->m_geo.w != 0 && pH->m_geo.h != 0 )
+					_requestRender(pH->m_geo);
 
-                int oldW = pH->m_geo.w;
-                int oldH = pH->m_geo.h;
-				pH->m_geo = geo;
-				if( geo.w != oldW || geo.h != oldH )
-                    pH->m_pWidget->_onNewSize( geo.Size() );
+				pH->m_geo.x = pos.x;
+				pH->m_geo.y = pos.y;
+				if( m_bHorizontal )
+				{
+					geo.w = 0;
+					geo.h = size.h;
+				}
+				else
+				{
+					geo.w = size.w;
+					geo.h = 0;
+				}
 			}
-				
-			
-			pI++;
 			pH = pH->Next();
 		}
 		
@@ -463,12 +510,14 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray )
 	{
 		while( pH )
 		{
-			pI->preferred = pH->m_preferredSize.w;
-			pI->min = pH->_paddedMinSize().w;
-			pI->max = pH->_paddedMaxSize().w;
-			pI->weight = pH->m_weight;
-			
-			pI++;
+			if( pH->IsVisible() )
+			{
+				pI->preferred = pH->m_preferredSize.w;
+				pI->min = pH->_paddedMinSize().w;
+				pI->max = pH->_paddedMaxSize().w;
+				pI->weight = pH->m_weight;			
+				pI++;
+			}
 			pH = pH->Next();
 		}
 	}
@@ -476,12 +525,14 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray )
 	{
 		while( pH )
 		{
-			pI->preferred = pH->m_preferredSize.h;
-			pI->min = pH->_paddedMinSize().h;
-			pI->max = pH->_paddedMaxSize().h;
-			pI->weight = pH->m_weight;
-			
-			pI++;
+			if( pH->IsVisible() )
+			{
+				pI->preferred = pH->m_preferredSize.h;
+				pI->min = pH->_paddedMinSize().h;
+				pI->max = pH->_paddedMaxSize().h;
+				pI->weight = pH->m_weight;			
+				pI++;
+			}
 			pH = pH->Next();
 		}			
 	}

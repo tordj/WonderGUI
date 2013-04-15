@@ -65,7 +65,7 @@ void WgKnob::SetValue( float value )
 
 WgSize WgKnob::PreferredSize() const
 {
-	return WgSize(32,32);
+	return WgSize(40,40);
 }
 
 
@@ -82,9 +82,12 @@ void WgKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRe
 {
 //    pDevice->Fill( _clip, WgColor::black );
 
-	if( _window.h > 1 )
-		pDevice->ClipDrawElipse( _clip, _canvas, WgColor::pink );
+	int sz = WgMin( _canvas.w,_canvas.h );
 
+	if( sz > 1 )
+	{
+		pDevice->ClipDrawElipse( _clip, WgRect(_canvas.Pos(),sz,sz), WgColor::pink );
+	}
 }
 
 //____ _onAlphaTest() ___________________________________________________________

@@ -65,7 +65,7 @@ void WgSwitch::SetValue( int value )
 
 WgSize WgSwitch::PreferredSize() const
 {
-	return WgSize(32,32);
+	return WgSize(40,40);
 }
 
 
@@ -80,7 +80,21 @@ void WgSwitch::_onCloneContent( const WgWidget * _pOrg )
 
 void WgSwitch::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
 {
-    pDevice->Fill( _clip, WgColor::blue );
+	int sz = WgMin( _canvas.w,_canvas.h );
+
+	if( sz > 12 )
+	{
+		int itemSize = sz/4;
+		int stepping = itemSize/2;
+
+		int y = _canvas.y;
+		int x = _canvas.x + (sz - itemSize) / 2;
+		for( int i = 0 ; i < 3 ; i++ )
+		{
+			pDevice->ClipDrawElipse( _clip, WgRect(x,y,itemSize,itemSize), WgColor::white );
+			y += itemSize + stepping;
+		}
+	}	
 }
 
 //____ _onAlphaTest() ___________________________________________________________

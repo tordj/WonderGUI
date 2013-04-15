@@ -29,8 +29,11 @@
 #	include <wg_capsule.h>
 #endif
 
+#ifndef WG_SIZESCALER_DOT_H
+#	include <wg_sizescaler.h>
+#endif
 
-class WgSizeCapsule : public WgCapsule
+class WgSizeCapsule : public WgCapsule, public WgScalable
 {
 public:
 	WgSizeCapsule();
@@ -54,10 +57,11 @@ public:
 	int		WidthForHeight( int height ) const;
 
 private:
+	void	_onScaleChanged();
 
-	WgSize	m_min;
-	WgSize	m_max;
-	WgSize	m_preferred;
+	WgSize			m_min;
+	WgSize			m_max;
+	WgSize			m_preferred;
 };
 
 #endif //WG_SIZECAPSULE_DOT_H

@@ -356,12 +356,12 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 //		pValue->GrabFocus();
 	}
 */
-
+/*
 	{
 		WgKnob * pKnob = new WgKnob();
 		addResizablePanel( pFlex, pKnob, pEventHandler );
 	}
-
+*/
 	// Test menus and MenuPanel.
 /*
 	{
@@ -480,6 +480,21 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	}
 */
 
+	// Test overlapping non-visible
+/*
+	{
+		WgFiller * pCovered = new WgFiller();
+		pCovered->SetColors( WgColorset::Create( WgColor::aliceblue ) );
+		pFlex->AddChild( pCovered, WgRect( 10,10,20,20 ) );
+
+		g_pCovered = pCovered;
+
+		WgFiller * pCovering = new WgFiller();
+		pCovering->SetColors( WgColorset::Create( WgColor::wheat ) );
+		WgFlexHook * pHook = pFlex->AddChild( pCovering, WgRect( 0,0,50,50 ) );
+		pHook->SetVisible(false);
+	}
+*/
 
 	// Modal panel
 /*

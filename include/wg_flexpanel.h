@@ -67,7 +67,6 @@ public:
 
 	bool	IsFloating() const { return m_bFloating; }
 	bool	IsAnchored() const { return !m_bFloating; }
-	bool	IsHidden() const { return m_bHidden; }
 
 	// Methods for floating hooks
 
@@ -138,7 +137,6 @@ protected:
 
 	WgFlexPanel* m_pParent;
 
-	bool			m_bHidden;
 	bool			m_bFloating;		// true = floating, false = anchored
 	WgRect			m_realGeo;			// Widgets geo relative parent
 

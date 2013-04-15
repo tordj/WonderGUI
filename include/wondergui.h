@@ -107,10 +107,6 @@
 #	include <wg_rootpanel.h>
 #endif
 
-#ifndef WG_SKINMANAGER_DOT_H
-#	include <wg_skinmanager.h>
-#endif
-
 #ifndef WG_SMARTPTR_DOT_H
 #	include <wg_smartptr.h>
 #endif

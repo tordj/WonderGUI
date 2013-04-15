@@ -246,7 +246,7 @@ bool WgVectorPanel::DeleteChild( WgWidget * pWidget )
 	if( pHook->IsVisible() )
 		_onWidgetDisappeared( pHook );
 
-	// Delete the widget and return
+	// Delete the hook & widget and return
 
 	delete pHook;
 	return true;
@@ -267,6 +267,8 @@ WgWidget * WgVectorPanel::ReleaseChild( WgWidget * pWidget )
 	if( pHook->IsVisible() )
 		_onWidgetDisappeared( pHook );
 
+	pHook->_releaseWidget();
+	delete pHook;
 	return pWidget;
 }
 
@@ -284,9 +286,14 @@ bool WgVectorPanel::DeleteAllChildren()
 
 bool WgVectorPanel::ReleaseAllChildren()
 {
-	while( m_hooks.First() )
-		m_hooks.PopFront();
+	WgVectorHook * pHook = m_hooks.First();
+	while( pHook )
+	{
+		pHook->_releaseWidget();
+		pHook = pHook->Next();
+	}
 
+	m_hooks.Clear();
 	_refreshAllWidgets();
 
 	return true;
