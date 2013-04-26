@@ -572,7 +572,7 @@ void WgMenu::_markFirstFilteredEntry()
 
 //____ _onRender() _____________________________________________________________
 
-void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& window, const WgRect& clip, Uint8 layer )
+void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& window, const WgRect& clip )
 {
 
 	// Render background
@@ -1191,7 +1191,7 @@ void WgMenu::_itemSelected()
 
 //____ _renderPatches() ________________________________________________________
 
-void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 	WgRect sliderGeo = _sliderGeo( _canvas );
 
@@ -1201,7 +1201,7 @@ void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 		WgRect clip( _canvas, *pRect );
 		if( clip.w > 0 || clip.h > 0 )
-			_onRender( pDevice, _canvas, _window, clip, _layer );
+			_onRender( pDevice, _canvas, _window, clip );
 
 		// Render slider if present.
 
@@ -1209,7 +1209,7 @@ void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		{
 			WgRect clip( sliderGeo, *pRect );
 			if( clip.w > 0 || clip.h > 0 )
-				((WgWidgetSlider*)m_sliderHook.Widget())->_onRender( pDevice, sliderGeo, sliderGeo, clip, _layer );
+				((WgWidgetSlider*)m_sliderHook.Widget())->_onRender( pDevice, sliderGeo, sliderGeo, clip );
 		}
 	}
 }

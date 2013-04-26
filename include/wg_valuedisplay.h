@@ -70,7 +70,7 @@ public:
 protected:
 	void	_onRefresh();
 	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onEnable();
 	void	_onDisable();
 

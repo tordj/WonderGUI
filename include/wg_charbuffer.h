@@ -573,7 +573,7 @@ void WgCharBuffer::ClearColor( WgMode mode )
 /// @brief	Clears the style setting for all characters currently in the buffer.
 ///
 /// @param mode		The style can be cleared for an individual mode by specifying it here.
-///					This parameter defaults to WG_MODE_ALL, which clears the style for all modes.
+///					This parameter defaults to WG_MODE_SPECIAL, which clears the style for all modes.
 ///
 /// This method clears the style-property of all characters in the buffer.
 

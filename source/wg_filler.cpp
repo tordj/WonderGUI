@@ -103,7 +103,7 @@ void WgFiller::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 
-void WgFiller::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgFiller::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	if( m_pColors )
 		pDevice->Fill( _clip, m_pColors->Color(m_mode) );

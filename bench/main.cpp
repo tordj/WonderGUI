@@ -217,6 +217,7 @@ void printWidgetSizes()
 	printf( "WgRefreshButton: %d bytes\n", (int) sizeof(WgRefreshButton) );
 	printf( "WgShaderCapsule: %d bytes\n", (int) sizeof(WgShaderCapsule) );
 	printf( "WgWidgetSlider: %d bytes\n", (int) sizeof(WgWidgetSlider) );
+	printf( "WgPackPanel: %d bytes\n", (int) sizeof(WgPackPanel) );
 	printf( "WgStackPanel: %d bytes\n", (int) sizeof(WgStackPanel) );
 	printf( "WgTablePanel: %d bytes\n", (int) sizeof(WgTablePanel) );
 	printf( "WgSizeCapsule: %d bytes\n", (int) sizeof(WgSizeCapsule) );
@@ -228,6 +229,7 @@ void printWidgetSizes()
 	printf( "WgFlexHook: %d bytes\n", (int) sizeof(WgFlexHook) );
 	printf( "WgMenuHook: %d bytes\n", (int) sizeof(WgMenuHook) );
 	printf( "WgModalHook: %d bytes\n", (int) sizeof(WgModalHook) );
+	printf( "WgPackHook: %d bytes\n", (int) sizeof(WgPackHook) );
 	printf( "WgStackHook: %d bytes\n", (int) sizeof(WgStackHook) );
 	printf( "WgTableHook: %d bytes\n", (int) sizeof(WgTableHook) );
 	printf( "WgListHook: %d bytes\n", (int) sizeof(WgListHook) );
@@ -287,11 +289,17 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	// Background
 
-	WgImage * pBackground = new WgImage();
-	pBackground->SetSource( pBackBlock );
+//	WgImage * pBackground = new WgImage();
+//	pBackground->SetSource( pBackBlock );
+//	WgFlexHook * pHook = pFlex->AddChild( pBackground );
+//	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
 
-	WgFlexHook * pHook = pFlex->AddChild( pBackground );
-	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
+	WgBlockSkinPtr pBgSkin = WgBlockSkin::Create();
+	pBgSkin->SetSurface(pBackImg);
+	pBgSkin->SetBlockGeo( pBackImg->Size() );
+	pBgSkin->SetStateBlock( WG_STATE_NORMAL, WgCoord(0,0) );
+	pBgSkin->SetTiledCenter(true);
+	pFlex->SetSkin( pBgSkin );
 
 
 	//

@@ -154,7 +154,7 @@ void WgSimpleVolumeMeter::_onNewSize( const WgSize& size )
 
 //____ _onRender() _____________________________________________________________________
 
-void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	if( !m_bEnabled )
 		return;

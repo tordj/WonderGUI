@@ -194,11 +194,11 @@ private:
 
 	//
 
-	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
+	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	void		_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	void		_onCloneContent( const WgWidget * _pOrg );
-	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void		_onNewSize( const WgSize& size );
 	void		_onRefresh();
 

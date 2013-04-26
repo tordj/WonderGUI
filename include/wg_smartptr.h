@@ -57,7 +57,7 @@ protected:
 
 //____ WgSmartPtr _____________________________________________________________
 
-template<class T> class WgSmartPtr : private WgSmartPtrImpl
+template<class T> class WgSmartPtr : protected WgSmartPtrImpl
 {
 public:
 	WgSmartPtr(T* p=0) : WgSmartPtrImpl( p ) {};

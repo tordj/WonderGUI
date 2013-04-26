@@ -272,7 +272,7 @@ void WgAnimPlayer::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 //____ _onRender() ________________________________________________________
 
-void WgAnimPlayer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgAnimPlayer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	if( m_pAnim && m_bEnabled )
 		pDevice->ClipBlitBlock( _clip, m_animFrame, _canvas );
@@ -315,14 +315,14 @@ bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs )
 	WgSize sz = Size();
 
 	if( m_pAnim && m_bEnabled )
-		return WgUtil::MarkTestBlock( ofs, m_animFrame, WgRect(0,0,sz) );
+		return WgUtil::MarkTestBlock( ofs, m_animFrame, WgRect(0,0,sz), m_markOpacity );
 	else if( m_pStaticBlock )
 	{
 		WgMode mode = WG_MODE_NORMAL;
 		if( !m_bEnabled )
 			mode = WG_MODE_DISABLED;
 
-		return WgUtil::MarkTestBlock( ofs, m_pStaticBlock->GetBlock(mode,sz), WgRect(0,0,sz) );
+		return WgUtil::MarkTestBlock( ofs, m_pStaticBlock->GetBlock(mode,sz), WgRect(0,0,sz), m_markOpacity );
 	}
 	return false;
 }

@@ -95,7 +95,7 @@ void WgImage::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 
-void WgImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	if( !m_pGfx )
 		return;
@@ -122,7 +122,7 @@ bool WgImage::_onAlphaTest( const WgCoord& ofs )
 
 	WgSize sz = Size();
 
-	return WgUtil::MarkTestBlock( ofs, m_pGfx->GetBlock(mode,sz), WgRect(0,0,sz.w,sz.h) );
+	return WgUtil::MarkTestBlock( ofs, m_pGfx->GetBlock(mode,sz), WgRect(0,0,sz.w,sz.h), m_markOpacity );
 }
 
 //____ _onEnable() _____________________________________________________________

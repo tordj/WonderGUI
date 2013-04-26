@@ -261,7 +261,7 @@ public:
 	WgPatches	patches;
 };
 
-void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 
 	// We start by eliminating dirt outside our geometry
@@ -278,7 +278,7 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 	// Render container itself
 	
 	for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
-		_onRender(pDevice, _canvas, _window, *pRect, _layer );
+		_onRender(pDevice, _canvas, _window, *pRect );
 		
 	
 	// Render children
@@ -325,7 +325,7 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 		for( int i = 0 ; i < (int) renderList.size() ; i++ )
 		{
 			WidgetRenderContext * p = &renderList[i];
-			p->pWidget->_renderPatches( pDevice, p->geo, p->geo, &p->patches, _layer );
+			p->pWidget->_renderPatches( pDevice, p->geo, p->geo, &p->patches );
 		}
 
 	}
@@ -339,7 +339,7 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 			WgRect canvas = childGeo + _canvas.Pos();
 			bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
 			if( bVisibleHook && canvas.IntersectsWith( dirtBounds ) )
-				p->Widget()->_renderPatches( pDevice, canvas, canvas, &patches, _layer );
+				p->Widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 			p = _nextHookWithGeo( childGeo, p );
 		}
 

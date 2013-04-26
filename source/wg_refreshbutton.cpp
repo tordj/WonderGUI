@@ -262,7 +262,7 @@ void WgRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 
 //____ _onRender() _____________________________________________________________
 
-void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	// Render background or animation
 

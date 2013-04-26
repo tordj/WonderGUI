@@ -78,7 +78,7 @@ void WgSwitch::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 
-void WgSwitch::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgSwitch::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	int sz = WgMin( _canvas.w,_canvas.h );
 

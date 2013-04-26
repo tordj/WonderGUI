@@ -48,7 +48,7 @@ public:
 
 
 protected:
-	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
+	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	void		_onCloneContent( const WgWidget * _pOrg );
 	WgBlendMode _getBlendMode() const;
 

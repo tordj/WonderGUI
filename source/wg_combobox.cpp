@@ -936,7 +936,7 @@ void WgCombobox::_onUpdate( const WgUpdateInfo& _updateInfo )
 
 //____ _onRender() ________________________________________________________
 
-void WgCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	// Render the textbox
 	if(m_pTextBoxBg)
@@ -1082,7 +1082,7 @@ bool WgCombobox::_onAlphaTest( const WgCoord& ofs )
 
 	WgSize sz = Size();
 
-	return WgUtil::MarkTestBlock( ofs, m_pTextBoxBg->GetBlock(m_mode,sz), WgRect( WgCoord(0,0), sz ) );
+	return WgUtil::MarkTestBlock( ofs, m_pTextBoxBg->GetBlock(m_mode,sz), WgRect( WgCoord(0,0), sz ), m_markOpacity );
 }
 
 //____ _onGotInputFocus() ______________________________________________

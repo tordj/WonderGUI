@@ -102,8 +102,8 @@ public:
 	void			SetTabLock( bool bLock ) { m_bTabLock = bLock; }
 	bool			IsTabLocked() const { return m_bTabLock; }
 
-	void			SetMarkPolicy( WgMarkPolicy policy ) { m_markPolicy = policy; }
-	WgMarkPolicy	GetMarkPolicy() const { return m_markPolicy; }
+	void			SetMarkOpacity( int opacity ) { m_markOpacity = opacity; }
+	int				GetMarkOpacity() const { return m_markOpacity; }
 	bool			MarkTest( const WgCoord& ofs );
 
 	WgHook*			Hook() const { return m_pHook; }
@@ -179,11 +179,11 @@ protected:
 
 	// To be overloaded by Widget
 
-	virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer );
+	virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	virtual void	_onCloneContent( const WgWidget * _pOrg ) = 0;
-	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_onRefresh();
 
@@ -206,7 +206,7 @@ protected:
 	WgPointerStyle	m_pointerStyle;
 
 	WgString		m_tooltip;
-	WgMarkPolicy	m_markPolicy;
+	int				m_markOpacity;
 
 	bool			m_bOpaque;
 	bool			m_bTabLock;		// If set, the widget prevents focus shifting away from it with tab.

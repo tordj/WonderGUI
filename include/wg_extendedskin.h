@@ -19,49 +19,37 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_IMAGE_DOT_H
-#define WG_IMAGE_DOT_H
+#ifndef WG_EXTENDEDSKIN_DOT_H
+#define WG_EXTENDEDSKIN_DOT_H
 
-
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
+class WgExtendedSkin;
+typedef	WgSmartChildPtr<WgExtendedSkin,WgSkinPtr>	WgExtendedSkinPtr;
 
-
-//____ WgImage __________________________________________________________
-
-class WgImage : public WgWidget
+class WgExtendedSkin : public WgSkin
 {
 public:
-	WgImage();
-	virtual ~WgImage();
+	virtual void	SetContentPadding( WgBorders padding );
+	virtual void	SetContentShift( WgStateEnum state, WgCoord shift );
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgImage(); };
-	
+	virtual void	SetHoveredContentShift( WgCoord shift );
+	virtual void	SetPressedContentShift( WgCoord shift );
+	virtual void	SetSelectedContentShift( WgCoord shift );
+	virtual void	SetFocusedContentShift( WgCoord shift );
 
-	void			SetSource( const WgBlocksetPtr& pBlockset );
-	WgBlocksetPtr	GetSource() const { return m_pGfx; }
+	virtual WgSize	MinSize() const;
+	virtual WgSize	PreferredSize() const;
 
-	WgSize			PreferredSize() const;
+	virtual WgSize	SizeForContent( const WgSize contentSize ) const;
+	virtual WgRect	ContentRect( const WgRect& canvas, WgState state ) const;
 
 protected:
-
-	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onEnable();
-	void	_onDisable();
-
-private:
-
-	WgBlocksetPtr	m_pGfx;
+	WgBorders	m_contentPadding;
+	WgCoord		m_contentShift[WG_NB_STATES];	
 };
 
 
-#endif //WG_FILLER_DOT_H
+#endif //WG_EXTENDEDSKIN_DOT_H

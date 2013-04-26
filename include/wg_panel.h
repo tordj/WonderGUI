@@ -107,7 +107,7 @@ protected:
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	virtual bool	_onAlphaTest( const WgCoord& ofs );	
-	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	virtual void	_onCloneContent( const WgPanel * _pOrg );
 
 

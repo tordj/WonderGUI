@@ -13,47 +13,12 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_SWITCH_DOT_H
-#define WG_SWITCH_DOT_H
+#include <wg_skin.h>
 
-
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
-
-
-//____ WgSwitch ____________________________________________________________
-
-class WgSwitch : public WgWidget
-{
-public:
-	WgSwitch();
-	virtual ~WgSwitch();
-
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgSwitch(); };
-
-    void    SetValue( int value );
-    
-	WgSize	PreferredSize() const;
-
-protected:
-	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onEnable();
-	void	_onDisable();
-
-private:
-
-};
-
-
-#endif //WG_SWITCH_DOT_H
+int	WgSkin::s_stateToIndexTable[WG_MAX_STATE_VALUE+1] = { 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 8, 9, 10, 11, 12 };

@@ -214,7 +214,7 @@ WgSize WgMenubar::PreferredSize() const
 
 //____ _onRender() ________________________________________________________
 
-void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	// Render background
 

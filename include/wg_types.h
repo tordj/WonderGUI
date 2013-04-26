@@ -83,57 +83,59 @@ enum WgMode //: Uint8
 
 #define	WG_NB_MODES		5		// Number of modes (excluding WG_MODE_ALL )
 
-/*
-enum WgModeEnum
+
+enum WgStateEnum
 {
-	WG_MODE_NORMAL					= 0,
-	WG_MODE_DISABLED				= 1,
-	WG_MODE_SELECTED				= 2,
-	WG_MODE_FOCUSED					= 4,
-	WG_MODE_FOCUSED_SELECTED		= 4+2,
-	WG_MODE_HOVER					= 8,
-	WG_MODE_HOVER_SELECTED			= 8+2,
-	WG_MODE_HOVER_FOCUSED			= 8+4,
-	WG_MODE_HOVER_FOCUSED_SELECTED	= 8+4+2,
-	WG_MODE_PRESSED					= 16+8,
-	WG_MODE_PRESSED_SELECTED		= 16+8+2,
-	WG_MODE_PRESSED_FOCUSED			= 16+8+4,
-	WG_MODE_PRESSED_FOCUSED_SELECTED = 16+8+4+2
+	WG_STATE_NORMAL						= 0,
+	WG_STATE_SELECTED					= 1,
+	WG_STATE_FOCUSED					= 2,
+	WG_STATE_FOCUSED_SELECTED			= 2+1,
+	WG_STATE_HOVERED					= 4,
+	WG_STATE_HOVERED_SELECTED			= 4+1,
+	WG_STATE_HOVERED_FOCUSED			= 4+2,
+	WG_STATE_HOVERED_FOCUSED_SELECTED	= 4+2+1,
+	WG_STATE_PRESSED					= 8+4,
+	WG_STATE_PRESSED_SELECTED			= 8+4+1,
+	WG_STATE_PRESSED_FOCUSED			= 8+4+2,
+	WG_STATE_PRESSED_FOCUSED_SELECTED	= 8+4+2+1,
+	WG_STATE_DISABLED					= 16,
 };
 
-class WgMode 
+#define	WG_NB_STATES		13			// Number of states
+#define	WG_MAX_STATE_VALUE	16			// Highest value for WgStateEnum
+
+class WgState 
 {
 public:
-	WgMode() { m_mode = WG_MODE_NORMAL; }
-	WgMode( WgModeEnum mode ) { m_mode = mode; }
+	WgState() { m_state = WG_STATE_NORMAL; }
+	WgState( WgStateEnum state ) { m_state = state; }
 
-//	void		set( WgModeEnum mode ) { m_mode = mode; }
-//	WgModeEnum	getEnum() const { return (WgModeEnum) m_mode; }
+//	void		set( WgModeEnum state ) { m_state = state; }
+//	WgModeEnum	getEnum() const { return (WgModeEnum) m_state; }
 
-	bool	setEnabled(bool bEnabled) { if(bEnabled) m_mode &= ~WG_MODE_DISABLED; else m_mode = WG_MODE_DISABLED; return true; }
-	bool	setSelected(bool bSelected) { if( m_mode == WG_MODE_DISABLED ) return false; if(bSelected) m_mode |= WG_MODE_SELECTED; else m_mode &= ~WG_MODE_SELECTED; return true; }
-	bool	setFocused(bool bFocused) { if( m_mode == WG_MODE_DISABLED ) return false; if(bFocused) m_mode |= WG_MODE_FOCUSED; else m_mode &= ~WG_MODE_FOCUSED; return true; }
-	bool	setHovered(bool bHovered) { if( m_mode == WG_MODE_DISABLED ) return false; if(bHovered) m_mode |= WG_MODE_HOVER; else m_mode &= ~WG_MODE_PRESSED; return true; }
-	bool	setPressed(bool bPressed) { if( m_mode == WG_MODE_DISABLED ) return false; if(bPressed) m_mode |= WG_MODE_PRESSED; else m_mode &= ~(WG_MODE_PRESSED - WG_MODE_HOVER); return true; }
+	bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~WG_STATE_DISABLED; else m_state = WG_STATE_DISABLED; return true; }
+	bool	setSelected(bool bSelected) { if( m_state == WG_STATE_DISABLED ) return false; if(bSelected) m_state |= WG_STATE_SELECTED; else m_state &= ~WG_STATE_SELECTED; return true; }
+	bool	setFocused(bool bFocused) { if( m_state == WG_STATE_DISABLED ) return false; if(bFocused) m_state |= WG_STATE_FOCUSED; else m_state &= ~WG_STATE_FOCUSED; return true; }
+	bool	setHovered(bool bHovered) { if( m_state == WG_STATE_DISABLED ) return false; if(bHovered) m_state |= WG_STATE_HOVERED; else m_state &= ~WG_STATE_PRESSED; return true; }
+	bool	setPressed(bool bPressed) { if( m_state == WG_STATE_DISABLED ) return false; if(bPressed) m_state |= WG_STATE_PRESSED; else m_state &= ~(WG_STATE_PRESSED - WG_STATE_HOVERED); return true; }
 
 
-	bool	isEnabled() { return (m_mode & WG_MODE_DISABLED) == WG_MODE_NORMAL; }
-	bool	isSelected() { return (m_mode & WG_MODE_SELECTED) == WG_MODE_SELECTED; }
-	bool	isFocused() { return (m_mode & WG_MODE_FOCUSED) == WG_MODE_FOCUSED; }
-	bool	isHovered() { return (m_mode & WG_MODE_HOVER) == WG_MODE_HOVER; }
-	bool	isPressed() { return (m_mode & WG_MODE_PRESSED) == WG_MODE_PRESSED; }
+	bool	isEnabled() { return (m_state & WG_STATE_DISABLED) == WG_STATE_NORMAL; }
+	bool	isSelected() { return (m_state & WG_STATE_SELECTED) == WG_STATE_SELECTED; }
+	bool	isFocused() { return (m_state & WG_STATE_FOCUSED) == WG_STATE_FOCUSED; }
+	bool	isHovered() { return (m_state & WG_STATE_HOVERED) == WG_STATE_HOVERED; }
+	bool	isPressed() { return (m_state & WG_STATE_PRESSED) == WG_STATE_PRESSED; }
 
-	inline bool operator==(WgModeEnum mode) const { return m_mode == mode; }
-	inline bool operator!=(WgModeEnum mode) const { return m_mode != mode; }
+	inline bool operator==(WgStateEnum state) const { return m_state == state; }
+	inline bool operator!=(WgStateEnum state) const { return m_state != state; }
 
-	inline void operator=(WgModeEnum mode) { m_mode = mode; }
+	inline void operator=(WgStateEnum state) { m_state = state; }
 
-	operator WgModeEnum() const { return (WgModeEnum) m_mode; }
+	operator WgStateEnum() const { return (WgStateEnum) m_state; }
 
 private:
-	int		m_mode;
+	int		m_state;
 };
-*/
 
 //____ WgTxtAttr ______________________________________________________________
 
@@ -395,15 +397,6 @@ enum WgSearchMode
 	WG_SEARCH_MARKPOLICY,			// Perform a mark test on Widget.
 	WG_SEARCH_GEOMETRY,				// Goes strictly on geometry, ignores alpha.
 	WG_SEARCH_ACTION_TARGET,		// Like MARKPOLICY, but takes modality into account.
-};
-
-//____ WgMarkPolicy _____________________________________________________________
-
-enum WgMarkPolicy
-{
-	WG_MARKPOLICY_OPAQUE,
-	WG_MARKPOLICY_ALPHA,
-	WG_MARKPOLICY_TRANSPARENT
 };
 
 //____ WgOrigo _____________________________________________________________

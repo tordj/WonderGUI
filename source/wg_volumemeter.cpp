@@ -153,7 +153,7 @@ void WgVolumeMeter::_onNewSize( const WgSize& size )
 
 //____ _onRender() _____________________________________________________________________
 
-void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	int	peak = 0;
 	int hold = 0;

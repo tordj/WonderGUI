@@ -293,7 +293,7 @@ Uint32 WgCheckBox::GetTextAreaWidth()
 
 //____ _onRender() ________________________________________________________
 
-void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	// Get correct mode
 
@@ -526,7 +526,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 
 			//
 
-			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize) )) ||
+			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize), m_markOpacity )) ||
 				_markTestTextArea( ofs.x, ofs.y ) ||
 				iconRect.Contains( ofs.x, ofs.y ) )
 				return true;
@@ -535,8 +535,8 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 		}
 		case ALPHA:			// Alpha test on background and icon.
 		{
-			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize) )) ||
-				(iconBlock.IsValid() && WgUtil::MarkTestBlock( ofs, iconBlock, iconRect )) )
+			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize), m_markOpacity)) ||
+				(iconBlock.IsValid() && WgUtil::MarkTestBlock( ofs, iconBlock, iconRect, m_markOpacity )) )
 				return true;
 
 			return false;
@@ -545,7 +545,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 			return true;
 		case ICON:			// Only the icon (alpha test) is clickable.
 		{
-			if( iconBlock.IsValid() && WgUtil::MarkTestBlock( ofs, iconBlock, iconRect ) )
+			if( iconBlock.IsValid() && WgUtil::MarkTestBlock( ofs, iconBlock, iconRect, m_markOpacity ) )
 				return true;
 
 			return false;

@@ -1,24 +1,24 @@
 /*=========================================================================
- 
- >>> WonderGUI <<<
- 
- This file is part of Tord Jansson's WonderGUI Graphics Toolkit
- and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
- 
- -----------
- 
- The WonderGUI Graphics Toolkit is free software; you can redistribute
- this file and/or modify it under the terms of the GNU General Public
- License as published by the Free Software Foundation; either
- version 2 of the License, or (at your option) any later version.
- 
- -----------
- 
- The WonderGUI Graphics Toolkit is also available for use in commercial
- closed-source projects under a separate license. Interested parties
- should contact Tord Jansson [tord.jansson@gmail.com] for details.
- 
- =========================================================================*/
+
+                         >>> WonderGUI <<<
+
+  This file is part of Tord Jansson's WonderGUI Graphics Toolkit
+  and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
+
+                            -----------
+
+  The WonderGUI Graphics Toolkit is free software; you can redistribute
+  this file and/or modify it under the terms of the GNU General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+                            -----------
+
+  The WonderGUI Graphics Toolkit is also available for use in commercial
+  closed-source projects under a separate license. Interested parties
+  should contact Tord Jansson [tord.jansson@gmail.com] for details.
+
+=========================================================================*/
 
 #include <wg_colorskin.h>
 #include <wg_gfxdevice.h>
@@ -38,7 +38,7 @@ WgColorSkin::WgColorSkin( WgColor col )
 }
 
 	
-void WgColorSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip )
+void WgColorSkin::Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip ) const
 {
 	pDevice->Fill( _clip, m_color );
 }
@@ -46,4 +46,39 @@ void WgColorSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 bool WgColorSkin::IsOpaque() const
 {
 	return m_color.a == 255 ? true : false;
+}
+
+bool WgColorSkin::IsOpaque(WgState state) const
+{
+	return m_color.a == 255 ? true : false;
+}
+
+bool WgColorSkin::IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const
+{
+	return m_color.a == 255 ? true : false;
+}
+
+WgSize WgColorSkin::MinSize() const
+{
+	return WgSize(0,0);
+}
+
+WgSize WgColorSkin::PreferredSize() const
+{
+	return WgSize(0,0);
+}
+
+WgSize  WgColorSkin::SizeForContent( const WgSize contentSize ) const
+{
+	return contentSize;
+}
+
+WgRect  WgColorSkin::ContentRect( const WgRect& canvas, WgState state ) const
+{
+	return canvas;
+}
+
+bool WgColorSkin::MarkTest( const WgCoord& ofs, const WgSize& canvasSize, WgState state ) const
+{
+	return m_color.a > 0 ? true : false;
 }

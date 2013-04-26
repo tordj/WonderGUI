@@ -122,7 +122,7 @@ WgSize WgRulerLabels::PreferredSize() const
 
 //____ _onRender() _____________________________________________________________________
 
-void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	if( m_direction == WG_UP || m_direction == WG_DOWN )
 	{

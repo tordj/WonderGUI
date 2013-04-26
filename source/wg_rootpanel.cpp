@@ -212,7 +212,7 @@ bool WgRootPanel::BeginRender()
 
 //____ RenderSection() __________________________________________________________
 
-bool WgRootPanel::RenderSection( const WgRect& _clip, int layer )
+bool WgRootPanel::RenderSection( const WgRect& _clip )
 {
 	if( !m_pGfxDevice || !m_hook.Widget() )
 		return false;						// No GFX-device or no widgets to render.
@@ -242,7 +242,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip, int layer )
 
 	// Render the dirty patches recursively
 
-	m_hook.Widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches, layer );
+	m_hook.Widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches );
 
 	return true;
 }

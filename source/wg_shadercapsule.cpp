@@ -94,7 +94,7 @@ WgBlendMode WgShaderCapsule::_getBlendMode() const
 
 //____ _renderPatches() ________________________________________________________
 
-void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 	// Set our tint color and blend mode.
 
@@ -118,7 +118,7 @@ void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canv
 	// Render children recursively
 
 	if( m_hook.Widget() )
-		m_hook.Widget()->_renderPatches( pDevice, _canvas, _canvas, _pPatches, _layer );
+		m_hook.Widget()->_renderPatches( pDevice, _canvas, _canvas, _pPatches );
 
 	// Reset old blend mode and tint color
 

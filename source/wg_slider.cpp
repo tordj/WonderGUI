@@ -464,7 +464,7 @@ void WgWidgetSlider::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, 
 
 //____ _onRender() ________________________________________________________
 
-void WgWidgetSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgWidgetSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	WgRect	dest = _canvas;
 
@@ -536,7 +536,7 @@ bool WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock&
 		else
 			_dest.h = _block.Height();
 
-		bool retVal = WgUtil::MarkTestBlock( ofs, _block, _dest );
+		bool retVal = WgUtil::MarkTestBlock( ofs, _block, _dest, m_markOpacity );
 
 		if( m_bHorizontal )
 			_dest.x += _dest.w;
@@ -607,7 +607,7 @@ WgWidgetSlider::Component WgWidgetSlider::_findMarkedComponent( WgCoord ofs )
 		r.h -= m_headerLen + m_footerLen;
 	}
 
-	if( m_pBgGfx && WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode[C_BG]), r ) )
+	if( m_pBgGfx && WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode[C_BG]), r, m_markOpacity ) )
 		return C_BG;
 
 	return C_NONE;
@@ -891,7 +891,7 @@ bool WgWidgetSlider::_markTestSlider( WgCoord ofs )
 		area.h = barLen;
 	}
 
-	return WgUtil::MarkTestBlock( ofs, m_pBarGfx->GetBlock(m_mode[C_BAR]), area );
+	return WgUtil::MarkTestBlock( ofs, m_pBarGfx->GetBlock(m_mode[C_BAR]), area, m_markOpacity );
 }
 
 //____ _setSlider() ____________________________________________________________

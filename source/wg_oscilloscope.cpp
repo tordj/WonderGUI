@@ -239,12 +239,12 @@ void WgOscilloscope::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() ____________________________________________________________
 
-void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	// Render background
 
 	if( m_pBG )
-		m_pBG->Render( pDevice, _canvas, _clip );
+		m_pBG->Render( pDevice, WG_STATE_NORMAL, _canvas, _clip );
 
 	//
 

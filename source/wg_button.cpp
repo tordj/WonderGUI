@@ -210,7 +210,7 @@ void WgButton::_onNewSize( const WgSize& size )
 
 //____ _onRender() _____________________________________________________________
 
-void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	WgRect cli = _clip;
 	WgRect can = _canvas;
@@ -424,7 +424,7 @@ bool WgButton::_onAlphaTest( const WgCoord& ofs )
 
 	//TODO: Take icon into account.
 
-	return	WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode,sz), WgRect(0,0,sz) );
+	return	WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode,sz), WgRect(0,0,sz), m_markOpacity );
 }
 
 //____ _onGotInputFocus() ______________________________________________________

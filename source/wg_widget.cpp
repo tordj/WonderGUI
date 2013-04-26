@@ -29,7 +29,7 @@
 //____ Constructor ____________________________________________________________
 
 WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WG_POINTER_DEFAULT),
-					m_markPolicy( WG_MARKPOLICY_ALPHA ), m_bEnabled(true), m_bOpaque(false),
+					m_markOpacity( 1 ), m_bEnabled(true), m_bOpaque(false),
 					m_bFocused(false), m_bTabLock(false), m_bReceiveTick(false)
 {
 }
@@ -70,14 +70,14 @@ void WgWidget::SetEnabled( bool bEnabled )
 
 bool WgWidget::MarkTest( const WgCoord& ofs )
 {
-	switch( m_markPolicy )
+	switch( m_markOpacity )
 	{
-	case WG_MARKPOLICY_ALPHA:
-		return _onAlphaTest(ofs);
-	case WG_MARKPOLICY_TRANSPARENT:
-		return false;
-	default:						//WG_MARKPOLICY_OPAQUE:
+	case 0:
 		return true;
+	case 256:
+		return false;
+	default:
+		return _onAlphaTest(ofs);
 	}
 }
 
@@ -93,7 +93,7 @@ bool WgWidget::CloneContent( const WgWidget * _pOrg )
 	m_pointerStyle 	= _pOrg->m_pointerStyle;
 
 	m_tooltip		= _pOrg->m_tooltip;
-	m_markPolicy	= _pOrg->m_markPolicy;
+	m_markOpacity	= _pOrg->m_markOpacity;
 
 	m_bEnabled		= _pOrg->m_bEnabled;
 	m_bOpaque		= _pOrg->m_bOpaque;
@@ -266,13 +266,13 @@ void WgWidget::_queueEvent( WgEvent::Event * pEvent )
 
 //____ _renderPatches() ________________________________________________________
 
-void WgWidget::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches, Uint8 _layer )
+void WgWidget::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
 	{
 		WgRect clip( _window, *pRect );
 		if( clip.w > 0 || clip.h > 0 )
-			_onRender( pDevice, _canvas, _window, clip, _layer );
+			_onRender( pDevice, _canvas, _window, clip );
 	}
 }
 
@@ -291,7 +291,7 @@ void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRe
 	}
 }
 
-void WgWidget::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgWidget::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 }
 

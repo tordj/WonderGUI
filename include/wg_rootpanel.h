@@ -85,7 +85,7 @@ public:
 	bool	Render( const WgRect& clip );
 
 	bool	BeginRender();
-	bool	RenderSection( const WgRect& clip, int layer = 0xFF );
+	bool	RenderSection( const WgRect& clip );
 	bool	EndRender();
 
 	inline void	AddDirtyPatch( const WgRect& rect ) { m_dirtyPatches.Add( rect ); }

@@ -53,7 +53,7 @@ protected:
 
 	bool	_isColorChanged( WgMode newMode ) const;
 	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onEnable();
 	void	_onDisable();

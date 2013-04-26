@@ -22,7 +22,7 @@ namespace WgUtil
 {
 	bool		AdjustScaledArea(const WgBlock& block, WgRect& area);
 
-	bool		MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area );
+	bool		MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area, int opacityTreshold );
 
 	bool		PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
 

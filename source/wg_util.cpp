@@ -70,7 +70,7 @@ bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 
 //____ MarkTestBlock() ________________________________________________________
 
-bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area )
+bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area, int opacityTreshold )
 {
 	AdjustScaledArea(block, area);
 
@@ -162,9 +162,9 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area )
 		}
 	}
 
-	Uint8 alpha = block.Surface()->GetOpacity(block.Rect().x+ofs.x, block.Rect().y+ofs.y);
+	int alpha = block.Surface()->GetOpacity(block.Rect().x+ofs.x, block.Rect().y+ofs.y);
 
-	if( alpha )
+	if( alpha >= opacityTreshold )
 		return true;
 	else
 		return false;

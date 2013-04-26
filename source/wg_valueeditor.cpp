@@ -238,7 +238,7 @@ void WgValueEditor::_onRefresh( void )
 
 //____ _onRender() _____________________________________________________________
 
-void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	// Leave if we have nothing to print
 

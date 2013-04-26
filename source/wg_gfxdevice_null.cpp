@@ -42,7 +42,7 @@ void WgGfxDeviceNull::TileBlit( const WgSurface* src, const WgRect& srcrect, con
 {
 }
 
-void WgGfxDeviceNullFillSubPixel( const WgRectF& rect, const WgColor& col )
+void WgGfxDeviceNull::FillSubPixel( const WgRectF& rect, const WgColor& col )
 {
 }
 

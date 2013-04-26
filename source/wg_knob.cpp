@@ -78,7 +78,7 @@ void WgKnob::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 
-void WgKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 //    pDevice->Fill( _clip, WgColor::black );
 

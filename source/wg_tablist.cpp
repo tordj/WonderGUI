@@ -1038,7 +1038,7 @@ WgTab * WgTablist::_pos2Tab( int x, int y ) const
 				((unsigned) y) > pSrc->Padding().top && y < sz.h - pSrc->Padding().bottom )
 				bHit = true;
 			else
-				bHit = WgUtil::MarkTestBlock( WgCoord(x, y), pSrc->GetBlock( _getTabMode(*pTab), WgSize(w,sz.h) ), WgRect(0,0,w,sz.h));
+				bHit = WgUtil::MarkTestBlock( WgCoord(x, y), pSrc->GetBlock( _getTabMode(*pTab), WgSize(w,sz.h) ), WgRect(0,0,w,sz.h), m_markOpacity);
 
 			if( bHit )
 			{
@@ -1091,7 +1091,7 @@ void WgTablist::_onUpdate( const WgUpdateInfo& _updateInfo )
 
 //____ _onRender() ________________________________________________________
 
-void WgTablist::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& clip, Uint8 _layer )
+void WgTablist::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& clip )
 {
 	Uint32	selectedX	= INT_MAX;			// X-offset for selected tab.
 

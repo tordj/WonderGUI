@@ -100,7 +100,7 @@ public:
 protected:
 
 		void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-		void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+		void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 		void		_onCloneContent( const WgWidget * _pOrg );
 		virtual void _onNewSize( const WgSize& size );
 

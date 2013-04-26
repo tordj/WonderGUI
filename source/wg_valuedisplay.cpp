@@ -119,7 +119,7 @@ void WgValueDisplay::_regenText()
 
 //____ _onRender() _____________________________________________________________
 
-void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	pDevice->PrintText( _clip, &m_text, _canvas );
 }

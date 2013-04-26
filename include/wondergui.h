@@ -19,6 +19,10 @@
 #	include <wg_blockset.h>
 #endif
 
+#ifndef WG_BLOCKSKIN_DOT_H
+#	include <wg_blockskin.h>
+#endif
+
 #ifndef WG_CHAIN_DOT_H
 #	include <wg_chain.h>
 #endif
@@ -216,6 +220,10 @@
 #	include <wg_fpsdisplay.h>
 #endif
 
+#ifndef WG_IMAGE_DOT_H
+#	include <wg_image.h>
+#endif
+
 #ifndef WG_MENU_DOT_H
 #	include <wg_menu.h>
 #endif
@@ -236,8 +244,8 @@
 #	include <wg_oscilloscope.h>
 #endif
 
-#ifndef WG_IMAGE_DOT_H
-#	include <wg_image.h>
+#ifndef	WG_PACKPANEL_DOT_H
+#	include	<wg_packpanel.h>
 #endif
 
 #ifndef WG_RADIOBUTTON_DOT_H

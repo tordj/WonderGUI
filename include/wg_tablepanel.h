@@ -381,7 +381,7 @@ public:
 protected:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
-	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onNewSize( const WgSize& size );
 //	bool			_onAlphaTest( const WgCoord& ofs );		//TODO: Implement for performance!
 

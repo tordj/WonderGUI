@@ -19,49 +19,60 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_COLORSKIN_DOT_H
-#define WG_COLORSKIN_DOT_H
+#ifndef WG_BOXSKIN_DOT_H
+#define WG_BOXSKIN_DOT_H
 
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
+#ifndef WG_EXTENDEDSKIN_DOT_H
+#	include <wg_extendedskin.h>
 #endif
 
 #ifndef WG_COLOR_DOT_H
 #	include <wg_color.h>
 #endif
 
-class WgColorSkin;
+class WgBoxSkin;
+typedef	WgSmartChildPtr<WgBoxSkin,WgExtendedSkinPtr>	WgBoxSkinPtr;
 
-typedef	WgSmartChildPtr<WgColorSkin,WgSkinPtr>	WgColorSkinPtr;
-
-
-class WgColorSkin : public WgSkin
+class WgBoxSkin : public WgExtendedSkin
 {
 public:
-	static WgColorSkinPtr Create( WgColor col );
+	static WgBoxSkinPtr	Create();
+	static WgBoxSkinPtr Create( WgColor color, WgBorders frame, WgColor frameColor );
 	
-	~WgColorSkin() {};
-	
-	void	Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip ) const;
-	bool	IsOpaque() const;
-	bool	IsOpaque(WgState state) const;
-	bool	IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const;
+	~WgBoxSkin() {};
 
+	void	SetColor( WgColor color );
+	void	SetFrameColor( WgColor color );
+	void	SetFrameThickness( WgBorders frame );
+	void	SetFrame( WgBorders frame, WgColor color );
+
+	void	SetStateColor( WgStateEnum state, WgColor color );
+	void	SetStateColor( WgStateEnum state, WgColor color, WgColor frameColor );
+
+	void Render( WgGfxDevice * pDevice, WgState mode, const WgRect& _canvas, const WgRect& _clip ) const;
+	
 	WgSize	MinSize() const;
 	WgSize	PreferredSize() const;
 
 	WgSize	SizeForContent( const WgSize contentSize ) const;
-	WgRect	ContentRect( const WgRect& canvas, WgState state ) const;
-
 	bool	MarkTest( const WgCoord& ofs, const WgSize& canvasSize, WgState state ) const;
 
+	bool	IsOpaque() const;
+	bool	IsOpaque( WgState state ) const;
+	bool	IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const;
 
 
 private:
-	WgColorSkin( WgColor col );
+	WgBoxSkin();
+	WgBoxSkin( WgColor color, WgBorders frame, WgColor frameColor );
+	void	_updateOpaqueFlag();
 
-	WgColor		m_color;
-	
+	bool		m_bOpaque;
+	WgColor		m_color[WG_NB_STATES];
+	WgColor		m_frameColor[WG_NB_STATES];
+    WgBorders   m_frame;
 };
 
-#endif //WG_COLORSKIN_DOT_H
+#endif //WG_BOXSKIN_DOT_H
+
+

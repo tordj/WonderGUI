@@ -1833,7 +1833,7 @@ WgWidget * WgTablePanel::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 
 
 //____ _onRender() _____________________________________________________________
-void WgTablePanel::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgTablePanel::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	WgRect	r = _canvas;
 	WgRect	clipView = _clip;
@@ -2004,7 +2004,7 @@ void WgTablePanel::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 				//
 
-				pHook->Widget()->_onRender( pDevice, rc, rc, clip2, _layer );
+				pHook->Widget()->_onRender( pDevice, rc, rc, clip2 );
 				rc.x += m_pColumns[i].m_realWidth - m_cellPadding.left;		// Left cellpadding already added...
 			}
 		}

@@ -143,7 +143,7 @@ WgString WgTextDisplay::GetTooltipString() const
 
 //____ _onRender() ________________________________________________________
 
-void WgTextDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgTextDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	WgText * pText = &m_text;
 

@@ -93,7 +93,7 @@ public:
 
 protected:
 	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer );
+	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onRefresh();
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	bool	_onAlphaTest( const WgCoord& ofs );

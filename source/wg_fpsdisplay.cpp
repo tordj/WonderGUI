@@ -92,7 +92,7 @@ WgSize WgFpsDisplay::PreferredSize() const
 
 //____ _onRender() ________________________________________________________
 
-void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip, Uint8 _layer )
+void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 
 	const int	cCurrentFrames = 10;
