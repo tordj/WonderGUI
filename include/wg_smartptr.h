@@ -87,7 +87,7 @@ template<class T,class P> class WgSmartChildPtr : public P
 {
 public:
 	WgSmartChildPtr(T* p=0) : P( p ) {};
-	WgSmartChildPtr(const WgSmartChildPtr<T,P>& r) : P( r.m_pObj ) {};
+	WgSmartChildPtr(const WgSmartChildPtr<T,P>& r) : P( (T*) r.m_pObj ) {};
 	~WgSmartChildPtr() {};
 
 /*

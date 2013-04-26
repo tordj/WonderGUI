@@ -56,7 +56,7 @@ WgBoxSkin::WgBoxSkin( WgColor color, WgBorders frame, WgColor frameColor )
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
 		m_color[i] = color;
-		m_frameColor[i] = color;
+		m_frameColor[i] = frameColor;
 	}
 
 	bool hasFrame = frame.Width() + frame.Height();
