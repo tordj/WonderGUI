@@ -607,7 +607,7 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 	{
 		case WGCHAR:
 		{
-			Uint32 size = WgTextTool::getTextSizeUTF8( (WgChar*) m_pChar, m_nbChars );
+			int size = WgTextTool::getTextSizeUTF8( (WgChar*) m_pChar, m_nbChars );
 			char * p = new char[size+1];
 			WgTextTool::getTextUTF8( (WgChar*) m_pChar, p, size+1 );
 			basket.ptr = p;
@@ -626,7 +626,7 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 		}
 		case UTF16:
 		{
-			Uint32 size = WgTextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
+			int size = WgTextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
 			char * p = new char[size+1];
 			WgTextTool::getTextUTF8( (Uint16*) m_pChar, p, size+1 );
 			basket.ptr = p;
@@ -636,7 +636,7 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 		}
 		case ESCAPED_UTF8:
 		{
-			Uint32 size = WgTextTool::getTextSizeStrippedUTF8( (char *) m_pChar, m_nbChars );
+			int size = WgTextTool::getTextSizeStrippedUTF8( (char *) m_pChar, m_nbChars );
 			char * p = new char[size+1];
 			WgTextTool::stripTextCommands( (char*) m_pChar, p, size+1 );
 			basket.ptr = p;
@@ -647,7 +647,7 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 
 		case ESCAPED_UTF16:
 		{
-			Uint32 size = WgTextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
+			int size = WgTextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
 			char * p = new char[size+1];
 			WgTextTool::stripTextCommandsConvert( (Uint16*) m_pChar, p, m_nbChars+1 );
 			basket.ptr = p;
@@ -658,7 +658,7 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 
 		case MAP8:
 		{
-			Uint32 size = WgTextTool::getTextSizeUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, m_nbChars );
+			int size = WgTextTool::getTextSizeUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, m_nbChars );
 			char * p = new char[size+1];
 			WgTextTool::getTextUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, p, size+1 );
 			basket.ptr = p;
@@ -686,7 +686,7 @@ std::string WgCharSeq::GetStdString() const
 	{
 		case WGCHAR:
 		{
-			Uint32 size = WgTextTool::getTextSizeUTF8( (WgChar*) m_pChar, m_nbChars );
+			int size = WgTextTool::getTextSizeUTF8( (WgChar*) m_pChar, m_nbChars );
 			char * p = new char[size+1];
 			WgTextTool::getTextUTF8( (WgChar*) m_pChar, p, size+1 );
 			std::string str( p, size );
@@ -702,7 +702,7 @@ std::string WgCharSeq::GetStdString() const
 		}
 		case UTF16:
 		{
-			Uint32 size = WgTextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
+			int size = WgTextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
 			char * p = new char[size+1];
 			WgTextTool::getTextUTF8( (Uint16*) m_pChar, p, size+1 );
 			std::string str( p, size );
@@ -711,7 +711,7 @@ std::string WgCharSeq::GetStdString() const
 		}
 		case ESCAPED_UTF8:
 		{
-			Uint32 size = WgTextTool::getTextSizeStrippedUTF8( (char *) m_pChar, m_nbChars );
+			int size = WgTextTool::getTextSizeStrippedUTF8( (char *) m_pChar, m_nbChars );
 			char * p = new char[size+1];
 			WgTextTool::stripTextCommands( (char*) m_pChar, p, size+1 );
 			std::string str( p, size );
@@ -721,7 +721,7 @@ std::string WgCharSeq::GetStdString() const
 
 		case ESCAPED_UTF16:
 		{
-			Uint32 size = WgTextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
+			int size = WgTextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
 			char * p = new char[size+1];
 			WgTextTool::stripTextCommandsConvert( (Uint16*) m_pChar, p, m_nbChars+1 );
 			std::string str( p, size );
@@ -731,7 +731,7 @@ std::string WgCharSeq::GetStdString() const
 
 		case MAP8:
 		{
-			Uint32 size = WgTextTool::getTextSizeUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, m_nbChars );
+			int size = WgTextTool::getTextSizeUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, m_nbChars );
 			char * p = new char[size+1];
 			WgTextTool::getTextUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, p, size+1 );
 			std::string str( p, size );

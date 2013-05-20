@@ -125,6 +125,7 @@ protected:
 	WgSurfaceSoft * m_pCanvas;
 	Uint8			m_limitTable[512];
 	int *			m_pCurveTab;
+	Uint8 *			m_pDivTab;
 };
 
 #endif //WG_GFXDEVICE_SOFT_DOT_H

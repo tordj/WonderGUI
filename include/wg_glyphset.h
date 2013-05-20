@@ -58,17 +58,17 @@ public:
 	virtual const WgGlyphBitmap * GetBitmap() = 0;
 
 	inline int		Advance() { return m_advance; }
-	inline Uint32	KerningIndex() { return m_kerningIndex; }
+	inline int		KerningIndex() { return m_kerningIndex; }
 	inline WgGlyphset *	Glyphset() { return m_pGlyphset; }
 
 protected:
 	WgGlyph();
-	WgGlyph( int advance, Uint32 _kerningIndex, WgGlyphset * pGlyphset );
+	WgGlyph( int advance, int _kerningIndex, WgGlyphset * pGlyphset );
 	virtual ~WgGlyph() {}
 
 	WgGlyphset *	m_pGlyphset;	// glyphset that this glyph belongs to
 	int				m_advance;		// spacing to next glyph
-	Uint32			m_kerningIndex;	// index into kerning table (WgBitmapGlyphs) or glyph_index (WgVectorGlyphs)
+	int				m_kerningIndex;	// index into kerning table (WgBitmapGlyphs) or glyph_index (WgVectorGlyphs)
 };
 
 typedef WgGlyph*	WgGlyphPtr;

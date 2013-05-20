@@ -429,7 +429,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 */
 
 	// Test oscilloscope
-/*
+
 	{
 		WgSurface * pImg = sdl_wglib::LoadSurface("../resources/blocks.png", WgSurfaceFactorySoft() );
 
@@ -460,9 +460,9 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 		addResizablePanel( pFlex, pOsc, pEventHandler );
 	}
-*/
+
 	// Test combobox
-/*
+
 	{
 		WgCombobox * pCombobox = WgCast<WgCombobox>(pDB->CloneWidget("combobox"));
 
@@ -474,7 +474,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 		addResizablePanel( pFlex, pCombobox, pEventHandler );
 
 	}
-*/
+
 
 	// Test view
 /*

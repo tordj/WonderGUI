@@ -35,8 +35,11 @@ WgCharBuffer::BufferHead * WgCharBuffer::g_pEmptyBuffer = 0;
 //
 /// @brief Creates a new buffer of the specified initial capacity.
 
-WgCharBuffer::WgCharBuffer( Uint32 size )
+WgCharBuffer::WgCharBuffer( int size )
 {
+	if( size < 0 )
+		size = 0;
+
 	m_pHead = _createBuffer( size );
 	m_pHead->m_refCnt++;
 }
@@ -81,7 +84,7 @@ WgCharBuffer& WgCharBuffer::operator=( WgString const & r)
 
 //____ _clearCharsNoDeref() _____________________________________________________
 
-void WgCharBuffer::_clearCharsNoDeref( Uint32 ofs, Uint32 n )
+void WgCharBuffer::_clearCharsNoDeref( int ofs, int n )
 {
 	Uint32 * p = (Uint32*) _ptr(ofs);
 
@@ -118,8 +121,11 @@ void WgCharBuffer::TrimWhiteSpace()
 //
 /// @brief Deletes all content and reallocates the buffer to the specified capacity.
 
-void WgCharBuffer::Reset( Uint32 size )
+void WgCharBuffer::Reset( int size )
 {
+	if( size < 0 )
+		size = 0;
+
 	if( m_pHead->m_size == size && m_pHead->m_refCnt == 1 )
 	{
 		_derefProps( 0, m_pHead->m_len );
@@ -144,7 +150,7 @@ void WgCharBuffer::Reset( Uint32 size )
 	to keep.
 */
 
-void WgCharBuffer::_reshapeBuffer( Uint32 begMargin, Uint32 copyOfs, Uint32 copyLen, Uint32 endMargin )
+void WgCharBuffer::_reshapeBuffer( int begMargin, int copyOfs, int copyLen, int endMargin )
 {
 
 	// First create a buffer of right size and
@@ -234,8 +240,11 @@ void WgCharBuffer::EndWrite()
 ///
 ///	@return Number of characters that was removed from the front of the content.
 
-Uint32 WgCharBuffer::PopFront( Uint32 nChars )
+int WgCharBuffer::PopFront( int nChars )
 {
+	if( nChars <= 0 )
+		return 0;
+
 	if( nChars > m_pHead->m_len )
 		nChars = m_pHead->m_len;
 
@@ -265,8 +274,11 @@ Uint32 WgCharBuffer::PopFront( Uint32 nChars )
 ///
 ///	@return Number of characters that was removed from the back of the content.
 
-Uint32 WgCharBuffer::PopBack( Uint32 nChars )
+int WgCharBuffer::PopBack( int nChars )
 {
+	if( nChars <= 0 )
+		return 0;
+
 	if( nChars > m_pHead->m_len )
 		nChars = m_pHead->m_len;
 
@@ -297,7 +309,7 @@ Uint32 WgCharBuffer::PopBack( Uint32 nChars )
 	No error checking, parameters are assumed to have been verified before call.
 */
 
-void WgCharBuffer::_copyChars( BufferHead * pDst, Uint32 ofsDst, const BufferHead * pSrc, Uint32 ofsSrc, Uint32 nChars )
+void WgCharBuffer::_copyChars( BufferHead * pDst, int ofsDst, const BufferHead * pSrc, int ofsSrc, int nChars )
 {
 	memmove( ((char*)&pDst[1])+ofsDst*sizeof(WgChar), ((char*)&pSrc[1])+ofsSrc*sizeof(WgChar), nChars*sizeof(WgChar) );
 }
@@ -314,14 +326,14 @@ void WgCharBuffer::_copyChars( BufferHead * pDst, Uint32 ofsDst, const BufferHea
 
 */
 
-void WgCharBuffer::_copyChars( BufferHead * pDst, Uint32 ofsDst, const WgChar * pChars, Uint32 nChars )
+void WgCharBuffer::_copyChars( BufferHead * pDst, int ofsDst, const WgChar * pChars, int nChars )
 {
 	memcpy( ((char*)&pDst[1])+ofsDst*sizeof(WgChar), pChars, nChars*sizeof(WgChar) );
 }
 
 //____ _setChars() _____________________________________________________________
 
-void WgCharBuffer::_setChars( Uint32 ofs, Uint32 nChars, Uint32 value )
+void WgCharBuffer::_setChars( int ofs, int nChars, Uint32 value )
 {
 	Uint32 * pChar = ((Uint32 *) &m_pHead[1]) + m_pHead->m_beg + ofs;
 
@@ -337,7 +349,7 @@ void WgCharBuffer::_setChars( Uint32 ofs, Uint32 nChars, Uint32 value )
 ///
 ///	@return Number of characters the content was grown with. Always 1.
 
-Uint32 WgCharBuffer::PushFront( const WgChar& character )
+int WgCharBuffer::PushFront( const WgChar& character )
 {
 	_pushFront(1);
 	*((Uint32*)_ptr(0)) = character.all;
@@ -355,8 +367,11 @@ Uint32 WgCharBuffer::PushFront( const WgChar& character )
 ///
 ///	@return Number of characters the content was grown with. Always equals nChars.
 
-Uint32 WgCharBuffer::PushFront( Uint32 nChars )
+int WgCharBuffer::PushFront( int nChars )
 {
+	if( nChars <= 0 )
+		return 0;
+
 	_pushFront(nChars);
 	_setChars( 0, nChars, c_emptyChar );
 	return nChars;
@@ -369,9 +384,9 @@ Uint32 WgCharBuffer::PushFront( Uint32 nChars )
 ///
 ///	@return Number of characters the content was grown with.
 
-Uint32 WgCharBuffer::PushFront( const WgChar * pChars )
+int WgCharBuffer::PushFront( const WgChar * pChars )
 {
-	Uint32 len = WgTextTool::strlen( pChars );
+	int len = WgTextTool::strlen( pChars );
 
 	_pushFront(len);
 
@@ -390,8 +405,11 @@ Uint32 WgCharBuffer::PushFront( const WgChar * pChars )
 ///
 ///	@return Number of characters the content was grown with. Always equals nChars.
 
-Uint32 WgCharBuffer::PushFront( const WgChar * pChars, Uint32 nChars )
+int WgCharBuffer::PushFront( const WgChar * pChars, int nChars )
 {
+	if( nChars <= 0 )
+		return 0;
+
 	_pushFront(nChars);
 
 	memcpy( _ptr(0), pChars, sizeof(WgChar)*nChars );
@@ -406,9 +424,9 @@ Uint32 WgCharBuffer::PushFront( const WgChar * pChars, Uint32 nChars )
 ///
 ///	@return Number of characters the content was grown with. Always equals length of the sequence.
 
-Uint32 WgCharBuffer::PushFront( const WgCharSeq& seq )
+int WgCharBuffer::PushFront( const WgCharSeq& seq )
 {
-	Uint32 len = seq.Length();
+	int len = seq.Length();
 	_pushFront(len);
 	seq.CopyTo((WgChar*)_ptr(0));
 	return len;
@@ -423,7 +441,7 @@ Uint32 WgCharBuffer::PushFront( const WgCharSeq& seq )
 ///
 ///	@return Number of characters the content was grown with. Always 1.
 
-Uint32 WgCharBuffer::PushBack( const WgChar& character )
+int WgCharBuffer::PushBack( const WgChar& character )
 {
 	_pushBack(1);
 	*((Uint32*)_ptr( m_pHead->m_len - 1)) = character.all;
@@ -441,8 +459,11 @@ Uint32 WgCharBuffer::PushBack( const WgChar& character )
 ///
 ///	@return Number of characters the content was grown with. Always equals nChars.
 
-Uint32 WgCharBuffer::PushBack( Uint32 nChars )
+int WgCharBuffer::PushBack( int nChars )
 {
+	if( nChars <= 0 )
+		return 0;
+
 	_pushBack(nChars);
 	_setChars( m_pHead->m_len - nChars, nChars, c_emptyChar );
 	return nChars;
@@ -454,9 +475,9 @@ Uint32 WgCharBuffer::PushBack( Uint32 nChars )
 ///
 ///	@return Number of characters the content was grown with.
 
-Uint32 WgCharBuffer::PushBack( const WgChar * pChars )
+int WgCharBuffer::PushBack( const WgChar * pChars )
 {
-	Uint32 len = WgTextTool::strlen( pChars );
+	int len = WgTextTool::strlen( pChars );
 
 	_pushBack(len);
 
@@ -476,8 +497,11 @@ Uint32 WgCharBuffer::PushBack( const WgChar * pChars )
 ///
 ///	@return Number of characters the content was grown with. Always equals nChars.
 
-Uint32 WgCharBuffer::PushBack( const WgChar * pChars, Uint32 nChars )
+int WgCharBuffer::PushBack( const WgChar * pChars, int nChars )
 {
+	if( nChars <= 0 )
+		return 0;
+
 	_pushBack(nChars);
 
 	memcpy( ((WgChar*) _ptr(0)) + m_pHead->m_len-nChars, pChars, sizeof(WgChar)*nChars );
@@ -492,9 +516,9 @@ Uint32 WgCharBuffer::PushBack( const WgChar * pChars, Uint32 nChars )
 ///
 ///	@return Number of characters the content was grown with. Always equals length of the sequence.
 
-Uint32 WgCharBuffer::PushBack( const WgCharSeq& seq )
+int WgCharBuffer::PushBack( const WgCharSeq& seq )
 {
-	Uint32 nChars = seq.Length();
+	int nChars = seq.Length();
 	_pushBack(nChars);
 	memset( ((WgChar*) _ptr(0)) + m_pHead->m_len-nChars, 0, sizeof(WgChar)*nChars );
 	seq.CopyTo( ((WgChar*) _ptr(0)) + m_pHead->m_len-nChars );
@@ -505,7 +529,7 @@ Uint32 WgCharBuffer::PushBack( const WgCharSeq& seq )
 
 //____ _pushFront() _____________________________________________________
 
-void WgCharBuffer::_pushFront( Uint32 nChars )
+void WgCharBuffer::_pushFront( int nChars )
 {
 	// Check if we can just modify this buffer to fit things in
 
@@ -537,7 +561,7 @@ void WgCharBuffer::_pushFront( Uint32 nChars )
 
 //____ _pushBack() ______________________________________________________
 
-void WgCharBuffer::_pushBack( Uint32 nChars )
+void WgCharBuffer::_pushBack( int nChars )
 {
 	// Check if we can just modify this buffer to fit things in
 
@@ -581,8 +605,11 @@ void WgCharBuffer::_pushBack( Uint32 nChars )
 ///
 /// @return Number of characters that have been insert.
 
-Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar& character )
+int WgCharBuffer::Insert( int ofs, const WgChar& character )
 {
+	if( ofs < 0 )
+		ofs = 0;
+
 	_replace( ofs, 0, 1, &character );
 	return 1;
 }
@@ -598,8 +625,14 @@ Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar& character )
 ///
 /// @return Number of characters that have been insert. Always equals nChars.
 
-Uint32 WgCharBuffer::Insert( Uint32 ofs, Uint32 nChars )
+int WgCharBuffer::Insert( int ofs, int nChars )
 {
+	if( ofs < 0 )
+		ofs = 0;
+
+	if( nChars <= 0 )
+		return 0;
+
 	_replace( ofs, 0, nChars );
 	return nChars;
 }
@@ -615,9 +648,12 @@ Uint32 WgCharBuffer::Insert( Uint32 ofs, Uint32 nChars )
 ///
 /// @return Number of characters that have been insert. Always equals 1.
 
-Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar * pChars )
+int WgCharBuffer::Insert( int ofs, const WgChar * pChars )
 {
-	Uint32 nInsert = WgTextTool::strlen( pChars );
+	if( ofs < 0 )
+		ofs = 0;
+
+	int nInsert = WgTextTool::strlen( pChars );
 	_replace( ofs, 0, nInsert, pChars );
 	return nInsert;
 }
@@ -636,8 +672,14 @@ Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar * pChars )
 ///
 /// @return Number of characters that have been insert. Always equals nChars.
 
-Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar * pChars, Uint32 nChars )
+int WgCharBuffer::Insert( int ofs, const WgChar * pChars, int nChars )
 {
+	if( ofs < 0 )
+		ofs = 0;
+
+	if( nChars <= 0 )
+		return 0;
+
 	_replace( ofs, 0, nChars, pChars );
 	return nChars;
 }
@@ -652,8 +694,11 @@ Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgChar * pChars, Uint32 nChars )
 ///
 /// @return Number of characters that have been insert. Always equals length of sequence.
 
-Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgCharSeq& seq )
+int WgCharBuffer::Insert( int ofs, const WgCharSeq& seq )
 {
+	if( ofs < 0 )
+		ofs = 0;
+
 	if( ofs > m_pHead->m_len )
 		ofs = m_pHead->m_len;
 
@@ -679,8 +724,14 @@ Uint32 WgCharBuffer::Insert( Uint32 ofs, const WgCharSeq& seq )
 ///
 /// @return Number of characters that were deleted.
 
-Uint32 WgCharBuffer::Delete( Uint32 ofs, Uint32 nChars )
+int WgCharBuffer::Delete( int ofs, int nChars )
 {
+	if( ofs < 0 )
+		ofs = 0;
+
+	if( nChars <= 0 )
+		return 0;
+
 	return _replace( ofs, nChars, 0 );
 }
 
@@ -696,8 +747,11 @@ Uint32 WgCharBuffer::Delete( Uint32 ofs, Uint32 nChars )
 ///
 /// @return Number of characters that were replaced. Always equals 1.
 
-Uint32 WgCharBuffer::Replace( Uint32 ofs, const WgChar& character )
+int WgCharBuffer::Replace( int ofs, const WgChar& character )
 {
+	if( ofs < 0 )
+		return 0;
+
 	if( ofs >= m_pHead->m_len )
 		PushBack( character );
 	else
@@ -720,8 +774,17 @@ Uint32 WgCharBuffer::Replace( Uint32 ofs, const WgChar& character )
 ///
 /// @return Number of characters that were inserted. Always equals nInsert.
 
-Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, Uint32 nInsert )
+int WgCharBuffer::Replace( int ofs, int nDelete, int nInsert )
 {
+	if( ofs < 0 )
+		ofs = 0;
+
+	if( nDelete < 0 )
+		nDelete = 0;
+
+	if( nInsert < 0 )
+		nInsert = 0;
+
 	_replace( ofs, nDelete, nInsert );
 	return nInsert;
 }
@@ -742,9 +805,14 @@ Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, Uint32 nInsert )
 ///
 /// @return Number of characters that were inserted.
 
-Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars )
+int WgCharBuffer::Replace( int ofs, int nDelete, const WgChar * pChars )
 {
-	Uint32 nInsert = WgTextTool::strlen( pChars );
+	if( ofs < 0 )
+		ofs = 0;
+	if( nDelete < 0 )
+		nDelete = 0;
+
+	int nInsert = WgTextTool::strlen( pChars );
 	_replace( ofs, nDelete, nInsert, pChars );
 	return nInsert;
 }
@@ -767,8 +835,15 @@ Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars 
 ///
 /// @return Number of characters that were inserted. Always equals nInsert.
 
-Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars, Uint32 nInsert)
+int WgCharBuffer::Replace( int ofs, int nDelete, const WgChar * pChars, int nInsert)
 {
+	if( ofs < 0 )
+		ofs = 0;
+	if( nDelete < 0 )
+		nDelete = 0;
+	if( nInsert < 0 )
+		nInsert = 0;
+
 	_replace( ofs, nDelete, nInsert, pChars );
 	return nInsert;
 }
@@ -791,8 +866,13 @@ Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars,
 ///
 /// @return Number of characters that were inserted. Always equals length of sequence.
 
-Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgCharSeq& seq )
+int WgCharBuffer::Replace( int ofs, int nDelete, const WgCharSeq& seq )
 {
+	if( ofs < 0 )
+		ofs = 0;
+	if( nDelete < 0 )
+		nDelete = 0;
+
 	if( ofs > m_pHead->m_len )
 		ofs = m_pHead->m_len;
 
@@ -808,7 +888,7 @@ Uint32 WgCharBuffer::Replace( Uint32 ofs, Uint32 nDelete, const WgCharSeq& seq )
 
 //____ _replace() ______________________________________________________
 
-Uint32 WgCharBuffer::_replace( Uint32 ofs, Uint32 delChar, Uint32 addSpace, const WgChar * pChars )
+int WgCharBuffer::_replace( int ofs, int delChar, int addSpace, const WgChar * pChars )
 {
 	// Forcing sane values
 
@@ -912,9 +992,9 @@ Uint32 WgCharBuffer::_replace( Uint32 ofs, Uint32 delChar, Uint32 addSpace, cons
 
 //____ _createBuffer() __________________________________________________________
 
-WgCharBuffer::BufferHead * WgCharBuffer::_createBuffer( Uint32 size )
+WgCharBuffer::BufferHead * WgCharBuffer::_createBuffer( int size )
 {
-	if( size == 0 && g_pEmptyBuffer )
+	if( size <= 0 && g_pEmptyBuffer )
 		return g_pEmptyBuffer;
 
 	int nBytes = sizeof(BufferHead) + sizeof(WgChar)*(size+1);
@@ -1001,9 +1081,9 @@ int WgCharBuffer::CompareGlyphsIgnoreCaseTo( const WgCharBuffer * pBuffer )
 /// Fully replaces the content of the specified buffer section by filling it with the specified
 /// character. If the section spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::Fill( const WgChar& ch, Uint32 ofs, Uint32 len )
+void WgCharBuffer::Fill( const WgChar& ch, int ofs, int len )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1026,9 +1106,9 @@ void WgCharBuffer::Fill( const WgChar& ch, Uint32 ofs, Uint32 len )
 /// This method sets the glyph for all characters in the specified range. If the
 /// range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len )
+void WgCharBuffer::SetGlyphs( Uint16 glyph, int ofs, int len )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1054,9 +1134,9 @@ void WgCharBuffer::SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len )
 /// properties for the characters, like font, color, style, and underlined.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetProperties( const WgTextpropPtr& pProp, Uint32 ofs, Uint32 len  )
+void WgCharBuffer::SetProperties( const WgTextpropPtr& pProp, int ofs, int len  )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1082,9 +1162,9 @@ void WgCharBuffer::SetProperties( const WgTextpropPtr& pProp, Uint32 ofs, Uint32
 /// be tinted when displayed in the specified mode, for all characters in
 /// the specified range. If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetColor( const WgColor color, Uint32 ofs, Uint32 len, WgMode mode )
+void WgCharBuffer::SetColor( const WgColor color, int ofs, int len, WgMode mode )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1111,9 +1191,9 @@ void WgCharBuffer::SetColor( const WgColor color, Uint32 ofs, Uint32 len, WgMode
 /// displayed in the specified mode or all modes.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetStyle( WgFontStyle style, Uint32 ofs, Uint32 len, WgMode mode )
+void WgCharBuffer::SetStyle( WgFontStyle style, int ofs, int len, WgMode mode )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1139,9 +1219,9 @@ void WgCharBuffer::SetStyle( WgFontStyle style, Uint32 ofs, Uint32 len, WgMode m
 ///
 /// Setting pFont to null is identical to calling ClearFont().
 
-void WgCharBuffer::SetFont( WgFont * pFont, Uint32 ofs, Uint32 len  )
+void WgCharBuffer::SetFont( WgFont * pFont, int ofs, int len  )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1165,9 +1245,9 @@ void WgCharBuffer::SetFont( WgFont * pFont, Uint32 ofs, Uint32 len  )
 /// Specifying a single mode as underlined doesn't affect whether other modes are underlined or not.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetUnderlined( Uint32 ofs, Uint32 len, WgMode mode )
+void WgCharBuffer::SetUnderlined( int ofs, int len, WgMode mode )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1191,9 +1271,9 @@ void WgCharBuffer::SetUnderlined( Uint32 ofs, Uint32 len, WgMode mode )
 /// By clearing the properties you erase all previous settings of individual
 /// properties for the characters, like font, color, style and underlined.
 
-void WgCharBuffer::ClearProperties( Uint32 ofs, Uint32 len  )
+void WgCharBuffer::ClearProperties( int ofs, int len  )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1217,9 +1297,9 @@ void WgCharBuffer::ClearProperties( Uint32 ofs, Uint32 len  )
 /// This method clears the color-property of all characters in the specified range.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearColor( Uint32 ofs, Uint32 len, WgMode mode )
+void WgCharBuffer::ClearColor( int ofs, int len, WgMode mode )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1243,9 +1323,9 @@ void WgCharBuffer::ClearColor( Uint32 ofs, Uint32 len, WgMode mode )
 /// This method clears the style-property of all characters in the specified range.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearStyle( Uint32 ofs, Uint32 len, WgMode mode )
+void WgCharBuffer::ClearStyle( int ofs, int len, WgMode mode )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1268,9 +1348,9 @@ void WgCharBuffer::ClearStyle( Uint32 ofs, Uint32 len, WgMode mode )
 /// This method clears the font for all characters in the specified range. If the
 /// range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearFont( Uint32 ofs, Uint32 len  )
+void WgCharBuffer::ClearFont( int ofs, int len  )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1293,9 +1373,9 @@ void WgCharBuffer::ClearFont( Uint32 ofs, Uint32 len  )
 ///
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearUnderlined( Uint32 ofs, Uint32 len, WgMode mode  )
+void WgCharBuffer::ClearUnderlined( int ofs, int len, WgMode mode  )
 {
-	if( ofs >= m_pHead->m_len )
+	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
 
 	if( ofs + len > m_pHead->m_len )
@@ -1319,8 +1399,11 @@ void WgCharBuffer::ClearUnderlined( Uint32 ofs, Uint32 len, WgMode mode  )
 ///
 /// @return Offset in buffer for first match found or -1 if none found.
 
-int WgCharBuffer::FindFirst( const WgCharSeq& _seq, Uint32 ofs )
+int WgCharBuffer::FindFirst( const WgCharSeq& _seq, int ofs )
 {
+	if( ofs < 0 )
+		ofs = 0;
+
 	WgCharSeq::WgCharBasket seq		= _seq.GetWgChars();
 	WgChar *				pBuff	= (WgChar*)_ptr(0);
 
@@ -1354,8 +1437,11 @@ int WgCharBuffer::FindFirst( const WgCharSeq& _seq, Uint32 ofs )
 ///
 /// @return Offset in buffer for first match found or -1 if none found.
 
-int WgCharBuffer::FindFirst( Uint16 character, Uint32 ofs )
+int WgCharBuffer::FindFirst( Uint16 character, int ofs )
 {
+	if( ofs < 0 )
+		ofs = 0;
+
 	WgChar *				pBuff	= (WgChar*)_ptr(0);
 
 	while( ofs < m_pHead->m_len )

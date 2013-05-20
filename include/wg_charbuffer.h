@@ -107,7 +107,7 @@ class WgCharBuffer
 {
 public:
 
-	WgCharBuffer( Uint32 size = 0 );
+	WgCharBuffer( int size = 0 );
 	inline WgCharBuffer(const WgCharBuffer& r);
 
 	~WgCharBuffer() { _derefBuffer(); }
@@ -121,103 +121,104 @@ public:
 
 	// These operator[] are slow, please use Chars() or BeginWrite() instead.
 
-	WgChar&				operator[](Uint32 i)								{ if( m_pHead->m_refCnt > 1 ) _reshapeBuffer(0,0,m_pHead->m_len,0); return *(WgChar*)_ptr(i); }
-	const WgChar&		operator[](Uint32 i) const							{ return *(const WgChar*)_ptr(i); }
+	WgChar&				operator[](int i)								{ if( m_pHead->m_refCnt > 1 ) _reshapeBuffer(0,0,m_pHead->m_len,0); return *(WgChar*)_ptr(i); }
+	const WgChar&		operator[](int i) const							{ return *(const WgChar*)_ptr(i); }
 
 	inline operator bool() const { return m_pHead->m_len != 0?true:false; }
 
 	void	Trim();
 	void	TrimWhiteSpace();
-	void	Reset( Uint32 size = 0 );
+	void	Reset( int size = 0 );
 
-	inline void	SetCapacity( Uint32 front, Uint32 back );
+	inline void	SetCapacity( int capacity );
+	inline void	SetUnusedCapacity( int front, int back );
 	WgChar*	BeginWrite();
 	void	EndWrite();
 
-	Uint32	PushFront( Uint32 nChars );
-	Uint32	PushFront( const WgChar& character );
-	Uint32	PushFront( const WgChar * pChars );
-	Uint32	PushFront( const WgChar * pChars, Uint32 nChars );
-	Uint32	PushFront( const WgCharSeq& seq );
+	int		PushFront( int nChars );
+	int		PushFront( const WgChar& character );
+	int		PushFront( const WgChar * pChars );
+	int		PushFront( const WgChar * pChars, int nChars );
+	int		PushFront( const WgCharSeq& seq );
 
-	Uint32	PopFront( Uint32 nChars );
+	int		PopFront( int nChars );
 
-	Uint32	PushBack( Uint32 nChars );
-	Uint32	PushBack( const WgChar& character );
-	Uint32	PushBack( const WgChar * pChars );
-	Uint32	PushBack( const WgChar * pChars, Uint32 nChars );
-	Uint32	PushBack( const WgCharSeq& seq );
+	int		PushBack( int nChars );
+	int		PushBack( const WgChar& character );
+	int		PushBack( const WgChar * pChars );
+	int		PushBack( const WgChar * pChars, int nChars );
+	int		PushBack( const WgCharSeq& seq );
 
-	Uint32	PopBack( Uint32 nChars );
+	int		PopBack( int nChars );
 
-	Uint32	Insert( Uint32 ofs, Uint32 nChars );
-	Uint32	Insert( Uint32 ofs, const WgChar& character );
-	Uint32	Insert( Uint32 ofs, const WgChar * pChars );
-	Uint32	Insert( Uint32 ofs, const WgChar * pChars, Uint32 nChars );
-	Uint32	Insert( Uint32 ofs, const WgCharSeq& seq );
+	int		Insert( int ofs, int nChars );
+	int		Insert( int ofs, const WgChar& character );
+	int		Insert( int ofs, const WgChar * pChars );
+	int		Insert( int ofs, const WgChar * pChars, int nChars );
+	int		Insert( int ofs, const WgCharSeq& seq );
 
-	Uint32	Delete( Uint32 ofs, Uint32 nChars = 1 );
+	int		Delete( int ofs, int nChars = 1 );
 
-	Uint32	Replace( Uint32 ofs, const WgChar& character );
-	Uint32	Replace( Uint32 ofs, Uint32 nDelete, Uint32 nInsert );
-	Uint32	Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars );
-	Uint32	Replace( Uint32 ofs, Uint32 nDelete, const WgChar * pChars, Uint32 nInsert );
-	Uint32	Replace( Uint32 ofs, Uint32 nDelete, const WgCharSeq& seq );
+	int		Replace( int ofs, const WgChar& character );
+	int		Replace( int ofs, int nDelete, int nInsert );
+	int		Replace( int ofs, int nDelete, const WgChar * pChars );
+	int		Replace( int ofs, int nDelete, const WgChar * pChars, int nInsert );
+	int		Replace( int ofs, int nDelete, const WgCharSeq& seq );
 
 	inline const WgChar * Chars() const;
 
-	inline Uint32		NbChars() const;
-	inline Uint32		Length() const;
+	inline int			NbChars() const;
+	inline int			Length() const;
 
-	inline Uint32		Size() const;
+	inline int			Capacity() const;
 
-	inline Uint32		FrontCapacity() const;
-	inline Uint32		BackCapacity() const;
-	inline Uint32		Capacity() const;
+	inline int			UnusedFrontCapacity() const;
+	inline int			UnusedBackCapacity() const;
+	inline int			UnusedCapacity() const;
 
 	inline void			Fill( const WgChar& ch );
-	void			    Fill( const WgChar& ch, Uint32 ofs, Uint32 len );
+	void			    Fill( const WgChar& ch, int ofs, int len );
 
 
 	inline void			SetGlyphs( Uint16 glyph );
-	void			    SetGlyphs( Uint16 glyph, Uint32 ofs, Uint32 len );
+	void			    SetGlyphs( Uint16 glyph, int ofs, int len );
 
 	inline void			SetProperties( const WgTextpropPtr& pProp );
-	void				SetProperties( const WgTextpropPtr& pProp, Uint32 ofs, Uint32 len);
+	void				SetProperties( const WgTextpropPtr& pProp, int ofs, int len);
 
 	inline void			SetFont( WgFont * pFont );
-	void				SetFont( WgFont * pFont, Uint32 ofs, Uint32 len );
+	void				SetFont( WgFont * pFont, int ofs, int len );
 
 	inline void			SetColor( const WgColor color, WgMode mode = WG_MODE_ALL );
-	void				SetColor( const WgColor color, Uint32 ofs, Uint32 len, WgMode mode = WG_MODE_ALL );
+	void				SetColor( const WgColor color, int ofs, int len, WgMode mode = WG_MODE_ALL );
 
 	inline void			SetStyle( WgFontStyle style, WgMode mode = WG_MODE_ALL );
-	void				SetStyle( WgFontStyle style, Uint32 ofs, Uint32 len, WgMode mode = WG_MODE_ALL );
+	void				SetStyle( WgFontStyle style, int ofs, int len, WgMode mode = WG_MODE_ALL );
 
 	inline void			SetUnderlined( WgMode mode = WG_MODE_ALL );
-	void				SetUnderlined( Uint32 ofs, Uint32 len, WgMode mode = WG_MODE_ALL );
+	void				SetUnderlined( int ofs, int len, WgMode mode = WG_MODE_ALL );
 
 
 	inline void			Clear();
 
 	inline void 		ClearProperties();
-	void				ClearProperties( Uint32 ofs, Uint32 len );
+	void				ClearProperties( int ofs, int len );
 
 	inline void			ClearFont();
-	void				ClearFont( Uint32 ofs, Uint32 len );
+	void				ClearFont( int ofs, int len );
 
 	inline void			ClearColor( WgMode mode = WG_MODE_ALL );
-	void				ClearColor( Uint32 ofs, Uint32 len, WgMode mode = WG_MODE_ALL );
+	void				ClearColor( int ofs, int len, WgMode mode = WG_MODE_ALL );
 
 	inline void 		ClearStyle( WgMode mode = WG_MODE_ALL );
-	void				ClearStyle( Uint32 ofs, Uint32 len, WgMode mode = WG_MODE_ALL );
+	void				ClearStyle( int ofs, int len, WgMode mode = WG_MODE_ALL );
 
 	inline void			ClearUnderlined( WgMode mode = WG_MODE_ALL );
-	void				ClearUnderlined( Uint32 ofs, Uint32 len, WgMode mode = WG_MODE_ALL );
+	void				ClearUnderlined( int ofs, int len, WgMode mode = WG_MODE_ALL );
 
 
-	int					FindFirst( const WgCharSeq& seq, Uint32 ofs = 0 );
-	int					FindFirst( Uint16 character, Uint32 ofs = 0 );
+	int					FindFirst( const WgCharSeq& seq, int ofs = 0 );
+	int					FindFirst( Uint16 character, int ofs = 0 );
 
 
 	int					CompareTo( const WgCharBuffer * pBuffer );
@@ -228,27 +229,27 @@ public:
 
 	// Methods mostly for debugging and profiling purposes.
 
-	inline Uint32		RefCount() const;
-	inline static Uint32 NbBuffers();
+	inline int		RefCount() const;
+	inline static int NbBuffers();
 
 private:
 
 	struct BufferHead
 	{
-		Uint32		m_lockCnt;
-		Uint32		m_refCnt;
-		Uint32		m_size;					// Size in number of WgChar of buffer.
-		Uint32		m_beg;					// Beginning of chars.
-		Uint32		m_len;					// Number of chars.
+		int			m_lockCnt;
+		int			m_refCnt;
+		int			m_size;					// Size in number of WgChar of buffer.
+		int			m_beg;					// Beginning of chars.
+		int			m_len;					// Number of chars.
 	};
 
 
-	void        	_clearCharsNoDeref( Uint32 ofs, Uint32 n );  ///< Clears specified characters in buffer without dereferencing properties.
-	inline void *	_ptr( Uint32 ofs ) const { return ((char*) &m_pHead[1]) + sizeof(WgChar)*(m_pHead->m_beg+ofs); }
+	void        	_clearCharsNoDeref( int ofs, int n );  ///< Clears specified characters in buffer without dereferencing properties.
+	inline void *	_ptr( int ofs ) const { return ((char*) &m_pHead[1]) + sizeof(WgChar)*(m_pHead->m_beg+ofs); }
 
-	void			_pushFront( Uint32 nChars );
-	void			_pushBack( Uint32 nChars );
-	Uint32			_replace( Uint32 ofs, Uint32 delChar, Uint32 addChar, const WgChar * pChars = 0);
+	void			_pushFront( int nChars );
+	void			_pushBack( int nChars );
+	int				_replace( int ofs, int delChar, int addChar, const WgChar * pChars = 0);
 
 
 
@@ -262,17 +263,17 @@ private:
 		}
 	}
 
-	BufferHead *	_createBuffer( Uint32 size );
+	BufferHead *	_createBuffer( int size );
 	inline void 	_destroyBuffer( BufferHead * pBuffer ) { delete [] (char*) pBuffer; g_nBuffers--; }
 
-	void			_copyChars( BufferHead * pDst, Uint32 ofsDst, const BufferHead * pSrc, Uint32 ofsSrc, Uint32 nChars );
-	void			_copyChars( BufferHead * pDst, Uint32 ofsDst, const WgChar * pChars, Uint32 nChars );
-	void			_reshapeBuffer( Uint32 begMargin, Uint32 copyOfs, Uint32 copyLen, Uint32 endMargin );
+	void			_copyChars( BufferHead * pDst, int ofsDst, const BufferHead * pSrc, int ofsSrc, int nChars );
+	void			_copyChars( BufferHead * pDst, int ofsDst, const WgChar * pChars, int nChars );
+	void			_reshapeBuffer( int begMargin, int copyOfs, int copyLen, int endMargin );
 
-	void			_setChars( Uint32 ofs, Uint32 nChars, Uint32 value );
+	void			_setChars( int ofs, int nChars, Uint32 value );
 
-	inline void		_derefProps( Uint32 ofs, Uint32 n ) { WgTextTool::DerefProps( (WgChar*) _ptr(ofs), n ); }
-	inline void		_refProps( Uint32 ofs, Uint32 n ) { WgTextTool::RefProps( (WgChar*) _ptr(ofs), n ); }
+	inline void		_derefProps( int ofs, int n ) { WgTextTool::DerefProps( (WgChar*) _ptr(ofs), n ); }
+	inline void		_refProps( int ofs, int n ) { WgTextTool::RefProps( (WgChar*) _ptr(ofs), n ); }
 
 	static bool		_compareBuffers( const BufferHead * p1, const BufferHead * p2 );
 
@@ -305,8 +306,29 @@ WgCharBuffer::WgCharBuffer(const WgCharBuffer& r)
 
 //____ SetCapacity() __________________________________________________________
 //
+/// @brief Reallocates the buffer to the specified size.
+/// If content doesn't fit in the new size, the content is cut at the end. Any unused capacity
+/// will be at the end of the buffer.
+///
+///	@param capacity	The new size of the buffer.
+///
+
+void WgCharBuffer::SetCapacity( int capacity )
+{
+	if( capacity < 0 )
+		capacity = 0;
+
+	if( m_pHead->m_len > capacity )
+		_reshapeBuffer( 0, 0, capacity, 0 );
+	else
+		_reshapeBuffer( 0, 0, m_pHead->m_len, capacity-m_pHead->m_len );
+}
+
+
+//____ SetUnusedCapacity() __________________________________________________________
+//
 /// @brief Reallocates the buffer to hold its content plus the specified extra capacity at the front and back.
-/// SetCapacity(0,0) is identical to Trim().
+/// SetUnusedCapacity(0,0) is identical to Trim().
 ///
 ///	@param front	The amount of space to leave in the front of the buffer to allow for future growth without
 ///					having to move the content or reallocate the buffer.
@@ -315,7 +337,7 @@ WgCharBuffer::WgCharBuffer(const WgCharBuffer& r)
 ///					having to move the content or reallocate the buffer.
 ///
 
-void WgCharBuffer::SetCapacity( Uint32 front, Uint32 back )
+void WgCharBuffer::SetUnusedCapacity( int front, int back )
 {
 	_reshapeBuffer( front, 0, m_pHead->m_len, back );
 }
@@ -341,7 +363,7 @@ const WgChar * WgCharBuffer::Chars() const
 ///
 /// @return Number of characters in the buffer (or length of the buffer content if you so will).
 
-Uint32 WgCharBuffer::NbChars() const
+int WgCharBuffer::NbChars() const
 {
 	return m_pHead->m_len;
 }
@@ -354,25 +376,23 @@ Uint32 WgCharBuffer::NbChars() const
 ///
 /// @return Number of characters in the buffer (or length of the buffer content if you so will).
 
-Uint32 WgCharBuffer::Length() const
+int WgCharBuffer::Length() const
 {
 	return m_pHead->m_len;
 }
 
-//____ Size() _________________________________________________________________
+//____ Capacity() _________________________________________________________________
 
 /// @brief	Returns the size of the buffer itself, not size of content.
 ///
-///	The size of the buffer equals its capacity when empty.
-///
 /// @return Number of characters the buffer can hold before it needs to be reallocated.
 
-Uint32 WgCharBuffer::Size() const
+int WgCharBuffer::Capacity() const
 {
 	return m_pHead->m_size;
 }
 
-//____ FrontCapacity() ________________________________________________________
+//____ UnusedFrontCapacity() ________________________________________________________
 
 /// @brief 	Returns available space for new characters in the front of the buffer.
 ///
@@ -381,12 +401,12 @@ Uint32 WgCharBuffer::Size() const
 ///
 /// @return Number of characters that can be pushed to the front without causing extra overhead.
 
-inline Uint32 WgCharBuffer::FrontCapacity() const
+inline int WgCharBuffer::UnusedFrontCapacity() const
 {
 	return m_pHead->m_beg;
 }
 
-//____ BackCapacity() _________________________________________________________
+//____ UnusedBackCapacity() _________________________________________________________
 
 /// @brief 	Returns available space for new characters in the back of the buffer.
 ///
@@ -395,21 +415,21 @@ inline Uint32 WgCharBuffer::FrontCapacity() const
 ///
 /// @return Number of characters that can be pushed to the back without causing extra overhead.
 
-Uint32 WgCharBuffer::BackCapacity() const
+int WgCharBuffer::UnusedBackCapacity() const
 {
 	return m_pHead->m_size - (m_pHead->m_beg + m_pHead->m_len);
 }
 
-//____ Capacity() _____________________________________________________________
+//____ UnusedCapacity() _____________________________________________________________
 
 /// @brief 	Returns total available space for new characters in the buffer.
 ///
-///	This is identical to GetFrontCapacity() + GetBackCapacity() and determines how many characters can
+///	This is identical to UnusedFrontCapacity() + UnusedBackCapacity() and determines how many characters can
 /// be pushed or inserted before a bigger buffer needs to be allocated.
 ///
 /// @return Number of characters that can be added to the buffer without reallocation.
 
-Uint32 WgCharBuffer::Capacity() const
+int WgCharBuffer::UnusedCapacity() const
 {
 	return m_pHead->m_size - m_pHead->m_len;
 }
@@ -607,7 +627,7 @@ void WgCharBuffer::ClearUnderlined( WgMode mode )
 ///
 /// @return Number of objects referencing the same buffer. Always one or higher.
 
-Uint32 WgCharBuffer::RefCount() const
+int WgCharBuffer::RefCount() const
 {
 	return m_pHead->m_refCnt;
 }
@@ -621,7 +641,7 @@ Uint32 WgCharBuffer::RefCount() const
 /// @return Number of memory buffers currently in use, which is @<=
 /// total number of WgCharBuffer, WgString and WgText objects combined.
 
-Uint32 WgCharBuffer::NbBuffers()
+int WgCharBuffer::NbBuffers()
 {
 	return g_nBuffers;
 }

@@ -71,7 +71,7 @@ WgString WgValueFormatter::Suffix() const
 WgString WgValueFormatter::Format( Sint64 value ) const
 {
 	WgCharBuffer	buff;
-	buff.SetCapacity( 32,32 );
+	buff.SetUnusedCapacity( 32,32 );
 	_formatValue( &buff, value );
 	buff.PushFront( m_format.prefix );
 	buff.PushBack( m_format.suffix );
@@ -89,7 +89,7 @@ WgString WgValueFormatter::Format( Sint64 value ) const
 WgString WgValueFormatter::FormatNoPreSuffix( Sint64 value ) const
 {
 	WgCharBuffer	buff;
-	buff.SetCapacity( 32,32 );
+	buff.SetUnusedCapacity( 32,32 );
 	_formatValue( &buff, value );
 
 	if( value < 0 )

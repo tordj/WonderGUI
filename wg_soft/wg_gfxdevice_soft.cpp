@@ -51,7 +51,8 @@ WgGfxDeviceSoft::WgGfxDeviceSoft( WgSurfaceSoft * pCanvas ) : WgGfxDevice( pCanv
 WgGfxDeviceSoft::~WgGfxDeviceSoft()
 {
 	delete m_pCanvas;
-	delete m_pCurveTab;
+	delete [] m_pDivTab;
+	delete [] m_pCurveTab;
 }
 
 //____ SetCanvas() _______________________________________________________________
@@ -120,9 +121,9 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 			{
 				for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
 				{
-					pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedBlue) >> 8);
-					pDst[x+1] = (Uint8) ((pDst[x+1]*invAlpha + storedGreen) >> 8);
-					pDst[x+2] = (Uint8) ((pDst[x+2]*invAlpha + storedRed) >> 8);
+					pDst[x] = m_pDivTab[pDst[x]*invAlpha + storedBlue];
+					pDst[x+1] = m_pDivTab[pDst[x+1]*invAlpha + storedGreen];
+					pDst[x+2] = m_pDivTab[pDst[x+2]*invAlpha + storedRed];
 				}
 				pDst += m_pCanvas->m_pitch;
 			}
@@ -130,9 +131,9 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 		}
 		case WG_BLENDMODE_ADD:
 		{
-			int storedRed = (((int)fillColor.r) * fillColor.a) >> 8;
-			int storedGreen = (((int)fillColor.g) * fillColor.a) >> 8;
-			int storedBlue = (((int)fillColor.b) * fillColor.a) >> 8;
+			int storedRed = (int) m_pDivTab[fillColor.r * fillColor.a];
+			int storedGreen = (int) m_pDivTab[fillColor.g * fillColor.a];
+			int storedBlue = (int) m_pDivTab[fillColor.b * fillColor.a];
 
 			if( storedRed + storedGreen + storedBlue == 0 )
 				return;
@@ -159,9 +160,9 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 			{
 				for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
 				{
-					pDst[x] = (pDst[x] * storedBlue) >> 8;
-					pDst[x+1] = (pDst[x+1] * storedGreen) >> 8;
-					pDst[x+2] = (pDst[x+2] * storedRed) >> 8;
+					pDst[x] = m_pDivTab[pDst[x] * storedBlue];
+					pDst[x+1] = m_pDivTab[pDst[x+1] * storedGreen];
+					pDst[x+2] = m_pDivTab[pDst[x+2] * storedRed];
 				}
 				pDst += m_pCanvas->m_pitch;
 			}
@@ -182,9 +183,9 @@ void WgGfxDeviceSoft::Fill( const WgRect& rect, const WgColor& col )
 			{
 				for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
 				{
-					pDst[x] = ((255-pDst[x]) * storedBlue + pDst[x] * invertBlue) >> 8;
-					pDst[x+1] = ((255-pDst[x+1]) * storedGreen + pDst[x+1] * invertGreen) >> 8;
-					pDst[x+2] = ((255-pDst[x+2]) * storedRed + pDst[x+2] * invertRed) >> 8;
+					pDst[x] = m_pDivTab[(255-pDst[x]) * storedBlue + pDst[x] * invertBlue];
+					pDst[x+1] = m_pDivTab[(255-pDst[x+1]) * storedGreen + pDst[x+1] * invertGreen];
+					pDst[x+2] = m_pDivTab[(255-pDst[x+2]) * storedRed + pDst[x+2] * invertRed];
 				}
 				pDst += m_pCanvas->m_pitch;
 			}
@@ -362,9 +363,9 @@ void WgGfxDeviceSoft::ClipPlotSoftPixels( const WgRect& clip, int nCoords, const
 				for( int x = 0 ; x < 4 ; x++ )
 				{
 					int ofs = offset[x];
-					pDst[ofs] = (Uint8) ((pDst[ofs]*invAlpha + storedBlue) >> 8);
-					pDst[ofs+1] = (Uint8) ((pDst[ofs+1]*invAlpha + storedGreen) >> 8);
-					pDst[ofs+2] = (Uint8) ((pDst[ofs+2]*invAlpha + storedRed) >> 8);
+					pDst[ofs] = m_pDivTab[pDst[ofs]*invAlpha + storedBlue];
+					pDst[ofs+1] = m_pDivTab[pDst[ofs+1]*invAlpha + storedGreen];
+					pDst[ofs+2] = m_pDivTab[pDst[ofs+2]*invAlpha + storedRed];
 				}
 			}
 		}
@@ -468,18 +469,18 @@ void WgGfxDeviceSoft::_drawHorrVertLine( int _x, int _y, int _length, const WgCo
 
 			for( int x = 0 ; x < _length*inc ; x+=inc )
 			{
-				pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedBlue) >> 8);
-				pDst[x+1] = (Uint8) ((pDst[x+1]*invAlpha + storedGreen) >> 8);
-				pDst[x+2] = (Uint8) ((pDst[x+2]*invAlpha + storedRed) >> 8);
+				pDst[x] = m_pDivTab[pDst[x]*invAlpha + storedBlue];
+				pDst[x+1] = m_pDivTab[pDst[x+1]*invAlpha + storedGreen];
+				pDst[x+2] = m_pDivTab[pDst[x+2]*invAlpha + storedRed];
 			}
 
 			break;
 		}
 		case WG_BLENDMODE_ADD:
 		{
-			int storedRed = (((int)fillColor.r) * fillColor.a) >> 8;
-			int storedGreen = (((int)fillColor.g) * fillColor.a) >> 8;
-			int storedBlue = (((int)fillColor.b) * fillColor.a) >> 8;
+			int storedRed = m_pDivTab[fillColor.r * (int) fillColor.a];
+			int storedGreen = m_pDivTab[fillColor.g * (int) fillColor.a];
+			int storedBlue = m_pDivTab[fillColor.b * (int) fillColor.a];
 
 			if( storedRed + storedGreen + storedBlue == 0 )
 				return;
@@ -500,9 +501,9 @@ void WgGfxDeviceSoft::_drawHorrVertLine( int _x, int _y, int _length, const WgCo
 
 			for( int x = 0 ; x < _length*inc ; x+= inc )
 			{
-				pDst[x] = (pDst[x] * storedBlue) >> 8;
-				pDst[x+1] = (pDst[x+1] * storedGreen) >> 8;
-				pDst[x+2] = (pDst[x+2] * storedRed) >> 8;
+				pDst[x] = m_pDivTab[pDst[x] * storedBlue];
+				pDst[x+1] = m_pDivTab[pDst[x+1] * storedGreen];
+				pDst[x+2] = m_pDivTab[pDst[x+2] * storedRed];
 			}
 			break;
 		}
@@ -519,9 +520,9 @@ void WgGfxDeviceSoft::_drawHorrVertLine( int _x, int _y, int _length, const WgCo
 
 			for( int x = 0 ; x < _length*inc ; x+= inc )
 			{
-				pDst[x] = ((255-pDst[x]) * storedBlue + pDst[x] * invertBlue) >> 8;
-				pDst[x+1] = ((255-pDst[x+1]) * storedGreen + pDst[x+1] * invertGreen) >> 8;
-				pDst[x+2] = ((255-pDst[x+2]) * storedRed + pDst[x+2] * invertRed) >> 8;
+				pDst[x] = m_pDivTab[(255-pDst[x]) * storedBlue + pDst[x] * invertBlue];
+				pDst[x+1] = m_pDivTab[(255-pDst[x+1]) * storedGreen + pDst[x+1] * invertGreen];
+				pDst[x+2] = m_pDivTab[(255-pDst[x+2]) * storedRed + pDst[x+2] * invertRed];
 			}
 			break;
 		}
@@ -555,36 +556,36 @@ void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const Wg
 			
 			for( int x = 0 ; x < _length*inc ; x+= inc )
 			{
-				pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedBlue) >> 8);
-				pDst[x+1] = (Uint8) ((pDst[x+1]*invAlpha + storedGreen) >> 8);
-				pDst[x+2] = (Uint8) ((pDst[x+2]*invAlpha + storedRed) >> 8);
+				pDst[x] = m_pDivTab[pDst[x]*invAlpha + storedBlue];
+				pDst[x+1] = m_pDivTab[pDst[x+1]*invAlpha + storedGreen];
+				pDst[x+2] = m_pDivTab[pDst[x+2]*invAlpha + storedRed];
 			}
 			break;
 		}
 		case WG_BLENDMODE_BLEND:
 		{
-			int aa = _col.a * _aa;
+			int aa = m_pDivTab[_col.a * _aa];
 			
-			int storedRed = (((int)_col.r) * aa) >> 8;
-			int storedGreen = (((int)_col.g) * aa) >> 8;
-			int storedBlue = (((int)_col.b) * aa) >> 8;
-			int invAlpha = 255-(aa>>8);
+			int storedRed = _col.r * aa;
+			int storedGreen = _col.g * aa;
+			int storedBlue = _col.b * aa;
+			int invAlpha = 255-aa;
 			
 			for( int x = 0 ; x < _length*inc ; x+= inc )
 			{
-				pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedBlue) >> 8);
-				pDst[x+1] = (Uint8) ((pDst[x+1]*invAlpha + storedGreen) >> 8);
-				pDst[x+2] = (Uint8) ((pDst[x+2]*invAlpha + storedRed) >> 8);
+				pDst[x] = m_pDivTab[pDst[x]*invAlpha + storedBlue];
+				pDst[x+1] = m_pDivTab[pDst[x+1]*invAlpha + storedGreen];
+				pDst[x+2] = m_pDivTab[pDst[x+2]*invAlpha + storedRed];
 			}
 			break;
 		}
 		case WG_BLENDMODE_ADD:
 		{
-			int aa = _col.a * _aa;
+			int aa = m_pDivTab[_col.a * _aa];
 			
-			int storedRed = (((int)_col.r) * aa) >> 16;
-			int storedGreen = (((int)_col.g) * aa) >> 16;
-			int storedBlue = (((int)_col.b) * aa) >> 16;
+			int storedRed = m_pDivTab[_col.r * aa];
+			int storedGreen = m_pDivTab[_col.g * aa];
+			int storedBlue = m_pDivTab[_col.b * aa];
 			
 			if( storedRed + storedGreen + storedBlue == 0 )
 				return;
@@ -599,22 +600,24 @@ void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const Wg
 		}
 		case WG_BLENDMODE_MULTIPLY:
 		{
-			int storedRed = (int)_col.r;
-			int storedGreen = (int)_col.g;
-			int storedBlue = (int)_col.b;
+			int storedRed = (int) m_pDivTab[_col.r*_aa];
+			int storedGreen = (int) m_pDivTab[_col.g*_aa];
+			int storedBlue = (int) m_pDivTab[_col.b*_aa];
 			
-			int invAlpha = (255 - _aa) << 8;
+			int invAlpha = 255 - _aa;
 			
 			for( int x = 0 ; x < _length*inc ; x+= inc )
 			{
-				pDst[x] = ( (pDst[x]*invAlpha) + (_aa * pDst[x] * storedBlue) ) >> 16;
-				pDst[x+1] = ( (pDst[x+1]*invAlpha) + (_aa * pDst[x+1] * storedGreen) ) >> 16;
-				pDst[x+2] = ( (pDst[x+2]*invAlpha) + (_aa * pDst[x+2] * storedRed) ) >> 16;
+				pDst[x] = m_pDivTab[(pDst[x]*invAlpha) + (pDst[x] * storedBlue)];
+				pDst[x+1] = m_pDivTab[(pDst[x+1]*invAlpha) + (pDst[x+1] * storedGreen)];
+				pDst[x+2] = m_pDivTab[(pDst[x+2]*invAlpha) + (pDst[x+2] * storedRed)];
 			}
 			break;
 		}
 		case WG_BLENDMODE_INVERT:
 		{
+			//TODO: Translate to use m_pDivTab
+
 			int storedRed = (int)_col.r;
 			int storedGreen = (int)_col.g;
 			int storedBlue = (int)_col.b;
@@ -642,6 +645,8 @@ void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const Wg
 
 void WgGfxDeviceSoft::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode blendMode, int _aa )
 {
+	//TODO: Translate to use m_pDivTab
+
 	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 	Uint8 * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
 	
@@ -783,6 +788,8 @@ void WgGfxDeviceSoft::DrawElipse( const WgRect& rect, WgColor color )
 
 void WgGfxDeviceSoft::_clipDrawHorrFadeLine( int clipX1, int clipX2, Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, WgColor color )
 {
+	//TODO: Translate to use m_pDivTab
+
 	int pitch = m_pCanvas->m_pitch;
 	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 	Uint8 * p = pLineStart + (begOfs>>8) * pixelBytes;
@@ -855,6 +862,8 @@ void WgGfxDeviceSoft::_clipDrawHorrFadeLine( int clipX1, int clipX2, Uint8 * pLi
 
 void WgGfxDeviceSoft::_drawHorrFadeLine( Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, WgColor color )
 {
+	//TODO: Translate to use m_pDivTab
+
 	int pitch = m_pCanvas->m_pitch;
 	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 	Uint8 * p = pLineStart + (begOfs>>8) * pixelBytes;
@@ -1178,9 +1187,9 @@ void WgGfxDeviceSoft::_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, 
 						int alpha = pSrc[3];
 						int invAlpha = 255-alpha;
 
-						pDst[0] = (pDst[0]*invAlpha + pSrc[0]*alpha ) >> 8;
-						pDst[1] = (pDst[1]*invAlpha + pSrc[1]*alpha ) >> 8;
-						pDst[2] = (pDst[2]*invAlpha + pSrc[2]*alpha ) >> 8;
+						pDst[0] = m_pDivTab[pDst[0]*invAlpha + pSrc[0]*alpha];
+						pDst[1] = m_pDivTab[pDst[1]*invAlpha + pSrc[1]*alpha];
+						pDst[2] = m_pDivTab[pDst[2]*invAlpha + pSrc[2]*alpha];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -1204,9 +1213,9 @@ void WgGfxDeviceSoft::_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, 
 					{
 						int alpha = pSrc[3];
 
-						pDst[0] = m_limitTable[pDst[0] + ((pSrc[0]*alpha)>>8)];
-						pDst[1] = m_limitTable[pDst[1] + ((pSrc[1]*alpha)>>8)];
-						pDst[2] = m_limitTable[pDst[2] + ((pSrc[2]*alpha)>>8)];
+						pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[pSrc[0]*alpha] ];
+						pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[pSrc[1]*alpha] ];
+						pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[pSrc[2]*alpha] ];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -1238,9 +1247,9 @@ void WgGfxDeviceSoft::_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, 
 			{
 				for( int x = 0 ; x < srcrect.w ; x++ )
 				{
-					pDst[0] = (pDst[0]*pSrc[0]) >> 8;
-					pDst[1] = (pDst[1]*pSrc[1]) >> 8;
-					pDst[2] = (pDst[2]*pSrc[2]) >> 8;
+					pDst[0] = m_pDivTab[ pDst[0]*pSrc[0] ];
+					pDst[1] = m_pDivTab[ pDst[1]*pSrc[1] ];
+					pDst[2] = m_pDivTab[ pDst[2]*pSrc[2] ];
 					pSrc += srcPixelBytes;
 					pDst += dstPixelBytes;
 				}
@@ -1255,9 +1264,9 @@ void WgGfxDeviceSoft::_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, 
 			{
 				for( int x = 0 ; x < srcrect.w ; x++ )
 				{
-					pDst[0] = (pSrc[0]*(255-pDst[0]) + pDst[0]*(255-pSrc[0])) >> 8;
-					pDst[1] = (pSrc[1]*(255-pDst[1]) + pDst[1]*(255-pSrc[0])) >> 8;
-					pDst[2] = (pSrc[2]*(255-pDst[2]) + pDst[2]*(255-pSrc[0])) >> 8;
+					pDst[0] = m_pDivTab[pSrc[0]*(255-pDst[0]) + pDst[0]*(255-pSrc[0])];
+					pDst[1] = m_pDivTab[pSrc[1]*(255-pDst[1]) + pDst[1]*(255-pSrc[0])];
+					pDst[2] = m_pDivTab[pSrc[2]*(255-pDst[2]) + pDst[2]*(255-pSrc[0])];
 					pSrc += srcPixelBytes;
 					pDst += dstPixelBytes;
 				}
@@ -1310,9 +1319,9 @@ void WgGfxDeviceSoft::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcre
 			{
 				for( int x = 0 ; x < srcrect.w ; x++ )
 				{
-					pDst[0] = (pSrc[0]*tintBlue) >> 8;
-					pDst[1] = (pSrc[1]*tintGreen) >> 8;
-					pDst[2] = (pSrc[2]*tintRed) >> 8;
+					pDst[0] = m_pDivTab[pSrc[0]*tintBlue];
+					pDst[1] = m_pDivTab[pSrc[1]*tintGreen];
+					pDst[2] = m_pDivTab[pSrc[2]*tintRed];
 					pSrc += srcPixelBytes;
 					pDst += dstPixelBytes;
 				}
@@ -1334,12 +1343,17 @@ void WgGfxDeviceSoft::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcre
 				{
 					for( int x = 0 ; x < srcrect.w ; x++ )
 					{
-						int alpha = (pSrc[3]*tintAlpha) >> 8;
-						int invAlpha = (255-alpha) << 8;
+						int alpha = m_pDivTab[pSrc[3]*tintAlpha];
+						int invAlpha = 255-alpha;
 
-						pDst[0] = (pDst[0]*invAlpha + pSrc[0]*tintBlue*alpha ) >> 16;
-						pDst[1] = (pDst[1]*invAlpha + pSrc[1]*tintGreen*alpha ) >> 16;
-						pDst[2] = (pDst[2]*invAlpha + pSrc[2]*tintRed*alpha ) >> 16;
+						int srcBlue		= m_pDivTab[pSrc[0] * tintBlue];
+						int srcGreen	= m_pDivTab[pSrc[1] * tintGreen];
+						int srcRed		= m_pDivTab[pSrc[2] * tintRed];
+						
+
+						pDst[0] = m_pDivTab[ pDst[0]*invAlpha + srcBlue*alpha ];
+						pDst[1] = m_pDivTab[ pDst[1]*invAlpha + srcGreen*alpha ];
+						pDst[2] = m_pDivTab[ pDst[2]*invAlpha + srcRed*alpha ];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -1350,18 +1364,18 @@ void WgGfxDeviceSoft::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcre
 			else
 			{
 				int tintAlpha = (int) m_tintColor.a;
-				int tintRed = (int) m_tintColor.r * tintAlpha;
-				int tintGreen = (int) m_tintColor.g * tintAlpha;
-				int tintBlue = (int) m_tintColor.b * tintAlpha;
-				int invAlpha = (255-tintAlpha) << 8;
+				int tintRed = (int) m_pDivTab[ m_tintColor.r * tintAlpha ];
+				int tintGreen = (int) m_pDivTab[ m_tintColor.g * tintAlpha ];
+				int tintBlue = (int) m_pDivTab[ m_tintColor.b * tintAlpha ];
+				int invAlpha = 255-tintAlpha;
 
 				for( int y = 0 ; y < srcrect.h ; y++ )
 				{
 					for( int x = 0 ; x < srcrect.w ; x++ )
 					{
-						pDst[0] = (pDst[0]*invAlpha + pSrc[0]*tintBlue ) >> 16;
-						pDst[1] = (pDst[1]*invAlpha + pSrc[1]*tintGreen ) >> 16;
-						pDst[2] = (pDst[2]*invAlpha + pSrc[2]*tintRed ) >> 16;
+						pDst[0] = m_pDivTab[ pDst[0]*invAlpha + pSrc[0]*tintBlue ];
+						pDst[1] = m_pDivTab[ pDst[1]*invAlpha + pSrc[1]*tintGreen ];
+						pDst[2] = m_pDivTab[ pDst[2]*invAlpha + pSrc[2]*tintRed ];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -1384,11 +1398,15 @@ void WgGfxDeviceSoft::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcre
 				{
 					for( int x = 0 ; x < srcrect.w ; x++ )
 					{
-						int alpha = (pSrc[3]*tintAlpha) >> 8;
+						int alpha = m_pDivTab[ pSrc[3]*tintAlpha ];
 
-						pDst[0] = m_limitTable[pDst[0] + ((pSrc[0]*tintBlue*alpha)>>16)];
-						pDst[1] = m_limitTable[pDst[1] + ((pSrc[1]*tintGreen*alpha)>>16)];
-						pDst[2] = m_limitTable[pDst[2] + ((pSrc[2]*tintRed*alpha)>>16)];
+						int srcBlue		= m_pDivTab[pSrc[0] * tintBlue];
+						int srcGreen	= m_pDivTab[pSrc[1] * tintGreen];
+						int srcRed		= m_pDivTab[pSrc[2] * tintRed];
+
+						pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[srcBlue*alpha] ];
+						pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[srcGreen*alpha] ];
+						pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[ srcRed*alpha] ];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -1399,17 +1417,17 @@ void WgGfxDeviceSoft::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcre
 			else
 			{
 				int tintAlpha = (int) m_tintColor.a;
-				int tintRed = (int) m_tintColor.r * tintAlpha;
-				int tintGreen = (int) m_tintColor.g * tintAlpha;
-				int tintBlue = (int) m_tintColor.b * tintAlpha;
+				int tintRed = (int) m_pDivTab[m_tintColor.r * tintAlpha];
+				int tintGreen = (int) m_pDivTab[m_tintColor.g * tintAlpha];
+				int tintBlue = (int) m_pDivTab[m_tintColor.b * tintAlpha];
 
 				for( int y = 0 ; y < srcrect.h ; y++ )
 				{
 					for( int x = 0 ; x < srcrect.w ; x++ )
 					{
-						pDst[0] = m_limitTable[pDst[0] + ((pSrc[0]*tintBlue)>>16)];
-						pDst[1] = m_limitTable[pDst[1] + ((pSrc[1]*tintGreen)>>16)];
-						pDst[2] = m_limitTable[pDst[2] + ((pSrc[2]*tintRed)>>16)];
+						pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[pSrc[0]*tintBlue] ];
+						pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[pSrc[1]*tintGreen] ];
+						pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[pSrc[2]*tintRed] ];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -1429,9 +1447,14 @@ void WgGfxDeviceSoft::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcre
 			{
 				for( int x = 0 ; x < srcrect.w ; x++ )
 				{
-					pDst[0] = (tintBlue*pDst[0]*pSrc[0]) >> 16;
-					pDst[1] = (tintGreen*pDst[1]*pSrc[1]) >> 16;
-					pDst[2] = (tintRed*pDst[2]*pSrc[2]) >> 16;
+					int srcBlue		= m_pDivTab[pSrc[0] * tintBlue];
+					int srcGreen	= m_pDivTab[pSrc[1] * tintGreen];
+					int srcRed		= m_pDivTab[pSrc[2] * tintRed];
+
+
+					pDst[0] = m_pDivTab[srcBlue*pDst[0]];
+					pDst[1] = m_pDivTab[srcGreen*pDst[1]];
+					pDst[2] = m_pDivTab[srcRed*pDst[2]];
 					pSrc += srcPixelBytes;
 					pDst += dstPixelBytes;
 				}
@@ -1450,13 +1473,13 @@ void WgGfxDeviceSoft::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcre
 			{
 				for( int x = 0 ; x < srcrect.w ; x++ )
 				{
-					int srcBlue = tintBlue*pSrc[0];
-					int srcGreen = tintGreen*pSrc[1];
-					int srcRed = tintRed*pSrc[2];
+					int srcBlue = m_pDivTab[tintBlue*pSrc[0]];
+					int srcGreen = m_pDivTab[tintGreen*pSrc[1]];
+					int srcRed = m_pDivTab[tintRed*pSrc[2]];
 
-					pDst[0] = (srcBlue*(255-pDst[0]) + pDst[0]*(255*255-srcBlue)) >> 16;
-					pDst[1] = (srcGreen*(255-pDst[1]) + pDst[1]*(255*255-srcGreen)) >> 16;
-					pDst[2] = (srcRed*(255-pDst[2]) + pDst[2]*(255*255-srcRed)) >> 16;
+					pDst[0] = m_pDivTab[srcBlue*(255-pDst[0]) + pDst[0]*(255-srcBlue)];
+					pDst[1] = m_pDivTab[srcGreen*(255-pDst[1]) + pDst[1]*(255-srcGreen)];
+					pDst[2] = m_pDivTab[srcRed*(255-pDst[2]) + pDst[2]*(255-srcRed)];
 					pSrc += srcPixelBytes;
 					pDst += dstPixelBytes;
 				}
@@ -1748,9 +1771,9 @@ void WgGfxDeviceSoft::_stretchBlitTintedOpaque( const WgSurfaceSoft * pSrcSurf, 
 
 	,
 
-	pDst[0] = (srcBlue*tintBlue) >> 8;
-	pDst[1] = (srcGreen*tintGreen) >> 8;
-	pDst[2] = (srcRed*tintRed) >> 8;
+	pDst[0] = m_pDivTab[srcBlue*tintBlue];
+	pDst[1] = m_pDivTab[srcGreen*tintGreen];
+	pDst[2] = m_pDivTab[srcRed*tintRed];
 
 	)
 }
@@ -1769,12 +1792,17 @@ void WgGfxDeviceSoft::_stretchBlitTintedBlend32( const WgSurfaceSoft * pSrcSurf,
 
 	,
 
-	int alpha = (srcAlpha*tintAlpha) >> 8;
-	int invAlpha = (255-alpha) << 8;
+	int alpha = m_pDivTab[srcAlpha*tintAlpha];
+	int invAlpha = 255-alpha;
 
-	pDst[0] = (pDst[0]*invAlpha + srcBlue*tintBlue*alpha ) >> 16;
-	pDst[1] = (pDst[1]*invAlpha + srcGreen*tintGreen*alpha ) >> 16;
-	pDst[2] = (pDst[2]*invAlpha + srcRed*tintRed*alpha ) >> 16;
+	srcBlue = m_pDivTab[srcBlue * tintBlue];
+	srcGreen = m_pDivTab[srcGreen * tintGreen];
+	srcRed = m_pDivTab[srcRed * tintRed];
+
+
+	pDst[0] = m_pDivTab[pDst[0]*invAlpha + srcBlue*alpha];
+	pDst[1] = m_pDivTab[pDst[1]*invAlpha + srcGreen*alpha];
+	pDst[2] = m_pDivTab[pDst[2]*invAlpha + srcRed*alpha];
 
 	)
 }
@@ -1787,16 +1815,16 @@ void WgGfxDeviceSoft::_stretchBlitTintedBlend24( const WgSurfaceSoft * pSrcSurf,
 	STRETCHBLIT( false,
 
 	int tintAlpha = (int) m_tintColor.a;
-	int tintRed = (int) m_tintColor.r * tintAlpha;
-	int tintGreen = (int) m_tintColor.g * tintAlpha;
-	int tintBlue = (int) m_tintColor.b * tintAlpha;
-	int invAlpha = (255-tintAlpha) << 8;
+	int tintRed = (int) m_pDivTab[m_tintColor.r * tintAlpha];
+	int tintGreen = (int) m_pDivTab[m_tintColor.g * tintAlpha];
+	int tintBlue = (int) m_pDivTab[m_tintColor.b * tintAlpha];
+	int invAlpha = 255-tintAlpha;
 
 	,
 
-	pDst[0] = (pDst[0]*invAlpha + srcBlue*tintBlue ) >> 16;
-	pDst[1] = (pDst[1]*invAlpha + srcGreen*tintGreen ) >> 16;
-	pDst[2] = (pDst[2]*invAlpha + srcRed*tintRed ) >> 16;
+	pDst[0] = m_pDivTab[pDst[0]*invAlpha + srcBlue*tintBlue];
+	pDst[1] = m_pDivTab[pDst[1]*invAlpha + srcGreen*tintGreen];
+	pDst[2] = m_pDivTab[pDst[2]*invAlpha + srcRed*tintRed];
 
 	)
 }
@@ -1816,11 +1844,15 @@ void WgGfxDeviceSoft::_stretchBlitTintedAdd32( const WgSurfaceSoft * pSrcSurf, f
 
 	,
 
-	int alpha = (srcAlpha*tintAlpha) >> 8;
+	int alpha = m_pDivTab[srcAlpha*tintAlpha];
 
-	pDst[0] = m_limitTable[pDst[0] + ((srcBlue*tintBlue*alpha)>>16)];
-	pDst[1] = m_limitTable[pDst[1] + ((srcGreen*tintGreen*alpha)>>16)];
-	pDst[2] = m_limitTable[pDst[2] + ((srcRed*tintRed*alpha)>>16)];
+	srcBlue = m_pDivTab[srcBlue * tintBlue];
+	srcGreen = m_pDivTab[srcGreen * tintGreen];
+	srcRed = m_pDivTab[srcRed * tintRed];
+
+	pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[srcBlue*alpha] ];
+	pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[srcGreen*alpha] ];
+	pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[srcRed*alpha] ];
 
 	)
 }
@@ -1834,15 +1866,15 @@ void WgGfxDeviceSoft::_stretchBlitTintedAdd24( const WgSurfaceSoft * pSrcSurf, f
 	STRETCHBLIT( false,
 
 	int tintAlpha = (int) m_tintColor.a;
-	int tintRed = (int) m_tintColor.r * tintAlpha;
-	int tintGreen = (int) m_tintColor.g * tintAlpha;
-	int tintBlue = (int) m_tintColor.b * tintAlpha;
+	int tintRed = (int) m_pDivTab[m_tintColor.r * tintAlpha];
+	int tintGreen = (int) m_pDivTab[m_tintColor.g * tintAlpha];
+	int tintBlue = (int) m_pDivTab[m_tintColor.b * tintAlpha];
 
 	,
 
-	pDst[0] = m_limitTable[pDst[0] + ((srcBlue*tintBlue)>>16)];
-	pDst[1] = m_limitTable[pDst[1] + ((srcGreen*tintGreen)>>16)];
-	pDst[2] = m_limitTable[pDst[2] + ((srcRed*tintRed)>>16)];
+	pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[srcBlue*tintBlue]];
+	pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[srcGreen*tintGreen]];
+	pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[srcRed*tintRed]];
 
 	)
 }
@@ -1861,9 +1893,13 @@ void WgGfxDeviceSoft::_stretchBlitTintedMultiply( const WgSurfaceSoft * pSrcSurf
 
 	,
 
-	pDst[0] = (tintBlue*pDst[0]*srcBlue) >> 16;
-	pDst[1] = (tintGreen*pDst[1]*srcGreen) >> 16;
-	pDst[2] = (tintRed*pDst[2]*srcRed) >> 16;
+	srcBlue = m_pDivTab[srcBlue * tintBlue];
+	srcGreen = m_pDivTab[srcGreen * tintGreen];
+	srcRed = m_pDivTab[srcRed * tintRed];
+
+	pDst[0] = m_pDivTab[pDst[0]*srcBlue];
+	pDst[1] = m_pDivTab[pDst[1]*srcGreen];
+	pDst[2] = m_pDivTab[pDst[2]*srcRed];
 
 	)
 }
@@ -1881,13 +1917,13 @@ void WgGfxDeviceSoft::_stretchBlitTintedInvert( const WgSurfaceSoft * pSrcSurf, 
 
 	,
 
-	srcBlue = srcBlue * tintBlue;
-	srcGreen = srcGreen * tintGreen;
-	srcRed = srcRed * tintRed;
+	srcBlue = m_pDivTab[srcBlue * tintBlue];
+	srcGreen = m_pDivTab[srcGreen * tintGreen];
+	srcRed = m_pDivTab[srcRed * tintRed];
 
-	pDst[0] = (srcBlue*(255-pDst[0]) + pDst[0]*(255*255-srcBlue)) >> 16;
-	pDst[1] = (srcGreen*(255-pDst[1]) + pDst[1]*(255*255-srcGreen)) >> 16;
-	pDst[2] = (srcRed*(255-pDst[2]) + pDst[2]*(255*255-srcRed)) >> 16;
+	pDst[0] = m_pDivTab[srcBlue*(255-pDst[0]) + pDst[0]*(255-srcBlue)];
+	pDst[1] = m_pDivTab[srcGreen*(255-pDst[1]) + pDst[1]*(255-srcGreen)];
+	pDst[2] = m_pDivTab[srcRed*(255-pDst[2]) + pDst[2]*(255-srcRed)];
 
 	)
 }
@@ -1920,9 +1956,9 @@ void WgGfxDeviceSoft::_stretchBlitBlend32( const WgSurfaceSoft * pSrcSurf, float
 
 	int invAlpha = 255-srcAlpha;
 
-	pDst[0] = (pDst[0]*invAlpha + srcBlue*srcAlpha ) >> 8;
-	pDst[1] = (pDst[1]*invAlpha + srcGreen*srcAlpha ) >> 8;
-	pDst[2] = (pDst[2]*invAlpha + srcRed*srcAlpha ) >> 8;
+	pDst[0] = m_pDivTab[pDst[0]*invAlpha + srcBlue*srcAlpha];
+	pDst[1] = m_pDivTab[pDst[1]*invAlpha + srcGreen*srcAlpha];
+	pDst[2] = m_pDivTab[pDst[2]*invAlpha + srcRed*srcAlpha];
 
 	)
 }
@@ -1936,9 +1972,9 @@ void WgGfxDeviceSoft::_stretchBlitAdd32( const WgSurfaceSoft * pSrcSurf, float s
 
 	,
 
-	pDst[0] = m_limitTable[pDst[0] + ((srcBlue*srcAlpha)>>8 )];
-	pDst[1] = m_limitTable[pDst[1] + ((srcGreen*srcAlpha)>>8 )];
-	pDst[2] = m_limitTable[pDst[2] + ((srcRed*srcAlpha)>>8 )];
+	pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[srcBlue*srcAlpha] ];
+	pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[srcGreen*srcAlpha] ];
+	pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[srcRed*srcAlpha] ];
 
 	)
 }
@@ -1970,9 +2006,9 @@ void WgGfxDeviceSoft::_stretchBlitMultiply( const WgSurfaceSoft * pSrcSurf, floa
 
 	,
 
-	pDst[0] = (pDst[0]*srcBlue) >> 8;
-	pDst[1] = (pDst[1]*srcGreen) >> 8;
-	pDst[2] = (pDst[2]*srcRed) >> 8;
+	pDst[0] = m_pDivTab[pDst[0]*srcBlue];
+	pDst[1] = m_pDivTab[pDst[1]*srcGreen];
+	pDst[2] = m_pDivTab[pDst[2]*srcRed];
 
 	)
 }
@@ -1986,9 +2022,9 @@ void WgGfxDeviceSoft::_stretchBlitInvert( const WgSurfaceSoft * pSrcSurf, float 
 
 	,
 
-	pDst[0] = (srcBlue*(255-pDst[0]) + pDst[0]*(255-srcBlue)) >> 8;
-	pDst[1] = (srcGreen*(255-pDst[1]) + pDst[1]*(255-srcGreen)) >> 8;
-	pDst[2] = (srcRed*(255-pDst[2]) + pDst[2]*(255-srcRed)) >> 8;
+	pDst[0] = m_pDivTab[(srcBlue*(255-pDst[0]) + pDst[0]*(255-srcBlue))];
+	pDst[1] = m_pDivTab[(srcGreen*(255-pDst[1]) + pDst[1]*(255-srcGreen))];
+	pDst[2] = m_pDivTab[(srcRed*(255-pDst[2]) + pDst[2]*(255-srcRed))];
 
 	)
 }
@@ -2006,5 +2042,12 @@ void WgGfxDeviceSoft::_initTables()
 
 	for( int i = 256 ; i < 512 ; i++ )
 		m_limitTable[i] = 255;
+
+	// Init divTable
+
+	m_pDivTab = new Uint8[65536];
+
+	for( int i = 0 ; i < 65536 ; i++ )
+		m_pDivTab[i] = i / 255;
 
 }
