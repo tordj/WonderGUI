@@ -97,15 +97,15 @@ public:
 		return *this;
 	}
 */
-	inline T & operator*() const { return * (T*) m_pObj; }
-	inline T * operator->() const{ return (T*) m_pObj; }
+	inline T & operator*() const { return * (T*) this->m_pObj; }
+	inline T * operator->() const{ return (T*) this->m_pObj; }
 
-	inline bool operator==(const WgSmartChildPtr<T,P>& other) const { return m_pObj == other.m_pObj; }
-	inline bool operator!=(const WgSmartChildPtr<T,P>& other) const { return m_pObj != other.m_pObj; }
+	inline bool operator==(const WgSmartChildPtr<T,P>& other) const { return this->m_pObj == other.m_pObj; }
+	inline bool operator!=(const WgSmartChildPtr<T,P>& other) const { return this->m_pObj != other.m_pObj; }
 
-	inline operator bool() const { return (m_pObj != 0); }
+	inline operator bool() const { return (this->m_pObj != 0); }
 
-	inline T * GetRealPtr() const { return (T*) m_pObj; }
+	inline T * GetRealPtr() const { return (T*) this->m_pObj; }
 };
 
 

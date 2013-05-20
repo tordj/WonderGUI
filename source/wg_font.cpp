@@ -460,7 +460,7 @@ bool WgFont::SetDefaultBitmapGlyphs( WgBitmapGlyphs * pGlyphs, int size )
 WgBitmapGlyphs * WgFont::GetBitmapGlyphs( WgFontStyle style, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
-		return false;
+		return 0;
 
 	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] != 0 )
 		return m_aBitmapGlyphs[size][style];

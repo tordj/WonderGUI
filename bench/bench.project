@@ -37,18 +37,17 @@
         <IncludePath Value="../wg_sdl"/>
         <IncludePath Value="../wg_soft"/>
         <IncludePath Value="../extras"/>
-        <Preprocessor Value="WG_TNG"/>
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="../Debug"/>
         <LibraryPath Value="../wg_sdl/Debug"/>
         <LibraryPath Value="../wg_soft/Debug"/>
         <Library Value="SDL"/>
-        <Library Value="freetype"/>
         <Library Value="SDL_image"/>
         <Library Value="wg_soft"/>
         <Library Value="wg_sdl"/>
         <Library Value="wondergui"/>
+        <Library Value="freetype"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(IntermediateDirectory)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="" PauseExecWhenProcTerminates="yes"/>
@@ -76,6 +75,7 @@
         <CustomPreBuild/>
       </AdditionalRules>
       <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
         <SearchPaths/>
@@ -129,6 +129,7 @@
         <CustomPreBuild/>
       </AdditionalRules>
       <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
         <SearchPaths/>
