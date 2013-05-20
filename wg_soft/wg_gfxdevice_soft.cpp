@@ -22,6 +22,7 @@
 
 #include <wg_gfxdevice_soft.h>
 #include <wg_surface_soft.h>
+#include <math.h>
 
 #include <assert.h>
 
@@ -201,55 +202,55 @@ void WgGfxDeviceSoft::FillSubPixel( const WgRectF& rect, const WgColor& col )
 {
 	if( !m_pCanvas || !m_pCanvas->m_pData )
 		return;
-	
+
 	WgColor fillColor = col * m_tintColor;
-	
+
 	// Skip calls that won't affect destination
-	
+
 	if( fillColor.a == 0 && (m_blendMode == WG_BLENDMODE_BLEND || m_blendMode == WG_BLENDMODE_ADD) )
 		return;
-	
+
 	// Fill all but anti-aliased edges
-	
+
 	int x1 = (int) (rect.x + 0.999f);
 	int y1 = (int) (rect.y + 0.999f);
 	int x2 = (int) (rect.x + rect.w);
 	int y2 = (int) (rect.y + rect.h);
-		
+
 	Fill( WgRect( x1,y1,x2-x1,y2-y1 ), col );
-	
+
 	// Optimize calls
-	
+
 	WgBlendMode blendMode = m_blendMode;
 	if( blendMode == WG_BLENDMODE_BLEND && fillColor.a == 255 )
 		blendMode = WG_BLENDMODE_OPAQUE;
-	
+
 	// Draw the sides
-		
+
 	int aaLeft = (256 - (int)(rect.x * 256)) & 0xFF;
 	int aaTop = (256 - (int)(rect.y * 256)) & 0xFF;
 	int aaRight = ((int)((rect.x + rect.w) * 256)) & 0xFF;
 	int aaBottom = ((int)((rect.y + rect.h) * 256)) & 0xFF;
-	
+
 	if( aaTop != 0 )
 		_drawHorrVertLineAA( x1, (int) rect.y, x2-x1, fillColor, blendMode, aaTop, WG_HORIZONTAL );
-	
+
 	if( aaBottom != 0 )
 		_drawHorrVertLineAA( x1, (int) y2, x2-x1, fillColor, blendMode, aaBottom, WG_HORIZONTAL );
-	
+
 	if( aaLeft != 0 )
 		_drawHorrVertLineAA( (int) rect.x, y1, y2-y1, fillColor, blendMode, aaLeft, WG_VERTICAL );
-	
+
 	if( aaRight != 0 )
-		_drawHorrVertLineAA( (int) x2, y1, y2-y1, fillColor, blendMode, aaRight, WG_VERTICAL );	
-	
+		_drawHorrVertLineAA( (int) x2, y1, y2-y1, fillColor, blendMode, aaRight, WG_VERTICAL );
+
 	// Draw corner pieces
-	
+
 	int aaTopLeft = aaTop * aaLeft / 256;
 	int aaTopRight = aaTop * aaRight / 256;
 	int aaBottomLeft = aaBottom * aaLeft / 256;
 	int aaBottomRight = aaBottom * aaRight / 256;
-	
+
 	if( aaTopLeft != 0 )
 		_plotAA( (int) rect.x, (int) rect.y, fillColor, blendMode, aaTopLeft );
 
@@ -418,7 +419,7 @@ void WgGfxDeviceSoft::_drawHorrVertLine( int _x, int _y, int _length, const WgCo
 {
 	if( !m_pCanvas || !m_pCanvas->m_pData || _length <= 0  )
 		return;
-	
+
 	WgColor fillColor = _col * m_tintColor;
 
 	// Skip calls that won't affect destination
@@ -537,7 +538,7 @@ void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const Wg
 	int pitch = m_pCanvas->m_pitch;
 	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 	Uint8 * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
-	
+
 	int inc;
 	if( orientation == WG_HORIZONTAL )
 		inc = pixelBytes;
@@ -552,7 +553,7 @@ void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const Wg
 			int storedGreen = ((int)_col.g) * _aa;
 			int storedBlue = ((int)_col.b) * _aa;
 			int invAlpha = 255- _aa;
-			
+
 			for( int x = 0 ; x < _length*inc ; x+= inc )
 			{
 				pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedBlue) >> 8);
@@ -564,12 +565,12 @@ void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const Wg
 		case WG_BLENDMODE_BLEND:
 		{
 			int aa = _col.a * _aa;
-			
+
 			int storedRed = (((int)_col.r) * aa) >> 8;
 			int storedGreen = (((int)_col.g) * aa) >> 8;
 			int storedBlue = (((int)_col.b) * aa) >> 8;
 			int invAlpha = 255-(aa>>8);
-			
+
 			for( int x = 0 ; x < _length*inc ; x+= inc )
 			{
 				pDst[x] = (Uint8) ((pDst[x]*invAlpha + storedBlue) >> 8);
@@ -581,14 +582,14 @@ void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const Wg
 		case WG_BLENDMODE_ADD:
 		{
 			int aa = _col.a * _aa;
-			
+
 			int storedRed = (((int)_col.r) * aa) >> 16;
 			int storedGreen = (((int)_col.g) * aa) >> 16;
 			int storedBlue = (((int)_col.b) * aa) >> 16;
-			
+
 			if( storedRed + storedGreen + storedBlue == 0 )
 				return;
-			
+
 			for( int x = 0 ; x < _length*inc ; x+= inc )
 			{
 				pDst[x] = m_limitTable[pDst[x] + storedBlue];
@@ -602,9 +603,9 @@ void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const Wg
 			int storedRed = (int)_col.r;
 			int storedGreen = (int)_col.g;
 			int storedBlue = (int)_col.b;
-			
+
 			int invAlpha = (255 - _aa) << 8;
-			
+
 			for( int x = 0 ; x < _length*inc ; x+= inc )
 			{
 				pDst[x] = ( (pDst[x]*invAlpha) + (_aa * pDst[x] * storedBlue) ) >> 16;
@@ -618,13 +619,13 @@ void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const Wg
 			int storedRed = (int)_col.r;
 			int storedGreen = (int)_col.g;
 			int storedBlue = (int)_col.b;
-			
+
 			int invertRed = 255 - (int)_col.r;
 			int invertGreen = 255 - (int)_col.g;
 			int invertBlue = 255 - (int)_col.b;
-			
+
 			int invAlpha = (255 - _aa) << 8;
-			
+
 			for( int x = 0 ; x < _length*inc ; x+= inc )
 			{
 				pDst[x] = ( (pDst[x]*invAlpha) + _aa * ((255-pDst[x]) * storedBlue + pDst[x] * invertBlue) ) >> 16;
@@ -635,7 +636,7 @@ void WgGfxDeviceSoft::_drawHorrVertLineAA( int _x, int _y, int _length, const Wg
 		}
 		default:
 			break;
-	}	
+	}
 }
 
 //____ _plotAA() ________________________________________________
@@ -644,7 +645,7 @@ void WgGfxDeviceSoft::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode 
 {
 	int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 	Uint8 * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
-	
+
 	switch( blendMode )
 	{
 		case WG_BLENDMODE_OPAQUE:
@@ -653,7 +654,7 @@ void WgGfxDeviceSoft::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode 
 			int storedGreen = ((int)_col.g) * _aa;
 			int storedBlue = ((int)_col.b) * _aa;
 			int invAlpha = 255- _aa;
-			
+
 			pDst[0] = (Uint8) ((pDst[0]*invAlpha + storedBlue) >> 8);
 			pDst[1] = (Uint8) ((pDst[1]*invAlpha + storedGreen) >> 8);
 			pDst[2] = (Uint8) ((pDst[2]*invAlpha + storedRed) >> 8);
@@ -662,12 +663,12 @@ void WgGfxDeviceSoft::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode 
 		case WG_BLENDMODE_BLEND:
 		{
 			int aa = _col.a * _aa;
-			
+
 			int storedRed = (((int)_col.r) * aa) >> 8;
 			int storedGreen = (((int)_col.g) * aa) >> 8;
 			int storedBlue = (((int)_col.b) * aa) >> 8;
 			int invAlpha = 255-(aa>>8);
-			
+
 			pDst[0] = (Uint8) ((pDst[0]*invAlpha + storedBlue) >> 8);
 			pDst[1] = (Uint8) ((pDst[1]*invAlpha + storedGreen) >> 8);
 			pDst[2] = (Uint8) ((pDst[2]*invAlpha + storedRed) >> 8);
@@ -676,14 +677,14 @@ void WgGfxDeviceSoft::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode 
 		case WG_BLENDMODE_ADD:
 		{
 			int aa = _col.a * _aa;
-			
+
 			int storedRed = (((int)_col.r) * aa) >> 16;
 			int storedGreen = (((int)_col.g) * aa) >> 16;
 			int storedBlue = (((int)_col.b) * aa) >> 16;
-			
+
 			if( storedRed + storedGreen + storedBlue == 0 )
 				return;
-			
+
 			pDst[0] = m_limitTable[pDst[0] + storedBlue];
 			pDst[1] = m_limitTable[pDst[1] + storedGreen];
 			pDst[2] = m_limitTable[pDst[2] + storedRed];
@@ -694,9 +695,9 @@ void WgGfxDeviceSoft::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode 
 			int storedRed = (int)_col.r;
 			int storedGreen = (int)_col.g;
 			int storedBlue = (int)_col.b;
-			
+
 			int invAlpha = (255 - _aa) << 8;
-			
+
 			pDst[0] = ( (pDst[0]*invAlpha) + (_aa * pDst[0] * storedBlue) ) >> 16;
 			pDst[1] = ( (pDst[1]*invAlpha) + (_aa * pDst[1] * storedGreen) ) >> 16;
 			pDst[2] = ( (pDst[2]*invAlpha) + (_aa * pDst[2] * storedRed) ) >> 16;
@@ -707,13 +708,13 @@ void WgGfxDeviceSoft::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode 
 			int storedRed = (int)_col.r;
 			int storedGreen = (int)_col.g;
 			int storedBlue = (int)_col.b;
-			
+
 			int invertRed = 255 - (int)_col.r;
 			int invertGreen = 255 - (int)_col.g;
 			int invertBlue = 255 - (int)_col.b;
-			
+
 			int invAlpha = (255 - _aa) << 8;
-			
+
 			pDst[0] = ( (pDst[0]*invAlpha) + _aa * ((255-pDst[0]) * storedBlue + pDst[0] * invertBlue) ) >> 16;
 			pDst[1] = ( (pDst[1]*invAlpha) + _aa * ((255-pDst[1]) * storedGreen + pDst[1] * invertGreen) )  >> 16;
 			pDst[2] = ( (pDst[2]*invAlpha) + _aa * ((255-pDst[2]) * storedRed + pDst[2] * invertRed) ) >> 16;
@@ -721,7 +722,7 @@ void WgGfxDeviceSoft::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode 
 		}
 		default:
 			break;
-	}	
+	}
 }
 
 
@@ -731,13 +732,13 @@ void WgGfxDeviceSoft::_genCurveTab()
 {
 	m_pCurveTab = new int[NB_CURVETAB_ENTRIES];
 
-	double factor = 3.14159265 / (2.0 * NB_CURVETAB_ENTRIES); 
+	double factor = 3.14159265 / (2.0 * NB_CURVETAB_ENTRIES);
 
 	for( int i = 0 ; i < NB_CURVETAB_ENTRIES ; i++ )
 	{
 		double y = 1.f - i/(double)NB_CURVETAB_ENTRIES;
 		m_pCurveTab[i] = (int) (sqrt(1.f - y*y)*65536.f);
-	}		
+	}
 }
 
 
@@ -912,7 +913,7 @@ void WgGfxDeviceSoft::_drawHorrFadeLine( Uint8 * pLineStart, int begOfs, int pea
 		alpha += alphaInc;
 		p += pixelBytes;
 	}
-	
+
 }
 
 //____ ClipDrawElipse() _______________________________________________________________
@@ -948,14 +949,14 @@ void WgGfxDeviceSoft::ClipDrawElipse( const WgRect& clip, const WgRect& rect, Wg
 		peakOfs = ((m_pCurveTab[sinOfs>>16] * maxWidth) >> 8);
 		endOfs = (m_pCurveTab[(sinOfs+(sinOfsInc-1))>>16] * maxWidth) >> 8;
 
-		if( rect.y + i >= clip.y && rect.y + i < clip.y + clip.h ) 
-		{		
+		if( rect.y + i >= clip.y && rect.y + i < clip.y + clip.h )
+		{
 			_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + i*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, color );
 			_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + i*pitch, center - endOfs, center - peakOfs, center - begOfs +256, color );
 		}
 
 		int y2 = sectionHeight*2-i-1;
-		if( rect.y + y2 >= clip.y && rect.y + y2 < clip.y + clip.h ) 
+		if( rect.y + y2 >= clip.y && rect.y + y2 < clip.y + clip.h )
 		{
 			_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + y2*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, color );
 			_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + y2*pitch, center - endOfs, center - peakOfs, center - begOfs +256, color );
@@ -1024,7 +1025,7 @@ void WgGfxDeviceSoft::ClipDrawFilledElipse( const WgRect& clip, const WgRect& re
 			if( rect.y + j*(rect.h/2) + i >= clip.y && rect.y + j*(rect.h/2) + i < clip.y + clip.h )
 			{
 				int lineLen = ((m_pCurveTab[sinOfs>>16] * rect.w/2 + 32768)>>16);
-	
+
 				int beg = rect.x + rect.w/2 - lineLen;
 				int end = rect.x + rect.w/2 + lineLen;
 
@@ -1036,8 +1037,8 @@ void WgGfxDeviceSoft::ClipDrawFilledElipse( const WgRect& clip, const WgRect& re
 
 				if( beg < end )
 				{
-					Uint8 * pLineBeg = pLine + beg * pixelBytes;	
-					Uint8 * pLineEnd = pLine + end * pixelBytes;			
+					Uint8 * pLineBeg = pLine + beg * pixelBytes;
+					Uint8 * pLineEnd = pLine + end * pixelBytes;
 
 					for( Uint8 * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
 					{

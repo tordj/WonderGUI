@@ -91,7 +91,7 @@ public:
 	bool				SetDefaultBitmapGlyphs( WgBitmapGlyphs * pGlyphs, int size = 0 );
 
 	WgBitmapGlyphs *		GetBitmapGlyphs( WgFontStyle style, int size );
-	inline WgBitmapGlyphs *	GetDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return false; }
+	inline WgBitmapGlyphs *	GetDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return 0; }
 
 	const WgUnderline *	GetUnderline( int size );
 
