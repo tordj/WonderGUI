@@ -260,8 +260,8 @@
 #	include <wg_shadercapsule.h>
 #endif
 
-#ifndef WG_WIDGET_SLIDER_DOT_H
-#	include <wg_slider.h>
+#ifndef WG_SCROLLBAR_DOT_H
+#	include <wg_scrollbar.h>
 #endif
 
 #ifndef WG_STACKPANEL_DOT_H

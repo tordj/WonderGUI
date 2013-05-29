@@ -480,7 +480,7 @@ void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 				if( bModified )
 				{
-					_updateSlider( FractionalValue(), 0.f );
+					_updateScrollbar( FractionalValue(), 0.f );
 					_queueEvent( new WgEvent::EditvalueModify(this, m_value, FractionalValue()) );
 
 					m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
@@ -721,7 +721,7 @@ void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			if( pHandler )
 				pHandler->QueueEvent( new WgEvent::EditvalueModify(this,value,FractionalValue()) );
 
-			_updateSlider( FractionalValue(), 0.f );
+			_updateScrollbar( FractionalValue(), 0.f );
 		}
 	}
 	

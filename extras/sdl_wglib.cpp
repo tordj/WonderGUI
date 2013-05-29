@@ -153,29 +153,29 @@ namespace sdl_wglib
 		if( !pSurface )
 			return 0;
 
-		WgBlocksetPtr pHSliderBtnBwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
-		pHSliderBtnBwdBlocks->SetFrame(WgBorders(3));
-		pHSliderBtnBwdBlocks->SetPadding(WgBorders(4));
+		WgBlocksetPtr pHScrollbarBtnBwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pHScrollbarBtnBwdBlocks->SetFrame(WgBorders(3));
+		pHScrollbarBtnBwdBlocks->SetPadding(WgBorders(4));
 
-		WgBlocksetPtr pHSliderBtnFwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(77,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
-		pHSliderBtnFwdBlocks->SetFrame(WgBorders(3));
-		pHSliderBtnFwdBlocks->SetPadding(WgBorders(4));
+		WgBlocksetPtr pHScrollbarBtnFwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(77,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pHScrollbarBtnFwdBlocks->SetFrame(WgBorders(3));
+		pHScrollbarBtnFwdBlocks->SetPadding(WgBorders(4));
 
-		WgBlocksetPtr pVSliderBtnBwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
-		pVSliderBtnBwdBlocks->SetFrame(WgBorders(3));
-		pVSliderBtnBwdBlocks->SetPadding(WgBorders(4));
+		WgBlocksetPtr pVScrollbarBtnBwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pVScrollbarBtnBwdBlocks->SetFrame(WgBorders(3));
+		pVScrollbarBtnBwdBlocks->SetPadding(WgBorders(4));
 
-		WgBlocksetPtr pVSliderBtnFwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(77,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
-		pVSliderBtnFwdBlocks->SetFrame(WgBorders(3));
-		pVSliderBtnFwdBlocks->SetPadding(WgBorders(4));
+		WgBlocksetPtr pVScrollbarBtnFwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(77,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pVScrollbarBtnFwdBlocks->SetFrame(WgBorders(3));
+		pVScrollbarBtnFwdBlocks->SetPadding(WgBorders(4));
 
-		WgBlocksetPtr pSliderBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,SLIDER_OFS,38,8), 4, 2, WG_OPAQUE);
-		pSliderBlocks->SetFrame(WgBorders(2));
-		pSliderBlocks->SetPadding(WgBorders(3));
+		WgBlocksetPtr pScrollbarBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,SLIDER_OFS,38,8), 4, 2, WG_OPAQUE);
+		pScrollbarBlocks->SetFrame(WgBorders(2));
+		pScrollbarBlocks->SetPadding(WgBorders(3));
 
-		WgBlocksetPtr pSliderBackBlocks	= WgBlockset::CreateFromRect(pSurface, WgRect(1,SLIDER_BACK_OFS,5,5), WG_OPAQUE );
-		pSliderBackBlocks->SetFrame(WgBorders(2));
-		pSliderBackBlocks->SetPadding(WgBorders(2));
+		WgBlocksetPtr pScrollbarBackBlocks	= WgBlockset::CreateFromRect(pSurface, WgRect(1,SLIDER_BACK_OFS,5,5), WG_OPAQUE );
+		pScrollbarBackBlocks->SetFrame(WgBorders(2));
+		pScrollbarBackBlocks->SetPadding(WgBorders(2));
 
 		WgBlocksetPtr pResizeButtonBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,RESIZE_BUTTON_OFS,86,20), 4, 2, WG_OPAQUE);
 		pResizeButtonBlocks->SetFrame(WgBorders(3));
@@ -219,6 +219,22 @@ namespace sdl_wglib
 
 		WgColorsetPtr pSelectionColors = WgColorset::Create( WgColor(0x0), WgColor(0x40FFFFFF), WgColor(0x80FFFFFF), WgColor(0x40000000), WgColor(0x0) );
 
+		WgBlockSkinPtr pPlateSkin = WgBlockSkin::Create();
+		pPlateSkin->SetSurface( pSurface );
+		pPlateSkin->SetBlockGeo( WgSize(8,8), WgBorders(3) );
+		pPlateSkin->SetStateBlock( WG_STATE_NORMAL, WgCoord(1,PLATE_OFS) );
+		pPlateSkin->SetStateBlock( WG_STATE_HOVERED, WgCoord(1+10,PLATE_OFS) );
+		pPlateSkin->SetStateBlock( WG_STATE_PRESSED, WgCoord(1+20,PLATE_OFS) );
+		pPlateSkin->SetStateBlock( WG_STATE_DISABLED, WgCoord(1+30,PLATE_OFS) );
+
+		WgBlockSkinPtr pBgCheckeredGreySkin = WgBlockSkin::Create();
+		pBgCheckeredGreySkin->SetSurface( pSurface );
+		pBgCheckeredGreySkin->SetBlockGeo( WgSize(64,64) );
+		pBgCheckeredGreySkin->SetTiledCenter(true);
+		pBgCheckeredGreySkin->SetStateBlock( WG_STATE_NORMAL, WgCoord(0,TILES_OFS) );
+
+
+
 
 		WgResDB * pDB = new WgResDB();
 
@@ -246,17 +262,17 @@ namespace sdl_wglib
 		pRadiobutton->SetIcons( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks );
 		pDB->AddWidget( "radiobutton", pRadiobutton );
 
-		// Create standard horizontal slider
+		// Create standard horizontal scrollbar
 
-		WgHSlider * pHSlider = new WgHSlider();
-		pHSlider->SetSource( pSliderBackBlocks, pSliderBlocks, pHSliderBtnBwdBlocks, pHSliderBtnFwdBlocks );
-		pDB->AddWidget( "hslider", pHSlider );
+		WgHScrollbar * pHScrollbar = new WgHScrollbar();
+		pHScrollbar->SetSource( pScrollbarBackBlocks, pScrollbarBlocks, pHScrollbarBtnBwdBlocks, pHScrollbarBtnFwdBlocks );
+		pDB->AddWidget( "hscrollbar", pHScrollbar );
 
-		// Create standard vertical slider
+		// Create standard vertical scrollbar
 
-		WgVSlider * pVSlider = new WgVSlider();
-		pVSlider->SetSource( pSliderBackBlocks, pSliderBlocks, pVSliderBtnBwdBlocks, pVSliderBtnFwdBlocks );
-		pDB->AddWidget( "vslider", pVSlider );
+		WgVScrollbar * pVScrollbar = new WgVScrollbar();
+		pVScrollbar->SetSource( pScrollbarBackBlocks, pScrollbarBlocks, pVScrollbarBtnBwdBlocks, pVScrollbarBtnFwdBlocks );
+		pDB->AddWidget( "vscrollbar", pVScrollbar );
 
 		// Create standard menubar
 
@@ -281,7 +297,7 @@ namespace sdl_wglib
 		pMenu->SetSeparatorSource( pHSplitBlocks, WgBorders(1) );
 		pMenu->SetCheckBoxSource( pCheckboxUncheckedBlocks, pCheckboxCheckedBlocks);
 		pMenu->SetRadioButtonSource( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks);
-		pMenu->SetSliderSource( pSliderBackBlocks, pSliderBlocks, pVSliderBtnBwdBlocks, pVSliderBtnFwdBlocks );
+		pMenu->SetScrollbarSource( pScrollbarBackBlocks, pScrollbarBlocks, pVScrollbarBtnBwdBlocks, pVScrollbarBtnFwdBlocks );
 		pMenu->SetTileColors( pSelectionColors );
 		pDB->AddWidget( "menu", pMenu );
 
@@ -296,15 +312,16 @@ namespace sdl_wglib
 		{
 			WgScrollPanel * pView = new WgScrollPanel();
 			
-			WgWidget * pHSlider = pDB->CloneWidget( "hslider" );
-			WgWidget * pVSlider = pDB->CloneWidget( "vslider" );
+			WgWidget * pHScrollbar = pDB->CloneWidget( "hscrollbar" );
+			WgWidget * pVScrollbar = pDB->CloneWidget( "vscrollbar" );
 
-			if( pHSlider )
-				pView->SetHSlider( static_cast<WgHSlider*>(pHSlider) );
-			if( pVSlider )
-				pView->SetVSlider( static_cast<WgVSlider*>(pVSlider) );
+			if( pHScrollbar )
+				pView->SetHScrollbar( static_cast<WgHScrollbar*>(pHScrollbar) );
+			if( pVScrollbar )
+				pView->SetVScrollbar( static_cast<WgVScrollbar*>(pVScrollbar) );
 
-			pView->SetFillerBlocks( pPlateBlocks );
+			pView->SetSkin( pBgCheckeredGreySkin );
+			pView->SetFillerSkin( pPlateSkin );
 			pDB->AddWidget( "view", pView );
 		}
 

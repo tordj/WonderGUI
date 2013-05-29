@@ -465,7 +465,8 @@ void WgBitmapGlyphs::InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool bin
 		{
 			// Fix bearing that (incorrectly) starts from top in fontfiles.
 
-			bearingY -= ascend;
+			if( nRead < 8 )
+				bearingY -= ascend;
 
 			//
 

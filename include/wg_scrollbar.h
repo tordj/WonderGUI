@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_SLIDER_DOT_H
-#define	WG_SLIDER_DOT_H
+#ifndef	WG_SCROLLBAR_DOT_H
+#define	WG_SCROLLBAR_DOT_H
 
 #ifndef	WG_WIDGET_DOT_H
 #	include <wg_widget.h>
@@ -33,28 +33,21 @@
 
 
 class WgSurface;
-class WgSliderTarget;
+class WgScrollbarTarget;
 class WgMenu;
 
-//____ Class: WgWidgetSlider _____________________________________________________
+//____ Class: WgScrollbar _____________________________________________________
 
-class	WgWidgetSlider : public WgWidget
+class	WgScrollbar : public WgWidget
 {
-	friend class WgSliderTarget;
+	friend class WgScrollbarTarget;
 	friend class WgMenu;
 
 	public:
-		WgWidgetSlider();
-		virtual	~WgWidgetSlider();
+		WgScrollbar();
+		virtual	~WgScrollbar();
 		virtual const char * Type() const;
 		static const char * GetClass();
-
-		//____ Callbacks ________________________________________
-
-		static void cbSetSlider				(void * pWidget, float pos, float size) { ((WgWidgetSlider*)pWidget)->SetSlider(pos,size); }
-		static void cbSetSliderPos			(void * pWidget, float pos) { ((WgWidgetSlider*)pWidget)->SetSliderPos(pos); }
-		static void cbSetSliderSize			(void * pWidget, float size) { ((WgWidgetSlider*)pWidget)->SetSliderSize(size); }
-		static void cbSetSliderPosPxlOfs	(void * pWidget, int x) { ((WgWidgetSlider*)pWidget)->SetSliderPosPxlOfs(x); }
 
 		//____ Enums ____________________________________________
 
@@ -82,8 +75,8 @@ class	WgWidgetSlider : public WgWidget
 
 		//____ Methods __________________________________________
 
-		float			GetSliderPos() const { return m_sliderPos; }
-		float			GetSliderSize() const { return m_sliderSize; }
+		float			GetHandlePos() const { return m_handlePos; }
+		float			GetHandleSize() const { return m_handleSize; }
 		WgBlocksetPtr 	GetBgSource() const { return m_pBgGfx; }
 		WgBlocksetPtr 	GetBarSource() const { return m_pBarGfx; }
 		WgBlocksetPtr 	GetBwdSource() const { return m_pBtnBwdGfx; }
@@ -93,15 +86,15 @@ class	WgWidgetSlider : public WgWidget
 		void	SetBgPressMode( BgPressMode mode );
 		BgPressMode GetBgPressMode() const { return m_bgPressMode; }
 
-		bool	SetSlider( float pos, float size );
-		bool	SetSliderPos( float pos );
-		bool	SetSliderPosPxlOfs( int x );
-		bool	SetSliderSize( float size );
+		bool	SetHandle( float pos, float size );
+		bool	SetHandlePos( float pos );
+		bool	SetHandlePosPxlOfs( int x );
+		bool	SetHandleSize( float size );
 
 		bool	SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx );
 		bool	SetButtonLayout(  ButtonLayout layout );
 
-		bool	SetSliderTarget( WgSliderTarget * pTarget );
+		bool	SetScrollbarTarget( WgScrollbarTarget * pTarget );
 
 		WgSize	PreferredSize() const;
 
@@ -114,7 +107,7 @@ class	WgWidgetSlider : public WgWidget
 		void	_onEnable();
 		void	_onDisable();
 
-		bool	_setSlider( float pos, float size );		// Set slider pos/size without notifying target (but should post events).
+		bool	_setHandle( float pos, float size );		// Set scrollbar pos/size without notifying target (but should post events).
 
 		enum Component
 		{
@@ -135,8 +128,8 @@ class	WgWidgetSlider : public WgWidget
 		WgBlocksetPtr	m_pBtnFwdGfx;
 		WgBlocksetPtr	m_pBtnBwdGfx;
 
-		float			m_sliderPos;
-		float			m_sliderSize;
+		float			m_handlePos;
+		float			m_handleSize;
 
 		BgPressMode		m_bgPressMode;
 		bool			m_bHorizontal;
@@ -152,8 +145,8 @@ class	WgWidgetSlider : public WgWidget
 
 		WgSize			m_minSize;
 
-		WgSliderTarget *m_pSliderTargetInterface;			// So we can access our target.
-		WgWidgetWeakPtr	m_pSliderTargetWidget;				// So we can check if target has been deleted.
+		WgScrollbarTarget *m_pScrollbarTargetInterface;			// So we can access our target.
+		WgWidgetWeakPtr	m_pScrollbarTargetWidget;				// So we can check if target has been deleted.
 
 
 	private:
@@ -167,35 +160,35 @@ class	WgWidgetSlider : public WgWidget
 		Component	_findMarkedComponent( WgCoord ofs );								// -1 = None.
 		void		_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block );
 		bool		_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block );
-		bool		_markTestSlider( WgCoord ofs );
+		bool		_markTestHandle( WgCoord ofs );
 		void		_headerFooterChanged();
 		void		_unmarkReqRender();
 };
 
-//____ Class: WgHSlider _______________________________________________________
+//____ Class: WgHScrollbar _______________________________________________________
 
-class WgHSlider:public WgWidgetSlider
+class WgHScrollbar:public WgScrollbar
 {
 	public:
-		WgHSlider();
+		WgHScrollbar();
 
 		virtual const char * Type() const;
 		static const char * GetClass();
-		virtual WgWidget * NewOfMyType() const { return new WgHSlider(); };
+		virtual WgWidget * NewOfMyType() const { return new WgHScrollbar(); };
 
 };
 
-//____ Class: WgVSlider _______________________________________________________
+//____ Class: WgVScrollbar _______________________________________________________
 
-class WgVSlider:public WgWidgetSlider
+class WgVScrollbar:public WgScrollbar
 {
 	public:
-		WgVSlider();
+		WgVScrollbar();
 
 		virtual const char * Type() const;
 		static const char * GetClass();
-		virtual WgWidget * NewOfMyType() const { return new WgVSlider(); };
+		virtual WgWidget * NewOfMyType() const { return new WgVScrollbar(); };
 
 };
 
-#endif //	WG_SLIDER_DOT_H
+#endif //	WG_SCROLLBAR_DOT_H

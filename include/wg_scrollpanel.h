@@ -28,12 +28,12 @@
 #	include <wg_panel.h>
 #endif
 
-#ifndef	WG_WIDGET_SLIDER_DOT_H
-#	include <wg_slider.h>
+#ifndef	WG_SCROLLBAR_DOT_H
+#	include <wg_scrollbar.h>
 #endif
 
-#ifndef WG_SLIDERTARGET_DOT_H
-#	include <wg_slidertarget.h>
+#ifndef WG_SCROLLBARTARGET_DOT_H
+#	include <wg_scrollbartarget.h>
 #endif
 
 class WgScrollPanel;
@@ -75,7 +75,7 @@ protected:
 
 	WgScrollPanel *	m_pView;
 	WgRect			m_windowGeo;		// Geometry of Widgets window inside parent.
-	WgRect			m_canvasGeo;		// Geometry of Widgets canvas. Same as m_windowGeo for sliders.
+	WgRect			m_canvasGeo;		// Geometry of Widgets canvas. Same as m_windowGeo for scrollbars.
 };
 
 
@@ -109,8 +109,8 @@ public:
 	void		SetStepSizeX( int pixels ) { m_stepSizeX = pixels; };
 	void		SetStepSizeY( int pixels ) { m_stepSizeY = pixels; };
 
-	Uint32 		StepSizeX() { return m_stepSizeX; };
-	Uint32 		StepSizeY() { return m_stepSizeY; };
+	int 		StepSizeX() { return m_stepSizeX; };
+	int 		StepSizeY() { return m_stepSizeY; };
 
 	void		SetJumpSize( float viewFractionX, float viewFractionY ) { SetJumpSizeX(viewFractionX); SetJumpSizeY(viewFractionY); };
 	void		SetJumpSizeX( float viewFraction );
@@ -122,9 +122,6 @@ public:
 	int			ContentHeight() { return m_contentSize.h; };
 	WgSize		ContentSize() { return m_contentSize; };
 
-	void		SetBgColor( WgColor color );
-	WgColor		BgColor() const { return m_bgColor; }
-
 	void		SetContentOrigo( WgOrigo origo );
 	WgOrigo ContentOrigo() const { return m_contentOrigo; }
 
@@ -133,12 +130,12 @@ public:
 	WgSizePolicy	ContentHeightPolicy() const { return m_heightPolicy; }
 
 
-	Uint32		ViewPixelOfsX() { return m_viewPixOfs.x; };
-	Uint32		ViewPixelOfsY() { return m_viewPixOfs.y; };
+	int			ViewPixelOfsX() { return m_viewPixOfs.x; };
+	int			ViewPixelOfsY() { return m_viewPixOfs.y; };
 	WgCoord		ViewPixelOfs() { return m_viewPixOfs; };
 
-	Uint32		ViewPixelLenX();
-	Uint32		ViewPixelLenY();
+	int			ViewPixelLenX();
+	int			ViewPixelLenY();
 
 	float		ViewOfsX();
 	float		ViewOfsY();
@@ -173,40 +170,45 @@ public:
 	bool		AutoScrollX() const { return m_bAutoScrollX; }
 	bool		AutoScrollY() const { return m_bAutoScrollY; }
 
-	bool				SetHSlider( WgHSlider * pSlider );
-	void				DeleteHSlider() {SetVSlider(0);}
-	WgHSlider *	HSlider() const { return (WgHSlider*) m_elements[XDRAG].Widget(); }
-	WgHSlider* 	ReleaseHSlider();
+	WgPanelHook*SetHScrollbar( WgHScrollbar * pScrollbar );
+	void		DeleteHScrollbar() {SetVScrollbar(0);}
+	WgHScrollbar *	HScrollbar() const { return (WgHScrollbar*) m_elements[XDRAG].Widget(); }
+	WgHScrollbar* 	ReleaseHScrollbar();
 
-	bool				SetVSlider( WgVSlider * pSlider );
-	void				DeleteVSlider() {SetVSlider(0);}
-	WgVSlider *	VSlider() const { return (WgVSlider*) m_elements[YDRAG].Widget(); }
-	WgVSlider* 	ReleaseVSlider();
+	WgPanelHook*SetVScrollbar( WgVScrollbar * pScrollbar );
+	void		DeleteVScrollbar() {SetVScrollbar(0);}
+	WgVScrollbar *	VScrollbar() const { return (WgVScrollbar*) m_elements[YDRAG].Widget(); }
+	WgVScrollbar* 	ReleaseVScrollbar();
 
-	bool				SetContent( WgWidget * pContent );
-	void				DeleteContent() {SetContent(0); }
-	WgWidget*			Content() const { return m_elements[WINDOW].Widget(); }
-	WgWidget*			ReleaseContent();
+	WgPanelHook*SetContent( WgWidget * pContent );
+	void		DeleteContent() {SetContent(0); }
+	WgWidget*	Content() const { return m_elements[WINDOW].Widget(); }
+	WgWidget*	ReleaseContent();
 
-	bool				DeleteChild( WgWidget * pWidget );
-	WgWidget *			ReleaseChild( WgWidget * pWidget );
+	bool		DeleteChild( WgWidget * pWidget );
+	WgWidget *	ReleaseChild( WgWidget * pWidget );
 
-	bool				DeleteAllChildren();
-	bool				ReleaseAllChildren();
+	bool		DeleteAllChildren();
+	bool		ReleaseAllChildren();
 
-	void				SetSliderAutoHide( bool bHideVSlider, bool bHideHSlider );
-	bool				GetHSliderAutoHide() const { return m_bAutoHideSliderX; }
-	bool				GetVSliderAutoHide() const { return m_bAutoHideSliderY; }
+	void		SetScrollbarAutoHide( bool bHideVScrollbar, bool bHideHScrollbar );
+	bool		GetHScrollbarAutoHide() const { return m_bAutoHideScrollbarX; }
+	bool		GetVScrollbarAutoHide() const { return m_bAutoHideScrollbarY; }
 
-	void				SetSliderPositions( bool bBottom, bool bRight );
-	bool				IsSliderAtBottom() const { return m_bSliderBottom; }
-	bool				IsSliderAtRight() const { return m_bSliderRight; }
+	void		SetHandlePositions( bool bBottom, bool bRight );
+	bool		IsScrollbarAtBottom() const { return m_bScrollbarBottom; }
+	bool		IsScrollbarAtRight() const { return m_bScrollbarRight; }
 
-	bool				IsVSliderVisible();
-	bool				IsHSliderVisible();
+	bool		IsVScrollbarVisible();
+	bool		IsHScrollbarVisible();
 
-	void				SetFillerBlocks( const WgBlocksetPtr& pBlocks );
-	WgBlocksetPtr		FillerBlocks() const { return m_pFillerBlocks; }
+	void		SetOverlayScrollbars( bool bOverlay );
+	bool		OverlayScrollbars() const { return m_bOverlayScrollbars; }
+
+	void				SetFillerSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr			FillerSkin() const { return m_pFillerSkin; }
+
+	virtual void SetSkin( const WgSkinPtr& pSkin );
 
 	// Overloaded from WgPanel
 
@@ -236,7 +238,7 @@ protected:
 	};
 
 
-	class SliderTarget : public WgSliderTarget
+	class ScrollbarTarget : public WgScrollbarTarget
 	{
 	public:
 		float		_stepFwd();
@@ -248,10 +250,10 @@ protected:
 		float		_setPosition( float fraction );
 
 		WgWidget*	_getWidget();
-		float		_getSliderPosition();
-		float		_getSliderSize();
+		float		_getHandlePosition();
+		float		_getHandleSize();
 
-		void		_updateSlider( float pos, float size ) { WgSliderTarget::_updateSlider(pos,size); }
+		void		_updateScrollbar( float pos, float size ) { WgScrollbarTarget::_updateScrollbar(pos,size); }
 
 		bool		m_bHorizontal;
 		WgScrollPanel *	m_pParent;
@@ -297,28 +299,29 @@ protected:
 
 	WgCoord		m_viewPixOfs;
 
-	bool		m_bAutoHideSliderX;		// Should X-slider autohide when not needed?
-	bool		m_bAutoHideSliderY;		// Should Y-slider autohide when not needed?
+	bool		m_bAutoHideScrollbarX;		// Should X-scrollbar autohide when not needed?
+	bool		m_bAutoHideScrollbarY;		// Should Y-scrollbar autohide when not needed?
 
-	bool		m_bSliderBottom;		// True if X-slider should be at the bottom, otherwise at the top.
-	bool		m_bSliderRight;			// True if Y-slider should be at the right, otherwise at the left.
+	bool		m_bScrollbarBottom;		// True if X-scrollbar should be at the bottom, otherwise at the top.
+	bool		m_bScrollbarRight;			// True if Y-scrollbar should be at the right, otherwise at the left.
 
 	bool		m_bAutoScrollX;
 	bool		m_bAutoScrollY;
 
 	int			m_wheelForScrollX;		// What wheel should be used for horizontal scrolling. (0=none)
 	int			m_wheelForScrollY;		// What wheel should be used for vertical scrolling. (0=none)
+
+	bool		m_bOverlayScrollbars;
 	
 
 //	ViewWidgetCollection	m_elementsCollection;	// WgWidgetCollection for the elements widgets.
 	WgScrollHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag widgets in that order.
 
-	WgColor			m_bgColor;
 	WgSizePolicy	m_widthPolicy;
 	WgSizePolicy	m_heightPolicy;
 	WgOrigo	m_contentOrigo;		// Origo when content is smaller than window
 
-	SliderTarget	m_sliderTargets[2];			// Order: Vertical, horizontal
+	ScrollbarTarget	m_scrollbarTargets[2];			// Order: Vertical, horizontal
 
 private:
 
@@ -326,8 +329,8 @@ private:
 	WgHook*	_lastHook() const;
 
 
-	WgBlocksetPtr	m_pFillerBlocks;
-	WgRect			m_geoFiller;
+	WgSkinPtr		m_pFillerSkin;
+	WgRect			m_fillerGeo;
 };
 
 #endif //WG_SCROLLPANEL_DOT_H

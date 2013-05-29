@@ -30,7 +30,7 @@
 #include <wg_tablist.h>
 #include <wg_valuedisplay.h>
 #include <wg_valueeditor.h>
-#include <wg_slider.h>
+#include <wg_scrollbar.h>
 #include <wg_textdisplay.h>
 #include <wg_lineeditor.h>
 #include <wg_menu.h>
@@ -655,35 +655,35 @@ namespace WgEvent
 		m_fraction = fraction;
 	}
 
-	//____ Slider event methods _______________________________________________
+	//____ Scrollbar event methods _______________________________________________
 
-	SliderEvent::SliderEvent( WgWidgetSlider * pWidget, float pos, float length )
+	ScrollbarEvent::ScrollbarEvent( WgScrollbar * pWidget, float pos, float length )
 	{
 		m_pWidget 	= pWidget;
 		m_pos 		= pos;
 		m_length 	= length;
 	}
 
-	WgWidgetSlider* SliderEvent::Slider() const
+	WgScrollbar* ScrollbarEvent::Scrollbar() const
 	{
 		WgWidget * pWidget = m_pWidget.GetRealPtr();
 		if( pWidget )
-			return static_cast<WgWidgetSlider*>(pWidget);
+			return static_cast<WgScrollbar*>(pWidget);
 		else
 			return 0;
 	}
 
-	float SliderEvent::Pos() const
+	float ScrollbarEvent::Pos() const
 	{
 		return m_pos;
 	}
 
-	float SliderEvent::Length() const
+	float ScrollbarEvent::Length() const
 	{
 		return m_length;
 	}
 
-	float SliderEvent::Value() const
+	float ScrollbarEvent::Value() const
 	{
 		float max = 1.f - m_length;
 
@@ -693,38 +693,38 @@ namespace WgEvent
 			return m_pos / max;
 	}
 
-	SliderMove::SliderMove( WgWidgetSlider* pWidget, float pos, float length ) : SliderEvent( pWidget, pos, length )
+	ScrollbarMove::ScrollbarMove( WgScrollbar* pWidget, float pos, float length ) : ScrollbarEvent( pWidget, pos, length )
 	{
-		m_type = WG_EVENT_SLIDER_MOVE;
+		m_type = WG_EVENT_SCROLLBAR_MOVE;
 	}
 
-	SliderStepFwd::SliderStepFwd( WgWidgetSlider* pWidget, float pos, float length ) : SliderEvent( pWidget, pos, length )
+	ScrollbarStepFwd::ScrollbarStepFwd( WgScrollbar* pWidget, float pos, float length ) : ScrollbarEvent( pWidget, pos, length )
 	{
-		m_type = WG_EVENT_SLIDER_STEP_FWD;
+		m_type = WG_EVENT_SCROLLBAR_STEP_FWD;
 	}
 
-	SliderStepBwd::SliderStepBwd( WgWidgetSlider* pWidget, float pos, float length ) : SliderEvent( pWidget, pos, length )
+	ScrollbarStepBwd::ScrollbarStepBwd( WgScrollbar* pWidget, float pos, float length ) : ScrollbarEvent( pWidget, pos, length )
 	{
-		m_type = WG_EVENT_SLIDER_STEP_BWD;
+		m_type = WG_EVENT_SCROLLBAR_STEP_BWD;
 	}
 
-	SliderJumpFwd::SliderJumpFwd( WgWidgetSlider* pWidget, float pos, float length ) : SliderEvent( pWidget, pos, length )
+	ScrollbarJumpFwd::ScrollbarJumpFwd( WgScrollbar* pWidget, float pos, float length ) : ScrollbarEvent( pWidget, pos, length )
 	{
-		m_type = WG_EVENT_SLIDER_JUMP_FWD;
+		m_type = WG_EVENT_SCROLLBAR_JUMP_FWD;
 	}
 
-	SliderJumpBwd::SliderJumpBwd( WgWidgetSlider* pWidget, float pos, float length ) : SliderEvent( pWidget, pos, length )
+	ScrollbarJumpBwd::ScrollbarJumpBwd( WgScrollbar* pWidget, float pos, float length ) : ScrollbarEvent( pWidget, pos, length )
 	{
-		m_type = WG_EVENT_SLIDER_JUMP_BWD;
+		m_type = WG_EVENT_SCROLLBAR_JUMP_BWD;
 	}
 
-	SliderWheelRolled::SliderWheelRolled( WgWidgetSlider* pWidget, int distance, float pos, float length )  : SliderEvent( pWidget, pos, length )
+	ScrollbarWheelRolled::ScrollbarWheelRolled( WgScrollbar* pWidget, int distance, float pos, float length )  : ScrollbarEvent( pWidget, pos, length )
 	{
-		m_type = WG_EVENT_SLIDER_WHEEL_ROLL;
+		m_type = WG_EVENT_SCROLLBAR_WHEEL_ROLL;
 		m_distance = distance;
 	}
 	
-	int SliderWheelRolled::Distance() const
+	int ScrollbarWheelRolled::Distance() const
 	{
 		return m_distance;
 	}

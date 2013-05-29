@@ -376,50 +376,50 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		}
 
-		case WG_EVENT_SLIDER_MOVE:
+		case WG_EVENT_SCROLLBAR_MOVE:
 		{
-			id = "SliderMove";
-			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
+			id = "ScrollbarMove";
+			const WgEvent::ScrollbarEvent * pEvent = static_cast<const WgEvent::ScrollbarEvent*>(_pEvent);
 			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 				
-		case WG_EVENT_SLIDER_STEP_FWD:
+		case WG_EVENT_SCROLLBAR_STEP_FWD:
 		{
-			id = "SliderStepFwd";
-			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
+			id = "ScrollbarStepFwd";
+			const WgEvent::ScrollbarEvent * pEvent = static_cast<const WgEvent::ScrollbarEvent*>(_pEvent);
 			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 
-		case WG_EVENT_SLIDER_STEP_BWD:
+		case WG_EVENT_SCROLLBAR_STEP_BWD:
 		{
-			id = "SliderStepBwd";
-			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
+			id = "ScrollbarStepBwd";
+			const WgEvent::ScrollbarEvent * pEvent = static_cast<const WgEvent::ScrollbarEvent*>(_pEvent);
 			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 
-		case WG_EVENT_SLIDER_JUMP_FWD:
+		case WG_EVENT_SCROLLBAR_JUMP_FWD:
 		{
-			id = "SliderJumpFwd";
-			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
+			id = "ScrollbarJumpFwd";
+			const WgEvent::ScrollbarEvent * pEvent = static_cast<const WgEvent::ScrollbarEvent*>(_pEvent);
 			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 
-		case WG_EVENT_SLIDER_JUMP_BWD:
+		case WG_EVENT_SCROLLBAR_JUMP_BWD:
 		{
-			id = "SliderJumpBwd";
-			const WgEvent::SliderEvent * pEvent = static_cast<const WgEvent::SliderEvent*>(_pEvent);
+			id = "ScrollbarJumpBwd";
+			const WgEvent::ScrollbarEvent * pEvent = static_cast<const WgEvent::ScrollbarEvent*>(_pEvent);
 			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
 
-		case WG_EVENT_SLIDER_WHEEL_ROLL:
+		case WG_EVENT_SCROLLBAR_WHEEL_ROLL:
 		{
-			id = "SliderWheelRoll";
-			const WgEvent::SliderWheelRolled * pEvent = static_cast<const WgEvent::SliderWheelRolled*>(_pEvent);
+			id = "ScrollbarWheelRoll";
+			const WgEvent::ScrollbarWheelRolled * pEvent = static_cast<const WgEvent::ScrollbarWheelRolled*>(_pEvent);
 			sprintf( params, "distance=%d pos=%f length=%f", pEvent->Distance(), pEvent->Pos(), pEvent->Length() );
 			break;
 		}

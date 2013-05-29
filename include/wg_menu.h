@@ -44,16 +44,16 @@
 #	include	<wg_tileholder.h>
 #endif
 
-#ifndef WG_WIDGET_SLIDER_DOT_H
-#	include <wg_slider.h>
+#ifndef WG_SCROLLBAR_DOT_H
+#	include <wg_scrollbar.h>
 #endif
 
 #ifndef WG_PANEL_DOT_H
 #	include <wg_panel.h>
 #endif
 
-#ifndef WG_SLIDERTARGET_DOT_H
-#	include <wg_slidertarget.h>
+#ifndef WG_SCROLLBARTARGET_DOT_H
+#	include <wg_scrollbartarget.h>
 #endif
 
 class	WgSurface;
@@ -62,7 +62,7 @@ class	WgGfxAnim;
 class	WgText;
 
 
-class WgMenu:public WgPanel, public WgTileHolder, private WgSliderTarget
+class WgMenu:public WgPanel, public WgTileHolder, private WgScrollbarTarget
 {
 	friend class WgMenuItem;
 	friend class WgMenuSubMenu;
@@ -100,13 +100,13 @@ public:
 	WgTextpropPtr	GetTextEntryProperties() const { return m_pEntryProp; }
 	WgTextpropPtr	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
 
-	bool			SetSliderSource(  WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx );
-	bool			SetSliderButtonLayout(  WgWidgetSlider::ButtonLayout layout );
-	WgWidgetSlider::ButtonLayout GetSliderButtonLayout() const { return m_sliderBtnLayout; }
-	WgBlocksetPtr 	GetSliderBgSource() const { return m_pSliderBgGfx; }
-	WgBlocksetPtr 	GetSliderBarSource() const { return m_pSliderBarGfx; }
-	WgBlocksetPtr 	GetSliderBwdSource() const { return m_pSliderBtnBwdGfx; }
-	WgBlocksetPtr 	GetSliderFwdSource() const { return m_pSliderBtnFwdGfx; }
+	bool			SetScrollbarSource(  WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx );
+	bool			SetScrollbarButtonLayout(  WgScrollbar::ButtonLayout layout );
+	WgScrollbar::ButtonLayout GetScrollbarButtonLayout() const { return m_scrollbarBtnLayout; }
+	WgBlocksetPtr 	GetScrollbarBgSource() const { return m_pScrollbarBgGfx; }
+	WgBlocksetPtr 	GetScrollbarBarSource() const { return m_pScrollbarBarGfx; }
+	WgBlocksetPtr 	GetScrollbarBwdSource() const { return m_pScrollbarBtnBwdGfx; }
+	WgBlocksetPtr 	GetScrollbarFwdSource() const { return m_pScrollbarBtnFwdGfx; }
 
 	int			GetEntryHeight() const;
 
@@ -152,7 +152,7 @@ public:
 
 private:
 
-	class SliderHook : public WgHook
+	class ScrollbarHook : public WgHook
 	{
 		friend class WgMenu;
 
@@ -172,11 +172,11 @@ private:
 		bool		SetVisible( bool bVisible ) { return false; }
 		WgMenu* Parent() const { return m_pParent; }
 
-		WgVSlider * Slider() { return m_pWidget?static_cast<WgVSlider*>(m_pWidget):0; }
+		WgVScrollbar * Scrollbar() { return m_pWidget?static_cast<WgVScrollbar*>(m_pWidget):0; }
 
 
 	protected:
-		SliderHook() : m_pParent(0) {}
+		ScrollbarHook() : m_pParent(0) {}
 
 		void		_requestRender();
 		void		_requestRender( const WgRect& rect );
@@ -224,9 +224,9 @@ private:
 	void		_itemModified();
 	void		_adjustSize();
 	void		_tilesModified();
-	WgRect		_sliderGeo( const WgRect& menuGeo ) const;
+	WgRect		_scrollbarGeo( const WgRect& menuGeo ) const;
 
-	// Overriden for WgSliderTarget
+	// Overriden for WgScrollbarTarget
 
 	float		_stepFwd();
 	float		_stepBwd();
@@ -237,8 +237,8 @@ private:
 	float		_setPosition( float fraction );
 
 	WgWidget*	_getWidget();
-	float		_getSliderPosition();
-	float		_getSliderSize();
+	float		_getHandlePosition();
+	float		_getHandleSize();
 
 	//
 
@@ -260,7 +260,7 @@ private:
 
 	//____ Members ___________________________________________
 
-	SliderHook				m_sliderHook;
+	ScrollbarHook				m_scrollbarHook;
 	WgSize					m_defaultSize;
 
 	// Members defining items.
@@ -322,11 +322,11 @@ private:
 
 	// Members defining dragbar.
 
-	WgBlocksetPtr				m_pSliderBgGfx;
-	WgBlocksetPtr				m_pSliderBarGfx;
-	WgBlocksetPtr				m_pSliderBtnFwdGfx;
-	WgBlocksetPtr				m_pSliderBtnBwdGfx;
-	WgWidgetSlider::ButtonLayout	m_sliderBtnLayout;
+	WgBlocksetPtr				m_pScrollbarBgGfx;
+	WgBlocksetPtr				m_pScrollbarBarGfx;
+	WgBlocksetPtr				m_pScrollbarBtnFwdGfx;
+	WgBlocksetPtr				m_pScrollbarBtnBwdGfx;
+	WgScrollbar::ButtonLayout	m_scrollbarBtnLayout;
 };
 
 

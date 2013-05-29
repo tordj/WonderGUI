@@ -20,19 +20,19 @@
 
 =========================================================================*/
 
-#include <wg_slidertarget.h>
-#include <wg_slider.h>
+#include <wg_scrollbartarget.h>
+#include <wg_scrollbar.h>
 
 
-void WgSliderTarget::_updateSlider( float pos, float size )
+void WgScrollbarTarget::_updateScrollbar( float pos, float size )
 {
-		WgWidget * pWidget = m_pSlider.GetRealPtr();
+		WgWidget * pWidget = m_pScrollbar.GetRealPtr();
 
 		if( pWidget )
 		{
-			if( pWidget->Type() == WgVSlider::GetClass() ||
-				pWidget->Type() == WgHSlider::GetClass() )
-					static_cast<WgWidgetSlider*>(pWidget)->_setSlider(pos,size);
+			if( pWidget->Type() == WgVScrollbar::GetClass() ||
+				pWidget->Type() == WgHScrollbar::GetClass() )
+					static_cast<WgScrollbar*>(pWidget)->_setHandle(pos,size);
 		}
 
 }

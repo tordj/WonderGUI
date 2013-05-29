@@ -216,7 +216,7 @@ void printWidgetSizes()
 	printf( "WgRadioButton: %d bytes\n", (int) sizeof(WgRadioButton) );
 	printf( "WgRefreshButton: %d bytes\n", (int) sizeof(WgRefreshButton) );
 	printf( "WgShaderCapsule: %d bytes\n", (int) sizeof(WgShaderCapsule) );
-	printf( "WgWidgetSlider: %d bytes\n", (int) sizeof(WgWidgetSlider) );
+	printf( "WgScrollbar: %d bytes\n", (int) sizeof(WgScrollbar) );
 	printf( "WgPackPanel: %d bytes\n", (int) sizeof(WgPackPanel) );
 	printf( "WgStackPanel: %d bytes\n", (int) sizeof(WgStackPanel) );
 	printf( "WgTablePanel: %d bytes\n", (int) sizeof(WgTablePanel) );
@@ -354,9 +354,9 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 //		WgValueEditor * pValue = new WgValueEditor();
 //		pVBox->AddChild( pValue );
 
-//		WgWidgetSlider * pSlider = (WgWidgetSlider*) pDB->CloneWidget( "hslider" );
-//		pSlider->SetSliderTarget(pValue);
-//		pVBox->AddChild( pSlider );
+//		WgScrollbar * pScrollbar = (WgScrollbar*) pDB->CloneWidget( "hscrollbar" );
+//		pScrollbar->SetScrollbarTarget(pValue);
+//		pVBox->AddChild( pScrollbar );
 
 		addResizablePanel( pFlex, pStack, pEventHandler );
 
@@ -427,7 +427,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 		addResizablePanel( pFlex, pMenubar, pEventHandler );
 	}
 */
-
+/*
 	// Test oscilloscope
 
 	{
@@ -460,9 +460,9 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 		addResizablePanel( pFlex, pOsc, pEventHandler );
 	}
-
+*/
 	// Test combobox
-
+/*
 	{
 		WgCombobox * pCombobox = WgCast<WgCombobox>(pDB->CloneWidget("combobox"));
 
@@ -474,19 +474,25 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 		addResizablePanel( pFlex, pCombobox, pEventHandler );
 
 	}
-
+*/
 
 	// Test view
-/*
+
 	{
 		WgScrollPanel * pView = (WgScrollPanel*) pDB->CloneWidget( "view" );
 
 		WgImage * pImage = new WgImage();
 		pImage->SetSource( pBigBlock );
 		pView->SetContent( pImage );
+		pView->SetOverlayScrollbars(true);
+		((WgPanelHook*)pView->HScrollbar()->Hook())->SetPadding( 10 );
+		((WgPanelHook*)pView->VScrollbar()->Hook())->SetPadding( 10 );
+
+		((WgPanelHook*)pView->Content()->Hook())->SetPadding( 50 );
+
 		addResizablePanel( pFlex, pView, pEventHandler );
 	}
-*/
+
 
 	// Test overlapping non-visible
 /*

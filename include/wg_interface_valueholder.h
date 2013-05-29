@@ -28,14 +28,14 @@
 #	include <wg_valueformat.h>
 #endif
 
-#ifndef WG_SLIDERTARGET_DOT_H
-#	include <wg_slidertarget.h>
+#ifndef WG_SCROLLBARTARGET_DOT_H
+#	include <wg_scrollbartarget.h>
 #endif
 
 class	WgFont;
 
 
-class Wg_Interface_ValueHolder : public WgSliderTarget
+class Wg_Interface_ValueHolder : public WgScrollbarTarget
 {
 public:
 
@@ -78,7 +78,7 @@ protected:
 	bool			_setValue( Sint64 value );
 	bool			_setFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)
 
-	// Inherited from slidertarget
+	// Inherited from scrollbartarget
 
 	float		_stepFwd();
 	float		_stepBwd();
@@ -86,8 +86,8 @@ protected:
 	float		_jumpBwd();
 	float		_wheelRolled( int distance );
 	float		_setPosition( float fraction );
-	float		_getSliderPosition();
-	float		_getSliderSize();
+	float		_getHandlePosition();
+	float		_getHandleSize();
 
 	//
 

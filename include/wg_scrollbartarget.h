@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_SLIDERTARGET_DOT_H
-#define WG_SLIDERTARGET_DOT_H
+#ifndef WG_SCROLLBARTARGET_DOT_H
+#define WG_SCROLLBARTARGET_DOT_H
 
 #ifndef WG_SMARTPTR_DOT_H
 #	include <wg_smartptr.h>
@@ -32,13 +32,13 @@
 #endif
 
 
-class WgSliderTarget
+class WgScrollbarTarget
 {
-	friend class WgWidgetSlider;
+	friend class WgScrollbar;
 
 protected:
 
-	// Calls for Slider
+	// Calls for Scrollbar
 
 	virtual float	_stepFwd() = 0;
 	virtual float	_stepBwd() = 0;
@@ -50,16 +50,16 @@ protected:
 	virtual float	_setPosition( float fraction ) = 0;
 
 	virtual WgWidget*_getWidget() = 0;
-	virtual float	_getSliderPosition() = 0;
-	virtual float	_getSliderSize() = 0;
+	virtual float	_getHandlePosition() = 0;
+	virtual float	_getHandleSize() = 0;
 
 	// Calls for Target
 
-	void			_updateSlider( float pos, float size );
+	void			_updateScrollbar( float pos, float size );
 
 	//
 
-	WgWidgetWeakPtr	m_pSlider;
+	WgWidgetWeakPtr	m_pScrollbar;
 };
 
 

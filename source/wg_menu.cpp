@@ -24,7 +24,7 @@
 
 #include	<wg_menu.h>
 #include	<wg_menulayer.h>
-#include	<wg_slider.h>
+#include	<wg_scrollbar.h>
 #include	<wg_surface.h>
 #include	<wg_gfxdevice.h>
 #include	<wg_char.h>
@@ -36,7 +36,7 @@
 #include	<wg_patches.h>
 
 static const char	c_widgetType[] = {"Menu"};
-static const char	c_hookType[] = {"MenuSliderHook"};
+static const char	c_hookType[] = {"MenuScrollbarHook"};
 
 
 //____ Constructor _____________________________________________________________
@@ -63,7 +63,7 @@ WgMenu::WgMenu()
 	m_entryHeight			= 0;
 	m_sepHeight				= 2;
 
-	m_sliderBtnLayout		= WgWidgetSlider::DEFAULT;
+	m_scrollbarBtnLayout		= WgScrollbar::DEFAULT;
 
 	m_contentHeight			= 0;
 	m_contentOfs			= 0;
@@ -71,7 +71,7 @@ WgMenu::WgMenu()
 	m_nSelectorKeys			= 0;
 	m_selectorCountdown		= 0;
 
-	m_sliderHook.m_pParent = this;
+	m_scrollbarHook.m_pParent = this;
 	m_pOpenSubMenu			= 0;
 
 	_refreshEntryHeight();
@@ -211,32 +211,32 @@ void WgMenu::_refreshEntryHeight()
 }
 
 
-//____ SetSliderSource() ______________________________________________________
+//____ SetScrollbarSource() ______________________________________________________
 
-bool WgMenu::SetSliderSource(  WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx )
+bool WgMenu::SetScrollbarSource(  WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx )
 {
-	m_pSliderBgGfx		= pBgGfx;
-	m_pSliderBarGfx		= pBarGfx;
-	m_pSliderBtnFwdGfx	= pBtnFwdGfx;
-	m_pSliderBtnBwdGfx	= pBtnBwdGfx;
+	m_pScrollbarBgGfx		= pBgGfx;
+	m_pScrollbarBarGfx		= pBarGfx;
+	m_pScrollbarBtnFwdGfx	= pBtnFwdGfx;
+	m_pScrollbarBtnBwdGfx	= pBtnBwdGfx;
 
-	if( m_sliderHook.Slider() )
+	if( m_scrollbarHook.Scrollbar() )
 	{
-		//TODO: Adapt to changes in sliders minimum width.
+		//TODO: Adapt to changes in scrollbars minimum width.
 
-		m_sliderHook.Slider()->SetSource( pBgGfx, pBarGfx, pBtnBwdGfx, pBtnFwdGfx );
+		m_scrollbarHook.Scrollbar()->SetSource( pBgGfx, pBarGfx, pBtnBwdGfx, pBtnFwdGfx );
 	}
 	return true;
 }
 
-//____ SetSliderButtonLayout() ________________________________________________
+//____ SetScrollbarButtonLayout() ________________________________________________
 
-bool WgMenu::SetSliderButtonLayout(  WgWidgetSlider::ButtonLayout layout )
+bool WgMenu::SetScrollbarButtonLayout(  WgScrollbar::ButtonLayout layout )
 {
-	m_sliderBtnLayout = layout;
+	m_scrollbarBtnLayout = layout;
 
-	if( m_sliderHook.Slider() )
-		m_sliderHook.Slider()->SetButtonLayout( layout );
+	if( m_scrollbarHook.Scrollbar() )
+		m_scrollbarHook.Scrollbar()->SetButtonLayout( layout );
 
 	return true;
 }
@@ -443,21 +443,21 @@ int  WgMenu::WidthForHeight( int height ) const
 	if( height >= m_defaultSize.h )
 		return m_defaultSize.w;
 
-	int sliderWidth = 0;
+	int scrollbarWidth = 0;
 
-	if( m_pSliderBgGfx && m_pSliderBgGfx->Width() > sliderWidth )
-		sliderWidth = m_pSliderBgGfx->Width();
+	if( m_pScrollbarBgGfx && m_pScrollbarBgGfx->Width() > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarBgGfx->Width();
 
-	if( m_pSliderBarGfx && m_pSliderBarGfx->Width() > sliderWidth )
-		sliderWidth = m_pSliderBarGfx->Width();
+	if( m_pScrollbarBarGfx && m_pScrollbarBarGfx->Width() > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarBarGfx->Width();
 
-	if( m_pSliderBtnFwdGfx && m_pSliderBtnFwdGfx->Width() > sliderWidth )
-		sliderWidth = m_pSliderBtnFwdGfx->Width();
+	if( m_pScrollbarBtnFwdGfx && m_pScrollbarBtnFwdGfx->Width() > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarBtnFwdGfx->Width();
 
-	if( m_pSliderBtnBwdGfx && m_pSliderBtnBwdGfx->Width() > sliderWidth )
-		sliderWidth = m_pSliderBtnBwdGfx->Width();
+	if( m_pScrollbarBtnBwdGfx && m_pScrollbarBtnBwdGfx->Width() > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarBtnBwdGfx->Width();
 
-	return m_defaultSize.w + sliderWidth;
+	return m_defaultSize.w + scrollbarWidth;
 }
 
 
@@ -528,7 +528,7 @@ void WgMenu::_scrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop )
 	else if( ofs + m_entryHeight > m_contentOfs + _getViewSize() )
 		_setViewOfs( ofs + m_entryHeight - _getViewSize() );
 
-	_updateSlider( _getSliderPosition(), _getSliderSize() );
+	_updateScrollbar( _getHandlePosition(), _getHandleSize() );
 }
 
 //____ _markFirstFilteredEntry() _______________________________________________
@@ -865,7 +865,7 @@ void WgMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler 
 				int distance = pEv->Distance();
 
 				_setViewOfs( m_contentOfs - m_entryHeight*distance );
-				_updateSlider( _getSliderPosition(), _getSliderSize() );
+				_updateScrollbar( _getHandlePosition(), _getHandleSize() );
 			}
 		}
 
@@ -1193,7 +1193,7 @@ void WgMenu::_itemSelected()
 
 void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
-	WgRect sliderGeo = _sliderGeo( _canvas );
+	WgRect scrollbarGeo = _scrollbarGeo( _canvas );
 
 	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
 	{
@@ -1203,13 +1203,13 @@ void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		if( clip.w > 0 || clip.h > 0 )
 			_onRender( pDevice, _canvas, _window, clip );
 
-		// Render slider if present.
+		// Render scrollbar if present.
 
-		if( m_sliderHook.Widget() )
+		if( m_scrollbarHook.Widget() )
 		{
-			WgRect clip( sliderGeo, *pRect );
+			WgRect clip( scrollbarGeo, *pRect );
 			if( clip.w > 0 || clip.h > 0 )
-				((WgWidgetSlider*)m_sliderHook.Widget())->_onRender( pDevice, sliderGeo, sliderGeo, clip );
+				((WgScrollbar*)m_scrollbarHook.Widget())->_onRender( pDevice, scrollbarGeo, scrollbarGeo, clip );
 		}
 	}
 }
@@ -1258,11 +1258,11 @@ void WgMenu::_onCloneContent( const WgWidget * _pOrg )
 	m_pCbGfxUnchecked	= pOrg->m_pCbGfxUnchecked;
 	m_pRbGfxSelected	= pOrg->m_pRbGfxSelected;
 	m_pRbGfxUnselected	= pOrg->m_pRbGfxUnselected;
-	m_pSliderBgGfx		= pOrg->m_pSliderBgGfx;
-	m_pSliderBarGfx		= pOrg->m_pSliderBarGfx;
-	m_pSliderBtnFwdGfx	= pOrg->m_pSliderBtnFwdGfx;
-	m_pSliderBtnBwdGfx	= pOrg->m_pSliderBtnBwdGfx;
-	m_sliderBtnLayout	= pOrg->m_sliderBtnLayout;
+	m_pScrollbarBgGfx		= pOrg->m_pScrollbarBgGfx;
+	m_pScrollbarBarGfx		= pOrg->m_pScrollbarBarGfx;
+	m_pScrollbarBtnFwdGfx	= pOrg->m_pScrollbarBtnFwdGfx;
+	m_pScrollbarBtnBwdGfx	= pOrg->m_pScrollbarBtnBwdGfx;
+	m_scrollbarBtnLayout	= pOrg->m_scrollbarBtnLayout;
 
 	WgTileHolder::_cloneContent( pOrg );
 
@@ -1294,8 +1294,8 @@ bool WgMenu::_onAlphaTest( const WgCoord& ofs )
 
 void WgMenu::_onEnable()
 {
-	if( m_sliderHook.Widget() )
-		m_sliderHook.Widget()->SetEnabled(true);
+	if( m_scrollbarHook.Widget() )
+		m_scrollbarHook.Widget()->SetEnabled(true);
 
 	_requestRender();
 }
@@ -1304,8 +1304,8 @@ void WgMenu::_onEnable()
 
 void WgMenu::_onDisable()
 {
-	if( m_sliderHook.Widget() )
-		m_sliderHook.Widget()->SetEnabled(false);
+	if( m_scrollbarHook.Widget() )
+		m_scrollbarHook.Widget()->SetEnabled(false);
 
 	_requestRender();
 }
@@ -1315,21 +1315,21 @@ void WgMenu::_onDisable()
 
 WgHook * WgMenu::_firstHook() const
 {
-	if( m_sliderHook.Widget() )
-		return const_cast<SliderHook*>(&m_sliderHook);
+	if( m_scrollbarHook.Widget() )
+		return const_cast<ScrollbarHook*>(&m_scrollbarHook);
 	else
 		return 0;
 }
 
-//____ _sliderGeo() ___________________________________________________________
+//____ _scrollbarGeo() ___________________________________________________________
 
-WgRect WgMenu::_sliderGeo( const WgRect& menuGeo ) const
+WgRect WgMenu::_scrollbarGeo( const WgRect& menuGeo ) const
 {
-	if( m_sliderHook.Widget() )
+	if( m_scrollbarHook.Widget() )
 	{
 		WgRect contentGeo = menuGeo - _getPadding();
-		WgRect sliderGeo( contentGeo.x + contentGeo.w - m_sliderHook.m_size.w, contentGeo.y, m_sliderHook.m_size.w, contentGeo.h );	//TODO: Slider is now hardcoded to right side.
-		return sliderGeo;
+		WgRect scrollbarGeo( contentGeo.x + contentGeo.w - m_scrollbarHook.m_size.w, contentGeo.y, m_scrollbarHook.m_size.w, contentGeo.h );	//TODO: Scrollbar is now hardcoded to right side.
+		return scrollbarGeo;
 	}
 	else
 		return WgRect();
@@ -1340,10 +1340,10 @@ WgRect WgMenu::_sliderGeo( const WgRect& menuGeo ) const
 
 WgHook * WgMenu::_firstHookWithGeo( WgRect& writeGeo ) const
 {
-	if( m_sliderHook.Widget() )
+	if( m_scrollbarHook.Widget() )
 	{
-		writeGeo = _sliderGeo( Size() );
-		return const_cast<SliderHook*>(&m_sliderHook);
+		writeGeo = _scrollbarGeo( Size() );
+		return const_cast<ScrollbarHook*>(&m_scrollbarHook);
 	}
 	else
 		return 0;
@@ -1446,28 +1446,28 @@ void WgMenu::_adjustSize()
 
 	if( h > Size().h )
 	{
-		WgWidgetSlider * pSlider = m_sliderHook.Slider();
-		if( !pSlider )
+		WgScrollbar * pScrollbar = m_scrollbarHook.Scrollbar();
+		if( !pScrollbar )
 		{
-			pSlider = new WgVSlider();
-			pSlider->SetSource( m_pSliderBgGfx, m_pSliderBarGfx, m_pSliderBtnBwdGfx, m_pSliderBtnFwdGfx );
-			pSlider->SetButtonLayout( m_sliderBtnLayout );
-			pSlider->SetSliderTarget(this);
+			pScrollbar = new WgVScrollbar();
+			pScrollbar->SetSource( m_pScrollbarBgGfx, m_pScrollbarBarGfx, m_pScrollbarBtnBwdGfx, m_pScrollbarBtnFwdGfx );
+			pScrollbar->SetButtonLayout( m_scrollbarBtnLayout );
+			pScrollbar->SetScrollbarTarget(this);
 		}
-		WgSize sliderSize = pSlider->PreferredSize();
+		WgSize scrollbarSize = pScrollbar->PreferredSize();
 
-		m_sliderHook.m_size.w = sliderSize.w;
-		m_sliderHook.m_size.h = Size().h - contentBorders.Height();
+		m_scrollbarHook.m_size.w = scrollbarSize.w;
+		m_scrollbarHook.m_size.h = Size().h - contentBorders.Height();
 
-		m_sliderHook._attachWidget(pSlider);
+		m_scrollbarHook._attachWidget(pScrollbar);
 
-		_updateSlider( _getSliderPosition(), _getSliderSize() );
+		_updateScrollbar( _getHandlePosition(), _getHandleSize() );
 	}
 	else
 	{
-		if( m_sliderHook.Widget() )
+		if( m_scrollbarHook.Widget() )
 		{
-			delete m_sliderHook._releaseWidget();
+			delete m_scrollbarHook._releaseWidget();
 		}
 	}
 
@@ -1480,7 +1480,7 @@ void WgMenu::_adjustSize()
 float WgMenu::_stepFwd()
 {
 	_setViewOfs( m_contentOfs + m_entryHeight );
-	return _getSliderPosition();
+	return _getHandlePosition();
 }
 
 //____ _stepBwd() ______________________________________________________________
@@ -1488,7 +1488,7 @@ float WgMenu::_stepFwd()
 float WgMenu::_stepBwd()
 {
 	_setViewOfs( m_contentOfs - m_entryHeight );
-	return _getSliderPosition();
+	return _getHandlePosition();
 }
 
 //____ _jumpFwd() ______________________________________________________________
@@ -1497,7 +1497,7 @@ float WgMenu::_jumpFwd()
 {
 	int viewHeight = Size().h - _getPadding().Height();
 	_setViewOfs( m_contentOfs + (viewHeight - m_entryHeight) );
-	return _getSliderPosition();
+	return _getHandlePosition();
 }
 
 //____ _jumpBwd() ______________________________________________________________
@@ -1506,7 +1506,7 @@ float WgMenu::_jumpBwd()
 {
 	int viewHeight = Size().h - _getPadding().Height();
 	_setViewOfs( m_contentOfs - (viewHeight - m_entryHeight) );
-	return _getSliderPosition();
+	return _getHandlePosition();
 }
 
 //____ _wheelRolled() ______________________________________________________________
@@ -1515,7 +1515,7 @@ float WgMenu::_wheelRolled( int distance )
 {
 	int viewHeight = Size().h - _getPadding().Height();
 	_setViewOfs( m_contentOfs + m_entryHeight*distance );
-	return _getSliderPosition();
+	return _getHandlePosition();
 }
 
 
@@ -1546,16 +1546,16 @@ WgWidget* WgMenu::_getWidget()
 	return this;
 }
 
-//____ _getSliderPosition() ____________________________________________________
+//____ _getHandlePosition() ____________________________________________________
 
-float WgMenu::_getSliderPosition()
+float WgMenu::_getHandlePosition()
 {
 	return ((float)m_contentOfs) / (m_contentHeight-(Size().h-_getPadding().Height()));
 }
 
-//____ _getSliderSize() ________________________________________________________
+//____ _getHandleSize() ________________________________________________________
 
-float WgMenu::_getSliderSize()
+float WgMenu::_getHandleSize()
 {
 	return ((float)(_getViewSize())) / m_contentHeight;
 }
@@ -1599,58 +1599,58 @@ void WgMenu::_tilesModified()
 
 
 
-const char * WgMenu::SliderHook::Type( void ) const
+const char * WgMenu::ScrollbarHook::Type( void ) const
 {
 	return ClassType();
 }
 
-const char * WgMenu::SliderHook::ClassType()
+const char * WgMenu::ScrollbarHook::ClassType()
 {
 	return c_hookType;
 }
 
-WgCoord WgMenu::SliderHook::Pos() const
+WgCoord WgMenu::ScrollbarHook::Pos() const
 {
 	WgSize parentSize = m_pParent->Size();
 	WgBorders borders = m_pParent->_getPadding();
 	return WgCoord(parentSize.w-m_size.w-borders.right,borders.top);
 }
 
-WgSize WgMenu::SliderHook::Size() const
+WgSize WgMenu::ScrollbarHook::Size() const
 {
 	return m_size;
 }
 
-WgRect WgMenu::SliderHook::Geo() const
+WgRect WgMenu::ScrollbarHook::Geo() const
 {
 	WgSize parentSize = m_pParent->Size();
 	WgBorders borders = m_pParent->_getPadding();
 	return WgRect(parentSize.w-m_size.w-borders.right,borders.top,m_size);
 }
 
-WgCoord WgMenu::SliderHook::ScreenPos() const
+WgCoord WgMenu::ScrollbarHook::ScreenPos() const
 {
 	WgRect content = m_pParent->ScreenGeo() - m_pParent->_getPadding();
 	return WgCoord( content.x + content.w - m_size.w, content.y);
 }
 
-WgRect WgMenu::SliderHook::ScreenGeo() const
+WgRect WgMenu::ScrollbarHook::ScreenGeo() const
 {
 	WgRect content = m_pParent->ScreenGeo() - m_pParent->_getPadding();
 	return WgRect( content.x + content.w - m_size.w, content.y, m_size );
 }
 
-void WgMenu::SliderHook::_requestRender()
+void WgMenu::ScrollbarHook::_requestRender()
 {
 	m_pParent->_requestRender( Geo() );
 }
 
-void WgMenu::SliderHook::_requestRender( const WgRect& rect )
+void WgMenu::ScrollbarHook::_requestRender( const WgRect& rect )
 {
 	m_pParent->_requestRender( rect + Pos() );
 }
 
-void WgMenu::SliderHook::_requestResize()
+void WgMenu::ScrollbarHook::_requestResize()
 {
 	// Do nothing.
 }

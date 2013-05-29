@@ -174,23 +174,23 @@ public:
 	static WgEventFilter	EditvalueSet();
 	static WgEventFilter	EditvalueSet( WgValueEditor * pWidget );
 
-	static WgEventFilter	SliderMove();
-	static WgEventFilter	SliderMove( WgWidgetSlider * pWidget );
+	static WgEventFilter	ScrollbarMove();
+	static WgEventFilter	ScrollbarMove( WgScrollbar * pWidget );
 
-	static WgEventFilter	SliderStepFwd();
-	static WgEventFilter	SliderStepFwd( WgWidgetSlider * pWidget );
+	static WgEventFilter	ScrollbarStepFwd();
+	static WgEventFilter	ScrollbarStepFwd( WgScrollbar * pWidget );
 
-	static WgEventFilter	SliderStepBwd();
-	static WgEventFilter	SliderStepBwd( WgWidgetSlider * pWidget );
+	static WgEventFilter	ScrollbarStepBwd();
+	static WgEventFilter	ScrollbarStepBwd( WgScrollbar * pWidget );
 
-	static WgEventFilter	SliderJumpFwd();
-	static WgEventFilter	SliderJumpFwd( WgWidgetSlider * pWidget );
+	static WgEventFilter	ScrollbarJumpFwd();
+	static WgEventFilter	ScrollbarJumpFwd( WgScrollbar * pWidget );
 
-	static WgEventFilter	SliderJumpBwd();
-	static WgEventFilter	SliderJumpBwd( WgWidgetSlider * pWidget );
+	static WgEventFilter	ScrollbarJumpBwd();
+	static WgEventFilter	ScrollbarJumpBwd( WgScrollbar * pWidget );
 
-	static WgEventFilter	SliderWheelRoll();
-	static WgEventFilter	SliderWheelRoll( WgWidgetSlider * pWidget );
+	static WgEventFilter	ScrollbarWheelRoll();
+	static WgEventFilter	ScrollbarWheelRoll( WgScrollbar * pWidget );
 
 	static WgEventFilter	TextModify();
 	static WgEventFilter	TextModify( WgWidget * pWidget );

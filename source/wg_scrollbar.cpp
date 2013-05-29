@@ -21,28 +21,28 @@
 =========================================================================*/
 
 #include <memory.h>
-#include <wg_slider.h>
+#include <wg_scrollbar.h>
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
-#include <wg_slidertarget.h>
+#include <wg_scrollbartarget.h>
 #include <wg_eventhandler.h>
 
 using namespace WgUtil;
 
-static const char	c_widgetType[] = {"Unspecified type derived from Slider"};
-static const char c_widgetTypeH[] = {"HSlider"};
-static const char c_widgetTypeV[] = {"VSlider"};
+static const char	c_widgetType[] = {"Unspecified type derived from Scrollbar"};
+static const char c_widgetTypeH[] = {"HScrollbar"};
+static const char c_widgetTypeV[] = {"VScrollbar"};
 
 
-//____ WgWidgetSlider() ____________________________________________________
+//____ WgScrollbar() ____________________________________________________
 
-WgWidgetSlider::WgWidgetSlider()
+WgScrollbar::WgScrollbar()
 {
-	m_pSliderTargetInterface = 0;
+	m_pScrollbarTargetInterface = 0;
 
-	m_sliderSize 		= 1.0;
-	m_sliderPos 		= 0.0;
+	m_handleSize 		= 1.0;
+	m_handlePos 		= 0.0;
 
 	m_bgPressMode		= SKIP_PAGE;
 	m_bPressOnDragBar	= false;
@@ -58,67 +58,67 @@ WgWidgetSlider::WgWidgetSlider()
 		m_mode[i] = WG_MODE_NORMAL;
 }
 
-//____ ~WgWidgetSlider() _________________________________________________________
+//____ ~WgScrollbar() _________________________________________________________
 
-WgWidgetSlider::~WgWidgetSlider( void )
+WgScrollbar::~WgScrollbar( void )
 {
 }
 
 
 //____ Type() _________________________________________________________________
 
-const char * WgWidgetSlider::Type( void ) const
+const char * WgScrollbar::Type( void ) const
 {
 	return GetClass();
 }
 
-const char * WgWidgetSlider::GetClass( void )
+const char * WgScrollbar::GetClass( void )
 {
 	return c_widgetType;
 }
 
 //____ SetBgPressMode() _______________________________________________________
 
-void WgWidgetSlider::SetBgPressMode( BgPressMode mode )
+void WgScrollbar::SetBgPressMode( BgPressMode mode )
 {
 	m_bgPressMode = mode;
 }
 
 
 
-//____ SetSlider() ____________________________________________________________
+//____ SetHandle() ____________________________________________________________
 
-bool WgWidgetSlider::SetSlider( float _pos, float _size )
+bool WgScrollbar::SetHandle( float _pos, float _size )
 {
 	WG_LIMIT( _size, 0.0001f, 1.f );
 	WG_LIMIT( _pos, 0.f, 1.f );
 
-	if( m_sliderPos == _pos && m_sliderSize == _size )
+	if( m_handlePos == _pos && m_handleSize == _size )
 		return true;
 
-	m_sliderPos		= _pos;
-	m_sliderSize 	= _size;
+	m_handlePos		= _pos;
+	m_handleSize 	= _size;
 
 	_requestRender();
 	return	true;
 }
 
-//____ SetSliderPos() _________________________________________________________
+//____ SetHandlePos() _________________________________________________________
 
-bool WgWidgetSlider::SetSliderPos( float pos )
+bool WgScrollbar::SetHandlePos( float pos )
 {
 	WG_LIMIT( pos, 0.f, 1.f );
 
-	if( pos > m_sliderPos-0.000001 && pos < m_sliderPos+0.000001 )
+	if( pos > m_handlePos-0.000001 && pos < m_handlePos+0.000001 )
 		return true;
 
-	m_sliderPos = pos;
+	m_handlePos = pos;
 
 	_requestRender();
 	return	true;
 }
 
-bool WgWidgetSlider::SetSliderPosPxlOfs( int x )
+bool WgScrollbar::SetHandlePosPxlOfs( int x )
 {
 	int		barPos, barLen;
 	_viewToPosLen( &barPos, &barLen );
@@ -135,23 +135,23 @@ bool WgWidgetSlider::SetSliderPosPxlOfs( int x )
 
 	length -= m_headerLen + m_footerLen;
 
-	float sliderPos = 0.f;
-	if( m_sliderSize < 1.f)
-		sliderPos = ((float)(x - (barLen >> 1))) / (length - barLen);
+	float scrollbarPos = 0.f;
+	if( m_handleSize < 1.f)
+		scrollbarPos = ((float)(x - (barLen >> 1))) / (length - barLen);
 
-	return SetSliderPos(sliderPos);
+	return SetHandlePos(scrollbarPos);
 }
 
-//____ SetSliderSize() ________________________________________________________
+//____ SetHandleSize() ________________________________________________________
 
-bool WgWidgetSlider::SetSliderSize( float _size )
+bool WgScrollbar::SetHandleSize( float _size )
 {
 	WG_LIMIT( _size, 0.0001f, 1.f );
 
-	if( _size == m_sliderSize )
+	if( _size == m_handleSize )
 		return true;
 
-	m_sliderSize = _size;
+	m_handleSize = _size;
 
 	_requestRender();
 	return	true;
@@ -160,7 +160,7 @@ bool WgWidgetSlider::SetSliderSize( float _size )
 
 //____ SetSource() ____________________________________________________________
 
-bool WgWidgetSlider::SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx,
+bool WgScrollbar::SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx,
 							 WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx )
 {
 	m_pBgGfx		= pBgGfx;
@@ -176,7 +176,7 @@ bool WgWidgetSlider::SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx,
 
 //____ SetButtonLayout() ______________________________________________________
 
-bool WgWidgetSlider::SetButtonLayout(  ButtonLayout layout )
+bool WgScrollbar::SetButtonLayout(  ButtonLayout layout )
 {
 	m_btnLayout = layout;
 
@@ -184,38 +184,38 @@ bool WgWidgetSlider::SetButtonLayout(  ButtonLayout layout )
 	return true;
 }
 
-//____ SetSliderTarget() _______________________________________________________
+//____ SetScrollbarTarget() _______________________________________________________
 
-bool WgWidgetSlider::SetSliderTarget( WgSliderTarget * pTarget )
+bool WgScrollbar::SetScrollbarTarget( WgScrollbarTarget * pTarget )
 {
 	// Release previous target (if any)
 
-	if( m_pSliderTargetWidget )
-		m_pSliderTargetInterface->m_pSlider = 0;
+	if( m_pScrollbarTargetWidget )
+		m_pScrollbarTargetInterface->m_pScrollbar = 0;
 
 	// Set new target
 
 	if( pTarget == 0 )
 	{
-		m_pSliderTargetInterface	= 0;
-		m_pSliderTargetWidget		= 0;
+		m_pScrollbarTargetInterface	= 0;
+		m_pScrollbarTargetWidget		= 0;
 	}
 	else
 	{
-		if( pTarget->m_pSlider )
-			return false;									// Target is already controlled by another slider.
+		if( pTarget->m_pScrollbar )
+			return false;									// Target is already controlled by another scrollbar.
 
-		m_pSliderTargetInterface 	= pTarget;
-		m_pSliderTargetWidget		= pTarget->_getWidget();
-		m_pSliderTargetInterface->m_pSlider = this;
-		_setSlider( pTarget->_getSliderPosition(), pTarget->_getSliderSize() );
+		m_pScrollbarTargetInterface 	= pTarget;
+		m_pScrollbarTargetWidget		= pTarget->_getWidget();
+		m_pScrollbarTargetInterface->m_pScrollbar = this;
+		_setHandle( pTarget->_getHandlePosition(), pTarget->_getHandleSize() );
 	}
 	return true;
 }
 
 //____ _headerFooterChanged() _______________________________________________
 
-void WgWidgetSlider::_headerFooterChanged()
+void WgScrollbar::_headerFooterChanged()
 {
 	int	fwdLen = 0, bwdLen = 0;
 
@@ -264,17 +264,17 @@ void WgWidgetSlider::_headerFooterChanged()
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgWidgetSlider::_onCloneContent( const WgWidget * _pOrg )
+void WgScrollbar::_onCloneContent( const WgWidget * _pOrg )
 {
-	WgWidgetSlider * pOrg = (WgWidgetSlider *) _pOrg;
+	WgScrollbar * pOrg = (WgScrollbar *) _pOrg;
 
 	m_pBgGfx			= pOrg->m_pBgGfx;
 	m_pBarGfx			= pOrg->m_pBarGfx;
 	m_pBtnFwdGfx		= pOrg->m_pBtnFwdGfx;
 	m_pBtnBwdGfx		= pOrg->m_pBtnBwdGfx;
 
-  	m_sliderPos			= pOrg->m_sliderPos;
-	m_sliderSize		= pOrg->m_sliderSize;
+  	m_handlePos			= pOrg->m_handlePos;
+	m_handleSize		= pOrg->m_handleSize;
 
 	m_bHorizontal		= pOrg->m_bHorizontal;
 	m_bgPressMode		= pOrg->m_bgPressMode;
@@ -291,7 +291,7 @@ void WgWidgetSlider::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _viewToPosLen() _________________________________________________________
 
-void	WgWidgetSlider::_viewToPosLen( int * _wpPos, int * _wpLen )
+void	WgScrollbar::_viewToPosLen( int * _wpPos, int * _wpLen )
 {
 	// changes by Viktor.
 
@@ -307,8 +307,8 @@ void	WgWidgetSlider::_viewToPosLen( int * _wpPos, int * _wpLen )
 
 	maxLen -= m_headerLen + m_footerLen;
 
-	//len = m_sliderSize * maxLen;
-	len = (int)(m_sliderSize * (float)maxLen);
+	//len = m_handleSize * maxLen;
+	len = (int)(m_handleSize * (float)maxLen);
 
 	int		minLen;
 
@@ -327,8 +327,8 @@ void	WgWidgetSlider::_viewToPosLen( int * _wpPos, int * _wpLen )
 		len = minLen;
 	}
 
-	//pos = m_sliderPos * (maxLen-len);
-	pos = (int)(m_sliderPos * (float)(maxLen-len));
+	//pos = m_handlePos * (maxLen-len);
+	pos = (int)(m_handlePos * (float)(maxLen-len));
 
 	if( pos + len > maxLen )
 		pos = maxLen - len;
@@ -344,7 +344,7 @@ void	WgWidgetSlider::_viewToPosLen( int * _wpPos, int * _wpLen )
 
 //____ _onEnable() ___________________________________________________
 
-void WgWidgetSlider::_onEnable( void )
+void WgScrollbar::_onEnable( void )
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_NORMAL;
@@ -354,7 +354,7 @@ void WgWidgetSlider::_onEnable( void )
 
 //____ _onDisable() ___________________________________________________
 
-void WgWidgetSlider::_onDisable( void )
+void WgScrollbar::_onDisable( void )
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_DISABLED;
@@ -364,18 +364,18 @@ void WgWidgetSlider::_onDisable( void )
 
 //____ _onRefresh() _______________________________________________________
 
-void WgWidgetSlider::_onRefresh( void )
+void WgScrollbar::_onRefresh( void )
 {
 	_requestRender();
 }
 
 //____ PreferredSize() _____________________________________________________________
 
-WgSize WgWidgetSlider::PreferredSize() const
+WgSize WgScrollbar::PreferredSize() const
 {
 	WgSize sz = m_minSize;
 
-	// Add 50 pixels in the sliders direction for best size.
+	// Add 50 pixels in the scrollbars direction for best size.
 
 	if( m_bHorizontal )
 		sz.w += 50;
@@ -388,7 +388,7 @@ WgSize WgWidgetSlider::PreferredSize() const
 
 //____ _updateMinSize() ________________________________________________________
 
-void WgWidgetSlider::_updateMinSize()
+void WgScrollbar::_updateMinSize()
 {
 	int	minW = 4;
 	int	minH = 4;
@@ -410,7 +410,7 @@ void WgWidgetSlider::_updateMinSize()
 	}
 
 
-	// Add header and footer to minW/minH from slider part.
+	// Add header and footer to minW/minH from scrollbar part.
 
 	if( m_bHorizontal )
 		minW += m_footerLen + m_headerLen;
@@ -447,7 +447,7 @@ void WgWidgetSlider::_updateMinSize()
 
 //____ _renderButton() _________________________________________________________
 
-void WgWidgetSlider::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block )
+void WgScrollbar::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block )
 {
 		if( m_bHorizontal )
 			_dest.w = _block.Width();
@@ -464,7 +464,7 @@ void WgWidgetSlider::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, 
 
 //____ _onRender() ________________________________________________________
 
-void WgWidgetSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgScrollbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	WgRect	dest = _canvas;
 
@@ -519,7 +519,7 @@ void WgWidgetSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgWidgetSlider::_onAlphaTest( const WgCoord& ofs )
+bool WgScrollbar::_onAlphaTest( const WgCoord& ofs )
 {
 	if( _findMarkedComponent( ofs ) == C_NONE )
 		return false;
@@ -529,7 +529,7 @@ bool WgWidgetSlider::_onAlphaTest( const WgCoord& ofs )
 
 //____ _markTestButton() _______________________________________________________
 
-bool WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block )
+bool WgScrollbar::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block )
 {
 		if( m_bHorizontal )
 			_dest.w = _block.Width();
@@ -548,7 +548,7 @@ bool WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock&
 
 //____ _findMarkedComponent() __________________________________________________
 
-WgWidgetSlider::Component WgWidgetSlider::_findMarkedComponent( WgCoord ofs )
+WgScrollbar::Component WgScrollbar::_findMarkedComponent( WgCoord ofs )
 {
 	// First of all, do a mark test against the header buttons...
 
@@ -589,7 +589,7 @@ WgWidgetSlider::Component WgWidgetSlider::_findMarkedComponent( WgCoord ofs )
 
 	// Then, do a mark test against the dragbar...
 
-	if( _markTestSlider( ofs ) == true )
+	if( _markTestHandle( ofs ) == true )
 		return C_BAR;
 
 	// Finally, do a mark test against the background.
@@ -615,7 +615,7 @@ WgWidgetSlider::Component WgWidgetSlider::_findMarkedComponent( WgCoord ofs )
 
 //____ _unmarkReqRender() ______________________________________________________
 
-void WgWidgetSlider::_unmarkReqRender()
+void WgScrollbar::_unmarkReqRender()
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
 		m_mode[i] = WG_MODE_NORMAL;
@@ -625,7 +625,7 @@ void WgWidgetSlider::_unmarkReqRender()
 
 //____ _onEvent() ______________________________________________________________
 
-void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	int		barPos, barLen;
 	_viewToPosLen( &barPos, &barLen );
@@ -718,24 +718,24 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 				case SKIP_PAGE:
 					if( pointerOfs - barPos < barLen/2 )
 					{
-						if( m_pSliderTargetWidget.GetRealPtr() != 0 )
-							SetSliderPos( m_pSliderTargetInterface->_jumpBwd() );
+						if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+							SetHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
 
-						pHandler->QueueEvent( new WgEvent::SliderJumpBwd(this,m_sliderPos,m_sliderSize) );
+						pHandler->QueueEvent( new WgEvent::ScrollbarJumpBwd(this,m_handlePos,m_handleSize) );
 					}
 					else
 					{
-						if( m_pSliderTargetWidget.GetRealPtr() != 0 )
-							SetSliderPos( m_pSliderTargetInterface->_jumpFwd() );
+						if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+							SetHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
 
-						pHandler->QueueEvent( new WgEvent::SliderJumpFwd(this,m_sliderPos,m_sliderSize) );
+						pHandler->QueueEvent( new WgEvent::ScrollbarJumpFwd(this,m_handlePos,m_handleSize) );
 					}
 					break;
 				case GOTO_POS:
 					m_mode[C_BAR] = WG_MODE_SELECTED;
 					m_mode[C_BG] = WG_MODE_MARKED;
 					m_dragBarPressOfs = barLen/2;
-					SetSliderPosPxlOfs( pointerOfs );
+					SetHandlePosPxlOfs( pointerOfs );
 					break;
 				default:
 //					assert( false );
@@ -745,17 +745,17 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 			{
-				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
-					SetSliderPos( m_pSliderTargetInterface->_stepFwd() );
+				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+					SetHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
 
-				pHandler->QueueEvent( new WgEvent::SliderStepFwd(this,m_sliderPos,m_sliderSize) );
+				pHandler->QueueEvent( new WgEvent::ScrollbarStepFwd(this,m_handlePos,m_handleSize) );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
-				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
-					SetSliderPos( m_pSliderTargetInterface->_stepBwd() );
+				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+					SetHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
 
-				pHandler->QueueEvent( new WgEvent::SliderStepBwd(this,m_sliderPos,m_sliderSize) );
+				pHandler->QueueEvent( new WgEvent::ScrollbarStepBwd(this,m_handlePos,m_handleSize) );
 			}
 			break;
 		}
@@ -774,32 +774,32 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 			{
 				if( pointerOfs - barPos < barLen/2 )
 				{
-					if( m_pSliderTargetWidget.GetRealPtr() != 0 )
-						SetSliderPos( m_pSliderTargetInterface->_jumpBwd() );
+					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+						SetHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
 
-					pHandler->QueueEvent( new WgEvent::SliderJumpBwd(this,m_sliderPos,m_sliderSize) );
+					pHandler->QueueEvent( new WgEvent::ScrollbarJumpBwd(this,m_handlePos,m_handleSize) );
 				}
 				else
 				{
-					if( m_pSliderTargetWidget.GetRealPtr() != 0 )
-						SetSliderPos( m_pSliderTargetInterface->_jumpFwd() );
+					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+						SetHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
 
-					pHandler->QueueEvent( new WgEvent::SliderJumpFwd(this,m_sliderPos,m_sliderSize) );
+					pHandler->QueueEvent( new WgEvent::ScrollbarJumpFwd(this,m_handlePos,m_handleSize) );
 				}
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 			{
-				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
-					SetSliderPos( m_pSliderTargetInterface->_stepFwd() );
+				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+					SetHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
 
-				pHandler->QueueEvent( new WgEvent::SliderJumpFwd(this,m_sliderPos,m_sliderSize) );
+				pHandler->QueueEvent( new WgEvent::ScrollbarJumpFwd(this,m_handlePos,m_handleSize) );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
-				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
-					SetSliderPos( m_pSliderTargetInterface->_stepBwd() );
+				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+					SetHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
 
-				pHandler->QueueEvent( new WgEvent::SliderJumpBwd(this,m_sliderPos,m_sliderSize) );
+				pHandler->QueueEvent( new WgEvent::ScrollbarJumpBwd(this,m_handlePos,m_handleSize) );
 			}
 
 			break;
@@ -812,21 +812,21 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 
 			if( m_mode[C_BAR] == WG_MODE_SELECTED )
 			{
-				float	sliderPos = 0.f;
+				float	scrollbarPos = 0.f;
 
-				if( m_sliderSize < 1.f)
-					sliderPos = ((float)(pointerOfs - m_dragBarPressOfs)) / (length - barLen);
+				if( m_handleSize < 1.f)
+					scrollbarPos = ((float)(pointerOfs - m_dragBarPressOfs)) / (length - barLen);
 
-				WG_LIMIT( sliderPos, 0.f, 1.f );
+				WG_LIMIT( scrollbarPos, 0.f, 1.f );
 
-				if( sliderPos != m_sliderPos )
+				if( scrollbarPos != m_handlePos )
 				{
-					m_sliderPos = sliderPos;
+					m_handlePos = scrollbarPos;
 
-					if( m_pSliderTargetWidget.GetRealPtr() != 0 )
-						m_sliderPos = m_pSliderTargetInterface->_setPosition(m_sliderPos);
+					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+						m_handlePos = m_pScrollbarTargetInterface->_setPosition(m_handlePos);
 
-					pHandler->QueueEvent( new WgEvent::SliderMove(this,m_sliderPos,m_sliderSize) );
+					pHandler->QueueEvent( new WgEvent::ScrollbarMove(this,m_handlePos,m_handleSize) );
 
 					_requestRender();
 				}
@@ -841,10 +841,10 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 			if( p->Wheel() == 1 )
 			{
 				int distance = p->Distance();
-				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
-					SetSliderPos( m_pSliderTargetInterface->_wheelRolled(distance) );
+				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+					SetHandlePos( m_pScrollbarTargetInterface->_wheelRolled(distance) );
 				
-				pHandler->QueueEvent( new WgEvent::SliderWheelRolled(this,distance,m_sliderPos,m_sliderSize) );
+				pHandler->QueueEvent( new WgEvent::ScrollbarWheelRolled(this,distance,m_handlePos,m_handleSize) );
 			}
 		}
 		
@@ -866,9 +866,9 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 }
 
 
-//____ _markTestSlider() _______________________________________________________
+//____ _markTestHandle() _______________________________________________________
 
-bool WgWidgetSlider::_markTestSlider( WgCoord ofs )
+bool WgScrollbar::_markTestHandle( WgCoord ofs )
 {
 	if( !m_pBarGfx )
 		return false;
@@ -894,18 +894,18 @@ bool WgWidgetSlider::_markTestSlider( WgCoord ofs )
 	return WgUtil::MarkTestBlock( ofs, m_pBarGfx->GetBlock(m_mode[C_BAR]), area, m_markOpacity );
 }
 
-//____ _setSlider() ____________________________________________________________
+//____ _setHandle() ____________________________________________________________
 
-bool WgWidgetSlider::_setSlider( float _pos, float _size )
+bool WgScrollbar::_setHandle( float _pos, float _size )
 {
 	WG_LIMIT( _size, 0.0001f, 1.f );
 	WG_LIMIT( _pos, 0.f, 1.f );
 
-	if( m_sliderPos == _pos && m_sliderSize == _size )
+	if( m_handlePos == _pos && m_handleSize == _size )
 		return true;
 
-	m_sliderPos		= _pos;
-	m_sliderSize 	= _size;
+	m_handlePos		= _pos;
+	m_handleSize 	= _size;
 
 	_requestRender();
 	return	true;
@@ -914,27 +914,27 @@ bool WgWidgetSlider::_setSlider( float _pos, float _size )
 
 //=============================================================================
 //
-//										>>> WgHSlider - functions <<<
+//										>>> WgHScrollbar - functions <<<
 //
 //=============================================================================
 
 
-//____ WgHSlider() ______________________________________________________
+//____ WgHScrollbar() ______________________________________________________
 
-WgHSlider::WgHSlider( void )
+WgHScrollbar::WgHScrollbar( void )
 {
 	m_bHorizontal = true;
 }
 
 
-//____ WgHSlider::Type() ______________________________________________________
+//____ WgHScrollbar::Type() ______________________________________________________
 
-const char * WgHSlider::Type( void ) const
+const char * WgHScrollbar::Type( void ) const
 {
 	return GetClass();
 }
 
-const char * WgHSlider::GetClass( void )
+const char * WgHScrollbar::GetClass( void )
 {
 	return c_widgetTypeH;
 }
@@ -944,27 +944,27 @@ const char * WgHSlider::GetClass( void )
 
 //=============================================================================
 //
-//										>>> WgVSlider - functions <<<
+//										>>> WgVScrollbar - functions <<<
 //
 //=============================================================================
 
 
-//____ WgVSlider() ______________________________________________________
+//____ WgVScrollbar() ______________________________________________________
 
-WgVSlider::WgVSlider( void )
+WgVScrollbar::WgVScrollbar( void )
 {
 	m_bHorizontal = false;
 }
 
 
-//____ WgVSlider::Type() ______________________________________________________
+//____ WgVScrollbar::Type() ______________________________________________________
 
-const char * WgVSlider::Type( void ) const
+const char * WgVScrollbar::Type( void ) const
 {
 	return GetClass();
 }
 
-const char * WgVSlider::GetClass( void )
+const char * WgVScrollbar::GetClass( void )
 {
 	return c_widgetTypeV;
 }

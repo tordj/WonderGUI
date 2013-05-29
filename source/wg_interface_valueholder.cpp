@@ -65,7 +65,7 @@ bool Wg_Interface_ValueHolder::SetRange( Sint64 min, Sint64 max )
 	}
 
 	_rangeModified();
-	_updateSlider( FractionalValue(), 0.f );
+	_updateScrollbar( FractionalValue(), 0.f );
 	return true;
 }
 
@@ -98,7 +98,7 @@ bool Wg_Interface_ValueHolder::SetUnitSize( int unitsize )
 bool Wg_Interface_ValueHolder::SetValue( Sint64 value )
 {
 	bool b = _setValue(value);
-	_updateSlider( FractionalValue(), 0.f );
+	_updateScrollbar( FractionalValue(), 0.f );
 	return b;
 }
 
@@ -109,14 +109,14 @@ bool Wg_Interface_ValueHolder::SetFractionalValue( float fraction )
 	// First we check if fraction is identical to what we might have sent out
 	// ourselves. In that case we ignore it even if it would result in a slightly
 	// different value due to rounding. This prevents signal-looping and making
-	// it impossible to step up/down at certain values if we are connected to a slider.
+	// it impossible to step up/down at certain values if we are connected to a scrollbar.
 
 	float currFracValue = (m_value - m_rangeMin) / (float)(m_rangeMax - m_rangeMin);
 	if( fraction > currFracValue-0.000001 && fraction < currFracValue+0.000001 )
 		return true;
 
 	bool b = _setFractionalValue(fraction);
-	_updateSlider( FractionalValue(), 0.f );
+	_updateScrollbar( FractionalValue(), 0.f );
 	return b;
 }
 
@@ -213,16 +213,16 @@ float Wg_Interface_ValueHolder::_setPosition( float fraction )
 	return FractionalValue();
 }
 
-//____ _getSliderPosition() ____________________________________________________
+//____ _getHandlePosition() ____________________________________________________
 
-float Wg_Interface_ValueHolder::_getSliderPosition()
+float Wg_Interface_ValueHolder::_getHandlePosition()
 {
 	return FractionalValue();
 }
 
-//____ _getSliderSize() ________________________________________________________
+//____ _getHandleSize() ________________________________________________________
 
-float Wg_Interface_ValueHolder::_getSliderSize()
+float Wg_Interface_ValueHolder::_getHandleSize()
 {
 	return 0.f;
 }

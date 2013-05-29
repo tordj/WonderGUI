@@ -60,7 +60,7 @@ void WgResDB::Clear()
 	m_mapColorsets.clear();
 	m_mapTextprops.clear();
 	m_mapLegoSources.clear();
-	m_mapBlocksets.clear();
+	m_mapSkins.clear();
 	m_mapWidgets.clear();
 	m_mapMenuitems.clear();
 	m_mapTabs.clear();
@@ -84,7 +84,7 @@ void WgResDB::Clear()
 	m_colorsets.Clear();
 	m_colors.Clear();
 	m_legos.Clear();
-	m_blockSets.Clear();
+	m_skins.Clear();
 	m_widgets.Clear();
 	m_menuItems.Clear();
 	m_tabs.Clear();
@@ -201,11 +201,11 @@ std::string	WgResDB::GenerateName( const WgTextpropPtr& data )
 	return std::string("_textprop__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgBlocksetPtr& data )
+std::string	WgResDB::GenerateName( const WgSkinPtr& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
-	return std::string("_blockset__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
+	return std::string("_skin__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
 std::string	WgResDB::GenerateName( const WgWidget* data )
@@ -467,15 +467,15 @@ std::string WgResDB::LoadString( const std::string& token )
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddBlockset( const std::string& id, const WgBlocksetPtr& pBlockset, MetaData * pMetaData )
+bool WgResDB::AddSkin( const std::string& id, const WgSkinPtr& pSkin, MetaData * pMetaData )
 {
-	assert(m_mapBlocksets.find(id) == m_mapBlocksets.end());
-	if(m_mapBlocksets.find(id) == m_mapBlocksets.end())
+	assert(m_mapSkins.find(id) == m_mapSkins.end());
+	if(m_mapSkins.find(id) == m_mapSkins.end())
 	{
-		BlocksetRes* p = new BlocksetRes(id, pBlockset, pMetaData);
-		m_blockSets.PushBack(p);
+		SkinRes* p = new SkinRes(id, pSkin, pMetaData);
+		m_skins.PushBack(p);
 		if(id.size())
-			m_mapBlocksets[id] = p;
+			m_mapSkins[id] = p;
 		return true;
 	}
 	return false;
@@ -654,10 +654,10 @@ WgColorsetPtr WgResDB::GetColorset( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgBlocksetPtr WgResDB::GetBlockset( const std::string& id ) const
+WgSkinPtr WgResDB::GetSkin( const std::string& id ) const
 {
-	BlocksetRes* blockRes = GetResBlockset(id);
-	return blockRes ? blockRes->res : WgBlocksetPtr();
+	SkinRes* skinRes = GetResSkin(id);
+	return skinRes ? skinRes->res : WgSkinPtr();
 }
 
 //____ () _________________________________________________________
@@ -897,19 +897,19 @@ WgResDB::LegoSource * WgResDB::GetLegoSource( const std::string& id ) const
 	return it == m_mapLegoSources.end() ? 0 : it->second;
 }
 
-WgResDB::BlocksetRes * WgResDB::GetResBlockset( const std::string& id ) const
+WgResDB::SkinRes * WgResDB::GetResSkin( const std::string& id ) const
 {
-	BlocksetRes* res = 0;
+	SkinRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->GetResBlockset(id)))
+			if((res = db->res->GetResSkin(id)))
 				return res;
 		}
 	}
-	BlockMap::const_iterator it = m_mapBlocksets.find(id);
-	return it == m_mapBlocksets.end() ? 0 : it->second;
+	SkinMap::const_iterator it = m_mapSkins.find(id);
+	return it == m_mapSkins.end() ? 0 : it->second;
 }
 
 //____ () _________________________________________________________
@@ -1205,18 +1205,18 @@ WgResDB::ColorsetRes* WgResDB::FindResColorset( const WgColorsetPtr& meta ) cons
 
 //____ () _________________________________________________________
 
-WgResDB::BlocksetRes* WgResDB::FindResBlockset( const WgBlocksetPtr& meta ) const
+WgResDB::SkinRes* WgResDB::FindResSkin( const WgSkinPtr& meta ) const
 {
-	BlocksetRes* res = 0;
+	SkinRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
 	{
 		if(db->res)
 		{
-			if((res = db->res->FindResBlockset(meta)))
+			if((res = db->res->FindResSkin(meta)))
 				return res;
 		}
 	}
-	for(res = GetFirstResBlockset(); res; res = res->Next())
+	for(res = GetFirstResSkin(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1605,32 +1605,32 @@ bool WgResDB::RemoveLegoSource( WgResDB::LegoSource * pRes )
 	return true;
 }
 
-//____ RemoveBlockset() _______________________________________________________
+//____ RemoveSkin() _______________________________________________________
 
-bool WgResDB::RemoveBlockset( const std::string& id )
+bool WgResDB::RemoveSkin( const std::string& id )
 {
-	BlockMap::iterator it = m_mapBlocksets.find( id );
+	SkinMap::iterator it = m_mapSkins.find( id );
 
-	if( it == m_mapBlocksets.end() )
+	if( it == m_mapSkins.end() )
 		return false;
 
-	BlocksetRes * pRes = it->second;
-	m_mapBlocksets.erase(it);
+	SkinRes * pRes = it->second;
+	m_mapSkins.erase(it);
 	delete pRes;
 
 	return true;
 }
 
-bool WgResDB::RemoveBlockset( WgResDB::BlocksetRes * pRes )
+bool WgResDB::RemoveSkin( WgResDB::SkinRes * pRes )
 {
 	if( !pRes )
 		return false;
 
 	if( pRes->id.length() > 0 )
 	{
-		BlockMap::iterator it = m_mapBlocksets.find( pRes->id );
-		assert( it != m_mapBlocksets.end() );
-		m_mapBlocksets.erase(it);
+		SkinMap::iterator it = m_mapSkins.find( pRes->id );
+		assert( it != m_mapSkins.end() );
+		m_mapSkins.erase(it);
 	}
 	delete pRes;
 	return true;

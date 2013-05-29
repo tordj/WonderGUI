@@ -25,7 +25,7 @@
 #include <wg_event.h>
 #include <wg_eventfilter.h>
 #include <wg_widget.h>
-#include <wg_slider.h>
+#include <wg_scrollbar.h>
 #include <wg_checkbox.h>
 #include <wg_radiobutton.h>
 #include <wg_animplayer.h>
@@ -545,76 +545,76 @@ WgEventFilter	WgEventFilter::EditvalueSet( WgValueEditor * pWidget )
 }
 
 
-//____ SliderMove() __________________________________________________________
+//____ ScrollbarMove() __________________________________________________________
 
-WgEventFilter	WgEventFilter::SliderMove()
+WgEventFilter	WgEventFilter::ScrollbarMove()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_MOVE, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_MOVE, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderMove( WgWidgetSlider * pWidget )
+WgEventFilter	WgEventFilter::ScrollbarMove( WgScrollbar * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_MOVE, pWidget, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_MOVE, pWidget, _filterTypeWidget );
 }
 
-//____ SliderStepFwd() __________________________________________________________
+//____ ScrollbarStepFwd() __________________________________________________________
 
-WgEventFilter	WgEventFilter::SliderStepFwd()
+WgEventFilter	WgEventFilter::ScrollbarStepFwd()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_STEP_FWD, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_STEP_FWD, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderStepFwd( WgWidgetSlider * pWidget )
+WgEventFilter	WgEventFilter::ScrollbarStepFwd( WgScrollbar * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_STEP_FWD, pWidget, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_STEP_FWD, pWidget, _filterTypeWidget );
 }
 
-//____ SliderStepBwd() __________________________________________________________
+//____ ScrollbarStepBwd() __________________________________________________________
 
-WgEventFilter	WgEventFilter::SliderStepBwd()
+WgEventFilter	WgEventFilter::ScrollbarStepBwd()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_STEP_BWD, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_STEP_BWD, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderStepBwd( WgWidgetSlider * pWidget )
+WgEventFilter	WgEventFilter::ScrollbarStepBwd( WgScrollbar * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_STEP_BWD, pWidget, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_STEP_BWD, pWidget, _filterTypeWidget );
 }
 
-//____ SliderJumpFwd() __________________________________________________________
+//____ ScrollbarJumpFwd() __________________________________________________________
 
-WgEventFilter	WgEventFilter::SliderJumpFwd()
+WgEventFilter	WgEventFilter::ScrollbarJumpFwd()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_JUMP_FWD, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_JUMP_FWD, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderJumpFwd( WgWidgetSlider * pWidget )
+WgEventFilter	WgEventFilter::ScrollbarJumpFwd( WgScrollbar * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_JUMP_FWD, pWidget, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_JUMP_FWD, pWidget, _filterTypeWidget );
 }
 
-//____ SliderJumpBwd() __________________________________________________________
+//____ ScrollbarJumpBwd() __________________________________________________________
 
-WgEventFilter	WgEventFilter::SliderJumpBwd()
+WgEventFilter	WgEventFilter::ScrollbarJumpBwd()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_JUMP_BWD, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_JUMP_BWD, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderJumpBwd( WgWidgetSlider * pWidget )
+WgEventFilter	WgEventFilter::ScrollbarJumpBwd( WgScrollbar * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_JUMP_BWD, pWidget, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_JUMP_BWD, pWidget, _filterTypeWidget );
 }
 
-//____ SliderWheelRoll() __________________________________________________________
+//____ ScrollbarWheelRoll() __________________________________________________________
 
-WgEventFilter	WgEventFilter::SliderWheelRoll()
+WgEventFilter	WgEventFilter::ScrollbarWheelRoll()
 {
-	return WgEventFilter( WG_EVENT_SLIDER_WHEEL_ROLL, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_WHEEL_ROLL, 0, _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::SliderWheelRoll( WgWidgetSlider * pWidget )
+WgEventFilter	WgEventFilter::ScrollbarWheelRoll( WgScrollbar * pWidget )
 {
-	return WgEventFilter( WG_EVENT_SLIDER_WHEEL_ROLL, pWidget, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SCROLLBAR_WHEEL_ROLL, pWidget, _filterTypeWidget );
 }
 
 //____ TextModify() _______________________________________________________

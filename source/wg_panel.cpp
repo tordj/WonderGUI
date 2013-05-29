@@ -79,7 +79,7 @@ void WgPanel::SetSkin( const WgSkinPtr& pSkin )
 bool WgPanel::_onAlphaTest( const WgCoord& ofs )
 {
 	if( m_pSkin )
-		return m_pSkin->IsOpaque();
+		return m_pSkin->MarkTest( ofs, Size(), m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED );
 	else
 		return false;		// By default cointainers have nothing to display themselves.
 }
@@ -92,6 +92,7 @@ void WgPanel::_onCloneContent( const WgPanel * _pOrg )
 	m_bRadioGroup 		= _pOrg->m_bRadioGroup;
 	m_bTooltipGroup 	= _pOrg->m_bTooltipGroup;
 	m_maskOp 			= _pOrg->m_maskOp;
+	m_pSkin				= _pOrg->m_pSkin;
 
 	WgContainer::_onCloneContent( _pOrg );
 }
@@ -100,7 +101,7 @@ void WgPanel::_onCloneContent( const WgPanel * _pOrg )
 
 void WgPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-	if( m_pSkin && m_pSkin->IsOpaque() )
+	if( m_pSkin && m_pSkin->IsOpaque(m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED) )
 		container.Add( WgRect( geo, clip ) );
 	else
 		WgContainer::_onCollectPatches( container, geo, clip );
@@ -112,11 +113,13 @@ void WgPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const 
 
 void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
+
+	//TODO: Don't just check IsOpaque() globally, check rect by rect.
 	if( m_pSkin && m_pSkin->IsOpaque() )
 	{
 		patches.Sub( WgRect(geo,clip) );
 		return;
-	}	
+	}
 	
 	switch( m_maskOp )
 	{

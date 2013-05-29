@@ -52,7 +52,7 @@ class WgAnimPlayer;
 class WgTablist;
 class WgValueDisplay;
 class WgValueEditor;
-class WgWidgetSlider;
+class WgScrollbar;
 class WgMenu;
 class WgMenuLayer;
 class WgModalLayer;
@@ -409,56 +409,56 @@ namespace WgEvent
 		EditvalueSet( WgValueEditor * pWidget, int64_t value, double fraction );
 	};
 
-	//____ WgWidgetSlider events ________________________________________________
+	//____ WgScrollbar events ________________________________________________
 
-	class SliderEvent : public Event
+	class ScrollbarEvent : public Event
 	{
 	public:
-		WgWidgetSlider* Slider() const;
+		WgScrollbar*	Scrollbar() const;
 		float			Pos() const;
 		float			Length() const;
 		float			Value() const;
 
 	protected:
-		SliderEvent( WgWidgetSlider * pWidget, float pos, float length );
+		ScrollbarEvent( WgScrollbar * pWidget, float pos, float length );
 		float			m_pos;
 		float			m_length;
 	};
 
-	class SliderMove : public SliderEvent
+	class ScrollbarMove : public ScrollbarEvent
 	{
 	public:
-		SliderMove( WgWidgetSlider* pWidget, float pos, float length );
+		ScrollbarMove( WgScrollbar* pWidget, float pos, float length );
 	};
 
-	class SliderStepFwd : public SliderEvent
+	class ScrollbarStepFwd : public ScrollbarEvent
 	{
 	public:
-		SliderStepFwd( WgWidgetSlider* pWidget, float pos, float length );
+		ScrollbarStepFwd( WgScrollbar* pWidget, float pos, float length );
 	};
 
-	class SliderStepBwd : public SliderEvent
+	class ScrollbarStepBwd : public ScrollbarEvent
 	{
 	public:
-		SliderStepBwd( WgWidgetSlider* pWidget, float pos, float length );
+		ScrollbarStepBwd( WgScrollbar* pWidget, float pos, float length );
 	};
 
-	class SliderJumpFwd : public SliderEvent
+	class ScrollbarJumpFwd : public ScrollbarEvent
 	{
 	public:
-		SliderJumpFwd( WgWidgetSlider* pWidget, float pos, float length );
+		ScrollbarJumpFwd( WgScrollbar* pWidget, float pos, float length );
 	};
 
-	class SliderJumpBwd : public SliderEvent
+	class ScrollbarJumpBwd : public ScrollbarEvent
 	{
 	public:
-		SliderJumpBwd( WgWidgetSlider* pWidget, float pos, float length );
+		ScrollbarJumpBwd( WgScrollbar* pWidget, float pos, float length );
 	};
 
-	class SliderWheelRolled : public SliderEvent
+	class ScrollbarWheelRolled : public ScrollbarEvent
 	{
 	public:
-		SliderWheelRolled( WgWidgetSlider* pWidget, int distance, float pos, float length );
+		ScrollbarWheelRolled( WgScrollbar* pWidget, int distance, float pos, float length );
 		int			Distance() const;
 	protected:
 		int			m_distance;
