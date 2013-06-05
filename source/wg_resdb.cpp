@@ -57,7 +57,6 @@ void WgResDB::Clear()
 	m_mapAnims.clear();
 	m_mapCursors.clear();
 	m_mapColors.clear();
-	m_mapColorsets.clear();
 	m_mapTextprops.clear();
 	m_mapLegoSources.clear();
 	m_mapSkins.clear();
@@ -81,7 +80,6 @@ void WgResDB::Clear()
 	m_anims.Clear();
 	m_cursors.Clear();
 	m_textProps.Clear();
-	m_colorsets.Clear();
 	m_colors.Clear();
 	m_legos.Clear();
 	m_skins.Clear();
@@ -185,14 +183,6 @@ std::string	WgResDB::GenerateName( const WgColor data )
 	char pBuf[100];
 	return std::string("_color__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
-
-std::string	WgResDB::GenerateName( const WgColorsetPtr& data )
-{
-	static int nGenerated = 0;
-	char pBuf[100];
-	return std::string("_colorset__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
-}
-
 
 std::string	WgResDB::GenerateName( const WgTextpropPtr& data )
 {
@@ -429,23 +419,6 @@ bool WgResDB::AddColor( const std::string& id, WgColor col, MetaData * pMetaData
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddColorset( const std::string& id, const WgColorsetPtr& pColorset, MetaData * pMetaData )
-{
-	assert(m_mapColorsets.find(id) == m_mapColorsets.end());
-	if(m_mapColorsets.find(id) == m_mapColorsets.end())
-	{
-		ColorsetRes* p = new ColorsetRes(id, pColorset, pMetaData);
-		m_colorsets.PushBack(p);
-		if(id.size())
-			m_mapColorsets[id] = p;
-		return true;
-	}
-	return false;
-}
-
-
-//____ () _________________________________________________________
-
 bool WgResDB::AddLegoSource( const std::string& id, const std::string& surface, WgRect rect, Uint32 nStates, MetaData * pMetaData )
 {
 	assert(m_mapLegoSources.find(id) == m_mapLegoSources.end());
@@ -642,14 +615,6 @@ WgColor WgResDB::GetColor( const std::string& id ) const
 {
 	ColorRes* colorRes = GetResColor(id);
 	return colorRes ? colorRes->res : WgColor::black;
-}
-
-//____ () _________________________________________________________
-
-WgColorsetPtr WgResDB::GetColorset( const std::string& id ) const
-{
-	ColorsetRes* colorsetRes = GetResColorset(id);
-	return colorsetRes ? colorsetRes->res : WgColorsetPtr();
 }
 
 //____ () _________________________________________________________
@@ -860,23 +825,6 @@ WgResDB::ColorRes * WgResDB::GetResColor( const std::string& id ) const
 	}
 	ColMap::const_iterator it = m_mapColors.find(id);
 	return it == m_mapColors.end() ? 0 : it->second;
-}
-
-//____ () _________________________________________________________
-
-WgResDB::ColorsetRes * WgResDB::GetResColorset( const std::string& id ) const
-{
-	ColorsetRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
-	{
-		if(db->res)
-		{
-			if((res = db->res->GetResColorset(id)))
-				return res;
-		}
-	}
-	ColSetMap::const_iterator it = m_mapColorsets.find(id);
-	return it == m_mapColorsets.end() ? 0 : it->second;
 }
 
 
@@ -1179,25 +1127,6 @@ WgResDB::ColorRes* WgResDB::FindResColor( const WgColor meta ) const
 		}
 	}
 	for(res = GetFirstResColor(); res; res = res->Next())
-		if(res->res == meta)
-			return res;
-	return 0;
-}
-
-//____ () _________________________________________________________
-
-WgResDB::ColorsetRes* WgResDB::FindResColorset( const WgColorsetPtr& meta ) const
-{
-	ColorsetRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
-	{
-		if(db->res)
-		{
-			if((res = db->res->FindResColorset(meta)))
-				return res;
-		}
-	}
-	for(res = GetFirstResColorset(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;
@@ -1537,37 +1466,6 @@ bool WgResDB::RemoveColor( WgResDB::ColorRes * pRes )
 		ColMap::iterator it = m_mapColors.find( pRes->id );
 		assert( it != m_mapColors.end() );
 		m_mapColors.erase(it);
-	}
-	delete pRes;
-	return true;
-}
-
-//____ RemoveColorset() _______________________________________________________
-
-bool WgResDB::RemoveColorset( const std::string& id )
-{
-	ColSetMap::iterator it = m_mapColorsets.find( id );
-
-	if( it == m_mapColorsets.end() )
-		return false;
-
-	ColorsetRes * pRes = it->second;
-	m_mapColorsets.erase(it);
-	delete pRes;
-
-	return true;
-}
-
-bool WgResDB::RemoveColorset( WgResDB::ColorsetRes * pRes )
-{
-	if( !pRes )
-		return false;
-
-	if( pRes->id.length() > 0 )
-	{
-		ColSetMap::iterator it = m_mapColorsets.find( pRes->id );
-		assert( it != m_mapColorsets.end() );
-		m_mapColorsets.erase(it);
 	}
 	delete pRes;
 	return true;

@@ -45,27 +45,25 @@ class WgSkin : public WgRefCounted
 public:
 	virtual ~WgSkin() {};
 	
-	virtual void Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip ) const = 0;
+	virtual void Render( WgGfxDevice * pDevice, const WgRect& canvas, WgState state, const WgRect& clip ) const = 0;
 
 	virtual WgSize	MinSize() const = 0;
 	virtual WgSize	PreferredSize() const = 0;
 
+	virtual WgSize	ContentPadding() const = 0;
 	virtual WgSize	SizeForContent( const WgSize contentSize ) const = 0;
 	virtual WgRect	ContentRect( const WgRect& canvas, WgState state ) const = 0;
 
-	virtual bool	MarkTest( const WgCoord& ofs, const WgSize& canvasSize, WgState state ) const = 0;
+	virtual bool	MarkTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const = 0;
 
 	virtual bool	IsOpaque() const = 0;
 	virtual bool	IsOpaque( WgState state ) const = 0;
 	virtual bool	IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const = 0;
-	
+
+	virtual bool	IsStateIdentical( WgState state, WgState comparedTo ) const = 0;
+
 protected:
 	WgSkin() {};
-	
-	static int	s_stateToIndexTable[WG_MAX_STATE_VALUE+1];
-
-	inline int _stateToIndex(WgStateEnum state) const { return s_stateToIndexTable[state]; }
-
 };
 
 #endif //WG_SKIN_DOT_H

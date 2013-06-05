@@ -31,12 +31,8 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
-
-#ifndef WG_COLORSET_DOT_H
-#	include <wg_colorset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 
@@ -49,30 +45,21 @@ public:
 
 	void			SetMinTileSize( WgSize size );
 	WgSize			MinTileSize() const { return m_minTileSize; }
-	int				MinTileWidth() const { return m_minTileSize.w; }
-	int				MinTileHeight() const { return m_minTileSize.h; }
 
-	void			SetTileBlocks( const WgBlocksetPtr& pBlocks ) { SetTileBlocks(pBlocks,pBlocks); }
-	void			SetTileBlocks( const WgBlocksetPtr& pOddBlocks, const WgBlocksetPtr& pEvenBlocks );
-	WgBlocksetPtr	OddTileBlocks() const { return m_pTileBlocks[0]; }
-	WgBlocksetPtr	EvenTileBlocks() const { return m_pTileBlocks[1]; }
-	void			RemoveTileBlocks();
-
-	void			SetTileColors( const WgColorsetPtr& pColors ) { SetTileColors(pColors,pColors); }
-	void			SetTileColors( const WgColorsetPtr& pOddColors, const WgColorsetPtr& pEvenColors );
-	WgColorsetPtr	OddTileColors() const { return m_pTileColors[0]; }
-	WgColorsetPtr	EvenTileColors() const { return m_pTileColors[1]; }
-	void			RemoveTileColors();
+	void			SetTileSkin( const WgSkinPtr& pSkin ) { SetTileSkin(pSkin,pSkin); }
+	void			SetTileSkins( const WgSkinPtr& pOddSkin, const WgSkinPtr& pEvenSkin );
+	WgSkinPtr		OddTileSkin() const { return m_pTileSkin[0]; }
+	WgSkinPtr		EvenTileSkin() const { return m_pTileSkin[1]; }
+	void			RemoveTileSkins();
 
 protected:
 
 	virtual void	_tilesModified() = 0;
 
-	void			_renderTile( WgGfxDevice * pDevice, const WgRect& clip, const WgRect& dest, int tileNb, WgMode mode );
+	void			_renderTile( WgGfxDevice * pDevice, const WgRect& clip, const WgRect& dest, int tileNb, WgState state );
 	void			_cloneContent( const WgTileHolder * _pOrg );
 
-	WgColorsetPtr 	m_pTileColors[2];
-	WgBlocksetPtr	m_pTileBlocks[2];
+	WgSkinPtr		m_pTileSkin[2];
 
 	WgSize			m_minTileSize;			// Set minimum size of a tile.
 };

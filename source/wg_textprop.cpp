@@ -28,6 +28,7 @@
 
 #include <memory.h>
 
+using namespace WgUtil;
 
 //____ Constructor ____________________________________________________________
 
@@ -43,15 +44,15 @@ WgTextprop::WgTextprop( const WgTextpropPtr& pProp )
 	m_visibilityFlags	= pProp->m_visibilityFlags;
 	m_breakLevel		= pProp->m_breakLevel;
 
-	for( int i = 0 ; i < WG_NB_MODES ; i++ )
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
-		m_modeProp[i].m_bColored	= pProp->m_modeProp[i].m_bColored;
-		m_modeProp[i].m_bBgColor	= pProp->m_modeProp[i].m_bBgColor;
-		m_modeProp[i].m_bUnderlined = pProp->m_modeProp[i].m_bUnderlined;
-		m_modeProp[i].m_color		= pProp->m_modeProp[i].m_color;
-		m_modeProp[i].m_bgColor		= pProp->m_modeProp[i].m_bgColor;
-		m_modeProp[i].m_style		= pProp->m_modeProp[i].m_style;
-		m_modeProp[i].m_size		= pProp->m_modeProp[i].m_size;
+		m_stateProp[i].m_bColored	= pProp->m_stateProp[i].m_bColored;
+		m_stateProp[i].m_bBgColor	= pProp->m_stateProp[i].m_bBgColor;
+		m_stateProp[i].m_bUnderlined = pProp->m_stateProp[i].m_bUnderlined;
+		m_stateProp[i].m_color		= pProp->m_stateProp[i].m_color;
+		m_stateProp[i].m_bgColor		= pProp->m_stateProp[i].m_bgColor;
+		m_stateProp[i].m_style		= pProp->m_stateProp[i].m_style;
+		m_stateProp[i].m_size		= pProp->m_stateProp[i].m_size;
 	}
 }
 
@@ -72,17 +73,17 @@ void WgTextprop::ClearAll()
 	m_pLink = 0;
 	m_breakLevel = -1;
 
-	for( int i = 0 ; i < WG_NB_MODES ; i++ )
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
-		m_modeProp[i].m_bColored	= false;
-		m_modeProp[i].m_color.argb = 0xFFFFFFFF;
+		m_stateProp[i].m_bColored	= false;
+		m_stateProp[i].m_color.argb = 0xFFFFFFFF;
 
-		m_modeProp[i].m_bBgColor	= false;
-		m_modeProp[i].m_bgColor.argb = 0xFFFFFFFF;
+		m_stateProp[i].m_bBgColor	= false;
+		m_stateProp[i].m_bgColor.argb = 0xFFFFFFFF;
 
-		m_modeProp[i].m_style = WG_STYLE_NORMAL;
-		m_modeProp[i].m_size = 0;
-		m_modeProp[i].m_bUnderlined = false;
+		m_stateProp[i].m_style = WG_STYLE_NORMAL;
+		m_stateProp[i].m_size = 0;
+		m_stateProp[i].m_bUnderlined = false;
 	}
 }
 
@@ -90,173 +91,182 @@ void WgTextprop::ClearAll()
 
 //____ SetColor() _____________________________________________________________
 
-void WgTextprop::SetColor( WgColor col, WgMode mode )
+void WgTextprop::SetColor( WgColor col )
 {
-	if( mode == WG_MODE_ALL )
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
-		for( int i = 0 ; i < WG_NB_MODES ; i++ )
-		{
-			m_modeProp[i].m_bColored	= true;
-			m_modeProp[i].m_color		= col;
-		}
-	}
-	else
-	{
-		m_modeProp[mode].m_bColored	= true;
-		m_modeProp[mode].m_color	= col;
+		m_stateProp[i].m_bColored	= true;
+		m_stateProp[i].m_color		= col;
 	}
 }
+
+void WgTextprop::SetColor( WgColor col, WgState state )
+{
+	int i = _stateToIndex(state);
+	m_stateProp[i].m_bColored	= true;
+	m_stateProp[i].m_color		= col;
+}
+
 
 //____ SetBgColor() ___________________________________________________________
 
-void WgTextprop::SetBgColor( WgColor col, WgMode mode )
+void WgTextprop::SetBgColor( WgColor col )
 {
-	if( mode == WG_MODE_ALL )
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
-		for( int i = 0 ; i < WG_NB_MODES ; i++ )
-		{
-			m_modeProp[i].m_bBgColor	= true;
-			m_modeProp[i].m_bgColor		= col;
-		}
-	}
-	else
-	{
-		m_modeProp[mode].m_bBgColor	= true;
-		m_modeProp[mode].m_bgColor	= col;
+		m_stateProp[i].m_bBgColor	= true;
+		m_stateProp[i].m_bgColor		= col;
 	}
 }
+
+void WgTextprop::SetBgColor( WgColor col, WgState state )
+{
+	int i = _stateToIndex(state);
+	m_stateProp[i].m_bBgColor	= true;
+	m_stateProp[i].m_bgColor	= col;
+}
+
 
 
 //____ SetStyle() _____________________________________________________________
 
-void WgTextprop::SetStyle( WgFontStyle style, WgMode mode )
+void WgTextprop::SetStyle( WgFontStyle style )
 {
 	assert( style<WG_NB_FONTSTYLES );
 
-	if( mode == WG_MODE_ALL )
-	{
-		for( int i = 0 ; i < WG_NB_MODES ; i++ )
-			m_modeProp[i].m_style = style;
-	}
-	else
-		m_modeProp[mode].m_style = style;
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		m_stateProp[i].m_style = style;
+}
+
+void WgTextprop::SetStyle( WgFontStyle style, WgState state )
+{
+	assert( style<WG_NB_FONTSTYLES );
+
+	int i = _stateToIndex(state);
+	m_stateProp[i].m_style = style;
 }
 
 //____ SetSize() ______________________________________________________________
 
-void WgTextprop::SetSize( int size, WgMode mode )
+void WgTextprop::SetSize( int size )
 {
 	assert( size >= 0 && size < 2048 );
 
-	if( mode == WG_MODE_ALL )
-	{
-		for( int i = 0 ; i < WG_NB_MODES ; i++ )
-			m_modeProp[i].m_size = size;
-	}
-	else
-		m_modeProp[mode].m_size = size;
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		m_stateProp[i].m_size = size;
 }
 
+void WgTextprop::SetSize( int size, WgState state )
+{
+	assert( size >= 0 && size < 2048 );
+
+	int i = _stateToIndex(state);
+	m_stateProp[i].m_size = size;
+}
 
 
 //____ SetUnderlined() ________________________________________________________
 
-void WgTextprop::SetUnderlined( WgMode mode )
+void WgTextprop::SetUnderlined()
 {
-	if( mode == WG_MODE_ALL )
-	{
-		for( int i = 0 ; i < WG_NB_MODES ; i++ )
-			m_modeProp[i].m_bUnderlined	= true;
-	}
-	else
-		m_modeProp[mode].m_bUnderlined = true;
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		m_stateProp[i].m_bUnderlined	= true;
+}
+
+void WgTextprop::SetUnderlined( WgState state )
+{
+	int i = _stateToIndex(state);
+	m_stateProp[i].m_bUnderlined = true;
 }
 
 //____ ClearColor() _____________________________________________________________
 
-void WgTextprop::ClearColor( WgMode mode )
+void WgTextprop::ClearColor()
 {
-	if( mode == WG_MODE_ALL )
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
-		for( int i = 0 ; i < WG_NB_MODES ; i++ )
-		{
-			m_modeProp[i].m_bColored	= false;
-			m_modeProp[i].m_color.argb = 0xFFFFFFFF;
-		}
+		m_stateProp[i].m_bColored	= false;
+		m_stateProp[i].m_color.argb = 0xFFFFFFFF;
 	}
-	else
-	{
-		m_modeProp[mode].m_bColored	= false;
-		m_modeProp[mode].m_color.argb = 0xFFFFFFFF;
-	}
+}
+
+void WgTextprop::ClearColor( WgState state )
+{
+	int i = _stateToIndex(state);
+	m_stateProp[i].m_bColored	= false;
+	m_stateProp[i].m_color.argb = 0xFFFFFFFF;
 }
 
 //____ ClearBgColor() _________________________________________________________
 
-void WgTextprop::ClearBgColor( WgMode mode )
+void WgTextprop::ClearBgColor()
 {
-	if( mode == WG_MODE_ALL )
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
-		for( int i = 0 ; i < WG_NB_MODES ; i++ )
-		{
-			m_modeProp[i].m_bBgColor	= false;
-			m_modeProp[i].m_bgColor.argb = 0xFFFFFFFF;
-		}
+		m_stateProp[i].m_bBgColor	= false;
+		m_stateProp[i].m_bgColor.argb = 0xFFFFFFFF;
 	}
-	else
-	{
-		m_modeProp[mode].m_bBgColor	= false;
-		m_modeProp[mode].m_bgColor.argb = 0xFFFFFFFF;
-	}
+}
+
+void WgTextprop::ClearBgColor( WgState state )
+{
+	int i = _stateToIndex(state);
+	m_stateProp[i].m_bBgColor	= false;
+	m_stateProp[i].m_bgColor.argb = 0xFFFFFFFF;
 }
 
 
 //____ ClearStyle() _____________________________________________________________
 
-void WgTextprop::ClearStyle( WgMode mode )
+void WgTextprop::ClearStyle()
 {
-	if( mode == WG_MODE_ALL )
-	{
-		for( int i = 0 ; i < WG_NB_MODES ; i++ )
-			m_modeProp[i].m_style = WG_STYLE_NORMAL;
-	}
-	else
-		m_modeProp[mode].m_style = WG_STYLE_NORMAL;
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		m_stateProp[i].m_style = WG_STYLE_NORMAL;
 }
+
+void WgTextprop::ClearStyle( WgState state )
+{
+	int i = _stateToIndex(state);
+	m_stateProp[i].m_style = WG_STYLE_NORMAL;
+}
+
 
 //____ ClearSize() ______________________________________________________________
 
-void WgTextprop::ClearSize( WgMode mode )
+void WgTextprop::ClearSize()
 {
-	if( mode == WG_MODE_ALL )
-	{
-		for( int i = 0 ; i < WG_NB_MODES ; i++ )
-			m_modeProp[i].m_size = 0;
-	}
-	else
-		m_modeProp[mode].m_size = 0;
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		m_stateProp[i].m_size = 0;
+}
+
+void WgTextprop::ClearSize( WgState state )
+{
+	int i = _stateToIndex(state);
+	m_stateProp[i].m_size = 0;
 }
 
 
 //____ ClearUnderlined() ________________________________________________________
 
-void WgTextprop::ClearUnderlined( WgMode mode )
+void WgTextprop::ClearUnderlined()
 {
-	if( mode == WG_MODE_ALL )
-	{
-		for( int i = 0 ; i < WG_NB_MODES ; i++ )
-			m_modeProp[i].m_bUnderlined = false;
-	}
-	else
-		m_modeProp[mode].m_bUnderlined = false;
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		m_stateProp[i].m_bUnderlined = false;
 }
+
+void WgTextprop::ClearUnderlined( WgState state )
+{
+	int i = _stateToIndex(state);
+	m_stateProp[i].m_bUnderlined = false;
+}
+
 
 //____ IsColorStatic() _________________________________________________________
 
 bool WgTextprop::IsColorStatic() const
 {
-	for( int i = 1 ; i < WG_NB_MODES ; i++ )
-		if( m_modeProp[0].m_bColored != m_modeProp[i].m_bColored || m_modeProp[0].m_color != m_modeProp[i].m_color )
+	for( int i = 1 ; i < WG_NB_STATES ; i++ )
+		if( m_stateProp[0].m_bColored != m_stateProp[i].m_bColored || m_stateProp[0].m_color != m_stateProp[i].m_color )
 			return false;
 
 	return true;
@@ -266,8 +276,8 @@ bool WgTextprop::IsColorStatic() const
 
 bool WgTextprop::IsBgColorStatic() const
 {
-	for( int i = 1 ; i < WG_NB_MODES ; i++ )
-		if( m_modeProp[0].m_bBgColor != m_modeProp[i].m_bBgColor || m_modeProp[0].m_bgColor != m_modeProp[i].m_bgColor )
+	for( int i = 1 ; i < WG_NB_STATES ; i++ )
+		if( m_stateProp[0].m_bBgColor != m_stateProp[i].m_bBgColor || m_stateProp[0].m_bgColor != m_stateProp[i].m_bgColor )
 			return false;
 
 	return true;
@@ -278,8 +288,8 @@ bool WgTextprop::IsBgColorStatic() const
 
 bool WgTextprop::IsStyleStatic() const
 {
-	for( int i = 1 ; i < WG_NB_MODES ; i++ )
-		if( m_modeProp[0].m_style != m_modeProp[i].m_style )
+	for( int i = 1 ; i < WG_NB_STATES ; i++ )
+		if( m_stateProp[0].m_style != m_stateProp[i].m_style )
 			return false;
 
 	return true;
@@ -289,8 +299,8 @@ bool WgTextprop::IsStyleStatic() const
 
 bool WgTextprop::IsSizeStatic() const
 {
-	for( int i = 1 ; i < WG_NB_MODES ; i++ )
-		if( m_modeProp[0].m_size != m_modeProp[i].m_size )
+	for( int i = 1 ; i < WG_NB_STATES ; i++ )
+		if( m_stateProp[0].m_size != m_stateProp[i].m_size )
 			return false;
 
 	return true;
@@ -301,8 +311,8 @@ bool WgTextprop::IsSizeStatic() const
 
 bool WgTextprop::IsUnderlineStatic() const
 {
-	for( int i = 1 ; i < WG_NB_MODES ; i++ )
-		if( m_modeProp[0].m_bUnderlined != m_modeProp[i].m_bUnderlined )
+	for( int i = 1 ; i < WG_NB_STATES ; i++ )
+		if( m_stateProp[0].m_bUnderlined != m_stateProp[i].m_bUnderlined )
 			return false;
 
 	return true;
@@ -312,8 +322,8 @@ bool WgTextprop::IsUnderlineStatic() const
 
 bool WgTextprop::CompareColorTo( const WgTextpropPtr& pProp ) const
 {
-	for( int i = 1 ; i < WG_NB_MODES ; i++ )
-		if( m_modeProp[i].m_bColored != pProp->m_modeProp[i].m_bColored || m_modeProp[i].m_color != pProp->m_modeProp[i].m_color )
+	for( int i = 1 ; i < WG_NB_STATES ; i++ )
+		if( m_stateProp[i].m_bColored != pProp->m_stateProp[i].m_bColored || m_stateProp[i].m_color != pProp->m_stateProp[i].m_color )
 			return false;
 
 	return true;
@@ -323,8 +333,8 @@ bool WgTextprop::CompareColorTo( const WgTextpropPtr& pProp ) const
 
 bool WgTextprop::CompareBgColorTo( const WgTextpropPtr& pProp ) const
 {
-	for( int i = 1 ; i < WG_NB_MODES ; i++ )
-		if( m_modeProp[i].m_bBgColor != pProp->m_modeProp[i].m_bBgColor || m_modeProp[i].m_bgColor != pProp->m_modeProp[i].m_bgColor )
+	for( int i = 1 ; i < WG_NB_STATES ; i++ )
+		if( m_stateProp[i].m_bBgColor != pProp->m_stateProp[i].m_bBgColor || m_stateProp[i].m_bgColor != pProp->m_stateProp[i].m_bgColor )
 			return false;
 
 	return true;
@@ -335,8 +345,8 @@ bool WgTextprop::CompareBgColorTo( const WgTextpropPtr& pProp ) const
 
 bool WgTextprop::CompareStyleTo( const WgTextpropPtr& pProp ) const
 {
-	for( int i = 1 ; i < WG_NB_MODES ; i++ )
-		if( m_modeProp[i].m_style != pProp->m_modeProp[i].m_style )
+	for( int i = 1 ; i < WG_NB_STATES ; i++ )
+		if( m_stateProp[i].m_style != pProp->m_stateProp[i].m_style )
 			return false;
 
 	return true;
@@ -346,8 +356,8 @@ bool WgTextprop::CompareStyleTo( const WgTextpropPtr& pProp ) const
 
 bool WgTextprop::CompareSizeTo( const WgTextpropPtr& pProp ) const
 {
-	for( int i = 1 ; i < WG_NB_MODES ; i++ )
-		if( m_modeProp[i].m_size != pProp->m_modeProp[i].m_size )
+	for( int i = 1 ; i < WG_NB_STATES ; i++ )
+		if( m_stateProp[i].m_size != pProp->m_stateProp[i].m_size )
 			return false;
 
 	return true;
@@ -357,8 +367,8 @@ bool WgTextprop::CompareSizeTo( const WgTextpropPtr& pProp ) const
 //____ CompareUnderlineTo() ____________________________________________________
 bool WgTextprop::CompareUnderlineTo( const WgTextpropPtr& pProp ) const
 {
-	for( int i = 1 ; i < WG_NB_MODES ; i++ )
-		if( m_modeProp[i].m_bUnderlined != pProp->m_modeProp[i].m_bUnderlined )
+	for( int i = 1 ; i < WG_NB_STATES ; i++ )
+		if( m_stateProp[i].m_bUnderlined != pProp->m_stateProp[i].m_bUnderlined )
 			return false;
 
 	return true;
@@ -376,15 +386,15 @@ Uint8 WgTextprop::_calculateChecksum() const
 	chk.Add( &m_pLink, sizeof(WgTextLinkPtr) );
 	chk.Add( &m_pFont, sizeof(WgFont *) );
 
-	for( int i = 0 ; i < WG_NB_MODES ; i++ )
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
-		chk.Add8( (Uint8) m_modeProp[i].m_bColored );
-		chk.Add8( (Uint8) m_modeProp[i].m_bBgColor );
-		chk.Add8( (Uint8) m_modeProp[i].m_bUnderlined );
-		chk.Add32( m_modeProp[i].m_color.argb );
-		chk.Add32( m_modeProp[i].m_bgColor.argb );
-		chk.Add16( m_modeProp[i].m_style );
-		chk.Add16( m_modeProp[i].m_size );
+		chk.Add8( (Uint8) m_stateProp[i].m_bColored );
+		chk.Add8( (Uint8) m_stateProp[i].m_bBgColor );
+		chk.Add8( (Uint8) m_stateProp[i].m_bUnderlined );
+		chk.Add32( m_stateProp[i].m_color.argb );
+		chk.Add32( m_stateProp[i].m_bgColor.argb );
+		chk.Add16( m_stateProp[i].m_style );
+		chk.Add16( m_stateProp[i].m_size );
 	}
 
 	return chk.GetChecksum();
@@ -399,15 +409,15 @@ bool WgTextprop::_compareTo( const WgTextprop * pProp ) const
 		m_breakLevel != pProp->m_breakLevel )
 		return false;
 
-	for( int i = 0 ; i < WG_NB_MODES ; i++ )
+	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
-		if( m_modeProp[i].m_style != pProp->m_modeProp[i].m_style ||
-			m_modeProp[i].m_size != pProp->m_modeProp[i].m_size ||
-			m_modeProp[i].m_bColored != pProp->m_modeProp[i].m_bColored ||
-			m_modeProp[i].m_bBgColor != pProp->m_modeProp[i].m_bBgColor ||
-			m_modeProp[i].m_bUnderlined != pProp->m_modeProp[i].m_bUnderlined ||
-			m_modeProp[i].m_color.argb != pProp->m_modeProp[i].m_color.argb ||
-			m_modeProp[i].m_bgColor.argb != pProp->m_modeProp[i].m_bgColor.argb )
+		if( m_stateProp[i].m_style != pProp->m_stateProp[i].m_style ||
+			m_stateProp[i].m_size != pProp->m_stateProp[i].m_size ||
+			m_stateProp[i].m_bColored != pProp->m_stateProp[i].m_bColored ||
+			m_stateProp[i].m_bBgColor != pProp->m_stateProp[i].m_bBgColor ||
+			m_stateProp[i].m_bUnderlined != pProp->m_stateProp[i].m_bUnderlined ||
+			m_stateProp[i].m_color.argb != pProp->m_stateProp[i].m_color.argb ||
+			m_stateProp[i].m_bgColor.argb != pProp->m_stateProp[i].m_bgColor.argb )
 			return false;
 	}
 
@@ -545,19 +555,19 @@ const WgTextprop * WgTextpropPtr::operator->() const
 //_____________________________________________________________________________
 void WgTextprop::AssertIntegrity() const
 {
-	for( int i = 0; i<WG_NB_MODES; i++ )
-		assert( m_modeProp[i].m_style<WG_NB_FONTSTYLES );
+	for( int i = 0; i<WG_NB_STATES; i++ )
+		assert( m_stateProp[i].m_style<WG_NB_FONTSTYLES );
 }
 
 //_____________________________________________________________________________
 
-bool WgTextprop::IsEqual(WgMode mode0, WgMode mode1) const
+bool WgTextprop::IsEqual(WgState state0, WgState state1) const
 {
-	return	m_modeProp[mode0].m_bColored == m_modeProp[mode1].m_bColored &&
-			m_modeProp[mode0].m_bBgColor == m_modeProp[mode1].m_bBgColor &&
-			m_modeProp[mode0].m_bUnderlined == m_modeProp[mode1].m_bUnderlined &&
-			m_modeProp[mode0].m_color == m_modeProp[mode1].m_color &&
-			m_modeProp[mode0].m_bgColor == m_modeProp[mode1].m_bgColor &&
-			m_modeProp[mode0].m_style == m_modeProp[mode1].m_style &&
-			m_modeProp[mode0].m_size == m_modeProp[mode1].m_size;
+	return	m_stateProp[state0].m_bColored == m_stateProp[state1].m_bColored &&
+			m_stateProp[state0].m_bBgColor == m_stateProp[state1].m_bBgColor &&
+			m_stateProp[state0].m_bUnderlined == m_stateProp[state1].m_bUnderlined &&
+			m_stateProp[state0].m_color == m_stateProp[state1].m_color &&
+			m_stateProp[state0].m_bgColor == m_stateProp[state1].m_bgColor &&
+			m_stateProp[state0].m_style == m_stateProp[state1].m_style &&
+			m_stateProp[state0].m_size == m_stateProp[state1].m_size;
 }

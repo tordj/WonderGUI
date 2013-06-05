@@ -49,8 +49,8 @@ public:
 	inline WgTextpropPtr GetTextProperties() { return m_pText->getProperties(); }
 
 	inline WgColor			GetTextColor() const { return m_pText->getColor(); }
-	inline WgColor			GetTextColor(WgMode mode) const { return m_pText->getColor(mode); }
-	inline WgFontStyle		GetTextStyle(WgMode mode) const { return m_pText->getStyle(mode); }
+	inline WgColor			GetTextColor(WgState state) const { return m_pText->getColor(state); }
+	inline WgFontStyle		GetTextStyle(WgState state) const { return m_pText->getStyle(state); }
 	inline int				GetBreakLevel() const { return m_pText->getBreakLevel(); }
 	inline WgFont *			GetFont() const { return m_pText->getFont(); }
 	inline WgTextLinkPtr	GetLink() const { return m_pText->getLink(); }
@@ -60,10 +60,10 @@ public:
 	inline void			SetTextProperties( const WgTextpropPtr& pProp )		{ m_pText->setProperties(pProp); _textModified(); }
 
 	inline void			SetTextColor( const WgColor color )					{ m_pText->setColor(color); _textModified(); }
-	inline void			SetTextColor( const WgColor color, WgMode mode )		{ m_pText->setColor(color,mode); _textModified(); }
+	inline void			SetTextColor( const WgColor color, WgState state )	{ m_pText->setColor(color,state); _textModified(); }
 
 	inline void			SetTextStyle( WgFontStyle style )					{ m_pText->setStyle(style); _textModified(); }
-	inline void			SetTextStyle( WgFontStyle style, WgMode mode )		{ m_pText->setStyle(style,mode); _textModified(); }
+	inline void			SetTextStyle( WgFontStyle style, WgState state )	{ m_pText->setStyle(style,state); _textModified(); }
 
 	inline void			SetBreakLevel( int level )							{ m_pText->setBreakLevel(level); _textModified(); }
 
@@ -74,11 +74,11 @@ public:
 
 	inline void			ClearTextProperties()								{ m_pText->clearProperties(); _textModified(); }
 
-	inline void			ClearTextColor()										{ m_pText->clearColor(); _textModified(); }
-	inline void			ClearTextColor( WgMode mode )						{ m_pText->clearColor(mode); _textModified(); }
+	inline void			ClearTextColor()									{ m_pText->clearColor(); _textModified(); }
+	inline void			ClearTextColor( WgState state )						{ m_pText->clearColor(state); _textModified(); }
 
 	inline void			ClearTextStyle()										{ m_pText->clearStyle(); _textModified(); }
-	inline void			ClearTextStyle( WgMode mode )						{ m_pText->clearStyle(mode); _textModified(); }
+	inline void			ClearTextStyle( WgState state )						{ m_pText->clearStyle(state); _textModified(); }
 
 	inline void			ClearBreakLevel()									{ m_pText->clearBreakLevel(); _textModified(); }
 
@@ -104,11 +104,6 @@ public:
 
 //	-----------
 
-	inline void			SetTextBaseColors( const WgColorsetPtr& pColors ) { m_pText->SetBaseColors(pColors); }
-	inline WgColorsetPtr TextBaseColors() const { return m_pText->BaseColors(); }
-
-//	-----------
-
 	inline bool			SetMaxChars( int max ) { bool ret = m_pText->SetMaxChars(max); _textModified(); return ret; }
 	inline int			MaxChars() const { return m_pText->MaxChars(); }
 
@@ -116,7 +111,7 @@ public:
 //	inline void			SetSelectionColor( WgColor color )							{ m_pText->setSelectionBgColor(color); }
 //	inline WgColor		GetSelectionColor() const									{ return m_pText->getSelectionBgColor(); }
 
-	void				SetTextMode( WgMode mode );
+	void				SetTextState( WgState state );
 	void				SetTextAlignment( const WgOrigo alignment );
 	void				SetTextTintMode( WgTintMode mode );
 
@@ -148,7 +143,7 @@ public:
 	inline bool			AutoEllipsis() const { return m_pText->IsAutoEllipsis(); }
 	virtual bool		IsAutoEllipsisDefault() const = 0;
 
-	inline WgMode		TextMode() const { return m_pText->mode(); }
+	inline WgState		TextState() const { return m_pText->state(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }
 	inline WgOrigo TextAlignment() const;
 	inline WgText *		TextObj() const;

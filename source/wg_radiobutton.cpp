@@ -63,7 +63,7 @@ bool WgRadioButton::SetState( bool _state )
 	{
 		if( _state )
 		{
-			WgWidgetHolder * pGroup = _findRadioGroup();
+			WgContainer * pGroup = _findRadioGroup();
 			if( pGroup )
 				_unselectRecursively( pGroup );
 
@@ -89,30 +89,23 @@ bool WgRadioButton::SetState( bool _state )
 
 //____ _findRadioGroup() _______________________________________________________
 
-WgWidgetHolder * WgRadioButton::_findRadioGroup()
+WgContainer * WgRadioButton::_findRadioGroup()
 {
-	WgWidgetHolder * pRadioGroup = 0;
-	WgWidgetHolder * pParent = Parent();
+	WgContainer * pParent = Parent();
 	while( pParent )
 	{
-		pRadioGroup = pParent;
+		if( pParent->IsPanel() && pParent->CastToPanel()->IsRadioGroup() )
+			return pParent;
 
-		if( pParent->IsContainer() )
-		{
-			if( pParent->IsPanel() && pParent->CastToPanel()->IsRadioGroup() )
-				break;
-
-			pParent = pParent->CastToContainer()->Parent();
-		}
-		else break;
+		pParent = pParent->Parent();
 	}
 
-	return pRadioGroup;
+	return 0;
 }
 
 //____ _unselectRecursively() __________________________________________________
 
-void WgRadioButton::_unselectRecursively( WgWidgetHolder * pParent )
+void WgRadioButton::_unselectRecursively( WgContainer * pParent )
 {
 	WgWidget * pWidget = pParent->FirstWidget();
 

@@ -43,8 +43,12 @@ public:
 	virtual WgSize	MinSize() const;
 	virtual WgSize	PreferredSize() const;
 
+	virtual WgSize	ContentPadding() const;
 	virtual WgSize	SizeForContent( const WgSize contentSize ) const;
 	virtual WgRect	ContentRect( const WgRect& canvas, WgState state ) const;
+
+	virtual	bool	IsStateIdentical( WgState state, WgState comparedTo ) const;
+
 
 protected:
 	WgBorders	m_contentPadding;

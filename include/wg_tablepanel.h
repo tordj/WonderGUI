@@ -28,10 +28,6 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef  WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
-
 #ifndef WG_HOOK_DOT_H
 #	include <wg_hook.h>
 #endif
@@ -252,14 +248,14 @@ public:
 	//____ Methods __________________________________________
 
 	bool			SetHeaderTextprop( const WgTextpropPtr& pProp );
-	WgTextpropPtr 	GetHeaderTextprop() const { return m_pHeaderProps; };
+	WgTextpropPtr 	HeaderTextprop() const { return m_pHeaderProps; };
 
-	bool			SetHeaderSource( const WgBlocksetPtr& pHeader );
-	WgBlocksetPtr 	GetHeaderSource() const { return m_pHeaderGfx; }
+	bool			SetHeaderSkin( const WgSkinPtr& pHeader );
+	WgSkinPtr 		HeaderSkin() const { return m_pHeaderGfx; }
 
-	void			SetArrowSource( const WgBlocksetPtr& pAscend, const WgBlocksetPtr& pDescend );
-	WgBlocksetPtr	GetArrowAscend() const { return m_pAscendGfx; }
-	WgBlocksetPtr	GetArrowDescend() const { return m_pDescendGfx; }
+	void			SetArrowSkin( const WgSkinPtr& pAscend, const WgSkinPtr& pDescend );
+	WgSkinPtr		ArrowAscend() const { return m_pAscendGfx; }
+	WgSkinPtr		ArrowDescend() const { return m_pDescendGfx; }
 	void			SetArrowPos( const WgOrigo alignment, int xOfs, int yOfs );
 	void			SetArrowPos( int xOfs, int yOfs );
 	int				GetArrowPosX() const { return m_sortMarkerOfs.x; }

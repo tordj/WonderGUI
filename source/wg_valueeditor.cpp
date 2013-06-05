@@ -82,7 +82,7 @@ void WgValueEditor::SetTextColor( WgColor col )
 
 WgColor WgValueEditor::GetTextColor() const
 {
-	return m_text.getColor(WG_MODE_NORMAL);
+	return m_text.getColor(WG_STATE_NORMAL);
 }
 
 //____ SetTextprop() __________________________________________________________
@@ -815,7 +815,7 @@ void WgValueEditor::_onCloneContent( const WgWidget * _pOrg )
 
 void WgValueEditor::_onEnable( void )
 {
-	m_text.setMode(WG_MODE_NORMAL);
+	m_text.setState(WG_STATE_NORMAL);
 	_requestRender();
 }
 
@@ -823,7 +823,7 @@ void WgValueEditor::_onEnable( void )
 
 void WgValueEditor::_onDisable( void )
 {
-	m_text.setMode(WG_MODE_DISABLED);
+	m_text.setState(WG_STATE_DISABLED);
 	_requestRender();
 }
 

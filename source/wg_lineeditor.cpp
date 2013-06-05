@@ -200,7 +200,7 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		pText->setAlignment(m_text.alignment());
 		pText->setProperties(m_text.getProperties());
 		pText->setSelectionProperties(m_text.getSelectionProperties());
-		pText->setMode(m_text.mode());
+		pText->setState(m_text.state());
 
 		pText->SetEditMode(m_text.GetEditMode());
 		pText->showCursor();
@@ -564,7 +564,7 @@ void WgLineEditor::_adjustViewOfs()
 
 void WgLineEditor::_onEnable()
 {
-	m_text.setMode(WG_MODE_NORMAL);
+	m_text.setState(WG_STATE_NORMAL);
 	_requestRender();
 }
 
@@ -572,7 +572,7 @@ void WgLineEditor::_onEnable()
 
 void WgLineEditor::_onDisable()
 {
-	m_text.setMode(WG_MODE_DISABLED);
+	m_text.setState(WG_STATE_DISABLED);
 	_requestRender();
 }
 

@@ -125,25 +125,27 @@ WgWidgetCollectionPtr WgListPanel::GetSelected() const
 	return WgWidgetCollectionPtr();
 }
 
-//____ SetRowBlocks() _________________________________________________________
+//____ SetRowSkin() _________________________________________________________
 
-void WgListPanel::SetRowBlocks( const WgBlocksetPtr& pRowBlocks )
+void WgListPanel::SetRowSkin( const WgSkinPtr& pRowSkin )
 {
-	if( pRowBlocks == m_pRowBlocks[0] && pRowBlocks == m_pRowBlocks[1] )
+	if( pRowSkin == m_pRowSkins[0] && pRowSkin == m_pRowSkins[1] )
 		return;
 
-	m_pRowBlocks[0] = pRowBlocks;
-	m_pRowBlocks[1] = pRowBlocks;
+	m_pRowSkins[0] = pRowSkin;
+	m_pRowSkins[1] = pRowSkin;
 	_requestRender();
 }
 
-void WgListPanel::SetRowBlocks( const WgBlocksetPtr& pOddRowBlocks, const WgBlocksetPtr& pEvenRowBlocks )
+//____ SetRowSkins() __________________________________________________________
+
+void WgListPanel::SetRowSkins( const WgSkinPtr& pOddRowSkin, const WgSkinPtr& pEvenRowSkin )
 {
-	if( pOddRowBlocks == m_pRowBlocks[0] && pEvenRowBlocks == m_pRowBlocks[1] )
+	if( pOddRowSkin == m_pRowSkins[0] && pEvenRowSkin == m_pRowSkins[1] )
 		return;
 
-	m_pRowBlocks[0] = pOddRowBlocks;
-	m_pRowBlocks[1] = pEvenRowBlocks;
+	m_pRowSkins[0] = pOddRowSkin;
+	m_pRowSkins[1] = pEvenRowSkin;
 	_requestRender();
 }
 

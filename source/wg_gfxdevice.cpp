@@ -25,7 +25,6 @@
 #include <wg_gfxdevice.h>
 #include <wg_surface.h>
 #include <wg_geo.h>
-#include <wg_blockset.h>
 #include <wg_text.h>
 #include <wg_cursorinstance.h>
 #include <wg_font.h>
@@ -363,251 +362,6 @@ void WgGfxDevice::ClipTileBlit( const WgRect& _clip, const WgSurface* _pSrc, con
 		myRect.h = _src.h;
 	}
 	return;
-}
-
-//____ BlitBlock() ____________________________________________________________
-
-void WgGfxDevice::BlitBlock( const WgBlock& _block, const WgRect& _dest2, bool bTriLinear, float mipmapbias )
-{
-	if( !_block.Surface() )
-		return;
-
-	if( _block.IsSkipable() )
-		return;
-
-	WgRect _dest = _dest2;
-	WgUtil::AdjustScaledArea(_block, _dest);
-
-	// Shortcuts & optimizations for common special cases.
-
-	const WgRect& src = _block.Rect();
-	const WgSurface * pSurf = _block.Surface();
-
-	if( src.w == _dest.w && src.h == _dest.h )
-	{
-		Blit( pSurf, src, _dest.x, _dest.y );
-		return;
-	}
-
-	if( !_block.HasBorders() )
-	{
-		if( _block.HasTiledCenter() )
-			TileBlit( pSurf, src, _dest );
-		else
-			StretchBlit( pSurf, src, _dest, bTriLinear, mipmapbias );
-		return;
-	}
-
-	if( src.w == _dest.w )
-	{
-		BlitVertBar( pSurf, src, _block.Frame(),
-					 _block.HasTiledCenter(), _dest.x, _dest.y, _dest.h );
-		return;
-	}
-
-	if( src.h == _dest.h )
-	{
-		BlitHorrBar( pSurf, src, _block.Frame(),
-					 _block.HasTiledCenter(), _dest.x, _dest.y, _dest.w );
-		return;
-	}
-
-	const WgBorders& borders = _block.Frame();
-
-	// Render upper row (top-left corner, top stretch area and top-right corner)
-
-	if( borders.top > 0 )
-	{
-		WgRect rect( src.x, src.y, src.w, borders.top );
-
-		BlitHorrBar( pSurf, rect, borders, _block.HasTiledTopBorder(),
-					_dest.x, _dest.y, _dest.w );
-	}
-
-	// Render lowest row (bottom-left corner, bottom stretch area and bottom-right corner)
-
-	if( borders.bottom > 0 )
-	{
-		WgRect rect( src.x, src.y + src.h - borders.bottom, src.w, borders.bottom );
-
-		BlitHorrBar( pSurf, rect, borders, _block.HasTiledBottomBorder(),
-					_dest.x, _dest.y + _dest.h - borders.bottom, _dest.w );
-	}
-
-	// Render left and right stretch areas
-
-	if( _dest.h > (int) borders.Height() )
-	{
-		if( borders.left > 0 )
-		{
-			WgRect sr( src.x, src.y + borders.top, borders.left, src.h - borders.Height() );
-			WgRect dr( _dest.x, _dest.y + borders.top, borders.left, _dest.h - borders.Height() );
-
-			if( _block.HasTiledLeftBorder() )
-				TileBlit( pSurf, sr, dr );
-			else
-				StretchBlit( pSurf, sr, dr );
-		}
-
-		if( borders.right > 0 )
-		{
-			WgRect sr(	src.x + src.w - borders.right, src.y + borders.top,
-						borders.right, src.h - borders.Height() );
-			WgRect dr(	_dest.x + _dest.w - borders.right, _dest.y + borders.top,
-						borders.right, _dest.h - borders.Height() );
-
-			if( _block.HasTiledRightBorder() )
-				TileBlit( pSurf, sr, dr );
-			else
-				StretchBlit( pSurf, sr, dr );
-		}
-	}
-
-
-	// Render middle stretch area
-
-	if( (_dest.h > borders.top + borders.bottom) && (_dest.w > borders.left + borders.right ) )
-	{
-		WgRect sr(	src.x + borders.left, src.y + borders.top,
-					src.w - borders.Width(), src.h - borders.Height() );
-
-		WgRect dr(	_dest.x + borders.left, _dest.y + borders.top,
-					_dest.w - borders.Width(), _dest.h - borders.Height() );
-
-		if( _block.HasTiledCenter() )
-			TileBlit( pSurf, sr, dr );
-		else
-			StretchBlit( pSurf, sr, dr, bTriLinear, mipmapbias );
-	}
-
-
-}
-
-
-//____ ClipBlitBlock() ________________________________________________________
-
-void WgGfxDevice::ClipBlitBlock( const WgRect& _clip, const WgBlock& _block, const WgRect& _dest2, bool bTriLinear, float mipmapbias )
-{
-	if( !_block.Surface() )
-		return;
-
-	if( _block.IsSkipable() )
-		return;
-
-	// Shortcuts & optimizations for common special cases.
-
-	WgSize borderSize = _block.Frame().Size();
-
-	if( _clip.Contains( _dest2 ) && borderSize.w <= _dest2.Size().w && borderSize.h <= _dest2.Size().h )
-	{
-		BlitBlock( _block, _dest2, bTriLinear, mipmapbias );
-		return;
-	}
-
-	WgRect _dest = _dest2;
-	WgUtil::AdjustScaledArea(_block, _dest);
-
-	const WgRect& src = _block.Rect();
-	const WgSurface * pSurf = _block.Surface();
-
-	if( src.w == _dest.w && src.h == _dest.h )
-	{
-		ClipBlit( _clip, pSurf, src, _dest.x, _dest.y );
-		return;
-	}
-
-	if( !_block.HasBorders() )
-	{
-		if( _block.HasTiledCenter() )
-			ClipTileBlit( _clip, pSurf, src, _dest );
-		else
-			ClipStretchBlit( _clip, pSurf, src, _dest, bTriLinear, mipmapbias );
-		return;
-	}
-
-	if( src.w == _dest.w )
-	{
-		ClipBlitVertBar( _clip, pSurf, src, _block.Frame(),
-						 _block.HasTiledCenter(), _dest.x, _dest.y, _dest.h );
-		return;
-	}
-
-	if( src.h == _dest.h )
-	{
-		ClipBlitHorrBar( _clip, pSurf, src, _block.Frame(),
-						 _block.HasTiledCenter(), _dest.x, _dest.y, _dest.w );
-		return;
-	}
-
-	const WgBorders& borders = _block.Frame();
-
-	// Render upper row (top-left corner, top stretch area and top-right corner)
-
-	if( borders.top > 0 )
-	{
-		WgRect rect( src.x, src.y, src.w, borders.top );
-
-		ClipBlitHorrBar( _clip, pSurf, rect, borders, _block.HasTiledTopBorder(),
-								_dest.x, _dest.y, _dest.w );
-	}
-
-	// Render lowest row (bottom-left corner, bottom stretch area and bottom-right corner)
-
-	if( borders.bottom > 0 )
-	{
-		WgRect rect( src.x, src.y + src.h - borders.bottom, src.w, borders.bottom );
-
-		ClipBlitHorrBar( _clip, pSurf, rect, borders, _block.HasTiledBottomBorder(),
-								_dest.x, _dest.y + _dest.h - borders.bottom, _dest.w );
-	}
-
-	// Render left and right stretch areas
-
-	if( _dest.h > (int) borders.Height() )
-	{
-		if( borders.left > 0 )
-		{
-			WgRect sr( src.x, src.y + borders.top, borders.left, src.h - borders.Height() );
-			WgRect dr( _dest.x, _dest.y + borders.top, borders.left, _dest.h - borders.Height() );
-
-			if( _block.HasTiledLeftBorder() )
-				ClipTileBlit( _clip, pSurf, sr, dr );
-			else
-				ClipStretchBlit( _clip, pSurf, sr, dr );
-		}
-
-		if( borders.right > 0 )
-		{
-			WgRect sr(	src.x + src.w - borders.right, src.y + borders.top,
-						borders.right, src.h - borders.Height() );
-			WgRect dr(	_dest.x + _dest.w - borders.right, _dest.y + borders.top,
-						borders.right, _dest.h - borders.Height() );
-
-			if( _block.HasTiledRightBorder() )
-				ClipTileBlit( _clip, pSurf, sr, dr );
-			else
-				ClipStretchBlit( _clip, pSurf, sr, dr );
-		}
-	}
-
-
-	// Render middle stretch area
-
-	if( (_dest.h > borders.top + borders.bottom) && (_dest.w > borders.left + borders.right ) )
-	{
-		WgRect sr(	src.x + borders.left, src.y + borders.top,
-					src.w - borders.Width(), src.h - borders.Height() );
-
-		WgRect dr(	_dest.x + borders.left, _dest.y + borders.top,
-					_dest.w - borders.Width(), _dest.h - borders.Height() );
-
-		if( _block.HasTiledCenter() )
-			ClipTileBlit( _clip, pSurf, sr, dr );
-		else
-			ClipStretchBlit( _clip, pSurf, sr, dr, bTriLinear, mipmapbias );
-	}
-
-
 }
 
 
@@ -1136,7 +890,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 {
 	WgRect		clip(_clip,dest);		// Make sure clipping rect is inside dest.
 
-	WgMode mode = pText->mode();
+	WgState state = pText->state();
 
 	// Take care of selection background color (if we have any)
 
@@ -1151,7 +905,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 
 	if( selStart != selEnd && pSelProp->IsBgColored() )
 	{
-		_drawTextSectionBg( clip, pText, dest, selStart, selEnd, pSelProp->BgColor(mode) );
+		_drawTextSectionBg( clip, pText, dest, selStart, selEnd, pSelProp->BgColor(state) );
 	}
 	else
 	{
@@ -1263,7 +1017,7 @@ void WgGfxDevice::_drawTextSectionBg( const WgRect& clip, const WgText * pText, 
 
 //____ PrintLine() ________________________________________________________
 
-void WgGfxDevice::PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars, WgMode mode )
+void WgGfxDevice::PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars, WgState state )
 {
 	if( !_pLine )
 		return;
@@ -1289,7 +1043,7 @@ void WgGfxDevice::PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgCha
 
 			attr = baseAttr;
 
-			WgTextTool::AddPropAttributes( attr, _pLine[i].Properties(), mode );
+			WgTextTool::AddPropAttributes( attr, _pLine[i].Properties(), state );
 
 			hProp = _pLine[i].PropHandle();
 

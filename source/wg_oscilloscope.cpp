@@ -78,9 +78,9 @@ WgSize WgOscilloscope::PreferredSize() const
 }
 
 
-//____ SetBackground() ________________________________________________________
+//____ SetSkin() ______________________________________________________________
 
-void WgOscilloscope::SetBackground( const WgSkinPtr& skin )
+void WgOscilloscope::SetSkin( const WgSkinPtr& skin )
 {
 	if( m_pBG != skin )
 	{
@@ -217,13 +217,13 @@ void WgOscilloscope::AddMarker( int xOfs, float yOfs )
 	_requestRender();
 }
 
-//____ SetMarkerGfx() _________________________________________________________
+//____ SetMarkerSkin() _________________________________________________________
 
-void WgOscilloscope::SetMarkerGfx( const WgBlocksetPtr& pBlockset )
+void WgOscilloscope::SetMarkerSkin( const WgSkinPtr& pSkin )
 {
-	if( m_pMarkerGfx != pBlockset )
+	if( m_pMarkerSkin != pSkin )
 	{
-		m_pMarkerGfx = pBlockset;
+		m_pMarkerSkin = pSkin;
 		_requestRender();
 	}
 }
@@ -244,7 +244,7 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	// Render background
 
 	if( m_pBG )
-		m_pBG->Render( pDevice, WG_STATE_NORMAL, _canvas, _clip );
+		m_pBG->Render( pDevice, _canvas, WG_STATE_NORMAL, _clip );
 
 	//
 
@@ -286,21 +286,23 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 	WgBase::MemStackRelease(allocSize);
 
-	// Blit markers
+	// Render markers
 
-	for( int i = 0 ; i < m_nMarkers ; i++ )
+	if( m_pMarkerSkin )
 	{
-		WgRect dest;
+		for( int i = 0 ; i < m_nMarkers ; i++ )
+		{
+			WgRect dest;
 
-		int x = m_pMarkers[i].x;
-		int y = (int) (m_pMarkers[i].y*scaleY+centerY);
+			int x = m_pMarkers[i].x;
+			int y = (int) (m_pMarkers[i].y*scaleY+centerY);
 
-		dest.SetSize( m_pMarkerGfx->Size() );
-		dest.x = x - dest.w / 2;
-		dest.y = y - dest.h / 2;
+			dest.SetSize( m_pMarkerSkin->PreferredSize() );
+			dest.x = x - dest.w / 2;
+			dest.y = y - dest.h / 2;
 
-		pDevice->ClipBlitBlock( _clip, m_pMarkerGfx->GetBlock(WG_MODE_NORMAL), dest );
+			m_pMarkerSkin->Render( pDevice, dest, WG_STATE_NORMAL, _clip );
+		}
 	}
-
 }
 

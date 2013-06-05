@@ -182,7 +182,7 @@ public:
 
 	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const char * pString );
 	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const Uint16 * pString );
-	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr& attr, WgMode mode, const WgChar * pString );
+	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr& attr, WgState mode, const WgChar * pString );
 
 	static void		forwardCharacters( const char *& pChar, Uint32 nChars );
 	static void		forwardEscapedCharacters( const char *& pChar, Uint32 nChars );
@@ -195,50 +195,38 @@ public:
 	static void			SetLink( const WgTextLinkPtr& pLink, WgChar * pChar, Uint32 nb );
 	static void			SetFont( WgFont * pFont, WgChar * pChar, Uint32 nb );
 	static void			SetBreakLevel( int breakLevel, WgChar * pChar, Uint32 nb );
-	static void			SetColor( const WgColor col, WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
-	static void			SetSize( int size, WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
-	static void			SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
-	static void			SetUnderlined( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
+
+	static void			SetColor( const WgColor col, WgChar * pChar, Uint32 nb );
+	static void			SetSize( int size, WgChar * pChar, Uint32 nb );
+	static void			SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb );
+	static void			SetUnderlined( WgChar * pChar, Uint32 nb );
+
+	static void			SetColor( const WgColor col, WgChar * pChar, Uint32 nb, WgState state );
+	static void			SetSize( int size, WgChar * pChar, Uint32 nb, WgState state );
+	static void			SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb, WgState state );
+	static void			SetUnderlined( WgChar * pChar, Uint32 nb, WgState state );
+
 
 	inline static void	ClearProperties( WgChar * pChar, Uint32 nb ) { SetProperties( 0, pChar, nb ); }
 	inline static void	ClearLink( WgChar * pChar, Uint32 nb ) { SetLink(0,pChar,nb); }
 	inline static void	ClearFont( WgChar * pChar, Uint32 nb ) { SetFont(0,pChar,nb); }
 	inline static void	ClearBreakLevel( WgChar * pChar, Uint32 nb ) { SetBreakLevel(-1,pChar,nb); }
-	static void			ClearColor( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
-	static void			ClearSize( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
-	static void			ClearStyle( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
-	static void			ClearUnderlined( WgChar * pChar, Uint32 nb, WgMode mode = WG_MODE_ALL );
+
+	static void			ClearColor( WgChar * pChar, Uint32 nb );
+	static void			ClearSize( WgChar * pChar, Uint32 nb );
+	static void			ClearStyle( WgChar * pChar, Uint32 nb );
+	static void			ClearUnderlined( WgChar * pChar, Uint32 nb );
+
+	static void			ClearColor( WgChar * pChar, Uint32 nb, WgState state );
+	static void			ClearSize( WgChar * pChar, Uint32 nb, WgState state );
+	static void			ClearStyle( WgChar * pChar, Uint32 nb, WgState state );
+	static void			ClearUnderlined( WgChar * pChar, Uint32 nb, WgState state );
 
 
 
-	static void			AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgMode mode = WG_MODE_NORMAL );
-	static void			SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgMode mode = WG_MODE_NORMAL );
-/*
-	static bool				IsCharUnderlined(	Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
-	static const WgColor	GetCharColor(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
-	static const WgColor	GetCharBgColor(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
-	static WgFontStyle		GetCharStyle(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
-	static int				GetCharSize(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
-	static WgFont *			GetCharFont(		Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
-	static WgGlyphset *		GetCharGlyphset(	Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
-	static bool				GetCharVisibility(	Uint16 character, Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL, bool bSelected = false );
-	static int				GetCharBreakLevel(	Uint16 hCharProp, const WgTextAttr * pAttr, WgMode linkMode = WG_MODE_NORMAL );
-	static WgTextLinkPtr	GetCharLink(		Uint16 hCharProp, const WgTextAttr * pAttr );
-	static bool				IsCharLink(			Uint16 hCharProp, const WgTextAttr * pAttr );
-*/
+	static void			AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgState state = WG_STATE_NORMAL );
+//	static void			SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgState state = WG_STATE_NORMAL );
 
-/*
-	static bool				IsCombUnderlined( Uint16 hTextprop, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
-	static const WgColor	GetCombColor( Uint16 hTextprop, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
-	static const WgColor	GetCombBgColor( Uint16 hTextprop, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
-	static WgFontStyle		GetCombStyle( Uint16 hTextprop, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
-	static int				GetCombSize( Uint16 hTextprop, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
-	static WgTextLinkPtr	GetCombLink( Uint16 hTextprop, Uint16 hCharProp = 0 );
-	static WgFont *			GetCombFont( Uint16 hTextprop, Uint16 hCharProp = 0 );
-	static WgGlyphset *		GetCombGlyphset( Uint16 hTextprop, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL );
-	static bool				GetCombCharVisibility( Uint16 character, Uint16 hTextprop, Uint16 hCharProp = 0 );
-	static int				GetCombBreakLevel( Uint16 hTextprop, Uint16 hCharProp = 0 );
-*/
 	static WgCursor *		GetCursor( const WgText * pText );
 	static WgTextpropPtr	GetSelectionProperties( const WgText * pText );
 	static WgTextpropPtr	GetLinkProperties( const WgText * pText );
@@ -250,113 +238,6 @@ public:
 	static void				clearBreakRules();
 	static bool				setBreakRule( unsigned char character, int level, WgBreakRules rule );
 	static void				setDefaultBreakRules();
-
-
-	//____
-
-	class PropModifier
-	{
-	public:
-		virtual void Modify( WgTextprop& prop ) const = 0;
-
-	protected:
-		PropModifier() {};
-		virtual ~PropModifier() {}
-	};
-
-	class PropSizeModifier : public PropModifier
-	{
-	public:
-		PropSizeModifier( int size, WgMode mode ) { m_size = size; m_mode = mode; }
-		void Modify( WgTextprop& prop ) const { prop.SetSize(m_size,m_mode); }
-	private:
-		int		m_size;
-		WgMode	m_mode;
-	};
-
-	class PropSizeClearer : public PropModifier
-	{
-	public:
-		PropSizeClearer( WgMode mode ) { m_mode = mode; }
-		void Modify( WgTextprop& prop ) const { prop.ClearSize(m_mode); }
-	private:
-		WgMode	m_mode;
-	};
-
-
-	class PropColorModifier : public PropModifier
-	{
-	public:
-		PropColorModifier( WgColor col, WgMode mode ) { m_col = col; m_mode = mode; }
-		void Modify( WgTextprop& prop ) const { prop.SetColor(m_col,m_mode); }
-	private:
-		WgColor m_col;
-		WgMode	m_mode;
-	};
-
-	class PropColorClearer : public PropModifier
-	{
-	public:
-		PropColorClearer( WgMode mode ) { m_mode = mode; }
-		void Modify( WgTextprop& prop ) const { prop.ClearColor(m_mode); }
-	private:
-		WgMode	m_mode;
-	};
-
-
-	class PropStyleModifier : public PropModifier
-	{
-	public:
-		PropStyleModifier( WgFontStyle style, WgMode mode ) { m_style = style; m_mode = mode; }
-		void Modify( WgTextprop& prop ) const { prop.SetStyle(m_style,m_mode); }
-	private:
-		WgFontStyle m_style;
-		WgMode	m_mode;
-	};
-
-	class PropUnderlinedModifier : public PropModifier
-	{
-	public:
-		PropUnderlinedModifier( bool bUnderlined, WgMode mode ) { m_bUnderlined = bUnderlined; m_mode = mode; }
-		void Modify( WgTextprop& prop ) const { if( m_bUnderlined) prop.SetUnderlined(m_mode); else prop.ClearUnderlined(m_mode); }
-	private:
-		bool	m_bUnderlined;
-		WgMode	m_mode;
-	};
-
-	class PropBreakLevelModifier : public PropModifier
-	{
-	public:
-		PropBreakLevelModifier( int level ) { m_level = level; }
-		void Modify( WgTextprop& prop ) const { prop.SetBreakLevel(m_level); }
-	private:
-		int		m_level;
-	};
-
-
-	class PropLinkModifier : public PropModifier
-	{
-	public:
-		PropLinkModifier( const WgTextLinkPtr& pLink ) { m_pLink = pLink; }
-		void Modify( WgTextprop& prop ) const { prop.SetLink( m_pLink ); }
-	private:
-		WgTextLinkPtr	m_pLink;
-	};
-
-	class PropFontModifier : public PropModifier
-	{
-	public:
-		PropFontModifier( WgFont * pFont ) { m_pFont = pFont; }
-		void Modify( WgTextprop& prop ) const { prop.SetFont( m_pFont ); }
-	private:
-		WgFont *	m_pFont;
-	};
-
-
-	//____
-
-	static void ModifyProperties( const PropModifier& modif, WgChar * pChar, Uint32 nb );
-
 
 	//____
 
@@ -387,6 +268,160 @@ public:
 
 
 private:
+	//____
+
+	class PropModifier
+	{
+	public:
+		virtual void Modify( WgTextprop& prop ) const = 0;
+
+	protected:
+		PropModifier() {};
+		virtual ~PropModifier() {}
+	};
+
+	class PropSizeModifier : public PropModifier
+	{
+	public:
+		PropSizeModifier( int size ) { m_size = size; }
+		void Modify( WgTextprop& prop ) const { prop.SetSize(m_size); }
+	private:
+		int		m_size;
+	};
+
+	class PropSizeClearer : public PropModifier
+	{
+	public:
+		void Modify( WgTextprop& prop ) const { prop.ClearSize(); }
+	};
+
+
+	class PropColorModifier : public PropModifier
+	{
+	public:
+		PropColorModifier( WgColor col ) { m_col = col; }
+		void Modify( WgTextprop& prop ) const { prop.SetColor(m_col); }
+	private:
+		WgColor m_col;
+	};
+
+	class PropColorClearer : public PropModifier
+	{
+	public:
+		void Modify( WgTextprop& prop ) const { prop.ClearColor(); }
+	};
+
+
+	class PropStyleModifier : public PropModifier
+	{
+	public:
+		PropStyleModifier( WgFontStyle style ) { m_style = style; }
+		void Modify( WgTextprop& prop ) const { prop.SetStyle(m_style); }
+	private:
+		WgFontStyle m_style;
+	};
+
+	class PropUnderlinedModifier : public PropModifier
+	{
+	public:
+		PropUnderlinedModifier( bool bUnderlined ) { m_bUnderlined = bUnderlined; }
+		void Modify( WgTextprop& prop ) const { if( m_bUnderlined) prop.SetUnderlined(); else prop.ClearUnderlined(); }
+	private:
+		bool	m_bUnderlined;
+	};
+
+	class PropBreakLevelModifier : public PropModifier
+	{
+	public:
+		PropBreakLevelModifier( int level ) { m_level = level; }
+		void Modify( WgTextprop& prop ) const { prop.SetBreakLevel(m_level); }
+	private:
+		int		m_level;
+	};
+
+	class PropLinkModifier : public PropModifier
+	{
+	public:
+		PropLinkModifier( const WgTextLinkPtr& pLink ) { m_pLink = pLink; }
+		void Modify( WgTextprop& prop ) const { prop.SetLink( m_pLink ); }
+	private:
+		WgTextLinkPtr	m_pLink;
+	};
+
+	class PropFontModifier : public PropModifier
+	{
+	public:
+		PropFontModifier( WgFont * pFont ) { m_pFont = pFont; }
+		void Modify( WgTextprop& prop ) const { prop.SetFont( m_pFont ); }
+	private:
+		WgFont *	m_pFont;
+	};
+
+	class PropStateSizeModifier : public PropModifier
+	{
+	public:
+		PropStateSizeModifier( int size, WgState state ) { m_size = size; m_state = state; }
+		void Modify( WgTextprop& prop ) const { prop.SetSize(m_size,m_state); }
+	private:
+		int		m_size;
+		WgState	m_state;
+	};
+
+	class PropStateSizeClearer : public PropModifier
+	{
+	public:
+		PropStateSizeClearer( WgState state ) { m_state = state; }
+		void Modify( WgTextprop& prop ) const { prop.ClearSize(m_state); }
+	private:
+		WgState	m_state;
+	};
+
+
+	class PropStateColorModifier : public PropModifier
+	{
+	public:
+		PropStateColorModifier( WgColor col, WgState state ) { m_col = col; m_state = state; }
+		void Modify( WgTextprop& prop ) const { prop.SetColor(m_col,m_state); }
+	private:
+		WgColor m_col;
+		WgState	m_state;
+	};
+
+	class PropStateColorClearer : public PropModifier
+	{
+	public:
+		PropStateColorClearer( WgState state ) { m_state = state; }
+		void Modify( WgTextprop& prop ) const { prop.ClearColor(m_state); }
+	private:
+		WgState	m_state;
+	};
+
+
+	class PropStateStyleModifier : public PropModifier
+	{
+	public:
+		PropStateStyleModifier( WgFontStyle style, WgState state ) { m_style = style; m_state = state; }
+		void Modify( WgTextprop& prop ) const { prop.SetStyle(m_style,m_state); }
+	private:
+		WgFontStyle m_style;
+		WgState	m_state;
+	};
+
+	class PropStateUnderlinedModifier : public PropModifier
+	{
+	public:
+		PropStateUnderlinedModifier( bool bUnderlined, WgState state ) { m_bUnderlined = bUnderlined; m_state = state; }
+		void Modify( WgTextprop& prop ) const { if( m_bUnderlined) prop.SetUnderlined(m_state); else prop.ClearUnderlined(m_state); }
+	private:
+		bool	m_bUnderlined;
+		WgState	m_state;
+	};
+
+
+
+	//____
+
+	static void ModifyProperties( const PropModifier& modif, WgChar * pChar, Uint32 nb );
 
 	inline static Uint8	NibbleToAscii( Uint8 nibble );
 	inline static Uint8	AsciiToNibble( Uint8 ascii );

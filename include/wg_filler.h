@@ -19,16 +19,16 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_FILL_DOT_H
-#define WG_FILL_DOT_H
+#ifndef WG_FILLER_DOT_H
+#define WG_FILLER_DOT_H
 
 
 #ifndef WG_WIDGET_DOT_H
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_COLORSET_DOT_H
-#	include <wg_colorset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 //____ WgFiller ____________________________________________________________
@@ -43,15 +43,14 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgFiller(); };
 
-	void	SetColors( const WgColorsetPtr& pColors );
-	const	WgColorsetPtr	GetColors() const		{ return m_pColors; }
+	void		SetSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr	GetSkin() const		{ return m_pSkin; }
 
 	void	SetPreferredSize( const WgSize& size );
 	WgSize	PreferredSize() const;
 
 protected:
 
-	bool	_isColorChanged( WgMode newMode ) const;
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	bool	_onAlphaTest( const WgCoord& ofs );
@@ -60,11 +59,11 @@ protected:
 
 private:
 
-	WgColorsetPtr	m_pColors;
+	WgSkinPtr		m_pSkin;
 	WgSize			m_defaultSize;
-	WgMode			m_mode;
+	WgState			m_state;
 
 };
 
 
-#endif //WG_FILL_DOT_H
+#endif //WG_FILLER_DOT_H

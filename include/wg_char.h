@@ -137,57 +137,53 @@ public:
 
 	inline WgTextpropPtr	Properties() const { return WgTextpropPtr(properties); }
 
-							/// Checks if the character is set to be underlined in the given mode.
+							/// Checks if the character is set to be underlined in the given state.
 
-							/// @param mode			The mode of the Widget or Item containing the text.
+							/// @param state			The state of the Widget or Item containing the text.
 
-							/// @return True if the character is set to underlined for the given mode.
+							/// @return True if the character is set to underlined for the given state.
 
-	inline bool				IsUnderlined( WgMode mode ) const { return GetPropRef().IsUnderlined(mode); }
+	inline bool				IsUnderlined( WgState state ) const { return GetPropRef().IsUnderlined(state); }
 
-							/// Checks if the character has a color specified for the given mode.
+							/// Checks if the character has a color specified for the given state.
 
-							/// @param mode			The mode of the Widget or Item containing the text.
-							///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
+							/// @param state			The state of the Widget or Item containing the text.
 
-							/// @return True if the character has a color specified for the specified mode.
+							/// @return True if the character has a color specified for the specified state.
 
-	inline bool				IsColored( WgMode mode ) const { return GetPropRef().IsColored(mode); }
+	inline bool				IsColored( WgState state ) const { return GetPropRef().IsColored(state); }
 
-							/// Returns the characters specified color (if any) for the given mode.
+							/// Returns the characters specified color (if any) for the given state.
 
-							/// @param mode			The mode of the Widget or Item containing the text.
-							///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
+							/// @param state			The state of the Widget or Item containing the text.
 
 							/// The method IsColored() needs to be called to determine wether the
-							/// character actually has a color for the given mode or not.
+							/// character actually has a color for the given state or not.
 							///
-							/// @return If the character has a color specified for the given mode that will be returned,
+							/// @return If the character has a color specified for the given state that will be returned,
 							///			otherwise an unspecified value will be returned.
 
-	inline const WgColor	Color( WgMode mode ) const { return GetPropRef().Color(mode); }
+	inline const WgColor	Color( WgState state ) const { return GetPropRef().Color(state); }
 
-							/// Checks if the character has a background color specified for the given mode.
+							/// Checks if the character has a background color specified for the given state.
 
-							/// @param mode			The mode of the Widget or Item containing the text.
-							///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
+							/// @param state		The state of the Widget or Item containing the text.
 
-							/// @return True if the character has a background color specified for the specified mode.
+							/// @return True if the character has a background color specified for the specified state.
 
-	inline bool				IsBgColored( WgMode mode ) const { return GetPropRef().IsBgColored(mode); }
+	inline bool				IsBgColored( WgState state ) const { return GetPropRef().IsBgColored(state); }
 
-							/// Returns the characters specified background color (if any) for the given mode.
+							/// Returns the characters specified background color (if any) for the given state.
 
-							/// @param mode			The mode of the Widget or Item containing the text.
-							///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
+							/// @param state		The state of the Widget or Item containing the text.
 
 							/// The method IsBgColored() needs to be called to determine wether the
-							/// character actually has a background color for the given mode or not.
+							/// character actually has a background color for the given state or not.
 							///
-							/// @return If the character has a background color specified for the given mode that will be returned,
+							/// @return If the character has a background color specified for the given state that will be returned,
 							///			otherwise an unspecified value will be returned.
 
-	inline const WgColor	BgColor( WgMode mode ) const { return GetPropRef().BgColor(mode); }
+	inline const WgColor	BgColor( WgState state ) const { return GetPropRef().BgColor(state); }
 
 							/// Returns the text-link (weblink) this character links to, if any.
 							///
@@ -202,32 +198,31 @@ public:
 	inline WgFont *			Font() const { return GetPropRef().Font(); }
 
 
-//	inline WgGlyphset *		Glyphset( const WgTextpropPtr& pDefProp, WgMode mode = WG_MODE_NORMAL ) const { return WgTextTool::GetCombGlyphset(pDefProp.GetHandle(), properties, mode); }
+//	inline WgGlyphset *		Glyphset( const WgTextpropPtr& pDefProp, WgState state = WG_STATE_NORMAL ) const { return WgTextTool::GetCombGlyphset(pDefProp.GetHandle(), properties, state); }
 
-							/// Returns the characters font size for the given mode.
+							/// Returns the characters font size for the given state.
 							///
-							/// @param mode			The mode of the Widget or Item containing the text.
+							/// @param state			The state of the Widget or Item containing the text.
 							///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
 							///
-							///	Default value for all modes is WG_MODE_NORMAL which is considered "no mode specified"
+							///	Default value for all states is WG_STATE_NORMAL which is considered "no state specified"
 							/// by most text managers who therefore will decide the characters style themselves.
 							///
-							/// @return Characters font size for the given mode.
+							/// @return Characters font size for the given state.
 
-	inline int				Size( WgMode mode = WG_MODE_NORMAL ) const { return GetPropRef().Size(mode); }
+	inline int				Size( WgState state = WG_STATE_NORMAL ) const { return GetPropRef().Size(state); }
 
-							/// Returns the characters font style specification for the given mode.
+							/// Returns the characters font style specification for the given state.
 							///
-							/// @param mode			The mode of the Widget or Item containing the text.
-							///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
+							/// @param state			The state of the Widget or Item containing the text.
 							///
-							///	Default value for all modes is WG_MODE_NORMAL which is considered "no mode specified"
+							///	Default value for all states is WG_STATE_NORMAL which is considered "no state specified"
 							/// by most text managers who therefore will decide the characters style themselves.
 							///
-							/// @return Font style specified for the given mode.
+							/// @return Font style specified for the given state.
 
 
-	inline WgFontStyle		Style( WgMode mode = WG_MODE_NORMAL ) const { return GetPropRef().Style(mode); }
+	inline WgFontStyle		Style( WgState state = WG_STATE_NORMAL ) const { return GetPropRef().Style(state); }
 
 							/// Checks if the character terminates the current line.
 							/// @return True if the glyph portion of the character contains End-Of-Line (\\n) or End-of-Text (null).

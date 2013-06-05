@@ -26,10 +26,6 @@
 #	include <wg_button.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
-
 #ifndef	WG_TEXT_DOT_H
 #	include <wg_text.h>
 #endif
@@ -104,7 +100,7 @@ protected:
 		void		_onCloneContent( const WgWidget * _pOrg );
 		virtual void _onNewSize( const WgSize& size );
 
-		WgMode		_getRenderMode();
+		WgState		_getRenderState();
 
 
 

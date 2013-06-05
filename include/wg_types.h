@@ -69,20 +69,6 @@ template<typename T> inline void WgSwap(T &a, T &b) { T c = a; a = b; b = c; }
 
 #define		WG_LIMIT(x, min, max)	if( x < min) x = min; if( x > max) x = max;
 
-//____ WgMode _________________________________________________________________
-
-enum WgMode //: Uint8
-{
-	WG_MODE_NORMAL =	0,
-	WG_MODE_MARKED =	1,		// Widget is highlighted (mouse over)
-	WG_MODE_SELECTED =	2,		// Widget is selected (pressed)
-	WG_MODE_DISABLED =	3,		// Widget is disabled
-	WG_MODE_SPECIAL =	4,		// Graphics block for a special, widget-specific mode.
-	WG_MODE_ALL		=	5		// Only supported by certain methods!!!
-};
-
-#define	WG_NB_MODES		5		// Number of modes (excluding WG_MODE_ALL )
-
 
 enum WgStateEnum
 {
@@ -99,10 +85,11 @@ enum WgStateEnum
 	WG_STATE_PRESSED_FOCUSED			= 8+4+2,
 	WG_STATE_PRESSED_FOCUSED_SELECTED	= 8+4+2+1,
 	WG_STATE_DISABLED					= 16,
+	WG_STATE_DISABLED_SELECTED			= 16+1,
 };
 
-#define	WG_NB_STATES		13			// Number of states
-#define	WG_MAX_STATE_VALUE	16			// Highest value for WgStateEnum
+#define	WG_NB_STATES		14			// Number of states
+#define	WG_MAX_STATE_VALUE	17			// Highest value for WgStateEnum
 
 class WgState 
 {
@@ -113,8 +100,8 @@ public:
 //	void		set( WgModeEnum state ) { m_state = state; }
 //	WgModeEnum	getEnum() const { return (WgModeEnum) m_state; }
 
-	bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~WG_STATE_DISABLED; else m_state = WG_STATE_DISABLED; return true; }
-	bool	setSelected(bool bSelected) { if( m_state == WG_STATE_DISABLED ) return false; if(bSelected) m_state |= WG_STATE_SELECTED; else m_state &= ~WG_STATE_SELECTED; return true; }
+	bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~WG_STATE_DISABLED; else m_state = (m_state & WG_STATE_SELECTED) | WG_STATE_DISABLED; return true; }
+	bool	setSelected(bool bSelected) { if(bSelected) m_state |= WG_STATE_SELECTED; else m_state &= ~WG_STATE_SELECTED; return true; }
 	bool	setFocused(bool bFocused) { if( m_state == WG_STATE_DISABLED ) return false; if(bFocused) m_state |= WG_STATE_FOCUSED; else m_state &= ~WG_STATE_FOCUSED; return true; }
 	bool	setHovered(bool bHovered) { if( m_state == WG_STATE_DISABLED ) return false; if(bHovered) m_state |= WG_STATE_HOVERED; else m_state &= ~WG_STATE_PRESSED; return true; }
 	bool	setPressed(bool bPressed) { if( m_state == WG_STATE_DISABLED ) return false; if(bPressed) m_state |= WG_STATE_PRESSED; else m_state &= ~(WG_STATE_PRESSED - WG_STATE_HOVERED); return true; }

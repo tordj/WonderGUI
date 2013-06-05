@@ -187,8 +187,8 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 {
 	Uint32 w = size.w;
 
-	if( m_pBgGfx )
-		w -= m_pBgGfx->Padding().Width();
+	if( m_pSkin )
+		w -= m_pSkin->ContentPadding().w;
 	m_refreshText.setLineWidth(w);
 
 	WgButton::_onNewSize( size );
@@ -266,29 +266,27 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 {
 	// Render background or animation
 
-	WgBlock	bgBlock;
-	if( m_pBgGfx )
-		bgBlock = m_pBgGfx->GetBlock(m_mode,_canvas.Size());
-
 	if( m_bRefreshing && m_pRefreshAnim && m_animTarget != ICON )
 	{
-		WgBlock animBlock = m_pRefreshAnim->GetBlock( m_animTimer );
+		WgGfxFrame * pAnimFrame = m_pRefreshAnim->GetFrame( m_animTimer );
 
 		switch( m_animTarget )
 		{
 			case BUTTON_CENTERED:
 			{
-				WgRect dest = (	_canvas.x + (_canvas.w - animBlock.Width())/2,
-								_canvas.y + (_canvas.h - animBlock.Height())/2,
-								animBlock.Size() );
+				WgRect dest = (	_canvas.x + (_canvas.w - pAnimFrame->rect.w)/2,
+								_canvas.y + (_canvas.h - pAnimFrame->rect.h)/2,
+								pAnimFrame->rect.Size() );
 
-				pDevice->ClipBlitBlock( _clip, animBlock, dest );
+				pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect.x, pAnimFrame->rect.y, pAnimFrame->rect.w, pAnimFrame->rect.h,
+										  dest.x, dest.y, dest.w, dest.h, false );
 			}
 			break;
 
 			case BUTTON_STRETCHED:
 			{
-				pDevice->ClipBlitBlock( _clip, animBlock, _canvas );
+				pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect.x, pAnimFrame->rect.y, pAnimFrame->rect.w, pAnimFrame->rect.h,
+										  _canvas.x, _canvas.y, _canvas.w, _canvas.h, false );
 			}
 			break;
 
@@ -296,20 +294,22 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 				break;
 		}
 	}
-	else
+	else if( m_pSkin )
 	{
-		pDevice->ClipBlitBlock( _clip, bgBlock, _canvas );
+		m_pSkin->Render( pDevice, _canvas, m_state, _clip );
 	}
 
 	// Get content rect with displacement.
 
-	WgRect contentRect = bgBlock.ContentRect( _canvas );
+	WgRect contentRect = _canvas;
+	if( m_pSkin )
+		contentRect = m_pSkin->ContentRect( _canvas, m_state );
 
 	// Get icon and text rect from content rect
 
 	WgSize iconSize;
-	if( m_pIconGfx )
-		iconSize = m_pIconGfx->Size();
+	if( m_pIconSkin )
+		iconSize = m_pIconSkin->PreferredSize();
 	else if( m_animTarget == ICON && m_pRefreshAnim )
 		iconSize = m_pRefreshAnim->Size();
 
@@ -323,12 +323,12 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	{
 		// Render animation
 
-		WgBlock animBlock = m_pRefreshAnim->GetBlock( m_animTimer );
+		WgGfxFrame * pAnimFrame = m_pRefreshAnim->GetFrame( m_animTimer );
 
-		pDevice->ClipBlitBlock( _clip, animBlock, iconRect );
+		pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect, iconRect );
 	}
-	else if( m_pIconGfx )
-		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, iconRect.Size()), iconRect );
+	else if( m_pIconSkin )
+		m_pIconSkin->Render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
@@ -341,10 +341,10 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
  	if( !pText->IsEmpty() )
 	{
-		pText->setMode(m_mode);
+		pText->setState(m_state);
 
-		if( m_pBgGfx )
-			pText->SetBgBlockColors( m_pBgGfx->TextColors() );
+		if( m_pSkin )
+			pText->SetColorSkin( m_pSkin );
 
 		WgRect clip(textRect,_clip);
 		pDevice->PrintText( clip, pText, textRect );
@@ -352,27 +352,27 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 }
 
 
-//_____ _getRenderMode() ________________________________________________________
+//_____ _getRenderState() ________________________________________________________
 
-WgMode WgRefreshButton::_getRenderMode()
+WgState WgRefreshButton::_getRenderState()
 {
 	if( !IsEnabled() )
-		return WG_MODE_DISABLED;
+		return WG_STATE_DISABLED;
 
 	if( m_bRefreshing && !m_bRestartable )
-		return WG_MODE_SPECIAL;					// Not restartable, so we shouldn't show any MARKED/SELECTED modes.
+		return WG_STATE_SELECTED;					// Not restartable, so we shouldn't show any MARKED/SELECTED modes.
 
 
 	if( m_bReturnPressed || (m_bPressed && (m_bPointerInside || m_bDownOutside)) )
-		return WG_MODE_SELECTED;
+		return WG_STATE_SELECTED;
 
 	if( m_bPointerInside )
-		return WG_MODE_MARKED;
+		return WG_STATE_HOVERED;
 
 	if( m_bRefreshing )
-		return WG_MODE_SPECIAL;
+		return WG_STATE_SELECTED;
 	else
-		return WG_MODE_NORMAL;
+		return WG_STATE_NORMAL;
 }
 
 

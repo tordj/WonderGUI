@@ -35,8 +35,8 @@
 #	include <wg_text.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 class WgFont;
@@ -59,8 +59,8 @@ public:
 	const WgChar*	getText() const				{ return m_text.getText(); }
 	void			setText(const char* pText)	{ return m_text.setText(pText); }
 
-	void			SetSource( const WgBlocksetPtr& pGfx ) { m_pGfx = pGfx; }
-	WgBlocksetPtr	GetSource() const			{ return m_pGfx; }
+	void			SetSkin( const WgSkinPtr& pSkin ) { m_pSkin = pSkin; }
+	WgSkinPtr		Skin() const			{ return m_pSkin; }
 
 	void			SetId( int id ) { m_id = id; }
 
@@ -71,7 +71,7 @@ private:
 	int				m_advance;		// Distance from beginning of this tab to the next one.
 	int				m_id;
 	bool			m_bAlert;
-	WgBlocksetPtr	m_pGfx;
+	WgSkinPtr		m_pSkin;
 	bool			m_bVisible;
 };
 
@@ -131,23 +131,23 @@ public:
 	void			SetTextProperties( const WgTextpropPtr& pProp );
 	WgTextpropPtr	GetTextProperties() const { return m_pProp; }
 
-	void			SetSource( WgBlocksetPtr pBlockSet, SourceType type = SourceTypeAll);
-	WgBlocksetPtr	GetSource(SourceType type = SourceTypeMiddle) const			{ return m_sources[type]; }
+	void			SetTabSkin( WgSkinPtr pSkin, SourceType type = SourceTypeAll);
+	WgSkinPtr		TabSkin(SourceType type = SourceTypeMiddle) const			{ return m_sources[type]; }
 
 	void	SetOverlap( int overlap );
-	int		GetOverlap() const { return m_overlap; }
+	int		Overlap() const { return m_overlap; }
 
 	void	SetMaxOverlap( int maxOverlap );
-	int		GetMaxOverlap() const { return m_maxOverlap; }
+	int		MaxOverlap() const { return m_maxOverlap; }
 
 	void 	SetMinTabWidth( int minWidth );
-	int 	GetMinTabWidth() const { return m_minTabWidth; }
+	int 	MinTabWidth() const { return m_minTabWidth; }
 
 	void 	SetAlertRate( int millisec );
-	int		GetAlertRate() const { return m_alertRate; }
+	int		AlertRate() const { return m_alertRate; }
 
 	void 	SetTextAlignment( WgOrigo alignment );
-	WgOrigo GetTextAlignment() const { return m_textAlignment; }
+	WgOrigo TextAlignment() const { return m_textAlignment; }
 
 	void			SetTabExpandMode( TabExpandMode mode );
 	TabExpandMode	GetTabExpandMode() const { return m_tabExpandMode; }
@@ -158,7 +158,7 @@ public:
 	void 			SetTabWidthMode( TabWidthMode mode );
 	TabWidthMode	GetTabWidthMode() const { return m_tabWidthMode; }
 
-	bool AddTab( int id, const WgCharSeq& text, int position = -1, const WgBlocksetPtr& pGfx = 0 );
+	bool AddTab( int id, const WgCharSeq& text, int position = -1, const WgSkinPtr& pGfx = 0 );
 	bool RemoveTab( int id );
 	void RemoveAllTabs( );
 
@@ -166,31 +166,31 @@ public:
 	bool SetTabText( int id, const WgCharSeq& text );
 
 	bool SetTabId( int id, int newId );
-	int GetTabId(int position) const;
+	int	TabId(int position) const;
 
-	void	setTabMouseOpacity( bool bOpaque ) { m_bTabOpaqueForMouse = bOpaque; };
-	bool	getTabMouseOpacity() const { return m_bTabOpaqueForMouse; }
+	void	SetTabMouseOpacity( bool bOpaque ) { m_bTabOpaqueForMouse = bOpaque; };
+	bool	TabMouseOpacity() const { return m_bTabOpaqueForMouse; }
 
 
 	bool SetTabTextColor( int id, WgColor col );
 
-	Uint32	GetTabWidth( int id ) const;
+	int	TabWidth( int id ) const;
 
 	bool SelectTab( int id );
-	int GetSelectedTabId() const;
-	int GetSelectedTabPos() const;
+	int SelectedTabId() const;
+	int SelectedTabPos() const;
 	bool SetAlert( int id, bool bAlertOn );
 	bool GetAlert( int id ) const;
 	bool ShowTab( int id, bool bVisible );
-	int GetTabCount( ) const;
+	int TabCount( ) const;
 
 	bool HasTab( int id ) const;
 
-	WgTab*			GetSelectedTab() const;
-	WgTab*			GetFirstTab() const;
-	WgTab*			GetLastTab() const;
-	WgTab* 			GetFirstVisibleTab() const;
-	WgTab* 			GetLastVisibleTab() const;
+	WgTab*			SelectedTab() const;
+	WgTab*			FirstTab() const;
+	WgTab*			LastTab() const;
+	WgTab* 			FirstVisibleTab() const;
+	WgTab* 			LastVisibleTab() const;
 
 	WgSize			PreferredSize() const;
 
@@ -204,8 +204,8 @@ protected:
 
 private:
 
-	WgBlocksetPtr	_getTabSource( WgTab * pTab ) const;
-	WgMode			_getTabMode(const WgTab& tab) const;
+	WgSkinPtr		_tabSkin( WgTab * pTab ) const;
+	WgState			_tabState(const WgTab& tab) const;
 	WgTab*			_findTab( int id ) const;
 	WgTab*	 		_pos2Tab( int x, int y ) const;
 
@@ -219,7 +219,7 @@ private:
 	WgTextpropPtr	m_pProp;
 
 	WgOrigo	m_textAlignment;
-	WgBlocksetPtr	m_sources[m_nSourceTypes];
+	WgSkinPtr	m_sources[m_nSourceTypes];
 
 	WgTab *		m_pTabSelected;
 	WgTab *		m_pTabMarked;

@@ -89,10 +89,10 @@ void WgIconHolder::SetIconPushingText( bool bPush )
 
 */
 
-WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, const WgBlocksetPtr& pBlocks ) const
+WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, const WgSkinPtr& pSkin ) const
 {
-	if( pBlocks )
-		return _getIconRect(contentRect, WgSize(pBlocks->Size()));
+	if( pSkin )
+		return _getIconRect(contentRect, WgSize(pSkin->PreferredSize()));
 	else
 		return WgRect();
 }

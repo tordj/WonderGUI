@@ -34,7 +34,7 @@
 #include <wg_textdisplay.h>
 #include <wg_lineeditor.h>
 #include <wg_menu.h>
-#include <wg_tablepanel.h>
+//#include <wg_tablepanel.h>
 
 namespace WgEvent
 {
@@ -772,8 +772,8 @@ namespace WgEvent
 	WgMenu *	MenuitemEvent::Menu() const
 	{
 		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget && pWidget->Type() == WgMenu::GetClass() )
-			return static_cast<WgMenu*>(pWidget);
+//TEMP!		if( pWidget && pWidget->Type() == WgMenu::GetClass() )
+//TEMP!			return static_cast<WgMenu*>(pWidget);
 
 		return 0;
 	}
@@ -848,12 +848,12 @@ namespace WgEvent
 	}
 
 	//____ Table event methods _________________________________________________
-
+/*
 	WgTablePanel * TableCellEvent::Table() const
 	{
 		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget && pWidget->Type() == WgMenu::GetClass() )
-			return static_cast<WgTablePanel*>(pWidget);
+//TEMP!		if( pWidget && pWidget->Type() == WgMenu::GetClass() )
+//TEMP!			return static_cast<WgTablePanel*>(pWidget);
 
 		return 0;		
 	}
@@ -890,7 +890,7 @@ namespace WgEvent
 		m_column 		= column;
 		m_pCellContent 	= pCellContent;
 	}
-
+*/
 	//____ Link event methods __________________________________________________
 
 	std::string LinkEvent::Link() const

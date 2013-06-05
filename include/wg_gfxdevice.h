@@ -46,12 +46,8 @@
 #	include <wg_surface.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
 */
 
-class	WgBlock;
 class	WgRect;
 class	WgBorders;
 class	WgSurface;
@@ -147,12 +143,6 @@ public:
 								  const WgRect& srcrect, const WgRect& dest );
 
 
-	// High-level draw methods
-	void			ClipBlitBlock(	const WgRect& clip, const WgBlock& block, const WgRect& dest, bool bTriLinear = false, float mipmapbias = 0.f );
-
-	void			BlitBlock(		const WgBlock& block, const WgRect& dest, bool bTriLinear = false, float mipmapbias = 0.f );
-
-
 	// Mid-level draw methods
 
 	virtual void	ClipBlitHorrBar(	const WgRect& _clip, const WgSurface * _pSurf, const WgRect& _src,
@@ -178,7 +168,7 @@ public:
 
 	// Low-level print methods
 
-	virtual void		PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars = INT_MAX, WgMode mode = WG_MODE_NORMAL );
+	virtual void		PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars = INT_MAX, WgState state = WG_STATE_NORMAL );
 
 	virtual void	FillSubPixel( const WgRectF& rect, const WgColor& col ) = 0;
 	virtual void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,

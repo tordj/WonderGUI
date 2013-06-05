@@ -56,7 +56,6 @@ class WgScrollbar;
 class WgMenu;
 class WgMenuLayer;
 class WgModalLayer;
-class WgTablePanel;
 class WgInterfaceEditText;
 class WgText;
 
@@ -576,7 +575,7 @@ namespace WgEvent
 	};
 
 	//____ WgTablePanel events _________________________________________________
-
+/*
 	class TableCellEvent : public Event
 	{
 	public:
@@ -604,7 +603,7 @@ namespace WgEvent
 	protected:
 		TableCellUnmarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent );
 	};
-
+*/
 	//____ Link events _________________________________________________________
 
 	class LinkEvent : public Event

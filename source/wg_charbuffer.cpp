@@ -1162,18 +1162,14 @@ void WgCharBuffer::SetProperties( const WgTextpropPtr& pProp, int ofs, int len  
 /// be tinted when displayed in the specified mode, for all characters in
 /// the specified range. If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetColor( const WgColor color, int ofs, int len, WgMode mode )
+void WgCharBuffer::SetColor( const WgColor color, int ofs, int len, WgState state )
 {
-	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
-		return;
+	_modifyProperties( ofs, len, WgTextTool::PropStateColorModifier(color,state) );
+}
 
-	if( ofs + len > m_pHead->m_len )
-		len = m_pHead->m_len - ofs;
-
-	if( m_pHead->m_refCnt > 1 )
-		_reshapeBuffer(0,0,m_pHead->m_len,0);
-
-	WgTextTool::SetColor(color, (WgChar*)_ptr(ofs), len, mode);
+void WgCharBuffer::SetColor( const WgColor color, int ofs, int len )
+{
+	_modifyProperties( ofs, len, WgTextTool::PropColorModifier(color) );
 }
 
 
@@ -1191,18 +1187,14 @@ void WgCharBuffer::SetColor( const WgColor color, int ofs, int len, WgMode mode 
 /// displayed in the specified mode or all modes.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetStyle( WgFontStyle style, int ofs, int len, WgMode mode )
+void WgCharBuffer::SetStyle( WgFontStyle style, int ofs, int len, WgState state )
 {
-	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
-		return;
+	_modifyProperties( ofs, len, WgTextTool::PropStateStyleModifier(style,state) );
+}
 
-	if( ofs + len > m_pHead->m_len )
-		len = m_pHead->m_len - ofs;
-
-	if( m_pHead->m_refCnt > 1 )
-		_reshapeBuffer(0,0,m_pHead->m_len,0);
-
-	WgTextTool::SetStyle(style, (WgChar*)_ptr(ofs), len, mode );
+void WgCharBuffer::SetStyle( WgFontStyle style, int ofs, int len )
+{
+	_modifyProperties( ofs, len, WgTextTool::PropStyleModifier(style) );
 }
 
 
@@ -1219,18 +1211,9 @@ void WgCharBuffer::SetStyle( WgFontStyle style, int ofs, int len, WgMode mode )
 ///
 /// Setting pFont to null is identical to calling ClearFont().
 
-void WgCharBuffer::SetFont( WgFont * pFont, int ofs, int len  )
+void WgCharBuffer::SetFont( WgFont * pFont, int ofs, int len )
 {
-	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
-		return;
-
-	if( ofs + len > m_pHead->m_len )
-		len = m_pHead->m_len - ofs;
-
-	if( m_pHead->m_refCnt > 1 )
-		_reshapeBuffer(0,0,m_pHead->m_len,0);
-
-	WgTextTool::SetFont( pFont, (WgChar*)_ptr(ofs), len );
+	_modifyProperties( ofs, len, WgTextTool::PropFontModifier(pFont) );
 }
 
 //___ SetUnderlined() __________________________________________________________
@@ -1245,20 +1228,15 @@ void WgCharBuffer::SetFont( WgFont * pFont, int ofs, int len  )
 /// Specifying a single mode as underlined doesn't affect whether other modes are underlined or not.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetUnderlined( int ofs, int len, WgMode mode )
+void WgCharBuffer::SetUnderlined( int ofs, int len, WgState state )
 {
-	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
-		return;
-
-	if( ofs + len > m_pHead->m_len )
-		len = m_pHead->m_len - ofs;
-
-	if( m_pHead->m_refCnt > 1 )
-		_reshapeBuffer(0,0,m_pHead->m_len,0);
-
-	WgTextTool::SetUnderlined( (WgChar*)_ptr(ofs), len, mode );
+	_modifyProperties( ofs, len, WgTextTool::PropStateUnderlinedModifier(true,state) );
 }
 
+void WgCharBuffer::SetUnderlined( int ofs, int len )
+{
+	_modifyProperties( ofs, len, WgTextTool::PropUnderlinedModifier(true) );
+}
 
 //___ ClearProperties() ________________________________________________________
 //
@@ -1297,19 +1275,16 @@ void WgCharBuffer::ClearProperties( int ofs, int len  )
 /// This method clears the color-property of all characters in the specified range.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearColor( int ofs, int len, WgMode mode )
+void WgCharBuffer::ClearColor( int ofs, int len, WgState state )
 {
-	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
-		return;
-
-	if( ofs + len > m_pHead->m_len )
-		len = m_pHead->m_len - ofs;
-
-	if( m_pHead->m_refCnt > 1 )
-		_reshapeBuffer(0,0,m_pHead->m_len,0);
-
-	WgTextTool::ClearColor( (WgChar*)_ptr(ofs), len, mode );
+	_modifyProperties( ofs, len, WgTextTool::PropStateColorClearer(state) );
 }
+
+void WgCharBuffer::ClearColor( int ofs, int len )
+{
+	_modifyProperties( ofs, len, WgTextTool::PropColorClearer() );
+}
+
 
 //___ ClearStyle() _____________________________________________________________
 //
@@ -1323,20 +1298,15 @@ void WgCharBuffer::ClearColor( int ofs, int len, WgMode mode )
 /// This method clears the style-property of all characters in the specified range.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearStyle( int ofs, int len, WgMode mode )
+void WgCharBuffer::ClearStyle( int ofs, int len, WgState state )
 {
-	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
-		return;
-
-	if( ofs + len > m_pHead->m_len )
-		len = m_pHead->m_len - ofs;
-
-	if( m_pHead->m_refCnt > 1 )
-		_reshapeBuffer(0,0,m_pHead->m_len,0);
-
-	WgTextTool::ClearStyle( (WgChar*)_ptr(ofs), len, mode );
+	_modifyProperties( ofs, len, WgTextTool::PropStateStyleModifier(WG_STYLE_NORMAL,state) );
 }
 
+void WgCharBuffer::ClearStyle( int ofs, int len )
+{
+	_modifyProperties( ofs, len, WgTextTool::PropStyleModifier(WG_STYLE_NORMAL) );
+}
 
 //___ ClearFont() ______________________________________________________________
 //
@@ -1350,16 +1320,7 @@ void WgCharBuffer::ClearStyle( int ofs, int len, WgMode mode )
 
 void WgCharBuffer::ClearFont( int ofs, int len  )
 {
-	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
-		return;
-
-	if( ofs + len > m_pHead->m_len )
-		len = m_pHead->m_len - ofs;
-
-	if( m_pHead->m_refCnt > 1 )
-		_reshapeBuffer(0,0,m_pHead->m_len,0);
-
-	WgTextTool::ClearFont( (WgChar*)_ptr(ofs), len );
+	_modifyProperties( ofs, len, WgTextTool::PropFontModifier(0) );
 }
 
 //___ ClearUnderlined() ________________________________________________________
@@ -1373,7 +1334,20 @@ void WgCharBuffer::ClearFont( int ofs, int len  )
 ///
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearUnderlined( int ofs, int len, WgMode mode  )
+void WgCharBuffer::ClearUnderlined( int ofs, int len, WgState state )
+{
+	_modifyProperties( ofs, len, WgTextTool::PropStateUnderlinedModifier(false,state) );
+}
+
+void WgCharBuffer::ClearUnderlined( int ofs, int len )
+{
+	_modifyProperties( ofs, len, WgTextTool::PropUnderlinedModifier(false) );
+}
+
+
+//____ _modifyProperties() ____________________________________________________
+
+void WgCharBuffer::_modifyProperties( int ofs, int len, const WgTextTool::PropModifier& modif )
 {
 	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
@@ -1384,7 +1358,7 @@ void WgCharBuffer::ClearUnderlined( int ofs, int len, WgMode mode  )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::ClearUnderlined( (WgChar*)_ptr(ofs), len, mode );
+	WgTextTool::ModifyProperties( modif, (WgChar*)_ptr(ofs), len );
 }
 
 //____ FindFirst() ____________________________________________________________

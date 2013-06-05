@@ -30,13 +30,13 @@ Wg_Interface_TextHolder::Wg_Interface_TextHolder()
 }
 
 
-//____ SetTextMode() __________________________________________________________
+//____ SetTextState() __________________________________________________________
 
-void Wg_Interface_TextHolder::SetTextMode( WgMode _mode )
+void Wg_Interface_TextHolder::SetTextState( WgState _state )
 {
-	if( _mode != m_pText->mode() )
+	if( _state != m_pText->state() )
 	{
-		m_pText->setMode(_mode);
+		m_pText->setState(_state);
 		_textModified();
 	}
 }

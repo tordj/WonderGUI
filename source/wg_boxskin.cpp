@@ -23,6 +23,9 @@
 #include <wg_boxskin.h>
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
+#include <wg_util.h>
+
+using namespace WgUtil;
 
 //____ Create() _______________________________________________________________
 
@@ -59,7 +62,7 @@ WgBoxSkin::WgBoxSkin( WgColor color, WgBorders frame, WgColor frameColor )
 		m_frameColor[i] = frameColor;
 	}
 
-	bool hasFrame = frame.Width() + frame.Height();
+	bool hasFrame = (frame.Width() + frame.Height() > 0 );
 	if( color.a == 255 && (!hasFrame || frameColor.a == 255) )
 		m_bOpaque = true;
 	else
@@ -86,7 +89,7 @@ void WgBoxSkin::SetFrameColor( WgColor color )
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		m_frameColor[i] = color;
 
-	bool hasFrame = m_frame.Width() + m_frame.Height();
+	bool hasFrame = (m_frame.Width() + m_frame.Height() > 0 );
 	if( hasFrame && ((color.a == 255 && !m_bOpaque) || (color.a < 255 && m_bOpaque)) )
 		_updateOpaqueFlag();
 }
@@ -95,8 +98,8 @@ void WgBoxSkin::SetFrameColor( WgColor color )
 
 void WgBoxSkin::SetFrameThickness( WgBorders frame )
 {
-	bool hadFrame = m_frame.Width() + m_frame.Height();
-	bool hasFrame = frame.Width() + frame.Height();
+	bool hadFrame = (m_frame.Width() + m_frame.Height() > 0 );
+	bool hasFrame = (frame.Width() + frame.Height() > 0);
 
 	m_frame = frame;
 
@@ -144,7 +147,7 @@ void WgBoxSkin::SetStateColor( WgStateEnum state, WgColor color, WgColor frameCo
 
 //____ Render() _______________________________________________________________
 	
-void WgBoxSkin::Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip ) const
+void WgBoxSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const
 {
 	int i = _stateToIndex(state);
 	if( m_frame.Width() + m_frame.Height() == 0 )
@@ -201,18 +204,27 @@ WgSize WgBoxSkin::SizeForContent( const WgSize contentSize ) const
 
 //____ MarkTest() _____________________________________________________________
 
-bool WgBoxSkin::MarkTest( const WgCoord& ofs, const WgSize& canvasSize, WgState state ) const
+bool WgBoxSkin::MarkTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const
 {
+	if( !canvas.Contains(ofs) )
+		return false;
+
+	int opacity;
+
 	if( m_bOpaque )
-		return true;
-
-	int i = _stateToIndex(state);
-
-	WgRect center = WgRect(canvasSize) - m_frame;
-	if( center.Contains(ofs) )
-		return m_color[i].a > 0;
+		opacity = 255;
 	else
-		return m_frameColor[i].a > 0;
+	{
+		int i = _stateToIndex(state);
+
+		WgRect center = canvas - m_frame;
+		if( center.Contains(ofs) )
+			opacity = m_color[i].a;
+		else
+			opacity = m_frameColor[i].a;
+	}
+
+	return ( opacity >= opacityTreshold );
 }
 
 //____ IsOpaque() _____________________________________________________________
@@ -246,6 +258,20 @@ bool WgBoxSkin::IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState 
 	return m_color[i].a == 255 && m_frameColor[i].a == 255;
 }
 
+//____ IsStateIdentical() ____________________________________________________
+
+bool WgBoxSkin::IsStateIdentical( WgState state, WgState comparedTo ) const
+{
+	int i1 = _stateToIndex(state);
+	int i2 = _stateToIndex(comparedTo);
+
+	if( m_color[i1] == m_color[i2] && (m_frame.IsEmpty() || m_frameColor[i1] == m_frameColor[i2]) && 
+		WgExtendedSkin::IsStateIdentical(state,comparedTo) )
+		return true;
+	else
+		return false;
+}
+
 //____ _updateOpaqueFlag() ____________________________________________________
 
 void WgBoxSkin::_updateOpaqueFlag()
@@ -259,7 +285,7 @@ void WgBoxSkin::_updateOpaqueFlag()
 		frameAlpha += (int) m_frameColor[i].a;
 	}
 
-	bool hasFrame = m_frame.Width() + m_frame.Height();
+	bool hasFrame = (m_frame.Width() + m_frame.Height() > 0);
 	
 	if( alpha == 255*WG_NB_STATES && (!hasFrame || frameAlpha == 255*WG_NB_STATES) )
 		m_bOpaque = true;

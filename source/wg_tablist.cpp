@@ -112,19 +112,19 @@ void WgTablist::SetTextProperties( const WgTextpropPtr& pProp )
 
 }
 
-//____ SetSource() ____________________________________________________________
+//____ SetTabSkin() ____________________________________________________________
 
-void WgTablist::SetSource( WgBlocksetPtr pBlockSet, SourceType type )
+void WgTablist::SetTabSkin( WgSkinPtr pSkin, SourceType type )
 {
 	if(type == SourceTypeAll)
 	{
-		SetSource( pBlockSet, SourceTypeLeft );
-		SetSource( pBlockSet, SourceTypeMiddle );
-		SetSource( pBlockSet, SourceTypeRight );
+		SetTabSkin( pSkin, SourceTypeLeft );
+		SetTabSkin( pSkin, SourceTypeMiddle );
+		SetTabSkin( pSkin, SourceTypeRight );
 		return;
 	}
 
-	m_sources[type] = pBlockSet;
+	m_sources[type] = pSkin;
 	_resizeTabs();
 	_requestRender();
 }
@@ -206,7 +206,7 @@ void WgTablist::SetTextAlignment( WgOrigo alignment )
 
 //____ AddTab() _______________________________________________________________
 
-bool WgTablist::AddTab( int id, const WgCharSeq& text, int position, const WgBlocksetPtr& pGfx )
+bool WgTablist::AddTab( int id, const WgCharSeq& text, int position, const WgSkinPtr& pSkin )
 {
 	if( _findTab(id) )
 		return false;					// We already have a tab with this ID...
@@ -218,7 +218,7 @@ bool WgTablist::AddTab( int id, const WgCharSeq& text, int position, const WgBlo
 
 	pTab->m_text.setText(text);
 	pTab->m_text.setProperties(m_pProp);
-	pTab->SetSource( pGfx );
+	pTab->SetSkin( pSkin );
 
 	WgTab * pPos = m_tabs.Get(position);
 	if( pPos )
@@ -304,7 +304,7 @@ bool WgTablist::SetTabId( int id, int newId )
 
 //____ GetTabId() ___________________________________________________________
 
-int WgTablist::GetTabId(int position) const
+int WgTablist::TabId(int position) const
 {
 	WgTab *pTab = m_tabs.First();
 	if( pTab && position )
@@ -373,18 +373,18 @@ bool WgTablist::SelectTab( int id )
 	return false;
 }
 
-//____ GetSelectedTabId() _____________________________________________________________
+//____ SelectedTabId() _____________________________________________________________
 
-int WgTablist::GetSelectedTabId() const
+int WgTablist::SelectedTabId() const
 {
 	if( m_pTabSelected )
 		return m_pTabSelected->m_id;
 	return -1;
 }
 
-//____ GetSelectedTabPos() _____________________________________________________________
+//____ SelectedTabPos() _____________________________________________________________
 
-int WgTablist::GetSelectedTabPos() const
+int WgTablist::SelectedTabPos() const
 {
 	if(m_pTabSelected == 0)
 		return -1;
@@ -456,9 +456,9 @@ bool WgTablist::ShowTab( int id, bool bVisible )
 	return false;
 }
 
-//____ GetTabCount() ______________________________________________________________
+//____ TabCount() ______________________________________________________________
 
-int WgTablist::GetTabCount( ) const
+int WgTablist::TabCount( ) const
 {
 	int n = 0;
 
@@ -468,9 +468,9 @@ int WgTablist::GetTabCount( ) const
 	return n;
 }
 
-//____ GetTabWidth() ______________________________________________________________
+//____ TabWidth() ______________________________________________________________
 
-Uint32 WgTablist::GetTabWidth( int id ) const
+int WgTablist::TabWidth( int id ) const
 {
 	WgTab * pTab = _findTab(id);
 	if( pTab )
@@ -489,41 +489,42 @@ bool WgTablist::HasTab( int id ) const
 }
 
 
-//////////////////////////////////////////////////////////////////////////
-WgTab* WgTablist::GetSelectedTab() const
+//____ SelectedTab() __________________________________________________________
+
+WgTab* WgTablist::SelectedTab() const
 {
 	return m_pTabSelected;
 }
 
-//____ GetFirstTab() ______________________________________________________________
+//____ FirstTab() ______________________________________________________________
 
-WgTab* WgTablist::GetFirstTab() const
+WgTab* WgTablist::FirstTab() const
 {
 	return m_tabs.First();
 }
 
-//____ GetLastTab() ______________________________________________________________
+//____ LastTab() ______________________________________________________________
 
-WgTab* WgTablist::GetLastTab() const
+WgTab* WgTablist::LastTab() const
 {
 	return m_tabs.Last();
 }
 
-//____ GetFirstVisibleTab() ___________________________________________________
+//____ FirstVisibleTab() ___________________________________________________
 
-WgTab* WgTablist::GetFirstVisibleTab() const
+WgTab* WgTablist::FirstVisibleTab() const
 {
-	WgTab* pTab = GetFirstTab();
+	WgTab* pTab = FirstTab();
 	while(pTab && !pTab->m_bVisible)
 		pTab = pTab->Next();
 	return pTab;
 }
 
-//____ GetLastVisibleTab() ____________________________________________________
+//____ LastVisibleTab() ____________________________________________________
 
-WgTab* WgTablist::GetLastVisibleTab() const
+WgTab* WgTablist::LastVisibleTab() const
 {
-	WgTab* pTab = GetLastTab();
+	WgTab* pTab = LastTab();
 	while(pTab && !pTab->m_bVisible)
 		pTab = pTab->Prev();
 	return pTab;
@@ -546,40 +547,40 @@ WgTab* WgTablist::_findTab( int id ) const
 
 
 
-//____ _getTabSource() _________________________________________________________
+//____ _tabSkin() _________________________________________________________
 
-WgBlocksetPtr WgTablist::_getTabSource( WgTab * pTab ) const
+WgSkinPtr WgTablist::_tabSkin( WgTab * pTab ) const
 {
-	if( pTab->GetSource() )
+	if( pTab->Skin() )
 	{
-		return pTab->GetSource();
+		return pTab->Skin();
 	}
 
-	if(pTab == GetFirstVisibleTab())
+	if(pTab == FirstVisibleTab())
 		return m_sources[SourceTypeLeft];
 
-	if(pTab == GetLastVisibleTab())
+	if(pTab == LastVisibleTab())
 		return m_sources[SourceTypeRight];
 
 	return m_sources[SourceTypeMiddle];
 }
 
-//____ _getTabMode() __________________________________________________________
+//____ _getTabState() __________________________________________________________
 
-WgMode	WgTablist::_getTabMode(const WgTab& tab) const
+WgState	WgTablist::_tabState(const WgTab& tab) const
 {
 	if( !m_bEnabled )
-		return WG_MODE_DISABLED;
+		return WG_STATE_DISABLED;
 	else if( m_bAlertOn && tab.m_bAlert )
-		return WG_MODE_SPECIAL;
+		return WG_STATE_PRESSED;								// Repurposing state PRESSED as alert state.
 //	else if( m_pTabMarked == &tab && m_pTabSelected == &tab )
 //		cord = src.m_srcSelectedMarked;
 	else if( m_pTabSelected == &tab )
-		return WG_MODE_SELECTED;
+		return WG_STATE_SELECTED;
 	else if( m_pTabMarked == &tab )
-		return WG_MODE_MARKED;
+		return WG_STATE_HOVERED;
 	else
-		return WG_MODE_NORMAL;
+		return WG_STATE_NORMAL;
 }
 
 //____ PreferredSize() ______________________________________________________________
@@ -640,13 +641,13 @@ WgSize WgTablist::PreferredSize() const
 	{
 		int h = 0;
 
-		WgBlocksetPtr pBg = _getTabSource(pTab);
+		WgSkinPtr pBg = _tabSkin(pTab);
 		if( pBg )
 		{
-			h = pBg->Height();
+			h = pBg->PreferredSize().h;
 			int textH = pTab->m_text.height();
-			if( h - pBg->Padding().Height() < textH )
-				h = textH + pBg->Padding().Height();
+			if( h - pBg->ContentPadding().h < textH )
+				h = textH + pBg->ContentPadding().h;
 		}
 		else
 			h = pTab->m_text.height();
@@ -989,13 +990,13 @@ int WgTablist::_calcTabsWantedWidth( WgTab * pTab ) const
 			width += pTab->m_pItemRow->ItemSpacing();
 	}
 */
-	WgBlocksetPtr pSrc = _getTabSource(pTab);
+	WgSkinPtr pSrc = _tabSkin(pTab);
 	if( pSrc )
 	{
-		width += pSrc->Padding().Width();
+		width += pSrc->ContentPadding().w;
 
-		if( width < pSrc->MinWidth() )
-			width = pSrc->MinWidth();
+		if( width < pSrc->MinSize().w )
+			width = pSrc->MinSize().w;
 	}
 
 	if( width < m_minTabWidth )
@@ -1021,24 +1022,29 @@ WgTab * WgTablist::_pos2Tab( int x, int y ) const
 	{
 		if(pTab->m_bVisible)
 		{
-			Uint32 w = pTab->m_width;
 
 //			if(pTab == m_pTabSelected)
 //				bMovingUp = false;
 
-			WgBlocksetPtr pSrc = _getTabSource(pTab);
+			WgSkinPtr pSrc = _tabSkin(pTab);
 			bool	bHit = false;
 
 			// Tab is hit if position is on a non-transparent (alpha != 0) pixel of the block
 			// or inside tabs text-area.
 
-			if( m_bTabOpaqueForMouse && x >= 0 && y >= 0 && x < (int) w && y < sz.h )
-				bHit = true;
-			else if( ((unsigned) x) > pSrc->Padding().left && ((unsigned) x) < w - pSrc->Padding().right &&
-				((unsigned) y) > pSrc->Padding().top && y < sz.h - pSrc->Padding().bottom )
-				bHit = true;
+			WgRect tabCanvas = WgRect(0,0,pTab->m_width,sz.h);
+			WgRect tabContent;
+			if( pSrc )
+				tabContent = pSrc->ContentRect( tabCanvas, _tabState(*pTab) );
 			else
-				bHit = WgUtil::MarkTestBlock( WgCoord(x, y), pSrc->GetBlock( _getTabMode(*pTab), WgSize(w,sz.h) ), WgRect(0,0,w,sz.h), m_markOpacity);
+				tabContent = tabCanvas;
+
+			if( m_bTabOpaqueForMouse && tabCanvas.Contains(x,y) )
+				bHit = true;
+			else if( tabContent.Contains( WgCoord(x,y) ) )
+				bHit = true;
+			else if( pSrc )
+				bHit = pSrc->MarkTest( WgCoord(x,y), tabCanvas, _tabState(*pTab), m_markOpacity );
 
 			if( bHit )
 			{
@@ -1128,15 +1134,19 @@ void WgTablist::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 
 void WgTablist::_renderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, const WgRect& clip )
 {
-	WgBlocksetPtr pSrc = _getTabSource(&tab);
+	WgSkinPtr pSkin = _tabSkin(&tab);
 
-	WgMode	mode = _getTabMode(tab);
+	WgState	state = _tabState(tab);
 
-	WgBlock block = pSrc->GetBlock(mode,dest);
+	WgRect content;
 
-	pDevice->ClipBlitBlock( clip, block, dest );
-
-	WgRect	r = block.ContentRect( dest );
+	if( pSkin )
+	{
+		pSkin->Render( pDevice, dest, state, clip );
+		content = pSkin->ContentRect( dest, state );
+	}
+	else
+		content = dest;
 
 /*	if( tab.m_pItemRow )
 	{
@@ -1151,11 +1161,11 @@ void WgTablist::_renderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, cons
 */
 	tab.m_text.setAlignment(m_textAlignment);
 
-	WgRect clip2( clip, r );
-	tab.m_text.setMode(mode);
-	if( pSrc )
-		tab.m_text.SetBgBlockColors( pSrc->TextColors() );
-	pDevice->PrintText( clip2, &tab.m_text, r );
+	WgRect clip2( clip, content );
+	tab.m_text.setState(state);
+	if( pSkin )
+		tab.m_text.SetColorSkin( pSkin );
+	pDevice->PrintText( clip2, &tab.m_text, content );
 }
 
 //____ _onRefresh() ____________________________________________________________

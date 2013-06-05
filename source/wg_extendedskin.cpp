@@ -21,7 +21,9 @@
 =========================================================================*/
 
 #include <wg_extendedskin.h>
+#include <wg_util.h>
 
+using namespace WgUtil;
 
 //____ SetContentPadding() ____________________________________________________
 
@@ -109,6 +111,14 @@ WgSize WgExtendedSkin::SizeForContent( const WgSize contentSize ) const
 	return contentSize + m_contentPadding;
 }
 
+//____ ContentPadding() _______________________________________________________
+
+WgSize WgExtendedSkin::ContentPadding() const
+{
+	return m_contentPadding.Size();
+}
+
+
 //____ ContentRect() __________________________________________________________
 
 WgRect WgExtendedSkin::ContentRect( const WgRect& canvas, WgState state ) const
@@ -116,3 +126,9 @@ WgRect WgExtendedSkin::ContentRect( const WgRect& canvas, WgState state ) const
 	return (canvas - m_contentPadding) + m_contentShift[_stateToIndex(state)];
 }
 
+//____ IsStateIdentical() ______________________________________________________
+
+bool WgExtendedSkin::IsStateIdentical( WgState state, WgState comparedTo ) const
+{
+	return ( m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)] );
+}

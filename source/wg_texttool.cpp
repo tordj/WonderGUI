@@ -25,6 +25,7 @@
 #include <wchar.h>
 #include <wctype.h>
 #include <wg_codepages.h>
+#include <wg_util.h>
 
 #include <string>
 
@@ -2271,7 +2272,7 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const 
 }
 
 
-Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, WgMode mode, const WgChar * pString )
+Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, WgState state, const WgChar * pString )
 {
 	WgTextAttr	attr2;
 
@@ -2285,7 +2286,7 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, WgMode
 		if( pString->PropHandle() != hProp )
 		{
 			attr2 = attr;
-			AddPropAttributes( attr2, pString->Properties(), mode );
+			AddPropAttributes( attr2, pString->Properties(), state );
 			pen.SetAttributes( attr2 );
 		}
 		pen.SetChar( pString->Glyph() );
@@ -2616,59 +2617,102 @@ int WgTextTool::stripTextCommandsConvert( const char* pSrc, Uint16* pDest, int m
 
 //____ SetSize() _____________________________________________________________
 
-void WgTextTool::SetSize( int size, WgChar * pChar, Uint32 nb, WgMode mode )
+void WgTextTool::SetSize( int size, WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropSizeModifier(size,mode), pChar, nb );
+	ModifyProperties( PropSizeModifier(size), pChar, nb );
 }
+
+void WgTextTool::SetSize( int size, WgChar * pChar, Uint32 nb, WgState state )
+{
+	ModifyProperties( PropStateSizeModifier(size,state), pChar, nb );
+}
+
 
 //____ ClearSize() ___________________________________________________________
 
-void WgTextTool::ClearSize( WgChar * pChar, Uint32 nb, WgMode mode )
+void WgTextTool::ClearSize( WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropSizeClearer(mode), pChar, nb );
+	ModifyProperties( PropSizeClearer(), pChar, nb );
 }
 
+void WgTextTool::ClearSize( WgChar * pChar, Uint32 nb, WgState state )
+{
+	ModifyProperties( PropStateSizeClearer(state), pChar, nb );
+}
 
 //____ SetColor() _____________________________________________________________
 
-void WgTextTool::SetColor( const WgColor col, WgChar * pChar, Uint32 nb, WgMode mode )
+void WgTextTool::SetColor( const WgColor col, WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropColorModifier(col,mode), pChar, nb );
+	ModifyProperties( PropColorModifier(col), pChar, nb );
 }
+
+void WgTextTool::SetColor( const WgColor col, WgChar * pChar, Uint32 nb, WgState state )
+{
+	ModifyProperties( PropStateColorModifier(col,state), pChar, nb );
+}
+
 
 //____ ClearColor() ___________________________________________________________
 
-void WgTextTool::ClearColor( WgChar * pChar, Uint32 nb, WgMode mode )
+void WgTextTool::ClearColor( WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropColorClearer(mode), pChar, nb );
+	ModifyProperties( PropColorClearer(), pChar, nb );
 }
+
+void WgTextTool::ClearColor( WgChar * pChar, Uint32 nb, WgState state )
+{
+	ModifyProperties( PropStateColorClearer(state), pChar, nb );
+}
+
 
 //____ SetStyle() _____________________________________________________________
 
-void WgTextTool::SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb, WgMode mode )
+void WgTextTool::SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropStyleModifier(style,mode), pChar, nb );
+	ModifyProperties( PropStyleModifier(style), pChar, nb );
+}
+
+void WgTextTool::SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb, WgState state )
+{
+	ModifyProperties( PropStateStyleModifier(style,state), pChar, nb );
 }
 
 //____ ClearStyle() ___________________________________________________________
 
-void WgTextTool::ClearStyle( WgChar * pChar, Uint32 nb, WgMode mode )
+void WgTextTool::ClearStyle( WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropStyleModifier(WG_STYLE_NORMAL,mode), pChar, nb );
+	ModifyProperties( PropStyleModifier(WG_STYLE_NORMAL), pChar, nb );
 }
+
+void WgTextTool::ClearStyle( WgChar * pChar, Uint32 nb, WgState state )
+{
+	ModifyProperties( PropStateStyleModifier(WG_STYLE_NORMAL,state), pChar, nb );
+}
+
 
 //____ SetUnderlined() ________________________________________________________
 
-void WgTextTool::SetUnderlined( WgChar * pChar, Uint32 nb, WgMode mode )
+void WgTextTool::SetUnderlined( WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropUnderlinedModifier(true,mode), pChar, nb );
+	ModifyProperties( PropUnderlinedModifier(true), pChar, nb );
+}
+
+void WgTextTool::SetUnderlined( WgChar * pChar, Uint32 nb, WgState state )
+{
+	ModifyProperties( PropStateUnderlinedModifier(true,state), pChar, nb );
 }
 
 //____ ClearUnderlined() ________________________________________________________
 
-void WgTextTool::ClearUnderlined( WgChar * pChar, Uint32 nb, WgMode mode )
+void WgTextTool::ClearUnderlined( WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropUnderlinedModifier(false,mode), pChar, nb );
+	ModifyProperties( PropUnderlinedModifier(false), pChar, nb );
+}
+
+void WgTextTool::ClearUnderlined( WgChar * pChar, Uint32 nb, WgState state )
+{
+	ModifyProperties( PropStateUnderlinedModifier(false,state), pChar, nb );
 }
 
 //____ SetBreakLevel() ________________________________________________________
@@ -2799,7 +2843,7 @@ void WgTextTool::ModifyProperties( const PropModifier& modif, WgChar * pChar, Ui
 
 //____ AddPropAttributes() ________________________________________________________
 
-void WgTextTool::AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgMode mode )
+void WgTextTool::AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgState state )
 {
 	if( !pProp )
 		return;
@@ -2807,19 +2851,19 @@ void WgTextTool::AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp
 	if( pProp->Font() )
 		attr.pFont = pProp->Font();
 
-	if( pProp->Size(mode) != 0 )
-		attr.size = pProp->Size(mode);
+	if( pProp->Size(state) != 0 )
+		attr.size = pProp->Size(state);
 
-	if( pProp->Style(mode) != WG_STYLE_NORMAL )
-		attr.style = pProp->Style(mode);
+	if( pProp->Style(state) != WG_STYLE_NORMAL )
+		attr.style = pProp->Style(state);
 
-	if( pProp->IsColored(mode) )
-		attr.color = pProp->Color(mode);
+	if( pProp->IsColored(state) )
+		attr.color = pProp->Color(state);
 
-	if( pProp->IsBgColored(mode) )
-		attr.bgColor = pProp->BgColor(mode);
+	if( pProp->IsBgColored(state) )
+		attr.bgColor = pProp->BgColor(state);
 
-	if( pProp->IsUnderlined(mode) )
+	if( pProp->IsUnderlined(state) )
 		attr.bUnderlined = true;
 
 	if( pProp->BreakLevel() != -1 )
@@ -2831,15 +2875,17 @@ void WgTextTool::AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp
 		attr.pLink = pProp->Link();
 }
 
+/*
 //____ SetAttrColor() _______________________________________________________
 
-void WgTextTool::SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgMode mode )
+void WgTextTool::SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgState state )
 {
 	if( !pColors )
 		return;
 
-	attr.color = pColors->Color(mode);
+	attr.color = pColors->Color(state);
 }
+*/
 
 //____ GetCursor() ____________________________________________________________
 

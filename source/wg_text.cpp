@@ -80,13 +80,13 @@ void WgText::Init()
 	m_pCursor		= 0;
 	m_pCursorStyle	= 0;
 
-	m_markedLinkMode = WG_MODE_NORMAL;
+	m_markedLinkState = WG_STATE_NORMAL;
 
 	m_alignment		= WG_NORTHWEST;
 	m_tintMode		= WG_TINTMODE_MULTIPLY;
 	m_lineSpaceAdj	= 1.f;
 
-	m_mode		= WG_MODE_NORMAL;
+	m_state			= WG_STATE_NORMAL;
 
 	m_pHardLines	= new WgTextLine[1];
 	m_nHardLines	= 1;
@@ -608,10 +608,10 @@ void WgText::setColor( const WgColor color )
 	m_pBaseProp = prop.Register();
 }
 
-void WgText::setColor( const WgColor color, WgMode mode )
+void WgText::setColor( const WgColor color, WgState state )
 {
 	WgTextprop	prop = * m_pBaseProp;
-	prop.SetColor(color,mode);
+	prop.SetColor(color,state);
 	m_pBaseProp = prop.Register();
 }
 
@@ -624,10 +624,10 @@ void WgText::setStyle( WgFontStyle style )
 	_refreshAllLines();
 }
 
-void WgText::setStyle( WgFontStyle style, WgMode mode )
+void WgText::setStyle( WgFontStyle style, WgState state )
 {
 	WgTextprop	prop = * m_pBaseProp;
-	prop.SetStyle(style,mode);
+	prop.SetStyle(style,state);
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -677,10 +677,10 @@ void WgText::clearColor()
 	m_pBaseProp = prop.Register();
 }
 
-void WgText::clearColor( WgMode mode )
+void WgText::clearColor( WgState state )
 {
 	WgTextprop	prop = * m_pBaseProp;
-	prop.ClearColor(mode);
+	prop.ClearColor(state);
 	m_pBaseProp = prop.Register();
 }
 
@@ -693,10 +693,10 @@ void WgText::clearStyle()
 	_refreshAllLines();
 }
 
-void WgText::clearStyle( WgMode mode )
+void WgText::clearStyle( WgState state )
 {
 	WgTextprop	prop = * m_pBaseProp;
-	prop.ClearStyle(mode);
+	prop.ClearStyle(state);
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -2437,7 +2437,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 					pEventHandler->QueueEvent( new WgEvent::LinkMark(pEvent->Widget(), pLink->Link() ));
 
 					m_pMarkedLink = pLink;
-					m_markedLinkMode = WG_MODE_MARKED;
+					m_markedLinkState = WG_STATE_HOVERED;
 					bRefresh = true;
 				}
 			}
@@ -2461,7 +2461,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 			if( m_pMarkedLink )
 			{
 				pEventHandler->QueueEvent( new WgEvent::LinkPress(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
-				m_markedLinkMode = WG_MODE_SELECTED;
+				m_markedLinkState = WG_STATE_PRESSED;
 				bRefresh = true;
 			}
 			break;
@@ -2482,10 +2482,10 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 			{
 				pEventHandler->QueueEvent( new WgEvent::LinkRelease(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 
-				if( m_markedLinkMode == WG_MODE_SELECTED )
+				if( m_markedLinkState == WG_STATE_PRESSED )
 					pEventHandler->QueueEvent( new WgEvent::LinkClick(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 
-				m_markedLinkMode = WG_MODE_MARKED;
+				m_markedLinkState = WG_STATE_HOVERED;
 				bRefresh = true;
 			}
 			break;
@@ -2634,10 +2634,9 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 void WgText::GetBaseAttr( WgTextAttr& attr ) const
 {
 	attr.Clear();
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), m_mode );
-	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_mode );
-	WgTextTool::SetAttrColor( attr, m_pBaseColors, m_mode );
-	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_mode );
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), m_state );
+//	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_state );
+	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_state );
 }
 
 //____ GetCharAttr() __________________________________________________________
@@ -2648,10 +2647,9 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 		return false;
 
 	attr.Clear();
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), m_mode );
-	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_mode );
-	WgTextTool::SetAttrColor( attr, m_pBaseColors, m_mode );
-	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_mode );
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), m_state );
+//	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_state );
+	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_state );
 
 	// Add selection properties if character is selected
 
@@ -2663,9 +2661,9 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 		if( charOfs >= selStart && charOfs < selEnd )
 		{
 			if( m_pSelectionProp )
-				WgTextTool::AddPropAttributes( attr, m_pSelectionProp, m_mode );
+				WgTextTool::AddPropAttributes( attr, m_pSelectionProp, m_state );
 			else
-				WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultSelectionProp(), m_mode );
+				WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultSelectionProp(), m_state );
 		}
 	}
 
@@ -2681,29 +2679,29 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 	{
 		WgTextpropPtr pProp = m_pLinkProp?m_pLinkProp:WgBase::GetDefaultLinkProp();
 
-		WgMode	mode;
+		WgState	state;
 
 		if( pLink == m_pMarkedLink )
 		{
-			mode = m_markedLinkMode;
+			state = m_markedLinkState;
 		}
 		else
 		{
-			if( m_mode == WG_MODE_DISABLED )
-				mode = WG_MODE_DISABLED;
+			if( m_state == WG_STATE_DISABLED )
+				state = WG_STATE_DISABLED;
 			else if( pLink->HasBeenAccessed() )
-				mode = WG_MODE_SPECIAL;
+				state = WG_STATE_SELECTED;
 			else
-				mode = WG_MODE_NORMAL;
+				state = WG_STATE_NORMAL;
 		}
 
 
-		WgTextTool::AddPropAttributes( attr, pProp, mode );
+		WgTextTool::AddPropAttributes( attr, pProp, state );
 	}
 
 	// Add characters own properties
 
-	WgTextTool::AddPropAttributes( attr, pCharProp, m_mode );
+	WgTextTool::AddPropAttributes( attr, pCharProp, m_state );
 
 	return true;
 }

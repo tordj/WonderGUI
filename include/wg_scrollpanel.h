@@ -205,8 +205,8 @@ public:
 	void		SetOverlayScrollbars( bool bOverlay );
 	bool		OverlayScrollbars() const { return m_bOverlayScrollbars; }
 
-	void				SetFillerSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr			FillerSkin() const { return m_pFillerSkin; }
+	void		SetCornerSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr	CornerSkin() const { return m_pCornerSkin; }
 
 	virtual void SetSkin( const WgSkinPtr& pSkin );
 
@@ -329,8 +329,8 @@ private:
 	WgHook*	_lastHook() const;
 
 
-	WgSkinPtr		m_pFillerSkin;
-	WgRect			m_fillerGeo;
+	WgSkinPtr		m_pCornerSkin;
+	WgRect			m_cornerGeo;
 };
 
 #endif //WG_SCROLLPANEL_DOT_H

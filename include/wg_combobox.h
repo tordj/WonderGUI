@@ -31,8 +31,8 @@
 #	include <wg_interface_edittext.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 #include <wg_text.h>
@@ -50,8 +50,8 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgCombobox(); };
 
-	void			SetSource( const WgBlocksetPtr& pTextBox );
-	WgBlocksetPtr	GetSource( ) const		{ return m_pTextBoxBg; }
+	void			SetSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr		Skin( ) const		{ return m_pSkin; }
 
 	void			SetMenu( WgMenu * pMenu );
 	WgMenu*			GetMenu( ) const;
@@ -116,9 +116,9 @@ private:
 	WgString		m_textFormat;
 	WgString		m_placeholderText;		// Text displayed when field is empty and has no cursor.
 
-	WgBlocksetPtr	m_pTextBoxBg;
+	WgSkinPtr		m_pSkin;
 
-	WgMode			m_mode;
+	WgState			m_state;
 	WgMenu *		m_pMenu;
 	WgMenuItem*		m_pSelectedItem;
 	WgText			m_text;

@@ -110,8 +110,6 @@ int WgTextDisplay::HeightForWidth( int width ) const
 
 WgSize WgTextDisplay::PreferredSize() const
 {
-	//TODO: Fix this so we don't return current size (after wraptext is adapted to width) but size for unwrapped lines.
-
 	return m_text.unwrappedSize();
 }
 
@@ -372,7 +370,7 @@ bool WgTextDisplay::_onAlphaTest( const WgCoord& ofs )
 
 void WgTextDisplay::_onEnable( void )
 {
-	m_text.setMode(WG_MODE_NORMAL);
+	m_text.setState(WG_STATE_NORMAL);
 	_requestRender();
 }
 
@@ -380,7 +378,7 @@ void WgTextDisplay::_onEnable( void )
 
 void WgTextDisplay::_onDisable( void )
 {
-	m_text.setMode(WG_MODE_DISABLED);
+	m_text.setState(WG_STATE_DISABLED);
 	_requestRender();
 }
 

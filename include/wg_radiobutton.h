@@ -48,8 +48,8 @@ public:
 private:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
-	WgWidgetHolder * _findRadioGroup();
-	void			_unselectRecursively( WgWidgetHolder * pParent );
+	WgContainer *	_findRadioGroup();
+	void			_unselectRecursively( WgContainer * pParent );
 	
 	
 	bool			m_bAllowUnchecking;

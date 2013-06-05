@@ -1,84 +1,19 @@
 
 #include <wg_util.h>
 #include <wg_geo.h>
-#include <wg_blockset.h>
 #include <wg_surface.h>
 #include <wg_widget.h>
 #include <wg_panel.h>
 
-bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
+//____ MarkTestStretchRect() __________________________________________________
+
+bool WgUtil::MarkTestStretchRect( WgCoord ofs, WgSurface * pSurface, const WgRect& source, const WgRect& area, int opacityTreshold )
 {
-	if( block.IsFixedSize() )
-	{
-		int areaW = area.w;
-		int areaH = area.h;
-
-		int blockW = block.Width();
-		int blockH = block.Height();
-
-		if( areaW > blockW )
-		{
-			area.x += (areaW - blockW)/2;
-			area.w = blockW;
-		}
-
-		if( areaH > blockH )
-		{
-			area.y += (areaH - blockH)/2;
-			area.h = blockH;
-		}
-
-		return true;
-	}
-
-
-	if(!block.IsScaled())
-		return false;
-
-	const WgBorders& borders = block.Frame();
-
-	int areaW = area.w - borders.Width();
-	int areaH = area.h - borders.Height();
-
-	int blockW = block.Width() - borders.Width();
-	int blockH = block.Height() - borders.Height();
-
-	if(areaW <= 0 || areaH <= 0 || blockW <= 0 || blockH <= 0)
-		return false;
-
-	int adjustedW = borders.Width();
-	int adjustedH = borders.Height();
-
-	if(areaW * blockH > blockW * areaH)
-	{
-		adjustedH += areaH;
-		adjustedW += int(float(adjustedH * blockW) / float(blockH));
-	}
-	else
-	{
-		adjustedW += areaW;
-		adjustedH += int(float(adjustedW * blockH) / float(blockW));
-	}
-
-	area.x += (area.w - adjustedW) >> 1;
-	area.y += (area.h - adjustedH) >> 1;
-	area.w = adjustedW;
-	area.h = adjustedH;
-
-	return true;
-}
-
-//____ MarkTestBlock() ________________________________________________________
-
-bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area, int opacityTreshold )
-{
-	AdjustScaledArea(block, area);
-
 	// Sanity check & shortcuts.
-	if( !area.Contains(ofs.x,ofs.y) )
+	if( !pSurface || !area.Contains(ofs.x,ofs.y) || source.IsEmpty() || area.IsEmpty() || opacityTreshold > 255 )
 		return false;
 
-	if( block.IsOpaque() )
+	if( pSurface->IsOpaque() || opacityTreshold <= 0 )
 		return true;
 
 	// Make cordinates relative area.
@@ -86,89 +21,19 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area, int 
 	ofs.x -= area.x;
 	ofs.y -= area.y;
 
+	// Convert offset in area to offset in bitmap.
 
-	const WgBorders& borders = block.Frame();
+	ofs.x = (int) (ofs.x/((double)area.w) * source.w);
+	ofs.y = (int) (ofs.y/((double)area.h) * source.h);
 
-	// Determine in which section the cordinate is (0-2 for x and y).
+	// Do alpha test
 
-	int	xSection = 0;
-	int ySection = 0;
+	int alpha = pSurface->GetOpacity(source.x+ofs.x, source.y+ofs.y);
 
-	if( ofs.x >= area.w - borders.right )
-		xSection = 2;
-	else if( ofs.x > borders.left )
-		xSection = 1;
-
-	if( ofs.y >= area.h - borders.bottom )
-		ySection = 2;
-	else if( ofs.y > borders.top )
-		ySection = 1;
-
-
-	// Convert ofs.x to X-offset in bitmap, taking stretch/tile section into account.
-
-	if( xSection == 2 )
-	{
-		ofs.x = block.Width() - (area.w - ofs.x);
-	}
-	else if( xSection == 1 )
-	{
-		int tileAreaWidth = block.Width() - borders.Width();
-
-		bool bTile;
-
-		if( ySection == 0 )
-			bTile = block.HasTiledTopBorder();
-		else if( ySection == 1 )
-			bTile = block.HasTiledCenter();
-		else
-			bTile = block.HasTiledBottomBorder();
-
-		if( bTile )
-			ofs.x = ((ofs.x - borders.left) % tileAreaWidth) + borders.left;
-		else
-		{
-			double screenWidth = area.w - borders.Width();	// Width of stretch-area on screen.
-			ofs.x = (int) ((ofs.x-borders.left)/screenWidth * tileAreaWidth + borders.left);
-		}
-	}
-
-
-	// Convert ofs.y to Y-offset in bitmap, taking stretch/tile section into account.
-
-	if( ySection == 2 )
-	{
-		ofs.y = block.Height() - (area.h - ofs.y);
-	}
-	else if( ySection == 1 )
-	{
-		int tileAreaHeight = block.Height() - borders.Height();
-
-		bool bTile;
-
-		if( xSection == 0 )
-			bTile = block.HasTiledLeftBorder();
-		else if( xSection == 1 )
-			bTile = block.HasTiledCenter();
-		else
-			bTile = block.HasTiledRightBorder();
-
-		if( bTile )
-			ofs.y = ((ofs.y - borders.top) % tileAreaHeight) + borders.top;
-		else
-		{
-			double screenHeight = area.h - borders.Height();	// Height of stretch-area on screen.
-			ofs.y = (int) ((ofs.y-borders.top)/screenHeight * tileAreaHeight + borders.top);
-		}
-	}
-
-	int alpha = block.Surface()->GetOpacity(block.Rect().x+ofs.x, block.Rect().y+ofs.y);
-
-	if( alpha >= opacityTreshold )
-		return true;
-	else
-		return false;
+	return (alpha >= opacityTreshold);
 }
+
+
 
 //____ PixelTypeToFormat() _____________________________________________________
 

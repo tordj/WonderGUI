@@ -10,19 +10,17 @@
 #	include <wg_types.h>
 #endif
 
-class WgBlock;
 class WgRect;
 class WgWidget;
 class WgPanelHook;
+class WgSurface;
 
 
 //____ WgUtil _________________________________________________________________
 
 namespace WgUtil
 {
-	bool		AdjustScaledArea(const WgBlock& block, WgRect& area);
-
-	bool		MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area, int opacityTreshold );
+	bool		MarkTestStretchRect( WgCoord ofs, WgSurface * pSurface, const WgRect& source, const WgRect& area, int opacityTreshold );
 
 	bool		PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
 
@@ -310,6 +308,14 @@ namespace WgUtil
 		ofs =-4; while((ofs = escaped.find_first_of('>', ofs+4)) >= 0)	escaped.replace(ofs, 1, "&gt;");
 		ofs =-6; while((ofs = escaped.find_first_of('"', ofs+6)) >= 0)	escaped.replace(ofs, 1, "&quot;");
 		ofs =-6; while((ofs = escaped.find_first_of('\'',ofs+6)) >= 0)	escaped.replace(ofs, 1, "&apos;");
+	}
+
+
+
+	inline int _stateToIndex(WgStateEnum state)
+	{ 
+		static int	s_stateToIndexTable[WG_MAX_STATE_VALUE+1] = { 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 8, 9, 10, 11, 12, 13 };
+		return s_stateToIndexTable[state]; 
 	}
 
 }

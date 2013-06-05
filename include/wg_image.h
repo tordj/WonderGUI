@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 
@@ -45,8 +45,14 @@ public:
 	virtual WgWidget * NewOfMyType() const { return new WgImage(); };
 	
 
-	void			SetSource( const WgBlocksetPtr& pBlockset );
-	WgBlocksetPtr	GetSource() const { return m_pGfx; }
+	void			SetImage( WgSurface * pSurface, const WgRect& rect );
+	void			SetImage( WgSurface * pSurface );
+
+	WgSurface *		ImageSurface() const { return m_pSurface; }
+	WgRect			ImageRect() const { return m_rect; }
+
+	void			SetSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr		Skin() const { return m_pSkin; }
 
 	WgSize			PreferredSize() const;
 
@@ -60,7 +66,10 @@ protected:
 
 private:
 
-	WgBlocksetPtr	m_pGfx;
+	WgSkinPtr	m_pSkin;
+	WgSurface *	m_pSurface;
+	WgRect		m_rect;
+
 };
 
 

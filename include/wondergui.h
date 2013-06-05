@@ -15,10 +15,6 @@
 #	include <wg_bitmapglyphs.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
-
 #ifndef WG_BLOCKSKIN_DOT_H
 #	include <wg_blockskin.h>
 #endif
@@ -184,6 +180,14 @@
 #	include <wg_animplayer.h>
 #endif
 
+#ifndef WG_BLOCKSKIN_DOT_H
+#	include <wg_blockskin.h>
+#endif
+
+#ifndef WG_BOXSKIN_DOT_H
+#	include <wg_boxskin.h>
+#endif
+
 #ifndef WG_BUTTON_DOT_H
 #	include <wg_button.h>
 #endif
@@ -256,20 +260,20 @@
 #	include <wg_refreshbutton.h>
 #endif
 
-#ifndef WG_SHADERCAPSULE_DOT_H
-#	include <wg_shadercapsule.h>
-#endif
-
 #ifndef WG_SCROLLBAR_DOT_H
 #	include <wg_scrollbar.h>
 #endif
 
-#ifndef WG_STACKPANEL_DOT_H
-#	include <wg_stackpanel.h>
+#ifndef WG_SHADERCAPSULE_DOT_H
+#	include <wg_shadercapsule.h>
 #endif
 
-#ifndef WG_TABLEPANEL_DOT_H
-#	include <wg_tablepanel.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
+#endif
+
+#ifndef WG_STACKPANEL_DOT_H
+#	include <wg_stackpanel.h>
 #endif
 
 #ifndef WG_TABLIST_DOT_H

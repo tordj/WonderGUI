@@ -32,6 +32,10 @@
 #	include <wg_gfxanim.h>
 #endif
 
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
+#endif
+
 class WgAnimPlayer:public WgWidget
 {
 public:
@@ -47,8 +51,8 @@ public:
 	bool			SetAnimation( WgGfxAnim * pAnim );
 	WgGfxAnim *		Animation() const { return m_pAnim; }
 
-	bool			SetSource( const WgBlocksetPtr& pStaticBlock );
-	WgBlocksetPtr	Source() const { return m_pStaticBlock; }
+	void			SetSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr		Skin() const { return m_pSkin; }
 		
 	int				PlayPos();										/// Returns play position in ticks.
 	bool			SetPlayPos( int ticks );						/// Position in ticks for next update.
@@ -83,8 +87,8 @@ protected:
 private:
 
 	WgGfxAnim *		m_pAnim;
-	WgBlock			m_animFrame;			// Frame currently used by animation.
-	WgBlocksetPtr	m_pStaticBlock;			// Blockset used when no animation is displayed (not set or widget disabled).
+	WgGfxFrame *	m_pAnimFrame;			// Frame currently used by animation.
+	WgSkinPtr		m_pSkin;
 
 	bool			m_bPlaying;
 	double			m_playPos;

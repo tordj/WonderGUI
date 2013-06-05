@@ -189,14 +189,20 @@ public:
 	inline void			SetFont( WgFont * pFont );
 	void				SetFont( WgFont * pFont, int ofs, int len );
 
-	inline void			SetColor( const WgColor color, WgMode mode = WG_MODE_ALL );
-	void				SetColor( const WgColor color, int ofs, int len, WgMode mode = WG_MODE_ALL );
+	inline void			SetColor( const WgColor color );
+	void				SetColor( const WgColor color, int ofs, int len );
+	inline void			SetColor( const WgColor color, WgState state );
+	void				SetColor( const WgColor color, int ofs, int len, WgState state );
 
-	inline void			SetStyle( WgFontStyle style, WgMode mode = WG_MODE_ALL );
-	void				SetStyle( WgFontStyle style, int ofs, int len, WgMode mode = WG_MODE_ALL );
+	inline void			SetStyle( WgFontStyle style );
+	void				SetStyle( WgFontStyle style, int ofs, int len );
+	inline void			SetStyle( WgFontStyle style, WgState state );
+	void				SetStyle( WgFontStyle style, int ofs, int len, WgState state );
 
-	inline void			SetUnderlined( WgMode mode = WG_MODE_ALL );
-	void				SetUnderlined( int ofs, int len, WgMode mode = WG_MODE_ALL );
+	inline void			SetUnderlined();
+	void				SetUnderlined( int ofs, int len );
+	inline void			SetUnderlined( WgState state );
+	void				SetUnderlined( int ofs, int len, WgState state );
 
 
 	inline void			Clear();
@@ -207,14 +213,20 @@ public:
 	inline void			ClearFont();
 	void				ClearFont( int ofs, int len );
 
-	inline void			ClearColor( WgMode mode = WG_MODE_ALL );
-	void				ClearColor( int ofs, int len, WgMode mode = WG_MODE_ALL );
+	inline void			ClearColor();
+	void				ClearColor( int ofs, int len );
+	inline void			ClearColor( WgState state );
+	void				ClearColor( int ofs, int len, WgState state );
 
-	inline void 		ClearStyle( WgMode mode = WG_MODE_ALL );
-	void				ClearStyle( int ofs, int len, WgMode mode = WG_MODE_ALL );
+	inline void 		ClearStyle();
+	void				ClearStyle( int ofs, int len );
+	inline void 		ClearStyle( WgState state );
+	void				ClearStyle( int ofs, int len, WgState state );
 
-	inline void			ClearUnderlined( WgMode mode = WG_MODE_ALL );
-	void				ClearUnderlined( int ofs, int len, WgMode mode = WG_MODE_ALL );
+	inline void			ClearUnderlined();
+	void				ClearUnderlined( int ofs, int len );
+	inline void			ClearUnderlined( WgState state );
+	void				ClearUnderlined( int ofs, int len, WgState state );
 
 
 	int					FindFirst( const WgCharSeq& seq, int ofs = 0 );
@@ -276,6 +288,8 @@ private:
 	inline void		_refProps( int ofs, int n ) { WgTextTool::RefProps( (WgChar*) _ptr(ofs), n ); }
 
 	static bool		_compareBuffers( const BufferHead * p1, const BufferHead * p2 );
+
+	void			_modifyProperties( int ofs, int len, const WgTextTool::PropModifier& modif );
 
 
 	const static Uint32		c_emptyChar = 0x00000020;	// Value to fill out empty WgChars with.
@@ -506,10 +520,16 @@ void WgCharBuffer::SetFont( WgFont * pFont )
 /// This method specifies the color with which the characters glyphs will be tinted when displayed in the specified mode
 /// or all modes.
 
-void WgCharBuffer::SetColor( const WgColor color, WgMode mode )
+void WgCharBuffer::SetColor( const WgColor color, WgState state )
 {
-	SetColor( color, 0, INT_MAX, mode );
+	SetColor( color, 0, INT_MAX, state );
 }
+
+void WgCharBuffer::SetColor( const WgColor color )
+{
+	SetColor( color, 0, INT_MAX );
+}
+
 
 //____ SetStyle() _____________________________________________________________
 
@@ -522,10 +542,16 @@ void WgCharBuffer::SetColor( const WgColor color, WgMode mode )
 /// This method specifies the style in which the character is rendered when displayed in the specified mode
 /// or all modes.
 
-void WgCharBuffer::SetStyle( WgFontStyle style, WgMode mode )
+void WgCharBuffer::SetStyle( WgFontStyle style, WgState state )
 {
-	SetStyle( style, 0, INT_MAX, mode );
+	SetStyle( style, 0, INT_MAX, state );
 }
+
+void WgCharBuffer::SetStyle( WgFontStyle style )
+{
+	SetStyle( style, 0, INT_MAX );
+}
+
 
 //____ SetUnderline() _________________________________________________________
 
@@ -536,10 +562,16 @@ void WgCharBuffer::SetStyle( WgFontStyle style, WgMode mode )
 ///
 /// Specifying a single mode as underlined doesn't affect whether other modes are underlined or not.
 
-void WgCharBuffer::SetUnderlined( WgMode mode )
+void WgCharBuffer::SetUnderlined( WgState state )
 {
-	SetUnderlined( 0, INT_MAX, mode );
+	SetUnderlined( 0, INT_MAX, state );
 }
+
+void WgCharBuffer::SetUnderlined()
+{
+	SetUnderlined( 0, INT_MAX );
+}
+
 
 //____ Clear() ________________________________________________________________
 
@@ -583,9 +615,14 @@ void WgCharBuffer::ClearFont()
 ///
 /// This method clears the color-property of all characters in the buffer.
 
-void WgCharBuffer::ClearColor( WgMode mode )
+void WgCharBuffer::ClearColor( WgState state )
 {
-	ClearColor( 0, INT_MAX, mode );
+	ClearColor( 0, INT_MAX, state );
+}
+
+void WgCharBuffer::ClearColor()
+{
+	ClearColor( 0, INT_MAX );
 }
 
 //____ ClearStyle() ___________________________________________________________
@@ -597,9 +634,14 @@ void WgCharBuffer::ClearColor( WgMode mode )
 ///
 /// This method clears the style-property of all characters in the buffer.
 
-void WgCharBuffer::ClearStyle( WgMode mode )
+void WgCharBuffer::ClearStyle( WgState state )
 {
-	ClearStyle( 0, INT_MAX, mode );
+	ClearStyle( 0, INT_MAX, state );
+}
+
+void WgCharBuffer::ClearStyle()
+{
+	ClearStyle( 0, INT_MAX );
 }
 
 //____ ClearUnderlined() ______________________________________________________
@@ -609,9 +651,14 @@ void WgCharBuffer::ClearStyle( WgMode mode )
 /// @param mode		The characters can have their underline removed from an individual mode by specifying it here.
 ///					This parameter defaults to WG_MODE_ALL, which removes underline from the characters in all modes.
 
-void WgCharBuffer::ClearUnderlined( WgMode mode )
+void WgCharBuffer::ClearUnderlined( WgState state )
 {
-	ClearUnderlined( 0, INT_MAX, mode );
+	ClearUnderlined( 0, INT_MAX, state );
+}
+
+void WgCharBuffer::ClearUnderlined()
+{
+	ClearUnderlined( 0, INT_MAX );
 }
 
 

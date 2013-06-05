@@ -47,12 +47,10 @@ WgMenu::WgMenu()
 	m_markedItem			= 0;
 	m_pSelectedItem			= 0;
 
-	m_pBgGfx				= 0;
-	m_pSepGfx				= 0;
-	m_pCbGfxChecked			= 0;
-	m_pCbGfxUnchecked		= 0;
-	m_pRbGfxSelected		= 0;
-	m_pRbGfxUnselected		= 0;
+	m_pSkin					= 0;
+	m_pSeparatorSkin		= 0;
+	m_pCheckBoxSkin			= 0;
+	m_pRadioButtonSkin		= 0;
 
 	m_iconFieldWidth		= 0;
 	m_arrowFieldWidth		= 0;
@@ -98,11 +96,11 @@ const char * WgMenu::GetClass( void )
 	return c_widgetType;
 }
 
-//____ SetBgSource() __________________________________________________________
+//____ SetSkin() __________________________________________________________
 
-bool WgMenu::SetBgSource( const WgBlocksetPtr pBgGfx, Uint8 iconFieldWidth, Uint8 arrowFieldWidth )
+bool WgMenu::SetSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowFieldWidth )
 {
-	m_pBgGfx			= pBgGfx;
+	m_pSkin			= pSkin;
 
 	m_iconFieldWidth	= iconFieldWidth;
 	m_arrowFieldWidth	= arrowFieldWidth;
@@ -113,16 +111,31 @@ bool WgMenu::SetBgSource( const WgBlocksetPtr pBgGfx, Uint8 iconFieldWidth, Uint
 
 }
 
-//____ SetSeparatorSource() ___________________________________________________
+//____ SetEntrySkin() _________________________________________________________
 
-bool WgMenu::SetSeparatorSource( const WgBlocksetPtr pGfx, const WgBorders& borders )
+void WgMenu::SetEntrySkin( const WgSkinPtr& pSkin )
 {
-	if( pGfx == WgBlocksetPtr(0) )
-		return false;
+	if( pSkin != m_pEntrySkin )
+	{
+		m_pEntrySkin = pSkin;
+	_refreshEntryHeight();
+	_adjustSize();
+	_requestRender();
 
-	m_pSepGfx		= pGfx;
-	m_sepBorders	= borders;
-	m_sepHeight		= m_pSepGfx->Height() + m_sepBorders.Height();
+	}
+}
+
+//____ SetSeparatorSkin() ___________________________________________________
+
+bool WgMenu::SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorders& borders )
+{
+	m_pSeparatorSkin	= pSkin;
+	m_sepBorders		= borders;
+
+	if( pSkin )
+		m_sepHeight	= m_pSeparatorSkin->PreferredSize().h + m_sepBorders.Height();
+	else
+		m_sepHeight = m_sepBorders.Height();
 
 	_adjustSize();
 	_requestRender();
@@ -174,21 +187,21 @@ void WgMenu::_refreshEntryHeight()
 {
 		WgPen		pen;
 		WgTextAttr	attr;
-		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_MODE_NORMAL );
-		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_MODE_NORMAL );
+		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_STATE_NORMAL );
+		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_STATE_NORMAL );
 
 		pen.SetAttributes( attr );
 		int	heightNormal	= pen.GetLineSpacing();
 
 		attr.Clear();
-		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_MODE_MARKED );
-		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_MODE_MARKED );
+		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_STATE_HOVERED );
+		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_STATE_HOVERED );
 		pen.SetAttributes( attr );
 		int heightMarked	= pen.GetLineSpacing();
 
 		attr.Clear();
-		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_MODE_DISABLED );
-		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_MODE_DISABLED );
+		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_STATE_DISABLED );
+		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_STATE_DISABLED );
 		pen.SetAttributes( attr );
 		int heightDisabled	= pen.GetLineSpacing();
 
@@ -203,28 +216,25 @@ void WgMenu::_refreshEntryHeight()
 
 		//
 
-		if( m_pTileBlocks[0] )
-			m_entryHeight +=  m_pTileBlocks[0]->Padding().Height();
-
-		if( m_entryHeight < m_minTileSize.h )
-			m_entryHeight = m_minTileSize.h;
+		if( m_pEntrySkin )
+			m_entryHeight +=  m_pEntrySkin->ContentPadding().h;
 }
 
 
-//____ SetScrollbarSource() ______________________________________________________
+//____ SetScrollbarSkin() ______________________________________________________
 
-bool WgMenu::SetScrollbarSource(  WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx )
+bool WgMenu::SetScrollbarSkins(  const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& pHandleSkin, const WgSkinPtr& pBwdButtonSkin, const WgSkinPtr& pFwdButtonSkin )
 {
-	m_pScrollbarBgGfx		= pBgGfx;
-	m_pScrollbarBarGfx		= pBarGfx;
-	m_pScrollbarBtnFwdGfx	= pBtnFwdGfx;
-	m_pScrollbarBtnBwdGfx	= pBtnBwdGfx;
+	m_pScrollbarBgSkin		= pBackgroundSkin;
+	m_pScrollbarHandleSkin	= pHandleSkin;
+	m_pScrollbarBtnFwdSkin	= pFwdButtonSkin;
+	m_pScrollbarBtnBwdSkin	= pBwdButtonSkin;
 
 	if( m_scrollbarHook.Scrollbar() )
 	{
 		//TODO: Adapt to changes in scrollbars minimum width.
 
-		m_scrollbarHook.Scrollbar()->SetSource( pBgGfx, pBarGfx, pBtnBwdGfx, pBtnFwdGfx );
+		m_scrollbarHook.Scrollbar()->SetSkins( pBackgroundSkin, pHandleSkin, pBwdButtonSkin, pFwdButtonSkin );
 	}
 	return true;
 }
@@ -242,23 +252,21 @@ bool WgMenu::SetScrollbarButtonLayout(  WgScrollbar::ButtonLayout layout )
 }
 
 
-//____ SetCheckBoxSource() ____________________________________________________
+//____ SetCheckBoxSkin() ____________________________________________________
 
-bool WgMenu::SetCheckBoxSource( const WgBlocksetPtr pUnchecked, const WgBlocksetPtr pChecked )
+bool WgMenu::SetCheckBoxSkin( const WgSkinPtr& pSkin )
 {
-	m_pCbGfxChecked		= pChecked;
-	m_pCbGfxUnchecked	= pUnchecked;
+	m_pCheckBoxSkin		= pSkin;
 
 	_requestRender();
 	return true;
 }
 
-//____ SetRadioButtonSource() _________________________________________________
+//____ SetRadioButtonSkin() _________________________________________________
 
-bool WgMenu::SetRadioButtonSource( const WgBlocksetPtr pUnselected, const WgBlocksetPtr pSelected )
+bool WgMenu::SetRadioButtonSkin( const WgSkinPtr& pSkin )
 {
-	m_pRbGfxSelected			= pSelected;
-	m_pRbGfxUnselected			= pUnselected;
+	m_pRadioButtonSkin			= pSkin;
 
 	_requestRender();
 	return true;
@@ -445,17 +453,17 @@ int  WgMenu::WidthForHeight( int height ) const
 
 	int scrollbarWidth = 0;
 
-	if( m_pScrollbarBgGfx && m_pScrollbarBgGfx->Width() > scrollbarWidth )
-		scrollbarWidth = m_pScrollbarBgGfx->Width();
+	if( m_pScrollbarBgSkin && m_pScrollbarBgSkin->PreferredSize().w > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarBgSkin->PreferredSize().w;
 
-	if( m_pScrollbarBarGfx && m_pScrollbarBarGfx->Width() > scrollbarWidth )
-		scrollbarWidth = m_pScrollbarBarGfx->Width();
+	if( m_pScrollbarHandleSkin && m_pScrollbarHandleSkin->PreferredSize().w > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarHandleSkin->PreferredSize().w;
 
-	if( m_pScrollbarBtnFwdGfx && m_pScrollbarBtnFwdGfx->Width() > scrollbarWidth )
-		scrollbarWidth = m_pScrollbarBtnFwdGfx->Width();
+	if( m_pScrollbarBtnFwdSkin && m_pScrollbarBtnFwdSkin->PreferredSize().w > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarBtnFwdSkin->PreferredSize().w;
 
-	if( m_pScrollbarBtnBwdGfx && m_pScrollbarBtnBwdGfx->Width() > scrollbarWidth )
-		scrollbarWidth = m_pScrollbarBtnBwdGfx->Width();
+	if( m_pScrollbarBtnBwdSkin && m_pScrollbarBtnBwdSkin->PreferredSize().w > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarBtnBwdSkin->PreferredSize().w;
 
 	return m_defaultSize.w + scrollbarWidth;
 }
@@ -467,27 +475,27 @@ int  WgMenu::WidthForHeight( int height ) const
 void WgMenu::_calcEntryMinWidth( WgMenuEntry * pEntry )
 {
 	WgTextAttr	entryAttr;
-	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextprop(), WG_MODE_NORMAL );
-	WgTextTool::AddPropAttributes(entryAttr, m_pEntryProp, WG_MODE_NORMAL);
+	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextprop(), WG_STATE_NORMAL );
+	WgTextTool::AddPropAttributes(entryAttr, m_pEntryProp, WG_STATE_NORMAL);
 	WgTextAttr	accelAttr;
-	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextprop(), WG_MODE_NORMAL );
-	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_MODE_NORMAL);
+	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextprop(), WG_STATE_NORMAL );
+	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_NORMAL);
 
 	int wNormal = WgTextTool::lineWidth( 0, entryAttr, "  " );
 	int wMarked = WgTextTool::lineWidth( 0, entryAttr, "  " );
 
-	wNormal += WgTextTool::lineWidth( 0, entryAttr, WG_MODE_NORMAL, pEntry->GetText().Chars() );
-	wNormal += WgTextTool::lineWidth( 0, accelAttr, WG_MODE_NORMAL, pEntry->GetAccelText().Chars() );
+	wNormal += WgTextTool::lineWidth( 0, entryAttr, WG_STATE_NORMAL, pEntry->GetText().Chars() );
+	wNormal += WgTextTool::lineWidth( 0, accelAttr, WG_STATE_NORMAL, pEntry->GetAccelText().Chars() );
 
 	entryAttr.Clear();
-	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextprop(), WG_MODE_MARKED );
-	WgTextTool::AddPropAttributes(entryAttr, m_pEntryProp, WG_MODE_MARKED);
+	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextprop(), WG_STATE_HOVERED );
+	WgTextTool::AddPropAttributes(entryAttr, m_pEntryProp, WG_STATE_HOVERED);
 	accelAttr.Clear();
-	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextprop(), WG_MODE_MARKED );
-	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_MODE_MARKED);
+	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextprop(), WG_STATE_HOVERED );
+	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_HOVERED);
 
-	wMarked += WgTextTool::lineWidth( 0, entryAttr, WG_MODE_NORMAL, pEntry->GetText().Chars() );
-	wMarked += WgTextTool::lineWidth( 0, accelAttr, WG_MODE_NORMAL, pEntry->GetAccelText().Chars() );
+	wMarked += WgTextTool::lineWidth( 0, entryAttr, WG_STATE_NORMAL, pEntry->GetText().Chars() );
+	wMarked += WgTextTool::lineWidth( 0, accelAttr, WG_STATE_NORMAL, pEntry->GetAccelText().Chars() );
 
 
 	if( wNormal > wMarked )
@@ -500,8 +508,13 @@ void WgMenu::_calcEntryMinWidth( WgMenuEntry * pEntry )
 
 WgBorders WgMenu::_getPadding() const
 {
-	if( m_pBgGfx )
-		return m_pBgGfx->Padding();
+	//TODO: This is ugly and doesn't take ContentShift of various states into account.
+
+	if( m_pSkin )
+	{
+		WgRect r = m_pSkin->ContentRect( WgRect(0,0,1000,1000), WG_STATE_NORMAL );
+		return WgBorders(r.x, r.y, 1000-r.w, 1000-r.h);
+	}
 	else
 		return WgBorders(0);
 }
@@ -574,29 +587,26 @@ void WgMenu::_markFirstFilteredEntry()
 
 void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& window, const WgRect& clip )
 {
+	WgState backState = m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED;
 
 	// Render background
 
-	if( m_pBgGfx )
-	{
-		if( m_bEnabled )
-			pDevice->ClipBlitBlock( clip, m_pBgGfx->GetBlock(WG_MODE_NORMAL,window), window );
-		else
-			pDevice->ClipBlitBlock( clip, m_pBgGfx->GetBlock(WG_MODE_DISABLED,window), window );
-	}
+	if( m_pSkin )
+		m_pSkin->Render( pDevice, canvas, backState, clip );
 
 
 	// Render the menu-items
 
-	WgBorders	contentBorders = _getPadding();
-	WgRect		contentClip( canvas - contentBorders, clip );		// A clip rectangle for content.
+	WgRect		contentRect = m_pSkin?m_pSkin->ContentRect(canvas, backState):canvas;
+
+	WgRect		contentClip( contentRect, clip );		// A clip rectangle for content.
 
 	WgMenuItem * pItem = m_items.First();
 
-	Uint32	yPos = window.y + contentBorders.top - m_contentOfs;
-	Uint32	xPosText = window.x + contentBorders.left + m_iconFieldWidth;
-	Uint32	xPosIcon = window.x + contentBorders.left;
-	Uint32	textFieldLen = window.w - contentBorders.Width() - m_iconFieldWidth - m_arrowFieldWidth;
+	int		yPos = contentRect.y - m_contentOfs;
+	int		xPosText = contentRect.x + m_iconFieldWidth;
+	int		xPosIcon = contentRect.x;
+	int		textFieldLen = contentRect.w - m_iconFieldWidth - m_arrowFieldWidth;
 
 	WgPen	entryPen( pDevice, WgCoord( xPosText, yPos ), contentClip );
 	WgPen	accelPen( pDevice, WgCoord( xPosText, yPos ), contentClip );
@@ -609,37 +619,37 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 		{
 			if( pItem->GetType() == SEPARATOR )
 			{
-				if( m_pSepGfx )
+				if( m_pSeparatorSkin )
 				{
-					WgRect sepClip(clip, WgRect(canvas.x, canvas.y + contentBorders.top, canvas.w, canvas.h - contentBorders.Height() ) );
+					WgRect	dest( contentRect.x, yPos + m_sepBorders.top,
+								  contentRect.w, m_pSeparatorSkin->PreferredSize().h );
 
-					WgRect	dest( window.x + m_sepBorders.left, yPos + m_sepBorders.top,
-									window.w - m_sepBorders.Width(), m_pSepGfx->Height() );
-
-					pDevice->ClipBlitBlock( sepClip, m_pSepGfx->GetBlock(WG_MODE_NORMAL,dest), dest );
+					m_pSeparatorSkin->Render( pDevice, dest, backState, contentClip );
 					yPos += m_sepHeight;
 				}
 			}
 			else
 			{
-				WgMode	mode = WG_MODE_DISABLED;
+				WgState	state = WG_STATE_DISABLED;
 
 				if( ((WgMenuEntry*)pItem)->IsEnabled() )
-					mode = WG_MODE_NORMAL;
+					state = WG_STATE_NORMAL;
 
 				if( item == m_markedItem )
-					mode = WG_MODE_MARKED;
+					state = WG_STATE_HOVERED;
 
 				// Render the tile for this entry
 
-				WgRect tileDest(	window.x + contentBorders.left,
+				WgRect tileDest(	contentRect.x,
 									yPos,
-									window.w - contentBorders.Width(),
+									contentRect.w,
 									m_entryHeight );
 
-				WgRect tileClip( contentClip, tileDest);
+//				WgRect tileClip( contentClip, tileDest);
 
-				_renderTile( pDevice, tileClip, tileDest, item-1, mode );
+				if( m_pEntrySkin )
+					m_pEntrySkin->Render( pDevice, tileDest, state, contentClip );
+
 
 				// Print the text (if any)
 
@@ -648,10 +658,10 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 				{
 
 					WgTextAttr	attr;
-					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), mode );
-					if( m_pBgGfx )
-						WgTextTool::SetAttrColor( attr, m_pBgGfx->TextColors(), mode );
-					WgTextTool::AddPropAttributes( attr, m_pEntryProp, mode );
+					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), state );
+//					if( m_pSkin )
+//						WgTextTool::SetAttrColor( attr, m_pSkin->TextColors(), mode );
+					WgTextTool::AddPropAttributes( attr, m_pEntryProp, state );
 					entryPen.SetAttributes( attr );
 					int y = yPos + (m_entryHeight - entryPen.GetLineHeight())/2 + entryPen.GetBaseline();
 					entryPen.SetPos( WgCoord( xPosText, y ) );
@@ -664,14 +674,14 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 				if( pAccelText->Glyph() != 0 )
 				{
 					WgTextAttr	attr;
-					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), mode );
-					if( m_pBgGfx )
-						WgTextTool::SetAttrColor( attr, m_pBgGfx->TextColors(), mode );
-					WgTextTool::AddPropAttributes( attr, m_pKeyAccelProp, mode );
+					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), state );
+//					if( m_pSkin )
+//						WgTextTool::SetAttrColor( attr, m_pSkin->TextColors(), mode );
+					WgTextTool::AddPropAttributes( attr, m_pKeyAccelProp, state );
 					accelPen.SetAttributes( attr );
 
 					int y = yPos + (m_entryHeight - accelPen.GetLineHeight())/2 + accelPen.GetBaseline();
-					int width = WgTextTool::lineWidth( 0, attr, mode, pAccelText );
+					int width = WgTextTool::lineWidth( 0, attr, state, pAccelText );
 					int x = xPosText + textFieldLen - width;
 
 					accelPen.SetPos( WgCoord(x, y) );
@@ -684,66 +694,57 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 				{
 					case ENTRY:
 					{
-						WgBlocksetPtr pIcon = ((WgMenuEntry*)pItem)->GetIcon();
+						WgSkinPtr pIcon = ((WgMenuEntry*)pItem)->GetIcon();
 						if( pIcon )
 						{
-							int w = pIcon->Width();
-							int h = pIcon->Height();
+							WgSize sz = pIcon->PreferredSize();
 
-							//
+							if( sz.w > m_iconFieldWidth )
+								sz.w = m_iconFieldWidth;
+							if( sz.h > m_entryHeight )
+								sz.h = m_entryHeight;
 
-							if( w > m_iconFieldWidth )
-								w = m_iconFieldWidth;
-							if( h > m_entryHeight )
-								h = m_entryHeight;
+							int y = yPos + (m_entryHeight - sz.h)/2;
+							int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
 
-							int y = yPos + (m_entryHeight - h)/2;
-							int x = xPosIcon + (m_iconFieldWidth - w)/2;
-
-							pDevice->ClipBlitBlock( contentClip, pIcon->GetBlock(mode), WgRect(x,y,w,h) );
+							pIcon->Render( pDevice, WgRect(x,y,sz), state, contentClip );
 						}
 					}
 					break;
 
 					case CHECKBOX:
 					{
-						WgBlocksetPtr	pGfx;
+						WgState checkboxState = state;
 
 						if( ((WgMenuCheckBox*)pItem)->IsChecked() )
-							pGfx = m_pCbGfxChecked;
-						else
-							pGfx = m_pCbGfxUnchecked;
+							checkboxState.setSelected(true);
 
-						if( pGfx )
+						if( m_pCheckBoxSkin )
 						{
-							int w = pGfx->Width();
-							int h = pGfx->Height();
+							WgSize sz = m_pCheckBoxSkin->PreferredSize();
 
-							int y = yPos + (m_entryHeight - h)/2;
-							int x = xPosIcon + (m_iconFieldWidth - w)/2;
+							int y = yPos + (m_entryHeight - sz.h)/2;
+							int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
 
-							pDevice->ClipBlitBlock( contentClip, pGfx->GetBlock(mode), WgRect(x,y,w,h) );
+							m_pCheckBoxSkin->Render( pDevice, WgRect(x,y,sz), checkboxState, contentClip );
 						}
 					}
 					break;
 					case RADIOBUTTON:
 					{
-						WgBlocksetPtr	pGfx;
+						WgState radiobuttonState = state;
 
 						if( ((WgMenuRadioButton*)pItem)->IsSelected() )
-							pGfx = m_pRbGfxSelected;
-						else
-							pGfx = m_pRbGfxUnselected;
+							radiobuttonState.setSelected(true);
 
-						if( pGfx )
+						if( m_pRadioButtonSkin )
 						{
-							int w = pGfx->Width();
-							int h = pGfx->Height();
+							WgSize sz = m_pRadioButtonSkin->PreferredSize();
 
-							int y = yPos + (m_entryHeight - h)/2;
-							int x = xPosIcon + (m_iconFieldWidth - w)/2;
+							int y = yPos + (m_entryHeight - sz.h)/2;
+							int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
 
-							pDevice->ClipBlitBlock( contentClip, pGfx->GetBlock(mode), WgRect(x,y,w,h) );
+							m_pRadioButtonSkin->Render( pDevice, WgRect(x,y,sz), radiobuttonState, contentClip );
 						}
 					}
 					break;
@@ -1140,7 +1141,7 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 	// Calculate itemArea
 
-	WgRect	geo = ScreenGeo() - _getPadding();
+	WgRect	geo = m_pSkin?m_pSkin->ContentRect(ScreenGeo(), WG_STATE_NORMAL):ScreenGeo();
 	WgRect itemArea( geo.x, geo.y + yOfs, geo.w, m_entryHeight );
 
 	// 
@@ -1229,12 +1230,12 @@ void WgMenu::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect
 	{
 		patches.Sub( WgRect( geo, clip ) );
 	}
-	else if( blendMode == WG_BLENDMODE_BLEND && m_pBgGfx )
+	else if( blendMode == WG_BLENDMODE_BLEND && m_pSkin )
 	{
-		if( m_pBgGfx->IsOpaque() )
+		if( m_pSkin->IsOpaque() )
 			patches.Sub( WgRect( geo, clip ) );
-		else if( m_pBgGfx->HasOpaqueCenter() )
-			patches.Sub( WgRect( geo - m_pBgGfx->Frame(), clip ) );
+		else if( m_pSkin->IsOpaque() )
+			patches.Sub( WgRect( geo, clip ) );
 	}
 }
 
@@ -1244,27 +1245,25 @@ void WgMenu::_onCloneContent( const WgWidget * _pOrg )
 {
 	const WgMenu * pOrg = static_cast<const WgMenu*>(_pOrg);
 
-	m_pBgGfx 			= pOrg->m_pBgGfx;
-	m_iconFieldWidth 	= pOrg->m_iconFieldWidth;
-	m_arrowFieldWidth 	= pOrg->m_arrowFieldWidth;
-	m_pSepGfx			= pOrg->m_pSepGfx;
-	m_sepBorders		= pOrg->m_sepBorders;
-	m_pArrowAnim		= pOrg->m_pArrowAnim;
-	m_entryHeight		= pOrg->m_entryHeight;
-	m_sepHeight			= pOrg->m_sepHeight;
-	m_pEntryProp		= pOrg->m_pEntryProp;
-	m_pKeyAccelProp		= pOrg->m_pKeyAccelProp;
-	m_pCbGfxChecked		= pOrg->m_pCbGfxChecked;
-	m_pCbGfxUnchecked	= pOrg->m_pCbGfxUnchecked;
-	m_pRbGfxSelected	= pOrg->m_pRbGfxSelected;
-	m_pRbGfxUnselected	= pOrg->m_pRbGfxUnselected;
-	m_pScrollbarBgGfx		= pOrg->m_pScrollbarBgGfx;
-	m_pScrollbarBarGfx		= pOrg->m_pScrollbarBarGfx;
-	m_pScrollbarBtnFwdGfx	= pOrg->m_pScrollbarBtnFwdGfx;
-	m_pScrollbarBtnBwdGfx	= pOrg->m_pScrollbarBtnBwdGfx;
+	m_pSkin 				= pOrg->m_pSkin;
+	m_iconFieldWidth 		= pOrg->m_iconFieldWidth;
+	m_arrowFieldWidth 		= pOrg->m_arrowFieldWidth;
+	m_pSeparatorSkin		= pOrg->m_pSeparatorSkin;
+	m_sepBorders			= pOrg->m_sepBorders;
+	m_pArrowAnim			= pOrg->m_pArrowAnim;
+	m_entryHeight			= pOrg->m_entryHeight;
+	m_sepHeight				= pOrg->m_sepHeight;
+	m_pEntryProp			= pOrg->m_pEntryProp;
+	m_pKeyAccelProp			= pOrg->m_pKeyAccelProp;
+	m_pCheckBoxSkin			= pOrg->m_pCheckBoxSkin;
+	m_pRadioButtonSkin		= pOrg->m_pRadioButtonSkin;
+	m_pEntrySkin			= pOrg->m_pEntrySkin;
+	m_pScrollbarBgSkin		= pOrg->m_pScrollbarBgSkin;
+	m_pScrollbarHandleSkin	= pOrg->m_pScrollbarHandleSkin;
+	m_pScrollbarBtnFwdSkin	= pOrg->m_pScrollbarBtnFwdSkin;
+	m_pScrollbarBtnBwdSkin	= pOrg->m_pScrollbarBtnBwdSkin;
 	m_scrollbarBtnLayout	= pOrg->m_scrollbarBtnLayout;
 
-	WgTileHolder::_cloneContent( pOrg );
 
 	//TODO: Implement cloning of menu items!
 }
@@ -1402,8 +1401,8 @@ void WgMenu::_adjustSize()
 	int	 h = contentBorders.Height();
 
 	int minSep = m_sepBorders.Width();
-	if( m_pSepGfx )
-		minSep += m_pSepGfx->MinWidth();
+	if( m_pSeparatorSkin )
+		minSep += m_pSeparatorSkin->MinSize().w;
 
 	WgMenuItem * pItem = m_items.First();
 	while( pItem )
@@ -1450,7 +1449,7 @@ void WgMenu::_adjustSize()
 		if( !pScrollbar )
 		{
 			pScrollbar = new WgVScrollbar();
-			pScrollbar->SetSource( m_pScrollbarBgGfx, m_pScrollbarBarGfx, m_pScrollbarBtnBwdGfx, m_pScrollbarBtnFwdGfx );
+			pScrollbar->SetSkins( m_pScrollbarBgSkin, m_pScrollbarHandleSkin, m_pScrollbarBtnBwdSkin, m_pScrollbarBtnFwdSkin );
 			pScrollbar->SetButtonLayout( m_scrollbarBtnLayout );
 			pScrollbar->SetScrollbarTarget(this);
 		}
@@ -1585,18 +1584,6 @@ void WgMenu::_setViewOfs(int pos)
 		_requestRender();
 	}
 }
-
-
-//____ _tilesModified() _______________________________________________________
-
-void WgMenu::_tilesModified()
-{
-	_refreshEntryHeight();
-	_adjustSize();
-	_requestRender();
-}
-
-
 
 
 const char * WgMenu::ScrollbarHook::Type( void ) const

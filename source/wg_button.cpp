@@ -40,7 +40,7 @@ WgButton::WgButton()
 	m_text.setLineWidth(Size().w);					// We start with no textborders...
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 
- 	m_mode				= WG_MODE_NORMAL;
+ 	m_state				= WG_STATE_NORMAL;
 
 	m_bDownOutside	 = false;
 	m_bPressed 		 = false;
@@ -68,13 +68,13 @@ const char * WgButton::GetClass()
 	return c_widgetType;
 }
 
-//____ SetSource() ____________________________________________________________
+//____ SetSkin() ____________________________________________________________
 
-bool WgButton::SetSource( const WgBlocksetPtr& pGfx )
+bool WgButton::SetSkin( const WgSkinPtr& pSkin )
 {
-	m_pBgGfx = pGfx;
+	m_pSkin = pSkin;
 
-	if( pGfx && pGfx->IsOpaque() )
+	if( pSkin && pSkin->IsOpaque() )
 		m_bOpaque = true;
 	else
 		m_bOpaque = false;
@@ -85,20 +85,20 @@ bool WgButton::SetSource( const WgBlocksetPtr& pGfx )
 
 //____ SetIcon() ______________________________________________________________
 
-void WgButton::SetIcon( const WgBlocksetPtr& pIconGfx )
+void WgButton::SetIcon( const WgSkinPtr& pIconGfx )
 {
-	m_pIconGfx = pIconGfx;
+	m_pIconSkin = pIconGfx;
 	_iconModified();
 }
 
-bool WgButton::SetIcon( const WgBlocksetPtr& pIconGfx, WgOrigo origo, WgBorders borders, float scale, bool bPushText )
+bool WgButton::SetIcon( const WgSkinPtr& pIconGfx, WgOrigo origo, WgBorders padding, float scale, bool bPushText )
 {
 	if( scale < 0 || scale > 1.f )
 		return false;
 
-	m_pIconGfx = pIconGfx;
+	m_pIconSkin = pIconGfx;
 	m_iconOrigo = origo;
-	m_iconBorders = borders;
+	m_iconBorders = padding;
 	m_iconScale = scale;
 	m_bIconPushText = bPushText;
 
@@ -107,16 +107,16 @@ bool WgButton::SetIcon( const WgBlocksetPtr& pIconGfx, WgOrigo origo, WgBorders 
 }
 
 
-//____ GetTextAreaWidth() _____________________________________________________
+//____ TextAreaWidth() _____________________________________________________
 
-Uint32 WgButton::GetTextAreaWidth()
+int WgButton::TextAreaWidth()
 {
 	WgRect	contentRect(0,0,Size());
 
-	if( m_pBgGfx )
-		contentRect.Shrink(m_pBgGfx->Padding());
+	if( m_pSkin )
+		contentRect = m_pSkin->SizeForContent( contentRect );
 
-	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx ) );
+	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin ) );
 
 	return textRect.w;
 }
@@ -127,17 +127,17 @@ int WgButton::HeightForWidth( int width ) const
 {
 	int height = 0;
 
-	if( m_pBgGfx )
-		height = m_pBgGfx->Height();
+	if( m_pSkin )
+		height = m_pSkin->PreferredSize().h;
 
 	if( m_text.nbChars() != 0 )
 	{
-		WgBorders padding;
+		WgSize padding;
 
-		if( m_pBgGfx )
-			padding = m_pBgGfx->Padding();
+		if( m_pSkin )
+			padding = m_pSkin->ContentPadding();
 
-		int heightForText = m_text.heightForWidth(width-padding.Width()) + padding.Height();
+		int heightForText = m_text.heightForWidth(width-padding.w) + padding.h;
 		if( heightForText > height )
 			height = heightForText;
 	}
@@ -152,28 +152,28 @@ int WgButton::HeightForWidth( int width ) const
 
 WgSize WgButton::PreferredSize() const
 {
-	WgSize bestSize;
+	WgSize preferred;
 
-	if( m_pBgGfx )
-		bestSize = m_pBgGfx->Size();
+	if( m_pSkin )
+		preferred = m_pSkin->PreferredSize();
 
 	if( m_text.nbChars() != 0 )
 	{
 		WgSize textSize = m_text.unwrappedSize();
 
-		if( m_pBgGfx )
-			textSize += m_pBgGfx->Padding();
+		if( m_pSkin )
+			textSize += m_pSkin->ContentPadding();
 
-		if( textSize.w > bestSize.w )
-			bestSize.w = textSize.w;
+		if( textSize.w > preferred.w )
+			preferred.w = textSize.w;
 
-		if( textSize.h > bestSize.h )
-			bestSize.h = textSize.h;
+		if( textSize.h > preferred.h )
+			preferred.h = textSize.h;
 	}
 
 	//TODO: Take icon into account.
 
-	return bestSize;
+	return preferred;
 }
 
 
@@ -181,7 +181,7 @@ WgSize WgButton::PreferredSize() const
 
 void WgButton::_onEnable()
 {
-	m_mode = WG_MODE_NORMAL;
+	m_state = WG_STATE_NORMAL;
 	_requestRender();
 }
 
@@ -189,7 +189,7 @@ void WgButton::_onEnable()
 
 void WgButton::_onDisable()
 {
-	m_mode = WG_MODE_DISABLED;
+	m_state = WG_STATE_DISABLED;
 	_requestRender();
 }
 
@@ -199,10 +199,10 @@ void WgButton::_onNewSize( const WgSize& size )
 {
 	WgRect	contentRect(0,0,Size());
 
-	if( m_pBgGfx )
-		contentRect.Shrink(m_pBgGfx->Padding());
+	if( m_pSkin )
+		contentRect -= m_pSkin->ContentPadding();
 
-	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx ) );
+	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin ) );
 
 	m_text.setLineWidth(textRect.w);
 }
@@ -212,41 +212,32 @@ void WgButton::_onNewSize( const WgSize& size )
 
 void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	WgRect cli = _clip;
-	WgRect can = _canvas;
-	WgRect win = _window;
+	WgRect	contentRect = _canvas;
 
-	WgBlock	block;
-
-	if( m_pBgGfx )
-		block = m_pBgGfx->GetBlock(m_mode, _canvas);
-
-	// Render background
-
-	pDevice->ClipBlitBlock( _clip, block, _canvas );
-
-	// Get content rect with displacement.
-
-	WgRect contentRect = block.ContentRect(_canvas );
+	if( m_pSkin )
+	{
+		m_pSkin->Render( pDevice, _canvas, m_state, _clip );
+		contentRect = m_pSkin->ContentRect(_canvas, m_state);
+	}
 
 	// Get icon and text rect from content rect
 
-	WgRect iconRect = _getIconRect( contentRect, m_pIconGfx );
+	WgRect iconRect = _getIconRect( contentRect, m_pIconSkin );
 	WgRect textRect = _getTextRect( contentRect, iconRect );
 
 	// Render icon
 
-	if( m_pIconGfx )
-		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, iconRect.Size()), iconRect );
+	if( m_pIconSkin )
+		m_pIconSkin->Render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
  	if( !m_text.IsEmpty() )
 	{
-		m_text.setMode(m_mode);
+		m_text.setState(m_state);
 
-		if( m_pBgGfx )
-			m_text.SetBgBlockColors( m_pBgGfx->TextColors() );
+		if( m_pSkin )
+			m_text.SetColorSkin( m_pSkin );
 
 		WgRect clip(textRect,_clip);
 		pDevice->PrintText( clip, &m_text, textRect );
@@ -345,30 +336,34 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 
 	}
 
-	WgMode newMode = _getRenderMode();
-	if( newMode != m_mode )
+	WgState newState = _getRenderState();
+	if( newState != m_state )
 	{
-		m_mode = newMode;
-		_requestRender();
+		WgState oldState = m_state;
+		m_state = newState;
+
+		if( (m_pSkin && !m_pSkin->IsStateIdentical(newState,oldState)) ||
+			(m_pIconSkin && !m_pIconSkin->IsStateIdentical(newState,oldState)) )
+			_requestRender();
 	}
 
 }
 
 
-//_____ _getRenderMode() ________________________________________________________
+//_____ _getRenderState() ________________________________________________________
 
-WgMode WgButton::_getRenderMode()
+WgState WgButton::_getRenderState()
 {
 	if( !IsEnabled() )
-		return WG_MODE_DISABLED;
+		return WG_STATE_DISABLED;
 
 	if( m_bReturnPressed || (m_bPressed && (m_bPointerInside || m_bDownOutside)) )
-		return WG_MODE_SELECTED;
+		return WG_STATE_PRESSED;
 
 	if( m_bPointerInside )
-		return WG_MODE_MARKED;
+		return WG_STATE_HOVERED;
 
-	return WG_MODE_NORMAL;
+	return WG_STATE_NORMAL;
 }
 
 
@@ -376,9 +371,9 @@ WgMode WgButton::_getRenderMode()
 
 void WgButton::_onRefresh( void )
 {
-	if( m_pBgGfx )
+	if( m_pSkin )
 	{
-		if( m_pBgGfx->IsOpaque() )
+		if( m_pSkin->IsOpaque() )
 			m_bOpaque = true;
 		else
 			m_bOpaque = false;
@@ -398,7 +393,6 @@ void WgButton::SetDownWhenMouseOutside( bool bDown )
 
 void WgButton::_onCloneContent( const WgWidget * _pOrg )
 {
-
 	WgButton * pOrg = (WgButton *) _pOrg;
 
 	pOrg->Wg_Interface_TextHolder::_cloneInterface( this );
@@ -408,23 +402,28 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 	m_pText = &m_text;
 	m_text.setHolder( this );
 
-	m_pBgGfx		= pOrg->m_pBgGfx;
-	m_pIconGfx		= pOrg->m_pIconGfx;
-	m_mode			= pOrg->m_mode;
+	m_pSkin		= pOrg->m_pSkin;
+	m_pIconSkin		= pOrg->m_pIconSkin;
+	m_state			= pOrg->m_state;
 }
 
 //____ _onAlphaTest() ___________________________________________________________
 
 bool WgButton::_onAlphaTest( const WgCoord& ofs )
 {
-	if( !m_pBgGfx )
-		return false;
-
 	WgSize	sz = Size();
+	bool	bMarked = false;
 
-	//TODO: Take icon into account.
 
-	return	WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode,sz), WgRect(0,0,sz), m_markOpacity );
+	if( m_pSkin )
+		bMarked = m_pSkin->MarkTest( ofs, WgRect(0,0,sz), m_state, m_markOpacity );
+
+	if( !bMarked && m_pIconSkin )
+	{
+		//TODO: Test against icon.
+	}
+
+	return bMarked;
 }
 
 //____ _onGotInputFocus() ______________________________________________________

@@ -37,6 +37,7 @@ static const char	c_widgetType[] = {"AnimPlayer"};
 WgAnimPlayer::WgAnimPlayer()
 {
 	m_pAnim			= 0;
+	m_pAnimFrame	= 0;
 	m_playPos		= 0.0;
 
 	m_bPlaying		= false;
@@ -76,18 +77,13 @@ bool WgAnimPlayer::SetAnimation( WgGfxAnim * pAnim )
 	return true;
 }
 
-//____ SetSource() ________________________________________________________
+//____ SetSkin() ________________________________________________________
 
-bool WgAnimPlayer::SetSource( const WgBlocksetPtr& pBlocks )
+void WgAnimPlayer::SetSkin( const WgSkinPtr& pSkin )
 {
-	m_pStaticBlock = pBlocks;
-
-	if( !m_pAnim || !m_bEnabled )
-	{
-		_requestResize();
-		_requestRender();
-	}
-	return true;
+	m_pSkin = pSkin;
+	_requestResize();
+	_requestRender();
 }
 
 //____ PlayPos() ______________________________________________________________
@@ -218,12 +214,15 @@ bool WgAnimPlayer::Stop()
 
 WgSize WgAnimPlayer::PreferredSize() const
 {
+	WgSize	sz;
+
 	if( m_pAnim )
-		return m_pAnim->Size();
-	else if( m_pStaticBlock )
-		return m_pStaticBlock->Size();
-	else
-		return WgSize(0,0);
+		sz = m_pAnim->Size();
+
+	if( m_pSkin )
+		sz = m_pSkin->SizeForContent(sz);
+
+	return sz;
 }
 
 //_____ _playPosUpdated() ______________________________________________________
@@ -233,11 +232,11 @@ void WgAnimPlayer::_playPosUpdated()
 	if( !m_pAnim )
 		return;
 
-	WgBlock block = m_pAnim->GetBlock( (int64_t) m_playPos );
+	WgGfxFrame * pAnimFrame = m_pAnim->GetFrame( (int64_t) m_playPos );
 
-	if( block != m_animFrame )
+	if( pAnimFrame != m_pAnimFrame )
 	{
-		m_animFrame = block;
+		m_pAnimFrame = pAnimFrame;
 		_requestRender();
 
 		_queueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));
@@ -274,16 +273,17 @@ void WgAnimPlayer::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 void WgAnimPlayer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	if( m_pAnim && m_bEnabled )
-		pDevice->ClipBlitBlock( _clip, m_animFrame, _canvas );
-	else if( m_pStaticBlock )
+	if( m_pSkin )
 	{
-		WgMode mode = WG_MODE_NORMAL;
+		WgState state = WG_STATE_NORMAL;
 		if( !m_bEnabled )
-			mode = WG_MODE_DISABLED;
+			state = WG_STATE_DISABLED;
 
-		pDevice->ClipBlitBlock( _clip, m_pStaticBlock->GetBlock(mode,_canvas.Size()), _canvas );
+		m_pSkin->Render( pDevice, _canvas, state, _clip );
 	}
+
+	if( m_pAnim && m_bEnabled )
+		pDevice->ClipStretchBlit( _clip, m_pAnimFrame->pSurf, m_pAnimFrame->rect, _canvas );
 }
 
 //____ _onRefresh() _______________________________________________________
@@ -300,8 +300,8 @@ void WgAnimPlayer::_onCloneContent( const WgWidget * _pOrg )
 	WgAnimPlayer * pOrg = (WgAnimPlayer *) _pOrg;
 
 	m_pAnim				= pOrg->m_pAnim;
-	m_animFrame			= pOrg->m_animFrame;
-	m_pStaticBlock		= pOrg->m_pStaticBlock;
+	m_pAnimFrame		= pOrg->m_pAnimFrame;
+	m_pSkin				= pOrg->m_pSkin;
 
 	m_bPlaying			= pOrg->m_bPlaying;
 	m_playPos			= pOrg->m_playPos;
@@ -314,16 +314,12 @@ bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs )
 {
 	WgSize sz = Size();
 
-	if( m_pAnim && m_bEnabled )
-		return WgUtil::MarkTestBlock( ofs, m_animFrame, WgRect(0,0,sz), m_markOpacity );
-	else if( m_pStaticBlock )
-	{
-		WgMode mode = WG_MODE_NORMAL;
-		if( !m_bEnabled )
-			mode = WG_MODE_DISABLED;
+	if( m_pSkin && m_pSkin->MarkTest( ofs, WgRect(0,0,sz), m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED, m_markOpacity ) )
+		return true;
 
-		return WgUtil::MarkTestBlock( ofs, m_pStaticBlock->GetBlock(mode,sz), WgRect(0,0,sz), m_markOpacity );
-	}
+	if( m_pAnim && m_bEnabled )
+		return WgUtil::MarkTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, WgRect(0,0,sz), m_markOpacity );
+
 	return false;
 }
 

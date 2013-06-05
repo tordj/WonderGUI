@@ -32,16 +32,12 @@
 #	include <wg_menuitem.h>
 #endif
 
-#ifndef	WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
+#ifndef	WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 #ifndef WG_TEXTPROP_DOT_H
 #	include <wg_textprop.h>
-#endif
-
-#ifndef WG_TILEHOLDER_DOT_H
-#	include	<wg_tileholder.h>
 #endif
 
 #ifndef WG_SCROLLBAR_DOT_H
@@ -62,7 +58,7 @@ class	WgGfxAnim;
 class	WgText;
 
 
-class WgMenu:public WgPanel, public WgTileHolder, private WgScrollbarTarget
+class WgMenu:public WgPanel, private WgScrollbarTarget
 {
 	friend class WgMenuItem;
 	friend class WgMenuSubMenu;
@@ -77,22 +73,23 @@ public:
 
 	//____ Methods ___________________________________________
 
-	bool			SetBgSource( const WgBlocksetPtr pBgGfx, Uint8 iconFieldWidth, Uint8 arrowFieldWidth );
-	WgBlocksetPtr	GetBgSource() const				{ return m_pBgGfx; }
-	Uint8			GetIconFieldWidth() const		{ return m_iconFieldWidth; }
-	Uint8			GetArrowFieldWidth() const		{ return m_arrowFieldWidth; }
+	bool			SetSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowFieldWidth );
+	WgSkinPtr		Skin() const					{ return m_pSkin; }
+	int				IconFieldWidth() const			{ return m_iconFieldWidth; }
+	int				ArrowFieldWidth() const			{ return m_arrowFieldWidth; }
 
-	bool			SetSeparatorSource( const WgBlocksetPtr pGfx, const WgBorders& sepBorders = WgBorders() );
-	WgBlocksetPtr	GetSeparatorSource() const { return m_pSepGfx; }
-	WgBorders		GetSeparatorBorders() const { return m_sepBorders; }
+	void			SetEntrySkin( const WgSkinPtr& pSkin );
+	WgSkinPtr		EntrySkin() const { return m_pEntrySkin; }
 
-	bool			SetCheckBoxSource( const WgBlocksetPtr pUnchecked, const WgBlocksetPtr pChecked );
-	WgBlocksetPtr	GetCheckedSource() const { return m_pCbGfxChecked; }
-	WgBlocksetPtr	GetUncheckedSource() const { return m_pCbGfxUnchecked; }
+	bool			SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorders& sepBorders = WgBorders() );
+	WgSkinPtr		SeparatorSkin() const { return m_pSeparatorSkin; }
+	WgBorders		SeparatorBorders() const { return m_sepBorders; }
 
-	bool			SetRadioButtonSource( const WgBlocksetPtr pUnchecked, const WgBlocksetPtr pChecked );
-	WgBlocksetPtr 	GetRadioCheckedSource() const { return m_pRbGfxSelected; }
-	WgBlocksetPtr 	GetRadioUncheckedSource() const { return m_pRbGfxUnselected; }
+	bool			SetCheckBoxSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr		CheckBoxSkin() const { return m_pCheckBoxSkin; }
+
+	bool			SetRadioButtonSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr 		RadioButtonSkin() const { return m_pRadioButtonSkin; }
 
 	bool			SetArrowSource( WgGfxAnim * pAnim );
 
@@ -100,13 +97,13 @@ public:
 	WgTextpropPtr	GetTextEntryProperties() const { return m_pEntryProp; }
 	WgTextpropPtr	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
 
-	bool			SetScrollbarSource(  WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx );
+	bool			SetScrollbarSkins(  const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& pHandleSkin, const WgSkinPtr& pBwdButtonSkin, const WgSkinPtr& pFwdButtonSkin );
 	bool			SetScrollbarButtonLayout(  WgScrollbar::ButtonLayout layout );
 	WgScrollbar::ButtonLayout GetScrollbarButtonLayout() const { return m_scrollbarBtnLayout; }
-	WgBlocksetPtr 	GetScrollbarBgSource() const { return m_pScrollbarBgGfx; }
-	WgBlocksetPtr 	GetScrollbarBarSource() const { return m_pScrollbarBarGfx; }
-	WgBlocksetPtr 	GetScrollbarBwdSource() const { return m_pScrollbarBtnBwdGfx; }
-	WgBlocksetPtr 	GetScrollbarFwdSource() const { return m_pScrollbarBtnFwdGfx; }
+	WgSkinPtr 		GetScrollbarBackgroundSkin() const { return m_pScrollbarBgSkin; }
+	WgSkinPtr 		GetScrollbarHandleSkin() const { return m_pScrollbarHandleSkin; }
+	WgSkinPtr 		GetScrollbarBwdButtonSkin() const { return m_pScrollbarBtnBwdSkin; }
+	WgSkinPtr 		GetScrollbarFwdButtonSkin() const { return m_pScrollbarBtnFwdSkin; }
 
 	int			GetEntryHeight() const;
 
@@ -223,7 +220,6 @@ private:
 
 	void		_itemModified();
 	void		_adjustSize();
-	void		_tilesModified();
 	WgRect		_scrollbarGeo( const WgRect& menuGeo ) const;
 
 	// Overriden for WgScrollbarTarget
@@ -260,7 +256,7 @@ private:
 
 	//____ Members ___________________________________________
 
-	ScrollbarHook				m_scrollbarHook;
+	ScrollbarHook			m_scrollbarHook;
 	WgSize					m_defaultSize;
 
 	// Members defining items.
@@ -285,16 +281,17 @@ private:
 
 	// Members defining background
 
-	WgBlocksetPtr			m_pBgGfx;
+	WgSkinPtr				m_pSkin;
+	WgSkinPtr				m_pEntrySkin;
 
 	// Members defining content layout
 
-	Uint8					m_iconFieldWidth;
-	Uint8					m_arrowFieldWidth;
+	int						m_iconFieldWidth;
+	int						m_arrowFieldWidth;
 
 	// Members defining separators
 
-	WgBlocksetPtr			m_pSepGfx;
+	WgSkinPtr				m_pSeparatorSkin;
 	WgBorders				m_sepBorders;
 
 	// Members defining the arrow for submenus
@@ -312,24 +309,22 @@ private:
 
 	// Members defining checkbox entries
 
-	WgBlocksetPtr			m_pCbGfxChecked;
-	WgBlocksetPtr			m_pCbGfxUnchecked;
+	WgSkinPtr				m_pCheckBoxSkin;
 
 	// Members defining radiobutton entries.
 
-	WgBlocksetPtr			m_pRbGfxSelected;
-	WgBlocksetPtr			m_pRbGfxUnselected;
+	WgSkinPtr				m_pRadioButtonSkin;
 
 	// Members defining dragbar.
 
-	WgBlocksetPtr				m_pScrollbarBgGfx;
-	WgBlocksetPtr				m_pScrollbarBarGfx;
-	WgBlocksetPtr				m_pScrollbarBtnFwdGfx;
-	WgBlocksetPtr				m_pScrollbarBtnBwdGfx;
+	WgSkinPtr					m_pScrollbarBgSkin;
+	WgSkinPtr					m_pScrollbarHandleSkin;
+	WgSkinPtr					m_pScrollbarBtnFwdSkin;
+	WgSkinPtr					m_pScrollbarBtnBwdSkin;
 	WgScrollbar::ButtonLayout	m_scrollbarBtnLayout;
 };
 
 
-#endif //	WDG_MENU_DOT_H
+#endif //	WG_MENU_DOT_H
 
 

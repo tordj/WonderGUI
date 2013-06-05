@@ -31,6 +31,7 @@ WgCursor::WgCursor()
 		m_pAnim[i]	= 0;
 		m_advance[i] = 0;
 		m_sizeRatio[i]	= 1.f;
+		m_scaleWidth[i] = false;
 	}
 	m_blitMode = NORMAL;
 }
@@ -43,6 +44,7 @@ WgCursor::WgCursor(	WgCursor& in )
 		m_bearing[i]	= in.m_bearing[i];
 		m_advance[i]	= in.m_advance[i];
 		m_sizeRatio[i]	= in.m_sizeRatio[i];
+		m_scaleWidth[i] = in.m_scaleWidth[i];
 	}
 
 	m_blitMode = in.m_blitMode;
@@ -101,6 +103,16 @@ void WgCursor::SetAdvance( Mode m, int advance )
 		return;
 
 	m_advance[m] = advance;
+}
+
+//____ SetScaleWidth() ___________________________________________________________
+
+void WgCursor::SetScaleWidth( Mode m, bool bScaleWidth )
+{
+	if( m < 0 || m >= (Mode) N_MODES )
+		return;
+
+	m_scaleWidth[m] = bScaleWidth;
 }
 
 

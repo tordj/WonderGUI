@@ -36,6 +36,10 @@
 #	include <wg_textlink.h>
 #endif
 
+#ifndef WG_UTIL_DOT_H
+#	include	<wg_util.h>
+#endif
+
 
 
 class WgChar;
@@ -96,22 +100,34 @@ public:
 
 	WgTextpropPtr	Register() const;
 
-	void			SetColor( WgColor col, WgMode mode = WG_MODE_ALL );
-	void			SetBgColor( WgColor col, WgMode mode = WG_MODE_ALL );
-	void			SetStyle( WgFontStyle style, WgMode mode = WG_MODE_ALL );
-	void			SetSize( int size, WgMode mode = WG_MODE_ALL );
-	void			SetUnderlined( WgMode mode = WG_MODE_ALL );
+	void			SetColor( WgColor col );
+	void			SetBgColor( WgColor col );
+	void			SetStyle( WgFontStyle style );
+	void			SetSize( int size );
+	void			SetUnderlined();
+
+	void			SetColor( WgColor col, WgState state );
+	void			SetBgColor( WgColor col, WgState state );
+	void			SetStyle( WgFontStyle style, WgState state );
+	void			SetSize( int size, WgState state );
+	void			SetUnderlined( WgState state );
 
 	inline void		SetBreakLevel( int level ) { m_breakLevel = (char) level; }
 	inline void		SetLink( const WgTextLinkPtr& pLink ) { m_pLink = pLink; }
 	inline void		SetFont( WgFont * pFont ) { m_pFont = pFont; }
 	bool			SetCharVisibility( Uint16 specialCharacter, bool bVisible );
 
-	void			ClearColor( WgMode mode = WG_MODE_ALL );
-	void			ClearBgColor( WgMode mode = WG_MODE_ALL );
-	void			ClearStyle( WgMode mode = WG_MODE_ALL );
-	void			ClearSize( WgMode mode = WG_MODE_ALL );
-	void			ClearUnderlined( WgMode mode = WG_MODE_ALL );
+	void			ClearColor();
+	void			ClearBgColor();
+	void			ClearStyle();
+	void			ClearSize();
+	void			ClearUnderlined();
+
+	void			ClearColor( WgState state );
+	void			ClearBgColor( WgState state );
+	void			ClearStyle( WgState state );
+	void			ClearSize( WgState state );
+	void			ClearUnderlined( WgState state );
 
 	inline void		ClearBreakLevel() { m_breakLevel = -1; }
 	inline void		ClearLink() { m_pLink = 0; }
@@ -120,13 +136,13 @@ public:
 	void			ClearAll();
 
 
-	inline bool				IsUnderlined( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bUnderlined; }
-	inline bool				IsColored( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bColored; }
-	inline const WgColor&	Color( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_color; }
-	inline bool				IsBgColored( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bBgColor; }
-	inline const WgColor&	BgColor( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_bgColor; }
-	inline WgFontStyle		Style( WgMode mode = WG_MODE_NORMAL ) const { return (WgFontStyle) m_modeProp[mode].m_style; }
-	inline int				Size( WgMode mode = WG_MODE_NORMAL ) const { return m_modeProp[mode].m_size; }
+	inline bool				IsUnderlined( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bUnderlined; }
+	inline bool				IsColored( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bColored; }
+	inline const WgColor&	Color( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_color; }
+	inline bool				IsBgColored( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bBgColor; }
+	inline const WgColor&	BgColor( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bgColor; }
+	inline WgFontStyle		Style( WgState state = WG_STATE_NORMAL ) const { return (WgFontStyle) m_stateProp[WgUtil::_stateToIndex(state)].m_style; }
+	inline int				Size( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_size; }
 	bool					CharVisibility( Uint16 specialCharacter ) const;
 	inline int				CharVisibilityFlags() const { return m_visibilityFlags; }
 
@@ -136,7 +152,7 @@ public:
 
 	void					AssertIntegrity() const;
 
-	bool					IsEqual(WgMode mode0, WgMode mode1) const;
+	bool					IsEqual(WgState state0, WgState state1) const;
 	bool					IsColorStatic() const;
 	bool					IsBgColorStatic() const;
 	bool					IsStyleStatic() const;
@@ -156,11 +172,11 @@ private:
 	Uint8			_calculateChecksum() const;
 
 
-	// Struct holding WgMode-specific parameters.
+	// Struct holding WgState-specific parameters.
 
-	struct WgModeProp
+	struct WgStateProp
 	{
-		Uint16			m_style:5;		///< WgFontStyle for this mode, WG_STYLE_NORMAL is same as none and overriden if set higher in hierarchy.
+		Uint16			m_style:5;		///< WgFontStyle for this state, WG_STYLE_NORMAL is same as none and overriden if set higher in hierarchy.
 		Uint16			m_size:11;		///< Size in pixels of font. 0 = none specified, use sized specified higher up in hierarchy.
 		bool			m_bUnderlined;	///< Hierarchally cumulative, anyone in hierarchy set gives underlined.
 		bool			m_bColored;		///< Set if color of this struct should be used.
@@ -190,7 +206,7 @@ private:
 	WgTextLinkPtr		m_pLink;			///< Hierarchally overrides.
 	WgFont *			m_pFont;			///< Hierarchally overrides.
 
-	WgModeProp		m_modeProp[WG_NB_MODES];
+	WgStateProp		m_stateProp[WG_NB_STATES];
 };
 
 // CR, NON-BREAK SPACE, BREAK PERMITTED, HYPHEN BREAK PERMITTED, TAB.

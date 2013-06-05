@@ -84,15 +84,15 @@ public:
 
 
 	void	SetSelectMode( WgSelectMode mode );
-	inline WgSelectMode SelectMode() const { return m_selectMode; }
+	inline	WgSelectMode SelectMode() const { return m_selectMode; }
 
 	WgWidgetCollectionPtr GetSelected() const;
 
-	void	SetRowBlocks( const WgBlocksetPtr& pRowBlocks );
-	void	SetRowBlocks( const WgBlocksetPtr& pOddRowBlocks, const WgBlocksetPtr& pEvenRowBlocks );
+	void	SetRowSkin( const WgSkinPtr& pRowSkin );
+	void	SetRowSkins( const WgSkinPtr& pOddRowSkin, const WgSkinPtr& pEvenRowSkin );
 
-	WgBlocksetPtr OddRowBlocks() const { return m_pRowBlocks[0]; };
-	WgBlocksetPtr EvenRowBlocks() const { return m_pRowBlocks[1]; };
+	WgSkinPtr OddRowSkin() const { return m_pRowSkins[0]; };
+	WgSkinPtr EvenRowSkin() const { return m_pRowSkins[1]; };
 
 	// Overloaded from WgWidget
 
@@ -140,7 +140,7 @@ protected:
 	WgSize	m_preferredSize;
 	int		m_nPreferredWidth;				// Number of Widgets who have exactly m_preferredSize.w as their prefered width.
 
-	WgBlocksetPtr	m_pRowBlocks[2];
+	WgSkinPtr		m_pRowSkins[2];
 	WgSelectMode	m_selectMode;
 
 };

@@ -31,7 +31,6 @@
 #include	<wg_base.h>
 #include	<wg_event.h>
 #include	<wg_eventhandler.h>
-#include	<wg_blockset.h>
 #include	<wg_surface.h>
 #include	<wg_gfxdevice.h>
 #include	<wg_texttool.h>
@@ -47,8 +46,8 @@ WgMenubar::WgMenubar( void )
 	m_selectedItem	= 0;		// 0 = no item is selected.
 	m_markedItem	= 0;		// 0 = no item is marked:
 
-	m_pBgGfx		= 0;
-	m_pEntryGfx		= 0;
+	m_pSkin			= 0;
+	m_pEntrySkin	= 0;
 }
 
 //____ ~WgMenubar() __________________________________________________________
@@ -72,21 +71,25 @@ const char * WgMenubar::GetClass( void )
 	return c_widgetType;
 }
 
-//____ SetBgSource() __________________________________________________________
+//____ SetSkin() __________________________________________________________
 
-bool WgMenubar::SetBgSource( const WgBlocksetPtr& pBlocks )
+bool WgMenubar::SetSkin( const WgSkinPtr& pSkin )
 {
-	m_pBgGfx	= pBlocks;
+	//TODO: Resize if contentBorders have changed or no content and PreferredSize has changed.
+
+	m_pSkin	= pSkin;
 
 	_requestRender();
 	return true;
 }
 
-//____ SetEntrySource() _______________________________________________________
+//____ SetEntrySkin() _______________________________________________________
 
-bool WgMenubar::SetEntrySource( const WgBlocksetPtr& pBlocks, const WgTextpropPtr& pTextProperties )
+bool WgMenubar::SetEntrySkin( const WgSkinPtr& pSkin, const WgTextpropPtr& pTextProperties )
 {
-	m_pEntryGfx			= pBlocks;
+	//TODO: Possibly resize if needed.
+
+	m_pEntrySkin			= pSkin;
 	m_pTextProp			= pTextProperties;
 
 	_requestRender();
@@ -114,14 +117,14 @@ bool WgMenubar::AddMenu( const char * pTitle, WgMenu * pMenu, Uint16 navKey )
 	// Calculate linewidth
 
 	WgTextAttr	attr;
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), WG_MODE_NORMAL);
-	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_MODE_NORMAL);
-	Uint32 lineWidthNormal = WgTextTool::lineWidth( 0, attr, WG_MODE_NORMAL, pItem->m_pText );
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), WG_STATE_NORMAL);
+	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_STATE_NORMAL);
+	Uint32 lineWidthNormal = WgTextTool::lineWidth( 0, attr, WG_STATE_NORMAL, pItem->m_pText );
 
 	attr.Clear();
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), WG_MODE_MARKED);
-	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_MODE_MARKED);
-	Uint32 lineWidthMarked = WgTextTool::lineWidth( 0, attr, WG_MODE_NORMAL, pItem->m_pText );
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), WG_STATE_HOVERED);
+	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_STATE_HOVERED);
+	Uint32 lineWidthMarked = WgTextTool::lineWidth( 0, attr, WG_STATE_HOVERED, pItem->m_pText );
 
 	if( lineWidthNormal > lineWidthMarked )
 		pItem->m_width = lineWidthNormal;
@@ -163,8 +166,8 @@ bool WgMenubar::RemoveMenu( WgMenu * pMenu )
 	return false;
 }
 
-//____ GetMenuTitle() ________________________________________________________
-WgChar *WgMenubar::GetMenuTitle(WgMenu * pMenu) const
+//____ MenuTitle() ________________________________________________________
+WgChar *WgMenubar::MenuTitle(WgMenu * pMenu) const
 {
 	for( WgMenuBarItem * pI = m_items.First(); pI; pI = pI->Next() )
 	{
@@ -216,28 +219,21 @@ WgSize WgMenubar::PreferredSize() const
 
 void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
+	WgState backState = m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED;
+
 	// Render background
 
-	WgBlock bgBlock;
-
-	if( m_pBgGfx )
-	{
-		if( m_bEnabled )
-			bgBlock = m_pBgGfx->GetBlock(WG_MODE_NORMAL,_canvas.Size());
-		else
-			bgBlock = m_pBgGfx->GetBlock(WG_MODE_DISABLED,_canvas.Size());
-
-		pDevice->ClipBlitBlock( _clip, bgBlock, _canvas );
-	}
+	if( m_pSkin )
+		m_pSkin->Render( pDevice, _canvas, backState, _clip );
 
 	// Take backgrounds content borders into account
 
 	WgRect	window;
 	WgRect	clip;
 
-	if( m_pBgGfx )
+	if( m_pSkin )
 	{
-		window = bgBlock.ContentRect( _canvas );
+		window = m_pSkin->ContentRect( _canvas, backState );
 		clip.Intersection( window, _clip );
 	}
 	else
@@ -255,8 +251,8 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 
 
 	WgTextAttr	attr;
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), WG_MODE_NORMAL);
-	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_MODE_NORMAL);
+	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), WG_STATE_NORMAL);
+	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_STATE_NORMAL);
 
 	pen.SetAttributes( attr );
 	pen.SetClipRect( clip );
@@ -269,38 +265,38 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 	{
 		if( pI->IsVisible() )
 		{
-			WgMode	mode = WG_MODE_DISABLED;
+			WgState	state = WG_STATE_DISABLED;
 			if( m_bEnabled && pI->m_bEnabled )
 			{
-				mode = WG_MODE_NORMAL;
+				state = WG_STATE_NORMAL;
 
 				if( itemNb == m_selectedItem )
-					mode = WG_MODE_SELECTED;
+					state = WG_STATE_PRESSED;
 				else if( itemNb == m_markedItem )
-					mode = WG_MODE_MARKED;
+					state = WG_STATE_HOVERED;
 			}
 
 			WgBorders b = GetEntryBorders();
 
-			WgColorsetPtr pTextColors;
+//			WgColorsetPtr pTextColors;
 			
-			if( m_pBgGfx )
-				pTextColors = m_pBgGfx->TextColors();
+//			if( m_pSkin )
+//				pTextColors = m_pSkin->TextColors();
 
-			if( m_pEntryGfx )
+			if( m_pEntrySkin )
 			{
 				WgRect	dest( posX, window.y, pI->m_width + b.Width(), window.h );
-				pDevice->ClipBlitBlock( clip, m_pEntryGfx->GetBlock(mode,dest), dest );
+				m_pEntrySkin->Render( pDevice, dest, state, clip );
 
-				pTextColors = m_pEntryGfx->TextColors();
+//				pTextColors = m_pEntrySkin->TextColors();
 			}
 
 			pen.SetPos( WgCoord(posX + b.left, printPosY) );
 
 			WgTextAttr	attr;
-			WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), mode );
-			WgTextTool::SetAttrColor( attr, pTextColors, mode );
-			WgTextTool::AddPropAttributes( attr, m_pTextProp, mode );
+			WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), state );
+//			WgTextTool::SetAttrColor( attr, pTextColors, mode );
+			WgTextTool::AddPropAttributes( attr, m_pTextProp, state );
 			pen.SetAttributes( attr );
 
 			pDevice->PrintLine( pen, attr, pI->m_pText );
@@ -440,8 +436,8 @@ void WgMenubar::_onCloneContent( const WgWidget * _pOrg )
 {
 	const WgMenubar * pOrg = (const WgMenubar *) _pOrg;
 
-	m_pBgGfx		= pOrg->m_pBgGfx;
-	m_pEntryGfx		= pOrg->m_pEntryGfx;
+	m_pSkin			= pOrg->m_pSkin;
+	m_pEntrySkin	= pOrg->m_pEntrySkin;
 	m_pTextProp		= pOrg->m_pTextProp;
 
 	//TODO: Clone entries!
@@ -451,8 +447,14 @@ void WgMenubar::_onCloneContent( const WgWidget * _pOrg )
 
 WgBorders WgMenubar::GetEntryBorders() const
 {
-	if( m_pEntryGfx )
-		return m_pEntryGfx->Padding();
+	//TODO: This doesn't take ContentShift for different states into account.
+
+	if( m_pEntrySkin )
+	{
+		WgRect r = m_pEntrySkin->ContentRect( WgRect(0,0,1000,1000), WG_STATE_NORMAL );
+
+		return WgBorders(r.x,r.y,1000-r.w,1000-r.h);
+	}
 	else
 		return WgBorders(10,0,10,0);		// 10 pixels on each side as default margin. Should do something more intelligent here, like taking fonts avgSpacing into account...
 }
@@ -469,14 +471,8 @@ bool WgMenubar::OpenMenu( Uint32 nb )
 
 	WgCoord pos = Abs2local( WgCoord(0, 0) );
 
-	Sint32	x = pos.x;
-	Sint32	y = pos.y;
-
-	if( m_pBgGfx )
-	{
-		pos.x += m_pBgGfx->Padding().left;
-		pos.y += m_pBgGfx->Padding().top;
-	}
+	if( m_pSkin )
+		pos = m_pSkin->ContentRect( pos, WG_STATE_NORMAL ).Pos();
 
 	int bordersWidth = GetEntryBorders().Width();
 
@@ -532,14 +528,9 @@ bool WgMenubar::CloseMenu( Uint32 nb )
 Uint32 WgMenubar::GetItemAtAbsPos( int x, int y )
 {
 	WgCoord pos = Abs2local( WgCoord(x, y) );
-	x = pos.x;
-	y = pos.y;
 
-	if( m_pBgGfx )
-	{
-		pos.x -= m_pBgGfx->Padding().left;
-		pos.y -= m_pBgGfx->Padding().top;
-	}
+	if( m_pSkin )
+		pos = m_pSkin->ContentRect( pos, WG_STATE_NORMAL ).Pos();
 
 	if( y > 0 && x > 0 && y < (int) Size().h )
 	{

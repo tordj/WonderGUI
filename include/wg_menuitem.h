@@ -29,8 +29,8 @@
 #	include <wg_userdefines.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 #ifndef WG_STRING_DOT_H
@@ -103,13 +103,13 @@ class WgMenuEntry : public WgMenuItem
 	friend class WgMenu;
 public:
 	WgMenuEntry();
-	WgMenuEntry( int id, const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey,
+	WgMenuEntry( int id, const WgString& text, const WgString& helpText, const WgSkinPtr& pIcon, Uint16 navKey,
 		WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuEntry();
 
 	void 	SetText(const WgString& text);
 	void 	SetHelpText(const WgString& helpText);
-	void 	SetIcon(const WgBlocksetPtr& pIcon);
+	void 	SetIcon(const WgSkinPtr& pIcon);
 	void 	SetNavKey(Uint16 navKey);
 	void 	SetAccelModifier(WgModifierKeys accelModif);
 	void 	SetAccelKey(Uint16 accelKey);
@@ -122,7 +122,7 @@ public:
 	inline WgString GetHelpText() { return m_helpText; }
 	inline WgString GetAccelText() { return m_accelText; }
 
-	inline const WgBlocksetPtr GetIcon() { return m_pIcon; }
+	inline const WgSkinPtr GetIcon() { return m_pIcon; }
 	inline Uint16			GetNavKey()		{ return m_navKey; }
 	inline WgModifierKeys	GetAccelModif()	{ return m_accelModif; }
 	inline Uint16			GetAccelKey()	{ return m_accelKey; }
@@ -134,7 +134,7 @@ private:
 	WgString		m_accelText;
 	WgString		m_helpText;
 
-	WgBlocksetPtr	m_pIcon;
+	WgSkinPtr		m_pIcon;
 	bool			m_bEnabled;
 
 	Uint16			m_navKey;
@@ -184,7 +184,7 @@ class WgMenuSubMenu : public WgMenuEntry
 {
 public:
 	WgMenuSubMenu();
-	WgMenuSubMenu(	int id, const WgString& text, const WgString& helpText, const WgBlocksetPtr& pIcon, Uint16 navKey, WgMenu * pSubMenu,
+	WgMenuSubMenu(	int id, const WgString& text, const WgString& helpText, const WgSkinPtr& pIcon, Uint16 navKey, WgMenu * pSubMenu,
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuSubMenu() {};
 

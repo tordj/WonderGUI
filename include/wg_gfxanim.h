@@ -35,10 +35,6 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
-
 class WgSurface;
 class WgGfxFrame;
 
@@ -49,16 +45,10 @@ class	WgGfxAnim : public WgAnim
 {
 public:
 	WgGfxAnim();
-	WgGfxAnim( WgSize size, WgBorders gfxBorders = WgBorders(), Uint32 blockFlags = 0 );
+	WgGfxAnim( WgSize size );
 
 	void		SetSize( WgSize size );
 	WgSize		Size() const { return m_size; }
-
-	void		SetGfxBorders( WgBorders borders );
-	WgBorders	GfxBorders() const { return m_borders; }
-
-	void		SetBlockFlags( Uint32 flags );
-	Uint32		BlockFlags() const { return m_blockFlags; }
 
 	bool		InsertFrame( int pos, WgSurface * pSurf, WgCoord ofs, int duration );
 	bool		InsertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, WgCoord ofs, int duration );
@@ -71,13 +61,9 @@ public:
 	WgGfxFrame * GetFirstFrame(void) {return (WgGfxFrame *) WgAnim::_firstKeyFrame(); };
 	WgGfxFrame * GetLastFrame(void) {return (WgGfxFrame *) WgAnim::_lastKeyFrame(); };
 
-	WgBlock		 GetBlock( int64_t tick, WgGfxFrame * pProximity = 0 ) const;
-
 protected:
 
 	WgSize		m_size;
-	WgBorders	m_borders;
-	Uint32		m_blockFlags;
 };
 
 //____ Class WgGfxFrame _______________________________________________________
@@ -91,7 +77,7 @@ public:
 	WgGfxFrame * GetPrev(void) {return (WgGfxFrame *) WgKeyFrame::Prev();};
 
 	WgSurface *	pSurf;
-	WgCoord		ofs;
+	WgRect		rect;
 };
 
 #endif //WG_GFXANIM_DOT_H

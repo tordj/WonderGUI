@@ -31,8 +31,8 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 class WgIconHolder
@@ -55,12 +55,12 @@ protected:
 
 	virtual void	_iconModified() = 0;
 
-	WgRect			_getIconRect( const WgRect& contentRect, const WgBlocksetPtr& pBlockset ) const;
+	WgRect			_getIconRect( const WgRect& contentRect, const WgSkinPtr& pSkin ) const;
 	WgRect			_getIconRect( const WgRect& contentRect, const WgSize& iconSize ) const;
 	WgRect			_getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
 	void			_onCloneContent( const WgIconHolder * _pOrg );
 
-	WgOrigo	m_iconOrigo;
+	WgOrigo			m_iconOrigo;
 	float			m_iconScale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 	bool			m_bIconPushText;
 	WgBorders		m_iconBorders;

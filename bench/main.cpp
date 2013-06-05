@@ -219,7 +219,7 @@ void printWidgetSizes()
 	printf( "WgScrollbar: %d bytes\n", (int) sizeof(WgScrollbar) );
 	printf( "WgPackPanel: %d bytes\n", (int) sizeof(WgPackPanel) );
 	printf( "WgStackPanel: %d bytes\n", (int) sizeof(WgStackPanel) );
-	printf( "WgTablePanel: %d bytes\n", (int) sizeof(WgTablePanel) );
+//	printf( "WgTablePanel: %d bytes\n", (int) sizeof(WgTablePanel) );
 	printf( "WgSizeCapsule: %d bytes\n", (int) sizeof(WgSizeCapsule) );
 	printf( "WgTextDisplay: %d bytes\n", (int) sizeof(WgTextDisplay) );
 	printf( "WgValueDisplay: %d bytes\n", (int) sizeof(WgValueDisplay) );
@@ -231,7 +231,7 @@ void printWidgetSizes()
 	printf( "WgModalHook: %d bytes\n", (int) sizeof(WgModalHook) );
 	printf( "WgPackHook: %d bytes\n", (int) sizeof(WgPackHook) );
 	printf( "WgStackHook: %d bytes\n", (int) sizeof(WgStackHook) );
-	printf( "WgTableHook: %d bytes\n", (int) sizeof(WgTableHook) );
+//	printf( "WgTableHook: %d bytes\n", (int) sizeof(WgTableHook) );
 	printf( "WgListHook: %d bytes\n", (int) sizeof(WgListHook) );
 	printf( "WgScrollHook: %d bytes\n", (int) sizeof(WgScrollHook) );
 }
@@ -257,19 +257,15 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	pEventHandler->AddCallback( pEventLogger );
 
 
-	// Load images and specify blocks
+	// Load images
 
 	WgSurface * pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", WgSurfaceFactorySoft() );
-	WgBlocksetPtr pBackBlock = WgBlockset::CreateFromSurface(pBackImg, WG_TILE_ALL );
 
 	WgSurface * pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", WgSurfaceFactorySoft() );
-	WgBlocksetPtr pFlagBlock = WgBlockset::CreateFromSurface( pFlagImg );
 
 	WgSurface * pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", WgSurfaceFactorySoft() );
-	WgBlocksetPtr pSplashBlock = WgBlockset::CreateFromSurface( pSplashImg );
 
 	WgSurface * pBigImg = sdl_wglib::LoadSurface("../resources/frog.jpg", WgSurfaceFactorySoft() );
-	WgBlocksetPtr pBigBlock = WgBlockset::CreateFromSurface( pBigImg );
 
 	// MenuPanel
 
@@ -477,7 +473,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 */
 
 	// Test view
-
+/*
 	{
 		WgScrollPanel * pView = (WgScrollPanel*) pDB->CloneWidget( "view" );
 
@@ -492,7 +488,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 		addResizablePanel( pFlex, pView, pEventHandler );
 	}
-
+*/
 
 	// Test overlapping non-visible
 /*
@@ -512,7 +508,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	// Modal panel
 /*
-	g_pModal = new WgWidgetModalLayer();
+	g_pModal = new WgModalLayer();
 	g_pModal->SetBase( pFlex );
 
 	pRoot->SetChild(g_pModal);
@@ -528,15 +524,15 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	WgButton * pButton = (WgButton*) pDB->CloneWidget( "button" );
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pButton, 1), cbOpenModal, pModalButton );
 
-	pHook = pFlex->AddChild( pButton, WgRect(0,0,100,100), WG_NORTHWEST );
-
+	WgFlexHook * pHook = pFlex->AddChild( pButton, WgRect(0,0,100,100), WG_NORTHWEST );
+*/
 	//
-
+/*
 	WgImage * pFlag1= new WgImage();
 	pFlag1->SetSource( pSplashBlock );
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pFlag1, 1), cbInitDrag, pFlag1 );
 
-	pHook = pFlex->AddChild( pFlag1, WgCoord(0,0), WG_CENTER );
+	WgFlexHook * pHook = pFlex->AddChild( pFlag1, WgCoord(0,0), WG_CENTER );
 
 
 
@@ -547,62 +543,54 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	pHook = pFlex->AddChild( pFlag2, WgCoord(100,100), WG_CENTER );
 
 	//
-
+*/
 
 	WgListPanel * pVBox = new WgListPanel();
 //	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
 
 
-	WgImage * pFlag3 = new WgImage();
-	pFlag3->SetSource( pFlagBlock );
-	WgImage * pFlag4= new WgImage();
-	pFlag4->SetSource( pFlagBlock );
+//	WgImage * pFlag3 = new WgImage();
+//	pFlag3->SetSource( pFlagBlock );
+//	WgImage * pFlag4= new WgImage();
+//	pFlag4->SetSource( pFlagBlock );
 
 	WgButton * pButton2 = (WgButton*) pDB->CloneWidget( "button" );
 	pButton2->SetText( "BUTTON TEXT" );
-
 	pVBox->AddChild(pButton2);
 
-	pVBox->AddChild(pFlag3);
+//	pVBox->AddChild(pFlag3);
 //	pVBox->AddChild(pFlag4);
 
-	pHook = pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
-	pHook->SetMaxSize( WgSize(120, INT_MAX) );
 
-	//
+//	WgSizeCapsule * pSizeCapsule = new WgSizeCapsule();
+//	pSizeCapsule->SetMaxSize( WgSize(150,600) );
+//	pSizeCapsule->SetChild( pVBox );
+	WgFlexHook * p = pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
+	p->SetSizePolicy( WG_BOUND, WG_DEFAULT );
+	p->SetSize( WgSize(150,10 ) );
 
-	WgWidgetTabOrder * pTabOrder = new WgWidgetTabOrder();
-	pVBox->AddChild(pTabOrder);
-
-	WgListPanel * pTabBox = new WgListPanel();
-	pTabOrder->SetChild(pTabBox);
-//	pVBox->AddChild(pTabBox);
-
-	WgTextDisplay * pText1 = new WgTextDisplay();
-	pText1->SetText("TEXTA1");
-	pText1->SetEditMode(WG_TEXT_EDITABLE);
-	pTabBox->AddChild(pText1);
+//	WgTextDisplay * pText1 = new WgTextDisplay();
+//	pText1->SetText("TEXTA1");
+//	pText1->SetEditMode(WG_TEXT_EDITABLE);
+//	pVBox->AddChild(pText1);
 
 	WgTextDisplay * pText2 = new WgTextDisplay();
-	pText2->SetText("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj");
+	pText2->SetText("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj Hej");
 	pText2->SetEditMode(WG_TEXT_EDITABLE);
-	pTabBox->AddChild(pText2);
+	pVBox->AddChild(pText2);
 
-	pText1->GrabFocus();
-
-//	pTabOrder->AddToTabOrder(pText1);
-//	pTabOrder->AddToTabOrder(pText2);
+//	pText1->GrabFocus();
 
 	// Radiobuttons test
 
-	pVBox->AddChild( pDB->CloneWidget( "radiobutton" ) );
-	pVBox->AddChild( pDB->CloneWidget( "radiobutton" ) );
+//	pVBox->AddChild( pDB->CloneWidget( "radiobutton" ) );
+//	pVBox->AddChild( pDB->CloneWidget( "radiobutton" ) );
 
-	pFlex->AddChild( pDB->CloneWidget( "radiobutton" ) );
-	pFlex->AddChild( pDB->CloneWidget( "radiobutton" ) );
+//	pFlex->AddChild( pDB->CloneWidget( "radiobutton" ) );
+//	pFlex->AddChild( pDB->CloneWidget( "radiobutton" ) );
 
 	pVBox->SetRadioGroup(true);
-*/
+
 	return pRoot;
 }
 

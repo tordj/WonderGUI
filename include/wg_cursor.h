@@ -66,6 +66,8 @@ public:
 
 	bool				SetMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing = WgCoord(), int advance = 0, float size_ratio = 1.f  );
 
+	void				SetScaleWidth( Mode m, bool bScaleWidth );
+
 	void				SetBearing( Mode m, WgCoord bearing );
 	void				SetAdvance( Mode m, int advance );
 	void				SetAnim( Mode m, WgGfxAnim * pAnim );
@@ -82,7 +84,7 @@ public:
 	int					Width( Mode m ) const { return m_pAnim[m]->Size().w; }
 	WgGfxAnim * 		Anim( Mode m ) const { return m_pAnim[m]; };
 	float				SizeRatio(Mode m ) const { return m_sizeRatio[m]; }
-
+	bool				ScaleWidth(Mode m ) const { return m_scaleWidth[m]; }
 	
 
 private:
@@ -91,6 +93,7 @@ private:
 	WgGfxAnim *			m_pAnim[N_MODES];
 	WgCoord				m_bearing[N_MODES];
 	int					m_advance[N_MODES];
+	bool				m_scaleWidth[N_MODES];
 
 	float				m_sizeRatio[N_MODES];			// ratio <= 1.f. Cursors height relative fonts lineheight.
 

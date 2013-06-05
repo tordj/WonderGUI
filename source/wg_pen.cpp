@@ -26,7 +26,6 @@
 #include <wg_font.h>
 #include <wg_cursorinstance.h>
 #include <wg_gfxanim.h>
-#include <wg_blockset.h>
 #include <wg_textmanager.h>
 #include <wg_base.h>
 
@@ -283,20 +282,20 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 	if( pAnim == 0 )
 		return false;
 
-	WgBlock	block =	pAnim->GetBlock( instance.time(), 0 );
+	WgGfxFrame * pAnimFrame =	pAnim->GetFrame( instance.time(), 0 );
 
-	WgSize	size = block.Size();
+	WgSize	size = pAnim->Size();
 	WgCoord  bearing = pCursor->Bearing( mode );
 
 	float	scaleValue = (pCursor->SizeRatio(mode)*GetLineHeight())/ size.h;
 
-	if( block.IsScaled() )
+	if( pCursor->ScaleWidth(mode) )
 	{
 		size		*= scaleValue;
 		bearing		*= scaleValue;
 		size.w += 1;				// So that scaled size won't be limited by width truncation.
 	}
-	else if( !block.IsFixedSize() )
+	else
 	{
 		size.h		= (int) (size.h * scaleValue);
 		bearing.y	= (int) (bearing.y * scaleValue);
@@ -323,9 +322,9 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 	//
 
 	if( m_bClip )
-		m_pDevice->ClipBlitBlock( m_clipRect, block, WgRect(m_pos + bearing, size) );
+		m_pDevice->ClipStretchBlit( m_clipRect, pAnimFrame->pSurf, pAnimFrame->rect, WgRect(m_pos + bearing, size) );
 	else
-		m_pDevice->BlitBlock( block, WgRect(m_pos + bearing, size) );
+		m_pDevice->StretchBlit( pAnimFrame->pSurf, pAnimFrame->rect, WgRect(m_pos + bearing, size) );
 
 	// Restore tintcolor/blendmode.
 
@@ -362,7 +361,7 @@ void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 
 	int advance = pCursor->Advance(mode);
 
-	if( pAnim->BlockFlags() & WG_SCALE_CENTER )
+	if( pCursor->ScaleWidth(mode) )
 	{
 		float	scaleValue = (pCursor->SizeRatio(mode) * GetLineSpacing())/pAnim->Size().h;
 		advance = (int) (advance * scaleValue);

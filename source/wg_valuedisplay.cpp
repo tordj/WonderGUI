@@ -142,7 +142,7 @@ void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 
 void WgValueDisplay::_onEnable( void )
 {
-	m_text.setMode(WG_MODE_NORMAL);
+	m_text.setState(WG_STATE_NORMAL);
 	_requestRender();
 }
 
@@ -150,6 +150,6 @@ void WgValueDisplay::_onEnable( void )
 
 void WgValueDisplay::_onDisable( void )
 {
-	m_text.setMode(WG_MODE_DISABLED);
+	m_text.setState(WG_STATE_DISABLED);
 	_requestRender();
 }

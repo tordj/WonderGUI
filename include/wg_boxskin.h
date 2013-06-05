@@ -49,18 +49,19 @@ public:
 	void	SetStateColor( WgStateEnum state, WgColor color );
 	void	SetStateColor( WgStateEnum state, WgColor color, WgColor frameColor );
 
-	void Render( WgGfxDevice * pDevice, WgState mode, const WgRect& _canvas, const WgRect& _clip ) const;
+	void Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const;
 	
 	WgSize	MinSize() const;
 	WgSize	PreferredSize() const;
 
 	WgSize	SizeForContent( const WgSize contentSize ) const;
-	bool	MarkTest( const WgCoord& ofs, const WgSize& canvasSize, WgState state ) const;
+	bool	MarkTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const;
 
 	bool	IsOpaque() const;
 	bool	IsOpaque( WgState state ) const;
 	bool	IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const;
 
+	bool	IsStateIdentical( WgState state, WgState comparedTo ) const;
 
 private:
 	WgBoxSkin();

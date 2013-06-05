@@ -467,7 +467,11 @@ WgPanelHook * WgScrollPanel::SetContent( WgWidget * pContent )
 
 	_updateElementGeo( Size() );
 	_requestRender( m_elements[WINDOW].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
-	return &m_elements[WINDOW];
+
+	if( pContent )
+		return &m_elements[WINDOW];
+	else
+		return 0;
 }
 
 //____ SetHScrollbar() ________________________________________________________
@@ -489,7 +493,11 @@ WgPanelHook * WgScrollPanel::SetHScrollbar( WgHScrollbar* pScrollbar )
 	_updateElementGeo( Size() );
 	pScrollbar->SetHandle( ViewOfsX(), ViewLenX() );
 	_requestRender( m_elements[XDRAG].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
-	return &m_elements[YDRAG];
+
+	if( pScrollbar )
+		return &m_elements[YDRAG];
+	else
+		return 0;
 }
 
 //____ SetVScrollbar() ________________________________________________________
@@ -513,7 +521,11 @@ WgPanelHook * WgScrollPanel::SetVScrollbar( WgVScrollbar* pScrollbar )
 	_updateElementGeo( Size() );
 	pScrollbar->SetHandle( ViewOfsY(), ViewLenY() );
 	_requestRender( m_elements[YDRAG].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
-	return &m_elements[YDRAG];
+
+	if( pScrollbar )
+		return &m_elements[YDRAG];
+	else
+		return 0;
 }
 
 //____ ReleaseContent() _______________________________________________________
@@ -547,14 +559,19 @@ WgVScrollbar* WgScrollPanel::ReleaseVScrollbar()
 
 bool WgScrollPanel::DeleteChild( WgWidget * pWidget )
 {
-	if( pWidget == m_elements[XDRAG].Widget() )
-		return SetHScrollbar(0);
-	else if( pWidget == m_elements[YDRAG].Widget() )
-		return SetVScrollbar(0);
-	else if( pWidget == m_elements[WINDOW].Widget() )
-		return SetContent(0);
+	if( pWidget == 0 )
+		return false;
 
-	return false;
+	if( pWidget == m_elements[XDRAG].Widget() )
+		SetHScrollbar(0);
+	else if( pWidget == m_elements[YDRAG].Widget() )
+		SetVScrollbar(0);
+	else if( pWidget == m_elements[WINDOW].Widget() )
+		SetContent(0);
+	else
+		return false;
+
+	return true;
 }
 
 //____ ReleaseChild() _________________________________________________________
@@ -625,12 +642,12 @@ void WgScrollPanel::SetHandlePositions( bool bBottom, bool bRight )
 	_updateElementGeo( Size() );
 }
 
-//____ SetFillerSkin() ______________________________________________________
+//____ SetCornerSkin() ______________________________________________________
 
-void WgScrollPanel::SetFillerSkin( const WgSkinPtr& pSkin )
+void WgScrollPanel::SetCornerSkin( const WgSkinPtr& pSkin )
 {
-	m_pFillerSkin = pSkin;
-	_requestRender( m_fillerGeo );
+	m_pCornerSkin = pSkin;
+	_requestRender( m_cornerGeo );
 }
 
 //____ FindWidget() ____________________________________________________________
@@ -677,7 +694,7 @@ WgWidget * WgScrollPanel::FindWidget( const WgCoord& pos, WgSearchMode mode )
 
 		if( m_pSkin )
 		{
-			if( m_pSkin->MarkTest( pos - p->m_windowGeo.Pos() + m_viewPixOfs, m_contentSize, m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED ) )
+			if( m_pSkin->MarkTest( pos - p->m_windowGeo.Pos() + m_viewPixOfs, m_contentSize, m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED, m_markOpacity ) )
 				return this;
 		}
 	}
@@ -784,7 +801,7 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 
 	WgSize newContentSize = _calcContentSize( mySize );
 
-	WgRect	newDragX, newDragY, newWindow, newFiller;
+	WgRect	newDragX, newDragY, newWindow, newCorner;
 	bool	bShowDragX = false, bShowDragY = false;
 
 	// First get "default geometry" for them all, ignoring overlaps.
@@ -847,7 +864,7 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 			newWindow.y += newDragX.h;
 	}
 
-	// If both dragbars are visible we need to avoid overlap and include a filler for the empty square.
+	// If both dragbars are visible we need to avoid overlap and include a corner to fill the empty square.
 
 	if( bShowDragX && bShowDragY )
 	{
@@ -858,17 +875,17 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 		newDragY.h = newWindow.h;
 	}
 
-	// Display filler if both dragbars are visible and they are outside the view
+	// Display corner if both dragbars are visible and they are outside the view
 
 	if( bShowDragX && bShowDragY && !m_bOverlayScrollbars )
 	{
-		m_fillerGeo.x = newDragY.x;
-		m_fillerGeo.y = newDragX.y;
-		m_fillerGeo.w = newDragY.w;
-		m_fillerGeo.h = newDragX.h;
+		m_cornerGeo.x = newDragY.x;
+		m_cornerGeo.y = newDragX.y;
+		m_cornerGeo.w = newDragY.w;
+		m_cornerGeo.h = newDragX.h;
 	}
 	else
-		m_fillerGeo.Clear();
+		m_cornerGeo.Clear();
 
 	// Remove padding from dragbars now all geometry calculations have been done
 
@@ -1127,7 +1144,7 @@ void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
 		{
 			WgRect clip(*pRect,skinWindow);
-			m_pSkin->Render( pDevice, state, skinCanvas, clip );
+			m_pSkin->Render( pDevice, skinCanvas, state, clip );
 		}
 	}
 
@@ -1154,15 +1171,15 @@ void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 			m_elements[YDRAG].Widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 	}
 
-	if( m_pFillerSkin && m_fillerGeo.w != 0 && m_fillerGeo.h != 0 )
+	if( m_pCornerSkin && m_cornerGeo.w != 0 && m_cornerGeo.h != 0 )
 	{
-		WgRect canvas = m_fillerGeo + _canvas.Pos();
+		WgRect canvas = m_cornerGeo + _canvas.Pos();
 
 		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
 		{
 			WgRect clip( canvas, *pRect );
 			if( clip.w > 0 || clip.h > 0 )
-				m_pFillerSkin->Render( pDevice, state, canvas, clip );
+				m_pCornerSkin->Render( pDevice, canvas, state, clip );
 		}
 
 	}
@@ -1205,8 +1222,8 @@ void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const
 
 			// Maska against corner piece
 
-			if( !m_fillerGeo.IsEmpty() && m_pFillerSkin && m_pFillerSkin->IsOpaque() )
-				patches.Sub( WgRect(m_fillerGeo + geo.Pos(), clip) );
+			if( !m_cornerGeo.IsEmpty() && m_pCornerSkin && m_pCornerSkin->IsOpaque() )
+				patches.Sub( WgRect(m_cornerGeo + geo.Pos(), clip) );
 
 			break;
 		}
@@ -1222,11 +1239,11 @@ void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const
 
 bool WgScrollPanel::_onAlphaTest( const WgCoord& ofs )
 {
-	if( m_pFillerSkin && m_fillerGeo.Contains( ofs ) )
+	if( m_pCornerSkin && m_cornerGeo.Contains( ofs ) )
 	{
 		WgState state = m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED;
 
-		return m_pFillerSkin->MarkTest( ofs, m_fillerGeo, state );
+		return m_pCornerSkin->MarkTest( ofs, m_cornerGeo, state, m_markOpacity );
 	}
 
 	return false;
@@ -1265,8 +1282,8 @@ void WgScrollPanel::_onCloneContent( const WgWidget * _pOrg )
 	m_heightPolicy = pOrg->m_heightPolicy;
 	m_contentOrigo = pOrg->m_contentOrigo;
 
-	m_pFillerSkin = pOrg->m_pFillerSkin;
-	m_fillerGeo = pOrg->m_fillerGeo;
+	m_pCornerSkin = pOrg->m_pCornerSkin;
+	m_cornerGeo = pOrg->m_cornerGeo;
 
 	//
 

@@ -33,7 +33,7 @@ WgFiller::WgFiller()
 {
 	m_defaultSize = WgSize(1,1);
 	m_bOpaque = false;
-	m_mode = WG_MODE_NORMAL;
+	m_state = WG_STATE_NORMAL;
 }
 
 //____ Destructor _____________________________________________________________
@@ -67,20 +67,12 @@ void WgFiller::SetPreferredSize( const WgSize& size )
 	}
 }
 
-//____ SetColors() _____________________________________________________________
+//____ SetSkin() _____________________________________________________________
 
-void WgFiller::SetColors( const WgColorsetPtr& pColors )
+void WgFiller::SetSkin( const WgSkinPtr& pSkin )
 {
-	WgColor oldC = m_pColors?m_pColors->Color(m_mode):WgColor(0,0,0,0);
-	WgColor newC = pColors?pColors->Color(m_mode):WgColor(0,0,0,0);
-
-	m_pColors = pColors;
-
-	if( oldC != newC )
-	{
-		m_bOpaque = (newC.a == 255);
-		_requestRender();
-	}
+	m_pSkin = pSkin;
+	_requestRender();
 }
 
 //____ PreferredSize() __________________________________________________________
@@ -98,67 +90,49 @@ void WgFiller::_onCloneContent( const WgWidget * _pOrg )
 	WgFiller * pOrg = (WgFiller*) _pOrg;
 
 	m_defaultSize = pOrg->m_defaultSize;
-	m_pColors = pOrg->m_pColors;
+	m_pSkin = pOrg->m_pSkin;
 }
 
 //____ _onRender() _____________________________________________________________
 
 void WgFiller::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	if( m_pColors )
-		pDevice->Fill( _clip, m_pColors->Color(m_mode) );
+	if( m_pSkin )
+		m_pSkin->Render( pDevice, _canvas, m_state, _clip );
 }
 
 //____ _onAlphaTest() ___________________________________________________________
 
 bool WgFiller::_onAlphaTest( const WgCoord& ofs )
 {
-	if( m_pColors && m_pColors->Color(m_mode).a != 0 )
-		return true;
-
-	return false;
+	 return ( m_pSkin && m_pSkin->MarkTest( ofs, WgRect(0,0,Size()), m_state, m_markOpacity ) );
 }
 
-//____ _isColorChanged() ______________________________________________________
-
-bool WgFiller::_isColorChanged( WgMode newMode ) const
-{
-	if( newMode != m_mode && m_pColors && m_pColors->Color(m_mode) != m_pColors->Color(newMode) )
-		return true;
-
-	return false;
-}
 
 //____ _onEnable() _____________________________________________________________
 
 void WgFiller::_onEnable()
 {
-	if( _isColorChanged(WG_MODE_NORMAL) )
-		_requestRender();
+	m_state = WG_STATE_NORMAL;
 
-	if( m_pColors && m_pColors->Color(WG_MODE_NORMAL).a == 255 )
-		m_bOpaque = true;
-	else
-		m_bOpaque = false;
-
-	m_mode = WG_MODE_NORMAL;
+	if( m_pSkin )
+	{
+		m_bOpaque =  m_pSkin->IsOpaque(WG_STATE_NORMAL);
+		if( !m_pSkin->IsStateIdentical(WG_STATE_NORMAL,WG_STATE_DISABLED) )
+			_requestRender();
+	}
 }
 
 //____ _onDisable() ____________________________________________________________
 
 void WgFiller::_onDisable()
 {
-	if( _isColorChanged(WG_MODE_DISABLED) )
-		_requestRender();
+	m_state = WG_STATE_DISABLED;
 
-	if( m_pColors && m_pColors->Color(WG_MODE_DISABLED).a == 255 )
-		m_bOpaque = true;
-	else
-		m_bOpaque = false;
-
-	m_mode = WG_MODE_DISABLED;
+	if( m_pSkin )
+	{
+		m_bOpaque =  m_pSkin->IsOpaque(WG_STATE_DISABLED);
+		if( !m_pSkin->IsStateIdentical(WG_STATE_NORMAL,WG_STATE_DISABLED) )
+			_requestRender();
+	}
 }
-
-
-
-

@@ -35,8 +35,8 @@
 #	include <wg_text.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 #ifndef WG_ICONHOLDER_DOT_H
@@ -67,27 +67,16 @@ public:
 	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
 
-	bool			SetSource( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked );
+	bool			SetSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr		Skin() const { return m_pSkin; }
 
-	WgBlocksetPtr	GetCheckedSource() const { return m_pBlockChecked; }
-	WgBlocksetPtr	GetUncheckedSource() const { return m_pBlockUnchecked; }
-
-	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked, 
-							  const WgOrigo& origo, WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
-	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked );
-	void			SetCheckedIcon( const WgBlocksetPtr& pChecked );
-	void			SetUncheckedIcon( const WgBlocksetPtr& pUnchecked );
-
-
-	WgBlocksetPtr	GetCheckedIcon() const { return m_pIconChecked; }
-	WgBlocksetPtr	GetUncheckedIcon() const { return m_pIconUnchecked; }
+	void			SetIcon( const WgSkinPtr& pIconSkin, const WgOrigo& origo, 
+							 WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
+	void			SetIcon( const WgSkinPtr& pIconSkin );
+	WgSkinPtr		Icon() const { return m_pIconSkin; }
 
 	inline bool		IsChecked() { return m_bChecked; };
-
-	inline bool		Check( void ) { return SetState( true ); };
-	inline bool		Uncheck( void ) { return SetState( false ); };
-	virtual bool	SetState( bool state );
-	inline bool		ChangeState( void ) { return SetState( !m_bChecked ); };
+	bool			SetChecked( bool bChecked );
 
 	void			SetFlipOnRelease( bool bFlipOnRelease );
 	inline bool		FlipOnRelease() { return m_bFlipOnRelease; }
@@ -116,27 +105,19 @@ protected:
 
 private:
 
-
 	void	_refreshTextArea();
 	bool	_markTestTextArea( int _x, int _y );
 	
-
-
 	bool			m_bOver;						// Set when mouse is over.							
 	bool			m_bPressed;						// Set when mouse is pressed and over.
 	bool			m_bFlipOnRelease;				// Set if we want to flip checkbox on press (default), not click.
 
-	WgBlocksetPtr	m_pIconUnchecked;
-	WgBlocksetPtr	m_pIconChecked;
-
-	WgBlocksetPtr	m_pBlockUnchecked;
-	WgBlocksetPtr	m_pBlockChecked;
+	WgSkinPtr		m_pSkin;
+	WgSkinPtr		m_pIconSkin;
 	WgText			m_text;
 
 	ClickArea		m_clickArea;
 };
-
-
 
 
 #endif //	WG_CHECKBOX_DOT_H

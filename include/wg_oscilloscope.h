@@ -31,10 +31,6 @@
 #	include <wg_skin.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
-
 //____ WgOscilloscope ____________________________________________________________
 
 class WgOscilloscope : public WgWidget
@@ -47,7 +43,7 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgOscilloscope(); };
 
-	void	SetBackground( const WgSkinPtr& skin );
+	void	SetSkin( const WgSkinPtr& skin );
 	void	SetGridColor( WgColor color );
 	void	SetVGridLines( int nLines, float pLines[] );
 	void	SetHGridLines( int nLines, float pLines[] );
@@ -59,7 +55,7 @@ public:
 
 	void	ClearMarkers();
 	void	AddMarker( int xOfs, float yOfs );
-	void	SetMarkerGfx( const WgBlocksetPtr& pBlockset );
+	void	SetMarkerSkin( const WgSkinPtr& pSkin );
 
 	WgSize	PreferredSize() const;
 
@@ -93,7 +89,7 @@ private:
 	int				m_nMarkers;
 	Marker *		m_pMarkers;
 	
-	WgBlocksetPtr	m_pMarkerGfx;
+	WgSkinPtr		m_pMarkerSkin;
 };
 
 

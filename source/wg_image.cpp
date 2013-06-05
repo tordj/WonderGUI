@@ -25,13 +25,14 @@
 #include <wg_image.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
+#include <wg_surface.h>
 
 
 static const char	c_widgetType[] = {"Image"};
 
 //____ Constructor ____________________________________________________________
 
-WgImage::WgImage()
+WgImage::WgImage() : m_pSurface(0)
 {
 }
 
@@ -55,34 +56,82 @@ const char * WgImage::GetClass()
 	return c_widgetType;
 }
 
-//____ SetSource() _____________________________________________________________
+//____ SetSkin() _____________________________________________________________
 
-void WgImage::SetSource( const WgBlocksetPtr& pBlockset )
+void WgImage::SetSkin( const WgSkinPtr& pSkin )
 {
-	if( m_pGfx != pBlockset )
+	if( m_pSkin != pSkin )
 	{
-		m_pGfx = pBlockset;
+		bool bResize = false;
 
-		if( m_pGfx && m_pGfx->IsOpaque() )
+		if( !pSkin || !m_pSkin || pSkin->ContentPadding() != m_pSkin->ContentPadding() || pSkin->PreferredSize() != m_pSkin->PreferredSize() )
+			bResize = true;
+
+		m_pSkin = pSkin;
+
+		if( m_pSkin && m_pSkin->IsOpaque() )
 			m_bOpaque = true;
 		else
 			m_bOpaque = false;
 
 		_requestRender();
+		if( bResize )
+			_requestResize();
 	}
 }
+
+//____ SetImage() _____________________________________________________________
+
+void WgImage::SetImage( WgSurface * pSurface, const WgRect& rect )
+{
+	if( pSurface != m_pSurface || rect != m_rect )
+	{
+		m_pSurface = pSurface;
+
+		if( pSurface )
+			m_rect = WgRect( rect, WgRect(pSurface->Size()) );
+		else
+			m_rect.Clear();
+
+		_requestRender();
+	}
+}
+
+void WgImage::SetImage( WgSurface * pSurface )
+{
+	if( pSurface != m_pSurface )
+	{
+		m_pSurface = pSurface;
+
+		if( pSurface )
+			m_rect = pSurface->Size();
+		else
+			m_rect.Clear();
+
+		_requestRender();
+	}
+}
+
+
 
 //____ PreferredSize() _____________________________________________________________
 
 WgSize WgImage::PreferredSize() const
 {
-	if( m_pGfx )
-		return m_pGfx->Size();
+	WgSize	sz;
+
+	if( m_pSkin )
+	{
+		if( m_pSurface )
+			return m_pSkin->SizeForContent( m_rect.Size() );
+		else
+			return m_pSkin->PreferredSize();
+	}
+	else if( m_pSurface )
+		return m_rect.Size();
 
 	return WgSize(1,1);
 }
-
-
 
 //____ _onCloneContent() _______________________________________________________
 
@@ -90,48 +139,58 @@ void WgImage::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgImage * pOrg = (WgImage*) _pOrg;
 
-	m_pGfx = pOrg->m_pGfx;
+	m_pSkin		= pOrg->m_pSkin;
+	m_pSurface	= pOrg->m_pSurface;
+	m_rect		= pOrg->m_rect;
 }
 
 //____ _onRender() _____________________________________________________________
 
 void WgImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	if( !m_pGfx )
-		return;
+	if( m_pSkin )
+		m_pSkin->Render( pDevice, _canvas, State(), _clip );
 
-	WgBlock	block;
-	if( m_bEnabled )
-		block = m_pGfx->GetBlock(WG_MODE_NORMAL, _canvas);
-	else
-		block = m_pGfx->GetBlock(WG_MODE_DISABLED, _canvas);
+	if( m_pSurface && !m_rect.IsEmpty() )
+	{
+		WgRect dest;
+		if( m_pSkin )
+			dest = m_pSkin->ContentRect( _canvas, State() );
+		else
+			dest = _canvas;
 
-	pDevice->ClipBlitBlock( _clip, block, _canvas);
+		pDevice->ClipStretchBlit( _clip, m_pSurface, m_rect, dest );
+	}
 }
 
 //____ _onAlphaTest() ___________________________________________________________
 
 bool WgImage::_onAlphaTest( const WgCoord& ofs )
 {
-	if( !m_pGfx )
-		return	false;												// No visible pixel, so don't accept the mark...
+	if( m_pSkin )
+		return m_pSkin->MarkTest( ofs, Size(), State(), m_markOpacity );
 
-	WgMode mode = WG_MODE_NORMAL;
-	if( !m_bEnabled )
-		mode = WG_MODE_DISABLED;
+	if( m_pSurface && !m_rect.IsEmpty() )
+	{
+		WgRect dest;
+		if( m_pSkin )
+			dest = m_pSkin->ContentRect( Size(), State() );
+		else
+			dest = Size();
 
-	WgSize sz = Size();
+		return WgUtil::MarkTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity );
+	}
 
-	return WgUtil::MarkTestBlock( ofs, m_pGfx->GetBlock(mode,sz), WgRect(0,0,sz.w,sz.h), m_markOpacity );
+	return false;
 }
 
 //____ _onEnable() _____________________________________________________________
 
 void WgImage::_onEnable()
 {
-	if( m_pGfx )
+	if( m_pSkin )
 	{
-		if( !m_pGfx->SameBlock(WG_MODE_NORMAL, WG_MODE_DISABLED) )
+		if( !m_pSkin->IsStateIdentical( WG_STATE_NORMAL, WG_STATE_DISABLED ) )
 			_requestRender();
 	}
 }
@@ -140,13 +199,9 @@ void WgImage::_onEnable()
 
 void WgImage::_onDisable()
 {
-	if( m_pGfx )
+	if( m_pSkin )
 	{
-		if( !m_pGfx->SameBlock(WG_MODE_NORMAL, WG_MODE_DISABLED) )
+		if( !m_pSkin->IsStateIdentical( WG_STATE_NORMAL, WG_STATE_DISABLED ) )
 			_requestRender();
 	}
 }
-
-
-
-

@@ -26,8 +26,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 #ifndef	WG_TEXT_DOT_H
@@ -59,14 +59,14 @@ public:
 	void			SetDownWhenMouseOutside( bool bDown );
 	bool			DownWhenMouseOutside() const { return m_bDownOutside; }
 
-	bool			SetIcon( const WgBlocksetPtr& pIconGfx, WgOrigo origo, WgBorders borders = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
-	void			SetIcon( const WgBlocksetPtr& pIconGfx );
-	WgBlocksetPtr	GetIconSource() const { return m_pIconGfx; }
+	bool			SetIcon( const WgSkinPtr& pIconGfx, WgOrigo origo, WgBorders padding = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
+	void			SetIcon( const WgSkinPtr& pIconGfx );
+	WgSkinPtr		IconSkin() const { return m_pIconSkin; }
 
-	bool			SetSource( const WgBlocksetPtr& pGfx );
-	WgBlocksetPtr	GetSource() const { return m_pBgGfx; }
+	bool			SetSkin( const WgSkinPtr& pGfx );
+	WgSkinPtr		Skin() const { return m_pSkin; }
 
-	Uint32			GetTextAreaWidth();
+	int				TextAreaWidth();
 
 	virtual int		HeightForWidth( int width ) const;
 //	virtual int		WidthForHeight( int height ) const;
@@ -93,15 +93,15 @@ protected:
 	void			_textModified();
 	void			_iconModified();
 
-	virtual WgMode	_getRenderMode();
+	virtual WgState	_getRenderState();
 
 
 	WgText			m_text;
 
-	WgBlocksetPtr	m_pIconGfx;
-	WgBlocksetPtr	m_pBgGfx;
+	WgSkinPtr		m_pIconSkin;
+	WgSkinPtr		m_pSkin;
 
-	WgMode			m_mode;
+	WgState			m_state;
 
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 

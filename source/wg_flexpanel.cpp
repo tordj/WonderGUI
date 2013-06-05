@@ -723,7 +723,7 @@ WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget )
 
 	m_hooks.PushBack(p);
 
-	p->SetFloating();
+	p->SetFloating( WgCoord(0,0) );
 	return p;
 }
 

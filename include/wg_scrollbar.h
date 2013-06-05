@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 
@@ -69,7 +69,7 @@ class	WgScrollbar : public WgWidget
 
 		enum BgPressMode
 		{
-			SKIP_PAGE,
+			JUMP_PAGE,
 			GOTO_POS
 		};
 
@@ -77,22 +77,27 @@ class	WgScrollbar : public WgWidget
 
 		float			GetHandlePos() const { return m_handlePos; }
 		float			GetHandleSize() const { return m_handleSize; }
-		WgBlocksetPtr 	GetBgSource() const { return m_pBgGfx; }
-		WgBlocksetPtr 	GetBarSource() const { return m_pBarGfx; }
-		WgBlocksetPtr 	GetBwdSource() const { return m_pBtnBwdGfx; }
-		WgBlocksetPtr 	GetFwdSource() const { return m_pBtnFwdGfx; }
+		WgSkinPtr 		GetBackgroundSkin() const { return m_pBgSkin; }
+		WgSkinPtr 		GetHandleSkin() const { return m_pHandleSkin; }
+		WgSkinPtr 		GetBwdButtonSkin() const { return m_pBtnBwdSkin; }
+		WgSkinPtr 		GetFwdButtonSkin() const { return m_pBtnFwdSkin; }
 		ButtonLayout	GetButtonLayout() const { return m_btnLayout; }
 
-		void	SetBgPressMode( BgPressMode mode );
-		BgPressMode GetBgPressMode() const { return m_bgPressMode; }
+		void		SetBackgroundPressMode( BgPressMode mode );
+		BgPressMode GetBackgroundPressMode() const { return m_bgPressMode; }
 
 		bool	SetHandle( float pos, float size );
 		bool	SetHandlePos( float pos );
 		bool	SetHandlePosPxlOfs( int x );
 		bool	SetHandleSize( float size );
 
-		bool	SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx );
-		bool	SetButtonLayout(  ButtonLayout layout );
+		void	SetBackgroundSkin( const WgSkinPtr& pSkin );
+		void	SetHandleSkin( const WgSkinPtr& pSkin );
+		void	SetBwdButtonSkin( const WgSkinPtr& pSkin );
+		void	SetFwdButtonSkin( const WgSkinPtr& pSkin );
+
+		void	SetSkins( const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& pHandleSkin, const WgSkinPtr& pBwdButtonSkin, const WgSkinPtr& pFwdButtonSkin );
+		void	SetButtonLayout(  ButtonLayout layout );
 
 		bool	SetScrollbarTarget( WgScrollbarTarget * pTarget );
 
@@ -116,32 +121,32 @@ class	WgScrollbar : public WgWidget
 			C_FOOTER_FWD	= 2,
 			C_FOOTER_BWD	= 3,
 			C_BG			= 4,
-			C_BAR			= 5,
+			C_HANDLE		= 5,
 
 			C_NUMBER_OF_COMPONENTS	= 6,
 			C_NONE			= -1,
 
 		};
 
-		WgBlocksetPtr	m_pBgGfx;
-		WgBlocksetPtr	m_pBarGfx;
-		WgBlocksetPtr	m_pBtnFwdGfx;
-		WgBlocksetPtr	m_pBtnBwdGfx;
+		WgSkinPtr		m_pBgSkin;
+		WgSkinPtr		m_pHandleSkin;
+		WgSkinPtr		m_pBtnFwdSkin;
+		WgSkinPtr		m_pBtnBwdSkin;
 
 		float			m_handlePos;
 		float			m_handleSize;
 
 		BgPressMode		m_bgPressMode;
 		bool			m_bHorizontal;
-		bool			m_bPressOnDragBar;
-		int				m_dragBarPressOfs;
+		bool			m_bPressOnHandle;
+		int				m_handlePressOfs;
 		WgCoord			m_lastCursorDownPos;
 
 		ButtonLayout	m_btnLayout;
 		Uint8			m_headerLen;
 		Uint8			m_footerLen;
 
-		WgMode			m_mode[C_NUMBER_OF_COMPONENTS];
+		WgState			m_state[C_NUMBER_OF_COMPONENTS];
 
 		WgSize			m_minSize;
 
@@ -158,11 +163,11 @@ class	WgScrollbar : public WgWidget
 
 
 		Component	_findMarkedComponent( WgCoord ofs );								// -1 = None.
-		void		_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block );
-		bool		_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block );
+		void		_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgSkinPtr& pSkin, WgState state );
+		bool		_markTestButton( WgCoord ofs, WgRect& _dest, const WgSkinPtr& pSkin, WgState state );
 		bool		_markTestHandle( WgCoord ofs );
 		void		_headerFooterChanged();
-		void		_unmarkReqRender();
+		void		_unhoverReqRender();
 };
 
 //____ Class: WgHScrollbar _______________________________________________________

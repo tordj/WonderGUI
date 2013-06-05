@@ -38,7 +38,7 @@ WgColorSkin::WgColorSkin( WgColor col )
 }
 
 	
-void WgColorSkin::Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip ) const
+void WgColorSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const
 {
 	pDevice->Fill( _clip, m_color );
 }
@@ -68,6 +68,11 @@ WgSize WgColorSkin::PreferredSize() const
 	return WgSize(0,0);
 }
 
+WgSize WgColorSkin::ContentPadding() const
+{
+	return WgSize(0,0);
+}
+
 WgSize  WgColorSkin::SizeForContent( const WgSize contentSize ) const
 {
 	return contentSize;
@@ -78,7 +83,12 @@ WgRect  WgColorSkin::ContentRect( const WgRect& canvas, WgState state ) const
 	return canvas;
 }
 
-bool WgColorSkin::MarkTest( const WgCoord& ofs, const WgSize& canvasSize, WgState state ) const
+bool WgColorSkin::MarkTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const
 {
-	return m_color.a > 0 ? true : false;
+	return ( canvas.Contains(ofs) && ((int)m_color.a) >= opacityTreshold );
+}
+
+bool WgColorSkin::IsStateIdentical( WgState state, WgState comparedTo ) const
+{
+	return true;
 }

@@ -31,10 +31,6 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef WG_COLORSET_DOT_H
-#	include <wg_colorset.h>
-#endif
-
 #ifndef WG_CHAR_DOT_H
 #	include <wg_char.h>
 #endif
@@ -55,8 +51,13 @@
 #	include <wg_event.h>
 #endif
 
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
+#endif
+
 class	WgValueFormat;
 class	WgFont;
+
 
 //____ WgTextHolder ___________________________________________________________
 
@@ -172,8 +173,8 @@ public:
 
 	inline const WgTextpropPtr&	getProperties() const { return m_pBaseProp; }
 	inline WgColor				getColor() const { return m_pBaseProp->Color(); }
-	inline WgColor				getColor(WgMode mode) const { return m_pBaseProp->Color(mode); }
-	inline WgFontStyle			getStyle(WgMode mode) const { return m_pBaseProp->Style(mode); }
+	inline WgColor				getColor(WgState state) const { return m_pBaseProp->Color(state); }
+	inline WgFontStyle			getStyle(WgState state) const { return m_pBaseProp->Style(state); }
 	inline int					getBreakLevel() const { return m_pBaseProp->BreakLevel(); }
 	inline WgFont *				getFont() const { return m_pBaseProp->Font(); }
 	inline WgTextLinkPtr		getLink() const { return m_pBaseProp->Link(); }
@@ -183,10 +184,10 @@ public:
 	void				setProperties( const WgTextpropPtr& pProp );
 
 	void				setColor( const WgColor color );
-	void				setColor( const WgColor color, WgMode mode );
+	void				setColor( const WgColor color, WgState state );
 
 	void				setStyle( WgFontStyle style );
-	void				setStyle( WgFontStyle style, WgMode mode );
+	void				setStyle( WgFontStyle style, WgState state );
 
 	void				setBreakLevel( int level );
 
@@ -198,10 +199,10 @@ public:
 	void				clearProperties();
 
 	void				clearColor();
-	void				clearColor( WgMode mode );
+	void				clearColor( WgState state );
 
 	void				clearStyle();
-	void				clearStyle( WgMode mode );
+	void				clearStyle( WgState state );
 
 	void				clearBreakLevel();
 
@@ -280,13 +281,13 @@ public:
 
 
 
-	inline void			setMode( WgMode mode ) { m_mode = mode; }
+	inline void			setState( WgState state ) { m_state = state; }
 	inline void			setAlignment( const WgOrigo alignment ) { m_alignment = alignment; }
 	inline void			setTintMode( WgTintMode mode ) { m_tintMode = mode; }
 	inline void			setLineSpaceAdjustment( float adjustment ) { m_lineSpaceAdj = adjustment; }
 
 
-	inline WgMode		mode() const { return m_mode; }
+	inline WgState		state() const { return m_state; }
 	inline const WgOrigo alignment() const { return m_alignment; }
 	inline WgTintMode	tintMode() const { return m_tintMode; }
 	inline float		lineSpaceAdjustment() const { return m_lineSpaceAdj; }
@@ -404,13 +405,10 @@ public:
 //	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
 
 	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }
-	WgMode			GetMarkedLinkMode() const { return m_markedLinkMode; }
+	WgState			GetMarkedLinkState() const { return m_markedLinkState; }
 
-	inline void		SetBaseColors( const WgColorsetPtr& pColors ) { m_pBaseColors = pColors; }
-	inline WgColorsetPtr BaseColors() const { return m_pBaseColors; }
-
-	inline void		SetBgBlockColors( const WgColorsetPtr& pColors ) { m_pBgBlockColors = pColors; }
-	inline WgColorsetPtr BgBlockColors() const { return m_pBgBlockColors; }
+	inline void		SetColorSkin( const WgSkinPtr& pSkin ) { m_pColorSkin = pSkin; }
+	inline WgSkinPtr ColorSkin() const { return m_pColorSkin; }
 
 protected:
 
@@ -442,10 +440,10 @@ protected:
 
 	WgTintMode		m_tintMode;
 	WgOrigo	m_alignment;
-	WgMode			m_mode;
+	WgState			m_state;
 
 	WgTextLinkPtr	m_pMarkedLink;
-	WgMode			m_markedLinkMode;
+	WgState			m_markedLinkState;
 
 //	int				m_markedLinkOfs;	// Offset in buffer for first character of link currently marked or -1 if none.
 
@@ -455,9 +453,8 @@ protected:
 	int				m_selEndCol;
 	float			m_lineSpaceAdj;		// Adjustment of linespacing for this text.
 
-	WgColorsetPtr	m_pBgBlockColors;	// Textcolors as defined by background blockset (lowest prio).
+	WgSkinPtr		m_pColorSkin;		// Skin from which we take low-prio text colors (lowest prio).
 
-	WgColorsetPtr	m_pBaseColors;		// Default colors for this text (prio between m_pBgBlockColors and m_pBaseProp).
 	WgTextpropPtr	m_pBaseProp;		// Default properties for this text. Used for all characters who have
 										// properties set to 0.
 	WgTextpropPtr	m_pLinkProp;		// Props used for links, overriding certain text and char properties.

@@ -225,14 +225,14 @@ bool WgWidget::SetNormal()
 		return false;
 }
 
-//____ Mode() _________________________________________________________________
+//____ State() _________________________________________________________________
 
-WgMode WgWidget::Mode() const
+WgState WgWidget::State() const
 {
 	if( m_bEnabled )
-		return WG_MODE_NORMAL;
+		return WG_STATE_NORMAL;
 	else
-		return WG_MODE_DISABLED;
+		return WG_STATE_DISABLED;
 }
 
 //____ _getBlendMode() _________________________________________________________

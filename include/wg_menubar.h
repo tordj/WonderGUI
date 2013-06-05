@@ -32,8 +32,8 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
 #endif
 
 #ifndef WG_TEXTPROP_DOT_H
@@ -113,20 +113,19 @@ public:
 
 	//____ Methods __________________________________________
 
-	bool			SetBgSource( const WgBlocksetPtr& pBlocks );
-	WgBlocksetPtr	GetBgSource() const { return m_pBgGfx; }
+	bool			SetSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr		Skin() const { return m_pSkin; }
 
-	bool			SetEntrySource( const WgBlocksetPtr& pBlocks, const WgTextpropPtr& pTextProperties );
-
-	WgBlocksetPtr	GetEntrySource() const { return m_pEntryGfx; }
-	WgTextpropPtr	GetTextProp() const { return m_pTextProp; }
+	bool			SetEntrySkin( const WgSkinPtr& pSkin, const WgTextpropPtr& pTextProperties );
+	WgSkinPtr		EntrySkin() const { return m_pEntrySkin; }
+	WgTextpropPtr	TextProp() const { return m_pTextProp; }
 
 	bool			AddMenu( const char * pTitle, WgMenu * pMenu, Uint16 navKey = 0 );
 	bool			RemoveMenu( WgMenu * pMenu );
 
-	WgMenuBarItem*	GetFirstMenuBarItem() { return m_items.First(); }
+	WgMenuBarItem*	FirstMenuBarItem() { return m_items.First(); }
 
-	WgChar *		GetMenuTitle(WgMenu * pMenu) const;
+	WgChar *		MenuTitle(WgMenu * pMenu) const;
 
 	bool			ShowMenu(WgMenu * pMenu);
 	bool			HideMenu(WgMenu * pMenu);
@@ -165,8 +164,8 @@ private:
 	Uint32					m_selectedItem;		// 0 = no item is selected.
 	Uint32					m_markedItem;		// 0 = no item is marked:
 
-	WgBlocksetPtr			m_pBgGfx;
-	WgBlocksetPtr			m_pEntryGfx;
+	WgSkinPtr				m_pSkin;
+	WgSkinPtr				m_pEntrySkin;
 	WgTextpropPtr			m_pTextProp;
 };
 
