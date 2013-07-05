@@ -194,20 +194,11 @@ void Wg_Interface_TextHolder::SetLineSpaceAdjustment( float adjustment )
 	_textModified();
 }
 
-//____ GetLineSpaceAdjustment() __________________________________________________
+//____ LineSpaceAdjustment() __________________________________________________
 
-float Wg_Interface_TextHolder::GetLineSpaceAdjustment() const
+float Wg_Interface_TextHolder::LineSpaceAdjustment() const
 {
 	return m_pText->lineSpaceAdjustment();
-}
-
-
-//____ _cloneInterface() _______________________________________________________
-
-//DEPRECATED! To be removed once all widgets and items are widgets.
-
-void Wg_Interface_TextHolder::_cloneInterface( Wg_Interface_TextHolder * _pClone )
-{
 }
 
 //____ _onCloneContent() _______________________________________________________

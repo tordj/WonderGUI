@@ -65,13 +65,13 @@ public:
 	void		GoBOF() { GoBOL(); }
 	void		GoEOF() { GoEOL(); }
 
-	Uint32		InsertTextAtCursor( const WgCharSeq& str );
+	int			InsertTextAtCursor( const WgCharSeq& str );
 	bool		InsertCharAtCursor( Uint16 c );
 
 	virtual void			SetEditMode(WgTextEditMode mode);
-	virtual WgTextEditMode	GetEditMode() const { return m_text.GetEditMode(); }
-	virtual bool			TempIsInputField() const	{ return _isEditable(); }
-	virtual Wg_Interface_TextHolder* TempGetText(){ return this; }
+	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
+	virtual bool			IsInputField() const	{ return _isEditable(); }
+	virtual Wg_Interface_TextHolder* TextInterface(){ return this; }
 
 	bool		SetTextWrap(bool bWrap);						// Overloading SetTextWrap since we don't support wrapping text.
 
@@ -85,13 +85,11 @@ protected:
 	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-	void	_onGotInputFocus();
-	void	_onLostInputFocus();
+	void	_onStateChanged( WgState oldState, WgState newState );
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void	_onEnable();
-	void	_onDisable();
 	void	_onNewSize( const WgSize& size );
+	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 	void	_textModified();
 

@@ -39,10 +39,15 @@
 #	include <wg_event.h>
 #endif
 
+#ifndef WG_SKIN_DOT_H
+#	include <wg_skin.h>
+#endif
+
 class WgGfxDevice;
 class Wg_Interface_TextHolder;
 class WgContainer;
 class WgPanel;
+class WgList;
 class WgCapsule;
 class WgLayer;
 class WgEventHandler;
@@ -86,25 +91,31 @@ public:
 	inline int			Id() const { return m_id; }
 	inline void			SetId( int id ) { m_id = id; }
 
-	virtual WgString	GetTooltipString() const { return m_tooltip; }
-	WgString			GetRealTooltipString() const { return m_tooltip; }
+	virtual WgString	TooltipString() const { return m_tooltip; }
+	WgString			RealTooltipString() const { return m_tooltip; }
 	inline void			SetTooltipString( const WgString& str ) { m_tooltip = str; }
 
 	inline void			Refresh() { _onRefresh(); }
 	void				SetEnabled(bool bEnabled);
-	inline bool			IsEnabled() const { return m_bEnabled; }
+	inline bool			IsEnabled() const { return m_state.IsEnabled(); }
+
+	inline WgState		State() const { return m_state; }
 
 	bool				CloneContent( const WgWidget * _pOrg );
 
-	void			SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
-	virtual WgPointerStyle	GetPointerStyle() const;
+	void				SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
+	virtual WgPointerStyle	PointerStyle() const;
 
-	void			SetTabLock( bool bLock ) { m_bTabLock = bLock; }
-	bool			IsTabLocked() const { return m_bTabLock; }
+	void				SetTabLock( bool bLock ) { m_bTabLock = bLock; }
+	bool				IsTabLocked() const { return m_bTabLock; }
 
-	void			SetMarkOpacity( int opacity ) { m_markOpacity = opacity; }
-	int				GetMarkOpacity() const { return m_markOpacity; }
-	bool			MarkTest( const WgCoord& ofs );
+	void				SetMarkOpacity( int opacity ) { m_markOpacity = opacity; }
+	int					GetMarkOpacity() const { return m_markOpacity; }
+	bool				MarkTest( const WgCoord& ofs );
+
+	virtual void		SetSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr			Skin( ) const	{ return m_pSkin; }
+
 
 	WgHook*			Hook() const { return m_pHook; }
 
@@ -119,7 +130,7 @@ public:
 	WgRect			ScreenGeo() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
 	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
-	bool			IsFocused() { return m_bFocused; }
+	bool			IsFocused() { return m_state.IsFocused(); }
 	WgContainer *	Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 	WgWidgetHolder* Holder() const { if( m_pHook ) return m_pHook->_holder(); return 0; }
 
@@ -134,29 +145,25 @@ public:
 	virtual int		HeightForWidth( int width ) const;
 	virtual int		WidthForHeight( int height ) const;
 
-	virtual WgSize	PreferredSize() const = 0;
+	virtual WgSize	PreferredSize() const;
 	virtual WgSize	MinSize() const;
 	virtual WgSize	MaxSize() const;
 
 	virtual bool	IsContainer() const { return false; }
 	virtual bool	IsPanel() const { return false; }
+	virtual bool	IsList() const { return false; }
 	virtual bool	IsCapsule() const { return false; }
 	virtual bool	IsLayer() const { return false; }
 	virtual WgContainer * CastToContainer() { return 0; }
 	virtual const WgContainer * CastToContainer() const { return 0; }
 	virtual WgPanel * CastToPanel() { return 0; }
 	virtual const WgPanel * CastToPanel() const { return 0; }
+	virtual WgList * CastToList() { return 0; }
+	virtual const WgList * CastToList() const { return 0; }
 	virtual WgCapsule * CastToCapsule() { return 0; }
 	virtual const WgCapsule * CastToCapsule() const { return 0; }
 	virtual WgLayer * CastToLayer() { return 0; }
 	virtual const WgLayer * CastToLayer() const { return 0; }
-
-
-	virtual bool	SetMarked();					// Switch to WG_MODE_MARKED unless we are disabled or widget controls mode itself.
-	virtual bool	SetSelected();					// Switch to WG_MODE_SELECTED unless we are disabled or widget controls mode itself.
-	virtual bool	SetNormal();					// Switch to WG_MODE_NORMAL unless we are disabled or widget controls mode itself.
-	virtual WgState	State() const;
-
 
 protected:
 
@@ -184,25 +191,26 @@ protected:
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	virtual void	_onCloneContent( const WgWidget * _pOrg ) = 0;
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	virtual void	_onNewSize( const WgSize& size );
+
 	virtual void	_onRefresh();
+	virtual void	_onNewSize( const WgSize& size );
+	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	virtual void	_onStateChanged( WgState oldState, WgState newState );
 
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs );
-	virtual void	_onEnable();
-	virtual void	_onDisable();
-	virtual void	_onGotInputFocus();
-	virtual void	_onLostInputFocus();
+
 
 	// rename when widgets are done
-	virtual bool	TempIsInputField() const;
-	virtual Wg_Interface_TextHolder*	TempGetText();
+	virtual bool	IsInputField() const;
+	virtual Wg_Interface_TextHolder*	TextInterface();
 
 	//
 
-	Uint32			m_id;
+	int				m_id;
 	WgHook *		m_pHook;
 
+	WgSkinPtr		m_pSkin;
 	WgPointerStyle	m_pointerStyle;
 
 	WgString		m_tooltip;
@@ -212,8 +220,10 @@ protected:
 	bool			m_bTabLock;		// If set, the widget prevents focus shifting away from it with tab.
 	bool			m_bReceiveTick;	// Set if Widget should reveive periodic Tick() events.
 
-	bool			m_bEnabled;		// Set when object is not disabled
-	bool			m_bFocused;		// Set when object is enabled and has keyboard focus
+	WgState			m_state;
+private:
+	bool			m_bPressed;		// Keeps track of pressed button when mouse leaves/re-enters widget.
+
 };
 
 typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;

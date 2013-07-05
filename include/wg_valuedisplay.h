@@ -71,8 +71,8 @@ protected:
 	void	_onRefresh();
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void	_onEnable();
-	void	_onDisable();
+	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 	void	_regenText();
 

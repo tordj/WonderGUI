@@ -80,7 +80,12 @@ void WgValueDisplay::SetFormat( const WgValueFormat& format )
 
 WgSize WgValueDisplay::PreferredSize() const
 {
-	return WgSize(m_text.width(),m_text.height());
+	WgSize textSize(m_text.width(),m_text.height());
+
+	if( m_pSkin )
+		return m_pSkin->SizeForContent(textSize);
+	else
+		return textSize;
 }
 
 
@@ -121,6 +126,7 @@ void WgValueDisplay::_regenText()
 
 void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 	pDevice->PrintText( _clip, &m_text, _canvas );
 }
 
@@ -138,18 +144,19 @@ void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 	m_text.setProperties(pOrg->m_text.getProperties());
 }
 
-//____ _onEnable() _____________________________________________________________
+//____ _onStateChanged() ______________________________________________________
 
-void WgValueDisplay::_onEnable( void )
+void WgValueDisplay::_onStateChanged( WgState oldState, WgState newState )
 {
-	m_text.setState(WG_STATE_NORMAL);
-	_requestRender();
+	WgWidget::_onStateChanged(oldState,newState);
+	m_text.setState(newState);
+	_requestRender();				//TODO: Check for text-related difference before call.
 }
 
-//____ _onDisable() ____________________________________________________________
+//____ _onSkinChanged() _______________________________________________________
 
-void WgValueDisplay::_onDisable( void )
+void WgValueDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
-	m_text.setState(WG_STATE_DISABLED);
-	_requestRender();
+	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+	m_text.SetColorSkin(pNewSkin);
 }

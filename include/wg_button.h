@@ -26,10 +26,6 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
-
 #ifndef	WG_TEXT_DOT_H
 #	include <wg_text.h>
 #endif
@@ -63,9 +59,6 @@ public:
 	void			SetIcon( const WgSkinPtr& pIconGfx );
 	WgSkinPtr		IconSkin() const { return m_pIconSkin; }
 
-	bool			SetSkin( const WgSkinPtr& pGfx );
-	WgSkinPtr		Skin() const { return m_pSkin; }
-
 	int				TextAreaWidth();
 
 	virtual int		HeightForWidth( int width ) const;
@@ -83,31 +76,22 @@ protected:
 	void			_onRefresh();
 	virtual void	_onCloneContent( const WgWidget * _pOrg );
 	bool			_onAlphaTest( const WgCoord& ofs );
-	void			_onEnable();
-	void			_onDisable();
 	virtual void	_onNewSize( const WgSize& size );
-	void			_onGotInputFocus();
-	void			_onLostInputFocus();
+	void			_onStateChanged( WgState oldState, WgState newState );
+	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 
 	void			_textModified();
 	void			_iconModified();
 
-	virtual WgState	_getRenderState();
-
-
 	WgText			m_text;
 
 	WgSkinPtr		m_pIconSkin;
-	WgSkinPtr		m_pSkin;
-
-	WgState			m_state;
 
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 
 	bool			m_bPressed;				// Set when left mousebutton was pressed inside.
 	bool			m_bReturnPressed;
-	bool			m_bPointerInside;
 };
 
 #endif //WG_BUTTON_DOT_H

@@ -39,13 +39,13 @@ WgButton::WgButton()
 	m_text.setAlignment( WG_CENTER );
 	m_text.setLineWidth(Size().w);					// We start with no textborders...
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
+	m_text.setHolder(this);
 
  	m_state				= WG_STATE_NORMAL;
 
 	m_bDownOutside	 = false;
 	m_bPressed 		 = false;
 	m_bReturnPressed = false;
-	m_bPointerInside = false;
 }
 
 //____ Destructor _____________________________________________________________
@@ -66,21 +66,6 @@ const char * WgButton::Type( void ) const
 const char * WgButton::GetClass()
 {
 	return c_widgetType;
-}
-
-//____ SetSkin() ____________________________________________________________
-
-bool WgButton::SetSkin( const WgSkinPtr& pSkin )
-{
-	m_pSkin = pSkin;
-
-	if( pSkin && pSkin->IsOpaque() )
-		m_bOpaque = true;
-	else
-		m_bOpaque = false;
-
-	_requestRender();
-	return true;
 }
 
 //____ SetIcon() ______________________________________________________________
@@ -105,6 +90,8 @@ bool WgButton::SetIcon( const WgSkinPtr& pIconGfx, WgOrigo origo, WgBorders padd
 	_iconModified();
 	return true;
 }
+
+
 
 
 //____ TextAreaWidth() _____________________________________________________
@@ -154,44 +141,40 @@ WgSize WgButton::PreferredSize() const
 {
 	WgSize preferred;
 
-	if( m_pSkin )
-		preferred = m_pSkin->PreferredSize();
-
 	if( m_text.nbChars() != 0 )
-	{
-		WgSize textSize = m_text.unwrappedSize();
-
-		if( m_pSkin )
-			textSize += m_pSkin->ContentPadding();
-
-		if( textSize.w > preferred.w )
-			preferred.w = textSize.w;
-
-		if( textSize.h > preferred.h )
-			preferred.h = textSize.h;
-	}
+		preferred = m_text.unwrappedSize();
+	
+	if( m_pSkin )
+		preferred = m_pSkin->SizeForContent(preferred);
 
 	//TODO: Take icon into account.
 
 	return preferred;
 }
 
+//____ _onStateChanged() ______________________________________________________
 
-//____ _onEnable() _____________________________________________________________
-
-void WgButton::_onEnable()
+void WgButton::_onStateChanged( WgState oldState, WgState newState )
 {
-	m_state = WG_STATE_NORMAL;
-	_requestRender();
+	WgWidget::_onStateChanged(oldState,newState);
+
+	if(m_pIconSkin && !m_pIconSkin->IsStateIdentical(newState,oldState))
+			_requestRender();
+
+	m_text.setState(newState);
+
+	//TODO: Request render if text properties have changed.
+
 }
 
-//____ _onDisable() ____________________________________________________________
+//____ _onSkinChanged() _______________________________________________________
 
-void WgButton::_onDisable()
+void WgButton::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
-	m_state = WG_STATE_DISABLED;
-	_requestRender();
+	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+	m_text.SetColorSkin(pNewSkin);
 }
+
 
 //____ _onNewSize() ____________________________________________________________
 
@@ -212,13 +195,12 @@ void WgButton::_onNewSize( const WgSize& size )
 
 void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+
 	WgRect	contentRect = _canvas;
 
 	if( m_pSkin )
-	{
-		m_pSkin->Render( pDevice, _canvas, m_state, _clip );
 		contentRect = m_pSkin->ContentRect(_canvas, m_state);
-	}
 
 	// Get icon and text rect from content rect
 
@@ -233,137 +215,91 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 	// Print text
 
  	if( !m_text.IsEmpty() )
-	{
-		m_text.setState(m_state);
-
-		if( m_pSkin )
-			m_text.SetColorSkin( m_pSkin );
-
-		WgRect clip(textRect,_clip);
-		pDevice->PrintText( clip, &m_text, textRect );
-	}
+		pDevice->PrintText( WgRect(textRect,_clip), &m_text, textRect );
 }
 
 //____ _onEvent() ______________________________________________________________
 
-void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgButton::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
-	switch( pEvent->Type() )
+	WgState oldState = m_state;
+
+	switch( _pEvent->Type() )
 	{
-		case	WG_EVENT_KEY_PRESS:
-		{
-			if( static_cast<const WgEvent::KeyPress*>(pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
-				m_bReturnPressed = true;
-			else
-				pHandler->ForwardEvent( pEvent );
-			break;
-		}
-
-		case	WG_EVENT_KEY_REPEAT:
-		{
-			if( static_cast<const WgEvent::KeyPress*>(pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+		case WG_EVENT_KEY_PRESS:
+			if( static_cast<const WgEvent::KeyPress*>(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
+				m_bReturnPressed = true;
+				_pEvent->Swallow();
 			}
-			else
-				pHandler->ForwardEvent( pEvent );
 			break;
-		}
 
+		case WG_EVENT_KEY_REPEAT:
+			if( static_cast<const WgEvent::KeyPress*>(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+				_pEvent->Swallow();
+			break;
 
-		case	WG_EVENT_KEY_RELEASE:
-		{
-			if( static_cast< const WgEvent::KeyPress*>(pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+		case WG_EVENT_KEY_RELEASE:
+			if( static_cast< const WgEvent::KeyPress*>(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = false;
 				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
+				_pEvent->Swallow();
 			}
-			else
-				pHandler->ForwardEvent( pEvent );
 			break;
-		}
-
-		case	WG_EVENT_MOUSE_ENTER:
-			m_bPointerInside = true;
+	
+		case WG_EVENT_MOUSE_ENTER:
+			m_state.SetHovered(true);
 			break;
-
-		case	WG_EVENT_MOUSE_LEAVE:
-			m_bPointerInside = false;
+		case WG_EVENT_MOUSE_LEAVE:
+			m_state.SetHovered(false);
 			break;
-
 		case WG_EVENT_MOUSEBUTTON_PRESS:
-		{
-			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
-			if( button == 1 )
+			if( static_cast<const WgEvent::MouseButtonPress*>(_pEvent)->Button() == 1 )
+			{
 				m_bPressed = true;
-			else
-				pHandler->ForwardEvent( pEvent );
+				_pEvent->Swallow();
+			}
 			break;
-		}
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
-		{
-			int button = static_cast<const WgEvent::MouseButtonRelease*>(pEvent)->Button();
-			if( button == 1 )
+			if( static_cast<const WgEvent::MouseButtonRelease*>(_pEvent)->Button() == 1 )
+			{
 				m_bPressed = false;
-			else
-				pHandler->ForwardEvent( pEvent );
+				_pEvent->Swallow();
+			}
 			break;
-		}
-
 		case WG_EVENT_MOUSEBUTTON_CLICK:
-		{
-			int button = static_cast<const WgEvent::MouseButtonClick*>(pEvent)->Button();
-			if( button == 1 )
+			if( static_cast<const WgEvent::MouseButtonClick*>(_pEvent)->Button() == 1 )
+			{
 				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
-			else
-				pHandler->ForwardEvent( pEvent );
+				_pEvent->Swallow();
+			}
 			break;
-		}
-
 		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 		case WG_EVENT_MOUSEBUTTON_REPEAT:
 		case WG_EVENT_MOUSEBUTTON_DRAG:
-		{
-			int button = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
-			if( button != 1 )
-				pHandler->ForwardEvent( pEvent );
+			if( static_cast<const WgEvent::MouseButtonEvent*>(_pEvent)->Button() == 1 )
+				_pEvent->Swallow();
 			break;
-		}
 
-
-        default:
-			pHandler->ForwardEvent( pEvent );
-            break;
-
+		case WG_EVENT_FOCUS_GAINED:
+			m_state.SetFocused(true);
+			break;
+		case WG_EVENT_FOCUS_LOST:
+			m_state.SetFocused(false);
+			m_bReturnPressed = false;
+			m_bPressed = false;
+			break;
 	}
 
-	WgState newState = _getRenderState();
-	if( newState != m_state )
-	{
-		WgState oldState = m_state;
-		m_state = newState;
 
-		if( (m_pSkin && !m_pSkin->IsStateIdentical(newState,oldState)) ||
-			(m_pIconSkin && !m_pIconSkin->IsStateIdentical(newState,oldState)) )
-			_requestRender();
-	}
+	if( m_bReturnPressed || (m_bPressed && (m_bDownOutside || m_state.IsHovered() )) )
+		m_state.SetPressed(true);
+	else
+		m_state.SetPressed(false);
 
-}
-
-
-//_____ _getRenderState() ________________________________________________________
-
-WgState WgButton::_getRenderState()
-{
-	if( !IsEnabled() )
-		return WG_STATE_DISABLED;
-
-	if( m_bReturnPressed || (m_bPressed && (m_bPointerInside || m_bDownOutside)) )
-		return WG_STATE_PRESSED;
-
-	if( m_bPointerInside )
-		return WG_STATE_HOVERED;
-
-	return WG_STATE_NORMAL;
+	if( m_state != oldState )
+		_onStateChanged(oldState,m_state);
 }
 
 
@@ -371,15 +307,9 @@ WgState WgButton::_getRenderState()
 
 void WgButton::_onRefresh( void )
 {
-	if( m_pSkin )
-	{
-		if( m_pSkin->IsOpaque() )
-			m_bOpaque = true;
-		else
-			m_bOpaque = false;
+	WgWidget::_onRefresh();
 
-		_requestRender();
-	}
+	//TODO: Handling of icon and text.
 }
 
 //____ SetDownWhenMouseOutside() _______________________________________________
@@ -395,59 +325,32 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgButton * pOrg = (WgButton *) _pOrg;
 
-	pOrg->Wg_Interface_TextHolder::_cloneInterface( this );
+	pOrg->Wg_Interface_TextHolder::_onCloneContent( this );
 	WgIconHolder::_onCloneContent( pOrg );
 
 	m_text.setText(&pOrg->m_text);
-	m_pText = &m_text;
-	m_text.setHolder( this );
 
-	m_pSkin		= pOrg->m_pSkin;
 	m_pIconSkin		= pOrg->m_pIconSkin;
-	m_state			= pOrg->m_state;
+	m_bDownOutside	= pOrg->m_bDownOutside;
 }
 
 //____ _onAlphaTest() ___________________________________________________________
 
 bool WgButton::_onAlphaTest( const WgCoord& ofs )
 {
-	WgSize	sz = Size();
-	bool	bMarked = false;
-
-
-	if( m_pSkin )
-		bMarked = m_pSkin->MarkTest( ofs, WgRect(0,0,sz), m_state, m_markOpacity );
-
-	if( !bMarked && m_pIconSkin )
+	if( m_pIconSkin )
 	{
 		//TODO: Test against icon.
 	}
 
-	return bMarked;
+	return WgWidget::_onAlphaTest(ofs);
 }
-
-//____ _onGotInputFocus() ______________________________________________________
-
-void WgButton::_onGotInputFocus()
-{
-	m_bFocused = true;
-	_requestRender();
-}
-
-//____ _onLostInputFocus() _____________________________________________________
-
-void WgButton::_onLostInputFocus()
-{
-	m_bFocused = false;
-	m_bReturnPressed = false;
-	_requestRender();
-}
-
 
 //____ _textModified() __________________________________________________________
 
 void WgButton::_textModified()
 {
+	//TODO: Should possibly refresh size too.
 	_requestRender();
 }
 

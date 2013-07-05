@@ -115,8 +115,11 @@ WgSize WgRulerLabels::PreferredSize() const
             pLabel = pLabel->Next();
         }
     }
-    	
-	return preferred;
+    
+	if( m_pSkin )
+		return m_pSkin->SizeForContent(preferred);
+	else
+		return preferred;
 }
 
 
@@ -124,15 +127,23 @@ WgSize WgRulerLabels::PreferredSize() const
 
 void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+
+	WgRect canvas;
+	if( m_pSkin )
+		canvas = m_pSkin->ContentRect(_canvas,m_state);
+	else
+		canvas = _canvas;
+
 	if( m_direction == WG_UP || m_direction == WG_DOWN )
 	{
 		Label * pLabel = m_labels.First();
 		while( pLabel )
 		{
 			int height = pLabel->text.height();
-			int ofs = (int) (_canvas.h * pLabel->offset);
+			int ofs = (int) (canvas.h * pLabel->offset);
 			if( m_direction == WG_UP )
-				ofs = _canvas.h - ofs;
+				ofs = canvas.h - ofs;
 			
 			switch( pLabel->text.alignment() )
 			{
@@ -152,7 +163,7 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 					break;
 			}
 			
-			pDevice->PrintText( _clip, &pLabel->text, WgRect( _canvas.x, _canvas.y + ofs, _canvas.w, height ) );				
+			pDevice->PrintText( _clip, &pLabel->text, WgRect( canvas.x, canvas.y + ofs, canvas.w, height ) );				
 			pLabel = pLabel->Next();
 		}
 	}
@@ -162,9 +173,9 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		while( pLabel )
 		{
 			int width = pLabel->text.width();
-			int ofs = (int) (_canvas.w * pLabel->offset);
+			int ofs = (int) (canvas.w * pLabel->offset);
 			if( m_direction == WG_LEFT )
-				ofs = _canvas.w - ofs;
+				ofs = canvas.w - ofs;
 			
 			switch( pLabel->text.alignment() )
 			{
@@ -184,7 +195,7 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 					break;
 			}
 			
-			pDevice->PrintText( _clip, &pLabel->text, WgRect( _canvas.x + ofs, _canvas.y, width, _canvas.h ) );				
+			pDevice->PrintText( _clip, &pLabel->text, WgRect( canvas.x + ofs, canvas.y, width, canvas.h ) );				
 			pLabel = pLabel->Next();
 		}
 	}
@@ -202,7 +213,7 @@ void WgRulerLabels::_onCloneContent( const WgWidget * _pOrg )
 
 bool WgRulerLabels::_onAlphaTest( const WgCoord& ofs )
 {
-	return false;
+	return WgWidget::_onAlphaTest(ofs);
 }
 
 //____ _onTextModified() _________________________________________________________________
@@ -213,3 +224,31 @@ void WgRulerLabels::_textModified( WgText * pText )
     _requestRender();
 }
 
+//____ _onStateChanged() ______________________________________________________
+
+void WgRulerLabels::_onStateChanged( WgState oldState, WgState newState )
+{
+	WgWidget::_onStateChanged(oldState,newState);
+
+	Label * p = m_labels.First();
+	while( p )
+	{
+		p->text.setState(newState);
+		p = p->Next();
+	}
+}
+
+//____ _onSkinChanged() _______________________________________________________
+
+void WgRulerLabels::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+{
+	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+
+	Label * p = m_labels.First();
+	while( p )
+	{
+		p->text.SetColorSkin(pNewSkin);
+		p = p->Next();
+	}
+
+}

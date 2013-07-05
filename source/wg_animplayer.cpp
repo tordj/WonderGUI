@@ -77,15 +77,6 @@ bool WgAnimPlayer::SetAnimation( WgGfxAnim * pAnim )
 	return true;
 }
 
-//____ SetSkin() ________________________________________________________
-
-void WgAnimPlayer::SetSkin( const WgSkinPtr& pSkin )
-{
-	m_pSkin = pSkin;
-	_requestResize();
-	_requestRender();
-}
-
 //____ PlayPos() ______________________________________________________________
 
 int WgAnimPlayer::PlayPos()
@@ -248,11 +239,13 @@ void WgAnimPlayer::_playPosUpdated()
 
 void WgAnimPlayer::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
+	WgWidget::_onEvent( pEvent, pHandler );
+
 	switch( pEvent->Type() )
 	{
 		case WG_EVENT_TICK:
 		{
-			if( !m_pAnim || !m_bEnabled )
+			if( !m_pAnim || !m_state.IsEnabled() )
 				return;
 
 			const WgEvent::Tick * pTick = static_cast<const WgEvent::Tick*>(pEvent);
@@ -260,10 +253,6 @@ void WgAnimPlayer::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 			_playPosUpdated();
 
 		}
-		break;
-
-		default:
-			pHandler->ForwardEvent( pEvent );
 		break;
 	}
 }
@@ -273,16 +262,9 @@ void WgAnimPlayer::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 void WgAnimPlayer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	if( m_pSkin )
-	{
-		WgState state = WG_STATE_NORMAL;
-		if( !m_bEnabled )
-			state = WG_STATE_DISABLED;
+	WgWidget::_onRender( pDevice, _canvas, _window, _clip );
 
-		m_pSkin->Render( pDevice, _canvas, state, _clip );
-	}
-
-	if( m_pAnim && m_bEnabled )
+	if( m_pAnim && m_state.IsEnabled() )
 		pDevice->ClipStretchBlit( _clip, m_pAnimFrame->pSurf, m_pAnimFrame->rect, _canvas );
 }
 
@@ -312,33 +294,26 @@ void WgAnimPlayer::_onCloneContent( const WgWidget * _pOrg )
 
 bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs )
 {
-	WgSize sz = Size();
-
-	if( m_pSkin && m_pSkin->MarkTest( ofs, WgRect(0,0,sz), m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED, m_markOpacity ) )
+	if( m_pAnim && m_state.IsEnabled() && WgUtil::MarkTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, WgRect(0,0,Size()), m_markOpacity ) )
 		return true;
 
-	if( m_pAnim && m_bEnabled )
-		return WgUtil::MarkTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, WgRect(0,0,sz), m_markOpacity );
-
-	return false;
+	return WgWidget::_onAlphaTest(ofs);
 }
 
-//____ _onEnable() ___________________________________________________
+//____ _onStateChanged() ______________________________________________________
 
-void WgAnimPlayer::_onEnable( void )
+void WgAnimPlayer::_onStateChanged( WgState oldState, WgState newState )
 {
-	if( m_bPlaying )
-		_startReceiveTicks();
+	WgWidget::_onStateChanged(oldState,newState);
 
-	_requestRender();
+	if( oldState.IsEnabled() != newState.IsEnabled() && m_bPlaying )
+	{
+		if( newState.IsEnabled() )
+			_startReceiveTicks();
+		else
+			_stopReceiveTicks();
+
+		_requestRender();
+	}
 }
 
-//____ _onDisable() ___________________________________________________
-
-void WgAnimPlayer::_onDisable( void )
-{
-	if( m_bPlaying )
-		_stopReceiveTicks();
-
-	_requestRender();
-}

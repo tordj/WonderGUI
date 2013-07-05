@@ -31,7 +31,6 @@ static const char	c_widgetType[] = {"Switch"};
 
 WgSwitch::WgSwitch()
 {
-	m_bOpaque = false;
 }
 
 //____ Destructor _____________________________________________________________
@@ -65,7 +64,12 @@ void WgSwitch::SetValue( int value )
 
 WgSize WgSwitch::PreferredSize() const
 {
-	return WgSize(40,40);
+	WgSize contentSize(40,40);
+
+	if( m_pSkin )
+		return m_pSkin->SizeForContent(contentSize);
+	else
+		return contentSize;
 }
 
 
@@ -80,15 +84,23 @@ void WgSwitch::_onCloneContent( const WgWidget * _pOrg )
 
 void WgSwitch::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	int sz = WgMin( _canvas.w,_canvas.h );
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+
+	WgRect canvas;
+	if( m_pSkin )
+		canvas = m_pSkin->ContentRect(_canvas,m_state);
+	else
+		canvas = _canvas;
+
+	int sz = WgMin( canvas.w,canvas.h );
 
 	if( sz > 12 )
 	{
 		int itemSize = sz/4;
 		int stepping = itemSize/2;
 
-		int y = _canvas.y;
-		int x = _canvas.x + (sz - itemSize) / 2;
+		int y = canvas.y;
+		int x = canvas.x + (sz - itemSize) / 2;
 		for( int i = 0 ; i < 3 ; i++ )
 		{
 			pDevice->ClipDrawElipse( _clip, WgRect(x,y,itemSize,itemSize), WgColor::white );
@@ -101,23 +113,9 @@ void WgSwitch::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 
 bool WgSwitch::_onAlphaTest( const WgCoord& ofs )
 {
-	return false;
+	return true;
 }
 
-
-//____ _onEnable() _____________________________________________________________
-
-void WgSwitch::_onEnable()
-{
-    _requestRender();
-}
-
-//____ _onDisable() ____________________________________________________________
-
-void WgSwitch::_onDisable()
-{
-    _requestRender();
-}
 
 
 

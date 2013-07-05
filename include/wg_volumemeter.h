@@ -39,9 +39,8 @@ public:
 protected:
 	
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+	void			_onStateChanged( WgState oldState, WgState newState );
 	void			_onCloneContent( const WgWidget * _pOrg );
-	bool			_onAlphaTest( const WgCoord& ofs );
-	void			_onNewSize( const WgSize& size );
 	
 	WgDirection		m_direction;
 	WgColor			m_LEDColors[3][2];

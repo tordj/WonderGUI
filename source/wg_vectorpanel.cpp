@@ -178,7 +178,7 @@ WgHook * WgVectorHook::_nextHook() const
 
 //____ Constructor() __________________________________________________________
 
-WgVectorPanel::WgVectorPanel() : m_sortOrder(WG_SORT_ASCENDING), m_pSortFunc(0), m_nChildPanels(0)
+WgVectorPanel::WgVectorPanel() : m_nChildPanels(0)
 {
 
 }
@@ -220,15 +220,6 @@ WgVectorHook * WgVectorPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibli
 	
 	_onWidgetAppeared(pHook);
 	return pHook;
-}
-
-//____ InsertChildSorted() ____________________________________________________
-
-WgVectorHook * WgVectorPanel::InsertChildSorted( WgWidget * pWidget )
-{
-	//TODO: Implement
-
-	return 0;
 }
 
 //____ DeleteChild() __________________________________________________________
@@ -297,27 +288,6 @@ bool WgVectorPanel::ReleaseAllChildren()
 	_refreshAllWidgets();
 
 	return true;
-}
-
-//____ SortChildren() ___________________________________________________________
-
-void WgVectorPanel::SortChildren()
-{
-	//TODO: Implement
-}
-
-//____ SetSortOrder() _________________________________________________________
-
-void WgVectorPanel::SetSortOrder( WgSortOrder order )
-{
-	m_sortOrder = order;
-}
-
-//____ SetSortFunction() ______________________________________________________
-
-void WgVectorPanel::SetSortFunction( WgWidgetSortFunc pSortFunc )
-{
-	m_pSortFunc = pSortFunc;
 }
 
 //____ _onCloneContent() ______________________________________________________

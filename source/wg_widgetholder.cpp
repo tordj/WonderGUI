@@ -67,6 +67,13 @@ bool WgWidgetHolder::IsPanel() const
 	return false;
 }
 
+//____ IsList() ______________________________________________________________
+
+bool WgWidgetHolder::IsList() const
+{
+	return false;
+}
+
 //____ IsCapsule() ______________________________________________________________
 
 bool WgWidgetHolder::IsCapsule() const
@@ -122,6 +129,18 @@ WgPanel * WgWidgetHolder::CastToPanel()
 }
 
 const WgPanel * WgWidgetHolder::CastToPanel() const
+{
+	return 0;
+}
+
+//____ CastToList() _______________________________________________________
+
+WgList * WgWidgetHolder::CastToList()
+{
+	return 0;
+}
+
+const WgList * WgWidgetHolder::CastToList() const
 {
 	return 0;
 }

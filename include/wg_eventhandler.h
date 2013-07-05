@@ -160,7 +160,10 @@ private:
 
 	void 	_updateMarkedWidget(bool bPostMouseMoveEvents);
 	void	_addTickReceiver( WgWidget * pWidget );
-		
+
+	void	_setWidgetFocused( WgWidget * pWidget, bool bFocused );
+
+
 	//
 
 	WgRootPanel *		m_pRoot;

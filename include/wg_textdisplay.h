@@ -56,7 +56,7 @@ public:
 	inline void		SetMaxLines( int nLines ) { m_maxLines = nLines; }
 	inline int		MaxLines() { return m_maxLines; }
 
-	Uint32	InsertTextAtCursor( const WgCharSeq& str );
+	int		InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
 	void		GoBOL();
@@ -65,13 +65,13 @@ public:
 	void		GoEOF();
 
 	virtual void			SetEditMode(WgTextEditMode mode);
-	virtual WgTextEditMode	GetEditMode() const { return m_text.GetEditMode(); }
+	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
 
-	WgPointerStyle		GetPointerStyle() const;
-	WgString			GetTooltipString() const;
+	WgPointerStyle		PointerStyle() const;
+	WgString			TooltipString() const;
 
-	virtual bool TempIsInputField() const { return IsEditable(); }
-	virtual Wg_Interface_TextHolder* TempGetText() { return this; }
+	virtual bool IsInputField() const { return IsEditable(); }
+	virtual Wg_Interface_TextHolder* TextInterface() { return this; }
 
 	int		HeightForWidth( int width ) const;
 	WgSize	PreferredSize() const;
@@ -87,11 +87,8 @@ protected:
 	void	_onNewSize( const WgSize& size );
 	void	_onRefresh();
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onEnable();
-	void	_onDisable();
-	void	_onGotInputFocus();
-	void	_onLostInputFocus();
+	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 private:
 	void	_textModified();

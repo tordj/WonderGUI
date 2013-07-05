@@ -86,7 +86,7 @@ void WgLineEditor::SetEditMode(WgTextEditMode mode)
 
 void WgLineEditor::GoBOL()
 {
-	if( _isEditable() && m_bFocused )
+	if( _isEditable() && m_state.IsFocused() )
 		m_pText->goBOL();
 }
 
@@ -94,7 +94,7 @@ void WgLineEditor::GoBOL()
 
 void WgLineEditor::GoEOL()
 {
-	if( _isEditable() && m_bFocused )
+	if( _isEditable() && m_state.IsFocused() )
 		m_pText->goEOL();
 }
 
@@ -111,16 +111,16 @@ void WgLineEditor::SetPasswordGlyph( Uint16 glyph )
 
 //____ InsertTextAtCursor() ___________________________________________________
 
-Uint32 WgLineEditor::InsertTextAtCursor( const WgCharSeq& str )
+int WgLineEditor::InsertTextAtCursor( const WgCharSeq& str )
 {
 	if( !_isEditable() )
 		return 0;
 
-	if( !m_bFocused )
+	if( !m_state.IsFocused() )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
-	Uint32 retVal = m_pText->putText( str );
+	int retVal = m_pText->putText( str );
 
 	_queueEvent( new WgEvent::TextModify(this,m_pText) );
 
@@ -134,9 +134,9 @@ Uint32 WgLineEditor::InsertTextAtCursor( const WgCharSeq& str )
 bool WgLineEditor::InsertCharAtCursor( Uint16 c )
 {
 	if( !_isEditable() )
-		return 0;
+		return false;
 
-	if( !m_bFocused )
+	if( !m_state.IsFocused() )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
@@ -161,12 +161,16 @@ bool WgLineEditor::SetTextWrap(bool bWrap)
 
 WgSize WgLineEditor::PreferredSize() const
 {
-	//TODO: Implement!
-
-	return WgSize(1,1);
+	WgTextAttr attr;
+	m_text.GetBaseAttr( attr );
+	int width = WgTextTool::lineWidth( m_text.getNode(), attr, "MMMMMMMMMM" );		// Default line editor should fit 10 letter M in textfield
+	WgSize contentSize( m_text.height(), width );
+	
+	if( m_pSkin )
+		return m_pSkin->SizeForContent( contentSize );
+	else
+		return contentSize;
 }
-
-
 
 //____ _onCloneContent() _______________________________________________________
 
@@ -176,13 +180,16 @@ void WgLineEditor::_onCloneContent( const WgWidget * _pOrg )
 
 	Wg_Interface_TextHolder::_onCloneContent( pOrg );
 
-	//TODO: Implement!
+	m_text			= pOrg->m_text;
+	m_bPasswordMode = pOrg->m_bPasswordMode;
+	m_pwGlyph		= pOrg->m_pwGlyph;
 }
 
 //____ _onRender() _____________________________________________________________
 
 void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
 	WgText * pText = &m_text;
 	if( m_bPasswordMode )
@@ -202,7 +209,7 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		pText->setSelectionProperties(m_text.getSelectionProperties());
 		pText->setState(m_text.state());
 
-		pText->SetEditMode(m_text.GetEditMode());
+		pText->SetEditMode(m_text.EditMode());
 		pText->showCursor();
 		pText->gotoSoftPos( m_text.line(), m_text.column() );
 		pText->incTime( m_text.time() );
@@ -213,16 +220,23 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 	}
 
-	WgRect r = _canvas;
-	r.x -= m_viewOfs;
-	r.w += m_viewOfs;
+	WgRect canvas;
+	if( m_pSkin )
+		canvas = m_pSkin->SizeForContent(_canvas);
+	else
+		canvas = _canvas;
 
-	if( m_bFocused && _isEditable() )
+	WgRect	textClip( _clip, canvas );
+
+	canvas.x -= m_viewOfs;
+	canvas.w += m_viewOfs;
+
+	if( m_state.IsFocused() && _isEditable() )
 		pText->showCursor();
 	else
 		pText->hideCursor();
 
-	pDevice->PrintText( _clip, pText, r );
+	pDevice->PrintText( textClip, pText, canvas );
 
 	if( pText != &m_text )
 		delete pText;
@@ -232,11 +246,13 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
+	WgWidget::_onEvent(pEvent,pHandler);
+
 	WgEventType event = pEvent->Type();
 
 	if( event == WG_EVENT_TICK )
 	{
-		if( _isSelectable() && m_bFocused )
+		if( _isSelectable() && m_state.IsFocused() )
 		{
 			m_pText->incTime( static_cast<const WgEvent::Tick*>(pEvent)->Millisec() );
 			_requestRender();					//TODO: Should only render the cursor and selection!
@@ -246,10 +262,10 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 	if( (event == WG_EVENT_MOUSEBUTTON_PRESS || event == WG_EVENT_MOUSEBUTTON_DRAG) && static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() == 1 )
 	{
-		if( !m_bFocused )
+		if( !m_state.IsFocused() )
 			GrabFocus();
 
-		if( m_bFocused )
+		if( m_state.IsFocused() )
 		{
 			if( _isSelectable() && (pEvent->ModKeys() & WG_MODKEY_SHIFT) )
 			{
@@ -298,7 +314,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 	if( event == WG_EVENT_MOUSEBUTTON_RELEASE )
 	{
-		if( m_bFocused && static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() == 1 )
+		if( m_state.IsFocused() && static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() == 1 )
 			m_pText->setSelectionMode(false);
 	}		
 
@@ -306,7 +322,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 	{
 		int ch = static_cast<const WgEvent::Character*>(pEvent)->Char();
 
-		if( _isEditable() && m_bFocused && ch >= 32 && ch != 127)
+		if( _isEditable() && m_state.IsFocused() && ch >= 32 && ch != 127)
 		{
 
 			if(m_pText->hasSelection())
@@ -323,7 +339,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 		}
 	}
 
-	if( event == WG_EVENT_KEY_RELEASE && m_bFocused )
+	if( event == WG_EVENT_KEY_RELEASE && m_state.IsFocused() )
 	{
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 		switch( key )
@@ -335,7 +351,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 		}
 	}
 
-	if( (event == WG_EVENT_KEY_PRESS || event == WG_EVENT_KEY_REPEAT) && _isEditable() && m_bFocused )
+	if( (event == WG_EVENT_KEY_PRESS || event == WG_EVENT_KEY_REPEAT) && _isEditable() && m_state.IsFocused() )
 	{
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 		switch( key )
@@ -455,20 +471,18 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 	if( pEvent->IsMouseButtonEvent() )
 	{
-		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-			pHandler->ForwardEvent( pEvent );
+		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() == 1 )
+			pEvent->Swallow();
 	}
 	else if( pEvent->IsKeyEvent() )
 	{
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
-		if( static_cast<const WgEvent::KeyEvent*>(pEvent)->IsMovementKey() == false &&
-			key != WG_KEY_DELETE && key != WG_KEY_BACKSPACE )
-				pHandler->ForwardEvent( pEvent );
+		if( static_cast<const WgEvent::KeyEvent*>(pEvent)->IsMovementKey() == true ||
+			key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE )
+				pEvent->Swallow();
 		
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
-	else if( event != WG_EVENT_CHARACTER )
-		pHandler->ForwardEvent( pEvent );
 }
 
 
@@ -481,7 +495,7 @@ void WgLineEditor::_adjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_bFocused && m_pText->getFont() )
+	if( m_state.IsFocused() && m_pText->getFont() )
 	{
 		WgCursor * pCursor = WgTextTool::GetCursor( m_pText );
 		if( !pCursor )
@@ -507,6 +521,8 @@ void WgLineEditor::_adjustViewOfs()
 		int minOfs;			// Min allowed view offset in pixels.
 
 		int geoWidth = Size().w;
+		if( m_pSkin )
+			geoWidth -= m_pSkin->ContentPadding().w;
 		int	lineWidth = m_pText->getSoftLineWidth( 0 ) + cursBearing+cursWidth;
 
 		// Calculate cursOfs
@@ -558,61 +574,54 @@ void WgLineEditor::_adjustViewOfs()
 		m_viewOfs = 0;				// Show beginning of line when cursor disappears.
 }
 
+//____ _onStateChanged() ______________________________________________________
 
-
-//____ _onEnable() _____________________________________________________________
-
-void WgLineEditor::_onEnable()
+void WgLineEditor::_onStateChanged( WgState oldState, WgState newState )
 {
-	m_text.setState(WG_STATE_NORMAL);
-	_requestRender();
-}
+	WgWidget::_onStateChanged(oldState,newState);
+	
+	m_text.setState(newState);
+	_requestRender();				//TODO: Only request render if text appearance has changed.
 
-//____ _onDisable() ____________________________________________________________
-
-void WgLineEditor::_onDisable()
-{
-	m_text.setState(WG_STATE_DISABLED);
-	_requestRender();
-}
-
-//____ _onGotInputFocus() ______________________________________________________
-
-void WgLineEditor::_onGotInputFocus()
-{
-	m_bFocused = true;
-
-	if( _isEditable() )
+	if( newState.IsFocused() && !oldState.IsFocused() )
 	{
-		_startReceiveTicks();
-		if( m_bResetCursorOnFocus )
-			m_pText->goEOL();
-		_requestRender(); // render with cursor on
+		if( _isEditable() )
+		{
+			_startReceiveTicks();
+			if( m_bResetCursorOnFocus )
+				m_pText->goEOL();
+			_requestRender(); // render with cursor on
+		}
+	}
+
+	if( !newState.IsFocused() && oldState.IsFocused() )
+	{
+		if( _isSelectable() )
+		{
+			m_pText->clearSelection();
+			m_pText->setSelectionMode(false);
+			m_bResetCursorOnFocus = false;
+		}
+
+		if( _isEditable() || m_viewOfs != 0 )
+		{
+			_stopReceiveTicks();
+			_queueEvent( new WgEvent::TextSet(this, m_pText) );
+
+			m_viewOfs = 0;
+			_requestRender();
+		}
 	}
 }
 
-//____ _onLostInputFocus() _____________________________________________________
+//____ _onSkinChanged() _______________________________________________________
 
-void WgLineEditor::_onLostInputFocus()
+void WgLineEditor::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
-	m_bFocused = false;
-
-	if( _isSelectable() )
-	{
-		m_pText->clearSelection();
-		m_pText->setSelectionMode(false);
-		m_bResetCursorOnFocus = false;
-	}
-
-	if( _isEditable() || m_viewOfs != 0 )
-	{
-		_stopReceiveTicks();
-		_queueEvent( new WgEvent::TextSet(this, m_pText) );
-
-		m_viewOfs = 0;
-		_requestRender();
-	}
+	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+	m_text.SetColorSkin(pNewSkin);
 }
+
 
 //____ _onNewSize() ____________________________________________________________
 

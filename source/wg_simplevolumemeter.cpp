@@ -139,7 +139,12 @@ void WgSimpleVolumeMeter::SetValue( float leftPeak, float leftHold, float rightP
 
 WgSize WgSimpleVolumeMeter::PreferredSize() const
 {
-	return WgSize(9,20);
+	WgSize content(9,20);
+
+	if( m_pSkin )
+		return m_pSkin->SizeForContent(content);
+	else
+		return content;
 }
 
 //____ _onNewSize() ____________________________________________________________________
@@ -156,12 +161,20 @@ void WgSimpleVolumeMeter::_onNewSize( const WgSize& size )
 
 void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	if( !m_bEnabled )
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+
+	if( !m_state.IsEnabled() )
 		return;
 	
+	WgRect canvas;
+	if( m_pSkin )
+		canvas = m_pSkin->SizeForContent(_canvas);
+	else
+		canvas = _canvas;
+
 	if( m_bStereo )
 	{
-		WgRect r = _canvas;
+		WgRect r = canvas;
 		r.w = (r.w - 1) / 2;
 		_renderHold( pDevice, 0, r, _clip );
 		_renderPeak( pDevice, 0, r, _clip );
@@ -173,8 +186,8 @@ void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canva
 	}
 	else 
 	{
-		_renderHold( pDevice, 0, _canvas, _clip );
-		_renderPeak( pDevice, 0, _canvas, _clip );			
+		_renderHold( pDevice, 0, canvas, _clip );
+		_renderPeak( pDevice, 0, canvas, _clip );			
 	}
 }
 
@@ -244,6 +257,8 @@ void WgSimpleVolumeMeter::_renderHold( WgGfxDevice * pDevice, int nb, const WgRe
 void WgSimpleVolumeMeter::_updateSectionPixelHeight()
 {
 	int totalHeight = Geo().h;
+	if( m_pSkin )
+		totalHeight -= m_pSkin->ContentPadding().h;
 
 	m_sectionPixelHeight[0] = (int) (m_sectionHeight[0] * totalHeight + 0.5f);
 	m_sectionPixelHeight[1] =  ((int)((m_sectionHeight[0] + m_sectionHeight[1]) * totalHeight + 0.5f)) - m_sectionPixelHeight[0];
@@ -272,9 +287,21 @@ void WgSimpleVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
 	_updateSectionPixelHeight();
 }
 
-//____ _onAlphaTest() ____________________________________________________________________
+//____ _onStateChanged() ______________________________________________________
 
-bool WgSimpleVolumeMeter::_onAlphaTest( const WgCoord& ofs )
+void  WgSimpleVolumeMeter::_onStateChanged( WgState oldState, WgState newState )
 {
-	return false;
+	WgWidget::_onStateChanged(oldState,newState);
+
+	if( oldState.IsEnabled() != newState.IsEnabled() )
+		_requestRender();
 }
+
+//____ _onSkinChanged() _______________________________________________________
+
+void  WgSimpleVolumeMeter::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+{
+	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+	_updateSectionPixelHeight();
+}
+

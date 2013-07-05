@@ -76,27 +76,19 @@ const char * WgCombobox::GetClass( void )
 	return c_widgetType;
 }
 
-
-//____ SetSkin() ____________________________________________________________
-
-void WgCombobox::SetSkin( const WgSkinPtr& pSkin )
-{
-	if( m_pSkin != pSkin )
-	{
-		//TODO: Needs to request resize if new skin has different padding.
-
-		m_pSkin = pSkin;
-		_requestRender();
-	}
-}
-
 //____ PreferredSize() __________________________________________________________
 
 WgSize WgCombobox::PreferredSize() const
 {
-	//TODO: Implement!!!
-
-	return WgSize(40,20);
+	WgTextAttr attr;
+	m_text.GetBaseAttr( attr );
+	int width = WgTextTool::lineWidth( m_text.getNode(), attr, "MMMMMMMMMM" );		// Default combobox should fit 10 letter M in textfield
+	WgSize contentSize( m_text.height(), width );
+	
+	if( m_pSkin )
+		return m_pSkin->SizeForContent( contentSize );
+	else
+		return contentSize;
 }
 
 
@@ -112,9 +104,9 @@ void WgCombobox::SetMenu( WgMenu * pMenu )
 		_entrySelected(m_pMenu->GetSelectedItem()->GetId());
 }
 
-//____ GetMenu() __________________________________________________________
+//____ Menu() __________________________________________________________
 
-WgMenu* WgCombobox::GetMenu() const
+WgMenu* WgCombobox::Menu() const
 {
 	return m_pMenu;
 }
@@ -146,16 +138,16 @@ void WgCombobox::SetPlaceholderText( const WgCharSeq& str )
 
 //____ InsertTextAtCursor() ___________________________________________________
 
-Uint32 WgCombobox::InsertTextAtCursor( const WgCharSeq& str )
+int WgCombobox::InsertTextAtCursor( const WgCharSeq& str )
 {
 	if( !_isEditable() )
 		return 0;
 
-	if( !m_bFocused )
+	if( !m_state.IsFocused() )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
-	Uint32 retVal = 0;
+	int retVal = 0;
 
 	if( m_maxCharacters == 0 || str.Length() < m_maxCharacters - m_pText->nbChars() )
 	{
@@ -184,7 +176,7 @@ bool WgCombobox::InsertCharAtCursor( Uint16 c )
 	if( !_isEditable() )
 		return 0;
 
-	if( !m_bFocused )
+	if( !m_state.IsFocused() )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
@@ -205,7 +197,7 @@ bool WgCombobox::InsertCharAtCursor( Uint16 c )
 
 void WgCombobox::GoBOL()
 {
-	if( _isEditable() && m_bFocused )
+	if( _isEditable() && m_state.IsFocused() )
 		m_pText->goBOL();
 }
 
@@ -213,7 +205,7 @@ void WgCombobox::GoBOL()
 
 void WgCombobox::GoEOL()
 {
-	if( _isEditable() && m_bFocused )
+	if( _isEditable() && m_state.IsFocused() )
 		m_pText->goEOL();
 }
 
@@ -237,12 +229,12 @@ void WgCombobox::_closeMenu()
 
 void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
-	WgState newState = m_state;
+	WgState oldState = m_state;
 
 	switch( _pEvent->Type() )
 	{
 		case WG_EVENT_TICK:
-			if( _isEditable() && m_bFocused )
+			if( _isEditable() && m_state.IsFocused() )
 			{
 				m_text.incTime( static_cast<const WgEvent::Tick*>(_pEvent)->Millisec() );
 				_requestRender();					//TODO: Should only render the cursor and selection!
@@ -250,28 +242,19 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 		break;
 
 		case WG_EVENT_MENU_CLOSED:
-			if( Geo().Contains( _pEvent->PointerPos() ) )
-				newState = WG_STATE_HOVERED;
-			else
-				newState = WG_STATE_NORMAL;
+			m_state.SetPressed(false);
 		break;
 
 		case WG_EVENT_MENUITEM_SELECT:
-
 		break;
 
 		case WG_EVENT_MOUSE_ENTER:
-			if( m_state == WG_STATE_PRESSED )
-				break;
-
-			newState = WG_STATE_HOVERED;
+			m_state.SetHovered(true);
 			break;
 
 		case WG_EVENT_MOUSE_LEAVE:
-			if( m_state == WG_STATE_PRESSED )
-				break;
-
-			newState = WG_STATE_NORMAL;
+			if( !m_state.IsPressed() )
+				m_state.SetHovered(false);
 			break;
 
 		case WG_EVENT_MOUSE_POSITION:
@@ -301,23 +284,23 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 			{
 				WgRect inputRect = m_pSkin ? m_pSkin->ContentRect( Size(), m_state ): WgRect( 0,0, Size() );
 
-				if( m_state == WG_STATE_PRESSED && m_pMenu )
+				if( m_state.IsPressed() && m_pMenu )
 				{
 					m_bPressInInputRect = false;
 					_closeMenu();
 				}
 				else if( _isEditable() && inputRect.Contains(pos) )
 				{
-					if( !m_bFocused )
+					if( !m_state.IsFocused() )
 					{
 						GrabFocus();
-						if( m_bFocused )
+						if( m_state.IsFocused() )
 							m_bFocusPress = true;		// Current button press brought focus.
 					}
 
 					m_bPressInInputRect = true;
 
-					if( m_bFocused )
+					if( m_state.IsFocused() )
 					{
 						if( _isSelectable() && (pEvent->ModKeys() & WG_MODKEY_SHIFT))
 						{
@@ -354,11 +337,10 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 						}
 					}
 
-					newState = WG_STATE_PRESSED;
+					m_state.SetPressed(true);
 				}
+				_pEvent->Swallow();
 			}
-			else
-				pHandler->ForwardEvent( _pEvent );
 			break;
 		}
 
@@ -367,7 +349,7 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 			const WgEvent::MouseButtonDrag * pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
 			if( pEvent->Button() == 1 )
 			{
-				if( m_bFocused && m_bPressInInputRect )
+				if( m_state.IsFocused() && m_bPressInInputRect )
 				{
 					if( _isSelectable() && (pEvent->ModKeys() & WG_MODKEY_SHIFT) )
 					{
@@ -380,9 +362,8 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 					m_pText->CursorGotoCoord( WgCoord(x, 0), WgRect(leftBorder,0,1000000,1000000) );
 					_adjustViewOfs();
 				}
+				_pEvent->Swallow();
 			}
-			else
-				pHandler->ForwardEvent( _pEvent );
 			break;
 		}
 
@@ -391,7 +372,7 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 			const WgEvent::MouseButtonRelease * pEvent = static_cast<const WgEvent::MouseButtonRelease*>(_pEvent);
 			if( pEvent->Button() == 1 )
 			{
-				if( m_bFocused )
+				if( m_state.IsFocused() )
 				{
 					m_pText->setSelectionMode(false);
 					if( m_bFocusPress )
@@ -401,16 +382,15 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 							m_pText->selectAll();
 					}
 				}
+				_pEvent->Swallow();
 			}
-			else
-				pHandler->ForwardEvent( _pEvent );
 			break;
 		}
 
 		case WG_EVENT_MOUSEWHEEL_ROLL:
 		{		
 			const WgEvent::MouseWheelRoll * pEvent = static_cast<const WgEvent::MouseWheelRoll*>(_pEvent);
-			if( !m_bFocused && m_pMenu && m_pMenu->GetItemCount() != 0 )
+			if( !m_state.IsFocused() && m_pMenu && m_pMenu->GetItemCount() != 0 )
 			{
 				WgMenuItem * pItem = m_pSelectedItem;
 				int distance = pEvent->Distance();
@@ -420,22 +400,22 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 					if( distance > 0 )
 					{
 						pItem = m_pMenu->GetLastItem();
-						distance = 0; //distance--;			//TODO: Put back to distance-- once we have fixed Intobet client rolls a large distance for each step.
+						distance--;
 					}
 					if( distance < 0 )
 					{
 						pItem = m_pMenu->GetFirstItem();
-						distance = 0; //distance++;			//TODO: Put back to distance++ once we have fixed Intobet client rolls a large distance for each step.
+						distance++;
 					}
 				}
 
-				if( distance > 0 && pItem->Prev() )		//TODO: This used to be a while loop, but Intobet client rolls a large distance for each step.
+				while( distance > 0 && pItem->Prev() )
 				{
 					pItem = pItem->Prev();
 					distance--;
 				}
 
-				if( distance < 0 && pItem->Next() )		//TODO: This used to be a while loop, but Intobet client rolls a large distance for each step.
+				while( distance < 0 && pItem->Next() )
 				{
 					pItem = pItem->Next();
 					distance++;
@@ -443,16 +423,15 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 
 				m_pMenu->SelectItem( pItem );
 				_entrySelected( pItem->GetId() );
+				_pEvent->Swallow();
 			}
-			else
-				pHandler->ForwardEvent( pEvent );
 			break;
 		}
 
 		case WG_EVENT_CHARACTER:
 		{
 			const WgEvent::Character * pEvent = static_cast<const WgEvent::Character*>(_pEvent);
-			if( _isEditable() && m_bFocused )
+			if( _isEditable() && m_state.IsFocused() )
 			{
 
 				if(m_pText->hasSelection())
@@ -470,7 +449,7 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 		}
 
 		case WG_EVENT_KEY_RELEASE:
-			if( m_bFocused )
+			if( m_state.IsFocused() )
 			{
 				const WgEvent::KeyRelease * pEvent = static_cast<const WgEvent::KeyRelease*>(_pEvent);
 				switch( pEvent->TranslatedKeyCode() )
@@ -478,10 +457,8 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 					case WG_KEY_SHIFT:
 						if(!pHandler->IsMouseButtonPressed(1))
 							m_pText->setSelectionMode(false);
+						_pEvent->Swallow();
 					break;
-					default:
-						pHandler->ForwardEvent( pEvent );
-						break;
 				}
 			}
 		break;
@@ -491,11 +468,11 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 		{
 			const WgEvent::KeyEvent * pEvent = static_cast<const WgEvent::KeyEvent*>(_pEvent);
 
-			if( pEvent->TranslatedKeyCode() == WG_KEY_ESCAPE && m_state == WG_STATE_PRESSED )
+			if( pEvent->TranslatedKeyCode() == WG_KEY_ESCAPE && m_state.IsPressed() )
 			{
 				_closeMenu();
 			}
-			else if( _isEditable() && m_bFocused )
+			else if( _isEditable() && m_state.IsFocused() )
 			{
 				switch( pEvent->TranslatedKeyCode() )
 				{
@@ -504,9 +481,10 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 							m_pText->setSelectionMode(true);
 
 						if( pEvent->ModKeys() & WG_MODKEY_CTRL )
-								m_pText->gotoPrevWord();
+							m_pText->gotoPrevWord();
 						else
 							m_pText->goLeft();
+						_pEvent->Swallow();
 						break;
 					case WG_KEY_RIGHT:
 						if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
@@ -516,6 +494,7 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 								m_pText->gotoNextWord();
 						else
 							m_pText->goRight();
+						_pEvent->Swallow();
 						break;
 
 					case WG_KEY_BACKSPACE:
@@ -527,6 +506,7 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 							m_pText->delPrevChar();
 						
 						pHandler->QueueEvent( new WgEvent::TextModify(this, m_pText) ); //TODO: Should only emit if text really has changed
+						_pEvent->Swallow();
 						break;
 
 					case WG_KEY_DELETE:
@@ -537,6 +517,7 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 						else
 							m_pText->delNextChar();
 						pHandler->QueueEvent( new WgEvent::TextModify(this, m_pText) );		//TODO: Should only emit if text really has changed
+						_pEvent->Swallow();
 						break;
 
 					case WG_KEY_HOME:
@@ -558,7 +539,7 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 							m_pText->goBOL();
 							break;
 						}
-
+						_pEvent->Swallow();
 						break;
 
 					case WG_KEY_END:
@@ -581,38 +562,73 @@ void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHan
 							break;
 						}
 
-						break;
-
-					default:
-						pHandler->ForwardEvent( _pEvent );
+						_pEvent->Swallow();
 						break;
 				}
 				_adjustViewOfs();
 			}
 		}
 		break;
-
-        default:
-			pHandler->ForwardEvent( _pEvent );
-            break;
-
 	}
 
-	if( newState != m_state )
+	if( m_state != oldState )
+		_onStateChanged( oldState, m_state );
+}
+
+//____ _onStateChanged() ______________________________________________________
+
+void WgCombobox::_onStateChanged( WgState oldState, WgState newState )
+{
+	WgWidget::_onStateChanged( oldState, newState );
+
+	m_text.setState( newState );
+
+	// Check if we got focus
+
+	if( newState.IsFocused() && !oldState.IsFocused() )
 	{
-		m_state = newState;
-		_requestRender();
+		if( _isEditable() )
+		{
+			_startReceiveTicks();
+			m_text.showCursor();
+			if( m_bResetCursorOnFocus )
+			{
+				m_text.goEOL();
+				m_text.selectAll();
+			}
+		}
+	}
+
+	// Check if we lost focus
+
+	if( !newState.IsFocused() && oldState.IsFocused() )
+	{
+		if( _isEditable() )
+		{
+			_stopReceiveTicks();
+			m_text.hideCursor();
+			m_text.clearSelection();
+			m_bResetCursorOnFocus = true;
+			_eventHandler()->QueueEvent( new WgEvent::TextSet( this, &m_text ) );	//TODO: Should only do if text was really changed!
+		}
 	}
 }
+
+//____ _onSkinChanged() _______________________________________________________
+
+void WgCombobox::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+{
+	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+	m_text.SetColorSkin(pNewSkin);
+}
+
+
 
 //____ _onRender() ________________________________________________________
 
 void WgCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	// Render the skin
-
-	if(m_pSkin)
-		m_pSkin->Render( pDevice, _canvas, m_state, _clip );
+	WgWidget::_onRender( pDevice, _canvas, _window, _clip );
 
 	// Print the text
 
@@ -622,17 +638,12 @@ void WgCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 
 	WgRect	textClip( r, _clip );
 
-	if(m_pSkin)
-		m_text.SetColorSkin(m_pSkin);
-
 	bool bPlaceholder = false;
 	if( !m_placeholderText.IsEmpty() && m_text.IsEmpty() && !m_text.isCursorShowing() )
 	{
 		bPlaceholder = true;
 		m_text.setText( m_placeholderText );
 	}
-
-	m_text.setState( m_state );
 
 	r.x -= m_viewOfs;
 	r.w += m_viewOfs;
@@ -657,7 +668,6 @@ void WgCombobox::_onCloneContent( const WgWidget * _pOrg )
 	{
 		m_textFormat = pOrg->m_textFormat;
 		m_placeholderText = pOrg->m_placeholderText;
-		m_pSkin = pOrg->m_pSkin;
 		m_pMenu = pOrg->m_pMenu;
 		m_pSelectedItem = pOrg->m_pSelectedItem;
 		m_text = pOrg->m_text;
@@ -675,7 +685,7 @@ void WgCombobox::_adjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_bFocused && m_pText->getFont() )
+	if( m_state.IsFocused() && m_pText->getFont() )
 	{
 		WgCursor * pCursor = WgTextTool::GetCursor( m_pText );
 		if( !pCursor )
@@ -742,73 +752,9 @@ void WgCombobox::_adjustViewOfs()
 
 bool WgCombobox::_onAlphaTest( const WgCoord& ofs )
 {
-	if( !m_pSkin )
-		return false;
+	//TODO: Should we treat text-box as opaque for mouse?
 
-	return m_pSkin->MarkTest( ofs, WgRect(0,0,Size()), m_state, m_markOpacity );
-}
-
-//____ _onGotInputFocus() ______________________________________________
-
-void WgCombobox::_onGotInputFocus()
-{
-	m_bFocused = true;
-
-	if( _isEditable() )
-	{
-		_startReceiveTicks();
-		m_text.showCursor();
-		if( m_bResetCursorOnFocus )
-		{
-			m_text.goEOL();
-			m_text.selectAll();
-		}
-	}
-}
-
-//____ _onLostInputFocus() ______________________________________________
-
-void WgCombobox::_onLostInputFocus()
-{
-	m_bFocused = false;
-
-	if( _isEditable() )
-	{
-		_stopReceiveTicks();
-		m_text.hideCursor();
-		m_text.clearSelection();
-		m_bResetCursorOnFocus = true;
-		_eventHandler()->QueueEvent( new WgEvent::TextSet( this, &m_text ) );	//TODO: Should only do if text was really changed!
-	}
-}
-
-
-//____ _onEnable() _____________________________________________________________
-
-void WgCombobox::_onEnable( void )
-{
-	//TODO: Needs to check changes to textprop also...
-
-	WgState oldState = m_state;
-
-	m_state.setEnabled(true);
-
-	if( m_pSkin && !m_pSkin->IsStateIdentical(m_state,oldState) )
-		_requestRender();
-}
-
-//____ _onDisable() ____________________________________________________________
-
-void WgCombobox::_onDisable( void )
-{
-	//TODO: Needs to check changes to textprop also...
-
-	WgState oldState = m_state;
-
-	m_state.setEnabled(false);
-
-	if( m_pSkin && !m_pSkin->IsStateIdentical(m_state,oldState) )
-		_requestRender();
+	return WgWidget::_onAlphaTest(ofs);
 }
 
 

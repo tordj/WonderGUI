@@ -31,7 +31,6 @@ static const char	c_widgetType[] = {"Knob"};
 
 WgKnob::WgKnob()
 {
-	m_bOpaque = false;
 }
 
 //____ Destructor _____________________________________________________________
@@ -80,7 +79,7 @@ void WgKnob::_onCloneContent( const WgWidget * _pOrg )
 
 void WgKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-//    pDevice->Fill( _clip, WgColor::black );
+	WgWidget::_onRender(pDevice, _canvas, _window, _clip);
 
 	int sz = WgMin( _canvas.w,_canvas.h );
 
@@ -96,22 +95,5 @@ bool WgKnob::_onAlphaTest( const WgCoord& ofs )
 {
 	return true;
 }
-
-
-//____ _onEnable() _____________________________________________________________
-
-void WgKnob::_onEnable()
-{
-    _requestRender();
-}
-
-//____ _onDisable() ____________________________________________________________
-
-void WgKnob::_onDisable()
-{
-    _requestRender();
-}
-
-
 
 

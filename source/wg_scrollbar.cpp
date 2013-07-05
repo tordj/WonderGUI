@@ -55,7 +55,7 @@ WgScrollbar::WgScrollbar()
 	m_lastCursorDownPos = WgCoord(-4096, -4096);
 
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS; i++ )
-		m_state[i] = WG_STATE_NORMAL;
+		m_states[i] = WG_STATE_NORMAL;
 }
 
 //____ ~WgScrollbar() _________________________________________________________
@@ -118,6 +118,8 @@ bool WgScrollbar::SetHandlePos( float pos )
 	return	true;
 }
 
+//____ SetHandlePosPxlOfs() ___________________________________________________
+
 bool WgScrollbar::SetHandlePosPxlOfs( int x )
 {
 	int		handlePos, handleLen;
@@ -127,10 +129,14 @@ bool WgScrollbar::SetHandlePosPxlOfs( int x )
 	if( m_bHorizontal )
 	{
 		length = Size().w;
+		if( m_pSkin )
+			length -= m_pSkin->ContentPadding().w;
 	}
 	else
 	{
 		length = Size().h;
+		if( m_pSkin )
+			length -= m_pSkin->ContentPadding().h;
 	}
 
 	length -= m_headerLen + m_footerLen;
@@ -299,10 +305,17 @@ void	WgScrollbar::_viewToPosLen( int * _wpPos, int * _wpLen )
 
 	int maxLen;
 	if( m_bHorizontal )
+	{
 		maxLen = Size().w;
+		if( m_pSkin )
+			maxLen -= m_pSkin->ContentPadding().w;
+	}
 	else
+	{
 		maxLen = Size().h;
-
+		if( m_pSkin )
+			maxLen -= m_pSkin->ContentPadding().h;
+	}
 	maxLen -= m_headerLen + m_footerLen;
 
 	//len = m_handleSize * maxLen;
@@ -340,25 +353,19 @@ void	WgScrollbar::_viewToPosLen( int * _wpPos, int * _wpLen )
 //	* _wpLen = ((int)(pos + len)) - (int) pos;
 }
 
-//____ _onEnable() ___________________________________________________
 
-void WgScrollbar::_onEnable( void )
+//____ _onStateChanged() ______________________________________________________
+
+void WgScrollbar::_onStateChanged( WgState oldState, WgState newState )
 {
-	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
-		m_state[i] = WG_STATE_NORMAL;
-
+	if( newState.IsEnabled() != oldState.IsEnabled() )
+	{
+		for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
+			m_states[i].SetEnabled(newState.IsEnabled());
+	}
 	_requestRender();
 }
 
-//____ _onDisable() ___________________________________________________
-
-void WgScrollbar::_onDisable( void )
-{
-	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
-		m_state[i] = WG_STATE_DISABLED;
-
-	_requestRender();
-}
 
 //____ _onRefresh() _______________________________________________________
 
@@ -440,6 +447,14 @@ void WgScrollbar::_updateMinSize()
 		minH = Max( minH, sz.h );
 	}
 
+	// Add padding for base skin
+
+	if( m_pSkin )
+	{
+		minW += m_pSkin->ContentPadding().w;
+		minH += m_pSkin->ContentPadding().h;
+	}
+
 	// Set if changed.
 
 	if( minW != m_minSize.w || minH != m_minSize.h )
@@ -472,15 +487,19 @@ void WgScrollbar::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgR
 
 void WgScrollbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+
 	WgRect	dest = _canvas;
+	if( m_pSkin )
+		dest = m_pSkin->ContentRect(_canvas,m_state);
 
 	// Render header buttons
 
 	if( m_pBtnBwdSkin && (m_btnLayout & HEADER_BWD) )
-		_renderButton( pDevice, _clip, dest, m_pBtnBwdSkin, m_state[C_HEADER_BWD] );
+		_renderButton( pDevice, _clip, dest, m_pBtnBwdSkin, m_states[C_HEADER_BWD] );
 
 	if( m_pBtnFwdSkin && (m_btnLayout & HEADER_FWD) )
-		_renderButton( pDevice, _clip, dest, m_pBtnFwdSkin, m_state[C_HEADER_FWD] );
+		_renderButton( pDevice, _clip, dest, m_pBtnFwdSkin, m_states[C_HEADER_FWD] );
 
 	// Render background (if any).
 
@@ -490,7 +509,7 @@ void WgScrollbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		dest.h = Size().h - m_headerLen - m_footerLen;
 
 	if( m_pBgSkin )
-		m_pBgSkin->Render( pDevice, dest, m_state[C_BG], _clip );
+		m_pBgSkin->Render( pDevice, dest, m_states[C_BG], _clip );
 
 	// Render the handle
 
@@ -506,7 +525,7 @@ void WgScrollbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		else
 			handleDest = WgRect( dest.x, dest.y + handlePos, dest.w, handleLen );
 
-		m_pHandleSkin->Render( pDevice, handleDest, m_state[C_HANDLE], _clip );
+		m_pHandleSkin->Render( pDevice, handleDest, m_states[C_HANDLE], _clip );
 	}
 
 	// Render footer buttons
@@ -517,20 +536,20 @@ void WgScrollbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		dest.y += dest.h;
 
 	if( m_pBtnBwdSkin && (m_btnLayout & FOOTER_BWD) )
-		_renderButton( pDevice, _clip, dest, m_pBtnBwdSkin, m_state[C_FOOTER_BWD] );
+		_renderButton( pDevice, _clip, dest, m_pBtnBwdSkin, m_states[C_FOOTER_BWD] );
 
 	if( m_pBtnFwdSkin && (m_btnLayout & FOOTER_FWD) )
-		_renderButton( pDevice, _clip, dest, m_pBtnFwdSkin, m_state[C_FOOTER_FWD] );
+		_renderButton( pDevice, _clip, dest, m_pBtnFwdSkin, m_states[C_FOOTER_FWD] );
 }
 
 //____ _onAlphaTest() ______________________________________________________
 
 bool WgScrollbar::_onAlphaTest( const WgCoord& ofs )
 {
-	if( _findMarkedComponent( ofs ) == C_NONE )
-		return false;
+	if( _findMarkedComponent( ofs ) != C_NONE )
+		return true;
 
-	return true;
+	return WgWidget::_onAlphaTest(ofs);
 }
 
 //____ _markTestButton() _______________________________________________________
@@ -556,40 +575,45 @@ bool WgScrollbar::_markTestButton( WgCoord ofs, WgRect& _dest, const WgSkinPtr& 
 
 WgScrollbar::Component WgScrollbar::_findMarkedComponent( WgCoord ofs )
 {
+	WgRect canvas;
+
+	if( m_pSkin )
+		canvas = m_pSkin->ContentRect( WgRect(0,0,Size()),m_state);
+	else 
+		canvas = WgRect(0,0,Size());
+
+	WgRect dest = canvas;
+
 	// First of all, do a mark test against the header buttons...
-
-	WgSize	sz = Size();
-
-	WgRect dest(0,0,sz.w,sz.h);
 
 	if( m_pBtnBwdSkin && (m_btnLayout & HEADER_BWD) )
 	{
-		if( _markTestButton( ofs, dest, m_pBtnBwdSkin, m_state[C_HEADER_BWD]) )
+		if( _markTestButton( ofs, dest, m_pBtnBwdSkin, m_states[C_HEADER_BWD]) )
 			return C_HEADER_BWD;
 	}
 
 	if( m_pBtnFwdSkin && (m_btnLayout & HEADER_FWD) )
 	{
-		if( _markTestButton( ofs, dest, m_pBtnFwdSkin, m_state[C_HEADER_FWD]) )
+		if( _markTestButton( ofs, dest, m_pBtnFwdSkin, m_states[C_HEADER_FWD]) )
 			return C_HEADER_FWD;
 	}
 
 	// Then do a mark test against the footer buttons...
 
 	if( m_bHorizontal )
-		dest.x = sz.w - m_footerLen;
+		dest.x = dest.w - m_footerLen;
 	else
-		dest.y = sz.h - m_footerLen;
+		dest.y = dest.h - m_footerLen;
 
 	if( m_pBtnBwdSkin && (m_btnLayout & FOOTER_BWD) )
 	{
-		if( _markTestButton( ofs, dest, m_pBtnBwdSkin, m_state[C_FOOTER_BWD]) )
+		if( _markTestButton( ofs, dest, m_pBtnBwdSkin, m_states[C_FOOTER_BWD]) )
 			return C_FOOTER_BWD;
 	}
 
 	if( m_pBtnFwdSkin && (m_btnLayout & FOOTER_FWD) )
 	{
-		if( _markTestButton( ofs, dest, m_pBtnFwdSkin, m_state[C_FOOTER_FWD]) )
+		if( _markTestButton( ofs, dest, m_pBtnFwdSkin, m_states[C_FOOTER_FWD]) )
 			return C_FOOTER_FWD;
 	}
 
@@ -598,9 +622,9 @@ WgScrollbar::Component WgScrollbar::_findMarkedComponent( WgCoord ofs )
 	if( _markTestHandle( ofs ) == true )
 		return C_HANDLE;
 
-	// Finally, do a mark test against the background.
+	// Do a mark test against the dragbar background.
 
-	WgRect	r(0,0,sz.w,sz.h);
+	WgRect	r = canvas;
 
 	if( m_bHorizontal )
 	{
@@ -613,7 +637,7 @@ WgScrollbar::Component WgScrollbar::_findMarkedComponent( WgCoord ofs )
 		r.h -= m_headerLen + m_footerLen;
 	}
 
-	if( m_pBgSkin && m_pBgSkin->MarkTest( ofs, r, m_state[C_BG], m_markOpacity ) )
+	if( m_pBgSkin && m_pBgSkin->MarkTest( ofs, r, m_states[C_BG], m_markOpacity ) )
 		return C_BG;
 
 	return C_NONE;
@@ -624,7 +648,7 @@ WgScrollbar::Component WgScrollbar::_findMarkedComponent( WgCoord ofs )
 void WgScrollbar::_unhoverReqRender()
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
-		m_state[i].setHovered(false);
+		m_states[i].SetHovered(false);
 
 	_requestRender();
 }
@@ -637,20 +661,25 @@ void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 	_viewToPosLen( &handlePos, &handleLen );
 
 	WgCoord pos = pEvent->PointerPos();
-	int		x = pos.x;
-	int		y = pos.y;
 
 	int		pointerOfs;
 	int		length;
+
+	WgRect contentRect;
+	if( m_pSkin )
+		contentRect = m_pSkin->ContentRect(WgRect(0,0,Size()),m_state);
+	else
+		contentRect = WgRect(0,0,Size());
+
 	if( m_bHorizontal )
 	{
-		pointerOfs = x;
-		length = Size().w;
+		pointerOfs = pos.x - contentRect.x;
+		length = contentRect.w;
 	}
 	else
 	{
-		pointerOfs = y;
-		length = Size().h;
+		pointerOfs = pos.y - contentRect.y;
+		length = contentRect.h;
 	}
 
 	length -= m_headerLen + m_footerLen;
@@ -676,7 +705,7 @@ void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 			// Turn handle back to NORMAL only if MARKED (selected handle should remain selected).
 			// Request render only if something changed (which it has unless bar was SELECTED...).
 
-			if( m_state[C_HANDLE].isPressed() )
+			if( m_states[C_HANDLE].IsPressed() )
 				return;
 
 			_unhoverReqRender();
@@ -686,17 +715,17 @@ void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 		case WG_EVENT_MOUSE_ENTER:
 		case WG_EVENT_MOUSE_MOVE:
 		{
-			if( m_state[C_HANDLE].isPressed() )
+			if( m_states[C_HANDLE].IsPressed() )
 				return;
 
 			Component c = _findMarkedComponent(pos);
 
-			if( c != C_NONE && !m_state[c].isHovered() )
+			if( c != C_NONE && !m_states[c].IsHovered() )
 			{
 				_unhoverReqRender();
-				m_state[c].setHovered(true);
+				m_states[c].SetHovered(true);
 				if( c == C_HANDLE )
-					m_state[C_BG].setHovered(true);			// Always also mark bg if bar is marked.
+					m_states[C_BG].SetHovered(true);			// Always also mark bg if bar is marked.
 			}
 
 			break;
@@ -710,12 +739,12 @@ void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 			Component c = _findMarkedComponent(pos);
 
 			_unhoverReqRender();
-			m_state[c].setPressed(true);
+			m_states[c].SetPressed(true);
 
 			if( c == C_HANDLE )
 			{
 				m_handlePressOfs = pointerOfs - handlePos;
-				m_state[C_BG].setHovered(true);			// Always mark bg if bar is pressed.
+				m_states[C_BG].SetHovered(true);			// Always mark bg if bar is pressed.
 			}
 			else if( c == C_BG )
 			{
@@ -738,8 +767,8 @@ void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 					}
 					break;
 				case GOTO_POS:
-					m_state[C_HANDLE].setPressed(true);
-					m_state[C_BG].setHovered(true);
+					m_states[C_HANDLE].SetPressed(true);
+					m_states[C_BG].SetHovered(true);
 					m_handlePressOfs = handleLen/2;
 					SetHandlePosPxlOfs( pointerOfs );
 					break;
@@ -771,7 +800,7 @@ void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
 				return;
 
-			if( m_state[C_HANDLE].isPressed() )
+			if( m_states[C_HANDLE].IsPressed() )
 				return;
 
 			Component c = _findMarkedComponent(pos);
@@ -816,7 +845,7 @@ void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
 				return;
 
-			if( m_state[C_HANDLE].isPressed() )
+			if( m_states[C_HANDLE].IsPressed() )
 			{
 				float	scrollhandlePos = 0.f;
 
@@ -852,6 +881,7 @@ void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 				
 				pHandler->QueueEvent( new WgEvent::ScrollbarWheelRolled(this,distance,m_handlePos,m_handleSize) );
 			}
+			pEvent->Swallow();
 		}
 		
         default:
@@ -859,15 +889,10 @@ void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 	}
 
-	// Forward event depending on rules.
+	// Swallow all button 1 events.
 
-	if( pEvent->IsMouseButtonEvent() )
-	{
-		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-			pHandler->ForwardEvent( pEvent );
-	}
-	else if( pEvent->Type() != WG_EVENT_MOUSEWHEEL_ROLL )
-		pHandler->ForwardEvent( pEvent );
+	if( pEvent->IsMouseButtonEvent() && static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() == 1 )
+			pEvent->Swallow();
 
 }
 
@@ -882,9 +907,10 @@ bool WgScrollbar::_markTestHandle( WgCoord ofs )
 	int   handlePos, handleLen;
 	_viewToPosLen( &handlePos, &handleLen );
 
-	WgSize	sz = Size();
+	WgRect area(0,0,Size());
 
-	WgRect area(0,0,sz.w,sz.h);
+	if( m_pSkin )
+		area = m_pSkin->ContentRect(area,m_state);
 
 	if( m_bHorizontal )
 	{
@@ -897,7 +923,7 @@ bool WgScrollbar::_markTestHandle( WgCoord ofs )
 		area.h = handleLen;
 	}
 
-	return m_pHandleSkin->MarkTest( ofs, area, m_state[C_HANDLE], m_markOpacity );
+	return m_pHandleSkin->MarkTest( ofs, area, m_states[C_HANDLE], m_markOpacity );
 }
 
 //____ _setHandle() ____________________________________________________________

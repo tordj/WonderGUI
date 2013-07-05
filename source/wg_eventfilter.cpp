@@ -427,43 +427,6 @@ WgEventFilter	WgEventFilter::CheckboxToggle( WgCheckBox * pWidget )
 	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, pWidget, _filterTypeWidget );
 }
 
-//____ RadiobuttonSelect() __________________________________________________________
-
-WgEventFilter	WgEventFilter::RadiobuttonSelect()
-{
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_SELECT, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::RadiobuttonSelect( WgRadioButton * pWidget )
-{
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_SELECT, pWidget, _filterTypeWidget );
-}
-
-//____ RadiobuttonUnselect() __________________________________________________________
-
-WgEventFilter	WgEventFilter::RadiobuttonUnselect()
-{
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_UNSELECT, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::RadiobuttonUnselect( WgRadioButton * pWidget )
-{
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_UNSELECT, pWidget, _filterTypeWidget );
-}
-
-
-//____ RadiobuttonToggle() __________________________________________________________
-
-WgEventFilter	WgEventFilter::RadiobuttonToggle()
-{
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_TOGGLE, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::RadiobuttonToggle( WgRadioButton * pWidget )
-{
-	return WgEventFilter( WG_EVENT_RADIOBUTTON_TOGGLE, pWidget, _filterTypeWidget );
-}
-
 //____ AnimationUpdate() _______________________________________________________
 
 WgEventFilter	WgEventFilter::AnimationUpdate()

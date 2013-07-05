@@ -37,9 +37,8 @@ static const char	c_widgetType[] = {"Checkbox"};
 
 WgCheckBox::WgCheckBox()
 {
-	m_bChecked			= false;
-	m_bOver				= false;
 	m_bPressed			= false;
+	m_bReturnPressed	= false;
 	m_bFlipOnRelease	= false;
 
 	m_pText				= &m_text;
@@ -68,17 +67,6 @@ const char * WgCheckBox::GetClass( void )
 	return c_widgetType;
 }
 
-
-//____ SetSkin() ____________________________________________________________
-
-bool WgCheckBox::SetSkin( const WgSkinPtr& pSkin )
-{
-	m_pSkin = pSkin;
-
-	_onRefresh();
-	return true;
-}
-
 //____ SetIcon() ______________________________________________________________
 
 void WgCheckBox::SetIcon( const WgSkinPtr& pIconSkin, const WgOrigo& origo, 
@@ -98,27 +86,16 @@ void WgCheckBox::SetIcon( const WgSkinPtr& pIconSkin )
 	_onRefresh();
 }
 
-//____ SetChecked() _____________________________________________________________
+//____ SetSelected() __________________________________________________________
 
-bool WgCheckBox::SetChecked( bool bChecked )
+bool WgCheckBox::SetSelected( bool bSelected )
 {
-	if( m_bChecked != bChecked )
+	if( m_state.IsSelected() != bSelected )
 	{
-		m_bChecked = bChecked;
-
-		WgEventHandler * pHandler = _eventHandler();
-		if( pHandler )
-		{
-			if( bChecked )
-				pHandler->QueueEvent( new WgEvent::CheckboxCheck( this ) );
-			else
-				pHandler->QueueEvent( new WgEvent::CheckboxUncheck( this ) );
-
-			pHandler->QueueEvent( new WgEvent::CheckboxToggle(this, bChecked ) );
-		}
-		_requestRender();
+		WgState oldState = m_state;
+		m_state.SetSelected(bSelected);
+		_onStateChanged(oldState,m_state);
 	}
-
 	return true;
 }
 
@@ -135,17 +112,10 @@ void WgCheckBox::SetFlipOnRelease( bool bFlipOnRelease )
 WgSize WgCheckBox::PreferredSize() const
 {
 	WgSize iconPreferredSize;
-	WgSize bgPreferredSize;
 	WgSize textPreferredSize;
 
 	if( m_text.nbChars() > 0 )
 		textPreferredSize = m_text.unwrappedSize();
-
-	if( m_pSkin )
-	{
-		bgPreferredSize = m_pSkin->PreferredSize();
-		textPreferredSize += m_pSkin->ContentPadding();
-	}
 
 	if( m_pIconSkin )
 	{
@@ -154,114 +124,137 @@ WgSize WgCheckBox::PreferredSize() const
 		//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorders, iconScale and bgPreferredSize
 	}
 
-	WgSize preferredSize = WgSize::Max( WgSize::Max(iconPreferredSize,bgPreferredSize), textPreferredSize);
+	// Apply the skin
+
+	WgSize preferredSize = WgSize::Max( iconPreferredSize, textPreferredSize );
+
+	if( m_pSkin )
+		preferredSize = m_pSkin->SizeForContent( preferredSize );
 
 	return preferredSize;
 }
 
 
-//____ _onEnable() _________________________________________________
-void WgCheckBox::_onEnable()
-{
-	_requestRender();
-}
-
-//____ _onDisable() _________________________________________________
-void WgCheckBox::_onDisable()
-{
-	m_bOver = false;
-	m_bPressed = false;
-
-	_requestRender();
-}
-
 //____ _onEvent() _____________________________________________________________
 
-void WgCheckBox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgCheckBox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
-	switch( pEvent->Type() )
+	WgState oldState = m_state;
+
+	switch( _pEvent->Type() )
 	{
+		case WG_EVENT_KEY_PRESS:
+			if( static_cast<const WgEvent::KeyPress*>(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+			{
+				m_bReturnPressed = true;
+				_pEvent->Swallow();
+			}
+			break;
+
+		case WG_EVENT_KEY_REPEAT:
+			if( static_cast<const WgEvent::KeyPress*>(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+				_pEvent->Swallow();
+			break;
+
+		case WG_EVENT_KEY_RELEASE:
+			if( static_cast< const WgEvent::KeyPress*>(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+			{
+				m_bReturnPressed = false;
+				_pEvent->Swallow();
+			}
+			break;
+	
 		case WG_EVENT_MOUSE_ENTER:
-			if( !m_bOver )
-			{
-				m_bOver = true;
-				_requestRender();
-			}
+			m_state.SetHovered(true);
 			break;
-
 		case WG_EVENT_MOUSE_LEAVE:
-			if( m_bOver )
-			{
-				m_bOver = false;
-				_requestRender();
-			}
+			m_state.SetHovered(false);
 			break;
-
 		case WG_EVENT_MOUSEBUTTON_PRESS:
-		{
-			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
-			if( button == 1 )
+			if( static_cast<const WgEvent::MouseButtonPress*>(_pEvent)->Button() == 1 )
 			{
-				if( !m_bPressed )
-				{
-					if( !m_bFlipOnRelease )
-						SetChecked( !m_bChecked );
-					m_bPressed = true;
-					_requestRender();
-				}
+				m_bPressed = true;
+				_pEvent->Swallow();
 			}
-			else
-				pHandler->ForwardEvent( pEvent );
 			break;
-		}
-
+		case WG_EVENT_MOUSEBUTTON_RELEASE:
+			if( static_cast<const WgEvent::MouseButtonRelease*>(_pEvent)->Button() == 1 )
+			{
+				m_bPressed = false;
+				_pEvent->Swallow();
+			}
+			break;
 		case WG_EVENT_MOUSEBUTTON_CLICK:
 		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 		case WG_EVENT_MOUSEBUTTON_REPEAT:
 		case WG_EVENT_MOUSEBUTTON_DRAG:
-		{
-			int button = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
-			if( button != 1 )
-				pHandler->ForwardEvent( pEvent );
+			if( static_cast<const WgEvent::MouseButtonEvent*>(_pEvent)->Button() == 1 )
+				_pEvent->Swallow();
 			break;
-		}
 
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		case WG_EVENT_FOCUS_GAINED:
+			m_state.SetFocused(true);
+			break;
+		case WG_EVENT_FOCUS_LOST:
+			m_state.SetFocused(false);
+			m_bReturnPressed = false;
+			m_bPressed = false;
+			break;
+	}
+
+	// Set pressed if return or mouse button 1 is pressed
+
+	if( m_bReturnPressed || (m_bPressed && m_state.IsHovered()) )
+		m_state.SetPressed(true);
+	else
+		m_state.SetPressed(false);
+
+	// Possibly flip selected
+
+	if( m_state.IsPressed() != oldState.IsPressed() )
+	{
+		if( m_state.IsPressed() != m_bFlipOnRelease )
+			m_state.SetSelected( !m_state.IsSelected() );
+	}
+
+	//
+
+	if( m_state != oldState )
+		_onStateChanged(oldState,m_state);
+}
+
+//____ _onStateChanged() ______________________________________________________
+
+void WgCheckBox::_onStateChanged( WgState oldState, WgState newState )
+{
+	WgWidget::_onStateChanged(oldState,newState);
+
+	m_pText->setState( newState );
+
+	if( m_pIconSkin && !m_pIconSkin->IsStateIdentical(newState, oldState) )
+		_requestRender();		//TODO: Just request render on icon?
+
+	if( newState.IsSelected() != oldState.IsSelected() )
+	{
+		WgEventHandler * pHandler = _eventHandler();
+		if( pHandler )
 		{
-			int button = static_cast<const WgEvent::MouseButtonPress*>(pEvent)->Button();
-			if( button == 1 )
-			{
-				if( m_bPressed )
-				{
-					m_bPressed = false;
-					if( m_bFlipOnRelease )
-						SetChecked( !m_bChecked );
-					_requestRender();
-				}
-			}
+			if( newState.IsSelected() )
+				pHandler->QueueEvent( new WgEvent::CheckboxCheck( this ) );
 			else
-				pHandler->ForwardEvent( pEvent );
-			break;
-		}
+				pHandler->QueueEvent( new WgEvent::CheckboxUncheck( this ) );
 
-        default:
-			pHandler->ForwardEvent( pEvent );
-            break;
+			pHandler->QueueEvent( new WgEvent::CheckboxToggle(this, newState.IsSelected() ) );
+		}
 	}
 }
 
-//____ GetTextAreaWidth() _____________________________________________________
+//____ _onSkinChanged() _______________________________________________________
 
-Uint32 WgCheckBox::GetTextAreaWidth()
+void WgCheckBox::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
-	WgSize widgetSize = Size();
-
-	WgSize	iconSize;
-
-	if( m_pIconSkin )
-		iconSize = m_pIconSkin->PreferredSize();
-
-	return _getTextRect( widgetSize, _getIconRect( WgRect(0,0,widgetSize), iconSize ) ).w;
+	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+	m_text.SetColorSkin(pNewSkin);
 }
 
 
@@ -269,49 +262,26 @@ Uint32 WgCheckBox::GetTextAreaWidth()
 
 void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	// Get correct state
-
-	WgState	state = WG_STATE_NORMAL;
-	if( !m_bEnabled )
-		state = WG_STATE_DISABLED;
-	else if( m_bOver )
-	{
-		state.setHovered(true);
-		if( m_bPressed )
-			state.setPressed(true);
-	}
-
-	if( m_bChecked )
-		state.setSelected(true);
-
-	// Blit background
-
-	if( m_pSkin )
-		m_pSkin->Render( pDevice, _canvas, state, _clip );
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
 	// Get the content rect and icon rect
 
 	WgRect contentRect	= _canvas;
 	if( m_pSkin )
-		contentRect = m_pSkin->ContentRect(_canvas, state );
+		contentRect = m_pSkin->ContentRect(_canvas, m_state );
 
 	WgRect iconRect		= _getIconRect( contentRect, m_pIconSkin );
 
 	// Blit icon
 
 	if( m_pIconSkin && iconRect.w > 0 && iconRect.h > 0 )
-		m_pIconSkin->Render( pDevice, iconRect, state, _clip );
+		m_pIconSkin->Render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
  	if( m_text.nbLines()!= 0 )
 	{
 		WgRect	textRect = _getTextRect( contentRect, iconRect );
-		m_pText->setState( state );
-
-		if( m_pSkin )
-			m_text.SetColorSkin( m_pSkin );
-
 		pDevice->PrintText( _clip, m_pText, textRect );
 	}
 }
@@ -320,19 +290,24 @@ void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 
 void WgCheckBox::_onRefresh( void )
 {
-	if( m_pSkin && m_pSkin->IsOpaque() )
-		m_bOpaque = true;
-	else
-		m_bOpaque = false;
+	WgWidget::_onRefresh();
 
-	_requestRender();
+	//TODO: Handling of icon and text?
 }
 
 //____ _onNewSize() _______________________________________________________
 
 void WgCheckBox::_onNewSize( const WgSize& size )
 {
-	m_text.setLineWidth( GetTextAreaWidth() );
+	WgRect contentRect	= WgRect(0,0,size);
+	if( m_pSkin )
+		contentRect = m_pSkin->ContentRect(contentRect, m_state );
+
+	WgSize	iconSize;
+	if( m_pIconSkin )
+		iconSize = m_pIconSkin->PreferredSize();
+
+	m_text.setLineWidth( _getTextRect( contentRect, _getIconRect( contentRect, iconSize )).w );
 }
 
 
@@ -342,12 +317,8 @@ void WgCheckBox::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgCheckBox * pOrg = (WgCheckBox *) _pOrg;
 
-	m_bChecked			= pOrg->m_bChecked;
-	m_bOver				= false;
-	m_bPressed			= false;
-	m_bFlipOnRelease	= pOrg->m_bFlipOnRelease;
 
-	m_pSkin				= pOrg->m_pSkin;
+	m_bFlipOnRelease	= pOrg->m_bFlipOnRelease;
 	m_pIconSkin			= pOrg->m_pIconSkin;
 
 	m_text				= pOrg->m_text;
@@ -361,8 +332,7 @@ void WgCheckBox::_onCloneContent( const WgWidget * _pOrg )
 
 void WgCheckBox::_textModified()
 {
-	//TODO: Need to do more here, like possibly request resize.
-
+	_requestResize();
 	_requestRender();
 }
 
@@ -370,18 +340,19 @@ void WgCheckBox::_textModified()
 
 void WgCheckBox::_iconModified()
 {
-	//TODO: Need to do more here, like possibly request resize.
-
+	_requestResize();
 	_requestRender();
 }
-
-
 
 //____ _markTestTextArea() ______________________________________________________
 
 bool WgCheckBox::_markTestTextArea( int _x, int _y )
 {
-	WgRect	contentRect = _getTextRect( Size(), _getIconRect( Size(), m_pIconSkin ) );
+	WgRect contentRect	= WgRect(0,0,Size());
+	if( m_pSkin )
+		contentRect = m_pSkin->ContentRect(contentRect, m_state );
+
+	contentRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin ) );
 
 	if( m_text.CoordToOfs( WgCoord(_x,_y), contentRect ) != -1 )
 		return true;
@@ -393,23 +364,13 @@ bool WgCheckBox::_markTestTextArea( int _x, int _y )
 
 bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 {
-	WgState state = WG_STATE_NORMAL;
-
-	if( !m_bEnabled )
-		state = WG_STATE_DISABLED;
-	else if( m_bOver )
-	{
-		state.setHovered(true);
-		if( m_bPressed )
-			state.setSelected(true);
-	}
-
-	if( m_bChecked )
-		state.setSelected(true);
-
-
 	WgSize	bgSize		= Size();
-	WgRect	iconRect	= _getIconRect( bgSize, m_pIconSkin );
+
+	WgRect	contentRect = WgRect(0,0,bgSize);
+	if( m_pSkin )
+		contentRect = m_pSkin->ContentRect( contentRect, m_state );
+
+	WgRect	iconRect	= _getIconRect( contentRect, m_pIconSkin );
 
 	switch( m_clickArea )
 	{
@@ -417,7 +378,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 		{
 			// Extend iconRect so it connects with textArea before we compare
 
-			WgRect	textRect = _getTextRect( bgSize, iconRect);
+			WgRect	textRect = _getTextRect( contentRect, iconRect);
 
 			if( iconRect.x + iconRect.w < textRect.x )
 				iconRect.w = textRect.x - iconRect.x;
@@ -439,17 +400,15 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 
 			//
 
-			if( (m_pSkin && m_pSkin->MarkTest( ofs, WgRect(0,0,bgSize), state, m_markOpacity )) ||
-				_markTestTextArea( ofs.x, ofs.y ) ||
-				iconRect.Contains( ofs ) )
+			if( WgWidget::_onAlphaTest( ofs ) || _markTestTextArea( ofs.x, ofs.y ) || iconRect.Contains( ofs ) )
 				return true;
 
 			return false;
 		}
 		case ALPHA:			// Alpha test on background and icon.
 		{
-			if( (m_pSkin && m_pSkin->MarkTest( ofs, WgRect(0,0,bgSize), state, m_markOpacity )) ||
-				(m_pIconSkin && m_pIconSkin->MarkTest( ofs, iconRect, state, m_markOpacity )) )
+			if( WgWidget::_onAlphaTest( ofs ) ||
+				(m_pIconSkin && m_pIconSkin->MarkTest( ofs, iconRect, m_state, m_markOpacity )) )
 				return true;
 
 			return false;
@@ -458,7 +417,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 			return true;
 		case ICON:			// Only the icon (alpha test) is clickable.
 		{
-			if( m_pIconSkin && m_pIconSkin->MarkTest( ofs, iconRect, state, m_markOpacity ) )
+			if( m_pIconSkin && m_pIconSkin->MarkTest( ofs, iconRect, m_state, m_markOpacity ) )
 				return true;
 
 			return false;

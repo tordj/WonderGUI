@@ -33,7 +33,7 @@ public:
 
 	virtual void	SetEditMode(WgTextEditMode mode) = 0;
 
-	virtual Uint32	InsertTextAtCursor( const WgCharSeq& str ) = 0;
+	virtual int		InsertTextAtCursor( const WgCharSeq& str ) = 0;
 	virtual bool	InsertCharAtCursor( Uint16 c ) = 0;
 
 	virtual void	GoBOL() = 0;

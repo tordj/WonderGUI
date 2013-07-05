@@ -146,15 +146,6 @@ public:
 	static WgEventFilter	CheckboxToggle();
 	static WgEventFilter	CheckboxToggle( WgCheckBox * pWidget );
 
-	static WgEventFilter	RadiobuttonSelect();
-	static WgEventFilter	RadiobuttonSelect( WgRadioButton * pWidget );
-
-	static WgEventFilter	RadiobuttonUnselect();
-	static WgEventFilter	RadiobuttonUnselect( WgRadioButton * pWidget );
-
-	static WgEventFilter	RadiobuttonToggle();
-	static WgEventFilter	RadiobuttonToggle( WgRadioButton * pWidget );
-
 	static WgEventFilter	AnimationUpdate();
 	static WgEventFilter	AnimationUpdate( WgAnimPlayer * pWidget );
 

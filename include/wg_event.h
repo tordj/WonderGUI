@@ -82,6 +82,7 @@ namespace WgEvent
 			bool			IsMouseEvent() const;
 			bool			IsMouseButtonEvent() const;
 			bool			IsKeyEvent() const;
+			void			Swallow() const {};		//TODO: Should not be const later on...
 
 		protected:
 			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForWidget(false) {}
@@ -308,35 +309,6 @@ namespace WgEvent
 
 	private:
 		bool	m_bChecked;
-	};
-
-	//____ WgRadioButton events ___________________________________________
-
-	class RadiobuttonEvent : public Event
-	{
-	public:
-		WgRadioButton * Radiobutton() const;
-	};
-
-	class RadiobuttonSelect : public RadiobuttonEvent
-	{
-	public:
-		RadiobuttonSelect( WgRadioButton * pWidget );
-	};
-
-	class RadiobuttonUnselect : public RadiobuttonEvent
-	{
-	public:
-		RadiobuttonUnselect( WgRadioButton * pWidget );
-	};
-
-	class RadiobuttonToggle : public RadiobuttonEvent
-	{
-	public:
-		RadiobuttonToggle( WgRadioButton * pWidget, bool bSelected );
-		bool	IsSelected() const;
-	private:
-		bool	m_bSelected;
 	};
 
 	//____ WgAnimPlayer events _____________________________________________

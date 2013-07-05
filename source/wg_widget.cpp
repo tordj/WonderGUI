@@ -29,8 +29,8 @@
 //____ Constructor ____________________________________________________________
 
 WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WG_POINTER_DEFAULT),
-					m_markOpacity( 1 ), m_bEnabled(true), m_bOpaque(false),
-					m_bFocused(false), m_bTabLock(false), m_bReceiveTick(false)
+					m_markOpacity( 1 ), m_bOpaque(false),
+					m_bTabLock(false), m_bReceiveTick(false)
 {
 }
 
@@ -45,9 +45,9 @@ WgWidget::~WgWidget()
 }
 
 
-//____ GetPointerStyle() ________________________________________
+//____ PointerStyle() ________________________________________
 
-WgPointerStyle WgWidget::GetPointerStyle() const
+WgPointerStyle WgWidget::PointerStyle() const
 {
 	return m_pointerStyle;
 }
@@ -56,13 +56,11 @@ WgPointerStyle WgWidget::GetPointerStyle() const
 
 void WgWidget::SetEnabled( bool bEnabled )
 {
-	if( m_bEnabled != bEnabled || IsContainer() )
+	if( m_state.IsEnabled() != bEnabled || IsContainer() )
 	{
-		m_bEnabled = bEnabled;
-		if( bEnabled )
-			_onEnable();
-		else
-			_onDisable();
+		WgState old = m_state;
+		m_state.SetEnabled(bEnabled);
+		_onStateChanged(m_state, old);
 	}
 }
 
@@ -81,6 +79,17 @@ bool WgWidget::MarkTest( const WgCoord& ofs )
 	}
 }
 
+//____ SetSkin() ______________________________________________________________
+
+void WgWidget::SetSkin( const WgSkinPtr& pSkin )
+{
+	WgSkinPtr pOldSkin = m_pSkin;
+	m_pSkin = pSkin;
+	_onSkinChanged( pOldSkin, m_pSkin );
+}
+
+
+
 //____ CloneContent() _________________________________________________________
 
 bool WgWidget::CloneContent( const WgWidget * _pOrg )
@@ -91,13 +100,15 @@ bool WgWidget::CloneContent( const WgWidget * _pOrg )
 	m_id			= _pOrg->m_id;
 
 	m_pointerStyle 	= _pOrg->m_pointerStyle;
+	m_pSkin			= _pOrg->m_pSkin;
 
 	m_tooltip		= _pOrg->m_tooltip;
 	m_markOpacity	= _pOrg->m_markOpacity;
 
-	m_bEnabled		= _pOrg->m_bEnabled;
 	m_bOpaque		= _pOrg->m_bOpaque;
 	m_bTabLock		= _pOrg->m_bTabLock;
+
+	// We do not clone state...
 
 	_onCloneContent( _pOrg );
 	return true;
@@ -187,11 +198,24 @@ int WgWidget::WidthForHeight( int height ) const
 	return PreferredSize().w;		// Default is to stick with best width no matter what height.
 }
 
+//____ PreferredSize() ________________________________________________________
+
+WgSize WgWidget::PreferredSize() const
+{
+	if( m_pSkin )
+		return m_pSkin->PreferredSize();
+	else
+		return WgSize(0,0);
+}
+
 //____ MinSize() ______________________________________________________________
 
 WgSize WgWidget::MinSize() const
 {
-	return WgSize(0,0);
+	if( m_pSkin )
+		return m_pSkin->MinSize();
+	else
+		return WgSize(0,0);
 }
 
 //____ MaxSize() ______________________________________________________________
@@ -199,40 +223,6 @@ WgSize WgWidget::MinSize() const
 WgSize WgWidget::MaxSize() const
 {
 	return WgSize(2<<24,2<<24);
-}
-
-//____ SetMarked() ____________________________________________________________
-
-bool WgWidget::SetMarked()
-{
-	return false;
-}
-
-//____ SetSelected() __________________________________________________________
-
-bool WgWidget::SetSelected()
-{
-	return false;
-}
-
-//____ SetNormal() ____________________________________________________________
-
-bool WgWidget::SetNormal()
-{
-	if( m_bEnabled )
-		return true;
-	else
-		return false;
-}
-
-//____ State() _________________________________________________________________
-
-WgState WgWidget::State() const
-{
-	if( m_bEnabled )
-		return WG_STATE_NORMAL;
-	else
-		return WG_STATE_DISABLED;
 }
 
 //____ _getBlendMode() _________________________________________________________
@@ -276,12 +266,14 @@ void WgWidget::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	}
 }
 
-//____ Fillers _______________________________________________________________
+//____ onCollectPatches()  ____________________________________________________
 
 void WgWidget::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 		container.Add( WgRect( geo, clip ) );
 }
+
+//____ _onMaskPatches() _______________________________________________________
 
 void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
@@ -291,56 +283,134 @@ void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRe
 	}
 }
 
+//____ _onRender() ____________________________________________________________
+
 void WgWidget::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
+	if( m_pSkin )
+		m_pSkin->Render( pDevice, _canvas, m_state, _clip );
 }
+
+//____ _onNewSize() ___________________________________________________________
 
 void WgWidget::_onNewSize( const WgSize& size )
 {
 	_requestRender();
 }
 
+//____ _onRefresh() ___________________________________________________________
+
 void WgWidget::_onRefresh()
 {
+	if( m_pSkin && m_pSkin->IsOpaque(m_state) )
+		m_bOpaque = true;
+	else
+		m_bOpaque = false;
+
+	_requestResize();
 	_requestRender();
 }
 
-void WgWidget::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+//____ _onSkinChanged() _______________________________________________________
+
+void WgWidget::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
-	pHandler->ForwardEvent( pEvent );
+	if( !pOldSkin || !pNewSkin || pOldSkin->ContentPadding() != pNewSkin->ContentPadding() ||
+		pOldSkin->PreferredSize() != pNewSkin->PreferredSize() ||
+		pOldSkin->MinSize() != pNewSkin->MinSize() )
+	{
+		_requestResize();
+	}
+
+	if( pNewSkin && pNewSkin->IsOpaque(m_state) )
+		m_bOpaque = true;
+	else
+		m_bOpaque = false;
+
+	_requestRender();
+}
+
+//____ _onStateChanged() ______________________________________________________
+
+void WgWidget::_onStateChanged( WgState newState, WgState oldState )
+{
+	if( m_pSkin && !m_pSkin->IsStateIdentical(newState, oldState) )
+	{
+		m_bOpaque = m_pSkin->IsOpaque(newState);
+		_requestRender();
+	}
+}
+
+//____ _onEvent() _____________________________________________________________
+
+void WgWidget::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+{
+	WgState oldState = m_state;
+
+	switch( _pEvent->Type() )
+	{
+		case WG_EVENT_MOUSE_ENTER:
+			if( m_bPressed )
+				m_state.SetPressed(true);
+			else
+				m_state.SetHovered(true);
+			break;
+		case WG_EVENT_MOUSE_LEAVE:
+			if( m_bPressed )
+				m_state.SetPressed(false);
+			else
+				m_state.SetHovered(false);
+			break;
+		case WG_EVENT_MOUSEBUTTON_PRESS:
+		{
+			const WgEvent::MouseButtonPress * pEvent = static_cast<const WgEvent::MouseButtonPress*>(_pEvent);
+			if( pEvent->Button() == 1 )
+			{
+				if( m_state.IsHovered() )
+					m_state.SetPressed(true);
+
+				m_bPressed = true;
+			}
+			break;
+		}
+		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		{
+			const WgEvent::MouseButtonRelease * pEvent = static_cast<const WgEvent::MouseButtonRelease*>(_pEvent);
+			if( pEvent->Button() == 1 )
+			{
+				if( m_state.IsHovered() )
+					m_state.SetPressed(false);
+
+				m_bPressed = false;
+			}
+			break;
+		}
+		case WG_EVENT_FOCUS_GAINED:
+			m_state.SetFocused(true);
+			break;
+		case WG_EVENT_FOCUS_LOST:
+			m_state.SetFocused(false);
+			break;
+	}
+
+	if( m_state != oldState )
+		_onStateChanged( m_state, oldState );
 }
 
 bool WgWidget::_onAlphaTest( const WgCoord& ofs )
 {
-	return true;
+	if( m_pSkin )
+		return m_pSkin->MarkTest( ofs, WgRect(0,0,Size()), m_state, m_markOpacity );
+
+	return false;
 }
 
-void WgWidget::_onEnable()
-{
-	_requestRender();
-}
-
-void WgWidget::_onDisable()
-{
-	_requestRender();
-}
-
-void WgWidget::_onGotInputFocus()
-{
-	m_bFocused = true;
-}
-
-void WgWidget::_onLostInputFocus()
-{
-	m_bFocused = false;
-}
-
-bool WgWidget::TempIsInputField() const
+bool WgWidget::IsInputField() const
 {
 	return false;
 }
 
-Wg_Interface_TextHolder* WgWidget::TempGetText()
+Wg_Interface_TextHolder* WgWidget::TextInterface()
 {
 	return 0;
 }

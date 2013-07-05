@@ -352,29 +352,6 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 }
 
 
-//_____ _getRenderState() ________________________________________________________
-
-WgState WgRefreshButton::_getRenderState()
-{
-	if( !IsEnabled() )
-		return WG_STATE_DISABLED;
-
-	if( m_bRefreshing && !m_bRestartable )
-		return WG_STATE_SELECTED;					// Not restartable, so we shouldn't show any MARKED/SELECTED modes.
-
-
-	if( m_bReturnPressed || (m_bPressed && (m_bPointerInside || m_bDownOutside)) )
-		return WG_STATE_SELECTED;
-
-	if( m_bPointerInside )
-		return WG_STATE_HOVERED;
-
-	if( m_bRefreshing )
-		return WG_STATE_SELECTED;
-	else
-		return WG_STATE_NORMAL;
-}
-
 
 //____ _onCloneContent() _______________________________________________________
 

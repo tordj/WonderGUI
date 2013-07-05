@@ -39,12 +39,16 @@ static const char	c_widgetType[] = {"FpsDisplay"};
 
 WgFpsDisplay::WgFpsDisplay( void )
 {
-	m_pTickBuffer		= new Uint32[TICK_BUFFER];
+	m_pTickBuffer		= new int[TICK_BUFFER];
 	for( int i = 0 ; i < TICK_BUFFER ; i++ )
 		m_pTickBuffer[i] = 1;
 
 	m_tickBufferOfs		= 0;
-	m_bOpaque			= false;
+
+	m_labelsText.setText( "Now:/nMin:/nAvg:/nMax:/n" );
+	m_valuesText.setAlignment( WG_NORTHEAST );
+
+	m_bReceiveTick = true;
 }
 
 //____ ~WgFpsDisplay() __________________________________________________________
@@ -76,7 +80,9 @@ const char * WgFpsDisplay::GetClass( void )
 
 void WgFpsDisplay::SetTextProperties( const WgTextpropPtr& pProp )
 {
-	m_pProp = pProp;
+	m_labelsText.setProperties(pProp);
+	m_valuesText.setProperties(pProp);
+	_requestResize();
 	_requestRender();
 }
 
@@ -84,9 +90,16 @@ void WgFpsDisplay::SetTextProperties( const WgTextpropPtr& pProp )
 
 WgSize WgFpsDisplay::PreferredSize() const
 {
-	//TODO: Implement!
+	WgSize contentSize = m_labelsText.unwrappedSize();
 
-	return WgSize(1,1);
+	WgTextAttr attr;
+	m_valuesText.GetBaseAttr( attr );
+	contentSize.w += WgTextTool::lineWidth( m_valuesText.getNode(), attr, " 1000.00" );
+
+	if( m_pSkin )
+		return m_pSkin->SizeForContent(contentSize);
+	else
+		return contentSize;
 }
 
 
@@ -94,86 +107,16 @@ WgSize WgFpsDisplay::PreferredSize() const
 
 void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
-	const int	cCurrentFrames = 10;
-	int currOfs = ((int)m_tickBufferOfs) - cCurrentFrames;
-	if( currOfs < 0 )
-		currOfs += TICK_BUFFER;
+	WgRect content;
+	if( m_pSkin )
+		content = m_pSkin->ContentRect( _canvas, m_state );
+	else
+		content = _canvas;
 
-	Uint32	currTotal = 0;
-	for( int i = 0 ; i < cCurrentFrames ; i++ )
-	{
-		currTotal += m_pTickBuffer[currOfs++];
-		currOfs %= TICK_BUFFER;
-	}
-	float	fpsCurrent = 1000.f / (currTotal / (float) cCurrentFrames);
-
-	//____
-
-	Uint32	avg = 0;
-	for( int i = 0 ; i < TICK_BUFFER ; i++ )
-		avg += m_pTickBuffer[i];
-	float fpsAvg = 1000.f / (((float)avg)/TICK_BUFFER);
-
-	//____
-
-	Uint32	min = 1000000000;
-	for( int i = 0 ; i < TICK_BUFFER ; i++ )
-		if( min > m_pTickBuffer[i] )
-			min = m_pTickBuffer[i];
-	float fpsMax = 1000.f / min;
-
-	//____
-
-	Uint32	max = 0;
-	for( int i = 0 ; i < TICK_BUFFER ; i++ )
-		if( max < m_pTickBuffer[i] )
-			max = m_pTickBuffer[i];
-	float fpsMin = 1000.f / max;
-
-	//____
-
-	char	temp[40];
-	WgChar	temp2[40];
-	const char *	pTemp;
-
-	WgPen	pen( pDevice, _canvas, _clip );
-	WgTextAttr attr;
-
-	WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop());
-	WgTextTool::AddPropAttributes(attr, m_pProp);
-
-	pen.SetAttributes( attr );
-	pen.SetPos( WgCoord(_canvas.x, _canvas.y + pen.GetBaseline()) );
-
-	int height = pen.GetLineSpacing();
-
-	pTemp = temp;
-	sprintf( temp, "Now: %.2f", fpsCurrent );
-	WgTextTool::readString( pTemp, temp2, 39 );
-
-	pDevice->PrintLine( pen, attr, temp2 );
-
-	pTemp = temp;
-	sprintf( temp, "Min: %.2f", fpsMin );
-	WgTextTool::readString( pTemp, temp2, 39 );
-	pen.SetPosX( _canvas.x );
-	pen.MoveY( height );
-	pDevice->PrintLine( pen, attr, temp2 );
-
-	pTemp = temp;
-	sprintf( temp, "Avg: %.2f", fpsAvg );
-	WgTextTool::readString( pTemp, temp2, 39 );
-	pen.SetPosX( _canvas.x );
-	pen.MoveY( height );
-	pDevice->PrintLine( pen, attr, temp2 );
-
-	pTemp = temp;
-	sprintf( temp, "Max: %.2f", fpsMax );
-	WgTextTool::readString( pTemp, temp2, 39 );
-	pen.SetPosX( _canvas.x );
-	pen.MoveY( height );
-	pDevice->PrintLine( pen, attr, temp2 );
+	pDevice->PrintText( _clip, &m_labelsText, _canvas );
+	pDevice->PrintText( _clip, &m_valuesText, _canvas );
 }
 
 
@@ -185,6 +128,8 @@ void WgFpsDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 	{
 		case WG_EVENT_TICK:
 		{
+			// Update tick buffer
+
 			m_tickBufferOfs = (++m_tickBufferOfs) % TICK_BUFFER;
 
 			int msDiff = ((WgEvent::Tick*)pEvent)->Millisec();
@@ -192,6 +137,51 @@ void WgFpsDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 				m_pTickBuffer[m_tickBufferOfs] = msDiff;
 			else
 				m_pTickBuffer[m_tickBufferOfs] = 1;
+
+			// Update valueTexts from tick-buffer
+
+			const int	cCurrentFrames = 10;
+			int currOfs = ((int)m_tickBufferOfs) - cCurrentFrames;
+			if( currOfs < 0 )
+				currOfs += TICK_BUFFER;
+
+			int	currTotal = 0;
+			for( int i = 0 ; i < cCurrentFrames ; i++ )
+			{
+				currTotal += m_pTickBuffer[currOfs++];
+				currOfs %= TICK_BUFFER;
+			}
+			float	fpsCurrent = 1000.f / (currTotal / (float) cCurrentFrames);
+
+			//____
+
+			int	avg = 0;
+			for( int i = 0 ; i < TICK_BUFFER ; i++ )
+				avg += m_pTickBuffer[i];
+			float fpsAvg = 1000.f / (((float)avg)/TICK_BUFFER);
+
+			//____
+
+			int	min = 1000000000;
+			for( int i = 0 ; i < TICK_BUFFER ; i++ )
+				if( min > m_pTickBuffer[i] )
+					min = m_pTickBuffer[i];
+			float fpsMax = 1000.f / min;
+
+			//____
+
+			int	max = 0;
+			for( int i = 0 ; i < TICK_BUFFER ; i++ )
+				if( max < m_pTickBuffer[i] )
+					max = m_pTickBuffer[i];
+			float fpsMin = 1000.f / max;
+
+			//____
+	
+			char	temp[100];
+			sprintf( temp, "%.2f/n%.2f/n%.2f/n%.2f/n", fpsCurrent, fpsMin, fpsAvg, fpsMax );
+			m_valuesText.setText(temp);
+
 			_requestRender();
 		}
 		default:
@@ -199,13 +189,42 @@ void WgFpsDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 	}
 }
 
+//____ _onStateChanged() ______________________________________________________
+
+void WgFpsDisplay::_onStateChanged( WgState oldState, WgState newState )
+{
+	WgWidget::_onStateChanged(oldState,newState);
+
+	m_labelsText.setState(newState);
+	m_valuesText.setState(newState);
+	_requestRender();							//TODO: Check if there has been changes to text appearance.
+
+	if( newState.IsEnabled() && !oldState.IsEnabled() )
+		_startReceiveTicks();
+
+	if( !newState.IsEnabled() && oldState.IsEnabled() )
+		_stopReceiveTicks();
+}
+
+//____ _onSkinChanged() _______________________________________________________
+
+void WgFpsDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+{
+	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+	m_labelsText.SetColorSkin(pNewSkin);
+	m_valuesText.SetColorSkin(pNewSkin);
+}
+
+
 //____ DoMyOwnCloning() _______________________________________________________
 
 void WgFpsDisplay::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgFpsDisplay * pOrg		= (WgFpsDisplay *) _pOrg;
 
-	m_pProp			= pOrg->m_pProp;
+	m_labelsText.setProperties( pOrg->m_labelsText.getProperties() );
+	m_valuesText.setProperties( pOrg->m_valuesText.getProperties() );
+
 	m_tickBufferOfs	= pOrg->m_tickBufferOfs;
 
 	for( int i = 0 ; i < TICK_BUFFER ; i++ )

@@ -35,10 +35,6 @@
 #	include <wg_text.h>
 #endif
 
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
-
 #ifndef WG_ICONHOLDER_DOT_H
 #	include <wg_iconholder.h>
 #endif
@@ -67,21 +63,16 @@ public:
 	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
 
-	bool			SetSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr		Skin() const { return m_pSkin; }
-
 	void			SetIcon( const WgSkinPtr& pIconSkin, const WgOrigo& origo, 
 							 WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
 	void			SetIcon( const WgSkinPtr& pIconSkin );
 	WgSkinPtr		Icon() const { return m_pIconSkin; }
 
-	inline bool		IsChecked() { return m_bChecked; };
-	bool			SetChecked( bool bChecked );
+	inline bool		IsSelected() { return m_state.IsSelected(); };
+	virtual bool	SetSelected( bool bSelected );
 
 	void			SetFlipOnRelease( bool bFlipOnRelease );
 	inline bool		FlipOnRelease() { return m_bFlipOnRelease; }
-
-	Uint32			GetTextAreaWidth();
 
 	WgSize			PreferredSize() const;
 	bool			IsAutoEllipsisDefault() const { return false; };
@@ -95,11 +86,9 @@ protected:
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
 	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onEnable();
-	void	_onDisable();
+	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	
-	bool			m_bChecked;
-
 	virtual void	_iconModified();
 	virtual void	_textModified();
 
@@ -108,11 +97,10 @@ private:
 	void	_refreshTextArea();
 	bool	_markTestTextArea( int _x, int _y );
 	
-	bool			m_bOver;						// Set when mouse is over.							
 	bool			m_bPressed;						// Set when mouse is pressed and over.
+	bool			m_bReturnPressed;
 	bool			m_bFlipOnRelease;				// Set if we want to flip checkbox on press (default), not click.
 
-	WgSkinPtr		m_pSkin;
 	WgSkinPtr		m_pIconSkin;
 	WgText			m_text;
 

@@ -83,10 +83,8 @@ class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder
 		void	_onCloneContent( const WgWidget * _pOrg );
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-		void	_onEnable();
-		void	_onDisable();
-		void	_onGotInputFocus();
-		void	_onLostInputFocus();
+		void	_onStateChanged( WgState oldState, WgState newState );
+		void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 		void	_onRefresh();
 
 		WgWidget*	_getWidget() { return this; }

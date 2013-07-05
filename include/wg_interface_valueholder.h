@@ -72,7 +72,6 @@ protected:
 	virtual void	_valueModified() = 0;				///< Called when value has been modified.
 	virtual void	_rangeModified() = 0;				///< Called when range (and thus fractional value) has been modified.
 
-	void			_cloneInterface( Wg_Interface_ValueHolder * _pClone );
 	void			_onCloneContent( const Wg_Interface_ValueHolder * pOrg );
 
 	bool			_setValue( Sint64 value );

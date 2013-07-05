@@ -569,7 +569,7 @@ WgSkinPtr WgTablist::_tabSkin( WgTab * pTab ) const
 
 WgState	WgTablist::_tabState(const WgTab& tab) const
 {
-	if( !m_bEnabled )
+	if( !m_state.IsEnabled() )
 		return WG_STATE_DISABLED;
 	else if( m_bAlertOn && tab.m_bAlert )
 		return WG_STATE_PRESSED;								// Repurposing state PRESSED as alert state.

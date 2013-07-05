@@ -21,7 +21,7 @@ WgVolumeMeter::WgVolumeMeter()
 	m_nSectionLEDs[2] = 1;
 	
 	m_nLEDs = m_nSectionLEDs[0] + m_nSectionLEDs[1] + m_nSectionLEDs[2];
-	m_LEDSpacing = 0.33;
+	m_LEDSpacing = 0.33f;
 	m_direction = WG_UP;
 	
 	m_peak = 0.f;
@@ -136,37 +136,44 @@ void WgVolumeMeter::SetValue( float peak, float hold )
 
 WgSize WgVolumeMeter::PreferredSize() const
 {
+	WgSize	content;
+
 	if( m_direction == WG_UP || m_direction == WG_DOWN )
-		return WgSize(10,5*m_nLEDs);
+		content = WgSize(10,5*m_nLEDs);
 	else
-		return WgSize(5*m_nLEDs,10);
+		content = WgSize(5*m_nLEDs,10);
+
+	if( m_pSkin )
+		return m_pSkin->SizeForContent(content);
+	else
+		return content;
 }
-
-//____ _onNewSize() ____________________________________________________________________
-
-void WgVolumeMeter::_onNewSize( const WgSize& size )
-{
-	_requestRender();
-}
-
 
 
 //____ _onRender() _____________________________________________________________________
 
 void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+
+	WgRect canvas;
+	if( m_pSkin )
+		canvas = m_pSkin->ContentRect(_canvas, m_state);
+	else
+		canvas = _canvas;
+
+
 	int	peak = 0;
 	int hold = 0;
 	
-	if( m_bEnabled )
+	if( m_state.IsEnabled() )
 	{
 		peak = (int) (m_nLEDs * m_peak);
 		hold = (int) (m_nLEDs * m_hold);
 	}
 
-	
-	
-	float ledSize = ((m_direction == WG_UP || m_direction == WG_DOWN)?_canvas.h:_canvas.w) / (float)(m_nLEDs + (m_nLEDs-1)*m_LEDSpacing);
+		
+	float ledSize = ((m_direction == WG_UP || m_direction == WG_DOWN)?canvas.h:canvas.w) / (float)(m_nLEDs + (m_nLEDs-1)*m_LEDSpacing);
 	float stepSize = ledSize * (1.f+m_LEDSpacing);
 
 	WgRectF ledRect;
@@ -176,22 +183,22 @@ void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	switch( m_direction )
 	{
 		case WG_UP:
-			ledRect = WgRectF( _canvas.x, _canvas.y + _canvas.h - ledSize, _canvas.w, ledSize );
+			ledRect = WgRectF( (float) canvas.x, (float) (canvas.y + canvas.h - ledSize), (float) canvas.w, (float) ledSize );
 			stepX = 0.f;
 			stepY = -stepSize;
 			break;
 		case WG_DOWN:
-			ledRect = WgRectF( _canvas.x, _canvas.y, _canvas.w, ledSize );
+			ledRect = WgRectF( (float) canvas.x, (float) canvas.y, (float) canvas.w, (float) ledSize );
 			stepX = 0.f;
 			stepY = stepSize;
 			break;
 		case WG_LEFT:
-			ledRect = WgRectF( _canvas.x + _canvas.w - ledSize, _canvas.y, ledSize, _canvas.h );
+			ledRect = WgRectF( (float) (canvas.x + canvas.w - ledSize), (float) canvas.y, (float) ledSize, (float) canvas.h );
 			stepX = -stepSize;
 			stepY = 0.f;
 			break;
 		case WG_RIGHT:
-			ledRect = WgRectF( _canvas.x, _canvas.y, ledSize, _canvas.h );
+			ledRect = WgRectF( (float) canvas.x, (float) canvas.y, (float) ledSize, (float) canvas.h );
 			stepX = stepSize;
 			stepY = 0.f;
 			break;
@@ -221,6 +228,16 @@ void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	}
 }
 
+//____ _onStateChanged() ______________________________________________________
+
+void  WgVolumeMeter::_onStateChanged( WgState oldState, WgState newState )
+{
+	WgWidget::_onStateChanged(oldState,newState);
+
+	if( oldState.IsEnabled() != newState.IsEnabled() )
+		_requestRender();
+}
+
 //____ _onCloneContent() _________________________________________________________________ 
 
 void WgVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
@@ -239,11 +256,4 @@ void WgVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
 	m_LEDSpacing = pOrg->m_LEDSpacing;
 	m_peak = pOrg->m_peak;
 	m_hold = pOrg->m_hold;	
-}
-
-//____ _onAlphaTest() ____________________________________________________________________
-
-bool WgVolumeMeter::_onAlphaTest( const WgCoord& ofs )
-{
-	return false;
 }

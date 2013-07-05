@@ -87,8 +87,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 		WgContainer();
 		virtual ~WgContainer() {};
 
-		virtual void	_onEnable();
-		virtual void	_onDisable();
+		virtual void	_onStateChanged( WgState oldState, WgState newState );
 
 		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;

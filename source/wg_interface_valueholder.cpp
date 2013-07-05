@@ -286,18 +286,6 @@ bool Wg_Interface_ValueHolder::_setValue( Sint64 value )
 }
 
 
-//____ _cloneInterface() _______________________________________________________
-
-// DEPRECATED! To be removed once all widgets/items have been turned into widgets.
-
-void Wg_Interface_ValueHolder::_cloneInterface( Wg_Interface_ValueHolder * _pClone )
-{
-	_pClone->m_rangeMin = m_rangeMin;
-	_pClone->m_rangeMax = m_rangeMax;
-	_pClone->m_value	= m_value;
-	_pClone->m_stepSize	= m_stepSize;
-	_pClone->m_unitSize	= m_unitSize;
-}
 //____ _onCloneContent() _______________________________________________________
 
 void Wg_Interface_ValueHolder::_onCloneContent( const Wg_Interface_ValueHolder * pOrg )

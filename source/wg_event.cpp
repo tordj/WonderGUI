@@ -25,7 +25,6 @@
 #include <wg_widget.h>
 #include <wg_button.h>
 #include <wg_checkbox.h>
-#include <wg_radiobutton.h>
 #include <wg_animplayer.h>
 #include <wg_tablist.h>
 #include <wg_valuedisplay.h>
@@ -511,41 +510,6 @@ namespace WgEvent
 	bool CheckboxToggle::IsChecked() const
 	{
 		return m_bChecked;
-	}
-
-	//____ Radiobutton event methods ___________________________________________
-
-	WgRadioButton * RadiobuttonEvent::Radiobutton() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-			return static_cast<WgRadioButton*>(pWidget);
-		else
-			return 0;
-	}
-
-	RadiobuttonSelect::RadiobuttonSelect( WgRadioButton * pWidget )
-	{
-		m_type = WG_EVENT_RADIOBUTTON_SELECT;
-		m_pWidget = pWidget;
-	}
-
-	RadiobuttonUnselect::RadiobuttonUnselect( WgRadioButton * pWidget )
-	{
-		m_type = WG_EVENT_RADIOBUTTON_UNSELECT;
-		m_pWidget = pWidget;
-	}
-
-	RadiobuttonToggle::RadiobuttonToggle( WgRadioButton * pWidget, bool bSelected )
-	{
-		m_type = WG_EVENT_RADIOBUTTON_TOGGLE;
-		m_pWidget = pWidget;
-		m_bSelected = bSelected;
-	}
-
-	bool RadiobuttonToggle::IsSelected() const
-	{
-		return m_bSelected;
 	}
 
 	//____ Animation event methods _____________________________________________

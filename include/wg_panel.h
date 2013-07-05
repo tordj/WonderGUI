@@ -87,9 +87,6 @@ public:
 	void		SetMaskOp( WgMaskOp operation );
 	WgMaskOp	MaskOp() const { return m_maskOp; }
 
-	virtual void	SetSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr	Skin() const { return m_pSkin; }
-
 	inline WgPanelHook *	FirstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
 	inline WgPanelHook *	LastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
 
@@ -106,16 +103,13 @@ protected:
 
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-	virtual bool	_onAlphaTest( const WgCoord& ofs );	
-	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	virtual void	_onCloneContent( const WgPanel * _pOrg );
+	virtual void	_onCloneContent( const WgWidget * _pOrg );
 
 
 	bool		m_bFocusGroup;
 	bool		m_bRadioGroup;
 	bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
 	WgMaskOp	m_maskOp;			// Specifies how container masks background.
-	WgSkinPtr	m_pSkin;
 };
 
 

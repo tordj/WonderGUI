@@ -89,7 +89,6 @@ public:
 
 	WgVectorHook * AddChild( WgWidget * pWidget );
 	WgVectorHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling );
-	WgVectorHook * InsertChildSorted( WgWidget * pWidget );
 
 	bool			DeleteChild( WgWidget * pWidget );
 	WgWidget *		ReleaseChild( WgWidget * pWidget );
@@ -97,22 +96,12 @@ public:
 	bool			DeleteAllChildren();
 	bool			ReleaseAllChildren();
 
-	void			SortChildren();
-	void			SetSortOrder( WgSortOrder order );
-	WgSortOrder		GetSortOrder() const { return m_sortOrder; }
-
-	void			SetSortFunction( WgWidgetSortFunc pSortFunc );
-	WgWidgetSortFunc	SortFunction() const { return m_pSortFunc; }
-
-
 protected:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 
 	WgHook*			_firstHook() const { return m_hooks.First(); }
 	WgHook*			_lastHook() const { return m_hooks.Last(); }
-
-	int				_compareWidgets(const WgWidget * p1, const WgWidget * p2) { return m_pSortFunc?m_pSortFunc(p1,p2):0; }
 
 	// To be overloaded by subclasses
 
@@ -130,8 +119,6 @@ protected:
 
 	WgChain<WgVectorHook>	m_hooks;
 
-	WgSortOrder			m_sortOrder;
-	WgWidgetSortFunc	m_pSortFunc;
 	int					m_nChildPanels;					// Number of VISIBLE children that are panels.
 };
 

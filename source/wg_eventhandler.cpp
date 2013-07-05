@@ -81,10 +81,10 @@ bool WgEventHandler::SetFocusGroup( WgPanel * pFocusGroup )
 			pNewFocusWidget = m_focusGroupMap[pFocusGroup];
 
 	if( m_keyFocusWidget )
-		m_keyFocusWidget->_onLostInputFocus();
+		_setWidgetFocused( m_keyFocusWidget.GetRealPtr(), false );
 
 	if( pNewFocusWidget )
-		pNewFocusWidget->_onGotInputFocus();
+		_setWidgetFocused( pNewFocusWidget.GetRealPtr(), true );
 
 	// Set members and exit
 
@@ -93,6 +93,7 @@ bool WgEventHandler::SetFocusGroup( WgPanel * pFocusGroup )
 
 	return true;
 }
+
 
 //____ SetKeyboardFocus() _____________________________________________________
 
@@ -111,7 +112,7 @@ bool WgEventHandler::SetKeyboardFocus( WgWidget * pFocus )
 		return true;
 
 	if( pOldFocus )
-		pOldFocus->_onLostInputFocus();
+		_setWidgetFocused( pOldFocus, false );
 
 	// Handle new focus, possibly switching focus group.
 
@@ -134,7 +135,7 @@ bool WgEventHandler::SetKeyboardFocus( WgWidget * pFocus )
 
 		// Activate focus
 
-		pFocus->_onGotInputFocus();
+		_setWidgetFocused( pFocus, true );
 	}
 
 	// Set members and exit.
@@ -993,7 +994,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 void WgEventHandler::_processFocusGained( WgEvent::FocusGained * pEvent )
 {
 	if( !m_bWindowFocus && m_keyFocusWidget )
-		m_keyFocusWidget.GetRealPtr()->_onGotInputFocus();
+		_setWidgetFocused( m_keyFocusWidget.GetRealPtr(), true );
 
 	m_bWindowFocus = true;
 }
@@ -1003,7 +1004,7 @@ void WgEventHandler::_processFocusGained( WgEvent::FocusGained * pEvent )
 void WgEventHandler::_processFocusLost( WgEvent::FocusLost * pEvent )
 {
 	if( m_bWindowFocus && m_keyFocusWidget )
-		m_keyFocusWidget.GetRealPtr()->_onLostInputFocus();
+		_setWidgetFocused( m_keyFocusWidget.GetRealPtr(), false );
 
 	m_bWindowFocus = false;
 }
@@ -1074,6 +1075,18 @@ void WgEventHandler::_processMousePosition( WgEvent::MousePosition * pEvent )
 
 }
 
+//____ _setWidgetFocused() ____________________________________________________
+
+void WgEventHandler::_setWidgetFocused( WgWidget * pWidget, bool bFocused )
+{
+		WgState oldState = m_keyFocusWidget->m_state;
+		m_keyFocusWidget->m_state.SetFocused(bFocused);
+
+		if( m_keyFocusWidget->m_state != oldState )
+			m_keyFocusWidget->_onStateChanged(oldState,m_keyFocusWidget->m_state);
+}
+
+
 //____ _updateMarkedWidget() _______________________________________________
 
 void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
@@ -1122,7 +1135,7 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 	WgPointerStyle newStyle;
 	
 	if( pNowMarked && pNowMarked->IsEnabled() )
-		newStyle = pNowMarked->GetPointerStyle();
+		newStyle = pNowMarked->PointerStyle();
 	else if( button != 0 )
 		newStyle = m_pointerStyle;
 	else

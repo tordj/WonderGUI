@@ -43,7 +43,6 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgOscilloscope(); };
 
-	void	SetSkin( const WgSkinPtr& skin );
 	void	SetGridColor( WgColor color );
 	void	SetVGridLines( int nLines, float pLines[] );
 	void	SetHGridLines( int nLines, float pLines[] );
@@ -73,7 +72,6 @@ private:
 		float	y;		// Offset in y from middle of oscillator. Range: -1.0 to 1.0;
 	};
 
-	WgSkinPtr		m_pBG;
 	WgColor			m_gridColor;
 	WgColor			m_lineColor;
 	float			m_lineThickness;

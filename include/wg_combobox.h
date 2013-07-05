@@ -31,10 +31,6 @@
 #	include <wg_interface_edittext.h>
 #endif
 
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
-
 #include <wg_text.h>
 
 class WgMenu;
@@ -50,27 +46,24 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgCombobox(); };
 
-	void			SetSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr		Skin( ) const		{ return m_pSkin; }
-
 	void			SetMenu( WgMenu * pMenu );
-	WgMenu*			GetMenu( ) const;
+	WgMenu*			Menu( ) const;
 
-	WgMenuItem*		GetSelectedItem() const { return m_pSelectedItem; }
+	WgMenuItem*		SelectedItem() const { return m_pSelectedItem; }
 
 	void			SetTextFormat( const WgCharSeq& str );
-	WgString		GetTextFormat() const { return m_textFormat; }
+	WgString		TextFormat() const { return m_textFormat; }
 
 	void			SetPlaceholderText( const WgCharSeq& str );
-	WgString		GetPlaceholderText() const { return m_placeholderText; }
+	WgString		PlaceholderText() const { return m_placeholderText; }
 
 	WgSize			PreferredSize() const;
 	bool			IsAutoEllipsisDefault() const { return false; };
 
 	void			SetEditMode(WgTextEditMode mode);
-	WgTextEditMode	GetEditMode() const { return m_text.GetEditMode(); }
+	WgTextEditMode	EditMode() const { return m_text.EditMode(); }
 
-	Uint32			InsertTextAtCursor( const WgCharSeq& str );
+	int				InsertTextAtCursor( const WgCharSeq& str );
 	bool			InsertCharAtCursor( Uint16 c );
 
 	void			GoBOL();
@@ -78,7 +71,7 @@ public:
 	void			GoBOF() { GoBOL(); }
 	void			GoEOF() { GoEOL(); }
 
-	virtual Wg_Interface_TextHolder* TempGetText(){ return this; }
+	virtual Wg_Interface_TextHolder* TextInterface(){ return this; }
 
 	// Press in textfield:
 	//		Editable - Grab input focus.
@@ -97,10 +90,8 @@ protected:
 	void	_onRefresh();
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onEnable();
-	void	_onDisable();
-	void	_onGotInputFocus();
-	void	_onLostInputFocus();
+	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 private:
 	bool	_isEditable() const { return m_text.IsEditable(); }
@@ -116,9 +107,6 @@ private:
 	WgString		m_textFormat;
 	WgString		m_placeholderText;		// Text displayed when field is empty and has no cursor.
 
-	WgSkinPtr		m_pSkin;
-
-	WgState			m_state;
 	WgMenu *		m_pMenu;
 	WgMenuItem*		m_pSelectedItem;
 	WgText			m_text;

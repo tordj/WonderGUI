@@ -33,6 +33,7 @@ class WgRootPanel;
 class WgHook;
 class WgContainer;
 class WgPanel;
+class WgList;
 class WgCapsule;
 class WgLayer;
 class WgModalLayer;
@@ -65,6 +66,8 @@ class WgWidgetHolder
 		virtual const WgContainer *			CastToContainer() const;
 		virtual WgPanel *					CastToPanel();
 		virtual const WgPanel *				CastToPanel() const;
+		virtual WgList *					CastToList();
+		virtual const WgList *				CastToList() const;
 		virtual WgCapsule *					CastToCapsule();
 		virtual const WgCapsule *			CastToCapsule() const;
 		virtual WgLayer *					CastToLayer();
@@ -76,6 +79,7 @@ class WgWidgetHolder
 		virtual bool		IsWidget() const;
 		virtual bool		IsContainer() const;
 		virtual bool		IsPanel() const;
+		virtual bool		IsList() const;
 		virtual bool		IsCapsule() const;
 		virtual bool		IsLayer() const;
 

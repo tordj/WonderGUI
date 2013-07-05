@@ -31,9 +31,7 @@ static const char	c_widgetType[] = {"Filler"};
 
 WgFiller::WgFiller()
 {
-	m_defaultSize = WgSize(1,1);
-	m_bOpaque = false;
-	m_state = WG_STATE_NORMAL;
+	m_preferredSize = WgSize(-1,-1);
 }
 
 //____ Destructor _____________________________________________________________
@@ -60,26 +58,21 @@ const char * WgFiller::GetClass()
 
 void WgFiller::SetPreferredSize( const WgSize& size )
 {
-	if( size != m_defaultSize )
+	if( size != m_preferredSize )
 	{
-		m_defaultSize = size;
+		m_preferredSize = size;
 		_requestResize();
 	}
-}
-
-//____ SetSkin() _____________________________________________________________
-
-void WgFiller::SetSkin( const WgSkinPtr& pSkin )
-{
-	m_pSkin = pSkin;
-	_requestRender();
 }
 
 //____ PreferredSize() __________________________________________________________
 
 WgSize WgFiller::PreferredSize() const
 {
-	return m_defaultSize;
+	if( m_preferredSize.w >= 0 && m_preferredSize.h >= 0 )
+		return m_preferredSize;
+	else
+		return WgWidget::PreferredSize();
 }
 
 
@@ -89,50 +82,5 @@ void WgFiller::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgFiller * pOrg = (WgFiller*) _pOrg;
 
-	m_defaultSize = pOrg->m_defaultSize;
-	m_pSkin = pOrg->m_pSkin;
-}
-
-//____ _onRender() _____________________________________________________________
-
-void WgFiller::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
-{
-	if( m_pSkin )
-		m_pSkin->Render( pDevice, _canvas, m_state, _clip );
-}
-
-//____ _onAlphaTest() ___________________________________________________________
-
-bool WgFiller::_onAlphaTest( const WgCoord& ofs )
-{
-	 return ( m_pSkin && m_pSkin->MarkTest( ofs, WgRect(0,0,Size()), m_state, m_markOpacity ) );
-}
-
-
-//____ _onEnable() _____________________________________________________________
-
-void WgFiller::_onEnable()
-{
-	m_state = WG_STATE_NORMAL;
-
-	if( m_pSkin )
-	{
-		m_bOpaque =  m_pSkin->IsOpaque(WG_STATE_NORMAL);
-		if( !m_pSkin->IsStateIdentical(WG_STATE_NORMAL,WG_STATE_DISABLED) )
-			_requestRender();
-	}
-}
-
-//____ _onDisable() ____________________________________________________________
-
-void WgFiller::_onDisable()
-{
-	m_state = WG_STATE_DISABLED;
-
-	if( m_pSkin )
-	{
-		m_bOpaque =  m_pSkin->IsOpaque(WG_STATE_DISABLED);
-		if( !m_pSkin->IsStateIdentical(WG_STATE_NORMAL,WG_STATE_DISABLED) )
-			_requestRender();
-	}
+	m_preferredSize = pOrg->m_preferredSize;
 }

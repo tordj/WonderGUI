@@ -39,20 +39,18 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgRadioButton(); };
 	
-	
-	bool	SetState( bool state );
-
-	inline void	AllowUnchecking( bool bAllow ) {m_bAllowUnchecking = bAllow; }	///< Should we allow this radiobutton to be unchecked without any other being checked?
-	inline bool AllowUnchecking( ) const { return m_bAllowUnchecking; }
+	inline void	AllowUnselecting( bool bAllow ) {m_bAllowUnselecting = bAllow; }	///< Should we allow this radiobutton to be unchecked without any other being checked?
+	inline bool AllowUnselecting( ) const { return m_bAllowUnselecting; }
 
 private:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 	WgContainer *	_findRadioGroup();
 	void			_unselectRecursively( WgContainer * pParent );
+	void			_onStateChanged( WgState oldState, WgState newState );
 	
 	
-	bool			m_bAllowUnchecking;
+	bool			m_bAllowUnselecting;
 
 };
 

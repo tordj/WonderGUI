@@ -113,9 +113,6 @@ public:
 
 	//____ Methods __________________________________________
 
-	bool			SetSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr		Skin() const { return m_pSkin; }
-
 	bool			SetEntrySkin( const WgSkinPtr& pSkin, const WgTextpropPtr& pTextProperties );
 	WgSkinPtr		EntrySkin() const { return m_pEntrySkin; }
 	WgTextpropPtr	TextProp() const { return m_pTextProp; }
@@ -137,7 +134,6 @@ protected:
 	//TODO: Should handle disable/enable (close open menu?) and cloning.
 
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-//	void	_onAction( WgInput::UserAction action, int button_key, const WgActionDetails& info, const WgInput& inputObj );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onRefresh();
@@ -164,7 +160,6 @@ private:
 	Uint32					m_selectedItem;		// 0 = no item is selected.
 	Uint32					m_markedItem;		// 0 = no item is marked:
 
-	WgSkinPtr				m_pSkin;
 	WgSkinPtr				m_pEntrySkin;
 	WgTextpropPtr			m_pTextProp;
 };

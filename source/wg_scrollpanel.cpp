@@ -694,7 +694,7 @@ WgWidget * WgScrollPanel::FindWidget( const WgCoord& pos, WgSearchMode mode )
 
 		if( m_pSkin )
 		{
-			if( m_pSkin->MarkTest( pos - p->m_windowGeo.Pos() + m_viewPixOfs, m_contentSize, m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED, m_markOpacity ) )
+			if( m_pSkin->MarkTest( pos - p->m_windowGeo.Pos() + m_viewPixOfs, m_contentSize, m_state, m_markOpacity ) )
 				return this;
 		}
 	}
@@ -1105,21 +1105,22 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 				else if( wheel == m_wheelForScrollX )
 					_wheelRollX( pEvent->Distance() );
 			}
+
+			_pEvent->Swallow();
 		}
 		break;
 
 		default:
-			pHandler->ForwardEvent(_pEvent);
-		break;
+			break;
 	}
+
+	WgPanel::_onEvent(_pEvent,pHandler);
 }
 
 //____ _renderPatches() ________________________________________________________
 
 void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
-	WgState state = m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED;
-
 	// We start by eliminating dirt outside our geometry
 
 	WgPatches 	patches( _pPatches->Size() );								// TODO: Optimize by pre-allocating?
@@ -1144,7 +1145,7 @@ void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
 		{
 			WgRect clip(*pRect,skinWindow);
-			m_pSkin->Render( pDevice, skinCanvas, state, clip );
+			m_pSkin->Render( pDevice, skinCanvas, m_state, clip );
 		}
 	}
 
@@ -1179,7 +1180,7 @@ void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 		{
 			WgRect clip( canvas, *pRect );
 			if( clip.w > 0 || clip.h > 0 )
-				m_pCornerSkin->Render( pDevice, canvas, state, clip );
+				m_pCornerSkin->Render( pDevice, canvas, m_state, clip );
 		}
 
 	}
@@ -1239,11 +1240,14 @@ void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const
 
 bool WgScrollPanel::_onAlphaTest( const WgCoord& ofs )
 {
+	if( m_pSkin && m_elements[WINDOW].m_windowGeo.Contains( ofs ) )
+	{
+		return m_pSkin->MarkTest( ofs, m_elements[WINDOW].m_canvasGeo, m_state, m_markOpacity );
+	}
+
 	if( m_pCornerSkin && m_cornerGeo.Contains( ofs ) )
 	{
-		WgState state = m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED;
-
-		return m_pCornerSkin->MarkTest( ofs, m_cornerGeo, state, m_markOpacity );
+		return m_pCornerSkin->MarkTest( ofs, m_cornerGeo, m_state, m_markOpacity );
 	}
 
 	return false;

@@ -587,17 +587,11 @@ void WgMenu::_markFirstFilteredEntry()
 
 void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& window, const WgRect& clip )
 {
-	WgState backState = m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED;
-
-	// Render background
-
-	if( m_pSkin )
-		m_pSkin->Render( pDevice, canvas, backState, clip );
-
+	WgWidget::_onRender(pDevice,canvas,window,clip);
 
 	// Render the menu-items
 
-	WgRect		contentRect = m_pSkin?m_pSkin->ContentRect(canvas, backState):canvas;
+	WgRect		contentRect = m_pSkin?m_pSkin->ContentRect(canvas, m_state):canvas;
 
 	WgRect		contentClip( contentRect, clip );		// A clip rectangle for content.
 
@@ -624,7 +618,7 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 					WgRect	dest( contentRect.x, yPos + m_sepBorders.top,
 								  contentRect.w, m_pSeparatorSkin->PreferredSize().h );
 
-					m_pSeparatorSkin->Render( pDevice, dest, backState, contentClip );
+					m_pSeparatorSkin->Render( pDevice, dest, m_state, contentClip );
 					yPos += m_sepHeight;
 				}
 			}
@@ -717,7 +711,7 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 						WgState checkboxState = state;
 
 						if( ((WgMenuCheckBox*)pItem)->IsChecked() )
-							checkboxState.setSelected(true);
+							checkboxState.SetSelected(true);
 
 						if( m_pCheckBoxSkin )
 						{
@@ -735,7 +729,7 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 						WgState radiobuttonState = state;
 
 						if( ((WgMenuRadioButton*)pItem)->IsSelected() )
-							radiobuttonState.setSelected(true);
+							radiobuttonState.SetSelected(true);
 
 						if( m_pRadioButtonSkin )
 						{
@@ -1057,6 +1051,17 @@ void WgMenu::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler 
 		pHandler->ForwardEvent( pEvent );
 }
 
+//____ _onStateChanged() ______________________________________________________
+
+void WgMenu::_onStateChanged( WgState oldState, WgState newState )
+{
+	WgWidget::_onStateChanged(oldState,newState);
+
+	if( newState.IsEnabled() != oldState.IsEnabled() && m_scrollbarHook.Widget() )
+		m_scrollbarHook.Widget()->SetEnabled(newState.IsEnabled());
+
+}
+
 //____ SelectItem() _________________________________________________
 void WgMenu::SelectItem(WgMenuItem* pItem)
 {
@@ -1245,7 +1250,6 @@ void WgMenu::_onCloneContent( const WgWidget * _pOrg )
 {
 	const WgMenu * pOrg = static_cast<const WgMenu*>(_pOrg);
 
-	m_pSkin 				= pOrg->m_pSkin;
 	m_iconFieldWidth 		= pOrg->m_iconFieldWidth;
 	m_arrowFieldWidth 		= pOrg->m_arrowFieldWidth;
 	m_pSeparatorSkin		= pOrg->m_pSeparatorSkin;
@@ -1286,29 +1290,8 @@ void WgMenu::_onNewSize( const WgSize& size )
 
 bool WgMenu::_onAlphaTest( const WgCoord& ofs )
 {
-	return true;
+	return WgWidget::_onAlphaTest(ofs);
 }
-
-//____ _onEnable() _____________________________________________________________
-
-void WgMenu::_onEnable()
-{
-	if( m_scrollbarHook.Widget() )
-		m_scrollbarHook.Widget()->SetEnabled(true);
-
-	_requestRender();
-}
-
-//____ _onDisable() ____________________________________________________________
-
-void WgMenu::_onDisable()
-{
-	if( m_scrollbarHook.Widget() )
-		m_scrollbarHook.Widget()->SetEnabled(false);
-
-	_requestRender();
-}
-
 
 //____ _firstHook() ____________________________________________________________
 

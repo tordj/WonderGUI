@@ -51,9 +51,6 @@ public:
 	WgSurface *		ImageSurface() const { return m_pSurface; }
 	WgRect			ImageRect() const { return m_rect; }
 
-	void			SetSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr		Skin() const { return m_pSkin; }
-
 	WgSize			PreferredSize() const;
 
 protected:
@@ -61,12 +58,9 @@ protected:
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onEnable();
-	void	_onDisable();
 
 private:
 
-	WgSkinPtr	m_pSkin;
 	WgSurface *	m_pSurface;
 	WgRect		m_rect;
 

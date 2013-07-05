@@ -322,19 +322,6 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, "checked=%d", (int) (static_cast<const WgEvent::CheckboxToggle*>(_pEvent)->IsChecked()) );
 			break;
 
-		case WG_EVENT_RADIOBUTTON_SELECT:
-			id = "RadiobuttonSelect";
-			break;
-
-		case WG_EVENT_RADIOBUTTON_UNSELECT:
-			id = "RadiobuttonUnselect";
-			break;
-
-		case WG_EVENT_RADIOBUTTON_TOGGLE:
-			id = "RadiobuttonToggle";
-			sprintf( params, "selected=%d", (int) (static_cast<const WgEvent::RadiobuttonToggle*>(_pEvent)->IsSelected()) );
-			break;
-
 		default:
 			id = "Unknown Event";
 			break;

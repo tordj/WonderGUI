@@ -66,42 +66,25 @@ void WgPanel::SetMaskOp( WgMaskOp operation )
 	}
 }
 
-//____ SetSkin() _______________________________________________________________
-
-void WgPanel::SetSkin( const WgSkinPtr& pSkin )
-{
-	m_pSkin = pSkin;
-	_requestRender();
-}
-
-//____ _onAlphaTest() _________________________________________________________
-
-bool WgPanel::_onAlphaTest( const WgCoord& ofs )
-{
-	if( m_pSkin )
-		return m_pSkin->MarkTest( ofs, Size(), m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED, m_markOpacity );
-	else
-		return false;		// By default cointainers have nothing to display themselves.
-}
-
 //____ _onCloneContent() _______________________________________________________
 
-void WgPanel::_onCloneContent( const WgPanel * _pOrg )
+void WgPanel::_onCloneContent( const WgWidget * _pOrg )
 {
-	m_bFocusGroup 		= _pOrg->m_bFocusGroup;
-	m_bRadioGroup 		= _pOrg->m_bRadioGroup;
-	m_bTooltipGroup 	= _pOrg->m_bTooltipGroup;
-	m_maskOp 			= _pOrg->m_maskOp;
-	m_pSkin				= _pOrg->m_pSkin;
+	const WgPanel * pOrg = static_cast<const WgPanel*>(_pOrg);
 
-	WgContainer::_onCloneContent( _pOrg );
+	m_bFocusGroup 		= pOrg->m_bFocusGroup;
+	m_bRadioGroup 		= pOrg->m_bRadioGroup;
+	m_bTooltipGroup 	= pOrg->m_bTooltipGroup;
+	m_maskOp 			= pOrg->m_maskOp;
+
+	WgContainer::_onCloneContent( pOrg );
 }
 
 //____ _onCollectPatches() _______________________________________________________
 
 void WgPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-	if( m_pSkin && m_pSkin->IsOpaque(m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED) )
+	if( m_pSkin && m_pSkin->IsOpaque(m_state) )
 		container.Add( WgRect( geo, clip ) );
 	else
 		WgContainer::_onCollectPatches( container, geo, clip );
@@ -115,7 +98,7 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 {
 
 	//TODO: Don't just check IsOpaque() globally, check rect by rect.
-	if( m_pSkin && m_pSkin->IsOpaque() )
+	if( m_pSkin && m_pSkin->IsOpaque(m_state) )
 	{
 		patches.Sub( WgRect(geo,clip) );
 		return;
@@ -142,14 +125,6 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 			patches.Sub( WgRect(geo,clip) );
 			break;
 	}
-}
-
-//____ _onRender() ___________________________________________________________________
-
-void WgPanel::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
-{
-	if( m_pSkin )
-		m_pSkin->Render( pDevice, _canvas, WG_STATE_NORMAL, _clip );
 }
 
 //____ WgPanelHook::Parent() __________________________________________________

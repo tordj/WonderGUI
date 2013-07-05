@@ -223,7 +223,7 @@ void printWidgetSizes()
 	printf( "WgSizeCapsule: %d bytes\n", (int) sizeof(WgSizeCapsule) );
 	printf( "WgTextDisplay: %d bytes\n", (int) sizeof(WgTextDisplay) );
 	printf( "WgValueDisplay: %d bytes\n", (int) sizeof(WgValueDisplay) );
-	printf( "WgListPanel: %d bytes\n", (int) sizeof(WgListPanel) );
+//	printf( "WgListPanel: %d bytes\n", (int) sizeof(WgListPanel) );
 	printf( "WgScrollPanel: %d bytes\n", (int) sizeof(WgScrollPanel) );
 	printf( "\n" );
 	printf( "WgFlexHook: %d bytes\n", (int) sizeof(WgFlexHook) );
@@ -232,7 +232,7 @@ void printWidgetSizes()
 	printf( "WgPackHook: %d bytes\n", (int) sizeof(WgPackHook) );
 	printf( "WgStackHook: %d bytes\n", (int) sizeof(WgStackHook) );
 //	printf( "WgTableHook: %d bytes\n", (int) sizeof(WgTableHook) );
-	printf( "WgListHook: %d bytes\n", (int) sizeof(WgListHook) );
+//	printf( "WgListHook: %d bytes\n", (int) sizeof(WgListHook) );
 	printf( "WgScrollHook: %d bytes\n", (int) sizeof(WgScrollHook) );
 }
 
@@ -545,7 +545,8 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	//
 */
 
-	WgListPanel * pVBox = new WgListPanel();
+	WgPackPanel * pVBox = new WgPackPanel();
+	pVBox->SetOrientation( WG_VERTICAL );
 //	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
 
 

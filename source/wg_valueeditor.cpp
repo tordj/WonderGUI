@@ -99,6 +99,8 @@ bool WgValueEditor::SetTextprop( const WgTextpropPtr& _pProp )
 	return true;
 }
 
+//____ GetTextprop() __________________________________________________________
+
 WgTextpropPtr WgValueEditor::GetTextprop( ) const
 {
 	return m_text.getProperties();
@@ -193,7 +195,13 @@ WgSize WgValueEditor::PreferredSize() const
 	if( attr.pFont )
 		sz.w = attr.pFont->GetGlyphset(attr.style,attr.size)->GetMaxGlyphAdvance(attr.size)*5;	// By default fit at least 5 characters
 
-	return sz;
+	if( sz.h == 0 )
+		return WgWidget::PreferredSize();
+
+	if( m_pSkin )
+		return m_pSkin->SizeForContent(sz);
+	else
+		return sz;
 }
 
 
@@ -232,7 +240,6 @@ void WgValueEditor::_onRefresh( void )
 		_regenText();
 		_requestRender();
 	}
-
 }
 
 
@@ -240,14 +247,15 @@ void WgValueEditor::_onRefresh( void )
 
 void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	// Leave if we have nothing to print
-
-	if( m_text.nbLines() == 0 )
-		return;
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
 	// Adjust text canvas
 
 	WgRect	canvas = _canvas;
+	if( m_pSkin )
+		canvas = m_pSkin->ContentRect(_canvas,m_state);
+
+	WgRect textClip( canvas, _clip );
 
 	if( m_text.isCursorShowing() )
 	{
@@ -263,7 +271,7 @@ void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	// Print the text
 
-	pDevice->PrintText( _clip, &m_text, canvas - m_viewOfs );
+	pDevice->PrintText( textClip, &m_text, canvas - m_viewOfs );
 }
 
 //____ _regenText() ____________________________________________________________
@@ -374,6 +382,8 @@ bool WgValueEditor::_parseValueFromInput( int64_t * wpResult )
 
 void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
+	WgWidget::_onEvent(pEvent,pHandler);
+
 	WgEventType event = pEvent->Type();
 
 	if( event == WG_EVENT_TICK )
@@ -397,7 +407,7 @@ void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if( event == WG_EVENT_MOUSEBUTTON_PRESS && mousebutton == 1 )
 	{
-		if( !m_bFocused )
+		if( !m_state.IsFocused() )
 		{
 			GrabFocus();
 			m_bSelectAllOnRelease = true;
@@ -425,7 +435,7 @@ void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if( event == WG_EVENT_MOUSEBUTTON_DRAG && mousebutton == 1 )
 	{
-		if( m_bFocused && ofs.x != m_buttonDownOfs )
+		if( m_state.IsFocused() && ofs.x != m_buttonDownOfs )
 		{
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
 			_limitCursor();
@@ -436,7 +446,7 @@ void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if( event == WG_EVENT_MOUSEBUTTON_RELEASE )
 	{
-		if( m_bFocused && mousebutton == 1 )
+		if( m_state.IsFocused() && mousebutton == 1 )
 		{
 			m_text.setSelectionMode(false);
 
@@ -725,24 +735,22 @@ void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		}
 	}
 	
-	// Forward event depending on rules.
+	// Swallow event depending on rules.
 
 	if( pEvent->IsMouseButtonEvent() )
 	{
-		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-			pHandler->ForwardEvent( pEvent );
+		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() == 1 )
+			pEvent->Swallow();
 	}
 	else if( pEvent->IsKeyEvent() )
 	{
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
-		if( static_cast<const WgEvent::KeyEvent*>(pEvent)->IsMovementKey() == false &&
-			key != WG_KEY_DELETE && key != WG_KEY_BACKSPACE )
-				pHandler->ForwardEvent( pEvent );
+		if( static_cast<const WgEvent::KeyEvent*>(pEvent)->IsMovementKey() == true ||
+			key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE )
+			pEvent->Swallow();
 		
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
-	else if( event != WG_EVENT_CHARACTER )
-		pHandler->ForwardEvent( pEvent );
 }
 
 //____ _selectAll() ___________________________________________________________
@@ -805,63 +813,66 @@ void WgValueEditor::_onCloneContent( const WgWidget * _pOrg )
 
 	Wg_Interface_ValueHolder::_onCloneContent( pOrg );
 
+	m_maxInputChars = pOrg->m_maxInputChars;
 	m_format		= pOrg->m_format;
 	m_text.setText(&pOrg->m_text);
 	m_text.setFont(pOrg->m_text.getFont());
 	m_text.setAlignment(pOrg->m_text.alignment());
 }
 
-//____ _onEnable() _____________________________________________________________
+//____ onStateChanged() _______________________________________________________
 
-void WgValueEditor::_onEnable( void )
+void WgValueEditor::_onStateChanged( WgState oldState, WgState newState )
 {
-	m_text.setState(WG_STATE_NORMAL);
-	_requestRender();
+	WgWidget::_onStateChanged(oldState,newState);
+
+	// Update text
+
+	m_text.setState(newState);
+	_requestRender();				//TODO: Only render if text has been affected
+
+	// Check if we got input focus
+
+	if( newState.IsFocused() && !oldState.IsFocused() )
+	{
+		_startReceiveTicks();
+		m_text.showCursor();
+		m_text.goEOL();
+		m_useFormat = m_format;
+
+		if( m_format.decimals != 0 )
+			m_useFormat.bForcePeriod = true;	// Force period if decimals are involved.
+
+		if( m_value < 0.f )
+			m_useFormat.bZeroIsNegative = true;	// Force minus sign if value is negative.
+
+		m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
+
+		_requestRender();
+	}
+
+	// Check if we lost input focus
+
+	if( !newState.IsFocused() && oldState.IsFocused() )
+	{
+		_stopReceiveTicks();
+		_queueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
+
+		m_text.hideCursor();
+		m_useFormat = m_format;
+		_regenText();
+
+		_requestRender();
+	}
 }
 
-//____ _onDisable() ____________________________________________________________
 
-void WgValueEditor::_onDisable( void )
+//____ _onSkinChanged() _______________________________________________________
+
+void WgValueEditor::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
-	m_text.setState(WG_STATE_DISABLED);
-	_requestRender();
-}
-
-
-//____ _onGotInputFocus() ______________________________________________________
-
-void WgValueEditor::_onGotInputFocus()
-{
-	_startReceiveTicks();
-	m_bFocused = true;
-	m_text.showCursor();
-	m_text.goEOL();
-	m_useFormat = m_format;
-
-	if( m_format.decimals != 0 )
-		m_useFormat.bForcePeriod = true;	// Force period if decimals are involved.
-
-	if( m_value < 0.f )
-		m_useFormat.bZeroIsNegative = true;	// Force minus sign if value is negative.
-
-	m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
-
-	_requestRender();
-}
-
-//____ _onLostInputFocus() _____________________________________________________
-
-void WgValueEditor::_onLostInputFocus()
-{
-	_stopReceiveTicks();
-	_queueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
-
-	m_bFocused = false;
-	m_text.hideCursor();
-	m_useFormat = m_format;
-	_regenText();
-
-	_requestRender();
+	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+	m_text.SetColorSkin(pNewSkin);
 }
 
 

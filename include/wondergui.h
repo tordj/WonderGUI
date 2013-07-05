@@ -296,8 +296,5 @@
 #	include <wg_scrollpanel.h>
 #endif
 
-#ifndef WG_LISTPANEL_DOT_H
-#	include <wg_listpanel.h>
-#endif
 
 #endif //WONDERGUI_DOT_H

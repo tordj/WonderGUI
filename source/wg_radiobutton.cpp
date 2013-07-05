@@ -22,7 +22,6 @@
 
 #include <wg_radiobutton.h>
 #include <wg_panel.h>
-#include <wg_eventhandler.h>
 
 static const char	c_widgetType[] = {"RadioButton"};
 
@@ -32,7 +31,7 @@ static const char	c_widgetType[] = {"RadioButton"};
 
 WgRadioButton::WgRadioButton()
 {
-	m_bAllowUnchecking	= false;
+	m_bAllowUnselecting	= false;
 }
 
 //____ Destructor _____________________________________________________________
@@ -41,7 +40,6 @@ WgRadioButton::~WgRadioButton()
 {
 }
 
-
 //____ Type() _________________________________________________________________
 
 const char * WgRadioButton::Type( void ) const
@@ -49,42 +47,25 @@ const char * WgRadioButton::Type( void ) const
 	return GetClass();
 }
 
+//____ GetClass() _____________________________________________________________
+
 const char * WgRadioButton::GetClass( void )
 {
 	return c_widgetType;
 }
 
+//____ _onStateChanged() ______________________________________________________
 
-//____ SetState() _____________________________________________________________
-
-bool WgRadioButton::SetState( bool _state )
+void WgRadioButton::_onStateChanged( WgState oldState, WgState newState )
 {
-	if( m_bChecked != _state )
+	if( newState.IsSelected() && !oldState.IsSelected() )
 	{
-		if( _state )
-		{
 			WgContainer * pGroup = _findRadioGroup();
 			if( pGroup )
 				_unselectRecursively( pGroup );
-
-			// Set and queue event
-
-			m_bChecked = true;
-			_queueEvent( new WgEvent::RadiobuttonSelect(this) );
-		}
-		else
-		{
-			if( !m_bAllowUnchecking )
-				return false;
-
-			m_bChecked = false;
-			_queueEvent( new WgEvent::RadiobuttonUnselect(this) );
-		}
-
-		_queueEvent( new WgEvent::RadiobuttonToggle(this, m_bChecked) );
-		_requestRender();
 	}
-	return true;
+
+	WgCheckBox::_onStateChanged(oldState,newState);
 }
 
 //____ _findRadioGroup() _______________________________________________________
@@ -114,18 +95,8 @@ void WgRadioButton::_unselectRecursively( WgContainer * pParent )
 		if( pWidget->Type() == WgRadioButton::GetClass() )
 		{
 			WgRadioButton * pRB = (WgRadioButton*) pWidget;
-			if( pRB->m_bChecked )
-			{
-				pRB->m_bChecked = false;
-
-				WgEventHandler * pHandler = _eventHandler();
-				if( pHandler )
-				{
-					pHandler->QueueEvent( new WgEvent::RadiobuttonUnselect(pRB) );
-					pHandler->QueueEvent( new WgEvent::RadiobuttonToggle(pRB, false) );
-				}
-				pRB->_requestRender();
-			}
+			if( pRB->m_state.IsSelected() && pRB != this )
+				pRB->SetSelected(false);
 		}
 		else if( pWidget->IsContainer() && (!pWidget->IsPanel() || !pWidget->CastToPanel()->IsRadioGroup()) )
 			_unselectRecursively( pWidget->CastToContainer() );
@@ -142,5 +113,5 @@ void WgRadioButton::_onCloneContent( const WgWidget * _pOrg )
 
 	WgRadioButton * pOrg = (WgRadioButton *) _pOrg;
 
-	m_bAllowUnchecking	= pOrg->m_bAllowUnchecking;
+	m_bAllowUnselecting	= pOrg->m_bAllowUnselecting;
 }

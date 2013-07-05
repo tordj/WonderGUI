@@ -100,18 +100,18 @@ public:
 //	void		set( WgModeEnum state ) { m_state = state; }
 //	WgModeEnum	getEnum() const { return (WgModeEnum) m_state; }
 
-	bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~WG_STATE_DISABLED; else m_state = (m_state & WG_STATE_SELECTED) | WG_STATE_DISABLED; return true; }
-	bool	setSelected(bool bSelected) { if(bSelected) m_state |= WG_STATE_SELECTED; else m_state &= ~WG_STATE_SELECTED; return true; }
-	bool	setFocused(bool bFocused) { if( m_state == WG_STATE_DISABLED ) return false; if(bFocused) m_state |= WG_STATE_FOCUSED; else m_state &= ~WG_STATE_FOCUSED; return true; }
-	bool	setHovered(bool bHovered) { if( m_state == WG_STATE_DISABLED ) return false; if(bHovered) m_state |= WG_STATE_HOVERED; else m_state &= ~WG_STATE_PRESSED; return true; }
-	bool	setPressed(bool bPressed) { if( m_state == WG_STATE_DISABLED ) return false; if(bPressed) m_state |= WG_STATE_PRESSED; else m_state &= ~(WG_STATE_PRESSED - WG_STATE_HOVERED); return true; }
+	bool	SetEnabled(bool bEnabled) { if(bEnabled) m_state &= ~WG_STATE_DISABLED; else m_state = (m_state & WG_STATE_SELECTED) | WG_STATE_DISABLED; return true; }
+	bool	SetSelected(bool bSelected) { if(bSelected) m_state |= WG_STATE_SELECTED; else m_state &= ~WG_STATE_SELECTED; return true; }
+	bool	SetFocused(bool bFocused) { if( m_state == WG_STATE_DISABLED ) return false; if(bFocused) m_state |= WG_STATE_FOCUSED; else m_state &= ~WG_STATE_FOCUSED; return true; }
+	bool	SetHovered(bool bHovered) { if( m_state == WG_STATE_DISABLED ) return false; if(bHovered) m_state |= WG_STATE_HOVERED; else m_state &= ~WG_STATE_PRESSED; return true; }
+	bool	SetPressed(bool bPressed) { if( m_state == WG_STATE_DISABLED ) return false; if(bPressed) m_state |= WG_STATE_PRESSED; else m_state &= ~(WG_STATE_PRESSED - WG_STATE_HOVERED); return true; }
 
 
-	bool	isEnabled() { return (m_state & WG_STATE_DISABLED) == WG_STATE_NORMAL; }
-	bool	isSelected() { return (m_state & WG_STATE_SELECTED) == WG_STATE_SELECTED; }
-	bool	isFocused() { return (m_state & WG_STATE_FOCUSED) == WG_STATE_FOCUSED; }
-	bool	isHovered() { return (m_state & WG_STATE_HOVERED) == WG_STATE_HOVERED; }
-	bool	isPressed() { return (m_state & WG_STATE_PRESSED) == WG_STATE_PRESSED; }
+	bool	IsEnabled() const { return (m_state & WG_STATE_DISABLED) == WG_STATE_NORMAL; }
+	bool	IsSelected() const { return (m_state & WG_STATE_SELECTED) == WG_STATE_SELECTED; }
+	bool	IsFocused() const { return (m_state & WG_STATE_FOCUSED) == WG_STATE_FOCUSED; }
+	bool	IsHovered() const { return (m_state & WG_STATE_HOVERED) == WG_STATE_HOVERED; }
+	bool	IsPressed() const { return (m_state & WG_STATE_PRESSED) == WG_STATE_PRESSED; }
 
 	inline bool operator==(WgStateEnum state) const { return m_state == state; }
 	inline bool operator!=(WgStateEnum state) const { return m_state != state; }
@@ -465,10 +465,6 @@ enum	WgEventType
 	WG_EVENT_CHECKBOX_CHECK,
 	WG_EVENT_CHECKBOX_UNCHECK,
 	WG_EVENT_CHECKBOX_TOGGLE,
-
-	WG_EVENT_RADIOBUTTON_SELECT,
-	WG_EVENT_RADIOBUTTON_UNSELECT,
-	WG_EVENT_RADIOBUTTON_TOGGLE,
 
 	WG_EVENT_ANIMATION_UPDATE,				// Posted every time the animation changes frame.
 

@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include	<wg_textprop.h>
+#ifndef WG_TEXT_DOT_H
+#	include	<wg_text.h>
 #endif
 
 class WgFont;
@@ -51,16 +51,17 @@ class WgFpsDisplay:public WgWidget
 
 	protected:
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+		void	_onStateChanged( WgState oldState, WgState newState );
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 		void	_onCloneContent( const WgWidget * _pOrg );
+		void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 	private:
 
-		WgTextpropPtr	m_pProp;
-
-
-		Uint32 *		m_pTickBuffer;
-		Uint32			m_tickBufferOfs;
+		WgText		m_labelsText;
+		WgText		m_valuesText;
+		int *		m_pTickBuffer;
+		int			m_tickBufferOfs;
 
 };
 

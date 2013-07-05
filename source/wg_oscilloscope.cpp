@@ -74,25 +74,14 @@ const char * WgOscilloscope::GetClass()
 
 WgSize WgOscilloscope::PreferredSize() const
 {
-	return WgSize(80,64);
+	WgSize contentSize(80,64);
+
+	if( m_pSkin )
+		return m_pSkin->SizeForContent(contentSize);
+	else
+		return contentSize;
 }
 
-
-//____ SetSkin() ______________________________________________________________
-
-void WgOscilloscope::SetSkin( const WgSkinPtr& skin )
-{
-	if( m_pBG != skin )
-	{
-		m_pBG = skin;
-		if( m_pBG )
-			m_bOpaque = m_pBG->IsOpaque();
-		else
-			m_bOpaque = false;
-
-		_requestRender();
-	}
-}
 
 //____ SetGridColor() _________________________________________________________
 
@@ -234,31 +223,79 @@ void WgOscilloscope::SetMarkerSkin( const WgSkinPtr& pSkin )
 
 void WgOscilloscope::_onCloneContent( const WgWidget * _pOrg )
 {
+	const WgOscilloscope * pOrg = static_cast<const WgOscilloscope*>(_pOrg);
 
+	m_gridColor = pOrg->m_gridColor;
+	m_lineColor = pOrg->m_lineColor;
+	m_lineThickness = pOrg->m_lineThickness;
+
+	delete [] m_pVGridLines;
+	delete [] m_pHGridLines;
+	delete [] m_pLinePoints;
+	delete [] m_pMarkers;
+
+	m_nVGridLines = pOrg->m_nVGridLines;
+	m_pVGridLines = 0;
+	if( m_nVGridLines > 0 )
+	{
+		m_pVGridLines = new float[m_nVGridLines];
+		for( int i = 0 ; i < m_nVGridLines ; i++ )
+			m_pVGridLines[i] = pOrg->m_pVGridLines[i];
+	}
+
+	m_nHGridLines = pOrg->m_nHGridLines;
+	m_pHGridLines = 0;
+	if( m_nHGridLines > 0 )
+	{
+		m_pHGridLines = new float[m_nHGridLines];
+		for( int i = 0 ; i < m_nHGridLines ; i++ )
+			m_pHGridLines[i] = pOrg->m_pHGridLines[i];
+	}
+
+	m_nLinePoints = pOrg->m_nLinePoints;
+	m_pLinePoints = 0;
+	if( m_nLinePoints > 0 )
+	{
+		m_pLinePoints = new float[m_nLinePoints];
+		for( int i = 0 ; i < m_nLinePoints ; i++ )
+			m_pLinePoints[i] = pOrg->m_pLinePoints[i];
+	}
+
+	m_nMarkers = pOrg->m_nMarkers;
+	m_pMarkers = 0;
+	if( m_nMarkers > 0 )
+	{
+		m_pMarkers = new Marker[m_nMarkers];
+		for( int i = 0 ; i < m_nMarkers ; i++ )
+			m_pMarkers[i] = pOrg->m_pMarkers[i];
+	}
+	
+	m_pMarkerSkin = pOrg->m_pMarkerSkin;
 }
 
 //____ _onRender() ____________________________________________________________
 
 void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	// Render background
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
-	if( m_pBG )
-		m_pBG->Render( pDevice, _canvas, WG_STATE_NORMAL, _clip );
+	WgRect canvas = _canvas;
+	if( m_pSkin )
+		canvas = m_pSkin->ContentRect(_canvas,m_state);
 
 	//
 
-	float centerX = _canvas.x + _canvas.w/2.f;
-	float centerY = _canvas.y + _canvas.h/2.f;
-	float scaleX = (_canvas.w-1)/2.f;
-	float scaleY = (_canvas.h-1)/2.f;
+	float centerX = canvas.x + canvas.w/2.f;
+	float centerY = canvas.y + canvas.h/2.f;
+	float scaleX = (canvas.w-1)/2.f;
+	float scaleY = (canvas.h-1)/2.f;
 
 	// Draw HGridLines
 
 	for( int i = 0 ; i < m_nHGridLines ; i++ )
 	{
 		int ofsY = (int) (m_pHGridLines[i] * scaleY + centerY);
-		pDevice->ClipDrawHorrLine( _clip, WgCoord(_canvas.x,ofsY), _canvas.w, m_gridColor );
+		pDevice->ClipDrawHorrLine( _clip, WgCoord(canvas.x,ofsY), canvas.w, m_gridColor );
 	}
 
 	// Draw VGridLines
@@ -266,12 +303,12 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	for( int i = 0 ; i < m_nVGridLines ; i++ )
 	{
 		int ofsX = (int) (m_pVGridLines[i] * scaleX + centerX);
-		pDevice->ClipDrawVertLine( _clip, WgCoord(ofsX,_canvas.y), _canvas.h, m_gridColor );
+		pDevice->ClipDrawVertLine( _clip, WgCoord(ofsX,canvas.y), canvas.h, m_gridColor );
 	}
 
 	// Draw the oscilloscope line
 
-	int nPoints = m_nLinePoints > _canvas.w ? _canvas.w : m_nLinePoints;
+	int nPoints = m_nLinePoints > canvas.w ? canvas.w : m_nLinePoints;
 
 	int allocSize = sizeof(WgCoord)*nPoints;
 
@@ -279,7 +316,7 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 	for( int i = 0 ; i < nPoints ; i++ )
 	{
-		pOut[i] = WgCoord(_canvas.x + i, (int)(centerY + scaleY*m_pLinePoints[i]));
+		pOut[i] = WgCoord(canvas.x + i, (int)(centerY + scaleY*m_pLinePoints[i]));
 	}
 
 	pDevice->ClipPlotSoftPixels(_clip, nPoints, pOut, m_lineColor, m_lineThickness);

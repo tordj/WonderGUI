@@ -43,26 +43,15 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgFiller(); };
 
-	void		SetSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr	GetSkin() const		{ return m_pSkin; }
-
 	void	SetPreferredSize( const WgSize& size );
 	WgSize	PreferredSize() const;
 
 protected:
-
 	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onEnable();
-	void	_onDisable();
 
 private:
 
-	WgSkinPtr		m_pSkin;
-	WgSize			m_defaultSize;
-	WgState			m_state;
-
+	WgSize			m_preferredSize;
 };
 
 

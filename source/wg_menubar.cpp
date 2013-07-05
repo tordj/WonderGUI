@@ -71,18 +71,6 @@ const char * WgMenubar::GetClass( void )
 	return c_widgetType;
 }
 
-//____ SetSkin() __________________________________________________________
-
-bool WgMenubar::SetSkin( const WgSkinPtr& pSkin )
-{
-	//TODO: Resize if contentBorders have changed or no content and PreferredSize has changed.
-
-	m_pSkin	= pSkin;
-
-	_requestRender();
-	return true;
-}
-
 //____ SetEntrySkin() _______________________________________________________
 
 bool WgMenubar::SetEntrySkin( const WgSkinPtr& pSkin, const WgTextpropPtr& pTextProperties )
@@ -219,12 +207,7 @@ WgSize WgMenubar::PreferredSize() const
 
 void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	WgState backState = m_bEnabled?WG_STATE_NORMAL:WG_STATE_DISABLED;
-
-	// Render background
-
-	if( m_pSkin )
-		m_pSkin->Render( pDevice, _canvas, backState, _clip );
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
 	// Take backgrounds content borders into account
 
@@ -233,7 +216,7 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 
 	if( m_pSkin )
 	{
-		window = m_pSkin->ContentRect( _canvas, backState );
+		window = m_pSkin->ContentRect( _canvas, m_state );
 		clip.Intersection( window, _clip );
 	}
 	else
@@ -266,7 +249,7 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 		if( pI->IsVisible() )
 		{
 			WgState	state = WG_STATE_DISABLED;
-			if( m_bEnabled && pI->m_bEnabled )
+			if( m_state.IsEnabled() && pI->m_bEnabled )
 			{
 				state = WG_STATE_NORMAL;
 
@@ -312,6 +295,8 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 
 void WgMenubar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
+	WgWidget::_onEvent(pEvent,pHandler);
+
 	switch( pEvent->Type() )
 	{
 		case WG_EVENT_MOUSE_MOVE:
@@ -436,7 +421,6 @@ void WgMenubar::_onCloneContent( const WgWidget * _pOrg )
 {
 	const WgMenubar * pOrg = (const WgMenubar *) _pOrg;
 
-	m_pSkin			= pOrg->m_pSkin;
 	m_pEntrySkin	= pOrg->m_pEntrySkin;
 	m_pTextProp		= pOrg->m_pTextProp;
 

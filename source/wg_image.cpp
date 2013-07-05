@@ -56,36 +56,16 @@ const char * WgImage::GetClass()
 	return c_widgetType;
 }
 
-//____ SetSkin() _____________________________________________________________
-
-void WgImage::SetSkin( const WgSkinPtr& pSkin )
-{
-	if( m_pSkin != pSkin )
-	{
-		bool bResize = false;
-
-		if( !pSkin || !m_pSkin || pSkin->ContentPadding() != m_pSkin->ContentPadding() || pSkin->PreferredSize() != m_pSkin->PreferredSize() )
-			bResize = true;
-
-		m_pSkin = pSkin;
-
-		if( m_pSkin && m_pSkin->IsOpaque() )
-			m_bOpaque = true;
-		else
-			m_bOpaque = false;
-
-		_requestRender();
-		if( bResize )
-			_requestResize();
-	}
-}
-
 //____ SetImage() _____________________________________________________________
 
 void WgImage::SetImage( WgSurface * pSurface, const WgRect& rect )
 {
 	if( pSurface != m_pSurface || rect != m_rect )
 	{
+		bool bResize = false;
+		if( rect.w != m_rect.w || rect.h != m_rect.h )
+			bResize = true;
+
 		m_pSurface = pSurface;
 
 		if( pSurface )
@@ -93,6 +73,8 @@ void WgImage::SetImage( WgSurface * pSurface, const WgRect& rect )
 		else
 			m_rect.Clear();
 
+		if( bResize )
+			_requestResize();
 		_requestRender();
 	}
 }
@@ -101,6 +83,10 @@ void WgImage::SetImage( WgSurface * pSurface )
 {
 	if( pSurface != m_pSurface )
 	{
+		bool bResize = false;
+		if( pSurface->Size() != m_pSurface->Size() )
+			bResize = true;
+
 		m_pSurface = pSurface;
 
 		if( pSurface )
@@ -108,6 +94,8 @@ void WgImage::SetImage( WgSurface * pSurface )
 		else
 			m_rect.Clear();
 
+		if( bResize )
+			_requestResize();
 		_requestRender();
 	}
 }
@@ -118,19 +106,15 @@ void WgImage::SetImage( WgSurface * pSurface )
 
 WgSize WgImage::PreferredSize() const
 {
-	WgSize	sz;
-
-	if( m_pSkin )
+	if( m_pSurface )
 	{
-		if( m_pSurface )
+		if( m_pSkin )
 			return m_pSkin->SizeForContent( m_rect.Size() );
 		else
-			return m_pSkin->PreferredSize();
+			return m_rect.Size();
 	}
-	else if( m_pSurface )
-		return m_rect.Size();
 
-	return WgSize(1,1);
+	return WgWidget::PreferredSize();
 }
 
 //____ _onCloneContent() _______________________________________________________
@@ -139,7 +123,6 @@ void WgImage::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgImage * pOrg = (WgImage*) _pOrg;
 
-	m_pSkin		= pOrg->m_pSkin;
 	m_pSurface	= pOrg->m_pSurface;
 	m_rect		= pOrg->m_rect;
 }
@@ -148,8 +131,7 @@ void WgImage::_onCloneContent( const WgWidget * _pOrg )
 
 void WgImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	if( m_pSkin )
-		m_pSkin->Render( pDevice, _canvas, State(), _clip );
+	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
 	if( m_pSurface && !m_rect.IsEmpty() )
 	{
@@ -167,9 +149,6 @@ void WgImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgR
 
 bool WgImage::_onAlphaTest( const WgCoord& ofs )
 {
-	if( m_pSkin )
-		return m_pSkin->MarkTest( ofs, Size(), State(), m_markOpacity );
-
 	if( m_pSurface && !m_rect.IsEmpty() )
 	{
 		WgRect dest;
@@ -178,30 +157,9 @@ bool WgImage::_onAlphaTest( const WgCoord& ofs )
 		else
 			dest = Size();
 
-		return WgUtil::MarkTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity );
+		if( WgUtil::MarkTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity ) )
+			return true;
 	}
 
-	return false;
-}
-
-//____ _onEnable() _____________________________________________________________
-
-void WgImage::_onEnable()
-{
-	if( m_pSkin )
-	{
-		if( !m_pSkin->IsStateIdentical( WG_STATE_NORMAL, WG_STATE_DISABLED ) )
-			_requestRender();
-	}
-}
-
-//____ _onDisable() ____________________________________________________________
-
-void WgImage::_onDisable()
-{
-	if( m_pSkin )
-	{
-		if( !m_pSkin->IsStateIdentical( WG_STATE_NORMAL, WG_STATE_DISABLED ) )
-			_requestRender();
-	}
+	return WgWidget::_onAlphaTest(ofs);
 }

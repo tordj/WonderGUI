@@ -74,7 +74,6 @@ public:
 	//____ Methods ___________________________________________
 
 	bool			SetSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowFieldWidth );
-	WgSkinPtr		Skin() const					{ return m_pSkin; }
 	int				IconFieldWidth() const			{ return m_iconFieldWidth; }
 	int				ArrowFieldWidth() const			{ return m_arrowFieldWidth; }
 
@@ -200,10 +199,8 @@ private:
 	void		_onRefresh();
 
 	void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void		_onStateChanged( WgState oldState, WgState newState );
 	bool		_onAlphaTest( const WgCoord& ofs );
-
-	void		_onEnable();			// We are a container, but we also have our own graphics.
-	void		_onDisable();			// " -
 
 	//
 
@@ -281,7 +278,6 @@ private:
 
 	// Members defining background
 
-	WgSkinPtr				m_pSkin;
 	WgSkinPtr				m_pEntrySkin;
 
 	// Members defining content layout

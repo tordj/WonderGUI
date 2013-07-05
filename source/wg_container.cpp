@@ -222,29 +222,21 @@ WgMenuLayer * WgContainer::_getMenuLayer() const
 		return 0;
 }
 
+//____ _onStateChanged() ______________________________________________________
 
-
-//____ _onEnable() _____________________________________________________________
-
-void WgContainer::_onEnable()
+void WgContainer::_onStateChanged( WgState oldState, WgState newState )
 {
-	WgWidget * p = FirstWidget();
-	while( p )
-	{
-		p->SetEnabled(true);
-		p = p->NextSibling();
-	}
-}
+	WgWidget::_onStateChanged(oldState,newState);
 
-//____ _onDisable() ____________________________________________________________
-
-void WgContainer::_onDisable()
-{
-	WgWidget * p = FirstWidget();
-	while( p )
+	if( oldState.IsEnabled() != newState.IsEnabled() )
 	{
-		p->SetEnabled(false);
-		p = p->NextSibling();
+		bool bEnabled = newState.IsEnabled();
+		WgWidget * p = FirstWidget();
+		while( p )
+		{
+			p->SetEnabled(bEnabled);
+			p = p->NextSibling();
+		}
 	}
 }
 

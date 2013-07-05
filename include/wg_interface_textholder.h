@@ -39,7 +39,7 @@ class Wg_Interface_TextHolder : protected WgTextHolder
 {
 
 public:
-	virtual WgTextEditMode GetEditMode() const  { return WG_TEXT_STATIC; }
+	virtual WgTextEditMode EditMode() const  { return WG_TEXT_STATIC; }
 
 	virtual void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); _textModified(); }
 	inline WgTextManager * GetTextManager() const { return m_pText->getManager(); }
@@ -134,7 +134,7 @@ public:
 	int			DeleteChar( int ofs );
 
 	void				SetLineSpaceAdjustment( float adjustment );
-	float				GetLineSpaceAdjustment() const;
+	float				LineSpaceAdjustment() const;
 
 	virtual bool		SetTextWrap(bool bWrap);
 	inline bool			GetTextWrap() const { return m_pText->IsWrap(); }
@@ -158,7 +158,6 @@ protected:
 
 	inline void			_textModified( WgText * pText ) { _textModified(); }
 	virtual void		_textModified() = 0;
-	void				_cloneInterface( Wg_Interface_TextHolder * _pClone );
 	void				_onCloneContent( const Wg_Interface_TextHolder * pOrg );
 
 	WgText *			m_pText;			// Must always be set by derived class!

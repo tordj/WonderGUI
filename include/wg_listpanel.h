@@ -77,7 +77,6 @@ public:
 
 	inline WgListHook * AddChild( WgWidget * pWidget ) { return static_cast<WgListHook*>(WgVectorPanel::AddChild(pWidget)); }
 	inline WgListHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgListHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
-	inline WgListHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgListHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 
 	inline WgListHook* FirstHook() const { return static_cast<WgListHook*>(m_hooks.First()); }
 	inline WgListHook* LastHook() const { return static_cast<WgListHook*>(m_hooks.Last()); }
