@@ -31,18 +31,21 @@
 #	include <wg_skin.h>
 #endif
 
+class WgImage;
+typedef	WgSmartChildPtr<WgImage,WgWidgetPtr>		WgImagePtr;
+typedef	WgWeakChildPtr<WgImage,WgWidgetWeakPtr>		WgImageWeakPtr;
 
 //____ WgImage __________________________________________________________
 
 class WgImage : public WgWidget
 {
 public:
-	WgImage();
-	virtual ~WgImage();
+	static WgImagePtr	Create() { return WgImagePtr(new WgImage()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgImage(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgImagePtr	Cast( const WgObjectPtr& pObject );
 	
 
 	void			SetImage( WgSurface * pSurface, const WgRect& rect );
@@ -54,6 +57,9 @@ public:
 	WgSize			PreferredSize() const;
 
 protected:
+	WgImage();
+	virtual ~WgImage();
+	virtual WgWidget* _newOfMyType() const { return new WgImage(); };
 
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );

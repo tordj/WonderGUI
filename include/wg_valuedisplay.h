@@ -45,14 +45,19 @@
 
 class	WgFont;
 
+class WgValueDisplay;
+typedef	WgSmartChildPtr<WgValueDisplay,WgWidgetPtr>		WgValueDisplayPtr;
+typedef	WgWeakChildPtr<WgValueDisplay,WgWidgetWeakPtr>	WgValueDisplayWeakPtr;
+
 class WgValueDisplay : public WgWidget, public Wg_Interface_ValueHolder
 {
 public:
-	WgValueDisplay();
-	virtual ~WgValueDisplay();
-	virtual const char * Type() const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgValueDisplay(); };
+	static WgValueDisplayPtr	Create() { return WgValueDisplayPtr(new WgValueDisplay()); }
+
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgValueDisplayPtr	Cast( const WgObjectPtr& pObject );
 
 
 	//____ Methods __________________________________________
@@ -68,6 +73,10 @@ public:
 
 
 protected:
+	WgValueDisplay();
+	virtual ~WgValueDisplay();
+	virtual WgWidget* _newOfMyType() const { return new WgValueDisplay(); };
+
 	void	_onRefresh();
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );

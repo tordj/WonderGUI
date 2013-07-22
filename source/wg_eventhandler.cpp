@@ -1091,9 +1091,9 @@ void WgEventHandler::_setWidgetFocused( WgWidget * pWidget, bool bFocused )
 
 void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 {
-	WgWidget*  pNowMarked = 0;
+	WgWidgetPtr pNowMarked = 0;
 
-	WgWidget * pWidgetTarget = m_pRoot->FindWidget( m_pointerPos, WG_SEARCH_ACTION_TARGET );
+	WgWidgetPtr pWidgetTarget = m_pRoot->FindWidget( m_pointerPos, WG_SEARCH_ACTION_TARGET );
 
 	// Figure out which button of currently pressed has been pressed the longest.
 	// Mouse is only allowed to mark Widgets that were marked on press of that button.
@@ -1121,14 +1121,14 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 			QueueEvent( new WgEvent::MouseLeave( m_pMarkedWidget.GetRealPtr() ) );
 	
 		if( pNowMarked )
-			QueueEvent( new WgEvent::MouseEnter( pNowMarked ) );
+			QueueEvent( new WgEvent::MouseEnter( pNowMarked.GetRealPtr() ) );
 	}
 	else if( bPostMouseMoveEvents && pNowMarked )
-		QueueEvent( new WgEvent::MouseMove( pNowMarked ) );
+		QueueEvent( new WgEvent::MouseMove( pNowMarked.GetRealPtr() ) );
 
 	// Copy content of pNowMarked to m_pMarkedWidget
 
-	m_pMarkedWidget = pNowMarked;
+	m_pMarkedWidget = pNowMarked.GetRealPtr();
 	
 	// Update PointerStyle
 	

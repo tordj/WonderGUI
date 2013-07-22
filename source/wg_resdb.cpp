@@ -198,7 +198,7 @@ std::string	WgResDB::GenerateName( const WgSkinPtr& data )
 	return std::string("_skin__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgWidget* data )
+std::string	WgResDB::GenerateName( const WgWidgetPtr& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -473,7 +473,7 @@ bool WgResDB::AddDataSet( const std::string& id, MetaData * pMetaData )
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddWidget( const std::string& id, WgWidget * pWidget, MetaData * pMetaData )
+bool WgResDB::AddWidget( const std::string& id, const WgWidgetPtr& pWidget, MetaData * pMetaData )
 {
 	assert(m_mapWidgets.find(id) == m_mapWidgets.end());
 	if(m_mapWidgets.find(id) == m_mapWidgets.end())
@@ -635,7 +635,7 @@ WgResDB::MetaData * WgResDB::GetDataSet( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgWidget * WgResDB::GetWidget( const std::string& id ) const
+WgWidgetPtr WgResDB::GetWidget( const std::string& id ) const
 {
 	WidgetRes* widgetRes = GetResWidget(id);
 	return widgetRes ? widgetRes->res : 0;
@@ -643,17 +643,17 @@ WgWidget * WgResDB::GetWidget( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgWidget * WgResDB::CloneWidget( const std::string& id ) const
+WgWidgetPtr WgResDB::CloneWidget( const std::string& id ) const
 {
 	WidgetRes* widgetRes = GetResWidget(id);
 	
 	if( !widgetRes )
 		return 0;
 
-	WgWidget* pWidget = widgetRes->res;
+	WgWidgetPtr pWidget = widgetRes->res;
 
-	WgWidget* pClone = pWidget->NewOfMyType();
-	pClone->CloneContent(pWidget);
+	WgWidgetPtr pClone = pWidget->NewOfMyType();
+	pClone->CloneContent(pWidget.GetRealPtr());
 	return pClone;
 }
 
@@ -1153,7 +1153,7 @@ WgResDB::SkinRes* WgResDB::FindResSkin( const WgSkinPtr& meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::WidgetRes* WgResDB::FindResWidget( const WgWidget* meta ) const
+WgResDB::WidgetRes* WgResDB::FindResWidget( const WgWidgetPtr& meta ) const
 {
 	WidgetRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())

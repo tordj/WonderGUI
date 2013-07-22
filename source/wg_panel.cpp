@@ -30,11 +30,41 @@
 #	include <wg_gfxdevice.h>
 #endif
 
+const char WgPanel::CLASSNAME[] = {"Panel"};
+
 //____ Constructor _____________________________________________________________
 
 WgPanel::WgPanel() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE)
 {
 }
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgPanel::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgContainer::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgPanel::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgPanelPtr WgPanel::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgPanelPtr( static_cast<WgPanel*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ IsPanel() ______________________________________________________________
 
@@ -114,7 +144,7 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 			while(p)
 			{
 				if( p->IsVisible() )
-					p->Widget()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
+					p->_widget()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
 				p = static_cast<WgPanelHook*>(_nextHookWithGeo( childGeo, p ));
 			}
 			break;
@@ -129,7 +159,7 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 
 //____ WgPanelHook::Parent() __________________________________________________
 
-WgPanel* WgPanelHook::Parent() const 
+WgPanelPtr WgPanelHook::Parent() const 
 { 
 	return static_cast<WgPanel*>(_parent()); 
 }

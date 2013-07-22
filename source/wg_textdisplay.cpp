@@ -26,7 +26,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_eventhandler.h>
 
-static const char	c_widgetType[] = {"TextDisplay"};
+const char WgTextDisplay::CLASSNAME[] = {"TextDisplay"};
 
 
 
@@ -52,17 +52,33 @@ WgTextDisplay::~WgTextDisplay()
 }
 
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgTextDisplay::Type() const
-{
-	return WgTextDisplay::GetClass();
+bool WgTextDisplay::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-const char * WgTextDisplay::GetClass()
-{
-	return c_widgetType;
+//____ ClassName() ____________________________________________________________
+
+const char * WgTextDisplay::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgTextDisplayPtr WgTextDisplay::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgTextDisplayPtr( static_cast<WgTextDisplay*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ GoBOL() ________________________________________________________________
 void WgTextDisplay::GoBOL()

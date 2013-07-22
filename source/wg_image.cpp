@@ -28,7 +28,7 @@
 #include <wg_surface.h>
 
 
-static const char	c_widgetType[] = {"Image"};
+const char WgImage::CLASSNAME[] = {"Image"};
 
 //____ Constructor ____________________________________________________________
 
@@ -42,18 +42,31 @@ WgImage::~WgImage()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgImage::Type( void ) const
-{
-	return GetClass();
+bool WgImage::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgImage::GetClass()
+const char * WgImage::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgImagePtr WgImage::Cast( const WgObjectPtr& pObject )
 {
-	return c_widgetType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgImagePtr( static_cast<WgImage*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetImage() _____________________________________________________________

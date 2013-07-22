@@ -28,7 +28,8 @@
 #include <wg_eventhandler.h>
 
 
-static const char	c_widgetType[] = {"ScrollPanel"};
+const char WgScrollPanel::CLASSNAME[] = {"ScrollPanel"};
+
 static const char	c_hookType[] = {"ScrollHook"};
 
 
@@ -82,16 +83,31 @@ WgScrollPanel::~WgScrollPanel()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgScrollPanel::Type() const
-{
-	return GetClass();
+bool WgScrollPanel::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgPanel::IsInstanceOf(pClassName);
 }
 
-const char * WgScrollPanel::GetClass( void )
+//____ ClassName() ____________________________________________________________
+
+const char * WgScrollPanel::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgScrollPanelPtr WgScrollPanel::Cast( const WgObjectPtr& pObject )
 {
-	return c_widgetType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgScrollPanelPtr( static_cast<WgScrollPanel*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 
@@ -461,9 +477,9 @@ void WgScrollPanel::SetSkin( const WgSkinPtr& pSkin )
 
 //____ SetContent() ___________________________________________________________
 
-WgPanelHook * WgScrollPanel::SetContent( WgWidget * pContent )
+WgPanelHook * WgScrollPanel::SetContent( const WgWidgetPtr& pContent )
 {
-	m_elements[WINDOW]._attachWidget(pContent);
+	m_elements[WINDOW]._setWidget(pContent.GetRealPtr());
 
 	_updateElementGeo( Size() );
 	_requestRender( m_elements[WINDOW].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
@@ -476,97 +492,83 @@ WgPanelHook * WgScrollPanel::SetContent( WgWidget * pContent )
 
 //____ SetHScrollbar() ________________________________________________________
 
-WgPanelHook * WgScrollPanel::SetHScrollbar( WgHScrollbar* pScrollbar )
+WgPanelHook * WgScrollPanel::SetHScrollbar( const WgHScrollbarPtr& pScrollbar )
 {
 	// Remove us as target target from current Scrollbar (if we have any)
 
-	if( m_elements[XDRAG].Widget() )
-		((WgScrollbar*)m_elements[XDRAG].Widget())->SetScrollbarTarget(0);
+	if( m_elements[XDRAG]._widget() )
+		((WgScrollbar*)m_elements[XDRAG]._widget())->SetScrollbarTarget(0);
 
 	//
 
-	m_elements[XDRAG]._attachWidget(pScrollbar);
-
-	if( pScrollbar )
-		pScrollbar->SetScrollbarTarget( &m_scrollbarTargets[1] );
-
+	m_elements[XDRAG]._setWidget(pScrollbar.GetRealPtr());
 	_updateElementGeo( Size() );
-	pScrollbar->SetHandle( ViewOfsX(), ViewLenX() );
 	_requestRender( m_elements[XDRAG].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
 
 	if( pScrollbar )
+	{
+		pScrollbar->SetScrollbarTarget( &m_scrollbarTargets[1] );
+		pScrollbar->SetHandle( ViewOfsX(), ViewLenX() );
 		return &m_elements[YDRAG];
-	else
-		return 0;
+	}
+
+	return 0;
 }
 
 //____ SetVScrollbar() ________________________________________________________
 
-WgPanelHook * WgScrollPanel::SetVScrollbar( WgVScrollbar* pScrollbar )
+WgPanelHook * WgScrollPanel::SetVScrollbar( const WgVScrollbarPtr& pScrollbar )
 {
-	// Remove us as target target from current Scrollbar (if we have any)
+	// Remove us as target from current Scrollbar (if we have any)
 
-	if( m_elements[YDRAG].Widget() )
-		((WgScrollbar*)m_elements[YDRAG].Widget())->SetScrollbarTarget(0);
-
-	//
-
-	m_elements[YDRAG]._attachWidget(pScrollbar);
+	if( m_elements[YDRAG]._widget() )
+		((WgScrollbar*)m_elements[YDRAG]._widget())->SetScrollbarTarget(0);
 
 	//
 
-	if( pScrollbar )
-		pScrollbar->SetScrollbarTarget( &m_scrollbarTargets[0] );
-
+	m_elements[YDRAG]._setWidget(pScrollbar.GetRealPtr());
 	_updateElementGeo( Size() );
-	pScrollbar->SetHandle( ViewOfsY(), ViewLenY() );
 	_requestRender( m_elements[YDRAG].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
 
 	if( pScrollbar )
+	{
+		pScrollbar->SetScrollbarTarget( &m_scrollbarTargets[0] );
+		pScrollbar->SetHandle( ViewOfsY(), ViewLenY() );
 		return &m_elements[YDRAG];
-	else
-		return 0;
+	}
+
+	return 0;
 }
 
-//____ ReleaseContent() _______________________________________________________
-
-WgWidget* WgScrollPanel::ReleaseContent()
+WgHScrollbarPtr WgScrollPanel::HScrollbar() const 
 {
-	WgWidget * p = m_elements[WINDOW]._releaseWidget();
-	_updateElementGeo( Size() );
-	return p;
+	return (WgHScrollbar*) m_elements[XDRAG]._widget(); 
 }
 
-//____ ReleaseHScrollbar() ____________________________________________________
-
-WgHScrollbar* WgScrollPanel::ReleaseHScrollbar()
-{
-	WgHScrollbar * p = (WgHScrollbar*) m_elements[XDRAG]._releaseWidget();
-	_updateElementGeo( Size() );
-	return p;
+WgVScrollbarPtr WgScrollPanel::VScrollbar() const 
+{ 
+	return (WgVScrollbar*) m_elements[YDRAG]._widget(); 
 }
 
-//____ ReleaseVScrollbar() ____________________________________________________
-
-WgVScrollbar* WgScrollPanel::ReleaseVScrollbar()
-{
-	WgVScrollbar * p = (WgVScrollbar*) m_elements[YDRAG]._releaseWidget();
-	_updateElementGeo( Size() );
-	return p;
+WgWidgetPtr WgScrollPanel::Content() const 
+{ 
+	return m_elements[WINDOW]._widget(); 
 }
 
-//____ DeleteChild() __________________________________________________________
 
-bool WgScrollPanel::DeleteChild( WgWidget * pWidget )
+
+//____ RemoveChild() __________________________________________________________
+
+bool WgScrollPanel::RemoveChild( const WgWidgetPtr& pWidget )
 {
-	if( pWidget == 0 )
+	if( !pWidget )
 		return false;
 
-	if( pWidget == m_elements[XDRAG].Widget() )
+	if( pWidget == m_elements[XDRAG]._widget() )
 		SetHScrollbar(0);
-	else if( pWidget == m_elements[YDRAG].Widget() )
+	else if( pWidget == m_elements[YDRAG]._widget() )
 		SetVScrollbar(0);
-	else if( pWidget == m_elements[WINDOW].Widget() )
+	else if( pWidget == m_elements[WINDOW]._widget() )
 		SetContent(0);
 	else
 		return false;
@@ -574,41 +576,22 @@ bool WgScrollPanel::DeleteChild( WgWidget * pWidget )
 	return true;
 }
 
-//____ ReleaseChild() _________________________________________________________
+//____ Clear() ______________________________________________________
 
-WgWidget * WgScrollPanel::ReleaseChild( WgWidget * pWidget )
+bool WgScrollPanel::Clear()
 {
-	if( pWidget == m_elements[XDRAG].Widget() )
-		return ReleaseHScrollbar();
-	else if( pWidget == m_elements[YDRAG].Widget() )
-		return ReleaseVScrollbar();
-	else if( pWidget == m_elements[WINDOW].Widget() )
-		return ReleaseContent();
+	if( !m_elements[XDRAG]._widget() && !m_elements[YDRAG]._widget() && !m_elements[WINDOW]._widget() )
+		return false;
 
-	return 0;
-}
+	if( m_elements[XDRAG]._widget() )
+		SetHScrollbar(0);
+	if( m_elements[YDRAG]._widget() )
+		SetVScrollbar(0);
+	if( m_elements[WINDOW]._widget() )
+		SetContent(0);
 
-//____ DeleteAllChildren() ______________________________________________________
-
-bool WgScrollPanel::DeleteAllChildren()
-{
-	SetHScrollbar(0);
-	SetVScrollbar(0);
-	SetContent(0);
 	return true;
 }
-
-//____ ReleaseAllChildren() _____________________________________________________
-
-bool WgScrollPanel::ReleaseAllChildren()
-{
-	ReleaseHScrollbar();
-	ReleaseVScrollbar();
-	ReleaseContent();
-	return true;
-}
-
-
 
 //____ SetScrollbarAutoHide() _________________________________________________
 
@@ -650,26 +633,26 @@ void WgScrollPanel::SetCornerSkin( const WgSkinPtr& pSkin )
 	_requestRender( m_cornerGeo );
 }
 
-//____ FindWidget() ____________________________________________________________
+//____ _findWidget() ____________________________________________________________
 
-WgWidget * WgScrollPanel::FindWidget( const WgCoord& pos, WgSearchMode mode )
+WgWidget * WgScrollPanel::_findWidget( const WgCoord& pos, WgSearchMode mode )
 {
 	// Check XDRAG
 
 	WgScrollHook * p = &m_elements[XDRAG];
-	if( p->IsVisible() && p->m_pWidget && p->m_windowGeo.Contains( pos ) )
+	if( p->IsVisible() && p->_widget() && p->m_windowGeo.Contains( pos ) )
 	{
-		if( mode != WG_SEARCH_MARKPOLICY || p->m_pWidget->MarkTest( pos - p->m_windowGeo.Pos() ) )
-			return p->m_pWidget;
+		if( mode != WG_SEARCH_MARKPOLICY || p->_widget()->MarkTest( pos - p->m_windowGeo.Pos() ) )
+			return p->_widget();
 	}
 
 	// Check YDRAG
 
 	p = &m_elements[YDRAG];
-	if( p->IsVisible() && p->m_pWidget && p->m_windowGeo.Contains( pos ) )
+	if( p->IsVisible() && p->_widget() && p->m_windowGeo.Contains( pos ) )
 	{
-		if( mode != WG_SEARCH_MARKPOLICY || p->m_pWidget->MarkTest( pos - p->m_windowGeo.Pos() ) )
-			return p->m_pWidget;
+		if( mode != WG_SEARCH_MARKPOLICY || p->_widget()->MarkTest( pos - p->m_windowGeo.Pos() ) )
+			return p->_widget();
 	}
 
 	// Check WINDOW
@@ -678,16 +661,16 @@ WgWidget * WgScrollPanel::FindWidget( const WgCoord& pos, WgSearchMode mode )
 
 	if( p->m_windowGeo.Contains( pos ) )
 	{
-		if( p->IsVisible() && p->m_pWidget && p->m_windowGeo.Contains( pos ) )
+		if( p->IsVisible() && p->_widget() && p->m_windowGeo.Contains( pos ) )
 		{
-			if( p->m_pWidget->IsContainer() )
+			if( p->_widget()->IsContainer() )
 			{
-				WgWidget * pFound = p->m_pWidget->CastToContainer()->FindWidget( pos - p->m_canvasGeo.Pos(), mode );
+				WgWidget * pFound = p->_widget()->CastToContainer()->_findWidget( pos - p->m_canvasGeo.Pos(), mode );
 				if( pFound )
 					return pFound;
 			}
-			else if( mode != WG_SEARCH_MARKPOLICY || p->m_pWidget->MarkTest( pos - p->m_canvasGeo.Pos() ) )
-				return p->m_pWidget;
+			else if( mode != WG_SEARCH_MARKPOLICY || p->_widget()->MarkTest( pos - p->m_canvasGeo.Pos() ) )
+				return p->_widget();
 		}
 
 		// Check window skin
@@ -751,42 +734,42 @@ void  WgScrollPanel::SetContentSizePolicy( WgSizePolicy widthPolicy, WgSizePolic
 
 WgSize WgScrollPanel::_calcContentSize( WgSize mySize )
 {
-	WgWidget * pContent = m_elements[WINDOW].Widget();
+	WgWidget * pContent = m_elements[WINDOW]._widget();
 
 	if( !pContent )
 		return WgSize(0,0);
 
 	//
 
-	if( !m_bAutoHideScrollbarX && m_elements[XDRAG].Widget() )
-		mySize.h -= m_elements[XDRAG].Widget()->PreferredSize().h;
+	if( !m_bAutoHideScrollbarX && m_elements[XDRAG]._widget() )
+		mySize.h -= m_elements[XDRAG]._widget()->PreferredSize().h;
 
-	if( !m_bAutoHideScrollbarY && m_elements[YDRAG].Widget() )
-		mySize.w -= m_elements[YDRAG].Widget()->PreferredSize().w;
+	if( !m_bAutoHideScrollbarY && m_elements[YDRAG]._widget() )
+		mySize.w -= m_elements[YDRAG]._widget()->PreferredSize().w;
 
 	//
 
 	WgSize contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy );
 
-	if( contentSize.h > mySize.h && m_bAutoHideScrollbarY && m_elements[YDRAG].Widget() )
+	if( contentSize.h > mySize.h && m_bAutoHideScrollbarY && m_elements[YDRAG]._widget() )
 	{
-		mySize.w -= m_elements[YDRAG].Widget()->PreferredSize().w;
+		mySize.w -= m_elements[YDRAG]._widget()->PreferredSize().w;
 		contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy );
 
-		if( contentSize.w > mySize.w && m_bAutoHideScrollbarX && m_elements[XDRAG].Widget() )
+		if( contentSize.w > mySize.w && m_bAutoHideScrollbarX && m_elements[XDRAG]._widget() )
 		{
-			mySize.h -= m_elements[XDRAG].Widget()->PreferredSize().h;
+			mySize.h -= m_elements[XDRAG]._widget()->PreferredSize().h;
 			contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy );
 		}
 	}
-	else if( contentSize.w > mySize.w && m_bAutoHideScrollbarX && m_elements[XDRAG].Widget() )
+	else if( contentSize.w > mySize.w && m_bAutoHideScrollbarX && m_elements[XDRAG]._widget() )
 	{
-		mySize.h -= m_elements[XDRAG].Widget()->PreferredSize().h;
+		mySize.h -= m_elements[XDRAG]._widget()->PreferredSize().h;
 		contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy );
 
-		if( contentSize.h > mySize.h && m_bAutoHideScrollbarY && m_elements[YDRAG].Widget() )
+		if( contentSize.h > mySize.h && m_bAutoHideScrollbarY && m_elements[YDRAG]._widget() )
 		{
-			mySize.w -= m_elements[YDRAG].Widget()->PreferredSize().w;
+			mySize.w -= m_elements[YDRAG]._widget()->PreferredSize().w;
 			contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy );
 		}
 	}
@@ -808,7 +791,7 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 
 	newWindow = mySize;
 
-	if( m_elements[XDRAG].Widget() )
+	if( m_elements[XDRAG]._widget() )
 	{
 		newDragX.h = m_elements[XDRAG]._paddedPreferredSize().h;
 		newDragX.w = newWindow.w;
@@ -820,7 +803,7 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 			newDragX.y = 0;
 	}
 
-	if( m_elements[YDRAG].Widget() )
+	if( m_elements[YDRAG]._widget() )
 	{
 		newDragY.w = m_elements[YDRAG]._paddedPreferredSize().w;
 		newDragY.h = newWindow.h;
@@ -834,18 +817,18 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 
 	// Determine which dragbars we need to show, using basic rules
 
-	if( m_elements[XDRAG].Widget() && (newContentSize.w > newWindow.w || !m_bAutoHideScrollbarX) )
+	if( m_elements[XDRAG]._widget() && (newContentSize.w > newWindow.w || !m_bAutoHideScrollbarX) )
 		bShowDragX = true;
 
-	if( m_elements[YDRAG].Widget() && (newContentSize.h > newWindow.h || !m_bAutoHideScrollbarY) )
+	if( m_elements[YDRAG]._widget() && (newContentSize.h > newWindow.h || !m_bAutoHideScrollbarY) )
 		bShowDragY = true;
 
 	// See if showing one forces us to show the other
 
-	if( bShowDragY && m_elements[XDRAG].Widget() && newContentSize.w > (newWindow.w - newDragY.w) )
+	if( bShowDragY && m_elements[XDRAG]._widget() && newContentSize.w > (newWindow.w - newDragY.w) )
 		bShowDragX = true;
 
-	if( bShowDragX && m_elements[YDRAG].Widget() && newContentSize.h > (newWindow.h - newDragY.h) )
+	if( bShowDragX && m_elements[YDRAG]._widget() && newContentSize.h > (newWindow.h - newDragY.h) )
 		bShowDragY = true;
 
 	// We need to adjust view layout to accomodate visible scrollbars. 
@@ -977,9 +960,9 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 		// Notify scrollbars of their new size.
 
 		if( bShowDragX )
-			m_elements[XDRAG].Widget()->_onNewSize(newDragX.Size());
+			m_elements[XDRAG]._widget()->_onNewSize(newDragX.Size());
 		if( bShowDragY )
-			m_elements[YDRAG].Widget()->_onNewSize(newDragY.Size());
+			m_elements[YDRAG]._widget()->_onNewSize(newDragY.Size());
 	}
 
 	// If contentSize has changed we save changes and set flags
@@ -999,8 +982,8 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 
 		// Notify content of its new size.
 
-		if( m_elements[WINDOW].Widget() )
-			m_elements[WINDOW].Widget()->_onNewSize(newContentSize);
+		if( m_elements[WINDOW]._widget() )
+			m_elements[WINDOW]._widget()->_onNewSize(newContentSize);
 	}
 
 	// Notify scrollbars of any change to content size, view size or view offset.
@@ -1151,25 +1134,25 @@ void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 
 	//
 
-	if( m_elements[WINDOW].Widget() )
+	if( m_elements[WINDOW]._widget() )
 	{
 		WgRect canvas = m_elements[WINDOW].m_canvasGeo + _canvas.Pos();
 		WgRect window( canvas, m_elements[WINDOW].m_windowGeo + _canvas.Pos() );	// Use intersection in case canvas is smaller than window.
 
 		if( window.IntersectsWith(dirtBounds) )
-			m_elements[WINDOW].Widget()->_renderPatches( pDevice, canvas, window, &patches );
+			m_elements[WINDOW]._widget()->_renderPatches( pDevice, canvas, window, &patches );
 	}
 	if( m_elements[XDRAG].m_bVisible )
 	{
 		WgRect canvas = m_elements[XDRAG].m_windowGeo + _canvas.Pos();
 		if( canvas.IntersectsWith(dirtBounds) )
-			m_elements[XDRAG].Widget()->_renderPatches( pDevice, canvas, canvas, &patches );
+			m_elements[XDRAG]._widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 	}
 	if( m_elements[YDRAG].m_bVisible )
 	{
 		WgRect canvas = m_elements[YDRAG].m_windowGeo + _canvas.Pos();
 		if( canvas.IntersectsWith(dirtBounds) )
-			m_elements[YDRAG].Widget()->_renderPatches( pDevice, canvas, canvas, &patches );
+			m_elements[YDRAG]._widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 	}
 
 	if( m_pCornerSkin && m_cornerGeo.w != 0 && m_cornerGeo.h != 0 )
@@ -1208,18 +1191,18 @@ void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const
 
 			if( m_pSkin && m_pSkin->IsOpaque() )
 				patches.Sub( WgRect( p->m_windowGeo + geo.Pos(), clip) );
-			else if( p->Widget() )
-				p->Widget()->_onMaskPatches( patches, p->m_canvasGeo + geo.Pos(), WgRect(p->m_windowGeo + geo.Pos(), clip), blendMode );
+			else if( p->_widget() )
+				p->_widget()->_onMaskPatches( patches, p->m_canvasGeo + geo.Pos(), WgRect(p->m_windowGeo + geo.Pos(), clip), blendMode );
 
 			// Mask against dragbars
 
 			p = &m_elements[XDRAG];
 			if( p->IsVisible() )
-				p->Widget()->_onMaskPatches( patches, p->m_windowGeo + geo.Pos(), clip, blendMode );
+				p->_widget()->_onMaskPatches( patches, p->m_windowGeo + geo.Pos(), clip, blendMode );
 
 			p = &m_elements[YDRAG];
 			if( p->IsVisible() )
-				p->Widget()->_onMaskPatches( patches, p->m_windowGeo + geo.Pos(), clip, blendMode );
+				p->_widget()->_onMaskPatches( patches, p->m_windowGeo + geo.Pos(), clip, blendMode );
 
 			// Maska against corner piece
 
@@ -1299,12 +1282,12 @@ void WgScrollPanel::_onCloneContent( const WgWidget * _pOrg )
 	m_elements[XDRAG].m_windowGeo = pOrg->m_elements[XDRAG].m_windowGeo;
 	m_elements[XDRAG].m_canvasGeo = pOrg->m_elements[XDRAG].m_canvasGeo;
 	m_elements[XDRAG].m_bVisible = pOrg->m_elements[XDRAG].m_bVisible;
-	if( pOrg->m_elements[XDRAG].m_pWidget )
+	if( pOrg->m_elements[XDRAG]._widget() )
 	{
-		WgHScrollbar * pScrollbar = (WgHScrollbar*) pOrg->m_elements[XDRAG].m_pWidget->NewOfMyType();
-		pScrollbar->CloneContent( pOrg->m_elements[XDRAG].m_pWidget );
+		WgHScrollbar * pScrollbar = (WgHScrollbar*) pOrg->m_elements[XDRAG]._widget()->_newOfMyType();
+		pScrollbar->CloneContent( pOrg->m_elements[XDRAG]._widget() );
 		pScrollbar->SetScrollbarTarget(&m_scrollbarTargets[1]);
-		m_elements[XDRAG]._attachWidget(pScrollbar);		
+		m_elements[XDRAG]._setWidget(pScrollbar);		
 	}
 
 	//
@@ -1312,12 +1295,12 @@ void WgScrollPanel::_onCloneContent( const WgWidget * _pOrg )
 	m_elements[YDRAG].m_windowGeo = pOrg->m_elements[YDRAG].m_windowGeo;
 	m_elements[YDRAG].m_canvasGeo = pOrg->m_elements[YDRAG].m_canvasGeo;
 	m_elements[YDRAG].m_bVisible = pOrg->m_elements[YDRAG].m_bVisible;
-	if( pOrg->m_elements[YDRAG].m_pWidget )
+	if( pOrg->m_elements[YDRAG]._widget() )
 	{
-		WgVScrollbar * pScrollbar = (WgVScrollbar*) pOrg->m_elements[YDRAG].m_pWidget->NewOfMyType();
-		pScrollbar->CloneContent( pOrg->m_elements[YDRAG].m_pWidget );
+		WgVScrollbar * pScrollbar = (WgVScrollbar*) pOrg->m_elements[YDRAG]._widget()->_newOfMyType();
+		pScrollbar->CloneContent( pOrg->m_elements[YDRAG]._widget() );
 		pScrollbar->SetScrollbarTarget(&m_scrollbarTargets[0]);
-		m_elements[YDRAG]._attachWidget(pScrollbar);
+		m_elements[YDRAG]._setWidget(pScrollbar);
 	}
 
 	//
@@ -1344,7 +1327,7 @@ bool WgScrollPanel::SetAutoscroll( bool bAutoX, bool bAutoY )
 WgHook*	WgScrollPanel::_firstHook() const
 {
 	for( int i = 0 ; i < 3 ; i++ )
-		if( m_elements[i].m_pWidget )
+		if( m_elements[i]._widget() )
 			return const_cast<WgScrollHook*>(&m_elements[i]);
 
 	return 0;
@@ -1354,7 +1337,7 @@ WgHook*	WgScrollPanel::_firstHook() const
 WgHook*	WgScrollPanel::_lastHook() const
 {
 	for( int i = 2 ; i >= 0 ; i++ )
-		if( m_elements[i].m_pWidget )
+		if( m_elements[i]._widget() )
 			return const_cast<WgScrollHook*>(&m_elements[i]);
 
 	return 0;
@@ -1365,7 +1348,7 @@ WgHook*	WgScrollPanel::_lastHook() const
 WgHook * WgScrollPanel::_firstHookWithGeo( WgRect& geo ) const
 {
 	for( int i = 0 ; i < 3 ; i++ )
-		if( m_elements[i].m_pWidget )
+		if( m_elements[i]._widget() )
 		{
 			geo = m_elements[i].m_canvasGeo;
 			return const_cast<WgScrollHook*>(&m_elements[i]);
@@ -1384,7 +1367,7 @@ WgHook * WgScrollPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	while( p != pLast )
 	{
 		p++;
-		if( p->m_pWidget )
+		if( p->_widget() )
 		{
 			geo = p->m_canvasGeo;
 			return const_cast<WgScrollHook*>(p);
@@ -1397,7 +1380,7 @@ WgHook * WgScrollPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 WgHook * WgScrollPanel::_lastHookWithGeo( WgRect& geo ) const
 {
 	for( int i = 2 ; i >= 0 ; i++ )
-		if( m_elements[i].m_pWidget )
+		if( m_elements[i]._widget() )
 		{
 			geo = m_elements[i].m_canvasGeo;
 			return const_cast<WgScrollHook*>(&m_elements[i]);
@@ -1416,7 +1399,7 @@ WgHook * WgScrollPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	while( p != pFirst )
 	{
 		p--;
-		if( p->m_pWidget )
+		if( p->_widget() )
 		{
 			geo = p->m_canvasGeo;
 			return const_cast<WgScrollHook*>(p);
@@ -1520,7 +1503,7 @@ WgHook * WgScrollHook::_prevHook() const
 	while( p != pFirst )
 	{
 		p--;
-		if( p->m_pWidget )
+		if( p->_widget() )
 			return p;
 	}
 	return 0;
@@ -1536,7 +1519,7 @@ WgHook * WgScrollHook::_nextHook() const
 	while( p != pLast )
 	{
 		p++;
-		if( p->m_pWidget )
+		if( p->_widget() )
 			return p;
 	}
 	return 0;

@@ -30,9 +30,9 @@
 
 using namespace WgUtil;
 
-static const char	c_widgetType[] = {"Unspecified type derived from Scrollbar"};
-static const char c_widgetTypeH[] = {"HScrollbar"};
-static const char c_widgetTypeV[] = {"VScrollbar"};
+const char WgScrollbar::CLASSNAME[] = {"Scrollbar"};
+const char WgVScrollbar::CLASSNAME[] = {"VScrollbar"};
+const char WgHScrollbar::CLASSNAME[] = {"HScrollbar"};
 
 
 //____ WgScrollbar() ____________________________________________________
@@ -65,17 +65,33 @@ WgScrollbar::~WgScrollbar( void )
 }
 
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgScrollbar::Type( void ) const
-{
-	return GetClass();
+bool WgScrollbar::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-const char * WgScrollbar::GetClass( void )
-{
-	return c_widgetType;
+//____ ClassName() ____________________________________________________________
+
+const char * WgScrollbar::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgScrollbarPtr WgScrollbar::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgScrollbarPtr( static_cast<WgScrollbar*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetBackgroundPressMode() _______________________________________________________
 
@@ -959,16 +975,31 @@ WgHScrollbar::WgHScrollbar( void )
 }
 
 
-//____ WgHScrollbar::Type() ______________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgHScrollbar::Type( void ) const
-{
-	return GetClass();
+bool WgHScrollbar::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgScrollbar::IsInstanceOf(pClassName);
 }
 
-const char * WgHScrollbar::GetClass( void )
+//____ ClassName() ____________________________________________________________
+
+const char * WgHScrollbar::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgHScrollbarPtr WgHScrollbar::Cast( const WgObjectPtr& pObject )
 {
-	return c_widgetTypeH;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgHScrollbarPtr( static_cast<WgHScrollbar*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 
@@ -989,15 +1020,29 @@ WgVScrollbar::WgVScrollbar( void )
 }
 
 
-//____ WgVScrollbar::Type() ______________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgVScrollbar::Type( void ) const
-{
-	return GetClass();
+bool WgVScrollbar::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgScrollbar::IsInstanceOf(pClassName);
 }
 
-const char * WgVScrollbar::GetClass( void )
-{
-	return c_widgetTypeV;
+//____ ClassName() ____________________________________________________________
+
+const char * WgVScrollbar::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
 
+//____ Cast() _________________________________________________________________
+
+WgVScrollbarPtr WgVScrollbar::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgVScrollbarPtr( static_cast<WgVScrollbar*>(pObject.GetRealPtr()) );
+
+	return 0;
+}

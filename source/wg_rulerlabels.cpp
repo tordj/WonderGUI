@@ -2,7 +2,7 @@
 #include <wg_rulerlabels.h>
 #include <wg_gfxdevice.h>
 
-static const char	c_widgetType[] = {"RulerLabels"};
+const char WgRulerLabels::CLASSNAME[] = {"RulerLabels"};
 
 
 //____ Constructor ____________________________________________________________
@@ -19,19 +19,33 @@ WgRulerLabels::~WgRulerLabels()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgRulerLabels::Type( void ) const
-{
-	return GetClass();
+bool WgRulerLabels::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgRulerLabels::GetClass()
-{
-	return c_widgetType;
+const char * WgRulerLabels::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgRulerLabelsPtr WgRulerLabels::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgRulerLabelsPtr( static_cast<WgRulerLabels*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ AddLabel() ____________________________________________________________
 

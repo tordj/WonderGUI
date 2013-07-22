@@ -29,7 +29,7 @@
 #include <wg_util.h>
 #include <wg_key.h>
 
-static const char	c_widgetType[] = {"RefreshButton"};
+const char WgRefreshButton::CLASSNAME[] = {"RefreshButton"};
 
 //____ Constructor ____________________________________________________________
 
@@ -54,18 +54,31 @@ WgRefreshButton::~WgRefreshButton()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgRefreshButton::Type( void ) const
-{
-	return GetClass();
+bool WgRefreshButton::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgButton::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgRefreshButton::GetClass()
+const char * WgRefreshButton::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgRefreshButtonPtr WgRefreshButton::Cast( const WgObjectPtr& pObject )
 {
-	return c_widgetType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgRefreshButtonPtr( static_cast<WgRefreshButton*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 

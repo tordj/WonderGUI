@@ -37,13 +37,18 @@
 
 class WgPatches;
 
+class WgPanel;
+typedef	WgSmartChildPtr<WgPanel,WgContainerPtr>		WgPanelPtr;
+typedef	WgWeakChildPtr<WgPanel,WgContainerWeakPtr>	WgPanelWeakPtr;
+
+//____ WgPanelHook ____________________________________________________________
 
 class WgPanelHook : public WgHook
 {
 public:
 	WgPanelHook *	Prev() const { return static_cast<WgPanelHook*>(_prevHook()); }
 	WgPanelHook *	Next() const { return static_cast<WgPanelHook*>(_nextHook()); }
-	WgPanel*		Parent() const;
+	WgPanelPtr		Parent() const;
 
 	virtual bool	SetVisible( bool bVisible );
 	bool			IsVisible() { return m_bVisible; }
@@ -72,9 +77,16 @@ protected:
 };
 
 
+//____ WgPanel ________________________________________________________________
+
 class WgPanel : public WgContainer
 {
 public:
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgPanelPtr	Cast( const WgObjectPtr& pObject );
+
 	void		SetFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
 	bool		IsFocusGroup() const { return m_bFocusGroup; }
 

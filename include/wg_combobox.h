@@ -31,23 +31,30 @@
 #	include <wg_interface_edittext.h>
 #endif
 
+#ifndef WG_MENU_DOT_H
+#	include <wg_menu.h>
+#endif
+
 #include <wg_text.h>
 
-class WgMenu;
 class WgMenuItem;
 
+class WgCombobox;
+typedef	WgSmartChildPtr<WgCombobox,WgWidgetPtr>		WgComboboxPtr;
+typedef	WgWeakChildPtr<WgCombobox,WgWidgetWeakPtr>	WgComboboxWeakPtr;
 
 class WgCombobox : public WgWidget, public WgInterfaceEditText
 {
 public:
-	WgCombobox();
-	virtual ~WgCombobox();
-	virtual const char * Type() const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgCombobox(); };
+	static WgComboboxPtr	Create() { return WgComboboxPtr(new WgCombobox()); }
 
-	void			SetMenu( WgMenu * pMenu );
-	WgMenu*			Menu( ) const;
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgComboboxPtr	Cast( const WgObjectPtr& pObject );
+
+	void			SetMenu( const WgMenuPtr& pMenu );
+	WgMenuPtr		Menu( ) const;
 
 	WgMenuItem*		SelectedItem() const { return m_pSelectedItem; }
 
@@ -85,6 +92,10 @@ public:
 
 
 protected:
+	WgCombobox();
+	virtual ~WgCombobox();
+	virtual WgWidget* _newOfMyType() const { return new WgCombobox(); };
+
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onRefresh();
@@ -107,7 +118,7 @@ private:
 	WgString		m_textFormat;
 	WgString		m_placeholderText;		// Text displayed when field is empty and has no cursor.
 
-	WgMenu *		m_pMenu;
+	WgMenuPtr		m_pMenu;
 	WgMenuItem*		m_pSelectedItem;
 	WgText			m_text;
 	bool			m_bResetCursorOnFocus;

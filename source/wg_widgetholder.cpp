@@ -24,28 +24,6 @@
 #include <wg_widget.h>
 
 
-//____ FirstWidget() __________________________________________________________
-
-WgWidget * WgWidgetHolder::FirstWidget() const 
-{ 
-	WgHook * p = FirstHook(); 
-	if( p ) 
-		return p->Widget(); 
-	else 
-		return 0;
-}
-
-//____ LastWidget() ___________________________________________________________
-
-WgWidget * WgWidgetHolder::LastWidget() const 
-{ 
-	WgHook * p = LastHook(); 
-	if( p ) 
-		return p->Widget(); 
-	else 
-		return 0; 
-}
-
 //____ IsWidget() ______________________________________________________________
 
 bool WgWidgetHolder::IsWidget() const
@@ -182,3 +160,24 @@ const WgRootPanel * WgWidgetHolder::CastToRoot() const
 }
 
 
+//____ _firstWidget() __________________________________________________________
+
+WgWidget * WgWidgetHolder::_firstWidget() const 
+{ 
+	WgHook * p = FirstHook(); 
+	if( p ) 
+		return p->_widget(); 
+	else 
+		return 0;
+}
+
+//____ _lastWidget() ___________________________________________________________
+
+WgWidget * WgWidgetHolder::_lastWidget() const 
+{ 
+	WgHook * p = LastHook(); 
+	if( p ) 
+		return p->_widget(); 
+	else 
+		return 0; 
+}

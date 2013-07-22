@@ -30,12 +30,40 @@
 #	include <wg_gfxdevice.h>
 #endif
 
+const char WgContainer::CLASSNAME[] = {"Container"};
+
 //____ Constructor _____________________________________________________________
 
 WgContainer::WgContainer() : m_bSiblingsOverlap(true)
 {
 }
 
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgContainer::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgContainer::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgContainerPtr WgContainer::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgContainerPtr( static_cast<WgContainer*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
 
 
 //____ IsWidget() ______________________________________________________________
@@ -135,9 +163,9 @@ const WgLayer * WgContainer::CastToLayer() const
 	return 0;
 }
 
-//____ FindWidget() ____________________________________________________________
+//____ _findWidget() ____________________________________________________________
 
-WgWidget * WgContainer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
+WgWidget * WgContainer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 {
 	WgRect childGeo;
 	WgHook * pHook = _lastHookWithGeo( childGeo );
@@ -149,9 +177,9 @@ WgWidget * WgContainer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 
 		if( bVisibleHook && childGeo.Contains( ofs ) )
 		{
-			if( pHook->Widget()->IsContainer() )
+			if( pHook->_widget()->IsContainer() )
 			{
-				pResult = pHook->Widget()->CastToContainer()->FindWidget( ofs - childGeo.Pos(), mode );
+				pResult = pHook->_widget()->CastToContainer()->_findWidget( ofs - childGeo.Pos(), mode );
 			}
 			else
 			{
@@ -159,11 +187,11 @@ WgWidget * WgContainer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 				{
 					case WG_SEARCH_ACTION_TARGET:
 					case WG_SEARCH_MARKPOLICY:
-						if( pHook->Widget()->MarkTest( ofs - childGeo.Pos() ) )
-							pResult = pHook->Widget();
+						if( pHook->_widget()->MarkTest( ofs - childGeo.Pos() ) )
+							pResult = pHook->_widget();
 						break;
 					case WG_SEARCH_GEOMETRY:
-						pResult = pHook->Widget();
+						pResult = pHook->_widget();
 						break;
 				}
 			}
@@ -231,7 +259,7 @@ void WgContainer::_onStateChanged( WgState oldState, WgState newState )
 	if( oldState.IsEnabled() != newState.IsEnabled() )
 	{
 		bool bEnabled = newState.IsEnabled();
-		WgWidget * p = FirstWidget();
+		WgWidget * p = _firstWidget();
 		while( p )
 		{
 			p->SetEnabled(bEnabled);
@@ -293,7 +321,7 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 			bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
 
 			if( bVisibleHook && geo.IntersectsWith( dirtBounds ) )
-				renderList.push_back( WidgetRenderContext(p->Widget(), geo ) );
+				renderList.push_back( WidgetRenderContext(p->_widget(), geo ) );
 
 			p = _nextHookWithGeo( childGeo, p );
 		}
@@ -331,7 +359,7 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 			WgRect canvas = childGeo + _canvas.Pos();
 			bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
 			if( bVisibleHook && canvas.IntersectsWith( dirtBounds ) )
-				p->Widget()->_renderPatches( pDevice, canvas, canvas, &patches );
+				p->_widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 			p = _nextHookWithGeo( childGeo, p );
 		}
 
@@ -364,7 +392,7 @@ void WgContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, co
 	{
 		bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
 		if( bVisibleHook )
-			p->Widget()->_onCollectPatches( container, childGeo + geo.Pos(), clip );
+			p->_widget()->_onCollectPatches( container, childGeo + geo.Pos(), clip );
 		p = _nextHookWithGeo( childGeo, p );
 	}
 }
@@ -382,7 +410,7 @@ void WgContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const W
 	{
 		bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
 		if( bVisibleHook )
-			p->Widget()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
+			p->_widget()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
 		p = _nextHookWithGeo( childGeo, p );
 	}
 }

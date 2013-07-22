@@ -510,7 +510,7 @@ string WgEventLogger::_formatWidget( const WgEvent::Event * _pEvent )
 		const char * pType = def_type;
 
 		if( pWidget )
-			pType = pWidget->Type();
+			pType = pWidget->ClassName();
 
 		sprintf( temp, " widget=%p (%s)", pWidget, pType );
 		out = temp;

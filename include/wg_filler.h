@@ -31,26 +31,33 @@
 #	include <wg_skin.h>
 #endif
 
+class WgFiller;
+typedef	WgSmartChildPtr<WgFiller,WgWidgetPtr>		WgFillerPtr;
+typedef	WgWeakChildPtr<WgFiller,WgWidgetWeakPtr>	WgFillerWeakPtr;
+
 //____ WgFiller ____________________________________________________________
 
 class WgFiller : public WgWidget
 {
 public:
-	WgFiller();
-	virtual ~WgFiller();
+	static WgFillerPtr	Create() { return WgFillerPtr(new WgFiller()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgFiller(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgFillerPtr	Cast( const WgObjectPtr& pObject );
 
 	void	SetPreferredSize( const WgSize& size );
 	WgSize	PreferredSize() const;
 
 protected:
+	WgFiller();
+	virtual ~WgFiller();
+	virtual WgWidget* _newOfMyType() const { return new WgFiller(); };
+
 	void	_onCloneContent( const WgWidget * _pOrg );
 
 private:
-
 	WgSize			m_preferredSize;
 };
 

@@ -31,17 +31,21 @@
 #	include <wg_skin.h>
 #endif
 
+class WgOscilloscope;
+typedef	WgSmartChildPtr<WgOscilloscope,WgWidgetPtr>		WgOscilloscopePtr;
+typedef	WgWeakChildPtr<WgOscilloscope,WgWidgetWeakPtr>	WgOscilloscopeWeakPtr;
+
 //____ WgOscilloscope ____________________________________________________________
 
 class WgOscilloscope : public WgWidget
 {
 public:
-	WgOscilloscope();
-	virtual ~WgOscilloscope();
+	static WgOscilloscopePtr	Create() { return WgOscilloscopePtr(new WgOscilloscope()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgOscilloscope(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgOscilloscopePtr	Cast( const WgObjectPtr& pObject );
 
 	void	SetGridColor( WgColor color );
 	void	SetVGridLines( int nLines, float pLines[] );
@@ -59,6 +63,9 @@ public:
 	WgSize	PreferredSize() const;
 
 protected:
+	WgOscilloscope();
+	virtual ~WgOscilloscope();
+	virtual WgWidget* _newOfMyType() const { return new WgOscilloscope(); };
 
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );

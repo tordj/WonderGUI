@@ -33,15 +33,19 @@
 #	include <wg_sizescaler.h>
 #endif
 
+class WgSizeCapsule;
+typedef	WgSmartChildPtr<WgSizeCapsule,WgCapsulePtr>		WgSizeCapsulePtr;
+typedef	WgWeakChildPtr<WgSizeCapsule,WgCapsulePtr>		WgSizeCapsuleWeakPtr;
+
 class WgSizeCapsule : public WgCapsule, public WgScalable
 {
 public:
-	WgSizeCapsule();
-	~WgSizeCapsule();
+	static WgSizeCapsulePtr	Create() { return WgSizeCapsulePtr(new WgSizeCapsule()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgSizeCapsule(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgSizeCapsulePtr	Cast( const WgObjectPtr& pObject );
 
 	void	SetSizes( WgSize min, WgSize preferred, WgSize max );
 
@@ -55,6 +59,11 @@ public:
 
 	int		HeightForWidth( int width ) const;
 	int		WidthForHeight( int height ) const;
+
+protected:
+	WgSizeCapsule();
+	virtual ~WgSizeCapsule();
+	virtual WgWidget* _newOfMyType() const { return new WgSizeCapsule(); };
 
 private:
 	void	_onScaleChanged();

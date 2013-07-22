@@ -33,7 +33,7 @@
 #include <wg_event.h>
 #include <wg_eventhandler.h>
 
-static const char Wdg_Type[] = {"ValueEditor"};
+const char WgValueEditor::CLASSNAME[] = {"ValueEditor"};
 
 
 //____ WgValueEditor() _________________________________________________________________
@@ -59,16 +59,31 @@ WgValueEditor::~WgValueEditor()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgValueEditor::Type( void ) const
-{
-	return GetClass();
+bool WgValueEditor::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-const char * WgValueEditor::GetClass( void )
+//____ ClassName() ____________________________________________________________
+
+const char * WgValueEditor::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgValueEditorPtr WgValueEditor::Cast( const WgObjectPtr& pObject )
 {
-	return Wdg_Type;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgValueEditorPtr( static_cast<WgValueEditor*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetTextColor() _________________________________________________________

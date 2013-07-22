@@ -29,7 +29,7 @@
 #include <wg_event.h>
 #include <wg_eventhandler.h>
 
-static const char	c_widgetType[] = {"Button"};
+const char WgButton::CLASSNAME[] = {"Button"};
 
 //____ Constructor ____________________________________________________________
 
@@ -54,19 +54,33 @@ WgButton::~WgButton()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgButton::Type( void ) const
-{
-	return GetClass();
+bool WgButton::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgButton::GetClass()
-{
-	return c_widgetType;
+const char * WgButton::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgButtonPtr WgButton::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgButtonPtr( static_cast<WgButton*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetIcon() ______________________________________________________________
 

@@ -32,15 +32,20 @@
 #	include <wg_gfxanim.h>
 #endif
 
+class WgAnimPlayer;
+typedef	WgSmartChildPtr<WgAnimPlayer,WgWidgetPtr>		WgAnimPlayerPtr;
+typedef	WgWeakChildPtr<WgAnimPlayer,WgWidgetWeakPtr>	WgAnimPlayerWeakPtr;
+
+
 class WgAnimPlayer:public WgWidget
 {
 public:
-	WgAnimPlayer();
-	~WgAnimPlayer();
-	virtual const char * Type() const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgAnimPlayer(); };
+	static WgAnimPlayerPtr	Create() { return WgAnimPlayerPtr(new WgAnimPlayer()); }
 
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgAnimPlayerPtr	Cast( const WgObjectPtr& pObject );
 
 	//____ Methods __________________________________________
 
@@ -67,6 +72,10 @@ public:
 	WgSize			PreferredSize() const;
 
 protected:
+	WgAnimPlayer();
+	virtual ~WgAnimPlayer();
+	virtual WgWidget* _newOfMyType() const { return new WgAnimPlayer(); };
+
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onRefresh();

@@ -34,89 +34,92 @@
 #	include <wg_interface_textholder.h>
 #endif
 
+class WgRefreshButton;
+typedef	WgSmartChildPtr<WgRefreshButton,WgButtonPtr>		WgRefreshButtonPtr;
+typedef	WgWeakChildPtr<WgRefreshButton,WgButtonWeakPtr>		WgRefreshButtonWeakPtr;
 
 //____ WgWidgetRefreshButton ____________________________________________________________
 
 class WgRefreshButton : public WgButton
 {
 public:
-	WgRefreshButton();
-	~WgRefreshButton();
+	static WgRefreshButtonPtr	Create() { return WgRefreshButtonPtr(new WgRefreshButton()); }
 	
-
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgRefreshButton(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgRefreshButtonPtr	Cast( const WgObjectPtr& pObject );
 
 	//____ Methods __________________________________________
 
-		enum RefreshMode
-		{
-			SPINNING,
-			PROGRESS
-		};
+	enum RefreshMode
+	{
+		SPINNING,
+		PROGRESS
+	};
 
-		enum AnimTarget
-		{
-			ICON,
-			BUTTON_CENTERED,
-			BUTTON_STRETCHED
-		};
+	enum AnimTarget
+	{
+		ICON,
+		BUTTON_CENTERED,
+		BUTTON_STRETCHED
+	};
 
-		void			SetRefreshAnimation( WgGfxAnim * pAnimation );
-		WgGfxAnim *		GetRefreshAnimation() const { return m_pRefreshAnim; }
+	void			SetRefreshAnimation( WgGfxAnim * pAnimation );
+	WgGfxAnim *		GetRefreshAnimation() const { return m_pRefreshAnim; }
 
-		void			SetRefreshMode( RefreshMode mode );
-		RefreshMode		GetRefreshMode() const { return m_refreshMode; }
+	void			SetRefreshMode( RefreshMode mode );
+	RefreshMode		GetRefreshMode() const { return m_refreshMode; }
 
-		void			SetAnimTarget( AnimTarget target );
-		AnimTarget		GetAnimTarget() const { return m_animTarget; }
+	void			SetAnimTarget( AnimTarget target );
+	AnimTarget		GetAnimTarget() const { return m_animTarget; }
 
-		void			SetRefreshText( const WgCharSeq& text );
-		const WgChar*	GetRefreshText() const { return m_refreshText.getText(); }
+	void			SetRefreshText( const WgCharSeq& text );
+	const WgChar*	GetRefreshText() const { return m_refreshText.getText(); }
 
-		void			SetRefreshTextProperties( const WgTextpropPtr& pProp );
-		WgTextpropPtr	GetRefreshTextProperties() const { return m_refreshText.getProperties(); }
+	void			SetRefreshTextProperties( const WgTextpropPtr& pProp );
+	WgTextpropPtr	GetRefreshTextProperties() const { return m_refreshText.getProperties(); }
 
-		void			SetRestartable( bool bRestartable );
-		bool			IsRestartable() const { return m_bRestartable; }
+	void			SetRestartable( bool bRestartable );
+	bool			IsRestartable() const { return m_bRestartable; }
 
-		void			SetAutoStartRefresh( bool bAuto ) { m_bAutoRefresh = bAuto; }
-		bool			IsAutoStartRefresh( ) const { return m_bAutoRefresh; }
+	void			SetAutoStartRefresh( bool bAuto ) { m_bAutoRefresh = bAuto; }
+	bool			IsAutoStartRefresh( ) const { return m_bAutoRefresh; }
 
-		void			StartRefresh();
-		void			StopRefresh();
-		void			StopRefreshNow();
-		void			SetRefreshProgress( float fraction );
-		float			GetRefreshProgress() const { return m_refreshProgress; }
-		bool			IsRefreshing() const { return m_bRefreshing; }
+	void			StartRefresh();
+	void			StopRefresh();
+	void			StopRefreshNow();
+	void			SetRefreshProgress( float fraction );
+	float			GetRefreshProgress() const { return m_refreshProgress; }
+	bool			IsRefreshing() const { return m_bRefreshing; }
 
-		virtual void	SetTextManager( WgTextManager * pManager );
+	virtual void	SetTextManager( WgTextManager * pManager );
 
 protected:
+	WgRefreshButton();
+	virtual ~WgRefreshButton();
+	virtual WgWidget* _newOfMyType() const { return new WgRefreshButton(); };
 
-		void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-		void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void		_onCloneContent( const WgWidget * _pOrg );
-		virtual void _onNewSize( const WgSize& size );
+	void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+	void		_onCloneContent( const WgWidget * _pOrg );
+	virtual void _onNewSize( const WgSize& size );
 
-		WgState		_getRenderState();
-
-
-
-		WgGfxAnim *		m_pRefreshAnim;
-		AnimTarget		m_animTarget;
-		RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
-		WgText			m_refreshText;
-		bool			m_bRestartable;
-
-		bool			m_bRefreshing;
-		bool			m_bAutoRefresh;
-		Uint32			m_animTimer;
-		float			m_refreshProgress;
-		bool			m_bStopping;
+	WgState		_getRenderState();
 
 
+
+	WgGfxAnim *		m_pRefreshAnim;
+	AnimTarget		m_animTarget;
+	RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
+	WgText			m_refreshText;
+	bool			m_bRestartable;
+
+	bool			m_bRefreshing;
+	bool			m_bAutoRefresh;
+	Uint32			m_animTimer;
+	float			m_refreshProgress;
+	bool			m_bStopping;
 };
 
 #endif //WG_REFRESHBUTTON_DOT_H

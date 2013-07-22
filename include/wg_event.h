@@ -41,8 +41,6 @@
 #	include <wg_smartptr.h>
 #endif
 
-
-
 class WgEventHandler;
 class WgWidget;
 class WgButton;
@@ -59,7 +57,7 @@ class WgModalLayer;
 class WgInterfaceEditText;
 class WgText;
 
-typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;
+typedef class WgWeakChildPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
 
 namespace WgEvent
 {

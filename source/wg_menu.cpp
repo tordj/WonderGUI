@@ -35,7 +35,7 @@
 #include	<wg_eventhandler.h>
 #include	<wg_patches.h>
 
-static const char	c_widgetType[] = {"Menu"};
+const char WgMenu::CLASSNAME[] = {"Menu"};
 static const char	c_hookType[] = {"MenuScrollbarHook"};
 
 
@@ -82,18 +82,31 @@ WgMenu::~WgMenu()
 }
 
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgMenu::Type() const
-{
-	return GetClass();
+bool WgMenu::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgPanel::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() _____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgMenu::GetClass( void )
+const char * WgMenu::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgMenuPtr WgMenu::Cast( const WgObjectPtr& pObject )
 {
-	return c_widgetType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMenuPtr( static_cast<WgMenu*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetSkin() __________________________________________________________
@@ -1057,8 +1070,8 @@ void WgMenu::_onStateChanged( WgState oldState, WgState newState )
 {
 	WgWidget::_onStateChanged(oldState,newState);
 
-	if( newState.IsEnabled() != oldState.IsEnabled() && m_scrollbarHook.Widget() )
-		m_scrollbarHook.Widget()->SetEnabled(newState.IsEnabled());
+	if( newState.IsEnabled() != oldState.IsEnabled() && m_scrollbarHook._widget() )
+		m_scrollbarHook._widget()->SetEnabled(newState.IsEnabled());
 
 }
 
@@ -1107,11 +1120,11 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 	}
 }
 
-//____ FindWidget() _____________________________________________________________
+//____ _findWidget() _____________________________________________________________
 
-WgWidget * WgMenu::FindWidget( const WgCoord& ofs, WgSearchMode mode )
+WgWidget * WgMenu::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 {
-	WgWidget * pWidget = WgPanel::FindWidget(ofs, mode);
+	WgWidget * pWidget = WgPanel::_findWidget(ofs, mode);
 	if( !pWidget && MarkTest( ofs ) )
 		return this;
 
@@ -1211,11 +1224,11 @@ void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 		// Render scrollbar if present.
 
-		if( m_scrollbarHook.Widget() )
+		if( m_scrollbarHook._widget() )
 		{
 			WgRect clip( scrollbarGeo, *pRect );
 			if( clip.w > 0 || clip.h > 0 )
-				((WgScrollbar*)m_scrollbarHook.Widget())->_onRender( pDevice, scrollbarGeo, scrollbarGeo, clip );
+				((WgScrollbar*)m_scrollbarHook._widget())->_onRender( pDevice, scrollbarGeo, scrollbarGeo, clip );
 		}
 	}
 }
@@ -1297,7 +1310,7 @@ bool WgMenu::_onAlphaTest( const WgCoord& ofs )
 
 WgHook * WgMenu::_firstHook() const
 {
-	if( m_scrollbarHook.Widget() )
+	if( m_scrollbarHook._widget() )
 		return const_cast<ScrollbarHook*>(&m_scrollbarHook);
 	else
 		return 0;
@@ -1307,7 +1320,7 @@ WgHook * WgMenu::_firstHook() const
 
 WgRect WgMenu::_scrollbarGeo( const WgRect& menuGeo ) const
 {
-	if( m_scrollbarHook.Widget() )
+	if( m_scrollbarHook._widget() )
 	{
 		WgRect contentGeo = menuGeo - _getPadding();
 		WgRect scrollbarGeo( contentGeo.x + contentGeo.w - m_scrollbarHook.m_size.w, contentGeo.y, m_scrollbarHook.m_size.w, contentGeo.h );	//TODO: Scrollbar is now hardcoded to right side.
@@ -1322,7 +1335,7 @@ WgRect WgMenu::_scrollbarGeo( const WgRect& menuGeo ) const
 
 WgHook * WgMenu::_firstHookWithGeo( WgRect& writeGeo ) const
 {
-	if( m_scrollbarHook.Widget() )
+	if( m_scrollbarHook._widget() )
 	{
 		writeGeo = _scrollbarGeo( Size() );
 		return const_cast<ScrollbarHook*>(&m_scrollbarHook);
@@ -1441,15 +1454,15 @@ void WgMenu::_adjustSize()
 		m_scrollbarHook.m_size.w = scrollbarSize.w;
 		m_scrollbarHook.m_size.h = Size().h - contentBorders.Height();
 
-		m_scrollbarHook._attachWidget(pScrollbar);
+		m_scrollbarHook._setWidget(pScrollbar);
 
 		_updateScrollbar( _getHandlePosition(), _getHandleSize() );
 	}
 	else
 	{
-		if( m_scrollbarHook.Widget() )
+		if( m_scrollbarHook._widget() )
 		{
-			delete m_scrollbarHook._releaseWidget();
+			m_scrollbarHook._setWidget(0);
 		}
 	}
 

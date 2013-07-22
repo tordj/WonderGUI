@@ -40,9 +40,12 @@
 #	include <wg_textprop.h>
 #endif
 
+#ifndef WG_MENU_DOT_H
+#	include <wg_menu.h>
+#endif
+
 
 class	WgSurface;
-class	WgMenu;
 class	WgFont;
 
 class	WgChar;
@@ -89,13 +92,16 @@ public:
 
 	WgChar *		m_pText;
 	Uint16			m_navKey;
-	WgMenu *		m_pMenu;
+	WgMenuPtr		m_pMenu;
 	Uint16			m_width;		// Width of this item.
 	bool			m_bEnabled;
 	bool			m_bVisible;
 	WgMenubar *	m_pMenuBar;		// Pointer at the menubar, needed for some callbacks.
 };
 
+class WgMenubar;
+typedef	WgSmartChildPtr<WgMenubar,WgWidgetPtr>		WgMenubarPtr;
+typedef	WgWeakChildPtr<WgMenubar,WgWidgetWeakPtr>	WgMenubarWeakPtr;
 
 //____ WgMenubar ____________________________________________________________
 
@@ -104,12 +110,12 @@ class WgMenubar:public WgWidget
 	friend class WgMenuBarItem;
 
 public:
-	WgMenubar();
-	~WgMenubar();
+	static WgMenubarPtr	Create() { return WgMenubarPtr(new WgMenubar()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgMenubar(); };	
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMenubarPtr	Cast( const WgObjectPtr& pObject );
 
 	//____ Methods __________________________________________
 
@@ -117,20 +123,24 @@ public:
 	WgSkinPtr		EntrySkin() const { return m_pEntrySkin; }
 	WgTextpropPtr	TextProp() const { return m_pTextProp; }
 
-	bool			AddMenu( const char * pTitle, WgMenu * pMenu, Uint16 navKey = 0 );
-	bool			RemoveMenu( WgMenu * pMenu );
+	bool			AddMenu( const char * pTitle, const WgMenuPtr& pMenu, Uint16 navKey = 0 );
+	bool			RemoveMenu( const WgMenuPtr& pMenu );
 
 	WgMenuBarItem*	FirstMenuBarItem() { return m_items.First(); }
 
-	WgChar *		MenuTitle(WgMenu * pMenu) const;
+	WgChar *		MenuTitle(const WgMenuPtr& pMenu) const;
 
-	bool			ShowMenu(WgMenu * pMenu);
-	bool			HideMenu(WgMenu * pMenu);
+	bool			ShowMenu(const WgMenuPtr& pMenu);
+	bool			HideMenu(const WgMenuPtr& pMenu);
 
 	WgSize			PreferredSize() const;
 
 
 protected:
+	WgMenubar();
+	virtual ~WgMenubar();
+	virtual WgWidget* _newOfMyType() const { return new WgMenubar(); };
+
 	//TODO: Should handle disable/enable (close open menu?) and cloning.
 
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );

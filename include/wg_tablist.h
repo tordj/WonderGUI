@@ -43,6 +43,10 @@ class WgFont;
 class WgSurface;
 class WgCharSeq;
 
+class WgTablist;
+typedef	WgSmartChildPtr<WgTablist,WgWidgetPtr>		WgTablistPtr;
+typedef	WgWeakChildPtr<WgTablist,WgWidgetWeakPtr>	WgTablistWeakPtr;
+
 class WgTab : public WgLink
 {
 	friend class WgTablist;
@@ -74,6 +78,7 @@ private:
 	WgSkinPtr		m_pSkin;
 	bool			m_bVisible;
 };
+
 
 class WgTablist : public WgWidget
 {
@@ -118,12 +123,12 @@ public:
 		UNIFIED_WIDTH
 	};
 
+	static WgTablistPtr	Create() { return WgTablistPtr(new WgTablist()); }
 
-	WgTablist();
-	~WgTablist();
-	virtual const char * Type() const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgTablist(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgTablistPtr	Cast( const WgObjectPtr& pObject );
 
 
 	//____ Methods __________________________________________
@@ -195,6 +200,10 @@ public:
 	WgSize			PreferredSize() const;
 
 protected:
+	WgTablist();
+	virtual ~WgTablist();
+	virtual WgWidget* _newOfMyType() const { return new WgTablist(); };
+
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onRefresh();

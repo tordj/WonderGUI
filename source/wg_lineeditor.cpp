@@ -28,7 +28,7 @@
 #include 	<wg_pen.h>
 #include 	<wg_eventhandler.h>
 
-static const char	c_widgetType[] = {"LineEditor"};
+const char WgLineEditor::CLASSNAME[] = {"LineEditor"};
 
 //____ Constructor ____________________________________________________________
 
@@ -52,18 +52,31 @@ WgLineEditor::~WgLineEditor()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgLineEditor::Type( void ) const
-{
-	return GetClass();
+bool WgLineEditor::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgLineEditor::GetClass()
+const char * WgLineEditor::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgLineEditorPtr WgLineEditor::Cast( const WgObjectPtr& pObject )
 {
-	return c_widgetType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLineEditorPtr( static_cast<WgLineEditor*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetEditMode() __________________________________________________________

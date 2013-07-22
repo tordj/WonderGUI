@@ -27,24 +27,31 @@
 #	include <wg_widget.h>
 #endif
 
+class WgKnob;
+typedef	WgSmartChildPtr<WgKnob,WgWidgetPtr>		WgKnobPtr;
+typedef	WgWeakChildPtr<WgKnob,WgWidgetWeakPtr>	WgKnobWeakPtr;
 
 //____ WgKnob ____________________________________________________________
 
 class WgKnob : public WgWidget
 {
 public:
-	WgKnob();
-	virtual ~WgKnob();
+	static WgKnobPtr	Create() { return WgKnobPtr(new WgKnob()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgKnob(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgKnobPtr	Cast( const WgObjectPtr& pObject );
 
     void    SetValue( float value );
     
 	WgSize	PreferredSize() const;
 
 protected:
+	WgKnob();
+	virtual ~WgKnob();
+	virtual WgWidget* _newOfMyType() const { return new WgKnob(); };
+
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	bool	_onAlphaTest( const WgCoord& ofs );

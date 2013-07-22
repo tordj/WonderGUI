@@ -53,8 +53,15 @@ class WgLayer;
 class WgEventHandler;
 class WgPatches;
 
+class WgWidget;
+typedef	WgSmartChildPtr<WgWidget,WgObjectPtr>		WgWidgetPtr;
+typedef	WgWeakChildPtr<WgWidget,WgObjectWeakPtr>	WgWidgetWeakPtr;
 
-class WgWidget : public WgWeakPtrTarget
+//typedef class WgSmartPtr<WgWidget> WgWidgetPtr;
+//typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;
+
+
+class WgWidget : public WgObject
 {
 friend class WgInput;
 friend class WgEventHandler;
@@ -86,7 +93,10 @@ public:
 	WgWidget();
 	virtual ~WgWidget();
 
-	virtual const char *Type( void ) const = 0;
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgWidgetPtr	Cast( const WgObjectPtr& pObject );
 
 	inline int			Id() const { return m_id; }
 	inline void			SetId( int id ) { m_id = id; }
@@ -119,7 +129,7 @@ public:
 
 	WgHook*			Hook() const { return m_pHook; }
 
-	virtual WgWidget * NewOfMyType() const = 0;
+	WgWidgetPtr		NewOfMyType() const { return WgWidgetPtr(_newOfMyType() ); }
 
 	// Convenient calls to hook
 
@@ -134,8 +144,8 @@ public:
 	WgContainer *	Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 	WgWidgetHolder* Holder() const { if( m_pHook ) return m_pHook->_holder(); return 0; }
 
-	WgWidget *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->Widget(); } return 0; }
-	WgWidget *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->Widget(); } return 0; }
+	WgWidget *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->m_pWidget; } return 0; }
+	WgWidget *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->m_pWidget; } return 0; }
 
 	WgCoord			Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
 	WgCoord			Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
@@ -176,6 +186,8 @@ protected:
 
 	WgEventHandler* _eventHandler() const;
 	void			_queueEvent( WgEvent::Event * pEvent );
+
+	virtual WgWidget* _newOfMyType() const = 0;
 
 
 	// Convenient calls to hook
@@ -226,10 +238,9 @@ private:
 
 };
 
-typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;
-
 typedef	int(*WgWidgetSortFunc)(const WgWidget *,const WgWidget *);
 
+/*
 template<typename T> T* WgCast(WgWidget * pWidget)
 {
 	if(pWidget)
@@ -249,7 +260,7 @@ template<typename T> const T* WgCast(const WgWidget * pWidget)
 	}
 	return 0;
 }
-
+*/
 
 #endif
 

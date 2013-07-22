@@ -28,6 +28,7 @@
 #include <wg_gfxanim.h>
 #include <wg_textmanager.h>
 #include <wg_base.h>
+#include <wg_widget.h>
 
 WgPen::WgPen()
 {

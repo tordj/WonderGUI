@@ -40,7 +40,7 @@ typedef	WgSmartPtr<class WgTextlink> WgTextLinkPtr;
 //____ WgTextLink _____________________________________________________________
 
 
-class WgTextlink : public WgRefCounted
+class WgTextlink : public WgObject
 {
 public:
 	static WgTextLinkPtr Create( const std::string& link ) { return new WgTextlink(link); }

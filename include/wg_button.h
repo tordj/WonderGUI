@@ -38,17 +38,22 @@
 #	include <wg_iconholder.h>
 #endif
 
+
+class WgButton;
+typedef	WgSmartChildPtr<WgButton,WgWidgetPtr>		WgButtonPtr;
+typedef	WgWeakChildPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
+
 //____ WgButton ____________________________________________________________
 
 class WgButton : public WgWidget, public Wg_Interface_TextHolder, public WgIconHolder
 {
 public:
-	WgButton();
-	virtual ~WgButton();
+	static WgButtonPtr	Create() { return WgButtonPtr(new WgButton()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgButton(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgButtonPtr	Cast( const WgObjectPtr& pObject );
 
 	//____ Methods __________________________________________
 
@@ -70,6 +75,9 @@ public:
 
 
 protected:
+	WgButton();
+	virtual ~WgButton();
+	virtual WgWidget* _newOfMyType() const { return new WgButton(); };
 
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );

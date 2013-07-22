@@ -27,27 +27,73 @@
 #	include <wg_container.h>
 #endif
 
+class WgCapsule;
+typedef	WgSmartChildPtr<WgCapsule,WgContainerPtr>	WgCapsulePtr;
+typedef	WgWeakChildPtr<WgCapsule,WgContainerPtr>	WgCapsuleWeakPtr;
+
+
+
+class WgCapsuleHook : public WgHook
+{
+	friend class WgCapsule;
+	friend class WgSizeCapsule;
+	friend class WgShaderCapsule;
+
+public:
+	const char *Type( void ) const;
+	static const char * ClassType();
+
+	// Standard Hook methods
+
+	WgCoord			Pos() const;
+	WgSize			Size() const;
+	WgRect			Geo() const;
+
+	WgCoord			ScreenPos() const;
+	WgRect			ScreenGeo() const;
+
+	WgCapsulePtr 		Parent() const;
+
+protected:
+	void			_requestRender();
+	void			_requestRender( const WgRect& rect );
+	void			_requestResize();
+
+	WgHook *		_prevHook() const;
+	WgHook *		_nextHook() const;
+	WgContainer *	_parent() const;
+	WgWidgetHolder*	_holder() const;
+
+	WgCapsule * 	m_pParent;
+};
+
+
+
+//____ WgCapsule ______________________________________________________________
 
 class WgCapsule : public WgContainer
 {
+	friend class WgCapsuleHook;
+
 public:
-	~WgCapsule() {}
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgCapsulePtr	Cast( const WgObjectPtr& pObject );
 
-	WgHook *		SetChild( WgWidget * pWidget );
-	WgWidget *		Child() { return m_hook.Widget(); }
-	bool			DeleteChild();
-	WgWidget *		ReleaseChild();
-
-	bool			DeleteChild( WgWidget * pWidget );
-	WgWidget *		ReleaseChild( WgWidget * pWidget );
-
-	bool			DeleteAllChildren();
-	bool			ReleaseAllChildren();
+	WgHook *		SetChild( const WgWidgetPtr& pWidget );
+	WgWidgetPtr		Child() { return m_hook.Widget(); }
+	bool			RemoveChild( const WgWidgetPtr& pWidget );
+	bool			Clear();
 
 
-	bool			IsCapsule() const;
-	WgCapsule *		CastToCapsule();
+	bool				IsCapsule() const;
+	WgCapsule *			CastToCapsule();
 	const WgCapsule *	CastToCapsule() const;
+
+	inline WgCapsuleHook *	FirstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
+	inline WgCapsuleHook *	LastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }
+
 
 	// Overloaded from WgWidget
 
@@ -58,40 +104,7 @@ public:
 
 protected:
 	WgCapsule();
-
-	class CapsuleHook : public WgHook
-	{
-		friend class WgCapsule;
-
-	public:
-
-		const char *Type( void ) const;
-		static const char * ClassType();
-
-		// Standard Hook methods
-
-		WgCoord			Pos() const { return m_pParent->Pos(); }
-		WgSize			Size() const { 	return m_pParent->Size(); }
-		WgRect			Geo() const { return m_pParent->Geo(); }
-
-		WgCoord			ScreenPos() const { return m_pParent->ScreenPos(); }
-		WgRect			ScreenGeo() const { return m_pParent->ScreenGeo(); }
-
-		WgCapsule* 		Parent() const { return m_pParent; }
-
-	protected:
-		void			_requestRender() { m_pParent->_requestRender(); }
-		void			_requestRender( const WgRect& rect ) { m_pParent->_requestRender(rect); }
-		void			_requestResize() { m_pParent->_requestResize(); }
-
-		WgHook *		_prevHook() const { return 0; }
-		WgHook *		_nextHook() const { return 0; }
-		WgContainer *	_parent() const { return m_pParent; }
-		WgWidgetHolder*	_holder() const { return m_pParent; }
-
-		WgCapsule * 	m_pParent;
-
-	};
+	virtual ~WgCapsule() {}
 
 	WgHook *		_firstHookWithGeo( WgRect& geo ) const;
 	WgHook *		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
@@ -110,7 +123,7 @@ protected:
 	WgHook*			_firstHook() const;
 	WgHook*			_lastHook() const;
 
-	CapsuleHook		m_hook;
+	WgCapsuleHook	m_hook;
 
 };
 

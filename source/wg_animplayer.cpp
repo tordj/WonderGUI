@@ -29,7 +29,7 @@
 #include <wg_eventhandler.h>
 #include <math.h>
 
-static const char	c_widgetType[] = {"AnimPlayer"};
+const char WgAnimPlayer::CLASSNAME[] = {"AnimPlayer"};
 
 
 //____ Constructor _________________________________________________________________
@@ -50,17 +50,33 @@ WgAnimPlayer::~WgAnimPlayer()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgAnimPlayer::Type() const
-{
-	return GetClass();
+bool WgAnimPlayer::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-const char * WgAnimPlayer::GetClass( void )
-{
-	return c_widgetType;
+//____ ClassName() ____________________________________________________________
+
+const char * WgAnimPlayer::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgAnimPlayerPtr WgAnimPlayer::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgAnimPlayerPtr( static_cast<WgAnimPlayer*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetAnimation() ____________________________________________________________
 

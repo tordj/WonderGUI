@@ -12,7 +12,7 @@
 
 
 
-static const char	c_widgetType[] = {"Tablist"};
+const char WgTablist::CLASSNAME[] = {"Tablist"};
 
 //____ WgTab::Constructor __________________________________________________________
 
@@ -71,20 +71,33 @@ WgTablist::~WgTablist( void )
 {
 }
 
+//____ IsInstanceOf() _________________________________________________________
 
-//____ Type() _________________________________________________________________
+bool WgTablist::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
 
-const char * WgTablist::Type( void ) const
-{
-	return GetClass();
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() _____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgTablist::GetClass( void )
-{
-	return c_widgetType;
+const char * WgTablist::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgTablistPtr WgTablist::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgTablistPtr( static_cast<WgTablist*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetTextProperties() ____________________________________________________
 

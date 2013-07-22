@@ -24,7 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_base.h>
 
-static const char	c_widgetType[] = {"Oscilloscope"};
+const char WgOscilloscope::CLASSNAME[] = {"Oscilloscope"};
 
 //____ Constructor ____________________________________________________________
 
@@ -56,19 +56,33 @@ WgOscilloscope::~WgOscilloscope()
 	delete [] m_pMarkers;
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgOscilloscope::Type( void ) const
-{
-	return GetClass();
+bool WgOscilloscope::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgOscilloscope::GetClass()
-{
-	return c_widgetType;
+const char * WgOscilloscope::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgOscilloscopePtr WgOscilloscope::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgOscilloscopePtr( static_cast<WgOscilloscope*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ PreferredSize() ________________________________________________________
 

@@ -25,7 +25,7 @@
 #include <wg_knob.h>
 #include <wg_gfxdevice.h>
 
-static const char	c_widgetType[] = {"Knob"};
+const char WgKnob::CLASSNAME[] = {"Knob"};
 
 //____ Constructor ____________________________________________________________
 
@@ -39,19 +39,33 @@ WgKnob::~WgKnob()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgKnob::Type( void ) const
-{
-	return GetClass();
+bool WgKnob::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgKnob::GetClass()
-{
-	return c_widgetType;
+const char * WgKnob::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgKnobPtr WgKnob::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgKnobPtr( static_cast<WgKnob*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetValue() _____________________________________________________________
 

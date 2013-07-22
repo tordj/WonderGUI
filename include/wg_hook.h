@@ -27,22 +27,40 @@
 #	include <wg_geo.h>
 #endif
 
-
+#ifndef WG_SMARTPTR_DOT_H
+#	include <wg_smartptr.h>
+#endif
 
 class WgWidgetHolder;
 class WgContainer;
 class WgGfxDevice;
 class WgWidget;
-class WgRootPanel;
 class WgRectLink;
 class WgEventHandler;
+class WgRootPanel;
+
+
+class WgWidget;
+typedef class WgSmartChildPtr<WgWidget,WgObjectPtr> WgWidgetPtr;
+typedef class WgWeakChildPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
+
+class WgContainer;
+typedef	WgSmartChildPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
+typedef	WgWeakChildPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
+
+class WgRootPanel;
+typedef	WgSmartPtr<WgRootPanel>		WgRootPanelPtr;
+typedef	WgWeakPtr<WgRootPanel>		WgRootPanelWeakPtr;
 
 class WgHook
 {
 	friend class WgWidget;
 	friend class WgLayer;
 	friend class WgPanel;
+	friend class WgContainer;
 	friend class WgVectorPanel;
+	friend class WgWidgetHolder;
+
 
 public:
 	virtual WgCoord	Pos() const = 0;
@@ -54,23 +72,25 @@ public:
 	WgHook *		Prev() const { return _prevHook(); }
 	WgHook *		Next() const { return _nextHook(); }
 
-	WgWidget *				Widget() const { return m_pWidget; }
-	WgWidgetHolder * 		Holder() const { return _holder(); }
-	WgContainer * 			Parent() const { return _parent(); }
+	WgWidgetPtr			Widget() const;
+	WgWidgetHolder * 	Holder() const;
+	WgContainerPtr 		Parent() const;
 
-	virtual WgRootPanel *	Root() const;
+	WgRootPanelPtr		Root() const;
 	WgEventHandler *	EventHandler() const;
 
 	virtual const char *Type( void ) const = 0;
+
 	
 protected:
 
 	WgHook() : m_pWidget(0) {}
 	virtual ~WgHook();
 
-	virtual void	_attachWidget( WgWidget * pWidget );				// Make sure Widget links us. Call when hook has been relocated.
-	void			_relinkWidget();
-	WgWidget*		_releaseWidget();								//
+	virtual void	_setWidget( WgWidget * pWidget );				// Attach/release widget.
+	void			_relinkWidget();								// Call when hook has been relocated, so old hook-pointer in widget is dirty and needs to be reset.
+
+	WgWidget *		_widget() const { return m_pWidget; }
 
 	// To be called by Widget
 
@@ -87,10 +107,11 @@ protected:
 	virtual WgHook *	_nextHook() const = 0;
 	virtual WgWidgetHolder * _holder() const = 0;
 	virtual WgContainer * _parent() const = 0;
+	virtual WgRootPanel * _root() const;
 
 	WgWidget *		m_pWidget;
 };
-
+/*
 template<typename T> T* WgCast(WgHook * pHook)
 {
 	if(pHook)
@@ -100,5 +121,5 @@ template<typename T> T* WgCast(WgHook * pHook)
 	}
 	return 0;
 }
-
+*/
 #endif //WG_HOOK_DOT_H

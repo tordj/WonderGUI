@@ -27,24 +27,31 @@
 #	include <wg_widget.h>
 #endif
 
+class WgSwitch;
+typedef	WgSmartChildPtr<WgSwitch,WgWidgetPtr>		WgSwitchPtr;
+typedef	WgWeakChildPtr<WgSwitch,WgWidgetWeakPtr>	WgSwitchWeakPtr;
 
 //____ WgSwitch ____________________________________________________________
 
 class WgSwitch : public WgWidget
 {
 public:
-	WgSwitch();
-	virtual ~WgSwitch();
+	static WgSwitchPtr	Create() { return WgSwitchPtr(new WgSwitch()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgSwitch(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgSwitchPtr	Cast( const WgObjectPtr& pObject );
 
     void    SetValue( int value );
     
 	WgSize	PreferredSize() const;
 
 protected:
+	WgSwitch();
+	virtual ~WgSwitch();
+	virtual WgWidget* _newOfMyType() const { return new WgSwitch(); };
+
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	bool	_onAlphaTest( const WgCoord& ofs );

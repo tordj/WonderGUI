@@ -44,70 +44,77 @@ class	WgCursorInstance;
 class	WgFont;
 class	WgTextManager;
 
+class WgValueEditor;
+typedef	WgSmartChildPtr<WgValueEditor,WgWidgetPtr>		WgValueEditorPtr;
+typedef	WgWeakChildPtr<WgValueEditor,WgWidgetWeakPtr>	WgValueEditorWeakPtr;
+
 class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder
 {
-	public:
-		WgValueEditor();
-		virtual ~WgValueEditor();
+public:
+	static WgValueEditorPtr	Create() { return WgValueEditorPtr(new WgValueEditor()); }
 
-		virtual const char * Type() const;
-		static const char * GetClass();
-		virtual WgWidget * NewOfMyType() const { return new WgValueEditor(); };
-
-
-		//____ Methods __________________________________________
-
-		bool	SetMaxInputChars( int max );
-		int		MaxInputChars() const { return m_maxInputChars; }
-		void	SetTextAlignment( const WgOrigo alignment );
-		WgOrigo GetTextAlignment( ) const;
-		void	SetTextColor(WgColor color);
-		WgColor GetTextColor() const;
-		bool	SetTextprop( const WgTextpropPtr& _pProp );
-		WgTextpropPtr GetTextprop( ) const;
-		void	SetTextManager(WgTextManager * _pManager);
-		WgTextManager * GetTextManager() const;
-		void	SetFormat( const WgValueFormat& format );
-		const WgValueFormat& GetFormat() const { return m_format; }
-		void	Clear();									// Sets value to 0 and clears input field.
-
-		bool	SelectAllText();
-
-		WgSize	PreferredSize() const;
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgValueEditorPtr	Cast( const WgObjectPtr& pObject );
 
 
-		virtual bool		IsInputField() const	{ return true; }
+	//____ Methods __________________________________________
 
-	protected:
+	bool	SetMaxInputChars( int max );
+	int		MaxInputChars() const { return m_maxInputChars; }
+	void	SetTextAlignment( const WgOrigo alignment );
+	WgOrigo GetTextAlignment( ) const;
+	void	SetTextColor(WgColor color);
+	WgColor GetTextColor() const;
+	bool	SetTextprop( const WgTextpropPtr& _pProp );
+	WgTextpropPtr GetTextprop( ) const;
+	void	SetTextManager(WgTextManager * _pManager);
+	WgTextManager * GetTextManager() const;
+	void	SetFormat( const WgValueFormat& format );
+	const WgValueFormat& GetFormat() const { return m_format; }
+	void	Clear();									// Sets value to 0 and clears input field.
 
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-		void	_onStateChanged( WgState oldState, WgState newState );
-		void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
-		void	_onRefresh();
+	bool	SelectAllText();
 
-		WgWidget*	_getWidget() { return this; }
+	WgSize	PreferredSize() const;
 
-	private:
-		void	_limitCursor();					///< Make sure cursor or selection is not in prefix or suffix part of text.
-		void	_selectAll();					///< Our own select all that doesn't include prefix or suffix.
 
-		void	_valueModified();				///< Called when value has been modified.
-		void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
+	virtual bool		IsInputField() const	{ return true; }
 
-		bool	_parseValueFromInput( int64_t * wpResult );
+protected:
+	WgValueEditor();
+	virtual ~WgValueEditor();
+	virtual WgWidget* _newOfMyType() const { return new WgValueEditor(); };
 
-		void	_regenText();
+	void	_onCloneContent( const WgWidget * _pOrg );
+	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void	_onRefresh();
 
-		bool				m_bRegenText;
-		WgValueFormat		m_format;			///< Value format specified by user
-		WgValueFormat		m_useFormat;		///< Value format currently used (affected by user typing in values).
-		WgText				m_text;
-		int					m_buttonDownOfs;
-		bool				m_bSelectAllOnRelease;
-		int					m_maxInputChars;
-		WgCoord				m_viewOfs;
+	WgWidget*	_getWidget() { return this; }
+
+private:
+	void	_limitCursor();					///< Make sure cursor or selection is not in prefix or suffix part of text.
+	void	_selectAll();					///< Our own select all that doesn't include prefix or suffix.
+
+	void	_valueModified();				///< Called when value has been modified.
+	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
+
+	bool	_parseValueFromInput( int64_t * wpResult );
+
+	void	_regenText();
+
+	bool				m_bRegenText;
+	WgValueFormat		m_format;			///< Value format specified by user
+	WgValueFormat		m_useFormat;		///< Value format currently used (affected by user typing in values).
+	WgText				m_text;
+	int					m_buttonDownOfs;
+	bool				m_bSelectAllOnRelease;
+	int					m_maxInputChars;
+	WgCoord				m_viewOfs;
 };
 
 

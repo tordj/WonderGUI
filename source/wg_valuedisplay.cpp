@@ -26,7 +26,7 @@
 #include	<wg_gfxdevice.h>
 
 
-static const char c_widgetType[] = {"ValueDisplay"};
+const char WgValueDisplay::CLASSNAME[] = {"ValueDisplay"};
 
 
 //____ WgValueDisplay() _________________________________________________________________
@@ -43,17 +43,33 @@ WgValueDisplay::~WgValueDisplay()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgValueDisplay::Type( void ) const
-{
-	return GetClass();
+bool WgValueDisplay::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-const char * WgValueDisplay::GetClass( void )
-{
-	return c_widgetType;
+//____ ClassName() ____________________________________________________________
+
+const char * WgValueDisplay::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgValueDisplayPtr WgValueDisplay::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgValueDisplayPtr( static_cast<WgValueDisplay*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetTextProperties() _____________________________________________________________
 

@@ -17,17 +17,21 @@
 #	include <wg_textprop.h>
 #endif
 
+class WgRulerLabels;
+typedef	WgSmartChildPtr<WgRulerLabels,WgWidgetPtr>		WgRulerLabelsPtr;
+typedef	WgWeakChildPtr<WgRulerLabels,WgWidgetWeakPtr>	WgRulerLabelsWeakPtr;
+
 //____ WgRulerLabels ____________________________________________________________
 
 class WgRulerLabels : public WgWidget, protected WgTextHolder
 {
 public:
-	WgRulerLabels();
-	virtual ~WgRulerLabels();
+	static WgRulerLabelsPtr	Create() { return WgRulerLabelsPtr(new WgRulerLabels()); }
 	
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgRulerLabels(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgRulerLabelsPtr	Cast( const WgObjectPtr& pObject );
 	
 	//____ Methods __________________________________________
 	
@@ -37,6 +41,9 @@ public:
 	void			SetDirection( WgDirection direction );
 	
 protected:
+	WgRulerLabels();
+	virtual ~WgRulerLabels();
+	virtual WgWidget* _newOfMyType() const { return new WgRulerLabels(); };
 	
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onCloneContent( const WgWidget * _pOrg );

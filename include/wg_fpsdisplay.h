@@ -33,35 +33,43 @@
 
 class WgFont;
 
+class WgFpsDisplay;
+typedef	WgSmartChildPtr<WgFpsDisplay,WgWidgetPtr>		WgFpsDisplayPtr;
+typedef	WgWeakChildPtr<WgFpsDisplay,WgWidgetWeakPtr>	WgFpsDisplayWeakPtr;
 
 class WgFpsDisplay:public WgWidget
 {
-	public:
-		WgFpsDisplay();
-		virtual ~WgFpsDisplay();
-		virtual const char * Type() const;
-		static const char * GetClass();
-		virtual WgWidget * NewOfMyType() const { return new WgFpsDisplay(); };
+public:
+	static WgFpsDisplayPtr	Create() { return WgFpsDisplayPtr(new WgFpsDisplay()); }
+
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgFpsDisplayPtr	Cast( const WgObjectPtr& pObject );
 		
 
-		//____ Methods __________________________________________
+	//____ Methods __________________________________________
 
-		void	SetTextProperties( const WgTextpropPtr& pProp );
-		WgSize	PreferredSize() const;
+	void	SetTextProperties( const WgTextpropPtr& pProp );
+	WgSize	PreferredSize() const;
 
-	protected:
-		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-		void	_onStateChanged( WgState oldState, WgState newState );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+protected:
+	WgFpsDisplay();
+	virtual ~WgFpsDisplay();
+	virtual WgWidget* _newOfMyType() const { return new WgFpsDisplay(); };
 
-	private:
+	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+	void	_onCloneContent( const WgWidget * _pOrg );
+	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
-		WgText		m_labelsText;
-		WgText		m_valuesText;
-		int *		m_pTickBuffer;
-		int			m_tickBufferOfs;
+private:
+
+	WgText		m_labelsText;
+	WgText		m_valuesText;
+	int *		m_pTickBuffer;
+	int			m_tickBufferOfs;
 
 };
 

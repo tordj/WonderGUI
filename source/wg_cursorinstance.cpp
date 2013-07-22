@@ -35,6 +35,7 @@
 #	include <wg_font.h>
 #endif
 
+#include <wg_widget.h>
 
 //____ Constructor() __________________________________________________________
 

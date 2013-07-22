@@ -40,7 +40,7 @@ class WgGfxDevice;
 typedef	WgSmartPtr<WgSkin>	WgSkinPtr;
 
 
-class WgSkin : public WgRefCounted
+class WgSkin : public WgObject
 {
 public:
 	virtual ~WgSkin() {};

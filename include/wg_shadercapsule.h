@@ -27,16 +27,19 @@
 #	include <wg_capsule.h>
 #endif
 
+class WgShaderCapsule;
+typedef	WgSmartChildPtr<WgShaderCapsule,WgCapsulePtr>		WgShaderCapsulePtr;
+typedef	WgWeakChildPtr<WgShaderCapsule,WgCapsuleWeakPtr>	WgShaderCapsuleWeakPtr;
 
 class WgShaderCapsule : public WgCapsule
 {
 public:
-	WgShaderCapsule();
-	~WgShaderCapsule();
+	static WgShaderCapsulePtr	Create() { return WgShaderCapsulePtr(new WgShaderCapsule()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgShaderCapsule(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgShaderCapsulePtr	Cast( const WgObjectPtr& pObject );
 
 	void		SetColor( const WgColor& color);
 	void		SetTintMode( WgTintMode mode );
@@ -48,6 +51,10 @@ public:
 
 
 protected:
+	WgShaderCapsule();
+	virtual ~WgShaderCapsule();
+	virtual WgWidget* _newOfMyType() const { return new WgShaderCapsule(); };
+
 	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	void		_onCloneContent( const WgWidget * _pOrg );
 	WgBlendMode _getBlendMode() const;

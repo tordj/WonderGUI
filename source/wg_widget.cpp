@@ -26,6 +26,9 @@
 #	include <wg_rootpanel.h>
 #	include <wg_eventhandler.h>
 
+const char WgWidget::CLASSNAME[] = {"Widget"};
+
+
 //____ Constructor ____________________________________________________________
 
 WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WG_POINTER_DEFAULT),
@@ -38,11 +41,35 @@ WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WG_POINTER_DEFAULT),
 
 WgWidget::~WgWidget()
 {
-	if( m_pHook )
-	{
-		m_pHook->Parent()->ReleaseChild(this);
-	}
 }
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgWidget::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgObject::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgWidget::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgWidgetPtr WgWidget::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgWidgetPtr( static_cast<WgWidget*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 
 //____ PointerStyle() ________________________________________
@@ -94,7 +121,7 @@ void WgWidget::SetSkin( const WgSkinPtr& pSkin )
 
 bool WgWidget::CloneContent( const WgWidget * _pOrg )
 {
-	if( _pOrg->Type() != Type() )
+	if( _pOrg->ClassName() != ClassName() )
 		return false;
 
 	m_id			= _pOrg->m_id;
@@ -139,7 +166,7 @@ void WgWidget::_startReceiveTicks()
 
 		if( m_pHook )
 		{
-			WgRootPanel * pRoot = m_pHook->Root();
+			WgRootPanel * pRoot = m_pHook->_root();
 			if( pRoot )
 				pRoot->EventHandler()->_addTickReceiver(this);
 		}
@@ -177,7 +204,7 @@ WgEventHandler * WgWidget::_eventHandler() const
 {
 	if( m_pHook )
 	{
-		WgRootPanel * pRoot = m_pHook->Root();
+		WgRootPanel * pRoot = m_pHook->_root();
 		if( pRoot )
 			return pRoot->EventHandler();
 	}
@@ -242,7 +269,7 @@ void WgWidget::_queueEvent( WgEvent::Event * pEvent )
 {
 	if( m_pHook )
 	{
-		WgRootPanel * pRoot = m_pHook->Root();
+		WgRootPanel * pRoot = m_pHook->_root();
 		if( pRoot )
 		{
 			pRoot->EventHandler()->QueueEvent(pEvent);

@@ -23,7 +23,7 @@
 #include <wg_shadercapsule.h>
 #include <wg_gfxdevice.h>
 
-static const char	c_widgetType[] = {"ShaderCapsule"};
+const char WgShaderCapsule::CLASSNAME[] = {"ShaderCapsule"};
 
 //____ Constructor ____________________________________________________________
 
@@ -37,19 +37,33 @@ WgShaderCapsule::~WgShaderCapsule()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgShaderCapsule::Type( void ) const
-{
-	return GetClass();
+bool WgShaderCapsule::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgCapsule::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgShaderCapsule::GetClass()
-{
-	return c_widgetType;
+const char * WgShaderCapsule::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgShaderCapsulePtr WgShaderCapsule::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgShaderCapsulePtr( static_cast<WgShaderCapsule*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetColor() ______________________________________________________________
 
@@ -117,8 +131,8 @@ void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canv
 
 	// Render children recursively
 
-	if( m_hook.Widget() )
-		m_hook.Widget()->_renderPatches( pDevice, _canvas, _canvas, _pPatches );
+	if( m_hook._widget() )
+		m_hook._widget()->_renderPatches( pDevice, _canvas, _canvas, _pPatches );
 
 	// Reset old blend mode and tint color
 

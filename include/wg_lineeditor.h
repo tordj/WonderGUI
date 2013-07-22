@@ -39,18 +39,21 @@
 #	include <wg_cursorinstance.h>
 #endif
 
+class WgLineEditor;
+typedef	WgSmartChildPtr<WgLineEditor,WgWidgetPtr>		WgLineEditorPtr;
+typedef	WgWeakChildPtr<WgLineEditor,WgWidgetWeakPtr>	WgLineEditorWeakPtr;
 
 //____ WgLineEditor ____________________________________________________________
 
 class WgLineEditor : public WgWidget, public WgInterfaceEditText
 {
 public:
-	WgLineEditor();
-	virtual ~WgLineEditor();
+	static WgLineEditorPtr	Create() { return WgLineEditorPtr(new WgLineEditor()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgLineEditor(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLineEditorPtr	Cast( const WgObjectPtr& pObject );
 
 
 	//____ Methods __________________________________________
@@ -80,6 +83,9 @@ public:
 
 
 protected:
+	WgLineEditor();
+	virtual ~WgLineEditor();
+	virtual WgWidget* _newOfMyType() const { return new WgLineEditor(); };
 
 	bool	_isEditable() const { return m_text.IsEditable(); }
 	bool	_isSelectable() const { return m_text.IsSelectable(); }

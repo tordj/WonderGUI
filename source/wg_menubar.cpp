@@ -36,7 +36,7 @@
 #include	<wg_texttool.h>
 #include	<wg_menulayer.h>
 
-static const char	c_widgetType[] = {"Menubar"};
+const char WgMenubar::CLASSNAME[] = {"Menubar"};
 
 
 //____ WgMenubar() _________________________________________________________________
@@ -57,19 +57,33 @@ WgMenubar::~WgMenubar( void )
 }
 
 
-//____ Type() __________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgMenubar::Type( void ) const
-{
-	return GetClass();
+bool WgMenubar::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() _____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgMenubar::GetClass( void )
-{
-	return c_widgetType;
+const char * WgMenubar::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgMenubarPtr WgMenubar::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMenubarPtr( static_cast<WgMenubar*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetEntrySkin() _______________________________________________________
 
@@ -86,7 +100,7 @@ bool WgMenubar::SetEntrySkin( const WgSkinPtr& pSkin, const WgTextpropPtr& pText
 
 //____ AddMenu() ______________________________________________________________
 
-bool WgMenubar::AddMenu( const char * pTitle, WgMenu * pMenu, Uint16 navKey )
+bool WgMenubar::AddMenu( const char * pTitle, const WgMenuPtr& pMenu, Uint16 navKey )
 {
 	// Sanity check
 
@@ -139,7 +153,7 @@ bool WgMenubar::AddMenu( const char * pTitle, WgMenu * pMenu, Uint16 navKey )
 }
 
 //____ RemoveMenu() ________________________________________________________
-bool WgMenubar::RemoveMenu( WgMenu * pMenu )
+bool WgMenubar::RemoveMenu( const WgMenuPtr& pMenu )
 {
 	for( WgMenuBarItem * pI = m_items.First(); pI; pI = pI->Next() )
 	{
@@ -155,7 +169,7 @@ bool WgMenubar::RemoveMenu( WgMenu * pMenu )
 }
 
 //____ MenuTitle() ________________________________________________________
-WgChar *WgMenubar::MenuTitle(WgMenu * pMenu) const
+WgChar *WgMenubar::MenuTitle( const WgMenuPtr& pMenu) const
 {
 	for( WgMenuBarItem * pI = m_items.First(); pI; pI = pI->Next() )
 	{
@@ -166,7 +180,7 @@ WgChar *WgMenubar::MenuTitle(WgMenu * pMenu) const
 }
 
 //____ ShowMenu() ________________________________________________________
-bool WgMenubar::ShowMenu(WgMenu * pMenu)
+bool WgMenubar::ShowMenu( const WgMenuPtr& pMenu)
 {
 	for( WgMenuBarItem * pI = m_items.First(); pI; pI = pI->Next() )
 	{
@@ -180,7 +194,7 @@ bool WgMenubar::ShowMenu(WgMenu * pMenu)
 }
 
 //____ HideMenu() ________________________________________________________
-bool WgMenubar::HideMenu(WgMenu * pMenu)
+bool WgMenubar::HideMenu(const WgMenuPtr& pMenu)
 {
 	for( WgMenuBarItem * pI = m_items.First(); pI; pI = pI->Next() )
 	{
@@ -450,7 +464,7 @@ WgBorders WgMenubar::GetEntryBorders() const
 bool WgMenubar::OpenMenu( Uint32 nb )
 {
 	WgMenuBarItem * pItem = m_items.Get(nb-1);
-	if( pItem == 0 || pItem->m_pMenu == 0 )
+	if( pItem == 0 || !pItem->m_pMenu )
 		return false;
 
 	WgCoord pos = Abs2local( WgCoord(0, 0) );
@@ -495,7 +509,7 @@ bool WgMenubar::CloseMenu( Uint32 nb )
 
 
 	WgMenuLayer * pLayer = 0;
-	WgWidget * pMenu = pItem->m_pMenu;
+	WgWidgetPtr pMenu = pItem->m_pMenu;
 	if( Parent() )
 		pLayer = Parent()->_getMenuLayer();
 
@@ -590,8 +604,6 @@ WgMenuBarItem::~WgMenuBarItem()
 {
 	if(m_pText != 0)
 		delete [] m_pText;
-	delete m_pMenu;
-
 }
 
 //____ WgMenuBarItem::SetEnabled() _______________________________________________

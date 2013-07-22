@@ -95,12 +95,12 @@
 #	include <wg_mempool.h>
 #endif
 
-#ifndef WG_PEN_DOT_H
-#	include <wg_pen.h>
+#ifndef WG_OBJECT_DOT_H
+#	include <wg_object.h>
 #endif
 
-#ifndef WG_REFCOUNTED_DOT_H
-#	include <wg_refcounted.h>
+#ifndef WG_PEN_DOT_H
+#	include <wg_pen.h>
 #endif
 
 #ifndef WG_ROOTPANEL_DOT_H

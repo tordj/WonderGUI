@@ -2,7 +2,7 @@
 #include <wg_volumemeter.h>
 #include <wg_gfxdevice.h>
 
-static const char	c_widgetType[] = {"VolumeMeter"};
+const char WgVolumeMeter::CLASSNAME[] = {"VolumeMeter"};
 
 
 //____ Constructor ____________________________________________________________
@@ -34,18 +34,31 @@ WgVolumeMeter::~WgVolumeMeter()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgVolumeMeter::Type( void ) const
-{
-	return GetClass();
+bool WgVolumeMeter::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgVolumeMeter::GetClass()
+const char * WgVolumeMeter::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgVolumeMeterPtr WgVolumeMeter::Cast( const WgObjectPtr& pObject )
 {
-	return c_widgetType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgVolumeMeterPtr( static_cast<WgVolumeMeter*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetDirection() ________________________________________________________

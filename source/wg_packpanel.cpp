@@ -23,7 +23,7 @@
 #include <wg_packpanel.h>
 #include <wg_base.h>
 
-static const char	c_widgetType[] = {"PackPanel"};
+const char WgPackPanel::CLASSNAME[] = {"PackPanel"};
 static const char	c_hookType[] = {"PackHook"};
 
 
@@ -51,7 +51,7 @@ const char * WgPackHook::ClassType()
 
 //____ WgPackHook::Parent() ___________________________________________________
 
-WgPackPanel * WgPackHook::Parent() const 
+WgPackPanelPtr WgPackHook::Parent() const 
 { 
 	return m_pParent; 
 }
@@ -92,18 +92,31 @@ WgPackPanel::~WgPackPanel()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgPackPanel::Type( void ) const
-{
-	return GetClass();
+bool WgPackPanel::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgVectorPanel::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgPackPanel::GetClass()
+const char * WgPackPanel::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgPackPanelPtr WgPackPanel::Cast( const WgObjectPtr& pObject )
 {
-	return c_widgetType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgPackPanelPtr( static_cast<WgPackPanel*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetOrientation() ______________________________________________________

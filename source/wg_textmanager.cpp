@@ -23,6 +23,7 @@
 #include <wg_textmanager.h>
 
 #include <wg_text.h>
+#include <wg_widget.h>
 
 
 //____ Constructor ____________________________________________________________

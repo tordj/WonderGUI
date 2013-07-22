@@ -216,37 +216,37 @@ namespace sdl_wglib
 
 		// Create standard button
 
-		WgButton * pButton = new WgButton();
+		WgButtonPtr pButton = WgButton::Create();
 		pButton->SetSkin( pButtonSkin );
 		pDB->AddWidget( "button", pButton );
 
 		// Create standard plate
 
-		WgImage * pPlate = new WgImage();
+		WgImagePtr pPlate = WgImage::Create();
 		pPlate->SetSkin( pPlateSkin );
 		pDB->AddWidget( "plate", pPlate );
 
 		// Create standard checkbox
 
-		WgCheckBox * pCheckbox = new WgCheckBox();
+		WgCheckBoxPtr pCheckbox = WgCheckBox::Create();
 		pCheckbox->SetIcon( pCheckboxIconSkin );
 		pDB->AddWidget( "checkbox", pCheckbox );
 
 		// Create standard radiobutton
 
-		WgRadioButton * pRadiobutton = new WgRadioButton();
+		WgRadioButtonPtr pRadiobutton = WgRadioButton::Create();
 		pRadiobutton->SetIcon( pRadiobuttonIconSkin );
 		pDB->AddWidget( "radiobutton", pRadiobutton );
 
 		// Create standard horizontal scrollbar
 
-		WgHScrollbar * pHScrollbar = new WgHScrollbar();
+		WgHScrollbarPtr pHScrollbar = WgHScrollbar::Create();
 		pHScrollbar->SetSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pHScrollbarBwdButtonSkin, pHScrollbarFwdButtonSkin );
 		pDB->AddWidget( "hscrollbar", pHScrollbar );
 
 		// Create standard vertical scrollbar
 
-		WgVScrollbar * pVScrollbar = new WgVScrollbar();
+		WgVScrollbarPtr pVScrollbar = WgVScrollbar::Create();
 		pVScrollbar->SetSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pVScrollbarBwdButtonSkin, pVScrollbarFwdButtonSkin );
 		pDB->AddWidget( "vscrollbar", pVScrollbar );
 
@@ -258,11 +258,11 @@ namespace sdl_wglib
 */
 		// Create Background bitmaps
 
-		WgImage * pBgCheckeredGrey = new WgImage();
+		WgImagePtr pBgCheckeredGrey = WgImage::Create();
 		pBgCheckeredGrey->SetSkin( pBgCheckeredGreySkin );
 		pDB->AddWidget( "bg_checkered_grey", pBgCheckeredGrey );
 
-		WgImage * pBgBlueGradient = new WgImage();
+		WgImagePtr pBgBlueGradient = WgImage::Create();
 		pBgBlueGradient->SetSkin( pBgBlueGradientSkin );
 		pDB->AddWidget( "bg_blue_gradient", pBgBlueGradient );
 
@@ -286,16 +286,21 @@ namespace sdl_wglib
 		// Create standard view
 		
 		{
-			WgScrollPanel * pView = new WgScrollPanel();
+			WgScrollPanelPtr pView = WgScrollPanel::Create();
 			
-			WgWidget * pHScrollbar = pDB->CloneWidget( "hscrollbar" );
-			WgWidget * pVScrollbar = pDB->CloneWidget( "vscrollbar" );
+			WgWidgetPtr pHScrollbar = pDB->CloneWidget( "hscrollbar" );
+			WgWidgetPtr pVScrollbar = pDB->CloneWidget( "vscrollbar" );
 
 			if( pHScrollbar )
-				pView->SetHScrollbar( static_cast<WgHScrollbar*>(pHScrollbar) );
+			{
+				WgHScrollbarPtr pH = WgHScrollbar::Cast(pHScrollbar);
+				pView->SetHScrollbar( pH );
+			}
 			if( pVScrollbar )
-				pView->SetVScrollbar( static_cast<WgVScrollbar*>(pVScrollbar) );
-
+			{
+				WgVScrollbarPtr pV = WgVScrollbar::Cast(pVScrollbar);
+				pView->SetVScrollbar( pV );
+			}
 			pView->SetSkin( pBgCheckeredGreySkin );
 			pView->SetCornerSkin( pPlateSkin );
 			pDB->AddWidget( "view", pView );

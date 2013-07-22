@@ -31,6 +31,8 @@
 #endif
 
 class WgPackPanel;
+typedef	WgSmartChildPtr<WgPackPanel,WgVectorPanelPtr>		WgPackPanelPtr;
+typedef	WgWeakChildPtr<WgPackPanel,WgVectorPanelWeakPtr>	WgPackPanelWeakPtr;
 
 class WgPackHook : public WgVectorHook
 {
@@ -45,7 +47,7 @@ public:
 
 	WgPackHook *	Prev() const { return _prev(); }
 	WgPackHook *	Next() const { return _next(); }
-	WgPackPanel*		Parent() const;
+	WgPackPanelPtr	Parent() const;
 
 protected:
 	PROTECTED_LINK_METHODS( WgPackHook );
@@ -61,23 +63,20 @@ protected:
 };
 
 
-
-
 class WgPackPanel : public WgVectorPanel
 {
 	friend class WgPackHook;
 
 public:
-	WgPackPanel();
-	virtual ~WgPackPanel();
+	static WgPackPanelPtr	Create() { return WgPackPanelPtr(new WgPackPanel()); }
 	
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgPackPanel(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgPackPanelPtr	Cast( const WgObjectPtr& pObject );
 
-	inline WgPackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChild(pWidget)); }
-	inline WgPackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
-	
+	inline WgPackHook * AddChild( const WgWidgetPtr& pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChild(pWidget)); }
+	inline WgPackHook * InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
     
 	void			SetOrientation( WgOrientation orientaiton );
 	WgOrientation	Orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
@@ -91,6 +90,9 @@ public:
 	WgSize			PreferredSize() const;
 	
 protected:
+	WgPackPanel();
+	virtual ~WgPackPanel();
+	virtual WgWidget* _newOfMyType() const { return new WgPackPanel(); };
 
     // Overloaded from Widget
     

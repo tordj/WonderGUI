@@ -41,15 +41,20 @@
 
 class	WgSurface;
 
+class WgCheckBox;
+typedef	WgSmartChildPtr<WgCheckBox,WgWidgetPtr>		WgCheckBoxPtr;
+typedef	WgWeakChildPtr<WgCheckBox,WgWidgetWeakPtr>	WgCheckBoxWeakPtr;
+
+
 class	WgCheckBox : public WgWidget, public Wg_Interface_TextHolder, public WgIconHolder
 {
 public:
-	WgCheckBox();
-	virtual ~WgCheckBox();
+	static WgCheckBoxPtr	Create() { return WgCheckBoxPtr(new WgCheckBox()); }
 
-	virtual const char * Type() const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgCheckBox(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgCheckBoxPtr	Cast( const WgObjectPtr& pObject );
 
 	enum ClickArea
 	{
@@ -79,6 +84,9 @@ public:
 	
 
 protected:
+	WgCheckBox();
+	virtual ~WgCheckBox();
+	virtual WgWidget* _newOfMyType() const { return new WgCheckBox(); };
 
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );

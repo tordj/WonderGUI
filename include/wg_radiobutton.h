@@ -27,20 +27,30 @@
 #	include <wg_checkbox.h>
 #endif
 
-// Radiobutton is almost exactly the same as Checkbox so it inherits from it now
+class WgRadioButton;
+typedef	WgSmartChildPtr<WgRadioButton,WgCheckBoxPtr>	WgRadioButtonPtr;
+typedef	WgWeakChildPtr<WgRadioButton,WgCheckBoxWeakPtr>	WgRadioButtonWeakPtr;
+
+
 class	WgRadioButton : public WgCheckBox
 {
 
 public:
-	WgRadioButton();
-	~WgRadioButton();
+	static WgRadioButtonPtr	Create() { return WgRadioButtonPtr(new WgRadioButton()); }
 
-	virtual const char * Type() const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgRadioButton(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgRadioButtonPtr	Cast( const WgObjectPtr& pObject );
 	
 	inline void	AllowUnselecting( bool bAllow ) {m_bAllowUnselecting = bAllow; }	///< Should we allow this radiobutton to be unchecked without any other being checked?
 	inline bool AllowUnselecting( ) const { return m_bAllowUnselecting; }
+
+protected:
+	WgRadioButton();
+	virtual ~WgRadioButton();
+	virtual WgWidget* _newOfMyType() const { return new WgRadioButton(); };
+
 
 private:
 

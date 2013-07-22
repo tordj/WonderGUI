@@ -23,7 +23,7 @@
 #include <wg_radiobutton.h>
 #include <wg_panel.h>
 
-static const char	c_widgetType[] = {"RadioButton"};
+const char WgRadioButton::CLASSNAME[] = {"RadioButton"};
 
 
 
@@ -40,19 +40,33 @@ WgRadioButton::~WgRadioButton()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgRadioButton::Type( void ) const
-{
-	return GetClass();
+bool WgRadioButton::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgCheckBox::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() _____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgRadioButton::GetClass( void )
-{
-	return c_widgetType;
+const char * WgRadioButton::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgRadioButtonPtr WgRadioButton::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgRadioButtonPtr( static_cast<WgRadioButton*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ _onStateChanged() ______________________________________________________
 
@@ -88,11 +102,11 @@ WgContainer * WgRadioButton::_findRadioGroup()
 
 void WgRadioButton::_unselectRecursively( WgContainer * pParent )
 {
-	WgWidget * pWidget = pParent->FirstWidget();
+	WgWidget * pWidget = pParent->_firstWidget();
 
 	while( pWidget )
 	{
-		if( pWidget->Type() == WgRadioButton::GetClass() )
+		if( pWidget->IsInstanceOf(WgRadioButton::CLASSNAME) )
 		{
 			WgRadioButton * pRB = (WgRadioButton*) pWidget;
 			if( pRB->m_state.IsSelected() && pRB != this )

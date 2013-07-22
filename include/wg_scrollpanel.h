@@ -38,6 +38,10 @@
 
 class WgScrollPanel;
 
+class WgScrollPanel;
+typedef	WgSmartChildPtr<WgScrollPanel,WgPanelPtr>		WgScrollPanelPtr;
+typedef	WgWeakChildPtr<WgScrollPanel,WgPanelWeakPtr>	WgScrollPanelWeakPtr;
+
 //____ WgScrollHook _____________________________________________________________
 
 class WgScrollHook : public WgPanelHook
@@ -58,7 +62,7 @@ public:
 
 
 	bool			SetVisible( bool bVisible ) { return false; }		// This widget handles hide/show of children according to its own rules.
-	WgScrollPanel * 	Parent() const { return m_pView; }
+	WgScrollPanelPtr 	Parent() const { return m_pView; }
 
 protected:
 	WgScrollHook() : m_pView(0) {};				// So we can make them members and then make placement new...
@@ -79,21 +83,18 @@ protected:
 };
 
 
-
 //____ WgScrollPanel ________________________________________________________
 
 class WgScrollPanel : public WgPanel
 {
 	friend class WgScrollHook;
 public:
-	WgScrollPanel();
-	virtual ~WgScrollPanel();
-	virtual const char * Type() const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgScrollPanel(); };
+	static WgScrollPanelPtr	Create() { return WgScrollPanelPtr(new WgScrollPanel()); }
 
-
-	//____ Methods _______________________________________________________________
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgScrollPanelPtr	Cast( const WgObjectPtr& pObject );
 
 	bool		StepUp();
 	bool		StepDown();
@@ -170,26 +171,20 @@ public:
 	bool		AutoScrollX() const { return m_bAutoScrollX; }
 	bool		AutoScrollY() const { return m_bAutoScrollY; }
 
-	WgPanelHook*SetHScrollbar( WgHScrollbar * pScrollbar );
-	void		DeleteHScrollbar() {SetVScrollbar(0);}
-	WgHScrollbar *	HScrollbar() const { return (WgHScrollbar*) m_elements[XDRAG].Widget(); }
-	WgHScrollbar* 	ReleaseHScrollbar();
+	WgPanelHook*SetHScrollbar( const WgHScrollbarPtr& pScrollbar );
+	void		RemoveHScrollbar() {SetVScrollbar(0);}
+	WgHScrollbarPtr	HScrollbar() const;
 
-	WgPanelHook*SetVScrollbar( WgVScrollbar * pScrollbar );
-	void		DeleteVScrollbar() {SetVScrollbar(0);}
-	WgVScrollbar *	VScrollbar() const { return (WgVScrollbar*) m_elements[YDRAG].Widget(); }
-	WgVScrollbar* 	ReleaseVScrollbar();
+	WgPanelHook*SetVScrollbar( const WgVScrollbarPtr& pScrollbar );
+	void		RemoveVScrollbar() {SetVScrollbar(0);}
+	WgVScrollbarPtr	VScrollbar() const;
 
-	WgPanelHook*SetContent( WgWidget * pContent );
-	void		DeleteContent() {SetContent(0); }
-	WgWidget*	Content() const { return m_elements[WINDOW].Widget(); }
-	WgWidget*	ReleaseContent();
+	WgPanelHook*SetContent( const WgWidgetPtr& pContent );
+	void		RemoveContent() {SetContent(0); }
+	WgWidgetPtr	Content() const;
 
-	bool		DeleteChild( WgWidget * pWidget );
-	WgWidget *	ReleaseChild( WgWidget * pWidget );
-
-	bool		DeleteAllChildren();
-	bool		ReleaseAllChildren();
+	bool		RemoveChild( const WgWidgetPtr& pWidget );
+	bool		Clear();
 
 	void		SetScrollbarAutoHide( bool bHideVScrollbar, bool bHideHScrollbar );
 	bool		GetHScrollbarAutoHide() const { return m_bAutoHideScrollbarX; }
@@ -210,10 +205,6 @@ public:
 
 	virtual void SetSkin( const WgSkinPtr& pSkin );
 
-	// Overloaded from WgPanel
-
-	WgWidget * FindWidget( const WgCoord& pos, WgSearchMode mode );
-
 	// Overloaded from Widget
 
 	WgSize				PreferredSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
@@ -229,6 +220,9 @@ public:
 */
 
 protected:
+	WgScrollPanel();
+	virtual ~WgScrollPanel();
+	virtual WgWidget* _newOfMyType() const { return new WgScrollPanel(); };
 
 	enum ElementType
 	{
@@ -263,6 +257,10 @@ protected:
 	static const int	MAX_ELEMENTS = 3;
 
 	virtual void _onNewSize( const WgSize& size );
+
+	// Overloaded from WgPanel
+
+	WgWidget *	_findWidget( const WgCoord& pos, WgSearchMode mode );
 
 	//
 
@@ -313,8 +311,6 @@ protected:
 
 	bool		m_bOverlayScrollbars;
 	
-
-//	ViewWidgetCollection	m_elementsCollection;	// WgWidgetCollection for the elements widgets.
 	WgScrollHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag widgets in that order.
 
 	WgSizePolicy	m_widthPolicy;

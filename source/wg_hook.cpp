@@ -34,23 +34,49 @@ WgHook::~WgHook()
 	if( m_pWidget )
 	{
 		m_pWidget->m_pHook = 0;
-		delete m_pWidget;
+		m_pWidget->m_refCount--;
+		if( m_pWidget->m_refCount == 0 )
+			delete m_pWidget;
 	}
 }
 
-//____ _attachWidget() __________________________________________________________
+WgWidgetPtr WgHook::Widget() const
+{ 
+	return m_pWidget; 
+}
 
-void WgHook::_attachWidget( WgWidget * pWidget )
+WgWidgetHolder * WgHook::Holder() const 
+{ 
+	return _holder(); 
+}
+
+WgContainerPtr WgHook::Parent() const 
+{ 
+	return _parent(); 
+}
+
+
+//____ _setWidget() __________________________________________________________
+
+void WgHook::_setWidget( WgWidget * pWidget )
 {
-	assert( pWidget->Parent() == 0 );
+	assert( pWidget == 0 || pWidget->Parent() == 0 );
 
 	if( m_pWidget )
+	{
 		m_pWidget->m_pHook = 0;
+		m_pWidget->m_refCount--;
+		if( m_pWidget->m_refCount == 0 && m_pWidget != pWidget )
+			delete m_pWidget;
+	}
 
 	m_pWidget = pWidget;
 
 	if( pWidget )
+	{
 		pWidget->m_pHook = this;
+		m_pWidget->m_refCount++;
+	}
 }
 
 //____ _relinkWidget() __________________________________________________________
@@ -59,19 +85,6 @@ void WgHook::_relinkWidget()
 {
 	if( m_pWidget )
 		m_pWidget->m_pHook = this;
-}
-
-//____ _releaseWidget() _________________________________________________________
-
-WgWidget* WgHook::_releaseWidget()
-{
-	WgWidget * p = m_pWidget;
-	m_pWidget = 0;
-
-	if( p )
-		p->m_pHook = 0;
-
-	return p;
 }
 
 //____ _requestFocus() _________________________________________________________
@@ -90,7 +103,14 @@ bool WgHook::_releaseFocus()
 
 //____ Root() _________________________________________________________________
 
-WgRootPanel * WgHook::Root() const
+WgRootPanelPtr WgHook::Root() const
+{
+	return _root();
+}
+
+//____ _root() _________________________________________________________________
+
+WgRootPanel * WgHook::_root() const
 {
 	WgWidgetHolder * pHolder = _holder();
 
@@ -98,7 +118,7 @@ WgRootPanel * WgHook::Root() const
 	{
 		WgHook * pHook = pHolder->CastToWidget()->Hook();
 		if( pHook )
-			return pHook->Root();
+			return pHook->_root();
 	}
 	else if( pHolder->IsRoot() )
 		return pHolder->CastToRoot();
@@ -106,11 +126,12 @@ WgRootPanel * WgHook::Root() const
 	return 0;
 }
 
+
 //____ EventHandler() __________________________________________________________
 
 WgEventHandler * WgHook::EventHandler() const
 {
-	WgRootPanel * pRoot = Root();
+	WgRootPanelPtr pRoot = Root();		//TODO: Optimize?
 	if( pRoot )
 		return pRoot->EventHandler();
 

@@ -33,6 +33,10 @@
 
 class WgPatches;
 
+class WgContainer;
+typedef	WgSmartChildPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
+typedef	WgWeakChildPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
+
 class WgContainer : public WgWidgetHolder, public WgWidget
 {
 	friend class WgEventHandler;
@@ -47,6 +51,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 
 	friend class WgRootPanel;
 	friend class WgFlexPanel;
+	friend class WgMenuLayer;
 	friend class WgModalLayer;
 	friend class WgTablePanel;
 	friend class WgScrollPanel;
@@ -57,8 +62,11 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 
 	public:
 
+		bool		IsInstanceOf( const char * pClassName ) const;
+		const char *ClassName( void ) const;
+		static const char	CLASSNAME[];
+		static WgContainerPtr	Cast( const WgObjectPtr& pObject );
 
-		virtual WgWidget * 	FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
 		bool		IsWidget() const;
 		bool		IsContainer() const;
@@ -87,6 +95,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 		WgContainer();
 		virtual ~WgContainer() {};
 
+		virtual WgWidget * 	_findWidget( const WgCoord& ofs, WgSearchMode mode );
 		virtual void	_onStateChanged( WgState oldState, WgState newState );
 
 		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );

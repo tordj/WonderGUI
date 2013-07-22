@@ -40,16 +40,19 @@
 #	include <wg_cursorinstance.h>
 #endif
 
+class WgTextDisplay;
+typedef	WgSmartChildPtr<WgTextDisplay,WgWidgetPtr>		WgTextDisplayPtr;
+typedef	WgWeakChildPtr<WgTextDisplay,WgWidgetWeakPtr>	WgTextDisplayWeakPtr;
+
 class WgTextDisplay:public WgWidget, public WgInterfaceEditText
 {
 public:
-	WgTextDisplay();
-	virtual ~WgTextDisplay();
-	virtual const char * Type() const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgTextDisplay(); };
+	static WgTextDisplayPtr	Create() { return WgTextDisplayPtr(new WgTextDisplay()); }
 
-
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgTextDisplayPtr	Cast( const WgObjectPtr& pObject );
 
 	//____ Methods __________________________________________
 
@@ -81,6 +84,9 @@ public:
 	bool	IsSelectable() const { return m_text.IsSelectable(); }
 
 protected:
+	WgTextDisplay();
+	virtual ~WgTextDisplay();
+	virtual WgWidget* _newOfMyType() const { return new WgTextDisplay(); };
 
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );

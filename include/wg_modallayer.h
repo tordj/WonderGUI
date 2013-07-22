@@ -29,6 +29,8 @@
 
 
 class WgModalLayer;
+typedef	WgSmartChildPtr<WgModalLayer,WgLayerPtr>	WgModalLayerPtr;
+typedef	WgWeakChildPtr<WgModalLayer,WgLayerWeakPtr>	WgModalLayerWeakPtr;
 
 class WgModalHook : public WgLayerHook, protected WgLink
 {
@@ -62,7 +64,7 @@ public:
 	WgModalHook *	Prev() const { return _prev(); }
 	WgModalHook *	Next() const { return _next(); }
 
-	WgModalLayer*	Parent() const;
+	WgModalLayerPtr	Parent() const;
 
 protected:
 	// TODO: Constructor should in the future call SetHook() on Widget, once we are totally rid of widgets...
@@ -89,30 +91,25 @@ protected:
 };
 
 
-
 class WgModalLayer : public WgLayer
 {
 	friend class WgModalHook;
 
 public:
-	WgModalLayer();
-	~WgModalLayer();
+	static WgModalLayerPtr	Create() { return WgModalLayerPtr(new WgModalLayer()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgModalLayer(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgModalLayerPtr	Cast( const WgObjectPtr& pObject );
 
-	WgModalHook *	AddModal( WgWidget * pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
-	WgModalHook *	AddModal( WgWidget * pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST ) { return AddModal( pWidget, WgRect(pos,0,0), origo); }
+	WgModalHook *	AddModal( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
+	WgModalHook *	AddModal( const WgWidgetPtr& pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST ) { return AddModal( pWidget, WgRect(pos,0,0), origo); }
 
-	bool			DeleteAllModal();
-	bool			ReleaseAllModal();
+	bool			ClearModalChildren();
 
-	bool			DeleteChild( WgWidget * pWidget );
-	WgWidget *		ReleaseChild( WgWidget * pWidget );
-
-	bool			DeleteAllChildren();
-	bool			ReleaseAllChildren();
+	bool			RemoveChild( const WgWidgetPtr& pWidget );
+	bool			Clear();
 
 	WgModalHook *	FirstModal();
 	WgModalHook *	LastModal();
@@ -125,15 +122,22 @@ public:
 
 	WgSize			PreferredSize() const;
 
-	// Overloaded from WgPanel
+protected:
+	WgModalLayer();
+	virtual ~WgModalLayer();
+	virtual WgWidget* _newOfMyType() const { return new WgModalLayer(); };
 
-	WgWidget *		FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
 private:
 
 	WgModalLayer *	_getModalLayer() const { return const_cast<WgModalLayer*>(this); }
 
 	void			_updateKeyboardFocus();
+
+	// Overloaded from WgPanel
+
+	WgWidget *		_findWidget( const WgCoord& ofs, WgSearchMode mode );
+
 
 	// Overloaded from WgLayer
 

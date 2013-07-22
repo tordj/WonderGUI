@@ -29,7 +29,7 @@
 #include <wg_eventhandler.h>
 #include <assert.h>
 
-static const char	c_widgetType[] = {"Checkbox"};
+const char WgCheckBox::CLASSNAME[] = {"Checkbox"};
 
 
 
@@ -55,16 +55,31 @@ WgCheckBox::~WgCheckBox()
 }
 
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgCheckBox::Type( void ) const
-{
-	return GetClass();
+bool WgCheckBox::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-const char * WgCheckBox::GetClass( void )
+//____ ClassName() ____________________________________________________________
+
+const char * WgCheckBox::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgCheckBoxPtr WgCheckBox::Cast( const WgObjectPtr& pObject )
 {
-	return c_widgetType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgCheckBoxPtr( static_cast<WgCheckBox*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetIcon() ______________________________________________________________

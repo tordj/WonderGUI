@@ -28,7 +28,7 @@
 #include	<wg_pen.h>
 #include	<wg_base.h>
 
-static const char	c_widgetType[] = {"FpsDisplay"};
+const char WgFpsDisplay::CLASSNAME[] = {"FpsDisplay"};
 
 
 #define		TICK_BUFFER			64
@@ -63,16 +63,31 @@ WgFpsDisplay::~WgFpsDisplay( void )
 }
 
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgFpsDisplay::Type( void ) const
-{
-	return GetClass();
+bool WgFpsDisplay::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-const char * WgFpsDisplay::GetClass( void )
+//____ ClassName() ____________________________________________________________
+
+const char * WgFpsDisplay::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgFpsDisplayPtr WgFpsDisplay::Cast( const WgObjectPtr& pObject )
 {
-	return c_widgetType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgFpsDisplayPtr( static_cast<WgFpsDisplay*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 

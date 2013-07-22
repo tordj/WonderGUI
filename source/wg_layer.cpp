@@ -23,6 +23,8 @@
 #include <wg_layer.h>
 #include <wg_patches.h>
 
+const char WgLayer::CLASSNAME[] = {"Layer"};
+
 
 //____ Constructor ____________________________________________________________
 
@@ -30,6 +32,34 @@ WgLayer::WgLayer()
 {
 	m_baseHook.m_pParent = this;
 }
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgLayer::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgContainer::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgLayer::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgLayerPtr WgLayer::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLayerPtr( static_cast<WgLayer*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ IsLayer() ______________________________________________________________
 
@@ -50,59 +80,42 @@ const WgLayer * WgLayer::CastToLayer() const
 	return this;
 }
 
-//____ SetBase() _________________________________________________________
+//____ SetBaseChild() _________________________________________________________
 
-WgHook * WgLayer::SetBase( WgWidget * pWidget )
+WgHook * WgLayer::SetBaseChild( const WgWidgetPtr& pWidget )
 {
-	// Replace Widget
-
-	WgWidget * pOldWidget = m_baseHook._releaseWidget();
-	if( pOldWidget )
-		delete pOldWidget;
-	m_baseHook._attachWidget(pWidget);
+	m_baseHook._setWidget(pWidget.GetRealPtr());
 	_onBaseChanged();
 	return &m_baseHook;
 }
 
-//____ Base() ____________________________________________________________
+//____ BaseChild() ____________________________________________________________
 
-WgWidget * WgLayer::Base()
+WgWidgetPtr WgLayer::BaseChild()
 {
-	return m_baseHook.Widget();
+	return m_baseHook._widget();
 }
 
-//____ DeleteBase() ______________________________________________________
 
-bool WgLayer::DeleteBase()
+//____ RemoveBaseChild() _____________________________________________________
+
+bool WgLayer::RemoveBaseChild()
 {
-	WgWidget * pWidget = m_baseHook._releaseWidget();
-	if( pWidget )
-	{
-		_onBaseChanged();
-		delete pWidget;
-		return true;
-	}
+	if( !m_baseHook._widget() )
+		return false;
 
-	return false;
-}
+	m_baseHook._setWidget(0);
+	_onBaseChanged();
 
-//____ ReleaseBase() _____________________________________________________
-
-WgWidget * WgLayer::ReleaseBase()
-{
-	WgWidget * pWidget = m_baseHook._releaseWidget();
-	if( pWidget )
-		_onBaseChanged();
-
-	return pWidget;
+	return true;
 }
 
 //____ HeightForWidth() _______________________________________________________
 
 int WgLayer::HeightForWidth( int width ) const
 {
-	if( m_baseHook.Widget() )
-		return m_baseHook.Widget()->HeightForWidth( width );
+	if( m_baseHook._widget() )
+		return m_baseHook._widget()->HeightForWidth( width );
 	else
 		return WgWidget::HeightForWidth(width);
 }
@@ -111,8 +124,8 @@ int WgLayer::HeightForWidth( int width ) const
 
 int WgLayer::WidthForHeight( int height ) const
 {
-	if( m_baseHook.Widget() )
-		return m_baseHook.Widget()->WidthForHeight( height );
+	if( m_baseHook._widget() )
+		return m_baseHook._widget()->WidthForHeight( height );
 	else
 		return WgWidget::WidthForHeight(height);
 }
@@ -121,8 +134,8 @@ int WgLayer::WidthForHeight( int height ) const
 
 WgSize WgLayer::PreferredSize() const
 {
-	if( m_baseHook.Widget() )
-		return m_baseHook.Widget()->PreferredSize();
+	if( m_baseHook._widget() )
+		return m_baseHook._widget()->PreferredSize();
 	else
 		return WgSize(1,1);
 }
@@ -150,7 +163,7 @@ void WgLayer::_onRequestRender( const WgRect& rect, const WgLayerHook * pHook )
 	while( pCover )
 	{
 		if( pCover->m_geo.IntersectsWith( rect ) )
-			pCover->Widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
+			pCover->_widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();
 	}
@@ -214,7 +227,7 @@ void WgLayerHook::_requestRender( const WgRect& rect )
 }
 
 //_____________________________________________________________________________
-WgLayer* WgLayerHook::Parent() const
+WgLayerPtr WgLayerHook::Parent() const
 { 
 	return static_cast<WgLayer*>(_parent()); 
 }

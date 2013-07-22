@@ -5,8 +5,8 @@
 #	include <wg_mempool.h>
 #endif
 
-#ifndef	WG_REFCOUNTED_DOT_H
-#	include <wg_refcounted.h>
+#ifndef	WG_OBJECT_DOT_H
+#	include <wg_object.h>
 #endif
 
 
@@ -16,19 +16,19 @@ class WgSmartPtrImpl
 {
 public:
 
-	WgSmartPtrImpl(WgRefCounted * p)
+	WgSmartPtrImpl(WgObject * p)
 	{
 		m_pObj = p;
 		if( p )
-			p->m_ref++;
+			p->m_refCount++;
 	}
 
 	~WgSmartPtrImpl()
 	{
 		if( m_pObj )
 		{
-			m_pObj->m_ref--;
-			if( m_pObj->m_ref == 0 )
+			m_pObj->m_refCount--;
+			if( m_pObj->m_refCount == 0 )
 				delete m_pObj;
 		}
 	}
@@ -39,19 +39,19 @@ public:
 		{
 			if( m_pObj )
 			{
-				m_pObj->m_ref--;
-				if( m_pObj->m_ref == 0 )
+				m_pObj->m_refCount--;
+				if( m_pObj->m_refCount == 0 )
 					delete m_pObj;
 			}
 
 			m_pObj = r.m_pObj;
 			if( m_pObj )
-				m_pObj->m_ref++;
+				m_pObj->m_refCount++;
 		}
 	}
 
 protected:
-	WgRefCounted * m_pObj;
+	WgObject * m_pObj;
 };
 
 
@@ -83,6 +83,8 @@ public:
 };
 
 
+//____ WgSmartChildPtr ________________________________________________________
+
 template<class T,class P> class WgSmartChildPtr : public P
 {
 public:
@@ -103,7 +105,7 @@ public:
 	inline bool operator==(const WgSmartChildPtr<T,P>& other) const { return this->m_pObj == other.m_pObj; }
 	inline bool operator!=(const WgSmartChildPtr<T,P>& other) const { return this->m_pObj != other.m_pObj; }
 
-	inline operator bool() const { return (this->m_pObj != 0); }
+//	inline operator bool() const { return (this->m_pObj != 0); }
 
 	inline T * GetRealPtr() const { return (T*) this->m_pObj; }
 };
@@ -112,57 +114,57 @@ public:
 
 
 
-//____ WgSmartPtrPooled _______________________________________________________
+//____ WgPoolSmartPtr _______________________________________________________
 
-template<class T> class WgSmartPtrPooled
+template<class T> class WgPoolSmartPtr
 {
 public:
-	WgSmartPtrPooled(T* p=0)
+	WgPoolSmartPtr(T* p=0)
 	{
 		m_pObj = p;
 		if( p )
-			((WgRefCountedPooled*)p)->m_ref++;
+			((WgPoolObject*)p)->m_refCount++;
 	};
 
-	WgSmartPtrPooled(const WgSmartPtrPooled<T>& r)
+	WgPoolSmartPtr(const WgPoolSmartPtr<T>& r)
 	{
 		m_pObj = r.m_pObj;
 		if( m_pObj )
-			((WgRefCountedPooled*)m_pObj)->m_ref++;
+			((WgPoolObject*)m_pObj)->m_ref++;
 	}
 
-	~WgSmartPtrPooled()
+	~WgPoolSmartPtr()
 	{
 		if( m_pObj )
 		{
-			((WgRefCountedPooled*)m_pObj)->m_ref--;
-			if( ((WgRefCountedPooled*)m_pObj)->m_ref == 0 )
+			((WgPoolObject*)m_pObj)->m_ref--;
+			if( ((WgPoolObject*)m_pObj)->m_ref == 0 )
 			{
 				m_pObj->~T();
-				((WgRefCountedPooled*)m_pObj)->m_pPool->FreeEntry(m_pObj);
+				((WgPoolObject*)m_pObj)->m_pPool->FreeEntry(m_pObj);
 			}
 		}
 	};
 
 
-    WgSmartPtrPooled<T> & operator=( WgSmartPtrPooled<T> const & r)
+    WgPoolSmartPtr<T> & operator=( WgPoolSmartPtr<T> const & r)
 	{
 		if( m_pObj != r.m_pObj )
 		{
 			if( m_pObj )
 			{
-				((WgRefCountedPooled*)m_pObj)->m_ref--;
+				((WgPoolObject*)m_pObj)->m_ref--;
 
-				if( ((WgRefCountedPooled*)m_pObj)->m_ref == 0 )
+				if( ((WgPoolObject*)m_pObj)->m_ref == 0 )
 				{
 					m_pObj->~T();
-					((WgRefCountedPooled*)m_pObj)->m_pPool->FreeEntry(m_pObj);
+					((WgPoolObject*)m_pObj)->m_pPool->FreeEntry(m_pObj);
 				}
 			}
 
 			m_pObj = r.m_pObj;
 			if( m_pObj )
-				((WgRefCountedPooled*)m_pObj)->m_ref++;
+				((WgPoolObject*)m_pObj)->m_ref++;
 		}
 		return *this;
 	}
@@ -170,60 +172,8 @@ public:
 	inline T & operator*() const { return * m_pObj; }
 	inline T * operator->() const{ return m_pObj; }
 
-	inline bool operator==(const WgSmartPtrPooled<T>& other) const { return m_pObj == other.m_pObj; }
-	inline bool operator!=(const WgSmartPtrPooled<T>& other) const { return m_pObj != other.m_pObj; }
-
-	inline operator bool() const { return (m_pObj != 0); }
-
-	inline T * GetRealPtr() const { return (T*) m_pObj; }
-
-private:
-	T * m_pObj;
-};
-
-//____ WgRefCountPtr __________________________________________________________
-
-template<class T> class WgRefCountPtr
-{
-public:
-	WgRefCountPtr(T* p=0)
-	{
-		m_pObj = p;
-		if( p )
-			p->m_ref++;
-	}
-
-	WgRefCountPtr(const WgRefCountPtr<T>& r)
-	{
-		m_pObj = r.m_pObj;
-		if( m_pObj )
-			m_pObj->m_ref++;
-	}
-
-	~WgRefCountPtr()
-	{
-		if( m_pObj )
-			m_pObj->m_ref--;
-	}
-
-
-    inline WgRefCountPtr<T> & operator=( WgRefCountPtr<T> const & r)
-	{
-		if( m_pObj )
-			m_pObj->m_ref--;
-
-		m_pObj = r.m_pObj;
-		if( m_pObj )
-			m_pObj->m_ref++;
-
-		return *this;
-	}
-
-	inline T & operator*() const { return * (T*) m_pObj; }
-	inline T * operator->() const{ return (T*) m_pObj; }
-
-	inline bool operator==(const WgRefCountPtr<T>& other) const { return m_pObj == other.m_pObj; }
-	inline bool operator!=(const WgRefCountPtr<T>& other) const { return m_pObj != other.m_pObj; }
+	inline bool operator==(const WgPoolSmartPtr<T>& other) const { return m_pObj == other.m_pObj; }
+	inline bool operator!=(const WgPoolSmartPtr<T>& other) const { return m_pObj != other.m_pObj; }
 
 	inline operator bool() const { return (m_pObj != 0); }
 
@@ -240,7 +190,7 @@ class WgWeakPtrImpl
 {
 public:
 	WgWeakPtrImpl() { m_pHub = 0; }
-	WgWeakPtrImpl( WgWeakPtrTarget * pObj );
+	WgWeakPtrImpl( WgObject * pObj );
 	~WgWeakPtrImpl();
 
 	void copy( WgWeakPtrImpl const & r );
@@ -251,7 +201,7 @@ public:
 
 //____ WgWeakPtr ______________________________________________________________
 
-template<class T> class WgWeakPtr : private WgWeakPtrImpl
+template<class T> class WgWeakPtr : protected WgWeakPtrImpl
 {
 public:
 	WgWeakPtr() {}
@@ -296,6 +246,62 @@ public:
 	}
 };
 
+//____ WgWeakChildPtr _________________________________________________________
+
+template<class T,class P> class WgWeakChildPtr : public P
+{
+public:
+	WgWeakChildPtr(T* p=0) : P( p ) {};
+	WgWeakChildPtr(const WgWeakChildPtr<T,P>& r) : P( r.GetRealPtr() ) {};
+	~WgWeakChildPtr() {};
+
+	inline T & operator*() const { return * GetRealPtr(); }
+	inline T * operator->() const{ return GetRealPtr(); }
+
+	inline bool operator==(const WgWeakChildPtr<T,P>& other) const { return this->m_pHub == other.m_pHub; }
+	inline bool operator!=(const WgWeakChildPtr<T,P>& other) const { return this->m_pHub != other.m_pHub; }
+
+//	inline operator bool() const { return (this->m_pObj != 0); }
+
+	inline T * GetRealPtr() const
+	{
+		if( m_pHub && m_pHub->pObj )
+			return static_cast<T*>(m_pHub->pObj);
+		else
+			return reinterpret_cast<T*>(0);
+	}
+};
+
+
+typedef class WgSmartPtr<WgObject> WgObjectPtr;
+typedef class WgWeakPtr<WgObject> WgObjectWeakPtr;
+
+
+/*
+
+template<typename T> T WgCast(const WgObjectPtr& p)
+{
+	if(p && p->IsInstanceOf(T::CLASSNAME) )
+		return T(p.GetRealPtr());
+	else
+		return T(0);
+}
+
+template<typename DestT,typename SrcT>
+inline WgCast(const WgObjectPtr& pObj)
+{
+	if( !pObj )
+		return T(0);
+
+
+
+	WgObject * p = pObj.GetRealPtr();
+
+
+
+	return T(static_cast<TpObj.GetRealPtr());
+}
+*/
 
 
 #endif //WG_SMARTPTR_DOT_H

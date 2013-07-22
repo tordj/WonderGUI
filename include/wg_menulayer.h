@@ -29,6 +29,8 @@
 
 
 class WgMenuLayer;
+typedef	WgSmartChildPtr<WgMenuLayer,WgLayerPtr>		WgMenuLayerPtr;
+typedef	WgWeakChildPtr<WgMenuLayer,WgLayerWeakPtr>	WgMenuLayerWeakPtr;
 
 class WgMenuHook : public WgLayerHook, protected WgLink
 {
@@ -45,7 +47,7 @@ public:
 	WgMenuHook *	Prev() const { return _prev(); }
 	WgMenuHook *	Next() const { return _next(); }
 
-	WgMenuLayer *	Parent() const;
+	WgMenuLayerPtr	Parent() const;
 
 protected:
 	// TODO: Constructor should in the future call SetHook() on Widget, once we are totally rid of widgets...
@@ -75,22 +77,23 @@ protected:
 };
 
 
+//____ WgMenuLayer ____________________________________________________________
 
 class WgMenuLayer : public WgLayer
 {
 	friend class WgMenuHook;
 
 public:
-	WgMenuLayer();
-	~WgMenuLayer();
+	static WgMenuLayerPtr	Create() { return WgMenuLayerPtr(new WgMenuLayer()); }
 
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgMenuLayer(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMenuLayerPtr	Cast( const WgObjectPtr& pObject );
 
-	WgMenuHook *	OpenMenu( WgWidget * pMenu, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
+	WgMenuHook *	OpenMenu( const WgWidgetPtr& pMenu, const WgWidgetPtr& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
 
-	bool			CloseMenu( WgWidget * pMenu );
+	bool			CloseMenu( const WgWidgetPtr& pMenu );
 	bool			CloseAllMenus();
 
 	WgMenuHook *	FirstMenu();
@@ -98,13 +101,15 @@ public:
 
 	// Overloaded from WgPanel
 
-	WgWidget *		FindWidget( const WgCoord& ofs, WgSearchMode mode );
+	bool			RemoveChild( const WgWidgetPtr& pWidget ) { return false; }
+	bool			Clear() { return false; }
 
-	bool			DeleteChild( WgWidget * pWidget ) { return 0; }
-	WgWidget *		ReleaseChild( WgWidget * pWidget ) { return 0; }
+protected:
+	WgMenuLayer();
+	virtual ~WgMenuLayer();
+	virtual WgWidget* _newOfMyType() const { return new WgMenuLayer(); };
 
-	bool			DeleteAllChildren() { return 0; }
-	bool			ReleaseAllChildren() { return 0; }
+	WgWidget *		_findWidget( const WgCoord& ofs, WgSearchMode mode );
 
 private:
 

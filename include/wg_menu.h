@@ -57,6 +57,9 @@ class	WgFont;
 class	WgGfxAnim;
 class	WgText;
 
+class WgMenu;
+typedef	WgSmartChildPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;
+typedef	WgWeakChildPtr<WgMenu,WgWidgetWeakPtr>	WgMenuWeakPtr;
 
 class WgMenu:public WgPanel, private WgScrollbarTarget
 {
@@ -64,12 +67,12 @@ class WgMenu:public WgPanel, private WgScrollbarTarget
 	friend class WgMenuSubMenu;
 
 public:
-	WgMenu();
-	virtual ~WgMenu();
+	static WgMenuPtr	Create() { return WgMenuPtr(new WgMenu()); }
 
-	virtual const char * Type() const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgMenu(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMenuPtr	Cast( const WgObjectPtr& pObject );
 
 	//____ Methods ___________________________________________
 
@@ -129,15 +132,12 @@ public:
 
 	void		SelectItem(WgMenuItem* pItem);
 
-	WgWidget * 	FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
 
 	//____ Overloaded from WgWidget & WgPanel ___________________________
 
-	bool		DeleteChild(WgWidget* pChild ) { return false; }
-	WgWidget*	ReleaseChild(WgWidget* pChild ) { return 0; }
-	bool		DeleteAllChildren() { return false; }
-	bool		ReleaseAllChildren() { return false; }
+	bool		RemoveChild(const WgWidgetPtr& pChild ) { return false; }
+	bool		Clear() { return false; }
 
 	int			WidthForHeight( int height ) const;
 
@@ -145,6 +145,10 @@ public:
 
 	//
 
+protected:
+	WgMenu();
+	virtual ~WgMenu();
+	virtual WgWidget* _newOfMyType() const { return new WgMenu(); };
 
 private:
 
@@ -189,6 +193,7 @@ private:
 	};
 
 	//
+	WgWidget * 	_findWidget( const WgCoord& ofs, WgSearchMode mode );
 
 	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	void		_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );

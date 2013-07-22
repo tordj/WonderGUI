@@ -29,7 +29,7 @@
 #include <wg_eventhandler.h>
 #include <wg_menulayer.h>
 
-static const char	c_widgetType[] = {"Combobox"};
+const char WgCombobox::CLASSNAME[] = {"Combobox"};
 
 
 //____ WgCombobox() _________________________________________________________________
@@ -58,23 +58,35 @@ WgCombobox::WgCombobox( void )
 
 WgCombobox::~WgCombobox()
 {
-	delete m_pMenu;
 }
 
+//____ IsInstanceOf() _________________________________________________________
 
-//____ Type() _________________________________________________________________
+bool WgCombobox::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
 
-const char * WgCombobox::Type( void ) const
+	return WgWidget::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgCombobox::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgComboboxPtr WgCombobox::Cast( const WgObjectPtr& pObject )
 {
-	return GetClass();
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgComboboxPtr( static_cast<WgCombobox*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
-//____ GetClass() _____________________________________________________________
-
-const char * WgCombobox::GetClass( void )
-{
-	return c_widgetType;
-}
 
 //____ PreferredSize() __________________________________________________________
 
@@ -94,7 +106,7 @@ WgSize WgCombobox::PreferredSize() const
 
 //____ SetMenu() ______________________________________________________________
 
-void WgCombobox::SetMenu( WgMenu * pMenu )
+void WgCombobox::SetMenu( const WgMenuPtr& pMenu )
 {
 	if( pMenu == m_pMenu )
 		return;
@@ -106,7 +118,7 @@ void WgCombobox::SetMenu( WgMenu * pMenu )
 
 //____ Menu() __________________________________________________________
 
-WgMenu* WgCombobox::Menu() const
+WgMenuPtr WgCombobox::Menu() const
 {
 	return m_pMenu;
 }
@@ -663,16 +675,15 @@ void WgCombobox::_onRefresh( void )
 
 void WgCombobox::_onCloneContent( const WgWidget * _pOrg )
 {
-	const WgCombobox * pOrg = WgCast<WgCombobox>(_pOrg);
-	if( pOrg )
-	{
-		m_textFormat = pOrg->m_textFormat;
-		m_placeholderText = pOrg->m_placeholderText;
-		m_pMenu = pOrg->m_pMenu;
-		m_pSelectedItem = pOrg->m_pSelectedItem;
-		m_text = pOrg->m_text;
-		m_maxCharacters = pOrg->m_maxCharacters;
-	}
+
+	const WgCombobox * pOrg = static_cast<const WgCombobox*>(_pOrg);
+
+	m_textFormat		= pOrg->m_textFormat;
+	m_placeholderText	= pOrg->m_placeholderText;
+	m_pMenu				= pOrg->m_pMenu;
+	m_pSelectedItem		= pOrg->m_pSelectedItem;
+	m_text				= pOrg->m_text;
+	m_maxCharacters		= pOrg->m_maxCharacters;
 }
 
 

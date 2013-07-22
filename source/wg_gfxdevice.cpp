@@ -31,6 +31,8 @@
 #include <wg_gfxanim.h>
 #include <wg_util.h>
 #include <wg_pen.h>
+#include <wg_widget.h>
+
 
 //____ Constructor _____________________________________________________________
 

@@ -53,7 +53,7 @@ protected:
 };
 
 
-class WgSizeScaler : public WgRefCounted
+class WgSizeScaler : public WgObject
 {
 	friend class WgScalable;
 public:

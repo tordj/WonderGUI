@@ -26,10 +26,16 @@
 #	include <wg_container.h>
 #endif
 
+class WgLayer;
+typedef	WgSmartChildPtr<WgLayer,WgContainerPtr>	WgLayerPtr;
+typedef	WgWeakChildPtr<WgLayer,WgContainerPtr>	WgLayerWeakPtr;
+
 
 class WgLayerHook : public WgHook
 {
 	friend class WgLayer;
+	friend class WgModalLayer;
+
 public:
 	WgCoord			Pos() const { return m_geo.Pos(); }
 	WgSize			Size() const { 	return m_geo.Size(); }
@@ -40,7 +46,7 @@ public:
 
 	WgLayerHook *	Prev() const { return static_cast<WgLayerHook*>(_prevHook()); }
 	WgLayerHook *	Next() const { return static_cast<WgLayerHook*>(_nextHook()); }
-	WgLayer*		Parent() const;
+	WgLayerPtr		Parent() const;
 
 protected:
 
@@ -57,15 +63,18 @@ class WgLayer : public WgContainer
 	friend class WgLayerHook;
 
 public:
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLayerPtr	Cast( const WgObjectPtr& pObject );
+
 	bool			IsLayer() const;
 	WgLayer *		CastToLayer();
 	const WgLayer *	CastToLayer() const;
 
-	WgHook *		SetBase( WgWidget * pWidget );
-	WgWidget *		Base();
-	bool			DeleteBase();
-	WgWidget *		ReleaseBase();
-
+	WgHook *		SetBaseChild( const WgWidgetPtr& pWidget );
+	WgWidgetPtr		BaseChild();
+	bool			RemoveBaseChild();
 
 	inline WgLayerHook *	FirstHook() const { return static_cast<WgLayerHook*>(_firstHook()); }
 	inline WgLayerHook *	LastHook() const { return static_cast<WgLayerHook*>(_lastHook()); }
@@ -83,6 +92,10 @@ protected:
 	class BaseHook : public WgHook
 	{
 		friend class WgLayer;
+		friend class WgModalLayer;
+		friend class WgModalHook;
+		friend class WgMenuLayer;
+		friend class WgMenuHook;
 
 	public:
 

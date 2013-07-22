@@ -37,12 +37,24 @@
 class WgGfxDevice;
 class WgWidget;
 
-class WgRootPanel : public WgWidgetHolder
+
+class WgRootPanel;
+typedef	WgSmartPtr<WgRootPanel>		WgRootPanelPtr;
+typedef	WgWeakPtr<WgRootPanel>		WgRootPanelWeakPtr;
+
+
+//____ WgRootPanel ____________________________________________________________
+
+class WgRootPanel : public WgObject, public WgWidgetHolder
 {
 public:
-	WgRootPanel();
-	WgRootPanel( WgGfxDevice * pGfxDevice );
-	~WgRootPanel();
+	static WgRootPanelPtr	Create() { return WgRootPanelPtr(new WgRootPanel()); }
+	static WgRootPanelPtr	Create( WgGfxDevice * pDevice ) { return WgRootPanelPtr(new WgRootPanel(pDevice)); }
+
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgRootPanelPtr	Cast( const WgObjectPtr& pObject );
 
 	bool					SetGfxDevice( WgGfxDevice * pDevice );
 	inline WgGfxDevice * 	GfxDevice() const { return m_pGfxDevice; };
@@ -55,18 +67,14 @@ public:
 	bool					SetVisible( bool bVisible );
 	bool					IsVisible() const { return m_bVisible; }
 
-	inline WgWidget *		Child() const { return m_hook.Widget(); }
-	bool					SetChild( WgWidget * pWidget );
-	inline void				DeleteChild() { SetChild(0); }
-	WgWidget * 				ReleaseChild();
+	inline WgWidgetPtr		Child() const { return m_hook._widget(); }
+	bool					SetChild( const WgWidgetPtr& pWidget );
+	bool					RemoveChild();
 
 	// Inherited from WgWidgetHolder
 
-	bool					DeleteChild( WgWidget * pWidget );
-	WgWidget *				ReleaseChild( WgWidget * pWidget );
-
-	bool					DeleteAllChildren();
-	bool					ReleaseAllChildren();
+	bool					RemoveChild( const WgWidgetPtr& pWidget );
+	bool					Clear();
 
 	bool					IsRoot() const { return true; }
 
@@ -90,9 +98,12 @@ public:
 
 	inline void	AddDirtyPatch( const WgRect& rect ) { m_dirtyPatches.Add( rect ); }
 
-	WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
 protected:
+	WgRootPanel();
+	WgRootPanel( WgGfxDevice * pGfxDevice );
+	~WgRootPanel();
+
 	class Hook : public WgHook
 	{
 		friend class WgRootPanel;
@@ -109,7 +120,6 @@ protected:
 		WgCoord			ScreenPos() const;
 		WgRect			ScreenGeo() const;
 
-		WgRootPanel*			Root() const;
 
 	protected:
 
@@ -121,13 +131,15 @@ protected:
 		WgHook *		_nextHook() const;
 		WgWidgetHolder * _holder() const;
 		WgContainer *	_parent() const;
+		WgRootPanel *	_root() const;
 
 		WgRootPanel *		m_pRoot;
 	};
 
+	WgWidget *			_findWidget( const WgCoord& ofs, WgSearchMode mode );
 
-	WgHook*				_firstHook() const { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
-	WgHook*				_lastHook() const { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*				_firstHook() const { return m_hook._widget()? const_cast<Hook*>(&m_hook):0; }
+	WgHook*				_lastHook() const { return m_hook._widget()? const_cast<Hook*>(&m_hook):0; }
 
 	bool 				_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );
 	bool 				_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );

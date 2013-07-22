@@ -26,13 +26,14 @@
 #include <wg_eventhandler.h>
 #include <wg_panel.h>
 
-static const char	c_widgetType[] = {"MenuLayer"};
+const char WgMenuLayer::CLASSNAME[] = {"MenuLayer"};
+
 static const char	c_hookType[] = {"MenuHook"};
 static const char	c_basehookType[] = {"MenuLayerBasehook"};
 
 
 //_____________________________________________________________________________
-WgMenuLayer* WgMenuHook::Parent() const
+WgMenuLayerPtr WgMenuHook::Parent() const
 {
 	return m_pParent;
 }
@@ -85,7 +86,7 @@ WgHook * WgMenuHook::_prevHook() const
 
 	if( p )
 		return p;
-	else if( m_pParent->m_baseHook.Widget() )
+	else if( m_pParent->m_baseHook._widget() )
 		return &m_pParent->m_baseHook;
 	else
 		return 0;
@@ -120,7 +121,7 @@ bool WgMenuHook::_updateGeo()
 
 	//
 
-	WgRect geo(0,0,WgSize::Min(Widget()->PreferredSize(),WgSize::Min(m_maxSize,parentSize)));
+	WgRect geo(0,0,WgSize::Min(_widget()->PreferredSize(),WgSize::Min(m_maxSize,parentSize)));
 
 	switch( m_attachPoint )
 	{
@@ -289,39 +290,44 @@ WgMenuLayer::WgMenuLayer()
 
 WgMenuLayer::~WgMenuLayer()
 {
-	// In contrast to all other panels we only delete our base child on exit.
-	// Menus don't belong to us, we just display them, so they are not ours to delete.
-
-	WgMenuHook * pHook = m_menuHooks.First();
-	while( pHook )
-	{
-		pHook->_releaseWidget();
-		pHook = pHook->_next();
-	}
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char *WgMenuLayer::Type( void ) const
+bool WgMenuLayer::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLayer::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgMenuLayer::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgMenuLayerPtr WgMenuLayer::Cast( const WgObjectPtr& pObject )
 {
-	return GetClass();
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMenuLayerPtr( static_cast<WgMenuLayer*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
-//____ GetClass() ____________________________________________________________
-
-const char * WgMenuLayer::GetClass()
-{
-	return c_widgetType;
-}
 
 //____ OpenMenu() _______________________________________________________________
 
-WgMenuHook * WgMenuLayer::OpenMenu( WgWidget * pMenu, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize )
+WgMenuHook * WgMenuLayer::OpenMenu( const WgWidgetPtr& pMenu, const WgWidgetPtr& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize )
 {
 	// Create Hook and fill in members.
 
-	WgMenuHook * pHook = new WgMenuHook( this, pOpener, launcherGeo, attachPoint, maxSize );
-	pHook->_attachWidget(pMenu);
+	WgMenuHook * pHook = new WgMenuHook( this, pOpener.GetRealPtr(), launcherGeo, attachPoint, maxSize );
+	pHook->_setWidget(pMenu.GetRealPtr());
 	m_menuHooks.PushBack(pHook);
 	pHook->_updateGeo();
 	_stealKeyboardFocus();
@@ -335,7 +341,7 @@ bool WgMenuLayer::CloseAllMenus()
 {
 	WgMenuHook * pHook = m_menuHooks.First();
 	if( pHook )
-		CloseMenu( pHook->Widget() );
+		CloseMenu( pHook->_widget() );
 
 	return true;
 }
@@ -343,7 +349,7 @@ bool WgMenuLayer::CloseAllMenus()
 
 //____ CloseMenu() _________________________________________________________
 
-bool WgMenuLayer::CloseMenu( WgWidget * pWidget )
+bool WgMenuLayer::CloseMenu( const WgWidgetPtr& pWidget )
 {
 	if( !pWidget || pWidget->Parent() != this || pWidget == m_baseHook.Widget() )
 		return false;
@@ -358,10 +364,9 @@ bool WgMenuLayer::CloseMenu( WgWidget * pWidget )
 		pHook = pHook->Next();
 
 		if( pEH )
-			pEH->QueueEvent( new WgEvent::MenuClosed( p->Widget(), p->m_pOpener ) );
+			pEH->QueueEvent( new WgEvent::MenuClosed( p->_widget(), p->m_pOpener ) );
 
 		p->_requestRender();
-		p->_releaseWidget();
 		delete p;
 	}
 	_restoreKeyboardFocus();
@@ -382,11 +387,11 @@ WgMenuHook * WgMenuLayer::LastMenu()
 	return m_menuHooks.Last();
 }
 
-//____ FindWidget() ____________________________________________________________
+//____ _findWidget() ____________________________________________________________
 
-WgWidget *  WgMenuLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
+WgWidget *  WgMenuLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 {
-	// MenuPanel has its own FindWidget() method since we need special treatment of
+	// MenuPanel has its own _findWidget() method since we need special treatment of
 	// searchmode ACTION_TARGET when a menu is open.
 
 	if( mode == WG_SEARCH_ACTION_TARGET && !m_menuHooks.IsEmpty() )
@@ -400,10 +405,10 @@ WgWidget *  WgMenuLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 		{
 			if( pHook->m_geo.Contains( ofs ) )
 			{
-				if( pHook->Widget()->IsContainer() )
-					pResult = pHook->Widget()->CastToContainer()->FindWidget( ofs - pHook->m_geo.Pos(), mode );
-				else if( pHook->Widget()->MarkTest( ofs - pHook->m_geo.Pos() ) )
-					pResult = pHook->Widget();
+				if( pHook->_widget()->IsContainer() )
+					pResult = pHook->_widget()->CastToContainer()->_findWidget( ofs - pHook->m_geo.Pos(), mode );
+				else if( pHook->_widget()->MarkTest( ofs - pHook->m_geo.Pos() ) )
+					pResult = pHook->_widget();
 			}
 			pHook = pHook->Prev();
 		}
@@ -435,7 +440,7 @@ WgWidget *  WgMenuLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 	{
 		// For the rest of the modes we can rely on the default method.
 
-		return WgContainer::FindWidget( ofs, mode );
+		return WgContainer::_findWidget( ofs, mode );
 	}
 }
 
@@ -461,7 +466,7 @@ void WgMenuLayer::_onRequestRender( const WgRect& rect, const WgMenuHook * pHook
 	while( pCover )
 	{
 		if( pCover->m_geo.IntersectsWith( rect ) )
-			pCover->Widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
+			pCover->_widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->Next();
 	}
@@ -480,8 +485,8 @@ void WgMenuLayer::_onNewSize( const WgSize& sz )
 
 	// Update size of base widget
 
-	if( m_baseHook.Widget() )
-		m_baseHook.Widget()->_onNewSize(sz);
+	if( m_baseHook._widget() )
+		m_baseHook._widget()->_onNewSize(sz);
 }
 
 //____ _onCloneContent() ______________________________________________________
@@ -502,7 +507,7 @@ void WgMenuLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 	if( pForwardedFrom )
 	{
 		WgMenuHook * pHook = m_menuHooks.First();
-		while( pHook && pHook->Widget() != pForwardedFrom )
+		while( pHook && pHook->_widget() != pForwardedFrom )
 			pHook = pHook->Next();
 			
 		if( pHook && pHook->m_pOpener )
@@ -527,7 +532,7 @@ void WgMenuLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 			if( !m_menuHooks.IsEmpty() )							// Process only if we have at least one open menu.
 			{
 				WgCoord ofs = _pEvent->PointerPos();
-				WgWidget * p = FindWidget( ofs, WG_SEARCH_ACTION_TARGET );
+				WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
 				if( p != this )
 				{
 					while( p->Parent() != this )
@@ -544,7 +549,7 @@ void WgMenuLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 			const WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
 
 			WgCoord ofs = pEvent->PointerPos();
-			WgWidget * p = FindWidget( ofs, WG_SEARCH_ACTION_TARGET );
+			WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
 			if( p == this )
 			{
 				CloseAllMenus();
@@ -562,7 +567,7 @@ void WgMenuLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 			{
 				if( !m_menuHooks.IsEmpty() )
 				{
-					CloseMenu( m_menuHooks.Last()->Widget() );
+					CloseMenu( m_menuHooks.Last()->_widget() );
 					return;
 				}
 			}
@@ -598,7 +603,7 @@ void WgMenuLayer::_stealKeyboardFocus()
 
 	// Steal keyboard focus to top menu
 
-	WgWidget * pWidget = m_menuHooks.Last()->Widget();
+	WgWidget * pWidget = m_menuHooks.Last()->_widget();
 
 	if( pWidget->IsPanel() && pWidget->CastToPanel()->IsFocusGroup() )
 		pHandler->SetFocusGroup(pWidget->CastToPanel());
@@ -632,7 +637,7 @@ void WgMenuLayer::_restoreKeyboardFocus()
 
 WgHook* WgMenuLayer::_firstHook() const
 {
-	if( m_baseHook.Widget() )
+	if( m_baseHook._widget() )
 		return const_cast<BaseHook*>(&m_baseHook);
 	else
 		return m_menuHooks.First();
@@ -649,7 +654,7 @@ WgHook* WgMenuLayer::_lastHook() const
 
 WgHook * WgMenuLayer::_firstHookWithGeo( WgRect& geo ) const
 {
-	if( m_baseHook.Widget() )
+	if( m_baseHook._widget() )
 	{
 		geo = WgRect(0,0,m_size);
 		return const_cast<BaseHook*>(&m_baseHook);
@@ -685,7 +690,7 @@ WgHook * WgMenuLayer::_lastHookWithGeo( WgRect& geo ) const
 		geo = p->m_geo;
 		return p;
 	}
-	else if( m_baseHook.Widget() )
+	else if( m_baseHook._widget() )
 	{
 		geo = WgRect(0,0,m_size);
 		return const_cast<BaseHook*>(&m_baseHook);

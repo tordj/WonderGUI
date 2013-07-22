@@ -36,6 +36,11 @@ class WgSurface;
 class WgScrollbarTarget;
 class WgMenu;
 
+
+class WgScrollbar;
+typedef	WgSmartChildPtr<WgScrollbar,WgWidgetPtr>		WgScrollbarPtr;
+typedef	WgWeakChildPtr<WgScrollbar,WgWidgetWeakPtr>		WgScrollbarWeakPtr;
+
 //____ Class: WgScrollbar _____________________________________________________
 
 class	WgScrollbar : public WgWidget
@@ -44,10 +49,10 @@ class	WgScrollbar : public WgWidget
 	friend class WgMenu;
 
 	public:
-		WgScrollbar();
-		virtual	~WgScrollbar();
-		virtual const char * Type() const;
-		static const char * GetClass();
+		bool		IsInstanceOf( const char * pClassName ) const;
+		const char *ClassName( void ) const;
+		static const char	CLASSNAME[];
+		static WgScrollbarPtr	Cast( const WgObjectPtr& pObject );
 
 		//____ Enums ____________________________________________
 
@@ -104,6 +109,9 @@ class	WgScrollbar : public WgWidget
 		WgSize	PreferredSize() const;
 
 	protected:
+		WgScrollbar();
+		virtual	~WgScrollbar();
+
 		void	_onCloneContent( const WgWidget * _pOrg );
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
@@ -171,27 +179,48 @@ class	WgScrollbar : public WgWidget
 
 //____ Class: WgHScrollbar _______________________________________________________
 
+class WgHScrollbar;
+typedef	WgSmartChildPtr<WgHScrollbar,WgScrollbarPtr>		WgHScrollbarPtr;
+typedef	WgWeakChildPtr<WgHScrollbar,WgScrollbarWeakPtr>		WgHScrollbarWeakPtr;
+
 class WgHScrollbar:public WgScrollbar
 {
-	public:
-		WgHScrollbar();
+public:
+	static WgHScrollbarPtr	Create() { return WgHScrollbarPtr(new WgHScrollbar()); }
 
-		virtual const char * Type() const;
-		static const char * GetClass();
-		virtual WgWidget * NewOfMyType() const { return new WgHScrollbar(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgHScrollbarPtr	Cast( const WgObjectPtr& pObject );
+
+protected:
+	WgHScrollbar();
+	virtual ~WgHScrollbar() {}
+	virtual WgWidget* _newOfMyType() const { return new WgHScrollbar(); };
 
 };
 
 //____ Class: WgVScrollbar _______________________________________________________
 
+class WgVScrollbar;
+typedef	WgSmartChildPtr<WgVScrollbar,WgScrollbarPtr>		WgVScrollbarPtr;
+typedef	WgWeakChildPtr<WgVScrollbar,WgScrollbarWeakPtr>		WgVScrollbarWeakPtr;
+
 class WgVScrollbar:public WgScrollbar
 {
-	public:
-		WgVScrollbar();
+	friend class WgMenu;
+public:
+	static WgVScrollbarPtr	Create() { return WgVScrollbarPtr(new WgVScrollbar()); }
 
-		virtual const char * Type() const;
-		static const char * GetClass();
-		virtual WgWidget * NewOfMyType() const { return new WgVScrollbar(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgVScrollbarPtr	Cast( const WgObjectPtr& pObject );
+
+protected:
+	WgVScrollbar();
+	virtual ~WgVScrollbar() {}
+	virtual WgWidget* _newOfMyType() const { return new WgVScrollbar(); };
 
 };
 

@@ -26,7 +26,7 @@ extern std::ostream cout;
 
 SDL_Surface *	initSDL( int w, int h );
 bool			eventLoop( WgEventHandler * pHandler );
-WgRootPanel * 		setupGUI( WgGfxDevice * pDevice );
+WgRootPanelPtr	setupGUI( WgGfxDevice * pDevice );
 void			printWidgetSizes();
 
 void cbInitDrag( const WgEvent::Event* _pEvent, WgWidget * pWidget );
@@ -123,7 +123,7 @@ int main ( int argc, char** argv )
 	WgBase::SetDefaultTextprop( prop.Register() );
 
 
-	WgRootPanel * pRoot = setupGUI( pGfxDevice );
+	WgRootPanelPtr pRoot = setupGUI( pGfxDevice );
 
 	pRoot->FindWidget( WgCoord(10,10), WG_SEARCH_ACTION_TARGET );
 
@@ -185,7 +185,7 @@ int main ( int argc, char** argv )
 
 	// Exit WonderGUI
 
-	delete pRoot;
+	pRoot = 0;
 	delete pGfxDevice;
 
 	WgBase::Exit();
@@ -238,13 +238,13 @@ void printWidgetSizes()
 
 //____ setupGUI() ______________________________________________________________
 
-WgRootPanel * setupGUI( WgGfxDevice * pDevice )
+WgRootPanelPtr setupGUI( WgGfxDevice * pDevice )
 {
 	WgResDB * pDB = sdl_wglib::LoadStdWidgets( "../resources/blocks.png", WgSurfaceFactorySoft() );
 	if( !pDB )
 		return 0;
 
-	WgRootPanel * pRoot = new WgRootPanel( pDevice );
+	WgRootPanelPtr pRoot = WgRootPanel::Create( pDevice );
 
 	WgEventHandler * pEventHandler = pRoot->EventHandler();
 
@@ -269,18 +269,18 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 
 	// MenuPanel
 
-	WgMenuLayer * pMenuLayer = new WgMenuLayer();
+	WgMenuLayerPtr pMenuLayer = WgMenuLayer::Create();
 	pRoot->SetChild( pMenuLayer );
 
 	// Bottom Flex
 
-	WgFlexPanel * pBottom = new WgFlexPanel();
-	pMenuLayer->SetBase( pBottom );
+	WgFlexPanelPtr pBottom = WgFlexPanel::Create();
+	pMenuLayer->SetBaseChild( pBottom );
 	pBottom->SetSkin( WgColorSkin::Create( WgColor::black ) );
 
 	// Main Flex
 
-	WgFlexPanel * pFlex = new WgFlexPanel();
+	WgFlexPanelPtr pFlex = WgFlexPanel::Create();
 	pBottom->AddChild( pFlex, WG_NORTHWEST, WG_SOUTHEAST, WgBorders(10) );
 
 	// Background
@@ -545,7 +545,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 	//
 */
 
-	WgPackPanel * pVBox = new WgPackPanel();
+	WgPackPanelPtr pVBox = WgPackPanel::Create();
 	pVBox->SetOrientation( WG_VERTICAL );
 //	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
 
@@ -555,7 +555,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 //	WgImage * pFlag4= new WgImage();
 //	pFlag4->SetSource( pFlagBlock );
 
-	WgButton * pButton2 = (WgButton*) pDB->CloneWidget( "button" );
+	WgButtonPtr pButton2 = WgButton::Cast(pDB->CloneWidget( "button" ));
 	pButton2->SetText( "BUTTON TEXT" );
 	pVBox->AddChild(pButton2);
 
@@ -575,7 +575,7 @@ WgRootPanel * setupGUI( WgGfxDevice * pDevice )
 //	pText1->SetEditMode(WG_TEXT_EDITABLE);
 //	pVBox->AddChild(pText1);
 
-	WgTextDisplay * pText2 = new WgTextDisplay();
+	WgTextDisplayPtr pText2 = WgTextDisplay::Create();
 	pText2->SetText("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj Hej");
 	pText2->SetEditMode(WG_TEXT_EDITABLE);
 	pVBox->AddChild(pText2);
@@ -702,7 +702,7 @@ void cbOpenModal( const WgEvent::Event* _pEvent, WgWidget * pWidget )
 
 void cbCloseModal( const WgEvent::Event* _pEvent, WgWidget * pWidget )
 {
-	g_pModal->ReleaseChild(pWidget);
+	g_pModal->RemoveChild(pWidget);
 }
 
 //____ cbResizeWidget() _________________________________________________________

@@ -2,7 +2,7 @@
 #include <wg_simplevolumemeter.h>
 #include <wg_gfxdevice.h>
 
-static const char	c_widgetType[] = {"SimpleVolumeMeter"};
+const char WgSimpleVolumeMeter::CLASSNAME[] = {"SimpleVolumeMeter"};
 
 
 //____ Constructor ____________________________________________________________
@@ -33,19 +33,33 @@ WgSimpleVolumeMeter::~WgSimpleVolumeMeter()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgSimpleVolumeMeter::Type( void ) const
-{
-	return GetClass();
+bool WgSimpleVolumeMeter::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgSimpleVolumeMeter::GetClass()
-{
-	return c_widgetType;
+const char * WgSimpleVolumeMeter::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgSimpleVolumeMeterPtr WgSimpleVolumeMeter::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgSimpleVolumeMeterPtr( static_cast<WgSimpleVolumeMeter*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetColors() ___________________________________________________________
 

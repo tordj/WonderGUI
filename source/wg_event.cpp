@@ -700,9 +700,9 @@ namespace WgEvent
 		WgWidget * pWidget = m_pWidget.GetRealPtr();
 		if( pWidget )
 		{
-			if( pWidget->Type() == WgTextDisplay::GetClass() )
+			if( pWidget->ClassName() == WgTextDisplay::CLASSNAME )
 				return static_cast<WgTextDisplay*>(pWidget);
-			else if( pWidget->Type() == WgLineEditor::GetClass() )
+			else if( pWidget->ClassName() == WgTextDisplay::CLASSNAME )
 				return static_cast<WgLineEditor*>(pWidget);
 		}
 		return 0;

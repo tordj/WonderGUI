@@ -32,7 +32,7 @@ class WgWidgetCollection;
 
 typedef	WgSmartPtr<WgWidgetCollection>	WgWidgetCollectionPtr;
 
-class WgWidgetCollection : public WgRefCounted
+class WgWidgetCollection : public WgObject
 {
 public:
 	virtual int			Size() const = 0;

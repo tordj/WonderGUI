@@ -20,18 +20,16 @@
 
 =========================================================================*/
 
-#include <wg_scrollbartarget.h>
-#include <wg_scrollbar.h>
+#include <wg_object.h>
 
+const char WgObject::CLASSNAME[] = {"Object"};
 
-void WgScrollbarTarget::_updateScrollbar( float pos, float size )
-{
-		WgWidget * pWidget = m_pScrollbar.GetRealPtr();
+bool WgObject::IsInstanceOf( const char * pClassName ) const
+{ 
+	return (pClassName==CLASSNAME); 
+}
 
-		if( pWidget )
-		{
-			if( pWidget->IsInstanceOf(WgScrollbar::CLASSNAME) )
-					static_cast<WgScrollbar*>(pWidget)->_setHandle(pos,size);
-		}
-
+const char * WgObject::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }

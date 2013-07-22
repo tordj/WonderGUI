@@ -27,8 +27,11 @@
 #	include <wg_types.h>
 #endif
 
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
+#endif
 
-class WgWidget;
+
 class WgRootPanel;
 class WgHook;
 class WgContainer;
@@ -45,20 +48,19 @@ class WgWidgetHolder
 	friend class WgPanel;
 	friend class WgHook;
 	friend class WgContainer;
+	friend class WgRadioButton;
 	public:
-		WgWidget *	FirstWidget() const;
-		WgWidget *	LastWidget() const;	
+		WgWidgetPtr			FirstWidget() const { return WgWidgetPtr(_firstWidget()); }
+		WgWidgetPtr			LastWidget() const { return WgWidgetPtr(_lastWidget()); }
 
-		inline WgHook *	FirstHook() const { return _firstHook(); }
-		inline WgHook *	LastHook() const { return _lastHook(); }
+		inline WgHook *		FirstHook() const { return _firstHook(); }
+		inline WgHook *		LastHook() const { return _lastHook(); }
 
-		virtual WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode ) = 0;
+		virtual WgWidgetPtr FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
 
-		virtual bool		DeleteChild( WgWidget * pWidget ) = 0;
-		virtual WgWidget *	ReleaseChild( WgWidget * pWidget ) = 0;
 
-		virtual bool		DeleteAllChildren() = 0;
-		virtual bool		ReleaseAllChildren() = 0;
+		virtual bool		RemoveChild( const WgWidgetPtr& pWidget ) = 0;
+		virtual bool		Clear() = 0;
 
 		virtual WgWidget *					CastToWidget();
 		virtual const WgWidget *			CastToWidget() const;
@@ -90,6 +92,11 @@ class WgWidgetHolder
 
 		virtual WgHook*	_firstHook() const = 0;
 		virtual WgHook*	_lastHook() const = 0;
+
+		WgWidget *		_firstWidget() const;
+		WgWidget *		_lastWidget() const;
+		virtual WgWidget * _findWidget( const WgCoord& ofs, WgSearchMode mode ) = 0;
+
 };
 
 

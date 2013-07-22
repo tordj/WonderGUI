@@ -14,17 +14,21 @@
 #	include <wg_geo.h>
 #endif
 
+class WgSimpleVolumeMeter;
+typedef	WgSmartChildPtr<WgSimpleVolumeMeter,WgWidgetPtr>		WgSimpleVolumeMeterPtr;
+typedef	WgWeakChildPtr<WgSimpleVolumeMeter,WgWidgetWeakPtr>		WgSimpleVolumeMeterWeakPtr;
+
 //____ WgSimpleVolumeMeter ____________________________________________________________
 
 class WgSimpleVolumeMeter : public WgWidget
 {
 public:
-	WgSimpleVolumeMeter();
-	virtual ~WgSimpleVolumeMeter();
+	static WgSimpleVolumeMeterPtr	Create() { return WgSimpleVolumeMeterPtr(new WgSimpleVolumeMeter()); }
 	
-	virtual const char *Type( void ) const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgSimpleVolumeMeter(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgSimpleVolumeMeterPtr	Cast( const WgObjectPtr& pObject );
 	
 	//____ Methods __________________________________________
 
@@ -40,6 +44,9 @@ public:
 	WgSize			PreferredSize() const;
 	
 protected:
+	WgSimpleVolumeMeter();
+	virtual ~WgSimpleVolumeMeter();
+	virtual WgWidget* _newOfMyType() const { return new WgSimpleVolumeMeter(); };
 	
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onCloneContent( const WgWidget * _pOrg );

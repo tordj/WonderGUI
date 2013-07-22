@@ -36,7 +36,10 @@
 #endif
 
 class WgVectorPanel;
+typedef	WgSmartChildPtr<WgVectorPanel,WgPanelPtr>		WgVectorPanelPtr;
+typedef	WgWeakChildPtr<WgVectorPanel,WgPanelWeakPtr>	WgVectorPanelWeakPtr;
 
+//____ WgVectorHook ___________________________________________________________
 
 class WgVectorHook : public WgPanelHook, protected WgLink
 {
@@ -53,7 +56,7 @@ public:
 
 	WgVectorHook*	Prev() const { return _prev(); }
 	WgVectorHook*	Next() const { return _next(); }
-	WgVectorPanel * Parent() const;
+	WgVectorPanelPtr Parent() const;
 
 	bool			MoveForward();
 	bool			MoveBackward();
@@ -78,25 +81,26 @@ protected:
 	WgHook *	_nextHook() const;
 };
 
+//____ WgVectorPanel __________________________________________________________
 
 class WgVectorPanel : public WgPanel
 {
 	friend class WgVectorHook;
 public:
-	WgVectorPanel();
-	virtual ~WgVectorPanel();
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgVectorPanelPtr	Cast( const WgObjectPtr& pObject );
 
+	WgVectorHook * AddChild( const WgWidgetPtr& pWidget );
+	WgVectorHook * InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
 
-	WgVectorHook * AddChild( WgWidget * pWidget );
-	WgVectorHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling );
-
-	bool			DeleteChild( WgWidget * pWidget );
-	WgWidget *		ReleaseChild( WgWidget * pWidget );
-
-	bool			DeleteAllChildren();
-	bool			ReleaseAllChildren();
+	bool			RemoveChild( const WgWidgetPtr& pWidget );
+	bool			Clear();
 
 protected:
+	WgVectorPanel();
+	virtual ~WgVectorPanel();
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 

@@ -28,6 +28,10 @@
 #endif
 
 class WgStackPanel;
+typedef	WgSmartChildPtr<WgStackPanel,WgVectorPanelPtr>		WgStackPanelPtr;
+typedef	WgWeakChildPtr<WgStackPanel,WgVectorPanelWeakPtr>	WgStackPanelWeakPtr;
+
+//____ WgStackHook ____________________________________________________________
 
 class WgStackHook : public WgVectorHook
 {
@@ -52,7 +56,7 @@ public:
 	WgStackHook * 	Prev() const { return _prev(); }
 	WgStackHook * 	Next() const { return _next(); }
 
-	WgStackPanel * 	Parent() const { return m_pParent; }
+	WgStackPanelPtr 	Parent() const { return m_pParent; }
 
 protected:
 	PROTECTED_LINK_METHODS( WgStackHook );
@@ -70,21 +74,22 @@ protected:
 	
 };
 
+//____ WgStackPanel ___________________________________________________________
+
 class WgStackPanel : public WgVectorPanel
 {
 friend class WgStackHook;	
 	
 public:
-	WgStackPanel();
-	~WgStackPanel();
+	static WgStackPanelPtr	Create() { return WgStackPanelPtr(new WgStackPanel()); }
 
-	const char * Type() const;
-	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgStackPanel(); };
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgStackPanelPtr	Cast( const WgObjectPtr& pObject );
 	
-
-	inline WgStackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::AddChild(pWidget)); }
-	inline WgStackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
+	inline WgStackHook * AddChild( const WgWidgetPtr& pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::AddChild(pWidget)); }
+	inline WgStackHook * InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
 
 	inline WgStackHook* FirstHook() const { return static_cast<WgStackHook*>(m_hooks.First()); }
 	inline WgStackHook* LastHook() const { return static_cast<WgStackHook*>(m_hooks.Last()); }
@@ -97,6 +102,9 @@ public:
 	WgSize	PreferredSize() const;
 
 protected:
+	WgStackPanel();
+	virtual ~WgStackPanel();
+	virtual WgWidget* _newOfMyType() const { return new WgStackPanel(); };
 
 	// Overloaded from Widget
 

@@ -25,7 +25,7 @@
 #include <wg_switch.h>
 #include <wg_gfxdevice.h>
 
-static const char	c_widgetType[] = {"Switch"};
+const char WgSwitch::CLASSNAME[] = {"Switch"};
 
 //____ Constructor ____________________________________________________________
 
@@ -39,19 +39,33 @@ WgSwitch::~WgSwitch()
 {
 }
 
-//____ Type() _________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgSwitch::Type( void ) const
-{
-	return GetClass();
+bool WgSwitch::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgWidget::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() ____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgSwitch::GetClass()
-{
-	return c_widgetType;
+const char * WgSwitch::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
+
+//____ Cast() _________________________________________________________________
+
+WgSwitchPtr WgSwitch::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgSwitchPtr( static_cast<WgSwitch*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetValue() _____________________________________________________________
 
