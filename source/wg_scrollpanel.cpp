@@ -665,7 +665,7 @@ WgWidget * WgScrollPanel::_findWidget( const WgCoord& pos, WgSearchMode mode )
 		{
 			if( p->_widget()->IsContainer() )
 			{
-				WgWidget * pFound = p->_widget()->CastToContainer()->_findWidget( pos - p->m_canvasGeo.Pos(), mode );
+				WgWidget * pFound = static_cast<WgContainer*>(p->_widget())->_findWidget( pos - p->m_canvasGeo.Pos(), mode );
 				if( pFound )
 					return pFound;
 			}

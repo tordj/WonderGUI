@@ -57,7 +57,7 @@ class WgModalLayer;
 class WgInterfaceEditText;
 class WgText;
 
-typedef class WgWeakChildPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
+typedef class WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
 
 namespace WgEvent
 {

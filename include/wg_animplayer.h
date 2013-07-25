@@ -33,8 +33,8 @@
 #endif
 
 class WgAnimPlayer;
-typedef	WgSmartChildPtr<WgAnimPlayer,WgWidgetPtr>		WgAnimPlayerPtr;
-typedef	WgWeakChildPtr<WgAnimPlayer,WgWidgetWeakPtr>	WgAnimPlayerWeakPtr;
+typedef	WgSmartPtr<WgAnimPlayer,WgWidgetPtr>		WgAnimPlayerPtr;
+typedef	WgWeakPtr<WgAnimPlayer,WgWidgetWeakPtr>	WgAnimPlayerWeakPtr;
 
 
 class WgAnimPlayer:public WgWidget

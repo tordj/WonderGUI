@@ -61,25 +61,6 @@ WgLayerPtr WgLayer::Cast( const WgObjectPtr& pObject )
 }
 
 
-//____ IsLayer() ______________________________________________________________
-
-bool WgLayer::IsLayer() const
-{
-	return true;
-}
-
-//____ CastToLayer() _______________________________________________________
-
-WgLayer * WgLayer::CastToLayer()
-{
-	return this;
-}
-
-const WgLayer * WgLayer::CastToLayer() const
-{
-	return this;
-}
-
 //____ SetBaseChild() _________________________________________________________
 
 WgHook * WgLayer::SetBaseChild( const WgWidgetPtr& pWidget )

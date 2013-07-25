@@ -39,8 +39,8 @@ class WgWidget;
 
 
 class WgRootPanel;
-typedef	WgSmartPtr<WgRootPanel>		WgRootPanelPtr;
-typedef	WgWeakPtr<WgRootPanel>		WgRootPanelWeakPtr;
+typedef	WgSmartPtr<WgRootPanel,WgObjectPtr>	WgRootPanelPtr;
+typedef	WgWeakPtr<WgRootPanel,WgObjectPtr>		WgRootPanelWeakPtr;
 
 
 //____ WgRootPanel ____________________________________________________________
@@ -77,10 +77,6 @@ public:
 	bool					Clear();
 
 	bool					IsRoot() const { return true; }
-
-	WgRootPanel *			CastToRoot() { return this; }
-	const WgRootPanel *		CastToRoot() const { return this; }
-
 
 	inline int				NbDirtyRects() const { return m_dirtyPatches.Size(); }
 	inline const WgRect*	FirstDirtyRect() const { return m_dirtyPatches.IsEmpty() ? 0 : m_dirtyPatches.Begin(); }

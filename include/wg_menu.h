@@ -58,8 +58,8 @@ class	WgGfxAnim;
 class	WgText;
 
 class WgMenu;
-typedef	WgSmartChildPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;
-typedef	WgWeakChildPtr<WgMenu,WgWidgetWeakPtr>	WgMenuWeakPtr;
+typedef	WgSmartPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;
+typedef	WgWeakPtr<WgMenu,WgWidgetWeakPtr>	WgMenuWeakPtr;
 
 class WgMenu:public WgPanel, private WgScrollbarTarget
 {

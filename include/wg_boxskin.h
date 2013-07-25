@@ -31,7 +31,7 @@
 #endif
 
 class WgBoxSkin;
-typedef	WgSmartChildPtr<WgBoxSkin,WgExtendedSkinPtr>	WgBoxSkinPtr;
+typedef	WgSmartPtr<WgBoxSkin,WgExtendedSkinPtr>	WgBoxSkinPtr;
 
 class WgBoxSkin : public WgExtendedSkin
 {

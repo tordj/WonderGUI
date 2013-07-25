@@ -37,7 +37,7 @@
 
 class WgSizeScaler;
 
-typedef	WgSmartPtr<WgSizeScaler>	WgSizeScalerPtr;
+typedef	WgSmartPtr<WgSizeScaler,WgObjectPtr>	WgSizeScalerPtr;
 
 
 class WgScalable

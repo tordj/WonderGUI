@@ -406,7 +406,7 @@ WgWidget *  WgMenuLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 			if( pHook->m_geo.Contains( ofs ) )
 			{
 				if( pHook->_widget()->IsContainer() )
-					pResult = pHook->_widget()->CastToContainer()->_findWidget( ofs - pHook->m_geo.Pos(), mode );
+					pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - pHook->m_geo.Pos(), mode );
 				else if( pHook->_widget()->MarkTest( ofs - pHook->m_geo.Pos() ) )
 					pResult = pHook->_widget();
 			}
@@ -536,7 +536,7 @@ void WgMenuLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 				if( p != this )
 				{
 					while( p->Parent() != this )
-						p = p->Parent()->CastToWidget();
+						p = p->Parent();
 						
 					if( p != m_menuHooks.	
 				}	
@@ -605,8 +605,8 @@ void WgMenuLayer::_stealKeyboardFocus()
 
 	WgWidget * pWidget = m_menuHooks.Last()->_widget();
 
-	if( pWidget->IsPanel() && pWidget->CastToPanel()->IsFocusGroup() )
-		pHandler->SetFocusGroup(pWidget->CastToPanel());
+	if( pWidget->IsInstanceOf( WgPanel::CLASSNAME ) && static_cast<WgPanel*>(pWidget)->IsFocusGroup() )
+		pHandler->SetFocusGroup(static_cast<WgPanel*>(pWidget));
 	else
 		pHandler->SetKeyboardFocus(pWidget);
 }

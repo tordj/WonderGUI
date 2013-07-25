@@ -114,14 +114,14 @@ WgRootPanel * WgHook::_root() const
 {
 	WgWidgetHolder * pHolder = _holder();
 
-	if( pHolder->IsWidget() )
+	if( pHolder->IsContainer() )
 	{
-		WgHook * pHook = pHolder->CastToWidget()->Hook();
+		WgHook * pHook = static_cast<WgContainer*>(pHolder)->Hook();
 		if( pHook )
 			return pHook->_root();
 	}
 	else if( pHolder->IsRoot() )
-		return pHolder->CastToRoot();
+		return static_cast<WgRootPanel*>(pHolder);
 
 	return 0;
 }

@@ -28,8 +28,8 @@
 #endif
 
 class WgCapsule;
-typedef	WgSmartChildPtr<WgCapsule,WgContainerPtr>	WgCapsulePtr;
-typedef	WgWeakChildPtr<WgCapsule,WgContainerPtr>	WgCapsuleWeakPtr;
+typedef	WgSmartPtr<WgCapsule,WgContainerPtr>	WgCapsulePtr;
+typedef	WgWeakPtr<WgCapsule,WgContainerPtr>	WgCapsuleWeakPtr;
 
 
 
@@ -85,11 +85,6 @@ public:
 	WgWidgetPtr		Child() { return m_hook.Widget(); }
 	bool			RemoveChild( const WgWidgetPtr& pWidget );
 	bool			Clear();
-
-
-	bool				IsCapsule() const;
-	WgCapsule *			CastToCapsule();
-	const WgCapsule *	CastToCapsule() const;
 
 	inline WgCapsuleHook *	FirstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
 	inline WgCapsuleHook *	LastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }

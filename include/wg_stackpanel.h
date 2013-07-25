@@ -28,8 +28,8 @@
 #endif
 
 class WgStackPanel;
-typedef	WgSmartChildPtr<WgStackPanel,WgVectorPanelPtr>		WgStackPanelPtr;
-typedef	WgWeakChildPtr<WgStackPanel,WgVectorPanelWeakPtr>	WgStackPanelWeakPtr;
+typedef	WgSmartPtr<WgStackPanel,WgVectorPanelPtr>		WgStackPanelPtr;
+typedef	WgWeakPtr<WgStackPanel,WgVectorPanelWeakPtr>	WgStackPanelWeakPtr;
 
 //____ WgStackHook ____________________________________________________________
 

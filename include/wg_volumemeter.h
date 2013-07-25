@@ -14,8 +14,8 @@
 #endif
 
 class WgVolumeMeter;
-typedef	WgSmartChildPtr<WgVolumeMeter,WgWidgetPtr>		WgVolumeMeterPtr;
-typedef	WgWeakChildPtr<WgVolumeMeter,WgWidgetWeakPtr>	WgVolumeMeterWeakPtr;
+typedef	WgSmartPtr<WgVolumeMeter,WgWidgetPtr>		WgVolumeMeterPtr;
+typedef	WgWeakPtr<WgVolumeMeter,WgWidgetWeakPtr>	WgVolumeMeterWeakPtr;
 
 //____ WgVolumeMeter ____________________________________________________________
 

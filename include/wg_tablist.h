@@ -44,8 +44,8 @@ class WgSurface;
 class WgCharSeq;
 
 class WgTablist;
-typedef	WgSmartChildPtr<WgTablist,WgWidgetPtr>		WgTablistPtr;
-typedef	WgWeakChildPtr<WgTablist,WgWidgetWeakPtr>	WgTablistWeakPtr;
+typedef	WgSmartPtr<WgTablist,WgWidgetPtr>		WgTablistPtr;
+typedef	WgWeakPtr<WgTablist,WgWidgetWeakPtr>	WgTablistWeakPtr;
 
 class WgTab : public WgLink
 {

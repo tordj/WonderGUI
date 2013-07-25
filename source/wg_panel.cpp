@@ -66,23 +66,11 @@ WgPanelPtr WgPanel::Cast( const WgObjectPtr& pObject )
 }
 
 
-//____ IsPanel() ______________________________________________________________
+//____ _isPanel() ______________________________________________________________
 
-bool WgPanel::IsPanel() const
+bool WgPanel::_isPanel() const
 {
 	return true;
-}
-
-//____ CastToPanel() _______________________________________________________
-
-WgPanel * WgPanel::CastToPanel()
-{
-	return this;
-}
-
-const WgPanel * WgPanel::CastToPanel() const
-{
-	return this;
 }
 
 //____ SetMaskOp() _____________________________________________________________

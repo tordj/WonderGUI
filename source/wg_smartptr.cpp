@@ -24,7 +24,7 @@
 
 #include <wg_base.h>
 
-WgWeakPtrImpl::WgWeakPtrImpl( WgObject * pObj )
+WgObjectWeakPtr::WgObjectWeakPtr( WgObject * pObj )
 {
 	if( pObj )
 	{
@@ -48,7 +48,7 @@ WgWeakPtrImpl::WgWeakPtrImpl( WgObject * pObj )
 };
 
 
-WgWeakPtrImpl::~WgWeakPtrImpl()
+WgObjectWeakPtr::~WgObjectWeakPtr()
 {
 	if( m_pHub )
 	{
@@ -65,7 +65,7 @@ WgWeakPtrImpl::~WgWeakPtrImpl()
 
 
 
-void WgWeakPtrImpl::copy( WgWeakPtrImpl const & r)
+void WgObjectWeakPtr::copy( WgObjectWeakPtr const & r)
 {
 	if( m_pHub != r.m_pHub )
 	{

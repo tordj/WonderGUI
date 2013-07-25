@@ -28,8 +28,8 @@
 #endif
 
 class WgShaderCapsule;
-typedef	WgSmartChildPtr<WgShaderCapsule,WgCapsulePtr>		WgShaderCapsulePtr;
-typedef	WgWeakChildPtr<WgShaderCapsule,WgCapsuleWeakPtr>	WgShaderCapsuleWeakPtr;
+typedef	WgSmartPtr<WgShaderCapsule,WgCapsulePtr>		WgShaderCapsulePtr;
+typedef	WgWeakPtr<WgShaderCapsule,WgCapsuleWeakPtr>	WgShaderCapsuleWeakPtr;
 
 class WgShaderCapsule : public WgCapsule
 {

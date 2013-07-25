@@ -41,8 +41,8 @@
 #endif
 
 class WgTextDisplay;
-typedef	WgSmartChildPtr<WgTextDisplay,WgWidgetPtr>		WgTextDisplayPtr;
-typedef	WgWeakChildPtr<WgTextDisplay,WgWidgetWeakPtr>	WgTextDisplayWeakPtr;
+typedef	WgSmartPtr<WgTextDisplay,WgWidgetPtr>		WgTextDisplayPtr;
+typedef	WgWeakPtr<WgTextDisplay,WgWidgetWeakPtr>	WgTextDisplayWeakPtr;
 
 class WgTextDisplay:public WgWidget, public WgInterfaceEditText
 {

@@ -38,8 +38,8 @@
 class WgPatches;
 
 class WgPanel;
-typedef	WgSmartChildPtr<WgPanel,WgContainerPtr>		WgPanelPtr;
-typedef	WgWeakChildPtr<WgPanel,WgContainerWeakPtr>	WgPanelWeakPtr;
+typedef	WgSmartPtr<WgPanel,WgContainerPtr>		WgPanelPtr;
+typedef	WgWeakPtr<WgPanel,WgContainerWeakPtr>	WgPanelWeakPtr;
 
 //____ WgPanelHook ____________________________________________________________
 
@@ -104,15 +104,12 @@ public:
 
 	// Overloaded from WgWidgetHolder
 
-	bool				IsPanel() const;
-
-	WgPanel *			CastToPanel();
-	const WgPanel *		CastToPanel() const;
 
 protected:
 	WgPanel();
 	virtual ~WgPanel() {};
 
+	bool			_isPanel() const;
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	virtual void	_onCloneContent( const WgWidget * _pOrg );

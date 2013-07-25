@@ -43,7 +43,7 @@ namespace WgEvent
 class WgWidget;
 class WgEventFilter;
 
-typedef class WgWeakChildPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
+typedef class WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
 
 typedef	bool(*WgFilterFuncPtr)(const WgEvent::Event *, const WgEventFilter& );
 

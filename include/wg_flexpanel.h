@@ -30,8 +30,8 @@
 #endif
 
 class WgFlexPanel;
-typedef	WgSmartChildPtr<WgFlexPanel,WgPanelPtr>		WgFlexPanelPtr;
-typedef	WgWeakChildPtr<WgFlexPanel,WgPanelWeakPtr>	WgFlexPanelWeakPtr;
+typedef	WgSmartPtr<WgFlexPanel,WgPanelPtr>		WgFlexPanelPtr;
+typedef	WgWeakPtr<WgFlexPanel,WgPanelWeakPtr>	WgFlexPanelWeakPtr;
 
 //____ WgFlexHook _____________________________________________________________
 

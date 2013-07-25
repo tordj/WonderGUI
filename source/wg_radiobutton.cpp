@@ -89,7 +89,7 @@ WgContainer * WgRadioButton::_findRadioGroup()
 	WgContainer * pParent = Parent();
 	while( pParent )
 	{
-		if( pParent->IsPanel() && pParent->CastToPanel()->IsRadioGroup() )
+		if( pParent->_isPanel() && static_cast<WgPanel*>(pParent)->IsRadioGroup() )
 			return pParent;
 
 		pParent = pParent->Parent();
@@ -112,8 +112,8 @@ void WgRadioButton::_unselectRecursively( WgContainer * pParent )
 			if( pRB->m_state.IsSelected() && pRB != this )
 				pRB->SetSelected(false);
 		}
-		else if( pWidget->IsContainer() && (!pWidget->IsPanel() || !pWidget->CastToPanel()->IsRadioGroup()) )
-			_unselectRecursively( pWidget->CastToContainer() );
+		else if( pWidget->IsContainer() && (!static_cast<WgContainer*>(pWidget)->_isPanel() || !static_cast<WgPanel*>(pWidget)->IsRadioGroup()) )
+			_unselectRecursively( static_cast<WgContainer*>(pWidget) );
 
 		pWidget = pWidget->NextSibling();
 	}

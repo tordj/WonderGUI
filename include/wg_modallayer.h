@@ -29,8 +29,8 @@
 
 
 class WgModalLayer;
-typedef	WgSmartChildPtr<WgModalLayer,WgLayerPtr>	WgModalLayerPtr;
-typedef	WgWeakChildPtr<WgModalLayer,WgLayerWeakPtr>	WgModalLayerWeakPtr;
+typedef	WgSmartPtr<WgModalLayer,WgLayerPtr>	WgModalLayerPtr;
+typedef	WgWeakPtr<WgModalLayer,WgLayerWeakPtr>	WgModalLayerWeakPtr;
 
 class WgModalHook : public WgLayerHook, protected WgLink
 {

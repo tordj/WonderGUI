@@ -30,7 +30,7 @@
 class WgWidget;
 class WgWidgetCollection;
 
-typedef	WgSmartPtr<WgWidgetCollection>	WgWidgetCollectionPtr;
+typedef	WgSmartPtr<WgWidgetCollection,WgObjectPtr>	WgWidgetCollectionPtr;
 
 class WgWidgetCollection : public WgObject
 {

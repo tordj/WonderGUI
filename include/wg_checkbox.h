@@ -42,8 +42,8 @@
 class	WgSurface;
 
 class WgCheckBox;
-typedef	WgSmartChildPtr<WgCheckBox,WgWidgetPtr>		WgCheckBoxPtr;
-typedef	WgWeakChildPtr<WgCheckBox,WgWidgetWeakPtr>	WgCheckBoxWeakPtr;
+typedef	WgSmartPtr<WgCheckBox,WgWidgetPtr>		WgCheckBoxPtr;
+typedef	WgWeakPtr<WgCheckBox,WgWidgetWeakPtr>	WgCheckBoxWeakPtr;
 
 
 class	WgCheckBox : public WgWidget, public Wg_Interface_TextHolder, public WgIconHolder

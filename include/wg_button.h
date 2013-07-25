@@ -40,8 +40,8 @@
 
 
 class WgButton;
-typedef	WgSmartChildPtr<WgButton,WgWidgetPtr>		WgButtonPtr;
-typedef	WgWeakChildPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
+typedef	WgSmartPtr<WgButton,WgWidgetPtr>		WgButtonPtr;
+typedef	WgWeakPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
 
 //____ WgButton ____________________________________________________________
 

@@ -40,8 +40,8 @@
 class WgMenuItem;
 
 class WgCombobox;
-typedef	WgSmartChildPtr<WgCombobox,WgWidgetPtr>		WgComboboxPtr;
-typedef	WgWeakChildPtr<WgCombobox,WgWidgetWeakPtr>	WgComboboxWeakPtr;
+typedef	WgSmartPtr<WgCombobox,WgWidgetPtr>		WgComboboxPtr;
+typedef	WgWeakPtr<WgCombobox,WgWidgetWeakPtr>	WgComboboxWeakPtr;
 
 class WgCombobox : public WgWidget, public WgInterfaceEditText
 {

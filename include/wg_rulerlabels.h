@@ -18,8 +18,8 @@
 #endif
 
 class WgRulerLabels;
-typedef	WgSmartChildPtr<WgRulerLabels,WgWidgetPtr>		WgRulerLabelsPtr;
-typedef	WgWeakChildPtr<WgRulerLabels,WgWidgetWeakPtr>	WgRulerLabelsWeakPtr;
+typedef	WgSmartPtr<WgRulerLabels,WgWidgetPtr>		WgRulerLabelsPtr;
+typedef	WgWeakPtr<WgRulerLabels,WgWidgetWeakPtr>	WgRulerLabelsWeakPtr;
 
 //____ WgRulerLabels ____________________________________________________________
 

@@ -93,26 +93,6 @@ WgCapsulePtr WgCapsule::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-
-//____ IsCapsule() ______________________________________________________________
-
-bool WgCapsule::IsCapsule() const
-{
-	return true;
-}
-
-//____ CastToCapsule() _______________________________________________________
-
-WgCapsule * WgCapsule::CastToCapsule()
-{
-	return this;
-}
-
-const WgCapsule * WgCapsule::CastToCapsule() const
-{
-	return this;
-}
-
 //____ SetChild() ______________________________________________________________
 
 WgHook * WgCapsule::SetChild( const WgWidgetPtr& pWidget )

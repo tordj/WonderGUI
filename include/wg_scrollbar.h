@@ -38,8 +38,8 @@ class WgMenu;
 
 
 class WgScrollbar;
-typedef	WgSmartChildPtr<WgScrollbar,WgWidgetPtr>		WgScrollbarPtr;
-typedef	WgWeakChildPtr<WgScrollbar,WgWidgetWeakPtr>		WgScrollbarWeakPtr;
+typedef	WgSmartPtr<WgScrollbar,WgWidgetPtr>		WgScrollbarPtr;
+typedef	WgWeakPtr<WgScrollbar,WgWidgetWeakPtr>		WgScrollbarWeakPtr;
 
 //____ Class: WgScrollbar _____________________________________________________
 
@@ -180,8 +180,8 @@ class	WgScrollbar : public WgWidget
 //____ Class: WgHScrollbar _______________________________________________________
 
 class WgHScrollbar;
-typedef	WgSmartChildPtr<WgHScrollbar,WgScrollbarPtr>		WgHScrollbarPtr;
-typedef	WgWeakChildPtr<WgHScrollbar,WgScrollbarWeakPtr>		WgHScrollbarWeakPtr;
+typedef	WgSmartPtr<WgHScrollbar,WgScrollbarPtr>		WgHScrollbarPtr;
+typedef	WgWeakPtr<WgHScrollbar,WgScrollbarWeakPtr>		WgHScrollbarWeakPtr;
 
 class WgHScrollbar:public WgScrollbar
 {
@@ -203,8 +203,8 @@ protected:
 //____ Class: WgVScrollbar _______________________________________________________
 
 class WgVScrollbar;
-typedef	WgSmartChildPtr<WgVScrollbar,WgScrollbarPtr>		WgVScrollbarPtr;
-typedef	WgWeakChildPtr<WgVScrollbar,WgScrollbarWeakPtr>		WgVScrollbarWeakPtr;
+typedef	WgSmartPtr<WgVScrollbar,WgScrollbarPtr>		WgVScrollbarPtr;
+typedef	WgWeakPtr<WgVScrollbar,WgScrollbarWeakPtr>		WgVScrollbarWeakPtr;
 
 class WgVScrollbar:public WgScrollbar
 {

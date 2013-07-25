@@ -41,16 +41,16 @@ class WgRootPanel;
 
 
 class WgWidget;
-typedef class WgSmartChildPtr<WgWidget,WgObjectPtr> WgWidgetPtr;
-typedef class WgWeakChildPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
+typedef class WgSmartPtr<WgWidget,WgObjectPtr> WgWidgetPtr;
+typedef class WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
 
 class WgContainer;
-typedef	WgSmartChildPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
-typedef	WgWeakChildPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
+typedef	WgSmartPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
+typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 class WgRootPanel;
-typedef	WgSmartPtr<WgRootPanel>		WgRootPanelPtr;
-typedef	WgWeakPtr<WgRootPanel>		WgRootPanelWeakPtr;
+typedef	WgSmartPtr<WgRootPanel,WgObjectPtr>		WgRootPanelPtr;
+typedef	WgWeakPtr<WgRootPanel,WgObjectPtr>		WgRootPanelWeakPtr;
 
 class WgHook
 {

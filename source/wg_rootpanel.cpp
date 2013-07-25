@@ -291,7 +291,7 @@ WgWidget * WgRootPanel::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 		return 0;
 
 	if( m_hook._widget() && m_hook._widget()->IsContainer() )
-		return m_hook._widget()->CastToContainer()->_findWidget( ofs, mode );
+		return static_cast<WgContainer*>(m_hook._widget())->_findWidget( ofs, mode );
 
 	return m_hook._widget();
 }

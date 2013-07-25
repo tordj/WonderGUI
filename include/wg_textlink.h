@@ -34,7 +34,7 @@ class WgText;
 class WgTextlink;
 class WgCoord;
 
-typedef	WgSmartPtr<class WgTextlink> WgTextLinkPtr;
+typedef	WgSmartPtr<class WgTextlink,WgObjectPtr> WgTextLinkPtr;
 
 
 //____ WgTextLink _____________________________________________________________

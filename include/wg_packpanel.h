@@ -31,8 +31,8 @@
 #endif
 
 class WgPackPanel;
-typedef	WgSmartChildPtr<WgPackPanel,WgVectorPanelPtr>		WgPackPanelPtr;
-typedef	WgWeakChildPtr<WgPackPanel,WgVectorPanelWeakPtr>	WgPackPanelWeakPtr;
+typedef	WgSmartPtr<WgPackPanel,WgVectorPanelPtr>		WgPackPanelPtr;
+typedef	WgWeakPtr<WgPackPanel,WgVectorPanelWeakPtr>	WgPackPanelWeakPtr;
 
 class WgPackHook : public WgVectorHook
 {

@@ -32,8 +32,8 @@
 #endif
 
 class WgOscilloscope;
-typedef	WgSmartChildPtr<WgOscilloscope,WgWidgetPtr>		WgOscilloscopePtr;
-typedef	WgWeakChildPtr<WgOscilloscope,WgWidgetWeakPtr>	WgOscilloscopeWeakPtr;
+typedef	WgSmartPtr<WgOscilloscope,WgWidgetPtr>		WgOscilloscopePtr;
+typedef	WgWeakPtr<WgOscilloscope,WgWidgetWeakPtr>	WgOscilloscopeWeakPtr;
 
 //____ WgOscilloscope ____________________________________________________________
 

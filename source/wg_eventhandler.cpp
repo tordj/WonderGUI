@@ -124,7 +124,7 @@ bool WgEventHandler::SetKeyboardFocus( WgWidget * pFocus )
 		WgContainer * p = pFocus->Parent();
 		while( p )
 		{
-			if( p->IsPanel() && p->CastToPanel()->IsFocusGroup() )
+			if( p->_isPanel() && static_cast<WgPanel*>(p)->IsFocusGroup() )
 			{
 				m_keyFocusGroup = p;
 				break;
@@ -151,8 +151,8 @@ bool WgEventHandler::SetKeyboardFocus( WgWidget * pFocus )
 WgPanel * WgEventHandler::FocusGroup() const
 {
 	WgWidget * pWidget = m_keyFocusGroup.GetRealPtr();
-	if( pWidget )
-		return pWidget->CastToPanel();
+	if( pWidget && pWidget->IsContainer() && static_cast<WgContainer*>(pWidget)->_isPanel() )
+		return static_cast<WgPanel*>(pWidget);
 
 	return 0;
 }

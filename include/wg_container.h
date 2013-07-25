@@ -34,8 +34,8 @@
 class WgPatches;
 
 class WgContainer;
-typedef	WgSmartChildPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
-typedef	WgWeakChildPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
+typedef	WgSmartPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
+typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 class WgContainer : public WgWidgetHolder, public WgWidget
 {
@@ -60,6 +60,8 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 	friend class WgListPanel;
 	friend class WgCapsule;
 
+	friend class WgRadioButton;
+
 	public:
 
 		bool		IsInstanceOf( const char * pClassName ) const;
@@ -68,32 +70,14 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 		static WgContainerPtr	Cast( const WgObjectPtr& pObject );
 
 
-		bool		IsWidget() const;
-		bool		IsContainer() const;
-
-		WgWidget *				CastToWidget();
-		const WgWidget *		CastToWidget() const;
-		WgContainer *			CastToContainer();
-		const WgContainer *		CastToContainer() const;
-
-		// The following need to be here to tackle ambigious access to identical methods in WgWidget and WgWidgetHolder.
-
-		virtual bool			IsPanel() const;
-		virtual WgPanel *		CastToPanel();
-		virtual const WgPanel *	CastToPanel() const;
-
-		virtual bool			IsCapsule() const;
-		virtual WgCapsule *		CastToCapsule();
-		virtual const WgCapsule *	CastToCapsule() const;
-
-		virtual bool			IsLayer() const;
-		virtual WgLayer *		CastToLayer();
-		virtual const WgLayer *	CastToLayer() const;
-
+		bool					IsContainer() const;
 
 	protected:
 		WgContainer();
 		virtual ~WgContainer() {};
+
+		
+		virtual bool			_isPanel() const;
 
 		virtual WgWidget * 	_findWidget( const WgCoord& ofs, WgSearchMode mode );
 		virtual void	_onStateChanged( WgState oldState, WgState newState );

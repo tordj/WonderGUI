@@ -62,10 +62,6 @@ class WgChar;
 class WgCursorInstance;
 class WgResDB;
 class WgTextNode;
-class WgColorset;
-
-typedef	WgSmartPtr<WgColorset>	WgColorsetPtr;
-
 
 //____ WgTextTool _____________________________________________________________
 

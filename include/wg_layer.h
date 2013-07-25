@@ -27,8 +27,8 @@
 #endif
 
 class WgLayer;
-typedef	WgSmartChildPtr<WgLayer,WgContainerPtr>	WgLayerPtr;
-typedef	WgWeakChildPtr<WgLayer,WgContainerPtr>	WgLayerWeakPtr;
+typedef	WgSmartPtr<WgLayer,WgContainerPtr>	WgLayerPtr;
+typedef	WgWeakPtr<WgLayer,WgContainerPtr>	WgLayerWeakPtr;
 
 
 class WgLayerHook : public WgHook
@@ -67,10 +67,6 @@ public:
 	const char *ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgLayerPtr	Cast( const WgObjectPtr& pObject );
-
-	bool			IsLayer() const;
-	WgLayer *		CastToLayer();
-	const WgLayer *	CastToLayer() const;
 
 	WgHook *		SetBaseChild( const WgWidgetPtr& pWidget );
 	WgWidgetPtr		BaseChild();

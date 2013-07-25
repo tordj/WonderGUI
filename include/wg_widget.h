@@ -54,12 +54,8 @@ class WgEventHandler;
 class WgPatches;
 
 class WgWidget;
-typedef	WgSmartChildPtr<WgWidget,WgObjectPtr>		WgWidgetPtr;
-typedef	WgWeakChildPtr<WgWidget,WgObjectWeakPtr>	WgWidgetWeakPtr;
-
-//typedef class WgSmartPtr<WgWidget> WgWidgetPtr;
-//typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;
-
+typedef	WgSmartPtr<WgWidget,WgObjectPtr>		WgWidgetPtr;
+typedef	WgWeakPtr<WgWidget,WgObjectWeakPtr>	WgWidgetWeakPtr;
 
 class WgWidget : public WgObject
 {
@@ -160,23 +156,8 @@ public:
 	virtual WgSize	MaxSize() const;
 
 	virtual bool	IsContainer() const { return false; }
-	virtual bool	IsPanel() const { return false; }
-	virtual bool	IsList() const { return false; }
-	virtual bool	IsCapsule() const { return false; }
-	virtual bool	IsLayer() const { return false; }
-	virtual WgContainer * CastToContainer() { return 0; }
-	virtual const WgContainer * CastToContainer() const { return 0; }
-	virtual WgPanel * CastToPanel() { return 0; }
-	virtual const WgPanel * CastToPanel() const { return 0; }
-	virtual WgList * CastToList() { return 0; }
-	virtual const WgList * CastToList() const { return 0; }
-	virtual WgCapsule * CastToCapsule() { return 0; }
-	virtual const WgCapsule * CastToCapsule() const { return 0; }
-	virtual WgLayer * CastToLayer() { return 0; }
-	virtual const WgLayer * CastToLayer() const { return 0; }
 
 protected:
-
 	void			_onNewHook( WgHook * pHook );
 
 	void			_onNewRoot( WgRootPanel * pRoot );
@@ -239,28 +220,6 @@ private:
 };
 
 typedef	int(*WgWidgetSortFunc)(const WgWidget *,const WgWidget *);
-
-/*
-template<typename T> T* WgCast(WgWidget * pWidget)
-{
-	if(pWidget)
-	{
-		if(T::GetClass() == pWidget->Type())
-			return static_cast<T*>(pWidget);
-	}
-	return 0;
-}
-
-template<typename T> const T* WgCast(const WgWidget * pWidget)
-{
-	if(pWidget)
-	{
-		if(T::GetClass() == pWidget->Type())
-			return static_cast<const T*>(pWidget);
-	}
-	return 0;
-}
-*/
 
 #endif
 

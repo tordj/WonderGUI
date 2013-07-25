@@ -46,8 +46,8 @@
 class	WgFont;
 
 class WgValueDisplay;
-typedef	WgSmartChildPtr<WgValueDisplay,WgWidgetPtr>		WgValueDisplayPtr;
-typedef	WgWeakChildPtr<WgValueDisplay,WgWidgetWeakPtr>	WgValueDisplayWeakPtr;
+typedef	WgSmartPtr<WgValueDisplay,WgWidgetPtr>		WgValueDisplayPtr;
+typedef	WgWeakPtr<WgValueDisplay,WgWidgetWeakPtr>	WgValueDisplayWeakPtr;
 
 class WgValueDisplay : public WgWidget, public Wg_Interface_ValueHolder
 {

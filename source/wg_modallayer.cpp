@@ -388,7 +388,7 @@ WgWidget *  WgModalLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 		{
 			if( pHook->_widget()->IsContainer() )
 			{
-				WgWidget * pResult = pHook->_widget()->CastToContainer()->_findWidget( ofs - pHook->Pos(), mode );
+				WgWidget * pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - pHook->Pos(), mode );
 				if( pResult )
 					return pResult;
 			}
@@ -404,7 +404,7 @@ WgWidget *  WgModalLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 		{
 			if( m_baseHook._widget()->IsContainer() )
 			{
-				WgWidget * pResult = m_baseHook._widget()->CastToContainer()->_findWidget( ofs - m_baseHook.Pos(), mode );
+				WgWidget * pResult = static_cast<WgContainer*>(m_baseHook._widget())->_findWidget( ofs - m_baseHook.Pos(), mode );
 				if( pResult )
 					return pResult;
 			}
@@ -439,7 +439,7 @@ void WgModalLayer::_updateKeyboardFocus()
 
 	WgWidget * p = pFocused;
 	while( p && p->Parent() && p->Parent() != this )
-		p = p->Parent()->CastToWidget();
+		p = p->Parent();
 
 	if( p && p->Parent() != this )
 		return;								// Focus belongs to a Widget that is not a descendant to us,
@@ -484,9 +484,9 @@ void WgModalLayer::_updateKeyboardFocus()
 		WgHook * p = pSavedFocus->Hook();
 		while( p && p != pBranch )
 		{
-			WgWidgetHolder * pParent = p->Holder();
-			if( pParent && pParent->IsWidget() )
-				p = pParent->CastToWidget()->Hook();
+			WgWidgetHolder * pHolder = p->Holder();
+			if( pHolder && pHolder->IsContainer() )
+				p = static_cast<WgContainer*>(pHolder)->Hook();
 			else
 				p = 0;
 		}

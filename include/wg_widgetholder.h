@@ -62,28 +62,8 @@ class WgWidgetHolder
 		virtual bool		RemoveChild( const WgWidgetPtr& pWidget ) = 0;
 		virtual bool		Clear() = 0;
 
-		virtual WgWidget *					CastToWidget();
-		virtual const WgWidget *			CastToWidget() const;
-		virtual WgContainer *				CastToContainer();
-		virtual const WgContainer *			CastToContainer() const;
-		virtual WgPanel *					CastToPanel();
-		virtual const WgPanel *				CastToPanel() const;
-		virtual WgList *					CastToList();
-		virtual const WgList *				CastToList() const;
-		virtual WgCapsule *					CastToCapsule();
-		virtual const WgCapsule *			CastToCapsule() const;
-		virtual WgLayer *					CastToLayer();
-		virtual const WgLayer *				CastToLayer() const;
-		virtual WgRootPanel *				CastToRoot();
-		virtual const WgRootPanel *			CastToRoot() const;
-
 		virtual bool		IsRoot() const;
-		virtual bool		IsWidget() const;
 		virtual bool		IsContainer() const;
-		virtual bool		IsPanel() const;
-		virtual bool		IsList() const;
-		virtual bool		IsCapsule() const;
-		virtual bool		IsLayer() const;
 
 	protected:
 

@@ -65,14 +65,6 @@ WgContainerPtr WgContainer::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-
-//____ IsWidget() ______________________________________________________________
-
-bool WgContainer::IsWidget() const
-{
-	return true;
-}
-
 //____ IsContainer() ______________________________________________________________
 
 bool WgContainer::IsContainer() const
@@ -80,88 +72,13 @@ bool WgContainer::IsContainer() const
 	return true;
 }
 
-//____ IsPanel() ______________________________________________________________
+//____ _isPanel() ______________________________________________________________
 
-bool WgContainer::IsPanel() const
+bool WgContainer::_isPanel() const
 {
 	return false;
 }
 
-//____ IsCapsule() ______________________________________________________________
-
-bool WgContainer::IsCapsule() const
-{
-	return false;
-}
-
-//____ IsLayer() ______________________________________________________________
-
-bool WgContainer::IsLayer() const
-{
-	return false;
-}
-
-
-//____ CastToWidget() _______________________________________________________
-
-WgWidget * WgContainer::CastToWidget()
-{
-	return this;
-}
-
-const WgWidget * WgContainer::CastToWidget() const
-{
-	return this;
-}
-
-
-//____ CastToContainer() _______________________________________________________
-
-WgContainer * WgContainer::CastToContainer()
-{
-	return this;
-}
-
-const WgContainer * WgContainer::CastToContainer() const
-{
-	return this;
-}
-
-//____ CastToPanel() _______________________________________________________
-
-WgPanel * WgContainer::CastToPanel()
-{
-	return 0;
-}
-
-const WgPanel * WgContainer::CastToPanel() const
-{
-	return 0;
-}
-
-//____ CastToCapsule() _______________________________________________________
-
-WgCapsule * WgContainer::CastToCapsule()
-{
-	return 0;
-}
-
-const WgCapsule * WgContainer::CastToCapsule() const
-{
-	return 0;
-}
-
-//____ CastToLayer() _______________________________________________________
-
-WgLayer * WgContainer::CastToLayer()
-{
-	return 0;
-}
-
-const WgLayer * WgContainer::CastToLayer() const
-{
-	return 0;
-}
 
 //____ _findWidget() ____________________________________________________________
 
@@ -173,13 +90,13 @@ WgWidget * WgContainer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 	while( pHook && !pResult )
 	{
-		bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(pHook)->IsVisible():true;
+		bool bVisibleHook = _isPanel()?static_cast<WgPanelHook*>(pHook)->IsVisible():true;
 
 		if( bVisibleHook && childGeo.Contains( ofs ) )
 		{
 			if( pHook->_widget()->IsContainer() )
 			{
-				pResult = pHook->_widget()->CastToContainer()->_findWidget( ofs - childGeo.Pos(), mode );
+				pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.Pos(), mode );
 			}
 			else
 			{
@@ -318,7 +235,7 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 		{
 			WgRect geo = childGeo + _canvas.Pos();
 
-			bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
+			bool bVisibleHook = _isPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
 
 			if( bVisibleHook && geo.IntersectsWith( dirtBounds ) )
 				renderList.push_back( WidgetRenderContext(p->_widget(), geo ) );
@@ -357,7 +274,7 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 		while(p)
 		{
 			WgRect canvas = childGeo + _canvas.Pos();
-			bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
+			bool bVisibleHook = _isPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
 			if( bVisibleHook && canvas.IntersectsWith( dirtBounds ) )
 				p->_widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 			p = _nextHookWithGeo( childGeo, p );
@@ -390,7 +307,7 @@ void WgContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, co
 
 	while(p)
 	{
-		bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
+		bool bVisibleHook = _isPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
 		if( bVisibleHook )
 			p->_widget()->_onCollectPatches( container, childGeo + geo.Pos(), clip );
 		p = _nextHookWithGeo( childGeo, p );
@@ -408,7 +325,7 @@ void WgContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const W
 
 	while(p)
 	{
-		bool bVisibleHook = IsPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
+		bool bVisibleHook = _isPanel()?static_cast<WgPanelHook*>(p)->IsVisible():true;
 		if( bVisibleHook )
 			p->_widget()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
 		p = _nextHookWithGeo( childGeo, p );

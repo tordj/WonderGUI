@@ -29,7 +29,7 @@
 class WgSurface;
 
 class WgBlockSkin;
-typedef	WgSmartChildPtr<WgBlockSkin,WgExtendedSkinPtr>	WgBlockSkinPtr;
+typedef	WgSmartPtr<WgBlockSkin,WgExtendedSkinPtr>	WgBlockSkinPtr;
 
 
 class WgBlockSkin : public WgExtendedSkin

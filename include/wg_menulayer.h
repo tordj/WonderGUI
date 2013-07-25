@@ -29,8 +29,8 @@
 
 
 class WgMenuLayer;
-typedef	WgSmartChildPtr<WgMenuLayer,WgLayerPtr>		WgMenuLayerPtr;
-typedef	WgWeakChildPtr<WgMenuLayer,WgLayerWeakPtr>	WgMenuLayerWeakPtr;
+typedef	WgSmartPtr<WgMenuLayer,WgLayerPtr>		WgMenuLayerPtr;
+typedef	WgWeakPtr<WgMenuLayer,WgLayerWeakPtr>	WgMenuLayerWeakPtr;
 
 class WgMenuHook : public WgLayerHook, protected WgLink
 {
