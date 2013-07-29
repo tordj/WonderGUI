@@ -19,33 +19,79 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_skin.h>
 
-const char WgSkin::CLASSNAME[] = {"Skin"};
+#include <memory.h>
+
+#include <wg_glsurface.h>
+#include <wg_glsurfacefactory.h>
+#include <wg_util.h>
+
+#ifdef WIN32
+#	include <glext.h>
+#else
+#	include <GL/glext.h>
+#	include <GL/glx.h>
+#endif
+//#include <GL/glu.h>
+
+
+const char WgGLSurfaceFactory::CLASSNAME[] = {"GLSurfaceFactory"};
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgSkin::IsInstanceOf( const char * pClassName ) const
+bool WgGLSurfaceFactory::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgSurfaceFactory::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgSkin::ClassName( void ) const
+const char * WgGLSurfaceFactory::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgSkinPtr WgSkin::Cast( const WgObjectPtr& pObject )
+WgGLSurfaceFactoryPtr WgGLSurfaceFactory::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSkinPtr( static_cast<WgSkin*>(pObject.GetRealPtr()) );
+		return WgGLSurfaceFactoryPtr( static_cast<WgGLSurfaceFactory*>(pObject.GetRealPtr()) );
 
 	return 0;
+}
+
+//____ CreateSurface() ________________________________________________________
+
+WgSurfacePtr WgGLSurfaceFactory::CreateSurface( const WgSize& size, WgPixelType type ) const
+{
+	GLint	format;
+	int		buffSize;
+
+	switch( type )
+	{
+	case WG_PIXEL_RGB_8:
+		format = GL_RGB8;
+		buffSize = 3*size.w*size.h;
+		break;
+
+	case WG_PIXEL_ARGB_8:
+		format = GL_RGBA8;
+		buffSize = 4*size.w*size.h;
+		break;
+
+	default:
+		return 0;
+	}
+
+	char * pBuffer = new char[buffSize];
+	memset( pBuffer, 0, buffSize );
+
+	WgGLSurface * p = new WgGLSurface( size, format, pBuffer );
+
+	delete pBuffer;
+	return 	p;
 }

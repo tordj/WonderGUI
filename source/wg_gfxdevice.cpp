@@ -33,6 +33,7 @@
 #include <wg_pen.h>
 #include <wg_widget.h>
 
+const char WgGfxDevice::CLASSNAME[] = {"GfxDevice"};
 
 //____ Constructor _____________________________________________________________
 
@@ -43,6 +44,33 @@ WgGfxDevice::WgGfxDevice( WgSize canvasSize )
 	m_bSaveDirtyRects 	= false;
 	m_renderFlags		= 0;
 	m_canvasSize		= canvasSize;
+}
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgGfxDevice::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgObject::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgGfxDevice::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgGfxDevicePtr WgGfxDevice::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgGfxDevicePtr( static_cast<WgGfxDevice*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetSaveDirtyRects() _____________________________________________________
@@ -92,46 +120,46 @@ bool WgGfxDevice::EndRender()
 
 //____ Blit() __________________________________________________________________
 
-void WgGfxDevice::Blit( const WgSurface* pSrc )
+void WgGfxDevice::Blit( const WgSurfacePtr& pSrc )
 {
 	Blit( pSrc, WgRect( 0, 0, pSrc->Width(), pSrc->Height() ), 0, 0 );
 }
 
-void WgGfxDevice::Blit( const WgSurface* pSrc, int dx, int dy )
+void WgGfxDevice::Blit( const WgSurfacePtr& pSrc, int dx, int dy )
 {
 	Blit( pSrc, WgRect( 0, 0, pSrc->Width(), pSrc->Height() ), dx, dy );
 }
 
 //____ StretchBlit() ___________________________________________________________
 
-void WgGfxDevice::StretchBlit( const WgSurface * pSrc, bool bTriLinear, float mipmapBias )
+void WgGfxDevice::StretchBlit( const WgSurfacePtr& pSrc, bool bTriLinear, float mipmapBias )
 {
 	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->Width(), (float) pSrc->Height(), 0, 0, (float) m_canvasSize.w, (float) m_canvasSize.h, bTriLinear, mipmapBias );
 }
 
-void WgGfxDevice::StretchBlit( const WgSurface * pSrc, const WgRect& dest, bool bTriLinear, float mipmapBias )
+void WgGfxDevice::StretchBlit( const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear, float mipmapBias )
 {
 	StretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->Width(), (float) pSrc->Height(), (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, bTriLinear, mipmapBias );
 }
 
-void WgGfxDevice::StretchBlit( const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipmapBias )
+void WgGfxDevice::StretchBlit( const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipmapBias )
 {
 	StretchBlitSubPixel( pSrc, (float) src.x, (float) src.y, (float) src.w, (float) src.h, (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, bTriLinear, mipmapBias );
 }
 
 //____ TileBlit() ______________________________________________________________
 
-void WgGfxDevice::TileBlit( const WgSurface* _pSrc )
+void WgGfxDevice::TileBlit( const WgSurfacePtr& _pSrc )
 {
 	TileBlit( _pSrc, WgRect( 0, 0, _pSrc->Width(), _pSrc->Height() ), WgRect(0,0,m_canvasSize) );
 }
 
-void WgGfxDevice::TileBlit( const WgSurface* _pSrc, const WgRect& _dest )
+void WgGfxDevice::TileBlit( const WgSurfacePtr& _pSrc, const WgRect& _dest )
 {
 	TileBlit( _pSrc, WgRect( 0, 0, _pSrc->Width(), _pSrc->Height() ), _dest );
 }
 
-void WgGfxDevice::TileBlit( const WgSurface* _pSrc, const WgRect& _src, const WgRect& _dest )
+void WgGfxDevice::TileBlit( const WgSurfacePtr& _pSrc, const WgRect& _src, const WgRect& _dest )
 {
 	if( !_pSrc || _dest.h == 0 || _dest.w == 0 )
 		return;
@@ -186,17 +214,17 @@ void WgGfxDevice::ClipFill( const WgRect& _clip, const WgRect& _rect, const WgCo
 
 //____ ClipBlit() ______________________________________________________________
 
-void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurface* pSrc )
+void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurfacePtr& pSrc )
 {
 	ClipBlit( clip, pSrc, WgRect(0,0,pSrc->Width(),pSrc->Height()), 0, 0 );
 }
 
-void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurface* pSrc, int dx, int dy  )
+void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurfacePtr& pSrc, int dx, int dy  )
 {
 	ClipBlit( clip, pSrc, WgRect(0,0,pSrc->Width(),pSrc->Height()), dx, dy );
 }
 
-void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurface* pSrc, const WgRect& srcRect, int dx, int dy  )
+void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& srcRect, int dx, int dy  )
 {
 	if( (clip.x <= dx) && (clip.x + clip.w > dx + srcRect.w) &&
       (clip.y <= dy) && (clip.y + clip.h > dy + srcRect.h) )
@@ -239,22 +267,22 @@ void WgGfxDevice::ClipBlit( const WgRect& clip, const WgSurface* pSrc, const WgR
 
 //____ ClipStretchBlit() _______________________________________________________
 
-void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, bool bTriLinear, float mipBias )
+void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, bool bTriLinear, float mipBias )
 {
 	ClipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->Width(), pSrc->Height()), WgRect( 0,0,m_canvasSize), bTriLinear, mipBias );
 }
 
-void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& dest, bool bTriLinear, float mipBias )
+void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear, float mipBias )
 {
 	ClipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->Width(), pSrc->Height()), dest, bTriLinear, mipBias );
 }
 
-void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipBias )
+void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipBias )
 {
 	ClipStretchBlit( clip, pSrc, (float)src.x, (float)src.y, (float)src.w, (float)src.h, (float)dest.x, (float)dest.y, (float)dest.w, (float)dest.h, false );
 }
 
-void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
+void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
 {
 	float cx = std::max(float(clip.x), dx);
 	float cy = std::max(float(clip.y), dy);
@@ -289,20 +317,20 @@ void WgGfxDevice::ClipStretchBlit( const WgRect& clip, const WgSurface * pSrc, f
 
 //____ ClipTileBlit() __________________________________________________________
 
-void WgGfxDevice::ClipTileBlit( const WgRect& clip, const WgSurface* pSrc )
+void WgGfxDevice::ClipTileBlit( const WgRect& clip, const WgSurfacePtr& pSrc )
 {
 	ClipTileBlit( clip, pSrc, WgRect( 0,0,pSrc->Width(),pSrc->Height() ),
 				  WgRect(0,0,m_canvasSize) );
 }
 
-void WgGfxDevice::ClipTileBlit( const WgRect& clip, const WgSurface* pSrc,
+void WgGfxDevice::ClipTileBlit( const WgRect& clip, const WgSurfacePtr& pSrc,
 								  const WgRect& dest )
 {
 	ClipTileBlit( clip, pSrc, WgRect(0,0,pSrc->Width(),pSrc->Height()), dest );
 }
 
 
-void WgGfxDevice::ClipTileBlit( const WgRect& _clip, const WgSurface* _pSrc, const WgRect& _src, const WgRect& _dest )
+void WgGfxDevice::ClipTileBlit( const WgRect& _clip, const WgSurfacePtr& _pSrc, const WgRect& _src, const WgRect& _dest )
 {
 	if( !_pSrc )
 		return;
@@ -369,7 +397,7 @@ void WgGfxDevice::ClipTileBlit( const WgRect& _clip, const WgSurface* _pSrc, con
 
 //____ ClipBlitHorrBar() ______________________________________________________
 
-void WgGfxDevice::ClipBlitHorrBar(	const WgRect& _clip, const WgSurface * _pSurf,
+void WgGfxDevice::ClipBlitHorrBar(	const WgRect& _clip, const WgSurfacePtr& _pSurf,
 								  	const WgRect& _src, const WgBorders& _borders,
 								  	bool _bTile, int _dx, int _dy, int _len )
 {
@@ -420,7 +448,7 @@ void WgGfxDevice::ClipBlitHorrBar(	const WgRect& _clip, const WgSurface * _pSurf
 
 //____ ClipBlitVertBar() ______________________________________________________
 
-void WgGfxDevice::ClipBlitVertBar(	const WgRect& _clip, const WgSurface * _pSurf,
+void WgGfxDevice::ClipBlitVertBar(	const WgRect& _clip, const WgSurfacePtr& _pSurf,
 								  	const WgRect& _src, const WgBorders& _borders,
 								  	bool _bTile, int _dx, int _dy, int _len )
 {
@@ -472,7 +500,7 @@ void WgGfxDevice::ClipBlitVertBar(	const WgRect& _clip, const WgSurface * _pSurf
 
 //____ BlitHorrBar() __________________________________________________________
 
-void WgGfxDevice::BlitHorrBar(	const WgSurface * _pSurf, const WgRect& _src,
+void WgGfxDevice::BlitHorrBar(	const WgSurfacePtr& _pSurf, const WgRect& _src,
 								const WgBorders& _borders, bool _bTile,
 								int _dx, int _dy, int _len )
 {
@@ -519,7 +547,7 @@ void WgGfxDevice::BlitHorrBar(	const WgSurface * _pSurf, const WgRect& _src,
 
 //____ BlitVertBar() __________________________________________________________
 
-void WgGfxDevice::BlitVertBar(	const WgSurface * _pSurf, const WgRect& _src,
+void WgGfxDevice::BlitVertBar(	const WgSurfacePtr& _pSurf, const WgRect& _src,
 								const WgBorders& _borders, bool _bTile,
 								int _dx, int _dy, int _len )
 {

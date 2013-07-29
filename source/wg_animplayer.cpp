@@ -253,7 +253,7 @@ void WgAnimPlayer::_playPosUpdated()
 
 //____ _onEvent() ______________________________________________________________
 
-void WgAnimPlayer::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgAnimPlayer::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	WgWidget::_onEvent( pEvent, pHandler );
 

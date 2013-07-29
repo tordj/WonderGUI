@@ -137,7 +137,7 @@ void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 //____ _onEvent() _____________________________________________________________
 
-void WgFpsDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgFpsDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
 	{

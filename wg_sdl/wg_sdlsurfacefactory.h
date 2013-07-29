@@ -20,12 +20,17 @@
 
 =========================================================================*/
 
-#ifndef	WG_SURFACE_SDL_DOT_H
-#define	WG_SURFACE_SDL_DOT_H
+#ifndef	WG_SDLSURFACEFACTORY_DOT_H
+#define	WG_SDLSURFACEFACTORY_DOT_H
 
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>
 #endif
+
+#ifndef WG_SURFACEFACTORY_DOT_H
+#	include <wg_surfacefactory.h>
+#endif
+
 
 #ifdef WIN32
 #	include <SDL.h>
@@ -33,49 +38,26 @@
 #	include <SDL/SDL.h>
 #endif
 
-//____ WgSurfaceSDL ___________________________________________________________
+class WgSDLSurfaceFactory;
+typedef	WgSmartPtr<WgSDLSurfaceFactory,WgSurfaceFactoryPtr>		WgSDLSurfaceFactoryPtr;
+typedef	WgWeakPtr<WgSDLSurfaceFactory,WgSurfaceFactoryWeakPtr>	WgSDLSurfaceFactoryWeakPtr;
 
-class WgSurfaceSDL : public WgSurface
+//____ WgSDLSurfaceFactory ____________________________________________________
+
+class WgSDLSurfaceFactory : public WgSurfaceFactory
 {
 public:
-	WgSurfaceSDL(SDL_Surface * pSurf);
-	WgSurfaceSDL( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 );
+	static WgSDLSurfaceFactoryPtr	Create() { return WgSDLSurfaceFactoryPtr(new WgSDLSurfaceFactory()); }
 
-	~WgSurfaceSDL();
+	bool							IsInstanceOf( const char * pClassName ) const;
+	const char *					ClassName( void ) const;
+	static const char				CLASSNAME[];
+	static WgSDLSurfaceFactoryPtr	Cast( const WgObjectPtr& pObject );
 
-	inline	SDL_Surface*	SDL_Surf() const { return m_pSurface; };
-
-	// Methods needed by WgSurface
-
-	const char *Type() const;
-	static const char * GetClass();
-
-	WgSize		Size() const;
-	bool		IsOpaque() const;
-
-	Uint32		GetPixel( WgCoord coord ) const;
-	Uint8		GetOpacity( WgCoord coord ) const;
-
-	void *		Lock( WgAccessMode mode );
-	void *		LockRegion( WgAccessMode mode, const WgRect& region );
-	void		Unlock();
-
-
-private:
-	SDL_Surface * 	m_pSurface;
-
-};
-
-
-//____ WgSurfaceFactorySDL ____________________________________________________
-
-class WgSurfaceFactorySDL : public WgSurfaceFactory
-{
-public:
-	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
+	virtual WgSurfacePtr CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
 };
 
 
 
-#endif //WG_SURFACE_SDL_DOT_H
+#endif //WG_SDLSURFACEFACTORY_DOT_H
 

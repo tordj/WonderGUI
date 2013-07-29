@@ -24,18 +24,50 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 
+const char WgColorSkin::CLASSNAME[] = {"ColorSkin"};
 
+
+//____ Create() _______________________________________________________________
 
 WgColorSkinPtr WgColorSkin::Create( WgColor col )
 {
 	return WgColorSkinPtr(new WgColorSkin(col));
 }
 
+//____ Constructor ____________________________________________________________
 
 WgColorSkin::WgColorSkin( WgColor col )
 {
 	m_color = col;
 }
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgColorSkin::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgSkin::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgColorSkin::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgColorSkinPtr WgColorSkin::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgColorSkinPtr( static_cast<WgColorSkin*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 	
 void WgColorSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const

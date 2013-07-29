@@ -20,32 +20,61 @@
 
 =========================================================================*/
 
-#include <wg_gfxdevice_gl.h>
-#include <wg_surface_gl.h>
+#include <wg_glgfxdevice.h>
+#include <wg_glsurface.h>
+
+const char WgGLGfxDevice::CLASSNAME[] = {"GLGfxDevice"};
 
 //____ Constructor _____________________________________________________________
 
-WgGfxDeviceGL::WgGfxDeviceGL( WgSize canvas ) : WgGfxDevice(canvas)
+WgGLGfxDevice::WgGLGfxDevice( WgSize canvas ) : WgGfxDevice(canvas)
 {
 	m_bRendering = false;
 }
 
 //____ Destructor ______________________________________________________________
 
-WgGfxDeviceGL::~WgGfxDeviceGL()
+WgGLGfxDevice::~WgGLGfxDevice()
 {
+}
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgGLGfxDevice::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgGfxDevice::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgGLGfxDevice::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgGLGfxDevicePtr WgGLGfxDevice::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgGLGfxDevicePtr( static_cast<WgGLGfxDevice*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetCanvas() __________________________________________________________________
 
-void WgGfxDeviceGL::SetCanvas( WgSize size )
+void WgGLGfxDevice::SetCanvas( WgSize size )
 {
 	m_canvasSize 	= size;
 }
 
 //____ SetTintColor() __________________________________________________________
 
-void WgGfxDeviceGL::SetTintColor( WgColor color )
+void WgGLGfxDevice::SetTintColor( WgColor color )
 {
 	WgGfxDevice::SetTintColor(color);
 
@@ -55,7 +84,7 @@ void WgGfxDeviceGL::SetTintColor( WgColor color )
 
 //____ SetBlendMode() __________________________________________________________
 
-bool WgGfxDeviceGL::SetBlendMode( WgBlendMode blendMode )
+bool WgGLGfxDevice::SetBlendMode( WgBlendMode blendMode )
 {
 	if( blendMode != WG_BLENDMODE_BLEND && blendMode != WG_BLENDMODE_OPAQUE && 
 		blendMode != WG_BLENDMODE_ADD && blendMode != WG_BLENDMODE_MULTIPLY &&
@@ -71,7 +100,7 @@ bool WgGfxDeviceGL::SetBlendMode( WgBlendMode blendMode )
 
 //____ BeginRender() ___________________________________________________________
 
-bool WgGfxDeviceGL::BeginRender()
+bool WgGLGfxDevice::BeginRender()
 {
 	if( m_bRendering == true )
 		return false;
@@ -123,7 +152,7 @@ bool WgGfxDeviceGL::BeginRender()
 
 //____ EndRender() _____________________________________________________________
 
-bool WgGfxDeviceGL::EndRender()
+bool WgGLGfxDevice::EndRender()
 {
 	if( m_bRendering == false )
 		return false;
@@ -165,7 +194,7 @@ bool WgGfxDeviceGL::EndRender()
 
 //____ Fill() __________________________________________________________________
 
-void WgGfxDeviceGL::Fill( const WgRect& _rect, const WgColor& _col )
+void WgGLGfxDevice::Fill( const WgRect& _rect, const WgColor& _col )
 {
 	if( _col.a == 0 || _rect.w < 1 || _rect.h < 1 )
 		return;
@@ -196,7 +225,7 @@ void WgGfxDeviceGL::Fill( const WgRect& _rect, const WgColor& _col )
 
 //____ Blit() __________________________________________________________________
 
-void WgGfxDeviceGL::Blit( const WgSurface* _pSrc, const WgRect& _src, int _dx, int _dy  )
+void WgGLGfxDevice::Blit( const WgSurfacePtr& _pSrc, const WgRect& _src, int _dx, int _dy  )
 {
 	if( !_pSrc )
 		return;
@@ -214,7 +243,7 @@ void WgGfxDeviceGL::Blit( const WgSurface* _pSrc, const WgRect& _src, int _dx, i
 	int		dy1 = m_canvasSize.h - _dy;
 	int		dy2 = dy1 - _src.h;
 
-	glBindTexture(GL_TEXTURE_2D, ((WgSurfaceGL*) _pSrc)->GetTexture() );
+	glBindTexture(GL_TEXTURE_2D, ((WgGLSurface*) _pSrc.GetRealPtr())->GetTexture() );
 	glBegin(GL_QUADS);
 		glTexCoord2f( sx1, sy1 );
 		glVertex2i( dx1, dy1 );
@@ -233,7 +262,7 @@ void WgGfxDeviceGL::Blit( const WgSurface* _pSrc, const WgRect& _src, int _dx, i
 
 //____ StretchBlitSubPixel() ___________________________________________________
 
-void WgGfxDeviceGL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy,
+void WgGLGfxDevice::StretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, float sy,
 										 float sw, float sh,
 								   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
 {
@@ -253,7 +282,7 @@ void WgGfxDeviceGL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float
 	float	dy1 = m_canvasSize.h - dy;
 	float	dy2 = dy1 - dh;
 
-	glBindTexture(GL_TEXTURE_2D, ((WgSurfaceGL*)pSrc)->GetTexture() );
+	glBindTexture(GL_TEXTURE_2D, ((WgGLSurface*)pSrc.GetRealPtr())->GetTexture() );
 	glBegin(GL_QUADS);
 		glTexCoord2f( sx1, sy1 );
 		glVertex2f( dx1, dy1 );
@@ -271,7 +300,7 @@ void WgGfxDeviceGL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float
 
 //____ _setBlendMode() _________________________________________________________
 
-void WgGfxDeviceGL::_setBlendMode( WgBlendMode blendMode )
+void WgGLGfxDevice::_setBlendMode( WgBlendMode blendMode )
 {
 	switch( blendMode )
 	{

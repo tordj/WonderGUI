@@ -35,15 +35,18 @@
 #	include <wg_key.h>
 #endif
 
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
+#endif
+
 namespace WgEvent
 {
 	class Event;
 };
 
-class WgWidget;
-class WgEventFilter;
 
-typedef class WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
+
+class WgEventFilter;
 
 typedef	bool(*WgFilterFuncPtr)(const WgEvent::Event *, const WgEventFilter& );
 
@@ -62,167 +65,168 @@ public:
 	static WgEventFilter	FocusLost();
 
 	static WgEventFilter	MouseEnter();
-	static WgEventFilter	MouseEnter( WgWidget * pWidget );
+	static WgEventFilter	MouseEnter( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	MouseLeave();
-	static WgEventFilter	MouseLeave( WgWidget * pWidget );
+	static WgEventFilter	MouseLeave( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	MouseMove();
-	static WgEventFilter	MouseMove( WgWidget * pWidget );
+	static WgEventFilter	MouseMove( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	MouseButtonPress();
 	static WgEventFilter	MouseButtonPress( int button);
-	static WgEventFilter	MouseButtonPress( WgWidget * pWidget );
-	static WgEventFilter	MouseButtonPress( WgWidget * pWidget, int button );
+	static WgEventFilter	MouseButtonPress( const WgWidgetPtr& pWidget );
+	static WgEventFilter	MouseButtonPress( const WgWidgetPtr& pWidget, int button );
 
 	static WgEventFilter	MouseButtonRelease();
 	static WgEventFilter	MouseButtonRelease( int button);
-	static WgEventFilter	MouseButtonRelease( WgWidget * pWidget );
-	static WgEventFilter	MouseButtonRelease( WgWidget * pWidget, int button );
+	static WgEventFilter	MouseButtonRelease( const WgWidgetPtr& pWidget );
+	static WgEventFilter	MouseButtonRelease( const WgWidgetPtr& pWidget, int button );
 
 	static WgEventFilter	MouseButtonDrag();
 	static WgEventFilter	MouseButtonDrag( int button);
-	static WgEventFilter	MouseButtonDrag( WgWidget * pWidget );
-	static WgEventFilter	MouseButtonDrag( WgWidget * pWidget, int button );
+	static WgEventFilter	MouseButtonDrag( const WgWidgetPtr& pWidget );
+	static WgEventFilter	MouseButtonDrag( const WgWidgetPtr& pWidget, int button );
 
 	static WgEventFilter	MouseButtonRepeat();
 	static WgEventFilter	MouseButtonRepeat( int button);
-	static WgEventFilter	MouseButtonRepeat( WgWidget * pWidget );
-	static WgEventFilter	MouseButtonRepeat( WgWidget * pWidget, int button );
+	static WgEventFilter	MouseButtonRepeat( const WgWidgetPtr& pWidget );
+	static WgEventFilter	MouseButtonRepeat( const WgWidgetPtr& pWidget, int button );
 
 	static WgEventFilter	MouseButtonClick();
 	static WgEventFilter	MouseButtonClick( int button);
-	static WgEventFilter	MouseButtonClick( WgWidget * pWidget );
-	static WgEventFilter	MouseButtonClick( WgWidget * pWidget, int button );
+	static WgEventFilter	MouseButtonClick( const WgWidgetPtr& pWidget );
+	static WgEventFilter	MouseButtonClick( const WgWidgetPtr& pWidget, int button );
 
 	static WgEventFilter	MouseButtonDoubleClick();
 	static WgEventFilter	MouseButtonDoubleClick( int button);
-	static WgEventFilter	MouseButtonDoubleClick( WgWidget * pWidget );
-	static WgEventFilter	MouseButtonDoubleClick( WgWidget * pWidget, int button );
+	static WgEventFilter	MouseButtonDoubleClick( const WgWidgetPtr& pWidget );
+	static WgEventFilter	MouseButtonDoubleClick( const WgWidgetPtr& pWidget, int button );
 
 	static WgEventFilter	KeyPress();
-	static WgEventFilter	KeyPress( WgWidget * pWidget );
+	static WgEventFilter	KeyPress( const WgWidgetPtr& pWidget );
 	static WgEventFilter	KeyPress( WgKey translated_keycode );
-	static WgEventFilter	KeyPress( WgWidget * pWidget, WgKey keycode );
+	static WgEventFilter	KeyPress( const WgWidgetPtr& pWidget, WgKey keycode );
 
 	static WgEventFilter	KeyRelease();
-	static WgEventFilter	KeyRelease( WgWidget * pWidget );
+	static WgEventFilter	KeyRelease( const WgWidgetPtr& pWidget );
 	static WgEventFilter	KeyRelease( WgKey translated_keycode );
-	static WgEventFilter	KeyRelease( WgWidget * pWidget, WgKey keycode );
+	static WgEventFilter	KeyRelease( const WgWidgetPtr& pWidget, WgKey keycode );
 
 	static WgEventFilter	KeyRepeat();
-	static WgEventFilter	KeyRepeat( WgWidget * pWidget );
+	static WgEventFilter	KeyRepeat( const WgWidgetPtr& pWidget );
 	static WgEventFilter	KeyRepeat( WgKey keycode );
-	static WgEventFilter	KeyRepeat( WgWidget * pWidget, WgKey keycode );
+	static WgEventFilter	KeyRepeat( const WgWidgetPtr& pWidget, WgKey keycode );
 
 	static WgEventFilter	KeyPressNative( int native_keycode );
-	static WgEventFilter	KeyPressNative( WgWidget * pWidget, int native_keycode );
+	static WgEventFilter	KeyPressNative( const WgWidgetPtr& pWidget, int native_keycode );
 
 	static WgEventFilter	KeyReleaseNative( int native_keycode );
-	static WgEventFilter	KeyReleaseNative( WgWidget * pWidget, int native_keycode );
+	static WgEventFilter	KeyReleaseNative( const WgWidgetPtr& pWidget, int native_keycode );
 
 	static WgEventFilter	KeyRepeatNative( int native_keycode );
-	static WgEventFilter	KeyRepeatNative( WgWidget * pWidget, int native_keycode );
+	static WgEventFilter	KeyRepeatNative( const WgWidgetPtr& pWidget, int native_keycode );
 
 	static WgEventFilter	Character();
 	static WgEventFilter	Character( unsigned short character);
-	static WgEventFilter	Character( WgWidget * pWidget );
-	static WgEventFilter	Character( WgWidget * pWidget, unsigned short character );
+	static WgEventFilter	Character( const WgWidgetPtr& pWidget );
+	static WgEventFilter	Character( const WgWidgetPtr& pWidget, unsigned short character );
 
 	static WgEventFilter	MouseWheelRoll();
 	static WgEventFilter	MouseWheelRoll( int wheel );
-	static WgEventFilter	MouseWheelRoll( WgWidget * pWidget );
-	static WgEventFilter	MouseWheelRoll( WgWidget * pWidget, int wheel );
+	static WgEventFilter	MouseWheelRoll( const WgWidgetPtr& pWidget );
+	static WgEventFilter	MouseWheelRoll( const WgWidgetPtr& pWidget, int wheel );
 
 	static WgEventFilter	ButtonPress();
-	static WgEventFilter	ButtonPress( WgWidget * pWidget );
+	static WgEventFilter	ButtonPress( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	CheckboxCheck();
-	static WgEventFilter	CheckboxCheck( WgCheckBox * pWidget );
+	static WgEventFilter	CheckboxCheck( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	CheckboxUncheck();
-	static WgEventFilter	CheckboxUncheck( WgCheckBox * pWidget );
+	static WgEventFilter	CheckboxUncheck( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	CheckboxToggle();
-	static WgEventFilter	CheckboxToggle( WgCheckBox * pWidget );
+	static WgEventFilter	CheckboxToggle( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	AnimationUpdate();
-	static WgEventFilter	AnimationUpdate( WgAnimPlayer * pWidget );
+	static WgEventFilter	AnimationUpdate( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	TabSelect();
-	static WgEventFilter	TabSelect( WgTablist * pWidget );
-	static WgEventFilter	TabSelect( WgTablist * pWidget, int id );
+	static WgEventFilter	TabSelect( const WgWidgetPtr& pWidget );
+	static WgEventFilter	TabSelect( const WgWidgetPtr& pWidget, int id );
 
 	static WgEventFilter	TabPress();
 	static WgEventFilter	TabPress( int button );
-	static WgEventFilter	TabPress( WgTablist * pWidget );
-	static WgEventFilter	TabPress( WgTablist * pWidget, int button );
-	static WgEventFilter	TabPress( WgTablist * pWidget, int button, int id );
+	static WgEventFilter	TabPress( const WgWidgetPtr& pWidget );
+	static WgEventFilter	TabPress( const WgWidgetPtr& pWidget, int button );
+	static WgEventFilter	TabPress( const WgWidgetPtr& pWidget, int button, int id );
 
 	static WgEventFilter	EditvalueModify();
-	static WgEventFilter	EditvalueModify( WgValueEditor * pWidget );
+	static WgEventFilter	EditvalueModify( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	EditvalueSet();
-	static WgEventFilter	EditvalueSet( WgValueEditor * pWidget );
+	static WgEventFilter	EditvalueSet( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	ScrollbarMove();
-	static WgEventFilter	ScrollbarMove( WgScrollbar * pWidget );
+	static WgEventFilter	ScrollbarMove( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	ScrollbarStepFwd();
-	static WgEventFilter	ScrollbarStepFwd( WgScrollbar * pWidget );
+	static WgEventFilter	ScrollbarStepFwd( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	ScrollbarStepBwd();
-	static WgEventFilter	ScrollbarStepBwd( WgScrollbar * pWidget );
+	static WgEventFilter	ScrollbarStepBwd( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	ScrollbarJumpFwd();
-	static WgEventFilter	ScrollbarJumpFwd( WgScrollbar * pWidget );
+	static WgEventFilter	ScrollbarJumpFwd( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	ScrollbarJumpBwd();
-	static WgEventFilter	ScrollbarJumpBwd( WgScrollbar * pWidget );
+	static WgEventFilter	ScrollbarJumpBwd( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	ScrollbarWheelRoll();
-	static WgEventFilter	ScrollbarWheelRoll( WgScrollbar * pWidget );
+	static WgEventFilter	ScrollbarWheelRoll( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	TextModify();
-	static WgEventFilter	TextModify( WgWidget * pWidget );
+	static WgEventFilter	TextModify( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	TextSet();
-	static WgEventFilter	TextSet( WgWidget * pWidget );
+	static WgEventFilter	TextSet( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	MenuitemSelect();
 	static WgEventFilter	MenuitemSelect( int itemId );
-	static WgEventFilter	MenuitemSelect( WgMenu * pWidget );
-	static WgEventFilter	MenuitemSelect( WgMenu * pWidget, int itemId );
+	static WgEventFilter	MenuitemSelect( const WgWidgetPtr& pWidget );
+	static WgEventFilter	MenuitemSelect( const WgWidgetPtr& pWidget, int itemId );
 
 	static WgEventFilter	MenuitemCheck();
 	static WgEventFilter	MenuitemCheck( int itemId );
-	static WgEventFilter	MenuitemCheck( WgMenu * pWidget );
-	static WgEventFilter	MenuitemCheck( WgMenu * pWidget, int itemId );
+	static WgEventFilter	MenuitemCheck( const WgWidgetPtr& pWidget );
+	static WgEventFilter	MenuitemCheck( const WgWidgetPtr& pWidget, int itemId );
 
 	static WgEventFilter	MenuitemUncheck();
 	static WgEventFilter	MenuitemUncheck( int itemId );
-	static WgEventFilter	MenuitemUncheck( WgMenu * pWidget );
-	static WgEventFilter	MenuitemUncheck( WgMenu * pWidget, int itemId );
+	static WgEventFilter	MenuitemUncheck( const WgWidgetPtr& pWidget );
+	static WgEventFilter	MenuitemUncheck( const WgWidgetPtr& pWidget, int itemId );
 
 
 	//TODO: Add missing filters!
 
 
 	static WgEventFilter	KnobTurn();
-	static WgEventFilter	KnobTurn( WgWidget * pWidget );
+	static WgEventFilter	KnobTurn( const WgWidgetPtr& pWidget );
 
 
-	inline bool			FilterEvent( const WgEvent::Event * pEvent ) const { return m_pFilterFunc( pEvent, *this ); }
-	inline WgEventType 	EventType() const { return m_eventType; }
-	inline bool			FiltersWidget() const { return m_pWidget?true:false; }
-	inline WgWidget *	Widget() const { return m_pWidget; }
+	inline bool				FilterEvent( const WgEvent::Event * pEvent ) const { return m_pFilterFunc( pEvent, *this ); }
+	inline WgEventType 		EventType() const { return m_eventType; }
+	inline bool				FiltersWidget() const { return m_pWidget?true:false; }
+	inline WgWidgetWeakPtr	Widget() const { return m_pWidget; }
 private:
 	WgEventFilter( WgEventType eventType, WgWidget * pWidget, WgFilterFuncPtr pFunc, int data1 = 0, int data2 = 0 )
-				: m_eventType(eventType), m_pWidget(pWidget), m_pFilterFunc(pFunc), m_data1(data1), m_data2(data2) {}
-
+				: m_eventType(eventType), m_pWidget(pWidget), m_pFilterFunc(pFunc), m_data1(data1), m_data2(data2) 
+	{
+	}
 
 	WgEventType			m_eventType;		// Only event type filter accepts, if a specific.
-	WgWidget *	 		m_pWidget;			// Only Widget filter accepts, if a specific one.
+	WgWidget *			m_pWidget;			// Only Widget filter accepts, if a specific one.
 	WgFilterFuncPtr 	m_pFilterFunc;		// Pointer at filter function.
 	int					m_data1;			// Additional data for filter function.
 	int					m_data2;			// Additional data for filter function.

@@ -23,9 +23,6 @@
 #include <wg_rootpanel.h>
 #include <new>
 
-#ifndef WG_GFXDEVICE_DOT_H
-#	include <wg_gfxdevice.h>
-#endif
 
 #include <wg_eventhandler.h>
 
@@ -41,14 +38,13 @@ WgRootPanel::WgRootPanel()
 	m_bVisible = true;
 	m_bHasGeo = false;
 	m_geo = WgRect(0,0,0,0);
-	m_pGfxDevice = 0;
 	m_pEventHandler = new WgEventHandler(this);
 	m_hook.m_pRoot = this;
 
 }
 
 
-WgRootPanel::WgRootPanel( WgGfxDevice * pGfxDevice )
+WgRootPanel::WgRootPanel( const WgGfxDevicePtr& pGfxDevice )
 {
 	m_bVisible = true;
 	m_bHasGeo = false;
@@ -95,7 +91,7 @@ WgRootPanelPtr WgRootPanel::Cast( const WgObjectPtr& pObject )
 
 //____ SetGfxDevice() _________________________________________________________
 
-bool WgRootPanel::SetGfxDevice( WgGfxDevice * pDevice )
+bool WgRootPanel::SetGfxDevice( const WgGfxDevicePtr& pDevice )
 {
 	m_pGfxDevice = pDevice;
 
@@ -260,7 +256,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 	// Render the dirty patches recursively
 
-	m_hook._widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches );
+	m_hook._widget()->_renderPatches( m_pGfxDevice.GetRealPtr(), canvas, canvas, &dirtyPatches );
 
 	return true;
 }

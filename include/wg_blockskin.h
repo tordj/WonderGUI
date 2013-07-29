@@ -26,7 +26,10 @@
 #	include <wg_extendedskin.h>
 #endif
 
-class WgSurface;
+#ifndef WG_SURFACE_DOT_H
+#	include <wg_surface.h>
+#endif
+
 
 class WgBlockSkin;
 typedef	WgSmartPtr<WgBlockSkin,WgExtendedSkinPtr>	WgBlockSkinPtr;
@@ -39,23 +42,28 @@ class WgBlockSkin : public WgExtendedSkin
 
 public:
 	static WgBlockSkinPtr Create();
-	static WgBlockSkinPtr CreateStatic( WgSurface * pSurface, WgRect block, WgBorders frame = WgBorders(0) );
-	static WgBlockSkinPtr CreateEnable( WgSurface * pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorders frame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickable( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateSelectable( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickSelectable( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickSelectableWidget( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
+	static WgBlockSkinPtr CreateStatic( const WgSurfacePtr& pSurface, WgRect block, WgBorders frame = WgBorders(0) );
+	static WgBlockSkinPtr CreateEnable( const WgSurfacePtr& pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorders frame = WgBorders(0) );
+	static WgBlockSkinPtr CreateClickable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
+	static WgBlockSkinPtr CreateSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
+	static WgBlockSkinPtr CreateClickSelectable(const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
+	static WgBlockSkinPtr CreateClickSelectableWidget( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
 
-	static WgBlockSkinPtr CreateStaticFromSurface( WgSurface * pSurface, WgBorders frame = WgBorders(0) );
-	static WgBlockSkinPtr CreateEnableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateSelectableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickSelectableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
-
+	static WgBlockSkinPtr CreateStaticFromSurface( const WgSurfacePtr& pSurface, WgBorders frame = WgBorders(0) );
+	static WgBlockSkinPtr CreateEnableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
+	static WgBlockSkinPtr CreateClickableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
+	static WgBlockSkinPtr CreateSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
+	static WgBlockSkinPtr CreateClickSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
 
 	~WgBlockSkin() {};
 
-	void	SetSurface( WgSurface * pSurf );
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgBlockSkinPtr	Cast( const WgObjectPtr& pObject );
+
+
+	void	SetSurface( const WgSurfacePtr& pSurf );
 	bool	SetBlockGeo( WgSize size, WgBorders frame = WgBorders(0) );
 	void	SetStateBlock( WgStateEnum state, const WgCoord& ofs );
 
@@ -104,13 +112,13 @@ private:
 
 	static const int ALL_SECTIONS = 0x1FF;
 
-	WgSurface *	m_pSurface;
-	WgSize		m_dimensions;
-	WgBorders	m_frame;
-	int			m_tiledSections;
-	bool		m_bIsOpaque;
+	WgSurfacePtr	m_pSurface;
+	WgSize			m_dimensions;
+	WgBorders		m_frame;
+	int				m_tiledSections;
+	bool			m_bIsOpaque;
 
-	StateData	m_state[WG_NB_STATES];
+	StateData		m_state[WG_NB_STATES];
 };
 
 #endif //WG_BLOCKSKIN_DOT_H

@@ -152,7 +152,7 @@ WgSize WgCheckBox::PreferredSize() const
 
 //____ _onEvent() _____________________________________________________________
 
-void WgCheckBox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgCheckBox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	WgState oldState = m_state;
 

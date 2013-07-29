@@ -7,6 +7,14 @@
 #include <SDL/SDL_image.h>
 #endif
 
+#ifndef WG_SURFACE_DOT_H
+#	include <wg_surface.h>
+#endif
+
+#ifndef WG_SURFACEFACTORY_DOT_H
+#	include <wg_surfacefactory.h>
+#endif
+
 class WgEventHandler;
 class WgSurface;
 class WgSurfaceFactory;
@@ -20,11 +28,11 @@ namespace sdl_wglib
 	void 		TranslateEvent( SDL_Event& event );
 	void 		EndEvents();
 
-	WgSurface * LoadSurface( const char * path, const WgSurfaceFactory& factory );
+	WgSurfacePtr LoadSurface( const char * path, const WgSurfaceFactoryPtr& factory );
 
-	WgResDB *	LoadStdWidgets( const char * pImagePath, const WgSurfaceFactory& factory );
+	WgResDB *	LoadStdWidgets( const char * pImagePath, const WgSurfaceFactoryPtr& factory );
 
-	WgFont *	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactory& factory );
+	WgFont *	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactoryPtr& pFactory );
 	
 	int 		FileSize( const char * pPath );
 	void * 		LoadFile( const char * pPath );

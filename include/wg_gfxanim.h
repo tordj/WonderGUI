@@ -35,7 +35,10 @@
 #	include <wg_geo.h>
 #endif
 
-class WgSurface;
+#ifndef WG_SURFACE_DOT_H
+#	include	<wg_surface.h>
+#endif
+
 class WgGfxFrame;
 
 
@@ -50,11 +53,11 @@ public:
 	void		SetSize( WgSize size );
 	WgSize		Size() const { return m_size; }
 
-	bool		InsertFrame( int pos, WgSurface * pSurf, WgCoord ofs, int duration );
-	bool		InsertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, WgCoord ofs, int duration );
-	bool		AddFrame( WgSurface * pSurf, WgCoord ofs, int duration );
-	int			AddFrames( WgSurface * pSurf, WgCoord arrayOfs, WgSize arraySize, int duration, int nFrames = 0, WgSize spacing = WgSize() );
-	int			AddFrames( WgSurface * pSurf, int duration, int nFrames = 0, WgSize spacing = WgSize() );
+	bool		InsertFrame( int pos, const WgSurfacePtr& pSurf, WgCoord ofs, int duration );
+	bool		InsertFrame( WgGfxFrame * pBefore, const WgSurfacePtr& pSurf, WgCoord ofs, int duration );
+	bool		AddFrame( const WgSurfacePtr& pSurf, WgCoord ofs, int duration );
+	int			AddFrames( const WgSurfacePtr& pSurf, WgCoord arrayOfs, WgSize arraySize, int duration, int nFrames = 0, WgSize spacing = WgSize() );
+	int			AddFrames(const WgSurfacePtr& pSurf, int duration, int nFrames = 0, WgSize spacing = WgSize() );
 
 	WgGfxFrame * GetFrame( int64_t ticks, WgGfxFrame * pProximity = 0 ) const;
 
@@ -76,8 +79,8 @@ public:
 	WgGfxFrame * GetNext(void) {return (WgGfxFrame *) WgKeyFrame::Next();};
 	WgGfxFrame * GetPrev(void) {return (WgGfxFrame *) WgKeyFrame::Prev();};
 
-	WgSurface *	pSurf;
-	WgRect		rect;
+	WgSurfacePtr	pSurf;
+	WgRect			rect;
 };
 
 #endif //WG_GFXANIM_DOT_H

@@ -71,7 +71,7 @@ WgImagePtr WgImage::Cast( const WgObjectPtr& pObject )
 
 //____ SetImage() _____________________________________________________________
 
-void WgImage::SetImage( WgSurface * pSurface, const WgRect& rect )
+void WgImage::SetImage( const WgSurfacePtr& pSurface, const WgRect& rect )
 {
 	if( pSurface != m_pSurface || rect != m_rect )
 	{
@@ -92,7 +92,7 @@ void WgImage::SetImage( WgSurface * pSurface, const WgRect& rect )
 	}
 }
 
-void WgImage::SetImage( WgSurface * pSurface )
+void WgImage::SetImage( const WgSurfacePtr& pSurface )
 {
 	if( pSurface != m_pSurface )
 	{

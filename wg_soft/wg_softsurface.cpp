@@ -22,17 +22,17 @@
 
 #include <assert.h>
 #include <memory.h>
-#include <wg_surface_soft.h>
+#include <wg_softsurface.h>
 #include <wg_util.h>
 
 
 using namespace std;
 
-static const char	c_surfaceType[] = {"Software"};
+const char WgSoftSurface::CLASSNAME[] = {"SoftSurface"};
 
 //____ Constructor ________________________________________________________________
 
-WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type )
+WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_ARGB_8 );
 	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
@@ -44,7 +44,7 @@ WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type )
 	m_fScaleAlpha = 1.f;
 }
 
-WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch )
+WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_ARGB_8 );
 	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
@@ -56,37 +56,50 @@ WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, in
 	m_fScaleAlpha = 1.f;
 }
 
-WgSurfaceSoft::WgSurfaceSoft( const WgSurfaceSoft * pOther )
+WgSoftSurface::WgSoftSurface( const WgSoftSurface * pOther )
 {
 	_copy( pOther );
 }
 
 //____ Destructor ______________________________________________________________
 
-WgSurfaceSoft::~WgSurfaceSoft()
+WgSoftSurface::~WgSoftSurface()
 {
 	if(m_bOwnsData)
 		delete m_pData;
 }
 
-//____ Type() __________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgSurfaceSoft::Type() const
-{
-	return GetClass();
+bool WgSoftSurface::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgSurface::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() _____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgSurfaceSoft::GetClass()
+const char * WgSoftSurface::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgSoftSurfacePtr WgSoftSurface::Cast( const WgObjectPtr& pObject )
 {
-	return c_surfaceType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgSoftSurfacePtr( static_cast<WgSoftSurface*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 
 //____ _copy() _________________________________________________________________
 
-void WgSurfaceSoft::_copy(const WgSurfaceSoft * pOther)
+void WgSoftSurface::_copy(const WgSoftSurface * pOther)
 {
 	m_pixelFormat 	= pOther->m_pixelFormat;
 	m_pitch 		= ((pOther->m_size.w+3)&0xFFFFFFFC)*pOther->m_pixelFormat.bits/8;
@@ -103,7 +116,7 @@ void WgSurfaceSoft::_copy(const WgSurfaceSoft * pOther)
 
 //____ GetPixel() _________________________________________________________________
 
-Uint32 WgSurfaceSoft::GetPixel( WgCoord coord ) const
+Uint32 WgSoftSurface::GetPixel( WgCoord coord ) const
 {
 	if( coord.x >= m_size.w || coord.x < 0 ||
 		coord.y >= m_size.h || coord.y < 0  )
@@ -126,7 +139,7 @@ Uint32 WgSurfaceSoft::GetPixel( WgCoord coord ) const
 
 //____ GetOpacity() _______________________________________________________________
 
-Uint8 WgSurfaceSoft::GetOpacity( WgCoord coord ) const
+Uint8 WgSoftSurface::GetOpacity( WgCoord coord ) const
 {
 	if( coord.x >= m_size.w || coord.x < 0 ||
 		coord.y >= m_size.h || coord.y < 0  )
@@ -143,21 +156,21 @@ Uint8 WgSurfaceSoft::GetOpacity( WgCoord coord ) const
 
 //____ Size() __________________________________________________________________
 
-WgSize WgSurfaceSoft::Size() const
+WgSize WgSoftSurface::Size() const
 {
 	return m_size;
 }
 
 //____ IsOpaque() ______________________________________________________________
 
-bool WgSurfaceSoft::IsOpaque() const
+bool WgSoftSurface::IsOpaque() const
 {
 	return m_pixelFormat.A_bits==0?true:false;
 }
 
 //____ Lock() __________________________________________________________________
 
-void * WgSurfaceSoft::Lock( WgAccessMode mode )
+void * WgSoftSurface::Lock( WgAccessMode mode )
 {
 	m_accessMode = WG_READ_WRITE;
 	m_pPixels = m_pData;
@@ -167,7 +180,7 @@ void * WgSurfaceSoft::Lock( WgAccessMode mode )
 
 //____ LockRegion() ____________________________________________________________
 
-void * WgSurfaceSoft::LockRegion( WgAccessMode mode, const WgRect& region )
+void * WgSoftSurface::LockRegion( WgAccessMode mode, const WgRect& region )
 {
 	m_accessMode = mode;
 	m_pPixels = m_pData + m_pitch*region.y + region.x*m_pixelFormat.bits/8;
@@ -177,7 +190,7 @@ void * WgSurfaceSoft::LockRegion( WgAccessMode mode, const WgRect& region )
 
 //____ Unlock() ________________________________________________________________
 
-void WgSurfaceSoft::Unlock()
+void WgSoftSurface::Unlock()
 {
 	m_accessMode = WG_NO_ACCESS;
 	m_pPixels = 0;
@@ -186,7 +199,7 @@ void WgSurfaceSoft::Unlock()
 
 //____ SetScaleAlpha() _________________________________________________________
 
-void WgSurfaceSoft::SetScaleAlpha(float fScaleAlpha)
+void WgSoftSurface::SetScaleAlpha(float fScaleAlpha)
 {
         m_fScaleAlpha = fScaleAlpha;
 }
@@ -195,7 +208,7 @@ void WgSurfaceSoft::SetScaleAlpha(float fScaleAlpha)
 
 #define PCLIP(x,y) (((x)>(y))?(y):(x))
 
-void WgSurfaceSoft::PutPixels(const vector<int> &x, const vector<int> &y, const vector<Uint32> &col, int length, bool replace)
+void WgSoftSurface::PutPixels(const vector<int> &x, const vector<int> &y, const vector<Uint32> &col, int length, bool replace)
 {
 	WgColor color1;
 	WgColor color2;
@@ -229,11 +242,4 @@ void WgSurfaceSoft::PutPixels(const vector<int> &x, const vector<int> &y, const 
 		default:
 			break;
     }
-}
-
-//____ WgSurfaceFactorySoft::CreateSurface() ___________________________________
-
-WgSurface * WgSurfaceFactorySoft::CreateSurface( const WgSize& size, WgPixelType type ) const
-{
-	return new WgSurfaceSoft( size, type );
 }

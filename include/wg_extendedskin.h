@@ -32,6 +32,11 @@ typedef	WgSmartPtr<WgExtendedSkin,WgSkinPtr>	WgExtendedSkinPtr;
 class WgExtendedSkin : public WgSkin
 {
 public:
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgExtendedSkinPtr	Cast( const WgObjectPtr& pObject );
+
 	virtual void	SetContentPadding( WgBorders padding );
 	virtual void	SetContentShift( WgStateEnum state, WgCoord shift );
 

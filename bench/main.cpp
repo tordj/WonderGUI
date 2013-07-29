@@ -18,15 +18,16 @@
 #include <wg_knob.h>
 #include <iostream>
 
-#include <wg_surface_soft.h>
-#include <wg_gfxdevice_soft.h>
+#include <wg_softsurface.h>
+#include <wg_softsurfacefactory.h>
+#include <wg_softgfxdevice.h>
 #include <sdl_wglib.h>
 
 extern std::ostream cout;
 
 SDL_Surface *	initSDL( int w, int h );
 bool			eventLoop( WgEventHandler * pHandler );
-WgRootPanelPtr	setupGUI( WgGfxDevice * pDevice );
+WgRootPanelPtr	setupGUI( const WgGfxDevicePtr& pDevice );
 void			printWidgetSizes();
 
 void cbInitDrag( const WgEvent::Event* _pEvent, WgWidget * pWidget );
@@ -67,13 +68,13 @@ int main ( int argc, char** argv )
 
 	// Setup gfxdevice and gui
 
-	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(640,480), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch );
-	WgGfxDeviceSoft * pGfxDevice = new WgGfxDeviceSoft( pCanvas );
+	WgSoftSurfacePtr pCanvas = WgSoftSurface::Create( WgSize(640,480), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch );
+	WgSoftGfxDevicePtr pGfxDevice = WgSoftGfxDevice::Create( pCanvas );
 	pGfxDevice->SetBilinearFiltering( true );
 
 	// Load TTF-font
 /*
-	WgVectorGlyphs::SetSurfaceFactory( new WgSurfaceFactorySDL() );
+	WgVectorGlyphs::SetSurfaceFactory( new WgSDLSurfaceFactory() );
 
 	char	ttfname[] = { "a.ttf" };
 
@@ -86,11 +87,11 @@ int main ( int argc, char** argv )
 */
 	// Load bitmap font
 
-	WgFont * pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", WgSurfaceFactorySoft() );
+	WgFont * pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", WgSoftSurfaceFactory::Create() );
 
 	// Load and setup cursor
 
-	WgSurface * pCursorImg = sdl_wglib::LoadSurface("../resources/cursors.png", WgSurfaceFactorySoft() );
+	WgSurfacePtr pCursorImg = sdl_wglib::LoadSurface("../resources/cursors.png", WgSoftSurfaceFactory::Create() );
 
 	WgGfxAnim * pCursorEOL = new WgGfxAnim();
 	pCursorEOL->SetSize( WgSize(8,8) );
@@ -186,7 +187,7 @@ int main ( int argc, char** argv )
 	// Exit WonderGUI
 
 	pRoot = 0;
-	delete pGfxDevice;
+	pGfxDevice = 0;
 
 	WgBase::Exit();
 
@@ -238,9 +239,9 @@ void printWidgetSizes()
 
 //____ setupGUI() ______________________________________________________________
 
-WgRootPanelPtr setupGUI( WgGfxDevice * pDevice )
+WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 {
-	WgResDB * pDB = sdl_wglib::LoadStdWidgets( "../resources/blocks.png", WgSurfaceFactorySoft() );
+	WgResDB * pDB = sdl_wglib::LoadStdWidgets( "../resources/blocks.png", WgSoftSurfaceFactory::Create() );
 	if( !pDB )
 		return 0;
 
@@ -259,13 +260,15 @@ WgRootPanelPtr setupGUI( WgGfxDevice * pDevice )
 
 	// Load images
 
-	WgSurface * pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", WgSurfaceFactorySoft() );
+	WgSoftSurfaceFactoryPtr pFactory = WgSoftSurfaceFactory::Create();
 
-	WgSurface * pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", WgSurfaceFactorySoft() );
+	WgSurfacePtr pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", pFactory );
 
-	WgSurface * pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", WgSurfaceFactorySoft() );
+	WgSurfacePtr pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", pFactory );
 
-	WgSurface * pBigImg = sdl_wglib::LoadSurface("../resources/frog.jpg", WgSurfaceFactorySoft() );
+	WgSurfacePtr pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", pFactory );
+
+	WgSurfacePtr pBigImg = sdl_wglib::LoadSurface("../resources/frog.jpg", pFactory );
 
 	// MenuPanel
 
@@ -427,7 +430,7 @@ WgRootPanelPtr setupGUI( WgGfxDevice * pDevice )
 	// Test oscilloscope
 
 	{
-		WgSurface * pImg = sdl_wglib::LoadSurface("../resources/blocks.png", WgSurfaceFactorySoft() );
+		WgSurface * pImg = sdl_wglib::LoadSurface("../resources/blocks.png", WgSoftSurfaceFactory() );
 
 		WgBlocksetPtr pMarkerBlock = WgBlockset::CreateFromRect( pImg, WgRect(1,120,8,8) );
 

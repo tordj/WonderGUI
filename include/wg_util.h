@@ -10,17 +10,18 @@
 #	include <wg_types.h>
 #endif
 
+#ifndef WG_SURFACE_DOT_H
+#	include <wg_surface.h>
+#endif
+
 class WgRect;
-class WgWidget;
-class WgPanelHook;
-class WgSurface;
 
 
 //____ WgUtil _________________________________________________________________
 
 namespace WgUtil
 {
-	bool		MarkTestStretchRect( WgCoord ofs, WgSurface * pSurface, const WgRect& source, const WgRect& area, int opacityTreshold );
+	bool		MarkTestStretchRect( WgCoord ofs, const WgSurfacePtr& pSurface, const WgRect& source, const WgRect& area, int opacityTreshold );
 
 	bool		PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
 

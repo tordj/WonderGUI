@@ -23,6 +23,9 @@
 #include <memory.h>
 #include <wg_surface.h>
 
+const char WgSurface::CLASSNAME[] = {"Surface"};
+
+
 //____ WgSurface() ____________________________________________________________
 
 WgSurface::WgSurface()
@@ -38,6 +41,34 @@ WgSurface::WgSurface()
 WgSurface::~WgSurface()
 {
 }
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgSurface::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgObject::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgSurface::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgSurfacePtr WgSurface::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgSurfacePtr( static_cast<WgSurface*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ Width() ________________________________________________________________
 
@@ -180,17 +211,17 @@ bool WgSurface::Fill( WgColor col, const WgRect& _rect )
 
 //_____ CopyFrom() _____________________________________________________________
 
-bool WgSurface::CopyFrom( WgSurface * pSrcSurface, WgCoord dst )
+bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, WgCoord dst )
 {
-	if( pSrcSurface == 0 )
+	if( !pSrcSurface )
 		return false;
 
 	return CopyFrom( pSrcSurface, WgRect(0,0,pSrcSurface->Size()), dst );
 }
 
-bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoord _dst )
+bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, const WgRect& _srcRect, WgCoord _dst )
 {
-	if( pSrcSurface == 0 || pSrcSurface->m_pixelFormat.type == WG_PIXEL_UNKNOWN || m_pixelFormat.type == WG_PIXEL_UNKNOWN )
+	if( !pSrcSurface || pSrcSurface->m_pixelFormat.type == WG_PIXEL_UNKNOWN || m_pixelFormat.type == WG_PIXEL_UNKNOWN )
 		return false;
 
 	// Save old locks and lock the way we want.

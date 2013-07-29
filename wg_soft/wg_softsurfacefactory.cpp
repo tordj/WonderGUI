@@ -19,33 +19,44 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_skin.h>
 
-const char WgSkin::CLASSNAME[] = {"Skin"};
+#include <wg_softsurfacefactory.h>
+#include <wg_util.h>
+
+
+
+const char WgSoftSurfaceFactory::CLASSNAME[] = {"SoftSurfaceFactory"};
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgSkin::IsInstanceOf( const char * pClassName ) const
+bool WgSoftSurfaceFactory::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgSurfaceFactory::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgSkin::ClassName( void ) const
+const char * WgSoftSurfaceFactory::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgSkinPtr WgSkin::Cast( const WgObjectPtr& pObject )
+WgSoftSurfaceFactoryPtr WgSoftSurfaceFactory::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSkinPtr( static_cast<WgSkin*>(pObject.GetRealPtr()) );
+		return WgSoftSurfaceFactoryPtr( static_cast<WgSoftSurfaceFactory*>(pObject.GetRealPtr()) );
 
 	return 0;
+}
+
+//____ WgSoftSurfaceFactory::CreateSurface() ___________________________________
+
+WgSurfacePtr WgSoftSurfaceFactory::CreateSurface( const WgSize& size, WgPixelType type ) const
+{
+	return new WgSoftSurface( size, type );
 }

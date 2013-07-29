@@ -22,7 +22,7 @@
 
 #include <memory.h>
 
-#include <wg_surface_gl.h>
+#include <wg_glsurface.h>
 #include <wg_util.h>
 
 #ifdef WIN32
@@ -40,12 +40,12 @@ PFNGLDELETEBUFFERSARBPROC			pglDeleteBuffersARB		= 0;
 PFNGLMAPBUFFERARBPROC				pglMapBufferARB			= 0;
 PFNGLUNMAPBUFFERARBPROC				pglUnmapBufferARB		= 0;
 
-static const char	c_surfaceType[] = {"OpenGL"};
+const char WgGLSurface::CLASSNAME[] = {"GLSurface"};
 
 
 //____ _initGlExtensions() ______________________________________________________
 
-bool WgSurfaceGL::_initGlExtensions()
+bool WgGLSurface::_initGlExtensions()
 {
 #ifdef WIN32
 	pglBufferDataARB = (PFNGLBUFFERDATAARBPROC) wglGetProcAddress("glBufferData");
@@ -73,7 +73,7 @@ bool WgSurfaceGL::_initGlExtensions()
 
 //____ Constructor _____________________________________________________________
 
-WgSurfaceGL::WgSurfaceGL( WgSize dimensions, GLint _format, void * _pPixels )
+WgGLSurface::WgGLSurface( WgSize dimensions, GLint _format, void * _pPixels )
 {
 	if( pglBufferDataARB == 0 )
 		_initGlExtensions();
@@ -101,7 +101,7 @@ WgSurfaceGL::WgSurfaceGL( WgSize dimensions, GLint _format, void * _pPixels )
 
 }
 
-WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint8 * _pAlpha )
+WgGLSurface::WgGLSurface(GLuint _texture, Uint8 * _pAlpha )
 {
 	if( pglBufferDataARB == 0 )
 		_initGlExtensions();
@@ -125,7 +125,7 @@ WgSurfaceGL::WgSurfaceGL(GLuint _texture, Uint8 * _pAlpha )
 	pglBindBufferARB( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );
 }
 
-void WgSurfaceGL::_initBuffer()
+void WgGLSurface::_initBuffer()
 {
 	if( m_pPixels == 0 )
 		return;
@@ -144,7 +144,7 @@ void WgSurfaceGL::_initBuffer()
 	pglBufferDataARB( GL_PIXEL_UNPACK_BUFFER_ARB, size, m_pPixels, GL_STREAM_DRAW_ARB );
 }
 
-void WgSurfaceGL::_setPixelFormat( GLint _format )
+void WgGLSurface::_setPixelFormat( GLint _format )
 {
 	WgPixelType pixeltype = WG_PIXEL_UNKNOWN;
 
@@ -170,7 +170,7 @@ void WgSurfaceGL::_setPixelFormat( GLint _format )
 
 //____ Destructor ______________________________________________________________
 
-WgSurfaceGL::~WgSurfaceGL()
+WgGLSurface::~WgGLSurface()
 {
 	// Free the stuff
 
@@ -183,31 +183,43 @@ WgSurfaceGL::~WgSurfaceGL()
 	glDeleteTextures( 1, &m_texture );
 }
 
-//____ Type() __________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgSurfaceGL::Type() const
-{
-	return GetClass();
+bool WgGLSurface::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgSurface::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() _____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgSurfaceGL::GetClass()
-{
-	return c_surfaceType;
+const char * WgGLSurface::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
 
+//____ Cast() _________________________________________________________________
+
+WgGLSurfacePtr WgGLSurface::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgGLSurfacePtr( static_cast<WgGLSurface*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
 
 //____ Size() ______________________________________________________________
 
-WgSize WgSurfaceGL::Size() const
+WgSize WgGLSurface::Size() const
 {
 	return m_size;
 }
 
 //____ IsOpaque() ______________________________________________________________
 
-bool WgSurfaceGL::IsOpaque() const
+bool WgGLSurface::IsOpaque() const
 {
 	if( m_pAlpha )
 		return false;
@@ -220,7 +232,7 @@ bool WgSurfaceGL::IsOpaque() const
 
 //____ Lock() __________________________________________________________________
 
-void * WgSurfaceGL::Lock( WgAccessMode mode )
+void * WgGLSurface::Lock( WgAccessMode mode )
 {
 	if( m_format == 0 || m_accessMode != WG_NO_ACCESS || mode == WG_NO_ACCESS )
 		return 0;
@@ -249,7 +261,7 @@ void * WgSurfaceGL::Lock( WgAccessMode mode )
 
 //____ LockRegion() __________________________________________________________________
 
-void * WgSurfaceGL::LockRegion( WgAccessMode mode, const WgRect& region )
+void * WgGLSurface::LockRegion( WgAccessMode mode, const WgRect& region )
 {
 	if( m_format == 0 || m_accessMode != WG_NO_ACCESS || mode == WG_NO_ACCESS )
 		return 0;
@@ -282,7 +294,7 @@ void * WgSurfaceGL::LockRegion( WgAccessMode mode, const WgRect& region )
 
 //____ Unlock() ________________________________________________________________
 
-void WgSurfaceGL::Unlock()
+void WgGLSurface::Unlock()
 {
 	if(m_accessMode == WG_NO_ACCESS )
 		return;
@@ -306,7 +318,7 @@ void WgSurfaceGL::Unlock()
 
 //____ GetPixel() ______________________________________________________________
 
-Uint32 WgSurfaceGL::GetPixel( WgCoord coord ) const
+Uint32 WgGLSurface::GetPixel( WgCoord coord ) const
 {
 	if( m_format != 0 && m_buffer && m_accessMode != WG_WRITE_ONLY )
 	{
@@ -365,7 +377,7 @@ Uint32 WgSurfaceGL::GetPixel( WgCoord coord ) const
 
 //____ GetOpacity() ____________________________________________________________
 
-Uint8 WgSurfaceGL::GetOpacity( WgCoord coord ) const
+Uint8 WgGLSurface::GetOpacity( WgCoord coord ) const
 {
 	return 255;
 
@@ -409,41 +421,3 @@ Uint8 WgSurfaceGL::GetOpacity( WgCoord coord ) const
 	return 255;
 }
 
-
-//____ WgSurfaceFactoryGL::CreateSurface() ___________________________________
-
-WgSurface * WgSurfaceFactoryGL::CreateSurface( const WgSize& size, WgPixelType type ) const
-{
-
-	GLint	format;
-	int		buffSize;
-
-
-
-	switch( type )
-	{
-	case WG_PIXEL_RGB_8:
-		format = GL_RGB8;
-		buffSize = 3*size.w*size.h;
-		break;
-
-	case WG_PIXEL_ARGB_8:
-		format = GL_RGBA8;
-		buffSize = 4*size.w*size.h;
-		break;
-
-	default:
-		return 0;
-
-	}
-
-	char * pBuffer = new char[buffSize];
-	memset( pBuffer, 0, buffSize );
-
-	WgSurfaceGL * p = new WgSurfaceGL( size, format, pBuffer );
-
-	delete pBuffer;
-	return 	p;
-
-
-}

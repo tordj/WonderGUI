@@ -239,7 +239,7 @@ void WgCombobox::_closeMenu()
 
 //____ _onEvent() _____________________________________________________________
 
-void WgCombobox::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	WgState oldState = m_state;
 

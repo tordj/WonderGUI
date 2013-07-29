@@ -370,7 +370,7 @@ void WgWidget::_onStateChanged( WgState newState, WgState oldState )
 
 //____ _onEvent() _____________________________________________________________
 
-void WgWidget::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgWidget::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	WgState oldState = m_state;
 

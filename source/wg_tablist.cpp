@@ -1199,7 +1199,7 @@ void WgTablist::_onNewSize( const WgSize& size )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgTablist::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgTablist::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	switch( _pEvent->Type() )
 	{

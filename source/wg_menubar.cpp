@@ -307,7 +307,7 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 
 //____ _onEvent() _____________________________________________________________
 
-void WgMenubar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgMenubar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	WgWidget::_onEvent(pEvent,pHandler);
 

@@ -42,16 +42,16 @@ class WgImage : public WgWidget
 public:
 	static WgImagePtr	Create() { return WgImagePtr(new WgImage()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgImagePtr	Cast( const WgObjectPtr& pObject );
 	
 
-	void			SetImage( WgSurface * pSurface, const WgRect& rect );
-	void			SetImage( WgSurface * pSurface );
+	void			SetImage( const WgSurfacePtr& pSurface, const WgRect& rect );
+	void			SetImage( const WgSurfacePtr& pSurface );
 
-	WgSurface *		ImageSurface() const { return m_pSurface; }
+	WgSurfacePtr	ImageSurface() const { return m_pSurface; }
 	WgRect			ImageRect() const { return m_rect; }
 
 	WgSize			PreferredSize() const;
@@ -67,8 +67,8 @@ protected:
 
 private:
 
-	WgSurface *	m_pSurface;
-	WgRect		m_rect;
+	WgSurfacePtr	m_pSurface;
+	WgRect			m_rect;
 
 };
 

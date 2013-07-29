@@ -257,7 +257,7 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 //____ _onEvent() ______________________________________________________________
 
-void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgLineEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	WgWidget::_onEvent(pEvent,pHandler);
 

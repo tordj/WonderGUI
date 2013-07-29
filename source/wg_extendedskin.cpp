@@ -25,13 +25,42 @@
 
 using namespace WgUtil;
 
+const char WgExtendedSkin::CLASSNAME[] = {"ExtendedSkin"};
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgExtendedSkin::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgSkin::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgExtendedSkin::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgExtendedSkinPtr WgExtendedSkin::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgExtendedSkinPtr( static_cast<WgExtendedSkin*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
 //____ SetContentPadding() ____________________________________________________
 
 void WgExtendedSkin::SetContentPadding( WgBorders padding )
 {
 	m_contentPadding = padding;
 }
-
 
 //____ SetContentShift() ______________________________________________________
 

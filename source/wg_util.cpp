@@ -7,7 +7,7 @@
 
 //____ MarkTestStretchRect() __________________________________________________
 
-bool WgUtil::MarkTestStretchRect( WgCoord ofs, WgSurface * pSurface, const WgRect& source, const WgRect& area, int opacityTreshold )
+bool WgUtil::MarkTestStretchRect( WgCoord ofs, const WgSurfacePtr& pSurface, const WgRect& source, const WgRect& area, int opacityTreshold )
 {
 	// Sanity check & shortcuts.
 	if( !pSurface || !area.Contains(ofs.x,ofs.y) || source.IsEmpty() || area.IsEmpty() || opacityTreshold > 255 )

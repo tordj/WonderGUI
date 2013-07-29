@@ -20,40 +20,33 @@
 
 =========================================================================*/
 
-#ifndef WG_GFXDEVICE_SDL_DOT_H
-#define WG_GFXDEVICE_SDL_DOT_H
+#ifndef	WG_GLSURFACEFACTORY_DOT_H
+#define	WG_GLSURFACEFACTORY_DOT_H
 
-#ifndef	WG_GFXDEVICE_DOT_H
-#	include <wg_gfxdevice.h>
+#ifndef WG_SURFACEFACTORY_DOT_H
+#	include <wg_surfacefactory.h>
 #endif
 
-class WgSurfaceSDL;
+class WgGLSurfaceFactory;
+typedef	WgSmartPtr<WgGLSurfaceFactory,WgSurfaceFactoryPtr>		WgGLSurfaceFactoryPtr;
+typedef	WgWeakPtr<WgGLSurfaceFactory,WgSurfaceFactoryWeakPtr>	WgGLSurfaceFactoryWeakPtr;
 
+//____ WgGLSurfaceFactory _____________________________________________________
 
-class WgGfxDeviceSDL : public WgGfxDevice
+class WgGLSurfaceFactory : public WgSurfaceFactory
 {
 public:
-	WgGfxDeviceSDL( WgSurfaceSDL * pCanvas );
-	~WgGfxDeviceSDL();
+	static WgGLSurfaceFactoryPtr	Create() { return WgGLSurfaceFactoryPtr(new WgGLSurfaceFactory()); }
 
-	void	SetCanvas( WgSurfaceSDL * pCanvas );
-	inline WgSurfaceSDL * GetCanvas( void ) { return m_pCanvas; };
+	bool							IsInstanceOf( const char * pClassName ) const;
+	const char *					ClassName( void ) const;
+	static const char				CLASSNAME[];
+	static WgGLSurfaceFactoryPtr	Cast( const WgObjectPtr& pObject );
 
-	//
-
-	void	SetTintColor( WgColor color );
-	bool	SetBlendMode( WgBlendMode blendMode );
-
-	void	Fill( const WgRect& rect, const WgColor& col );
-	void	Blit( const WgSurface* src, const WgRect& srcrect, int dx, int dy  );
-
-
-protected:
-	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
-						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
-
-	WgSurfaceSDL *	m_pCanvas;
+	WgSurfacePtr CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
 };
 
-#endif //WG_GFXDEVICE_SDL_DOT_H
+
+
+#endif //WG_GLSURFACEFACTORY_DOT_H
 

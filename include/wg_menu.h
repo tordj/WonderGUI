@@ -203,7 +203,7 @@ private:
 	void		_onNewSize( const WgSize& size );
 	void		_onRefresh();
 
-	void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void		_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void		_onStateChanged( WgState oldState, WgState newState );
 	bool		_onAlphaTest( const WgCoord& ofs );
 

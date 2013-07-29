@@ -34,7 +34,11 @@
 #	include <wg_patches.h>
 #endif
 
-class WgGfxDevice;
+
+#ifndef WG_GFXDEVICE_DOT_H
+#	include <wg_gfxdevice.h>
+#endif
+
 class WgWidget;
 
 
@@ -49,15 +53,15 @@ class WgRootPanel : public WgObject, public WgWidgetHolder
 {
 public:
 	static WgRootPanelPtr	Create() { return WgRootPanelPtr(new WgRootPanel()); }
-	static WgRootPanelPtr	Create( WgGfxDevice * pDevice ) { return WgRootPanelPtr(new WgRootPanel(pDevice)); }
+	static WgRootPanelPtr	Create( const WgGfxDevicePtr& pDevice ) { return WgRootPanelPtr(new WgRootPanel(pDevice)); }
 
 	bool		IsInstanceOf( const char * pClassName ) const;
 	const char *ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgRootPanelPtr	Cast( const WgObjectPtr& pObject );
 
-	bool					SetGfxDevice( WgGfxDevice * pDevice );
-	inline WgGfxDevice * 	GfxDevice() const { return m_pGfxDevice; };
+	bool					SetGfxDevice( const WgGfxDevicePtr& pDevice );
+	inline WgGfxDevicePtr 	GfxDevice() const { return m_pGfxDevice; };
 
 	inline WgEventHandler *	EventHandler() const { return m_pEventHandler; }
 
@@ -97,7 +101,7 @@ public:
 
 protected:
 	WgRootPanel();
-	WgRootPanel( WgGfxDevice * pGfxDevice );
+	WgRootPanel( const WgGfxDevicePtr& pGfxDevice );
 	~WgRootPanel();
 
 	class Hook : public WgHook
@@ -143,7 +147,7 @@ protected:
 	WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
 	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
-	WgGfxDevice *		m_pGfxDevice;
+	WgGfxDevicePtr		m_pGfxDevice;
 	WgEventHandler *	m_pEventHandler;
 	Hook				m_hook;
 	WgRect				m_geo;

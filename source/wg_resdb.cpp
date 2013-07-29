@@ -93,38 +93,40 @@ void WgResDB::Clear()
 	m_dataSets.Clear();
 }
 
-void WgResDB::DestroySurfaces()
-{
-	for(SurfaceRes* res = GetFirstResSurface(); res; res = res->Next())
-		delete res->res;
-
-	m_mapSurfaces.clear();
-	m_surfaces.Clear();
-}
-
-
 void WgResDB::DestroyFonts()
 {
 	for(FontRes* res = GetFirstResFont(); res; res = res->Next())
 		delete res->res;
+
+	m_mapFonts.clear();
+	m_fonts.Clear();
 }
 
 void WgResDB::DestroyAnims()
 {
 	for(AnimRes* res = GetFirstResAnim(); res; res = res->Next())
 		delete res->res;
+
+	m_mapAnims.clear();
+	m_anims.Clear();
 }
 
 void WgResDB::DestroyCursors()
 {
 	for(CursorRes* res = GetFirstResCursor(); res; res = res->Next())
 		delete res->res;
+
+	m_mapCursors.clear();
+	m_cursors.Clear();
 }
 
 void WgResDB::DestroyTextManagers()
 {
 	for(TextManagerRes* res = GetFirstResTextManager(); res; res = res->Next())
 		delete res->res;
+
+	m_mapTextManagers.clear();
+	m_textManagers.Clear();
 }
 
 
@@ -142,7 +144,7 @@ void WgResDB::ClearWidgets()
 
 //____ () _________________________________________________________
 
-std::string	WgResDB::GenerateName( const WgSurface * data )
+std::string	WgResDB::GenerateName( const WgSurfacePtr& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -272,7 +274,7 @@ bool WgResDB::AddSurface( const std::string& id, const std::string& file, MetaDa
 
 	if(m_mapSurfaces.find(id) == m_mapSurfaces.end() && m_pResLoader)
 	{
-		WgSurface * pSurface = m_pResLoader->LoadSurface( file, bRequired );
+		WgSurfacePtr pSurface = m_pResLoader->LoadSurface( file, bRequired );
 		if( !pSurface )
 			return false;
 
@@ -287,7 +289,7 @@ bool WgResDB::AddSurface( const std::string& id, const std::string& file, MetaDa
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddSurface( const std::string& id, WgSurface * pSurface, const std::string& filename, MetaData * pMetaData )
+bool WgResDB::AddSurface( const std::string& id, const WgSurfacePtr& pSurface, const std::string& filename, MetaData * pMetaData )
 {
 	assert(m_mapSurfaces.find(id) == m_mapSurfaces.end());
 	if(m_mapSurfaces.find(id) == m_mapSurfaces.end())
@@ -563,7 +565,7 @@ bool WgResDB::AddConnect( MetaData * pMetaData )
 
 //____ () _________________________________________________________
 
-WgSurface * WgResDB::GetSurface( const std::string& id ) const
+WgSurfacePtr WgResDB::GetSurface( const std::string& id ) const
 {
 	SurfaceRes* surfRes = GetResSurface(id);
 	return surfRes ? surfRes->res : 0;
@@ -1001,7 +1003,7 @@ WgResDB::ResDBRes * WgResDB::FindResDbRes( const WgResDB * data ) const
 
 //____ () _________________________________________________________
 
-WgResDB::SurfaceRes* WgResDB::FindResSurface( const WgSurface* surf ) const
+WgResDB::SurfaceRes* WgResDB::FindResSurface( const WgSurfacePtr& surf ) const
 {
 	SurfaceRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())

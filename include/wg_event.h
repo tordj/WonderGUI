@@ -80,7 +80,7 @@ namespace WgEvent
 			bool			IsMouseEvent() const;
 			bool			IsMouseButtonEvent() const;
 			bool			IsKeyEvent() const;
-			void			Swallow() const {};		//TODO: Should not be const later on...
+			void			Swallow() {};		//TODO: Should not be const later on...
 
 		protected:
 			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForWidget(false) {}
@@ -91,7 +91,7 @@ namespace WgEvent
 			WgEventType		m_type;				// Type of event
 			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
 			int64_t			m_timestamp;		// Timestamp of posting this event
-			bool			m_bIsForWidget;		// Set if this event is for a specific Widget (m_pWidget set at creation, even if weak pointer now is null).
+			bool			m_bIsForWidget;		// Set if this event is for a specific Widget.
 			WgWidgetWeakPtr	m_pWidget;			// Widget to receive this event.
 			WgWidgetWeakPtr	m_pForwardedFrom;	// Widget this event was forwarded from.
 			WgCoord			m_pointerLocalPos;	// Widget-relative position of pointer. Same as m_pointerScreenPos if Widget not set.

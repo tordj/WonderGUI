@@ -26,8 +26,8 @@
 #	include <SDL/SDL.h>
 #endif
 
-#include <wg_gfxdevice_sdl.h>
-#include <wg_surface_sdl.h>
+#include <wg_sdlgfxdevice.h>
+#include <wg_sdlsurface.h>
 
 #include <memory.h>
 #include <stdio.h>
@@ -41,22 +41,51 @@ typedef struct tColorRGBA {
 
 int SDL_SoftStretchModified( SDL_Surface *src , SDL_Rect *aSrcRect , SDL_Surface *dst , SDL_Rect *aDstRect, WgBlendMode blendMode );
 
+const char WgSDLGfxDevice::CLASSNAME[] = {"SDLGfxDevice"};
+
 //____ Constructor _____________________________________________________________
 
-WgGfxDeviceSDL::WgGfxDeviceSDL( WgSurfaceSDL * pCanvas) : WgGfxDevice(WgSize(0,0))
+WgSDLGfxDevice::WgSDLGfxDevice( const WgSDLSurfacePtr& pCanvas) : WgGfxDevice(WgSize(0,0))
 {
 	SetCanvas( pCanvas );
 }
 
 //____ Destructor ______________________________________________________________
 
-WgGfxDeviceSDL::~WgGfxDeviceSDL()
+WgSDLGfxDevice::~WgSDLGfxDevice()
 {
+}
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgSDLGfxDevice::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgGfxDevice::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgSDLGfxDevice::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgSDLGfxDevicePtr WgSDLGfxDevice::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgSDLGfxDevicePtr( static_cast<WgSDLGfxDevice*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetCanvas() __________________________________________________________________
 
-void WgGfxDeviceSDL::SetCanvas( WgSurfaceSDL * pCanvas )
+void WgSDLGfxDevice::SetCanvas( const WgSDLSurfacePtr& pCanvas )
 {
 	m_pCanvas 		= pCanvas;
 
@@ -67,11 +96,11 @@ void WgGfxDeviceSDL::SetCanvas( WgSurfaceSDL * pCanvas )
 }
 
 
-void WgGfxDeviceSDL::SetTintColor( WgColor color )
+void WgSDLGfxDevice::SetTintColor( WgColor color )
 {
 }
 
-bool WgGfxDeviceSDL::SetBlendMode( WgBlendMode blendMode )
+bool WgSDLGfxDevice::SetBlendMode( WgBlendMode blendMode )
 {
 	WgGfxDevice::SetBlendMode(blendMode);
 	return true;
@@ -79,9 +108,9 @@ bool WgGfxDeviceSDL::SetBlendMode( WgBlendMode blendMode )
 
 //____ Fill() __________________________________________________________________
 
-void WgGfxDeviceSDL::Fill( const WgRect& _rect, const WgColor& _col )
+void WgSDLGfxDevice::Fill( const WgRect& _rect, const WgColor& _col )
 {
-	if( m_pCanvas == 0 || _col.a == 0 || _rect.w < 1 || _rect.h < 1 )
+	if( !m_pCanvas || _col.a == 0 || _rect.w < 1 || _rect.h < 1 )
 		return;
 
 
@@ -220,7 +249,7 @@ void WgGfxDeviceSDL::Fill( const WgRect& _rect, const WgColor& _col )
 
 //____ Blit() __________________________________________________________________
 
-void WgGfxDeviceSDL::Blit( const WgSurface* pSrc, const WgRect& src, int dx, int dy  )
+void WgSDLGfxDevice::Blit( const WgSurfacePtr& pSrc, const WgRect& src, int dx, int dy  )
 {
 	if( !m_pCanvas || !pSrc )
 		return;
@@ -238,12 +267,12 @@ void WgGfxDeviceSDL::Blit( const WgSurface* pSrc, const WgRect& src, int dx, int
 	drect.w = src.w;
 	drect.h = src.h;
 
-	SDL_BlitSurface( ((const WgSurfaceSDL*)pSrc)->SDL_Surf(), &srect, m_pCanvas->SDL_Surf(), &drect  );
+	SDL_BlitSurface( ((const WgSDLSurface*)pSrc.GetRealPtr())->SDL_Surf(), &srect, m_pCanvas->SDL_Surf(), &drect  );
 }
 
 //____ StretchBlitSubPixel() ___________________________________________________
 
-void WgGfxDeviceSDL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
+void WgSDLGfxDevice::StretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh,
 								   		  float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
 {
 	if( !m_pCanvas || !pSrc )
@@ -265,7 +294,7 @@ void WgGfxDeviceSDL::StretchBlitSubPixel( const WgSurface * pSrc, float sx, floa
 	if(sw <= 0 || sh <= 0 || dw <= 0 || dh <= 0)
 		return;
 
-	SDL_SoftStretchModified( ((const WgSurfaceSDL*)pSrc)->SDL_Surf(), &srect, m_pCanvas->SDL_Surf(), &drect, GetBlendMode() );
+	SDL_SoftStretchModified( ((const WgSDLSurface*)pSrc.GetRealPtr())->SDL_Surf(), &srect, m_pCanvas->SDL_Surf(), &drect, GetBlendMode() );
 }
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))

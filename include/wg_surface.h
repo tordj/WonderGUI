@@ -36,18 +36,28 @@
 #	include <wg_color.h>
 #endif
 
+#ifndef WG_SMARTPTR_DOT_H
+#	include <wg_smartptr.h>
+#endif
+
+
+class WgSurface;
+typedef	WgSmartPtr<WgSurface,WgObjectPtr>		WgSurfacePtr;
+typedef	WgWeakPtr<WgSurface,WgObjectWeakPtr>	WgSurfaceWeakPtr;
 
 //____ WgSurface ______________________________________________________________
 
-class WgSurface
+class WgSurface : public WgObject
 {
 
 public:
-	virtual ~WgSurface();
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgSurfacePtr	Cast( const WgObjectPtr& pObject );
 
 	// Methods for reading dimensions and abilities.
 
-	virtual const char *Type() const = 0;
 	virtual	WgSize		Size() const = 0;
 	virtual	int			Width() const;
 	virtual	int			Height() const;
@@ -80,11 +90,13 @@ public:
 
 	virtual bool		Fill( WgColor col );
 	virtual bool		Fill( WgColor col, const WgRect& rect );
-	virtual bool		CopyFrom( WgSurface * pSrcSurf, const WgRect& srcRect, WgCoord dst );
-	virtual bool		CopyFrom( WgSurface * pSrcSurf, WgCoord dst );
+	virtual bool		CopyFrom( const WgSurfacePtr& pSrcSurf, const WgRect& srcRect, WgCoord dst );
+	virtual bool		CopyFrom( const WgSurfacePtr& pSrcSurf, WgCoord dst );
 
 protected:
 	WgSurface();
+	virtual ~WgSurface();
+
 	WgRect				_lockAndAdjustRegion( WgAccessMode modeNeeded, const WgRect& region );
 
 	WgPixelFormat		m_pixelFormat;
@@ -94,16 +106,6 @@ protected:
 	Uint8 *				m_pPixels;			// Pointer at pixels when surface locked.
 	WgRect				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 };
-
-//____ WgSurfaceFactory _______________________________________________________
-
-class WgSurfaceFactory
-{
-public:
-	virtual WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const = 0;
-	virtual ~WgSurfaceFactory() {}
-};
-
 
 //____ WgSurface::Pitch() _______________________________________________
 

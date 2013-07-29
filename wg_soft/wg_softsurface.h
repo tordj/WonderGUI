@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_SURFACE_SOFT_DOT_H
-#define WG_SURFACE_SOFT_DOT_H
+#ifndef WG_SOFTSURFACE_DOT_H
+#define WG_SOFTSURFACE_DOT_H
 
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>
@@ -29,20 +29,26 @@
 
 #include <vector>
 
-//____ Class WgSurfaceSoft _____________________________________________________________________
+class WgSoftSurface;
+typedef	WgSmartPtr<WgSoftSurface,WgSurfacePtr>		WgSoftSurfacePtr;
+typedef	WgWeakPtr<WgSoftSurface,WgSurfaceWeakPtr>	WgSoftSurfaceWeakPtr;
 
-class WgSurfaceSoft : public WgSurface
+//____ Class WgSoftSurface _____________________________________________________________________
+
+class WgSoftSurface : public WgSurface
 {
-	friend class WgGfxDeviceSoft;
+	friend class WgSoftGfxDevice;
+	friend class WgSoftSurfaceFactory;
 
  public:
-	WgSurfaceSoft( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 );
-	WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch );
-	WgSurfaceSoft( const WgSurfaceSoft * pOther );
-	~WgSurfaceSoft();
+	static WgSoftSurfacePtr	WgSoftSurface::Create( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type)); }
+	static WgSoftSurfacePtr	WgSoftSurface::Create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type,pPixels,pitch)); }
+	static WgSoftSurfacePtr	WgSoftSurface::Create( const WgSoftSurfacePtr& pOther ) { return WgSoftSurfacePtr(new WgSoftSurface( pOther.GetRealPtr() )); }
 
-	const char *Type() const;
-	static const char * GetClass();
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgSoftSurfacePtr	Cast( const WgObjectPtr& pObject );
 
 	WgSize		Size() const;
 	bool		IsOpaque() const;
@@ -60,8 +66,12 @@ class WgSurfaceSoft : public WgSurface
 	void PutPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<Uint32> &col, int length, bool replace);
 
 protected:
+	WgSoftSurface( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 );
+	WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch );
+	WgSoftSurface( const WgSoftSurface * pOther );
+	virtual ~WgSoftSurface();
 
-	void _copy(const WgSurfaceSoft * pOther);
+	void _copy(const WgSoftSurface * pOther);
 
 	WgSize		m_size;
 	float    	m_fScaleAlpha;
@@ -69,15 +79,6 @@ protected:
 	Uint8 *		m_pData;
 };
 
-//____ WgSurfaceFactorySoft _____________________________________________________
-
-class WgSurfaceFactorySoft : public WgSurfaceFactory
-{
-public:
-	WgSurface * CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
-};
-
-
 
 //========================================================================================
-#endif // WG_SURFACE_SOFT_DOT_H
+#endif // WG_SOFTSURFACE_DOT_H

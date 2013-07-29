@@ -25,13 +25,13 @@
 #else
 #	include <SDL/SDL.h>
 #endif
-#include <wg_surface_sdl.h>
+#include <wg_sdlsurface.h>
 
-static const char	c_surfaceType[] = {"SDL"};
+const char WgSDLSurface::CLASSNAME[] = {"SDLSurface"};
 
 //____ Constructor _____________________________________________________________
 
-WgSurfaceSDL::WgSurfaceSDL( SDL_Surface * pSurf )
+WgSDLSurface::WgSDLSurface( SDL_Surface * pSurf )
 {
 	m_pSurface = pSurf;
 
@@ -56,7 +56,7 @@ WgSurfaceSDL::WgSurfaceSDL( SDL_Surface * pSurf )
 	m_pixelFormat.A_bits = 8 - pSurf->format->Aloss;
 }
 
-WgSurfaceSDL::WgSurfaceSDL( WgSize size, WgPixelType type )
+WgSDLSurface::WgSDLSurface( WgSize size, WgPixelType type )
 {
 	int flags = SDL_HWSURFACE | SDL_SRCALPHA;
 
@@ -105,31 +105,44 @@ WgSurfaceSDL::WgSurfaceSDL( WgSize size, WgPixelType type )
 
 //____ Destructor ______________________________________________________________
 
-WgSurfaceSDL::~WgSurfaceSDL()
+WgSDLSurface::~WgSDLSurface()
 {
 	// Free the surface
 
 	SDL_FreeSurface( m_pSurface );
 }
 
-//____ Type() __________________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
-const char * WgSurfaceSDL::Type() const
-{
-	return GetClass();
+bool WgSDLSurface::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgSurface::IsInstanceOf(pClassName);
 }
 
-//____ GetClass() _____________________________________________________________
+//____ ClassName() ____________________________________________________________
 
-const char * WgSurfaceSDL::GetClass()
+const char * WgSDLSurface::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgSDLSurfacePtr WgSDLSurface::Cast( const WgObjectPtr& pObject )
 {
-	return c_surfaceType;
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgSDLSurfacePtr( static_cast<WgSDLSurface*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 
 //____ Size() _________________________________________________________________
 
-WgSize WgSurfaceSDL::Size() const
+WgSize WgSDLSurface::Size() const
 {
 	if( m_pSurface )
 		return WgSize( m_pSurface->w, m_pSurface->h );
@@ -139,7 +152,7 @@ WgSize WgSurfaceSDL::Size() const
 
 //____ IsOpaque() ______________________________________________________________
 
-bool WgSurfaceSDL::IsOpaque() const
+bool WgSDLSurface::IsOpaque() const
 {
   if( m_pSurface->flags & SDL_SRCALPHA || m_pSurface->flags & SDL_SRCCOLORKEY )
 		return false;
@@ -149,7 +162,7 @@ bool WgSurfaceSDL::IsOpaque() const
 
 //____ Lock() __________________________________________________________________
 
-void * WgSurfaceSDL::Lock( WgAccessMode mode )
+void * WgSDLSurface::Lock( WgAccessMode mode )
 {
 	if( m_accessMode != WG_NO_ACCESS || mode == WG_NO_ACCESS )
 		return 0;
@@ -165,7 +178,7 @@ void * WgSurfaceSDL::Lock( WgAccessMode mode )
 
 //____ LockRegion() ___________________________________________________________
 
-void * WgSurfaceSDL::LockRegion( WgAccessMode mode, const WgRect& region )
+void * WgSDLSurface::LockRegion( WgAccessMode mode, const WgRect& region )
 {
 	if( !m_pSurface )
 		return 0;
@@ -190,7 +203,7 @@ void * WgSurfaceSDL::LockRegion( WgAccessMode mode, const WgRect& region )
 
 //____ Unlock() ________________________________________________________________
 
-void WgSurfaceSDL::Unlock()
+void WgSDLSurface::Unlock()
 {
 	if(m_accessMode == WG_NO_ACCESS )
 		return;
@@ -206,7 +219,7 @@ void WgSurfaceSDL::Unlock()
 
 //____ GetPixel() ______________________________________________________________
 
-Uint32 WgSurfaceSDL::GetPixel( WgCoord coord ) const
+Uint32 WgSDLSurface::GetPixel( WgCoord coord ) const
 {
 	SDL_LockSurface( m_pSurface );
 
@@ -233,7 +246,7 @@ Uint32 WgSurfaceSDL::GetPixel( WgCoord coord ) const
 
 //____ GetOpacity() ____________________________________________________________
 
-Uint8 WgSurfaceSDL::GetOpacity( WgCoord coord ) const
+Uint8 WgSDLSurface::GetOpacity( WgCoord coord ) const
 {
 	// All pixels are transparent if we don't have any surface...
 
@@ -264,12 +277,4 @@ Uint8 WgSurfaceSDL::GetOpacity( WgCoord coord ) const
 	// Fourth, all tests passed, pixel is opaque.
 
 	return 255;
-}
-
-
-//____ WgSurfaceFactorySDL::CreateSurface() ___________________________________
-
-WgSurface * WgSurfaceFactorySDL::CreateSurface( const WgSize& size, WgPixelType type ) const
-{
-	return new WgSurfaceSDL( size, type );
 }

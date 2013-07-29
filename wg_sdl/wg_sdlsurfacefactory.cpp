@@ -19,33 +19,48 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_skin.h>
 
-const char WgSkin::CLASSNAME[] = {"Skin"};
+#ifdef WIN32
+#	include <SDL.h>
+#else
+#	include <SDL/SDL.h>
+#endif
+
+#include <wg_sdlsurfacefactory.h>
+#include <wg_sdlsurface.h>
+
+const char WgSDLSurfaceFactory::CLASSNAME[] = {"SDLSurfaceFactory"};
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgSkin::IsInstanceOf( const char * pClassName ) const
+bool WgSDLSurfaceFactory::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgSurfaceFactory::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgSkin::ClassName( void ) const
+const char * WgSDLSurfaceFactory::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgSkinPtr WgSkin::Cast( const WgObjectPtr& pObject )
+WgSDLSurfaceFactoryPtr WgSDLSurfaceFactory::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSkinPtr( static_cast<WgSkin*>(pObject.GetRealPtr()) );
+		return WgSDLSurfaceFactoryPtr( static_cast<WgSDLSurfaceFactory*>(pObject.GetRealPtr()) );
 
 	return 0;
+}
+
+//____ CreateSurface() ________________________________________________________
+
+WgSurfacePtr WgSDLSurfaceFactory::CreateSurface( const WgSize& size, WgPixelType type ) const
+{
+	return new WgSDLSurface( size, type );
 }

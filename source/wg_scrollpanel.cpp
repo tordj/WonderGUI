@@ -1071,7 +1071,7 @@ void WgScrollPanel::_onNewSize( const WgSize& size )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgScrollPanel::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	switch( _pEvent->Type() )
 	{

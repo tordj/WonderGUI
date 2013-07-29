@@ -220,7 +220,7 @@ void WgTextDisplay::_onStateChanged( WgState oldState, WgState newState )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgTextDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	WgWidget::_onEvent(pEvent,pHandler);
 

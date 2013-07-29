@@ -27,6 +27,8 @@
 
 using namespace WgUtil;
 
+const char WgBoxSkin::CLASSNAME[] = {"BoxSkin"};
+
 //____ Create() _______________________________________________________________
 
 WgBoxSkinPtr WgBoxSkin::Create()
@@ -68,6 +70,34 @@ WgBoxSkin::WgBoxSkin( WgColor color, WgBorders frame, WgColor frameColor )
 	else
 		m_bOpaque = false;
 }
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgBoxSkin::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgExtendedSkin::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgBoxSkin::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgBoxSkinPtr WgBoxSkin::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgBoxSkinPtr( static_cast<WgBoxSkin*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetColor() _____________________________________________________________
 

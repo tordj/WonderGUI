@@ -44,7 +44,13 @@ class WgSkin : public WgObject
 {
 public:
 	virtual ~WgSkin() {};
-	
+
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgSkinPtr	Cast( const WgObjectPtr& pObject );
+
+
 	virtual void Render( WgGfxDevice * pDevice, const WgRect& canvas, WgState state, const WgRect& clip ) const = 0;
 
 	virtual WgSize	MinSize() const = 0;

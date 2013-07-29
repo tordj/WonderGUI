@@ -1,5 +1,5 @@
 #include <sdl_wglib.h>
-#include <wg_surface_sdl.h>
+#include <wg_sdlsurface.h>
 #include <wondergui.h>
 
 
@@ -103,7 +103,7 @@ namespace sdl_wglib
 
 	//____ LoadSurface() __________________________________________________________
 
-	WgSurface * LoadSurface( const char * path, const WgSurfaceFactory& factory )
+	WgSurfacePtr LoadSurface( const char * path, const WgSurfaceFactoryPtr& pFactory )
 	{
 		SDL_Surface* bmp = IMG_Load(path);
 		if (!bmp)
@@ -112,9 +112,9 @@ namespace sdl_wglib
 			return 0;
 		}
 
-		WgSurfaceSDL	wrapper( bmp );
+		WgSDLSurfacePtr	wrapper = WgSDLSurface::Create( bmp );
 
-		WgSurface * pSurf = factory.CreateSurface( wrapper.Size(), wrapper.IsOpaque()? WG_PIXEL_RGB_8 : WG_PIXEL_ARGB_8 );
+		WgSurfacePtr pSurf = pFactory->CreateSurface( wrapper->Size(), wrapper->IsOpaque()? WG_PIXEL_RGB_8 : WG_PIXEL_ARGB_8 );
 
 		if( !pSurf )
 		{
@@ -122,10 +122,9 @@ namespace sdl_wglib
 			return 0;
 		}
 
-		if( !pSurf->CopyFrom( &wrapper, WgCoord(0,0) ) )
+		if( !pSurf->CopyFrom( wrapper, WgCoord(0,0) ) )
 		{
 			printf("Unable to copy loaded bitmap '%s' to surface.\n", path);
-			delete pSurf;
 			return 0;
 		};
 
@@ -134,7 +133,7 @@ namespace sdl_wglib
 
 	//____ LoadStdWidgets() _____________________________________________________
 
-	WgResDB * LoadStdWidgets( const char * pImagePath, const WgSurfaceFactory& factory )
+	WgResDB * LoadStdWidgets( const char * pImagePath, const WgSurfaceFactoryPtr& pFactory )
 	{
 		const int HSLIDER_BTN_OFS 		= 1;
 		const int VSLIDER_BTN_OFS 		= HSLIDER_BTN_OFS + 19;
@@ -149,7 +148,7 @@ namespace sdl_wglib
 		const int COMBOBOX_OFS			= SPLITS_AND_FRAME_OFS + 10;
 		const int TILES_OFS				= 192;
 
-		WgSurface * pSurface = LoadSurface( pImagePath, factory );
+		WgSurfacePtr pSurface = LoadSurface( pImagePath, pFactory );
 		if( !pSurface )
 			return 0;
 
@@ -311,11 +310,11 @@ namespace sdl_wglib
 
 	//____ LoadBitmapFont() ____________________________________________________
 
-	WgFont * LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactory& factory )
+	WgFont * LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactoryPtr& factory )
 	{
 		//TODO: This leaks memory until we have ref-counted
 
-		WgSurface * pFontImg = sdl_wglib::LoadSurface( pImgPath, factory );
+		WgSurfacePtr pFontImg = sdl_wglib::LoadSurface( pImgPath, factory );
 
 		char * pFontSpec = (char*) LoadFile( pSpecPath );
 

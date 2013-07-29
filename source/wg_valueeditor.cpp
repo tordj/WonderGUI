@@ -395,7 +395,7 @@ bool WgValueEditor::_parseValueFromInput( int64_t * wpResult )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	WgWidget::_onEvent(pEvent,pHandler);
 

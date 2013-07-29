@@ -497,7 +497,7 @@ void WgMenuLayer::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgMenuLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgMenuLayer::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	WgWidget * pOpener = 0;
 

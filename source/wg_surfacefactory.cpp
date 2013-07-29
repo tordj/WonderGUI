@@ -19,13 +19,14 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_skin.h>
 
-const char WgSkin::CLASSNAME[] = {"Skin"};
+#include <wg_surfacefactory.h>
+
+const char WgSurfaceFactory::CLASSNAME[] = {"SurfaceFactory"};
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgSkin::IsInstanceOf( const char * pClassName ) const
+bool WgSurfaceFactory::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
@@ -35,17 +36,18 @@ bool WgSkin::IsInstanceOf( const char * pClassName ) const
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgSkin::ClassName( void ) const
+const char * WgSurfaceFactory::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgSkinPtr WgSkin::Cast( const WgObjectPtr& pObject )
+WgSurfaceFactoryPtr WgSurfaceFactory::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSkinPtr( static_cast<WgSkin*>(pObject.GetRealPtr()) );
+		return WgSurfaceFactoryPtr( static_cast<WgSurfaceFactory*>(pObject.GetRealPtr()) );
 
 	return 0;
 }
+

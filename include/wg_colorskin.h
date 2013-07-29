@@ -39,9 +39,13 @@ class WgColorSkin : public WgSkin
 {
 public:
 	static WgColorSkinPtr Create( WgColor col );
-	
 	~WgColorSkin() {};
-	
+
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgColorSkinPtr	Cast( const WgObjectPtr& pObject );
+
 	void	Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const;
 	bool	IsOpaque() const;
 	bool	IsOpaque(WgState state) const;

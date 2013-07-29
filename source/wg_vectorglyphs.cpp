@@ -30,6 +30,7 @@
 #include <wg_base.h>
 #include <wg_vectorglyphs.h>
 #include <wg_surface.h>
+#include <wg_surfacefactory.h>
 #include <assert.h>
 
 
@@ -39,7 +40,7 @@
 
 WgChain<WgVectorGlyphs::CacheSlot>	WgVectorGlyphs::s_cacheSlots[GLYPH_SLOT_SIZES];
 WgChain<WgVectorGlyphs::CacheSurf>	WgVectorGlyphs::s_cacheSurfaces;
-WgSurfaceFactory *					WgVectorGlyphs::s_pSurfaceFactory = 0;
+WgSurfaceFactoryPtr					WgVectorGlyphs::s_pSurfaceFactory = 0;
 
 
 //____ Constructor ____________________________________________________________
@@ -461,7 +462,7 @@ WgVectorGlyphs::CacheSlot * WgVectorGlyphs::_generateBitmap( Glyph * pGlyph )
 
 void WgVectorGlyphs::_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 {
-	WgSurface * pSurf = pSlot->bitmap.pSurface;
+	WgSurfacePtr pSurf = pSlot->bitmap.pSurface;
 
 	unsigned char * pDest = (unsigned char*) pSurf->LockRegion( WG_WRITE_ONLY, pSlot->bitmap.rect );
 	assert( pDest != 0 );
@@ -593,7 +594,7 @@ WgVectorGlyphs::Glyph * WgVectorGlyphs::_addGlyph( Uint16 ch, int size, int adva
 
 //____ SetSurfaceFactory() ____________________________________________________
 
-void WgVectorGlyphs::SetSurfaceFactory( WgSurfaceFactory * pFactory )
+void WgVectorGlyphs::SetSurfaceFactory( const WgSurfaceFactoryPtr& pFactory )
 {
 	s_pSurfaceFactory = pFactory;
 }
@@ -661,7 +662,7 @@ int WgVectorGlyphs::AddCacheSlots( WgChain<CacheSlot> * pChain, const WgSize& sl
 
 	WgSize texSize = CalcTextureSize( slotSize, 16 );
 
-	WgSurface * pSurf = s_pSurfaceFactory->CreateSurface( texSize );
+	WgSurfacePtr pSurf = s_pSurfaceFactory->CreateSurface( texSize );
 	pSurf->Fill( WgColor( 255,255,255,0 ) );
 
 	CacheSurf * pCache = new CacheSurf( pSurf );
@@ -728,7 +729,6 @@ WgSize WgVectorGlyphs::CalcTextureSize( const WgSize& slotSize, int nSlots )
 
 WgVectorGlyphs::CacheSurf::~CacheSurf()
 {
-	delete pSurf;
 }
 
 WgVectorGlyphs::Glyph::Glyph()

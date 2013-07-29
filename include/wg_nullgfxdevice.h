@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_GFXDEVICE_NULL_DOT_H
-#define WG_GFXDEVICE_NULL_DOT_H
+#ifndef WG_NULLGFXDEVICE_DOT_H
+#define WG_NULLGFXDEVICE_DOT_H
 
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -35,22 +35,33 @@ class WgSurface;
 class WgRect;
 class WgColor;
 
-class WgGfxDeviceNull : public WgGfxDevice
+class WgNullGfxDevice;
+typedef	WgSmartPtr<WgNullGfxDevice,WgGfxDevicePtr>	WgNullGfxDevicePtr;
+typedef	WgWeakPtr<WgNullGfxDevice,WgGfxDeviceWeakPtr>	WgNullGfxDeviceWeakPtr;
+
+class WgNullGfxDevice : public WgGfxDevice
 {
 public:
-	WgGfxDeviceNull( WgSize size );
-	~WgGfxDeviceNull();
+	static WgNullGfxDevicePtr	Create( WgSize size );
+
+	bool						IsInstanceOf( const char * pClassName ) const;
+	const char *				ClassName( void ) const;
+	static const char			CLASSNAME[];
+	static WgNullGfxDevicePtr	Cast( const WgObjectPtr& pObject );
 
 	//
 
 	void	Fill( const WgRect& rect, const WgColor& col );
-	void	Blit( const WgSurface* src, const WgRect& srcrect, int dx, int dy  );
-	void	TileBlit( const WgSurface* src, const WgRect& srcrect, const WgRect& dest );
+	void	Blit( const WgSurfacePtr& src, const WgRect& srcrect, int dx, int dy  );
+	void	TileBlit( const WgSurfacePtr& src, const WgRect& srcrect, const WgRect& dest );
 
 	void	FillSubPixel( const WgRectF& rect, const WgColor& col );
-	void	StretchBlitSubPixel( const WgSurface * pSrc, float sx, float sy, float sw, float sh,
+	void	StretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 
+	void	ClipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
+	void	ClipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
+	void	ClipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness );
 
 	void	DrawArcNE( const WgRect& rect, WgColor color );
 	void	DrawElipse( const WgRect& rect, WgColor color );
@@ -61,8 +72,10 @@ public:
 	void	ClipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color );
 
 protected:
+	WgNullGfxDevice( WgSize size );
+	~WgNullGfxDevice();
 
 };
 
-#endif //WG_GFXDEVICE_NULL_DOT_H
+#endif //WG_NULLGFXDEVICE_DOT_H
 

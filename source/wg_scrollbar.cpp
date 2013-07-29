@@ -671,7 +671,7 @@ void WgScrollbar::_unhoverReqRender()
 
 //____ _onEvent() ______________________________________________________________
 
-void WgScrollbar::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgScrollbar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	int		handlePos, handleLen;
 	_viewToPosLen( &handlePos, &handleLen );

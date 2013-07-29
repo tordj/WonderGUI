@@ -234,7 +234,7 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 
 //____ _onEvent() ______________________________________________________________
 
-void WgButton::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgButton::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 	WgState oldState = m_state;
 

@@ -79,8 +79,8 @@
 #	include <wg_gfxdevice.h>
 #endif
 
-#ifndef WG_GFXDEVICE_NULL_DOT_H
-#	include <wg_gfxdevice_null.h>
+#ifndef WG_NULLGFXDEVICE_DOT_H
+#	include <wg_nullgfxdevice.h>
 #endif
 
 #ifndef WG_WIDGET_DOT_H
@@ -117,6 +117,10 @@
 
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>
+#endif
+
+#ifndef WG_SURFACEFACTORY_DOT_H
+#	include <wg_surfacefactory.h>
 #endif
 
 #ifndef WG_TEXT_DOT_H

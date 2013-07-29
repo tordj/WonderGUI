@@ -38,8 +38,12 @@ class WgBoxSkin : public WgExtendedSkin
 public:
 	static WgBoxSkinPtr	Create();
 	static WgBoxSkinPtr Create( WgColor color, WgBorders frame, WgColor frameColor );
-	
 	~WgBoxSkin() {};
+
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgBoxSkinPtr	Cast( const WgObjectPtr& pObject );
 
 	void	SetColor( WgColor color );
 	void	SetFrameColor( WgColor color );

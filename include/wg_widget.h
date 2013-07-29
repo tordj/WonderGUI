@@ -190,7 +190,7 @@ protected:
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	virtual void	_onStateChanged( WgState oldState, WgState newState );
 
-	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	virtual void	_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs );
 
 

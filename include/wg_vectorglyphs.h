@@ -43,10 +43,10 @@
 #	include <wg_glyphset.h>
 #endif
 
+#ifndef WG_SURFACEFACTORY_DOT_H
+#	include <wg_surfacefactory.h>
+#endif
 
-
-class WgSurface;
-class WgSurfaceFactory;
 
 struct	FT_FaceRec_;
 typedef struct FT_FaceRec_*	FT_Face;
@@ -90,7 +90,7 @@ public:
 	bool		SetRenderMode( RenderMode mode, int startSize, int endSize );
 	inline RenderMode	GetRenderMode( int size ) const { if( size >= 0 && size <= WG_MAX_FONTSIZE ) return m_renderMode[size]; else return MONOCHROME; }
 
-	static void	SetSurfaceFactory( WgSurfaceFactory * pFactory );
+	static void	SetSurfaceFactory( const WgSurfaceFactoryPtr& pFactory );
 	static void	ClearCache();
 
 private:
@@ -120,13 +120,13 @@ private:
 	class CacheSurf : public WgLink
 	{
 	public:
-		CacheSurf( WgSurface * _pSurf ) { pSurf = _pSurf; access = 0; }
+		CacheSurf( const WgSurfacePtr& _pSurf ) { pSurf = _pSurf; access = 0; }
 		~CacheSurf();
 
 		LINK_METHODS( CacheSurf );		
 
 		Uint32			access;			// Timestamp of last access.
-		WgSurface *		pSurf;
+		WgSurfacePtr	pSurf;
 	};
 
 
@@ -183,7 +183,7 @@ private:
 
 	static WgChain<CacheSlot>	s_cacheSlots[GLYPH_SLOT_SIZES];
 	static WgChain<CacheSurf>	s_cacheSurfaces;
-	static WgSurfaceFactory *	s_pSurfaceFactory;
+	static WgSurfaceFactoryPtr	s_pSurfaceFactory;
 
 	//____
 

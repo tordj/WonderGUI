@@ -27,22 +27,25 @@
 #	include <wg_geo.h>
 #endif
 
-#include <wg_glyphset.h>
+#ifndef WG_GLYPHSET_DOT_H
+#	include <wg_glyphset.h>
+#endif
 
-class	WgSurface;
-
+#ifndef WG_SURFACE_DOT_H
+#	include <wg_surface.h>
+#endif
 
 //____ WgBitmapGlyphs _____________________________________________________________
 
 class WgBitmapGlyphs : public WgGlyphset
 {
 public:
-	WgBitmapGlyphs( WgSurface * pSurf, char * pGlyphSpec, bool binaryFile=false );
+	WgBitmapGlyphs( const WgSurfacePtr& pSurf, char * pGlyphSpec, bool binaryFile=false );
 	~WgBitmapGlyphs();
 
 	inline Type	GetType() const { return BITMAP; }
 
-	void					InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool binaryFile=false );
+	void					InsertGlyphs( const WgSurfacePtr& pSurf, char* pGlyphSpec, bool binaryFile=false );
 	void					CopyGlyphs( WgBitmapGlyphs* pOtherGlyphset );
 
 
@@ -65,7 +68,7 @@ private:
 	{
 	public:
 		Glyph();
-		Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, WgSurface * pSurf, const WgRect& rect );
+		Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, const WgSurfacePtr& pSurf, const WgRect& rect );
 
 		const WgGlyphBitmap * GetBitmap() { return &m_src; }
 

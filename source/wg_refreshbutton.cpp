@@ -210,7 +210,7 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 
 //____ _onEvent() _____________________________________________________________
 
-void WgRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgRefreshButton::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
 	{
