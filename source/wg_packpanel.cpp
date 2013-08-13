@@ -135,7 +135,7 @@ void WgPackPanel::SetOrientation( WgOrientation orientation )
 
 //____ SetSizeBroker() _______________________________________________________
 
-void WgPackPanel::SetSizeBroker( WgSizeBroker * pBroker )
+void WgPackPanel::SetSizeBroker( const WgSizeBrokerPtr& pBroker )
 {
 	if( m_pSizeBroker != pBroker )
 	{

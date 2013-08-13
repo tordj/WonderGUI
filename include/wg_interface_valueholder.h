@@ -41,12 +41,12 @@ public:
 
 	Wg_Interface_ValueHolder();
 
-	bool	SetFonts( WgFont * _pFonts );
+	bool	SetFonts( const WgFontPtr& _pFonts );
 	bool	SetRange( Sint64 min, Sint64 max );
 	bool	SetUnitSize( int unitSize );
 
-	virtual void					SetFormat( const WgValueFormat& format ) = 0;
-	virtual const WgValueFormat&	GetFormat() const = 0;
+	virtual void					SetFormat( const WgValueFormatPtr& format ) = 0;
+	virtual WgValueFormatPtr		Format() const = 0;
 
 	bool	SetValue( Sint64 value );
 	bool	SetFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)

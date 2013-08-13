@@ -80,7 +80,7 @@ WgAnimPlayerPtr WgAnimPlayer::Cast( const WgObjectPtr& pObject )
 
 //____ SetAnimation() ____________________________________________________________
 
-bool WgAnimPlayer::SetAnimation( WgGfxAnim * pAnim )
+bool WgAnimPlayer::SetAnimation( const WgGfxAnimPtr& pAnim )
 {
 	m_pAnim			= pAnim;
 	m_playPos		= 0.0;

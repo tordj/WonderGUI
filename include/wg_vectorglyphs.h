@@ -52,10 +52,19 @@ struct	FT_FaceRec_;
 typedef struct FT_FaceRec_*	FT_Face;
 typedef struct  FT_Bitmap_ FT_Bitmap;
 
+class WgVectorGlyphs;
+typedef	WgSmartPtr<WgVectorGlyphs,WgGlyphsetPtr>		WgVectorGlyphsPtr;
+typedef	WgWeakPtr<WgVectorGlyphs,WgGlyphsetWeakPtr>	WgVectorGlyphsWeakPtr;
 
 class WgVectorGlyphs : public WgGlyphset
 {
 public:
+	static WgVectorGlyphsPtr	Create( char* pTTF_File, int bytes, int faceIndex ) { return WgVectorGlyphsPtr(new WgVectorGlyphs(pTTF_File,bytes,faceIndex)); }
+
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgVectorGlyphsPtr	Cast( const WgObjectPtr& pObject );
 
 	enum RenderMode
 	{
@@ -65,8 +74,6 @@ public:
 	};
 
 
-	WgVectorGlyphs( char* pTTF_File, int bytes, int faceIndex );
-	~WgVectorGlyphs();
 
 	inline Type	GetType() const { return VECTOR; }
 
@@ -94,6 +101,9 @@ public:
 	static void	ClearCache();
 
 private:
+	WgVectorGlyphs( char* pTTF_File, int bytes, int faceIndex );
+	~WgVectorGlyphs();
+
 	const static int	MIN_GLYPH_PIXEL_SIZE = 12;		
 	const static int	MAX_GLYPH_PIXEL_SIZE = WG_MAX_FONTSIZE*2;
 	const static int	GLYPH_PIXEL_SIZE_QUANTIZATION = 4;

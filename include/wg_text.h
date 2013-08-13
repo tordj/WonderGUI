@@ -55,8 +55,10 @@
 #	include <wg_skin.h>
 #endif
 
-class	WgValueFormat;
-class	WgFont;
+#ifndef WG_VALUEFORMAT_DOT_H
+#	include <wg_valueformat.h>
+#endif
+
 
 
 //____ WgTextHolder ___________________________________________________________
@@ -176,7 +178,7 @@ public:
 	inline WgColor				getColor(WgState state) const { return m_pBaseProp->Color(state); }
 	inline WgFontStyle			getStyle(WgState state) const { return m_pBaseProp->Style(state); }
 	inline int					getBreakLevel() const { return m_pBaseProp->BreakLevel(); }
-	inline WgFont *				getFont() const { return m_pBaseProp->Font(); }
+	inline WgFontPtr			getFont() const { return m_pBaseProp->Font(); }
 	inline WgTextLinkPtr		getLink() const { return m_pBaseProp->Link(); }
 
 //	--------------
@@ -191,7 +193,7 @@ public:
 
 	void				setBreakLevel( int level );
 
-	void				setFont( WgFont * pFont );
+	void				setFont( const WgFontPtr& pFont );
 	void				setLink( const WgTextLinkPtr& pLink );
 
 // -------------
@@ -226,8 +228,8 @@ public:
 
 // -------------
 
-	void				setCursorStyle( WgCursor * pCursor );
-	inline WgCursor *	getCursorStyle() const { return m_pCursorStyle; }
+	void				setCursorStyle( const WgCursorPtr& pCursor );
+	inline WgCursorPtr	getCursorStyle() const { return m_pCursorStyle; }
 
 // -------------
 
@@ -238,7 +240,7 @@ public:
 	WgColor				GetCharBgColor(		int charOfs ) const;
 	WgFontStyle			GetCharStyle(		int charOfs ) const;
 	int					GetCharSize(		int charOfs ) const;
-	WgFont *			GetCharFont(		int charOfs ) const;
+	WgFontPtr			GetCharFont(		int charOfs ) const;
 //	WgGlyphset *		GetCharGlyphset(	int charOfs ) const;
 //	bool				GetCharVisibility(	int charOfs ) const;
 	int					GetCharBreakLevel(	int charOfs ) const;
@@ -247,8 +249,8 @@ public:
 
 // -------------
 
-	void				setValue( double value, const WgValueFormat& form );
-	void				setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form );
+	void				setValue( double value, const WgValueFormatPtr& pFormat );
+	void				setScaledValue( Sint64 value, Uint32 scale, const WgValueFormatPtr& pFormat );
 //	int				compareTo( const WgText * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
 
 	int					width() const;
@@ -415,8 +417,8 @@ protected:
 
 
 	static const int	s_parseBufLen = 9+16+1+16+8;
-	WgChar *		_parseValue( double value, const WgValueFormat& form, WgChar[s_parseBufLen] );
-	WgChar *		_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form, WgChar[s_parseBufLen] );
+	WgChar *		_parseValue( double value, const WgValueFormat * pFormat, WgChar[s_parseBufLen] );
+	WgChar *		_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat * pFormat, WgChar[s_parseBufLen] );
 
 
 	void			_regenHardLines();		// regenerate the softlines-array (if necessary).
@@ -431,7 +433,7 @@ protected:
 
 
 	WgCharBuffer	m_buffer;
-	WgCursor*		m_pCursorStyle;
+	WgCursorPtr		m_pCursorStyle;
 	WgCursorInstance*	m_pCursor;
 	WgTextNode *	m_pManagerNode;
 

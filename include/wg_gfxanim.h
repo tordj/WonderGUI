@@ -41,14 +41,21 @@
 
 class WgGfxFrame;
 
+class WgGfxAnim;
+typedef	WgSmartPtr<WgGfxAnim,WgAnimPtr>		WgGfxAnimPtr;
+typedef	WgWeakPtr<WgGfxAnim,WgAnimWeakPtr>	WgGfxAnimWeakPtr;
 
 //____ Class WgGfxAnim ________________________________________________________
 
 class	WgGfxAnim : public WgAnim
 {
 public:
-	WgGfxAnim();
-	WgGfxAnim( WgSize size );
+	static WgGfxAnimPtr	Create() { return WgGfxAnimPtr(new WgGfxAnim()); }
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgGfxAnimPtr	Cast( const WgObjectPtr& pObject );
 
 	void		SetSize( WgSize size );
 	WgSize		Size() const { return m_size; }
@@ -65,6 +72,8 @@ public:
 	WgGfxFrame * GetLastFrame(void) {return (WgGfxFrame *) WgAnim::_lastKeyFrame(); };
 
 protected:
+	WgGfxAnim();
+	WgGfxAnim( WgSize size );
 
 	WgSize		m_size;
 };

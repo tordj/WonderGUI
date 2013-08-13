@@ -35,13 +35,22 @@
 #	include <wg_surface.h>
 #endif
 
+class WgBitmapGlyphs;
+typedef	WgSmartPtr<WgBitmapGlyphs,WgGlyphsetPtr>		WgBitmapGlyphsPtr;
+typedef	WgWeakPtr<WgBitmapGlyphs,WgGlyphsetWeakPtr>		WgBitmapGlyphsWeakPtr;
+
 //____ WgBitmapGlyphs _____________________________________________________________
 
 class WgBitmapGlyphs : public WgGlyphset
 {
 public:
-	WgBitmapGlyphs( const WgSurfacePtr& pSurf, char * pGlyphSpec, bool binaryFile=false );
-	~WgBitmapGlyphs();
+	static WgBitmapGlyphsPtr	Create( const WgSurfacePtr& pSurf, char * pGlyphSpec, bool binaryFile=false ) { return WgBitmapGlyphsPtr(new WgBitmapGlyphs(pSurf,pGlyphSpec,binaryFile)); }
+
+	bool						IsInstanceOf( const char * pClassName ) const;
+	const char *				ClassName( void ) const;
+	static const char			CLASSNAME[];
+	static WgBitmapGlyphsPtr	Cast( const WgObjectPtr& pObject );
+
 
 	inline Type	GetType() const { return BITMAP; }
 
@@ -62,7 +71,9 @@ public:
 	inline int				GetWhitespaceAdvance( int size ) { return m_spaceSpacing; }
 	inline int				GetMaxGlyphAdvance( int size ) { return m_maxSpacing; }
 
-private:
+protected:
+	WgBitmapGlyphs( const WgSurfacePtr& pSurf, char * pGlyphSpec, bool binaryFile=false );
+	~WgBitmapGlyphs();
 
 	class Glyph : public WgGlyph
 	{

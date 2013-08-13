@@ -65,8 +65,8 @@ public:
 		BUTTON_STRETCHED
 	};
 
-	void			SetRefreshAnimation( WgGfxAnim * pAnimation );
-	WgGfxAnim *		GetRefreshAnimation() const { return m_pRefreshAnim; }
+	void			SetRefreshAnimation( const WgGfxAnimPtr& pAnimation );
+	WgGfxAnimPtr	GetRefreshAnimation() const { return m_pRefreshAnim; }
 
 	void			SetRefreshMode( RefreshMode mode );
 	RefreshMode		GetRefreshMode() const { return m_refreshMode; }
@@ -109,7 +109,7 @@ protected:
 
 
 
-	WgGfxAnim *		m_pRefreshAnim;
+	WgGfxAnimPtr	m_pRefreshAnim;
 	AnimTarget		m_animTarget;
 	RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
 	WgText			m_refreshText;

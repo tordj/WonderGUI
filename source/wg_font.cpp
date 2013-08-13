@@ -24,6 +24,7 @@
 #include <wg_bitmapglyphs.h>
 #include <wg_vectorglyphs.h>
 
+const char WgFont::CLASSNAME[] = {"Font"};
 
 //____ Constructor ____________________________________________________________
 
@@ -34,14 +35,14 @@ WgFont::WgFont()
 }
 
 #ifdef WG_USE_FREETYPE
-WgFont::WgFont( WgVectorGlyphs * pNormal )
+WgFont::WgFont( const WgVectorGlyphsPtr& pNormal )
 {
 	_init();
 	SetVectorGlyphs( pNormal, WG_STYLE_NORMAL );
 }
 #endif
 
-WgFont::WgFont( WgBitmapGlyphs * pNormal, int size )
+WgFont::WgFont( const WgBitmapGlyphsPtr& pNormal, int size )
 {
 	_init();
 	SetBitmapGlyphs( pNormal, WG_STYLE_NORMAL, size );
@@ -52,17 +53,12 @@ WgFont::WgFont( WgBitmapGlyphs * pNormal, int size )
 void WgFont::_init()
 {
 #ifdef	WG_USE_FREETYPE
-	m_pDefaultVectorGlyphs = 0;
-
 	for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
 		m_aVectorGlyphs[i] = 0;
 #endif
 
 	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
-	{
 		m_aBitmapGlyphs[i] = 0;
-		m_aDefaultBitmapGlyphs[i] = 0;
-	}
 }
 
 
@@ -86,10 +82,37 @@ WgFont::~WgFont()
 	}
 }
 
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgFont::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgObject::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgFont::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgFontPtr WgFont::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgFontPtr( static_cast<WgFont*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ GetGlyphset() _______________________________________________________________
 
-WgGlyphset * WgFont::GetGlyphset( WgFontStyle style, int size ) const
+WgGlyphsetPtr WgFont::GetGlyphset( WgFontStyle style, int size ) const
 {
 	// Find the right glyphset to the following priorities:
 	//
@@ -99,12 +122,12 @@ WgGlyphset * WgFont::GetGlyphset( WgFontStyle style, int size ) const
 	// 4. Default VectorGlyphs.
 	// 5. BitmapGlyphs of the closest smaller size (preferably same style, otherwise default).
 
-	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] != 0 )
+	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] )
 		return m_aBitmapGlyphs[size][style];
-	else if( m_aDefaultBitmapGlyphs[size] != 0 )
+	else if( m_aDefaultBitmapGlyphs[size] )
 		return m_aDefaultBitmapGlyphs[size];
 #ifdef WG_USE_FREETYPE
-	else if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] != 0 )
+	else if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] )
 		return m_aVectorGlyphs[style][size];
 	else if( m_pDefaultVectorGlyphs )
 		return m_pDefaultVectorGlyphs;
@@ -112,10 +135,10 @@ WgGlyphset * WgFont::GetGlyphset( WgFontStyle style, int size ) const
 
 	for( int i = size-1 ; i >= 0 ; i-- )
 	{
-		if( m_aBitmapGlyphs[i] != 0 && m_aBitmapGlyphs[i][style] != 0 )
+		if( m_aBitmapGlyphs[i] != 0 && m_aBitmapGlyphs[i][style] )
 			return m_aBitmapGlyphs[i][style];
 
-		if( m_aDefaultBitmapGlyphs[i] != 0 )
+		if( m_aDefaultBitmapGlyphs[i] )
 			return m_aDefaultBitmapGlyphs[i];
 	}
 
@@ -167,7 +190,7 @@ WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 	{
 		// VectorGlyphs whitespace spec of the right style
 
-		if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] != 0 )
+		if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] )
 		{
 			p = m_aVectorGlyphs[style][size]->GetGlyph( chr, size );
 			if( p )
@@ -190,7 +213,7 @@ WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 	// 1. BitmapGlyphs of the right style and size.
 
 
-	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] != 0 )
+	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] )
 	{
 		p = m_aBitmapGlyphs[size][style]->GetGlyph( chr, size );
 		if( p )
@@ -199,7 +222,7 @@ WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 
 	// 2. Default BitmapGlyphs of the right size.
 
-	if( m_aDefaultBitmapGlyphs[size] != 0 )
+	if( m_aDefaultBitmapGlyphs[size] )
 	{
 		p = m_aDefaultBitmapGlyphs[size]->GetGlyph( chr, size );
 		if( p )
@@ -209,7 +232,7 @@ WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 #ifdef WG_USE_FREETYPE
 	// 3. VectorGlyphs of the right style.
 
-	if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] != 0 )
+	if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] )
 	{
 		p = m_aVectorGlyphs[style][size]->GetGlyph( chr, size );
 		if( p )
@@ -231,14 +254,14 @@ WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 
 	for( int i = size-1 ; i >= 0 ; i-- )
 	{
-		if( m_aBitmapGlyphs[i] != 0 && m_aBitmapGlyphs[i][style] != 0 )
+		if( m_aBitmapGlyphs[i] != 0 && m_aBitmapGlyphs[i][style] )
 		{
 			p = m_aBitmapGlyphs[i][style]->GetGlyph( chr, i );
 			if( p )
 				return p;
 		}
 
-		if( m_aDefaultBitmapGlyphs[i] != 0 )
+		if( m_aDefaultBitmapGlyphs[i] )
 		{
 			p = m_aDefaultBitmapGlyphs[i]->GetGlyph( chr, size );
 			if( p )
@@ -261,7 +284,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	// 1. BitmapGlyphs of the right style and size.
 
-	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] != 0 )
+	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] )
 	{
 		if( m_aBitmapGlyphs[size][style]->HasGlyph( chr ) )
 			return EXACT_MATCH_PROVIDED;
@@ -269,7 +292,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	// 2. Default BitmapGlyphs of the right size.
 
-	if( m_aDefaultBitmapGlyphs[size] != 0 )
+	if( m_aDefaultBitmapGlyphs[size] )
 	{
 		if( m_aDefaultBitmapGlyphs[size]->HasGlyph( chr ) )
 			return DEFAULT_PROVIDED;
@@ -278,7 +301,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 #ifdef WG_USE_FREETYPE
 	// 3. VectorGlyphs of the right style.
 
-	if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] != 0 )
+	if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] )
 	{
 		if( m_aVectorGlyphs[style][size]->HasGlyph( chr ) )
 			return EXACT_MATCH_PROVIDED;
@@ -298,13 +321,13 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 
 	for( int i = size-1 ; i >= 0 ; i-- )
 	{
-		if( m_aBitmapGlyphs[i] != 0 && m_aBitmapGlyphs[i][style] != 0 )
+		if( m_aBitmapGlyphs[i] != 0 && m_aBitmapGlyphs[i][style] )
 		{
 			if( m_aBitmapGlyphs[i][style]->HasGlyph( chr ) )
 				return SMALLER_MATCH_PROVIDED;
 		}
 
-		if( m_aDefaultBitmapGlyphs[i] != 0 )
+		if( m_aDefaultBitmapGlyphs[i] )
 		{
 			if( m_aDefaultBitmapGlyphs[size]->HasGlyph( chr ) )
 				return SMALLER_DEFAULT_PROVIDED;
@@ -319,10 +342,10 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 #ifdef WG_USE_FREETYPE
 //____ SetVectorGlyphs() ______________________________________________________
 
-bool WgFont::SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style )
+bool WgFont::SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontStyle style )
 {
 	if( m_aVectorGlyphs[style] == 0 )
-		m_aVectorGlyphs[style] = new WgVectorGlyphs*[WG_MAX_FONTSIZE+1];
+		m_aVectorGlyphs[style] = new WgVectorGlyphsPtr[WG_MAX_FONTSIZE+1];
 
 	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 		m_aVectorGlyphs[style][i] = pGlyph;
@@ -330,14 +353,14 @@ bool WgFont::SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style )
 	return true;
 }
 
-bool WgFont::SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style, int size )
+bool WgFont::SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontStyle style, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return false;
 
 	if( m_aVectorGlyphs[style] == 0 )
 	{
-		m_aVectorGlyphs[style] = new WgVectorGlyphs*[WG_MAX_FONTSIZE+1];
+		m_aVectorGlyphs[style] = new WgVectorGlyphsPtr[WG_MAX_FONTSIZE+1];
 
 		for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 			m_aVectorGlyphs[style][i] = 0;
@@ -352,7 +375,7 @@ bool WgFont::SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style, int si
 
 //____ SetDefaultVectorGlyphs() _______________________________________________
 
-bool WgFont::SetDefaultVectorGlyphs( WgVectorGlyphs * pGlyphs )
+bool WgFont::SetDefaultVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs )
 {
 	m_pDefaultVectorGlyphs = pGlyphs;
 	return true;
@@ -360,7 +383,7 @@ bool WgFont::SetDefaultVectorGlyphs( WgVectorGlyphs * pGlyphs )
 
 //____ ReplaceVectorGlyphs() __________________________________________________
 
-int WgFont::ReplaceVectorGlyphs( WgVectorGlyphs * pOld, WgVectorGlyphs * pNew )
+int WgFont::ReplaceVectorGlyphs( const WgVectorGlyphsPtr& pOld, const WgVectorGlyphsPtr& pNew )
 {
 	int nbReplaced = 0;
 
@@ -390,9 +413,9 @@ int WgFont::ReplaceVectorGlyphs( WgVectorGlyphs * pOld, WgVectorGlyphs * pNew )
 
 //____ ReplaceBitmapGlyphs() __________________________________________________
 
-int WgFont::ReplaceBitmapGlyphs( WgBitmapGlyphs * pOld, WgBitmapGlyphs * pNew )
+int WgFont::ReplaceBitmapGlyphs( const WgBitmapGlyphsPtr& pOld, const WgBitmapGlyphsPtr& pNew )
 {
-	if( pOld == 0 )
+	if( !pOld )
 		return 0;
 
 	int nbReplaced = 0;
@@ -425,14 +448,14 @@ int WgFont::ReplaceBitmapGlyphs( WgBitmapGlyphs * pOld, WgBitmapGlyphs * pNew )
 
 //____ SetBitmapGlyphs() ______________________________________________________
 
-bool WgFont::SetBitmapGlyphs( WgBitmapGlyphs * pGlyph, WgFontStyle style, int size )
+bool WgFont::SetBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyph, WgFontStyle style, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return false;
 
 	if( m_aBitmapGlyphs[size] == 0 )
 	{
-		WgBitmapGlyphs** p = new WgBitmapGlyphs*[WG_NB_FONTSTYLES];
+		WgBitmapGlyphsPtr* p = new WgBitmapGlyphsPtr[WG_NB_FONTSTYLES];
 		for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
 			p[i] = 0;
 
@@ -446,7 +469,7 @@ bool WgFont::SetBitmapGlyphs( WgBitmapGlyphs * pGlyph, WgFontStyle style, int si
 
 //____ SetDefaultBitmapGlyphs() _______________________________________________
 
-bool WgFont::SetDefaultBitmapGlyphs( WgBitmapGlyphs * pGlyphs, int size )
+bool WgFont::SetDefaultBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyphs, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return false;
@@ -457,12 +480,12 @@ bool WgFont::SetDefaultBitmapGlyphs( WgBitmapGlyphs * pGlyphs, int size )
 
 //____ GetBitmapGlyphs() ______________________________________________________
 
-WgBitmapGlyphs * WgFont::GetBitmapGlyphs( WgFontStyle style, int size )
+WgBitmapGlyphsPtr WgFont::GetBitmapGlyphs( WgFontStyle style, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return 0;
 
-	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] != 0 )
+	if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] )
 		return m_aBitmapGlyphs[size][style];
 
 	return 0;

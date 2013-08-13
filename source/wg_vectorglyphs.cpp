@@ -37,6 +37,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+const char WgVectorGlyphs::CLASSNAME[] = {"VectorGlyphs"};
 
 WgChain<WgVectorGlyphs::CacheSlot>	WgVectorGlyphs::s_cacheSlots[GLYPH_SLOT_SIZES];
 WgChain<WgVectorGlyphs::CacheSurf>	WgVectorGlyphs::s_cacheSurfaces;
@@ -94,6 +95,33 @@ WgVectorGlyphs::~WgVectorGlyphs()
 
 	FT_Done_Face( m_ftFace );
 	delete[] m_pData;
+}
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgVectorGlyphs::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgGlyphset::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgVectorGlyphs::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgVectorGlyphsPtr WgVectorGlyphs::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgVectorGlyphsPtr( static_cast<WgVectorGlyphs*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ _setCharSize() __________________________________________________________

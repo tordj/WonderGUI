@@ -86,9 +86,9 @@ void WgValueDisplay::SetTextProperties( const WgTextpropPtr& _pProp )
 
 //____ SetFormat() ____________________________________________________________
 
-void WgValueDisplay::SetFormat( const WgValueFormat& format )
+void WgValueDisplay::SetFormat( const WgValueFormatPtr& pFormat )
 {
-	m_format = format;
+	m_pFormat = pFormat;
 	_requestRender();
 }
 
@@ -135,7 +135,7 @@ void WgValueDisplay::_onRefresh( void )
 
 void WgValueDisplay::_regenText()
 {
-		m_text.setScaledValue( m_value, m_format.scale, m_format );
+		m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pFormat );
 }
 
 //____ _onRender() _____________________________________________________________
@@ -154,7 +154,7 @@ void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 
 	Wg_Interface_ValueHolder::_onCloneContent( pOrg );
 
-	m_format		= pOrg->m_format;
+	m_pFormat		= pOrg->m_pFormat;
 	m_text.setText(&pOrg->m_text);
 	m_text.setAlignment(pOrg->m_text.alignment());
 	m_text.setProperties(pOrg->m_text.getProperties());

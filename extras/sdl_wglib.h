@@ -15,10 +15,13 @@
 #	include <wg_surfacefactory.h>
 #endif
 
+#ifndef WG_RESDB_DOT_H
+#	include <wg_resdb.h>
+#endif
+
 class WgEventHandler;
 class WgSurface;
 class WgSurfaceFactory;
-class WgResDB;
 class WgFont;
 
 namespace sdl_wglib
@@ -30,9 +33,9 @@ namespace sdl_wglib
 
 	WgSurfacePtr LoadSurface( const char * path, const WgSurfaceFactoryPtr& factory );
 
-	WgResDB *	LoadStdWidgets( const char * pImagePath, const WgSurfaceFactoryPtr& factory );
+	WgResDBPtr	LoadStdWidgets( const char * pImagePath, const WgSurfaceFactoryPtr& factory );
 
-	WgFont *	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactoryPtr& pFactory );
+	WgFontPtr	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactoryPtr& pFactory );
 	
 	int 		FileSize( const char * pPath );
 	void * 		LoadFile( const char * pPath );

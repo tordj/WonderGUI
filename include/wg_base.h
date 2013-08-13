@@ -44,6 +44,9 @@
 #	include <wg_textprop.h>
 #endif
 
+#ifndef WG_CURSOR_DOT_H
+#	include <wg_cursor.h>
+#endif
 
 
 #ifdef WG_USE_FREETYPE
@@ -58,7 +61,6 @@ class WgTextpropManager;
 class WgMemPool;
 class WgWeakPtrHub;
 class WgMemStack;
-class WgCursor;
 
 class WgBase
 {
@@ -86,8 +88,8 @@ public:
 	static void 	SetDefaultLinkProp( const WgTextpropPtr& pProp );
 	static WgTextpropPtr GetDefaultLinkProp() { assert(s_pData!=0); return s_pData->pDefaultLinkProp; }
 
-	static void 	SetDefaultCursor( WgCursor * pCursor );
-	static WgCursor * GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
+	static void 	SetDefaultCursor( const WgCursorPtr& pCursor );
+	static WgCursorPtr GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
 
 	static void		MapKey( WgKey translated_keycode, int native_keycode );
 	static void		UnmapKey( WgKey translated_keycode );
@@ -123,7 +125,7 @@ private:
 		WgTextpropPtr		pDefaultTextprop;
 		WgTextpropPtr		pDefaultSelectionProp;
 		WgTextpropPtr		pDefaultLinkProp;
-		WgCursor *			pDefaultCursor;
+		WgCursorPtr			pDefaultCursor;
 
 		// Settings for keyboard/pointer input
 

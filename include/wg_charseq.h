@@ -33,12 +33,10 @@
 #	include <wg_userdefines.h>
 #endif
 
-
 class WgChar;
 class WgString;
 class WgCharBuffer;
 class WgText;
-class WgResDB;
 
 /*
 
@@ -65,18 +63,18 @@ class WgResDB;
 class WgCharSeq
 {
 public:
-	WgCharSeq( const char * pChar, WgResDB * pDB = 0);
-	WgCharSeq( const char * pChar, int len, WgResDB * pDB = 0 );
-	WgCharSeq( const Uint16 * pChar, WgResDB * pDB = 0 );
-	WgCharSeq( const Uint16 * pChar, int len, WgResDB * pDB = 0 );
+	WgCharSeq( const char * pChar );
+	WgCharSeq( const char * pChar, int len );
+	WgCharSeq( const Uint16 * pChar );
+	WgCharSeq( const Uint16 * pChar, int len );
 	WgCharSeq( const WgChar * pChar );
 	WgCharSeq( const WgChar * pChar, int len );
 	WgCharSeq( const WgCharBuffer * pBuffer );
 	WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len );
-	WgCharSeq( const std::string& str, WgResDB * pDB = 0 );
-	WgCharSeq( const std::string& str, int ofs, int len, WgResDB * pDB = 0 );
-	WgCharSeq( const std::wstring& str, WgResDB * pDB = 0 );
-	WgCharSeq( const std::wstring& str, int ofs, int len, WgResDB * pDB = 0 );
+	WgCharSeq( const std::string& str );
+	WgCharSeq( const std::string& str, int ofs, int len );
+	WgCharSeq( const std::wstring& str );
+	WgCharSeq( const std::wstring& str, int ofs, int len );
 	WgCharSeq( const WgString& str );
 	WgCharSeq( const WgString& str, int ofs, int len );
 	WgCharSeq( const WgCharSeq& seq, int ofs = 0, int len = INT_MAX );
@@ -168,7 +166,6 @@ protected:
 	SeqType			m_type;
 	const void * 	m_pChar;
 	int				m_nbChars;		// Length of sequence in number of characters.
-	WgResDB *		m_pDB;
 };
 
 

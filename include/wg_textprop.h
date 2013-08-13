@@ -40,10 +40,13 @@
 #	include	<wg_util.h>
 #endif
 
+#ifndef WG_FONT_DOT_H
+#	include <wg_font.h>
+#endif
+
 
 
 class WgChar;
-class WgFont;
 class WgGlyphset;
 class WgTextprop;
 class WgTextpropPtr;
@@ -114,7 +117,7 @@ public:
 
 	inline void		SetBreakLevel( int level ) { m_breakLevel = (char) level; }
 	inline void		SetLink( const WgTextLinkPtr& pLink ) { m_pLink = pLink; }
-	inline void		SetFont( WgFont * pFont ) { m_pFont = pFont; }
+	inline void		SetFont( const WgFontPtr& pFont ) { m_pFont = pFont; }
 	bool			SetCharVisibility( Uint16 specialCharacter, bool bVisible );
 
 	void			ClearColor();
@@ -147,7 +150,7 @@ public:
 	inline int				CharVisibilityFlags() const { return m_visibilityFlags; }
 
 	inline WgTextLinkPtr	Link() const { return m_pLink; }
-	inline WgFont *			Font() const { return m_pFont; }
+	inline WgFontPtr		Font() const { return m_pFont; }
 	inline int				BreakLevel() const { return m_breakLevel; }
 
 	void					AssertIntegrity() const;
@@ -204,7 +207,7 @@ private:
 
 	char				m_breakLevel;		///< How aggressively lines should be breaked. Higher value breaks on more characters. -1 = not set.
 	WgTextLinkPtr		m_pLink;			///< Hierarchally overrides.
-	WgFont *			m_pFont;			///< Hierarchally overrides.
+	WgFontPtr			m_pFont;			///< Hierarchally overrides.
 
 	WgStateProp		m_stateProp[WG_NB_STATES];
 };
@@ -236,7 +239,7 @@ public:
 							bgColor = WgColor::transparent; bUnderlined = false; breakLevel = 3;
 							visibilityFlags = 0; pLink = 0; }
 
-	WgFont *		pFont;
+	WgFontPtr		pFont;
 	int				size;
 	WgFontStyle		style;
 	WgColor			color;

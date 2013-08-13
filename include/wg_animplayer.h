@@ -49,8 +49,8 @@ public:
 
 	//____ Methods __________________________________________
 
-	bool			SetAnimation( WgGfxAnim * pAnim );
-	WgGfxAnim *		Animation() const { return m_pAnim; }
+	bool			SetAnimation( const WgGfxAnimPtr& pAnim );
+	WgGfxAnimPtr	Animation() const { return m_pAnim; }
 		
 	int				PlayPos();										/// Returns play position in ticks.
 	bool			SetPlayPos( int ticks );						/// Position in ticks for next update.
@@ -87,7 +87,7 @@ protected:
 
 private:
 
-	WgGfxAnim *		m_pAnim;
+	WgGfxAnimPtr	m_pAnim;
 	WgGfxFrame *	m_pAnimFrame;			// Frame currently used by animation.
 
 	bool			m_bPlaying;

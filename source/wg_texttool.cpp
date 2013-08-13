@@ -2732,7 +2732,7 @@ void WgTextTool::SetLink( const WgTextLinkPtr& pLink, WgChar * pChar, Uint32 nb 
 
 //____ SetFont() ______________________________________________________________
 
-void WgTextTool::SetFont( WgFont * pFont, WgChar * pChar, Uint32 nb )
+void WgTextTool::SetFont( const WgFontPtr& pFont, WgChar * pChar, Uint32 nb )
 {
 	ModifyProperties( PropFontModifier(pFont), pChar, nb );
 }
@@ -2889,9 +2889,9 @@ void WgTextTool::SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, W
 
 //____ GetCursor() ____________________________________________________________
 
-WgCursor * WgTextTool::GetCursor( const WgText * pText )
+WgCursorPtr WgTextTool::GetCursor( const WgText * pText )
 {
-	WgCursor * p = pText->getCursorStyle();
+	WgCursorPtr p = pText->getCursorStyle();
 	if( p )
 		return p;
 
@@ -2965,7 +2965,7 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 		// Secondly, if nullprop isn't our current baseprop we see if we can do this using only nullprop
 		// + style/color/size/underline settings.
 
-		if( !m_pBaseProp && pNewProp->Font() == 0 && !pNewProp->Link() &&
+		if( !m_pBaseProp && !pNewProp->Font() && !pNewProp->Link() &&
 			pNewProp->IsColorStatic() && pNewProp->IsStyleStatic() && pNewProp->IsSizeStatic() && pNewProp->IsUnderlined() )
 		{
 			// Yes we can! Switch to nullprop as our baseprop

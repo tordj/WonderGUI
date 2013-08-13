@@ -19,39 +19,20 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_multirulesizebroker.h>
+#ifndef WG_INTERFACE_DOT_H
+#define WG_INTERFACE_DOT_H
 
 
-WgMultiRuleSizeBroker::WgMultiRuleSizeBroker()
+class WgInterface
 {
-}
+	friend class WgInterfacePtr;
+	friend class WgInterfaceWeakPtr;
+public:
+	virtual bool		IsInstanceOf( const char * pClassName ) const;
+	virtual const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgInterfacePtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+};
 
-WgMultiRuleSizeBroker::~WgMultiRuleSizeBroker()
-{
-}
 
-
-
-int WgMultiRuleSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const
-{
-    if( nItems == 0 )
-        return 0;
-
-	int total = 0;
-
-    return total;
-}
-
-int WgMultiRuleSizeBroker::SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
-{
-    if( nItems == 0 )
-        return 0;
-    
-    int total = 0;    
-    return total;
-}
-
-bool WgMultiRuleSizeBroker::MayAlterPreferredLengths() const
-{
-    return true;
-}
+#endif //WG_INTERFACE_DOT_H

@@ -1211,7 +1211,7 @@ void WgCharBuffer::SetStyle( WgFontStyle style, int ofs, int len )
 ///
 /// Setting pFont to null is identical to calling ClearFont().
 
-void WgCharBuffer::SetFont( WgFont * pFont, int ofs, int len )
+void WgCharBuffer::SetFont( const WgFontPtr& pFont, int ofs, int len )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropFontModifier(pFont) );
 }

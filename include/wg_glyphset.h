@@ -91,13 +91,19 @@ struct WgUnderline
 	Uint8		rightBorder;
 };
 
+class WgGlyphset;
+typedef	WgSmartPtr<WgGlyphset,WgObjectPtr>		WgGlyphsetPtr;
+typedef	WgWeakPtr<WgGlyphset,WgObjectWeakPtr>	WgGlyphsetWeakPtr;
+
 //____ WgGlyphset _____________________________________________________________
 
-class WgGlyphset
+class WgGlyphset : public WgObject
 {
 public:
-	WgGlyphset() {}
-	virtual ~WgGlyphset() {}
+	bool					IsInstanceOf( const char * pClassName ) const;
+	const char *			ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgGlyphsetPtr	Cast( const WgObjectPtr& pObject );
 
 	enum Type
 	{
@@ -123,7 +129,8 @@ public:
 
 
 protected:
-
+	WgGlyphset() {}
+	virtual ~WgGlyphset() {}
 };
 
 

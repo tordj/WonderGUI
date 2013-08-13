@@ -53,7 +53,6 @@ void WgPen::_init()
 	m_pTextNode = 0;
 
 	m_pFont = 0;
-	m_pGlyphs = 0;
 
 	m_size = 0;
 	m_wantedSize = 0;
@@ -131,7 +130,7 @@ bool WgPen::SetSize( int size )
 
 //____ SetFont() ______________________________________________________________
 
-void WgPen::SetFont( WgFont * pFont )
+void WgPen::SetFont( const WgFontPtr& pFont )
 {
 	m_pFont = pFont;
 	_onAttrChanged();
@@ -273,14 +272,14 @@ void WgPen::BlitChar() const
 
 bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 {
-	WgCursor * pCursor = WgTextTool::GetCursor(instance.m_pText);
-	if( pCursor == 0 )
+	WgCursorPtr pCursor = WgTextTool::GetCursor(instance.m_pText);
+	if( !pCursor )
 		return false;
 
 	WgCursor::Mode mode = instance.cursorMode();
 
-	WgGfxAnim * pAnim	= pCursor->Anim( mode );
-	if( pAnim == 0 )
+	WgGfxAnimPtr pAnim	= pCursor->Anim( mode );
+	if( !pAnim )
 		return false;
 
 	WgGfxFrame * pAnimFrame =	pAnim->GetFrame( instance.time(), 0 );
@@ -350,13 +349,13 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 {
-	WgCursor * pCursor = WgTextTool::GetCursor( instance.m_pText );
-	if( pCursor == 0 )
+	WgCursorPtr pCursor = WgTextTool::GetCursor( instance.m_pText );
+	if( !pCursor )
 		return;
 
 	WgCursor::Mode mode = instance.cursorMode();
 
-	WgGfxAnim * pAnim	= pCursor->Anim( mode );
+	WgGfxAnimPtr pAnim	= pCursor->Anim( mode );
 	if( !pAnim )
 		return;
 

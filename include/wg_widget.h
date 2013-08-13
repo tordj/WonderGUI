@@ -43,6 +43,10 @@
 #	include <wg_skin.h>
 #endif
 
+#ifndef WG_SMARTPTR_DOT_H
+#	include <wg_smartptr.h>
+#endif
+
 class WgGfxDevice;
 class Wg_Interface_TextHolder;
 class WgContainer;

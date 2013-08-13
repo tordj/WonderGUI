@@ -88,7 +88,7 @@ private:
 
 	static Uint16	RegisterProp( const WgTextprop& prop );			// DOES NOT INCREASE REFCNT!
 
-//	static Uint16 	GetProp( WgFont * pFont, const WgColor color, bool bColored,
+//	static Uint16 	GetProp( const WgFontPtr& pFont, const WgColor color, bool bColored,
 //							 bool bUnderlined, bool bSelected, WgTextLinkPtr& pLink );
 
 	static const WgTextprop&	GetProp( Uint16 hProp ) { return g_pPropBuffer[hProp].m_prop; }

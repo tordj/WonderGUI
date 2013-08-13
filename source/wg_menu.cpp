@@ -157,9 +157,9 @@ bool WgMenu::SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorders& borders 
 
 //____ SetArrowSource() _______________________________________________________
 
-bool WgMenu::SetArrowSource( WgGfxAnim * pAnim )
+bool WgMenu::SetArrowSource( const WgGfxAnimPtr& pAnim )
 {
-	if( pAnim == 0 )
+	if( !pAnim )
 		return false;
 
 	m_pArrowAnim = pAnim;

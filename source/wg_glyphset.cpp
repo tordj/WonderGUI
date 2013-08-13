@@ -27,12 +27,34 @@
 #include <wg_glyphset.h>
 #include <wg_texttool.h>
 
+const char WgGlyphset::CLASSNAME[] = {"Glyphset"};
 
-// TEMP PROFILING INCLUDES
-//#include "Utilities/EProfiler.h"
-//#include "Util/Util.hpp"
+//____ IsInstanceOf() _________________________________________________________
 
+bool WgGlyphset::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
 
+	return WgObject::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgGlyphset::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgGlyphsetPtr WgGlyphset::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgGlyphsetPtr( static_cast<WgGlyphset*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
 
 
 

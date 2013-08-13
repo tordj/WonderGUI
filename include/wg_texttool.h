@@ -189,7 +189,7 @@ public:
 
 	static void			SetProperties( const WgTextpropPtr& pProp, WgChar * pChar, Uint32 nb );
 	static void			SetLink( const WgTextLinkPtr& pLink, WgChar * pChar, Uint32 nb );
-	static void			SetFont( WgFont * pFont, WgChar * pChar, Uint32 nb );
+	static void			SetFont( const WgFontPtr& pFont, WgChar * pChar, Uint32 nb );
 	static void			SetBreakLevel( int breakLevel, WgChar * pChar, Uint32 nb );
 
 	static void			SetColor( const WgColor col, WgChar * pChar, Uint32 nb );
@@ -223,7 +223,7 @@ public:
 	static void			AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgState state = WG_STATE_NORMAL );
 //	static void			SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgState state = WG_STATE_NORMAL );
 
-	static WgCursor *		GetCursor( const WgText * pText );
+	static WgCursorPtr		GetCursor( const WgText * pText );
 	static WgTextpropPtr	GetSelectionProperties( const WgText * pText );
 	static WgTextpropPtr	GetLinkProperties( const WgText * pText );
 
@@ -347,10 +347,10 @@ private:
 	class PropFontModifier : public PropModifier
 	{
 	public:
-		PropFontModifier( WgFont * pFont ) { m_pFont = pFont; }
+		PropFontModifier( const WgFontPtr& pFont ) { m_pFont = pFont; }
 		void Modify( WgTextprop& prop ) const { prop.SetFont( m_pFont ); }
 	private:
-		WgFont *	m_pFont;
+		WgFontPtr	m_pFont;
 	};
 
 	class PropStateSizeModifier : public PropModifier

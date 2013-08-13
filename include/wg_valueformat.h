@@ -40,19 +40,34 @@
 #	include <wg_string.h>
 #endif
 
+#ifndef WG_SMARTPTR_DOT_H
+#	include <wg_smartptr.h>
+#endif
+
+class WgValueFormat;
+typedef	WgSmartPtr<WgValueFormat,WgObjectPtr>		WgValueFormatPtr;
+typedef	WgWeakPtr<WgValueFormat,WgObjectWeakPtr>	WgValueFormatWeakPtr;
 
 //____ WgValueFormat __________________________________________________________
 
-class WgValueFormat
+class WgValueFormat : public WgObject
 {
+	friend class WgText;
 	public:
-		WgValueFormat();
-		WgValueFormat( const WgCharSeq& format );
-		WgValueFormat( const WgValueFormat& in );
-		WgValueFormat(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
-						Uint16 _separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 );
+		static WgValueFormatPtr	Create() { return WgValueFormatPtr(new WgValueFormat()); }
+		static WgValueFormatPtr	Create( const WgCharSeq& format )  { return WgValueFormatPtr(new WgValueFormat(format)); }
+		static WgValueFormatPtr	Create( const WgValueFormatPtr& pIn ) { return WgValueFormatPtr(new WgValueFormat(pIn)); }
+		static WgValueFormatPtr	Create(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
+						Uint16 separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 )
+		{ return WgValueFormatPtr(new WgValueFormat(nInt,nDec,grouping,bPlus,separator,period,bForcePeriod,pPrefix,pSuffix)); }
+
+		bool		IsInstanceOf( const char * pClassName ) const;
+		const char *ClassName( void ) const;
+		static const char	CLASSNAME[];
+		static WgValueFormatPtr	Cast( const WgObjectPtr& pObject );
 
 		void setFormat( const WgCharSeq& format );
+		void setFormat( const WgValueFormatPtr& pFormat );
 
 		void setFormat( int nInt, int nDec, int grouping, bool bPlus = false,
 						Uint16 _separator = 0, Uint16 period = 0, bool bForcePeriod = false );
@@ -100,6 +115,15 @@ class WgValueFormat
 		inline void		setSeparator(Uint16 _separator) { separator = _separator; }
 		inline Uint16	getSeparator() const { return separator; }
 
+		inline int		_getScale() const { return scale; }
+
+protected:
+		WgValueFormat();
+		WgValueFormat( const WgCharSeq& format );
+		WgValueFormat( const WgValueFormatPtr& pIn );
+		WgValueFormat(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
+						Uint16 _separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 );
+
 
 		Uint8		integers;			/// Lowest number of integers to display, padded with zeroes.
 		Uint8		decimals;			/// Number of decimals to display.
@@ -146,7 +170,7 @@ class WgValueFormat
 			* Replace noDecimalTreshold with "value digits"?
 */
 
-
+/*
 class WgValueFormatter
 {
 public:
@@ -170,6 +194,6 @@ private:
 	WgValueFormat	m_format;
 };
 
-
+*/
 
 #endif

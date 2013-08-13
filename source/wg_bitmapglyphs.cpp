@@ -27,10 +27,8 @@
 #include <wg_bitmapglyphs.h>
 #include <wg_texttool.h>
 
-// TEMP PROFILING INCLUDES
-//#include "Utilities/EProfiler.h"
-//#include "Util/Util.hpp"
 
+const char WgBitmapGlyphs::CLASSNAME[] = {"BitmapGlyphs"};
 
 
 //____ Constructor ____________________________________________________________
@@ -93,6 +91,32 @@ WgBitmapGlyphs::~WgBitmapGlyphs()
 		delete [] m_pKerningTable;
 }
 
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgBitmapGlyphs::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgGlyphset::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgBitmapGlyphs::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgBitmapGlyphsPtr WgBitmapGlyphs::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgBitmapGlyphsPtr( static_cast<WgBitmapGlyphs*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
 
 //____ CopyGlyphs() ___________________________________________________________
 

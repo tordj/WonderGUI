@@ -138,7 +138,7 @@ void WgText::setManager( WgTextManager * pManager )
 
 //____ setCursorStyle() _______________________________________________________
 
-void WgText::setCursorStyle( WgCursor * pCursor )
+void WgText::setCursorStyle( const WgCursorPtr& pCursor )
 {
 	if( pCursor != m_pCursorStyle )
 	{
@@ -633,7 +633,7 @@ void WgText::setStyle( WgFontStyle style, WgState state )
 	_refreshAllLines();
 }
 
-void WgText::setFont( WgFont * pFont )
+void WgText::setFont( const WgFontPtr& pFont )
 {
 	WgTextprop	prop = * m_pBaseProp;
 	prop.SetFont(pFont);
@@ -899,26 +899,26 @@ int WgText::compareTo( const WgText * _pOther, bool bCheckCase ) const
 
 //____ setValue() _____________________________________________________________
 
-void WgText::setValue( double value, const WgValueFormat& form )
+void WgText::setValue( double value, const WgValueFormatPtr& pFormat )
 {
 	WgChar	str[s_parseBufLen];
-	WgChar * pStr = _parseValue( value, form, str );
+	WgChar * pStr = _parseValue( value, pFormat.GetRealPtr(), str );
 	setText( pStr );
 }
 
 //____ setScaledValue() _______________________________________________________
 
-void WgText::setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form )
+void WgText::setScaledValue( Sint64 value, Uint32 scale, const WgValueFormatPtr& pFormat )
 {
 	WgChar	str[s_parseBufLen];
-	WgChar * pStr = _parseScaledValue( value, scale, form, str );
+	WgChar * pStr = _parseScaledValue( value, scale, pFormat.GetRealPtr(), str );
 	setText( pStr );
 }
 
 
 //____ _parseValue() ___________________________________________________________
 
-WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar tempstring[s_parseBufLen] )
+WgChar * WgText::_parseValue( double value, const WgValueFormat * pF, WgChar tempstring[s_parseBufLen] )
 {
 
 	// Write period and decimal part
@@ -927,18 +927,18 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 	int fractionOffset = s_parseBufLen - 16 - 4 - 1 - 1;
 
 	WgChar * p = tempstring + fractionOffset;
-	if( f.decimals || f.bForcePeriod )
+	if( pF->decimals || pF->bForcePeriod )
 	{
-		if( 0 == f.noDecimalThreshold || (int)value < f.noDecimalThreshold )
+		if( 0 == pF->noDecimalThreshold || (int)value < pF->noDecimalThreshold )
 		{
 			double decPart = value - (int) value ;
 
-			if( f.bForceDecimals || decPart != 0. )
+			if( pF->bForceDecimals || decPart != 0. )
 			{
-				p->SetGlyph(f.period);
+				p->SetGlyph(pF->period);
 				p++;
 
-				for( int i = f.decimals; i > 0 ; i-- )
+				for( int i = pF->decimals; i > 0 ; i-- )
 				{
 					decPart *= 10;
 					p->SetGlyph((Uint16)decPart + 0x30);
@@ -951,9 +951,9 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 
 	// Add suffix
 
-	const WgChar * pSuffix = f.suffix.Chars();
+	const WgChar * pSuffix = pF->suffix.Chars();
 
-	for( int i = 0 ; i < f.suffix.Length() && i < 4 ; i++ )
+	for( int i = 0 ; i < pF->suffix.Length() && i < 4 ; i++ )
 		* p++ = pSuffix[i];
 
 	// Terminate string
@@ -977,7 +977,7 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 	// Copy integer part acknowledge grouping
 
 	p = tempstring + fractionOffset;
-	if( f.grouping == 0 )
+	if( pF->grouping == 0 )
 	{
 		for( int i = 0 ; i < n ; i++ )
 		{
@@ -989,10 +989,10 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 	{
 		for( int i = 0 ; i < n ; i++ )
 		{
-			if( i != 0 && (i % f.grouping) == 0 )
+			if( i != 0 && (i % pF->grouping) == 0 )
 			{
 				p--;
-				p->SetGlyph(f.separator);
+				p->SetGlyph(pF->separator);
 			}
 
 			p--;
@@ -1002,14 +1002,14 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 
 	// Possibly fill out with zeroes, acknowledge grouping
 
-	if( n < f.integers )
+	if( n < pF->integers )
 	{
-		for( int i = n ; i < f.integers ; i++ )
+		for( int i = n ; i < pF->integers ; i++ )
 		{
-			if( i != 0 && (i % f.grouping) == 0 )
+			if( i != 0 && (i % pF->grouping) == 0 )
 			{
 				p--;
-				p->SetGlyph(f.separator);
+				p->SetGlyph(pF->separator);
 			}
 
 			p--;
@@ -1020,9 +1020,9 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 
 	// Possibly put a prefix at the start
 
-	const WgChar * pPrefix = f.prefix.Chars();
+	const WgChar * pPrefix = pF->prefix.Chars();
 
-	for( int i = f.prefix.Length()-1 ; i >= 0 ; i-- )
+	for( int i = pF->prefix.Length()-1 ; i >= 0 ; i-- )
 		* --p = pPrefix[i];
 
 	// Possibly put a plus or minus sign before prefix.
@@ -1032,7 +1032,7 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 		p--;
 		p->SetGlyph('-');
 	}
-	else if( f.bPlus )
+	else if( pF->bPlus )
 	{
 		p--;
 		p->SetGlyph('+');
@@ -1040,15 +1040,15 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 
 	// Set character attributes
 
-	if( f.bSetTextprop )
-		WgTextTool::SetProperties( f.pTextProperties, tempstring, s_parseBufLen );
+	if( pF->bSetTextprop )
+		WgTextTool::SetProperties( pF->pTextProperties, tempstring, s_parseBufLen );
 
 	return p;
 }
 
 //____ _parseScaledValue() _____________________________________________________
 
-WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& f, WgChar tempstring[s_parseBufLen] )
+WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat * pF, WgChar tempstring[s_parseBufLen] )
 {
 
 	Sint64 absVal = value >= 0 ? value : -value;
@@ -1062,15 +1062,15 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 	int fractionOffset = s_parseBufLen - 16 - 4 - 1 - 1;
 
 	WgChar * p = tempstring + fractionOffset;
-	if( f.decimals || f.bForcePeriod )
+	if( pF->decimals || pF->bForcePeriod )
 	{
-		if( 0 == f.noDecimalThreshold || (int)absVal < f.noDecimalThreshold )
+		if( 0 == pF->noDecimalThreshold || (int)absVal < pF->noDecimalThreshold )
 		{
-			if( f.bForceDecimals || decPart != 0 )
+			if( pF->bForceDecimals || decPart != 0 )
 			{
-				p++->SetGlyph(f.period);
+				p++->SetGlyph(pF->period);
 
-				for( int i = f.decimals; i > 0 ; i-- )
+				for( int i = pF->decimals; i > 0 ; i-- )
 				{
 					decPart *= 10;
 					p++->SetGlyph(((Uint16)(decPart/scale)) + 0x30);
@@ -1080,9 +1080,9 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 		}
 	}
 
-	const WgChar * pSuffix = f.suffix.Chars();
+	const WgChar * pSuffix = pF->suffix.Chars();
 
-	for( int i = 0 ; i < f.suffix.Length() && i < 4 ; i++ )
+	for( int i = 0 ; i < pF->suffix.Length() && i < 4 ; i++ )
 		* p++ = pSuffix[i];
 
 	// Terminate string
@@ -1104,7 +1104,7 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 	// Copy integer part acknowledge grouping
 
 	p = tempstring + fractionOffset;
-	if( f.grouping == 0 )
+	if( pF->grouping == 0 )
 	{
 		for( int i = 0 ; i < n ; i++ )
 			(--p)->SetGlyph(temp2[i]);
@@ -1113,8 +1113,8 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 	{
 		for( int i = 0 ; i < n ; i++ )
 		{
-			if( i != 0 && (i % f.grouping) == 0 )
-				(--p)->SetGlyph(f.separator);
+			if( i != 0 && (i % pF->grouping) == 0 )
+				(--p)->SetGlyph(pF->separator);
 
 			(--p)->SetGlyph(temp2[i]);
 		}
@@ -1122,12 +1122,12 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 
 	// Possibly fill out with zeroes, acknowledge grouping
 
-	if( n < f.integers )
+	if( n < pF->integers )
 	{
-		for( int i = n ; i < f.integers ; i++ )
+		for( int i = n ; i < pF->integers ; i++ )
 		{
-			if( i != 0 && (i % f.grouping) == 0 )
-				(--p)->SetGlyph(f.separator);
+			if( i != 0 && (i % pF->grouping) == 0 )
+				(--p)->SetGlyph(pF->separator);
 
 			(--p)->SetGlyph(0x30);
 		}
@@ -1136,22 +1136,22 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 
 	// Possibly put a prefix at the start
 
-	const WgChar * pPrefix = f.prefix.Chars();
+	const WgChar * pPrefix = pF->prefix.Chars();
 
-	for( int i = f.prefix.Length()-1 ; i >= 0 ; i-- )
+	for( int i = pF->prefix.Length()-1 ; i >= 0 ; i-- )
 		* --p = pPrefix[i];
 
 	// Possibly put a plus or minus sign at the very start.
 
-	if( value < 0 || (value == 0 && f.bZeroIsNegative) )
+	if( value < 0 || (value == 0 && pF->bZeroIsNegative) )
 		(--p)->SetGlyph((short) '-');
-	else if( f.bPlus )
+	else if( pF->bPlus )
 		(--p)->SetGlyph((short) '+');
 
 	// Set character attributes
 
-	if( f.bSetTextprop )
-		WgTextTool::SetProperties(f.pTextProperties, tempstring, s_parseBufLen );
+	if( pF->bSetTextprop )
+		WgTextTool::SetProperties(pF->pTextProperties, tempstring, s_parseBufLen );
 
 	return p;
 }
@@ -1798,7 +1798,7 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 		GetBaseAttr( attr );
 		pen.SetAttributes( attr );
 
-		if( pen.GetGlyphset() != 0 )
+		if( pen.GetGlyphset() )
 		{
 			int height		= pen.GetLineHeight();
 			int baseline	= pen.GetBaseline();
@@ -1823,7 +1823,7 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 
 				hProp = pChars[i].PropHandle();
 
-				if( pen.GetGlyphset() == 0 )
+				if( !pen.GetGlyphset() )
 					break;									// Bail out instead of crashing.
 
 				int height		= pen.GetLineHeight();
@@ -1859,7 +1859,7 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 
 int WgText::_cursorMaxWidth() const
 {
-	WgCursor * p = m_pCursorStyle?m_pCursorStyle:WgBase::GetDefaultCursor();
+	WgCursorPtr p = m_pCursorStyle?m_pCursorStyle:WgBase::GetDefaultCursor();
 
 	if( p && m_editMode == WG_TEXT_EDITABLE )
 	{
@@ -2746,7 +2746,7 @@ int WgText::GetCharSize( int charOfs ) const
 	return attr.size;
 }
 
-WgFont * WgText::GetCharFont( int charOfs ) const
+WgFontPtr WgText::GetCharFont( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;

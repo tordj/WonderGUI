@@ -38,17 +38,26 @@
 //class WgGfxAnim;
 class WgGlyphset;
 
+class WgCursor;
+typedef	WgSmartPtr<WgCursor,WgObjectPtr>		WgCursorPtr;
+typedef	WgWeakPtr<WgCursor,WgObjectWeakPtr>		WgCursorWeakPtr;
 
 //____ WgCursor _______________________________________________________________
 
-class WgCursor
+class WgCursor : public WgObject
 {
 	friend class WgGlyphset;
 
 public:
-	WgCursor();
-	WgCursor( WgCursor& in );
-	
+	static WgCursorPtr	Create() { return WgCursorPtr(new WgCursor()); }
+	static WgCursorPtr	Create( const WgCursorPtr& in ) { return WgCursorPtr(new WgCursor(in.GetRealPtr())); }
+
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgCursorPtr	Cast( const WgObjectPtr& pObject );
+
+
 	enum Mode
 	{
 		EOL = 0,
@@ -64,13 +73,13 @@ public:
 	};
 
 
-	bool				SetMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing = WgCoord(), int advance = 0, float size_ratio = 1.f  );
+	bool				SetMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing = WgCoord(), int advance = 0, float size_ratio = 1.f  );
 
 	void				SetScaleWidth( Mode m, bool bScaleWidth );
 
 	void				SetBearing( Mode m, WgCoord bearing );
 	void				SetAdvance( Mode m, int advance );
-	void				SetAnim( Mode m, WgGfxAnim * pAnim );
+	void				SetAnim( Mode m, const WgGfxAnimPtr& pAnim );
 
 	void				SetSizeRatio( Mode m, float ratio );
 
@@ -82,15 +91,18 @@ public:
 	WgCoord				Bearing( Mode m ) const { return m_bearing[m]; }
 	int					Advance( Mode m ) const { return m_advance[m]; };
 	int					Width( Mode m ) const { return m_pAnim[m]->Size().w; }
-	WgGfxAnim * 		Anim( Mode m ) const { return m_pAnim[m]; };
+	WgGfxAnimPtr 		Anim( Mode m ) const { return m_pAnim[m]; };
 	float				SizeRatio(Mode m ) const { return m_sizeRatio[m]; }
 	bool				ScaleWidth(Mode m ) const { return m_scaleWidth[m]; }
 	
 
 private:
+	WgCursor();
+	WgCursor( WgCursor * pIn );
+
 	enum { N_MODES = 3 };
 
-	WgGfxAnim *			m_pAnim[N_MODES];
+	WgGfxAnimPtr		m_pAnim[N_MODES];
 	WgCoord				m_bearing[N_MODES];
 	int					m_advance[N_MODES];
 	bool				m_scaleWidth[N_MODES];

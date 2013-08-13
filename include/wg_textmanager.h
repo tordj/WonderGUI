@@ -31,20 +31,31 @@
 #	include <wg_types.h>
 #endif
 
+#ifndef WG_FONT_DOT_H
+#	include <wg_font.h>
+#endif
+
+
 class WgTextNode;
 class WgText;
-class WgFont;
 
 
+class WgTextManager;
+typedef	WgSmartPtr<WgTextManager,WgObjectPtr>		WgTextManagerPtr;
+typedef	WgWeakPtr<WgTextManager,WgObjectWeakPtr>	WgTextManagerWeakPtr;
 
-class WgTextManager
+class WgTextManager : public WgObject
 {
 friend class WgText;
 friend class WgTextNode;
 
 public:
-	WgTextManager();
-	virtual ~WgTextManager();
+	static WgTextManagerPtr	Create() { return WgTextManagerPtr(new WgTextManager()); }
+
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgTextManagerPtr	Cast( const WgObjectPtr& pObject );
 
 	bool SetScaleValue( float scale );
 
@@ -81,7 +92,10 @@ public:
 	inline float *	GetAllowedSizes() const { return m_pAllowedSizes; }
 
 private:
-	float	_getSize( WgTextNode * pNode, const WgFont * m_pFont, WgFontStyle style, int size );
+	WgTextManager();
+	virtual ~WgTextManager();
+
+	float	_getSize( WgTextNode * pNode, const WgFontPtr& pFont, WgFontStyle style, int size );
 
 	void		_refreshAll();
 	virtual WgTextNode *	_newNode( WgText * pText );
@@ -117,7 +131,7 @@ public:
 
 	LINK_METHODS( WgTextNode );
 
-	inline float	GetSize( const WgFont * pFont, WgFontStyle style, int size ) { return m_pManager->_getSize( this, pFont, style, size ); }
+	inline float	GetSize( const WgFontPtr& pFont, WgFontStyle style, int size ) { return m_pManager->_getSize( this, pFont, style, size ); }
 	void	Refresh();
 
 	inline WgTextManager *	GetManager() const { return m_pManager; }

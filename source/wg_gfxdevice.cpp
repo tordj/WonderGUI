@@ -608,7 +608,7 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 	WgTextAttr	attr;
 	pText->GetBaseAttr(attr);
 
-	if( attr.pFont == 0 )
+	if( !attr.pFont )
 		return false;
 
 	pen.SetAttributes(attr);

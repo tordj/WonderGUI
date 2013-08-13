@@ -40,23 +40,35 @@
 #include <assert.h>
 
 #ifdef	WG_USE_FREETYPE
-	class WgVectorGlyphs;
+#	ifndef WG_VECTORGLYPHS_DOT_H
+#		include <wg_vectorglyphs.h>
+#	endif
 #endif
 
-class WgBitmapGlyphs;
+#ifndef WG_BITMAPGLYPHS_DOT_H
+#	include <wg_bitmapglyphs.h>
+#endif
 
+
+class WgFont;
+typedef	WgSmartPtr<WgFont,WgObjectPtr>		WgFontPtr;
+typedef	WgWeakPtr<WgFont,WgObjectWeakPtr>	WgFontWeakPtr;
 
 //____ WgFont ______________________________________________________________
 
-class WgFont
+class WgFont : public WgObject
 {
 public:
-	WgFont();
+	static WgFontPtr	Create() { return WgFontPtr(new WgFont()); }
 #ifdef WG_USE_FREETYPE
-	WgFont( WgVectorGlyphs * pNormal );
+	static WgFontPtr	Create( const WgVectorGlyphsPtr& pNormal ) { return WgFontPtr(new WgFont(pNormal)); }
 #endif
-	WgFont( WgBitmapGlyphs * pNormal, int size );
-	~WgFont();
+	static WgFontPtr	Create( const WgBitmapGlyphsPtr& pNormal, int size ) { return WgFontPtr(new WgFont(pNormal,size)); }
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgFontPtr	Cast( const WgObjectPtr& pObject );
 
 	enum GlyphProvided
 	{
@@ -69,43 +81,50 @@ public:
 
 
 
-	WgGlyphset *		GetGlyphset( WgFontStyle style, int size ) const;
+	WgGlyphsetPtr		GetGlyphset( WgFontStyle style, int size ) const;
 	WgGlyphPtr			GetGlyph( Uint32 chr, WgFontStyle style, int size ) const;
 	GlyphProvided		IsGlyphProvided( Uint32 chr, WgFontStyle style, int size ) const;
 
 #ifdef	WG_USE_FREETYPE
-	bool				SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style  );
-	bool				SetVectorGlyphs( WgVectorGlyphs * pGlyph, WgFontStyle style, int size );
-	bool				SetDefaultVectorGlyphs( WgVectorGlyphs * pGlyphs );
+	bool				SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs, WgFontStyle style  );
+	bool				SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs, WgFontStyle style, int size );
+	bool				SetDefaultVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs );
 
-	inline WgVectorGlyphs *	GetVectorGlyphs( WgFontStyle style, int size  ) const { if( size <= WG_MAX_FONTSIZE && m_aVectorGlyphs[style] != 0 ) return m_aVectorGlyphs[style][size]; else return 0; }
-	inline WgVectorGlyphs *	GetDefaultVectorGlyphs( ) const { return m_pDefaultVectorGlyphs; }
+	inline WgVectorGlyphsPtr	GetVectorGlyphs( WgFontStyle style, int size  ) const { if( size <= WG_MAX_FONTSIZE && m_aVectorGlyphs[style] != 0 ) return m_aVectorGlyphs[style][size]; else return 0; }
+	inline WgVectorGlyphsPtr	GetDefaultVectorGlyphs( ) const { return m_pDefaultVectorGlyphs; }
 
-	int					ReplaceVectorGlyphs( WgVectorGlyphs * pOld, WgVectorGlyphs * pNew );
+	int					ReplaceVectorGlyphs( const WgVectorGlyphsPtr& pOld, const WgVectorGlyphsPtr& pNew );
 #endif
 
-	int					ReplaceBitmapGlyphs( WgBitmapGlyphs * pOld, WgBitmapGlyphs * pNew );
+	int					ReplaceBitmapGlyphs( const WgBitmapGlyphsPtr& pOld, const WgBitmapGlyphsPtr& pNew );
 
 
-	bool				SetBitmapGlyphs( WgBitmapGlyphs * pGlyph, WgFontStyle style, int size );
-	bool				SetDefaultBitmapGlyphs( WgBitmapGlyphs * pGlyphs, int size = 0 );
+	bool				SetBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyph, WgFontStyle style, int size );
+	bool				SetDefaultBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyphs, int size = 0 );
 
-	WgBitmapGlyphs *		GetBitmapGlyphs( WgFontStyle style, int size );
-	inline WgBitmapGlyphs *	GetDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return 0; }
+	WgBitmapGlyphsPtr			GetBitmapGlyphs( WgFontStyle style, int size );
+	inline WgBitmapGlyphsPtr	GetDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return 0; }
 
 	const WgUnderline *	GetUnderline( int size );
 
 
 protected:
+	WgFont();
+#ifdef WG_USE_FREETYPE
+	WgFont( const WgVectorGlyphsPtr& pNormal );
+#endif
+	WgFont( const WgBitmapGlyphsPtr& pNormal, int size );
+	~WgFont();
+
 	void	_init();
 
 #ifdef	WG_USE_FREETYPE
-	WgVectorGlyphs *	m_pDefaultVectorGlyphs;
-	WgVectorGlyphs **	m_aVectorGlyphs[WG_NB_FONTSTYLES];			// Pointer at an array of WG_MAX_FONTSIZE+1 WgVectorGlyhphs.
+	WgVectorGlyphsPtr	m_pDefaultVectorGlyphs;
+	WgVectorGlyphsPtr*	m_aVectorGlyphs[WG_NB_FONTSTYLES];			// Pointer at an array of WG_MAX_FONTSIZE+1 WgVectorGlyhphs.
 #endif
 
-	WgBitmapGlyphs **	m_aBitmapGlyphs[WG_MAX_FONTSIZE+1];			// Pointer at an array of WG_NB_FONTSTYLES WgBitmapGlyphs.
-	WgBitmapGlyphs *	m_aDefaultBitmapGlyphs[WG_MAX_FONTSIZE+1];
+	WgBitmapGlyphsPtr *	m_aBitmapGlyphs[WG_MAX_FONTSIZE+1];			// Pointer at an array of WG_NB_FONTSTYLES WgBitmapGlyphs.
+	WgBitmapGlyphsPtr	m_aDefaultBitmapGlyphs[WG_MAX_FONTSIZE+1];
 
 	WgUnderline			m_tempUnderline;							// Holds the last requested underline.
 

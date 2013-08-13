@@ -67,7 +67,7 @@ public:
 
 	bool					SetAttributes( const WgTextAttr& attr );
 	bool					SetSize( int size );
-	void					SetFont( WgFont * pFont );
+	void					SetFont( const WgFontPtr& pFont );
 	void					SetStyle( WgFontStyle style );
 	void					SetColor( WgColor color );
 //	void					SetCharVisibility( int visibilityFlags );		// We need something better here...
@@ -103,11 +103,11 @@ public:
 	inline const WgRect&	GetClipRect() const { return m_clipRect; }
 	inline bool				HasClipRect() const { return m_bClip; }
 
-	inline WgFont *			GetFont() const { return m_pFont; }
+	inline WgFontPtr		GetFont() const { return m_pFont; }
 	inline int				GetSize() const { return m_size; }
 	inline WgFontStyle		GetStyle() const { return m_style; }
 	inline WgColor			GetColor() const { return m_color; }
-	inline WgGlyphset *		GetGlyphset() const { return m_pGlyphs; }
+	inline WgGlyphsetPtr	GetGlyphset() const { return m_pGlyphs; }
 
 
 	inline int				GetLineSpacing() const { return m_pGlyphs->GetLineSpacing(m_size); }
@@ -135,12 +135,12 @@ private:
 
 	//
 
-	WgGlyphset *m_pGlyphs;			// Pointer at our glyphs.
+	WgGlyphsetPtr	m_pGlyphs;			// Pointer at our glyphs.
 
 	WgGlyphPtr		m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
 	WgGlyphPtr		m_pGlyph;		// Current glyph.
 
-	WgFont *		m_pFont;		// Pointer back to the font.
+	WgFontPtr		m_pFont;		// Pointer back to the font.
 	int				m_wantedSize;	// Size we requested.
 	int				m_size;			// Fontsize we got a glyphset for, which might be smaller than what we requested.
 	WgFontStyle		m_style;		// Style of glyphset we requested.

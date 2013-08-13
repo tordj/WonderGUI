@@ -21,6 +21,7 @@
 =========================================================================*/
 #include <wg_cursor.h>
 
+const char WgCursor::CLASSNAME[] = {"Cursor"};
 
 //____ WgCursor() _____________________________________________________________
 
@@ -36,19 +37,47 @@ WgCursor::WgCursor()
 	m_blitMode = NORMAL;
 }
 
-WgCursor::WgCursor(	WgCursor& in )
+WgCursor::WgCursor(	WgCursor * pIn )
 {
 	for( int i = 0 ; i < N_MODES ; i++ )
 	{
-		m_pAnim[i]		= in.m_pAnim[i];
-		m_bearing[i]	= in.m_bearing[i];
-		m_advance[i]	= in.m_advance[i];
-		m_sizeRatio[i]	= in.m_sizeRatio[i];
-		m_scaleWidth[i] = in.m_scaleWidth[i];
+		m_pAnim[i]		= pIn->m_pAnim[i];
+		m_bearing[i]	= pIn->m_bearing[i];
+		m_advance[i]	= pIn->m_advance[i];
+		m_sizeRatio[i]	= pIn->m_sizeRatio[i];
+		m_scaleWidth[i] = pIn->m_scaleWidth[i];
 	}
 
-	m_blitMode = in.m_blitMode;
+	m_blitMode = pIn->m_blitMode;
 }
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgCursor::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgObject::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgCursor::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgCursorPtr WgCursor::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgCursorPtr( static_cast<WgCursor*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetBlitMode() __________________________________________________________
 
@@ -71,7 +100,7 @@ void WgCursor::SetSizeRatio( Mode m, float ratio )
 
 //____ SetMode() ______________________________________________________________
 
-bool WgCursor::SetMode( Mode m, WgGfxAnim * pAnim, WgCoord bearing, int advance, float size_ratio )
+bool WgCursor::SetMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing, int advance, float size_ratio )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return false;
@@ -118,7 +147,7 @@ void WgCursor::SetScaleWidth( Mode m, bool bScaleWidth )
 
 //____ SetAnim() ______________________________________________________________
 
-void WgCursor::SetAnim( Mode m, WgGfxAnim * pAnim )
+void WgCursor::SetAnim( Mode m, const WgGfxAnimPtr& pAnim )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;

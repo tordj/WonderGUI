@@ -22,6 +22,7 @@
 
 #include <wg_anim.h>
 
+const char WgAnim::CLASSNAME[] = {"Anim"};
 
 //____ WgAnim() _______________________________________________________________
 
@@ -37,6 +38,34 @@ WgAnim::WgAnim()
 WgAnim::~WgAnim()
 {
 }
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgAnim::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgObject::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgAnim::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgAnimPtr WgAnim::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgAnimPtr( static_cast<WgAnim*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ SetPlayMode() __________________________________________________________
 

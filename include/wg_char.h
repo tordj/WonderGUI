@@ -195,7 +195,7 @@ public:
 							///
 							/// @return Pointer to the font specified for this character or NULL if none.
 
-	inline WgFont *			Font() const { return GetPropRef().Font(); }
+	inline WgFontPtr		Font() const { return GetPropRef().Font(); }
 
 
 //	inline WgGlyphset *		Glyphset( const WgTextpropPtr& pDefProp, WgState state = WG_STATE_NORMAL ) const { return WgTextTool::GetCombGlyphset(pDefProp.GetHandle(), properties, state); }

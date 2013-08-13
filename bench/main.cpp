@@ -80,30 +80,30 @@ int main ( int argc, char** argv )
 
 	int size = fileSize( ttfname );
 	char * pFontFile = (char*) loadFile( ttfname );
-	WgVectorGlyphs * pGlyphs = new WgVectorGlyphs( pFontFile , size, 0 );
+	WgVectorGlyphsPtr pGlyphs = WgVectorGlyphs::Create( pFontFile , size, 0 );
 
-	WgFont * pFont = new WgFont();
+	WgFontPtr pFont = WgFont::Create();
 	pFont->SetDefaultVectorGlyphs( pGlyphs );
 */
 	// Load bitmap font
 
-	WgFont * pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", WgSoftSurfaceFactory::Create() );
+	WgFontPtr pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", WgSoftSurfaceFactory::Create() );
 
 	// Load and setup cursor
 
 	WgSurfacePtr pCursorImg = sdl_wglib::LoadSurface("../resources/cursors.png", WgSoftSurfaceFactory::Create() );
 
-	WgGfxAnim * pCursorEOL = new WgGfxAnim();
+	WgGfxAnimPtr pCursorEOL = WgGfxAnim::Create();
 	pCursorEOL->SetSize( WgSize(8,8) );
 	pCursorEOL->AddFrames(pCursorImg, WgCoord(0,0), WgSize(2,1), 200 );
 	pCursorEOL->SetPlayMode( WG_FORWARD_LOOPING );
 
-	WgGfxAnim * pCursorINS = new WgGfxAnim();
+	WgGfxAnimPtr pCursorINS = WgGfxAnim::Create();
 	pCursorINS->SetSize( WgSize(8,8) );
 	pCursorINS->AddFrames( pCursorImg, WgCoord(0,8), WgSize(2,1), 200 );
 	pCursorINS->SetPlayMode( WG_FORWARD_LOOPING );
 
-	WgCursor * pCursor = new WgCursor();
+	WgCursorPtr pCursor = WgCursor::Create();
 	pCursor->SetAnim(WgCursor::EOL, pCursorEOL);
 	pCursor->SetAnim(WgCursor::INS, pCursorINS);
 	pCursor->SetAnim(WgCursor::OVR, pCursorEOL);
@@ -241,7 +241,7 @@ void printWidgetSizes()
 
 WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 {
-	WgResDB * pDB = sdl_wglib::LoadStdWidgets( "../resources/blocks.png", WgSoftSurfaceFactory::Create() );
+	WgResDBPtr pDB = sdl_wglib::LoadStdWidgets( "../resources/blocks.png", WgSoftSurfaceFactory::Create() );
 	if( !pDB )
 		return 0;
 

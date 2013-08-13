@@ -84,8 +84,8 @@ public:
 	WgPackHook *	FirstHook() const { return static_cast<WgPackHook*>(_firstHook()); }
 	WgPackHook *	LastHook() const { return static_cast<WgPackHook*>(_lastHook()); }
 
-	void			SetSizeBroker( WgSizeBroker* pBroker );
-	WgSizeBroker *	SizeBroker() const { return m_pSizeBroker; }
+	void			SetSizeBroker( const WgSizeBrokerPtr& pBroker );
+	WgSizeBrokerPtr	SizeBroker() const { return m_pSizeBroker; }
 
 	WgSize			PreferredSize() const;
 	
@@ -127,7 +127,7 @@ protected:
 	int				_populateSizeBrokerArray( WgSizeBrokerItem * pArray );
 
 	bool			m_bHorizontal;
-	WgSizeBroker * 	m_pSizeBroker;
+	WgSizeBrokerPtr	m_pSizeBroker;
 	WgSize			m_preferredSize;
 
 };

@@ -19,25 +19,36 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_MULTIRULE_SIZEBROKER_DOT_H
-#define	WG_MULTIRULE_SIZEBROKER_DOT_H
+#ifndef	WG_SCALEPREFERRED_SIZEBROKER_DOT_H
+#define	WG_SCALEPREFERRED_SIZEBROKER_DOT_H
 
-#ifndef	WG_SIZEBROKER_DOT_H
+#ifndef WG_SIZEBROKER_DOT_H
 #	include <wg_sizebroker.h>
 #endif
 
-class WgMultiRuleSizeBroker : public WgSizeBroker
+class WgScalePreferredSizeBroker;
+typedef	WgSmartPtr<WgScalePreferredSizeBroker,WgSizeBrokerPtr>		WgScalePreferredSizeBrokerPtr;
+typedef	WgWeakPtr<WgScalePreferredSizeBroker,WgSizeBrokerWeakPtr>	WgScalePreferredSizeBrokerWeakPtr;
+
+class WgScalePreferredSizeBroker : public WgSizeBroker
 {
 public:
-	WgMultiRuleSizeBroker();
-	virtual ~WgMultiRuleSizeBroker();
-    
+	static WgScalePreferredSizeBrokerPtr	Create() { return WgScalePreferredSizeBrokerPtr(new WgScalePreferredSizeBroker()); }
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgScalePreferredSizeBrokerPtr	Cast( const WgObjectPtr& pObject );
+
 	int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
 	int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
 	bool MayAlterPreferredLengths() const;
-
+    
 protected:
+	WgScalePreferredSizeBroker() {};
+    virtual ~WgScalePreferredSizeBroker() {};
+    
 };
 
 
-#endif //WG_MULTIRULE_SIZEBROKER_DOT_H
+#endif //WG_SCALEPREFERRED_SIZEBROKER_DOT_H

@@ -31,7 +31,10 @@
 #	include <wg_color.h>
 #endif
 
-class WgFont;
+#ifndef WG_FONT_DOT_H
+#	include <wg_font.h>
+#endif
+
 
 //____ Wg_Interface_TextHolder ________________________________________________
 
@@ -52,7 +55,7 @@ public:
 	inline WgColor			GetTextColor(WgState state) const { return m_pText->getColor(state); }
 	inline WgFontStyle		GetTextStyle(WgState state) const { return m_pText->getStyle(state); }
 	inline int				GetBreakLevel() const { return m_pText->getBreakLevel(); }
-	inline WgFont *			GetFont() const { return m_pText->getFont(); }
+	inline WgFontPtr		GetFont() const { return m_pText->getFont(); }
 	inline WgTextLinkPtr	GetLink() const { return m_pText->getLink(); }
 
 // -------------
@@ -67,7 +70,7 @@ public:
 
 	inline void			SetBreakLevel( int level )							{ m_pText->setBreakLevel(level); _textModified(); }
 
-	inline void			SetFont( WgFont * pFont )							{ m_pText->setFont(pFont); _textModified(); }
+	inline void			SetFont( const WgFontPtr& pFont )					{ m_pText->setFont(pFont); _textModified(); }
 	inline void			SetLink( WgTextLinkPtr pLink )						{ m_pText->setLink(pLink); _textModified(); }
 
 // -------------
@@ -99,8 +102,8 @@ public:
 
 //	-----------
 
-	inline void			SetCursor( WgCursor * pCursor ) { m_pText->setCursorStyle(pCursor); _textModified(); }
-	inline WgCursor *	GetCursor() const { return m_pText->getCursorStyle(); }
+	inline void			SetCursor( const WgCursorPtr& pCursor ) { m_pText->setCursorStyle(pCursor); _textModified(); }
+	inline WgCursorPtr	GetCursor() const { return m_pText->getCursorStyle(); }
 
 //	-----------
 

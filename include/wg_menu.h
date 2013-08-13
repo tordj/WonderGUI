@@ -93,7 +93,7 @@ public:
 	bool			SetRadioButtonSkin( const WgSkinPtr& pSkin );
 	WgSkinPtr 		RadioButtonSkin() const { return m_pRadioButtonSkin; }
 
-	bool			SetArrowSource( WgGfxAnim * pAnim );
+	bool			SetArrowSource( const WgGfxAnimPtr& pAnim );
 
 	bool			SetTextProperties( const WgTextpropPtr& pEntryProperties, const WgTextpropPtr& pKeyAccelProperties );
 	WgTextpropPtr	GetTextEntryProperties() const { return m_pEntryProp; }
@@ -297,7 +297,7 @@ private:
 
 	// Members defining the arrow for submenus
 
-	WgGfxAnim *				m_pArrowAnim;
+	WgGfxAnimPtr			m_pArrowAnim;
 	Uint32					m_arrowAnimCount;	// Animation position in milliseconds.
 
 	//

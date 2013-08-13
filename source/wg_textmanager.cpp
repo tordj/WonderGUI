@@ -25,6 +25,8 @@
 #include <wg_text.h>
 #include <wg_widget.h>
 
+const char WgTextManager::CLASSNAME[] = {"TextManager"};
+
 
 //____ Constructor ____________________________________________________________
 
@@ -57,6 +59,34 @@ WgTextManager::~WgTextManager()
 	if( m_pAllowedSizes )
 		delete [] m_pAllowedSizes;
 }
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgTextManager::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgObject::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgTextManager::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgTextManagerPtr WgTextManager::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgTextManagerPtr( static_cast<WgTextManager*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ _newNode() ______________________________________________________________
 
@@ -212,7 +242,7 @@ void WgTextManager::SetSizeRounding( Rounding rounding )
 }
 //____ _getSize() __________________________________________________
 
-float WgTextManager::_getSize( WgTextNode * pNode, const WgFont * m_pFont, WgFontStyle style, int size )
+float WgTextManager::_getSize( WgTextNode * pNode, const WgFontPtr& pFont, WgFontStyle style, int size )
 {
 	float scale = m_scale;
 

@@ -510,7 +510,7 @@ void WgLineEditor::_adjustViewOfs()
 
 	if( m_state.IsFocused() && m_pText->getFont() )
 	{
-		WgCursor * pCursor = WgTextTool::GetCursor( m_pText );
+		WgCursorPtr pCursor = WgTextTool::GetCursor( m_pText );
 		if( !pCursor )
 			return;
 

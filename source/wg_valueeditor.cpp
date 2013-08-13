@@ -51,6 +51,9 @@ WgValueEditor::WgValueEditor()
 	m_text.SetWrap(false);
 	m_text.SetAutoEllipsis(false);
 	m_text.SetEditMode( WG_TEXT_EDITABLE );
+
+	m_pFormat = WgValueFormat::Create();
+	m_pUseFormat = WgValueFormat::Create();
 }
 
 //____ ~WgValueEditor() ___________________________________________________________
@@ -124,10 +127,10 @@ WgTextpropPtr WgValueEditor::GetTextprop( ) const
 
 //____ SetFormat() ____________________________________________________________
 
-void WgValueEditor::SetFormat( const WgValueFormat& format )
+void WgValueEditor::SetFormat( const WgValueFormatPtr& pFormat )
 {
-	m_format		= format;
-	m_useFormat		= format;
+	m_pFormat		= pFormat;
+	m_pUseFormat	= pFormat;
 
 	_regenText();
 	_requestRender();
@@ -180,9 +183,9 @@ void WgValueEditor::Clear()
 
 	// Make the inputfield empty
 
-	m_useFormat.integers = 0;
-	m_useFormat.bForcePeriod = false;
-	m_useFormat.decimals = 0;
+	m_pUseFormat->setIntegers(0);
+	m_pUseFormat->setForcePeriod(false);
+	m_pUseFormat->setDecimals(0);
 }
 
 //____ SetMaxInputChars() _____________________________________________________
@@ -226,13 +229,13 @@ void WgValueEditor::_valueModified()
 {
 	_queueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
 
-	m_useFormat	= m_format;
+	m_pUseFormat->setFormat( m_pFormat );
 
-	if( 0 != m_format.noDecimalThreshold && (int)m_value >= m_format.noDecimalThreshold )
+	if( 0 != m_pFormat->getNoDecimalThreshold() && (int)m_value >= m_pFormat->getNoDecimalThreshold() )
 	{
 		// value is >= noDecimalThreshold so prevent period and decimals
-		m_useFormat.bForcePeriod = false;
-		m_useFormat.decimals = 0;
+		m_pUseFormat->setForceDecimals(false);
+		m_pUseFormat->setDecimals(0);
 	}
 	_regenText();
 	_requestRender();
@@ -250,7 +253,7 @@ void WgValueEditor::_rangeModified()
 
 void WgValueEditor::_onRefresh( void )
 {
-	if( m_text.getFont() != 0 )
+	if( m_text.getFont() )
 	{
 		_regenText();
 		_requestRender();
@@ -293,8 +296,8 @@ void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 void WgValueEditor::_regenText()
 {
-		m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
-		m_text.goEOL();
+	m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.GetRealPtr() );
+	m_text.goEOL();
 }
 
 //____ _parseValueFromInput() __________________________________________________
@@ -320,14 +323,14 @@ bool WgValueEditor::_parseValueFromInput( int64_t * wpResult )
 			if( glyph == '-' )
 				continue;
 
-			if( glyph == m_format.period )
+			if( glyph == m_pFormat->getPeriod() )
 			{
 				nDecimals = nbChars-i-1;
-				if( nDecimals > m_format.decimals )
+				if( nDecimals > m_pFormat->getDecimals() )
 				{
 					// Only parse as many decimals as we need, avoid unnecessary overflows.
-					nbChars -= nDecimals - m_format.decimals;
-					nDecimals = m_format.decimals;
+					nbChars -= nDecimals - m_pFormat->getDecimals();
+					nDecimals = m_pFormat->getDecimals();
 					bModified = true;
 				}
 
@@ -357,9 +360,9 @@ bool WgValueEditor::_parseValueFromInput( int64_t * wpResult )
 
 		}
 
-		if( nDecimals < m_format.decimals )
+		if( nDecimals < m_pFormat->getDecimals() )
 		{
-			int64_t multiplier = (int64_t) pow(10.0,m_format.decimals-nDecimals);
+			int64_t multiplier = (int64_t) pow(10.0,m_pFormat->getDecimals()-nDecimals);
 
 			if( value <= LLONG_MAX/multiplier )
 				value *= multiplier;
@@ -508,7 +511,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 					_updateScrollbar( FractionalValue(), 0.f );
 					_queueEvent( new WgEvent::EditvalueModify(this, m_value, FractionalValue()) );
 
-					m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
+					m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.GetRealPtr() );
 					m_text.goEOL();
 					_limitCursor();
 				}
@@ -567,7 +570,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 				}
 				else
 				{
-					if( m_text.column() > m_format.getPrefix().Length() )
+					if( m_text.column() > m_pFormat->getPrefix().Length() )
 					{
 						m_text.delPrevChar();
 						bTextChanged = true;
@@ -598,7 +601,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 				}
 				else
 				{
-					if( m_text.column() < m_text.nbChars() - m_format.getSuffix().Length() )
+					if( m_text.column() < m_text.nbChars() - m_pFormat->getSuffix().Length() )
 					{
 						m_text.delNextChar();
 						bTextChanged = true;
@@ -672,9 +675,9 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 		WgCursorInstance * pCursor = m_text.GetCursor();
 		if( pCursor )
 		{
-			if( character == m_format.period )
+			if( character == m_pFormat->getPeriod() )
 			{
-				if( m_format.decimals > 0 && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
+				if( m_pFormat->getDecimals() > 0 && m_text.getBuffer()->FindFirst( m_pFormat->getPeriod() ) == -1 &&
 					(pCursor->column() != 0 || (*m_text.getBuffer())[0].Glyph() != '-' ) )
 				{
 					if(m_text.hasSelection())
@@ -689,7 +692,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 							pCursor->goRight();
 						}
 
-						pCursor->putChar( m_format.period );
+						pCursor->putChar( m_pFormat->getPeriod() );
 					}
 					bTextChanged = true;
 				}
@@ -700,7 +703,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 
 			if( character == '-' )
 			{
-				if( pCursor->column() == m_format.getPrefix().Length() && m_text.getBuffer()->FindFirst( m_format.period ) == -1 &&
+				if( pCursor->column() == m_pFormat->getPrefix().Length() && m_text.getBuffer()->FindFirst( m_pFormat->getPeriod() ) == -1 &&
 					m_rangeMin < 0 )
 				{
 					if(m_text.hasSelection())
@@ -772,8 +775,8 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 
 void WgValueEditor::_selectAll()
 {
-	int min = m_format.getPrefix().Length();
-	int max = m_text.nbChars() - m_format.getSuffix().Length();
+	int min = m_pFormat->getPrefix().Length();
+	int max = m_text.nbChars() - m_pFormat->getSuffix().Length();
 
 	m_text.selectRange( WgRange( min, max-min ) );
 }
@@ -782,8 +785,8 @@ void WgValueEditor::_selectAll()
 
 void WgValueEditor::_limitCursor()
 {
-	int min = m_format.getPrefix().Length();
-	int max = m_text.nbChars() - m_format.getSuffix().Length();
+	int min = m_pFormat->getPrefix().Length();
+	int max = m_text.nbChars() - m_pFormat->getSuffix().Length();
 
 	WgCursorInstance * pCursor = m_text.GetCursor();
 
@@ -829,7 +832,8 @@ void WgValueEditor::_onCloneContent( const WgWidget * _pOrg )
 	Wg_Interface_ValueHolder::_onCloneContent( pOrg );
 
 	m_maxInputChars = pOrg->m_maxInputChars;
-	m_format		= pOrg->m_format;
+	m_pFormat		= pOrg->m_pFormat;
+	m_pUseFormat->setFormat(pOrg->m_pFormat);
 	m_text.setText(&pOrg->m_text);
 	m_text.setFont(pOrg->m_text.getFont());
 	m_text.setAlignment(pOrg->m_text.alignment());
@@ -853,15 +857,15 @@ void WgValueEditor::_onStateChanged( WgState oldState, WgState newState )
 		_startReceiveTicks();
 		m_text.showCursor();
 		m_text.goEOL();
-		m_useFormat = m_format;
+		m_pUseFormat = m_pFormat;
 
-		if( m_format.decimals != 0 )
-			m_useFormat.bForcePeriod = true;	// Force period if decimals are involved.
+		if( m_pFormat->getDecimals() != 0 )
+			m_pUseFormat->setForcePeriod(true);	// Force period if decimals are involved.
 
 		if( m_value < 0.f )
-			m_useFormat.bZeroIsNegative = true;	// Force minus sign if value is negative.
+			m_pUseFormat->setZeroIsNegative(true);	// Force minus sign if value is negative.
 
-		m_text.setScaledValue( m_value, m_format.scale, m_useFormat );
+		m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat );
 
 		_requestRender();
 	}
@@ -874,7 +878,7 @@ void WgValueEditor::_onStateChanged( WgState oldState, WgState newState )
 		_queueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
 
 		m_text.hideCursor();
-		m_useFormat = m_format;
+		m_pUseFormat->setFormat(m_pFormat);
 		_regenText();
 
 		_requestRender();

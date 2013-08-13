@@ -31,6 +31,10 @@
 #	include <wg_chain.h>
 #endif
 
+#ifndef WG_SMARTPTR_DOT_H
+#	include <wg_smartptr.h>
+#endif
+
 class		WgKeyFrame;
 struct	WgAnimPlayPos;
 
@@ -51,16 +55,21 @@ protected:
 	LINK_METHODS( WgKeyFrame );
 };
 
+class WgAnim;
+typedef	WgSmartPtr<WgAnim,WgObjectPtr>		WgAnimPtr;
+typedef	WgWeakPtr<WgAnim,WgObjectWeakPtr>	WgAnimWeakPtr;
 
 //____ Class WgAnim ______________________________________________________
 
-class WgAnim
+class WgAnim : public WgObject
 {
 	friend class WgKeyFrame;
 
 public:
-	WgAnim();
-	virtual ~WgAnim();
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgAnimPtr	Cast( const WgObjectPtr& pObject );
 
 	bool				SetPlayMode( WgAnimMode mode );
 	bool				SetTimeScaler( float scale );
@@ -76,6 +85,8 @@ public:
 	int					TimeToOfs( int64_t ticks );			/// Convert play-time to offset in animation by scaling with timeScaler and unwinding loops.
 
 protected:
+	WgAnim();
+	virtual ~WgAnim();
 
 	// Meant to be overloaded with methods by the same name that builds up their 
 	// WgKeyFrame-derived class.

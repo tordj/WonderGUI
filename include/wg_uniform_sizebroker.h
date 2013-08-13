@@ -19,43 +19,40 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_SIZEBROKER_DOT_H
-#define	WG_SIZEBROKER_DOT_H
+#ifndef	WG_UNIFORM_SIZEBROKER_DOT_H
+#define	WG_UNIFORM_SIZEBROKER_DOT_H
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
+#ifndef WG_SIZEBROKER_DOT_H
+#	include <wg_sizebroker.h>
 #endif
 
-class WgSizeBrokerItem
-{
-public:	
-	int		preferred;		// Preferred length for this item (input)
-	int		min;			// Min length for this item (input)
-	int		max;			// Max length for this item (input)
-	float	weight;			// Weight for this item (input)
-	int		output;			// Length or preferred length for this item (output)
-};
 
+class WgUniformSizeBroker;
+typedef	WgSmartPtr<WgUniformSizeBroker,WgSizeBrokerPtr>		WgUniformSizeBrokerPtr;
+typedef	WgWeakPtr<WgUniformSizeBroker,WgSizeBrokerWeakPtr>	WgUniformSizeBrokerWeakPtr;
 
-class WgSizeBroker;
-typedef	WgSmartPtr<WgSizeBroker,WgObjectPtr>		WgSizeBrokerPtr;
-typedef	WgWeakPtr<WgSizeBroker,WgObjectWeakPtr>	WgSizeBrokerWeakPtr;
-
-class WgSizeBroker : public WgObject
+class WgUniformSizeBroker : public WgSizeBroker
 {
 public:
+	static WgUniformSizeBrokerPtr	Create() { return WgUniformSizeBrokerPtr(new WgUniformSizeBroker()); }
+
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
-	static WgSizeBrokerPtr	Cast( const WgObjectPtr& pObject );
+	static WgUniformSizeBrokerPtr	Cast( const WgObjectPtr& pObject );
     
-	virtual int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const = 0;
-	virtual int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const = 0;
-	virtual bool MayAlterPreferredLengths() const = 0;
+	int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
+	int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
+	bool MayAlterPreferredLengths() const;
 
 protected:
-	WgSizeBroker();
-	virtual ~WgSizeBroker();
+    WgUniformSizeBroker() {};
+    virtual ~WgUniformSizeBroker() {};
+
+	int     _findLongestUnified( WgSizeBrokerItem * pItems, int nItems ) const;
+    void    _setOutputs( WgSizeBrokerItem * pItems, int nItems, int value ) const;
 };
 
-#endif //WG_SIZEBROKER_DOT_H
+
+
+#endif //WG_UNIFORM_SIZEBROKER_DOT_H

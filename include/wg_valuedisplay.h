@@ -63,11 +63,10 @@ public:
 	//____ Methods __________________________________________
 
 	void	SetTextProperties( const WgTextpropPtr& _pProps );
-	void	SetFormat( const WgValueFormat& format );
+	void	SetFormat( const WgValueFormatPtr& pFormat );
 
 	WgTextpropPtr	TextProperties() { return m_text.getProperties(); }
-	WgValueFormat	Format() { return m_format; }
-	virtual const WgValueFormat&	GetFormat() const { return m_format; }
+	WgValueFormatPtr	Format() const { return m_pFormat; }
 
 	WgSize	PreferredSize() const;
 
@@ -91,8 +90,8 @@ private:
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
 
-	WgValueFormat	m_format;
-	WgText			m_text;
+	WgValueFormatPtr	m_pFormat;
+	WgText				m_text;
 };
 
 

@@ -384,7 +384,7 @@ Uint8 WgTextprop::_calculateChecksum() const
 	chk.Add8( m_visibilityFlags );
 	chk.Add8( m_breakLevel );
 	chk.Add( &m_pLink, sizeof(WgTextLinkPtr) );
-	chk.Add( &m_pFont, sizeof(WgFont *) );
+	chk.Add( &m_pFont, sizeof(WgFontPtr) );
 
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{

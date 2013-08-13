@@ -186,8 +186,8 @@ public:
 	inline void			SetProperties( const WgTextpropPtr& pProp );
 	void				SetProperties( const WgTextpropPtr& pProp, int ofs, int len);
 
-	inline void			SetFont( WgFont * pFont );
-	void				SetFont( WgFont * pFont, int ofs, int len );
+	inline void			SetFont( const WgFontPtr& pFont );
+	void				SetFont( const WgFontPtr& pFont, int ofs, int len );
 
 	inline void			SetColor( const WgColor color );
 	void				SetColor( const WgColor color, int ofs, int len );
@@ -503,7 +503,7 @@ void WgCharBuffer::SetProperties( const WgTextpropPtr& pProp )
 ///
 /// Setting pFont to null is identical to calling ClearFont().
 
-void WgCharBuffer::SetFont( WgFont * pFont )
+void WgCharBuffer::SetFont( const WgFontPtr& pFont )
 {
 	SetFont( pFont, 0, INT_MAX );
 }

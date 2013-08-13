@@ -83,7 +83,7 @@ WgRefreshButtonPtr WgRefreshButton::Cast( const WgObjectPtr& pObject )
 
 
 //_____________________________________________________________________________
-void WgRefreshButton::SetRefreshAnimation( WgGfxAnim * pAnimation )
+void WgRefreshButton::SetRefreshAnimation( const WgGfxAnimPtr& pAnimation )
 {
 	m_pRefreshAnim		= pAnimation;
 

@@ -22,7 +22,6 @@
 #ifndef WG_OBJECT_DOT_H
 #define WG_OBJECT_DOT_H
 
-class WgMemPool;
 class WgObject;
 
 class WgWeakPtrHub
@@ -39,10 +38,15 @@ class WgObject
 	friend class WgObjectWeakPtr;
 	template<class T, class P> friend class WgSmartPtr;
 	template<class T, class P> friend class WgWeakPtr;
+
+	friend class WgInterfacePtr;
+	friend class WgInterfaceWeakPtr;
+
 public:
 	virtual bool		IsInstanceOf( const char * pClassName ) const;
 	virtual const char *ClassName( void ) const;
 	static const char	CLASSNAME[];
+	static WgObjectPtr	Cast( const WgObjectPtr& pObject );				// Provided just for completeness sake.
 
 protected:
 	WgObject() : m_refCount(0), m_pWeakPtrHub(0) {}
@@ -53,24 +57,6 @@ protected:
 	int				m_refCount;
 	WgWeakPtrHub *	m_pWeakPtrHub;
 };
-
-
-class WgPoolObject : public WgObject
-{
-public:
-	virtual bool		IsInstanceOf( const char * pClassName ) const;
-	virtual const char *ClassName( void ) const;
-	static const char	CLASSNAME[];
-
-protected:
-	WgPoolObject(WgMemPool * pPool) : m_pMemPool(pPool) {}
-
-	void	_destroy();
-
-	WgMemPool *		m_pMemPool;
-};
-
-
 
 
 #endif //WG_OBJECT_DOT_H

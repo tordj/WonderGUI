@@ -24,6 +24,7 @@
 #include <wg_gfxanim.h>
 #include <wg_surface.h>
 
+const char WgGfxAnim::CLASSNAME[] = {"GfxAnim"};
 
 //____ Constructor ____________________________________________________________
 
@@ -35,6 +36,33 @@ WgGfxAnim::WgGfxAnim()
 WgGfxAnim::WgGfxAnim( WgSize size )
 {
 	m_size = size;
+}
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgGfxAnim::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgAnim::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgGfxAnim::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgGfxAnimPtr WgGfxAnim::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgGfxAnimPtr( static_cast<WgGfxAnim*>(pObject.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ SetSize() ______________________________________________________________

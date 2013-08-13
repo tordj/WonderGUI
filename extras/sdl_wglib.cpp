@@ -133,7 +133,7 @@ namespace sdl_wglib
 
 	//____ LoadStdWidgets() _____________________________________________________
 
-	WgResDB * LoadStdWidgets( const char * pImagePath, const WgSurfaceFactoryPtr& pFactory )
+	WgResDBPtr LoadStdWidgets( const char * pImagePath, const WgSurfaceFactoryPtr& pFactory )
 	{
 		const int HSLIDER_BTN_OFS 		= 1;
 		const int VSLIDER_BTN_OFS 		= HSLIDER_BTN_OFS + 19;
@@ -211,7 +211,7 @@ namespace sdl_wglib
 		WgBlockSkinPtr pPlateSkin = WgBlockSkin::CreateClickable( pSurface, WgSize(8,8), WgCoord(1,PLATE_OFS), WgSize(10,0), WgBorders(3) );
 		pPlateSkin->OptimizeRenderMethods();
 
-		WgResDB * pDB = new WgResDB();
+		WgResDBPtr pDB = WgResDB::Create();
 
 		// Create standard button
 
@@ -310,7 +310,7 @@ namespace sdl_wglib
 
 	//____ LoadBitmapFont() ____________________________________________________
 
-	WgFont * LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactoryPtr& factory )
+	WgFontPtr LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactoryPtr& factory )
 	{
 		//TODO: This leaks memory until we have ref-counted
 
@@ -318,9 +318,9 @@ namespace sdl_wglib
 
 		char * pFontSpec = (char*) LoadFile( pSpecPath );
 
-		WgBitmapGlyphs * pGlyphs = new WgBitmapGlyphs( pFontImg, pFontSpec );
+		WgBitmapGlyphsPtr pGlyphs = WgBitmapGlyphs::Create( pFontImg, pFontSpec );
 
-		WgFont * pFont = new WgFont();
+		WgFontPtr pFont = WgFont::Create();
 		pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 0 );
 
 		free( pFontSpec );

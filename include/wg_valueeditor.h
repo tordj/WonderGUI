@@ -71,8 +71,8 @@ public:
 	WgTextpropPtr GetTextprop( ) const;
 	void	SetTextManager(WgTextManager * _pManager);
 	WgTextManager * GetTextManager() const;
-	void	SetFormat( const WgValueFormat& format );
-	const WgValueFormat& GetFormat() const { return m_format; }
+	void	SetFormat( const WgValueFormatPtr& pFormat );
+	WgValueFormatPtr Format() const { return m_pFormat; }
 	void	Clear();									// Sets value to 0 and clears input field.
 
 	bool	SelectAllText();
@@ -108,8 +108,8 @@ private:
 	void	_regenText();
 
 	bool				m_bRegenText;
-	WgValueFormat		m_format;			///< Value format specified by user
-	WgValueFormat		m_useFormat;		///< Value format currently used (affected by user typing in values).
+	WgValueFormatPtr	m_pFormat;			///< Value format specified by user
+	WgValueFormatPtr	m_pUseFormat;		///< Value format currently used (affected by user typing in values).
 	WgText				m_text;
 	int					m_buttonDownOfs;
 	bool				m_bSelectAllOnRelease;
