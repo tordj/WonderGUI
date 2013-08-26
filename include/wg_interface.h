@@ -22,6 +22,7 @@
 #ifndef WG_INTERFACE_DOT_H
 #define WG_INTERFACE_DOT_H
 
+class WgInterfacePtr;
 
 class WgInterface
 {

@@ -147,7 +147,7 @@ public:
 	typedef ResWrapper<WgTextManagerPtr>TextManagerRes;
 	typedef ResWrapper<WgWidgetPtr>		WidgetRes;
 	typedef ResWrapper<void*>			DataSetRes;
-	
+
 
 	//----
 
@@ -290,18 +290,6 @@ public:
 	inline ConnectRes *		GetFirstResConnect() const { return m_connects.First(); }
 	inline WidgetRes *		GetFirstResWidget() const { return m_widgets.First(); }
 	inline DataSetRes *		GetFirstResDataSet() const { return m_dataSets.First(); }
-
-
-	template<typename T> T* GetCastWidget(const std::string& id) const
-	{
-		WgWidgetPtr pWidget = GetWidget(id);
-		if(pWidget)
-		{
-			if(T::GetClass() == pWidget->Type())
-				return static_cast<T>(pWidget);
-		}
-		return 0;
-	}
 
 
 private:

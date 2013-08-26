@@ -113,7 +113,7 @@ public:
 
 //____ WgObjectWeakPtr ______________________________________________________________
 
-class WgObjectWeakPtr 
+class WgObjectWeakPtr
 {
 public:
 	WgObjectWeakPtr() { m_pHub = 0; }
@@ -182,8 +182,8 @@ public:
 
 	inline T * GetRealPtr() const
 	{
-		if( m_pHub && m_pHub->pObj )
-			return static_cast<T*>(m_pHub->pObj);
+		if( this->m_pHub && this->m_pHub->pObj )
+			return static_cast<T*>(this->m_pHub->pObj);
 		else
 			return reinterpret_cast<T*>(0);
 	}
@@ -292,7 +292,7 @@ public:
 
 //____ WgInterfaceWeakPtr ______________________________________________________________
 
-class WgInterfaceWeakPtr 
+class WgInterfaceWeakPtr
 {
 public:
 	WgInterfaceWeakPtr() { m_pHub = 0; m_pInterface = 0; }
@@ -359,8 +359,8 @@ public:
 
 	inline T * GetRealPtr() const
 	{
-		if( m_pHub && m_pHub->pObj )
-			return static_cast<T*>(m_pInterface);
+		if( this->m_pHub && this->m_pHub->pObj )
+			return static_cast<T*>(this->m_pInterface);
 		else
 			return reinterpret_cast<T*>(0);
 	}

@@ -49,7 +49,7 @@ WgResDB::~WgResDB()
 //____ IsInstanceOf() _________________________________________________________
 
 bool WgResDB::IsInstanceOf( const char * pClassName ) const
-{ 
+{
 	if( pClassName==CLASSNAME )
 		return true;
 
@@ -59,8 +59,8 @@ bool WgResDB::IsInstanceOf( const char * pClassName ) const
 //____ ClassName() ____________________________________________________________
 
 const char * WgResDB::ClassName( void ) const
-{ 
-	return CLASSNAME; 
+{
+	return CLASSNAME;
 }
 
 //____ Cast() _________________________________________________________________
@@ -95,7 +95,7 @@ void WgResDB::Clear()
 	m_mapConnects.clear();
 	m_mapResDBs.clear();
 	m_mapDataSets.clear();
-	
+
 	// Clear the linked lists, this will also delete the ResWrapper objects
 	// along with their meta-data but NOT the resources themselves.
 	// This will cause memory leaks until all resources are properly equipped
@@ -493,7 +493,7 @@ bool WgResDB::AddConnect( MetaData * pMetaData )
 WgSurfacePtr WgResDB::GetSurface( const std::string& id ) const
 {
 	SurfaceRes* surfRes = GetResSurface(id);
-	return surfRes ? surfRes->res : 0;
+	return surfRes ? surfRes->res : WgSurfacePtr();
 }
 
 //____ () _________________________________________________________
@@ -501,7 +501,7 @@ WgSurfacePtr WgResDB::GetSurface( const std::string& id ) const
 WgGlyphsetPtr WgResDB::GetGlyphset( const std::string& id ) const
 {
 	GlyphsetRes* glyphRes = GetResGlyphset(id);
-	return glyphRes ? glyphRes->res : 0;
+	return glyphRes ? glyphRes->res : WgGlyphsetPtr();
 }
 
 //____ () _________________________________________________________
@@ -509,7 +509,7 @@ WgGlyphsetPtr WgResDB::GetGlyphset( const std::string& id ) const
 WgFontPtr WgResDB::GetFont( const std::string& id ) const
 {
 	FontRes* fontRes = GetResFont(id);
-	return fontRes ? fontRes->res : 0;
+	return fontRes ? fontRes->res : WgFontPtr();
 }
 
 //____ () _________________________________________________________
@@ -517,7 +517,7 @@ WgFontPtr WgResDB::GetFont( const std::string& id ) const
 WgGfxAnimPtr WgResDB::GetGfxAnim( const std::string& id ) const
 {
 	GfxAnimRes* animRes = GetResGfxAnim(id);
-	return animRes ? animRes->res : 0;
+	return animRes ? animRes->res : WgGfxAnimPtr();
 }
 
 //____ () _________________________________________________________
@@ -525,7 +525,7 @@ WgGfxAnimPtr WgResDB::GetGfxAnim( const std::string& id ) const
 WgCursorPtr WgResDB::GetCursor( const std::string& id ) const
 {
 	CursorRes* cursorRes = GetResCursor(id);
-	return cursorRes ? cursorRes->res : 0;
+	return cursorRes ? cursorRes->res : WgCursorPtr();
 }
 
 //____ () _________________________________________________________
@@ -565,7 +565,7 @@ WgResDB::MetaData * WgResDB::GetDataSet( const std::string& id ) const
 WgWidgetPtr WgResDB::GetWidget( const std::string& id ) const
 {
 	WidgetRes* widgetRes = GetResWidget(id);
-	return widgetRes ? widgetRes->res : 0;
+	return widgetRes ? widgetRes->res : WgWidgetPtr();
 }
 
 //____ () _________________________________________________________
@@ -573,7 +573,7 @@ WgWidgetPtr WgResDB::GetWidget( const std::string& id ) const
 WgWidgetPtr WgResDB::CloneWidget( const std::string& id ) const
 {
 	WidgetRes* widgetRes = GetResWidget(id);
-	
+
 	if( !widgetRes )
 		return 0;
 
@@ -590,7 +590,7 @@ WgWidgetPtr WgResDB::CloneWidget( const std::string& id ) const
 WgTextManagerPtr WgResDB::GetTextManager( const std::string& id ) const
 {
 	TextManagerRes* managerRes = GetResTextManager(id);
-	return managerRes ? managerRes->res : 0;
+	return managerRes ? managerRes->res : WgTextManagerPtr();
 }
 
 

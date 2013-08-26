@@ -67,11 +67,11 @@ public:
 	bool	SetBlockGeo( WgSize size, WgBorders frame = WgBorders(0) );
 	void	SetStateBlock( WgStateEnum state, const WgCoord& ofs );
 
-	void	SetAllBlocks( WgCoord& ofs );
-	void	SetDisabledBlock( WgCoord& ofs );
-	void	SetHoveredBlocks( WgCoord& ofs );
-	void	SetPressedBlocks( WgCoord& ofs );
-	void	SetSelectedBlocks( WgCoord& ofs );
+	void	SetAllBlocks( const WgCoord& ofs );
+	void	SetDisabledBlock( const WgCoord& ofs );
+	void	SetHoveredBlocks( const WgCoord& ofs );
+	void	SetPressedBlocks( const WgCoord& ofs );
+	void	SetSelectedBlocks( const WgCoord& ofs );
 
 	void	SetTiled( bool bTiled );
 	void	SetTiledTopBorder( bool bTiled );
@@ -94,7 +94,7 @@ public:
 	bool	IsOpaque() const;
 	bool	IsOpaque( WgState state ) const;
 	bool	IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const;
-	
+
 	bool	IsStateIdentical( WgState state, WgState comparedTo ) const;
 
 private:

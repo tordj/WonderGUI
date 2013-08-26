@@ -224,7 +224,7 @@ WgBlockSkin::WgBlockSkin()
 //____ IsInstanceOf() _________________________________________________________
 
 bool WgBlockSkin::IsInstanceOf( const char * pClassName ) const
-{ 
+{
 	if( pClassName==CLASSNAME )
 		return true;
 
@@ -234,8 +234,8 @@ bool WgBlockSkin::IsInstanceOf( const char * pClassName ) const
 //____ ClassName() ____________________________________________________________
 
 const char * WgBlockSkin::ClassName( void ) const
-{ 
-	return CLASSNAME; 
+{
+	return CLASSNAME;
 }
 
 //____ Cast() _________________________________________________________________
@@ -281,7 +281,7 @@ void WgBlockSkin::SetStateBlock( WgStateEnum state, const WgCoord& ofs )
 
 //____ SetAllBlocks() _________________________________________________________
 
-void WgBlockSkin::SetAllBlocks( WgCoord& ofs )
+void WgBlockSkin::SetAllBlocks( const WgCoord& ofs )
 {
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		m_state[i].ofs = ofs;
@@ -290,14 +290,14 @@ void WgBlockSkin::SetAllBlocks( WgCoord& ofs )
 
 //____ SetDisabledBlock() _____________________________________________________
 
-void WgBlockSkin::SetDisabledBlock( WgCoord& ofs )
+void WgBlockSkin::SetDisabledBlock( const WgCoord& ofs )
 {
 	m_state[_stateToIndex(WG_STATE_DISABLED)].ofs = ofs;
 }
 
 //____ SetHoveredBlocks() _____________________________________________________
 
-void WgBlockSkin::SetHoveredBlocks( WgCoord& ofs )
+void WgBlockSkin::SetHoveredBlocks( const WgCoord& ofs )
 {
 	m_state[_stateToIndex(WG_STATE_HOVERED)].ofs = ofs;
 	m_state[_stateToIndex(WG_STATE_HOVERED_SELECTED)].ofs = ofs;
@@ -309,7 +309,7 @@ void WgBlockSkin::SetHoveredBlocks( WgCoord& ofs )
 
 //____ SetPressedBlocks() _____________________________________________________
 
-void WgBlockSkin::SetPressedBlocks( WgCoord& ofs )
+void WgBlockSkin::SetPressedBlocks( const WgCoord& ofs )
 {
 	m_state[_stateToIndex(WG_STATE_PRESSED)].ofs = ofs;
 	m_state[_stateToIndex(WG_STATE_PRESSED_SELECTED)].ofs = ofs;
@@ -319,7 +319,7 @@ void WgBlockSkin::SetPressedBlocks( WgCoord& ofs )
 
 //____ SetSelectedBlocks() ____________________________________________________
 
-void WgBlockSkin::SetSelectedBlocks( WgCoord& ofs )
+void WgBlockSkin::SetSelectedBlocks( const WgCoord& ofs )
 {
 	m_state[_stateToIndex(WG_STATE_SELECTED)].ofs = ofs;
 	m_state[_stateToIndex(WG_STATE_FOCUSED_SELECTED)].ofs = ofs;
@@ -404,7 +404,7 @@ void WgBlockSkin::OptimizeRenderMethods()
 	if( !m_pSurface )
 		return;
 
-	// 
+	//
 
 	m_pSurface->Lock(WG_READ_ONLY);
 
@@ -471,13 +471,13 @@ void WgBlockSkin::_scanStateBlockSectionArea( StateData * pState, WgOrigo sectio
 		return;												// Only supports ARGB_8 for the moment.
 
 	unsigned char * p = ((unsigned char*)m_pSurface->Pixels()) + sectionArea.x * pFormat->bits/8 + sectionArea.y * pitch;
-	
+
 	unsigned int alphaAcc = 0;
 
 	for( int y = 0 ; y < sectionArea.h ; y++ )
 	{
 		for( int x = 0 ; x < sectionArea.w ; x++ )
-			alphaAcc += (int) p[x*4+3]; 
+			alphaAcc += (int) p[x*4+3];
 
 		p += pitch;
 	}
@@ -491,7 +491,7 @@ void WgBlockSkin::_scanStateBlockSectionArea( StateData * pState, WgOrigo sectio
 
 
 //____ Render() _______________________________________________________________
-	
+
 void WgBlockSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const
 {
 	if( !m_pSurface )
@@ -863,7 +863,7 @@ bool WgBlockSkin::IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgStat
 	if( m_bIsOpaque )
 		return true;
 
-	// Semi-quick exit 
+	// Semi-quick exit
 
 	int index = _stateToIndex(state);
 
@@ -960,5 +960,5 @@ void WgBlockSkin::_setBitFlag( int& bitmask, int bit, bool bSet )
 		bitmask |= 1 << bit;
 	else
 		bitmask &= ~(1 << bit);
-		
+
 }

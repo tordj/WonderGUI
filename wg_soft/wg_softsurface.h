@@ -41,9 +41,9 @@ class WgSoftSurface : public WgSurface
 	friend class WgSoftSurfaceFactory;
 
  public:
-	static WgSoftSurfacePtr	WgSoftSurface::Create( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type)); }
-	static WgSoftSurfacePtr	WgSoftSurface::Create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type,pPixels,pitch)); }
-	static WgSoftSurfacePtr	WgSoftSurface::Create( const WgSoftSurfacePtr& pOther ) { return WgSoftSurfacePtr(new WgSoftSurface( pOther.GetRealPtr() )); }
+	static WgSoftSurfacePtr	Create( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type)); }
+	static WgSoftSurfacePtr	Create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type,pPixels,pitch)); }
+	static WgSoftSurfacePtr	Create( const WgSoftSurfacePtr& pOther ) { return WgSoftSurfacePtr(new WgSoftSurface( pOther.GetRealPtr() )); }
 
 	bool		IsInstanceOf( const char * pClassName ) const;
 	const char *ClassName( void ) const;

@@ -8,10 +8,12 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="code">
-    <File Name="wg_gfxdevice_sdl.h"/>
-    <File Name="wg_surface_sdl.h"/>
-    <File Name="wg_gfxdevice_sdl.cpp"/>
-    <File Name="wg_surface_sdl.cpp"/>
+    <File Name="wg_sdlgfxdevice.cpp"/>
+    <File Name="wg_sdlgfxdevice.h"/>
+    <File Name="wg_sdlsurface.cpp"/>
+    <File Name="wg_sdlsurface.h"/>
+    <File Name="wg_sdlsurfacefactory.cpp"/>
+    <File Name="wg_sdlsurfacefactory.h"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

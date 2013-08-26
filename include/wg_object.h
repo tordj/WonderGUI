@@ -23,6 +23,7 @@
 #define WG_OBJECT_DOT_H
 
 class WgObject;
+class WgObjectPtr;
 
 class WgWeakPtrHub
 {

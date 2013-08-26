@@ -8,10 +8,12 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="code">
-    <File Name="wg_gfxdevice_soft.cpp"/>
-    <File Name="wg_gfxdevice_soft.h"/>
-    <File Name="wg_surface_soft.cpp"/>
-    <File Name="wg_surface_soft.h"/>
+    <File Name="wg_softgfxdevice.cpp"/>
+    <File Name="wg_softgfxdevice.h"/>
+    <File Name="wg_softsurface.cpp"/>
+    <File Name="wg_softsurface.h"/>
+    <File Name="wg_softsurfacefactory.cpp"/>
+    <File Name="wg_softsurfacefactory.h"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
