@@ -40,8 +40,8 @@ class WgRootPanel;
 
 
 class WgWidget;
-typedef class WgSmartPtr<WgWidget,WgObjectPtr> WgWidgetPtr;
-typedef class WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
+typedef WgSmartPtr<WgWidget,WgObjectPtr> WgWidgetPtr;
+typedef WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
 
 class WgContainer;
 typedef	WgSmartPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
@@ -85,7 +85,7 @@ public:
 
 	virtual const char *Type( void ) const = 0;
 
-	
+
 protected:
 
 	WgHook() : m_pWidget(0) {}

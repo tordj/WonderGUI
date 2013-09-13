@@ -150,8 +150,6 @@
     <File Name="include/wg_glyphset.h"/>
     <File Name="include/wg_hook.h"/>
     <File Name="include/wg_iconholder.h"/>
-    <File Name="include/wg_interface_edittext.h"/>
-    <File Name="include/wg_interface_textholder.h"/>
     <File Name="include/wg_interface_valueholder.h"/>
     <File Name="include/wg_key.h"/>
     <File Name="include/wg_mempool.h"/>
@@ -177,7 +175,6 @@
     <File Name="include/wg_valueformat.h"/>
     <File Name="include/wg_vectorglyphs.h"/>
     <File Name="include/wg_widget.h"/>
-    <File Name="include/wg_widgetcollection.h"/>
     <File Name="include/wg_widgetholder.h"/>
     <File Name="include/wondergui.h"/>
     <File Name="source/wg_anim.cpp"/>
@@ -203,8 +200,6 @@
     <File Name="source/wg_glyphset.cpp"/>
     <File Name="source/wg_hook.cpp"/>
     <File Name="source/wg_iconholder.cpp"/>
-    <File Name="source/wg_interface_edittext.cpp"/>
-    <File Name="source/wg_interface_textholder.cpp"/>
     <File Name="source/wg_interface_valueholder.cpp"/>
     <File Name="source/wg_mempool.cpp"/>
     <File Name="source/wg_memstack.cpp"/>
@@ -342,5 +337,13 @@
     <File Name="include/wg_shadercapsule.h"/>
     <File Name="source/wg_sizecapsule.cpp"/>
     <File Name="include/wg_sizecapsule.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="Interfaces">
+    <File Name="include/wg_iedittext.h"/>
+    <File Name="include/wg_imodiftext.h"/>
+    <File Name="include/wg_istatictext.h"/>
+    <File Name="source/wg_iedittext.cpp"/>
+    <File Name="source/wg_imodiftext.cpp"/>
+    <File Name="source/wg_istatictext.cpp"/>
   </VirtualDirectory>
 </CodeLite_Project>
