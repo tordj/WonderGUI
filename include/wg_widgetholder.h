@@ -49,33 +49,34 @@ class WgWidgetHolder
 	friend class WgHook;
 	friend class WgContainer;
 	friend class WgRadioButton;
-	public:
-		WgWidgetPtr			FirstWidget() const { return WgWidgetPtr(_firstWidget()); }
-		WgWidgetPtr			LastWidget() const { return WgWidgetPtr(_lastWidget()); }
+	
+public:
+	inline WgWidgetPtr	FirstWidget() const { return WgWidgetPtr(_firstWidget()); }
+	inline WgWidgetPtr	LastWidget() const { return WgWidgetPtr(_lastWidget()); }
 
-		inline WgHook *		FirstHook() const { return _firstHook(); }
-		inline WgHook *		LastHook() const { return _lastHook(); }
+	inline WgHook *		FirstHook() const { return _firstHook(); }
+	inline WgHook *		LastHook() const { return _lastHook(); }
 
-		virtual WgWidgetPtr FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
+	virtual WgWidgetPtr FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
 
 
-		virtual bool		RemoveChild( const WgWidgetPtr& pWidget ) = 0;
-		virtual bool		Clear() = 0;
+	virtual bool		RemoveChild( const WgWidgetPtr& pWidget ) = 0;
+	virtual bool		Clear() = 0;
 
-		virtual bool		IsRoot() const;
-		virtual bool		IsContainer() const;
+	virtual bool		IsRoot() const;
+	virtual bool		IsContainer() const;
 
-	protected:
+protected:
 
-		virtual bool 		_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting ) = 0;
-		virtual bool 		_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing ) = 0;
+	virtual bool 		_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting ) = 0;
+	virtual bool 		_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing ) = 0;
 
-		virtual WgHook*	_firstHook() const = 0;
-		virtual WgHook*	_lastHook() const = 0;
+	virtual WgHook*	_firstHook() const = 0;
+	virtual WgHook*	_lastHook() const = 0;
 
-		WgWidget *		_firstWidget() const;
-		WgWidget *		_lastWidget() const;
-		virtual WgWidget * _findWidget( const WgCoord& ofs, WgSearchMode mode ) = 0;
+	WgWidget *		_firstWidget() const;
+	WgWidget *		_lastWidget() const;
+	virtual WgWidget * _findWidget( const WgCoord& ofs, WgSearchMode mode ) = 0;
 
 };
 

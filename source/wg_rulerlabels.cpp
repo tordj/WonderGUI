@@ -52,10 +52,10 @@ WgRulerLabelsPtr WgRulerLabels::Cast( const WgObjectPtr& pObject )
 void WgRulerLabels::AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProps, float offset, WgOrigo origo )
 {
 	Label * pLabel = new Label();
-	pLabel->text.setText(text);
-	pLabel->text.setProperties(pProps);
-	pLabel->text.setAlignment(origo);
-    pLabel->text.setManager(m_pTextManager);
+	pLabel->text.Set(text);
+	pLabel->text.SetProperties(pProps);
+	pLabel->text.SetAlignment(origo);
+    pLabel->text.SetManager(m_pTextManager);
 	pLabel->offset = offset;
 
     if( m_labels.IsEmpty() )
@@ -86,12 +86,23 @@ void WgRulerLabels::SetTextManager( WgTextManager * pTextManager )
         Label * p = m_labels.First();
         while( p )
         {
-            p->text.setManager(pTextManager);
+            p->text.SetManager(pTextManager);
             p = p->Next();
         }
     }
 
 }
+
+//____ GetLabel() ________________________________________________________________
+
+WgIModifTextPtr	WgRulerLabels::GetLabel(int index)
+{
+	if( index >= m_labels.Size() )
+		return WgIModifTextPtr();
+
+	return WgIModifTextPtr(this, &m_labels.Get(index)->text);
+}
+
 
 
 //____ PreferredSize() ________________________________________________________________
@@ -154,12 +165,12 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		Label * pLabel = m_labels.First();
 		while( pLabel )
 		{
-			int height = pLabel->text.height();
+			int height = pLabel->text.Height();
 			int ofs = (int) (canvas.h * pLabel->offset);
 			if( m_direction == WG_UP )
 				ofs = canvas.h - ofs;
 			
-			switch( pLabel->text.alignment() )
+			switch( pLabel->text.Alignment() )
 			{
 				case WG_NORTHWEST:
 				case WG_NORTH:
@@ -186,12 +197,12 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		Label * pLabel = m_labels.First();
 		while( pLabel )
 		{
-			int width = pLabel->text.width();
+			int width = pLabel->text.Width();
 			int ofs = (int) (canvas.w * pLabel->offset);
 			if( m_direction == WG_LEFT )
 				ofs = canvas.w - ofs;
 			
-			switch( pLabel->text.alignment() )
+			switch( pLabel->text.Alignment() )
 			{
 				case WG_NORTHWEST:
 				case WG_SOUTHWEST:

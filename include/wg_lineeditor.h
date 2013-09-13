@@ -27,10 +27,6 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_INTERFACE_EDITTEXT_DOT_H
-#	include <wg_interface_edittext.h>
-#endif
-
 #ifndef	WG_TEXT_DOT_H
 #	include <wg_text.h>
 #endif
@@ -45,7 +41,7 @@ typedef	WgWeakPtr<WgLineEditor,WgWidgetWeakPtr>	WgLineEditorWeakPtr;
 
 //____ WgLineEditor ____________________________________________________________
 
-class WgLineEditor : public WgWidget, public WgInterfaceEditText
+class WgLineEditor : public WgWidget, public WgTextHolder
 {
 public:
 	static WgLineEditorPtr	Create() { return WgLineEditorPtr(new WgLineEditor()); }
@@ -63,20 +59,14 @@ public:
 	inline Uint16 PasswordGlyph() const				 { return m_pwGlyph; };
 	void		SetPasswordGlyph( Uint16 glyph );
 
-	void		GoBOL();
-	void		GoEOL();
-	void		GoBOF() { GoBOL(); }
-	void		GoEOF() { GoEOL(); }
-
 	int			InsertTextAtCursor( const WgCharSeq& str );
 	bool		InsertCharAtCursor( Uint16 c );
 
 	virtual void			SetEditMode(WgTextEditMode mode);
 	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
 	virtual bool			IsInputField() const	{ return _isEditable(); }
-	virtual Wg_Interface_TextHolder* TextInterface(){ return this; }
 
-	bool		SetTextWrap(bool bWrap);						// Overloading SetTextWrap since we don't support wrapping text.
+	inline WgIEditTextPtr	Text() { return WgIEditTextPtr(this,&m_text); } 
 
 	WgSize		PreferredSize() const;
 	bool		IsAutoEllipsisDefault() const { return false; };
@@ -97,7 +87,7 @@ protected:
 	void	_onNewSize( const WgSize& size );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
-	void	_textModified();
+	void	_textModified(WgText * pText);
 
 
 private:

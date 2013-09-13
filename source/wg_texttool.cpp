@@ -2891,7 +2891,7 @@ void WgTextTool::SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, W
 
 WgCursorPtr WgTextTool::GetCursor( const WgText * pText )
 {
-	WgCursorPtr p = pText->getCursorStyle();
+	WgCursorPtr p = pText->CursorSkin();
 	if( p )
 		return p;
 
@@ -2902,7 +2902,7 @@ WgCursorPtr WgTextTool::GetCursor( const WgText * pText )
 
 WgTextpropPtr WgTextTool::GetSelectionProperties( const WgText * pText )
 {
-	WgTextpropPtr p = pText->getSelectionProperties();
+	WgTextpropPtr p = pText->SelectionProperties();
 	if( p )
 		return p;
 
@@ -2913,7 +2913,7 @@ WgTextpropPtr WgTextTool::GetSelectionProperties( const WgText * pText )
 
 WgTextpropPtr WgTextTool::GetLinkProperties( const WgText * pText )
 {
-	WgTextpropPtr p = pText->getLinkProperties();
+	WgTextpropPtr p = pText->LinkProperties();
 	if( p )
 		return p;
 

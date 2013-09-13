@@ -78,3 +78,13 @@ void WgMemStack::Clear()
 {
 	m_blocks.Clear();
 }
+
+//____ IsEmpty() ______________________________________________________________
+
+bool WgMemStack::IsEmpty() const
+{
+	if( m_blocks.IsEmpty() || (m_blocks.Size() == 1 && m_blocks.First()->allocated == 0) )
+		return true;
+
+	return false;
+}

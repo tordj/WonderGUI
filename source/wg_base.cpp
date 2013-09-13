@@ -67,9 +67,16 @@ void WgBase::Init()
 
 //____ Exit() __________________________________________________________________
 
-void WgBase::Exit()
+int WgBase::Exit()
 {
-	assert( s_pData != 0 );
+	if( s_pData == 0 )
+		return -1;					// Base already exited or not intialized.
+
+	if( !s_pData->pWeakPtrPool->IsEmpty() )
+		return -2;					// There are weak pointers left.
+
+	if( !s_pData->pMemStack->IsEmpty() )
+		return -3;					// There is data left in memstack.
 
 #ifdef WG_USE_FREETYPE
 
@@ -84,6 +91,7 @@ void WgBase::Exit()
 	delete s_pData->pMemStack;
 	delete s_pData;
 	s_pData = 0;
+	return 0;
 }
 
 //____ AllocWeakPtrHub() ______________________________________________________

@@ -590,16 +590,16 @@ void WgMenuLayer::_stealKeyboardFocus()
 	if( !Hook() )
 		return;
 
-	WgEventHandler * pHandler = Hook()->EventHandler();
+	WgEventHandlerPtr pHandler = Hook()->EventHandler();
 	if( !pHandler )
 		return;
 
 	// Save old keyboard focus, which we assume belonged to previous menu in hierarchy.
 
 	if( m_menuHooks.Size() < 2 )
-		m_pKeyFocus = pHandler->KeyboardFocus();
+		m_pKeyFocus = pHandler->KeyboardFocus().GetRealPtr();
 	else
-		m_menuHooks.Last()->Prev()->m_pKeyFocus = pHandler->KeyboardFocus();
+		m_menuHooks.Last()->Prev()->m_pKeyFocus = pHandler->KeyboardFocus().GetRealPtr();
 
 	// Steal keyboard focus to top menu
 
@@ -620,7 +620,7 @@ void WgMenuLayer::_restoreKeyboardFocus()
 	if( !Hook() )
 		return;
 
-	WgEventHandler * pHandler = Hook()->EventHandler();
+	WgEventHandlerPtr pHandler = Hook()->EventHandler();
 	if( !pHandler )
 		return;
 

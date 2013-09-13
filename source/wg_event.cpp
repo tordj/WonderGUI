@@ -33,6 +33,7 @@
 #include <wg_textdisplay.h>
 #include <wg_lineeditor.h>
 #include <wg_menu.h>
+#include <wg_text.h>
 //#include <wg_tablepanel.h>
 
 namespace WgEvent
@@ -695,40 +696,23 @@ namespace WgEvent
 
 	//____ Text event methods __________________________________________________
 
-	WgInterfaceEditText * TextEvent::Interface() const
+	WgIEditTextPtr TextEvent::Text() const
 	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-		{
-			if( pWidget->ClassName() == WgTextDisplay::CLASSNAME )
-				return static_cast<WgTextDisplay*>(pWidget);
-			else if( pWidget->ClassName() == WgTextDisplay::CLASSNAME )
-				return static_cast<WgLineEditor*>(pWidget);
-		}
-		return 0;
-	}
-
-	const WgText * TextEvent::Text() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-			return m_pText;
-		else
-			return 0;
+		return m_pText;
 	}
 
 	TextModify::TextModify( WgWidget * pWidget, WgText * pText )
 	{
 		m_type 		= WG_EVENT_TEXT_MODIFY;
 		m_pWidget 	= pWidget;
-		m_pText 	= pText;
+		m_pText 	= WgIEditTextPtr(pWidget, pText);
 	}
 
 	TextSet::TextSet( WgWidget * pWidget, WgText * pText )
 	{
 		m_type 		= WG_EVENT_TEXT_SET;
 		m_pWidget 	= pWidget;
-		m_pText 	= pText;
+		m_pText 	= WgIEditTextPtr(pWidget, pText);
 	}
 
 	//____ Menu event methods __________________________________________________

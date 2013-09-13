@@ -49,7 +49,7 @@ class WgValueDisplay;
 typedef	WgSmartPtr<WgValueDisplay,WgWidgetPtr>		WgValueDisplayPtr;
 typedef	WgWeakPtr<WgValueDisplay,WgWidgetWeakPtr>	WgValueDisplayWeakPtr;
 
-class WgValueDisplay : public WgWidget, public Wg_Interface_ValueHolder
+class WgValueDisplay : public WgWidget, private WgTextHolder, public Wg_Interface_ValueHolder
 {
 public:
 	static WgValueDisplayPtr	Create() { return WgValueDisplayPtr(new WgValueDisplay()); }
@@ -62,14 +62,12 @@ public:
 
 	//____ Methods __________________________________________
 
-	void	SetTextProperties( const WgTextpropPtr& _pProps );
 	void	SetFormat( const WgValueFormatPtr& pFormat );
-
-	WgTextpropPtr	TextProperties() { return m_text.getProperties(); }
 	WgValueFormatPtr	Format() const { return m_pFormat; }
 
 	WgSize	PreferredSize() const;
 
+	inline WgIStaticTextPtr	Text() { return WgIStaticTextPtr(this,&m_text); } 
 
 protected:
 	WgValueDisplay();
@@ -89,6 +87,7 @@ protected:
 private:
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
+	void	_textModified( WgText * pText );
 
 	WgValueFormatPtr	m_pFormat;
 	WgText				m_text;

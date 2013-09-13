@@ -311,7 +311,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 			break;
 		case WgCursor::TINTED:
 			tintColor = m_pDevice->GetTintColor();
-			m_pDevice->SetTintColor( tintColor * instance.text()->getColor() );
+			m_pDevice->SetTintColor( tintColor * instance.text()->Color( WG_STATE_NORMAL ) );
 			break;
 		case WgCursor::INVERT_BG:
 			blendMode = m_pDevice->GetBlendMode();

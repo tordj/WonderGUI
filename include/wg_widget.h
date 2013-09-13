@@ -48,7 +48,6 @@
 #endif
 
 class WgGfxDevice;
-class Wg_Interface_TextHolder;
 class WgContainer;
 class WgPanel;
 class WgList;
@@ -200,7 +199,6 @@ protected:
 
 	// rename when widgets are done
 	virtual bool	IsInputField() const;
-	virtual Wg_Interface_TextHolder*	TextInterface();
 
 	//
 

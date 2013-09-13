@@ -20,29 +20,35 @@
 
 =========================================================================*/
 
-#ifndef WG_INTERFACE_EDITTEXT_DOT_H
-#define WG_INTERFACE_EDITTEXT_DOT_H
+#include <wg_imodiftext.h>
 
-#ifndef WG_INTERFACE_TEXTHOLDER_DOT_H
-#	include	<wg_interface_textholder.h>
-#endif
+const char WgIModifText::CLASSNAME[] = {"IModifText"};
 
-class WgInterfaceEditText : public Wg_Interface_TextHolder
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgIModifText::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgIStaticText::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgIModifText::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgIModifTextPtr WgIModifText::Cast( const WgInterfacePtr& pInterface )
 {
-public:
+	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
+		return WgIModifTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgIModifText*>( pInterface.GetRealPtr()) );
 
-	virtual void	SetEditMode(WgTextEditMode mode) = 0;
+	return 0;
+}
 
-	virtual int		InsertTextAtCursor( const WgCharSeq& str ) = 0;
-	virtual bool	InsertCharAtCursor( Uint16 c ) = 0;
-
-	virtual void	GoBOL() = 0;
-	virtual void	GoEOL() = 0;
-	virtual void	GoBOF() = 0;
-	virtual void	GoEOF() = 0;
-};
-
-
-
-
-#endif //WG_INTERFACE_EDITTEXT_DOT_H

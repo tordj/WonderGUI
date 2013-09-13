@@ -27,10 +27,6 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_INTERFACE_TEXTHOLDER_DOT_H
-#	include <wg_interface_textholder.h>
-#endif
-
 #ifndef WG_TEXT_DOT_H
 #	include <wg_text.h>
 #endif
@@ -46,7 +42,7 @@ typedef	WgSmartPtr<WgCheckBox,WgWidgetPtr>		WgCheckBoxPtr;
 typedef	WgWeakPtr<WgCheckBox,WgWidgetWeakPtr>	WgCheckBoxWeakPtr;
 
 
-class	WgCheckBox : public WgWidget, public Wg_Interface_TextHolder, public WgIconHolder
+class	WgCheckBox : public WgWidget, public WgIconHolder, public WgTextHolder
 {
 public:
 	static WgCheckBoxPtr	Create() { return WgCheckBoxPtr(new WgCheckBox()); }
@@ -64,6 +60,8 @@ public:
 		ICON,			// Only the icon (alpha test) is clickable.
 		TEXT			// Only the text is clickable.
 	};
+
+	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
 
 	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
@@ -98,7 +96,7 @@ protected:
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	
 	virtual void	_iconModified();
-	virtual void	_textModified();
+	virtual void	_textModified( WgText * pText );
 
 private:
 

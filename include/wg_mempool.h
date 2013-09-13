@@ -29,11 +29,17 @@
 class WgMemPool
 {
 public:
-	WgMemPool( Uint32 entriesPerBlock, Uint32 entrySize );
+	WgMemPool( int entriesPerBlock, int entrySize );
 	virtual ~WgMemPool();
 
 	void *	AllocEntry();
 	void	FreeEntry( void * pEntry );
+
+	inline int		EntriesAllocated() const { return m_nAllocEntries; }
+	inline int		EntriesAvailable() const { return m_blocks.Size()*m_nEntriesPerBlock - m_nAllocEntries; }
+	inline int		Capacity() const { return m_blocks.Size()*m_nEntriesPerBlock; }
+	inline bool		IsEmpty() const { return (m_nAllocEntries == 0); }
+
 
 private:
 
@@ -48,7 +54,7 @@ private:
 	class Block : public WgLink
 	{
 	public:
-		Block( Uint32 nEntries, Uint32 entrySize );
+		Block( int nEntries, int entrySize );
 		~Block();
 
 		LINK_METHODS( Block );
@@ -59,21 +65,20 @@ private:
 
 		void *		pMemBlock;			// Memory area containing our entries.
 		int			blockSize;			// Size of memory area containing our entries.
-		Uint32		nAllocEntries;		// Number of entires currently in used.
-		Uint32		nCleanEntries;		// Number of clean entries, all entries after this
+		int			nAllocEntries;		// Number of entires currently in used.
+		int			nCleanEntries;		// Number of clean entries, all entries after this
 										// are free AND uninitzialised.
-		Uint32		maxEntries;			// Number of entries in block.
-		Uint32		firstFreeEntry;		// Number of first free entry, entry contains number of next
+		int			maxEntries;			// Number of entries in block.
+		int			firstFreeEntry;		// Number of first free entry, entry contains number of next
 										// unless firstFreeEntry==nCleanEntries.
-		Uint32		entrySize;			// Size of each individual entry.
+		int			entrySize;			// Size of each individual entry.
 
 	};
 
 	WgChain<Block>	m_blocks;
-	Uint32			m_nEntriesPerBlock;
-	Uint32			m_entrySize;
-
-	static Uint32	g_allocatedEver;
+	int				m_nEntriesPerBlock;
+	int				m_entrySize;
+	int				m_nAllocEntries;
 };
 
 

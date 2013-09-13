@@ -30,10 +30,6 @@
 #	include <wg_text.h>
 #endif
 
-#ifndef	WG_INTERFACE_TEXTHOLDER_DOT_H
-#	include <wg_interface_textholder.h>
-#endif
-
 #ifndef	WG_ICONHOLDER_DOT_H
 #	include <wg_iconholder.h>
 #endif
@@ -45,7 +41,7 @@ typedef	WgWeakPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
 
 //____ WgButton ____________________________________________________________
 
-class WgButton : public WgWidget, public Wg_Interface_TextHolder, public WgIconHolder
+class WgButton : public WgWidget, public WgIconHolder, public WgTextHolder
 {
 public:
 	static WgButtonPtr	Create() { return WgButtonPtr(new WgButton()); }
@@ -65,6 +61,7 @@ public:
 	WgSkinPtr		IconSkin() const { return m_pIconSkin; }
 
 	int				TextAreaWidth();
+	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
 
 	virtual int		HeightForWidth( int width ) const;
 //	virtual int		WidthForHeight( int height ) const;
@@ -89,7 +86,7 @@ protected:
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 
-	void			_textModified();
+	void			_textModified( WgText * pText );
 	void			_iconModified();
 
 	WgText			m_text;

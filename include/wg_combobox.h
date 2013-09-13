@@ -27,10 +27,6 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_INTERFACE_EDITTEXT_DOT_H
-#	include <wg_interface_edittext.h>
-#endif
-
 #ifndef WG_MENU_DOT_H
 #	include <wg_menu.h>
 #endif
@@ -43,7 +39,7 @@ class WgCombobox;
 typedef	WgSmartPtr<WgCombobox,WgWidgetPtr>		WgComboboxPtr;
 typedef	WgWeakPtr<WgCombobox,WgWidgetWeakPtr>	WgComboboxWeakPtr;
 
-class WgCombobox : public WgWidget, public WgInterfaceEditText
+class WgCombobox : public WgWidget, public WgTextHolder
 {
 public:
 	static WgComboboxPtr	Create() { return WgComboboxPtr(new WgCombobox()); }
@@ -73,12 +69,7 @@ public:
 	int				InsertTextAtCursor( const WgCharSeq& str );
 	bool			InsertCharAtCursor( Uint16 c );
 
-	void			GoBOL();
-	void			GoEOL();
-	void			GoBOF() { GoBOL(); }
-	void			GoEOF() { GoEOL(); }
-
-	virtual Wg_Interface_TextHolder* TextInterface(){ return this; }
+	inline WgIStaticTextPtr	Text() { return WgIStaticTextPtr(this,&m_text); } 
 
 	// Press in textfield:
 	//		Editable - Grab input focus.
@@ -108,7 +99,7 @@ private:
 	bool	_isEditable() const { return m_text.IsEditable(); }
 	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
-	void	_textModified();
+	void	_textModified( WgText * pText );
 	void	_adjustViewOfs();
 	void	_closeMenu();
 

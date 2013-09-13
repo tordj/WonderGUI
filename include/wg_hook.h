@@ -36,7 +36,6 @@ class WgContainer;
 class WgGfxDevice;
 class WgWidget;
 class WgRectLink;
-class WgEventHandler;
 class WgRootPanel;
 
 
@@ -50,7 +49,12 @@ typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 class WgRootPanel;
 typedef	WgSmartPtr<WgRootPanel,WgObjectPtr>		WgRootPanelPtr;
-typedef	WgWeakPtr<WgRootPanel,WgObjectPtr>		WgRootPanelWeakPtr;
+typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>	WgRootPanelWeakPtr;
+
+class WgEventHandler;
+typedef	WgSmartPtr<WgEventHandler,WgObjectPtr>		WgEventHandlerPtr;
+typedef	WgWeakPtr<WgEventHandler,WgObjectWeakPtr>	WgEventHandlerWeakPtr;
+
 
 class WgHook
 {
@@ -77,7 +81,7 @@ public:
 	WgContainerPtr 		Parent() const;
 
 	WgRootPanelPtr		Root() const;
-	WgEventHandler *	EventHandler() const;
+	WgEventHandlerPtr	EventHandler() const;
 
 	virtual const char *Type( void ) const = 0;
 

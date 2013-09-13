@@ -36,8 +36,7 @@ const char WgCombobox::CLASSNAME[] = {"Combobox"};
 
 WgCombobox::WgCombobox( void )
 {
-	m_pText = &m_text;
-	m_text.setAlignment( WG_WEST );
+	m_text.SetAlignment( WG_WEST );
 	m_text.SetWrap(false);
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
 //	m_textColor = m_text.color();
@@ -95,7 +94,7 @@ WgSize WgCombobox::PreferredSize() const
 	WgTextAttr attr;
 	m_text.GetBaseAttr( attr );
 	int width = WgTextTool::lineWidth( m_text.getNode(), attr, "MMMMMMMMMM" );		// Default combobox should fit 10 letter M in textfield
-	WgSize contentSize( m_text.height(), width );
+	WgSize contentSize( m_text.Height(), width );
 	
 	if( m_pSkin )
 		return m_pSkin->SizeForContent( contentSize );
@@ -161,20 +160,20 @@ int WgCombobox::InsertTextAtCursor( const WgCharSeq& str )
 
 	int retVal = 0;
 
-	if( m_maxCharacters == 0 || str.Length() < m_maxCharacters - m_pText->nbChars() )
+	if( m_maxCharacters == 0 || str.Length() < m_maxCharacters - m_text.Length() )
 	{
-		m_pText->putText( str );
+		m_text.putText( str );
 		retVal = str.Length();
 	}
 	else
 	{
-		retVal = m_maxCharacters - m_pText->nbChars();
-		m_pText->putText( WgCharSeq( str, 0, retVal ) );
+		retVal = m_maxCharacters - m_text.Length();
+		m_text.putText( WgCharSeq( str, 0, retVal ) );
 	}
 
 	WgEventHandler * pHandler = _eventHandler();		
 	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+		pHandler->QueueEvent( new WgEvent::TextModify(this,&m_text) );
 
 	_adjustViewOfs();
 
@@ -192,33 +191,17 @@ bool WgCombobox::InsertCharAtCursor( Uint16 c )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
-	if( m_maxCharacters != 0 && m_maxCharacters < m_pText->nbChars() )
+	if( m_maxCharacters != 0 && m_maxCharacters < m_text.Length() )
 		return false;
 
-	m_pText->putChar( c );
+	m_text.putChar( c );
 
 	WgEventHandler * pHandler = _eventHandler();		
 	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+		pHandler->QueueEvent( new WgEvent::TextModify(this,&m_text) );
 
 	_adjustViewOfs();
 	return true;
-}
-
-//____ GoBOL() ________________________________________________________________
-
-void WgCombobox::GoBOL()
-{
-	if( _isEditable() && m_state.IsFocused() )
-		m_pText->goBOL();
-}
-
-//____ GoEOL() ________________________________________________________________
-
-void WgCombobox::GoEOL()
-{
-	if( _isEditable() && m_state.IsFocused() )
-		m_pText->goEOL();
 }
 
 //____ _closeMenu() ___________________________________________________________
@@ -316,7 +299,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 					{
 						if( _isSelectable() && (pEvent->ModKeys() & WG_MODKEY_SHIFT))
 						{
-							m_pText->setSelectionMode(true);
+							m_text.setSelectionMode(true);
 						}
 
 
@@ -324,12 +307,12 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 						int y = pos.y;
 						x += m_viewOfs;
 
-						m_pText->CursorGotoCoord( WgCoord(x, 0), WgRect(inputRect.x,0,1000000,1000000) );
+						m_text.CursorGotoCoord( WgCoord(x, 0), WgRect(inputRect.x,0,1000000,1000000) );
 				
 						if(_isSelectable() && !(pEvent->ModKeys() & WG_MODKEY_SHIFT))
 						{
-							m_pText->clearSelection();
-							m_pText->setSelectionMode(true);
+							m_text.ClearSelection();
+							m_text.setSelectionMode(true);
 						}
 						_adjustViewOfs();
 					}
@@ -365,13 +348,13 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 				{
 					if( _isSelectable() && (pEvent->ModKeys() & WG_MODKEY_SHIFT) )
 					{
-						m_pText->setSelectionMode(true);
+						m_text.setSelectionMode(true);
 					}
 
 					int x = pEvent->PointerPos().x + m_viewOfs;
 					int leftBorder = m_pSkin ? m_pSkin->ContentRect( Size(), m_state ).x : 0;
 
-					m_pText->CursorGotoCoord( WgCoord(x, 0), WgRect(leftBorder,0,1000000,1000000) );
+					m_text.CursorGotoCoord( WgCoord(x, 0), WgRect(leftBorder,0,1000000,1000000) );
 					_adjustViewOfs();
 				}
 				_pEvent->Swallow();
@@ -386,12 +369,12 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 			{
 				if( m_state.IsFocused() )
 				{
-					m_pText->setSelectionMode(false);
+					m_text.setSelectionMode(false);
 					if( m_bFocusPress )
 					{
 						m_bFocusPress = false;
-						if( !m_pText->hasSelection() )
-							m_pText->selectAll();
+						if( !m_text.hasSelection() )
+							m_text.SelectAll();
 					}
 				}
 				_pEvent->Swallow();
@@ -446,15 +429,15 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 			if( _isEditable() && m_state.IsFocused() )
 			{
 
-				if(m_pText->hasSelection())
-					m_pText->delSelection();
-				m_pText->setSelectionMode(false);
+				if(m_text.hasSelection())
+					m_text.delSelection();
+				m_text.setSelectionMode(false);
 
 				// by default - no max limit
-				if( m_maxCharacters == 0 || m_maxCharacters > m_pText->nbChars() )
-					m_pText->putChar( pEvent->Char() );
+				if( m_maxCharacters == 0 || m_maxCharacters > m_text.Length() )
+					m_text.putChar( pEvent->Char() );
 
-				pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+				pHandler->QueueEvent( new WgEvent::TextModify(this,&m_text) );
 				_adjustViewOfs();
 			}
 			break;
@@ -468,7 +451,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 				{
 					case WG_KEY_SHIFT:
 						if(!pHandler->IsMouseButtonPressed(1))
-							m_pText->setSelectionMode(false);
+							m_text.setSelectionMode(false);
 						_pEvent->Swallow();
 					break;
 				}
@@ -490,45 +473,45 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 				{
 					case WG_KEY_LEFT:
 						if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
-							m_pText->setSelectionMode(true);
+							m_text.setSelectionMode(true);
 
 						if( pEvent->ModKeys() & WG_MODKEY_CTRL )
-							m_pText->gotoPrevWord();
+							m_text.gotoPrevWord();
 						else
-							m_pText->goLeft();
+							m_text.goLeft();
 						_pEvent->Swallow();
 						break;
 					case WG_KEY_RIGHT:
 						if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
-							m_pText->setSelectionMode(true);
+							m_text.setSelectionMode(true);
 
 						if( pEvent->ModKeys() & WG_MODKEY_CTRL )
-								m_pText->gotoNextWord();
+								m_text.gotoNextWord();
 						else
-							m_pText->goRight();
+							m_text.goRight();
 						_pEvent->Swallow();
 						break;
 
 					case WG_KEY_BACKSPACE:
-						if(m_pText->hasSelection())
-							m_pText->delSelection();
+						if(m_text.hasSelection())
+							m_text.delSelection();
 						else if( pEvent->ModKeys() & WG_MODKEY_CTRL )
-							m_pText->delPrevWord();
+							m_text.delPrevWord();
 						else
-							m_pText->delPrevChar();
+							m_text.delPrevChar();
 						
-						pHandler->QueueEvent( new WgEvent::TextModify(this, m_pText) ); //TODO: Should only emit if text really has changed
+						pHandler->QueueEvent( new WgEvent::TextModify(this, &m_text) ); //TODO: Should only emit if text really has changed
 						_pEvent->Swallow();
 						break;
 
 					case WG_KEY_DELETE:
-						if(m_pText->hasSelection())
-							m_pText->delSelection();
+						if(m_text.hasSelection())
+							m_text.delSelection();
 						else if( pEvent->ModKeys() & WG_MODKEY_CTRL )
-							m_pText->delNextWord();
+							m_text.delNextWord();
 						else
-							m_pText->delNextChar();
-						pHandler->QueueEvent( new WgEvent::TextModify(this, m_pText) );		//TODO: Should only emit if text really has changed
+							m_text.delNextChar();
+						pHandler->QueueEvent( new WgEvent::TextModify(this, &m_text) );		//TODO: Should only emit if text really has changed
 						_pEvent->Swallow();
 						break;
 
@@ -546,9 +529,9 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 
 						default: // no modifier key was pressed
 							if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
-								m_pText->setSelectionMode(true);
+								m_text.setSelectionMode(true);
 
-							m_pText->goBOL();
+							m_text.GoBOL();
 							break;
 						}
 						_pEvent->Swallow();
@@ -568,9 +551,9 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 
 						default: // no modifier key was pressed
 							if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
-								m_pText->setSelectionMode(true);
+								m_text.setSelectionMode(true);
 
-							m_pText->goEOL();
+							m_text.GoEOL();
 							break;
 						}
 
@@ -605,8 +588,8 @@ void WgCombobox::_onStateChanged( WgState oldState, WgState newState )
 			m_text.showCursor();
 			if( m_bResetCursorOnFocus )
 			{
-				m_text.goEOL();
-				m_text.selectAll();
+				m_text.GoEOL();
+				m_text.SelectAll();
 			}
 		}
 	}
@@ -619,7 +602,7 @@ void WgCombobox::_onStateChanged( WgState oldState, WgState newState )
 		{
 			_stopReceiveTicks();
 			m_text.hideCursor();
-			m_text.clearSelection();
+			m_text.ClearSelection();
 			m_bResetCursorOnFocus = true;
 			_eventHandler()->QueueEvent( new WgEvent::TextSet( this, &m_text ) );	//TODO: Should only do if text was really changed!
 		}
@@ -654,7 +637,7 @@ void WgCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 	if( !m_placeholderText.IsEmpty() && m_text.IsEmpty() && !m_text.isCursorShowing() )
 	{
 		bPlaceholder = true;
-		m_text.setText( m_placeholderText );
+		m_text.Set( m_placeholderText );
 	}
 
 	r.x -= m_viewOfs;
@@ -662,7 +645,7 @@ void WgCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 	pDevice->PrintText( textClip, &m_text, r );
 
 	if( bPlaceholder )
-		m_text.clear();
+		m_text.Clear();
 }
 
 //____ _onRefresh() _______________________________________________________
@@ -696,20 +679,20 @@ void WgCombobox::_adjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_state.IsFocused() && m_pText->getFont() )
+	if( m_state.IsFocused() && m_text.Font() )
 	{
-		WgCursorPtr pCursor = WgTextTool::GetCursor( m_pText );
+		WgCursorPtr pCursor = WgTextTool::GetCursor( &m_text );
 		if( !pCursor )
 			return;
 
-		int cursCol	= m_pText->column();
+		int cursCol	= m_text.column();
 
 		WgTextAttr	attr;
-		m_pText->GetBaseAttr( attr );
+		m_text.GetBaseAttr( attr );
 
-		int cursAdvance	= pCursor->Advance(m_pText->cursorMode() );
-		int cursBearing	= pCursor->BearingX(m_pText->cursorMode() );
-		int cursWidth	= pCursor->Width(m_pText->cursorMode() );
+		int cursAdvance	= pCursor->Advance(m_text.cursorMode() );
+		int cursBearing	= pCursor->BearingX(m_text.cursorMode() );
+		int cursWidth	= pCursor->Width(m_text.cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.
@@ -719,17 +702,17 @@ void WgCombobox::_adjustViewOfs()
 		if( m_pSkin )
 			geoWidth -= m_pSkin->ContentPadding().w;
 
-		int	lineWidth = m_pText->getSoftLineWidth( 0 ) + cursBearing+cursWidth;
+		int	lineWidth = m_text.getSoftLineWidth( 0 ) + cursBearing+cursWidth;
 
 		// Calculate cursOfs
 
-		cursOfs	= m_pText->getSoftLineWidthPart( 0, 0, cursCol );
+		cursOfs	= m_text.getSoftLineWidthPart( 0, 0, cursCol );
 
 		// Calculate maxOfs
 
 		if( cursCol > 0 )
 		{
-			maxOfs = m_pText->getSoftLineWidthPart( 0, 0, cursCol-1 );
+			maxOfs = m_text.getSoftLineWidthPart( 0, 0, cursCol-1 );
 
 			if( lineWidth < maxOfs + geoWidth )
 				maxOfs = WgMax( lineWidth - geoWidth, 0 );
@@ -740,8 +723,8 @@ void WgCombobox::_adjustViewOfs()
 
 		// Calculate minOfs
 
-		if( cursCol < m_pText->getLine(0)->nChars )
-			minOfs = m_pText->getSoftLineWidthPart( 0, 0, cursCol+1 ) + cursAdvance - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
+		if( cursCol < m_text.getLine(0)->nChars )
+			minOfs = m_text.getSoftLineWidthPart( 0, 0, cursCol+1 ) + cursAdvance - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
 		else
 			minOfs = cursOfs + cursBearing + cursWidth - geoWidth;
 
@@ -771,12 +754,12 @@ bool WgCombobox::_onAlphaTest( const WgCoord& ofs )
 
 //____ _textModified() _________________________________________________________
 
-void WgCombobox::_textModified()
+void WgCombobox::_textModified( WgText * pText )
 {
 	m_bResetCursorOnFocus = true;
 	WgEventHandler * pHandler = _eventHandler();		
 	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::TextModify(this,m_pText) );
+		pHandler->QueueEvent( new WgEvent::TextModify(this,&m_text) );
 	_requestRender();
 //	_adjustViewOfs();
 }
@@ -817,7 +800,7 @@ void WgCombobox::_entrySelected( int itemId )
 			buff.EndWrite();
 
 		}
-		SetText( &buff );
+		m_text.Set( &buff );
 		_adjustViewOfs();
 	}
 }

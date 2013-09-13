@@ -37,7 +37,7 @@ class WgFpsDisplay;
 typedef	WgSmartPtr<WgFpsDisplay,WgWidgetPtr>		WgFpsDisplayPtr;
 typedef	WgWeakPtr<WgFpsDisplay,WgWidgetWeakPtr>	WgFpsDisplayWeakPtr;
 
-class WgFpsDisplay:public WgWidget
+class WgFpsDisplay:public WgWidget, public WgTextHolder
 {
 public:
 	static WgFpsDisplayPtr	Create() { return WgFpsDisplayPtr(new WgFpsDisplay()); }
@@ -53,6 +53,10 @@ public:
 	void	SetTextProperties( const WgTextpropPtr& pProp );
 	WgSize	PreferredSize() const;
 
+	inline WgIModifTextPtr	Labels() { return WgIModifTextPtr(this,&m_labelsText); } 
+	inline WgIStaticTextPtr	Values() { return WgIStaticTextPtr(this,&m_valuesText); } 
+
+
 protected:
 	WgFpsDisplay();
 	virtual ~WgFpsDisplay();
@@ -63,6 +67,8 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void	_textModified( WgText * pText );
+
 
 private:
 

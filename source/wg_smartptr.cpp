@@ -24,6 +24,15 @@
 
 #include <wg_base.h>
 
+
+WgObjectPtr::WgObjectPtr( const WgObjectWeakPtr& r )
+{
+	m_pObj = r.GetRealPtr();
+	if( m_pObj )
+		m_pObj->m_refCount++;
+}
+
+
 WgObjectWeakPtr::WgObjectWeakPtr( WgObject * pObj )
 {
 	if( pObj )
@@ -47,6 +56,30 @@ WgObjectWeakPtr::WgObjectWeakPtr( WgObject * pObj )
 	}
 };
 
+WgObjectWeakPtr::WgObjectWeakPtr( const WgObjectPtr& pObject )
+{
+	WgObject * pObj = pObject.GetRealPtr();
+
+	if( pObj )
+	{
+		if( !pObj->m_pWeakPtrHub )
+		{
+			m_pHub = WgBase::AllocWeakPtrHub();
+			m_pHub->refCnt = 1;
+			m_pHub->pObj = pObj;
+			pObj->m_pWeakPtrHub = m_pHub;
+		}
+		else
+		{
+			m_pHub = pObj->m_pWeakPtrHub;
+			m_pHub->refCnt++;
+		}
+	}
+	else
+	{
+		m_pHub = 0;
+	}
+};
 
 WgObjectWeakPtr::~WgObjectWeakPtr()
 {

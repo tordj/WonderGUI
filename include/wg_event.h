@@ -41,6 +41,10 @@
 #	include <wg_smartptr.h>
 #endif
 
+#ifndef WG_TEXT_DOT_H
+#	include <wg_text.h>
+#endif
+
 class WgEventHandler;
 class WgWidget;
 class WgButton;
@@ -54,8 +58,6 @@ class WgScrollbar;
 class WgMenu;
 class WgMenuLayer;
 class WgModalLayer;
-class WgInterfaceEditText;
-class WgText;
 
 typedef class WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
 
@@ -452,10 +454,9 @@ namespace WgEvent
 	class TextEvent : public Event
 	{
 	public:
-		WgInterfaceEditText * Interface() const;
-		const WgText *		  Text() const;
+		WgIEditTextPtr		Text() const;
 	protected:
-		WgText *	m_pText;
+		WgIEditTextPtr		m_pText;
 	};
 
 	class TextModify : public TextEvent

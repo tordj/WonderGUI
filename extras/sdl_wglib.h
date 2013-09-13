@@ -27,9 +27,9 @@ class WgFont;
 namespace sdl_wglib
 {
 	void 		MapKeys();
-	void 		BeginEvents( WgEventHandler * pHandler );
-	void 		TranslateEvent( SDL_Event& event );
-	void 		EndEvents();
+	void 		BeginEvents( const WgEventHandlerPtr& pHandler );
+	void 		TranslateEvent( const WgEventHandlerPtr& pHandler, SDL_Event& event );
+	void 		EndEvents( const WgEventHandlerPtr& pHandler );
 
 	WgSurfacePtr LoadSurface( const char * path, const WgSurfaceFactoryPtr& factory );
 

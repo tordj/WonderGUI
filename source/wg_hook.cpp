@@ -129,7 +129,7 @@ WgRootPanel * WgHook::_root() const
 
 //____ EventHandler() __________________________________________________________
 
-WgEventHandler * WgHook::EventHandler() const
+WgEventHandlerPtr WgHook::EventHandler() const
 {
 	WgRootPanelPtr pRoot = Root();		//TODO: Optimize?
 	if( pRoot )

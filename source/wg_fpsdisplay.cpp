@@ -45,10 +45,13 @@ WgFpsDisplay::WgFpsDisplay( void )
 
 	m_tickBufferOfs		= 0;
 
-	m_labelsText.setText( "Now:/nMin:/nAvg:/nMax:/n" );
-	m_valuesText.setAlignment( WG_NORTHEAST );
+	m_labelsText.Set( "Now:/nMin:/nAvg:/nMax:/n" );
+	m_valuesText.SetAlignment( WG_NORTHEAST );
 
 	m_bReceiveTick = true;
+
+	m_labelsText.setHolder(this);
+	m_valuesText.setHolder(this);
 }
 
 //____ ~WgFpsDisplay() __________________________________________________________
@@ -95,8 +98,8 @@ WgFpsDisplayPtr WgFpsDisplay::Cast( const WgObjectPtr& pObject )
 
 void WgFpsDisplay::SetTextProperties( const WgTextpropPtr& pProp )
 {
-	m_labelsText.setProperties(pProp);
-	m_valuesText.setProperties(pProp);
+	m_labelsText.SetProperties(pProp);
+	m_valuesText.SetProperties(pProp);
 	_requestResize();
 	_requestRender();
 }
@@ -110,6 +113,10 @@ WgSize WgFpsDisplay::PreferredSize() const
 	WgTextAttr attr;
 	m_valuesText.GetBaseAttr( attr );
 	contentSize.w += WgTextTool::lineWidth( m_valuesText.getNode(), attr, " 1000.00" );
+
+	int valueHeight = m_valuesText.unwrappedSize().h;
+	if( valueHeight > contentSize.h )
+		contentSize.h = valueHeight;
 
 	if( m_pSkin )
 		return m_pSkin->SizeForContent(contentSize);
@@ -195,7 +202,7 @@ void WgFpsDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler 
 	
 			char	temp[100];
 			sprintf( temp, "%.2f/n%.2f/n%.2f/n%.2f/n", fpsCurrent, fpsMin, fpsAvg, fpsMax );
-			m_valuesText.setText(temp);
+			m_valuesText.Set(temp);
 
 			_requestRender();
 		}
@@ -230,15 +237,22 @@ void WgFpsDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& p
 	m_valuesText.SetColorSkin(pNewSkin);
 }
 
+//____ _textModified() ________________________________________________________
 
-//____ DoMyOwnCloning() _______________________________________________________
+void WgFpsDisplay::_textModified( WgText * pText )
+{
+	_requestRender();
+	_requestResize();
+}
+
+//____ _onCloneContent() _______________________________________________________
 
 void WgFpsDisplay::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgFpsDisplay * pOrg		= (WgFpsDisplay *) _pOrg;
 
-	m_labelsText.setProperties( pOrg->m_labelsText.getProperties() );
-	m_valuesText.setProperties( pOrg->m_valuesText.getProperties() );
+	m_labelsText.clone( &pOrg->m_labelsText );
+	m_valuesText.clone( &pOrg->m_valuesText );
 
 	m_tickBufferOfs	= pOrg->m_tickBufferOfs;
 

@@ -13,47 +13,42 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
 
-#ifndef WG_WIDGETCOLLECTION_DOT_H
-#define WG_WIDGETCOLLECTION_DOT_H
+#include <wg_istatictext.h>
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
-#endif
+const char WgIStaticText::CLASSNAME[] = {"IStaticText"};
 
-class WgWidget;
-class WgWidgetCollection;
 
-typedef	WgSmartPtr<WgWidgetCollection,WgObjectPtr>	WgWidgetCollectionPtr;
+//____ IsInstanceOf() _________________________________________________________
 
-class WgWidgetCollection : public WgObject
+bool WgIStaticText::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgInterface::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgIStaticText::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgIStaticTextPtr WgIStaticText::Cast( const WgInterfacePtr& pInterface )
 {
-public:
-	virtual int			Size() const = 0;
-	virtual bool		IsEmpty() const = 0;
+	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
+		return WgIStaticTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgIStaticText*>( pInterface.GetRealPtr()) );
 
-	virtual WgWidget *	First() const = 0;
-	virtual WgWidget *	Last() const = 0;
-
-	virtual WgWidget *	Get( int index ) const = 0;
-	virtual	int			Find( WgWidget * pWidget ) const = 0;
-	virtual WgWidget *	Next( WgWidget * pWidget ) const = 0;
-	virtual WgWidget *	Prev( WgWidget * pWidget ) const = 0;
-protected:
-	WgWidgetCollection() {};
-	virtual ~WgWidgetCollection() {};
-
-
-};
-
-
-
-
-#endif //WG_WIDGETCOLLECTION_DOT_H
+	return 0;
+}
 

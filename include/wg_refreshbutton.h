@@ -30,10 +30,6 @@
 #	include <wg_text.h>
 #endif
 
-#ifndef	WG_INTERFACE_TEXTHOLDER_DOT_H
-#	include <wg_interface_textholder.h>
-#endif
-
 class WgRefreshButton;
 typedef	WgSmartPtr<WgRefreshButton,WgButtonPtr>		WgRefreshButtonPtr;
 typedef	WgWeakPtr<WgRefreshButton,WgButtonWeakPtr>		WgRefreshButtonWeakPtr;
@@ -75,10 +71,7 @@ public:
 	AnimTarget		GetAnimTarget() const { return m_animTarget; }
 
 	void			SetRefreshText( const WgCharSeq& text );
-	const WgChar*	GetRefreshText() const { return m_refreshText.getText(); }
-
-	void			SetRefreshTextProperties( const WgTextpropPtr& pProp );
-	WgTextpropPtr	GetRefreshTextProperties() const { return m_refreshText.getProperties(); }
+	inline WgIModifTextPtr	RefreshText() { return WgIModifTextPtr(this,&m_refreshText); } 
 
 	void			SetRestartable( bool bRestartable );
 	bool			IsRestartable() const { return m_bRestartable; }
@@ -105,6 +98,7 @@ protected:
 	void		_onCloneContent( const WgWidget * _pOrg );
 	virtual void _onNewSize( const WgSize& size );
 
+	void			_textModified( WgText * pText );
 	WgState		_getRenderState();
 
 

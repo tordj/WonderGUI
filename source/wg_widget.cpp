@@ -206,7 +206,7 @@ WgEventHandler * WgWidget::_eventHandler() const
 	{
 		WgRootPanel * pRoot = m_pHook->_root();
 		if( pRoot )
-			return pRoot->EventHandler();
+			return pRoot->EventHandler().GetRealPtr();
 	}
 	return 0;
 }
@@ -435,9 +435,4 @@ bool WgWidget::_onAlphaTest( const WgCoord& ofs )
 bool WgWidget::IsInputField() const
 {
 	return false;
-}
-
-Wg_Interface_TextHolder* WgWidget::TextInterface()
-{
-	return 0;
 }

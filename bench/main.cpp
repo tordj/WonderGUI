@@ -26,7 +26,7 @@
 extern std::ostream cout;
 
 SDL_Surface *	initSDL( int w, int h );
-bool			eventLoop( WgEventHandler * pHandler );
+bool			eventLoop( const WgEventHandlerPtr& pHandler );
 WgRootPanelPtr	setupGUI( const WgGfxDevicePtr& pDevice );
 void			printWidgetSizes();
 
@@ -186,6 +186,7 @@ int main ( int argc, char** argv )
 
 	// Exit WonderGUI
 
+	g_pModal = 0;
 	pRoot = 0;
 	pGfxDevice = 0;
 
@@ -247,7 +248,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 
 	WgRootPanelPtr pRoot = WgRootPanel::Create( pDevice );
 
-	WgEventHandler * pEventHandler = pRoot->EventHandler();
+	WgEventHandlerPtr pEventHandler = pRoot->EventHandler();
 
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
 	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_POSITION );
@@ -559,7 +560,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //	pFlag4->SetSource( pFlagBlock );
 
 	WgButtonPtr pButton2 = WgButton::Cast(pDB->CloneWidget( "button" ));
-	pButton2->SetText( "BUTTON TEXT" );
+	pButton2->Label()->Set( "BUTTON TEXT" );
 	pVBox->AddChild(pButton2);
 
 //	pVBox->AddChild(pFlag3);
@@ -579,7 +580,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //	pVBox->AddChild(pText1);
 
 	WgTextDisplayPtr pText2 = WgTextDisplay::Create();
-	pText2->SetText("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj Hej");
+	pText2->Text()->Set("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj Hej");
 	pText2->SetEditMode(WG_TEXT_EDITABLE);
 	pVBox->AddChild(pText2);
 
@@ -628,7 +629,7 @@ SDL_Surface * initSDL( int w, int h )
 
 //____ eventLoop() ____________________________________________________________
 
-bool eventLoop( WgEventHandler * pHandler )
+bool eventLoop( const WgEventHandlerPtr& pHandler )
 {
 	sdl_wglib::BeginEvents( pHandler );
 
@@ -651,10 +652,10 @@ bool eventLoop( WgEventHandler * pHandler )
 //					return false;
 			}
 		}
-		sdl_wglib::TranslateEvent( event );
+		sdl_wglib::TranslateEvent( pHandler, event );
 	}
 
-	sdl_wglib::EndEvents();
+	sdl_wglib::EndEvents( pHandler );
 
 	return true;
 }

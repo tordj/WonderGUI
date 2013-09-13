@@ -39,7 +39,9 @@ public:
     void            SetTextManager( WgTextManager * pTextManager );
 	WgSize			PreferredSize() const;
 	void			SetDirection( WgDirection direction );
-	
+	WgIModifTextPtr	GetLabel(int index);
+
+
 protected:
 	WgRulerLabels();
 	virtual ~WgRulerLabels();

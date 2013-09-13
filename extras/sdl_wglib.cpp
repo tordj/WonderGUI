@@ -5,7 +5,6 @@
 
 namespace sdl_wglib
 {
-	static WgEventHandler * g_pHandler;
 	static int				g_ticks = 0;
 
 	//____ MapKeys() ___________________________________________________________
@@ -38,10 +37,8 @@ namespace sdl_wglib
 
 	//____ BeginEvents() _______________________________________________________
 
-	void BeginEvents( WgEventHandler * pHandler )
+	void BeginEvents( const WgEventHandlerPtr& pHandler )
 	{
-		g_pHandler = pHandler;
-
 		// Add a tick event first as the first.
 
 		int ticks = SDL_GetTicks();
@@ -51,54 +48,54 @@ namespace sdl_wglib
 
 	//____ TranslateEvent() ____________________________________________________
 
-	void TranslateEvent( SDL_Event& event )
+	void TranslateEvent(  const WgEventHandlerPtr& pHandler, SDL_Event& event )
 	{
 		switch (event.type)
 		{
 			// check for keypresses
 			case SDL_KEYDOWN:
 			{
-				g_pHandler->QueueEvent( new WgEvent::KeyPress( event.key.keysym.sym ) );
+				pHandler->QueueEvent( new WgEvent::KeyPress( event.key.keysym.sym ) );
 				if( event.key.keysym.unicode != 0 )
-					g_pHandler->QueueEvent( new WgEvent::Character( event.key.keysym.unicode ) );
+					pHandler->QueueEvent( new WgEvent::Character( event.key.keysym.unicode ) );
 				break;
 			}
 
 			case SDL_KEYUP:
 			{
-				g_pHandler->QueueEvent( new WgEvent::KeyRelease( event.key.keysym.sym ) );
+				pHandler->QueueEvent( new WgEvent::KeyRelease( event.key.keysym.sym ) );
 				break;
 			}
 
 			case	SDL_MOUSEMOTION:
 			{
-				g_pHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( event.motion.x, event.motion.y ) ) );
+				pHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( event.motion.x, event.motion.y ) ) );
 				break;
 			}
 
 			case	SDL_MOUSEBUTTONDOWN:
 				if(event.button.button == 4 )
-					g_pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, 1 ) );
+					pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, 1 ) );
 				else if(event.button.button == 5)
-					g_pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, -1 ) );
+					pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, -1 ) );
 				else
 				{
-					g_pHandler->QueueEvent( new WgEvent::MouseButtonPress( event.button.button ) );
+					pHandler->QueueEvent( new WgEvent::MouseButtonPress( event.button.button ) );
 				}
 				break;
 
 			case	SDL_MOUSEBUTTONUP:
 				if( event.button.button != 4 && event.button.button != 5 )
-					g_pHandler->QueueEvent( new WgEvent::MouseButtonRelease( event.button.button ) );
+					pHandler->QueueEvent( new WgEvent::MouseButtonRelease( event.button.button ) );
 				break;
 		}
 	}
 
 	//_____ EndEvents() ________________________________________________________
 
-	void EndEvents()
+	void EndEvents( const WgEventHandlerPtr& pHandler )
 	{
-		g_pHandler->ProcessEvents();
+		pHandler->ProcessEvents();
 	}
 
 	//____ LoadSurface() __________________________________________________________

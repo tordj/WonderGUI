@@ -21,7 +21,7 @@ WgTab::WgTab( int id )
 	m_id = id;
 	m_bAlert = false;
 	m_width = 1;
-	m_text.setAlignment(WG_CENTER);
+	m_text.SetAlignment(WG_CENTER);
 	m_text.SetWrap(false);
 	m_bVisible = true;
 }
@@ -113,7 +113,7 @@ void WgTablist::SetTextProperties( const WgTextpropPtr& pProp )
 		WgTab * pTab = m_tabs.First();
 		while( pTab )
 		{
-			pTab->m_text.setProperties(m_pProp);
+			pTab->m_text.SetProperties(m_pProp);
 			pTab = pTab->Next();
 		}
 
@@ -229,8 +229,8 @@ bool WgTablist::AddTab( int id, const WgCharSeq& text, int position, const WgSki
 
 	WgTab * pTab = new WgTab(id);
 
-	pTab->m_text.setText(text);
-	pTab->m_text.setProperties(m_pProp);
+	pTab->m_text.Set(text);
+	pTab->m_text.SetProperties(m_pProp);
 	pTab->SetSkin( pSkin );
 
 	WgTab * pPos = m_tabs.Get(position);
@@ -337,7 +337,7 @@ bool WgTablist::SetTabText( int id, const WgCharSeq& text )
 	WgTab * pTab = _findTab(id);
 	if( pTab )
 	{
-		pTab->m_text.setText( text );
+		pTab->m_text.Set( text );
 		_resizeTabs();
 		_requestRender();
 		return true;
@@ -351,7 +351,7 @@ bool WgTablist::SetTabTextColor( int id, WgColor col )
 	WgTab * pTab = _findTab(id);
 	if( pTab )
 	{
-		pTab->m_text.setColor( col );
+		pTab->m_text.SetColor( col );
 		_requestRender();
 		return true;
 	}
@@ -658,12 +658,12 @@ WgSize WgTablist::PreferredSize() const
 		if( pBg )
 		{
 			h = pBg->PreferredSize().h;
-			int textH = pTab->m_text.height();
+			int textH = pTab->m_text.Height();
 			if( h - pBg->ContentPadding().h < textH )
 				h = textH + pBg->ContentPadding().h;
 		}
 		else
-			h = pTab->m_text.height();
+			h = pTab->m_text.Height();
 
 		if( h > preferredHeight )
 			preferredHeight = h;
@@ -994,7 +994,7 @@ void WgTablist::_resizeTabs()
 
 int WgTablist::_calcTabsWantedWidth( WgTab * pTab ) const
 {
-	int width = pTab->m_text.width();
+	int width = pTab->m_text.Width();
 /*
 	if( pTab->m_pItemRow )
 	{
@@ -1172,7 +1172,7 @@ void WgTablist::_renderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, cons
 		r.w -= rowWidth;
 	}
 */
-	tab.m_text.setAlignment(m_textAlignment);
+	tab.m_text.SetAlignment(m_textAlignment);
 
 	WgRect clip2( clip, content );
 	tab.m_text.setState(state);

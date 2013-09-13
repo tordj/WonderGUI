@@ -46,6 +46,8 @@ WgRefreshButton::WgRefreshButton()
 	m_refreshProgress	= 0.f;
 	m_bStopping			= false;
 
+	m_refreshText.setHolder(this);
+
 }
 
 //____ Destructor _____________________________________________________________
@@ -110,19 +112,7 @@ void WgRefreshButton::SetAnimTarget( AnimTarget target )
 //_____________________________________________________________________________
 void WgRefreshButton::SetRefreshText( const WgCharSeq& text )
 {
-	m_refreshText.setText( text );
-
-	// HACK!
-	m_refreshText.setAlignment(m_text.alignment());
-
-	if( m_bRefreshing )
-		_requestRender();
-}
-
-//_____________________________________________________________________________
-void WgRefreshButton::SetRefreshTextProperties( const WgTextpropPtr& pProp )
-{
-	m_refreshText.setProperties(pProp);
+	m_refreshText.Set( text );
 
 	if( m_bRefreshing )
 		_requestRender();
@@ -206,6 +196,17 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 
 	WgButton::_onNewSize( size );
 }
+
+//____ _textModified() ________________________________________________________
+
+void WgRefreshButton::_textModified( WgText * pText )
+{
+	//TODO: Make conditional
+
+	_requestResize();
+	_requestRender();
+}
+
 
 
 //____ _onEvent() _____________________________________________________________
@@ -377,7 +378,7 @@ void WgRefreshButton::_onCloneContent( const WgWidget * _pOrg )
 	m_pRefreshAnim		= pOrg->m_pRefreshAnim;
 	m_animTarget		= pOrg->m_animTarget;
 	m_refreshMode		= pOrg->m_refreshMode;
-	m_refreshText.setText(&pOrg->m_refreshText);
+	m_refreshText.clone(&pOrg->m_refreshText);
 	m_bRestartable		= pOrg->m_bRestartable;
 
 	m_bRefreshing		= pOrg->m_bRefreshing;
@@ -388,6 +389,6 @@ void WgRefreshButton::_onCloneContent( const WgWidget * _pOrg )
 
 void WgRefreshButton::SetTextManager( WgTextManager * pManager )
 {
-	m_refreshText.setManager( pManager );
-	WgButton::SetTextManager(pManager);
+	m_refreshText.SetManager( pManager );
+	m_text.SetManager(pManager);
 }

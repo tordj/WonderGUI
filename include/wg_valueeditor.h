@@ -48,7 +48,7 @@ class WgValueEditor;
 typedef	WgSmartPtr<WgValueEditor,WgWidgetPtr>		WgValueEditorPtr;
 typedef	WgWeakPtr<WgValueEditor,WgWidgetWeakPtr>	WgValueEditorWeakPtr;
 
-class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder
+class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder, private WgTextHolder
 {
 public:
 	static WgValueEditorPtr	Create() { return WgValueEditorPtr(new WgValueEditor()); }
@@ -63,20 +63,11 @@ public:
 
 	bool	SetMaxInputChars( int max );
 	int		MaxInputChars() const { return m_maxInputChars; }
-	void	SetTextAlignment( const WgOrigo alignment );
-	WgOrigo GetTextAlignment( ) const;
-	void	SetTextColor(WgColor color);
-	WgColor GetTextColor() const;
-	bool	SetTextprop( const WgTextpropPtr& _pProp );
-	WgTextpropPtr GetTextprop( ) const;
-	void	SetTextManager(WgTextManager * _pManager);
-	WgTextManager * GetTextManager() const;
 	void	SetFormat( const WgValueFormatPtr& pFormat );
 	WgValueFormatPtr Format() const { return m_pFormat; }
 	void	Clear();									// Sets value to 0 and clears input field.
 
-	bool	SelectAllText();
-
+	inline WgIStaticTextPtr	Text() { return WgIStaticTextPtr(this,&m_text); } 
 	WgSize	PreferredSize() const;
 
 
@@ -102,6 +93,7 @@ private:
 
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
+	void	_textModified( WgText * pText );
 
 	bool	_parseValueFromInput( int64_t * wpResult );
 

@@ -34,13 +34,15 @@
 #	include <wg_eventfilter.h>
 #endif
 
+#ifndef WG_PANEL_DOT_H
+#	include <wg_panel.h>
+#endif
 
 #ifndef WG_KEY_DOT_H
 #	include <wg_key.h>
 #endif
 
 class WgRootPanel;
-class WgPanel;
 
 class WgEventListener
 {
@@ -51,14 +53,23 @@ public:
 };
 
 
+class WgEventHandler;
+typedef	WgSmartPtr<WgEventHandler,WgObjectPtr>		WgEventHandlerPtr;
+typedef	WgWeakPtr<WgEventHandler,WgObjectWeakPtr>	WgEventHandlerWeakPtr;
 
-class WgEventHandler
+class WgEventHandler : public WgObject
 {
 friend class WgWidget;
+friend class WgRootPanel;
 
 public:
-	WgEventHandler( WgRootPanel * pRoot );
-	~WgEventHandler();
+	static WgEventHandlerPtr	Create(const WgRootPanelPtr& pRoot) { return WgEventHandlerPtr(new WgEventHandler(pRoot.GetRealPtr())); }
+
+	bool						IsInstanceOf( const char * pClassName ) const;
+	const char *				ClassName( void ) const;
+	static const char			CLASSNAME[];
+	static WgEventHandlerPtr	Cast( const WgObjectPtr& pObject );
+
 
 	bool	QueueEvent( WgEvent::Event * pEvent );
 
@@ -66,11 +77,11 @@ public:
 
 	//----
 
-	bool	SetFocusGroup( WgPanel * pFocusGroup );
-	bool	SetKeyboardFocus( WgWidget * pFocus );
+	bool	SetFocusGroup( const WgPanelPtr& pFocusGroup );
+	bool	SetKeyboardFocus( const WgWidgetPtr& pFocus );
 
-	WgPanel *	FocusGroup() const;
-	WgWidget *			KeyboardFocus() const { return m_keyFocusWidget.GetRealPtr(); }
+	WgPanelPtr	FocusGroup() const { return m_keyFocusGroup.GetRealPtr(); }
+	WgWidgetPtr	KeyboardFocus() const { return m_keyFocusWidget.GetRealPtr(); }
 
 	//----
 
@@ -116,6 +127,9 @@ public:
 	bool	ForwardEvent( const WgEvent::Event * pEvent, WgWidget * pRecipient );
 
 private:
+	WgEventHandler( WgRootPanel * pRoot );
+	~WgEventHandler();
+
 	class	Callback;
 
 	void 	_postTickEvents( int ticks );
@@ -166,7 +180,7 @@ private:
 
 	//
 
-	WgRootPanel *		m_pRoot;
+	WgRootPanelWeakPtr	m_pRoot;
 
 	std::deque<WgEvent::Event*>				m_eventQueue;
 	bool									m_bIsProcessing;	// Set when we are inside ProcessEvents().
@@ -205,7 +219,7 @@ private:
 	std::vector<KeyDownInfo*>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.
 
 	bool						m_bWindowFocus;			// Set if we have window focus.
-	WgWidgetWeakPtr				m_keyFocusGroup;		// Current focus group (if any).
+	WgPanelWeakPtr				m_keyFocusGroup;		// Current focus group (if any).
 	WgWidgetWeakPtr				m_keyFocusWidget;		// Widget currently having the keyboard focus.
 
 	std::map<WgWidgetWeakPtr,WgWidgetWeakPtr>	m_focusGroupMap;	// Mapping focus groups (key) with their currently focused Widget (value).

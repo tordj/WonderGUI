@@ -13,6 +13,7 @@
 #	include	<wg_interface.h>
 #endif
 
+class WgObjectWeakPtr;
 
 //____ WgObjectPtr _____________________________________________________________
 
@@ -32,6 +33,8 @@ public:
 		if( m_pObj )
 			m_pObj->m_refCount++;
 	}
+
+	WgObjectPtr( const WgObjectWeakPtr& r );
 
 	~WgObjectPtr()
 	{
@@ -90,6 +93,7 @@ template<class T,class P> class WgSmartPtr : public P
 public:
 	WgSmartPtr(T* p=0) : P( p ) {};
 	WgSmartPtr(const WgSmartPtr<T,P>& r) : P( (T*) r.m_pObj ) {};
+//	WgSmartPtr(const WgWeakPtr<T,P>& r) : P( (T*) r.GetRealPtr() ) {};
 	~WgSmartPtr() {};
 
 /*
@@ -118,7 +122,7 @@ class WgObjectWeakPtr
 public:
 	WgObjectWeakPtr() { m_pHub = 0; }
 	WgObjectWeakPtr( WgObject * pObj );
-
+	WgObjectWeakPtr(const WgObjectPtr& r);
 	WgObjectWeakPtr(const WgObjectWeakPtr& r)
 	{
 
@@ -128,7 +132,6 @@ public:
 	}
 
 	~WgObjectWeakPtr();
-
 
     inline WgObjectWeakPtr& operator=( WgObjectWeakPtr const & r)
 	{
@@ -170,6 +173,7 @@ template<class T,class P> class WgWeakPtr : public P
 public:
 	WgWeakPtr(T* p=0) : P( p ) {};
 	WgWeakPtr(const WgWeakPtr<T,P>& r) : P( r.GetRealPtr() ) {};
+//	WgWeakPtr(const WgSmartPtr<T,P>& r) : P( r.GetRealPtr() ) {};
 	~WgWeakPtr() {};
 
 	inline T & operator*() const { return * GetRealPtr(); }
@@ -246,6 +250,7 @@ public:
 	inline operator bool() const { return (m_pInterface != 0); }
 
 	inline WgInterface * GetRealPtr() const { return m_pInterface; }
+	inline WgObject * GetRealObjectPtr() const { return m_pObj; }
 
 protected:
 	void copy( WgInterfacePtr const & r )
@@ -276,8 +281,9 @@ protected:
 template<class T,class P> class WgISmartPtr : public P
 {
 public:
-	WgISmartPtr(WgObject* pObj, T* pInterface=0) : P( pObj, pInterface ) {};
-	WgISmartPtr(const WgISmartPtr<T,P>& r) : P( r.pObj, (T*) r.m_pObj ) {};
+	WgISmartPtr( int dummy = 0 ) : P( 0, 0 ) {};
+	WgISmartPtr(WgObject* pObj, T* pInterface) : P( pObj, pInterface ) {};
+	WgISmartPtr(const WgISmartPtr<T,P>& r) : P( r.m_pObj, (T*) r.m_pInterface ) {};
 	~WgISmartPtr() {};
 
 	inline T & operator*() const { return * (T*) this->m_pInterface; }

@@ -61,7 +61,7 @@ public:
 	bool			GetAlert() const		{ return m_bAlert; }
 
 	const WgChar*	getText() const				{ return m_text.getText(); }
-	void			setText(const char* pText)	{ return m_text.setText(pText); }
+	void			setText(const char* pText)	{ return m_text.Set(pText); }
 
 	void			SetSkin( const WgSkinPtr& pSkin ) { m_pSkin = pSkin; }
 	WgSkinPtr		Skin() const			{ return m_pSkin; }

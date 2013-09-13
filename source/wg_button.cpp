@@ -35,8 +35,7 @@ const char WgButton::CLASSNAME[] = {"Button"};
 
 WgButton::WgButton()
 {
-	m_pText = &m_text;
-	m_text.setAlignment( WG_CENTER );
+	m_text.SetAlignment( WG_CENTER );
 	m_text.setLineWidth(Size().w);					// We start with no textborders...
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 	m_text.setHolder(this);
@@ -131,7 +130,7 @@ int WgButton::HeightForWidth( int width ) const
 	if( m_pSkin )
 		height = m_pSkin->PreferredSize().h;
 
-	if( m_text.nbChars() != 0 )
+	if( m_text.Length() != 0 )
 	{
 		WgSize padding;
 
@@ -155,7 +154,7 @@ WgSize WgButton::PreferredSize() const
 {
 	WgSize preferred;
 
-	if( m_text.nbChars() != 0 )
+	if( m_text.Length() != 0 )
 		preferred = m_text.unwrappedSize();
 	
 	if( m_pSkin )
@@ -339,7 +338,6 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgButton * pOrg = (WgButton *) _pOrg;
 
-	pOrg->Wg_Interface_TextHolder::_onCloneContent( this );
 	WgIconHolder::_onCloneContent( pOrg );
 
 	m_text.setText(&pOrg->m_text);
@@ -362,9 +360,9 @@ bool WgButton::_onAlphaTest( const WgCoord& ofs )
 
 //____ _textModified() __________________________________________________________
 
-void WgButton::_textModified()
+void WgButton::_textModified( WgText * pText )
 {
-	//TODO: Should possibly refresh size too.
+	_requestResize();
 	_requestRender();
 }
 
@@ -372,6 +370,6 @@ void WgButton::_textModified()
 
 void WgButton::_iconModified()
 {
-	//TODO: Should possibly refresh size too.
+	_requestResize();
 	_requestRender();
 }

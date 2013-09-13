@@ -20,34 +20,35 @@
 
 =========================================================================*/
 
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
+#include <wg_iedittext.h>
 
-class WgMemStack
+const char WgIEditText::CLASSNAME[] = {"IEditText"};
+
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgIEditText::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgIModifText::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgIEditText::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgIEditTextPtr WgIEditText::Cast( const WgInterfacePtr& pInterface )
 {
-public:
-	WgMemStack( int blockSize );
-	~WgMemStack() {}
+	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
+		return WgIEditTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgIEditText*>(pInterface.GetRealPtr()) );
 
-	char *  Alloc( int bytes );
-	void	Release( int bytes );
-	void	Clear();
-	bool	IsEmpty() const;
+	return 0;
+}
 
-private:
-
-	class BlockHeader : public WgLink
-	{
-	public:
-		BlockHeader(int bytes);
-		~BlockHeader();
-
-		char *	pBlock;
-		int		size;
-		int		allocated;
-	};
-
-	int						m_blockSize;
-	WgChain<BlockHeader>	m_blocks;
-};

@@ -58,7 +58,6 @@ WgRootPanel::WgRootPanel( const WgGfxDevicePtr& pGfxDevice )
 
 WgRootPanel::~WgRootPanel()
 {
-	delete m_pEventHandler;
 }
 
 //____ IsInstanceOf() _________________________________________________________
@@ -297,20 +296,14 @@ WgWidget * WgRootPanel::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 bool WgRootPanel::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting )
 {
-	if( m_pEventHandler )
-		return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
-	else
-		return false;
+	return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
 }
 
 //____ _focusReleased() ________________________________________________________
 
 bool WgRootPanel::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing )
 {
-	if( m_pEventHandler )
-		return m_pEventHandler->SetKeyboardFocus(0);
-	else
-		return false;
+	return m_pEventHandler->SetKeyboardFocus(0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

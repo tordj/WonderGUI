@@ -43,10 +43,9 @@ typedef	WgSmartPtr<WgSizeScaler,WgObjectPtr>	WgSizeScalerPtr;
 class WgScalable
 {
 	friend class WgSizeScaler;
-public:
-	virtual ~WgScalable();
 protected:
 	WgScalable() {}
+	virtual ~WgScalable();
 	virtual void _onScaleChanged() = 0;
 	
 	WgSizeScalerPtr m_pScaler;

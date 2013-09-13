@@ -40,6 +40,7 @@ const char WgValueEditor::CLASSNAME[] = {"ValueEditor"};
 
 WgValueEditor::WgValueEditor()
 {
+	m_text.setHolder(this);
 	_regenText();
 	m_buttonDownOfs = 0;
 	m_bSelectAllOnRelease = false;
@@ -89,40 +90,6 @@ WgValueEditorPtr WgValueEditor::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-//____ SetTextColor() _________________________________________________________
-
-void WgValueEditor::SetTextColor( WgColor col )
-{
-	m_text.setColor( col );
-	_regenText();			// Is this necessary?
-	_requestRender();
-}
-
-WgColor WgValueEditor::GetTextColor() const
-{
-	return m_text.getColor(WG_STATE_NORMAL);
-}
-
-//____ SetTextprop() __________________________________________________________
-
-bool WgValueEditor::SetTextprop( const WgTextpropPtr& _pProp )
-{
-	if( _pProp != m_text.getProperties() )
-	{
-		m_text.setProperties(_pProp);
-		_regenText();		// Is this necessary?
-		_requestRender();
-	}
-
-	return true;
-}
-
-//____ GetTextprop() __________________________________________________________
-
-WgTextpropPtr WgValueEditor::GetTextprop( ) const
-{
-	return m_text.getProperties();
-}
 
 
 //____ SetFormat() ____________________________________________________________
@@ -136,40 +103,6 @@ void WgValueEditor::SetFormat( const WgValueFormatPtr& pFormat )
 	_requestRender();
 }
 
-//____ SetTextAlignment() _____________________________________________________
-
-void WgValueEditor::SetTextAlignment( const WgOrigo alignment )
-{
-	if( m_text.alignment() != alignment )
-	{
-		m_text.setAlignment(alignment);
-		_requestRender();
-	}
-}
-
-//____ GetTextAlignment() _____________________________________________________
-
-WgOrigo WgValueEditor::GetTextAlignment( ) const
-{
-	return m_text.alignment();
-}
-
-//____ SetTextManager() _______________________________________________________
-
-void WgValueEditor::SetTextManager(WgTextManager * _pManager)
-{
-	if( m_text.getManager() != _pManager )
-	{
-		m_text.setManager( _pManager );
-	}
-}
-
-//____ GetTextManager() _______________________________________________________
-
-WgTextManager * WgValueEditor::GetTextManager() const
-{
-	return m_text.getManager();
-}
 
 
 //____ Clear() ________________________________________________________________
@@ -205,7 +138,7 @@ WgSize WgValueEditor::PreferredSize() const
 {
 	WgSize	sz;
 
-	sz.h = m_text.height();
+	sz.h = m_text.Height();
 	sz.w = 0;
 
 	WgTextAttr	attr;
@@ -248,12 +181,19 @@ void WgValueEditor::_rangeModified()
 		_queueEvent( new WgEvent::EditvalueSet(this,m_value,FractionalValue()) );
 }
 
+//____ _textModified() ________________________________________________________
+
+void WgValueEditor::_textModified( WgText * pText )
+{
+	_requestRender();
+}
+
 
 //____ _onRefresh() ____________________________________________________________
 
 void WgValueEditor::_onRefresh( void )
 {
-	if( m_text.getFont() )
+	if( m_text.Font() )
 	{
 		_regenText();
 		_requestRender();
@@ -277,7 +217,7 @@ void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	if( m_text.isCursorShowing() )
 	{
-		int textW = m_text.width();
+		int textW = m_text.Width();
 		if( textW > canvas.w )
 			canvas.w = textW;
 
@@ -297,7 +237,7 @@ void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 void WgValueEditor::_regenText()
 {
 	m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.GetRealPtr() );
-	m_text.goEOL();
+	m_text.GoEOL();
 }
 
 //____ _parseValueFromInput() __________________________________________________
@@ -442,7 +382,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 		else
 		{
 			m_text.setSelectionMode(false);
-			m_text.clearSelection();
+			m_text.ClearSelection();
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
 			_limitCursor();
 			m_text.setSelectionMode(true);
@@ -512,7 +452,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 					_queueEvent( new WgEvent::EditvalueModify(this, m_value, FractionalValue()) );
 
 					m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.GetRealPtr() );
-					m_text.goEOL();
+					m_text.GoEOL();
 					_limitCursor();
 				}
 				else
@@ -563,7 +503,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 
 					if( ofs2 < ofs1 )
 					{
-						m_text.deleteText( ofs2, ofs1 - ofs2 );
+						m_text.Delete( ofs2, ofs1 - ofs2 );
 						bTextChanged = true;
 					}
 //					m_text.delPrevWord();
@@ -594,14 +534,14 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 
 					if( ofs2 > ofs1 )
 					{
-						m_text.deleteText( ofs1, ofs2 - ofs1 );
+						m_text.Delete( ofs1, ofs2 - ofs1 );
 						bTextChanged = true;
 					}
 //					m_text.delNextWord();
 				}
 				else
 				{
-					if( m_text.column() < m_text.nbChars() - m_pFormat->getSuffix().Length() )
+					if( m_text.column() < m_text.Length() - m_pFormat->getSuffix().Length() )
 					{
 						m_text.delNextChar();
 						bTextChanged = true;
@@ -627,7 +567,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 					if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 
-					m_text.goBOL();
+					m_text.GoBOL();
 					_limitCursor();
 					break;
 				}
@@ -650,7 +590,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 					if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 
-					m_text.goEOL();
+					m_text.GoEOL();
 					_limitCursor();
 					break;
 				}
@@ -684,7 +624,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 						m_text.delSelection();
 					m_text.setSelectionMode(false);
 
-					if( m_text.nbChars() < m_maxInputChars )
+					if( m_text.Length() < m_maxInputChars )
 					{
 						if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].Glyph() == '-' ) )
 						{
@@ -710,7 +650,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 						m_text.delSelection();
 					m_text.setSelectionMode(false);
 
-					if( m_text.nbChars() < m_maxInputChars )
+					if( m_text.Length() < m_maxInputChars )
 						pCursor->putChar( '-' );
 					bTextChanged = true;
 				}
@@ -729,7 +669,7 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 						m_text.delSelection();
 					m_text.setSelectionMode(false);
 
-					if( m_text.nbChars() < m_maxInputChars )
+					if( m_text.Length() < m_maxInputChars )
 						pCursor->putChar( character );
 					bTextChanged = true;
 				}
@@ -776,9 +716,9 @@ void WgValueEditor::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 void WgValueEditor::_selectAll()
 {
 	int min = m_pFormat->getPrefix().Length();
-	int max = m_text.nbChars() - m_pFormat->getSuffix().Length();
+	int max = m_text.Length() - m_pFormat->getSuffix().Length();
 
-	m_text.selectRange( WgRange( min, max-min ) );
+	m_text.Select( min, max-min );
 }
 
 //____ _limitCursor() _________________________________________________________
@@ -786,7 +726,7 @@ void WgValueEditor::_selectAll()
 void WgValueEditor::_limitCursor()
 {
 	int min = m_pFormat->getPrefix().Length();
-	int max = m_text.nbChars() - m_pFormat->getSuffix().Length();
+	int max = m_text.Length() - m_pFormat->getSuffix().Length();
 
 	WgCursorInstance * pCursor = m_text.GetCursor();
 
@@ -834,9 +774,7 @@ void WgValueEditor::_onCloneContent( const WgWidget * _pOrg )
 	m_maxInputChars = pOrg->m_maxInputChars;
 	m_pFormat		= pOrg->m_pFormat;
 	m_pUseFormat->setFormat(pOrg->m_pFormat);
-	m_text.setText(&pOrg->m_text);
-	m_text.setFont(pOrg->m_text.getFont());
-	m_text.setAlignment(pOrg->m_text.alignment());
+	m_text.clone(&pOrg->m_text);
 }
 
 //____ onStateChanged() _______________________________________________________
@@ -856,7 +794,7 @@ void WgValueEditor::_onStateChanged( WgState oldState, WgState newState )
 	{
 		_startReceiveTicks();
 		m_text.showCursor();
-		m_text.goEOL();
+		m_text.GoEOL();
 		m_pUseFormat = m_pFormat;
 
 		if( m_pFormat->getDecimals() != 0 )
@@ -894,17 +832,3 @@ void WgValueEditor::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& 
 	m_text.SetColorSkin(pNewSkin);
 }
 
-
-//____ SelectAllText() __________________________________________________________
-
-bool WgValueEditor::SelectAllText()
-{
-	if( !m_text.GetCursor() )
-	{
-		if( !GrabFocus() )
-			return false;				// Couldn't get cursor.
-	}
-
-	_selectAll();
-	return true;
-}

@@ -29,9 +29,9 @@ class WgInterface
 	friend class WgInterfacePtr;
 	friend class WgInterfaceWeakPtr;
 public:
-	virtual bool		IsInstanceOf( const char * pClassName ) const;
-	virtual const char *ClassName( void ) const;
-	static const char	CLASSNAME[];
+	bool					IsInstanceOf( const char * pClassName ) const;
+	const char *			ClassName( void ) const;
+	static const char		CLASSNAME[];
 	static WgInterfacePtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
 };
 

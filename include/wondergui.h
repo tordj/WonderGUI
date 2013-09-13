@@ -163,10 +163,6 @@
 #	include <wg_vectorglyphs.h>
 #endif
 
-#ifndef WG_WIDGETCOLLECTION_DOT_H
-#	include <wg_widgetcollection.h>
-#endif
-
 #ifndef WG_PANEL_DOT_H
 #	include <wg_panel.h>
 #endif

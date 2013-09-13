@@ -41,7 +41,6 @@ WgCheckBox::WgCheckBox()
 	m_bReturnPressed	= false;
 	m_bFlipOnRelease	= false;
 
-	m_pText				= &m_text;
 	m_text.setHolder( this );
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 
@@ -129,7 +128,7 @@ WgSize WgCheckBox::PreferredSize() const
 	WgSize iconPreferredSize;
 	WgSize textPreferredSize;
 
-	if( m_text.nbChars() > 0 )
+	if( m_text.Length() > 0 )
 		textPreferredSize = m_text.unwrappedSize();
 
 	if( m_pIconSkin )
@@ -244,7 +243,7 @@ void WgCheckBox::_onStateChanged( WgState oldState, WgState newState )
 {
 	WgWidget::_onStateChanged(oldState,newState);
 
-	m_pText->setState( newState );
+	m_text.setState( newState );
 
 	if( m_pIconSkin && !m_pIconSkin->IsStateIdentical(newState, oldState) )
 		_requestRender();		//TODO: Just request render on icon?
@@ -294,10 +293,10 @@ void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 
 	// Print text
 
- 	if( m_text.nbLines()!= 0 )
+ 	if( m_text.Lines()!= 0 )
 	{
 		WgRect	textRect = _getTextRect( contentRect, iconRect );
-		pDevice->PrintText( _clip, m_pText, textRect );
+		pDevice->PrintText( _clip, &m_text, textRect );
 	}
 }
 
@@ -339,13 +338,12 @@ void WgCheckBox::_onCloneContent( const WgWidget * _pOrg )
 	m_text				= pOrg->m_text;
 	m_clickArea			= pOrg->m_clickArea;
 
-	Wg_Interface_TextHolder::_onCloneContent( pOrg );
 	WgIconHolder::_onCloneContent( pOrg );
 }
 
 //____ _textModified() _________________________________________________________
 
-void WgCheckBox::_textModified()
+void WgCheckBox::_textModified( WgText * pText )
 {
 	_requestResize();
 	_requestRender();

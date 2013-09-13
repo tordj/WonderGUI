@@ -2,14 +2,13 @@
 #include <wg_mempool.h>
 #include <stdlib.h>
 
-Uint32	WgMemPool::g_allocatedEver = 0;
-
 //____ Constructor ____________________________________________________________
 
-WgMemPool::WgMemPool( Uint32 entriesPerBlock, Uint32 entrySize )
+WgMemPool::WgMemPool( int entriesPerBlock, int entrySize )
 {
 	m_nEntriesPerBlock	= entriesPerBlock;
 	m_entrySize			= entrySize;
+	m_nAllocEntries		= 0;
 }
 
 //____ Destructor _____________________________________________________________
@@ -22,7 +21,7 @@ WgMemPool::~WgMemPool()
 
 void * WgMemPool::AllocEntry()
 {
-	g_allocatedEver++;
+	m_nAllocEntries++;
 
 	Block * pBlock = m_blocks.First();
 	if(pBlock == 0)
@@ -70,7 +69,10 @@ void WgMemPool::FreeEntry( void * pEntry )
 
 	if( pBlock->nAllocEntries == 0 )
 		delete pBlock;
+
+	m_nAllocEntries--;
 }
+
 
 //____ _addBlock() _____________________________________________________________
 
@@ -83,7 +85,7 @@ WgMemPool::Block *WgMemPool::_addBlock()
 
 //____ Block::Constructor _____________________________________________________
 
-WgMemPool::Block::Block( Uint32 _nEntries, Uint32 _entrySize )
+WgMemPool::Block::Block( int _nEntries, int _entrySize )
 {
 	pMemBlock		= malloc( _nEntries*_entrySize );
 	blockSize		= _nEntries*_entrySize;
@@ -118,7 +120,7 @@ void * WgMemPool::Block::allocEntry()
 	}
 	else
 	{
-		firstFreeEntry = * ((Uint32*)p);
+		firstFreeEntry = * ((int*)p);
 	}
 	return p;
 }
@@ -130,8 +132,8 @@ bool WgMemPool::Block::freeEntry( void * pEntry )
 	if( pEntry < pMemBlock || pEntry >= ((Uint8*)pMemBlock) + blockSize )
 		return false;
 
-	* ((Uint32*)pEntry) = firstFreeEntry;
-	firstFreeEntry = ((Uint32) (((char*)pEntry) - ((char*)pMemBlock))) / entrySize;
+	* ((int*)pEntry) = firstFreeEntry;
+	firstFreeEntry = ((int) (((char*)pEntry) - ((char*)pMemBlock))) / entrySize;
 
 	nAllocEntries--;
 	return true;

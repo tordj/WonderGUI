@@ -66,7 +66,7 @@ class WgBase
 {
 public:
 	static void Init();
-	static void Exit();
+	static int Exit();
 
 
 #ifdef WG_USE_FREETYPE

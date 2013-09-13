@@ -28,10 +28,6 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_INTERFACE_EDITTEXT_DOT_H
-#	include <wg_interface_edittext.h>
-#endif
-
 #ifndef	WG_TEXT_DOT_H
 #	include <wg_text.h>
 #endif
@@ -44,7 +40,7 @@ class WgTextDisplay;
 typedef	WgSmartPtr<WgTextDisplay,WgWidgetPtr>		WgTextDisplayPtr;
 typedef	WgWeakPtr<WgTextDisplay,WgWidgetWeakPtr>	WgTextDisplayWeakPtr;
 
-class WgTextDisplay:public WgWidget, public WgInterfaceEditText
+class WgTextDisplay:public WgWidget, public WgTextHolder
 {
 public:
 	static WgTextDisplayPtr	Create() { return WgTextDisplayPtr(new WgTextDisplay()); }
@@ -62,11 +58,6 @@ public:
 	int		InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
-	void		GoBOL();
-	void		GoEOL();
-	void		GoBOF();
-	void		GoEOF();
-
 	virtual void			SetEditMode(WgTextEditMode mode);
 	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
 
@@ -74,7 +65,7 @@ public:
 	WgString			TooltipString() const;
 
 	virtual bool IsInputField() const { return IsEditable(); }
-	virtual Wg_Interface_TextHolder* TextInterface() { return this; }
+	inline WgIEditTextPtr	Text() { return WgIEditTextPtr(this,&m_text); } 
 
 	int		HeightForWidth( int width ) const;
 	WgSize	PreferredSize() const;
@@ -97,7 +88,7 @@ protected:
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 private:
-	void	_textModified();
+	void	_textModified( WgText * pText );
 	bool	_insertCharAtCursor( Uint16 c );
 
 

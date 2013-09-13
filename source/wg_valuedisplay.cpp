@@ -33,7 +33,8 @@ const char WgValueDisplay::CLASSNAME[] = {"ValueDisplay"};
 
 WgValueDisplay::WgValueDisplay()
 {
-	m_text.setAlignment( WG_EAST );
+	m_text.setHolder(this);
+	m_text.SetAlignment( WG_EAST );
 	m_text.SetWrap(false);
 }
 
@@ -71,19 +72,6 @@ WgValueDisplayPtr WgValueDisplay::Cast( const WgObjectPtr& pObject )
 }
 
 
-//____ SetTextProperties() _____________________________________________________________
-
-void WgValueDisplay::SetTextProperties( const WgTextpropPtr& _pProp )
-{
-	if( _pProp != m_text.getProperties() )
-	{
-		m_text.setProperties(_pProp);
-		_regenText();
-		_requestRender();
-	}
-}
-
-
 //____ SetFormat() ____________________________________________________________
 
 void WgValueDisplay::SetFormat( const WgValueFormatPtr& pFormat )
@@ -96,7 +84,7 @@ void WgValueDisplay::SetFormat( const WgValueFormatPtr& pFormat )
 
 WgSize WgValueDisplay::PreferredSize() const
 {
-	WgSize textSize(m_text.width(),m_text.height());
+	WgSize textSize(m_text.Width(),m_text.Height());
 
 	if( m_pSkin )
 		return m_pSkin->SizeForContent(textSize);
@@ -115,6 +103,14 @@ void WgValueDisplay::_valueModified()
 	_regenText();
 	_requestRender();
 }
+
+//____ _textModified() _____________________________________________________________
+
+void WgValueDisplay::_textModified(WgText * pText)
+{
+	_requestRender();
+}
+
 
 //____ _rangeModified() ________________________________________________________
 
@@ -155,9 +151,7 @@ void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 	Wg_Interface_ValueHolder::_onCloneContent( pOrg );
 
 	m_pFormat		= pOrg->m_pFormat;
-	m_text.setText(&pOrg->m_text);
-	m_text.setAlignment(pOrg->m_text.alignment());
-	m_text.setProperties(pOrg->m_text.getProperties());
+	m_text.clone(&pOrg->m_text);
 }
 
 //____ _onStateChanged() ______________________________________________________

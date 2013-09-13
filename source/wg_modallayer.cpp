@@ -429,13 +429,13 @@ void WgModalLayer::_updateKeyboardFocus()
 	if( !Hook() )
 		return;
 
-	WgEventHandler * pHandler = Hook()->EventHandler();
+	WgEventHandler * pHandler = Hook()->EventHandler().GetRealPtr();
 	if( !pHandler )
 		return;
 
 	// Retrieve focused Widget and verify it being a descendant to us.
 
-	WgWidget * pFocused = pHandler->KeyboardFocus();
+	WgWidget * pFocused = pHandler->KeyboardFocus().GetRealPtr();
 
 	WgWidget * p = pFocused;
 	while( p && p->Parent() && p->Parent() != this )

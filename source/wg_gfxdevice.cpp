@@ -613,7 +613,7 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 
 	pen.SetAttributes(attr);
 
-	WgSize	textSize( pText->width(), pText->height() );
+	WgSize	textSize( pText->Width(), pText->Height() );
 
 	if( dest.h < (int) textSize.h || dest.w < (int) textSize.w || !clip.Contains( dest ) || pText->isCursorShowing() )
 		pen.SetClipRect( clip );
@@ -628,7 +628,7 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 	}
 
 	bool bEllipsisActive = false;
-	if( pText->IsAutoEllipsis() && !pText->isCursorShowing() && (textSize.w > dest.w || textSize.h > dest.h) )
+	if( pText->AutoEllipsis() && !pText->isCursorShowing() && (textSize.w > dest.w || textSize.h > dest.h) )
 		bEllipsisActive = true;
 
 	WgCoord	pos;
@@ -920,7 +920,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 {
 	WgRect		clip(_clip,dest);		// Make sure clipping rect is inside dest.
 
-	WgState state = pText->state();
+	WgState state = pText->State();
 
 	// Take care of selection background color (if we have any)
 
@@ -951,7 +951,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 	int		startOfs = 0;
 
 	const WgChar * pChars = pText->getText();
-	int nChars = pText->nbChars();
+	int nChars = pText->Length();
 
 	for( int ofs = 0 ; ofs < nChars ; ofs++ )
 	{

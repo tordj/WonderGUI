@@ -28,6 +28,9 @@
 #include <wg_rootpanel.h>
 #include <wg_panel.h>
 
+const char WgEventHandler::CLASSNAME[] = {"EventHandler"};
+
+
 //____ Constructor ____________________________________________________________
 
 WgEventHandler::WgEventHandler( WgRootPanel * pRoot )
@@ -54,15 +57,43 @@ WgEventHandler::~WgEventHandler()
 {
 }
 
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgEventHandler::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgObject::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgEventHandler::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgEventHandlerPtr WgEventHandler::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgEventHandlerPtr( static_cast<WgEventHandler*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
 //____ SetFocusGroup() ________________________________________________________
 
-bool WgEventHandler::SetFocusGroup( WgPanel * pFocusGroup )
+bool WgEventHandler::SetFocusGroup( const WgPanelPtr& pFocusGroup )
 {
 	// Sanity checks
 
 	if( pFocusGroup )
 	{
-		if( pFocusGroup == m_keyFocusGroup.GetRealPtr() )
+		if( pFocusGroup == m_keyFocusGroup )
 			return true;									// Not an error, but we don't need to do anything
 
 		if( !pFocusGroup->IsFocusGroup() )
@@ -77,8 +108,8 @@ bool WgEventHandler::SetFocusGroup( WgPanel * pFocusGroup )
 	WgWidgetWeakPtr pNewFocusWidget;
 
 	if( pFocusGroup )
-		if( m_focusGroupMap.find(pFocusGroup) != m_focusGroupMap.end() )
-			pNewFocusWidget = m_focusGroupMap[pFocusGroup];
+		if( m_focusGroupMap.find(pFocusGroup.GetRealPtr()) != m_focusGroupMap.end() )
+			pNewFocusWidget = m_focusGroupMap[pFocusGroup.GetRealPtr()];
 
 	if( m_keyFocusWidget )
 		_setWidgetFocused( m_keyFocusWidget.GetRealPtr(), false );
@@ -89,7 +120,7 @@ bool WgEventHandler::SetFocusGroup( WgPanel * pFocusGroup )
 	// Set members and exit
 
 	m_keyFocusWidget = pNewFocusWidget;
-	m_keyFocusGroup = pFocusGroup;
+	m_keyFocusGroup = pFocusGroup.GetRealPtr();
 
 	return true;
 }
@@ -97,7 +128,7 @@ bool WgEventHandler::SetFocusGroup( WgPanel * pFocusGroup )
 
 //____ SetKeyboardFocus() _____________________________________________________
 
-bool WgEventHandler::SetKeyboardFocus( WgWidget * pFocus )
+bool WgEventHandler::SetKeyboardFocus( const WgWidgetPtr& pFocus )
 {
 	// Return if Widget is not child of our root.
 
@@ -126,7 +157,7 @@ bool WgEventHandler::SetKeyboardFocus( WgWidget * pFocus )
 		{
 			if( p->_isPanel() && static_cast<WgPanel*>(p)->IsFocusGroup() )
 			{
-				m_keyFocusGroup = p;
+				m_keyFocusGroup = static_cast<WgPanel*>(p);
 				break;
 			}
 
@@ -135,26 +166,15 @@ bool WgEventHandler::SetKeyboardFocus( WgWidget * pFocus )
 
 		// Activate focus
 
-		_setWidgetFocused( pFocus, true );
+		_setWidgetFocused( pFocus.GetRealPtr(), true );
 	}
 
 	// Set members and exit.
 
-	m_keyFocusWidget = pFocus;
-	m_focusGroupMap[m_keyFocusGroup] = pFocus;
+	m_keyFocusWidget = pFocus.GetRealPtr();
+	m_focusGroupMap[m_keyFocusGroup] = pFocus.GetRealPtr();
 
 	return true;
-}
-
-//____ FocusGroup() ___________________________________________________________
-
-WgPanel * WgEventHandler::FocusGroup() const
-{
-	WgWidget * pWidget = m_keyFocusGroup.GetRealPtr();
-	if( pWidget && pWidget->IsContainer() && static_cast<WgContainer*>(pWidget)->_isPanel() )
-		return static_cast<WgPanel*>(pWidget);
-
-	return 0;
 }
 
 //____ IsMouseButtonPressed() _________________________________________________________

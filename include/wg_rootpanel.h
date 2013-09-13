@@ -34,6 +34,9 @@
 #	include <wg_patches.h>
 #endif
 
+#ifndef WG_EVENTHANDLER_DOT_H
+#	include <wg_eventhandler.h>
+#endif
 
 #ifndef WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
@@ -43,8 +46,8 @@ class WgWidget;
 
 
 class WgRootPanel;
-typedef	WgSmartPtr<WgRootPanel,WgObjectPtr>	WgRootPanelPtr;
-typedef	WgWeakPtr<WgRootPanel,WgObjectPtr>		WgRootPanelWeakPtr;
+typedef	WgSmartPtr<WgRootPanel,WgObjectPtr>		WgRootPanelPtr;
+typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>	WgRootPanelWeakPtr;
 
 
 //____ WgRootPanel ____________________________________________________________
@@ -61,9 +64,9 @@ public:
 	static WgRootPanelPtr	Cast( const WgObjectPtr& pObject );
 
 	bool					SetGfxDevice( const WgGfxDevicePtr& pDevice );
-	inline WgGfxDevicePtr 	GfxDevice() const { return m_pGfxDevice; };
+	inline WgGfxDevicePtr 	GfxDevice() const { return m_pGfxDevice; }
 
-	inline WgEventHandler *	EventHandler() const { return m_pEventHandler; }
+	inline WgEventHandlerPtr EventHandler() const { return m_pEventHandler; }
 
 	bool					SetGeo( const WgRect& geo );
 	WgRect					Geo() const;
@@ -148,7 +151,7 @@ protected:
 	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
 	WgGfxDevicePtr		m_pGfxDevice;
-	WgEventHandler *	m_pEventHandler;
+	WgEventHandlerPtr	m_pEventHandler;
 	Hook				m_hook;
 	WgRect				m_geo;
 	bool				m_bHasGeo;
