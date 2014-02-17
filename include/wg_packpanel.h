@@ -63,6 +63,11 @@ protected:
 };
 
 
+/**
+ * @brief	A widget for arranging children horizontally or vertically.
+ * 
+ */
+
 class WgPackPanel : public WgVectorPanel
 {
 	friend class WgPackHook;
