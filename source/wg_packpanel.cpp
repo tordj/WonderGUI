@@ -152,6 +152,185 @@ WgSize WgPackPanel::PreferredSize() const
 	return m_preferredSize;
 }
 
+//____ HeightForWidth() _______________________________________________________
+
+int WgPackPanel::HeightForWidth( int width ) const
+{
+	int height = 0;
+
+	if( m_bHorizontal )
+	{
+		if( m_pSizeBroker )
+		{
+			// Allocate and populate SizeBroker array
+		
+			int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.Size();
+			WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::MemStackAlloc(arrayBytes));
+		
+			int nItems = _populateSizeBrokerArray(pItemArea);		
+		
+			// Retrieve item lengths and find height of highest item.
+
+			m_pSizeBroker->SetItemLengths( pItemArea, nItems, width );
+
+			WgPackHook * pH = FirstHook();
+			WgSizeBrokerItem * pI = pItemArea;
+
+			while( pH )
+			{
+				if( pH->IsVisible() )
+				{
+					int itemHeight = pH->_paddedHeightForWidth( pI->output );
+					if( itemHeight > height )
+						height = itemHeight;
+					pI++;
+				}
+
+				pH = pH->Next();
+			}
+
+			// Release temporary memory area
+		
+			WgBase::MemStackRelease(arrayBytes);
+		}
+		else 
+		{
+			WgPackHook * pH = FirstHook();
+
+			while( pH )
+			{
+				if( pH->IsVisible() && pH->m_preferredSize.h > height )
+						height = pH->m_preferredSize.h;
+
+				pH = pH->Next();
+			}
+		}
+	}
+	else
+	{
+		if( m_pSizeBroker && m_pSizeBroker->MayAlterPreferredLengths() )
+		{
+			// Allocate and populate SizeBroker array
+		
+			int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.Size();
+			WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::MemStackAlloc(arrayBytes));
+		
+			int nItems = _populateSizeBrokerArray(pItemArea, width);		
+		
+			// Retrieve preferred length
+
+			height = m_pSizeBroker->SetPreferredLengths( pItemArea, nItems );
+				
+			// Release temporary memory area
+		
+			WgBase::MemStackRelease(arrayBytes);
+		}
+		else 
+		{
+			WgPackHook * p = FirstHook();
+
+			while( p )
+			{
+				if( p->IsVisible() )
+					height += p->_paddedHeightForWidth( width );
+
+				p = p->Next();
+			}
+		}
+	}
+	return height;
+}
+
+//____ WidthForHeight() _______________________________________________________
+
+int WgPackPanel::WidthForHeight( int height ) const
+{
+	int width = 0;
+
+	if( !m_bHorizontal )
+	{
+		if( m_pSizeBroker )
+		{
+			// Allocate and populate SizeBroker array
+		
+			int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.Size();
+			WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::MemStackAlloc(arrayBytes));
+		
+			int nItems = _populateSizeBrokerArray(pItemArea);		
+		
+			// Retrieve item lengths and find height of highest item.
+
+			m_pSizeBroker->SetItemLengths( pItemArea, nItems, height );
+
+			WgPackHook * pH = FirstHook();
+			WgSizeBrokerItem * pI = pItemArea;
+
+			while( pH )
+			{
+				if( pH->IsVisible() )
+				{
+					int itemWidth = pH->_paddedWidthForHeight( pI->output );
+					if( itemWidth > width )
+						width = itemWidth;
+					pI++;
+				}
+
+				pH = pH->Next();
+			}
+
+			// Release temporary memory area
+		
+			WgBase::MemStackRelease(arrayBytes);
+		}
+		else 
+		{
+			WgPackHook * pH = FirstHook();
+
+			while( pH )
+			{
+				if( pH->IsVisible() && pH->m_preferredSize.w > width )
+						width = pH->m_preferredSize.w;
+
+				pH = pH->Next();
+			}
+		}
+	}
+	else
+	{
+		if( m_pSizeBroker && m_pSizeBroker->MayAlterPreferredLengths() )
+		{
+			// Allocate and populate SizeBroker array
+		
+			int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.Size();
+			WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::MemStackAlloc(arrayBytes));
+		
+			int nItems = _populateSizeBrokerArray(pItemArea, height);		
+		
+			// Retrieve preferred length
+
+			width = m_pSizeBroker->SetPreferredLengths( pItemArea, nItems );
+				
+			// Release temporary memory area
+		
+			WgBase::MemStackRelease(arrayBytes);
+		}
+		else 
+		{
+			WgPackHook * p = FirstHook();
+
+			while( p )
+			{
+				if( p->IsVisible() )
+					width += p->_paddedWidthForHeight( height );
+
+				p = p->Next();
+			}
+		}
+	}
+	return width;
+}
+
+
 
 //____ _firstHookWithGeo() _____________________________________________________
 
@@ -372,8 +551,10 @@ void WgPackPanel::_refreshChildGeo()
 	
 	int wantedLength = m_bHorizontal?m_preferredSize.w:m_preferredSize.h;
 	int givenLength = m_bHorizontal?size.w:size.h;
+	int givenBreadth = m_bHorizontal?size.h:size.w;
 
 	// Optimized special case, just copy preferred to length.
+	//TODO: We probably need to use WidthForHeight()/HeightForWidth() here anyway... prefered length might change with given breadth
 
 	if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->MayAlterPreferredLengths()) )
 	{
@@ -441,7 +622,7 @@ void WgPackPanel::_refreshChildGeo()
 		int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.Size();
 		WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::MemStackAlloc(arrayBytes));
 
-		int nItems = _populateSizeBrokerArray(pItemArea);		
+		int nItems = _populateSizeBrokerArray(pItemArea, givenBreadth);		
 		
 		// Retrieve length and set geo for all children, call _requestRender() and _onNewSize() where needed.
 		
@@ -514,7 +695,7 @@ void WgPackPanel::_refreshChildGeo()
 
 //____ _populateSizeBrokerArray() ___________________________________________
 
-int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray )
+int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 {
 	WgPackHook * pH = FirstHook();
 	WgSizeBrokerItem * pI = pArray;
@@ -553,3 +734,41 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray )
 	return pI - pArray;
 }
 
+int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forcedBreadth ) const
+{
+	WgPackHook * pH = FirstHook();
+	WgSizeBrokerItem * pI = pArray;
+	
+	if( m_bHorizontal )
+	{
+		while( pH )
+		{
+			if( pH->IsVisible() )
+			{
+				pI->preferred = pH->_paddedWidthForHeight(forcedBreadth);
+				pI->min = pH->_paddedMinSize().w;
+				pI->max = pH->_paddedMaxSize().w;
+				pI->weight = pH->m_weight;			
+				pI++;
+			}
+			pH = pH->Next();
+		}
+	}
+	else 
+	{
+		while( pH )
+		{
+			if( pH->IsVisible() )
+			{
+				pI->preferred = pH->_paddedHeightForWidth(forcedBreadth);
+				pI->min = pH->_paddedMinSize().h;
+				pI->max = pH->_paddedMaxSize().h;
+				pI->weight = pH->m_weight;			
+				pI++;
+			}
+			pH = pH->Next();
+		}			
+	}
+	
+	return pI - pArray;
+}

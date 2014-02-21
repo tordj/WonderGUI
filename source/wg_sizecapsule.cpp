@@ -127,7 +127,52 @@ WgSize WgSizeCapsule::PreferredSize() const
 			if( m_pScaler )
 				pref.h = (int) (pref.h * m_pScaler->ScaleY());
 		}
-		pref.ConstrainTo( MinSize(), MaxSize() );
+
+		// Constrain against min/max, taking WidthForHeight/HeightForWidth into account.
+		//TODO: Check so we don't have any corner cases that breaks the constraints and
+		// and that priorities between preferred height/width are reasonable.
+
+		WgSize min = MinSize();
+		WgSize max = MaxSize();
+
+		if( pref.w < min.w )
+		{
+			pref.w = min.w;
+			pref.h = HeightForWidth(pref.w);
+		}
+
+		if( pref.h < min.h )
+		{
+			pref.h = min.h;
+			pref.w = WidthForHeight(pref.h);
+			if( pref.w < min.w )
+				pref.w = min.w;
+		}
+
+		if( pref.w > max.w )
+		{
+			if( pref.h > max.h )
+				pref = max;
+			else
+			{
+				pref.w = max.w;
+				pref.h = HeightForWidth(pref.w);
+				if( pref.h > max.h )
+					pref.h = max.h;
+			}
+		}
+		else if( pref.h > max.h )
+		{
+			if( pref.w > max.w )
+				pref = max;
+			else
+			{
+				pref.h = max.h;
+				pref.w = WidthForHeight(pref.h);
+				if( pref.w > max.w )
+					pref.w = max.w;
+			}
+		}
 		return pref;
 	}
 	else

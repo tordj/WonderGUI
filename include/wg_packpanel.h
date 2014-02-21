@@ -87,6 +87,9 @@ public:
 	void			SetSizeBroker( const WgSizeBrokerPtr& pBroker );
 	WgSizeBrokerPtr	SizeBroker() const { return m_pSizeBroker; }
 
+	int				HeightForWidth( int width ) const;
+	int				WidthForHeight( int height ) const;
+
 	WgSize			PreferredSize() const;
 	
 protected:
@@ -124,7 +127,9 @@ protected:
 	
 	void			_refreshChildGeo();
 	void			_updatePreferredSize();
-	int				_populateSizeBrokerArray( WgSizeBrokerItem * pArray );
+	int				_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const;
+	int				_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forcedBreadth ) const;
+
 
 	bool			m_bHorizontal;
 	WgSizeBrokerPtr	m_pSizeBroker;
