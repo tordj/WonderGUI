@@ -80,8 +80,9 @@ public:
 
 //____ Class: WgCoord ________________________________________________________
 /**
+	@brief Simple class holding the X and Y values of a 2D coordinate.
 
-	Specifies a 2D Coordinate through class members x and y, where x is the
+	Specifies a 2D coordinate through class members x and y, where x is the
 	horizontal distance from origo moving from left to right and y is
 	the vertical distance moving downwards.
 
@@ -122,7 +123,7 @@ public:
 	inline WgCoord operator*(int v) const	{ WgCoord res; res.x = x * v; res.y = y * v; return res; }
 	inline WgCoord operator/(int v) const	{ WgCoord res; res.x = x / v; res.y = y / v; return res; }
 
-	inline void Clear()						{ x = 0; y = 0; }
+	inline void Clear()						{ x = 0; y = 0; }			///< Sets X and Y to 0.
 
 	int	x, y;
 };
@@ -133,7 +134,7 @@ class WgSize;
 
 //____ WgBorders ______________________________________________________________
 /**
-	Specifies the thickness of the four borders of a rectangular area, measured in pixels.
+	@brief Specifies the thickness of the four borders of a rectangular area, measured in pixels.
 	
 	The four borders are, in order of specification, left, top, right, bottom. I.e.
 	you start with the left border and go clockwise.
@@ -173,9 +174,8 @@ public:
 //____ Class: WgSize ________________________________________________________
 
 /**
-	Specifies the size of a 2D rectangular area, measured in pixels, through
-	members w and h for width and height respectively.
-
+	@brief Specifies the size of a rectangular area, measured in pixels.
+	 
 	Members are integer precision and can be negative.
 **/
 
@@ -225,15 +225,17 @@ public:
 	static inline WgSize Min( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
 	static inline WgSize Max( WgSize sz1, WgSize sz2 ) { return WgSize( sz1.w>sz2.w?sz1.w:sz2.w, sz1.h>sz2.h?sz1.h:sz2.h ); }
 
-	int	w, h;
+	int	w;		///< Width of the rectangular area in pixels.
+	int h;		///< Height of the rectangular area in pixels.
+
 };
 
 
 //____ WgRect ___________________________________________________________
 
 /**
-
-	Specifies a rectangular area of a 2D surface through position and size. 
+	@brief Specifies a rectangular area of a 2D surface through position and size.
+ 
 	Position is specified through the members x and y, containing the horizontal
 	and vertical offset from an origo position while members w and h specifies
 	the width and height.
@@ -321,7 +323,10 @@ public:
 	inline bool	IsEmpty() const { return (w==0||h==0)?true:false; }
 	inline void Clear()			{ x = 0; y = 0; w = 0; h = 0; }
 
-	int	x, y, w, h;
+	int	x;		///< Start position in pixels along the X axis.
+	int y;		///< Start position in pixels along the Y axis.
+	int w;		///< Width, i.e. length of rectangle along the X axis. 
+	int h;		///< Height, i.e. length of rectangle along the Y axis.
 };
 
 //____ WgRectF ________________________________________________________________

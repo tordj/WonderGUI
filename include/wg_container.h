@@ -37,6 +37,10 @@ class WgContainer;
 typedef	WgSmartPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
 typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
+/**
+ * @brief Base class for all widgets that can take child widgets.
+ */
+
 class WgContainer : public WgWidgetHolder, public WgWidget
 {
 	friend class WgEventHandler;

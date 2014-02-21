@@ -187,6 +187,12 @@ private:
 
 //____ WgFlexPanel _________________________________________________________
 
+/**
+ * @brief	A widget for individual, flexible arrangement of children.
+ * 
+ */
+
+
 class WgFlexPanel : public WgPanel
 {
 friend class WgFlexHook;

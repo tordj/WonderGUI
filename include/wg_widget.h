@@ -60,6 +60,13 @@ class WgWidget;
 typedef	WgSmartPtr<WgWidget,WgObjectPtr>		WgWidgetPtr;
 typedef	WgWeakPtr<WgWidget,WgObjectWeakPtr>	WgWidgetWeakPtr;
 
+
+/**
+ * @brief Base class for widgets.
+ * 
+ * WgWidget is the base class for all widgets, providing common functionality.
+ */
+
 class WgWidget : public WgObject
 {
 friend class WgInput;

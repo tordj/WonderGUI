@@ -33,6 +33,18 @@ public:
 };
 
 
+/**
+ * @brief Base class for all reference counted objects in WonderGUI.
+ * 
+ * WgObject provides the datastructures needed for smart pointers, weak pointers and
+ * destruction notifiers as well as methods for identifying object types and 
+ * dynamic cast of smart pointers.
+ * 
+ * Objects that are based on WgObject are implicitly destroyed when their last
+ * reference disappears and should never be explicitly destroyed.
+ *
+ */
+
 class WgObject
 {
 	friend class WgObjectPtr;

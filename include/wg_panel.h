@@ -41,6 +41,8 @@ class WgPanel;
 typedef	WgSmartPtr<WgPanel,WgContainerPtr>		WgPanelPtr;
 typedef	WgWeakPtr<WgPanel,WgContainerWeakPtr>	WgPanelWeakPtr;
 
+
+
 //____ WgPanelHook ____________________________________________________________
 
 class WgPanelHook : public WgHook
@@ -76,6 +78,10 @@ protected:
     WgUnit          m_paddingUnit;
 };
 
+/**
+ * @brief	Super class for container widgets for layout of children.
+ * 
+ */
 
 //____ WgPanel ________________________________________________________________
 
