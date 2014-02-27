@@ -173,7 +173,7 @@ int WgCombobox::InsertTextAtCursor( const WgCharSeq& str )
 
 	WgEventHandler * pHandler = _eventHandler();		
 	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::TextModify(this,&m_text) );
+		pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
 
 	_adjustViewOfs();
 
@@ -198,7 +198,7 @@ bool WgCombobox::InsertCharAtCursor( Uint16 c )
 
 	WgEventHandler * pHandler = _eventHandler();		
 	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::TextModify(this,&m_text) );
+		pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
 
 	_adjustViewOfs();
 	return true;
@@ -216,13 +216,13 @@ void WgCombobox::_closeMenu()
 
 		WgEventHandler * pEH = _eventHandler();
 		if( pEH )
-			pEH->DeleteCallback( WgEventFilter::MenuitemSelect( m_pMenu ), this );
+			pEH->DeleteCallback( m_cbHandler );
 	}
 }
 
 //____ _onEvent() _____________________________________________________________
 
-void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
 	WgState oldState = m_state;
 
@@ -231,7 +231,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 		case WG_EVENT_TICK:
 			if( _isEditable() && m_state.IsFocused() )
 			{
-				m_text.incTime( static_cast<const WgEvent::Tick*>(_pEvent)->Millisec() );
+				m_text.incTime( WgTickEvent::Cast(_pEvent)->Millisec() );
 				_requestRender();					//TODO: Should only render the cursor and selection!
 			}
 		break;
@@ -240,7 +240,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 			m_state.SetPressed(false);
 		break;
 
-		case WG_EVENT_MENUITEM_SELECT:
+		case WG_EVENT_ITEMS_SELECT:
 		break;
 
 		case WG_EVENT_MOUSE_ENTER:
@@ -254,7 +254,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 
 		case WG_EVENT_MOUSE_POSITION:
 		{
-			WgCoord pos = static_cast<const WgEvent::MousePosition*>(_pEvent)->PointerPos();
+			WgCoord pos = WgMousePositionEvent::Cast(_pEvent)->PointerPos();
 			WgRect inputRect = m_pSkin ? m_pSkin->ContentRect(Size(),m_state): WgRect( 0,0, Size() );
 
 			if( _isSelectable() && inputRect.Contains( pos ) )
@@ -270,9 +270,9 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 
 
 
-		case WG_EVENT_MOUSEBUTTON_PRESS:
+		case WG_EVENT_MOUSE_PRESS:
 		{
-			const WgEvent::MouseButtonPress * pEvent = static_cast<const WgEvent::MouseButtonPress*>(_pEvent);
+			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
 			WgCoord pos = pEvent->PointerPos();
 
 			if( pEvent->Button() == 1 )
@@ -328,20 +328,20 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 						if( pLayer )
 						{
 							pLayer->OpenMenu( m_pMenu, this, m_pHook->ScreenGeo() - pLayer->ScreenPos(), WG_SOUTHWEST );
-							pHandler->AddCallback( WgEventFilter::MenuitemSelect( m_pMenu ), cbEntrySelected, this );
+							m_cbHandler = pHandler->AddCallback( WgEventFilter::ItemsSelect( m_pMenu ), cbEntrySelected, this );
 						}
 					}
 
 					m_state.SetPressed(true);
 				}
-				_pEvent->Swallow();
+				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_DRAG:
+		case WG_EVENT_MOUSE_DRAG:
 		{
-			const WgEvent::MouseButtonDrag * pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
+			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
 			if( pEvent->Button() == 1 )
 			{
 				if( m_state.IsFocused() && m_bPressInInputRect )
@@ -357,14 +357,14 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 					m_text.CursorGotoCoord( WgCoord(x, 0), WgRect(leftBorder,0,1000000,1000000) );
 					_adjustViewOfs();
 				}
-				_pEvent->Swallow();
+				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		case WG_EVENT_MOUSE_RELEASE:
 		{
-			const WgEvent::MouseButtonRelease * pEvent = static_cast<const WgEvent::MouseButtonRelease*>(_pEvent);
+			WgMouseReleaseEventPtr pEvent = WgMouseReleaseEvent::Cast(_pEvent);
 			if( pEvent->Button() == 1 )
 			{
 				if( m_state.IsFocused() )
@@ -377,14 +377,14 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 							m_text.SelectAll();
 					}
 				}
-				_pEvent->Swallow();
+				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
 		}
 
-		case WG_EVENT_MOUSEWHEEL_ROLL:
+		case WG_EVENT_WHEEL_ROLL:
 		{		
-			const WgEvent::MouseWheelRoll * pEvent = static_cast<const WgEvent::MouseWheelRoll*>(_pEvent);
+			WgWheelRollEventPtr pEvent = WgWheelRollEvent::Cast(_pEvent);
 			if( !m_state.IsFocused() && m_pMenu && m_pMenu->GetItemCount() != 0 )
 			{
 				WgMenuItem * pItem = m_pSelectedItem;
@@ -418,14 +418,14 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 
 				m_pMenu->SelectItem( pItem );
 				_entrySelected( pItem->GetId() );
-				_pEvent->Swallow();
+				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
 		}
 
 		case WG_EVENT_CHARACTER:
 		{
-			const WgEvent::Character * pEvent = static_cast<const WgEvent::Character*>(_pEvent);
+			WgCharacterEventPtr pEvent = WgCharacterEvent::Cast(_pEvent);
 			if( _isEditable() && m_state.IsFocused() )
 			{
 
@@ -437,7 +437,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 				if( m_maxCharacters == 0 || m_maxCharacters > m_text.Length() )
 					m_text.putChar( pEvent->Char() );
 
-				pHandler->QueueEvent( new WgEvent::TextModify(this,&m_text) );
+				pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
 				_adjustViewOfs();
 			}
 			break;
@@ -446,13 +446,13 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 		case WG_EVENT_KEY_RELEASE:
 			if( m_state.IsFocused() )
 			{
-				const WgEvent::KeyRelease * pEvent = static_cast<const WgEvent::KeyRelease*>(_pEvent);
+				WgKeyReleaseEventPtr pEvent = WgKeyReleaseEvent::Cast(_pEvent);
 				switch( pEvent->TranslatedKeyCode() )
 				{
 					case WG_KEY_SHIFT:
 						if(!pHandler->IsMouseButtonPressed(1))
 							m_text.setSelectionMode(false);
-						_pEvent->Swallow();
+						pHandler->SwallowEvent(_pEvent);
 					break;
 				}
 			}
@@ -461,7 +461,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 		case WG_EVENT_KEY_PRESS:
 		case WG_EVENT_KEY_REPEAT:
 		{
-			const WgEvent::KeyEvent * pEvent = static_cast<const WgEvent::KeyEvent*>(_pEvent);
+			WgKeyEventPtr pEvent = WgKeyEvent::Cast(_pEvent);
 
 			if( pEvent->TranslatedKeyCode() == WG_KEY_ESCAPE && m_state.IsPressed() )
 			{
@@ -479,7 +479,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 							m_text.gotoPrevWord();
 						else
 							m_text.goLeft();
-						_pEvent->Swallow();
+						pHandler->SwallowEvent(_pEvent);
 						break;
 					case WG_KEY_RIGHT:
 						if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
@@ -489,7 +489,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 								m_text.gotoNextWord();
 						else
 							m_text.goRight();
-						_pEvent->Swallow();
+						pHandler->SwallowEvent(_pEvent);
 						break;
 
 					case WG_KEY_BACKSPACE:
@@ -500,8 +500,8 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 						else
 							m_text.delPrevChar();
 						
-						pHandler->QueueEvent( new WgEvent::TextModify(this, &m_text) ); //TODO: Should only emit if text really has changed
-						_pEvent->Swallow();
+						pHandler->QueueEvent( new WgTextEditEvent(this, &m_text, false) ); //TODO: Should only emit if text really has changed
+						pHandler->SwallowEvent(_pEvent);
 						break;
 
 					case WG_KEY_DELETE:
@@ -511,8 +511,8 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 							m_text.delNextWord();
 						else
 							m_text.delNextChar();
-						pHandler->QueueEvent( new WgEvent::TextModify(this, &m_text) );		//TODO: Should only emit if text really has changed
-						_pEvent->Swallow();
+						pHandler->QueueEvent( new WgTextEditEvent(this, &m_text, false) );		//TODO: Should only emit if text really has changed
+						pHandler->SwallowEvent(_pEvent);
 						break;
 
 					case WG_KEY_HOME:
@@ -534,7 +534,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 							m_text.GoBOL();
 							break;
 						}
-						_pEvent->Swallow();
+						pHandler->SwallowEvent(_pEvent);
 						break;
 
 					case WG_KEY_END:
@@ -557,7 +557,7 @@ void WgCombobox::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 							break;
 						}
 
-						_pEvent->Swallow();
+						pHandler->SwallowEvent(_pEvent);
 						break;
 				}
 				_adjustViewOfs();
@@ -604,7 +604,7 @@ void WgCombobox::_onStateChanged( WgState oldState, WgState newState )
 			m_text.hideCursor();
 			m_text.ClearSelection();
 			m_bResetCursorOnFocus = true;
-			_eventHandler()->QueueEvent( new WgEvent::TextSet( this, &m_text ) );	//TODO: Should only do if text was really changed!
+			_eventHandler()->QueueEvent( new WgTextEditEvent( this, &m_text,true ) );	//TODO: Should only do if text was really changed!
 		}
 	}
 }
@@ -759,7 +759,7 @@ void WgCombobox::_textModified( WgText * pText )
 	m_bResetCursorOnFocus = true;
 	WgEventHandler * pHandler = _eventHandler();		
 	if( pHandler )
-		pHandler->QueueEvent( new WgEvent::TextModify(this,&m_text) );
+		pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
 	_requestRender();
 //	_adjustViewOfs();
 }

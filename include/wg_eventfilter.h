@@ -39,16 +39,10 @@
 #	include <wg_widget.h>
 #endif
 
-namespace WgEvent
-{
-	class Event;
-};
-
-
 
 class WgEventFilter;
 
-typedef	bool(*WgFilterFuncPtr)(const WgEvent::Event *, const WgEventFilter& );
+typedef	bool(*WgFilterFuncPtr)(const WgEventPtr&, const WgEventFilter& );
 
 
 class WgEventFilter
@@ -132,90 +126,48 @@ public:
 	static WgEventFilter	Character( const WgWidgetPtr& pWidget );
 	static WgEventFilter	Character( const WgWidgetPtr& pWidget, unsigned short character );
 
-	static WgEventFilter	MouseWheelRoll();
-	static WgEventFilter	MouseWheelRoll( int wheel );
-	static WgEventFilter	MouseWheelRoll( const WgWidgetPtr& pWidget );
-	static WgEventFilter	MouseWheelRoll( const WgWidgetPtr& pWidget, int wheel );
+	static WgEventFilter	WheelRoll();
+	static WgEventFilter	WheelRoll( int wheel );
+	static WgEventFilter	WheelRoll( const WgWidgetPtr& pWidget );
+	static WgEventFilter	WheelRoll( const WgWidgetPtr& pWidget, int wheel );
 
-	static WgEventFilter	ButtonPress();
-	static WgEventFilter	ButtonPress( const WgWidgetPtr& pWidget );
+	static WgEventFilter	Select();
+	static WgEventFilter	Select( const WgWidgetPtr& pWidget );
 
-	static WgEventFilter	CheckboxCheck();
-	static WgEventFilter	CheckboxCheck( const WgWidgetPtr& pWidget );
+	static WgEventFilter	Toggle();
+	static WgEventFilter	Toggle( const WgWidgetPtr& pWidget );
 
-	static WgEventFilter	CheckboxUncheck();
-	static WgEventFilter	CheckboxUncheck( const WgWidgetPtr& pWidget );
+	static WgEventFilter	ValueUpdate();
+	static WgEventFilter	ValueUpdate( const WgWidgetPtr& pWidget );
 
-	static WgEventFilter	CheckboxToggle();
-	static WgEventFilter	CheckboxToggle( const WgWidgetPtr& pWidget );
+	static WgEventFilter	RangeUpdate();
+	static WgEventFilter	RangeUpdate( const WgWidgetPtr& pWidget );
 
-	static WgEventFilter	AnimationUpdate();
-	static WgEventFilter	AnimationUpdate( const WgWidgetPtr& pWidget );
+	static WgEventFilter	TextEdit();
+	static WgEventFilter	TextEdit( const WgWidgetPtr& pWidget );
 
-	static WgEventFilter	TabSelect();
-	static WgEventFilter	TabSelect( const WgWidgetPtr& pWidget );
-	static WgEventFilter	TabSelect( const WgWidgetPtr& pWidget, int id );
+	static WgEventFilter	ItemToggle();
+	static WgEventFilter	ItemToggle( const WgWidgetPtr& pWidget );
+	static WgEventFilter	ItemToggle( const WgWidgetPtr& pWidget, int id );
 
-	static WgEventFilter	TabPress();
-	static WgEventFilter	TabPress( int button );
-	static WgEventFilter	TabPress( const WgWidgetPtr& pWidget );
-	static WgEventFilter	TabPress( const WgWidgetPtr& pWidget, int button );
-	static WgEventFilter	TabPress( const WgWidgetPtr& pWidget, int button, int id );
+	static WgEventFilter	ItemMousePress();
+	static WgEventFilter	ItemMousePress( int button );
+	static WgEventFilter	ItemMousePress( const WgWidgetPtr& pWidget );
+	static WgEventFilter	ItemMousePress( const WgWidgetPtr& pWidget, int button );
+	static WgEventFilter	ItemMousePress( const WgWidgetPtr& pWidget, int button, int id );
 
-	static WgEventFilter	EditvalueModify();
-	static WgEventFilter	EditvalueModify( const WgWidgetPtr& pWidget );
+	static WgEventFilter	ItemsSelect();
+	static WgEventFilter	ItemsSelect( const WgWidgetPtr& pWidget );
 
-	static WgEventFilter	EditvalueSet();
-	static WgEventFilter	EditvalueSet( const WgWidgetPtr& pWidget );
-
-	static WgEventFilter	ScrollbarMove();
-	static WgEventFilter	ScrollbarMove( const WgWidgetPtr& pWidget );
-
-	static WgEventFilter	ScrollbarStepFwd();
-	static WgEventFilter	ScrollbarStepFwd( const WgWidgetPtr& pWidget );
-
-	static WgEventFilter	ScrollbarStepBwd();
-	static WgEventFilter	ScrollbarStepBwd( const WgWidgetPtr& pWidget );
-
-	static WgEventFilter	ScrollbarJumpFwd();
-	static WgEventFilter	ScrollbarJumpFwd( const WgWidgetPtr& pWidget );
-
-	static WgEventFilter	ScrollbarJumpBwd();
-	static WgEventFilter	ScrollbarJumpBwd( const WgWidgetPtr& pWidget );
-
-	static WgEventFilter	ScrollbarWheelRoll();
-	static WgEventFilter	ScrollbarWheelRoll( const WgWidgetPtr& pWidget );
-
-	static WgEventFilter	TextModify();
-	static WgEventFilter	TextModify( const WgWidgetPtr& pWidget );
-
-	static WgEventFilter	TextSet();
-	static WgEventFilter	TextSet( const WgWidgetPtr& pWidget );
-
-	static WgEventFilter	MenuitemSelect();
-	static WgEventFilter	MenuitemSelect( int itemId );
-	static WgEventFilter	MenuitemSelect( const WgWidgetPtr& pWidget );
-	static WgEventFilter	MenuitemSelect( const WgWidgetPtr& pWidget, int itemId );
-
-	static WgEventFilter	MenuitemCheck();
-	static WgEventFilter	MenuitemCheck( int itemId );
-	static WgEventFilter	MenuitemCheck( const WgWidgetPtr& pWidget );
-	static WgEventFilter	MenuitemCheck( const WgWidgetPtr& pWidget, int itemId );
-
-	static WgEventFilter	MenuitemUncheck();
-	static WgEventFilter	MenuitemUncheck( int itemId );
-	static WgEventFilter	MenuitemUncheck( const WgWidgetPtr& pWidget );
-	static WgEventFilter	MenuitemUncheck( const WgWidgetPtr& pWidget, int itemId );
+	static WgEventFilter	ItemsUnselect();
+	static WgEventFilter	ItemsUnselect( const WgWidgetPtr& pWidget );
 
 
 	//TODO: Add missing filters!
 
 
-	static WgEventFilter	KnobTurn();
-	static WgEventFilter	KnobTurn( const WgWidgetPtr& pWidget );
 
-
-	inline bool				FilterEvent( const WgEvent::Event * pEvent ) const { return m_pFilterFunc( pEvent, *this ); }
+	inline bool				FilterEvent( const WgEventPtr& pEvent ) const { return m_pFilterFunc( pEvent, *this ); }
 	inline WgEventType 		EventType() const { return m_eventType; }
 	inline bool				FiltersWidget() const { return m_pWidget?true:false; }
 	inline WgWidgetWeakPtr	Widget() const { return m_pWidget; }
@@ -232,19 +184,18 @@ private:
 	int					m_data2;			// Additional data for filter function.
 
 
-	static bool _filterDummy( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterType( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterTypeWidget( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterDummy( const WgEventPtr& pEvent, const WgEventFilter& filter );
+	static bool _filterType( const WgEventPtr& pEvent, const WgEventFilter& filter );
+	static bool _filterTypeWidget( const WgEventPtr& pEvent, const WgEventFilter& filter );
 
-	static bool _filterPointerEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterMouseButtonEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterNativeKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterCharacterEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterMouseWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterTabSelect( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterTabPress( const WgEvent::Event * pEvent, const WgEventFilter& filter );
-	static bool _filterMenuitemEvent( const WgEvent::Event * pEvent, const WgEventFilter& filter );
+	static bool _filterPointerEvents( const WgEventPtr& pEvent, const WgEventFilter& filter );
+	static bool _filterMouseButtonEvents( const WgEventPtr& pEvent, const WgEventFilter& filter );
+	static bool _filterKeyEvents( const WgEventPtr& pEvent, const WgEventFilter& filter );
+	static bool _filterNativeKeyEvents( const WgEventPtr& pEvent, const WgEventFilter& filter );
+	static bool _filterCharacterEvents( const WgEventPtr& pEvent, const WgEventFilter& filter );
+	static bool _filterWheelRollEvents( const WgEventPtr& pEvent, const WgEventFilter& filter );
+	static bool _filterItemToggleEvents( const WgEventPtr& pEvent, const WgEventFilter& filter );
+	static bool _filterItemMousePressEvents( const WgEventPtr& pEvent, const WgEventFilter& filter );
 };
 
 

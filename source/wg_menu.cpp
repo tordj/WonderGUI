@@ -776,8 +776,10 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 
 //____ _onEvent() _____________________________________________________________
 
-void WgMenu::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgMenu::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 {
+	// TODO: Not handle or swallow key-events if some modifier keys are pressed.
+
 	WgCoord mousePos = pEvent->PointerPos();
 
 	switch( pEvent->Type() )
@@ -786,7 +788,7 @@ void WgMenu::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 		{
 			if( m_selectorCountdown > 0 )
 			{
-				const WgEvent::Tick * pTick = static_cast<const WgEvent::Tick*>(pEvent);
+				WgTickEventPtr pTick = WgTickEvent::Cast(pEvent);
 
 				m_selectorCountdown -= pTick->Millisec();
 				if( m_selectorCountdown < 0 )
@@ -856,7 +858,7 @@ void WgMenu::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 		}
 		break;
 
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		case WG_EVENT_MOUSE_RELEASE:
 		{
 			WgMenuItem * pItem = _getItemAtPos( mousePos.x, mousePos.y );
 			if( pItem )
@@ -864,9 +866,9 @@ void WgMenu::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 		}
 		break;
 
-		case WG_EVENT_MOUSEWHEEL_ROLL:
+		case WG_EVENT_WHEEL_ROLL:
 		{
-			const WgEvent::MouseWheelRoll * pEv = static_cast<const WgEvent::MouseWheelRoll*>(pEvent);
+			WgWheelRollEventPtr pEv = WgWheelRollEvent::Cast(pEvent);
 
 			if( pEv->Wheel() == 1 )
 			{
@@ -879,7 +881,7 @@ void WgMenu::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 
 		case WG_EVENT_CHARACTER:
 		{
-			Uint16 chr = static_cast<const WgEvent::Character*>(pEvent)->Char();
+			Uint16 chr = WgCharacterEvent::Cast(pEvent)->Char();
 			if( chr != 0 )
 			{
 				m_selectorCountdown = c_selectorCountdownStart;
@@ -900,28 +902,30 @@ void WgMenu::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 			if( m_markedItem != 0 )
 				pItem = m_items.Get( m_markedItem-1 );
 
-			int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
+			int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
 			switch( key )
 			{
 				case WG_KEY_ESCAPE:
 					if( m_pOpenSubMenu )
+					{
 						_closeSubMenu( m_pOpenSubMenu );
-					else
-						pHandler->ForwardEvent( pEvent );								
+					}
 					break;
 					
 				case WG_KEY_LEFT:
 					if( m_pOpenSubMenu )
+					{
 						_closeSubMenu( m_pOpenSubMenu );
-					else
-						pHandler->ForwardEvent( pEvent );								
+					}
 					break;
 				
 				case WG_KEY_RIGHT:
 					if( pItem )
 					{
 						if( pItem->GetType() == SUBMENU )
+						{
 							_openSubMenu( (WgMenuSubMenu*) pItem );
+						}
 					}
 					break;
 
@@ -993,7 +997,6 @@ void WgMenu::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 						while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsVisible() ))
 							pItem = pItem->Next();
 					}
-
 					break;
 				}
 				case WG_KEY_PAGE_DOWN:
@@ -1020,7 +1023,6 @@ void WgMenu::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 						while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsVisible() ))
 							pItem = pItem->Next();
 					}
-
 					break;
 				}
 			}
@@ -1047,21 +1049,18 @@ void WgMenu::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 
 	// Forward event depending on rules.
 
-	if( pEvent->IsMouseButtonEvent() )
-	{
-		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-			pHandler->ForwardEvent( pEvent );
-	}
+	if( pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+		pHandler->SwallowEvent(pEvent);
 	else if( pEvent->IsKeyEvent() )
 	{
-		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
-		if( key != WG_KEY_RIGHT && key != WG_KEY_RETURN && key != WG_KEY_UP && key != WG_KEY_DOWN &&
-			key != WG_KEY_HOME && key != WG_KEY_END && key != WG_KEY_PAGE_UP && key != WG_KEY_PAGE_DOWN &&
-			key != WG_KEY_ESCAPE && key != WG_KEY_LEFT )
-			pHandler->ForwardEvent( pEvent );		
+		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
+		if( key == WG_KEY_RIGHT || key == WG_KEY_RETURN || key == WG_KEY_UP || key == WG_KEY_DOWN &&
+			key == WG_KEY_HOME || key == WG_KEY_END || key == WG_KEY_PAGE_UP || key == WG_KEY_PAGE_DOWN &&
+			key == WG_KEY_ESCAPE || key == WG_KEY_LEFT )
+			pHandler->SwallowEvent(pEvent);
 	}
-	else if( pEvent->Type() != WG_EVENT_CHARACTER && pEvent->Type() != WG_EVENT_MOUSEWHEEL_ROLL )
-		pHandler->ForwardEvent( pEvent );
+	else if( pEvent->Type() == WG_EVENT_CHARACTER || pEvent->Type() == WG_EVENT_WHEEL_ROLL )
+		pHandler->SwallowEvent(pEvent);
 }
 
 //____ _onStateChanged() ______________________________________________________
@@ -1086,9 +1085,16 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 	switch( pItem->GetType() )
 	{
 		case ENTRY:
+		{
 			m_pSelectedItem = pItem;
-			_queueEvent( new WgEvent::MenuitemSelect(this,pItem->GetId()));
+
+			WgItemInfo * pInfo = new WgItemInfo[1];
+			pInfo->id = pItem->GetId();
+											//TODO: Add index (and in the future pObject).
+
+			_queueEvent( new WgItemsSelectEvent(this,1,pInfo));
 			_itemSelected();
+		}
 		break;
 		case CHECKBOX:
 		{
@@ -1097,21 +1103,23 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 			if( pCheckBox->IsChecked() )
 			{
 				pCheckBox->Uncheck();
-				_queueEvent( new WgEvent::MenuitemUncheck(this,pItem->GetId()));
+				_queueEvent( new WgItemToggleEvent(this,-1,pItem->GetId(),WgObjectPtr(),true));
 			}
 			else
 			{
 				pCheckBox->Check();
-				_queueEvent( new WgEvent::MenuitemCheck(this,pItem->GetId()));
+				_queueEvent( new WgItemToggleEvent(this,-1,pItem->GetId(),WgObjectPtr(),false));
 			}
 
 			_itemSelected();
 		}
 		break;
 		case RADIOBUTTON:
+			if( m_pSelectedItem )
+				_queueEvent( new WgItemToggleEvent(this,-1,m_pSelectedItem->GetId(),WgObjectPtr(),false));
 			m_pSelectedItem = pItem;
 			((WgMenuRadioButton*)pItem)->Select();
-			_queueEvent( new WgEvent::MenuitemSelect(this,pItem->GetId()));
+			_queueEvent( new WgItemToggleEvent(this,-1,pItem->GetId(),WgObjectPtr(),true));
 			_itemSelected();
 		break;
 

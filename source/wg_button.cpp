@@ -233,31 +233,31 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 
 //____ _onEvent() ______________________________________________________________
 
-void WgButton::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
 	WgState oldState = m_state;
 
 	switch( _pEvent->Type() )
 	{
 		case WG_EVENT_KEY_PRESS:
-			if( static_cast<const WgEvent::KeyPress*>(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+			if( WgKeyPressEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = true;
-				_pEvent->Swallow();
+				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
 
 		case WG_EVENT_KEY_REPEAT:
-			if( static_cast<const WgEvent::KeyPress*>(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
-				_pEvent->Swallow();
+			if( WgKeyRepeatEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+				pHandler->SwallowEvent(_pEvent);
 			break;
 
 		case WG_EVENT_KEY_RELEASE:
-			if( static_cast< const WgEvent::KeyPress*>(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+			if( WgKeyReleaseEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = false;
-				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
-				_pEvent->Swallow();
+				pHandler->QueueEvent( new WgSelectEvent(this) );
+				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
 	
@@ -267,32 +267,32 @@ void WgButton::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 		case WG_EVENT_MOUSE_LEAVE:
 			m_state.SetHovered(false);
 			break;
-		case WG_EVENT_MOUSEBUTTON_PRESS:
-			if( static_cast<const WgEvent::MouseButtonPress*>(_pEvent)->Button() == 1 )
+		case WG_EVENT_MOUSE_PRESS:
+			if( WgMousePressEvent::Cast(_pEvent)->Button() == 1 )
 			{
 				m_bPressed = true;
-				_pEvent->Swallow();
+				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
-			if( static_cast<const WgEvent::MouseButtonRelease*>(_pEvent)->Button() == 1 )
+		case WG_EVENT_MOUSE_RELEASE:
+			if( WgMouseReleaseEvent::Cast(_pEvent)->Button() == 1 )
 			{
 				m_bPressed = false;
-				_pEvent->Swallow();
+				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
-		case WG_EVENT_MOUSEBUTTON_CLICK:
-			if( static_cast<const WgEvent::MouseButtonClick*>(_pEvent)->Button() == 1 )
+		case WG_EVENT_MOUSE_CLICK:
+			if( WgMouseClickEvent::Cast(_pEvent)->Button() == 1 )
 			{
-				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
-				_pEvent->Swallow();
+				pHandler->QueueEvent( new WgSelectEvent(this) );
+				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
-		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
-		case WG_EVENT_MOUSEBUTTON_REPEAT:
-		case WG_EVENT_MOUSEBUTTON_DRAG:
-			if( static_cast<const WgEvent::MouseButtonEvent*>(_pEvent)->Button() == 1 )
-				_pEvent->Swallow();
+		case WG_EVENT_MOUSE_DOUBLE_CLICK:
+		case WG_EVENT_MOUSE_REPEAT:
+		case WG_EVENT_MOUSE_DRAG:
+			if( WgMouseButtonEvent::Cast(_pEvent)->Button() == 1 )
+				pHandler->SwallowEvent(_pEvent);
 			break;
 
 		case WG_EVENT_FOCUS_GAINED:

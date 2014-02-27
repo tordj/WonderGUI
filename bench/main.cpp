@@ -30,14 +30,14 @@ bool			eventLoop( const WgEventHandlerPtr& pHandler );
 WgRootPanelPtr	setupGUI( const WgGfxDevicePtr& pDevice );
 void			printWidgetSizes();
 
-void cbInitDrag( const WgEvent::Event* _pEvent, WgWidget * pWidget );
-void cbDragWidget( const WgEvent::Event* _pEvent, WgWidget * pWidget );
+void cbInitDrag( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
+void cbDragWidget( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
 
-void cbOpenModal( const WgEvent::Event* _pEvent, WgWidget * pWidget );
-void cbCloseModal( const WgEvent::Event* _pEvent, WgWidget * pWidget );
+void cbOpenModal( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
+void cbCloseModal( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
 
-void addResizablePanel( WgFlexPanel * pParent, WgWidget * pChild, WgEventHandler * pEventHandler );
-void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook );
+void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler );
+void cbResize( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
 
 
 WgModalLayer * g_pModal = 0;
@@ -252,10 +252,10 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 
 	WgEventLogger * pEventLogger = new WgEventLogger( std::cout );
 	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_POSITION );
-	pEventLogger->IgnoreEvent( WG_EVENT_MOUSEBUTTON_REPEAT );
-	pEventLogger->IgnoreEvent( WG_EVENT_BUTTON_PRESS );
-//	pEventLogger->IgnoreAllEvents();
-//	pEventLogger->LogMouseButtonEvents();
+	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_REPEAT );
+	pEventLogger->IgnoreEvent( WG_EVENT_MOUSE_PRESS );
+	pEventLogger->IgnoreAllEvents();
+	pEventLogger->LogMouseButtonEvents();
 	pEventHandler->AddCallback( pEventLogger );
 
 
@@ -666,9 +666,9 @@ WgCoord dragStartPos;
 
 //____ cbInitDrag() ___________________________________________________________
 
-void cbInitDrag( const WgEvent::Event* _pEvent, WgWidget * pWidget )
+void cbInitDrag( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
 {
-	WgFlexHook * pHook = static_cast<WgFlexHook*>(pWidget->Hook());
+	WgFlexHook * pHook = static_cast<WgFlexHook*>(WgWidget::Cast(pWidget)->Hook());
 
 
 	dragStartPos = pHook->FloatOfs();
@@ -677,12 +677,14 @@ void cbInitDrag( const WgEvent::Event* _pEvent, WgWidget * pWidget )
 
 //____ cbDragWidget() __________________________________________________________
 
-void cbDragWidget( const WgEvent::Event* _pEvent, WgWidget * pWidget )
+void cbDragWidget( const WgEventPtr& _pEvent, const WgObjectPtr& pObject )
 {
-	if( _pEvent->Type() != WG_EVENT_MOUSEBUTTON_DRAG || !pWidget->Parent() )
+	WgWidgetPtr pWidget = WgWidget::Cast(pObject);
+
+	if( _pEvent->Type() != WG_EVENT_MOUSE_DRAG || !pWidget->Parent() )
 		return;
 
-	const WgEvent::MouseButtonDrag* pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
+	const WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
 
 	WgCoord	dragDistance = pEvent->DraggedTotal();
 
@@ -697,24 +699,24 @@ void cbDragWidget( const WgEvent::Event* _pEvent, WgWidget * pWidget )
 
 //____ cbOpenModal() __________________________________________________________
 
-void cbOpenModal( const WgEvent::Event* _pEvent, WgWidget * pWidget )
+void cbOpenModal( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
 {
-	g_pModal->AddModal( pWidget, WgCoord(), WG_SOUTHEAST );
+	g_pModal->AddModal( WgWidget::Cast(pWidget), WgCoord(), WG_SOUTHEAST );
 }
 
 //____ cbCloseModal() __________________________________________________________
 
-void cbCloseModal( const WgEvent::Event* _pEvent, WgWidget * pWidget )
+void cbCloseModal( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
 {
-	g_pModal->RemoveChild(pWidget);
+	g_pModal->RemoveChild( WgWidget::Cast(pWidget));
 }
 
 //____ cbResizeWidget() _________________________________________________________
 
-void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook )
+void cbResize( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
 {
-	WgFlexHook * pHook = static_cast<WgFlexHook*>(_pFlexHook);
-	const WgEvent::MouseButtonDrag* pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
+	WgFlexHook * pHook =   static_cast<WgFlexHook*>( WgWidget::Cast(pWidget)->Hook() );
+	const WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
 
 	WgCoord dragged = pEvent->DraggedNow();
 
@@ -725,11 +727,9 @@ void cbResize( const WgEvent::Event* _pEvent, void * _pFlexHook )
 
 //____ addResizablePanel() _________________________________________________
 
-void addResizablePanel( WgFlexPanel * pParent, WgWidget * pChild, WgEventHandler * pEventHandler )
+void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler )
 {
-	WgHook * pHook = pParent->AddChild( pChild );
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 2), cbResize, pHook );
-
+	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 2), cbResize, pChild );
 
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pChild, 3), cbInitDrag, pChild );
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 3), cbDragWidget, pChild );

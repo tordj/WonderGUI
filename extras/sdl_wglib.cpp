@@ -42,7 +42,7 @@ namespace sdl_wglib
 		// Add a tick event first as the first.
 
 		int ticks = SDL_GetTicks();
-		pHandler->QueueEvent( new WgEvent::Tick( ticks - g_ticks ) );
+		pHandler->QueueEvent( WgTickEvent::Create( ticks - g_ticks ) );
 		g_ticks = ticks;
 	}
 
@@ -55,38 +55,38 @@ namespace sdl_wglib
 			// check for keypresses
 			case SDL_KEYDOWN:
 			{
-				pHandler->QueueEvent( new WgEvent::KeyPress( event.key.keysym.sym ) );
+				pHandler->QueueEvent( WgKeyPressEvent::Create( event.key.keysym.sym ) );
 				if( event.key.keysym.unicode != 0 )
-					pHandler->QueueEvent( new WgEvent::Character( event.key.keysym.unicode ) );
+					pHandler->QueueEvent( WgCharacterEvent::Create( event.key.keysym.unicode ) );
 				break;
 			}
 
 			case SDL_KEYUP:
 			{
-				pHandler->QueueEvent( new WgEvent::KeyRelease( event.key.keysym.sym ) );
+				pHandler->QueueEvent( WgKeyReleaseEvent::Create( event.key.keysym.sym ) );
 				break;
 			}
 
 			case	SDL_MOUSEMOTION:
 			{
-				pHandler->QueueEvent( new WgEvent::MouseMove( WgCoord( event.motion.x, event.motion.y ) ) );
+				pHandler->QueueEvent( WgMouseMoveEvent::Create( WgCoord( event.motion.x, event.motion.y ) ) );
 				break;
 			}
 
 			case	SDL_MOUSEBUTTONDOWN:
 				if(event.button.button == 4 )
-					pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, 1 ) );
+					pHandler->QueueEvent( WgWheelRollEvent::Create( 1, 1 ) );
 				else if(event.button.button == 5)
-					pHandler->QueueEvent( new WgEvent::MouseWheelRoll( 1, -1 ) );
+					pHandler->QueueEvent( WgWheelRollEvent::Create( 1, -1 ) );
 				else
 				{
-					pHandler->QueueEvent( new WgEvent::MouseButtonPress( event.button.button ) );
+					pHandler->QueueEvent( WgMousePressEvent::Create( event.button.button ) );
 				}
 				break;
 
 			case	SDL_MOUSEBUTTONUP:
 				if( event.button.button != 4 && event.button.button != 5 )
-					pHandler->QueueEvent( new WgEvent::MouseButtonRelease( event.button.button ) );
+					pHandler->QueueEvent( WgMouseReleaseEvent::Create( event.button.button ) );
 				break;
 		}
 	}

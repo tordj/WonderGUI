@@ -41,8 +41,8 @@
 #	include <wg_smartptr.h>
 #endif
 
-#ifndef WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef WG_IEDITTEXT_DOT_H
+#	include <wg_iedittext.h>
 #endif
 
 class WgEventHandler;
@@ -59,644 +59,984 @@ class WgMenu;
 class WgMenuLayer;
 class WgModalLayer;
 
-typedef class WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
+typedef WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
 
-namespace WgEvent
+class WgEvent;
+typedef	WgSmartPtr<WgEvent,WgObjectPtr>		WgEventPtr;
+typedef	WgWeakPtr<WgEvent,WgObjectWeakPtr>	WgEventWeakPtr;
+
+class WgFocusGainedEvent;
+typedef	WgSmartPtr<WgFocusGainedEvent,WgEventPtr>		WgFocusGainedEventPtr;
+typedef	WgWeakPtr<WgFocusGainedEvent,WgEventWeakPtr>	WgFocusGainedEventWeakPtr;
+
+class WgFocusLostEvent;
+typedef	WgSmartPtr<WgFocusLostEvent,WgEventPtr>		WgFocusLostEventPtr;
+typedef	WgWeakPtr<WgFocusLostEvent,WgEventWeakPtr>	WgFocusLostEventWeakPtr;
+
+class WgMouseEnterEvent;
+typedef	WgSmartPtr<WgMouseEnterEvent,WgEventPtr>		WgMouseEnterEventPtr;
+typedef	WgWeakPtr<WgMouseEnterEvent,WgEventWeakPtr>	WgMouseEnterEventWeakPtr;
+
+class WgMouseLeaveEvent;
+typedef	WgSmartPtr<WgMouseLeaveEvent,WgEventPtr>		WgMouseLeaveEventPtr;
+typedef	WgWeakPtr<WgMouseLeaveEvent,WgEventWeakPtr>	WgMouseLeaveEventWeakPtr;
+
+class WgMouseMoveEvent;
+typedef	WgSmartPtr<WgMouseMoveEvent,WgEventPtr>		WgMouseMoveEventPtr;
+typedef	WgWeakPtr<WgMouseMoveEvent,WgEventWeakPtr>	WgMouseMoveEventWeakPtr;
+
+class WgMousePositionEvent;
+typedef	WgSmartPtr<WgMousePositionEvent,WgEventPtr>		WgMousePositionEventPtr;
+typedef	WgWeakPtr<WgMousePositionEvent,WgEventWeakPtr>	WgMousePositionEventWeakPtr;
+
+class WgMouseButtonEvent;
+typedef	WgSmartPtr<WgMouseButtonEvent,WgEventPtr>		WgMouseButtonEventPtr;
+typedef	WgWeakPtr<WgMouseButtonEvent,WgEventWeakPtr>	WgMouseButtonEventWeakPtr;
+
+class WgMousePressEvent;
+typedef	WgSmartPtr<WgMousePressEvent,WgMouseButtonEventPtr>		WgMousePressEventPtr;
+typedef	WgWeakPtr<WgMousePressEvent,WgMouseButtonEventWeakPtr>	WgMousePressEventWeakPtr;
+
+class WgMouseReleaseEvent;
+typedef	WgSmartPtr<WgMouseReleaseEvent,WgMouseButtonEventPtr>		WgMouseReleaseEventPtr;
+typedef	WgWeakPtr<WgMouseReleaseEvent,WgMouseButtonEventWeakPtr>	WgMouseReleaseEventWeakPtr;
+
+class WgMouseRepeatEvent;
+typedef	WgSmartPtr<WgMouseRepeatEvent,WgMouseButtonEventPtr>		WgMouseRepeatEventPtr;
+typedef	WgWeakPtr<WgMouseRepeatEvent,WgMouseButtonEventWeakPtr>	WgMouseRepeatEventWeakPtr;
+
+class WgMouseClickEvent;
+typedef	WgSmartPtr<WgMouseClickEvent,WgMouseButtonEventPtr>		WgMouseClickEventPtr;
+typedef	WgWeakPtr<WgMouseClickEvent,WgMouseButtonEventWeakPtr>	WgMouseClickEventWeakPtr;
+
+class WgMouseDoubleClickEvent;
+typedef	WgSmartPtr<WgMouseDoubleClickEvent,WgMouseButtonEventPtr>		WgMouseDoubleClickEventPtr;
+typedef	WgWeakPtr<WgMouseDoubleClickEvent,WgMouseButtonEventWeakPtr>	WgMouseDoubleClickEventWeakPtr;
+
+class WgMouseDragEvent;
+typedef	WgSmartPtr<WgMouseDragEvent,WgMouseButtonEventPtr>		WgMouseDragEventPtr;
+typedef	WgWeakPtr<WgMouseDragEvent,WgMouseButtonEventWeakPtr>	WgMouseDragEventWeakPtr;
+
+class WgKeyEvent;
+typedef	WgSmartPtr<WgKeyEvent,WgEventPtr>		WgKeyEventPtr;
+typedef	WgWeakPtr<WgKeyEvent,WgEventWeakPtr>	WgKeyEventWeakPtr;
+
+class WgKeyPressEvent;
+typedef	WgSmartPtr<WgKeyPressEvent,WgKeyEventPtr>		WgKeyPressEventPtr;
+typedef	WgWeakPtr<WgKeyPressEvent,WgKeyEventWeakPtr>	WgKeyPressEventWeakPtr;
+
+class WgKeyReleaseEvent;
+typedef	WgSmartPtr<WgKeyReleaseEvent,WgKeyEventPtr>		WgKeyReleaseEventPtr;
+typedef	WgWeakPtr<WgKeyReleaseEvent,WgKeyEventWeakPtr>	WgKeyReleaseEventWeakPtr;
+
+class WgKeyRepeatEvent;
+typedef	WgSmartPtr<WgKeyRepeatEvent,WgKeyEventPtr>		WgKeyRepeatEventPtr;
+typedef	WgWeakPtr<WgKeyRepeatEvent,WgKeyEventWeakPtr>	WgKeyRepeatEventWeakPtr;
+
+class WgCharacterEvent;
+typedef	WgSmartPtr<WgCharacterEvent,WgEventPtr>		WgCharacterEventPtr;
+typedef	WgWeakPtr<WgCharacterEvent,WgEventWeakPtr>	WgCharacterEventWeakPtr;
+
+class WgWheelRollEvent;
+typedef	WgSmartPtr<WgWheelRollEvent,WgEventPtr>		WgWheelRollEventPtr;
+typedef	WgWeakPtr<WgWheelRollEvent,WgEventWeakPtr>	WgWheelRollEventWeakPtr;
+
+class WgTickEvent;
+typedef	WgSmartPtr<WgTickEvent,WgEventPtr>		WgTickEventPtr;
+typedef	WgWeakPtr<WgTickEvent,WgEventWeakPtr>	WgTickEventWeakPtr;
+
+class WgPointerChangeEvent;
+typedef	WgSmartPtr<WgPointerChangeEvent,WgEventPtr>		WgPointerChangeEventPtr;
+typedef	WgWeakPtr<WgPointerChangeEvent,WgEventWeakPtr>	WgPointerChangeEventWeakPtr;
+
+class WgSelectEvent;
+typedef	WgSmartPtr<WgSelectEvent,WgEventPtr>		WgSelectEventPtr;
+typedef	WgWeakPtr<WgSelectEvent,WgEventWeakPtr>	WgSelectEventWeakPtr;
+
+class WgToggleEvent;
+typedef	WgSmartPtr<WgToggleEvent,WgEventPtr>		WgToggleEventPtr;
+typedef	WgWeakPtr<WgToggleEvent,WgEventWeakPtr>	WgToggleEventWeakPtr;
+
+class WgValueUpdateEvent;
+typedef	WgSmartPtr<WgValueUpdateEvent,WgEventPtr>		WgValueUpdateEventPtr;
+typedef	WgWeakPtr<WgValueUpdateEvent,WgEventWeakPtr>	WgValueUpdateEventWeakPtr;
+
+class WgRangeUpdateEvent;
+typedef	WgSmartPtr<WgRangeUpdateEvent,WgEventPtr>		WgRangeUpdateEventPtr;
+typedef	WgWeakPtr<WgRangeUpdateEvent,WgEventWeakPtr>	WgRangeUpdateEventWeakPtr;
+
+class WgTextEditEvent;
+typedef	WgSmartPtr<WgTextEditEvent,WgEventPtr>		WgTextEditEventPtr;
+typedef	WgWeakPtr<WgTextEditEvent,WgEventWeakPtr>	WgTextEditEventWeakPtr;
+
+class WgItemEvent;
+typedef	WgSmartPtr<WgItemEvent,WgEventPtr>		WgItemEventPtr;
+typedef	WgWeakPtr<WgItemEvent,WgEventWeakPtr>	WgItemEventWeakPtr;
+
+class WgItemListEvent;
+typedef	WgSmartPtr<WgItemListEvent,WgEventPtr>		WgItemListEventPtr;
+typedef	WgWeakPtr<WgItemListEvent,WgEventWeakPtr>	WgItemListEventWeakPtr;
+
+class WgItemsSelectEvent;
+typedef	WgSmartPtr<WgItemsSelectEvent,WgItemListEventPtr>		WgItemsSelectEventPtr;
+typedef	WgWeakPtr<WgItemsSelectEvent,WgItemListEventWeakPtr>	WgItemsSelectEventWeakPtr;
+
+class WgItemsUnselectEvent;
+typedef	WgSmartPtr<WgItemsUnselectEvent,WgItemListEventPtr>		WgItemsUnselectEventPtr;
+typedef	WgWeakPtr<WgItemsUnselectEvent,WgItemListEventWeakPtr>	WgItemsUnselectEventWeakPtr;
+
+class WgItemToggleEvent;
+typedef	WgSmartPtr<WgItemToggleEvent,WgItemEventPtr>		WgItemToggleEventPtr;
+typedef	WgWeakPtr<WgItemToggleEvent,WgItemEventWeakPtr>	WgItemToggleEventWeakPtr;
+
+class WgItemMousePressEvent;
+typedef	WgSmartPtr<WgItemMousePressEvent,WgItemEventPtr>		WgItemMousePressEventPtr;
+typedef	WgWeakPtr<WgItemMousePressEvent,WgItemEventWeakPtr>	WgItemMousePressEventWeakPtr;
+
+class WgMenuClosedEvent;
+typedef	WgSmartPtr<WgMenuClosedEvent,WgEventPtr>		WgMenuClosedEventPtr;
+typedef	WgWeakPtr<WgMenuClosedEvent,WgEventWeakPtr>	WgMenuClosedEventWeakPtr;
+
+class WgModalMoveOutsideEvent;
+typedef	WgSmartPtr<WgModalMoveOutsideEvent,WgEventPtr>		WgModalMoveOutsideEventPtr;
+typedef	WgWeakPtr<WgModalMoveOutsideEvent,WgEventWeakPtr>	WgModalMoveOutsideEventWeakPtr;
+
+class WgModalBlockedPressEvent;
+typedef	WgSmartPtr<WgModalBlockedPressEvent,WgEventPtr>		WgModalBlockedPressEventPtr;
+typedef	WgWeakPtr<WgModalBlockedPressEvent,WgEventWeakPtr>	WgModalBlockedPressEventWeakPtr;
+
+class WgModalBlockedReleaseEvent;
+typedef	WgSmartPtr<WgModalBlockedReleaseEvent,WgEventPtr>		WgModalBlockedReleaseEventPtr;
+typedef	WgWeakPtr<WgModalBlockedReleaseEvent,WgEventWeakPtr>	WgModalBlockedReleaseEventWeakPtr;
+
+//
+
+class WgLinkEvent;
+typedef	WgSmartPtr<WgLinkEvent,WgEventPtr>		WgLinkEventPtr;
+typedef	WgWeakPtr<WgLinkEvent,WgEventWeakPtr>	WgLinkEventWeakPtr;
+
+class WgLinkSelectEvent;
+typedef	WgSmartPtr<WgLinkSelectEvent,WgLinkEventPtr>		WgLinkSelectEventPtr;
+typedef	WgWeakPtr<WgLinkSelectEvent,WgLinkEventWeakPtr>		WgLinkSelectEventWeakPtr;
+
+class WgLinkMouseEnterEvent;
+typedef	WgSmartPtr<WgLinkMouseEnterEvent,WgLinkEventPtr>		WgLinkMouseEnterEventPtr;
+typedef	WgWeakPtr<WgLinkMouseEnterEvent,WgLinkEventWeakPtr>		WgLinkMouseEnterEventWeakPtr;
+
+class WgLinkMouseLeaveEvent;
+typedef	WgSmartPtr<WgLinkMouseLeaveEvent,WgLinkEventPtr>		WgLinkMouseLeaveEventPtr;
+typedef	WgWeakPtr<WgLinkMouseLeaveEvent,WgLinkEventWeakPtr>		WgLinkMouseLeaveEventWeakPtr;
+
+class WgLinkMouseButtonEvent;
+typedef	WgSmartPtr<WgLinkMouseButtonEvent,WgLinkEventPtr>		WgLinkMouseButtonEventPtr;
+typedef	WgWeakPtr<WgLinkMouseButtonEvent,WgLinkEventWeakPtr>		WgLinkMouseButtonEventWeakPtr;
+
+class WgLinkMousePressEvent;
+typedef	WgSmartPtr<WgLinkMousePressEvent,WgLinkMouseButtonEventPtr>		WgLinkMousePressEventPtr;
+typedef	WgWeakPtr<WgLinkMousePressEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMousePressEventWeakPtr;
+
+class WgLinkMouseRepeatEvent;
+typedef	WgSmartPtr<WgLinkMouseRepeatEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseRepeatEventPtr;
+typedef	WgWeakPtr<WgLinkMouseRepeatEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMouseRepeatEventWeakPtr;
+
+class WgLinkMouseReleaseEvent;
+typedef	WgSmartPtr<WgLinkMouseReleaseEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseReleaseEventPtr;
+typedef	WgWeakPtr<WgLinkMouseReleaseEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMouseReleaseEventWeakPtr;
+
+class WgLinkMouseClickEvent;
+typedef	WgSmartPtr<WgLinkMouseClickEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseClickEventPtr;
+typedef	WgWeakPtr<WgLinkMouseClickEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMouseClickEventWeakPtr;
+
+class WgLinkMouseDoubleClickEvent;
+typedef	WgSmartPtr<WgLinkMouseDoubleClickEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseDoubleClickEventPtr;
+typedef	WgWeakPtr<WgLinkMouseDoubleClickEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMouseDoubleClickEventWeakPtr;
+
+
+class WgEvent : public WgObject
 {
-	class Event
-	{
-		friend class ::WgEventHandler;
-		friend class ::WgWidget;
+	friend class WgEventHandler;
+	friend class WgWidget;
 
-		public:
-			WgEventType		Type() const { return m_type; }
-			int64_t			Timestamp() const { return m_timestamp; }
-			bool			IsForWidget() const { return m_bIsForWidget; }
-			WgWidget *		Widget() const;									// Inlining this would demand include of wg_widget.h.
-			WgWidgetWeakPtr	WidgetWeakPtr() const { return m_pWidget; }
-			WgWidget *		ForwardedFrom() const;
-			WgModifierKeys	ModKeys() const { return m_modKeys; }
-			WgCoord			PointerPos() const { return m_pointerLocalPos; }
-			WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
+	public:
+
+		bool				IsInstanceOf( const char * pClassName ) const;
+		const char *		ClassName( void ) const;
+		static const char	CLASSNAME[];
+		static WgEventPtr	Cast( const WgObjectPtr& pObject );
+
+		WgEventType		Type() const { return m_type; }
+		int64_t			Timestamp() const { return m_timestamp; }
+		bool			IsForWidget() const { return m_bIsForWidget; }
+		WgWidget *		Widget() const;									// Inlining this would demand include of wg_widget.h.
+		WgWidgetWeakPtr	WidgetWeakPtr() const { return m_pWidget; }
+		WgWidget *		ForwardedFrom() const;
+		WgModifierKeys	ModKeys() const { return m_modKeys; }
+		WgCoord			PointerPos() const { return m_pointerLocalPos; }
+		WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
 			
-			bool			IsMouseEvent() const;
-			bool			IsMouseButtonEvent() const;
-			bool			IsKeyEvent() const;
-			void			Swallow() {};		//TODO: Should not be const later on...
+		bool			IsMouseEvent() const;
+		bool			IsMouseButtonEvent() const;
+		bool			IsKeyEvent() const;
 
-		protected:
-			Event() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForWidget(false) {}
-			virtual ~Event() {}
-
-			virtual void 	_cloneContentFrom( const Event * pOrg );			// Only subclassed for the standard event types.
+	protected:
+		WgEvent() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForWidget(false) {}
+		virtual ~WgEvent() {}
 			
-			WgEventType		m_type;				// Type of event
-			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
-			int64_t			m_timestamp;		// Timestamp of posting this event
-			bool			m_bIsForWidget;		// Set if this event is for a specific Widget.
-			WgWidgetWeakPtr	m_pWidget;			// Widget to receive this event.
-			WgWidgetWeakPtr	m_pForwardedFrom;	// Widget this event was forwarded from.
-			WgCoord			m_pointerLocalPos;	// Widget-relative position of pointer. Same as m_pointerScreenPos if Widget not set.
-			WgCoord			m_pointerScreenPos;	// Screen position of pointer.
-	};
+		WgEventType		m_type;				// Type of event
+		WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
+		int64_t			m_timestamp;		// Timestamp of posting this event
+		bool			m_bIsForWidget;		// Set if this event is for a specific Widget.
+		WgWidgetWeakPtr	m_pWidget;			// Widget to receive this event.
+		WgWidgetWeakPtr	m_pForwardedFrom;	// Widget this event was forwarded from.
+		WgCoord			m_pointerLocalPos;	// Widget-relative position of pointer. Same as m_pointerScreenPos if Widget not set.
+		WgCoord			m_pointerScreenPos;	// Screen position of pointer.
+};
 
-	class MouseButtonEvent : public Event
-	{
-		friend class ::WgEventHandler;
-	public:
-		int		Button() const { return m_button; }
-	protected:
-		MouseButtonEvent(int button) : m_button(button) {}
-		virtual void 	_cloneContentFrom( const Event * pOrg );
+class WgMouseButtonEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMouseButtonEventPtr	Cast( const WgObjectPtr& pObject );
 
-		int		m_button;
-	};
+	int		Button() const { return m_button; }
+protected:
+	WgMouseButtonEvent(int button) : m_button(button) {}
 
-	class KeyEvent : public Event
-	{
-		friend class ::WgEventHandler;
-	public:
-		int		NativeKeyCode() const { return m_nativeKeyCode; }
-		int		TranslatedKeyCode() const { return m_translatedKeyCode; }
-		bool	IsCursorKey() const;
-		bool	IsMovementKey() const;
-	protected:
-		KeyEvent( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(0) {}
-		virtual void 	_cloneContentFrom( const Event * pOrg );
+	int		m_button;
+};
 
-		int		m_nativeKeyCode;
-		int		m_translatedKeyCode;
-	};
+class WgKeyEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgKeyEventPtr	Cast( const WgObjectPtr& pObject );
 
-	class FocusGained : public Event
-	{
-		friend class ::WgEventHandler;
-	public:
-		FocusGained();
-	};
+	int		NativeKeyCode() const { return m_nativeKeyCode; }
+	int		TranslatedKeyCode() const { return m_translatedKeyCode; }
+	bool	IsCursorKey() const;
+	bool	IsMovementKey() const;
+protected:
+	WgKeyEvent( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(0) {}
 
-	class FocusLost : public Event
-	{
-		friend class ::WgEventHandler;
-	public:
-		FocusLost();
-	};
+	int		m_nativeKeyCode;
+	int		m_translatedKeyCode;
+};
 
-	class MouseEnter : public Event
-	{
-		friend class ::WgEventHandler;
-	public:
-		MouseEnter( const WgCoord& pos );
-	protected:
-		MouseEnter( WgWidget * pWidget );
-	};
+class WgFocusGainedEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgFocusGainedEventPtr	Create() { return new WgFocusGainedEvent(); }
 
-	class MouseLeave : public Event
-	{
-		friend class ::WgEventHandler;
-	public:
-		MouseLeave();
-	protected:
-		MouseLeave( WgWidget * pWidget );
-	};
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgFocusGainedEventPtr	Cast( const WgObjectPtr& pObject );
+protected:
+	WgFocusGainedEvent();
+};
+
+class WgFocusLostEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgFocusLostEventPtr	Create() { return new WgFocusLostEvent(); }
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgFocusLostEventPtr	Cast( const WgObjectPtr& pObject );
+protected:
+	WgFocusLostEvent();
+};
+
+class WgMouseEnterEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgMouseEnterEventPtr			Create( const WgCoord& pos ) { return new WgMouseEnterEvent(pos); }
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMouseEnterEventPtr	Cast( const WgObjectPtr& pObject );
+protected:
+	WgMouseEnterEvent( const WgCoord& pos );
+	WgMouseEnterEvent( WgWidget * pWidget );
+};
+
+class WgMouseLeaveEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgMouseLeaveEventPtr			Create() { return new WgMouseLeaveEvent(); }
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMouseLeaveEventPtr	Cast( const WgObjectPtr& pObject );
+protected:
+	WgMouseLeaveEvent();
+	WgMouseLeaveEvent( WgWidget * pWidget );
+};
 
 
-	class MouseMove : public Event
-	{
-		friend class ::WgEventHandler;
-	protected:
-		MouseMove( WgWidget * pWidget );
-	public:
-		MouseMove( const WgCoord& pos );
-	};
+class WgMouseMoveEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgMouseMoveEventPtr			Create( const WgCoord& pos ) { return new WgMouseMoveEvent(pos); }
 
-	class MouseButtonPress : public MouseButtonEvent
-	{
-		friend class ::WgEventHandler;
-	protected:
-		MouseButtonPress( int button, WgWidget * pWidget );
-	public:
-		MouseButtonPress( int button );
-	};
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMouseMoveEventPtr	Cast( const WgObjectPtr& pObject );
+protected:
+	WgMouseMoveEvent( WgWidget * pWidget );
+	WgMouseMoveEvent( const WgCoord& pos );
+};
 
-	class MouseButtonRelease : public MouseButtonEvent
-	{
-		friend class ::WgEventHandler;
-	public:
-		MouseButtonRelease( int button );
+class WgMousePressEvent : public WgMouseButtonEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgMousePressEventPtr			Create( int button ) { return new WgMousePressEvent(button); }
 
-		bool			PressInside() const;
-		bool			ReleaseInside() const;
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMousePressEventPtr	Cast( const WgObjectPtr& pObject );
+protected:
+	WgMousePressEvent( int button, WgWidget * pWidget );
+	WgMousePressEvent( int button );
+};
 
-	protected:
-		MouseButtonRelease( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside );
-		virtual void 	_cloneContentFrom( const Event * pOrg );
+class WgMouseReleaseEvent : public WgMouseButtonEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgMouseReleaseEventPtr		Create( int button ) { return new WgMouseReleaseEvent(button); }
 
-		bool			m_bPressInside;
-		bool			m_bReleaseInside;
-	};
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMouseReleaseEventPtr	Cast( const WgObjectPtr& pObject );
 
-	class KeyPress : public KeyEvent
-	{
-		friend class ::WgEventHandler;
-	public:
-		KeyPress( int native_keycode );
-	protected:
-		KeyPress( int native_keycode, WgWidget * pWidget );
-	};
+	bool			PressInside() const;
+	bool			ReleaseInside() const;
 
-	class KeyRelease : public KeyEvent
-	{
-		friend class ::WgEventHandler;
-	public:
-		KeyRelease( int native_keycode );
-	protected:
-		KeyRelease( int native_keycode, WgWidget * pWidget );
-	};
+protected:
+	WgMouseReleaseEvent( int button );
+	WgMouseReleaseEvent( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside );
 
-	class Character : public Event
-	{
-		friend class ::WgEventHandler;
-	public:
-		Character( unsigned short character );
+	bool			m_bPressInside;
+	bool			m_bReleaseInside;
+};
 
-		unsigned short	Char() const;
-	protected:
-		Character( unsigned short character, WgWidget * pWidget );
-		virtual void 	_cloneContentFrom( const Event * pOrg );
-	protected:
-		unsigned short	m_char;
-	};
+class WgKeyPressEvent : public WgKeyEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgKeyPressEventPtr			Create( int native_keycode ) { return new WgKeyPressEvent(native_keycode); }
 
-	class MouseWheelRoll : public Event
-	{
-		friend class ::WgEventHandler;
-	public:
-		MouseWheelRoll( int wheel, int distance );
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgKeyPressEventPtr	Cast( const WgObjectPtr& pObject );
+protected:
+	WgKeyPressEvent( int native_keycode );
+	WgKeyPressEvent( int native_keycode, WgWidget * pWidget );
+};
 
-		int			Wheel() const;
-		int			Distance() const;
-	protected:
-		MouseWheelRoll( int wheel, int distance, WgWidget * pWidget );
-		virtual void 	_cloneContentFrom( const Event * pOrg );
+class WgKeyReleaseEvent : public WgKeyEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgKeyReleaseEventPtr			Create( int native_keycode ) { return new WgKeyReleaseEvent(native_keycode); }
 
-		int			m_wheel;
-		int			m_distance;
-	};
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgKeyReleaseEventPtr	Cast( const WgObjectPtr& pObject );
+protected:
+	WgKeyReleaseEvent( int native_keycode );
+	WgKeyReleaseEvent( int native_keycode, WgWidget * pWidget );
+};
 
-	class Tick : public Event
-	{
-		friend class ::WgEventHandler;
-	public:
-		Tick( int ms );
+class WgCharacterEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgCharacterEventPtr			Create( unsigned short character ) { return new WgCharacterEvent(character); }
 
-		int				Millisec() const;
-	protected:
-		Tick( int ms, WgWidget * pWidget );
-		virtual void 	_cloneContentFrom( const Event * pOrg );
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgCharacterEventPtr	Cast( const WgObjectPtr& pObject );
 
-		int			m_millisec;
-	};
+	unsigned short	Char() const;
+protected:
+	WgCharacterEvent( unsigned short character );
+	WgCharacterEvent( unsigned short character, WgWidget * pWidget );
+protected:
+	unsigned short	m_char;
+};
 
-	class PointerChange : public Event
-	{
-		friend class ::WgEventHandler;
-	public:
-		WgPointerStyle	Style() const;
+class WgWheelRollEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgWheelRollEventPtr			Create( int wheel, int distance ) { return new WgWheelRollEvent(wheel,distance); }
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgWheelRollEventPtr	Cast( const WgObjectPtr& pObject );
+
+	int			Wheel() const;
+	int			Distance() const;
+protected:
+	WgWheelRollEvent( int wheel, int distance );
+	WgWheelRollEvent( int wheel, int distance, WgWidget * pWidget );
+
+	int			m_wheel;
+	int			m_distance;
+};
+
+class WgTickEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	static WgTickEventPtr				Create( int ms ) { return new WgTickEvent(ms); }
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgTickEventPtr	Cast( const WgObjectPtr& pObject );
+
+	int				Millisec() const;
+protected:
+	WgTickEvent( int ms );
+	WgTickEvent( int ms, WgWidget * pWidget );
+
+	int			m_millisec;
+};
+
+class WgPointerChangeEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgPointerChangeEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgPointerStyle	Style() const;
 		
-	protected:
-		PointerChange( WgPointerStyle style );
-		virtual void 	_cloneContentFrom( const Event * pOrg );
+protected:
+	WgPointerChangeEvent( WgPointerStyle style );
 		
-		WgPointerStyle	m_style;
-	};
-
-
-	//____ WgButton events _______________________________________________
-
-	class ButtonPress : public Event
-	{
-	public:
-		ButtonPress( WgButton * pWidget );
-		WgButton *	Button() const;
-	};
-
-	//____ WgCheckBox events ______________________________________________
-
-	class CheckboxEvent : public Event
-	{
-	public:
-		WgCheckBox * Checkbox() const;
-	};
-
-	class CheckboxCheck : public CheckboxEvent
-	{
-	public:
-		CheckboxCheck( WgCheckBox * pWidget );
-	};
-
-	class CheckboxUncheck : public CheckboxEvent
-	{
-	public:
-		CheckboxUncheck( WgCheckBox * pWidget );
-	};
-
-	class CheckboxToggle : public CheckboxEvent
-	{
-	public:
-		CheckboxToggle( WgCheckBox * pWidget, bool bChecked );
-		bool		IsChecked() const;
-
-	private:
-		bool	m_bChecked;
-	};
-
-	//____ WgAnimPlayer events _____________________________________________
-
-	class AnimationUpdate : public Event
-	{
-	public:
-		AnimationUpdate( WgAnimPlayer * pWidget, int frame, float fraction );
-		WgAnimPlayer * Animation() const;
-		int		Frame() const;
-		float	Fraction() const;
-	private:
-		int		m_frame;
-		float	m_fraction;
-	};
-
-	//____ WgTablist events _______________________________________________
-
-	class TablistEvent : public Event
-	{
-	public:
-		WgTablist *	Tablist() const;
-	};
-
-	class TabSelect : public TablistEvent
-	{
-	public:
-		TabSelect( WgTablist * pWidget, int tabId );
-		int		TabId() const;
-	private:
-		int		m_tabId;
-	};
-
-	class TabPress : public TablistEvent
-	{
-	public:
-		TabPress( WgTablist * pWidget, int tabId, int mouseButton );
-		int		TabId() const;
-		int		MouseButton() const;
-	private:
-		int		m_tabId;
-		int		m_button;
-	};
-
-	//____ WgValueEditor events _____________________________________
-
-	class EditvalueEvent : public Event
-	{
-		friend class EditvalueModify;
-		friend class EditvalueSet;
-	public:
-		WgValueEditor * Editvalue() const;
-		int64_t		Value() const;
-		double		Fraction() const;
-	protected:
-		int64_t		m_value;
-		double		m_fraction;
-	};
-
-	class EditvalueModify : public EditvalueEvent
-	{
-	public:
-		EditvalueModify( WgValueEditor * pWidget, int64_t value, double fraction );
-	};
-
-	class EditvalueSet : public EditvalueEvent
-	{
-	public:
-		EditvalueSet( WgValueEditor * pWidget, int64_t value, double fraction );
-	};
-
-	//____ WgScrollbar events ________________________________________________
-
-	class ScrollbarEvent : public Event
-	{
-	public:
-		WgScrollbar*	Scrollbar() const;
-		float			Pos() const;
-		float			Length() const;
-		float			Value() const;
-
-	protected:
-		ScrollbarEvent( WgScrollbar * pWidget, float pos, float length );
-		float			m_pos;
-		float			m_length;
-	};
-
-	class ScrollbarMove : public ScrollbarEvent
-	{
-	public:
-		ScrollbarMove( WgScrollbar* pWidget, float pos, float length );
-	};
-
-	class ScrollbarStepFwd : public ScrollbarEvent
-	{
-	public:
-		ScrollbarStepFwd( WgScrollbar* pWidget, float pos, float length );
-	};
-
-	class ScrollbarStepBwd : public ScrollbarEvent
-	{
-	public:
-		ScrollbarStepBwd( WgScrollbar* pWidget, float pos, float length );
-	};
-
-	class ScrollbarJumpFwd : public ScrollbarEvent
-	{
-	public:
-		ScrollbarJumpFwd( WgScrollbar* pWidget, float pos, float length );
-	};
-
-	class ScrollbarJumpBwd : public ScrollbarEvent
-	{
-	public:
-		ScrollbarJumpBwd( WgScrollbar* pWidget, float pos, float length );
-	};
-
-	class ScrollbarWheelRolled : public ScrollbarEvent
-	{
-	public:
-		ScrollbarWheelRolled( WgScrollbar* pWidget, int distance, float pos, float length );
-		int			Distance() const;
-	protected:
-		int			m_distance;
-	};
-
-	//____ WgWidgetKnob events _________________________________________________
-
-	class KnobTurn : public Event
-	{
-	public:
-		KnobTurn( WgWidget * pWidget, int pos, float fraction ); //TODO: Change to WgWidgetKnob* when we have impoted WgWidgetKnob to main code.
-//		WgWidgetKnob * Knob() const;		TODO: Add when we have imported WgWidgetKnob to main code.
-		float	Fraction() const;
-		int		Pos() const;
-	private:
-		float	m_fraction;
-		int		m_pos;
-	};
-
-	//____ Text events ________________________________________
-
-	class TextEvent : public Event
-	{
-	public:
-		WgIEditTextPtr		Text() const;
-	protected:
-		WgIEditTextPtr		m_pText;
-	};
-
-	class TextModify : public TextEvent
-	{
-	public:
-		TextModify( WgWidget * pWidget, WgText * pText );
-	};
-
-	class TextSet : public TextEvent
-	{
-	public:
-		TextSet( WgWidget * pWidget, WgText * pText );
-	};
-
-	//____ WgMenu events __________________________________________________
-
-	class MenuitemEvent : public Event
-	{
-	public:
-		WgMenu *	Menu() const;
-		int				ItemId() const;
-
-	protected:
-		int				m_itemId;
-	};
-
-	class MenuitemSelect : public MenuitemEvent
-	{
-	public:
-		MenuitemSelect( WgMenu * pMenu, int menuItemId );
-	};
-
-	class MenuitemCheck : public MenuitemEvent
-	{
-	public:
-		MenuitemCheck( WgMenu * pMenu, int menuItemId );
-	};
-
-	class MenuitemUncheck : public MenuitemEvent
-	{
-	public:
-		MenuitemUncheck( WgMenu * pMenu, int menuItemId );
-	};
-
-	//____ WgMenuLayer events __________________________________________________
-
-	class MenuClosed : public Event
-	{
-		friend class ::WgMenuLayer;
-	public:
-		WgWidget *		Menu() const;									// Inlining this would demand include of wg_widget.h.
-		WgWidgetWeakPtr	MenuWeakPtr() const { return m_pMenu; }
-
-		// Caller is the same as m_pWidget, since m_pWidget should receive
-		// the event.
-
-		WgWidget *		Caller() const;									// Inlining this would demand include of wg_widget.h.
-		WgWidgetWeakPtr	CallerWeakPtr() const { return m_pWidget; }
-
-	protected:
-		MenuClosed( WgWidget * pMenu, const WgWidgetWeakPtr& pCaller );
-
-		WgWidgetWeakPtr m_pMenu;
-	};
-
-	//____ WgWidgetModalLayer events _________________________________________________
-
-	class ModalMoveOutside : public Event
-	{
-		friend class ::WgModalLayer;
-	protected:
-		ModalMoveOutside( WgWidget * pWidget );
-	};
-
-	class ModalBlockedPress : public MouseButtonEvent
-	{
-		friend class ::WgModalLayer;
-	protected:
-		ModalBlockedPress( int button, WgWidget * pModalWidget );
-	};
-
-	class ModalBlockedRelease : public MouseButtonEvent
-	{
-		friend class ::WgModalLayer;
-	protected:
-		ModalBlockedRelease( int button, WgWidget * pModalWidget );
-	};
-
-	//____ WgTablePanel events _________________________________________________
-/*
-	class TableCellEvent : public Event
-	{
-	public:
-		WgTablePanel * 	Table() const;
-		int				Row() const;
-		int				Column() const;
-		WgWidget *		CellContent() const;
-		
-	protected:
-		int				m_row;
-		int				m_column;
-		WgWidgetWeakPtr	m_pCellContent;
-	};
-
-	class TableCellMarked : public TableCellEvent
-	{
-		friend class ::WgTablePanel;
-	protected:
-		TableCellMarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent );
-	};
-
-	class TableCellUnmarked : public TableCellEvent
-	{
-		friend class ::WgTablePanel;
-	protected:
-		TableCellUnmarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent );
-	};
-*/
-	//____ Link events _________________________________________________________
-
-	class LinkEvent : public Event
-	{
-	public:
-		std::string		Link() const;
-	protected:
-		std::string		m_link;
-	};
-
-	class LinkMark : public LinkEvent
-	{
-	public:
-		LinkMark( WgWidget * pWidget, std::string link );
-	};
-
-	class LinkUnmark : public LinkEvent
-	{
-	public:
-		LinkUnmark( WgWidget * pWidget, std::string link );
-	};
-
-	class LinkButtonEvent : public LinkEvent
-	{
-	public:
-		int			Button() const;
-	protected:
-		int			m_button;
-	};
-
-	class LinkPress : public LinkButtonEvent
-	{
-	public:
-		LinkPress( WgWidget * pWidget, std::string link, int button );
-	};
-
-	class LinkRepeat : public LinkButtonEvent
-	{
-	public:
-		LinkRepeat( WgWidget * pWidget, std::string link, int button );
-	};
-
-	class LinkRelease : public LinkButtonEvent
-	{
-	public:
-		LinkRelease( WgWidget * pWidget, std::string link, int button );
-	};
-
-	class LinkClick : public LinkButtonEvent
-	{
-	public:
-		LinkClick( WgWidget * pWidget, std::string link, int button );
-	};
-
-	class LinkDoubleClick : public LinkButtonEvent
-	{
-	public:
-		LinkDoubleClick( WgWidget * pWidget, std::string link, int button );
-	};
-
-	//____ Internally posted events ____________________________________________
-
-	class MousePosition : public Event
-	{
-		friend class ::WgEventHandler;
-	protected:
-		MousePosition();
-	};
-
-	class MouseButtonDrag : public MouseButtonEvent
-	{
-		friend class ::WgEventHandler;
-	protected:
-		MouseButtonDrag( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos );
-		MouseButtonDrag( int button, WgWidget * pWidget, const WgCoord& orgPos, const WgCoord& prevPos, const WgCoord& currPos );
-		virtual void 	_cloneContentFrom( const Event * pOrg );
-	public:
-		WgCoord			DraggedTotal() const;
-		WgCoord			DraggedNow() const;
-		WgCoord			StartPos() const;
-		WgCoord			PrevPos() const;
-		WgCoord			CurrPos() const;
-	protected:
-		WgCoord			m_startPos;
-		WgCoord			m_prevPos;
-		WgCoord			m_currPos;
-	};
-
-	class MouseButtonRepeat : public MouseButtonEvent
-	{
-		friend class ::WgEventHandler;
-	protected:
-		MouseButtonRepeat( int button, WgWidget * pWidget );
-	public:
-		MouseButtonRepeat( int button );
-	};
-
-	class MouseButtonClick : public MouseButtonEvent
-	{
-		friend class ::WgEventHandler;
-	protected:
-		MouseButtonClick( int button );
-		MouseButtonClick( int button, WgWidget * pWidget );
-	};
-
-	class MouseButtonDoubleClick : public MouseButtonEvent
-	{
-		friend class ::WgEventHandler;
-	protected:
-		MouseButtonDoubleClick( int button );
-		MouseButtonDoubleClick( int button, WgWidget * pWidget );
-	};
-
-	class KeyRepeat : public KeyEvent
-	{
-		friend class ::WgEventHandler;
-	protected:
-		KeyRepeat( int native_keycode );
-		KeyRepeat( int native_keycode, WgWidget * pWidget );
-	};
-
-}
+	WgPointerStyle	m_style;
+};
+
+
+//____ WgSelectEvent _______________________________________________
+
+class WgSelectEvent : public WgEvent
+{
+public:
+	WgSelectEvent( WgWidget * pWidget );
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgSelectEventPtr	Cast( const WgObjectPtr& pObject );
+};
+
+//____ WgToggleEvent ______________________________________________
+
+class WgToggleEvent : public WgEvent
+{
+public:
+	WgToggleEvent( WgWidget * pWidget, bool bSet );
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgToggleEventPtr	Cast( const WgObjectPtr& pObject );
+
+	bool		IsSet() const;
+
+private:
+	bool	m_bSet;
+};
+
+//____ WgValueUpdateEvent _____________________________________
+
+class WgValueUpdateEvent : public WgEvent
+{
+public:
+	WgValueUpdateEvent( WgWidget * pWidget, int64_t value, double fraction, bool bFinal );
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgValueUpdateEventPtr	Cast( const WgObjectPtr& pObject );
+
+	int64_t		Value() const;
+	double		Fraction() const;
+	bool		IsFinal() const;
+
+protected:
+	int64_t		m_value;
+	double		m_fraction;
+	bool		m_bFinal;
+};
+
+//____ WgRangeUpdateEvent ___________________________________________
+
+class WgRangeUpdateEvent : public WgEvent
+{
+public:
+	WgRangeUpdateEvent( WgWidget * pWidget, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal ); 
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgRangeUpdateEventPtr	Cast( const WgObjectPtr& pObject );
+
+	int			Offset() const;
+	int			Length() const;
+	double		FracOffset() const;
+	double		FracLength() const;
+	bool		IsFinal() const;
+
+	int			m_ofs;
+	int			m_length;
+	double		m_fracOfs;
+	double		m_fracLength;
+	bool		m_bFinal;
+};
+
+//____ WgTextEditEvent ________________________________________
+
+class WgTextEditEvent : public WgEvent
+{
+public:
+	WgTextEditEvent( WgWidget * pWidget, WgText * pText, bool bFinal );
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgTextEditEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgIEditTextPtr		Text() const;
+	bool				IsFinal() const;
+
+protected:
+	WgIEditTextPtr		m_pText;
+	bool				m_bFinal;
+};
+
+
+//____
+
+class WgItemInfo
+{
+public:
+	WgItemInfo(): index(-1), id(-1) {}
+	WgItemInfo( int _index, int _id, const WgObjectPtr& _pObject ) : index(_index), id(_id), pObject(_pObject) {}
+
+	int				index;
+	int				id;
+	WgObjectPtr		pObject;
+};
+
+//____ WgItemEvent ____________________________________________________________
+
+class WgItemEvent : public WgEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgItemEventPtr	Cast( const WgObjectPtr& pObject );
+
+	int				ItemIndex() const;
+	int				ItemId() const;
+	WgObjectPtr		ItemObject() const;
+
+protected:
+	WgItemEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject );
+
+	WgItemInfo		m_item;
+};
+
+//____ WgItemToggleEvent ______________________________________________________
+
+class WgItemToggleEvent : public WgItemEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgItemToggleEventPtr	Cast( const WgObjectPtr& pObject );
+
+	bool		IsSet() const;
+
+//protected:
+	WgItemToggleEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject, bool bSet );
+
+	bool		m_bSet;
+};
+
+//____ WgItemMousePressEvent ______________________________________________________
+
+class WgItemMousePressEvent : public WgItemEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgItemMousePressEventPtr	Cast( const WgObjectPtr& pObject );
+
+	int				Button() const;
+//protected:
+	WgItemMousePressEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject, int button );
+
+	int		m_button;
+};
+
+
+//____ WgItemListEvent ___________________________________________________________
+
+class WgItemListEvent : public WgEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgItemListEventPtr	Cast( const WgObjectPtr& pObject );
+
+	int					NbItems() const;
+	const WgItemInfo *	Items() const;
+
+protected:
+	WgItemListEvent( WgWidget * pWidget, int nbItems, WgItemInfo * pItems );
+	virtual ~WgItemListEvent();
+	int				m_nbItems;
+	WgItemInfo *	m_pItems;
+};
+
+
+//____ WgItemsSelectEvent _____________________________________________________
+
+class WgItemsSelectEvent : public WgItemListEvent
+{
+public:
+	WgItemsSelectEvent( WgWidget * pWidget, int nbItems, WgItemInfo * pItems );
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgItemsSelectEventPtr	Cast( const WgObjectPtr& pObject );
+};
+
+//____ WgItemsUnselectEvent _____________________________________________________
+
+class WgItemsUnselectEvent : public WgItemListEvent
+{
+public:
+	WgItemsUnselectEvent( WgWidget * pWidget, int nbItems, WgItemInfo * pItems );
+
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgItemsUnselectEventPtr	Cast( const WgObjectPtr& pObject );
+};
+
+//____ WgMenuClosedEvent ______________________________________________________
+
+class WgMenuClosedEvent : public WgEvent
+{
+	friend class WgMenuLayer;
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMenuClosedEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgWidget *		Menu() const;									// Inlining this would demand include of wg_widget.h.
+	WgWidgetWeakPtr	MenuWeakPtr() const { return m_pMenu; }
+
+	// Caller is the same as m_pWidget, since m_pWidget should receive
+	// the event.
+
+	WgWidget *		Caller() const;									// Inlining this would demand include of wg_widget.h.
+	WgWidgetWeakPtr	CallerWeakPtr() const { return m_pWidget; }
+
+protected:
+	WgMenuClosedEvent( WgWidget * pMenu, const WgWidgetWeakPtr& pCaller );
+
+	WgWidgetWeakPtr m_pMenu;
+};
+
+//____ WgWidgetModalLayer events _________________________________________________
+
+class WgModalMoveOutsideEvent : public WgEvent
+{
+	friend class WgModalLayer;
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgModalMoveOutsideEventPtr	Cast( const WgObjectPtr& pObject );
+
+protected:
+	WgModalMoveOutsideEvent( WgWidget * pWidget );
+};
+
+class WgModalBlockedPressEvent : public WgMouseButtonEvent
+{
+	friend class WgModalLayer;
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgModalBlockedPressEventPtr	Cast( const WgObjectPtr& pObject );
+
+protected:
+	WgModalBlockedPressEvent( int button, WgWidget * pModalWidget );
+};
+
+class WgModalBlockedReleaseEvent : public WgMouseButtonEvent
+{
+	friend class WgModalLayer;
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgModalBlockedReleaseEventPtr	Cast( const WgObjectPtr& pObject );
+
+protected:
+	WgModalBlockedReleaseEvent( int button, WgWidget * pModalWidget );
+};
+
+//____ Link events _________________________________________________________
+
+class WgLinkEvent : public WgEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLinkEventPtr	Cast( const WgObjectPtr& pObject );
+
+	std::string		Link() const;
+protected:
+	std::string		m_link;
+};
+
+class WgLinkSelectEvent : public WgLinkEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLinkSelectEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgLinkSelectEvent( WgWidget * pWidget, std::string link );
+};
+
+
+class WgLinkMouseEnterEvent : public WgLinkEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLinkMouseEnterEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgLinkMouseEnterEvent( WgWidget * pWidget, std::string link );
+};
+
+class WgLinkMouseLeaveEvent : public WgLinkEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLinkMouseLeaveEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgLinkMouseLeaveEvent( WgWidget * pWidget, std::string link );
+};
+
+class WgLinkMouseButtonEvent : public WgLinkEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLinkMouseButtonEventPtr	Cast( const WgObjectPtr& pObject );
+
+	int			Button() const;
+protected:
+	int			m_button;
+};
+
+class WgLinkMousePressEvent : public WgLinkMouseButtonEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLinkMousePressEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgLinkMousePressEvent( WgWidget * pWidget, std::string link, int button );
+};
+
+class WgLinkMouseRepeatEvent : public WgLinkMouseButtonEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLinkMouseRepeatEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgLinkMouseRepeatEvent( WgWidget * pWidget, std::string link, int button );
+};
+
+class WgLinkMouseReleaseEvent : public WgLinkMouseButtonEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLinkMouseReleaseEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgLinkMouseReleaseEvent( WgWidget * pWidget, std::string link, int button );
+};
+
+class WgLinkMouseClickEvent : public WgLinkMouseButtonEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLinkMouseClickEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgLinkMouseClickEvent( WgWidget * pWidget, std::string link, int button );
+};
+
+class WgLinkMouseDoubleClickEvent : public WgLinkMouseButtonEvent
+{
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgLinkMouseDoubleClickEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgLinkMouseDoubleClickEvent( WgWidget * pWidget, std::string link, int button );
+};
+
+//____ Internally posted events ____________________________________________
+
+class WgMousePositionEvent : public WgEvent
+{
+	friend class WgEventHandler;
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMousePositionEventPtr	Cast( const WgObjectPtr& pObject );
+
+protected:
+	WgMousePositionEvent();
+};
+
+class WgMouseDragEvent : public WgMouseButtonEvent
+{
+	friend class WgEventHandler;
+protected:
+	WgMouseDragEvent( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos );
+	WgMouseDragEvent( int button, WgWidget * pWidget, const WgCoord& orgPos, const WgCoord& prevPos, const WgCoord& currPos );
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMouseDragEventPtr	Cast( const WgObjectPtr& pObject );
+
+	WgCoord			DraggedTotal() const;
+	WgCoord			DraggedNow() const;
+	WgCoord			StartPos() const;
+	WgCoord			PrevPos() const;
+	WgCoord			CurrPos() const;
+protected:
+	WgCoord			m_startPos;
+	WgCoord			m_prevPos;
+	WgCoord			m_currPos;
+};
+
+class WgMouseRepeatEvent : public WgMouseButtonEvent
+{
+	friend class WgEventHandler;
+protected:
+	WgMouseRepeatEvent( int button, WgWidget * pWidget );
+	WgMouseRepeatEvent( int button );
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMouseRepeatEventPtr	Cast( const WgObjectPtr& pObject );
+};
+
+class WgMouseClickEvent : public WgMouseButtonEvent
+{
+	friend class WgEventHandler;
+protected:
+	WgMouseClickEvent( int button );
+	WgMouseClickEvent( int button, WgWidget * pWidget );
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMouseClickEventPtr	Cast( const WgObjectPtr& pObject );
+};
+
+class WgMouseDoubleClickEvent : public WgMouseButtonEvent
+{
+	friend class WgEventHandler;
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgMouseDoubleClickEventPtr	Cast( const WgObjectPtr& pObject );
+
+protected:
+	WgMouseDoubleClickEvent( int button );
+	WgMouseDoubleClickEvent( int button, WgWidget * pWidget );
+};
+
+class WgKeyRepeatEvent : public WgKeyEvent
+{
+	friend class WgEventHandler;
+public:
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
+	static const char	CLASSNAME[];
+	static WgKeyRepeatEventPtr	Cast( const WgObjectPtr& pObject );
+
+protected:
+	WgKeyRepeatEvent( int native_keycode );
+	WgKeyRepeatEvent( int native_keycode, WgWidget * pWidget );
+};
+
 
 
 

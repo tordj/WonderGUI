@@ -671,7 +671,7 @@ void WgScrollbar::_unhoverReqRender()
 
 //____ _onEvent() ______________________________________________________________
 
-void WgScrollbar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 {
 	int		handlePos, handleLen;
 	_viewToPosLen( &handlePos, &handleLen );
@@ -703,9 +703,9 @@ void WgScrollbar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 
 	switch( pEvent->Type() )
 	{
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		case WG_EVENT_MOUSE_RELEASE:
 		{
-			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+			if( WgMouseButtonEvent::Cast(pEvent)->Button() != 1 )
 				return;
 
 			// Just put them all to NORMAL and request render.
@@ -747,9 +747,9 @@ void WgScrollbar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_PRESS:
+		case WG_EVENT_MOUSE_PRESS:
 		{
-			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+			if( WgMouseButtonEvent::Cast(pEvent)->Button() != 1 )
 				return;
 
 			Component c = _findMarkedComponent(pos);
@@ -767,20 +767,19 @@ void WgScrollbar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 				switch( m_bgPressMode )
 				{
 				case JUMP_PAGE:
-					if( pointerOfs - handlePos < handleLen/2 )
+
+					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
 					{
-						if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+						if( pointerOfs - handlePos < handleLen/2 )
 							SetHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
-
-						pHandler->QueueEvent( new WgEvent::ScrollbarJumpBwd(this,m_handlePos,m_handleSize) );
-					}
-					else
-					{
-						if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+						else
 							SetHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
-
-						pHandler->QueueEvent( new WgEvent::ScrollbarJumpFwd(this,m_handlePos,m_handleSize) );
 					}
+
+					int pxlPos, pxlLen;
+					_viewToPosLen( &pxlPos, &pxlLen );
+					pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+
 					break;
 				case GOTO_POS:
 					m_states[C_HANDLE].SetPressed(true);
@@ -798,22 +797,23 @@ void WgScrollbar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 			{
 				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
-
-				pHandler->QueueEvent( new WgEvent::ScrollbarStepFwd(this,m_handlePos,m_handleSize) );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
 				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
-
-				pHandler->QueueEvent( new WgEvent::ScrollbarStepBwd(this,m_handlePos,m_handleSize) );
 			}
+
+
+			int pxlPos, pxlLen;
+			_viewToPosLen( &pxlPos, &pxlLen );
+			pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_REPEAT:
+		case WG_EVENT_MOUSE_REPEAT:
 		{
-			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+			if( WgMouseButtonEvent::Cast(pEvent)->Button() != 1 )
 				return;
 
 			if( m_states[C_HANDLE].IsPressed() )
@@ -827,38 +827,33 @@ void WgScrollbar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 				{
 					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
 						SetHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
-
-					pHandler->QueueEvent( new WgEvent::ScrollbarJumpBwd(this,m_handlePos,m_handleSize) );
 				}
 				else
 				{
 					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
 						SetHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
-
-					pHandler->QueueEvent( new WgEvent::ScrollbarJumpFwd(this,m_handlePos,m_handleSize) );
 				}
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 			{
 				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
-
-				pHandler->QueueEvent( new WgEvent::ScrollbarJumpFwd(this,m_handlePos,m_handleSize) );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
 				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
-
-				pHandler->QueueEvent( new WgEvent::ScrollbarJumpBwd(this,m_handlePos,m_handleSize) );
 			}
 
+			int pxlPos, pxlLen;
+			_viewToPosLen( &pxlPos, &pxlLen );
+			pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_DRAG:
+		case WG_EVENT_MOUSE_DRAG:
 		{
-			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
+			if( WgMouseButtonEvent::Cast(pEvent)->Button() != 1 )
 				return;
 
 			if( m_states[C_HANDLE].IsPressed() )
@@ -877,17 +872,18 @@ void WgScrollbar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
 						m_handlePos = m_pScrollbarTargetInterface->_setPosition(m_handlePos);
 
-					pHandler->QueueEvent( new WgEvent::ScrollbarMove(this,m_handlePos,m_handleSize) );
-
+					int pxlPos, pxlLen;
+					_viewToPosLen( &pxlPos, &pxlLen );
+					pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 					_requestRender();
 				}
 			}
 			break;
 		}
 		
-		case WG_EVENT_MOUSEWHEEL_ROLL:
+		case WG_EVENT_WHEEL_ROLL:
 		{
-			const WgEvent::MouseWheelRoll * p = static_cast<const WgEvent::MouseWheelRoll*>(pEvent);
+			WgWheelRollEventPtr p = WgWheelRollEvent::Cast(pEvent);
 
 			if( p->Wheel() == 1 )
 			{
@@ -895,9 +891,11 @@ void WgScrollbar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_wheelRolled(distance) );
 				
-				pHandler->QueueEvent( new WgEvent::ScrollbarWheelRolled(this,distance,m_handlePos,m_handleSize) );
+				int pxlPos, pxlLen;
+				_viewToPosLen( &pxlPos, &pxlLen );
+				pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 			}
-			pEvent->Swallow();
+			pHandler->SwallowEvent(pEvent);
 		}
 		
         default:
@@ -907,8 +905,8 @@ void WgScrollbar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 
 	// Swallow all button 1 events.
 
-	if( pEvent->IsMouseButtonEvent() && static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() == 1 )
-			pEvent->Swallow();
+	if( pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+			pHandler->SwallowEvent(pEvent);
 
 }
 

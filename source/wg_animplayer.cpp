@@ -246,14 +246,14 @@ void WgAnimPlayer::_playPosUpdated()
 		m_pAnimFrame = pAnimFrame;
 		_requestRender();
 
-		_queueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));
+		_queueEvent( new WgValueUpdateEvent(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1)),true));
 	}
 }
 
 
 //____ _onEvent() ______________________________________________________________
 
-void WgAnimPlayer::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgAnimPlayer::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 {
 	WgWidget::_onEvent( pEvent, pHandler );
 
@@ -264,8 +264,7 @@ void WgAnimPlayer::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler 
 			if( !m_pAnim || !m_state.IsEnabled() )
 				return;
 
-			const WgEvent::Tick * pTick = static_cast<const WgEvent::Tick*>(pEvent);
-			m_playPos += pTick->Millisec() * m_speed;
+			m_playPos += WgTickEvent::Cast(pEvent)->Millisec() * m_speed;
 			_playPosUpdated();
 
 		}

@@ -307,14 +307,14 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 
 //____ _onEvent() _____________________________________________________________
 
-void WgMenubar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgMenubar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 {
 	WgWidget::_onEvent(pEvent,pHandler);
 
 	switch( pEvent->Type() )
 	{
 		case WG_EVENT_MOUSE_MOVE:
-		case WG_EVENT_MOUSEBUTTON_PRESS:
+		case WG_EVENT_MOUSE_PRESS:
 		{
 			WgCoord pos = pEvent->PointerPos();
 
@@ -345,7 +345,7 @@ void WgMenubar::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
 
 			//TODO: A click on an already open entry should close the menu.
 
-			if( item && pEvent->Type()== WG_EVENT_MOUSEBUTTON_PRESS )
+			if( item && pEvent->Type()== WG_EVENT_MOUSE_PRESS )
 			{
 				OpenMenu( item );
 			}

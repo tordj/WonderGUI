@@ -80,7 +80,7 @@ protected:
 	bool	_isEditable() const { return m_text.IsEditable(); }
 	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
-	void	_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	void	_onStateChanged( WgState oldState, WgState newState );
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );

@@ -189,7 +189,7 @@ void WgTextDisplay::_onStateChanged( WgState oldState, WgState newState )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgTextDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 {
 	WgWidget::_onEvent(pEvent,pHandler);
 
@@ -200,7 +200,7 @@ void WgTextDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 	{
 		if( IsSelectable() && m_state.IsFocused() )
 		{
-			m_text.incTime( ((const WgEvent::Tick*)(pEvent))->Millisec() );
+			m_text.incTime( WgTickEvent::Cast(pEvent)->Millisec() );
 			_requestRender();					//TODO: Should only render the cursor and selection!
 		}
 		return;
@@ -208,7 +208,7 @@ void WgTextDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 
 
 
-	if( m_state.IsFocused() && (type == WG_EVENT_MOUSEBUTTON_PRESS || type == WG_EVENT_MOUSEBUTTON_DRAG) && ((const WgEvent::MouseButtonEvent*)(pEvent))->Button() == 1 )
+	if( m_state.IsFocused() && (type == WG_EVENT_MOUSE_PRESS || type == WG_EVENT_MOUSE_DRAG) && WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
 	{
 
 		if( IsSelectable() && (modKeys & WG_MODKEY_SHIFT) )
@@ -218,18 +218,18 @@ void WgTextDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 
 		m_text.CursorGotoCoord( pEvent->PointerPos(), Geo() );
 
-		if(IsSelectable() && type == WG_EVENT_MOUSEBUTTON_PRESS && !(modKeys & WG_MODKEY_SHIFT))
+		if(IsSelectable() && type == WG_EVENT_MOUSE_PRESS && !(modKeys & WG_MODKEY_SHIFT))
 		{
 			m_text.ClearSelection();
 			m_text.setSelectionMode(true);
 		}
 	}
-	else if( type == WG_EVENT_MOUSEBUTTON_RELEASE  )
+	else if( type == WG_EVENT_MOUSE_RELEASE  )
 	{
-		if(m_state.IsFocused() && ((const WgEvent::MouseButtonEvent*)(pEvent))->Button() == 1)
+		if(m_state.IsFocused() && WgMouseButtonEvent::Cast(pEvent)->Button() == 1)
 			m_text.setSelectionMode(false);
 	}
-	else if( !m_state.IsFocused() && IsEditable() && type == WG_EVENT_MOUSEBUTTON_PRESS && ((const WgEvent::MouseButtonEvent*)(pEvent))->Button() == 1 )
+	else if( !m_state.IsFocused() && IsEditable() && type == WG_EVENT_MOUSE_PRESS && WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
 	{
 		GrabFocus();
 	}
@@ -239,7 +239,7 @@ void WgTextDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 	{
 		if( IsEditable() )
 		{
-			int  chr = static_cast<const WgEvent::Character*>(pEvent)->Char();
+			int  chr = WgCharacterEvent::Cast(pEvent)->Char();
 
 			if( chr >= 32 && chr != 127)
 			{
@@ -258,7 +258,7 @@ void WgTextDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 
 	if( type == WG_EVENT_KEY_RELEASE )
 	{
-		switch( static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode() )
+		switch( WgKeyEvent::Cast(pEvent)->TranslatedKeyCode() )
 		{
 			case WG_KEY_SHIFT:
 				if(!pHandler->IsMouseButtonPressed(1))
@@ -269,7 +269,7 @@ void WgTextDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 
 	if( (type == WG_EVENT_KEY_PRESS || type == WG_EVENT_KEY_REPEAT) && IsEditable() )
 	{
-		switch( static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode() )
+		switch( WgKeyEvent::Cast(pEvent)->TranslatedKeyCode() )
 		{
 			case WG_KEY_LEFT:
 				if( modKeys & WG_MODKEY_SHIFT )
@@ -358,21 +358,20 @@ void WgTextDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler
 
 	if( pEvent->IsMouseButtonEvent() )
 	{
-		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() == 1 )
-			pEvent->Swallow();
+		if( WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+			pHandler->SwallowEvent(pEvent);
 	}
 	else if( pEvent->IsKeyEvent() )
 	{
-		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
-		if( static_cast<const WgEvent::KeyEvent*>(pEvent)->IsMovementKey() == true ||
+		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
+		if( WgKeyEvent::Cast(pEvent)->IsMovementKey() == true ||
 			key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE || key == WG_KEY_RETURN || (key == WG_KEY_TAB && m_bTabLock) )
-				pEvent->Swallow();
+				pHandler->SwallowEvent(pEvent);
 		
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
 	else if( type == WG_EVENT_CHARACTER )
-		pEvent->Swallow();
-
+		pHandler->SwallowEvent(pEvent);
 }
 
 

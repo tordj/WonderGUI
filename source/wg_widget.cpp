@@ -265,7 +265,7 @@ WgBlendMode WgWidget::_getBlendMode() const
 
 //____ _queueEvent() __________________________________________________________
 
-void WgWidget::_queueEvent( WgEvent::Event * pEvent )
+void WgWidget::_queueEvent( const WgEventPtr& pEvent )
 {
 	if( m_pHook )
 	{
@@ -276,8 +276,6 @@ void WgWidget::_queueEvent( WgEvent::Event * pEvent )
 			return;
 		}
 	}
-
-	delete pEvent;		// Can't queue event, silently delete it.
 }
 
 
@@ -370,7 +368,7 @@ void WgWidget::_onStateChanged( WgState newState, WgState oldState )
 
 //____ _onEvent() _____________________________________________________________
 
-void WgWidget::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgWidget::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
 	WgState oldState = m_state;
 
@@ -388,9 +386,9 @@ void WgWidget::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 			else
 				m_state.SetHovered(false);
 			break;
-		case WG_EVENT_MOUSEBUTTON_PRESS:
+		case WG_EVENT_MOUSE_PRESS:
 		{
-			const WgEvent::MouseButtonPress * pEvent = static_cast<const WgEvent::MouseButtonPress*>(_pEvent);
+			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
 			if( pEvent->Button() == 1 )
 			{
 				if( m_state.IsHovered() )
@@ -400,9 +398,9 @@ void WgWidget::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 			}
 			break;
 		}
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		case WG_EVENT_MOUSE_RELEASE:
 		{
-			const WgEvent::MouseButtonRelease * pEvent = static_cast<const WgEvent::MouseButtonRelease*>(_pEvent);
+			WgMouseReleaseEventPtr pEvent = WgMouseReleaseEvent::Cast(_pEvent);
 			if( pEvent->Button() == 1 )
 			{
 				if( m_state.IsHovered() )

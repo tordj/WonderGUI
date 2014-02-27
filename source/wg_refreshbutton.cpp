@@ -211,7 +211,7 @@ void WgRefreshButton::_textModified( WgText * pText )
 
 //____ _onEvent() _____________________________________________________________
 
-void WgRefreshButton::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgRefreshButton::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
 	{
@@ -221,7 +221,7 @@ void WgRefreshButton::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandl
 			{
 				if( m_refreshMode != PROGRESS )
 				{
-					const WgEvent::Tick * pTick = static_cast<const WgEvent::Tick*>(pEvent);
+					WgTickEventPtr pTick = WgTickEvent::Cast(pEvent);
 
 					WgGfxFrame * pOldFrame = m_pRefreshAnim->GetFrame( m_animTimer );
 					m_animTimer += pTick->Millisec();
@@ -248,7 +248,7 @@ void WgRefreshButton::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandl
 
 		case WG_EVENT_KEY_RELEASE:
 		{
-			const WgEvent::KeyRelease * pKeyRelease = static_cast<const WgEvent::KeyRelease*>(pEvent);
+			WgKeyReleaseEventPtr pKeyRelease = WgKeyReleaseEvent::Cast(pEvent);
 
 			if( m_bAutoRefresh && pKeyRelease->TranslatedKeyCode() == WG_KEY_RETURN )
 				StartRefresh();
@@ -256,9 +256,9 @@ void WgRefreshButton::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandl
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		case WG_EVENT_MOUSE_RELEASE:
 		{
-			const WgEvent::MouseButtonRelease * pBtnRelease = static_cast<const WgEvent::MouseButtonRelease*>(pEvent);
+			WgMouseReleaseEventPtr pBtnRelease = WgMouseReleaseEvent::Cast(pEvent);
 
 			if( m_bAutoRefresh && m_bPressed && pBtnRelease->Button() == 1 )
 				StartRefresh();

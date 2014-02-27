@@ -97,7 +97,7 @@ protected:
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_onRefresh();
 
-	virtual void	_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs );
 	virtual void	_onStateChanged( WgState oldState, WgState newState );
 

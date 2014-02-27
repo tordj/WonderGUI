@@ -1071,13 +1071,13 @@ void WgScrollPanel::_onNewSize( const WgSize& size )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgScrollPanel::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgScrollPanel::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
 	switch( _pEvent->Type() )
 	{
-		case WG_EVENT_MOUSEWHEEL_ROLL:
+		case WG_EVENT_WHEEL_ROLL:
 		{			
-			const WgEvent::MouseWheelRoll * pEvent = static_cast<const WgEvent::MouseWheelRoll*>(_pEvent);
+			WgWheelRollEventPtr pEvent = WgWheelRollEvent::Cast(_pEvent);
 
 			if( m_elements[WINDOW].m_windowGeo.Contains(pEvent->PointerPos()) )
 			{
@@ -1089,7 +1089,7 @@ void WgScrollPanel::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandle
 					_wheelRollX( pEvent->Distance() );
 			}
 
-			_pEvent->Swallow();
+			pHandler->SwallowEvent(_pEvent);
 		}
 		break;
 

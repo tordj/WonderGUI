@@ -36,961 +36,1827 @@
 #include <wg_text.h>
 //#include <wg_tablepanel.h>
 
-namespace WgEvent
+
+//____ WgEvent ______________________________________________________________
+
+const char WgEvent::CLASSNAME[] = {"Event"};
+
+bool WgEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgObject::IsInstanceOf(pClassName);
+}
+
+const char * WgEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgEventPtr WgEvent::Cast( const WgObjectPtr& pObject )
 {
-	//____ Event ______________________________________________________________
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgEventPtr( static_cast<WgEvent*>(pObject.GetRealPtr()) );
 
-	WgWidget * Event::Widget() const
-	{
-		return m_pWidget.GetRealPtr();
-	}
+	return 0;
+}
 
-	WgWidget * Event::ForwardedFrom() const
-	{
-		return m_pForwardedFrom.GetRealPtr();
-	}
+WgWidget * WgEvent::Widget() const
+{
+	return m_pWidget.GetRealPtr();
+}
+
+WgWidget * WgEvent::ForwardedFrom() const
+{
+	return m_pForwardedFrom.GetRealPtr();
+}
 
 
-	bool Event::IsMouseEvent() const
-	{
-		if( m_type == WG_EVENT_MOUSEWHEEL_ROLL ||
-			m_type == WG_EVENT_MOUSE_ENTER ||
-			m_type == WG_EVENT_MOUSE_LEAVE ||	
-			m_type == WG_EVENT_MOUSE_MOVE ||	
-			m_type == WG_EVENT_MOUSE_POSITION ||
-			IsMouseButtonEvent() )
-			return true;
-		else
-			return false;
+bool WgEvent::IsMouseEvent() const
+{
+	if( m_type == WG_EVENT_WHEEL_ROLL ||
+		m_type == WG_EVENT_MOUSE_ENTER ||
+		m_type == WG_EVENT_MOUSE_LEAVE ||	
+		m_type == WG_EVENT_MOUSE_MOVE ||	
+		m_type == WG_EVENT_MOUSE_POSITION ||
+		IsMouseButtonEvent() )
+		return true;
+	else
+		return false;
 			
-	}
+}
 	
-	bool Event::IsMouseButtonEvent() const
-	{
-		if( m_type == WG_EVENT_MOUSEBUTTON_CLICK ||
-			m_type == WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK ||
-			m_type == WG_EVENT_MOUSEBUTTON_DRAG ||
-			m_type == WG_EVENT_MOUSEBUTTON_PRESS ||
-			m_type == WG_EVENT_MOUSEBUTTON_RELEASE ||
-			m_type == WG_EVENT_MOUSEBUTTON_REPEAT )
-			return true;
-		else
-			return false;
-	}
+bool WgEvent::IsMouseButtonEvent() const
+{
+	if( m_type == WG_EVENT_MOUSE_CLICK ||
+		m_type == WG_EVENT_MOUSE_DOUBLE_CLICK ||
+		m_type == WG_EVENT_MOUSE_DRAG ||
+		m_type == WG_EVENT_MOUSE_PRESS ||
+		m_type == WG_EVENT_MOUSE_RELEASE ||
+		m_type == WG_EVENT_MOUSE_REPEAT )
+		return true;
+	else
+		return false;
+}
 	
-	bool Event::IsKeyEvent() const
-	{
-		if( m_type == WG_EVENT_KEY_PRESS ||
-			m_type == WG_EVENT_KEY_RELEASE ||
-			m_type == WG_EVENT_KEY_REPEAT )
-			return true;
-		else
-			return false;
-	}
+bool WgEvent::IsKeyEvent() const
+{
+	if( m_type == WG_EVENT_KEY_PRESS ||
+		m_type == WG_EVENT_KEY_RELEASE ||
+		m_type == WG_EVENT_KEY_REPEAT )
+		return true;
+	else
+		return false;
+}
 
-	void Event::_cloneContentFrom( const Event * pOrg )
-	{
-		m_type				= pOrg->m_type;
-		m_modKeys			= pOrg->m_modKeys;
-		m_timestamp			= pOrg->m_timestamp;
-		m_bIsForWidget		= pOrg->m_bIsForWidget;
-		m_pWidget			= pOrg->m_pWidget;
-		m_pointerLocalPos	= pOrg->m_pointerLocalPos;
-		m_pointerScreenPos	= pOrg->m_pointerScreenPos;
-	}
+//____ WgKeyEvent ____________________________________________________________
 
-	//____ MouseButtonEvent ____________________________________________________
+const char WgKeyEvent::CLASSNAME[] = {"KeyEvent"};
 
-	void MouseButtonEvent::_cloneContentFrom( const Event * _pOrg )
-	{
-		const MouseButtonEvent * pOrg = static_cast<const MouseButtonEvent*>(_pOrg);
-		
-		m_button = pOrg->m_button;
-		Event::_cloneContentFrom( pOrg );
-	}
+bool WgKeyEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
 
-	//____ KeyEvent ____________________________________________________________
+	return WgEvent::IsInstanceOf(pClassName);
+}
 
-	bool KeyEvent::IsCursorKey() const
-	{
-		if( m_translatedKeyCode == WG_KEY_UP || m_translatedKeyCode == WG_KEY_DOWN ||
-			m_translatedKeyCode == WG_KEY_LEFT || m_translatedKeyCode == WG_KEY_RIGHT )
-			return true;
-		else
-			return false;
-	}
+const char * WgKeyEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgKeyEventPtr WgKeyEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgKeyEventPtr( static_cast<WgKeyEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+bool WgKeyEvent::IsCursorKey() const
+{
+	if( m_translatedKeyCode == WG_KEY_UP || m_translatedKeyCode == WG_KEY_DOWN ||
+		m_translatedKeyCode == WG_KEY_LEFT || m_translatedKeyCode == WG_KEY_RIGHT )
+		return true;
+	else
+		return false;
+}
 	
-	bool KeyEvent::IsMovementKey() const
-	{
-		if( m_translatedKeyCode == WG_KEY_PAGE_UP || m_translatedKeyCode == WG_KEY_PAGE_DOWN ||
-			m_translatedKeyCode == WG_KEY_HOME || m_translatedKeyCode == WG_KEY_END ||
-			IsCursorKey() )
-			return true;
-		else
-			return false;
-	}
-
-	void KeyEvent::_cloneContentFrom( const Event * _pOrg )
-	{
-		const KeyEvent * pOrg = static_cast<const KeyEvent*>(_pOrg);
-
-		m_nativeKeyCode		= pOrg->m_nativeKeyCode;
-		m_translatedKeyCode	= pOrg->m_translatedKeyCode;
-		Event::_cloneContentFrom( pOrg );
-	}
+bool WgKeyEvent::IsMovementKey() const
+{
+	if( m_translatedKeyCode == WG_KEY_PAGE_UP || m_translatedKeyCode == WG_KEY_PAGE_DOWN ||
+		m_translatedKeyCode == WG_KEY_HOME || m_translatedKeyCode == WG_KEY_END ||
+		IsCursorKey() )
+		return true;
+	else
+		return false;
+}
 	
-	//____ FocusGained ________________________________________________________
-
-	FocusGained::FocusGained()
-	{
-		m_type = WG_EVENT_FOCUS_GAINED;
-	}
-
-	//____ FocusLost __________________________________________________________
-
-	FocusLost::FocusLost()
-	{
-		m_type = WG_EVENT_FOCUS_LOST;
-	}
-
-	//____ MouseEnter _______________________________________________________
-
-	MouseEnter::MouseEnter( const WgCoord& pos )
-	{
-		m_type = WG_EVENT_MOUSE_ENTER;
-
-		m_pointerLocalPos = pos;
-		m_pointerScreenPos = pos;
-	}
-
-	MouseEnter::MouseEnter( WgWidget * pWidget )
-	{
-		m_type = WG_EVENT_MOUSE_ENTER;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-	//____ MouseLeave ________________________________________________________
-
-	MouseLeave::MouseLeave()
-	{
-		m_type = WG_EVENT_MOUSE_LEAVE;
-	}
-
-	MouseLeave::MouseLeave( WgWidget * pWidget )
-	{
-		m_type = WG_EVENT_MOUSE_LEAVE;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-	//____ MouseMove __________________________________________________________
-
-	MouseMove::MouseMove( const WgCoord& pos )
-	{
-		m_type = WG_EVENT_MOUSE_MOVE;
-
-		m_pointerLocalPos = pos;
-		m_pointerScreenPos = pos;
-	}
-
-	MouseMove::MouseMove( WgWidget * pWidget )
-	{
-		m_type = WG_EVENT_MOUSE_MOVE;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-	//____ MouseButtonPress ______________________________________________________
-
-	MouseButtonPress::MouseButtonPress( int button ) : MouseButtonEvent(button)
-	{
-		m_type = WG_EVENT_MOUSEBUTTON_PRESS;
-	}
-
-	MouseButtonPress::MouseButtonPress( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
-	{
-		m_type			= WG_EVENT_MOUSEBUTTON_PRESS;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-	//____ MouseButtonRepeat ______________________________________________________
-
-	MouseButtonRepeat::MouseButtonRepeat( int button ) : MouseButtonEvent(button)
-	{
-		m_type = WG_EVENT_MOUSEBUTTON_REPEAT;
-	}
-
-	MouseButtonRepeat::MouseButtonRepeat( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
-	{
-		m_type			= WG_EVENT_MOUSEBUTTON_REPEAT;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-	//____ MouseButtonRelease _____________________________________________________
-
-	MouseButtonRelease::MouseButtonRelease( int button ) : MouseButtonEvent(button)
-	{
-		m_type = WG_EVENT_MOUSEBUTTON_RELEASE;
-
-		m_bPressInside = true;			// Always assumed to have had the press inside our window.
-		m_bReleaseInside = true;			// Always assumed to be inside our window now.
-	}
-
-	MouseButtonRelease::MouseButtonRelease( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside ) : MouseButtonEvent(button)
-	{
-		m_type			= WG_EVENT_MOUSEBUTTON_RELEASE;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-
-		m_bPressInside = bPressInside;
-		m_bReleaseInside = bReleaseInside;
-	}
-
-	void MouseButtonRelease::_cloneContentFrom( const Event * _pOrg )
-	{
-		const MouseButtonRelease * pOrg = static_cast<const MouseButtonRelease*>(_pOrg);
-		
-		m_bPressInside		= pOrg->m_bPressInside;
-		m_bReleaseInside	= pOrg->m_bReleaseInside;
-		Event::_cloneContentFrom( pOrg );
-	}
-
-
-	bool MouseButtonRelease::PressInside() const
-	{
-		return m_bPressInside;
-	}
-
-	bool MouseButtonRelease::ReleaseInside() const
-	{
-		return m_bReleaseInside;
-	}
-
-
-
-	//____ MouseButtonClick _____________________________________________________
-
-	MouseButtonClick::MouseButtonClick( int button ) : MouseButtonEvent(button)
-	{
-		m_type = WG_EVENT_MOUSEBUTTON_CLICK;
-	}
-
-	MouseButtonClick::MouseButtonClick( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
-	{
-		m_type = WG_EVENT_MOUSEBUTTON_CLICK;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-
-	//____ MouseButtonDoubleClick _____________________________________________________
-
-	MouseButtonDoubleClick::MouseButtonDoubleClick( int button ) : MouseButtonEvent(button)
-	{
-		m_type = WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK;
-	}
-
-	MouseButtonDoubleClick::MouseButtonDoubleClick( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
-	{
-		m_type = WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-	//____ KeyPress ___________________________________________________________
-
-	KeyPress::KeyPress( int native_keycode ) : KeyEvent(native_keycode)
-	{
-		m_type 			= WG_EVENT_KEY_PRESS;
-	}
-
-	KeyPress::KeyPress( int native_keycode, WgWidget * pWidget ) : KeyEvent(native_keycode)
-	{
-		m_type 			= WG_EVENT_KEY_PRESS;
-		m_bIsForWidget	= true;
-		m_pWidget		= pWidget;
-	}
-
-	//____ KeyRepeat ___________________________________________________________
-
-	KeyRepeat::KeyRepeat( int native_keycode ) : KeyEvent(native_keycode)
-	{
-		m_type 			= WG_EVENT_KEY_REPEAT;
-	}
-
-	KeyRepeat::KeyRepeat( int native_keycode, WgWidget * pWidget ) : KeyEvent(native_keycode)
-	{
-		m_type 			= WG_EVENT_KEY_REPEAT;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-	//____ KeyRelease ________________________________________________________
-
-	KeyRelease::KeyRelease( int native_keycode ) : KeyEvent(native_keycode)
-	{
-		m_type 		= WG_EVENT_KEY_RELEASE;
-	}
-
-	KeyRelease::KeyRelease( int native_keycode, WgWidget * pWidget ) : KeyEvent(native_keycode)
-	{
-		m_type 			= WG_EVENT_KEY_RELEASE;
-		m_bIsForWidget	= true;
-		m_pWidget		= pWidget;
-	}
-
-	//____ Character __________________________________________________________
-
-	Character::Character( unsigned short character )
-	{
-		m_type = WG_EVENT_CHARACTER;
-		m_char = character;
-	}
-
-	Character::Character( unsigned short character, WgWidget * pWidget )
-	{
-		m_type			= WG_EVENT_CHARACTER;
-		m_char			= character;
-		m_bIsForWidget	= true;
-		m_pWidget		= pWidget;
-	}
-
-	void Character::_cloneContentFrom( const Event * _pOrg )
-	{
-		const Character * pOrg = static_cast<const Character*>(_pOrg);
-		
-		m_char			= pOrg->m_char;
-		Event::_cloneContentFrom( pOrg );
-	}
-
-	unsigned short Character::Char() const
-	{
-		return m_char;
-	}
-
-	//____ MouseWheelRoll __________________________________________________________
-
-	MouseWheelRoll::MouseWheelRoll( int wheel, int distance )
-	{
-		m_type = WG_EVENT_MOUSEWHEEL_ROLL;
-		m_wheel = wheel;
-		m_distance = distance;
-	}
-
-	MouseWheelRoll::MouseWheelRoll( int wheel, int distance, WgWidget * pWidget )
-	{
-		m_type			= WG_EVENT_MOUSEWHEEL_ROLL;
-		m_wheel			= wheel;
-		m_distance		= distance;
-		m_bIsForWidget	= true;
-		m_pWidget		= pWidget;
-	}
-
-	void MouseWheelRoll::_cloneContentFrom( const Event * _pOrg )
-	{
-		const MouseWheelRoll * pOrg = static_cast<const MouseWheelRoll*>(_pOrg);
-
-		m_wheel			= pOrg->m_wheel;
-		m_distance		= pOrg->m_distance;
-		Event::_cloneContentFrom( pOrg );
-	}
-
-
-	int MouseWheelRoll::Wheel() const
-	{
-		return m_wheel;
-	}
-
-	int MouseWheelRoll::Distance() const
-	{
-		return m_distance;
-	}
-
-	//____ Tick _______________________________________________________________
-
-	Tick::Tick( int ms )
-	{
-		m_type = WG_EVENT_TICK;
-		m_millisec = ms;
-	}
-
-	Tick::Tick( int ms, WgWidget * pWidget )
-	{
-		m_type 			= WG_EVENT_TICK;
-		m_millisec 		= ms;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-	void Tick::_cloneContentFrom( const Event * _pOrg )
-	{
-		const Tick * pOrg = static_cast<const Tick*>(_pOrg);
-				
-		m_millisec = pOrg->m_millisec;
-		Event::_cloneContentFrom( pOrg );
-	}
+//____ WgMouseButtonEvent _____________________________________________________
+
+const char WgMouseButtonEvent::CLASSNAME[] = {"MouseButtonEvent"};
+
+bool WgMouseButtonEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMouseButtonEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMouseButtonEventPtr WgMouseButtonEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMouseButtonEventPtr( static_cast<WgMouseButtonEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
+//____ WgFocusGainedEvent ________________________________________________________
+
+const char WgFocusGainedEvent::CLASSNAME[] = {"FocusGainedEvent"};
+
+WgFocusGainedEvent::WgFocusGainedEvent()
+{
+	m_type = WG_EVENT_FOCUS_GAINED;
+}
+
+bool WgFocusGainedEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgFocusGainedEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgFocusGainedEventPtr WgFocusGainedEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgFocusGainedEventPtr( static_cast<WgFocusGainedEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
+//____ WgFocusLostEvent __________________________________________________________
+
+const char WgFocusLostEvent::CLASSNAME[] = {"FocusLostEvent"};
+
+WgFocusLostEvent::WgFocusLostEvent()
+{
+	m_type = WG_EVENT_FOCUS_LOST;
+}
+
+bool WgFocusLostEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgFocusLostEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgFocusLostEventPtr WgFocusLostEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgFocusLostEventPtr( static_cast<WgFocusLostEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
+//____ WgMouseEnterEvent _______________________________________________________
+
+const char WgMouseEnterEvent::CLASSNAME[] = {"MouseEnterEvent"};
+
+WgMouseEnterEvent::WgMouseEnterEvent( const WgCoord& pos )
+{
+	m_type = WG_EVENT_MOUSE_ENTER;
+
+	m_pointerLocalPos = pos;
+	m_pointerScreenPos = pos;
+}
+
+WgMouseEnterEvent::WgMouseEnterEvent( WgWidget * pWidget )
+{
+	m_type = WG_EVENT_MOUSE_ENTER;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
+
+bool WgMouseEnterEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMouseEnterEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMouseEnterEventPtr WgMouseEnterEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMouseEnterEventPtr( static_cast<WgMouseEnterEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
+//____ WgMouseLeaveEvent ________________________________________________________
+
+const char WgMouseLeaveEvent::CLASSNAME[] = {"MouseLeaveEvent"};
+
+WgMouseLeaveEvent::WgMouseLeaveEvent()
+{
+	m_type = WG_EVENT_MOUSE_LEAVE;
+}
+
+WgMouseLeaveEvent::WgMouseLeaveEvent( WgWidget * pWidget )
+{
+	m_type = WG_EVENT_MOUSE_LEAVE;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
+
+bool WgMouseLeaveEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMouseLeaveEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMouseLeaveEventPtr WgMouseLeaveEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMouseLeaveEventPtr( static_cast<WgMouseLeaveEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgMouseMoveEvent __________________________________________________________
+
+const char WgMouseMoveEvent::CLASSNAME[] = {"MouseMoveEvent"};
+
+WgMouseMoveEvent::WgMouseMoveEvent( const WgCoord& pos )
+{
+	m_type = WG_EVENT_MOUSE_MOVE;
+
+	m_pointerLocalPos = pos;
+	m_pointerScreenPos = pos;
+}
+
+WgMouseMoveEvent::WgMouseMoveEvent( WgWidget * pWidget )
+{
+	m_type = WG_EVENT_MOUSE_MOVE;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
+
+bool WgMouseMoveEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMouseMoveEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMouseMoveEventPtr WgMouseMoveEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMouseMoveEventPtr( static_cast<WgMouseMoveEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
+//____ WgMousePressEvent ______________________________________________________
+
+const char WgMousePressEvent::CLASSNAME[] = {"MousePressEvent"};
+
+WgMousePressEvent::WgMousePressEvent( int button ) : WgMouseButtonEvent(button)
+{
+	m_type = WG_EVENT_MOUSE_PRESS;
+}
+
+WgMousePressEvent::WgMousePressEvent( int button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
+{
+	m_type			= WG_EVENT_MOUSE_PRESS;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
+
+bool WgMousePressEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMousePressEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMousePressEventPtr WgMousePressEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMousePressEventPtr( static_cast<WgMousePressEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgMouseRepeatEvent ______________________________________________________
+
+const char WgMouseRepeatEvent::CLASSNAME[] = {"MouseRepeatEvent"};
+
+WgMouseRepeatEvent::WgMouseRepeatEvent( int button ) : WgMouseButtonEvent(button)
+{
+	m_type = WG_EVENT_MOUSE_REPEAT;
+}
+
+WgMouseRepeatEvent::WgMouseRepeatEvent( int button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
+{
+	m_type			= WG_EVENT_MOUSE_REPEAT;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
+
+bool WgMouseRepeatEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMouseRepeatEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMouseRepeatEventPtr WgMouseRepeatEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMouseRepeatEventPtr( static_cast<WgMouseRepeatEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
+//____ WgMouseReleaseEvent _____________________________________________________
+
+const char WgMouseReleaseEvent::CLASSNAME[] = {"MouseReleaseEvent"};
+
+WgMouseReleaseEvent::WgMouseReleaseEvent( int button ) : WgMouseButtonEvent(button)
+{
+	m_type = WG_EVENT_MOUSE_RELEASE;
+
+	m_bReleaseInside = true;			// Always assumed to have had the press inside our window.
+	m_bReleaseInside = true;			// Always assumed to be inside our window now.
+}
+
+WgMouseReleaseEvent::WgMouseReleaseEvent( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside ) : WgMouseButtonEvent(button)
+{
+	m_type			= WG_EVENT_MOUSE_RELEASE;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+
+	m_bPressInside = bPressInside;
+	m_bReleaseInside = bReleaseInside;
+}
+
+bool WgMouseReleaseEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMouseReleaseEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMouseReleaseEventPtr WgMouseReleaseEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMouseReleaseEventPtr( static_cast<WgMouseReleaseEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+bool WgMouseReleaseEvent::PressInside() const
+{
+	return m_bPressInside;
+}
+
+bool WgMouseReleaseEvent::ReleaseInside() const
+{
+	return m_bReleaseInside;
+}
+
+
+
+//____ WgMouseClickEvent _____________________________________________________
+
+const char WgMouseClickEvent::CLASSNAME[] = {"MouseClickEvent"};
+
+WgMouseClickEvent::WgMouseClickEvent( int button ) : WgMouseButtonEvent(button)
+{
+	m_type = WG_EVENT_MOUSE_CLICK;
+}
+
+WgMouseClickEvent::WgMouseClickEvent( int button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
+{
+	m_type = WG_EVENT_MOUSE_CLICK;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
+
+bool WgMouseClickEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMouseClickEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMouseClickEventPtr WgMouseClickEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMouseClickEventPtr( static_cast<WgMouseClickEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgMouseDoubleClickEvent _____________________________________________________
+
+const char WgMouseDoubleClickEvent::CLASSNAME[] = {"MouseDoubleClickEvent"};
+
+WgMouseDoubleClickEvent::WgMouseDoubleClickEvent( int button ) : WgMouseButtonEvent(button)
+{
+	m_type = WG_EVENT_MOUSE_DOUBLE_CLICK;
+}
+
+WgMouseDoubleClickEvent::WgMouseDoubleClickEvent( int button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
+{
+	m_type = WG_EVENT_MOUSE_DOUBLE_CLICK;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
+
+bool WgMouseDoubleClickEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMouseDoubleClickEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMouseDoubleClickEventPtr WgMouseDoubleClickEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMouseDoubleClickEventPtr( static_cast<WgMouseDoubleClickEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgKeyPressEvent ___________________________________________________________
+
+const char WgKeyPressEvent::CLASSNAME[] = {"KeyPressEvent"};
+
+WgKeyPressEvent::WgKeyPressEvent( int native_keycode ) : WgKeyEvent(native_keycode)
+{
+	m_type 			= WG_EVENT_KEY_PRESS;
+}
+
+WgKeyPressEvent::WgKeyPressEvent( int native_keycode, WgWidget * pWidget ) : WgKeyEvent(native_keycode)
+{
+	m_type 			= WG_EVENT_KEY_PRESS;
+	m_bIsForWidget	= true;
+	m_pWidget		= pWidget;
+}
+
+bool WgKeyPressEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgKeyEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgKeyPressEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgKeyPressEventPtr WgKeyPressEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgKeyPressEventPtr( static_cast<WgKeyPressEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgKeyRepeatEvent ___________________________________________________________
+
+const char WgKeyRepeatEvent::CLASSNAME[] = {"KeyRepeatEvent"};
+
+WgKeyRepeatEvent::WgKeyRepeatEvent( int native_keycode ) : WgKeyEvent(native_keycode)
+{
+	m_type 			= WG_EVENT_KEY_REPEAT;
+}
+
+WgKeyRepeatEvent::WgKeyRepeatEvent( int native_keycode, WgWidget * pWidget ) : WgKeyEvent(native_keycode)
+{
+	m_type 			= WG_EVENT_KEY_REPEAT;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
+
+bool WgKeyRepeatEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgKeyEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgKeyRepeatEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgKeyRepeatEventPtr WgKeyRepeatEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgKeyRepeatEventPtr( static_cast<WgKeyRepeatEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgKeyReleaseEvent ________________________________________________________
+
+const char WgKeyReleaseEvent::CLASSNAME[] = {"KeyReleaseEvent"};
+
+WgKeyReleaseEvent::WgKeyReleaseEvent( int native_keycode ) : WgKeyEvent(native_keycode)
+{
+	m_type 		= WG_EVENT_KEY_RELEASE;
+}
+
+WgKeyReleaseEvent::WgKeyReleaseEvent( int native_keycode, WgWidget * pWidget ) : WgKeyEvent(native_keycode)
+{
+	m_type 			= WG_EVENT_KEY_RELEASE;
+	m_bIsForWidget	= true;
+	m_pWidget		= pWidget;
+}
+
+bool WgKeyReleaseEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgKeyEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgKeyReleaseEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgKeyReleaseEventPtr WgKeyReleaseEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgKeyReleaseEventPtr( static_cast<WgKeyReleaseEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgCharacterEvent __________________________________________________________
+
+const char WgCharacterEvent::CLASSNAME[] = {"CharacterEvent"};
+
+WgCharacterEvent::WgCharacterEvent( unsigned short character )
+{
+	m_type = WG_EVENT_CHARACTER;
+	m_char = character;
+}
+
+WgCharacterEvent::WgCharacterEvent( unsigned short character, WgWidget * pWidget )
+{
+	m_type			= WG_EVENT_CHARACTER;
+	m_char			= character;
+	m_bIsForWidget	= true;
+	m_pWidget		= pWidget;
+}
+
+unsigned short WgCharacterEvent::Char() const
+{
+	return m_char;
+}
+
+bool WgCharacterEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgCharacterEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgCharacterEventPtr WgCharacterEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgCharacterEventPtr( static_cast<WgCharacterEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
+//____ WgWheelRollEvent __________________________________________________________
+
+const char WgWheelRollEvent::CLASSNAME[] = {"WheelRollEvent"};
+
+WgWheelRollEvent::WgWheelRollEvent( int wheel, int distance )
+{
+	m_type = WG_EVENT_WHEEL_ROLL;
+	m_wheel = wheel;
+	m_distance = distance;
+}
+
+WgWheelRollEvent::WgWheelRollEvent( int wheel, int distance, WgWidget * pWidget )
+{
+	m_type			= WG_EVENT_WHEEL_ROLL;
+	m_wheel			= wheel;
+	m_distance		= distance;
+	m_bIsForWidget	= true;
+	m_pWidget		= pWidget;
+}
+
+int WgWheelRollEvent::Wheel() const
+{
+	return m_wheel;
+}
+
+int WgWheelRollEvent::Distance() const
+{
+	return m_distance;
+}
+
+bool WgWheelRollEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgWheelRollEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgWheelRollEventPtr WgWheelRollEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgWheelRollEventPtr( static_cast<WgWheelRollEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgTickEvent _______________________________________________________________
+
+const char WgTickEvent::CLASSNAME[] = {"TickEvent"};
+
+WgTickEvent::WgTickEvent( int ms )
+{
+	m_type = WG_EVENT_TICK;
+	m_millisec = ms;
+}
+
+WgTickEvent::WgTickEvent( int ms, WgWidget * pWidget )
+{
+	m_type 			= WG_EVENT_TICK;
+	m_millisec 		= ms;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
 	
-	int Tick::Millisec() const
-	{
-		return m_millisec;
-	}
+int WgTickEvent::Millisec() const
+{
+	return m_millisec;
+}
 
-	//____ PointerChange _______________________________________________________________
+bool WgTickEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
 
-	PointerChange::PointerChange( WgPointerStyle style )
-	{
-		m_type = WG_EVENT_POINTER_CHANGE;
-		m_style = style;
-	}
+	return WgEvent::IsInstanceOf(pClassName);
+}
 
-	void PointerChange::_cloneContentFrom( const Event * _pOrg )
-	{
-		const PointerChange * pOrg = static_cast<const PointerChange*>(_pOrg);
+const char * WgTickEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
 
-		m_style = pOrg->m_style;
-		Event::_cloneContentFrom( pOrg );
-	}
+WgTickEventPtr WgTickEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgTickEventPtr( static_cast<WgTickEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgPointerChangeEvent _______________________________________________________________
+
+const char WgPointerChangeEvent::CLASSNAME[] = {"PointerChangeEvent"};
+
+WgPointerChangeEvent::WgPointerChangeEvent( WgPointerStyle style )
+{
+	m_type = WG_EVENT_POINTER_CHANGE;
+	m_style = style;
+}
 	
-	WgPointerStyle PointerChange::Style() const
-	{
-		return m_style;
-	}
-
-
-	//____ ButtonPress _________________________________________________________
-
-	ButtonPress::ButtonPress( WgButton * pWidget )
-	{
-		m_type 			= WG_EVENT_BUTTON_PRESS;
-		m_pWidget 		= pWidget;
-	}
-
-	WgButton * ButtonPress::Button() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-			return static_cast<WgButton*>(pWidget);
-		else
-			return 0;
-	}
-
-
-	//____ Checkbox event methods ______________________________________________
-
-	WgCheckBox * CheckboxEvent::Checkbox() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-			return static_cast<WgCheckBox*>(pWidget);
-		else
-			return 0;
-	}
-
-	CheckboxCheck::CheckboxCheck( WgCheckBox * pWidget )
-	{
-		m_type = WG_EVENT_CHECKBOX_CHECK;
-		m_pWidget = pWidget;
-	}
-
-	CheckboxUncheck::CheckboxUncheck( WgCheckBox * pWidget )
-	{
-		m_type = WG_EVENT_CHECKBOX_UNCHECK;
-		m_pWidget = pWidget;
-	}
-
-	CheckboxToggle::CheckboxToggle( WgCheckBox * pWidget, bool bChecked )
-	{
-		m_type = WG_EVENT_CHECKBOX_TOGGLE;
-		m_pWidget = pWidget;
-		m_bChecked = bChecked;
-	}
-
-	bool CheckboxToggle::IsChecked() const
-	{
-		return m_bChecked;
-	}
-
-	//____ Animation event methods _____________________________________________
-
-	AnimationUpdate::AnimationUpdate( WgAnimPlayer * pWidget, int frame, float fraction )
-	{
-		m_type = WG_EVENT_ANIMATION_UPDATE;
-		m_pWidget = pWidget;
-		m_frame = frame;
-		m_fraction = fraction;
-	}
-
-	WgAnimPlayer * AnimationUpdate::Animation() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-			return static_cast<WgAnimPlayer*>(pWidget);
-		else
-			return 0;
-	}
-
-	int AnimationUpdate::Frame() const
-	{
-		return m_frame;
-	}
-
-	float AnimationUpdate::Fraction() const
-	{
-		return m_fraction;
-	}
-
-	//____ Tablist event methods _______________________________________________
-
-	WgTablist * TablistEvent::Tablist() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-			return static_cast<WgTablist*>(pWidget);
-		else
-			return 0;
-	}
-
-	TabSelect::TabSelect( WgTablist * pWidget, int tabId )
-	{
-		m_type 		= WG_EVENT_TAB_SELECT;
-		m_pWidget 	= pWidget;
-		m_tabId 	= tabId;
-	}
-
-	int TabSelect::TabId() const
-	{
-		return m_tabId;
-	}
-
-	TabPress::TabPress( WgTablist * pWidget, int tabId, int mouseButton )
-	{
-		m_type 		= WG_EVENT_TAB_PRESS;
-		m_pWidget 	= pWidget;
-		m_tabId 	= tabId;
-		m_button	= mouseButton;
-	}
-
-	int TabPress::TabId() const
-	{
-		return m_tabId;
-	}
-
-	int TabPress::MouseButton() const
-	{
-		return m_button;
-	}
-
-	//____ Editvalue event methods ___________________________________________
-
-	WgValueEditor * EditvalueEvent::Editvalue() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-			return static_cast<WgValueEditor*>(pWidget);
-		else
-			return 0;
-	}
-
-	int64_t EditvalueEvent::Value() const
-	{
-		return m_value;
-	}
-
-	double EditvalueEvent::Fraction() const
-	{
-		return m_fraction;
-	}
-
-	EditvalueModify::EditvalueModify( WgValueEditor * pWidget, int64_t value, double fraction )
-	{
-		m_type = WG_EVENT_EDITVALUE_MODIFY;
-		m_pWidget = pWidget;
-		m_value = value;
-		m_fraction = fraction;
-	}
-
-	EditvalueSet::EditvalueSet( WgValueEditor * pWidget, int64_t value, double fraction )
-	{
-		m_type = WG_EVENT_EDITVALUE_SET;
-		m_pWidget = pWidget;
-		m_value = value;
-		m_fraction = fraction;
-	}
-
-	//____ Scrollbar event methods _______________________________________________
-
-	ScrollbarEvent::ScrollbarEvent( WgScrollbar * pWidget, float pos, float length )
-	{
-		m_pWidget 	= pWidget;
-		m_pos 		= pos;
-		m_length 	= length;
-	}
-
-	WgScrollbar* ScrollbarEvent::Scrollbar() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-			return static_cast<WgScrollbar*>(pWidget);
-		else
-			return 0;
-	}
-
-	float ScrollbarEvent::Pos() const
-	{
-		return m_pos;
-	}
-
-	float ScrollbarEvent::Length() const
-	{
-		return m_length;
-	}
-
-	float ScrollbarEvent::Value() const
-	{
-		float max = 1.f - m_length;
-
-		if( max == 0.f )
-			return 0.5f;		// is this logically correct?
-		else
-			return m_pos / max;
-	}
-
-	ScrollbarMove::ScrollbarMove( WgScrollbar* pWidget, float pos, float length ) : ScrollbarEvent( pWidget, pos, length )
-	{
-		m_type = WG_EVENT_SCROLLBAR_MOVE;
-	}
-
-	ScrollbarStepFwd::ScrollbarStepFwd( WgScrollbar* pWidget, float pos, float length ) : ScrollbarEvent( pWidget, pos, length )
-	{
-		m_type = WG_EVENT_SCROLLBAR_STEP_FWD;
-	}
-
-	ScrollbarStepBwd::ScrollbarStepBwd( WgScrollbar* pWidget, float pos, float length ) : ScrollbarEvent( pWidget, pos, length )
-	{
-		m_type = WG_EVENT_SCROLLBAR_STEP_BWD;
-	}
-
-	ScrollbarJumpFwd::ScrollbarJumpFwd( WgScrollbar* pWidget, float pos, float length ) : ScrollbarEvent( pWidget, pos, length )
-	{
-		m_type = WG_EVENT_SCROLLBAR_JUMP_FWD;
-	}
-
-	ScrollbarJumpBwd::ScrollbarJumpBwd( WgScrollbar* pWidget, float pos, float length ) : ScrollbarEvent( pWidget, pos, length )
-	{
-		m_type = WG_EVENT_SCROLLBAR_JUMP_BWD;
-	}
-
-	ScrollbarWheelRolled::ScrollbarWheelRolled( WgScrollbar* pWidget, int distance, float pos, float length )  : ScrollbarEvent( pWidget, pos, length )
-	{
-		m_type = WG_EVENT_SCROLLBAR_WHEEL_ROLL;
-		m_distance = distance;
-	}
-	
-	int ScrollbarWheelRolled::Distance() const
-	{
-		return m_distance;
-	}
-
-	//____ Text event methods __________________________________________________
-
-	WgIEditTextPtr TextEvent::Text() const
-	{
-		return m_pText;
-	}
-
-	TextModify::TextModify( WgWidget * pWidget, WgText * pText )
-	{
-		m_type 		= WG_EVENT_TEXT_MODIFY;
-		m_pWidget 	= pWidget;
-		m_pText 	= WgIEditTextPtr(pWidget, pText);
-	}
-
-	TextSet::TextSet( WgWidget * pWidget, WgText * pText )
-	{
-		m_type 		= WG_EVENT_TEXT_SET;
-		m_pWidget 	= pWidget;
-		m_pText 	= WgIEditTextPtr(pWidget, pText);
-	}
-
-	//____ Menu event methods __________________________________________________
-
-	WgMenu *	MenuitemEvent::Menu() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-//TEMP!		if( pWidget && pWidget->Type() == WgMenu::GetClass() )
-//TEMP!			return static_cast<WgMenu*>(pWidget);
-
-		return 0;
-	}
-
-	int MenuitemEvent::ItemId() const
-	{
-		return m_itemId;
-	}
-
-	MenuitemSelect::MenuitemSelect( WgMenu * pMenu, int menuItemId )
-	{
-		m_type		= WG_EVENT_MENUITEM_SELECT;
-		m_pWidget	= pMenu;
-		m_itemId	= menuItemId;
-	}
-
-	MenuitemCheck::MenuitemCheck( WgMenu * pMenu, int menuItemId )
-	{
-		m_type		= WG_EVENT_MENUITEM_CHECK;
-		m_pWidget	= pMenu;
-		m_itemId	= menuItemId;
-	}
-
-	MenuitemUncheck::MenuitemUncheck( WgMenu * pMenu, int menuItemId )
-	{
-		m_type		= WG_EVENT_MENUITEM_UNCHECK;
-		m_pWidget	= pMenu;
-		m_itemId	= menuItemId;
-	}
-
-	//____ MenuLayer event methods ____________________________________________
-
-	MenuClosed::MenuClosed( WgWidget * pMenu, const WgWidgetWeakPtr& pCaller )
-	{
-		m_type		= WG_EVENT_MENU_CLOSED;
-		m_pWidget	= pCaller;
-		m_bIsForWidget	= true;
-		m_pMenu		= pMenu;
-	}
-
-	WgWidget * MenuClosed::Menu() const
-	{
-		return m_pMenu.GetRealPtr();
-	}
-
-	WgWidget * MenuClosed::Caller() const
-	{
-		return m_pWidget.GetRealPtr();
-	}
-
-	//____ Modal event methods ___________________________________________________
-
-	ModalMoveOutside::ModalMoveOutside( WgWidget * pWidget )
-	{
-		m_type = WG_EVENT_MODAL_MOVE_OUTSIDE;
-		m_bIsForWidget	= true;
-		m_pWidget		= pWidget;
-	}
-
-	ModalBlockedPress::ModalBlockedPress( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
-	{
-		m_type			= WG_EVENT_MODAL_BLOCKED_PRESS;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-	ModalBlockedRelease::ModalBlockedRelease( int button, WgWidget * pWidget ) : MouseButtonEvent(button)
-	{
-		m_type			= WG_EVENT_MODAL_BLOCKED_RELEASE;
-		m_bIsForWidget	= true;
-		m_pWidget 		= pWidget;
-	}
-
-	//____ Table event methods _________________________________________________
-/*
-	WgTablePanel * TableCellEvent::Table() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-//TEMP!		if( pWidget && pWidget->Type() == WgMenu::GetClass() )
-//TEMP!			return static_cast<WgTablePanel*>(pWidget);
-
-		return 0;		
-	}
-	
-	int TableCellEvent::Row() const
-	{
-		return m_row;
-	}
-	
-	int TableCellEvent::Column() const
-	{
-		return m_column;
-	}
-	
-	WgWidget * TableCellEvent::CellContent() const
-	{
-		return m_pCellContent.GetRealPtr();
-	}
-		
-	TableCellMarked::TableCellMarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent )
-	{
-		m_type 			= WG_EVENT_TABLE_CELL_MARK;
-		m_pWidget 		= pTable;
-		m_row 			= row;
-		m_column 		= column;
-		m_pCellContent 	= pCellContent;
-	}
-
-	TableCellUnmarked::TableCellUnmarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent )
-	{
-		m_type 			= WG_EVENT_TABLE_CELL_UNMARK;
-		m_pWidget 		= pTable;
-		m_row 			= row;
-		m_column 		= column;
-		m_pCellContent 	= pCellContent;
-	}
-*/
-	//____ Link event methods __________________________________________________
-
-	std::string LinkEvent::Link() const
-	{
-		return m_link;
-	}
-
-	LinkMark::LinkMark( WgWidget * pWidget, std::string link )
-	{
-		m_type			= WG_EVENT_LINK_MARK;
-		m_pWidget		= pWidget;
-		m_link			= link;
-	}
-
-	LinkUnmark::LinkUnmark( WgWidget * pWidget, std::string link )
-	{
-		m_type			= WG_EVENT_LINK_UNMARK;
-		m_pWidget		= pWidget;
-		m_link			= link;
-	}
-
-	int LinkButtonEvent::Button() const
-	{
-		return m_button;
-	}
-
-	LinkPress::LinkPress( WgWidget * pWidget, std::string link, int button )
-	{
-		m_type			= WG_EVENT_LINK_PRESS;
-		m_pWidget		= pWidget;
-		m_link			= link;
-		m_button		= button;
-	}
-
-	LinkRepeat::LinkRepeat( WgWidget * pWidget, std::string link, int button )
-	{
-		m_type			= WG_EVENT_LINK_REPEAT;
-		m_pWidget		= pWidget;
-		m_link			= link;
-		m_button		= button;
-	}
-
-	LinkRelease::LinkRelease( WgWidget * pWidget, std::string link, int button )
-	{
-		m_type			= WG_EVENT_LINK_RELEASE;
-		m_pWidget		= pWidget;
-		m_link			= link;
-		m_button		= button;
-	}
-
-	LinkClick::LinkClick( WgWidget * pWidget, std::string link, int button )
-	{
-		m_type			= WG_EVENT_LINK_CLICK;
-		m_pWidget		= pWidget;
-		m_link			= link;
-		m_button		= button;
-	}
-
-	LinkDoubleClick::LinkDoubleClick( WgWidget * pWidget, std::string link, int button )
-	{
-		m_type			= WG_EVENT_LINK_DOUBLE_CLICK;
-		m_pWidget		= pWidget;
-		m_link			= link;
-		m_button		= button;
-	}
-
-	//____ Knob event methods ____________________________________________________
-
-	KnobTurn::KnobTurn( WgWidget * pWidget, int pos, float fraction )
-	{
-		m_type		= WG_EVENT_KNOB_TURN;
-		m_pWidget	= pWidget;
-		m_pos		= pos;
-		m_fraction	= fraction;
-	}
-
-	float KnobTurn::Fraction() const
-	{
-		return m_fraction;
-	}
-
-	int KnobTurn::Pos() const
-	{
-		return m_pos;
-	}
-
-
-
-	//____ MousePosition _______________________________________________________
-
-	MousePosition::MousePosition()
-	{
-		m_type = WG_EVENT_MOUSE_POSITION;
-	}
-
-	//____ MouseButtonDrag _________________________________________________________
-
-	MouseButtonDrag::MouseButtonDrag( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : MouseButtonEvent(button)
-	{
-
-		m_type = WG_EVENT_MOUSEBUTTON_DRAG;
-
-		m_startPos = startPos;
-		m_prevPos = prevPos;
-		m_currPos = currPos;
-	}
-
-	MouseButtonDrag::MouseButtonDrag( int button, WgWidget * pWidget, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : MouseButtonEvent(button)
-	{
-		m_type = WG_EVENT_MOUSEBUTTON_DRAG;
-		m_bIsForWidget		= true;
-		m_pWidget 			= pWidget;
-
-		m_startPos = startPos;
-		m_prevPos = prevPos;
-		m_currPos = currPos;
-	}
-
-	void MouseButtonDrag::_cloneContentFrom( const Event * _pOrg )
-	{
-		const MouseButtonDrag * pOrg = static_cast<const MouseButtonDrag*>(_pOrg);
-		
-		m_startPos = pOrg->m_startPos;
-		m_prevPos = pOrg->m_prevPos;
-		m_currPos = pOrg->m_currPos;
-		MouseButtonEvent::_cloneContentFrom( pOrg );
-	}
-
-
-	WgCoord MouseButtonDrag::DraggedTotal() const
-	{
-		return m_currPos - m_startPos;
-	}
-
-	WgCoord MouseButtonDrag::DraggedNow() const
-	{
-		return m_currPos - m_prevPos;
-	}
-
-	WgCoord MouseButtonDrag::CurrPos() const
-	{
-		return m_currPos;
-	}
-
-	WgCoord MouseButtonDrag::StartPos() const
-	{
-		return m_startPos;
-	}
-
-	WgCoord MouseButtonDrag::PrevPos() const
-	{
-		return m_prevPos;
-	}
-
-};
+WgPointerStyle WgPointerChangeEvent::Style() const
+{
+	return m_style;
+}
+
+bool WgPointerChangeEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgPointerChangeEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgPointerChangeEventPtr WgPointerChangeEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgPointerChangeEventPtr( static_cast<WgPointerChangeEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgSelectEvent _________________________________________________________
+
+const char WgSelectEvent::CLASSNAME[] = {"SelectEvent"};
+
+WgSelectEvent::WgSelectEvent( WgWidget * pWidget )
+{
+	m_type 			= WG_EVENT_SELECT;
+	m_pWidget 		= pWidget;
+}
+
+bool WgSelectEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgSelectEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgSelectEventPtr WgSelectEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgSelectEventPtr( static_cast<WgSelectEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgToggleEvent ______________________________________________
+
+const char WgToggleEvent::CLASSNAME[] = {"ToggleEvent"};
+
+WgToggleEvent::WgToggleEvent( WgWidget * pWidget, bool bSet )
+{
+	m_type = WG_EVENT_TOGGLE;
+	m_pWidget = pWidget;
+	m_bSet = bSet;
+}
+
+bool WgToggleEvent::IsSet() const
+{
+	return m_bSet;
+}
+
+bool WgToggleEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgToggleEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgToggleEventPtr WgToggleEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgToggleEventPtr( static_cast<WgToggleEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgValueChangeEvent ___________________________________________
+
+const char WgValueUpdateEvent::CLASSNAME[] = {"ValueUpdateEvent"};
+
+WgValueUpdateEvent::WgValueUpdateEvent( WgWidget * pWidget, int64_t value, double fraction, bool bFinal )
+{
+	m_type = WG_EVENT_VALUE_UPDATE;
+	m_pWidget = pWidget;
+	m_value = value;
+	m_fraction = fraction;
+	m_bFinal = bFinal;
+}
+
+int64_t WgValueUpdateEvent::Value() const
+{
+	return m_value;
+}
+
+double WgValueUpdateEvent::Fraction() const
+{
+	return m_fraction;
+}
+
+bool WgValueUpdateEvent::IsFinal() const
+{
+	return m_bFinal;
+}
+
+bool WgValueUpdateEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgValueUpdateEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgValueUpdateEventPtr WgValueUpdateEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgValueUpdateEventPtr( static_cast<WgValueUpdateEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgRangeUpdateEvent ___________________________________________
+
+const char WgRangeUpdateEvent::CLASSNAME[] = {"RangeUpdateEvent"};
+
+WgRangeUpdateEvent::WgRangeUpdateEvent( WgWidget * pWidget, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal )
+{
+	m_type = WG_EVENT_RANGE_UPDATE;
+	m_pWidget = pWidget;
+	m_ofs		= intOfs;
+	m_length	= intLength;
+	m_fracOfs	= fracOfs;
+	m_fracLength= fracLength;
+	m_bFinal	= bFinal;
+}
+
+bool WgRangeUpdateEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgRangeUpdateEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgRangeUpdateEventPtr WgRangeUpdateEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgRangeUpdateEventPtr( static_cast<WgRangeUpdateEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+int WgRangeUpdateEvent::Offset() const
+{
+	return m_ofs;
+}
+
+int WgRangeUpdateEvent::Length() const
+{
+	return m_length;
+}
+
+double WgRangeUpdateEvent::FracOffset() const
+{
+	return m_fracOfs;
+}
+
+double WgRangeUpdateEvent::FracLength() const
+{
+	return m_fracLength;
+}
+
+bool WgRangeUpdateEvent::IsFinal() const
+{
+	return m_bFinal;
+}
+
+
+//____ WgTextEditEvent ________________________________________________________
+
+const char WgTextEditEvent::CLASSNAME[] = {"TextEditEvent"};
+
+WgIEditTextPtr WgTextEditEvent::Text() const
+{
+	return m_pText;
+}
+
+WgTextEditEvent::WgTextEditEvent( WgWidget * pWidget, WgText * pText, bool bFinal )
+{
+	m_type 		= WG_EVENT_TEXT_EDIT;
+	m_pWidget 	= pWidget;
+	m_pText 	= WgIEditTextPtr(pWidget, pText);
+	m_bFinal	= bFinal;
+}
+
+bool WgTextEditEvent::IsFinal() const
+{
+	return m_bFinal;
+}
+
+bool WgTextEditEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgTextEditEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgTextEditEventPtr WgTextEditEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgTextEditEventPtr( static_cast<WgTextEditEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgItemEvent ________________________________________________________
+
+const char WgItemEvent::CLASSNAME[] = {"ItemEvent"};
+
+WgItemEvent::WgItemEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject ) : m_item(itemIndex,itemId,pItemObject)
+{
+	m_pWidget 	= pWidget;
+}
+
+bool WgItemEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgItemEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgItemEventPtr WgItemEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgItemEventPtr( static_cast<WgItemEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+int WgItemEvent::ItemIndex() const 
+{ 
+	return m_item.index; 
+}
+
+int WgItemEvent::ItemId() const 
+{ 
+	return m_item.id; 
+}
+
+WgObjectPtr WgItemEvent::ItemObject() const 
+{ 
+	return m_item.pObject; 
+}
+
+//____ WgItemToggleEvent ________________________________________________________
+
+const char WgItemToggleEvent::CLASSNAME[] = {"ItemToggleEvent"};
+
+WgItemToggleEvent::WgItemToggleEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject, bool bSet ) : WgItemEvent(pWidget,itemIndex,itemId,pItemObject)
+{
+	m_type = WG_EVENT_ITEM_TOGGLE;
+	m_bSet = bSet;
+}
+
+bool WgItemToggleEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgItemEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgItemToggleEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgItemToggleEventPtr WgItemToggleEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgItemToggleEventPtr( static_cast<WgItemToggleEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+bool WgItemToggleEvent::IsSet() const
+{
+	return m_bSet;
+}
+
+//____ WgItemMousePressEvent ________________________________________________________
+
+const char WgItemMousePressEvent::CLASSNAME[] = {"ItemMousePressEvent"};
+
+WgItemMousePressEvent::WgItemMousePressEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject, int button ) : WgItemEvent(pWidget,itemIndex,itemId,pItemObject)
+{
+	m_type = WG_EVENT_ITEM_MOUSE_PRESS;
+	m_button = button;
+}
+
+bool WgItemMousePressEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgItemEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgItemMousePressEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgItemMousePressEventPtr WgItemMousePressEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgItemMousePressEventPtr( static_cast<WgItemMousePressEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+int WgItemMousePressEvent::Button() const
+{
+	return m_button;
+}
+
+//____ WgItemListEvent ________________________________________________________
+
+const char WgItemListEvent::CLASSNAME[] = {"ItemListEvent"};
+
+WgItemListEvent::WgItemListEvent( WgWidget * pWidget, int nbItems, WgItemInfo * pItems )
+{
+	m_pWidget 	= pWidget;
+	m_nbItems	= nbItems;
+	m_pItems	= pItems;
+}
+
+WgItemListEvent::~WgItemListEvent()
+{
+	delete [] m_pItems;
+}
+
+bool WgItemListEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgItemListEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgItemListEventPtr WgItemListEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgItemListEventPtr( static_cast<WgItemListEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+int WgItemListEvent::NbItems() const
+{
+	return m_nbItems;
+}
+
+const WgItemInfo * WgItemListEvent::Items() const
+{
+	return m_pItems;
+}
+
+//____ WgItemsSelectEvent ________________________________________________________
+
+const char WgItemsSelectEvent::CLASSNAME[] = {"ItemsSelectEvent"};
+
+WgItemsSelectEvent::WgItemsSelectEvent( WgWidget * pWidget, int nbItems, WgItemInfo * pItems ) : WgItemListEvent(pWidget,nbItems,pItems)
+{
+	m_type = WG_EVENT_ITEMS_SELECT;
+}
+
+bool WgItemsSelectEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgItemListEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgItemsSelectEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgItemsSelectEventPtr WgItemsSelectEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgItemsSelectEventPtr( static_cast<WgItemsSelectEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgItemsUnselectEvent ________________________________________________________
+
+const char WgItemsUnselectEvent::CLASSNAME[] = {"ItemsUnselectEvent"};
+
+WgItemsUnselectEvent::WgItemsUnselectEvent( WgWidget * pWidget, int nbItems, WgItemInfo * pItems ) : WgItemListEvent(pWidget,nbItems,pItems)
+{
+	m_type = WG_EVENT_ITEMS_UNSELECT;
+}
+
+bool WgItemsUnselectEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgItemListEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgItemsUnselectEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgItemsUnselectEventPtr WgItemsUnselectEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgItemsUnselectEventPtr( static_cast<WgItemsUnselectEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgMenuClosedEvent ____________________________________________
+
+const char WgMenuClosedEvent::CLASSNAME[] = {"MenuClosedEvent"};
+
+WgMenuClosedEvent::WgMenuClosedEvent( WgWidget * pMenu, const WgWidgetWeakPtr& pCaller )
+{
+	m_type		= WG_EVENT_MENU_CLOSED;
+	m_pWidget	= pCaller;
+	m_bIsForWidget	= true;
+	m_pMenu		= pMenu;
+}
+
+bool WgMenuClosedEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMenuClosedEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMenuClosedEventPtr WgMenuClosedEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMenuClosedEventPtr( static_cast<WgMenuClosedEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+WgWidget * WgMenuClosedEvent::Menu() const
+{
+	return m_pMenu.GetRealPtr();
+}
+
+WgWidget * WgMenuClosedEvent::Caller() const
+{
+	return m_pWidget.GetRealPtr();
+}
+
+//____ WgModalMoveOutsideEvent ___________________________________________________
+
+const char WgModalMoveOutsideEvent::CLASSNAME[] = {"ModalMoveOutsideEvent"};
+
+WgModalMoveOutsideEvent::WgModalMoveOutsideEvent( WgWidget * pWidget )
+{
+	m_type = WG_EVENT_MODAL_MOVE_OUTSIDE;
+	m_bIsForWidget	= true;
+	m_pWidget		= pWidget;
+}
+
+bool WgModalMoveOutsideEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgModalMoveOutsideEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgModalMoveOutsideEventPtr WgModalMoveOutsideEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgModalMoveOutsideEventPtr( static_cast<WgModalMoveOutsideEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
+//____ WgModalBlockedPressEvent _______________________________________________
+
+const char WgModalBlockedPressEvent::CLASSNAME[] = {"ModalBlockedPressEvent"};
+
+WgModalBlockedPressEvent::WgModalBlockedPressEvent( int button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
+{
+	m_type			= WG_EVENT_MODAL_BLOCKED_PRESS;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
+
+bool WgModalBlockedPressEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgModalBlockedPressEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgModalBlockedPressEventPtr WgModalBlockedPressEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgModalBlockedPressEventPtr( static_cast<WgModalBlockedPressEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgModalBlockedReleaseEvent _____________________________________________
+
+const char WgModalBlockedReleaseEvent::CLASSNAME[] = {"ModalBlockedReleaseEvent"};
+
+WgModalBlockedReleaseEvent::WgModalBlockedReleaseEvent( int button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
+{
+	m_type			= WG_EVENT_MODAL_BLOCKED_RELEASE;
+	m_bIsForWidget	= true;
+	m_pWidget 		= pWidget;
+}
+
+bool WgModalBlockedReleaseEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgModalBlockedReleaseEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgModalBlockedReleaseEventPtr WgModalBlockedReleaseEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgModalBlockedReleaseEventPtr( static_cast<WgModalBlockedReleaseEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgLinkEvent __________________________________________________
+
+const char WgLinkEvent::CLASSNAME[] = {"LinkEvent"};
+
+std::string WgLinkEvent::Link() const
+{
+	return m_link;
+}
+
+bool WgLinkEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgLinkEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgLinkEventPtr WgLinkEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLinkEventPtr( static_cast<WgLinkEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgLinkSelectEvent __________________________________________________
+
+const char WgLinkSelectEvent::CLASSNAME[] = {"LinkSelectEvent"};
+
+WgLinkSelectEvent::WgLinkSelectEvent( WgWidget * pWidget, std::string link )
+{
+	m_type			= WG_EVENT_LINK_SELECT;
+	m_pWidget		= pWidget;
+	m_link			= link;
+}
+
+bool WgLinkSelectEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLinkEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgLinkSelectEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgLinkSelectEventPtr WgLinkSelectEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLinkSelectEventPtr( static_cast<WgLinkSelectEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgLinkMouseEnterEvent __________________________________________________
+
+const char WgLinkMouseEnterEvent::CLASSNAME[] = {"LinkMouseEnterEvent"};
+
+WgLinkMouseEnterEvent::WgLinkMouseEnterEvent( WgWidget * pWidget, std::string link )
+{
+	m_type			= WG_EVENT_LINK_MOUSE_ENTER;
+	m_pWidget		= pWidget;
+	m_link			= link;
+}
+
+bool WgLinkMouseEnterEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLinkEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgLinkMouseEnterEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgLinkMouseEnterEventPtr WgLinkMouseEnterEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLinkMouseEnterEventPtr( static_cast<WgLinkMouseEnterEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgLinkMouseLeaveEvent __________________________________________________
+
+const char WgLinkMouseLeaveEvent::CLASSNAME[] = {"LinkMouseLeaveEvent"};
+
+WgLinkMouseLeaveEvent::WgLinkMouseLeaveEvent( WgWidget * pWidget, std::string link )
+{
+	m_type			= WG_EVENT_LINK_MOUSE_LEAVE;
+	m_pWidget		= pWidget;
+	m_link			= link;
+}
+
+bool WgLinkMouseLeaveEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLinkEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgLinkMouseLeaveEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgLinkMouseLeaveEventPtr WgLinkMouseLeaveEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLinkMouseLeaveEventPtr( static_cast<WgLinkMouseLeaveEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgLinkMouseButtonEvent __________________________________________________
+
+const char WgLinkMouseButtonEvent::CLASSNAME[] = {"LinkMouseButtonEvent"};
+
+int WgLinkMouseButtonEvent::Button() const
+{
+	return m_button;
+}
+
+bool WgLinkMouseButtonEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLinkEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgLinkMouseButtonEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgLinkMouseButtonEventPtr WgLinkMouseButtonEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLinkMouseButtonEventPtr( static_cast<WgLinkMouseButtonEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgLinkMousePressEvent __________________________________________________
+
+const char WgLinkMousePressEvent::CLASSNAME[] = {"LinkMousePressEvent"};
+
+WgLinkMousePressEvent::WgLinkMousePressEvent( WgWidget * pWidget, std::string link, int button )
+{
+	m_type			= WG_EVENT_LINK_MOUSE_PRESS;
+	m_pWidget		= pWidget;
+	m_link			= link;
+	m_button		= button;
+}
+
+bool WgLinkMousePressEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLinkMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgLinkMousePressEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgLinkMousePressEventPtr WgLinkMousePressEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLinkMousePressEventPtr( static_cast<WgLinkMousePressEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgLinkMouseRepeatEvent __________________________________________________
+
+const char WgLinkMouseRepeatEvent::CLASSNAME[] = {"LinkMouseRepeatEvent"};
+
+WgLinkMouseRepeatEvent::WgLinkMouseRepeatEvent( WgWidget * pWidget, std::string link, int button )
+{
+	m_type			= WG_EVENT_LINK_MOUSE_REPEAT;
+	m_pWidget		= pWidget;
+	m_link			= link;
+	m_button		= button;
+}
+
+bool WgLinkMouseRepeatEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLinkMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgLinkMouseRepeatEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgLinkMouseRepeatEventPtr WgLinkMouseRepeatEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLinkMouseRepeatEventPtr( static_cast<WgLinkMouseRepeatEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgLinkMouseReleaseEvent __________________________________________________
+
+const char WgLinkMouseReleaseEvent::CLASSNAME[] = {"LinkMouseReleaseEvent"};
+
+WgLinkMouseReleaseEvent::WgLinkMouseReleaseEvent( WgWidget * pWidget, std::string link, int button )
+{
+	m_type			= WG_EVENT_LINK_MOUSE_RELEASE;
+	m_pWidget		= pWidget;
+	m_link			= link;
+	m_button		= button;
+}
+
+bool WgLinkMouseReleaseEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLinkMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgLinkMouseReleaseEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgLinkMouseReleaseEventPtr WgLinkMouseReleaseEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLinkMouseReleaseEventPtr( static_cast<WgLinkMouseReleaseEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgLinkMouseClickEvent __________________________________________________
+
+const char WgLinkMouseClickEvent::CLASSNAME[] = {"LinkMouseClickEvent"};
+
+WgLinkMouseClickEvent::WgLinkMouseClickEvent( WgWidget * pWidget, std::string link, int button )
+{
+	m_type			= WG_EVENT_LINK_MOUSE_CLICK;
+	m_pWidget		= pWidget;
+	m_link			= link;
+	m_button		= button;
+}
+
+bool WgLinkMouseClickEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLinkMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgLinkMouseClickEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgLinkMouseClickEventPtr WgLinkMouseClickEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLinkMouseClickEventPtr( static_cast<WgLinkMouseClickEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgLinkMouseDoubleClickEvent __________________________________________________
+
+const char WgLinkMouseDoubleClickEvent::CLASSNAME[] = {"LinkMouseDoubleClickEvent"};
+
+WgLinkMouseDoubleClickEvent::WgLinkMouseDoubleClickEvent( WgWidget * pWidget, std::string link, int button )
+{
+	m_type			= WG_EVENT_LINK_MOUSE_DOUBLE_CLICK;
+	m_pWidget		= pWidget;
+	m_link			= link;
+	m_button		= button;
+}
+
+bool WgLinkMouseDoubleClickEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLinkMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgLinkMouseDoubleClickEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgLinkMouseDoubleClickEventPtr WgLinkMouseDoubleClickEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgLinkMouseDoubleClickEventPtr( static_cast<WgLinkMouseDoubleClickEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+
+//____ WgMousePositionEvent _______________________________________________________
+
+const char WgMousePositionEvent::CLASSNAME[] = {"MousePositionEvent"};
+
+WgMousePositionEvent::WgMousePositionEvent()
+{
+	m_type = WG_EVENT_MOUSE_POSITION;
+}
+
+bool WgMousePositionEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMousePositionEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMousePositionEventPtr WgMousePositionEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMousePositionEventPtr( static_cast<WgMousePositionEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ WgMouseDragEvent _________________________________________________________
+
+const char WgMouseDragEvent::CLASSNAME[] = {"MouseDragEvent"};
+
+WgMouseDragEvent::WgMouseDragEvent( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : WgMouseButtonEvent(button)
+{
+	m_type = WG_EVENT_MOUSE_DRAG;
+
+	m_startPos = startPos;
+	m_prevPos = prevPos;
+	m_currPos = currPos;
+}
+
+WgMouseDragEvent::WgMouseDragEvent( int button, WgWidget * pWidget, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : WgMouseButtonEvent(button)
+{
+	m_type = WG_EVENT_MOUSE_DRAG;
+	m_bIsForWidget		= true;
+	m_pWidget 			= pWidget;
+
+	m_startPos = startPos;
+	m_prevPos = prevPos;
+	m_currPos = currPos;
+}
+
+bool WgMouseDragEvent::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgMouseButtonEvent::IsInstanceOf(pClassName);
+}
+
+const char * WgMouseDragEvent::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+WgMouseDragEventPtr WgMouseDragEvent::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgMouseDragEventPtr( static_cast<WgMouseDragEvent*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+WgCoord WgMouseDragEvent::DraggedTotal() const
+{
+	return m_currPos - m_startPos;
+}
+
+WgCoord WgMouseDragEvent::DraggedNow() const
+{
+	return m_currPos - m_prevPos;
+}
+
+WgCoord WgMouseDragEvent::CurrPos() const
+{
+	return m_currPos;
+}
+
+WgCoord WgMouseDragEvent::StartPos() const
+{
+	return m_startPos;
+}
+
+WgCoord WgMouseDragEvent::PrevPos() const
+{
+	return m_prevPos;
+}
+

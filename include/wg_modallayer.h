@@ -147,7 +147,7 @@ private:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
-	void			_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void			_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 
 	WgHook*		_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
 	WgHook*		_lastHook() const;		//

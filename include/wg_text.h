@@ -59,10 +59,9 @@
 #	include <wg_valueformat.h>
 #endif
 
-namespace WgEvent
-{
-	class Event;
-};
+#ifndef WG_EVENT_DOT_H
+#	include <wg_event.h>
+#endif
 
 class WgEventHandler;
 
@@ -412,7 +411,7 @@ public:
 
 	WgCoord			FocusWindowOnRange( const WgSize& canvas, const WgRect& window, WgRange range ) const;
 
-	bool 			OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHandler, const WgRect& container );
+	bool 			OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEventHandler, const WgRect& container );
 //	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
 
 	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }

@@ -144,7 +144,7 @@ void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 //____ _onEvent() _____________________________________________________________
 
-void WgFpsDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgFpsDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 {
 	switch( pEvent->Type() )
 	{
@@ -154,7 +154,7 @@ void WgFpsDisplay::_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler 
 
 			m_tickBufferOfs = (++m_tickBufferOfs) % TICK_BUFFER;
 
-			int msDiff = ((WgEvent::Tick*)pEvent)->Millisec();
+			int msDiff = WgTickEvent::Cast(pEvent)->Millisec();
 			if( msDiff > 0 )
 				m_pTickBuffer[m_tickBufferOfs] = msDiff;
 			else
