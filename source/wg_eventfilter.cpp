@@ -104,132 +104,132 @@ WgEventFilter	WgEventFilter::MouseMove( const WgWidgetPtr& pWidget )
 
 WgEventFilter	WgEventFilter::MouseButtonPress()
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, 0, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_PRESS, 0, _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonPress( int button)
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, 0, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_PRESS, 0, _filterMouseButtonEvents, button );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonPress( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_PRESS, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonPress( const WgWidgetPtr& pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_PRESS, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_PRESS, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
 
 //____ MouseButtonRelease() ________________________________________________________
 
 WgEventFilter	WgEventFilter::MouseButtonRelease()
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, 0, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_RELEASE, 0, _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonRelease( int button)
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, 0, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_RELEASE, 0, _filterMouseButtonEvents, button );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonRelease( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_RELEASE, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonRelease( const WgWidgetPtr& pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_RELEASE, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_RELEASE, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
 
 //____ MouseButtonDrag() ___________________________________________________________
 
 WgEventFilter	WgEventFilter::MouseButtonDrag()
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, 0, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_DRAG, 0, _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonDrag( int button)
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, 0, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_DRAG, 0, _filterMouseButtonEvents, button );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonDrag( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_DRAG, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonDrag( const WgWidgetPtr& pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_DRAG, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_DRAG, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
 
 //____ MouseButtonRepeat() ________________________________________________________
 
 WgEventFilter	WgEventFilter::MouseButtonRepeat()
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, 0, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_REPEAT, 0, _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonRepeat( int button)
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, 0, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_REPEAT, 0, _filterMouseButtonEvents, button );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonRepeat( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_REPEAT, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonRepeat( const WgWidgetPtr& pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_REPEAT, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_REPEAT, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
 
 //____ MouseButtonClick() ________________________________________________________
 
 WgEventFilter	WgEventFilter::MouseButtonClick()
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, 0, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_CLICK, 0, _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonClick( int button)
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, 0, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_CLICK, 0, _filterMouseButtonEvents, button );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonClick( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonClick(const WgWidgetPtr& pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
 
 //____ MouseButtonDoubleClick() ________________________________________________________
 
 WgEventFilter	WgEventFilter::MouseButtonDoubleClick()
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, 0, _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_CLICK, 0, _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonDoubleClick( int button)
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, 0, _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_CLICK, 0, _filterMouseButtonEvents, button );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonDoubleClick( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
+	return WgEventFilter( WG_EVENT_MOUSE_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
 WgEventFilter	WgEventFilter::MouseButtonDoubleClick( const WgWidgetPtr& pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_MOUSEBUTTON_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
+	return WgEventFilter( WG_EVENT_MOUSE_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
 
 //____ KeyPress() _____________________________________________________________
@@ -356,266 +356,160 @@ WgEventFilter	WgEventFilter::Character( const WgWidgetPtr& pWidget, unsigned sho
 	return WgEventFilter( WG_EVENT_CHARACTER, pWidget.GetRealPtr(), _filterCharacterEvents, character );
 }
 
-//____ MouseWheelRoll() ____________________________________________________________
+//____ WheelRoll() ____________________________________________________________
 
-WgEventFilter	WgEventFilter::MouseWheelRoll()
+WgEventFilter	WgEventFilter::WheelRoll()
 {
-	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, 0, _filterMouseWheelRollEvents, 0 );
+	return WgEventFilter( WG_EVENT_WHEEL_ROLL, 0, _filterWheelRollEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseWheelRoll( int wheel )
+WgEventFilter	WgEventFilter::WheelRoll( int wheel )
 {
-	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, 0, _filterMouseWheelRollEvents, wheel );
+	return WgEventFilter( WG_EVENT_WHEEL_ROLL, 0, _filterWheelRollEvents, wheel );
 }
 
-WgEventFilter	WgEventFilter::MouseWheelRoll( const WgWidgetPtr& pWidget )
+WgEventFilter	WgEventFilter::WheelRoll( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, pWidget.GetRealPtr(), _filterMouseWheelRollEvents, 0 );
+	return WgEventFilter( WG_EVENT_WHEEL_ROLL, pWidget.GetRealPtr(), _filterWheelRollEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseWheelRoll( const WgWidgetPtr& pWidget, int wheel )
+WgEventFilter	WgEventFilter::WheelRoll( const WgWidgetPtr& pWidget, int wheel )
 {
-	return WgEventFilter( WG_EVENT_MOUSEWHEEL_ROLL, pWidget.GetRealPtr(), _filterMouseWheelRollEvents, wheel );
+	return WgEventFilter( WG_EVENT_WHEEL_ROLL, pWidget.GetRealPtr(), _filterWheelRollEvents, wheel );
 }
 
-//____ ButtonPress() __________________________________________________________
+//____ Select() __________________________________________________________
 
-WgEventFilter	WgEventFilter::ButtonPress()
+WgEventFilter	WgEventFilter::Select()
 {
-	return WgEventFilter( WG_EVENT_BUTTON_PRESS, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SELECT, 0, _filterType );
 }
 
-WgEventFilter	WgEventFilter::ButtonPress( const WgWidgetPtr& pWidget )
+WgEventFilter	WgEventFilter::Select( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_BUTTON_PRESS, pWidget.GetRealPtr(), _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_SELECT, pWidget.GetRealPtr(), _filterTypeWidget );
 }
 
-//____ CheckboxCheck() __________________________________________________________
+//____ Toggle() __________________________________________________________
 
-WgEventFilter	WgEventFilter::CheckboxCheck()
+WgEventFilter	WgEventFilter::Toggle()
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_CHECK, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_TOGGLE, 0, _filterType );
 }
 
-WgEventFilter	WgEventFilter::CheckboxCheck( const WgWidgetPtr& pWidget )
+WgEventFilter	WgEventFilter::Toggle( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_CHECK, pWidget.GetRealPtr(), _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_TOGGLE, pWidget.GetRealPtr(), _filterTypeWidget );
 }
 
-//____ CheckboxUncheck() __________________________________________________________
+//____ ValueUpdate() _______________________________________________________
 
-WgEventFilter	WgEventFilter::CheckboxUncheck()
+WgEventFilter	WgEventFilter::ValueUpdate()
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_UNCHECK, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_VALUE_UPDATE, 0, _filterType );
 }
 
-WgEventFilter	WgEventFilter::CheckboxUncheck( const WgWidgetPtr& pWidget )
+WgEventFilter	WgEventFilter::ValueUpdate( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_UNCHECK, pWidget.GetRealPtr(), _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_VALUE_UPDATE, pWidget.GetRealPtr(), _filterTypeWidget );
 }
 
+//____ RangeUpdate() __________________________________________________________
 
-//____ CheckboxToggle() __________________________________________________________
-
-WgEventFilter	WgEventFilter::CheckboxToggle()
+WgEventFilter	WgEventFilter::RangeUpdate()
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_RANGE_UPDATE, 0, _filterType );
 }
 
-WgEventFilter	WgEventFilter::CheckboxToggle( const WgWidgetPtr& pWidget )
+WgEventFilter	WgEventFilter::RangeUpdate( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_CHECKBOX_TOGGLE, pWidget.GetRealPtr(), _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_RANGE_UPDATE, pWidget.GetRealPtr(), _filterTypeWidget );
 }
 
-//____ AnimationUpdate() _______________________________________________________
+//____ TextEdit() _______________________________________________________
 
-WgEventFilter	WgEventFilter::AnimationUpdate()
+WgEventFilter	WgEventFilter::TextEdit()
 {
-	return WgEventFilter( WG_EVENT_ANIMATION_UPDATE, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_TEXT_EDIT, 0, _filterType );
 }
 
-WgEventFilter	WgEventFilter::AnimationUpdate( const WgWidgetPtr& pWidget )
+WgEventFilter	WgEventFilter::TextEdit( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_ANIMATION_UPDATE, pWidget.GetRealPtr(), _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_TEXT_EDIT, pWidget.GetRealPtr(), _filterTypeWidget );
 }
 
-//____ TabSelect() _____________________________________________________________
+//____ ItemToggle() ___________________________________________________________
 
-WgEventFilter	WgEventFilter::TabSelect()
+WgEventFilter WgEventFilter::ItemToggle()
 {
-	return WgEventFilter( WG_EVENT_TAB_SELECT, 0, _filterTabSelect );
+	return WgEventFilter( WG_EVENT_ITEM_TOGGLE, 0, _filterType );
 }
 
-WgEventFilter	WgEventFilter::TabSelect( const WgWidgetPtr& pWidget )
+WgEventFilter WgEventFilter::ItemToggle( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_TAB_SELECT, pWidget.GetRealPtr(), _filterTabSelect );
+	return WgEventFilter( WG_EVENT_ITEM_TOGGLE, pWidget.GetRealPtr(), _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::TabSelect( const WgWidgetPtr& pWidget, int id )
+WgEventFilter WgEventFilter::ItemToggle( const WgWidgetPtr& pWidget, int id )
 {
-	return WgEventFilter( WG_EVENT_TAB_SELECT, pWidget.GetRealPtr(), _filterTabSelect, id );
+	return WgEventFilter( WG_EVENT_ITEM_TOGGLE, pWidget.GetRealPtr(), _filterItemToggleEvents, id, 0 );
 }
 
-//____ TabPress() _____________________________________________________________
+//____ ItemMousePress() _______________________________________________________
 
-WgEventFilter	WgEventFilter::TabPress()
+WgEventFilter WgEventFilter::ItemMousePress()
 {
-	return WgEventFilter( WG_EVENT_TAB_PRESS, 0, _filterTabPress );
+	return WgEventFilter( WG_EVENT_ITEM_MOUSE_PRESS, 0, _filterType );
 }
 
-WgEventFilter	WgEventFilter::TabPress( int button )
+WgEventFilter WgEventFilter::ItemMousePress( int button )
 {
-	return WgEventFilter( WG_EVENT_TAB_PRESS, 0, _filterTabPress, button );
+	return WgEventFilter( WG_EVENT_ITEM_MOUSE_PRESS, 0, _filterItemMousePressEvents, -1, button );
 }
 
-WgEventFilter	WgEventFilter::TabPress( const WgWidgetPtr& pWidget )
+WgEventFilter WgEventFilter::ItemMousePress( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_TAB_PRESS, pWidget.GetRealPtr(), _filterTabPress );
+	return WgEventFilter( WG_EVENT_ITEM_MOUSE_PRESS, pWidget.GetRealPtr(), _filterTypeWidget );
 }
 
-WgEventFilter	WgEventFilter::TabPress( const WgWidgetPtr& pWidget, int button )
+WgEventFilter WgEventFilter::ItemMousePress( const WgWidgetPtr& pWidget, int button )
 {
-	return WgEventFilter( WG_EVENT_TAB_PRESS, pWidget.GetRealPtr(), _filterTabPress, button );
+	return WgEventFilter( WG_EVENT_ITEM_MOUSE_PRESS, pWidget.GetRealPtr(), _filterItemMousePressEvents, -1, button );
 }
 
-WgEventFilter	WgEventFilter::TabPress( const WgWidgetPtr& pWidget, int button, int id )
+WgEventFilter WgEventFilter::ItemMousePress( const WgWidgetPtr& pWidget, int button, int id )
 {
-	return WgEventFilter( WG_EVENT_TAB_PRESS, pWidget.GetRealPtr(), _filterTabPress, button, id );
+	return WgEventFilter( WG_EVENT_ITEM_MOUSE_PRESS, pWidget.GetRealPtr(), _filterItemMousePressEvents, id, button );
 }
 
-//____ EditvalueModify() _______________________________________________________
+//____ ItemsSelect() __________________________________________________________
 
-WgEventFilter	WgEventFilter::EditvalueModify()
+WgEventFilter WgEventFilter::ItemsSelect()
 {
-	return WgEventFilter( WG_EVENT_EDITVALUE_MODIFY, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_ITEMS_SELECT, 0, _filterType );
 }
 
-WgEventFilter	WgEventFilter::EditvalueModify( const WgWidgetPtr& pWidget )
+WgEventFilter WgEventFilter::ItemsSelect( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_EDITVALUE_MODIFY, pWidget.GetRealPtr(), _filterTypeWidget );
-}
-
-//____ EditvalueSet() _______________________________________________________
-
-WgEventFilter	WgEventFilter::EditvalueSet()
-{
-	return WgEventFilter( WG_EVENT_EDITVALUE_SET, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::EditvalueSet( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_EDITVALUE_SET, pWidget.GetRealPtr(), _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_ITEMS_SELECT, pWidget.GetRealPtr(), _filterTypeWidget );
 }
 
 
-//____ ScrollbarMove() __________________________________________________________
+//____ ItemsUnselect() ________________________________________________________
 
-WgEventFilter	WgEventFilter::ScrollbarMove()
+WgEventFilter WgEventFilter::ItemsUnselect()
 {
-	return WgEventFilter( WG_EVENT_SCROLLBAR_MOVE, 0, _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_ITEMS_UNSELECT, 0, _filterType );
 }
 
-WgEventFilter	WgEventFilter::ScrollbarMove( const WgWidgetPtr& pWidget )
+WgEventFilter WgEventFilter::ItemsUnselect( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_SCROLLBAR_MOVE, pWidget.GetRealPtr(), _filterTypeWidget );
+	return WgEventFilter( WG_EVENT_ITEMS_UNSELECT, pWidget.GetRealPtr(), _filterTypeWidget );
 }
 
-//____ ScrollbarStepFwd() __________________________________________________________
 
-WgEventFilter	WgEventFilter::ScrollbarStepFwd()
-{
-	return WgEventFilter( WG_EVENT_SCROLLBAR_STEP_FWD, 0, _filterTypeWidget );
-}
 
-WgEventFilter	WgEventFilter::ScrollbarStepFwd( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_SCROLLBAR_STEP_FWD, pWidget.GetRealPtr(), _filterTypeWidget );
-}
-
-//____ ScrollbarStepBwd() __________________________________________________________
-
-WgEventFilter	WgEventFilter::ScrollbarStepBwd()
-{
-	return WgEventFilter( WG_EVENT_SCROLLBAR_STEP_BWD, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::ScrollbarStepBwd( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_SCROLLBAR_STEP_BWD, pWidget.GetRealPtr(), _filterTypeWidget );
-}
-
-//____ ScrollbarJumpFwd() __________________________________________________________
-
-WgEventFilter	WgEventFilter::ScrollbarJumpFwd()
-{
-	return WgEventFilter( WG_EVENT_SCROLLBAR_JUMP_FWD, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::ScrollbarJumpFwd( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_SCROLLBAR_JUMP_FWD, pWidget.GetRealPtr(), _filterTypeWidget );
-}
-
-//____ ScrollbarJumpBwd() __________________________________________________________
-
-WgEventFilter	WgEventFilter::ScrollbarJumpBwd()
-{
-	return WgEventFilter( WG_EVENT_SCROLLBAR_JUMP_BWD, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::ScrollbarJumpBwd( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_SCROLLBAR_JUMP_BWD, pWidget.GetRealPtr(), _filterTypeWidget );
-}
-
-//____ ScrollbarWheelRoll() __________________________________________________________
-
-WgEventFilter	WgEventFilter::ScrollbarWheelRoll()
-{
-	return WgEventFilter( WG_EVENT_SCROLLBAR_WHEEL_ROLL, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::ScrollbarWheelRoll( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_SCROLLBAR_WHEEL_ROLL, pWidget.GetRealPtr(), _filterTypeWidget );
-}
-
-//____ TextModify() _______________________________________________________
-
-WgEventFilter	WgEventFilter::TextModify()
-{
-	return WgEventFilter( WG_EVENT_TEXT_MODIFY, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::TextModify( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_TEXT_MODIFY, pWidget.GetRealPtr(), _filterTypeWidget );
-}
-
-//____ TextSet() _______________________________________________________
-
-WgEventFilter	WgEventFilter::TextSet()
-{
-	return WgEventFilter( WG_EVENT_TEXT_SET, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::TextSet( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_TEXT_SET, pWidget.GetRealPtr(), _filterTypeWidget );
-}
-
-//____ KnobTurn() __________________________________________________________
-
-WgEventFilter	WgEventFilter::KnobTurn()
-{
-	return WgEventFilter( WG_EVENT_KNOB_TURN, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::KnobTurn( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_KNOB_TURN, pWidget.GetRealPtr(), _filterTypeWidget );
-}
-
+/*
 //____ MenuitemSelect() __________________________________________________________
 
 WgEventFilter	WgEventFilter::MenuitemSelect()
@@ -637,60 +531,16 @@ WgEventFilter	WgEventFilter::MenuitemSelect( const WgWidgetPtr& pWidget, int ite
 {
 	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pWidget.GetRealPtr(), _filterMenuitemEvent, itemId );
 }
-
-//____ MenuitemCheck() __________________________________________________________
-
-WgEventFilter	WgEventFilter::MenuitemCheck()
-{
-	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, 0, _filterMenuitemEvent );
-}
-
-WgEventFilter	WgEventFilter::MenuitemCheck( int itemId )
-{
-	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, 0, _filterMenuitemEvent, itemId );
-}
-
-WgEventFilter	WgEventFilter::MenuitemCheck( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, pWidget.GetRealPtr(), _filterMenuitemEvent );
-}
-
-WgEventFilter	WgEventFilter::MenuitemCheck( const WgWidgetPtr& pWidget, int itemId )
-{
-	return WgEventFilter( WG_EVENT_MENUITEM_CHECK, pWidget.GetRealPtr(), _filterMenuitemEvent, itemId );
-}
-
-//____ MenuitemUncheck() __________________________________________________________
-
-WgEventFilter	WgEventFilter::MenuitemUncheck()
-{
-	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, 0, _filterMenuitemEvent );
-}
-
-WgEventFilter	WgEventFilter::MenuitemUncheck( int itemId )
-{
-	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, 0, _filterMenuitemEvent, itemId );
-}
-
-WgEventFilter	WgEventFilter::MenuitemUncheck( const WgWidgetPtr& pWidget )
-{
-	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, pWidget.GetRealPtr(), _filterMenuitemEvent );
-}
-
-WgEventFilter	WgEventFilter::MenuitemUncheck( const WgWidgetPtr& pWidget, int itemId )
-{
-	return WgEventFilter( WG_EVENT_MENUITEM_UNCHECK, pWidget.GetRealPtr(), _filterMenuitemEvent, itemId );
-}
-
+*/
 
 //_____________________________________________________________________________
 
-bool WgEventFilter::_filterDummy( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterDummy( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
 	return true;
 }
 
-bool WgEventFilter::_filterType( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterType( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() )
 		return true;
@@ -698,7 +548,7 @@ bool WgEventFilter::_filterType( const WgEvent::Event * pEvent, const WgEventFil
 	return false;
 }
 
-bool WgEventFilter::_filterTypeWidget( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterTypeWidget( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 		return true;
@@ -706,7 +556,7 @@ bool WgEventFilter::_filterTypeWidget( const WgEvent::Event * pEvent, const WgEv
 	return false;
 }
 
-bool WgEventFilter::_filterMouseButtonEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterMouseButtonEvents( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
@@ -714,7 +564,7 @@ bool WgEventFilter::_filterMouseButtonEvents( const WgEvent::Event * pEvent, con
 			return true;
 		else
 		{
-			const WgEvent::MouseButtonEvent * p = static_cast<const WgEvent::MouseButtonEvent*>(pEvent);
+			WgMouseButtonEventPtr p = WgMouseButtonEvent::Cast(pEvent);
 
 			if( p->Button() == filter.m_data1 )
 				return true;
@@ -723,7 +573,7 @@ bool WgEventFilter::_filterMouseButtonEvents( const WgEvent::Event * pEvent, con
 	return false;
 }
 
-bool WgEventFilter::_filterKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterKeyEvents( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
@@ -731,7 +581,7 @@ bool WgEventFilter::_filterKeyEvents( const WgEvent::Event * pEvent, const WgEve
 			return true;
 		else
 		{
-			const WgEvent::KeyEvent * p = static_cast<const WgEvent::KeyEvent*>(pEvent);
+			WgKeyEventPtr p = WgKeyEvent::Cast(pEvent);
 
 			if( p->TranslatedKeyCode() == filter.m_data1 )
 				return true;
@@ -740,11 +590,11 @@ bool WgEventFilter::_filterKeyEvents( const WgEvent::Event * pEvent, const WgEve
 	return false;
 }
 
-bool WgEventFilter::_filterNativeKeyEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterNativeKeyEvents( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
-		const WgEvent::KeyEvent * p = static_cast<const WgEvent::KeyEvent*>(pEvent);
+		WgKeyEventPtr p = WgKeyEvent::Cast(pEvent);
 
 		if( p->NativeKeyCode() == filter.m_data1 )
 			return true;
@@ -752,11 +602,11 @@ bool WgEventFilter::_filterNativeKeyEvents( const WgEvent::Event * pEvent, const
 	return false;
 }
 
-bool WgEventFilter::_filterCharacterEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterCharacterEvents( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
-		int chr = (static_cast<const WgEvent::Character *>(pEvent))->Char();
+		int chr = WgCharacterEvent::Cast(pEvent)->Char();
 
 		if( chr == filter.m_data1 )
 			return true;
@@ -764,11 +614,11 @@ bool WgEventFilter::_filterCharacterEvents( const WgEvent::Event * pEvent, const
 	return false;
 }
 
-bool WgEventFilter::_filterMouseWheelRollEvents( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterWheelRollEvents( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
-		int chr = (static_cast<const WgEvent::MouseWheelRoll *>(pEvent))->Wheel();
+		int chr = WgWheelRollEvent::Cast(pEvent)->Wheel();
 
 		if( chr == filter.m_data1 )
 			return true;
@@ -776,36 +626,36 @@ bool WgEventFilter::_filterMouseWheelRollEvents( const WgEvent::Event * pEvent, 
 	return false;
 }
 
-bool WgEventFilter::_filterTabSelect( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+bool WgEventFilter::_filterItemToggleEvents( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
-		if( filter.m_data1 == 0 )
-			return true;
-		else
-		{
-			const WgEvent::TabSelect * p = static_cast<const WgEvent::TabSelect*>(pEvent);
+		int itemId = WgItemToggleEvent::Cast(pEvent)->ItemId();
 
-			if( p->TabId() == filter.m_data1 )
-				return true;
-		}
-	}
-	return false;
-}
-
-bool WgEventFilter::_filterTabPress( const WgEvent::Event * pEvent, const WgEventFilter& filter )
-{
-	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
-	{
-		const WgEvent::TabPress * p = static_cast<const WgEvent::TabPress*>(pEvent);
-
-		if( (filter.m_data1 == 0 || filter.m_data1 == p->MouseButton()) && (filter.m_data2 == 0 || filter.m_data2 == p->TabId()) )
+		if( itemId == filter.m_data1 )
 			return true;
 	}
 	return false;
 }
 
-bool WgEventFilter::_filterMenuitemEvent( const WgEvent::Event * pEvent, const WgEventFilter& filter )
+
+bool WgEventFilter::_filterItemMousePressEvents( const WgEventPtr& pEvent, const WgEventFilter& filter )
+{
+	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
+	{
+		WgItemMousePressEventPtr pEvent = WgItemMousePressEvent::Cast(pEvent);
+
+		if( (filter.m_data1 == -1 || pEvent->ItemId() == filter.m_data1) ||
+			(filter.m_data2 == -1 || pEvent->Button() == filter.m_data2) )
+			return true;
+	}
+	return false;
+}
+
+
+
+/*
+bool WgEventFilter::_filterMenuitemEvent( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
 	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 	{
@@ -821,3 +671,4 @@ bool WgEventFilter::_filterMenuitemEvent( const WgEvent::Event * pEvent, const W
 	}
 	return false;
 }
+*/

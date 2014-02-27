@@ -49,6 +49,8 @@ WgEventHandler::WgEventHandler( WgRootPanel * pRoot )
 		m_pLatestPressEvents[i] = 0;
 		m_pLatestReleaseEvents[i] = 0;
 	}
+
+	m_handleCounter = 1;				// We start on 1
 }
 
 //____ Destructor _____________________________________________________________
@@ -202,69 +204,74 @@ bool WgEventHandler::IsKeyPressed( int native_keycode )
 
 //____ AddCallback() __________________________________________________________
 
-void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event * pEvent) )
+WgCallbackHandle WgEventHandler::AddCallback( void(*fp)(const WgEventPtr& pEvent) )
 {
-	Callback * p = new FunctionCallback( WgEventFilter(), fp );
-	m_globalCallbacks.PushBack( p );
+	Callback * p = new NoParamCallback( WgEventFilter(), fp );
+	return _addCallback( p );
 }
 
-void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event * pEvent, void * pParam), void * pParam )
+WgCallbackHandle WgEventHandler::AddCallback( void(*fp)(const WgEventPtr& pEvent, int param), int param )
 {
-	Callback * p = new FunctionCallbackParam( WgEventFilter(), fp, pParam );
-	m_globalCallbacks.PushBack( p );
+	Callback * p = new IntParamCallback( WgEventFilter(), fp, param );
+	return _addCallback( p );
 }
 
-void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event * pEvent, WgWidget * pDest), WgWidget * pDest )
+WgCallbackHandle WgEventHandler::AddCallback( void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
 {
-	Callback * p = new WidgetCallback( WgEventFilter(), fp, pDest );
-	m_globalCallbacks.PushBack( p );
+	Callback * p = new VoidPtrParamCallback( WgEventFilter(), fp, pParam );
+	return _addCallback( p );
 }
 
-void WgEventHandler::AddCallback( WgEventListener * pListener )
+WgCallbackHandle WgEventHandler::AddCallback( void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
+{
+	Callback * p = new ObjectParamCallback( WgEventFilter(), fp, pParam.GetRealPtr() );
+	return _addCallback( p );
+}
+
+WgCallbackHandle WgEventHandler::AddCallback( WgEventListener * pListener )
 {
 	Callback * p = new ListenerCallback( WgEventFilter(), pListener );
-	m_globalCallbacks.PushBack( p );
+	return _addCallback( p );
 }
 
-void WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent) )
+WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent) )
 {
-	Callback * p = new FunctionCallback( filter, fp );
-	_addCallback( filter, p );
+	Callback * p = new NoParamCallback( filter, fp );
+	return _addCallback( filter, p );
 }
 
-void WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent, void * pParam), void * pParam )
+WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, int param), int param )
 {
-	Callback * p = new FunctionCallbackParam( filter, fp, pParam );
-	_addCallback( filter, p );
+	Callback * p = new IntParamCallback( filter, fp, param );
+	return _addCallback( filter, p );
 }
 
-void WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent, WgWidget * pDest), WgWidget * pDest )
+WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
 {
-	Callback * p = new WidgetCallback( filter, fp, pDest );
-	_addCallback( filter, p );
+	Callback * p = new VoidPtrParamCallback( filter, fp, pParam );
+	return _addCallback( filter, p );
 }
 
-void WgEventHandler::AddCallback( const WgEventFilter& filter, WgEventListener * pListener )
+WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
+{
+	Callback * p = new ObjectParamCallback( filter, fp, pParam );
+	return _addCallback( filter, p );
+}
+
+WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, WgEventListener * pListener )
 {
 	Callback * p = new ListenerCallback( filter, pListener );
-	_addCallback( filter, p );
+	return _addCallback( filter, p );
 }
 
 //____ DeleteCallbacksTo() _______________________________________________________
 
-int WgEventHandler::DeleteCallbacksTo( const WgWidget * pWidget )
-{
-	// Delete all callbacks with the specified Widget as recipient.
-
-	return _deleteCallbacksTo(pWidget);
-}
-
-int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEvent::Event * pEvent) )
+int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEventPtr& pEvent) )
 {
 	return _deleteCallbacksTo( reinterpret_cast<void*>(fp) );
 }
 
-int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEvent::Event * pEvent, void * pParam) )
+int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEventPtr& pEvent, void * pParam) )
 {
 	return _deleteCallbacksTo( reinterpret_cast<void*>(fp) );
 }
@@ -274,11 +281,16 @@ int WgEventHandler::DeleteCallbacksTo( const WgEventListener * pListener )
 	return _deleteCallbacksTo(pListener);
 }
 
+int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam) )
+{
+	return _deleteCallbacksTo( reinterpret_cast<void*>(fp) );
+}
+
 //____ DeleteCallbacksOn() _______________________________________________________
 
-int WgEventHandler::DeleteCallbacksOn( const WgWidget * pWidget )
+int WgEventHandler::DeleteCallbacksOn( const WgWidgetPtr& pWidget )
 {
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr( const_cast<WgWidget*>(pWidget) ));
+	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr(pWidget.GetRealPtr()) );
 
 	if( it == m_widgetCallbacks.end() )
 		return 0;
@@ -310,9 +322,9 @@ int WgEventHandler::DeleteCallbacksOn( WgEventType type )
 }
 
 
-int WgEventHandler::DeleteCallbacksOn( const WgWidget * pWidget, WgEventType type )
+int WgEventHandler::DeleteCallbacksOn( const WgWidgetPtr& pWidget, WgEventType type )
 {
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find( WgWidgetWeakPtr(const_cast<WgWidget*>(pWidget)));
+	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find( WgWidgetWeakPtr(pWidget.GetRealPtr()) );
 
 	if( it == m_widgetCallbacks.end() )
 		return 0;
@@ -340,29 +352,34 @@ int WgEventHandler::DeleteCallbacksOn( const WgWidget * pWidget, WgEventType typ
 
 
 
-//____ DeleteCallbacks() ______________________________________________________
+//____ DeleteCallback() ______________________________________________________
 
-int WgEventHandler::DeleteCallback( const WgEventFilter& filter,const  WgWidget * pWidget )
+bool WgEventHandler::DeleteCallback( WgCallbackHandle handle )
 {
-	return _deleteCallback( filter, pWidget );
+	Callback * p = m_globalCallbacks.First();
+	while( p )
+	{
+		if( p->m_handle == handle )
+			delete p;
+			return true;
+			p = p->Next();
+	}
+
+	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator	it;
+	for( it = m_widgetCallbacks.begin() ; it != m_widgetCallbacks.end() ; ++it )
+	{
+		Callback * p = it->second.First();
+		while( p )
+		{
+			if( p->m_handle == handle )
+				delete p;
+				return true;
+				p = p->Next();
+		}
+	}
+
+	return false;
 }
-
-int WgEventHandler::DeleteCallback( const WgEventFilter& filter, const WgEventListener * pListener )
-{
-	return _deleteCallback( filter, pListener );
-}
-
-int WgEventHandler::DeleteCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event * pEvent) )
-{
-	return _deleteCallback( filter, (const void *) fp );
-}
-
-int WgEventHandler::DeleteCallback( const WgEventFilter& filter, void(*fp)( const WgEvent::Event * pEvent, void * pParam) )
-{
-	return _deleteCallback( filter, (const void *) fp );
-}
-
-
 
 //____ DeleteAllCallbacks() ___________________________________________________
 
@@ -432,7 +449,14 @@ int WgEventHandler::DeleteDeadCallbacks()
 
 //____ _addCallback() _________________________________________________________
 
-void WgEventHandler::_addCallback( const WgEventFilter& filter, Callback * pCallback )
+WgCallbackHandle WgEventHandler::_addCallback( Callback * pCallback )
+{
+	m_globalCallbacks.PushBack( pCallback );
+	pCallback->m_handle = m_handleCounter++;
+	return pCallback->m_handle;
+}
+
+WgCallbackHandle WgEventHandler::_addCallback( const WgEventFilter& filter, Callback * pCallback )
 {
 	if( filter.FiltersWidget() )
 	{
@@ -444,6 +468,9 @@ void WgEventHandler::_addCallback( const WgEventFilter& filter, Callback * pCall
 	}
 	else
 		m_globalCallbacks.PushBack( pCallback );
+
+	pCallback->m_handle = m_handleCounter++;
+	return pCallback->m_handle;
 }
 
 
@@ -517,59 +544,9 @@ int WgEventHandler::_deleteCallbacksOnType( WgEventType type, WgChain<Callback> 
 	return nDeleted;
 }
 
-//____ deleteCallback() ______________________________________________________
-
-int WgEventHandler::_deleteCallback( const WgEventFilter& filter, const void * pReceiver )
-{
-	// Deletes all callbacks created with exactly the same filter settings and receiver.
-
-	int nDeleted = 0;
-	WgChain<Callback>*	pChain;
-
-	if( filter.FiltersWidget() )
-	{
-		std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr(filter.Widget()));
-
-		if( it == m_widgetCallbacks.end() )
-			return 0;					// No callbacks for Widget
-
-		pChain = &it->second;
-	}
-	else
-	{
-		pChain = &m_globalCallbacks;
-	}
-
-	// We now have the right chain and need to check all the callbacks.
-
-	Callback * p = pChain->First();
-	while( p )
-	{
-		if( filter.EventType() == p->Filter().EventType() && pReceiver == p->Receiver() )
-		{
-			Callback * pNext = p->Next();
-			delete p;
-			nDeleted++;
-			p = pNext;
-		}
-		else
-			p = p->Next();
-	}
-
-	if( pChain->Size() == 0 && pChain != &m_globalCallbacks )
-	{
-		std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr(filter.Widget()));
-		m_widgetCallbacks.erase(it);
-
-	}
-
-	return nDeleted;
-}
-
-
 //____ QueueEvent() ___________________________________________________________
 
-bool WgEventHandler::QueueEvent( WgEvent::Event * pEvent )
+bool WgEventHandler::QueueEvent( const WgEventPtr& pEvent )
 {
 	if( m_bIsProcessing )
 	{
@@ -591,85 +568,6 @@ bool WgEventHandler::QueueEvent( WgEvent::Event * pEvent )
 
 	return true;
 }
-
-//____ ForwardEvent() __________________________________________________________
-
-bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent )
-{
-	if( !_pEvent )
-		return false;
-	
-	WgWidget * p = _pEvent->Widget();
-	if( p && p->Parent() )
-		return ForwardEvent( _pEvent, p->Parent() );
-	else
-		return false;				
-}
-
-bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent, WgWidget * pRecipient )
-{
-	if( !_pEvent || !pRecipient )
-		return false;
-
-	WgEvent::Event * pEvent = 0;
-
-	switch( _pEvent->Type() ) 
-	{
-		case WG_EVENT_MOUSEBUTTON_PRESS:
-			pEvent = new WgEvent::MouseButtonPress(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseButtonPress*>(_pEvent) );
-			break;
-		case WG_EVENT_MOUSEBUTTON_REPEAT:
-			pEvent =  new WgEvent::MouseButtonRepeat(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseButtonRepeat*>(_pEvent) );
-			break;
-		case WG_EVENT_MOUSEBUTTON_DRAG:
-			pEvent =  new WgEvent::MouseButtonDrag(0,WgCoord(),WgCoord(),WgCoord());
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseButtonDrag*>(_pEvent) );
-			break;
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
-			pEvent =  new WgEvent::MouseButtonRelease(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseButtonRelease*>(_pEvent) );
-			break;
-		case WG_EVENT_MOUSEBUTTON_CLICK:
-			pEvent =  new WgEvent::MouseButtonClick(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseButtonClick*>(_pEvent) );
-			break;
-		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
-			pEvent =  new WgEvent::MouseButtonDoubleClick(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseButtonDoubleClick*>(_pEvent) );
-			break;
-		case WG_EVENT_KEY_PRESS:
-			pEvent =  new WgEvent::KeyPress(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::KeyPress*>(_pEvent) );
-			break;
-		case WG_EVENT_KEY_REPEAT:
-			pEvent =  new WgEvent::KeyRepeat(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::KeyRepeat*>(_pEvent) );		
-			break;
-		case WG_EVENT_KEY_RELEASE:
-			pEvent =  new WgEvent::KeyRelease(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::KeyRelease*>(_pEvent) );		
-			break;
-		case WG_EVENT_CHARACTER:
-			pEvent =  new WgEvent::Character(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::Character*>(_pEvent) );		
-			break;
-		case WG_EVENT_MOUSEWHEEL_ROLL:
-			pEvent =  new WgEvent::MouseWheelRoll(0,0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseWheelRoll*>(_pEvent) );
-			break;
-		
-		default:
-			return false;
-	}
-
-	pEvent->m_pWidget = pRecipient;
-	pEvent->m_pForwardedFrom = _pEvent->m_pWidget;
-	QueueEvent( pEvent );
-	return true;
-}
-
 
 //____ ProcessEvents() ________________________________________________________
 
@@ -699,13 +597,28 @@ void WgEventHandler::ProcessEvents()
 	m_bIsProcessing = false;
 }
 
+//____ SwallowEvent() _________________________________________________________
+
+bool WgEventHandler::SwallowEvent( const WgEventPtr& pEvent )
+{
+	return false;
+}
+
+//____ ForwardEvent() _________________________________________________________
+
+bool WgEventHandler::ForwardEvent( const WgEventPtr& pEvent, const WgWidgetPtr& pWidget )
+{
+	return false;
+}
+
+
 //____ _processEventQueue() ___________________________________________________
 
 void WgEventHandler::_processEventQueue()
 {
 	while( !m_eventQueue.empty() )
 	{
-		WgEvent::Event * pEvent = m_eventQueue.front();
+		WgEventPtr& pEvent = m_eventQueue.front();
 
 		m_insertPos = m_eventQueue.begin()+1;	// Insert position set to right after current event.
 
@@ -725,13 +638,6 @@ void WgEventHandler::_processEventQueue()
 
 		m_eventQueue.pop_front();
 		m_insertPos = m_eventQueue.begin();		// Insert position set right to start.
-
-		// Delete event object unless its a BUTTON_PRESS, BUTTON_RELEASE or KEY_PRESS event for NO SPECIFIC WIDGET,
-		// which are kept in m_pLatestPressEvents, m_pLatestReleaseEvents and m_keysDown respectively.
-
-		if( pEvent->IsForWidget() || (pEvent->Type() !=  WG_EVENT_MOUSEBUTTON_PRESS &&
-			pEvent->Type() != WG_EVENT_MOUSEBUTTON_RELEASE && pEvent->Type() != WG_EVENT_KEY_PRESS) )
-			delete pEvent;
 	}
 }
 
@@ -747,7 +653,7 @@ void WgEventHandler::_postTickEvents( int ticks )
 
 		if( pWidget && pWidget->Hook() && pWidget->Hook()->Root() == m_pRoot && pWidget->m_bReceiveTick )
 		{
-			QueueEvent( new WgEvent::Tick( ticks, pWidget ) );
+			QueueEvent( new WgTickEvent( ticks, pWidget ) );
 			++it;
 		}
 		else
@@ -766,7 +672,7 @@ void WgEventHandler::_addTickReceiver( WgWidget * pWidget )
 
 //____ _processEventCallbacks() ________________________________________________
 
-void WgEventHandler::_processEventCallbacks( WgEvent::Event * pEvent )
+void WgEventHandler::_processEventCallbacks( const WgEventPtr& pEvent )
 {
 	// Call all global callbacks
 
@@ -806,7 +712,7 @@ void WgEventHandler::_processEventCallbacks( WgEvent::Event * pEvent )
 
 //____ _finalizeEvent() ________________________________________________________
 
-void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
+void WgEventHandler::_finalizeEvent( const WgEventPtr& pEvent )
 {
 	// Fill in missing information in the event-class.
 
@@ -836,7 +742,7 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 		case WG_EVENT_KEY_RELEASE:
 		case WG_EVENT_KEY_REPEAT:
 		{
-			WgEvent::KeyEvent* p = static_cast<WgEvent::KeyEvent*>(pEvent);
+			WgKeyEvent* p = static_cast<WgKeyEvent*>(pEvent.GetRealPtr());
 			p->m_translatedKeyCode = WgBase::TranslateKey(p->m_nativeKeyCode);
 		}
 		break;
@@ -852,81 +758,82 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 
 //____ _processGeneralEvent() _________________________________________________
 
-void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
+void WgEventHandler::_processGeneralEvent( const WgEventPtr& _pEvent )
 {
+	WgEvent * pEvent = _pEvent.GetRealPtr();
 
 	switch( pEvent->Type() )
 	{
 		case WG_EVENT_FOCUS_GAINED:
-			_processFocusGained( (WgEvent::FocusGained*) pEvent );
+			_processFocusGained( (WgFocusGainedEvent*) pEvent );
 			break;
 
 		case WG_EVENT_FOCUS_LOST:
-			_processFocusLost( (WgEvent::FocusLost*) pEvent );
+			_processFocusLost( (WgFocusLostEvent*) pEvent );
 			break;
 
 		case WG_EVENT_MOUSE_ENTER:
-			_processMouseEnter( (WgEvent::MouseEnter*) pEvent );
+			_processMouseEnter( (WgMouseEnterEvent*) pEvent );
 			break;
 
 		case WG_EVENT_MOUSE_MOVE:
-			_processMouseMove( (WgEvent::MouseMove*) pEvent );
+			_processMouseMove( (WgMouseMoveEvent*) pEvent );
 			break;
 
 		case WG_EVENT_MOUSE_POSITION:
-			_processMousePosition( (WgEvent::MousePosition*) pEvent );
+			_processMousePosition( (WgMousePositionEvent*) pEvent );
 			break;
 
 		case WG_EVENT_MOUSE_LEAVE:
-			_processMouseLeave( (WgEvent::MouseLeave*) pEvent );
+			_processMouseLeave( (WgMouseLeaveEvent*) pEvent );
 			break;
 
-		case WG_EVENT_MOUSEBUTTON_PRESS:
-			_processMouseButtonPress( (WgEvent::MouseButtonPress*) pEvent );
+		case WG_EVENT_MOUSE_PRESS:
+			_processMouseButtonPress( (WgMousePressEvent*) pEvent );
 			break;
 
-		case WG_EVENT_MOUSEBUTTON_REPEAT:
-			_processMouseButtonRepeat( (WgEvent::MouseButtonRepeat*) pEvent );
+		case WG_EVENT_MOUSE_REPEAT:
+			_processMouseButtonRepeat( (WgMouseRepeatEvent*) pEvent );
 			break;
 
-		case WG_EVENT_MOUSEBUTTON_DRAG:
-			_processMouseButtonDrag( (WgEvent::MouseButtonDrag*) pEvent );
+		case WG_EVENT_MOUSE_DRAG:
+			_processMouseButtonDrag( (WgMouseDragEvent*) pEvent );
 			break;
 
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
-			_processMouseButtonRelease( (WgEvent::MouseButtonRelease*) pEvent );
+		case WG_EVENT_MOUSE_RELEASE:
+			_processMouseButtonRelease( (WgMouseReleaseEvent*) pEvent );
 			break;
 
-		case WG_EVENT_MOUSEBUTTON_CLICK:
-			_processMouseButtonClick( (WgEvent::MouseButtonClick*) pEvent );
+		case WG_EVENT_MOUSE_CLICK:
+			_processMouseButtonClick( (WgMouseClickEvent*) pEvent );
 			break;
 
-		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
-			_processMouseButtonDoubleClick( (WgEvent::MouseButtonDoubleClick*) pEvent );
+		case WG_EVENT_MOUSE_DOUBLE_CLICK:
+			_processMouseButtonDoubleClick( (WgMouseDoubleClickEvent*) pEvent );
 			break;
 
 		case WG_EVENT_KEY_PRESS:
-			_processKeyPress( (WgEvent::KeyPress*) pEvent );
+			_processKeyPress( (WgKeyPressEvent*) pEvent );
 			break;
 
 		case WG_EVENT_KEY_REPEAT:
-			_processKeyRepeat( (WgEvent::KeyRepeat*) pEvent );
+			_processKeyRepeat( (WgKeyRepeatEvent*) pEvent );
 			break;
 
 		case WG_EVENT_KEY_RELEASE:
-			_processKeyRelease( (WgEvent::KeyRelease*) pEvent );
+			_processKeyRelease( (WgKeyReleaseEvent*) pEvent );
 			break;
 
 		case WG_EVENT_CHARACTER:
-			_processCharacter( (WgEvent::Character*) pEvent );
+			_processCharacter( (WgCharacterEvent*) pEvent );
 			break;
 
-		case WG_EVENT_MOUSEWHEEL_ROLL:
-			_processMouseWheelRoll( (WgEvent::MouseWheelRoll*) pEvent );
+		case WG_EVENT_WHEEL_ROLL:
+			_processMouseWheelRoll( (WgWheelRollEvent*) pEvent );
 			break;
 
 		case WG_EVENT_TICK:
-			_processTick( (WgEvent::Tick*) pEvent );
+			_processTick( (WgTickEvent*) pEvent );
 			break;
 
 		case WG_EVENT_DUMMY:
@@ -940,7 +847,7 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 
 //____ _processTick() ______________________________________________________
 
-void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
+void WgEventHandler::_processTick( WgTickEvent * pEvent )
 {
 	// Check if we need to post BUTTON_REPEAT
 
@@ -956,7 +863,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 			// First BUTTON_REPEAT event posted separately.
 
 			if( msSinceRepeatStart < 0 && msSinceRepeatStart + pEvent->Millisec() >= 0 )
-				QueueEvent( new WgEvent::MouseButtonRepeat(button) );
+				QueueEvent( new WgMouseRepeatEvent(button) );
 
 			// Calculate ms since last BUTTON_REPEAT event
 
@@ -970,7 +877,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 
 			while( msToProcess >= buttonRate )
 			{
-				QueueEvent( new WgEvent::MouseButtonRepeat(button) );
+				QueueEvent( new WgMouseRepeatEvent(button) );
 				msToProcess -= buttonRate;
 			}
 		}
@@ -997,7 +904,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 
 		while( fraction >= keyRate )
 		{
-			QueueEvent( new WgEvent::KeyRepeat( pInfo->pEvent->NativeKeyCode() ) );
+			QueueEvent( new WgKeyRepeatEvent( pInfo->pEvent->NativeKeyCode() ) );
 			fraction -= keyRate;
 		}
 	}
@@ -1011,7 +918,7 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 
 //____ _processFocusGained() __________________________________________________
 
-void WgEventHandler::_processFocusGained( WgEvent::FocusGained * pEvent )
+void WgEventHandler::_processFocusGained( WgFocusGainedEvent * pEvent )
 {
 	if( !m_bWindowFocus && m_keyFocusWidget )
 		_setWidgetFocused( m_keyFocusWidget.GetRealPtr(), true );
@@ -1021,7 +928,7 @@ void WgEventHandler::_processFocusGained( WgEvent::FocusGained * pEvent )
 
 //____ _processFocusLost() ____________________________________________________
 
-void WgEventHandler::_processFocusLost( WgEvent::FocusLost * pEvent )
+void WgEventHandler::_processFocusLost( WgFocusLostEvent * pEvent )
 {
 	if( m_bWindowFocus && m_keyFocusWidget )
 		_setWidgetFocused( m_keyFocusWidget.GetRealPtr(), false );
@@ -1032,19 +939,19 @@ void WgEventHandler::_processFocusLost( WgEvent::FocusLost * pEvent )
 
 //____ _processMouseEnter() __________________________________________________
 
-void WgEventHandler::_processMouseEnter( WgEvent::MouseEnter * pEvent )
+void WgEventHandler::_processMouseEnter( WgMouseEnterEvent * pEvent )
 {
 	// Post events for button drag
 
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
-			QueueEvent( new WgEvent::MouseButtonDrag( i, m_pLatestPressEvents[i]->PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
+			QueueEvent( new WgMouseDragEvent( i, m_pLatestPressEvents[i]->PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
 	}
 
 	// Post event for finalizing position once button drag is taken care of.
 
-	QueueEvent( new WgEvent::MousePosition() );
+	QueueEvent( new WgMousePositionEvent() );
 
 	// Update pointer position
 
@@ -1053,14 +960,14 @@ void WgEventHandler::_processMouseEnter( WgEvent::MouseEnter * pEvent )
 
 //____ _processMouseLeave() ___________________________________________________
 
-void WgEventHandler::_processMouseLeave( WgEvent::MouseLeave * pEvent )
+void WgEventHandler::_processMouseLeave( WgMouseLeaveEvent * pEvent )
 {
 	// Post POINTER_EXIT event to marked widget
 
 	WgWidget * pWidget = m_pMarkedWidget.GetRealPtr();
 
 	if( pWidget )
-		QueueEvent( new WgEvent::MouseLeave( pWidget ) );
+		QueueEvent( new WgMouseLeaveEvent( pWidget ) );
 
 	m_pMarkedWidget = 0;
 }
@@ -1068,19 +975,19 @@ void WgEventHandler::_processMouseLeave( WgEvent::MouseLeave * pEvent )
 
 //____ _processMouseMove() ___________________________________________________
 
-void WgEventHandler::_processMouseMove( WgEvent::MouseMove * pEvent )
+void WgEventHandler::_processMouseMove( WgMouseMoveEvent * pEvent )
 {
 	// Post events for button drag
 
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
-			QueueEvent( new WgEvent::MouseButtonDrag( i, m_pLatestPressEvents[i]->PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
+			QueueEvent( new WgMouseDragEvent( i, m_pLatestPressEvents[i]->PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
 	}
 
 	// Post event for finalizing move once button drag is taken care of.
 
-	QueueEvent( new WgEvent::MousePosition() );
+	QueueEvent( new WgMousePositionEvent() );
 
 	// Update pointer position
 
@@ -1089,7 +996,7 @@ void WgEventHandler::_processMouseMove( WgEvent::MouseMove * pEvent )
 
 //____ _processMousePosition() _________________________________________________
 
-void WgEventHandler::_processMousePosition( WgEvent::MousePosition * pEvent )
+void WgEventHandler::_processMousePosition( WgMousePositionEvent * pEvent )
 {
 	_updateMarkedWidget(true);
 
@@ -1138,13 +1045,13 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 	if( pNowMarked != m_pMarkedWidget.GetRealPtr() )
 	{
 		if( m_pMarkedWidget )
-			QueueEvent( new WgEvent::MouseLeave( m_pMarkedWidget.GetRealPtr() ) );
+			QueueEvent( new WgMouseLeaveEvent( m_pMarkedWidget.GetRealPtr() ) );
 	
 		if( pNowMarked )
-			QueueEvent( new WgEvent::MouseEnter( pNowMarked.GetRealPtr() ) );
+			QueueEvent( new WgMouseEnterEvent( pNowMarked.GetRealPtr() ) );
 	}
 	else if( bPostMouseMoveEvents && pNowMarked )
-		QueueEvent( new WgEvent::MouseMove( pNowMarked.GetRealPtr() ) );
+		QueueEvent( new WgMouseMoveEvent( pNowMarked.GetRealPtr() ) );
 
 	// Copy content of pNowMarked to m_pMarkedWidget
 
@@ -1163,7 +1070,7 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 
 	if( newStyle != m_pointerStyle )
 	{
-		QueueEvent( new WgEvent::PointerChange( newStyle ) );
+		QueueEvent( new WgPointerChangeEvent( newStyle ) );
 		m_pointerStyle = newStyle;
 	}	
 	
@@ -1172,7 +1079,7 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 
 //____ _processKeyPress() ______________________________________________________
 
-void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
+void WgEventHandler::_processKeyPress( WgKeyPressEvent * pEvent )
 {
 	// Fill in the info-structure.
 
@@ -1182,7 +1089,7 @@ void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
 	// Post KEY_PRESS events for widgets and remember which ones we have posted it for
 
 	WgWidget * pWidget = m_keyFocusWidget.GetRealPtr();
-	QueueEvent( new WgEvent::KeyPress( pEvent->NativeKeyCode(), pWidget ) );
+	QueueEvent( new WgKeyPressEvent( pEvent->NativeKeyCode(), pWidget ) );
 	pInfo->pWidget = pWidget;
 
 	// Push the info-structure onto m_keysDown.
@@ -1212,7 +1119,7 @@ void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
 
 //____ _processKeyRepeat() ____________________________________________________
 
-void WgEventHandler::_processKeyRepeat( WgEvent::KeyRepeat * pEvent )
+void WgEventHandler::_processKeyRepeat( WgKeyRepeatEvent * pEvent )
 {
 	// Find right KeyDownInfo structure
 
@@ -1234,12 +1141,12 @@ void WgEventHandler::_processKeyRepeat( WgEvent::KeyRepeat * pEvent )
 	// Post KEY_REPEAT event for widget
 
 		if( pInfo->pWidget )
-			QueueEvent( new WgEvent::KeyRepeat( pEvent->NativeKeyCode(), pInfo->pWidget.GetRealPtr() ));
+			QueueEvent( new WgKeyRepeatEvent( pEvent->NativeKeyCode(), pInfo->pWidget.GetRealPtr() ));
 }
 
 //____ _processKeyRelease() ___________________________________________________
 
-void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
+void WgEventHandler::_processKeyRelease( WgKeyReleaseEvent * pEvent )
 {
 	// Find right KeyDownInfo structure and remove it from m_keysDown.
 
@@ -1264,11 +1171,10 @@ void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 	// Post KEY_RELEASE event for widget
 
 	if( pInfo->pWidget )
-		QueueEvent( new WgEvent::KeyRelease( pEvent->NativeKeyCode(), pInfo->pWidget.GetRealPtr() ));
+		QueueEvent( new WgKeyReleaseEvent( pEvent->NativeKeyCode(), pInfo->pWidget.GetRealPtr() ));
 
 	// Delete the KeyPress-message and KeyDownInfo-structure
 
-	delete pInfo->pEvent;
 	delete pInfo;
 
 	// Update modkeys
@@ -1294,29 +1200,29 @@ void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 
 //____ _processCharacter() ____________________________________________________
 
-void WgEventHandler::_processCharacter( WgEvent::Character * pEvent )
+void WgEventHandler::_processCharacter( WgCharacterEvent * pEvent )
 {
 	WgWidget * pWidget = m_keyFocusWidget.GetRealPtr();
 
 	if( pWidget )
-		QueueEvent( new WgEvent::Character( pEvent->Char(), pWidget ) );
+		QueueEvent( new WgCharacterEvent( pEvent->Char(), pWidget ) );
 }
 
 //____ _processMouseWheelRoll() ____________________________________________________
 
-void WgEventHandler::_processMouseWheelRoll( WgEvent::MouseWheelRoll * pEvent )
+void WgEventHandler::_processMouseWheelRoll( WgWheelRollEvent * pEvent )
 {
 	_updateMarkedWidget(false);
 
 	WgWidget * pWidget = m_pMarkedWidget.GetRealPtr();
 
 	if( pWidget )
-		QueueEvent( new WgEvent::MouseWheelRoll( pEvent->Wheel(), pEvent->Distance(), pWidget ) );
+		QueueEvent( new WgWheelRollEvent( pEvent->Wheel(), pEvent->Distance(), pWidget ) );
 }
 
 //____ _processMouseButtonPress() ___________________________________________________
 
-void WgEventHandler::_processMouseButtonPress( WgEvent::MouseButtonPress * pEvent )
+void WgEventHandler::_processMouseButtonPress( WgMousePressEvent * pEvent )
 {
 	_updateMarkedWidget(false);
 
@@ -1337,7 +1243,7 @@ void WgEventHandler::_processMouseButtonPress( WgEvent::MouseButtonPress * pEven
 	pWidget = m_pMarkedWidget.GetRealPtr();
 	if( pWidget )
 	{
-		QueueEvent( new WgEvent::MouseButtonPress( button, pWidget ) );
+		QueueEvent( new WgMousePressEvent( button, pWidget ) );
 		m_latestPressWidgets[button] = pWidget;
 	}
 
@@ -1355,12 +1261,11 @@ void WgEventHandler::_processMouseButtonPress( WgEvent::MouseButtonPress * pEven
 			distance.x >= -doubleClickDistanceTreshold &&
 			distance.y <= doubleClickDistanceTreshold &&
 			distance.y >= -doubleClickDistanceTreshold )
-			QueueEvent( new WgEvent::MouseButtonDoubleClick(button) );
+			QueueEvent( new WgMouseDoubleClickEvent(button) );
 	}
 
 	// Save info for the future
 
-	delete m_pLatestPressEvents[button];		// Delete previous saved event.
 	m_pLatestPressEvents[button] = pEvent;
 
 	m_bButtonPressed[button] = true;
@@ -1369,7 +1274,7 @@ void WgEventHandler::_processMouseButtonPress( WgEvent::MouseButtonPress * pEven
 
 //____ _processMouseButtonRepeat() __________________________________________________
 
-void WgEventHandler::_processMouseButtonRepeat( WgEvent::MouseButtonRepeat * pEvent )
+void WgEventHandler::_processMouseButtonRepeat( WgMouseRepeatEvent * pEvent )
 {
 	_updateMarkedWidget(false);
 
@@ -1379,14 +1284,14 @@ void WgEventHandler::_processMouseButtonRepeat( WgEvent::MouseButtonRepeat * pEv
 
 	WgWidget * pWidget = m_latestPressWidgets[button].GetRealPtr();
 	if( pWidget && pWidget == m_pMarkedWidget.GetRealPtr() )
-		QueueEvent( new WgEvent::MouseButtonRepeat(button, pWidget) );
+		QueueEvent( new WgMouseRepeatEvent(button, pWidget) );
 }
 
 
 
 //____ _processMouseButtonRelease() _________________________________________________
 
-void WgEventHandler::_processMouseButtonRelease( WgEvent::MouseButtonRelease * pEvent )
+void WgEventHandler::_processMouseButtonRelease( WgMouseReleaseEvent * pEvent )
 {
 	_updateMarkedWidget(false);
 
@@ -1398,7 +1303,7 @@ void WgEventHandler::_processMouseButtonRelease( WgEvent::MouseButtonRelease * p
 	if( pWidget )
 	{
 		bool bIsInside = pWidget->ScreenGeo().Contains(pEvent->PointerPos());
-		QueueEvent( new WgEvent::MouseButtonRelease( button, pWidget, true, bIsInside ) );
+		QueueEvent( new WgMouseReleaseEvent( button, pWidget, true, bIsInside ) );
 	}
 
 	// Post BUTTON_RELEASE events for marked widget that was NOT pressed
@@ -1409,7 +1314,7 @@ void WgEventHandler::_processMouseButtonRelease( WgEvent::MouseButtonRelease * p
 		if( pWidget != m_latestPressWidgets[button].GetRealPtr() )
 		{
 			bool bIsInside = pWidget->ScreenGeo().Contains(pEvent->PointerPos());
-			QueueEvent( new WgEvent::MouseButtonRelease( button, pWidget, false, bIsInside ) );
+			QueueEvent( new WgMouseReleaseEvent( button, pWidget, false, bIsInside ) );
 		}
 	}
 
@@ -1417,18 +1322,17 @@ void WgEventHandler::_processMouseButtonRelease( WgEvent::MouseButtonRelease * p
 	// on this level.
 
 	if( m_bButtonPressed[button] )
-		QueueEvent( new WgEvent::MouseButtonClick( button ) );
+		QueueEvent( new WgMouseClickEvent( button ) );
 
 	// Save info for the future
 
-	delete m_pLatestReleaseEvents[button];		// Delete previous saved event.
 	m_pLatestReleaseEvents[button] = pEvent;
 	m_bButtonPressed[button] = false;
 }
 
 //____ _processMouseButtonDrag() ____________________________________________________
 
-void WgEventHandler::_processMouseButtonDrag( WgEvent::MouseButtonDrag * pEvent )
+void WgEventHandler::_processMouseButtonDrag( WgMouseDragEvent * pEvent )
 {
 	int button = pEvent->Button();
 
@@ -1439,14 +1343,14 @@ void WgEventHandler::_processMouseButtonDrag( WgEvent::MouseButtonDrag * pEvent 
 	if( pWidget )
 	{
 		WgCoord	ofs = pWidget->ScreenPos();
-		QueueEvent( new WgEvent::MouseButtonDrag( button, pWidget, pEvent->StartPos() - ofs, pEvent->PrevPos() - ofs, pEvent->CurrPos() - ofs ) );
+		QueueEvent( new WgMouseDragEvent( button, pWidget, pEvent->StartPos() - ofs, pEvent->PrevPos() - ofs, pEvent->CurrPos() - ofs ) );
 	}
 
 }
 
 //____ _processMouseButtonClick() _________________________________________________
 
-void WgEventHandler::_processMouseButtonClick( WgEvent::MouseButtonClick * pEvent )
+void WgEventHandler::_processMouseButtonClick( WgMouseClickEvent * pEvent )
 {
 	int button = pEvent->Button();
 
@@ -1455,12 +1359,12 @@ void WgEventHandler::_processMouseButtonClick( WgEvent::MouseButtonClick * pEven
 
 	WgWidget * pWidget = m_latestPressWidgets[button].GetRealPtr();
 	if( pWidget && pWidget == m_pMarkedWidget.GetRealPtr() )
-		QueueEvent( new WgEvent::MouseButtonClick(button, pWidget) );
+		QueueEvent( new WgMouseClickEvent(button, pWidget) );
 }
 
 //____ _processMouseButtonDoubleClick() _________________________________________________
 
-void WgEventHandler::_processMouseButtonDoubleClick( WgEvent::MouseButtonDoubleClick * pEvent )
+void WgEventHandler::_processMouseButtonDoubleClick( WgMouseDoubleClickEvent * pEvent )
 {
 	int button = pEvent->Button();
 
@@ -1468,7 +1372,7 @@ void WgEventHandler::_processMouseButtonDoubleClick( WgEvent::MouseButtonDoubleC
 
 	WgWidget * pWidget = m_latestPressWidgets[button].GetRealPtr();
 	if( pWidget && pWidget ==  m_previousPressWidgets[button].GetRealPtr() )
-		QueueEvent( new WgEvent::MouseButtonDoubleClick(button, pWidget) );
+		QueueEvent( new WgMouseDoubleClickEvent(button, pWidget) );
 }
 
 //____ _isWidgetInList() ________________________________________________________
@@ -1486,72 +1390,96 @@ bool WgEventHandler::_isWidgetInList( const WgWidget * pWidget, const std::vecto
 
 
 
-WgEventHandler::WidgetCallback::WidgetCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent, WgWidget * pDest), WgWidget * pDest )
+WgEventHandler::ObjectParamCallback::ObjectParamCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
 {
 	m_filter = filter;
 	m_pFunction = fp;
-	m_pWidget = pDest;
+	m_pObject = pParam;
 }
 
-void WgEventHandler::WidgetCallback::ProcessEvent( const WgEvent::Event * pEvent )
+void WgEventHandler::ObjectParamCallback::ProcessEvent( const WgEventPtr& pEvent )
 {
-	WgWidget * p = m_pWidget.GetRealPtr();
+	WgObject * p = m_pObject.GetRealPtr();
 	if( p && m_filter.FilterEvent(pEvent) )
 		m_pFunction(pEvent,p);
 }
 
-bool WgEventHandler::WidgetCallback::IsAlive() const
+bool WgEventHandler::ObjectParamCallback::IsAlive() const
 {
-	return m_pWidget?true:false;
+	return m_pObject?true:false;
 }
 
-void * WgEventHandler::WidgetCallback::Receiver() const
+void * WgEventHandler::ObjectParamCallback::Receiver() const
 {
-	return m_pWidget.GetRealPtr();
+	return m_pObject.GetRealPtr();
 }
 
 
-WgEventHandler::FunctionCallback::FunctionCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent) )
+WgEventHandler::NoParamCallback::NoParamCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent) )
 {
 	m_filter = filter;
 	m_pFunction = fp;
 }
 
-void WgEventHandler::FunctionCallback::ProcessEvent( const WgEvent::Event * pEvent )
+void WgEventHandler::NoParamCallback::ProcessEvent( const WgEventPtr& pEvent )
 {
 	if( m_pFunction && m_filter.FilterEvent(pEvent) )
 		m_pFunction(pEvent);
 }
 
-bool WgEventHandler::FunctionCallback::IsAlive() const
+bool WgEventHandler::NoParamCallback::IsAlive() const
 {
 	return true;
 }
 
-void * WgEventHandler::FunctionCallback::Receiver() const
+void * WgEventHandler::NoParamCallback::Receiver() const
 {
 	return reinterpret_cast<void*>(m_pFunction);
 }
 
-WgEventHandler::FunctionCallbackParam::FunctionCallbackParam( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent, void * pDest), void * pParam )
+WgEventHandler::IntParamCallback::IntParamCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, int param), int param )
+{
+	m_filter = filter;
+	m_pFunction = fp;
+	m_param 	= param;
+}
+
+void WgEventHandler::IntParamCallback::ProcessEvent( const WgEventPtr& pEvent )
+{
+	if( m_pFunction && m_filter.FilterEvent(pEvent) )
+		m_pFunction(pEvent,m_param);
+}
+
+bool WgEventHandler::IntParamCallback::IsAlive() const
+{
+	return true;
+}
+
+void * WgEventHandler::IntParamCallback::Receiver() const
+{
+	return reinterpret_cast<void*>(m_pFunction);
+}
+
+
+WgEventHandler::VoidPtrParamCallback::VoidPtrParamCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
 {
 	m_filter = filter;
 	m_pFunction = fp;
 	m_pParam 	= pParam;
 }
 
-void WgEventHandler::FunctionCallbackParam::ProcessEvent( const WgEvent::Event * pEvent )
+void WgEventHandler::VoidPtrParamCallback::ProcessEvent( const WgEventPtr& pEvent )
 {
 	if( m_pFunction && m_filter.FilterEvent(pEvent) )
 		m_pFunction(pEvent,m_pParam);
 }
 
-bool WgEventHandler::FunctionCallbackParam::IsAlive() const
+bool WgEventHandler::VoidPtrParamCallback::IsAlive() const
 {
 	return true;
 }
 
-void * WgEventHandler::FunctionCallbackParam::Receiver() const
+void * WgEventHandler::VoidPtrParamCallback::Receiver() const
 {
 	return reinterpret_cast<void*>(m_pFunction);
 }
@@ -1563,7 +1491,7 @@ WgEventHandler::ListenerCallback::ListenerCallback( const WgEventFilter& filter,
 	m_pListener = pListener;
 }
 
-void WgEventHandler::ListenerCallback::ProcessEvent( const WgEvent::Event * pEvent )
+void WgEventHandler::ListenerCallback::ProcessEvent( const WgEventPtr& pEvent )
 {
 	if( m_filter.FilterEvent(pEvent) )
 		m_pListener->OnEvent( pEvent );

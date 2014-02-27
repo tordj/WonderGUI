@@ -530,38 +530,34 @@ void WgModalLayer::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgModalLayer::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgModalLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
 
 	if( !m_modalHooks.IsEmpty() && _findWidget( _pEvent->PointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
 	{
 		switch( _pEvent->Type() )
 		{
-			case WG_EVENT_MOUSEBUTTON_PRESS:
+			case WG_EVENT_MOUSE_PRESS:
 			{
-				const WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
-				pHandler->QueueEvent( new WgEvent::ModalBlockedPress( pEvent->Button(), this) );
+				WgMouseButtonEventPtr pEvent = WgMouseButtonEvent::Cast(_pEvent);
+				pHandler->QueueEvent( new WgModalBlockedPressEvent( pEvent->Button(), this) );
 			}
 			break;
 
-			case WG_EVENT_MOUSEBUTTON_RELEASE:
+			case WG_EVENT_MOUSE_RELEASE:
 			{
-				const WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
-				pHandler->QueueEvent( new WgEvent::ModalBlockedPress( pEvent->Button(), this) );
+				WgMouseButtonEventPtr pEvent = WgMouseButtonEvent::Cast(_pEvent);
+				pHandler->QueueEvent( new WgModalBlockedPressEvent( pEvent->Button(), this) );
 			}
 			break;
 
 			case WG_EVENT_MOUSE_MOVE:
 			{
-				pHandler->QueueEvent( new WgEvent::ModalMoveOutside(this) );
+				pHandler->QueueEvent( new WgModalMoveOutsideEvent(this) );
 			}
 			break;
 		}
-	}
-	
-	// Forward all events
-	
-	pHandler->ForwardEvent( _pEvent );
+	}	
 }
 
 //____ _firstHook() ___________________________________________________________

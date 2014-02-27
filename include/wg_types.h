@@ -447,46 +447,38 @@ enum	WgEventType
 	WG_EVENT_MOUSE_POSITION,
 	WG_EVENT_MOUSE_LEAVE,
 
-	WG_EVENT_MOUSEBUTTON_PRESS,
-	WG_EVENT_MOUSEBUTTON_REPEAT,
-	WG_EVENT_MOUSEBUTTON_DRAG,
-	WG_EVENT_MOUSEBUTTON_RELEASE,
-	WG_EVENT_MOUSEBUTTON_CLICK,
-	WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK,
+	WG_EVENT_MOUSE_PRESS,
+	WG_EVENT_MOUSE_REPEAT,
+	WG_EVENT_MOUSE_DRAG,
+	WG_EVENT_MOUSE_RELEASE,
+	WG_EVENT_MOUSE_CLICK,
+	WG_EVENT_MOUSE_DOUBLE_CLICK,
 
 	WG_EVENT_KEY_PRESS,
 	WG_EVENT_KEY_REPEAT,
 	WG_EVENT_KEY_RELEASE,
 	WG_EVENT_CHARACTER,
-	WG_EVENT_MOUSEWHEEL_ROLL,
+	WG_EVENT_WHEEL_ROLL,
 
-	WG_EVENT_BUTTON_PRESS,					// Posted every time a button is pressed, either by left mouse button or enter key.
+	WG_EVENT_SELECT,						// Non-value widget triggered, like a button being pressed.
+	WG_EVENT_TOGGLE,						// Boolean value widget toggled, like for checkboxes, radiobuttons etc.
+	WG_EVENT_VALUE_UPDATE,					// Value of widget changed, like for editvalue, animations, sliders etc
+	WG_EVENT_RANGE_UPDATE,					// Range widget updated, such as scrollbar, scrollpanel, rangesliders etc.
 
-	WG_EVENT_CHECKBOX_CHECK,
-	WG_EVENT_CHECKBOX_UNCHECK,
-	WG_EVENT_CHECKBOX_TOGGLE,
+	WG_EVENT_TEXT_EDIT,						// Text widget edited, like texteditor, editline, etc.
 
-	WG_EVENT_ANIMATION_UPDATE,				// Posted every time the animation changes frame.
 
-	WG_EVENT_TAB_SELECT,					// Posted when a new tab is selected.
-	WG_EVENT_TAB_PRESS,						// Posted every time any mousebutton is pressed on a widget.
-
-	WG_EVENT_EDITVALUE_MODIFY,				// Posted for every change to value through keyboard (once for every accepted keystroke).
-	WG_EVENT_EDITVALUE_SET,					// Posted when edited value is 'set' by removing cursor.
-
-	WG_EVENT_SCROLLBAR_MOVE,
-	WG_EVENT_SCROLLBAR_STEP_FWD,
-	WG_EVENT_SCROLLBAR_STEP_BWD,
-	WG_EVENT_SCROLLBAR_JUMP_FWD,
-	WG_EVENT_SCROLLBAR_JUMP_BWD,
-	WG_EVENT_SCROLLBAR_WHEEL_ROLL,
-
-	WG_EVENT_TEXT_MODIFY,					// Posted for every change to text through cursor/selection.
-	WG_EVENT_TEXT_SET,						// Posted when edited text is 'set' by removing cursor.
-
-	WG_EVENT_MENUITEM_SELECT,				// Posted when a WgMenuEntry or WgMenuRadioButton is selected.
-	WG_EVENT_MENUITEM_CHECK,				// Posted when a WgMenuCheckBox is checked.
-	WG_EVENT_MENUITEM_UNCHECK,				// Posted when a WgMenuCheckBox is unchecked.
+	WG_EVENT_ITEM_TOGGLE,
+//	WG_EVENT_ITEM_MOUSE_ENTER,
+//	WG_EVENT_ITEM_MOUSE_LEAVE,
+	WG_EVENT_ITEM_MOUSE_PRESS,
+//	WG_EVENT_ITEM_MOUSE_DRAG,
+//	WG_EVENT_ITEM_MOUSE_REPEAT,
+//	WG_EVENT_ITEM_MOUSE_RELEASE,
+//	WG_EVENT_ITEM_MOUSE_CLICK,
+//	WG_EVENT_ITEM_MOUSE_DOUBLE_CLICK,
+	WG_EVENT_ITEMS_SELECT,
+	WG_EVENT_ITEMS_UNSELECT,
 
 	WG_EVENT_MENU_CLOSED,
 
@@ -494,19 +486,15 @@ enum	WgEventType
 	WG_EVENT_MODAL_BLOCKED_PRESS,
 	WG_EVENT_MODAL_BLOCKED_RELEASE,
 
-	WG_EVENT_TABLE_CELL_MARK,
-	WG_EVENT_TABLE_CELL_UNMARK,
+	WG_EVENT_LINK_SELECT,
+	WG_EVENT_LINK_MOUSE_ENTER,
+	WG_EVENT_LINK_MOUSE_LEAVE,
+	WG_EVENT_LINK_MOUSE_PRESS,
+	WG_EVENT_LINK_MOUSE_REPEAT,
+	WG_EVENT_LINK_MOUSE_RELEASE,
+	WG_EVENT_LINK_MOUSE_CLICK,
+	WG_EVENT_LINK_MOUSE_DOUBLE_CLICK,
 	
-	WG_EVENT_LINK_MARK,
-	WG_EVENT_LINK_UNMARK,
-	WG_EVENT_LINK_PRESS,
-	WG_EVENT_LINK_REPEAT,
-	WG_EVENT_LINK_RELEASE,
-	WG_EVENT_LINK_CLICK,
-	WG_EVENT_LINK_DOUBLE_CLICK,
-	
-	WG_EVENT_KNOB_TURN,
-
 	WG_EVENT_MAX
 };
 

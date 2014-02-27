@@ -113,7 +113,7 @@ WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, const WgSize& icon
 		{
 			if( (w / (float) bgW) > (h / (float) bgH) )
 			{
-				h = (int) ((h * bgW * m_iconScale) / h);
+				h = (int) ((h * bgW * m_iconScale) / w);
 				w = (int) (bgW * m_iconScale);
 			}
 			else

@@ -76,7 +76,7 @@ protected:
 	virtual ~WgButton();
 	virtual WgWidget* _newOfMyType() const { return new WgButton(); };
 
-	virtual void	_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onRefresh();
 	virtual void	_onCloneContent( const WgWidget * _pOrg );

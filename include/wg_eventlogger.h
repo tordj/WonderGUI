@@ -34,7 +34,7 @@ public:
 	WgEventLogger( std::ostream& stream );
 	~WgEventLogger();
 
-	void OnEvent( const WgEvent::Event * _pEvent );
+	void OnEvent( const WgEventPtr& _pEvent );
 
 	void IgnoreEvent( WgEventType event );
 	void LogEvent( WgEventType event );
@@ -61,10 +61,10 @@ public:
 
 private:
 	std::string	_formatTimestamp( int64_t ms );
-	std::string _formatWidget( const WgEvent::Event * _pEvent );
-	std::string _formatModkeys( const WgEvent::Event * _pEvent );
-	std::string _formatPointerPos( const WgEvent::Event * _pEvent );
-	std::string _formatPointerStyle( const WgEvent::PointerChange * _pEvent );
+	std::string _formatWidget( const WgEventPtr& _pEvent );
+	std::string _formatModkeys( const WgEventPtr& _pEvent );
+	std::string _formatPointerPos( const WgEventPtr& _pEvent );
+	std::string _formatPointerStyle( const WgPointerChangeEventPtr& _pEvent );
 
 
 	bool			m_eventFilter[WG_EVENT_MAX];

@@ -208,7 +208,7 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
-	void 	_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler );
+	void 	_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler );
 	bool	_onAlphaTest( const WgCoord& ofs );
 
 private:

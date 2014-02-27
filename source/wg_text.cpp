@@ -2430,7 +2430,7 @@ int WgText::LineColToOffset(int line, int col) const
 
 //____ OnEvent() _____________________________________________________________
 
-bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHandler, const WgRect& container )
+bool WgText::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEventHandler, const WgRect& container )
 {
 	bool bRefresh = false;
 
@@ -2444,7 +2444,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 			WgTextLinkPtr pLink = CoordToLink( pointerOfs, container );
 			if( m_pMarkedLink && pLink != m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Widget(), m_pMarkedLink->Link()) );
+				pEventHandler->QueueEvent( new WgLinkMouseLeaveEvent(pEvent->Widget(), m_pMarkedLink->Link()) );
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2453,7 +2453,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 			{
 				if( pLink != m_pMarkedLink )
 				{
-					pEventHandler->QueueEvent( new WgEvent::LinkMark(pEvent->Widget(), pLink->Link() ));
+					pEventHandler->QueueEvent( new WgLinkMouseEnterEvent(pEvent->Widget(), pLink->Link() ));
 
 					m_pMarkedLink = pLink;
 					m_markedLinkState = WG_STATE_HOVERED;
@@ -2468,51 +2468,53 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Widget(), m_pMarkedLink->Link()));
+				pEventHandler->QueueEvent( new WgLinkMouseLeaveEvent(pEvent->Widget(), m_pMarkedLink->Link()));
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_PRESS:
+		case WG_EVENT_MOUSE_PRESS:
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkPress(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgLinkMousePressEvent(pEvent->Widget(), m_pMarkedLink->Link(), WgMouseButtonEvent::Cast(pEvent)->Button() ));
 				m_markedLinkState = WG_STATE_PRESSED;
 				bRefresh = true;
 			}
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_REPEAT:
+		case WG_EVENT_MOUSE_REPEAT:
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkRepeat(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgLinkMouseRepeatEvent(pEvent->Widget(), m_pMarkedLink->Link(), WgMouseButtonEvent::Cast(pEvent)->Button() ));
 			}
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		case WG_EVENT_MOUSE_RELEASE:
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkRelease(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgLinkMouseReleaseEvent(pEvent->Widget(), m_pMarkedLink->Link(), WgMouseButtonEvent::Cast(pEvent)->Button() ));
 
 				if( m_markedLinkState == WG_STATE_PRESSED )
-					pEventHandler->QueueEvent( new WgEvent::LinkClick(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
-
+				{
+					pEventHandler->QueueEvent( new WgLinkMouseClickEvent(pEvent->Widget(), m_pMarkedLink->Link(), WgMouseButtonEvent::Cast(pEvent)->Button() ));
+					pEventHandler->QueueEvent( new WgLinkSelectEvent(pEvent->Widget(), m_pMarkedLink->Link() ));				
+				}
 				m_markedLinkState = WG_STATE_HOVERED;
 				bRefresh = true;
 			}
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
+		case WG_EVENT_MOUSE_DOUBLE_CLICK:
 			if( m_pMarkedLink )
-				pEventHandler->QueueEvent( new WgEvent::LinkDoubleClick(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgLinkMouseDoubleClickEvent(pEvent->Widget(), m_pMarkedLink->Link(), WgMouseButtonEvent::Cast(pEvent)->Button() ));
 			break;
 
 		default:

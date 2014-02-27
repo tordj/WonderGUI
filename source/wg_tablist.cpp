@@ -369,6 +369,7 @@ bool WgTablist::SelectTab( int id )
 
 	if( pTab )
 	{
+
 		m_pTabSelected = pTab;
 		pTab->m_bAlert = false;		// Selecting automatically stops any alert.
 		_resizeTabs();				// fonts have changed
@@ -376,7 +377,12 @@ bool WgTablist::SelectTab( int id )
 
 		WgEventHandler * pHandler = _eventHandler();
 		if( pHandler )
-			pHandler->QueueEvent( new WgEvent::TabSelect(this, pTab->m_id) );
+		{
+			WgItemInfo * p = new WgItemInfo[1];
+			p->id = pTab->m_id;						//TODO: Should set index too (and in the future, a pointer to the widget of the tab).
+
+			pHandler->QueueEvent( new WgItemsSelectEvent(this, 1, p) );
+		}
 		return true;
 	}
 
@@ -1199,13 +1205,13 @@ void WgTablist::_onNewSize( const WgSize& size )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgTablist::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgTablist::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
 	switch( _pEvent->Type() )
 	{
 		case WG_EVENT_TICK:
 		{
-			const WgEvent::Tick * pEvent = static_cast<const WgEvent::Tick*>(_pEvent);
+			WgTickEventPtr pEvent = WgTickEvent::Cast(_pEvent);
 
 			m_alertModeCnt -= pEvent->Millisec();
 			if( m_alertModeCnt <= 0 )
@@ -1229,9 +1235,9 @@ void WgTablist::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 			break;
 		}
 
-		case WG_EVENT_MOUSEBUTTON_PRESS:
+		case WG_EVENT_MOUSE_PRESS:
 		{
-			const WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
+			WgMouseButtonEventPtr pEvent = WgMouseButtonEvent::Cast(_pEvent);
 
 			WgCoord pos = pEvent->PointerPos();
 
@@ -1241,7 +1247,7 @@ void WgTablist::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 				if( pEvent->Button() == 1 )
 					SelectTab(pTab->m_id);
 
-				pHandler->QueueEvent( new WgEvent::TabPress(this, pTab->m_id, pEvent->Button()) );
+				pHandler->QueueEvent( new WgItemMousePressEvent(this, -1, pTab->m_id, WgObjectPtr(), pEvent->Button()) );
 			}
 		}
 		break;
@@ -1272,16 +1278,10 @@ void WgTablist::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
             break;
 	}
 
-	// Forward event depending on rules.
+	// Swallow event depending on rules.
 
-	if( _pEvent->IsMouseButtonEvent() )
-	{
-		if( static_cast<const WgEvent::MouseButtonEvent*>(_pEvent)->Button() != 1 )
-			pHandler->ForwardEvent( _pEvent );
-	}
-	else
-		pHandler->ForwardEvent( _pEvent );
-
+	if( _pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(_pEvent)->Button() == 1 )
+		pHandler->SwallowEvent(_pEvent);
 }
 
 //____ _onCloneContent() _______________________________________________________

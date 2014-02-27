@@ -364,7 +364,7 @@ bool WgMenuLayer::CloseMenu( const WgWidgetPtr& pWidget )
 		pHook = pHook->Next();
 
 		if( pEH )
-			pEH->QueueEvent( new WgEvent::MenuClosed( p->_widget(), p->m_pOpener ) );
+			pEH->QueueEvent( new WgMenuClosedEvent( p->_widget(), p->m_pOpener ) );
 
 		p->_requestRender();
 		delete p;
@@ -497,7 +497,7 @@ void WgMenuLayer::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgMenuLayer::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+void WgMenuLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
 	WgWidget * pOpener = 0;
 
@@ -543,16 +543,17 @@ void WgMenuLayer::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler 
 			}
 		break;
 */		
-		case WG_EVENT_MOUSEBUTTON_RELEASE:
-		case WG_EVENT_MOUSEBUTTON_PRESS:
+		case WG_EVENT_MOUSE_RELEASE:
+		case WG_EVENT_MOUSE_PRESS:
 		{
-			const WgEvent::MouseButtonEvent * pEvent = static_cast<const WgEvent::MouseButtonEvent*>(_pEvent);
+			WgMouseButtonEventPtr pEvent = WgMouseButtonEvent::Cast(_pEvent);
 
 			WgCoord ofs = pEvent->PointerPos();
 			WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
 			if( p == this )
 			{
 				CloseAllMenus();
+				pHandler->SwallowEvent( _pEvent );
 				return;
 			}
 		}
@@ -561,13 +562,14 @@ void WgMenuLayer::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler 
 		case WG_EVENT_KEY_PRESS:
 		case WG_EVENT_KEY_REPEAT:
 		{
-			const WgEvent::KeyEvent * pEvent = static_cast<const WgEvent::KeyEvent*>(_pEvent);
+			WgKeyEventPtr pEvent = WgKeyEvent::Cast(_pEvent);
 
 			if( pEvent->TranslatedKeyCode() == WG_KEY_ESCAPE )
 			{
 				if( !m_menuHooks.IsEmpty() )
 				{
 					CloseMenu( m_menuHooks.Last()->_widget() );
+					pHandler->SwallowEvent( _pEvent );
 					return;
 				}
 			}
@@ -575,10 +577,6 @@ void WgMenuLayer::_onEvent( WgEvent::Event * _pEvent, WgEventHandler * pHandler 
 		}
 		break;
 	}
-
-	// Final solution: forward to our parent.
-
-	pHandler->ForwardEvent( _pEvent );
 }
 
 //____ _stealKeyboardFocus() _________________________________________________

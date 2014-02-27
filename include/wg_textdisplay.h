@@ -83,7 +83,7 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onNewSize( const WgSize& size );
 	void	_onRefresh();
-	void	_onEvent( WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	void	_onStateChanged( WgState oldState, WgState newState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
