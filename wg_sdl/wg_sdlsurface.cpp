@@ -20,11 +20,6 @@
 
 =========================================================================*/
 
-#ifdef WIN32
-#	include <SDL.h>
-#else
-#	include <SDL/SDL.h>
-#endif
 #include <wg_sdlsurface.h>
 
 const char WgSDLSurface::CLASSNAME[] = {"SDLSurface"};

@@ -32,12 +32,6 @@
 #endif
 
 
-#ifdef WIN32
-#	include <SDL.h>
-#else
-#	include <SDL/SDL.h>
-#endif
-
 class WgSDLSurfaceFactory;
 typedef	WgSmartPtr<WgSDLSurfaceFactory,WgSurfaceFactoryPtr>		WgSDLSurfaceFactoryPtr;
 typedef	WgWeakPtr<WgSDLSurfaceFactory,WgSurfaceFactoryWeakPtr>	WgSDLSurfaceFactoryWeakPtr;

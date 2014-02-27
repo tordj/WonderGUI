@@ -27,11 +27,7 @@
 #	include <wg_surface.h>
 #endif
 
-#ifdef WIN32
-#	include <SDL.h>
-#else
-#	include <SDL/SDL.h>
-#endif
+#include <SDL/SDL.h>
 
 class WgSDLSurface;
 typedef	WgSmartPtr<WgSDLSurface,WgSurfacePtr>		WgSDLSurfacePtr;

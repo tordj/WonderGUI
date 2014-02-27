@@ -20,11 +20,7 @@
 
 =========================================================================*/
 
-#ifdef WIN32
-#	include <SDL.h>
-#else
-#	include <SDL/SDL.h>
-#endif
+#include <SDL/SDL.h>
 
 #include <wg_sdlsurfacefactory.h>
 #include <wg_sdlsurface.h>
