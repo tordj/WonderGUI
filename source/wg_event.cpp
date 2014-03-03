@@ -67,11 +67,6 @@ WgWidget * WgEvent::Widget() const
 	return m_pWidget.GetRealPtr();
 }
 
-WgWidget * WgEvent::ForwardedFrom() const
-{
-	return m_pForwardedFrom.GetRealPtr();
-}
-
 
 bool WgEvent::IsMouseEvent() const
 {

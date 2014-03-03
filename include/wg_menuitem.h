@@ -37,13 +37,20 @@
 #	include <wg_string.h>
 #endif
 
+#ifndef	WG_WIDGET_DOT_H
+#	include <wg_widget.h>
+#endif
+
 class WgChar;
 
 class WgText;
 class WgGfxAnim;
 
 class WgMenu;
-typedef class WgMenu WgMenu;
+//typedef class WgMenu WgMenu;
+
+typedef	WgSmartPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;
+typedef	WgWeakPtr<WgMenu,WgWidgetWeakPtr>	WgMenuWeakPtr;
 
 enum WgMenuItemType
 {
@@ -184,17 +191,14 @@ class WgMenuSubMenu : public WgMenuEntry
 {
 public:
 	WgMenuSubMenu();
-	WgMenuSubMenu(	int id, const WgString& text, const WgString& helpText, const WgSkinPtr& pIcon, Uint16 navKey, WgMenu * pSubMenu,
+	WgMenuSubMenu(	int id, const WgString& text, const WgString& helpText, const WgSkinPtr& pIcon, Uint16 navKey, const WgMenuPtr& pSubMenu,
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuSubMenu() {};
 
-	inline WgMenu *GetSubMenu()					{return m_pSubMenu;};
-	void				SetSubMenu(WgMenu * subMenu);
+	inline WgMenuPtr	GetSubMenu()					{return m_pSubMenu;};
+	void				SetSubMenu(const WgMenuPtr& pSubMenu);
 
-private:
-	void				SetMyMenu( WgMenu * pMenu );
-
-	WgMenu *		m_pSubMenu;
+	WgMenuPtr		m_pSubMenu;
 };
 
 

@@ -180,13 +180,9 @@ namespace sdl_wglib
 		pButtonSkin->SetContentPadding(WgBorders(4));
 		pButtonSkin->SetContentShift( WG_STATE_PRESSED, WgCoord(2,2) );
 
-//		WgBlocksetPtr pPlateBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,PLATE_OFS,38,8), 4, 2, WG_OPAQUE);
-//		pPlateBlocks->SetFrame(WgBorders(3));
-//		pPlateBlocks->SetPadding(WgBorders(4));
+		WgBlockSkinPtr pHSplitSkin = WgBlockSkin::CreateStatic(pSurface, WgRect(1,SPLITS_AND_FRAME_OFS,8,2), WgBorders(0) );
 
-//		WgBlocksetPtr pHSplitBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(1,SPLITS_AND_FRAME_OFS,8,2), WG_OPAQUE);
-
-//		WgBlocksetPtr pVSplitBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(11,SPLITS_AND_FRAME_OFS,2,8), WG_OPAQUE);
+		WgBlockSkinPtr pVSplitBlocks = WgBlockSkin::CreateStatic(pSurface, WgRect(11,SPLITS_AND_FRAME_OFS,2,8), WgBorders(0) );
 
 		WgBlockSkinPtr pFrameSkin = WgBlockSkin::CreateClickable( pSurface, WgSize(8,8), WgCoord(1, SPLITS_AND_FRAME_OFS), WgSize(10,0), WgBorders(2) );
 		pFrameSkin->SetContentPadding(WgBorders(3));
@@ -206,6 +202,7 @@ namespace sdl_wglib
 //		WgColorsetPtr pSelectionColors = WgColorset::Create( WgColor(0x0), WgColor(0x40FFFFFF), WgColor(0x80FFFFFF), WgColor(0x40000000), WgColor(0x0) );
 
 		WgBlockSkinPtr pPlateSkin = WgBlockSkin::CreateClickable( pSurface, WgSize(8,8), WgCoord(1,PLATE_OFS), WgSize(10,0), WgBorders(3) );
+		pPlateSkin->SetContentPadding(WgBorders(4));
 		pPlateSkin->OptimizeRenderMethods();
 
 		WgResDBPtr pDB = WgResDB::Create();
@@ -263,18 +260,18 @@ namespace sdl_wglib
 		pDB->AddWidget( "bg_blue_gradient", pBgBlueGradient );
 
 		// Create standard menu
-/*
-		WgMenu * pMenu = new WgMenu();
-		pMenu->SetBgSource( pPlateBlocks, 16, 16 );
-		pMenu->SetSeparatorSource( pHSplitBlocks, WgBorders(1) );
-		pMenu->SetCheckBoxSource( pCheckboxUncheckedBlocks, pCheckboxCheckedBlocks);
-		pMenu->SetRadioButtonSource( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks);
+
+		WgMenuPtr pMenu = WgMenu::Create();
+		pMenu->SetSkin( pPlateSkin, 16, 16 );
+		pMenu->SetSeparatorSkin( pHSplitSkin, WgBorders(1) );
+		pMenu->SetCheckBoxSkin( pCheckboxIconSkin );
+		pMenu->SetRadioButtonSkin( pRadiobuttonIconSkin );
 		pMenu->SetScrollbarSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pVScrollbarBwdButtonSkin, pVScrollbarFwdButtonSkin );
-		pMenu->SetTileColors( pSelectionColors );
+		pMenu->SetEntrySkin( pPlateSkin );
 		pDB->AddWidget( "menu", pMenu );
 
 		// Create standard combobox
-
+/*
 		WgCombobox * pCombobox = new WgCombobox();
 		pCombobox->SetSource( pComboboxBlocks );
 		pDB->AddWidget( "combobox", pCombobox );

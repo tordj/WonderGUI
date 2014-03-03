@@ -503,11 +503,11 @@ void WgMenuLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler
 
 	// Try to find an opener
 
-	WgWidget * pForwardedFrom = _pEvent->ForwardedFrom();
-	if( pForwardedFrom )
+	WgWidget * pOrigin = _pEvent->Widget();
+	if( pOrigin && pOrigin != this )
 	{
 		WgMenuHook * pHook = m_menuHooks.First();
-		while( pHook && pHook->_widget() != pForwardedFrom )
+		while( pHook && pHook->_widget() != pOrigin )
 			pHook = pHook->Next();
 			
 		if( pHook && pHook->m_pOpener )

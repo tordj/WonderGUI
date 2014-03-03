@@ -601,14 +601,22 @@ void WgEventHandler::ProcessEvents()
 
 bool WgEventHandler::SwallowEvent( const WgEventPtr& pEvent )
 {
-	return false;
+	if( pEvent != m_pEventProcessing )
+		return false;
+
+	m_pNextEventReceiver = 0;
+	return true;
 }
 
 //____ ForwardEvent() _________________________________________________________
 
 bool WgEventHandler::ForwardEvent( const WgEventPtr& pEvent, const WgWidgetPtr& pWidget )
 {
-	return false;
+	if( pEvent != m_pEventProcessing )
+		return false;
+
+	m_pNextEventReceiver = pWidget;
+	return true;
 }
 
 
@@ -619,22 +627,35 @@ void WgEventHandler::_processEventQueue()
 	while( !m_eventQueue.empty() )
 	{
 		WgEventPtr& pEvent = m_eventQueue.front();
+		m_pEventProcessing = pEvent;
+		m_pNextEventReceiver = 0;
 
 		m_insertPos = m_eventQueue.begin()+1;	// Insert position set to right after current event.
 
 		_finalizeEvent( pEvent );
 
-		if( pEvent->IsForWidget() )
+		if( pEvent->IsFromWidget() )
 		{
+			_processGlobalEventCallbacks( pEvent );
+
 			WgWidget * pWidget = pEvent->Widget();
-			if( pWidget )
+			while( pWidget )
+			{
+				if( pEvent->Type() == WG_EVENT_MOUSE_ENTER || pEvent->Type() == WG_EVENT_MOUSE_LEAVE || pEvent->Type() == WG_EVENT_TICK )
+					m_pNextEventReceiver = 0;
+				else
+					m_pNextEventReceiver = pWidget->Parent();
+
 				pWidget->_onEvent( pEvent, this );
+				_processWidgetEventCallbacks( pEvent, pWidget );
+				pWidget = m_pNextEventReceiver.GetRealPtr();
+			}
 		}
 		else
 		{
 			_processGeneralEvent( pEvent );
+			_processGlobalEventCallbacks( pEvent );
 		}
-		_processEventCallbacks( pEvent );
 
 		m_eventQueue.pop_front();
 		m_insertPos = m_eventQueue.begin();		// Insert position set right to start.
@@ -669,13 +690,10 @@ void WgEventHandler::_addTickReceiver( WgWidget * pWidget )
 		m_vTickWidgets.push_back( WgWidgetWeakPtr(pWidget) );
 }
 
+//____ _processGlobalEventCallbacks() ________________________________________________
 
-//____ _processEventCallbacks() ________________________________________________
-
-void WgEventHandler::_processEventCallbacks( const WgEventPtr& pEvent )
+void WgEventHandler::_processGlobalEventCallbacks( const WgEventPtr& pEvent )
 {
-	// Call all global callbacks
-
 	Callback * pCallback = m_globalCallbacks.First();
 
 	while( pCallback )
@@ -683,9 +701,14 @@ void WgEventHandler::_processEventCallbacks( const WgEventPtr& pEvent )
 		pCallback->ProcessEvent( pEvent );
 		pCallback = pCallback->Next();
 	}
+}
 
-	// Call all Widget-specific callbacks
 
+//____ _processWidgetEventCallbacks() ________________________________________________
+
+void WgEventHandler::_processWidgetEventCallbacks( const WgEventPtr& pEvent, WgWidget * pWidget )
+{
+	Callback * pCallback = 0;
 	WgChain<Callback> * pChain = 0;
 
 	if( pEvent->Widget() )
@@ -722,7 +745,7 @@ void WgEventHandler::_finalizeEvent( const WgEventPtr& pEvent )
 	// Only global POINTER_ENTER & POINTER_MOVE events have these members
 	// set, the rest needs to have them filled in.
 
-	if( pEvent->IsForWidget() || (pEvent->Type() != WG_EVENT_MOUSE_MOVE && pEvent->Type() != WG_EVENT_MOUSE_ENTER) )
+	if( pEvent->IsFromWidget() || (pEvent->Type() != WG_EVENT_MOUSE_MOVE && pEvent->Type() != WG_EVENT_MOUSE_ENTER) )
 	{
 		pEvent->m_pointerScreenPos = m_pointerPos;
 		pEvent->m_pointerLocalPos = m_pointerPos;
@@ -1006,11 +1029,11 @@ void WgEventHandler::_processMousePosition( WgMousePositionEvent * pEvent )
 
 void WgEventHandler::_setWidgetFocused( WgWidget * pWidget, bool bFocused )
 {
-		WgState oldState = m_keyFocusWidget->m_state;
-		m_keyFocusWidget->m_state.SetFocused(bFocused);
+		WgState oldState = pWidget->m_state;
+		pWidget->m_state.SetFocused(bFocused);
 
-		if( m_keyFocusWidget->m_state != oldState )
-			m_keyFocusWidget->_onStateChanged(oldState,m_keyFocusWidget->m_state);
+		if( pWidget->m_state != oldState )
+			pWidget->_onStateChanged(oldState,pWidget->m_state);
 }
 
 

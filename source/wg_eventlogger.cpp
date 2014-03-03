@@ -387,7 +387,7 @@ string WgEventLogger::_formatWidget( const WgEventPtr& _pEvent )
 {
 	std::string	out;
 
-	if( _pEvent->IsForWidget() || _pEvent->Widget() )
+	if( _pEvent->IsFromWidget() )
 	{
 		char	temp[64];
 		WgWidget * pWidget = _pEvent->Widget();

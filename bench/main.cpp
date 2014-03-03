@@ -371,41 +371,44 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 	}
 */
 	// Test menus and MenuPanel.
-/*
+
 	{
-		WgMenu * pSubMenu1_1 = (WgMenu*) pDB->CloneWidget( "menu" );
-		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("ENTRY 11"), WgString("Help text for entry 11"), WgBlocksetPtr(), 0 ));
-		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("ENTRY 12"), WgString("Help text for entry 12"), WgBlocksetPtr(), 0 ));
+		WgMenuPtr pSubMenu1_1 = WgMenu::Cast(pDB->CloneWidget( "menu" ));
+		pSubMenu1_1->AddItem( new WgMenuEntry( 1, WgString("ENTRY 11"), WgString("Help text for entry 11"), WgSkinPtr(), 0 ));
+		pSubMenu1_1->AddItem( new WgMenuEntry( 2, WgString("ENTRY 12"), WgString("Help text for entry 12"), WgSkinPtr(), 0 ));
 		
-		WgMenu * pSubMenu1 = (WgMenu*) pDB->CloneWidget( "menu" );
-		pSubMenu1->AddItem( new WgMenuEntry( WgString("ENTRY 7"), WgString("Help text for entry 7"), WgBlocksetPtr(), 0 ));
-		pSubMenu1->AddItem( new WgMenuEntry( WgString("ENTRY 8"), WgString("Help text for entry 8"), WgBlocksetPtr(), 0 ));
+		WgMenuPtr pSubMenu1 = WgMenu::Cast(pDB->CloneWidget( "menu" ));
+		pSubMenu1->AddItem( new WgMenuEntry( 3, WgString("ENTRY 7"), WgString("Help text for entry 7"), WgSkinPtr(), 0 ));
+		pSubMenu1->AddItem( new WgMenuEntry( 4, WgString("ENTRY 8"), WgString("Help text for entry 8"), WgSkinPtr(), 0 ));
 		pSubMenu1->AddItem( new WgMenuSeparator() );
-		pSubMenu1->AddItem( new WgMenuSubMenu( WgString("SUBMENU 1_1"), WgString("Help text for submenu 1_1"), WgBlocksetPtr(), 0, pSubMenu1_1 ) );
+		pSubMenu1->AddItem( new WgMenuSubMenu( 5, WgString("SUBMENU 1_1"), WgString("Help text for submenu 1_1"), WgSkinPtr(), 0, pSubMenu1_1.GetRealPtr() ) );
 
-		WgMenu * pSubMenu2 = (WgMenu*) pDB->CloneWidget( "menu" );
-		pSubMenu2->AddItem( new WgMenuEntry( WgString("ENTRY 9"), WgString("Help text for entry 9"), WgBlocksetPtr(), 0 ));
+		WgMenuPtr pSubMenu2 = WgMenu::Cast(pDB->CloneWidget( "menu" ));
+		pSubMenu2->AddItem( new WgMenuEntry( 6, WgString("ENTRY 9"), WgString("Help text for entry 9"), WgSkinPtr(), 0 ));
 		pSubMenu2->AddItem( new WgMenuSeparator() );
-		pSubMenu2->AddItem( new WgMenuEntry( WgString("ENTRY 10"), WgString("Help text for entry 10"), WgBlocksetPtr(), 0 ));
+		pSubMenu2->AddItem( new WgMenuEntry( 7, WgString("ENTRY 10"), WgString("Help text for entry 10"), WgSkinPtr(), 0 ));
 
-		WgMenu * pMenu = (WgMenu*) pDB->CloneWidget( "menu" );
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 1"), WgString("Help text for entry 1"), WgBlocksetPtr(), 0 ));
+		WgMenuPtr pMenu = WgMenu::Cast(pDB->CloneWidget( "menu" ));
+		pMenu->AddItem( new WgMenuEntry( 8, WgString("ENTRY 1"), WgString("Help text for entry 1"), WgSkinPtr(), 0 ));
 		pMenu->AddItem( new WgMenuSeparator() );
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 2"), WgString("Help text for entry 2"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 3"), WgString("Help text for entry 3"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 4"), WgString("Help text for entry 4"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 5"), WgString("Help text for entry 5"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 6"), WgString("Help text for entry 6"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( 9, WgString("ENTRY 2"), WgString("Help text for entry 2"), WgSkinPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( 10, WgString("ENTRY 3"), WgString("Help text for entry 3"), WgSkinPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( 11, WgString("ENTRY 4"), WgString("Help text for entry 4"), WgSkinPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( 12, WgString("ENTRY 5"), WgString("Help text for entry 5"), WgSkinPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( 13, WgString("ENTRY 6"), WgString("Help text for entry 6"), WgSkinPtr(), 0 ));
 
-		pMenu->AddItem( new WgMenuSubMenu( WgString("SUBMENU 1"), WgString("Help text for submenu 1"), WgBlocksetPtr(), 0, pSubMenu1 ) );
-		pMenu->AddItem( new WgMenuSubMenu( WgString("SUBMENU 2"), WgString("Help text for submenu 2"), WgBlocksetPtr(), 0, pSubMenu2 ) );
+		pMenu->AddItem( new WgMenuSubMenu( 14, WgString("SUBMENU 1"), WgString("Help text for submenu 1"), WgSkinPtr(), 0, pSubMenu1.GetRealPtr() ) );
+		pMenu->AddItem( new WgMenuSubMenu( 15, WgString("SUBMENU 2"), WgString("Help text for submenu 2"), WgSkinPtr(), 0, pSubMenu2.GetRealPtr() ) );
 
-		addResizablePanel( pFlex, pMenu, pEventHandler );
+		pFlex->AddChild(pMenu);
+
+//		addResizablePanel( pFlex, pMenu, pEventHandler );
 		pMenu->GrabFocus();
 
 //		pMenuPanel->OpenMenu( pMenu, WgRect(10,10,100,10), WG_SOUTHWEST );
+
 	}
-*/
+
 	// Test menubar and menus
 /*
 	{
@@ -549,8 +552,8 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 	//
 */
 
-	WgPackPanelPtr pVBox = WgPackPanel::Create();
-	pVBox->SetOrientation( WG_VERTICAL );
+//	WgPackPanelPtr pVBox = WgPackPanel::Create();
+//	pVBox->SetOrientation( WG_VERTICAL );
 //	pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
 
 
@@ -559,9 +562,9 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //	WgImage * pFlag4= new WgImage();
 //	pFlag4->SetSource( pFlagBlock );
 
-	WgButtonPtr pButton2 = WgButton::Cast(pDB->CloneWidget( "button" ));
-	pButton2->Label()->Set( "BUTTON TEXT" );
-	pVBox->AddChild(pButton2);
+//	WgButtonPtr pButton2 = WgButton::Cast(pDB->CloneWidget( "button" ));
+//	pButton2->Label()->Set( "BUTTON TEXT" );
+//	pVBox->AddChild(pButton2);
 
 //	pVBox->AddChild(pFlag3);
 //	pVBox->AddChild(pFlag4);
@@ -570,19 +573,19 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //	WgSizeCapsule * pSizeCapsule = new WgSizeCapsule();
 //	pSizeCapsule->SetMaxSize( WgSize(150,600) );
 //	pSizeCapsule->SetChild( pVBox );
-	WgFlexHook * p = pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
-	p->SetSizePolicy( WG_BOUND, WG_DEFAULT );
-	p->SetSize( WgSize(150,10 ) );
+//	WgFlexHook * p = pFlex->AddChild( pVBox, WgCoord(50,50), WG_NORTHWEST );
+//	p->SetSizePolicy( WG_BOUND, WG_DEFAULT );
+//	p->SetSize( WgSize(150,10 ) );
 
 //	WgTextDisplay * pText1 = new WgTextDisplay();
 //	pText1->SetText("TEXTA1");
 //	pText1->SetEditMode(WG_TEXT_EDITABLE);
 //	pVBox->AddChild(pText1);
 
-	WgTextDisplayPtr pText2 = WgTextDisplay::Create();
-	pText2->Text()->Set("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj Hej");
-	pText2->SetEditMode(WG_TEXT_EDITABLE);
-	pVBox->AddChild(pText2);
+//	WgTextDisplayPtr pText2 = WgTextDisplay::Create();
+//	pText2->Text()->Set("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj Hej");
+//	pText2->SetEditMode(WG_TEXT_EDITABLE);
+//	pVBox->AddChild(pText2);
 
 //	pText1->GrabFocus();
 
@@ -594,7 +597,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //	pFlex->AddChild( pDB->CloneWidget( "radiobutton" ) );
 //	pFlex->AddChild( pDB->CloneWidget( "radiobutton" ) );
 
-	pVBox->SetRadioGroup(true);
+//	pVBox->SetRadioGroup(true);
 
 	return pRoot;
 }

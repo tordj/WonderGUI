@@ -273,7 +273,7 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 					state = WG_STATE_HOVERED;
 			}
 
-			WgBorders b = GetEntryBorders();
+			WgBorders b = _getEntryBorders();
 
 //			WgColorsetPtr pTextColors;
 			
@@ -318,7 +318,7 @@ void WgMenubar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 		{
 			WgCoord pos = pEvent->PointerPos();
 
-			Uint32 item = GetItemAtAbsPos( pos.x, pos.y );
+			Uint32 item = _getItemAtAbsPos( pos.x, pos.y );
 
 			if( item && !m_items.Get(item-1)->m_bEnabled )
 				item = 0;								// Item is disabled and can't be marked.
@@ -336,8 +336,8 @@ void WgMenubar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 			{
 				if( m_markedItem && m_selectedItem != m_markedItem )
 				{
-					CloseMenu( m_selectedItem );
-					OpenMenu( m_markedItem );
+					_closeMenu( m_selectedItem );
+					_openMenu( m_markedItem );
 				}
 			}
 
@@ -347,7 +347,7 @@ void WgMenubar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 
 			if( item && pEvent->Type()== WG_EVENT_MOUSE_PRESS )
 			{
-				OpenMenu( item );
+				_openMenu( item );
 			}
 
 		}
@@ -359,61 +359,6 @@ void WgMenubar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 
 	}
 }
-
-//____ _onAction() _____________________________________________________________
-/*
-void WgMenubar::_onAction( WgInput::UserAction _action, int _button_key, const WgActionDetails& _info, const WgInput& _inputObj )
-{
-	switch( _action )
-	{
-		case WgInput::POINTER_OVER:
-		case WgInput::BUTTON_PRESS:
-		{
-			Uint32 item = GetItemAtAbsPos( _info.x, _info.y );
-
-			if( item && !m_items.Get(item-1)->m_bEnabled )
-				item = 0;								// Item is disabled and can't be marked.
-
-			if(m_markedItem != item)
-			{
-				m_markedItem = item;
-				_requestRender();
-			}
-
-			// If a menu entry already is selected we should
-			// switch to the new marked one.
-
-			if( m_selectedItem )
-			{
-				if( m_markedItem && m_selectedItem != m_markedItem )
-				{
-					CloseMenu( m_selectedItem );
-					OpenMenu( m_markedItem );
-				}
-			}
-
-			// If this was a press, we need to select the item and open the menu.
-
-			//TODO: A click on an already open entry should close the menu.
-
-			if( item && _action == WgInput::BUTTON_PRESS )
-			{
-				OpenMenu( item );
-			}
-
-		}
-		break;
-
-		case WgInput::POINTER_EXIT:
-			m_markedItem = 0;
-			_requestRender();
-		break;
-
-        default:
-            break;
-	}
-}
-*/
 
 //____ _onRefresh() _______________________________________________________
 
@@ -441,9 +386,9 @@ void WgMenubar::_onCloneContent( const WgWidget * _pOrg )
 	//TODO: Clone entries!
 }
 
-//____ GetEntryBorders() ____________________________________________________
+//____ _getEntryBorders() ____________________________________________________
 
-WgBorders WgMenubar::GetEntryBorders() const
+WgBorders WgMenubar::_getEntryBorders() const
 {
 	//TODO: This doesn't take ContentShift for different states into account.
 
@@ -459,9 +404,9 @@ WgBorders WgMenubar::GetEntryBorders() const
 
 
 
-//____ OpenMenu() _____________________________________________________________
+//____ _openMenu() _____________________________________________________________
 
-bool WgMenubar::OpenMenu( Uint32 nb )
+bool WgMenubar::_openMenu( int nb )
 {
 	WgMenuBarItem * pItem = m_items.Get(nb-1);
 	if( pItem == 0 || !pItem->m_pMenu )
@@ -472,7 +417,7 @@ bool WgMenubar::OpenMenu( Uint32 nb )
 	if( m_pSkin )
 		pos = m_pSkin->ContentRect( pos, WG_STATE_NORMAL ).Pos();
 
-	int bordersWidth = GetEntryBorders().Width();
+	int bordersWidth = _getEntryBorders().Width();
 
 	WgMenuBarItem * pI = m_items.First();
 	while( pI != pItem )
@@ -496,9 +441,9 @@ bool WgMenubar::OpenMenu( Uint32 nb )
 	return true;
 }
 
-//____ CloseMenu() ____________________________________________________________
+//____ _closeMenu() ____________________________________________________________
 
-bool WgMenubar::CloseMenu( Uint32 nb )
+bool WgMenubar::_closeMenu( int nb )
 {
 	if( nb == 0 )
 		return false;
@@ -521,9 +466,9 @@ bool WgMenubar::CloseMenu( Uint32 nb )
 	return true;
 }
 
-//____ GetItemAtPos() _________________________________________________________
+//____ _getItemAtPos() _________________________________________________________
 
-Uint32 WgMenubar::GetItemAtAbsPos( int x, int y )
+Uint32 WgMenubar::_getItemAtAbsPos( int x, int y )
 {
 	WgCoord pos = Abs2local( WgCoord(x, y) );
 
@@ -532,7 +477,7 @@ Uint32 WgMenubar::GetItemAtAbsPos( int x, int y )
 
 	if( y > 0 && x > 0 && y < (int) Size().h )
 	{
-		int bordersWidth = GetEntryBorders().Width();
+		int bordersWidth = _getEntryBorders().Width();
 
 		WgMenuBarItem * pItem = m_items.First();
 		int		item = 1;
@@ -554,32 +499,32 @@ Uint32 WgMenubar::GetItemAtAbsPos( int x, int y )
 	return 0;
 }
 
-//____ MoveOutsideModal() _____________________________________________________
+//____ _moveOutsideModal() _____________________________________________________
 
-void WgMenubar::MoveOutsideModal( int x, int y )
+void WgMenubar::_moveOutsideModal( int x, int y )
 {
-	Uint32 item = GetItemAtAbsPos( x, y );
+	Uint32 item = _getItemAtAbsPos( x, y );
 
 	if( item && item != m_selectedItem && m_items.Get(item-1)->m_bEnabled )
 	{
-		CloseMenu( m_selectedItem );
-		OpenMenu(item);
+		_closeMenu( m_selectedItem );
+		_openMenu(item);
 	}
 
 }
 
-//____ MenuOpened() ___________________________________________________________
+//____ _menuOpened() ___________________________________________________________
 
-void WgMenubar::MenuOpened( WgMenuBarItem * pItem )
+void WgMenubar::_menuOpened( WgMenuBarItem * pItem )
 {
 	Uint32 item = pItem->Index()+1;
 	m_selectedItem = item;
 	_requestRender();
 }
 
-//____ MenuClosed() ___________________________________________________________
+//____ _menuClosed() ___________________________________________________________
 
-void WgMenubar::MenuClosed( WgMenuBarItem * pItem )
+void WgMenubar::_menuClosed( WgMenuBarItem * pItem )
 {
 	m_selectedItem = 0;
 	_requestRender();

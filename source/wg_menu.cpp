@@ -1143,7 +1143,7 @@ WgWidget * WgMenu::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 {
-	WgWidget * pMenu = pItem->GetSubMenu();
+	WgWidgetPtr pMenu = pItem->GetSubMenu();
 
 	if( !pMenu )
 		return;
@@ -1190,7 +1190,7 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 void WgMenu::_closeSubMenu( WgMenuSubMenu * pItem )
 {
 	WgMenuLayer * pLayer = 0;
-	WgWidget * pMenu = pItem->GetSubMenu();
+	WgWidgetPtr pMenu = pItem->GetSubMenu();
 
 	if( Parent() )
 		pLayer = Parent()->_getMenuLayer();
@@ -1363,7 +1363,7 @@ WgMenuItem * WgMenu::_getItemAtPos( int x, int y )
 
 	y += m_contentOfs;
 
-	if( y > 0 && x > 0 && x < (int) ( Geo().w - contentBorders.Width() ) )
+	if( y > 0 && x > 0 && x < (int) ( Geo().w - contentBorders.right ) )
 	{
 		WgMenuItem * pItem = m_items.First();
 		while( pItem )

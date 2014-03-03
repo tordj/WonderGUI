@@ -152,19 +152,19 @@ protected:
 
 private:
 
-	WgBorders	GetEntryBorders() const;
+	WgBorders	_getEntryBorders() const;
 
-	Uint32		GetItemAtAbsPos( int x, int y );
-	bool		OpenMenu( Uint32 nb );
-	bool		CloseMenu( Uint32 nb );
+	Uint32		_getItemAtAbsPos( int x, int y );
+	bool		_openMenu( int nb );
+	bool		_closeMenu( int nb );
 
-	static void	cbMoveOutsideModal( void * pWdg, int x, int y ) { ((WgMenubar*)pWdg)->MoveOutsideModal(x,y);}
-	static void	cbMenuClosed( void * pItem ) { ((WgMenuBarItem*)pItem)->m_pMenuBar->MenuClosed((WgMenuBarItem*)pItem);}
-	static void	cbMenuOpened( void * pItem ) { ((WgMenuBarItem*)pItem)->m_pMenuBar->MenuOpened((WgMenuBarItem*)pItem);}
+	static void	_cbMoveOutsideModal( void * pWdg, int x, int y ) { ((WgMenubar*)pWdg)->_moveOutsideModal(x,y);}
+	static void	_cbMenuClosed( void * pItem ) { ((WgMenuBarItem*)pItem)->m_pMenuBar->_menuClosed((WgMenuBarItem*)pItem);}
+	static void	_cbMenuOpened( void * pItem ) { ((WgMenuBarItem*)pItem)->m_pMenuBar->_menuOpened((WgMenuBarItem*)pItem);}
 
-	void		MoveOutsideModal( int x, int y );
-	void		MenuOpened( WgMenuBarItem * pItem );
-	void		MenuClosed( WgMenuBarItem * pItem );
+	void		_moveOutsideModal( int x, int y );
+	void		_menuOpened( WgMenuBarItem * pItem );
+	void		_menuClosed( WgMenuBarItem * pItem );
 
 	WgChain<WgMenuBarItem>	m_items;
 	Uint32					m_selectedItem;		// 0 = no item is selected.
