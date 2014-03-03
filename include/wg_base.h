@@ -62,6 +62,11 @@ class WgMemPool;
 class WgWeakPtrHub;
 class WgMemStack;
 
+/**
+ * @brief	Static base class for WonderGUI.
+ * 
+ */
+
 class WgBase
 {
 public:

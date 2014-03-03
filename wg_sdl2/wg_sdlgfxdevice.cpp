@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <wg_sdlgfxdevice.h>
 #include <wg_sdlsurface.h>

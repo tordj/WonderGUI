@@ -3,13 +3,8 @@
 #else
     #include <stdlib.h>
 #endif
-#ifdef WIN32
-#include <SDL.h>
-#include <SDL_image.h>
-#else
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#endif
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 
 #include <wondergui.h>
