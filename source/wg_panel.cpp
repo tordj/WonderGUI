@@ -268,8 +268,7 @@ WgSize WgPanelHook::_paddedMinSize() const
             sz.w += ((sz.w * m_padding.left) >> 8) + ((sz.w * m_padding.right) >> 8);
             sz.h += ((sz.h * m_padding.top) >> 8) + ((sz.h * m_padding.bottom) >> 8);
             return sz;
-        }
-            
+        }   
     }
 }
 

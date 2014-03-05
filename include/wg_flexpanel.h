@@ -33,6 +33,29 @@ class WgFlexPanel;
 typedef	WgSmartPtr<WgFlexPanel,WgPanelPtr>		WgFlexPanelPtr;
 typedef	WgWeakPtr<WgFlexPanel,WgPanelWeakPtr>	WgFlexPanelWeakPtr;
 
+
+//____ WgFlexOrigo ____________________________________________________________
+
+class WgFlexOrigo
+{
+public:
+	inline WgFlexOrigo() : x(0.f), y(0.f) {}
+	inline WgFlexOrigo( float _x, float _y ) : x(_x), y(_y) {}
+	inline WgFlexOrigo( WgOrigo origo ) : x(s_origoTab[origo][0]), y(s_origoTab[origo][1]) {}
+
+	inline WgCoord Position( WgSize sz ) { return WgCoord((int)(x*(sz.w+0.5f)),(int)(y*(sz.h+0.5f))); }
+
+	float	x;
+	float	y;
+
+	bool			operator==(const WgFlexOrigo& origo) const { return x == origo.x &&
+																		y == origo.y; }
+	bool			operator!=(const WgFlexOrigo& origo) const { return x != origo.x ||
+																		y != origo.y; }
+private:
+	static float	s_origoTab[9][2];
+};
+
 //____ WgFlexHook _____________________________________________________________
 
 class WgFlexHook : public WgPanelHook, protected WgLink
@@ -49,14 +72,12 @@ public:
 
 	// Flex-specific methods
 
-	bool	SetAnchored();
-	bool	SetAnchored( int anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 );
+	bool	SetStretching( const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders padding = 0 );
 
-	bool	SetFloating();
-	bool	SetFloating( const WgCoord& pos, WgOrigo origo = WG_NORTHWEST );
-	bool	SetFloating( const WgCoord& pos, int anchor, WgOrigo hotspot );
-	bool	SetFloating( const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
-	bool	SetFloating( const WgRect& geometry, int anchor, WgOrigo hotspot );
+	bool	SetFloating( const WgCoord& pos, const WgFlexOrigo& origo = WG_NORTHWEST );
+	bool	SetFloating( const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot );
+	bool	SetFloating( const WgRect& geometry, const WgFlexOrigo& origo = WG_NORTHWEST );
+	bool	SetFloating( const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot );
 
 
 	void	Top();								// Put us ontop all our silbings.
@@ -68,12 +89,12 @@ public:
 	bool	MoveUnder( WgFlexHook * pSibling );
 
 	bool	IsFloating() const { return m_bFloating; }
-	bool	IsAnchored() const { return !m_bFloating; }
+	bool	IsStretching() const { return !m_bFloating; }
 
 	// Methods for floating hooks
 
-	bool	SetAnchor( int anchor );
-	bool	SetHotspot( WgOrigo hotspot );
+	bool	SetOrigo( const WgFlexOrigo& origo );
+	bool	SetHotspot( const WgFlexOrigo& hotspot );
 
 	bool	SetSizePolicy( WgSizePolicy width, WgSizePolicy height );
 
@@ -93,16 +114,18 @@ public:
 
 	WgSizePolicy	WidthPolicy() const { return m_widthPolicy; }
 	WgSizePolicy	HeightPolicy() const { return m_heightPolicy; }
-	int				Origo() const { return m_anchor; }
-	WgOrigo	Hotspot() const { return m_hotspot; }
+	WgFlexOrigo		FloatOrigo() const { return m_origo; }
+	WgFlexOrigo		FloatHotspot() const { return m_hotspot; }
 	WgRect			FloatGeo() const { return m_placementGeo; }
 	WgCoord			FloatOfs() const { return m_placementGeo.Pos(); }
 	WgRect			FloatSize() const { return m_placementGeo.Size(); }
 
-	// Methods for anchored hooks
+	// Methods for stretching hooks
 
-	int				AnchorTopLeft() const { return m_anchorTopLeft; }
-	int				AnchorBottomRight() const { return m_anchorBottomRight; }
+	WgFlexOrigo		TopLeftOrigo() const { return m_topLeftOrigo; }
+	WgFlexOrigo		BottomRightOrigo() const { return m_bottomRightOrigo; }
+	WgCoord			TopLeftOfs() const { return m_topLeftOfs; }
+	WgCoord			BottomRightOfs() const { return m_bottomRightOfs; }
 
 	// Standard Hook methods
 
@@ -117,7 +140,7 @@ public:
 	WgFlexHook *	Prev() const { return _prev(); }
 	WgFlexHook *	Next() const { return _next(); }
 
-	WgFlexPanelPtr Parent() const { return m_pParent; }
+	WgFlexPanelPtr	Parent() const { return m_pParent; }
 
 protected:
 	// TODO: Constructor should in the future call SetHook() on Widget, once we are totally rid of widgets...
@@ -126,12 +149,12 @@ protected:
 
 	WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo, WgBorders padding );
 
-	void		_refreshRealGeo();
-	WgSize		_sizeNeededForGeo();
+	void			_refreshRealGeo();
+	WgSize			_sizeNeededForGeo();
 
-	void		_requestRender();
-	void		_requestRender( const WgRect& rect );
-	void		_requestResize();
+	void			_requestRender();
+	void			_requestRender( const WgRect& rect );
+	void			_requestResize();
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
@@ -142,47 +165,28 @@ protected:
 	bool			m_bFloating;		// true = floating, false = anchored
 	WgRect			m_realGeo;			// Widgets geo relative parent
 
-	// Only used for floating hooks.
+	union
+	{
+		struct // Floating hooks
+		{
+			WgFlexOrigo		m_origo;
+			WgFlexOrigo		m_hotspot;
+			WgRect			m_placementGeo;	// Widgets geo relative anchor and hotspot.
+		};
+		struct	// Stretching hooks
+		{
+			WgFlexOrigo		m_topLeftOrigo;
+			WgFlexOrigo		m_bottomRightOrigo;
+			WgCoord			m_topLeftOfs;
+			WgCoord			m_bottomRightOfs;
+		};
+	};
+
+	// Only used for floating hooks, but kept safe when set to stretch.
 
 	WgSizePolicy	m_widthPolicy;
 	WgSizePolicy	m_heightPolicy;
-
-	int				m_anchor;
-	WgOrigo	m_hotspot;
-	WgRect			m_placementGeo;	// Widgets geo relative anchor and hotspot.
-
-	//Only used for anchored hooks.
-
-	int				m_anchorTopLeft;
-	int				m_anchorBottomRight;
-
 };
-
-
-//____ WgFlexAnchor ___________________________________________________________
-
-class WgFlexAnchor
-{
-	friend class WgFlexPanel;
-
-public:
-	float	RelativeX() const { return m_xRelative; }
-	float	RelativeY() const { return m_yRelative; }
-	int		OffsetX() const { return m_pixelOfs.x; }
-	int		OffsetY() const { return m_pixelOfs.y; }
-	WgCoord	Offset() const { return m_pixelOfs; }
-
-	WgCoord	Position( const WgSize& parentSize ) const { return WgCoord((int)(m_xRelative*parentSize.w), (int)(m_yRelative*parentSize.h)) + m_pixelOfs; }
-
-private:
-	WgFlexAnchor() : m_xRelative(0.f), m_yRelative(0.f), m_pixelOfs(0,0) {};
-	WgFlexAnchor( float xRelative, float yRelative, const WgCoord& pixelOfs ) : m_xRelative(xRelative), m_yRelative(yRelative), m_pixelOfs(pixelOfs) {}
-
-	float	m_xRelative;
-	float	m_yRelative;
-	WgCoord	m_pixelOfs;
-};
-
 
 
 //____ WgFlexPanel _________________________________________________________
@@ -210,29 +214,25 @@ public:
 
 
 	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget );
-	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget, int anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 );
-	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST, WgBorders padding = 0 );
-	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget, const WgCoord& pos, int anchor, WgOrigo hotspot, WgBorders padding = 0 );
-	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST, WgBorders padding = 0 );
-	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget, const WgRect& geometry, int anchor, WgOrigo hotspot, WgBorders padding = 0 );
+	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget, const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
+							  const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders padding = 0 );
+
+	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget, const WgCoord& pos, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorders padding = 0 );
+	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders padding = 0 );
+	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget, const WgRect& geometry, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorders padding = 0 );
+	WgFlexHook *	AddChild( const WgWidgetPtr& pWidget, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders padding = 0 );
 
 	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
-	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 );
-	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST, WgBorders padding = 0  );
-	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, int anchor, WgOrigo hotspot, WgBorders padding = 0  );
-	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST, WgBorders padding = 0  );
-	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, int anchor, WgOrigo hotspot, WgBorders padding = 0  );
+	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
+								 const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders pInserting = 0 );
+
+	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorders pInserting = 0 );
+	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders pInserting = 0 );
+	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorders pInserting = 0 );
+	WgFlexHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders pInserting = 0 );
 
 	bool			RemoveChild( const WgWidgetPtr& pWidget );
 	bool			Clear();
-
-	int				AddAnchor( float relativeX, float relativeY, const WgCoord& pixelOfs = WgCoord(0,0) );
-	bool			ReplaceAnchor( int index, float relativeX, float relativeY, const WgCoord& pixelOfs = WgCoord(0,0) );
-	bool			DeleteAnchor( int index );
-	void			DeleteAllAnchors();
-
-	int				NbAnchors() const { return m_anchors.size()+9; }
-	const WgFlexAnchor *	Anchor( int index );
 
 
 	WgFlexHook*		FirstHook() const { return m_hooks.First(); }
@@ -266,11 +266,8 @@ private:
 	WgHook *		_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
 
 	WgChain<WgFlexHook>			m_hooks;
-	std::vector<WgFlexAnchor>	m_anchors;
 
 	bool			m_bConfineChildren;
-
-	static WgFlexAnchor	g_baseAnchors[9];
 };
 
 

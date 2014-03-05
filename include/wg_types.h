@@ -239,16 +239,16 @@ enum WgExtChar
 enum WgCodePage
 {
 	WG_CODEPAGE_LATIN1 = 0,
-	WG_CODEPAGE_1250 = 1,		// Windows Cental Europe
-	WG_CODEPAGE_1251 = 2,		// Windows Cyrillic
-	WG_CODEPAGE_1252 = 3,		// Windows Latin-1 extended
-	WG_CODEPAGE_1253 = 4,		// Windows Greek
-	WG_CODEPAGE_1254 = 5,		// Windows Turkish
-	WG_CODEPAGE_1255 = 6,		// Windows Hebrew
-	WG_CODEPAGE_1256 = 7,		// Windows Arabic
-	WG_CODEPAGE_1257 = 8,		// Windows Baltic
-	WG_CODEPAGE_1258 = 9,		// Windows Vietnam
-	WG_CODEPAGE_874 = 10,		// Windows Thai
+	WG_CODEPAGE_1250 = 1,		///< Windows Cental Europe
+	WG_CODEPAGE_1251 = 2,		///< Windows Cyrillic
+	WG_CODEPAGE_1252 = 3,		///< Windows Latin-1 extended
+	WG_CODEPAGE_1253 = 4,		///< Windows Greek
+	WG_CODEPAGE_1254 = 5,		///< Windows Turkish
+	WG_CODEPAGE_1255 = 6,		///< Windows Hebrew
+	WG_CODEPAGE_1256 = 7,		///< Windows Arabic
+	WG_CODEPAGE_1257 = 8,		///< Windows Baltic
+	WG_CODEPAGE_1258 = 9,		///< Windows Vietnam
+	WG_CODEPAGE_874 = 10,		///< Windows Thai
 };
 
 #define WG_NB_CODEPAGES 11
@@ -381,9 +381,9 @@ enum	WgExtChar
 
 enum WgSearchMode
 {
-	WG_SEARCH_MARKPOLICY,			// Perform a mark test on Widget.
-	WG_SEARCH_GEOMETRY,				// Goes strictly on geometry, ignores alpha.
-	WG_SEARCH_ACTION_TARGET,		// Like MARKPOLICY, but takes modality into account.
+	WG_SEARCH_MARKPOLICY,			///< Perform a mark test on Widget.
+	WG_SEARCH_GEOMETRY,				///< Goes strictly on geometry, ignores alpha.
+	WG_SEARCH_ACTION_TARGET,		///< Like MARKPOLICY, but takes modality into account.
 };
 
 //____ WgOrigo _____________________________________________________________
@@ -422,13 +422,21 @@ enum WgOrientation
 };
 
 //____ WgSizePolicy ___________________________________________________________
+/**
+	WgSizePolicy is used by certain containers, including FlexPanel and ScrollPanel, 
+	to limit/control the geometry of children. Different SizePolicies can be set
+	for horizontal and vertical size.
 
+	It is used in combination with a size specified by parent. In the case of
+	ScrollPanel it is the size of the window to the scrollarea. In the case of
+	FlexPanel, it is a size specified in the childs hook.
+*/
 enum WgSizePolicy
 {
-	WG_DEFAULT = 0,
-	WG_BOUND,
-	WG_CONFINED,
-	WG_EXPANDED,
+	WG_DEFAULT = 0,			///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
+	WG_BOUND,				///< Child is bound to the exact size specified by parent.
+	WG_CONFINED,			///< Childs size is limited to the size specified by parent.
+	WG_EXPANDED,			///< Childs size is set to at least the size specified by parent.
 };
 
 //____ WgEventType ______________________________________________________________

@@ -3,8 +3,8 @@
 #else
     #include <stdlib.h>
 #endif
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 
 
 #include <wondergui.h>
@@ -280,7 +280,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 	// Main Flex
 
 	WgFlexPanelPtr pFlex = WgFlexPanel::Create();
-	pBottom->AddChild( pFlex, WG_NORTHWEST, WG_SOUTHEAST, WgBorders(10) );
+	pBottom->AddChild( pFlex, WG_NORTHWEST, WgCoord(), WG_SOUTHEAST, WgCoord(), WgBorders(10) );
 
 	// Background
 

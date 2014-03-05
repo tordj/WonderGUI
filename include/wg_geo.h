@@ -147,14 +147,17 @@ class WgSize;
 	the rectangles height.
 
 **/
+
 class WgBorders
 {
 public:
-	WgBorders() : left(0), top(0), right(0), bottom(0) {}
-	WgBorders( Uint8 _left, Uint8 _top, Uint8 _right, Uint8 _bottom ) : left(_left), top(_top), right(_right), bottom(_bottom) {}
-	WgBorders( Uint8 _all ) : left(_all), top(_all), right(_all), bottom(_all) {}
+	WgBorders() : top(0), right(0), bottom(0), left(0) {}
+	WgBorders( Uint16 _topBottom, Uint16 _leftRight ) : top(_topBottom), right(_leftRight), bottom(_topBottom), left(_leftRight) {}
+	WgBorders( Uint16 _top, Uint16 _sides, Uint16 _left ) : top(_top), right(_sides), bottom(_sides), left(_left) {}
+	WgBorders( Uint16 _top, Uint16 _right, Uint16 _bottom, Uint16 _left ) : top(_top), right(_right), bottom(_bottom), left(_left) {}
+	WgBorders( Uint16 _all ) : top(_all), right(_all), bottom(_all), left(_all) {}
 
-	inline void		Set( Uint8 _all ) { left = right = top = bottom = _all; }
+	inline void		Set( Uint16 _all ) { left = right = top = bottom = _all; }
 
 	inline WgSize	Size() const;
 	inline int		Width() const { return ((int)left)+right; }
@@ -168,7 +171,7 @@ public:
 																		bottom == borders.bottom; }
 	bool			operator!=(const WgBorders& borders) const { return !(*this == borders); }
 
-	Uint8	left, top, right, bottom;
+	Uint16	top, right, bottom, left;
 };
 
 //____ Class: WgSize ________________________________________________________
