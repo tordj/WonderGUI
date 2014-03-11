@@ -24,7 +24,7 @@
 #include <wg_base.h>
 
 const char WgPackPanel::CLASSNAME[] = {"PackPanel"};
-static const char	c_hookType[] = {"PackHook"};
+const char WgPackHook::CLASSNAME[] = {"PackHook"};
 
 
 //____ WgPackHook::Constructor ________________________________________________
@@ -35,18 +35,31 @@ WgPackHook::WgPackHook( WgPackPanel * pParent )
 	m_weight = 1.f;
 }
 
-//____ WgPackHook::Type() _____________________________________________________
+//____ WgPackHook::IsInstanceOf() __________________________________________
 
-const char * WgPackHook::Type( void ) const
-{
-	return ClassType();
+bool WgPackHook::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgVectorHook::IsInstanceOf(pClassName);
 }
 
-//____ WgPackHook::ClassType() ________________________________________________
+//____ WgPackHook::ClassName() _____________________________________________
 
-const char * WgPackHook::ClassType()
+const char * WgPackHook::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ WgPackHook::Cast() __________________________________________________
+
+WgPackHookPtr WgPackHook::Cast( const WgHookPtr& pHook )
 {
-	return c_hookType;
+	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
+		return WgPackHookPtr( static_cast<WgPackHook*>(pHook.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ WgPackHook::Parent() ___________________________________________________
@@ -173,7 +186,7 @@ int WgPackPanel::HeightForWidth( int width ) const
 
 			m_pSizeBroker->SetItemLengths( pItemArea, nItems, width );
 
-			WgPackHook * pH = FirstHook();
+			WgPackHook * pH = _firstHook();
 			WgSizeBrokerItem * pI = pItemArea;
 
 			while( pH )
@@ -186,7 +199,7 @@ int WgPackPanel::HeightForWidth( int width ) const
 					pI++;
 				}
 
-				pH = pH->Next();
+				pH = pH->_next();
 			}
 
 			// Release temporary memory area
@@ -195,14 +208,14 @@ int WgPackPanel::HeightForWidth( int width ) const
 		}
 		else 
 		{
-			WgPackHook * pH = FirstHook();
+			WgPackHook * pH = _firstHook();
 
 			while( pH )
 			{
 				if( pH->IsVisible() && pH->m_preferredSize.h > height )
 						height = pH->m_preferredSize.h;
 
-				pH = pH->Next();
+				pH = pH->_next();
 			}
 		}
 	}
@@ -227,14 +240,14 @@ int WgPackPanel::HeightForWidth( int width ) const
 		}
 		else 
 		{
-			WgPackHook * p = FirstHook();
+			WgPackHook * p = _firstHook();
 
 			while( p )
 			{
 				if( p->IsVisible() )
 					height += p->_paddedHeightForWidth( width );
 
-				p = p->Next();
+				p = p->_next();
 			}
 		}
 	}
@@ -262,7 +275,7 @@ int WgPackPanel::WidthForHeight( int height ) const
 
 			m_pSizeBroker->SetItemLengths( pItemArea, nItems, height );
 
-			WgPackHook * pH = FirstHook();
+			WgPackHook * pH = _firstHook();
 			WgSizeBrokerItem * pI = pItemArea;
 
 			while( pH )
@@ -275,7 +288,7 @@ int WgPackPanel::WidthForHeight( int height ) const
 					pI++;
 				}
 
-				pH = pH->Next();
+				pH = pH->_next();
 			}
 
 			// Release temporary memory area
@@ -284,14 +297,14 @@ int WgPackPanel::WidthForHeight( int height ) const
 		}
 		else 
 		{
-			WgPackHook * pH = FirstHook();
+			WgPackHook * pH = _firstHook();
 
 			while( pH )
 			{
 				if( pH->IsVisible() && pH->m_preferredSize.w > width )
 						width = pH->m_preferredSize.w;
 
-				pH = pH->Next();
+				pH = pH->_next();
 			}
 		}
 	}
@@ -316,14 +329,14 @@ int WgPackPanel::WidthForHeight( int height ) const
 		}
 		else 
 		{
-			WgPackHook * p = FirstHook();
+			WgPackHook * p = _firstHook();
 
 			while( p )
 			{
 				if( p->IsVisible() )
 					width += p->_paddedWidthForHeight( height );
 
-				p = p->Next();
+				p = p->_next();
 			}
 		}
 	}
@@ -336,7 +349,7 @@ int WgPackPanel::WidthForHeight( int height ) const
 
 WgHook* WgPackPanel::_firstHookWithGeo( WgRect& geo ) const
 {	
-	WgPackHook * p = FirstHook();
+	WgPackHook * p = _firstHook();
 	if( p )
 		geo = p->m_geo;
 	return p;
@@ -346,7 +359,7 @@ WgHook* WgPackPanel::_firstHookWithGeo( WgRect& geo ) const
 
 WgHook* WgPackPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
-	WgPackHook * p = static_cast<WgPackHook*>(pHook)->Next();
+	WgPackHook * p = static_cast<WgPackHook*>(pHook)->_next();
 	if( p )
 		geo = p->m_geo;
 	return p;	
@@ -356,7 +369,7 @@ WgHook* WgPackPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 WgHook* WgPackPanel::_lastHookWithGeo( WgRect& geo ) const
 {
-	WgPackHook * p = LastHook();
+	WgPackHook * p = _lastHook();
 	if( p )
 		geo = p->m_geo;
 	return p;
@@ -366,7 +379,7 @@ WgHook* WgPackPanel::_lastHookWithGeo( WgRect& geo ) const
 
 WgHook* WgPackPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
-	WgPackHook * p = static_cast<WgPackHook*>(pHook)->Prev();
+	WgPackHook * p = static_cast<WgPackHook*>(pHook)->_prev();
 	if( p )
 		geo = p->m_geo;
 	return p;	
@@ -479,7 +492,7 @@ void WgPackPanel::_updatePreferredSize()
 		
 		length = m_pSizeBroker->SetPreferredLengths( pItemArea, nItems );
 		
-		WgPackHook * pH = FirstHook();
+		WgPackHook * pH = _firstHook();
 		WgSizeBrokerItem * pI = pItemArea;
 		while( pH )
 		{
@@ -490,7 +503,7 @@ void WgPackPanel::_updatePreferredSize()
 					breadth = b;			
 				pI++;
 			}
-			pH = pH->Next();
+			pH = pH->_next();
 		}
 		
 		// Release temporary memory area
@@ -500,7 +513,7 @@ void WgPackPanel::_updatePreferredSize()
 	}
 	else
 	{
-		WgPackHook * p = FirstHook();
+		WgPackHook * p = _firstHook();
 
 		if( m_bHorizontal )
 		{
@@ -512,7 +525,7 @@ void WgPackPanel::_updatePreferredSize()
 	                if( p->m_preferredSize.h > breadth )
 	                    breadth = p->m_preferredSize.h;
 				}
-				p = p->Next();
+				p = p->_next();
             }
 		}
 		else
@@ -525,7 +538,7 @@ void WgPackPanel::_updatePreferredSize()
 					if( p->m_preferredSize.w > breadth )
 					    breadth = p->m_preferredSize.w;
 				}
-                p = p->Next();
+                p = p->_next();
             }
 		}
 	}
@@ -559,7 +572,7 @@ void WgPackPanel::_refreshChildGeo()
 	if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->MayAlterPreferredLengths()) )
 	{
 		WgCoord pos;
-		WgPackHook * p = FirstHook();
+		WgPackHook * p = _firstHook();
         WgRect geo;
 		while( p )
 		{
@@ -612,7 +625,7 @@ void WgPackPanel::_refreshChildGeo()
 				}
 			}
 
-			p = p->Next();
+			p = p->_next();
 		}
 	}
 	else
@@ -628,7 +641,7 @@ void WgPackPanel::_refreshChildGeo()
 		
 		m_pSizeBroker->SetItemLengths( pItemArea, nItems, givenLength );
 		
-		WgPackHook * pH = FirstHook();
+		WgPackHook * pH = _firstHook();
 		WgSizeBrokerItem * pI = pItemArea;
 
 		WgCoord pos;
@@ -684,7 +697,7 @@ void WgPackPanel::_refreshChildGeo()
 					geo.h = 0;
 				}
 			}
-			pH = pH->Next();
+			pH = pH->_next();
 		}
 		
 		// Release SizeBroker array
@@ -697,7 +710,7 @@ void WgPackPanel::_refreshChildGeo()
 
 int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 {
-	WgPackHook * pH = FirstHook();
+	WgPackHook * pH = _firstHook();
 	WgSizeBrokerItem * pI = pArray;
 	
 	if( m_bHorizontal )
@@ -712,7 +725,7 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 				pI->weight = pH->m_weight;			
 				pI++;
 			}
-			pH = pH->Next();
+			pH = pH->_next();
 		}
 	}
 	else 
@@ -727,7 +740,7 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 				pI->weight = pH->m_weight;			
 				pI++;
 			}
-			pH = pH->Next();
+			pH = pH->_next();
 		}			
 	}
 	
@@ -736,7 +749,7 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 
 int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forcedBreadth ) const
 {
-	WgPackHook * pH = FirstHook();
+	WgPackHook * pH = _firstHook();
 	WgSizeBrokerItem * pI = pArray;
 	
 	if( m_bHorizontal )
@@ -751,7 +764,7 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forced
 				pI->weight = pH->m_weight;			
 				pI++;
 			}
-			pH = pH->Next();
+			pH = pH->_next();
 		}
 	}
 	else 
@@ -766,7 +779,7 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forced
 				pI->weight = pH->m_weight;			
 				pI++;
 			}
-			pH = pH->Next();
+			pH = pH->_next();
 		}			
 	}
 	

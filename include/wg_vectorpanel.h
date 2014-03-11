@@ -39,6 +39,9 @@ class WgVectorPanel;
 typedef	WgSmartPtr<WgVectorPanel,WgPanelPtr>		WgVectorPanelPtr;
 typedef	WgWeakPtr<WgVectorPanel,WgPanelWeakPtr>	WgVectorPanelWeakPtr;
 
+class WgVectorHook;
+typedef	WgHookTypePtr<WgVectorHook,WgPanelHookPtr>	WgVectorHookPtr;
+
 //____ WgVectorHook ___________________________________________________________
 
 class WgVectorHook : public WgPanelHook, protected WgLink
@@ -48,20 +51,25 @@ class WgVectorHook : public WgPanelHook, protected WgLink
 
 
 public:
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgVectorHookPtr	Cast( const WgHookPtr& pInterface );
+
 	WgCoord	Pos() const;
 	WgSize	Size() const;
 	WgRect	Geo() const;
 	WgCoord	ScreenPos() const;
 	WgRect	ScreenGeo() const;
 
-	WgVectorHook*	Prev() const { return _prev(); }
-	WgVectorHook*	Next() const { return _next(); }
+	WgVectorHookPtr	Prev() const { return _prev(); }
+	WgVectorHookPtr	Next() const { return _next(); }
 	WgVectorPanelPtr Parent() const;
 
 	bool			MoveForward();
 	bool			MoveBackward();
-	bool			MoveBefore( WgVectorHook * pSibling );
-	bool			MoveAfter( WgVectorHook * pSibling );
+	bool			MoveBefore( const WgVectorHookPtr& pSibling );
+	bool			MoveAfter( const WgVectorHookPtr& pSibling );
 	bool			MoveFirst();
 	bool			MoveLast();
 
@@ -92,15 +100,19 @@ public:
 	static const char	CLASSNAME[];
 	static WgVectorPanelPtr	Cast( const WgObjectPtr& pObject );
 
-	WgVectorHook * AddChild( const WgWidgetPtr& pWidget );
-	WgVectorHook * InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
+	WgVectorHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return _addWidget(pWidget.GetRealPtr() ); }
+	WgVectorHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return _insertWidget( pWidget.GetRealPtr(), pSibling.GetRealPtr() ); }
 
-	bool			RemoveChild( const WgWidgetPtr& pWidget );
+	bool			RemoveWidget( const WgWidgetPtr& pWidget );
 	bool			Clear();
 
 protected:
 	WgVectorPanel();
 	virtual ~WgVectorPanel();
+
+	WgVectorHook *	_addWidget( WgWidget * pWidget );
+	WgVectorHook *	_insertWidget( WgWidget * pWidget, WgWidget * pSibling );
+
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 

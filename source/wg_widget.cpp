@@ -70,7 +70,14 @@ WgWidgetPtr WgWidget::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
+//____ Parent() _______________________________________________________________
 
+WgContainerPtr WgWidget::Parent() const
+{ 
+	if( m_pHook ) 
+		return m_pHook->Parent(); 
+	return 0; 
+}
 
 //____ PointerStyle() ________________________________________
 
@@ -119,25 +126,27 @@ void WgWidget::SetSkin( const WgSkinPtr& pSkin )
 
 //____ CloneContent() _________________________________________________________
 
-bool WgWidget::CloneContent( const WgWidget * _pOrg )
+bool WgWidget::CloneContent( const WgWidgetPtr& _pOrg )
 {
 	if( _pOrg->ClassName() != ClassName() )
 		return false;
 
-	m_id			= _pOrg->m_id;
+	WgWidget * pOrg = _pOrg.GetRealPtr();
 
-	m_pointerStyle 	= _pOrg->m_pointerStyle;
-	m_pSkin			= _pOrg->m_pSkin;
+	m_id			= pOrg->m_id;
 
-	m_tooltip		= _pOrg->m_tooltip;
-	m_markOpacity	= _pOrg->m_markOpacity;
+	m_pointerStyle 	= pOrg->m_pointerStyle;
+	m_pSkin			= pOrg->m_pSkin;
 
-	m_bOpaque		= _pOrg->m_bOpaque;
-	m_bTabLock		= _pOrg->m_bTabLock;
+	m_tooltip		= pOrg->m_tooltip;
+	m_markOpacity	= pOrg->m_markOpacity;
+
+	m_bOpaque		= pOrg->m_bOpaque;
+	m_bTabLock		= pOrg->m_bTabLock;
 
 	// We do not clone state...
 
-	_onCloneContent( _pOrg );
+	_onCloneContent( pOrg );
 	return true;
 }
 
@@ -256,7 +265,7 @@ WgSize WgWidget::MaxSize() const
 
 WgBlendMode WgWidget::_getBlendMode() const
 {
-	WgContainer * pParent = Parent();
+	WgContainer * pParent = _parent();
 	if( pParent )
 		return pParent->_getBlendMode();
 	else

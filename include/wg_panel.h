@@ -41,6 +41,8 @@ class WgPanel;
 typedef	WgSmartPtr<WgPanel,WgContainerPtr>		WgPanelPtr;
 typedef	WgWeakPtr<WgPanel,WgContainerWeakPtr>	WgPanelWeakPtr;
 
+class WgPanelHook;
+typedef	WgHookTypePtr<WgPanelHook,WgHookPtr>	WgPanelHookPtr;
 
 
 //____ WgPanelHook ____________________________________________________________
@@ -48,8 +50,13 @@ typedef	WgWeakPtr<WgPanel,WgContainerWeakPtr>	WgPanelWeakPtr;
 class WgPanelHook : public WgHook
 {
 public:
-	WgPanelHook *	Prev() const { return static_cast<WgPanelHook*>(_prevHook()); }
-	WgPanelHook *	Next() const { return static_cast<WgPanelHook*>(_nextHook()); }
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgPanelHookPtr	Cast( const WgHookPtr& pInterface );
+
+	WgPanelHookPtr	Prev() const { return static_cast<WgPanelHook*>(_prevHook()); }
+	WgPanelHookPtr	Next() const { return static_cast<WgPanelHook*>(_nextHook()); }
 	WgPanelPtr		Parent() const;
 
 	virtual bool	SetVisible( bool bVisible );
@@ -63,7 +70,7 @@ protected:
 	WgPanelHook() : m_bVisible(true), m_paddingUnit(WG_PIXELS) {}
 	 virtual ~WgPanelHook() {};
 
-	 WgWidgetHolder* _holder() const { return _parent(); }
+	 WgIWidgetHolder* _holder() const { return _parent(); }
 
 	WgSize		_paddedPreferredSize() const;
 	WgSize		_paddedMinSize() const;
@@ -105,10 +112,10 @@ public:
 	void		SetMaskOp( WgMaskOp operation );
 	WgMaskOp	MaskOp() const { return m_maskOp; }
 
-	inline WgPanelHook *	FirstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
-	inline WgPanelHook *	LastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
+	inline WgPanelHookPtr	FirstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
+	inline WgPanelHookPtr	LastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
 
-	// Overloaded from WgWidgetHolder
+	// Overloaded from WgIWidgetHolder
 
 
 protected:

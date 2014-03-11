@@ -338,10 +338,10 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 			break;
 		}
 
-		case WG_EVENT_MENU_CLOSED:
+		case WG_EVENT_POPUP_CLOSED:
 		{
-			WgMenuClosedEventPtr pEvent = WgMenuClosedEvent::Cast(_pEvent);
-			sprintf( params, "menu=%d", pEvent->Menu() );
+			WgPopupClosedEventPtr pEvent = WgPopupClosedEvent::Cast(_pEvent);
+			sprintf( params, "popup=%d", pEvent->Popup() );
 			break;
 		}
 

@@ -34,7 +34,7 @@
 #include	<wg_surface.h>
 #include	<wg_gfxdevice.h>
 #include	<wg_texttool.h>
-#include	<wg_menulayer.h>
+#include	<wg_popuplayer.h>
 
 const char WgMenubar::CLASSNAME[] = {"Menubar"};
 
@@ -431,13 +431,13 @@ bool WgMenubar::_openMenu( int nb )
 	WgRect	r(pos, pI->m_width+bordersWidth, Size().h );
 
 
-	WgMenuLayer * pLayer = 0;
+	WgPopupLayer * pLayer = 0;
 	if( Parent() )
-		pLayer = Parent()->_getMenuLayer();
+		pLayer = Parent()->_getPopupLayer();
 	if( !pLayer )
 		return false;
 
-	pLayer->OpenMenu( pItem->m_pMenu, this, r - pLayer->ScreenPos(), WG_SOUTHWEST );
+	pLayer->OpenPopup( pItem->m_pMenu, this, r - pLayer->ScreenPos(), WG_SOUTHWEST );
 	return true;
 }
 
@@ -453,15 +453,15 @@ bool WgMenubar::_closeMenu( int nb )
 		return false;
 
 
-	WgMenuLayer * pLayer = 0;
+	WgPopupLayer * pLayer = 0;
 	WgWidgetPtr pMenu = pItem->m_pMenu;
 	if( Parent() )
-		pLayer = Parent()->_getMenuLayer();
+		pLayer = Parent()->_getPopupLayer();
 
 	if( !pLayer || !pMenu )
 		return false;
 
-	pLayer->CloseMenu( pMenu );
+	pLayer->ClosePopup( pMenu );
 
 	return true;
 }

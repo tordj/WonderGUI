@@ -131,9 +131,9 @@ WgRect WgRootPanel::Geo() const
 }
 
 
-//____ SetChild() _____________________________________________________________
+//____ SetWidget() _____________________________________________________________
 
-bool WgRootPanel::SetChild( const WgWidgetPtr& pWidget )
+WgHookPtr WgRootPanel::SetWidget( const WgWidgetPtr& pWidget )
 {
 	if( !pWidget )
 		return false;
@@ -143,12 +143,12 @@ bool WgRootPanel::SetChild( const WgWidgetPtr& pWidget )
 
 	m_hook._widget()->_onCollectPatches( m_dirtyPatches, Geo(), Geo() );
 
-	return true;
+	return &m_hook;
 }
 
-//____ RemoveChild() _________________________________________________________
+//____ RemoveWidget() _________________________________________________________
 
-bool WgRootPanel::RemoveChild()
+bool WgRootPanel::RemoveWidget()
 {
 	if( !m_hook._widget() )
 		return false;
@@ -158,10 +158,10 @@ bool WgRootPanel::RemoveChild()
 	return true;
 }
 
-bool WgRootPanel::RemoveChild( const WgWidgetPtr& pWidget )
+bool WgRootPanel::RemoveWidget( const WgWidgetPtr& pWidget )
 {
 	if( pWidget.GetRealPtr() == m_hook._widget() )
-		return RemoveChild();
+		return RemoveWidget();
 
 	return false;
 }
@@ -171,7 +171,7 @@ bool WgRootPanel::RemoveChild( const WgWidgetPtr& pWidget )
 
 bool WgRootPanel::Clear()
 {
-	return RemoveChild();
+	return RemoveWidget();
 }
 
 
@@ -379,7 +379,7 @@ WgHook * WgRootPanel::Hook::_nextHook() const
 	return 0;
 }
 
-WgWidgetHolder * WgRootPanel::Hook::_holder() const
+WgIWidgetHolder * WgRootPanel::Hook::_holder() const
 {
 	return m_pRoot;
 }

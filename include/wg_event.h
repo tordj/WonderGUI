@@ -56,7 +56,7 @@ class WgValueDisplay;
 class WgValueEditor;
 class WgScrollbar;
 class WgMenu;
-class WgMenuLayer;
+class WgPopupLayer;
 class WgModalLayer;
 
 typedef WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
@@ -193,9 +193,9 @@ class WgItemMousePressEvent;
 typedef	WgSmartPtr<WgItemMousePressEvent,WgItemEventPtr>		WgItemMousePressEventPtr;
 typedef	WgWeakPtr<WgItemMousePressEvent,WgItemEventWeakPtr>	WgItemMousePressEventWeakPtr;
 
-class WgMenuClosedEvent;
-typedef	WgSmartPtr<WgMenuClosedEvent,WgEventPtr>		WgMenuClosedEventPtr;
-typedef	WgWeakPtr<WgMenuClosedEvent,WgEventWeakPtr>	WgMenuClosedEventWeakPtr;
+class WgPopupClosedEvent;
+typedef	WgSmartPtr<WgPopupClosedEvent,WgEventPtr>		WgPopupClosedEventPtr;
+typedef	WgWeakPtr<WgPopupClosedEvent,WgEventWeakPtr>	WgPopupClosedEventWeakPtr;
 
 class WgModalMoveOutsideEvent;
 typedef	WgSmartPtr<WgModalMoveOutsideEvent,WgEventPtr>		WgModalMoveOutsideEventPtr;
@@ -759,19 +759,19 @@ public:
 	static WgItemsUnselectEventPtr	Cast( const WgObjectPtr& pObject );
 };
 
-//____ WgMenuClosedEvent ______________________________________________________
+//____ WgPopupClosedEvent ______________________________________________________
 
-class WgMenuClosedEvent : public WgEvent
+class WgPopupClosedEvent : public WgEvent
 {
-	friend class WgMenuLayer;
+	friend class WgPopupLayer;
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
-	static WgMenuClosedEventPtr	Cast( const WgObjectPtr& pObject );
+	static WgPopupClosedEventPtr	Cast( const WgObjectPtr& pObject );
 
-	WgWidget *		Menu() const;									// Inlining this would demand include of wg_widget.h.
-	WgWidgetWeakPtr	MenuWeakPtr() const { return m_pMenu; }
+	WgWidget *		Popup() const;									// Inlining this would demand include of wg_widget.h.
+	WgWidgetWeakPtr	PopupWeakPtr() const { return m_pPopup; }
 
 	// Caller is the same as m_pWidget, since m_pWidget should receive
 	// the event.
@@ -780,9 +780,9 @@ public:
 	WgWidgetWeakPtr	CallerWeakPtr() const { return m_pWidget; }
 
 protected:
-	WgMenuClosedEvent( WgWidget * pMenu, const WgWidgetWeakPtr& pCaller );
+	WgPopupClosedEvent( WgWidget * pPopup, const WgWidgetWeakPtr& pCaller );
 
-	WgWidgetWeakPtr m_pMenu;
+	WgWidgetWeakPtr m_pPopup;
 };
 
 //____ WgWidgetModalLayer events _________________________________________________

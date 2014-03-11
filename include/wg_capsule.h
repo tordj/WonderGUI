@@ -31,6 +31,8 @@ class WgCapsule;
 typedef	WgSmartPtr<WgCapsule,WgContainerPtr>	WgCapsulePtr;
 typedef	WgWeakPtr<WgCapsule,WgContainerPtr>	WgCapsuleWeakPtr;
 
+class WgCapsuleHook;
+typedef	WgHookTypePtr<WgCapsuleHook,WgHookPtr>	WgCapsuleHookPtr;
 
 
 class WgCapsuleHook : public WgHook
@@ -40,8 +42,10 @@ class WgCapsuleHook : public WgHook
 	friend class WgShaderCapsule;
 
 public:
-	const char *Type( void ) const;
-	static const char * ClassType();
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgCapsuleHookPtr	Cast( const WgHookPtr& pInterface );
 
 	// Standard Hook methods
 
@@ -62,7 +66,7 @@ protected:
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;
 	WgContainer *	_parent() const;
-	WgWidgetHolder*	_holder() const;
+	WgIWidgetHolder*	_holder() const;
 
 	WgCapsule * 	m_pParent;
 };
@@ -81,13 +85,13 @@ public:
 	static const char	CLASSNAME[];
 	static WgCapsulePtr	Cast( const WgObjectPtr& pObject );
 
-	WgHook *		SetChild( const WgWidgetPtr& pWidget );
-	WgWidgetPtr		Child() { return m_hook.Widget(); }
-	bool			RemoveChild( const WgWidgetPtr& pWidget );
-	bool			Clear();
+	WgCapsuleHookPtr	SetWidget( const WgWidgetPtr& pWidget );
+	WgWidgetPtr			Widget() { return m_hook.Widget(); }
+	bool				RemoveWidget( const WgWidgetPtr& pWidget );
+	bool				Clear();
 
-	inline WgCapsuleHook *	FirstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
-	inline WgCapsuleHook *	LastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }
+	inline WgCapsuleHookPtr	FirstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
+	inline WgCapsuleHookPtr	LastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }
 
 
 	// Overloaded from WgWidget

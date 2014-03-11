@@ -236,8 +236,8 @@
 #	include <wg_menubar.h>
 #endif
 
-#ifndef WG_MENULAYER_DOT_H
-#	include <wg_menulayer.h>
+#ifndef WG_POPUPLAYER_DOT_H
+#	include <wg_popuplayer.h>
 #endif
 
 #ifndef WG_MODAL_LAYER_DOT_H

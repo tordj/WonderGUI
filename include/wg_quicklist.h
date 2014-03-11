@@ -29,14 +29,19 @@ class WgQuickList;
 typedef	WgSmartPtr<WgQuickList,WgListPtr>		WgQuickListPtr;
 typedef	WgWeakPtr<WgQuickList,WgListWeakPtr>	WgQuickListWeakPtr;
 
+class WgQuickListHook;
+typedef	WgHookTypePtr<WgQuickListHook,WgListHookPtr>	WgQuickListHookPtr;
+
 class WgQuickListHook : public WgListHook, private WgLink
 {
 public:
-	const char *Type( void ) const;
-	static const char * ClassType();
+	virtual bool				IsInstanceOf( const char * pClassName ) const;
+	virtual const char *		ClassName( void ) const;
+	static const char			CLASSNAME[];
+	static WgQuickListHookPtr	Cast( const WgHookPtr& pInterface );
 	
-	WgQuickListHook *	Prev() const { return _prev(); }
-	WgQuickListHook *	Next() const { return _next(); }
+	WgQuickListHookPtr	Prev() const { return _prev(); }
+	WgQuickListHookPtr	Next() const { return _next(); }
 	WgQuickListPtr		Parent() const;
 
 protected:
@@ -70,11 +75,14 @@ public:
 	static const char	CLASSNAME[];
 	static WgQuickListPtr	Cast( const WgObjectPtr& pObject );
 
-	WgQuickListHook *	AddChild( const WgWidgetPtr& pWidget );
-	WgQuickListHook *	InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
-	WgQuickListHook *	InsertChildSorted( const WgWidgetPtr& pWidget );
+	WgQuickListHookPtr	AddWidget( const WgWidgetPtr& pWidget );
+	WgQuickListHookPtr	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
+	WgQuickListHookPtr	InsertWidgetSorted( const WgWidgetPtr& pWidget );
 
-	void				SortChildren();
+	bool				RemoveWidget( const WgWidgetPtr& pWidget );
+	bool				Clear();
+
+	void				SortWidgets();
 	void				SetSortOrder( WgSortOrder order );
 	WgSortOrder			GetSortOrder() const { return m_sortOrder; }
 
@@ -100,6 +108,17 @@ protected:
 	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs );
 	virtual void	_onStateChanged( WgState oldState, WgState newState );
+
+
+	WgHook*			_firstHook() const;
+	WgHook*			_lastHook() const;
+
+	WgHook*			_firstHookWithGeo( WgRect& geo ) const;
+	WgHook*			_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
+	WgHook*			_lastHookWithGeo( WgRect& geo ) const;
+	WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
 
 
 	WgSortOrder			m_sortOrder;

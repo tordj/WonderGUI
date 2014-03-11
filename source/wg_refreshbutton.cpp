@@ -292,15 +292,16 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 								_canvas.y + (_canvas.h - pAnimFrame->rect.h)/2,
 								pAnimFrame->rect.Size() );
 
-				pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect.x, pAnimFrame->rect.y, pAnimFrame->rect.w, pAnimFrame->rect.h,
-										  dest.x, dest.y, dest.w, dest.h, false );
+				pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, (float) pAnimFrame->rect.x, (float) pAnimFrame->rect.y, 
+										  (float) pAnimFrame->rect.w, (float) pAnimFrame->rect.h,
+										  (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, false );
 			}
 			break;
 
 			case BUTTON_STRETCHED:
 			{
-				pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect.x, pAnimFrame->rect.y, pAnimFrame->rect.w, pAnimFrame->rect.h,
-										  _canvas.x, _canvas.y, _canvas.w, _canvas.h, false );
+				pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, (float) pAnimFrame->rect.x, (float) pAnimFrame->rect.y, (float) pAnimFrame->rect.w, (float) pAnimFrame->rect.h,
+										  (float) _canvas.x, (float) _canvas.y, (float) _canvas.w, (float) _canvas.h, false );
 			}
 			break;
 

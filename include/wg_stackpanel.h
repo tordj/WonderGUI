@@ -31,14 +31,19 @@ class WgStackPanel;
 typedef	WgSmartPtr<WgStackPanel,WgVectorPanelPtr>		WgStackPanelPtr;
 typedef	WgWeakPtr<WgStackPanel,WgVectorPanelWeakPtr>	WgStackPanelWeakPtr;
 
+class WgStackHook;
+typedef	WgHookTypePtr<WgStackHook,WgVectorHookPtr>		WgStackHookPtr;
+
 //____ WgStackHook ____________________________________________________________
 
 class WgStackHook : public WgVectorHook
 {
 	friend class WgStackPanel;
 public:
-	const char *Type( void ) const;
-	static const char * ClassType();
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgStackHookPtr	Cast( const WgHookPtr& pInterface );
 
 	enum SizePolicy
 	{
@@ -53,8 +58,8 @@ public:
 	void			SetOrigo( WgOrigo origo );
 	WgOrigo	Origo() const { return m_origo; }
 
-	WgStackHook * 	Prev() const { return _prev(); }
-	WgStackHook * 	Next() const { return _next(); }
+	WgStackHookPtr	Prev() const { return _prev(); }
+	WgStackHookPtr 	Next() const { return _next(); }
 
 	WgStackPanelPtr 	Parent() const { return m_pParent; }
 
@@ -88,11 +93,11 @@ public:
 	static const char	CLASSNAME[];
 	static WgStackPanelPtr	Cast( const WgObjectPtr& pObject );
 	
-	inline WgStackHook * AddChild( const WgWidgetPtr& pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::AddChild(pWidget)); }
-	inline WgStackHook * InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
+	inline WgStackHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::_addWidget(pWidget.GetRealPtr())); }
+	inline WgStackHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::_insertWidget(pWidget.GetRealPtr(),pSibling.GetRealPtr())); }
 
-	inline WgStackHook* FirstHook() const { return static_cast<WgStackHook*>(m_hooks.First()); }
-	inline WgStackHook* LastHook() const { return static_cast<WgStackHook*>(m_hooks.Last()); }
+	inline WgStackHookPtr FirstHook() const { return static_cast<WgStackHook*>(m_hooks.First()); }
+	inline WgStackHookPtr LastHook() const { return static_cast<WgStackHook*>(m_hooks.Last()); }
 
 	// Overloaded from WgWidget
 
@@ -136,6 +141,9 @@ protected:
 	void 	_refreshPreferredSize();
 	void	_adaptChildrenToSize();
 	void	_renderFromChildOnward( WgVectorHook * pHook );
+
+	inline WgStackHook *	_firstHook() const { return static_cast<WgStackHook*>(m_hooks.First()); }
+	inline WgStackHook *	_lastHook() const { return static_cast<WgStackHook*>(m_hooks.Last()); }
 
 
 	WgSize	m_size;

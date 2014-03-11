@@ -23,6 +23,35 @@
 #include <wg_vectorpanel.h>
 
 const char WgVectorPanel::CLASSNAME[] = {"VectorPanel"};
+const char WgVectorHook::CLASSNAME[] = {"VectorHook"};
+
+//____ WgVectorHook::IsInstanceOf() __________________________________________
+
+bool WgVectorHook::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgPanelHook::IsInstanceOf(pClassName);
+}
+
+//____ WgVectorHook::ClassName() _____________________________________________
+
+const char * WgVectorHook::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ WgVectorHook::Cast() __________________________________________________
+
+WgVectorHookPtr WgVectorHook::Cast( const WgHookPtr& pHook )
+{
+	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
+		return WgVectorHookPtr( static_cast<WgVectorHook*>(pHook.GetRealPtr()) );
+
+	return 0;
+}
+
 
 WgCoord WgVectorHook::Pos() const
 {
@@ -72,11 +101,11 @@ bool WgVectorHook::MoveBackward()
 	return false;
 }
 
-bool WgVectorHook::MoveBefore( WgVectorHook * pSibling )
+bool WgVectorHook::MoveBefore( const WgVectorHookPtr& pSibling )
 {
 	if( pSibling && pSibling->Parent() == Parent() )
 	{
-		if( _moveBefore(pSibling) )
+		if( _moveBefore(pSibling.GetRealPtr()) )
 		{
 			Parent()->_onWidgetsReordered();
 			return true;
@@ -85,11 +114,11 @@ bool WgVectorHook::MoveBefore( WgVectorHook * pSibling )
 	return false;
 }
 
-bool WgVectorHook::MoveAfter( WgVectorHook * pSibling )
+bool WgVectorHook::MoveAfter( const WgVectorHookPtr& pSibling )
 {
 	if( pSibling && pSibling->Parent() == Parent() )
 	{
-		if( _moveAfter(pSibling) )
+		if( _moveAfter(pSibling.GetRealPtr()) )
 		{
 			Parent()->_onWidgetsReordered();
 			return true;
@@ -218,47 +247,50 @@ WgVectorPanelPtr WgVectorPanel::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-//____ AddChild() _____________________________________________________________
+//____ _addWidget() _____________________________________________________________
 
-WgVectorHook * WgVectorPanel::AddChild( const WgWidgetPtr& pWidget )
+WgVectorHook * WgVectorPanel::_addWidget( WgWidget * pWidget )
 {
 	if( !pWidget )
 		return 0;
 
 	WgVectorHook * pHook = _newHook();
 	m_hooks.PushBack(pHook);
-	pHook->_setWidget( pWidget.GetRealPtr() );
+	pHook->_setWidget( pWidget );
 
 	_onWidgetAppeared(pHook);
 	return pHook;
 }
 
-//____ InsertChild() __________________________________________________________
+//____ _insertWidget() __________________________________________________________
 
-WgVectorHook * WgVectorPanel::InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling )
+WgVectorHook * WgVectorPanel::_insertWidget( WgWidget * pWidget, WgWidget * pSibling )
 {
 	if( !pWidget || !pSibling || !pSibling->Parent() || pSibling->Parent() != this )
 		return 0;
 
-	WgVectorHook * pHook = _newHook();
-	pHook->_moveBefore(static_cast<WgVectorHook*>(pSibling->Hook()));
+	WgVectorPanel * pWdg = (WgVectorPanel*) pSibling;
+	WgHook * p = pWdg->m_pHook;
 
-	pHook->_setWidget( pWidget.GetRealPtr() );
+	WgVectorHook * pHook = _newHook();
+	pHook->_moveBefore(static_cast<WgVectorHook*>(pSibling->_hook()));
+
+	pHook->_setWidget( pWidget );
 	
 	_onWidgetAppeared(pHook);
 	return pHook;
 }
 
-//____ RemoveChild() __________________________________________________________
+//____ RemoveWidget() __________________________________________________________
 
-bool WgVectorPanel::RemoveChild( const WgWidgetPtr& pWidget )
+bool WgVectorPanel::RemoveWidget( const WgWidgetPtr& pWidget )
 {
 	if( !pWidget || !pWidget->Hook() || pWidget->Hook()->Parent() != this )
 		return false;
 
 	// Disconnect and notify subclass that widget has disappeared
 
-	WgVectorHook * pHook = (WgVectorHook *) pWidget->Hook();
+	WgVectorHook * pHook = (WgVectorHook *) pWidget->_hook();
 	pHook->_disconnect();
 
 	if( pHook->IsVisible() )

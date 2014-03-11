@@ -39,11 +39,19 @@ class WgList;
 typedef	WgSmartPtr<WgList,WgContainerPtr>		WgListPtr;
 typedef	WgWeakPtr<WgList,WgContainerWeakPtr>	WgListWeakPtr;
 
+class WgListHook;
+typedef	WgHookTypePtr<WgListHook,WgHookPtr>	WgListHookPtr;
+
 class WgListHook : public WgHook
 {
 public:
-	WgListHook *	Prev() const { return static_cast<WgListHook*>(_prevHook()); }
-	WgListHook *	Next() const { return static_cast<WgListHook*>(_nextHook()); }
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgListHookPtr	Cast( const WgHookPtr& pInterface );
+
+	WgListHookPtr	Prev() const { return static_cast<WgListHook*>(_prevHook()); }
+	WgListHookPtr	Next() const { return static_cast<WgListHook*>(_nextHook()); }
 	WgListPtr		Parent() const;
 
 	virtual bool	SetVisible( bool bVisible );
@@ -58,7 +66,7 @@ protected:
 	WgListHook() : m_bVisible(true) {}
 	 virtual ~WgListHook() {};
 
-	 WgWidgetHolder* _holder() const { return _parent(); }
+	 WgIWidgetHolder* _holder() const { return _parent(); }
 
 
 	 bool			m_bVisible;
@@ -86,8 +94,8 @@ public:
 	void			SetSelectMode( WgSelectMode mode ) const;
 	WgSelectMode	SelectMode() const { return m_selectMode; }
 
-	inline WgListHook *	FirstHook() const { return static_cast<WgListHook*>(_firstHook()); }
-	inline WgListHook *	LastHook() const { return static_cast<WgListHook*>(_lastHook()); }
+	inline WgListHookPtr	FirstHook() const { return static_cast<WgListHook*>(_firstHook()); }
+	inline WgListHookPtr	LastHook() const { return static_cast<WgListHook*>(_lastHook()); }
 
 
 protected:

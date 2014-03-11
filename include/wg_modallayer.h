@@ -32,14 +32,19 @@ class WgModalLayer;
 typedef	WgSmartPtr<WgModalLayer,WgLayerPtr>	WgModalLayerPtr;
 typedef	WgWeakPtr<WgModalLayer,WgLayerWeakPtr>	WgModalLayerWeakPtr;
 
+class WgModalHook;
+typedef	WgHookTypePtr<WgModalHook,WgLayerHookPtr>	WgModalHookPtr;
+
 class WgModalHook : public WgLayerHook, protected WgLink
 {
 	friend class WgModalLayer;
 	friend class WgChain<WgModalHook>;
 
 public:
-	const char *Type( void ) const;
-	static const char * ClassType();
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgModalHookPtr	Cast( const WgHookPtr& pInterface );
 
 	void	Top();								// Put us ontop of all our siblings.
 
@@ -61,8 +66,8 @@ public:
 
 	// Standard Hook methods
 
-	WgModalHook *	Prev() const { return _prev(); }
-	WgModalHook *	Next() const { return _next(); }
+	WgModalHookPtr	Prev() const { return _prev(); }
+	WgModalHookPtr	Next() const { return _next(); }
 
 	WgModalLayerPtr	Parent() const;
 
@@ -76,9 +81,9 @@ protected:
 	bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
 	void		_requestResize();
 
-	WgHook *	_prevHook() const;
-	WgHook *	_nextHook() const;
-	WgContainer* _parent() const;
+	WgLayerHook *	_prevLayerHook() const;			// Iterate through all hooks except the base hook
+	WgLayerHook *	_nextLayerHook() const;			// Iterate through all hooks except the base hook
+	WgContainer *	_parent() const;
 
 
 	WgModalLayer *	m_pParent;
@@ -103,16 +108,16 @@ public:
 	static const char	CLASSNAME[];
 	static WgModalLayerPtr	Cast( const WgObjectPtr& pObject );
 
-	WgModalHook *	AddModal( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
-	WgModalHook *	AddModal( const WgWidgetPtr& pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST ) { return AddModal( pWidget, WgRect(pos,0,0), origo); }
+	WgModalHookPtr	AddModalWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
+	WgModalHookPtr	AddModalWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST ) { return AddModalWidget( pWidget, WgRect(pos,0,0), origo); }
 
-	bool			ClearModalChildren();
+	bool			RemoveModalWidgets();
 
-	bool			RemoveChild( const WgWidgetPtr& pWidget );
+	bool			RemoveWidget( const WgWidgetPtr& pWidget );
 	bool			Clear();
 
-	WgModalHook *	FirstModal();
-	WgModalHook *	LastModal();
+	WgModalHookPtr	FirstModalHook();
+	WgModalHookPtr	LastModalHook();
 
 
 	// Overloaded from WgWidget
@@ -142,21 +147,13 @@ private:
 	// Overloaded from WgLayer
 
 	WgLayerHook *	_firstLayerHook() const { return m_modalHooks.First(); }
+	WgLayerHook *	_lastLayerHook() const { return m_modalHooks.Last(); }
 
 	//
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
 	void			_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
-
-	WgHook*		_firstHook() const;		// Fist Hook returned is the normal child, then follows the modal ones.
-	WgHook*		_lastHook() const;		//
-
-	WgHook *	_firstHookWithGeo( WgRect& geo ) const;
-	WgHook *	_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
-
-	WgHook *	_lastHookWithGeo( WgRect& geo ) const;
-	WgHook *	_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
 	WgChain<WgModalHook>	m_modalHooks;		// First modal widget lies at the bottom.
 

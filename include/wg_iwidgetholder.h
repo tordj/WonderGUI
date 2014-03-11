@@ -23,6 +23,14 @@
 #ifndef	WG_WIDGETHOLDER_DOT_H
 #define	WG_WIDGETHOLDER_DOT_H
 
+#ifndef WG_INTERFACE_DOT_H
+#	include <wg_interface.h>
+#endif
+
+#ifndef WG_SMARTPTR_DOT_H
+#	include <wg_smartptr.h>
+#endif
+
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
 #endif
@@ -40,10 +48,15 @@ class WgList;
 class WgCapsule;
 class WgLayer;
 class WgModalLayer;
-class WgMenuLayer;
+class WgPopupLayer;
 class WgCoord;
 
-class WgWidgetHolder
+
+class WgIWidgetHolder;
+typedef	WgISmartPtr<WgIWidgetHolder,WgInterfacePtr>		WgIWidgetHolderPtr;
+typedef	WgWeakPtr<WgIWidgetHolder,WgInterfacePtr>		WgIWidgetHolderWeakPtr;
+
+class WgIWidgetHolder : public WgInterface
 {
 	friend class WgPanel;
 	friend class WgHook;
@@ -51,16 +64,21 @@ class WgWidgetHolder
 	friend class WgRadioButton;
 	
 public:
+	virtual bool				IsInstanceOf( const char * pClassName ) const;
+	virtual const char *		ClassName( void ) const;
+	static const char			CLASSNAME[];
+	static WgIWidgetHolderPtr	Cast( const WgInterfacePtr& pInterface );
+
 	inline WgWidgetPtr	FirstWidget() const { return WgWidgetPtr(_firstWidget()); }
 	inline WgWidgetPtr	LastWidget() const { return WgWidgetPtr(_lastWidget()); }
 
-	inline WgHook *		FirstHook() const { return _firstHook(); }
-	inline WgHook *		LastHook() const { return _lastHook(); }
+	inline WgHookPtr	FirstHook() const { return _firstHook(); }
+	inline WgHookPtr	LastHook() const { return _lastHook(); }
 
 	virtual WgWidgetPtr FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
 
 
-	virtual bool		RemoveChild( const WgWidgetPtr& pWidget ) = 0;
+	virtual bool		RemoveWidget( const WgWidgetPtr& pWidget ) = 0;
 	virtual bool		Clear() = 0;
 
 	virtual bool		IsRoot() const;

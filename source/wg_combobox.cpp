@@ -27,7 +27,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_eventhandler.h>
-#include <wg_menulayer.h>
+#include <wg_popuplayer.h>
 
 const char WgCombobox::CLASSNAME[] = {"Combobox"};
 
@@ -210,9 +210,9 @@ void WgCombobox::_closeMenu()
 {
 	if( Parent() )
 	{
-		WgMenuLayer * pLayer = Parent()->_getMenuLayer();
+		WgPopupLayer * pLayer = Parent()->_getPopupLayer();
 		if( pLayer )
-			pLayer->CloseMenu( m_pMenu );
+			pLayer->ClosePopup( m_pMenu );
 
 		WgEventHandler * pEH = _eventHandler();
 		if( pEH )
@@ -236,7 +236,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 			}
 		break;
 
-		case WG_EVENT_MENU_CLOSED:
+		case WG_EVENT_POPUP_CLOSED:
 			m_state.SetPressed(false);
 		break;
 
@@ -324,10 +324,10 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 
 					if( Parent() )
 					{
-						WgMenuLayer * pLayer = Parent()->_getMenuLayer();
+						WgPopupLayer * pLayer = Parent()->_getPopupLayer();
 						if( pLayer )
 						{
-							pLayer->OpenMenu( m_pMenu, this, m_pHook->ScreenGeo() - pLayer->ScreenPos(), WG_SOUTHWEST );
+							pLayer->OpenPopup( m_pMenu, this, m_pHook->ScreenGeo() - pLayer->ScreenPos(), WG_SOUTHWEST );
 							m_cbHandler = pHandler->AddCallback( WgEventFilter::ItemsSelect( m_pMenu ), cbEntrySelected, this );
 						}
 					}

@@ -34,19 +34,24 @@ class WgPackPanel;
 typedef	WgSmartPtr<WgPackPanel,WgVectorPanelPtr>		WgPackPanelPtr;
 typedef	WgWeakPtr<WgPackPanel,WgVectorPanelWeakPtr>	WgPackPanelWeakPtr;
 
+class WgPackHook;
+typedef	WgHookTypePtr<WgPackHook,WgVectorHookPtr>	WgPackHookPtr;
+
 class WgPackHook : public WgVectorHook
 {
 	friend class WgPackPanel;
 
 public:
-	const char *Type( void ) const;
-	static const char * ClassType();
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgPackHookPtr	Cast( const WgHookPtr& pInterface );
 	
 	bool	SetWeight( float weight );
 	float	Weight() { return m_weight; }
 
-	WgPackHook *	Prev() const { return _prev(); }
-	WgPackHook *	Next() const { return _next(); }
+	WgPackHookPtr	Prev() const { return _prev(); }
+	WgPackHookPtr	Next() const { return _next(); }
 	WgPackPanelPtr	Parent() const;
 
 protected:
@@ -80,14 +85,14 @@ public:
 	static const char	CLASSNAME[];
 	static WgPackPanelPtr	Cast( const WgObjectPtr& pObject );
 
-	inline WgPackHook * AddChild( const WgWidgetPtr& pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChild(pWidget)); }
-	inline WgPackHook * InsertChild( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
+	inline WgPackHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::_addWidget(pWidget.GetRealPtr())); }
+	inline WgPackHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::_insertWidget(pWidget.GetRealPtr(),pSibling.GetRealPtr())); }
     
 	void			SetOrientation( WgOrientation orientaiton );
 	WgOrientation	Orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
 	
-	WgPackHook *	FirstHook() const { return static_cast<WgPackHook*>(_firstHook()); }
-	WgPackHook *	LastHook() const { return static_cast<WgPackHook*>(_lastHook()); }
+	WgPackHookPtr	FirstHook() const { return static_cast<WgPackHook*>(_firstHook()); }
+	WgPackHookPtr	LastHook() const { return static_cast<WgPackHook*>(_lastHook()); }
 
 	void			SetSizeBroker( const WgSizeBrokerPtr& pBroker );
 	WgSizeBrokerPtr	SizeBroker() const { return m_pSizeBroker; }
@@ -130,6 +135,10 @@ protected:
 	
 	//
 	
+	inline WgPackHook *	_firstHook() const { return static_cast<WgPackHook*>(m_hooks.First()); }
+	inline WgPackHook *	_lastHook() const { return static_cast<WgPackHook*>(m_hooks.Last()); }
+
+
 	void			_refreshChildGeo();
 	void			_updatePreferredSize();
 	int				_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const;

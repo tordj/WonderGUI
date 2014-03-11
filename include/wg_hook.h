@@ -31,7 +31,12 @@
 #	include <wg_smartptr.h>
 #endif
 
-class WgWidgetHolder;
+#ifndef WG_HOOKPTR_DOT_H
+#	include <wg_hookptr.h>
+#endif
+
+
+class WgIWidgetHolder;
 class WgContainer;
 class WgGfxDevice;
 class WgWidget;
@@ -40,20 +45,28 @@ class WgRootPanel;
 
 
 class WgWidget;
-typedef WgSmartPtr<WgWidget,WgObjectPtr> WgWidgetPtr;
-typedef WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
+typedef WgSmartPtr<WgWidget,WgObjectPtr>			WgWidgetPtr;
+typedef WgWeakPtr<WgWidget,WgObjectWeakPtr>			WgWidgetWeakPtr;
 
 class WgContainer;
-typedef	WgSmartPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
+typedef	WgSmartPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
 typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 class WgRootPanel;
-typedef	WgSmartPtr<WgRootPanel,WgObjectPtr>		WgRootPanelPtr;
-typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>	WgRootPanelWeakPtr;
+typedef	WgSmartPtr<WgRootPanel,WgObjectPtr>			WgRootPanelPtr;
+typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>		WgRootPanelWeakPtr;
 
 class WgEventHandler;
 typedef	WgSmartPtr<WgEventHandler,WgObjectPtr>		WgEventHandlerPtr;
 typedef	WgWeakPtr<WgEventHandler,WgObjectWeakPtr>	WgEventHandlerWeakPtr;
+
+class WgIWidgetHolder;
+typedef	WgISmartPtr<WgIWidgetHolder,WgInterfacePtr>		WgIWidgetHolderPtr;
+typedef	WgWeakPtr<WgIWidgetHolder,WgInterfacePtr>		WgIWidgetHolderWeakPtr;
+
+
+class	WgHook;
+
 
 
 class WgHook
@@ -63,32 +76,36 @@ class WgHook
 	friend class WgPanel;
 	friend class WgContainer;
 	friend class WgVectorPanel;
-	friend class WgWidgetHolder;
-
+	friend class WgIWidgetHolder;
+	friend class WgHookPtr;
+	friend class WgModalLayer;
+	friend class WgPopupLayer;
 
 public:
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgHookPtr		Cast( const WgHookPtr& pInterface );				// Provided just for completeness sake.
+
 	virtual WgCoord	Pos() const = 0;
 	virtual WgSize	Size() const = 0;
 	virtual WgRect	Geo() const = 0;
 	virtual WgCoord	ScreenPos() const = 0;
 	virtual WgRect	ScreenGeo() const = 0;
 
-	WgHook *		Prev() const { return _prevHook(); }
-	WgHook *		Next() const { return _nextHook(); }
+	WgHookPtr		Prev() const { return _prevHook(); }
+	WgHookPtr		Next() const { return _nextHook(); }
 
 	WgWidgetPtr			Widget() const;
-	WgWidgetHolder * 	Holder() const;
+	WgIWidgetHolderPtr 	Holder() const;
 	WgContainerPtr 		Parent() const;
 
 	WgRootPanelPtr		Root() const;
 	WgEventHandlerPtr	EventHandler() const;
 
-	virtual const char *Type( void ) const = 0;
-
-
 protected:
 
-	WgHook() : m_pWidget(0) {}
+	WgHook() : m_pWidget(0), m_pPtrHub(0) {}
 	virtual ~WgHook();
 
 	virtual void	_setWidget( WgWidget * pWidget );				// Attach/release widget.
@@ -109,11 +126,12 @@ protected:
 
 	virtual WgHook *	_prevHook() const = 0;
 	virtual WgHook *	_nextHook() const = 0;
-	virtual WgWidgetHolder * _holder() const = 0;
+	virtual WgIWidgetHolder * _holder() const = 0;
 	virtual WgContainer * _parent() const = 0;
 	virtual WgRootPanel * _root() const;
 
 	WgWidget *		m_pWidget;
+	WgHookPtrHub *	m_pPtrHub;
 };
 /*
 template<typename T> T* WgCast(WgHook * pHook)

@@ -27,6 +27,7 @@
 #include <wg_textpropmanager.h>
 #include <wg_texttool.h>
 #include <wg_memstack.h>
+#include <wg_hook.h>
 
 #ifdef WG_USE_FREETYPE
 #	include <ft2build.h>
@@ -42,10 +43,11 @@ WgBase::Data *			WgBase::s_pData = 0;
 void WgBase::Init()
 {
 	assert( s_pData == 0 );
+	assert( sizeof( WgWeakPtrHub ) == sizeof( WgHookPtrHub ) );			// Need to be same as we are sharing object stack!
 	s_pData = new Data;
 
 	s_pData->pDefaultCursor = 0;
-	s_pData->pWeakPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
+	s_pData->pPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
 	s_pData->pMemStack = new WgMemStack( 4096 );
 
 	s_pData->doubleClickTimeTreshold 		= 250;
@@ -72,8 +74,8 @@ int WgBase::Exit()
 	if( s_pData == 0 )
 		return -1;					// Base already exited or not intialized.
 
-	if( !s_pData->pWeakPtrPool->IsEmpty() )
-		return -2;					// There are weak pointers left.
+	if( !s_pData->pPtrPool->IsEmpty() )
+		return -2;					// There are weak pointers or hook pointers left.
 
 	if( !s_pData->pMemStack->IsEmpty() )
 		return -3;					// There is data left in memstack.
@@ -87,7 +89,7 @@ int WgBase::Exit()
 		FT_Done_FreeType( s_pData->freeTypeLibrary );
 #endif
 
-	delete s_pData->pWeakPtrPool;
+	delete s_pData->pPtrPool;
 	delete s_pData->pMemStack;
 	delete s_pData;
 	s_pData = 0;
@@ -99,7 +101,7 @@ int WgBase::Exit()
 WgWeakPtrHub * WgBase::AllocWeakPtrHub()
 {
 	assert( s_pData != 0 );
-	return (WgWeakPtrHub*) s_pData->pWeakPtrPool->AllocEntry();
+	return (WgWeakPtrHub*) s_pData->pPtrPool->AllocEntry();
 }
 
 //____ FreeWeakPtrHub() _______________________________________________________
@@ -107,9 +109,24 @@ WgWeakPtrHub * WgBase::AllocWeakPtrHub()
 void WgBase::FreeWeakPtrHub( WgWeakPtrHub * pHub )
 {
 	assert( s_pData != 0 );
-	s_pData->pWeakPtrPool->FreeEntry( pHub );
+	s_pData->pPtrPool->FreeEntry( pHub );
 }
 
+//____ AllocHookPtrHub() ______________________________________________________
+
+WgHookPtrHub * WgBase::AllocHookPtrHub()
+{
+	assert( s_pData != 0 );
+	return (WgHookPtrHub*) s_pData->pPtrPool->AllocEntry();
+}
+
+//____ FreeHookPtrHub() _______________________________________________________
+
+void WgBase::FreeHookPtrHub( WgHookPtrHub * pHub )
+{
+	assert( s_pData != 0 );
+	s_pData->pPtrPool->FreeEntry( pHub );
+}
 
 //____ InitFreeType() _________________________________________________________
 

@@ -24,8 +24,10 @@
 #include <wg_panel.h>
 #include <wg_widget.h>
 #include <wg_rootpanel.h>
+#include <wg_iwidgetholder.h>
 #include <assert.h>
 
+const char WgHook::CLASSNAME[] = {"Hook"};
 
 //____ Destructor _____________________________________________________________
 
@@ -38,17 +40,48 @@ WgHook::~WgHook()
 		if( m_pWidget->m_refCount == 0 )
 			delete m_pWidget;
 	}
+
+	if( m_pPtrHub )
+		m_pPtrHub->pObj = 0;
 }
+
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgHook::IsInstanceOf( const char * pClassName ) const
+{ 
+	return (pClassName==CLASSNAME);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgHook::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgHookPtr WgHook::Cast( const WgHookPtr& pHook )
+{
+	return pHook;
+}
+
+//____ Widget() _______________________________________________________________
 
 WgWidgetPtr WgHook::Widget() const
 { 
 	return m_pWidget; 
 }
 
-WgWidgetHolder * WgHook::Holder() const 
+//____ Holder() _______________________________________________________________
+
+WgIWidgetHolderPtr WgHook::Holder() const 
 { 
-	return _holder(); 
+	return WgIWidgetHolderPtr(_parent(), _holder()); 
 }
+
+//____ Parent() _______________________________________________________________
 
 WgContainerPtr WgHook::Parent() const 
 { 
@@ -60,7 +93,7 @@ WgContainerPtr WgHook::Parent() const
 
 void WgHook::_setWidget( WgWidget * pWidget )
 {
-	assert( pWidget == 0 || pWidget->Parent() == 0 );
+	assert( pWidget == 0 || pWidget->_parent() == 0 );
 
 	if( m_pWidget )
 	{
@@ -112,11 +145,11 @@ WgRootPanelPtr WgHook::Root() const
 
 WgRootPanel * WgHook::_root() const
 {
-	WgWidgetHolder * pHolder = _holder();
+	WgIWidgetHolder * pHolder = _holder();
 
 	if( pHolder->IsContainer() )
 	{
-		WgHook * pHook = static_cast<WgContainer*>(pHolder)->Hook();
+		WgHook * pHook = static_cast<WgContainer*>(pHolder)->_hook();
 		if( pHook )
 			return pHook->_root();
 	}

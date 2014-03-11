@@ -136,7 +136,7 @@ public:
 
 	//____ Overloaded from WgWidget & WgPanel ___________________________
 
-	bool		RemoveChild(const WgWidgetPtr& pChild ) { return false; }
+	bool		RemoveWidget(const WgWidgetPtr& pWidget ) { return false; }
 	bool		Clear() { return false; }
 
 	int			WidthForHeight( int height ) const;
@@ -184,7 +184,7 @@ private:
 
 		WgHook *	_prevHook() const { return 0; }
 		WgHook *	_nextHook() const { return 0; }
-		WgWidgetHolder * _holder() const { return m_pParent; }
+		WgIWidgetHolder * _holder() const { return m_pParent; }
 		WgContainer * _parent() const { return m_pParent; }
 
 		WgMenu * 	m_pParent;

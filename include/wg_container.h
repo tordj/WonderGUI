@@ -28,20 +28,20 @@
 #endif
 
 #ifndef WG_WIDGETHOLDER_DOT_H
-#	include <wg_widgetholder.h>
+#	include <wg_iwidgetholder.h>
 #endif
 
 class WgPatches;
 
 class WgContainer;
-typedef	WgSmartPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
+typedef	WgSmartPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
 typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 /**
  * @brief Base class for all widgets that can take child widgets.
  */
 
-class WgContainer : public WgWidgetHolder, public WgWidget
+class WgContainer : public WgIWidgetHolder, public WgWidget
 {
 	friend class WgEventHandler;
 
@@ -55,7 +55,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 
 	friend class WgRootPanel;
 	friend class WgFlexPanel;
-	friend class WgMenuLayer;
+	friend class WgPopupLayer;
 	friend class WgModalLayer;
 	friend class WgTablePanel;
 	friend class WgScrollPanel;
@@ -68,9 +68,9 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 
 	public:
 
-		bool		IsInstanceOf( const char * pClassName ) const;
-		const char *ClassName( void ) const;
-		static const char	CLASSNAME[];
+		virtual bool			IsInstanceOf( const char * pClassName ) const;
+		virtual const char *	ClassName( void ) const;
+		static const char		CLASSNAME[];
 		static WgContainerPtr	Cast( const WgObjectPtr& pObject );
 
 
@@ -97,7 +97,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 		bool 			_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );		// Needed until WgPanel inherits from WgWidget
 
 		virtual WgModalLayer *	_getModalLayer() const;
-		virtual WgMenuLayer*	_getMenuLayer() const;
+		virtual WgPopupLayer*	_getPopupLayer() const;
 
 		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );

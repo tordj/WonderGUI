@@ -30,6 +30,9 @@ class WgLayer;
 typedef	WgSmartPtr<WgLayer,WgContainerPtr>	WgLayerPtr;
 typedef	WgWeakPtr<WgLayer,WgContainerPtr>	WgLayerWeakPtr;
 
+class WgLayerHook;
+typedef	WgHookTypePtr<WgLayerHook,WgHookPtr>	WgLayerHookPtr;
+
 
 class WgLayerHook : public WgHook
 {
@@ -37,6 +40,11 @@ class WgLayerHook : public WgHook
 	friend class WgModalLayer;
 
 public:
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgLayerHookPtr	Cast( const WgHookPtr& pInterface );
+
 	WgCoord			Pos() const { return m_geo.Pos(); }
 	WgSize			Size() const { 	return m_geo.Size(); }
 	WgRect			Geo() const { return m_geo; }
@@ -44,15 +52,21 @@ public:
 	WgCoord			ScreenPos() const;
 	WgRect			ScreenGeo() const;
 
-	WgLayerHook *	Prev() const { return static_cast<WgLayerHook*>(_prevHook()); }
-	WgLayerHook *	Next() const { return static_cast<WgLayerHook*>(_nextHook()); }
+	WgLayerHookPtr	Prev() const { return _prevLayerHook(); }
+	WgLayerHookPtr	Next() const { return _nextLayerHook(); }
 	WgLayerPtr		Parent() const;
 
 protected:
 
-	void		_requestRender();
-	void		_requestRender( const WgRect& rect );
-	WgWidgetHolder* _holder() const { return _parent(); }
+	virtual WgLayerHook *	_prevLayerHook() const = 0;			// Iterate through all hooks except the base hook
+	virtual WgLayerHook *	_nextLayerHook() const = 0;			// Iterate through all hooks except the base hook
+	
+	WgHook *		_prevHook() const;							// Iterates through all hooks, including the base hook
+	WgHook *		_nextHook() const;							// Iterates through all hooks, including the base hook
+	
+	void			_requestRender();
+	void			_requestRender( const WgRect& rect );
+	WgIWidgetHolder* _holder() const { return _parent(); }
 
 	WgRect		m_geo;
 };
@@ -63,40 +77,35 @@ class WgLayer : public WgContainer
 	friend class WgLayerHook;
 
 public:
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgLayerPtr	Cast( const WgObjectPtr& pObject );
 
-	WgHook *		SetBaseChild( const WgWidgetPtr& pWidget );
-	WgWidgetPtr		BaseChild();
-	bool			RemoveBaseChild();
+	WgHookPtr			SetBaseWidget( const WgWidgetPtr& pWidget );
+	WgWidgetPtr			BaseWidget();
+	bool				RemoveBaseWidget();
+	inline WgHookPtr	BaseHook() { return &m_baseHook; }
 
-	inline WgLayerHook *	FirstHook() const { return static_cast<WgLayerHook*>(_firstHook()); }
-	inline WgLayerHook *	LastHook() const { return static_cast<WgLayerHook*>(_lastHook()); }
+	inline WgLayerHookPtr	FirstLayerHook() const { return _firstLayerHook(); }
+	inline WgLayerHookPtr	LastLayerHook() const { return _lastLayerHook(); }
 
 	// Overloaded from WgWidget
 
-	int				HeightForWidth( int width ) const;
-	int				WidthForHeight( int height ) const;
+	int					HeightForWidth( int width ) const;
+	int					WidthForHeight( int height ) const;
 
-	WgSize			PreferredSize() const;
+	WgSize				PreferredSize() const;
 
 protected:
 	WgLayer();
 
-	class BaseHook : public WgHook
+	class _BaseHook : public WgHook
 	{
 		friend class WgLayer;
-		friend class WgModalLayer;
-		friend class WgModalHook;
-		friend class WgMenuLayer;
-		friend class WgMenuHook;
+		friend class WgLayerHook;
 
 	public:
-
-		const char *Type( void ) const;
-		static const char * ClassType();
 
 		// Standard Hook methods
 
@@ -107,27 +116,37 @@ protected:
 		WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
 		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
-		WgLayer *		Parent() const { return m_pParent; }
-
 	protected:
 		void		_requestRender();
 		void		_requestRender( const WgRect& rect );
 		void		_requestResize();
 
-		WgHook *	_prevHook() const { return 0; }
-		WgHook *	_nextHook() const { return m_pParent->_firstLayerHook(); }
-		WgContainer* _parent() const { return m_pParent; }
-		WgWidgetHolder* _holder() const { return m_pParent; }
+		WgHook *		_prevHook() const { return 0; }
+		WgHook *		_nextHook() const { return m_pParent->_firstLayerHook(); }
+		WgContainer*	_parent() const { return m_pParent; }
+		WgIWidgetHolder* _holder() const { return m_pParent; }
 
 		WgLayer * 	m_pParent;
 	};
 
+	_BaseHook		m_baseHook;
+
 	virtual	void	_onRequestRender( const WgRect& rect, const WgLayerHook * pHook );	// rect is in our coordinate system.
 	virtual WgLayerHook * _firstLayerHook() const = 0;
+	virtual WgLayerHook * _lastLayerHook() const = 0;
+
+	WgHook *			_firstHook() const;		// Fist Hook returned is for the base, then follows the LayerHooks.
+	WgHook *			_lastHook() const;		//
+
+	WgHook *		_firstHookWithGeo( WgRect& geo ) const;
+	WgHook *		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
+	WgHook *		_lastHookWithGeo( WgRect& geo ) const;
+	WgHook *		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
+
 	virtual void	 _onBaseChanged();
 
-
-	BaseHook		m_baseHook;
 	WgSize			m_size;
 
 };

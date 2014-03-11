@@ -154,7 +154,7 @@ bool WgEventHandler::SetKeyboardFocus( const WgWidgetPtr& pFocus )
 		// Check what focus group (if any) this Widget belongs to.
 
 		m_keyFocusGroup = 0;
-		WgContainer * p = pFocus->Parent();
+		WgContainer * p = pFocus->_parent();
 		while( p )
 		{
 			if( p->_isPanel() && static_cast<WgPanel*>(p)->IsFocusGroup() )
@@ -163,7 +163,7 @@ bool WgEventHandler::SetKeyboardFocus( const WgWidgetPtr& pFocus )
 				break;
 			}
 
-			p = p->Parent();
+			p = p->_parent();
 		}
 
 		// Activate focus
