@@ -60,6 +60,7 @@ class WgFont;
 class WgTextpropManager;
 class WgMemPool;
 class WgWeakPtrHub;
+class WgHookPtrHub;
 class WgMemStack;
 
 /**
@@ -123,6 +124,9 @@ public:
 	static WgWeakPtrHub *	AllocWeakPtrHub();
 	static void			FreeWeakPtrHub( WgWeakPtrHub * pHub );
 
+	static WgHookPtrHub *	AllocHookPtrHub();
+	static void			FreeHookPtrHub( WgHookPtrHub * pHub );
+
 private:
 
 	struct Data
@@ -147,7 +151,7 @@ private:
 
 		//
 
-		WgMemPool *			pWeakPtrPool;
+		WgMemPool *			pPtrPool;
 		WgMemStack *		pMemStack;
 
 #ifdef WG_USE_FREETYPE

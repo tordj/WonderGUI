@@ -120,7 +120,7 @@ public:
 class WgObjectWeakPtr
 {
 public:
-	WgObjectWeakPtr() { m_pHub = 0; }
+	WgObjectWeakPtr() : m_pHub(0) {}
 	WgObjectWeakPtr( WgObject * pObj );
 	WgObjectWeakPtr(const WgObjectPtr& r);
 	WgObjectWeakPtr(const WgObjectWeakPtr& r)

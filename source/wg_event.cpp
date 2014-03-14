@@ -67,11 +67,6 @@ WgWidget * WgEvent::Widget() const
 	return m_pWidget.GetRealPtr();
 }
 
-WgWidget * WgEvent::ForwardedFrom() const
-{
-	return m_pForwardedFrom.GetRealPtr();
-}
-
 
 bool WgEvent::IsMouseEvent() const
 {
@@ -1298,19 +1293,19 @@ WgItemsUnselectEventPtr WgItemsUnselectEvent::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-//____ WgMenuClosedEvent ____________________________________________
+//____ WgPopupClosedEvent ____________________________________________
 
-const char WgMenuClosedEvent::CLASSNAME[] = {"MenuClosedEvent"};
+const char WgPopupClosedEvent::CLASSNAME[] = {"PopupClosedEvent"};
 
-WgMenuClosedEvent::WgMenuClosedEvent( WgWidget * pMenu, const WgWidgetWeakPtr& pCaller )
+WgPopupClosedEvent::WgPopupClosedEvent( WgWidget * pPopup, const WgWidgetWeakPtr& pCaller )
 {
-	m_type		= WG_EVENT_MENU_CLOSED;
+	m_type		= WG_EVENT_POPUP_CLOSED;
 	m_pWidget	= pCaller;
 	m_bIsForWidget	= true;
-	m_pMenu		= pMenu;
+	m_pPopup		= pPopup;
 }
 
-bool WgMenuClosedEvent::IsInstanceOf( const char * pClassName ) const
+bool WgPopupClosedEvent::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
@@ -1318,25 +1313,25 @@ bool WgMenuClosedEvent::IsInstanceOf( const char * pClassName ) const
 	return WgEvent::IsInstanceOf(pClassName);
 }
 
-const char * WgMenuClosedEvent::ClassName( void ) const
+const char * WgPopupClosedEvent::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMenuClosedEventPtr WgMenuClosedEvent::Cast( const WgObjectPtr& pObject )
+WgPopupClosedEventPtr WgPopupClosedEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMenuClosedEventPtr( static_cast<WgMenuClosedEvent*>(pObject.GetRealPtr()) );
+		return WgPopupClosedEventPtr( static_cast<WgPopupClosedEvent*>(pObject.GetRealPtr()) );
 
 	return 0;
 }
 
-WgWidget * WgMenuClosedEvent::Menu() const
+WgWidget * WgPopupClosedEvent::Popup() const
 {
-	return m_pMenu.GetRealPtr();
+	return m_pPopup.GetRealPtr();
 }
 
-WgWidget * WgMenuClosedEvent::Caller() const
+WgWidget * WgPopupClosedEvent::Caller() const
 {
 	return m_pWidget.GetRealPtr();
 }

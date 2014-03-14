@@ -128,7 +128,7 @@ WgWidget * WgContainer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 bool WgContainer::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting )
 {
-	WgHook * p = Hook();
+	WgHook * p = _hook();
 	if( p )
 		return p->Holder()->_focusRequested( p, pWidgetRequesting );
 	else
@@ -139,7 +139,7 @@ bool WgContainer::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequestin
 
 bool WgContainer::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing )
 {
-	WgHook * p = Hook();
+	WgHook * p = _hook();
 	if( p )
 		return p->Holder()->_focusReleased( p, pWidgetReleasing );
 	else
@@ -149,7 +149,7 @@ bool WgContainer::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing 
 
 WgModalLayer *  WgContainer::_getModalLayer() const
 {
-	const WgContainer * p = Parent();
+	const WgContainer * p = _parent();
 
 	if( p )
 		return p->_getModalLayer();
@@ -159,7 +159,7 @@ WgModalLayer *  WgContainer::_getModalLayer() const
 
 WgMenuLayer * WgContainer::_getMenuLayer() const
 {
-	const WgContainer * p = Parent();
+	const WgContainer * p = _parent();
 
 	if( p )
 		return p->_getMenuLayer();
@@ -180,7 +180,7 @@ void WgContainer::_onStateChanged( WgState oldState, WgState newState )
 		while( p )
 		{
 			p->SetEnabled(bEnabled);
-			p = p->NextSibling();
+			p = p->_nextSibling();
 		}
 	}
 }

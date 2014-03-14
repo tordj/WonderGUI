@@ -26,23 +26,37 @@
 #include <wg_eventhandler.h>
 
 const char WgModalLayer::CLASSNAME[] = {"ModalLayer"};
-
-static const char	c_hookType[] = {"ModalHook"};
-static const char	c_basehookType[] = {"ModalLayerBasehook"};
-
-// Improve WgModalHook geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
+const char WgModalHook::CLASSNAME[] = {"ModalHook"};
 
 
-//_____________________________________________________________________________
-const char * WgModalHook::Type( void ) const
-{
-	return ClassType();
+//TODO: Improve WgModalHook geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
+
+
+//____ WgModalHook::IsInstanceOf() __________________________________________
+
+bool WgModalHook::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgLayerHook::IsInstanceOf(pClassName);
 }
 
-//_____________________________________________________________________________
-const char * WgModalHook::ClassType()
+//____ WgModalHook::ClassName() _____________________________________________
+
+const char * WgModalHook::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ WgModalHook::Cast() __________________________________________________
+
+WgModalHookPtr WgModalHook::Cast( const WgHookPtr& pHook )
 {
-	return c_hookType;
+	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
+		return WgModalHookPtr( static_cast<WgModalHook*>(pHook.GetRealPtr()) );
+
+	return 0;
 }
 
 //_____________________________________________________________________________
@@ -200,22 +214,22 @@ void WgModalHook::_requestResize()
 }
 
 //_____________________________________________________________________________
-WgHook * WgModalHook::_prevHook() const
+WgLayerHook * WgModalHook::_prevLayerHook() const
 {
 	WgModalHook * p = _prev();
 
+	// We have multiple inheritance, so lets make the cast in a safe way, preserving NULL-pointer as NULL.
+
 	if( p )
 		return p;
-	else if( m_pParent->m_baseHook._widget() )
-		return &m_pParent->m_baseHook;
 	else
 		return 0;
 }
 
 //_____________________________________________________________________________
-WgHook * WgModalHook::_nextHook() const
+WgLayerHook * WgModalHook::_nextLayerHook() const
 {
-	WgModalHook * p = _prev();
+	WgModalHook * p = _next();
 
 	// We have multiple inheritance, so lets make the cast in a safe way, preserving NULL-pointer as NULL.
 
@@ -271,9 +285,9 @@ WgModalLayerPtr WgModalLayer::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-//____ AddModal() ________________________________________________________
+//____ AddModalWidget() ________________________________________________________
 
-WgModalHook * WgModalLayer::AddModal( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo )
+WgModalHookPtr WgModalLayer::AddModalWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo )
 {
 	// Create Hook and fill in members.
 
@@ -290,9 +304,9 @@ WgModalHook * WgModalLayer::AddModal( const WgWidgetPtr& pWidget, const WgRect& 
 	return pHook;
 }
 
-//____ ClearModalChildren() ________________________________________________
+//____ RemoveModalWidgets() ________________________________________________
 
-bool WgModalLayer::ClearModalChildren()
+bool WgModalLayer::RemoveModalWidgets()
 {
 	m_modalHooks.Clear();
 	_requestRender();
@@ -300,18 +314,18 @@ bool WgModalLayer::ClearModalChildren()
 	return true;
 }
 
-//____ RemoveChild() _________________________________________________________
+//____ RemoveWidget() _________________________________________________________
 
-bool WgModalLayer::RemoveChild( const WgWidgetPtr& pWidget )
+bool WgModalLayer::RemoveWidget( const WgWidgetPtr& pWidget )
 {
 	if( !pWidget || pWidget->Parent() != this )
 		return false;
 
 	if( pWidget == m_baseHook._widget() )
-		return RemoveBaseChild();
+		return RemoveBaseWidget();
 	else
 	{
-		WgModalHook * pHook = (WgModalHook *) pWidget->Hook();
+		WgModalHook * pHook = (WgModalHook *) pWidget->_hook();
 		pHook->_requestRender();
 		delete pHook;
 		_updateKeyboardFocus();
@@ -324,21 +338,21 @@ bool WgModalLayer::RemoveChild( const WgWidgetPtr& pWidget )
 
 bool WgModalLayer::Clear()
 {
-	RemoveBaseChild();
-	ClearModalChildren();
+	RemoveBaseWidget();
+	RemoveModalWidgets();
 	return true;
 }
 
-//____ FirstModal() ______________________________________________________
+//____ FirstModalHook() ______________________________________________________
 
-WgModalHook * WgModalLayer::FirstModal()
+WgModalHookPtr WgModalLayer::FirstModalHook()
 {
 	return m_modalHooks.First();
 }
 
-//____ LastModal() _______________________________________________________
+//____ LastModalHook() _______________________________________________________
 
-WgModalHook * WgModalLayer::LastModal()
+WgModalHookPtr WgModalLayer::LastModalHook()
 {
 	return m_modalHooks.Last();
 }
@@ -439,9 +453,9 @@ void WgModalLayer::_updateKeyboardFocus()
 
 	WgWidget * p = pFocused;
 	while( p && p->Parent() && p->Parent() != this )
-		p = p->Parent();
+		p = p->_parent();
 
-	if( p && p->Parent() != this )
+	if( p && p->_parent() != this )
 		return;								// Focus belongs to a Widget that is not a descendant to us,
 											// so we can't save and shouldn't steal focus.
 
@@ -452,7 +466,7 @@ void WgModalLayer::_updateKeyboardFocus()
 			m_pBaseKeyFocus = pFocused;
 		else
 		{
-			WgModalHook * pHook = static_cast<WgModalHook*>(p->Hook());
+			WgModalHook * pHook = static_cast<WgModalHook*>(p->_hook());
 			pHook->m_pKeyFocus = pFocused;
 		}
 	}
@@ -481,12 +495,12 @@ void WgModalLayer::_updateKeyboardFocus()
 
 	if( pSavedFocus )
 	{
-		WgHook * p = pSavedFocus->Hook();
+		WgHook * p = pSavedFocus->_hook();
 		while( p && p != pBranch )
 		{
-			WgWidgetHolder * pHolder = p->Holder();
+			WgIWidgetHolder * pHolder = p->_holder();
 			if( pHolder && pHolder->IsContainer() )
-				p = static_cast<WgContainer*>(pHolder)->Hook();
+				p = static_cast<WgContainer*>(pHolder)->_hook();
 			else
 				p = 0;
 		}
@@ -558,94 +572,5 @@ void WgModalLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandle
 			break;
 		}
 	}	
-}
-
-//____ _firstHook() ___________________________________________________________
-
-WgHook* WgModalLayer::_firstHook() const
-{
-	if( m_baseHook._widget() )
-		return const_cast<BaseHook*>(&m_baseHook);
-	else
-		return m_modalHooks.First();
-}
-
-//____ _lastHook() ____________________________________________________________
-
-WgHook* WgModalLayer::_lastHook() const
-{
-	return m_modalHooks.Last();
-}
-
-//____ _firstHookWithGeo() _____________________________________________________
-
-WgHook * WgModalLayer::_firstHookWithGeo( WgRect& geo ) const
-{
-	if( m_baseHook._widget() )
-	{
-		geo = WgRect(0,0,m_size);
-		return const_cast<BaseHook*>(&m_baseHook);
-	}
-	else
-	{
-		WgModalHook * p = m_modalHooks.First();
-		if( p )
-			geo = p->m_geo;
-
-		return p;
-	}
-}
-
-//____ _nextHookWithGeo() _______________________________________________________
-
-WgHook * WgModalLayer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
-{
-	WgHook * p = pHook->Next();
-	if( p )
-		geo = ((WgModalHook*)p)->m_geo;
-
-	return p;
-}
-
-//____ _lastHookWithGeo() _____________________________________________________
-
-WgHook * WgModalLayer::_lastHookWithGeo( WgRect& geo ) const
-{
-	WgModalHook * p = m_modalHooks.Last();
-	if( p )
-	{
-		geo = p->m_geo;
-		return p;
-	}
-	else if( m_baseHook._widget() )
-	{
-		geo = WgRect(0,0,m_size);
-		return const_cast<BaseHook*>(&m_baseHook);
-	}
-	else
-		return 0;
-}
-
-//____ _prevHookWithGeo() _______________________________________________________
-
-WgHook * WgModalLayer::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
-{
-	WgHook * p = pHook->Prev();
-	if( p )
-		geo = p->Geo();
-
-	return p;
-}
-
-//_____________________________________________________________________________
-const char * WgModalLayer::BaseHook::Type( void ) const
-{
-	return ClassType();
-}
-
-//_____________________________________________________________________________
-const char * WgModalLayer::BaseHook::ClassType()
-{
-	return c_basehookType;
 }
 

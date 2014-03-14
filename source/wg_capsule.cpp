@@ -22,21 +22,34 @@
 
 #include <wg_capsule.h>
 
-static const char	c_hookType[] = {"Capsule"};
-
 const char WgCapsule::CLASSNAME[] = {"Capsule"};
+const char WgCapsuleHook::CLASSNAME[] = {"CapsuleHook"};
 
+//____ WgCapsuleHook::IsInstanceOf() __________________________________________
 
-//_____________________________________________________________________________
-const char * WgCapsuleHook::Type( void ) const
-{
-	return ClassType();
+bool WgCapsuleHook::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgHook::IsInstanceOf(pClassName);
 }
 
-//_____________________________________________________________________________
-const char * WgCapsuleHook::ClassType()
+//____ WgCapsuleHook::ClassName() _____________________________________________
+
+const char * WgCapsuleHook::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ WgCapsuleHook::Cast() __________________________________________________
+
+WgCapsuleHookPtr WgCapsuleHook::Cast( const WgHookPtr& pHook )
 {
-	return c_hookType;
+	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
+		return WgCapsuleHookPtr( static_cast<WgCapsuleHook*>(pHook.GetRealPtr()) );
+
+	return 0;
 }
 
 
@@ -56,7 +69,7 @@ void WgCapsuleHook::_requestResize() { m_pParent->_requestResize(); }
 WgHook * WgCapsuleHook::_prevHook() const { return 0; }
 WgHook * WgCapsuleHook::_nextHook() const { return 0; }
 WgContainer * WgCapsuleHook::_parent() const { return m_pParent; }
-WgWidgetHolder* WgCapsuleHook::_holder() const { return m_pParent; }
+WgIWidgetHolder* WgCapsuleHook::_holder() const { return m_pParent; }
 
 
 //____ Constructor ____________________________________________________________
@@ -93,9 +106,9 @@ WgCapsulePtr WgCapsule::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-//____ SetChild() ______________________________________________________________
+//____ SetWidget() ______________________________________________________________
 
-WgHook * WgCapsule::SetChild( const WgWidgetPtr& pWidget )
+WgCapsuleHookPtr WgCapsule::SetWidget( const WgWidgetPtr& pWidget )
 {
 	if( !pWidget )
 		return false;
@@ -108,11 +121,11 @@ WgHook * WgCapsule::SetChild( const WgWidgetPtr& pWidget )
 	return &m_hook;
 }
 
-//____ RemoveChild() ___________________________________________________________
+//____ RemoveWidget() ___________________________________________________________
 
-bool WgCapsule::RemoveChild( const WgWidgetPtr& pChild )
+bool WgCapsule::RemoveWidget( const WgWidgetPtr& pWidget )
 {
-	if( m_hook._widget() != pChild.GetRealPtr() )
+	if( m_hook._widget() != pWidget.GetRealPtr() )
 		return false;
 
 	m_hook._setWidget(0);

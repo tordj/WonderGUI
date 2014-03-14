@@ -60,6 +60,10 @@ class WgWidget;
 typedef	WgSmartPtr<WgWidget,WgObjectPtr>		WgWidgetPtr;
 typedef	WgWeakPtr<WgWidget,WgObjectWeakPtr>	WgWidgetWeakPtr;
 
+class WgContainer;
+typedef	WgSmartPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
+typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
+
 
 /**
  * @brief Base class for widgets.
@@ -89,9 +93,11 @@ friend class WgLayer;
 friend class WgStackPanel;
 friend class WgContainer;
 friend class WgPanel;
+friend class WgVectorPanel;
 friend class WgPackPanel;
 friend class WgShaderCapsule;
-friend class WgMenuLayer;
+friend class WgPopupLayer;
+friend class WgRadioButton;
 
 friend class WgTableRow;
 
@@ -117,7 +123,7 @@ public:
 
 	inline WgState		State() const { return m_state; }
 
-	bool				CloneContent( const WgWidget * _pOrg );
+	bool				CloneContent( const WgWidgetPtr& _pOrg );
 
 	void				SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
 	virtual WgPointerStyle	PointerStyle() const;
@@ -133,7 +139,7 @@ public:
 	WgSkinPtr			Skin( ) const	{ return m_pSkin; }
 
 
-	WgHook*			Hook() const { return m_pHook; }
+	WgHookPtr			Hook() const { return m_pHook; }
 
 	WgWidgetPtr		NewOfMyType() const { return WgWidgetPtr(_newOfMyType() ); }
 
@@ -147,11 +153,11 @@ public:
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
 	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_state.IsFocused(); }
-	WgContainer *	Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
-	WgWidgetHolder* Holder() const { if( m_pHook ) return m_pHook->_holder(); return 0; }
+	WgContainerPtr	Parent() const;
+	WgIWidgetHolderPtr Holder() const { if( m_pHook ) return m_pHook->Holder(); return 0; }
 
-	WgWidget *		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Next(); if( p ) return p->m_pWidget; } return 0; }
-	WgWidget *		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->Prev(); if( p ) return p->m_pWidget; } return 0; }
+	WgWidgetPtr		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->_nextHook(); if( p ) return p->m_pWidget; } return 0; }
+	WgWidgetPtr		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->_prevHook(); if( p ) return p->m_pWidget; } return 0; }
 
 	WgCoord			Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
 	WgCoord			Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
@@ -187,6 +193,12 @@ protected:
 	void			_requestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
 	void			_requestResize() { if( m_pHook ) m_pHook->_requestResize(); }
 
+	WgWidget *		_nextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->_nextHook(); if( p ) return p->m_pWidget; } return 0; }
+	WgWidget *		_prevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->_prevHook(); if( p ) return p->m_pWidget; } return 0; }
+	inline WgHook *	_hook() const { return m_pHook; }
+	WgContainer *	_parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
+
+
 	// To be overloaded by Widget
 
 	virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
@@ -202,7 +214,6 @@ protected:
 
 	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs );
-
 
 	// rename when widgets are done
 	virtual bool	IsInputField() const;

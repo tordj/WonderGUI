@@ -20,42 +20,66 @@
 
 =========================================================================*/
 
-#include <wg_widgetholder.h>
-#include <wg_widget.h>
+#include <wg_hookptr.h>
+#include <wg_hook.h>
+#include <wg_base.h>
 
-
-//____ IsContainer() ______________________________________________________________
-
-bool WgWidgetHolder::IsContainer() const
+WgHookPtr::WgHookPtr( WgHook * pHook )
 {
-	return false;
-}
+	if( pHook )
+	{
+		if( !pHook->m_pPtrHub )
+		{
+			m_pHub = WgBase::AllocHookPtrHub();
+			m_pHub->refCnt = 1;
+			m_pHub->pObj = pHook;
+			pHook->m_pPtrHub = m_pHub;
+		}
+		else
+		{
+			m_pHub = pHook->m_pPtrHub;
+			m_pHub->refCnt++;
+		}
+	}
+	else
+	{
+		m_pHub = 0;
+	}
+};
 
-//____ IsRoot() _______________________________________________________________
-
-bool WgWidgetHolder::IsRoot() const
+WgHookPtr::~WgHookPtr()
 {
-	return false;
+	if( m_pHub )
+	{
+		m_pHub->refCnt--;
+
+		if( m_pHub->refCnt == 0 )
+		{
+			if( m_pHub->pObj )
+				m_pHub->pObj->m_pPtrHub = 0;
+			WgBase::FreeHookPtrHub(m_pHub);
+		}
+	}
 }
 
-//____ _firstWidget() __________________________________________________________
+void WgHookPtr::copy( WgHookPtr const & r)
+{
+	if( m_pHub != r.m_pHub )
+	{
+		if( m_pHub )
+		{
+			m_pHub->refCnt--;
 
-WgWidget * WgWidgetHolder::_firstWidget() const 
-{ 
-	WgHook * p = FirstHook(); 
-	if( p ) 
-		return p->_widget(); 
-	else 
-		return 0;
-}
+			if( m_pHub->refCnt == 0 )
+			{
+				if( m_pHub->pObj )
+					m_pHub->pObj->m_pPtrHub = 0;
+				WgBase::FreeHookPtrHub(m_pHub);
+			}
+		}
 
-//____ _lastWidget() ___________________________________________________________
-
-WgWidget * WgWidgetHolder::_lastWidget() const 
-{ 
-	WgHook * p = LastHook(); 
-	if( p ) 
-		return p->_widget(); 
-	else 
-		return 0; 
+		m_pHub = r.m_pHub;
+		if( m_pHub )
+			m_pHub->refCnt++;
+	}
 }

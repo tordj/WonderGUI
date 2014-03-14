@@ -25,8 +25,8 @@
 #include <wg_patches.h>
 
 const char WgStackPanel::CLASSNAME[] = {"StackPanel"};
+const char WgStackHook::CLASSNAME[] = {"StackHook"};
 
-static const char	c_hookType[] = {"StackHook"};
 
 
 void WgStackHook::SetSizePolicy( SizePolicy policy )
@@ -53,17 +53,32 @@ WgStackHook::WgStackHook( WgStackPanel * pParent ): m_pParent(pParent), m_origo(
 {
 }
 
+//____ WgStackHook::IsInstanceOf() __________________________________________
 
-const char * WgStackHook::Type( void ) const
-{
-	return ClassType();
+bool WgStackHook::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgVectorHook::IsInstanceOf(pClassName);
 }
 
-const char * WgStackHook::ClassType()
-{
-	return c_hookType;
+//____ WgStackHook::ClassName() _____________________________________________
+
+const char * WgStackHook::ClassName( void ) const
+{ 
+	return CLASSNAME; 
 }
 
+//____ WgStackHook::Cast() __________________________________________________
+
+WgStackHookPtr WgStackHook::Cast( const WgHookPtr& pHook )
+{
+	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
+		return WgStackHookPtr( static_cast<WgStackHook*>(pHook.GetRealPtr()) );
+
+	return 0;
+}
 
 WgContainer * WgStackHook::_parent() const
 {
@@ -175,13 +190,13 @@ int WgStackPanel::HeightForWidth( int width ) const
 {
 	int height = 0;
 
-	WgStackHook * pHook = FirstHook();
+	WgStackHook * pHook = _firstHook();
 	while( pHook )
 	{
 		int h = pHook->_widget()->HeightForWidth(width);
 		if( h > height )
 			height = h;
-		pHook = pHook->Next();
+		pHook = pHook->_next();
 	}
 
 	return height;
@@ -193,13 +208,13 @@ int WgStackPanel::WidthForHeight( int height ) const
 {
 	int width = 0;
 
-	WgStackHook * pHook = FirstHook();
+	WgStackHook * pHook = _firstHook();
 	while( pHook )
 	{
 		int w = pHook->_widget()->WidthForHeight(height);
 		if( w > width )
 			width = w;
-		pHook = pHook->Next();
+		pHook = pHook->_next();
 	}
 
 	return width;
@@ -262,14 +277,14 @@ void WgStackPanel::_onRenderRequested( WgVectorHook * _pHook, const WgRect& _rec
 
 	// Remove portions of patches that are covered by opaque upper siblings
 
-	WgStackHook * pCover = ((WgStackHook*)pHook)->Next();
+	WgStackHook * pCover = ((WgStackHook*)pHook)->_next();
 	while( pCover )
 	{
 		WgRect geo = pCover->_getGeo(m_size);
 		if( pCover->IsVisible() && geo.IntersectsWith( rect ) )
 			pCover->_widget()->_onMaskPatches( patches, geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
-		pCover = pCover->Next();
+		pCover = pCover->_next();
 	}
 
 	// Make request render calls
@@ -333,7 +348,7 @@ void WgStackPanel::_onWidgetDisappeared( WgVectorHook * _pToBeRemoved )
 	// Update m_preferredSize, skiping pToBeRemoved
 
 	WgSize	preferredSize;
-	WgStackHook * pHook = FirstHook();
+	WgStackHook * pHook = _firstHook();
 	while( pHook )
 	{
 		if( pHook != pToBeRemoved )
@@ -344,7 +359,7 @@ void WgStackPanel::_onWidgetDisappeared( WgVectorHook * _pToBeRemoved )
 			if( sz.h > preferredSize.h )
 				preferredSize.h = sz.h;
 		}
-		pHook = pHook->Next();
+		pHook = pHook->_next();
 	}
 
 	if( preferredSize != m_preferredSize )
@@ -393,7 +408,7 @@ void WgStackPanel::_refreshPreferredSize()
 {
 	WgSize	preferredSize;
 
-	WgStackHook * pHook = FirstHook();
+	WgStackHook * pHook = _firstHook();
 	while( pHook )
 	{
 		WgSize sz = pHook->_paddedPreferredSize();
@@ -401,7 +416,7 @@ void WgStackPanel::_refreshPreferredSize()
 			preferredSize.w = sz.w;
 		if( sz.h > preferredSize.h )
 			preferredSize.h = sz.h;
-		pHook = pHook->Next();
+		pHook = pHook->_next();
 	}
 
 	if( m_preferredSize != preferredSize)
@@ -415,11 +430,11 @@ void WgStackPanel::_refreshPreferredSize()
 
 void WgStackPanel::_adaptChildrenToSize()
 {
-	WgStackHook * pHook = FirstHook();
+	WgStackHook * pHook = _firstHook();
 	while( pHook )
 	{
 		pHook->_widget()->_onNewSize( pHook->_getGeo(m_size) );
-		pHook = pHook->Next();
+		pHook = pHook->_next();
 	}
 }
 
@@ -427,7 +442,7 @@ void WgStackPanel::_adaptChildrenToSize()
 
 WgHook * WgStackPanel::_firstHookWithGeo( WgRect& writeGeo ) const
 {
-	WgStackHook * p = FirstHook();
+	WgStackHook * p = _firstHook();
 	if( p )
 		writeGeo = p->_getGeo(m_size);
 
@@ -438,7 +453,7 @@ WgHook * WgStackPanel::_firstHookWithGeo( WgRect& writeGeo ) const
 
 WgHook * WgStackPanel::_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
 {
-	WgStackHook * p = ((WgStackHook*)pHook)->Next();
+	WgStackHook * p = ((WgStackHook*)pHook)->_next();
 	if( p )
 		writeGeo = p->_getGeo(m_size);
 
@@ -449,7 +464,7 @@ WgHook * WgStackPanel::_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) cons
 
 WgHook * WgStackPanel::_lastHookWithGeo( WgRect& writeGeo ) const
 {
-	WgStackHook * p = LastHook();
+	WgStackHook * p = _lastHook();
 	if( p )
 		writeGeo = p->_getGeo(m_size);
 
@@ -460,7 +475,7 @@ WgHook * WgStackPanel::_lastHookWithGeo( WgRect& writeGeo ) const
 
 WgHook * WgStackPanel::_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
 {
-	WgStackHook * p = ((WgStackHook*)pHook)->Prev();
+	WgStackHook * p = ((WgStackHook*)pHook)->_prev();
 	if( p )
 		writeGeo = p->_getGeo(m_size);
 

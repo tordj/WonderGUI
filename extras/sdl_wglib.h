@@ -1,11 +1,6 @@
 
-#ifdef WIN32
-#include <SDL.h>
-#include <SDL_image.h>
-#else
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
-#endif
 
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>

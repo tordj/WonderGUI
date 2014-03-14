@@ -72,9 +72,9 @@ typedef	WgWeakPtr<WgIStaticText,WgInterfacePtr>		WgIStaticTextWeakPtr;
 class WgIStaticText : public WgInterface
 {
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
-	static const char		CLASSNAME[];
+	virtual bool				IsInstanceOf( const char * pClassName ) const;
+	virtual const char *		ClassName( void ) const;
+	static const char			CLASSNAME[];
 	static WgIStaticTextPtr		Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
 
 	virtual void				SetManager( const WgTextManagerPtr& pManager ) = 0;

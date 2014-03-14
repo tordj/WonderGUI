@@ -56,7 +56,7 @@ class WgValueDisplay;
 class WgValueEditor;
 class WgScrollbar;
 class WgMenu;
-class WgMenuLayer;
+class WgPopupLayer;
 class WgModalLayer;
 
 typedef WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
@@ -193,9 +193,9 @@ class WgItemMousePressEvent;
 typedef	WgSmartPtr<WgItemMousePressEvent,WgItemEventPtr>		WgItemMousePressEventPtr;
 typedef	WgWeakPtr<WgItemMousePressEvent,WgItemEventWeakPtr>	WgItemMousePressEventWeakPtr;
 
-class WgMenuClosedEvent;
-typedef	WgSmartPtr<WgMenuClosedEvent,WgEventPtr>		WgMenuClosedEventPtr;
-typedef	WgWeakPtr<WgMenuClosedEvent,WgEventWeakPtr>	WgMenuClosedEventWeakPtr;
+class WgPopupClosedEvent;
+typedef	WgSmartPtr<WgPopupClosedEvent,WgEventPtr>		WgPopupClosedEventPtr;
+typedef	WgWeakPtr<WgPopupClosedEvent,WgEventWeakPtr>	WgPopupClosedEventWeakPtr;
 
 class WgModalMoveOutsideEvent;
 typedef	WgSmartPtr<WgModalMoveOutsideEvent,WgEventPtr>		WgModalMoveOutsideEventPtr;
@@ -266,10 +266,9 @@ class WgEvent : public WgObject
 
 		WgEventType		Type() const { return m_type; }
 		int64_t			Timestamp() const { return m_timestamp; }
-		bool			IsForWidget() const { return m_bIsForWidget; }
+		bool			IsFromWidget() const { return m_bIsForWidget; }
 		WgWidget *		Widget() const;									// Inlining this would demand include of wg_widget.h.
 		WgWidgetWeakPtr	WidgetWeakPtr() const { return m_pWidget; }
-		WgWidget *		ForwardedFrom() const;
 		WgModifierKeys	ModKeys() const { return m_modKeys; }
 		WgCoord			PointerPos() const { return m_pointerLocalPos; }
 		WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
@@ -287,7 +286,6 @@ class WgEvent : public WgObject
 		int64_t			m_timestamp;		// Timestamp of posting this event
 		bool			m_bIsForWidget;		// Set if this event is for a specific Widget.
 		WgWidgetWeakPtr	m_pWidget;			// Widget to receive this event.
-		WgWidgetWeakPtr	m_pForwardedFrom;	// Widget this event was forwarded from.
 		WgCoord			m_pointerLocalPos;	// Widget-relative position of pointer. Same as m_pointerScreenPos if Widget not set.
 		WgCoord			m_pointerScreenPos;	// Screen position of pointer.
 };
@@ -761,19 +759,19 @@ public:
 	static WgItemsUnselectEventPtr	Cast( const WgObjectPtr& pObject );
 };
 
-//____ WgMenuClosedEvent ______________________________________________________
+//____ WgPopupClosedEvent ______________________________________________________
 
-class WgMenuClosedEvent : public WgEvent
+class WgPopupClosedEvent : public WgEvent
 {
-	friend class WgMenuLayer;
+	friend class WgPopupLayer;
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
-	static WgMenuClosedEventPtr	Cast( const WgObjectPtr& pObject );
+	static WgPopupClosedEventPtr	Cast( const WgObjectPtr& pObject );
 
-	WgWidget *		Menu() const;									// Inlining this would demand include of wg_widget.h.
-	WgWidgetWeakPtr	MenuWeakPtr() const { return m_pMenu; }
+	WgWidget *		Popup() const;									// Inlining this would demand include of wg_widget.h.
+	WgWidgetWeakPtr	PopupWeakPtr() const { return m_pPopup; }
 
 	// Caller is the same as m_pWidget, since m_pWidget should receive
 	// the event.
@@ -782,9 +780,9 @@ public:
 	WgWidgetWeakPtr	CallerWeakPtr() const { return m_pWidget; }
 
 protected:
-	WgMenuClosedEvent( WgWidget * pMenu, const WgWidgetWeakPtr& pCaller );
+	WgPopupClosedEvent( WgWidget * pPopup, const WgWidgetWeakPtr& pCaller );
 
-	WgWidgetWeakPtr m_pMenu;
+	WgWidgetWeakPtr m_pPopup;
 };
 
 //____ WgWidgetModalLayer events _________________________________________________

@@ -29,8 +29,8 @@
 
 
 const char WgScrollPanel::CLASSNAME[] = {"ScrollPanel"};
+const char WgScrollHook::CLASSNAME[] = {"ScrollHook"};
 
-static const char	c_hookType[] = {"ScrollHook"};
 
 
 //____ Constructor ____________________________________________________________
@@ -477,7 +477,7 @@ void WgScrollPanel::SetSkin( const WgSkinPtr& pSkin )
 
 //____ SetContent() ___________________________________________________________
 
-WgPanelHook * WgScrollPanel::SetContent( const WgWidgetPtr& pContent )
+WgScrollHookPtr WgScrollPanel::SetContent( const WgWidgetPtr& pContent )
 {
 	m_elements[WINDOW]._setWidget(pContent.GetRealPtr());
 
@@ -492,7 +492,7 @@ WgPanelHook * WgScrollPanel::SetContent( const WgWidgetPtr& pContent )
 
 //____ SetHScrollbar() ________________________________________________________
 
-WgPanelHook * WgScrollPanel::SetHScrollbar( const WgHScrollbarPtr& pScrollbar )
+WgScrollHookPtr WgScrollPanel::SetHScrollbar( const WgHScrollbarPtr& pScrollbar )
 {
 	// Remove us as target target from current Scrollbar (if we have any)
 
@@ -517,7 +517,7 @@ WgPanelHook * WgScrollPanel::SetHScrollbar( const WgHScrollbarPtr& pScrollbar )
 
 //____ SetVScrollbar() ________________________________________________________
 
-WgPanelHook * WgScrollPanel::SetVScrollbar( const WgVScrollbarPtr& pScrollbar )
+WgScrollHookPtr WgScrollPanel::SetVScrollbar( const WgVScrollbarPtr& pScrollbar )
 {
 	// Remove us as target from current Scrollbar (if we have any)
 
@@ -557,9 +557,9 @@ WgWidgetPtr WgScrollPanel::Content() const
 
 
 
-//____ RemoveChild() __________________________________________________________
+//____ RemoveWidget() __________________________________________________________
 
-bool WgScrollPanel::RemoveChild( const WgWidgetPtr& pWidget )
+bool WgScrollPanel::RemoveWidget( const WgWidgetPtr& pWidget )
 {
 	if( !pWidget )
 		return false;
@@ -1408,26 +1408,37 @@ WgHook * WgScrollPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	return 0;
 }
 
-
-
 //____ WgScrollHook::Destructor ___________________________________________________
 
 WgScrollHook::~WgScrollHook()
 {
 }
 
-//____ WgScrollHook::Type _______________________________________________________
+//____ WgScrollHook::IsInstanceOf() __________________________________________
 
-const char * WgScrollHook::Type( void ) const
-{
-	return ClassType();
+bool WgScrollHook::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgPanelHook::IsInstanceOf(pClassName);
 }
 
-//____ WgScrollHook::ClassType __________________________________________________
+//____ WgScrollHook::ClassName() _____________________________________________
 
-const char * WgScrollHook::ClassType()
+const char * WgScrollHook::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ WgScrollHook::Cast() __________________________________________________
+
+WgScrollHookPtr WgScrollHook::Cast( const WgHookPtr& pHook )
 {
-	return c_hookType;
+	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
+		return WgScrollHookPtr( static_cast<WgScrollHook*>(pHook.GetRealPtr()) );
+
+	return 0;
 }
 
 

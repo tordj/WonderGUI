@@ -180,7 +180,7 @@ WgMenuSubMenu::WgMenuSubMenu()
 
 
 WgMenuSubMenu::WgMenuSubMenu(	int id, const WgString& text, const WgString& helpText,
-								const WgSkinPtr& pIcon, Uint16 navKey, WgMenu * pSubMenu,
+								const WgSkinPtr& pIcon, Uint16 navKey, const WgMenuPtr& pSubMenu,
 								WgModifierKeys accelModif, Uint16 accelKey, const WgString& accelText )
 						:WgMenuEntry( id, text, helpText, pIcon, navKey, accelModif, accelKey, accelText )
 {
@@ -188,13 +188,8 @@ WgMenuSubMenu::WgMenuSubMenu(	int id, const WgString& text, const WgString& help
 	m_pSubMenu = pSubMenu;
 }
 
-void WgMenuSubMenu::SetSubMenu(WgMenu* subMenu)
+void WgMenuSubMenu::SetSubMenu(const WgMenuPtr& pSubMenu)
 {
-	m_pSubMenu= subMenu;
+	m_pSubMenu= pSubMenu;
 };
-
-void WgMenuSubMenu::SetMyMenu( WgMenu * pMenu )
-{
-	WgMenuItem::SetMyMenu( pMenu );
-}
 

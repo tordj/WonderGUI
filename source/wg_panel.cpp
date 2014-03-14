@@ -31,6 +31,7 @@
 #endif
 
 const char WgPanel::CLASSNAME[] = {"Panel"};
+const char WgPanelHook::CLASSNAME[] = {"PanelHook"};
 
 //____ Constructor _____________________________________________________________
 
@@ -143,6 +144,33 @@ void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRec
 			patches.Sub( WgRect(geo,clip) );
 			break;
 	}
+}
+
+//____ WgPanelHook::IsInstanceOf() __________________________________________
+
+bool WgPanelHook::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgHook::IsInstanceOf(pClassName);
+}
+
+//____ WgPanelHook::ClassName() _____________________________________________
+
+const char * WgPanelHook::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ WgPanelHook::Cast() __________________________________________________
+
+WgPanelHookPtr WgPanelHook::Cast( const WgHookPtr& pHook )
+{
+	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
+		return WgPanelHookPtr( static_cast<WgPanelHook*>(pHook.GetRealPtr()) );
+
+	return 0;
 }
 
 //____ WgPanelHook::Parent() __________________________________________________
@@ -268,8 +296,7 @@ WgSize WgPanelHook::_paddedMinSize() const
             sz.w += ((sz.w * m_padding.left) >> 8) + ((sz.w * m_padding.right) >> 8);
             sz.h += ((sz.h * m_padding.top) >> 8) + ((sz.h * m_padding.bottom) >> 8);
             return sz;
-        }
-            
+        }   
     }
 }
 

@@ -42,14 +42,19 @@ class WgScrollPanel;
 typedef	WgSmartPtr<WgScrollPanel,WgPanelPtr>		WgScrollPanelPtr;
 typedef	WgWeakPtr<WgScrollPanel,WgPanelWeakPtr>	WgScrollPanelWeakPtr;
 
+class WgScrollHook;
+typedef	WgHookTypePtr<WgScrollHook,WgPanelHookPtr>	WgScrollHookPtr;
+
 //____ WgScrollHook _____________________________________________________________
 
 class WgScrollHook : public WgPanelHook
 {
 	friend class WgScrollPanel;
 public:
-	const char *Type( void ) const;
-	static const char * ClassType();
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
+	static WgScrollHookPtr	Cast( const WgHookPtr& pInterface );
 
 	WgCoord			Pos() const;
 	WgSize			Size() const;
@@ -57,9 +62,8 @@ public:
 	WgCoord			ScreenPos() const;
 	WgRect			ScreenGeo() const;
 
-	WgHook * 		Prev() const { return _prevHook(); }
-	WgHook * 		Next() const { return _nextHook(); }
-
+	WgScrollHookPtr 	Prev() const { return static_cast<WgScrollHook*>(_prevHook()); }
+	WgScrollHookPtr 	Next() const { return static_cast<WgScrollHook*>(_nextHook()); }
 
 	bool			SetVisible( bool bVisible ) { return false; }		// This widget handles hide/show of children according to its own rules.
 	WgScrollPanelPtr 	Parent() const { return m_pView; }
@@ -171,19 +175,19 @@ public:
 	bool		AutoScrollX() const { return m_bAutoScrollX; }
 	bool		AutoScrollY() const { return m_bAutoScrollY; }
 
-	WgPanelHook*SetHScrollbar( const WgHScrollbarPtr& pScrollbar );
-	void		RemoveHScrollbar() {SetVScrollbar(0);}
+	WgScrollHookPtr SetHScrollbar( const WgHScrollbarPtr& pScrollbar );
+	void			RemoveHScrollbar() {SetVScrollbar(0);}
 	WgHScrollbarPtr	HScrollbar() const;
 
-	WgPanelHook*SetVScrollbar( const WgVScrollbarPtr& pScrollbar );
-	void		RemoveVScrollbar() {SetVScrollbar(0);}
+	WgScrollHookPtr	SetVScrollbar( const WgVScrollbarPtr& pScrollbar );
+	void			RemoveVScrollbar() {SetVScrollbar(0);}
 	WgVScrollbarPtr	VScrollbar() const;
 
-	WgPanelHook*SetContent( const WgWidgetPtr& pContent );
-	void		RemoveContent() {SetContent(0); }
-	WgWidgetPtr	Content() const;
+	WgScrollHookPtr	SetContent( const WgWidgetPtr& pContent );
+	void			RemoveContent() {SetContent(0); }
+	WgWidgetPtr		Content() const;
 
-	bool		RemoveChild( const WgWidgetPtr& pWidget );
+	bool		RemoveWidget( const WgWidgetPtr& pWidget );
 	bool		Clear();
 
 	void		SetScrollbarAutoHide( bool bHideVScrollbar, bool bHideHScrollbar );

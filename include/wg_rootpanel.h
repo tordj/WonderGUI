@@ -22,8 +22,8 @@
 #ifndef WG_ROOTPANEL_DOT_H
 #define WG_ROOTPANEL_DOT_H
 
-#ifndef WG_CONTAINER_DOT_H
-#	include <wg_container.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
 
 #ifndef WG_GEO_DOT_H
@@ -58,15 +58,15 @@ typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>	WgRootPanelWeakPtr;
  */
 
 
-class WgRootPanel : public WgObject, public WgWidgetHolder
+class WgRootPanel : public WgObject, public WgIWidgetHolder
 {
 public:
 	static WgRootPanelPtr	Create() { return WgRootPanelPtr(new WgRootPanel()); }
 	static WgRootPanelPtr	Create( const WgGfxDevicePtr& pDevice ) { return WgRootPanelPtr(new WgRootPanel(pDevice)); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
-	static const char	CLASSNAME[];
+	bool					IsInstanceOf( const char * pClassName ) const;
+	const char *			ClassName( void ) const;
+	static const char		CLASSNAME[];
 	static WgRootPanelPtr	Cast( const WgObjectPtr& pObject );
 
 	bool					SetGfxDevice( const WgGfxDevicePtr& pDevice );
@@ -80,13 +80,13 @@ public:
 	bool					SetVisible( bool bVisible );
 	bool					IsVisible() const { return m_bVisible; }
 
-	inline WgWidgetPtr		Child() const { return m_hook._widget(); }
-	bool					SetChild( const WgWidgetPtr& pWidget );
-	bool					RemoveChild();
+	inline WgWidgetPtr		Widget() const { return m_hook._widget(); }
+	WgHookPtr				SetWidget( const WgWidgetPtr& pWidget );
+	bool					RemoveWidget();
 
-	// Inherited from WgWidgetHolder
+	// Inherited from WgIWidgetHolder
 
-	bool					RemoveChild( const WgWidgetPtr& pWidget );
+	bool					RemoveWidget( const WgWidgetPtr& pWidget );
 	bool					Clear();
 
 	bool					IsRoot() const { return true; }
@@ -138,7 +138,7 @@ protected:
 
 		WgHook *		_prevHook() const;
 		WgHook *		_nextHook() const;
-		WgWidgetHolder * _holder() const;
+		WgIWidgetHolder * _holder() const;
 		WgContainer *	_parent() const;
 		WgRootPanel *	_root() const;
 

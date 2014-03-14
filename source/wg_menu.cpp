@@ -23,7 +23,7 @@
 #include	<wctype.h>
 
 #include	<wg_menu.h>
-#include	<wg_menulayer.h>
+#include	<wg_popuplayer.h>
 #include	<wg_scrollbar.h>
 #include	<wg_surface.h>
 #include	<wg_gfxdevice.h>
@@ -1143,7 +1143,7 @@ WgWidget * WgMenu::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 {
-	WgWidget * pMenu = pItem->GetSubMenu();
+	WgWidgetPtr pMenu = pItem->GetSubMenu();
 
 	if( !pMenu )
 		return;
@@ -1172,14 +1172,14 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 	// 
 
-	WgMenuLayer * pLayer = 0;
+	WgPopupLayer * pLayer = 0;
 
 	if( Parent() )
-		pLayer = Parent()->_getMenuLayer();
+		pLayer = Parent()->_getPopupLayer();
 
 	if( pLayer )
 	{
-		pLayer->OpenMenu( pMenu, this, itemArea - pLayer->ScreenPos(), WG_NORTHEAST );
+		pLayer->OpenPopup( pMenu, this, itemArea - pLayer->ScreenPos(), WG_NORTHEAST );
 		m_pOpenSubMenu = pItem;
 	}
 }
@@ -1189,15 +1189,15 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 void WgMenu::_closeSubMenu( WgMenuSubMenu * pItem )
 {
-	WgMenuLayer * pLayer = 0;
-	WgWidget * pMenu = pItem->GetSubMenu();
+	WgPopupLayer * pLayer = 0;
+	WgWidgetPtr pMenu = pItem->GetSubMenu();
 
 	if( Parent() )
-		pLayer = Parent()->_getMenuLayer();
+		pLayer = Parent()->_getPopupLayer();
 
 	if( pLayer && pMenu )
 	{	
-		pLayer->CloseMenu( pMenu );
+		pLayer->ClosePopup( pMenu );
 		m_pOpenSubMenu = 0;
 	}
 }
@@ -1207,13 +1207,13 @@ void WgMenu::_closeSubMenu( WgMenuSubMenu * pItem )
 
 void WgMenu::_itemSelected()
 {
-	WgMenuLayer * pLayer = 0;
+	WgPopupLayer * pLayer = 0;
 
 	if( Parent() )
-		pLayer = Parent()->_getMenuLayer();
+		pLayer = Parent()->_getPopupLayer();
 
 	if( pLayer )
-		pLayer->CloseAllMenus();
+		pLayer->CloseAllPopups();
 }
 
 //____ _renderPatches() ________________________________________________________
@@ -1363,7 +1363,7 @@ WgMenuItem * WgMenu::_getItemAtPos( int x, int y )
 
 	y += m_contentOfs;
 
-	if( y > 0 && x > 0 && x < (int) ( Geo().w - contentBorders.Width() ) )
+	if( y > 0 && x > 0 && x < (int) ( Geo().w - contentBorders.right ) )
 	{
 		WgMenuItem * pItem = m_items.First();
 		while( pItem )

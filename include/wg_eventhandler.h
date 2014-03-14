@@ -139,7 +139,8 @@ private:
 
 	void	_finalizeEvent( const WgEventPtr& pEvent );
 	void	_processGeneralEvent( const WgEventPtr& pEvent );
-	void	_processEventCallbacks( const WgEventPtr& pEvent );
+	void	_processGlobalEventCallbacks( const WgEventPtr& pEvent );
+	void	_processWidgetEventCallbacks( const WgEventPtr& pEvent, WgWidget * pWidget );
 
 	void	_processTick( WgTickEvent * pEvent );
 
@@ -184,8 +185,10 @@ private:
 	WgRootPanelWeakPtr	m_pRoot;
 
 	std::deque<WgEventPtr>					m_eventQueue;
-	bool									m_bIsProcessing;	// Set when we are inside ProcessEvents().
-	std::deque<WgEventPtr>::iterator		m_insertPos;		// Position where we insert events being queued when processing.
+	bool									m_bIsProcessing;		// Set when we are inside ProcessEvents().
+	std::deque<WgEventPtr>::iterator		m_insertPos;			// Position where we insert events being queued when processing.
+	WgEventPtr								m_pEventProcessing;		// Current event being processed.
+	WgWidgetPtr								m_pNextEventReceiver;	// Next widget to receive the event, from bubbling or forwarding.
 
 	int64_t			m_time;
 	WgCoord			m_pointerPos;

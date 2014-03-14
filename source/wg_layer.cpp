@@ -24,6 +24,7 @@
 #include <wg_patches.h>
 
 const char WgLayer::CLASSNAME[] = {"Layer"};
+const char WgLayerHook::CLASSNAME[] = {"LayerHook"};
 
 
 //____ Constructor ____________________________________________________________
@@ -61,26 +62,26 @@ WgLayerPtr WgLayer::Cast( const WgObjectPtr& pObject )
 }
 
 
-//____ SetBaseChild() _________________________________________________________
+//____ SetBaseWidget() _________________________________________________________
 
-WgHook * WgLayer::SetBaseChild( const WgWidgetPtr& pWidget )
+WgHookPtr WgLayer::SetBaseWidget( const WgWidgetPtr& pWidget )
 {
 	m_baseHook._setWidget(pWidget.GetRealPtr());
 	_onBaseChanged();
 	return &m_baseHook;
 }
 
-//____ BaseChild() ____________________________________________________________
+//____ BaseWidget() ____________________________________________________________
 
-WgWidgetPtr WgLayer::BaseChild()
+WgWidgetPtr WgLayer::BaseWidget()
 {
 	return m_baseHook._widget();
 }
 
 
-//____ RemoveBaseChild() _____________________________________________________
+//____ RemoveBaseWidget() _____________________________________________________
 
-bool WgLayer::RemoveBaseChild()
+bool WgLayer::RemoveBaseWidget()
 {
 	if( !m_baseHook._widget() )
 		return false;
@@ -137,7 +138,7 @@ void WgLayer::_onRequestRender( const WgRect& rect, const WgLayerHook * pHook )
 	WgLayerHook * pCover;
 
 	if( pHook )
-		pCover = pHook->Next();
+		pCover = pHook->_nextLayerHook();
 	else
 		pCover = _firstLayerHook();
 
@@ -146,13 +147,101 @@ void WgLayer::_onRequestRender( const WgRect& rect, const WgLayerHook * pHook )
 		if( pCover->m_geo.IntersectsWith( rect ) )
 			pCover->_widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
-		pCover = pCover->Next();
+		pCover = pCover->_nextLayerHook();
 	}
 
 	// Make request render calls
 
 	for( const WgRect * pRect = patches.Begin() ; pRect < patches.End() ; pRect++ )
 		_requestRender( * pRect );
+}
+
+
+//____ _firstHook() ___________________________________________________________
+
+WgHook* WgLayer::_firstHook() const
+{
+	if( m_baseHook._widget() )
+		return const_cast<_BaseHook*>(&m_baseHook);
+	else
+		return _firstLayerHook();
+}
+
+//____ _lastHook() ____________________________________________________________
+
+WgHook* WgLayer::_lastHook() const
+{
+	WgHook * p = _lastLayerHook();
+
+	if( !p )
+	{
+		if( m_baseHook._widget() )
+			return const_cast<_BaseHook*>(&m_baseHook);	
+		return 0;
+	}
+
+	return p;
+}
+
+//____ _firstHookWithGeo() _____________________________________________________
+
+WgHook * WgLayer::_firstHookWithGeo( WgRect& geo ) const
+{
+	if( m_baseHook._widget() )
+	{
+		geo = WgRect(0,0,m_size);
+		return const_cast<_BaseHook*>(&m_baseHook);
+	}
+	else
+	{
+		WgLayerHook * p = _firstLayerHook();
+		if( p )
+			geo = p->m_geo;
+
+		return p;
+	}
+}
+
+//____ _nextHookWithGeo() _______________________________________________________
+
+WgHook * WgLayer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+	WgHook * p = pHook->_nextHook();
+	if( p )
+		geo = ((WgLayerHook*)p)->m_geo;
+
+	return p;
+}
+
+
+//____ _lastHookWithGeo() _____________________________________________________
+
+WgHook * WgLayer::_lastHookWithGeo( WgRect& geo ) const
+{
+	WgLayerHook * p = _lastLayerHook();
+	if( p )
+	{
+		geo = p->m_geo;
+		return p;
+	}
+	else if( m_baseHook._widget() )
+	{
+		geo = WgRect(0,0,m_size);
+		return const_cast<_BaseHook*>(&m_baseHook);
+	}
+	else
+		return 0;
+}
+
+//____ _prevHookWithGeo() _______________________________________________________
+
+WgHook * WgLayer::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+{
+	WgHook * p = pHook->_prevHook();
+	if( p )
+		geo = p->Geo();
+
+	return p;
 }
 
 
@@ -165,23 +254,50 @@ void WgLayer::_onBaseChanged()
 }
 
 //_____________________________________________________________________________
-void WgLayer::BaseHook::_requestRender()
+void WgLayer::_BaseHook::_requestRender()
 {
 	m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
 }
 
 //_____________________________________________________________________________
-void WgLayer::BaseHook::_requestRender( const WgRect& rect )
+void WgLayer::_BaseHook::_requestRender( const WgRect& rect )
 {
 	m_pParent->_onRequestRender( rect, 0 );
 }
 
 //_____________________________________________________________________________
-void WgLayer::BaseHook::_requestResize()
+void WgLayer::_BaseHook::_requestResize()
 {
 	m_pParent->_requestResize();					// Just forward to our parent
 }
 
+
+//____ WgLayerHook::IsInstanceOf() __________________________________________
+
+bool WgLayerHook::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgHook::IsInstanceOf(pClassName);
+}
+
+//____ WgLayerHook::ClassName() _____________________________________________
+
+const char * WgLayerHook::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ WgLayerHook::Cast() __________________________________________________
+
+WgLayerHookPtr WgLayerHook::Cast( const WgHookPtr& pHook )
+{
+	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
+		return WgLayerHookPtr( static_cast<WgLayerHook*>(pHook.GetRealPtr()) );
+
+	return 0;
+}
 
 //_____________________________________________________________________________
 WgCoord WgLayerHook::ScreenPos() const
@@ -206,6 +322,30 @@ void WgLayerHook::_requestRender( const WgRect& rect )
 {
 	Parent()->_onRequestRender( rect + m_geo.Pos(), this );
 }
+
+//_____________________________________________________________________________
+WgHook * WgLayerHook::_prevHook() const
+{
+	WgHook * p = _prevLayerHook();
+	if( !p )
+	{
+		WgContainer * c = _parent();
+		if( c != 0 )
+		{
+			WgLayer * l = static_cast<WgLayer*>(c);
+			if( l->m_baseHook._widget() )	
+				p = &l->m_baseHook;
+		}
+	}
+	return p;
+}
+
+//_____________________________________________________________________________
+WgHook * WgLayerHook::_nextHook() const
+{
+	return _nextLayerHook();
+}
+
 
 //_____________________________________________________________________________
 WgLayerPtr WgLayerHook::Parent() const
