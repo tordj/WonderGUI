@@ -60,6 +60,15 @@ class WgIStaticText;
 typedef	WgISmartPtr<WgIStaticText,WgInterfacePtr>		WgIStaticTextPtr;
 typedef	WgWeakPtr<WgIStaticText,WgInterfacePtr>		WgIStaticTextWeakPtr;
 
+/**
+ * @brief Interface to a text field with static (non-modifiable) text
+ * 
+ * The text in a static text field is set by the widget itself and can
+ * not be modified directly either through the API or UI. Only the appearance
+ * of the text can be modified through this API.
+ * 
+ */
+
 class WgIStaticText : public WgInterface
 {
 public:
@@ -69,7 +78,7 @@ public:
 	static WgIStaticTextPtr		Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
 
 	virtual void				SetManager( const WgTextManagerPtr& pManager ) = 0;
-	virtual WgTextManagerPtr	Manager() const = 0;
+	virtual WgTextManagerPtr	Manager()  const = 0;
 
 	virtual void				SetProperties( const WgTextpropPtr& pProp ) = 0;
 	virtual void				ClearProperties() = 0;
