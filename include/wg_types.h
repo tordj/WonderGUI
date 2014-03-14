@@ -63,7 +63,9 @@ typedef unsigned __int64  uint64_t;
 #endif
 
 template<typename T> inline T WgMin(const T &a, const T &b) { return a < b ? a : b; }
+template<typename T> inline T WgMin(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
 template<typename T> inline T WgMax(const T &a, const T &b) { return a > b ? a : b; }
+template<typename T> inline T WgMax(const T &a, const T &b, const T &c) { if( a > b ) return a > c ? a : c; else return b > c ? b : c; }
 template<typename T> inline T WgAbs(T x)					{ return x >= 0 ? x : -x; }
 template<typename T> inline void WgSwap(T &a, T &b) { T c = a; a = b; b = c; }
 

@@ -17,7 +17,6 @@ PRE0 - Release
 Things to fix
 =============
 
-* Make sure IsInstanceOf() and ClassName() are virtual everywhere...
 * Can we cast back-and-forth between Objects and interfaces for objects with WgIWidgetHolder interface?
 * WgPopupLayer should have AddPopupWidget() instead of OpenPopup() etc (see ModalLayer for ref).
 * Pools deallokeras automatiskt när alla medlemmar försvinner. WgBase hålla en medlem tills exit.

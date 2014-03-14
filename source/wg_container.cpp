@@ -45,7 +45,11 @@ bool WgContainer::IsInstanceOf( const char * pClassName ) const
 	if( pClassName==CLASSNAME )
 		return true;
 
+	if( WgIWidgetHolder::IsInstanceOf( pClassName ) )
+		return true;
+
 	return WgWidget::IsInstanceOf(pClassName);
+	
 }
 
 //____ ClassName() ____________________________________________________________
@@ -157,12 +161,12 @@ WgModalLayer *  WgContainer::_getModalLayer() const
 		return 0;
 }
 
-WgMenuLayer * WgContainer::_getMenuLayer() const
+WgPopupLayer * WgContainer::_getPopupLayer() const
 {
 	const WgContainer * p = _parent();
 
 	if( p )
-		return p->_getMenuLayer();
+		return p->_getPopupLayer();
 	else
 		return 0;
 }

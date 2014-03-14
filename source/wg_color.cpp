@@ -172,12 +172,37 @@ const WgColor WgColor::whitesmoke  		( 0xFFf5f5f5 );
 const WgColor WgColor::yellow  			( 0xFFffff00 );
 const WgColor WgColor::yellowgreen 		( 0xFF9acd32 );
 
+//____ setCMYK ___________________________________________________________________
+
+void WgColor::setCMYK( float c, float m, float y, float k, Uint8 alpha )
+{
+	r = (Uint8) (255*(1.f-c)*(1.f-k));
+	g = (Uint8) (255*(1.f-m)*(1.f-k));
+	b = (Uint8) (255*(1.f-y)*(1.f-k));
+	a = alpha;
+}
+
+
+//____ getCMYK() _______________________________________________________________
+
+void WgColor::getCMYK( float* _c, float* _m, float* _y, float* _k )
+{
+	float fr = r / 255.f;
+	float fg = r / 255.f;
+	float fb = r / 255.f;
+
+	float k = 1.f - WgMax( fr, fg, fb );
+	* _c = (1.f-fr-k) / (1.f-k);
+	* _m = (1.f-fg-k) / (1.f-k);
+	* _y = (1.f-fb-k) / (1.f-k);
+	* _k = k;
+}
 
 
 
-//____ blend() ________________________________________________________________
+//____ Blend() ________________________________________________________________
 
-WgColor blend( const WgColor& start, const WgColor& dest, float grade )
+WgColor WgColor::Blend( const WgColor& start, const WgColor& dest, float grade )
 {
 	WgColor col;
 
@@ -188,4 +213,5 @@ WgColor blend( const WgColor& start, const WgColor& dest, float grade )
 
 	return col;
 }
+
 
