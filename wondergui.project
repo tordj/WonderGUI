@@ -19,7 +19,6 @@
   </Plugins>
   <Description/>
   <Dependencies/>
-  <Dependencies Name="Release"/>
   <VirtualDirectory Name="Base">
     <File Name="include/wg_anim.h"/>
     <File Name="include/wg_base.h"/>
@@ -362,4 +361,5 @@
     </Configuration>
   </Settings>
   <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

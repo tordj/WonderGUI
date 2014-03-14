@@ -12,7 +12,7 @@
 void 	translateEvents( WgEventHandlerPtr pEventHandler );
 int 	translateMouseButton( Uint8 button );
 void 	updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow );
-void 	myButtonClickCallback( const WgEvent::Event * pEvent );
+void 	myButtonClickCallback( const WgEventPtr& pEvent );
 void * 	loadFile( const char * pPath );
 
 
@@ -158,7 +158,7 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 		tickDiff = (int) (ticks - oldTicks);		
 	oldTicks = ticks;
 
-	pEventHandler->QueueEvent( new WgEvent::Tick(tickDiff) );
+	pEventHandler->QueueEvent( WgTickEvent::Create(tickDiff) );
 
 	// Process all the SDL events in a loop
 
@@ -172,15 +172,15 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pEventHandler->QueueEvent( new WgEvent::MouseMove( WgCoord(e.motion.x,e.motion.y)) );
+				pEventHandler->QueueEvent( WgMouseMoveEvent::Create( WgCoord(e.motion.x,e.motion.y)) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
-				pEventHandler->QueueEvent( new WgEvent::MouseButtonPress( translateMouseButton(e.button.button)));
+				pEventHandler->QueueEvent( WgMousePressEvent::Create( translateMouseButton(e.button.button)));
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				pEventHandler->QueueEvent( new WgEvent::MouseButtonRelease( translateMouseButton(e.button.button)));
+				pEventHandler->QueueEvent( WgMouseReleaseEvent::Create( translateMouseButton(e.button.button)));
 				break;
 				
 			default:
@@ -240,7 +240,7 @@ void updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow )
 
 //____ myButtonClickCallback() _________________________________________________
 
-void myButtonClickCallback( const WgEvent::Event * pEvent )
+void myButtonClickCallback( const WgEventPtr& pEvent )
 {
 	bQuit = true;
 }

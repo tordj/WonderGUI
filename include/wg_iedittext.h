@@ -35,6 +35,14 @@ class WgIEditText;
 typedef	WgISmartPtr<WgIEditText,WgIModifTextPtr>		WgIEditTextPtr;
 typedef	WgWeakPtr<WgIEditText,WgIModifTextPtr>		WgIEditTextWeakPtr;
 
+/**
+ * @brief Interface to a text field with editable text
+ * 
+ * The text in an editable text field can be set through the API, and is
+ * editable through the UI.
+ * 
+ */
+ 
 class WgIEditText : public WgIModifText
 {
 public:

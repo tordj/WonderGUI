@@ -60,6 +60,14 @@ class WgIModifText;
 typedef	WgISmartPtr<WgIModifText,WgIStaticTextPtr>		WgIModifTextPtr;
 typedef	WgWeakPtr<WgIModifText,WgIStaticTextPtr>		WgIModifTextWeakPtr;
 
+/**
+ * @brief Interface to a text field with text that is modifiable through the api
+ * 
+ * The text in a modifiable text field can be set through the API, but isn't
+ * editable through the UI.
+ * 
+*/
+ 
 class WgIModifText : public WgIStaticText
 {
 public:
