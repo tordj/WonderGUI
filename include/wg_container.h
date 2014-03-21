@@ -27,10 +27,6 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_WIDGETHOLDER_DOT_H
-#	include <wg_iwidgetholder.h>
-#endif
-
 class WgPatches;
 
 class WgContainer;
@@ -41,7 +37,7 @@ typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
  * @brief Base class for all widgets that can take child widgets.
  */
 
-class WgContainer : public WgIWidgetHolder, public WgWidget
+class WgContainer : public WgWidget
 {
 	friend class WgEventHandler;
 
@@ -76,25 +72,43 @@ class WgContainer : public WgIWidgetHolder, public WgWidget
 
 		bool					IsContainer() const;
 
+		inline WgWidgetPtr		FirstWidget() const { return WgWidgetPtr(_firstWidget()); }
+		inline WgWidgetPtr		LastWidget() const { return WgWidgetPtr(_lastWidget()); }
+
+		inline WgHookPtr		FirstHook() const { return _firstHook(); }
+		inline WgHookPtr		LastHook() const { return _lastHook(); }
+
+		virtual WgWidgetPtr		FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
+
+
+		virtual bool			RemoveWidget( const WgWidgetPtr& pWidget ) = 0;
+		virtual bool			Clear() = 0;
+			
 	protected:
 		WgContainer();
 		virtual ~WgContainer() {};
-
 		
 		virtual bool			_isPanel() const;
 
-		virtual WgWidget * 	_findWidget( const WgCoord& ofs, WgSearchMode mode );
-		virtual void	_onStateChanged( WgState oldState, WgState newState );
+		virtual WgHook*			_firstHook() const = 0;
+		virtual WgHook*			_lastHook() const = 0;
 
-		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
-		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
+		WgWidget *				_firstWidget() const;
+		WgWidget *				_lastWidget() const;
 
-		virtual WgHook* _lastHookWithGeo( WgRect& geo ) const = 0;
-		virtual WgHook* _prevHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
 
-		bool 			_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );	// Needed until WgPanel inherits from WgWidget
-		bool 			_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );		// Needed until WgPanel inherits from WgWidget
+		virtual WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
+		virtual void			_onStateChanged( WgState oldState, WgState newState );
+
+		virtual void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
+		virtual WgHook*			_firstHookWithGeo( WgRect& geo ) const = 0;
+		virtual WgHook*			_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
+
+		virtual WgHook*			_lastHookWithGeo( WgRect& geo ) const = 0;
+		virtual WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
+
+		bool 					_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );		// Needed until WgPanel inherits from WgWidget
+		bool 					_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );		// Needed until WgPanel inherits from WgWidget
 
 		virtual WgModalLayer *	_getModalLayer() const;
 		virtual WgPopupLayer*	_getPopupLayer() const;

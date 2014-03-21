@@ -178,16 +178,15 @@ private:
 	protected:
 		ScrollbarHook() : m_pParent(0) {}
 
-		void		_requestRender();
-		void		_requestRender( const WgRect& rect );
-		void		_requestResize();
+		void			_requestRender();
+		void			_requestRender( const WgRect& rect );
+		void			_requestResize();
 
-		WgHook *	_prevHook() const { return 0; }
-		WgHook *	_nextHook() const { return 0; }
-		WgIWidgetHolder * _holder() const { return m_pParent; }
-		WgContainer * _parent() const { return m_pParent; }
+		WgHook *		_prevHook() const { return 0; }
+		WgHook *		_nextHook() const { return 0; }
+		WgContainer *	_parent() const { return m_pParent; }
 
-		WgMenu * 	m_pParent;
+		WgMenu * 		m_pParent;
 		WgSize			m_size;
 
 	};

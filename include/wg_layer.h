@@ -66,7 +66,6 @@ protected:
 	
 	void			_requestRender();
 	void			_requestRender( const WgRect& rect );
-	WgIWidgetHolder* _holder() const { return _parent(); }
 
 	WgRect		m_geo;
 };
@@ -124,7 +123,6 @@ protected:
 		WgHook *		_prevHook() const { return 0; }
 		WgHook *		_nextHook() const { return m_pParent->_firstLayerHook(); }
 		WgContainer*	_parent() const { return m_pParent; }
-		WgIWidgetHolder* _holder() const { return m_pParent; }
 
 		WgLayer * 	m_pParent;
 	};

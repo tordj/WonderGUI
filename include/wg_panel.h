@@ -70,8 +70,6 @@ protected:
 	WgPanelHook() : m_bVisible(true), m_paddingUnit(WG_PIXELS) {}
 	 virtual ~WgPanelHook() {};
 
-	 WgIWidgetHolder* _holder() const { return _parent(); }
-
 	WgSize		_paddedPreferredSize() const;
 	WgSize		_paddedMinSize() const;
 	WgSize		_paddedMaxSize() const;

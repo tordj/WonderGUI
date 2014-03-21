@@ -530,9 +530,10 @@ enum WgUnit
 
 enum WgSelectMode
 {
-	WG_SELECT_NONE,
-	WG_SELECT_SINGLE,
-	WG_SELECT_MULTI
+	WG_SELECT_NONE,			///< Entries can not be selected.
+	WG_SELECT_SINGLE,		///< Only a single entry can be selected at a time.
+	WG_SELECT_MULTI,		///< Multiple entries can be selected at the same time.
+	WG_SELECT_FLIP			///< Multiple entries can be selected at the same time and are switched individually.
 };
 
 //____ WgTextEditMode _________________________________________________________

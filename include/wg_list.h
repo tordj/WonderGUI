@@ -66,8 +66,6 @@ protected:
 	WgListHook() : m_bVisible(true) {}
 	 virtual ~WgListHook() {};
 
-	 WgIWidgetHolder* _holder() const { return _parent(); }
-
 
 	 bool			m_bVisible;
 	 bool			m_bSelected;
@@ -78,21 +76,21 @@ protected:
 class WgList : public WgContainer
 {
 public:
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgListPtr	Cast( const WgObjectPtr& pObject );
 
-	virtual void	SetSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr		Skin() const { return m_pSkin; }
+	virtual void		SetSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr			Skin() const { return m_pSkin; }
 
-	virtual void	SetEntrySkin( const WgSkinPtr& pSkin );
-	virtual void	SetEntrySkins( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEvenEntrySkin );
-	WgSkinPtr		OddEntrySkin() const { return m_pEntrySkin[0]; }
-	WgSkinPtr		EvenEntrySkin() const { return m_pEntrySkin[1]; }
+	virtual void		SetEntrySkin( const WgSkinPtr& pSkin );
+	virtual void		SetEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEvenEntrySkin );
+	WgSkinPtr			OddEntrySkin() const { return m_pEntrySkin[0]; }
+	WgSkinPtr			EvenEntrySkin() const { return m_pEntrySkin[1]; }
 
-	void			SetSelectMode( WgSelectMode mode ) const;
-	WgSelectMode	SelectMode() const { return m_selectMode; }
+	void				SetSelectMode( WgSelectMode mode ) const;
+	WgSelectMode		SelectMode() const { return m_selectMode; }
 
 	inline WgListHookPtr	FirstHook() const { return static_cast<WgListHook*>(_firstHook()); }
 	inline WgListHookPtr	LastHook() const { return static_cast<WgListHook*>(_lastHook()); }

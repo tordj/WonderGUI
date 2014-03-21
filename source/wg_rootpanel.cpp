@@ -158,15 +158,6 @@ bool WgRootPanel::RemoveWidget()
 	return true;
 }
 
-bool WgRootPanel::RemoveWidget( const WgWidgetPtr& pWidget )
-{
-	if( pWidget.GetRealPtr() == m_hook._widget() )
-		return RemoveWidget();
-
-	return false;
-}
-
-
 //____ Clear() ______________________________________________________
 
 bool WgRootPanel::Clear()
@@ -378,12 +369,6 @@ WgHook * WgRootPanel::Hook::_nextHook() const
 {
 	return 0;
 }
-
-WgIWidgetHolder * WgRootPanel::Hook::_holder() const
-{
-	return m_pRoot;
-}
-
 
 WgContainer * WgRootPanel::Hook::_parent() const
 {

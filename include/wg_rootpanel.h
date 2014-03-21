@@ -58,8 +58,10 @@ typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>	WgRootPanelWeakPtr;
  */
 
 
-class WgRootPanel : public WgObject, public WgIWidgetHolder
+class WgRootPanel : public WgObject
 {
+	friend class WgContainer;
+
 public:
 	static WgRootPanelPtr	Create() { return WgRootPanelPtr(new WgRootPanel()); }
 	static WgRootPanelPtr	Create( const WgGfxDevicePtr& pDevice ) { return WgRootPanelPtr(new WgRootPanel(pDevice)); }
@@ -83,13 +85,9 @@ public:
 	inline WgWidgetPtr		Widget() const { return m_hook._widget(); }
 	WgHookPtr				SetWidget( const WgWidgetPtr& pWidget );
 	bool					RemoveWidget();
-
-	// Inherited from WgIWidgetHolder
-
-	bool					RemoveWidget( const WgWidgetPtr& pWidget );
 	bool					Clear();
 
-	bool					IsRoot() const { return true; }
+	WgWidgetPtr				FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
 
 	inline int				NbDirtyRects() const { return m_dirtyPatches.Size(); }
 	inline const WgRect*	FirstDirtyRect() const { return m_dirtyPatches.IsEmpty() ? 0 : m_dirtyPatches.Begin(); }
@@ -138,11 +136,10 @@ protected:
 
 		WgHook *		_prevHook() const;
 		WgHook *		_nextHook() const;
-		WgIWidgetHolder * _holder() const;
 		WgContainer *	_parent() const;
 		WgRootPanel *	_root() const;
 
-		WgRootPanel *		m_pRoot;
+		WgRootPanel *	m_pRoot;
 	};
 
 	WgWidget *			_findWidget( const WgCoord& ofs, WgSearchMode mode );

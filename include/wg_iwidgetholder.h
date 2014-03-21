@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_WIDGETHOLDER_DOT_H
-#define	WG_WIDGETHOLDER_DOT_H
+#ifndef	WG_IWIDGETHOLDER_DOT_H
+#define	WG_IWIDGETHOLDER_DOT_H
 
 #ifndef WG_INTERFACE_DOT_H
 #	include <wg_interface.h>
@@ -31,26 +31,11 @@
 #	include <wg_smartptr.h>
 #endif
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
 #ifndef WG_WIDGET_DOT_H
 #	include <wg_widget.h>
 #endif
 
-
-class WgRootPanel;
 class WgHook;
-class WgContainer;
-class WgPanel;
-class WgList;
-class WgCapsule;
-class WgLayer;
-class WgModalLayer;
-class WgPopupLayer;
-class WgCoord;
-
 
 class WgIWidgetHolder;
 typedef	WgISmartPtr<WgIWidgetHolder,WgInterfacePtr>		WgIWidgetHolderPtr;
@@ -58,10 +43,6 @@ typedef	WgWeakPtr<WgIWidgetHolder,WgInterfacePtr>		WgIWidgetHolderWeakPtr;
 
 class WgIWidgetHolder : public WgInterface
 {
-	friend class WgPanel;
-	friend class WgHook;
-	friend class WgContainer;
-	friend class WgRadioButton;
 	
 public:
 	virtual bool				IsInstanceOf( const char * pClassName ) const;
@@ -75,28 +56,14 @@ public:
 	inline WgHookPtr	FirstHook() const { return _firstHook(); }
 	inline WgHookPtr	LastHook() const { return _lastHook(); }
 
-	virtual WgWidgetPtr FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
-
-
-	virtual bool		RemoveWidget( const WgWidgetPtr& pWidget ) = 0;
-	virtual bool		Clear() = 0;
-
-	virtual bool		IsRoot() const;
-	virtual bool		IsContainer() const;
-
 protected:
 
-	virtual bool 		_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting ) = 0;
-	virtual bool 		_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing ) = 0;
+	virtual WgHook*		_firstHook() const = 0;
+	virtual WgHook*		_lastHook() const = 0;
 
-	virtual WgHook*	_firstHook() const = 0;
-	virtual WgHook*	_lastHook() const = 0;
-
-	WgWidget *		_firstWidget() const;
-	WgWidget *		_lastWidget() const;
-	virtual WgWidget * _findWidget( const WgCoord& ofs, WgSearchMode mode ) = 0;
-
+	WgWidget *			_firstWidget() const;
+	WgWidget *			_lastWidget() const;
 };
 
 
-#endif //WG_WIDGETHOLDER_DOT_H
+#endif //WG_IWIDGETHOLDER_DOT_H

@@ -54,20 +54,6 @@ WgIWidgetHolderPtr WgIWidgetHolder::Cast( const WgInterfacePtr& pInterface )
 	return 0;
 }
 
-//____ IsContainer() ______________________________________________________________
-
-bool WgIWidgetHolder::IsContainer() const
-{
-	return false;
-}
-
-//____ IsRoot() _______________________________________________________________
-
-bool WgIWidgetHolder::IsRoot() const
-{
-	return false;
-}
-
 //____ _firstWidget() __________________________________________________________
 
 WgWidget * WgIWidgetHolder::_firstWidget() const 

@@ -69,7 +69,6 @@ void WgCapsuleHook::_requestResize() { m_pParent->_requestResize(); }
 WgHook * WgCapsuleHook::_prevHook() const { return 0; }
 WgHook * WgCapsuleHook::_nextHook() const { return 0; }
 WgContainer * WgCapsuleHook::_parent() const { return m_pParent; }
-WgIWidgetHolder* WgCapsuleHook::_holder() const { return m_pParent; }
 
 
 //____ Constructor ____________________________________________________________

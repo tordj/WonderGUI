@@ -23,6 +23,7 @@
 #include <vector>
 #include <wg_container.h>
 #include <wg_panel.h>
+#include <wg_rootpanel.h>
 
 #include <wg_patches.h>
 
@@ -45,11 +46,7 @@ bool WgContainer::IsInstanceOf( const char * pClassName ) const
 	if( pClassName==CLASSNAME )
 		return true;
 
-	if( WgIWidgetHolder::IsInstanceOf( pClassName ) )
-		return true;
-
-	return WgWidget::IsInstanceOf(pClassName);
-	
+	return WgWidget::IsInstanceOf(pClassName);	
 }
 
 //____ ClassName() ____________________________________________________________
@@ -83,6 +80,27 @@ bool WgContainer::_isPanel() const
 	return false;
 }
 
+//____ _firstWidget() __________________________________________________________
+
+WgWidget * WgContainer::_firstWidget() const 
+{ 
+	WgHook * p = _firstHook(); 
+	if( p ) 
+		return p->_widget(); 
+	else 
+		return 0;
+}
+
+//____ _lastWidget() ___________________________________________________________
+
+WgWidget * WgContainer::_lastWidget() const 
+{ 
+	WgHook * p = _lastHook(); 
+	if( p ) 
+		return p->_widget(); 
+	else 
+		return 0; 
+}
 
 //____ _findWidget() ____________________________________________________________
 
@@ -134,9 +152,12 @@ bool WgContainer::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequestin
 {
 	WgHook * p = _hook();
 	if( p )
-		return p->Holder()->_focusRequested( p, pWidgetRequesting );
-	else
-		return false;
+	{
+		WgRootPanel * r = p->_root();
+		if( r )
+			return r->_focusRequested( p, pWidgetRequesting );
+	}
+	return false;
 }
 
 //____ _focusReleased() ________________________________________________________
@@ -145,9 +166,12 @@ bool WgContainer::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing 
 {
 	WgHook * p = _hook();
 	if( p )
-		return p->Holder()->_focusReleased( p, pWidgetReleasing );
-	else
-		return false;
+	{
+		WgRootPanel * r = p->_root();
+		if( r )
+			return r->_focusReleased( p, pWidgetReleasing );
+	}
+	return false;
 }
 
 

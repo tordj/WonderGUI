@@ -36,7 +36,6 @@
 #endif
 
 
-class WgIWidgetHolder;
 class WgContainer;
 class WgGfxDevice;
 class WgWidget;
@@ -87,17 +86,16 @@ public:
 	static const char		CLASSNAME[];
 	static WgHookPtr		Cast( const WgHookPtr& pInterface );				// Provided just for completeness sake.
 
-	virtual WgCoord	Pos() const = 0;
-	virtual WgSize	Size() const = 0;
-	virtual WgRect	Geo() const = 0;
-	virtual WgCoord	ScreenPos() const = 0;
-	virtual WgRect	ScreenGeo() const = 0;
+	virtual WgCoord			Pos() const = 0;
+	virtual WgSize			Size() const = 0;
+	virtual WgRect			Geo() const = 0;
+	virtual WgCoord			ScreenPos() const = 0;
+	virtual WgRect			ScreenGeo() const = 0;
 
-	WgHookPtr		Prev() const { return _prevHook(); }
-	WgHookPtr		Next() const { return _nextHook(); }
+	WgHookPtr			Prev() const { return _prevHook(); }
+	WgHookPtr			Next() const { return _nextHook(); }
 
 	WgWidgetPtr			Widget() const;
-	WgIWidgetHolderPtr 	Holder() const;
 	WgContainerPtr 		Parent() const;
 
 	WgRootPanelPtr		Root() const;
@@ -126,7 +124,6 @@ protected:
 
 	virtual WgHook *	_prevHook() const = 0;
 	virtual WgHook *	_nextHook() const = 0;
-	virtual WgIWidgetHolder * _holder() const = 0;
 	virtual WgContainer * _parent() const = 0;
 	virtual WgRootPanel * _root() const;
 

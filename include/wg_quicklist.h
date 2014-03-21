@@ -22,8 +22,9 @@
 #ifndef WG_QUICKLIST_DOT_H
 #define WG_QUICKLIST_DOT_H
 
-#include <wg_list.h>
-#include <wg_chain.h>
+#ifndef WG_LIST_DOT_H
+#	include <wg_list.h>
+#endif
 
 class WgQuickList;
 typedef	WgSmartPtr<WgQuickList,WgListPtr>		WgQuickListPtr;
@@ -32,7 +33,7 @@ typedef	WgWeakPtr<WgQuickList,WgListWeakPtr>	WgQuickListWeakPtr;
 class WgQuickListHook;
 typedef	WgHookTypePtr<WgQuickListHook,WgListHookPtr>	WgQuickListHookPtr;
 
-class WgQuickListHook : public WgListHook, private WgLink
+class WgQuickListHook : public WgListHook
 {
 public:
 	virtual bool				IsInstanceOf( const char * pClassName ) const;
@@ -40,24 +41,26 @@ public:
 	static const char			CLASSNAME[];
 	static WgQuickListHookPtr	Cast( const WgHookPtr& pInterface );
 	
-	WgQuickListHookPtr	Prev() const { return _prev(); }
-	WgQuickListHookPtr	Next() const { return _next(); }
-	WgQuickListPtr		Parent() const;
+	WgQuickListHookPtr	Prev() const { return static_cast<WgQuickListHook*>(_prevHook()); }
+	WgQuickListHookPtr	Next() const { return static_cast<WgQuickListHook*>(_nextHook()); }
+	WgQuickListPtr		Parent() const { return m_pParent; }
 
 protected:
-	PROTECTED_LINK_METHODS( WgQuickListHook );
 	WgQuickListHook( WgQuickList * pParent );
 
-	void	_requestRender();
-	void	_requestRender( const WgRect& rect );
-	void	_requestResize();
+	void			_requestRender();
+	void			_requestRender( const WgRect& rect );
+	void			_requestResize();
 
-	WgHook *	_prevHook() const;
-	WgHook *	_nextHook() const;
+	WgHook *		_prevHook() const;
+	WgHook *		_nextHook() const;
 
-	WgContainer * _parent() const;
+	WgContainer *	_parent() const;
 	
 	WgQuickList *	m_pParent;
+	int				m_ofs;				// Offset in pixels for start of this list item.
+	int				m_length;			// Length in pixels of this list item.
+
 };
 
 
@@ -70,34 +73,35 @@ class WgQuickList : public WgList
 public:
 	static WgQuickListPtr	Create() { return WgQuickListPtr(new WgQuickList()); }
 	
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
-	static const char	CLASSNAME[];
+	virtual bool			IsInstanceOf( const char * pClassName ) const;
+	virtual const char *	ClassName( void ) const;
+	static const char		CLASSNAME[];
 	static WgQuickListPtr	Cast( const WgObjectPtr& pObject );
 
-	WgQuickListHookPtr	AddWidget( const WgWidgetPtr& pWidget );
-	WgQuickListHookPtr	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
-	WgQuickListHookPtr	InsertWidgetSorted( const WgWidgetPtr& pWidget );
+	WgQuickListHookPtr		AddWidget( const WgWidgetPtr& pWidget );
+	WgQuickListHookPtr		InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
+	WgQuickListHookPtr		InsertWidgetSorted( const WgWidgetPtr& pWidget );
 
-	bool				RemoveWidget( const WgWidgetPtr& pWidget );
-	bool				Clear();
+	bool					RemoveWidget( const WgWidgetPtr& pWidget );
+	bool					Clear();
 
-	void				SortWidgets();
-	void				SetSortOrder( WgSortOrder order );
-	WgSortOrder			GetSortOrder() const { return m_sortOrder; }
+	void					SetOrientation( WgOrientation orientaiton );
+	WgOrientation			Orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
 
-	void				SetSortFunction( WgWidgetSortFunc pSortFunc );
-	WgWidgetSortFunc	SortFunction() const { return m_pSortFunc; }
+	void					SortWidgets();
+	void					SetSortOrder( WgSortOrder order );
+	WgSortOrder				GetSortOrder() const { return m_sortOrder; }
 
+	void					SetSortFunction( WgWidgetSortFunc pSortFunc );
+	WgWidgetSortFunc		SortFunction() const { return m_pSortFunc; }
 
-	WgSize				PreferredSize() const;
+	WgSize					PreferredSize() const;
 
 protected:
 	WgQuickList();
 	virtual ~WgQuickList();
 	virtual WgWidget* _newOfMyType() const { return new WgQuickList(); };
 
-	virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	virtual void	_onCloneContent( const WgWidget * _pOrg );
@@ -120,9 +124,12 @@ protected:
 	WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
 
+	bool			m_bHorizontal;
 
 	WgSortOrder			m_sortOrder;
 	WgWidgetSortFunc	m_pSortFunc;
+
+
 
 };
 

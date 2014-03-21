@@ -154,7 +154,6 @@ public:
 	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_state.IsFocused(); }
 	WgContainerPtr	Parent() const;
-	WgIWidgetHolderPtr Holder() const { if( m_pHook ) return m_pHook->Holder(); return 0; }
 
 	WgWidgetPtr		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->_nextHook(); if( p ) return p->m_pWidget; } return 0; }
 	WgWidgetPtr		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->_prevHook(); if( p ) return p->m_pWidget; } return 0; }

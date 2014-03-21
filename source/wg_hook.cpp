@@ -74,13 +74,6 @@ WgWidgetPtr WgHook::Widget() const
 	return m_pWidget; 
 }
 
-//____ Holder() _______________________________________________________________
-
-WgIWidgetHolderPtr WgHook::Holder() const 
-{ 
-	return WgIWidgetHolderPtr(_parent(), _holder()); 
-}
-
 //____ Parent() _______________________________________________________________
 
 WgContainerPtr WgHook::Parent() const 
@@ -145,16 +138,14 @@ WgRootPanelPtr WgHook::Root() const
 
 WgRootPanel * WgHook::_root() const
 {
-	WgIWidgetHolder * pHolder = _holder();
+	WgContainer * pParent = _parent();
 
-	if( pHolder->IsContainer() )
+	if( pParent )
 	{
-		WgHook * pHook = static_cast<WgContainer*>(pHolder)->_hook();
-		if( pHook )
-			return pHook->_root();
+		WgHook * pParentHook = pParent->_hook();
+		if( pParentHook )
+			return pParentHook->_root();
 	}
-	else if( pHolder->IsRoot() )
-		return static_cast<WgRootPanel*>(pHolder);
 
 	return 0;
 }

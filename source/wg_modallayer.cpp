@@ -498,9 +498,9 @@ void WgModalLayer::_updateKeyboardFocus()
 		WgHook * p = pSavedFocus->_hook();
 		while( p && p != pBranch )
 		{
-			WgIWidgetHolder * pHolder = p->_holder();
-			if( pHolder && pHolder->IsContainer() )
-				p = static_cast<WgContainer*>(pHolder)->_hook();
+			WgContainer * pHolder = p->_parent();
+			if( pHolder )
+				p = pHolder->_hook();
 			else
 				p = 0;
 		}
