@@ -78,11 +78,11 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	WgFlexPanelPtr pFlexPanel = WgFlexPanel::Create();
-	pRoot->SetChild(pFlexPanel);
+	pRoot->SetWidget(pFlexPanel);
 
 	WgFillerPtr pBackground = WgFiller::Create();
 	pBackground->SetSkin( WgColorSkin::Create(WgColor::aqua) );
-	pFlexPanel->AddChild(pBackground, WG_NORTHWEST, WG_SOUTHEAST);
+	pFlexPanel->AddWidget(pBackground, WG_NORTHWEST, WgCoord(), WG_SOUTHEAST, WgCoord());
 
 /*
 	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../resources/simple_button.bmp" );
@@ -91,22 +91,22 @@ int main ( int argc, char** argv )
 	WgButtonPtr pButton = WgButton::Create();
 	pButton->SetSkin( WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorders(3) ) );
 	pButton->Label()->Set( "BUTTON" );
-	pFlexPanel->AddChild( pButton, WgRect(0,0,80,33), WG_CENTER );
+	pFlexPanel->AddWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
 
 	pRoot->EventHandler()->AddCallback( WgEventFilter::ButtonPress(pButton), myButtonClickCallback );
 */	
 	WgSizeCapsulePtr pCapsule = WgSizeCapsule::Create();
 	pCapsule->SetMaxSize( WgSize(100,1000));
-	pFlexPanel->AddChild( pCapsule );
+	pFlexPanel->AddWidget( pCapsule );
 
 	WgStackPanelPtr pStack = WgStackPanel::Create();
-	pCapsule->SetChild( pStack );
+	pCapsule->SetWidget( pStack );
 
 
 
 	WgTextDisplayPtr pText = WgTextDisplay::Create();
 	pText->Text()->Set( "THIS IS THE LONG TEXT THAT SHOULD WRAP AND BE FULLY DISPLAYED." );
-	pStack->AddChild(pText);
+	pStack->AddWidget(pText);
 
 
 

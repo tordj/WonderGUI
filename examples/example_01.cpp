@@ -38,7 +38,7 @@
 void 	translateEvents( WgEventHandlerPtr pEventHandler );
 int 	translateMouseButton( Uint8 button );
 void 	updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow );
-void 	myButtonClickCallback( const WgEvent::Event * pEvent );
+void 	myButtonClickCallback( const WgEventPtr& pEvent );
 
 bool	bQuit = false;	// Set to false by myButtonClickCallback() or translateEvents().
 
@@ -100,11 +100,11 @@ int main ( int argc, char** argv )
 	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch );
 
 	// First we create and add a FlexPanel to the RootPanel.
-	// The RootPanel can only take one child, but the  FlexPanel
+	// The RootPanel can only take one child, but the FlexPanel
 	// provides simple and powerful ways to layout multiple children.
 
 	WgFlexPanelPtr pFlexPanel = WgFlexPanel::Create();
-	pRoot->SetChild(pFlexPanel);
+	pRoot->SetWidget(pFlexPanel);
 
 	// Now we create the background using the simplest widget
 	// type, the Filler and add it to the FlexPanel, making
@@ -113,7 +113,7 @@ int main ( int argc, char** argv )
 
 	WgFillerPtr pBackground = WgFiller::Create();
 	pBackground->SetSkin( WgColorSkin::Create(WgColor::aqua) );
-	pFlexPanel->AddChild(pBackground, WG_NORTHWEST, WG_SOUTHEAST);
+	pFlexPanel->AddWidget(pBackground, WG_NORTHWEST, WG_SOUTHEAST);
 
 	// Now we create the button, using a clickable skin built from
 	// the BMP with the button graphics. CreateClickableFromSurface()
@@ -127,11 +127,11 @@ int main ( int argc, char** argv )
 
 	WgButtonPtr pButton = WgButton::Create();
 	pButton->SetSkin( WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorders(3) ) );
-	pFlexPanel->AddChild( pButton, WgRect(0,0,80,33), WG_CENTER );
+	pFlexPanel->AddWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
 
 	// Finally we add a callback to the click-event of the button.
 
-	pRoot->EventHandler()->AddCallback( WgEventFilter::ButtonPress(pButton), myButtonClickCallback );
+	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(pButton), myButtonClickCallback );
 	
 
 	//------------------------------------------------------
@@ -188,7 +188,7 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 		tickDiff = (int) (ticks - oldTicks);		
 	oldTicks = ticks;
 
-	pEventHandler->QueueEvent( new WgEvent::Tick(tickDiff) );
+	pEventHandler->QueueEvent( WgTickEvent::Create(tickDiff) );
 
 	// Process all the SDL events in a loop
 
@@ -202,15 +202,15 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pEventHandler->QueueEvent( new WgEvent::MouseMove( WgCoord(e.motion.x,e.motion.y)) );
+				pEventHandler->QueueEvent( WgMouseMoveEvent::Create( WgCoord(e.motion.x,e.motion.y)) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
-				pEventHandler->QueueEvent( new WgEvent::MouseButtonPress( translateMouseButton(e.button.button)));
+				pEventHandler->QueueEvent( WgMousePressEvent::Create( translateMouseButton(e.button.button)));
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				pEventHandler->QueueEvent( new WgEvent::MouseButtonRelease( translateMouseButton(e.button.button)));
+				pEventHandler->QueueEvent( WgMouseReleaseEvent::Create( translateMouseButton(e.button.button)));
 				break;
 				
 			default:
@@ -239,6 +239,8 @@ int translateMouseButton( Uint8 button )
 			return 4;
 		case SDL_BUTTON_X2:
 			return 5;
+		default:
+			return 0;
 	}
 }
 
@@ -270,7 +272,7 @@ void updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow )
 
 //____ myButtonClickCallback() _________________________________________________
 
-void myButtonClickCallback( const WgEvent::Event * pEvent )
+void myButtonClickCallback( const WgEventPtr& pEvent )
 {
 	bQuit = true;
 }

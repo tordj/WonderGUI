@@ -136,7 +136,7 @@ WgRect WgRootPanel::Geo() const
 WgHookPtr WgRootPanel::SetWidget( const WgWidgetPtr& pWidget )
 {
 	if( !pWidget )
-		return false;
+		return 0;
 
 	m_hook._setWidget(pWidget.GetRealPtr());
 	m_hook._widget()->_onNewSize(m_geo.Size());

@@ -112,8 +112,8 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Release"/>
   <Dependencies Name="Debug">
     <Project Name="wondergui"/>
   </Dependencies>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

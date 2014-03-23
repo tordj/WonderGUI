@@ -69,7 +69,6 @@
     <File Name="include/wg_valueformat.h"/>
     <File Name="include/wg_vectorglyphs.h"/>
     <File Name="include/wg_widget.h"/>
-    <File Name="include/wg_widgetholder.h"/>
     <File Name="include/wondergui.h"/>
     <File Name="source/wg_anim.cpp"/>
     <File Name="source/wg_base.cpp"/>
@@ -114,7 +113,6 @@
     <File Name="source/wg_valueformat.cpp"/>
     <File Name="source/wg_vectorglyphs.cpp"/>
     <File Name="source/wg_widget.cpp"/>
-    <File Name="source/wg_widgetholder.cpp"/>
     <File Name="include/wg_interface.h"/>
     <File Name="source/wg_interface.cpp"/>
     <File Name="include/wg_nullgfxdevice.h"/>
@@ -125,6 +123,8 @@
     <File Name="source/wg_scrollbartarget.cpp"/>
     <File Name="include/wg_surfacefactory.h"/>
     <File Name="source/wg_surfacefactory.cpp"/>
+    <File Name="include/wg_hookptr.h"/>
+    <File Name="source/wg_hookptr.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Widgets">
     <File Name="source/wg_animplayer.cpp"/>
@@ -219,10 +219,10 @@
   <VirtualDirectory Name="Layers">
     <File Name="source/wg_layer.cpp"/>
     <File Name="include/wg_layer.h"/>
-    <File Name="source/wg_menulayer.cpp"/>
-    <File Name="include/wg_menulayer.h"/>
     <File Name="source/wg_modallayer.cpp"/>
     <File Name="include/wg_modallayer.h"/>
+    <File Name="source/wg_popuplayer.cpp"/>
+    <File Name="include/wg_popuplayer.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Capsules">
     <File Name="source/wg_capsule.cpp"/>
@@ -239,6 +239,8 @@
     <File Name="source/wg_iedittext.cpp"/>
     <File Name="source/wg_imodiftext.cpp"/>
     <File Name="source/wg_istatictext.cpp"/>
+    <File Name="include/wg_iwidgetholder.h"/>
+    <File Name="source/wg_iwidgetholder.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -360,6 +362,6 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
+  <Dependencies Name="Debug"/>
 </CodeLite_Project>

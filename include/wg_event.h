@@ -251,6 +251,11 @@ class WgLinkMouseDoubleClickEvent;
 typedef	WgSmartPtr<WgLinkMouseDoubleClickEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseDoubleClickEventPtr;
 typedef	WgWeakPtr<WgLinkMouseDoubleClickEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMouseDoubleClickEventWeakPtr;
 
+//____ WgEvent _________________________________________________________________
+/**
+ * @brief Base class for all events.
+ */
+
 
 class WgEvent : public WgObject
 {
@@ -290,6 +295,12 @@ class WgEvent : public WgObject
 		WgCoord			m_pointerScreenPos;	// Screen position of pointer.
 };
 
+//____ WgMouseButtonEvent ______________________________________________________
+/**
+ * @brief Base class for all mouse button events.
+ * 
+ */
+
 class WgMouseButtonEvent : public WgEvent
 {
 	friend class WgEventHandler;
@@ -305,6 +316,11 @@ protected:
 
 	int		m_button;
 };
+
+//____ WgKeyEvent ______________________________________________________________
+/**
+ * @brief Base class for all keyboard events.
+ */
 
 class WgKeyEvent : public WgEvent
 {
@@ -326,6 +342,8 @@ protected:
 	int		m_translatedKeyCode;
 };
 
+//____ WgFocusGainedEvent ______________________________________________________
+
 class WgFocusGainedEvent : public WgEvent
 {
 	friend class WgEventHandler;
@@ -340,6 +358,8 @@ protected:
 	WgFocusGainedEvent();
 };
 
+//____ WgFocusLostEvent ________________________________________________________
+
 class WgFocusLostEvent : public WgEvent
 {
 	friend class WgEventHandler;
@@ -353,6 +373,8 @@ public:
 protected:
 	WgFocusLostEvent();
 };
+
+//____ WgMouseEnterEvent _______________________________________________________
 
 class WgMouseEnterEvent : public WgEvent
 {
@@ -369,6 +391,8 @@ protected:
 	WgMouseEnterEvent( WgWidget * pWidget );
 };
 
+//____ WgMouseLeaveEvent _______________________________________________________
+
 class WgMouseLeaveEvent : public WgEvent
 {
 	friend class WgEventHandler;
@@ -384,6 +408,7 @@ protected:
 	WgMouseLeaveEvent( WgWidget * pWidget );
 };
 
+//____ WgMouseMoveEvent ________________________________________________________
 
 class WgMouseMoveEvent : public WgEvent
 {
@@ -400,6 +425,8 @@ protected:
 	WgMouseMoveEvent( const WgCoord& pos );
 };
 
+//____ WgMousePressEvent _______________________________________________________
+
 class WgMousePressEvent : public WgMouseButtonEvent
 {
 	friend class WgEventHandler;
@@ -414,6 +441,8 @@ protected:
 	WgMousePressEvent( int button, WgWidget * pWidget );
 	WgMousePressEvent( int button );
 };
+
+//____ WgMouseReleaseEvent _____________________________________________________
 
 class WgMouseReleaseEvent : public WgMouseButtonEvent
 {
@@ -437,6 +466,8 @@ protected:
 	bool			m_bReleaseInside;
 };
 
+//____ WgKeyPressEvent _________________________________________________________
+
 class WgKeyPressEvent : public WgKeyEvent
 {
 	friend class WgEventHandler;
@@ -452,6 +483,8 @@ protected:
 	WgKeyPressEvent( int native_keycode, WgWidget * pWidget );
 };
 
+//____ WgKeyReleaseEvent _______________________________________________________
+
 class WgKeyReleaseEvent : public WgKeyEvent
 {
 	friend class WgEventHandler;
@@ -466,6 +499,8 @@ protected:
 	WgKeyReleaseEvent( int native_keycode );
 	WgKeyReleaseEvent( int native_keycode, WgWidget * pWidget );
 };
+
+//____ WgCharacterEvent ________________________________________________________
 
 class WgCharacterEvent : public WgEvent
 {
@@ -485,6 +520,8 @@ protected:
 protected:
 	unsigned short	m_char;
 };
+
+//____ WgWheelRollEvent ________________________________________________________
 
 class WgWheelRollEvent : public WgEvent
 {
@@ -507,6 +544,8 @@ protected:
 	int			m_distance;
 };
 
+//____ WgTickEvent _____________________________________________________________
+
 class WgTickEvent : public WgEvent
 {
 	friend class WgEventHandler;
@@ -526,6 +565,8 @@ protected:
 	int			m_millisec;
 };
 
+//____ WgPointerChangeEvent ____________________________________________________
+
 class WgPointerChangeEvent : public WgEvent
 {
 	friend class WgEventHandler;
@@ -544,7 +585,7 @@ protected:
 };
 
 
-//____ WgSelectEvent _______________________________________________
+//____ WgSelectEvent ___________________________________________________________
 
 class WgSelectEvent : public WgEvent
 {
@@ -557,7 +598,7 @@ public:
 	static WgSelectEventPtr	Cast( const WgObjectPtr& pObject );
 };
 
-//____ WgToggleEvent ______________________________________________
+//____ WgToggleEvent ___________________________________________________________
 
 class WgToggleEvent : public WgEvent
 {
@@ -575,7 +616,7 @@ private:
 	bool	m_bSet;
 };
 
-//____ WgValueUpdateEvent _____________________________________
+//____ WgValueUpdateEvent ______________________________________________________
 
 class WgValueUpdateEvent : public WgEvent
 {
@@ -597,7 +638,7 @@ protected:
 	bool		m_bFinal;
 };
 
-//____ WgRangeUpdateEvent ___________________________________________
+//____ WgRangeUpdateEvent ______________________________________________________
 
 class WgRangeUpdateEvent : public WgEvent
 {
@@ -622,7 +663,7 @@ public:
 	bool		m_bFinal;
 };
 
-//____ WgTextEditEvent ________________________________________
+//____ WgTextEditEvent _________________________________________________________
 
 class WgTextEditEvent : public WgEvent
 {

@@ -110,7 +110,7 @@ WgCapsulePtr WgCapsule::Cast( const WgObjectPtr& pObject )
 WgCapsuleHookPtr WgCapsule::SetWidget( const WgWidgetPtr& pWidget )
 {
 	if( !pWidget )
-		return false;
+		return 0;
 
 	m_hook._setWidget(pWidget.GetRealPtr());
 	pWidget->_onNewSize(Size());

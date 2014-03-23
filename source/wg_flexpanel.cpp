@@ -77,6 +77,23 @@ WgFlexHookPtr WgFlexHook::Cast( const WgHookPtr& pHook )
 
 //____ WgFlexHook::SetStretching() ______________________________________________
 
+bool  WgFlexHook::SetStretching( const WgFlexOrigo& topLeftOrigo, 
+								 const WgFlexOrigo& bottomRightOrigo, WgBorders padding )
+{
+	m_bFloating			= false;
+	m_topLeftOrigo		= topLeftOrigo;
+	m_bottomRightOrigo	= bottomRightOrigo;
+	m_padding			= padding;
+
+	m_topLeftOfs.Clear();
+	m_bottomRightOfs.Clear();
+
+	_refreshRealGeo();
+	return true;
+}
+
+//____ WgFlexHook::SetStretching() ______________________________________________
+
 bool  WgFlexHook::SetStretching( const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
 	const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders padding )
 {
@@ -734,6 +751,21 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget )
 }
 
 //____ AddWidget() _____________________________________________________________
+
+WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgFlexOrigo& topLeftOrigo,
+									 const WgFlexOrigo& bottomRightOrigo, WgBorders padding )
+{
+	if( !pWidget )
+		return 0;
+
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), padding );
+	p->_setWidget( pWidget.GetRealPtr() );
+
+	m_hooks.PushBack(p);
+
+	p->SetStretching( topLeftOrigo, bottomRightOrigo, padding );
+	return p;
+}
 
 WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
 							 const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders padding )
