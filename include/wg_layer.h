@@ -103,6 +103,8 @@ protected:
 	{
 		friend class WgLayer;
 		friend class WgLayerHook;
+		friend class WgModalLayer;
+		friend class WgPopupLayer;
 
 	public:
 
@@ -116,6 +118,7 @@ protected:
 		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
 
 	protected:
+
 		void		_requestRender();
 		void		_requestRender( const WgRect& rect );
 		void		_requestResize();

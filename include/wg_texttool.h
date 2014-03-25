@@ -51,8 +51,8 @@
 #	include <wg_charseq.h>
 #endif
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
+#ifndef WG_POINTERS_DOT_H
+#	include <wg_pointers.h>
 #endif
 
 class WgFont;

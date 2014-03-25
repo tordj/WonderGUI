@@ -26,6 +26,10 @@
 #	include <wg_list.h>
 #endif
 
+#ifndef WG_HOOKARRAY_DOT_H
+#	include <wg_hookarray.h>
+#endif
+
 class WgQuickList;
 typedef	WgSmartPtr<WgQuickList,WgListPtr>		WgQuickListPtr;
 typedef	WgWeakPtr<WgQuickList,WgListWeakPtr>	WgQuickListWeakPtr;
@@ -35,18 +39,26 @@ typedef	WgHookTypePtr<WgQuickListHook,WgListHookPtr>	WgQuickListHookPtr;
 
 class WgQuickListHook : public WgListHook
 {
+	friend class WgQuickList;
+	friend class WgHookArray<WgQuickListHook>;
 public:
 	virtual bool				IsInstanceOf( const char * pClassName ) const;
 	virtual const char *		ClassName( void ) const;
 	static const char			CLASSNAME[];
 	static WgQuickListHookPtr	Cast( const WgHookPtr& pInterface );
-	
+
+	WgCoord			Pos() const;
+	WgSize			Size() const;
+	WgRect			Geo() const;
+	WgCoord			ScreenPos() const;
+	WgRect			ScreenGeo() const;
+
 	WgQuickListHookPtr	Prev() const { return static_cast<WgQuickListHook*>(_prevHook()); }
 	WgQuickListHookPtr	Next() const { return static_cast<WgQuickListHook*>(_nextHook()); }
 	WgQuickListPtr		Parent() const { return m_pParent; }
 
 protected:
-	WgQuickListHook( WgQuickList * pParent );
+	WgQuickListHook() {};
 
 	void			_requestRender();
 	void			_requestRender( const WgRect& rect );
@@ -59,7 +71,7 @@ protected:
 	
 	WgQuickList *	m_pParent;
 	int				m_ofs;				// Offset in pixels for start of this list item.
-	int				m_length;			// Length in pixels of this list item.
+	int				m_length;			// Length in pixels of this list item. Includes widget padding.
 
 };
 
@@ -70,6 +82,7 @@ protected:
 
 class WgQuickList : public WgList
 {
+	friend class WgQuickListHook;
 public:
 	static WgQuickListPtr	Create() { return WgQuickListPtr(new WgQuickList()); }
 	
@@ -100,19 +113,27 @@ public:
 protected:
 	WgQuickList();
 	virtual ~WgQuickList();
-	virtual WgWidget* _newOfMyType() const { return new WgQuickList(); };
+	WgWidget*		_newOfMyType() const { return new WgQuickList(); };
 
-	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-	virtual void	_onCloneContent( const WgWidget * _pOrg );
-	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	virtual void	_onNewSize( const WgSize& size );
-	virtual void	_onRefresh();
+	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+	void			_onCloneContent( const WgWidget * _pOrg );
+	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+	void			_onNewSize( const WgSize& size );
+	void			_onRefresh();
 
-	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
-	virtual	bool	_onAlphaTest( const WgCoord& ofs );
-	virtual void	_onStateChanged( WgState oldState, WgState newState );
+	void			_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
+	void			_onStateChanged( WgState oldState, WgState newState );
 
+	void			_onRequestRender( WgQuickListHook * pHook );
+	void			_onRequestRender( WgQuickListHook * pHook, const WgRect& rect );
+	void			_onRequestResize( WgQuickListHook * pHook );
+
+	void			_onWidgetAppeared( WgQuickListHook * pInserted );
+	void			_onWidgetDisappeared( WgQuickListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
+
+	WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
+	void			_getChildGeo( WgRect& geo, const WgHook * pHook ) const;
 
 	WgHook*			_firstHook() const;
 	WgHook*			_lastHook() const;
@@ -124,13 +145,15 @@ protected:
 	WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
 
-	bool			m_bHorizontal;
+	bool				m_bHorizontal;
 
 	WgSortOrder			m_sortOrder;
 	WgWidgetSortFunc	m_pSortFunc;
 
+	WgHookArray<WgQuickListHook>	m_hooks;
 
-
+	WgSize				m_preferredSize;
+	WgSize				m_size;
 };
 
 

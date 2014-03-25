@@ -311,14 +311,6 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 	}
 }
 
-
-//____ _onAlphaTest() _________________________________________________________
-
-bool WgContainer::_onAlphaTest( const WgCoord& ofs )
-{
-	return false;		// By default cointainers have nothing to display themselves.
-}
-
 //____ _onCloneContent() _______________________________________________________
 
 void WgContainer::_onCloneContent( const WgContainer * _pOrg )

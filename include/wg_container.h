@@ -115,7 +115,6 @@ class WgContainer : public WgWidget
 
 		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-		virtual bool 	_onAlphaTest( const WgCoord& ofs );
 		virtual void	_onCloneContent( const WgContainer * _pOrg );
 
 		bool		m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).

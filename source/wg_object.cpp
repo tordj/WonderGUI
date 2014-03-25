@@ -22,7 +22,7 @@
 
 #include <wg_object.h>
 #include <wg_mempool.h>
-#include <wg_smartptr.h>
+#include <wg_pointers.h>
 
 const char WgObject::CLASSNAME[] = {"Object"};
 

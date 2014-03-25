@@ -27,8 +27,8 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
+#ifndef WG_POINTERS_DOT_H
+#	include <wg_pointers.h>
 #endif
 
 #ifndef WG_HOOKPTR_DOT_H
@@ -36,12 +36,8 @@
 #endif
 
 
-class WgContainer;
-class WgGfxDevice;
-class WgWidget;
 class WgRectLink;
 class WgRootPanel;
-
 
 class WgWidget;
 typedef WgSmartPtr<WgWidget,WgObjectPtr>			WgWidgetPtr;
@@ -59,13 +55,9 @@ class WgEventHandler;
 typedef	WgSmartPtr<WgEventHandler,WgObjectPtr>		WgEventHandlerPtr;
 typedef	WgWeakPtr<WgEventHandler,WgObjectWeakPtr>	WgEventHandlerWeakPtr;
 
-class WgIWidgetHolder;
-typedef	WgISmartPtr<WgIWidgetHolder,WgInterfacePtr>		WgIWidgetHolderPtr;
-typedef	WgWeakPtr<WgIWidgetHolder,WgInterfacePtr>		WgIWidgetHolderWeakPtr;
-
-
-class	WgHook;
-
+class WgIWidgets;
+typedef	WgISmartPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsPtr;
+typedef	WgWeakPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsWeakPtr;
 
 
 class WgHook
@@ -75,10 +67,8 @@ class WgHook
 	friend class WgPanel;
 	friend class WgContainer;
 	friend class WgVectorPanel;
-	friend class WgIWidgetHolder;
 	friend class WgHookPtr;
 	friend class WgModalLayer;
-	friend class WgPopupLayer;
 
 public:
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
@@ -130,15 +120,5 @@ protected:
 	WgWidget *		m_pWidget;
 	WgHookPtrHub *	m_pPtrHub;
 };
-/*
-template<typename T> T* WgCast(WgHook * pHook)
-{
-	if(pHook)
-	{
-		if(T::ClassType() == pHook->Type())
-			return static_cast<T*>(pHook);
-	}
-	return 0;
-}
-*/
+
 #endif //WG_HOOK_DOT_H

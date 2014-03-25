@@ -24,7 +24,6 @@
 #include <wg_panel.h>
 #include <wg_widget.h>
 #include <wg_rootpanel.h>
-#include <wg_iwidgetholder.h>
 #include <assert.h>
 
 const char WgHook::CLASSNAME[] = {"Hook"};

@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_smartptr.h>
+#include <wg_pointers.h>
 
 #include <wg_base.h>
 

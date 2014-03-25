@@ -43,8 +43,8 @@
 #	include <wg_skin.h>
 #endif
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
+#ifndef WG_POINTERS_DOT_H
+#	include <wg_pointers.h>
 #endif
 
 class WgGfxDevice;
@@ -87,7 +87,7 @@ friend class WgFlexPanel;
 friend class WgModalLayer;
 friend class WgTablePanel;
 friend class WgScrollPanel;
-friend class WgListPanel;
+friend class WgQuickList;
 friend class WgCapsule;
 friend class WgLayer;
 friend class WgStackPanel;

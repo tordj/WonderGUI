@@ -20,16 +20,16 @@
 
 =========================================================================*/
 
-#include <wg_iwidgetholder.h>
+#include <wg_iwidgets.h>
 #include <wg_widget.h>
 
 
-const char WgIWidgetHolder::CLASSNAME[] = {"IWidgetHolder"};
+const char WgIWidgets::CLASSNAME[] = {"IWidgets"};
 
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgIWidgetHolder::IsInstanceOf( const char * pClassName ) const
+bool WgIWidgets::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
@@ -39,39 +39,17 @@ bool WgIWidgetHolder::IsInstanceOf( const char * pClassName ) const
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgIWidgetHolder::ClassName( void ) const
+const char * WgIWidgets::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgIWidgetHolderPtr WgIWidgetHolder::Cast( const WgInterfacePtr& pInterface )
+WgIWidgetsPtr WgIWidgets::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgIWidgetHolderPtr( pInterface.GetRealObjectPtr(), static_cast<WgIWidgetHolder*>( pInterface.GetRealPtr()) );
+		return WgIWidgetsPtr( pInterface.GetRealObjectPtr(), static_cast<WgIWidgets*>( pInterface.GetRealPtr()) );
 
 	return 0;
-}
-
-//____ _firstWidget() __________________________________________________________
-
-WgWidget * WgIWidgetHolder::_firstWidget() const 
-{ 
-	WgHook * p = _firstHook(); 
-	if( p ) 
-		return p->_widget(); 
-	else 
-		return 0;
-}
-
-//____ _lastWidget() ___________________________________________________________
-
-WgWidget * WgIWidgetHolder::_lastWidget() const 
-{ 
-	WgHook * p = _lastHook(); 
-	if( p ) 
-		return p->_widget(); 
-	else 
-		return 0; 
 }

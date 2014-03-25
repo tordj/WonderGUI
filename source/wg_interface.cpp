@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_interface.h>
-#include <wg_smartptr.h>
+#include <wg_pointers.h>
 
 const char WgInterface::CLASSNAME[] = {"Interface"};
 

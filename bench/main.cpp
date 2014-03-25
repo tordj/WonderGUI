@@ -727,10 +727,10 @@ void cbResize( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
 
 void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler )
 {
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 2), cbResize, pChild );
+	pEventHandler->AddCallback( WgEventFilter::MouseDrag(pChild, 2), cbResize, pChild );
 
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pChild, 3), cbInitDrag, pChild );
-	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 3), cbDragWidget, pChild );
+	pEventHandler->AddCallback( WgEventFilter::MousePress(pChild, 3), cbInitDrag, pChild );
+	pEventHandler->AddCallback( WgEventFilter::MouseDrag(pChild, 3), cbDragWidget, pChild );
 }
 
 

@@ -62,12 +62,11 @@ public:
 	virtual bool	SetVisible( bool bVisible );
 	bool			IsVisible() { return m_bVisible; }
 
-	virtual bool	SetPadding( WgBorders padding, WgUnit mode = WG_PIXELS );
+	virtual bool	SetPadding( WgBorders padding );
 	WgBorders		Padding() const { return m_padding; }
-    WgUnit          PaddingUnit() const { return m_paddingUnit; }
 
 protected:
-	WgPanelHook() : m_bVisible(true), m_paddingUnit(WG_PIXELS) {}
+	WgPanelHook() : m_bVisible(true) {}
 	 virtual ~WgPanelHook() {};
 
 	WgSize		_paddedPreferredSize() const;
@@ -80,7 +79,6 @@ protected:
 
 	bool			m_bVisible;
 	WgBorders		m_padding;
-    WgUnit          m_paddingUnit;
 };
 
 /**
@@ -113,7 +111,7 @@ public:
 	inline WgPanelHookPtr	FirstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
 	inline WgPanelHookPtr	LastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
 
-	// Overloaded from WgIWidgetHolder
+	// Overloaded from WgIWidgets
 
 
 protected:

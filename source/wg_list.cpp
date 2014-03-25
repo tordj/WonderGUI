@@ -53,4 +53,9 @@ WgListHookPtr WgListHook::Cast( const WgHookPtr& pHook )
 	return 0;
 }
 
+//____ WgListHook::Parent() ___________________________________________________
 
+WgListPtr WgListHook::Parent() const 
+{ 
+	return static_cast<WgList*>(_parent()); 
+}

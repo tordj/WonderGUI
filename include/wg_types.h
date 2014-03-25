@@ -521,8 +521,8 @@ enum WgSortOrder
 
 enum WgUnit
 {
-	WG_PIXELS,
-	WG_FRACTION
+	WG_PX,
+	WG_EM
 };
 
 

@@ -107,8 +107,8 @@
 #	include <wg_rootpanel.h>
 #endif
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
+#ifndef WG_POINTERS_DOT_H
+#	include <wg_pointers.h>
 #endif
 
 #ifndef WG_STRING_DOT_H
@@ -171,8 +171,8 @@
 #	include <wg_hook.h>
 #endif
 
-#ifndef WG_IWIDGETHOLDER_DOT_H
-#	include <wg_iwidgetholder.h>
+#ifndef WG_IWIDGETS_DOT_H
+#	include <wg_iwidgets.h>
 #endif
 
 

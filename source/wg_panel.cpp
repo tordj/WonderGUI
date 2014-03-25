@@ -203,12 +203,11 @@ bool WgPanelHook::SetVisible( bool bVisible )
 
 //____ WgPanelHook::SetPadding() ______________________________________________
 
-bool WgPanelHook::SetPadding( WgBorders padding, WgUnit unit )
+bool WgPanelHook::SetPadding( WgBorders padding )
 {
-	if( padding != m_padding || unit != m_paddingUnit )
+	if( padding != m_padding )
 	{
 		m_padding = padding;
-        m_paddingUnit = unit;
 		_requestResize();
 	}
 	return true;
@@ -269,83 +268,25 @@ WgSize WgPanelHook::_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPol
 
 WgSize WgPanelHook::_paddedPreferredSize() const
 {
-    switch( m_paddingUnit )
-    {
-        case WG_PIXELS:
-            return m_pWidget->PreferredSize() + m_padding;
-        case WG_FRACTION:
-        {
-            WgSize sz = m_pWidget->PreferredSize();
-            sz.w += ((sz.w * m_padding.left) >> 8) + ((sz.w * m_padding.right) >> 8);
-            sz.h += ((sz.h * m_padding.top) >> 8) + ((sz.h * m_padding.bottom) >> 8);
-            return sz;
-        }
-            
-    }
+	return m_pWidget->PreferredSize() + m_padding;
 }
 
 WgSize WgPanelHook::_paddedMinSize() const
 {
-    switch( m_paddingUnit )
-    {
-        case WG_PIXELS:
-            return m_pWidget->MinSize() + m_padding;
-        case WG_FRACTION:
-        {
-            WgSize sz = m_pWidget->MinSize();
-            sz.w += ((sz.w * m_padding.left) >> 8) + ((sz.w * m_padding.right) >> 8);
-            sz.h += ((sz.h * m_padding.top) >> 8) + ((sz.h * m_padding.bottom) >> 8);
-            return sz;
-        }   
-    }
+	return m_pWidget->MinSize() + m_padding;
 }
 
 WgSize WgPanelHook::_paddedMaxSize() const
 {
-    switch( m_paddingUnit )
-    {
-        case WG_PIXELS:
-            return m_pWidget->MaxSize() + m_padding;
-        case WG_FRACTION:
-        {
-            WgSize sz = m_pWidget->MaxSize();
-            sz.w += ((sz.w * m_padding.left) >> 8) + ((sz.w * m_padding.right) >> 8);
-            sz.h += ((sz.h * m_padding.top) >> 8) + ((sz.h * m_padding.bottom) >> 8);
-            return sz;
-        }
-            
-    }
+	return m_pWidget->MaxSize() + m_padding;
 }
 
 int WgPanelHook::_paddedWidthForHeight( int paddedHeight ) const
 {
-    switch( m_paddingUnit )
-    {
-        case WG_PIXELS:
-            return m_pWidget->WidthForHeight( paddedHeight - m_padding.Height() ) + m_padding.Width();
-        case WG_FRACTION:
-        {
-        }
-            
-    }
+	return m_pWidget->WidthForHeight( paddedHeight - m_padding.Height() ) + m_padding.Width();
 }
 
 int WgPanelHook::_paddedHeightForWidth( int paddedWidth ) const
 {
-    switch( m_paddingUnit )
-    {
-        case WG_PIXELS:
-            return m_pWidget->HeightForWidth( paddedWidth - m_padding.Width() ) + m_padding.Height();
-        case WG_FRACTION:
-        {
-            float fOrgWidth = paddedWidth / 1.f + (m_padding.left + m_padding.right)/256.f;
-            
-            float leftPadding = fOrgWidth * m_padding.left/256.f;
-            float rightPadding = fOrgWidth * m_padding.right/256.f;
-            
-            int orgWidth = paddedWidth - ((int)leftPadding) - ((int)rightPadding);
-            
-        }
-            
-    }
+	return m_pWidget->HeightForWidth( paddedWidth - m_padding.Width() ) + m_padding.Height();
 }

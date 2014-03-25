@@ -1,5 +1,5 @@
-#ifndef	WG_SMARTPTR_DOT_H
-#define	WG_SMARTPTR_DOT_H
+#ifndef	WG_POINTERS_DOT_H
+#define	WG_POINTERS_DOT_H
 
 #ifndef WG_MEMPOOL_DOT_H
 #	include <wg_mempool.h>
@@ -374,5 +374,5 @@ public:
 
 
 
-#endif //WG_SMARTPTR_DOT_H
+#endif //WG_POINTERS_DOT_H
 

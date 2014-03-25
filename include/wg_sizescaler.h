@@ -23,8 +23,8 @@
 #ifndef	WG_SIZESCALER_DOT_H
 #define	WG_SIZESCALER_DOT_H
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
+#ifndef WG_POINTERS_DOT_H
+#	include <wg_pointers.h>
 #endif
 
 #ifndef WG_CHAIN_DOT_H

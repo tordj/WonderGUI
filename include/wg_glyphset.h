@@ -27,8 +27,8 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
+#ifndef WG_POINTERS_DOT_H
+#	include <wg_pointers.h>
 #endif
 
 #ifndef WG_SURFACE_DOT_H
