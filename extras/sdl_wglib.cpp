@@ -80,13 +80,13 @@ namespace sdl_wglib
 					pHandler->QueueEvent( WgWheelRollEvent::Create( 1, -1 ) );
 				else
 				{
-					pHandler->QueueEvent( WgMousePressEvent::Create( event.button.button ) );
+					pHandler->QueueEvent( WgMousePressEvent::Create( (WgMouseButton) event.button.button ) );
 				}
 				break;
 
 			case	SDL_MOUSEBUTTONUP:
 				if( event.button.button != 4 && event.button.button != 5 )
-					pHandler->QueueEvent( WgMouseReleaseEvent::Create( event.button.button ) );
+					pHandler->QueueEvent( WgMouseReleaseEvent::Create( (WgMouseButton) event.button.button ) );
 				break;
 		}
 	}

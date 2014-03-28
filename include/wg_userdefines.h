@@ -30,12 +30,6 @@
 
 //=============================================================================
 
-//____ systemwide defines _____________________________________________________
-
-//#define	WG_USE_SDL				// Set when Simple DirectMedia Layer is used
-//								// as the base for WonderGUI for some extra
-//								// speedups.
-
 
 //____ font & print related defines ___________________________________________
 
@@ -57,17 +51,6 @@
 #define WG_ESCAPE_CODE		0xA4
 
 #define WG_DEFAULT_CODEPAGE WG_CODEPAGE_1252
-
-//____ input related defines __________________________________________________
-
-#define	WG_MAX_BUTTONS		8	// Maximum number of mouse buttons that wonderGUI is aware of.
-#define	WG_MAX_WIDGETS		8	// Maximum number of widgets that can receive the same action.
-								//(through intercept settings on parents). No overflow check!
-#define	WG_MAX_KEYS_DOWN	16	// Maximum number of keys simultaneously depressed. No overflow check!
-
-#define	WG_MAX_KEYS			128	// Number of keys that we'll let WonderGUI be aware of.
-								// Keycode sent to WgInput may not equal or exceed this
-								// number!
 
 
 //____ enum WgModifierKeys ____________________________________________________
@@ -97,10 +80,6 @@ enum WgModifierKeys
 	// Needs to be last!
 	WG_MAX_MODKEYS = 16
 };
-
-//____ layer constants ____________________________________________________
-#define WG_DEFAULT_LAYER 128
-
 
 //=============================================================================
 #endif	// WG_USERDEFINES_DOT_H

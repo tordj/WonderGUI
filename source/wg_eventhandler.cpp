@@ -886,7 +886,7 @@ void WgEventHandler::_processTick( WgTickEvent * pEvent )
 			// First BUTTON_REPEAT event posted separately.
 
 			if( msSinceRepeatStart < 0 && msSinceRepeatStart + pEvent->Millisec() >= 0 )
-				QueueEvent( new WgMouseRepeatEvent(button) );
+				QueueEvent( new WgMouseRepeatEvent((WgMouseButton)button) );
 
 			// Calculate ms since last BUTTON_REPEAT event
 
@@ -900,7 +900,7 @@ void WgEventHandler::_processTick( WgTickEvent * pEvent )
 
 			while( msToProcess >= buttonRate )
 			{
-				QueueEvent( new WgMouseRepeatEvent(button) );
+				QueueEvent( new WgMouseRepeatEvent((WgMouseButton)button) );
 				msToProcess -= buttonRate;
 			}
 		}
@@ -969,7 +969,7 @@ void WgEventHandler::_processMouseEnter( WgMouseEnterEvent * pEvent )
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
-			QueueEvent( new WgMouseDragEvent( i, m_pLatestPressEvents[i]->PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
+			QueueEvent( new WgMouseDragEvent( (WgMouseButton)i, m_pLatestPressEvents[i]->PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
 	}
 
 	// Post event for finalizing position once button drag is taken care of.
@@ -1005,7 +1005,7 @@ void WgEventHandler::_processMouseMove( WgMouseMoveEvent * pEvent )
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
-			QueueEvent( new WgMouseDragEvent( i, m_pLatestPressEvents[i]->PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
+			QueueEvent( new WgMouseDragEvent( (WgMouseButton) i, m_pLatestPressEvents[i]->PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
 	}
 
 	// Post event for finalizing move once button drag is taken care of.
@@ -1249,7 +1249,7 @@ void WgEventHandler::_processMouseButtonPress( WgMousePressEvent * pEvent )
 {
 	_updateMarkedWidget(false);
 
-	int button = pEvent->Button();
+	WgMouseButton button = pEvent->Button();
 
 	// Update m_previousPressWidgets
 
@@ -1301,7 +1301,7 @@ void WgEventHandler::_processMouseButtonRepeat( WgMouseRepeatEvent * pEvent )
 {
 	_updateMarkedWidget(false);
 
-	int button = pEvent->Button();
+	WgMouseButton button = pEvent->Button();
 
 	// Post BUTTON_REPEAT event for widget that received the press if we are still inside.
 
@@ -1318,7 +1318,7 @@ void WgEventHandler::_processMouseButtonRelease( WgMouseReleaseEvent * pEvent )
 {
 	_updateMarkedWidget(false);
 
-	int button = pEvent->Button();
+	WgMouseButton button = pEvent->Button();
 
 	// Post BUTTON_RELEASE events for widget that was pressed
 
@@ -1357,7 +1357,7 @@ void WgEventHandler::_processMouseButtonRelease( WgMouseReleaseEvent * pEvent )
 
 void WgEventHandler::_processMouseButtonDrag( WgMouseDragEvent * pEvent )
 {
-	int button = pEvent->Button();
+	WgMouseButton button = pEvent->Button();
 
 	// Post POINTER_DRAG event for pressed widget
 
@@ -1375,7 +1375,7 @@ void WgEventHandler::_processMouseButtonDrag( WgMouseDragEvent * pEvent )
 
 void WgEventHandler::_processMouseButtonClick( WgMouseClickEvent * pEvent )
 {
-	int button = pEvent->Button();
+	WgMouseButton button = pEvent->Button();
 
 	// Post BUTTON_CLICK events for widget that received the press if we
 	// still are inside.
@@ -1389,7 +1389,7 @@ void WgEventHandler::_processMouseButtonClick( WgMouseClickEvent * pEvent )
 
 void WgEventHandler::_processMouseButtonDoubleClick( WgMouseDoubleClickEvent * pEvent )
 {
-	int button = pEvent->Button();
+	WgMouseButton button = pEvent->Button();
 
 	// Post BUTTON_DOUBLE_CLICK event if gizom received both this and previous press.
 

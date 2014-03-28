@@ -68,34 +68,34 @@ public:
 	static WgEventFilter	MouseMove( const WgWidgetPtr& pWidget );
 
 	static WgEventFilter	MousePress();
-	static WgEventFilter	MousePress( int button);
+	static WgEventFilter	MousePress( WgMouseButton button);
 	static WgEventFilter	MousePress( const WgWidgetPtr& pWidget );
-	static WgEventFilter	MousePress( const WgWidgetPtr& pWidget, int button );
+	static WgEventFilter	MousePress( const WgWidgetPtr& pWidget, WgMouseButton button );
 
 	static WgEventFilter	MouseRelease();
-	static WgEventFilter	MouseRelease( int button);
+	static WgEventFilter	MouseRelease( WgMouseButton button);
 	static WgEventFilter	MouseRelease( const WgWidgetPtr& pWidget );
-	static WgEventFilter	MouseRelease( const WgWidgetPtr& pWidget, int button );
+	static WgEventFilter	MouseRelease( const WgWidgetPtr& pWidget, WgMouseButton button );
 
 	static WgEventFilter	MouseDrag();
-	static WgEventFilter	MouseDrag( int button);
+	static WgEventFilter	MouseDrag( WgMouseButton button);
 	static WgEventFilter	MouseDrag( const WgWidgetPtr& pWidget );
-	static WgEventFilter	MouseDrag( const WgWidgetPtr& pWidget, int button );
+	static WgEventFilter	MouseDrag( const WgWidgetPtr& pWidget, WgMouseButton button );
 
 	static WgEventFilter	MouseRepeat();
-	static WgEventFilter	MouseRepeat( int button);
+	static WgEventFilter	MouseRepeat( WgMouseButton button);
 	static WgEventFilter	MouseRepeat( const WgWidgetPtr& pWidget );
-	static WgEventFilter	MouseRepeat( const WgWidgetPtr& pWidget, int button );
+	static WgEventFilter	MouseRepeat( const WgWidgetPtr& pWidget, WgMouseButton button );
 
 	static WgEventFilter	MouseClick();
-	static WgEventFilter	MouseClick( int button);
+	static WgEventFilter	MouseClick( WgMouseButton button);
 	static WgEventFilter	MouseClick( const WgWidgetPtr& pWidget );
-	static WgEventFilter	MouseClick( const WgWidgetPtr& pWidget, int button );
+	static WgEventFilter	MouseClick( const WgWidgetPtr& pWidget, WgMouseButton button );
 
 	static WgEventFilter	MouseDoubleClick();
-	static WgEventFilter	MouseDoubleClick( int button);
+	static WgEventFilter	MouseDoubleClick( WgMouseButton button);
 	static WgEventFilter	MouseDoubleClick( const WgWidgetPtr& pWidget );
-	static WgEventFilter	MouseDoubleClick( const WgWidgetPtr& pWidget, int button );
+	static WgEventFilter	MouseDoubleClick( const WgWidgetPtr& pWidget, WgMouseButton button );
 
 	static WgEventFilter	KeyPress();
 	static WgEventFilter	KeyPress( const WgWidgetPtr& pWidget );
@@ -151,10 +151,10 @@ public:
 	static WgEventFilter	ItemToggle( const WgWidgetPtr& pWidget, int id );
 
 	static WgEventFilter	ItemMousePress();
-	static WgEventFilter	ItemMousePress( int button );
+	static WgEventFilter	ItemMousePress( WgMouseButton button );
 	static WgEventFilter	ItemMousePress( const WgWidgetPtr& pWidget );
-	static WgEventFilter	ItemMousePress( const WgWidgetPtr& pWidget, int button );
-	static WgEventFilter	ItemMousePress( const WgWidgetPtr& pWidget, int button, int id );
+	static WgEventFilter	ItemMousePress( const WgWidgetPtr& pWidget, WgMouseButton button );
+	static WgEventFilter	ItemMousePress( const WgWidgetPtr& pWidget, WgMouseButton button, int id );
 
 	static WgEventFilter	ItemsSelect();
 	static WgEventFilter	ItemsSelect( const WgWidgetPtr& pWidget );

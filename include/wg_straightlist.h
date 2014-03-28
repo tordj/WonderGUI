@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_QUICKLIST_DOT_H
-#define WG_QUICKLIST_DOT_H
+#ifndef WG_STRAIGHTLIST_DOT_H
+#define WG_STRAIGHTLIST_DOT_H
 
 #ifndef WG_LIST_DOT_H
 #	include <wg_list.h>
@@ -30,22 +30,22 @@
 #	include <wg_hookarray.h>
 #endif
 
-class WgQuickList;
-typedef	WgSmartPtr<WgQuickList,WgListPtr>		WgQuickListPtr;
-typedef	WgWeakPtr<WgQuickList,WgListWeakPtr>	WgQuickListWeakPtr;
+class WgStraightList;
+typedef	WgSmartPtr<WgStraightList,WgListPtr>		WgStraightListPtr;
+typedef	WgWeakPtr<WgStraightList,WgListWeakPtr>	WgStraightListWeakPtr;
 
-class WgQuickListHook;
-typedef	WgHookTypePtr<WgQuickListHook,WgListHookPtr>	WgQuickListHookPtr;
+class WgStraightListHook;
+typedef	WgHookTypePtr<WgStraightListHook,WgListHookPtr>	WgStraightListHookPtr;
 
-class WgQuickListHook : public WgListHook
+class WgStraightListHook : public WgListHook
 {
-	friend class WgQuickList;
-	friend class WgHookArray<WgQuickListHook>;
+	friend class WgStraightList;
+	friend class WgHookArray<WgStraightListHook>;
 public:
 	virtual bool				IsInstanceOf( const char * pClassName ) const;
 	virtual const char *		ClassName( void ) const;
 	static const char			CLASSNAME[];
-	static WgQuickListHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgStraightListHookPtr	Cast( const WgHookPtr& pInterface );
 
 	WgCoord			Pos() const;
 	WgSize			Size() const;
@@ -53,12 +53,12 @@ public:
 	WgCoord			ScreenPos() const;
 	WgRect			ScreenGeo() const;
 
-	WgQuickListHookPtr	Prev() const { return static_cast<WgQuickListHook*>(_prevHook()); }
-	WgQuickListHookPtr	Next() const { return static_cast<WgQuickListHook*>(_nextHook()); }
-	WgQuickListPtr		Parent() const { return m_pParent; }
+	WgStraightListHookPtr	Prev() const { return static_cast<WgStraightListHook*>(_prevHook()); }
+	WgStraightListHookPtr	Next() const { return static_cast<WgStraightListHook*>(_nextHook()); }
+	WgStraightListPtr		Parent() const { return m_pParent; }
 
 protected:
-	WgQuickListHook() {};
+	WgStraightListHook() {};
 
 	void			_requestRender();
 	void			_requestRender( const WgRect& rect );
@@ -69,7 +69,7 @@ protected:
 
 	WgContainer *	_parent() const;
 	
-	WgQuickList *	m_pParent;
+	WgStraightList *	m_pParent;
 	int				m_ofs;				// Offset in pixels for start of this list item.
 	int				m_length;			// Length in pixels of this list item. Includes widget padding.
 
@@ -78,22 +78,22 @@ protected:
 
 
 
-//____ WgQuickList ____________________________________________________________
+//____ WgStraightList ____________________________________________________________
 
-class WgQuickList : public WgList
+class WgStraightList : public WgList
 {
-	friend class WgQuickListHook;
+	friend class WgStraightListHook;
 public:
-	static WgQuickListPtr	Create() { return WgQuickListPtr(new WgQuickList()); }
+	static WgStraightListPtr	Create() { return WgStraightListPtr(new WgStraightList()); }
 	
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
-	static WgQuickListPtr	Cast( const WgObjectPtr& pObject );
+	static WgStraightListPtr	Cast( const WgObjectPtr& pObject );
 
-	WgQuickListHookPtr		AddWidget( const WgWidgetPtr& pWidget );
-	WgQuickListHookPtr		InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
-	WgQuickListHookPtr		InsertWidgetSorted( const WgWidgetPtr& pWidget );
+	WgStraightListHookPtr		AddWidget( const WgWidgetPtr& pWidget );
+	WgStraightListHookPtr		InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
+	WgStraightListHookPtr		InsertWidgetSorted( const WgWidgetPtr& pWidget );
 
 	bool					RemoveWidget( const WgWidgetPtr& pWidget );
 	bool					Clear();
@@ -111,9 +111,9 @@ public:
 	WgSize					PreferredSize() const;
 
 protected:
-	WgQuickList();
-	virtual ~WgQuickList();
-	WgWidget*		_newOfMyType() const { return new WgQuickList(); };
+	WgStraightList();
+	virtual ~WgStraightList();
+	WgWidget*		_newOfMyType() const { return new WgStraightList(); };
 
 	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
@@ -125,12 +125,12 @@ protected:
 	void			_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	void			_onStateChanged( WgState oldState, WgState newState );
 
-	void			_onRequestRender( WgQuickListHook * pHook );
-	void			_onRequestRender( WgQuickListHook * pHook, const WgRect& rect );
-	void			_onRequestResize( WgQuickListHook * pHook );
+	void			_onRequestRender( WgStraightListHook * pHook );
+	void			_onRequestRender( WgStraightListHook * pHook, const WgRect& rect );
+	void			_onRequestResize( WgStraightListHook * pHook );
 
-	void			_onWidgetAppeared( WgQuickListHook * pInserted );
-	void			_onWidgetDisappeared( WgQuickListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
+	void			_onWidgetAppeared( WgStraightListHook * pInserted );
+	void			_onWidgetDisappeared( WgStraightListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
 
 	WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
 	void			_getChildGeo( WgRect& geo, const WgHook * pHook ) const;
@@ -150,11 +150,11 @@ protected:
 	WgSortOrder			m_sortOrder;
 	WgWidgetSortFunc	m_pSortFunc;
 
-	WgHookArray<WgQuickListHook>	m_hooks;
+	WgHookArray<WgStraightListHook>	m_hooks;
 
 	WgSize				m_preferredSize;
 	WgSize				m_size;
 };
 
 
-#endif //WG_QUICKLIST_DOT_H
+#endif //WG_STRAIGHTLIST_DOT_H

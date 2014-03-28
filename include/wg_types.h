@@ -328,6 +328,21 @@ enum WgPointerStyle
 	WG_POINTER_SIZE_W_E,						// double-pointed arrow pointing west and east
 };
 
+//____ WgMouseButton _________________________________________________________
+
+enum WgMouseButton
+{
+	WG_BUTTON_NONE = 0,
+	WG_BUTTON_LEFT,
+	WG_BUTTON_MIDDLE,
+	WG_BUTTON_RIGHT,
+	WG_BUTTON_X1,
+	WG_BUTTON_X2,
+};
+
+#define	WG_MAX_BUTTONS		WG_BUTTON_X2+1	
+
+
 //____ WgAnimMode _____________________________________________________________
 
 enum WgAnimMode

@@ -20,15 +20,15 @@
 
 =========================================================================*/
 
-#include <wg_quicklist.h>
+#include <wg_straightlist.h>
 
-const char WgQuickList::CLASSNAME[] = {"QuickList"};
-const char WgQuickListHook::CLASSNAME[] = {"QuickListHook"};
+const char WgStraightList::CLASSNAME[] = {"StraightList"};
+const char WgStraightListHook::CLASSNAME[] = {"StraightListHook"};
 
 
-//____ WgQuickListHook::IsInstanceOf() __________________________________________
+//____ WgStraightListHook::IsInstanceOf() __________________________________________
 
-bool WgQuickListHook::IsInstanceOf( const char * pClassName ) const
+bool WgStraightListHook::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
@@ -36,54 +36,54 @@ bool WgQuickListHook::IsInstanceOf( const char * pClassName ) const
 	return WgListHook::IsInstanceOf(pClassName);
 }
 
-//____ WgQuickListHook::ClassName() _____________________________________________
+//____ WgStraightListHook::ClassName() _____________________________________________
 
-const char * WgQuickListHook::ClassName( void ) const
+const char * WgStraightListHook::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ WgQuickListHook::Cast() ________________________________________________
+//____ WgStraightListHook::Cast() ________________________________________________
 
-WgQuickListHookPtr WgQuickListHook::Cast( const WgHookPtr& pHook )
+WgStraightListHookPtr WgStraightListHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgQuickListHookPtr( static_cast<WgQuickListHook*>(pHook.GetRealPtr()) );
+		return WgStraightListHookPtr( static_cast<WgStraightListHook*>(pHook.GetRealPtr()) );
 
 	return 0;
 }
 
 //____ WqQuickListHook::Pos() _________________________________________________
 
-WgCoord WgQuickListHook::Pos() const
+WgCoord WgStraightListHook::Pos() const
 {
 	WgRect	geo;
 	m_pParent->_getChildGeo(geo,this);
 	return geo.Pos();
 }
 
-WgSize WgQuickListHook::Size() const
+WgSize WgStraightListHook::Size() const
 {
 	WgRect	geo;
 	m_pParent->_getChildGeo(geo,this);
 	return geo.Size();
 }
 
-WgRect WgQuickListHook::Geo() const
+WgRect WgStraightListHook::Geo() const
 {
 	WgRect	geo;
 	m_pParent->_getChildGeo(geo,this);
 	return geo;
 }
 
-WgCoord WgQuickListHook::ScreenPos() const
+WgCoord WgStraightListHook::ScreenPos() const
 {
 	WgRect	geo;
 	m_pParent->_getChildGeo(geo,this);
 	return m_pParent->ScreenPos() + geo.Pos();
 }
 
-WgRect WgQuickListHook::ScreenGeo() const
+WgRect WgStraightListHook::ScreenGeo() const
 {
 	WgRect	geo;
 	m_pParent->_getChildGeo(geo,this);
@@ -91,39 +91,39 @@ WgRect WgQuickListHook::ScreenGeo() const
 }
 
 
-void WgQuickListHook::_requestRender()
+void WgStraightListHook::_requestRender()
 {
 	m_pParent->_onRequestRender(this);
 }
 
-void WgQuickListHook::_requestRender( const WgRect& rect )
+void WgStraightListHook::_requestRender( const WgRect& rect )
 {
 	m_pParent->_onRequestRender(this, rect);
 }
 
-void WgQuickListHook::_requestResize()
+void WgStraightListHook::_requestResize()
 {
 	m_pParent->_onRequestResize(this);
 }
 
-WgHook *  WgQuickListHook::_prevHook() const
+WgHook *  WgStraightListHook::_prevHook() const
 {
 	return m_pParent->m_hooks.Prev(this);
 }
 
-WgHook *  WgQuickListHook::_nextHook() const
+WgHook *  WgStraightListHook::_nextHook() const
 {
 	return m_pParent->m_hooks.Next(this);
 }
 
-WgContainer *  WgQuickListHook::_parent() const
+WgContainer *  WgStraightListHook::_parent() const
 {
 	return m_pParent;
 }
 
 //____ Constructor ____________________________________________________________
 
-WgQuickList::WgQuickList()
+WgStraightList::WgStraightList()
 {
 	m_bHorizontal = false;
 	m_sortOrder = WG_SORT_ASCENDING;
@@ -132,13 +132,13 @@ WgQuickList::WgQuickList()
 
 //____ Destructor _____________________________________________________________
 
-WgQuickList::~WgQuickList()
+WgStraightList::~WgStraightList()
 {
 }
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgQuickList::IsInstanceOf( const char * pClassName ) const
+bool WgStraightList::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
@@ -148,26 +148,26 @@ bool WgQuickList::IsInstanceOf( const char * pClassName ) const
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgQuickList::ClassName( void ) const
+const char * WgStraightList::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgQuickListPtr WgQuickList::Cast( const WgObjectPtr& pObj )
+WgStraightListPtr WgStraightList::Cast( const WgObjectPtr& pObj )
 {
 	if( pObj && pObj->IsInstanceOf(CLASSNAME) )
-		return WgQuickListPtr( static_cast<WgQuickList*>(pObj.GetRealPtr()) );
+		return WgStraightListPtr( static_cast<WgStraightList*>(pObj.GetRealPtr()) );
 
 	return nullptr;
 }
 
 //____ AddWidget() ____________________________________________________________
 
-WgQuickListHookPtr WgQuickList::AddWidget( const WgWidgetPtr& pWidget )
+WgStraightListHookPtr WgStraightList::AddWidget( const WgWidgetPtr& pWidget )
 {
-	WgQuickListHook * pHook = m_hooks.Add();
+	WgStraightListHook * pHook = m_hooks.Add();
 	pHook->m_pParent = this;
 	pHook->_setWidget(pWidget.GetRealPtr());
 
@@ -178,21 +178,21 @@ WgQuickListHookPtr WgQuickList::AddWidget( const WgWidgetPtr& pWidget )
 
 //____ InsertWidget() ____________________________________________________________
 
-WgQuickListHookPtr WgQuickList::InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling )
+WgStraightListHookPtr WgStraightList::InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling )
 {
 	int index = 0;
 	if( !pSibling )
 		index = m_hooks.Size()-1;
 	else 
 	{
-		WgQuickListHook * pHook = static_cast<WgQuickListHook*>(pSibling->_hook());
+		WgStraightListHook * pHook = static_cast<WgStraightListHook*>(pSibling->_hook());
 		if( pHook && pHook->_parent() == this )
 			index = m_hooks.Index(pHook);
 		else
 			return nullptr;
 	}
 
-	WgQuickListHook * pHook = m_hooks.Insert(index);
+	WgStraightListHook * pHook = m_hooks.Insert(index);
 	pHook->m_pParent = this;
 	pHook->_setWidget(pWidget.GetRealPtr());
 
@@ -202,7 +202,7 @@ WgQuickListHookPtr WgQuickList::InsertWidget( const WgWidgetPtr& pWidget, const 
 
 //____ InsertWidgetSorted() ___________________________________________________
 
-WgQuickListHookPtr WgQuickList::InsertWidgetSorted( const WgWidgetPtr& pWidget )
+WgStraightListHookPtr WgStraightList::InsertWidgetSorted( const WgWidgetPtr& pWidget )
 {
 	//TODO: Implement!
 
@@ -211,12 +211,12 @@ WgQuickListHookPtr WgQuickList::InsertWidgetSorted( const WgWidgetPtr& pWidget )
 
 //____ RemoveWidget() _________________________________________________________
 
-bool WgQuickList::RemoveWidget( const WgWidgetPtr& pWidget )
+bool WgStraightList::RemoveWidget( const WgWidgetPtr& pWidget )
 {
 	if( !pWidget || !pWidget->_hook() )
 		return false;
 
-	WgQuickListHook * pHook = static_cast<WgQuickListHook*>(pWidget->_hook());
+	WgStraightListHook * pHook = static_cast<WgStraightListHook*>(pWidget->_hook());
 	if( pHook->_parent() != this )
 		return false;
 
@@ -228,7 +228,7 @@ bool WgQuickList::RemoveWidget( const WgWidgetPtr& pWidget )
 
 //____ Clear() ________________________________________________________________
 
-bool WgQuickList::Clear()
+bool WgStraightList::Clear()
 {
 	m_hooks.Clear();
 	_onRefresh();
@@ -237,7 +237,7 @@ bool WgQuickList::Clear()
 
 //____ SetOrientation() _______________________________________________________
 
-void WgQuickList::SetOrientation( WgOrientation orientation )
+void WgStraightList::SetOrientation( WgOrientation orientation )
 {
 	bool bHorizontal = (orientation == WG_HORIZONTAL);
 
@@ -250,74 +250,74 @@ void WgQuickList::SetOrientation( WgOrientation orientation )
 
 //____ SortWidgets() __________________________________________________________
 
-void WgQuickList::SortWidgets()
+void WgStraightList::SortWidgets()
 {
 	//TODO: Implement!!!
 }
 
 //____ SetSortOrder() _________________________________________________________
 
-void WgQuickList::SetSortOrder( WgSortOrder order )
+void WgStraightList::SetSortOrder( WgSortOrder order )
 {
 	//TODO: Implement!!!
 }
 
 //____ SetSortFunction() ______________________________________________________
 
-void WgQuickList::SetSortFunction( WgWidgetSortFunc pSortFunc )
+void WgStraightList::SetSortFunction( WgWidgetSortFunc pSortFunc )
 {
 	//TODO: Implement!!!
 }
 
 //____ PreferredSize() ________________________________________________________
 
-WgSize WgQuickList::PreferredSize() const
+WgSize WgStraightList::PreferredSize() const
 {
 	return m_preferredSize;
 }
 
 
-void WgQuickList::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+void WgStraightList::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 }
 
-void WgQuickList::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgStraightList::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 }
 
-void WgQuickList::_onCloneContent( const WgWidget * _pOrg )
+void WgStraightList::_onCloneContent( const WgWidget * _pOrg )
 {
 }
 
-void WgQuickList::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgStraightList::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 }
 
-void WgQuickList::_onNewSize( const WgSize& size )
+void WgStraightList::_onNewSize( const WgSize& size )
 {
 }
 
-void WgQuickList::_onRefresh()
+void WgStraightList::_onRefresh()
 {
 }
 
-void WgQuickList::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+void WgStraightList::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 {
 }
 
-void WgQuickList::_onStateChanged( WgState oldState, WgState newState )
+void WgStraightList::_onStateChanged( WgState oldState, WgState newState )
 {
 
 }
 
-void WgQuickList::_onRequestRender( WgQuickListHook * pHook )
+void WgStraightList::_onRequestRender( WgStraightListHook * pHook )
 {
 	WgRect geo;
 	_getChildGeo(geo, pHook);
 	_requestRender(geo);
 }
 
-void WgQuickList::_onRequestRender( WgQuickListHook * pHook, const WgRect& rect )
+void WgStraightList::_onRequestRender( WgStraightListHook * pHook, const WgRect& rect )
 {
 	WgRect geo;
 	_getChildGeo(geo, pHook);
@@ -328,7 +328,7 @@ void WgQuickList::_onRequestRender( WgQuickListHook * pHook, const WgRect& rect 
 	_requestRender(geo);
 }
 
-void WgQuickList::_onRequestResize( WgQuickListHook * pHook )
+void WgStraightList::_onRequestResize( WgStraightListHook * pHook )
 {
 	if( pHook->m_bVisible )
 	{
@@ -338,15 +338,15 @@ void WgQuickList::_onRequestResize( WgQuickListHook * pHook )
 
 }
 
-void WgQuickList::_onWidgetAppeared( WgQuickListHook * pInserted )
+void WgStraightList::_onWidgetAppeared( WgStraightListHook * pInserted )
 {
 }
 
-void WgQuickList::_onWidgetDisappeared( WgQuickListHook * pToBeRemoved )
+void WgStraightList::_onWidgetDisappeared( WgStraightListHook * pToBeRemoved )
 {
 }
 
-WgWidget * WgQuickList::_findWidget( const WgCoord& ofs, WgSearchMode mode )
+WgWidget * WgStraightList::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 {
 	//TODO: Implement!!!
 
@@ -355,9 +355,9 @@ WgWidget * WgQuickList::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 //____ _getChildGeo() _________________________________________________________
 
-void WgQuickList::_getChildGeo( WgRect& geo, const WgHook * _pHook ) const
+void WgStraightList::_getChildGeo( WgRect& geo, const WgHook * _pHook ) const
 {
-	const WgQuickListHook * pHook = static_cast<const WgQuickListHook*>(_pHook);
+	const WgStraightListHook * pHook = static_cast<const WgStraightListHook*>(_pHook);
 
 	if( m_pSkin )
 		geo = m_pSkin->ContentRect( geo, m_state );
@@ -385,7 +385,7 @@ void WgQuickList::_getChildGeo( WgRect& geo, const WgHook * _pHook ) const
 
 //____ _firstHook() ___________________________________________________________
 
-WgHook* WgQuickList::_firstHook() const
+WgHook* WgStraightList::_firstHook() const
 {
 	if( m_hooks.Size() > 0 )
 		return m_hooks.Hook(0);
@@ -395,7 +395,7 @@ WgHook* WgQuickList::_firstHook() const
 
 //____ _lastHook() ____________________________________________________________
 
-WgHook* WgQuickList::_lastHook() const
+WgHook* WgStraightList::_lastHook() const
 {
 	if( m_hooks.Size() > 0 )
 		return m_hooks.Hook(m_hooks.Size()-1);
@@ -405,7 +405,7 @@ WgHook* WgQuickList::_lastHook() const
 
 //____ _firstHookWithGeo() ____________________________________________________
 
-WgHook* WgQuickList::_firstHookWithGeo( WgRect& geo ) const
+WgHook* WgStraightList::_firstHookWithGeo( WgRect& geo ) const
 {
 	if( m_hooks.Size() == 0 )
 		return nullptr;
@@ -417,9 +417,9 @@ WgHook* WgQuickList::_firstHookWithGeo( WgRect& geo ) const
 
 //____ _nextHookWithGeo() _____________________________________________________
 
-WgHook* WgQuickList::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook* WgStraightList::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
-	WgQuickListHook * p = m_hooks.Next(static_cast<WgQuickListHook*>(pHook));
+	WgStraightListHook * p = m_hooks.Next(static_cast<WgStraightListHook*>(pHook));
 	if( p )
 		_getChildGeo(geo,p);
 	return p;
@@ -427,7 +427,7 @@ WgHook* WgQuickList::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 //_____ _lastHookWithGeo() ____________________________________________________
 
-WgHook* WgQuickList::_lastHookWithGeo( WgRect& geo ) const
+WgHook* WgStraightList::_lastHookWithGeo( WgRect& geo ) const
 {
 	if( m_hooks.Size() == 0 )
 		return nullptr;
@@ -439,9 +439,9 @@ WgHook* WgQuickList::_lastHookWithGeo( WgRect& geo ) const
 
 //____ _prevHookWithGeo() _____________________________________________________
 
-WgHook* WgQuickList::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+WgHook* WgStraightList::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 {
-	WgQuickListHook * p = m_hooks.Prev(static_cast<WgQuickListHook*>(pHook));
+	WgStraightListHook * p = m_hooks.Prev(static_cast<WgStraightListHook*>(pHook));
 	if( p )
 		_getChildGeo(geo,p);
 	return p;

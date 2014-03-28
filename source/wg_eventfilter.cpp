@@ -105,7 +105,7 @@ WgEventFilter	WgEventFilter::MousePress()
 	return WgEventFilter( WG_EVENT_MOUSE_PRESS, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MousePress( int button)
+WgEventFilter	WgEventFilter::MousePress( WgMouseButton button)
 {
 	return WgEventFilter( WG_EVENT_MOUSE_PRESS, 0, _filterMouseButtonEvents, button );
 }
@@ -115,7 +115,7 @@ WgEventFilter	WgEventFilter::MousePress( const WgWidgetPtr& pWidget )
 	return WgEventFilter( WG_EVENT_MOUSE_PRESS, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MousePress( const WgWidgetPtr& pWidget, int button )
+WgEventFilter	WgEventFilter::MousePress( const WgWidgetPtr& pWidget, WgMouseButton button )
 {
 	return WgEventFilter( WG_EVENT_MOUSE_PRESS, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
@@ -127,7 +127,7 @@ WgEventFilter	WgEventFilter::MouseRelease()
 	return WgEventFilter( WG_EVENT_MOUSE_RELEASE, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseRelease( int button)
+WgEventFilter	WgEventFilter::MouseRelease( WgMouseButton button)
 {
 	return WgEventFilter( WG_EVENT_MOUSE_RELEASE, 0, _filterMouseButtonEvents, button );
 }
@@ -137,7 +137,7 @@ WgEventFilter	WgEventFilter::MouseRelease( const WgWidgetPtr& pWidget )
 	return WgEventFilter( WG_EVENT_MOUSE_RELEASE, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseRelease( const WgWidgetPtr& pWidget, int button )
+WgEventFilter	WgEventFilter::MouseRelease( const WgWidgetPtr& pWidget, WgMouseButton button )
 {
 	return WgEventFilter( WG_EVENT_MOUSE_RELEASE, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
@@ -149,7 +149,7 @@ WgEventFilter	WgEventFilter::MouseDrag()
 	return WgEventFilter( WG_EVENT_MOUSE_DRAG, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseDrag( int button)
+WgEventFilter	WgEventFilter::MouseDrag( WgMouseButton button)
 {
 	return WgEventFilter( WG_EVENT_MOUSE_DRAG, 0, _filterMouseButtonEvents, button );
 }
@@ -159,7 +159,7 @@ WgEventFilter	WgEventFilter::MouseDrag( const WgWidgetPtr& pWidget )
 	return WgEventFilter( WG_EVENT_MOUSE_DRAG, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseDrag( const WgWidgetPtr& pWidget, int button )
+WgEventFilter	WgEventFilter::MouseDrag( const WgWidgetPtr& pWidget, WgMouseButton button )
 {
 	return WgEventFilter( WG_EVENT_MOUSE_DRAG, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
@@ -171,7 +171,7 @@ WgEventFilter	WgEventFilter::MouseRepeat()
 	return WgEventFilter( WG_EVENT_MOUSE_REPEAT, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseRepeat( int button)
+WgEventFilter	WgEventFilter::MouseRepeat( WgMouseButton button)
 {
 	return WgEventFilter( WG_EVENT_MOUSE_REPEAT, 0, _filterMouseButtonEvents, button );
 }
@@ -181,7 +181,7 @@ WgEventFilter	WgEventFilter::MouseRepeat( const WgWidgetPtr& pWidget )
 	return WgEventFilter( WG_EVENT_MOUSE_REPEAT, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseRepeat( const WgWidgetPtr& pWidget, int button )
+WgEventFilter	WgEventFilter::MouseRepeat( const WgWidgetPtr& pWidget, WgMouseButton button )
 {
 	return WgEventFilter( WG_EVENT_MOUSE_REPEAT, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
@@ -193,7 +193,7 @@ WgEventFilter	WgEventFilter::MouseClick()
 	return WgEventFilter( WG_EVENT_MOUSE_CLICK, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseClick( int button)
+WgEventFilter	WgEventFilter::MouseClick( WgMouseButton button)
 {
 	return WgEventFilter( WG_EVENT_MOUSE_CLICK, 0, _filterMouseButtonEvents, button );
 }
@@ -203,7 +203,7 @@ WgEventFilter	WgEventFilter::MouseClick( const WgWidgetPtr& pWidget )
 	return WgEventFilter( WG_EVENT_MOUSE_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseClick(const WgWidgetPtr& pWidget, int button )
+WgEventFilter	WgEventFilter::MouseClick(const WgWidgetPtr& pWidget, WgMouseButton button )
 {
 	return WgEventFilter( WG_EVENT_MOUSE_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
@@ -215,7 +215,7 @@ WgEventFilter	WgEventFilter::MouseDoubleClick()
 	return WgEventFilter( WG_EVENT_MOUSE_CLICK, 0, _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseDoubleClick( int button)
+WgEventFilter	WgEventFilter::MouseDoubleClick( WgMouseButton button)
 {
 	return WgEventFilter( WG_EVENT_MOUSE_CLICK, 0, _filterMouseButtonEvents, button );
 }
@@ -225,7 +225,7 @@ WgEventFilter	WgEventFilter::MouseDoubleClick( const WgWidgetPtr& pWidget )
 	return WgEventFilter( WG_EVENT_MOUSE_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, 0 );
 }
 
-WgEventFilter	WgEventFilter::MouseDoubleClick( const WgWidgetPtr& pWidget, int button )
+WgEventFilter	WgEventFilter::MouseDoubleClick( const WgWidgetPtr& pWidget, WgMouseButton button )
 {
 	return WgEventFilter( WG_EVENT_MOUSE_CLICK, pWidget.GetRealPtr(), _filterMouseButtonEvents, button );
 }
@@ -460,7 +460,7 @@ WgEventFilter WgEventFilter::ItemMousePress()
 	return WgEventFilter( WG_EVENT_ITEM_MOUSE_PRESS, 0, _filterType );
 }
 
-WgEventFilter WgEventFilter::ItemMousePress( int button )
+WgEventFilter WgEventFilter::ItemMousePress( WgMouseButton button )
 {
 	return WgEventFilter( WG_EVENT_ITEM_MOUSE_PRESS, 0, _filterItemMousePressEvents, -1, button );
 }
@@ -470,12 +470,12 @@ WgEventFilter WgEventFilter::ItemMousePress( const WgWidgetPtr& pWidget )
 	return WgEventFilter( WG_EVENT_ITEM_MOUSE_PRESS, pWidget.GetRealPtr(), _filterTypeWidget );
 }
 
-WgEventFilter WgEventFilter::ItemMousePress( const WgWidgetPtr& pWidget, int button )
+WgEventFilter WgEventFilter::ItemMousePress( const WgWidgetPtr& pWidget, WgMouseButton button )
 {
 	return WgEventFilter( WG_EVENT_ITEM_MOUSE_PRESS, pWidget.GetRealPtr(), _filterItemMousePressEvents, -1, button );
 }
 
-WgEventFilter WgEventFilter::ItemMousePress( const WgWidgetPtr& pWidget, int button, int id )
+WgEventFilter WgEventFilter::ItemMousePress( const WgWidgetPtr& pWidget, WgMouseButton button, int id )
 {
 	return WgEventFilter( WG_EVENT_ITEM_MOUSE_PRESS, pWidget.GetRealPtr(), _filterItemMousePressEvents, id, button );
 }

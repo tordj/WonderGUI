@@ -310,11 +310,11 @@ public:
 	static const char	CLASSNAME[];
 	static WgMouseButtonEventPtr	Cast( const WgObjectPtr& pObject );
 
-	int		Button() const { return m_button; }
+	WgMouseButton		Button() const { return m_button; }
 protected:
-	WgMouseButtonEvent(int button) : m_button(button) {}
+	WgMouseButtonEvent(WgMouseButton button) : m_button(button) {}
 
-	int		m_button;
+	WgMouseButton		m_button;
 };
 
 //____ WgKeyEvent ______________________________________________________________
@@ -431,15 +431,15 @@ class WgMousePressEvent : public WgMouseButtonEvent
 {
 	friend class WgEventHandler;
 public:
-	static WgMousePressEventPtr			Create( int button ) { return new WgMousePressEvent(button); }
+	static WgMousePressEventPtr			Create( WgMouseButton button ) { return new WgMousePressEvent(button); }
 
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgMousePressEventPtr	Cast( const WgObjectPtr& pObject );
 protected:
-	WgMousePressEvent( int button, WgWidget * pWidget );
-	WgMousePressEvent( int button );
+	WgMousePressEvent( WgMouseButton button, WgWidget * pWidget );
+	WgMousePressEvent( WgMouseButton button );
 };
 
 //____ WgMouseReleaseEvent _____________________________________________________
@@ -448,7 +448,7 @@ class WgMouseReleaseEvent : public WgMouseButtonEvent
 {
 	friend class WgEventHandler;
 public:
-	static WgMouseReleaseEventPtr		Create( int button ) { return new WgMouseReleaseEvent(button); }
+	static WgMouseReleaseEventPtr		Create( WgMouseButton button ) { return new WgMouseReleaseEvent(button); }
 
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
@@ -459,8 +459,8 @@ public:
 	bool			ReleaseInside() const;
 
 protected:
-	WgMouseReleaseEvent( int button );
-	WgMouseReleaseEvent( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside );
+	WgMouseReleaseEvent( WgMouseButton button );
+	WgMouseReleaseEvent( WgMouseButton button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside );
 
 	bool			m_bPressInside;
 	bool			m_bReleaseInside;
@@ -745,11 +745,11 @@ public:
 	static const char	CLASSNAME[];
 	static WgItemMousePressEventPtr	Cast( const WgObjectPtr& pObject );
 
-	int				Button() const;
+	WgMouseButton		Button() const;
 //protected:
-	WgItemMousePressEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject, int button );
+	WgItemMousePressEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject, WgMouseButton button );
 
-	int		m_button;
+	WgMouseButton		m_button;
 };
 
 
@@ -851,7 +851,7 @@ public:
 	static WgModalBlockedPressEventPtr	Cast( const WgObjectPtr& pObject );
 
 protected:
-	WgModalBlockedPressEvent( int button, WgWidget * pModalWidget );
+	WgModalBlockedPressEvent( WgMouseButton button, WgWidget * pModalWidget );
 };
 
 class WgModalBlockedReleaseEvent : public WgMouseButtonEvent
@@ -864,7 +864,7 @@ public:
 	static WgModalBlockedReleaseEventPtr	Cast( const WgObjectPtr& pObject );
 
 protected:
-	WgModalBlockedReleaseEvent( int button, WgWidget * pModalWidget );
+	WgModalBlockedReleaseEvent( WgMouseButton button, WgWidget * pModalWidget );
 };
 
 //____ Link events _________________________________________________________
@@ -924,9 +924,9 @@ public:
 	static const char	CLASSNAME[];
 	static WgLinkMouseButtonEventPtr	Cast( const WgObjectPtr& pObject );
 
-	int			Button() const;
+	WgMouseButton		Button() const;
 protected:
-	int			m_button;
+	WgMouseButton		m_button;
 };
 
 class WgLinkMousePressEvent : public WgLinkMouseButtonEvent
@@ -937,7 +937,7 @@ public:
 	static const char	CLASSNAME[];
 	static WgLinkMousePressEventPtr	Cast( const WgObjectPtr& pObject );
 
-	WgLinkMousePressEvent( WgWidget * pWidget, std::string link, int button );
+	WgLinkMousePressEvent( WgWidget * pWidget, std::string link, WgMouseButton button );
 };
 
 class WgLinkMouseRepeatEvent : public WgLinkMouseButtonEvent
@@ -948,7 +948,7 @@ public:
 	static const char	CLASSNAME[];
 	static WgLinkMouseRepeatEventPtr	Cast( const WgObjectPtr& pObject );
 
-	WgLinkMouseRepeatEvent( WgWidget * pWidget, std::string link, int button );
+	WgLinkMouseRepeatEvent( WgWidget * pWidget, std::string link, WgMouseButton button );
 };
 
 class WgLinkMouseReleaseEvent : public WgLinkMouseButtonEvent
@@ -959,7 +959,7 @@ public:
 	static const char	CLASSNAME[];
 	static WgLinkMouseReleaseEventPtr	Cast( const WgObjectPtr& pObject );
 
-	WgLinkMouseReleaseEvent( WgWidget * pWidget, std::string link, int button );
+	WgLinkMouseReleaseEvent( WgWidget * pWidget, std::string link, WgMouseButton button );
 };
 
 class WgLinkMouseClickEvent : public WgLinkMouseButtonEvent
@@ -970,7 +970,7 @@ public:
 	static const char	CLASSNAME[];
 	static WgLinkMouseClickEventPtr	Cast( const WgObjectPtr& pObject );
 
-	WgLinkMouseClickEvent( WgWidget * pWidget, std::string link, int button );
+	WgLinkMouseClickEvent( WgWidget * pWidget, std::string link, WgMouseButton button );
 };
 
 class WgLinkMouseDoubleClickEvent : public WgLinkMouseButtonEvent
@@ -981,7 +981,7 @@ public:
 	static const char	CLASSNAME[];
 	static WgLinkMouseDoubleClickEventPtr	Cast( const WgObjectPtr& pObject );
 
-	WgLinkMouseDoubleClickEvent( WgWidget * pWidget, std::string link, int button );
+	WgLinkMouseDoubleClickEvent( WgWidget * pWidget, std::string link, WgMouseButton button );
 };
 
 //____ Internally posted events ____________________________________________
@@ -1003,8 +1003,8 @@ class WgMouseDragEvent : public WgMouseButtonEvent
 {
 	friend class WgEventHandler;
 protected:
-	WgMouseDragEvent( int button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos );
-	WgMouseDragEvent( int button, WgWidget * pWidget, const WgCoord& orgPos, const WgCoord& prevPos, const WgCoord& currPos );
+	WgMouseDragEvent( WgMouseButton button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos );
+	WgMouseDragEvent( WgMouseButton button, WgWidget * pWidget, const WgCoord& orgPos, const WgCoord& prevPos, const WgCoord& currPos );
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
@@ -1026,8 +1026,8 @@ class WgMouseRepeatEvent : public WgMouseButtonEvent
 {
 	friend class WgEventHandler;
 protected:
-	WgMouseRepeatEvent( int button, WgWidget * pWidget );
-	WgMouseRepeatEvent( int button );
+	WgMouseRepeatEvent( WgMouseButton button, WgWidget * pWidget );
+	WgMouseRepeatEvent( WgMouseButton button );
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
@@ -1039,8 +1039,8 @@ class WgMouseClickEvent : public WgMouseButtonEvent
 {
 	friend class WgEventHandler;
 protected:
-	WgMouseClickEvent( int button );
-	WgMouseClickEvent( int button, WgWidget * pWidget );
+	WgMouseClickEvent( WgMouseButton button );
+	WgMouseClickEvent( WgMouseButton button, WgWidget * pWidget );
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
@@ -1058,8 +1058,8 @@ public:
 	static WgMouseDoubleClickEventPtr	Cast( const WgObjectPtr& pObject );
 
 protected:
-	WgMouseDoubleClickEvent( int button );
-	WgMouseDoubleClickEvent( int button, WgWidget * pWidget );
+	WgMouseDoubleClickEvent( WgMouseButton button );
+	WgMouseDoubleClickEvent( WgMouseButton button, WgWidget * pWidget );
 };
 
 class WgKeyRepeatEvent : public WgKeyEvent
