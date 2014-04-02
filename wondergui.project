@@ -54,7 +54,6 @@
     <File Name="include/wg_resdb.h"/>
     <File Name="include/wg_resloader.h"/>
     <File Name="include/wg_sizescaler.h"/>
-    <File Name="include/wg_smartptr.h"/>
     <File Name="include/wg_string.h"/>
     <File Name="include/wg_surface.h"/>
     <File Name="include/wg_text.h"/>
@@ -101,7 +100,6 @@
     <File Name="source/wg_pen.cpp"/>
     <File Name="source/wg_resdb.cpp"/>
     <File Name="source/wg_sizescaler.cpp"/>
-    <File Name="source/wg_smartptr.cpp"/>
     <File Name="source/wg_string.cpp"/>
     <File Name="source/wg_surface.cpp"/>
     <File Name="source/wg_text.cpp"/>
@@ -125,6 +123,9 @@
     <File Name="source/wg_surfacefactory.cpp"/>
     <File Name="include/wg_hookptr.h"/>
     <File Name="source/wg_hookptr.cpp"/>
+    <File Name="include/wg_pointers.h"/>
+    <File Name="source/wg_pointers.cpp"/>
+    <File Name="include/wg_hookarray.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Widgets">
     <File Name="source/wg_animplayer.cpp"/>
@@ -212,9 +213,9 @@
   </VirtualDirectory>
   <VirtualDirectory Name="Lists">
     <File Name="include/wg_list.h"/>
-    <File Name="include/wg_quicklist.h"/>
     <File Name="source/wg_list.cpp"/>
-    <File Name="source/wg_quicklist.cpp"/>
+    <File Name="include/wg_straightlist.h"/>
+    <File Name="source/wg_straightlist.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Layers">
     <File Name="source/wg_layer.cpp"/>
@@ -239,8 +240,8 @@
     <File Name="source/wg_iedittext.cpp"/>
     <File Name="source/wg_imodiftext.cpp"/>
     <File Name="source/wg_istatictext.cpp"/>
-    <File Name="include/wg_iwidgetholder.h"/>
-    <File Name="source/wg_iwidgetholder.cpp"/>
+    <File Name="include/wg_iwidgets.h"/>
+    <File Name="source/wg_iwidgets.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

@@ -1049,7 +1049,7 @@ void WgMenu::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 
 	// Forward event depending on rules.
 
-	if( pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+	if( pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 		pHandler->SwallowEvent(pEvent);
 	else if( pEvent->IsKeyEvent() )
 	{

@@ -246,7 +246,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 		return;
 	}
 
-	if( (event == WG_EVENT_MOUSE_PRESS || event == WG_EVENT_MOUSE_DRAG) && WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+	if( (event == WG_EVENT_MOUSE_PRESS || event == WG_EVENT_MOUSE_DRAG) && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 	{
 		if( !m_state.IsFocused() )
 			GrabFocus();
@@ -300,7 +300,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 
 	if( event == WG_EVENT_MOUSE_RELEASE )
 	{
-		if( m_state.IsFocused() && WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+		if( m_state.IsFocused() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 			m_text.setSelectionMode(false);
 	}		
 
@@ -457,7 +457,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 
 	if( pEvent->IsMouseButtonEvent() )
 	{
-		if( WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 			pHandler->SwallowEvent(pEvent);
 	}
 	else if( pEvent->IsKeyEvent() )

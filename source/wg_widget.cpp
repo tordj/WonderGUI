@@ -398,7 +398,7 @@ void WgWidget::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 		case WG_EVENT_MOUSE_PRESS:
 		{
 			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
-			if( pEvent->Button() == 1 )
+			if( pEvent->Button() == WG_BUTTON_LEFT )
 			{
 				if( m_state.IsHovered() )
 					m_state.SetPressed(true);
@@ -410,7 +410,7 @@ void WgWidget::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 		case WG_EVENT_MOUSE_RELEASE:
 		{
 			WgMouseReleaseEventPtr pEvent = WgMouseReleaseEvent::Cast(_pEvent);
-			if( pEvent->Button() == 1 )
+			if( pEvent->Button() == WG_BUTTON_LEFT )
 			{
 				if( m_state.IsHovered() )
 					m_state.SetPressed(false);

@@ -65,7 +65,7 @@ private:
 	std::string _formatModkeys( const WgEventPtr& _pEvent );
 	std::string _formatPointerPos( const WgEventPtr& _pEvent );
 	std::string _formatPointerStyle( const WgPointerChangeEventPtr& _pEvent );
-
+	std::string _formatMouseButton( WgMouseButton button );
 
 	bool			m_eventFilter[WG_EVENT_MAX];
 
