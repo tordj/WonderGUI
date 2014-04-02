@@ -1244,7 +1244,7 @@ void WgTablist::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			WgTab * pTab = _pos2Tab( pos.x, pos.y );
 			if( pTab && pTab != m_pTabSelected )
 			{
-				if( pEvent->Button() == 1 )
+				if( pEvent->Button() == WG_BUTTON_LEFT )
 					SelectTab(pTab->m_id);
 
 				pHandler->QueueEvent( new WgItemMousePressEvent(this, -1, pTab->m_id, WgObjectPtr(), pEvent->Button()) );
@@ -1280,7 +1280,7 @@ void WgTablist::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 
 	// Swallow event depending on rules.
 
-	if( _pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(_pEvent)->Button() == 1 )
+	if( _pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
 		pHandler->SwallowEvent(_pEvent);
 }
 

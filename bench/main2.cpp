@@ -9,11 +9,11 @@
 #include <wg_softsurface.h>
 #include <wg_softgfxdevice.h>
 
-void 	translateEvents( WgEventHandlerPtr pEventHandler );
-int 	translateMouseButton( Uint8 button );
-void 	updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow );
-void 	myButtonClickCallback( const WgEventPtr& pEvent );
-void * 	loadFile( const char * pPath );
+void 			translateEvents( WgEventHandlerPtr pEventHandler );
+WgMouseButton 	translateMouseButton( Uint8 button );
+void 			updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow );
+void 			myButtonClickCallback( const WgEventPtr& pEvent );
+void * 			loadFile( const char * pPath );
 
 
 bool	bQuit = false;
@@ -195,20 +195,20 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 //
 // Translate SDL mouse button enums to WonderGUI equivalents.
 //
-int translateMouseButton( Uint8 button )
+WgButton translateMouseButton( Uint8 button )
 {
 	switch( button )
 	{
 		case SDL_BUTTON_LEFT:
-			return 1;
+			return WG_BUTTON_LEFT;
 		case SDL_BUTTON_MIDDLE:
-			return 2;
+			return WG_BUTTON_MIDDLE;
 		case SDL_BUTTON_RIGHT:
-			return 3;
+			return WG_BUTTON_RIGHT;
 		case SDL_BUTTON_X1:
-			return 4;
+			return WG_BUTTON_X1;
 		case SDL_BUTTON_X2:
-			return 5;
+			return WG_BUTTON_X2;
 	}
 }
 

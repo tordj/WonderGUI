@@ -211,10 +211,10 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 		case WG_EVENT_MOUSE_LEAVE:
 			break;
 		case WG_EVENT_MOUSE_PRESS:
-			sprintf( params, " button=%d", WgMousePressEvent::Cast(_pEvent)->Button() );
+			sprintf( params, " button=%s", _formatMouseButton(WgMousePressEvent::Cast(_pEvent)->Button()).c_str() );
 			break;
 		case WG_EVENT_MOUSE_REPEAT:
-			sprintf( params, " button=%d", WgMouseRepeatEvent::Cast(_pEvent)->Button() );
+			sprintf( params, " button=%s", _formatMouseButton(WgMouseRepeatEvent::Cast(_pEvent)->Button()).c_str() );
 			break;
 		case WG_EVENT_MOUSE_DRAG:
 		{
@@ -227,8 +227,8 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 			WgCoord	dragNow	= pEvent->DraggedNow();
 			WgCoord	dragTotal=pEvent->DraggedTotal();
 
-			sprintf( params, " button=%d position(start=%d,%d prev=%d,%d now=%d,%d) dragged(now=%d,%d total=%d,%d)",
-					pEvent->Button(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
+			sprintf( params, " button=%s position(start=%d,%d prev=%d,%d now=%d,%d) dragged(now=%d,%d total=%d,%d)",
+					_formatMouseButton(pEvent->Button()).c_str(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
 			break;
 		}
 		case WG_EVENT_MOUSE_RELEASE:
@@ -246,14 +246,14 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 			if( pEvent->ReleaseInside() )
 				pRelease = inside;
 
-			sprintf( params, " button=%d press=%s release=%s", pEvent->Button(), pPress, pRelease );
+			sprintf( params, " button=%s press=%s release=%s", _formatMouseButton(pEvent->Button()).c_str(), pPress, pRelease );
 			break;
 		}
 		case WG_EVENT_MOUSE_CLICK:
-			sprintf( params, " button=%d", WgMouseClickEvent::Cast(_pEvent)->Button() );
+			sprintf( params, " button=%s", _formatMouseButton(WgMouseClickEvent::Cast(_pEvent)->Button()).c_str() );
 			break;
 		case WG_EVENT_MOUSE_DOUBLE_CLICK:
-			sprintf( params, " button=%d", WgMouseDoubleClickEvent::Cast(_pEvent)->Button() );
+			sprintf( params, " button=%s", _formatMouseButton(WgMouseDoubleClickEvent::Cast(_pEvent)->Button()).c_str() );
 			break;
 
 		case WG_EVENT_KEY_PRESS:
@@ -320,7 +320,7 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 		case WG_EVENT_ITEM_MOUSE_PRESS:
 		{
 			WgItemMousePressEventPtr pEvent = WgItemMousePressEvent::Cast(_pEvent);
-			sprintf( params, "index=%d id=% mouseButton=%d", pEvent->ItemIndex(), pEvent->ItemId(), pEvent->Button() );
+			sprintf( params, "index=%d id=% mouseButton=%s", pEvent->ItemIndex(), pEvent->ItemId(), _formatMouseButton(pEvent->Button()).c_str() );
 			break;
 		}
 				
@@ -348,10 +348,10 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 		case WG_EVENT_MODAL_MOVE_OUTSIDE:
 			break;
 		case WG_EVENT_MODAL_BLOCKED_PRESS:
-			sprintf( params, " button=%d", WgModalBlockedPressEvent::Cast(_pEvent)->Button() );
+			sprintf( params, " button=%s", _formatMouseButton(WgModalBlockedPressEvent::Cast(_pEvent)->Button()).c_str() );
 			break;
 		case WG_EVENT_MODAL_BLOCKED_RELEASE:
-			sprintf( params, " button=%d", WgModalBlockedReleaseEvent::Cast(_pEvent)->Button() );
+			sprintf( params, " button=%s", _formatMouseButton(WgModalBlockedReleaseEvent::Cast(_pEvent)->Button()).c_str() );
 			break;
 
 		default:
@@ -480,8 +480,30 @@ string WgEventLogger::_formatPointerStyle( const WgPointerChangeEventPtr& _pEven
 			return string(temp);
 		}
 	}
+}
 
-	
+//____ _formatMouseButton() ____________________________________________________
 
+std::string _formatMouseButton( const WgMouseButton button )
+{
+	switch( button )
+	{
+		case WG_BUTTON_LEFT:
+			return "LEFT";
+		case WG_BUTTON_MIDDLE:
+			return "MIDDLE";
+		case WG_BUTTON_RIGHT:
+			return "RIGHT";
+		case WG_BUTTON_X1:
+			return "X1";
+		case WG_BUTTON_X2:
+			return "X2";
+		default:
+		{
+			char	temp[64];
+			sprintf( temp, "%d (unkown enum)", button );
+			return string(temp);
+		}
+	}
 }
 

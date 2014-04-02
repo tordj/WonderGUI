@@ -697,7 +697,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 
 	if( pEvent->IsMouseButtonEvent() )
 	{
-		if( WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 			pHandler->SwallowEvent(pEvent);
 	}
 	else if( pEvent->IsKeyEvent() )

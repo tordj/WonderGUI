@@ -208,7 +208,7 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 
 
 
-	if( m_state.IsFocused() && (type == WG_EVENT_MOUSE_PRESS || type == WG_EVENT_MOUSE_DRAG) && WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+	if( m_state.IsFocused() && (type == WG_EVENT_MOUSE_PRESS || type == WG_EVENT_MOUSE_DRAG) && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 	{
 
 		if( IsSelectable() && (modKeys & WG_MODKEY_SHIFT) )
@@ -226,10 +226,10 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 	}
 	else if( type == WG_EVENT_MOUSE_RELEASE  )
 	{
-		if(m_state.IsFocused() && WgMouseButtonEvent::Cast(pEvent)->Button() == 1)
+		if(m_state.IsFocused() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT)
 			m_text.setSelectionMode(false);
 	}
-	else if( !m_state.IsFocused() && IsEditable() && type == WG_EVENT_MOUSE_PRESS && WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+	else if( !m_state.IsFocused() && IsEditable() && type == WG_EVENT_MOUSE_PRESS && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 	{
 		GrabFocus();
 	}
@@ -358,7 +358,7 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 
 	if( pEvent->IsMouseButtonEvent() )
 	{
-		if( WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 			pHandler->SwallowEvent(pEvent);
 	}
 	else if( pEvent->IsKeyEvent() )

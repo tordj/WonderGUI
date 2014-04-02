@@ -23,6 +23,7 @@
 #ifndef WG_HOOKARRAY_DOT_H
 #define WG_HOOKARRAY_DOT_H
 
+#include <stdlib.h>
 
 template<class H> class WgHookArray
 {
@@ -44,7 +45,7 @@ public:
 	void	Remove(int index, int entries) { _deleteBlock(index,entries); }
 
 	void	Clear() { _killBlock( 0, m_size ); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
-	void	SetCapacity(int capacity) { if( capacity != m_capacity ) _realloc(capacity); }
+	void	SetCapacity(int capacity) { if( capacity != m_capacity ) _reallocArray(capacity); }
 
 	H*		Prev( const H* pHook ) const { if( pHook > m_pArray ) return const_cast<H*>(pHook)-1; return 0; }
 	H*		Next( const H* pHook ) const { if( pHook < &m_pArray[m_size] ) return const_cast<H*>(pHook)+1; return 0; }

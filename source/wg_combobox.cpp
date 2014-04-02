@@ -275,7 +275,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
 			WgCoord pos = pEvent->PointerPos();
 
-			if( pEvent->Button() == 1 )
+			if( pEvent->Button() == WG_BUTTON_LEFT )
 			{
 				WgRect inputRect = m_pSkin ? m_pSkin->ContentRect( Size(), m_state ): WgRect( 0,0, Size() );
 
@@ -342,7 +342,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 		case WG_EVENT_MOUSE_DRAG:
 		{
 			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
-			if( pEvent->Button() == 1 )
+			if( pEvent->Button() == WG_BUTTON_LEFT )
 			{
 				if( m_state.IsFocused() && m_bPressInInputRect )
 				{
@@ -365,7 +365,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 		case WG_EVENT_MOUSE_RELEASE:
 		{
 			WgMouseReleaseEventPtr pEvent = WgMouseReleaseEvent::Cast(_pEvent);
-			if( pEvent->Button() == 1 )
+			if( pEvent->Button() == WG_BUTTON_LEFT )
 			{
 				if( m_state.IsFocused() )
 				{

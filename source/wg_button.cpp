@@ -268,21 +268,21 @@ void WgButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			m_state.SetHovered(false);
 			break;
 		case WG_EVENT_MOUSE_PRESS:
-			if( WgMousePressEvent::Cast(_pEvent)->Button() == 1 )
+			if( WgMousePressEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = true;
 				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
 		case WG_EVENT_MOUSE_RELEASE:
-			if( WgMouseReleaseEvent::Cast(_pEvent)->Button() == 1 )
+			if( WgMouseReleaseEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = false;
 				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
 		case WG_EVENT_MOUSE_CLICK:
-			if( WgMouseClickEvent::Cast(_pEvent)->Button() == 1 )
+			if( WgMouseClickEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
 			{
 				pHandler->QueueEvent( new WgSelectEvent(this) );
 				pHandler->SwallowEvent(_pEvent);
@@ -291,7 +291,7 @@ void WgButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 		case WG_EVENT_MOUSE_DOUBLE_CLICK:
 		case WG_EVENT_MOUSE_REPEAT:
 		case WG_EVENT_MOUSE_DRAG:
-			if( WgMouseButtonEvent::Cast(_pEvent)->Button() == 1 )
+			if( WgMouseButtonEvent::Cast(_pEvent)->Button() ==WG_BUTTON_LEFT )
 				pHandler->SwallowEvent(_pEvent);
 			break;
 

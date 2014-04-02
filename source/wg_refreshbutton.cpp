@@ -260,7 +260,7 @@ void WgRefreshButton::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHand
 		{
 			WgMouseReleaseEventPtr pBtnRelease = WgMouseReleaseEvent::Cast(pEvent);
 
-			if( m_bAutoRefresh && m_bPressed && pBtnRelease->Button() == 1 )
+			if( m_bAutoRefresh && m_bPressed && pBtnRelease->Button() == WG_BUTTON_LEFT )
 				StartRefresh();
 
 			break;

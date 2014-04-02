@@ -705,7 +705,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 	{
 		case WG_EVENT_MOUSE_RELEASE:
 		{
-			if( WgMouseButtonEvent::Cast(pEvent)->Button() != 1 )
+			if( WgMouseButtonEvent::Cast(pEvent)->Button() != WG_BUTTON_LEFT )
 				return;
 
 			// Just put them all to NORMAL and request render.
@@ -749,7 +749,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 
 		case WG_EVENT_MOUSE_PRESS:
 		{
-			if( WgMouseButtonEvent::Cast(pEvent)->Button() != 1 )
+			if( WgMouseButtonEvent::Cast(pEvent)->Button() != WG_BUTTON_LEFT )
 				return;
 
 			Component c = _findMarkedComponent(pos);
@@ -813,7 +813,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 
 		case WG_EVENT_MOUSE_REPEAT:
 		{
-			if( WgMouseButtonEvent::Cast(pEvent)->Button() != 1 )
+			if( WgMouseButtonEvent::Cast(pEvent)->Button() != WG_BUTTON_LEFT )
 				return;
 
 			if( m_states[C_HANDLE].IsPressed() )
@@ -853,7 +853,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 
 		case WG_EVENT_MOUSE_DRAG:
 		{
-			if( WgMouseButtonEvent::Cast(pEvent)->Button() != 1 )
+			if( WgMouseButtonEvent::Cast(pEvent)->Button() != WG_BUTTON_LEFT )
 				return;
 
 			if( m_states[C_HANDLE].IsPressed() )
@@ -905,7 +905,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 
 	// Swallow all button 1 events.
 
-	if( pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(pEvent)->Button() == 1 )
+	if( pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 			pHandler->SwallowEvent(pEvent);
 
 }
