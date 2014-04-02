@@ -53,7 +53,7 @@ WgStraightListHookPtr WgStraightListHook::Cast( const WgHookPtr& pHook )
 	return 0;
 }
 
-//____ WqQuickListHook::Pos() _________________________________________________
+//____ WqStraightListHook::Pos() _________________________________________________
 
 WgCoord WgStraightListHook::Pos() const
 {
@@ -273,9 +273,15 @@ void WgStraightList::SetSortFunction( WgWidgetSortFunc pSortFunc )
 
 WgSize WgStraightList::PreferredSize() const
 {
-	return m_preferredSize;
+	WgSize sz = m_bHorizontal ? WgSize(m_contentPreferredLength, m_contentPreferredBreadth) : WgSize(m_contentPreferredBreadth,m_contentPreferredLength);
+
+	if( m_pSkin )
+		sz += m_pSkin->ContentPadding();
+
+	return sz;
 }
 
+//____ _onCollectPatches() ____________________________________________________
 
 void WgStraightList::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
@@ -307,7 +313,7 @@ void WgStraightList::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandl
 
 void WgStraightList::_onStateChanged( WgState oldState, WgState newState )
 {
-
+	WgContainer::_onStateChanged(oldState,newState);
 }
 
 void WgStraightList::_onRequestRender( WgStraightListHook * pHook )
@@ -332,21 +338,202 @@ void WgStraightList::_onRequestResize( WgStraightListHook * pHook )
 {
 	if( pHook->m_bVisible )
 	{
+/*		WgWidget * pChild = pHook->_widget();
+		WgSize pref = pChild->PreferredSize();
+				
+		int length = m_bHorizontal ? pref.w : pref.h;
+		int breadth = m_bHorizontal ? pref.h : pref.w;
 
+		if( breadth != pHook->m_prefBreadth )
+		{
+		}
+
+
+		if( length != pHook->m_length )
+		{
+
+		}
+*/
 
 	}
 
 }
 
-void WgStraightList::_onWidgetAppeared( WgStraightListHook * pInserted )
+//____ _onWidgetAppeared() ____________________________________________________
+
+void WgStraightList::_onWidgetAppeared( WgListHook * pInserted )
 {
+	WgStraightListHook * pHook = static_cast<WgStraightListHook*>(pInserted);
+	WgWidget * pChild = pHook->_widget();
+
+	WgSize pref = _paddedPreferredSize( pChild );
+
+	if( m_bHorizontal )
+	{
+		_addToContentPreferredSize( pref.w, pref.h );
+
+		// Get entry length and breadth, update contentSize
+
+		pHook->m_length	= _paddedWidthForHeight(pChild, m_contentSize.h);
+		pHook->m_prefBreadth = pref.h;
+		m_contentSize.w += pHook->m_length;
+	}
+	else
+	{
+		_addToContentPreferredSize( pref.h, pref.w );
+
+		// Get entry length and breadth, update contentSize
+
+		pHook->m_length = _paddedHeightForWidth(pChild, m_contentSize.w);
+		pHook->m_prefBreadth = pref.w;
+		m_contentSize.h += pHook->m_length;
+	}
+
+	// Finish up
+
+	_updateChildOfsFrom( pHook );
+	_requestRenderChildrenFrom( pHook );	// Request render on dirty area
+	_requestResize();						// This should preferably be done first once we have changed the method.
+
 }
 
-void WgStraightList::_onWidgetDisappeared( WgStraightListHook * pToBeRemoved )
+//____ _onWidgetDisappeared() _________________________________________________
+
+void WgStraightList::_onWidgetDisappeared( WgListHook * pToBeRemoved )
 {
+	WgStraightListHook * pHook = static_cast<WgStraightListHook*>(pToBeRemoved);
+	WgWidget * pChild = pHook->_widget();
+
+	WgSize pref = _paddedPreferredSize( pChild );
+
+	_requestRenderChildrenFrom( pHook );	// Request render on dirty area
+
+	if( m_bHorizontal )
+	{
+		_subFromContentPreferredSize( pref.w, pref.h );
+		m_contentSize.w -= pHook->m_length;
+	}
+	else
+	{
+		_subFromContentPreferredSize( pref.h, pref.w );
+		m_contentSize.h -= pHook->m_length;
+	}
+
+	pHook->m_length = 0;
+
+	_updateChildOfsFrom( m_hooks.Next(pHook) );
+	_requestResize();
 }
+
+//____ _findWidget() __________________________________________________________
 
 WgWidget * WgStraightList::_findWidget( const WgCoord& ofs, WgSearchMode mode )
+{
+	//TODO: Implement!!!
+
+	return 0;
+}
+
+//____ _addToContentPreferredSize() ___________________________________________
+
+void  WgStraightList::_addToContentPreferredSize( int length, int breadth )
+{
+	m_contentPreferredLength += length;
+	
+	if( breadth == m_contentPreferredBreadth )
+		m_nbPreferredBreadthEntries++;
+	else if( breadth > m_contentPreferredBreadth )
+	{
+		m_contentPreferredBreadth = breadth;
+		m_nbPreferredBreadthEntries = 1;
+	}
+}
+
+//____ _subFromContentPreferredSize() _________________________________________
+
+void  WgStraightList::_subFromContentPreferredSize( int length, int breadth )
+{
+	m_contentPreferredLength -= length;
+	
+	if( breadth == m_contentPreferredBreadth )
+	{
+		m_nbPreferredBreadthEntries--;
+		if( m_nbPreferredBreadthEntries == 0 )
+		{
+			int highest = 0;
+			for( WgStraightListHook * p = m_hooks.Begin() ; p < m_hooks.End() ; p++ )
+			{
+				if( p->m_prefBreadth == highest )
+					m_nbPreferredBreadthEntries++;
+				else if( p->m_prefBreadth > highest )
+				{
+					highest = p->m_prefBreadth;
+					m_nbPreferredBreadthEntries = 0;
+				}
+			}
+			m_contentPreferredBreadth = highest;
+		}
+	}
+}
+
+
+//____ _requestRenderChildrenFrom() ___________________________________________
+
+void WgStraightList::_requestRenderChildrenFrom( WgStraightListHook * pHook )
+{
+	WgRect box;
+	if( m_pSkin )
+		box = m_pSkin->ContentRect( m_size, m_state );
+	else
+		box = m_size;
+
+	if( m_bHorizontal )
+	{
+		box.x += pHook->m_ofs;
+		box.w = m_contentSize.w - pHook->m_ofs;
+	}
+	else
+	{
+		box.y += pHook->m_ofs;
+		box.h = m_contentSize.h - pHook->m_ofs;
+	}
+
+	_requestRender( box );
+}
+
+//____ _updateChildOfsFrom() __________________________________________________
+
+void WgStraightList::_updateChildOfsFrom( WgStraightListHook * pHook )
+{
+	int ofs = 0;
+	WgStraightListHook * pPrev = m_hooks.Prev(pHook);
+	if( pPrev )
+		ofs = pPrev->m_ofs + pPrev->m_length;
+
+	while( pHook < m_hooks.End() )
+	{
+		pHook->m_ofs += ofs;
+		ofs += pHook->m_length;
+		pHook++;
+	}	
+}
+
+//____ _onEntrySelected() _____________________________________________________
+
+bool WgStraightList::_onEntrySelected( WgListHook * _pHook, bool bSelected )
+{
+	WgStraightListHook * pHook = static_cast<WgStraightListHook*>(_pHook);
+	pHook->m_bSelected = bSelected;
+	_onRequestRender( pHook );
+
+	//TODO: post event!
+
+	return true;
+}
+
+//____ _onRangeSelected() _____________________________________________________
+
+int WgStraightList::_onRangeSelected( int firstEntry, int nbEntries, bool bSelected )
 {
 	//TODO: Implement!!!
 
@@ -381,6 +568,43 @@ void WgStraightList::_getChildGeo( WgRect& geo, const WgHook * _pHook ) const
 		if( m_pEntrySkin[index&0x1] )
 			geo = m_pSkin->ContentRect( geo, pHook->_widget()->State() );
 	}
+}
+
+//____ _paddedHeightForWidth() ________________________________________________
+
+int WgStraightList::_paddedHeightForWidth( WgWidget * pChild, int paddedWidth )
+{
+	if( m_pEntrySkin[0] )
+	{
+		WgSize padding = m_pEntrySkin[0]->ContentPadding();
+		return pChild->HeightForWidth( paddedWidth - padding.w ) + padding.h;
+	}
+	else
+		return pChild->HeightForWidth( paddedWidth );
+}
+
+//____ _paddedWidthForHeight() ________________________________________________
+
+int WgStraightList::_paddedWidthForHeight( WgWidget * pChild, int paddedHeight )
+{
+	if( m_pEntrySkin[0] )
+	{
+		WgSize padding = m_pEntrySkin[0]->ContentPadding();
+		return pChild->WidthForHeight( paddedHeight - padding.h ) + padding.w;
+	}
+	else
+		return pChild->WidthForHeight( paddedHeight );
+}
+
+//____ _paddedPreferredSize() _________________________________________________
+
+WgSize WgStraightList::_paddedPreferredSize( WgWidget * pChild )
+{
+	WgSize sz = pChild->PreferredSize();
+	if( m_pEntrySkin[0] )
+		sz += m_pEntrySkin[0]->ContentPadding();
+
+	return sz;
 }
 
 //____ _firstHook() ___________________________________________________________

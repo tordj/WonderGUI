@@ -72,6 +72,7 @@ protected:
 	WgStraightList *	m_pParent;
 	int				m_ofs;				// Offset in pixels for start of this list item.
 	int				m_length;			// Length in pixels of this list item. Includes widget padding.
+	int				m_prefBreadth;		// Prefereed breadth of this widget.
 
 };
 
@@ -129,11 +130,21 @@ protected:
 	void			_onRequestRender( WgStraightListHook * pHook, const WgRect& rect );
 	void			_onRequestResize( WgStraightListHook * pHook );
 
-	void			_onWidgetAppeared( WgStraightListHook * pInserted );
-	void			_onWidgetDisappeared( WgStraightListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
+	void			_requestRenderChildrenFrom( WgStraightListHook * pHook );
+	void			_updateChildOfsFrom( WgStraightListHook * pHook );
+
+	void			_onWidgetAppeared( WgListHook * pInserted );
+	void			_onWidgetDisappeared( WgListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
 
 	WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
 	void			_getChildGeo( WgRect& geo, const WgHook * pHook ) const;
+
+	bool			_onEntrySelected( WgListHook * pHook, bool bSelected );
+	int				_onRangeSelected( int firstEntry, int nbEntries, bool bSelected );
+
+	WgSize			_paddedPreferredSize( WgWidget * pChild );
+	int				_paddedHeightForWidth( WgWidget * pChild, int paddedWidth );
+	int				_paddedWidthForHeight( WgWidget * pChild, int paddedHeight );
 
 	WgHook*			_firstHook() const;
 	WgHook*			_lastHook() const;
@@ -144,7 +155,6 @@ protected:
 	WgHook*			_lastHookWithGeo( WgRect& geo ) const;
 	WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
-
 	bool				m_bHorizontal;
 
 	WgSortOrder			m_sortOrder;
@@ -152,8 +162,18 @@ protected:
 
 	WgHookArray<WgStraightListHook>	m_hooks;
 
-	WgSize				m_preferredSize;
+	WgSize				m_contentSize;
 	WgSize				m_size;
+
+	//----
+
+	void			_addToContentPreferredSize( int length, int breadth );
+	void			_subFromContentPreferredSize( int length, int breadth );
+
+	int				m_contentPreferredLength;
+	int				m_contentPreferredBreadth;
+	int				m_nbPreferredBreadthEntries;			// Number of entries whose preferred breadth are the same as m_preferredSize.
+
 };
 
 

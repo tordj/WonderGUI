@@ -75,6 +75,7 @@ protected:
 
 class WgList : public WgContainer
 {
+	friend class WgListHook;
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
@@ -95,11 +96,16 @@ public:
 	inline WgListHookPtr	FirstHook() const { return static_cast<WgListHook*>(_firstHook()); }
 	inline WgListHookPtr	LastHook() const { return static_cast<WgListHook*>(_lastHook()); }
 
-
 protected:
 
 	WgList();
 	virtual ~WgList();
+
+	virtual bool	_onEntrySelected( WgListHook * pHook, bool bSelected ) = 0;
+	virtual int		_onRangeSelected( int firstEntry, int nbEntries, bool bSelected ) = 0;
+
+	virtual void	_onWidgetAppeared( WgListHook * pInserted ) = 0;
+	virtual void	_onWidgetDisappeared( WgListHook * pToBeRemoved ) = 0;		// Call BEFORE widget is removed from m_hooks.
 
 	WgSelectMode	m_selectMode;
 

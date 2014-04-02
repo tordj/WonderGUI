@@ -59,3 +59,28 @@ WgListPtr WgListHook::Parent() const
 { 
 	return static_cast<WgList*>(_parent()); 
 }
+
+//____ WgListHook::SetVisible() ________________________________________________
+
+bool WgListHook::SetVisible( bool bVisible )
+{
+	if( m_bVisible != bVisible )
+	{
+		m_bVisible = bVisible;
+		if( bVisible )
+			static_cast<WgList*>(_parent())->_onWidgetAppeared( this );
+		else
+			static_cast<WgList*>(_parent())->_onWidgetDisappeared( this );
+	}
+	return true;
+}
+
+//____ WgListHook::SetSelected() ________________________________________________
+
+bool WgListHook::SetSelected( bool bSelected )
+{
+	if( !m_bVisible )
+		return false;
+
+	return (static_cast<WgList*>(_parent()))->_onEntrySelected( this, bSelected );
+}

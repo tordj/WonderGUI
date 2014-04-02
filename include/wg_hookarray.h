@@ -52,6 +52,9 @@ public:
 	int		Index( const H* pHook ) const { return m_pArray - pHook; }
 	int		IsInArray( const H* pHook ) const { if( pHook >= m_pArray && pHook < &m_pArray[m_size] ) return true; return false; }
 
+	H*		Begin() const { return m_pArray; }
+	H*		End() const { return m_pArray + m_size; }
+
 protected:
 
 	void	_reallocArray( int capacity )
