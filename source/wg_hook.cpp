@@ -149,6 +149,13 @@ WgRootPanel * WgHook::_root() const
 	return 0;
 }
 
+//____ _isVisible() ___________________________________________________________
+
+bool WgHook::_isVisible() const
+{
+	return true;
+}
+
 
 //____ EventHandler() __________________________________________________________
 

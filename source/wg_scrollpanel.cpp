@@ -1181,6 +1181,14 @@ void WgScrollPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, 
 
 void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
+	//TODO: Don't just check IsOpaque() globally, check rect by rect.
+	if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE ||
+		(m_pSkin && m_pSkin->IsOpaque(m_state)) )
+	{
+		patches.Sub( WgRect(geo,clip) );
+		return;
+	}
+
 	switch( m_maskOp )
 	{
 		case WG_MASKOP_RECURSE:

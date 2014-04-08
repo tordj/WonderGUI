@@ -84,3 +84,78 @@ bool WgListHook::SetSelected( bool bSelected )
 
 	return (static_cast<WgList*>(_parent()))->_onEntrySelected( this, bSelected );
 }
+
+//____ Constructor ____________________________________________________________
+
+WgList::WgList()
+{
+	m_selectMode = WG_SELECT_SINGLE;
+}
+
+//____ Destructor _____________________________________________________________
+
+WgList::~WgList()
+{
+}
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgList::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgContainer::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgList::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgListPtr WgList::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgListPtr( static_cast<WgList*>(pObject.GetRealPtr()) );
+
+	return 0;
+}
+
+//____ SetEntrySkin() _________________________________________________________
+
+void WgList::SetEntrySkin( const WgSkinPtr& pSkin )
+{
+	WgSize oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->ContentPadding() : WgSize();
+
+	m_pEntrySkin[0] = pSkin;
+	m_pEntrySkin[1] = pSkin;
+	m_bOpaqueEntries = pSkin ? pSkin->IsOpaque() : false;
+
+	_onEntrySkinChanged( oldPadding, pSkin ? pSkin->ContentPadding() : WgSize() );
+}
+
+bool WgList::SetEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEvenEntrySkin )
+{
+	WgSize oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->ContentPadding() : WgSize();
+	WgSize padding[2];
+
+	if( pOddEntrySkin )
+		padding[0] = pOddEntrySkin->ContentPadding();
+
+	if( pEvenEntrySkin )
+		padding[1] = pEvenEntrySkin->ContentPadding();
+
+	if( (padding[0].w != padding[1].w) || (padding[0].h != padding[1].h) )
+		return false;
+
+	m_pEntrySkin[0] = pOddEntrySkin;
+	m_pEntrySkin[1] = pEvenEntrySkin;
+	m_bOpaqueEntries = (pOddEntrySkin->IsOpaque() && pEvenEntrySkin->IsOpaque());
+
+	_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->ContentPadding() : WgSize() );
+	return true;
+}

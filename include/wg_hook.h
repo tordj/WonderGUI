@@ -116,6 +116,7 @@ protected:
 	virtual WgHook *	_nextHook() const = 0;
 	virtual WgContainer * _parent() const = 0;
 	virtual WgRootPanel * _root() const;
+	virtual bool		_isVisible() const;
 
 	WgWidget *		m_pWidget;
 	WgHookPtrHub *	m_pPtrHub;

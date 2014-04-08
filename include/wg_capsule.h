@@ -67,6 +67,7 @@ protected:
 	WgHook *		_nextHook() const;
 	WgContainer *	_parent() const;
 
+
 	WgCapsule * 	m_pParent;
 };
 

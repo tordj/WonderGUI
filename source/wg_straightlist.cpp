@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_straightlist.h>
+#include <wg_patches.h>
 
 const char WgStraightList::CLASSNAME[] = {"StraightList"};
 const char WgStraightListHook::CLASSNAME[] = {"StraightListHook"};
@@ -285,10 +286,43 @@ WgSize WgStraightList::PreferredSize() const
 
 void WgStraightList::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
+	if( m_pSkin )
+		container.Add( WgRect( geo, clip ) );
+	else
+	{
+		if( m_bHorizontal )
+			container.Add( WgRect( WgRect( geo.x, geo.y, WgMin(geo.w,m_contentLength), geo.h ), clip ) );
+		else
+			container.Add( WgRect( WgRect( geo.x, geo.y, geo.w, WgMin(geo.h,m_contentLength) ), clip ) );
+	}
 }
+
+//____ _onMaskPatches() _______________________________________________________
 
 void WgStraightList::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
+	if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE)
+		patches.Sub( WgRect(geo,clip) );
+	else if( m_bOpaqueEntries && blendMode == WG_BLENDMODE_BLEND )
+	{
+		if( m_bHorizontal )
+			patches.Sub( WgRect( WgRect( geo.x, geo.y, WgMin(geo.w,m_contentLength), geo.h ), clip ) );
+		else
+			patches.Sub( WgRect( WgRect( geo.x, geo.y, geo.w, WgMin(geo.h,m_contentLength) ), clip ) );
+	}
+	else
+	{
+		WgRect childGeo;
+		WgStraightListHook * p = static_cast<WgStraightListHook*>(_firstHookWithGeo( childGeo ));
+
+		while(p)
+		{
+			if( p->_isVisible() )
+				p->_widget()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
+			p = static_cast<WgStraightListHook*>(_nextHookWithGeo( childGeo, p ));
+		}
+	}
+
 }
 
 void WgStraightList::_onCloneContent( const WgWidget * _pOrg )
@@ -372,22 +406,22 @@ void WgStraightList::_onWidgetAppeared( WgListHook * pInserted )
 	{
 		_addToContentPreferredSize( pref.w, pref.h );
 
-		// Get entry length and breadth, update contentSize
+		// Get entry length and breadth
 
-		pHook->m_length	= _paddedWidthForHeight(pChild, m_contentSize.h);
+		pHook->m_length	= _paddedWidthForHeight(pChild, m_contentBreadth);
 		pHook->m_prefBreadth = pref.h;
-		m_contentSize.w += pHook->m_length;
 	}
 	else
 	{
 		_addToContentPreferredSize( pref.h, pref.w );
 
-		// Get entry length and breadth, update contentSize
+		// Get entry length and breadth
 
-		pHook->m_length = _paddedHeightForWidth(pChild, m_contentSize.w);
+		pHook->m_length = _paddedHeightForWidth(pChild, m_contentBreadth);
 		pHook->m_prefBreadth = pref.w;
-		m_contentSize.h += pHook->m_length;
 	}
+
+	m_contentLength += pHook->m_length;
 
 	// Finish up
 
@@ -409,15 +443,11 @@ void WgStraightList::_onWidgetDisappeared( WgListHook * pToBeRemoved )
 	_requestRenderChildrenFrom( pHook );	// Request render on dirty area
 
 	if( m_bHorizontal )
-	{
 		_subFromContentPreferredSize( pref.w, pref.h );
-		m_contentSize.w -= pHook->m_length;
-	}
 	else
-	{
 		_subFromContentPreferredSize( pref.h, pref.w );
-		m_contentSize.h -= pHook->m_length;
-	}
+
+	m_contentLength -= pHook->m_length;
 
 	pHook->m_length = 0;
 
@@ -490,12 +520,12 @@ void WgStraightList::_requestRenderChildrenFrom( WgStraightListHook * pHook )
 	if( m_bHorizontal )
 	{
 		box.x += pHook->m_ofs;
-		box.w = m_contentSize.w - pHook->m_ofs;
+		box.w = m_contentLength - pHook->m_ofs;
 	}
 	else
 	{
 		box.y += pHook->m_ofs;
-		box.h = m_contentSize.h - pHook->m_ofs;
+		box.h = m_contentLength - pHook->m_ofs;
 	}
 
 	_requestRender( box );
@@ -539,6 +569,42 @@ int WgStraightList::_onRangeSelected( int firstEntry, int nbEntries, bool bSelec
 
 	return 0;
 }
+
+//____ _onEntrySkinChanged() __________________________________________________
+
+void WgStraightList::_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding )
+{
+	_requestRender();
+
+	if( oldPadding != newPadding )
+	{
+		int nEntries = m_hooks.Size();
+
+		int	lengthDiff, breadthDiff;
+		if( m_bHorizontal )
+		{
+			lengthDiff = (newPadding.w - oldPadding.w)*nEntries;
+			breadthDiff = (newPadding.h - oldPadding.h)*nEntries;
+		}
+		else
+		{
+			lengthDiff = (newPadding.h - oldPadding.h)*nEntries;
+			breadthDiff = (newPadding.w - oldPadding.w)*nEntries;
+		}
+
+		if( lengthDiff != 0 || breadthDiff != 0 )
+		{
+			m_contentLength += lengthDiff;
+			m_contentBreadth += breadthDiff;
+
+			m_contentPreferredLength += lengthDiff;
+			m_contentPreferredBreadth += breadthDiff;
+
+			_requestResize();
+		}
+	}
+}
+
 
 //____ _getChildGeo() _________________________________________________________
 

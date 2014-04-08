@@ -60,12 +60,12 @@ public:
 	bool IsEventLogged( WgEventType event ) { return m_eventFilter[event]; }
 
 private:
-	std::string	_formatTimestamp( int64_t ms );
-	std::string _formatWidget( const WgEventPtr& _pEvent );
-	std::string _formatModkeys( const WgEventPtr& _pEvent );
-	std::string _formatPointerPos( const WgEventPtr& _pEvent );
-	std::string _formatPointerStyle( const WgPointerChangeEventPtr& _pEvent );
-	std::string _formatMouseButton( WgMouseButton button );
+	std::string	_formatTimestamp( int64_t ms ) const;
+	std::string _formatWidget( const WgEventPtr& _pEvent ) const;
+	std::string _formatModkeys( const WgEventPtr& _pEvent ) const;
+	std::string _formatPointerPos( const WgEventPtr& _pEvent ) const;
+	std::string _formatPointerStyle( const WgPointerChangeEventPtr& _pEvent ) const;
+	std::string _formatMouseButton( WgMouseButton button ) const;
 
 	bool			m_eventFilter[WG_EVENT_MAX];
 

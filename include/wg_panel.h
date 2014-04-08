@@ -74,6 +74,7 @@ protected:
 	WgSize		_paddedMaxSize() const;
 	int			_paddedWidthForHeight( int paddedHeight ) const;
 	int			_paddedHeightForWidth( int paddedWidth ) const;
+	bool		_isVisible() const { return m_bVisible; }				// Overloading WgHook::_isVisible().
 
 	WgSize		_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy ) const;
 
@@ -120,7 +121,6 @@ protected:
 
 	bool			_isPanel() const;
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	virtual void	_onCloneContent( const WgWidget * _pOrg );
 
 

@@ -99,25 +99,13 @@ void WgPanel::_onCloneContent( const WgWidget * _pOrg )
 	WgContainer::_onCloneContent( pOrg );
 }
 
-//____ _onCollectPatches() _______________________________________________________
-
-void WgPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
-{
-	if( m_pSkin && m_pSkin->IsOpaque(m_state) )
-		container.Add( WgRect( geo, clip ) );
-	else
-		WgContainer::_onCollectPatches( container, geo, clip );
-
-}
-
 
 //____ _onMaskPatches() __________________________________________________________
 
 void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-
 	//TODO: Don't just check IsOpaque() globally, check rect by rect.
-	if( m_pSkin && m_pSkin->IsOpaque(m_state) )
+	if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
 	{
 		patches.Sub( WgRect(geo,clip) );
 		return;

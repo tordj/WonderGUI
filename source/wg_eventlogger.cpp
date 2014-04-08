@@ -368,7 +368,7 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 
 //____ _formatTimestamp() ______________________________________________________
 
-string WgEventLogger::_formatTimestamp( int64_t ms )
+string WgEventLogger::_formatTimestamp( int64_t ms ) const
 {
 	char	temp[20];
 
@@ -383,7 +383,7 @@ string WgEventLogger::_formatTimestamp( int64_t ms )
 
 //____ _formatWidget() __________________________________________________________
 
-string WgEventLogger::_formatWidget( const WgEventPtr& _pEvent )
+string WgEventLogger::_formatWidget( const WgEventPtr& _pEvent ) const
 {
 	std::string	out;
 
@@ -407,7 +407,7 @@ string WgEventLogger::_formatWidget( const WgEventPtr& _pEvent )
 
 //____ _formatModkeys() __________________________________________________________
 
-string WgEventLogger::_formatModkeys( const WgEventPtr& _pEvent )
+string WgEventLogger::_formatModkeys( const WgEventPtr& _pEvent ) const
 {
 	WgModifierKeys keys = _pEvent->ModKeys();
 
@@ -425,7 +425,7 @@ string WgEventLogger::_formatModkeys( const WgEventPtr& _pEvent )
 
 //____ _formatPointerPos() _____________________________________________________
 
-string WgEventLogger::_formatPointerPos( const WgEventPtr& _pEvent )
+string WgEventLogger::_formatPointerPos( const WgEventPtr& _pEvent ) const
 {
 	WgCoord localPos = _pEvent->PointerPos();
 	WgCoord globalPos = _pEvent->PointerScreenPos();
@@ -443,7 +443,7 @@ string WgEventLogger::_formatPointerPos( const WgEventPtr& _pEvent )
 
 //____ _formatPointerStyle() _____________________________________________________
 
-string WgEventLogger::_formatPointerStyle( const WgPointerChangeEventPtr& _pEvent )
+string WgEventLogger::_formatPointerStyle( const WgPointerChangeEventPtr& _pEvent ) const
 {
 	switch( _pEvent->Style() )
 	{
@@ -484,7 +484,7 @@ string WgEventLogger::_formatPointerStyle( const WgPointerChangeEventPtr& _pEven
 
 //____ _formatMouseButton() ____________________________________________________
 
-std::string _formatMouseButton( const WgMouseButton button )
+std::string WgEventLogger::_formatMouseButton( WgMouseButton button ) const
 {
 	switch( button )
 	{

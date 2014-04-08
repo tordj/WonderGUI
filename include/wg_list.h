@@ -82,11 +82,8 @@ public:
 	static const char	CLASSNAME[];
 	static WgListPtr	Cast( const WgObjectPtr& pObject );
 
-	virtual void		SetSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr			Skin() const { return m_pSkin; }
-
 	virtual void		SetEntrySkin( const WgSkinPtr& pSkin );
-	virtual void		SetEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEvenEntrySkin );
+	virtual bool		SetEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEvenEntrySkin );
 	WgSkinPtr			OddEntrySkin() const { return m_pEntrySkin[0]; }
 	WgSkinPtr			EvenEntrySkin() const { return m_pEntrySkin[1]; }
 
@@ -107,10 +104,12 @@ protected:
 	virtual void	_onWidgetAppeared( WgListHook * pInserted ) = 0;
 	virtual void	_onWidgetDisappeared( WgListHook * pToBeRemoved ) = 0;		// Call BEFORE widget is removed from m_hooks.
 
-	WgSelectMode	m_selectMode;
+	virtual void	_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding ) = 0;
 
-	WgSkinPtr		m_pSkin;
+	WgSelectMode	m_selectMode;
 	WgSkinPtr		m_pEntrySkin[2];
+	bool			m_bOpaqueEntries;
+
 };
 
 

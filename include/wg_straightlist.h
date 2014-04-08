@@ -141,6 +141,7 @@ protected:
 
 	bool			_onEntrySelected( WgListHook * pHook, bool bSelected );
 	int				_onRangeSelected( int firstEntry, int nbEntries, bool bSelected );
+	void			_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding );
 
 	WgSize			_paddedPreferredSize( WgWidget * pChild );
 	int				_paddedHeightForWidth( WgWidget * pChild, int paddedWidth );
@@ -162,7 +163,8 @@ protected:
 
 	WgHookArray<WgStraightListHook>	m_hooks;
 
-	WgSize				m_contentSize;
+	int					m_contentBreadth;
+	int					m_contentLength;
 	WgSize				m_size;
 
 	//----
