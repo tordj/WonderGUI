@@ -225,7 +225,7 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 //
 // Translate SDL mouse button enums to WonderGUI equivalents.
 //
-WgButton translateMouseButton( Uint8 button )
+WgMouseButton translateMouseButton( Uint8 button )
 {
 	switch( button )
 	{

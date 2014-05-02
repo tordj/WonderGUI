@@ -1,9 +1,35 @@
+/*
+ * This example uses SDL2 to setup a minimal framework for WonderGUI and
+ * create a clickable button that closes the window. It has no
+ * dependencies except SDL2, WonderGUI and WgSoft.
+ * 
+ * The intention is to show how WonderGUI easily can be integrated  with
+ * any development framework with some simple bindings and pure software
+ * rendering. Although SDL2 is used, no WonderGUI code outside this file
+ * is dependent on SDL in anyway.
+ * 
+ * In order to keep the example small, we are making some assumptions,
+ * for example that the screen surface is either 24 or 32 bits graphics
+ * with the RGB elements in the same order as WgSoftSurface keeps them,
+ * which is usually the case on normal PC's. In environments where this
+ * is not the case, either specific WgSurface and WgGfxDevice classes
+ * will need to be provided or graphics needs to be rendered to an interim
+ * surface from which blocks can be copied and translated to the output
+ * format.
+ * 
+ * If you want to use WonderGUI with SDL2, there are better examples to use
+ * as a template. Use the SDL2 specific Surface/GfxDevice classes that
+ * better integrate with SDL2's video API, giving you better performance
+ * and transparent support for images and windows of other pixel formats.
+ * 
+ * Also note that in order to keep this example short, it doesn't provide a full
+ * initialization of WonderGUI. No font is initialized and no keyboard events
+ * are translated. See other examples for a more full initialization of WonderGUI.
+ */
 
 #include <cstdlib>
-#include <stdio.h>
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <wondergui.h>
 
 #include <wg_softsurface.h>
@@ -13,10 +39,8 @@ void 			translateEvents( WgEventHandlerPtr pEventHandler );
 WgMouseButton 	translateMouseButton( Uint8 button );
 void 			updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const WgEventPtr& pEvent );
-void * 			loadFile( const char * pPath );
 
-
-bool	bQuit = false;
+bool			bQuit = false;	// Set to false by myButtonClickCallback() or translateEvents().
 
 //____ main() _________________________________________________________________
 
@@ -28,18 +52,21 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 320, height = 240;
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
+	int posX = 100, posY = 100, width = 800, height = 600;
+	SDL_Window * pWin = SDL_CreateWindow("WonderGUI Widget Gallery", posX, posY, width, height, 0);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
-
-	IMG_Init( IMG_INIT_JPG | IMG_INIT_PNG );
 
 	//------------------------------------------------------
 	// Init WonderGUI
 	//------------------------------------------------------
 
+	// First we need to initialize the base system
+
 	WgBase::Init();
+
+	// The software renderer needs a WgSoftSurface as its canvas,
+	// so we wrap the SDL WindowSurface into a WgSoftSurface.
 
 	WgPixelType type = WG_PIXEL_UNKNOWN;
 
@@ -50,65 +77,62 @@ int main ( int argc, char** argv )
 		
 	WgSoftSurfacePtr pCanvas = WgSoftSurface::Create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch );
 
+	// Wg create the GfxDevice that will be used for all rendering, providing
+	// it our canvas to draw up.
+
 	WgSoftGfxDevicePtr pGfxDevice = WgSoftGfxDevice::Create( pCanvas );
 
+	// We create a RootPanel. This is responsible for rendering the
+	// tree of child widgets connected to it and handle their events.
+	// We provide it the GfxDevice to use for rendering.
+
 	WgRootPanelPtr pRoot = WgRootPanel::Create( pGfxDevice );
-
-	// Init font
-	
-	SDL_Surface * pFontSurf = IMG_Load( "../resources/anuvverbubbla_8x8.png" );
-	WgSoftSurfacePtr pFontImg = WgSoftSurface::Create( WgSize(pFontSurf->w,pFontSurf->h), WG_PIXEL_ARGB_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch );
-		
-	char * pFontSpec = (char*) loadFile( "../resources/anuvverbubbla_8x8.fnt" );
-
-	WgBitmapGlyphsPtr pGlyphs = WgBitmapGlyphs::Create( pFontImg, pFontSpec );
-	WgFontPtr pFont = WgFont::Create( pGlyphs, 8 );
-
-	WgTextprop prop;
-	prop.SetFont(pFont);
-	prop.SetSize(8);
-	WgTextpropPtr pProp = prop.Register();
-
-	WgBase::SetDefaultTextprop( pProp );
-
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
 	// a button using scaled bitmaps.
 	//------------------------------------------------------
+	
+	// First we load the 24-bit bmp containing the button graphics.
+	// No error handling or such to keep this example short and simple.
+
+	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../resources/simple_button.bmp" );
+	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch );
+
+	// First we create and add a FlexPanel to the RootPanel.
+	// The RootPanel can only take one child, but the FlexPanel
+	// provides simple and powerful ways to layout multiple children.
 
 	WgFlexPanelPtr pFlexPanel = WgFlexPanel::Create();
 	pRoot->SetWidget(pFlexPanel);
 
+	// Now we create the background using the simplest widget
+	// type, the Filler and add it to the FlexPanel, making
+	// it stretch from the north-west to the south-east corners
+	// of the FlexPanel.
+
 	WgFillerPtr pBackground = WgFiller::Create();
 	pBackground->SetSkin( WgColorSkin::Create(WgColor::aqua) );
-	pFlexPanel->AddWidget(pBackground, WG_NORTHWEST, WgCoord(), WG_SOUTHEAST, WgCoord());
+	pFlexPanel->AddWidget(pBackground, WG_NORTHWEST, WG_SOUTHEAST);
 
-/*
-	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../resources/simple_button.bmp" );
-	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch );
+	// Now we create the button, using a clickable skin built from
+	// the BMP with the button graphics. CreateClickableFromSurface()
+	// expects the surface to be divided horizontally in four equal
+	// sections containing the graphics for the button states NORMAL,
+	// HOVERED, PRESSED and DISABLED. We specify that there are no
+	// spacing between these four graphics blocks and that they have 
+	// three pixel thick borders around that should not stretch.
+	// When adding it to the FlexPanel we specify its geometry in
+	// pixels and that it should be centered.
 
 	WgButtonPtr pButton = WgButton::Create();
 	pButton->SetSkin( WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorders(3) ) );
-	pButton->Label()->Set( "BUTTON" );
 	pFlexPanel->AddWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
 
-	pRoot->EventHandler()->AddCallback( WgEventFilter::ButtonPress(pButton), myButtonClickCallback );
-*/	
-	WgSizeCapsulePtr pCapsule = WgSizeCapsule::Create();
-	pCapsule->SetMaxSize( WgSize(100,1000));
-	pFlexPanel->AddWidget( pCapsule );
+	// Finally we add a callback to the click-event of the button.
 
-	WgStackPanelPtr pStack = WgStackPanel::Create();
-	pCapsule->SetWidget( pStack );
-
-
-
-	WgTextDisplayPtr pText = WgTextDisplay::Create();
-	pText->Text()->Set( "THIS IS THE LONG TEXT THAT SHOULD WRAP AND BE FULLY DISPLAYED." );
-	pStack->AddWidget(pText);
-
-
+	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(pButton), myButtonClickCallback );
+	
 
 	//------------------------------------------------------
 	// Program Main Loop
@@ -116,11 +140,18 @@ int main ( int argc, char** argv )
 
 	while( !bQuit ) 
 	{
+		// Loop through SDL events, translate them to WonderGUI events
+		// and process them.
+		
 		translateEvents( pRoot->EventHandler() );
+
+		// Let WonderGUI render any updated/dirty regions of the screen.
 
 		SDL_LockSurface(pWinSurf);
 		pRoot->Render();
 		SDL_UnlockSurface(pWinSurf);
+
+		// Make SDL update any screen regions redrawn by WonderGUI.
 
 		updateWindowRects( pRoot, pWin );
 
@@ -133,7 +164,6 @@ int main ( int argc, char** argv )
 
 	// Exit SDL
 
-	IMG_Quit();
 	SDL_Quit();
 
     return 0;
@@ -209,6 +239,8 @@ WgMouseButton translateMouseButton( Uint8 button )
 			return WG_BUTTON_X1;
 		case SDL_BUTTON_X2:
 			return WG_BUTTON_X2;
+		default:
+			return WG_BUTTON_NONE;
 	}
 }
 
@@ -243,32 +275,4 @@ void updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow )
 void myButtonClickCallback( const WgEventPtr& pEvent )
 {
 	bQuit = true;
-}
-
-
-//____ loadFile() _____________________________________________________________
-
-void * loadFile( const char * pPath )
-{
-	FILE * fp = fopen( pPath, "rb" );
-	if( !fp )
-		return 0;
-
-	fseek( fp, 0, SEEK_END );
-	int size = ftell(fp);
-	fseek( fp, 0, SEEK_SET );
-
-	char * pMem = (char*) malloc( size+1 );
-	pMem[size] = 0;
-	int nRead = fread( pMem, 1, size, fp );
-	fclose( fp );
-
-	if( nRead < size )
-	{
-		free( pMem );
-		return 0;
-	}
-
-	return pMem;
-
 }
