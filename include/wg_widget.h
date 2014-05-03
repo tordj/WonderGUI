@@ -214,9 +214,6 @@ protected:
 	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs );
 
-	// rename when widgets are done
-	virtual bool	IsInputField() const;
-
 	//
 
 	int				m_id;

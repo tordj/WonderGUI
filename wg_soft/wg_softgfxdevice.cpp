@@ -21,7 +21,6 @@
 =========================================================================*/
 
 #include <wg_softgfxdevice.h>
-#include <wg_softsurface.h>
 #include <math.h>
 
 #include <assert.h>

@@ -438,8 +438,3 @@ bool WgWidget::_onAlphaTest( const WgCoord& ofs )
 
 	return false;
 }
-
-bool WgWidget::IsInputField() const
-{
-	return false;
-}

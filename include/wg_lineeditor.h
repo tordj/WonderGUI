@@ -64,7 +64,6 @@ public:
 
 	virtual void			SetEditMode(WgTextEditMode mode);
 	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
-	virtual bool			IsInputField() const	{ return _isEditable(); }
 
 	inline WgIEditTextPtr	Text() { return WgIEditTextPtr(this,&m_text); } 
 

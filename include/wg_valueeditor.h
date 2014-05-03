@@ -70,9 +70,6 @@ public:
 	inline WgIStaticTextPtr	Text() { return WgIStaticTextPtr(this,&m_text); } 
 	WgSize	PreferredSize() const;
 
-
-	virtual bool		IsInputField() const	{ return true; }
-
 protected:
 	WgValueEditor();
 	virtual ~WgValueEditor();

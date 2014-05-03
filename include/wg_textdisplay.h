@@ -64,7 +64,6 @@ public:
 	WgPointerStyle		PointerStyle() const;
 	WgString			TooltipString() const;
 
-	virtual bool IsInputField() const { return IsEditable(); }
 	inline WgIEditTextPtr	Text() { return WgIEditTextPtr(this,&m_text); } 
 
 	int		HeightForWidth( int width ) const;
