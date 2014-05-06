@@ -35,7 +35,7 @@
 #	include <wg_eventhandler.h>
 #endif
 
-#include <wg_text.h>
+#include <wg_textfield.h>
 
 class WgMenuItem;
 

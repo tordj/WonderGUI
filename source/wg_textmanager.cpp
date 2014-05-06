@@ -22,7 +22,7 @@
 
 #include <wg_textmanager.h>
 
-#include <wg_text.h>
+#include <wg_textfield.h>
 #include <wg_widget.h>
 
 const char WgTextManager::CLASSNAME[] = {"TextManager"};

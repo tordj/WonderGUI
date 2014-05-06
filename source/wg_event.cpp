@@ -33,7 +33,7 @@
 #include <wg_textdisplay.h>
 #include <wg_lineeditor.h>
 #include <wg_menu.h>
-#include <wg_text.h>
+#include <wg_textfield.h>
 //#include <wg_tablepanel.h>
 
 

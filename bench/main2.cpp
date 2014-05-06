@@ -108,6 +108,12 @@ int main ( int argc, char** argv )
 	pText->Text()->Set( "THIS IS THE LONG TEXT THAT SHOULD WRAP AND BE FULLY DISPLAYED." );
 	pStack->AddWidget(pText);
 
+	
+/*
+	WgCheckBoxPtr pCheckbox = WgCheckBox::Create();
+	pCheckbox->Label()->Set( "CHECKBOX" );
+	pCheckbox->Icon()->Set( pCheckboxSkin );
+*/
 
 
 	//------------------------------------------------------

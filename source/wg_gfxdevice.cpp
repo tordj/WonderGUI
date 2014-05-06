@@ -25,7 +25,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_surface.h>
 #include <wg_geo.h>
-#include <wg_text.h>
+#include <wg_textfield.h>
 #include <wg_cursorinstance.h>
 #include <wg_font.h>
 #include <wg_gfxanim.h>

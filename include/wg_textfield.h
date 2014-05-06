@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_TEXT_DOT_H
-#define WG_TEXT_DOT_H
+#ifndef	WG_TEXTFIELD_DOT_H
+#define WG_TEXTFIELD_DOT_H
 
 #ifndef	WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -491,4 +491,4 @@ protected:
 };
 
 
-#endif // WG_TEXT_DOT_H
+#endif // WG_TEXTFIELD_DOT_H

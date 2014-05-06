@@ -28,10 +28,10 @@
 #include <wctype.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <wg_text.h>
+#include <wg_textfield.h>
 #include <wg_font.h>
 #include <wg_valueformat.h>
-#include <wg_text.h>			// UGLY DEPENDENCY FOR QUICKHACK IN INSERT TEXT METHODS!!!
+#include <wg_textfield.h>			// UGLY DEPENDENCY FOR QUICKHACK IN INSERT TEXT METHODS!!!
 #include <wg_texttool.h>
 #include <wg_charseq.h>
 #include <wg_charbuffer.h>

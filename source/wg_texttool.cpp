@@ -31,7 +31,7 @@
 
 #include <wg_texttool.h>
 #include <wg_font.h>
-#include <wg_text.h>
+#include <wg_textfield.h>
 #include <wg_textpropmanager.h>
 #include <wg_charseq.h>
 #include <wg_cursorinstance.h>

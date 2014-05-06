@@ -129,6 +129,13 @@ WgStraightList::WgStraightList()
 	m_bHorizontal = false;
 	m_sortOrder = WG_SORT_ASCENDING;
 	m_pSortFunc = 0;
+	
+	m_contentBreadth = 0;
+	m_contentLength = 0;
+	
+	m_contentPreferredLength = 0;
+	m_contentPreferredBreadth = 0;
+	m_nbPreferredBreadthEntries = 0;
 }
 
 //____ Destructor _____________________________________________________________

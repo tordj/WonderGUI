@@ -9,8 +9,8 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_TEXTPROP_DOT_H

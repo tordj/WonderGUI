@@ -123,8 +123,8 @@
 #	include <wg_surfacefactory.h>
 #endif
 
-#ifndef WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_TEXTMANAGER_DOT_H
