@@ -408,7 +408,7 @@ void WgTextDisplay::_onNewSize( const WgSize& size )
 
 //____ _textModified() _________________________________________________________
 
-void WgTextDisplay::_textModified( WgText * pText )
+void WgTextDisplay::_textModified( WgTextField * pText )
 {
 	m_bResetCursorOnFocus = true;
     _requestResize();

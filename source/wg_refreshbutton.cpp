@@ -199,7 +199,7 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 
 //____ _textModified() ________________________________________________________
 
-void WgRefreshButton::_textModified( WgText * pText )
+void WgRefreshButton::_textModified( WgTextField * pText )
 {
 	//TODO: Make conditional
 
@@ -347,7 +347,7 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 	// Print text
 
-	WgText * pText;
+	WgTextField * pText;
 
 	if( m_bRefreshing )
 		pText = &m_refreshText;

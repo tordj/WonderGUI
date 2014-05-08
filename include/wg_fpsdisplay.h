@@ -67,13 +67,13 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
-	void	_textModified( WgText * pText );
+	void	_textModified( WgTextField * pText );
 
 
 private:
 
-	WgText		m_labelsText;
-	WgText		m_valuesText;
+	WgTextField	m_labelsText;
+	WgTextField	m_valuesText;
 	int *		m_pTickBuffer;
 	int			m_tickBufferOfs;
 

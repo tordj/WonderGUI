@@ -64,13 +64,14 @@
 #endif
 
 class WgEventHandler;
+class WgTextField;
 
 //____ WgTextHolder ___________________________________________________________
 
 struct WgTextHolder
 {
 public:
-	virtual void		_textModified( WgText * pText ) = 0;
+	virtual void		_textModified( WgTextField * pText ) = 0;
 };
 
 
@@ -92,21 +93,21 @@ struct WgTextLine
 	// HYPHEN_BREAK_PERMITTED_HERE: Gives additional hyphen when printed.
 };
 
-//____ WgText __________________________________________________________________
+//____ WgTextField __________________________________________________________________
 
-class WgText : public WgIEditText
+class WgTextField : public WgIEditText
 {
 friend class WgTextNode;
 
 public:
-	WgText();
-	WgText( const WgCharSeq& seq );
-	WgText( const WgCharBuffer * pBuffer );
-	WgText( const WgString& str );
+	WgTextField();
+	WgTextField( const WgCharSeq& seq );
+	WgTextField( const WgCharBuffer * pBuffer );
+	WgTextField( const WgString& str );
 
 	void	Init();
 
-	~WgText();
+	~WgTextField();
 
 	//
 
@@ -214,10 +215,10 @@ public:
 
 	//TODO: operator= should copy the whole object, not just the text.
 
-	inline void operator=( const WgText& t) { setText(&t); }; // Fastest order to do this in.
+	inline void operator=( const WgTextField& t) { setText(&t); }; // Fastest order to do this in.
 
-	void		setText( const WgText * pText );
-	void		clone( const WgText * pText );
+	void		setText( const WgTextField * pText );
+	void		clone( const WgTextField * pText );
 
 	int			addChar( const WgChar& character );
 	int			insertChar( int ofs, const WgChar& character );
@@ -290,7 +291,7 @@ public:
 
 	void				setValue( double value, const WgValueFormatPtr& pFormat );
 	void				setScaledValue( Sint64 value, Uint32 scale, const WgValueFormatPtr& pFormat );
-//	int				compareTo( const WgText * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
+//	int				compareTo( const WgTextField * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
 
 	WgSize				unwrappedSize() const;
 	int					unwrappedWidth() const;				// Width of text if no lines are wrapped.

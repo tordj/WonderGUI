@@ -82,10 +82,10 @@ protected:
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 
-	void			_textModified( WgText * pText );
+	void			_textModified( WgTextField * pText );
 	void			_iconModified( WgIconField * pIcon );
 
-	WgText			m_text;
+	WgTextField		m_text;
 	WgIconField		m_icon;
 
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?

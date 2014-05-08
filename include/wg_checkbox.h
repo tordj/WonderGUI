@@ -92,7 +92,7 @@ protected:
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	
 	virtual void	_iconModified( WgIconField * pIcon );
-	virtual void	_textModified( WgText * pText );
+	virtual void	_textModified( WgTextField * pText );
 
 private:
 
@@ -103,7 +103,7 @@ private:
 	bool			m_bReturnPressed;
 	bool			m_bFlipOnRelease;				// Set if we want to flip checkbox on press (default), not click.
 
-	WgText			m_text;
+	WgTextField		m_text;
 	WgIconField		m_icon;
 
 	ClickArea		m_clickArea;

@@ -90,7 +90,7 @@ private:
 
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
-	void	_textModified( WgText * pText );
+	void	_textModified( WgTextField * pText );
 
 	bool	_parseValueFromInput( int64_t * wpResult );
 
@@ -99,7 +99,7 @@ private:
 	bool				m_bRegenText;
 	WgValueFormatPtr	m_pFormat;			///< Value format specified by user
 	WgValueFormatPtr	m_pUseFormat;		///< Value format currently used (affected by user typing in values).
-	WgText				m_text;
+	WgTextField			m_text;
 	int					m_buttonDownOfs;
 	bool				m_bSelectAllOnRelease;
 	int					m_maxInputChars;

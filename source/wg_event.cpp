@@ -1035,7 +1035,7 @@ WgIEditTextPtr WgTextEditEvent::Text() const
 	return m_pText;
 }
 
-WgTextEditEvent::WgTextEditEvent( WgWidget * pWidget, WgText * pText, bool bFinal )
+WgTextEditEvent::WgTextEditEvent( WgWidget * pWidget, WgTextField * pText, bool bFinal )
 {
 	m_type 		= WG_EVENT_TEXT_EDIT;
 	m_pWidget 	= pWidget;

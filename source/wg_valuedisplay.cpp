@@ -106,7 +106,7 @@ void WgValueDisplay::_valueModified()
 
 //____ _textModified() _____________________________________________________________
 
-void WgValueDisplay::_textModified(WgText * pText)
+void WgValueDisplay::_textModified(WgTextField * pText)
 {
 	_requestRender();
 }

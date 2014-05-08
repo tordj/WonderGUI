@@ -239,7 +239,7 @@ void WgFpsDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& p
 
 //____ _textModified() ________________________________________________________
 
-void WgFpsDisplay::_textModified( WgText * pText )
+void WgFpsDisplay::_textModified( WgTextField * pText )
 {
 	_requestRender();
 	_requestResize();

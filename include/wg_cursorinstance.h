@@ -37,7 +37,7 @@
 #	include <wg_color.h>
 #endif
 
-class WgText;
+class WgTextField;
 class WgCharSeq;
 class WgPen;
 
@@ -48,7 +48,7 @@ class WgCursorInstance
 	friend class WgPen;
 public:
 
-	WgCursorInstance( WgText& text );
+	WgCursorInstance( WgTextField& text );
 
 	bool			incTime( int ms );
 	void			insertMode( bool bInsert );
@@ -94,7 +94,7 @@ public:
 	inline int		column() const;
 	inline int		time() const;
 
-	inline WgText *	text() const;
+	inline WgTextField *	text() const;
 
 	WgCursor::Mode	cursorMode() const;
 
@@ -111,7 +111,7 @@ protected:
 	void			_gotoPos( int line, int col );
 	void			_updateLocation(int line, int col);
 
-	WgText *		m_pText;
+	WgTextField *		m_pText;
 	bool			m_bHidden;
 	bool			m_bInsert;
 	bool			m_bSelectMode;
@@ -149,7 +149,7 @@ inline int WgCursorInstance::time() const
 
 //____ text() __________________________________________________________________
 
-inline WgText * WgCursorInstance::text() const
+inline WgTextField * WgCursorInstance::text() const
 {
 	return m_pText;
 }

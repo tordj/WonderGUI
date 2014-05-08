@@ -93,20 +93,20 @@ protected:
 	virtual ~WgRefreshButton();
 	virtual WgWidget* _newOfMyType() const { return new WgRefreshButton(); };
 
-	void		_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
-	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void		_onCloneContent( const WgWidget * _pOrg );
-	virtual void _onNewSize( const WgSize& size );
+	void			_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
+	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+	void			_onCloneContent( const WgWidget * _pOrg );
+	virtual void 	_onNewSize( const WgSize& size );
 
-	void			_textModified( WgText * pText );
-	WgState		_getRenderState();
+	void			_textModified( WgTextField * pText );
+	WgState			_getRenderState();
 
 
 
 	WgGfxAnimPtr	m_pRefreshAnim;
 	AnimTarget		m_animTarget;
 	RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
-	WgText			m_refreshText;
+	WgTextField		m_refreshText;
 	bool			m_bRestartable;
 
 	bool			m_bRefreshing;

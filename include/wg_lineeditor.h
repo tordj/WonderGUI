@@ -86,14 +86,14 @@ protected:
 	void	_onNewSize( const WgSize& size );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
-	void	_textModified(WgText * pText);
+	void	_textModified(WgTextField * pText);
 
 
 private:
 
 	void	_adjustViewOfs();
 
-	WgText				m_text;
+	WgTextField			m_text;
 
 	bool				m_bResetCursorOnFocus;
 	bool				m_bPasswordMode;

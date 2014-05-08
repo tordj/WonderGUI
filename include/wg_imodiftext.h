@@ -74,7 +74,7 @@ public:
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
-	static WgIModifTextPtr		Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	static WgIModifTextPtr		Cast( const WgInterfacePtr& pInterface );
 
 	virtual void				Clear() = 0;
 

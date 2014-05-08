@@ -57,7 +57,7 @@
 
 class WgFont;
 class WgGlyphset;
-class WgText;
+class WgTextField;
 class WgChar;
 class WgCursorInstance;
 class WgResDB;
@@ -223,9 +223,9 @@ public:
 	static void			AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgState state = WG_STATE_NORMAL );
 //	static void			SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgState state = WG_STATE_NORMAL );
 
-	static WgCursorPtr		GetCursor( const WgText * pText );
-	static WgTextpropPtr	GetSelectionProperties( const WgText * pText );
-	static WgTextpropPtr	GetLinkProperties( const WgText * pText );
+	static WgCursorPtr		GetCursor( const WgTextField * pText );
+	static WgTextpropPtr	GetSelectionProperties( const WgTextField * pText );
+	static WgTextpropPtr	GetLinkProperties( const WgTextField * pText );
 
     static char *           itoa( int value, char * str, int base );
 

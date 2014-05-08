@@ -90,7 +90,7 @@ WgTextManagerPtr WgTextManager::Cast( const WgObjectPtr& pObject )
 
 //____ _newNode() ______________________________________________________________
 
-WgTextNode * WgTextManager::_newNode( WgText * pText )
+WgTextNode * WgTextManager::_newNode( WgTextField * pText )
 {
 	if( !pText )
 		return 0;
@@ -353,7 +353,7 @@ float WgTextManager::_getSize( WgTextNode * pNode, const WgFontPtr& pFont, WgFon
 
 //____ WgTextNode::Constructor ________________________________________________
 
-WgTextNode::WgTextNode( WgTextManager * pManager, WgText * pText )
+WgTextNode::WgTextNode( WgTextManager * pManager, WgTextField * pText )
 {
 	m_pManager = pManager;
 	m_pText = pText;

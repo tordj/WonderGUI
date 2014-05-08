@@ -177,7 +177,7 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 {
 	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
-	WgText * pText = &m_text;
+	WgTextField * pText = &m_text;
 	if( m_bPasswordMode )
 	{
 		int nChars = m_text.Length();
@@ -185,7 +185,7 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		for( int i = 0 ; i < nChars ; i++ )
 			pContent[i] = m_pwGlyph;
 		pContent[nChars] = 0;
-		pText = new WgText( pContent );
+		pText = new WgTextField( pContent );
 		delete [] pContent;
 
 		pText->SetWrap(false);
@@ -620,7 +620,7 @@ void WgLineEditor::_onNewSize( const WgSize& size )
 
 //____ _textModified() _________________________________________________________
 
-void WgLineEditor::_textModified( WgText * pText )
+void WgLineEditor::_textModified( WgTextField * pText )
 {
 	m_bResetCursorOnFocus = true;			// Any change to text while we don't have focus resets the position.
 	_requestRender();

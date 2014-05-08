@@ -594,7 +594,7 @@ void WgGfxDevice::BlitVertBar(	const WgSurfacePtr& _pSurf, const WgRect& _src,
 
 //____ PrintText() ____________________________________________________________
 
-bool WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest )
+bool WgGfxDevice::PrintText( const WgRect& clip, const WgTextField * pText, const WgRect& dest )
 {
 	if( !pText || dest.w <= 0 )
 		return false;
@@ -686,7 +686,7 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgText * pText, const WgR
 
 //____ _printTextSpan() ________________________________________________________
 
-void WgGfxDevice::_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, bool bLineEnding )
+void WgGfxDevice::_printTextSpan( WgPen& pen, const WgTextField * pText, int ofs, int len, bool bLineEnding )
 {
 	WgColor baseCol	= m_tintColor;
 	WgColor	color	= baseCol;
@@ -783,7 +783,7 @@ void WgGfxDevice::_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int
 
 //____ _printEllipsisTextSpan() ________________________________________________________
 
-void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, int endX )
+void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgTextField * pText, int ofs, int len, int endX )
 {
 	WgColor baseCol	= m_tintColor;
 	WgColor	color	= baseCol;
@@ -916,7 +916,7 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int 
 
 //____ _drawTextBg() ___________________________________________________________
 
-void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const WgRect& dest )
+void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgTextField * pText, const WgRect& dest )
 {
 	WgRect		clip(_clip,dest);		// Make sure clipping rect is inside dest.
 
@@ -996,7 +996,7 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgText * pText, const 
 
 //____ _drawTextSectionBg() ___________________________________________________
 
-void WgGfxDevice::_drawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect,
+void WgGfxDevice::_drawTextSectionBg( const WgRect& clip, const WgTextField * pText, const WgRect& dstRect,
 									  int iStartOfs, int iEndOfs, WgColor color )
 {
 	const WgTextLine *	pLines = pText->getSoftLines();
@@ -1132,7 +1132,7 @@ void WgGfxDevice::PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgCha
 
 //____ _drawUnderline() ________________________________________________________
 
-void WgGfxDevice::_drawUnderline( const WgRect& clip, const WgText * pText, int _x, int _y, int ofs, int maxChars )
+void WgGfxDevice::_drawUnderline( const WgRect& clip, const WgTextField * pText, int _x, int _y, int ofs, int maxChars )
 {
 	Uint32 hProp = 0xFFFF;
 

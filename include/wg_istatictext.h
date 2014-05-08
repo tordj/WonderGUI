@@ -138,9 +138,6 @@ public:
 	virtual bool				IsEditable() const = 0;
 	virtual bool				IsSelectable() const = 0;
 
-	virtual int					Width() const = 0;
-	virtual int					Height() const = 0;
-
 	virtual void				Select( int ofs, int len ) = 0;
 	virtual void				SelectAll() = 0;
 	virtual int					SelectionStart() const = 0;

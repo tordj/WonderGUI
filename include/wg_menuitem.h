@@ -43,7 +43,7 @@
 
 class WgChar;
 
-class WgText;
+class WgTextField;
 class WgGfxAnim;
 
 class WgMenu;

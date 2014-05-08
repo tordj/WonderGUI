@@ -20,40 +20,35 @@
 
 =========================================================================*/
 
-#ifndef WG_TEXTLINK_DOT_H
-#define WG_TEXTLINK_DOT_H
+#include <wg_imodifvalue.h>
 
-#include <string>
-
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-class WgTextField;
-class WgTextlink;
-class WgCoord;
-
-typedef	WgSmartPtr<class WgTextlink,WgObjectPtr> WgTextLinkPtr;
+const char WgIModifValue::CLASSNAME[] = {"IModifValue"};
 
 
-//____ WgTextLink _____________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
+bool WgIModifValue::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
 
-class WgTextlink : public WgObject
+	return WgIStaticValue::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgIModifValue::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgIModifValuePtr WgIModifValue::Cast( const WgInterfacePtr& pInterface )
 {
-public:
-	static WgTextLinkPtr Create( const std::string& link ) { return new WgTextlink(link); }
+	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
+		return WgIModifValuePtr( pInterface.GetRealObjectPtr(), static_cast<WgIModifValue*>( pInterface.GetRealPtr()) );
 
-	const std::string&		Link() const { return m_link; }
-	bool					HasBeenAccessed() const { return m_bAccessed; }
+	return 0;
+}
 
-private:
-	bool					m_bAccessed;
-	std::string				m_link;
-
-	WgTextlink( const std::string& link ) : m_bAccessed(false), m_link(link) {}
-	~WgTextlink() {}
-};
-
-#endif //WG_TEXTLINK_DOT_H

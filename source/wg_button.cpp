@@ -331,7 +331,7 @@ bool WgButton::_onAlphaTest( const WgCoord& ofs )
 
 //____ _textModified() __________________________________________________________
 
-void WgButton::_textModified( WgText * pText )
+void WgButton::_textModified( WgTextField * pText )
 {
 	_requestResize();
 	_requestRender();

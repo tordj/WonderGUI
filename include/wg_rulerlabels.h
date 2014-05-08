@@ -52,14 +52,14 @@ protected:
 	void			_onStateChanged( WgState oldState, WgState newState );
 	void			_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	bool			_onAlphaTest( const WgCoord& ofs );
-    void            _textModified( WgText * pText );
+    void            _textModified( WgTextField * pText );
 	
 	class Label : public WgLink
 	{
 	public:
 		LINK_METHODS(Label);
 		
-		WgText		text;
+		WgTextField	text;
 		float		offset;
 	};
 	

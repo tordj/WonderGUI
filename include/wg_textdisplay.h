@@ -87,11 +87,11 @@ protected:
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 private:
-	void	_textModified( WgText * pText );
+	void	_textModified( WgTextField * pText );
 	bool	_insertCharAtCursor( Uint16 c );
 
 
-	WgText				m_text;
+	WgTextField			m_text;
 	bool				m_bHasFocus;
 	int					m_maxLines;
 	bool				m_bResetCursorOnFocus;

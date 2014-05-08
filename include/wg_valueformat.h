@@ -52,7 +52,7 @@ typedef	WgWeakPtr<WgValueFormat,WgObjectWeakPtr>	WgValueFormatWeakPtr;
 
 class WgValueFormat : public WgObject
 {
-	friend class WgText;
+	friend class WgTextField;
 	public:
 		static WgValueFormatPtr	Create() { return WgValueFormatPtr(new WgValueFormat()); }
 		static WgValueFormatPtr	Create( const WgCharSeq& format )  { return WgValueFormatPtr(new WgValueFormat(format)); }

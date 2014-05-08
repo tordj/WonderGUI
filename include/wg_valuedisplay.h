@@ -87,10 +87,10 @@ protected:
 private:
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
-	void	_textModified( WgText * pText );
+	void	_textModified( WgTextField * pText );
 
 	WgValueFormatPtr	m_pFormat;
-	WgText				m_text;
+	WgTextField			m_text;
 };
 
 

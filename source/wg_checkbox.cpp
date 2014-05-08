@@ -310,7 +310,7 @@ void WgCheckBox::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _textModified() _________________________________________________________
 
-void WgCheckBox::_textModified( WgText * pText )
+void WgCheckBox::_textModified( WgTextField * pText )
 {
 	_requestResize();
 	_requestRender();

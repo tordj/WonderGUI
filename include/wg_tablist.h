@@ -70,7 +70,7 @@ public:
 
 private:
 
-	WgText			m_text;
+	WgTextField		m_text;
 	int				m_width;		// Width of this tab.
 	int				m_advance;		// Distance from beginning of this tab to the next one.
 	int				m_id;

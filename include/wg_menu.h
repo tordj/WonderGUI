@@ -55,7 +55,7 @@
 class	WgSurface;
 class	WgFont;
 class	WgGfxAnim;
-class	WgText;
+class	WgTextField;
 
 class WgMenu;
 typedef	WgSmartPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;

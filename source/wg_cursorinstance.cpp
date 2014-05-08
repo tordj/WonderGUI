@@ -39,7 +39,7 @@
 
 //____ Constructor() __________________________________________________________
 
-WgCursorInstance::WgCursorInstance( WgText& text )
+WgCursorInstance::WgCursorInstance( WgTextField& text )
 {
 	m_pText 		= &text;
 	m_bHidden		= true;

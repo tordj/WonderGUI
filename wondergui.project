@@ -240,6 +240,12 @@
     <File Name="source/wg_iwidgets.cpp"/>
     <File Name="include/wg_iicon.h"/>
     <File Name="source/wg_iicon.cpp"/>
+    <File Name="include/wg_istaticvalue.h"/>
+    <File Name="source/wg_istaticvalue.cpp"/>
+    <File Name="include/wg_ieditvalue.h"/>
+    <File Name="include/wg_imodifvalue.h"/>
+    <File Name="source/wg_ieditvalue.cpp"/>
+    <File Name="source/wg_imodifvalue.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

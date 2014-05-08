@@ -79,14 +79,14 @@ protected:
 
 	// Inherited from scrollbartarget
 
-	float		_stepFwd();
-	float		_stepBwd();
-	float		_jumpFwd();
-	float		_jumpBwd();
-	float		_wheelRolled( int distance );
-	float		_setPosition( float fraction );
-	float		_getHandlePosition();
-	float		_getHandleSize();
+	float			_stepFwd();
+	float			_stepBwd();
+	float			_jumpFwd();
+	float			_jumpBwd();
+	float			_wheelRolled( int distance );
+	float			_setPosition( float fraction );
+	float			_getHandlePosition();
+	float			_getHandleSize();
 
 	//
 
