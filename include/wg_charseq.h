@@ -36,7 +36,7 @@
 class WgChar;
 class WgString;
 class WgCharBuffer;
-class WgText;
+class WgTextField;
 
 /*
 

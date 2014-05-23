@@ -13,47 +13,42 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-
+	
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
 
-#ifndef WG_TEXTLINK_DOT_H
-#define WG_TEXTLINK_DOT_H
+#include <wg_iicon.h>
 
-#include <string>
-
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-class WgTextField;
-class WgTextlink;
-class WgCoord;
-
-typedef	WgSmartPtr<class WgTextlink,WgObjectPtr> WgTextLinkPtr;
+const char WgIIcon::CLASSNAME[] = {"IIcon"};
 
 
-//____ WgTextLink _____________________________________________________________
+//____ IsInstanceOf() _________________________________________________________
 
+bool WgIIcon::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
 
-class WgTextlink : public WgObject
+	return WgInterface::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgIIcon::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgIIconPtr WgIIcon::Cast( const WgInterfacePtr& pInterface )
 {
-public:
-	static WgTextLinkPtr Create( const std::string& link ) { return new WgTextlink(link); }
+	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
+		return WgIIconPtr( pInterface.GetRealObjectPtr(), static_cast<WgIIcon*>( pInterface.GetRealPtr()) );
 
-	const std::string&		Link() const { return m_link; }
-	bool					HasBeenAccessed() const { return m_bAccessed; }
+	return 0;
+}
 
-private:
-	bool					m_bAccessed;
-	std::string				m_link;
-
-	WgTextlink( const std::string& link ) : m_bAccessed(false), m_link(link) {}
-	~WgTextlink() {}
-};
-
-#endif //WG_TEXTLINK_DOT_H

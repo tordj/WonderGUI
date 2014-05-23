@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef	WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_CURSORINSTANCE_DOT_H
@@ -64,7 +64,6 @@ public:
 
 	virtual void			SetEditMode(WgTextEditMode mode);
 	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
-	virtual bool			IsInputField() const	{ return _isEditable(); }
 
 	inline WgIEditTextPtr	Text() { return WgIEditTextPtr(this,&m_text); } 
 
@@ -87,14 +86,14 @@ protected:
 	void	_onNewSize( const WgSize& size );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
-	void	_textModified(WgText * pText);
+	void	_textModified(WgTextField * pText);
 
 
 private:
 
 	void	_adjustViewOfs();
 
-	WgText				m_text;
+	WgTextField			m_text;
 
 	bool				m_bResetCursorOnFocus;
 	bool				m_bPasswordMode;

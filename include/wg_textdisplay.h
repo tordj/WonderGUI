@@ -28,8 +28,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef	WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_CURSORINSTANCE_DOT_H
@@ -64,7 +64,6 @@ public:
 	WgPointerStyle		PointerStyle() const;
 	WgString			TooltipString() const;
 
-	virtual bool IsInputField() const { return IsEditable(); }
 	inline WgIEditTextPtr	Text() { return WgIEditTextPtr(this,&m_text); } 
 
 	int		HeightForWidth( int width ) const;
@@ -88,11 +87,11 @@ protected:
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 private:
-	void	_textModified( WgText * pText );
+	void	_textModified( WgTextField * pText );
 	bool	_insertCharAtCursor( Uint16 c );
 
 
-	WgText				m_text;
+	WgTextField			m_text;
 	bool				m_bHasFocus;
 	int					m_maxLines;
 	bool				m_bResetCursorOnFocus;

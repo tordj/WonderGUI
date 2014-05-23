@@ -9,8 +9,8 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_TEXTPROP_DOT_H
@@ -52,14 +52,14 @@ protected:
 	void			_onStateChanged( WgState oldState );
 	void			_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	bool			_onAlphaTest( const WgCoord& ofs );
-    void            _textModified( WgText * pText );
+    void            _textModified( WgTextField * pText );
 	
 	class Label : public WgLink
 	{
 	public:
 		LINK_METHODS(Label);
 		
-		WgText		text;
+		WgTextField	text;
 		float		offset;
 	};
 	

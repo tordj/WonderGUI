@@ -33,7 +33,7 @@
 #include <wg_textdisplay.h>
 #include <wg_lineeditor.h>
 #include <wg_menu.h>
-#include <wg_text.h>
+#include <wg_textfield.h>
 //#include <wg_tablepanel.h>
 
 
@@ -1035,7 +1035,7 @@ WgIEditTextPtr WgTextEditEvent::Text() const
 	return m_pText;
 }
 
-WgTextEditEvent::WgTextEditEvent( WgWidget * pWidget, WgText * pText, bool bFinal )
+WgTextEditEvent::WgTextEditEvent( WgWidget * pWidget, WgTextField * pText, bool bFinal )
 {
 	m_type 		= WG_EVENT_TEXT_EDIT;
 	m_pWidget 	= pWidget;

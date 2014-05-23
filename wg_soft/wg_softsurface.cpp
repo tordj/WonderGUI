@@ -25,10 +25,10 @@
 #include <wg_softsurface.h>
 #include <wg_util.h>
 
-
 using namespace std;
 
 const char WgSoftSurface::CLASSNAME[] = {"SoftSurface"};
+
 
 //____ Constructor ________________________________________________________________
 
@@ -96,7 +96,6 @@ WgSoftSurfacePtr WgSoftSurface::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-
 //____ _copy() _________________________________________________________________
 
 void WgSoftSurface::_copy(const WgSoftSurface * pOther)
@@ -154,6 +153,7 @@ Uint8 WgSoftSurface::GetOpacity( WgCoord coord ) const
 	  return 0xff;
 }
 
+
 //____ Size() __________________________________________________________________
 
 WgSize WgSoftSurface::Size() const
@@ -196,6 +196,7 @@ void WgSoftSurface::Unlock()
 	m_pPixels = 0;
 	m_lockRegion.Clear();
 }
+
 
 //____ SetScaleAlpha() _________________________________________________________
 

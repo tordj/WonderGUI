@@ -19,7 +19,7 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
+ 
 #ifndef	WG_BASE_DOT_H
 #define	WG_BASE_DOT_H
 

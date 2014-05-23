@@ -243,7 +243,7 @@ bool WgRulerLabels::_onAlphaTest( const WgCoord& ofs )
 
 //____ _onTextModified() _________________________________________________________________
 
-void WgRulerLabels::_textModified( WgText * pText )
+void WgRulerLabels::_textModified( WgTextField * pText )
 {
     _requestResize();
     _requestRender();

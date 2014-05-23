@@ -37,7 +37,7 @@
 
 
 class WgTextNode;
-class WgText;
+class WgTextField;
 
 
 class WgTextManager;
@@ -46,7 +46,7 @@ typedef	WgWeakPtr<WgTextManager,WgObjectWeakPtr>	WgTextManagerWeakPtr;
 
 class WgTextManager : public WgObject
 {
-friend class WgText;
+friend class WgTextField;
 friend class WgTextNode;
 
 public:
@@ -98,7 +98,7 @@ private:
 	float	_getSize( WgTextNode * pNode, const WgFontPtr& pFont, WgFontStyle style, int size );
 
 	void		_refreshAll();
-	virtual WgTextNode *	_newNode( WgText * pText );
+	virtual WgTextNode *	_newNode( WgTextField * pText );
 	WgChain<WgTextNode>	m_nodes;
 
 	float		m_scale;
@@ -126,7 +126,7 @@ class WgTextNode : public WgLink
 {
 
 public:
-	WgTextNode( WgTextManager * pManager, WgText * pText );
+	WgTextNode( WgTextManager * pManager, WgTextField * pText );
 	virtual ~WgTextNode();
 
 	LINK_METHODS( WgTextNode );
@@ -135,11 +135,11 @@ public:
 	void	Refresh();
 
 	inline WgTextManager *	GetManager() const { return m_pManager; }
-	inline WgText *			GetText() const { return m_pText; }
+	inline WgTextField *			GetText() const { return m_pText; }
 
 private:
-	WgTextManager	* m_pManager;
-	WgText			* m_pText;
+	WgTextManager* 	m_pManager;
+	WgTextField * 	m_pText;
 };
 
 

@@ -55,7 +55,7 @@
 class	WgRect;
 class	WgBorders;
 class	WgSurface;
-class	WgText;
+class	WgTextField;
 class	WgCursorInstance;
 class 	WgPen;
 
@@ -176,7 +176,7 @@ public:
 
 	// High-level print methods
 
-	virtual bool		PrintText( const WgRect& clip, const WgText * pText, const WgRect& dest );
+	virtual bool		PrintText( const WgRect& clip, const WgTextField * pText, const WgRect& dest );
 
 	// Low-level print methods
 
@@ -191,11 +191,11 @@ protected:
 	WgGfxDevice( WgSize canvasSize );
 	virtual ~WgGfxDevice() {};
 
-	void	_printTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, bool bLineEnding );
-	void	_printEllipsisTextSpan( WgPen& pen, const WgText * pText, int ofs, int len, int endX );
+	void	_printTextSpan( WgPen& pen, const WgTextField * pText, int ofs, int len, bool bLineEnding );
+	void	_printEllipsisTextSpan( WgPen& pen, const WgTextField * pText, int ofs, int len, int endX );
 
-	void	_drawTextBg( const WgRect& clip, const WgText * pText, const WgRect& dest );
-	void	_drawTextSectionBg( const WgRect& clip, const WgText * pText, const WgRect& dstRect,
+	void	_drawTextBg( const WgRect& clip, const WgTextField * pText, const WgRect& dest );
+	void	_drawTextSectionBg( const WgRect& clip, const WgTextField * pText, const WgRect& dstRect,
 							  int iStartOfs, int iEndOfs, WgColor color );
 
 
@@ -203,7 +203,7 @@ protected:
 //	virtual void	BlitSubPixel( const WgSurface * pSrc, const WgRect& srcrect,
 //								  float dx, float dy ) = 0;
 
-	virtual void	_drawUnderline( const WgRect& clip, const WgText * pText, int _x, int _y, int ofs, int maxChars );
+	virtual void	_drawUnderline( const WgRect& clip, const WgTextField * pText, int _x, int _y, int ofs, int maxChars );
 
 
 	WgColor		m_tintColor;		// Current Tint color.

@@ -183,7 +183,7 @@ void WgValueEditor::_rangeModified()
 
 //____ _textModified() ________________________________________________________
 
-void WgValueEditor::_textModified( WgText * pText )
+void WgValueEditor::_textModified( WgTextField * pText )
 {
 	_requestRender();
 }

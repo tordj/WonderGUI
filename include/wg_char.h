@@ -62,7 +62,7 @@
 
 class WgChar
 {
-friend class WgText;
+friend class WgTextField;
 friend class WgTextprop;
 friend class WgTextTool;
 friend class WgCharBuffer;

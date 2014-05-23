@@ -199,7 +199,7 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 
 //____ _textModified() ________________________________________________________
 
-void WgRefreshButton::_textModified( WgText * pText )
+void WgRefreshButton::_textModified( WgTextField * pText )
 {
 	//TODO: Make conditional
 
@@ -323,13 +323,13 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	// Get icon and text rect from content rect
 
 	WgSize iconSize;
-	if( m_pIconSkin )
-		iconSize = m_pIconSkin->PreferredSize();
+	if( !m_icon.IsEmpty() )
+		iconSize = m_icon.Skin()->PreferredSize();
 	else if( m_animTarget == ICON && m_pRefreshAnim )
 		iconSize = m_pRefreshAnim->Size();
 
-	WgRect iconRect = _getIconRect( contentRect, iconSize );
-	WgRect textRect = _getTextRect( contentRect, iconRect );
+	WgRect iconRect = m_icon.GetIconRect( contentRect, iconSize );
+	WgRect textRect = m_icon.GetTextRect( contentRect, iconRect );
 
 
 	// Render icon or animation
@@ -342,12 +342,12 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 		pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect, iconRect );
 	}
-	else if( m_pIconSkin )
-		m_pIconSkin->Render( pDevice, iconRect, m_state, _clip );
+	else if( !m_icon.IsEmpty() )
+		m_icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
-	WgText * pText;
+	WgTextField * pText;
 
 	if( m_bRefreshing )
 		pText = &m_refreshText;

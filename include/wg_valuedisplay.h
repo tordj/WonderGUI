@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef	WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_VALUEFORMAT_DOT_H
@@ -87,10 +87,10 @@ protected:
 private:
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
-	void	_textModified( WgText * pText );
+	void	_textModified( WgTextField * pText );
 
 	WgValueFormatPtr	m_pFormat;
-	WgText				m_text;
+	WgTextField			m_text;
 };
 
 

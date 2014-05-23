@@ -24,6 +24,7 @@
 #define WG_HOOKARRAY_DOT_H
 
 #include <stdlib.h>
+#include <memory.h>
 
 template<class H> class WgHookArray
 {

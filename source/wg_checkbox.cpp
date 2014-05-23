@@ -81,25 +81,6 @@ WgCheckBoxPtr WgCheckBox::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-//____ SetIcon() ______________________________________________________________
-
-void WgCheckBox::SetIcon( const WgSkinPtr& pIconSkin, const WgOrigo& origo, 
-						  WgBorders borders, float scale, bool bPushText )
-{
-	m_pIconSkin		= pIconSkin;
-	m_iconOrigo		= origo;
-	m_iconScale		= scale;
-	m_bIconPushText	= bPushText;
-	m_iconBorders	= borders;
-	_onRefresh();
-}
-
-void WgCheckBox::SetIcon( const WgSkinPtr& pIconSkin )
-{
-	m_pIconSkin		= pIconSkin;
-	_onRefresh();
-}
-
 //____ SetSelected() __________________________________________________________
 
 bool WgCheckBox::SetSelected( bool bSelected )
@@ -131,9 +112,9 @@ WgSize WgCheckBox::PreferredSize() const
 	if( m_text.Length() > 0 )
 		textPreferredSize = m_text.unwrappedSize();
 
-	if( m_pIconSkin )
+	if( !m_icon.IsEmpty() )
 	{
-		iconPreferredSize = m_pIconSkin->PreferredSize() + m_iconBorders.Size();
+		iconPreferredSize = m_icon.Skin()->PreferredSize() + m_icon.Padding().Size();
 
 		//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorders, iconScale and bgPreferredSize
 	}
@@ -245,7 +226,7 @@ void WgCheckBox::_onStateChanged( WgState oldState )
 
 	m_text.setState( m_state );
 
-	if( m_pIconSkin && !m_pIconSkin->IsStateIdentical(m_state, oldState) )
+	if( !m_icon.IsEmpty() && !m_icon.Skin()->IsStateIdentical(m_state, oldState) )
 		_requestRender();		//TODO: Just request render on icon?
 
 	if( m_state.IsSelected() != oldState.IsSelected() )
@@ -277,18 +258,18 @@ void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 	if( m_pSkin )
 		contentRect = m_pSkin->ContentRect(_canvas, m_state );
 
-	WgRect iconRect		= _getIconRect( contentRect, m_pIconSkin );
+	WgRect iconRect		= m_icon.GetIconRect( contentRect );
 
 	// Blit icon
 
-	if( m_pIconSkin && iconRect.w > 0 && iconRect.h > 0 )
-		m_pIconSkin->Render( pDevice, iconRect, m_state, _clip );
+	if( m_icon.IsEmpty() && iconRect.w > 0 && iconRect.h > 0 )
+		m_icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
  	if( m_text.Lines()!= 0 )
 	{
-		WgRect	textRect = _getTextRect( contentRect, iconRect );
+		WgRect	textRect = m_icon.GetTextRect( contentRect, iconRect );
 		pDevice->PrintText( _clip, &m_text, textRect );
 	}
 }
@@ -310,11 +291,7 @@ void WgCheckBox::_onNewSize( const WgSize& size )
 	if( m_pSkin )
 		contentRect = m_pSkin->ContentRect(contentRect, m_state );
 
-	WgSize	iconSize;
-	if( m_pIconSkin )
-		iconSize = m_pIconSkin->PreferredSize();
-
-	m_text.setLineWidth( _getTextRect( contentRect, _getIconRect( contentRect, iconSize )).w );
+	m_text.setLineWidth( m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect )).w );
 }
 
 
@@ -324,19 +301,16 @@ void WgCheckBox::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgCheckBox * pOrg = (WgCheckBox *) _pOrg;
 
-
 	m_bFlipOnRelease	= pOrg->m_bFlipOnRelease;
-	m_pIconSkin			= pOrg->m_pIconSkin;
-
-	m_text				= pOrg->m_text;
 	m_clickArea			= pOrg->m_clickArea;
 
-	WgIconHolder::_onCloneContent( pOrg );
+	m_text.clone( &pOrg->m_text );
+	m_icon.OnCloneContent( &pOrg->m_icon );
 }
 
 //____ _textModified() _________________________________________________________
 
-void WgCheckBox::_textModified( WgText * pText )
+void WgCheckBox::_textModified( WgTextField * pText )
 {
 	_requestResize();
 	_requestRender();
@@ -344,7 +318,7 @@ void WgCheckBox::_textModified( WgText * pText )
 
 //____ _iconModified() ________________________________________________________
 
-void WgCheckBox::_iconModified()
+void WgCheckBox::_iconModified( WgIconField * pIcon )
 {
 	_requestResize();
 	_requestRender();
@@ -358,7 +332,7 @@ bool WgCheckBox::_markTestTextArea( int _x, int _y )
 	if( m_pSkin )
 		contentRect = m_pSkin->ContentRect(contentRect, m_state );
 
-	contentRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin ) );
+	contentRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
 
 	if( m_text.CoordToOfs( WgCoord(_x,_y), contentRect ) != -1 )
 		return true;
@@ -376,7 +350,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 	if( m_pSkin )
 		contentRect = m_pSkin->ContentRect( contentRect, m_state );
 
-	WgRect	iconRect	= _getIconRect( contentRect, m_pIconSkin );
+	WgRect	iconRect	= m_icon.GetIconRect( contentRect );
 
 	switch( m_clickArea )
 	{
@@ -384,7 +358,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 		{
 			// Extend iconRect so it connects with textArea before we compare
 
-			WgRect	textRect = _getTextRect( contentRect, iconRect);
+			WgRect	textRect = m_icon.GetTextRect( contentRect, iconRect);
 
 			if( iconRect.x + iconRect.w < textRect.x )
 				iconRect.w = textRect.x - iconRect.x;
@@ -414,7 +388,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 		case ALPHA:			// Alpha test on background and icon.
 		{
 			if( WgWidget::_onAlphaTest( ofs ) ||
-				(m_pIconSkin && m_pIconSkin->MarkTest( ofs, iconRect, m_state, m_markOpacity )) )
+				( !m_icon.IsEmpty() && m_icon.Skin()->MarkTest( ofs, iconRect, m_state, m_markOpacity )) )
 				return true;
 
 			return false;
@@ -423,7 +397,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 			return true;
 		case ICON:			// Only the icon (alpha test) is clickable.
 		{
-			if( m_pIconSkin && m_pIconSkin->MarkTest( ofs, iconRect, m_state, m_markOpacity ) )
+			if( !m_icon.IsEmpty() && m_icon.Skin()->MarkTest( ofs, iconRect, m_state, m_markOpacity ) )
 				return true;
 
 			return false;

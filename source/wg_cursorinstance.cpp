@@ -23,8 +23,8 @@
 
 #include <wg_cursorinstance.h>
 
-#ifndef WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_TEXTTOOL_DOT_H
@@ -39,7 +39,7 @@
 
 //____ Constructor() __________________________________________________________
 
-WgCursorInstance::WgCursorInstance( WgText& text )
+WgCursorInstance::WgCursorInstance( WgTextField& text )
 {
 	m_pText 		= &text;
 	m_bHidden		= true;

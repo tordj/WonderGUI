@@ -35,7 +35,7 @@
 #	include <wg_eventhandler.h>
 #endif
 
-#include <wg_text.h>
+#include <wg_textfield.h>
 
 class WgMenuItem;
 
@@ -103,7 +103,7 @@ private:
 	bool	_isEditable() const { return m_text.IsEditable(); }
 	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
-	void	_textModified( WgText * pText );
+	void	_textModified( WgTextField * pText );
 	void	_adjustViewOfs();
 	void	_closeMenu();
 
@@ -115,7 +115,7 @@ private:
 
 	WgMenuPtr		m_pMenu;
 	WgMenuItem*		m_pSelectedItem;
-	WgText			m_text;
+	WgTextField		m_text;
 	bool			m_bResetCursorOnFocus;
 	bool			m_bPressInInputRect;
 	bool			m_bFocusPress;

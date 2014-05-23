@@ -130,13 +130,12 @@ WgStraightList::WgStraightList()
 	m_bSiblingsOverlap = false;
 	m_bHorizontal = false;
 	m_sortOrder = WG_SORT_ASCENDING;
-	m_pSortFunc = nullptr;
+	m_pSortFunc = 0;
 
-	m_maxEntrySize = WgSize(INT_MAX,INT_MAX);
+	m_maxEntrySize = WgSize(INT_MAX,INT_MAX);		//TODO: Test so m_maxEntrySize matters!
 
 	m_contentBreadth = 0;
 	m_contentLength = 0;
-
 	m_contentPreferredLength = 0;
 	m_contentPreferredBreadth = 0;
 	m_nbPreferredBreadthEntries = 0;
@@ -172,7 +171,7 @@ WgStraightListPtr WgStraightList::Cast( const WgObjectPtr& pObj )
 	if( pObj && pObj->IsInstanceOf(CLASSNAME) )
 		return WgStraightListPtr( static_cast<WgStraightList*>(pObj.GetRealPtr()) );
 
-	return nullptr;
+	return 0;
 }
 
 //____ AddWidget() ____________________________________________________________
@@ -201,7 +200,7 @@ WgStraightListHookPtr WgStraightList::InsertWidget( const WgWidgetPtr& pWidget, 
 		if( pHook && pHook->_parent() == this )
 			index = m_hooks.Index(pHook);
 		else
-			return nullptr;
+			return 0;
 	}
 
 	WgStraightListHook * pHook = m_hooks.Insert(index);
@@ -218,7 +217,7 @@ WgStraightListHookPtr WgStraightList::InsertWidgetSorted( const WgWidgetPtr& pWi
 {
 	//TODO: Implement!
 
-	return nullptr;
+	return 0;
 }
 
 //____ RemoveWidget() _________________________________________________________
@@ -1085,7 +1084,7 @@ WgHook* WgStraightList::_firstHook() const
 	if( m_hooks.Size() > 0 )
 		return m_hooks.Hook(0);
 
-	return nullptr;
+	return 0;
 }
 
 //____ _lastHook() ____________________________________________________________
@@ -1095,7 +1094,7 @@ WgHook* WgStraightList::_lastHook() const
 	if( m_hooks.Size() > 0 )
 		return m_hooks.Hook(m_hooks.Size()-1);
 
-	return nullptr;
+	return 0;
 }
 
 //____ _firstHookWithGeo() ____________________________________________________
@@ -1103,7 +1102,7 @@ WgHook* WgStraightList::_lastHook() const
 WgHook* WgStraightList::_firstHookWithGeo( WgRect& geo ) const
 {
 	if( m_hooks.Size() == 0 )
-		return nullptr;
+		return 0;
 
 	WgStraightListHook * p = m_hooks.Hook(0);
 	_getChildGeo(geo,p);
@@ -1125,7 +1124,7 @@ WgHook* WgStraightList::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 WgHook* WgStraightList::_lastHookWithGeo( WgRect& geo ) const
 {
 	if( m_hooks.Size() == 0 )
-		return nullptr;
+		return 0;
 
 	WgStraightListHook * p = m_hooks.Hook(m_hooks.Size()-1);
 	_getChildGeo(geo,p);

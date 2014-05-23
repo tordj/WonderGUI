@@ -80,33 +80,6 @@ WgButtonPtr WgButton::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-
-//____ SetIcon() ______________________________________________________________
-
-void WgButton::SetIcon( const WgSkinPtr& pIconGfx )
-{
-	m_pIconSkin = pIconGfx;
-	_iconModified();
-}
-
-bool WgButton::SetIcon( const WgSkinPtr& pIconGfx, WgOrigo origo, WgBorders padding, float scale, bool bPushText )
-{
-	if( scale < 0 || scale > 1.f )
-		return false;
-
-	m_pIconSkin = pIconGfx;
-	m_iconOrigo = origo;
-	m_iconBorders = padding;
-	m_iconScale = scale;
-	m_bIconPushText = bPushText;
-
-	_iconModified();
-	return true;
-}
-
-
-
-
 //____ TextAreaWidth() _____________________________________________________
 
 int WgButton::TextAreaWidth()
@@ -116,7 +89,7 @@ int WgButton::TextAreaWidth()
 	if( m_pSkin )
 		contentRect = m_pSkin->SizeForContent( contentRect );
 
-	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin ) );
+	WgRect textRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
 
 	return textRect.w;
 }
@@ -171,7 +144,7 @@ void WgButton::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	if(m_pIconSkin && !m_pIconSkin->IsStateIdentical(oldState,m_state))
+	if(m_icon.Skin() && !m_icon.Skin()->IsStateIdentical(m_state,oldState))
 			_requestRender();
 
 	m_text.setState(m_state);
@@ -198,7 +171,7 @@ void WgButton::_onNewSize( const WgSize& size )
 	if( m_pSkin )
 		contentRect -= m_pSkin->ContentPadding();
 
-	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin ) );
+	WgRect textRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
 
 	m_text.setLineWidth(textRect.w);
 }
@@ -217,13 +190,13 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 
 	// Get icon and text rect from content rect
 
-	WgRect iconRect = _getIconRect( contentRect, m_pIconSkin );
-	WgRect textRect = _getTextRect( contentRect, iconRect );
+	WgRect iconRect = m_icon.GetIconRect( contentRect );
+	WgRect textRect = m_icon.GetTextRect( contentRect, iconRect );
 
 	// Render icon
 
-	if( m_pIconSkin )
-		m_pIconSkin->Render( pDevice, iconRect, m_state, _clip );
+	if( m_icon.Skin() )
+		m_icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
@@ -338,11 +311,9 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgButton * pOrg = (WgButton *) _pOrg;
 
-	WgIconHolder::_onCloneContent( pOrg );
+	m_icon.OnCloneContent( &pOrg->m_icon );
 
-	m_text.setText(&pOrg->m_text);
-
-	m_pIconSkin		= pOrg->m_pIconSkin;
+	m_text.clone(&pOrg->m_text);
 	m_bDownOutside	= pOrg->m_bDownOutside;
 }
 
@@ -350,7 +321,7 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 
 bool WgButton::_onAlphaTest( const WgCoord& ofs )
 {
-	if( m_pIconSkin )
+	if( m_icon.Skin() )
 	{
 		//TODO: Test against icon.
 	}
@@ -360,7 +331,7 @@ bool WgButton::_onAlphaTest( const WgCoord& ofs )
 
 //____ _textModified() __________________________________________________________
 
-void WgButton::_textModified( WgText * pText )
+void WgButton::_textModified( WgTextField * pText )
 {
 	_requestResize();
 	_requestRender();
@@ -368,7 +339,7 @@ void WgButton::_textModified( WgText * pText )
 
 //____ _iconModified() __________________________________________________________
 
-void WgButton::_iconModified()
+void WgButton::_iconModified( WgIconField * pIcon )
 {
 	_requestResize();
 	_requestRender();

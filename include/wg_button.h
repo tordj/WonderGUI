@@ -26,14 +26,13 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef	WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
-#ifndef	WG_ICONHOLDER_DOT_H
-#	include <wg_iconholder.h>
+#ifndef	WG_ICONFIELD_DOT_H
+#	include <wg_iconfield.h>
 #endif
-
 
 class WgButton;
 typedef	WgSmartPtr<WgButton,WgWidgetPtr>		WgButtonPtr;
@@ -46,8 +45,8 @@ class WgButton : public WgWidget, public WgIconHolder, public WgTextHolder
 public:
 	static WgButtonPtr	Create() { return WgButtonPtr(new WgButton()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgButtonPtr	Cast( const WgObjectPtr& pObject );
 
@@ -55,13 +54,10 @@ public:
 
 	void			SetDownWhenMouseOutside( bool bDown );
 	bool			DownWhenMouseOutside() const { return m_bDownOutside; }
-
-	bool			SetIcon( const WgSkinPtr& pIconGfx, WgOrigo origo, WgBorders padding = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
-	void			SetIcon( const WgSkinPtr& pIconGfx );
-	WgSkinPtr		IconSkin() const { return m_pIconSkin; }
-
 	int				TextAreaWidth();
+	
 	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
+	inline WgIIconPtr		Icon() 	{ return WgIIconPtr(this,&m_icon); }
 
 	virtual int		HeightForWidth( int width ) const;
 //	virtual int		WidthForHeight( int height ) const;
@@ -86,12 +82,11 @@ protected:
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 
-	void			_textModified( WgText * pText );
-	void			_iconModified();
+	void			_textModified( WgTextField * pText );
+	void			_iconModified( WgIconField * pIcon );
 
-	WgText			m_text;
-
-	WgSkinPtr		m_pIconSkin;
+	WgTextField		m_text;
+	WgIconField		m_icon;
 
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 

@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef	WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_VALUEFORMAT_DOT_H
@@ -70,9 +70,6 @@ public:
 	inline WgIStaticTextPtr	Text() { return WgIStaticTextPtr(this,&m_text); } 
 	WgSize	PreferredSize() const;
 
-
-	virtual bool		IsInputField() const	{ return true; }
-
 protected:
 	WgValueEditor();
 	virtual ~WgValueEditor();
@@ -93,7 +90,7 @@ private:
 
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
-	void	_textModified( WgText * pText );
+	void	_textModified( WgTextField * pText );
 
 	bool	_parseValueFromInput( int64_t * wpResult );
 
@@ -102,7 +99,7 @@ private:
 	bool				m_bRegenText;
 	WgValueFormatPtr	m_pFormat;			///< Value format specified by user
 	WgValueFormatPtr	m_pUseFormat;		///< Value format currently used (affected by user typing in values).
-	WgText				m_text;
+	WgTextField			m_text;
 	int					m_buttonDownOfs;
 	bool				m_bSelectAllOnRelease;
 	int					m_maxInputChars;

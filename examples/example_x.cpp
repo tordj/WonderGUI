@@ -52,8 +52,8 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 320, height = 240;
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
+	int posX = 100, posY = 100, width = 800, height = 600;
+	SDL_Window * pWin = SDL_CreateWindow("WonderGUI Widget Gallery", posX, posY, width, height, 0);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
 

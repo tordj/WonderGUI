@@ -31,8 +31,8 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_SKIN_DOT_H
@@ -70,7 +70,7 @@ public:
 
 private:
 
-	WgText			m_text;
+	WgTextField		m_text;
 	int				m_width;		// Width of this tab.
 	int				m_advance;		// Distance from beginning of this tab to the next one.
 	int				m_id;

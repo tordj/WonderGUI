@@ -27,12 +27,12 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
-#ifndef WG_ICONHOLDER_DOT_H
-#	include <wg_iconholder.h>
+#ifndef WG_ICONFIELD_DOT_H
+#	include <wg_iconfield.h>
 #endif
 
 class	WgSurface;
@@ -47,9 +47,9 @@ class	WgCheckBox : public WgWidget, public WgIconHolder, public WgTextHolder
 public:
 	static WgCheckBoxPtr	Create() { return WgCheckBoxPtr(new WgCheckBox()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
-	static const char	CLASSNAME[];
+	bool					IsInstanceOf( const char * pClassName ) const;
+	const char *			ClassName( void ) const;
+	static const char		CLASSNAME[];
 	static WgCheckBoxPtr	Cast( const WgObjectPtr& pObject );
 
 	enum ClickArea
@@ -62,14 +62,10 @@ public:
 	};
 
 	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
+	inline WgIIconPtr		Icon() { return WgIIconPtr(this,&m_icon); }
 
 	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
-
-	void			SetIcon( const WgSkinPtr& pIconSkin, const WgOrigo& origo, 
-							 WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
-	void			SetIcon( const WgSkinPtr& pIconSkin );
-	WgSkinPtr		Icon() const { return m_pIconSkin; }
 
 	inline bool		IsSelected() { return m_state.IsSelected(); };
 	virtual bool	SetSelected( bool bSelected );
@@ -95,8 +91,8 @@ protected:
 	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	
-	virtual void	_iconModified();
-	virtual void	_textModified( WgText * pText );
+	virtual void	_iconModified( WgIconField * pIcon );
+	virtual void	_textModified( WgTextField * pText );
 
 private:
 
@@ -107,8 +103,8 @@ private:
 	bool			m_bReturnPressed;
 	bool			m_bFlipOnRelease;				// Set if we want to flip checkbox on press (default), not click.
 
-	WgSkinPtr		m_pIconSkin;
-	WgText			m_text;
+	WgTextField		m_text;
+	WgIconField		m_icon;
 
 	ClickArea		m_clickArea;
 };

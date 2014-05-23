@@ -668,7 +668,7 @@ public:
 class WgTextEditEvent : public WgEvent
 {
 public:
-	WgTextEditEvent( WgWidget * pWidget, WgText * pText, bool bFinal );
+	WgTextEditEvent( WgWidget * pWidget, WgTextField * pText, bool bFinal );
 
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
