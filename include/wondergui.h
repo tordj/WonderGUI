@@ -296,5 +296,9 @@
 #	include <wg_scrollpanel.h>
 #endif
 
+#ifndef WG_STRAIGHTLIST_DOT_H
+#	include <wg_straightlist.h>
+#endif
+
 
 #endif //WONDERGUI_DOT_H

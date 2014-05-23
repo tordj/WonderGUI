@@ -57,7 +57,7 @@ private:
 	void			_onCloneContent( const WgWidget * _pOrg );
 	WgContainer *	_findRadioGroup();
 	void			_unselectRecursively( WgContainer * pParent );
-	void			_onStateChanged( WgState oldState, WgState newState );
+	void			_onStateChanged( WgState oldState );
 	
 	
 	bool			m_bAllowUnselecting;

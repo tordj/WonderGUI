@@ -567,20 +567,20 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 	}
 
 	if( m_state != oldState )
-		_onStateChanged( oldState, m_state );
+		_onStateChanged( oldState );
 }
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgCombobox::_onStateChanged( WgState oldState, WgState newState )
+void WgCombobox::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged( oldState, newState );
+	WgWidget::_onStateChanged( oldState );
 
-	m_text.setState( newState );
+	m_text.setState( m_state );
 
 	// Check if we got focus
 
-	if( newState.IsFocused() && !oldState.IsFocused() )
+	if( m_state.IsFocused() && !oldState.IsFocused() )
 	{
 		if( _isEditable() )
 		{
@@ -596,7 +596,7 @@ void WgCombobox::_onStateChanged( WgState oldState, WgState newState )
 
 	// Check if we lost focus
 
-	if( !newState.IsFocused() && oldState.IsFocused() )
+	if( !m_state.IsFocused() && oldState.IsFocused() )
 	{
 		if( _isEditable() )
 		{

@@ -365,8 +365,31 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 		addResizablePanel( pFlex, pKnob, pEventHandler );
 	}
 */
-	// Test menus and MenuPanel.
 
+	// Test StraightList
+
+	{
+		WgStraightListPtr pList = WgStraightList::Create();
+
+		WgSkinPtr pPlate = pDB->GetSkin("plate");
+
+		pList->SetSkin( pPlate );
+		pList->SetEntrySkin(pPlate);
+		pList->SetOrientation( WG_HORIZONTAL );
+
+		for( int i = 0 ; i < 10 ; i++ )
+		{
+			WgTextDisplayPtr pEntry = WgTextDisplay::Create();
+			pEntry->Text()->Set( "ENTRY" );
+			pList->AddWidget( pEntry );
+		}
+
+		pFlex->AddWidget(pList);
+
+	}
+	
+	// Test menus and MenuPanel.
+/*
 	{
 		WgMenuPtr pSubMenu1_1 = WgMenu::Cast(pDB->CloneWidget( "menu" ));
 		pSubMenu1_1->AddItem( new WgMenuEntry( 1, WgString("ENTRY 11"), WgString("Help text for entry 11"), WgSkinPtr(), 0 ));
@@ -403,7 +426,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //		pMenuPanel->OpenMenu( pMenu, WgRect(10,10,100,10), WG_SOUTHWEST );
 
 	}
-
+*/
 	// Test menubar and menus
 /*
 	{

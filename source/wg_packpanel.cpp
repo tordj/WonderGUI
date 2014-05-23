@@ -95,6 +95,7 @@ WgContainer * WgPackHook::_parent() const
 
 WgPackPanel::WgPackPanel()
 {
+	m_bSiblingsOverlap = false;
 	m_bHorizontal = true;
     m_pSizeBroker = 0;
 }

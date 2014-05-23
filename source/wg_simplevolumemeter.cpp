@@ -303,11 +303,11 @@ void WgSimpleVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onStateChanged() ______________________________________________________
 
-void  WgSimpleVolumeMeter::_onStateChanged( WgState oldState, WgState newState )
+void  WgSimpleVolumeMeter::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
-	if( oldState.IsEnabled() != newState.IsEnabled() )
+	if( oldState.IsEnabled() != m_state.IsEnabled() )
 		_requestRender();
 }
 

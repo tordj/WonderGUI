@@ -82,7 +82,7 @@ bool WgListHook::SetSelected( bool bSelected )
 	if( !m_bVisible )
 		return false;
 
-	return (static_cast<WgList*>(_parent()))->_onEntrySelected( this, bSelected );
+	return (static_cast<WgList*>(_parent()))->_onEntrySelected( this, bSelected, false );
 }
 
 //____ Constructor ____________________________________________________________

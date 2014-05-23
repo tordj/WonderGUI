@@ -82,7 +82,7 @@ protected:
 	virtual void	_onCloneContent( const WgWidget * _pOrg );
 	bool			_onAlphaTest( const WgCoord& ofs );
 	virtual void	_onNewSize( const WgSize& size );
-	void			_onStateChanged( WgState oldState, WgState newState );
+	void			_onStateChanged( WgState oldState );
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 

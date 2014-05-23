@@ -207,6 +207,8 @@ namespace sdl_wglib
 
 		WgResDBPtr pDB = WgResDB::Create();
 
+		pDB->AddSkin( "plate", pPlateSkin );
+
 		// Create standard button
 
 		WgButtonPtr pButton = WgButton::Create();

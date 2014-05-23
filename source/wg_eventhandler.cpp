@@ -1033,7 +1033,7 @@ void WgEventHandler::_setWidgetFocused( WgWidget * pWidget, bool bFocused )
 		pWidget->m_state.SetFocused(bFocused);
 
 		if( pWidget->m_state != oldState )
-			pWidget->_onStateChanged(oldState,pWidget->m_state);
+			pWidget->_onStateChanged(oldState);
 }
 
 

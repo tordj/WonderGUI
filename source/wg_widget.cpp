@@ -94,7 +94,7 @@ void WgWidget::SetEnabled( bool bEnabled )
 	{
 		WgState old = m_state;
 		m_state.SetEnabled(bEnabled);
-		_onStateChanged(m_state, old);
+		_onStateChanged(old);
 	}
 }
 
@@ -366,11 +366,11 @@ void WgWidget::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewS
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgWidget::_onStateChanged( WgState newState, WgState oldState )
+void WgWidget::_onStateChanged( WgState oldState )
 {
-	if( m_pSkin && !m_pSkin->IsStateIdentical(newState, oldState) )
+	if( m_pSkin && !m_pSkin->IsStateIdentical(m_state, oldState) )
 	{
-		m_bOpaque = m_pSkin->IsOpaque(newState);
+		m_bOpaque = m_pSkin->IsOpaque(m_state);
 		_requestRender();
 	}
 }
@@ -428,7 +428,7 @@ void WgWidget::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 	}
 
 	if( m_state != oldState )
-		_onStateChanged( m_state, oldState );
+		_onStateChanged( oldState );
 }
 
 bool WgWidget::_onAlphaTest( const WgCoord& ofs )

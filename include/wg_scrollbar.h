@@ -117,7 +117,7 @@ class	WgScrollbar : public WgWidget
 		void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 		void	_onRefresh();
 		bool	_onAlphaTest( const WgCoord& ofs );
-		void	_onStateChanged( WgState oldState, WgState newState );
+		void	_onStateChanged( WgState oldState );
 
 		bool	_setHandle( float pos, float size );		// Set scrollbar pos/size without notifying target (but should post events).
 

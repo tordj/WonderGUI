@@ -251,14 +251,14 @@ void WgRulerLabels::_textModified( WgText * pText )
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgRulerLabels::_onStateChanged( WgState oldState, WgState newState )
+void WgRulerLabels::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
 	Label * p = m_labels.First();
 	while( p )
 	{
-		p->text.setState(newState);
+		p->text.setState(m_state);
 		p = p->Next();
 	}
 }

@@ -243,11 +243,11 @@ void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 //____ _onStateChanged() ______________________________________________________
 
-void  WgVolumeMeter::_onStateChanged( WgState oldState, WgState newState )
+void  WgVolumeMeter::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
-	if( oldState.IsEnabled() != newState.IsEnabled() )
+	if( oldState.IsEnabled() != m_state.IsEnabled() )
 		_requestRender();
 }
 

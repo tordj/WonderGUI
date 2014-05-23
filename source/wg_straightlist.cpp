@@ -22,6 +22,7 @@
 
 #include <wg_straightlist.h>
 #include <wg_patches.h>
+#include <wg_eventhandler.h>
 
 const char WgStraightList::CLASSNAME[] = {"StraightList"};
 const char WgStraightListHook::CLASSNAME[] = {"StraightListHook"};
@@ -126,9 +127,19 @@ WgContainer *  WgStraightListHook::_parent() const
 
 WgStraightList::WgStraightList()
 {
+	m_bSiblingsOverlap = false;
 	m_bHorizontal = false;
 	m_sortOrder = WG_SORT_ASCENDING;
 	m_pSortFunc = nullptr;
+
+	m_maxEntrySize = WgSize(INT_MAX,INT_MAX);
+
+	m_contentBreadth = 0;
+	m_contentLength = 0;
+
+	m_contentPreferredLength = 0;
+	m_contentPreferredBreadth = 0;
+	m_nbPreferredBreadthEntries = 0;
 }
 
 //____ Destructor _____________________________________________________________
@@ -282,6 +293,37 @@ WgSize WgStraightList::PreferredSize() const
 	return sz;
 }
 
+//____ SetMinEntrySize() ______________________________________________________
+
+bool WgStraightList::SetMinEntrySize( WgSize min )
+{
+	if( min == m_minEntrySize )
+		return true;
+
+	if( min.w > m_maxEntrySize.w || min.h > m_maxEntrySize.h )
+		return false;
+
+	m_minEntrySize = min;
+	_onRefresh();
+	return true;
+}
+
+//____ SetMaxEntrySize() ______________________________________________________
+
+bool WgStraightList::SetMaxEntrySize( WgSize max )
+{
+	if( max == m_maxEntrySize )
+		return true;
+
+	if( max.w < m_minEntrySize.w || max.h < m_minEntrySize.h )
+		return false;
+
+	m_maxEntrySize = max;
+	_onRefresh();
+	return true;
+}
+
+
 //____ _onCollectPatches() ____________________________________________________
 
 void WgStraightList::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
@@ -325,30 +367,254 @@ void WgStraightList::_onMaskPatches( WgPatches& patches, const WgRect& geo, cons
 
 }
 
+//____ _onCloneContent() ______________________________________________________
+
 void WgStraightList::_onCloneContent( const WgWidget * _pOrg )
 {
+	//TODO: Implement!!!
 }
+
+//____ _renderPatches() _______________________________________________________
+
+void WgStraightList::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+{
+	// We start by eliminating dirt outside our geometry
+
+	WgPatches 	patches( _pPatches->Size() );								// TODO: Optimize by pre-allocating?
+
+	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
+	{
+		if( _canvas.IntersectsWith( *pRect ) )
+			patches.Push( WgRect(*pRect,_canvas) );
+	}
+
+	// Render container itself
+	
+	for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
+		_onRender(pDevice, _canvas, _window, *pRect );
+		
+	
+	// Render children
+
+	WgRect	dirtBounds = patches.Union();
+	
+	{
+		WgRect childGeo;
+		WgStraightListHook * p = (WgStraightListHook*)_firstHookWithGeo( childGeo );
+
+		while(p)
+		{
+			WgRect canvas = childGeo + _canvas.Pos();
+			if( p->_isVisible() && canvas.IntersectsWith( dirtBounds ) )
+				p->_widget()->_renderPatches( pDevice, canvas, canvas, &patches );
+			p = (WgStraightListHook*) _nextHookWithGeo( childGeo, p );
+		}
+	}
+}
+
+
+//____ _onRender() ____________________________________________________________
 
 void WgStraightList::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
+	WgWidget::_onRender( pDevice, _canvas, _window, _clip );
+
+	WgRect contentRect = _canvas;
+	if( m_pSkin )
+		contentRect = m_pSkin->ContentRect( _canvas, m_state );
+
+	int startOfs = m_bHorizontal ? _clip.x-_canvas.x : _clip.y-_canvas.y;
+	if( startOfs < 0 )
+		startOfs = 0;
+
+	for( int i = _getEntryAt( startOfs ) ; i < m_hooks.Size() ; i++ )
+	{
+		WgStraightListHook * pHook = m_hooks.Hook(i);
+		WgWidget * pChild = pHook->_widget();
+
+		// Get entry geometry, skin and state
+
+		WgRect entryGeo( contentRect );
+		if( m_bHorizontal )
+		{
+			if( pHook->m_ofs >= contentRect.w )
+				break;
+
+			entryGeo.x += pHook->m_ofs;
+			entryGeo.w = pHook->m_length;
+		}
+		else
+		{
+			if( pHook->m_ofs >= contentRect.h )
+				break;
+
+			entryGeo.y += pHook->m_ofs;
+			entryGeo.h = pHook->m_length;
+		}
+		
+		WgSkin * pEntrySkin	= m_pEntrySkin[i&0x1].GetRealPtr();
+		WgState	state		= pChild->State();
+//		WgRect	childGeo( entryGeo );
+
+		// Render entry skin, shrink child geo
+
+		if( pEntrySkin )
+		{
+			pEntrySkin->Render( pDevice, entryGeo, state, _clip );
+//			childGeo = pEntrySkin->ContentRect( entryGeo, state );
+		}
+
+		// Render child
+
+//		pChild->_onRender( pDevice, childGeo, childGeo, _clip );
+
+	}
 }
+
+//____ _onNewSize() ___________________________________________________________
 
 void WgStraightList::_onNewSize( const WgSize& size )
 {
+	int newContentBreadth;
+
+	if( m_bHorizontal )
+		newContentBreadth = size.h;
+	else
+		newContentBreadth = size.w;
+
+	if( newContentBreadth != m_contentBreadth )
+	{
+		m_contentBreadth = newContentBreadth;
+		int ofs = 0;
+
+		for( int i = 0 ; i < m_hooks.Size() ; i++ )
+		{
+			WgStraightListHook * pHook = m_hooks.Hook(i);
+			WgWidget * pWidget = pHook->_widget();
+
+			if( m_bHorizontal )
+			{
+				int newEntryLength = _paddedLimitedWidthForHeight(pWidget, newContentBreadth );
+				pHook->m_ofs = ofs;
+				pHook->m_length = newEntryLength;
+				ofs += newEntryLength;
+
+				pWidget->_onNewSize( WgSize(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _onNewSize() that prevents child from doing a _requestRender().
+			}
+			else
+			{
+				int newEntryLength = _paddedLimitedHeightForWidth(pWidget, newContentBreadth );
+				pHook->m_ofs = ofs;
+				pHook->m_length = newEntryLength;
+				ofs += newEntryLength;
+
+				pWidget->_onNewSize( WgSize(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _onNewSize() that prevents child from doing a _requestRender().
+			}
+		}
+		m_contentLength = ofs;
+	}
+
+	m_size = size;
+	_requestRender();
 }
+
+//____ _onRefresh() ___________________________________________________________
 
 void WgStraightList::_onRefresh()
 {
+	//TODO: Implement!!!
 }
 
-void WgStraightList::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+//____ _onEvent() _____________________________________________________________
+
+void WgStraightList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
+	WgState oldState = m_state;
+
+	switch( _pEvent->Type() )
+	{
+		case WG_EVENT_KEY_PRESS:
+		{
+			if( m_selectMode == WG_SELECT_NONE )
+				break;
+
+			int				keyCode = WgKeyPressEvent::Cast(_pEvent)->TranslatedKeyCode();
+			WgModifierKeys	modKeys = WgKeyPressEvent::Cast(_pEvent)->ModKeys();
+			if( (m_bHorizontal && (keyCode == WG_KEY_LEFT || keyCode == WG_KEY_RIGHT)) || 
+				(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
+				keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
+				(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
+					pHandler->SwallowEvent(_pEvent);
+			break;
+		}
+
+		case WG_EVENT_KEY_REPEAT:
+		case WG_EVENT_KEY_RELEASE:
+		{
+			if( m_selectMode == WG_SELECT_NONE )
+				break;
+
+			int				keyCode = WgKeyEvent::Cast(_pEvent)->TranslatedKeyCode();
+			WgModifierKeys	modKeys = WgKeyEvent::Cast(_pEvent)->ModKeys();
+			if( (m_bHorizontal && (keyCode == WG_KEY_LEFT || keyCode == WG_KEY_RIGHT)) || 
+				(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
+				keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
+				(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
+					pHandler->SwallowEvent(_pEvent);
+			break;
+		}
+	
+		case WG_EVENT_MOUSE_ENTER:
+			m_state.SetHovered(true);
+			break;
+		case WG_EVENT_MOUSE_LEAVE:
+			m_state.SetHovered(false);
+			break;
+		case WG_EVENT_MOUSE_PRESS:
+			if( WgMousePressEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+			{
+				pHandler->SwallowEvent(_pEvent);
+			}
+			break;
+		case WG_EVENT_MOUSE_RELEASE:
+			if( WgMouseReleaseEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+			{
+				pHandler->SwallowEvent(_pEvent);
+			}
+			break;
+		case WG_EVENT_MOUSE_CLICK:
+			if( WgMouseClickEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+				pHandler->SwallowEvent(_pEvent);
+			break;
+		case WG_EVENT_MOUSE_DOUBLE_CLICK:
+		case WG_EVENT_MOUSE_REPEAT:
+		case WG_EVENT_MOUSE_DRAG:
+			if( WgMouseButtonEvent::Cast(_pEvent)->Button() ==WG_BUTTON_LEFT )
+				pHandler->SwallowEvent(_pEvent);
+			break;
+
+		case WG_EVENT_FOCUS_GAINED:
+			m_state.SetFocused(true);
+			break;
+		case WG_EVENT_FOCUS_LOST:
+			m_state.SetFocused(false);
+			break;
+
+	}
+
+	if( m_state != oldState )
+		_onStateChanged(oldState);
 }
 
-void WgStraightList::_onStateChanged( WgState oldState, WgState newState )
+//____ _onStateChanged() ______________________________________________________
+
+void WgStraightList::_onStateChanged( WgState oldState )
 {
-	WgContainer::_onStateChanged(oldState,newState);
+	WgContainer::_onStateChanged(oldState);
 }
+
+
+//____ _onRequestRender() _____________________________________________________
 
 void WgStraightList::_onRequestRender( WgStraightListHook * pHook )
 {
@@ -368,29 +634,54 @@ void WgStraightList::_onRequestRender( WgStraightListHook * pHook, const WgRect&
 	_requestRender(geo);
 }
 
+//____ _onRequestResize() _____________________________________________________
+
 void WgStraightList::_onRequestResize( WgStraightListHook * pHook )
 {
-	if( pHook->m_bVisible )
+	if( !pHook->m_bVisible  || m_minEntrySize == m_maxEntrySize )
+		return;
+
+	WgWidget * pChild = pHook->_widget();
+	WgSize prefEntrySize = _paddedLimitedPreferredSize(pChild);
+
+	int prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
+	int prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
+
+	bool	bReqResize = false;
+
+	// Update preferred sizes
+
+	if( prefBreadth != pHook->m_prefBreadth || prefLength != pHook->m_length )
 	{
-/*		WgWidget * pChild = pHook->_widget();
-		WgSize pref = pChild->PreferredSize();
-				
-		int length = m_bHorizontal ? pref.w : pref.h;
-		int breadth = m_bHorizontal ? pref.h : pref.w;
+		_subFromContentPreferredSize( pHook->m_length, pHook->m_prefBreadth );
+		_addToContentPreferredSize( prefLength, prefBreadth );
 
-		if( breadth != pHook->m_prefBreadth )
-		{
-		}
-
-
-		if( length != pHook->m_length )
-		{
-
-		}
-*/
-
+		pHook->m_prefBreadth = prefBreadth;
+		bReqResize = true;
 	}
 
+	// Calculate new length
+
+	int length;
+	if( prefBreadth == m_contentBreadth )	
+		length = prefLength;
+	else
+		length = m_bHorizontal ? _paddedLimitedWidthForHeight(pChild, prefBreadth ) : _paddedLimitedHeightForWidth(pChild, prefBreadth );
+
+	// Update if length has changed
+
+	if( length != pHook->m_length )
+	{
+		m_contentLength += length - pHook->m_length;
+		pHook->m_length = length;
+		bReqResize = true;
+
+		_updateChildOfsFrom( pHook );
+		_requestRenderChildrenFrom( pHook );
+	}
+
+	if( bReqResize )
+		_requestResize();
 }
 
 //____ _onWidgetAppeared() ____________________________________________________
@@ -400,7 +691,7 @@ void WgStraightList::_onWidgetAppeared( WgListHook * pInserted )
 	WgStraightListHook * pHook = static_cast<WgStraightListHook*>(pInserted);
 	WgWidget * pChild = pHook->_widget();
 
-	WgSize pref = _paddedPreferredSize( pChild );
+	WgSize pref = _paddedLimitedPreferredSize( pChild );
 
 	if( m_bHorizontal )
 	{
@@ -408,7 +699,10 @@ void WgStraightList::_onWidgetAppeared( WgListHook * pInserted )
 
 		// Get entry length and breadth
 
-		pHook->m_length	= _paddedWidthForHeight(pChild, m_contentBreadth);
+		if( pref.h == m_contentBreadth )
+			pHook->m_length = pref.w;
+		else
+			pHook->m_length	= _paddedLimitedWidthForHeight(pChild, m_contentBreadth);
 		pHook->m_prefBreadth = pref.h;
 	}
 	else
@@ -417,7 +711,10 @@ void WgStraightList::_onWidgetAppeared( WgListHook * pInserted )
 
 		// Get entry length and breadth
 
-		pHook->m_length = _paddedHeightForWidth(pChild, m_contentBreadth);
+		if( pref.w == m_contentBreadth )
+			pHook->m_length = pref.h;
+		else
+			pHook->m_length = _paddedLimitedHeightForWidth(pChild, m_contentBreadth);
 		pHook->m_prefBreadth = pref.w;
 	}
 
@@ -438,7 +735,7 @@ void WgStraightList::_onWidgetDisappeared( WgListHook * pToBeRemoved )
 	WgStraightListHook * pHook = static_cast<WgStraightListHook*>(pToBeRemoved);
 	WgWidget * pChild = pHook->_widget();
 
-	WgSize pref = _paddedPreferredSize( pChild );
+	WgSize pref = _paddedLimitedPreferredSize( pChild );
 
 	_requestRenderChildrenFrom( pHook );	// Request render on dirty area
 
@@ -455,13 +752,92 @@ void WgStraightList::_onWidgetDisappeared( WgListHook * pToBeRemoved )
 	_requestResize();
 }
 
+//____ _getEntryAt() __________________________________________________________
+
+// Pixelofs is counted from beginning of container content, not widget.
+
+int WgStraightList::_getEntryAt( int pixelofs ) const
+{
+	int first = 0;
+	int last = m_hooks.Size() - 1;
+	int middle = (first+last)/2;
+ 
+	while( first <= last )
+	{
+		WgStraightListHook * pHook = m_hooks.Hook(middle);
+
+		if( pHook->m_ofs + pHook->m_length < pixelofs )
+			first = middle + 1;
+		else if( pHook->m_ofs <= pixelofs ) 
+			return middle;
+		else
+			last = middle - 1;
+ 
+		middle = (first + last)/2;
+	}
+
+	return m_hooks.Size();
+}
+
+
 //____ _findWidget() __________________________________________________________
 
 WgWidget * WgStraightList::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 {
-	//TODO: Implement!!!
+	WgWidget * pResult = 0;
+	WgRect content;
 
-	return 0;
+	if( m_pSkin )
+		content = m_pSkin->ContentRect(m_size, m_state );
+	else
+		content = m_size;
+
+	if( content.Contains(ofs) )
+	{
+		int entry;
+		if( m_bHorizontal )
+			entry = _getEntryAt(ofs.x-content.x);
+		else
+			entry = _getEntryAt(ofs.y-content.y);
+
+		if( entry != m_hooks.Size() )
+		{
+			WgStraightListHook * pHook = m_hooks.Hook(entry);
+			WgRect childGeo = content;
+			if( m_bHorizontal )
+			{
+				childGeo.x += pHook->m_ofs;
+				childGeo.w = pHook->m_length;
+			}
+			else
+			{
+				childGeo.y += pHook->m_ofs;
+				childGeo.h = pHook->m_length;
+			}
+
+			if( m_pEntrySkin[entry&0x1] )
+				childGeo = m_pSkin->ContentRect( childGeo, pHook->_widget()->State() );
+			
+			if( childGeo.Contains(ofs) )
+			{
+				if( pHook->_widget()->IsContainer() )
+				{
+					pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.Pos(), mode );
+				}
+				else if( mode == WG_SEARCH_GEOMETRY || pHook->_widget()->MarkTest( ofs - childGeo.Pos() ) )
+				{
+						pResult = pHook->_widget();
+				}
+			}
+		}
+	}
+
+	// Check against ourselves
+
+	if( !pResult && ( mode == WG_SEARCH_GEOMETRY || MarkTest(ofs)) )
+		pResult = this;
+		
+	return pResult;
 }
 
 //____ _addToContentPreferredSize() ___________________________________________
@@ -550,20 +926,39 @@ void WgStraightList::_updateChildOfsFrom( WgStraightListHook * pHook )
 
 //____ _onEntrySelected() _____________________________________________________
 
-bool WgStraightList::_onEntrySelected( WgListHook * _pHook, bool bSelected )
+bool WgStraightList::_onEntrySelected( WgListHook * _pHook, bool bSelected, bool bPostEvent )
 {
 	WgStraightListHook * pHook = static_cast<WgStraightListHook*>(_pHook);
-	pHook->m_bSelected = bSelected;
-	_onRequestRender( pHook );
+	WgState	oldState = pHook->m_pWidget->State();
 
-	//TODO: post event!
+	if( bSelected != oldState.IsSelected() )
+	{
+
+		pHook->m_pWidget->m_state.SetSelected(bSelected);
+		pHook->m_pWidget->_onStateChanged( oldState );
+
+		if( bPostEvent )
+		{
+			WgItemInfo * pItemInfo	= new WgItemInfo[1];
+			pItemInfo->pObject	= pHook->_widget();
+			pItemInfo->id		= pHook->_widget()->Id();
+			pItemInfo->index	= m_hooks.Index(pHook);
+
+			WgEvent * pEvent;
+			if( bSelected )
+				pEvent = new WgItemsSelectEvent(this, 1, pItemInfo);
+			else
+				pEvent = new WgItemsUnselectEvent(this, 1, pItemInfo);
+			_eventHandler()->QueueEvent( pEvent );
+		}
+	}
 
 	return true;
 }
 
 //____ _onRangeSelected() _____________________________________________________
 
-int WgStraightList::_onRangeSelected( int firstEntry, int nbEntries, bool bSelected )
+int WgStraightList::_onRangeSelected( int firstEntry, int nbEntries, bool bSelected, bool bPostEvent )
 {
 	//TODO: Implement!!!
 
@@ -578,6 +973,7 @@ void WgStraightList::_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding )
 
 	if( oldPadding != newPadding )
 	{
+		m_entryPadding = newPadding;
 		int nEntries = m_hooks.Size();
 
 		int	lengthDiff, breadthDiff;
@@ -608,12 +1004,12 @@ void WgStraightList::_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding )
 
 //____ _getChildGeo() _________________________________________________________
 
-void WgStraightList::_getChildGeo( WgRect& geo, const WgHook * _pHook ) const
+void WgStraightList::_getChildGeo( WgRect& geo, const WgStraightListHook * pHook ) const
 {
-	const WgStraightListHook * pHook = static_cast<const WgStraightListHook*>(_pHook);
-
 	if( m_pSkin )
-		geo = m_pSkin->ContentRect( geo, m_state );
+		geo = m_pSkin->ContentRect( m_size, m_state );
+	else
+		geo = m_size;
 
 	if( m_bHorizontal )
 	{
@@ -636,39 +1032,48 @@ void WgStraightList::_getChildGeo( WgRect& geo, const WgHook * _pHook ) const
 	}
 }
 
-//____ _paddedHeightForWidth() ________________________________________________
+//____ _paddedLimitedHeightForWidth() _________________________________________
 
-int WgStraightList::_paddedHeightForWidth( WgWidget * pChild, int paddedWidth )
+int WgStraightList::_paddedLimitedHeightForWidth( WgWidget * pChild, int paddedWidth )
 {
-	if( m_pEntrySkin[0] )
-	{
-		WgSize padding = m_pEntrySkin[0]->ContentPadding();
-		return pChild->HeightForWidth( paddedWidth - padding.w ) + padding.h;
-	}
-	else
-		return pChild->HeightForWidth( paddedWidth );
+	int height = pChild->HeightForWidth( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
+	WG_LIMIT( height, m_minEntrySize.h, m_maxEntrySize.h );
+	return height;
 }
 
-//____ _paddedWidthForHeight() ________________________________________________
+//____ _paddedLimitedWidthForHeight() _________________________________________
 
-int WgStraightList::_paddedWidthForHeight( WgWidget * pChild, int paddedHeight )
+int WgStraightList::_paddedLimitedWidthForHeight( WgWidget * pChild, int paddedHeight )
 {
-	if( m_pEntrySkin[0] )
-	{
-		WgSize padding = m_pEntrySkin[0]->ContentPadding();
-		return pChild->WidthForHeight( paddedHeight - padding.h ) + padding.w;
-	}
-	else
-		return pChild->WidthForHeight( paddedHeight );
+	int width = pChild->WidthForHeight( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
+	WG_LIMIT( width, m_minEntrySize.w, m_maxEntrySize.w );
+	return width;
 }
 
-//____ _paddedPreferredSize() _________________________________________________
+//____ _paddedLimitedPreferredSize() __________________________________________
 
-WgSize WgStraightList::_paddedPreferredSize( WgWidget * pChild )
+WgSize WgStraightList::_paddedLimitedPreferredSize( WgWidget * pChild )
 {
 	WgSize sz = pChild->PreferredSize();
-	if( m_pEntrySkin[0] )
-		sz += m_pEntrySkin[0]->ContentPadding();
+	sz += m_entryPadding;
+
+	// Apply limits
+
+	if( sz.w < m_minEntrySize.w )
+		sz.w = m_minEntrySize.w;
+	if( sz.h < m_minEntrySize.h )
+		sz.h = m_minEntrySize.h;
+
+	if( sz.w > m_maxEntrySize.w )
+	{
+		int h = pChild->HeightForWidth(m_maxEntrySize.w-m_entryPadding.w) + m_entryPadding.h;
+		WG_LIMIT(h, m_minEntrySize.h, m_maxEntrySize.h );
+	}
+	else if( sz.h > m_maxEntrySize.h )
+	{
+		int w = pChild->WidthForHeight(m_maxEntrySize.h-m_entryPadding.h) + m_entryPadding.w;
+		WG_LIMIT(w, m_minEntrySize.w, m_maxEntrySize.w );
+	}
 
 	return sz;
 }
@@ -700,7 +1105,7 @@ WgHook* WgStraightList::_firstHookWithGeo( WgRect& geo ) const
 	if( m_hooks.Size() == 0 )
 		return nullptr;
 
-	WgHook * p = m_hooks.Hook(0);
+	WgStraightListHook * p = m_hooks.Hook(0);
 	_getChildGeo(geo,p);
 	return p;
 }
@@ -722,7 +1127,7 @@ WgHook* WgStraightList::_lastHookWithGeo( WgRect& geo ) const
 	if( m_hooks.Size() == 0 )
 		return nullptr;
 
-	WgHook * p = m_hooks.Hook(m_hooks.Size()-1);
+	WgStraightListHook * p = m_hooks.Hook(m_hooks.Size()-1);
 	_getChildGeo(geo,p);
 	return p;
 }

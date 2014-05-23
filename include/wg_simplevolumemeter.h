@@ -51,7 +51,7 @@ protected:
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
-	void			_onStateChanged( WgState oldState, WgState newState );
+	void			_onStateChanged( WgState oldState );
 	void			_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	
 	void			_updateSectionPixelHeight();

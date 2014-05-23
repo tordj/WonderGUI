@@ -160,16 +160,16 @@ void WgTextDisplay::_onRefresh( void )
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgTextDisplay::_onStateChanged( WgState oldState, WgState newState )
+void WgTextDisplay::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
-	m_text.setState(newState);
+	m_text.setState(m_state);
 	_requestRender(); //TODO: Only requestRender if text appearance has changed.
 
 	if( IsEditable() )
 	{
-		if( newState.IsFocused() && !oldState.IsFocused() )
+		if( m_state.IsFocused() && !oldState.IsFocused() )
 		{
 			m_text.showCursor();
 			_startReceiveTicks();
@@ -177,7 +177,7 @@ void WgTextDisplay::_onStateChanged( WgState oldState, WgState newState )
 				m_text.GoEOF();
 			_requestRender();
 		}
-		if( !newState.IsFocused() && oldState.IsFocused() )
+		if( !m_state.IsFocused() && oldState.IsFocused() )
 		{
 			m_text.hideCursor();
 			_stopReceiveTicks();

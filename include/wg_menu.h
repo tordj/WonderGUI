@@ -203,7 +203,7 @@ private:
 	void		_onRefresh();
 
 	void		_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
-	void		_onStateChanged( WgState oldState, WgState newState );
+	void		_onStateChanged( WgState oldState );
 	bool		_onAlphaTest( const WgCoord& ofs );
 
 	//

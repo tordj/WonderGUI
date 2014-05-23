@@ -167,14 +167,14 @@ WgSize WgButton::PreferredSize() const
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgButton::_onStateChanged( WgState oldState, WgState newState )
+void WgButton::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
-	if(m_pIconSkin && !m_pIconSkin->IsStateIdentical(newState,oldState))
+	if(m_pIconSkin && !m_pIconSkin->IsStateIdentical(oldState,m_state))
 			_requestRender();
 
-	m_text.setState(newState);
+	m_text.setState(m_state);
 
 	//TODO: Request render if text properties have changed.
 
@@ -312,7 +312,7 @@ void WgButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 		m_state.SetPressed(false);
 
 	if( m_state != oldState )
-		_onStateChanged(oldState,m_state);
+		_onStateChanged(oldState);
 }
 
 

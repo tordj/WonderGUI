@@ -108,7 +108,7 @@ bool WgCheckBox::SetSelected( bool bSelected )
 	{
 		WgState oldState = m_state;
 		m_state.SetSelected(bSelected);
-		_onStateChanged(oldState,m_state);
+		_onStateChanged(oldState);
 	}
 	return true;
 }
@@ -234,25 +234,25 @@ void WgCheckBox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 	//
 
 	if( m_state != oldState )
-		_onStateChanged(oldState,m_state);
+		_onStateChanged(oldState);
 }
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgCheckBox::_onStateChanged( WgState oldState, WgState newState )
+void WgCheckBox::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
-	m_text.setState( newState );
+	m_text.setState( m_state );
 
-	if( m_pIconSkin && !m_pIconSkin->IsStateIdentical(newState, oldState) )
+	if( m_pIconSkin && !m_pIconSkin->IsStateIdentical(m_state, oldState) )
 		_requestRender();		//TODO: Just request render on icon?
 
-	if( newState.IsSelected() != oldState.IsSelected() )
+	if( m_state.IsSelected() != oldState.IsSelected() )
 	{
 		WgEventHandler * pHandler = _eventHandler();
 		if( pHandler )
-			pHandler->QueueEvent( new WgToggleEvent(this, newState.IsSelected() ) );
+			pHandler->QueueEvent( new WgToggleEvent(this, m_state.IsSelected() ) );
 	}
 }
 

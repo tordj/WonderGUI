@@ -59,6 +59,7 @@ class WgContainer : public WgWidget
 	friend class WgVectorPanel;
 	friend class WgListPanel;
 	friend class WgCapsule;
+	friend class WgStraightList;
 
 	friend class WgRadioButton;
 
@@ -98,7 +99,7 @@ class WgContainer : public WgWidget
 
 
 		virtual WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
-		virtual void			_onStateChanged( WgState oldState, WgState newState );
+		virtual void			_onStateChanged( WgState oldState );
 
 		virtual void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 		virtual WgHook*			_firstHookWithGeo( WgRect& geo ) const = 0;

@@ -46,7 +46,7 @@ protected:
 	virtual WgWidget* _newOfMyType() const { return new WgVolumeMeter(); };
 	
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void			_onStateChanged( WgState oldState, WgState newState );
+	void			_onStateChanged( WgState oldState );
 	void			_onCloneContent( const WgWidget * _pOrg );
 	
 	WgDirection		m_direction;

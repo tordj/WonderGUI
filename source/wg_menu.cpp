@@ -1065,12 +1065,12 @@ void WgMenu::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgMenu::_onStateChanged( WgState oldState, WgState newState )
+void WgMenu::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
-	if( newState.IsEnabled() != oldState.IsEnabled() && m_scrollbarHook._widget() )
-		m_scrollbarHook._widget()->SetEnabled(newState.IsEnabled());
+	if( m_state.IsEnabled() != oldState.IsEnabled() && m_scrollbarHook._widget() )
+		m_scrollbarHook._widget()->SetEnabled(m_state.IsEnabled());
 
 }
 

@@ -81,7 +81,7 @@ protected:
 	void			_onRefresh();
 	void			_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	bool			_onAlphaTest( const WgCoord& ofs );
-	void			_onStateChanged( WgState oldState, WgState newState );
+	void			_onStateChanged( WgState oldState );
 
 	void			_playPosUpdated();
 
