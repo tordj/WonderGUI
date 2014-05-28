@@ -86,7 +86,7 @@ protected:
 	void	_onNewSize( const WgSize& size );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
-	void	_textModified(WgTextField * pText);
+	void	_fieldModified(WgTextField * pField);
 
 
 private:

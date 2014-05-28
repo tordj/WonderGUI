@@ -752,9 +752,9 @@ bool WgCombobox::_onAlphaTest( const WgCoord& ofs )
 }
 
 
-//____ _textModified() _________________________________________________________
+//____ _fieldModified() _________________________________________________________
 
-void WgCombobox::_textModified( WgTextField * pText )
+void WgCombobox::_fieldModified( WgTextField * pField )
 {
 	m_bResetCursorOnFocus = true;
 	WgEventHandler * pHandler = _eventHandler();		

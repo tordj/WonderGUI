@@ -197,9 +197,9 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 	WgButton::_onNewSize( size );
 }
 
-//____ _textModified() ________________________________________________________
+//____ _fieldModified() ________________________________________________________
 
-void WgRefreshButton::_textModified( WgTextField * pText )
+void WgRefreshButton::_fieldModified( WgTextField * pField )
 {
 	//TODO: Make conditional
 

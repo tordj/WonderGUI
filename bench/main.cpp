@@ -374,8 +374,9 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 		WgSkinPtr pPlate = pDB->GetSkin("plate");
 
 		pList->SetSkin( pPlate );
-		pList->SetEntrySkin(pPlate);
-		pList->SetOrientation( WG_HORIZONTAL );
+		pList->SetEntrySkin( pDB->GetSkin("listentry"));
+		pList->SetSelectMode( WG_SELECT_FLIP );
+//		pList->SetOrientation( WG_HORIZONTAL );
 
 		for( int i = 0 ; i < 10 ; i++ )
 		{

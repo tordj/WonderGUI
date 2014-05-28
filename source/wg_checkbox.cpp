@@ -44,6 +44,8 @@ WgCheckBox::WgCheckBox()
 	m_text.setHolder( this );
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 
+	m_icon.SetHolder( this );
+
 	m_clickArea			= DEFAULT;
 }
 
@@ -308,17 +310,15 @@ void WgCheckBox::_onCloneContent( const WgWidget * _pOrg )
 	m_icon.OnCloneContent( &pOrg->m_icon );
 }
 
-//____ _textModified() _________________________________________________________
+//____ _fieldModified() _________________________________________________________
 
-void WgCheckBox::_textModified( WgTextField * pText )
+void WgCheckBox::_fieldModified( WgTextField * pField )
 {
 	_requestResize();
 	_requestRender();
 }
 
-//____ _iconModified() ________________________________________________________
-
-void WgCheckBox::_iconModified( WgIconField * pIcon )
+void WgCheckBox::_fieldModified( WgIconField * pField )
 {
 	_requestResize();
 	_requestRender();

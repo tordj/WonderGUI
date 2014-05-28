@@ -103,7 +103,7 @@ private:
 	bool	_isEditable() const { return m_text.IsEditable(); }
 	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
-	void	_textModified( WgTextField * pText );
+	void	_fieldModified( WgTextField * pField );
 	void	_adjustViewOfs();
 	void	_closeMenu();
 

@@ -87,7 +87,7 @@ protected:
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 private:
-	void	_textModified( WgTextField * pText );
+	void	_fieldModified( WgTextField * pField );
 	bool	_insertCharAtCursor( Uint16 c );
 
 

@@ -356,12 +356,12 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 
 	// Forward event depending on rules.
 
-	if( pEvent->IsMouseButtonEvent() )
+	if( pEvent->IsMouseButtonEvent() && IsSelectable() )
 	{
 		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 			pHandler->SwallowEvent(pEvent);
 	}
-	else if( pEvent->IsKeyEvent() )
+	else if( pEvent->IsKeyEvent() && IsEditable() )
 	{
 		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
 		if( WgKeyEvent::Cast(pEvent)->IsMovementKey() == true ||
@@ -406,9 +406,9 @@ void WgTextDisplay::_onNewSize( const WgSize& size )
 }
 
 
-//____ _textModified() _________________________________________________________
+//____ _fieldModified() _________________________________________________________
 
-void WgTextDisplay::_textModified( WgTextField * pText )
+void WgTextDisplay::_fieldModified( WgTextField * pField )
 {
 	m_bResetCursorOnFocus = true;
     _requestResize();

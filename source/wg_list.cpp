@@ -159,3 +159,16 @@ bool WgList::SetEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEve
 	_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->ContentPadding() : WgSize() );
 	return true;
 }
+
+//____ SetSelectMode() ________________________________________________________
+
+bool WgList::SetSelectMode( WgSelectMode mode )
+{
+	if( mode != m_selectMode )
+	{
+		m_selectMode = mode;
+
+		//TODO: Unselect all.
+	}
+	return true;
+}

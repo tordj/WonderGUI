@@ -46,7 +46,7 @@ class WgIconField;
 struct WgIconHolder
 {
 public:
-	virtual void		_iconModified( WgIconField * pIcon ) = 0;
+	virtual void		_fieldModified( WgIconField * pField ) = 0;
 };
 
 //____ WgIconField _____________________________________________________________

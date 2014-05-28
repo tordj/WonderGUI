@@ -237,9 +237,9 @@ void WgFpsDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& p
 	m_valuesText.SetColorSkin(pNewSkin);
 }
 
-//____ _textModified() ________________________________________________________
+//____ _fieldModified() ________________________________________________________
 
-void WgFpsDisplay::_textModified( WgTextField * pText )
+void WgFpsDisplay::_fieldModified( WgTextField * pField )
 {
 	_requestRender();
 	_requestResize();

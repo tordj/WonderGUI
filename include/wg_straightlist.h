@@ -143,7 +143,9 @@ protected:
 	void			_onWidgetDisappeared( WgListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
 
 	WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
+	WgStraightListHook *_findEntry( const WgCoord& ofs );
 	void			_getChildGeo( WgRect& geo, const WgStraightListHook * pHook ) const;
+	void			_getEntryGeo( WgRect& geo, const WgStraightListHook * pHook ) const;
 	int				_getEntryAt( int pixelofs ) const;
 
 	bool			_onEntrySelected( WgListHook * pHook, bool bSelected, bool bPostEvent );
@@ -177,6 +179,8 @@ protected:
 	WgSize				m_entryPadding;
 	WgSize				m_minEntrySize;
 	WgSize				m_maxEntrySize;
+
+	WgWidget *			m_pHoveredChild;	// Careful not to use the pointer! It widget might be destroyed.
 
 	//----
 

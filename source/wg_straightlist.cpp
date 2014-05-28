@@ -139,6 +139,8 @@ WgStraightList::WgStraightList()
 	m_contentPreferredLength = 0;
 	m_contentPreferredBreadth = 0;
 	m_nbPreferredBreadthEntries = 0;
+
+	m_pHoveredChild = 0;
 }
 
 //____ Destructor _____________________________________________________________
@@ -564,17 +566,42 @@ void WgStraightList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHand
 		}
 	
 		case WG_EVENT_MOUSE_ENTER:
+			m_pHoveredChild = _pEvent->Widget();
 			m_state.SetHovered(true);
 			break;
 		case WG_EVENT_MOUSE_LEAVE:
-			m_state.SetHovered(false);
+			if( _pEvent->Widget() == m_pHoveredChild )
+				m_state.SetHovered(false);
 			break;
 		case WG_EVENT_MOUSE_PRESS:
-			if( WgMousePressEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+		{
+			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
+			if( pEvent->Button() == WG_BUTTON_LEFT )
 			{
+				WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
+
+				WgStraightListHook * pEntry = _findEntry(ofs);
+				if( pEntry )
+				{
+					switch( m_selectMode )
+					{
+						case WG_SELECT_NONE:
+							break;
+						case WG_SELECT_SINGLE:
+							break;
+						case WG_SELECT_FLIP:
+							pEntry->SetSelected( !pEntry->IsSelected() );
+
+							break;
+						case WG_SELECT_MULTI:
+							break;
+					}
+				}
+
 				pHandler->SwallowEvent(_pEvent);
 			}
 			break;
+		}
 		case WG_EVENT_MOUSE_RELEASE:
 			if( WgMouseReleaseEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
 			{
@@ -618,7 +645,7 @@ void WgStraightList::_onStateChanged( WgState oldState )
 void WgStraightList::_onRequestRender( WgStraightListHook * pHook )
 {
 	WgRect geo;
-	_getChildGeo(geo, pHook);
+	_getEntryGeo(geo, pHook);		// Render whole entry, entry skin might need to be redrawn due to state change.
 	_requestRender(geo);
 }
 
@@ -778,6 +805,32 @@ int WgStraightList::_getEntryAt( int pixelofs ) const
 	return m_hooks.Size();
 }
 
+//____ _findEntry() ___________________________________________________________
+
+WgStraightListHook * WgStraightList::_findEntry( const WgCoord& ofs )
+{
+	WgWidget * pResult = 0;
+	WgRect content;
+
+	if( m_pSkin )
+		content = m_pSkin->ContentRect(m_size, m_state );
+	else
+		content = m_size;
+
+	if( content.Contains(ofs) )
+	{
+		int entry;
+		if( m_bHorizontal )
+			entry = _getEntryAt(ofs.x-content.x);
+		else
+			entry = _getEntryAt(ofs.y-content.y);
+
+		if( entry != m_hooks.Size() )
+			return m_hooks.Hook(entry);
+	}
+
+	return 0;
+}
 
 //____ _findWidget() __________________________________________________________
 
@@ -802,30 +855,35 @@ WgWidget * WgStraightList::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 		if( entry != m_hooks.Size() )
 		{
 			WgStraightListHook * pHook = m_hooks.Hook(entry);
-			WgRect childGeo = content;
-			if( m_bHorizontal )
-			{
-				childGeo.x += pHook->m_ofs;
-				childGeo.w = pHook->m_length;
-			}
+			if( mode == WG_SEARCH_ACTION_TARGET )
+				pResult = pHook->_widget();
 			else
 			{
-				childGeo.y += pHook->m_ofs;
-				childGeo.h = pHook->m_length;
-			}
-
-			if( m_pEntrySkin[entry&0x1] )
-				childGeo = m_pSkin->ContentRect( childGeo, pHook->_widget()->State() );
-			
-			if( childGeo.Contains(ofs) )
-			{
-				if( pHook->_widget()->IsContainer() )
+				WgRect childGeo = content;
+				if( m_bHorizontal )
 				{
-					pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.Pos(), mode );
+					childGeo.x += pHook->m_ofs;
+					childGeo.w = pHook->m_length;
 				}
-				else if( mode == WG_SEARCH_GEOMETRY || pHook->_widget()->MarkTest( ofs - childGeo.Pos() ) )
+				else
 				{
-						pResult = pHook->_widget();
+					childGeo.y += pHook->m_ofs;
+					childGeo.h = pHook->m_length;
+				}
+
+				if( m_pEntrySkin[entry&0x1] )
+					childGeo = m_pSkin->ContentRect( childGeo, pHook->_widget()->State() );
+			
+				if( childGeo.Contains(ofs) )
+				{
+					if( pHook->_widget()->IsContainer() )
+					{
+						pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.Pos(), mode );
+					}
+					else if( mode == WG_SEARCH_GEOMETRY || pHook->_widget()->MarkTest( ofs - childGeo.Pos() ) )
+					{
+							pResult = pHook->_widget();
+					}
 				}
 			}
 		}
@@ -997,6 +1055,27 @@ void WgStraightList::_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding )
 
 			_requestResize();
 		}
+	}
+}
+
+//____ _getEntryGeo() _________________________________________________________
+
+void WgStraightList::_getEntryGeo( WgRect& geo, const WgStraightListHook * pHook ) const
+{
+	if( m_pSkin )
+		geo = m_pSkin->ContentRect( m_size, m_state );
+	else
+		geo = m_size;
+
+	if( m_bHorizontal )
+	{
+		geo.x += pHook->m_ofs;
+		geo.w = pHook->m_length;
+	}
+	else
+	{
+		geo.y += pHook->m_ofs;
+		geo.h = pHook->m_length;
 	}
 }
 

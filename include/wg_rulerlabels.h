@@ -52,7 +52,7 @@ protected:
 	void			_onStateChanged( WgState oldState );
 	void			_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	bool			_onAlphaTest( const WgCoord& ofs );
-    void            _textModified( WgTextField * pText );
+    void            _fieldModified( WgTextField * pField );
 	
 	class Label : public WgLink
 	{

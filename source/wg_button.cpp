@@ -329,17 +329,15 @@ bool WgButton::_onAlphaTest( const WgCoord& ofs )
 	return WgWidget::_onAlphaTest(ofs);
 }
 
-//____ _textModified() __________________________________________________________
+//____ _fieldModified() __________________________________________________________
 
-void WgButton::_textModified( WgTextField * pText )
+void WgButton::_fieldModified( WgTextField * pField )
 {
 	_requestResize();
 	_requestRender();
 }
 
-//____ _iconModified() __________________________________________________________
-
-void WgButton::_iconModified( WgIconField * pIcon )
+void WgButton::_fieldModified( WgIconField * pField )
 {
 	_requestResize();
 	_requestRender();

@@ -618,9 +618,9 @@ void WgLineEditor::_onNewSize( const WgSize& size )
 }
 
 
-//____ _textModified() _________________________________________________________
+//____ _fieldModified() _________________________________________________________
 
-void WgLineEditor::_textModified( WgTextField * pText )
+void WgLineEditor::_fieldModified( WgTextField * pField )
 {
 	m_bResetCursorOnFocus = true;			// Any change to text while we don't have focus resets the position.
 	_requestRender();

@@ -1203,7 +1203,7 @@ void WgTextField::refresh()
 		m_pCursor->gotoHardPos(m_pCursor->line(), m_pCursor->column());
 
 	if( m_pHolder )
-		m_pHolder->_textModified( this );
+		m_pHolder->_fieldModified( this );
 }
 
 //____ addChar() ______________________________________________________________

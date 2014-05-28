@@ -181,9 +181,9 @@ void WgValueEditor::_rangeModified()
 		_queueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(), false) );
 }
 
-//____ _textModified() ________________________________________________________
+//____ _fieldModified() ________________________________________________________
 
-void WgValueEditor::_textModified( WgTextField * pText )
+void WgValueEditor::_fieldModified( WgTextField * pField )
 {
 	_requestRender();
 }

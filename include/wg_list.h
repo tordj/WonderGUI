@@ -86,7 +86,7 @@ public:
 	WgSkinPtr			OddEntrySkin() const { return m_pEntrySkin[0]; }
 	WgSkinPtr			EvenEntrySkin() const { return m_pEntrySkin[1]; }
 
-	void				SetSelectMode( WgSelectMode mode ) const;
+	virtual bool		SetSelectMode( WgSelectMode mode );
 	WgSelectMode		SelectMode() const { return m_selectMode; }
 
 	inline WgListHookPtr	FirstHook() const { return static_cast<WgListHook*>(_firstHook()); }

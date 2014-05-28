@@ -33,7 +33,7 @@ const char WgWidget::CLASSNAME[] = {"Widget"};
 
 WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WG_POINTER_DEFAULT),
 					m_markOpacity( 1 ), m_bOpaque(false),
-					m_bTabLock(false), m_bReceiveTick(false)
+					m_bTabLock(false), m_bReceiveTick(false), m_bPressed(false)
 {
 }
 
@@ -390,10 +390,7 @@ void WgWidget::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 				m_state.SetHovered(true);
 			break;
 		case WG_EVENT_MOUSE_LEAVE:
-			if( m_bPressed )
-				m_state.SetPressed(false);
-			else
-				m_state.SetHovered(false);
+			m_state.SetHovered(false);			// Also clears any pressed flag.
 			break;
 		case WG_EVENT_MOUSE_PRESS:
 		{

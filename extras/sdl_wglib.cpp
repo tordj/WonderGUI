@@ -143,6 +143,7 @@ namespace sdl_wglib
 		const int PLATE_OFS				= BUTTON_OFS + 10;
 		const int SPLITS_AND_FRAME_OFS	= PLATE_OFS + 10;
 		const int COMBOBOX_OFS			= SPLITS_AND_FRAME_OFS + 10;
+		const int LISTENTRY_OFS			= COMBOBOX_OFS + 35;
 		const int TILES_OFS				= 192;
 
 		WgSurfacePtr pSurface = LoadSurface( pImagePath, pFactory );
@@ -191,6 +192,9 @@ namespace sdl_wglib
 //		pComboboxBlocks->SetFrame(WgBorders(1,1,20,1));
 //		pComboboxBlocks->SetPadding(WgBorders(2,2,21,2));
 
+		WgBlockSkinPtr pListEntrySkin = WgBlockSkin::CreateClickSelectable( pSurface, WgSize(8,6), WgCoord(1,LISTENTRY_OFS), WgSize(10,0), WgBorders(1) );
+		pListEntrySkin->SetContentPadding(WgBorders(4));
+
 		WgBlockSkinPtr pBgCheckeredGreySkin = WgBlockSkin::CreateStatic( pSurface, WgRect(0,TILES_OFS,64,64) );
 		pBgCheckeredGreySkin->SetTiledCenter(true);
 		pBgCheckeredGreySkin->OptimizeRenderMethods();
@@ -207,6 +211,7 @@ namespace sdl_wglib
 
 		WgResDBPtr pDB = WgResDB::Create();
 
+		pDB->AddSkin( "listentry", pListEntrySkin );
 		pDB->AddSkin( "plate", pPlateSkin );
 
 		// Create standard button
@@ -224,13 +229,13 @@ namespace sdl_wglib
 		// Create standard checkbox
 
 		WgCheckBoxPtr pCheckbox = WgCheckBox::Create();
-		pCheckbox->SetIcon( pCheckboxIconSkin );
+		pCheckbox->Icon()->Set( pCheckboxIconSkin );
 		pDB->AddWidget( "checkbox", pCheckbox );
 
 		// Create standard radiobutton
 
 		WgRadioButtonPtr pRadiobutton = WgRadioButton::Create();
-		pRadiobutton->SetIcon( pRadiobuttonIconSkin );
+		pRadiobutton->Icon()->Set( pRadiobuttonIconSkin );
 		pDB->AddWidget( "radiobutton", pRadiobutton );
 
 		// Create standard horizontal scrollbar

@@ -90,7 +90,7 @@ private:
 
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
-	void	_textModified( WgTextField * pText );
+	void	_fieldModified( WgTextField * pField );
 
 	bool	_parseValueFromInput( int64_t * wpResult );
 

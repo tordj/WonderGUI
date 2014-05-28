@@ -241,9 +241,9 @@ bool WgRulerLabels::_onAlphaTest( const WgCoord& ofs )
 	return WgWidget::_onAlphaTest(ofs);
 }
 
-//____ _onTextModified() _________________________________________________________________
+//____ _fieldModified() _________________________________________________________________
 
-void WgRulerLabels::_textModified( WgTextField * pText )
+void WgRulerLabels::_fieldModified( WgTextField * pField )
 {
     _requestResize();
     _requestRender();
