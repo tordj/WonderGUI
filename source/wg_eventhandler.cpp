@@ -641,7 +641,7 @@ void WgEventHandler::_processEventQueue()
 			WgWidget * pWidget = pEvent->Widget();
 			while( pWidget )
 			{
-				if( pEvent->Type() == WG_EVENT_MOUSE_ENTER || pEvent->Type() == WG_EVENT_MOUSE_LEAVE || pEvent->Type() == WG_EVENT_TICK )
+				if( pEvent->Type() == WG_EVENT_TICK )
 					m_pNextEventReceiver = 0;
 				else
 					m_pNextEventReceiver = pWidget->Parent();
@@ -1033,7 +1033,7 @@ void WgEventHandler::_setWidgetFocused( WgWidget * pWidget, bool bFocused )
 		pWidget->m_state.SetFocused(bFocused);
 
 		if( pWidget->m_state != oldState )
-			pWidget->_onStateChanged(oldState,pWidget->m_state);
+			pWidget->_onStateChanged(oldState);
 }
 
 
@@ -1067,11 +1067,14 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 
 	if( pNowMarked != m_pMarkedWidget.GetRealPtr() )
 	{
-		if( m_pMarkedWidget )
-			QueueEvent( new WgMouseLeaveEvent( m_pMarkedWidget.GetRealPtr() ) );
-	
+		// We send new enter events before leave. Containers are depending on this order to
+		// know if they or one of their children still are marked when they receive a leave event.
+
 		if( pNowMarked )
 			QueueEvent( new WgMouseEnterEvent( pNowMarked.GetRealPtr() ) );
+
+		if( m_pMarkedWidget )
+			QueueEvent( new WgMouseLeaveEvent( m_pMarkedWidget.GetRealPtr() ) );	
 	}
 	else if( bPostMouseMoveEvents && pNowMarked )
 		QueueEvent( new WgMouseMoveEvent( pNowMarked.GetRealPtr() ) );

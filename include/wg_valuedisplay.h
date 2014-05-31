@@ -77,7 +77,7 @@ protected:
 	void	_onRefresh();
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 	void	_regenText();
@@ -87,7 +87,7 @@ protected:
 private:
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
-	void	_textModified( WgTextField * pText );
+	void	_fieldModified( WgTextField * pField );
 
 	WgValueFormatPtr	m_pFormat;
 	WgTextField			m_text;

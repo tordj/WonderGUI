@@ -83,11 +83,11 @@ protected:
 	void	_onNewSize( const WgSize& size );
 	void	_onRefresh();
 	void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
-	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 private:
-	void	_textModified( WgTextField * pText );
+	void	_fieldModified( WgTextField * pField );
 	bool	_insertCharAtCursor( Uint16 c );
 
 

@@ -181,9 +181,9 @@ void WgValueEditor::_rangeModified()
 		_queueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(), false) );
 }
 
-//____ _textModified() ________________________________________________________
+//____ _fieldModified() ________________________________________________________
 
-void WgValueEditor::_textModified( WgTextField * pText )
+void WgValueEditor::_fieldModified( WgTextField * pField )
 {
 	_requestRender();
 }
@@ -779,18 +779,18 @@ void WgValueEditor::_onCloneContent( const WgWidget * _pOrg )
 
 //____ onStateChanged() _______________________________________________________
 
-void WgValueEditor::_onStateChanged( WgState oldState, WgState newState )
+void WgValueEditor::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
 	// Update text
 
-	m_text.setState(newState);
+	m_text.setState(m_state);
 	_requestRender();				//TODO: Only render if text has been affected
 
 	// Check if we got input focus
 
-	if( newState.IsFocused() && !oldState.IsFocused() )
+	if( m_state.IsFocused() && !oldState.IsFocused() )
 	{
 		_startReceiveTicks();
 		m_text.showCursor();
@@ -810,7 +810,7 @@ void WgValueEditor::_onStateChanged( WgState oldState, WgState newState )
 
 	// Check if we lost input focus
 
-	if( !newState.IsFocused() && oldState.IsFocused() )
+	if( !m_state.IsFocused() && oldState.IsFocused() )
 	{
 		_stopReceiveTicks();
 		_queueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(), true) );

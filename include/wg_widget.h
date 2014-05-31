@@ -209,7 +209,7 @@ protected:
 	virtual void	_onRefresh();
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
-	virtual void	_onStateChanged( WgState oldState, WgState newState );
+	virtual void	_onStateChanged( WgState oldState );
 
 	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs );

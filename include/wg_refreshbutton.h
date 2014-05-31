@@ -98,7 +98,7 @@ protected:
 	void			_onCloneContent( const WgWidget * _pOrg );
 	virtual void 	_onNewSize( const WgSize& size );
 
-	void			_textModified( WgTextField * pText );
+	void			_fieldModified( WgTextField * pField );
 	WgState			_getRenderState();
 
 

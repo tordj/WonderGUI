@@ -372,12 +372,12 @@ void	WgScrollbar::_viewToPosLen( int * _wpPos, int * _wpLen )
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgScrollbar::_onStateChanged( WgState oldState, WgState newState )
+void WgScrollbar::_onStateChanged( WgState oldState )
 {
-	if( newState.IsEnabled() != oldState.IsEnabled() )
+	if( m_state.IsEnabled() != oldState.IsEnabled() )
 	{
 		for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
-			m_states[i].SetEnabled(newState.IsEnabled());
+			m_states[i].SetEnabled(m_state.IsEnabled());
 	}
 	_requestRender();
 }

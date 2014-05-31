@@ -82,7 +82,7 @@ bool WgListHook::SetSelected( bool bSelected )
 	if( !m_bVisible )
 		return false;
 
-	return (static_cast<WgList*>(_parent()))->_onEntrySelected( this, bSelected );
+	return (static_cast<WgList*>(_parent()))->_onEntrySelected( this, bSelected, false );
 }
 
 //____ Constructor ____________________________________________________________
@@ -157,5 +157,18 @@ bool WgList::SetEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEve
 	m_bOpaqueEntries = (pOddEntrySkin->IsOpaque() && pEvenEntrySkin->IsOpaque());
 
 	_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->ContentPadding() : WgSize() );
+	return true;
+}
+
+//____ SetSelectMode() ________________________________________________________
+
+bool WgList::SetSelectMode( WgSelectMode mode )
+{
+	if( mode != m_selectMode )
+	{
+		m_selectMode = mode;
+
+		//TODO: Unselect all.
+	}
 	return true;
 }

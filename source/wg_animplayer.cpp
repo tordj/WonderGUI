@@ -317,13 +317,13 @@ bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs )
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgAnimPlayer::_onStateChanged( WgState oldState, WgState newState )
+void WgAnimPlayer::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
-	if( oldState.IsEnabled() != newState.IsEnabled() && m_bPlaying )
+	if( oldState.IsEnabled() != m_state.IsEnabled() && m_bPlaying )
 	{
-		if( newState.IsEnabled() )
+		if( m_state.IsEnabled() )
 			_startReceiveTicks();
 		else
 			_stopReceiveTicks();

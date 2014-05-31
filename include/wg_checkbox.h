@@ -88,11 +88,11 @@ protected:
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
 	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	
-	virtual void	_iconModified( WgIconField * pIcon );
-	virtual void	_textModified( WgTextField * pText );
+	virtual void	_fieldModified( WgIconField * pField );
+	virtual void	_fieldModified( WgTextField * pField );
 
 private:
 

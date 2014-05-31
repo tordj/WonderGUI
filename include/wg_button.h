@@ -78,12 +78,12 @@ protected:
 	virtual void	_onCloneContent( const WgWidget * _pOrg );
 	bool			_onAlphaTest( const WgCoord& ofs );
 	virtual void	_onNewSize( const WgSize& size );
-	void			_onStateChanged( WgState oldState, WgState newState );
+	void			_onStateChanged( WgState oldState );
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 
-	void			_textModified( WgTextField * pText );
-	void			_iconModified( WgIconField * pIcon );
+	void			_fieldModified( WgTextField * pField );
+	void			_fieldModified( WgIconField * pField );
 
 	WgTextField		m_text;
 	WgIconField		m_icon;

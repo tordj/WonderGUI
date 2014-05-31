@@ -96,14 +96,14 @@ protected:
 	void	_onRefresh();
 	void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	bool	_onAlphaTest( const WgCoord& ofs );
-	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 private:
 	bool	_isEditable() const { return m_text.IsEditable(); }
 	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
-	void	_textModified( WgTextField * pText );
+	void	_fieldModified( WgTextField * pField );
 	void	_adjustViewOfs();
 	void	_closeMenu();
 

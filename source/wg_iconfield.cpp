@@ -42,7 +42,8 @@ bool WgIconField::Set( const WgSkinPtr& pSkin, WgOrigo origo, WgBorders padding,
 	m_padding 	= padding;
 	m_scale 	= scale;
 	m_bOverlap 	= bOverlap;
-	m_pHolder->_iconModified(this);
+	m_pHolder->_fieldModified(this);
+	return true;
 }
 
 //____ Clear() _________________________________________________________________
@@ -54,7 +55,7 @@ void WgIconField::Clear()
 	m_padding 	= WgBorders(0);
 	m_scale 	= 0.f;
 	m_bOverlap 	= false;
-	m_pHolder->_iconModified(this);	
+	m_pHolder->_fieldModified(this);	
 }
 
 //____ SetScale() _________________________________________________________
@@ -67,7 +68,7 @@ bool WgIconField::SetScale( float scaleFactor )
 	if( scaleFactor != m_scale )
 	{
 		m_scale = scaleFactor;
-		m_pHolder->_iconModified(this);
+		m_pHolder->_fieldModified(this);
 	}
 
 	return true;
@@ -80,7 +81,7 @@ void WgIconField::SetOrigo( WgOrigo origo )
 	if( origo != m_origo )
 	{
 		m_origo = origo;
-		m_pHolder->_iconModified(this);
+		m_pHolder->_fieldModified(this);
 	}
 }
 
@@ -91,7 +92,7 @@ void WgIconField::SetPadding( WgBorders borders )
 	if( borders != m_padding )
 	{
 		m_padding = borders;
-		m_pHolder->_iconModified(this);
+		m_pHolder->_fieldModified(this);
 	}
 }
 
@@ -102,7 +103,18 @@ void WgIconField::SetOverlap( bool bOverlap )
 	if( bOverlap != m_bOverlap )
 	{
 		m_bOverlap = bOverlap;
-		m_pHolder->_iconModified(this);
+		m_pHolder->_fieldModified(this);
+	}
+}
+
+//____ SetSkin() ______________________________________________________________
+
+void WgIconField::SetSkin( const WgSkinPtr& pSkin )
+{
+	if( pSkin != m_pSkin )
+	{
+		m_pSkin = pSkin;
+		m_pHolder->_fieldModified(this);
 	}
 }
 

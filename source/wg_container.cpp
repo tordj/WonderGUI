@@ -118,29 +118,19 @@ WgWidget * WgContainer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 			{
 				pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.Pos(), mode );
 			}
-			else
+			else if( mode == WG_SEARCH_GEOMETRY || pHook->_widget()->MarkTest( ofs - childGeo.Pos() ) )
 			{
-				switch( mode )
-				{
-					case WG_SEARCH_ACTION_TARGET:
-					case WG_SEARCH_MARKPOLICY:
-						if( pHook->_widget()->MarkTest( ofs - childGeo.Pos() ) )
-							pResult = pHook->_widget();
-						break;
-					case WG_SEARCH_GEOMETRY:
-						pResult = pHook->_widget();
-						break;
-				}
+					pResult = pHook->_widget();
 			}
 		}
 		pHook = _prevHookWithGeo( childGeo, pHook );
 	}
 
-	// Return us if search mode is GEOMETRY
+	// Check against ourselves
 
-	if( !pResult && mode == WG_SEARCH_GEOMETRY )
+	if( !pResult && ( mode == WG_SEARCH_GEOMETRY || MarkTest(ofs)) )
 		pResult = this;
-
+		
 	return pResult;
 }
 
@@ -195,13 +185,13 @@ WgPopupLayer * WgContainer::_getPopupLayer() const
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgContainer::_onStateChanged( WgState oldState, WgState newState )
+void WgContainer::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
-	if( oldState.IsEnabled() != newState.IsEnabled() )
+	if( oldState.IsEnabled() != m_state.IsEnabled() )
 	{
-		bool bEnabled = newState.IsEnabled();
+		bool bEnabled = m_state.IsEnabled();
 		WgWidget * p = _firstWidget();
 		while( p )
 		{
@@ -209,6 +199,20 @@ void WgContainer::_onStateChanged( WgState oldState, WgState newState )
 			p = p->_nextSibling();
 		}
 	}
+
+	if( oldState.IsSelected() != m_state.IsSelected() )
+	{
+		bool bSelected = m_state.IsSelected();
+		WgWidget * p = _firstWidget();
+		while( p )
+		{
+			WgState old = p->m_state;
+			p->m_state.SetSelected(bSelected);
+			p->_onStateChanged( old );
+			p = p->_nextSibling();
+		}
+	}
+
 }
 
 //____ _renderPatches() _____________________________________________________

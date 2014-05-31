@@ -98,30 +98,32 @@ WgBlockSkinPtr WgBlockSkin::CreateClickSelectable( const WgSurfacePtr& pSurface,
 
 	WgCoord blockOfs = blockStartOfs;
 
-	pSkin->SetStateBlock( WG_STATE_NORMAL, blockOfs );
+	pSkin->SetStateBlock( WG_STATE_NORMAL, blockOfs );				// Normal
 	pSkin->SetStateBlock( WG_STATE_FOCUSED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_HOVERED, blockOfs );
+	pSkin->SetStateBlock( WG_STATE_HOVERED, blockOfs );				// Hovered, not selected
 	pSkin->SetStateBlock( WG_STATE_HOVERED_FOCUSED, blockOfs );
 	pSkin->SetStateBlock( WG_STATE_PRESSED, blockOfs );
 	pSkin->SetStateBlock( WG_STATE_PRESSED_FOCUSED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_SELECTED, blockOfs );
+	pSkin->SetStateBlock( WG_STATE_SELECTED, blockOfs );			// Selected, not hovered
 	pSkin->SetStateBlock( WG_STATE_FOCUSED_SELECTED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_HOVERED_SELECTED, blockOfs );
+	pSkin->SetStateBlock( WG_STATE_HOVERED_SELECTED, blockOfs );	// Selected and hovered
 	pSkin->SetStateBlock( WG_STATE_HOVERED_FOCUSED_SELECTED, blockOfs );
 	pSkin->SetStateBlock( WG_STATE_PRESSED_SELECTED, blockOfs );
 	pSkin->SetStateBlock( WG_STATE_PRESSED_FOCUSED_SELECTED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_DISABLED, blockOfs );
+	pSkin->SetStateBlock( WG_STATE_DISABLED, blockOfs );			// Disabled
 	return WgBlockSkinPtr(pSkin);
 }
 
+/** Usable for state button etc, where a widget is normal/hovered/pressed/disabled as well as selected/unselected
+*/
 WgBlockSkinPtr WgBlockSkin::CreateClickSelectableWidget( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
@@ -130,15 +132,15 @@ WgBlockSkinPtr WgBlockSkin::CreateClickSelectableWidget( const WgSurfacePtr& pSu
 
 	WgCoord blockOfs = blockStartOfs;
 
-	pSkin->SetStateBlock( WG_STATE_NORMAL, blockOfs );
+	pSkin->SetStateBlock( WG_STATE_NORMAL, blockOfs );				// Normal
 	pSkin->SetStateBlock( WG_STATE_FOCUSED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_HOVERED, blockOfs );
+	pSkin->SetStateBlock( WG_STATE_HOVERED, blockOfs );				// Hovered
 	pSkin->SetStateBlock( WG_STATE_HOVERED_FOCUSED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_PRESSED, blockOfs );
+	pSkin->SetStateBlock( WG_STATE_PRESSED, blockOfs );				// Pressed
 	pSkin->SetStateBlock( WG_STATE_PRESSED_FOCUSED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 

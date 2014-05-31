@@ -160,16 +160,16 @@ void WgTextDisplay::_onRefresh( void )
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgTextDisplay::_onStateChanged( WgState oldState, WgState newState )
+void WgTextDisplay::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
-	m_text.setState(newState);
+	m_text.setState(m_state);
 	_requestRender(); //TODO: Only requestRender if text appearance has changed.
 
 	if( IsEditable() )
 	{
-		if( newState.IsFocused() && !oldState.IsFocused() )
+		if( m_state.IsFocused() && !oldState.IsFocused() )
 		{
 			m_text.showCursor();
 			_startReceiveTicks();
@@ -177,7 +177,7 @@ void WgTextDisplay::_onStateChanged( WgState oldState, WgState newState )
 				m_text.GoEOF();
 			_requestRender();
 		}
-		if( !newState.IsFocused() && oldState.IsFocused() )
+		if( !m_state.IsFocused() && oldState.IsFocused() )
 		{
 			m_text.hideCursor();
 			_stopReceiveTicks();
@@ -356,12 +356,12 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 
 	// Forward event depending on rules.
 
-	if( pEvent->IsMouseButtonEvent() )
+	if( pEvent->IsMouseButtonEvent() && IsSelectable() )
 	{
 		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 			pHandler->SwallowEvent(pEvent);
 	}
-	else if( pEvent->IsKeyEvent() )
+	else if( pEvent->IsKeyEvent() && IsEditable() )
 	{
 		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
 		if( WgKeyEvent::Cast(pEvent)->IsMovementKey() == true ||
@@ -406,9 +406,9 @@ void WgTextDisplay::_onNewSize( const WgSize& size )
 }
 
 
-//____ _textModified() _________________________________________________________
+//____ _fieldModified() _________________________________________________________
 
-void WgTextDisplay::_textModified( WgTextField * pText )
+void WgTextDisplay::_fieldModified( WgTextField * pField )
 {
 	m_bResetCursorOnFocus = true;
     _requestResize();

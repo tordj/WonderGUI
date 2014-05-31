@@ -213,18 +213,18 @@ void WgFpsDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgFpsDisplay::_onStateChanged( WgState oldState, WgState newState )
+void WgFpsDisplay::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
-	m_labelsText.setState(newState);
-	m_valuesText.setState(newState);
+	m_labelsText.setState(m_state);
+	m_valuesText.setState(m_state);
 	_requestRender();							//TODO: Check if there has been changes to text appearance.
 
-	if( newState.IsEnabled() && !oldState.IsEnabled() )
+	if( m_state.IsEnabled() && !oldState.IsEnabled() )
 		_startReceiveTicks();
 
-	if( !newState.IsEnabled() && oldState.IsEnabled() )
+	if( !m_state.IsEnabled() && oldState.IsEnabled() )
 		_stopReceiveTicks();
 }
 
@@ -237,9 +237,9 @@ void WgFpsDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& p
 	m_valuesText.SetColorSkin(pNewSkin);
 }
 
-//____ _textModified() ________________________________________________________
+//____ _fieldModified() ________________________________________________________
 
-void WgFpsDisplay::_textModified( WgTextField * pText )
+void WgFpsDisplay::_fieldModified( WgTextField * pField )
 {
 	_requestRender();
 	_requestResize();

@@ -562,14 +562,14 @@ void WgLineEditor::_adjustViewOfs()
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgLineEditor::_onStateChanged( WgState oldState, WgState newState )
+void WgLineEditor::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 	
-	m_text.setState(newState);
+	m_text.setState(m_state);
 	_requestRender();				//TODO: Only request render if text appearance has changed.
 
-	if( newState.IsFocused() && !oldState.IsFocused() )
+	if( m_state.IsFocused() && !oldState.IsFocused() )
 	{
 		if( _isEditable() )
 		{
@@ -580,7 +580,7 @@ void WgLineEditor::_onStateChanged( WgState oldState, WgState newState )
 		}
 	}
 
-	if( !newState.IsFocused() && oldState.IsFocused() )
+	if( !m_state.IsFocused() && oldState.IsFocused() )
 	{
 		if( _isSelectable() )
 		{
@@ -618,9 +618,9 @@ void WgLineEditor::_onNewSize( const WgSize& size )
 }
 
 
-//____ _textModified() _________________________________________________________
+//____ _fieldModified() _________________________________________________________
 
-void WgLineEditor::_textModified( WgTextField * pText )
+void WgLineEditor::_fieldModified( WgTextField * pField )
 {
 	m_bResetCursorOnFocus = true;			// Any change to text while we don't have focus resets the position.
 	_requestRender();

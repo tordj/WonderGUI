@@ -71,7 +71,7 @@ class WgTextField;
 struct WgTextHolder
 {
 public:
-	virtual void		_textModified( WgTextField * pText ) = 0;
+	virtual void		_fieldModified( WgTextField * pText ) = 0;
 };
 
 

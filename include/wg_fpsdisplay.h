@@ -63,11 +63,11 @@ protected:
 	virtual WgWidget* _newOfMyType() const { return new WgFpsDisplay(); };
 
 	void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
-	void	_onStateChanged( WgState oldState, WgState newState );
+	void	_onStateChanged( WgState oldState );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
-	void	_textModified( WgTextField * pText );
+	void	_fieldModified( WgTextField * pField );
 
 
 private:

@@ -111,6 +111,11 @@ public:
 
 	WgSize					PreferredSize() const;
 
+	bool					SetMinEntrySize( WgSize min );
+	bool					SetMaxEntrySize( WgSize max );
+	WgSize					MinEntrySize() const { return m_minEntrySize; }
+	WgSize					MaxEntrySize() const { return m_maxEntrySize; }
+
 protected:
 	WgStraightList();
 	virtual ~WgStraightList();
@@ -119,12 +124,13 @@ protected:
 	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	void			_onCloneContent( const WgWidget * _pOrg );
+	void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onNewSize( const WgSize& size );
 	void			_onRefresh();
 
 	void			_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
-	void			_onStateChanged( WgState oldState, WgState newState );
+	void			_onStateChanged( WgState oldState );
 
 	void			_onRequestRender( WgStraightListHook * pHook );
 	void			_onRequestRender( WgStraightListHook * pHook, const WgRect& rect );
@@ -137,15 +143,18 @@ protected:
 	void			_onWidgetDisappeared( WgListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
 
 	WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
-	void			_getChildGeo( WgRect& geo, const WgHook * pHook ) const;
+	WgStraightListHook *_findEntry( const WgCoord& ofs );
+	void			_getChildGeo( WgRect& geo, const WgStraightListHook * pHook ) const;
+	void			_getEntryGeo( WgRect& geo, const WgStraightListHook * pHook ) const;
+	int				_getEntryAt( int pixelofs ) const;
 
-	bool			_onEntrySelected( WgListHook * pHook, bool bSelected );
-	int				_onRangeSelected( int firstEntry, int nbEntries, bool bSelected );
+	bool			_onEntrySelected( WgListHook * pHook, bool bSelected, bool bPostEvent );
+	int				_onRangeSelected( int firstEntry, int nbEntries, bool bSelected, bool bPostEvent );
 	void			_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding );
 
-	WgSize			_paddedPreferredSize( WgWidget * pChild );
-	int				_paddedHeightForWidth( WgWidget * pChild, int paddedWidth );
-	int				_paddedWidthForHeight( WgWidget * pChild, int paddedHeight );
+	WgSize			_paddedLimitedPreferredSize( WgWidget * pChild );
+	int				_paddedLimitedHeightForWidth( WgWidget * pChild, int paddedWidth );
+	int				_paddedLimitedWidthForHeight( WgWidget * pChild, int paddedHeight );
 
 	WgHook*			_firstHook() const;
 	WgHook*			_lastHook() const;
@@ -166,6 +175,12 @@ protected:
 	int					m_contentBreadth;
 	int					m_contentLength;
 	WgSize				m_size;
+
+	WgSize				m_entryPadding;
+	WgSize				m_minEntrySize;
+	WgSize				m_maxEntrySize;
+
+	WgWidget *			m_pHoveredChild;	// Careful not to use the pointer! It widget might be destroyed.
 
 	//----
 

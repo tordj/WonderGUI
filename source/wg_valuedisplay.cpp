@@ -104,9 +104,9 @@ void WgValueDisplay::_valueModified()
 	_requestRender();
 }
 
-//____ _textModified() _____________________________________________________________
+//____ _fieldModified() _____________________________________________________________
 
-void WgValueDisplay::_textModified(WgTextField * pText)
+void WgValueDisplay::_fieldModified(WgTextField * pField)
 {
 	_requestRender();
 }
@@ -156,10 +156,10 @@ void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgValueDisplay::_onStateChanged( WgState oldState, WgState newState )
+void WgValueDisplay::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
-	m_text.setState(newState);
+	WgWidget::_onStateChanged(oldState);
+	m_text.setState(m_state);
 	_requestRender();				//TODO: Check for text-related difference before call.
 }
 

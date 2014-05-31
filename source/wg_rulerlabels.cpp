@@ -241,9 +241,9 @@ bool WgRulerLabels::_onAlphaTest( const WgCoord& ofs )
 	return WgWidget::_onAlphaTest(ofs);
 }
 
-//____ _onTextModified() _________________________________________________________________
+//____ _fieldModified() _________________________________________________________________
 
-void WgRulerLabels::_textModified( WgTextField * pText )
+void WgRulerLabels::_fieldModified( WgTextField * pField )
 {
     _requestResize();
     _requestRender();
@@ -251,14 +251,14 @@ void WgRulerLabels::_textModified( WgTextField * pText )
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgRulerLabels::_onStateChanged( WgState oldState, WgState newState )
+void WgRulerLabels::_onStateChanged( WgState oldState )
 {
-	WgWidget::_onStateChanged(oldState,newState);
+	WgWidget::_onStateChanged(oldState);
 
 	Label * p = m_labels.First();
 	while( p )
 	{
-		p->text.setState(newState);
+		p->text.setState(m_state);
 		p = p->Next();
 	}
 }

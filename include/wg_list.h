@@ -58,7 +58,7 @@ public:
 	bool			IsVisible() { return m_bVisible; }
 
 	virtual bool	SetSelected( bool bSelected );
-	bool			IsSelected() { return m_bSelected; }
+	bool			IsSelected() { return m_pWidget->State().IsSelected(); }
 
 
 protected:
@@ -68,7 +68,6 @@ protected:
 
 
 	 bool			m_bVisible;
-	 bool			m_bSelected;
 };
 
 //____ WgList _________________________________________________________________
@@ -87,7 +86,7 @@ public:
 	WgSkinPtr			OddEntrySkin() const { return m_pEntrySkin[0]; }
 	WgSkinPtr			EvenEntrySkin() const { return m_pEntrySkin[1]; }
 
-	void				SetSelectMode( WgSelectMode mode ) const;
+	virtual bool		SetSelectMode( WgSelectMode mode );
 	WgSelectMode		SelectMode() const { return m_selectMode; }
 
 	inline WgListHookPtr	FirstHook() const { return static_cast<WgListHook*>(_firstHook()); }
@@ -98,8 +97,8 @@ protected:
 	WgList();
 	virtual ~WgList();
 
-	virtual bool	_onEntrySelected( WgListHook * pHook, bool bSelected ) = 0;
-	virtual int		_onRangeSelected( int firstEntry, int nbEntries, bool bSelected ) = 0;
+	virtual bool	_onEntrySelected( WgListHook * pHook, bool bSelected, bool bPostEvent ) = 0;
+	virtual int		_onRangeSelected( int firstEntry, int nbEntries, bool bSelected, bool bPostEvent ) = 0;
 
 	virtual void	_onWidgetAppeared( WgListHook * pInserted ) = 0;
 	virtual void	_onWidgetDisappeared( WgListHook * pToBeRemoved ) = 0;		// Call BEFORE widget is removed from m_hooks.

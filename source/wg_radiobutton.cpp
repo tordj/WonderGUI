@@ -70,16 +70,16 @@ WgRadioButtonPtr WgRadioButton::Cast( const WgObjectPtr& pObject )
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgRadioButton::_onStateChanged( WgState oldState, WgState newState )
+void WgRadioButton::_onStateChanged( WgState oldState )
 {
-	if( newState.IsSelected() && !oldState.IsSelected() )
+	if( m_state.IsSelected() && !oldState.IsSelected() )
 	{
 			WgContainer * pGroup = _findRadioGroup();
 			if( pGroup )
 				_unselectRecursively( pGroup );
 	}
 
-	WgCheckBox::_onStateChanged(oldState,newState);
+	WgCheckBox::_onStateChanged(oldState);
 }
 
 //____ _findRadioGroup() _______________________________________________________
