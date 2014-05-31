@@ -135,14 +135,6 @@ public:
 	virtual int					Lines() const = 0;
 	virtual int					Length() const = 0;
 	virtual bool				IsEmpty() const = 0;
-	virtual bool				IsEditable() const = 0;
-	virtual bool				IsSelectable() const = 0;
-
-	virtual void				Select( int ofs, int len ) = 0;
-	virtual void				SelectAll() = 0;
-	virtual int					SelectionStart() const = 0;
-	virtual int					SelectionLength() const = 0;
-	virtual void				ClearSelection() = 0;
 };
 
 

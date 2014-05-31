@@ -63,6 +63,8 @@ public:
 	virtual float				Fraction() const = 0;
 
 	virtual bool				SetRange( Sint64 min, Sint64 max ) = 0;
+	virtual Sint64				Min() const = 0;
+	virtual Sint64				Max() const = 0;
 };
 
 
