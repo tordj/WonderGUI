@@ -375,7 +375,8 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 
 		pList->SetSkin( pPlate );
 		pList->SetEntrySkin( pDB->GetSkin("listentry"));
-		pList->SetSelectMode( WG_SELECT_FLIP );
+		pList->SetLassoSkin( WgBoxSkin::Create( WgColor(0,0,255,64), WgBorders(1), WgColor(0,0,255,128)) );
+		pList->SetSelectMode( WG_SELECT_MULTI );
 //		pList->SetOrientation( WG_HORIZONTAL );
 
 		for( int i = 0 ; i < 10 ; i++ )

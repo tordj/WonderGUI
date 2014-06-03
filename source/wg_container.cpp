@@ -310,6 +310,41 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 	}
 }
 
+//____ _onEvent() _____________________________________________________________
+
+void WgContainer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+{
+	switch( _pEvent->Type() )
+	{
+		case WG_EVENT_MOUSE_ENTER:
+			m_pHoveredChild = _pEvent->Widget();
+			if( !m_state.IsHovered() )
+			{
+				WgState oldState = m_state;
+
+				if( m_bPressed )
+					m_state.SetPressed(true);
+				else
+					m_state.SetHovered(true);
+				m_state.SetHovered(true);
+				_onStateChanged(oldState);
+			}
+			break;
+		case WG_EVENT_MOUSE_LEAVE:
+			if( _pEvent->Widget() == m_pHoveredChild && m_state.IsHovered() )
+			{
+				WgState oldState = m_state;
+				m_state.SetHovered(false);
+				_onStateChanged(oldState);
+			}
+			break;
+		default:
+			WgWidget::_onEvent(_pEvent,pHandler);
+			break;
+	}
+}
+
+
 //____ _onCloneContent() _______________________________________________________
 
 void WgContainer::_onCloneContent( const WgContainer * _pOrg )

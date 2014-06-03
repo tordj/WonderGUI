@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_list.h>
+#include <wg_eventhandler.h>
 
 const char WgList::CLASSNAME[] = {"List"};
 const char WgListHook::CLASSNAME[] = {"ListHook"};
@@ -82,7 +83,7 @@ bool WgListHook::SetSelected( bool bSelected )
 	if( !m_bVisible )
 		return false;
 
-	return (static_cast<WgList*>(_parent()))->_onEntrySelected( this, bSelected, false );
+	return (static_cast<WgList*>(_parent()))->_selectEntry( this, bSelected, false );
 }
 
 //____ Constructor ____________________________________________________________
@@ -171,4 +172,284 @@ bool WgList::SetSelectMode( WgSelectMode mode )
 		//TODO: Unselect all.
 	}
 	return true;
+}
+
+//____ SetLassoSkin() _________________________________________________________
+
+void WgList::SetLassoSkin( const WgSkinPtr& pSkin )
+{
+	m_pLassoSkin = pSkin;
+}
+
+//____ _onEvent() _____________________________________________________________
+
+void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+{
+	WgState oldState = m_state;
+
+	switch( _pEvent->Type() )
+	{
+		case WG_EVENT_MOUSE_PRESS:
+		{
+			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
+			if( m_selectMode != WG_SELECT_NONE && pEvent->Button() == WG_BUTTON_LEFT )
+			{
+				WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
+				WgRect contentRect(0,0,Size());
+				if( m_pSkin )
+					contentRect = m_pSkin->ContentRect( contentRect, m_state );
+
+				WgListHook * pEntry = _findEntry(ofs);
+
+				ofs = contentRect.Constrain(ofs);
+				m_lassoBegin = ofs;
+				m_lassoEnd = ofs;
+
+				if( pEntry )
+				{
+					switch( m_selectMode )
+					{
+						case WG_SELECT_NONE:
+							break;
+						case WG_SELECT_SINGLE:
+							if( !pEntry->IsSelected() )
+							{
+								_clearSelected( true );
+								_selectEntry( pEntry, true, true );
+							}
+							break;
+						case WG_SELECT_FLIP:
+							_selectEntry( pEntry, !pEntry->IsSelected(), true );
+							break;
+						case WG_SELECT_MULTI:
+							if( (pEvent->ModKeys() & WG_MODKEY_CTRL) )
+							{
+								_selectEntry( pEntry, !pEntry->IsSelected(), true );
+							}
+							else
+							{
+								//TODO: Not post unselected/selected for already selected pressed entry.
+								_clearSelected( true );
+								_selectEntry( pEntry, true, true );
+							}
+							break;
+					}
+				}
+				else if( WG_SELECT_SINGLE || WG_SELECT_MULTI )
+				{
+					_clearSelected(true);
+				}
+
+				pHandler->SwallowEvent(_pEvent);
+			}
+			break;
+		}
+		case WG_EVENT_MOUSE_RELEASE:
+			if( m_selectMode != WG_SELECT_NONE && WgMouseReleaseEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+			{
+				WgRect dirtyRect( m_lassoBegin, m_lassoEnd );
+				_requestRender(dirtyRect);
+
+				m_lassoBegin = m_lassoEnd;
+				pHandler->SwallowEvent(_pEvent);
+			}
+			break;
+		case WG_EVENT_MOUSE_CLICK:
+			if( m_selectMode != WG_SELECT_NONE && WgMouseClickEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+				pHandler->SwallowEvent(_pEvent);
+			break;
+		case WG_EVENT_MOUSE_DOUBLE_CLICK:
+		case WG_EVENT_MOUSE_REPEAT:
+			if( m_selectMode != WG_SELECT_NONE && WgMouseButtonEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+				pHandler->SwallowEvent(_pEvent);
+			break;
+		case WG_EVENT_MOUSE_DRAG:
+		{
+			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
+			if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pEvent->Button() == WG_BUTTON_LEFT )
+			{
+				WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
+				WgRect contentRect(0,0,Size());
+				if( m_pSkin )
+					contentRect = m_pSkin->ContentRect( contentRect, m_state );
+
+				ofs = contentRect.Constrain(ofs);
+
+				WgRect oldLasso( m_lassoBegin, m_lassoEnd );
+				WgRect newLasso( m_lassoBegin, ofs );
+
+				_onLassoUpdated( oldLasso, newLasso );
+
+				WgRect dirtyRect = oldLasso;
+				dirtyRect.GrowToContain( ofs );
+				_requestRender( dirtyRect );
+				m_lassoEnd = ofs;
+				pHandler->SwallowEvent(_pEvent);
+			}
+			break;
+		}
+	}
+
+	if( m_state != oldState )
+		_onStateChanged(oldState);
+}
+
+//____ _selectEntry() _________________________________________________________
+
+bool WgList::_selectEntry( WgListHook * pHook, bool bSelected, bool bPostEvent )
+{
+	WgState	oldState = pHook->m_pWidget->State();
+
+	if( bSelected != oldState.IsSelected() )
+	{
+
+		pHook->m_pWidget->m_state.SetSelected(bSelected);
+		pHook->m_pWidget->_onStateChanged( oldState );
+
+		if( bPostEvent )
+		{
+			WgItemInfo * pItemInfo	= new WgItemInfo[1];
+			pItemInfo->pObject	= pHook->_widget();
+			pItemInfo->id		= pHook->_widget()->Id();
+
+			WgEvent * pEvent;
+			if( bSelected )
+				pEvent = new WgItemsSelectEvent(this, 1, pItemInfo);
+			else
+				pEvent = new WgItemsUnselectEvent(this, 1, pItemInfo);
+			_eventHandler()->QueueEvent( pEvent );
+		}
+	}
+
+	return true;
+}
+
+//____ _clearSelected() _______________________________________________________
+
+void WgList::_clearSelected( bool bPostEvent )
+{
+	_selectRange( static_cast<WgListHook*>(_firstHook()), 0, false, bPostEvent );
+}
+
+//____ _selectRange() _________________________________________________________
+
+int WgList::_selectRange( WgListHook * pBegin, WgListHook * pEnd, bool bSelected, bool bPostEvent )
+{
+	int	nModified = 0;
+
+	// Reserve ItemInfo array of right size if we are going to post event
+
+	WgItemInfo * pItemInfo = 0;
+	if( bPostEvent )
+	{
+		int size = 0;
+		for( WgListHook * pHook = pBegin ; pHook != 0 && pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
+		{
+			if( bSelected != pHook->_widget()->State().IsSelected() )
+				size++;
+		}
+
+		if( size > 0 )
+			pItemInfo = new WgItemInfo[size];
+	}
+
+	// Loop through entries
+
+	for( WgListHook * pHook = pBegin ; pHook != 0 && pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
+	{
+		WgState	oldState = pHook->m_pWidget->State();
+		if( bSelected != oldState.IsSelected() )
+		{
+			pHook->m_pWidget->m_state.SetSelected(bSelected);
+			pHook->m_pWidget->_onStateChanged( oldState );
+
+			if( bPostEvent )
+			{
+				pItemInfo[nModified].pObject	= pHook->_widget();
+				pItemInfo[nModified].id			= pHook->_widget()->Id();
+
+			}
+			nModified++;
+		}
+	}
+
+	// Post event
+
+	if( bPostEvent )
+	{
+		WgEvent * pEvent;
+		if( bSelected )
+			pEvent = new WgItemsSelectEvent(this, 1, pItemInfo);
+		else
+			pEvent = new WgItemsUnselectEvent(this, 1, pItemInfo);
+		_eventHandler()->QueueEvent( pEvent );
+	}
+
+	return nModified;
+}
+
+//____ _flipRange() _________________________________________________________
+
+int WgList::_flipRange( WgListHook * pBegin, WgListHook * pEnd, bool bPostEvent )
+{
+	int nSelected = 0;
+	int nDeselected = 0;
+
+	// Reserve ItemInfo array of right size if we are going to post event
+
+	WgItemInfo * pSelectedItemsInfo = 0;
+	WgItemInfo * pDeselectedItemsInfo = 0;
+	if( bPostEvent )
+	{
+		int nToSelect = 0;
+		int nToDeselect = 0;
+
+		for( WgListHook * pHook = pBegin ; pHook != 0 && pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
+		{
+			if( pHook->_widget()->State().IsSelected() )
+				nToDeselect++;
+			else
+				nToSelect++;
+		}
+
+		if( nToSelect > 0 )
+			pSelectedItemsInfo = new WgItemInfo[nToSelect];
+		if( nToDeselect > 0 )
+			pDeselectedItemsInfo = new WgItemInfo[nToDeselect];
+	}
+
+	// Loop through entries
+
+	for( WgListHook * pHook = pBegin ; pHook != 0 && pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
+	{
+		WgState	oldState = pHook->m_pWidget->State();
+
+		pHook->m_pWidget->m_state.SetSelected(!oldState.IsSelected());
+		pHook->m_pWidget->_onStateChanged( oldState );
+
+		if( bPostEvent )
+		{
+			WgItemInfo * p;
+			if( oldState.IsSelected() )
+				p = &pDeselectedItemsInfo[nSelected++];
+			else
+				p = &pSelectedItemsInfo[nDeselected++];
+
+			p->pObject	= pHook->_widget();
+			p->id		= pHook->_widget()->Id();
+		}
+	}
+
+	// Post event
+
+	if( bPostEvent )
+	{
+		if( nSelected > 0 )
+			_eventHandler()->QueueEvent( new WgItemsSelectEvent(this, 1, pSelectedItemsInfo) );
+
+		if( nDeselected > 0 )
+			_eventHandler()->QueueEvent( new WgItemsUnselectEvent(this, 1, pDeselectedItemsInfo) );
+	}
+
+	return nSelected + nDeselected;
 }

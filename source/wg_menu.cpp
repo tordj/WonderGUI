@@ -1103,12 +1103,12 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 			if( pCheckBox->IsChecked() )
 			{
 				pCheckBox->Uncheck();
-				_queueEvent( new WgItemToggleEvent(this,-1,pItem->GetId(),WgObjectPtr(),true));
+				_queueEvent( new WgItemToggleEvent(this,pItem->GetId(),WgObjectPtr(),true));
 			}
 			else
 			{
 				pCheckBox->Check();
-				_queueEvent( new WgItemToggleEvent(this,-1,pItem->GetId(),WgObjectPtr(),false));
+				_queueEvent( new WgItemToggleEvent(this,pItem->GetId(),WgObjectPtr(),false));
 			}
 
 			_itemSelected();
@@ -1116,10 +1116,10 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 		break;
 		case RADIOBUTTON:
 			if( m_pSelectedItem )
-				_queueEvent( new WgItemToggleEvent(this,-1,m_pSelectedItem->GetId(),WgObjectPtr(),false));
+				_queueEvent( new WgItemToggleEvent(this,m_pSelectedItem->GetId(),WgObjectPtr(),false));
 			m_pSelectedItem = pItem;
 			((WgMenuRadioButton*)pItem)->Select();
-			_queueEvent( new WgItemToggleEvent(this,-1,pItem->GetId(),WgObjectPtr(),true));
+			_queueEvent( new WgItemToggleEvent(this,pItem->GetId(),WgObjectPtr(),true));
 			_itemSelected();
 		break;
 

@@ -689,10 +689,9 @@ protected:
 class WgItemInfo
 {
 public:
-	WgItemInfo(): index(-1), id(-1) {}
-	WgItemInfo( int _index, int _id, const WgObjectPtr& _pObject ) : index(_index), id(_id), pObject(_pObject) {}
+	WgItemInfo(): id(-1) {}
+	WgItemInfo( int _id, const WgObjectPtr& _pObject ) : id(_id), pObject(_pObject) {}
 
-	int				index;
 	int				id;
 	WgObjectPtr		pObject;
 };
@@ -707,12 +706,11 @@ public:
 	static const char	CLASSNAME[];
 	static WgItemEventPtr	Cast( const WgObjectPtr& pObject );
 
-	int				ItemIndex() const;
 	int				ItemId() const;
 	WgObjectPtr		ItemObject() const;
 
 protected:
-	WgItemEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject );
+	WgItemEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject );
 
 	WgItemInfo		m_item;
 };
@@ -730,7 +728,7 @@ public:
 	bool		IsSet() const;
 
 //protected:
-	WgItemToggleEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject, bool bSet );
+	WgItemToggleEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject, bool bSet );
 
 	bool		m_bSet;
 };
@@ -747,7 +745,7 @@ public:
 
 	WgMouseButton		Button() const;
 //protected:
-	WgItemMousePressEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject, WgMouseButton button );
+	WgItemMousePressEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject, WgMouseButton button );
 
 	WgMouseButton		m_button;
 };

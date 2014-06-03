@@ -1247,7 +1247,7 @@ void WgTablist::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 				if( pEvent->Button() == WG_BUTTON_LEFT )
 					SelectTab(pTab->m_id);
 
-				pHandler->QueueEvent( new WgItemMousePressEvent(this, -1, pTab->m_id, WgObjectPtr(), pEvent->Button()) );
+				pHandler->QueueEvent( new WgItemMousePressEvent(this, pTab->m_id, WgObjectPtr(), pEvent->Button()) );
 			}
 		}
 		break;

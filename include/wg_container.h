@@ -117,8 +117,11 @@ class WgContainer : public WgWidget
 		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 		virtual void	_onCloneContent( const WgContainer * _pOrg );
+		virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 
-		bool		m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
+		bool			m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
+		WgWidget *		m_pHoveredChild;	// Careful not to use the pointer! Its widget might be destroyed.
+
 };
 
 #endif //WG_CONTAINER_DOT_H

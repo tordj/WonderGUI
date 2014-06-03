@@ -44,6 +44,7 @@ typedef	WgHookTypePtr<WgListHook,WgHookPtr>	WgListHookPtr;
 
 class WgListHook : public WgHook
 {
+	friend class WgList;
 public:
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;
@@ -86,8 +87,13 @@ public:
 	WgSkinPtr			OddEntrySkin() const { return m_pEntrySkin[0]; }
 	WgSkinPtr			EvenEntrySkin() const { return m_pEntrySkin[1]; }
 
+	virtual void		SetLassoSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr			LassoSkin() const { return m_pLassoSkin; }
+
 	virtual bool		SetSelectMode( WgSelectMode mode );
 	WgSelectMode		SelectMode() const { return m_selectMode; }
+
+
 
 	inline WgListHookPtr	FirstHook() const { return static_cast<WgListHook*>(_firstHook()); }
 	inline WgListHookPtr	LastHook() const { return static_cast<WgListHook*>(_lastHook()); }
@@ -97,18 +103,26 @@ protected:
 	WgList();
 	virtual ~WgList();
 
-	virtual bool	_onEntrySelected( WgListHook * pHook, bool bSelected, bool bPostEvent ) = 0;
-	virtual int		_onRangeSelected( int firstEntry, int nbEntries, bool bSelected, bool bPostEvent ) = 0;
+	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 
+	virtual bool	_selectEntry( WgListHook * pHook, bool bSelected, bool bPostEvent );
+	virtual int		_selectRange( WgListHook * pBegin, WgListHook * pEnd, bool bSelected, bool bPostEvent );
+	virtual int		_flipRange( WgListHook * pBegin, WgListHook * pEnd, bool bPostEvent );
+	virtual void	_clearSelected( bool bPostEvent );
 	virtual void	_onWidgetAppeared( WgListHook * pInserted ) = 0;
 	virtual void	_onWidgetDisappeared( WgListHook * pToBeRemoved ) = 0;		// Call BEFORE widget is removed from m_hooks.
+	virtual WgListHook * _findEntry( const WgCoord& ofs ) = 0;
 
 	virtual void	_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding ) = 0;
+	virtual void	_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso ) = 0;
 
 	WgSelectMode	m_selectMode;
 	WgSkinPtr		m_pEntrySkin[2];
+	WgSkinPtr		m_pLassoSkin;
 	bool			m_bOpaqueEntries;
 
+	WgCoord			m_lassoBegin;
+	WgCoord			m_lassoEnd;
 };
 
 

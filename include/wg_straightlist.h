@@ -116,6 +116,7 @@ public:
 	WgSize					MinEntrySize() const { return m_minEntrySize; }
 	WgSize					MaxEntrySize() const { return m_maxEntrySize; }
 
+
 protected:
 	WgStraightList();
 	virtual ~WgStraightList();
@@ -143,14 +144,13 @@ protected:
 	void			_onWidgetDisappeared( WgListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
 
 	WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
-	WgStraightListHook *_findEntry( const WgCoord& ofs );
+	WgListHook *	_findEntry( const WgCoord& ofs );
 	void			_getChildGeo( WgRect& geo, const WgStraightListHook * pHook ) const;
 	void			_getEntryGeo( WgRect& geo, const WgStraightListHook * pHook ) const;
 	int				_getEntryAt( int pixelofs ) const;
 
-	bool			_onEntrySelected( WgListHook * pHook, bool bSelected, bool bPostEvent );
-	int				_onRangeSelected( int firstEntry, int nbEntries, bool bSelected, bool bPostEvent );
 	void			_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding );
+	void			_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso );
 
 	WgSize			_paddedLimitedPreferredSize( WgWidget * pChild );
 	int				_paddedLimitedHeightForWidth( WgWidget * pChild, int paddedWidth );
@@ -179,8 +179,6 @@ protected:
 	WgSize				m_entryPadding;
 	WgSize				m_minEntrySize;
 	WgSize				m_maxEntrySize;
-
-	WgWidget *			m_pHoveredChild;	// Careful not to use the pointer! It widget might be destroyed.
 
 	//----
 

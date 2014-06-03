@@ -314,13 +314,13 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 		case WG_EVENT_ITEM_TOGGLE:
 		{
 			WgItemToggleEventPtr pEvent = WgItemToggleEvent::Cast(_pEvent);
-			sprintf( params, "set=%s index=%d id=%d object=%d", pEvent->IsSet()?"true":"false", pEvent->ItemIndex(), pEvent->ItemId() );
+			sprintf( params, "set=%s id=%d object=%d", pEvent->IsSet()?"true":"false", pEvent->ItemId() );
 			break;
 		}
 		case WG_EVENT_ITEM_MOUSE_PRESS:
 		{
 			WgItemMousePressEventPtr pEvent = WgItemMousePressEvent::Cast(_pEvent);
-			sprintf( params, "index=%d id=% mouseButton=%s", pEvent->ItemIndex(), pEvent->ItemId(), _formatMouseButton(pEvent->Button()).c_str() );
+			sprintf( params, "id=% mouseButton=%s", pEvent->ItemId(), _formatMouseButton(pEvent->Button()).c_str() );
 			break;
 		}
 				

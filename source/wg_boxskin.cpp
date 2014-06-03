@@ -149,7 +149,7 @@ void WgBoxSkin::SetFrame( WgBorders frame, WgColor color )
 		_updateOpaqueFlag();
 }
 
-//____ SetSateColor() _________________________________________________________
+//____ SetStateColor() _________________________________________________________
 
 void WgBoxSkin::SetStateColor( WgStateEnum state, WgColor color )
 {

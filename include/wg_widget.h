@@ -87,6 +87,7 @@ friend class WgFlexPanel;
 friend class WgModalLayer;
 friend class WgTablePanel;
 friend class WgScrollPanel;
+friend class WgList;
 friend class WgStraightList;
 friend class WgCapsule;
 friend class WgLayer;

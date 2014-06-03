@@ -1073,7 +1073,7 @@ WgTextEditEventPtr WgTextEditEvent::Cast( const WgObjectPtr& pObject )
 
 const char WgItemEvent::CLASSNAME[] = {"ItemEvent"};
 
-WgItemEvent::WgItemEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject ) : m_item(itemIndex,itemId,pItemObject)
+WgItemEvent::WgItemEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject ) : m_item(itemId,pItemObject)
 {
 	m_pWidget 	= pWidget;
 }
@@ -1099,11 +1099,6 @@ WgItemEventPtr WgItemEvent::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-int WgItemEvent::ItemIndex() const 
-{ 
-	return m_item.index; 
-}
-
 int WgItemEvent::ItemId() const 
 { 
 	return m_item.id; 
@@ -1118,7 +1113,7 @@ WgObjectPtr WgItemEvent::ItemObject() const
 
 const char WgItemToggleEvent::CLASSNAME[] = {"ItemToggleEvent"};
 
-WgItemToggleEvent::WgItemToggleEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject, bool bSet ) : WgItemEvent(pWidget,itemIndex,itemId,pItemObject)
+WgItemToggleEvent::WgItemToggleEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject, bool bSet ) : WgItemEvent(pWidget,itemId,pItemObject)
 {
 	m_type = WG_EVENT_ITEM_TOGGLE;
 	m_bSet = bSet;
@@ -1154,7 +1149,7 @@ bool WgItemToggleEvent::IsSet() const
 
 const char WgItemMousePressEvent::CLASSNAME[] = {"ItemMousePressEvent"};
 
-WgItemMousePressEvent::WgItemMousePressEvent( WgWidget * pWidget, int itemIndex, int itemId, const WgObjectPtr& pItemObject, WgMouseButton button ) : WgItemEvent(pWidget,itemIndex,itemId,pItemObject)
+WgItemMousePressEvent::WgItemMousePressEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject, WgMouseButton button ) : WgItemEvent(pWidget,itemId,pItemObject)
 {
 	m_type = WG_EVENT_ITEM_MOUSE_PRESS;
 	m_button = button;

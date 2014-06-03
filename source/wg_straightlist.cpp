@@ -411,6 +411,18 @@ void WgStraightList::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canva
 			p = (WgStraightListHook*) _nextHookWithGeo( childGeo, p );
 		}
 	}
+
+	// Render Lasso
+
+	if( m_pLassoSkin && m_lassoBegin != m_lassoEnd )
+	{
+		WgRect lasso( m_lassoBegin, m_lassoEnd );
+		lasso += _canvas.Pos();
+
+
+		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
+			m_pLassoSkin->Render( pDevice, lasso, m_state, WgRect( lasso, *pRect ) );
+	}
 }
 
 
@@ -565,78 +577,112 @@ void WgStraightList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHand
 			break;
 		}
 	
-		case WG_EVENT_MOUSE_ENTER:
-			m_pHoveredChild = _pEvent->Widget();
-			m_state.SetHovered(true);
-			break;
-		case WG_EVENT_MOUSE_LEAVE:
-			if( _pEvent->Widget() == m_pHoveredChild )
-				m_state.SetHovered(false);
-			break;
-		case WG_EVENT_MOUSE_PRESS:
-		{
-			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
-			if( pEvent->Button() == WG_BUTTON_LEFT )
-			{
-				WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
-
-				WgStraightListHook * pEntry = _findEntry(ofs);
-				if( pEntry )
-				{
-					switch( m_selectMode )
-					{
-						case WG_SELECT_NONE:
-							break;
-						case WG_SELECT_SINGLE:
-							break;
-						case WG_SELECT_FLIP:
-							pEntry->SetSelected( !pEntry->IsSelected() );
-
-							break;
-						case WG_SELECT_MULTI:
-							break;
-					}
-				}
-
-				pHandler->SwallowEvent(_pEvent);
-			}
-			break;
-		}
-		case WG_EVENT_MOUSE_RELEASE:
-			if( WgMouseReleaseEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
-			{
-				pHandler->SwallowEvent(_pEvent);
-			}
-			break;
-		case WG_EVENT_MOUSE_CLICK:
-			if( WgMouseClickEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
-				pHandler->SwallowEvent(_pEvent);
-			break;
-		case WG_EVENT_MOUSE_DOUBLE_CLICK:
-		case WG_EVENT_MOUSE_REPEAT:
-		case WG_EVENT_MOUSE_DRAG:
-			if( WgMouseButtonEvent::Cast(_pEvent)->Button() ==WG_BUTTON_LEFT )
-				pHandler->SwallowEvent(_pEvent);
-			break;
-
-		case WG_EVENT_FOCUS_GAINED:
-			m_state.SetFocused(true);
-			break;
-		case WG_EVENT_FOCUS_LOST:
-			m_state.SetFocused(false);
-			break;
-
+		default:
+			WgList::_onEvent(_pEvent, pHandler);
+			return;
 	}
 
 	if( m_state != oldState )
 		_onStateChanged(oldState);
 }
 
+//____ _onLassoUpdated() ______________________________________________________
+
+void WgStraightList::_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso )
+{
+	// Get out content area
+
+	WgRect contentRect;
+	if( m_pSkin )
+		contentRect = m_pSkin->ContentRect(m_size, m_state);
+
+	// Check if our lassos are inside content area or not.
+
+	bool	bOldLassoInside = false;
+	bool	bNewLassoInside = false;
+
+	if( oldLasso.IntersectsWith(contentRect ) )
+		bOldLassoInside = true;
+	if( newLasso.IntersectsWith(contentRect ) )
+		bNewLassoInside = true;
+
+	if( !bOldLassoInside && !bNewLassoInside )
+		return;										// None of the lassos inside content.
+
+	// Get first/last entries marked by old/new lasso
+
+	int oldOfs1, oldOfs2;
+	int newOfs1, newOfs2;
+
+
+	if( m_bHorizontal )
+	{
+		oldOfs1 = oldLasso.x - contentRect.x;
+		oldOfs2 = oldLasso.x + oldLasso.w - contentRect.x;
+		newOfs1 = newLasso.x - contentRect.x;
+		newOfs2 = newLasso.x + newLasso.w - contentRect.x;
+	}
+	else
+	{
+		oldOfs1 = oldLasso.y - contentRect.y;
+		oldOfs2 = oldLasso.y + oldLasso.h - contentRect.y;
+		newOfs1 = newLasso.y - contentRect.y;
+		newOfs2 = newLasso.y + newLasso.h - contentRect.y;
+	}
+
+	int oldFirst = _getEntryAt( oldOfs1 );
+	int oldLast = _getEntryAt( oldOfs2 );
+	int newFirst = _getEntryAt( newOfs1 );
+	int newLast = _getEntryAt( newOfs2 );
+
+	//
+
+	if( bOldLassoInside != bNewLassoInside )
+	{
+		int beg, end;
+		if( bNewLassoInside )
+		{
+			beg = newFirst;
+			end = newLast;
+		}
+		else
+		{
+			beg = oldFirst;
+			end = oldLast;
+		}
+
+		if( end != m_hooks.Size() )
+			end++;
+		_flipRange( m_hooks.Hook(beg), m_hooks.Hook(end), true );
+	}
+	else
+	{
+		if( oldFirst != newFirst )
+		{
+			int beg = WgMin(oldFirst,newFirst);
+			int end = WgMax(oldFirst,newFirst);
+
+			_flipRange( m_hooks.Hook(beg), m_hooks.Hook(end), true );
+		}
+
+		if( oldLast != newLast )
+		{
+			int beg = WgMin(oldLast,newLast)+1;
+			int end = WgMax(oldLast,newLast);
+			if( end != m_hooks.Size() )
+				end++;
+
+			_flipRange( m_hooks.Hook(beg), m_hooks.Hook(end), true );
+		}
+	}
+}
+
+
 //____ _onStateChanged() ______________________________________________________
 
 void WgStraightList::_onStateChanged( WgState oldState )
 {
-	WgContainer::_onStateChanged(oldState);
+	WgList::_onStateChanged(oldState);
 }
 
 
@@ -807,7 +853,7 @@ int WgStraightList::_getEntryAt( int pixelofs ) const
 
 //____ _findEntry() ___________________________________________________________
 
-WgStraightListHook * WgStraightList::_findEntry( const WgCoord& ofs )
+WgListHook * WgStraightList::_findEntry( const WgCoord& ofs )
 {
 	WgWidget * pResult = 0;
 	WgRect content;
@@ -979,47 +1025,6 @@ void WgStraightList::_updateChildOfsFrom( WgStraightListHook * pHook )
 		ofs += pHook->m_length;
 		pHook++;
 	}	
-}
-
-//____ _onEntrySelected() _____________________________________________________
-
-bool WgStraightList::_onEntrySelected( WgListHook * _pHook, bool bSelected, bool bPostEvent )
-{
-	WgStraightListHook * pHook = static_cast<WgStraightListHook*>(_pHook);
-	WgState	oldState = pHook->m_pWidget->State();
-
-	if( bSelected != oldState.IsSelected() )
-	{
-
-		pHook->m_pWidget->m_state.SetSelected(bSelected);
-		pHook->m_pWidget->_onStateChanged( oldState );
-
-		if( bPostEvent )
-		{
-			WgItemInfo * pItemInfo	= new WgItemInfo[1];
-			pItemInfo->pObject	= pHook->_widget();
-			pItemInfo->id		= pHook->_widget()->Id();
-			pItemInfo->index	= m_hooks.Index(pHook);
-
-			WgEvent * pEvent;
-			if( bSelected )
-				pEvent = new WgItemsSelectEvent(this, 1, pItemInfo);
-			else
-				pEvent = new WgItemsUnselectEvent(this, 1, pItemInfo);
-			_eventHandler()->QueueEvent( pEvent );
-		}
-	}
-
-	return true;
-}
-
-//____ _onRangeSelected() _____________________________________________________
-
-int WgStraightList::_onRangeSelected( int firstEntry, int nbEntries, bool bSelected, bool bPostEvent )
-{
-	//TODO: Implement!!!
-
-	return 0;
 }
 
 //____ _onEntrySkinChanged() __________________________________________________

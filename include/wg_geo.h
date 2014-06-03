@@ -302,6 +302,7 @@ public:
 
 
 	bool Intersection( const WgRect& r1, const WgRect& r2 );
+	void Union( const WgRect& r1, const WgRect& r2 );
 
 	void GrowToContain( int x, int y );
 	void GrowToContain( const WgRect& _rect );
@@ -310,6 +311,7 @@ public:
 	inline bool Contains( int x, int y ) const;
 	inline bool Contains( const WgRect& _rect ) const;
 	inline bool	Contains( const WgCoord& _coord ) const;
+	inline WgCoord Constrain( const WgCoord& _coord ) const;
 
 	inline bool IntersectsWith( const WgRect& _rect ) const;
 
@@ -422,6 +424,23 @@ inline bool WgRect::Contains( const WgRect& _rect ) const
 		return true;
 	return false;
 }
+
+//_____________________________________________________________________________
+inline WgCoord WgRect::Constrain( const WgCoord& _coord ) const
+{
+	WgCoord out = _coord;
+	if( out.x < x )
+		out.x = x;
+	if( out.y < y )
+		out.y = y;
+	if( out.x > x + w )
+		out.x = x + w;
+	if( out.y > y + h )
+		out.y = y + h;
+
+	return out;
+}
+
 
 //_____________________________________________________________________________
 inline bool WgRect::IntersectsWith( const WgRect& _rect ) const

@@ -99,6 +99,17 @@ bool WgRect::Intersection( const WgRect& _r1, const WgRect& _r2 )
 	return	true;
 }
 
+//____ Union() ________________________________________________________________
+
+void WgRect::Union( const WgRect& r1, const WgRect& r2 )
+{
+	x = r1.x < r2.x ? r1.x : r2.x;
+	y = r1.y < r2.y ? r1.y : r2.y;
+	w = r1.x + r1.w > r2.x + r2.w ? r1.x + r1.w : r2.x + r2.w;
+	h = r1.y + r1.h > r2.y + r2.h ? r1.y + r1.h : r2.y + r2.h;
+}
+
+
 //____ Shrink() _____________________________________________________________
 
 void WgRect::Shrink(int left, int top, int right, int bottom)
