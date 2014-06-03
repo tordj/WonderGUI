@@ -165,7 +165,7 @@ public:
 	void				Set( const WgCharBuffer * buffer );
 	void				Set( const WgString& str );
 
-	int					Add( const WgCharSeq& seq );
+	int					Append( const WgCharSeq& seq );
 	int					Insert( int ofs, const WgCharSeq& seq );
 	int					Replace( int ofs, int nDelete, const WgCharSeq& seq );
 	int					Delete( int ofs, int len );

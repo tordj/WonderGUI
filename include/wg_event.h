@@ -269,30 +269,30 @@ class WgEvent : public WgObject
 		static const char	CLASSNAME[];
 		static WgEventPtr	Cast( const WgObjectPtr& pObject );
 
-		WgEventType		Type() const { return m_type; }
-		int64_t			Timestamp() const { return m_timestamp; }
-		bool			IsFromWidget() const { return m_bIsForWidget; }
-		WgWidget *		Widget() const;									// Inlining this would demand include of wg_widget.h.
-		WgWidgetWeakPtr	WidgetWeakPtr() const { return m_pWidget; }
-		WgModifierKeys	ModKeys() const { return m_modKeys; }
-		WgCoord			PointerPos() const { return m_pointerLocalPos; }
-		WgCoord			PointerScreenPos() const { return m_pointerScreenPos; }
+		WgEventType			Type() const { return m_type; }
+		int64_t				Timestamp() const { return m_timestamp; }
+		bool				IsFromWidget() const { return m_bIsForWidget; }
+		WgWidget *			Widget() const;									// Inlining this would demand include of wg_widget.h.
+		WgWidgetWeakPtr		WidgetWeakPtr() const { return m_pWidget; }
+		WgModifierKeys		ModKeys() const { return m_modKeys; }
+		WgCoord				PointerPos() const { return m_pointerLocalPos; }
+		WgCoord				PointerScreenPos() const { return m_pointerScreenPos; }
 			
-		bool			IsMouseEvent() const;
-		bool			IsMouseButtonEvent() const;
-		bool			IsKeyEvent() const;
+		bool				IsMouseEvent() const;
+		bool				IsMouseButtonEvent() const;
+		bool				IsKeyEvent() const;
 
 	protected:
 		WgEvent() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForWidget(false) {}
 		virtual ~WgEvent() {}
 			
-		WgEventType		m_type;				// Type of event
-		WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
-		int64_t			m_timestamp;		// Timestamp of posting this event
-		bool			m_bIsForWidget;		// Set if this event is for a specific Widget.
-		WgWidgetWeakPtr	m_pWidget;			// Widget to receive this event.
-		WgCoord			m_pointerLocalPos;	// Widget-relative position of pointer. Same as m_pointerScreenPos if Widget not set.
-		WgCoord			m_pointerScreenPos;	// Screen position of pointer.
+		WgEventType			m_type;				// Type of event
+		WgModifierKeys		m_modKeys;			// Modifier keys pressed when event posted.
+		int64_t				m_timestamp;		// Timestamp of posting this event
+		bool				m_bIsForWidget;		// Set if this event is for a specific Widget.
+		WgWidgetWeakPtr		m_pWidget;			// Widget to receive this event.
+		WgCoord				m_pointerLocalPos;	// Widget-relative position of pointer. Same as m_pointerScreenPos if Widget not set.
+		WgCoord				m_pointerScreenPos;	// Screen position of pointer.
 };
 
 //____ WgMouseButtonEvent ______________________________________________________

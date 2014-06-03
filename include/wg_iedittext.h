@@ -51,18 +51,29 @@ public:
 	static const char		CLASSNAME[];
 	static WgIEditTextPtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
 
-	virtual void		SetEditMode(WgTextEditMode mode) = 0;
+	virtual void			SetEditMode(WgTextEditMode mode) = 0;
+	virtual WgTextEditMode	EditMode() const = 0;
 
-	virtual void		SetCursorSkin( const WgCursorPtr& pCursor ) = 0;
-	virtual WgCursorPtr	CursorSkin() const = 0;
+	virtual bool			IsEditable() const = 0;
+	virtual bool			IsSelectable() const = 0;
 
-	virtual int			InsertAtCursor( const WgCharSeq& str ) = 0;
-	virtual bool		InsertAtCursor( Uint16 c ) = 0;
+	virtual void			SetCursorSkin( const WgCursorPtr& pCursor ) = 0;
+	virtual WgCursorPtr		CursorSkin() const = 0;
 
-	virtual void		GoBOL() = 0;
-	virtual void		GoEOL() = 0;
-	virtual void		GoBOF() = 0;
-	virtual void		GoEOF() = 0;
+	virtual int				InsertAtCursor( const WgCharSeq& str ) = 0;
+	virtual bool			InsertAtCursor( Uint16 c ) = 0;
+
+	virtual void			GoBOL() = 0;
+	virtual void			GoEOL() = 0;
+	virtual void			GoBOF() = 0;
+	virtual void			GoEOF() = 0;
+
+	virtual void			Select( int ofs, int len ) = 0;
+	virtual void			SelectAll() = 0;
+	virtual int				SelectionStart() const = 0;
+	virtual int				SelectionLength() const = 0;
+	virtual void			ClearSelection() = 0;
+	virtual void			DeleteSelected() = 0;
 };
 
 

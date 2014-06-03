@@ -1222,9 +1222,9 @@ int WgTextField::addChar( const WgChar& character )
 }
 
 
-//____ Add() ______________________________________________________________
+//____ Append() ______________________________________________________________
 
-int WgTextField::Add( const WgCharSeq& seq )
+int WgTextField::Append( const WgCharSeq& seq )
 {
 	int nAdded;
 	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() )

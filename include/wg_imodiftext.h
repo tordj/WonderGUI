@@ -82,11 +82,10 @@ public:
 	virtual void				Set( const WgCharBuffer * buffer ) = 0;
 	virtual void				Set( const WgString& str ) = 0;
 
-	virtual int					Add( const WgCharSeq& seq ) = 0;
+	virtual int					Append( const WgCharSeq& seq ) = 0;
 	virtual int					Insert( int ofs, const WgCharSeq& seq ) = 0;
 	virtual int					Replace( int ofs, int nDelete, const WgCharSeq& seq ) = 0;
 	virtual int					Delete( int ofs, int len ) = 0;
-	virtual void				DeleteSelected() = 0;
 };
 
 
