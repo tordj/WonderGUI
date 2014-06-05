@@ -128,7 +128,7 @@ void WgIconField::SetSkin( const WgSkinPtr& pSkin )
 WgRect WgIconField::GetIconRect( const WgRect& contentRect ) const
 {
 	if( m_pSkin )
-		return GetIconRect(contentRect, WgSize(m_pSkin->PreferredSize()));
+		return GetIconRect(contentRect, m_pSkin->PreferredSize());
 	else
 		return WgRect();
 }
@@ -239,4 +239,13 @@ void WgIconField::OnCloneContent( const WgIconField * _pOrg )
 	m_pSkin			= _pOrg->m_pSkin;
 }
 
+//____ PreferredSize() ________________________________________________________
+
+WgSize WgIconField::PreferredSize() const
+{
+	if( m_pSkin )
+		return m_pSkin->PreferredSize() + m_padding;
+
+	return WgSize();
+}
 

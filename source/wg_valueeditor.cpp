@@ -40,7 +40,7 @@ const char WgValueEditor::CLASSNAME[] = {"ValueEditor"};
 
 WgValueEditor::WgValueEditor()
 {
-	m_text.setHolder(this);
+	m_text._setHolder(this);
 	_regenText();
 	m_buttonDownOfs = 0;
 	m_bSelectAllOnRelease = false;

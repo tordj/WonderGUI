@@ -35,7 +35,7 @@ const char WgTextDisplay::CLASSNAME[] = {"TextDisplay"};
 WgTextDisplay::WgTextDisplay()
 {
 	m_maxLines		= 0;
-    m_text.setHolder( this );
+    m_text._setHolder( this );
 
 	m_text.setLineWidth( Size().w );
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());

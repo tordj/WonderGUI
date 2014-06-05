@@ -30,6 +30,14 @@
 #	include <wg_hookarray.h>
 #endif
 
+#ifndef WG_ICONFIELD_DOT_H
+#	include <wg_iconfield.h>
+#endif
+
+#ifndef WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
+#endif
+
 class WgStraightList;
 typedef	WgSmartPtr<WgStraightList,WgListPtr>		WgStraightListPtr;
 typedef	WgWeakPtr<WgStraightList,WgListWeakPtr>	WgStraightListWeakPtr;
@@ -116,6 +124,32 @@ public:
 	WgSize					MinEntrySize() const { return m_minEntrySize; }
 	WgSize					MaxEntrySize() const { return m_maxEntrySize; }
 
+	class Header : private WgIconHolder, private WgTextHolder
+	{
+		friend class WgStraightList;
+	public:
+		WgIconField			icon;
+		WgIconField			arrow;
+		WgTextField			label;
+
+		void				SetSkin( const WgSkinPtr& pSkin );
+		inline WgSkinPtr	Skin() const { return m_pSkin; }
+
+		inline WgIIconPtr		Icon() { return WgIIconPtr(m_pHolder, &icon); }
+		inline WgIIconPtr		Arrow() { return WgIIconPtr(m_pHolder, &arrow); }
+		inline WgIModifTextPtr	Label() { return WgIModifTextPtr(m_pHolder, &label); }
+	private:
+		void				_fieldModified( WgTextField * pText );
+		void				_fieldModified( WgIconField * pField );
+
+		WgStraightList *	m_pHolder;
+		WgSkinPtr			m_pSkin;
+		int					m_height;
+		int					m_preferredWidth;
+		WgState				m_state;
+	};
+
+	Header		header;
 
 protected:
 	WgStraightList();
@@ -148,9 +182,11 @@ protected:
 	void			_getChildGeo( WgRect& geo, const WgStraightListHook * pHook ) const;
 	void			_getEntryGeo( WgRect& geo, const WgStraightListHook * pHook ) const;
 	int				_getEntryAt( int pixelofs ) const;
+	WgRect			_listArea() const;
 
 	void			_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding );
 	void			_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso );
+	void			_refreshHeader();
 
 	WgSize			_paddedLimitedPreferredSize( WgWidget * pChild );
 	int				_paddedLimitedHeightForWidth( WgWidget * pChild, int paddedWidth );

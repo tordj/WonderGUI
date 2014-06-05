@@ -43,7 +43,7 @@ class WgIconField;
 
 //____ WgIconHolder ___________________________________________________________
 
-struct WgIconHolder
+class WgIconHolder
 {
 public:
 	virtual void		_fieldModified( WgIconField * pField ) = 0;
@@ -53,6 +53,7 @@ public:
 
 class WgIconField : public WgIIcon
 {
+	friend class WgIconHolder;
 public:
 	WgIconField();
 	virtual ~WgIconField() {};
@@ -62,7 +63,7 @@ public:
 								float _scale = 0.f, bool _bOverlap = false );
 	void			Clear();
 
-	inline bool		IsEmpty() const { return m_pSkin; }
+	inline bool		IsEmpty() const { return !m_pSkin; }
 
 	bool			SetScale( float scaleFactor );
 	void			SetOrigo( WgOrigo origo );
@@ -76,14 +77,16 @@ public:
 	bool			Overlap() const { return m_bOverlap; }
 	WgSkinPtr		Skin() const { return  m_pSkin; }
 
-	void			SetHolder( WgIconHolder * pHolder ) { m_pHolder = pHolder; }
 
 	WgRect			GetIconRect( const WgRect& contentRect ) const;
 	WgRect			GetIconRect( const WgRect& contentRect, const WgSize& iconSize ) const;
 	WgRect			GetTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
 	void			OnCloneContent( const WgIconField * _pOrg );
+	WgSize			PreferredSize() const;
 
+	void			_setHolder( WgIconHolder * pHolder ) { m_pHolder = pHolder; }
 protected:
+
 	WgIconHolder *	m_pHolder;
 	WgOrigo			m_origo;
 	float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.

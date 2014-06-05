@@ -59,7 +59,7 @@ void WgRulerLabels::AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProps
 	pLabel->offset = offset;
 
     if( m_labels.IsEmpty() )
-        pLabel->text.setHolder(this);
+        pLabel->text._setHolder(this);
     
 	m_labels.PushBack(pLabel);
 	_requestResize();

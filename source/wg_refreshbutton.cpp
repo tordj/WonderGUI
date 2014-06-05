@@ -46,7 +46,7 @@ WgRefreshButton::WgRefreshButton()
 	m_refreshProgress	= 0.f;
 	m_bStopping			= false;
 
-	m_refreshText.setHolder(this);
+	m_refreshText._setHolder(this);
 
 }
 

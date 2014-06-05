@@ -262,7 +262,7 @@ public:
 
 	inline WgTextNode *	getNode() const { return m_pManagerNode; }
 
-	void				setHolder( WgTextHolder * pHolder ) { m_pHolder = pHolder; }
+	void				_setHolder( WgTextHolder * pHolder ) { m_pHolder = pHolder; }
 
 //  --------------
 

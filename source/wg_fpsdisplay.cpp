@@ -50,8 +50,8 @@ WgFpsDisplay::WgFpsDisplay( void )
 
 	m_bReceiveTick = true;
 
-	m_labelsText.setHolder(this);
-	m_valuesText.setHolder(this);
+	m_labelsText._setHolder(this);
+	m_valuesText._setHolder(this);
 }
 
 //____ ~WgFpsDisplay() __________________________________________________________

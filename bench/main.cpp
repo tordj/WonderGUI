@@ -379,6 +379,11 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 		pList->SetSelectMode( WG_SELECT_MULTI );
 //		pList->SetOrientation( WG_HORIZONTAL );
 
+		pList->header.SetSkin( pDB->GetSkin("plate") );
+		pList->header.label.Set( "LABEL" );
+		pList->header.arrow.Set( pDB->GetSkin("sortarrow"), WG_EAST, WgBorders(0,0,0,2) );
+		pList->header.icon.Set( pDB->GetSkin("smiley"), WG_WEST, WgBorders(0,2,0,0) );
+
 		for( int i = 0 ; i < 10 ; i++ )
 		{
 			WgTextDisplayPtr pEntry = WgTextDisplay::Create();

@@ -33,7 +33,7 @@ const char WgValueDisplay::CLASSNAME[] = {"ValueDisplay"};
 
 WgValueDisplay::WgValueDisplay()
 {
-	m_text.setHolder(this);
+	m_text._setHolder(this);
 	m_text.SetAlignment( WG_EAST );
 	m_text.SetWrap(false);
 }

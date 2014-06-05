@@ -34,7 +34,7 @@ const char WgLineEditor::CLASSNAME[] = {"LineEditor"};
 
 WgLineEditor::WgLineEditor()
 {
-	m_text.setHolder( this );
+	m_text._setHolder( this );
 	m_text.SetWrap(false);
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 	m_text.SetEditMode( WG_TEXT_EDITABLE );

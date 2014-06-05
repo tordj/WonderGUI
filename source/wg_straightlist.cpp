@@ -141,6 +141,14 @@ WgStraightList::WgStraightList()
 	m_nbPreferredBreadthEntries = 0;
 
 	m_pHoveredChild = 0;
+
+	header.m_pHolder = this;
+	header.m_height = 0;
+	header.m_preferredWidth = 0;
+	header.icon._setHolder(&header);
+	header.arrow._setHolder(&header);
+	header.label._setHolder(&header);
+	header.label.SetWrap(false);			// Labels by default don't wrap.
 }
 
 //____ Destructor _____________________________________________________________
@@ -288,6 +296,11 @@ WgSize WgStraightList::PreferredSize() const
 {
 	WgSize sz = m_bHorizontal ? WgSize(m_contentPreferredLength, m_contentPreferredBreadth) : WgSize(m_contentPreferredBreadth,m_contentPreferredLength);
 
+	if( header.m_preferredWidth > sz.w )
+		sz.w = header.m_preferredWidth;
+
+	sz.h += header.m_height;
+
 	if( m_pSkin )
 		sz += m_pSkin->ContentPadding();
 
@@ -410,6 +423,17 @@ void WgStraightList::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canva
 				p->_widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 			p = (WgStraightListHook*) _nextHookWithGeo( childGeo, p );
 		}
+	}
+
+	// Render header
+
+	if( header.m_height != 0 )
+	{
+		bool bInvertedSort = true;
+		WgRect canvas( _window.x, _window.y, _window.w, header.m_height );
+
+		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
+			_renderHeader( pDevice, canvas, *pRect, header.m_pSkin, &header.label, &header.icon, &header.arrow, header.m_state, true, bInvertedSort );
 	}
 
 	// Render Lasso
@@ -592,18 +616,16 @@ void WgStraightList::_onLassoUpdated( const WgRect& oldLasso, const WgRect& newL
 {
 	// Get out content area
 
-	WgRect contentRect;
-	if( m_pSkin )
-		contentRect = m_pSkin->ContentRect(m_size, m_state);
+	WgRect listArea = _listArea();
 
 	// Check if our lassos are inside content area or not.
 
 	bool	bOldLassoInside = false;
 	bool	bNewLassoInside = false;
 
-	if( oldLasso.IntersectsWith(contentRect ) )
+	if( oldLasso.IntersectsWith(listArea ) )
 		bOldLassoInside = true;
-	if( newLasso.IntersectsWith(contentRect ) )
+	if( newLasso.IntersectsWith(listArea ) )
 		bNewLassoInside = true;
 
 	if( !bOldLassoInside && !bNewLassoInside )
@@ -617,17 +639,17 @@ void WgStraightList::_onLassoUpdated( const WgRect& oldLasso, const WgRect& newL
 
 	if( m_bHorizontal )
 	{
-		oldOfs1 = oldLasso.x - contentRect.x;
-		oldOfs2 = oldLasso.x + oldLasso.w - contentRect.x;
-		newOfs1 = newLasso.x - contentRect.x;
-		newOfs2 = newLasso.x + newLasso.w - contentRect.x;
+		oldOfs1 = oldLasso.x - listArea.x;
+		oldOfs2 = oldLasso.x + oldLasso.w - listArea.x;
+		newOfs1 = newLasso.x - listArea.x;
+		newOfs2 = newLasso.x + newLasso.w - listArea.x;
 	}
 	else
 	{
-		oldOfs1 = oldLasso.y - contentRect.y;
-		oldOfs2 = oldLasso.y + oldLasso.h - contentRect.y;
-		newOfs1 = newLasso.y - contentRect.y;
-		newOfs2 = newLasso.y + newLasso.h - contentRect.y;
+		oldOfs1 = oldLasso.y - listArea.y;
+		oldOfs2 = oldLasso.y + oldLasso.h - listArea.y;
+		newOfs1 = newLasso.y - listArea.y;
+		newOfs2 = newLasso.y + newLasso.h - listArea.y;
 	}
 
 	int oldFirst = _getEntryAt( oldOfs1 );
@@ -651,8 +673,6 @@ void WgStraightList::_onLassoUpdated( const WgRect& oldLasso, const WgRect& newL
 			end = oldLast;
 		}
 
-		if( end != m_hooks.Size() )
-			end++;
 		_flipRange( m_hooks.Hook(beg), m_hooks.Hook(end), true );
 	}
 	else
@@ -660,7 +680,7 @@ void WgStraightList::_onLassoUpdated( const WgRect& oldLasso, const WgRect& newL
 		if( oldFirst != newFirst )
 		{
 			int beg = WgMin(oldFirst,newFirst);
-			int end = WgMax(oldFirst,newFirst);
+			int end = WgMax(oldFirst,newFirst)-1;
 
 			_flipRange( m_hooks.Hook(beg), m_hooks.Hook(end), true );
 		}
@@ -669,8 +689,6 @@ void WgStraightList::_onLassoUpdated( const WgRect& oldLasso, const WgRect& newL
 		{
 			int beg = WgMin(oldLast,newLast)+1;
 			int end = WgMax(oldLast,newLast);
-			if( end != m_hooks.Size() )
-				end++;
 
 			_flipRange( m_hooks.Hook(beg), m_hooks.Hook(end), true );
 		}
@@ -856,20 +874,15 @@ int WgStraightList::_getEntryAt( int pixelofs ) const
 WgListHook * WgStraightList::_findEntry( const WgCoord& ofs )
 {
 	WgWidget * pResult = 0;
-	WgRect content;
+	WgRect list = _listArea();
 
-	if( m_pSkin )
-		content = m_pSkin->ContentRect(m_size, m_state );
-	else
-		content = m_size;
-
-	if( content.Contains(ofs) )
+	if( list.Contains(ofs) )
 	{
 		int entry;
 		if( m_bHorizontal )
-			entry = _getEntryAt(ofs.x-content.x);
+			entry = _getEntryAt(ofs.x-list.x);
 		else
-			entry = _getEntryAt(ofs.y-content.y);
+			entry = _getEntryAt(ofs.y-list.y);
 
 		if( entry != m_hooks.Size() )
 			return m_hooks.Hook(entry);
@@ -883,20 +896,15 @@ WgListHook * WgStraightList::_findEntry( const WgCoord& ofs )
 WgWidget * WgStraightList::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 {
 	WgWidget * pResult = 0;
-	WgRect content;
+	WgRect list = _listArea();
 
-	if( m_pSkin )
-		content = m_pSkin->ContentRect(m_size, m_state );
-	else
-		content = m_size;
-
-	if( content.Contains(ofs) )
+	if( list.Contains(ofs) )
 	{
 		int entry;
 		if( m_bHorizontal )
-			entry = _getEntryAt(ofs.x-content.x);
+			entry = _getEntryAt(ofs.x-list.x);
 		else
-			entry = _getEntryAt(ofs.y-content.y);
+			entry = _getEntryAt(ofs.y-list.y);
 
 		if( entry != m_hooks.Size() )
 		{
@@ -905,7 +913,7 @@ WgWidget * WgStraightList::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 				pResult = pHook->_widget();
 			else
 			{
-				WgRect childGeo = content;
+				WgRect childGeo = list;
 				if( m_bHorizontal )
 				{
 					childGeo.x += pHook->m_ofs;
@@ -918,7 +926,7 @@ WgWidget * WgStraightList::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 				}
 
 				if( m_pEntrySkin[entry&0x1] )
-					childGeo = m_pSkin->ContentRect( childGeo, pHook->_widget()->State() );
+					childGeo = m_pEntrySkin[entry&0x1]->ContentRect( childGeo, pHook->_widget()->State() );
 			
 				if( childGeo.Contains(ofs) )
 				{
@@ -990,11 +998,7 @@ void  WgStraightList::_subFromContentPreferredSize( int length, int breadth )
 
 void WgStraightList::_requestRenderChildrenFrom( WgStraightListHook * pHook )
 {
-	WgRect box;
-	if( m_pSkin )
-		box = m_pSkin->ContentRect( m_size, m_state );
-	else
-		box = m_size;
+	WgRect box = _listArea();
 
 	if( m_bHorizontal )
 	{
@@ -1067,10 +1071,7 @@ void WgStraightList::_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding )
 
 void WgStraightList::_getEntryGeo( WgRect& geo, const WgStraightListHook * pHook ) const
 {
-	if( m_pSkin )
-		geo = m_pSkin->ContentRect( m_size, m_state );
-	else
-		geo = m_size;
+	geo = _listArea();
 
 	if( m_bHorizontal )
 	{
@@ -1089,10 +1090,7 @@ void WgStraightList::_getEntryGeo( WgRect& geo, const WgStraightListHook * pHook
 
 void WgStraightList::_getChildGeo( WgRect& geo, const WgStraightListHook * pHook ) const
 {
-	if( m_pSkin )
-		geo = m_pSkin->ContentRect( m_size, m_state );
-	else
-		geo = m_size;
+	geo = _listArea();
 
 	if( m_bHorizontal )
 	{
@@ -1111,7 +1109,7 @@ void WgStraightList::_getChildGeo( WgRect& geo, const WgStraightListHook * pHook
 	{
 		int index = m_hooks.Index( pHook );
 		if( m_pEntrySkin[index&0x1] )
-			geo = m_pSkin->ContentRect( geo, pHook->_widget()->State() );
+			geo = m_pEntrySkin[index&0x1]->ContentRect( geo, pHook->_widget()->State() );
 	}
 }
 
@@ -1223,4 +1221,96 @@ WgHook* WgStraightList::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	if( p )
 		_getChildGeo(geo,p);
 	return p;
+}
+
+//____ _listArea() ____________________________________________________________
+
+WgRect WgStraightList::_listArea() const
+{
+	WgRect r(0,0,m_size);
+
+	if( m_pSkin )
+		r = m_pSkin->ContentRect( r, m_state );
+
+	r.y += header.m_height;
+	r.h -= header.m_height;
+
+	return r;
+}
+
+
+//____ _refreshHeader() _______________________________________________________
+
+void WgStraightList::_refreshHeader()
+{
+	WgSize wantedIconSize = header.icon.PreferredSize();
+	WgSize wantedArrowSize = header.arrow.PreferredSize();
+	WgSize wantedTextSize = header.label.unwrappedSize();
+
+	WgSize wantedSize;
+
+	//TODO: Assumes icon/arrow origos to not be NORTH, SOUTH or CENTER.
+	//TODO: Assumes text not wrapping.
+
+	wantedSize.h = WgMax(wantedIconSize.h, wantedArrowSize.h, wantedTextSize.h );
+	wantedSize.w = wantedTextSize.w;
+	if( header.icon.Overlap() )
+		wantedSize.w = WgMax(wantedSize.w,wantedIconSize.w);
+	else
+		wantedSize.w += wantedIconSize.w;
+
+	if( header.arrow.Overlap() )
+		wantedSize.w = WgMax(wantedSize.w,wantedArrowSize.w);
+	else
+		wantedSize.w += wantedArrowSize.w;
+
+	//
+
+	if( header.m_pSkin )
+		wantedSize = header.m_pSkin->SizeForContent(wantedSize);
+	//
+
+	bool	bRequestResize = false;
+	if( wantedSize.h != header.m_height )
+	{
+		header.m_height = wantedSize.h;
+		bRequestResize = true;
+	}
+
+	// Update headers preferred width, possibly request resize.
+
+	if( wantedSize.w != header.m_preferredWidth ) 
+	{
+		int contentPrefWidth = m_bHorizontal ? m_contentPreferredLength : m_contentPreferredBreadth;
+		if( wantedSize.w > contentPrefWidth || header.m_preferredWidth > contentPrefWidth )
+			bRequestResize = true;
+
+		header.m_preferredWidth = wantedSize.w;
+	}
+
+	if( bRequestResize )
+		_requestResize();
+}
+
+//____ Header::SetSkin() ______________________________________________________
+
+void WgStraightList::Header::SetSkin( const WgSkinPtr& pSkin )
+{
+	if( pSkin != m_pSkin )
+	{
+		m_pSkin = pSkin;
+		m_pHolder->_refreshHeader();
+	}
+}
+
+//____ Header::_fieldModified() _______________________________________________________
+
+void WgStraightList::Header::_fieldModified( WgTextField * pText )
+{
+	m_pHolder->_refreshHeader();
+}
+
+void WgStraightList::Header::_fieldModified( WgIconField * pField )
+{
+	m_pHolder->_refreshHeader();
 }

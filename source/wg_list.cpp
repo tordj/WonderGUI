@@ -22,6 +22,10 @@
 
 #include <wg_list.h>
 #include <wg_eventhandler.h>
+#include <wg_iconfield.h>
+#include <wg_textfield.h>
+#include <wg_gfxdevice.h>
+
 
 const char WgList::CLASSNAME[] = {"List"};
 const char WgListHook::CLASSNAME[] = {"ListHook"};
@@ -195,13 +199,12 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			if( m_selectMode != WG_SELECT_NONE && pEvent->Button() == WG_BUTTON_LEFT )
 			{
 				WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
-				WgRect contentRect(0,0,Size());
-				if( m_pSkin )
-					contentRect = m_pSkin->ContentRect( contentRect, m_state );
 
+				
+				WgRect listArea = _listArea();
 				WgListHook * pEntry = _findEntry(ofs);
 
-				ofs = contentRect.Constrain(ofs);
+				ofs = listArea.Constrain(ofs);
 				m_lassoBegin = ofs;
 				m_lassoEnd = ofs;
 
@@ -216,21 +219,49 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 							{
 								_clearSelected( true );
 								_selectEntry( pEntry, true, true );
+								m_pFocusedEntry = pEntry;	
 							}
 							break;
 						case WG_SELECT_FLIP:
 							_selectEntry( pEntry, !pEntry->IsSelected(), true );
+							m_pFocusedEntry = pEntry;
 							break;
 						case WG_SELECT_MULTI:
-							if( (pEvent->ModKeys() & WG_MODKEY_CTRL) )
+							if( pEvent->ModKeys() & WG_MODKEY_SHIFT && m_pFocusedEntry )
 							{
-								_selectEntry( pEntry, !pEntry->IsSelected(), true );
+								// Select range from focused to clicked entry.
+
+								WgListHook * pFocused = m_pFocusedEntry.GetRealPtr();
+								WgListHook * pFirstSel = WgMin( pEntry, pFocused );
+								WgListHook * pLastSel = WgMax( pEntry, pFocused );
+								_selectRange( pFirstSel, pLastSel, true, true );
+
+								// Unselect the rest if not CTRL-click.
+
+								if( !(pEvent->ModKeys() & WG_MODKEY_CTRL) )
+								{
+									WgListHook * pFirst = static_cast<WgListHook*>(_firstHook());
+									WgListHook * pLast = static_cast<WgListHook*>(_lastHook());
+									if( pFirst < pFirstSel )
+										_selectRange( pFirst, static_cast<WgListHook*>(pFirstSel->_prevHook()), false, true );
+									if( pLast > pLastSel )
+										_selectRange( static_cast<WgListHook*>(pLastSel->_nextHook()), pLast, false, true );
+								}
 							}
 							else
 							{
-								//TODO: Not post unselected/selected for already selected pressed entry.
-								_clearSelected( true );
-								_selectEntry( pEntry, true, true );
+								if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+								{
+									// CTRL-click: We just flip the entry.
+									_selectEntry( pEntry, !pEntry->IsSelected(), true );
+								}
+								else
+								{
+									//TODO: Not post unselected/selected for already selected pressed entry.
+									_clearSelected( true );
+									_selectEntry( pEntry, true, true );
+								}
+								m_pFocusedEntry = pEntry;
 							}
 							break;
 					}
@@ -238,6 +269,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 				else if( WG_SELECT_SINGLE || WG_SELECT_MULTI )
 				{
 					_clearSelected(true);
+					m_pFocusedEntry = 0;
 				}
 
 				pHandler->SwallowEvent(_pEvent);
@@ -268,12 +300,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
 			if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pEvent->Button() == WG_BUTTON_LEFT )
 			{
-				WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
-				WgRect contentRect(0,0,Size());
-				if( m_pSkin )
-					contentRect = m_pSkin->ContentRect( contentRect, m_state );
-
-				ofs = contentRect.Constrain(ofs);
+				WgCoord ofs = _listArea().Constrain(Abs2local(pEvent->PointerScreenPos()));
 
 				WgRect oldLasso( m_lassoBegin, m_lassoEnd );
 				WgRect newLasso( m_lassoBegin, ofs );
@@ -328,14 +355,15 @@ bool WgList::_selectEntry( WgListHook * pHook, bool bSelected, bool bPostEvent )
 
 void WgList::_clearSelected( bool bPostEvent )
 {
-	_selectRange( static_cast<WgListHook*>(_firstHook()), 0, false, bPostEvent );
+	_selectRange( static_cast<WgListHook*>(_firstHook()), static_cast<WgListHook*>(_lastHook()), false, bPostEvent );
 }
 
 //____ _selectRange() _________________________________________________________
 
-int WgList::_selectRange( WgListHook * pBegin, WgListHook * pEnd, bool bSelected, bool bPostEvent )
+int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelected, bool bPostEvent )
 {
 	int	nModified = 0;
+	WgListHook * pEnd = static_cast<WgListHook*>(pLast->_nextHook());
 
 	// Reserve ItemInfo array of right size if we are going to post event
 
@@ -343,7 +371,7 @@ int WgList::_selectRange( WgListHook * pBegin, WgListHook * pEnd, bool bSelected
 	if( bPostEvent )
 	{
 		int size = 0;
-		for( WgListHook * pHook = pBegin ; pHook != 0 && pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
+		for( WgListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
 		{
 			if( bSelected != pHook->_widget()->State().IsSelected() )
 				size++;
@@ -355,7 +383,7 @@ int WgList::_selectRange( WgListHook * pBegin, WgListHook * pEnd, bool bSelected
 
 	// Loop through entries
 
-	for( WgListHook * pHook = pBegin ; pHook != 0 && pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
+	for( WgListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
 	{
 		WgState	oldState = pHook->m_pWidget->State();
 		if( bSelected != oldState.IsSelected() )
@@ -390,10 +418,11 @@ int WgList::_selectRange( WgListHook * pBegin, WgListHook * pEnd, bool bSelected
 
 //____ _flipRange() _________________________________________________________
 
-int WgList::_flipRange( WgListHook * pBegin, WgListHook * pEnd, bool bPostEvent )
+int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostEvent )
 {
 	int nSelected = 0;
 	int nDeselected = 0;
+	WgListHook * pEnd = static_cast<WgListHook*>(pLast->_nextHook());
 
 	// Reserve ItemInfo array of right size if we are going to post event
 
@@ -404,7 +433,7 @@ int WgList::_flipRange( WgListHook * pBegin, WgListHook * pEnd, bool bPostEvent 
 		int nToSelect = 0;
 		int nToDeselect = 0;
 
-		for( WgListHook * pHook = pBegin ; pHook != 0 && pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
+		for( WgListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
 		{
 			if( pHook->_widget()->State().IsSelected() )
 				nToDeselect++;
@@ -420,7 +449,7 @@ int WgList::_flipRange( WgListHook * pBegin, WgListHook * pEnd, bool bPostEvent 
 
 	// Loop through entries
 
-	for( WgListHook * pHook = pBegin ; pHook != 0 && pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
+	for( WgListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
 	{
 		WgState	oldState = pHook->m_pWidget->State();
 
@@ -452,4 +481,38 @@ int WgList::_flipRange( WgListHook * pBegin, WgListHook * pEnd, bool bPostEvent 
 	}
 
 	return nSelected + nDeselected;
+}
+
+//____ _renderHeader() ________________________________________________________
+
+void WgList::_renderHeader( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip, 
+									const WgSkinPtr& pSkin, WgTextField * pText, WgIconField * pLabelIcon, 
+									WgIconField * pSortIcon, WgState state, bool bShowSortIcon, bool bInvertedSort )
+{
+	WgRect canvas( _canvas );
+	WgRect clip( _canvas, _clip );
+
+	if( pSkin )
+	{
+		pSkin->Render( pDevice, canvas, state, _clip );
+		canvas = pSkin->ContentRect( canvas, state );
+	}
+
+	WgRect sortRect = pSortIcon->GetIconRect( canvas );
+	WgRect labelRect = pSortIcon->GetTextRect( canvas, sortRect );
+	WgRect iconRect = pLabelIcon->GetIconRect( labelRect );
+	labelRect = pLabelIcon->GetTextRect( labelRect, iconRect );
+
+	if( bShowSortIcon && !pSortIcon->IsEmpty() )
+	{
+		WgState iconState = state;
+		iconState.SetSelected( bInvertedSort );
+		pSortIcon->Skin()->Render( pDevice, sortRect, iconState, _clip );
+	}
+
+	if( !pLabelIcon->IsEmpty() )
+		pLabelIcon->Skin()->Render( pDevice, iconRect, state, _clip );
+
+	if( !pText->IsEmpty() )
+		pDevice->PrintText( _clip, pText, labelRect );
 }

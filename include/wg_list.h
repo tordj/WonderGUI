@@ -35,6 +35,8 @@
 #	include <wg_skin.h>
 #endif
 
+class WgIconField;
+
 class WgList;
 typedef	WgSmartPtr<WgList,WgContainerPtr>		WgListPtr;
 typedef	WgWeakPtr<WgList,WgContainerWeakPtr>	WgListWeakPtr;
@@ -106,15 +108,19 @@ protected:
 	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 
 	virtual bool	_selectEntry( WgListHook * pHook, bool bSelected, bool bPostEvent );
-	virtual int		_selectRange( WgListHook * pBegin, WgListHook * pEnd, bool bSelected, bool bPostEvent );
-	virtual int		_flipRange( WgListHook * pBegin, WgListHook * pEnd, bool bPostEvent );
+	virtual int		_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelected, bool bPostEvent );
+	virtual int		_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostEvent );
 	virtual void	_clearSelected( bool bPostEvent );
 	virtual void	_onWidgetAppeared( WgListHook * pInserted ) = 0;
 	virtual void	_onWidgetDisappeared( WgListHook * pToBeRemoved ) = 0;		// Call BEFORE widget is removed from m_hooks.
 	virtual WgListHook * _findEntry( const WgCoord& ofs ) = 0;
+	virtual WgRect	_listArea() const = 0;										// Area for the entries (contentRect minus header).
 
 	virtual void	_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding ) = 0;
 	virtual void	_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso ) = 0;
+	void			_renderHeader( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, 
+									const WgSkinPtr& pSkin, WgTextField * pText, WgIconField * pLabelIcon, 
+									WgIconField * pSortIcon, WgState state, bool bShowSortIcon, bool bInvertedSort );
 
 	WgSelectMode	m_selectMode;
 	WgSkinPtr		m_pEntrySkin[2];
@@ -123,6 +129,8 @@ protected:
 
 	WgCoord			m_lassoBegin;
 	WgCoord			m_lassoEnd;
+
+	WgListHookPtr	m_pFocusedEntry;
 };
 
 

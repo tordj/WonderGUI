@@ -41,10 +41,10 @@ WgCheckBox::WgCheckBox()
 	m_bReturnPressed	= false;
 	m_bFlipOnRelease	= false;
 
-	m_text.setHolder( this );
+	m_text._setHolder( this );
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 
-	m_icon.SetHolder( this );
+	m_icon._setHolder( this );
 
 	m_clickArea			= DEFAULT;
 }

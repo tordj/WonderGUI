@@ -38,7 +38,7 @@ WgButton::WgButton()
 	m_text.SetAlignment( WG_CENTER );
 	m_text.setLineWidth(Size().w);					// We start with no textborders...
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
-	m_text.setHolder(this);
+	m_text._setHolder(this);
 
  	m_state				= WG_STATE_NORMAL;
 

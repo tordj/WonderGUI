@@ -144,7 +144,9 @@ namespace sdl_wglib
 		const int SPLITS_AND_FRAME_OFS	= PLATE_OFS + 10;
 		const int COMBOBOX_OFS			= SPLITS_AND_FRAME_OFS + 10;
 		const int LISTENTRY_OFS			= COMBOBOX_OFS + 35;
-		const int TILES_OFS				= 192;
+		const int SORT_ARROW_OFS		= LISTENTRY_OFS + 9;
+		const int SMILEY_OFS			= SORT_ARROW_OFS + 8;
+		const int TILES_OFS				= 256+192;
 
 		WgSurfacePtr pSurface = LoadSurface( pImagePath, pFactory );
 		if( !pSurface )
@@ -195,6 +197,11 @@ namespace sdl_wglib
 		WgBlockSkinPtr pListEntrySkin = WgBlockSkin::CreateClickSelectable( pSurface, WgSize(8,6), WgCoord(1,LISTENTRY_OFS), WgSize(10,0), WgBorders(1) );
 		pListEntrySkin->SetContentPadding(WgBorders(4));
 
+		WgBlockSkinPtr pSortArrowSkin = WgBlockSkin::CreateClickSelectable( pSurface, WgSize(11,6), WgCoord(1,SORT_ARROW_OFS), WgSize(13,0), WgBorders(0) );
+
+		WgBlockSkinPtr pSmileyIconSkin = WgBlockSkin::CreateClickable( pSurface, WgSize(12,12), WgCoord(1, SMILEY_OFS), WgSize(14,0), WgBorders(2) );
+
+
 		WgBlockSkinPtr pBgCheckeredGreySkin = WgBlockSkin::CreateStatic( pSurface, WgRect(0,TILES_OFS,64,64) );
 		pBgCheckeredGreySkin->SetTiledCenter(true);
 		pBgCheckeredGreySkin->OptimizeRenderMethods();
@@ -213,6 +220,8 @@ namespace sdl_wglib
 
 		pDB->AddSkin( "listentry", pListEntrySkin );
 		pDB->AddSkin( "plate", pPlateSkin );
+		pDB->AddSkin( "sortarrow", pSortArrowSkin );
+		pDB->AddSkin( "smiley", pSmileyIconSkin );
 
 		// Create standard button
 
