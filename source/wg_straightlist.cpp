@@ -145,10 +145,12 @@ WgStraightList::WgStraightList()
 	header.m_pHolder = this;
 	header.m_height = 0;
 	header.m_preferredWidth = 0;
+	header.m_bPressed = false;
 	header.icon._setHolder(&header);
 	header.arrow._setHolder(&header);
 	header.label._setHolder(&header);
 	header.label.SetWrap(false);			// Labels by default don't wrap.
+	header.label.SetAlignment( WG_WEST );
 }
 
 //____ Destructor _____________________________________________________________
@@ -188,6 +190,9 @@ WgStraightListPtr WgStraightList::Cast( const WgObjectPtr& pObj )
 
 WgStraightListHookPtr WgStraightList::AddWidget( const WgWidgetPtr& pWidget )
 {
+	if( !pWidget )
+		return 0;
+
 	WgStraightListHook * pHook = m_hooks.Add();
 	pHook->m_pParent = this;
 	pHook->_setWidget(pWidget.GetRealPtr());
@@ -201,9 +206,12 @@ WgStraightListHookPtr WgStraightList::AddWidget( const WgWidgetPtr& pWidget )
 
 WgStraightListHookPtr WgStraightList::InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling )
 {
+	if( !pWidget )
+		return 0;
+
 	int index = 0;
 	if( !pSibling )
-		index = m_hooks.Size()-1;
+		index = m_hooks.Size();
 	else 
 	{
 		WgStraightListHook * pHook = static_cast<WgStraightListHook*>(pSibling->_hook());
@@ -225,9 +233,20 @@ WgStraightListHookPtr WgStraightList::InsertWidget( const WgWidgetPtr& pWidget, 
 
 WgStraightListHookPtr WgStraightList::InsertWidgetSorted( const WgWidgetPtr& pWidget )
 {
-	//TODO: Implement!
+	if( !pWidget )
+		return 0;
 
-	return 0;
+	if( m_hooks.IsEmpty() || !m_pSortFunc )
+		return AddWidget( pWidget );
+
+	int index = _getInsertionPoint( pWidget.GetRealPtr() );
+
+	WgStraightListHook * pHook = m_hooks.Insert(index);
+	pHook->m_pParent = this;
+	pHook->_setWidget(pWidget.GetRealPtr());
+
+	_onWidgetAppeared( pHook );
+	return pHook;
 }
 
 //____ RemoveWidget() _________________________________________________________
@@ -273,21 +292,30 @@ void WgStraightList::SetOrientation( WgOrientation orientation )
 
 void WgStraightList::SortWidgets()
 {
-	//TODO: Implement!!!
+	_sortEntries();
 }
 
 //____ SetSortOrder() _________________________________________________________
 
 void WgStraightList::SetSortOrder( WgSortOrder order )
 {
-	//TODO: Implement!!!
+	if( order != m_sortOrder )
+	{
+		m_sortOrder = order;
+		_sortEntries();
+		_requestRender();		// So we also render the header, which has an arrow with new state.
+	}
 }
 
 //____ SetSortFunction() ______________________________________________________
 
 void WgStraightList::SetSortFunction( WgWidgetSortFunc pSortFunc )
 {
-	//TODO: Implement!!!
+	if( pSortFunc != m_pSortFunc )
+	{
+		m_pSortFunc = pSortFunc;
+		_sortEntries();
+	}
 }
 
 //____ PreferredSize() ________________________________________________________
@@ -429,7 +457,7 @@ void WgStraightList::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canva
 
 	if( header.m_height != 0 )
 	{
-		bool bInvertedSort = true;
+		bool bInvertedSort = (m_sortOrder == WG_SORT_DESCENDING);
 		WgRect canvas( _window.x, _window.y, _window.w, header.m_height );
 
 		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
@@ -454,13 +482,17 @@ void WgStraightList::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canva
 
 void WgStraightList::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
-	WgWidget::_onRender( pDevice, _canvas, _window, _clip );
-
 	WgRect contentRect = _canvas;
-	if( m_pSkin )
-		contentRect = m_pSkin->ContentRect( _canvas, m_state );
+	contentRect.y += header.m_height;
+	contentRect.h -= header.m_height;
 
-	int startOfs = m_bHorizontal ? _clip.x-_canvas.x : _clip.y-_canvas.y;
+	if( m_pSkin )
+	{
+		m_pSkin->Render( pDevice, contentRect, m_state, _clip );
+		contentRect = m_pSkin->ContentRect( contentRect, m_state );
+	}
+
+	int startOfs = m_bHorizontal ? _clip.x-contentRect.x : _clip.y-contentRect.y;
 	if( startOfs < 0 )
 		startOfs = 0;
 
@@ -570,6 +602,95 @@ void WgStraightList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHand
 
 	switch( _pEvent->Type() )
 	{
+		case WG_EVENT_MOUSE_MOVE:
+		{
+			WgMouseMoveEventPtr pEvent = WgMouseMoveEvent::Cast(_pEvent);
+			WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
+
+			bool bHeaderHovered = (ofs.y < header.m_height) && (!pHandler->IsAnyMouseButtonPressed() || (pHandler->IsMouseButtonPressed(WG_BUTTON_LEFT) && header.m_bPressed));
+			if( bHeaderHovered != header.m_state.IsHovered() )
+			{
+				header.m_state.SetHovered(bHeaderHovered);
+				_requestRender( WgRect(0,0,m_size.w, header.m_height ) );
+			}
+			WgList::_onEvent( _pEvent, pHandler );
+			break;
+		}
+
+		case WG_EVENT_MOUSE_LEAVE:
+		{
+			WgMouseLeaveEventPtr pEvent = WgMouseLeaveEvent::Cast(_pEvent);
+			if( pEvent->Widget() == this && header.m_state.IsHovered() )
+			{
+				header.m_state.SetPressed(false);
+				header.m_state.SetHovered(false);
+				_requestRender( WgRect(0,0,m_size.w, header.m_height ) );
+			}
+			WgList::_onEvent( _pEvent, pHandler );
+			break;
+		}
+
+		case WG_EVENT_MOUSE_PRESS:
+		{
+			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
+			WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
+			if(pEvent->Button() == WG_BUTTON_LEFT && ofs.y < header.m_height)
+			{
+				header.m_bPressed = true;
+				header.m_state.SetPressed(true);
+				_requestRender( WgRect(0,0,m_size.w, header.m_height ) );
+				pHandler->SwallowEvent( pEvent );
+			}
+			else
+				WgList::_onEvent( _pEvent, pHandler );
+			break;
+		}
+
+		case WG_EVENT_MOUSE_DRAG:
+		{
+			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
+			if( header.m_bPressed )
+			{
+				WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
+				bool bHeaderHovered = (ofs.y < header.m_height && ofs.x > 0 && ofs.y > 0 && ofs.x < m_size.w );
+				if( bHeaderHovered != header.m_state.IsHovered() )
+				{
+					header.m_state.SetHovered(bHeaderHovered);
+					header.m_state.SetPressed(bHeaderHovered);
+					_requestRender( WgRect(0,0,m_size.w, header.m_height ) );
+				}
+				pHandler->SwallowEvent(pEvent);
+			}
+			else
+				WgList::_onEvent( _pEvent, pHandler );
+			break;
+		}
+
+		case WG_EVENT_MOUSE_RELEASE:
+		{
+			WgMouseReleaseEventPtr pEvent = WgMouseReleaseEvent::Cast(_pEvent);
+			if(pEvent->Button() == WG_BUTTON_LEFT && header.m_bPressed )
+			{
+				header.m_bPressed = false;
+				header.m_state.SetPressed(false);
+				_requestRender( WgRect(0,0,m_size.w, header.m_height ) );
+
+				WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
+				WgRect	headerRect = WgRect(0,0,m_size.w,header.m_height);
+				if( headerRect.Contains(ofs) )
+				{
+					if( m_sortOrder == WG_SORT_ASCENDING )
+						m_sortOrder = WG_SORT_DESCENDING;
+					else
+						m_sortOrder = WG_SORT_ASCENDING;
+					_sortEntries();
+				}
+				pHandler->SwallowEvent(pEvent);
+			}
+			else
+				WgList::_onEvent( _pEvent, pHandler );
+			break;
+		}
 		case WG_EVENT_KEY_PRESS:
 		{
 			if( m_selectMode == WG_SELECT_NONE )
@@ -868,6 +989,35 @@ int WgStraightList::_getEntryAt( int pixelofs ) const
 
 	return m_hooks.Size();
 }
+
+//____ _getInsertionPoint() ___________________________________________________
+
+int WgStraightList::_getInsertionPoint( const WgWidget * pWidget ) const
+{
+	int first = 0;
+	int last = m_hooks.Size() - 1;
+	int middle = (first+last)/2;
+ 
+	while( first <= last )
+	{
+		WgStraightListHook * pHook = m_hooks.Hook(middle);
+
+		int cmpRes = m_pSortFunc( pHook->_widget(), pWidget );
+
+		if( cmpRes < 0 )
+			first = middle + 1;
+		else if( cmpRes == 0 ) 
+			return middle;
+		else
+			last = middle - 1;
+ 
+		middle = (first + last)/2;
+	}
+
+	return first;
+}
+
+
 
 //____ _findEntry() ___________________________________________________________
 
@@ -1227,13 +1377,10 @@ WgHook* WgStraightList::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 WgRect WgStraightList::_listArea() const
 {
-	WgRect r(0,0,m_size);
+	WgRect r(0, header.m_height, m_size.w, m_size.h - header.m_height);
 
 	if( m_pSkin )
 		r = m_pSkin->ContentRect( r, m_state );
-
-	r.y += header.m_height;
-	r.h -= header.m_height;
 
 	return r;
 }
@@ -1290,6 +1437,19 @@ void WgStraightList::_refreshHeader()
 
 	if( bRequestResize )
 		_requestResize();
+}
+
+//____ _sortEntries() _________________________________________________________
+
+bool WgStraightList::_sortEntries()
+{
+	if( !m_pSortFunc )
+		return false;
+
+
+
+
+	return true;
 }
 
 //____ Header::SetSkin() ______________________________________________________

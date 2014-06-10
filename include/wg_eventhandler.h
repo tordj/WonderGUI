@@ -90,8 +90,9 @@ public:
 
 	//----
 
-	bool	IsMouseButtonPressed( int button );
-	bool	IsKeyPressed( int native_keycode );
+	bool	IsMouseButtonPressed( int button ) const;
+	bool	IsAnyMouseButtonPressed() const;
+	bool	IsKeyPressed( int native_keycode ) const;
 	WgModifierKeys ModKeys() const { return m_modKeys; }
 
 	bool	IsWindowFocused() const { return m_bWindowFocus; }

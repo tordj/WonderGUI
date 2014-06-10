@@ -181,7 +181,7 @@ bool WgEventHandler::SetKeyboardFocus( const WgWidgetPtr& pFocus )
 
 //____ IsMouseButtonPressed() _________________________________________________________
 
-bool WgEventHandler::IsMouseButtonPressed( int button )
+bool WgEventHandler::IsMouseButtonPressed( int button ) const
 {
 	if( button >= 1 && button <= WG_MAX_BUTTONS )
 		return m_bButtonPressed[button];
@@ -189,9 +189,21 @@ bool WgEventHandler::IsMouseButtonPressed( int button )
 	return false;
 }
 
+//____ IsAnyMouseButtonPressed() ________________________________________________________
+
+bool WgEventHandler::IsAnyMouseButtonPressed() const
+{
+	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
+		if( m_bButtonPressed[i] )
+			return true;
+
+	return false;
+}
+
+
 //____ IsKeyPressed() ____________________________________________________________
 
-bool WgEventHandler::IsKeyPressed( int native_keycode )
+bool WgEventHandler::IsKeyPressed( int native_keycode ) const
 {
 	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 		if( native_keycode == m_keysDown[i]->pEvent->NativeKeyCode() )

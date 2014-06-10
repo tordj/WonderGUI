@@ -233,6 +233,12 @@ void printWidgetSizes()
 	printf( "WgScrollHook: %d bytes\n", (int) sizeof(WgScrollHook) );
 }
 
+int sortWidgetId( const WgWidget * p1, const WgWidget * p2 )
+{
+	return p1->Id() - p2->Id();
+}
+
+
 //____ setupGUI() ______________________________________________________________
 
 WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
@@ -384,12 +390,23 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 		pList->header.arrow.Set( pDB->GetSkin("sortarrow"), WG_EAST, WgBorders(0,0,0,2) );
 		pList->header.icon.Set( pDB->GetSkin("smiley"), WG_WEST, WgBorders(0,2,0,0) );
 
-		for( int i = 0 ; i < 10 ; i++ )
+		pList->SetSortFunction( sortWidgetId );
+
+		for( int i = 0 ; i < 20 ; i++ )
 		{
 			WgTextDisplayPtr pEntry = WgTextDisplay::Create();
-			pEntry->Text()->Set( "ENTRY" );
-			pList->AddWidget( pEntry );
+
+			char str[20];
+			int val = rand() % 100;
+
+			sprintf( str, "ENTRY %d", val );
+			pEntry->SetId(val);
+			pEntry->Text()->Set( str );
+//			pList->AddWidget( pEntry );
+			pList->InsertWidgetSorted( pEntry );
 		}
+
+
 
 		pFlex->AddWidget(pList);
 

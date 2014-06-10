@@ -199,7 +199,7 @@ namespace sdl_wglib
 
 		WgBlockSkinPtr pSortArrowSkin = WgBlockSkin::CreateClickSelectable( pSurface, WgSize(11,6), WgCoord(1,SORT_ARROW_OFS), WgSize(13,0), WgBorders(0) );
 
-		WgBlockSkinPtr pSmileyIconSkin = WgBlockSkin::CreateClickable( pSurface, WgSize(12,12), WgCoord(1, SMILEY_OFS), WgSize(14,0), WgBorders(2) );
+		WgBlockSkinPtr pSmileyIconSkin = WgBlockSkin::CreateClickSelectable( pSurface, WgSize(12,12), WgCoord(1, SMILEY_OFS), WgSize(14,0), WgBorders(0) );
 
 
 		WgBlockSkinPtr pBgCheckeredGreySkin = WgBlockSkin::CreateStatic( pSurface, WgRect(0,TILES_OFS,64,64) );
