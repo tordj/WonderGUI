@@ -165,7 +165,7 @@ void WgTextDisplay::_onStateChanged( WgState oldState )
 	WgWidget::_onStateChanged(oldState);
 
 	m_text.setState(m_state);
-	_requestRender(); //TODO: Only requestRender if text appearance has changed.
+	_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 
 	if( IsEditable() )
 	{

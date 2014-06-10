@@ -147,6 +147,7 @@ public:
 		int					m_height;
 		int					m_preferredWidth;
 		WgState				m_state;
+		bool				m_bPressed;
 	};
 
 	Header		header;
@@ -179,6 +180,7 @@ protected:
 
 	WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
 	WgListHook *	_findEntry( const WgCoord& ofs );
+	int				_getInsertionPoint( const WgWidget * pWidget ) const;
 	void			_getChildGeo( WgRect& geo, const WgStraightListHook * pHook ) const;
 	void			_getEntryGeo( WgRect& geo, const WgStraightListHook * pHook ) const;
 	int				_getEntryAt( int pixelofs ) const;
@@ -187,6 +189,7 @@ protected:
 	void			_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding );
 	void			_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso );
 	void			_refreshHeader();
+	bool			_sortEntries();
 
 	WgSize			_paddedLimitedPreferredSize( WgWidget * pChild );
 	int				_paddedLimitedHeightForWidth( WgWidget * pChild, int paddedWidth );

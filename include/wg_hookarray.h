@@ -33,7 +33,8 @@ public:
 	WgHookArray(int capacity) : m_size(0), m_capacity(capacity) { m_pArray = (H*) malloc( sizeof(H)*capacity ); _initBlock(0,capacity); }
 	~WgHookArray() { _killBlock( 0, m_size ); free(m_pArray); }
 
-	int		Size() const { return m_size; };
+	int		Size() const { return m_size; }
+	bool	IsEmpty() const { return m_size == 0; }
 	int		Capacity() const { return m_capacity; }
 
 	H*		Hook(int index) const { return &m_pArray[index]; }
@@ -102,17 +103,17 @@ protected:
 	{
 		if( entries <= m_capacity - m_size )
 		{
-			memmove( &m_pArray[index+entries], &m_pArray[index], sizeof(H) * entries );
+			memmove( &m_pArray[index+entries], &m_pArray[index], sizeof(H) * (m_size - index) );
 		}
 		else
 		{
 			int grow = entries - (m_capacity - m_size);
 			if( grow == 1 )
-				m_capacity = ((m_capacity+1)*2) / 3;
+				m_capacity = ((m_capacity+1)*3) / 2;
 			else
 				m_capacity += grow;
 
-			H* pNew = (H*) malloc( m_capacity );
+			H* pNew = (H*) malloc( sizeof(H) * m_capacity );
 			H* pOld = m_pArray;
 
 			memcpy( pNew, pOld, sizeof(H) * index );
