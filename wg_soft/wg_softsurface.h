@@ -42,7 +42,7 @@ class WgSoftSurface : public WgSurface
 
  public:
 	static WgSoftSurfacePtr	Create( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type)); }
-	static WgSoftSurfacePtr	Create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type,pPixels,pitch)); }
+	static WgSoftSurfacePtr	Create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObjectPtr& pBlob ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type,pPixels,pitch,pBlob)); }
 	static WgSoftSurfacePtr	Create( const WgSoftSurfacePtr& pOther ) { return WgSoftSurfacePtr(new WgSoftSurface( pOther.GetRealPtr() )); }
 
 	bool		IsInstanceOf( const char * pClassName ) const;
@@ -67,12 +67,13 @@ class WgSoftSurface : public WgSurface
 
 protected:
 	WgSoftSurface( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 );
-	WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch );
+	WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObjectPtr& pFinalizer );
 	WgSoftSurface( const WgSoftSurface * pOther );
 	virtual ~WgSoftSurface();
 
 	void _copy(const WgSoftSurface * pOther);
 
+	WgObjectPtr	m_pFinalizer;
 	WgSize		m_size;
 	float    	m_fScaleAlpha;
 	bool		m_bOwnsData;

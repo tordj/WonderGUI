@@ -21,6 +21,8 @@
   <Dependencies/>
   <VirtualDirectory Name="code">
     <File Name="main2.cpp"/>
+    <File Name="skinloader.h"/>
+    <File Name="skinloader.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release">
     <Project Name="wondergui"/>

@@ -15,6 +15,10 @@
 #	include <wg_bitmapglyphs.h>
 #endif
 
+#ifndef WG_BLOB_DOT_H
+#	include <wg_blob.h>
+#endif
+
 #ifndef WG_BLOCKSKIN_DOT_H
 #	include <wg_blockskin.h>
 #endif

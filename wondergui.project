@@ -122,6 +122,10 @@
     <File Name="include/wg_pointers.h"/>
     <File Name="source/wg_pointers.cpp"/>
     <File Name="include/wg_hookarray.h"/>
+    <File Name="include/wg_blob.h"/>
+    <File Name="source/wg_blob.cpp"/>
+    <File Name="include/wg_finalizer.h"/>
+    <File Name="source/wg_finalizer.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Widgets">
     <File Name="include/wg_animplayer.h"/>

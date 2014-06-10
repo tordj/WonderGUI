@@ -18,6 +18,12 @@ void * 			loadFile( const char * pPath );
 
 bool	bQuit = false;
 
+
+void freeSDLSurfCallback( void * pSDLSurf )
+{
+	SDL_FreeSurface( (SDL_Surface*) pSDLSurf );
+}
+
 //____ main() _________________________________________________________________
 
 int main ( int argc, char** argv )
@@ -48,7 +54,7 @@ int main ( int argc, char** argv )
 	else if( pWinSurf->format->BitsPerPixel == 24 )
 		type = WG_PIXEL_RGB_8;
 		
-	WgSoftSurfacePtr pCanvas = WgSoftSurface::Create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch );
+	WgSoftSurfacePtr pCanvas = WgSoftSurface::Create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
 
 	WgSoftGfxDevicePtr pGfxDevice = WgSoftGfxDevice::Create( pCanvas );
 
@@ -57,7 +63,8 @@ int main ( int argc, char** argv )
 	// Init font
 	
 	SDL_Surface * pFontSurf = IMG_Load( "../resources/anuvverbubbla_8x8.png" );
-	WgSoftSurfacePtr pFontImg = WgSoftSurface::Create( WgSize(pFontSurf->w,pFontSurf->h), WG_PIXEL_ARGB_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch );
+	WgBlobPtr pFontSurfBlob = WgBlob::Create( pFontSurf, freeSDLSurfCallback );
+	WgSoftSurfacePtr pFontImg = WgSoftSurface::Create( WgSize(pFontSurf->w,pFontSurf->h), WG_PIXEL_ARGB_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
 		
 	char * pFontSpec = (char*) loadFile( "../resources/anuvverbubbla_8x8.fnt" );
 
@@ -71,6 +78,19 @@ int main ( int argc, char** argv )
 
 	WgBase::SetDefaultTextprop( pProp );
 
+	// Init skins
+
+	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
+	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	WgSkinPtr pSimpleButtonSkin = WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorders(3) );
+	
+	pSDLSurf = IMG_Load( "../resources/grey_pressable_plate.bmp" );
+	WgSoftSurfacePtr pPressablePlateSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	WgSkinPtr pPressablePlateSkin = WgBlockSkin::CreateClickableFromSurface( pPressablePlateSurface, 0, WgBorders(3) );
+	
+	pSDLSurf = IMG_Load( "../resources/list_entry.png" );
+	WgSoftSurfacePtr pListEntrySurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	WgSkinPtr pListEntrySkin = WgBlockSkin::CreateClickableFromSurface( pListEntrySurface, 0, WgBorders(3) );
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
@@ -85,16 +105,15 @@ int main ( int argc, char** argv )
 	pFlexPanel->AddWidget(pBackground, WG_NORTHWEST, WgCoord(), WG_SOUTHEAST, WgCoord());
 
 /*
-	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../resources/simple_button.bmp" );
-	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch );
-
 	WgButtonPtr pButton = WgButton::Create();
-	pButton->SetSkin( WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorders(3) ) );
+	pButton->SetSkin( pSimpleButtonSkin );
 	pButton->Label()->Set( "BUTTON" );
 	pFlexPanel->AddWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
 
 	pRoot->EventHandler()->AddCallback( WgEventFilter::ButtonPress(pButton), myButtonClickCallback );
 */	
+
+/*
 	WgSizeCapsulePtr pCapsule = WgSizeCapsule::Create();
 	pCapsule->SetMaxSize( WgSize(100,1000));
 	pFlexPanel->AddWidget( pCapsule );
@@ -103,11 +122,10 @@ int main ( int argc, char** argv )
 	pCapsule->SetWidget( pStack );
 
 
-
 	WgTextDisplayPtr pText = WgTextDisplay::Create();
 	pText->Text()->Set( "THIS IS THE LONG TEXT THAT SHOULD WRAP AND BE FULLY DISPLAYED." );
 	pStack->AddWidget(pText);
-
+*/
 	
 /*
 	WgCheckBoxPtr pCheckbox = WgCheckBox::Create();

@@ -44,11 +44,11 @@ WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type )
 	m_fScaleAlpha = 1.f;
 }
 
-WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch )
+WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObjectPtr& pFinalizer )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_ARGB_8 );
 	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
-
+	m_pFinalizer = pFinalizer;
 	m_pitch = pitch;
 	m_size = size;
 	m_pData = pPixels;

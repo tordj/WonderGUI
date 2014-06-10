@@ -20,45 +20,35 @@
 
 =========================================================================*/
 
-#ifndef	WG_BLOB_DOT_H
-#define	WG_BLOB_DOT_H
+#ifndef	WG_FINALIZER_DOT_H
+#define	WG_FINALIZER_DOT_H
 
-#include <stddef.h>
 
 #ifndef WG_POINTERS_DOT_H
 #	include <wg_pointers.h>
 #endif
 
-class WgBlob;
-typedef	WgSmartPtr<WgBlob,WgObjectPtr>		WgBlobPtr;
-typedef	WgWeakPtr<WgBlob,WgObjectWeakPtr>	WgBlobWeakPtr;
+class WgFinalizer;
+typedef	WgSmartPtr<WgFinalizer,WgObjectPtr>		WgFinalizerPtr;
+typedef	WgWeakPtr<WgFinalizer,WgObjectWeakPtr>	WgFinalizerWeakPtr;
 
-class WgBlob : public WgObject
+class WgFinalizer : public WgObject
 {
 public:
-	static WgBlobPtr	Create( int bytes );
-	static WgBlobPtr	Create( void * pData, void(*pDestructor)(void*) );
+	static WgFinalizerPtr	Create( void(*pCallback)(void*), void * pObject ) { return new WgFinalizer(pCallback,pObject); };
 
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
-	static WgBlobPtr	Cast( const WgObjectPtr& pObject );
-    
-	inline int		Size() const { return m_size; }
-	void *			Content() { return m_pContent; }
+	static WgFinalizerPtr	Cast( const WgObjectPtr& pObject );
 
 protected:
-	WgBlob( int bytes );
-	WgBlob( void * pData, void(*pDestructor)(void*) );
-	virtual ~WgBlob();
+	WgFinalizer(void(*pCallback)(void*),void * pObject);
+	virtual ~WgFinalizer();
 
-	void* operator new (size_t s, int bytes) { return new char[sizeof(WgBlob) + bytes]; }
-	void operator delete(void * p, int bytes)  { delete[] (char*) p; }
-	void operator delete(void * p)             { delete[] (char*) p; }
-
-	int		m_size;
-	void *	m_pContent;
-	void(*m_pDestructor)(void*);
+	void(*m_pCallback)(void*);
+	void *	m_pObject;
 };
 
-#endif //WG_BLOB_DOT_H
+
+#endif //WG_FINALIZER_DOT_H

@@ -19,55 +19,31 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_blob.h>
+#include <wg_finalizer.h>
 
-const char WgBlob::CLASSNAME[] = {"Blob"};
-
-
-//____ Create _________________________________________________________________
-
-WgBlobPtr WgBlob::Create( int bytes )
-{
-	WgBlob * pBlob = new(bytes) WgBlob( bytes );
-	return WgBlobPtr(pBlob);
-}
-
-WgBlobPtr WgBlob::Create(void * pData, void(*pDestructor)(void*) )
-{
-	WgBlob * pBlob = new(0) WgBlob( pData, pDestructor );
-	return WgBlobPtr(pBlob);
-}
-
+const char WgFinalizer::CLASSNAME[] = {"Finalizer"};
 
 
 //____ Constructor ____________________________________________________________
 
-WgBlob::WgBlob( int size )
+WgFinalizer::WgFinalizer( void(*pCallback)(void*), void * pObject )
 {
-	m_size = size;
-	m_pContent = ((char*)this) + sizeof(this);
-	m_pDestructor = 0;
-}
-
-WgBlob::WgBlob( void * pData, void(*pDestructor)(void*) )
-{
-	m_size = 0;
-	m_pContent = pData;
-	m_pDestructor = pDestructor;
+	m_pCallback = pCallback;
+	m_pObject = pObject;
 }
 
 
 //____ Destructor _____________________________________________________________
 
-WgBlob::~WgBlob()
+WgFinalizer::~WgFinalizer()
 {
-	if( m_pDestructor )
-		m_pDestructor( m_pContent );
+	if( m_pCallback )
+		m_pCallback( m_pObject );
 }
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgBlob::IsInstanceOf( const char * pClassName ) const
+bool WgFinalizer::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
@@ -77,17 +53,17 @@ bool WgBlob::IsInstanceOf( const char * pClassName ) const
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgBlob::ClassName( void ) const
+const char * WgFinalizer::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgBlobPtr WgBlob::Cast( const WgObjectPtr& pObject )
+WgFinalizerPtr WgFinalizer::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgBlobPtr( static_cast<WgBlob*>(pObject.GetRealPtr()) );
+		return WgFinalizerPtr( static_cast<WgFinalizer*>(pObject.GetRealPtr()) );
 
 	return 0;
 }
