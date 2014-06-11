@@ -63,7 +63,7 @@ int main ( int argc, char** argv )
 
 	// Setup gfxdevice and gui
 
-	WgSoftSurfacePtr pCanvas = WgSoftSurface::Create( WgSize(640,480), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch );
+	WgSoftSurfacePtr pCanvas = WgSoftSurface::Create( WgSize(640,480), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch, 0 );
 	WgSoftGfxDevicePtr pGfxDevice = WgSoftGfxDevice::Create( pCanvas );
 	pGfxDevice->SetBilinearFiltering( true );
 
@@ -407,8 +407,11 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 		}
 
 
+		WgScrollPanelPtr pWindow = WgScrollPanel::Cast(pDB->GetWidget("view"));
+		pWindow->SetContent( pList );
+		pWindow->SetContentSizePolicy( WgSizePolicy::WG_BOUND, WgSizePolicy::WG_DEFAULT );
 
-		pFlex->AddWidget(pList);
+		pFlex->AddWidget(pWindow, WgRect( 50,50,150,200) );
 
 	}
 	

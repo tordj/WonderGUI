@@ -30,7 +30,7 @@ template<class H> class WgHookArray
 {
 public:
 	WgHookArray() : m_pArray(0), m_size(0), m_capacity(0) {}
-	WgHookArray(int capacity) : m_size(0), m_capacity(capacity) { m_pArray = (H*) malloc( sizeof(H)*capacity ); _initBlock(0,capacity); }
+	WgHookArray(int capacity) : m_size(0), m_capacity(capacity) { m_pArray = (H*) malloc( sizeof(H)*capacity ); }
 	~WgHookArray() { _killBlock( 0, m_size ); free(m_pArray); }
 
 	int		Size() const { return m_size; }
@@ -41,7 +41,7 @@ public:
 
 	H*		Insert(int index) { _insertBlock( index, 1); return &m_pArray[index]; }
 	H*		Insert(int index, int entries) { _insertBlock( index, entries ); return &m_pArray[index]; }
-	H*		Add() { if( m_size == m_capacity ) _reallocArray( ((m_capacity+1)*3) / 2 ); _initBlock(m_size,1); return &m_pArray[m_size++]; }
+	H*		Add() { if( m_size == m_capacity ) _reallocArray( ((m_capacity+1)*3) / 2 ); _initBlock(m_size); return &m_pArray[m_size++]; }
 	H*		Add(int entries) { if( m_size+entries > m_capacity ) _reallocArray( m_capacity+entries ); _initBlock(m_size,entries); int ofs = m_size ; m_size += entries; return &m_pArray[ofs]; }
 	void	Remove(int index) { _deleteBlock(index,1); }
 	void	Remove(int index, int entries) { _deleteBlock(index,entries); }
@@ -57,6 +57,24 @@ public:
 
 	H*		Begin() const { return m_pArray; }
 	H*		End() const { return m_pArray + m_size; }
+
+	void	Reorder( int order[] )
+	{
+		if( m_size == 0 ) 
+			return;
+
+		int size = sizeof(H)*m_capacity;
+		H* pOld = m_pArray;
+		m_pArray = (H*) malloc( size );
+		_initBlock(0,m_size);
+		for( int i = 0 ; i < m_size ; i++ )
+		{
+			int ofs = order[i];
+			m_pArray[i] = pOld[ofs];
+		}
+		_reallocBlock( 0, m_size );
+		free( pOld );
+	}
 
 protected:
 
@@ -78,7 +96,8 @@ protected:
 
 	void	_reallocBlock( int index, int entries )
 	{
-		for( int i = 0 ; i < entries ; i++ )
+		int end = index + entries;
+		while( index < end )
 		{
 			H * p = &m_pArray[index++];
 			p->_relinkWidget();
@@ -132,6 +151,12 @@ protected:
 		for( int i = 0 ; i < entries ; i++ )
 			m_pArray[index++].~H();
 	}
+
+	inline void	_initBlock( int index )
+	{
+			new (&m_pArray[index]) H();
+	}
+
 
 	void	_initBlock( int index, int entries )
 	{

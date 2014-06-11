@@ -23,6 +23,7 @@
 #include <wg_straightlist.h>
 #include <wg_patches.h>
 #include <wg_eventhandler.h>
+#include <wg_base.h>
 
 const char WgStraightList::CLASSNAME[] = {"StraightList"};
 const char WgStraightListHook::CLASSNAME[] = {"StraightListHook"};
@@ -997,12 +998,13 @@ int WgStraightList::_getInsertionPoint( const WgWidget * pWidget ) const
 	int first = 0;
 	int last = m_hooks.Size() - 1;
 	int middle = (first+last)/2;
- 
+ 	int negator = m_sortOrder == WG_SORT_ASCENDING ? 1 : -1;
+
 	while( first <= last )
 	{
 		WgStraightListHook * pHook = m_hooks.Hook(middle);
 
-		int cmpRes = m_pSortFunc( pHook->_widget(), pWidget );
+		int cmpRes = m_pSortFunc( pHook->_widget(), pWidget )*negator;
 
 		if( cmpRes < 0 )
 			first = middle + 1;
@@ -1175,7 +1177,7 @@ void WgStraightList::_updateChildOfsFrom( WgStraightListHook * pHook )
 
 	while( pHook < m_hooks.End() )
 	{
-		pHook->m_ofs += ofs;
+		pHook->m_ofs = ofs;
 		ofs += pHook->m_length;
 		pHook++;
 	}	
@@ -1446,9 +1448,56 @@ bool WgStraightList::_sortEntries()
 	if( !m_pSortFunc )
 		return false;
 
+	if( m_hooks.IsEmpty() )
+		return true;
 
+	// Create a temporary, sorted list of pointers to hooks
 
+	int listSize = sizeof(int) * m_hooks.Size();
+	int * pOrderList = (int*) WgBase::MemStackAlloc( listSize );
+	int negator = m_sortOrder == WG_SORT_ASCENDING ? 1 : -1;
 
+	pOrderList[0] = 0;
+	for( int entry = 1 ; entry < m_hooks.Size() ; entry++ )
+	{
+		WgWidget * pWidget = m_hooks.Hook(entry)->_widget();
+
+		int first = 0;
+		int last = entry-1;
+		int middle = (first+last)/2;
+ 
+		while( first <= last )
+		{
+			WgWidget * pEntry = m_hooks.Hook(pOrderList[middle])->_widget();
+
+			int cmpRes = m_pSortFunc( pEntry, pWidget ) * negator;
+
+			if( cmpRes < 0 )
+				first = middle + 1;
+			else if( cmpRes == 0 ) 
+			{
+				first = middle;
+				break;
+			}
+			else
+				last = middle - 1;
+ 
+			middle = (first + last)/2;
+		}
+
+		for( int i = entry ; i > first ; i-- )
+			pOrderList[i] = pOrderList[i-1];
+
+		pOrderList[first] = entry;
+	}
+
+	m_hooks.Reorder( pOrderList );
+	WgBase::MemStackRelease( listSize );
+
+	// Update m_ofs in the hooks
+
+	_updateChildOfsFrom( m_hooks.Begin() );
+	_requestRenderChildrenFrom( m_hooks.Begin() );	// Request render on dirty area
 	return true;
 }
 
