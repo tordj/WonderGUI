@@ -59,7 +59,7 @@ class WgContainer : public WgWidget
 	friend class WgVectorPanel;
 	friend class WgListPanel;
 	friend class WgCapsule;
-	friend class WgStraightList;
+	friend class WgPackList;
 
 	friend class WgRadioButton;
 

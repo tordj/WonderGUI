@@ -189,17 +189,50 @@ void WgList::SetLassoSkin( const WgSkinPtr& pSkin )
 
 void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
+	WgContainer::_onEvent(_pEvent, pHandler);
+
 	WgState oldState = m_state;
 
 	switch( _pEvent->Type() )
 	{
+		case WG_EVENT_MOUSE_ENTER:
+		{	
+			WgListHook * pEntry = _findEntry(Abs2local(_pEvent->PointerGlobalPos()));
+			if( pEntry && pEntry != m_pHoveredEntry.GetRealPtr() )
+			{
+				WgRect geo;
+				if( m_pHoveredEntry )
+				{
+					_getEntryGeo( geo, m_pHoveredEntry.GetRealPtr() ); 
+					_requestRender(geo);
+				}
+
+				_getEntryGeo( geo, pEntry ); 
+				_requestRender(geo);
+				m_pHoveredEntry = pEntry;
+			}
+			break;
+		}
+		case WG_EVENT_MOUSE_LEAVE:
+		{
+			WgListHook * pEntry = _findEntry(Abs2local(_pEvent->PointerGlobalPos()));
+			if( m_pHoveredEntry && !pEntry )
+			{
+				WgRect geo;
+				_getEntryGeo( geo, m_pHoveredEntry.GetRealPtr() ); 
+				_requestRender(geo);
+				m_pHoveredEntry = 0;
+			}
+			break;
+		}
 		case WG_EVENT_MOUSE_PRESS:
 		{
 			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
 			if( m_selectMode != WG_SELECT_NONE && pEvent->Button() == WG_BUTTON_LEFT )
 			{
-				WgCoord ofs = Abs2local(pEvent->PointerScreenPos());
-
+				WgCoord ofs = Abs2local(pEvent->PointerGlobalPos());
+				if( !_listWindow().Contains(ofs) )
+					break;								// Click on header or somewhere else outside the real list.
 				
 				WgRect listArea = _listArea();
 				WgListHook * pEntry = _findEntry(ofs);
@@ -300,7 +333,8 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
 			if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pEvent->Button() == WG_BUTTON_LEFT )
 			{
-				WgCoord ofs = _listArea().Constrain(Abs2local(pEvent->PointerScreenPos()));
+				WgCoord ofs = _listArea().Constrain(Abs2local(pEvent->PointerGlobalPos()));
+				ofs = _listWindow().Constrain(ofs);
 
 				WgRect oldLasso( m_lassoBegin, m_lassoEnd );
 				WgRect newLasso( m_lassoBegin, ofs );
@@ -365,6 +399,14 @@ int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelecte
 	int	nModified = 0;
 	WgListHook * pEnd = static_cast<WgListHook*>(pLast->_nextHook());
 
+	// Request render for the range (not necessary, can be faster to take them one by one depending on circumstances).
+
+	WgRect geoFirst;
+	WgRect geoLast;
+	_getEntryGeo( geoFirst, pFirst );
+	_getEntryGeo( geoLast, pLast );
+	_requestRender( WgRect::Union(geoFirst,geoLast) );
+
 	// Reserve ItemInfo array of right size if we are going to post event
 
 	WgItemInfo * pItemInfo = 0;
@@ -423,6 +465,14 @@ int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostEvent
 	int nSelected = 0;
 	int nDeselected = 0;
 	WgListHook * pEnd = static_cast<WgListHook*>(pLast->_nextHook());
+
+	// Request render for the range
+
+	WgRect geoFirst;
+	WgRect geoLast;
+	_getEntryGeo( geoFirst, pFirst );
+	_getEntryGeo( geoLast, pLast );
+	_requestRender( WgRect::Union(geoFirst,geoLast) );
 
 	// Reserve ItemInfo array of right size if we are going to post event
 

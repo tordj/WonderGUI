@@ -1167,7 +1167,7 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 	// Calculate itemArea
 
-	WgRect	geo = m_pSkin?m_pSkin->ContentRect(ScreenGeo(), WG_STATE_NORMAL):ScreenGeo();
+	WgRect	geo = m_pSkin?m_pSkin->ContentRect(GlobalGeo(), WG_STATE_NORMAL):GlobalGeo();
 	WgRect itemArea( geo.x, geo.y + yOfs, geo.w, m_entryHeight );
 
 	// 
@@ -1179,7 +1179,7 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 	if( pLayer )
 	{
-		pLayer->OpenPopup( pMenu, this, itemArea - pLayer->ScreenPos(), WG_NORTHEAST );
+		pLayer->OpenPopup( pMenu, this, itemArea - pLayer->GlobalPos(), WG_NORTHEAST );
 		m_pOpenSubMenu = pItem;
 	}
 }
@@ -1619,15 +1619,15 @@ WgRect WgMenu::ScrollbarHook::Geo() const
 	return WgRect(parentSize.w-m_size.w-borders.right,borders.top,m_size);
 }
 
-WgCoord WgMenu::ScrollbarHook::ScreenPos() const
+WgCoord WgMenu::ScrollbarHook::GlobalPos() const
 {
-	WgRect content = m_pParent->ScreenGeo() - m_pParent->_getPadding();
+	WgRect content = m_pParent->GlobalGeo() - m_pParent->_getPadding();
 	return WgCoord( content.x + content.w - m_size.w, content.y);
 }
 
-WgRect WgMenu::ScrollbarHook::ScreenGeo() const
+WgRect WgMenu::ScrollbarHook::GlobalGeo() const
 {
-	WgRect content = m_pParent->ScreenGeo() - m_pParent->_getPadding();
+	WgRect content = m_pParent->GlobalGeo() - m_pParent->_getPadding();
 	return WgRect( content.x + content.w - m_size.w, content.y, m_size );
 }
 

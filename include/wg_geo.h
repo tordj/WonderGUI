@@ -302,7 +302,7 @@ public:
 
 
 	bool Intersection( const WgRect& r1, const WgRect& r2 );
-	void Union( const WgRect& r1, const WgRect& r2 );
+	static WgRect Union( const WgRect& r1, const WgRect& r2 );
 
 	void GrowToContain( int x, int y );
 	void GrowToContain( const WgRect& _rect );

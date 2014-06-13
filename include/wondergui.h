@@ -300,8 +300,8 @@
 #	include <wg_scrollpanel.h>
 #endif
 
-#ifndef WG_STRAIGHTLIST_DOT_H
-#	include <wg_straightlist.h>
+#ifndef WG_PACKLIST_DOT_H
+#	include <wg_packlist.h>
 #endif
 
 

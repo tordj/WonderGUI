@@ -321,12 +321,10 @@ void WgContainer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler
 			if( !m_state.IsHovered() )
 			{
 				WgState oldState = m_state;
-
 				if( m_bPressed )
 					m_state.SetPressed(true);
 				else
 					m_state.SetHovered(true);
-				m_state.SetHovered(true);
 				_onStateChanged(oldState);
 			}
 			break;

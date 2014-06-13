@@ -193,7 +193,7 @@ void WgWidget::_stopReceiveTicks()
 
 WgCoord WgWidget::Local2abs( const WgCoord& cord ) const
 {
-	WgCoord c = ScreenPos();
+	WgCoord c = GlobalPos();
 	c.x += cord.x;
 	c.y += cord.y;
 	return c;
@@ -203,7 +203,7 @@ WgCoord WgWidget::Local2abs( const WgCoord& cord ) const
 
 WgCoord WgWidget::Abs2local( const WgCoord& cord ) const
 {
-	WgCoord c = ScreenPos();
+	WgCoord c = GlobalPos();
 	return WgCoord( cord.x - c.x, cord.y - c.y );
 }
 

@@ -276,7 +276,7 @@ class WgEvent : public WgObject
 		WgWidgetWeakPtr		WidgetWeakPtr() const { return m_pWidget; }
 		WgModifierKeys		ModKeys() const { return m_modKeys; }
 		WgCoord				PointerPos() const { return m_pointerLocalPos; }
-		WgCoord				PointerScreenPos() const { return m_pointerScreenPos; }
+		WgCoord				PointerGlobalPos() const { return m_pointerScreenPos; }
 			
 		bool				IsMouseEvent() const;
 		bool				IsMouseButtonEvent() const;

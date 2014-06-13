@@ -101,12 +101,14 @@ bool WgRect::Intersection( const WgRect& _r1, const WgRect& _r2 )
 
 //____ Union() ________________________________________________________________
 
-void WgRect::Union( const WgRect& r1, const WgRect& r2 )
+WgRect WgRect::Union( const WgRect& r1, const WgRect& r2 )
 {
-	x = r1.x < r2.x ? r1.x : r2.x;
-	y = r1.y < r2.y ? r1.y : r2.y;
-	w = r1.x + r1.w > r2.x + r2.w ? r1.x + r1.w : r2.x + r2.w;
-	h = r1.y + r1.h > r2.y + r2.h ? r1.y + r1.h : r2.y + r2.h;
+	WgRect out;
+	out.x = r1.x < r2.x ? r1.x : r2.x;
+	out.y = r1.y < r2.y ? r1.y : r2.y;
+	out.w = r1.x + r1.w > r2.x + r2.w ? r1.x + r1.w : r2.x + r2.w;
+	out.h = r1.y + r1.h > r2.y + r2.h ? r1.y + r1.h : r2.y + r2.h;
+	return out;
 }
 
 

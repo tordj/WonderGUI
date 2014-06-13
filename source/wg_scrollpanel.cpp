@@ -1079,7 +1079,7 @@ void WgScrollPanel::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandl
 		{			
 			WgWheelRollEventPtr pEvent = WgWheelRollEvent::Cast(_pEvent);
 
-			if( m_elements[WINDOW].m_windowGeo.Contains(pEvent->PointerPos()) )
+			if( m_elements[WINDOW].m_windowGeo.Contains( Abs2local(pEvent->PointerGlobalPos())) )
 			{
 				int wheel = pEvent->Wheel();
 
@@ -1471,18 +1471,18 @@ WgRect WgScrollHook::Geo() const
 	return m_canvasGeo;
 }
 
-//____ WgScrollHook::ScreenPos() __________________________________________________
+//____ WgScrollHook::GlobalPos() __________________________________________________
 
-WgCoord WgScrollHook::ScreenPos() const
+WgCoord WgScrollHook::GlobalPos() const
 {
-	return m_pView->ScreenPos() + m_canvasGeo.Pos();
+	return m_pView->GlobalPos() + m_canvasGeo.Pos();
 }
 
-//____ WgScrollHook::ScreenGeo() __________________________________________________
+//____ WgScrollHook::GlobalGeo() __________________________________________________
 
-WgRect WgScrollHook::ScreenGeo() const
+WgRect WgScrollHook::GlobalGeo() const
 {
-	return m_canvasGeo + m_pView->ScreenPos();
+	return m_canvasGeo + m_pView->GlobalPos();
 }
 
 
@@ -1511,6 +1511,15 @@ void WgScrollHook::_requestResize()
 {
 	//TODO: Figure out how this should work and implement.
 }
+
+//____ WgScrollHook::_windowSection() ______________________________________________
+
+WgRect WgScrollHook::_windowSection() const 
+{ 
+	WgRect window(m_windowGeo,m_canvasGeo);			// Use intersection in case canvas is smaller than window.
+	return window - m_canvasGeo.Pos();
+}
+
 
 //____ WgScrollHook::_prevHook() ___________________________________________________
 

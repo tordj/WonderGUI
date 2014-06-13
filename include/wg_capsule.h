@@ -53,8 +53,8 @@ public:
 	WgSize			Size() const;
 	WgRect			Geo() const;
 
-	WgCoord			ScreenPos() const;
-	WgRect			ScreenGeo() const;
+	WgCoord			GlobalPos() const;
+	WgRect			GlobalGeo() const;
 
 	WgCapsulePtr 		Parent() const;
 

@@ -68,15 +68,15 @@ WgRect WgVectorHook::Geo() const
 	return Parent()->_hookGeo(this);
 }
 
-WgCoord WgVectorHook::ScreenPos() const
+WgCoord WgVectorHook::GlobalPos() const
 {
-	return Parent()->_hookGeo(this).Pos() + Parent()->ScreenPos();
+	return Parent()->_hookGeo(this).Pos() + Parent()->GlobalPos();
 
 }
 
-WgRect WgVectorHook::ScreenGeo() const
+WgRect WgVectorHook::GlobalGeo() const
 {
-	return Parent()->_hookGeo(this) + Parent()->ScreenPos();
+	return Parent()->_hookGeo(this) + Parent()->GlobalPos();
 }
 
 bool WgVectorHook::MoveForward()

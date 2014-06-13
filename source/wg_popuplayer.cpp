@@ -435,8 +435,8 @@ WgWidget *  WgPopupLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 			{
 				WgWidget * pOpener = pHook->m_pOpener.GetRealPtr();
 
-				WgCoord absPos 		= ofs + ScreenPos();
-				WgRect	openerGeo 	= pOpener->ScreenGeo();
+				WgCoord absPos 		= ofs + GlobalPos();
+				WgRect	openerGeo 	= pOpener->GlobalGeo();
 
 				if( openerGeo.Contains(absPos) && pOpener->MarkTest( absPos - openerGeo.Pos() ) )
 					pResult = pOpener;

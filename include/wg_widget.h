@@ -88,7 +88,7 @@ friend class WgModalLayer;
 friend class WgTablePanel;
 friend class WgScrollPanel;
 friend class WgList;
-friend class WgStraightList;
+friend class WgPackList;
 friend class WgCapsule;
 friend class WgLayer;
 friend class WgStackPanel;
@@ -149,8 +149,8 @@ public:
 	WgCoord			Pos() const { if( m_pHook ) return m_pHook->Pos(); return WgCoord(0,0); }
 	WgSize			Size() const { if( m_pHook ) return m_pHook->Size(); return WgSize(256,256); }
 	WgRect			Geo() const { if( m_pHook ) return m_pHook->Geo(); return WgRect(0,0,256,256); }
-	WgCoord			ScreenPos() const { if( m_pHook ) return m_pHook->ScreenPos(); return WgCoord(0,0); }
-	WgRect			ScreenGeo() const { if( m_pHook ) return m_pHook->ScreenGeo(); return WgRect(0,0,256,256); }
+	WgCoord			GlobalPos() const { if( m_pHook ) return m_pHook->GlobalPos(); return WgCoord(0,0); }
+	WgRect			GlobalGeo() const { if( m_pHook ) return m_pHook->GlobalGeo(); return WgRect(0,0,256,256); }
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
 	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_state.IsFocused(); }
@@ -198,6 +198,7 @@ protected:
 	inline WgHook *	_hook() const { return m_pHook; }
 	WgContainer *	_parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 
+	WgRect			_windowSection() const { if( m_pHook ) return m_pHook->_windowSection(); return WgRect(); }
 
 	// To be overloaded by Widget
 

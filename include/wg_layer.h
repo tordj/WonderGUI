@@ -49,8 +49,8 @@ public:
 	WgSize			Size() const { 	return m_geo.Size(); }
 	WgRect			Geo() const { return m_geo; }
 
-	WgCoord			ScreenPos() const;
-	WgRect			ScreenGeo() const;
+	WgCoord			GlobalPos() const;
+	WgRect			GlobalGeo() const;
 
 	WgLayerHookPtr	Prev() const { return _prevLayerHook(); }
 	WgLayerHookPtr	Next() const { return _nextLayerHook(); }
@@ -114,8 +114,8 @@ protected:
 		WgSize		Size() const { 	return m_pParent->Size(); }
 		WgRect		Geo() const { return m_pParent->Geo(); }
 
-		WgCoord		ScreenPos() const { return m_pParent->ScreenPos(); }
-		WgRect		ScreenGeo() const { return m_pParent->ScreenGeo(); }
+		WgCoord		GlobalPos() const { return m_pParent->GlobalPos(); }
+		WgRect		GlobalGeo() const { return m_pParent->GlobalGeo(); }
 
 	protected:
 

@@ -114,7 +114,11 @@ protected:
 	virtual void	_onWidgetAppeared( WgListHook * pInserted ) = 0;
 	virtual void	_onWidgetDisappeared( WgListHook * pToBeRemoved ) = 0;		// Call BEFORE widget is removed from m_hooks.
 	virtual WgListHook * _findEntry( const WgCoord& ofs ) = 0;
+	virtual void	_getEntryGeo( WgRect& geo, const WgListHook * pHook ) const = 0;
+
 	virtual WgRect	_listArea() const = 0;										// Area for the entries (contentRect minus header).
+	virtual WgRect	_listWindow() const = 0;
+	virtual WgRect	_listCanvas() const = 0;
 
 	virtual void	_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding ) = 0;
 	virtual void	_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso ) = 0;
@@ -131,6 +135,7 @@ protected:
 	WgCoord			m_lassoEnd;
 
 	WgListHookPtr	m_pFocusedEntry;
+	WgListHookPtr	m_pHoveredEntry;
 };
 
 

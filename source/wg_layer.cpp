@@ -300,15 +300,15 @@ WgLayerHookPtr WgLayerHook::Cast( const WgHookPtr& pHook )
 }
 
 //_____________________________________________________________________________
-WgCoord WgLayerHook::ScreenPos() const
+WgCoord WgLayerHook::GlobalPos() const
 {
-	return Parent()->ScreenPos() + m_geo.Pos();
+	return Parent()->GlobalPos() + m_geo.Pos();
 }
 
 //_____________________________________________________________________________
-WgRect WgLayerHook::ScreenGeo() const
+WgRect WgLayerHook::GlobalGeo() const
 {
-	return m_geo + Parent()->ScreenPos();
+	return m_geo + Parent()->GlobalPos();
 }
 
 //_____________________________________________________________________________

@@ -437,7 +437,7 @@ bool WgMenubar::_openMenu( int nb )
 	if( !pLayer )
 		return false;
 
-	pLayer->OpenPopup( pItem->m_pMenu, this, r - pLayer->ScreenPos(), WG_SOUTHWEST );
+	pLayer->OpenPopup( pItem->m_pMenu, this, r - pLayer->GlobalPos(), WG_SOUTHWEST );
 	return true;
 }
 

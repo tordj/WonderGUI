@@ -372,10 +372,10 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 	}
 */
 
-	// Test StraightList
+	// Test PackList
 
 	{
-		WgStraightListPtr pList = WgStraightList::Create();
+		WgPackListPtr pList = WgPackList::Create();
 
 		WgSkinPtr pPlate = pDB->GetSkin("plate");
 
@@ -383,7 +383,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 		pList->SetEntrySkin( pDB->GetSkin("listentry"));
 		pList->SetLassoSkin( WgBoxSkin::Create( WgColor(0,0,255,64), WgBorders(1), WgColor(0,0,255,128)) );
 		pList->SetSelectMode( WG_SELECT_MULTI );
-//		pList->SetOrientation( WG_HORIZONTAL );
+		pList->SetOrientation( WG_HORIZONTAL );
 
 		pList->header.SetSkin( pDB->GetSkin("plate") );
 		pList->header.label.Set( "LABEL" );
@@ -394,14 +394,24 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 
 		for( int i = 0 ; i < 20 ; i++ )
 		{
-			WgTextDisplayPtr pEntry = WgTextDisplay::Create();
+			WgPackPanelPtr pEntry = WgPackPanel::Create();
+			int id = rand() % 100;
+			pEntry->SetId(id);
 
+
+
+			WgTextDisplayPtr pLabel = WgTextDisplay::Create();
 			char str[20];
-			int val = rand() % 100;
+			sprintf( str, "ENTRY %d", id );
+			pLabel->Text()->Set( str );
+			pLabel->Text()->SetAlignment(WG_CENTER);
+			pLabel->SetMarkOpacity(0);
+			pEntry->AddWidget(pLabel);
+			
+			WgButtonPtr pButton = WgButton::Cast(pDB->CloneWidget("button"));
+			pButton->Label()->Set( "PUSH" );
+			pEntry->AddWidget(pButton);
 
-			sprintf( str, "ENTRY %d", val );
-			pEntry->SetId(val);
-			pEntry->Text()->Set( str );
 //			pList->AddWidget( pEntry );
 			pList->InsertWidgetSorted( pEntry );
 		}
@@ -409,9 +419,10 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 
 		WgScrollPanelPtr pWindow = WgScrollPanel::Cast(pDB->GetWidget("view"));
 		pWindow->SetContent( pList );
-		pWindow->SetContentSizePolicy( WgSizePolicy::WG_BOUND, WgSizePolicy::WG_DEFAULT );
+		pWindow->SetContentSizePolicy( WgSizePolicy::WG_DEFAULT, WgSizePolicy::WG_BOUND );
+//		pWindow->SetContentSizePolicy( WgSizePolicy::WG_BOUND, WgSizePolicy::WG_DEFAULT );
 
-		pFlex->AddWidget(pWindow, WgRect( 50,50,150,200) );
+		pFlex->AddWidget(pWindow, WgRect( 50,50,300,100) );
 
 	}
 	

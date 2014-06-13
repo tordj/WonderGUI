@@ -166,8 +166,8 @@ private:
 		WgSize		Size() const;
 		WgRect		Geo() const;
 
-		WgCoord		ScreenPos() const;
-		WgRect		ScreenGeo() const;
+		WgCoord		GlobalPos() const;
+		WgRect		GlobalGeo() const;
 
 		bool		SetVisible( bool bVisible ) { return false; }
 		WgMenu* Parent() const { return m_pParent; }

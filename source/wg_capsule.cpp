@@ -57,8 +57,8 @@ WgCoord WgCapsuleHook::Pos() const { return m_pParent->Pos(); }
 WgSize WgCapsuleHook::Size() const { 	return m_pParent->Size(); }
 WgRect WgCapsuleHook::Geo() const { return m_pParent->Geo(); }
 
-WgCoord WgCapsuleHook::ScreenPos() const { return m_pParent->ScreenPos(); }
-WgRect WgCapsuleHook::ScreenGeo() const { return m_pParent->ScreenGeo(); }
+WgCoord WgCapsuleHook::GlobalPos() const { return m_pParent->GlobalPos(); }
+WgRect WgCapsuleHook::GlobalGeo() const { return m_pParent->GlobalGeo(); }
 
 WgCapsulePtr WgCapsuleHook::Parent() const { return m_pParent; }
 

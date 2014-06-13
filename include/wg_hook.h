@@ -76,11 +76,11 @@ public:
 	static const char		CLASSNAME[];
 	static WgHookPtr		Cast( const WgHookPtr& pInterface );				// Provided just for completeness sake.
 
-	virtual WgCoord			Pos() const = 0;
-	virtual WgSize			Size() const = 0;
-	virtual WgRect			Geo() const = 0;
-	virtual WgCoord			ScreenPos() const = 0;
-	virtual WgRect			ScreenGeo() const = 0;
+	virtual WgCoord			Pos() const = 0;							///< Get the local position of the widget.
+	virtual WgSize			Size() const = 0;							///< Get the size of the widget.
+	virtual WgRect			Geo() const = 0;							///< Get the local geometry of the widget.
+	virtual WgCoord			GlobalPos() const = 0;
+	virtual WgRect			GlobalGeo() const = 0;
 
 	WgHookPtr			Prev() const { return _prevHook(); }
 	WgHookPtr			Next() const { return _nextHook(); }
@@ -109,6 +109,8 @@ protected:
 
 	virtual bool	_requestFocus();
 	virtual bool	_releaseFocus();
+
+	virtual WgRect	_windowSection() const { return Geo(); }			// Returns the window section within the canvas.
 
 	//
 

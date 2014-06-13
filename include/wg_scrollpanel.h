@@ -59,8 +59,8 @@ public:
 	WgCoord			Pos() const;
 	WgSize			Size() const;
 	WgRect			Geo() const;
-	WgCoord			ScreenPos() const;
-	WgRect			ScreenGeo() const;
+	WgCoord			GlobalPos() const;
+	WgRect			GlobalGeo() const;
 
 	WgScrollHookPtr 	Prev() const { return static_cast<WgScrollHook*>(_prevHook()); }
 	WgScrollHookPtr 	Next() const { return static_cast<WgScrollHook*>(_nextHook()); }
@@ -76,6 +76,8 @@ protected:
 	void			_requestRender();
 	void			_requestRender( const WgRect& rect );
 	void			_requestResize();
+
+	WgRect			_windowSection() const;
 
 	WgHook *		_prevHook() const;
 	WgHook *		_nextHook() const;

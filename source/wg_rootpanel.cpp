@@ -328,12 +328,12 @@ WgRect WgRootPanel::Hook::Geo() const
 	return m_pRoot->Geo();
 }
 
-WgCoord WgRootPanel::Hook::ScreenPos() const
+WgCoord WgRootPanel::Hook::GlobalPos() const
 {
 	return m_pRoot->Geo();
 }
 
-WgRect WgRootPanel::Hook::ScreenGeo() const
+WgRect WgRootPanel::Hook::GlobalGeo() const
 {
 	return m_pRoot->Geo();
 }

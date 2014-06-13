@@ -294,14 +294,14 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
 
-				m_text.CursorGoUp( 1, ScreenGeo() );
+				m_text.CursorGoUp( 1, GlobalGeo() );
 				break;
 
 			case WG_KEY_DOWN:
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
 
-				m_text.CursorGoDown( 1, ScreenGeo() );
+				m_text.CursorGoDown( 1, GlobalGeo() );
 				break;
 
 			case WG_KEY_BACKSPACE:
@@ -349,12 +349,12 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 
 	// Let text object handle its actions.
 /*
-	bool bChanged = m_text.OnAction( action, button_key, ScreenGeo(), WgCoord(info.x, info.y) );
+	bool bChanged = m_text.OnAction( action, button_key, GlobalGeo(), WgCoord(info.x, info.y) );
 	if( bChanged )
 		RequestRender();
 */
 
-	// Forward event depending on rules.
+	// Swallow event depending on rules.
 
 	if( pEvent->IsMouseButtonEvent() && IsSelectable() )
 	{

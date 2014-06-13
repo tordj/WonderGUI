@@ -507,18 +507,18 @@ bool WgFlexHook::MoveY( int y )
 	return true;
 }
 
-//____ WgFlexHook::ScreenPos() ________________________________________________
+//____ WgFlexHook::GlobalPos() ________________________________________________
 
-WgCoord WgFlexHook::ScreenPos() const
+WgCoord WgFlexHook::GlobalPos() const
 {
-	return m_realGeo.Pos() + m_pParent->ScreenPos();
+	return m_realGeo.Pos() + m_pParent->GlobalPos();
 }
 
-//____ WgFlexHook::ScreenGeo() ________________________________________________
+//____ WgFlexHook::GlobalGeo() ________________________________________________
 
-WgRect WgFlexHook::ScreenGeo() const
+WgRect WgFlexHook::GlobalGeo() const
 {
-	return m_realGeo + m_pParent->ScreenPos();
+	return m_realGeo + m_pParent->GlobalPos();
 }
 
 //____ WgFlexHook::_prevHook() ________________________________________________

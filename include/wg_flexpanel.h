@@ -139,8 +139,8 @@ public:
 	WgRect			Geo() const { return m_realGeo; }
 
 
-	WgCoord			ScreenPos() const;
-	WgRect			ScreenGeo() const;
+	WgCoord			GlobalPos() const;
+	WgRect			GlobalGeo() const;
 
 	WgFlexHookPtr	Prev() const { return _prev(); }
 	WgFlexHookPtr	Next() const { return _next(); }
