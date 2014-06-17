@@ -28,7 +28,7 @@
 #endif
 
 class WgShaderCapsule;
-typedef	WgSmartPtr<WgShaderCapsule,WgCapsulePtr>		WgShaderCapsulePtr;
+typedef	WgStrongPtr<WgShaderCapsule,WgCapsulePtr>		WgShaderCapsulePtr;
 typedef	WgWeakPtr<WgShaderCapsule,WgCapsuleWeakPtr>	WgShaderCapsuleWeakPtr;
 
 class WgShaderCapsule : public WgCapsule

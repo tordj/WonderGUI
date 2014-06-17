@@ -34,7 +34,7 @@
 #endif
 
 class WgSizeCapsule;
-typedef	WgSmartPtr<WgSizeCapsule,WgCapsulePtr>		WgSizeCapsulePtr;
+typedef	WgStrongPtr<WgSizeCapsule,WgCapsulePtr>		WgSizeCapsulePtr;
 typedef	WgWeakPtr<WgSizeCapsule,WgCapsulePtr>		WgSizeCapsuleWeakPtr;
 
 class WgSizeCapsule : public WgCapsule, public WgScalable

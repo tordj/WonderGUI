@@ -69,7 +69,7 @@ class WgResLoader;
 
 
 class WgResDB;
-typedef	WgSmartPtr<WgResDB,WgObjectPtr>		WgResDBPtr;
+typedef	WgStrongPtr<WgResDB,WgObjectPtr>	WgResDBPtr;
 typedef	WgWeakPtr<WgResDB,WgObjectWeakPtr>	WgResDBWeakPtr;
 
 class WgResDB : public WgObject

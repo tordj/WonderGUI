@@ -46,7 +46,7 @@ class WgWidget;
 
 
 class WgRootPanel;
-typedef	WgSmartPtr<WgRootPanel,WgObjectPtr>		WgRootPanelPtr;
+typedef	WgStrongPtr<WgRootPanel,WgObjectPtr>		WgRootPanelPtr;
 typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>	WgRootPanelWeakPtr;
 
 

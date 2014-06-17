@@ -32,7 +32,7 @@
 #endif
 
 class WgIEditText;
-typedef	WgISmartPtr<WgIEditText,WgIModifTextPtr>		WgIEditTextPtr;
+typedef	WgIStrongPtr<WgIEditText,WgIModifTextPtr>		WgIEditTextPtr;
 typedef	WgWeakPtr<WgIEditText,WgIModifTextPtr>		WgIEditTextWeakPtr;
 
 /**

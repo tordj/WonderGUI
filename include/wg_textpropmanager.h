@@ -45,7 +45,7 @@ private:
 
 	Uint16			m_id;				///< Handle of this WgTextprop.
 	Uint8			m_indexOfs;			///< Offset in index table, need to know for quick removal.
-	Uint32			m_refCnt;			///< Reference count. Nb of WgSmartPtr and WgChar referencing this prop.
+	Uint32			m_refCnt;			///< Reference count. Nb of WgStrongPtr and WgChar referencing this prop.
 	Sint16			m_next;				///< Handle of next WgTextprop with same checksum or -1.
 	Sint16			m_prev;				///< Handle of next WgTextprop with same checksum or -1.
 

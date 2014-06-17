@@ -49,7 +49,7 @@ class WgGfxAnim;
 class WgMenu;
 //typedef class WgMenu WgMenu;
 
-typedef	WgSmartPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;
+typedef	WgStrongPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;
 typedef	WgWeakPtr<WgMenu,WgWidgetWeakPtr>	WgMenuWeakPtr;
 
 enum WgMenuItemType

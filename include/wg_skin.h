@@ -37,7 +37,7 @@
 class WgSkin;
 class WgGfxDevice;
 
-typedef	WgSmartPtr<WgSkin,WgObjectPtr>	WgSkinPtr;
+typedef	WgStrongPtr<WgSkin,WgObjectPtr>	WgSkinPtr;
 
 
 class WgSkin : public WgObject

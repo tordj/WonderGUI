@@ -36,7 +36,7 @@
 #endif
 
 class WgVectorPanel;
-typedef	WgSmartPtr<WgVectorPanel,WgPanelPtr>		WgVectorPanelPtr;
+typedef	WgStrongPtr<WgVectorPanel,WgPanelPtr>		WgVectorPanelPtr;
 typedef	WgWeakPtr<WgVectorPanel,WgPanelWeakPtr>	WgVectorPanelWeakPtr;
 
 class WgVectorHook;

@@ -40,23 +40,23 @@ class WgRectLink;
 class WgRootPanel;
 
 class WgWidget;
-typedef WgSmartPtr<WgWidget,WgObjectPtr>			WgWidgetPtr;
+typedef WgStrongPtr<WgWidget,WgObjectPtr>			WgWidgetPtr;
 typedef WgWeakPtr<WgWidget,WgObjectWeakPtr>			WgWidgetWeakPtr;
 
 class WgContainer;
-typedef	WgSmartPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
+typedef	WgStrongPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
 typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 class WgRootPanel;
-typedef	WgSmartPtr<WgRootPanel,WgObjectPtr>			WgRootPanelPtr;
+typedef	WgStrongPtr<WgRootPanel,WgObjectPtr>			WgRootPanelPtr;
 typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>		WgRootPanelWeakPtr;
 
 class WgEventHandler;
-typedef	WgSmartPtr<WgEventHandler,WgObjectPtr>		WgEventHandlerPtr;
+typedef	WgStrongPtr<WgEventHandler,WgObjectPtr>		WgEventHandlerPtr;
 typedef	WgWeakPtr<WgEventHandler,WgObjectWeakPtr>	WgEventHandlerWeakPtr;
 
 class WgIWidgets;
-typedef	WgISmartPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsPtr;
+typedef	WgIStrongPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsPtr;
 typedef	WgWeakPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsWeakPtr;
 
 

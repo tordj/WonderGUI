@@ -30,7 +30,7 @@
 class WgPatches;
 
 class WgContainer;
-typedef	WgSmartPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
+typedef	WgStrongPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
 typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 /**

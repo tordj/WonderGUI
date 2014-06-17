@@ -38,7 +38,7 @@ public:
 
 
 class WgSizeBroker;
-typedef	WgSmartPtr<WgSizeBroker,WgObjectPtr>		WgSizeBrokerPtr;
+typedef	WgStrongPtr<WgSizeBroker,WgObjectPtr>		WgSizeBrokerPtr;
 typedef	WgWeakPtr<WgSizeBroker,WgObjectWeakPtr>	WgSizeBrokerWeakPtr;
 
 class WgSizeBroker : public WgObject

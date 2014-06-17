@@ -32,7 +32,7 @@
 #endif
 
 class WgFiller;
-typedef	WgSmartPtr<WgFiller,WgWidgetPtr>		WgFillerPtr;
+typedef	WgStrongPtr<WgFiller,WgWidgetPtr>		WgFillerPtr;
 typedef	WgWeakPtr<WgFiller,WgWidgetWeakPtr>	WgFillerWeakPtr;
 
 //____ WgFiller ____________________________________________________________

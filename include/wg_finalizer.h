@@ -29,7 +29,7 @@
 #endif
 
 class WgFinalizer;
-typedef	WgSmartPtr<WgFinalizer,WgObjectPtr>		WgFinalizerPtr;
+typedef	WgStrongPtr<WgFinalizer,WgObjectPtr>		WgFinalizerPtr;
 typedef	WgWeakPtr<WgFinalizer,WgObjectWeakPtr>	WgFinalizerWeakPtr;
 
 class WgFinalizer : public WgObject

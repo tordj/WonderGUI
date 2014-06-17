@@ -30,7 +30,7 @@
 
 
 class WgSurfaceFactory;
-typedef	WgSmartPtr<WgSurfaceFactory,WgObjectPtr>	WgSurfaceFactoryPtr;
+typedef	WgStrongPtr<WgSurfaceFactory,WgObjectPtr>	WgSurfaceFactoryPtr;
 typedef	WgWeakPtr<WgSurfaceFactory,WgObjectWeakPtr>	WgSurfaceFactoryWeakPtr;
 
 

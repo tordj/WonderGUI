@@ -28,7 +28,7 @@
 #endif
 
 class WgRadioButton;
-typedef	WgSmartPtr<WgRadioButton,WgCheckBoxPtr>	WgRadioButtonPtr;
+typedef	WgStrongPtr<WgRadioButton,WgCheckBoxPtr>	WgRadioButtonPtr;
 typedef	WgWeakPtr<WgRadioButton,WgCheckBoxWeakPtr>	WgRadioButtonWeakPtr;
 
 

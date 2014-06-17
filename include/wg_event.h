@@ -62,193 +62,193 @@ class WgModalLayer;
 typedef WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
 
 class WgEvent;
-typedef	WgSmartPtr<WgEvent,WgObjectPtr>		WgEventPtr;
+typedef	WgStrongPtr<WgEvent,WgObjectPtr>		WgEventPtr;
 typedef	WgWeakPtr<WgEvent,WgObjectWeakPtr>	WgEventWeakPtr;
 
 class WgFocusGainedEvent;
-typedef	WgSmartPtr<WgFocusGainedEvent,WgEventPtr>		WgFocusGainedEventPtr;
+typedef	WgStrongPtr<WgFocusGainedEvent,WgEventPtr>		WgFocusGainedEventPtr;
 typedef	WgWeakPtr<WgFocusGainedEvent,WgEventWeakPtr>	WgFocusGainedEventWeakPtr;
 
 class WgFocusLostEvent;
-typedef	WgSmartPtr<WgFocusLostEvent,WgEventPtr>		WgFocusLostEventPtr;
+typedef	WgStrongPtr<WgFocusLostEvent,WgEventPtr>		WgFocusLostEventPtr;
 typedef	WgWeakPtr<WgFocusLostEvent,WgEventWeakPtr>	WgFocusLostEventWeakPtr;
 
 class WgMouseEnterEvent;
-typedef	WgSmartPtr<WgMouseEnterEvent,WgEventPtr>		WgMouseEnterEventPtr;
+typedef	WgStrongPtr<WgMouseEnterEvent,WgEventPtr>		WgMouseEnterEventPtr;
 typedef	WgWeakPtr<WgMouseEnterEvent,WgEventWeakPtr>	WgMouseEnterEventWeakPtr;
 
 class WgMouseLeaveEvent;
-typedef	WgSmartPtr<WgMouseLeaveEvent,WgEventPtr>		WgMouseLeaveEventPtr;
+typedef	WgStrongPtr<WgMouseLeaveEvent,WgEventPtr>		WgMouseLeaveEventPtr;
 typedef	WgWeakPtr<WgMouseLeaveEvent,WgEventWeakPtr>	WgMouseLeaveEventWeakPtr;
 
 class WgMouseMoveEvent;
-typedef	WgSmartPtr<WgMouseMoveEvent,WgEventPtr>		WgMouseMoveEventPtr;
+typedef	WgStrongPtr<WgMouseMoveEvent,WgEventPtr>		WgMouseMoveEventPtr;
 typedef	WgWeakPtr<WgMouseMoveEvent,WgEventWeakPtr>	WgMouseMoveEventWeakPtr;
 
 class WgMousePositionEvent;
-typedef	WgSmartPtr<WgMousePositionEvent,WgEventPtr>		WgMousePositionEventPtr;
+typedef	WgStrongPtr<WgMousePositionEvent,WgEventPtr>		WgMousePositionEventPtr;
 typedef	WgWeakPtr<WgMousePositionEvent,WgEventWeakPtr>	WgMousePositionEventWeakPtr;
 
 class WgMouseButtonEvent;
-typedef	WgSmartPtr<WgMouseButtonEvent,WgEventPtr>		WgMouseButtonEventPtr;
+typedef	WgStrongPtr<WgMouseButtonEvent,WgEventPtr>		WgMouseButtonEventPtr;
 typedef	WgWeakPtr<WgMouseButtonEvent,WgEventWeakPtr>	WgMouseButtonEventWeakPtr;
 
 class WgMousePressEvent;
-typedef	WgSmartPtr<WgMousePressEvent,WgMouseButtonEventPtr>		WgMousePressEventPtr;
+typedef	WgStrongPtr<WgMousePressEvent,WgMouseButtonEventPtr>		WgMousePressEventPtr;
 typedef	WgWeakPtr<WgMousePressEvent,WgMouseButtonEventWeakPtr>	WgMousePressEventWeakPtr;
 
 class WgMouseReleaseEvent;
-typedef	WgSmartPtr<WgMouseReleaseEvent,WgMouseButtonEventPtr>		WgMouseReleaseEventPtr;
+typedef	WgStrongPtr<WgMouseReleaseEvent,WgMouseButtonEventPtr>		WgMouseReleaseEventPtr;
 typedef	WgWeakPtr<WgMouseReleaseEvent,WgMouseButtonEventWeakPtr>	WgMouseReleaseEventWeakPtr;
 
 class WgMouseRepeatEvent;
-typedef	WgSmartPtr<WgMouseRepeatEvent,WgMouseButtonEventPtr>		WgMouseRepeatEventPtr;
+typedef	WgStrongPtr<WgMouseRepeatEvent,WgMouseButtonEventPtr>		WgMouseRepeatEventPtr;
 typedef	WgWeakPtr<WgMouseRepeatEvent,WgMouseButtonEventWeakPtr>	WgMouseRepeatEventWeakPtr;
 
 class WgMouseClickEvent;
-typedef	WgSmartPtr<WgMouseClickEvent,WgMouseButtonEventPtr>		WgMouseClickEventPtr;
+typedef	WgStrongPtr<WgMouseClickEvent,WgMouseButtonEventPtr>		WgMouseClickEventPtr;
 typedef	WgWeakPtr<WgMouseClickEvent,WgMouseButtonEventWeakPtr>	WgMouseClickEventWeakPtr;
 
 class WgMouseDoubleClickEvent;
-typedef	WgSmartPtr<WgMouseDoubleClickEvent,WgMouseButtonEventPtr>		WgMouseDoubleClickEventPtr;
+typedef	WgStrongPtr<WgMouseDoubleClickEvent,WgMouseButtonEventPtr>		WgMouseDoubleClickEventPtr;
 typedef	WgWeakPtr<WgMouseDoubleClickEvent,WgMouseButtonEventWeakPtr>	WgMouseDoubleClickEventWeakPtr;
 
 class WgMouseDragEvent;
-typedef	WgSmartPtr<WgMouseDragEvent,WgMouseButtonEventPtr>		WgMouseDragEventPtr;
+typedef	WgStrongPtr<WgMouseDragEvent,WgMouseButtonEventPtr>		WgMouseDragEventPtr;
 typedef	WgWeakPtr<WgMouseDragEvent,WgMouseButtonEventWeakPtr>	WgMouseDragEventWeakPtr;
 
 class WgKeyEvent;
-typedef	WgSmartPtr<WgKeyEvent,WgEventPtr>		WgKeyEventPtr;
+typedef	WgStrongPtr<WgKeyEvent,WgEventPtr>		WgKeyEventPtr;
 typedef	WgWeakPtr<WgKeyEvent,WgEventWeakPtr>	WgKeyEventWeakPtr;
 
 class WgKeyPressEvent;
-typedef	WgSmartPtr<WgKeyPressEvent,WgKeyEventPtr>		WgKeyPressEventPtr;
+typedef	WgStrongPtr<WgKeyPressEvent,WgKeyEventPtr>		WgKeyPressEventPtr;
 typedef	WgWeakPtr<WgKeyPressEvent,WgKeyEventWeakPtr>	WgKeyPressEventWeakPtr;
 
 class WgKeyReleaseEvent;
-typedef	WgSmartPtr<WgKeyReleaseEvent,WgKeyEventPtr>		WgKeyReleaseEventPtr;
+typedef	WgStrongPtr<WgKeyReleaseEvent,WgKeyEventPtr>		WgKeyReleaseEventPtr;
 typedef	WgWeakPtr<WgKeyReleaseEvent,WgKeyEventWeakPtr>	WgKeyReleaseEventWeakPtr;
 
 class WgKeyRepeatEvent;
-typedef	WgSmartPtr<WgKeyRepeatEvent,WgKeyEventPtr>		WgKeyRepeatEventPtr;
+typedef	WgStrongPtr<WgKeyRepeatEvent,WgKeyEventPtr>		WgKeyRepeatEventPtr;
 typedef	WgWeakPtr<WgKeyRepeatEvent,WgKeyEventWeakPtr>	WgKeyRepeatEventWeakPtr;
 
 class WgCharacterEvent;
-typedef	WgSmartPtr<WgCharacterEvent,WgEventPtr>		WgCharacterEventPtr;
+typedef	WgStrongPtr<WgCharacterEvent,WgEventPtr>		WgCharacterEventPtr;
 typedef	WgWeakPtr<WgCharacterEvent,WgEventWeakPtr>	WgCharacterEventWeakPtr;
 
 class WgWheelRollEvent;
-typedef	WgSmartPtr<WgWheelRollEvent,WgEventPtr>		WgWheelRollEventPtr;
+typedef	WgStrongPtr<WgWheelRollEvent,WgEventPtr>		WgWheelRollEventPtr;
 typedef	WgWeakPtr<WgWheelRollEvent,WgEventWeakPtr>	WgWheelRollEventWeakPtr;
 
 class WgTickEvent;
-typedef	WgSmartPtr<WgTickEvent,WgEventPtr>		WgTickEventPtr;
+typedef	WgStrongPtr<WgTickEvent,WgEventPtr>		WgTickEventPtr;
 typedef	WgWeakPtr<WgTickEvent,WgEventWeakPtr>	WgTickEventWeakPtr;
 
 class WgPointerChangeEvent;
-typedef	WgSmartPtr<WgPointerChangeEvent,WgEventPtr>		WgPointerChangeEventPtr;
+typedef	WgStrongPtr<WgPointerChangeEvent,WgEventPtr>		WgPointerChangeEventPtr;
 typedef	WgWeakPtr<WgPointerChangeEvent,WgEventWeakPtr>	WgPointerChangeEventWeakPtr;
 
 class WgSelectEvent;
-typedef	WgSmartPtr<WgSelectEvent,WgEventPtr>		WgSelectEventPtr;
+typedef	WgStrongPtr<WgSelectEvent,WgEventPtr>		WgSelectEventPtr;
 typedef	WgWeakPtr<WgSelectEvent,WgEventWeakPtr>	WgSelectEventWeakPtr;
 
 class WgToggleEvent;
-typedef	WgSmartPtr<WgToggleEvent,WgEventPtr>		WgToggleEventPtr;
+typedef	WgStrongPtr<WgToggleEvent,WgEventPtr>		WgToggleEventPtr;
 typedef	WgWeakPtr<WgToggleEvent,WgEventWeakPtr>	WgToggleEventWeakPtr;
 
 class WgValueUpdateEvent;
-typedef	WgSmartPtr<WgValueUpdateEvent,WgEventPtr>		WgValueUpdateEventPtr;
+typedef	WgStrongPtr<WgValueUpdateEvent,WgEventPtr>		WgValueUpdateEventPtr;
 typedef	WgWeakPtr<WgValueUpdateEvent,WgEventWeakPtr>	WgValueUpdateEventWeakPtr;
 
 class WgRangeUpdateEvent;
-typedef	WgSmartPtr<WgRangeUpdateEvent,WgEventPtr>		WgRangeUpdateEventPtr;
+typedef	WgStrongPtr<WgRangeUpdateEvent,WgEventPtr>		WgRangeUpdateEventPtr;
 typedef	WgWeakPtr<WgRangeUpdateEvent,WgEventWeakPtr>	WgRangeUpdateEventWeakPtr;
 
 class WgTextEditEvent;
-typedef	WgSmartPtr<WgTextEditEvent,WgEventPtr>		WgTextEditEventPtr;
+typedef	WgStrongPtr<WgTextEditEvent,WgEventPtr>		WgTextEditEventPtr;
 typedef	WgWeakPtr<WgTextEditEvent,WgEventWeakPtr>	WgTextEditEventWeakPtr;
 
 class WgItemEvent;
-typedef	WgSmartPtr<WgItemEvent,WgEventPtr>		WgItemEventPtr;
+typedef	WgStrongPtr<WgItemEvent,WgEventPtr>		WgItemEventPtr;
 typedef	WgWeakPtr<WgItemEvent,WgEventWeakPtr>	WgItemEventWeakPtr;
 
 class WgItemListEvent;
-typedef	WgSmartPtr<WgItemListEvent,WgEventPtr>		WgItemListEventPtr;
+typedef	WgStrongPtr<WgItemListEvent,WgEventPtr>		WgItemListEventPtr;
 typedef	WgWeakPtr<WgItemListEvent,WgEventWeakPtr>	WgItemListEventWeakPtr;
 
 class WgItemsSelectEvent;
-typedef	WgSmartPtr<WgItemsSelectEvent,WgItemListEventPtr>		WgItemsSelectEventPtr;
+typedef	WgStrongPtr<WgItemsSelectEvent,WgItemListEventPtr>		WgItemsSelectEventPtr;
 typedef	WgWeakPtr<WgItemsSelectEvent,WgItemListEventWeakPtr>	WgItemsSelectEventWeakPtr;
 
 class WgItemsUnselectEvent;
-typedef	WgSmartPtr<WgItemsUnselectEvent,WgItemListEventPtr>		WgItemsUnselectEventPtr;
+typedef	WgStrongPtr<WgItemsUnselectEvent,WgItemListEventPtr>		WgItemsUnselectEventPtr;
 typedef	WgWeakPtr<WgItemsUnselectEvent,WgItemListEventWeakPtr>	WgItemsUnselectEventWeakPtr;
 
 class WgItemToggleEvent;
-typedef	WgSmartPtr<WgItemToggleEvent,WgItemEventPtr>		WgItemToggleEventPtr;
+typedef	WgStrongPtr<WgItemToggleEvent,WgItemEventPtr>		WgItemToggleEventPtr;
 typedef	WgWeakPtr<WgItemToggleEvent,WgItemEventWeakPtr>	WgItemToggleEventWeakPtr;
 
 class WgItemMousePressEvent;
-typedef	WgSmartPtr<WgItemMousePressEvent,WgItemEventPtr>		WgItemMousePressEventPtr;
+typedef	WgStrongPtr<WgItemMousePressEvent,WgItemEventPtr>		WgItemMousePressEventPtr;
 typedef	WgWeakPtr<WgItemMousePressEvent,WgItemEventWeakPtr>	WgItemMousePressEventWeakPtr;
 
 class WgPopupClosedEvent;
-typedef	WgSmartPtr<WgPopupClosedEvent,WgEventPtr>		WgPopupClosedEventPtr;
+typedef	WgStrongPtr<WgPopupClosedEvent,WgEventPtr>		WgPopupClosedEventPtr;
 typedef	WgWeakPtr<WgPopupClosedEvent,WgEventWeakPtr>	WgPopupClosedEventWeakPtr;
 
 class WgModalMoveOutsideEvent;
-typedef	WgSmartPtr<WgModalMoveOutsideEvent,WgEventPtr>		WgModalMoveOutsideEventPtr;
+typedef	WgStrongPtr<WgModalMoveOutsideEvent,WgEventPtr>		WgModalMoveOutsideEventPtr;
 typedef	WgWeakPtr<WgModalMoveOutsideEvent,WgEventWeakPtr>	WgModalMoveOutsideEventWeakPtr;
 
 class WgModalBlockedPressEvent;
-typedef	WgSmartPtr<WgModalBlockedPressEvent,WgEventPtr>		WgModalBlockedPressEventPtr;
+typedef	WgStrongPtr<WgModalBlockedPressEvent,WgEventPtr>		WgModalBlockedPressEventPtr;
 typedef	WgWeakPtr<WgModalBlockedPressEvent,WgEventWeakPtr>	WgModalBlockedPressEventWeakPtr;
 
 class WgModalBlockedReleaseEvent;
-typedef	WgSmartPtr<WgModalBlockedReleaseEvent,WgEventPtr>		WgModalBlockedReleaseEventPtr;
+typedef	WgStrongPtr<WgModalBlockedReleaseEvent,WgEventPtr>		WgModalBlockedReleaseEventPtr;
 typedef	WgWeakPtr<WgModalBlockedReleaseEvent,WgEventWeakPtr>	WgModalBlockedReleaseEventWeakPtr;
 
 //
 
 class WgLinkEvent;
-typedef	WgSmartPtr<WgLinkEvent,WgEventPtr>		WgLinkEventPtr;
+typedef	WgStrongPtr<WgLinkEvent,WgEventPtr>		WgLinkEventPtr;
 typedef	WgWeakPtr<WgLinkEvent,WgEventWeakPtr>	WgLinkEventWeakPtr;
 
 class WgLinkSelectEvent;
-typedef	WgSmartPtr<WgLinkSelectEvent,WgLinkEventPtr>		WgLinkSelectEventPtr;
+typedef	WgStrongPtr<WgLinkSelectEvent,WgLinkEventPtr>		WgLinkSelectEventPtr;
 typedef	WgWeakPtr<WgLinkSelectEvent,WgLinkEventWeakPtr>		WgLinkSelectEventWeakPtr;
 
 class WgLinkMouseEnterEvent;
-typedef	WgSmartPtr<WgLinkMouseEnterEvent,WgLinkEventPtr>		WgLinkMouseEnterEventPtr;
+typedef	WgStrongPtr<WgLinkMouseEnterEvent,WgLinkEventPtr>		WgLinkMouseEnterEventPtr;
 typedef	WgWeakPtr<WgLinkMouseEnterEvent,WgLinkEventWeakPtr>		WgLinkMouseEnterEventWeakPtr;
 
 class WgLinkMouseLeaveEvent;
-typedef	WgSmartPtr<WgLinkMouseLeaveEvent,WgLinkEventPtr>		WgLinkMouseLeaveEventPtr;
+typedef	WgStrongPtr<WgLinkMouseLeaveEvent,WgLinkEventPtr>		WgLinkMouseLeaveEventPtr;
 typedef	WgWeakPtr<WgLinkMouseLeaveEvent,WgLinkEventWeakPtr>		WgLinkMouseLeaveEventWeakPtr;
 
 class WgLinkMouseButtonEvent;
-typedef	WgSmartPtr<WgLinkMouseButtonEvent,WgLinkEventPtr>		WgLinkMouseButtonEventPtr;
+typedef	WgStrongPtr<WgLinkMouseButtonEvent,WgLinkEventPtr>		WgLinkMouseButtonEventPtr;
 typedef	WgWeakPtr<WgLinkMouseButtonEvent,WgLinkEventWeakPtr>		WgLinkMouseButtonEventWeakPtr;
 
 class WgLinkMousePressEvent;
-typedef	WgSmartPtr<WgLinkMousePressEvent,WgLinkMouseButtonEventPtr>		WgLinkMousePressEventPtr;
+typedef	WgStrongPtr<WgLinkMousePressEvent,WgLinkMouseButtonEventPtr>		WgLinkMousePressEventPtr;
 typedef	WgWeakPtr<WgLinkMousePressEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMousePressEventWeakPtr;
 
 class WgLinkMouseRepeatEvent;
-typedef	WgSmartPtr<WgLinkMouseRepeatEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseRepeatEventPtr;
+typedef	WgStrongPtr<WgLinkMouseRepeatEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseRepeatEventPtr;
 typedef	WgWeakPtr<WgLinkMouseRepeatEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMouseRepeatEventWeakPtr;
 
 class WgLinkMouseReleaseEvent;
-typedef	WgSmartPtr<WgLinkMouseReleaseEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseReleaseEventPtr;
+typedef	WgStrongPtr<WgLinkMouseReleaseEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseReleaseEventPtr;
 typedef	WgWeakPtr<WgLinkMouseReleaseEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMouseReleaseEventWeakPtr;
 
 class WgLinkMouseClickEvent;
-typedef	WgSmartPtr<WgLinkMouseClickEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseClickEventPtr;
+typedef	WgStrongPtr<WgLinkMouseClickEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseClickEventPtr;
 typedef	WgWeakPtr<WgLinkMouseClickEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMouseClickEventWeakPtr;
 
 class WgLinkMouseDoubleClickEvent;
-typedef	WgSmartPtr<WgLinkMouseDoubleClickEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseDoubleClickEventPtr;
+typedef	WgStrongPtr<WgLinkMouseDoubleClickEvent,WgLinkMouseButtonEventPtr>		WgLinkMouseDoubleClickEventPtr;
 typedef	WgWeakPtr<WgLinkMouseDoubleClickEvent,WgLinkMouseButtonEventWeakPtr>		WgLinkMouseDoubleClickEventWeakPtr;
 
 //____ WgEvent _________________________________________________________________

@@ -32,7 +32,7 @@
 
 class WgColorSkin;
 
-typedef	WgSmartPtr<WgColorSkin,WgSkinPtr>	WgColorSkinPtr;
+typedef	WgStrongPtr<WgColorSkin,WgSkinPtr>	WgColorSkinPtr;
 
 
 class WgColorSkin : public WgSkin

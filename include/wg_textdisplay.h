@@ -37,7 +37,7 @@
 #endif
 
 class WgTextDisplay;
-typedef	WgSmartPtr<WgTextDisplay,WgWidgetPtr>		WgTextDisplayPtr;
+typedef	WgStrongPtr<WgTextDisplay,WgWidgetPtr>		WgTextDisplayPtr;
 typedef	WgWeakPtr<WgTextDisplay,WgWidgetWeakPtr>	WgTextDisplayWeakPtr;
 
 class WgTextDisplay:public WgWidget, public WgTextHolder

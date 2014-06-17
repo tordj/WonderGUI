@@ -60,7 +60,7 @@ class	WgCursorInstance;
 class 	WgPen;
 
 class WgGfxDevice;
-typedef	WgSmartPtr<WgGfxDevice,WgObjectPtr>	WgGfxDevicePtr;
+typedef	WgStrongPtr<WgGfxDevice,WgObjectPtr>	WgGfxDevicePtr;
 typedef	WgWeakPtr<WgGfxDevice,WgObjectWeakPtr>	WgGfxDeviceWeakPtr;
 
 class WgGfxDevice : public WgObject

@@ -30,7 +30,7 @@
 #include <vector>
 
 class WgSoftSurface;
-typedef	WgSmartPtr<WgSoftSurface,WgSurfacePtr>		WgSoftSurfacePtr;
+typedef	WgStrongPtr<WgSoftSurface,WgSurfacePtr>		WgSoftSurfacePtr;
 typedef	WgWeakPtr<WgSoftSurface,WgSurfaceWeakPtr>	WgSoftSurfaceWeakPtr;
 
 //____ Class WgSoftSurface _____________________________________________________________________

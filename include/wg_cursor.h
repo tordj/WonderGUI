@@ -39,7 +39,7 @@
 class WgGlyphset;
 
 class WgCursor;
-typedef	WgSmartPtr<WgCursor,WgObjectPtr>		WgCursorPtr;
+typedef	WgStrongPtr<WgCursor,WgObjectPtr>		WgCursorPtr;
 typedef	WgWeakPtr<WgCursor,WgObjectWeakPtr>		WgCursorWeakPtr;
 
 //____ WgCursor _______________________________________________________________

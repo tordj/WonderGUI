@@ -57,7 +57,7 @@ class WgString;
 class WgCharBuffer;
 
 class WgIStaticText;
-typedef	WgISmartPtr<WgIStaticText,WgInterfacePtr>		WgIStaticTextPtr;
+typedef	WgIStrongPtr<WgIStaticText,WgInterfacePtr>		WgIStaticTextPtr;
 typedef	WgWeakPtr<WgIStaticText,WgInterfacePtr>		WgIStaticTextWeakPtr;
 
 /**

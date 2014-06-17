@@ -100,7 +100,7 @@ public:
 };
 
 class WgMenubar;
-typedef	WgSmartPtr<WgMenubar,WgWidgetPtr>		WgMenubarPtr;
+typedef	WgStrongPtr<WgMenubar,WgWidgetPtr>		WgMenubarPtr;
 typedef	WgWeakPtr<WgMenubar,WgWidgetWeakPtr>	WgMenubarWeakPtr;
 
 //____ WgMenubar ____________________________________________________________

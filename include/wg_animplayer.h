@@ -33,7 +33,7 @@
 #endif
 
 class WgAnimPlayer;
-typedef	WgSmartPtr<WgAnimPlayer,WgWidgetPtr>		WgAnimPlayerPtr;
+typedef	WgStrongPtr<WgAnimPlayer,WgWidgetPtr>		WgAnimPlayerPtr;
 typedef	WgWeakPtr<WgAnimPlayer,WgWidgetWeakPtr>	WgAnimPlayerWeakPtr;
 
 

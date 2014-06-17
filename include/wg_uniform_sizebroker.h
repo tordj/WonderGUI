@@ -28,7 +28,7 @@
 
 
 class WgUniformSizeBroker;
-typedef	WgSmartPtr<WgUniformSizeBroker,WgSizeBrokerPtr>		WgUniformSizeBrokerPtr;
+typedef	WgStrongPtr<WgUniformSizeBroker,WgSizeBrokerPtr>		WgUniformSizeBrokerPtr;
 typedef	WgWeakPtr<WgUniformSizeBroker,WgSizeBrokerWeakPtr>	WgUniformSizeBrokerWeakPtr;
 
 class WgUniformSizeBroker : public WgSizeBroker

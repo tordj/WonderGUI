@@ -38,7 +38,7 @@
 class WgHook;
 
 class WgIWidgets;
-typedef	WgISmartPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsPtr;
+typedef	WgIStrongPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsPtr;
 typedef	WgWeakPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsWeakPtr;
 
 class WgIWidgets : public WgInterface

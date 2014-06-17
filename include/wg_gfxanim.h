@@ -42,7 +42,7 @@
 class WgGfxFrame;
 
 class WgGfxAnim;
-typedef	WgSmartPtr<WgGfxAnim,WgAnimPtr>		WgGfxAnimPtr;
+typedef	WgStrongPtr<WgGfxAnim,WgAnimPtr>		WgGfxAnimPtr;
 typedef	WgWeakPtr<WgGfxAnim,WgAnimWeakPtr>	WgGfxAnimWeakPtr;
 
 //____ Class WgGfxAnim ________________________________________________________

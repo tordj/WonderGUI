@@ -38,7 +38,7 @@
 class WgPatches;
 
 class WgPanel;
-typedef	WgSmartPtr<WgPanel,WgContainerPtr>		WgPanelPtr;
+typedef	WgStrongPtr<WgPanel,WgContainerPtr>		WgPanelPtr;
 typedef	WgWeakPtr<WgPanel,WgContainerWeakPtr>	WgPanelWeakPtr;
 
 class WgPanelHook;

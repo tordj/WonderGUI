@@ -56,7 +56,7 @@ protected:
 };
 
 class WgAnim;
-typedef	WgSmartPtr<WgAnim,WgObjectPtr>		WgAnimPtr;
+typedef	WgStrongPtr<WgAnim,WgObjectPtr>		WgAnimPtr;
 typedef	WgWeakPtr<WgAnim,WgObjectWeakPtr>	WgAnimWeakPtr;
 
 //____ Class WgAnim ______________________________________________________

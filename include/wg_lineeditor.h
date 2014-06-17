@@ -36,7 +36,7 @@
 #endif
 
 class WgLineEditor;
-typedef	WgSmartPtr<WgLineEditor,WgWidgetPtr>		WgLineEditorPtr;
+typedef	WgStrongPtr<WgLineEditor,WgWidgetPtr>		WgLineEditorPtr;
 typedef	WgWeakPtr<WgLineEditor,WgWidgetWeakPtr>	WgLineEditorWeakPtr;
 
 //____ WgLineEditor ____________________________________________________________

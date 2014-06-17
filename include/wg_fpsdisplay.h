@@ -34,7 +34,7 @@
 class WgFont;
 
 class WgFpsDisplay;
-typedef	WgSmartPtr<WgFpsDisplay,WgWidgetPtr>		WgFpsDisplayPtr;
+typedef	WgStrongPtr<WgFpsDisplay,WgWidgetPtr>		WgFpsDisplayPtr;
 typedef	WgWeakPtr<WgFpsDisplay,WgWidgetWeakPtr>	WgFpsDisplayWeakPtr;
 
 class WgFpsDisplay:public WgWidget, public WgTextHolder

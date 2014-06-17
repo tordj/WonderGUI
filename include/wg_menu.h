@@ -58,7 +58,7 @@ class	WgGfxAnim;
 class	WgTextField;
 
 class WgMenu;
-typedef	WgSmartPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;
+typedef	WgStrongPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;
 typedef	WgWeakPtr<WgMenu,WgWidgetWeakPtr>	WgMenuWeakPtr;
 
 class WgMenu:public WgPanel, private WgScrollbarTarget

@@ -32,7 +32,7 @@
 #endif
 
 class WgSDLGfxDevice;
-typedef	WgSmartPtr<WgSDLGfxDevice,WgGfxDevicePtr>		WgSDLGfxDevicePtr;
+typedef	WgStrongPtr<WgSDLGfxDevice,WgGfxDevicePtr>		WgSDLGfxDevicePtr;
 typedef	WgWeakPtr<WgSDLGfxDevice,WgGfxDeviceWeakPtr>	WgSDLGfxDeviceWeakPtr;
 
 class WgSDLGfxDevice : public WgGfxDevice

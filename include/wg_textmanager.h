@@ -41,7 +41,7 @@ class WgTextField;
 
 
 class WgTextManager;
-typedef	WgSmartPtr<WgTextManager,WgObjectPtr>		WgTextManagerPtr;
+typedef	WgStrongPtr<WgTextManager,WgObjectPtr>		WgTextManagerPtr;
 typedef	WgWeakPtr<WgTextManager,WgObjectWeakPtr>	WgTextManagerWeakPtr;
 
 class WgTextManager : public WgObject

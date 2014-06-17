@@ -36,7 +36,7 @@
 #endif
 
 class WgBitmapGlyphs;
-typedef	WgSmartPtr<WgBitmapGlyphs,WgGlyphsetPtr>		WgBitmapGlyphsPtr;
+typedef	WgStrongPtr<WgBitmapGlyphs,WgGlyphsetPtr>		WgBitmapGlyphsPtr;
 typedef	WgWeakPtr<WgBitmapGlyphs,WgGlyphsetWeakPtr>		WgBitmapGlyphsWeakPtr;
 
 //____ WgBitmapGlyphs _____________________________________________________________

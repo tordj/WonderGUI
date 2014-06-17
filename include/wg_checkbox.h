@@ -38,7 +38,7 @@
 class	WgSurface;
 
 class WgCheckBox;
-typedef	WgSmartPtr<WgCheckBox,WgWidgetPtr>		WgCheckBoxPtr;
+typedef	WgStrongPtr<WgCheckBox,WgWidgetPtr>		WgCheckBoxPtr;
 typedef	WgWeakPtr<WgCheckBox,WgWidgetWeakPtr>	WgCheckBoxWeakPtr;
 
 

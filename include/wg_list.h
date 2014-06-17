@@ -38,7 +38,7 @@
 class WgIconField;
 
 class WgList;
-typedef	WgSmartPtr<WgList,WgContainerPtr>		WgListPtr;
+typedef	WgStrongPtr<WgList,WgContainerPtr>		WgListPtr;
 typedef	WgWeakPtr<WgList,WgContainerWeakPtr>	WgListWeakPtr;
 
 class WgListHook;

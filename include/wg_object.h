@@ -49,7 +49,7 @@ class WgObject
 {
 	friend class WgObjectPtr;
 	friend class WgObjectWeakPtr;
-	template<class T, class P> friend class WgSmartPtr;
+	template<class T, class P> friend class WgStrongPtr;
 	template<class T, class P> friend class WgWeakPtr;
 
 	friend class WgInterfacePtr;

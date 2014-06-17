@@ -31,7 +31,7 @@
 #endif
 
 class WgRefreshButton;
-typedef	WgSmartPtr<WgRefreshButton,WgButtonPtr>		WgRefreshButtonPtr;
+typedef	WgStrongPtr<WgRefreshButton,WgButtonPtr>		WgRefreshButtonPtr;
 typedef	WgWeakPtr<WgRefreshButton,WgButtonWeakPtr>		WgRefreshButtonWeakPtr;
 
 //____ WgWidgetRefreshButton ____________________________________________________________

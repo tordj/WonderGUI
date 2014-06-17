@@ -30,7 +30,7 @@
 #include <SDL/SDL.h>
 
 class WgSDLSurface;
-typedef	WgSmartPtr<WgSDLSurface,WgSurfacePtr>		WgSDLSurfacePtr;
+typedef	WgStrongPtr<WgSDLSurface,WgSurfacePtr>		WgSDLSurfacePtr;
 typedef	WgWeakPtr<WgSDLSurface,WgSurfaceWeakPtr>	WgSDLSurfaceWeakPtr;
 
 //____ WgSDLSurface ___________________________________________________________

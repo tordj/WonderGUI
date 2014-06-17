@@ -53,7 +53,7 @@ typedef struct FT_FaceRec_*	FT_Face;
 typedef struct  FT_Bitmap_ FT_Bitmap;
 
 class WgVectorGlyphs;
-typedef	WgSmartPtr<WgVectorGlyphs,WgGlyphsetPtr>		WgVectorGlyphsPtr;
+typedef	WgStrongPtr<WgVectorGlyphs,WgGlyphsetPtr>		WgVectorGlyphsPtr;
 typedef	WgWeakPtr<WgVectorGlyphs,WgGlyphsetWeakPtr>	WgVectorGlyphsWeakPtr;
 
 class WgVectorGlyphs : public WgGlyphset

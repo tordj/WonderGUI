@@ -40,7 +40,7 @@
 #endif
 
 class WgIStaticValue;
-typedef	WgISmartPtr<WgIStaticValue,WgInterfacePtr>		WgIStaticValuePtr;
+typedef	WgIStrongPtr<WgIStaticValue,WgInterfacePtr>		WgIStaticValuePtr;
 typedef	WgWeakPtr<WgIStaticValue,WgInterfacePtr>		WgIStaticValueWeakPtr;
 
 /**

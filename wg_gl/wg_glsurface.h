@@ -36,7 +36,7 @@
 #include <GL/gl.h>
 
 class WgGLSurface;
-typedef	WgSmartPtr<WgGLSurface,WgSurfacePtr>	WgGLSurfacePtr;
+typedef	WgStrongPtr<WgGLSurface,WgSurfacePtr>	WgGLSurfacePtr;
 typedef	WgWeakPtr<WgGLSurface,WgSurfaceWeakPtr>	WgGLSurfaceWeakPtr;
 
 //____ WgGLSurface _____________________________________________________________

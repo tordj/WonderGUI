@@ -36,7 +36,7 @@ class WgRect;
 class WgColor;
 
 class WgNullGfxDevice;
-typedef	WgSmartPtr<WgNullGfxDevice,WgGfxDevicePtr>	WgNullGfxDevicePtr;
+typedef	WgStrongPtr<WgNullGfxDevice,WgGfxDevicePtr>	WgNullGfxDevicePtr;
 typedef	WgWeakPtr<WgNullGfxDevice,WgGfxDeviceWeakPtr>	WgNullGfxDeviceWeakPtr;
 
 class WgNullGfxDevice : public WgGfxDevice

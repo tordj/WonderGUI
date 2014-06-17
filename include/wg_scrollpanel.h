@@ -39,7 +39,7 @@
 class WgScrollPanel;
 
 class WgScrollPanel;
-typedef	WgSmartPtr<WgScrollPanel,WgPanelPtr>		WgScrollPanelPtr;
+typedef	WgStrongPtr<WgScrollPanel,WgPanelPtr>		WgScrollPanelPtr;
 typedef	WgWeakPtr<WgScrollPanel,WgPanelWeakPtr>	WgScrollPanelWeakPtr;
 
 class WgScrollHook;

@@ -27,7 +27,7 @@
 #endif
 
 class WgLayer;
-typedef	WgSmartPtr<WgLayer,WgContainerPtr>	WgLayerPtr;
+typedef	WgStrongPtr<WgLayer,WgContainerPtr>	WgLayerPtr;
 typedef	WgWeakPtr<WgLayer,WgContainerPtr>	WgLayerWeakPtr;
 
 class WgLayerHook;

@@ -86,18 +86,18 @@ protected:
 };
 
 
-//____ WgSmartPtr ________________________________________________________
+//____ WgStrongPtr ________________________________________________________
 
-template<class T,class P> class WgSmartPtr : public P
+template<class T,class P> class WgStrongPtr : public P
 {
 public:
-	WgSmartPtr(T* p=0) : P( p ) {};
-	WgSmartPtr(const WgSmartPtr<T,P>& r) : P( (T*) r.m_pObj ) {};
-//	WgSmartPtr(const WgWeakPtr<T,P>& r) : P( (T*) r.GetRealPtr() ) {};
-	~WgSmartPtr() {};
+	WgStrongPtr(T* p=0) : P( p ) {};
+	WgStrongPtr(const WgStrongPtr<T,P>& r) : P( (T*) r.m_pObj ) {};
+//	WgStrongPtr(const WgWeakPtr<T,P>& r) : P( (T*) r.GetRealPtr() ) {};
+	~WgStrongPtr() {};
 
 /*
-    inline WgSmartPtr<T,P> & operator=( WgSmartPtr<T,P> const & r)
+    inline WgStrongPtr<T,P> & operator=( WgStrongPtr<T,P> const & r)
 	{
 		copy( r );
 		return *this;
@@ -106,8 +106,8 @@ public:
 	inline T & operator*() const { return * (T*) this->m_pObj; }
 	inline T * operator->() const{ return (T*) this->m_pObj; }
 
-	inline bool operator==(const WgSmartPtr<T,P>& other) const { return this->m_pObj == other.m_pObj; }
-	inline bool operator!=(const WgSmartPtr<T,P>& other) const { return this->m_pObj != other.m_pObj; }
+	inline bool operator==(const WgStrongPtr<T,P>& other) const { return this->m_pObj == other.m_pObj; }
+	inline bool operator!=(const WgStrongPtr<T,P>& other) const { return this->m_pObj != other.m_pObj; }
 
 //	inline operator bool() const { return (this->m_pObj != 0); }
 
@@ -173,7 +173,7 @@ template<class T,class P> class WgWeakPtr : public P
 public:
 	WgWeakPtr(T* p=0) : P( p ) {};
 	WgWeakPtr(const WgWeakPtr<T,P>& r) : P( r.GetRealPtr() ) {};
-//	WgWeakPtr(const WgSmartPtr<T,P>& r) : P( r.GetRealPtr() ) {};
+//	WgWeakPtr(const WgStrongPtr<T,P>& r) : P( r.GetRealPtr() ) {};
 	~WgWeakPtr() {};
 
 	inline T & operator*() const { return * GetRealPtr(); }
@@ -276,21 +276,21 @@ protected:
 	WgInterface *	m_pInterface;
 };
 
-//____ WgISmartPtr ________________________________________________________
+//____ WgIStrongPtr ________________________________________________________
 
-template<class T,class P> class WgISmartPtr : public P
+template<class T,class P> class WgIStrongPtr : public P
 {
 public:
-	WgISmartPtr( int dummy = 0 ) : P( 0, 0 ) {};
-	WgISmartPtr(WgObject* pObj, T* pInterface) : P( pObj, pInterface ) {};
-	WgISmartPtr(const WgISmartPtr<T,P>& r) : P( r.m_pObj, (T*) r.m_pInterface ) {};
-	~WgISmartPtr() {};
+	WgIStrongPtr( int dummy = 0 ) : P( 0, 0 ) {};
+	WgIStrongPtr(WgObject* pObj, T* pInterface) : P( pObj, pInterface ) {};
+	WgIStrongPtr(const WgIStrongPtr<T,P>& r) : P( r.m_pObj, (T*) r.m_pInterface ) {};
+	~WgIStrongPtr() {};
 
 	inline T & operator*() const { return * (T*) this->m_pInterface; }
 	inline T * operator->() const{ return (T*) this->m_pInterface; }
 
-	inline bool operator==(const WgISmartPtr<T,P>& other) const { return this->m_pInterface == other.m_pInterface; }
-	inline bool operator!=(const WgISmartPtr<T,P>& other) const { return this->m_pInterface != other.m_pInterface; }
+	inline bool operator==(const WgIStrongPtr<T,P>& other) const { return this->m_pInterface == other.m_pInterface; }
+	inline bool operator!=(const WgIStrongPtr<T,P>& other) const { return this->m_pInterface != other.m_pInterface; }
 
 	inline T * GetRealPtr() const { return (T*) this->m_pInterface; }
 };

@@ -44,7 +44,7 @@
 #endif
 
 class WgIIcon;
-typedef	WgISmartPtr<WgIIcon,WgInterfacePtr>		WgIIconPtr;
+typedef	WgIStrongPtr<WgIIcon,WgInterfacePtr>		WgIIconPtr;
 typedef	WgWeakPtr<WgIIcon,WgInterfacePtr>		WgIIconWeakPtr;
 
 class WgIIcon : public WgInterface

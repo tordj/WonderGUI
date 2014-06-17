@@ -92,7 +92,7 @@ struct WgUnderline
 };
 
 class WgGlyphset;
-typedef	WgSmartPtr<WgGlyphset,WgObjectPtr>		WgGlyphsetPtr;
+typedef	WgStrongPtr<WgGlyphset,WgObjectPtr>		WgGlyphsetPtr;
 typedef	WgWeakPtr<WgGlyphset,WgObjectWeakPtr>	WgGlyphsetWeakPtr;
 
 //____ WgGlyphset _____________________________________________________________

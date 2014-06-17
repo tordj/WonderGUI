@@ -28,7 +28,7 @@
 #endif
 
 class WgKnob;
-typedef	WgSmartPtr<WgKnob,WgWidgetPtr>		WgKnobPtr;
+typedef	WgStrongPtr<WgKnob,WgWidgetPtr>		WgKnobPtr;
 typedef	WgWeakPtr<WgKnob,WgWidgetWeakPtr>	WgKnobWeakPtr;
 
 //____ WgKnob ____________________________________________________________

@@ -57,11 +57,11 @@ class WgEventHandler;
 class WgPatches;
 
 class WgWidget;
-typedef	WgSmartPtr<WgWidget,WgObjectPtr>		WgWidgetPtr;
+typedef	WgStrongPtr<WgWidget,WgObjectPtr>		WgWidgetPtr;
 typedef	WgWeakPtr<WgWidget,WgObjectWeakPtr>	WgWidgetWeakPtr;
 
 class WgContainer;
-typedef	WgSmartPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
+typedef	WgStrongPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
 typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 

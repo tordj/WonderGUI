@@ -51,7 +51,7 @@
 
 
 class WgFont;
-typedef	WgSmartPtr<WgFont,WgObjectPtr>		WgFontPtr;
+typedef	WgStrongPtr<WgFont,WgObjectPtr>		WgFontPtr;
 typedef	WgWeakPtr<WgFont,WgObjectWeakPtr>	WgFontWeakPtr;
 
 //____ WgFont ______________________________________________________________

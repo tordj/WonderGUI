@@ -89,7 +89,7 @@ template<class T,class P> class WgHookTypePtr : public P
 public:
 	WgHookTypePtr(T* p=0) : P( p ) {};
 	WgHookTypePtr(const WgHookTypePtr<T,P>& r) : P( r.GetRealPtr() ) {};
-//	WgWeakPtr(const WgSmartPtr<T,P>& r) : P( r.GetRealPtr() ) {};
+//	WgWeakPtr(const WgStrongPtr<T,P>& r) : P( r.GetRealPtr() ) {};
 	~WgHookTypePtr() {};
 
 	inline T & operator*() const { return * GetRealPtr(); }

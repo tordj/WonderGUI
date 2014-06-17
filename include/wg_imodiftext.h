@@ -57,7 +57,7 @@ class WgString;
 class WgCharBuffer;
 
 class WgIModifText;
-typedef	WgISmartPtr<WgIModifText,WgIStaticTextPtr>		WgIModifTextPtr;
+typedef	WgIStrongPtr<WgIModifText,WgIStaticTextPtr>		WgIModifTextPtr;
 typedef	WgWeakPtr<WgIModifText,WgIStaticTextPtr>		WgIModifTextWeakPtr;
 
 /**

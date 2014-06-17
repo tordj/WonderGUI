@@ -45,7 +45,7 @@ class	WgFont;
 class	WgTextManager;
 
 class WgValueEditor;
-typedef	WgSmartPtr<WgValueEditor,WgWidgetPtr>		WgValueEditorPtr;
+typedef	WgStrongPtr<WgValueEditor,WgWidgetPtr>		WgValueEditorPtr;
 typedef	WgWeakPtr<WgValueEditor,WgWidgetWeakPtr>	WgValueEditorWeakPtr;
 
 class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder, private WgTextHolder

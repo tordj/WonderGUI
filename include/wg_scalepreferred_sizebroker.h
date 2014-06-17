@@ -27,7 +27,7 @@
 #endif
 
 class WgScalePreferredSizeBroker;
-typedef	WgSmartPtr<WgScalePreferredSizeBroker,WgSizeBrokerPtr>		WgScalePreferredSizeBrokerPtr;
+typedef	WgStrongPtr<WgScalePreferredSizeBroker,WgSizeBrokerPtr>		WgScalePreferredSizeBrokerPtr;
 typedef	WgWeakPtr<WgScalePreferredSizeBroker,WgSizeBrokerWeakPtr>	WgScalePreferredSizeBrokerWeakPtr;
 
 class WgScalePreferredSizeBroker : public WgSizeBroker

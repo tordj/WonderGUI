@@ -30,7 +30,7 @@
 #endif
 
 class WgBlob;
-typedef	WgSmartPtr<WgBlob,WgObjectPtr>		WgBlobPtr;
+typedef	WgStrongPtr<WgBlob,WgObjectPtr>		WgBlobPtr;
 typedef	WgWeakPtr<WgBlob,WgObjectWeakPtr>	WgBlobWeakPtr;
 
 class WgBlob : public WgObject

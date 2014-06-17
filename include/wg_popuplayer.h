@@ -29,7 +29,7 @@
 
 
 class WgPopupLayer;
-typedef	WgSmartPtr<WgPopupLayer,WgLayerPtr>		WgPopupLayerPtr;
+typedef	WgStrongPtr<WgPopupLayer,WgLayerPtr>		WgPopupLayerPtr;
 typedef	WgWeakPtr<WgPopupLayer,WgLayerWeakPtr>	WgPopupLayerWeakPtr;
 
 class WgPopupHook;

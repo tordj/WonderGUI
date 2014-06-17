@@ -33,7 +33,7 @@
 
 
 class WgSDLSurfaceFactory;
-typedef	WgSmartPtr<WgSDLSurfaceFactory,WgSurfaceFactoryPtr>		WgSDLSurfaceFactoryPtr;
+typedef	WgStrongPtr<WgSDLSurfaceFactory,WgSurfaceFactoryPtr>		WgSDLSurfaceFactoryPtr;
 typedef	WgWeakPtr<WgSDLSurfaceFactory,WgSurfaceFactoryWeakPtr>	WgSDLSurfaceFactoryWeakPtr;
 
 //____ WgSDLSurfaceFactory ____________________________________________________

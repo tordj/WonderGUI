@@ -32,7 +32,7 @@
 #endif
 
 class WgImage;
-typedef	WgSmartPtr<WgImage,WgWidgetPtr>		WgImagePtr;
+typedef	WgStrongPtr<WgImage,WgWidgetPtr>		WgImagePtr;
 typedef	WgWeakPtr<WgImage,WgWidgetWeakPtr>		WgImageWeakPtr;
 
 //____ WgImage __________________________________________________________

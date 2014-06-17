@@ -40,7 +40,7 @@
 class WgMenuItem;
 
 class WgCombobox;
-typedef	WgSmartPtr<WgCombobox,WgWidgetPtr>		WgComboboxPtr;
+typedef	WgStrongPtr<WgCombobox,WgWidgetPtr>		WgComboboxPtr;
 typedef	WgWeakPtr<WgCombobox,WgWidgetWeakPtr>	WgComboboxWeakPtr;
 
 class WgCombobox : public WgWidget, public WgTextHolder

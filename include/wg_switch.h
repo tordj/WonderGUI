@@ -28,7 +28,7 @@
 #endif
 
 class WgSwitch;
-typedef	WgSmartPtr<WgSwitch,WgWidgetPtr>		WgSwitchPtr;
+typedef	WgStrongPtr<WgSwitch,WgWidgetPtr>		WgSwitchPtr;
 typedef	WgWeakPtr<WgSwitch,WgWidgetWeakPtr>	WgSwitchWeakPtr;
 
 //____ WgSwitch ____________________________________________________________

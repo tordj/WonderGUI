@@ -35,7 +35,7 @@
 #endif
 
 class WgButton;
-typedef	WgSmartPtr<WgButton,WgWidgetPtr>		WgButtonPtr;
+typedef	WgStrongPtr<WgButton,WgWidgetPtr>		WgButtonPtr;
 typedef	WgWeakPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
 
 //____ WgButton ____________________________________________________________

@@ -39,7 +39,7 @@
 #endif
 
 class WgPackList;
-typedef	WgSmartPtr<WgPackList,WgListPtr>		WgPackListPtr;
+typedef	WgStrongPtr<WgPackList,WgListPtr>		WgPackListPtr;
 typedef	WgWeakPtr<WgPackList,WgListWeakPtr>	WgPackListWeakPtr;
 
 class WgPackListHook;

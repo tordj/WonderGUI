@@ -45,7 +45,7 @@
 #endif
 
 class WgValueFormat;
-typedef	WgSmartPtr<WgValueFormat,WgObjectPtr>		WgValueFormatPtr;
+typedef	WgStrongPtr<WgValueFormat,WgObjectPtr>		WgValueFormatPtr;
 typedef	WgWeakPtr<WgValueFormat,WgObjectWeakPtr>	WgValueFormatWeakPtr;
 
 //____ WgValueFormat __________________________________________________________

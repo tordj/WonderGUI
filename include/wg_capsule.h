@@ -28,7 +28,7 @@
 #endif
 
 class WgCapsule;
-typedef	WgSmartPtr<WgCapsule,WgContainerPtr>	WgCapsulePtr;
+typedef	WgStrongPtr<WgCapsule,WgContainerPtr>	WgCapsulePtr;
 typedef	WgWeakPtr<WgCapsule,WgContainerPtr>	WgCapsuleWeakPtr;
 
 class WgCapsuleHook;

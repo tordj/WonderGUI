@@ -54,7 +54,7 @@ public:
 
 
 class WgEventHandler;
-typedef	WgSmartPtr<WgEventHandler,WgObjectPtr>		WgEventHandlerPtr;
+typedef	WgStrongPtr<WgEventHandler,WgObjectPtr>		WgEventHandlerPtr;
 typedef	WgWeakPtr<WgEventHandler,WgObjectWeakPtr>	WgEventHandlerWeakPtr;
 
 typedef unsigned int	WgCallbackHandle;

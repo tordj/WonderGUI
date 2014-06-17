@@ -36,7 +36,7 @@
 
 
 class WgSoftGfxDevice;
-typedef	WgSmartPtr<WgSoftGfxDevice,WgGfxDevicePtr>	WgSoftGfxDevicePtr;
+typedef	WgStrongPtr<WgSoftGfxDevice,WgGfxDevicePtr>	WgSoftGfxDevicePtr;
 typedef	WgWeakPtr<WgSoftGfxDevice,WgGfxDeviceWeakPtr>	WgSoftGfxDeviceWeakPtr;
 
 class WgSoftGfxDevice : public WgGfxDevice

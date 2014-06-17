@@ -29,7 +29,7 @@
 
 
 class WgModalLayer;
-typedef	WgSmartPtr<WgModalLayer,WgLayerPtr>	WgModalLayerPtr;
+typedef	WgStrongPtr<WgModalLayer,WgLayerPtr>	WgModalLayerPtr;
 typedef	WgWeakPtr<WgModalLayer,WgLayerWeakPtr>	WgModalLayerWeakPtr;
 
 class WgModalHook;

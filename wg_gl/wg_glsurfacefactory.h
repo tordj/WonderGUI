@@ -28,7 +28,7 @@
 #endif
 
 class WgGLSurfaceFactory;
-typedef	WgSmartPtr<WgGLSurfaceFactory,WgSurfaceFactoryPtr>		WgGLSurfaceFactoryPtr;
+typedef	WgStrongPtr<WgGLSurfaceFactory,WgSurfaceFactoryPtr>		WgGLSurfaceFactoryPtr;
 typedef	WgWeakPtr<WgGLSurfaceFactory,WgSurfaceFactoryWeakPtr>	WgGLSurfaceFactoryWeakPtr;
 
 //____ WgGLSurfaceFactory _____________________________________________________
