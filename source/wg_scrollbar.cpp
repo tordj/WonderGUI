@@ -387,7 +387,7 @@ void WgScrollbar::_onStateChanged( WgState oldState )
 
 void WgScrollbar::_onRefresh( void )
 {
-	_requestRender();
+	WgWidget::_onRefresh();
 }
 
 //____ PreferredSize() _____________________________________________________________
@@ -617,9 +617,9 @@ WgScrollbar::Component WgScrollbar::_findMarkedComponent( WgCoord ofs )
 	// Then do a mark test against the footer buttons...
 
 	if( m_bHorizontal )
-		dest.x = dest.w - m_footerLen;
+		dest.x = canvas.x + canvas.w - m_footerLen;
 	else
-		dest.y = dest.h - m_footerLen;
+		dest.y = canvas.y + canvas.h - m_footerLen;
 
 	if( m_pBtnBwdSkin && (m_btnLayout & FOOTER_BWD) )
 	{
@@ -736,13 +736,20 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 
 			Component c = _findMarkedComponent(pos);
 
-			if( c != C_NONE && !m_states[c].IsHovered() )
+			if( (c != C_NONE && !m_states[c].IsHovered()) || (c == C_BG && m_states[C_HANDLE].IsHovered()) )
 			{
 				_unhoverReqRender();
 				m_states[c].SetHovered(true);
 				if( c == C_HANDLE )
 					m_states[C_BG].SetHovered(true);			// Always also mark bg if bar is marked.
 			}
+			else if( c == C_BG && m_states[C_HANDLE].IsHovered() )
+			{
+				m_states[C_HANDLE].SetHovered(false);
+				m_states[C_BG].SetHovered(false);
+				_requestRender();
+			}
+
 
 			break;
 		}
@@ -894,8 +901,8 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 				int pxlPos, pxlLen;
 				_viewToPosLen( &pxlPos, &pxlLen );
 				pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+				pHandler->SwallowEvent(pEvent);
 			}
-			pHandler->SwallowEvent(pEvent);
 		}
 		
         default:

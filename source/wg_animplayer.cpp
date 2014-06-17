@@ -287,7 +287,7 @@ void WgAnimPlayer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 void WgAnimPlayer::_onRefresh( void )
 {
-	_requestRender();
+	WgWidget::_onRefresh();
 }
 
 //____ _onCloneContent() _______________________________________________________

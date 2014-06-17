@@ -194,10 +194,9 @@ void WgValueEditor::_fieldModified( WgTextField * pField )
 void WgValueEditor::_onRefresh( void )
 {
 	if( m_text.Font() )
-	{
 		_regenText();
-		_requestRender();
-	}
+
+	WgWidget::_onRefresh();
 }
 
 

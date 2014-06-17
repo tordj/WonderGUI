@@ -152,7 +152,7 @@ bool WgScrollPanel::StepRight()
 
 bool WgScrollPanel::JumpUp()
 {
-	int ofs = m_viewPixOfs.y - (int)(ViewPixelLenY() * m_jumpSizeY);
+	int ofs = m_viewPixOfs.y - (int)(_paddedViewPixelLenY() * m_jumpSizeY);
 	if( ofs < 0 )
 		ofs = 0;
 
@@ -163,14 +163,14 @@ bool WgScrollPanel::JumpUp()
 
 bool WgScrollPanel::JumpDown()
 {
-	return SetViewPixelOfsY( m_viewPixOfs.y + (int)(ViewPixelLenY() * m_jumpSizeY) );
+	return SetViewPixelOfsY( m_viewPixOfs.y + (int)(_paddedViewPixelLenY() * m_jumpSizeY) );
 }
 
 //____ JumpLeft() _____________________________________________________________
 
 bool WgScrollPanel::JumpLeft()
 {
-	int ofs = m_viewPixOfs.x - (int)(ViewPixelLenX() * m_jumpSizeX);
+	int ofs = m_viewPixOfs.x - (int)(_paddedViewPixelLenX() * m_jumpSizeX);
 	if( ofs < 0 )
 		ofs = 0;
 
@@ -181,7 +181,7 @@ bool WgScrollPanel::JumpLeft()
 
 bool WgScrollPanel::JumpRight()
 {
-	return SetViewPixelOfsX( m_viewPixOfs.x + (int)(ViewPixelLenX() * m_jumpSizeX) );
+	return SetViewPixelOfsX( m_viewPixOfs.x + (int)(_paddedViewPixelLenX() * m_jumpSizeX) );
 }
 
 //____ _wheelRollX() ___________________________________________________________
@@ -324,6 +324,53 @@ float WgScrollPanel::ViewLenY()
 	return len;
 }
 
+//____ _paddedViewPixelLenX() _______________________________________________
+
+int WgScrollPanel::_paddedViewPixelLenX()
+{
+	WgSize	windowPadding = m_elements[WINDOW]._widget() ? m_elements[WINDOW]._widget()->_windowPadding() : WgSize(0,0);
+	return m_elements[WINDOW].m_windowGeo.w - windowPadding.w;
+}
+
+//____ _paddedViewPixelLenY() ________________________________________________________
+
+int WgScrollPanel::_paddedViewPixelLenY()
+{
+	WgSize	windowPadding = m_elements[WINDOW]._widget() ? m_elements[WINDOW]._widget()->_windowPadding() : WgSize(0,0);
+	return m_elements[WINDOW].m_windowGeo.h - windowPadding.h;
+}
+
+//____ _paddedViewLenX() _____________________________________________________________
+
+float WgScrollPanel::_paddedViewLenX()
+{
+	if( m_contentSize.w == 0 )
+		return 1.0f;
+
+	float len = _paddedViewPixelLenX()/(float)m_contentSize.w;
+
+	if( len > 1.f )
+		len = 1.f;
+
+	return len;
+}
+
+//____ _paddedViewLenY() _____________________________________________________________
+
+float WgScrollPanel::_paddedViewLenY()
+{
+	if( m_contentSize.h == 0 )
+		return 1.0f;
+
+	float len = _paddedViewPixelLenY()/(float)m_contentSize.h;
+
+	if( len > 1.f )
+		len = 1.f;
+
+	return len;
+}
+
+
 //____ SetViewPixelOfs() ______________________________________________________
 
 bool WgScrollPanel::SetViewPixelOfs( int x, int y )
@@ -371,21 +418,14 @@ bool WgScrollPanel::SetViewPixelOfs( int x, int y )
 		bChangedY = true;
 	}
 
-	float	ofsX = ViewOfsX();
-	float	ofsY = ViewOfsY();
-
-	if( bChangedX )
-	{
-		m_scrollbarTargets[1]._updateScrollbar( ViewOfsX(), ViewLenX() );
-	}
-
-	if( bChangedY )
-	{
-		m_scrollbarTargets[0]._updateScrollbar( ViewOfsY(), ViewLenY() );
-	}
-
 	if( bChangedX || bChangedY )
 	{
+		if( bChangedX )
+			m_scrollbarTargets[1]._updateScrollbar( ViewOfsX(), _paddedViewLenX() );
+
+		if( bChangedY )
+			m_scrollbarTargets[0]._updateScrollbar( ViewOfsY(), _paddedViewLenY() );
+
 		m_elements[WINDOW].m_canvasGeo = _genContentCanvasGeo( m_elements[WINDOW].m_windowGeo, m_contentSize, m_contentOrigo, m_viewPixOfs );
 		_requestRender( m_elements[WINDOW].m_windowGeo );
 	}
@@ -989,10 +1029,10 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 	// Notify scrollbars of any change to content size, view size or view offset.
 
 	if( bNewOfsX || bNewWidth || bNewContentWidth )
-		m_scrollbarTargets[1]._updateScrollbar( ViewOfsX(), ViewLenX() );
+		m_scrollbarTargets[1]._updateScrollbar( ViewOfsX(), _paddedViewLenX() );
 
 	if( bNewOfsY || bNewHeight || bNewContentHeight )
-		m_scrollbarTargets[0]._updateScrollbar( ViewOfsY(), ViewLenY() );
+		m_scrollbarTargets[0]._updateScrollbar( ViewOfsY(), _paddedViewLenY() );
 
 /*
 	// Send signals if views size or position over content has changed
@@ -1062,6 +1102,16 @@ WgRect WgScrollPanel::_genContentCanvasGeo( const WgRect& window, WgSize content
 	return out;
 }
 
+//____ _onRequestResize() _____________________________________________________
+
+void WgScrollPanel::_onRequestResize( WgScrollHook * pHook )
+{
+	_updateElementGeo( Size() );
+
+
+}
+
+
 //____ _onNewSize() ____________________________________________________________
 
 void WgScrollPanel::_onNewSize( const WgSize& size )
@@ -1073,6 +1123,8 @@ void WgScrollPanel::_onNewSize( const WgSize& size )
 
 void WgScrollPanel::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
+	WgPanel::_onEvent(_pEvent,pHandler);
+
 	switch( _pEvent->Type() )
 	{
 		case WG_EVENT_WHEEL_ROLL:
@@ -1096,8 +1148,6 @@ void WgScrollPanel::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandl
 		default:
 			break;
 	}
-
-	WgPanel::_onEvent(_pEvent,pHandler);
 }
 
 //____ _renderPatches() ________________________________________________________
@@ -1123,7 +1173,9 @@ void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 	if( m_pSkin )
 	{
 		WgRect skinWindow = m_elements[WINDOW].m_windowGeo + _canvas.Pos();
-		WgRect skinCanvas = WgRect( skinWindow.Pos() - m_viewPixOfs, m_contentSize );
+
+		WgSize skinSize = WgSize::Max(m_contentSize, m_elements[WINDOW].m_windowGeo);
+		WgRect skinCanvas = WgRect( skinWindow.Pos() - m_viewPixOfs, skinSize );
 
 		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
 		{
@@ -1509,7 +1561,7 @@ void WgScrollHook::_requestRender( const WgRect& rect )
 
 void WgScrollHook::_requestResize()
 {
-	//TODO: Figure out how this should work and implement.
+	m_pView->_onRequestResize(this);
 }
 
 //____ WgScrollHook::_windowSection() ______________________________________________

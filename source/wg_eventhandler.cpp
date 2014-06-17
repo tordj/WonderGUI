@@ -727,7 +727,7 @@ void WgEventHandler::_processWidgetEventCallbacks( const WgEventPtr& pEvent, WgW
 	{
 		std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it;
 
-		it = m_widgetCallbacks.find(pEvent->WidgetWeakPtr());
+		it = m_widgetCallbacks.find(WgWidgetWeakPtr(pWidget));
 		if( it != m_widgetCallbacks.end() )
 			pChain = &(it->second);
 	}

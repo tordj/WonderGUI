@@ -428,10 +428,19 @@ void WgWidget::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 		_onStateChanged( oldState );
 }
 
+//____ _onAlphaTest() _________________________________________________________
+
 bool WgWidget::_onAlphaTest( const WgCoord& ofs )
 {
 	if( m_pSkin )
 		return m_pSkin->MarkTest( ofs, WgRect(0,0,Size()), m_state, m_markOpacity );
 
 	return false;
+}
+
+//____ _windowPadding() _______________________________________________________
+
+WgSize WgWidget::_windowPadding() const 
+{
+	return WgSize(0,0);
 }

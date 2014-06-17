@@ -33,7 +33,8 @@ void cbCloseModal( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
 
 void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler );
 void cbResize( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
-
+void cbIncreaseEntryPadding( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
+void cbAddEntryText( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
 
 WgModalLayer * g_pModal = 0;
 
@@ -376,14 +377,13 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 
 	{
 		WgPackListPtr pList = WgPackList::Create();
-
 		WgSkinPtr pPlate = pDB->GetSkin("plate");
 
 		pList->SetSkin( pPlate );
 		pList->SetEntrySkin( pDB->GetSkin("listentry"));
 		pList->SetLassoSkin( WgBoxSkin::Create( WgColor(0,0,255,64), WgBorders(1), WgColor(0,0,255,128)) );
 		pList->SetSelectMode( WG_SELECT_MULTI );
-		pList->SetOrientation( WG_HORIZONTAL );
+//		pList->SetOrientation( WG_HORIZONTAL );
 
 		pList->header.SetSkin( pDB->GetSkin("plate") );
 		pList->header.label.Set( "LABEL" );
@@ -394,35 +394,53 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 
 		for( int i = 0 ; i < 20 ; i++ )
 		{
-			WgPackPanelPtr pEntry = WgPackPanel::Create();
 			int id = rand() % 100;
+/*			WgPackPanelPtr pEntry = WgPackPanel::Create();
 			pEntry->SetId(id);
-
+*/
 
 
 			WgTextDisplayPtr pLabel = WgTextDisplay::Create();
-			char str[20];
+			char str[40];
 			sprintf( str, "ENTRY %d", id );
 			pLabel->Text()->Set( str );
 			pLabel->Text()->SetAlignment(WG_CENTER);
+			pLabel->Text()->SetWrap(true);
 			pLabel->SetMarkOpacity(0);
-			pEntry->AddWidget(pLabel);
+			pLabel->SetId(id);
+/*			pEntry->AddWidget(pLabel);
 			
 			WgButtonPtr pButton = WgButton::Cast(pDB->CloneWidget("button"));
 			pButton->Label()->Set( "PUSH" );
 			pEntry->AddWidget(pButton);
-
+*/
 //			pList->AddWidget( pEntry );
-			pList->InsertWidgetSorted( pEntry );
+			pList->InsertWidgetSorted( pLabel );
 		}
 
 
 		WgScrollPanelPtr pWindow = WgScrollPanel::Cast(pDB->GetWidget("view"));
 		pWindow->SetContent( pList );
-		pWindow->SetContentSizePolicy( WgSizePolicy::WG_DEFAULT, WgSizePolicy::WG_BOUND );
-//		pWindow->SetContentSizePolicy( WgSizePolicy::WG_BOUND, WgSizePolicy::WG_DEFAULT );
+//		pWindow->SetContentSizePolicy( WgSizePolicy::WG_DEFAULT, WgSizePolicy::WG_BOUND );
+		pWindow->SetContentSizePolicy( WgSizePolicy::WG_BOUND, WgSizePolicy::WG_DEFAULT );
 
-		pFlex->AddWidget(pWindow, WgRect( 50,50,300,100) );
+		pFlex->AddWidget(pWindow, WgRect( 50,50,200,200) );
+
+
+		WgPackPanelPtr pButtonPanel = WgPackPanel::Create();
+		pButtonPanel->SetOrientation( WG_VERTICAL );
+		pFlex->AddWidget(pButtonPanel, WgCoord(300,50) );
+
+
+		WgButtonPtr pButton = WgButton::Cast(pDB->CloneWidget("button"));
+		pButton->Label()->Set("ADD ENTRY PADDING");
+		pButtonPanel->AddWidget(pButton );
+		pRoot->EventHandler()->AddCallback( WgEventFilter::Select(pButton), cbIncreaseEntryPadding, pList );
+
+		WgButtonPtr pButton2 = WgButton::Cast(pDB->CloneWidget("button"));
+		pButton2->Label()->Set("ADD ENTRY");
+		pButtonPanel->AddWidget(pButton2 );
+		pRoot->EventHandler()->AddCallback( WgEventFilter::Select(pButton2), cbAddEntryText, pList->FirstWidget() );
 
 	}
 	
@@ -782,6 +800,34 @@ void cbResize( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
 	pHook->SetSize( pHook->Size() + WgSize(dragged.x,dragged.y) );
 }
 
+//____ cbIncreaseEntryPadding() _________________________________________________________
+
+void cbIncreaseEntryPadding( const WgEventPtr& _pEvent, const WgObjectPtr& _pWidget )
+{
+	WgWidgetPtr pWidget = WgWidget::Cast(_pWidget);
+
+	WgExtendedSkinPtr pSkin = WgExtendedSkin::Cast(pWidget->Skin());
+		
+	WgRect contentRect = pSkin->ContentRect(WgRect(0,0,100,100), WG_STATE_NORMAL );
+	WgBorders padding( contentRect.Top(), 100 - contentRect.Right(), 100 - contentRect.Bottom(), contentRect.Left() );
+
+	padding.top++;
+	padding.left++;
+	pSkin->SetContentPadding(padding);
+	pWidget->Refresh();
+
+//	WgListPtr pList = WgList::Cast(pWidget);
+//	pList->SetEntrySkin(pSkin);
+
+}
+
+//____ cbAddEntryText() _________________________________________________________
+
+void cbAddEntryText( const WgEventPtr& _pEvent, const WgObjectPtr& _pWidget )
+{
+	WgTextDisplayPtr pWidget = WgTextDisplay::Cast(_pWidget);
+	pWidget->Text()->Append("**** **** **** **** **** **** ****");
+}
 
 
 //____ addResizablePanel() _________________________________________________

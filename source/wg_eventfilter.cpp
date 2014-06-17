@@ -548,6 +548,9 @@ bool WgEventFilter::_filterType( const WgEventPtr& pEvent, const WgEventFilter& 
 
 bool WgEventFilter::_filterTypeWidget( const WgEventPtr& pEvent, const WgEventFilter& filter )
 {
+	if( pEvent->Type() == WG_EVENT_SELECT )
+		int x = 0;
+
 	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
 		return true;
 

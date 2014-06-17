@@ -855,6 +855,7 @@ WgSelectEvent::WgSelectEvent( WgWidget * pWidget )
 {
 	m_type 			= WG_EVENT_SELECT;
 	m_pWidget 		= pWidget;
+	m_bIsForWidget	= true;
 }
 
 bool WgSelectEvent::IsInstanceOf( const char * pClassName ) const
@@ -886,6 +887,7 @@ WgToggleEvent::WgToggleEvent( WgWidget * pWidget, bool bSet )
 {
 	m_type = WG_EVENT_TOGGLE;
 	m_pWidget = pWidget;
+	m_bIsForWidget	= true;
 	m_bSet = bSet;
 }
 
@@ -923,6 +925,7 @@ WgValueUpdateEvent::WgValueUpdateEvent( WgWidget * pWidget, int64_t value, doubl
 {
 	m_type = WG_EVENT_VALUE_UPDATE;
 	m_pWidget = pWidget;
+	m_bIsForWidget	= true;
 	m_value = value;
 	m_fraction = fraction;
 	m_bFinal = bFinal;
@@ -972,6 +975,7 @@ WgRangeUpdateEvent::WgRangeUpdateEvent( WgWidget * pWidget, int intOfs, int intL
 {
 	m_type = WG_EVENT_RANGE_UPDATE;
 	m_pWidget = pWidget;
+	m_bIsForWidget	= true;
 	m_ofs		= intOfs;
 	m_length	= intLength;
 	m_fracOfs	= fracOfs;
@@ -1039,6 +1043,7 @@ WgTextEditEvent::WgTextEditEvent( WgWidget * pWidget, WgTextField * pText, bool 
 {
 	m_type 		= WG_EVENT_TEXT_EDIT;
 	m_pWidget 	= pWidget;
+	m_bIsForWidget	= true;
 	m_pText 	= WgIEditTextPtr(pWidget, pText);
 	m_bFinal	= bFinal;
 }
@@ -1076,6 +1081,7 @@ const char WgItemEvent::CLASSNAME[] = {"ItemEvent"};
 WgItemEvent::WgItemEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject ) : m_item(itemId,pItemObject)
 {
 	m_pWidget 	= pWidget;
+	m_bIsForWidget	= true;
 }
 
 bool WgItemEvent::IsInstanceOf( const char * pClassName ) const
@@ -1116,6 +1122,7 @@ const char WgItemToggleEvent::CLASSNAME[] = {"ItemToggleEvent"};
 WgItemToggleEvent::WgItemToggleEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject, bool bSet ) : WgItemEvent(pWidget,itemId,pItemObject)
 {
 	m_type = WG_EVENT_ITEM_TOGGLE;
+	m_bIsForWidget	= true;
 	m_bSet = bSet;
 }
 
@@ -1152,6 +1159,7 @@ const char WgItemMousePressEvent::CLASSNAME[] = {"ItemMousePressEvent"};
 WgItemMousePressEvent::WgItemMousePressEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject, WgMouseButton button ) : WgItemEvent(pWidget,itemId,pItemObject)
 {
 	m_type = WG_EVENT_ITEM_MOUSE_PRESS;
+	m_bIsForWidget	= true;
 	m_button = button;
 }
 
@@ -1188,6 +1196,7 @@ const char WgItemListEvent::CLASSNAME[] = {"ItemListEvent"};
 WgItemListEvent::WgItemListEvent( WgWidget * pWidget, int nbItems, WgItemInfo * pItems )
 {
 	m_pWidget 	= pWidget;
+	m_bIsForWidget	= true;
 	m_nbItems	= nbItems;
 	m_pItems	= pItems;
 }
@@ -1466,6 +1475,7 @@ WgLinkSelectEvent::WgLinkSelectEvent( WgWidget * pWidget, std::string link )
 {
 	m_type			= WG_EVENT_LINK_SELECT;
 	m_pWidget		= pWidget;
+	m_bIsForWidget	= true;
 	m_link			= link;
 }
 
@@ -1498,6 +1508,7 @@ WgLinkMouseEnterEvent::WgLinkMouseEnterEvent( WgWidget * pWidget, std::string li
 {
 	m_type			= WG_EVENT_LINK_MOUSE_ENTER;
 	m_pWidget		= pWidget;
+	m_bIsForWidget	= true;
 	m_link			= link;
 }
 
@@ -1530,6 +1541,7 @@ WgLinkMouseLeaveEvent::WgLinkMouseLeaveEvent( WgWidget * pWidget, std::string li
 {
 	m_type			= WG_EVENT_LINK_MOUSE_LEAVE;
 	m_pWidget		= pWidget;
+	m_bIsForWidget	= true;
 	m_link			= link;
 }
 
@@ -1592,6 +1604,7 @@ WgLinkMousePressEvent::WgLinkMousePressEvent( WgWidget * pWidget, std::string li
 {
 	m_type			= WG_EVENT_LINK_MOUSE_PRESS;
 	m_pWidget		= pWidget;
+	m_bIsForWidget	= true;
 	m_link			= link;
 	m_button		= button;
 }
@@ -1625,6 +1638,7 @@ WgLinkMouseRepeatEvent::WgLinkMouseRepeatEvent( WgWidget * pWidget, std::string 
 {
 	m_type			= WG_EVENT_LINK_MOUSE_REPEAT;
 	m_pWidget		= pWidget;
+	m_bIsForWidget	= true;
 	m_link			= link;
 	m_button		= button;
 }
@@ -1658,6 +1672,7 @@ WgLinkMouseReleaseEvent::WgLinkMouseReleaseEvent( WgWidget * pWidget, std::strin
 {
 	m_type			= WG_EVENT_LINK_MOUSE_RELEASE;
 	m_pWidget		= pWidget;
+	m_bIsForWidget	= true;
 	m_link			= link;
 	m_button		= button;
 }
@@ -1691,6 +1706,7 @@ WgLinkMouseClickEvent::WgLinkMouseClickEvent( WgWidget * pWidget, std::string li
 {
 	m_type			= WG_EVENT_LINK_MOUSE_CLICK;
 	m_pWidget		= pWidget;
+	m_bIsForWidget	= true;
 	m_link			= link;
 	m_button		= button;
 }
@@ -1724,6 +1740,7 @@ WgLinkMouseDoubleClickEvent::WgLinkMouseDoubleClickEvent( WgWidget * pWidget, st
 {
 	m_type			= WG_EVENT_LINK_MOUSE_DOUBLE_CLICK;
 	m_pWidget		= pWidget;
+	m_bIsForWidget	= true;
 	m_link			= link;
 	m_button		= button;
 }

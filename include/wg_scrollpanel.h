@@ -274,6 +274,7 @@ protected:
 	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	void		_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+	void		_onRequestResize( WgScrollHook * pHook );
 
 	bool		_onAlphaTest( const WgCoord& ofs );
 	void		_onCloneContent( const WgWidget * _pOrg );
@@ -292,6 +293,12 @@ protected:
 
 	bool		_wheelRollX(int distance);
 	bool		_wheelRollY(int distance);
+
+	int			_paddedViewPixelLenX();				// Width of view after childs window padding has been applied.
+	int			_paddedViewPixelLenY();				// Height of view after childs window padding has been applied.
+	float		_paddedViewLenX();
+	float		_paddedViewLenY();
+
 
 
 	WgSize		m_contentSize;

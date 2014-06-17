@@ -364,7 +364,7 @@ void WgMenubar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 
 void WgMenubar::_onRefresh( void )
 {
-	_requestRender();
+	WgWidget::_onRefresh();
 }
 
 //____ _onAlphaTest() ___________________________________________________

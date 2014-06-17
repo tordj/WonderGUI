@@ -216,6 +216,8 @@ protected:
 	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs );
 
+	virtual WgSize	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
+
 	//
 
 	int				m_id;

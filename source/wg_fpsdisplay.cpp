@@ -146,6 +146,8 @@ void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 void WgFpsDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 {
+	WgWidget::_onEvent(pEvent,pHandler);
+
 	switch( pEvent->Type() )
 	{
 		case WG_EVENT_TICK:

@@ -1192,7 +1192,7 @@ void WgTablist::_renderTab( WgGfxDevice * pDevice, WgTab& tab, WgRect dest, cons
 void WgTablist::_onRefresh( void )
 {
 	_resizeTabs();
-	_requestRender();
+	WgWidget::_onRefresh();
 }
 
 //____ _onNewSize() ____________________________________________________________
@@ -1207,6 +1207,8 @@ void WgTablist::_onNewSize( const WgSize& size )
 
 void WgTablist::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
+	WgWidget::_onEvent(_pEvent,pHandler);
+
 	switch( _pEvent->Type() )
 	{
 		case WG_EVENT_TICK:

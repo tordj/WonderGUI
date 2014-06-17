@@ -155,7 +155,7 @@ void WgTextDisplay::_onRefresh( void )
 {
 	//TODO: Implement more I believe...
 
-	_requestRender();
+	WgWidget::_onRefresh();
 }
 
 //____ _onStateChanged() ______________________________________________________

@@ -118,6 +118,8 @@ public:
 	WgWidgetSortFunc		SortFunction() const { return m_pSortFunc; }
 
 	WgSize					PreferredSize() const;
+	int						HeightForWidth( int width ) const;
+	int						WidthForHeight( int height ) const;
 
 	bool					SetMinEntrySize( WgSize min );
 	bool					SetMaxEntrySize( WgSize max );
@@ -164,6 +166,7 @@ protected:
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onNewSize( const WgSize& size );
 	void			_onRefresh();
+	void			_onRefreshList();
 
 	void			_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	void			_onStateChanged( WgState oldState );
@@ -188,6 +191,7 @@ protected:
 	WgRect			_listWindow() const;
 	WgRect			_listCanvas() const;
 	WgRect			_headerGeo() const;
+	WgSize			_windowPadding() const;
 
 	void			_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding );
 	void			_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso );

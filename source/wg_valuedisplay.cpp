@@ -124,7 +124,7 @@ void WgValueDisplay::_rangeModified()
 void WgValueDisplay::_onRefresh( void )
 {
 	_regenText();
-	_requestRender();
+	WgWidget::_onRefresh();
 }
 
 //____ _regenText() ____________________________________________________________

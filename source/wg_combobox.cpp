@@ -652,6 +652,7 @@ void WgCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 
 void WgCombobox::_onRefresh( void )
 {
+	WgWidget::_onRefresh();
 }
 
 //____ _onCloneContent() _______________________________________________________

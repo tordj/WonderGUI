@@ -1296,6 +1296,8 @@ void WgMenu::_onCloneContent( const WgWidget * _pOrg )
 //____ _onRefresh() ____________________________________________________________
 void WgMenu::_onRefresh()
 {
+	WgWidget::_onRefresh();
+
 	//TODO: Implement!
 }
 

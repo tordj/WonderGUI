@@ -272,7 +272,7 @@ bool WgPackList::RemoveWidget( const WgWidgetPtr& pWidget )
 bool WgPackList::Clear()
 {
 	m_hooks.Clear();
-	_onRefresh();
+	_onRefreshList();
 	return true;
 }
 
@@ -285,7 +285,7 @@ void WgPackList::SetOrientation( WgOrientation orientation )
 	if( bHorizontal != m_bHorizontal )
 	{
 		m_bHorizontal = bHorizontal;
-		_onRefresh();
+		_onRefreshList();
 	}
 }
 
@@ -343,6 +343,77 @@ WgSize WgPackList::PreferredSize() const
 	return sz;
 }
 
+//____ HeightForWidth() _______________________________________________________
+
+int WgPackList::HeightForWidth( int width ) const
+{
+	if( m_bHorizontal )
+	{
+		int height =  m_contentPreferredBreadth;
+		if( header.m_height > height )
+			height = header.m_height;
+
+		if( m_pSkin )
+			height += m_pSkin->ContentPadding().h;
+		return height;
+	}
+	else
+	{
+		int height = header.m_height;
+		if( m_pSkin )
+		{
+			WgSize pad = m_pSkin->ContentPadding();
+			width -= pad.w;
+			height += pad.h;
+		}
+		width -= m_entryPadding.w;
+
+		for( int i = 0 ; i < m_hooks.Size() ; i++ )
+		{
+			WgPackListHook * pHook = m_hooks.Hook(i);
+			height += pHook->_widget()->HeightForWidth(width);
+		}
+		height += m_entryPadding.h*m_hooks.Size();		
+		return height;
+	}
+}
+
+//____ WidthForHeight() _______________________________________________________
+
+int WgPackList::WidthForHeight( int height ) const
+{
+	if( m_bHorizontal )
+	{
+		int width = header.m_width;
+		if( m_pSkin )
+		{
+			WgSize pad = m_pSkin->ContentPadding();
+			height -= pad.w;
+			width += pad.h;
+		}
+		height -= m_entryPadding.h;
+
+		for( int i = 0 ; i < m_hooks.Size() ; i++ )
+		{
+			WgPackListHook * pHook = m_hooks.Hook(i);
+			width += pHook->_widget()->WidthForHeight(height);
+		}
+		width += m_entryPadding.w*m_hooks.Size();		
+		return width;
+	}
+	else
+	{
+		int width =  m_contentPreferredBreadth;
+		if( header.m_width > width )
+			width = header.m_width;
+
+		if( m_pSkin )
+			width += m_pSkin->ContentPadding().w;
+		return width;
+	}
+}
+
+
 //____ SetMinEntrySize() ______________________________________________________
 
 bool WgPackList::SetMinEntrySize( WgSize min )
@@ -354,7 +425,7 @@ bool WgPackList::SetMinEntrySize( WgSize min )
 		return false;
 
 	m_minEntrySize = min;
-	_onRefresh();
+	_onRefreshList();
 	return true;
 }
 
@@ -369,7 +440,7 @@ bool WgPackList::SetMaxEntrySize( WgSize max )
 		return false;
 
 	m_maxEntrySize = max;
-	_onRefresh();
+	_onRefreshList();
 	return true;
 }
 
@@ -597,7 +668,66 @@ void WgPackList::_onNewSize( const WgSize& size )
 
 void WgPackList::_onRefresh()
 {
-	//TODO: Implement!!!
+	_refreshHeader();
+	_onRefreshList();	
+	WgWidget::_onRefresh();
+}
+
+//____ _onRefreshList() _______________________________________________________
+
+void WgPackList::_onRefreshList()
+{
+	if( m_pEntrySkin[0] )
+		m_entryPadding = m_pEntrySkin[0]->ContentPadding();
+
+	m_contentPreferredLength = 0;
+	m_contentPreferredBreadth = 0;
+	m_nbPreferredBreadthEntries = 0;
+	int ofs = 0;
+
+	for( int entry = 0 ; entry < m_hooks.Size() ; entry++ )
+	{
+		WgPackListHook * pHook = m_hooks.Hook(entry);
+		WgWidget * pChild = pHook->_widget();
+
+		WgSize pref = _paddedLimitedPreferredSize( pChild );
+
+		if( m_bHorizontal )
+		{
+			_addToContentPreferredSize( pref.w, pref.h );
+			pHook->m_ofs = ofs;
+
+			// Get entry length and breadth
+
+			if( pref.h == m_contentBreadth )
+				pHook->m_length = pref.w;
+			else
+				pHook->m_length	= _paddedLimitedWidthForHeight(pChild, m_contentBreadth);
+			pHook->m_prefBreadth = pref.h;
+			ofs += pHook->m_length;
+
+		}
+		else
+		{
+			_addToContentPreferredSize( pref.h, pref.w );
+			pHook->m_ofs = ofs;
+
+			// Get entry length and breadth
+
+			if( pref.w == m_contentBreadth )
+				pHook->m_length = pref.h;
+			else
+				pHook->m_length = _paddedLimitedHeightForWidth(pChild, m_contentBreadth);
+			pHook->m_prefBreadth = pref.w;
+			ofs += pHook->m_length;
+		}
+	}
+	m_contentLength = ofs;
+
+	// Finish up
+
+	_requestRender();
+	_requestResize();						// This should preferably be done first once we have changed the method.
 }
 
 //____ _onEvent() _____________________________________________________________
@@ -711,6 +841,7 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 				keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
 				(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
 					pHandler->SwallowEvent(_pEvent);
+			WgList::_onEvent( _pEvent, pHandler );
 			break;
 		}
 
@@ -727,6 +858,7 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 				keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
 				(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
 					pHandler->SwallowEvent(_pEvent);
+			WgList::_onEvent( _pEvent, pHandler );
 			break;
 		}
 	
@@ -838,7 +970,7 @@ void WgPackList::_onStateChanged( WgState oldState )
 void WgPackList::_onRequestRender( WgPackListHook * pHook )
 {
 	WgRect geo;
-	_getEntryGeo(geo, pHook);		// Render whole entry, entry skin might need to be redrawn due to state change.
+	_getChildGeo(geo, pHook);
 	_requestRender(geo);
 }
 
@@ -885,7 +1017,7 @@ void WgPackList::_onRequestResize( WgPackListHook * pHook )
 	if( prefBreadth == m_contentBreadth )	
 		length = prefLength;
 	else
-		length = m_bHorizontal ? _paddedLimitedWidthForHeight(pChild, prefBreadth ) : _paddedLimitedHeightForWidth(pChild, prefBreadth );
+		length = m_bHorizontal ? _paddedLimitedWidthForHeight(pChild, m_contentBreadth ) : _paddedLimitedHeightForWidth(pChild, m_contentBreadth );
 
 	// Update if length has changed
 
@@ -897,7 +1029,13 @@ void WgPackList::_onRequestResize( WgPackListHook * pHook )
 
 		_updateChildOfsFrom( pHook );
 		_requestRenderChildrenFrom( pHook );
+
+		WgRect childGeo;
+		_getChildGeo(childGeo,pHook);
+		pHook->_widget()->_onNewSize(childGeo);
 	}
+
+
 
 	if( bReqResize )
 		_requestResize();
@@ -935,9 +1073,15 @@ void WgPackList::_onWidgetAppeared( WgListHook * pInserted )
 		else
 			pHook->m_length = _paddedLimitedHeightForWidth(pChild, m_contentBreadth);
 		pHook->m_prefBreadth = pref.w;
+
 	}
 
 	m_contentLength += pHook->m_length;
+
+	WgRect childGeo;
+	_getChildGeo(childGeo,pHook);
+	static_cast<WgPackListHook*>(pInserted)->_widget()->_onNewSize( childGeo );
+
 
 	// Finish up
 
@@ -1420,8 +1564,15 @@ WgRect WgPackList::_headerGeo() const
 		return WgRect( 0, _windowSection().y, m_size.w, header.m_height );
 }
 
+//____ _windowPadding() _______________________________________________________
 
-
+WgSize WgPackList::_windowPadding() const
+{
+	if( m_bHorizontal )
+		return WgSize( header.m_width, 0 );
+	else
+		return WgSize( 0, header.m_height );
+}
 
 //____ _refreshHeader() _______________________________________________________
 

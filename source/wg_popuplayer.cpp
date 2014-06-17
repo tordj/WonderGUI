@@ -512,6 +512,8 @@ void WgPopupLayer::_onCloneContent( const WgWidget * _pOrg )
 
 void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
+	WgLayer::_onEvent(_pEvent,pHandler);
+
 	WgWidget * pOpener = 0;
 
 	// Try to find an opener

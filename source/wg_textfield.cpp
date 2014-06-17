@@ -144,6 +144,9 @@ void WgTextField::SetCursorSkin( const WgCursorPtr& pCursor )
 		m_pCursorStyle = pCursor;
 		_regenSoftLines();
 		_refreshAllLines();
+
+		if( m_pHolder )
+			m_pHolder->_fieldModified( this );
 	}
 }
 
@@ -212,6 +215,9 @@ void WgTextField::Clear()
 
 	if( m_pCursor )
 		m_pCursor->gotoHardPos(m_pCursor->line(), m_pCursor->column());
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 //____ Set() __________________________________________________________________
@@ -229,6 +235,9 @@ void WgTextField::Set( const WgCharSeq& seq )
 	_refreshAllLines();
 	ClearSelection();
 
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
+
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
@@ -241,6 +250,9 @@ void WgTextField::Set( const WgCharBuffer * buffer )
 	_regenSoftLines();
 	_refreshAllLines();
 	ClearSelection();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
@@ -257,6 +269,9 @@ void WgTextField::Set( const WgString& str )
 	_regenSoftLines();
 	_refreshAllLines();
 	ClearSelection();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
@@ -353,6 +368,9 @@ void WgTextField::ClearSelection( )
 	m_selEndLine = 0;
 	m_selStartCol = 0;
 	m_selEndCol = 0;
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 
@@ -571,6 +589,9 @@ void WgTextField::SetLinkProperties( const WgTextpropPtr& pProp )
 		m_pLinkProp = pProp;
 		_regenSoftLines();		//TODO: Optimize: Only do if we have links.
 		_refreshAllLines();
+
+		if( m_pHolder )
+			m_pHolder->_fieldModified( this );
 	}
 }
 
@@ -581,6 +602,9 @@ void WgTextField::ClearLinkProperties()
 		m_pLinkProp = 0;
 		_regenSoftLines();		//TODO: Optimize: Only do if we have links.
 		_refreshAllLines();
+
+		if( m_pHolder )
+			m_pHolder->_fieldModified( this );
 	}
 }
 
@@ -591,6 +615,9 @@ void WgTextField::SetSelectionProperties( const WgTextpropPtr& pProp )
 		m_pSelectionProp = pProp;
 		_regenSoftLines();		//TODO: Optimize: Only do if we have selected text.
 		_refreshAllLines();
+
+		if( m_pHolder )
+			m_pHolder->_fieldModified( this );
 	}
 }
 
@@ -601,6 +628,9 @@ void WgTextField::ClearSelectionProperties()
 		m_pSelectionProp = 0;
 		_regenSoftLines();		//TODO: Optimize: Only do if we have selected text.
 		_refreshAllLines();
+
+		if( m_pHolder )
+			m_pHolder->_fieldModified( this );
 	}
 }
 
@@ -610,6 +640,9 @@ void WgTextField::setSelectionBgColor(WgColor color )
 	WgTextprop	prop = * m_pSelectionProp;
 	prop.SetBgColor(color);
 	m_pSelectionProp = prop.Register();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 
@@ -618,6 +651,9 @@ void WgTextField::SetProperties( const WgTextpropPtr& pProp )
 	m_pBaseProp = pProp;
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::SetColor( const WgColor color )
@@ -625,6 +661,9 @@ void WgTextField::SetColor( const WgColor color )
 	WgTextprop	prop = * m_pBaseProp;
 	prop.SetColor(color);
 	m_pBaseProp = prop.Register();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::SetColor( const WgColor color, WgState state )
@@ -632,6 +671,9 @@ void WgTextField::SetColor( const WgColor color, WgState state )
 	WgTextprop	prop = * m_pBaseProp;
 	prop.SetColor(color,state);
 	m_pBaseProp = prop.Register();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::SetStyle( WgFontStyle style )
@@ -641,6 +683,9 @@ void WgTextField::SetStyle( WgFontStyle style )
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::SetStyle( WgFontStyle style, WgState state )
@@ -650,6 +695,9 @@ void WgTextField::SetStyle( WgFontStyle style, WgState state )
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::SetFont( const WgFontPtr& pFont )
@@ -659,6 +707,9 @@ void WgTextField::SetFont( const WgFontPtr& pFont )
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::SetLink( const WgTextLinkPtr& pLink )
@@ -668,6 +719,9 @@ void WgTextField::SetLink( const WgTextLinkPtr& pLink )
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::SetBreakLevel( int level )
@@ -677,6 +731,9 @@ void WgTextField::SetBreakLevel( int level )
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::ClearProperties()
@@ -687,6 +744,9 @@ void WgTextField::ClearProperties()
 		_regenSoftLines();
 		_refreshAllLines();
 	}
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::ClearColor()
@@ -694,6 +754,9 @@ void WgTextField::ClearColor()
 	WgTextprop	prop = * m_pBaseProp;
 	prop.ClearColor();
 	m_pBaseProp = prop.Register();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::ClearColor( WgState state )
@@ -701,6 +764,9 @@ void WgTextField::ClearColor( WgState state )
 	WgTextprop	prop = * m_pBaseProp;
 	prop.ClearColor(state);
 	m_pBaseProp = prop.Register();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::ClearStyle()
@@ -710,6 +776,9 @@ void WgTextField::ClearStyle()
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::ClearStyle( WgState state )
@@ -719,6 +788,9 @@ void WgTextField::ClearStyle( WgState state )
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::ClearBreakLevel()
@@ -728,6 +800,9 @@ void WgTextField::ClearBreakLevel()
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::ClearFont()
@@ -737,6 +812,9 @@ void WgTextField::ClearFont()
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 void WgTextField::ClearLink()
@@ -746,6 +824,9 @@ void WgTextField::ClearLink()
 	m_pBaseProp = prop.Register();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 //____ getTextUTF8() __________________________________________________________
@@ -1236,6 +1317,9 @@ int WgTextField::Append( const WgCharSeq& seq )
 	_regenSoftLines();
 	_refreshAllLines();
 
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
+
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
 	return nAdded;
@@ -1254,6 +1338,9 @@ int WgTextField::Insert( int ofs, const WgCharSeq& seq )
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
@@ -1274,6 +1361,9 @@ int WgTextField::Replace( int ofs, int nDelete, const WgCharSeq& seq )
 	_regenSoftLines();
 	_refreshAllLines();
 
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
+
 	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
 	return nInserted;
@@ -1287,6 +1377,8 @@ int WgTextField::Delete( int ofs, int nChars )
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 	return nDeleted;
 }
 
@@ -1299,6 +1391,8 @@ int WgTextField::replaceChar( int ofs, const WgChar& character )
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 	return nReplaced;
 }
 
@@ -1314,6 +1408,8 @@ int WgTextField::insertChar( int ofs, const WgChar& character )
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 
 	return nInserted;
 }
@@ -1346,6 +1442,9 @@ void WgTextField::DeleteSelected()
 		m_pCursor->setSelectionMode(false);
 		m_pCursor->gotoHardPos(line, column);
 	}
+
+	if( m_pHolder )
+		m_pHolder->_fieldModified( this );
 }
 
 //____ Lines() ______________________________________________________________
@@ -1436,6 +1535,8 @@ void WgTextField::SetWrap( bool bWrap )
 		m_bWrap = bWrap;
 		_regenSoftLines();
 		_refreshAllLines();
+		if( m_pHolder )
+			m_pHolder->_fieldModified( this );
 	}
 }
 
@@ -1448,6 +1549,8 @@ void WgTextField::SetAutoEllipsis( bool bAutoEllipsis )
 		m_bAutoEllipsis = bAutoEllipsis;
 		_regenSoftLines();
 		_refreshAllLines();
+		if( m_pHolder )
+			m_pHolder->_fieldModified( this );
 	}
 }
 
