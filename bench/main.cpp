@@ -424,8 +424,8 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //		pWindow->SetContentSizePolicy( WgSizePolicy::WG_DEFAULT, WgSizePolicy::WG_BOUND );
 		pWindow->SetContentSizePolicy( WgSizePolicy::WG_BOUND, WgSizePolicy::WG_DEFAULT );
 
-		pFlex->AddWidget(pWindow, WgRect( 50,50,200,200) );
-
+//		pFlex->AddWidget(pWindow, WgRect( 50,50,200,200) );
+		pFlex->AddWidget(pWindow, WgCoord(50,50) );
 
 		WgPackPanelPtr pButtonPanel = WgPackPanel::Create();
 		pButtonPanel->SetOrientation( WG_VERTICAL );
@@ -435,12 +435,12 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 		WgButtonPtr pButton = WgButton::Cast(pDB->CloneWidget("button"));
 		pButton->Label()->Set("ADD ENTRY PADDING");
 		pButtonPanel->AddWidget(pButton );
-		pRoot->EventHandler()->AddCallback( WgEventFilter::Select(pButton), cbIncreaseEntryPadding, pList );
+		pRoot->EventHandler()->AddCallback( WgEventFilter::Select(), pButton, cbIncreaseEntryPadding, pList );
 
 		WgButtonPtr pButton2 = WgButton::Cast(pDB->CloneWidget("button"));
 		pButton2->Label()->Set("ADD ENTRY");
 		pButtonPanel->AddWidget(pButton2 );
-		pRoot->EventHandler()->AddCallback( WgEventFilter::Select(pButton2), cbAddEntryText, pList->FirstWidget() );
+		pRoot->EventHandler()->AddCallback( WgEventFilter::Select(), pButton2, cbAddEntryText, pList->FirstWidget() );
 
 	}
 	
@@ -834,10 +834,10 @@ void cbAddEntryText( const WgEventPtr& _pEvent, const WgObjectPtr& _pWidget )
 
 void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler )
 {
-	pEventHandler->AddCallback( WgEventFilter::MouseDrag(pChild, WG_BUTTON_MIDDLE), cbResize, pChild );
+	pEventHandler->AddCallback( WgEventFilter::MouseDrag(WG_BUTTON_MIDDLE), pChild, cbResize, pChild );
 
-	pEventHandler->AddCallback( WgEventFilter::MousePress(pChild, WG_BUTTON_RIGHT), cbInitDrag, pChild );
-	pEventHandler->AddCallback( WgEventFilter::MouseDrag(pChild, WG_BUTTON_RIGHT), cbDragWidget, pChild );
+	pEventHandler->AddCallback( WgEventFilter::MousePress(WG_BUTTON_RIGHT), pChild, cbInitDrag, pChild );
+	pEventHandler->AddCallback( WgEventFilter::MouseDrag(WG_BUTTON_RIGHT), pChild, cbDragWidget, pChild );
 }
 
 

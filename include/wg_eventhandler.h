@@ -105,11 +105,24 @@ public:
 	WgCallbackHandle	AddCallback( void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam );
 	WgCallbackHandle	AddCallback( WgEventListener * pListener );
 
+	WgCallbackHandle	AddCallback( const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent) );
+	WgCallbackHandle	AddCallback( const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, int param ), int param );
+	WgCallbackHandle	AddCallback( const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, void * pParam), void * pParam );
+	WgCallbackHandle	AddCallback( const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam );
+	WgCallbackHandle	AddCallback( const WgWidgetPtr& pWidget, WgEventListener * pListener );
+
 	WgCallbackHandle	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEventPtr& pEvent) );
 	WgCallbackHandle	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEventPtr& pEvent, int param ), int param );
 	WgCallbackHandle	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEventPtr& pEvent, void * pParam), void * pParam );
 	WgCallbackHandle	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam );
 	WgCallbackHandle	AddCallback( const WgEventFilter& filter, WgEventListener * pListener );
+
+	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent) );
+	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, int param ), int param );
+	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, void * pParam), void * pParam );
+	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam );
+	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, WgEventListener * pListener );
+
 
 	bool	DeleteCallback( WgCallbackHandle handle );
 
@@ -171,7 +184,7 @@ private:
 	bool	_isWidgetInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list );
 
 	WgCallbackHandle	_addCallback( Callback * pCallback );
-	WgCallbackHandle	_addCallback( const WgEventFilter& filter, Callback * pCallback );
+	WgCallbackHandle	_addCallback( const WgWidgetPtr& pWidget, Callback * pCallback );
 	int		_deleteCallbacksTo( const void * pReceiver );
 	int		_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain );
 

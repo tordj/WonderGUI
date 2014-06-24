@@ -246,34 +246,97 @@ WgCallbackHandle WgEventHandler::AddCallback( WgEventListener * pListener )
 	return _addCallback( p );
 }
 
+WgCallbackHandle WgEventHandler::AddCallback( const WgWidgetPtr& pWidget, void(*fp)(const WgEventPtr& pEvent) )
+{
+	Callback * p = new NoParamCallback( WgEventFilter(), fp );
+	return _addCallback( pWidget, p );
+}
+
+WgCallbackHandle WgEventHandler::AddCallback( const WgWidgetPtr& pWidget, void(*fp)(const WgEventPtr& pEvent, int param), int param )
+{
+	Callback * p = new IntParamCallback( WgEventFilter(), fp, param );
+	return _addCallback( pWidget, p );
+}
+
+WgCallbackHandle WgEventHandler::AddCallback( const WgWidgetPtr& pWidget, void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
+{
+	Callback * p = new VoidPtrParamCallback( WgEventFilter(), fp, pParam );
+	return _addCallback( pWidget, p );
+}
+
+WgCallbackHandle WgEventHandler::AddCallback( const WgWidgetPtr& pWidget, void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
+{
+	Callback * p = new ObjectParamCallback( WgEventFilter(), fp, pParam.GetRealPtr() );
+	return _addCallback( pWidget, p );
+}
+
+WgCallbackHandle WgEventHandler::AddCallback( const WgWidgetPtr& pWidget, WgEventListener * pListener )
+{
+	Callback * p = new ListenerCallback( WgEventFilter(), pListener );
+	return _addCallback( pWidget, p );
+}
+
+
+
 WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent) )
 {
 	Callback * p = new NoParamCallback( filter, fp );
-	return _addCallback( filter, p );
+	return _addCallback( p );
 }
 
 WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, int param), int param )
 {
 	Callback * p = new IntParamCallback( filter, fp, param );
-	return _addCallback( filter, p );
+	return _addCallback( p );
 }
 
 WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
 {
 	Callback * p = new VoidPtrParamCallback( filter, fp, pParam );
-	return _addCallback( filter, p );
+	return _addCallback( p );
 }
 
 WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
 {
 	Callback * p = new ObjectParamCallback( filter, fp, pParam );
-	return _addCallback( filter, p );
+	return _addCallback( p );
 }
 
 WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, WgEventListener * pListener )
 {
 	Callback * p = new ListenerCallback( filter, pListener );
-	return _addCallback( filter, p );
+	return _addCallback( p );
+}
+
+
+WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)(const WgEventPtr& pEvent) )
+{
+	Callback * p = new NoParamCallback( filter, fp );
+	return _addCallback( pWidget, p );
+}
+
+WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)(const WgEventPtr& pEvent, int param), int param )
+{
+	Callback * p = new IntParamCallback( filter, fp, param );
+	return _addCallback( pWidget, p );
+}
+
+WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
+{
+	Callback * p = new VoidPtrParamCallback( filter, fp, pParam );
+	return _addCallback( pWidget, p );
+}
+
+WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
+{
+	Callback * p = new ObjectParamCallback( filter, fp, pParam );
+	return _addCallback( pWidget, p );
+}
+
+WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, WgEventListener * pListener )
+{
+	Callback * p = new ListenerCallback( filter, pListener );
+	return _addCallback( pWidget, p );
 }
 
 //____ DeleteCallbacksTo() _______________________________________________________
@@ -468,19 +531,13 @@ WgCallbackHandle WgEventHandler::_addCallback( Callback * pCallback )
 	return pCallback->m_handle;
 }
 
-WgCallbackHandle WgEventHandler::_addCallback( const WgEventFilter& filter, Callback * pCallback )
+WgCallbackHandle WgEventHandler::_addCallback( const WgWidgetPtr& pWidget, Callback * pCallback )
 {
-	if( filter.FiltersWidget() )
-	{
-		WgWidgetWeakPtr pWidget = filter.Widget();
+	if( !pWidget )
+		return 0;
 
-		WgChain<Callback>& chain = m_widgetCallbacks[pWidget];
-
-		chain.PushBack(pCallback);
-	}
-	else
-		m_globalCallbacks.PushBack( pCallback );
-
+	WgChain<Callback>& chain = m_widgetCallbacks[pWidget.GetRealPtr()];
+	chain.PushBack(pCallback);
 	pCallback->m_handle = m_handleCounter++;
 	return pCallback->m_handle;
 }

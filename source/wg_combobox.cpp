@@ -328,7 +328,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 						if( pLayer )
 						{
 							pLayer->OpenPopup( m_pMenu, this, m_pHook->GlobalGeo() - pLayer->GlobalPos(), WG_SOUTHWEST );
-							m_cbHandler = pHandler->AddCallback( WgEventFilter::ItemsSelect( m_pMenu ), cbEntrySelected, this );
+							m_cbHandler = pHandler->AddCallback( WgEventFilter::ItemsSelect(), m_pMenu, cbEntrySelected, this );
 						}
 					}
 

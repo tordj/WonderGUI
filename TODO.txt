@@ -6,11 +6,28 @@ PRE0 - Release
 ==============
 
 	Working/reliable Menubar/Combobox/Menu.
-	Implement QuickList.
 	Implement TableList.
+	Lasso on PackList.
 	
 	Simple test of all widgets.
 	Clean out legacy classes.
+
+	Final decision on prefix camelcase.
+	EventHandler in Base, not in Root.
+
+
+PRE1 - Release
+==============
+
+*	Replace WgCheckbox and WgRadiobutton with WgStateButton + WgRadioGroup.
+*	Refactor WgHScrollbar & WgVScrollbar -> WgScrollbar.
+
+*	Refactor cursor.
+*	Refactor fonts.
+*	Refactor TextProps.
+
+*	Correctly working textfields.
+*	Correctly working valuefields.
 
 
 
@@ -26,6 +43,7 @@ Things to fix
 * Assign smartpointers from weakpointers.
 * Turn WgTextProp into normal Objects.
 * Turn Cast() into DynamicCast() and StaticCast().
+* OnEvent() should ALWAYS call the superclass. Now it doesn't for Button, Checkbox, Menu and Scrollbar.
 
 
 *************************************************
