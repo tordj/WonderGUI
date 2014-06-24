@@ -107,7 +107,7 @@ public:
 	bool					RemoveWidget( const WgWidgetPtr& pWidget );
 	bool					Clear();
 
-	void					SetOrientation( WgOrientation orientaiton );
+	void					SetOrientation( WgOrientation orientation );
 	WgOrientation			Orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
 
 	void					SortWidgets();

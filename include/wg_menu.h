@@ -172,7 +172,7 @@ private:
 		bool		SetVisible( bool bVisible ) { return false; }
 		WgMenu* Parent() const { return m_pParent; }
 
-		WgVScrollbar * Scrollbar() { return m_pWidget?static_cast<WgVScrollbar*>(m_pWidget):0; }
+		WgScrollbar * Scrollbar() { return m_pWidget?static_cast<WgScrollbar*>(m_pWidget):0; }
 
 
 	protected:

@@ -7,24 +7,22 @@ PRE0 - Release
 
 	Working/reliable Menubar/Combobox/Menu.
 	Implement TableList.
-	Lasso on PackList.
+	Lasso on Lists.
 	
 	Simple test of all widgets.
-	Clean out legacy classes.
 
-	Final decision on prefix camelcase.
-	EventHandler in Base, not in Root.
+	EventHandler in Base, not in Root? Or? Maybe just ticks from Base?
 
 
 PRE1 - Release
 ==============
 
 *	Replace WgCheckbox and WgRadiobutton with WgStateButton + WgRadioGroup.
-*	Refactor WgHScrollbar & WgVScrollbar -> WgScrollbar.
 
 *	Refactor cursor.
 *	Refactor fonts.
 *	Refactor TextProps.
+*	Refactor Eventfilters?
 
 *	Correctly working textfields.
 *	Correctly working valuefields.

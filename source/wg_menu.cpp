@@ -1454,7 +1454,7 @@ void WgMenu::_adjustSize()
 		WgScrollbar * pScrollbar = m_scrollbarHook.Scrollbar();
 		if( !pScrollbar )
 		{
-			pScrollbar = new WgVScrollbar();
+			pScrollbar = new WgScrollbar();
 			pScrollbar->SetSkins( m_pScrollbarBgSkin, m_pScrollbarHandleSkin, m_pScrollbarBtnBwdSkin, m_pScrollbarBtnFwdSkin );
 			pScrollbar->SetButtonLayout( m_scrollbarBtnLayout );
 			pScrollbar->SetScrollbarTarget(this);

@@ -49,10 +49,13 @@ class	WgScrollbar : public WgWidget
 	friend class WgMenu;
 
 	public:
+		static WgScrollbarPtr	Create() { return WgScrollbarPtr(new WgScrollbar()); }
+
 		bool		IsInstanceOf( const char * pClassName ) const;
 		const char *ClassName( void ) const;
 		static const char	CLASSNAME[];
 		static WgScrollbarPtr	Cast( const WgObjectPtr& pObject );
+
 
 		//____ Enums ____________________________________________
 
@@ -63,7 +66,7 @@ class	WgScrollbar : public WgWidget
 			HEADER_BWD	= 2,
 			FOOTER_FWD	= 4,
 			FOOTER_BWD	= 8,
-			WINDOWS		= HEADER_BWD | FOOTER_FWD,							// Like windows
+			WINDOWS		= HEADER_BWD | FOOTER_FWD,							// Like Microsoft Windows
 			NEXT_VERT	= FOOTER_FWD | FOOTER_BWD,							// Like NeXT's vertical dragbar.
 			NEXT_HORR	= HEADER_BWD | HEADER_FWD,							// Like NeXT's horizontal dragbar.
 			ALL			= HEADER_FWD | FOOTER_FWD | HEADER_BWD | FOOTER_BWD,
@@ -87,6 +90,9 @@ class	WgScrollbar : public WgWidget
 		WgSkinPtr 		GetBwdButtonSkin() const { return m_pBtnBwdSkin; }
 		WgSkinPtr 		GetFwdButtonSkin() const { return m_pBtnFwdSkin; }
 		ButtonLayout	GetButtonLayout() const { return m_btnLayout; }
+
+		void			SetOrientation( WgOrientation orientation );
+		WgOrientation	Orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
 
 		void		SetBackgroundPressMode( BgPressMode mode );
 		BgPressMode GetBackgroundPressMode() const { return m_bgPressMode; }
@@ -120,6 +126,8 @@ class	WgScrollbar : public WgWidget
 		void	_onStateChanged( WgState oldState );
 
 		bool	_setHandle( float pos, float size );		// Set scrollbar pos/size without notifying target (but should post events).
+
+		virtual WgWidget* _newOfMyType() const { return new WgScrollbar(); };
 
 		enum Component
 		{
@@ -175,53 +183,6 @@ class	WgScrollbar : public WgWidget
 		bool		_markTestHandle( WgCoord ofs );
 		void		_headerFooterChanged();
 		void		_unhoverReqRender();
-};
-
-//____ Class: WgHScrollbar _______________________________________________________
-
-class WgHScrollbar;
-typedef	WgStrongPtr<WgHScrollbar,WgScrollbarPtr>		WgHScrollbarPtr;
-typedef	WgWeakPtr<WgHScrollbar,WgScrollbarWeakPtr>		WgHScrollbarWeakPtr;
-
-class WgHScrollbar:public WgScrollbar
-{
-public:
-	static WgHScrollbarPtr	Create() { return WgHScrollbarPtr(new WgHScrollbar()); }
-
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
-	static const char	CLASSNAME[];
-	static WgHScrollbarPtr	Cast( const WgObjectPtr& pObject );
-
-protected:
-	WgHScrollbar();
-	virtual ~WgHScrollbar() {}
-	virtual WgWidget* _newOfMyType() const { return new WgHScrollbar(); };
-
-};
-
-//____ Class: WgVScrollbar _______________________________________________________
-
-class WgVScrollbar;
-typedef	WgStrongPtr<WgVScrollbar,WgScrollbarPtr>		WgVScrollbarPtr;
-typedef	WgWeakPtr<WgVScrollbar,WgScrollbarWeakPtr>		WgVScrollbarWeakPtr;
-
-class WgVScrollbar:public WgScrollbar
-{
-	friend class WgMenu;
-public:
-	static WgVScrollbarPtr	Create() { return WgVScrollbarPtr(new WgVScrollbar()); }
-
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
-	static const char	CLASSNAME[];
-	static WgVScrollbarPtr	Cast( const WgObjectPtr& pObject );
-
-protected:
-	WgVScrollbar();
-	virtual ~WgVScrollbar() {}
-	virtual WgWidget* _newOfMyType() const { return new WgVScrollbar(); };
-
 };
 
 #endif //	WG_SCROLLBAR_DOT_H

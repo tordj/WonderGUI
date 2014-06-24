@@ -177,13 +177,13 @@ public:
 	bool		AutoScrollX() const { return m_bAutoScrollX; }
 	bool		AutoScrollY() const { return m_bAutoScrollY; }
 
-	WgScrollHookPtr SetHScrollbar( const WgHScrollbarPtr& pScrollbar );
-	void			RemoveHScrollbar() {SetVScrollbar(0);}
-	WgHScrollbarPtr	HScrollbar() const;
+	WgScrollHookPtr SetHorizontalScrollbar( const WgScrollbarPtr& pScrollbar );
+	void			RemoveHorizontalScrollbar() {SetHorizontalScrollbar(0);}
+	WgScrollbarPtr	HorizontalScrollbar() const;
 
-	WgScrollHookPtr	SetVScrollbar( const WgVScrollbarPtr& pScrollbar );
-	void			RemoveVScrollbar() {SetVScrollbar(0);}
-	WgVScrollbarPtr	VScrollbar() const;
+	WgScrollHookPtr	SetVerticalScrollbar( const WgScrollbarPtr& pScrollbar );
+	void			RemoveVerticalScrollbar() {SetVerticalScrollbar(0);}
+	WgScrollbarPtr	VerticalScrollbar() const;
 
 	WgScrollHookPtr	SetContent( const WgWidgetPtr& pContent );
 	void			RemoveContent() {SetContent(0); }
@@ -192,7 +192,7 @@ public:
 	bool		RemoveWidget( const WgWidgetPtr& pWidget );
 	bool		Clear();
 
-	void		SetScrollbarAutoHide( bool bHideVScrollbar, bool bHideHScrollbar );
+	void		SetScrollbarAutoHide( bool bHideVerticalScrollbar, bool bHideHorizontalScrollbar );
 	bool		GetHScrollbarAutoHide() const { return m_bAutoHideScrollbarX; }
 	bool		GetVScrollbarAutoHide() const { return m_bAutoHideScrollbarY; }
 
@@ -200,8 +200,8 @@ public:
 	bool		IsScrollbarAtBottom() const { return m_bScrollbarBottom; }
 	bool		IsScrollbarAtRight() const { return m_bScrollbarRight; }
 
-	bool		IsVScrollbarVisible();
-	bool		IsHScrollbarVisible();
+	bool		IsVerticalScrollbarVisible();
+	bool		IsHorizontalScrollbarVisible();
 
 	void		SetOverlayScrollbars( bool bOverlay );
 	bool		OverlayScrollbars() const { return m_bOverlayScrollbars; }

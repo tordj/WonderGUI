@@ -31,8 +31,6 @@
 using namespace WgUtil;
 
 const char WgScrollbar::CLASSNAME[] = {"Scrollbar"};
-const char WgVScrollbar::CLASSNAME[] = {"VScrollbar"};
-const char WgHScrollbar::CLASSNAME[] = {"HScrollbar"};
 
 
 //____ WgScrollbar() ____________________________________________________
@@ -44,6 +42,7 @@ WgScrollbar::WgScrollbar()
 	m_handleSize 		= 1.0;
 	m_handlePos 		= 0.0;
 
+	m_bHorizontal		= false;
 	m_bgPressMode		= JUMP_PAGE;
 	m_bPressOnHandle	= false;
 	m_handlePressOfs	= 0;
@@ -90,6 +89,21 @@ WgScrollbarPtr WgScrollbar::Cast( const WgObjectPtr& pObject )
 		return WgScrollbarPtr( static_cast<WgScrollbar*>(pObject.GetRealPtr()) );
 
 	return 0;
+}
+
+//____ SetOrientation() _______________________________________________________
+
+void WgScrollbar::SetOrientation( WgOrientation orientation )
+{
+	bool bHorizontal = (orientation == WG_HORIZONTAL);
+
+	if( m_bHorizontal != bHorizontal )
+	{
+		m_bHorizontal = bHorizontal;
+		_headerFooterChanged();
+		_updateMinSize();
+		_requestRender();
+	}
 }
 
 
@@ -962,92 +976,4 @@ bool WgScrollbar::_setHandle( float _pos, float _size )
 
 	_requestRender();
 	return	true;
-}
-
-
-//=============================================================================
-//
-//										>>> WgHScrollbar - functions <<<
-//
-//=============================================================================
-
-
-//____ WgHScrollbar() ______________________________________________________
-
-WgHScrollbar::WgHScrollbar( void )
-{
-	m_bHorizontal = true;
-}
-
-
-//____ IsInstanceOf() _________________________________________________________
-
-bool WgHScrollbar::IsInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgScrollbar::IsInstanceOf(pClassName);
-}
-
-//____ ClassName() ____________________________________________________________
-
-const char * WgHScrollbar::ClassName( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ Cast() _________________________________________________________________
-
-WgHScrollbarPtr WgHScrollbar::Cast( const WgObjectPtr& pObject )
-{
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgHScrollbarPtr( static_cast<WgHScrollbar*>(pObject.GetRealPtr()) );
-
-	return 0;
-}
-
-
-
-
-//=============================================================================
-//
-//										>>> WgVScrollbar - functions <<<
-//
-//=============================================================================
-
-
-//____ WgVScrollbar() ______________________________________________________
-
-WgVScrollbar::WgVScrollbar( void )
-{
-	m_bHorizontal = false;
-}
-
-
-//____ IsInstanceOf() _________________________________________________________
-
-bool WgVScrollbar::IsInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgScrollbar::IsInstanceOf(pClassName);
-}
-
-//____ ClassName() ____________________________________________________________
-
-const char * WgVScrollbar::ClassName( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ Cast() _________________________________________________________________
-
-WgVScrollbarPtr WgVScrollbar::Cast( const WgObjectPtr& pObject )
-{
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgVScrollbarPtr( static_cast<WgVScrollbar*>(pObject.GetRealPtr()) );
-
-	return 0;
 }

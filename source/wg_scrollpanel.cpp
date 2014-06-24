@@ -232,16 +232,16 @@ void WgScrollPanel::SetJumpSizeY( float viewFraction )
 	m_jumpSizeY = viewFraction;
 }
 
-//____ IsHScrollbarVisible() ____________________________________________________
+//____ IsHorizontalScrollbarVisible() ____________________________________________________
 
-bool WgScrollPanel::IsHScrollbarVisible()
+bool WgScrollPanel::IsHorizontalScrollbarVisible()
 {
 	return m_elements[XDRAG].m_bVisible;
 }
 
-//____ IsVScrollbarVisible() ____________________________________________________
+//____ IsVerticalScrollbarVisible() ____________________________________________________
 
-bool WgScrollPanel::IsVScrollbarVisible()
+bool WgScrollPanel::IsVerticalScrollbarVisible()
 {
 	return m_elements[YDRAG].m_bVisible;
 }
@@ -534,16 +534,18 @@ WgScrollHookPtr WgScrollPanel::SetContent( const WgWidgetPtr& pContent )
 		return 0;
 }
 
-//____ SetHScrollbar() ________________________________________________________
+//____ SetHorizontalScrollbar() ________________________________________________________
 
-WgScrollHookPtr WgScrollPanel::SetHScrollbar( const WgHScrollbarPtr& pScrollbar )
+WgScrollHookPtr WgScrollPanel::SetHorizontalScrollbar( const WgScrollbarPtr& pScrollbar )
 {
 	// Remove us as target target from current Scrollbar (if we have any)
 
 	if( m_elements[XDRAG]._widget() )
 		((WgScrollbar*)m_elements[XDRAG]._widget())->SetScrollbarTarget(0);
 
-	//
+	// 
+
+	pScrollbar->SetOrientation( WG_HORIZONTAL );
 
 	m_elements[XDRAG]._setWidget(pScrollbar.GetRealPtr());
 	_updateElementGeo( Size() );
@@ -559,9 +561,9 @@ WgScrollHookPtr WgScrollPanel::SetHScrollbar( const WgHScrollbarPtr& pScrollbar 
 	return 0;
 }
 
-//____ SetVScrollbar() ________________________________________________________
+//____ SetVerticalScrollbar() ________________________________________________________
 
-WgScrollHookPtr WgScrollPanel::SetVScrollbar( const WgVScrollbarPtr& pScrollbar )
+WgScrollHookPtr WgScrollPanel::SetVerticalScrollbar( const WgScrollbarPtr& pScrollbar )
 {
 	// Remove us as target from current Scrollbar (if we have any)
 
@@ -569,6 +571,8 @@ WgScrollHookPtr WgScrollPanel::SetVScrollbar( const WgVScrollbarPtr& pScrollbar 
 		((WgScrollbar*)m_elements[YDRAG]._widget())->SetScrollbarTarget(0);
 
 	//
+
+	pScrollbar->SetOrientation( WG_VERTICAL );
 
 	m_elements[YDRAG]._setWidget(pScrollbar.GetRealPtr());
 	_updateElementGeo( Size() );
@@ -584,14 +588,14 @@ WgScrollHookPtr WgScrollPanel::SetVScrollbar( const WgVScrollbarPtr& pScrollbar 
 	return 0;
 }
 
-WgHScrollbarPtr WgScrollPanel::HScrollbar() const 
+WgScrollbarPtr WgScrollPanel::HorizontalScrollbar() const 
 {
-	return (WgHScrollbar*) m_elements[XDRAG]._widget(); 
+	return static_cast<WgScrollbar*>(m_elements[XDRAG]._widget()); 
 }
 
-WgVScrollbarPtr WgScrollPanel::VScrollbar() const 
+WgScrollbarPtr WgScrollPanel::VerticalScrollbar() const 
 { 
-	return (WgVScrollbar*) m_elements[YDRAG]._widget(); 
+	return static_cast<WgScrollbar*>(m_elements[YDRAG]._widget()); 
 }
 
 WgWidgetPtr WgScrollPanel::Content() const 
@@ -609,9 +613,9 @@ bool WgScrollPanel::RemoveWidget( const WgWidgetPtr& pWidget )
 		return false;
 
 	if( pWidget == m_elements[XDRAG]._widget() )
-		SetHScrollbar(0);
+		SetHorizontalScrollbar(0);
 	else if( pWidget == m_elements[YDRAG]._widget() )
-		SetVScrollbar(0);
+		SetVerticalScrollbar(0);
 	else if( pWidget == m_elements[WINDOW]._widget() )
 		SetContent(0);
 	else
@@ -628,9 +632,9 @@ bool WgScrollPanel::Clear()
 		return false;
 
 	if( m_elements[XDRAG]._widget() )
-		SetHScrollbar(0);
+		SetHorizontalScrollbar(0);
 	if( m_elements[YDRAG]._widget() )
-		SetVScrollbar(0);
+		SetVerticalScrollbar(0);
 	if( m_elements[WINDOW]._widget() )
 		SetContent(0);
 
@@ -644,15 +648,15 @@ void WgScrollPanel::SetScrollbarAutoHide( bool bHideHScrollbar, bool bHideVScrol
 	if( bHideHScrollbar == m_bAutoHideScrollbarX && bHideVScrollbar == m_bAutoHideScrollbarY )
 		return;
 
-	bool	bWasVisibleX = IsHScrollbarVisible();
-	bool	bWasVisibleY = IsVScrollbarVisible();
+	bool	bWasVisibleX = IsHorizontalScrollbarVisible();
+	bool	bWasVisibleY = IsVerticalScrollbarVisible();
 
 	m_bAutoHideScrollbarX = bHideHScrollbar;
 	m_bAutoHideScrollbarY = bHideVScrollbar;
 
 	// Force a refresh of our subclass if its geometry has been affected.
 
-	if( IsHScrollbarVisible() != bWasVisibleX || IsVScrollbarVisible() != bWasVisibleY )
+	if( IsHorizontalScrollbarVisible() != bWasVisibleX || IsVerticalScrollbarVisible() != bWasVisibleY )
 		_updateElementGeo( Size() );
 }
 
@@ -1322,7 +1326,7 @@ void WgScrollPanel::_onCloneContent( const WgWidget * _pOrg )
 	m_elements[XDRAG].m_bVisible = pOrg->m_elements[XDRAG].m_bVisible;
 	if( pOrg->m_elements[XDRAG]._widget() )
 	{
-		WgHScrollbar * pScrollbar = (WgHScrollbar*) pOrg->m_elements[XDRAG]._widget()->_newOfMyType();
+		WgScrollbar * pScrollbar = (WgScrollbar*) pOrg->m_elements[XDRAG]._widget()->_newOfMyType();
 		pScrollbar->CloneContent( pOrg->m_elements[XDRAG]._widget() );
 		pScrollbar->SetScrollbarTarget(&m_scrollbarTargets[1]);
 		m_elements[XDRAG]._setWidget(pScrollbar);		
@@ -1335,7 +1339,7 @@ void WgScrollPanel::_onCloneContent( const WgWidget * _pOrg )
 	m_elements[YDRAG].m_bVisible = pOrg->m_elements[YDRAG].m_bVisible;
 	if( pOrg->m_elements[YDRAG]._widget() )
 	{
-		WgVScrollbar * pScrollbar = (WgVScrollbar*) pOrg->m_elements[YDRAG]._widget()->_newOfMyType();
+		WgScrollbar * pScrollbar = (WgScrollbar*) pOrg->m_elements[YDRAG]._widget()->_newOfMyType();
 		pScrollbar->CloneContent( pOrg->m_elements[YDRAG]._widget() );
 		pScrollbar->SetScrollbarTarget(&m_scrollbarTargets[0]);
 		m_elements[YDRAG]._setWidget(pScrollbar);

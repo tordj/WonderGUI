@@ -249,13 +249,13 @@ namespace sdl_wglib
 
 		// Create standard horizontal scrollbar
 
-		WgHScrollbarPtr pHScrollbar = WgHScrollbar::Create();
+		WgScrollbarPtr pHScrollbar = WgScrollbar::Create();
 		pHScrollbar->SetSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pHScrollbarBwdButtonSkin, pHScrollbarFwdButtonSkin );
 		pDB->AddWidget( "hscrollbar", pHScrollbar );
 
 		// Create standard vertical scrollbar
 
-		WgVScrollbarPtr pVScrollbar = WgVScrollbar::Create();
+		WgScrollbarPtr pVScrollbar = WgScrollbar::Create();
 		pVScrollbar->SetSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pVScrollbarBwdButtonSkin, pVScrollbarFwdButtonSkin );
 		pDB->AddWidget( "vscrollbar", pVScrollbar );
 
@@ -302,13 +302,13 @@ namespace sdl_wglib
 
 			if( pHScrollbar )
 			{
-				WgHScrollbarPtr pH = WgHScrollbar::Cast(pHScrollbar);
-				pView->SetHScrollbar( pH );
+				WgScrollbarPtr pH = WgScrollbar::Cast(pHScrollbar);
+				pView->SetHorizontalScrollbar( pH );
 			}
 			if( pVScrollbar )
 			{
-				WgVScrollbarPtr pV = WgVScrollbar::Cast(pVScrollbar);
-				pView->SetVScrollbar( pV );
+				WgScrollbarPtr pV = WgScrollbar::Cast(pVScrollbar);
+				pView->SetVerticalScrollbar( pV );
 			}
 			pView->SetSkin( pBgCheckeredGreySkin );
 			pView->SetCornerSkin( pPlateSkin );
