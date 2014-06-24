@@ -344,10 +344,12 @@ int WgScrollPanel::_paddedViewPixelLenY()
 
 float WgScrollPanel::_paddedViewLenX()
 {
-	if( m_contentSize.w == 0 )
+	WgSize	windowPadding = m_elements[WINDOW]._widget() ? m_elements[WINDOW]._widget()->_windowPadding() : WgSize(0,0);
+
+	if( m_contentSize.w - windowPadding.w <= 0 )
 		return 1.0f;
 
-	float len = _paddedViewPixelLenX()/(float)m_contentSize.w;
+	float len = (m_elements[WINDOW].m_windowGeo.w - windowPadding.w)/(float)(m_contentSize.w - windowPadding.w);
 
 	if( len > 1.f )
 		len = 1.f;
@@ -359,10 +361,12 @@ float WgScrollPanel::_paddedViewLenX()
 
 float WgScrollPanel::_paddedViewLenY()
 {
-	if( m_contentSize.h == 0 )
+	WgSize	windowPadding = m_elements[WINDOW]._widget() ? m_elements[WINDOW]._widget()->_windowPadding() : WgSize(0,0);
+
+	if( m_contentSize.h - windowPadding.h <= 0 )
 		return 1.0f;
 
-	float len = _paddedViewPixelLenY()/(float)m_contentSize.h;
+	float len = (m_elements[WINDOW].m_windowGeo.h - windowPadding.h)/(float)(m_contentSize.h - windowPadding.h);
 
 	if( len > 1.f )
 		len = 1.f;
@@ -736,9 +740,28 @@ WgWidget * WgScrollPanel::_findWidget( const WgCoord& pos, WgSearchMode mode )
 
 WgSize WgScrollPanel::PreferredSize() const
 {
-	//TODO: Implement!!!
+	WgSize sz;
 
-	return WgSize( 128,128 );
+	if( m_elements[WINDOW]._widget() )
+		sz = m_elements[WINDOW]._paddedPreferredSize();
+
+	if( m_elements[XDRAG]._widget() && !m_bAutoHideScrollbarX )
+	{
+		WgSize scrollbar = m_elements[XDRAG]._paddedPreferredSize();
+		sz.h += scrollbar.h;
+		if( scrollbar.w > sz.w )
+			sz.w = scrollbar.w;
+	}
+
+	if( m_elements[YDRAG]._widget() && !m_bAutoHideScrollbarY )
+	{
+		WgSize scrollbar = m_elements[YDRAG]._paddedPreferredSize();
+		sz.w += scrollbar.w;
+		if( scrollbar.h > sz.h )
+			sz.h = scrollbar.h;
+	}
+
+	return sz;
 }
 
 //____ SetContentOrigo() _________________________________________________
@@ -868,7 +891,7 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 	if( bShowDragY && m_elements[XDRAG]._widget() && newContentSize.w > (newWindow.w - newDragY.w) )
 		bShowDragX = true;
 
-	if( bShowDragX && m_elements[YDRAG]._widget() && newContentSize.h > (newWindow.h - newDragY.h) )
+	if( bShowDragX && m_elements[YDRAG]._widget() && newContentSize.h > (newWindow.h - newDragX.h) )
 		bShowDragY = true;
 
 	// We need to adjust view layout to accomodate visible scrollbars. 
@@ -1033,51 +1056,6 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 
 	if( bNewOfsY || bNewHeight || bNewContentHeight )
 		m_scrollbarTargets[0]._updateScrollbar( ViewOfsY(), _paddedViewLenY() );
-
-/*
-	// Send signals if views size or position over content has changed
-	// or contents size has changed.
-
-	if( bNewOfsX || bNewContentWidth )
-		Emit( ViewPosX(), ViewOfsX() );
-	if( bNewOfsX )
-		Emit( ViewPosPixelX(), m_viewPixOfs.x );
-
-	if( bNewOfsY || bNewContentHeight )
-		Emit( ViewPosY(), ViewOfsY() );
-	if( bNewOfsY )
-		Emit( ViewPosPixelY(), m_viewPixOfs.y );
-
-	if( bNewWidth || bNewContentWidth )
-		Emit( ViewSizeX(), ViewLenX() );
-	if( bNewWidth )
-		Emit( ViewSizePixelX(), ViewPixelLenX() );
-
-	if( bNewHeight || bNewContentHeight )
-		Emit( ViewSizeY(), ViewLenY() );
-	if( bNewHeight )
-		Emit( ViewSizePixelY(), ViewPixelLenY() );
-
-	if( bNewOfsX || bNewWidth || bNewContentWidth )
-		Emit( ViewPosSizeX(), ViewOfsX(), ViewLenX() );
-	if( bNewOfsX || bNewWidth )
-		Emit( ViewPosSizePixelX(), m_viewPixOfs.x, ViewPixelLenX() );
-
-	if( bNewOfsY || bNewHeight || bNewContentHeight )
-		Emit( ViewPosSizeY(), ViewOfsY(), ViewLenY() );
-	if( bNewOfsY || bNewHeight )
-		Emit( ViewPosSizePixelY(), m_viewPixOfs.y, ViewPixelLenY() );
-
-	if( bNewOfsX || bNewOfsY || bNewContentHeight || bNewContentWidth )
-		Emit( ViewPos(), ViewOfsX(), ViewOfsY() );
-	if( bNewOfsX || bNewOfsY )
-		Emit( ViewPosPixel(), m_viewPixOfs.x, m_viewPixOfs.y );
-
-	if( bNewWidth || bNewHeight || bNewContentHeight || bNewContentWidth )
-		Emit( ViewSize(), ViewLenX(), ViewLenY() );
-	if( bNewWidth || bNewHeight )
-		Emit( ViewSizePixel(), ViewPixelLenX(), ViewPixelLenY() );
-*/
 }
 
 //____ _genContentCanvasGeo() __________________________________________________
