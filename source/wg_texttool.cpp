@@ -34,7 +34,7 @@
 #include <wg_textfield.h>
 #include <wg_textpropmanager.h>
 #include <wg_charseq.h>
-#include <wg_cursorinstance.h>
+#include <wg_caretinstance.h>
 #include <wg_resdb.h>
 #include <wg_base.h>
 #include <wg_pen.h>
@@ -2889,9 +2889,9 @@ void WgTextTool::SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, W
 
 //____ GetCursor() ____________________________________________________________
 
-WgCursorPtr WgTextTool::GetCursor( const WgTextField * pText )
+WgCaretPtr WgTextTool::GetCursor( const WgTextField * pText )
 {
-	WgCursorPtr p = pText->CursorSkin();
+	WgCaretPtr p = pText->CursorSkin();
 	if( p )
 		return p;
 

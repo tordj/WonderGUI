@@ -27,8 +27,8 @@
 #	include <wg_imodiftext.h>
 #endif
 
-#ifndef WG_CURSOR_DOT_H
-#	include <wg_cursor.h>
+#ifndef WG_CARET_DOT_H
+#	include <wg_caret.h>
 #endif
 
 class WgIEditText;
@@ -57,8 +57,8 @@ public:
 	virtual bool			IsEditable() const = 0;
 	virtual bool			IsSelectable() const = 0;
 
-	virtual void			SetCursorSkin( const WgCursorPtr& pCursor ) = 0;
-	virtual WgCursorPtr		CursorSkin() const = 0;
+	virtual void			SetCursorSkin( const WgCaretPtr& pCursor ) = 0;
+	virtual WgCaretPtr		CursorSkin() const = 0;
 
 	virtual int				InsertAtCursor( const WgCharSeq& str ) = 0;
 	virtual bool			InsertAtCursor( Uint16 c ) = 0;

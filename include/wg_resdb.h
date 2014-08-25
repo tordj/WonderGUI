@@ -52,8 +52,8 @@
 #	include <wg_gfxanim.h>
 #endif
 
-#ifndef WG_CURSOR_DOT_H
-#	include <wg_cursor.h>
+#ifndef WG_CARET_DOT_H
+#	include <wg_caret.h>
 #endif
 
 #ifndef WG_GLYPHSET_DOT_H
@@ -140,7 +140,7 @@ public:
 	typedef ResWrapper2<WgGlyphsetPtr>	GlyphsetRes;
 	typedef ResWrapper<WgFontPtr>		FontRes;
 	typedef ResWrapper<WgGfxAnimPtr>	GfxAnimRes;
-	typedef ResWrapper<WgCursorPtr>		CursorRes;
+	typedef ResWrapper<WgCaretPtr>		CursorRes;
 	typedef ResWrapper<WgTextpropPtr>	TextpropRes;
 	typedef ResWrapper<WgColor>			ColorRes;
 	typedef ResWrapper<WgSkinPtr>		SkinRes;
@@ -155,7 +155,7 @@ public:
 	static std::string	GenerateName( const WgGlyphsetPtr& data );
 	static std::string	GenerateName( const WgFontPtr& data );
 	static std::string	GenerateName( const WgGfxAnimPtr& data );
-	static std::string	GenerateName( const WgCursorPtr& data );
+	static std::string	GenerateName( const WgCaretPtr& data );
 	static std::string	GenerateName( const WgColor data );
 	static std::string	GenerateName( const WgTextpropPtr& data );
 	static std::string	GenerateName( const WgSkinPtr& data );
@@ -181,7 +181,7 @@ public:
 
 	bool				AddFont( const std::string& id, const WgFontPtr& pFont, MetaData * pMetaData = 0 );
 	bool				AddGfxAnim( const std::string& id, const WgGfxAnimPtr& pAnim, MetaData * pMetaData = 0 );
-	bool				AddCursor( const std::string& id, const WgCursorPtr& pCursor, MetaData * pMetaData = 0 );
+	bool				AddCursor( const std::string& id, const WgCaretPtr& pCursor, MetaData * pMetaData = 0 );
 	bool				AddTextprop( const std::string& id, const WgTextpropPtr& pProp, MetaData * pMetaData = 0 );
 	bool				AddColor( const std::string& id, WgColor col, MetaData * pMetaData = 0 );
 	bool				AddLegoSource( const std::string& id, const std::string& surface, WgRect rect, Uint32 nStates, MetaData * pMetaData = 0 );
@@ -229,7 +229,7 @@ public:
 	WgGlyphsetPtr		GetGlyphset( const std::string& id ) const;
 	WgFontPtr			GetFont( const std::string& id ) const;
 	WgGfxAnimPtr		GetGfxAnim( const std::string& id ) const;
-	WgCursorPtr			GetCursor( const std::string& id ) const;
+	WgCaretPtr			GetCursor( const std::string& id ) const;
 	WgTextpropPtr		GetTextprop( const std::string& id ) const;
 	WgColor				GetColor( const std::string& id ) const;
 	WgSkinPtr			GetSkin( const std::string& id ) const;
@@ -259,7 +259,7 @@ public:
 	GlyphsetRes *		FindResGlyphset( const WgGlyphsetPtr& data ) const;
 	FontRes *			FindResFont( const WgFontPtr& data ) const;
 	GfxAnimRes *		FindResGfxAnim( const WgGfxAnimPtr& data ) const;
-	CursorRes *			FindResCursor( const WgCursorPtr& data ) const;
+	CursorRes *			FindResCursor( const WgCaretPtr& data ) const;
 	TextpropRes *		FindResTextprop( const WgTextpropPtr& data ) const;
 	ColorRes *			FindResColor( const WgColor col ) const;
 	SkinRes *			FindResSkin( const WgSkinPtr& data ) const;
@@ -270,7 +270,7 @@ public:
 	std::string			FindGlyphsetId( const WgGlyphsetPtr& data ) const		{ GlyphsetRes * r =	FindResGlyphset(data); return r ? r->id : ""; }
 	std::string			FindFontId( const WgFontPtr& data ) const				{ FontRes *	r =		FindResFont(data); return r ? r->id : ""; }
 	std::string			FindGfxAnimId( const WgGfxAnimPtr& data ) const		{ GfxAnimRes *	r =		FindResGfxAnim(data); return r ? r->id : ""; }
-	std::string			FindCursorId( const WgCursorPtr& data ) const			{ CursorRes *	r =	FindResCursor(data); return r ? r->id : ""; }
+	std::string			FindCursorId( const WgCaretPtr& data ) const			{ CursorRes *	r =	FindResCursor(data); return r ? r->id : ""; }
 	std::string			FindTextpropId( const WgTextpropPtr& data ) const	{ TextpropRes *r =  FindResTextprop(data); return r ? r->id : ""; }
 	std::string			FindColorId( const WgColor data ) const				{ ColorRes *r =		FindResColor(data); return r ? r->id : ""; }
 	std::string			FindSkinId( const WgSkinPtr& data ) const			{ SkinRes *r =		FindResSkin(data); return r ? r->id : ""; }

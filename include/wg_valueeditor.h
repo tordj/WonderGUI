@@ -40,7 +40,7 @@
 #endif
 
 
-class	WgCursorInstance;
+class	WgCaretInstance;
 class	WgFont;
 class	WgTextManager;
 

@@ -43,8 +43,8 @@
 #	include <wg_glyphset.h>
 #endif
 
-#ifndef WG_CURSOR_DOT_H
-#	include <wg_cursor.h>
+#ifndef WG_CARET_DOT_H
+#	include <wg_caret.h>
 #endif
 
 #ifndef WG_CHARSEQ_DOT_H
@@ -59,7 +59,7 @@ class WgFont;
 class WgGlyphset;
 class WgTextField;
 class WgChar;
-class WgCursorInstance;
+class WgCaretInstance;
 class WgResDB;
 class WgTextNode;
 
@@ -223,7 +223,7 @@ public:
 	static void			AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgState state = WG_STATE_NORMAL );
 //	static void			SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgState state = WG_STATE_NORMAL );
 
-	static WgCursorPtr		GetCursor( const WgTextField * pText );
+	static WgCaretPtr		GetCursor( const WgTextField * pText );
 	static WgTextpropPtr	GetSelectionProperties( const WgTextField * pText );
 	static WgTextpropPtr	GetLinkProperties( const WgTextField * pText );
 

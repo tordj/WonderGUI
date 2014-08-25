@@ -31,8 +31,8 @@
 #	include <wg_pointers.h>
 #endif
 
-#ifndef WG_CURSOR_DOT_H
-#	include <wg_cursor.h>
+#ifndef WG_CARET_DOT_H
+#	include <wg_caret.h>
 #endif
 
 #ifndef WG_TEXTLINK_DOT_H

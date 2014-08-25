@@ -483,7 +483,7 @@ void WgLineEditor::_adjustViewOfs()
 
 	if( m_state.IsFocused() && m_text.Font() )
 	{
-		WgCursorPtr pCursor = WgTextTool::GetCursor( &m_text );
+		WgCaretPtr pCursor = WgTextTool::GetCursor( &m_text );
 		if( !pCursor )
 			return;
 

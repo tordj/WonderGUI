@@ -47,12 +47,12 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef WG_CURSOR_DOT_H
-#	include <wg_cursor.h>
+#ifndef WG_CARET_DOT_H
+#	include <wg_caret.h>
 #endif
 
-#ifndef WG_CURSORINSTANCE_DOT_H
-#	include <wg_cursorinstance.h>
+#ifndef WG_CARETINSTANCE_DOT_H
+#	include <wg_caretinstance.h>
 #endif
 
 #ifndef WG_RESDB_DOT_H

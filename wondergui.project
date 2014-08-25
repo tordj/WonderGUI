@@ -39,8 +39,6 @@
     <File Name="include/wg_codepages.h"/>
     <File Name="include/wg_color.h"/>
     <File Name="include/wg_container.h"/>
-    <File Name="include/wg_cursor.h"/>
-    <File Name="include/wg_cursorinstance.h"/>
     <File Name="include/wg_dynarray.h"/>
     <File Name="include/wg_event.h"/>
     <File Name="include/wg_eventfilter.h"/>
@@ -86,8 +84,6 @@
     <File Name="source/wg_codepages.cpp"/>
     <File Name="source/wg_color.cpp"/>
     <File Name="source/wg_container.cpp"/>
-    <File Name="source/wg_cursor.cpp"/>
-    <File Name="source/wg_cursorinstance.cpp"/>
     <File Name="source/wg_event.cpp"/>
     <File Name="source/wg_eventfilter.cpp"/>
     <File Name="source/wg_eventhandler.cpp"/>
@@ -135,6 +131,10 @@
     <File Name="source/wg_blob.cpp"/>
     <File Name="include/wg_finalizer.h"/>
     <File Name="source/wg_finalizer.cpp"/>
+    <File Name="include/wg_caret.h"/>
+    <File Name="include/wg_caretinstance.h"/>
+    <File Name="source/wg_caret.cpp"/>
+    <File Name="source/wg_caretinstance.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Widgets">
     <File Name="include/wg_animplayer.h"/>

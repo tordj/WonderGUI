@@ -27,8 +27,8 @@
 #	include <wg_imodifvalue.h>
 #endif
 
-#ifndef WG_CURSOR_DOT_H
-#	include <wg_cursor.h>
+#ifndef WG_CARET_DOT_H
+#	include <wg_caret.h>
 #endif
 
 class WgIEditValue;
@@ -57,8 +57,8 @@ public:
 	virtual bool			IsEditable() const = 0;
 	virtual bool			IsSelectable() const = 0;
 
-	virtual void			SetCursorSkin( const WgCursorPtr& pCursor ) = 0;
-	virtual WgCursorPtr		CursorSkin() const = 0;
+	virtual void			SetCursorSkin( const WgCaretPtr& pCursor ) = 0;
+	virtual WgCaretPtr		CursorSkin() const = 0;
 
 	// Calling these methods gets field into edit mode, displaying cursor.
 

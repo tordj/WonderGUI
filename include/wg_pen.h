@@ -89,7 +89,7 @@ public:
 
 	inline void				AdvancePos() { m_pos.x += m_pGlyph->Advance(); }							///< Advances position past current character.
 	inline void				AdvancePosMonospaced() { m_pos.x += m_pGlyphs->GetMaxGlyphAdvance(m_size); }	///< Advances position past current character using monospace spacing.
-	void					AdvancePosCursor( const WgCursorInstance& instance );
+	void					AdvancePosCursor( const WgCaretInstance& instance );
 
 	inline WgGlyphPtr		GetGlyph() const { return m_pGlyph; }
 	inline WgCoord			GetPos() const { return m_pos; }
@@ -115,7 +115,7 @@ public:
 	inline int				GetBaseline() const { return m_pGlyphs->GetBaseline(m_size); }
 
 	void					BlitChar() const;
-	bool					BlitCursor( const WgCursorInstance& instance ) const;
+	bool					BlitCursor( const WgCaretInstance& instance ) const;
 
 private:
 	void _init();

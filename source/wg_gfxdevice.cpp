@@ -26,7 +26,7 @@
 #include <wg_surface.h>
 #include <wg_geo.h>
 #include <wg_textfield.h>
-#include <wg_cursorinstance.h>
+#include <wg_caretinstance.h>
 #include <wg_font.h>
 #include <wg_gfxanim.h>
 #include <wg_util.h>
@@ -618,7 +618,7 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgTextField * pText, cons
 	if( dest.h < (int) textSize.h || dest.w < (int) textSize.w || !clip.Contains( dest ) || pText->isCursorShowing() )
 		pen.SetClipRect( clip );
 
-	const WgCursorInstance* pCursor = 0;
+	const WgCaretInstance* pCursor = 0;
 	int cursLine = -1, cursCol = -1;
 
 	if( pText->isCursorShowing() )

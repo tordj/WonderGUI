@@ -56,7 +56,7 @@ class	WgRect;
 class	WgBorders;
 class	WgSurface;
 class	WgTextField;
-class	WgCursorInstance;
+class	WgCaretInstance;
 class 	WgPen;
 
 class WgGfxDevice;

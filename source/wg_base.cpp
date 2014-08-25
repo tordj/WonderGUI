@@ -193,7 +193,7 @@ void WgBase::SetDefaultLinkProp( const WgTextpropPtr& pProp )
 
 //____ SetDefaultCursor() ___________________________________________________
 
-void WgBase::SetDefaultCursor( const WgCursorPtr& pCursor )
+void WgBase::SetDefaultCursor( const WgCaretPtr& pCursor )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultCursor = pCursor;

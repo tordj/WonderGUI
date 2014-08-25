@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <wg_gfxdevice.h>
 #include <wg_font.h>
-#include <wg_cursorinstance.h>
+#include <wg_caretinstance.h>
 #include <wg_key.h>
 #include <wg_textmanager.h>
 #include <wg_event.h>
@@ -220,7 +220,7 @@ void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		if( textW > canvas.w )
 			canvas.w = textW;
 
-		WgCursorInstance * pCursor = m_text.GetCursor();
+		WgCaretInstance * pCursor = m_text.GetCursor();
 		m_viewOfs = m_text.FocusWindowOnRange( canvas.Size(), WgRect(m_viewOfs,_canvas.Size()), WgRange( pCursor->column(),0 ) );
 	}
 	else
@@ -611,7 +611,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 		// It's not allowed before a minus sign.
 		// A zero is inserted (always INSERTED even if mode is replace) if there is no number before it.
 
-		WgCursorInstance * pCursor = m_text.GetCursor();
+		WgCaretInstance * pCursor = m_text.GetCursor();
 		if( pCursor )
 		{
 			if( character == m_pFormat->getPeriod() )
@@ -727,7 +727,7 @@ void WgValueEditor::_limitCursor()
 	int min = m_pFormat->getPrefix().Length();
 	int max = m_text.Length() - m_pFormat->getSuffix().Length();
 
-	WgCursorInstance * pCursor = m_text.GetCursor();
+	WgCaretInstance * pCursor = m_text.GetCursor();
 
 	// Save selection (might get destroyed by moving cursor)
 

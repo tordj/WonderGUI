@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CURSOR_DOT_H
-#define WG_CURSOR_DOT_H
+#ifndef	WG_CARET_DOT_H
+#define WG_CARET_DOT_H
 
 #ifndef	WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -38,24 +38,24 @@
 //class WgGfxAnim;
 class WgGlyphset;
 
-class WgCursor;
-typedef	WgStrongPtr<WgCursor,WgObjectPtr>		WgCursorPtr;
-typedef	WgWeakPtr<WgCursor,WgObjectWeakPtr>		WgCursorWeakPtr;
+class WgCaret;
+typedef	WgStrongPtr<WgCaret,WgObjectPtr>		WgCaretPtr;
+typedef	WgWeakPtr<WgCaret,WgObjectWeakPtr>		WgCaretWeakPtr;
 
-//____ WgCursor _______________________________________________________________
+//____ WgCaret _______________________________________________________________
 
-class WgCursor : public WgObject
+class WgCaret : public WgObject
 {
 	friend class WgGlyphset;
 
 public:
-	static WgCursorPtr	Create() { return WgCursorPtr(new WgCursor()); }
-	static WgCursorPtr	Create( const WgCursorPtr& in ) { return WgCursorPtr(new WgCursor(in.GetRealPtr())); }
+	static WgCaretPtr	Create() { return WgCaretPtr(new WgCaret()); }
+	static WgCaretPtr	Create( const WgCaretPtr& in ) { return WgCaretPtr(new WgCaret(in.GetRealPtr())); }
 
 	bool		IsInstanceOf( const char * pClassName ) const;
 	const char *ClassName( void ) const;
 	static const char	CLASSNAME[];
-	static WgCursorPtr	Cast( const WgObjectPtr& pObject );
+	static WgCaretPtr	Cast( const WgObjectPtr& pObject );
 
 
 	enum Mode
@@ -97,8 +97,8 @@ public:
 	
 
 private:
-	WgCursor();
-	WgCursor( WgCursor * pIn );
+	WgCaret();
+	WgCaret( WgCaret * pIn );
 
 	enum { N_MODES = 3 };
 
@@ -116,4 +116,4 @@ private:
 
 
 
-#endif // WG_CURSOR_DOT_H
+#endif // WG_CARET_DOT_H

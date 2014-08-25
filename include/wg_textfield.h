@@ -47,8 +47,8 @@
 #	include <wg_textmanager.h>
 #endif
 
-#ifndef	WG_CURSORINSTANCE_DOT_H
-	#include <wg_cursorinstance.h>
+#ifndef	WG_CARETINSTANCE_DOT_H
+	#include <wg_caretinstance.h>
 #endif
 
 #ifndef WG_SKIN_DOT_H
@@ -198,8 +198,8 @@ public:
 
 	//
 
-	void				SetCursorSkin( const WgCursorPtr& pCursor );
-	inline WgCursorPtr	CursorSkin() const { return m_pCursorStyle; }
+	void				SetCursorSkin( const WgCaretPtr& pCursor );
+	inline WgCaretPtr	CursorSkin() const { return m_pCursorStyle; }
 
 	int					InsertAtCursor( const WgCharSeq& str ) { return putText(str); }
 	bool				InsertAtCursor( Uint16 c ) { return putChar(c); }
@@ -328,7 +328,7 @@ public:
 
 
 	// cursor instance forwards. TODO: merge cursor instance with WgText
-	WgCursorInstance*GetCursor() const { return m_pCursor; }
+	WgCaretInstance*GetCursor() const { return m_pCursor; }
 
 	void			CursorGotoCoord( const WgCoord& coord, const WgRect& container );
 	void			CursorGotoLine( int line, const WgRect& container );
@@ -373,7 +373,7 @@ public:
 	inline int		column() const{return m_pCursor ? m_pCursor->column():0;}
 	inline int		time() const{return m_pCursor ? m_pCursor->time():0;}
 
-	WgCursor::Mode	cursorMode() const { return m_pCursor ? m_pCursor->cursorMode() : WgCursor::EOL; }
+	WgCaret::Mode	cursorMode() const { return m_pCursor ? m_pCursor->cursorMode() : WgCaret::EOL; }
 
 	void			setSelectionMode(bool bOn){ if(m_pCursor) m_pCursor->setSelectionMode(bOn); }
 	bool			hasSelection()const { return m_pCursor ? m_pCursor->hasSelection() : false; }
@@ -442,8 +442,8 @@ protected:
 
 
 	WgCharBuffer	m_buffer;
-	WgCursorPtr		m_pCursorStyle;
-	WgCursorInstance*	m_pCursor;
+	WgCaretPtr		m_pCursorStyle;
+	WgCaretInstance*	m_pCursor;
 	WgTextNode *	m_pManagerNode;
 
 	WgTextEditMode	m_editMode;
