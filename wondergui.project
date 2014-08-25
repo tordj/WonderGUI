@@ -2,11 +2,20 @@
 <CodeLite_Project Name="wondergui" InternalType="Library">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00010001N0005Debug000000000000]]>
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
     </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
 		"name":	"Debug",
+		"enabled":	false,
+		"buildDirectory":	"build",
+		"sourceDirectory":	"$(ProjectPath)",
+		"generator":	"",
+		"buildType":	"",
+		"arguments":	[],
+		"parentProject":	""
+	}, {
+		"name":	"Release",
 		"enabled":	false,
 		"buildDirectory":	"build",
 		"sourceDirectory":	"$(ProjectPath)",
@@ -214,8 +223,8 @@
   <VirtualDirectory Name="Lists">
     <File Name="include/wg_list.h"/>
     <File Name="source/wg_list.cpp"/>
-    <File Name="include/wg_straightlist.h"/>
-    <File Name="source/wg_straightlist.cpp"/>
+    <File Name="include/wg_packlist.h"/>
+    <File Name="source/wg_packlist.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Layers">
     <File Name="source/wg_layer.cpp"/>
@@ -250,6 +259,20 @@
     <File Name="include/wg_imodifvalue.h"/>
     <File Name="source/wg_ieditvalue.cpp"/>
     <File Name="source/wg_imodifvalue.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="Release"/>
+  <Dependencies Name="Debug"/>
+  <VirtualDirectory Name="Fields">
+    <File Name="include/wg_textfield.h"/>
+    <File Name="source/wg_textfield.cpp"/>
+    <File Name="include/wg_iconfield.h"/>
+    <File Name="source/wg_iconfield.cpp"/>
+    <File Name="include/wg_editvaluefield.h"/>
+    <File Name="include/wg_modifvaluefield.h"/>
+    <File Name="include/wg_staticvaluefield.h"/>
+    <File Name="source/wg_editvaluefield.cpp"/>
+    <File Name="source/wg_modifvaluefield.cpp"/>
+    <File Name="source/wg_staticvaluefield.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -300,47 +323,16 @@
         <SearchPaths/>
       </Completion>
     </Configuration>
-    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
-        <IncludePath Value="."/>
+        <IncludePath Value="./include"/>
+        <IncludePath Value="/usr/include/freetype2/"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      ]]>
+        <![CDATA[]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
         <DebuggerSearchPaths/>
@@ -371,18 +363,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Release"/>
-  <Dependencies Name="Debug"/>
-  <VirtualDirectory Name="Fields">
-    <File Name="include/wg_textfield.h"/>
-    <File Name="source/wg_textfield.cpp"/>
-    <File Name="include/wg_iconfield.h"/>
-    <File Name="source/wg_iconfield.cpp"/>
-    <File Name="include/wg_editvaluefield.h"/>
-    <File Name="include/wg_modifvaluefield.h"/>
-    <File Name="include/wg_staticvaluefield.h"/>
-    <File Name="source/wg_editvaluefield.cpp"/>
-    <File Name="source/wg_modifvaluefield.cpp"/>
-    <File Name="source/wg_staticvaluefield.cpp"/>
-  </VirtualDirectory>
 </CodeLite_Project>

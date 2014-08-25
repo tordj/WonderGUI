@@ -10,7 +10,7 @@
   <Project Name="example01" Path="examples/example01.project" Active="No"/>
   <Project Name="example_x" Path="examples/example_x.project" Active="No"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
+    <WorkspaceConfiguration Name="Debug" Selected="no">
       <Project Name="wondergui" ConfigName="Debug"/>
       <Project Name="wg_soft" ConfigName="Debug"/>
       <Project Name="wg_sdl" ConfigName="Debug"/>
