@@ -42,18 +42,18 @@ class WgBlockSkin : public WgExtendedSkin
 
 public:
 	static WgBlockSkinPtr Create();
-	static WgBlockSkinPtr CreateStatic( const WgSurfacePtr& pSurface, WgRect block, WgBorders frame = WgBorders(0) );
-	static WgBlockSkinPtr CreateEnable( const WgSurfacePtr& pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorders frame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickSelectable(const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickSelectableWidget( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
+	static WgBlockSkinPtr CreateStatic( const WgSurfacePtr& pSurface, WgRect block, WgBorder frame = WgBorder(0) );
+	static WgBlockSkinPtr CreateEnable( const WgSurfacePtr& pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorder frame = WgBorder(0) );
+	static WgBlockSkinPtr CreateClickable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame = WgBorder(0) );
+	static WgBlockSkinPtr CreateSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame = WgBorder(0) );
+	static WgBlockSkinPtr CreateClickSelectable(const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame = WgBorder(0) );
+	static WgBlockSkinPtr CreateClickSelectableWidget( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame = WgBorder(0) );
 
-	static WgBlockSkinPtr CreateStaticFromSurface( const WgSurfacePtr& pSurface, WgBorders frame = WgBorders(0) );
-	static WgBlockSkinPtr CreateEnableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
+	static WgBlockSkinPtr CreateStaticFromSurface( const WgSurfacePtr& pSurface, WgBorder frame = WgBorder(0) );
+	static WgBlockSkinPtr CreateEnableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame = WgBorder(0) );
+	static WgBlockSkinPtr CreateClickableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame = WgBorder(0) );
+	static WgBlockSkinPtr CreateSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame = WgBorder(0) );
+	static WgBlockSkinPtr CreateClickSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame = WgBorder(0) );
 
 	~WgBlockSkin() {};
 
@@ -64,7 +64,7 @@ public:
 
 
 	void	SetSurface( const WgSurfacePtr& pSurf );
-	bool	SetBlockGeo( WgSize size, WgBorders frame = WgBorders(0) );
+	bool	SetBlockGeo( WgSize size, WgBorder frame = WgBorder(0) );
 	void	SetStateBlock( WgStateEnum state, const WgCoord& ofs );
 
 	void	SetAllBlocks( const WgCoord& ofs );
@@ -114,7 +114,7 @@ private:
 
 	WgSurfacePtr	m_pSurface;
 	WgSize			m_dimensions;
-	WgBorders		m_frame;
+	WgBorder		m_frame;
 	int				m_tiledSections;
 	bool			m_bIsOpaque;
 

@@ -57,7 +57,7 @@ WgExtendedSkinPtr WgExtendedSkin::Cast( const WgObjectPtr& pObject )
 
 //____ SetContentPadding() ____________________________________________________
 
-void WgExtendedSkin::SetContentPadding( WgBorders padding )
+void WgExtendedSkin::SetContentPadding( WgBorder padding )
 {
 	m_contentPadding = padding;
 }

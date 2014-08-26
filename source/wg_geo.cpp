@@ -192,7 +192,7 @@ void WgRect::Shrink( int top, int right, int bottom, int left )
  * The rectangle is constrained to a minimum width and height of 0.
  **/
 
-void WgRect::Shrink(const WgBorders &_borders)
+void WgRect::Shrink(const WgBorder &_borders)
 {
 	x += _borders.left;
 	y += _borders.top;
@@ -235,7 +235,7 @@ void WgRect::Grow(int top, int right, int bottom, int left)
  * Width and height of rectangle is increased by the thickness of the borders.
  * Top and left borders also affects the position of the rectangle.
  **/
-void WgRect::Grow(const WgBorders &_borders)
+void WgRect::Grow(const WgBorder &_borders)
 {
 	x -= _borders.left;
 	y -= _borders.top;

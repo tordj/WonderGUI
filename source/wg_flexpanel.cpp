@@ -39,7 +39,7 @@ float	WgFlexOrigo::s_origoTab[9][2] = {	0.f, 0.f,
 
 //____ WgFlexHook::Constructor ________________________________________________
 
-WgFlexHook::WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo, WgBorders padding ) : m_pParent(pParent),
+WgFlexHook::WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo, WgBorder padding ) : m_pParent(pParent),
 	m_bFloating(false), m_widthPolicy(WG_BOUND), m_heightPolicy(WG_BOUND),
 	m_origo(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
 	m_placementGeo(placementGeo)
@@ -78,7 +78,7 @@ WgFlexHookPtr WgFlexHook::Cast( const WgHookPtr& pHook )
 //____ WgFlexHook::SetStretching() ______________________________________________
 
 bool  WgFlexHook::SetStretching( const WgFlexOrigo& topLeftOrigo, 
-								 const WgFlexOrigo& bottomRightOrigo, WgBorders padding )
+								 const WgFlexOrigo& bottomRightOrigo, WgBorder padding )
 {
 	m_bFloating			= false;
 	m_topLeftOrigo		= topLeftOrigo;
@@ -95,7 +95,7 @@ bool  WgFlexHook::SetStretching( const WgFlexOrigo& topLeftOrigo,
 //____ WgFlexHook::SetStretching() ______________________________________________
 
 bool  WgFlexHook::SetStretching( const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
-	const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders padding )
+	const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorder padding )
 {
 	m_bFloating			= false;
 	m_topLeftOrigo		= topLeftOrigo;
@@ -741,7 +741,7 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget )
 	if( !pWidget )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), WgBorders(0) );
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), WgBorder(0) );
 	p->_setWidget( pWidget.GetRealPtr() );
 
 	m_hooks.PushBack(p);
@@ -753,7 +753,7 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget )
 //____ AddWidget() _____________________________________________________________
 
 WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgFlexOrigo& topLeftOrigo,
-									 const WgFlexOrigo& bottomRightOrigo, WgBorders padding )
+									 const WgFlexOrigo& bottomRightOrigo, WgBorder padding )
 {
 	if( !pWidget )
 		return 0;
@@ -768,7 +768,7 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgFlexOri
 }
 
 WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
-							 const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders padding )
+							 const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorder padding )
 {
 	if( !pWidget )
 		return 0;
@@ -782,12 +782,12 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgFlexOri
 	return p;
 }
 
-WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, const WgFlexOrigo& origo, WgBorders padding )
+WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, const WgFlexOrigo& origo, WgBorder padding )
 {
 	return AddWidget( pWidget, pos, origo, origo, padding );
 }
 
-WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders padding )
+WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding )
 {
 	if( !pWidget )
 		return 0;
@@ -801,12 +801,12 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgCoord& 
 	return p;
 }
 
-WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, const WgFlexOrigo& origo, WgBorders padding )
+WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, const WgFlexOrigo& origo, WgBorder padding )
 {
 	return AddWidget( pWidget, geometry, origo, origo, padding );
 }
 
-WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders padding )
+WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding )
 {
 	if( !pWidget )
 		return 0;
@@ -828,7 +828,7 @@ WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidg
 	if( !pWidget || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), WgBorders(0) );
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), WgBorder(0) );
 	p->_setWidget( pWidget.GetRealPtr() );
 	p->_moveBefore( (WgFlexHook*)pSibling->_hook() );
 	p->SetFloating( WgCoord(0,0) );
@@ -837,12 +837,12 @@ WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidg
 
 
 WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
-									   const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders padding )
+									   const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorder padding )
 {
 	if( !pWidget || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;
 
-	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), WgBorders(0) );
+	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), WgBorder(0) );
 	p->_setWidget( pWidget.GetRealPtr() );
 	p->_moveBefore( (WgFlexHook*)pSibling->_hook() );
 	p->SetStretching( topLeftOrigo, topLeftOfs, bottomRightOrigo, bottomRightOfs, padding );
@@ -850,12 +850,12 @@ WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidg
 }
 
 
-WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, const WgFlexOrigo& origo, WgBorders padding )
+WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, const WgFlexOrigo& origo, WgBorder padding )
 {
 	return InsertWidget( pWidget, pSibling, geometry, origo, origo, padding );
 }
 
-WgFlexHook * WgFlexPanel::InsertWidget(const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders padding )
+WgFlexHook * WgFlexPanel::InsertWidget(const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding )
 {
 	if( !pWidget || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;
@@ -867,12 +867,12 @@ WgFlexHook * WgFlexPanel::InsertWidget(const WgWidgetPtr& pWidget, const WgWidge
 	return p;
 }
 
-WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, const WgFlexOrigo& origo, WgBorders padding )
+WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, const WgFlexOrigo& origo, WgBorder padding )
 {
 	return InsertWidget( pWidget, pSibling, pos, origo, origo, padding );
 }
 
-WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders padding )
+WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding )
 {
 	if( !pWidget || !pSibling || !pSibling->Hook() || pSibling->Hook()->Parent() != this )
 		return 0;

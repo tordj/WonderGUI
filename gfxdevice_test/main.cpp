@@ -180,8 +180,8 @@ WgRoot * setupGUI( WgGfxDevice * pDevice )
 
 	WgGizmo * pSlider = pDB->CloneGizmo( "hslider" );
 	WgStackHook * pSliderHook = pPanelStack->AddChild( pSlider );
-//	pDragbarHook->SetOrientation( WG_SOUTH );
-	pSliderHook->SetBorders( WgBorders(0,0,81,0) );
+//	pSliderHook->SetOrientation( WG_SOUTH );
+	pSliderHook->SetBorder( WgBorder(0,0,81,0) );
 
 	//
 

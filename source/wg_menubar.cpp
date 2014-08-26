@@ -273,7 +273,7 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 					state = WG_STATE_HOVERED;
 			}
 
-			WgBorders b = _getEntryBorders();
+			WgBorder b = _getEntryBorder();
 
 //			WgColorsetPtr pTextColors;
 			
@@ -386,9 +386,9 @@ void WgMenubar::_onCloneContent( const WgWidget * _pOrg )
 	//TODO: Clone entries!
 }
 
-//____ _getEntryBorders() ____________________________________________________
+//____ _getEntryBorder() ____________________________________________________
 
-WgBorders WgMenubar::_getEntryBorders() const
+WgBorder WgMenubar::_getEntryBorder() const
 {
 	//TODO: This doesn't take ContentShift for different states into account.
 
@@ -396,10 +396,10 @@ WgBorders WgMenubar::_getEntryBorders() const
 	{
 		WgRect r = m_pEntrySkin->ContentRect( WgRect(0,0,1000,1000), WG_STATE_NORMAL );
 
-		return WgBorders(r.x,r.y,1000-r.w,1000-r.h);
+		return WgBorder(r.x,r.y,1000-r.w,1000-r.h);
 	}
 	else
-		return WgBorders(10,0,10,0);		// 10 pixels on each side as default margin. Should do something more intelligent here, like taking fonts avgSpacing into account...
+		return WgBorder(10,0,10,0);		// 10 pixels on each side as default margin. Should do something more intelligent here, like taking fonts avgSpacing into account...
 }
 
 
@@ -417,7 +417,7 @@ bool WgMenubar::_openMenu( int nb )
 	if( m_pSkin )
 		pos = m_pSkin->ContentRect( pos, WG_STATE_NORMAL ).Pos();
 
-	int bordersWidth = _getEntryBorders().Width();
+	int bordersWidth = _getEntryBorder().Width();
 
 	WgMenuBarItem * pI = m_items.First();
 	while( pI != pItem )
@@ -477,7 +477,7 @@ Uint32 WgMenubar::_getItemAtAbsPos( int x, int y )
 
 	if( y > 0 && x > 0 && y < (int) Size().h )
 	{
-		int bordersWidth = _getEntryBorders().Width();
+		int bordersWidth = _getEntryBorder().Width();
 
 		WgMenuBarItem * pItem = m_items.First();
 		int		item = 1;

@@ -126,7 +126,7 @@ int main ( int argc, char** argv )
 	// pixels and that it should be centered.
 
 	WgButtonPtr pButton = WgButton::Create();
-	pButton->SetSkin( WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorders(3) ) );
+	pButton->SetSkin( WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorder(3) ) );
 	pFlexPanel->AddWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
 
 	// Finally we add a callback to the click-event of the button.

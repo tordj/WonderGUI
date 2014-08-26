@@ -76,8 +76,8 @@ public:
 
 	// Flex-specific methods
 
-	bool	SetStretching( const WgFlexOrigo& topLeftOrigo, const WgFlexOrigo& bottomRightOrigo, WgBorders padding = 0 );
-	bool	SetStretching( const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders padding = 0 );
+	bool	SetStretching( const WgFlexOrigo& topLeftOrigo, const WgFlexOrigo& bottomRightOrigo, WgBorder padding = 0 );
+	bool	SetStretching( const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorder padding = 0 );
 
 	bool	SetFloating( const WgCoord& pos, const WgFlexOrigo& origo = WG_NORTHWEST );
 	bool	SetFloating( const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot );
@@ -152,7 +152,7 @@ protected:
 
 	PROTECTED_LINK_METHODS( WgFlexHook );
 
-	WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo, WgBorders padding );
+	WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo, WgBorder padding );
 
 	void			_refreshRealGeo();
 	WgSize			_sizeNeededForGeo();
@@ -219,25 +219,25 @@ public:
 
 
 	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget );
-	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgFlexOrigo& topLeftOrigo, const WgFlexOrigo& bottomRightOrigo, WgBorders padding = 0 );
+	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgFlexOrigo& topLeftOrigo, const WgFlexOrigo& bottomRightOrigo, WgBorder padding = 0 );
 	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
-							  const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders padding = 0 );
+							  const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorder padding = 0 );
 
-	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorders padding = 0 );
-	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders padding = 0 );
-	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorders padding = 0 );
-	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders padding = 0 );
+	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorder padding = 0 );
+	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding = 0 );
+	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorder padding = 0 );
+	WgFlexHook *	AddWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding = 0 );
 
 	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
 	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgFlexOrigo& topLeftOrigo,
-								 const WgFlexOrigo& bottomRightOrigo, const WgBorders padding = 0 );
+								 const WgFlexOrigo& bottomRightOrigo, const WgBorder padding = 0 );
 	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
-								 const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorders padding = 0 );
+								 const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorder padding = 0 );
 
-	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorders padding = 0 );
-	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders padding = 0 );
-	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorders padding = 0 );
-	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorders padding = 0 );
+	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorder padding = 0 );
+	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding = 0 );
+	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, const WgFlexOrigo& origo = WG_NORTHWEST, WgBorder padding = 0 );
+	WgFlexHook *	InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding = 0 );
 
 	bool			RemoveWidget( const WgWidgetPtr& pWidget );
 	bool			Clear();

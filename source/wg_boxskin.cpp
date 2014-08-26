@@ -36,7 +36,7 @@ WgBoxSkinPtr WgBoxSkin::Create()
 	return WgBoxSkinPtr(new WgBoxSkin());
 }
 
-WgBoxSkinPtr WgBoxSkin::Create( WgColor color, WgBorders frame, WgColor frameColor )
+WgBoxSkinPtr WgBoxSkin::Create( WgColor color, WgBorder frame, WgColor frameColor )
 {
 	return WgBoxSkinPtr(new WgBoxSkin(color, frame, frameColor));
 }
@@ -54,7 +54,7 @@ WgBoxSkin::WgBoxSkin()
 	m_bOpaque = true;
 }
 
-WgBoxSkin::WgBoxSkin( WgColor color, WgBorders frame, WgColor frameColor )
+WgBoxSkin::WgBoxSkin( WgColor color, WgBorder frame, WgColor frameColor )
 {
     m_frame = frame;
 
@@ -126,7 +126,7 @@ void WgBoxSkin::SetFrameColor( WgColor color )
 
 //____ SetFrameThickness() ____________________________________________________
 
-void WgBoxSkin::SetFrameThickness( WgBorders frame )
+void WgBoxSkin::SetFrameThickness( WgBorder frame )
 {
 	bool hadFrame = (m_frame.Width() + m_frame.Height() > 0 );
 	bool hasFrame = (frame.Width() + frame.Height() > 0);
@@ -139,7 +139,7 @@ void WgBoxSkin::SetFrameThickness( WgBorders frame )
 
 //____ SetFrame() _____________________________________________________________
 
-void WgBoxSkin::SetFrame( WgBorders frame, WgColor color )
+void WgBoxSkin::SetFrame( WgBorder frame, WgColor color )
 {
 	m_frame = frame;
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )

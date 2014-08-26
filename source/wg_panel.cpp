@@ -191,7 +191,7 @@ bool WgPanelHook::SetVisible( bool bVisible )
 
 //____ WgPanelHook::SetPadding() ______________________________________________
 
-bool WgPanelHook::SetPadding( WgBorders padding )
+bool WgPanelHook::SetPadding( WgBorder padding )
 {
 	if( padding != m_padding )
 	{

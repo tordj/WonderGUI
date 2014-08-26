@@ -62,8 +62,8 @@ public:
 	virtual bool	SetVisible( bool bVisible );
 	bool			IsVisible() { return m_bVisible; }
 
-	virtual bool	SetPadding( WgBorders padding );
-	WgBorders		Padding() const { return m_padding; }
+	virtual bool	SetPadding( WgBorder padding );
+	WgBorder		Padding() const { return m_padding; }
 
 protected:
 	WgPanelHook() : m_bVisible(true) {}
@@ -79,7 +79,7 @@ protected:
 	WgSize		_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy ) const;
 
 	bool			m_bVisible;
-	WgBorders		m_padding;
+	WgBorder		m_padding;
 };
 
 /**

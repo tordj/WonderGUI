@@ -237,7 +237,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 				WgRect listArea = _listArea();
 				WgListHook * pEntry = _findEntry(ofs);
 
-				ofs = listArea.Constrain(ofs);
+				ofs = listArea.Limit(ofs);
 				m_lassoBegin = ofs;
 				m_lassoEnd = ofs;
 
@@ -333,8 +333,8 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
 			if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pEvent->Button() == WG_BUTTON_LEFT )
 			{
-				WgCoord ofs = _listArea().Constrain(Abs2local(pEvent->PointerGlobalPos()));
-				ofs = _listWindow().Constrain(ofs);
+				WgCoord ofs = _listArea().Limit(Abs2local(pEvent->PointerGlobalPos()));
+				ofs = _listWindow().Limit(ofs);
 
 				WgRect oldLasso( m_lassoBegin, m_lassoEnd );
 				WgRect newLasso( m_lassoBegin, ofs );
