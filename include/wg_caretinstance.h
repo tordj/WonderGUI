@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CURSORINSTANCE_DOT_H
-#define WG_CURSORINSTANCE_DOT_H
+#ifndef	WG_CARETINSTANCE_DOT_H
+#define WG_CARETINSTANCE_DOT_H
 
 #include <climits>
 
@@ -29,8 +29,8 @@
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_CURSOR_DOT_H
-#	include <wg_cursor.h>
+#ifndef WG_CARET_DOT_H
+#	include <wg_caret.h>
 #endif
 
 #ifndef WG_COLOR_DOT_H
@@ -41,14 +41,14 @@ class WgTextField;
 class WgCharSeq;
 class WgPen;
 
-//____ WgCursorInstance ________________________________________________________
+//____ WgCaretInstance ________________________________________________________
 
-class WgCursorInstance
+class WgCaretInstance
 {
 	friend class WgPen;
 public:
 
-	WgCursorInstance( WgTextField& text );
+	WgCaretInstance( WgTextField& text );
 
 	bool			incTime( int ms );
 	void			insertMode( bool bInsert );
@@ -96,7 +96,7 @@ public:
 
 	inline WgTextField *	text() const;
 
-	WgCursor::Mode	cursorMode() const;
+	WgCaret::Mode	cursorMode() const;
 
 	void			setSelectionMode(bool bOn);
 	bool			getSelectionMode() const { return m_bSelectMode; }
@@ -128,34 +128,34 @@ protected:
 
 //____ line() __________________________________________________________________
 
-inline int WgCursorInstance::line() const
+inline int WgCaretInstance::line() const
 {
 	return m_line;
 }
 
 //____ column() ________________________________________________________________
 
-inline int WgCursorInstance::column() const
+inline int WgCaretInstance::column() const
 {
 	return m_column;
 }
 
 //____ time() __________________________________________________________________
 
-inline int WgCursorInstance::time() const
+inline int WgCaretInstance::time() const
 {
 	return m_time;
 }
 
 //____ text() __________________________________________________________________
 
-inline WgTextField * WgCursorInstance::text() const
+inline WgTextField * WgCaretInstance::text() const
 {
 	return m_pText;
 }
 
 
-inline void WgCursorInstance::goLeft( int nChars )
+inline void WgCaretInstance::goLeft( int nChars )
 {
 	//if( m_column <= nChars )
 	//	gotoColumn( 0 );
@@ -163,17 +163,17 @@ inline void WgCursorInstance::goLeft( int nChars )
 		gotoColumn( m_column - nChars );
 }
 
-inline void WgCursorInstance::goRight( int nChars )
+inline void WgCaretInstance::goRight( int nChars )
 {
 	gotoColumn( m_column + nChars );
 }
 
-inline void WgCursorInstance::goBOF()
+inline void WgCaretInstance::goBOF()
 {
 	gotoSoftPos( 0, 0 );
 }
 
-inline void WgCursorInstance::goEOF()
+inline void WgCaretInstance::goEOF()
 {
 	gotoSoftPos( INT_MAX, INT_MAX );
 }
@@ -181,4 +181,4 @@ inline void WgCursorInstance::goEOF()
 
 
 
-#endif //WG_CURSORINSTANCE_DOT_H
+#endif //WG_CARETINSTANCE_DOT_H

@@ -21,7 +21,7 @@
 =========================================================================*/
 
 
-#include <wg_cursorinstance.h>
+#include <wg_caretinstance.h>
 
 #ifndef WG_TEXTFIELD_DOT_H
 #	include <wg_textfield.h>
@@ -39,7 +39,7 @@
 
 //____ Constructor() __________________________________________________________
 
-WgCursorInstance::WgCursorInstance( WgTextField& text )
+WgCaretInstance::WgCaretInstance( WgTextField& text )
 {
 	m_pText 		= &text;
 	m_bHidden		= true;
@@ -57,7 +57,7 @@ WgCursorInstance::WgCursorInstance( WgTextField& text )
 
 //____ incTime() _______________________________________________________________
 
-bool WgCursorInstance::incTime( int ms )
+bool WgCaretInstance::incTime( int ms )
 {
 	m_time += ms;
 	return true; //TODO: Should only return true if cursor needs to be re-rendered.
@@ -65,21 +65,21 @@ bool WgCursorInstance::incTime( int ms )
 
 //____ hide() _________________________________________________________________
 
-void WgCursorInstance::hide()
+void WgCaretInstance::hide()
 {
 	m_bHidden = true;
 }
 
 //____ show() _________________________________________________________________
 
-void WgCursorInstance::show()
+void WgCaretInstance::show()
 {
 	m_bHidden = false;
 }
 
 //____ isHidden() _____________________________________________________________
 
-bool WgCursorInstance::isHidden() const
+bool WgCaretInstance::isHidden() const
 {
 	return m_bHidden;
 }
@@ -88,7 +88,7 @@ bool WgCursorInstance::isHidden() const
 
 //____ insertMode() ____________________________________________________________
 
-void WgCursorInstance::insertMode( bool bInsert )
+void WgCaretInstance::insertMode( bool bInsert )
 {
 	m_bInsert = bInsert;
 }
@@ -96,7 +96,7 @@ void WgCursorInstance::insertMode( bool bInsert )
 
 //____ gotoSoftLine() _________________________________________________________
 
-void WgCursorInstance::gotoSoftLine( int line, const WgRect& container )
+void WgCaretInstance::gotoSoftLine( int line, const WgRect& container )
 {
 	// First we need to update m_wantedOfsX...
 
@@ -122,7 +122,7 @@ void WgCursorInstance::gotoSoftLine( int line, const WgRect& container )
 
 //____ gotoColumn() ____________________________________________________________
 
-void WgCursorInstance::gotoColumn( int col )
+void WgCaretInstance::gotoColumn( int col )
 {
 	const int minLine = 0;
 	const int maxLine = m_pText->Lines()-1;
@@ -177,7 +177,7 @@ void WgCursorInstance::gotoColumn( int col )
 
 //____ gotoPrevWord() _________________________________________________________
 
-void WgCursorInstance::gotoPrevWord()
+void WgCaretInstance::gotoPrevWord()
 {
 	gotoBeginningOfWord();
 
@@ -218,7 +218,7 @@ void WgCursorInstance::gotoPrevWord()
 }
 
 //_____________________________________________________________________________
-void WgCursorInstance::gotoBeginningOfWord()
+void WgCaretInstance::gotoBeginningOfWord()
 {
 	if(m_line == 0 && m_column == 0)
 		return;
@@ -258,7 +258,7 @@ void WgCursorInstance::gotoBeginningOfWord()
 
 //____ gotoNextWord() _________________________________________________________
 
-void WgCursorInstance::gotoNextWord()
+void WgCaretInstance::gotoNextWord()
 {
 	gotoEndOfWord();
 
@@ -287,7 +287,7 @@ void WgCursorInstance::gotoNextWord()
 }
 
 //_____________________________________________________________________________
-void WgCursorInstance::gotoEndOfWord()
+void WgCaretInstance::gotoEndOfWord()
 {
 	int line = m_line;
 	int col = m_column;
@@ -315,7 +315,7 @@ void WgCursorInstance::gotoEndOfWord()
 
 //____ gotoHardPos() __________________________________________________________
 
-void WgCursorInstance::gotoHardPos( int line, int col )
+void WgCaretInstance::gotoHardPos( int line, int col )
 {
 	_gotoPos( line, col );
 	m_wantedOfsX = -1;
@@ -324,7 +324,7 @@ void WgCursorInstance::gotoHardPos( int line, int col )
 
 //____ _gotoPos() ______________________________________________________________
 
-void WgCursorInstance::_gotoPos( int line, int col )
+void WgCaretInstance::_gotoPos( int line, int col )
 {
 	int maxLine = m_pText->Lines()-1;
 	if( line > maxLine )
@@ -339,7 +339,7 @@ void WgCursorInstance::_gotoPos( int line, int col )
 
 //____ gotoSoftPos() __________________________________________________________
 
-void WgCursorInstance::gotoSoftPos( int line, int col )
+void WgCaretInstance::gotoSoftPos( int line, int col )
 {
 	m_pText->posSoft2Hard( line, col );
 
@@ -350,7 +350,7 @@ void WgCursorInstance::gotoSoftPos( int line, int col )
 
 //____ getSoftPos() ___________________________________________________________
 
-void WgCursorInstance::getSoftPos( int &line, int &col ) const
+void WgCaretInstance::getSoftPos( int &line, int &col ) const
 {
 	line	= m_line;
 	col		= m_column;
@@ -362,7 +362,7 @@ void WgCursorInstance::getSoftPos( int &line, int &col ) const
 
 //____ putChar() ______________________________________________________________
 
-bool WgCursorInstance::putChar( Uint16 character )
+bool WgCaretInstance::putChar( Uint16 character )
 {
 	m_wantedOfsX = -1;
 
@@ -396,7 +396,7 @@ bool WgCursorInstance::putChar( Uint16 character )
 
 //____ putText() ______________________________________________________________
 
-int	WgCursorInstance::putText( const WgCharSeq& seq )
+int	WgCaretInstance::putText( const WgCharSeq& seq )
 {
 	m_wantedOfsX = -1;
 
@@ -418,7 +418,7 @@ int	WgCursorInstance::putText( const WgCharSeq& seq )
 }
 
 //______________________________________________________________
-void WgCursorInstance::unputText( int nChar )
+void WgCaretInstance::unputText( int nChar )
 {
 	if(nChar < 0)
 		return;
@@ -429,7 +429,7 @@ void WgCursorInstance::unputText( int nChar )
 }
 
 //_____________________________________________________________________
-void WgCursorInstance::delPrevWord()
+void WgCaretInstance::delPrevWord()
 {
 	int	ofs1 = m_pText->LineColToOffset( m_line, m_column );
 	gotoPrevWord();
@@ -438,7 +438,7 @@ void WgCursorInstance::delPrevWord()
 }
 
 //_____________________________________________________________________
-void WgCursorInstance::delNextWord()
+void WgCaretInstance::delNextWord()
 {
 	int	ofs1 = m_pText->LineColToOffset( m_line, m_column );
 	int line = m_line;
@@ -451,7 +451,7 @@ void WgCursorInstance::delNextWord()
 
 //____ delPrevChar() __________________________________________________________
 
-bool WgCursorInstance::delPrevChar()
+bool WgCaretInstance::delPrevChar()
 {
 	m_wantedOfsX = -1;
 
@@ -477,7 +477,7 @@ bool WgCursorInstance::delPrevChar()
 
 //____ delNextChar() __________________________________________________________
 
-bool WgCursorInstance::delNextChar()
+bool WgCaretInstance::delNextChar()
 {
 	m_wantedOfsX = -1;
 
@@ -492,7 +492,7 @@ bool WgCursorInstance::delNextChar()
 
 //____ ofsX() __________________________________________________________________
 
-int WgCursorInstance::ofsX() const
+int WgCaretInstance::ofsX() const
 {
 	int	ln = m_line;
 	int	col = m_column;
@@ -503,7 +503,7 @@ int WgCursorInstance::ofsX() const
 
 //____ ofsY() __________________________________________________________________
 
-int WgCursorInstance::ofsY() const
+int WgCaretInstance::ofsY() const
 {
 	//TODO: Need a better way...
 
@@ -517,20 +517,20 @@ int WgCursorInstance::ofsY() const
 
 //____ mode() __________________________________________________________________
 
-WgCursor::Mode WgCursorInstance::cursorMode() const
+WgCaret::Mode WgCaretInstance::cursorMode() const
 {
 	if( m_line >= m_pText->Lines() || m_pText->getLine(m_line)->nChars == m_column )
-		return WgCursor::EOL;
+		return WgCaret::EOL;
 
 	if( m_bInsert )
-		return WgCursor::INS;
+		return WgCaret::INS;
 
-	return WgCursor::OVR;
+	return WgCaret::OVR;
 }
 
 //____ goBOL() ________________________________________________________________
 
-void WgCursorInstance::goBOL()
+void WgCaretInstance::goBOL()
 {
 	int	ln = m_line;
 	int	col = m_column;
@@ -545,7 +545,7 @@ void WgCursorInstance::goBOL()
 
 //____ goEOL() ________________________________________________________________
 
-void WgCursorInstance::goEOL()
+void WgCaretInstance::goEOL()
 {
 	int	ln = m_line;
 	int	col = m_column;
@@ -560,7 +560,7 @@ void WgCursorInstance::goEOL()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void WgCursorInstance::_updateLocation(int line, int column)
+void WgCaretInstance::_updateLocation(int line, int column)
 {
 	m_line = line;
 	m_column = column;
@@ -576,12 +576,12 @@ void WgCursorInstance::_updateLocation(int line, int column)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void WgCursorInstance::setSelectionMode(bool bOn)
+void WgCaretInstance::setSelectionMode(bool bOn)
 {
 	m_bSelectMode = bOn;
 }
 
-bool WgCursorInstance::hasSelection()
+bool WgCaretInstance::hasSelection()
 {
 	if(m_selStartLine < 0)
 		return false;
@@ -589,7 +589,7 @@ bool WgCursorInstance::hasSelection()
 	return m_selStartLine != m_line || (m_selStartLine == m_line && m_selStartColumn != m_column);
 }
 
-void WgCursorInstance::delSelection()
+void WgCaretInstance::delSelection()
 {
 	if(!hasSelection())
 		return;
@@ -615,14 +615,14 @@ void WgCursorInstance::delSelection()
 	clearSelection();
 }
 
-void WgCursorInstance::clearSelection()
+void WgCaretInstance::clearSelection()
 {
 	m_pText->ClearSelection();
 	m_selStartLine = m_line;
 	m_selStartColumn = m_column;
 }
 
-void WgCursorInstance::selectRange( WgRange range )
+void WgCaretInstance::selectRange( WgRange range )
 {
 	WgTextPos beg = m_pText->OfsToPos( range.ofs );
 	WgTextPos end = m_pText->OfsToPos( range.ofs + range.len );
@@ -635,7 +635,7 @@ void WgCursorInstance::selectRange( WgRange range )
 	setSelectionMode(false);
 }
 
-void WgCursorInstance::selectAll()
+void WgCaretInstance::selectAll()
 {
 	m_pText->ClearSelection();
 	setSelectionMode(true);

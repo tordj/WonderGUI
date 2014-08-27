@@ -37,7 +37,7 @@ WgBlockSkinPtr WgBlockSkin::Create()
 }
 
 
-WgBlockSkinPtr WgBlockSkin::CreateStatic( const WgSurfacePtr& pSurface, WgRect block, WgBorders frame )
+WgBlockSkinPtr WgBlockSkin::CreateStatic( const WgSurfacePtr& pSurface, WgRect block, WgBorder frame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -46,7 +46,7 @@ WgBlockSkinPtr WgBlockSkin::CreateStatic( const WgSurfacePtr& pSurface, WgRect b
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateEnable( const WgSurfacePtr& pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorders frame )
+WgBlockSkinPtr WgBlockSkin::CreateEnable( const WgSurfacePtr& pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorder frame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -56,7 +56,7 @@ WgBlockSkinPtr WgBlockSkin::CreateEnable( const WgSurfacePtr& pSurface, WgSize b
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateClickable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -74,7 +74,7 @@ WgBlockSkinPtr WgBlockSkin::CreateClickable( const WgSurfacePtr& pSurface, WgSiz
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -90,7 +90,7 @@ WgBlockSkinPtr WgBlockSkin::CreateSelectable( const WgSurfacePtr& pSurface, WgSi
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateClickSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -124,7 +124,7 @@ WgBlockSkinPtr WgBlockSkin::CreateClickSelectable( const WgSurfacePtr& pSurface,
 
 /** Usable for state button etc, where a widget is normal/hovered/pressed/disabled as well as selected/unselected
 */
-WgBlockSkinPtr WgBlockSkin::CreateClickSelectableWidget( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateClickSelectableWidget( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -167,7 +167,7 @@ WgBlockSkinPtr WgBlockSkin::CreateClickSelectableWidget( const WgSurfacePtr& pSu
 
 
 
-WgBlockSkinPtr WgBlockSkin::CreateStaticFromSurface( const WgSurfacePtr& pSurface, WgBorders frame )
+WgBlockSkinPtr WgBlockSkin::CreateStaticFromSurface( const WgSurfacePtr& pSurface, WgBorder frame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -176,7 +176,7 @@ WgBlockSkinPtr WgBlockSkin::CreateStaticFromSurface( const WgSurfacePtr& pSurfac
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateEnableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateEnableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -189,19 +189,19 @@ WgBlockSkinPtr WgBlockSkin::CreateEnableFromSurface( const WgSurfacePtr& pSurfac
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateClickableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
 {
 	WgSize	blockSize = WgSize( (pSurface->Width()-blockSpacing*3)/4, pSurface->Height() );
 	return CreateClickable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
 {
 	WgSize	blockSize( (pSurface->Width()-blockSpacing*2)/3, pSurface->Height() );
 	return CreateSelectable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateClickSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
 {
 	WgSize	blockSize( (pSurface->Width()-blockSpacing*4)/5, pSurface->Height() );
 	return CreateClickSelectable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
@@ -253,7 +253,7 @@ WgBlockSkinPtr WgBlockSkin::Cast( const WgObjectPtr& pObject )
 
 //____ SetBlockGeo() __________________________________________________________
 
-bool WgBlockSkin::SetBlockGeo( WgSize size, WgBorders frame )
+bool WgBlockSkin::SetBlockGeo( WgSize size, WgBorder frame )
 {
 	if( size.w <= frame.Width() || size.h <= frame.Height() )
 		return false;
@@ -546,7 +546,7 @@ void WgBlockSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState 
 		return;
 	}
 
-	const WgBorders& borders = m_frame;
+	const WgBorder& borders = m_frame;
 
 	// Render upper row (top-left corner, top stretch area and top-right corner)
 
@@ -651,7 +651,7 @@ void WgBlockSkin::_renderNoClip( WgGfxDevice * pDevice, const StateData * pState
 		return;
 	}
 
-	const WgBorders& borders = m_frame;
+	const WgBorder& borders = m_frame;
 
 	// Render upper row (top-left corner, top stretch area and top-right corner)
 

@@ -36,7 +36,7 @@ class	WgCoord8
 {
 public:
 	WgCoord8() : x(0), y(0) {}
-	WgCoord8( Sint8 _x, Sint8 _y ) {x=_x;y=_y;};
+	WgCoord8( Sint8 x, Sint8 y ) : x(x), y(y) {}
 
 	inline WgCoord8 operator=(const WgCoord8& k)	{ x = k.x; y = k.y; return *this; }
 
@@ -52,7 +52,7 @@ class	WgCoord16
 {
 public:
 	WgCoord16() : x(0), y(0) {}
-	WgCoord16( Sint16 _x, Sint16 _y ) {x=_x;y=_y;};
+	WgCoord16( Sint16 x, Sint16 y ) : x(x), y(y) {}
 
 	inline WgCoord16 operator=(const WgCoord16& k)	{ x = k.x; y = k.y; return *this; }
 
@@ -132,46 +132,48 @@ public:
 
 class WgSize;
 
-//____ WgBorders ______________________________________________________________
+//____ WgBorder ______________________________________________________________
 /**
-	@brief Specifies the thickness of the four borders of a rectangular area, measured in pixels.
+	@brief Specifies the thickness of the border of a rectangular area, measured in pixels.
 	
-	The four borders are, in order of specification, left, top, right, bottom. I.e.
-	you start with the left border and go clockwise.
-
-	The member variables of WgBorders are unsigned chars, so borders have a maximum
-	thickness of 255 pixels each.
+	The thickness of the four sides of the border can be set individually.
+	The sides of the border always comes in the order: top, right, bottom, left. I.e.
+	you start with the top border and go clockwise.
 	
-	Borders are in most cases internal to the rectangular areas geometry, so the combined thickness of left and right
-	borders might not surpass the rectangles width and combined thickness of top and bottom borders may not surpass
+	Border are in most cases internal to the rectangular areas geometry, so the combined thickness of left and right
+	sides may not surpass the rectangles width and the combined thickness of top and bottom sides may not surpass
 	the rectangles height.
 
+	Negative values are in most cases not accepted and result in unspecified behavior.
 **/
 
-class WgBorders
+class WgBorder
 {
 public:
-	WgBorders() : top(0), right(0), bottom(0), left(0) {}
-	WgBorders( Uint16 _topBottom, Uint16 _leftRight ) : top(_topBottom), right(_leftRight), bottom(_topBottom), left(_leftRight) {}
-	WgBorders( Uint16 _top, Uint16 _sides, Uint16 _left ) : top(_top), right(_sides), bottom(_sides), left(_left) {}
-	WgBorders( Uint16 _top, Uint16 _right, Uint16 _bottom, Uint16 _left ) : top(_top), right(_right), bottom(_bottom), left(_left) {}
-	WgBorders( Uint16 _all ) : top(_all), right(_all), bottom(_all), left(_all) {}
+	WgBorder() : top(0), right(0), bottom(0), left(0) {}
+	WgBorder( short topBottom, short leftRight ) : top(topBottom), right(leftRight), bottom(topBottom), left(leftRight) {}
+	WgBorder( short top, short leftRight, short bottom ) : top(top), right(leftRight), bottom(bottom), left(leftRight) {}
+	WgBorder( short top, short right, short bottom, short left ) : top(top), right(right), bottom(bottom), left(left) {}
+	WgBorder( short all ) : top(all), right(all), bottom(all), left(all) {}
 
-	inline void		Set( Uint16 _all ) { left = right = top = bottom = _all; }
+	inline void		Set( short all ) { left = right = top = bottom = all; }
+	inline void		Set( short topBottom, short leftRight ) { top = bottom = topBottom; left = right = leftRight; }
+	inline void		Set( short top, short leftRight, short bottom ) { this->top = top; this->bottom = bottom; this->left = this->right = leftRight; }
+	inline void		Set( short top, short left, short bottom, short right ) { this->top = top; this->bottom = bottom; this->left = left; this->right = right; }
 
-	inline WgSize	Size() const;
-	inline int		Width() const { return ((int)left)+right; }
-	inline int		Height() const { return ((int)top)+bottom; }
-	inline void		Clear()			{ left = 0; right = 0; top = 0; bottom = 0; }
-	inline bool		IsEmpty() const { return ( ((int)left) + ((int)top) + ((int)right) + ((int)bottom) == 0 ); }
+	inline WgSize		Size() const;
+	inline int			Width() const { return ((int)left)+right; }
+	inline int			Height() const { return ((int)top)+bottom; }
+	inline void		Clear()			{ left = 0; right = 0; top = 0; bottom = 0; }		///< @brief Sets the thickness of all sides to 0.
+	inline bool		IsEmpty() const { return (left | top | right | bottom) == 0; }
 
-	bool			operator==(const WgBorders& borders) const { return left == borders.left &&
+	bool			operator==(const WgBorder& borders) const { return left == borders.left &&
 																		right == borders.right &&
 																		top == borders.top &&
 																		bottom == borders.bottom; }
-	bool			operator!=(const WgBorders& borders) const { return !(*this == borders); }
+	bool			operator!=(const WgBorder& borders) const { return !(*this == borders); }
 
-	Uint16	top, right, bottom, left;
+	short		top, right, bottom, left;
 };
 
 //____ Class: WgSize ________________________________________________________
@@ -186,7 +188,7 @@ class	WgSize
 {
 public:
 	WgSize() : w(0), h(0) {}
-	WgSize( int _w, int _h ) : w(_w), h(_h) {}
+	WgSize( int width, int height ) : w(width), h(height) {}
 	WgSize( const WgSize& size ) : w(size.w), h(size.h) {}
 	WgSize( const WgRect& rect );
 	WgSize( const WgCoord& c1, const WgCoord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
@@ -205,10 +207,10 @@ public:
 	inline WgSize operator+(const WgSize& k) const	{ WgSize res; res.w = w + k.w; res.h = h + k.h; return res; }
 	inline WgSize operator-(const WgSize& k) const	{ WgSize res; res.w = w - k.w; res.h = h - k.h; return res; }
 
-	inline void operator+=(const WgBorders& k)			{ w += k.left + k.right; h += k.top + k.bottom; }
-	inline void operator-=(const WgBorders& k)			{ w -= k.left + k.right; h -= k.top + k.bottom; }
-	inline WgSize operator+(const WgBorders& k) const	{ WgSize res; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
-	inline WgSize operator-(const WgBorders& k) const	{ WgSize res; res.w = w - k.left - k.right; res.h = h - k.top - k.bottom; return res; return res; }
+	inline void operator+=(const WgBorder& k)			{ w += k.left + k.right; h += k.top + k.bottom; }
+	inline void operator-=(const WgBorder& k)			{ w -= k.left + k.right; h -= k.top + k.bottom; }
+	inline WgSize operator+(const WgBorder& k) const	{ WgSize res; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
+	inline WgSize operator-(const WgBorder& k) const	{ WgSize res; res.w = w - k.left - k.right; res.h = h - k.top - k.bottom; return res; return res; }
 
 	inline void operator*=(double x)				{ w = (int) (w*x); h = (int) (h*x); }
 	inline void operator/=(double x)				{ w = (int) (w/x); h = (int) (h/x); }
@@ -244,7 +246,7 @@ public:
 	the width and height.
 	
 	Origo is normally the top-left corner of a parent rectangle, screen surface or
-	bitmap and position normally specifies the position of the top-left corner, although
+	bitmap and position normally specifies the position of the top-left corner of the rectangle, although
 	this might differ depending on context.
 	
 	Increasing x and y will always move the rectangle to the right and down respectively.
@@ -257,76 +259,95 @@ public:
 class WgRect
 {
 public:
-	WgRect() : x(0), y(0), w(0), h(0) {}
-	WgRect( int x, int y, int w, int h ) : x(x), y(y), w(w), h(h) {}
-	WgRect( const WgRect& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}
+	WgRect() : x(0), y(0), w(0), h(0) {}		///< @brief Initializes the rectangle with x, y, w and h set to 0.
+	WgRect( int x, int y, int w, int h ) : x(x), y(y), w(w), h(h) {}	///< @brief Initializes a rectangle with the given values.
+	WgRect( const WgRect& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}		///< @brief Initializes a copy of specified rectangle.	
 	WgRect( const WgRect& r1, const WgRect& r2 );
 	WgRect( const WgCoord& p1, const WgCoord& p2 );
-	WgRect( const WgCoord& p, const WgSize& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {}
-	WgRect( const WgCoord& p, int w, int h ) : x(p.x), y(p.y), w(w), h(h) {}
-	WgRect( int x, int y, const WgSize& sz ) : x(x), y(y), w(sz.w), h(sz.h) {}
-	WgRect( const WgCoord& p ) : x(p.x), y(p.y), w(0), h(0) {}
-	WgRect( const WgSize& sz ) : x(0), y(0), w(sz.w), h(sz.h) {}
-
-	inline void operator=( const WgRect& );
-	inline void operator=( const WgSize& sz) { x=0; y=0; w=sz.w; h=sz.h; }
-	inline void operator=( const WgCoord& c) { x=c.x; y=c.y; w=0; h=0; }
+	WgRect( const WgCoord& p, const WgSize& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {} 	///< @brief Initializes a rectangle with specified position and size.
+																									///< @param p 	Coordinate containing position for rectangle.
+																									///< @param sz	Coordinate containing size for rectangle.
+	WgRect( const WgCoord& p, int w, int h ) : x(p.x), y(p.y), w(w), h(h) {}				///< @brief Initializes a rectangle with specified position and size.
+																									///< @param p		Coordinate containing position for rectangle.
+																									///< @param w		Width for rectangle.
+																									///< @param h		Height for rectangle.
+	WgRect( int x, int y, const WgSize& sz ) : x(x), y(y), w(sz.w), h(sz.h) {}				///< @brief Initializes a rectangle with specified position and size.
+																									///< @param x		Horizontal position for rectangle.
+																									///< @param y		Vertical position for rectangle.
+																									///< @param sz	Width and height for rectangle. 
+	WgRect( const WgCoord& p ) : x(p.x), y(p.y), w(0), h(0) {}								///< @brief Initializes a rectangle to specified position, with width and height set to 0.
+																									///< @param p		Coordinate containing position for rectangle.
+	WgRect( const WgSize& sz ) : x(0), y(0), w(sz.w), h(sz.h) {}								///< @brief Initializes a rectangle to specified size, with an x- and y-postion of 0.
+																									///< @param sz	Width and height for rectangle.
+	inline void operator=( const WgRect& );													///< @brief Normal assignment operator.
+	inline void operator=( const WgSize& sz) { x=0; y=0; w=sz.w; h=sz.h; }					///< @brief Sets rectangle to specified size. Position is cleared.
+	inline void operator=( const WgCoord& c) { x=c.x; y=c.y; w=0; h=0; }					///< @brief Sets rectangle to specified position. Size is cleared.
 	inline bool operator==( const WgRect& rect) const { return x == rect.x && y == rect.y && w == rect.w && h == rect.h; }
 	inline bool operator!=( const WgRect& rect) const { return !(*this == rect); }
 
-	inline void operator+=(const WgSize& k)				{ w += k.w; h += k.h; }
-	inline void operator-=(const WgSize& k)				{ w -= k.w; h -= k.h; }
-	inline WgRect operator+(const WgSize& k) const	{ WgRect res; res.x = x; res.y = y; res.w = w + k.w; res.h = h + k.h; return res; }
-	inline WgRect operator-(const WgSize& k) const	{ WgRect res; res.x = x; res.y = y; res.w = w - k.w; res.h = h - k.h; return res; }
+	inline void operator+=(const WgSize& k)				{ w += k.w; h += k.h; }			///< @brief Increase size of rectangle.
+	inline void operator-=(const WgSize& k)				{ w -= k.w; h -= k.h; }			///< @brief Decrease size of rectangle.
+	inline WgRect operator+(const WgSize& k) const	{ WgRect res; res.x = x; res.y = y; res.w = w + k.w; res.h = h + k.h; return res; } ///< @brief Returns rectangle with size increased by WgSize.
+	inline WgRect operator-(const WgSize& k) const	{ WgRect res; res.x = x; res.y = y; res.w = w - k.w; res.h = h - k.h; return res; } ///< @brief Returns rectangle with size decreased by WgSize.
 
 
 
-	inline void operator+=(const WgCoord& k)				{ x += k.x; y += k.y; }
-	inline void operator-=(const WgCoord& k)				{ x -= k.x; y -= k.y; }
-	inline WgRect operator+(const WgCoord& k) const	{ WgRect res; res.x = x + k.x; res.y = y + k.y; res.w = w; res.h = h; return res; }
-	inline WgRect operator-(const WgCoord& k) const	{ WgRect res; res.x = x - k.x; res.y = y - k.y; res.w = w; res.h = h; return res; }
+	inline void operator+=(const WgCoord& k)				{ x += k.x; y += k.y; }			///< @brief Increase position of rectangle.
+	inline void operator-=(const WgCoord& k)				{ x -= k.x; y -= k.y; }			///< @brief Decrease position of rectangle.
+	inline WgRect operator+(const WgCoord& k) const	{ WgRect res; res.x = x + k.x; res.y = y + k.y; res.w = w; res.h = h; return res; } ///< @brief Returns rectangle with position increased by WgCoord.
+	inline WgRect operator-(const WgCoord& k) const	{ WgRect res; res.x = x - k.x; res.y = y - k.y; res.w = w; res.h = h; return res; } ///< @brief Returns rectangle with position decreased by WgCoord.
 
-	inline void operator+=(const WgBorders& k)			{ x -= k.left; y-= k.top; w += k.left + k.right; h += k.top + k.bottom; }
-	inline void operator-=(const WgBorders& k)			{ x += k.left; y+= k.top; w -= k.left + k.right; h -= k.top + k.bottom; }
-	inline WgRect operator+(const WgBorders& k) const	{ WgRect res; res.x = x - k.left; res.y = y- k.top; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
-	inline WgRect operator-(const WgBorders& k) const	{ WgRect res; res.x = x + k.left; res.y = y+ k.top; res.w = w - (k.left + k.right); res.h = h - (k.top + k.bottom); return res; }
+	inline void operator+=(const WgBorder& k);
+	inline void operator-=(const WgBorder& k);
+	inline WgRect operator+(const WgBorder& k) const;
+	inline WgRect operator-(const WgBorder& k) const;
+	
+	inline void SetPos( const WgCoord& p ) { x = p.x; y = p.y; }				///< @brief Sets the position (members x and y) of the rectangle.
+	inline void SetSize( const WgSize& sz ) { w = sz.w; h = sz.h; }			///< @brief Sets the size (members w and h) of the rectangle.
 
-	void SetPos( const WgCoord& p ) { x = p.x; y = p.y; }
-	void SetSize( const WgSize& sz ) { w = sz.w; h = sz.h; }
+	void Shrink( const WgBorder &borders );
+	void Shrink( int top, int right, int bottom, int left );
 
-	void Shrink(const WgBorders &borders);
-	void Shrink(int left, int top, int right, int bottom);
-
-	void Grow(const WgBorders &borders);
-	void Grow(int left, int top, int right, int bottom);
-
+	void Grow( const WgBorder &borders );
+	void Grow( int top, int right, int bottom, int left );
 
 	bool Intersection( const WgRect& r1, const WgRect& r2 );
 	static WgRect Union( const WgRect& r1, const WgRect& r2 );
 
 	void GrowToContain( int x, int y );
-	void GrowToContain( const WgRect& _rect );
-	void GrowToContain( const WgCoord& _coord );
+	void GrowToContain( const WgRect& rect );
+	void GrowToContain( const WgCoord& coord );
+	
+	inline bool Contains( int x, int y ) const;								///< @brief Check if given coordinate is within rectangle.
+																					///< @param x Horizontal position of coordinate of to check.
+																					///< @param y Vertical position of coordinate of to check.
+																					///< @return True if coordinate is within the bounds of the rectangle.
+	inline bool Contains( const WgRect& rect ) const;							///< @brief Check if parameter rectangle is fully within our rectangle.
+																					///< @param rect Rectangle to check.
+																					///< @return True if the parameter rectangle is fully within the bounds of our rectangle.
+	inline bool	Contains( const WgCoord& coord ) const;					///< @brief Check if given coordinate is within rectangle
+																					///< @param coord Coordinate to check
+																					///< @return True if coordinate is within the bounds of the rectangle.
+	inline WgCoord Limit( const WgCoord& coord ) const;						///< @brief Limit given coordinate to stay within rectangle.
+																					///< @param coord Coordinate to limit to the bounds of the rectangle.
+																					///< @return Coordinate limited to the rectangles geometry.
 
-	inline bool Contains( int x, int y ) const;
-	inline bool Contains( const WgRect& _rect ) const;
-	inline bool	Contains( const WgCoord& _coord ) const;
-	inline WgCoord Constrain( const WgCoord& _coord ) const;
+	inline bool IntersectsWith( const WgRect& rect ) const;					///< @brief Checks for intersection (partial or full overlap) with specified rectangle.
+																					///< @param rect Rectangle to check against.
+																					///< @return True if rectangles intersects.
 
-	inline bool IntersectsWith( const WgRect& _rect ) const;
+	inline int Width() const		{ return w; }									///< @brief Returns the width of the rectangle (member variable w).
+	inline int Height() const	{ return h; }									///< @brief Returns the height of the rectangle (member variable h).
+	inline WgSize Size() const		{ return WgSize(w,h); }					///< @brief Returns the width and height of the rectangle as a WgSize object.
+	inline WgCoord Pos() const		{ return WgCoord(x,y); }					///< @brief Returns the X- and Y-coordinates as a WgCoord object.
 
-	inline int Width() const		{ return w; }
-	inline int Height() const	{ return h; }
-	inline WgSize Size() const		{ return WgSize(w,h); }
-	inline WgCoord Pos() const		{ return WgCoord(x,y); }
+	inline int Left() const		{ return x; }									///< @brief Returns the X coordinate of the left border. This is equal to member variable x.
+	inline int Top() const		{ return y; }									///< @brief Returns the Y cordinate of the top border. This is equal to member variable y.
+	inline int Right() const		{ return x + w; }								///< @brief Returns the X coordinate of the right border. This is equal to member variables x + w.
+	inline int Bottom() const	{ return y + h; }								///< @brief Returns the Y coordinate of the bottom border. This is equal to member variables y + h.
 
-	inline int Left() const		{ return x; }
-	inline int Top() const		{ return y; }
-	inline int Right() const		{ return x + w; }
-	inline int Bottom() const	{ return y + h; }
-
-	inline bool	IsEmpty() const { return (w==0||h==0)?true:false; }
-	inline void Clear()			{ x = 0; y = 0; w = 0; h = 0; }
+	inline bool	IsEmpty() const { return (w==0||h==0)?true:false; }		///< @brief Returns true if rectangle has no area (width or height is zero).
+	inline void Clear()			{ x = 0; y = 0; w = 0; h = 0; }				///< @brief Sets all values to zero.
 
 	int	x;		///< Start position in pixels along the X axis.
 	int y;		///< Start position in pixels along the Y axis.
@@ -367,7 +388,7 @@ inline WgCoord WgCoord::operator=(const WgRect& r)
 }
 
 //_____________________________________________________________________________
-inline WgSize WgBorders::Size() const
+inline WgSize WgBorder::Size() const
 {
 	return WgSize( ((int)left)+right, ((int)top)+bottom );
 }
@@ -426,7 +447,7 @@ inline bool WgRect::Contains( const WgRect& _rect ) const
 }
 
 //_____________________________________________________________________________
-inline WgCoord WgRect::Constrain( const WgCoord& _coord ) const
+inline WgCoord WgRect::Limit( const WgCoord& _coord ) const
 {
 	WgCoord out = _coord;
 	if( out.x < x )
@@ -461,6 +482,70 @@ inline void WgRect::operator=( const WgRect& r2 )
 	w = r2.w;
 	h = r2.h;
 }
+
+//_____________________________________________________________________________
+/**
+ * @brief Grows the rectangle by the specified border.
+ * 
+ * The position of the rectangle is affected by the top and left borders.
+ **/
+inline void WgRect::operator+=(const WgBorder& k)			
+{ 
+	x -= k.left; 
+	y -= k.top; 
+	w += k.left + k.right; 
+	h += k.top + k.bottom;
+}
+
+//_____________________________________________________________________________
+/**
+ * @brief Shrinks the rectangle by the specified border.
+ * 
+ * The position of the rectangle is affected by the top and left borders.
+ **/
+inline void WgRect::operator-=(const WgBorder& k)			
+{ 
+	x += k.left; 
+	y += k.top; 
+	w -= k.left + k.right; 
+	h -= k.top + k.bottom;
+}
+
+
+//_____________________________________________________________________________
+/**
+ * @brief Returns a rectangle grown by the border.
+ * 
+ * The position of the rectangle is affected by the top and left borders.
+ **/
+inline WgRect WgRect::operator+(const WgBorder& k) const
+{ 
+	WgRect res; 
+	res.x = x - k.left; 
+	res.y = y- k.top; 
+	res.w = w + k.left + k.right; 
+	res.h = h + k.top + k.bottom; 
+	return res; 
+}
+
+//_____________________________________________________________________________
+/**
+ * @brief Returns a rectangle shrunk by the border.
+ * 
+ * The position of the rectangle is affected by the top and left borders.
+ **/
+inline WgRect WgRect::operator-(const WgBorder& k) const	
+{ 
+	WgRect res; 
+	res.x = x + k.left; 
+	res.y = y + k.top; 
+	res.w = w - (k.left + k.right); 
+	res.h = h - (k.top + k.bottom); 
+	return res; 
+}
+
+
+
 
 //=======================================================================================
 #endif	//WG_GEO_DOT_H

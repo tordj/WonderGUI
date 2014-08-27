@@ -32,8 +32,8 @@
 #	include <wg_textfield.h>
 #endif
 
-#ifndef WG_CURSORINSTANCE_DOT_H
-#	include <wg_cursorinstance.h>
+#ifndef WG_CARETINSTANCE_DOT_H
+#	include <wg_caretinstance.h>
 #endif
 
 class WgTextDisplay;

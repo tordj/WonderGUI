@@ -24,12 +24,30 @@
 #include <wg_geo.h>
 
 //____ WgRect() _______________________________________________________________
-
-
+/**
+ * @brief Initializes the rectangle to be the intersection of specified rectangles.
+ * 
+ * @param r1	First intersecting rectangle.
+ * @param r2	Second intersecting rectangle.
+ * 
+ * If specified rectangles don't intersect, width and height will be set to zero.
+ * 
+ **/
 WgRect::WgRect( const WgRect& r1, const WgRect& r2 )
 {
 	Intersection( r1, r2 );
 }
+
+/**
+ * @brief	Initializes the rectangle to cover the area between the specified coordinates.
+ * 
+ * @param p1	Coordinate specifying any corner of the rectangle.
+ * @param p2	Coordinate specifying the opposite corner of the rectangle, 
+ * 				diagonally across the rectangle from p1.
+ * 
+ * The order of the parameters are irrelevant.
+ * 
+ **/
 
 WgRect::WgRect( const WgCoord& p1, const WgCoord& p2 )
 {
@@ -58,7 +76,17 @@ WgRect::WgRect( const WgCoord& p1, const WgCoord& p2 )
 
 
 //____ Intersection() ________________________________________________________________
-
+/**
+ * @brief Sets the rectangle to be the intersection of specified rectangles.
+ * 
+ * @param r1	First intersecting rectangle.
+ * @param r2	Second intersecting rectangle.
+ * 
+ * If specified rectangles don't intersect, width and height will be set to zero.
+ * 
+ * @return	True if the specified rectangles intersected.
+ **/
+ 
 bool WgRect::Intersection( const WgRect& _r1, const WgRect& _r2 )
 {
 	int		x1, y1;						// So we can use ourself as inparameter.
@@ -100,6 +128,18 @@ bool WgRect::Intersection( const WgRect& _r1, const WgRect& _r2 )
 }
 
 //____ Union() ________________________________________________________________
+/**
+ * @brief Returns the union of specified rectangles.
+ * 
+ * @param r1	First rectangle.
+ * @param r2	Second rectangle.
+ * 
+ * The union of the rectangles is the smallest rectangle that contains both.
+ * 
+ * @return	A rectangle that is the union of the specified rectangles.
+ **/
+
+//TODO: Inconsistency between how Union and Intersection methods work. Both should be members of static.
 
 WgRect WgRect::Union( const WgRect& r1, const WgRect& r2 )
 {
@@ -113,8 +153,21 @@ WgRect WgRect::Union( const WgRect& r1, const WgRect& r2 )
 
 
 //____ Shrink() _____________________________________________________________
+/**
+ * @brief Shrinks the rectangle by the specified borders.
+ * 
+ * @param top	Width in pixels of top border.
+ * @param right Width in pixels of right border.
+ * @param bottom Width in pixels of bottom border.
+ * @param left Width in pixels of left border.
+ * 
+ * Width and height of rectangle is shrunk by the thickness of the borders.
+ * Top and left borders also affects the position of the rectangle.
+ * 
+ * The rectangle is constrained to a minimum width and height of 0.
+ **/
 
-void WgRect::Shrink(int left, int top, int right, int bottom)
+void WgRect::Shrink( int top, int right, int bottom, int left )
 {
 	x += left;
 	y += top;
@@ -128,7 +181,18 @@ void WgRect::Shrink(int left, int top, int right, int bottom)
 		h = 0;
 }
 
-void WgRect::Shrink(const WgBorders &_borders)
+/**
+ * @brief Shrinks the rectangle by the specified border.
+ * 
+ * @param border	Border by which to shrink the rectangle.
+ * 
+ * Width and height of rectangle is shrunk by the thickness of the borders.
+ * Top and left borders also affects the position of the rectangle.
+ * 
+ * The rectangle is constrained to a minimum width and height of 0.
+ **/
+
+void WgRect::Shrink(const WgBorder &_borders)
 {
 	x += _borders.left;
 	y += _borders.top;
@@ -143,8 +207,19 @@ void WgRect::Shrink(const WgBorders &_borders)
 }
 
 //____ Grow() _____________________________________________________________
+/**
+ * @brief Grows the rectangle by the specified borders.
+ * 
+ * @param top	Width in pixels of top border.
+ * @param right Width in pixels of right border.
+ * @param bottom Width in pixels of bottom border.
+ * @param left Width in pixels of left border.
+ * 
+ * Width and height of rectangle is increased by the thickness of the borders.
+ * Top and left borders also affects the position of the rectangle.
+ **/
 
-void WgRect::Grow(int left, int top, int right, int bottom)
+void WgRect::Grow(int top, int right, int bottom, int left)
 {
 	x -= left;
 	y -= top;
@@ -152,7 +227,15 @@ void WgRect::Grow(int left, int top, int right, int bottom)
 	h += bottom + top;
 }
 
-void WgRect::Grow(const WgBorders &_borders)
+/**
+ * @brief Grows the rectangle by the specified border.
+ * 
+ * @param border	Border by which to grow the rectangle.
+ * 
+ * Width and height of rectangle is increased by the thickness of the borders.
+ * Top and left borders also affects the position of the rectangle.
+ **/
+void WgRect::Grow(const WgBorder &_borders)
 {
 	x -= _borders.left;
 	y -= _borders.top;
@@ -161,6 +244,14 @@ void WgRect::Grow(const WgBorders &_borders)
 }
 
 //____ GrowToContain() _______________________________________________________
+/**
+ * @brief	Grows the reactangle to contain the specified coordinate.
+ * 
+ * @param	x	Horizontal position of coordinate.
+ * @param	y	Vertical position of coordinate.
+ * 
+ * Position of rectangle is affected if coordinate is above or left of coordinate.
+ **/
 
 void WgRect::GrowToContain( int _x, int _y )
 {
@@ -185,6 +276,14 @@ void WgRect::GrowToContain( int _x, int _y )
 	}
 }
 
+/**
+ * @brief	Grows the reactangle to contain the specified coordinate.
+ * 
+ * @param	coord	Coordinate the rectangle is grown to contain.
+ * 
+ * Position of rectangle is affected if coordinate is above or left of coordinate.
+ **/
+
 void WgRect::GrowToContain( const WgCoord& _coord )
 {
 	if( _coord.x < x )
@@ -208,6 +307,13 @@ void WgRect::GrowToContain( const WgCoord& _coord )
 	}
 }
 
+/**
+ * @brief	Grows the reactangle to contain the specified rectangle.
+ * 
+ * @param	r	Rectangle that shall be contained.
+ * 
+ * Position of our rectangle is affected if parameter rectangle is (partly or fully) above or left of coordinate.
+ **/
 
 void WgRect::GrowToContain( const WgRect& r )
 {

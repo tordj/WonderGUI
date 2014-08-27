@@ -19,13 +19,13 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_cursor.h>
+#include <wg_caret.h>
 
-const char WgCursor::CLASSNAME[] = {"Cursor"};
+const char WgCaret::CLASSNAME[] = {"Cursor"};
 
-//____ WgCursor() _____________________________________________________________
+//____ WgCaret() _____________________________________________________________
 
-WgCursor::WgCursor()
+WgCaret::WgCaret()
 {
 	for( int i = 0 ; i < N_MODES ; i++ )
 	{
@@ -37,7 +37,7 @@ WgCursor::WgCursor()
 	m_blitMode = NORMAL;
 }
 
-WgCursor::WgCursor(	WgCursor * pIn )
+WgCaret::WgCaret(	WgCaret * pIn )
 {
 	for( int i = 0 ; i < N_MODES ; i++ )
 	{
@@ -53,7 +53,7 @@ WgCursor::WgCursor(	WgCursor * pIn )
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgCursor::IsInstanceOf( const char * pClassName ) const
+bool WgCaret::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
@@ -63,17 +63,17 @@ bool WgCursor::IsInstanceOf( const char * pClassName ) const
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgCursor::ClassName( void ) const
+const char * WgCaret::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgCursorPtr WgCursor::Cast( const WgObjectPtr& pObject )
+WgCaretPtr WgCaret::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgCursorPtr( static_cast<WgCursor*>(pObject.GetRealPtr()) );
+		return WgCaretPtr( static_cast<WgCaret*>(pObject.GetRealPtr()) );
 
 	return 0;
 }
@@ -81,7 +81,7 @@ WgCursorPtr WgCursor::Cast( const WgObjectPtr& pObject )
 
 //____ SetBlitMode() __________________________________________________________
 
-void WgCursor::SetBlitMode( BlitMode mode )
+void WgCaret::SetBlitMode( BlitMode mode )
 {
 	m_blitMode = mode;
 }
@@ -89,7 +89,7 @@ void WgCursor::SetBlitMode( BlitMode mode )
 
 //____ SetSizeRatio() _________________________________________________________
 
-void WgCursor::SetSizeRatio( Mode m, float ratio )
+void WgCaret::SetSizeRatio( Mode m, float ratio )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -100,7 +100,7 @@ void WgCursor::SetSizeRatio( Mode m, float ratio )
 
 //____ SetMode() ______________________________________________________________
 
-bool WgCursor::SetMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing, int advance, float size_ratio )
+bool WgCaret::SetMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing, int advance, float size_ratio )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return false;
@@ -115,7 +115,7 @@ bool WgCursor::SetMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing, int 
 
 //____ SetBearing() ___________________________________________________________
 
-void WgCursor::SetBearing( Mode m, WgCoord bearing )
+void WgCaret::SetBearing( Mode m, WgCoord bearing )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -126,7 +126,7 @@ void WgCursor::SetBearing( Mode m, WgCoord bearing )
 
 //____ SetAdvance() ___________________________________________________________
 
-void WgCursor::SetAdvance( Mode m, int advance )
+void WgCaret::SetAdvance( Mode m, int advance )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -136,7 +136,7 @@ void WgCursor::SetAdvance( Mode m, int advance )
 
 //____ SetScaleWidth() ___________________________________________________________
 
-void WgCursor::SetScaleWidth( Mode m, bool bScaleWidth )
+void WgCaret::SetScaleWidth( Mode m, bool bScaleWidth )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -147,7 +147,7 @@ void WgCursor::SetScaleWidth( Mode m, bool bScaleWidth )
 
 //____ SetAnim() ______________________________________________________________
 
-void WgCursor::SetAnim( Mode m, const WgGfxAnimPtr& pAnim )
+void WgCaret::SetAnim( Mode m, const WgGfxAnimPtr& pAnim )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;

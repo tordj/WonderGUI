@@ -137,7 +137,7 @@ void WgTextField::SetManager( const WgTextManagerPtr& pManager )
 
 //____ SetCursorSkin() _______________________________________________________
 
-void WgTextField::SetCursorSkin( const WgCursorPtr& pCursor )
+void WgTextField::SetCursorSkin( const WgCaretPtr& pCursor )
 {
 	if( pCursor != m_pCursorStyle )
 	{
@@ -1581,7 +1581,7 @@ void WgTextField::SetEditMode(WgTextEditMode mode)
 
 	if( IsEditable() )
 	{
-		m_pCursor = new WgCursorInstance(*this);
+		m_pCursor = new WgCaretInstance(*this);
 	}
 	else
 	{
@@ -1981,13 +1981,13 @@ void WgTextField::_refreshLineInfo( WgTextLine * pLine ) const
 
 int WgTextField::_cursorMaxWidth() const
 {
-	WgCursorPtr p = m_pCursorStyle?m_pCursorStyle:WgBase::GetDefaultCursor();
+	WgCaretPtr p = m_pCursorStyle?m_pCursorStyle:WgBase::GetDefaultCursor();
 
 	if( p && m_editMode == WG_TEXT_EDITABLE )
 	{
-		int lenInsert = p->Advance(WgCursor::INS);
-		int lenOvr = p->Advance(WgCursor::OVR);
-		int lenEOL = p->BearingX(WgCursor::EOL) + p->Width(WgCursor::EOL);
+		int lenInsert = p->Advance(WgCaret::INS);
+		int lenOvr = p->Advance(WgCaret::OVR);
+		int lenEOL = p->BearingX(WgCaret::EOL) + p->Width(WgCaret::EOL);
 
 		return WgMax( lenEOL, WgMax(lenInsert,lenOvr) );
 	}
@@ -2445,7 +2445,7 @@ WgCoord WgTextField::FocusWindowOnRange( const WgSize& canvas, const WgRect& _wi
 
 	if( m_bFocused && m_pText->getFont() )
 	{
-		WgCursor * pCursor = WgTextTool::GetCursor( m_pText );
+		WgCaret * pCursor = WgTextTool::GetCursor( m_pText );
 		if( !pCursor )
 			return;
 

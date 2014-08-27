@@ -35,7 +35,7 @@ WgIconField::WgIconField()
 
 //____ Set() ___________________________________________________________________
 
-bool WgIconField::Set( const WgSkinPtr& pSkin, WgOrigo origo, WgBorders padding, float scale, bool bOverlap )
+bool WgIconField::Set( const WgSkinPtr& pSkin, WgOrigo origo, WgBorder padding, float scale, bool bOverlap )
 {
 	m_pSkin 	= pSkin;
 	m_origo 	= origo;
@@ -52,7 +52,7 @@ void WgIconField::Clear()
 {
 	m_pSkin 	= 0;
 	m_origo 	= WG_WEST;
-	m_padding 	= WgBorders(0);
+	m_padding 	= WgBorder(0);
 	m_scale 	= 0.f;
 	m_bOverlap 	= false;
 	m_pHolder->_fieldModified(this);	
@@ -87,7 +87,7 @@ void WgIconField::SetOrigo( WgOrigo origo )
 
 //____ SetPadding() _______________________________________________________
 
-void WgIconField::SetPadding( WgBorders borders )
+void WgIconField::SetPadding( WgBorder borders )
 {
 	if( borders != m_padding )
 	{

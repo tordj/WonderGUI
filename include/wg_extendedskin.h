@@ -37,7 +37,7 @@ public:
 	static const char	CLASSNAME[];
 	static WgExtendedSkinPtr	Cast( const WgObjectPtr& pObject );
 
-	virtual void	SetContentPadding( WgBorders padding );
+	virtual void	SetContentPadding( WgBorder padding );
 	virtual void	SetContentShift( WgStateEnum state, WgCoord shift );
 
 	virtual void	SetHoveredContentShift( WgCoord shift );
@@ -56,7 +56,7 @@ public:
 
 
 protected:
-	WgBorders	m_contentPadding;
+	WgBorder	m_contentPadding;
 	WgCoord		m_contentShift[WG_NB_STATES];	
 };
 

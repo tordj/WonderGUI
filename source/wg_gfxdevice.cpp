@@ -26,7 +26,7 @@
 #include <wg_surface.h>
 #include <wg_geo.h>
 #include <wg_textfield.h>
-#include <wg_cursorinstance.h>
+#include <wg_caretinstance.h>
 #include <wg_font.h>
 #include <wg_gfxanim.h>
 #include <wg_util.h>
@@ -398,7 +398,7 @@ void WgGfxDevice::ClipTileBlit( const WgRect& _clip, const WgSurfacePtr& _pSrc, 
 //____ ClipBlitHorrBar() ______________________________________________________
 
 void WgGfxDevice::ClipBlitHorrBar(	const WgRect& _clip, const WgSurfacePtr& _pSurf,
-								  	const WgRect& _src, const WgBorders& _borders,
+								  	const WgRect& _src, const WgBorder& _borders,
 								  	bool _bTile, int _dx, int _dy, int _len )
 {
 	/*
@@ -449,7 +449,7 @@ void WgGfxDevice::ClipBlitHorrBar(	const WgRect& _clip, const WgSurfacePtr& _pSu
 //____ ClipBlitVertBar() ______________________________________________________
 
 void WgGfxDevice::ClipBlitVertBar(	const WgRect& _clip, const WgSurfacePtr& _pSurf,
-								  	const WgRect& _src, const WgBorders& _borders,
+								  	const WgRect& _src, const WgBorder& _borders,
 								  	bool _bTile, int _dx, int _dy, int _len )
 {
 	/*
@@ -501,7 +501,7 @@ void WgGfxDevice::ClipBlitVertBar(	const WgRect& _clip, const WgSurfacePtr& _pSu
 //____ BlitHorrBar() __________________________________________________________
 
 void WgGfxDevice::BlitHorrBar(	const WgSurfacePtr& _pSurf, const WgRect& _src,
-								const WgBorders& _borders, bool _bTile,
+								const WgBorder& _borders, bool _bTile,
 								int _dx, int _dy, int _len )
 {
 	// Blit left edge
@@ -548,7 +548,7 @@ void WgGfxDevice::BlitHorrBar(	const WgSurfacePtr& _pSurf, const WgRect& _src,
 //____ BlitVertBar() __________________________________________________________
 
 void WgGfxDevice::BlitVertBar(	const WgSurfacePtr& _pSurf, const WgRect& _src,
-								const WgBorders& _borders, bool _bTile,
+								const WgBorder& _borders, bool _bTile,
 								int _dx, int _dy, int _len )
 {
 	// Blit top edge
@@ -618,7 +618,7 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgTextField * pText, cons
 	if( dest.h < (int) textSize.h || dest.w < (int) textSize.w || !clip.Contains( dest ) || pText->isCursorShowing() )
 		pen.SetClipRect( clip );
 
-	const WgCursorInstance* pCursor = 0;
+	const WgCaretInstance* pCursor = 0;
 	int cursLine = -1, cursCol = -1;
 
 	if( pText->isCursorShowing() )
@@ -1163,7 +1163,7 @@ void WgGfxDevice::_drawUnderline( const WgRect& clip, const WgTextField * pText,
 
 	const WgUnderline * pUnderline = pen.GetFont()->GetUnderline( pen.GetSize() );
 
-	ClipBlitHorrBar( clip, pUnderline->pSurf, pUnderline->rect, WgBorders( pUnderline->leftBorder, pUnderline->rightBorder, 0, 0 ), false,
+	ClipBlitHorrBar( clip, pUnderline->pSurf, pUnderline->rect, WgBorder( pUnderline->leftBorder, pUnderline->rightBorder, 0, 0 ), false,
 					_x + pUnderline->bearingX, _y + pUnderline->bearingY, pen.GetPosX() );
 }
 

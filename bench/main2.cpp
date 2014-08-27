@@ -11,7 +11,7 @@
 
 void 			translateEvents( WgEventHandlerPtr pEventHandler );
 WgMouseButton 	translateMouseButton( Uint8 button );
-void 			updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow );
+void 			updateWindowRects( const WgRootPanelPtr& pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const WgEventPtr& pEvent );
 void * 			loadFile( const char * pPath );
 
@@ -82,15 +82,15 @@ int main ( int argc, char** argv )
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
-	WgSkinPtr pSimpleButtonSkin = WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorders(3) );
+	WgSkinPtr pSimpleButtonSkin = WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorder(3) );
 	
 	pSDLSurf = IMG_Load( "../resources/grey_pressable_plate.bmp" );
 	WgSoftSurfacePtr pPressablePlateSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
-	WgSkinPtr pPressablePlateSkin = WgBlockSkin::CreateClickableFromSurface( pPressablePlateSurface, 0, WgBorders(3) );
+	WgSkinPtr pPressablePlateSkin = WgBlockSkin::CreateClickableFromSurface( pPressablePlateSurface, 0, WgBorder(3) );
 	
 	pSDLSurf = IMG_Load( "../resources/list_entry.png" );
 	WgSoftSurfacePtr pListEntrySurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
-	WgSkinPtr pListEntrySkin = WgBlockSkin::CreateClickableFromSurface( pListEntrySurface, 0, WgBorders(3) );
+	WgSkinPtr pListEntrySkin = WgBlockSkin::CreateClickableFromSurface( pListEntrySurface, 0, WgBorder(3) );
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
@@ -104,14 +104,14 @@ int main ( int argc, char** argv )
 	pBackground->SetSkin( WgColorSkin::Create(WgColor::aqua) );
 	pFlexPanel->AddWidget(pBackground, WG_NORTHWEST, WgCoord(), WG_SOUTHEAST, WgCoord());
 
-/*
+
 	WgButtonPtr pButton = WgButton::Create();
 	pButton->SetSkin( pSimpleButtonSkin );
 	pButton->Label()->Set( "BUTTON" );
 	pFlexPanel->AddWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
 
-	pRoot->EventHandler()->AddCallback( WgEventFilter::ButtonPress(pButton), myButtonClickCallback );
-*/	
+	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(), pButton, myButtonClickCallback );
+
 
 /*
 	WgSizeCapsulePtr pCapsule = WgSizeCapsule::Create();
@@ -240,7 +240,7 @@ WgMouseButton translateMouseButton( Uint8 button )
 //
 // Updates the rectangles of the SDL Window that WonderGUI has modified.
 //
-void updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow )
+void updateWindowRects( const WgRootPanelPtr& pRoot, SDL_Window * pWindow )
 {	
 	int nRects = pRoot->NbUpdatedRects();
 	if( nRects == 0 )

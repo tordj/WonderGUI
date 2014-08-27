@@ -37,7 +37,7 @@ class WgBoxSkin : public WgExtendedSkin
 {
 public:
 	static WgBoxSkinPtr	Create();
-	static WgBoxSkinPtr Create( WgColor color, WgBorders frame, WgColor frameColor );
+	static WgBoxSkinPtr Create( WgColor color, WgBorder frame, WgColor frameColor );
 	~WgBoxSkin() {};
 
 	bool		IsInstanceOf( const char * pClassName ) const;
@@ -47,8 +47,8 @@ public:
 
 	void	SetColor( WgColor color );
 	void	SetFrameColor( WgColor color );
-	void	SetFrameThickness( WgBorders frame );
-	void	SetFrame( WgBorders frame, WgColor color );
+	void	SetFrameThickness( WgBorder frame );
+	void	SetFrame( WgBorder frame, WgColor color );
 
 	void	SetStateColor( WgStateEnum state, WgColor color );
 	void	SetStateColor( WgStateEnum state, WgColor color, WgColor frameColor );
@@ -69,13 +69,13 @@ public:
 
 private:
 	WgBoxSkin();
-	WgBoxSkin( WgColor color, WgBorders frame, WgColor frameColor );
+	WgBoxSkin( WgColor color, WgBorder frame, WgColor frameColor );
 	void	_updateOpaqueFlag();
 
 	bool		m_bOpaque;
 	WgColor		m_color[WG_NB_STATES];
 	WgColor		m_frameColor[WG_NB_STATES];
-    WgBorders   m_frame;
+    WgBorder   m_frame;
 };
 
 #endif //WG_BOXSKIN_DOT_H

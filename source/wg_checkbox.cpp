@@ -118,7 +118,7 @@ WgSize WgCheckBox::PreferredSize() const
 	{
 		iconPreferredSize = m_icon.Skin()->PreferredSize() + m_icon.Padding().Size();
 
-		//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorders, iconScale and bgPreferredSize
+		//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorder, iconScale and bgPreferredSize
 	}
 
 	// Apply the skin

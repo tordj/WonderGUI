@@ -24,7 +24,7 @@
 #include <wg_texttool.h>
 #include <wg_textfield.h>
 #include <wg_font.h>
-#include <wg_cursorinstance.h>
+#include <wg_caretinstance.h>
 #include <wg_gfxanim.h>
 #include <wg_textmanager.h>
 #include <wg_base.h>
@@ -270,13 +270,13 @@ void WgPen::BlitChar() const
 
 //____ BlitCursor() ___________________________________________________________
 
-bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
+bool WgPen::BlitCursor( const WgCaretInstance& instance ) const
 {
-	WgCursorPtr pCursor = WgTextTool::GetCursor(instance.m_pText);
+	WgCaretPtr pCursor = WgTextTool::GetCursor(instance.m_pText);
 	if( !pCursor )
 		return false;
 
-	WgCursor::Mode mode = instance.cursorMode();
+	WgCaret::Mode mode = instance.cursorMode();
 
 	WgGfxAnimPtr pAnim	= pCursor->Anim( mode );
 	if( !pAnim )
@@ -307,13 +307,13 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 	WgBlendMode blendMode;
 	switch( pCursor->GetBlitMode() )
 	{
-		case WgCursor::NORMAL:
+		case WgCaret::NORMAL:
 			break;
-		case WgCursor::TINTED:
+		case WgCaret::TINTED:
 			tintColor = m_pDevice->GetTintColor();
 			m_pDevice->SetTintColor( tintColor * instance.text()->Color( WG_STATE_NORMAL ) );
 			break;
-		case WgCursor::INVERT_BG:
+		case WgCaret::INVERT_BG:
 			blendMode = m_pDevice->GetBlendMode();
 			m_pDevice->SetBlendMode(WG_BLENDMODE_INVERT);
 			break;
@@ -330,12 +330,12 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 	switch( pCursor->GetBlitMode() )
 	{
-		case WgCursor::NORMAL:
+		case WgCaret::NORMAL:
 			break;
-		case WgCursor::TINTED:
+		case WgCaret::TINTED:
 			m_pDevice->SetTintColor( tintColor );
 			break;
-		case WgCursor::INVERT_BG:
+		case WgCaret::INVERT_BG:
 			m_pDevice->SetBlendMode( blendMode );
 			break;
 	}
@@ -347,13 +347,13 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 //____ AdvancePosCursor() _____________________________________________________
 
-void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
+void WgPen::AdvancePosCursor( const WgCaretInstance& instance )
 {
-	WgCursorPtr pCursor = WgTextTool::GetCursor( instance.m_pText );
+	WgCaretPtr pCursor = WgTextTool::GetCursor( instance.m_pText );
 	if( !pCursor )
 		return;
 
-	WgCursor::Mode mode = instance.cursorMode();
+	WgCaret::Mode mode = instance.cursorMode();
 
 	WgGfxAnimPtr pAnim	= pCursor->Anim( mode );
 	if( !pAnim )

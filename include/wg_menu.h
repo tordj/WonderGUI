@@ -83,9 +83,9 @@ public:
 	void			SetEntrySkin( const WgSkinPtr& pSkin );
 	WgSkinPtr		EntrySkin() const { return m_pEntrySkin; }
 
-	bool			SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorders& sepBorders = WgBorders() );
+	bool			SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorder& sepBorder = WgBorder() );
 	WgSkinPtr		SeparatorSkin() const { return m_pSeparatorSkin; }
-	WgBorders		SeparatorBorders() const { return m_sepBorders; }
+	WgBorder		SeparatorBorder() const { return m_sepBorder; }
 
 	bool			SetCheckBoxSkin( const WgSkinPtr& pSkin );
 	WgSkinPtr		CheckBoxSkin() const { return m_pCheckBoxSkin; }
@@ -246,7 +246,7 @@ private:
 	void		_openSubMenu( WgMenuSubMenu * pItem );
 	void		_closeSubMenu( WgMenuSubMenu * pItem );
 
-	WgBorders	_getPadding() const;
+	WgBorder	_getPadding() const;
 	void		_refreshEntryHeight();
 
 	void		_scrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop = false );
@@ -292,7 +292,7 @@ private:
 	// Members defining separators
 
 	WgSkinPtr				m_pSeparatorSkin;
-	WgBorders				m_sepBorders;
+	WgBorder				m_sepBorder;
 
 	// Members defining the arrow for submenus
 

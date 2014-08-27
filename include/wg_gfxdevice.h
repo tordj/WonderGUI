@@ -53,10 +53,10 @@
 */
 
 class	WgRect;
-class	WgBorders;
+class	WgBorder;
 class	WgSurface;
 class	WgTextField;
-class	WgCursorInstance;
+class	WgCaretInstance;
 class 	WgPen;
 
 class WgGfxDevice;
@@ -158,20 +158,20 @@ public:
 	// Mid-level draw methods
 
 	virtual void	ClipBlitHorrBar(	const WgRect& _clip, const WgSurfacePtr& _pSurf, const WgRect& _src,
-										const WgBorders& _borders, bool _bTile,
+										const WgBorder& _borders, bool _bTile,
 										int _dx, int _dy, int _len );
 
 	virtual void	ClipBlitVertBar(	const WgRect& _clip, const WgSurfacePtr& _pSurf, const WgRect& _src,
-										const WgBorders& _borders, bool _bTile,
+										const WgBorder& _borders, bool _bTile,
 										int _dx, int _dy, int _len );
 
 
 	virtual void	BlitHorrBar(		const WgSurfacePtr& _pSurf, const WgRect& _src,
-										const WgBorders& _borders, bool _bTile,
+										const WgBorder& _borders, bool _bTile,
 										int _dx, int _dy, int _len );
 
 	virtual void	BlitVertBar(		const WgSurfacePtr& _pSurf, const WgRect& _src,
-										const WgBorders& _borders, bool _bTile,
+										const WgBorder& _borders, bool _bTile,
 										int _dx, int _dy, int _len );
 
 	// High-level print methods

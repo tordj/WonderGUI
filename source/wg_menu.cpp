@@ -140,15 +140,15 @@ void WgMenu::SetEntrySkin( const WgSkinPtr& pSkin )
 
 //____ SetSeparatorSkin() ___________________________________________________
 
-bool WgMenu::SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorders& borders )
+bool WgMenu::SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorder& borders )
 {
 	m_pSeparatorSkin	= pSkin;
-	m_sepBorders		= borders;
+	m_sepBorder		= borders;
 
 	if( pSkin )
-		m_sepHeight	= m_pSeparatorSkin->PreferredSize().h + m_sepBorders.Height();
+		m_sepHeight	= m_pSeparatorSkin->PreferredSize().h + m_sepBorder.Height();
 	else
-		m_sepHeight = m_sepBorders.Height();
+		m_sepHeight = m_sepBorder.Height();
 
 	_adjustSize();
 	_requestRender();
@@ -519,17 +519,17 @@ void WgMenu::_calcEntryMinWidth( WgMenuEntry * pEntry )
 
 //____ _getPadding() ____________________________________________________
 
-WgBorders WgMenu::_getPadding() const
+WgBorder WgMenu::_getPadding() const
 {
 	//TODO: This is ugly and doesn't take ContentShift of various states into account.
 
 	if( m_pSkin )
 	{
 		WgRect r = m_pSkin->ContentRect( WgRect(0,0,1000,1000), WG_STATE_NORMAL );
-		return WgBorders(r.x, r.y, 1000-r.w, 1000-r.h);
+		return WgBorder(r.x, r.y, 1000-r.w, 1000-r.h);
 	}
 	else
-		return WgBorders(0);
+		return WgBorder(0);
 }
 
 //____ _scrollItemIntoView() ___________________________________________________
@@ -628,7 +628,7 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 			{
 				if( m_pSeparatorSkin )
 				{
-					WgRect	dest( contentRect.x, yPos + m_sepBorders.top,
+					WgRect	dest( contentRect.x, yPos + m_sepBorder.top,
 								  contentRect.w, m_pSeparatorSkin->PreferredSize().h );
 
 					m_pSeparatorSkin->Render( pDevice, dest, m_state, contentClip );
@@ -1274,7 +1274,7 @@ void WgMenu::_onCloneContent( const WgWidget * _pOrg )
 	m_iconFieldWidth 		= pOrg->m_iconFieldWidth;
 	m_arrowFieldWidth 		= pOrg->m_arrowFieldWidth;
 	m_pSeparatorSkin		= pOrg->m_pSeparatorSkin;
-	m_sepBorders			= pOrg->m_sepBorders;
+	m_sepBorder			= pOrg->m_sepBorder;
 	m_pArrowAnim			= pOrg->m_pArrowAnim;
 	m_entryHeight			= pOrg->m_entryHeight;
 	m_sepHeight				= pOrg->m_sepHeight;
@@ -1358,14 +1358,14 @@ WgHook * WgMenu::_firstHookWithGeo( WgRect& writeGeo ) const
 
 WgMenuItem * WgMenu::_getItemAtPos( int x, int y )
 {
-	WgBorders	contentBorders = _getPadding();
+	WgBorder	contentBorder = _getPadding();
 
-	x -= contentBorders.left;
-	y -= contentBorders.top;
+	x -= contentBorder.left;
+	y -= contentBorder.top;
 
 	y += m_contentOfs;
 
-	if( y > 0 && x > 0 && x < (int) ( Geo().w - contentBorders.right ) )
+	if( y > 0 && x > 0 && x < (int) ( Geo().w - contentBorder.right ) )
 	{
 		WgMenuItem * pItem = m_items.First();
 		while( pItem )
@@ -1401,12 +1401,12 @@ void WgMenu::_itemModified()
 
 void WgMenu::_adjustSize()
 {
-	WgBorders contentBorders = _getPadding();
+	WgBorder contentBorder = _getPadding();
 
-	int  w = contentBorders.Width();
-	int	 h = contentBorders.Height();
+	int  w = contentBorder.Width();
+	int	 h = contentBorder.Height();
 
-	int minSep = m_sepBorders.Width();
+	int minSep = m_sepBorder.Width();
 	if( m_pSeparatorSkin )
 		minSep += m_pSeparatorSkin->MinSize().w;
 
@@ -1425,7 +1425,7 @@ void WgMenu::_adjustSize()
 			{
 				h += m_entryHeight;
 
-				int minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorders.Width() + m_iconFieldWidth + m_arrowFieldWidth;
+				int minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorder.Width() + m_iconFieldWidth + m_arrowFieldWidth;
 
 				if( w < minW )
 					w = minW;
@@ -1436,10 +1436,10 @@ void WgMenu::_adjustSize()
 		pItem = pItem->Next();
 	}
 
-	m_contentHeight = h - contentBorders.Height();
+	m_contentHeight = h - contentBorder.Height();
 
-	if( h < m_entryHeight + contentBorders.Height() )
-		h = m_entryHeight + contentBorders.Height();
+	if( h < m_entryHeight + contentBorder.Height() )
+		h = m_entryHeight + contentBorder.Height();
 
 
 	if( w != m_defaultSize.w || h != m_defaultSize.h )
@@ -1462,7 +1462,7 @@ void WgMenu::_adjustSize()
 		WgSize scrollbarSize = pScrollbar->PreferredSize();
 
 		m_scrollbarHook.m_size.w = scrollbarSize.w;
-		m_scrollbarHook.m_size.h = Size().h - contentBorders.Height();
+		m_scrollbarHook.m_size.h = Size().h - contentBorder.Height();
 
 		m_scrollbarHook._setWidget(pScrollbar);
 
@@ -1605,7 +1605,7 @@ const char * WgMenu::ScrollbarHook::ClassType()
 WgCoord WgMenu::ScrollbarHook::Pos() const
 {
 	WgSize parentSize = m_pParent->Size();
-	WgBorders borders = m_pParent->_getPadding();
+	WgBorder borders = m_pParent->_getPadding();
 	return WgCoord(parentSize.w-m_size.w-borders.right,borders.top);
 }
 
@@ -1617,7 +1617,7 @@ WgSize WgMenu::ScrollbarHook::Size() const
 WgRect WgMenu::ScrollbarHook::Geo() const
 {
 	WgSize parentSize = m_pParent->Size();
-	WgBorders borders = m_pParent->_getPadding();
+	WgBorder borders = m_pParent->_getPadding();
 	return WgRect(parentSize.w-m_size.w-borders.right,borders.top,m_size);
 }
 

@@ -152,7 +152,7 @@ protected:
 
 private:
 
-	WgBorders	_getEntryBorders() const;
+	WgBorder	_getEntryBorder() const;
 
 	Uint32		_getItemAtAbsPos( int x, int y );
 	bool		_openMenu( int nb );

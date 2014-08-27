@@ -55,19 +55,19 @@ public:
 	static const char			CLASSNAME[];
 	static WgIIconPtr			Cast( const WgInterfacePtr& pInterface );
 
-	virtual bool			Set( const WgSkinPtr& pIconGfx, WgOrigo origo = WG_WEST, WgBorders padding = WgBorders(0), 
+	virtual bool			Set( const WgSkinPtr& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0), 
 								float _scale = 0.f, bool _bOverlap = false ) = 0;
 	virtual void			Clear() = 0;
 
 	virtual bool			SetScale( float scaleFactor ) = 0;
 	virtual void			SetOrigo( WgOrigo origo ) = 0;
-	virtual void			SetPadding( WgBorders padding ) = 0;
+	virtual void			SetPadding( WgBorder padding ) = 0;
 	virtual void			SetOverlap( bool bOverlap ) = 0;
 	virtual void			SetSkin( const WgSkinPtr& pSkin ) = 0;
 
 	virtual float			Scale() const = 0;
 	virtual WgOrigo			Origo() const = 0;
-	virtual WgBorders		Padding() const = 0;
+	virtual WgBorder		Padding() const = 0;
 	virtual bool			Overlap() const = 0;
 	virtual WgSkinPtr		Skin() const = 0;
 

@@ -159,7 +159,7 @@ std::string	WgResDB::GenerateName( const WgGfxAnimPtr& data )
 	return std::string("_anim__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgCursorPtr& data )
+std::string	WgResDB::GenerateName( const WgCaretPtr& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -346,7 +346,7 @@ bool WgResDB::AddGfxAnim( const std::string& id, const WgGfxAnimPtr& pAnim, Meta
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddCursor( const std::string& id, const WgCursorPtr& pCursor, MetaData * pMetaData )
+bool WgResDB::AddCursor( const std::string& id, const WgCaretPtr& pCursor, MetaData * pMetaData )
 {
 	assert(m_mapCursors.find(id) == m_mapCursors.end());
 	if(m_mapCursors.find(id) == m_mapCursors.end())
@@ -522,10 +522,10 @@ WgGfxAnimPtr WgResDB::GetGfxAnim( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgCursorPtr WgResDB::GetCursor( const std::string& id ) const
+WgCaretPtr WgResDB::GetCursor( const std::string& id ) const
 {
 	CursorRes* cursorRes = GetResCursor(id);
-	return cursorRes ? cursorRes->res : WgCursorPtr();
+	return cursorRes ? cursorRes->res : WgCaretPtr();
 }
 
 //____ () _________________________________________________________
@@ -930,7 +930,7 @@ WgResDB::GfxAnimRes* WgResDB::FindResGfxAnim( const WgGfxAnimPtr& meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::CursorRes* WgResDB::FindResCursor( const WgCursorPtr& meta ) const
+WgResDB::CursorRes* WgResDB::FindResCursor( const WgCaretPtr& meta ) const
 {
 	CursorRes* res = 0;
 	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
