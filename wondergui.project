@@ -73,7 +73,6 @@
     <File Name="include/wg_valueformat.h"/>
     <File Name="include/wg_vectorglyphs.h"/>
     <File Name="include/wg_widget.h"/>
-    <File Name="include/wondergui.h"/>
     <File Name="source/wg_anim.cpp"/>
     <File Name="source/wg_base.cpp"/>
     <File Name="source/wg_bitmapglyphs.cpp"/>
@@ -225,6 +224,8 @@
     <File Name="source/wg_list.cpp"/>
     <File Name="include/wg_packlist.h"/>
     <File Name="source/wg_packlist.cpp"/>
+    <File Name="include/wg_tablelist.h"/>
+    <File Name="source/wg_tablelist.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Layers">
     <File Name="source/wg_layer.cpp"/>
@@ -241,6 +242,7 @@
     <File Name="include/wg_shadercapsule.h"/>
     <File Name="source/wg_sizecapsule.cpp"/>
     <File Name="include/wg_sizecapsule.h"/>
+    <File Name="include/wondergui.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Interfaces">
     <File Name="include/wg_iedittext.h"/>
