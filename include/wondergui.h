@@ -196,10 +196,6 @@
 #	include <wg_button.h>
 #endif
 
-#ifndef WG_CHECKBOX_DOT_H
-#	include <wg_checkbox.h>
-#endif
-
 #ifndef WG_COLORSKIN_DOT_H
 #	include <wg_colorskin.h>
 #endif
@@ -230,7 +226,6 @@
 
 #ifndef WG_IMAGE_DOT_H
 #	include <wg_image.h>
-#endif
 
 #ifndef WG_MENU_DOT_H
 #	include <wg_menu.h>
@@ -256,8 +251,8 @@
 #	include	<wg_packpanel.h>
 #endif
 
-#ifndef WG_RADIOBUTTON_DOT_H
-#	include <wg_radiobutton.h>
+#ifndef WG_TOGGLEGROUP_DOT_H
+#	include <wg_togglegroup.h>
 #endif
 
 #ifndef WG_REFRESHBUTTON_DOT_H
@@ -280,16 +275,21 @@
 #	include <wg_stackpanel.h>
 #endif
 
+#ifndef WG_SIZECAPSULE_DOT_H
+#	include <wg_sizecapsule.h>
+#endif
+#endif
+
 #ifndef WG_TABLIST_DOT_H
 #	include <wg_tablist.h>
 #endif
 
-#ifndef WG_SIZECAPSULE_DOT_H
-#	include <wg_sizecapsule.h>
-#endif
-
 #ifndef WG_TEXTDISPLAY_DOT_H
 #	include <wg_textdisplay.h>
+#endif
+
+#ifndef WG_TOGGLEBUTTON_DOT_H
+#	include <wg_togglebutton.h>
 #endif
 
 #ifndef WG_VALUEDISPLAY_DOT_H

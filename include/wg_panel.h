@@ -100,9 +100,6 @@ public:
 	void		SetFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
 	bool		IsFocusGroup() const { return m_bFocusGroup; }
 
-	void		SetRadioGroup( bool bRadioGroup ) { m_bRadioGroup = bRadioGroup; }
-	bool		IsRadioGroup() const { return m_bRadioGroup; }
-
 	void		SetTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
 	bool		IsTooltipGroup() const { return m_bTooltipGroup; }
 
@@ -125,7 +122,6 @@ protected:
 
 
 	bool		m_bFocusGroup;
-	bool		m_bRadioGroup;
 	bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
 	WgMaskOp	m_maskOp;			// Specifies how container masks background.
 };

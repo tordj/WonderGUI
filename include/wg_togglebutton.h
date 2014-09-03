@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CHECKBOX_DOT_H
-#define	WG_CHECKBOX_DOT_H
+#ifndef	WG_TOGGLEBUTTON_DOT_H
+#define	WG_TOGGLEBUTTON_DOT_H
 
 #ifndef	WG_WIDGET_DOT_H
 #	include <wg_widget.h>
@@ -37,20 +37,25 @@
 
 class	WgSurface;
 
-class WgCheckBox;
-typedef	WgStrongPtr<WgCheckBox,WgWidgetPtr>		WgCheckBoxPtr;
-typedef	WgWeakPtr<WgCheckBox,WgWidgetWeakPtr>	WgCheckBoxWeakPtr;
+class WgToggleButton;
+typedef	WgStrongPtr<WgToggleButton,WgWidgetPtr>		WgToggleButtonPtr;
+typedef	WgWeakPtr<WgToggleButton,WgWidgetWeakPtr>	WgToggleButtonWeakPtr;
+
+class WgToggleGroup;
+typedef	WgStrongPtr<WgToggleGroup,WgObjectPtr>		WgToggleGroupPtr;
+typedef	WgWeakPtr<WgToggleGroup,WgObjectWeakPtr>		WgToggleGroupWeakPtr;
 
 
-class	WgCheckBox : public WgWidget, public WgIconHolder, public WgTextHolder
+class	WgToggleButton : public WgWidget, public WgIconHolder, public WgTextHolder
 {
+friend class WgToggleGroup;
 public:
-	static WgCheckBoxPtr	Create() { return WgCheckBoxPtr(new WgCheckBox()); }
+	static WgToggleButtonPtr	Create() { return WgToggleButtonPtr(new WgToggleButton()); }
 
 	bool					IsInstanceOf( const char * pClassName ) const;
 	const char *			ClassName( void ) const;
 	static const char		CLASSNAME[];
-	static WgCheckBoxPtr	Cast( const WgObjectPtr& pObject );
+	static WgToggleButtonPtr	Cast( const WgObjectPtr& pObject );
 
 	enum ClickArea
 	{
@@ -64,7 +69,7 @@ public:
 	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
 	inline WgIIconPtr		Icon() { return WgIIconPtr(this,&m_icon); }
 
-	void			SetClickArea( ClickArea clickArea );
+ 	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
 
 	inline bool		IsSelected() { return m_state.IsSelected(); };
@@ -73,14 +78,15 @@ public:
 	void			SetFlipOnRelease( bool bFlipOnRelease );
 	inline bool		FlipOnRelease() { return m_bFlipOnRelease; }
 
+	WgToggleGroupPtr ToggleGroup() const { return m_pToggleGroup; } 
 	WgSize			PreferredSize() const;
 	bool			IsAutoEllipsisDefault() const { return false; };
-	
+
 
 protected:
-	WgCheckBox();
-	virtual ~WgCheckBox();
-	virtual WgWidget* _newOfMyType() const { return new WgCheckBox(); };
+	WgToggleButton();
+	virtual ~WgToggleButton();
+	virtual WgWidget* _newOfMyType() const { return new WgToggleButton(); };
 
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
@@ -94,6 +100,9 @@ protected:
 	virtual void	_fieldModified( WgIconField * pField );
 	virtual void	_fieldModified( WgTextField * pField );
 
+	void	_setToggleGroup( WgToggleGroup * pGroup );
+	WgToggleGroup * _toggleGroup() const { return m_pToggleGroup.GetRealPtr(); }
+
 private:
 
 	void	_refreshTextArea();
@@ -101,13 +110,14 @@ private:
 	
 	bool			m_bPressed;						// Set when mouse is pressed and over.
 	bool			m_bReturnPressed;
-	bool			m_bFlipOnRelease;				// Set if we want to flip checkbox on press (default), not click.
+	bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 
 	WgTextField		m_text;
 	WgIconField		m_icon;
+	WgToggleGroupPtr	m_pToggleGroup;
 
 	ClickArea		m_clickArea;
 };
 
 
-#endif //	WG_CHECKBOX_DOT_H
+#endif //	WG_TOGGLEBUTTON_DOT_H

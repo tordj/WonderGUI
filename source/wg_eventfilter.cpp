@@ -26,8 +26,6 @@
 #include <wg_eventfilter.h>
 #include <wg_widget.h>
 #include <wg_scrollbar.h>
-#include <wg_checkbox.h>
-#include <wg_radiobutton.h>
 #include <wg_animplayer.h>
 #include <wg_tablist.h>
 #include <wg_valueeditor.h>

@@ -20,22 +20,23 @@
 
 =========================================================================*/
 
-#include <wg_checkbox.h>
+#include <wg_togglebutton.h>
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
 #include <wg_font.h>
 #include <wg_util.h>
 #include <wg_rootpanel.h>
 #include <wg_eventhandler.h>
+#include <wg_togglegroup.h>
 #include <assert.h>
 
-const char WgCheckBox::CLASSNAME[] = {"Checkbox"};
+const char WgToggleButton::CLASSNAME[] = {"ToggleButton"};
 
 
 
-//____ WgCheckBox() _________________________________________________________________
+//____ WgToggleButton() _________________________________________________________________
 
-WgCheckBox::WgCheckBox()
+WgToggleButton::WgToggleButton()
 {
 	m_bPressed			= false;
 	m_bReturnPressed	= false;
@@ -51,14 +52,16 @@ WgCheckBox::WgCheckBox()
 
 //____ Destructor _____________________________________________________________
 
-WgCheckBox::~WgCheckBox()
+WgToggleButton::~WgToggleButton()
 {
+	if( m_pToggleGroup )
+		m_pToggleGroup->_remove(this);
 }
 
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgCheckBox::IsInstanceOf( const char * pClassName ) const
+bool WgToggleButton::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
@@ -68,24 +71,24 @@ bool WgCheckBox::IsInstanceOf( const char * pClassName ) const
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgCheckBox::ClassName( void ) const
+const char * WgToggleButton::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgCheckBoxPtr WgCheckBox::Cast( const WgObjectPtr& pObject )
+WgToggleButtonPtr WgToggleButton::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgCheckBoxPtr( static_cast<WgCheckBox*>(pObject.GetRealPtr()) );
+		return WgToggleButtonPtr( static_cast<WgToggleButton*>(pObject.GetRealPtr()) );
 
 	return 0;
 }
 
 //____ SetSelected() __________________________________________________________
 
-bool WgCheckBox::SetSelected( bool bSelected )
+bool WgToggleButton::SetSelected( bool bSelected )
 {
 	if( m_state.IsSelected() != bSelected )
 	{
@@ -98,15 +101,14 @@ bool WgCheckBox::SetSelected( bool bSelected )
 
 //____ SetFlipOnRelease() _____________________________________________________
 
-void WgCheckBox::SetFlipOnRelease( bool bFlipOnRelease )
+void WgToggleButton::SetFlipOnRelease( bool bFlipOnRelease )
 {
 	m_bFlipOnRelease = bFlipOnRelease;
 }
 
-
 //____ PreferredSize() __________________________________________________
 
-WgSize WgCheckBox::PreferredSize() const
+WgSize WgToggleButton::PreferredSize() const
 {
 	WgSize iconPreferredSize;
 	WgSize textPreferredSize;
@@ -131,10 +133,20 @@ WgSize WgCheckBox::PreferredSize() const
 	return preferredSize;
 }
 
+//____ _setToggleGroup() ________________________________________________________
+
+void WgToggleButton::_setToggleGroup( WgToggleGroup * pGroup )
+{
+	if( m_pToggleGroup && pGroup )			// Remove us from current Toggle group if we are not just set to null (then we are being removed by Togglegroup itself).
+		m_pToggleGroup->_remove(this);
+		
+	m_pToggleGroup = pGroup;
+}
+
 
 //____ _onEvent() _____________________________________________________________
 
-void WgCheckBox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+void WgToggleButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 {
 	WgState oldState = m_state;
 
@@ -222,8 +234,15 @@ void WgCheckBox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 
 //____ _onStateChanged() ______________________________________________________
 
-void WgCheckBox::_onStateChanged( WgState oldState )
+void WgToggleButton::_onStateChanged( WgState oldState )
 {
+	// If state has changed from selected to unselected we need to check with Togglegroup
+	
+	if( !m_state.IsSelected() && oldState.IsSelected() && m_pToggleGroup && !m_pToggleGroup->_unselect(this) )
+		m_state.SetSelected(true);
+	
+	//
+	
 	WgWidget::_onStateChanged(oldState);
 
 	m_text.setState( m_state );
@@ -236,12 +255,15 @@ void WgCheckBox::_onStateChanged( WgState oldState )
 		WgEventHandler * pHandler = _eventHandler();
 		if( pHandler )
 			pHandler->QueueEvent( new WgToggleEvent(this, m_state.IsSelected() ) );
+
+		if( m_pToggleGroup && m_state.IsSelected() )
+			m_pToggleGroup->_select(this);
 	}
 }
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgCheckBox::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgToggleButton::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 	m_text.SetColorSkin(pNewSkin);
@@ -250,7 +272,7 @@ void WgCheckBox::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNe
 
 //____ _onRender() ________________________________________________________
 
-void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgToggleButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
@@ -278,7 +300,7 @@ void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 
 //____ _onRefresh() _______________________________________________________
 
-void WgCheckBox::_onRefresh( void )
+void WgToggleButton::_onRefresh( void )
 {
 	WgWidget::_onRefresh();
 
@@ -287,7 +309,7 @@ void WgCheckBox::_onRefresh( void )
 
 //____ _onNewSize() _______________________________________________________
 
-void WgCheckBox::_onNewSize( const WgSize& size )
+void WgToggleButton::_onNewSize( const WgSize& size )
 {
 	WgRect contentRect	= WgRect(0,0,size);
 	if( m_pSkin )
@@ -299,9 +321,9 @@ void WgCheckBox::_onNewSize( const WgSize& size )
 
 //____ _onCloneContent() _______________________________________________________
 
-void WgCheckBox::_onCloneContent( const WgWidget * _pOrg )
+void WgToggleButton::_onCloneContent( const WgWidget * _pOrg )
 {
-	WgCheckBox * pOrg = (WgCheckBox *) _pOrg;
+	WgToggleButton * pOrg = (WgToggleButton *) _pOrg;
 
 	m_bFlipOnRelease	= pOrg->m_bFlipOnRelease;
 	m_clickArea			= pOrg->m_clickArea;
@@ -312,13 +334,13 @@ void WgCheckBox::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _fieldModified() _________________________________________________________
 
-void WgCheckBox::_fieldModified( WgTextField * pField )
+void WgToggleButton::_fieldModified( WgTextField * pField )
 {
 	_requestResize();
 	_requestRender();
 }
 
-void WgCheckBox::_fieldModified( WgIconField * pField )
+void WgToggleButton::_fieldModified( WgIconField * pField )
 {
 	_requestResize();
 	_requestRender();
@@ -326,7 +348,7 @@ void WgCheckBox::_fieldModified( WgIconField * pField )
 
 //____ _markTestTextArea() ______________________________________________________
 
-bool WgCheckBox::_markTestTextArea( int _x, int _y )
+bool WgToggleButton::_markTestTextArea( int _x, int _y )
 {
 	WgRect contentRect	= WgRect(0,0,Size());
 	if( m_pSkin )
@@ -342,7 +364,7 @@ bool WgCheckBox::_markTestTextArea( int _x, int _y )
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
+bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 {
 	WgSize	bgSize		= Size();
 
