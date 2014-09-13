@@ -35,7 +35,7 @@ const char WgPanelHook::CLASSNAME[] = {"PanelHook"};
 
 //____ Constructor _____________________________________________________________
 
-WgPanel::WgPanel() : m_bFocusGroup(false), m_bRadioGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE)
+WgPanel::WgPanel() : m_bFocusGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE)
 {
 }
 
@@ -92,7 +92,6 @@ void WgPanel::_onCloneContent( const WgWidget * _pOrg )
 	const WgPanel * pOrg = static_cast<const WgPanel*>(_pOrg);
 
 	m_bFocusGroup 		= pOrg->m_bFocusGroup;
-	m_bRadioGroup 		= pOrg->m_bRadioGroup;
 	m_bTooltipGroup 	= pOrg->m_bTooltipGroup;
 	m_maskOp 			= pOrg->m_maskOp;
 

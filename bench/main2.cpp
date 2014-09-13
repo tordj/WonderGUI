@@ -82,8 +82,14 @@ int main ( int argc, char** argv )
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
-	WgSkinPtr pSimpleButtonSkin = WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorder(3) );
-	
+	WgBlockSkinPtr pSimpleButtonSkin = WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorder(3) );
+	pSimpleButtonSkin->SetContentPadding( WgBorder(5) );
+
+	pSDLSurf = IMG_Load( "../resources/state_button.bmp" );
+	WgSoftSurfacePtr pStateButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	WgBlockSkinPtr pStateButtonSkin = WgBlockSkin::CreateClickSelectableFromSurface( pStateButtonSurface, 0, WgBorder(3) );
+	pStateButtonSkin->SetContentPadding( WgBorder(5) );
+
 	pSDLSurf = IMG_Load( "../resources/grey_pressable_plate.bmp" );
 	WgSoftSurfacePtr pPressablePlateSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 	WgSkinPtr pPressablePlateSkin = WgBlockSkin::CreateClickableFromSurface( pPressablePlateSurface, 0, WgBorder(3) );
@@ -104,14 +110,14 @@ int main ( int argc, char** argv )
 	pBackground->SetSkin( WgColorSkin::Create(WgColor::aqua) );
 	pFlexPanel->AddWidget(pBackground, WG_NORTHWEST, WgCoord(), WG_SOUTHEAST, WgCoord());
 
-
+/*
 	WgButtonPtr pButton = WgButton::Create();
 	pButton->SetSkin( pSimpleButtonSkin );
 	pButton->Label()->Set( "BUTTON" );
 	pFlexPanel->AddWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
 
 	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(), pButton, myButtonClickCallback );
-
+*/
 
 /*
 	WgSizeCapsulePtr pCapsule = WgSizeCapsule::Create();
@@ -132,6 +138,18 @@ int main ( int argc, char** argv )
 	pCheckbox->Label()->Set( "CHECKBOX" );
 	pCheckbox->Icon()->Set( pCheckboxSkin );
 */
+
+	WgToggleGroupPtr pGroup = WgToggleGroup::Create();
+	
+
+	for( int i = 0 ; i < 4 ; i++ )
+	{
+		WgToggleButtonPtr pCheckbox = WgToggleButton::Create();
+		pCheckbox->Label()->Set( "CHECKBOX" );
+		pCheckbox->SetSkin( pStateButtonSkin );
+		pFlexPanel->AddWidget( pCheckbox, WgCoord(10,20*i) );
+		pGroup->Add( pCheckbox );
+	}
 
 
 	//------------------------------------------------------

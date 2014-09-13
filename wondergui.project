@@ -134,14 +134,14 @@
     <File Name="include/wg_caretinstance.h"/>
     <File Name="source/wg_caret.cpp"/>
     <File Name="source/wg_caretinstance.cpp"/>
+    <File Name="include/wg_togglegroup.h"/>
+    <File Name="source/wg_togglegroup.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Widgets">
     <File Name="include/wg_animplayer.h"/>
     <File Name="include/wg_button.h"/>
-    <File Name="include/wg_checkbox.h"/>
     <File Name="source/wg_animplayer.cpp"/>
     <File Name="source/wg_button.cpp"/>
-    <File Name="source/wg_checkbox.cpp"/>
     <File Name="include/wg_combobox.h"/>
     <File Name="include/wg_filler.h"/>
     <File Name="include/wg_fpsdisplay.h"/>
@@ -160,10 +160,8 @@
     <File Name="source/wg_menu.cpp"/>
     <File Name="source/wg_menubar.cpp"/>
     <File Name="source/wg_oscilloscope.cpp"/>
-    <File Name="include/wg_radiobutton.h"/>
     <File Name="include/wg_rulerlabels.h"/>
     <File Name="include/wg_scrollbar.h"/>
-    <File Name="source/wg_radiobutton.cpp"/>
     <File Name="source/wg_rulerlabels.cpp"/>
     <File Name="source/wg_scrollbar.cpp"/>
     <File Name="include/wg_simplevolumemeter.h"/>
@@ -182,6 +180,8 @@
     <File Name="source/wg_volumemeter.cpp"/>
     <File Name="include/wg_refreshbutton.h"/>
     <File Name="source/wg_refreshbutton.cpp"/>
+    <File Name="include/wg_togglebutton.h"/>
+    <File Name="source/wg_togglebutton.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Skins">
     <File Name="source/wg_blockskin.cpp"/>

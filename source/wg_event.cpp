@@ -24,7 +24,6 @@
 #include <wg_key.h>
 #include <wg_widget.h>
 #include <wg_button.h>
-#include <wg_checkbox.h>
 #include <wg_animplayer.h>
 #include <wg_tablist.h>
 #include <wg_valuedisplay.h>
