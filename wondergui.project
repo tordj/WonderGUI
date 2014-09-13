@@ -224,8 +224,6 @@
     <File Name="source/wg_list.cpp"/>
     <File Name="include/wg_packlist.h"/>
     <File Name="source/wg_packlist.cpp"/>
-    <File Name="include/wg_tablelist.h"/>
-    <File Name="source/wg_tablelist.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Layers">
     <File Name="source/wg_layer.cpp"/>

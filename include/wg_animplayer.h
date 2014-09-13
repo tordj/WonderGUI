@@ -80,7 +80,7 @@ protected:
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onRefresh();
 	void			_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
-	bool			_onAlphaTest( const WgCoord& ofs );
+	bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 	void			_onStateChanged( WgState oldState );
 
 	void			_playPosUpdated();

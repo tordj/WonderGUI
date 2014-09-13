@@ -209,7 +209,7 @@ protected:
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
 	void 	_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler );
-	bool	_onAlphaTest( const WgCoord& ofs );
+	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 
 private:
 

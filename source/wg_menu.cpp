@@ -1311,9 +1311,9 @@ void WgMenu::_onNewSize( const WgSize& size )
 
 //____ _onAlphaTest() ___________________________________________________
 
-bool WgMenu::_onAlphaTest( const WgCoord& ofs )
+bool WgMenu::_onAlphaTest( const WgCoord& ofs , const WgSize& sz)
 {
-	return WgWidget::_onAlphaTest(ofs);
+	return WgWidget::_onAlphaTest(ofs, sz);
 }
 
 //____ _firstHook() ____________________________________________________________

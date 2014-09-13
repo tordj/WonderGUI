@@ -99,18 +99,39 @@ void WgWidget::SetEnabled( bool bEnabled )
 }
 
 //____ MarkTest() _____________________________________________________________
+/**
+ * @brief Check if specified coordinate is inside or outside the widget.
+ * 
+ * @param ofs	Coordinate to check in widgets own coordinate system.
+ * 
+ * This method first checks if the specified coordinate is inside the widgets
+ * box geometry. If it is, a second check is performed against the widgets
+ * alpha value (transparency) at the specified coordinate.
+ * If the alpha value is equal to or higher than the widgets MarkOpacity value, the
+ * test succeeds and MarkTest returns true.
+ * 
+ * MarkOpacity is by default set to 1, which means that all but totally transparent pixels
+ * will be marked. See SetMarkOpacity() for more info. 
+ * 
+ * This method is mainly used to determine if the pointer hovers over the widget or not. 
+ * 
+ * @return True if alpha value of coordinate is equal to or higher than widgets MarkOpaciy.
+ */
 
 bool WgWidget::MarkTest( const WgCoord& ofs )
 {
-	switch( m_markOpacity )
-	{
-	case 0:
-		return true;
-	case 256:
+	if( m_markOpacity <= 0 || ofs.x < 0 || ofs.y < 0 )
 		return false;
-	default:
-		return _onAlphaTest(ofs);
-	}
+		
+	WgSize sz = Size();
+
+	if( ofs.x >= sz.w || ofs.y >= sz.h )
+		return false;
+		
+	if( m_markOpacity >= 256 )
+		return true;
+		
+	return _onAlphaTest(ofs,sz);
 }
 
 //____ SetSkin() ______________________________________________________________
@@ -189,9 +210,21 @@ void WgWidget::_stopReceiveTicks()
 	m_bReceiveTick = false;
 }
 
-//____ Local2abs() ____________________________________________________________
-
-WgCoord WgWidget::Local2abs( const WgCoord& cord ) const
+//____ ToGlobal() ____________________________________________________________
+/**
+ * @brief Converts coordinate from local to global coordinate system
+ * 
+ * @param coord		Coordinate in widgets local coordinate system.
+ * 
+ * Please note that the widgets local coordinate system originates from the top-left
+ * corner of its box geometry and is NOT the same as the (parents) local coordinate 
+ * system in which it lives. 
+ * The coordinate (0,0) is always the top-left corner of the widget.
+ * 
+ * @return Coordinate in gobal coordinate system
+ */
+ 
+ WgCoord WgWidget::ToGlobal( const WgCoord& coord ) const
 {
 	WgCoord c = GlobalPos();
 	c.x += cord.x;
@@ -199,9 +232,21 @@ WgCoord WgWidget::Local2abs( const WgCoord& cord ) const
 	return c;
 }
 
-//____ Abs2local() ____________________________________________________________
+//____ ToLocal() ____________________________________________________________
+/**
+ * @brief Converts coordinate from local to global coordinate system
+ * 
+ * @param coord		Coordinate in widgets local coordinate system.
+ * 
+ * Please note that the widgets local coordinate system originates from the top-left
+ * corner of its box geometry and is NOT the same as the (parents) local coordinate 
+ * system in which it lives. 
+ * The coordinate (0,0) is always the top-left corner of the widget.
+ * 
+ * @return Coordinate in gobal coordinate system
+ */
 
-WgCoord WgWidget::Abs2local( const WgCoord& cord ) const
+WgCoord WgWidget::ToLocal( const WgCoord& coord ) const
 {
 	WgCoord c = GlobalPos();
 	return WgCoord( cord.x - c.x, cord.y - c.y );
@@ -221,6 +266,16 @@ WgEventHandler * WgWidget::_eventHandler() const
 }
 
 //____ HeightForWidth() _______________________________________________________
+/**
+ * @brief Returns the widgets preferred height for the specified width.
+ * 
+ * @param width		Width in pixels.
+ * 
+ * This method is used by containers to get the preferred height of a widget for which
+ * it has already decided the width.
+ * 
+ * @return The preferred height for the given width in pixels.
+ */
 
 int WgWidget::HeightForWidth( int width ) const
 {
@@ -228,6 +283,16 @@ int WgWidget::HeightForWidth( int width ) const
 }
 
 //____ WidthForHeight() _______________________________________________________
+/**
+ * @brief Returns the widgets preferred width for the specified height.
+ * 
+ * @param height	Height in pixels.
+ * 
+ * This method is used by containers to get the preferred width of a widget for which
+ * it has already decided the height.
+ * 
+ * @return The preferred width for the given height in pixels.
+ */
 
 int WgWidget::WidthForHeight( int height ) const
 {
@@ -235,6 +300,20 @@ int WgWidget::WidthForHeight( int height ) const
 }
 
 //____ PreferredSize() ________________________________________________________
+/**
+ * @brief Returns the widgets preferred size.
+ * 
+ * Each widget has its own preferred size, which is depending on things such as
+ * skinning, content and (in the case of containers) size and layout of children.
+ * 
+ * A container holding a widget will strive to give the widget its preferred size, given
+ * the constraints and limitations the container needs to work with. If a container can't
+ * give a widget its preferred size, it is likely to decide the closest width or height
+ * that it can provide and then make a second call to either WidthForHeight() or HeightForWidth()
+ * after which it will decide the size of the child and notify it.
+ * 
+ * @return The preferred size of the widget in pixels.
+ */
 
 WgSize WgWidget::PreferredSize() const
 {
@@ -245,6 +324,18 @@ WgSize WgWidget::PreferredSize() const
 }
 
 //____ MinSize() ______________________________________________________________
+/**
+ * @brief Returns the widgets stated minimum size.
+ * 
+ * Each widget has its own minimum size, which is depending on things such as
+ * skinning, content and (in the case of containers) size and layout of children.
+ * 
+ * The minimum size is only a hint for the container, which should strive to not
+ * make a child smaller than its minimum size, but is allowed to set the child to
+ * any size it decides, including 0.0.
+ *  
+ * @return The minimum size of the widget in pixels.
+ */
 
 WgSize WgWidget::MinSize() const
 {
@@ -255,6 +346,18 @@ WgSize WgWidget::MinSize() const
 }
 
 //____ MaxSize() ______________________________________________________________
+/**
+ * @brief Returns the widgets stated miaximum size.
+ * 
+ * Each widget has its own maximum size, which is depending on things such as
+ * skinning, content and (in the case of containers) size and layout of children.
+ * 
+ * The maximum size is only a hint for the container, which should strive to not
+ * make a child larger than its maximum size, but is allowed to set the child to
+ * any reasonable size it decides.
+ *  
+ * @return The maximum size of the widget in pixels.
+ */
 
 WgSize WgWidget::MaxSize() const
 {
@@ -430,10 +533,10 @@ void WgWidget::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 
 //____ _onAlphaTest() _________________________________________________________
 
-bool WgWidget::_onAlphaTest( const WgCoord& ofs )
+bool WgWidget::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	if( m_pSkin )
-		return m_pSkin->MarkTest( ofs, WgRect(0,0,Size()), m_state, m_markOpacity );
+		return m_pSkin->MarkTest( ofs, WgRect(0,0,sz), m_state, m_markOpacity );
 
 	return false;
 }

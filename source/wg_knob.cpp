@@ -105,7 +105,7 @@ void WgKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRe
 
 //____ _onAlphaTest() ___________________________________________________________
 
-bool WgKnob::_onAlphaTest( const WgCoord& ofs )
+bool WgKnob::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	return true;
 }

@@ -145,7 +145,7 @@ protected:
 
 	void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	bool	_onAlphaTest( const WgCoord& ofs );
+	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 	void	_onRefresh();
 	void	_onCloneContent( const WgWidget * _pOrg );
 

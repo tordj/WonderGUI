@@ -1113,7 +1113,7 @@ void WgScrollPanel::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandl
 		{			
 			WgWheelRollEventPtr pEvent = WgWheelRollEvent::Cast(_pEvent);
 
-			if( m_elements[WINDOW].m_windowGeo.Contains( Abs2local(pEvent->PointerGlobalPos())) )
+			if( m_elements[WINDOW].m_windowGeo.Contains( ToLocal(pEvent->PointerGlobalPos())) )
 			{
 				int wheel = pEvent->Wheel();
 
@@ -1263,7 +1263,7 @@ void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const
 
 //____ _onAlphaTest() ___________________________________________________________
 
-bool WgScrollPanel::_onAlphaTest( const WgCoord& ofs )
+bool WgScrollPanel::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	if( m_pSkin && m_elements[WINDOW].m_windowGeo.Contains( ofs ) )
 	{

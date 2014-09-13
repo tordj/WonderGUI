@@ -741,7 +741,7 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 		case WG_EVENT_MOUSE_MOVE:
 		{
 			WgMouseMoveEventPtr pEvent = WgMouseMoveEvent::Cast(_pEvent);
-			WgCoord ofs = Abs2local(pEvent->PointerGlobalPos());
+			WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
 			WgRect headerGeo = _headerGeo();
 			bool bHeaderHovered = headerGeo.Contains(ofs) && (!pHandler->IsAnyMouseButtonPressed() || (pHandler->IsMouseButtonPressed(WG_BUTTON_LEFT) && header.m_bPressed));
 			if( bHeaderHovered != header.m_state.IsHovered() )
@@ -769,7 +769,7 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 		case WG_EVENT_MOUSE_PRESS:
 		{
 			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
-			WgCoord ofs = Abs2local(pEvent->PointerGlobalPos());
+			WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
 			WgRect headerGeo = _headerGeo();
 			if(pEvent->Button() == WG_BUTTON_LEFT && headerGeo.Contains(ofs))
 			{
@@ -788,7 +788,7 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
 			if( header.m_bPressed )
 			{
-				WgCoord ofs = Abs2local(pEvent->PointerGlobalPos());
+				WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
 				WgRect headerGeo = _headerGeo();
 				bool bHeaderHovered = headerGeo.Contains(ofs);
 				if( bHeaderHovered != header.m_state.IsHovered() )
@@ -814,7 +814,7 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 				WgRect headerGeo = _headerGeo();
 				_requestRender( headerGeo );
 
-				WgCoord ofs = Abs2local(pEvent->PointerGlobalPos());
+				WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
 				if( headerGeo.Contains(ofs) )
 				{
 					if( m_sortOrder == WG_SORT_ASCENDING )

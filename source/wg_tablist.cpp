@@ -1322,7 +1322,7 @@ void WgTablist::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onAlphaTest() ________________________________________
 
-bool WgTablist::_onAlphaTest( const WgCoord& ofs )
+bool WgTablist::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	return _pos2Tab(ofs.x, ofs.y) != NULL;
 }

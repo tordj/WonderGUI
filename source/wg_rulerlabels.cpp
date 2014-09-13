@@ -236,9 +236,9 @@ void WgRulerLabels::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onAlphaTest() ____________________________________________________________________
 
-bool WgRulerLabels::_onAlphaTest( const WgCoord& ofs )
+bool WgRulerLabels::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
-	return WgWidget::_onAlphaTest(ofs);
+	return WgWidget::_onAlphaTest(ofs,sz);
 }
 
 //____ _fieldModified() _________________________________________________________________

@@ -125,7 +125,7 @@ void WgSwitch::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 
 //____ _onAlphaTest() ___________________________________________________________
 
-bool WgSwitch::_onAlphaTest( const WgCoord& ofs )
+bool WgSwitch::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	return true;
 }

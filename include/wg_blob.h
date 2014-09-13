@@ -33,6 +33,17 @@ class WgBlob;
 typedef	WgStrongPtr<WgBlob,WgObjectPtr>		WgBlobPtr;
 typedef	WgWeakPtr<WgBlob,WgObjectWeakPtr>	WgBlobWeakPtr;
 
+
+/**
+ * @brief Reference counted container of arbitrary data.
+ * 
+ * WgBlob is a container that can be used to wrap a non-WonderGUI
+ * object or any set of data into a reference counted WonderGUI object. 
+ * 
+ * When the Blob is destroyed, the external object is destroyed or the memory area
+ * released.
+ */
+
 class WgBlob : public WgObject
 {
 public:
@@ -44,8 +55,12 @@ public:
 	static const char	CLASSNAME[];
 	static WgBlobPtr	Cast( const WgObjectPtr& pObject );
     
-	inline int		Size() const { return m_size; }
-	void *			Content() { return m_pContent; }
+	inline int		Size() const { return m_size; }			///< @brief Return the size of the content held by the blob.
+															///< The size of the content can only be returned if known by the blob.
+															///< @return Size of blob content or 0 if unknown.
+	void *			Content() { return m_pContent; }		///< @brief Return pointer to the content of the blob.
+															///< This is either the object wrapped or beginning of the reserved memory area.
+															///< @return Pointer to content of the blob.
 
 protected:
 	WgBlob( int bytes );

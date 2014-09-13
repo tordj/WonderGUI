@@ -197,7 +197,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 	{
 		case WG_EVENT_MOUSE_ENTER:
 		{	
-			WgListHook * pEntry = _findEntry(Abs2local(_pEvent->PointerGlobalPos()));
+			WgListHook * pEntry = _findEntry(ToLocal(_pEvent->PointerGlobalPos()));
 			if( pEntry && pEntry != m_pHoveredEntry.GetRealPtr() )
 			{
 				WgRect geo;
@@ -215,7 +215,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 		}
 		case WG_EVENT_MOUSE_LEAVE:
 		{
-			WgListHook * pEntry = _findEntry(Abs2local(_pEvent->PointerGlobalPos()));
+			WgListHook * pEntry = _findEntry(ToLocal(_pEvent->PointerGlobalPos()));
 			if( m_pHoveredEntry && !pEntry )
 			{
 				WgRect geo;
@@ -230,7 +230,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
 			if( m_selectMode != WG_SELECT_NONE && pEvent->Button() == WG_BUTTON_LEFT )
 			{
-				WgCoord ofs = Abs2local(pEvent->PointerGlobalPos());
+				WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
 				if( !_listWindow().Contains(ofs) )
 					break;								// Click on header or somewhere else outside the real list.
 				
@@ -333,7 +333,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
 			if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pEvent->Button() == WG_BUTTON_LEFT )
 			{
-				WgCoord ofs = _listArea().Limit(Abs2local(pEvent->PointerGlobalPos()));
+				WgCoord ofs = _listArea().Limit(ToLocal(pEvent->PointerGlobalPos()));
 				ofs = _listWindow().Limit(ofs);
 
 				WgRect oldLasso( m_lassoBegin, m_lassoEnd );

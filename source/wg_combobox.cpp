@@ -745,11 +745,11 @@ void WgCombobox::_adjustViewOfs()
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgCombobox::_onAlphaTest( const WgCoord& ofs )
+bool WgCombobox::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	//TODO: Should we treat text-box as opaque for mouse?
 
-	return WgWidget::_onAlphaTest(ofs);
+	return WgWidget::_onAlphaTest(ofs, sz);
 }
 
 

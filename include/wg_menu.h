@@ -204,7 +204,7 @@ private:
 
 	void		_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	void		_onStateChanged( WgState oldState );
-	bool		_onAlphaTest( const WgCoord& ofs );
+	bool		_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 
 	//
 

@@ -574,12 +574,12 @@ void WgScrollbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgScrollbar::_onAlphaTest( const WgCoord& ofs )
+bool WgScrollbar::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	if( _findMarkedComponent( ofs ) != C_NONE )
 		return true;
 
-	return WgWidget::_onAlphaTest(ofs);
+	return WgWidget::_onAlphaTest(ofs,sz);
 }
 
 //____ _markTestButton() _______________________________________________________

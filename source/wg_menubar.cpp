@@ -369,7 +369,7 @@ void WgMenubar::_onRefresh( void )
 
 //____ _onAlphaTest() ___________________________________________________
 
-bool WgMenubar::_onAlphaTest( const WgCoord& ofs )
+bool WgMenubar::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	return true;
 }
@@ -412,7 +412,7 @@ bool WgMenubar::_openMenu( int nb )
 	if( pItem == 0 || !pItem->m_pMenu )
 		return false;
 
-	WgCoord pos = Abs2local( WgCoord(0, 0) );
+	WgCoord pos = ToLocal( WgCoord(0, 0) );
 
 	if( m_pSkin )
 		pos = m_pSkin->ContentRect( pos, WG_STATE_NORMAL ).Pos();
@@ -470,7 +470,7 @@ bool WgMenubar::_closeMenu( int nb )
 
 Uint32 WgMenubar::_getItemAtAbsPos( int x, int y )
 {
-	WgCoord pos = Abs2local( WgCoord(x, y) );
+	WgCoord pos = ToLocal( WgCoord(x, y) );
 
 	if( m_pSkin )
 		pos = m_pSkin->ContentRect( pos, WG_STATE_NORMAL ).Pos();

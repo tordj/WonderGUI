@@ -51,7 +51,7 @@ protected:
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onStateChanged( WgState oldState );
 	void			_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
-	bool			_onAlphaTest( const WgCoord& ofs );
+	bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
     void            _fieldModified( WgTextField * pField );
 	
 	class Label : public WgLink

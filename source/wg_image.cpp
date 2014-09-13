@@ -160,13 +160,13 @@ void WgImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgR
 
 //____ _onAlphaTest() ___________________________________________________________
 
-bool WgImage::_onAlphaTest( const WgCoord& ofs )
+bool WgImage::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	if( m_pSurface && !m_rect.IsEmpty() )
 	{
 		WgRect dest;
 		if( m_pSkin )
-			dest = m_pSkin->ContentRect( Size(), State() );
+			dest = m_pSkin->ContentRect( sz, State() );
 		else
 			dest = Size();
 
@@ -174,5 +174,5 @@ bool WgImage::_onAlphaTest( const WgCoord& ofs )
 			return true;
 	}
 
-	return WgWidget::_onAlphaTest(ofs);
+	return WgWidget::_onAlphaTest(ofs,sz);
 }

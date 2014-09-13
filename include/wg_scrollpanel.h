@@ -276,7 +276,7 @@ protected:
 	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	void		_onRequestResize( WgScrollHook * pHook );
 
-	bool		_onAlphaTest( const WgCoord& ofs );
+	bool		_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 	void		_onCloneContent( const WgWidget * _pOrg );
 
 	WgHook *	_firstHookWithGeo( WgRect& geo ) const;

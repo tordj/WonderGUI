@@ -307,12 +307,12 @@ void WgAnimPlayer::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onAlphaTest() ______________________________________________________
 
-bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs )
+bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
-	if( m_pAnim && m_state.IsEnabled() && WgUtil::MarkTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, WgRect(0,0,Size()), m_markOpacity ) )
+	if( m_pAnim && m_state.IsEnabled() && WgUtil::MarkTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, WgRect(0,0,sz), m_markOpacity ) )
 		return true;
 
-	return WgWidget::_onAlphaTest(ofs);
+	return WgWidget::_onAlphaTest(ofs,sz);
 }
 
 //____ _onStateChanged() ______________________________________________________

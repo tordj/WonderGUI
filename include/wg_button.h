@@ -76,7 +76,7 @@ protected:
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onRefresh();
 	virtual void	_onCloneContent( const WgWidget * _pOrg );
-	bool			_onAlphaTest( const WgCoord& ofs );
+	bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 	virtual void	_onNewSize( const WgSize& size );
 	void			_onStateChanged( WgState oldState );
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );

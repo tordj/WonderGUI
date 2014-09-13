@@ -319,14 +319,14 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onAlphaTest() ___________________________________________________________
 
-bool WgButton::_onAlphaTest( const WgCoord& ofs )
+bool WgButton::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	if( m_icon.Skin() )
 	{
 		//TODO: Test against icon.
 	}
 
-	return WgWidget::_onAlphaTest(ofs);
+	return WgWidget::_onAlphaTest(ofs,sz);
 }
 
 //____ _fieldModified() __________________________________________________________

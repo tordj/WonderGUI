@@ -114,9 +114,8 @@ public:
 	inline int			Id() const { return m_id; }
 	inline void			SetId( int id ) { m_id = id; }
 
-	virtual WgString	TooltipString() const { return m_tooltip; }
-	WgString			RealTooltipString() const { return m_tooltip; }
-	inline void			SetTooltipString( const WgString& str ) { m_tooltip = str; }
+	virtual WgString	Tooltip() const { return m_tooltip; }
+	inline void			SetTooltip( const WgString& str ) { m_tooltip = str; }
 
 	inline void			Refresh() { _onRefresh(); }
 	void				SetEnabled(bool bEnabled);
@@ -133,7 +132,7 @@ public:
 	bool				IsTabLocked() const { return m_bTabLock; }
 
 	void				SetMarkOpacity( int opacity ) { m_markOpacity = opacity; }
-	int					GetMarkOpacity() const { return m_markOpacity; }
+	int					MarkOpacity() const { return m_markOpacity; }
 	bool				MarkTest( const WgCoord& ofs );
 
 	virtual void		SetSkin( const WgSkinPtr& pSkin );
@@ -142,36 +141,40 @@ public:
 
 	WgHookPtr			Hook() const { return m_pHook; }
 
-	WgWidgetPtr		NewOfMyType() const { return WgWidgetPtr(_newOfMyType() ); }
+	WgWidgetPtr		NewOfMyType() const { return WgWidgetPtr(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
 
 	// Convenient calls to hook
 
-	WgCoord			Pos() const { if( m_pHook ) return m_pHook->Pos(); return WgCoord(0,0); }
-	WgSize			Size() const { if( m_pHook ) return m_pHook->Size(); return WgSize(256,256); }
-	WgRect			Geo() const { if( m_pHook ) return m_pHook->Geo(); return WgRect(0,0,256,256); }
-	WgCoord			GlobalPos() const { if( m_pHook ) return m_pHook->GlobalPos(); return WgCoord(0,0); }
-	WgRect			GlobalGeo() const { if( m_pHook ) return m_pHook->GlobalGeo(); return WgRect(0,0,256,256); }
-	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
-	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
-	bool			IsFocused() { return m_state.IsFocused(); }
-	WgContainerPtr	Parent() const;
+	inline WgCoord			Pos() const;
+	inline WgSize			Size() const;
+	inline WgRect			Geo() const;
+	inline WgCoord			GlobalPos() const;
+	inline WgRect			GlobalGeo() const;
+	inline bool				GrabFocus();
+	inline bool				ReleaseFocus();
+	inline bool				IsFocused();
+	inline WgContainerPtr	Parent() const;
 
-	WgWidgetPtr		NextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->_nextHook(); if( p ) return p->m_pWidget; } return 0; }
-	WgWidgetPtr		PrevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->_prevHook(); if( p ) return p->m_pWidget; } return 0; }
+	inline WgWidgetPtr		NextSibling() const;
+	inline WgWidgetPtr		PrevSibling() const;
 
-	WgCoord			Local2abs( const WgCoord& cord ) const;		// Cordinate from local cordsys to global
-	WgCoord			Abs2local( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys
-
+	WgCoord					ToGlobal( const WgCoord& coord ) const;
+	WgCoord					ToLocal( const WgCoord& coord ) const; 
+	
 	// To be overloaded by Widget
 
 	virtual int		HeightForWidth( int width ) const;
 	virtual int		WidthForHeight( int height ) const;
 
-	virtual WgSize	PreferredSize() const;
+	virtual WgSize	PreferredSize() const;	
 	virtual WgSize	MinSize() const;
 	virtual WgSize	MaxSize() const;
 
-	virtual bool	IsContainer() const { return false; }
+	virtual bool	IsContainer() const { return false; }		///< @brief Check if this widget is a container.
+																///< This method is just a quicker way to check if the widget
+																///< is a container (thus might have children) than calling 
+																///< IsInstanceOf(WgContainer::CLASS).
+																///< @return True if the widget is a subclass of WgContainer.
 
 protected:
 	void			_onNewHook( WgHook * pHook );
@@ -214,7 +217,7 @@ protected:
 	virtual void	_onStateChanged( WgState oldState );
 
 	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
-	virtual	bool	_onAlphaTest( const WgCoord& ofs );
+	virtual	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 
 	virtual WgSize	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 
@@ -242,4 +245,142 @@ private:
 typedef	int(*WgWidgetSortFunc)(const WgWidget *,const WgWidget *);
 
 #endif
+
+
+//____ Inline methods __________________________________________________________
+
+/**
+ * @brief	Return the local position of widget.
+ * 
+ * Local position is the position relative to parent.
+ * 
+ * @return Local position in pixels. 
+ */
+WgCoord WgWidget::Pos() const 
+{ 
+	if( m_pHook ) 
+		return m_pHook->Pos(); 
+	return WgCoord(0,0); 
+}
+
+
+/**
+ * @brief	Return the width and height of widget.
+ * 
+ * @return Width and height in pixels.
+ */
+WgSize WgWidget::Size() const 
+{ 
+	if( m_pHook ) 
+		return m_pHook->Size(); 
+	return WgSize(256,256); 
+}
+
+/**
+ * @brief	Return the local geometry of widget.
+ * 
+ * Return a rectangle with the size and local position, e.g position relative to parent, of the widget.
+ * 
+ * @return Local geometry in pixels. 
+ */
+WgRect WgWidget::Geo() const 
+{ 
+	if( m_pHook ) 
+		return m_pHook->Geo(); 
+	return WgRect(0,0,256,256); 
+}
+
+/**
+ * @brief	Return the global position of widget.
+ * 
+ * Global position is the position relative to RootPanel.
+ * 
+ * @return Global position in pixels. 
+ */
+WgCoord WgWidget::GlobalPos() const 
+{ 
+	if( m_pHook ) 
+		return m_pHook->GlobalPos(); 
+	return WgCoord(0,0); 
+}
+
+/**
+ * @brief	Return the global geometry of widget.
+ * 
+ * Return a rectangle with the size and global position, e.g position relative to RootPanel, of the widget.
+ * 
+ * @return Global geometry in pixels. 
+ */
+WgRect WgWidget::GlobalGeo() const 
+{ 
+	if( m_pHook ) 
+		return m_pHook->GlobalGeo(); 
+	return WgRect(0,0,256,256); 
+}
+
+
+bool WgWidget::GrabFocus() 
+{ 
+	if( m_pHook ) 
+		return m_pHook->_requestFocus(); 
+	return false; 
+}
+
+bool WgWidget::ReleaseFocus() 
+{ 
+	if( m_pHook ) 
+		return m_pHook->_releaseFocus(); 
+	return false; 
+}
+
+/** @brief Check if widget has keyboard focus.
+ * 
+ * @return True if widget has focus, otherwise false.
+ */
+
+bool WgWidget::IsFocused() 
+{ 
+	return m_state.IsFocused(); 
+}
+
+/** @brief Get next sibling.
+ * 
+ * Next sibling is next widget with same parent. Order of siblings is determined by parent
+ * and generally left to right or top to bottom for containers where children can't overlap.
+ * For containers where children can overlap the order is generally background to foreground.
+ * 
+ * @return Pointer to next sibling or null if none.
+ */
+
+WgWidgetPtr WgWidget::NextSibling() const 
+{ 
+	if( m_pHook ) 
+	{
+		WgHook * p = m_pHook->_nextHook(); 
+		if( p ) 
+			return p->m_pWidget; 
+	} 
+	return 0; 
+}
+
+/** @brief Get previous sibling.
+ * 
+ * Previous sibling is previous widget with same parent. Order of siblings is determined by parent
+ * and generally left to right or top to bottom for containers where children can't overlap.
+ * For containers where children can overlap the order is generally background to foreground.
+ * 
+ * @return Pointer to previous sibling or null if none.
+ */
+
+WgWidgetPtr WgWidget::PrevSibling() const 
+{ 
+	if( m_pHook ) 
+	{
+		WgHook * p = m_pHook->_prevHook();
+		if( p ) 
+			return p->m_pWidget; 
+	} 
+	return 0; 
+}
+
 
