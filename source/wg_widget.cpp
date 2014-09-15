@@ -227,8 +227,8 @@ void WgWidget::_stopReceiveTicks()
  WgCoord WgWidget::ToGlobal( const WgCoord& coord ) const
 {
 	WgCoord c = GlobalPos();
-	c.x += cord.x;
-	c.y += cord.y;
+	c.x += coord.x;
+	c.y += coord.y;
 	return c;
 }
 
@@ -249,7 +249,7 @@ void WgWidget::_stopReceiveTicks()
 WgCoord WgWidget::ToLocal( const WgCoord& coord ) const
 {
 	WgCoord c = GlobalPos();
-	return WgCoord( cord.x - c.x, cord.y - c.y );
+	return WgCoord( coord.x - c.x, coord.y - c.y );
 }
 
 //____ _eventHandler() __________________________________________________________
