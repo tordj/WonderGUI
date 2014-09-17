@@ -24,6 +24,9 @@
 #include <wg_skin.h>
 #include <wg_util.h>
 
+const char WgIconField::CLASSNAME[] = {"IconField"};
+
+
 //____ Constructor ____________________________________________________________
 
 WgIconField::WgIconField()
@@ -32,6 +35,35 @@ WgIconField::WgIconField()
 	m_scale			= 0.f;
 	m_bOverlap		= true;
 }
+
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgIconField::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgComponent::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgIconField::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgIconFieldPtr WgIconField::Cast( const WgComponentPtr& pComponent )
+{
+	if( pComponent && pComponent->IsInstanceOf(CLASSNAME) )
+		return WgIconFieldPtr( static_cast<WgIconField*>(pComponent.GetRealPtr()) );
+
+	return 0;
+}
+
 
 //____ Set() ___________________________________________________________________
 

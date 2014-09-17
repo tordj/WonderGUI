@@ -20,9 +20,36 @@
 
 =========================================================================*/
 
-#include <wg_widget.h>
 #include <wg_modifvaluefield.h>
 
+const char WgModifValueField::CLASSNAME[] = {"ModifValueField"};
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgModifValueField::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgValueField::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgModifValueField::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgModifValueFieldPtr WgModifValueField::Cast( const WgComponentPtr& pComponent )
+{
+	if( pComponent && pComponent->IsInstanceOf(CLASSNAME) )
+		return WgModifValueFieldPtr( static_cast<WgModifValueField*>(pComponent.GetRealPtr()) );
+
+	return 0;
+}
 
 
 

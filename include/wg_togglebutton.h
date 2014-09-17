@@ -66,8 +66,10 @@ public:
 		TEXT			// Only the text is clickable.
 	};
 
+	WgIconField		icon;
+
+
 	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
-	inline WgIIconPtr		Icon() { return WgIIconPtr(this,&m_icon); }
 
  	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
@@ -97,6 +99,7 @@ protected:
 	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	
+	WgObject *		_object() { return this; }
 	virtual void	_fieldModified( WgIconField * pField );
 	virtual void	_fieldModified( WgTextField * pField );
 
@@ -113,7 +116,6 @@ private:
 	bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 
 	WgTextField		m_text;
-	WgIconField		m_icon;
 	WgToggleGroupPtr	m_pToggleGroup;
 
 	ClickArea		m_clickArea;

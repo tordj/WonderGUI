@@ -1,3 +1,4 @@
+
 /*=========================================================================
 
                          >>> WonderGUI <<<
@@ -20,36 +21,49 @@
 
 =========================================================================*/
 
-#include <wg_editvaluefield.h>
+#include <wg_component.h>
+#include <wg_pointers.h>
 
-const char WgEditValueField::CLASSNAME[] = {"EditValueField"};
+const char WgComponent::CLASSNAME[] = {"Component"};
+
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgEditValueField::IsInstanceOf( const char * pClassName ) const
+bool WgComponent::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgModifValueField::IsInstanceOf(pClassName);
+	return false;
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgEditValueField::ClassName( void ) const
+const char * WgComponent::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgEditValueFieldPtr WgEditValueField::Cast( const WgComponentPtr& pComponent )
+WgComponentPtr WgComponent::Cast( const WgComponentPtr& pComponent )
 {
 	if( pComponent && pComponent->IsInstanceOf(CLASSNAME) )
-		return WgEditValueFieldPtr( static_cast<WgEditValueField*>(pComponent.GetRealPtr()) );
+		return WgComponentPtr( static_cast<WgComponent*>(pComponent.GetRealPtr()) );
 
 	return 0;
 }
 
+//____ Object() ________________________________________________________________
 
+WgObjectPtr WgComponent::Object()
+{
+	return WgObjectPtr(_object());
+}
 
+//____ Ptr() ___________________________________________________________________
+
+WgComponentPtr WgComponent::Ptr()
+{
+	return WgComponentPtr(this);
+}

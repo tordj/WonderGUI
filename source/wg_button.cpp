@@ -40,6 +40,8 @@ WgButton::WgButton()
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 	m_text._setHolder(this);
 
+	icon._setHolder(this);
+
  	m_state				= WG_STATE_NORMAL;
 
 	m_bDownOutside	 = false;
@@ -89,7 +91,7 @@ int WgButton::TextAreaWidth()
 	if( m_pSkin )
 		contentRect = m_pSkin->SizeForContent( contentRect );
 
-	WgRect textRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
+	WgRect textRect = icon.GetTextRect( contentRect, icon.GetIconRect( contentRect ) );
 
 	return textRect.w;
 }
@@ -144,7 +146,7 @@ void WgButton::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	if(m_icon.Skin() && !m_icon.Skin()->IsStateIdentical(m_state,oldState))
+	if(icon.Skin() && !icon.Skin()->IsStateIdentical(m_state,oldState))
 			_requestRender();
 
 	m_text.setState(m_state);
@@ -171,7 +173,7 @@ void WgButton::_onNewSize( const WgSize& size )
 	if( m_pSkin )
 		contentRect -= m_pSkin->ContentPadding();
 
-	WgRect textRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
+	WgRect textRect = icon.GetTextRect( contentRect, icon.GetIconRect( contentRect ) );
 
 	m_text.setLineWidth(textRect.w);
 }
@@ -190,13 +192,13 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 
 	// Get icon and text rect from content rect
 
-	WgRect iconRect = m_icon.GetIconRect( contentRect );
-	WgRect textRect = m_icon.GetTextRect( contentRect, iconRect );
+	WgRect iconRect = icon.GetIconRect( contentRect );
+	WgRect textRect = icon.GetTextRect( contentRect, iconRect );
 
 	// Render icon
 
-	if( m_icon.Skin() )
-		m_icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
+	if( icon.Skin() )
+		icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
@@ -311,7 +313,7 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgButton * pOrg = (WgButton *) _pOrg;
 
-	m_icon.OnCloneContent( &pOrg->m_icon );
+	icon.OnCloneContent( &pOrg->icon );
 
 	m_text.clone(&pOrg->m_text);
 	m_bDownOutside	= pOrg->m_bDownOutside;
@@ -321,7 +323,7 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 
 bool WgButton::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
-	if( m_icon.Skin() )
+	if( icon.Skin() )
 	{
 		//TODO: Test against icon.
 	}

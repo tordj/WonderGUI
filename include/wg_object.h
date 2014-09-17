@@ -55,6 +55,9 @@ class WgObject
 	friend class WgInterfacePtr;
 	friend class WgInterfaceWeakPtr;
 
+	friend class WgComponentPtr;
+	friend class WgComponentWeakPtr;
+
 public:
 	virtual bool		IsInstanceOf( const char * pClassName ) const;
 	virtual const char *ClassName( void ) const;

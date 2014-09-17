@@ -262,17 +262,19 @@
   </VirtualDirectory>
   <Dependencies Name="Release"/>
   <Dependencies Name="Debug"/>
-  <VirtualDirectory Name="Fields">
+  <VirtualDirectory Name="Components">
     <File Name="include/wg_textfield.h"/>
     <File Name="source/wg_textfield.cpp"/>
     <File Name="include/wg_iconfield.h"/>
     <File Name="source/wg_iconfield.cpp"/>
     <File Name="include/wg_editvaluefield.h"/>
     <File Name="include/wg_modifvaluefield.h"/>
-    <File Name="include/wg_staticvaluefield.h"/>
     <File Name="source/wg_editvaluefield.cpp"/>
     <File Name="source/wg_modifvaluefield.cpp"/>
-    <File Name="source/wg_staticvaluefield.cpp"/>
+    <File Name="include/wg_component.h"/>
+    <File Name="source/wg_component.cpp"/>
+    <File Name="include/wg_valuefield.h"/>
+    <File Name="source/wg_valuefield.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

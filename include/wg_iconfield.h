@@ -35,11 +35,15 @@
 #	include <wg_skin.h>
 #endif
 
-#ifndef WG_IICON_DOT_H
-#	include <wg_iicon.h>
+#ifndef WG_COMPONENT_DOT_H
+#	include <wg_component.h>
 #endif
 
 class WgIconField;
+typedef	WgCompStrongPtr<WgIconField,WgComponentPtr>		WgIconFieldPtr;
+typedef	WgCompWeakPtr<WgIconField,WgComponentWeakPtr>	WgIconFieldWeakPtr;
+
+
 
 //____ WgIconHolder ___________________________________________________________
 
@@ -47,16 +51,24 @@ class WgIconHolder
 {
 public:
 	virtual void		_fieldModified( WgIconField * pField ) = 0;
+	virtual WgObject *	_object() = 0;
 };
 
 //____ WgIconField _____________________________________________________________
 
-class WgIconField : public WgIIcon
+class WgIconField : public WgComponent
 {
 	friend class WgIconHolder;
 public:
 	WgIconField();
 	virtual ~WgIconField() {};
+
+	virtual bool				IsInstanceOf( const char * pClassName ) const;
+	virtual const char *		ClassName( void ) const;
+	static const char			CLASSNAME[];
+	static WgIconFieldPtr		Cast( const WgComponentPtr& pComponent );
+
+	WgIconFieldPtr	Ptr() { return WgIconFieldPtr(this); }
 
 
 	bool			Set( const WgSkinPtr& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0), 
@@ -85,7 +97,9 @@ public:
 	WgSize			PreferredSize() const;
 
 	void			_setHolder( WgIconHolder * pHolder ) { m_pHolder = pHolder; }
+
 protected:
+	WgObject *		_object() const { return m_pHolder->_object(); }
 
 	WgIconHolder *	m_pHolder;
 	WgOrigo			m_origo;

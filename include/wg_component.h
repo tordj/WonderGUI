@@ -1,3 +1,4 @@
+
 /*=========================================================================
 
                          >>> WonderGUI <<<
@@ -13,43 +14,45 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-
+	
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
 
-#include <wg_editvaluefield.h>
+#ifndef	WG_COMPONENT_DOT_H
+#define	WG_COMPONENT_DOT_H
 
-const char WgEditValueField::CLASSNAME[] = {"EditValueField"};
 
-//____ IsInstanceOf() _________________________________________________________
+class WgComponentPtr;
+class WgObjectPtr;
+class WgObject;
 
-bool WgEditValueField::IsInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgModifValueField::IsInstanceOf(pClassName);
-}
-
-//____ ClassName() ____________________________________________________________
-
-const char * WgEditValueField::ClassName( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ Cast() _________________________________________________________________
-
-WgEditValueFieldPtr WgEditValueField::Cast( const WgComponentPtr& pComponent )
+class WgComponent
 {
-	if( pComponent && pComponent->IsInstanceOf(CLASSNAME) )
-		return WgEditValueFieldPtr( static_cast<WgEditValueField*>(pComponent.GetRealPtr()) );
+	friend class WgComponentPtr;
+	friend class WgComponentWeakPtr;
+	template<class T, class P> friend class WgCompStrongPtr;
+	template<class T, class P> friend class WgCompWeakPtr;
+		
+public:
+	WgComponent() {}
+	~WgComponent() {}
 
-	return 0;
-}
+	virtual bool				IsInstanceOf( const char * pClassName ) const;
+	virtual const char *		ClassName( void ) const;
+	static const char			CLASSNAME[];
+	static WgComponentPtr		Cast( const WgComponentPtr& pComponent );
+
+	WgObjectPtr		Object();
+	WgComponentPtr	Ptr();
+	
+protected:
+	virtual WgObject *		_object() const = 0;
+
+};
 
 
 
+#endif //WG_COMPONENT_DOT_H
