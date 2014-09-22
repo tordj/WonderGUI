@@ -35,7 +35,9 @@
 #	include <wg_eventhandler.h>
 #endif
 
-#include <wg_textfield.h>
+#ifndef WG_EDITTEXTFIELD_DOT_H
+#	include <wg_edittextfield.h>
+#endif
 
 class WgMenuItem;
 
@@ -48,10 +50,17 @@ class WgCombobox : public WgWidget, public WgTextHolder
 public:
 	static WgComboboxPtr	Create() { return WgComboboxPtr(new WgCombobox()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
-	static WgComboboxPtr	Cast( const WgObjectPtr& pObject );
+	static WgComboboxPtr Cast( const WgObjectPtr& pObject );
+
+
+	//____ Components ______________________________________
+
+	WgEditTextField		text;
+
+	//____ Methods _________________________________________
 
 	void			SetMenu( const WgMenuPtr& pMenu );
 	WgMenuPtr		Menu( ) const;
@@ -68,12 +77,10 @@ public:
 	bool			IsAutoEllipsisDefault() const { return false; };
 
 	void			SetEditMode(WgTextEditMode mode);
-	WgTextEditMode	EditMode() const { return m_text.EditMode(); }
+	WgTextEditMode	EditMode() const { return text.EditMode(); }
 
 	int				InsertTextAtCursor( const WgCharSeq& str );
 	bool			InsertCharAtCursor( Uint16 c );
-
-	inline WgIStaticTextPtr	Text() { return WgIStaticTextPtr(this,&m_text); } 
 
 	// Press in textfield:
 	//		Editable - Grab input focus.
@@ -91,6 +98,8 @@ protected:
 	virtual ~WgCombobox();
 	virtual WgWidget* _newOfMyType() const { return new WgCombobox(); };
 
+	WgObject *	_object() { return this; }
+
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onRefresh();
@@ -100,8 +109,8 @@ protected:
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 private:
-	bool	_isEditable() const { return m_text.IsEditable(); }
-	bool	_isSelectable() const { return m_text.IsSelectable(); }
+	bool	_isEditable() const { return text.IsEditable(); }
+	bool	_isSelectable() const { return text.IsSelectable(); }
 
 	void	_fieldModified( WgTextField * pField );
 	void	_adjustViewOfs();
@@ -115,7 +124,6 @@ private:
 
 	WgMenuPtr		m_pMenu;
 	WgMenuItem*		m_pSelectedItem;
-	WgTextField		m_text;
 	bool			m_bResetCursorOnFocus;
 	bool			m_bPressInInputRect;
 	bool			m_bFocusPress;

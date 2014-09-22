@@ -9,8 +9,8 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_MODIFTEXTFIELD_DOT_H
+#	include <wg_modiftextfield.h>
 #endif
 
 #ifndef WG_TEXTPROP_DOT_H
@@ -35,18 +35,19 @@ public:
 	
 	//____ Methods __________________________________________
 	
-	void			AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProp, float offset, WgOrigo origo );
-    void            SetTextManager( WgTextManager * pTextManager );
-	WgSize			PreferredSize() const;
-	void			SetDirection( WgDirection direction );
-	WgIModifTextPtr	GetLabel(int index);
+	void				AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProp, float offset, WgOrigo origo );
+    void            	SetTextManager( WgTextManager * pTextManager );
+	WgSize				PreferredSize() const;
+	void				SetDirection( WgDirection direction );
+	WgModifTextFieldPtr	GetLabel(int index);
 
 
 protected:
 	WgRulerLabels();
 	virtual ~WgRulerLabels();
 	virtual WgWidget* _newOfMyType() const { return new WgRulerLabels(); };
-	
+
+	WgObject*		_object() { return this; }
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onStateChanged( WgState oldState );

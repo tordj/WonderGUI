@@ -111,8 +111,6 @@
     <File Name="source/wg_valueformat.cpp"/>
     <File Name="source/wg_vectorglyphs.cpp"/>
     <File Name="source/wg_widget.cpp"/>
-    <File Name="include/wg_interface.h"/>
-    <File Name="source/wg_interface.cpp"/>
     <File Name="include/wg_nullgfxdevice.h"/>
     <File Name="source/wg_nullgfxdevice.cpp"/>
     <File Name="include/wg_object.h"/>
@@ -242,24 +240,6 @@
     <File Name="include/wg_sizecapsule.h"/>
     <File Name="include/wondergui.h"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="Interfaces">
-    <File Name="include/wg_iedittext.h"/>
-    <File Name="include/wg_imodiftext.h"/>
-    <File Name="include/wg_istatictext.h"/>
-    <File Name="source/wg_iedittext.cpp"/>
-    <File Name="source/wg_imodiftext.cpp"/>
-    <File Name="source/wg_istatictext.cpp"/>
-    <File Name="include/wg_iwidgets.h"/>
-    <File Name="source/wg_iwidgets.cpp"/>
-    <File Name="include/wg_iicon.h"/>
-    <File Name="source/wg_iicon.cpp"/>
-    <File Name="include/wg_istaticvalue.h"/>
-    <File Name="source/wg_istaticvalue.cpp"/>
-    <File Name="include/wg_ieditvalue.h"/>
-    <File Name="include/wg_imodifvalue.h"/>
-    <File Name="source/wg_ieditvalue.cpp"/>
-    <File Name="source/wg_imodifvalue.cpp"/>
-  </VirtualDirectory>
   <Dependencies Name="Release"/>
   <Dependencies Name="Debug"/>
   <VirtualDirectory Name="Components">
@@ -275,6 +255,10 @@
     <File Name="source/wg_component.cpp"/>
     <File Name="include/wg_valuefield.h"/>
     <File Name="source/wg_valuefield.cpp"/>
+    <File Name="include/wg_modiftextfield.h"/>
+    <File Name="include/wg_edittextfield.h"/>
+    <File Name="source/wg_modiftextfield.cpp"/>
+    <File Name="source/wg_edittextfield.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

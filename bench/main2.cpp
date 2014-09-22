@@ -145,7 +145,7 @@ int main ( int argc, char** argv )
 	for( int i = 0 ; i < 4 ; i++ )
 	{
 		WgToggleButtonPtr pCheckbox = WgToggleButton::Create();
-		pCheckbox->Label()->Set( "CHECKBOX" );
+		pCheckbox->label.Set( "CHECKBOX" );
 		pCheckbox->SetSkin( pStateButtonSkin );
 		pFlexPanel->AddWidget( pCheckbox, WgCoord(10,20*i) );
 		pGroup->Add( pCheckbox );

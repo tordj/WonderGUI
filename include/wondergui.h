@@ -175,10 +175,6 @@
 #	include <wg_hook.h>
 #endif
 
-#ifndef WG_IWIDGETS_DOT_H
-#	include <wg_iwidgets.h>
-#endif
-
 
 #ifndef WG_ANIMPLAYER_DOT_H
 #	include <wg_animplayer.h>

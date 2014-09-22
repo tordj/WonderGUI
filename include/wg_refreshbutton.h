@@ -46,6 +46,11 @@ public:
 	static const char	CLASSNAME[];
 	static WgRefreshButtonPtr	Cast( const WgObjectPtr& pObject );
 
+	//____ Components ______________________________________
+
+	WgTextField		refreshLabel;
+
+
 	//____ Methods __________________________________________
 
 	enum RefreshMode
@@ -70,9 +75,6 @@ public:
 	void			SetAnimTarget( AnimTarget target );
 	AnimTarget		GetAnimTarget() const { return m_animTarget; }
 
-	void			SetRefreshText( const WgCharSeq& text );
-	inline WgIModifTextPtr	RefreshText() { return WgIModifTextPtr(this,&m_refreshText); } 
-
 	void			SetRestartable( bool bRestartable );
 	bool			IsRestartable() const { return m_bRestartable; }
 
@@ -85,8 +87,6 @@ public:
 	void			SetRefreshProgress( float fraction );
 	float			GetRefreshProgress() const { return m_refreshProgress; }
 	bool			IsRefreshing() const { return m_bRefreshing; }
-
-	virtual void	SetTextManager( WgTextManager * pManager );
 
 protected:
 	WgRefreshButton();
@@ -106,7 +106,7 @@ protected:
 	WgGfxAnimPtr	m_pRefreshAnim;
 	AnimTarget		m_animTarget;
 	RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
-	WgTextField		m_refreshText;
+	WgTextField		m_refreshLabel;
 	bool			m_bRestartable;
 
 	bool			m_bRefreshing;

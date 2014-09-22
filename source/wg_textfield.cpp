@@ -44,6 +44,8 @@
 #include <wg_widget.h>
 #include <wg_util.h>
 
+const char WgTextField::CLASSNAME[] = {"TextField"};
+
 //____ Constructor ____________________________________________________________
 
 
@@ -121,6 +123,36 @@ WgTextField::~WgTextField()
 	delete [] m_pHardLines;
 	delete m_pCursor;
 }
+
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgTextField::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgComponent::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgTextField::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgTextFieldPtr WgTextField::Cast( const WgComponentPtr& pComponent )
+{
+	if( pComponent && pComponent->IsInstanceOf(CLASSNAME) )
+		return WgTextFieldPtr( static_cast<WgTextField*>(pComponent.GetRealPtr()) );
+
+	return 0;
+}
+
+
 
 //____ SetManager() ___________________________________________________________
 

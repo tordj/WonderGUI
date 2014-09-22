@@ -41,9 +41,6 @@
 #	include <wg_pointers.h>
 #endif
 
-#ifndef WG_IEDITTEXT_DOT_H
-#	include <wg_iedittext.h>
-#endif
 
 class WgEventHandler;
 class WgWidget;
@@ -59,7 +56,25 @@ class WgMenu;
 class WgPopupLayer;
 class WgModalLayer;
 
+class WgTextField;
+class WgEditTextField;
+class WgModifTextField;
+
+
+typedef	WgCompStrongPtr<WgTextField,WgComponentPtr>		WgTextFieldPtr;
+typedef	WgCompWeakPtr<WgTextField,WgComponentWeakPtr>	WgTextFieldWeakPtr;
+
+typedef	WgCompStrongPtr<WgModifTextField,WgTextFieldPtr>	WgModifTextFieldPtr;
+typedef	WgCompWeakPtr<WgModifTextField,WgTextFieldWeakPtr>	WgModifTextFieldWeakPtr;
+
+typedef	WgCompStrongPtr<WgEditTextField,WgModifTextFieldPtr>	WgEditTextFieldPtr;
+typedef	WgCompWeakPtr<WgEditTextField,WgModifTextFieldWeakPtr>	WgEditTextFieldWeakPtr;
+
 typedef WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
+
+
+
+
 
 class WgEvent;
 typedef	WgStrongPtr<WgEvent,WgObjectPtr>		WgEventPtr;
@@ -273,7 +288,7 @@ class WgEvent : public WgObject
 		int64_t				Timestamp() const { return m_timestamp; }
 		bool				IsFromWidget() const { return m_bIsForWidget; }
 		WgWidget *			Widget() const;									// Inlining this would demand include of wg_widget.h.
-		WgWidgetWeakPtr		WidgetWeakPtr() const { return m_pWidget; }
+		WgWidgetWeakPtr		WidgetWeakPtr() const;
 		WgModifierKeys		ModKeys() const { return m_modKeys; }
 		WgCoord				PointerPos() const { return m_pointerLocalPos; }
 		WgCoord				PointerGlobalPos() const { return m_pointerScreenPos; }
@@ -283,7 +298,7 @@ class WgEvent : public WgObject
 		bool				IsKeyEvent() const;
 
 	protected:
-		WgEvent() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForWidget(false) {}
+		WgEvent();
 		virtual ~WgEvent() {}
 			
 		WgEventType			m_type;				// Type of event
@@ -668,18 +683,18 @@ public:
 class WgTextEditEvent : public WgEvent
 {
 public:
-	WgTextEditEvent( WgWidget * pWidget, WgTextField * pText, bool bFinal );
+	WgTextEditEvent( const WgEditTextFieldPtr& pText, bool bFinal );
 
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgTextEditEventPtr	Cast( const WgObjectPtr& pObject );
 
-	WgIEditTextPtr		Text() const;
+	WgEditTextFieldPtr	Text() const;
 	bool				IsFinal() const;
 
 protected:
-	WgIEditTextPtr		m_pText;
+	WgEditTextFieldPtr	m_pText;
 	bool				m_bFinal;
 };
 
@@ -810,13 +825,11 @@ public:
 	static WgPopupClosedEventPtr	Cast( const WgObjectPtr& pObject );
 
 	WgWidget *		Popup() const;									// Inlining this would demand include of wg_widget.h.
-	WgWidgetWeakPtr	PopupWeakPtr() const { return m_pPopup; }
-
-	// Caller is the same as m_pWidget, since m_pWidget should receive
+	WgWidgetWeakPtr	PopupWeakPtr() const;							// Caller is the same as m_pWidget, since m_pWidget should receive
 	// the event.
 
 	WgWidget *		Caller() const;									// Inlining this would demand include of wg_widget.h.
-	WgWidgetWeakPtr	CallerWeakPtr() const { return m_pWidget; }
+	WgWidgetWeakPtr	CallerWeakPtr() const;
 
 protected:
 	WgPopupClosedEvent( WgWidget * pPopup, const WgWidgetWeakPtr& pCaller );

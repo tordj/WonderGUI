@@ -40,6 +40,11 @@
 
 const char WgEvent::CLASSNAME[] = {"Event"};
 
+
+WgEvent::WgEvent() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bIsForWidget(false)
+{
+}
+
 bool WgEvent::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
@@ -65,6 +70,12 @@ WgWidget * WgEvent::Widget() const
 {
 	return m_pWidget.GetRealPtr();
 }
+
+WgWidgetWeakPtr WgEvent::WidgetWeakPtr() const
+{
+	return m_pWidget;
+}
+
 
 
 bool WgEvent::IsMouseEvent() const
@@ -1033,17 +1044,17 @@ bool WgRangeUpdateEvent::IsFinal() const
 
 const char WgTextEditEvent::CLASSNAME[] = {"TextEditEvent"};
 
-WgIEditTextPtr WgTextEditEvent::Text() const
+WgEditTextFieldPtr WgTextEditEvent::Text() const
 {
 	return m_pText;
 }
 
-WgTextEditEvent::WgTextEditEvent( WgWidget * pWidget, WgTextField * pText, bool bFinal )
+WgTextEditEvent::WgTextEditEvent( const WgEditTextFieldPtr& pText, bool bFinal )
 {
 	m_type 		= WG_EVENT_TEXT_EDIT;
-	m_pWidget 	= pWidget;
+	m_pWidget 	= WgWidget::Cast( pText->Object() ).GetRealPtr();
 	m_bIsForWidget	= true;
-	m_pText 	= WgIEditTextPtr(pWidget, pText);
+	m_pText 	= pText->Ptr();
 	m_bFinal	= bFinal;
 }
 
@@ -1334,9 +1345,19 @@ WgWidget * WgPopupClosedEvent::Popup() const
 	return m_pPopup.GetRealPtr();
 }
 
+WgWidgetWeakPtr	WgPopupClosedEvent::PopupWeakPtr() const
+{
+	return m_pPopup;
+}
+
 WgWidget * WgPopupClosedEvent::Caller() const
 {
 	return m_pWidget.GetRealPtr();
+}
+
+WgWidgetWeakPtr	WgPopupClosedEvent::CallerWeakPtr() const
+{
+	return m_pWidget;
 }
 
 //____ WgModalMoveOutsideEvent ___________________________________________________

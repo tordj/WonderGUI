@@ -53,10 +53,15 @@ class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder, private 
 public:
 	static WgValueEditorPtr	Create() { return WgValueEditorPtr(new WgValueEditor()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgValueEditorPtr	Cast( const WgObjectPtr& pObject );
+
+
+	//____ Components ______________________________________
+	
+	WgTextField			text;
 
 
 	//____ Methods __________________________________________
@@ -67,13 +72,14 @@ public:
 	WgValueFormatPtr Format() const { return m_pFormat; }
 	void	Clear();									// Sets value to 0 and clears input field.
 
-	inline WgIStaticTextPtr	Text() { return WgIStaticTextPtr(this,&m_text); } 
 	WgSize	PreferredSize() const;
 
 protected:
 	WgValueEditor();
 	virtual ~WgValueEditor();
 	virtual WgWidget* _newOfMyType() const { return new WgValueEditor(); };
+
+	WgObject *	_object() { return this; }
 
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
@@ -99,7 +105,6 @@ private:
 	bool				m_bRegenText;
 	WgValueFormatPtr	m_pFormat;			///< Value format specified by user
 	WgValueFormatPtr	m_pUseFormat;		///< Value format currently used (affected by user typing in values).
-	WgTextField			m_text;
 	int					m_buttonDownOfs;
 	bool				m_bSelectAllOnRelease;
 	int					m_maxInputChars;

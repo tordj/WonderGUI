@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_MODIFTEXTFIELD_DOT_H
+#	include <wg_modiftextfield.h>
 #endif
 
 #ifndef WG_ICONFIELD_DOT_H
@@ -46,7 +46,7 @@ typedef	WgStrongPtr<WgToggleGroup,WgObjectPtr>		WgToggleGroupPtr;
 typedef	WgWeakPtr<WgToggleGroup,WgObjectWeakPtr>		WgToggleGroupWeakPtr;
 
 
-class	WgToggleButton : public WgWidget, public WgIconHolder, public WgTextHolder
+class	WgToggleButton : public WgWidget, public WgIconHolder, public WgModifTextHolder
 {
 friend class WgToggleGroup;
 public:
@@ -66,10 +66,12 @@ public:
 		TEXT			// Only the text is clickable.
 	};
 
+	//____ Components ______________________________________
+
 	WgIconField		icon;
+	WgTextField		label;
 
-
-	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
+	//____ Methods _________________________________________
 
  	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
@@ -115,7 +117,6 @@ private:
 	bool			m_bReturnPressed;
 	bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 
-	WgTextField		m_text;
 	WgToggleGroupPtr	m_pToggleGroup;
 
 	ClickArea		m_clickArea;
