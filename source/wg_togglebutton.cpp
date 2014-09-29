@@ -402,15 +402,15 @@ bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 
 			//
 
-			if( WgWidget::_onAlphaTest( ofs, bgSize ) || _markTestTextArea( ofs.x, ofs.y ) || iconRect.Contains( ofs ) )
+			if( WgWidget::_onAlphaTest( ofs ) || _markTestTextArea( ofs.x, ofs.y ) || iconRect.Contains( ofs ) )
 				return true;
 
 			return false;
 		}
 		case ALPHA:			// Alpha test on background and icon.
 		{
-			if( WgWidget::_onAlphaTest( ofs, bgSize ) ||
-				( !icon.IsEmpty() && icon.Skin()->MarkTest( ofs, iconRect, m_state, m_markOpacity )) )
+			if( WgWidget::_onAlphaTest( ofs ) ||
+				( !m_icon.IsEmpty() && m_icon.Skin()->MarkTest( ofs, iconRect, m_state, m_markOpacity )) )
 				return true;
 
 			return false;
