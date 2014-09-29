@@ -27,13 +27,8 @@
 #	include <wg_types.h>
 #endif
 
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_COMPONENT_DOT_H
-#	include <wg_component.h>
+#ifndef WG_IEDITTEXT_DOT_H
+#	include <wg_iedittext.h>
 #endif
 
 #ifndef WG_COLOR_DOT_H
@@ -77,7 +72,6 @@ struct WgTextHolder
 {
 public:
 	virtual void		_fieldModified( WgTextField * pText ) = 0;
-	virtual WgObject *	_object() = 0;
 };
 
 
@@ -99,17 +93,11 @@ struct WgTextLine
 	// HYPHEN_BREAK_PERMITTED_HERE: Gives additional hyphen when printed.
 };
 
-class WgTextField;
-typedef	WgCompStrongPtr<WgTextField,WgComponentPtr>		WgTextFieldPtr;
-typedef	WgCompWeakPtr<WgTextField,WgComponentWeakPtr>	WgTextFieldWeakPtr;
-
-
 //____ WgTextField __________________________________________________________________
 
-class WgTextField : public WgComponent
+class WgTextField : public WgIEditText
 {
 friend class WgTextNode;
-friend class WgTextHolder;
 
 public:
 	WgTextField();
@@ -120,17 +108,6 @@ public:
 	void	Init();
 
 	~WgTextField();
-
-	virtual bool				IsInstanceOf( const char * pClassName ) const;
-	virtual const char *		ClassName( void ) const;
-	static const char			CLASSNAME[];
-	static WgTextFieldPtr		Cast( const WgComponentPtr& pComponent );
-
-	WgTextFieldPtr				Ptr() { return WgTextFieldPtr(this); }
-
-
-
-
 
 	//
 
@@ -446,7 +423,6 @@ public:
 
 protected:
 
-	WgObject *		_object() const { return m_pHolder->_object(); }
 
 
 	static const int	s_parseBufLen = 9+16+1+16+8;

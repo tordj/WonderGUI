@@ -26,8 +26,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_MODIFTEXTFIELD_DOT_H
-#	include <wg_modiftextfield.h>
+#ifndef	WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef	WG_ICONFIELD_DOT_H
@@ -40,7 +40,7 @@ typedef	WgWeakPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
 
 //____ WgButton ____________________________________________________________
 
-class WgButton : public WgWidget, public WgIconHolder, public WgModifTextHolder
+class WgButton : public WgWidget, public WgIconHolder, public WgTextHolder
 {
 public:
 	static WgButtonPtr	Create() { return WgButtonPtr(new WgButton()); }
@@ -52,8 +52,8 @@ public:
 
 	//____ Components ______________________________________
 
-	WgIconField			icon;
-	WgModifTextField	label;
+	WgIconField		icon;
+
 
 	//____ Methods __________________________________________
 
@@ -61,6 +61,8 @@ public:
 	bool			DownWhenMouseOutside() const { return m_bDownOutside; }
 	int				TextAreaWidth();
 	
+	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
+
 	virtual int		HeightForWidth( int width ) const;
 //	virtual int		WidthForHeight( int height ) const;
 
@@ -87,6 +89,8 @@ protected:
 	WgObject *		_object() { return this; }	
 	void			_fieldModified( WgTextField * pField );
 	void			_fieldModified( WgIconField * pField );
+
+	WgTextField		m_text;
 
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 

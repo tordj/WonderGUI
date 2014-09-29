@@ -45,13 +45,13 @@ WgFpsDisplay::WgFpsDisplay( void )
 
 	m_tickBufferOfs		= 0;
 
-	labels.Set( "Now:/nMin:/nAvg:/nMax:/n" );
-	values.SetAlignment( WG_NORTHEAST );
+	m_labelsText.Set( "Now:/nMin:/nAvg:/nMax:/n" );
+	m_valuesText.SetAlignment( WG_NORTHEAST );
 
 	m_bReceiveTick = true;
 
-	labels._setHolder(this);
-	values._setHolder(this);
+	m_labelsText._setHolder(this);
+	m_valuesText._setHolder(this);
 }
 
 //____ ~WgFpsDisplay() __________________________________________________________
@@ -98,8 +98,8 @@ WgFpsDisplayPtr WgFpsDisplay::Cast( const WgObjectPtr& pObject )
 
 void WgFpsDisplay::SetTextProperties( const WgTextpropPtr& pProp )
 {
-	labels.SetProperties(pProp);
-	values.SetProperties(pProp);
+	m_labelsText.SetProperties(pProp);
+	m_valuesText.SetProperties(pProp);
 	_requestResize();
 	_requestRender();
 }
@@ -108,13 +108,13 @@ void WgFpsDisplay::SetTextProperties( const WgTextpropPtr& pProp )
 
 WgSize WgFpsDisplay::PreferredSize() const
 {
-	WgSize contentSize = labels.unwrappedSize();
+	WgSize contentSize = m_labelsText.unwrappedSize();
 
 	WgTextAttr attr;
-	values.GetBaseAttr( attr );
-	contentSize.w += WgTextTool::lineWidth( values.getNode(), attr, " 1000.00" );
+	m_valuesText.GetBaseAttr( attr );
+	contentSize.w += WgTextTool::lineWidth( m_valuesText.getNode(), attr, " 1000.00" );
 
-	int valueHeight = values.unwrappedSize().h;
+	int valueHeight = m_valuesText.unwrappedSize().h;
 	if( valueHeight > contentSize.h )
 		contentSize.h = valueHeight;
 
@@ -137,8 +137,8 @@ void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	else
 		content = _canvas;
 
-	pDevice->PrintText( _clip, &labels, _canvas );
-	pDevice->PrintText( _clip, &values, _canvas );
+	pDevice->PrintText( _clip, &m_labelsText, _canvas );
+	pDevice->PrintText( _clip, &m_valuesText, _canvas );
 }
 
 
@@ -204,7 +204,7 @@ void WgFpsDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 	
 			char	temp[100];
 			sprintf( temp, "%.2f/n%.2f/n%.2f/n%.2f/n", fpsCurrent, fpsMin, fpsAvg, fpsMax );
-			values.Set(temp);
+			m_valuesText.Set(temp);
 
 			_requestRender();
 		}
@@ -219,8 +219,8 @@ void WgFpsDisplay::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	labels.setState(m_state);
-	values.setState(m_state);
+	m_labelsText.setState(m_state);
+	m_valuesText.setState(m_state);
 	_requestRender();							//TODO: Check if there has been changes to text appearance.
 
 	if( m_state.IsEnabled() && !oldState.IsEnabled() )
@@ -235,8 +235,8 @@ void WgFpsDisplay::_onStateChanged( WgState oldState )
 void WgFpsDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	labels.SetColorSkin(pNewSkin);
-	values.SetColorSkin(pNewSkin);
+	m_labelsText.SetColorSkin(pNewSkin);
+	m_valuesText.SetColorSkin(pNewSkin);
 }
 
 //____ _fieldModified() ________________________________________________________
@@ -253,8 +253,8 @@ void WgFpsDisplay::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgFpsDisplay * pOrg		= (WgFpsDisplay *) _pOrg;
 
-	labels.clone( &pOrg->labels );
-	values.clone( &pOrg->values );
+	m_labelsText.clone( &pOrg->m_labelsText );
+	m_valuesText.clone( &pOrg->m_valuesText );
 
 	m_tickBufferOfs	= pOrg->m_tickBufferOfs;
 

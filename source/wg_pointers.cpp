@@ -121,6 +121,73 @@ void WgObjectWeakPtr::copy( WgObjectWeakPtr const & r)
 }
 
 
+WgInterfaceWeakPtr::WgInterfaceWeakPtr( WgObject * pObj, WgInterface * pInterface )
+{
+	if( pObj && pInterface )
+	{
+		m_pInterface = pInterface;
+
+		if( !pObj->m_pWeakPtrHub )
+		{
+			m_pHub = WgBase::AllocWeakPtrHub();
+			m_pHub->refCnt = 1;
+			m_pHub->pObj = pObj;
+			pObj->m_pWeakPtrHub = m_pHub;
+		}
+		else
+		{
+			m_pHub = pObj->m_pWeakPtrHub;
+			m_pHub->refCnt++;
+		}
+	}
+	else
+	{
+		m_pHub = 0;
+		m_pInterface = 0;
+	}
+};
+
+
+WgInterfaceWeakPtr::~WgInterfaceWeakPtr()
+{
+	if( m_pHub )
+	{
+		m_pHub->refCnt--;
+
+		if( m_pHub->refCnt == 0 )
+		{
+			if( m_pHub->pObj )
+				m_pHub->pObj->m_pWeakPtrHub = 0;
+			WgBase::FreeWeakPtrHub(m_pHub);
+		}
+	}
+}
+
+
+
+void WgInterfaceWeakPtr::copy( WgInterfaceWeakPtr const & r)
+{
+	m_pInterface = r.m_pInterface;
+
+	if( m_pHub != r.m_pHub )
+	{
+		if( m_pHub )
+		{
+			m_pHub->refCnt--;
+
+			if( m_pHub->refCnt == 0 )
+			{
+				if( m_pHub->pObj )
+					m_pHub->pObj->m_pWeakPtrHub = 0;
+				WgBase::FreeWeakPtrHub(m_pHub);
+			}
+		}
+
+		m_pHub = r.m_pHub;
+		if( m_pHub )
+			m_pHub->refCnt++;
+	}
+}
 
 WgComponentWeakPtr::WgComponentWeakPtr( WgComponent * pComponent )
 {

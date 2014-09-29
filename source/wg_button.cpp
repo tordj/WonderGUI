@@ -20,6 +20,8 @@
 
 =========================================================================*/
 
+
+
 #include <wg_button.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
@@ -33,10 +35,10 @@ const char WgButton::CLASSNAME[] = {"Button"};
 
 WgButton::WgButton()
 {
-	label.SetAlignment( WG_CENTER );
-	label.setLineWidth(Size().w);					// We start with no textborders...
-	label.SetAutoEllipsis(IsAutoEllipsisDefault());
-	label._setHolder(this);
+	m_text.SetAlignment( WG_CENTER );
+	m_text.setLineWidth(Size().w);					// We start with no textborders...
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
+	m_text._setHolder(this);
 
 	icon._setHolder(this);
 
@@ -103,14 +105,14 @@ int WgButton::HeightForWidth( int width ) const
 	if( m_pSkin )
 		height = m_pSkin->PreferredSize().h;
 
-	if( label.Length() != 0 )
+	if( m_text.Length() != 0 )
 	{
 		WgSize padding;
 
 		if( m_pSkin )
 			padding = m_pSkin->ContentPadding();
 
-		int heightForText = label.heightForWidth(width-padding.w) + padding.h;
+		int heightForText = m_text.heightForWidth(width-padding.w) + padding.h;
 		if( heightForText > height )
 			height = heightForText;
 	}
@@ -127,8 +129,8 @@ WgSize WgButton::PreferredSize() const
 {
 	WgSize preferred;
 
-	if( label.Length() != 0 )
-		preferred = label.unwrappedSize();
+	if( m_text.Length() != 0 )
+		preferred = m_text.unwrappedSize();
 	
 	if( m_pSkin )
 		preferred = m_pSkin->SizeForContent(preferred);
@@ -147,7 +149,7 @@ void WgButton::_onStateChanged( WgState oldState )
 	if(icon.Skin() && !icon.Skin()->IsStateIdentical(m_state,oldState))
 			_requestRender();
 
-	label.setState(m_state);
+	m_text.setState(m_state);
 
 	//TODO: Request render if text properties have changed.
 
@@ -158,7 +160,7 @@ void WgButton::_onStateChanged( WgState oldState )
 void WgButton::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	label.SetColorSkin(pNewSkin);
+	m_text.SetColorSkin(pNewSkin);
 }
 
 
@@ -173,7 +175,7 @@ void WgButton::_onNewSize( const WgSize& size )
 
 	WgRect textRect = icon.GetTextRect( contentRect, icon.GetIconRect( contentRect ) );
 
-	label.setLineWidth(textRect.w);
+	m_text.setLineWidth(textRect.w);
 }
 
 
@@ -200,8 +202,8 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 
 	// Print text
 
- 	if( !label.IsEmpty() )
-		pDevice->PrintText( WgRect(textRect,_clip), &label, textRect );
+ 	if( !m_text.IsEmpty() )
+		pDevice->PrintText( WgRect(textRect,_clip), &m_text, textRect );
 }
 
 //____ _onEvent() ______________________________________________________________
@@ -313,7 +315,7 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 
 	icon.OnCloneContent( &pOrg->icon );
 
-	label.clone(&pOrg->label);
+	m_text.clone(&pOrg->m_text);
 	m_bDownOutside	= pOrg->m_bDownOutside;
 }
 

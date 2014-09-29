@@ -95,12 +95,12 @@ void WgRulerLabels::SetTextManager( WgTextManager * pTextManager )
 
 //____ GetLabel() ________________________________________________________________
 
-WgModifTextFieldPtr	WgRulerLabels::GetLabel(int index)
+WgIModifTextPtr	WgRulerLabels::GetLabel(int index)
 {
 	if( index >= m_labels.Size() )
-		return WgModifTextFieldPtr();
+		return WgIModifTextPtr();
 
-	return WgModifTextFieldPtr(m_labels.Get(index)->text.Ptr());
+	return WgIModifTextPtr(this, &m_labels.Get(index)->text);
 }
 
 

@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_MODIFTEXTFIELD_DOT_H
-#	include	<wg_modiftextfield.h>
+#ifndef WG_TEXTFIELD_DOT_H
+#	include	<wg_textfield.h>
 #endif
 
 class WgFont;
@@ -42,16 +42,10 @@ class WgFpsDisplay:public WgWidget, public WgTextHolder
 public:
 	static WgFpsDisplayPtr	Create() { return WgFpsDisplayPtr(new WgFpsDisplay()); }
 
-	bool					IsInstanceOf( const char * pClassName ) const;
-	const char *			ClassName( void ) const;
-	static const char		CLASSNAME[];
+	bool		IsInstanceOf( const char * pClassName ) const;
+	const char *ClassName( void ) const;
+	static const char	CLASSNAME[];
 	static WgFpsDisplayPtr	Cast( const WgObjectPtr& pObject );
-
-	//____ Components ______________________________________
-	
-	WgTextField	labels;
-	WgTextField	values;
-
 		
 
 	//____ Methods __________________________________________
@@ -59,13 +53,15 @@ public:
 	void	SetTextProperties( const WgTextpropPtr& pProp );
 	WgSize	PreferredSize() const;
 
+	inline WgIModifTextPtr	Labels() { return WgIModifTextPtr(this,&m_labelsText); } 
+	inline WgIStaticTextPtr	Values() { return WgIStaticTextPtr(this,&m_valuesText); } 
+
+
 protected:
 	WgFpsDisplay();
 	virtual ~WgFpsDisplay();
 	virtual WgWidget* _newOfMyType() const { return new WgFpsDisplay(); };
 
-	WgObject * _object() { return this; }
-	
 	void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	void	_onStateChanged( WgState oldState );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
@@ -73,8 +69,11 @@ protected:
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	void	_fieldModified( WgTextField * pField );
 
+
 private:
 
+	WgTextField	m_labelsText;
+	WgTextField	m_valuesText;
 	int *		m_pTickBuffer;
 	int			m_tickBufferOfs;
 

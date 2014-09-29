@@ -100,36 +100,6 @@ public:
 	static const char		CLASSNAME[];
 	static WgPackListPtr	Cast( const WgObjectPtr& pObject );
 
-	//____ Components ______________________________________
-
-	class Header : private WgIconHolder, private WgTextHolder
-	{
-		friend class WgPackList;
-	public:
-		WgIconField			icon;
-		WgIconField			arrow;
-		WgTextField			label;
-
-		void				SetSkin( const WgSkinPtr& pSkin );
-		inline WgSkinPtr	Skin() const { return m_pSkin; }
-
-	private:
-		WgObject *			_object() { return m_pHolder; }
-		void				_fieldModified( WgTextField * pText );
-		void				_fieldModified( WgIconField * pField );
-
-		WgPackList *	m_pHolder;
-		WgSkinPtr			m_pSkin;
-		int					m_height;
-		int					m_width;
-		WgState				m_state;
-		bool				m_bPressed;
-	};
-
-	Header		header;
-
-	//____ Methods __________________________________________
-
 	WgPackListHookPtr		AddWidget( const WgWidgetPtr& pWidget );
 	WgPackListHookPtr		InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
 	WgPackListHookPtr		InsertWidgetSorted( const WgWidgetPtr& pWidget );
@@ -156,6 +126,32 @@ public:
 	WgSize					MinEntrySize() const { return m_minEntrySize; }
 	WgSize					MaxEntrySize() const { return m_maxEntrySize; }
 
+	class Header : private WgIconHolder, private WgTextHolder
+	{
+		friend class WgPackList;
+	public:
+		WgIconField			icon;
+		WgIconField			arrow;
+		WgTextField			label;
+
+		void				SetSkin( const WgSkinPtr& pSkin );
+		inline WgSkinPtr	Skin() const { return m_pSkin; }
+
+		inline WgIModifTextPtr	Label() { return WgIModifTextPtr(m_pHolder, &label); }
+	private:
+		WgObject *			_object() { return m_pHolder; }
+		void				_fieldModified( WgTextField * pText );
+		void				_fieldModified( WgIconField * pField );
+
+		WgPackList *	m_pHolder;
+		WgSkinPtr			m_pSkin;
+		int					m_height;
+		int					m_width;
+		WgState				m_state;
+		bool				m_bPressed;
+	};
+
+	Header		header;
 
 protected:
 	WgPackList();

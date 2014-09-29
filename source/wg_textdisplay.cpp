@@ -35,11 +35,11 @@ const char WgTextDisplay::CLASSNAME[] = {"TextDisplay"};
 WgTextDisplay::WgTextDisplay()
 {
 	m_maxLines		= 0;
-    text._setHolder( this );
+    m_text._setHolder( this );
 
-	text.setLineWidth( Size().w );
-	text.SetAutoEllipsis(IsAutoEllipsisDefault());
-	text.SetEditMode( WG_TEXT_STATIC );
+	m_text.setLineWidth( Size().w );
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
+	m_text.SetEditMode( WG_TEXT_STATIC );
 	m_bResetCursorOnFocus = true;
 }
 
@@ -81,14 +81,14 @@ WgTextDisplayPtr WgTextDisplay::Cast( const WgObjectPtr& pObject )
 //_______________________________________________________________
 void WgTextDisplay::SetEditMode(WgTextEditMode mode)
 {
-	text.SetEditMode(mode);
+	m_text.SetEditMode(mode);
 }
 
 //____ HeightForWidth() _______________________________________________________
 
 int WgTextDisplay::HeightForWidth( int width ) const
 {
-	int textHeight = text.heightForWidth( width );
+	int textHeight = m_text.heightForWidth( width );
 
 	if( m_pSkin )
 		textHeight += m_pSkin->ContentPadding().h;
@@ -100,7 +100,7 @@ int WgTextDisplay::HeightForWidth( int width ) const
 
 WgSize WgTextDisplay::PreferredSize() const
 {
-	WgSize contentSize = text.unwrappedSize();
+	WgSize contentSize = m_text.unwrappedSize();
 
 	if( m_pSkin )
 		return m_pSkin->SizeForContent(contentSize);
@@ -112,7 +112,7 @@ WgSize WgTextDisplay::PreferredSize() const
 
 WgPointerStyle WgTextDisplay::PointerStyle() const
 {
-	if( text.GetMarkedLink() )
+	if( m_text.GetMarkedLink() )
 		return WG_POINTER_HAND;
 
 	return m_pointerStyle;
@@ -127,8 +127,8 @@ WgString WgTextDisplay::TooltipString() const
 	else
 	{
 		WgSize sz = Size();
-		if( sz.w < text.Width() || sz.h < text.Height() )
-			return text.getBuffer();
+		if( sz.w < m_text.Width() || sz.h < m_text.Height() )
+			return m_text.getBuffer();
 	}
 
 	return 0;
@@ -146,7 +146,7 @@ void WgTextDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	else
 		canvas = _canvas;
 
-	pDevice->PrintText( _clip, &text, canvas );
+	pDevice->PrintText( _clip, &m_text, canvas );
 }
 
 //____ _onRefresh() _______________________________________________________
@@ -164,22 +164,22 @@ void WgTextDisplay::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	text.setState(m_state);
+	m_text.setState(m_state);
 	_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 
 	if( IsEditable() )
 	{
 		if( m_state.IsFocused() && !oldState.IsFocused() )
 		{
-			text.showCursor();
+			m_text.showCursor();
 			_startReceiveTicks();
 			if(	m_bResetCursorOnFocus )
-				text.GoEOF();
+				m_text.GoEOF();
 			_requestRender();
 		}
 		if( !m_state.IsFocused() && oldState.IsFocused() )
 		{
-			text.hideCursor();
+			m_text.hideCursor();
 			_stopReceiveTicks();
 			_requestRender();
 		}
@@ -200,7 +200,7 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 	{
 		if( IsSelectable() && m_state.IsFocused() )
 		{
-			text.incTime( WgTickEvent::Cast(pEvent)->Millisec() );
+			m_text.incTime( WgTickEvent::Cast(pEvent)->Millisec() );
 			_requestRender();					//TODO: Should only render the cursor and selection!
 		}
 		return;
@@ -213,21 +213,21 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 
 		if( IsSelectable() && (modKeys & WG_MODKEY_SHIFT) )
 		{
-			text.setSelectionMode(true);
+			m_text.setSelectionMode(true);
 		}
 
-		text.CursorGotoCoord( pEvent->PointerPos(), Geo() );
+		m_text.CursorGotoCoord( pEvent->PointerPos(), Geo() );
 
 		if(IsSelectable() && type == WG_EVENT_MOUSE_PRESS && !(modKeys & WG_MODKEY_SHIFT))
 		{
-			text.ClearSelection();
-			text.setSelectionMode(true);
+			m_text.ClearSelection();
+			m_text.setSelectionMode(true);
 		}
 	}
 	else if( type == WG_EVENT_MOUSE_RELEASE  )
 	{
 		if(m_state.IsFocused() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT)
-			text.setSelectionMode(false);
+			m_text.setSelectionMode(false);
 	}
 	else if( !m_state.IsFocused() && IsEditable() && type == WG_EVENT_MOUSE_PRESS && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
 	{
@@ -262,7 +262,7 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 		{
 			case WG_KEY_SHIFT:
 				if(!pHandler->IsMouseButtonPressed(1))
-					text.setSelectionMode(false);
+					m_text.setSelectionMode(false);
 			break;
 		}
 	}
@@ -273,73 +273,73 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 		{
 			case WG_KEY_LEFT:
 				if( modKeys & WG_MODKEY_SHIFT )
-					text.setSelectionMode(true);
+					m_text.setSelectionMode(true);
 
 				if( modKeys & WG_MODKEY_CTRL )
-					text.gotoPrevWord();
+					m_text.gotoPrevWord();
 				else
-					text.goLeft();
+					m_text.goLeft();
 				break;
 			case WG_KEY_RIGHT:
 				if( modKeys & WG_MODKEY_SHIFT )
-					text.setSelectionMode(true);
+					m_text.setSelectionMode(true);
 
 				if( modKeys & WG_MODKEY_CTRL )
-					text.gotoNextWord();
+					m_text.gotoNextWord();
 				else
-					text.goRight();
+					m_text.goRight();
 				break;
 
 			case WG_KEY_UP:
 				if( modKeys & WG_MODKEY_SHIFT )
-					text.setSelectionMode(true);
+					m_text.setSelectionMode(true);
 
-				text.CursorGoUp( 1, GlobalGeo() );
+				m_text.CursorGoUp( 1, GlobalGeo() );
 				break;
 
 			case WG_KEY_DOWN:
 				if( modKeys & WG_MODKEY_SHIFT )
-					text.setSelectionMode(true);
+					m_text.setSelectionMode(true);
 
-				text.CursorGoDown( 1, GlobalGeo() );
+				m_text.CursorGoDown( 1, GlobalGeo() );
 				break;
 
 			case WG_KEY_BACKSPACE:
-				if(text.hasSelection())
-					text.delSelection();
+				if(m_text.hasSelection())
+					m_text.delSelection();
 				else if( modKeys & WG_MODKEY_CTRL )
-					text.delPrevWord();
+					m_text.delPrevWord();
 				else
-					text.delPrevChar();
+					m_text.delPrevChar();
 				break;
 
 			case WG_KEY_DELETE:
-				if(text.hasSelection())
-					text.delSelection();
+				if(m_text.hasSelection())
+					m_text.delSelection();
 				else if( modKeys & WG_MODKEY_CTRL )
-					text.delNextWord();
+					m_text.delNextWord();
 				else
-					text.delNextChar();
+					m_text.delNextChar();
 				break;
 
 			case WG_KEY_HOME:
 				if( modKeys & WG_MODKEY_SHIFT )
-					text.setSelectionMode(true);
+					m_text.setSelectionMode(true);
 
 				if( modKeys & WG_MODKEY_CTRL )
-					text.GoBOF();
+					m_text.GoBOF();
 				else
-					text.GoBOL();
+					m_text.GoBOL();
 				break;
 
 			case WG_KEY_END:
 				if( modKeys & WG_MODKEY_SHIFT )
-					text.setSelectionMode(true);
+					m_text.setSelectionMode(true);
 
 				if( modKeys & WG_MODKEY_CTRL )
-					text.GoEOF();
+					m_text.GoEOF();
 				else
-					text.GoEOL();
+					m_text.GoEOL();
 				break;
 
 			default:
@@ -349,7 +349,7 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 
 	// Let text object handle its actions.
 /*
-	bool bChanged = text.OnAction( action, button_key, GlobalGeo(), WgCoord(info.x, info.y) );
+	bool bChanged = m_text.OnAction( action, button_key, GlobalGeo(), WgCoord(info.x, info.y) );
 	if( bChanged )
 		RequestRender();
 */
@@ -381,7 +381,7 @@ void WgTextDisplay::_onCloneContent( const WgWidget * _pOrg )
 {
 	const WgTextDisplay * pOrg = static_cast<const WgTextDisplay*>(_pOrg);
 
-	text = pOrg->text;
+	m_text = pOrg->m_text;
 	m_maxLines = pOrg->m_maxLines;
 }
 
@@ -390,7 +390,7 @@ void WgTextDisplay::_onCloneContent( const WgWidget * _pOrg )
 void WgTextDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	text.SetColorSkin(pNewSkin);
+	m_text.SetColorSkin(pNewSkin);
 }
 
 //____ _onNewSize() ________________________________________________
@@ -402,7 +402,7 @@ void WgTextDisplay::_onNewSize( const WgSize& size )
 	if( m_pSkin )
 		width -= m_pSkin->ContentPadding().w;
 
-	text.setLineWidth( width );
+	m_text.setLineWidth( width );
 }
 
 
@@ -426,11 +426,11 @@ int WgTextDisplay::InsertTextAtCursor( const WgCharSeq& str )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
-	int nChars = text.putText( str );
+	int nChars = m_text.putText( str );
 
-	if( m_maxLines != 0 && m_maxLines < text.nbSoftLines() )
+	if( m_maxLines != 0 && m_maxLines < m_text.nbSoftLines() )
 	{
-		text.unputText( nChars );
+		m_text.unputText( nChars );
 		nChars = 0;
 	}
 
@@ -455,16 +455,16 @@ bool WgTextDisplay::InsertCharAtCursor( Uint16 c )
 
 bool WgTextDisplay::_insertCharAtCursor( Uint16 c )
 {
-	if(text.hasSelection())
-		text.delSelection();
-	text.setSelectionMode(false);
+	if(m_text.hasSelection())
+		m_text.delSelection();
+	m_text.setSelectionMode(false);
 
-	if( text.putChar( c ) == false )
+	if( m_text.putChar( c ) == false )
 		return false;
 
-	if( m_maxLines != 0 && m_maxLines < (int) text.nbSoftLines() )
+	if( m_maxLines != 0 && m_maxLines < (int) m_text.nbSoftLines() )
 	{
-		text.delPrevChar();
+		m_text.delPrevChar();
 		return false;
 	}
 

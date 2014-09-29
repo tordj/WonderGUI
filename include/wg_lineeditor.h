@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_EDITTEXTFIELD_DOT_H
-#	include <wg_edittextfield.h>
+#ifndef	WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_CARETINSTANCE_DOT_H
@@ -41,7 +41,7 @@ typedef	WgWeakPtr<WgLineEditor,WgWidgetWeakPtr>	WgLineEditorWeakPtr;
 
 //____ WgLineEditor ____________________________________________________________
 
-class WgLineEditor : public WgWidget, public WgEditTextHolder
+class WgLineEditor : public WgWidget, public WgTextHolder
 {
 public:
 	static WgLineEditorPtr	Create() { return WgLineEditorPtr(new WgLineEditor()); }
@@ -50,11 +50,6 @@ public:
 	const char *ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgLineEditorPtr	Cast( const WgObjectPtr& pObject );
-
-
-	//____ Components ______________________________________
-
-	WgEditTextField			text;
 
 
 	//____ Methods __________________________________________
@@ -68,7 +63,9 @@ public:
 	bool		InsertCharAtCursor( Uint16 c );
 
 	virtual void			SetEditMode(WgTextEditMode mode);
-	virtual WgTextEditMode	EditMode() const { return text.EditMode(); }
+	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
+
+	inline WgIEditTextPtr	Text() { return WgIEditTextPtr(this,&m_text); } 
 
 	WgSize		PreferredSize() const;
 	bool		IsAutoEllipsisDefault() const { return false; };
@@ -79,10 +76,9 @@ protected:
 	virtual ~WgLineEditor();
 	virtual WgWidget* _newOfMyType() const { return new WgLineEditor(); };
 
-	bool	_isEditable() const { return text.IsEditable(); }
-	bool	_isSelectable() const { return text.IsSelectable(); }
+	bool	_isEditable() const { return m_text.IsEditable(); }
+	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
-	WgObject *	_object() { return this; }
 	void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
 	void	_onStateChanged( WgState oldState );
 	void	_onCloneContent( const WgWidget * _pOrg );
@@ -96,6 +92,8 @@ protected:
 private:
 
 	void	_adjustViewOfs();
+
+	WgTextField			m_text;
 
 	bool				m_bResetCursorOnFocus;
 	bool				m_bPasswordMode;

@@ -59,9 +59,6 @@ public:
 	static const char	CLASSNAME[];
 	static WgValueDisplayPtr	Cast( const WgObjectPtr& pObject );
 
-	//____ Components ______________________________________
-
-	WgTextField			text;
 
 	//____ Methods __________________________________________
 
@@ -70,13 +67,12 @@ public:
 
 	WgSize	PreferredSize() const;
 
+	inline WgIStaticTextPtr	Text() { return WgIStaticTextPtr(this,&m_text); } 
 
 protected:
 	WgValueDisplay();
 	virtual ~WgValueDisplay();
 	virtual WgWidget* _newOfMyType() const { return new WgValueDisplay(); };
-
-	WgObject * _object() { return this; }
 
 	void	_onRefresh();
 	void	_onCloneContent( const WgWidget * _pOrg );
@@ -94,6 +90,7 @@ private:
 	void	_fieldModified( WgTextField * pField );
 
 	WgValueFormatPtr	m_pFormat;
+	WgTextField			m_text;
 };
 
 

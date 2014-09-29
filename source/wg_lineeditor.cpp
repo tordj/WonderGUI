@@ -34,10 +34,10 @@ const char WgLineEditor::CLASSNAME[] = {"LineEditor"};
 
 WgLineEditor::WgLineEditor()
 {
-	text._setHolder( this );
-	text.SetWrap(false);
-	text.SetAutoEllipsis(IsAutoEllipsisDefault());
-	text.SetEditMode( WG_TEXT_EDITABLE );
+	m_text._setHolder( this );
+	m_text.SetWrap(false);
+	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
+	m_text.SetEditMode( WG_TEXT_EDITABLE );
 	m_bPasswordMode = false;
 	m_pwGlyph		= '*';
 	m_viewOfs		= 0;
@@ -82,7 +82,7 @@ WgLineEditorPtr WgLineEditor::Cast( const WgObjectPtr& pObject )
 
 void WgLineEditor::SetEditMode(WgTextEditMode mode)
 {
-	text.SetEditMode( mode );
+	m_text.SetEditMode( mode );
 
 	if( _isSelectable() )
 	{
@@ -116,9 +116,9 @@ int WgLineEditor::InsertTextAtCursor( const WgCharSeq& str )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
-	int retVal = text.putText( str );
+	int retVal = m_text.putText( str );
 
-	_queueEvent( new WgTextEditEvent(text.Ptr(),false) );
+	_queueEvent( new WgTextEditEvent(this,&m_text,false) );
 
 	_adjustViewOfs();
 
@@ -136,10 +136,10 @@ bool WgLineEditor::InsertCharAtCursor( Uint16 c )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
-	if( !text.putChar( c ) )
+	if( !m_text.putChar( c ) )
 		return false;
 
-	_queueEvent( new WgTextEditEvent(text.Ptr(),false) );
+	_queueEvent( new WgTextEditEvent(this,&m_text,false) );
 
 	_adjustViewOfs();
 	return true;
@@ -150,9 +150,9 @@ bool WgLineEditor::InsertCharAtCursor( Uint16 c )
 WgSize WgLineEditor::PreferredSize() const
 {
 	WgTextAttr attr;
-	text.GetBaseAttr( attr );
-	int width = WgTextTool::lineWidth( text.getNode(), attr, "MMMMMMMMMM" );		// Default line editor should fit 10 letter M in textfield
-	WgSize contentSize( text.Height(), width );
+	m_text.GetBaseAttr( attr );
+	int width = WgTextTool::lineWidth( m_text.getNode(), attr, "MMMMMMMMMM" );		// Default line editor should fit 10 letter M in textfield
+	WgSize contentSize( m_text.Height(), width );
 	
 	if( m_pSkin )
 		return m_pSkin->SizeForContent( contentSize );
@@ -166,7 +166,7 @@ void WgLineEditor::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgLineEditor * pOrg = (WgLineEditor*) _pOrg;
 
-	text			= pOrg->text;
+	m_text			= pOrg->m_text;
 	m_bPasswordMode = pOrg->m_bPasswordMode;
 	m_pwGlyph		= pOrg->m_pwGlyph;
 }
@@ -177,10 +177,10 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 {
 	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
-	WgTextField * pText = &text;
+	WgTextField * pText = &m_text;
 	if( m_bPasswordMode )
 	{
-		int nChars = text.Length();
+		int nChars = m_text.Length();
 		Uint16 * pContent = new Uint16[nChars+1];
 		for( int i = 0 ; i < nChars ; i++ )
 			pContent[i] = m_pwGlyph;
@@ -190,18 +190,18 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 		pText->SetWrap(false);
 		pText->SetAutoEllipsis(false);
-		pText->SetAlignment(text.Alignment());
-		pText->SetProperties(text.Properties());
-		pText->SetSelectionProperties(text.SelectionProperties());
-		pText->setState(text.State());
+		pText->SetAlignment(m_text.Alignment());
+		pText->SetProperties(m_text.Properties());
+		pText->SetSelectionProperties(m_text.SelectionProperties());
+		pText->setState(m_text.State());
 
-		pText->SetEditMode(text.EditMode());
+		pText->SetEditMode(m_text.EditMode());
 		pText->showCursor();
-		pText->gotoSoftPos( text.line(), text.column() );
-		pText->incTime( text.time() );
+		pText->gotoSoftPos( m_text.line(), m_text.column() );
+		pText->incTime( m_text.time() );
 
 		int sl, sc, el, ec;
-		if( text.getSelection(sl, sc, el, ec) )
+		if( m_text.getSelection(sl, sc, el, ec) )
 			pText->selectText(sl, sc, el, ec);
 
 	}
@@ -224,7 +224,7 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 	pDevice->PrintText( textClip, pText, canvas );
 
-	if( pText != &text )
+	if( pText != &m_text )
 		delete pText;
 }
 
@@ -240,7 +240,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 	{
 		if( _isSelectable() && m_state.IsFocused() )
 		{
-			text.incTime( WgTickEvent::Cast(pEvent)->Millisec() );
+			m_text.incTime( WgTickEvent::Cast(pEvent)->Millisec() );
 			_requestRender();					//TODO: Should only render the cursor and selection!
 		}
 		return;
@@ -255,7 +255,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 		{
 			if( _isSelectable() && (pEvent->ModKeys() & WG_MODKEY_SHIFT) )
 			{
-				text.setSelectionMode(true);
+				m_text.setSelectionMode(true);
 			}
 
 			WgCoord ofs = pEvent->PointerPos();
@@ -265,7 +265,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 			if( m_bPasswordMode )
 			{
 				WgTextAttr	attr;
-				text.GetBaseAttr( attr );
+				m_text.GetBaseAttr( attr );
 
 				WgPen	pen;
 				pen.SetAttributes( attr );
@@ -282,17 +282,17 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 					col = 0;
 					line = 0;
 				}
-				text.gotoSoftPos(line,col);
+				m_text.gotoSoftPos(line,col);
 			}
 			else
 			{
-				text.CursorGotoCoord( WgCoord(x, 0), WgRect(0,0,1000000,1000000) );
+				m_text.CursorGotoCoord( WgCoord(x, 0), WgRect(0,0,1000000,1000000) );
 			}
 
 			if(_isSelectable() && event == WG_EVENT_MOUSE_PRESS && !(pEvent->ModKeys() & WG_MODKEY_SHIFT))
 			{
-				text.ClearSelection();
-				text.setSelectionMode(true);
+				m_text.ClearSelection();
+				m_text.setSelectionMode(true);
 			}
 		}
 		_adjustViewOfs();
@@ -301,7 +301,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 	if( event == WG_EVENT_MOUSE_RELEASE )
 	{
 		if( m_state.IsFocused() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
-			text.setSelectionMode(false);
+			m_text.setSelectionMode(false);
 	}		
 
 	if( event == WG_EVENT_CHARACTER )
@@ -311,14 +311,14 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 		if( _isEditable() && m_state.IsFocused() && ch >= 32 && ch != 127)
 		{
 
-			if(text.hasSelection())
-				text.delSelection();
-			text.setSelectionMode(false);
+			if(m_text.hasSelection())
+				m_text.delSelection();
+			m_text.setSelectionMode(false);
 
-			if( text.putChar( ch ) )
+			if( m_text.putChar( ch ) )
 			{
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
+					pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
 
 				_adjustViewOfs();
 			}
@@ -332,7 +332,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 		{
 			case WG_KEY_SHIFT:
 				if(!pHandler->IsMouseButtonPressed(1))
-					text.setSelectionMode(false);
+					m_text.setSelectionMode(false);
 			break;
 		}
 	}
@@ -344,62 +344,62 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 		{
 			case WG_KEY_LEFT:
 				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
-					text.setSelectionMode(true);
+					m_text.setSelectionMode(true);
 
 				if( pEvent->ModKeys() & WG_MODKEY_CTRL )
 				{
 					if( m_bPasswordMode )
-						text.GoBOL();
+						m_text.GoBOL();
 					else
-						text.gotoPrevWord();
+						m_text.gotoPrevWord();
 				}
 				else
 				{
-					text.goLeft();
+					m_text.goLeft();
 				}
 				break;
 			case WG_KEY_RIGHT:
 				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
-					text.setSelectionMode(true);
+					m_text.setSelectionMode(true);
 
 				if( pEvent->ModKeys() & WG_MODKEY_CTRL )
 				{
 					if( m_bPasswordMode )
-						text.GoEOL();
+						m_text.GoEOL();
 					else
-						text.gotoNextWord();
+						m_text.gotoNextWord();
 				}
 				else
 				{
-					text.goRight();
+					m_text.goRight();
 				}
 				break;
 
 			case WG_KEY_BACKSPACE:
 			{
-				if(text.hasSelection())
-					text.delSelection();
+				if(m_text.hasSelection())
+					m_text.delSelection();
 				else if( (pEvent->ModKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
-					text.delPrevWord();
+					m_text.delPrevWord();
 				else
-					text.delPrevChar();
+					m_text.delPrevChar();
 
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
+					pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
 				break;
 			}
 
 			case WG_KEY_DELETE:
 			{
-				if(text.hasSelection())
-					text.delSelection();
+				if(m_text.hasSelection())
+					m_text.delSelection();
 				else if( (pEvent->ModKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
-					text.delNextWord();
+					m_text.delNextWord();
 				else
-					text.delNextChar();
+					m_text.delNextChar();
 
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
+					pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
 				break;
 			}
 
@@ -417,9 +417,9 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 
 				default: // no modifier key was pressed
 					if(pEvent->ModKeys() & WG_MODKEY_SHIFT )
-						text.setSelectionMode(true);
+						m_text.setSelectionMode(true);
 
-					text.GoBOL();
+					m_text.GoBOL();
 					break;
 				}
 
@@ -439,9 +439,9 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 
 				default: // no modifier key was pressed
 					if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
-						text.setSelectionMode(true);
+						m_text.setSelectionMode(true);
 
-					text.GoEOL();
+					m_text.GoEOL();
 					break;
 				}
 
@@ -481,16 +481,16 @@ void WgLineEditor::_adjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_state.IsFocused() && text.Font() )
+	if( m_state.IsFocused() && m_text.Font() )
 	{
-		WgCaretPtr pCursor = WgTextTool::GetCursor( &text );
+		WgCaretPtr pCursor = WgTextTool::GetCursor( &m_text );
 		if( !pCursor )
 			return;
 
-		int cursCol	= text.column();
+		int cursCol	= m_text.column();
 
 		WgTextAttr	attr;
-		text.GetBaseAttr( attr );
+		m_text.GetBaseAttr( attr );
 
 		WgPen	pen;
 		pen.SetAttributes( attr );
@@ -498,9 +498,9 @@ void WgLineEditor::_adjustViewOfs()
 		pen.AdvancePos();
 
 		int pwAdvance	= pen.GetPosX();
-		int cursAdvance	= pCursor->Advance(text.cursorMode() );
-		int cursBearing	= pCursor->BearingX(text.cursorMode() );
-		int cursWidth	= pCursor->Width(text.cursorMode() );
+		int cursAdvance	= pCursor->Advance(m_text.cursorMode() );
+		int cursBearing	= pCursor->BearingX(m_text.cursorMode() );
+		int cursWidth	= pCursor->Width(m_text.cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.
@@ -509,14 +509,14 @@ void WgLineEditor::_adjustViewOfs()
 		int geoWidth = Size().w;
 		if( m_pSkin )
 			geoWidth -= m_pSkin->ContentPadding().w;
-		int	lineWidth = text.getSoftLineWidth( 0 ) + cursBearing+cursWidth;
+		int	lineWidth = m_text.getSoftLineWidth( 0 ) + cursBearing+cursWidth;
 
 		// Calculate cursOfs
 
 		if( m_bPasswordMode )
 			cursOfs = cursCol * pwAdvance;
 		else
-			cursOfs	= text.getSoftLineWidthPart( 0, 0, cursCol );
+			cursOfs	= m_text.getSoftLineWidthPart( 0, 0, cursCol );
 
 		// Calculate maxOfs
 
@@ -525,7 +525,7 @@ void WgLineEditor::_adjustViewOfs()
 			if( m_bPasswordMode )
 				maxOfs = (cursCol-1) * pwAdvance;
 			else
-				maxOfs = text.getSoftLineWidthPart( 0, 0, cursCol-1 );
+				maxOfs = m_text.getSoftLineWidthPart( 0, 0, cursCol-1 );
 
 			if( lineWidth < maxOfs + geoWidth )
 				maxOfs = WgMax( lineWidth - geoWidth, 0 );
@@ -536,12 +536,12 @@ void WgLineEditor::_adjustViewOfs()
 
 		// Calculate minOfs
 
-		if( cursCol < text.getLine(0)->nChars )
+		if( cursCol < m_text.getLine(0)->nChars )
 		{
 			if( m_bPasswordMode )
 				minOfs = (cursCol+1) * pwAdvance + cursAdvance - geoWidth;
 			else
-				minOfs = text.getSoftLineWidthPart( 0, 0, cursCol+1 ) + cursAdvance - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
+				minOfs = m_text.getSoftLineWidthPart( 0, 0, cursCol+1 ) + cursAdvance - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
 		}
 		else
 			minOfs = cursOfs + cursBearing + cursWidth - geoWidth;
@@ -566,7 +566,7 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 	
-	text.setState(m_state);
+	m_text.setState(m_state);
 	_requestRender();				//TODO: Only request render if text appearance has changed.
 
 	if( m_state.IsFocused() && !oldState.IsFocused() )
@@ -575,7 +575,7 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 		{
 			_startReceiveTicks();
 			if( m_bResetCursorOnFocus )
-				text.GoEOL();
+				m_text.GoEOL();
 			_requestRender(); // render with cursor on
 		}
 	}
@@ -584,15 +584,15 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 	{
 		if( _isSelectable() )
 		{
-			text.ClearSelection();
-			text.setSelectionMode(false);
+			m_text.ClearSelection();
+			m_text.setSelectionMode(false);
 			m_bResetCursorOnFocus = false;
 		}
 
 		if( _isEditable() || m_viewOfs != 0 )
 		{
 			_stopReceiveTicks();
-			_queueEvent( new WgTextEditEvent(text.Ptr(),true) );
+			_queueEvent( new WgTextEditEvent(this, &m_text,true) );
 
 			m_viewOfs = 0;
 			_requestRender();
@@ -605,7 +605,7 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 void WgLineEditor::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	text.SetColorSkin(pNewSkin);
+	m_text.SetColorSkin(pNewSkin);
 }
 
 

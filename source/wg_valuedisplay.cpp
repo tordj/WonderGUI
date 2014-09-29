@@ -33,9 +33,9 @@ const char WgValueDisplay::CLASSNAME[] = {"ValueDisplay"};
 
 WgValueDisplay::WgValueDisplay()
 {
-	text._setHolder(this);
-	text.SetAlignment( WG_EAST );
-	text.SetWrap(false);
+	m_text._setHolder(this);
+	m_text.SetAlignment( WG_EAST );
+	m_text.SetWrap(false);
 }
 
 //____ ~WgValueDisplay() ___________________________________________________________
@@ -84,7 +84,7 @@ void WgValueDisplay::SetFormat( const WgValueFormatPtr& pFormat )
 
 WgSize WgValueDisplay::PreferredSize() const
 {
-	WgSize textSize(text.Width(),text.Height());
+	WgSize textSize(m_text.Width(),m_text.Height());
 
 	if( m_pSkin )
 		return m_pSkin->SizeForContent(textSize);
@@ -131,7 +131,7 @@ void WgValueDisplay::_onRefresh( void )
 
 void WgValueDisplay::_regenText()
 {
-		text.setScaledValue( m_value, m_pFormat->_getScale(), m_pFormat );
+		m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pFormat );
 }
 
 //____ _onRender() _____________________________________________________________
@@ -139,7 +139,7 @@ void WgValueDisplay::_regenText()
 void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
-	pDevice->PrintText( _clip, &text, _canvas );
+	pDevice->PrintText( _clip, &m_text, _canvas );
 }
 
 //____ _onCloneContent() _______________________________________________________
@@ -151,7 +151,7 @@ void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 	Wg_Interface_ValueHolder::_onCloneContent( pOrg );
 
 	m_pFormat		= pOrg->m_pFormat;
-	text.clone(&pOrg->text);
+	m_text.clone(&pOrg->m_text);
 }
 
 //____ _onStateChanged() ______________________________________________________
@@ -159,7 +159,7 @@ void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 void WgValueDisplay::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
-	text.setState(m_state);
+	m_text.setState(m_state);
 	_requestRender();				//TODO: Check for text-related difference before call.
 }
 
@@ -168,5 +168,5 @@ void WgValueDisplay::_onStateChanged( WgState oldState )
 void WgValueDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	text.SetColorSkin(pNewSkin);
+	m_text.SetColorSkin(pNewSkin);
 }

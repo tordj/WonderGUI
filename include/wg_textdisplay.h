@@ -28,8 +28,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_EDITTEXTFIELD_DOT_H
-#	include <wg_edittextfield.h>
+#ifndef	WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_CARETINSTANCE_DOT_H
@@ -40,7 +40,7 @@ class WgTextDisplay;
 typedef	WgStrongPtr<WgTextDisplay,WgWidgetPtr>		WgTextDisplayPtr;
 typedef	WgWeakPtr<WgTextDisplay,WgWidgetWeakPtr>	WgTextDisplayWeakPtr;
 
-class WgTextDisplay:public WgWidget, public WgEditTextHolder
+class WgTextDisplay:public WgWidget, public WgTextHolder
 {
 public:
 	static WgTextDisplayPtr	Create() { return WgTextDisplayPtr(new WgTextDisplay()); }
@@ -49,10 +49,6 @@ public:
 	const char *ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgTextDisplayPtr	Cast( const WgObjectPtr& pObject );
-
-	//____ Components ______________________________________
-
-	WgEditTextField			text;
 
 	//____ Methods __________________________________________
 
@@ -63,25 +59,25 @@ public:
 	bool	InsertCharAtCursor( Uint16 c );
 
 	virtual void			SetEditMode(WgTextEditMode mode);
-	virtual WgTextEditMode	EditMode() const { return text.EditMode(); }
+	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
 
 	WgPointerStyle		PointerStyle() const;
 	WgString			TooltipString() const;
+
+	inline WgIEditTextPtr	Text() { return WgIEditTextPtr(this,&m_text); } 
 
 	int		HeightForWidth( int width ) const;
 	WgSize	PreferredSize() const;
 	bool	IsAutoEllipsisDefault() const { return true; };
 
-	bool	IsEditable() const { return text.IsEditable(); }
-	bool	IsSelectable() const { return text.IsSelectable(); }
+	bool	IsEditable() const { return m_text.IsEditable(); }
+	bool	IsSelectable() const { return m_text.IsSelectable(); }
 
 protected:
 	WgTextDisplay();
 	virtual ~WgTextDisplay();
 	virtual WgWidget* _newOfMyType() const { return new WgTextDisplay(); };
 
-	WgObject * _object() { return this; }
-	
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onNewSize( const WgSize& size );
@@ -95,6 +91,7 @@ private:
 	bool	_insertCharAtCursor( Uint16 c );
 
 
+	WgTextField			m_text;
 	bool				m_bHasFocus;
 	int					m_maxLines;
 	bool				m_bResetCursorOnFocus;

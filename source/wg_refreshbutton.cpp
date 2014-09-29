@@ -46,7 +46,7 @@ WgRefreshButton::WgRefreshButton()
 	m_refreshProgress	= 0.f;
 	m_bStopping			= false;
 
-	refreshLabel._setHolder(this);
+	m_refreshText._setHolder(this);
 
 }
 
@@ -105,6 +105,15 @@ void WgRefreshButton::SetRefreshMode( RefreshMode mode )
 void WgRefreshButton::SetAnimTarget( AnimTarget target )
 {
 	m_animTarget = target;
+	if( m_bRefreshing )
+		_requestRender();
+}
+
+//_____________________________________________________________________________
+void WgRefreshButton::SetRefreshText( const WgCharSeq& text )
+{
+	m_refreshText.Set( text );
+
 	if( m_bRefreshing )
 		_requestRender();
 }
@@ -183,7 +192,7 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 
 	if( m_pSkin )
 		w -= m_pSkin->ContentPadding().w;
-	refreshLabel.setLineWidth(w);
+	m_refreshText.setLineWidth(w);
 
 	WgButton::_onNewSize( size );
 }
@@ -341,9 +350,9 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	WgTextField * pText;
 
 	if( m_bRefreshing )
-		pText = &refreshLabel;
+		pText = &m_refreshText;
 	else
-		pText = &label;
+		pText = &m_text;
 
  	if( !pText->IsEmpty() )
 	{
@@ -370,7 +379,7 @@ void WgRefreshButton::_onCloneContent( const WgWidget * _pOrg )
 	m_pRefreshAnim		= pOrg->m_pRefreshAnim;
 	m_animTarget		= pOrg->m_animTarget;
 	m_refreshMode		= pOrg->m_refreshMode;
-	refreshLabel.clone(&pOrg->refreshLabel);
+	m_refreshText.clone(&pOrg->m_refreshText);
 	m_bRestartable		= pOrg->m_bRestartable;
 
 	m_bRefreshing		= pOrg->m_bRefreshing;
@@ -379,3 +388,8 @@ void WgRefreshButton::_onCloneContent( const WgWidget * _pOrg )
 	m_bStopping			= pOrg->m_bStopping;
 }
 
+void WgRefreshButton::SetTextManager( WgTextManager * pManager )
+{
+	m_refreshText.SetManager( pManager );
+	m_text.SetManager(pManager);
+}
