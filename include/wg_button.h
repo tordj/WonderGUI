@@ -50,11 +50,6 @@ public:
 	static const char	CLASSNAME[];
 	static WgButtonPtr	Cast( const WgObjectPtr& pObject );
 
-	//____ Components ______________________________________
-
-	WgIconField		icon;
-
-
 	//____ Methods __________________________________________
 
 	void			SetDownWhenMouseOutside( bool bDown );
@@ -62,6 +57,7 @@ public:
 	int				TextAreaWidth();
 	
 	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
+	inline WgIIconPtr		Icon() 	{ return WgIIconPtr(this,&m_icon); }
 
 	virtual int		HeightForWidth( int width ) const;
 //	virtual int		WidthForHeight( int height ) const;
@@ -86,11 +82,11 @@ protected:
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 
-	WgObject *		_object() { return this; }	
 	void			_fieldModified( WgTextField * pField );
 	void			_fieldModified( WgIconField * pField );
 
 	WgTextField		m_text;
+	WgIconField		m_icon;
 
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 

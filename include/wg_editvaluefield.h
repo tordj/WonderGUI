@@ -26,35 +26,31 @@
 #	include <wg_modifvaluefield.h>
 #endif
 
+#ifndef WG_IEDITVALUE_DOT_H
+#	include <wg_ieditvalue.h>
+#endif
+
 class WgEditValueField;
 
 //____ WgEditValueHolder ___________________________________________________________
 
-class WgEditValueHolder : public WgModifValueHolder
+class WgEditValueHolder
 {
 public:
+	virtual void		_onFieldDirty( WgEditValueField * pField ) = 0;
+	virtual void		_onFieldResize( WgEditValueField * pField ) = 0;
+	virtual void		_onValueModified( WgEditValueField * pField ) = 0;
 	virtual void		_onValueEdited( WgEditValueField * pField ) = 0;
 };
 
-class WgEditValueField;
-typedef	WgCompStrongPtr<WgEditValueField,WgModifValueFieldPtr>			WgEditValueFieldPtr;
-typedef	WgCompWeakPtr<WgEditValueField,WgModifValueFieldWeakPtr>		WgEditValueFieldWeakPtr;
 
-//____ WgEditValueField ____________________________________________________________
+//____ WgEditValueFieldBase ____________________________________________________________
 
-class WgEditValueField : public WgModifValueField
+class WgEditValueFieldBase : public WgModifValueFieldBase
 {
 public:
-	WgEditValueField();
-	~WgEditValueField();
-
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
-	static const char		CLASSNAME[];
-	static WgEditValueFieldPtr	Cast( const WgComponentPtr& pComponent );
-
-	WgEditValueFieldPtr	Ptr() { return WgEditValueFieldPtr(this); }
-
+	WgEditValueFieldBase();
+	~WgEditValueFieldBase();
 
 	void				SetEditMode(WgTextEditMode mode);
 	inline WgTextEditMode EditMode() const { return m_editMode; }
@@ -86,14 +82,28 @@ public:
 	void				GoEOF();
 
 protected:
-	void 				_setHolder( WgEditValueHolder * pHolder ) { m_pHolder = pHolder; }
-	void				_onValueEdited() { static_cast<WgEditValueHolder*>(m_pHolder)->_onValueEdited(this); }
+	virtual void		_onValueEdited();
 	
 	WgTextEditMode		m_editMode;
 	WgCaretPtr			m_pCursorSkin;
 	int					m_cursorOfs;		// -1 = No cursor.
 	int					m_selBeg;
 	int					m_selEnd;
+};
+
+//____ WgEditValueField ______________________________________________________
+
+class WgEditValueField : public WgEditValueFieldBase, public WgIEditValue
+{
+	friend class WgEditValueHolder;
+protected:
+	void 	_setHolder( WgEditValueHolder * pHolder ) { m_pHolder = pHolder; }
+	void	_onFieldDirty() { m_pHolder->_onFieldDirty(this); }
+	void	_onFieldResize() { m_pHolder->_onFieldResize(this); }
+	void	_onValueModified() { m_pHolder->_onValueModified(this); }
+	void	_onValueEdited() { m_pHolder->_onValueEdited(this); }
+
+	WgEditValueHolder *	m_pHolder;
 };
 
 

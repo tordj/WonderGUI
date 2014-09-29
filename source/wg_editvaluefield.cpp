@@ -20,36 +20,9 @@
 
 =========================================================================*/
 
+#include <wg_widget.h>
 #include <wg_editvaluefield.h>
 
-const char WgEditValueField::CLASSNAME[] = {"EditValueField"};
-
-//____ IsInstanceOf() _________________________________________________________
-
-bool WgEditValueField::IsInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgModifValueField::IsInstanceOf(pClassName);
-}
-
-//____ ClassName() ____________________________________________________________
-
-const char * WgEditValueField::ClassName( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ Cast() _________________________________________________________________
-
-WgEditValueFieldPtr WgEditValueField::Cast( const WgComponentPtr& pComponent )
-{
-	if( pComponent && pComponent->IsInstanceOf(CLASSNAME) )
-		return WgEditValueFieldPtr( static_cast<WgEditValueField*>(pComponent.GetRealPtr()) );
-
-	return 0;
-}
 
 
 

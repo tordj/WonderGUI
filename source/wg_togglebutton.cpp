@@ -45,7 +45,7 @@ WgToggleButton::WgToggleButton()
 	m_text._setHolder( this );
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 
-	icon._setHolder( this );
+	m_icon._setHolder( this );
 
 	m_clickArea			= DEFAULT;
 }
@@ -116,9 +116,9 @@ WgSize WgToggleButton::PreferredSize() const
 	if( m_text.Length() > 0 )
 		textPreferredSize = m_text.unwrappedSize();
 
-	if( !icon.IsEmpty() )
+	if( !m_icon.IsEmpty() )
 	{
-		iconPreferredSize = icon.Skin()->PreferredSize() + icon.Padding().Size();
+		iconPreferredSize = m_icon.Skin()->PreferredSize() + m_icon.Padding().Size();
 
 		//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorder, iconScale and bgPreferredSize
 	}
@@ -247,7 +247,7 @@ void WgToggleButton::_onStateChanged( WgState oldState )
 
 	m_text.setState( m_state );
 
-	if( !icon.IsEmpty() && !icon.Skin()->IsStateIdentical(m_state, oldState) )
+	if( !m_icon.IsEmpty() && !m_icon.Skin()->IsStateIdentical(m_state, oldState) )
 		_requestRender();		//TODO: Just request render on icon?
 
 	if( m_state.IsSelected() != oldState.IsSelected() )
@@ -282,18 +282,18 @@ void WgToggleButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	if( m_pSkin )
 		contentRect = m_pSkin->ContentRect(_canvas, m_state );
 
-	WgRect iconRect		= icon.GetIconRect( contentRect );
+	WgRect iconRect		= m_icon.GetIconRect( contentRect );
 
 	// Blit icon
 
-	if( icon.IsEmpty() && iconRect.w > 0 && iconRect.h > 0 )
-		icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
+	if( m_icon.IsEmpty() && iconRect.w > 0 && iconRect.h > 0 )
+		m_icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
  	if( m_text.Lines()!= 0 )
 	{
-		WgRect	textRect = icon.GetTextRect( contentRect, iconRect );
+		WgRect	textRect = m_icon.GetTextRect( contentRect, iconRect );
 		pDevice->PrintText( _clip, &m_text, textRect );
 	}
 }
@@ -315,7 +315,7 @@ void WgToggleButton::_onNewSize( const WgSize& size )
 	if( m_pSkin )
 		contentRect = m_pSkin->ContentRect(contentRect, m_state );
 
-	m_text.setLineWidth( icon.GetTextRect( contentRect, icon.GetIconRect( contentRect )).w );
+	m_text.setLineWidth( m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect )).w );
 }
 
 
@@ -329,7 +329,7 @@ void WgToggleButton::_onCloneContent( const WgWidget * _pOrg )
 	m_clickArea			= pOrg->m_clickArea;
 
 	m_text.clone( &pOrg->m_text );
-	icon.OnCloneContent( &pOrg->icon );
+	m_icon.OnCloneContent( &pOrg->m_icon );
 }
 
 //____ _fieldModified() _________________________________________________________
@@ -354,7 +354,7 @@ bool WgToggleButton::_markTestTextArea( int _x, int _y )
 	if( m_pSkin )
 		contentRect = m_pSkin->ContentRect(contentRect, m_state );
 
-	contentRect = icon.GetTextRect( contentRect, icon.GetIconRect( contentRect ) );
+	contentRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
 
 	if( m_text.CoordToOfs( WgCoord(_x,_y), contentRect ) != -1 )
 		return true;
@@ -372,7 +372,7 @@ bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 	if( m_pSkin )
 		contentRect = m_pSkin->ContentRect( contentRect, m_state );
 
-	WgRect	iconRect	= icon.GetIconRect( contentRect );
+	WgRect	iconRect	= m_icon.GetIconRect( contentRect );
 
 	switch( m_clickArea )
 	{
@@ -380,7 +380,7 @@ bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 		{
 			// Extend iconRect so it connects with textArea before we compare
 
-			WgRect	textRect = icon.GetTextRect( contentRect, iconRect);
+			WgRect	textRect = m_icon.GetTextRect( contentRect, iconRect);
 
 			if( iconRect.x + iconRect.w < textRect.x )
 				iconRect.w = textRect.x - iconRect.x;
@@ -410,7 +410,7 @@ bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 		case ALPHA:			// Alpha test on background and icon.
 		{
 			if( WgWidget::_onAlphaTest( ofs, bgSize ) ||
-				( !icon.IsEmpty() && icon.Skin()->MarkTest( ofs, iconRect, m_state, m_markOpacity )) )
+				( !m_icon.IsEmpty() && m_icon.Skin()->MarkTest( ofs, iconRect, m_state, m_markOpacity )) )
 				return true;
 
 			return false;
@@ -419,7 +419,7 @@ bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 			return true;
 		case ICON:			// Only the icon (alpha test) is clickable.
 		{
-			if( !icon.IsEmpty() && icon.Skin()->MarkTest( ofs, iconRect, m_state, m_markOpacity ) )
+			if( !m_icon.IsEmpty() && m_icon.Skin()->MarkTest( ofs, iconRect, m_state, m_markOpacity ) )
 				return true;
 
 			return false;

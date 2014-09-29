@@ -22,40 +22,36 @@
 #ifndef	WG_MODIFVALUEFIELD_DOT_H
 #define WG_MODIFVALUEFIELD_DOT_H
 
-#ifndef WG_VALUEFIELD_DOT_H
-#	include <wg_valuefield.h>
+#ifndef WG_STATICVALUEFIELD_DOT_H
+#	include <wg_staticvaluefield.h>
 #endif
 
+#ifndef WG_IMODIFVALUE_DOT_H
+#	include <wg_imodifvalue.h>
+#endif
 
 class WgModifValueField;
-typedef	WgCompStrongPtr<WgModifValueField,WgValueFieldPtr>		WgModifValueFieldPtr;
-typedef	WgCompWeakPtr<WgModifValueField,WgValueFieldWeakPtr>		WgModifValueFieldWeakPtr;
 
 //____ WgModifValueHolder ___________________________________________________________
 
-class WgModifValueHolder : public WgValueHolder
+class WgModifValueHolder
 {
 public:
+	virtual void		_onFieldDirty( WgModifValueField * pField ) = 0;
+	virtual void		_onFieldResize( WgModifValueField * pField ) = 0;
 	virtual void		_onValueModified( WgModifValueField * pField ) = 0;
 };
 
 
-//____ WgModifValueField _____________________________________________________________
+//____ WgModifValueFieldBase ____________________________________________________________
 
-class WgModifValueField : public WgValueField
+class WgModifValueFieldBase : public WgStaticValueFieldBase
 {
-	friend class WgModifValueHolder;
 public:
-	WgModifValueField();
-	~WgModifValueField();
+	WgModifValueFieldBase();
+	~WgModifValueFieldBase();
 
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
-	static const char		CLASSNAME[];
-	static WgModifValueFieldPtr	Cast( const WgComponentPtr& pComponent );
-
-	WgModifValueFieldPtr	Ptr() { return WgModifValueFieldPtr(this); }
-
+	// IModifValue methods
 
 	void				Set( int value );
 	void				Set( Sint64 value );
@@ -72,13 +68,27 @@ public:
 	inline Sint64		Max() const { return m_maxValue; }
 
 protected:
-	void 				_setHolder( WgModifValueHolder * pHolder ) { m_pHolder = pHolder; }
-	void				_onValueModified() { static_cast<WgModifValueHolder*>(m_pHolder)->_onValueModified(this); }
-
+	virtual void		_onValueModified();
 
 	Sint64				m_minValue;
 	Sint64				m_maxValue;
 	float				m_fraction;
 };
+
+//____ WgModifValueField ______________________________________________________
+
+class WgModifValueField : public WgModifValueFieldBase, public WgIModifValue
+{
+	friend class WgModifValueHolder;
+protected:
+	void 	_setHolder( WgModifValueHolder * pHolder ) { m_pHolder = pHolder; }
+	void	_onFieldDirty() { m_pHolder->_onFieldDirty(this); }
+	void	_onFieldResize() { m_pHolder->_onFieldResize(this); }
+	void	_onValueModified() { m_pHolder->_onValueModified(this); }
+
+	WgModifValueHolder *	m_pHolder;
+};
+
+
 
 #endif //WG_MODIFVALUEFIELD_DOT_H

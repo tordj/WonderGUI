@@ -137,9 +137,10 @@ public:
 		void				SetSkin( const WgSkinPtr& pSkin );
 		inline WgSkinPtr	Skin() const { return m_pSkin; }
 
+		inline WgIIconPtr		Icon() { return WgIIconPtr(m_pHolder, &icon); }
+		inline WgIIconPtr		Arrow() { return WgIIconPtr(m_pHolder, &arrow); }
 		inline WgIModifTextPtr	Label() { return WgIModifTextPtr(m_pHolder, &label); }
 	private:
-		WgObject *			_object() { return m_pHolder; }
 		void				_fieldModified( WgTextField * pText );
 		void				_fieldModified( WgIconField * pField );
 

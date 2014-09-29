@@ -21,13 +21,12 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_valuefield.h>
+#include <wg_staticvaluefield.h>
 
-const char WgValueField::CLASSNAME[] = {"ValueField"};
 
 //____ Constructor _____________________________________________________________
 
-WgValueField::WgValueField()
+WgStaticValueFieldBase::WgStaticValueFieldBase()
 {
 	m_value = 0;
 	m_alignment = WG_EAST;
@@ -36,42 +35,14 @@ WgValueField::WgValueField()
 
 //____ Destructor ______________________________________________________________
 
-WgValueField::~WgValueField()
+WgStaticValueFieldBase::~WgStaticValueFieldBase()
 {
 	
 }
 
-//____ IsInstanceOf() _________________________________________________________
-
-bool WgValueField::IsInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgComponent::IsInstanceOf(pClassName);
-}
-
-//____ ClassName() ____________________________________________________________
-
-const char * WgValueField::ClassName( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ Cast() _________________________________________________________________
-
-WgValueFieldPtr WgValueField::Cast( const WgComponentPtr& pComponent )
-{
-	if( pComponent && pComponent->IsInstanceOf(CLASSNAME) )
-		return WgValueFieldPtr( static_cast<WgValueField*>(pComponent.GetRealPtr()) );
-
-	return 0;
-}
-
-
 //____ SetFormat() _____________________________________________________________
 
-void WgValueField::SetFormat( const WgValueFormatPtr& pFormat )
+void WgStaticValueFieldBase::SetFormat( const WgValueFormatPtr& pFormat )
 {
 	if( m_pFormat != pFormat )
 	{
@@ -82,7 +53,7 @@ void WgValueField::SetFormat( const WgValueFormatPtr& pFormat )
 
 //____ SetProperties() _________________________________________________________
 
-void WgValueField::SetProperties( const WgTextpropPtr& pProp )
+void WgStaticValueFieldBase::SetProperties( const WgTextpropPtr& pProp )
 {
 	if( m_pProp != pProp )
 	{
@@ -94,14 +65,14 @@ void WgValueField::SetProperties( const WgTextpropPtr& pProp )
 
 //____ ClearProperties() _______________________________________________________
 
-void WgValueField::ClearProperties()
+void WgStaticValueFieldBase::ClearProperties()
 {
 		SetProperties( 0 );
 }
 
 //____ SetAlignment() __________________________________________________________
 
-void WgValueField::SetAlignment( WgOrigo alignment )
+void WgStaticValueFieldBase::SetAlignment( WgOrigo alignment )
 {
 	if( alignment != m_alignment )
 	{
@@ -112,7 +83,7 @@ void WgValueField::SetAlignment( WgOrigo alignment )
 
 //____ SetAutoEllipsis() _______________________________________________________
 
-void WgValueField::SetAutoEllipsis(bool bAutoEllipsis)
+void WgStaticValueFieldBase::SetAutoEllipsis(bool bAutoEllipsis)
 {
 	if( bAutoEllipsis != m_bAutoEllipsis )
 	{
@@ -123,7 +94,7 @@ void WgValueField::SetAutoEllipsis(bool bAutoEllipsis)
 
 
 
-void WgValueField::_setValue( Sint64 value )
+void WgStaticValueFieldBase::_setValue( Sint64 value )
 {
 	if( value != m_value )
 	{
@@ -132,12 +103,12 @@ void WgValueField::_setValue( Sint64 value )
 	}
 }
 
-void WgValueField::_recalcSize()
+void WgStaticValueFieldBase::_recalcSize()
 {
-	//TODO: IMPLEMENT!!! (check whole class)
+	
 }
 
-void WgValueField::_regenText()
+void WgStaticValueFieldBase::_regenText()
 {
 
 	

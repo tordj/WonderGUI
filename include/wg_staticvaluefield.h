@@ -19,11 +19,11 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_VALUEFIELD_DOT_H
-#define WG_VALUEFIELD_DOT_H
+#ifndef	WG_STATICVALUEFIELD_DOT_H
+#define WG_STATICVALUEFIELD_DOT_H
 
-#ifndef WG_COMPONENT_DOT_H
-#	include <wg_component.h>
+#ifndef WG_ISTATICVALUE_DOT_H
+#	include <wg_istaticvalue.h>
 #endif
 
 #ifndef WG_CHARBUFFER_DOT_H
@@ -34,41 +34,24 @@
 #	include <wg_textprop.h>
 #endif
 
-#ifndef WG_VALUEFORMAT_DOT_H
-#	include <wg_valueformat.h>
-#endif
+class WgStaticValueField;
 
-class WgValueField;
+//____ WgStaticValueHolder ___________________________________________________________
 
-//____ WgValueHolder ___________________________________________________________
-
-class WgValueHolder
+class WgStaticValueHolder
 {
 public:
-	virtual void		_onFieldDirty( WgValueField * pField ) = 0;
-	virtual void		_onFieldResize( WgValueField * pField ) = 0;
-	virtual void		_object() = 0;
+	virtual void		_onFieldDirty( WgStaticValueField * pField ) = 0;
+	virtual void		_onFieldResize( WgStaticValueField * pField ) = 0;
 };
 
-class WgValueField;
-typedef	WgCompStrongPtr<WgValueField,WgComponentPtr>		WgValueFieldPtr;
-typedef	WgCompWeakPtr<WgValueField,WgComponentWeakPtr>		WgValueFieldWeakPtr;
+//____ WgStaticValueFieldBase ____________________________________________________________
 
-//____ WgValueField ____________________________________________________________
-
-class WgValueField :public WgComponent
+class WgStaticValueFieldBase
 {
-	friend class WgValueHolder;
 public:
-	WgValueField();
-	~WgValueField();
-
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
-	static const char		CLASSNAME[];
-	static WgValueFieldPtr	Cast( const WgComponentPtr& pComponent );
-
-	WgValueFieldPtr			Ptr() { return WgValueFieldPtr(this); }
+	WgStaticValueFieldBase();
+	~WgStaticValueFieldBase();
 
 	void					SetFormat( const WgValueFormatPtr& pFormat );
 	inline WgValueFormatPtr	Format() const { return m_pFormat; }
@@ -84,18 +67,15 @@ public:
 	inline bool				AutoEllipsis() const { return m_bAutoEllipsis; }
 
 protected:
-	void 					_setHolder( WgValueHolder * pHolder ) { m_pHolder = pHolder; }
-	void					_onFieldDirty() { m_pHolder->_onFieldDirty(this); }
-	void					_onFieldResize() { m_pHolder->_onFieldResize(this); }
-
 	void					_setValue( Sint64 value );
+	virtual void			_onFieldDirty();
+	virtual void 			_onFieldResize();
 	void					_regenText();
 	void					_recalcSize();
 	inline WgSize			_preferredSize() const { return m_size; }
 
 	Sint64					m_value;
 	
-	WgValueHolder *			m_pHolder;
 	WgValueFormatPtr		m_pFormat;
 	WgTextpropPtr			m_pProp;
 	WgOrigo					m_alignment;
@@ -104,5 +84,18 @@ protected:
 	WgSize					m_size;
 };
 
+//____ WgStaticValueField ______________________________________________________
 
-#endif //WG_VALUEFIELD_DOT_H
+class WgStaticValueField : public WgStaticValueFieldBase, public WgIStaticValue
+{
+	friend class WgStaticValueHolder;
+protected:
+	void 	_setHolder( WgStaticValueHolder * pHolder ) { m_pHolder = pHolder; }
+	void	_onFieldDirty() { m_pHolder->_onFieldDirty(this); }
+	void	_onFieldResize() { m_pHolder->_onFieldResize(this); }
+
+	WgStaticValueHolder *	m_pHolder;
+};
+
+
+#endif //WG_STATICVALUEFIELD_DOT_H

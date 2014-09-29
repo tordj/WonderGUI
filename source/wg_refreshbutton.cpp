@@ -323,13 +323,13 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	// Get icon and text rect from content rect
 
 	WgSize iconSize;
-	if( !icon.IsEmpty() )
-		iconSize = icon.Skin()->PreferredSize();
+	if( !m_icon.IsEmpty() )
+		iconSize = m_icon.Skin()->PreferredSize();
 	else if( m_animTarget == ICON && m_pRefreshAnim )
 		iconSize = m_pRefreshAnim->Size();
 
-	WgRect iconRect = icon.GetIconRect( contentRect, iconSize );
-	WgRect textRect = icon.GetTextRect( contentRect, iconRect );
+	WgRect iconRect = m_icon.GetIconRect( contentRect, iconSize );
+	WgRect textRect = m_icon.GetTextRect( contentRect, iconRect );
 
 
 	// Render icon or animation
@@ -342,8 +342,8 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 		pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect, iconRect );
 	}
-	else if( !icon.IsEmpty() )
-		icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
+	else if( !m_icon.IsEmpty() )
+		m_icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
