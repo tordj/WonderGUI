@@ -145,21 +145,21 @@ public:
 
 	// Convenient calls to hook
 
-	inline WgCoord			Pos() const;
-	inline WgSize			Size() const;
-	inline WgRect			Geo() const;
-	inline WgCoord			GlobalPos() const;
-	inline WgRect			GlobalGeo() const;
-	inline bool				GrabFocus();
-	inline bool				ReleaseFocus();
-	inline bool				IsFocused();
-	inline WgContainerPtr	Parent() const;
+	inline WgCoord		Pos() const;
+	inline WgSize		Size() const;
+	inline WgRect		Geo() const;
+	inline WgCoord		GlobalPos() const;
+	inline WgRect		GlobalGeo() const;
+	inline bool			GrabFocus();
+	inline bool			ReleaseFocus();
+	inline bool			IsFocused();
+	WgContainerPtr		Parent() const;
 
-	inline WgWidgetPtr		NextSibling() const;
-	inline WgWidgetPtr		PrevSibling() const;
+	inline WgWidgetPtr	NextSibling() const;
+	inline WgWidgetPtr	PrevSibling() const;
 
-	WgCoord					ToGlobal( const WgCoord& coord ) const;
-	WgCoord					ToLocal( const WgCoord& coord ) const; 
+	WgCoord				ToGlobal( const WgCoord& coord ) const;
+	WgCoord				ToLocal( const WgCoord& coord ) const; 
 	
 	// To be overloaded by Widget
 
@@ -244,7 +244,6 @@ private:
 
 typedef	int(*WgWidgetSortFunc)(const WgWidget *,const WgWidget *);
 
-#endif
 
 
 //____ Inline methods __________________________________________________________
@@ -384,3 +383,4 @@ WgWidgetPtr WgWidget::PrevSibling() const
 }
 
 
+#endif

@@ -37,6 +37,11 @@
     <Project Name="wondergui"/>
     <Project Name="wg_soft"/>
   </Dependencies>
+  <Dependencies Name="Release">
+    <Project Name="wondergui"/>
+    <Project Name="wg_sdl"/>
+    <Project Name="wg_soft"/>
+  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -148,9 +153,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Release">
-    <Project Name="wondergui"/>
-    <Project Name="wg_sdl"/>
-    <Project Name="wg_soft"/>
-  </Dependencies>
 </CodeLite_Project>
