@@ -20,34 +20,34 @@
 
 =========================================================================*/
 
-#include <wg_istatictext.h>
+#include <wg_edittext.h>
 
-const char WgIStaticText::CLASSNAME[] = {"IStaticText"};
+const char WgEditText::CLASSNAME[] = {"EditText"};
 
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgIStaticText::IsInstanceOf( const char * pClassName ) const
+bool WgEditText::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgInterface::IsInstanceOf(pClassName);
+	return WgModText::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgIStaticText::ClassName( void ) const
+const char * WgEditText::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgIStaticTextPtr WgIStaticText::Cast( const WgInterfacePtr& pInterface )
+WgEditTextPtr WgEditText::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgIStaticTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgIStaticText*>( pInterface.GetRealPtr()) );
+		return WgEditTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgEditText*>(pInterface.GetRealPtr()) );
 
 	return 0;
 }

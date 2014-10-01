@@ -176,9 +176,6 @@ public:
 	void	SetTabMouseOpacity( bool bOpaque ) { m_bTabOpaqueForMouse = bOpaque; };
 	bool	TabMouseOpacity() const { return m_bTabOpaqueForMouse; }
 
-
-	bool SetTabTextColor( int id, WgColor col );
-
 	int	TabWidth( int id ) const;
 
 	bool SelectTab( int id );

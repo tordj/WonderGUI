@@ -22,35 +22,29 @@
 #ifndef	WG_EDITVALUEFIELD_DOT_H
 #define WG_EDITVALUEFIELD_DOT_H
 
-#ifndef WG_MODIFVALUEFIELD_DOT_H
-#	include <wg_modifvaluefield.h>
+#ifndef WG_MODVALUEFIELD_DOT_H
+#	include <wg_modvaluefield.h>
 #endif
 
-#ifndef WG_IEDITVALUE_DOT_H
-#	include <wg_ieditvalue.h>
-#endif
 
 class WgEditValueField;
 
 //____ WgEditValueHolder ___________________________________________________________
 
-class WgEditValueHolder
+class WgEditValueHolder : public WgModValueHolder
 {
 public:
-	virtual void		_onFieldDirty( WgEditValueField * pField ) = 0;
-	virtual void		_onFieldResize( WgEditValueField * pField ) = 0;
-	virtual void		_onValueModified( WgEditValueField * pField ) = 0;
 	virtual void		_onValueEdited( WgEditValueField * pField ) = 0;
 };
 
 
-//____ WgEditValueFieldBase ____________________________________________________________
+//____ WgEditValueField ____________________________________________________________
 
-class WgEditValueFieldBase : public WgModifValueFieldBase
+class WgEditValueField : public WgModValueField
 {
 public:
-	WgEditValueFieldBase();
-	~WgEditValueFieldBase();
+	WgEditValueField();
+	~WgEditValueField();
 
 	void				SetEditMode(WgTextEditMode mode);
 	inline WgTextEditMode EditMode() const { return m_editMode; }
@@ -82,28 +76,13 @@ public:
 	void				GoEOF();
 
 protected:
-	virtual void		_onValueEdited();
-	
+	void				_onValueEdited() { static_cast<WgEditValueHolder*>(m_pHolder)->_onValueEdited(this); }
+
 	WgTextEditMode		m_editMode;
 	WgCaretPtr			m_pCursorSkin;
 	int					m_cursorOfs;		// -1 = No cursor.
 	int					m_selBeg;
 	int					m_selEnd;
-};
-
-//____ WgEditValueField ______________________________________________________
-
-class WgEditValueField : public WgEditValueFieldBase, public WgIEditValue
-{
-	friend class WgEditValueHolder;
-protected:
-	void 	_setHolder( WgEditValueHolder * pHolder ) { m_pHolder = pHolder; }
-	void	_onFieldDirty() { m_pHolder->_onFieldDirty(this); }
-	void	_onFieldResize() { m_pHolder->_onFieldResize(this); }
-	void	_onValueModified() { m_pHolder->_onValueModified(this); }
-	void	_onValueEdited() { m_pHolder->_onValueEdited(this); }
-
-	WgEditValueHolder *	m_pHolder;
 };
 
 

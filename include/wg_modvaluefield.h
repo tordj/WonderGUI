@@ -19,39 +19,34 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_MODIFVALUEFIELD_DOT_H
-#define WG_MODIFVALUEFIELD_DOT_H
+#ifndef	WG_MODVALUEFIELD_DOT_H
+#define WG_MODVALUEFIELD_DOT_H
 
-#ifndef WG_STATICVALUEFIELD_DOT_H
-#	include <wg_staticvaluefield.h>
+#ifndef WG_VALUEFIELD_DOT_H
+#	include <wg_valuefield.h>
 #endif
 
-#ifndef WG_IMODIFVALUE_DOT_H
-#	include <wg_imodifvalue.h>
-#endif
 
-class WgModifValueField;
+class WgModValueField;
 
-//____ WgModifValueHolder ___________________________________________________________
+//____ WgModValueHolder ___________________________________________________________
 
-class WgModifValueHolder
+class WgModValueHolder : public WgValueHolder
 {
 public:
-	virtual void		_onFieldDirty( WgModifValueField * pField ) = 0;
-	virtual void		_onFieldResize( WgModifValueField * pField ) = 0;
-	virtual void		_onValueModified( WgModifValueField * pField ) = 0;
+	virtual void		_onValueModified( WgModValueField * pField ) = 0;
 };
 
 
-//____ WgModifValueFieldBase ____________________________________________________________
+//____ WgModValueField ____________________________________________________________
 
-class WgModifValueFieldBase : public WgStaticValueFieldBase
+class WgModValueField : public WgValueField
 {
 public:
-	WgModifValueFieldBase();
-	~WgModifValueFieldBase();
+	WgModValueField();
+	~WgModValueField();
 
-	// IModifValue methods
+	// ModValue methods
 
 	void				Set( int value );
 	void				Set( Sint64 value );
@@ -68,27 +63,12 @@ public:
 	inline Sint64		Max() const { return m_maxValue; }
 
 protected:
-	virtual void		_onValueModified();
+	void	_onValueModified() { static_cast<WgModValueHolder*>(m_pHolder)->_onValueModified(this); }
 
 	Sint64				m_minValue;
 	Sint64				m_maxValue;
 	float				m_fraction;
 };
 
-//____ WgModifValueField ______________________________________________________
 
-class WgModifValueField : public WgModifValueFieldBase, public WgIModifValue
-{
-	friend class WgModifValueHolder;
-protected:
-	void 	_setHolder( WgModifValueHolder * pHolder ) { m_pHolder = pHolder; }
-	void	_onFieldDirty() { m_pHolder->_onFieldDirty(this); }
-	void	_onFieldResize() { m_pHolder->_onFieldResize(this); }
-	void	_onValueModified() { m_pHolder->_onValueModified(this); }
-
-	WgModifValueHolder *	m_pHolder;
-};
-
-
-
-#endif //WG_MODIFVALUEFIELD_DOT_H
+#endif //WG_MODVALUEFIELD_DOT_H

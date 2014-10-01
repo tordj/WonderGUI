@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include	<wg_textfield.h>
+#ifndef WG_MODTEXT_DOT_H
+#	include	<wg_modtext.h>
 #endif
 
 class WgFont;
@@ -46,16 +46,16 @@ public:
 	const char *ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgFpsDisplayPtr	Cast( const WgObjectPtr& pObject );
-		
+
+	//____ Interfaces ______________________________________
+
+	WgModText	labels;
+	WgText		values;
 
 	//____ Methods __________________________________________
 
 	void	SetTextProperties( const WgTextpropPtr& pProp );
 	WgSize	PreferredSize() const;
-
-	inline WgIModifTextPtr	Labels() { return WgIModifTextPtr(this,&m_labelsText); } 
-	inline WgIStaticTextPtr	Values() { return WgIStaticTextPtr(this,&m_valuesText); } 
-
 
 protected:
 	WgFpsDisplay();

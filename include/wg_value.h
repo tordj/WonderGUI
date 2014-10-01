@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_ISTATICVALUE_DOT_H
-#define WG_ISTATICVALUE_DOT_H
+#ifndef WG_VALUE_DOT_H
+#define WG_VALUE_DOT_H
 
 #ifndef WG_INTERFACE_DOT_H
 #	include <wg_interface.h>
@@ -39,9 +39,11 @@
 #	include <wg_valueformat.h>
 #endif
 
-class WgIStaticValue;
-typedef	WgIStrongPtr<WgIStaticValue,WgInterfacePtr>		WgIStaticValuePtr;
-typedef	WgWeakPtr<WgIStaticValue,WgInterfacePtr>		WgIStaticValueWeakPtr;
+class WgValueField;
+
+class WgValue;
+typedef	WgIStrongPtr<WgValue,WgInterfacePtr>	WgValuePtr;
+typedef	WgIWeakPtr<WgValue,WgInterfacePtr>		WgValueWeakPtr;
 
 /**
  * @brief Interface to a value field displaying a static (non-modifiable) value
@@ -52,13 +54,15 @@ typedef	WgWeakPtr<WgIStaticValue,WgInterfacePtr>		WgIStaticValueWeakPtr;
  * 
  */
 
-class WgIStaticValue : public WgInterface
+class WgValue : public WgInterface
 {
 public:
+	WgValue(WgValueField* pField) : m_pField(pField) {}
+
 	virtual bool				IsInstanceOf( const char * pClassName ) const;
 	virtual const char *		ClassName( void ) const;
 	static const char			CLASSNAME[];
-	static WgIStaticValuePtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	static WgValuePtr			Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
 
 	virtual void				SetFormat( const WgValueFormatPtr& format ) = 0;
 	virtual WgValueFormatPtr	Format() const = 0;
@@ -78,8 +82,11 @@ public:
 
 	virtual WgState				State() const = 0;
 	virtual int					TextLength() const = 0;
+protected:
+	WgValueField *				m_pField;
+
 
 };
 
 
-#endif //WG_ISTATICVALUE_DOT_H
+#endif //WG_VALUE_DOT_H

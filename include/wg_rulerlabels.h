@@ -9,8 +9,8 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_MODTEXT_DOT_H
+#	include <wg_modtext.h>
 #endif
 
 #ifndef WG_TEXTPROP_DOT_H
@@ -39,7 +39,7 @@ public:
     void            SetTextManager( WgTextManager * pTextManager );
 	WgSize			PreferredSize() const;
 	void			SetDirection( WgDirection direction );
-	WgIModifTextPtr	GetLabel(int index);
+	WgModTextPtr	GetLabel(int index);
 
 
 protected:
@@ -57,9 +57,10 @@ protected:
 	class Label : public WgLink
 	{
 	public:
+		Label() : textInterface(&textField) {}
 		LINK_METHODS(Label);
-		
-		WgTextField	text;
+		WgModText	textInterface;
+		WgTextField	textField;
 		float		offset;
 	};
 	

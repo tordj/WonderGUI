@@ -20,36 +20,43 @@
 
 =========================================================================*/
 
-#ifndef WG_IEDITTEXT_DOT_H
-#define WG_IEDITTEXT_DOT_H
+#ifndef WG_EDITVALUE_DOT_H
+#define WG_EDITVALUE_DOT_H
 
-#ifndef WG_IMODIFTEXT_DOT_H
-#	include <wg_imodiftext.h>
+#ifndef WG_MODVALUE_DOT_H
+#	include <wg_modvalue.h>
 #endif
+
+#ifndef WG_EDITALUEFIELD_DOT_H
+#	include <wg_editvaluefield.h>
+#endif
+
 
 #ifndef WG_CARET_DOT_H
 #	include <wg_caret.h>
 #endif
 
-class WgIEditText;
-typedef	WgIStrongPtr<WgIEditText,WgIModifTextPtr>		WgIEditTextPtr;
-typedef	WgWeakPtr<WgIEditText,WgIModifTextPtr>		WgIEditTextWeakPtr;
+class WgEditValue;
+typedef	WgIStrongPtr<WgEditValue,WgModValuePtr>		WgEditValuePtr;
+typedef	WgIWeakPtr<WgEditValue,WgModValuePtr>		WgEditValueWeakPtr;
 
 /**
- * @brief Interface to a text field with editable text
+ * @brief Interface to a value display field with editable text
  * 
- * The text in an editable text field can be set through the API, and is
+ * The value in an editable value field can be set through the API, and is
  * editable through the UI.
  * 
  */
  
-class WgIEditText : public WgIModifText
+class WgEditValue : public WgModValue
 {
 public:
+	WgEditValue(WgEditValueField * pField) : WgModValue(pField) {}
+
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
-	static WgIEditTextPtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	static WgEditValuePtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
 
 	virtual void			SetEditMode(WgTextEditMode mode) = 0;
 	virtual WgTextEditMode	EditMode() const = 0;
@@ -60,21 +67,28 @@ public:
 	virtual void			SetCursorSkin( const WgCaretPtr& pCursor ) = 0;
 	virtual WgCaretPtr		CursorSkin() const = 0;
 
+	// Calling these methods gets field into edit mode, displaying cursor.
+
 	virtual int				InsertAtCursor( const WgCharSeq& str ) = 0;
 	virtual bool			InsertAtCursor( Uint16 c ) = 0;
 
-	virtual void			GoBOL() = 0;
-	virtual void			GoEOL() = 0;
-	virtual void			GoBOF() = 0;
-	virtual void			GoEOF() = 0;
+	virtual int				Append( const WgCharSeq& seq ) = 0;
+	virtual int				Insert( int ofs, const WgCharSeq& seq ) = 0;
+	virtual int				Replace( int ofs, int nDelete, const WgCharSeq& seq ) = 0;
+	virtual int				Delete( int ofs, int len ) = 0;
+	virtual void			DeleteSelected() = 0;
 
 	virtual void			Select( int ofs, int len ) = 0;
 	virtual void			SelectAll() = 0;
 	virtual int				SelectionStart() const = 0;
 	virtual int				SelectionLength() const = 0;
 	virtual void			ClearSelection() = 0;
-	virtual void			DeleteSelected() = 0;
+
+	virtual void			GoBOL() = 0;
+	virtual void			GoEOL() = 0;
+	virtual void			GoBOF() = 0;
+	virtual void			GoEOF() = 0;
 };
 
 
-#endif //WG_IEDITTEXT_DOT_H
+#endif //WG_EDITVALUE_DOT_H

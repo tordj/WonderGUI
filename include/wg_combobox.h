@@ -35,7 +35,9 @@
 #	include <wg_eventhandler.h>
 #endif
 
-#include <wg_textfield.h>
+#ifndef WG_EDITTEXT_DOT_H
+#	include <wg_edittext.h>
+#endif
 
 class WgMenuItem;
 
@@ -48,10 +50,16 @@ class WgCombobox : public WgWidget, public WgTextHolder
 public:
 	static WgComboboxPtr	Create() { return WgComboboxPtr(new WgCombobox()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
-	static const char	CLASSNAME[];
+	bool					IsInstanceOf( const char * pClassName ) const;
+	const char *			ClassName( void ) const;
+	static const char		CLASSNAME[];
 	static WgComboboxPtr	Cast( const WgObjectPtr& pObject );
+
+	//____ Interfaces ______________________________________
+
+	WgEditText		text;
+
+	//____ Methods _________________________________________
 
 	void			SetMenu( const WgMenuPtr& pMenu );
 	WgMenuPtr		Menu( ) const;
@@ -72,8 +80,6 @@ public:
 
 	int				InsertTextAtCursor( const WgCharSeq& str );
 	bool			InsertCharAtCursor( Uint16 c );
-
-	inline WgIStaticTextPtr	Text() { return WgIStaticTextPtr(this,&m_text); } 
 
 	// Press in textfield:
 	//		Editable - Grab input focus.

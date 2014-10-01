@@ -21,12 +21,12 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_staticvaluefield.h>
+#include <wg_valuefield.h>
 
 
 //____ Constructor _____________________________________________________________
 
-WgStaticValueFieldBase::WgStaticValueFieldBase()
+WgValueField::WgValueField()
 {
 	m_value = 0;
 	m_alignment = WG_EAST;
@@ -35,14 +35,14 @@ WgStaticValueFieldBase::WgStaticValueFieldBase()
 
 //____ Destructor ______________________________________________________________
 
-WgStaticValueFieldBase::~WgStaticValueFieldBase()
+WgValueField::~WgValueField()
 {
 	
 }
 
 //____ SetFormat() _____________________________________________________________
 
-void WgStaticValueFieldBase::SetFormat( const WgValueFormatPtr& pFormat )
+void WgValueField::SetFormat( const WgValueFormatPtr& pFormat )
 {
 	if( m_pFormat != pFormat )
 	{
@@ -53,7 +53,7 @@ void WgStaticValueFieldBase::SetFormat( const WgValueFormatPtr& pFormat )
 
 //____ SetProperties() _________________________________________________________
 
-void WgStaticValueFieldBase::SetProperties( const WgTextpropPtr& pProp )
+void WgValueField::SetProperties( const WgTextpropPtr& pProp )
 {
 	if( m_pProp != pProp )
 	{
@@ -65,14 +65,14 @@ void WgStaticValueFieldBase::SetProperties( const WgTextpropPtr& pProp )
 
 //____ ClearProperties() _______________________________________________________
 
-void WgStaticValueFieldBase::ClearProperties()
+void WgValueField::ClearProperties()
 {
 		SetProperties( 0 );
 }
 
 //____ SetAlignment() __________________________________________________________
 
-void WgStaticValueFieldBase::SetAlignment( WgOrigo alignment )
+void WgValueField::SetAlignment( WgOrigo alignment )
 {
 	if( alignment != m_alignment )
 	{
@@ -83,7 +83,7 @@ void WgStaticValueFieldBase::SetAlignment( WgOrigo alignment )
 
 //____ SetAutoEllipsis() _______________________________________________________
 
-void WgStaticValueFieldBase::SetAutoEllipsis(bool bAutoEllipsis)
+void WgValueField::SetAutoEllipsis(bool bAutoEllipsis)
 {
 	if( bAutoEllipsis != m_bAutoEllipsis )
 	{
@@ -94,7 +94,7 @@ void WgStaticValueFieldBase::SetAutoEllipsis(bool bAutoEllipsis)
 
 
 
-void WgStaticValueFieldBase::_setValue( Sint64 value )
+void WgValueField::_setValue( Sint64 value )
 {
 	if( value != m_value )
 	{
@@ -103,12 +103,12 @@ void WgStaticValueFieldBase::_setValue( Sint64 value )
 	}
 }
 
-void WgStaticValueFieldBase::_recalcSize()
+void WgValueField::_recalcSize()
 {
 	
 }
 
-void WgStaticValueFieldBase::_regenText()
+void WgValueField::_regenText()
 {
 
 	

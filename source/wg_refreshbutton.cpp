@@ -33,7 +33,7 @@ const char WgRefreshButton::CLASSNAME[] = {"RefreshButton"};
 
 //____ Constructor ____________________________________________________________
 
-WgRefreshButton::WgRefreshButton()
+WgRefreshButton::WgRefreshButton() : refreshText(&m_refreshText)
 {
 	m_pRefreshAnim		= 0;
 	m_animTarget		= BUTTON_CENTERED;
@@ -105,15 +105,6 @@ void WgRefreshButton::SetRefreshMode( RefreshMode mode )
 void WgRefreshButton::SetAnimTarget( AnimTarget target )
 {
 	m_animTarget = target;
-	if( m_bRefreshing )
-		_requestRender();
-}
-
-//_____________________________________________________________________________
-void WgRefreshButton::SetRefreshText( const WgCharSeq& text )
-{
-	m_refreshText.Set( text );
-
 	if( m_bRefreshing )
 		_requestRender();
 }

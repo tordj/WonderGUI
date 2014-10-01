@@ -30,8 +30,12 @@
 #	include <wg_textfield.h>
 #endif
 
-#ifndef	WG_ICONFIELD_DOT_H
-#	include <wg_iconfield.h>
+#ifndef WG_MODTEXT_DOT_H
+#	include <wg_modtext.h>
+#endif
+
+#ifndef	WG_ICON_DOT_H
+#	include <wg_icon.h>
 #endif
 
 class WgButton;
@@ -50,15 +54,17 @@ public:
 	static const char	CLASSNAME[];
 	static WgButtonPtr	Cast( const WgObjectPtr& pObject );
 
+	//____ Interfaces ______________________________________
+
+	WgModText		label;
+	WgIcon			icon;
+
 	//____ Methods __________________________________________
 
 	void			SetDownWhenMouseOutside( bool bDown );
 	bool			DownWhenMouseOutside() const { return m_bDownOutside; }
 	int				TextAreaWidth();
 	
-	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
-	inline WgIIconPtr		Icon() 	{ return WgIIconPtr(this,&m_icon); }
-
 	virtual int		HeightForWidth( int width ) const;
 //	virtual int		WidthForHeight( int height ) const;
 

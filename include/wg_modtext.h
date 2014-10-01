@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef WG_IMODIFTEXT_DOT_H
-#define WG_IMODIFTEXT_DOT_H
+#ifndef WG_MODTEXT_DOT_H
+#define WG_MODTEXT_DOT_H
 
-#ifndef WG_ISTATICTEXT_DOT_H
-#	include <wg_istatictext.h>
+#ifndef WG_TEXT_DOT_H
+#	include <wg_text.h>
 #endif
 
 #ifndef WG_POINTERS_DOT_H
@@ -56,9 +56,9 @@ class WgCharSeq;
 class WgString;
 class WgCharBuffer;
 
-class WgIModifText;
-typedef	WgIStrongPtr<WgIModifText,WgIStaticTextPtr>		WgIModifTextPtr;
-typedef	WgWeakPtr<WgIModifText,WgIStaticTextPtr>		WgIModifTextWeakPtr;
+class WgModText;
+typedef	WgIStrongPtr<WgModText,WgTextPtr>	WgModTextPtr;
+typedef	WgIWeakPtr<WgModText,WgTextWeakPtr>	WgModTextWeakPtr;
 
 /**
  * @brief Interface to a text field with text that is modifiable through the api
@@ -68,25 +68,27 @@ typedef	WgWeakPtr<WgIModifText,WgIStaticTextPtr>		WgIModifTextWeakPtr;
  * 
 */
  
-class WgIModifText : public WgIStaticText
+class WgModText : public WgText
 {
 public:
+	WgModText( WgTextField * pField ) : WgText(pField) {};
+
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
-	static WgIModifTextPtr		Cast( const WgInterfacePtr& pInterface );
+	static WgModTextPtr		Cast( const WgInterfacePtr& pInterface );
 
-	virtual void				Clear() = 0;
+	inline void				Clear() { m_pField->Clear(); }
 
-	virtual void				Set( const WgCharSeq& seq ) = 0;
-	virtual void				Set( const WgCharBuffer * buffer ) = 0;
-	virtual void				Set( const WgString& str ) = 0;
+	inline void				Set( const WgCharSeq& seq ) { m_pField->Set(seq); }
+	inline void				Set( const WgCharBuffer * pBuffer ) { m_pField->Set(pBuffer); }
+	inline void				Set( const WgString& str ) { m_pField->Set(str); }
 
-	virtual int					Append( const WgCharSeq& seq ) = 0;
-	virtual int					Insert( int ofs, const WgCharSeq& seq ) = 0;
-	virtual int					Replace( int ofs, int nDelete, const WgCharSeq& seq ) = 0;
-	virtual int					Delete( int ofs, int len ) = 0;
+	inline int				Append( const WgCharSeq& seq ) { return m_pField->Append(seq); }
+	inline int				Insert( int ofs, const WgCharSeq& seq ) { return m_pField->Insert(ofs,seq); }
+	inline int				Replace( int ofs, int len, const WgCharSeq& seq ) { return m_pField->Replace(ofs,len,seq); }
+	inline int				Delete( int ofs, int len ) { return m_pField->Delete(ofs,len); }
 };
 
 
-#endif //WG_IMODIFTEXT_DOT_H
+#endif //WG_MODTEXT_DOT_H

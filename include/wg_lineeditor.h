@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef	WG_EDITTEXT_DOT_H
+#	include <wg_edittext.h>
 #endif
 
 #ifndef WG_CARETINSTANCE_DOT_H
@@ -51,6 +51,9 @@ public:
 	static const char	CLASSNAME[];
 	static WgLineEditorPtr	Cast( const WgObjectPtr& pObject );
 
+	//____ Interfaces ______________________________________
+
+	WgEditText		text;
 
 	//____ Methods __________________________________________
 
@@ -64,8 +67,6 @@ public:
 
 	virtual void			SetEditMode(WgTextEditMode mode);
 	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
-
-	inline WgIEditTextPtr	Text() { return WgIEditTextPtr(this,&m_text); } 
 
 	WgSize		PreferredSize() const;
 	bool		IsAutoEllipsisDefault() const { return false; };

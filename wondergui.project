@@ -136,6 +136,7 @@
     <File Name="source/wg_caretinstance.cpp"/>
     <File Name="include/wg_togglegroup.h"/>
     <File Name="source/wg_togglegroup.cpp"/>
+    <File Name="include/wondergui.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Widgets">
     <File Name="include/wg_animplayer.h"/>
@@ -240,39 +241,38 @@
     <File Name="include/wg_shadercapsule.h"/>
     <File Name="source/wg_sizecapsule.cpp"/>
     <File Name="include/wg_sizecapsule.h"/>
-    <File Name="include/wondergui.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Interfaces">
-    <File Name="include/wg_iedittext.h"/>
-    <File Name="include/wg_imodiftext.h"/>
-    <File Name="include/wg_istatictext.h"/>
-    <File Name="source/wg_iedittext.cpp"/>
-    <File Name="source/wg_imodiftext.cpp"/>
-    <File Name="source/wg_istatictext.cpp"/>
     <File Name="include/wg_iwidgets.h"/>
     <File Name="source/wg_iwidgets.cpp"/>
-    <File Name="include/wg_iicon.h"/>
-    <File Name="source/wg_iicon.cpp"/>
-    <File Name="include/wg_istaticvalue.h"/>
-    <File Name="source/wg_istaticvalue.cpp"/>
-    <File Name="include/wg_ieditvalue.h"/>
-    <File Name="include/wg_imodifvalue.h"/>
-    <File Name="source/wg_ieditvalue.cpp"/>
-    <File Name="source/wg_imodifvalue.cpp"/>
+    <File Name="include/wg_text.h"/>
+    <File Name="source/wg_text.cpp"/>
+    <File Name="include/wg_modtext.h"/>
+    <File Name="source/wg_modtext.cpp"/>
+    <File Name="include/wg_icon.h"/>
+    <File Name="source/wg_icon.cpp"/>
+    <File Name="include/wg_edittext.h"/>
+    <File Name="source/wg_edittext.cpp"/>
+    <File Name="include/wg_value.h"/>
+    <File Name="include/wg_modvalue.h"/>
+    <File Name="include/wg_editvalue.h"/>
+    <File Name="source/wg_value.cpp"/>
+    <File Name="source/wg_modvalue.cpp"/>
+    <File Name="source/wg_editvalue.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release"/>
   <Dependencies Name="Debug"/>
-  <VirtualDirectory Name="Fields">
+  <VirtualDirectory Name="Items">
     <File Name="include/wg_textfield.h"/>
     <File Name="source/wg_textfield.cpp"/>
     <File Name="include/wg_iconfield.h"/>
     <File Name="source/wg_iconfield.cpp"/>
     <File Name="include/wg_editvaluefield.h"/>
-    <File Name="include/wg_modifvaluefield.h"/>
-    <File Name="include/wg_staticvaluefield.h"/>
     <File Name="source/wg_editvaluefield.cpp"/>
-    <File Name="source/wg_modifvaluefield.cpp"/>
-    <File Name="source/wg_staticvaluefield.cpp"/>
+    <File Name="include/wg_valuefield.h"/>
+    <File Name="include/wg_modvaluefield.h"/>
+    <File Name="source/wg_valuefield.cpp"/>
+    <File Name="source/wg_modvaluefield.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

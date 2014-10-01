@@ -26,8 +26,8 @@
 #	include <wg_button.h>
 #endif
 
-#ifndef	WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef	WG_MODTEXT_DOT_H
+#	include <wg_modtext.h>
 #endif
 
 class WgRefreshButton;
@@ -45,6 +45,10 @@ public:
 	const char *ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgRefreshButtonPtr	Cast( const WgObjectPtr& pObject );
+
+	//____ Interfaces ______________________________________
+
+	WgModText	refreshText;
 
 	//____ Methods __________________________________________
 
@@ -69,9 +73,6 @@ public:
 
 	void			SetAnimTarget( AnimTarget target );
 	AnimTarget		GetAnimTarget() const { return m_animTarget; }
-
-	void			SetRefreshText( const WgCharSeq& text );
-	inline WgIModifTextPtr	RefreshText() { return WgIModifTextPtr(this,&m_refreshText); } 
 
 	void			SetRestartable( bool bRestartable );
 	bool			IsRestartable() const { return m_bRestartable; }

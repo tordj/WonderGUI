@@ -20,35 +20,9 @@
 
 =========================================================================*/
 
-#include <wg_imodiftext.h>
+#include <wg_widget.h>
+#include <wg_modvaluefield.h>
 
-const char WgIModifText::CLASSNAME[] = {"IModifText"};
 
 
-//____ IsInstanceOf() _________________________________________________________
-
-bool WgIModifText::IsInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgIStaticText::IsInstanceOf(pClassName);
-}
-
-//____ ClassName() ____________________________________________________________
-
-const char * WgIModifText::ClassName( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ Cast() _________________________________________________________________
-
-WgIModifTextPtr WgIModifText::Cast( const WgInterfacePtr& pInterface )
-{
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgIModifTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgIModifText*>( pInterface.GetRealPtr()) );
-
-	return 0;
-}
 

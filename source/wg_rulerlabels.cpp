@@ -52,14 +52,14 @@ WgRulerLabelsPtr WgRulerLabels::Cast( const WgObjectPtr& pObject )
 void WgRulerLabels::AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProps, float offset, WgOrigo origo )
 {
 	Label * pLabel = new Label();
-	pLabel->text.Set(text);
-	pLabel->text.SetProperties(pProps);
-	pLabel->text.SetAlignment(origo);
-    pLabel->text.SetManager(m_pTextManager);
+	pLabel->textField.Set(text);
+	pLabel->textField.SetProperties(pProps);
+	pLabel->textField.SetAlignment(origo);
+    pLabel->textField.SetManager(m_pTextManager);
 	pLabel->offset = offset;
 
     if( m_labels.IsEmpty() )
-        pLabel->text._setHolder(this);
+        pLabel->textField._setHolder(this);
     
 	m_labels.PushBack(pLabel);
 	_requestResize();
@@ -86,7 +86,7 @@ void WgRulerLabels::SetTextManager( WgTextManager * pTextManager )
         Label * p = m_labels.First();
         while( p )
         {
-            p->text.SetManager(pTextManager);
+            p->textField.SetManager(pTextManager);
             p = p->Next();
         }
     }
@@ -95,12 +95,12 @@ void WgRulerLabels::SetTextManager( WgTextManager * pTextManager )
 
 //____ GetLabel() ________________________________________________________________
 
-WgIModifTextPtr	WgRulerLabels::GetLabel(int index)
+WgModTextPtr	WgRulerLabels::GetLabel(int index)
 {
 	if( index >= m_labels.Size() )
-		return WgIModifTextPtr();
+		return WgModTextPtr();
 
-	return WgIModifTextPtr(this, &m_labels.Get(index)->text);
+	return WgModTextPtr(this, &m_labels.Get(index)->textInterface);
 }
 
 
@@ -118,11 +118,11 @@ WgSize WgRulerLabels::PreferredSize() const
 		Label * pLabel = m_labels.First();
 		while( pLabel )
         {
-            int w = pLabel->text.unwrappedWidth();
+            int w = pLabel->textField.unwrappedWidth();
             if( w > preferred.w )
                 preferred.w = w;
   
-            preferred.h += pLabel->text.getLine(0)->lineSpacing;            
+            preferred.h += pLabel->textField.getLine(0)->lineSpacing;
             pLabel = pLabel->Next();
         }
     }
@@ -131,7 +131,7 @@ WgSize WgRulerLabels::PreferredSize() const
 		Label * pLabel = m_labels.First();
 		while( pLabel )
         {
-            WgSize sz = pLabel->text.unwrappedSize();
+            WgSize sz = pLabel->textField.unwrappedSize();
             preferred.w += sz.w;
             
             if( sz.h > preferred.h )
@@ -165,12 +165,12 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		Label * pLabel = m_labels.First();
 		while( pLabel )
 		{
-			int height = pLabel->text.Height();
+			int height = pLabel->textField.Height();
 			int ofs = (int) (canvas.h * pLabel->offset);
 			if( m_direction == WG_UP )
 				ofs = canvas.h - ofs;
 			
-			switch( pLabel->text.Alignment() )
+			switch( pLabel->textField.Alignment() )
 			{
 				case WG_NORTHWEST:
 				case WG_NORTH:
@@ -188,7 +188,7 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 					break;
 			}
 			
-			pDevice->PrintText( _clip, &pLabel->text, WgRect( canvas.x, canvas.y + ofs, canvas.w, height ) );				
+			pDevice->PrintText( _clip, &pLabel->textField, WgRect( canvas.x, canvas.y + ofs, canvas.w, height ) );
 			pLabel = pLabel->Next();
 		}
 	}
@@ -197,12 +197,12 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		Label * pLabel = m_labels.First();
 		while( pLabel )
 		{
-			int width = pLabel->text.Width();
+			int width = pLabel->textField.Width();
 			int ofs = (int) (canvas.w * pLabel->offset);
 			if( m_direction == WG_LEFT )
 				ofs = canvas.w - ofs;
 			
-			switch( pLabel->text.Alignment() )
+			switch( pLabel->textField.Alignment() )
 			{
 				case WG_NORTHWEST:
 				case WG_SOUTHWEST:
@@ -220,7 +220,7 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 					break;
 			}
 			
-			pDevice->PrintText( _clip, &pLabel->text, WgRect( canvas.x + ofs, canvas.y, width, canvas.h ) );				
+			pDevice->PrintText( _clip, &pLabel->textField, WgRect( canvas.x + ofs, canvas.y, width, canvas.h ) );
 			pLabel = pLabel->Next();
 		}
 	}
@@ -258,7 +258,7 @@ void WgRulerLabels::_onStateChanged( WgState oldState )
 	Label * p = m_labels.First();
 	while( p )
 	{
-		p->text.setState(m_state);
+		p->textField.setState(m_state);
 		p = p->Next();
 	}
 }
@@ -272,7 +272,7 @@ void WgRulerLabels::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& 
 	Label * p = m_labels.First();
 	while( p )
 	{
-		p->text.SetColorSkin(pNewSkin);
+		p->textField.SetColorSkin(pNewSkin);
 		p = p->Next();
 	}
 

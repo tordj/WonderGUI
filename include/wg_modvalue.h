@@ -20,21 +20,24 @@
 
 =========================================================================*/
 
-#ifndef WG_IMODIFVALUE_DOT_H
-#define WG_IMODIFVALUE_DOT_H
+#ifndef WG_MODVALUE_DOT_H
+#define WG_MODVALUE_DOT_H
 
-#ifndef WG_ISTATICVALUE_DOT_H
-#	include <wg_istaticvalue.h>
+#ifndef WG_VALUE_DOT_H
+#	include <wg_value.h>
 #endif
 
+#ifndef WG_MODVALUEFIELD_DOT_H
+#	include <wg_modvaluefield.h>
+#endif
 
 class WgCharSeq;
 class WgString;
 class WgCharBuffer;
 
-class WgIModifValue;
-typedef	WgIStrongPtr<WgIModifValue,WgIStaticValuePtr>	WgIModifValuePtr;
-typedef	WgWeakPtr<WgIModifValue,WgIStaticValuePtr>		WgIModifValueWeakPtr;
+class WgModValue;
+typedef	WgIStrongPtr<WgModValue,WgValuePtr>	WgModValuePtr;
+typedef	WgIWeakPtr<WgModValue,WgValuePtr>	WgModValueWeakPtr;
 
 /**
  * @brief Interface to a value field where the value is modifiable through the api
@@ -44,13 +47,15 @@ typedef	WgWeakPtr<WgIModifValue,WgIStaticValuePtr>		WgIModifValueWeakPtr;
  * 
 */
 
-class WgIModifValue : public WgIStaticValue
+class WgModValue : public WgValue
 {
 public:
+	WgModValue(WgModValueField * pField) : WgValue(pField) {}
+
 	virtual bool				IsInstanceOf( const char * pClassName ) const;
 	virtual const char *		ClassName( void ) const;
 	static const char			CLASSNAME[];
-	static WgIModifValuePtr		Cast( const WgInterfacePtr& pInterface );
+	static WgModValuePtr		Cast( const WgInterfacePtr& pInterface );
 
 	virtual void				Set( int value ) = 0;
 	virtual void				Set( Sint64 value ) = 0;
@@ -68,4 +73,4 @@ public:
 };
 
 
-#endif //WG_IMODIFVALUE_DOT_H
+#endif //WG_MODVALUE_DOT_H

@@ -20,34 +20,34 @@
 
 =========================================================================*/
 
-#include <wg_imodifvalue.h>
+#include <wg_modtext.h>
 
-const char WgIModifValue::CLASSNAME[] = {"IModifValue"};
+const char WgModText::CLASSNAME[] = {"ModText"};
 
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgIModifValue::IsInstanceOf( const char * pClassName ) const
+bool WgModText::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgIStaticValue::IsInstanceOf(pClassName);
+	return WgText::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgIModifValue::ClassName( void ) const
+const char * WgModText::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgIModifValuePtr WgIModifValue::Cast( const WgInterfacePtr& pInterface )
+WgModTextPtr WgModText::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgIModifValuePtr( pInterface.GetRealObjectPtr(), static_cast<WgIModifValue*>( pInterface.GetRealPtr()) );
+		return WgModTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgModText*>( pInterface.GetRealPtr()) );
 
 	return 0;
 }

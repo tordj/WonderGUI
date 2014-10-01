@@ -33,7 +33,7 @@ const char WgButton::CLASSNAME[] = {"Button"};
 
 //____ Constructor ____________________________________________________________
 
-WgButton::WgButton()
+WgButton::WgButton() : label(&m_text), icon(&m_icon)
 {
 	m_text.SetAlignment( WG_CENTER );
 	m_text.setLineWidth(Size().w);					// We start with no textborders...

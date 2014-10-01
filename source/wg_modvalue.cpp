@@ -20,34 +20,34 @@
 
 =========================================================================*/
 
-#include <wg_iedittext.h>
+#include <wg_modvalue.h>
 
-const char WgIEditText::CLASSNAME[] = {"IEditText"};
+const char WgModValue::CLASSNAME[] = {"ModValue"};
 
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgIEditText::IsInstanceOf( const char * pClassName ) const
+bool WgModValue::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgIModifText::IsInstanceOf(pClassName);
+	return WgValue::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgIEditText::ClassName( void ) const
+const char * WgModValue::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgIEditTextPtr WgIEditText::Cast( const WgInterfacePtr& pInterface )
+WgModValuePtr WgModValue::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgIEditTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgIEditText*>(pInterface.GetRealPtr()) );
+		return WgModValuePtr( pInterface.GetRealObjectPtr(), static_cast<WgModValue*>( pInterface.GetRealPtr()) );
 
 	return 0;
 }

@@ -345,19 +345,6 @@ bool WgTablist::SetTabText( int id, const WgCharSeq& text )
 	return false;
 }
 
-//____ SetTabTextColor() ____________________________________________________________
-bool WgTablist::SetTabTextColor( int id, WgColor col )
-{
-	WgTab * pTab = _findTab(id);
-	if( pTab )
-	{
-		pTab->m_text.SetColor( col );
-		_requestRender();
-		return true;
-	}
-	return false;
-}
-
 //____ SelectTab() ____________________________________________________________
 
 bool WgTablist::SelectTab( int id )

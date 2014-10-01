@@ -147,11 +147,11 @@ WgPackList::WgPackList()
 	header.m_height = 0;
 	header.m_width = 0;
 	header.m_bPressed = false;
-	header.icon._setHolder(&header);
-	header.arrow._setHolder(&header);
-	header.label._setHolder(&header);
-	header.label.SetWrap(false);			// Labels by default don't wrap.
-	header.label.SetAlignment( WG_WEST );
+	header.m_icon._setHolder(&header);
+	header.m_arrow._setHolder(&header);
+	header.m_label._setHolder(&header);
+	header.m_label.SetWrap(false);			// Labels by default don't wrap.
+	header.m_label.SetAlignment( WG_WEST );
 }
 
 //____ Destructor _____________________________________________________________
@@ -540,7 +540,7 @@ void WgPackList::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, c
 		WgRect canvas = _headerGeo() + _canvas.Pos();
 
 		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
-			_renderHeader( pDevice, canvas, *pRect, header.m_pSkin, &header.label, &header.icon, &header.arrow, header.m_state, true, bInvertedSort );
+			_renderHeader( pDevice, canvas, *pRect, header.m_pSkin, &header.m_label, &header.m_icon, &header.m_arrow, header.m_state, true, bInvertedSort );
 	}
 
 	// Render Lasso
@@ -1578,9 +1578,9 @@ WgSize WgPackList::_windowPadding() const
 
 void WgPackList::_refreshHeader()
 {
-	WgSize wantedIconSize = header.icon.PreferredSize();
-	WgSize wantedArrowSize = header.arrow.PreferredSize();
-	WgSize wantedTextSize = header.label.unwrappedSize();
+	WgSize wantedIconSize = header.m_icon.PreferredSize();
+	WgSize wantedArrowSize = header.m_arrow.PreferredSize();
+	WgSize wantedTextSize = header.m_label.unwrappedSize();
 
 	WgSize wantedSize;
 
@@ -1589,12 +1589,12 @@ void WgPackList::_refreshHeader()
 
 	wantedSize.h = WgMax(wantedIconSize.h, wantedArrowSize.h, wantedTextSize.h );
 	wantedSize.w = wantedTextSize.w;
-	if( header.icon.Overlap() )
+	if( header.m_icon.Overlap() )
 		wantedSize.w = WgMax(wantedSize.w,wantedIconSize.w);
 	else
 		wantedSize.w += wantedIconSize.w;
 
-	if( header.arrow.Overlap() )
+	if( header.m_arrow.Overlap() )
 		wantedSize.w = WgMax(wantedSize.w,wantedArrowSize.w);
 	else
 		wantedSize.w += wantedArrowSize.w;

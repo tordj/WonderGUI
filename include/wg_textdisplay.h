@@ -28,8 +28,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef	WG_EDITTEXT_DOT_H
+#	include <wg_edittext.h>
 #endif
 
 #ifndef WG_CARETINSTANCE_DOT_H
@@ -50,6 +50,10 @@ public:
 	static const char	CLASSNAME[];
 	static WgTextDisplayPtr	Cast( const WgObjectPtr& pObject );
 
+	//____ Interfaces ______________________________________
+
+	WgEditText		text;
+
 	//____ Methods __________________________________________
 
 	inline void		SetMaxLines( int nLines ) { m_maxLines = nLines; }
@@ -63,8 +67,6 @@ public:
 
 	WgPointerStyle		PointerStyle() const;
 	WgString			TooltipString() const;
-
-	inline WgIEditTextPtr	Text() { return WgIEditTextPtr(this,&m_text); } 
 
 	int		HeightForWidth( int width ) const;
 	WgSize	PreferredSize() const;

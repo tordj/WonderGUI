@@ -1033,17 +1033,17 @@ bool WgRangeUpdateEvent::IsFinal() const
 
 const char WgTextEditEvent::CLASSNAME[] = {"TextEditEvent"};
 
-WgIEditTextPtr WgTextEditEvent::Text() const
+WgEditTextPtr WgTextEditEvent::Text() const
 {
 	return m_pText;
 }
 
-WgTextEditEvent::WgTextEditEvent( WgWidget * pWidget, WgTextField * pText, bool bFinal )
+WgTextEditEvent::WgTextEditEvent( WgWidget * pWidget, WgEditText * pText, bool bFinal )
 {
 	m_type 		= WG_EVENT_TEXT_EDIT;
 	m_pWidget 	= pWidget;
 	m_bIsForWidget	= true;
-	m_pText 	= WgIEditTextPtr(pWidget, pText);
+	m_pText 	= WgEditTextPtr(pWidget, pText);
 	m_bFinal	= bFinal;
 }
 

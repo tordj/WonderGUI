@@ -34,7 +34,7 @@ const char WgCombobox::CLASSNAME[] = {"Combobox"};
 
 //____ WgCombobox() _________________________________________________________________
 
-WgCombobox::WgCombobox( void )
+WgCombobox::WgCombobox( void ) : text(&m_text)
 {
 	m_text.SetAlignment( WG_WEST );
 	m_text.SetWrap(false);
@@ -173,7 +173,7 @@ int WgCombobox::InsertTextAtCursor( const WgCharSeq& str )
 
 	WgEventHandler * pHandler = _eventHandler();		
 	if( pHandler )
-		pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
+		pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
 
 	_adjustViewOfs();
 
@@ -198,7 +198,7 @@ bool WgCombobox::InsertCharAtCursor( Uint16 c )
 
 	WgEventHandler * pHandler = _eventHandler();		
 	if( pHandler )
-		pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
+		pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
 
 	_adjustViewOfs();
 	return true;
@@ -437,7 +437,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 				if( m_maxCharacters == 0 || m_maxCharacters > m_text.Length() )
 					m_text.putChar( pEvent->Char() );
 
-				pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
+				pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
 				_adjustViewOfs();
 			}
 			break;
@@ -500,7 +500,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 						else
 							m_text.delPrevChar();
 						
-						pHandler->QueueEvent( new WgTextEditEvent(this, &m_text, false) ); //TODO: Should only emit if text really has changed
+						pHandler->QueueEvent( new WgTextEditEvent(this, &text, false) ); //TODO: Should only emit if text really has changed
 						pHandler->SwallowEvent(_pEvent);
 						break;
 
@@ -511,7 +511,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 							m_text.delNextWord();
 						else
 							m_text.delNextChar();
-						pHandler->QueueEvent( new WgTextEditEvent(this, &m_text, false) );		//TODO: Should only emit if text really has changed
+						pHandler->QueueEvent( new WgTextEditEvent(this, &text, false) );		//TODO: Should only emit if text really has changed
 						pHandler->SwallowEvent(_pEvent);
 						break;
 
@@ -604,7 +604,7 @@ void WgCombobox::_onStateChanged( WgState oldState )
 			m_text.hideCursor();
 			m_text.ClearSelection();
 			m_bResetCursorOnFocus = true;
-			_eventHandler()->QueueEvent( new WgTextEditEvent( this, &m_text,true ) );	//TODO: Should only do if text was really changed!
+			_eventHandler()->QueueEvent( new WgTextEditEvent( this, &text,true ) );	//TODO: Should only do if text was really changed!
 		}
 	}
 }
@@ -680,7 +680,7 @@ void WgCombobox::_adjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_state.IsFocused() && m_text.Font() )
+	if( m_state.IsFocused() && m_text.Properties() && m_text.Properties()->Font() )
 	{
 		WgCaretPtr pCursor = WgTextTool::GetCursor( &m_text );
 		if( !pCursor )
@@ -760,7 +760,7 @@ void WgCombobox::_fieldModified( WgTextField * pField )
 	m_bResetCursorOnFocus = true;
 	WgEventHandler * pHandler = _eventHandler();		
 	if( pHandler )
-		pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
+		pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
 	_requestRender();
 //	_adjustViewOfs();
 }

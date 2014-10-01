@@ -32,7 +32,7 @@ const char WgTextDisplay::CLASSNAME[] = {"TextDisplay"};
 
 //____ WgTextDisplay() _________________________________________________________________
 
-WgTextDisplay::WgTextDisplay()
+WgTextDisplay::WgTextDisplay() : text(&m_text)
 {
 	m_maxLines		= 0;
     m_text._setHolder( this );
@@ -174,7 +174,7 @@ void WgTextDisplay::_onStateChanged( WgState oldState )
 			m_text.showCursor();
 			_startReceiveTicks();
 			if(	m_bResetCursorOnFocus )
-				m_text.GoEOF();
+				m_text.GoEOT();
 			_requestRender();
 		}
 		if( !m_state.IsFocused() && oldState.IsFocused() )
@@ -327,7 +327,7 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 					m_text.setSelectionMode(true);
 
 				if( modKeys & WG_MODKEY_CTRL )
-					m_text.GoBOF();
+					m_text.GoBOT();
 				else
 					m_text.GoBOL();
 				break;
@@ -337,7 +337,7 @@ void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 					m_text.setSelectionMode(true);
 
 				if( modKeys & WG_MODKEY_CTRL )
-					m_text.GoEOF();
+					m_text.GoEOT();
 				else
 					m_text.GoEOL();
 				break;

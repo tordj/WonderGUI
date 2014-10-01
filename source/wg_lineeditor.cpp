@@ -32,7 +32,7 @@ const char WgLineEditor::CLASSNAME[] = {"LineEditor"};
 
 //____ Constructor ____________________________________________________________
 
-WgLineEditor::WgLineEditor()
+WgLineEditor::WgLineEditor() : text(&m_text)
 {
 	m_text._setHolder( this );
 	m_text.SetWrap(false);
@@ -118,7 +118,7 @@ int WgLineEditor::InsertTextAtCursor( const WgCharSeq& str )
 
 	int retVal = m_text.putText( str );
 
-	_queueEvent( new WgTextEditEvent(this,&m_text,false) );
+	_queueEvent( new WgTextEditEvent(this,&text,false) );
 
 	_adjustViewOfs();
 
@@ -139,7 +139,7 @@ bool WgLineEditor::InsertCharAtCursor( Uint16 c )
 	if( !m_text.putChar( c ) )
 		return false;
 
-	_queueEvent( new WgTextEditEvent(this,&m_text,false) );
+	_queueEvent( new WgTextEditEvent(this,&text,false) );
 
 	_adjustViewOfs();
 	return true;
@@ -318,7 +318,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 			if( m_text.putChar( ch ) )
 			{
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
+					pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
 
 				_adjustViewOfs();
 			}
@@ -385,7 +385,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 					m_text.delPrevChar();
 
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
+					pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
 				break;
 			}
 
@@ -399,7 +399,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 					m_text.delNextChar();
 
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(this,&m_text,false) );
+					pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
 				break;
 			}
 
@@ -481,7 +481,7 @@ void WgLineEditor::_adjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_state.IsFocused() && m_text.Font() )
+	if( m_state.IsFocused() && m_text.Properties() && m_text.Properties()->Font() )
 	{
 		WgCaretPtr pCursor = WgTextTool::GetCursor( &m_text );
 		if( !pCursor )
@@ -592,7 +592,7 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 		if( _isEditable() || m_viewOfs != 0 )
 		{
 			_stopReceiveTicks();
-			_queueEvent( new WgTextEditEvent(this, &m_text,true) );
+			_queueEvent( new WgTextEditEvent(this, &text,true) );
 
 			m_viewOfs = 0;
 			_requestRender();

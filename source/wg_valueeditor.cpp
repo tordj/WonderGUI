@@ -38,7 +38,7 @@ const char WgValueEditor::CLASSNAME[] = {"ValueEditor"};
 
 //____ WgValueEditor() _________________________________________________________________
 
-WgValueEditor::WgValueEditor()
+WgValueEditor::WgValueEditor() : text(&m_text)
 {
 	m_text._setHolder(this);
 	_regenText();
@@ -193,7 +193,7 @@ void WgValueEditor::_fieldModified( WgTextField * pField )
 
 void WgValueEditor::_onRefresh( void )
 {
-	if( m_text.Font() )
+	if( m_text.Properties() && m_text.Properties()->Font() )
 		_regenText();
 
 	WgWidget::_onRefresh();

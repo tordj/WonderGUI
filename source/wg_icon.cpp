@@ -13,16 +13,42 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-
+	
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
 
-#include <wg_widget.h>
-#include <wg_modifvaluefield.h>
+#include <wg_icon.h>
+
+const char WgIcon::CLASSNAME[] = {"Icon"};
 
 
+//____ IsInstanceOf() _________________________________________________________
 
+bool WgIcon::IsInstanceOf( const char * pClassName ) const
+{ 
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgInterface::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgIcon::ClassName( void ) const
+{ 
+	return CLASSNAME; 
+}
+
+//____ Cast() _________________________________________________________________
+
+WgIconPtr WgIcon::Cast( const WgInterfacePtr& pInterface )
+{
+	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
+		return WgIconPtr( pInterface.GetRealObjectPtr(), static_cast<WgIcon*>( pInterface.GetRealPtr()) );
+
+	return 0;
+}
 

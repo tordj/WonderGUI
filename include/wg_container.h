@@ -28,6 +28,8 @@
 #endif
 
 class WgPatches;
+class WgModalLayer;
+class WgPopupLayer;
 
 class WgContainer;
 typedef	WgStrongPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;

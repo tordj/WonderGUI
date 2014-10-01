@@ -30,12 +30,12 @@
 #	include <wg_hookarray.h>
 #endif
 
-#ifndef WG_ICONFIELD_DOT_H
-#	include <wg_iconfield.h>
+#ifndef WG_ICON_DOT_H
+#	include <wg_icon.h>
 #endif
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_MODTEXT_DOT_H
+#	include <wg_modtext.h>
 #endif
 
 class WgPackList;
@@ -130,16 +130,18 @@ public:
 	{
 		friend class WgPackList;
 	public:
-		WgIconField			icon;
-		WgIconField			arrow;
-		WgTextField			label;
+		Header() : icon(&m_icon), arrow(&m_arrow), label(&m_label) {}
+		//____ Interfaces __________________________________
+
+		WgIcon		icon;
+		WgIcon		arrow;
+		WgModText	label;
+
+		//____ Methods _____________________________________
 
 		void				SetSkin( const WgSkinPtr& pSkin );
 		inline WgSkinPtr	Skin() const { return m_pSkin; }
 
-		inline WgIIconPtr		Icon() { return WgIIconPtr(m_pHolder, &icon); }
-		inline WgIIconPtr		Arrow() { return WgIIconPtr(m_pHolder, &arrow); }
-		inline WgIModifTextPtr	Label() { return WgIModifTextPtr(m_pHolder, &label); }
 	private:
 		void				_fieldModified( WgTextField * pText );
 		void				_fieldModified( WgIconField * pField );
@@ -150,6 +152,11 @@ public:
 		int					m_width;
 		WgState				m_state;
 		bool				m_bPressed;
+
+		WgIconField			m_icon;
+		WgIconField			m_arrow;
+		WgTextField			m_label;
+
 	};
 
 	Header		header;

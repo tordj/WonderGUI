@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef	WG_TEXT_DOT_H
+#	include <wg_text.h>
 #endif
 
 #ifndef WG_VALUEFORMAT_DOT_H
@@ -59,6 +59,9 @@ public:
 	static const char	CLASSNAME[];
 	static WgValueDisplayPtr	Cast( const WgObjectPtr& pObject );
 
+	//____ Interfaces _______________________________________
+
+	WgText		text;
 
 	//____ Methods __________________________________________
 
@@ -66,8 +69,6 @@ public:
 	WgValueFormatPtr	Format() const { return m_pFormat; }
 
 	WgSize	PreferredSize() const;
-
-	inline WgIStaticTextPtr	Text() { return WgIStaticTextPtr(this,&m_text); } 
 
 protected:
 	WgValueDisplay();

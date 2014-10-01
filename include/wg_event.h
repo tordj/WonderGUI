@@ -41,9 +41,14 @@
 #	include <wg_pointers.h>
 #endif
 
-#ifndef WG_IEDITTEXT_DOT_H
-#	include <wg_iedittext.h>
+#ifndef WG_WIDGET_DOT_H
+#	include <wg_widget.h>
 #endif
+
+/*#ifndef WG_EDITTEXT_DOT_H
+#	include <wg_edittext.h>
+#endif
+*/
 
 class WgEventHandler;
 class WgWidget;
@@ -58,6 +63,19 @@ class WgScrollbar;
 class WgMenu;
 class WgPopupLayer;
 class WgModalLayer;
+class WgText;
+class WgModText;
+class WgEditText;
+
+typedef	WgIStrongPtr<WgText,WgInterfacePtr>	WgTextPtr;
+typedef	WgIWeakPtr<WgText,WgInterfaceWeakPtr> WgTextWeakPtr;
+
+typedef	WgIStrongPtr<WgModText,WgTextPtr>	WgModTextPtr;
+typedef	WgIWeakPtr<WgModText,WgTextWeakPtr>	WgModTextWeakPtr;
+
+typedef	WgIStrongPtr<WgEditText,WgModTextPtr>	WgEditTextPtr;
+typedef	WgIWeakPtr<WgEditText,WgModTextWeakPtr>	WgEditTextWeakPtr;
+
 
 typedef WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
 
@@ -668,18 +686,18 @@ public:
 class WgTextEditEvent : public WgEvent
 {
 public:
-	WgTextEditEvent( WgWidget * pWidget, WgTextField * pText, bool bFinal );
+	WgTextEditEvent( WgWidget * pWidget, WgEditText * pText, bool bFinal );
 
 	bool				IsInstanceOf( const char * pClassName ) const;
 	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgTextEditEventPtr	Cast( const WgObjectPtr& pObject );
 
-	WgIEditTextPtr		Text() const;
+	WgEditTextPtr		Text() const;
 	bool				IsFinal() const;
 
 protected:
-	WgIEditTextPtr		m_pText;
+	WgEditTextPtr		m_pText;
 	bool				m_bFinal;
 };
 

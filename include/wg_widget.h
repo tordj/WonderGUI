@@ -35,10 +35,6 @@
 #	include <wg_hook.h>
 #endif
 
-#ifndef WG_EVENT_DOT_H
-#	include <wg_event.h>
-#endif
-
 #ifndef WG_SKIN_DOT_H
 #	include <wg_skin.h>
 #endif
@@ -58,11 +54,15 @@ class WgPatches;
 
 class WgWidget;
 typedef	WgStrongPtr<WgWidget,WgObjectPtr>		WgWidgetPtr;
-typedef	WgWeakPtr<WgWidget,WgObjectWeakPtr>	WgWidgetWeakPtr;
+typedef	WgWeakPtr<WgWidget,WgObjectWeakPtr>		WgWidgetWeakPtr;
 
 class WgContainer;
-typedef	WgStrongPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
-typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
+typedef	WgStrongPtr<WgContainer,WgWidgetPtr>	WgContainerPtr;
+typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>	WgContainerWeakPtr;
+
+class WgEvent;
+typedef	WgStrongPtr<WgEvent,WgObjectPtr>		WgEventPtr;
+typedef	WgWeakPtr<WgEvent,WgObjectWeakPtr>			WgEventWeakPtr;
 
 
 /**

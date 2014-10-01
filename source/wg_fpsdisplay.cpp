@@ -37,7 +37,7 @@ const char WgFpsDisplay::CLASSNAME[] = {"FpsDisplay"};
 
 //____ WgFpsDisplay() _________________________________________________________________
 
-WgFpsDisplay::WgFpsDisplay( void )
+WgFpsDisplay::WgFpsDisplay( void ) : labels(&m_labelsText), values(&m_valuesText)
 {
 	m_pTickBuffer		= new int[TICK_BUFFER];
 	for( int i = 0 ; i < TICK_BUFFER ; i++ )

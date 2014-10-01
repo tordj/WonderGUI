@@ -27,12 +27,12 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_MODTEXT_DOT_H
+#	include <wg_modtext.h>
 #endif
 
-#ifndef WG_ICONFIELD_DOT_H
-#	include <wg_iconfield.h>
+#ifndef WG_ICON_DOT_H
+#	include <wg_icon.h>
 #endif
 
 class	WgSurface;
@@ -66,8 +66,14 @@ public:
 		TEXT			// Only the text is clickable.
 	};
 
-	inline WgIModifTextPtr	Label() { return WgIModifTextPtr(this,&m_text); } 
-	inline WgIIconPtr		Icon() { return WgIIconPtr(this,&m_icon); }
+
+	//____ Interfaces() ____________________________________
+
+	WgModText		label;
+	WgIcon			icon;
+
+
+	//____ Methods() _______________________________________
 
  	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
@@ -112,7 +118,7 @@ private:
 	bool			m_bReturnPressed;
 	bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 
-	WgTextField		m_text;
+	WgTextField		m_label;
 	WgIconField		m_icon;
 	WgToggleGroupPtr	m_pToggleGroup;
 

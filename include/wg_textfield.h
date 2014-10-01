@@ -27,10 +27,6 @@
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_IEDITTEXT_DOT_H
-#	include <wg_iedittext.h>
-#endif
-
 #ifndef WG_COLOR_DOT_H
 #	include <wg_color.h>
 #endif
@@ -95,7 +91,7 @@ struct WgTextLine
 
 //____ WgTextField __________________________________________________________________
 
-class WgTextField : public WgIEditText
+class WgTextField
 {
 friend class WgTextNode;
 
@@ -125,30 +121,6 @@ public:
 	void				SetLinkProperties( const WgTextpropPtr& pProp );
 	void				ClearLinkProperties();
 	WgTextpropPtr		LinkProperties() const { return m_pLinkProp; }
-
-	void				SetFont( const WgFontPtr& pFont );
-	void				ClearFont();
-	inline WgFontPtr	Font() const { return m_pBaseProp->Font(); }
-
-	void				SetColor( const WgColor color );
-	void				SetColor( const WgColor color, WgState state );
-	void				ClearColor();
-	void				ClearColor( WgState state );
-	inline WgColor		Color(WgState state) const { return m_pBaseProp->Color(state); }
-
-	void				SetStyle( WgFontStyle style );
-	void				SetStyle( WgFontStyle style, WgState state );
-	void				ClearStyle();
-	void				ClearStyle( WgState state );
-	WgFontStyle			Style(WgState state) const { return m_pBaseProp->Style(state); }
-
-	void				SetBreakLevel( int level );
-	void				ClearBreakLevel();
-	inline int			BreakLevel() const { return m_pBaseProp->BreakLevel(); }
-
-	void				SetLink( const WgTextLinkPtr& pLink );
-	void				ClearLink();
-	WgTextLinkPtr		Link() const { return m_pBaseProp->Link(); }
 
 	bool				SetMaxChars( int max );
 	int					MaxChars() const { return m_maxChars; }
@@ -204,8 +176,8 @@ public:
 	int					InsertAtCursor( const WgCharSeq& str ) { return putText(str); }
 	bool				InsertAtCursor( Uint16 c ) { return putChar(c); }
 
-	inline void			GoBOF(){ if(m_pCursor) m_pCursor->goBOF(); }
-	inline void			GoEOF(){ if(m_pCursor) m_pCursor->goEOF(); }
+	inline void			GoBOT(){ if(m_pCursor) m_pCursor->goBOF(); }
+	inline void			GoEOT(){ if(m_pCursor) m_pCursor->goEOF(); }
 	inline void			GoBOL(){ if(m_pCursor) m_pCursor->goBOL(); }
 	inline void			GoEOL(){ if(m_pCursor) m_pCursor->goEOL(); }
 

@@ -35,10 +35,6 @@
 #	include <wg_skin.h>
 #endif
 
-#ifndef WG_IICON_DOT_H
-#	include <wg_iicon.h>
-#endif
-
 class WgIconField;
 
 //____ WgIconHolder ___________________________________________________________
@@ -51,7 +47,7 @@ public:
 
 //____ WgIconField _____________________________________________________________
 
-class WgIconField : public WgIIcon
+class WgIconField
 {
 	friend class WgIconHolder;
 public:

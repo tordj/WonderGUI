@@ -20,14 +20,14 @@
 
 =========================================================================*/
 
-#include <wg_istaticvalue.h>
+#include <wg_text.h>
 
-const char WgIStaticValue::CLASSNAME[] = {"IStaticValue"};
+const char WgText::CLASSNAME[] = {"Text"};
 
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgIStaticValue::IsInstanceOf( const char * pClassName ) const
+bool WgText::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
@@ -37,17 +37,17 @@ bool WgIStaticValue::IsInstanceOf( const char * pClassName ) const
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgIStaticValue::ClassName( void ) const
+const char * WgText::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgIStaticValuePtr WgIStaticValue::Cast( const WgInterfacePtr& pInterface )
+WgTextPtr WgText::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgIStaticValuePtr( pInterface.GetRealObjectPtr(), static_cast<WgIStaticValue*>( pInterface.GetRealPtr()) );
+		return WgTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgText*>( pInterface.GetRealPtr()) );
 
 	return 0;
 }
