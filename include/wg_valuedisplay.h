@@ -88,7 +88,11 @@ protected:
 private:
 	void	_valueModified();				///< Called when value has been modified.
 	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
-	void	_fieldModified( WgTextField * pField );
+
+	WgObject * _object() { return this; }
+	void	_onFieldDirty( WgField * pField );
+	void	_onFieldResize( WgField * pField );
+
 
 	WgValueFormatPtr	m_pFormat;
 	WgTextField			m_text;

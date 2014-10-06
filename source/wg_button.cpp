@@ -33,13 +33,11 @@ const char WgButton::CLASSNAME[] = {"Button"};
 
 //____ Constructor ____________________________________________________________
 
-WgButton::WgButton() : label(&m_text), icon(&m_icon)
+WgButton::WgButton() : m_text(this), m_icon(this), label(&m_text), icon(&m_icon)
 {
 	m_text.SetAlignment( WG_CENTER );
 	m_text.setLineWidth(Size().w);					// We start with no textborders...
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
-	m_text._setHolder(this);
-
  	m_state				= WG_STATE_NORMAL;
 
 	m_bDownOutside	 = false;
@@ -329,15 +327,16 @@ bool WgButton::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 	return WgWidget::_onAlphaTest(ofs,sz);
 }
 
-//____ _fieldModified() __________________________________________________________
+//____ _onFieldDirty() _________________________________________________________
 
-void WgButton::_fieldModified( WgTextField * pField )
+void WgButton::_onFieldDirty( WgField * pField )
 {
-	_requestResize();
 	_requestRender();
 }
 
-void WgButton::_fieldModified( WgIconField * pField )
+//____ _onFieldResize() ________________________________________________________
+
+void WgButton::_onFieldResize( WgField * pField )
 {
 	_requestResize();
 	_requestRender();

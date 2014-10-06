@@ -2227,10 +2227,9 @@ Uint32 WgTextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int 
 
 //____ lineWidth() ____________________________________________________________
 
-Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const char * pString )
+Uint32 WgTextTool::lineWidth( const WgTextAttr& attr, const char * pString )
 {
 	WgPen pen;
-	pen.SetTextNode( pNode );
 	pen.SetAttributes( attr );
 
 	while( * pString != 0 && * pString != '\n' )
@@ -2249,10 +2248,9 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const 
 	return pen.GetPosX();
 }
 
-Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const Uint16 * pString )
+Uint32 WgTextTool::lineWidth( const WgTextAttr& attr, const Uint16 * pString )
 {
 	WgPen pen;
-	pen.SetTextNode( pNode );
 	pen.SetAttributes( attr );
 
 	while( * pString != 0 && * pString != '\n' )
@@ -2272,14 +2270,12 @@ Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const 
 }
 
 
-Uint32 WgTextTool::lineWidth( WgTextNode * pNode, const WgTextAttr& attr, WgState state, const WgChar * pString )
+Uint32 WgTextTool::lineWidth( const WgTextAttr& attr, WgState state, const WgChar * pString )
 {
 	WgTextAttr	attr2;
 
 	WgPen pen;
 	Uint16 hProp = 0xFFFF;
-
-	pen.SetTextNode( pNode );
 
 	while( !pString->IsEndOfLine() )
 	{

@@ -131,10 +131,6 @@
 #	include <wg_textfield.h>
 #endif
 
-#ifndef WG_TEXTMANAGER_DOT_H
-#	include <wg_textmanager.h>
-#endif
-
 #ifndef WG_TEXTPROP_DOT_H
 #	include <wg_textprop.h>
 #endif
@@ -226,6 +222,7 @@
 
 #ifndef WG_IMAGE_DOT_H
 #	include <wg_image.h>
+#endif
 
 #ifndef WG_MENU_DOT_H
 #	include <wg_menu.h>
@@ -277,11 +274,6 @@
 
 #ifndef WG_SIZECAPSULE_DOT_H
 #	include <wg_sizecapsule.h>
-#endif
-#endif
-
-#ifndef WG_TABLIST_DOT_H
-#	include <wg_tablist.h>
 #endif
 
 #ifndef WG_TEXTDISPLAY_DOT_H

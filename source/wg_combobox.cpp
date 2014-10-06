@@ -34,7 +34,7 @@ const char WgCombobox::CLASSNAME[] = {"Combobox"};
 
 //____ WgCombobox() _________________________________________________________________
 
-WgCombobox::WgCombobox( void ) : text(&m_text)
+WgCombobox::WgCombobox( void ) : m_text(this), text(&m_text)
 {
 	m_text.SetAlignment( WG_WEST );
 	m_text.SetWrap(false);
@@ -93,7 +93,7 @@ WgSize WgCombobox::PreferredSize() const
 {
 	WgTextAttr attr;
 	m_text.GetBaseAttr( attr );
-	int width = WgTextTool::lineWidth( m_text.getNode(), attr, "MMMMMMMMMM" );		// Default combobox should fit 10 letter M in textfield
+	int width = WgTextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default combobox should fit 10 letter M in textfield
 	WgSize contentSize( m_text.Height(), width );
 	
 	if( m_pSkin )
@@ -752,19 +752,6 @@ bool WgCombobox::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 	return WgWidget::_onAlphaTest(ofs, sz);
 }
 
-
-//____ _fieldModified() _________________________________________________________
-
-void WgCombobox::_fieldModified( WgTextField * pField )
-{
-	m_bResetCursorOnFocus = true;
-	WgEventHandler * pHandler = _eventHandler();		
-	if( pHandler )
-		pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
-	_requestRender();
-//	_adjustViewOfs();
-}
-
 //____ _entrySelected() ________________________________________________________
 
 void WgCombobox::_entrySelected( int itemId )
@@ -805,3 +792,21 @@ void WgCombobox::_entrySelected( int itemId )
 		_adjustViewOfs();
 	}
 }
+
+
+//____ _onFieldDirty() _________________________________________________________
+
+void WgCombobox::_onFieldDirty( WgField * pField )
+{
+	_requestRender();
+}
+
+//____ _onFieldResize() ________________________________________________________
+
+void WgCombobox::_onFieldResize( WgField * pField )
+{
+	m_bResetCursorOnFocus = true;
+	_requestResize();
+	_requestRender();
+}
+

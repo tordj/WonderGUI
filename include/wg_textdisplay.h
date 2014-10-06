@@ -88,8 +88,11 @@ protected:
 	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
+	WgObject * _object() { return this; }
+	void	_onFieldDirty( WgField * pField );
+	void	_onFieldResize( WgField * pField );
 private:
-	void	_fieldModified( WgTextField * pField );
+
 	bool	_insertCharAtCursor( Uint16 c );
 
 

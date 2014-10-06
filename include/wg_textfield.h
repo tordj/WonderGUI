@@ -27,6 +27,10 @@
 #	include <wg_types.h>
 #endif
 
+#ifndef WG_FIELD_DOT_H
+#	include <wg_field.h>
+#endif
+
 #ifndef WG_COLOR_DOT_H
 #	include <wg_color.h>
 #endif
@@ -37,10 +41,6 @@
 
 #ifndef WG_CHARBUFFER_DOT_H
 #	include <wg_charbuffer.h>
-#endif
-
-#ifndef WG_TEXTMANAGER_DOT_H
-#	include <wg_textmanager.h>
 #endif
 
 #ifndef	WG_CARETINSTANCE_DOT_H
@@ -64,10 +64,8 @@ class WgTextField;
 
 //____ WgTextHolder ___________________________________________________________
 
-struct WgTextHolder
+struct WgTextHolder : public WgFieldHolder
 {
-public:
-	virtual void		_fieldModified( WgTextField * pText ) = 0;
 };
 
 
@@ -91,24 +89,14 @@ struct WgTextLine
 
 //____ WgTextField __________________________________________________________________
 
-class WgTextField
+class WgTextField : public WgField
 {
-friend class WgTextNode;
 
 public:
-	WgTextField();
-	WgTextField( const WgCharSeq& seq );
-	WgTextField( const WgCharBuffer * pBuffer );
-	WgTextField( const WgString& str );
-
-	void	Init();
-
+	WgTextField( WgTextHolder * pHolder );
 	~WgTextField();
 
 	//
-
-	void				SetManager( const WgTextManagerPtr& pManager );
-	WgTextManagerPtr	Manager() const { return m_pManagerNode?m_pManagerNode->GetManager():0; }
 
 	void				SetProperties( const WgTextpropPtr& pProp );
 	void				ClearProperties();
@@ -229,12 +217,6 @@ public:
 	void				selectText( int startLine, int startCol, int endLine, int endCol );
 	bool				getSelection( int& startLine, int& startCol, int& endLine, int& endCol ) const;
 	WgRange				getSelection() const;
-
-//  --------------
-
-	inline WgTextNode *	getNode() const { return m_pManagerNode; }
-
-	void				_setHolder( WgTextHolder * pHolder ) { m_pHolder = pHolder; }
 
 //  --------------
 
@@ -395,7 +377,7 @@ public:
 
 protected:
 
-
+	WgTextHolder *	_holder() { return static_cast<WgTextHolder*>(m_pHolder); }
 
 	static const int	s_parseBufLen = 9+16+1+16+8;
 	WgChar *		_parseValue( double value, const WgValueFormat * pFormat, WgChar[s_parseBufLen] );
@@ -416,7 +398,6 @@ protected:
 	WgCharBuffer	m_buffer;
 	WgCaretPtr		m_pCursorStyle;
 	WgCaretInstance*	m_pCursor;
-	WgTextNode *	m_pManagerNode;
 
 	WgTextEditMode	m_editMode;
 
@@ -457,8 +438,6 @@ protected:
 
 	bool			m_bWrap;
 	bool			m_bAutoEllipsis;	// Use ellipsis for text that doesn't fit.
-
-	WgTextHolder *	m_pHolder;
 
 	static WgTextLine	g_emptyLine;
 };

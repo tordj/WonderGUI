@@ -88,8 +88,9 @@ protected:
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
 
-	void			_fieldModified( WgTextField * pField );
-	void			_fieldModified( WgIconField * pField );
+	WgObject * 		_object() { return this; };
+	void			_onFieldDirty( WgField * pField );
+	void 			_onFieldResize( WgField * pField );
 
 	WgTextField		m_text;
 	WgIconField		m_icon;

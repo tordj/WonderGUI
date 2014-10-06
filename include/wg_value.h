@@ -27,10 +27,6 @@
 #	include <wg_interface.h>
 #endif
 
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
 #ifndef WG_TEXTPROP_DOT_H
 #	include <wg_textprop.h>
 #endif
@@ -63,6 +59,8 @@ public:
 	virtual const char *		ClassName( void ) const;
 	static const char			CLASSNAME[];
 	static WgValuePtr			Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	inline WgValuePtr			Ptr() { return WgValuePtr(_object(),this); }
+
 
 	virtual void				SetFormat( const WgValueFormatPtr& format ) = 0;
 	virtual WgValueFormatPtr	Format() const = 0;
@@ -83,7 +81,10 @@ public:
 	virtual WgState				State() const = 0;
 	virtual int					TextLength() const = 0;
 protected:
-	WgValueField *				m_pField;
+	WgObject * 			_object() const;
+
+
+	WgValueField *		m_pField;
 
 
 };

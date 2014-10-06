@@ -19,28 +19,37 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_INTERFACE_DOT_H
-#define WG_INTERFACE_DOT_H
 
-class WgInterfacePtr;
-class WgInterfaceWeakPtr;
+#ifndef	WG_ITEM_DOT_H
+#define	WG_ITEM_DOT_H
 
-class WgObject;
 
-class WgInterface
+//____ WgItemHolder ___________________________________________________________
+
+class WgItemHolderHolder
 {
-	friend class WgInterfacePtr;
-	friend class WgInterfaceWeakPtr;
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
-	static const char		CLASSNAME[];
-	static WgInterfacePtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	WgInterfacePtr			Ptr();
-
-protected:
-	virtual WgObject * 		_object() const = 0;
+	virtual void		_onFieldDirty( WgVField * pField ) = 0;
+	virtual void		_onFieldResize( WgField * pField ) = 0;
 };
 
+//____ WgField _________________________________________________________________
 
-#endif //WG_INTERFACE_DOT_H
+class WgField
+{
+public:
+	WgField( WgFieldHolder * pHolder ) : m_pHolder(pHolder) {}
+
+	inline WgObject* _object() { return m_pHolder->_object(); }
+
+protected:
+
+	inline void		_onDirty() { return m_pHolder->_onFieldDirty(this); }
+	inline void		_onResize() { return m_pHolder->_onFieldResize(this); }
+
+	WgFieldHolder * m_pHolder;
+}
+
+
+
+#endif //WG_ITEM_DOT_H

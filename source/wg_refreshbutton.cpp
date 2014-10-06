@@ -33,7 +33,7 @@ const char WgRefreshButton::CLASSNAME[] = {"RefreshButton"};
 
 //____ Constructor ____________________________________________________________
 
-WgRefreshButton::WgRefreshButton() : refreshText(&m_refreshText)
+WgRefreshButton::WgRefreshButton() : m_refreshText(this), refreshText(&m_refreshText)
 {
 	m_pRefreshAnim		= 0;
 	m_animTarget		= BUTTON_CENTERED;
@@ -45,9 +45,6 @@ WgRefreshButton::WgRefreshButton() : refreshText(&m_refreshText)
 	m_animTimer			= 0;
 	m_refreshProgress	= 0.f;
 	m_bStopping			= false;
-
-	m_refreshText._setHolder(this);
-
 }
 
 //____ Destructor _____________________________________________________________
@@ -187,17 +184,6 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 
 	WgButton::_onNewSize( size );
 }
-
-//____ _fieldModified() ________________________________________________________
-
-void WgRefreshButton::_fieldModified( WgTextField * pField )
-{
-	//TODO: Make conditional
-
-	_requestResize();
-	_requestRender();
-}
-
 
 
 //____ _onEvent() _____________________________________________________________
@@ -379,8 +365,3 @@ void WgRefreshButton::_onCloneContent( const WgWidget * _pOrg )
 	m_bStopping			= pOrg->m_bStopping;
 }
 
-void WgRefreshButton::SetTextManager( WgTextManager * pManager )
-{
-	m_refreshText.SetManager( pManager );
-	m_text.SetManager(pManager);
-}

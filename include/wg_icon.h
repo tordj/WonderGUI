@@ -60,6 +60,7 @@ public:
 	virtual const char *		ClassName( void ) const;
 	static const char			CLASSNAME[];
 	static WgIconPtr			Cast( const WgInterfacePtr& pInterface );
+	inline WgIconPtr			Ptr() { return WgIconPtr(_object(),this); }
 
 	inline bool			Set( const WgSkinPtr& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0),
 							 float scale = 0.f, bool bOverlap = false ) { return m_pField->Set(pIconGfx,origo,padding,scale,bOverlap); }
@@ -77,6 +78,8 @@ public:
 	inline bool			Overlap() const { return m_pField->Overlap(); }
 	inline WgSkinPtr	Skin() const { return m_pField->Skin(); }
 protected:
+	WgObject * 			_object() const;
+
 	WgIconField *		m_pField;
 };
 

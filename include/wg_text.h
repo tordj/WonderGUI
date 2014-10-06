@@ -47,10 +47,6 @@
 #	include <wg_font.h>
 #endif
 
-#ifndef WG_TEXTMANAGER_DOT_H
-#	include <wg_textmanager.h>
-#endif
-
 #ifndef WG_TEXTPROP_DOT_H
 #	include <wg_textprop.h>
 #endif
@@ -82,9 +78,7 @@ public:
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
 	static WgTextPtr		Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-
-	inline void				SetManager( const WgTextManagerPtr& pManager ) { m_pField->SetManager(pManager); }
-	inline WgTextManagerPtr	Manager()  const { return m_pField->Manager(); }
+	inline WgTextPtr		Ptr() { return WgTextPtr(_object(),this); }
 
 	inline void				SetProperties( const WgTextpropPtr& pProp ) { m_pField->SetProperties(pProp); }
 	inline void				ClearProperties() { m_pField->ClearProperties(); }
@@ -119,6 +113,8 @@ public:
 	inline bool				IsEmpty() const { return m_pField->IsEmpty(); }
 
 protected:
+	WgObject *				_object() const;
+
 	WgTextField * 			m_pField;
 };
 

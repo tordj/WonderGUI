@@ -603,7 +603,6 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgTextField * pText, cons
 
 	WgPen pen;
 	pen.SetDevice( this );
-	pen.SetTextNode( pText->getNode() );
 
 	WgTextAttr	attr;
 	pText->GetBaseAttr(attr);
@@ -1138,7 +1137,6 @@ void WgGfxDevice::_drawUnderline( const WgRect& clip, const WgTextField * pText,
 
 	WgPen pen;
 	const WgChar * pChars = pText->getText();
-	pen.SetTextNode( pText->getNode() );
 
 	for( int i = ofs ; i < ofs + maxChars && !pChars[i].IsEndOfLine() ; i++ )
 	{

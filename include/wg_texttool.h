@@ -176,9 +176,9 @@ public:
 	static int		glyphcmpIgnoreCase( const WgChar * pStr1, const WgChar * pStr2 );
 
 
-	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const char * pString );
-	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr& attr, const Uint16 * pString );
-	static Uint32	lineWidth( WgTextNode * pNode, const WgTextAttr& attr, WgState mode, const WgChar * pString );
+	static Uint32	lineWidth( const WgTextAttr& attr, const char * pString );
+	static Uint32	lineWidth( const WgTextAttr& attr, const Uint16 * pString );
+	static Uint32	lineWidth( const WgTextAttr& attr, WgState mode, const WgChar * pString );
 
 	static void		forwardCharacters( const char *& pChar, Uint32 nChars );
 	static void		forwardEscapedCharacters( const char *& pChar, Uint32 nChars );

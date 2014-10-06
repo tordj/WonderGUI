@@ -35,6 +35,7 @@ class WgModValueHolder : public WgValueHolder
 {
 public:
 	virtual void		_onValueModified( WgModValueField * pField ) = 0;
+	virtual WgObject*	_object() = 0;
 };
 
 
@@ -43,7 +44,7 @@ public:
 class WgModValueField : public WgValueField
 {
 public:
-	WgModValueField();
+	WgModValueField( WgModValueHolder * pHolder );
 	~WgModValueField();
 
 	// ModValue methods

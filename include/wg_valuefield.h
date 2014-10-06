@@ -22,8 +22,8 @@
 #ifndef	WG_VALUEFIELD_DOT_H
 #define WG_VALUEFIELD_DOT_H
 
-#ifndef WG_VALUE_DOT_H
-#	include <wg_value.h>
+#ifndef WG_FIELD_DOT_H
+#	include <wg_field.h>
 #endif
 
 #ifndef WG_CHARBUFFER_DOT_H
@@ -34,23 +34,25 @@
 #	include <wg_textprop.h>
 #endif
 
+#ifndef WG_VALUEFORMAT_DOT_H
+#	include <wg_valueformat.h>
+#endif
+
 class WgValueField;
 
 //____ WgValueHolder ___________________________________________________________
 
-class WgValueHolder
+class WgValueHolder : public WgFieldHolder
 {
 public:
-	virtual void		_onFieldDirty( WgValueField * pField ) = 0;
-	virtual void		_onFieldResize( WgValueField * pField ) = 0;
 };
 
 //____ WgValueField ____________________________________________________________
 
-class WgValueField
+class WgValueField : public WgField
 {
 public:
-	WgValueField();
+	WgValueField(WgValueHolder * pHolder);
 	~WgValueField();
 
 	void					SetFormat( const WgValueFormatPtr& pFormat );
@@ -66,17 +68,13 @@ public:
 	void					SetAutoEllipsis(bool bAutoEllipsis);
 	inline bool				AutoEllipsis() const { return m_bAutoEllipsis; }
 
-protected:
-	void 					_setHolder( WgValueHolder * pHolder ) { m_pHolder = pHolder; }
-	void					_onFieldDirty() { m_pHolder->_onFieldDirty(this); }
-	void					_onFieldResize() { m_pHolder->_onFieldResize(this); }
+	void					SetValue( Sint64 value );
 
-	void					_setValue( Sint64 value );
+protected:
 	void					_regenText();
 	void					_recalcSize();
 	inline WgSize			_preferredSize() const { return m_size; }
 
-	WgValueHolder *			m_pHolder;
 	Sint64					m_value;
 	
 	WgValueFormatPtr		m_pFormat;

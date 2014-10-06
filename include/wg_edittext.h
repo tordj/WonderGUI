@@ -52,6 +52,7 @@ public:
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
 	static WgEditTextPtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	inline WgEditTextPtr	Ptr() { return WgEditTextPtr(_object(),this); }
 
 	inline void			SetEditMode(WgTextEditMode mode) { m_pField->SetEditMode(mode); }
 	inline WgTextEditMode	EditMode() const { return m_pField->EditMode(); }

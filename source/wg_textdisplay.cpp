@@ -32,10 +32,9 @@ const char WgTextDisplay::CLASSNAME[] = {"TextDisplay"};
 
 //____ WgTextDisplay() _________________________________________________________________
 
-WgTextDisplay::WgTextDisplay() : text(&m_text)
+WgTextDisplay::WgTextDisplay() : m_text(this), text(&m_text)
 {
 	m_maxLines		= 0;
-    m_text._setHolder( this );
 
 	m_text.setLineWidth( Size().w );
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
@@ -406,14 +405,6 @@ void WgTextDisplay::_onNewSize( const WgSize& size )
 }
 
 
-//____ _fieldModified() _________________________________________________________
-
-void WgTextDisplay::_fieldModified( WgTextField * pField )
-{
-	m_bResetCursorOnFocus = true;
-    _requestResize();
-	_requestRender();
-}
 
 //____ InsertTextAtCursor() ___________________________________________________
 
@@ -470,3 +461,20 @@ bool WgTextDisplay::_insertCharAtCursor( Uint16 c )
 
 	return true;
 }
+
+//____ _onFieldDirty() _________________________________________________________
+
+void WgTextDisplay::_onFieldDirty( WgField * pField )
+{
+	_requestRender();
+}
+
+//____ _onFieldResize() ________________________________________________________
+
+void WgTextDisplay::_onFieldResize( WgField * pField )
+{
+	m_bResetCursorOnFocus = true;
+	_requestResize();
+	_requestRender();
+}
+

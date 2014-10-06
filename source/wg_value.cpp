@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_value.h>
+#include <wg_valuefield.h>
 
 const char WgValue::CLASSNAME[] = {"Value"};
 
@@ -52,3 +53,9 @@ WgValuePtr WgValue::Cast( const WgInterfacePtr& pInterface )
 	return 0;
 }
 
+//____ _object() _______________________________________________________________
+
+WgObject * WgValue::_object() const
+{
+	return m_pField->_object();
+}

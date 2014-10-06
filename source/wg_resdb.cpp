@@ -26,7 +26,6 @@
 #include <wg_resloader.h>
 #include <assert.h>
 #include <wg_font.h>
-#include <wg_textmanager.h>
 #include <wg_surface.h>
 
 const char WgResDB::CLASSNAME[] = {"ResDB"};
@@ -91,7 +90,6 @@ void WgResDB::Clear()
 	m_mapLegoSources.clear();
 	m_mapSkins.clear();
 	m_mapWidgets.clear();
-	m_mapTextManagers.clear();
 	m_mapConnects.clear();
 	m_mapResDBs.clear();
 	m_mapDataSets.clear();
@@ -111,7 +109,6 @@ void WgResDB::Clear()
 	m_legos.Clear();
 	m_skins.Clear();
 	m_widgets.Clear();
-	m_textManagers.Clear();
 	m_connects.Clear();
 	m_resDbs.Clear();
 	m_dataSets.Clear();
@@ -192,13 +189,6 @@ std::string	WgResDB::GenerateName( const WgWidgetPtr& data )
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_widget__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
-}
-
-std::string	WgResDB::GenerateName( const WgTextManagerPtr& data )
-{
-	static int nGenerated = 0;
-	char pBuf[100];
-	return std::string("_textmanager__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
 void WgResDB::SetResLoader( WgResLoader * pLoader )
@@ -465,22 +455,6 @@ bool WgResDB::AddWidget( const std::string& id, const WgWidgetPtr& pWidget, Meta
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddTextManager( const std::string& id, const WgTextManagerPtr& pManager, MetaData * pMetaData )
-{
-	assert(m_mapTextManagers.find(id) == m_mapTextManagers.end());
-	if(m_mapTextManagers.find(id) == m_mapTextManagers.end())
-	{
-		TextManagerRes* p = new TextManagerRes(id, pManager, pMetaData);
-		m_textManagers.PushBack(p);
-		if(id.size())
-			m_mapTextManagers[id] = p;
-		return true;
-	}
-	return false;
-}
-
-//____ () _________________________________________________________
-
 bool WgResDB::AddConnect( MetaData * pMetaData )
 {
 	ConnectRes* p = new ConnectRes(pMetaData);
@@ -583,16 +557,6 @@ WgWidgetPtr WgResDB::CloneWidget( const std::string& id ) const
 	pClone->CloneContent(pWidget.GetRealPtr());
 	return pClone;
 }
-
-
-//____ () _________________________________________________________
-
-WgTextManagerPtr WgResDB::GetTextManager( const std::string& id ) const
-{
-	TextManagerRes* managerRes = GetResTextManager(id);
-	return managerRes ? managerRes->res : WgTextManagerPtr();
-}
-
 
 //____ () _________________________________________________________
 
@@ -797,25 +761,6 @@ WgResDB::DataSetRes * WgResDB::GetResDataSet( const std::string& id ) const
 	DataSetMap::const_iterator it = m_mapDataSets.find(id);
 	return it == m_mapDataSets.end() ? 0 : it->second;
 }
-
-
-//____ () _________________________________________________________
-
-WgResDB::TextManagerRes * WgResDB::GetResTextManager( const std::string& id ) const
-{
-	TextManagerRes* res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
-	{
-		if(db->res)
-		{
-			if((res = db->res->GetResTextManager(id)))
-				return res;
-		}
-	}
-	TextManagerMap::const_iterator it = m_mapTextManagers.find(id);
-	return it == m_mapTextManagers.end() ? 0 : it->second;
-}
-
 
 //____ () _________________________________________________________
 
@@ -1023,25 +968,6 @@ WgResDB::WidgetRes* WgResDB::FindResWidget( const WgWidgetPtr& meta ) const
 	return 0;
 }
 
-
-//____ () _________________________________________________________
-
-WgResDB::TextManagerRes* WgResDB::FindResTextManager( const WgTextManagerPtr& meta ) const
-{
-	TextManagerRes * res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
-	{
-		if(db->res)
-		{
-			if((res = db->res->FindResTextManager(meta)))
-				return res;
-		}
-	}
-	for(res = GetFirstResTextManager(); res; res = res->Next())
-		if(res->res == meta)
-			return res;
-	return 0;
-}
 
 //____ RemoveSurface() ________________________________________________________
 
@@ -1387,38 +1313,6 @@ bool WgResDB::RemoveWidget( WgResDB::WidgetRes * pRes )
 		WidgetMap::iterator it = m_mapWidgets.find( pRes->id );
 		assert( it != m_mapWidgets.end() );
 		m_mapWidgets.erase(it);
-	}
-	delete pRes;
-	return true;
-}
-
-
-//____ RemoveTextManager() _______________________________________________________
-
-bool WgResDB::RemoveTextManager( const std::string& id )
-{
-	TextManagerMap::iterator it = m_mapTextManagers.find( id );
-
-	if( it == m_mapTextManagers.end() )
-		return false;
-
-	TextManagerRes * pRes = it->second;
-	m_mapTextManagers.erase(it);
-	delete pRes;
-
-	return true;
-}
-
-bool WgResDB::RemoveTextManager( WgResDB::TextManagerRes * pRes )
-{
-	if( !pRes )
-		return false;
-
-	if( pRes->id.length() > 0 )
-	{
-		TextManagerMap::iterator it = m_mapTextManagers.find( pRes->id );
-		assert( it != m_mapTextManagers.end() );
-		m_mapTextManagers.erase(it);
 	}
 	delete pRes;
 	return true;

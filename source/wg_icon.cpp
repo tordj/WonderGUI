@@ -52,3 +52,11 @@ WgIconPtr WgIcon::Cast( const WgInterfacePtr& pInterface )
 	return 0;
 }
 
+//____ _object() _______________________________________________________________
+
+WgObject * WgIcon::_object() const
+{
+	return m_pField->_object();
+}
+
+

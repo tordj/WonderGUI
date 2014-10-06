@@ -37,7 +37,7 @@ const char WgFpsDisplay::CLASSNAME[] = {"FpsDisplay"};
 
 //____ WgFpsDisplay() _________________________________________________________________
 
-WgFpsDisplay::WgFpsDisplay( void ) : labels(&m_labelsText), values(&m_valuesText)
+WgFpsDisplay::WgFpsDisplay( void ) : m_labelsText(this), m_valuesText(this), labels(&m_labelsText), values(&m_valuesText)
 {
 	m_pTickBuffer		= new int[TICK_BUFFER];
 	for( int i = 0 ; i < TICK_BUFFER ; i++ )
@@ -49,9 +49,6 @@ WgFpsDisplay::WgFpsDisplay( void ) : labels(&m_labelsText), values(&m_valuesText
 	m_valuesText.SetAlignment( WG_NORTHEAST );
 
 	m_bReceiveTick = true;
-
-	m_labelsText._setHolder(this);
-	m_valuesText._setHolder(this);
 }
 
 //____ ~WgFpsDisplay() __________________________________________________________
@@ -112,7 +109,7 @@ WgSize WgFpsDisplay::PreferredSize() const
 
 	WgTextAttr attr;
 	m_valuesText.GetBaseAttr( attr );
-	contentSize.w += WgTextTool::lineWidth( m_valuesText.getNode(), attr, " 1000.00" );
+	contentSize.w += WgTextTool::lineWidth( attr, " 1000.00" );
 
 	int valueHeight = m_valuesText.unwrappedSize().h;
 	if( valueHeight > contentSize.h )
@@ -239,14 +236,6 @@ void WgFpsDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& p
 	m_valuesText.SetColorSkin(pNewSkin);
 }
 
-//____ _fieldModified() ________________________________________________________
-
-void WgFpsDisplay::_fieldModified( WgTextField * pField )
-{
-	_requestRender();
-	_requestResize();
-}
-
 //____ _onCloneContent() _______________________________________________________
 
 void WgFpsDisplay::_onCloneContent( const WgWidget * _pOrg )
@@ -262,4 +251,18 @@ void WgFpsDisplay::_onCloneContent( const WgWidget * _pOrg )
 		m_pTickBuffer[i] = pOrg->m_pTickBuffer[i];
 }
 
+//____ _onFieldDirty() _________________________________________________________
+
+void WgFpsDisplay::_onFieldDirty( WgField * pField )
+{
+	_requestRender();
+}
+
+//____ _onFieldResize() ________________________________________________________
+
+void WgFpsDisplay::_onFieldResize( WgField * pField )
+{
+	_requestResize();
+	_requestRender();
+}
 

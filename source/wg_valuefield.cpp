@@ -26,7 +26,7 @@
 
 //____ Constructor _____________________________________________________________
 
-WgValueField::WgValueField()
+WgValueField::WgValueField(WgValueHolder * pHolder) : WgField(pHolder)
 {
 	m_value = 0;
 	m_alignment = WG_EAST;
@@ -59,7 +59,7 @@ void WgValueField::SetProperties( const WgTextpropPtr& pProp )
 	{
 		m_pProp = pProp;
 		_recalcSize();
-		_onFieldDirty();
+		_onDirty();
 	}	
 }
 
@@ -77,7 +77,7 @@ void WgValueField::SetAlignment( WgOrigo alignment )
 	if( alignment != m_alignment )
 	{
 		m_alignment = alignment;
-		_onFieldDirty();
+		_onDirty();
 	}
 }
 
@@ -88,13 +88,13 @@ void WgValueField::SetAutoEllipsis(bool bAutoEllipsis)
 	if( bAutoEllipsis != m_bAutoEllipsis )
 	{
 		m_bAutoEllipsis = bAutoEllipsis;
-		_onFieldDirty();
+		_onDirty();
 	}
 }
 
 
 
-void WgValueField::_setValue( Sint64 value )
+void WgValueField::SetValue( Sint64 value )
 {
 	if( value != m_value )
 	{
@@ -110,9 +110,6 @@ void WgValueField::_recalcSize()
 
 void WgValueField::_regenText()
 {
-
-	
-	
 	_recalcSize();
-	_onFieldDirty();
+	_onDirty();
 }

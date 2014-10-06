@@ -103,8 +103,9 @@ protected:
 	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	
-	virtual void	_fieldModified( WgIconField * pField );
-	virtual void	_fieldModified( WgTextField * pField );
+	WgObject * 		_object() { return this; };
+	void			_onFieldDirty( WgField * pField );
+	void 			_onFieldResize( WgField * pField );
 
 	void	_setToggleGroup( WgToggleGroup * pGroup );
 	WgToggleGroup * _toggleGroup() const { return m_pToggleGroup.GetRealPtr(); }

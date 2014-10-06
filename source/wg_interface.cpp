@@ -34,3 +34,18 @@ const char * WgInterface::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
+
+
+WgInterfacePtr WgInterface::Cast( const WgInterfacePtr& pInterface )
+{
+	return pInterface;
+}
+
+
+WgInterfacePtr	WgInterface::Ptr()
+{
+	return WgInterfacePtr(_object(),this);
+}
+
+
+

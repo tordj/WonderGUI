@@ -57,6 +57,7 @@ public:
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
 	static WgEditValuePtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	inline WgEditValuePtr	Ptr() { return WgEditValuePtr(_object(),this); }
 
 	virtual void			SetEditMode(WgTextEditMode mode) = 0;
 	virtual WgTextEditMode	EditMode() const = 0;
@@ -88,6 +89,9 @@ public:
 	virtual void			GoEOL() = 0;
 	virtual void			GoBOF() = 0;
 	virtual void			GoEOF() = 0;
+
+private:
+	inline	WgEditValueField * 	_field() { return static_cast<WgEditValueField*>(m_pField); }
 };
 
 

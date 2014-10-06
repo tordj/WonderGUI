@@ -26,7 +26,6 @@
 #include <wg_font.h>
 #include <wg_caretinstance.h>
 #include <wg_gfxanim.h>
-#include <wg_textmanager.h>
 #include <wg_base.h>
 #include <wg_widget.h>
 
@@ -50,7 +49,6 @@ WgPen::WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip )
 void WgPen::_init()
 {
 	m_pDevice = 0;
-	m_pTextNode = 0;
 
 	m_pFont = 0;
 
@@ -93,11 +91,7 @@ void WgPen::_onAttrChanged()
 		return;
 	}
 
-	if( m_pTextNode )
-		m_size = (int) m_pTextNode->GetSize( m_pFont, m_style, m_wantedSize );
-	else
-		m_size = m_wantedSize;
-
+	m_size = m_wantedSize;
 	m_pGlyphs = m_pFont->GetGlyphset( m_style, m_size );
 }
 

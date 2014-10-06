@@ -60,10 +60,6 @@
 #	include	<wg_glyphset.h>
 #endif
 
-#ifndef WG_TEXTMANAGER_DOT_H
-#	include <wg_textmanager.h>
-#endif
-
 class WgFont;
 class WgResLoader;
 
@@ -144,7 +140,6 @@ public:
 	typedef ResWrapper<WgTextpropPtr>	TextpropRes;
 	typedef ResWrapper<WgColor>			ColorRes;
 	typedef ResWrapper<WgSkinPtr>		SkinRes;
-	typedef ResWrapper<WgTextManagerPtr>TextManagerRes;
 	typedef ResWrapper<WgWidgetPtr>		WidgetRes;
 	typedef ResWrapper<void*>			DataSetRes;
 
@@ -159,7 +154,6 @@ public:
 	static std::string	GenerateName( const WgColor data );
 	static std::string	GenerateName( const WgTextpropPtr& data );
 	static std::string	GenerateName( const WgSkinPtr& data );
-	static std::string	GenerateName( const WgTextManagerPtr& data );
 	static std::string	GenerateName( const WgWidgetPtr& data );
 
 	void				SetResLoader( WgResLoader * pLoader );
@@ -186,7 +180,6 @@ public:
 	bool				AddColor( const std::string& id, WgColor col, MetaData * pMetaData = 0 );
 	bool				AddLegoSource( const std::string& id, const std::string& surface, WgRect rect, Uint32 nStates, MetaData * pMetaData = 0 );
 	bool				AddSkin( const std::string& id, const WgSkinPtr& pSkin, MetaData * pMetaData = 0 );
-	bool				AddTextManager( const std::string& id, const WgTextManagerPtr& pTextManager, MetaData * pMetaData = 0 );
 	bool				AddConnect( MetaData * pMetaData );
 	bool				AddWidget( const std::string& id, const WgWidgetPtr& pWidget, MetaData * pMetaData = 0 );
 	bool				AddDataSet( const std::string& id, MetaData * pMetaData );
@@ -202,7 +195,6 @@ public:
 	bool				RemoveSkin( const std::string& id );
 	bool				RemoveMenuitem( const std::string& id );
 	bool				RemoveTab( const std::string& id );
-	bool				RemoveTextManager( const std::string& id );
 	bool				RemoveConnect( const std::string& id );
 	bool				RemoveResDB( const std::string& id );
 	bool				RemoveWidget( const std::string& id );
@@ -217,7 +209,6 @@ public:
 	bool				RemoveColor( ColorRes * pRes );
 	bool				RemoveLegoSource( LegoSource * pRes );
 	bool				RemoveSkin( SkinRes * pRes );
-	bool				RemoveTextManager( TextManagerRes * pRes );
 	bool				RemoveConnect( ConnectRes* pRes );
 	bool				RemoveResDB( ResDBRes* pRes );
 	bool				RemoveWidget( WidgetRes * pRes );
@@ -233,7 +224,6 @@ public:
 	WgTextpropPtr		GetTextprop( const std::string& id ) const;
 	WgColor				GetColor( const std::string& id ) const;
 	WgSkinPtr			GetSkin( const std::string& id ) const;
-	WgTextManagerPtr	GetTextManager( const std::string& id ) const;
 	WgWidgetPtr			GetWidget( const std::string& id ) const;
 	MetaData*			GetDataSet( const std::string& id ) const;
 	WgWidgetPtr			CloneWidget( const std::string& id ) const;
@@ -249,7 +239,6 @@ public:
 	ColorRes *			GetResColor( const std::string& id ) const;
 	LegoSource *		GetLegoSource( const std::string& id ) const;
 	SkinRes *			GetResSkin( const std::string& id ) const;
-	TextManagerRes *	GetResTextManager( const std::string& id ) const;
 	ConnectRes *		GetResConnect( const std::string& id ) const;
 	WidgetRes *			GetResWidget( const std::string& id ) const;
 	DataSetRes *		GetResDataSet( const std::string& id ) const;
@@ -263,7 +252,6 @@ public:
 	TextpropRes *		FindResTextprop( const WgTextpropPtr& data ) const;
 	ColorRes *			FindResColor( const WgColor col ) const;
 	SkinRes *			FindResSkin( const WgSkinPtr& data ) const;
-	TextManagerRes *	FindResTextManager( const WgTextManagerPtr& data ) const;
 	WidgetRes *			FindResWidget( const WgWidgetPtr& data ) const;
 
 	std::string			FindSurfaceId( const WgSurfacePtr& data ) const		{ SurfaceRes * r =	FindResSurface(data); return r ? r->id : ""; }
@@ -274,7 +262,6 @@ public:
 	std::string			FindTextpropId( const WgTextpropPtr& data ) const	{ TextpropRes *r =  FindResTextprop(data); return r ? r->id : ""; }
 	std::string			FindColorId( const WgColor data ) const				{ ColorRes *r =		FindResColor(data); return r ? r->id : ""; }
 	std::string			FindSkinId( const WgSkinPtr& data ) const			{ SkinRes *r =		FindResSkin(data); return r ? r->id : ""; }
-	std::string			FindTextManagerId( const WgTextManagerPtr& data ) const{ TextManagerRes *r =  	FindResTextManager(data); return r ? r->id : ""; }
 	std::string			FindWidgetId( const WgWidgetPtr& data ) const			{ WidgetRes *r =	FindResWidget(data); return r ? r->id : ""; }
 
 	inline ResDBRes *		GetFirstResDBRes() const { return m_resDbs.First(); }
@@ -286,7 +273,6 @@ public:
 	inline TextpropRes *	GetFirstResTextprop() const { return m_textProps.First(); }
 	inline ColorRes *		GetFirstResColor() const { return m_colors.First(); }
 	inline SkinRes *		GetFirstResSkin() const { return m_skins.First(); }
-	inline TextManagerRes *	GetFirstResTextManager() const { return m_textManagers.First(); }
 	inline ConnectRes *		GetFirstResConnect() const { return m_connects.First(); }
 	inline WidgetRes *		GetFirstResWidget() const { return m_widgets.First(); }
 	inline DataSetRes *		GetFirstResDataSet() const { return m_dataSets.First(); }
@@ -306,7 +292,6 @@ private:
 	typedef std::map<std::string, ColorRes*>		ColMap;
 	typedef std::map<std::string, LegoSource*>		LegoMap;
 	typedef std::map<std::string, SkinRes*>			SkinMap;
-	typedef std::map<std::string, TextManagerRes*>	TextManagerMap;
 	typedef std::map<std::string, ConnectRes*>		ConnectMap;
 	typedef std::map<std::string, WidgetRes*>		WidgetMap;
 	typedef std::map<std::string, DataSetRes*>		DataSetMap;
@@ -321,7 +306,6 @@ private:
 	WgChain<ColorRes>		m_colors;
 	WgChain<LegoSource>		m_legos;
 	WgChain<SkinRes>		m_skins;
-	WgChain<TextManagerRes>	m_textManagers;
 	WgChain<ConnectRes>		m_connects;
 	WgChain<WidgetRes>		m_widgets;
 	WgChain<DataSetRes>		m_dataSets;
@@ -336,7 +320,6 @@ private:
 	PropMap			m_mapTextprops;
 	LegoMap			m_mapLegoSources;
 	SkinMap			m_mapSkins;
-	TextManagerMap	m_mapTextManagers;
 	ConnectMap		m_mapConnects;
 	WidgetMap		m_mapWidgets;
 	DataSetMap		m_mapDataSets;

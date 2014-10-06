@@ -36,16 +36,13 @@ const char WgToggleButton::CLASSNAME[] = {"ToggleButton"};
 
 //____ WgToggleButton() _________________________________________________________________
 
-WgToggleButton::WgToggleButton() : label(&m_label), icon(&m_icon)
+WgToggleButton::WgToggleButton() : m_label(this), m_icon(this), label(&m_label), icon(&m_icon)
 {
 	m_bPressed			= false;
 	m_bReturnPressed	= false;
 	m_bFlipOnRelease	= false;
 
-	m_label._setHolder( this );
 	m_label.SetAutoEllipsis(IsAutoEllipsisDefault());
-
-	m_icon._setHolder( this );
 
 	m_clickArea			= DEFAULT;
 }
@@ -332,20 +329,6 @@ void WgToggleButton::_onCloneContent( const WgWidget * _pOrg )
 	m_icon.OnCloneContent( &pOrg->m_icon );
 }
 
-//____ _fieldModified() _________________________________________________________
-
-void WgToggleButton::_fieldModified( WgTextField * pField )
-{
-	_requestResize();
-	_requestRender();
-}
-
-void WgToggleButton::_fieldModified( WgIconField * pField )
-{
-	_requestResize();
-	_requestRender();
-}
-
 //____ _markTestTextArea() ______________________________________________________
 
 bool WgToggleButton::_markTestTextArea( int _x, int _y )
@@ -436,4 +419,19 @@ bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 			assert(false);			// Garbage in m_clickArea
 			return false;
 	};
+}
+
+//____ _onFieldDirty() _________________________________________________________
+
+void WgToggleButton::_onFieldDirty( WgField * pField )
+{
+	_requestRender();
+}
+
+//____ _onFieldResize() ________________________________________________________
+
+void WgToggleButton::_onFieldResize( WgField * pField )
+{
+	_requestResize();
+	_requestRender();
 }

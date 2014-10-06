@@ -43,10 +43,6 @@
 #	include <wg_font.h>
 #endif
 
-#ifndef WG_TEXTMANAGER_DOT_H
-#	include <wg_textmanager.h>
-#endif
-
 #ifndef WG_TEXTPROP_DOT_H
 #	include <wg_textprop.h>
 #endif
@@ -77,6 +73,7 @@ public:
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
 	static WgModTextPtr		Cast( const WgInterfacePtr& pInterface );
+	inline WgModTextPtr		Ptr() { return WgModTextPtr(_object(),this); }
 
 	inline void				Clear() { m_pField->Clear(); }
 
@@ -88,6 +85,7 @@ public:
 	inline int				Insert( int ofs, const WgCharSeq& seq ) { return m_pField->Insert(ofs,seq); }
 	inline int				Replace( int ofs, int len, const WgCharSeq& seq ) { return m_pField->Replace(ofs,len,seq); }
 	inline int				Delete( int ofs, int len ) { return m_pField->Delete(ofs,len); }
+
 };
 
 

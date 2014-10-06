@@ -109,7 +109,10 @@ private:
 	bool	_isEditable() const { return m_text.IsEditable(); }
 	bool	_isSelectable() const { return m_text.IsSelectable(); }
 
-	void	_fieldModified( WgTextField * pField );
+	WgObject * 		_object() { return this; };
+	void			_onFieldDirty( WgField * pField );
+	void 			_onFieldResize( WgField * pField );
+
 	void	_adjustViewOfs();
 	void	_closeMenu();
 

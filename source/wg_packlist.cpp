@@ -147,9 +147,6 @@ WgPackList::WgPackList()
 	header.m_height = 0;
 	header.m_width = 0;
 	header.m_bPressed = false;
-	header.m_icon._setHolder(&header);
-	header.m_arrow._setHolder(&header);
-	header.m_label._setHolder(&header);
 	header.m_label.SetWrap(false);			// Labels by default don't wrap.
 	header.m_label.SetAlignment( WG_WEST );
 }
@@ -1701,14 +1698,16 @@ void WgPackList::Header::SetSkin( const WgSkinPtr& pSkin )
 	}
 }
 
-//____ Header::_fieldModified() _______________________________________________________
+//____ Header::_onFieldDirty() _________________________________________________________
 
-void WgPackList::Header::_fieldModified( WgTextField * pText )
+void WgPackList::Header::_onFieldDirty( WgField * pField )
 {
 	m_pHolder->_refreshHeader();
 }
 
-void WgPackList::Header::_fieldModified( WgIconField * pField )
+//____ Header::_onFieldResize() ________________________________________________________
+
+void WgPackList::Header::_onFieldResize( WgField * pField )
 {
 	m_pHolder->_refreshHeader();
 }

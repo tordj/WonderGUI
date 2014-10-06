@@ -494,11 +494,11 @@ void WgMenu::_calcEntryMinWidth( WgMenuEntry * pEntry )
 	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextprop(), WG_STATE_NORMAL );
 	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_NORMAL);
 
-	int wNormal = WgTextTool::lineWidth( 0, entryAttr, "  " );
-	int wMarked = WgTextTool::lineWidth( 0, entryAttr, "  " );
+	int wNormal = WgTextTool::lineWidth( entryAttr, "  " );
+	int wMarked = WgTextTool::lineWidth( entryAttr, "  " );
 
-	wNormal += WgTextTool::lineWidth( 0, entryAttr, WG_STATE_NORMAL, pEntry->GetText().Chars() );
-	wNormal += WgTextTool::lineWidth( 0, accelAttr, WG_STATE_NORMAL, pEntry->GetAccelText().Chars() );
+	wNormal += WgTextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->GetText().Chars() );
+	wNormal += WgTextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->GetAccelText().Chars() );
 
 	entryAttr.Clear();
 	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextprop(), WG_STATE_HOVERED );
@@ -507,8 +507,8 @@ void WgMenu::_calcEntryMinWidth( WgMenuEntry * pEntry )
 	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextprop(), WG_STATE_HOVERED );
 	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_HOVERED);
 
-	wMarked += WgTextTool::lineWidth( 0, entryAttr, WG_STATE_NORMAL, pEntry->GetText().Chars() );
-	wMarked += WgTextTool::lineWidth( 0, accelAttr, WG_STATE_NORMAL, pEntry->GetAccelText().Chars() );
+	wMarked += WgTextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->GetText().Chars() );
+	wMarked += WgTextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->GetAccelText().Chars() );
 
 
 	if( wNormal > wMarked )
@@ -688,7 +688,7 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 					accelPen.SetAttributes( attr );
 
 					int y = yPos + (m_entryHeight - accelPen.GetLineHeight())/2 + accelPen.GetBaseline();
-					int width = WgTextTool::lineWidth( 0, attr, state, pAccelText );
+					int width = WgTextTool::lineWidth( attr, state, pAccelText );
 					int x = xPosText + textFieldLen - width;
 
 					accelPen.SetPos( WgCoord(x, y) );

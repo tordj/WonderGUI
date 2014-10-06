@@ -31,9 +31,8 @@ const char WgValueDisplay::CLASSNAME[] = {"ValueDisplay"};
 
 //____ WgValueDisplay() _________________________________________________________________
 
-WgValueDisplay::WgValueDisplay() : text(&m_text)
+WgValueDisplay::WgValueDisplay() : m_text(this), text(&m_text)
 {
-	m_text._setHolder(this);
 	m_text.SetAlignment( WG_EAST );
 	m_text.SetWrap(false);
 }
@@ -104,14 +103,6 @@ void WgValueDisplay::_valueModified()
 	_requestRender();
 }
 
-//____ _fieldModified() _____________________________________________________________
-
-void WgValueDisplay::_fieldModified(WgTextField * pField)
-{
-	_requestRender();
-}
-
-
 //____ _rangeModified() ________________________________________________________
 
 void WgValueDisplay::_rangeModified()
@@ -169,4 +160,19 @@ void WgValueDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr&
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 	m_text.SetColorSkin(pNewSkin);
+}
+
+//____ _onFieldDirty() _________________________________________________________
+
+void WgValueDisplay::_onFieldDirty( WgField * pField )
+{
+	_requestRender();
+}
+
+//____ _onFieldResize() ________________________________________________________
+
+void WgValueDisplay::_onFieldResize( WgField * pField )
+{
+	_requestResize();
+	_requestRender();
 }

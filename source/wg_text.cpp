@@ -52,3 +52,9 @@ WgTextPtr WgText::Cast( const WgInterfacePtr& pInterface )
 	return 0;
 }
 
+//____ _object() _______________________________________________________________
+
+WgObject * WgText::_object() const
+{
+	return m_pField->_object();
+}

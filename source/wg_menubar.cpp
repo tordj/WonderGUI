@@ -121,12 +121,12 @@ bool WgMenubar::AddMenu( const char * pTitle, const WgMenuPtr& pMenu, Uint16 nav
 	WgTextAttr	attr;
 	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), WG_STATE_NORMAL);
 	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_STATE_NORMAL);
-	Uint32 lineWidthNormal = WgTextTool::lineWidth( 0, attr, WG_STATE_NORMAL, pItem->m_pText );
+	Uint32 lineWidthNormal = WgTextTool::lineWidth( attr, WG_STATE_NORMAL, pItem->m_pText );
 
 	attr.Clear();
 	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), WG_STATE_HOVERED);
 	WgTextTool::AddPropAttributes( attr, m_pTextProp, WG_STATE_HOVERED);
-	Uint32 lineWidthMarked = WgTextTool::lineWidth( 0, attr, WG_STATE_HOVERED, pItem->m_pText );
+	Uint32 lineWidthMarked = WgTextTool::lineWidth( attr, WG_STATE_HOVERED, pItem->m_pText );
 
 	if( lineWidthNormal > lineWidthMarked )
 		pItem->m_width = lineWidthNormal;

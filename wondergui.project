@@ -63,7 +63,6 @@
     <File Name="include/wg_string.h"/>
     <File Name="include/wg_surface.h"/>
     <File Name="include/wg_textlink.h"/>
-    <File Name="include/wg_textmanager.h"/>
     <File Name="include/wg_textprop.h"/>
     <File Name="include/wg_textpropmanager.h"/>
     <File Name="include/wg_texttool.h"/>
@@ -103,7 +102,6 @@
     <File Name="source/wg_sizescaler.cpp"/>
     <File Name="source/wg_string.cpp"/>
     <File Name="source/wg_surface.cpp"/>
-    <File Name="source/wg_textmanager.cpp"/>
     <File Name="source/wg_textprop.cpp"/>
     <File Name="source/wg_textpropmanager.cpp"/>
     <File Name="source/wg_texttool.cpp"/>
@@ -111,8 +109,6 @@
     <File Name="source/wg_valueformat.cpp"/>
     <File Name="source/wg_vectorglyphs.cpp"/>
     <File Name="source/wg_widget.cpp"/>
-    <File Name="include/wg_interface.h"/>
-    <File Name="source/wg_interface.cpp"/>
     <File Name="include/wg_nullgfxdevice.h"/>
     <File Name="source/wg_nullgfxdevice.cpp"/>
     <File Name="include/wg_object.h"/>
@@ -167,11 +163,9 @@
     <File Name="source/wg_scrollbar.cpp"/>
     <File Name="include/wg_simplevolumemeter.h"/>
     <File Name="include/wg_switch.h"/>
-    <File Name="include/wg_tablist.h"/>
     <File Name="include/wg_textdisplay.h"/>
     <File Name="source/wg_simplevolumemeter.cpp"/>
     <File Name="source/wg_switch.cpp"/>
-    <File Name="source/wg_tablist.cpp"/>
     <File Name="source/wg_textdisplay.cpp"/>
     <File Name="include/wg_valuedisplay.h"/>
     <File Name="include/wg_valueeditor.h"/>
@@ -259,6 +253,8 @@
     <File Name="source/wg_value.cpp"/>
     <File Name="source/wg_modvalue.cpp"/>
     <File Name="source/wg_editvalue.cpp"/>
+    <File Name="source/wg_interface.cpp"/>
+    <File Name="include/wg_interface.h"/>
   </VirtualDirectory>
   <Dependencies Name="Release"/>
   <Dependencies Name="Debug"/>
@@ -273,6 +269,8 @@
     <File Name="include/wg_modvaluefield.h"/>
     <File Name="source/wg_valuefield.cpp"/>
     <File Name="source/wg_modvaluefield.cpp"/>
+    <File Name="include/wg_field.h"/>
+    <File Name="include/wg_item.h"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

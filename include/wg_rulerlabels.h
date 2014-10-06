@@ -36,8 +36,7 @@ public:
 	//____ Methods __________________________________________
 	
 	void			AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProp, float offset, WgOrigo origo );
-    void            SetTextManager( WgTextManager * pTextManager );
-	WgSize			PreferredSize() const;
+ 	WgSize			PreferredSize() const;
 	void			SetDirection( WgDirection direction );
 	WgModTextPtr	GetLabel(int index);
 
@@ -52,12 +51,15 @@ protected:
 	void			_onStateChanged( WgState oldState );
 	void			_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
-    void            _fieldModified( WgTextField * pField );
-	
+
+	WgObject * 		_object() { return this; };
+	void			_onFieldDirty( WgField * pField );
+	void 			_onFieldResize( WgField * pField );
+
 	class Label : public WgLink
 	{
 	public:
-		Label() : textInterface(&textField) {}
+		Label(WgTextHolder*pHolder) : textField(pHolder), textInterface(&textField) {}
 		LINK_METHODS(Label);
 		WgModText	textInterface;
 		WgTextField	textField;
@@ -66,7 +68,6 @@ protected:
 	
 	WgChain<Label>	m_labels;
 	WgDirection		m_direction;
-    WgTextManager * m_pTextManager;
 };
 
 

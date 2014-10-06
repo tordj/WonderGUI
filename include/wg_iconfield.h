@@ -27,6 +27,10 @@
 #	include <wg_types.h>
 #endif
 
+#ifndef WG_FIELD_DOT_H
+#	include <wg_field.h>
+#endif
+
 #ifndef WG_GEO_DOT_H
 #	include <wg_geo.h>
 #endif
@@ -39,19 +43,17 @@ class WgIconField;
 
 //____ WgIconHolder ___________________________________________________________
 
-class WgIconHolder
+class WgIconHolder : public WgFieldHolder
 {
-public:
-	virtual void		_fieldModified( WgIconField * pField ) = 0;
 };
 
 //____ WgIconField _____________________________________________________________
 
-class WgIconField
+class WgIconField : public WgField
 {
 	friend class WgIconHolder;
 public:
-	WgIconField();
+	WgIconField( WgIconHolder * pHolder );
 	virtual ~WgIconField() {};
 
 
@@ -80,10 +82,8 @@ public:
 	void			OnCloneContent( const WgIconField * _pOrg );
 	WgSize			PreferredSize() const;
 
-	void			_setHolder( WgIconHolder * pHolder ) { m_pHolder = pHolder; }
 protected:
 
-	WgIconHolder *	m_pHolder;
 	WgOrigo			m_origo;
 	float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 	bool			m_bOverlap;

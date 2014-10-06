@@ -106,8 +106,8 @@ public:
 	WgWidget();
 	virtual ~WgWidget();
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool				IsInstanceOf( const char * pClassName ) const;
+	const char *		ClassName( void ) const;
 	static const char	CLASSNAME[];
 	static WgWidgetPtr	Cast( const WgObjectPtr& pObject );
 

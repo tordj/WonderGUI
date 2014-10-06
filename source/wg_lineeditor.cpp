@@ -32,9 +32,8 @@ const char WgLineEditor::CLASSNAME[] = {"LineEditor"};
 
 //____ Constructor ____________________________________________________________
 
-WgLineEditor::WgLineEditor() : text(&m_text)
+WgLineEditor::WgLineEditor() : m_text(this), text(&m_text)
 {
-	m_text._setHolder( this );
 	m_text.SetWrap(false);
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 	m_text.SetEditMode( WG_TEXT_EDITABLE );
@@ -151,7 +150,7 @@ WgSize WgLineEditor::PreferredSize() const
 {
 	WgTextAttr attr;
 	m_text.GetBaseAttr( attr );
-	int width = WgTextTool::lineWidth( m_text.getNode(), attr, "MMMMMMMMMM" );		// Default line editor should fit 10 letter M in textfield
+	int width = WgTextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default line editor should fit 10 letter M in textfield
 	WgSize contentSize( m_text.Height(), width );
 	
 	if( m_pSkin )
@@ -178,6 +177,9 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
 	WgTextField * pText = &m_text;
+
+//TODO: Get password mode working again!
+/*
 	if( m_bPasswordMode )
 	{
 		int nChars = m_text.Length();
@@ -203,8 +205,8 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		int sl, sc, el, ec;
 		if( m_text.getSelection(sl, sc, el, ec) )
 			pText->selectText(sl, sc, el, ec);
-
 	}
+*/
 
 	WgRect canvas;
 	if( m_pSkin )
@@ -617,13 +619,19 @@ void WgLineEditor::_onNewSize( const WgSize& size )
 	_requestRender();
 }
 
+//____ _onFieldDirty() _________________________________________________________
 
-//____ _fieldModified() _________________________________________________________
-
-void WgLineEditor::_fieldModified( WgTextField * pField )
+void WgLineEditor::_onFieldDirty( WgField * pField )
 {
-	m_bResetCursorOnFocus = true;			// Any change to text while we don't have focus resets the position.
+	_requestRender();
+}
+
+//____ _onFieldResize() ________________________________________________________
+
+void WgLineEditor::_onFieldResize( WgField * pField )
+{
+	m_bResetCursorOnFocus = true;
+	_requestResize();
 	_requestRender();
 	_adjustViewOfs();
 }
-

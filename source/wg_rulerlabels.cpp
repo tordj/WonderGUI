@@ -10,7 +10,6 @@ const char WgRulerLabels::CLASSNAME[] = {"RulerLabels"};
 WgRulerLabels::WgRulerLabels()
 {
 	m_direction = WG_RIGHT;
-    m_pTextManager = 0;
 }
 
 //____ Destructor _____________________________________________________________
@@ -51,15 +50,11 @@ WgRulerLabelsPtr WgRulerLabels::Cast( const WgObjectPtr& pObject )
 
 void WgRulerLabels::AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProps, float offset, WgOrigo origo )
 {
-	Label * pLabel = new Label();
+	Label * pLabel = new Label(this);
 	pLabel->textField.Set(text);
 	pLabel->textField.SetProperties(pProps);
 	pLabel->textField.SetAlignment(origo);
-    pLabel->textField.SetManager(m_pTextManager);
 	pLabel->offset = offset;
-
-    if( m_labels.IsEmpty() )
-        pLabel->textField._setHolder(this);
     
 	m_labels.PushBack(pLabel);
 	_requestResize();
@@ -73,24 +68,6 @@ void WgRulerLabels::SetDirection( WgDirection direction )
 	m_direction = direction;
 	_requestResize();
 	_requestRender();
-}
-
-//____ SetTextManager() ________________________________________________________
-
-void WgRulerLabels::SetTextManager( WgTextManager * pTextManager )
-{
-    if( pTextManager != m_pTextManager )
-    {
-        m_pTextManager = pTextManager;
-        
-        Label * p = m_labels.First();
-        while( p )
-        {
-            p->textField.SetManager(pTextManager);
-            p = p->Next();
-        }
-    }
-
 }
 
 //____ GetLabel() ________________________________________________________________
@@ -241,13 +218,6 @@ bool WgRulerLabels::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 	return WgWidget::_onAlphaTest(ofs,sz);
 }
 
-//____ _fieldModified() _________________________________________________________________
-
-void WgRulerLabels::_fieldModified( WgTextField * pField )
-{
-    _requestResize();
-    _requestRender();
-}
 
 //____ _onStateChanged() ______________________________________________________
 
@@ -276,4 +246,19 @@ void WgRulerLabels::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& 
 		p = p->Next();
 	}
 
+}
+
+//____ _onFieldDirty() _________________________________________________________
+
+void WgRulerLabels::_onFieldDirty( WgField * pField )
+{
+	_requestRender();
+}
+
+//____ _onFieldResize() ________________________________________________________
+
+void WgRulerLabels::_onFieldResize( WgField * pField )
+{
+	_requestResize();
+	_requestRender();
 }

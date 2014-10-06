@@ -35,6 +35,7 @@ class WgEditValueHolder : public WgModValueHolder
 {
 public:
 	virtual void		_onValueEdited( WgEditValueField * pField ) = 0;
+	virtual WgObject*	_object() = 0;
 };
 
 
@@ -43,7 +44,7 @@ public:
 class WgEditValueField : public WgModValueField
 {
 public:
-	WgEditValueField();
+	WgEditValueField( WgEditValueHolder * pHolder );
 	~WgEditValueField();
 
 	void				SetEditMode(WgTextEditMode mode);

@@ -29,7 +29,6 @@
 #include <wg_font.h>
 #include <wg_caretinstance.h>
 #include <wg_key.h>
-#include <wg_textmanager.h>
 #include <wg_event.h>
 #include <wg_eventhandler.h>
 
@@ -38,9 +37,8 @@ const char WgValueEditor::CLASSNAME[] = {"ValueEditor"};
 
 //____ WgValueEditor() _________________________________________________________________
 
-WgValueEditor::WgValueEditor() : text(&m_text)
+WgValueEditor::WgValueEditor() : m_text(this), text(&m_text)
 {
-	m_text._setHolder(this);
 	_regenText();
 	m_buttonDownOfs = 0;
 	m_bSelectAllOnRelease = false;
@@ -180,14 +178,6 @@ void WgValueEditor::_rangeModified()
 {
 		_queueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(), false) );
 }
-
-//____ _fieldModified() ________________________________________________________
-
-void WgValueEditor::_fieldModified( WgTextField * pField )
-{
-	_requestRender();
-}
-
 
 //____ _onRefresh() ____________________________________________________________
 
@@ -831,3 +821,16 @@ void WgValueEditor::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& 
 	m_text.SetColorSkin(pNewSkin);
 }
 
+//____ _onFieldDirty() _________________________________________________________
+
+void WgValueEditor::_onFieldDirty( WgField * pField )
+{
+	_requestRender();
+}
+
+//____ _onFieldResize() ________________________________________________________
+
+void WgValueEditor::_onFieldResize( WgField * pField )
+{
+	_requestResize();
+}

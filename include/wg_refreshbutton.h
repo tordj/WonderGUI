@@ -87,8 +87,6 @@ public:
 	float			GetRefreshProgress() const { return m_refreshProgress; }
 	bool			IsRefreshing() const { return m_bRefreshing; }
 
-	virtual void	SetTextManager( WgTextManager * pManager );
-
 protected:
 	WgRefreshButton();
 	virtual ~WgRefreshButton();
@@ -99,7 +97,6 @@ protected:
 	void			_onCloneContent( const WgWidget * _pOrg );
 	virtual void 	_onNewSize( const WgSize& size );
 
-	void			_fieldModified( WgTextField * pField );
 	WgState			_getRenderState();
 
 

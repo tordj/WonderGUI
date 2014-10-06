@@ -130,7 +130,7 @@ public:
 	{
 		friend class WgPackList;
 	public:
-		Header() : icon(&m_icon), arrow(&m_arrow), label(&m_label) {}
+		Header() : m_icon(this), m_arrow(this), m_label(this), icon(&m_icon), arrow(&m_arrow), label(&m_label) {}
 		//____ Interfaces __________________________________
 
 		WgIcon		icon;
@@ -143,8 +143,9 @@ public:
 		inline WgSkinPtr	Skin() const { return m_pSkin; }
 
 	private:
-		void				_fieldModified( WgTextField * pText );
-		void				_fieldModified( WgIconField * pField );
+		WgObject * 			_object() { return m_pHolder; };
+		void				_onFieldDirty( WgField * pField );
+		void 				_onFieldResize( WgField * pField );
 
 		WgPackList *	m_pHolder;
 		WgSkinPtr			m_pSkin;

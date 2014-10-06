@@ -56,6 +56,7 @@ public:
 	virtual const char *		ClassName( void ) const;
 	static const char			CLASSNAME[];
 	static WgModValuePtr		Cast( const WgInterfacePtr& pInterface );
+	inline WgModValuePtr		Ptr() { return WgModValuePtr(_object(),this); }
 
 	virtual void				Set( int value ) = 0;
 	virtual void				Set( Sint64 value ) = 0;
@@ -70,6 +71,9 @@ public:
 	virtual bool				SetRange( Sint64 min, Sint64 max ) = 0;
 	virtual Sint64				Min() const = 0;
 	virtual Sint64				Max() const = 0;
+
+private:
+	inline	WgModValueField * 	_field() { return static_cast<WgModValueField*>(m_pField); }
 };
 
 
