@@ -139,7 +139,7 @@ public:
 	bool		RemoveWidget(const WgWidgetPtr& pWidget ) { return false; }
 	bool		Clear() { return false; }
 
-	int			WidthForHeight( int height ) const;
+	int			MatchingWidth( int height ) const;
 
 	WgSize		PreferredSize() const;
 

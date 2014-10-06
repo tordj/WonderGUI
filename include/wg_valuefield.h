@@ -38,7 +38,6 @@
 #	include <wg_valueformat.h>
 #endif
 
-class WgValueField;
 
 //____ WgValueHolder ___________________________________________________________
 

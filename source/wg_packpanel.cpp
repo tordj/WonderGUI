@@ -166,9 +166,9 @@ WgSize WgPackPanel::PreferredSize() const
 	return m_preferredSize;
 }
 
-//____ HeightForWidth() _______________________________________________________
+//____ MatchingHeight() _______________________________________________________
 
-int WgPackPanel::HeightForWidth( int width ) const
+int WgPackPanel::MatchingHeight( int width ) const
 {
 	int height = 0;
 
@@ -194,7 +194,7 @@ int WgPackPanel::HeightForWidth( int width ) const
 			{
 				if( pH->IsVisible() )
 				{
-					int itemHeight = pH->_paddedHeightForWidth( pI->output );
+					int itemHeight = pH->_paddedMatchingHeight( pI->output );
 					if( itemHeight > height )
 						height = itemHeight;
 					pI++;
@@ -246,7 +246,7 @@ int WgPackPanel::HeightForWidth( int width ) const
 			while( p )
 			{
 				if( p->IsVisible() )
-					height += p->_paddedHeightForWidth( width );
+					height += p->_paddedMatchingHeight( width );
 
 				p = p->_next();
 			}
@@ -255,9 +255,9 @@ int WgPackPanel::HeightForWidth( int width ) const
 	return height;
 }
 
-//____ WidthForHeight() _______________________________________________________
+//____ MatchingWidth() _______________________________________________________
 
-int WgPackPanel::WidthForHeight( int height ) const
+int WgPackPanel::MatchingWidth( int height ) const
 {
 	int width = 0;
 
@@ -283,7 +283,7 @@ int WgPackPanel::WidthForHeight( int height ) const
 			{
 				if( pH->IsVisible() )
 				{
-					int itemWidth = pH->_paddedWidthForHeight( pI->output );
+					int itemWidth = pH->_paddedMatchingWidth( pI->output );
 					if( itemWidth > width )
 						width = itemWidth;
 					pI++;
@@ -335,7 +335,7 @@ int WgPackPanel::WidthForHeight( int height ) const
 			while( p )
 			{
 				if( p->IsVisible() )
-					width += p->_paddedWidthForHeight( height );
+					width += p->_paddedMatchingWidth( height );
 
 				p = p->_next();
 			}
@@ -499,7 +499,7 @@ void WgPackPanel::_updatePreferredSize()
 		{
 			if( pH->IsVisible() )
 			{
-				int b = m_bHorizontal?pH->_paddedHeightForWidth(pI->output):pH->_paddedWidthForHeight(pI->output);
+				int b = m_bHorizontal?pH->_paddedMatchingHeight(pI->output):pH->_paddedMatchingWidth(pI->output);
 				if( b > breadth )
 					breadth = b;			
 				pI++;
@@ -568,7 +568,7 @@ void WgPackPanel::_refreshChildGeo()
 	int givenBreadth = m_bHorizontal?size.h:size.w;
 
 	// Optimized special case, just copy preferred to length.
-	//TODO: We probably need to use WidthForHeight()/HeightForWidth() here anyway... prefered length might change with given breadth
+	//TODO: We probably need to use MatchingWidth()/MatchingHeight() here anyway... prefered length might change with given breadth
 
 	if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->MayAlterPreferredLengths()) )
 	{
@@ -759,7 +759,7 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forced
 		{
 			if( pH->IsVisible() )
 			{
-				pI->preferred = pH->_paddedWidthForHeight(forcedBreadth);
+				pI->preferred = pH->_paddedMatchingWidth(forcedBreadth);
 				pI->min = pH->_paddedMinSize().w;
 				pI->max = pH->_paddedMaxSize().w;
 				pI->weight = pH->m_weight;			
@@ -774,7 +774,7 @@ int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forced
 		{
 			if( pH->IsVisible() )
 			{
-				pI->preferred = pH->_paddedHeightForWidth(forcedBreadth);
+				pI->preferred = pH->_paddedMatchingHeight(forcedBreadth);
 				pI->min = pH->_paddedMinSize().h;
 				pI->max = pH->_paddedMaxSize().h;
 				pI->weight = pH->m_weight;			

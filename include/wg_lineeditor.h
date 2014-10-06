@@ -41,7 +41,7 @@ typedef	WgWeakPtr<WgLineEditor,WgWidgetWeakPtr>	WgLineEditorWeakPtr;
 
 //____ WgLineEditor ____________________________________________________________
 
-class WgLineEditor : public WgWidget, public WgTextHolder
+class WgLineEditor : public WgWidget, protected WgTextHolder
 {
 public:
 	static WgLineEditorPtr	Create() { return WgLineEditorPtr(new WgLineEditor()); }

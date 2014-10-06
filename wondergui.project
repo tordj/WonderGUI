@@ -255,6 +255,8 @@
     <File Name="source/wg_editvalue.cpp"/>
     <File Name="source/wg_interface.cpp"/>
     <File Name="include/wg_interface.h"/>
+    <File Name="include/wg_columnheader.h"/>
+    <File Name="source/wg_columnheader.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release"/>
   <Dependencies Name="Debug"/>
@@ -271,6 +273,8 @@
     <File Name="source/wg_modvaluefield.cpp"/>
     <File Name="include/wg_field.h"/>
     <File Name="include/wg_item.h"/>
+    <File Name="include/wg_columnheaderfield.h"/>
+    <File Name="source/wg_columnheaderfield.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

@@ -83,9 +83,9 @@ void WgTextDisplay::SetEditMode(WgTextEditMode mode)
 	m_text.SetEditMode(mode);
 }
 
-//____ HeightForWidth() _______________________________________________________
+//____ MatchingHeight() _______________________________________________________
 
-int WgTextDisplay::HeightForWidth( int width ) const
+int WgTextDisplay::MatchingHeight( int width ) const
 {
 	int textHeight = m_text.heightForWidth( width );
 

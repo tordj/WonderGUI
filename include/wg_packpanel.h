@@ -97,8 +97,8 @@ public:
 	void			SetSizeBroker( const WgSizeBrokerPtr& pBroker );
 	WgSizeBrokerPtr	SizeBroker() const { return m_pSizeBroker; }
 
-	int				HeightForWidth( int width ) const;
-	int				WidthForHeight( int height ) const;
+	int				MatchingHeight( int width ) const;
+	int				MatchingWidth( int height ) const;
 
 	WgSize			PreferredSize() const;
 	

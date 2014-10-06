@@ -37,7 +37,7 @@ class WgFpsDisplay;
 typedef	WgStrongPtr<WgFpsDisplay,WgWidgetPtr>		WgFpsDisplayPtr;
 typedef	WgWeakPtr<WgFpsDisplay,WgWidgetWeakPtr>	WgFpsDisplayWeakPtr;
 
-class WgFpsDisplay:public WgWidget, public WgTextHolder
+class WgFpsDisplay:public WgWidget, protected WgTextHolder
 {
 public:
 	static WgFpsDisplayPtr	Create() { return WgFpsDisplayPtr(new WgFpsDisplay()); }

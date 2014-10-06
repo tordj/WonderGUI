@@ -40,7 +40,7 @@ class WgTextDisplay;
 typedef	WgStrongPtr<WgTextDisplay,WgWidgetPtr>		WgTextDisplayPtr;
 typedef	WgWeakPtr<WgTextDisplay,WgWidgetWeakPtr>	WgTextDisplayWeakPtr;
 
-class WgTextDisplay:public WgWidget, public WgTextHolder
+class WgTextDisplay:public WgWidget, protected WgTextHolder
 {
 public:
 	static WgTextDisplayPtr	Create() { return WgTextDisplayPtr(new WgTextDisplay()); }
@@ -68,7 +68,7 @@ public:
 	WgPointerStyle		PointerStyle() const;
 	WgString			TooltipString() const;
 
-	int		HeightForWidth( int width ) const;
+	int		MatchingHeight( int width ) const;
 	WgSize	PreferredSize() const;
 	bool	IsAutoEllipsisDefault() const { return true; };
 

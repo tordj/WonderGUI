@@ -72,8 +72,8 @@ protected:
 	WgSize		_paddedPreferredSize() const;
 	WgSize		_paddedMinSize() const;
 	WgSize		_paddedMaxSize() const;
-	int			_paddedWidthForHeight( int paddedHeight ) const;
-	int			_paddedHeightForWidth( int paddedWidth ) const;
+	int			_paddedMatchingWidth( int paddedHeight ) const;
+	int			_paddedMatchingHeight( int paddedWidth ) const;
 	bool		_isVisible() const { return m_bVisible; }				// Overloading WgHook::_isVisible().
 
 	WgSize		_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy ) const;

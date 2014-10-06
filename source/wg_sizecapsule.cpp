@@ -128,7 +128,7 @@ WgSize WgSizeCapsule::PreferredSize() const
 				pref.h = (int) (pref.h * m_pScaler->ScaleY());
 		}
 
-		// Constrain against min/max, taking WidthForHeight/HeightForWidth into account.
+		// Constrain against min/max, taking MatchingWidth/MatchingHeight into account.
 		//TODO: Check so we don't have any corner cases that breaks the constraints and
 		// and that priorities between preferred height/width are reasonable.
 
@@ -138,13 +138,13 @@ WgSize WgSizeCapsule::PreferredSize() const
 		if( pref.w < min.w )
 		{
 			pref.w = min.w;
-			pref.h = HeightForWidth(pref.w);
+			pref.h = MatchingHeight(pref.w);
 		}
 
 		if( pref.h < min.h )
 		{
 			pref.h = min.h;
-			pref.w = WidthForHeight(pref.h);
+			pref.w = MatchingWidth(pref.h);
 			if( pref.w < min.w )
 				pref.w = min.w;
 		}
@@ -156,7 +156,7 @@ WgSize WgSizeCapsule::PreferredSize() const
 			else
 			{
 				pref.w = max.w;
-				pref.h = HeightForWidth(pref.w);
+				pref.h = MatchingHeight(pref.w);
 				if( pref.h > max.h )
 					pref.h = max.h;
 			}
@@ -168,7 +168,7 @@ WgSize WgSizeCapsule::PreferredSize() const
 			else
 			{
 				pref.h = max.h;
-				pref.w = WidthForHeight(pref.h);
+				pref.w = MatchingWidth(pref.h);
 				if( pref.w > max.w )
 					pref.w = max.w;
 			}
@@ -208,9 +208,9 @@ WgSize WgSizeCapsule::MaxSize() const
 		return m_max; 
 }
 
-//____ HeightForWidth() _______________________________________________________
+//____ MatchingHeight() _______________________________________________________
 
-int WgSizeCapsule::HeightForWidth( int width ) const
+int WgSizeCapsule::MatchingHeight( int width ) const
 {
 	if( m_preferred.h != 0 )
 	{
@@ -229,7 +229,7 @@ int WgSizeCapsule::HeightForWidth( int width ) const
 	}
 	else if( m_hook._widget() )
 	{
-		int h = m_hook._widget()->HeightForWidth(width);
+		int h = m_hook._widget()->MatchingHeight(width);
 		WG_LIMIT( h, m_min.h, m_max.h );
 		return h;
 	}
@@ -237,9 +237,9 @@ int WgSizeCapsule::HeightForWidth( int width ) const
 		return m_min.h;
 }
 
-//____ WidthForHeight() _______________________________________________________
+//____ MatchingWidth() _______________________________________________________
 
-int WgSizeCapsule::WidthForHeight( int height ) const
+int WgSizeCapsule::MatchingWidth( int height ) const
 {
 	if( m_preferred.w != 0 )
 	{
@@ -258,7 +258,7 @@ int WgSizeCapsule::WidthForHeight( int height ) const
 	}
 	else if( m_hook._widget() )
 	{
-		int w = m_hook._widget()->WidthForHeight(height);
+		int w = m_hook._widget()->MatchingWidth(height);
 		WG_LIMIT( w, m_min.w, m_max.w );
 		return w;
 	}

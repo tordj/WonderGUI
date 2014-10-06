@@ -163,8 +163,8 @@ public:
 	
 	// To be overloaded by Widget
 
-	virtual int		HeightForWidth( int width ) const;
-	virtual int		WidthForHeight( int height ) const;
+	virtual int		MatchingHeight( int width ) const;
+	virtual int		MatchingWidth( int height ) const;
 
 	virtual WgSize	PreferredSize() const;	
 	virtual WgSize	MinSize() const;

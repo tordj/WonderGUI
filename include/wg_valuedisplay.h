@@ -49,7 +49,7 @@ class WgValueDisplay;
 typedef	WgStrongPtr<WgValueDisplay,WgWidgetPtr>		WgValueDisplayPtr;
 typedef	WgWeakPtr<WgValueDisplay,WgWidgetWeakPtr>	WgValueDisplayWeakPtr;
 
-class WgValueDisplay : public WgWidget, private WgTextHolder, public Wg_Interface_ValueHolder
+class WgValueDisplay : public WgWidget, protected WgTextHolder, public Wg_Interface_ValueHolder
 {
 public:
 	static WgValueDisplayPtr	Create() { return WgValueDisplayPtr(new WgValueDisplay()); }

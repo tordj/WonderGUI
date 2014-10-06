@@ -457,9 +457,9 @@ WgSize WgMenu::PreferredSize() const
 	return m_defaultSize;
 }
 
-//____ WidthForHeight() ________________________________________________________
+//____ MatchingWidth() ________________________________________________________
 
-int  WgMenu::WidthForHeight( int height ) const
+int  WgMenu::MatchingWidth( int height ) const
 {
 	if( height >= m_defaultSize.h )
 		return m_defaultSize.w;

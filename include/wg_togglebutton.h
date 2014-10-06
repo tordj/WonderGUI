@@ -46,7 +46,7 @@ typedef	WgStrongPtr<WgToggleGroup,WgObjectPtr>		WgToggleGroupPtr;
 typedef	WgWeakPtr<WgToggleGroup,WgObjectWeakPtr>		WgToggleGroupWeakPtr;
 
 
-class	WgToggleButton : public WgWidget, public WgIconHolder, public WgTextHolder
+class	WgToggleButton : public WgWidget, protected WgIconHolder, protected WgTextHolder
 {
 friend class WgToggleGroup;
 public:

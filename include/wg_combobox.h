@@ -45,7 +45,7 @@ class WgCombobox;
 typedef	WgStrongPtr<WgCombobox,WgWidgetPtr>		WgComboboxPtr;
 typedef	WgWeakPtr<WgCombobox,WgWidgetWeakPtr>	WgComboboxWeakPtr;
 
-class WgCombobox : public WgWidget, public WgTextHolder
+class WgCombobox : public WgWidget, protected WgTextHolder
 {
 public:
 	static WgComboboxPtr	Create() { return WgComboboxPtr(new WgCombobox()); }

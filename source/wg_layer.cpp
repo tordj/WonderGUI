@@ -92,24 +92,24 @@ bool WgLayer::RemoveBaseWidget()
 	return true;
 }
 
-//____ HeightForWidth() _______________________________________________________
+//____ MatchingHeight() _______________________________________________________
 
-int WgLayer::HeightForWidth( int width ) const
+int WgLayer::MatchingHeight( int width ) const
 {
 	if( m_baseHook._widget() )
-		return m_baseHook._widget()->HeightForWidth( width );
+		return m_baseHook._widget()->MatchingHeight( width );
 	else
-		return WgWidget::HeightForWidth(width);
+		return WgWidget::MatchingHeight(width);
 }
 
-//____ WidthForHeight() _______________________________________________________
+//____ MatchingWidth() _______________________________________________________
 
-int WgLayer::WidthForHeight( int height ) const
+int WgLayer::MatchingWidth( int height ) const
 {
 	if( m_baseHook._widget() )
-		return m_baseHook._widget()->WidthForHeight( height );
+		return m_baseHook._widget()->MatchingWidth( height );
 	else
-		return WgWidget::WidthForHeight(height);
+		return WgWidget::MatchingWidth(height);
 }
 
 //____ PreferredSize() _____________________________________________________________

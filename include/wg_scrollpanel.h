@@ -220,8 +220,8 @@ public:
 /*
 	NEED TO BE IMPLEMENTED!!!
 
-	int		HeightForWidth( int width ) const;	//
-	int		WidthForHeight( int height ) const;
+	int		MatchingHeight( int width ) const;	//
+	int		MatchingWidth( int height ) const;
 
 */
 

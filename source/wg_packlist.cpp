@@ -126,7 +126,7 @@ WgContainer *  WgPackListHook::_parent() const
 
 //____ Constructor ____________________________________________________________
 
-WgPackList::WgPackList()
+WgPackList::WgPackList() : m_header(this), header(&m_header)
 {
 	m_bSiblingsOverlap = false;
 	m_bHorizontal = false;
@@ -142,13 +142,6 @@ WgPackList::WgPackList()
 	m_nbPreferredBreadthEntries = 0;
 
 	m_pHoveredChild = 0;
-
-	header.m_pHolder = this;
-	header.m_height = 0;
-	header.m_width = 0;
-	header.m_bPressed = false;
-	header.m_label.SetWrap(false);			// Labels by default don't wrap.
-	header.m_label.SetAlignment( WG_WEST );
 }
 
 //____ Destructor _____________________________________________________________
@@ -323,15 +316,15 @@ WgSize WgPackList::PreferredSize() const
 	WgSize sz;
 	if( m_bHorizontal )
 	{
-		sz =  WgSize(m_contentPreferredLength + header.m_width, m_contentPreferredBreadth);
-		if( header.m_height > sz.h )
-			sz.h = header.m_height;
+		sz =  WgSize(m_contentPreferredLength + m_header.m_width, m_contentPreferredBreadth);
+		if( m_header.m_height > sz.h )
+			sz.h = m_header.m_height;
 	}
 	else
 	{
-		sz = WgSize(m_contentPreferredBreadth,m_contentPreferredLength + header.m_height );
-		if( header.m_width > sz.w )
-			sz.w = header.m_width;
+		sz = WgSize(m_contentPreferredBreadth,m_contentPreferredLength + m_header.m_height );
+		if( m_header.m_width > sz.w )
+			sz.w = m_header.m_width;
 	}
 
 	if( m_pSkin )
@@ -340,15 +333,15 @@ WgSize WgPackList::PreferredSize() const
 	return sz;
 }
 
-//____ HeightForWidth() _______________________________________________________
+//____ MatchingHeight() _______________________________________________________
 
-int WgPackList::HeightForWidth( int width ) const
+int WgPackList::MatchingHeight( int width ) const
 {
 	if( m_bHorizontal )
 	{
 		int height =  m_contentPreferredBreadth;
-		if( header.m_height > height )
-			height = header.m_height;
+		if( m_header.m_height > height )
+			height = m_header.m_height;
 
 		if( m_pSkin )
 			height += m_pSkin->ContentPadding().h;
@@ -356,7 +349,7 @@ int WgPackList::HeightForWidth( int width ) const
 	}
 	else
 	{
-		int height = header.m_height;
+		int height = m_header.m_height;
 		if( m_pSkin )
 		{
 			WgSize pad = m_pSkin->ContentPadding();
@@ -368,20 +361,20 @@ int WgPackList::HeightForWidth( int width ) const
 		for( int i = 0 ; i < m_hooks.Size() ; i++ )
 		{
 			WgPackListHook * pHook = m_hooks.Hook(i);
-			height += pHook->_widget()->HeightForWidth(width);
+			height += pHook->_widget()->MatchingHeight(width);
 		}
 		height += m_entryPadding.h*m_hooks.Size();		
 		return height;
 	}
 }
 
-//____ WidthForHeight() _______________________________________________________
+//____ MatchingWidth() _______________________________________________________
 
-int WgPackList::WidthForHeight( int height ) const
+int WgPackList::MatchingWidth( int height ) const
 {
 	if( m_bHorizontal )
 	{
-		int width = header.m_width;
+		int width = m_header.m_width;
 		if( m_pSkin )
 		{
 			WgSize pad = m_pSkin->ContentPadding();
@@ -393,7 +386,7 @@ int WgPackList::WidthForHeight( int height ) const
 		for( int i = 0 ; i < m_hooks.Size() ; i++ )
 		{
 			WgPackListHook * pHook = m_hooks.Hook(i);
-			width += pHook->_widget()->WidthForHeight(height);
+			width += pHook->_widget()->MatchingWidth(height);
 		}
 		width += m_entryPadding.w*m_hooks.Size();		
 		return width;
@@ -401,8 +394,8 @@ int WgPackList::WidthForHeight( int height ) const
 	else
 	{
 		int width =  m_contentPreferredBreadth;
-		if( header.m_width > width )
-			width = header.m_width;
+		if( m_header.m_width > width )
+			width = m_header.m_width;
 
 		if( m_pSkin )
 			width += m_pSkin->ContentPadding().w;
@@ -531,13 +524,13 @@ void WgPackList::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 	// Render header
 
-	if( header.m_height != 0 )
+	if( m_header.m_height != 0 )
 	{
 		bool bInvertedSort = (m_sortOrder == WG_SORT_DESCENDING);
 		WgRect canvas = _headerGeo() + _canvas.Pos();
 
 		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
-			_renderHeader( pDevice, canvas, *pRect, header.m_pSkin, &header.m_label, &header.m_icon, &header.m_arrow, header.m_state, true, bInvertedSort );
+			_renderHeader( pDevice, canvas, *pRect, m_header.m_pSkin, &m_header.label, &m_header.icon, &m_header.arrow, m_header.m_state, true, bInvertedSort );
 	}
 
 	// Render Lasso
@@ -638,7 +631,7 @@ void WgPackList::_onNewSize( const WgSize& size )
 
 			if( m_bHorizontal )
 			{
-				int newEntryLength = _paddedLimitedWidthForHeight(pWidget, newContentBreadth );
+				int newEntryLength = _paddedLimitedMatchingWidth(pWidget, newContentBreadth );
 				pHook->m_ofs = ofs;
 				pHook->m_length = newEntryLength;
 				ofs += newEntryLength;
@@ -647,7 +640,7 @@ void WgPackList::_onNewSize( const WgSize& size )
 			}
 			else
 			{
-				int newEntryLength = _paddedLimitedHeightForWidth(pWidget, newContentBreadth );
+				int newEntryLength = _paddedLimitedMatchingHeight(pWidget, newContentBreadth );
 				pHook->m_ofs = ofs;
 				pHook->m_length = newEntryLength;
 				ofs += newEntryLength;
@@ -699,7 +692,7 @@ void WgPackList::_onRefreshList()
 			if( pref.h == m_contentBreadth )
 				pHook->m_length = pref.w;
 			else
-				pHook->m_length	= _paddedLimitedWidthForHeight(pChild, m_contentBreadth);
+				pHook->m_length	= _paddedLimitedMatchingWidth(pChild, m_contentBreadth);
 			pHook->m_prefBreadth = pref.h;
 			ofs += pHook->m_length;
 
@@ -714,7 +707,7 @@ void WgPackList::_onRefreshList()
 			if( pref.w == m_contentBreadth )
 				pHook->m_length = pref.h;
 			else
-				pHook->m_length = _paddedLimitedHeightForWidth(pChild, m_contentBreadth);
+				pHook->m_length = _paddedLimitedMatchingHeight(pChild, m_contentBreadth);
 			pHook->m_prefBreadth = pref.w;
 			ofs += pHook->m_length;
 		}
@@ -740,10 +733,10 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 			WgMouseMoveEventPtr pEvent = WgMouseMoveEvent::Cast(_pEvent);
 			WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
 			WgRect headerGeo = _headerGeo();
-			bool bHeaderHovered = headerGeo.Contains(ofs) && (!pHandler->IsAnyMouseButtonPressed() || (pHandler->IsMouseButtonPressed(WG_BUTTON_LEFT) && header.m_bPressed));
-			if( bHeaderHovered != header.m_state.IsHovered() )
+			bool bHeaderHovered = headerGeo.Contains(ofs) && (!pHandler->IsAnyMouseButtonPressed() || (pHandler->IsMouseButtonPressed(WG_BUTTON_LEFT) && m_header.m_bPressed));
+			if( bHeaderHovered != m_header.m_state.IsHovered() )
 			{
-				header.m_state.SetHovered(bHeaderHovered);
+				m_header.m_state.SetHovered(bHeaderHovered);
 				_requestRender( headerGeo );
 			}
 			WgList::_onEvent( _pEvent, pHandler );
@@ -753,10 +746,10 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 		case WG_EVENT_MOUSE_LEAVE:
 		{
 			WgMouseLeaveEventPtr pEvent = WgMouseLeaveEvent::Cast(_pEvent);
-			if( pEvent->Widget() == this && header.m_state.IsHovered() )
+			if( pEvent->Widget() == this && m_header.m_state.IsHovered() )
 			{
-				header.m_state.SetPressed(false);
-				header.m_state.SetHovered(false);
+				m_header.m_state.SetPressed(false);
+				m_header.m_state.SetHovered(false);
 				_requestRender( _headerGeo() );
 			}
 			WgList::_onEvent( _pEvent, pHandler );
@@ -770,8 +763,8 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 			WgRect headerGeo = _headerGeo();
 			if(pEvent->Button() == WG_BUTTON_LEFT && headerGeo.Contains(ofs))
 			{
-				header.m_bPressed = true;
-				header.m_state.SetPressed(true);
+				m_header.m_bPressed = true;
+				m_header.m_state.SetPressed(true);
 				_requestRender( headerGeo );
 				pHandler->SwallowEvent( pEvent );
 			}
@@ -783,15 +776,15 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 		case WG_EVENT_MOUSE_DRAG:
 		{
 			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
-			if( header.m_bPressed )
+			if( m_header.m_bPressed )
 			{
 				WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
 				WgRect headerGeo = _headerGeo();
 				bool bHeaderHovered = headerGeo.Contains(ofs);
-				if( bHeaderHovered != header.m_state.IsHovered() )
+				if( bHeaderHovered != m_header.m_state.IsHovered() )
 				{
-					header.m_state.SetHovered(bHeaderHovered);
-					header.m_state.SetPressed(bHeaderHovered);
+					m_header.m_state.SetHovered(bHeaderHovered);
+					m_header.m_state.SetPressed(bHeaderHovered);
 					_requestRender( headerGeo );
 				}
 				pHandler->SwallowEvent(pEvent);
@@ -804,10 +797,10 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 		case WG_EVENT_MOUSE_RELEASE:
 		{
 			WgMouseReleaseEventPtr pEvent = WgMouseReleaseEvent::Cast(_pEvent);
-			if(pEvent->Button() == WG_BUTTON_LEFT && header.m_bPressed )
+			if(pEvent->Button() == WG_BUTTON_LEFT && m_header.m_bPressed )
 			{
-				header.m_bPressed = false;
-				header.m_state.SetPressed(false);
+				m_header.m_bPressed = false;
+				m_header.m_state.SetPressed(false);
 				WgRect headerGeo = _headerGeo();
 				_requestRender( headerGeo );
 
@@ -1014,7 +1007,7 @@ void WgPackList::_onRequestResize( WgPackListHook * pHook )
 	if( prefBreadth == m_contentBreadth )	
 		length = prefLength;
 	else
-		length = m_bHorizontal ? _paddedLimitedWidthForHeight(pChild, m_contentBreadth ) : _paddedLimitedHeightForWidth(pChild, m_contentBreadth );
+		length = m_bHorizontal ? _paddedLimitedMatchingWidth(pChild, m_contentBreadth ) : _paddedLimitedMatchingHeight(pChild, m_contentBreadth );
 
 	// Update if length has changed
 
@@ -1056,7 +1049,7 @@ void WgPackList::_onWidgetAppeared( WgListHook * pInserted )
 		if( pref.h == m_contentBreadth )
 			pHook->m_length = pref.w;
 		else
-			pHook->m_length	= _paddedLimitedWidthForHeight(pChild, m_contentBreadth);
+			pHook->m_length	= _paddedLimitedMatchingWidth(pChild, m_contentBreadth);
 		pHook->m_prefBreadth = pref.h;
 	}
 	else
@@ -1068,7 +1061,7 @@ void WgPackList::_onWidgetAppeared( WgListHook * pInserted )
 		if( pref.w == m_contentBreadth )
 			pHook->m_length = pref.h;
 		else
-			pHook->m_length = _paddedLimitedHeightForWidth(pChild, m_contentBreadth);
+			pHook->m_length = _paddedLimitedMatchingHeight(pChild, m_contentBreadth);
 		pHook->m_prefBreadth = pref.w;
 
 	}
@@ -1401,20 +1394,20 @@ void WgPackList::_getChildGeo( WgRect& geo, const WgPackListHook * pHook ) const
 	}
 }
 
-//____ _paddedLimitedHeightForWidth() _________________________________________
+//____ _paddedLimitedMatchingHeight() _________________________________________
 
-int WgPackList::_paddedLimitedHeightForWidth( WgWidget * pChild, int paddedWidth )
+int WgPackList::_paddedLimitedMatchingHeight( WgWidget * pChild, int paddedWidth )
 {
-	int height = pChild->HeightForWidth( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
+	int height = pChild->MatchingHeight( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
 	WG_LIMIT( height, m_minEntrySize.h, m_maxEntrySize.h );
 	return height;
 }
 
-//____ _paddedLimitedWidthForHeight() _________________________________________
+//____ _paddedLimitedMatchingWidth() _________________________________________
 
-int WgPackList::_paddedLimitedWidthForHeight( WgWidget * pChild, int paddedHeight )
+int WgPackList::_paddedLimitedMatchingWidth( WgWidget * pChild, int paddedHeight )
 {
-	int width = pChild->WidthForHeight( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
+	int width = pChild->MatchingWidth( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
 	WG_LIMIT( width, m_minEntrySize.w, m_maxEntrySize.w );
 	return width;
 }
@@ -1435,12 +1428,12 @@ WgSize WgPackList::_paddedLimitedPreferredSize( WgWidget * pChild )
 
 	if( sz.w > m_maxEntrySize.w )
 	{
-		int h = pChild->HeightForWidth(m_maxEntrySize.w-m_entryPadding.w) + m_entryPadding.h;
+		int h = pChild->MatchingHeight(m_maxEntrySize.w-m_entryPadding.w) + m_entryPadding.h;
 		WG_LIMIT(h, m_minEntrySize.h, m_maxEntrySize.h );
 	}
 	else if( sz.h > m_maxEntrySize.h )
 	{
-		int w = pChild->WidthForHeight(m_maxEntrySize.h-m_entryPadding.h) + m_entryPadding.w;
+		int w = pChild->MatchingWidth(m_maxEntrySize.h-m_entryPadding.h) + m_entryPadding.w;
 		WG_LIMIT(w, m_minEntrySize.w, m_maxEntrySize.w );
 	}
 
@@ -1530,13 +1523,13 @@ WgRect WgPackList::_listWindow() const
 
 	if( m_bHorizontal )
 	{
-		r.x += header.m_width;
-		r.w -= header.m_width;
+		r.x += m_header.m_width;
+		r.w -= m_header.m_width;
 	}
 	else
 	{
-		r.y += header.m_height;
-		r.h -= header.m_height;
+		r.y += m_header.m_height;
+		r.h -= m_header.m_height;
 	}
 	return r;
 }
@@ -1546,9 +1539,9 @@ WgRect WgPackList::_listWindow() const
 WgRect WgPackList::_listCanvas() const
 {
 	if( m_bHorizontal )
-		return WgRect(header.m_width, 0, m_size.w - header.m_width, m_size.h );
+		return WgRect(m_header.m_width, 0, m_size.w - m_header.m_width, m_size.h );
 	else
-		return WgRect(0, header.m_height, m_size.w, m_size.h - header.m_height);	// List canvas in widgets own coordinate system.
+		return WgRect(0, m_header.m_height, m_size.w, m_size.h - m_header.m_height);	// List canvas in widgets own coordinate system.
 }
 
 //____ _headerGeo() ___________________________________________________________
@@ -1556,9 +1549,9 @@ WgRect WgPackList::_listCanvas() const
 WgRect WgPackList::_headerGeo() const
 {
 	if( m_bHorizontal )
-		return WgRect( _windowSection().x, 0, header.m_width, m_size.h );
+		return WgRect( _windowSection().x, 0, m_header.m_width, m_size.h );
 	else
-		return WgRect( 0, _windowSection().y, m_size.w, header.m_height );
+		return WgRect( 0, _windowSection().y, m_size.w, m_header.m_height );
 }
 
 //____ _windowPadding() _______________________________________________________
@@ -1566,18 +1559,18 @@ WgRect WgPackList::_headerGeo() const
 WgSize WgPackList::_windowPadding() const
 {
 	if( m_bHorizontal )
-		return WgSize( header.m_width, 0 );
+		return WgSize( m_header.m_width, 0 );
 	else
-		return WgSize( 0, header.m_height );
+		return WgSize( 0, m_header.m_height );
 }
 
 //____ _refreshHeader() _______________________________________________________
 
 void WgPackList::_refreshHeader()
 {
-	WgSize wantedIconSize = header.m_icon.PreferredSize();
-	WgSize wantedArrowSize = header.m_arrow.PreferredSize();
-	WgSize wantedTextSize = header.m_label.unwrappedSize();
+	WgSize wantedIconSize = m_header.icon.PreferredSize();
+	WgSize wantedArrowSize = m_header.arrow.PreferredSize();
+	WgSize wantedTextSize = m_header.label.unwrappedSize();
 
 	WgSize wantedSize;
 
@@ -1586,20 +1579,20 @@ void WgPackList::_refreshHeader()
 
 	wantedSize.h = WgMax(wantedIconSize.h, wantedArrowSize.h, wantedTextSize.h );
 	wantedSize.w = wantedTextSize.w;
-	if( header.m_icon.Overlap() )
+	if( m_header.icon.Overlap() )
 		wantedSize.w = WgMax(wantedSize.w,wantedIconSize.w);
 	else
 		wantedSize.w += wantedIconSize.w;
 
-	if( header.m_arrow.Overlap() )
+	if( m_header.arrow.Overlap() )
 		wantedSize.w = WgMax(wantedSize.w,wantedArrowSize.w);
 	else
 		wantedSize.w += wantedArrowSize.w;
 
 	//
 
-	if( header.m_pSkin )
-		wantedSize = header.m_pSkin->SizeForContent(wantedSize);
+	if( m_header.m_pSkin )
+		wantedSize = m_header.m_pSkin->SizeForContent(wantedSize);
 	//
 
 	bool	bRequestResize = false;
@@ -1607,20 +1600,20 @@ void WgPackList::_refreshHeader()
 
 	// Update headers size, possibly request resize.
 
-	if( wantedSize.h != header.m_height )
+	if( wantedSize.h != m_header.m_height )
 	{
-		if( !m_bHorizontal || (wantedSize.h > m_contentPreferredBreadth || header.m_height > m_contentPreferredBreadth) )
+		if( !m_bHorizontal || (wantedSize.h > m_contentPreferredBreadth || m_header.m_height > m_contentPreferredBreadth) )
 			bRequestResize = true;
 
-		header.m_height = wantedSize.h;
+		m_header.m_height = wantedSize.h;
 	}
 
-	if( wantedSize.w != header.m_width ) 
+	if( wantedSize.w != m_header.m_width )
 	{
-		if( m_bHorizontal || (wantedSize.w > m_contentPreferredBreadth || header.m_width > m_contentPreferredBreadth) )
+		if( m_bHorizontal || (wantedSize.w > m_contentPreferredBreadth || m_header.m_width > m_contentPreferredBreadth) )
 			bRequestResize = true;
 
-		header.m_width = wantedSize.w;
+		m_header.m_width = wantedSize.w;
 	}
 
 	if( bRequestResize )
@@ -1687,27 +1680,18 @@ bool WgPackList::_sortEntries()
 	return true;
 }
 
-//____ Header::SetSkin() ______________________________________________________
+//____ _onFieldDirty() _________________________________________________________
 
-void WgPackList::Header::SetSkin( const WgSkinPtr& pSkin )
+void WgPackList::_onFieldDirty(WgField * pField)
 {
-	if( pSkin != m_pSkin )
-	{
-		m_pSkin = pSkin;
-		m_pHolder->_refreshHeader();
-	}
+	_refreshHeader();	//TODO: Just request render on header.
 }
 
-//____ Header::_onFieldDirty() _________________________________________________________
+//____ _onFieldResize() ________________________________________________________
 
-void WgPackList::Header::_onFieldDirty( WgField * pField )
+void WgPackList::_onFieldResize(WgField * pField)
 {
-	m_pHolder->_refreshHeader();
+	_refreshHeader();
 }
 
-//____ Header::_onFieldResize() ________________________________________________________
 
-void WgPackList::Header::_onFieldResize( WgField * pField )
-{
-	m_pHolder->_refreshHeader();
-}

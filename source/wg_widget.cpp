@@ -265,7 +265,7 @@ WgEventHandler * WgWidget::_eventHandler() const
 	return 0;
 }
 
-//____ HeightForWidth() _______________________________________________________
+//____ MatchingHeight() _______________________________________________________
 /**
  * @brief Returns the widgets preferred height for the specified width.
  * 
@@ -277,12 +277,12 @@ WgEventHandler * WgWidget::_eventHandler() const
  * @return The preferred height for the given width in pixels.
  */
 
-int WgWidget::HeightForWidth( int width ) const
+int WgWidget::MatchingHeight( int width ) const
 {
 	return PreferredSize().h;		// Default is to stick with best height no matter what width.
 }
 
-//____ WidthForHeight() _______________________________________________________
+//____ MatchingWidth() _______________________________________________________
 /**
  * @brief Returns the widgets preferred width for the specified height.
  * 
@@ -294,7 +294,7 @@ int WgWidget::HeightForWidth( int width ) const
  * @return The preferred width for the given height in pixels.
  */
 
-int WgWidget::WidthForHeight( int height ) const
+int WgWidget::MatchingWidth( int height ) const
 {
 	return PreferredSize().w;		// Default is to stick with best width no matter what height.
 }
@@ -309,7 +309,7 @@ int WgWidget::WidthForHeight( int height ) const
  * A container holding a widget will strive to give the widget its preferred size, given
  * the constraints and limitations the container needs to work with. If a container can't
  * give a widget its preferred size, it is likely to decide the closest width or height
- * that it can provide and then make a second call to either WidthForHeight() or HeightForWidth()
+ * that it can provide and then make a second call to either MatchingWidth() or MatchingHeight()
  * after which it will decide the size of the child and notify it.
  * 
  * @return The preferred size of the widget in pixels.

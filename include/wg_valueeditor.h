@@ -48,7 +48,7 @@ class WgValueEditor;
 typedef	WgStrongPtr<WgValueEditor,WgWidgetPtr>		WgValueEditorPtr;
 typedef	WgWeakPtr<WgValueEditor,WgWidgetWeakPtr>	WgValueEditorWeakPtr;
 
-class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder, private WgTextHolder
+class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder, protected WgTextHolder
 {
 public:
 	static WgValueEditorPtr	Create() { return WgValueEditorPtr(new WgValueEditor()); }

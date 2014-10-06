@@ -183,9 +183,9 @@ bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly t
 	if( sz.w == 0 && sz.h == 0 )
 		sz = m_pWidget->PreferredSize();
 	else if( sz.w == 0 )
-		sz.w = m_pWidget->WidthForHeight(sz.h);
+		sz.w = m_pWidget->MatchingWidth(sz.h);
 	else if( sz.h == 0 )
-		sz.h = m_pWidget->HeightForWidth(sz.w);
+		sz.h = m_pWidget->MatchingHeight(sz.w);
 
 	if( sz.w <= 0 )
 		sz.w = 1;
@@ -357,24 +357,24 @@ WgModalHookPtr WgModalLayer::LastModalHook()
 	return m_modalHooks.Last();
 }
 
-//____ HeightForWidth() _______________________________________________________
+//____ MatchingHeight() _______________________________________________________
 
-int WgModalLayer::HeightForWidth( int width ) const
+int WgModalLayer::MatchingHeight( int width ) const
 {
 	if( m_baseHook._widget() )
-		return m_baseHook._widget()->HeightForWidth( width );
+		return m_baseHook._widget()->MatchingHeight( width );
 	else
-		return WgWidget::HeightForWidth(width);
+		return WgWidget::MatchingHeight(width);
 }
 
-//____ WidthForHeight() _______________________________________________________
+//____ MatchingWidth() _______________________________________________________
 
-int WgModalLayer::WidthForHeight( int height ) const
+int WgModalLayer::MatchingWidth( int height ) const
 {
 	if( m_baseHook._widget() )
-		return m_baseHook._widget()->WidthForHeight( height );
+		return m_baseHook._widget()->MatchingWidth( height );
 	else
-		return WgWidget::WidthForHeight(height);
+		return WgWidget::MatchingWidth(height);
 }
 
 //____ PreferredSize() _____________________________________________________________

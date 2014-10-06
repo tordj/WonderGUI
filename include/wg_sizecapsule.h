@@ -57,8 +57,8 @@ public:
 	WgSize	MinSize() const;
 	WgSize	MaxSize() const;
 
-	int		HeightForWidth( int width ) const;
-	int		WidthForHeight( int height ) const;
+	int		MatchingHeight( int width ) const;
+	int		MatchingWidth( int height ) const;
 
 protected:
 	WgSizeCapsule();

@@ -92,9 +92,9 @@ int WgButton::TextAreaWidth()
 	return textRect.w;
 }
 
-//____ HeightForWidth() _______________________________________________________
+//____ MatchingHeight() _______________________________________________________
 
-int WgButton::HeightForWidth( int width ) const
+int WgButton::MatchingHeight( int width ) const
 {
 	int height = 0;
 

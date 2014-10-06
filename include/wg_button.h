@@ -44,7 +44,7 @@ typedef	WgWeakPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
 
 //____ WgButton ____________________________________________________________
 
-class WgButton : public WgWidget, public WgIconHolder, public WgTextHolder
+class WgButton : public WgWidget, protected WgIconHolder, protected WgTextHolder
 {
 public:
 	static WgButtonPtr	Create() { return WgButtonPtr(new WgButton()); }
@@ -65,8 +65,8 @@ public:
 	bool			DownWhenMouseOutside() const { return m_bDownOutside; }
 	int				TextAreaWidth();
 	
-	virtual int		HeightForWidth( int width ) const;
-//	virtual int		WidthForHeight( int height ) const;
+	virtual int		MatchingHeight( int width ) const;
+//	virtual int		MatchingWidth( int height ) const;
 
 	WgSize			PreferredSize() const;
 

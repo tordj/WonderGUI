@@ -213,22 +213,22 @@ WgSize WgPanelHook::_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPol
 		case WG_DEFAULT:
 		{
 			sz.h = WgUtil::SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
-			sz.w = _paddedWidthForHeight(sz.h);
+			sz.w = _paddedMatchingWidth(sz.h);
 			break;
 		case WG_BOUND:
 			sz.w = specifiedSize.w;
-			sz.h = WgUtil::SizeFromPolicy( _paddedHeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+			sz.h = WgUtil::SizeFromPolicy( _paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy );
 			break;
 		case WG_CONFINED:
 			if( defaultSize.w > specifiedSize.w )
 			{
 				sz.w = specifiedSize.w;
-				sz.h = WgUtil::SizeFromPolicy( _paddedHeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+				sz.h = WgUtil::SizeFromPolicy( _paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy );
 			}
 			else
 			{
 				sz.h = WgUtil::SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
-				sz.w = _paddedWidthForHeight(sz.h);
+				sz.w = _paddedMatchingWidth(sz.h);
 				if( sz.w > specifiedSize.w )
 					sz.w = specifiedSize.w;
 			}
@@ -237,12 +237,12 @@ WgSize WgPanelHook::_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPol
 			if( defaultSize.w < specifiedSize.w )
 			{
 				sz.w = specifiedSize.w;
-				sz.h = WgUtil::SizeFromPolicy( _paddedHeightForWidth(sz.w), specifiedSize.h, heightPolicy );
+				sz.h = WgUtil::SizeFromPolicy( _paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy );
 			}
 			else
 			{
 				sz.h = WgUtil::SizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
-				sz.w = _paddedWidthForHeight(sz.h);
+				sz.w = _paddedMatchingWidth(sz.h);
 				if( sz.w < specifiedSize.w )
 					sz.w = specifiedSize.w;
 			}
@@ -268,12 +268,12 @@ WgSize WgPanelHook::_paddedMaxSize() const
 	return m_pWidget->MaxSize() + m_padding;
 }
 
-int WgPanelHook::_paddedWidthForHeight( int paddedHeight ) const
+int WgPanelHook::_paddedMatchingWidth( int paddedHeight ) const
 {
-	return m_pWidget->WidthForHeight( paddedHeight - m_padding.Height() ) + m_padding.Width();
+	return m_pWidget->MatchingWidth( paddedHeight - m_padding.Height() ) + m_padding.Width();
 }
 
-int WgPanelHook::_paddedHeightForWidth( int paddedWidth ) const
+int WgPanelHook::_paddedMatchingHeight( int paddedWidth ) const
 {
-	return m_pWidget->HeightForWidth( paddedWidth - m_padding.Width() ) + m_padding.Height();
+	return m_pWidget->MatchingHeight( paddedWidth - m_padding.Width() ) + m_padding.Height();
 }

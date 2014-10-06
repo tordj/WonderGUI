@@ -146,24 +146,24 @@ bool WgCapsule::Clear()
 	return true;
 }
 
-//____ HeightForWidth() ________________________________________________________
+//____ MatchingHeight() ________________________________________________________
 
-int WgCapsule::HeightForWidth( int width ) const
+int WgCapsule::MatchingHeight( int width ) const
 {
 	if( m_hook._widget() )
-		return m_hook._widget()->HeightForWidth( width );
+		return m_hook._widget()->MatchingHeight( width );
 	else
-		return WgWidget::HeightForWidth(width);
+		return WgWidget::MatchingHeight(width);
 }
 
-//____ WidthForHeight() ________________________________________________________
+//____ MatchingWidth() ________________________________________________________
 
-int WgCapsule::WidthForHeight( int height ) const
+int WgCapsule::MatchingWidth( int height ) const
 {
 	if( m_hook._widget() )
-		return m_hook._widget()->WidthForHeight( height );
+		return m_hook._widget()->MatchingWidth( height );
 	else
-		return WgWidget::WidthForHeight(height);
+		return WgWidget::MatchingWidth(height);
 }
 
 //____ PreferredSize() ___________________________________________________________

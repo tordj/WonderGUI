@@ -30,12 +30,8 @@
 #	include <wg_hookarray.h>
 #endif
 
-#ifndef WG_ICON_DOT_H
-#	include <wg_icon.h>
-#endif
-
-#ifndef WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
+#ifndef WG_COLUMNHEADER_DOT_H
+#	include <wg_columnheader.h>
 #endif
 
 class WgPackList;
@@ -85,16 +81,20 @@ protected:
 };
 
 
-
-
 //____ WgPackList ____________________________________________________________
 
-class WgPackList : public WgList
+class WgPackList : public WgList, protected WgColumnHeaderHolder
 {
 	friend class WgPackListHook;
 public:
 	static WgPackListPtr	Create() { return WgPackListPtr(new WgPackList()); }
-	
+
+	//____ Interfaces ______________________________________
+
+	WgColumnHeader			header;
+
+	//____ Methods _________________________________________
+
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
@@ -118,49 +118,15 @@ public:
 	WgWidgetSortFunc		SortFunction() const { return m_pSortFunc; }
 
 	WgSize					PreferredSize() const;
-	int						HeightForWidth( int width ) const;
-	int						WidthForHeight( int height ) const;
+	int						MatchingHeight( int width ) const;
+	int						MatchingWidth( int height ) const;
 
 	bool					SetMinEntrySize( WgSize min );
 	bool					SetMaxEntrySize( WgSize max );
 	WgSize					MinEntrySize() const { return m_minEntrySize; }
 	WgSize					MaxEntrySize() const { return m_maxEntrySize; }
 
-	class Header : private WgIconHolder, private WgTextHolder
-	{
-		friend class WgPackList;
-	public:
-		Header() : m_icon(this), m_arrow(this), m_label(this), icon(&m_icon), arrow(&m_arrow), label(&m_label) {}
-		//____ Interfaces __________________________________
 
-		WgIcon		icon;
-		WgIcon		arrow;
-		WgModText	label;
-
-		//____ Methods _____________________________________
-
-		void				SetSkin( const WgSkinPtr& pSkin );
-		inline WgSkinPtr	Skin() const { return m_pSkin; }
-
-	private:
-		WgObject * 			_object() { return m_pHolder; };
-		void				_onFieldDirty( WgField * pField );
-		void 				_onFieldResize( WgField * pField );
-
-		WgPackList *	m_pHolder;
-		WgSkinPtr			m_pSkin;
-		int					m_height;
-		int					m_width;
-		WgState				m_state;
-		bool				m_bPressed;
-
-		WgIconField			m_icon;
-		WgIconField			m_arrow;
-		WgTextField			m_label;
-
-	};
-
-	Header		header;
 
 protected:
 	WgPackList();
@@ -206,9 +172,13 @@ protected:
 	void			_refreshHeader();
 	bool			_sortEntries();
 
+	WgObject *		_object() { return this; }
+	void			_onFieldDirty(WgField * pField);
+	void			_onFieldResize(WgField * pField);
+
 	WgSize			_paddedLimitedPreferredSize( WgWidget * pChild );
-	int				_paddedLimitedHeightForWidth( WgWidget * pChild, int paddedWidth );
-	int				_paddedLimitedWidthForHeight( WgWidget * pChild, int paddedHeight );
+	int				_paddedLimitedMatchingHeight( WgWidget * pChild, int paddedWidth );
+	int				_paddedLimitedMatchingWidth( WgWidget * pChild, int paddedHeight );
 
 	WgHook*			_firstHook() const;
 	WgHook*			_lastHook() const;
@@ -218,6 +188,8 @@ protected:
 
 	WgHook*			_lastHookWithGeo( WgRect& geo ) const;
 	WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+
+	WgColumnHeaderField	m_header;
 
 	bool				m_bHorizontal;
 
