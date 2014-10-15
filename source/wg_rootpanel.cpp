@@ -82,7 +82,7 @@ const char * WgRootPanel::ClassName( void ) const
 WgRootPanelPtr WgRootPanel::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgRootPanelPtr( static_cast<WgRootPanel*>(pObject.GetRealPtr()) );
+		return WgRootPanelPtr( static_cast<WgRootPanel*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -138,7 +138,7 @@ WgHookPtr WgRootPanel::SetWidget( const WgWidgetPtr& pWidget )
 	if( !pWidget )
 		return 0;
 
-	m_hook._setWidget(pWidget.GetRealPtr());
+	m_hook._setWidget(pWidget.RawPtr());
 	m_hook._widget()->_onNewSize(m_geo.Size());
 
 	m_hook._widget()->_onCollectPatches( m_dirtyPatches, Geo(), Geo() );
@@ -246,7 +246,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 	// Render the dirty patches recursively
 
-	m_hook._widget()->_renderPatches( m_pGfxDevice.GetRealPtr(), canvas, canvas, &dirtyPatches );
+	m_hook._widget()->_renderPatches( m_pGfxDevice.RawPtr(), canvas, canvas, &dirtyPatches );
 
 	return true;
 }

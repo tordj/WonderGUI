@@ -83,8 +83,9 @@ protected:
 };
 
 /**
- * @brief	Super class for container widgets for layout of children.
- * 
+ * @brief	Base class for layout widgets.
+ *
+ * Base class for layout widgets.
  */
 
 //____ WgPanel ________________________________________________________________

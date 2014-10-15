@@ -75,7 +75,7 @@ const char * WgStackHook::ClassName( void ) const
 WgStackHookPtr WgStackHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgStackHookPtr( static_cast<WgStackHook*>(pHook.GetRealPtr()) );
+		return WgStackHookPtr( static_cast<WgStackHook*>(pHook.RawPtr()) );
 
 	return 0;
 }
@@ -179,7 +179,7 @@ const char * WgStackPanel::ClassName( void ) const
 WgStackPanelPtr WgStackPanel::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgStackPanelPtr( static_cast<WgStackPanel*>(pObject.GetRealPtr()) );
+		return WgStackPanelPtr( static_cast<WgStackPanel*>(pObject.RawPtr()) );
 
 	return 0;
 }

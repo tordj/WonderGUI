@@ -46,7 +46,7 @@ const char * WgScalePreferredSizeBroker::ClassName( void ) const
 WgScalePreferredSizeBrokerPtr WgScalePreferredSizeBroker::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgScalePreferredSizeBrokerPtr( static_cast<WgScalePreferredSizeBroker*>(pObject.GetRealPtr()) );
+		return WgScalePreferredSizeBrokerPtr( static_cast<WgScalePreferredSizeBroker*>(pObject.RawPtr()) );
 
 	return 0;
 }

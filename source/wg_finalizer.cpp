@@ -63,7 +63,7 @@ const char * WgFinalizer::ClassName( void ) const
 WgFinalizerPtr WgFinalizer::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFinalizerPtr( static_cast<WgFinalizer*>(pObject.GetRealPtr()) );
+		return WgFinalizerPtr( static_cast<WgFinalizer*>(pObject.RawPtr()) );
 
 	return 0;
 }

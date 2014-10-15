@@ -55,7 +55,7 @@ const char * WgSimpleVolumeMeter::ClassName( void ) const
 WgSimpleVolumeMeterPtr WgSimpleVolumeMeter::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSimpleVolumeMeterPtr( static_cast<WgSimpleVolumeMeter*>(pObject.GetRealPtr()) );
+		return WgSimpleVolumeMeterPtr( static_cast<WgSimpleVolumeMeter*>(pObject.RawPtr()) );
 
 	return 0;
 }

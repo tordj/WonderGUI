@@ -28,7 +28,7 @@ bool WgUtil::MarkTestStretchRect( WgCoord ofs, const WgSurfacePtr& pSurface, con
 
 	// Do alpha test
 
-	int alpha = pSurface->GetOpacity(source.x+ofs.x, source.y+ofs.y);
+	int alpha = pSurface->Alpha(source.x+ofs.x, source.y+ofs.y);
 
 	return (alpha >= opacityTreshold);
 }

@@ -113,7 +113,7 @@ const char * WgBitmapGlyphs::ClassName( void ) const
 WgBitmapGlyphsPtr WgBitmapGlyphs::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgBitmapGlyphsPtr( static_cast<WgBitmapGlyphs*>(pObject.GetRealPtr()) );
+		return WgBitmapGlyphsPtr( static_cast<WgBitmapGlyphs*>(pObject.RawPtr()) );
 
 	return 0;
 }

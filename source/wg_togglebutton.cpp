@@ -78,7 +78,7 @@ const char * WgToggleButton::ClassName( void ) const
 WgToggleButtonPtr WgToggleButton::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgToggleButtonPtr( static_cast<WgToggleButton*>(pObject.GetRealPtr()) );
+		return WgToggleButtonPtr( static_cast<WgToggleButton*>(pObject.RawPtr()) );
 
 	return 0;
 }

@@ -72,7 +72,7 @@ const char * WgLineEditor::ClassName( void ) const
 WgLineEditorPtr WgLineEditor::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLineEditorPtr( static_cast<WgLineEditor*>(pObject.GetRealPtr()) );
+		return WgLineEditorPtr( static_cast<WgLineEditor*>(pObject.RawPtr()) );
 
 	return 0;
 }

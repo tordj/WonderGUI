@@ -59,7 +59,7 @@ const char * WgShaderCapsule::ClassName( void ) const
 WgShaderCapsulePtr WgShaderCapsule::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgShaderCapsulePtr( static_cast<WgShaderCapsule*>(pObject.GetRealPtr()) );
+		return WgShaderCapsulePtr( static_cast<WgShaderCapsule*>(pObject.RawPtr()) );
 
 	return 0;
 }

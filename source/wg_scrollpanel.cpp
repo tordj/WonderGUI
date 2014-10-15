@@ -105,7 +105,7 @@ const char * WgScrollPanel::ClassName( void ) const
 WgScrollPanelPtr WgScrollPanel::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgScrollPanelPtr( static_cast<WgScrollPanel*>(pObject.GetRealPtr()) );
+		return WgScrollPanelPtr( static_cast<WgScrollPanel*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -523,7 +523,7 @@ void WgScrollPanel::SetSkin( const WgSkinPtr& pSkin )
 
 WgScrollHookPtr WgScrollPanel::SetContent( const WgWidgetPtr& pContent )
 {
-	m_elements[WINDOW]._setWidget(pContent.GetRealPtr());
+	m_elements[WINDOW]._setWidget(pContent.RawPtr());
 
 	_updateElementGeo( Size() );
 	_requestRender( m_elements[WINDOW].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
@@ -547,7 +547,7 @@ WgScrollHookPtr WgScrollPanel::SetHorizontalScrollbar( const WgScrollbarPtr& pSc
 
 	pScrollbar->SetOrientation( WG_HORIZONTAL );
 
-	m_elements[XDRAG]._setWidget(pScrollbar.GetRealPtr());
+	m_elements[XDRAG]._setWidget(pScrollbar.RawPtr());
 	_updateElementGeo( Size() );
 	_requestRender( m_elements[XDRAG].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
 
@@ -574,7 +574,7 @@ WgScrollHookPtr WgScrollPanel::SetVerticalScrollbar( const WgScrollbarPtr& pScro
 
 	pScrollbar->SetOrientation( WG_VERTICAL );
 
-	m_elements[YDRAG]._setWidget(pScrollbar.GetRealPtr());
+	m_elements[YDRAG]._setWidget(pScrollbar.RawPtr());
 	_updateElementGeo( Size() );
 	_requestRender( m_elements[YDRAG].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
 
@@ -1478,7 +1478,7 @@ const char * WgScrollHook::ClassName( void ) const
 WgScrollHookPtr WgScrollHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgScrollHookPtr( static_cast<WgScrollHook*>(pHook.GetRealPtr()) );
+		return WgScrollHookPtr( static_cast<WgScrollHook*>(pHook.RawPtr()) );
 
 	return 0;
 }

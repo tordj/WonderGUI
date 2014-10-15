@@ -51,7 +51,7 @@ const char * WgGlyphset::ClassName( void ) const
 WgGlyphsetPtr WgGlyphset::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgGlyphsetPtr( static_cast<WgGlyphset*>(pObject.GetRealPtr()) );
+		return WgGlyphsetPtr( static_cast<WgGlyphset*>(pObject.RawPtr()) );
 
 	return 0;
 }

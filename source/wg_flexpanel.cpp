@@ -69,7 +69,7 @@ const char * WgFlexHook::ClassName( void ) const
 WgFlexHookPtr WgFlexHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgFlexHookPtr( static_cast<WgFlexHook*>(pHook.GetRealPtr()) );
+		return WgFlexHookPtr( static_cast<WgFlexHook*>(pHook.RawPtr()) );
 
 	return 0;
 }
@@ -219,7 +219,7 @@ bool WgFlexHook::Down()
 
 bool WgFlexHook::MoveOver( const WgFlexHookPtr& _pSibling )
 {
-	WgFlexHook * pSibling = _pSibling.GetRealPtr();
+	WgFlexHook * pSibling = _pSibling.RawPtr();
 
 	if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
 		return false;
@@ -279,7 +279,7 @@ bool WgFlexHook::MoveOver( const WgFlexHookPtr& _pSibling )
 
 bool WgFlexHook::MoveUnder( const WgFlexHookPtr& _pSibling )
 {
-	WgFlexHook * pSibling = _pSibling.GetRealPtr();
+	WgFlexHook * pSibling = _pSibling.RawPtr();
 
 	if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
 		return false;
@@ -710,7 +710,7 @@ const char * WgFlexPanel::ClassName( void ) const
 WgFlexPanelPtr WgFlexPanel::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFlexPanelPtr( static_cast<WgFlexPanel*>(pObject.GetRealPtr()) );
+		return WgFlexPanelPtr( static_cast<WgFlexPanel*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -742,7 +742,7 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget )
 		return 0;
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), WgBorder(0) );
-	p->_setWidget( pWidget.GetRealPtr() );
+	p->_setWidget( pWidget.RawPtr() );
 
 	m_hooks.PushBack(p);
 
@@ -759,7 +759,7 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgFlexOri
 		return 0;
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), padding );
-	p->_setWidget( pWidget.GetRealPtr() );
+	p->_setWidget( pWidget.RawPtr() );
 
 	m_hooks.PushBack(p);
 
@@ -774,7 +774,7 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgFlexOri
 		return 0;
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), padding );
-	p->_setWidget( pWidget.GetRealPtr() );
+	p->_setWidget( pWidget.RawPtr() );
 
 	m_hooks.PushBack(p);
 
@@ -795,7 +795,7 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgCoord& 
 	WgSize bestSize = pWidget->PreferredSize();
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,bestSize), padding );
-	p->_setWidget( pWidget.GetRealPtr() );
+	p->_setWidget( pWidget.RawPtr() );
 	m_hooks.PushBack(p);
 	p->SetFloating( pos, origo, hotspot );
 	return p;
@@ -812,7 +812,7 @@ WgFlexHook * WgFlexPanel::AddWidget( const WgWidgetPtr& pWidget, const WgRect& g
 		return 0;
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), padding );
-	p->_setWidget( pWidget.GetRealPtr() );
+	p->_setWidget( pWidget.RawPtr() );
 
 	m_hooks.PushBack(p);
 
@@ -829,7 +829,7 @@ WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidg
 		return 0;
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), WgBorder(0) );
-	p->_setWidget( pWidget.GetRealPtr() );
+	p->_setWidget( pWidget.RawPtr() );
 	p->_moveBefore( (WgFlexHook*)pSibling->_hook() );
 	p->SetFloating( WgCoord(0,0) );
 	return p;
@@ -843,7 +843,7 @@ WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidg
 		return 0;
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), WgBorder(0) );
-	p->_setWidget( pWidget.GetRealPtr() );
+	p->_setWidget( pWidget.RawPtr() );
 	p->_moveBefore( (WgFlexHook*)pSibling->_hook() );
 	p->SetStretching( topLeftOrigo, topLeftOfs, bottomRightOrigo, bottomRightOfs, padding );
 	return p;
@@ -861,7 +861,7 @@ WgFlexHook * WgFlexPanel::InsertWidget(const WgWidgetPtr& pWidget, const WgWidge
 		return 0;
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), padding );
-	p->_setWidget( pWidget.GetRealPtr() );
+	p->_setWidget( pWidget.RawPtr() );
 	p->_moveBefore( (WgFlexHook*)pSibling->_hook() );
 	p->SetFloating( geometry, origo, hotspot );
 	return p;
@@ -878,7 +878,7 @@ WgFlexHook * WgFlexPanel::InsertWidget( const WgWidgetPtr& pWidget, const WgWidg
 		return 0;
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->PreferredSize()), padding );
-	p->_setWidget( pWidget.GetRealPtr() );
+	p->_setWidget( pWidget.RawPtr() );
 	p->_moveBefore( (WgFlexHook*)pSibling->_hook() );
 	p->SetFloating( pos, origo, hotspot );
 	return p;

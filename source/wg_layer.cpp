@@ -56,7 +56,7 @@ const char * WgLayer::ClassName( void ) const
 WgLayerPtr WgLayer::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLayerPtr( static_cast<WgLayer*>(pObject.GetRealPtr()) );
+		return WgLayerPtr( static_cast<WgLayer*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -66,7 +66,7 @@ WgLayerPtr WgLayer::Cast( const WgObjectPtr& pObject )
 
 WgHookPtr WgLayer::SetBaseWidget( const WgWidgetPtr& pWidget )
 {
-	m_baseHook._setWidget(pWidget.GetRealPtr());
+	m_baseHook._setWidget(pWidget.RawPtr());
 	_onBaseChanged();
 	return &m_baseHook;
 }
@@ -294,7 +294,7 @@ const char * WgLayerHook::ClassName( void ) const
 WgLayerHookPtr WgLayerHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgLayerHookPtr( static_cast<WgLayerHook*>(pHook.GetRealPtr()) );
+		return WgLayerHookPtr( static_cast<WgLayerHook*>(pHook.RawPtr()) );
 
 	return 0;
 }

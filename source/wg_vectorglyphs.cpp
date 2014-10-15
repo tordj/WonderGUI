@@ -119,7 +119,7 @@ const char * WgVectorGlyphs::ClassName( void ) const
 WgVectorGlyphsPtr WgVectorGlyphs::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgVectorGlyphsPtr( static_cast<WgVectorGlyphs*>(pObject.GetRealPtr()) );
+		return WgVectorGlyphsPtr( static_cast<WgVectorGlyphs*>(pObject.RawPtr()) );
 
 	return 0;
 }

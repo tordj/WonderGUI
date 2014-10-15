@@ -49,7 +49,7 @@ const char * WgIWidgets::ClassName( void ) const
 WgIWidgetsPtr WgIWidgets::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgIWidgetsPtr( pInterface.GetRealObjectPtr(), static_cast<WgIWidgets*>( pInterface.GetRealPtr()) );
+		return WgIWidgetsPtr( pInterface.GetRealObjectPtr(), static_cast<WgIWidgets*>( pInterface.RawPtr()) );
 
 	return 0;
 }

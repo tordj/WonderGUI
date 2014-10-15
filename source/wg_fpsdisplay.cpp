@@ -85,7 +85,7 @@ const char * WgFpsDisplay::ClassName( void ) const
 WgFpsDisplayPtr WgFpsDisplay::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFpsDisplayPtr( static_cast<WgFpsDisplay*>(pObject.GetRealPtr()) );
+		return WgFpsDisplayPtr( static_cast<WgFpsDisplay*>(pObject.RawPtr()) );
 
 	return 0;
 }

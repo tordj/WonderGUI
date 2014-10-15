@@ -619,6 +619,56 @@ enum WgPixelType
 
 
 //____ WgPixelFormat __________________________________________________________
+/**
+ * @brief Describes the format of a pixel.
+ *
+ * Describes the format of a pixel.
+ *
+ * The format of the pixel is described in three ways by a WgPixelFormat object:
+ *
+ * First a WgPixelType enum that contains predefined values for common pixel formats.
+ * This allows for human readable information and quick lockups.
+ *
+ * Secondly a set of variables containing the number of bits for each pixel and the
+ * individual red, green, blue and alpha channels. This allows for quickly and easily
+ * checking the size of a pixel and the color depths and presence and depth of the alpha channel.
+ *
+ * Thirdly a pair of mask and shift variables for each individual channel, specifies the position
+ * of each channel and allows for quick conversion to and from the default 32-bit RGBA format used by WgColor.
+ *
+ * Not all pixel formats (like those of index/palette-based surfaces) can
+ * be fully described by a WgPixelFormat object. In that case the member type is set to WG_PIXEL_UNKNOWN.
+ *
+ * As long as the type member is not set to WG_PIXEL_UNKNOWN, you can extract the value of any channel of a
+ * pixel by applying the mask and shift variables. I.e. to extract the value of red from a pixel
+ * as an 8-bit value in the range 0-255, you use the formula:
+ *
+ * redValue = (pixel & R_mask) >> R_shift
+ *
+ * Thus you can convert any specified pixel type to a WgColor structure using the following routine:
+ *
+ * Uint32	pixel;
+ * WgPixelFormat * pFormat;
+ *
+ * 	WgColor col( (pixel & pFormat->R_mask) >> pFormat->R_shift,
+ *				 (pixel & pFormat->G_mask) >> pFormat->G_shift,
+ *				 (pixel & pFormat->B_mask) >> pFormat->B_shift,
+ *				 (pixel & pFormat->A_mask) >> pFormat->A_shift );
+ *
+ * To convert a WgColor object to a pixel value you can use:
+ *
+ * WgColor color;
+ * WgPixelFormat * pFormat;
+ *
+ * 	Uint32 pix = ((color.r << pFormat->R_shift) & pFormat->R_mask) |
+ *				 ((color.g << pFormat->G_shift) & pFormat->G_mask) |
+ *				 ((color.b << pFormat->B_shift) & pFormat->B_mask) |
+ *				 ((color.a << pFormat->A_shift) & pFormat->A_mask);
+ *
+ * This is essentially what the default implementation for WgSurface::ColorToPixel() and WgSurface::PixelToColor() does.
+ *
+ **/
+
 
 struct WgPixelFormat
 {

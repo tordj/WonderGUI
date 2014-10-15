@@ -272,6 +272,8 @@ typedef	WgWeakPtr<WgLinkMouseDoubleClickEvent,WgLinkMouseButtonEventWeakPtr>		Wg
 //____ WgEvent _________________________________________________________________
 /**
  * @brief Base class for all events.
+ *
+ * Base class for all events.
  */
 
 
@@ -338,6 +340,8 @@ protected:
 //____ WgKeyEvent ______________________________________________________________
 /**
  * @brief Base class for all keyboard events.
+ *
+ * Base class for all keyboard events.
  */
 
 class WgKeyEvent : public WgEvent

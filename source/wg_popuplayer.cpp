@@ -69,7 +69,7 @@ const char * WgPopupHook::ClassName( void ) const
 WgPopupHookPtr WgPopupHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgPopupHookPtr( static_cast<WgPopupHook*>(pHook.GetRealPtr()) );
+		return WgPopupHookPtr( static_cast<WgPopupHook*>(pHook.RawPtr()) );
 
 	return 0;
 }
@@ -327,7 +327,7 @@ const char * WgPopupLayer::ClassName( void ) const
 WgPopupLayerPtr WgPopupLayer::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgPopupLayerPtr( static_cast<WgPopupLayer*>(pObject.GetRealPtr()) );
+		return WgPopupLayerPtr( static_cast<WgPopupLayer*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -339,8 +339,8 @@ WgPopupHookPtr WgPopupLayer::OpenPopup( const WgWidgetPtr& pPopup, const WgWidge
 {
 	// Create Hook and fill in members.
 
-	WgPopupHook * pHook = new WgPopupHook( this, pOpener.GetRealPtr(), launcherGeo, attachPoint, maxSize );
-	pHook->_setWidget(pPopup.GetRealPtr());
+	WgPopupHook * pHook = new WgPopupHook( this, pOpener.RawPtr(), launcherGeo, attachPoint, maxSize );
+	pHook->_setWidget(pPopup.RawPtr());
 	m_popupHooks.PushBack(pHook);
 	pHook->_updateGeo();
 	_stealKeyboardFocus();
@@ -433,7 +433,7 @@ WgWidget *  WgPopupLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 			WgPopupHook * pHook = m_popupHooks.First();
 			if( pHook && pHook->m_pOpener )
 			{
-				WgWidget * pOpener = pHook->m_pOpener.GetRealPtr();
+				WgWidget * pOpener = pHook->m_pOpener.RawPtr();
 
 				WgCoord absPos 		= ofs + GlobalPos();
 				WgRect	openerGeo 	= pOpener->GlobalGeo();
@@ -526,7 +526,7 @@ void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandle
 			pHook = pHook->_next();
 			
 		if( pHook && pHook->m_pOpener )
-			pOpener = pHook->m_pOpener.GetRealPtr();
+			pOpener = pHook->m_pOpener.RawPtr();
 	}
 	
 	// First we try to forward event to opener (if any)
@@ -610,9 +610,9 @@ void WgPopupLayer::_stealKeyboardFocus()
 	// Save old keyboard focus, which we assume belonged to previous menu in hierarchy.
 
 	if( m_popupHooks.Size() < 2 )
-		m_pKeyFocus = pHandler->KeyboardFocus().GetRealPtr();
+		m_pKeyFocus = pHandler->KeyboardFocus().RawPtr();
 	else
-		m_popupHooks.Last()->Prev()->m_pKeyFocus = pHandler->KeyboardFocus().GetRealPtr();
+		m_popupHooks.Last()->Prev()->m_pKeyFocus = pHandler->KeyboardFocus().RawPtr();
 
 	// Steal keyboard focus to top menu
 
@@ -640,8 +640,8 @@ void WgPopupLayer::_restoreKeyboardFocus()
 	//
 
 	if( m_popupHooks.IsEmpty() )
-		pHandler->SetKeyboardFocus( m_pKeyFocus.GetRealPtr() );
+		pHandler->SetKeyboardFocus( m_pKeyFocus.RawPtr() );
 	else
-		pHandler->SetKeyboardFocus( m_popupHooks.Last()->m_pKeyFocus.GetRealPtr() );
+		pHandler->SetKeyboardFocus( m_popupHooks.Last()->m_pKeyFocus.RawPtr() );
 }
 

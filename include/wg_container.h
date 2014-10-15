@@ -36,7 +36,9 @@ typedef	WgStrongPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
 typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 /**
- * @brief Base class for all widgets that can take child widgets.
+ * @brief Base class for all widgets that can hold child widgets.
+ *
+ * Base class for all widgets that can hold child widgets.
  */
 
 class WgContainer : public WgWidget
@@ -62,8 +64,6 @@ class WgContainer : public WgWidget
 	friend class WgListPanel;
 	friend class WgCapsule;
 	friend class WgPackList;
-
-	friend class WgRadioButton;
 
 	public:
 

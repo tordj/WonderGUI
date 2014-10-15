@@ -91,7 +91,7 @@ const char * WgSoftSurface::ClassName( void ) const
 WgSoftSurfacePtr WgSoftSurface::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSoftSurfacePtr( static_cast<WgSoftSurface*>(pObject.GetRealPtr()) );
+		return WgSoftSurfacePtr( static_cast<WgSoftSurface*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -113,14 +113,10 @@ void WgSoftSurface::_copy(const WgSoftSurface * pOther)
 		memcpy( m_pData+y*m_pitch, pOther->m_pData+y*pOther->m_pitch, linebytes );
 }
 
-//____ GetPixel() _________________________________________________________________
+//____ Pixel() _________________________________________________________________
 
-Uint32 WgSoftSurface::GetPixel( WgCoord coord ) const
+Uint32 WgSoftSurface::Pixel( WgCoord coord ) const
 {
-	if( coord.x >= m_size.w || coord.x < 0 ||
-		coord.y >= m_size.h || coord.y < 0  )
-		return 0;
-
 	if( m_pixelFormat.type == WG_PIXEL_ARGB_8 )
     {
 		Uint32 k = * ((Uint32*) &m_pData[ m_pitch*coord.y+coord.x*4 ]);
@@ -136,14 +132,10 @@ Uint32 WgSoftSurface::GetPixel( WgCoord coord ) const
 
 }
 
-//____ GetOpacity() _______________________________________________________________
+//____ Alpha() _______________________________________________________________
 
-Uint8 WgSoftSurface::GetOpacity( WgCoord coord ) const
+Uint8 WgSoftSurface::Alpha( WgCoord coord ) const
 {
-	if( coord.x >= m_size.w || coord.x < 0 ||
-		coord.y >= m_size.h || coord.y < 0  )
-		return 0;
-
 	if( m_pixelFormat.type == WG_PIXEL_ARGB_8 )
 	  {
 		Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*4;

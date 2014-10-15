@@ -43,7 +43,7 @@ class WgSoftSurface : public WgSurface
  public:
 	static WgSoftSurfacePtr	Create( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type)); }
 	static WgSoftSurfacePtr	Create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObjectPtr& pBlob ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type,pPixels,pitch,pBlob)); }
-	static WgSoftSurfacePtr	Create( const WgSoftSurfacePtr& pOther ) { return WgSoftSurfacePtr(new WgSoftSurface( pOther.GetRealPtr() )); }
+	static WgSoftSurfacePtr	Create( const WgSoftSurfacePtr& pOther ) { return WgSoftSurfacePtr(new WgSoftSurface( pOther.RawPtr() )); }
 
 	bool		IsInstanceOf( const char * pClassName ) const;
 	const char *ClassName( void ) const;
@@ -53,8 +53,8 @@ class WgSoftSurface : public WgSurface
 	WgSize		Size() const;
 	bool		IsOpaque() const;
 
-	Uint32		GetPixel( WgCoord coord ) const;
-	Uint8		GetOpacity( WgCoord coord ) const;
+	Uint32		Pixel( WgCoord coord ) const;
+	Uint8		Alpha( WgCoord coord ) const;
 
 	void *		Lock( WgAccessMode mode );
 	void *		LockRegion( WgAccessMode mode, const WgRect& region );

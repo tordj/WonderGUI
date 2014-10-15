@@ -65,7 +65,7 @@ const char * WgWidget::ClassName( void ) const
 WgWidgetPtr WgWidget::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgWidgetPtr( static_cast<WgWidget*>(pObject.GetRealPtr()) );
+		return WgWidgetPtr( static_cast<WgWidget*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -100,7 +100,9 @@ void WgWidget::SetEnabled( bool bEnabled )
 
 //____ MarkTest() _____________________________________________________________
 /**
- * @brief Check if specified coordinate is inside or outside the widget.
+ * @brief Check if specified coordinate is inside or outside of widget.
+ *
+ * Check if specified coordinate is inside or outside of widget.
  * 
  * @param ofs	Coordinate to check in widgets own coordinate system.
  * 
@@ -152,7 +154,7 @@ bool WgWidget::CloneContent( const WgWidgetPtr& _pOrg )
 	if( _pOrg->ClassName() != ClassName() )
 		return false;
 
-	WgWidget * pOrg = _pOrg.GetRealPtr();
+	WgWidget * pOrg = _pOrg.RawPtr();
 
 	m_id			= pOrg->m_id;
 
@@ -212,8 +214,10 @@ void WgWidget::_stopReceiveTicks()
 
 //____ ToGlobal() ____________________________________________________________
 /**
- * @brief Converts coordinate from local to global coordinate system
- * 
+ * @brief Convert coordinate from local to global coordinate system
+ *
+ * Convert coordinate from local to global coordinate system
+ *
  * @param coord		Coordinate in widgets local coordinate system.
  * 
  * Please note that the widgets local coordinate system originates from the top-left
@@ -234,8 +238,10 @@ void WgWidget::_stopReceiveTicks()
 
 //____ ToLocal() ____________________________________________________________
 /**
- * @brief Converts coordinate from local to global coordinate system
- * 
+ * @brief Convert coordinate from local to global coordinate system
+ *
+ * Convert coordinate from local to global coordinate system
+ *
  * @param coord		Coordinate in widgets local coordinate system.
  * 
  * Please note that the widgets local coordinate system originates from the top-left
@@ -260,15 +266,17 @@ WgEventHandler * WgWidget::_eventHandler() const
 	{
 		WgRootPanel * pRoot = m_pHook->_root();
 		if( pRoot )
-			return pRoot->EventHandler().GetRealPtr();
+			return pRoot->EventHandler().RawPtr();
 	}
 	return 0;
 }
 
 //____ MatchingHeight() _______________________________________________________
 /**
- * @brief Returns the widgets preferred height for the specified width.
- * 
+ * @brief Get the widgets preferred height for the specified width.
+ *
+ * Get the widgets preferred height for the specified width.
+ *
  * @param width		Width in pixels.
  * 
  * This method is used by containers to get the preferred height of a widget for which
@@ -284,7 +292,9 @@ int WgWidget::MatchingHeight( int width ) const
 
 //____ MatchingWidth() _______________________________________________________
 /**
- * @brief Returns the widgets preferred width for the specified height.
+ * @brief Get the widgets preferred width for the specified height.
+ *
+ * Get the widgets preferred width for the specified height.
  * 
  * @param height	Height in pixels.
  * 
@@ -301,8 +311,10 @@ int WgWidget::MatchingWidth( int height ) const
 
 //____ PreferredSize() ________________________________________________________
 /**
- * @brief Returns the widgets preferred size.
- * 
+ * @brief Get the widgets preferred size.
+ *
+ * Get the widgets preferred size.
+ *
  * Each widget has its own preferred size, which is depending on things such as
  * skinning, content and (in the case of containers) size and layout of children.
  * 
@@ -325,8 +337,10 @@ WgSize WgWidget::PreferredSize() const
 
 //____ MinSize() ______________________________________________________________
 /**
- * @brief Returns the widgets stated minimum size.
- * 
+ * @brief Get the widgets recommended minimum size.
+ *
+ * Get the widgets recommended minimum size.
+ *
  * Each widget has its own minimum size, which is depending on things such as
  * skinning, content and (in the case of containers) size and layout of children.
  * 
@@ -347,8 +361,10 @@ WgSize WgWidget::MinSize() const
 
 //____ MaxSize() ______________________________________________________________
 /**
- * @brief Returns the widgets stated miaximum size.
- * 
+ * @brief Get the widgets recommended maximum size.
+ *
+ * Get the widgets recommended maximum size.
+ *
  * Each widget has its own maximum size, which is depending on things such as
  * skinning, content and (in the case of containers) size and layout of children.
  * 

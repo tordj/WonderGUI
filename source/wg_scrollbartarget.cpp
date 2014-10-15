@@ -26,7 +26,7 @@
 
 void WgScrollbarTarget::_updateScrollbar( float pos, float size )
 {
-		WgWidget * pWidget = m_pScrollbar.GetRealPtr();
+		WgWidget * pWidget = m_pScrollbar.RawPtr();
 
 		if( pWidget )
 		{

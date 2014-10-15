@@ -36,8 +36,9 @@ typedef	WgIStrongPtr<WgEditText,WgModTextPtr>		WgEditTextPtr;
 typedef	WgIWeakPtr<WgEditText,WgModTextWeakPtr>		WgEditTextWeakPtr;
 
 /**
- * @brief Interface to a text field with editable text
- * 
+ * @brief Interface to a text field with editable text.
+ *
+ * Interface to a text field with editable text.
  * The text in an editable text field can be set through the API, and is
  * editable through the UI.
  * 

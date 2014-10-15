@@ -205,7 +205,7 @@ const char * WgGLSurface::ClassName( void ) const
 WgGLSurfacePtr WgGLSurface::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgGLSurfacePtr( static_cast<WgGLSurface*>(pObject.GetRealPtr()) );
+		return WgGLSurfacePtr( static_cast<WgGLSurface*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -316,9 +316,9 @@ void WgGLSurface::Unlock()
 }
 
 
-//____ GetPixel() ______________________________________________________________
+//____ Pixel() ______________________________________________________________
 
-Uint32 WgGLSurface::GetPixel( WgCoord coord ) const
+Uint32 WgGLSurface::Pixel( WgCoord coord ) const
 {
 	if( m_format != 0 && m_buffer && m_accessMode != WG_WRITE_ONLY )
 	{
@@ -375,9 +375,9 @@ Uint32 WgGLSurface::GetPixel( WgCoord coord ) const
 
 
 
-//____ GetOpacity() ____________________________________________________________
+//____ Alpha() ____________________________________________________________
 
-Uint8 WgGLSurface::GetOpacity( WgCoord coord ) const
+Uint8 WgGLSurface::Alpha( WgCoord coord ) const
 {
 	return 255;
 

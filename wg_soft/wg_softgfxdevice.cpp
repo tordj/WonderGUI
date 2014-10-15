@@ -90,7 +90,7 @@ const char * WgSoftGfxDevice::ClassName( void ) const
 WgSoftGfxDevicePtr WgSoftGfxDevice::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSoftGfxDevicePtr( static_cast<WgSoftGfxDevice*>(pObject.GetRealPtr()) );
+		return WgSoftGfxDevicePtr( static_cast<WgSoftGfxDevice*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1148,7 +1148,7 @@ void WgSoftGfxDevice::ClipDrawArcNE( const WgRect& clip, const WgRect& rect, WgC
 
 void WgSoftGfxDevice::Blit( const WgSurfacePtr& pSrcSurf, const WgRect& srcrect, int dx, int dy  )
 {
-	WgSurface * pSrc = pSrcSurf.GetRealPtr();
+	WgSurface * pSrc = pSrcSurf.RawPtr();
 
 	if( m_tintColor.argb == 0xFFFFFFFF )
 		_blit( pSrc, srcrect, dx, dy );
@@ -1636,7 +1636,7 @@ void WgSoftGfxDevice::StretchBlitSubPixel( const WgSurfacePtr& _pSrcSurf, float 
 	if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->IsInstanceOf(WgSoftSurface::CLASSNAME) )
 		return;
 
-	WgSoftSurface * pSrcSurf = (WgSoftSurface*) _pSrcSurf.GetRealPtr();
+	WgSoftSurface * pSrcSurf = (WgSoftSurface*) _pSrcSurf.RawPtr();
 
 	if( !m_pCanvas->m_pData || !pSrcSurf->m_pData )
 		return;

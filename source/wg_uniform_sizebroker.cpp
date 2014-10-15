@@ -46,7 +46,7 @@ const char * WgUniformSizeBroker::ClassName( void ) const
 WgUniformSizeBrokerPtr WgUniformSizeBroker::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgUniformSizeBrokerPtr( static_cast<WgUniformSizeBroker*>(pObject.GetRealPtr()) );
+		return WgUniformSizeBrokerPtr( static_cast<WgUniformSizeBroker*>(pObject.RawPtr()) );
 
 	return 0;
 }

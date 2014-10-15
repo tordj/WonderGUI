@@ -61,7 +61,7 @@ const char * WgKnob::ClassName( void ) const
 WgKnobPtr WgKnob::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgKnobPtr( static_cast<WgKnob*>(pObject.GetRealPtr()) );
+		return WgKnobPtr( static_cast<WgKnob*>(pObject.RawPtr()) );
 
 	return 0;
 }

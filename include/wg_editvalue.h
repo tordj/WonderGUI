@@ -41,8 +41,10 @@ typedef	WgIStrongPtr<WgEditValue,WgModValuePtr>		WgEditValuePtr;
 typedef	WgIWeakPtr<WgEditValue,WgModValuePtr>		WgEditValueWeakPtr;
 
 /**
- * @brief Interface to a value display field with editable text
- * 
+ * @brief Interface to a value display field with editable text.
+ *
+ * Interface to a value display field with editable text.
+ *
  * The value in an editable value field can be set through the API, and is
  * editable through the UI.
  * 

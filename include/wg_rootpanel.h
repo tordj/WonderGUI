@@ -54,7 +54,10 @@ typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>	WgRootPanelWeakPtr;
 
 /**
  * @brief	Special widget, being the root of all widgets on screen.
- * 
+ *
+ * Special widget, being the root of all widgets on screen.
+ *
+ *
  */
 
 

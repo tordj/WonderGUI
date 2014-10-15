@@ -47,7 +47,7 @@ const char * WgText::ClassName( void ) const
 WgTextPtr WgText::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgText*>( pInterface.GetRealPtr()) );
+		return WgTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgText*>( pInterface.RawPtr()) );
 
 	return 0;
 }

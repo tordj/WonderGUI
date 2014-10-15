@@ -774,7 +774,7 @@ int WgTextField::compareTo( const WgTextField * _pOther, bool bCheckCase ) const
 void WgTextField::setValue( double value, const WgValueFormatPtr& pFormat )
 {
 	WgChar	str[s_parseBufLen];
-	WgChar * pStr = _parseValue( value, pFormat.GetRealPtr(), str );
+	WgChar * pStr = _parseValue( value, pFormat.RawPtr(), str );
 	Set( pStr );
 }
 
@@ -783,7 +783,7 @@ void WgTextField::setValue( double value, const WgValueFormatPtr& pFormat )
 void WgTextField::setScaledValue( Sint64 value, Uint32 scale, const WgValueFormatPtr& pFormat )
 {
 	WgChar	str[s_parseBufLen];
-	WgChar * pStr = _parseScaledValue( value, scale, pFormat.GetRealPtr(), str );
+	WgChar * pStr = _parseScaledValue( value, scale, pFormat.RawPtr(), str );
 	Set( pStr );
 }
 

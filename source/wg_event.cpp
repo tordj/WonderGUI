@@ -55,14 +55,14 @@ const char * WgEvent::ClassName( void ) const
 WgEventPtr WgEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgEventPtr( static_cast<WgEvent*>(pObject.GetRealPtr()) );
+		return WgEventPtr( static_cast<WgEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
 
 WgWidget * WgEvent::Widget() const
 {
-	return m_pWidget.GetRealPtr();
+	return m_pWidget.RawPtr();
 }
 
 
@@ -123,7 +123,7 @@ const char * WgKeyEvent::ClassName( void ) const
 WgKeyEventPtr WgKeyEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgKeyEventPtr( static_cast<WgKeyEvent*>(pObject.GetRealPtr()) );
+		return WgKeyEventPtr( static_cast<WgKeyEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -167,7 +167,7 @@ const char * WgMouseButtonEvent::ClassName( void ) const
 WgMouseButtonEventPtr WgMouseButtonEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseButtonEventPtr( static_cast<WgMouseButtonEvent*>(pObject.GetRealPtr()) );
+		return WgMouseButtonEventPtr( static_cast<WgMouseButtonEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -198,7 +198,7 @@ const char * WgFocusGainedEvent::ClassName( void ) const
 WgFocusGainedEventPtr WgFocusGainedEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFocusGainedEventPtr( static_cast<WgFocusGainedEvent*>(pObject.GetRealPtr()) );
+		return WgFocusGainedEventPtr( static_cast<WgFocusGainedEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -229,7 +229,7 @@ const char * WgFocusLostEvent::ClassName( void ) const
 WgFocusLostEventPtr WgFocusLostEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFocusLostEventPtr( static_cast<WgFocusLostEvent*>(pObject.GetRealPtr()) );
+		return WgFocusLostEventPtr( static_cast<WgFocusLostEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -270,7 +270,7 @@ const char * WgMouseEnterEvent::ClassName( void ) const
 WgMouseEnterEventPtr WgMouseEnterEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseEnterEventPtr( static_cast<WgMouseEnterEvent*>(pObject.GetRealPtr()) );
+		return WgMouseEnterEventPtr( static_cast<WgMouseEnterEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -308,7 +308,7 @@ const char * WgMouseLeaveEvent::ClassName( void ) const
 WgMouseLeaveEventPtr WgMouseLeaveEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseLeaveEventPtr( static_cast<WgMouseLeaveEvent*>(pObject.GetRealPtr()) );
+		return WgMouseLeaveEventPtr( static_cast<WgMouseLeaveEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -348,7 +348,7 @@ const char * WgMouseMoveEvent::ClassName( void ) const
 WgMouseMoveEventPtr WgMouseMoveEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseMoveEventPtr( static_cast<WgMouseMoveEvent*>(pObject.GetRealPtr()) );
+		return WgMouseMoveEventPtr( static_cast<WgMouseMoveEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -386,7 +386,7 @@ const char * WgMousePressEvent::ClassName( void ) const
 WgMousePressEventPtr WgMousePressEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMousePressEventPtr( static_cast<WgMousePressEvent*>(pObject.GetRealPtr()) );
+		return WgMousePressEventPtr( static_cast<WgMousePressEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -423,7 +423,7 @@ const char * WgMouseRepeatEvent::ClassName( void ) const
 WgMouseRepeatEventPtr WgMouseRepeatEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseRepeatEventPtr( static_cast<WgMouseRepeatEvent*>(pObject.GetRealPtr()) );
+		return WgMouseRepeatEventPtr( static_cast<WgMouseRepeatEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -467,7 +467,7 @@ const char * WgMouseReleaseEvent::ClassName( void ) const
 WgMouseReleaseEventPtr WgMouseReleaseEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseReleaseEventPtr( static_cast<WgMouseReleaseEvent*>(pObject.GetRealPtr()) );
+		return WgMouseReleaseEventPtr( static_cast<WgMouseReleaseEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -516,7 +516,7 @@ const char * WgMouseClickEvent::ClassName( void ) const
 WgMouseClickEventPtr WgMouseClickEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseClickEventPtr( static_cast<WgMouseClickEvent*>(pObject.GetRealPtr()) );
+		return WgMouseClickEventPtr( static_cast<WgMouseClickEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -553,7 +553,7 @@ const char * WgMouseDoubleClickEvent::ClassName( void ) const
 WgMouseDoubleClickEventPtr WgMouseDoubleClickEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseDoubleClickEventPtr( static_cast<WgMouseDoubleClickEvent*>(pObject.GetRealPtr()) );
+		return WgMouseDoubleClickEventPtr( static_cast<WgMouseDoubleClickEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -590,7 +590,7 @@ const char * WgKeyPressEvent::ClassName( void ) const
 WgKeyPressEventPtr WgKeyPressEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgKeyPressEventPtr( static_cast<WgKeyPressEvent*>(pObject.GetRealPtr()) );
+		return WgKeyPressEventPtr( static_cast<WgKeyPressEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -627,7 +627,7 @@ const char * WgKeyRepeatEvent::ClassName( void ) const
 WgKeyRepeatEventPtr WgKeyRepeatEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgKeyRepeatEventPtr( static_cast<WgKeyRepeatEvent*>(pObject.GetRealPtr()) );
+		return WgKeyRepeatEventPtr( static_cast<WgKeyRepeatEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -664,7 +664,7 @@ const char * WgKeyReleaseEvent::ClassName( void ) const
 WgKeyReleaseEventPtr WgKeyReleaseEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgKeyReleaseEventPtr( static_cast<WgKeyReleaseEvent*>(pObject.GetRealPtr()) );
+		return WgKeyReleaseEventPtr( static_cast<WgKeyReleaseEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -708,7 +708,7 @@ const char * WgCharacterEvent::ClassName( void ) const
 WgCharacterEventPtr WgCharacterEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgCharacterEventPtr( static_cast<WgCharacterEvent*>(pObject.GetRealPtr()) );
+		return WgCharacterEventPtr( static_cast<WgCharacterEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -760,7 +760,7 @@ const char * WgWheelRollEvent::ClassName( void ) const
 WgWheelRollEventPtr WgWheelRollEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgWheelRollEventPtr( static_cast<WgWheelRollEvent*>(pObject.GetRealPtr()) );
+		return WgWheelRollEventPtr( static_cast<WgWheelRollEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -804,7 +804,7 @@ const char * WgTickEvent::ClassName( void ) const
 WgTickEventPtr WgTickEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgTickEventPtr( static_cast<WgTickEvent*>(pObject.GetRealPtr()) );
+		return WgTickEventPtr( static_cast<WgTickEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -840,7 +840,7 @@ const char * WgPointerChangeEvent::ClassName( void ) const
 WgPointerChangeEventPtr WgPointerChangeEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgPointerChangeEventPtr( static_cast<WgPointerChangeEvent*>(pObject.GetRealPtr()) );
+		return WgPointerChangeEventPtr( static_cast<WgPointerChangeEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -872,7 +872,7 @@ const char * WgSelectEvent::ClassName( void ) const
 WgSelectEventPtr WgSelectEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSelectEventPtr( static_cast<WgSelectEvent*>(pObject.GetRealPtr()) );
+		return WgSelectEventPtr( static_cast<WgSelectEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -910,7 +910,7 @@ const char * WgToggleEvent::ClassName( void ) const
 WgToggleEventPtr WgToggleEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgToggleEventPtr( static_cast<WgToggleEvent*>(pObject.GetRealPtr()) );
+		return WgToggleEventPtr( static_cast<WgToggleEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -960,7 +960,7 @@ const char * WgValueUpdateEvent::ClassName( void ) const
 WgValueUpdateEventPtr WgValueUpdateEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgValueUpdateEventPtr( static_cast<WgValueUpdateEvent*>(pObject.GetRealPtr()) );
+		return WgValueUpdateEventPtr( static_cast<WgValueUpdateEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -997,7 +997,7 @@ const char * WgRangeUpdateEvent::ClassName( void ) const
 WgRangeUpdateEventPtr WgRangeUpdateEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgRangeUpdateEventPtr( static_cast<WgRangeUpdateEvent*>(pObject.GetRealPtr()) );
+		return WgRangeUpdateEventPtr( static_cast<WgRangeUpdateEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1067,7 +1067,7 @@ const char * WgTextEditEvent::ClassName( void ) const
 WgTextEditEventPtr WgTextEditEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgTextEditEventPtr( static_cast<WgTextEditEvent*>(pObject.GetRealPtr()) );
+		return WgTextEditEventPtr( static_cast<WgTextEditEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1098,7 +1098,7 @@ const char * WgItemEvent::ClassName( void ) const
 WgItemEventPtr WgItemEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemEventPtr( static_cast<WgItemEvent*>(pObject.GetRealPtr()) );
+		return WgItemEventPtr( static_cast<WgItemEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1140,7 +1140,7 @@ const char * WgItemToggleEvent::ClassName( void ) const
 WgItemToggleEventPtr WgItemToggleEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemToggleEventPtr( static_cast<WgItemToggleEvent*>(pObject.GetRealPtr()) );
+		return WgItemToggleEventPtr( static_cast<WgItemToggleEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1177,7 +1177,7 @@ const char * WgItemMousePressEvent::ClassName( void ) const
 WgItemMousePressEventPtr WgItemMousePressEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemMousePressEventPtr( static_cast<WgItemMousePressEvent*>(pObject.GetRealPtr()) );
+		return WgItemMousePressEventPtr( static_cast<WgItemMousePressEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1220,7 +1220,7 @@ const char * WgItemListEvent::ClassName( void ) const
 WgItemListEventPtr WgItemListEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemListEventPtr( static_cast<WgItemListEvent*>(pObject.GetRealPtr()) );
+		return WgItemListEventPtr( static_cast<WgItemListEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1260,7 +1260,7 @@ const char * WgItemsSelectEvent::ClassName( void ) const
 WgItemsSelectEventPtr WgItemsSelectEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemsSelectEventPtr( static_cast<WgItemsSelectEvent*>(pObject.GetRealPtr()) );
+		return WgItemsSelectEventPtr( static_cast<WgItemsSelectEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1290,7 +1290,7 @@ const char * WgItemsUnselectEvent::ClassName( void ) const
 WgItemsUnselectEventPtr WgItemsUnselectEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemsUnselectEventPtr( static_cast<WgItemsUnselectEvent*>(pObject.GetRealPtr()) );
+		return WgItemsUnselectEventPtr( static_cast<WgItemsUnselectEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1323,19 +1323,19 @@ const char * WgPopupClosedEvent::ClassName( void ) const
 WgPopupClosedEventPtr WgPopupClosedEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgPopupClosedEventPtr( static_cast<WgPopupClosedEvent*>(pObject.GetRealPtr()) );
+		return WgPopupClosedEventPtr( static_cast<WgPopupClosedEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
 
 WgWidget * WgPopupClosedEvent::Popup() const
 {
-	return m_pPopup.GetRealPtr();
+	return m_pPopup.RawPtr();
 }
 
 WgWidget * WgPopupClosedEvent::Caller() const
 {
-	return m_pWidget.GetRealPtr();
+	return m_pWidget.RawPtr();
 }
 
 //____ WgModalMoveOutsideEvent ___________________________________________________
@@ -1365,7 +1365,7 @@ const char * WgModalMoveOutsideEvent::ClassName( void ) const
 WgModalMoveOutsideEventPtr WgModalMoveOutsideEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgModalMoveOutsideEventPtr( static_cast<WgModalMoveOutsideEvent*>(pObject.GetRealPtr()) );
+		return WgModalMoveOutsideEventPtr( static_cast<WgModalMoveOutsideEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1398,7 +1398,7 @@ const char * WgModalBlockedPressEvent::ClassName( void ) const
 WgModalBlockedPressEventPtr WgModalBlockedPressEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgModalBlockedPressEventPtr( static_cast<WgModalBlockedPressEvent*>(pObject.GetRealPtr()) );
+		return WgModalBlockedPressEventPtr( static_cast<WgModalBlockedPressEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1430,7 +1430,7 @@ const char * WgModalBlockedReleaseEvent::ClassName( void ) const
 WgModalBlockedReleaseEventPtr WgModalBlockedReleaseEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgModalBlockedReleaseEventPtr( static_cast<WgModalBlockedReleaseEvent*>(pObject.GetRealPtr()) );
+		return WgModalBlockedReleaseEventPtr( static_cast<WgModalBlockedReleaseEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1460,7 +1460,7 @@ const char * WgLinkEvent::ClassName( void ) const
 WgLinkEventPtr WgLinkEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkEventPtr( static_cast<WgLinkEvent*>(pObject.GetRealPtr()) );
+		return WgLinkEventPtr( static_cast<WgLinkEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1493,7 +1493,7 @@ const char * WgLinkSelectEvent::ClassName( void ) const
 WgLinkSelectEventPtr WgLinkSelectEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkSelectEventPtr( static_cast<WgLinkSelectEvent*>(pObject.GetRealPtr()) );
+		return WgLinkSelectEventPtr( static_cast<WgLinkSelectEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1526,7 +1526,7 @@ const char * WgLinkMouseEnterEvent::ClassName( void ) const
 WgLinkMouseEnterEventPtr WgLinkMouseEnterEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseEnterEventPtr( static_cast<WgLinkMouseEnterEvent*>(pObject.GetRealPtr()) );
+		return WgLinkMouseEnterEventPtr( static_cast<WgLinkMouseEnterEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1559,7 +1559,7 @@ const char * WgLinkMouseLeaveEvent::ClassName( void ) const
 WgLinkMouseLeaveEventPtr WgLinkMouseLeaveEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseLeaveEventPtr( static_cast<WgLinkMouseLeaveEvent*>(pObject.GetRealPtr()) );
+		return WgLinkMouseLeaveEventPtr( static_cast<WgLinkMouseLeaveEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1589,7 +1589,7 @@ const char * WgLinkMouseButtonEvent::ClassName( void ) const
 WgLinkMouseButtonEventPtr WgLinkMouseButtonEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseButtonEventPtr( static_cast<WgLinkMouseButtonEvent*>(pObject.GetRealPtr()) );
+		return WgLinkMouseButtonEventPtr( static_cast<WgLinkMouseButtonEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1623,7 +1623,7 @@ const char * WgLinkMousePressEvent::ClassName( void ) const
 WgLinkMousePressEventPtr WgLinkMousePressEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMousePressEventPtr( static_cast<WgLinkMousePressEvent*>(pObject.GetRealPtr()) );
+		return WgLinkMousePressEventPtr( static_cast<WgLinkMousePressEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1657,7 +1657,7 @@ const char * WgLinkMouseRepeatEvent::ClassName( void ) const
 WgLinkMouseRepeatEventPtr WgLinkMouseRepeatEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseRepeatEventPtr( static_cast<WgLinkMouseRepeatEvent*>(pObject.GetRealPtr()) );
+		return WgLinkMouseRepeatEventPtr( static_cast<WgLinkMouseRepeatEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1691,7 +1691,7 @@ const char * WgLinkMouseReleaseEvent::ClassName( void ) const
 WgLinkMouseReleaseEventPtr WgLinkMouseReleaseEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseReleaseEventPtr( static_cast<WgLinkMouseReleaseEvent*>(pObject.GetRealPtr()) );
+		return WgLinkMouseReleaseEventPtr( static_cast<WgLinkMouseReleaseEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1725,7 +1725,7 @@ const char * WgLinkMouseClickEvent::ClassName( void ) const
 WgLinkMouseClickEventPtr WgLinkMouseClickEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseClickEventPtr( static_cast<WgLinkMouseClickEvent*>(pObject.GetRealPtr()) );
+		return WgLinkMouseClickEventPtr( static_cast<WgLinkMouseClickEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1759,7 +1759,7 @@ const char * WgLinkMouseDoubleClickEvent::ClassName( void ) const
 WgLinkMouseDoubleClickEventPtr WgLinkMouseDoubleClickEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseDoubleClickEventPtr( static_cast<WgLinkMouseDoubleClickEvent*>(pObject.GetRealPtr()) );
+		return WgLinkMouseDoubleClickEventPtr( static_cast<WgLinkMouseDoubleClickEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1790,7 +1790,7 @@ const char * WgMousePositionEvent::ClassName( void ) const
 WgMousePositionEventPtr WgMousePositionEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMousePositionEventPtr( static_cast<WgMousePositionEvent*>(pObject.GetRealPtr()) );
+		return WgMousePositionEventPtr( static_cast<WgMousePositionEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -1835,7 +1835,7 @@ const char * WgMouseDragEvent::ClassName( void ) const
 WgMouseDragEventPtr WgMouseDragEvent::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseDragEventPtr( static_cast<WgMouseDragEvent*>(pObject.GetRealPtr()) );
+		return WgMouseDragEventPtr( static_cast<WgMouseDragEvent*>(pObject.RawPtr()) );
 
 	return 0;
 }

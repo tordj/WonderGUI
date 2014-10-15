@@ -75,7 +75,7 @@ const char * WgRefreshButton::ClassName( void ) const
 WgRefreshButtonPtr WgRefreshButton::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgRefreshButtonPtr( static_cast<WgRefreshButton*>(pObject.GetRealPtr()) );
+		return WgRefreshButtonPtr( static_cast<WgRefreshButton*>(pObject.RawPtr()) );
 
 	return 0;
 }

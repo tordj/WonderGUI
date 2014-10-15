@@ -100,8 +100,8 @@ public:
 	static const char	CLASSNAME[];
 	static WgVectorPanelPtr	Cast( const WgObjectPtr& pObject );
 
-	WgVectorHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return _addWidget(pWidget.GetRealPtr() ); }
-	WgVectorHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return _insertWidget( pWidget.GetRealPtr(), pSibling.GetRealPtr() ); }
+	WgVectorHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return _addWidget(pWidget.RawPtr() ); }
+	WgVectorHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return _insertWidget( pWidget.RawPtr(), pSibling.RawPtr() ); }
 
 	bool			RemoveWidget( const WgWidgetPtr& pWidget );
 	bool			Clear();

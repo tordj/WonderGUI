@@ -57,7 +57,7 @@ const char * WgSizeBroker::ClassName( void ) const
 WgSizeBrokerPtr WgSizeBroker::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSizeBrokerPtr( static_cast<WgSizeBroker*>(pObject.GetRealPtr()) );
+		return WgSizeBrokerPtr( static_cast<WgSizeBroker*>(pObject.RawPtr()) );
 
 	return 0;
 }

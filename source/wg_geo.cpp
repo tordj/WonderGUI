@@ -25,8 +25,8 @@
 
 //____ WgRect() _______________________________________________________________
 /**
- * @brief Initializes the rectangle to be the intersection of specified rectangles.
- * 
+ * Create rectangle from intersection of specified rectangles.
+ *
  * @param r1	First intersecting rectangle.
  * @param r2	Second intersecting rectangle.
  * 
@@ -39,8 +39,8 @@ WgRect::WgRect( const WgRect& r1, const WgRect& r2 )
 }
 
 /**
- * @brief	Initializes the rectangle to cover the area between the specified coordinates.
- * 
+ * Create rectangle to cover the area between the specified coordinates.
+ *
  * @param p1	Coordinate specifying any corner of the rectangle.
  * @param p2	Coordinate specifying the opposite corner of the rectangle, 
  * 				diagonally across the rectangle from p1.
@@ -77,8 +77,10 @@ WgRect::WgRect( const WgCoord& p1, const WgCoord& p2 )
 
 //____ Intersection() ________________________________________________________________
 /**
- * @brief Sets the rectangle to be the intersection of specified rectangles.
- * 
+ * @brief Set rectangle to intersection of specified rectangles.
+ *
+ * Set rectangle to intersection of specified rectangles.
+ *
  * @param r1	First intersecting rectangle.
  * @param r2	Second intersecting rectangle.
  * 
@@ -129,8 +131,10 @@ bool WgRect::Intersection( const WgRect& _r1, const WgRect& _r2 )
 
 //____ Union() ________________________________________________________________
 /**
- * @brief Returns the union of specified rectangles.
- * 
+ * @brief Get the union of specified rectangles.
+ *
+ * Get the union of specified rectangles.
+ *
  * @param r1	First rectangle.
  * @param r2	Second rectangle.
  * 
@@ -154,8 +158,10 @@ WgRect WgRect::Union( const WgRect& r1, const WgRect& r2 )
 
 //____ Shrink() _____________________________________________________________
 /**
- * @brief Shrinks the rectangle by the specified borders.
- * 
+ * @brief Shrink the rectangle by the specified borders.
+ *
+ * Shrink the rectangle by the specified borders.
+ *
  * @param top	Width in pixels of top border.
  * @param right Width in pixels of right border.
  * @param bottom Width in pixels of bottom border.
@@ -182,8 +188,10 @@ void WgRect::Shrink( int top, int right, int bottom, int left )
 }
 
 /**
- * @brief Shrinks the rectangle by the specified border.
- * 
+ * @brief Shrink the rectangle by the specified border.
+ *
+ * Shrink the rectangle by the specified border.
+ *
  * @param border	Border by which to shrink the rectangle.
  * 
  * Width and height of rectangle is shrunk by the thickness of the borders.
@@ -208,8 +216,10 @@ void WgRect::Shrink(const WgBorder &_borders)
 
 //____ Grow() _____________________________________________________________
 /**
- * @brief Grows the rectangle by the specified borders.
- * 
+ * @brief Grow the rectangle by the specified borders.
+ *
+ * Grow the rectangle by the specified borders.
+ *
  * @param top	Width in pixels of top border.
  * @param right Width in pixels of right border.
  * @param bottom Width in pixels of bottom border.
@@ -228,8 +238,10 @@ void WgRect::Grow(int top, int right, int bottom, int left)
 }
 
 /**
- * @brief Grows the rectangle by the specified border.
- * 
+ * @brief Grow the rectangle by the specified border.
+ *
+ * Grow the rectangle by the specified border.
+ *
  * @param border	Border by which to grow the rectangle.
  * 
  * Width and height of rectangle is increased by the thickness of the borders.
@@ -245,8 +257,10 @@ void WgRect::Grow(const WgBorder &_borders)
 
 //____ GrowToContain() _______________________________________________________
 /**
- * @brief	Grows the reactangle to contain the specified coordinate.
- * 
+ * @brief	Grow the reactangle to contain the specified coordinate.
+ *
+ * Grow the reactangle to contain the specified coordinate.
+ *
  * @param	x	Horizontal position of coordinate.
  * @param	y	Vertical position of coordinate.
  * 
@@ -277,8 +291,10 @@ void WgRect::GrowToContain( int _x, int _y )
 }
 
 /**
- * @brief	Grows the reactangle to contain the specified coordinate.
- * 
+ * @brief	Grow the reactangle to contain the specified coordinate.
+ *
+ * Grow the reactangle to contain the specified coordinate.
+ *
  * @param	coord	Coordinate the rectangle is grown to contain.
  * 
  * Position of rectangle is affected if coordinate is above or left of coordinate.
@@ -308,8 +324,10 @@ void WgRect::GrowToContain( const WgCoord& _coord )
 }
 
 /**
- * @brief	Grows the reactangle to contain the specified rectangle.
- * 
+ * @brief	Grow the reactangle to contain the specified rectangle.
+ *
+ * Grow the reactangle to contain the specified rectangle.
+ *
  * @param	r	Rectangle that shall be contained.
  * 
  * Position of our rectangle is affected if parameter rectangle is (partly or fully) above or left of coordinate.

@@ -81,7 +81,7 @@ const char * WgCombobox::ClassName( void ) const
 WgComboboxPtr WgCombobox::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgComboboxPtr( static_cast<WgCombobox*>(pObject.GetRealPtr()) );
+		return WgComboboxPtr( static_cast<WgCombobox*>(pObject.RawPtr()) );
 
 	return 0;
 }

@@ -61,7 +61,7 @@ const char * WgContainer::ClassName( void ) const
 WgContainerPtr WgContainer::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgContainerPtr( static_cast<WgContainer*>(pObject.GetRealPtr()) );
+		return WgContainerPtr( static_cast<WgContainer*>(pObject.RawPtr()) );
 
 	return 0;
 }

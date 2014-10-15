@@ -64,30 +64,51 @@ const char * WgSurface::ClassName( void ) const
 WgSurfacePtr WgSurface::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSurfacePtr( static_cast<WgSurface*>(pObject.GetRealPtr()) );
+		return WgSurfacePtr( static_cast<WgSurface*>(pObject.RawPtr()) );
 
 	return 0;
-}
-
+} 
 
 //____ Width() ________________________________________________________________
-
+/**
+ * Get the width of the surface.
+ *
+ * @return The width of the surface, measured in pixels.
+ **/
 int WgSurface::Width() const
 {
 	return Size().w;
 }
 
 //____ Height() _______________________________________________________________
-
+/**
+ * Get the height of the surface.
+ *
+ * @return The height of the surface, measured in pixels.
+ **/
 int WgSurface::Height() const
 {
 	return Size().h;
 }
 
 
-//____ Col2Pixel() ____________________________________________________________
-
-Uint32 WgSurface::Col2Pixel( const WgColor& col ) const
+//____ ColorToPixel() ____________________________________________________________
+/**
+ * Convert specified color to a pixel in surface's native format.
+ *
+ * @param col	Color to be converted to pixel
+ *
+ * Converts the specified color to a raw pixel in surface's native format. If the native
+ * pixel format is less than 32 bits, the upper bits of the return value are cleared.
+ * The pixel value returned is the one closes resembling the specified color, given the
+ * limitations of the surfaces native format.
+ *
+ * The alpha channel of the color value is ignored if surface does not contain an alpha channel.
+ *
+ * @return Pixel value in surface's native format that closest resembles specified color.
+ *
+ **/
+Uint32 WgSurface::ColorToPixel( const WgColor& col ) const
 {
 	Uint32 pix = ((col.r << m_pixelFormat.R_shift) & m_pixelFormat.R_mask) |
 				 ((col.g << m_pixelFormat.G_shift) & m_pixelFormat.G_mask) |
@@ -97,9 +118,22 @@ Uint32 WgSurface::Col2Pixel( const WgColor& col ) const
 	return pix;
 }
 
-//____ Pixel2Col() ____________________________________________________________
-
-WgColor WgSurface::Pixel2Col( Uint32 pixel ) const
+//____ PixelToColor() ____________________________________________________________
+/**
+ * Get the color and alpha values of a pixel
+ *
+ * @param pixel Pixel value in surface's native format to get the RGBA values of
+ *
+ * Converts the specified pixel value to a WgColor object with RGBA values.
+ * If the native pixel format is less than 32 bits, the upper bits of the parameter
+ * needs to be cleared.
+ * If the surface doesn't have an alpha channel, the alpha value of the WgColor structure is
+ * set to 255 (opaque).
+ *
+ * @return WgColor structure with RGBA values for the specified pixel value.
+ *
+ **/
+WgColor WgSurface::PixelToColor( Uint32 pixel ) const
 {
 	WgColor col( (pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift,
 				 (pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift,
@@ -128,17 +162,46 @@ WgRect WgSurface::_lockAndAdjustRegion( WgAccessMode modeNeeded, const WgRect& r
 }
 
 //____ Fill() _________________________________________________________________
+/**
+ * Fill the surface with the specified color.
+ *
+ * @param col	Color value with which to fill the surface.
+ *
+ * The fill instruction replaces the surface content with the pixel values so
+ * no blending operations will take place. If the specified color has an alpha
+ * value it will replace the alpha channel of the surface (if it has any), not blend the color
+ * onto the surface.
+ *
+ * If the surface has less than 24-bits or color information, it will be filled with the
+ * pixel value most closely resembling the one specified.
+ *
+ **/
 
 bool WgSurface::Fill( WgColor col )
 {
 	return Fill( col, WgRect(0,0,Size()) );
 }
 
-bool WgSurface::Fill( WgColor col, const WgRect& _rect )
+/**
+ * Fill the specied region of the surface with the specified color.
+ *
+ * @param col		Color value with which to fill the region.
+ * @param region	Region of surface to fill.
+ *
+ * The fill instruction replaces the surface content with the pixel values so
+ * no blending operations will take place. If the specified color has an alpha
+ * value it will replace the alpha channel of the surface (if it has any), not blend the color
+ * onto the surface.
+ *
+ * If the surface has less than 24-bits or color information, it will be filled with the
+ * pixel value most closely resembling the one specified.
+ *
+ **/
+bool WgSurface::Fill( WgColor col, const WgRect& region )
 {
 
 	WgAccessMode oldMode = m_accessMode;
-	WgRect rect = _lockAndAdjustRegion(WG_WRITE_ONLY,_rect);
+	WgRect rect = _lockAndAdjustRegion(WG_WRITE_ONLY,region);
 
 	if( rect.w == 0 )
 		return false;
@@ -146,7 +209,7 @@ bool WgSurface::Fill( WgColor col, const WgRect& _rect )
 	//
 
 
-	Uint32 pixel = Col2Pixel( col );
+	Uint32 pixel = ColorToPixel( col );
 	int width = Width();
 	int height = Height();
 	int pitch = Pitch();
@@ -210,7 +273,21 @@ bool WgSurface::Fill( WgColor col, const WgRect& _rect )
 }
 
 //_____ CopyFrom() _____________________________________________________________
-
+/**
+ * Copy the content of the specified surface to given coordinate of this surface
+ *
+ * @param	pSrcSurface		The surface from which to copy the graphics
+ * @param	dst				Destination coordinate for top-left corner of copied graphics.
+ *
+ * The entire content of pSrcSurface is considered a rectangular graphics block that
+ * will be copied to the coordinate specified. The content is copied as is, with color
+ * values and alpha channel, no blend operation is applied. Pixel format is converted
+ * as needed. If the source surface doesn't have an alpha channel, the alpha values of
+ * copied pixels are set to 255. Clipping is applied if needed. The destination coordinate
+ * must be within the bounds of the destination area.
+ *
+ * @return True if successful, otherwise false.
+ **/
 bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, WgCoord dst )
 {
 	if( !pSrcSurface )
@@ -219,6 +296,22 @@ bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, WgCoord dst )
 	return CopyFrom( pSrcSurface, WgRect(0,0,pSrcSurface->Size()), dst );
 }
 
+/**
+ * Copy the specified rectangular area of the source surface to given coordinate of this surface.
+ *
+ * @param	pSrcSurface		The surface from which to copy the graphics block
+ * @param 	srcRect			Rectangular section of source surface to copy. Must be fully within
+ * 							the bounds of pSrcSurface.
+ * @param	dst				Destination coordinate for top-left corner of copied graphics.
+ *
+ * A rectangular graphics block is copied from the source surface to the coordinate specified.
+ * The content is copied as is, with color values and alpha channel, no blend operation is applied.
+ * Pixel format is converted as needed. If the source surface doesn't have an alpha channel, the alpha values of
+ * copied pixels are set to 255. Clipping is applied if needed. The destination coordinate must be within the
+ * bounds of the destination surface.
+ *
+ * @return True if successful, otherwise false.
+ **/
 bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, const WgRect& _srcRect, WgCoord _dst )
 {
 	if( !pSrcSurface || pSrcSurface->m_pixelFormat.type == WG_PIXEL_UNKNOWN || m_pixelFormat.type == WG_PIXEL_UNKNOWN )
@@ -227,7 +320,7 @@ bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, const WgRect& _srcRec
 	// Save old locks and lock the way we want.
 
 	WgAccessMode 	dstOldMode 		= m_accessMode;
-	WgAccessMode 	srcOldMode 		= pSrcSurface->GetLockStatus();
+	WgAccessMode 	srcOldMode 		= pSrcSurface->LockStatus();
 
 	WgRect srcRect = pSrcSurface->_lockAndAdjustRegion( WG_READ_ONLY, _srcRect );
 	WgRect dstRect = _lockAndAdjustRegion( WG_WRITE_ONLY, WgRect(_dst.x,_dst.y,srcRect.w,srcRect.h) );

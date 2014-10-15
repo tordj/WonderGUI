@@ -64,7 +64,7 @@ const char * WgToggleGroup::ClassName( void ) const
 WgToggleGroupPtr WgToggleGroup::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgToggleGroupPtr( static_cast<WgToggleGroup*>(pObject.GetRealPtr()) );
+		return WgToggleGroupPtr( static_cast<WgToggleGroup*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -83,7 +83,7 @@ void WgToggleGroup::SetRequireSelected(bool bRequire)
 
 void WgToggleGroup::Add( const WgToggleButtonPtr& pToggleButton )
 {
-	WgToggleButton * p = pToggleButton.GetRealPtr();
+	WgToggleButton * p = pToggleButton.RawPtr();
 	if( p )
 	{
 		p->_setToggleGroup(this);
@@ -103,7 +103,7 @@ bool WgToggleGroup::Remove( const WgToggleButtonPtr& pToggleButton )
 	if( pToggleButton && pToggleButton->_toggleGroup() == this )
 	{
 		pToggleButton->_setToggleGroup(0);
-		_remove( pToggleButton.GetRealPtr() );
+		_remove( pToggleButton.RawPtr() );
 		return true;
 	}
 

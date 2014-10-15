@@ -73,7 +73,7 @@ const char * WgButton::ClassName( void ) const
 WgButtonPtr WgButton::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgButtonPtr( static_cast<WgButton*>(pObject.GetRealPtr()) );
+		return WgButtonPtr( static_cast<WgButton*>(pObject.RawPtr()) );
 
 	return 0;
 }

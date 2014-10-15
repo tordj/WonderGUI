@@ -86,7 +86,7 @@ const char * WgScrollbar::ClassName( void ) const
 WgScrollbarPtr WgScrollbar::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgScrollbarPtr( static_cast<WgScrollbar*>(pObject.GetRealPtr()) );
+		return WgScrollbarPtr( static_cast<WgScrollbar*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -789,7 +789,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 				{
 				case JUMP_PAGE:
 
-					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+					if( m_pScrollbarTargetWidget.RawPtr() != 0 )
 					{
 						if( pointerOfs - handlePos < handleLen/2 )
 							SetHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
@@ -816,12 +816,12 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 			{
-				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+				if( m_pScrollbarTargetWidget.RawPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
-				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+				if( m_pScrollbarTargetWidget.RawPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
 			}
 
@@ -846,23 +846,23 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 			{
 				if( pointerOfs - handlePos < handleLen/2 )
 				{
-					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+					if( m_pScrollbarTargetWidget.RawPtr() != 0 )
 						SetHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
 				}
 				else
 				{
-					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+					if( m_pScrollbarTargetWidget.RawPtr() != 0 )
 						SetHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
 				}
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 			{
-				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+				if( m_pScrollbarTargetWidget.RawPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
-				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+				if( m_pScrollbarTargetWidget.RawPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
 			}
 
@@ -890,7 +890,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 				{
 					m_handlePos = scrollhandlePos;
 
-					if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+					if( m_pScrollbarTargetWidget.RawPtr() != 0 )
 						m_handlePos = m_pScrollbarTargetInterface->_setPosition(m_handlePos);
 
 					int pxlPos, pxlLen;
@@ -909,7 +909,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 			if( p->Wheel() == 1 )
 			{
 				int distance = p->Distance();
-				if( m_pScrollbarTargetWidget.GetRealPtr() != 0 )
+				if( m_pScrollbarTargetWidget.RawPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_wheelRolled(distance) );
 				
 				int pxlPos, pxlLen;

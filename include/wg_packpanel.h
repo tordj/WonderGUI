@@ -70,7 +70,8 @@ protected:
 
 /**
  * @brief	A widget for arranging children horizontally or vertically.
- * 
+ *
+ * A widget for arranging children horizontally or vertically.
  */
 
 class WgPackPanel : public WgVectorPanel
@@ -85,8 +86,8 @@ public:
 	static const char	CLASSNAME[];
 	static WgPackPanelPtr	Cast( const WgObjectPtr& pObject );
 
-	inline WgPackHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::_addWidget(pWidget.GetRealPtr())); }
-	inline WgPackHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::_insertWidget(pWidget.GetRealPtr(),pSibling.GetRealPtr())); }
+	inline WgPackHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::_addWidget(pWidget.RawPtr())); }
+	inline WgPackHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::_insertWidget(pWidget.RawPtr(),pSibling.RawPtr())); }
     
 	void			SetOrientation( WgOrientation orientaiton );
 	WgOrientation	Orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }

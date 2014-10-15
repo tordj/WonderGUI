@@ -47,7 +47,7 @@ const char * WgVectorHook::ClassName( void ) const
 WgVectorHookPtr WgVectorHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgVectorHookPtr( static_cast<WgVectorHook*>(pHook.GetRealPtr()) );
+		return WgVectorHookPtr( static_cast<WgVectorHook*>(pHook.RawPtr()) );
 
 	return 0;
 }
@@ -105,7 +105,7 @@ bool WgVectorHook::MoveBefore( const WgVectorHookPtr& pSibling )
 {
 	if( pSibling && pSibling->Parent() == Parent() )
 	{
-		if( _moveBefore(pSibling.GetRealPtr()) )
+		if( _moveBefore(pSibling.RawPtr()) )
 		{
 			Parent()->_onWidgetsReordered();
 			return true;
@@ -118,7 +118,7 @@ bool WgVectorHook::MoveAfter( const WgVectorHookPtr& pSibling )
 {
 	if( pSibling && pSibling->Parent() == Parent() )
 	{
-		if( _moveAfter(pSibling.GetRealPtr()) )
+		if( _moveAfter(pSibling.RawPtr()) )
 		{
 			Parent()->_onWidgetsReordered();
 			return true;
@@ -242,7 +242,7 @@ const char * WgVectorPanel::ClassName( void ) const
 WgVectorPanelPtr WgVectorPanel::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgVectorPanelPtr( static_cast<WgVectorPanel*>(pObject.GetRealPtr()) );
+		return WgVectorPanelPtr( static_cast<WgVectorPanel*>(pObject.RawPtr()) );
 
 	return 0;
 }

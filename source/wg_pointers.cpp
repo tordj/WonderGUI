@@ -27,7 +27,7 @@
 
 WgObjectPtr::WgObjectPtr( const WgObjectWeakPtr& r )
 {
-	m_pObj = r.GetRealPtr();
+	m_pObj = r.RawPtr();
 	if( m_pObj )
 		m_pObj->m_refCount++;
 }
@@ -58,7 +58,7 @@ WgObjectWeakPtr::WgObjectWeakPtr( WgObject * pObj )
 
 WgObjectWeakPtr::WgObjectWeakPtr( const WgObjectPtr& pObject )
 {
-	WgObject * pObj = pObject.GetRealPtr();
+	WgObject * pObj = pObject.RawPtr();
 
 	if( pObj )
 	{

@@ -74,7 +74,7 @@ const char * WgSDLGfxDevice::ClassName( void ) const
 WgSDLGfxDevicePtr WgSDLGfxDevice::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSDLGfxDevicePtr( static_cast<WgSDLGfxDevice*>(pObject.GetRealPtr()) );
+		return WgSDLGfxDevicePtr( static_cast<WgSDLGfxDevice*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -263,7 +263,7 @@ void WgSDLGfxDevice::Blit( const WgSurfacePtr& pSrc, const WgRect& src, int dx, 
 	drect.w = src.w;
 	drect.h = src.h;
 
-	SDL_BlitSurface( ((const WgSDLSurface*)pSrc.GetRealPtr())->SDL_Surf(), &srect, m_pCanvas->SDL_Surf(), &drect  );
+	SDL_BlitSurface( ((const WgSDLSurface*)pSrc.RawPtr())->SDL_Surf(), &srect, m_pCanvas->SDL_Surf(), &drect  );
 }
 
 //____ StretchBlitSubPixel() ___________________________________________________
@@ -290,7 +290,7 @@ void WgSDLGfxDevice::StretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, fl
 	if(sw <= 0 || sh <= 0 || dw <= 0 || dh <= 0)
 		return;
 
-	SDL_SoftStretchModified( ((const WgSDLSurface*)pSrc.GetRealPtr())->SDL_Surf(), &srect, m_pCanvas->SDL_Surf(), &drect, GetBlendMode() );
+	SDL_SoftStretchModified( ((const WgSDLSurface*)pSrc.RawPtr())->SDL_Surf(), &srect, m_pCanvas->SDL_Surf(), &drect, GetBlendMode() );
 }
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))

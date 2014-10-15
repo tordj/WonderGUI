@@ -47,7 +47,7 @@ const char * WgCapsuleHook::ClassName( void ) const
 WgCapsuleHookPtr WgCapsuleHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgCapsuleHookPtr( static_cast<WgCapsuleHook*>(pHook.GetRealPtr()) );
+		return WgCapsuleHookPtr( static_cast<WgCapsuleHook*>(pHook.RawPtr()) );
 
 	return 0;
 }
@@ -100,7 +100,7 @@ const char * WgCapsule::ClassName( void ) const
 WgCapsulePtr WgCapsule::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgCapsulePtr( static_cast<WgCapsule*>(pObject.GetRealPtr()) );
+		return WgCapsulePtr( static_cast<WgCapsule*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -112,7 +112,7 @@ WgCapsuleHookPtr WgCapsule::SetWidget( const WgWidgetPtr& pWidget )
 	if( !pWidget )
 		return 0;
 
-	m_hook._setWidget(pWidget.GetRealPtr());
+	m_hook._setWidget(pWidget.RawPtr());
 	pWidget->_onNewSize(Size());
 
 	_requestRender();
@@ -124,7 +124,7 @@ WgCapsuleHookPtr WgCapsule::SetWidget( const WgWidgetPtr& pWidget )
 
 bool WgCapsule::RemoveWidget( const WgWidgetPtr& pWidget )
 {
-	if( m_hook._widget() != pWidget.GetRealPtr() )
+	if( m_hook._widget() != pWidget.RawPtr() )
 		return false;
 
 	m_hook._setWidget(0);

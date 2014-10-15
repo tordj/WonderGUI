@@ -108,7 +108,7 @@ protected:
 	void 			_onFieldResize( WgField * pField );
 
 	void	_setToggleGroup( WgToggleGroup * pGroup );
-	WgToggleGroup * _toggleGroup() const { return m_pToggleGroup.GetRealPtr(); }
+	WgToggleGroup * _toggleGroup() const { return m_pToggleGroup.RawPtr(); }
 
 private:
 

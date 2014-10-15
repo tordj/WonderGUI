@@ -40,7 +40,7 @@ const char * WgRulerLabels::ClassName( void ) const
 WgRulerLabelsPtr WgRulerLabels::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgRulerLabelsPtr( static_cast<WgRulerLabels*>(pObject.GetRealPtr()) );
+		return WgRulerLabelsPtr( static_cast<WgRulerLabels*>(pObject.RawPtr()) );
 
 	return 0;
 }

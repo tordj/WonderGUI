@@ -198,6 +198,8 @@ protected:
 
 /**
  * @brief	A widget for individual, flexible arrangement of children.
+ *
+ * A widget for individual, flexible arrangement of children.
  * 
  */
 

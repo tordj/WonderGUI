@@ -326,12 +326,12 @@ WgEventFilter	WgEventFilter::MenuitemSelect( int itemId )
 
 WgEventFilter	WgEventFilter::MenuitemSelect( const WgWidgetPtr& pWidget )
 {
-	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pWidget.GetRealPtr(), _filterMenuitemEvent );
+	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pWidget.RawPtr(), _filterMenuitemEvent );
 }
 
 WgEventFilter	WgEventFilter::MenuitemSelect( const WgWidgetPtr& pWidget, int itemId )
 {
-	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pWidget.GetRealPtr(), _filterMenuitemEvent, itemId );
+	return WgEventFilter( WG_EVENT_MENUITEM_SELECT, pWidget.RawPtr(), _filterMenuitemEvent, itemId );
 }
 */
 

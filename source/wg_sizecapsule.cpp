@@ -58,7 +58,7 @@ const char * WgSizeCapsule::ClassName( void ) const
 WgSizeCapsulePtr WgSizeCapsule::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSizeCapsulePtr( static_cast<WgSizeCapsule*>(pObject.GetRealPtr()) );
+		return WgSizeCapsulePtr( static_cast<WgSizeCapsule*>(pObject.RawPtr()) );
 
 	return 0;
 }

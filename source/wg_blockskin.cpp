@@ -245,7 +245,7 @@ const char * WgBlockSkin::ClassName( void ) const
 WgBlockSkinPtr WgBlockSkin::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgBlockSkinPtr( static_cast<WgBlockSkin*>(pObject.GetRealPtr()) );
+		return WgBlockSkinPtr( static_cast<WgBlockSkin*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -837,7 +837,7 @@ bool WgBlockSkin::MarkTest( const WgCoord& _ofs, const WgRect& canvas, WgState s
 
 		WgCoord srcOfs = m_state[_stateToIndex(state)].ofs;
 
-		alpha = m_pSurface->GetOpacity(srcOfs.x+ofs.x, srcOfs.y+ofs.y);
+		alpha = m_pSurface->Alpha(srcOfs.x+ofs.x, srcOfs.y+ofs.y);
 	}
 
 	return ( alpha >= opacityTreshold);

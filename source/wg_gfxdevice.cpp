@@ -68,7 +68,7 @@ const char * WgGfxDevice::ClassName( void ) const
 WgGfxDevicePtr WgGfxDevice::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgGfxDevicePtr( static_cast<WgGfxDevice*>(pObject.GetRealPtr()) );
+		return WgGfxDevicePtr( static_cast<WgGfxDevice*>(pObject.RawPtr()) );
 
 	return 0;
 }

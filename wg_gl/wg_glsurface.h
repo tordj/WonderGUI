@@ -61,8 +61,8 @@ public:
 	WgSize		Size() const;
 	bool		IsOpaque() const;
 
-	Uint32		GetPixel( WgCoord coord ) const;
-	Uint8		GetOpacity( WgCoord coord ) const;
+	Uint32		Pixel( WgCoord coord ) const;
+	Uint8		Alpha( WgCoord coord ) const;
 
 	void *		Lock( WgAccessMode mode );
 	void *		LockRegion( WgAccessMode mode, const WgRect& region );

@@ -42,9 +42,9 @@ typedef	WgIStrongPtr<WgValue,WgInterfacePtr>	WgValuePtr;
 typedef	WgIWeakPtr<WgValue,WgInterfacePtr>		WgValueWeakPtr;
 
 /**
- * @brief Interface to a value field displaying a static (non-modifiable) value
+ * @brief Interface to a basic value display field
  * 
- * The value in a static value field is set by the widget itself and can
+ * The value in a basic value field is set by the widget itself and can
  * not be modified directly either through the API or UI. Only the formatting
  * and appearance of the value can be modified through this API.
  * 

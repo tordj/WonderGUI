@@ -49,7 +49,7 @@ const char * WgExtendedSkin::ClassName( void ) const
 WgExtendedSkinPtr WgExtendedSkin::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgExtendedSkinPtr( static_cast<WgExtendedSkin*>(pObject.GetRealPtr()) );
+		return WgExtendedSkinPtr( static_cast<WgExtendedSkin*>(pObject.RawPtr()) );
 
 	return 0;
 }

@@ -46,7 +46,7 @@ const char * WgSurfaceFactory::ClassName( void ) const
 WgSurfaceFactoryPtr WgSurfaceFactory::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSurfaceFactoryPtr( static_cast<WgSurfaceFactory*>(pObject.GetRealPtr()) );
+		return WgSurfaceFactoryPtr( static_cast<WgSurfaceFactory*>(pObject.RawPtr()) );
 
 	return 0;
 }

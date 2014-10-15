@@ -65,7 +65,7 @@ friend class WgWidget;
 friend class WgRootPanel;
 
 public:
-	static WgEventHandlerPtr	Create(const WgRootPanelPtr& pRoot) { return WgEventHandlerPtr(new WgEventHandler(pRoot.GetRealPtr())); }
+	static WgEventHandlerPtr	Create(const WgRootPanelPtr& pRoot) { return WgEventHandlerPtr(new WgEventHandler(pRoot.RawPtr())); }
 
 	bool						IsInstanceOf( const char * pClassName ) const;
 	const char *				ClassName( void ) const;
@@ -85,8 +85,8 @@ public:
 	bool	SetFocusGroup( const WgPanelPtr& pFocusGroup );
 	bool	SetKeyboardFocus( const WgWidgetPtr& pFocus );
 
-	WgPanelPtr	FocusGroup() const { return m_keyFocusGroup.GetRealPtr(); }
-	WgWidgetPtr	KeyboardFocus() const { return m_keyFocusWidget.GetRealPtr(); }
+	WgPanelPtr	FocusGroup() const { return m_keyFocusGroup.RawPtr(); }
+	WgWidgetPtr	KeyboardFocus() const { return m_keyFocusWidget.RawPtr(); }
 
 	//----
 

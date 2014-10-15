@@ -53,7 +53,7 @@ const char * WgListHook::ClassName( void ) const
 WgListHookPtr WgListHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgListHookPtr( static_cast<WgListHook*>(pHook.GetRealPtr()) );
+		return WgListHookPtr( static_cast<WgListHook*>(pHook.RawPtr()) );
 
 	return 0;
 }
@@ -125,7 +125,7 @@ const char * WgList::ClassName( void ) const
 WgListPtr WgList::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgListPtr( static_cast<WgList*>(pObject.GetRealPtr()) );
+		return WgListPtr( static_cast<WgList*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -198,12 +198,12 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 		case WG_EVENT_MOUSE_ENTER:
 		{	
 			WgListHook * pEntry = _findEntry(ToLocal(_pEvent->PointerGlobalPos()));
-			if( pEntry && pEntry != m_pHoveredEntry.GetRealPtr() )
+			if( pEntry && pEntry != m_pHoveredEntry.RawPtr() )
 			{
 				WgRect geo;
 				if( m_pHoveredEntry )
 				{
-					_getEntryGeo( geo, m_pHoveredEntry.GetRealPtr() ); 
+					_getEntryGeo( geo, m_pHoveredEntry.RawPtr() ); 
 					_requestRender(geo);
 				}
 
@@ -219,7 +219,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			if( m_pHoveredEntry && !pEntry )
 			{
 				WgRect geo;
-				_getEntryGeo( geo, m_pHoveredEntry.GetRealPtr() ); 
+				_getEntryGeo( geo, m_pHoveredEntry.RawPtr() ); 
 				_requestRender(geo);
 				m_pHoveredEntry = 0;
 			}
@@ -264,7 +264,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 							{
 								// Select range from focused to clicked entry.
 
-								WgListHook * pFocused = m_pFocusedEntry.GetRealPtr();
+								WgListHook * pFocused = m_pFocusedEntry.RawPtr();
 								WgListHook * pFirstSel = WgMin( pEntry, pFocused );
 								WgListHook * pLastSel = WgMax( pEntry, pFocused );
 								_selectRange( pFirstSel, pLastSel, true, true );

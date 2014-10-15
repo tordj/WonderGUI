@@ -93,7 +93,7 @@ const char * WgBoxSkin::ClassName( void ) const
 WgBoxSkinPtr WgBoxSkin::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgBoxSkinPtr( static_cast<WgBoxSkin*>(pObject.GetRealPtr()) );
+		return WgBoxSkinPtr( static_cast<WgBoxSkin*>(pObject.RawPtr()) );
 
 	return 0;
 }

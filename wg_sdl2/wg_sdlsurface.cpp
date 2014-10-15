@@ -129,7 +129,7 @@ const char * WgSDLSurface::ClassName( void ) const
 WgSDLSurfacePtr WgSDLSurface::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSDLSurfacePtr( static_cast<WgSDLSurface*>(pObject.GetRealPtr()) );
+		return WgSDLSurfacePtr( static_cast<WgSDLSurface*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -212,9 +212,9 @@ void WgSDLSurface::Unlock()
 
 
 
-//____ GetPixel() ______________________________________________________________
+//____ Pixel() ______________________________________________________________
 
-Uint32 WgSDLSurface::GetPixel( WgCoord coord ) const
+Uint32 WgSDLSurface::Pixel( WgCoord coord ) const
 {
 	SDL_LockSurface( m_pSurface );
 
@@ -239,9 +239,9 @@ Uint32 WgSDLSurface::GetPixel( WgCoord coord ) const
 	return val;
 }
 
-//____ GetOpacity() ____________________________________________________________
+//____ Alpha() ____________________________________________________________
 
-Uint8 WgSDLSurface::GetOpacity( WgCoord coord ) const
+Uint8 WgSDLSurface::Alpha( WgCoord coord ) const
 {
 	// All pixels are transparent if we don't have any surface...
 
@@ -254,13 +254,13 @@ Uint8 WgSDLSurface::GetOpacity( WgCoord coord ) const
 	// else.
 
 	if( m_pSurface->flags & SDL_SRCALPHA && m_pSurface->format->Amask )
-		return ((GetPixel(coord) & m_pSurface->format->Amask) >> m_pSurface->format->Ashift) << m_pSurface->format->Aloss;
+		return ((Pixel(coord) & m_pSurface->format->Amask) >> m_pSurface->format->Ashift) << m_pSurface->format->Aloss;
 
 	// Secondly, check for colorkey, return transparent if match.
 
 	if( m_pSurface->flags & SDL_SRCCOLORKEY )
 	{
-		if( GetPixel( coord ) == 0 )
+		if( Pixel( coord ) == 0 )
 			return 0;
 	}
 

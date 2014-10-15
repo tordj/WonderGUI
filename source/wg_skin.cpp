@@ -45,7 +45,7 @@ const char * WgSkin::ClassName( void ) const
 WgSkinPtr WgSkin::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSkinPtr( static_cast<WgSkin*>(pObject.GetRealPtr()) );
+		return WgSkinPtr( static_cast<WgSkin*>(pObject.RawPtr()) );
 
 	return 0;
 }

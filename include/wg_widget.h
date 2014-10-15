@@ -171,9 +171,10 @@ public:
 	virtual WgSize	MaxSize() const;
 
 	virtual bool	IsContainer() const { return false; }		///< @brief Check if this widget is a container.
-																///< This method is just a quicker way to check if the widget
-																///< is a container (thus might have children) than calling 
-																///< IsInstanceOf(WgContainer::CLASS).
+																///<
+																///< Check if widget is a container.
+																///< This method is a quicker way to check if the widget
+																///< is a container than calling IsInstanceOf(WgContainer::CLASS).
 																///< @return True if the widget is a subclass of WgContainer.
 
 protected:
@@ -249,9 +250,9 @@ typedef	int(*WgWidgetSortFunc)(const WgWidget *,const WgWidget *);
 //____ Inline methods __________________________________________________________
 
 /**
- * @brief	Return the local position of widget.
+ * @brief	Get the local position of widget.
  * 
- * Local position is the position relative to parent.
+ * Get the local position of the widget, which is the position relative to parent.
  * 
  * @return Local position in pixels. 
  */
@@ -264,7 +265,9 @@ WgCoord WgWidget::Pos() const
 
 
 /**
- * @brief	Return the width and height of widget.
+ * @brief	Get the width and height of widget.
+ *
+ * Get the size (width and height) of widget.
  * 
  * @return Width and height in pixels.
  */
@@ -276,9 +279,11 @@ WgSize WgWidget::Size() const
 }
 
 /**
- * @brief	Return the local geometry of widget.
- * 
- * Return a rectangle with the size and local position, e.g position relative to parent, of the widget.
+ * @brief	Get the local geometry of widget.
+ *
+ * Get the local geometry of the widget, eg a rectangle with the size of the widget and
+ * positon relative to the parent. If the widget doesn't have a parent, it's position
+ * defaults to (0,0).
  * 
  * @return Local geometry in pixels. 
  */
@@ -290,9 +295,9 @@ WgRect WgWidget::Geo() const
 }
 
 /**
- * @brief	Return the global position of widget.
+ * @brief	Get the global position of widget.
  * 
- * Global position is the position relative to RootPanel.
+ * Get the global position of widet, which is the position relative to RootPanel.
  * 
  * @return Global position in pixels. 
  */
@@ -304,10 +309,12 @@ WgCoord WgWidget::GlobalPos() const
 }
 
 /**
- * @brief	Return the global geometry of widget.
+ * @brief	Get the global geometry of widget.
  * 
- * Return a rectangle with the size and global position, e.g position relative to RootPanel, of the widget.
- * 
+ * Get the global geometry of the widget, eg a rectangle with the size of the widget and
+ * positon relative to RootPanel. If the widget doesn't have a parent, it's position
+ * defaults to (0,0).
+ *
  * @return Global geometry in pixels. 
  */
 WgRect WgWidget::GlobalGeo() const 
@@ -333,7 +340,9 @@ bool WgWidget::ReleaseFocus()
 }
 
 /** @brief Check if widget has keyboard focus.
- * 
+ *
+ * Check if widget has keyboard focus.
+ *
  * @return True if widget has focus, otherwise false.
  */
 
@@ -344,7 +353,7 @@ bool WgWidget::IsFocused()
 
 /** @brief Get next sibling.
  * 
- * Next sibling is next widget with same parent. Order of siblings is determined by parent
+ * Get the widgets next sibling. Order of siblings is determined by parent
  * and generally left to right or top to bottom for containers where children can't overlap.
  * For containers where children can overlap the order is generally background to foreground.
  * 
@@ -364,7 +373,7 @@ WgWidgetPtr WgWidget::NextSibling() const
 
 /** @brief Get previous sibling.
  * 
- * Previous sibling is previous widget with same parent. Order of siblings is determined by parent
+ * Get the widgets previous sibling. Order of siblings is determined by parent
  * and generally left to right or top to bottom for containers where children can't overlap.
  * For containers where children can overlap the order is generally background to foreground.
  * 

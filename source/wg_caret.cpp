@@ -21,7 +21,7 @@
 =========================================================================*/
 #include <wg_caret.h>
 
-const char WgCaret::CLASSNAME[] = {"Cursor"};
+const char WgCaret::CLASSNAME[] = {"Caret"};
 
 //____ WgCaret() _____________________________________________________________
 
@@ -73,7 +73,7 @@ const char * WgCaret::ClassName( void ) const
 WgCaretPtr WgCaret::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgCaretPtr( static_cast<WgCaret*>(pObject.GetRealPtr()) );
+		return WgCaretPtr( static_cast<WgCaret*>(pObject.RawPtr()) );
 
 	return 0;
 }

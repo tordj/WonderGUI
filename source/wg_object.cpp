@@ -28,7 +28,9 @@ const char WgObject::CLASSNAME[] = {"Object"};
 
 
 /**
- * @brief	Checks if the object is an instance of the specied class or subclass thereof.
+ * @brief	Check if the object is an instance or subclass of specified class.
+ *
+ * Check if the object is an instance or subclass of specified class.
  *
  * @param pClassName	Pointer to the class name. This needs to be a pointer returned by 
  * 						a call to WgObject::ClassName() or the CLASSNAME member of a subclass of WgObject.
@@ -48,8 +50,10 @@ bool WgObject::IsInstanceOf( const char * pClassName ) const
 }
 
 /**
- * @brief Returns a char pointer which identifies the class of the object.
- * 
+ * @brief Get a char pointer which identifies the class of the object.
+ *
+ * Get a char pointer which identifies the class of the object.
+ *
  * The char pointer points to a char string containing the class name without the Wg prefix.
  * The pointer itself can be used for object type comparison since it is always the same for 
  * objects of the same type. There is no need to do a string compare on the string content.
@@ -72,7 +76,9 @@ void WgObject::_destroy()
 
 /**
  * @brief Dynamic casting of smartpointer to a WgObject derived class.
- * 
+ *
+ * Dynamic casting of smartpointer to a WgObject derived class.
+ *
  * @param pObject	Pointer to be cast.
  * 
  * This method is needed to cast a smartpointer to one of its subclasses. It can also be used to

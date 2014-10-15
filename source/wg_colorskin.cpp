@@ -63,7 +63,7 @@ const char * WgColorSkin::ClassName( void ) const
 WgColorSkinPtr WgColorSkin::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgColorSkinPtr( static_cast<WgColorSkin*>(pObject.GetRealPtr()) );
+		return WgColorSkinPtr( static_cast<WgColorSkin*>(pObject.RawPtr()) );
 
 	return 0;
 }

@@ -78,7 +78,7 @@ const char * WgOscilloscope::ClassName( void ) const
 WgOscilloscopePtr WgOscilloscope::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgOscilloscopePtr( static_cast<WgOscilloscope*>(pObject.GetRealPtr()) );
+		return WgOscilloscopePtr( static_cast<WgOscilloscope*>(pObject.RawPtr()) );
 
 	return 0;
 }

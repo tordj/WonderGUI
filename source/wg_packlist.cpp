@@ -51,7 +51,7 @@ const char * WgPackListHook::ClassName( void ) const
 WgPackListHookPtr WgPackListHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgPackListHookPtr( static_cast<WgPackListHook*>(pHook.GetRealPtr()) );
+		return WgPackListHookPtr( static_cast<WgPackListHook*>(pHook.RawPtr()) );
 
 	return 0;
 }
@@ -172,7 +172,7 @@ const char * WgPackList::ClassName( void ) const
 WgPackListPtr WgPackList::Cast( const WgObjectPtr& pObj )
 {
 	if( pObj && pObj->IsInstanceOf(CLASSNAME) )
-		return WgPackListPtr( static_cast<WgPackList*>(pObj.GetRealPtr()) );
+		return WgPackListPtr( static_cast<WgPackList*>(pObj.RawPtr()) );
 
 	return 0;
 }
@@ -186,7 +186,7 @@ WgPackListHookPtr WgPackList::AddWidget( const WgWidgetPtr& pWidget )
 
 	WgPackListHook * pHook = m_hooks.Add();
 	pHook->m_pParent = this;
-	pHook->_setWidget(pWidget.GetRealPtr());
+	pHook->_setWidget(pWidget.RawPtr());
 
 	_onWidgetAppeared( pHook );
 	return pHook;
@@ -214,7 +214,7 @@ WgPackListHookPtr WgPackList::InsertWidget( const WgWidgetPtr& pWidget, const Wg
 
 	WgPackListHook * pHook = m_hooks.Insert(index);
 	pHook->m_pParent = this;
-	pHook->_setWidget(pWidget.GetRealPtr());
+	pHook->_setWidget(pWidget.RawPtr());
 
 	_onWidgetAppeared( pHook );
 	return pHook;
@@ -230,11 +230,11 @@ WgPackListHookPtr WgPackList::InsertWidgetSorted( const WgWidgetPtr& pWidget )
 	if( m_hooks.IsEmpty() || !m_pSortFunc )
 		return AddWidget( pWidget );
 
-	int index = _getInsertionPoint( pWidget.GetRealPtr() );
+	int index = _getInsertionPoint( pWidget.RawPtr() );
 
 	WgPackListHook * pHook = m_hooks.Insert(index);
 	pHook->m_pParent = this;
-	pHook->_setWidget(pWidget.GetRealPtr());
+	pHook->_setWidget(pWidget.RawPtr());
 
 	_onWidgetAppeared( pHook );
 	return pHook;
@@ -588,7 +588,7 @@ void WgPackList::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 			entryGeo.h = pHook->m_length;
 		}
 		
-		WgSkin * pEntrySkin	= m_pEntrySkin[i&0x1].GetRealPtr();
+		WgSkin * pEntrySkin	= m_pEntrySkin[i&0x1].RawPtr();
 		WgState	state		= pChild->State();
 //		WgRect	childGeo( entryGeo );
 

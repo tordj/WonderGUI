@@ -79,7 +79,7 @@ const char * WgMenubar::ClassName( void ) const
 WgMenubarPtr WgMenubar::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMenubarPtr( static_cast<WgMenubar*>(pObject.GetRealPtr()) );
+		return WgMenubarPtr( static_cast<WgMenubar*>(pObject.RawPtr()) );
 
 	return 0;
 }

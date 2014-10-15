@@ -61,11 +61,13 @@ typedef	WgIStrongPtr<WgText,WgInterfacePtr>		WgTextPtr;
 typedef	WgIWeakPtr<WgText,WgInterfaceWeakPtr>	WgTextWeakPtr;
 
 /**
- * @brief Interface to a text field with static (non-modifiable) text
- * 
- * The text in a static text field is set by the widget itself and can
+ * @brief Interface to a basic text field.
+ *
+ * Interface to a basic text field.
+ *
+ * The text in a basic text field is set by the widget itself and can
  * not be modified directly either through the API or UI. Only the appearance
- * of the text can be modified through this API.
+ * of the text can be modified through this interface.
  * 
  */
 

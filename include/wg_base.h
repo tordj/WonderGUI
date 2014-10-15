@@ -65,6 +65,12 @@ class WgMemStack;
 
 /**
  * @brief	Static base class for WonderGUI.
+ *
+ * A static base class for WonderGUI that handles initialization and general
+ * housekeeping and resource allocation.
+ *
+ * The first thing that you need to do when starting WonderGUI is to call WgBase::Init()
+ * and the last thing you should do is to call WgBase::Exit().
  * 
  */
 

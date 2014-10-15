@@ -61,7 +61,7 @@ const char * WgSwitch::ClassName( void ) const
 WgSwitchPtr WgSwitch::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSwitchPtr( static_cast<WgSwitch*>(pObject.GetRealPtr()) );
+		return WgSwitchPtr( static_cast<WgSwitch*>(pObject.RawPtr()) );
 
 	return 0;
 }

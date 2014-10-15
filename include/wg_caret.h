@@ -50,7 +50,7 @@ class WgCaret : public WgObject
 
 public:
 	static WgCaretPtr	Create() { return WgCaretPtr(new WgCaret()); }
-	static WgCaretPtr	Create( const WgCaretPtr& in ) { return WgCaretPtr(new WgCaret(in.GetRealPtr())); }
+	static WgCaretPtr	Create( const WgCaretPtr& in ) { return WgCaretPtr(new WgCaret(in.RawPtr())); }
 
 	bool		IsInstanceOf( const char * pClassName ) const;
 	const char *ClassName( void ) const;

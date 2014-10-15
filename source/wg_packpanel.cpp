@@ -57,7 +57,7 @@ const char * WgPackHook::ClassName( void ) const
 WgPackHookPtr WgPackHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgPackHookPtr( static_cast<WgPackHook*>(pHook.GetRealPtr()) );
+		return WgPackHookPtr( static_cast<WgPackHook*>(pHook.RawPtr()) );
 
 	return 0;
 }
@@ -128,7 +128,7 @@ const char * WgPackPanel::ClassName( void ) const
 WgPackPanelPtr WgPackPanel::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgPackPanelPtr( static_cast<WgPackPanel*>(pObject.GetRealPtr()) );
+		return WgPackPanelPtr( static_cast<WgPackPanel*>(pObject.RawPtr()) );
 
 	return 0;
 }

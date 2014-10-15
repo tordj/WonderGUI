@@ -109,7 +109,7 @@ const char * WgValueFormat::ClassName( void ) const
 WgValueFormatPtr WgValueFormat::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgValueFormatPtr( static_cast<WgValueFormat*>(pObject.GetRealPtr()) );
+		return WgValueFormatPtr( static_cast<WgValueFormat*>(pObject.RawPtr()) );
 
 	return 0;
 }

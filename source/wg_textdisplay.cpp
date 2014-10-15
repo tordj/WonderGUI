@@ -72,7 +72,7 @@ const char * WgTextDisplay::ClassName( void ) const
 WgTextDisplayPtr WgTextDisplay::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgTextDisplayPtr( static_cast<WgTextDisplay*>(pObject.GetRealPtr()) );
+		return WgTextDisplayPtr( static_cast<WgTextDisplay*>(pObject.RawPtr()) );
 
 	return 0;
 }

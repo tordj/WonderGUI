@@ -62,7 +62,7 @@ const char * WgFiller::ClassName( void ) const
 WgFillerPtr WgFiller::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFillerPtr( static_cast<WgFiller*>(pObject.GetRealPtr()) );
+		return WgFillerPtr( static_cast<WgFiller*>(pObject.RawPtr()) );
 
 	return 0;
 }

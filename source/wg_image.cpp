@@ -64,7 +64,7 @@ const char * WgImage::ClassName( void ) const
 WgImagePtr WgImage::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgImagePtr( static_cast<WgImage*>(pObject.GetRealPtr()) );
+		return WgImagePtr( static_cast<WgImage*>(pObject.RawPtr()) );
 
 	return 0;
 }

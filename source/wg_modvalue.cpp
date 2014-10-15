@@ -47,7 +47,7 @@ const char * WgModValue::ClassName( void ) const
 WgModValuePtr WgModValue::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgModValuePtr( pInterface.GetRealObjectPtr(), static_cast<WgModValue*>( pInterface.GetRealPtr()) );
+		return WgModValuePtr( pInterface.GetRealObjectPtr(), static_cast<WgModValue*>( pInterface.RawPtr()) );
 
 	return 0;
 }

@@ -83,7 +83,7 @@ const char * WgValueEditor::ClassName( void ) const
 WgValueEditorPtr WgValueEditor::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgValueEditorPtr( static_cast<WgValueEditor*>(pObject.GetRealPtr()) );
+		return WgValueEditorPtr( static_cast<WgValueEditor*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -225,7 +225,7 @@ void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 void WgValueEditor::_regenText()
 {
-	m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.GetRealPtr() );
+	m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.RawPtr() );
 	m_text.GoEOL();
 }
 
@@ -440,7 +440,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 					_updateScrollbar( FractionalValue(), 0.f );
 					_queueEvent( new WgValueUpdateEvent(this, m_value, FractionalValue(), false) );
 
-					m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.GetRealPtr() );
+					m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.RawPtr() );
 					m_text.GoEOL();
 					_limitCursor();
 				}

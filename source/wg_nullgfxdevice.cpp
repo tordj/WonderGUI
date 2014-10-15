@@ -62,7 +62,7 @@ const char * WgNullGfxDevice::ClassName( void ) const
 WgNullGfxDevicePtr WgNullGfxDevice::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgNullGfxDevicePtr( static_cast<WgNullGfxDevice*>(pObject.GetRealPtr()) );
+		return WgNullGfxDevicePtr( static_cast<WgNullGfxDevice*>(pObject.RawPtr()) );
 
 	return 0;
 }

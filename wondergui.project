@@ -133,6 +133,8 @@
     <File Name="include/wg_togglegroup.h"/>
     <File Name="source/wg_togglegroup.cpp"/>
     <File Name="include/wondergui.h"/>
+    <File Name="include/wg_caret2.h"/>
+    <File Name="include/wg_caret2.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Widgets">
     <File Name="include/wg_animplayer.h"/>

@@ -67,7 +67,7 @@ const char * WgResDB::ClassName( void ) const
 WgResDBPtr WgResDB::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgResDBPtr( static_cast<WgResDB*>(pObject.GetRealPtr()) );
+		return WgResDBPtr( static_cast<WgResDB*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -554,7 +554,7 @@ WgWidgetPtr WgResDB::CloneWidget( const std::string& id ) const
 	WgWidgetPtr pWidget = widgetRes->res;
 
 	WgWidgetPtr pClone = pWidget->NewOfMyType();
-	pClone->CloneContent(pWidget.GetRealPtr());
+	pClone->CloneContent(pWidget.RawPtr());
 	return pClone;
 }
 

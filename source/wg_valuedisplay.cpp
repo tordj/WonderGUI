@@ -65,7 +65,7 @@ const char * WgValueDisplay::ClassName( void ) const
 WgValueDisplayPtr WgValueDisplay::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgValueDisplayPtr( static_cast<WgValueDisplay*>(pObject.GetRealPtr()) );
+		return WgValueDisplayPtr( static_cast<WgValueDisplay*>(pObject.RawPtr()) );
 
 	return 0;
 }

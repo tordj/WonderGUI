@@ -60,7 +60,7 @@ const char * WgGLGfxDevice::ClassName( void ) const
 WgGLGfxDevicePtr WgGLGfxDevice::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgGLGfxDevicePtr( static_cast<WgGLGfxDevice*>(pObject.GetRealPtr()) );
+		return WgGLGfxDevicePtr( static_cast<WgGLGfxDevice*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -243,7 +243,7 @@ void WgGLGfxDevice::Blit( const WgSurfacePtr& _pSrc, const WgRect& _src, int _dx
 	int		dy1 = m_canvasSize.h - _dy;
 	int		dy2 = dy1 - _src.h;
 
-	glBindTexture(GL_TEXTURE_2D, ((WgGLSurface*) _pSrc.GetRealPtr())->GetTexture() );
+	glBindTexture(GL_TEXTURE_2D, ((WgGLSurface*) _pSrc.RawPtr())->GetTexture() );
 	glBegin(GL_QUADS);
 		glTexCoord2f( sx1, sy1 );
 		glVertex2i( dx1, dy1 );
@@ -282,7 +282,7 @@ void WgGLGfxDevice::StretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, flo
 	float	dy1 = m_canvasSize.h - dy;
 	float	dy2 = dy1 - dh;
 
-	glBindTexture(GL_TEXTURE_2D, ((WgGLSurface*)pSrc.GetRealPtr())->GetTexture() );
+	glBindTexture(GL_TEXTURE_2D, ((WgGLSurface*)pSrc.RawPtr())->GetTexture() );
 	glBegin(GL_QUADS);
 		glTexCoord2f( sx1, sy1 );
 		glVertex2f( dx1, dy1 );

@@ -93,8 +93,8 @@ public:
 	static const char	CLASSNAME[];
 	static WgStackPanelPtr	Cast( const WgObjectPtr& pObject );
 	
-	inline WgStackHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::_addWidget(pWidget.GetRealPtr())); }
-	inline WgStackHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::_insertWidget(pWidget.GetRealPtr(),pSibling.GetRealPtr())); }
+	inline WgStackHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::_addWidget(pWidget.RawPtr())); }
+	inline WgStackHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::_insertWidget(pWidget.RawPtr(),pSibling.RawPtr())); }
 
 	inline WgStackHookPtr FirstHook() const { return static_cast<WgStackHook*>(m_hooks.First()); }
 	inline WgStackHookPtr LastHook() const { return static_cast<WgStackHook*>(m_hooks.Last()); }

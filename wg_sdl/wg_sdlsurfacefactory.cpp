@@ -49,7 +49,7 @@ const char * WgSDLSurfaceFactory::ClassName( void ) const
 WgSDLSurfaceFactoryPtr WgSDLSurfaceFactory::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSDLSurfaceFactoryPtr( static_cast<WgSDLSurfaceFactory*>(pObject.GetRealPtr()) );
+		return WgSDLSurfaceFactoryPtr( static_cast<WgSDLSurfaceFactory*>(pObject.RawPtr()) );
 
 	return 0;
 }

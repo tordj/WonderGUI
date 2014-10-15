@@ -104,7 +104,7 @@ const char * WgMenu::ClassName( void ) const
 WgMenuPtr WgMenu::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMenuPtr( static_cast<WgMenu*>(pObject.GetRealPtr()) );
+		return WgMenuPtr( static_cast<WgMenu*>(pObject.RawPtr()) );
 
 	return 0;
 }

@@ -27,7 +27,9 @@ const char WgBlob::CLASSNAME[] = {"Blob"};
 //____ Create _________________________________________________________________
 /**
  * @brief Create an empty blob of the specified size.
- * 
+ *
+ * Create an empty blob of the specified size.
+ *
  * @param bytes Bytes to allocate.
  * 
  * Allocates a memory buffer of the given size and wraps it into a Blob.
@@ -43,7 +45,9 @@ WgBlobPtr WgBlob::Create( int bytes )
 }
 
 /**
- * @brief Wrap a non-WonderGUI object or any set of data into a Blob
+ * @brief Wrap a non-WonderGUI object or arbritary data into a Blob.
+ *
+ * Wrap a non-WonderGUI object or arbitrary data into a Blob.
  * 
  * @param pData			Pointer at the data to be considered the content of the Blob.
  * 
@@ -114,7 +118,7 @@ const char * WgBlob::ClassName( void ) const
 WgBlobPtr WgBlob::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgBlobPtr( static_cast<WgBlob*>(pObject.GetRealPtr()) );
+		return WgBlobPtr( static_cast<WgBlob*>(pObject.RawPtr()) );
 
 	return 0;
 }

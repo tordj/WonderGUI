@@ -47,7 +47,7 @@ const char * WgIcon::ClassName( void ) const
 WgIconPtr WgIcon::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgIconPtr( pInterface.GetRealObjectPtr(), static_cast<WgIcon*>( pInterface.GetRealPtr()) );
+		return WgIconPtr( pInterface.GetRealObjectPtr(), static_cast<WgIcon*>( pInterface.RawPtr()) );
 
 	return 0;
 }

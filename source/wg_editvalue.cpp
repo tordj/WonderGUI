@@ -47,7 +47,7 @@ const char * WgEditValue::ClassName( void ) const
 WgEditValuePtr WgEditValue::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgEditValuePtr( pInterface.GetRealObjectPtr(), static_cast<WgEditValue*>(pInterface.GetRealPtr()) );
+		return WgEditValuePtr( pInterface.GetRealObjectPtr(), static_cast<WgEditValue*>(pInterface.RawPtr()) );
 
 	return 0;
 }

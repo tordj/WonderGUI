@@ -61,7 +61,7 @@ const char * WgAnim::ClassName( void ) const
 WgAnimPtr WgAnim::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgAnimPtr( static_cast<WgAnim*>(pObject.GetRealPtr()) );
+		return WgAnimPtr( static_cast<WgAnim*>(pObject.RawPtr()) );
 
 	return 0;
 }

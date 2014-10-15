@@ -56,7 +56,7 @@ const char * WgColumnHeader::ClassName( void ) const
 WgColumnHeaderPtr WgColumnHeader::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgColumnHeaderPtr( pInterface.GetRealObjectPtr(), static_cast<WgColumnHeader*>( pInterface.GetRealPtr()) );
+		return WgColumnHeaderPtr( pInterface.GetRealObjectPtr(), static_cast<WgColumnHeader*>( pInterface.RawPtr()) );
 
 	return 0;
 }

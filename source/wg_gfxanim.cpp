@@ -60,7 +60,7 @@ const char * WgGfxAnim::ClassName( void ) const
 WgGfxAnimPtr WgGfxAnim::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgGfxAnimPtr( static_cast<WgGfxAnim*>(pObject.GetRealPtr()) );
+		return WgGfxAnimPtr( static_cast<WgGfxAnim*>(pObject.RawPtr()) );
 
 	return 0;
 }

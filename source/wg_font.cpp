@@ -104,7 +104,7 @@ const char * WgFont::ClassName( void ) const
 WgFontPtr WgFont::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFontPtr( static_cast<WgFont*>(pObject.GetRealPtr()) );
+		return WgFontPtr( static_cast<WgFont*>(pObject.RawPtr()) );
 
 	return 0;
 }

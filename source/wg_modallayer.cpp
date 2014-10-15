@@ -54,7 +54,7 @@ const char * WgModalHook::ClassName( void ) const
 WgModalHookPtr WgModalHook::Cast( const WgHookPtr& pHook )
 {
 	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgModalHookPtr( static_cast<WgModalHook*>(pHook.GetRealPtr()) );
+		return WgModalHookPtr( static_cast<WgModalHook*>(pHook.RawPtr()) );
 
 	return 0;
 }
@@ -280,7 +280,7 @@ const char * WgModalLayer::ClassName( void ) const
 WgModalLayerPtr WgModalLayer::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgModalLayerPtr( static_cast<WgModalLayer*>(pObject.GetRealPtr()) );
+		return WgModalLayerPtr( static_cast<WgModalLayer*>(pObject.RawPtr()) );
 
 	return 0;
 }
@@ -292,7 +292,7 @@ WgModalHookPtr WgModalLayer::AddModalWidget( const WgWidgetPtr& pWidget, const W
 	// Create Hook and fill in members.
 
 	WgModalHook * pHook = new WgModalHook( this );
-	pHook->_setWidget(pWidget.GetRealPtr());
+	pHook->_setWidget(pWidget.RawPtr());
 	pHook->m_origo = origo;
 	pHook->m_placementGeo = geometry;
 	m_modalHooks.PushBack(pHook);
@@ -443,13 +443,13 @@ void WgModalLayer::_updateKeyboardFocus()
 	if( !Hook() )
 		return;
 
-	WgEventHandler * pHandler = Hook()->EventHandler().GetRealPtr();
+	WgEventHandler * pHandler = Hook()->EventHandler().RawPtr();
 	if( !pHandler )
 		return;
 
 	// Retrieve focused Widget and verify it being a descendant to us.
 
-	WgWidget * pFocused = pHandler->KeyboardFocus().GetRealPtr();
+	WgWidget * pFocused = pHandler->KeyboardFocus().RawPtr();
 
 	WgWidget * p = pFocused;
 	while( p && p->Parent() && p->Parent() != this )
@@ -480,13 +480,13 @@ void WgModalLayer::_updateKeyboardFocus()
 
 	if( pHook )
 	{
-		pSavedFocus = pHook->m_pKeyFocus.GetRealPtr();
+		pSavedFocus = pHook->m_pKeyFocus.RawPtr();
 		pHook->m_pKeyFocus = 0;								// Needs to be cleared for the future.
 		pBranch = pHook;
 	}
 	else if( m_baseHook._widget() )
 	{
-		pSavedFocus = m_pBaseKeyFocus.GetRealPtr();
+		pSavedFocus = m_pBaseKeyFocus.RawPtr();
 		m_pBaseKeyFocus = 0;								// Needs to be cleared for the future.
 		pBranch = &m_baseHook;
 	}
