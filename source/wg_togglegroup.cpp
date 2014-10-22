@@ -20,9 +20,7 @@
 
 =========================================================================*/
 
-#ifndef	WG_TOGGLEGROUP_DOT_H
-#	include <wg_togglegroup.h>
-#endif
+#include <wg_togglegroup.h>
 
 const char WgToggleGroup::CLASSNAME[] = {"ToggleGroup"};
 

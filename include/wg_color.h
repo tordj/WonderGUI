@@ -81,6 +81,7 @@ public:
 
 
 	const static WgColor	transparent;		// 0x00FFFFFF
+	const static WgColor	none;				// 0x00000000	// Handled differently than 'transparent' when cascading colors.
 
 	const static WgColor 	aliceblue;			// 0xF0F8FF
 	const static WgColor 	antiquewhite;		// 0xFAEBD7

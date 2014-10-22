@@ -135,6 +135,8 @@
     <File Name="include/wondergui.h"/>
     <File Name="include/wg_caret2.h"/>
     <File Name="include/wg_caret2.cpp"/>
+    <File Name="include/wg_textstyle.h"/>
+    <File Name="source/wg_textstyle.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="Widgets">
     <File Name="include/wg_animplayer.h"/>

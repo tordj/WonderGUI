@@ -59,7 +59,7 @@ typedef unsigned __int64  uint64_t;
 #endif
 
 #ifndef INT64_MAX
-#define INT64_MAX ((9223372036854775807 ## L))
+#define INT64_MAX ((9223372036854775807 ## L))__
 #endif
 
 template<typename T> inline T WgMin(const T &a, const T &b) { return a < b ? a : b; }
@@ -71,6 +71,7 @@ template<typename T> inline void WgSwap(T &a, T &b) { T c = a; a = b; b = c; }
 
 #define		WG_LIMIT(x, min, max)	if( x < min) x = min; if( x > max) x = max;
 
+#define	WG_FONTSIZE_INHERIT 0x80000000
 
 enum WgStateEnum
 {
@@ -303,6 +304,7 @@ enum WgFontStyle
 	WG_STYLE_USER_4		= 15,
 	WG_STYLE_USER_5		= 16,
 
+	WG_STYLE_INHERIT	= 99,
 };
 
 #define WG_NB_FONTSTYLES	17
@@ -571,6 +573,15 @@ public:
 
 	int	line;
 	int col;
+};
+
+//___  WgTextDecoration ________________________________________________________
+
+enum WgTextDecoration
+{
+	WG_DECORATION_INHERIT,
+	WG_DECORATION_NONE,
+	WG_DECORATION_UNDERLINE
 };
 
 //____ WgRange ____________________________________________________________

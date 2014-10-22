@@ -31,10 +31,11 @@
 #endif
 
 class WgTextField;
-class WgTextlink;
 class WgCoord;
 
+class WgTextlink;
 typedef	WgStrongPtr<class WgTextlink,WgObjectPtr> WgTextLinkPtr;
+typedef	WgWeakPtr<class WgTextlink,WgObjectWeakPtr> WgTextLinkWeakPtr;
 
 
 //____ WgTextLink _____________________________________________________________

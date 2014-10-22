@@ -17,6 +17,14 @@
 class WgChar;
 
 //____ WgString _____________________________________________________________
+/**
+ * @brief Decorated string.
+ *
+ * WgString is a simple string-class for decorated strings. Each character
+ * in the string can have its own style.
+ *
+ **/
+
 
 class WgString
 {
