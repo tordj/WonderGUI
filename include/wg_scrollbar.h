@@ -42,6 +42,13 @@ typedef	WgStrongPtr<WgScrollbar,WgWidgetPtr>		WgScrollbarPtr;
 typedef	WgWeakPtr<WgScrollbar,WgWidgetWeakPtr>		WgScrollbarWeakPtr;
 
 //____ Class: WgScrollbar _____________________________________________________
+/**
+ * @brief Scrollbar widget.
+ *
+ * WgScrollbar is a normal scrollbar widget with buttons for stepping forward/backward
+ * and a resizable handle that can be dragged to move the view.
+ *
+ **/
 
 class	WgScrollbar : public WgWidget
 {
@@ -83,19 +90,19 @@ class	WgScrollbar : public WgWidget
 
 		//____ Methods __________________________________________
 
-		float			GetHandlePos() const { return m_handlePos; }
-		float			GetHandleSize() const { return m_handleSize; }
-		WgSkinPtr 		GetBackgroundSkin() const { return m_pBgSkin; }
-		WgSkinPtr 		GetHandleSkin() const { return m_pHandleSkin; }
-		WgSkinPtr 		GetBwdButtonSkin() const { return m_pBtnBwdSkin; }
-		WgSkinPtr 		GetFwdButtonSkin() const { return m_pBtnFwdSkin; }
-		ButtonLayout	GetButtonLayout() const { return m_btnLayout; }
+		inline float			GetHandlePos() const;
+		inline float			GetHandleSize() const;
+		inline WgSkinPtr 		GetBackgroundSkin() const;
+		inline WgSkinPtr 		GetHandleSkin() const;
+		inline WgSkinPtr 		GetBwdButtonSkin() const;
+		inline WgSkinPtr 		GetFwdButtonSkin() const;
+		inline ButtonLayout		GetButtonLayout() const;
 
-		void			SetOrientation( WgOrientation orientation );
-		WgOrientation	Orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
+		void			SetOrientation( WgOrientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
+		inline WgOrientation	Orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
 
 		void		SetBackgroundPressMode( BgPressMode mode );
-		BgPressMode GetBackgroundPressMode() const { return m_bgPressMode; }
+		inline BgPressMode GetBackgroundPressMode() const;
 
 		bool	SetHandle( float pos, float size );
 		bool	SetHandlePos( float pos );
@@ -184,5 +191,52 @@ class	WgScrollbar : public WgWidget
 		void		_headerFooterChanged();
 		void		_unhoverReqRender();
 };
+
+
+float WgScrollbar::GetHandlePos() const
+{
+	return m_handlePos;
+}
+
+float WgScrollbar::GetHandleSize() const
+{
+	return m_handleSize;
+}
+
+WgSkinPtr WgScrollbar::GetBackgroundSkin() const
+{
+	return m_pBgSkin;
+}
+
+WgSkinPtr WgScrollbar::GetHandleSkin() const
+{
+	return m_pHandleSkin;
+}
+
+WgSkinPtr WgScrollbar::GetBwdButtonSkin() const
+{
+	return m_pBtnBwdSkin;
+}
+
+WgSkinPtr WgScrollbar::GetFwdButtonSkin() const
+{
+	return m_pBtnFwdSkin;
+}
+
+WgScrollbar::ButtonLayout WgScrollbar::GetButtonLayout() const
+{
+	return m_btnLayout;
+}
+
+WgOrientation WgScrollbar::Orientation() const
+{
+	return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL;
+}
+
+WgScrollbar::BgPressMode WgScrollbar::GetBackgroundPressMode() const
+{
+	return m_bgPressMode;
+}
+
 
 #endif //	WG_SCROLLBAR_DOT_H

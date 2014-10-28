@@ -43,6 +43,11 @@ typedef	WgStrongPtr<WgButton,WgWidgetPtr>		WgButtonPtr;
 typedef	WgWeakPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
 
 //____ WgButton ____________________________________________________________
+/**
+ * @breif A normal push button widget.
+ *
+ * A simple push button widget with label and icon.
+ **/
 
 class WgButton : public WgWidget, protected WgIconHolder, protected WgTextHolder
 {
@@ -61,9 +66,8 @@ public:
 
 	//____ Methods __________________________________________
 
-	void			SetDownWhenMouseOutside( bool bDown );
-	bool			DownWhenMouseOutside() const { return m_bDownOutside; }
-	int				TextAreaWidth();
+	void			SetDownWhenMouseOutside( bool bDown );					///< @brief Set if button should stay in pressed state even if mouse goes outside.
+	bool			DownWhenMouseOutside() const { return m_bDownOutside; }	///< @brief Check if button will stay in pressed state even if mouse goes outside.
 	
 	virtual int		MatchingHeight( int width ) const;
 //	virtual int		MatchingWidth( int height ) const;

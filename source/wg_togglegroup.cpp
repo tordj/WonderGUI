@@ -68,6 +68,23 @@ WgToggleGroupPtr WgToggleGroup::Cast( const WgObjectPtr& pObject )
 }
 
 //____ SetRequireSelected() _______________________________________________________
+/**
+ * Sets the requireSelected flag of this group, which means that there will always
+ * be a selected widget in the group as long as the group is not empty. The default state
+ * of this flag is TRUE.
+ *
+ * @param bRequire 	Set to TRUE to require a member to always be selected. Set to
+ * 					false to allow all members to be deselected.
+ *
+ * Setting this flag in an empty ToggleGroup will result in the first widget that is added
+ * to automatically be selected. If the ToggleGroup is not empty but has no selected
+ * member, the first member of the group will be selected.
+ *
+ * It will not be possible to deselect a widget when requireSelected is TRUE, the only way
+ * to deselect a member is to select another one. If the selected member of
+ * the group is removed, the first member will be selected.
+ *
+ **/
 
 void WgToggleGroup::SetRequireSelected(bool bRequire)
 {
@@ -78,16 +95,40 @@ void WgToggleGroup::SetRequireSelected(bool bRequire)
 }
 
 //____ Add() ___________________________________________________________________
+/**
+ * Add specified WgToggleButton to this group, making it behave like a RadioButton
+ * against the rest of the members of this group.
+ *
+ * @pToggleButton	ToggleButton to be added to this ToggleGroup.
+ *
+ * A ToggleButton can only belong to one ToggleGroup at the same time. If added
+ * ToggleButton is member of another group, it will automatically be removed from
+ * that group.
+ *
+ * If the group is empty and it is set to require a member to be selected (default
+ * behavior) the added widget will automatically be selected. If the added member
+ * is in a selected state but the group already has a selected member, the added
+ * member is unselected.
+ *
+ **/
 
 void WgToggleGroup::Add( const WgToggleButtonPtr& pToggleButton )
 {
 	WgToggleButton * p = pToggleButton.RawPtr();
 	if( p )
 	{
+		if( p->IsSelected() )
+		{
+			if( m_pSelected )
+				p->SetSelected(false);
+			else
+				m_pSelected = p;
+		}
+
 		p->_setToggleGroup(this);
 		m_entries.push_back( p );
 	}
-	
+
 	// Select first entry if none selected and we require one to be
 	
 	if( m_bRequireSelected && !m_pSelected  )
@@ -95,6 +136,15 @@ void WgToggleGroup::Add( const WgToggleButtonPtr& pToggleButton )
 }
 
 //____ Remove() ________________________________________________________________
+/**
+ * Removes specified ToggleButton from this group.
+ *
+ * If the removed ToggleButton was selected, it will keep its selected state when removed.
+ * If the group requires a member to be selected (default behavior), the first member
+ * of the group will be selected.
+ *
+ **/
+
 
 bool WgToggleGroup::Remove( const WgToggleButtonPtr& pToggleButton )
 {
@@ -109,6 +159,12 @@ bool WgToggleGroup::Remove( const WgToggleButtonPtr& pToggleButton )
 }
 
 //____ Clear() _________________________________________________________________
+/**
+ * Removes all members from this group.
+ *
+ * The selected member (if any) will keep its selected state upon removal.
+ *
+ **/
 
 void WgToggleGroup::Clear()
 {
@@ -120,6 +176,14 @@ void WgToggleGroup::Clear()
 }
 
 //____ Get() ___________________________________________________________________
+/**
+ * Get a specific member of the group
+ *
+ * @param index		Index (0+) of the member to get.
+ *
+ *
+ * @return Pointer to member at index or null if index was out of bounds.
+ **/
 
 WgToggleButtonPtr WgToggleGroup::Get( int index )
 {
@@ -130,6 +194,11 @@ WgToggleButtonPtr WgToggleGroup::Get( int index )
 }
 
 //____ Size() __________________________________________________________________
+/**
+ * Get the number of members in the group.
+ *
+ * @return Number of members in this ToggleGroup.
+ **/
 
 int WgToggleGroup::Size() const
 {
@@ -137,6 +206,12 @@ int WgToggleGroup::Size() const
 }
 
 //____ Selected() ______________________________________________________________
+/**
+ * Get the selected widget.
+ *
+ * @return A pointer to the widget of the group that is selected or null if none.
+ *
+ **/
 
 WgToggleButtonPtr WgToggleGroup::Selected() const
 {

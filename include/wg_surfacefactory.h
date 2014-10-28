@@ -35,7 +35,14 @@ typedef	WgWeakPtr<WgSurfaceFactory,WgObjectWeakPtr>	WgSurfaceFactoryWeakPtr;
 
 
 //____ WgSurfaceFactory _______________________________________________________
-
+/**
+ * @brief Factory class for creating surfaces.
+ *
+ * WgSurfaceFactory is the base class for all surface factories. The surface factories
+ * are used by WonderGUI components that needs to dynamically create surfaces as
+ * part of their operation, like WgVectorFont.
+ *
+ **/
 class WgSurfaceFactory : public WgObject
 {
 public:

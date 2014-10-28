@@ -36,6 +36,17 @@ typedef	WgStrongPtr<WgFiller,WgWidgetPtr>		WgFillerPtr;
 typedef	WgWeakPtr<WgFiller,WgWidgetWeakPtr>	WgFillerWeakPtr;
 
 //____ WgFiller ____________________________________________________________
+/**
+ * @brief Simplest kind of widget.
+ *
+ * WgFiller is the simplest kind of widget that displays nothing but its skin
+ * and does nothing but firing the normal mouse events that every widget does.
+ *
+ * It is typically used as backgrounds and for filling out empty spaces in
+ * organized layouts.
+ *
+ **/
+
 
 class WgFiller : public WgWidget
 {

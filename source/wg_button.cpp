@@ -78,19 +78,6 @@ WgButtonPtr WgButton::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-//____ TextAreaWidth() _____________________________________________________
-
-int WgButton::TextAreaWidth()
-{
-	WgRect	contentRect(0,0,Size());
-
-	if( m_pSkin )
-		contentRect = m_pSkin->SizeForContent( contentRect );
-
-	WgRect textRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
-
-	return textRect.w;
-}
 
 //____ MatchingHeight() _______________________________________________________
 
@@ -297,7 +284,28 @@ void WgButton::_onRefresh( void )
 }
 
 //____ SetDownWhenMouseOutside() _______________________________________________
-
+/**
+ * Set whether the button will stay in pressed state even if the mouse goes outside.
+ *
+ * @param bDown		True if button should stay pressed.
+ *
+ * If set to True and the button is pushed, it will stay in its pressed state until the mouse button
+ * is released no matter how the mouse pointer is moved.
+ *
+ * If set to false, the button will return to its normal state when when the mouse
+ * pointer leaves the widget but go back to the pressed state if mouse pointer re-enters the
+ * widgets without the mouse button having been released.
+ *
+ * The effect is only cosmetic, the way that events are fired is not affected.
+ *
+ * The default setting is false.
+ *
+ * This little odd setting is useful when using buttons as click-areas for resizing or
+ * dragging widgets around on the screen. The button will then not switch between
+ * pressed and unpressed states as the pointer momentarily moves outside the button
+ * before the callback that updates the geometry is called.
+ *
+ **/
 void WgButton::SetDownWhenMouseOutside( bool bDown )
 {
 		m_bDownOutside		= bDown;

@@ -39,6 +39,14 @@ typedef	WgStrongPtr<WgToggleGroup,WgObjectPtr>		WgToggleGroupPtr;
 typedef	WgWeakPtr<WgToggleGroup,WgObjectWeakPtr>		WgToggleGroupWeakPtr;
 
 
+/**
+ * @brief Groups together StateButtons into RadioButtons.
+ *
+ * A WgToggleGroup object groups together a number of RadioButtons, making
+ * them operate as mutually exclusive RadioButtons.
+ *
+ **/
+
 class	WgToggleGroup : public WgObject
 {
 friend class WgToggleButton;
@@ -51,17 +59,17 @@ public:
 	static WgToggleGroupPtr	Cast( const WgObjectPtr& pObject );	
 
 
-	inline bool			RequireSelected() const { return m_bRequireSelected; }
-	void				SetRequireSelected(bool bRequire);
+	inline bool			RequireSelected() const { return m_bRequireSelected; } 	///< @brief Check if group requires a button to be selected at all time.
+	void				SetRequireSelected(bool bRequire);						///< @brief Set if group should require a button to always be selected.
 
-	void				Add( const WgToggleButtonPtr& pToggleButton );
-	bool				Remove( const WgToggleButtonPtr& pToggleButton );
-	void				Clear();
+	void				Add( const WgToggleButtonPtr& pToggleButton );			///< @brief Add widget to this group.
+	bool				Remove( const WgToggleButtonPtr& pToggleButton );		///< @brief Remove a widget from this group.
+	void				Clear();												///< @brief Remove all widgets from this group.
 	
-	WgToggleButtonPtr	Get( int index );
-	int					Size() const;
+	WgToggleButtonPtr	Get( int index );										///< @brief Get widget at specified index in group.
+	int					Size() const;											///< @brief Get number of widgets in group.
 		
-	WgToggleButtonPtr	Selected() const;
+	WgToggleButtonPtr	Selected() const;										///< @brief Get the selected widget.
 
 
 protected:
