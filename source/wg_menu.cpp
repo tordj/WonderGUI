@@ -254,7 +254,7 @@ bool WgMenu::SetScrollbarSkins(  const WgSkinPtr& pBackgroundSkin, const WgSkinP
 
 //____ SetScrollbarButtonLayout() ________________________________________________
 
-bool WgMenu::SetScrollbarButtonLayout(  WgScrollbar::ButtonLayout layout )
+bool WgMenu::SetScrollbarButtonLayout(  WgScrollbar::BtnLayout layout )
 {
 	m_scrollbarBtnLayout = layout;
 

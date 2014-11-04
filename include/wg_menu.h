@@ -100,12 +100,12 @@ public:
 	WgTextpropPtr	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
 
 	bool			SetScrollbarSkins(  const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& pHandleSkin, const WgSkinPtr& pBwdButtonSkin, const WgSkinPtr& pFwdButtonSkin );
-	bool			SetScrollbarButtonLayout(  WgScrollbar::ButtonLayout layout );
-	WgScrollbar::ButtonLayout GetScrollbarButtonLayout() const { return m_scrollbarBtnLayout; }
-	WgSkinPtr 		GetScrollbarBackgroundSkin() const { return m_pScrollbarBgSkin; }
-	WgSkinPtr 		GetScrollbarHandleSkin() const { return m_pScrollbarHandleSkin; }
-	WgSkinPtr 		GetScrollbarBwdButtonSkin() const { return m_pScrollbarBtnBwdSkin; }
-	WgSkinPtr 		GetScrollbarFwdButtonSkin() const { return m_pScrollbarBtnFwdSkin; }
+	bool			SetScrollbarButtonLayout(  WgScrollbar::BtnLayout layout );
+	WgScrollbar::BtnLayout ScrollbarButtonLayout() const { return m_scrollbarBtnLayout; }
+	WgSkinPtr 		ScrollbarBackgroundSkin() const { return m_pScrollbarBgSkin; }
+	WgSkinPtr 		ScrollbarHandleSkin() const { return m_pScrollbarHandleSkin; }
+	WgSkinPtr 		ScrollbarBwdButtonSkin() const { return m_pScrollbarBtnBwdSkin; }
+	WgSkinPtr 		ScrollbarFwdButtonSkin() const { return m_pScrollbarBtnFwdSkin; }
 
 	int			GetEntryHeight() const;
 
@@ -321,7 +321,7 @@ private:
 	WgSkinPtr					m_pScrollbarHandleSkin;
 	WgSkinPtr					m_pScrollbarBtnFwdSkin;
 	WgSkinPtr					m_pScrollbarBtnBwdSkin;
-	WgScrollbar::ButtonLayout	m_scrollbarBtnLayout;
+	WgScrollbar::BtnLayout		m_scrollbarBtnLayout;
 };
 
 

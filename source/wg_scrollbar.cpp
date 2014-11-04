@@ -92,6 +92,14 @@ WgScrollbarPtr WgScrollbar::Cast( const WgObjectPtr& pObject )
 }
 
 //____ SetOrientation() _______________________________________________________
+/**
+ * Set if scrollbar should be horizontal or vertical.
+ *
+ * @param orientation	Set to WG_HORIZONTAL to make widget horizontal or
+ * 						WG_VERTICAL to make widget vertical.
+ *
+ * By default a scrollbar is vertical.
+ **/
 
 void WgScrollbar::SetOrientation( WgOrientation orientation )
 {
@@ -108,6 +116,21 @@ void WgScrollbar::SetOrientation( WgOrientation orientation )
 
 
 //____ SetBackgroundPressMode() _______________________________________________________
+/**
+ * Set scrollbar behavior for pressing left mouse button on scrollbar background.
+ *
+ * @param	mode	JUMP_PAGE or GOTO_POS depending on behavior wanted.
+ *
+ * The scrollbar can be set to behave in two different ways when left mouse button
+ * is clicked on the scrollbar background.
+ *
+ * The default behavior (JUMP_PAGE) is that it jumps a page forward or backward depending on what
+ * side of the handle the press occurred.
+ *
+ * The alternative behavior (GOTO_POS) is that the scrollbar handle goes directly to the position that
+ * was pressed.
+ *
+ **/
 
 void WgScrollbar::SetBackgroundPressMode( BgPressMode mode )
 {
@@ -117,40 +140,75 @@ void WgScrollbar::SetBackgroundPressMode( BgPressMode mode )
 
 
 //____ SetHandle() ____________________________________________________________
+/**
+ * Set relative size and position of the scrollbar handle.
+ *
+ * @param pos	Position of the handle in the range 0.0 -> 1.0.
+ * @param size	Size of the handle in the range 0.0001 -> 1.0.
+ *
+ * Both parameters will be limited to their respective range.
+ * The size of the handle will not get smaller than the skin of the
+ * handle allows, but the value set is still the value later
+ * returned by HandlePos(). A size of 1.0 means that the handle will cover
+ * the whole background and make position useless.
+ *
+ * The positon of the handle is independent of the size of the handle. A
+ * position of 0.5 always positions the handle straight in the middle of its area.
+ *
+ **/
 
-bool WgScrollbar::SetHandle( float _pos, float _size )
+void WgScrollbar::SetHandle( float _pos, float _size )
 {
 	WG_LIMIT( _size, 0.0001f, 1.f );
 	WG_LIMIT( _pos, 0.f, 1.f );
 
 	if( m_handlePos == _pos && m_handleSize == _size )
-		return true;
+		return;
 
 	m_handlePos		= _pos;
 	m_handleSize 	= _size;
 
 	_requestRender();
-	return	true;
 }
 
 //____ SetHandlePos() _________________________________________________________
+/**
+ * Set relative position of scrollbar handle.
+ *
+ * @param	pos		Position of the handle in the range 0.0 -> 1.0.
+ *
+ * Position will be limited to its range before applied.
+ * The positon of the handle is independent of the size of the handle. A
+ * position of 0.5 always positions the handle straight in the middle of its area.
+ *
+ **/
 
-bool WgScrollbar::SetHandlePos( float pos )
+void WgScrollbar::SetHandlePos( float pos )
 {
 	WG_LIMIT( pos, 0.f, 1.f );
 
 	if( pos > m_handlePos-0.000001 && pos < m_handlePos+0.000001 )
-		return true;
+		return;
 
 	m_handlePos = pos;
-
 	_requestRender();
-	return	true;
 }
 
-//____ SetHandlePosPxlOfs() ___________________________________________________
+//____ SetHandlePixelPos() ___________________________________________________
+/**
+ * Set position of scrollbar handle in pixels.
+ *
+ * @param	pos		Position of the handle, as a pixel offset from the start
+ *					of the slider area.
+ *
+ * The scrollbar handle is moved so that it starts specified number of pixels
+ * from the start of the slider area. The generated position is stored as as a
+ * relative value, making it move to keep its relative position when the
+ * scrollbar widget or handle is resized.
+ *
+ **/
 
-bool WgScrollbar::SetHandlePosPxlOfs( int x )
+void WgScrollbar::SetHandlePixelPos( int pos )
 {
 	int		handlePos, handleLen;
 	_viewToPosLen( &handlePos, &handleLen );
@@ -173,24 +231,22 @@ bool WgScrollbar::SetHandlePosPxlOfs( int x )
 
 	float scrollhandlePos = 0.f;
 	if( m_handleSize < 1.f)
-		scrollhandlePos = ((float)(x - (handleLen >> 1))) / (length - handleLen);
+		scrollhandlePos = ((float)(pos - (handleLen >> 1))) / (length - handleLen);
 
-	return SetHandlePos(scrollhandlePos);
+	SetHandlePos(scrollhandlePos);
 }
 
 //____ SetHandleSize() ________________________________________________________
 
-bool WgScrollbar::SetHandleSize( float _size )
+void WgScrollbar::SetHandleSize( float _size )
 {
 	WG_LIMIT( _size, 0.0001f, 1.f );
 
 	if( _size == m_handleSize )
-		return true;
+		return;
 
 	m_handleSize = _size;
-
 	_requestRender();
-	return	true;
 }
 
 
@@ -211,7 +267,7 @@ void WgScrollbar::SetSkins( const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& p
 
 //____ SetButtonLayout() ______________________________________________________
 
-void WgScrollbar::SetButtonLayout(  ButtonLayout layout )
+void WgScrollbar::SetButtonLayout(  BtnLayout layout )
 {
 	m_btnLayout = layout;
 
@@ -232,7 +288,7 @@ bool WgScrollbar::SetScrollbarTarget( WgScrollbarTarget * pTarget )
 	if( pTarget == 0 )
 	{
 		m_pScrollbarTargetInterface	= 0;
-		m_pScrollbarTargetWidget		= 0;
+		m_pScrollbarTargetWidget	= 0;
 	}
 	else
 	{
@@ -806,7 +862,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 					m_states[C_HANDLE].SetPressed(true);
 					m_states[C_BG].SetHovered(true);
 					m_handlePressOfs = handleLen/2;
-					SetHandlePosPxlOfs( pointerOfs );
+					SetHandlePixelPos( pointerOfs );
 					break;
 				default:
 //					assert( false );

@@ -36,6 +36,12 @@ typedef	WgStrongPtr<WgImage,WgWidgetPtr>		WgImagePtr;
 typedef	WgWeakPtr<WgImage,WgWidgetWeakPtr>		WgImageWeakPtr;
 
 //____ WgImage __________________________________________________________
+/**
+ * @brief	Widget for displaying an image.
+ *
+ * WgImage is a widget that displays an image.
+ *
+ **/
 
 class WgImage : public WgWidget
 {
@@ -48,13 +54,13 @@ public:
 	static WgImagePtr	Cast( const WgObjectPtr& pObject );
 	
 
-	void			SetImage( const WgSurfacePtr& pSurface, const WgRect& rect );
-	void			SetImage( const WgSurfacePtr& pSurface );
+	void				SetImage( const WgSurfacePtr& pSurface, const WgRect& rect );
+	void				SetImage( const WgSurfacePtr& pSurface );
 
-	WgSurfacePtr	ImageSurface() const { return m_pSurface; }
-	WgRect			ImageRect() const { return m_rect; }
+	inline WgSurfacePtr	ImageSurface() const;
+	inline WgRect		ImageRect() const;
 
-	WgSize			PreferredSize() const;
+	WgSize				PreferredSize() const;
 
 protected:
 	WgImage();
@@ -71,6 +77,17 @@ private:
 	WgRect			m_rect;
 
 };
+
+
+WgSurfacePtr WgImage::ImageSurface() const
+{
+	return m_pSurface;
+}
+
+WgRect WgImage::ImageRect() const
+{
+	return m_rect;
+}
 
 
 #endif //WG_FILLER_DOT_H

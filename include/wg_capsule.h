@@ -34,6 +34,16 @@ typedef	WgWeakPtr<WgCapsule,WgContainerPtr>	WgCapsuleWeakPtr;
 class WgCapsuleHook;
 typedef	WgHookTypePtr<WgCapsuleHook,WgHookPtr>	WgCapsuleHookPtr;
 
+/**
+ * @brief Base class for containers that only holds one child.
+ *
+ * WgCapsule is the base class for WonderGUI Capsules, minimalistic container
+ * widgets that only can have one child.
+ *
+ * Capsules are typically used to "encapsulate" another widget (or branch of widgets) to affect its
+ * geometry, appearance or behavior.
+ *
+ **/
 
 class WgCapsuleHook : public WgHook
 {

@@ -71,6 +71,27 @@ protected:
 };
 
 
+/**
+ * @brief	Base class for containers that provides layers of different kinds.
+ *
+ * WgLayer is the base class for widget containers that are used as layers.
+ *
+ * The concept of Layers in WonderGUI is that a layer is a widget that provides
+ * a special purpose layer on top of the rest of the GUI hierarchy. The placement of
+ * this layer in the widget hierarchy decides on what layer things such as popups,
+ * modal dialog boxes, tooltips, notifications etc appear. (note: not all of these
+ * mentioned conceptual layers are implemented yet).
+ *
+ * For example, a WgMenubar widget that opens a menu will place the menu widget in the
+ * first WgPopupLayer it encounters while traversing it ancestors from itself upwards.
+ * In similar way, placing a widget in a WgModalLayer will make it modal only against the
+ * children of that specific layer.
+ *
+ * All Layers have a BaseChild (or BaseWidget), which is the child through which the normal hierarchy continues.
+ * Children that resides within the layer itself are usually referred to as Layer Children.
+ *
+ **/
+
 class WgLayer : public WgContainer
 {
 	friend class WgLayerHook;
