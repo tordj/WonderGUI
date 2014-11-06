@@ -19,7 +19,6 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
 #ifndef WG_SLIDESPAN_DOT_H
 #define WG_SLIDESPAN_DOT_H
 
@@ -57,4 +56,4 @@ public:
 };
 
 
-#endif //WG_SPAN_DOT_H
+#endif //WG_SLIDESPAN_DOT_H

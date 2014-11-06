@@ -266,6 +266,8 @@
     <File Name="source/wg_span.cpp"/>
     <File Name="include/wg_slidespan.h"/>
     <File Name="source/wg_slidespan.cpp"/>
+    <File Name="include/wg_modspan.h"/>
+    <File Name="source/wg_modspan.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release"/>
   <Dependencies Name="Debug"/>
