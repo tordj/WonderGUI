@@ -49,7 +49,7 @@
 
 class WgIcon;
 typedef	WgIStrongPtr<WgIcon,WgInterfacePtr>		WgIconPtr;
-typedef	WgIWeakPtr<WgIcon,WgInterfacePtr>		WgIconWeakPtr;
+typedef	WgIWeakPtr<WgIcon,WgInterfaceWeakPtr>	WgIconWeakPtr;
 
 class WgIcon : public WgInterface
 {

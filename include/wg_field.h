@@ -23,36 +23,35 @@
 #ifndef	WG_FIELD_DOT_H
 #define	WG_FIELD_DOT_H
 
+#ifndef WG_ITEM_DOT_H
+#	include <wg_item.h>
+#endif
+
 class WgField;
 class WgObject;
 
 //____ WgField ___________________________________________________________
 
-class WgFieldHolder
+class WgFieldHolder : public WgItemHolder
 {
 public:
 	virtual void		_onFieldDirty( WgField * pField ) = 0;
 	virtual void		_onFieldResize( WgField * pField ) = 0;
-	virtual WgObject*	_object() = 0;
 };
 
 //____ WgField _________________________________________________________________
 
-class WgField
+class WgField : public WgItem
 {
 public:
-	WgField( WgFieldHolder * pHolder ) : m_pHolder(pHolder) {}
-
-	inline WgObject* _object() { return m_pHolder->_object(); }
+	WgField( WgFieldHolder * pHolder ) : WgItem(pHolder) {}
 
 protected:
 
-	inline void		_onDirty() { return m_pHolder->_onFieldDirty(this); }
-	inline void		_onResize() { return m_pHolder->_onFieldResize(this); }
-
-	WgFieldHolder * m_pHolder;
+	inline void		_onDirty() { return static_cast<WgFieldHolder*>(m_pHolder)->_onFieldDirty(this); }
+	inline void		_onResize() { return static_cast<WgFieldHolder*>(m_pHolder)->_onFieldResize(this); }
 };
 
 
 
-#endif //WG_ITEM_DOT_H
+#endif //WG_FIELD_DOT_H

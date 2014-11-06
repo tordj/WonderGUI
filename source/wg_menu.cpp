@@ -247,7 +247,7 @@ bool WgMenu::SetScrollbarSkins(  const WgSkinPtr& pBackgroundSkin, const WgSkinP
 	{
 		//TODO: Adapt to changes in scrollbars minimum width.
 
-		m_scrollbarHook.Scrollbar()->SetSkins( pBackgroundSkin, pHandleSkin, pBwdButtonSkin, pFwdButtonSkin );
+		m_scrollbarHook.Scrollbar()->SetSkins( 0, pBackgroundSkin, pHandleSkin, pBwdButtonSkin, pFwdButtonSkin );
 	}
 	return true;
 }
@@ -1455,7 +1455,7 @@ void WgMenu::_adjustSize()
 		if( !pScrollbar )
 		{
 			pScrollbar = new WgScrollbar();
-			pScrollbar->SetSkins( m_pScrollbarBgSkin, m_pScrollbarHandleSkin, m_pScrollbarBtnBwdSkin, m_pScrollbarBtnFwdSkin );
+			pScrollbar->SetSkins( 0, m_pScrollbarBgSkin, m_pScrollbarHandleSkin, m_pScrollbarBtnBwdSkin, m_pScrollbarBtnFwdSkin );
 			pScrollbar->SetButtonLayout( m_scrollbarBtnLayout );
 			pScrollbar->SetScrollbarTarget(this);
 		}

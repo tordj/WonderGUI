@@ -38,7 +38,7 @@
 
 class WgEditValue;
 typedef	WgIStrongPtr<WgEditValue,WgModValuePtr>		WgEditValuePtr;
-typedef	WgIWeakPtr<WgEditValue,WgModValuePtr>		WgEditValueWeakPtr;
+typedef	WgIWeakPtr<WgEditValue,WgModValueWeakPtr>	WgEditValueWeakPtr;
 
 /**
  * @brief Interface to a value display field with editable text.

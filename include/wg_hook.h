@@ -57,7 +57,7 @@ typedef	WgWeakPtr<WgEventHandler,WgObjectWeakPtr>	WgEventHandlerWeakPtr;
 
 class WgIWidgets;
 typedef	WgIStrongPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsPtr;
-typedef	WgIWeakPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsWeakPtr;
+typedef	WgIWeakPtr<WgIWidgets,WgInterfaceWeakPtr>		WgIWidgetsWeakPtr;
 
 
 class WgHook

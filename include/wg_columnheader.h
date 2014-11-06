@@ -53,7 +53,7 @@
 
 class WgColumnHeader;
 typedef	WgIStrongPtr<WgColumnHeader,WgInterfacePtr>		WgColumnHeaderPtr;
-typedef	WgIWeakPtr<WgColumnHeader,WgInterfacePtr>		WgColumnHeaderWeakPtr;
+typedef	WgIWeakPtr<WgColumnHeader,WgInterfaceWeakPtr>	WgColumnHeaderWeakPtr;
 
 class WgColumnHeader : public WgInterface
 {

@@ -20,33 +20,36 @@
 
 =========================================================================*/
 
-#ifndef	WG_ITEM_DOT_H
-#define	WG_ITEM_DOT_H
+#include <wg_slidespan.h>
+#include <wg_spanitem.h>
 
-class WgObject;
+const char WgSlideSpan::CLASSNAME[] = {"SlideSpan"};
 
-//____ WgItemHolder ___________________________________________________________
 
-class WgItemHolder
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgSlideSpan::IsInstanceOf( const char * pClassName ) const
 {
-public:
-	virtual WgObject*	_object() = 0;
-};
+	if( pClassName==CLASSNAME )
+		return true;
 
-//____ WgItem _________________________________________________________________
+	return WgSpan::IsInstanceOf(pClassName);
+}
 
-class WgItem
+//____ ClassName() ____________________________________________________________
+
+const char * WgSlideSpan::ClassName( void ) const
 {
-public:
-	WgItem( WgItemHolder * pHolder ) : m_pHolder(pHolder) {}
+	return CLASSNAME;
+}
 
-	inline WgObject* _object() { return m_pHolder->_object(); }
+//____ Cast() _________________________________________________________________
 
-protected:
+WgSlideSpanPtr WgSlideSpan::Cast( const WgInterfacePtr& pInterface )
+{
+	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
+		return WgSlideSpanPtr( pInterface.GetRealObjectPtr(), static_cast<WgSlideSpan*>( pInterface.RawPtr()) );
 
-	WgItemHolder * m_pHolder;
-};
+	return 0;
+}
 
-
-
-#endif //WG_ITEM_DOT_H

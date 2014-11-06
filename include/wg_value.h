@@ -39,7 +39,7 @@ class WgValueField;
 
 class WgValue;
 typedef	WgIStrongPtr<WgValue,WgInterfacePtr>	WgValuePtr;
-typedef	WgIWeakPtr<WgValue,WgInterfacePtr>		WgValueWeakPtr;
+typedef	WgIWeakPtr<WgValue,WgInterfaceWeakPtr>	WgValueWeakPtr;
 
 /**
  * @brief Interface to a basic value display field

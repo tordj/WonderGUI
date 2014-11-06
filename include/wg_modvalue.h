@@ -37,7 +37,7 @@ class WgCharBuffer;
 
 class WgModValue;
 typedef	WgIStrongPtr<WgModValue,WgValuePtr>	WgModValuePtr;
-typedef	WgIWeakPtr<WgModValue,WgValuePtr>	WgModValueWeakPtr;
+typedef	WgIWeakPtr<WgModValue,WgValueWeakPtr>	WgModValueWeakPtr;
 
 /**
  * @brief Interface to a value field where the value is modifiable through the api

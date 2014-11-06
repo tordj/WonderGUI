@@ -54,11 +54,11 @@ public:
 	static WgImagePtr	Cast( const WgObjectPtr& pObject );
 	
 
-	void				SetImage( const WgSurfacePtr& pSurface, const WgRect& rect );
-	void				SetImage( const WgSurfacePtr& pSurface );
+	void				SetImage( const WgSurfacePtr& pSurface, const WgRect& rect );	///< @brief Set image to display.
+	void				SetImage( const WgSurfacePtr& pSurface );						///< @brief Set image to display.
 
-	inline WgSurfacePtr	ImageSurface() const;
-	inline WgRect		ImageRect() const;
+	inline WgSurfacePtr	ImageSurface() const;											///< @brief Get surface of image displayed.
+	inline WgRect		ImageRect() const;												///< @brief Get area of surface rectangle of image displayed.
 
 	WgSize				PreferredSize() const;
 

@@ -262,6 +262,10 @@
     <File Name="include/wg_interface.h"/>
     <File Name="include/wg_columnheader.h"/>
     <File Name="source/wg_columnheader.cpp"/>
+    <File Name="include/wg_span.h"/>
+    <File Name="source/wg_span.cpp"/>
+    <File Name="include/wg_slidespan.h"/>
+    <File Name="source/wg_slidespan.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release"/>
   <Dependencies Name="Debug"/>
@@ -280,6 +284,8 @@
     <File Name="include/wg_item.h"/>
     <File Name="include/wg_columnheaderfield.h"/>
     <File Name="source/wg_columnheaderfield.cpp"/>
+    <File Name="include/wg_spanitem.h"/>
+    <File Name="source/wg_spanitem.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

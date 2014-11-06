@@ -55,7 +55,7 @@ typedef	WgWeakPtr<WgScrollbar,WgWidgetWeakPtr>		WgScrollbarWeakPtr;
  * The same scrollbar class is used for vertical and horizontal scrollbars with the orientation
  * setting deciding if scrollbar is displayed vertically or horizontally.
  *
- * Skinning a scrollbar is a little more complex since it consists of five individual skins. The first skin
+ * Skinning a scrollbar is a little more complex than a normal widget since it consists of five individual skins. The first skin
  * is the normal widget skin which encloses all components of the scrollbar. The two next skins are the skins
  * for the forward and backward buttons. The fourth skin is the "background skin" which fills the area between
  * the buttons in the header and the footer (the area the handle can move over). The fifth and final skin is
@@ -128,7 +128,7 @@ class	WgScrollbar : public WgWidget
 		void	SetFwdButtonSkin( const WgSkinPtr& pSkin );				///< @brief Set skin for backward button.
 
 
-		void	SetSkins( const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& pHandleSkin,
+		void	SetSkins( const WgSkinPtr& pBaseSkin, const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& pHandleSkin,
 						  const WgSkinPtr& pBwdButtonSkin, const WgSkinPtr& pFwdButtonSkin ); ///< @brief Set all skins in one go.
 		void	SetButtonLayout(  BtnLayout layout );				///< @brief Set the layout for the forward/backward buttons.
 
@@ -311,8 +311,8 @@ WgSkinPtr WgScrollbar::FwdButtonSkin() const
 /**
  * Get the layout of the scrollbar buttons
  *
- * The scrollbar can have a total of four button, one forward
- * and back button in the header and the same in the footer.
+ * The scrollbar can have a total of four buttons, one forward
+ * and backward button in the header and the same in the footer.
  *
  * ButtonLayout is essentially a bitmask specifying which of the
  * buttons are displayed.

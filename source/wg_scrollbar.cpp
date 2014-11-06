@@ -150,7 +150,7 @@ void WgScrollbar::SetBackgroundPressMode( BgPressMode mode )
  * The size of the handle will not get smaller than the skin of the
  * handle allows, but the value set is still the value later
  * returned by HandlePos(). A size of 1.0 means that the handle will cover
- * the whole background and make position useless.
+ * the whole background and make position void.
  *
  * The positon of the handle is independent of the size of the handle. A
  * position of 0.5 always positions the handle straight in the middle of its area.
@@ -177,7 +177,7 @@ void WgScrollbar::SetHandle( float _pos, float _size )
  *
  * @param	pos		Position of the handle in the range 0.0 -> 1.0.
  *
- * Position will be limited to its range before applied.
+ * Position is limited to its range before applied.
  * The positon of the handle is independent of the size of the handle. A
  * position of 0.5 always positions the handle straight in the middle of its area.
  *
@@ -201,6 +201,7 @@ void WgScrollbar::SetHandlePos( float pos )
  * @param	pos		Position of the handle, as a pixel offset from the start
  *					of the slider area.
  *
+ * Position is limited to its valid range before applied.
  * The scrollbar handle is moved so that it starts specified number of pixels
  * from the start of the slider area. The generated position is stored as as a
  * relative value, making it move to keep its relative position when the
@@ -237,6 +238,19 @@ void WgScrollbar::SetHandlePixelPos( int pos )
 }
 
 //____ SetHandleSize() ________________________________________________________
+/**
+ * Set relative size of scrollbar handle.
+ *
+ * @param	size		Size of the handle in the range 0.0001 -> 1.0.
+ *
+ * Size is limited to its range before applied.
+ *
+ * The size of the handle will not get smaller than the skin of the
+ * handle allows, but the value set is still the value later
+ * returned by HandlePos(). A size of 1.0 means that the handle will cover
+ * the whole background and make position void.
+ *
+ **/
 
 void WgScrollbar::SetHandleSize( float _size )
 {
@@ -251,10 +265,31 @@ void WgScrollbar::SetHandleSize( float _size )
 
 
 //____ SetSkins() ____________________________________________________________
+/**
+ * Set all skins in one go.
+ *
+ * @param pBaseSkin			The normal widget skin, enclosing all components.
+ * @param pBackgroundSkin	Background skin for the scrollbar handle area.
+ * @param pHandleSkin		Skin for the scrollbar handle.
+ * @param pBwdButtonSkin	Skin for the backward (up or left) button.
+ * @param pFwdButtonSkin	Skin for the forward (down or right) button.
+ *
+ * Skinning a scrollbar is a little more complex than a normal widget since it
+ * is built up by different components that needs to be skinned individually.
+ *
+ * These components are the forward and backward buttons, the area for the scrollbar
+ * handle to move over and the scrollbar handle itself. Additionally, the normal widget
+ * skin, which encloses all components is still available. This gives a total of five
+ * individual skins.
+ *
+ **/
 
-void WgScrollbar::SetSkins( const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& pHandleSkin, 
+
+void WgScrollbar::SetSkins( const WgSkinPtr& pBaseSkin, const WgSkinPtr& pBackgroundSkin,
+							const WgSkinPtr& pHandleSkin,
 							const WgSkinPtr& pBwdButtonSkin, const WgSkinPtr& pFwdButtonSkin )
 {
+	m_pSkin 		= pBaseSkin;
 	m_pBgSkin		= pBackgroundSkin;
 	m_pHandleSkin	= pHandleSkin;
 	m_pBtnFwdSkin	= pFwdButtonSkin;
@@ -266,6 +301,21 @@ void WgScrollbar::SetSkins( const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& p
 }
 
 //____ SetButtonLayout() ______________________________________________________
+/**
+ * Set the layout of the scrollbar buttons
+ *
+ * @param 	layout		Enum or bitmask specifying what buttons to show.
+ *
+ * The scrollbar can have a total of four buttons, a forward
+ * and backward button in the header and the same in the footer.
+ *
+ * ButtonLayout is essentially a bitmask specifying which of the
+ * buttons are displayed, so any combination can be achieved by
+ * combining different values.
+ *
+ * The default is one
+ *
+ **/
 
 void WgScrollbar::SetButtonLayout(  BtnLayout layout )
 {
