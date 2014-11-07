@@ -67,7 +67,7 @@ typedef	WgIWeakPtr<WgModText,WgTextWeakPtr>	WgModTextWeakPtr;
 class WgModText : public WgText
 {
 public:
-	WgModText( WgTextField * pField ) : WgText(pField) {};
+	WgModText( WgLegacyTextField * pField ) : WgText(pField) {};
 
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;

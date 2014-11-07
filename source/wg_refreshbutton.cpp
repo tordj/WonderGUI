@@ -324,7 +324,7 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 	// Print text
 
-	WgTextField * pText;
+	WgLegacyTextField * pText;
 
 	if( m_bRefreshing )
 		pText = &m_refreshText;

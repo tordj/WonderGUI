@@ -104,7 +104,7 @@ protected:
 	WgGfxAnimPtr	m_pRefreshAnim;
 	AnimTarget		m_animTarget;
 	RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
-	WgTextField		m_refreshText;
+	WgLegacyTextField		m_refreshText;
 	bool			m_bRestartable;
 
 	bool			m_bRefreshing;

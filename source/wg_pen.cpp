@@ -22,7 +22,7 @@
 
 #include <wg_pen.h>
 #include <wg_texttool.h>
-#include <wg_textfield.h>
+#include <wg_legacytextfield.h>
 #include <wg_font.h>
 #include <wg_caretinstance.h>
 #include <wg_gfxanim.h>

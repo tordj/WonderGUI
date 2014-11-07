@@ -26,8 +26,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef	WG_LEGACYTEXTFIELD_DOT_H
+#	include <wg_legacytextfield.h>
 #endif
 
 #ifndef WG_MODTEXT_DOT_H
@@ -49,7 +49,7 @@ typedef	WgWeakPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
  * A simple push button widget with label and icon.
  **/
 
-class WgButton : public WgWidget, protected WgIconHolder, protected WgTextHolder
+class WgButton : public WgWidget, protected WgIconHolder, protected WgLegacyTextHolder
 {
 public:
 	static WgButtonPtr	Create() { return WgButtonPtr(new WgButton()); }
@@ -96,7 +96,7 @@ protected:
 	void			_onFieldDirty( WgField * pField );
 	void 			_onFieldResize( WgField * pField );
 
-	WgTextField		m_text;
+	WgLegacyTextField		m_text;
 	WgIconField		m_icon;
 
 	bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?

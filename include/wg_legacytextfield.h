@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_TEXTFIELD_DOT_H
-#define WG_TEXTFIELD_DOT_H
+#ifndef	WG_LEGACYTEXTFIELD_DOT_H
+#define WG_LEGACYTEXTFIELD_DOT_H
 
 #ifndef	WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -60,18 +60,18 @@
 #endif
 
 class WgEventHandler;
-class WgTextField;
+class WgLegacyTextField;
 
-//____ WgTextHolder ___________________________________________________________
+//____ WgLegacyTextHolder ___________________________________________________________
 
-struct WgTextHolder : public WgFieldHolder
+struct WgLegacyTextHolder : public WgFieldHolder
 {
 };
 
 
-//_____ WgTextLine _____________________________________________________________
+//_____ WgLegacyTextLine _____________________________________________________________
 
-struct WgTextLine
+struct WgLegacyTextLine
 {
 	int		nChars;			// Number of characters on this line (not including break).
 	int		ofs;			// Offset in buffer for line.
@@ -87,14 +87,14 @@ struct WgTextLine
 	// HYPHEN_BREAK_PERMITTED_HERE: Gives additional hyphen when printed.
 };
 
-//____ WgTextField __________________________________________________________________
+//____ WgLegacyTextField __________________________________________________________________
 
-class WgTextField : public WgField
+class WgLegacyTextField : public WgField
 {
 
 public:
-	WgTextField( WgTextHolder * pHolder );
-	~WgTextField();
+	WgLegacyTextField( WgLegacyTextHolder * pHolder );
+	~WgLegacyTextField();
 
 	//
 
@@ -175,10 +175,10 @@ public:
 
 	//TODO: operator= should copy the whole object, not just the text.
 
-	inline void operator=( const WgTextField& t) { setText(&t); }; // Fastest order to do this in.
+	inline void operator=( const WgLegacyTextField& t) { setText(&t); }; // Fastest order to do this in.
 
-	void		setText( const WgTextField * pText );
-	void		clone( const WgTextField * pText );
+	void		setText( const WgLegacyTextField * pText );
+	void		clone( const WgLegacyTextField * pText );
 
 	int			addChar( const WgChar& character );
 	int			insertChar( int ofs, const WgChar& character );
@@ -192,14 +192,14 @@ public:
 	inline WgCharBuffer * getBuffer() { return &m_buffer; }
 	inline const WgCharBuffer * getBuffer() const { return &m_buffer; }
 
-	const WgTextLine *	getLines() const;
-	WgTextLine *		getLine( int line ) const;
+	const WgLegacyTextLine *	getLines() const;
+	WgLegacyTextLine *		getLine( int line ) const;
 	const WgChar * 		getLineText( int line ) const;
 	int					getLineWidth( int line ) const;
 	int					getLineOfsY( int line ) const;
 
-	const WgTextLine *	getSoftLines() const;
-	WgTextLine *		getSoftLine( int line ) const;
+	const WgLegacyTextLine *	getSoftLines() const;
+	WgLegacyTextLine *		getSoftLine( int line ) const;
 	const WgChar * 		getSoftLineText( int line ) const;
 	int					getSoftLineWidth( int line ) const;
 	int					getSoftLineWidthPart( int line, int startCol, int nCol = INT_MAX ) const;
@@ -245,7 +245,7 @@ public:
 
 	void				setValue( double value, const WgValueFormatPtr& pFormat );
 	void				setScaledValue( Sint64 value, Uint32 scale, const WgValueFormatPtr& pFormat );
-//	int				compareTo( const WgTextField * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
+//	int				compareTo( const WgLegacyTextField * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
 
 	WgSize				unwrappedSize() const;
 	int					unwrappedWidth() const;				// Width of text if no lines are wrapped.
@@ -377,7 +377,7 @@ public:
 
 protected:
 
-	WgTextHolder *	_holder() { return static_cast<WgTextHolder*>(m_pHolder); }
+	WgLegacyTextHolder *	_holder() { return static_cast<WgLegacyTextHolder*>(m_pHolder); }
 
 	static const int	s_parseBufLen = 9+16+1+16+8;
 	WgChar *		_parseValue( double value, const WgValueFormat * pFormat, WgChar[s_parseBufLen] );
@@ -386,10 +386,10 @@ protected:
 
 	void			_regenHardLines();		// regenerate the softlines-array (if necessary).
 	void			_regenSoftLines();		// regenerate the softlines-array (if necessary).
-	int 			_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLine * pWriteLines, int maxWrite ) const; // Central algorithm of regenSoftLines().
+	int 			_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgLegacyTextLine * pWriteLines, int maxWrite ) const; // Central algorithm of regenSoftLines().
 
 	void			_refreshAllLines();
-	void			_refreshLineInfo( WgTextLine * pLine ) const;
+	void			_refreshLineInfo( WgLegacyTextLine * pLine ) const;
 
 	int				_cursorMaxWidth() const;
 
@@ -424,8 +424,8 @@ protected:
 	WgTextpropPtr	m_pLinkProp;		// Props used for links, overriding certain text and char properties.
 	WgTextpropPtr	m_pSelectionProp;	// Props used for selected text, overriding certain text, char and link properties.
 
-	WgTextLine*		m_pHardLines;
-	WgTextLine*		m_pSoftLines;
+	WgLegacyTextLine*		m_pHardLines;
+	WgLegacyTextLine*		m_pSoftLines;
 
 	int				m_nSoftLines;
 	int				m_nHardLines;
@@ -439,8 +439,8 @@ protected:
 	bool			m_bWrap;
 	bool			m_bAutoEllipsis;	// Use ellipsis for text that doesn't fit.
 
-	static WgTextLine	g_emptyLine;
+	static WgLegacyTextLine	g_emptyLine;
 };
 
 
-#endif // WG_TEXTFIELD_DOT_H
+#endif // WG_LEGACYTEXTFIELD_DOT_H

@@ -23,7 +23,7 @@ typedef	WgWeakPtr<WgRulerLabels,WgWidgetWeakPtr>	WgRulerLabelsWeakPtr;
 
 //____ WgRulerLabels ____________________________________________________________
 
-class WgRulerLabels : public WgWidget, protected WgTextHolder
+class WgRulerLabels : public WgWidget, protected WgLegacyTextHolder
 {
 public:
 	static WgRulerLabelsPtr	Create() { return WgRulerLabelsPtr(new WgRulerLabels()); }
@@ -59,10 +59,10 @@ protected:
 	class Label : public WgLink
 	{
 	public:
-		Label(WgTextHolder*pHolder) : textField(pHolder), textInterface(&textField) {}
+		Label(WgLegacyTextHolder*pHolder) : textField(pHolder), textInterface(&textField) {}
 		LINK_METHODS(Label);
 		WgModText	textInterface;
-		WgTextField	textField;
+		WgLegacyTextField	textField;
 		float		offset;
 	};
 	

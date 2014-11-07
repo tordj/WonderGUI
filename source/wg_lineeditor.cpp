@@ -176,7 +176,7 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 {
 	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
-	WgTextField * pText = &m_text;
+	WgLegacyTextField * pText = &m_text;
 
 //TODO: Get password mode working again!
 /*
@@ -187,7 +187,7 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		for( int i = 0 ; i < nChars ; i++ )
 			pContent[i] = m_pwGlyph;
 		pContent[nChars] = 0;
-		pText = new WgTextField( pContent );
+		pText = new WgLegacyTextField( pContent );
 		delete [] pContent;
 
 		pText->SetWrap(false);

@@ -37,7 +37,7 @@
 #	include <wg_color.h>
 #endif
 
-class WgTextField;
+class WgLegacyTextField;
 class WgCharSeq;
 class WgPen;
 
@@ -48,7 +48,7 @@ class WgCaretInstance
 	friend class WgPen;
 public:
 
-	WgCaretInstance( WgTextField& text );
+	WgCaretInstance( WgLegacyTextField& text );
 
 	bool			incTime( int ms );
 	void			insertMode( bool bInsert );
@@ -94,7 +94,7 @@ public:
 	inline int		column() const;
 	inline int		time() const;
 
-	inline WgTextField *	text() const;
+	inline WgLegacyTextField *	text() const;
 
 	WgCaret::Mode	cursorMode() const;
 
@@ -111,7 +111,7 @@ protected:
 	void			_gotoPos( int line, int col );
 	void			_updateLocation(int line, int col);
 
-	WgTextField *		m_pText;
+	WgLegacyTextField *		m_pText;
 	bool			m_bHidden;
 	bool			m_bInsert;
 	bool			m_bSelectMode;
@@ -149,7 +149,7 @@ inline int WgCaretInstance::time() const
 
 //____ text() __________________________________________________________________
 
-inline WgTextField * WgCaretInstance::text() const
+inline WgLegacyTextField * WgCaretInstance::text() const
 {
 	return m_pText;
 }

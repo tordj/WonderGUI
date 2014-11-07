@@ -57,7 +57,7 @@
 
 class WgFont;
 class WgGlyphset;
-class WgTextField;
+class WgLegacyTextField;
 class WgChar;
 class WgCaretInstance;
 class WgResDB;
@@ -223,9 +223,9 @@ public:
 	static void			AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgState state = WG_STATE_NORMAL );
 //	static void			SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgState state = WG_STATE_NORMAL );
 
-	static WgCaretPtr		GetCursor( const WgTextField * pText );
-	static WgTextpropPtr	GetSelectionProperties( const WgTextField * pText );
-	static WgTextpropPtr	GetLinkProperties( const WgTextField * pText );
+	static WgCaretPtr		GetCursor( const WgLegacyTextField * pText );
+	static WgTextpropPtr	GetSelectionProperties( const WgLegacyTextField * pText );
+	static WgTextpropPtr	GetLinkProperties( const WgLegacyTextField * pText );
 
     static char *           itoa( int value, char * str, int base );
 

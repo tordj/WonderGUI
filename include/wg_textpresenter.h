@@ -37,20 +37,20 @@ public:
 	static const char			CLASSNAME[];
 	static WgTextPresenterPtr	Cast( const WgObjectPtr& pObject );
 
-	int		CoordToCharPos( WgTextField * pField, WgState state, WgRect canvas, WgCoord pos ) = 0;
-	int		CoordToCaretPos( WgTextField * pField, WgState state, WgRect canvas, WgCoord pos ) = 0;
+	int		CoordToCharPos( WgLegacyTextField * pField, WgState state, WgRect canvas, WgCoord pos ) = 0;
+	int		CoordToCaretPos( WgLegacyTextField * pField, WgState state, WgRect canvas, WgCoord pos ) = 0;
 
 
-	void 	RenderTextField( WgGfxDevice * pDevice, WgTextField * pText, WgRect canvas, WgRect clip ) = 0;
-	void 	RenderEditTextField( WgGfxDevice * pDevice, WgTextField * pText, WgRect canvas, WgRect clip ) = 0;
+	void 	RenderTextField( WgGfxDevice * pDevice, WgLegacyTextField * pText, WgRect canvas, WgRect clip ) = 0;
+	void 	RenderEditTextField( WgGfxDevice * pDevice, WgLegacyTextField * pText, WgRect canvas, WgRect clip ) = 0;
 
-	void	OnTextModified( WgTextField * pField, int ofs, int charsRemoved, int charsAdded, WgRect canvas, WgRect clip ) = 0;
-	void	OnFieldResize( WgTextField * pField, WgSize newSize );
-	void	OnStateChange( WgTextField * pField, WgState newState, WgState oldState );
+	void	OnTextModified( WgLegacyTextField * pField, int ofs, int charsRemoved, int charsAdded, WgRect canvas, WgRect clip ) = 0;
+	void	OnFieldResize( WgLegacyTextField * pField, WgSize newSize );
+	void	OnStateChange( WgLegacyTextField * pField, WgState newState, WgState oldState );
 
 	int		MoveCaret( int caretOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
 
-	WgSize	PreferredSize( WgTextField * pField );
+	WgSize	PreferredSize( WgLegacyTextField * pField );
 
 
 protected:
@@ -59,7 +59,7 @@ protected:
 };
 
 
-class WgTextField2
+class WgLegacyTextField2
 {
 	WgCharBuffer		m_text;
 	WgTextStylePtr		m_pStyle;

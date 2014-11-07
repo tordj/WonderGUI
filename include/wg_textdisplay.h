@@ -40,7 +40,7 @@ class WgTextDisplay;
 typedef	WgStrongPtr<WgTextDisplay,WgWidgetPtr>		WgTextDisplayPtr;
 typedef	WgWeakPtr<WgTextDisplay,WgWidgetWeakPtr>	WgTextDisplayWeakPtr;
 
-class WgTextDisplay:public WgWidget, protected WgTextHolder
+class WgTextDisplay:public WgWidget, protected WgLegacyTextHolder
 {
 public:
 	static WgTextDisplayPtr	Create() { return WgTextDisplayPtr(new WgTextDisplay()); }
@@ -96,7 +96,7 @@ private:
 	bool	_insertCharAtCursor( Uint16 c );
 
 
-	WgTextField			m_text;
+	WgLegacyTextField			m_text;
 	bool				m_bHasFocus;
 	int					m_maxLines;
 	bool				m_bResetCursorOnFocus;

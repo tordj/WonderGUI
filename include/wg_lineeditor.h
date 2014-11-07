@@ -41,7 +41,7 @@ typedef	WgWeakPtr<WgLineEditor,WgWidgetWeakPtr>	WgLineEditorWeakPtr;
 
 //____ WgLineEditor ____________________________________________________________
 
-class WgLineEditor : public WgWidget, protected WgTextHolder
+class WgLineEditor : public WgWidget, protected WgLegacyTextHolder
 {
 public:
 	static WgLineEditorPtr	Create() { return WgLineEditorPtr(new WgLineEditor()); }
@@ -95,7 +95,7 @@ private:
 
 	void	_adjustViewOfs();
 
-	WgTextField			m_text;
+	WgLegacyTextField			m_text;
 
 	bool				m_bResetCursorOnFocus;
 	bool				m_bPasswordMode;

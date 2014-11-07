@@ -37,7 +37,7 @@ class WgFpsDisplay;
 typedef	WgStrongPtr<WgFpsDisplay,WgWidgetPtr>		WgFpsDisplayPtr;
 typedef	WgWeakPtr<WgFpsDisplay,WgWidgetWeakPtr>	WgFpsDisplayWeakPtr;
 
-class WgFpsDisplay:public WgWidget, protected WgTextHolder
+class WgFpsDisplay:public WgWidget, protected WgLegacyTextHolder
 {
 public:
 	static WgFpsDisplayPtr	Create() { return WgFpsDisplayPtr(new WgFpsDisplay()); }
@@ -75,8 +75,8 @@ protected:
 
 private:
 
-	WgTextField	m_labelsText;
-	WgTextField	m_valuesText;
+	WgLegacyTextField	m_labelsText;
+	WgLegacyTextField	m_valuesText;
 	int *		m_pTickBuffer;
 	int			m_tickBufferOfs;
 

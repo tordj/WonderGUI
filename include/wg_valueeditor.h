@@ -48,7 +48,7 @@ class WgValueEditor;
 typedef	WgStrongPtr<WgValueEditor,WgWidgetPtr>		WgValueEditorPtr;
 typedef	WgWeakPtr<WgValueEditor,WgWidgetWeakPtr>	WgValueEditorWeakPtr;
 
-class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder, protected WgTextHolder
+class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder, protected WgLegacyTextHolder
 {
 public:
 	static WgValueEditorPtr	Create() { return WgValueEditorPtr(new WgValueEditor()); }
@@ -105,7 +105,7 @@ private:
 	bool				m_bRegenText;
 	WgValueFormatPtr	m_pFormat;			///< Value format specified by user
 	WgValueFormatPtr	m_pUseFormat;		///< Value format currently used (affected by user typing in values).
-	WgTextField			m_text;
+	WgLegacyTextField			m_text;
 	int					m_buttonDownOfs;
 	bool				m_bSelectAllOnRelease;
 	int					m_maxInputChars;

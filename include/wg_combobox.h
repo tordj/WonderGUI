@@ -45,7 +45,7 @@ class WgCombobox;
 typedef	WgStrongPtr<WgCombobox,WgWidgetPtr>		WgComboboxPtr;
 typedef	WgWeakPtr<WgCombobox,WgWidgetWeakPtr>	WgComboboxWeakPtr;
 
-class WgCombobox : public WgWidget, protected WgTextHolder
+class WgCombobox : public WgWidget, protected WgLegacyTextHolder
 {
 public:
 	static WgComboboxPtr	Create() { return WgComboboxPtr(new WgCombobox()); }
@@ -124,7 +124,7 @@ private:
 
 	WgMenuPtr		m_pMenu;
 	WgMenuItem*		m_pSelectedItem;
-	WgTextField		m_text;
+	WgLegacyTextField		m_text;
 	bool			m_bResetCursorOnFocus;
 	bool			m_bPressInInputRect;
 	bool			m_bFocusPress;

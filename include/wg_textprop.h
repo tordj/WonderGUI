@@ -60,7 +60,7 @@ class WgTextpropPtr
 {
 public:
 	friend class WgChar;
-	friend class WgTextField;
+	friend class WgLegacyTextField;
 	friend class WgPen;
 
 	WgTextpropPtr( WgTextpropHolder * pProp = 0 );

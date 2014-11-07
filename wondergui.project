@@ -272,8 +272,6 @@
   <Dependencies Name="Release"/>
   <Dependencies Name="Debug"/>
   <VirtualDirectory Name="Items">
-    <File Name="include/wg_textfield.h"/>
-    <File Name="source/wg_textfield.cpp"/>
     <File Name="include/wg_iconfield.h"/>
     <File Name="source/wg_iconfield.cpp"/>
     <File Name="include/wg_editvaluefield.h"/>
@@ -288,6 +286,8 @@
     <File Name="source/wg_columnheaderfield.cpp"/>
     <File Name="include/wg_spanitem.h"/>
     <File Name="source/wg_spanitem.cpp"/>
+    <File Name="include/wg_legacytextfield.h"/>
+    <File Name="source/wg_legacytextfield.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

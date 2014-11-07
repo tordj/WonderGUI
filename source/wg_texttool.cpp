@@ -31,7 +31,7 @@
 
 #include <wg_texttool.h>
 #include <wg_font.h>
-#include <wg_textfield.h>
+#include <wg_legacytextfield.h>
 #include <wg_textpropmanager.h>
 #include <wg_charseq.h>
 #include <wg_caretinstance.h>
@@ -2885,7 +2885,7 @@ void WgTextTool::SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, W
 
 //____ GetCursor() ____________________________________________________________
 
-WgCaretPtr WgTextTool::GetCursor( const WgTextField * pText )
+WgCaretPtr WgTextTool::GetCursor( const WgLegacyTextField * pText )
 {
 	WgCaretPtr p = pText->CursorSkin();
 	if( p )
@@ -2896,7 +2896,7 @@ WgCaretPtr WgTextTool::GetCursor( const WgTextField * pText )
 
 //____ GetSelectionProperties() _______________________________________________
 
-WgTextpropPtr WgTextTool::GetSelectionProperties( const WgTextField * pText )
+WgTextpropPtr WgTextTool::GetSelectionProperties( const WgLegacyTextField * pText )
 {
 	WgTextpropPtr p = pText->SelectionProperties();
 	if( p )
@@ -2907,7 +2907,7 @@ WgTextpropPtr WgTextTool::GetSelectionProperties( const WgTextField * pText )
 
 //____ GetLinkProperties() ____________________________________________________
 
-WgTextpropPtr WgTextTool::GetLinkProperties( const WgTextField * pText )
+WgTextpropPtr WgTextTool::GetLinkProperties( const WgLegacyTextField * pText )
 {
 	WgTextpropPtr p = pText->LinkProperties();
 	if( p )

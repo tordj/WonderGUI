@@ -127,8 +127,8 @@
 #	include <wg_surfacefactory.h>
 #endif
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_LEGACYTEXTFIELD_DOT_H
+#	include <wg_legacytextfield.h>
 #endif
 
 #ifndef WG_TEXTPROP_DOT_H

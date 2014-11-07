@@ -61,7 +61,7 @@ typedef	WgWeakPtr<WgToggleGroup,WgObjectWeakPtr>	WgToggleGroupWeakPtr;
  *
  **/
 
-class	WgToggleButton : public WgWidget, protected WgIconHolder, protected WgTextHolder
+class	WgToggleButton : public WgWidget, protected WgIconHolder, protected WgLegacyTextHolder
 {
 friend class WgToggleGroup;
 public:
@@ -134,7 +134,7 @@ private:
 	bool			m_bReturnPressed;
 	bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 
-	WgTextField		m_label;
+	WgLegacyTextField		m_label;
 	WgIconField		m_icon;
 	WgToggleGroupPtr	m_pToggleGroup;
 

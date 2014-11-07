@@ -30,7 +30,7 @@
 #	include <wg_pointers.h>
 #endif
 
-class WgTextField;
+class WgLegacyTextField;
 class WgCoord;
 
 class WgTextlink;

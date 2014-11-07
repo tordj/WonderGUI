@@ -25,7 +25,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_surface.h>
 #include <wg_geo.h>
-#include <wg_textfield.h>
+#include <wg_legacytextfield.h>
 #include <wg_caretinstance.h>
 #include <wg_font.h>
 #include <wg_gfxanim.h>
@@ -594,7 +594,7 @@ void WgGfxDevice::BlitVertBar(	const WgSurfacePtr& _pSurf, const WgRect& _src,
 
 //____ PrintText() ____________________________________________________________
 
-bool WgGfxDevice::PrintText( const WgRect& clip, const WgTextField * pText, const WgRect& dest )
+bool WgGfxDevice::PrintText( const WgRect& clip, const WgLegacyTextField * pText, const WgRect& dest )
 {
 	if( !pText || dest.w <= 0 )
 		return false;
@@ -634,7 +634,7 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgTextField * pText, cons
 	pos.y = pText->LineStartY( 0, dest ) + pText->getSoftLine(0)->baseline;
 
 	int					nLines = pText->nbSoftLines();
-	const WgTextLine *	pLines = pText->getSoftLines();
+	const WgLegacyTextLine *	pLines = pText->getSoftLines();
 
 	for( int i = 0 ; i < nLines ; i++ )
 	{
@@ -685,7 +685,7 @@ bool WgGfxDevice::PrintText( const WgRect& clip, const WgTextField * pText, cons
 
 //____ _printTextSpan() ________________________________________________________
 
-void WgGfxDevice::_printTextSpan( WgPen& pen, const WgTextField * pText, int ofs, int len, bool bLineEnding )
+void WgGfxDevice::_printTextSpan( WgPen& pen, const WgLegacyTextField * pText, int ofs, int len, bool bLineEnding )
 {
 	WgColor baseCol	= m_tintColor;
 	WgColor	color	= baseCol;
@@ -782,7 +782,7 @@ void WgGfxDevice::_printTextSpan( WgPen& pen, const WgTextField * pText, int ofs
 
 //____ _printEllipsisTextSpan() ________________________________________________________
 
-void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgTextField * pText, int ofs, int len, int endX )
+void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgLegacyTextField * pText, int ofs, int len, int endX )
 {
 	WgColor baseCol	= m_tintColor;
 	WgColor	color	= baseCol;
@@ -915,7 +915,7 @@ void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgTextField * pText,
 
 //____ _drawTextBg() ___________________________________________________________
 
-void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgTextField * pText, const WgRect& dest )
+void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgLegacyTextField * pText, const WgRect& dest )
 {
 	WgRect		clip(_clip,dest);		// Make sure clipping rect is inside dest.
 
@@ -995,10 +995,10 @@ void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgTextField * pText, c
 
 //____ _drawTextSectionBg() ___________________________________________________
 
-void WgGfxDevice::_drawTextSectionBg( const WgRect& clip, const WgTextField * pText, const WgRect& dstRect,
+void WgGfxDevice::_drawTextSectionBg( const WgRect& clip, const WgLegacyTextField * pText, const WgRect& dstRect,
 									  int iStartOfs, int iEndOfs, WgColor color )
 {
-	const WgTextLine *	pLines = pText->getSoftLines();
+	const WgLegacyTextLine *	pLines = pText->getSoftLines();
 
 	WgTextPos startPos = pText->OfsToPos( iStartOfs );
 	WgTextPos endPos = pText->OfsToPos( iEndOfs );
@@ -1131,7 +1131,7 @@ void WgGfxDevice::PrintLine( WgPen& pen, const WgTextAttr& baseAttr, const WgCha
 
 //____ _drawUnderline() ________________________________________________________
 
-void WgGfxDevice::_drawUnderline( const WgRect& clip, const WgTextField * pText, int _x, int _y, int ofs, int maxChars )
+void WgGfxDevice::_drawUnderline( const WgRect& clip, const WgLegacyTextField * pText, int _x, int _y, int ofs, int maxChars )
 {
 	Uint32 hProp = 0xFFFF;
 

@@ -123,7 +123,7 @@ protected:
 	virtual void	_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding ) = 0;
 	virtual void	_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso ) = 0;
 	void			_renderHeader( WgGfxDevice * pDevice, const WgRect& _window, const WgRect& _clip, 
-									const WgSkinPtr& pSkin, WgTextField * pText, WgIconField * pLabelIcon, 
+									const WgSkinPtr& pSkin, WgLegacyTextField * pText, WgIconField * pLabelIcon, 
 									WgIconField * pSortIcon, WgState state, bool bShowSortIcon, bool bInvertedSort );
 
 	WgSelectMode	m_selectMode;

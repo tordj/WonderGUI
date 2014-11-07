@@ -23,8 +23,8 @@
 #ifndef WG_TEXT_DOT_H
 #define WG_TEXT_DOT_H
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_LEGACYTEXTFIELD_DOT_H
+#	include <wg_legacytextfield.h>
 #endif
 
 #ifndef WG_INTERFACE_DOT_H
@@ -74,7 +74,7 @@ typedef	WgIWeakPtr<WgText,WgInterfaceWeakPtr>	WgTextWeakPtr;
 class WgText : public WgInterface
 {
 public:
-	WgText( WgTextField * pField ) : m_pField(pField) {};
+	WgText( WgLegacyTextField * pField ) : m_pField(pField) {};
 
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;
@@ -117,7 +117,7 @@ public:
 protected:
 	WgObject *				_object() const;
 
-	WgTextField * 			m_pField;
+	WgLegacyTextField * 			m_pField;
 };
 
 

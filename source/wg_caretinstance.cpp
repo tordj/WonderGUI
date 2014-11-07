@@ -23,8 +23,8 @@
 
 #include <wg_caretinstance.h>
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_LEGACYTEXTFIELD_DOT_H
+#	include <wg_legacytextfield.h>
 #endif
 
 #ifndef WG_TEXTTOOL_DOT_H
@@ -39,7 +39,7 @@
 
 //____ Constructor() __________________________________________________________
 
-WgCaretInstance::WgCaretInstance( WgTextField& text )
+WgCaretInstance::WgCaretInstance( WgLegacyTextField& text )
 {
 	m_pText 		= &text;
 	m_bHidden		= true;
