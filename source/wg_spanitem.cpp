@@ -24,29 +24,29 @@
 
 WgSpanItem::WgSpanItem( WgSpanHolder * pHolder ) : WgItem( pHolder )
 {
-	m_min = MIN;
-	m_max = MAX;
-	m_begin = 0;
-	m_length = 1;
+	min = MIN;
+	max = MAX;
+	begin = 0;
+	length = 0;
 }
 
 
-bool WgSpanItem::SetMin( int min )
+bool WgSpanItem::SetMin( int _min )
 {
-	if( min < MIN || min > MAX )
+	if( _min < MIN || _min > MAX )
 		return false;
 
-	if( m_min != min )
+	if( min != _min )
 	{
-		m_min = min;
-		if( m_max < m_min )
-			m_max = MAX;
+		min = _min;
+		if( max < min )
+			max = MAX;
 
-		if( m_begin < min )
+		if( begin < min )
 		{
-			m_begin = min;
-			if( m_length < m_max - min )
-				m_length = m_max - min;
+			begin = min;
+			if( length < max - min )
+				length = max - min;
 		}
 
 		_onModified();
@@ -54,23 +54,23 @@ bool WgSpanItem::SetMin( int min )
 	return true;
 }
 
-bool WgSpanItem::SetMax( int max )
+bool WgSpanItem::SetMax( int _max )
 {
-	if( max < MIN || max > MAX )
+	if( _max < MIN || _max > MAX )
 		return false;
 
-	if( m_max != max )
+	if( max != _max )
 	{
-		m_max = max;
-		if( m_max < m_min )
-			m_min = MIN;
+		max = _max;
+		if( max < min )
+			min = MIN;
 
-		if( m_begin + m_length > m_max )
+		if( begin + length > max )
 		{
-			if( m_length > m_max - m_min )
-				m_length = m_max - m_min;
+			if( length > max - min )
+				length = max - min;
 
-			m_begin = m_max - m_length;
+			begin = max - length;
 		}
 
 		_onModified();
@@ -78,124 +78,124 @@ bool WgSpanItem::SetMax( int max )
 	return true;
 }
 
-bool WgSpanItem::SetRange( int min, int max )
+bool WgSpanItem::SetRange( int _min, int _max )
 {
-	if( min > max || min < MIN || max > MAX )
+	if( _min > _max || _min < MIN || _max > MAX )
 		return false;
 
-	if( m_min != min || m_max != max )
+	if( min != _min || max != _max )
 	{
-		m_min = min;
-		m_max = max;
+		min = _min;
+		max = _max;
 
-		if( m_length > m_max - m_min )
-			m_length = m_max - m_min;
+		if( length > max - min )
+			length = max - min;
 
-		if( m_begin < m_min )
-			m_begin = m_min;
+		if( begin < min )
+			begin = min;
 
-		if( m_begin + m_length > m_max )
-			m_begin = m_max - m_length;
+		if( begin + length > max )
+			begin = max - length;
 
 		_onModified();
 	}
 	return true;
 }
 
-void WgSpanItem::SetSpan( int begin, int length )
+void WgSpanItem::SetSpan( int _begin, int _length )
 {
-	if( length > m_max - m_min )
-		length = m_max - m_min;
+	if( _length > max - min )
+		_length = max - min;
 
-	if( begin + length > m_max )
-		begin = m_max - length;
+	if( _begin + _length > max )
+		_begin = max - _length;
 
-	if( begin < m_min )
-		begin = m_min;
+	if( _begin < min )
+		_begin = min;
 
-	if( m_begin != begin || m_length != length )
+	if( begin != _begin || length != _length )
 	{
-		m_begin = begin;
-		m_length = length;
+		begin = _begin;
+		length = _length;
 		_onModified();
 	}
 }
 
-void WgSpanItem::SetBegin( int begin )
+void WgSpanItem::SetBegin( int _begin )
 {
-	if( begin < m_min )
-		begin = m_min;
-	else if( begin + m_length > m_max )
-		begin = m_max - m_length;
+	if( _begin < min )
+		_begin = min;
+	else if( _begin + length > max )
+		_begin = max - length;
 
-	if( m_begin != begin )
+	if( begin != _begin )
 	{
-		m_begin = begin;
+		begin = _begin;
 		_onModified();
 	}
 }
 
-void WgSpanItem::SetLength( int length )
+void WgSpanItem::SetLength( int _length )
 {
-	if( length > m_max - m_min )
-		length = m_max - m_min;
+	if( _length > max - min )
+		_length = max - min;
 
-	if( m_begin + length > m_max )
-		m_begin = m_max - length;
+	if( begin + _length > max )
+		begin = max - _length;
 
-	if( m_length != length )
+	if( length != _length )
 	{
-		m_length = length;
+		length = _length;
 		_onModified();
 	}
 }
 
-void WgSpanItem::SetRelativeSpan( float begin, float length )
+void WgSpanItem::SetRelativeSpan( float _begin, float _length )
 {
-	int range = m_max - m_min;
-	SetSpan( m_min + (int) (begin*range), (int) length*range );
+	int range = max - min;
+	SetSpan( min + (int) (_begin*range), (int) _length*range );
 }
 
-void WgSpanItem::SetRelativePos( float pos )
+void WgSpanItem::SetRelativePos( float _pos )
 {
-	int range = m_max - m_min;
-	SetBegin( m_min + (int) ((pos*range*2)- m_length)/2 );
+	int range = max - min;
+	SetBegin( min + (int) ((_pos*range*2)- length)/2 );
 }
 
-void WgSpanItem::SetRelativeBegin( float begin )
+void WgSpanItem::SetRelativeBegin( float _begin )
 {
-	int range = m_max - m_min;
-	SetBegin( m_min + (int) (begin*range) );
+	int range = max - min;
+	SetBegin( min + (int) (_begin*range) );
 }
 
-void WgSpanItem::SetRelativeLength( float length )
-{	int range = m_max - m_min;
-	SetLength( (int) length*range );
+void WgSpanItem::SetRelativeLength( float _length )
+{	int range = max - min;
+	SetLength( (int) _length*range );
 }
 
 bool WgSpanItem::StepForward()
 {
-	int beg = m_begin;
+	int beg = begin;
 	SetBegin( beg + _stepSize() );
-	return beg != m_begin;
+	return beg != begin;
 }
 
 bool WgSpanItem::StepBackward()
-{	int beg = m_begin;
+{	int beg = begin;
 	SetBegin( beg - _stepSize() );
-	return beg != m_begin;
+	return beg != begin;
 }
 
 bool WgSpanItem::SkipForward()
 {
-	int beg = m_begin;
+	int beg = begin;
 	SetBegin( beg + _skipSize() );
-	return beg != m_begin;
+	return beg != begin;
 }
 
 bool WgSpanItem::SkipBackward()
 {
-	int beg = m_begin;
+	int beg = begin;
 	SetBegin( beg - _skipSize() );
-	return beg != m_begin;
+	return beg != begin;
 }

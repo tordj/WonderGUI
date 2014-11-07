@@ -51,10 +51,10 @@ public:
 	static WgSpanPtr			Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
 	inline WgSpanPtr			Ptr() { return WgSpanPtr(_object(),this); }
 
-	inline int		Min() const { return m_pItem->Min(); }
-	inline int		Max() const { return m_pItem->Max(); }
-	inline int 		Begin() const { return m_pItem->Begin(); }
-	inline int		Length() const { return m_pItem->Length(); }
+	inline int		Min() const { return m_pItem->min; }
+	inline int		Max() const { return m_pItem->max; }
+	inline int 		Begin() const { return m_pItem->begin; }
+	inline int		Length() const { return m_pItem->length; }
 
 	inline float	RelativePos() const { return m_pItem->RelativePos(); }
 	inline float	RelativeBegin() const { return m_pItem->RelativeBegin(); }

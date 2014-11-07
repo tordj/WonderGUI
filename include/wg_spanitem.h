@@ -65,28 +65,27 @@ public:
 	bool	SkipForward();
 	bool	SkipBackward();
 
-	inline int		Min() const { return m_min; }
-	inline int		Max() const { return m_max; }
-	inline int 		Begin() const { return m_begin; }
-	inline int		Length() const { return m_length; }
-
-	inline float	RelativePos() const { return (m_begin+m_length/2)/(float)(m_max-m_min); }
-	inline float	RelativeBegin() const { return m_begin/(float)(m_max-m_min); }
-	inline float	RelativeLength() const { return m_length/(float)(m_max-m_min); };
+	inline float	RelativePos() const { return (begin+length/2)/(float)(max-min); }
+	inline float	RelativeBegin() const { return begin/(float)(max-min); }
+	inline float	RelativeLength() const { return length/(float)(max-min); };
 
 
 	const static int	MAX = 0x00FFFFFF;
 	const static int	MIN = 0xFF000000;
+
+	// Directly accessible for holder.
+
+	int		min;
+	int		max;
+
+	int		begin;
+	int		length;
+
+
 protected:
 	void	_onModified() { static_cast<WgSpanHolder*>(m_pHolder)->_onSpanModified(this); }
 	int		_stepSize() { static_cast<WgSpanHolder*>(m_pHolder)->_spanStepSize(this); }
 	int		_skipSize() { static_cast<WgSpanHolder*>(m_pHolder)->_spanSkipSize(this); }
-
-	int		m_min;
-	int		m_max;
-
-	int		m_begin;
-	int		m_length;
 };
 
 
