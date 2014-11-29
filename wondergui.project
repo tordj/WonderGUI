@@ -288,6 +288,8 @@
     <File Name="source/wg_spanitem.cpp"/>
     <File Name="include/wg_legacytextfield.h"/>
     <File Name="source/wg_legacytextfield.cpp"/>
+    <File Name="include/wg_textfield.h"/>
+    <File Name="source/wg_textfield.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

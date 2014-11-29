@@ -24,6 +24,8 @@
 #define	WG_TEXTPRESENTER_DOT_H
 
 
+class WgTextField;
+class WgEditTextField;
 
 class WgTextPresenter;
 typedef	WgStrongPtr<WgTextPresenter,WgObjectPtr>	WgTextPresenterPtr;
@@ -37,20 +39,25 @@ public:
 	static const char			CLASSNAME[];
 	static WgTextPresenterPtr	Cast( const WgObjectPtr& pObject );
 
-	int		CoordToCharPos( WgLegacyTextField * pField, WgState state, WgRect canvas, WgCoord pos ) = 0;
-	int		CoordToCaretPos( WgLegacyTextField * pField, WgState state, WgRect canvas, WgCoord pos ) = 0;
+	int		CoordToChar( WgTextField * pField, WgCoord pos ) = 0;
+	WgRect	CharToRect( WgTextField * pField, int charOfs ) = 0;
+
+	int		CoordToCaretPos( WgTextField * pField, WgCoord pos ) = 0;
 
 
-	void 	RenderTextField( WgGfxDevice * pDevice, WgLegacyTextField * pText, WgRect canvas, WgRect clip ) = 0;
-	void 	RenderEditTextField( WgGfxDevice * pDevice, WgLegacyTextField * pText, WgRect canvas, WgRect clip ) = 0;
 
-	void	OnTextModified( WgLegacyTextField * pField, int ofs, int charsRemoved, int charsAdded, WgRect canvas, WgRect clip ) = 0;
-	void	OnFieldResize( WgLegacyTextField * pField, WgSize newSize );
-	void	OnStateChange( WgLegacyTextField * pField, WgState newState, WgState oldState );
+	void 	RenderTextField( WgTextField * pText, WgGfxDevice * pDevice, WgRect canvas, WgRect clip ) = 0;
+	void 	RenderEditTextField( WgEditTextField * pText, WgGfxDevice * pDevice, WgRect canvas, WgRect clip ) = 0;
 
-	int		MoveCaret( int caretOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
+	void	OnTextModified( WgTextField * pField, int ofs, int charsRemoved, int charsAdded, WgRect canvas, WgRect clip ) = 0;
+	void	OnFieldResize( WgTextField * pField, WgSize newSize );
+	void	OnStateChange( WgTextField * pField, WgState newState, WgState oldState );
 
-	WgSize	PreferredSize( WgLegacyTextField * pField );
+	int		MoveCaret( WgTextField * pField, int caretOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
+
+	WgSize	PreferredSize( WgTextField * pField );
+	int		MatchingWidth( int height ) const;
+	int		MatchingHeight( int width ) const;
 
 
 protected:
@@ -59,15 +66,6 @@ protected:
 };
 
 
-class WgLegacyTextField2
-{
-	WgCharBuffer		m_text;
-	WgTextStylePtr		m_pStyle;
-	WgTextPresenterPtr	m_pPresenter;
-	void *				m_pPresenterData;
-	WgSize				m_size;
-	WgState				m_state;
-};
 
 
 #endif //WG_TEXTPRESENTER_DOT_H

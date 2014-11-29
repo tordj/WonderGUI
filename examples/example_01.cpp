@@ -75,7 +75,7 @@ int main ( int argc, char** argv )
 	else if( pWinSurf->format->BitsPerPixel == 24 )
 		type = WG_PIXEL_RGB_8;
 		
-	WgSoftSurfacePtr pCanvas = WgSoftSurface::Create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch );
+	WgSoftSurfacePtr pCanvas = WgSoftSurface::Create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
 
 	// Wg create the GfxDevice that will be used for all rendering, providing
 	// it our canvas to draw up.
@@ -97,7 +97,7 @@ int main ( int argc, char** argv )
 	// No error handling or such to keep this example short and simple.
 
 	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../resources/simple_button.bmp" );
-	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch );
+	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 
 	// First we create and add a FlexPanel to the RootPanel.
 	// The RootPanel can only take one child, but the FlexPanel
@@ -131,7 +131,7 @@ int main ( int argc, char** argv )
 
 	// Finally we add a callback to the click-event of the button.
 
-	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(pButton), myButtonClickCallback );
+	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(), myButtonClickCallback );
 	
 
 	//------------------------------------------------------
