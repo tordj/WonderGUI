@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="wondergui" Database="">
+  <Project Name="wondergui" Path="wondergui.project" Active="No"/>
+  <Project Name="workbench" Path="workbench.project" Active="Yes"/>
+  <Project Name="gfxdevice_software" Path="gfxdevice_software.project" Active="No"/>
+  <Project Name="example_01" Path="example_01.project" Active="No"/>
+  <Environment>
+    <![CDATA[]]>
+  </Environment>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Project Name="wondergui" ConfigName="Debug"/>
+      <Project Name="workbench" ConfigName="Debug"/>
+      <Project Name="gfxdevice_software" ConfigName="Debug"/>
+      <Project Name="example_01" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="no">
+      <Project Name="wondergui" ConfigName="Release"/>
+      <Project Name="workbench" ConfigName="Release"/>
+      <Project Name="gfxdevice_software" ConfigName="Release"/>
+      <Project Name="example_01" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

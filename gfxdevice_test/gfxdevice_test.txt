@@ -1,1 +1,0 @@
-./Debug/main.o ./Debug/extras_sdl_wglib.o

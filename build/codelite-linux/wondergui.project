@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="wondergui" InternalType="Library">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+    </Plugin>
+    <Plugin Name="CMakePlugin">
+      <![CDATA[[{
+  "name": "Debug",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }]]]>
+    </Plugin>
+  </Plugins>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="widgets">
+    <File Name="../../src/widgets/wg_animplayer.cpp"/>
+    <File Name="../../src/widgets/wg_animplayer.h"/>
+    <File Name="../../src/widgets/wg_button.cpp"/>
+    <File Name="../../src/widgets/wg_button.h"/>
+    <File Name="../../src/widgets/wg_combobox.cpp"/>
+    <File Name="../../src/widgets/wg_combobox.h"/>
+    <File Name="../../src/widgets/wg_container.cpp"/>
+    <File Name="../../src/widgets/wg_container.h"/>
+    <File Name="../../src/widgets/wg_filler.cpp"/>
+    <File Name="../../src/widgets/wg_filler.h"/>
+    <File Name="../../src/widgets/wg_fpsdisplay.cpp"/>
+    <File Name="../../src/widgets/wg_fpsdisplay.h"/>
+    <File Name="../../src/widgets/wg_image.cpp"/>
+    <File Name="../../src/widgets/wg_image.h"/>
+    <File Name="../../src/widgets/wg_knob.cpp"/>
+    <File Name="../../src/widgets/wg_knob.h"/>
+    <File Name="../../src/widgets/wg_lineeditor.cpp"/>
+    <File Name="../../src/widgets/wg_lineeditor.h"/>
+    <File Name="../../src/widgets/wg_menu.cpp"/>
+    <File Name="../../src/widgets/wg_menu.h"/>
+    <File Name="../../src/widgets/wg_menubar.cpp"/>
+    <File Name="../../src/widgets/wg_menubar.h"/>
+    <File Name="../../src/widgets/wg_oscilloscope.cpp"/>
+    <File Name="../../src/widgets/wg_oscilloscope.h"/>
+    <File Name="../../src/widgets/wg_refreshbutton.cpp"/>
+    <File Name="../../src/widgets/wg_refreshbutton.h"/>
+    <File Name="../../src/widgets/wg_rulerlabels.cpp"/>
+    <File Name="../../src/widgets/wg_rulerlabels.h"/>
+    <File Name="../../src/widgets/wg_scrollbar.cpp"/>
+    <File Name="../../src/widgets/wg_scrollbar.h"/>
+    <File Name="../../src/widgets/wg_simplevolumemeter.cpp"/>
+    <File Name="../../src/widgets/wg_simplevolumemeter.h"/>
+    <File Name="../../src/widgets/wg_switch.cpp"/>
+    <File Name="../../src/widgets/wg_switch.h"/>
+    <File Name="../../src/widgets/wg_textdisplay.cpp"/>
+    <File Name="../../src/widgets/wg_textdisplay.h"/>
+    <File Name="../../src/widgets/wg_togglebutton.cpp"/>
+    <File Name="../../src/widgets/wg_togglebutton.h"/>
+    <File Name="../../src/widgets/wg_valuedisplay.cpp"/>
+    <File Name="../../src/widgets/wg_valuedisplay.h"/>
+    <File Name="../../src/widgets/wg_valueeditor.cpp"/>
+    <File Name="../../src/widgets/wg_valueeditor.h"/>
+    <File Name="../../src/widgets/wg_volumemeter.cpp"/>
+    <File Name="../../src/widgets/wg_volumemeter.h"/>
+    <File Name="../../src/widgets/wg_widget.cpp"/>
+    <File Name="../../src/widgets/wg_widget.h"/>
+    <VirtualDirectory Name="capsules">
+      <File Name="../../src/widgets/capsules/wg_capsule.cpp"/>
+      <File Name="../../src/widgets/capsules/wg_capsule.h"/>
+      <File Name="../../src/widgets/capsules/wg_shadercapsule.cpp"/>
+      <File Name="../../src/widgets/capsules/wg_shadercapsule.h"/>
+      <File Name="../../src/widgets/capsules/wg_sizecapsule.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="panels">
+      <File Name="../../src/widgets/panels/wg_flexpanel.cpp"/>
+      <File Name="../../src/widgets/panels/wg_flexpanel.h"/>
+      <File Name="../../src/widgets/panels/wg_packpanel.cpp"/>
+      <File Name="../../src/widgets/panels/wg_packpanel.h"/>
+      <File Name="../../src/widgets/panels/wg_panel.cpp"/>
+      <File Name="../../src/widgets/panels/wg_panel.h"/>
+      <File Name="../../src/widgets/panels/wg_rootpanel.cpp"/>
+      <File Name="../../src/widgets/panels/wg_rootpanel.h"/>
+      <File Name="../../src/widgets/panels/wg_scrollpanel.cpp"/>
+      <File Name="../../src/widgets/panels/wg_scrollpanel.h"/>
+      <File Name="../../src/widgets/panels/wg_stackpanel.cpp"/>
+      <File Name="../../src/widgets/panels/wg_stackpanel.h"/>
+      <File Name="../../src/widgets/panels/wg_vectorpanel.cpp"/>
+      <File Name="../../src/widgets/panels/wg_vectorpanel.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="lists">
+      <File Name="../../src/widgets/lists/wg_list.cpp"/>
+      <File Name="../../src/widgets/lists/wg_list.h"/>
+      <File Name="../../src/widgets/lists/wg_packlist.cpp"/>
+      <File Name="../../src/widgets/lists/wg_packlist.h"/>
+      <File Name="../../src/widgets/lists/wg_tablelist.cpp" ExcludeProjConfig="Debug;Release"/>
+      <File Name="../../src/widgets/lists/wg_tablelist.h" ExcludeProjConfig="Debug;Release"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="layers">
+      <File Name="../../src/widgets/layers/wg_layer.cpp"/>
+      <File Name="../../src/widgets/layers/wg_layer.h"/>
+      <File Name="../../src/widgets/layers/wg_modallayer.cpp"/>
+      <File Name="../../src/widgets/layers/wg_modallayer.h"/>
+      <File Name="../../src/widgets/layers/wg_popuplayer.cpp"/>
+      <File Name="../../src/widgets/layers/wg_popuplayer.h"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="items">
+    <File Name="../../src/items/wg_columnheaderfield.cpp"/>
+    <File Name="../../src/items/wg_columnheaderfield.h"/>
+    <File Name="../../src/items/wg_editvaluefield.cpp"/>
+    <File Name="../../src/items/wg_editvaluefield.h"/>
+    <File Name="../../src/items/wg_field.h"/>
+    <File Name="../../src/items/wg_iconfield.cpp"/>
+    <File Name="../../src/items/wg_iconfield.h"/>
+    <File Name="../../src/items/wg_item.h"/>
+    <File Name="../../src/items/wg_legacytextfield.cpp"/>
+    <File Name="../../src/items/wg_legacytextfield.h"/>
+    <File Name="../../src/items/wg_modvaluefield.cpp"/>
+    <File Name="../../src/items/wg_modvaluefield.h"/>
+    <File Name="../../src/items/wg_spanitem.cpp"/>
+    <File Name="../../src/items/wg_spanitem.h"/>
+    <File Name="../../src/items/wg_textfield.cpp"/>
+    <File Name="../../src/items/wg_textfield.h"/>
+    <File Name="../../src/items/wg_valuefield.cpp"/>
+    <File Name="../../src/items/wg_valuefield.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="interfaces">
+    <File Name="../../src/interfaces/wg_columnheader.cpp"/>
+    <File Name="../../src/interfaces/wg_columnheader.h"/>
+    <File Name="../../src/interfaces/wg_edittext.cpp"/>
+    <File Name="../../src/interfaces/wg_edittext.h"/>
+    <File Name="../../src/interfaces/wg_editvalue.cpp"/>
+    <File Name="../../src/interfaces/wg_editvalue.h"/>
+    <File Name="../../src/interfaces/wg_icon.cpp"/>
+    <File Name="../../src/interfaces/wg_icon.h"/>
+    <File Name="../../src/interfaces/wg_interface.cpp"/>
+    <File Name="../../src/interfaces/wg_interface.h"/>
+    <File Name="../../src/interfaces/wg_iwidgets.cpp"/>
+    <File Name="../../src/interfaces/wg_iwidgets.h"/>
+    <File Name="../../src/interfaces/wg_modspan.cpp"/>
+    <File Name="../../src/interfaces/wg_modspan.h"/>
+    <File Name="../../src/interfaces/wg_modtext.cpp"/>
+    <File Name="../../src/interfaces/wg_modtext.h"/>
+    <File Name="../../src/interfaces/wg_modvalue.cpp"/>
+    <File Name="../../src/interfaces/wg_modvalue.h"/>
+    <File Name="../../src/interfaces/wg_slidespan.cpp"/>
+    <File Name="../../src/interfaces/wg_slidespan.h"/>
+    <File Name="../../src/interfaces/wg_span.cpp"/>
+    <File Name="../../src/interfaces/wg_span.h"/>
+    <File Name="../../src/interfaces/wg_text.cpp"/>
+    <File Name="../../src/interfaces/wg_text.h"/>
+    <File Name="../../src/interfaces/wg_value.cpp"/>
+    <File Name="../../src/interfaces/wg_value.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="skins">
+    <File Name="../../src/skins/wg_blockskin.cpp"/>
+    <File Name="../../src/skins/wg_blockskin.h"/>
+    <File Name="../../src/skins/wg_boxskin.cpp"/>
+    <File Name="../../src/skins/wg_boxskin.h"/>
+    <File Name="../../src/skins/wg_colorskin.cpp"/>
+    <File Name="../../src/skins/wg_colorskin.h"/>
+    <File Name="../../src/skins/wg_extendedskin.cpp"/>
+    <File Name="../../src/skins/wg_extendedskin.h"/>
+    <File Name="../../src/skins/wg_skin.cpp"/>
+    <File Name="../../src/skins/wg_skin.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="sizebrokers">
+    <File Name="../../src/sizebrokers/wg_scalepreferred_sizebroker.cpp"/>
+    <File Name="../../src/sizebrokers/wg_scalepreferred_sizebroker.h"/>
+    <File Name="../../src/sizebrokers/wg_sizebroker.cpp"/>
+    <File Name="../../src/sizebrokers/wg_sizebroker.h"/>
+    <File Name="../../src/sizebrokers/wg_uniform_sizebroker.cpp"/>
+    <File Name="../../src/sizebrokers/wg_uniform_sizebroker.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="base">
+    <File Name="../../src/base/wg_anim.cpp"/>
+    <File Name="../../src/base/wg_anim.h"/>
+    <File Name="../../src/base/wg_base.cpp"/>
+    <File Name="../../src/base/wg_base.h"/>
+    <File Name="../../src/base/wg_bitmapglyphs.cpp"/>
+    <File Name="../../src/base/wg_bitmapglyphs.h"/>
+    <File Name="../../src/base/wg_blob.cpp"/>
+    <File Name="../../src/base/wg_blob.h"/>
+    <File Name="../../src/base/wg_caret.cpp"/>
+    <File Name="../../src/base/wg_caret.h"/>
+    <File Name="../../src/base/wg_caret2.cpp"/>
+    <File Name="../../src/base/wg_caret2.h"/>
+    <File Name="../../src/base/wg_caretinstance.cpp"/>
+    <File Name="../../src/base/wg_caretinstance.h"/>
+    <File Name="../../src/base/wg_chain.cpp"/>
+    <File Name="../../src/base/wg_chain.h"/>
+    <File Name="../../src/base/wg_char.cpp"/>
+    <File Name="../../src/base/wg_char.h"/>
+    <File Name="../../src/base/wg_charbuffer.cpp"/>
+    <File Name="../../src/base/wg_charbuffer.h"/>
+    <File Name="../../src/base/wg_charseq.cpp"/>
+    <File Name="../../src/base/wg_charseq.h"/>
+    <File Name="../../src/base/wg_codepages.cpp"/>
+    <File Name="../../src/base/wg_codepages.h"/>
+    <File Name="../../src/base/wg_color.cpp"/>
+    <File Name="../../src/base/wg_color.h"/>
+    <File Name="../../src/base/wg_event.cpp"/>
+    <File Name="../../src/base/wg_event.h"/>
+    <File Name="../../src/base/wg_eventfilter.cpp"/>
+    <File Name="../../src/base/wg_eventfilter.h"/>
+    <File Name="../../src/base/wg_eventhandler.cpp"/>
+    <File Name="../../src/base/wg_eventhandler.h"/>
+    <File Name="../../src/base/wg_eventlogger.cpp"/>
+    <File Name="../../src/base/wg_eventlogger.h"/>
+    <File Name="../../src/base/wg_finalizer.cpp"/>
+    <File Name="../../src/base/wg_finalizer.h"/>
+    <File Name="../../src/base/wg_font.cpp"/>
+    <File Name="../../src/base/wg_font.h"/>
+    <File Name="../../src/base/wg_geo.cpp"/>
+    <File Name="../../src/base/wg_geo.h"/>
+    <File Name="../../src/base/wg_gfxanim.cpp"/>
+    <File Name="../../src/base/wg_gfxanim.h"/>
+    <File Name="../../src/base/wg_gfxdevice.cpp"/>
+    <File Name="../../src/base/wg_gfxdevice.h"/>
+    <File Name="../../src/base/wg_glyphset.cpp"/>
+    <File Name="../../src/base/wg_glyphset.h"/>
+    <File Name="../../src/base/wg_hook.cpp"/>
+    <File Name="../../src/base/wg_hook.h"/>
+    <File Name="../../src/base/wg_hookarray.h"/>
+    <File Name="../../src/base/wg_hookptr.cpp"/>
+    <File Name="../../src/base/wg_hookptr.h"/>
+    <File Name="../../src/base/wg_interface_valueholder.cpp"/>
+    <File Name="../../src/base/wg_interface_valueholder.h"/>
+    <File Name="../../src/base/wg_key.h"/>
+    <File Name="../../src/base/wg_mempool.cpp"/>
+    <File Name="../../src/base/wg_mempool.h"/>
+    <File Name="../../src/base/wg_memstack.cpp"/>
+    <File Name="../../src/base/wg_memstack.h"/>
+    <File Name="../../src/base/wg_menuitem.cpp"/>
+    <File Name="../../src/base/wg_menuitem.h"/>
+    <File Name="../../src/base/wg_nullgfxdevice.cpp"/>
+    <File Name="../../src/base/wg_nullgfxdevice.h"/>
+    <File Name="../../src/base/wg_object.cpp"/>
+    <File Name="../../src/base/wg_object.h"/>
+    <File Name="../../src/base/wg_patches.cpp"/>
+    <File Name="../../src/base/wg_patches.h"/>
+    <File Name="../../src/base/wg_pen.cpp"/>
+    <File Name="../../src/base/wg_pen.h"/>
+    <File Name="../../src/base/wg_pointers.cpp"/>
+    <File Name="../../src/base/wg_pointers.h"/>
+    <File Name="../../src/base/wg_resdb.cpp"/>
+    <File Name="../../src/base/wg_resdb.h"/>
+    <File Name="../../src/base/wg_resloader.h"/>
+    <File Name="../../src/base/wg_scrollbartarget.cpp"/>
+    <File Name="../../src/base/wg_scrollbartarget.h"/>
+    <File Name="../../src/base/wg_string.cpp"/>
+    <File Name="../../src/base/wg_string.h"/>
+    <File Name="../../src/base/wg_surface.cpp"/>
+    <File Name="../../src/base/wg_surface.h"/>
+    <File Name="../../src/base/wg_surfacefactory.cpp"/>
+    <File Name="../../src/base/wg_surfacefactory.h"/>
+    <File Name="../../src/base/wg_textlink.h"/>
+    <File Name="../../src/base/wg_textpresenter.h"/>
+    <File Name="../../src/base/wg_textprop.cpp"/>
+    <File Name="../../src/base/wg_textprop.h"/>
+    <File Name="../../src/base/wg_textpropmanager.cpp"/>
+    <File Name="../../src/base/wg_textpropmanager.h"/>
+    <File Name="../../src/base/wg_textstyle.cpp"/>
+    <File Name="../../src/base/wg_textstyle.h"/>
+    <File Name="../../src/base/wg_texttool.cpp"/>
+    <File Name="../../src/base/wg_texttool.h"/>
+    <File Name="../../src/base/wg_togglegroup.cpp"/>
+    <File Name="../../src/base/wg_togglegroup.h"/>
+    <File Name="../../src/base/wg_types.h"/>
+    <File Name="../../src/base/wg_userdefines.h"/>
+    <File Name="../../src/base/wg_util.cpp"/>
+    <File Name="../../src/base/wg_util.h"/>
+    <File Name="../../src/base/wg_valueformat.cpp"/>
+    <File Name="../../src/base/wg_valueformat.h"/>
+    <File Name="../../src/base/wg_vectorglyphs.cpp"/>
+    <File Name="../../src/base/wg_vectorglyphs.h"/>
+    <File Name="../../src/base/wg_sizescaler.cpp"/>
+    <File Name="../../src/base/wg_sizescaler.h"/>
+    <File Name="../../src/widgets/capsules/wg_sizecapsule.h"/>
+  </VirtualDirectory>
+  <Settings Type="Static Library">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="" Assembler="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="/usr/include/freetype2/"/>
+        <IncludePath Value="../../src/base/"/>
+        <IncludePath Value="../../src/interfaces/"/>
+        <IncludePath Value="../../src/items/"/>
+        <IncludePath Value="../../src/sizebrokers/"/>
+        <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/widgets/"/>
+        <IncludePath Value="../../src/widgets/capsules/"/>
+        <IncludePath Value="../../src/widgets/layers/"/>
+        <IncludePath Value="../../src/widgets/panels/"/>
+        <IncludePath Value="../../src/widgets/lists/"/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="yes" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="yes">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="/usr/include/freetype2/"/>
+        <IncludePath Value="../../src/base/"/>
+        <IncludePath Value="../../src/interfaces/"/>
+        <IncludePath Value="../../src/items/"/>
+        <IncludePath Value="../../src/sizebrokers/"/>
+        <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/widgets/"/>
+        <IncludePath Value="../../src/widgets/capsules/"/>
+        <IncludePath Value="../../src/widgets/layers/"/>
+        <IncludePath Value="../../src/widgets/panels/"/>
+        <IncludePath Value="../../src/widgets/lists/"/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="yes" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="yes">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>
