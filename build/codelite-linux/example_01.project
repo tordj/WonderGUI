@@ -29,7 +29,7 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="code">
-    <File Name="../../src/examples/example_01.cpp"/>
+    <File Name="../../src/examples/example01.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release">
     <Project Name="wondergui"/>
@@ -159,4 +159,8 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="wondergui"/>
+    <Project Name="gfxdevice_software"/>
+  </Dependencies>
 </CodeLite_Project>
