@@ -161,4 +161,8 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="gfxdevice_software"/>
+    <Project Name="wondergui"/>
+  </Dependencies>
 </CodeLite_Project>
