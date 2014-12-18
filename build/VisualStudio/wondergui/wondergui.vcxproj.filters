@@ -1,0 +1,758 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="base">
+      <UniqueIdentifier>{3e75d528-92e6-410b-861a-3636007820c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="items">
+      <UniqueIdentifier>{613c7f7d-b779-4dec-b735-941efe88e6ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="skins">
+      <UniqueIdentifier>{1adf1dee-7363-4dbc-a483-0af321715ca7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sizebrokers">
+      <UniqueIdentifier>{b67b3553-ed78-498c-8c93-efea34c509c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces">
+      <UniqueIdentifier>{149ec1fc-7700-4386-b0ad-117e61a15898}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="widgets">
+      <UniqueIdentifier>{7ee97fe5-8265-4bd7-8693-425979e1d07b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="widgets\capsules">
+      <UniqueIdentifier>{5389dd19-2aad-4055-baa6-0d81135220d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="widgets\layers">
+      <UniqueIdentifier>{faa5e547-b4ed-41f4-b80e-f0c1d825b2f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="widgets\lists">
+      <UniqueIdentifier>{b935d349-0404-4288-99fa-4abbbb3ede20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="widgets\panels">
+      <UniqueIdentifier>{02bbf3d1-7d45-4d36-9784-2cd59e03922c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\wg_userdefines.h" />
+    <ClInclude Include="..\..\..\src\wondergui.h" />
+    <ClInclude Include="..\..\..\src\base\wg_anim.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_base.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_bitmapglyphs.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_blob.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_caret.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_caret2.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_caretinstance.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_chain.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_char.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_charbuffer.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_charseq.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_codepages.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_color.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_event.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_eventfilter.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_eventhandler.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_eventlogger.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_finalizer.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_font.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_geo.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gfxanim.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gfxdevice.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_glyphset.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_hook.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_hookarray.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_hookptr.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_interface_valueholder.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_key.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_mempool.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_memstack.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_menuitem.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_nullgfxdevice.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_object.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_patches.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_pen.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_pointers.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_resdb.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_resloader.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_scrollbartarget.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_sizescaler.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_string.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_surface.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_surfacefactory.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_textlink.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_textpresenter.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_textprop.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_textpropmanager.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_textstyle.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_texttool.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_togglegroup.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_types.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_util.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_valueformat.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_vectorglyphs.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_columnheader.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_edittext.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_editvalue.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_icon.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_interface.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_iwidgets.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_modspan.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_modtext.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_modvalue.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_slidespan.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_span.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_text.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_value.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_columnheaderfield.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_editvaluefield.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_field.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_iconfield.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_item.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_legacytextfield.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_modvaluefield.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_spanitem.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_textfield.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_valuefield.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.h">
+      <Filter>sizebrokers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sizebrokers\wg_sizebroker.h">
+      <Filter>sizebrokers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.h">
+      <Filter>sizebrokers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_blockskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_boxskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_colorskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_extendedskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_skin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_animplayer.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_button.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_combobox.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_container.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_filler.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_fpsdisplay.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_image.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_knob.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_lineeditor.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_menu.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_menubar.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_oscilloscope.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_refreshbutton.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_rulerlabels.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_scrollbar.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_simplevolumemeter.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_switch.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_textdisplay.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_togglebutton.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_valuedisplay.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_valueeditor.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_widget.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_volumemeter.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\capsules\wg_capsule.h">
+      <Filter>widgets\capsules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\capsules\wg_shadercapsule.h">
+      <Filter>widgets\capsules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\capsules\wg_sizecapsule.h">
+      <Filter>widgets\capsules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\layers\wg_layer.h">
+      <Filter>widgets\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\layers\wg_modallayer.h">
+      <Filter>widgets\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\layers\wg_popuplayer.h">
+      <Filter>widgets\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\lists\wg_list.h">
+      <Filter>widgets\lists</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\lists\wg_packlist.h">
+      <Filter>widgets\lists</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_flexpanel.h">
+      <Filter>widgets\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_packpanel.h">
+      <Filter>widgets\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_panel.h">
+      <Filter>widgets\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_rootpanel.h">
+      <Filter>widgets\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_scrollpanel.h">
+      <Filter>widgets\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_stackpanel.h">
+      <Filter>widgets\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_vectorpanel.h">
+      <Filter>widgets\panels</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\base\wg_anim.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_base.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_bitmapglyphs.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_blob.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_caret.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_caret2.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_caretinstance.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_chain.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_char.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_charbuffer.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_charseq.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_codepages.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_color.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_event.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_eventfilter.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_eventhandler.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_eventlogger.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_finalizer.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_font.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_geo.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_gfxanim.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_gfxdevice.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_glyphset.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_hook.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_hookptr.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_interface_valueholder.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_mempool.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_memstack.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_menuitem.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_nullgfxdevice.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_object.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_patches.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_pen.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_pointers.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_resdb.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_scrollbartarget.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_sizescaler.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_string.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_surface.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_surfacefactory.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_textprop.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_textpropmanager.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_textstyle.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_texttool.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_togglegroup.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_util.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_valueformat.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_vectorglyphs.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_columnheader.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_edittext.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_editvalue.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_icon.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_iwidgets.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_modspan.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_modtext.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_modvalue.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_slidespan.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_span.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_text.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_value.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\items\wg_columnheaderfield.cpp">
+      <Filter>items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\items\wg_editvaluefield.cpp">
+      <Filter>items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\items\wg_iconfield.cpp">
+      <Filter>items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\items\wg_legacytextfield.cpp">
+      <Filter>items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\items\wg_modvaluefield.cpp">
+      <Filter>items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\items\wg_spanitem.cpp">
+      <Filter>items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\items\wg_textfield.cpp">
+      <Filter>items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\items\wg_valuefield.cpp">
+      <Filter>items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.cpp">
+      <Filter>sizebrokers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sizebrokers\wg_sizebroker.cpp">
+      <Filter>sizebrokers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.cpp">
+      <Filter>sizebrokers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
+      <Filter>skins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_boxskin.cpp">
+      <Filter>skins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_colorskin.cpp">
+      <Filter>skins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_extendedskin.cpp">
+      <Filter>skins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">
+      <Filter>skins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_animplayer.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_button.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_combobox.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_container.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_filler.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_fpsdisplay.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_image.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_knob.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_lineeditor.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_menu.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_menubar.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_oscilloscope.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_refreshbutton.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_rulerlabels.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_scrollbar.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_simplevolumemeter.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_switch.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_textdisplay.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_togglebutton.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_valuedisplay.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_valueeditor.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_widget.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_volumemeter.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\capsules\wg_capsule.cpp">
+      <Filter>widgets\capsules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\capsules\wg_shadercapsule.cpp">
+      <Filter>widgets\capsules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\capsules\wg_sizecapsule.cpp">
+      <Filter>widgets\capsules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\layers\wg_layer.cpp">
+      <Filter>widgets\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\layers\wg_modallayer.cpp">
+      <Filter>widgets\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\layers\wg_popuplayer.cpp">
+      <Filter>widgets\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\lists\wg_list.cpp">
+      <Filter>widgets\lists</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\lists\wg_packlist.cpp">
+      <Filter>widgets\lists</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_flexpanel.cpp">
+      <Filter>widgets\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_packpanel.cpp">
+      <Filter>widgets\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_panel.cpp">
+      <Filter>widgets\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_rootpanel.cpp">
+      <Filter>widgets\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_scrollpanel.cpp">
+      <Filter>widgets\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_stackpanel.cpp">
+      <Filter>widgets\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_vectorpanel.cpp">
+      <Filter>widgets\panels</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

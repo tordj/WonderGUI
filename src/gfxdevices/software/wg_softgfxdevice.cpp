@@ -22,6 +22,7 @@
 
 #include <wg_softgfxdevice.h>
 #include <math.h>
+#include <algorithm>
 
 #include <assert.h>
 

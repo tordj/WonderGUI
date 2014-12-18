@@ -32,6 +32,7 @@
 #include <wg_util.h>
 #include <wg_pen.h>
 #include <wg_widget.h>
+#include <algorithm>
 
 const char WgGfxDevice::CLASSNAME[] = {"GfxDevice"};
 

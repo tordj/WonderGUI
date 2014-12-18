@@ -84,8 +84,8 @@ public:
 
 protected:
 	void	_onModified() { static_cast<WgSpanHolder*>(m_pHolder)->_onSpanModified(this); }
-	int		_stepSize() { static_cast<WgSpanHolder*>(m_pHolder)->_spanStepSize(this); }
-	int		_skipSize() { static_cast<WgSpanHolder*>(m_pHolder)->_spanSkipSize(this); }
+	int		_stepSize() { return static_cast<WgSpanHolder*>(m_pHolder)->_spanStepSize(this); }
+	int		_skipSize() { return static_cast<WgSpanHolder*>(m_pHolder)->_spanSkipSize(this); }
 };
 
 
