@@ -19,4 +19,14 @@ gnumake/
 	This makefile should be up-to-date in all stable and unstable
 	releases but might be out-of-date if you grab the project from GitHub.
 
+VisualStudio/
+	Solution for building WonderGUI and example files in VisualStudio 13.
+	You will need to add include and library paths to SDL2 and FreeType.
+	A precompiled SDL2 Library for Windows can be downloaded from 
+	www.libsdl.org and a the source package for FreeType can be downloaded
+	from www.freetype.org. It includes a solution for VisualStudio and
+	can be built in minutes. You might also need to change the name of
+	the FreeType-library in the example-projects, since it includes
+	the version number.
+
 
