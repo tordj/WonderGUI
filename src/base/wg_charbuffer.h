@@ -115,6 +115,7 @@ public:
 
     WgCharBuffer& operator=( WgCharBuffer const & r);
 	WgCharBuffer& operator=( WgString const & r);
+	WgCharBuffer& operator=( WgCharSeq const & r);
 
 	inline bool operator==(const WgCharBuffer& other) const { return _compareBuffers( this->m_pHead, other.m_pHead ); }
 	inline bool operator!=(const WgCharBuffer& other) const { return !_compareBuffers( this->m_pHead, other.m_pHead ); }

@@ -48,6 +48,20 @@
 #	include <wg_caret.h>
 #endif
 
+#ifndef WG_CARET2_DOT_H
+#	include <wg_caret2.h>
+#endif
+
+#ifndef WG_TEXTSTYLE_DOT_H
+#	include <wg_textstyle.h>
+#endif
+
+#ifndef WG_TEXTPRESENTER_DOT_H
+#	include <wg_textpresenter.h>
+#endif
+
+
+
 
 #ifdef WG_USE_FREETYPE
 
@@ -103,6 +117,16 @@ public:
 	static void 	SetDefaultCursor( const WgCaretPtr& pCursor );
 	static WgCaretPtr GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
 
+	static void		SetDefaultCaret( const WgCaret2Ptr& pCaret );
+	static WgCaret2Ptr DefaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
+
+	static void		SetDefaultPresenter( const WgTextPresenterPtr& pPresenter );
+	static WgTextPresenterPtr DefaultPresenter() { assert(s_pData!=0); return s_pData->pDefaultPresenter; }
+
+	static void		SetDefaultStyle( const WgTextStylePtr& pStyle );
+	static WgTextStylePtr DefaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
+
+
 	static void		MapKey( WgKey translated_keycode, int native_keycode );
 	static void		UnmapKey( WgKey translated_keycode );
 	static void		ClearKeyMap();
@@ -141,6 +165,10 @@ private:
 		WgTextpropPtr		pDefaultSelectionProp;
 		WgTextpropPtr		pDefaultLinkProp;
 		WgCaretPtr			pDefaultCursor;
+
+		WgCaret2Ptr			pDefaultCaret;
+		WgTextPresenterPtr	pDefaultPresenter;
+		WgTextStylePtr		pDefaultStyle;
 
 		// Settings for keyboard/pointer input
 

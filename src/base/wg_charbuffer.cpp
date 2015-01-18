@@ -80,6 +80,13 @@ WgCharBuffer& WgCharBuffer::operator=( WgString const & r)
 	return *this;
 }
 
+WgCharBuffer& WgCharBuffer::operator=( WgCharSeq const & seq)
+{
+	Reset(seq.Length());
+	PushBack(seq);
+}
+
+
 
 
 //____ _clearCharsNoDeref() _____________________________________________________

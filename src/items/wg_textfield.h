@@ -31,6 +31,25 @@
 #	include <wg_field.h>
 #endif
 
+#ifndef WG_TEXTSTYLE_DOT_H
+#	include <wg_textstyle.h>
+#endif
+
+#ifndef WG_TEXTPRESENTER_DOT_H
+#	include <wg_textpresenter.h>
+#endif
+
+#ifndef WG_EVEN_DOT_H
+#	include <wg_event.h>
+#endif
+
+#ifndef WG_BASE_DOT_H
+#	include <wg_base.h>
+#endif
+
+class WgString;
+class WgCharSeq;
+class WgCharBuffer;
 
 //____ WgTextHolder ___________________________________________________________
 
@@ -42,6 +61,7 @@ struct WgTextHolder : public WgFieldHolder
 
 class WgTextField : public WgField
 {
+	friend class WgTextPresenter;
 public:
 	WgTextField( WgTextHolder * pHolder );
 	~WgTextField();
@@ -70,7 +90,7 @@ public:
 	void				SetState( WgState state );
 	inline WgState		State() const { return m_state; }
 
-	int					Length() const;
+	inline int			Length() const { return m_text.Length(); }
 	inline bool			IsEmpty() const { return Length()==0?true:false; }
 
 	WgSize				PreferredSize() const;	
@@ -78,7 +98,7 @@ public:
 	int					MatchingHeight( int width ) const;
 	inline WgSize		Size() const { return m_size; }
 
-	int					CoordToChar( WgCoord pos );
+	int					CoordToChar( WgCoord pos ) const;
 	WgRect				CharToRect( int charOfs ) const;
 
 	
@@ -93,10 +113,18 @@ public:
 
 
 protected:
+
+	WgTextPresenter *	_presenter() const { if( m_pPresenter ) return m_pPresenter.RawPtr(); return WgBase::DefaultPresenter().RawPtr(); }
+	WgTextStyle *		_style() const { if( m_pStyle ) return m_pStyle.RawPtr(); return WgBase::DefaultStyle().RawPtr(); }
+
 	WgCharBuffer		m_text;
 	WgTextStylePtr		m_pStyle;
 	WgTextPresenterPtr	m_pPresenter;
-	void *				m_pPresenterData;
+	union 
+	{
+		void *			m_pPresenterData;
+		int				m_presenterData;
+	};
 	WgSize				m_size;
 	WgState				m_state;
 };

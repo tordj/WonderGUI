@@ -35,6 +35,10 @@
     <Project Name="gfxdevice_software"/>
     <Project Name="wondergui"/>
   </Dependencies>
+  <Dependencies Name="Debug">
+    <Project Name="gfxdevice_software"/>
+    <Project Name="wondergui"/>
+  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -53,6 +57,7 @@
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/textpresenters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
         <IncludePath Value="../../src/widgets/layers/"/>
@@ -110,6 +115,7 @@
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/textpresenters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
         <IncludePath Value="../../src/widgets/layers/"/>
@@ -161,8 +167,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="gfxdevice_software"/>
-    <Project Name="wondergui"/>
-  </Dependencies>
 </CodeLite_Project>

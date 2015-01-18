@@ -475,7 +475,7 @@ void WgTextStyle::ClearDecoration( WgState state )
 
 //____ ExportAttr() ____________________________________________________________
 
-void WgTextStyle::ExportAttr( WgState state, WgTextAttr * pDest )
+void WgTextStyle::ExportAttr( WgState state, WgTextAttr2 * pDest )
 {
 	int idx = WgUtil::_stateToIndex(state);
 
@@ -490,7 +490,7 @@ void WgTextStyle::ExportAttr( WgState state, WgTextAttr * pDest )
 
 //____ AddToAttr() _____________________________________________________________
 
-void WgTextStyle::AddToAttr( WgState state, WgTextAttr * pDest )
+void WgTextStyle::AddToAttr( WgState state, WgTextAttr2 * pDest )
 {
 	int idx = WgUtil::_stateToIndex(state);
 

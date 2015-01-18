@@ -64,7 +64,7 @@ public:
 	virtual int			EOLWidth( int size, int advance, int ascend, int descend ) const;
 	inline WgCaretMode	Mode() const { return m_mode; }
 	virtual void		Tick( int millisec );
-	inline bool			NeedToRender() const { m_bNeedToRender; }
+	inline bool			NeedToRender() const { return m_bNeedToRender; }
 	virtual WgRect		DirtyRect( WgCoord pos ) const;
 	virtual void		Render( WgGfxDevice * pDevice, WgCoord pos, const WgRect& clip );
 

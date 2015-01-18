@@ -266,7 +266,6 @@
     <File Name="../../src/base/wg_surfacefactory.cpp"/>
     <File Name="../../src/base/wg_surfacefactory.h"/>
     <File Name="../../src/base/wg_textlink.h"/>
-    <File Name="../../src/base/wg_textpresenter.h"/>
     <File Name="../../src/base/wg_textprop.cpp"/>
     <File Name="../../src/base/wg_textprop.h"/>
     <File Name="../../src/base/wg_textpropmanager.cpp"/>
@@ -278,7 +277,6 @@
     <File Name="../../src/base/wg_togglegroup.cpp"/>
     <File Name="../../src/base/wg_togglegroup.h"/>
     <File Name="../../src/base/wg_types.h"/>
-    <File Name="../../src/base/wg_userdefines.h"/>
     <File Name="../../src/base/wg_util.cpp"/>
     <File Name="../../src/base/wg_util.h"/>
     <File Name="../../src/base/wg_valueformat.cpp"/>
@@ -292,6 +290,12 @@
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>
     <File Name="../../src/wondergui.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="textpresenters">
+    <File Name="../../src/textpresenters/wg_standardpresenter.cpp"/>
+    <File Name="../../src/textpresenters/wg_standardpresenter.h"/>
+    <File Name="../../src/textpresenters/wg_textpresenter.cpp"/>
+    <File Name="../../src/textpresenters/wg_textpresenter.h"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -312,6 +316,7 @@
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/textpresenters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
         <IncludePath Value="../../src/widgets/layers/"/>
@@ -361,6 +366,7 @@
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/textpresenters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
         <IncludePath Value="../../src/widgets/layers/"/>

@@ -42,12 +42,15 @@
 #	include <wg_textlink.h>
 #endif
 
+#ifndef WG_CARET2_DOT_H
+#	include <wg_caret2.h>
+#endif
 
 class WgTextStyle;
 typedef	WgStrongPtr<WgTextStyle,WgObjectPtr>		WgTextStylePtr;
 typedef	WgWeakPtr<WgTextStyle,WgObjectWeakPtr>		WgTextStyleWeakPtr;
 
-struct WgTextAttr
+struct WgTextAttr2
 {
 		WgFontPtr			pFont;
 		int					size;
@@ -118,8 +121,8 @@ public:
 	inline int				CombSize( WgState state ) const;
 	inline WgTextDecoration CombDecoration( WgState state ) const;
 
-	void			ExportAttr( WgState state, WgTextAttr * pDest );
-	void			AddToAttr( WgState state, WgTextAttr * pDest );
+	void			ExportAttr( WgState state, WgTextAttr2 * pDest );
+	void			AddToAttr( WgState state, WgTextAttr2 * pDest );
 
 
 

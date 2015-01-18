@@ -166,6 +166,32 @@ const WgTextMgrPtr& WgBase::GetDefaultTextManager()
 }
 */
 
+//____ SetDefaultCaret() _______________________________________________________
+
+void WgBase::SetDefaultCaret( const WgCaret2Ptr& pCaret )
+{
+	assert( s_pData != 0 );
+	s_pData->pDefaultCaret = pCaret;	
+}
+
+//____ SetDefaultPresenter() ___________________________________________________
+
+void WgBase::SetDefaultPresenter( const WgTextPresenterPtr& pPresenter )
+{
+	assert( s_pData != 0 );
+	s_pData->pDefaultPresenter = pPresenter;	
+}
+
+//____ SetDefaultStyle() _______________________________________________________
+
+void WgBase::SetDefaultStyle( const WgTextStylePtr& pStyle )
+{
+	assert( s_pData != 0 );
+	s_pData->pDefaultStyle = pStyle;	
+}
+
+
+
 //____ SetDefaultTextprop() ___________________________________________________
 
 void WgBase::SetDefaultTextprop( const WgTextpropPtr& pProp )
