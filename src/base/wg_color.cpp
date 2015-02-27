@@ -23,6 +23,7 @@
 #include <wg_color.h>
 
 const WgColor WgColor::transparent		( 0x00FFFFFF );
+const WgColor WgColor::none				( 0x00000000 );
 
 const WgColor WgColor::aliceblue		( 0xFFF0F8FF );
 const WgColor WgColor::antiquewhite		( 0xFFFAEBD7 );

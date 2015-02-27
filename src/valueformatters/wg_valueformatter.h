@@ -19,36 +19,38 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#ifndef	WG_VALUEFORMATTER_DOT_H
+#define WG_VALUEFORMATTER_DOT_H
 
-#include <wg_edittext.h>
+#ifndef WG_OBJECT_DOT_H
+#	include <wg_object.h>
+#endif
 
-const char WgEditText::CLASSNAME[] = {"EditText"};
+#ifndef WG_POINTERS_DOT_H
+#	include <wg_pointers.h>
+#endif
 
+#ifndef WG_STRING_DOT_H
+#	include <wg_string.h>
+#endif
 
-//____ IsInstanceOf() _________________________________________________________
+class WgValueFormatter;
+typedef	WgStrongPtr<WgValueFormatter,WgObjectPtr>		WgValueFormatterPtr;
+typedef	WgWeakPtr<WgValueFormatter,WgObjectWeakPtr>	WgValueFormatterWeakPtr;
 
-bool WgEditText::IsInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
+//____ WgValueFormatter __________________________________________________________
 
-	return WgLegacyModText::IsInstanceOf(pClassName);
-}
-
-//____ ClassName() ____________________________________________________________
-
-const char * WgEditText::ClassName( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ Cast() _________________________________________________________________
-
-WgEditTextPtr WgEditText::Cast( const WgInterfacePtr& pInterface )
+class WgValueFormatter : public WgObject
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgEditTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgEditText*>(pInterface.RawPtr()) );
+public:
+	
+	bool						IsInstanceOf( const char * pClassName ) const;
+	const char *				ClassName( void ) const;
+	static const char			CLASSNAME[];
+	static WgValueFormatterPtr	Cast( const WgObjectPtr& pObject );
 
-	return 0;
-}
+	virtual WgString Format( Sint64 value, int scale ) const = 0;
+	virtual WgString Format( double value ) const = 0;
+};
 
+#endif //WG_VALUEFORMATTER_DOT_H

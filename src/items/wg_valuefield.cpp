@@ -26,90 +26,99 @@
 
 //____ Constructor _____________________________________________________________
 
-WgValueField::WgValueField(WgValueHolder * pHolder) : WgField(pHolder)
+WgValueField::WgValueField(WgValueHolder * pHolder) : WgPresentableField(pHolder)
 {
 	m_value = 0;
-	m_alignment = WG_EAST;
-	m_bAutoEllipsis = true;
+	m_scale = 1;
 }
 
-//____ Destructor ______________________________________________________________
+//____ SetFormatter() __________________________________________________________
 
-WgValueField::~WgValueField()
+void WgValueField::SetFormatter( const WgValueFormatterPtr& pFormatter )
 {
-	
-}
-
-//____ SetFormat() _____________________________________________________________
-
-void WgValueField::SetFormat( const WgValueFormatPtr& pFormat )
-{
-	if( m_pFormat != pFormat )
+	if( m_pFormatter != pFormatter )
 	{
-		m_pFormat = pFormat;
+		m_pFormatter = pFormatter;
 		_regenText();
 	}
 }
 
-//____ SetProperties() _________________________________________________________
+//____ ClearFormatter() ________________________________________________________
 
-void WgValueField::SetProperties( const WgTextpropPtr& pProp )
+void WgValueField::ClearFormatter()
 {
-	if( m_pProp != pProp )
+	if( m_pFormatter )
 	{
-		m_pProp = pProp;
-		_recalcSize();
-		_onDirty();
-	}	
-}
-
-//____ ClearProperties() _______________________________________________________
-
-void WgValueField::ClearProperties()
-{
-		SetProperties( 0 );
-}
-
-//____ SetAlignment() __________________________________________________________
-
-void WgValueField::SetAlignment( WgOrigo alignment )
-{
-	if( alignment != m_alignment )
-	{
-		m_alignment = alignment;
-		_onDirty();
+		m_pFormatter = 0;
+		_regenText();
 	}
 }
 
-//____ SetAutoEllipsis() _______________________________________________________
+//____ Clear() _________________________________________________________________
 
-void WgValueField::SetAutoEllipsis(bool bAutoEllipsis)
+void WgValueField::Clear()
 {
-	if( bAutoEllipsis != m_bAutoEllipsis )
+	if( m_value != 0 )
 	{
-		m_bAutoEllipsis = bAutoEllipsis;
-		_onDirty();
+		m_value = 0;
+		m_scale = 1;
+		_regenText();
 	}
 }
 
+//____ Set() ___________________________________________________________________
 
-
-void WgValueField::SetValue( Sint64 value )
+bool WgValueField::Set( Sint64 value, int scale )
 {
-	if( value != m_value )
+	if( m_value != value && m_scale != scale )
 	{
+		if( scale <= 0 )
+			return false;
+		
 		m_value = value;
+		m_scale = scale;
+		_regenText();
+	}
+	return true;
+}
+/*
+void WgValueField::Set( float value )
+{
+	value *= m_scale;
+	Sint64 intVal = (Sint64) value;
+	if( intVal != m_value )
+	{
+		m_value = intVal;
 		_regenText();
 	}
 }
 
-void WgValueField::_recalcSize()
+void WgValueField::Set( double value )
 {
-	
+	value *= m_scale;
+	Sint64 intVal = (Sint64) value;
+	if( intVal != value )
+	{
+		m_value = intVal;
+		_regenText();
+	}
 }
+*/
+
+//____ OnRefresh() _____________________________________________________________
+
+void WgValueField::OnRefresh()
+{	
+	_regenText();
+	WgPresentableField::OnRefresh();
+}
+
+//____ _regenText() ____________________________________________________________
 
 void WgValueField::_regenText()
 {
-	_recalcSize();
+	WgValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.RawPtr() : 0; //WgBase::DefaultValueFormatter();
+	if( m_pFormatter )
+		m_charBuffer = pFormatter->Format(m_value, m_scale);
 	_onDirty();
 }

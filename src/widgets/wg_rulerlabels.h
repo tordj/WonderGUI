@@ -9,8 +9,8 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
+#ifndef WG_LEGACYMODTEXT_DOT_H
+#	include <wg_legacymodtext.h>
 #endif
 
 #ifndef WG_TEXTPROP_DOT_H
@@ -38,7 +38,7 @@ public:
 	void			AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProp, float offset, WgOrigo origo );
  	WgSize			PreferredSize() const;
 	void			SetDirection( WgDirection direction );
-	WgModTextPtr	GetLabel(int index);
+	WgLegacyModTextPtr	GetLabel(int index);
 
 
 protected:
@@ -61,7 +61,7 @@ protected:
 	public:
 		Label(WgLegacyTextHolder*pHolder) : textField(pHolder), textInterface(&textField) {}
 		LINK_METHODS(Label);
-		WgModText	textInterface;
+		WgLegacyModText	textInterface;
 		WgLegacyTextField	textField;
 		float		offset;
 	};

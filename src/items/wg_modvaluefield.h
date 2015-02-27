@@ -35,7 +35,6 @@ class WgModValueHolder : public WgValueHolder
 {
 public:
 	virtual void		_onValueModified( WgModValueField * pField ) = 0;
-	virtual WgObject*	_object() = 0;
 };
 
 
@@ -44,31 +43,23 @@ public:
 class WgModValueField : public WgValueField
 {
 public:
-	WgModValueField( WgModValueHolder * pHolder );
-	~WgModValueField();
+	WgModValueField( WgModValueHolder * pHolder ) : WgValueField(pHolder), m_minValue(INT64_MIN), m_maxValue(INT64_MAX) {}
+	~WgModValueField() {}
 
 	// ModValue methods
 
-	void				Set( int value );
-	void				Set( Sint64 value );
-	void				Set( float value );
-	void				Set( double value );
-
-	inline Sint64		Value() const { return m_value; }
+	void				Clear();
+	bool				Set( Sint64 value, int scale );
 	
-	void				SetFraction( float fraction );	
-	inline float		Fraction() const { return m_fraction; }
-
 	bool				SetRange( Sint64 min, Sint64 max );
 	inline Sint64		Min() const { return m_minValue; }
 	inline Sint64		Max() const { return m_maxValue; }
 
-protected:
-	void	_onValueModified() { static_cast<WgModValueHolder*>(m_pHolder)->_onValueModified(this); }
+	void	OnValueModified() { static_cast<WgModValueHolder*>(m_pHolder)->_onValueModified(this); }
 
+protected:
 	Sint64				m_minValue;
 	Sint64				m_maxValue;
-	float				m_fraction;
 };
 
 

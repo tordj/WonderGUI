@@ -20,34 +20,34 @@
 
 =========================================================================*/
 
-#include <wg_edittext.h>
+#include <wg_legacymodtext.h>
 
-const char WgEditText::CLASSNAME[] = {"EditText"};
+const char WgLegacyModText::CLASSNAME[] = {"LegacyModText"};
 
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgEditText::IsInstanceOf( const char * pClassName ) const
+bool WgLegacyModText::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLegacyModText::IsInstanceOf(pClassName);
+	return WgLegacyText::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgEditText::ClassName( void ) const
+const char * WgLegacyModText::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgEditTextPtr WgEditText::Cast( const WgInterfacePtr& pInterface )
+WgLegacyModTextPtr WgLegacyModText::Cast( const WgInterfacePtr& pInterface )
 {
 	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgEditTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgEditText*>(pInterface.RawPtr()) );
+		return WgLegacyModTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgLegacyModText*>( pInterface.RawPtr()) );
 
 	return 0;
 }

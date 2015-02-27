@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef	WG_LEGACYTEXT_DOT_H
+#	include <wg_legacytext.h>
 #endif
 
 #ifndef WG_VALUEFORMAT_DOT_H
@@ -60,7 +60,7 @@ public:
 
 	//____ Interfaces ______________________________________
 
-	WgText	text;
+	WgLegacyText	text;
 
 
 	//____ Methods __________________________________________

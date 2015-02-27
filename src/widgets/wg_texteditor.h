@@ -20,49 +20,65 @@
 
 =========================================================================*/
 
-#ifndef	WG_TEXTDISPLAY_DOT_H
-#define	WG_TEXTDISPLAY_DOT_H
+#ifndef	WG_TEXTEDITOR_DOT_H
+#define	WG_TEXTEDITOR_DOT_H
 
 
 #ifndef WG_WIDGET_DOT_H
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
+#ifndef	WG_EDITTEXT_DOT_H
+#	include <wg_edittext.h>
 #endif
 
-class WgTextDisplay;
-typedef	WgStrongPtr<WgTextDisplay,WgWidgetPtr>		WgTextDisplayPtr;
-typedef	WgWeakPtr<WgTextDisplay,WgWidgetWeakPtr>	WgTextDisplayWeakPtr;
+#ifndef WG_CARETINSTANCE_DOT_H
+#	include <wg_caretinstance.h>
+#endif
 
-class WgTextDisplay:public WgWidget, protected WgTextHolder
+class WgTextEditor;
+typedef	WgStrongPtr<WgTextEditor,WgWidgetPtr>		WgTextEditorPtr;
+typedef	WgWeakPtr<WgTextEditor,WgWidgetWeakPtr>	WgTextEditorWeakPtr;
+
+class WgTextEditor:public WgWidget, protected WgLegacyTextHolder
 {
 public:
-	static WgTextDisplayPtr	Create() { return WgTextDisplayPtr(new WgTextDisplay()); }
+	static WgTextEditorPtr	Create() { return WgTextEditorPtr(new WgTextEditor()); }
 
 	bool		IsInstanceOf( const char * pClassName ) const;
 	const char *ClassName( void ) const;
 	static const char	CLASSNAME[];
-	static WgTextDisplayPtr	Cast( const WgObjectPtr& pObject );
+	static WgTextEditorPtr	Cast( const WgObjectPtr& pObject );
 
 	//____ Interfaces ______________________________________
 
-	WgModText		text;
+	WgEditText		text;
 
 	//____ Methods __________________________________________
+
+	inline void		SetMaxLines( int nLines ) { m_maxLines = nLines; }
+	inline int		MaxLines() { return m_maxLines; }
+
+	int		InsertTextAtCursor( const WgCharSeq& str );
+	bool	InsertCharAtCursor( Uint16 c );
+
+	virtual void			SetEditMode(WgTextEditMode mode);
+	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
 
 	WgPointerStyle		PointerStyle() const;
 	WgString			TooltipString() const;
 
-	int		MatchingWidth( int height ) const;
 	int		MatchingHeight( int width ) const;
 	WgSize	PreferredSize() const;
+	bool	IsAutoEllipsisDefault() const { return true; };
+
+	bool	IsEditable() const { return m_text.IsEditable(); }
+	bool	IsSelectable() const { return m_text.IsSelectable(); }
 
 protected:
-	WgTextDisplay();
-	virtual ~WgTextDisplay();
-	virtual WgWidget* _newOfMyType() const { return new WgTextDisplay(); };
+	WgTextEditor();
+	virtual ~WgTextEditor();
+	virtual WgWidget* _newOfMyType() const { return new WgTextEditor(); };
 
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
@@ -77,8 +93,16 @@ protected:
 	void	_onFieldResize( WgField * pField );
 private:
 
-	WgTextField			m_text;
+	bool	_insertCharAtCursor( Uint16 c );
+
+
+	WgLegacyTextField			m_text;
+	bool				m_bHasFocus;
+	int					m_maxLines;
+	bool				m_bResetCursorOnFocus;
 };
+
+
 
 
 

@@ -23,8 +23,8 @@
 #ifndef WG_EDITTEXT_DOT_H
 #define WG_EDITTEXT_DOT_H
 
-#ifndef WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
+#ifndef WG_LEGACYMODTEXT_DOT_H
+#	include <wg_legacymodtext.h>
 #endif
 
 #ifndef WG_CARET_DOT_H
@@ -32,8 +32,8 @@
 #endif
 
 class WgEditText;
-typedef	WgIStrongPtr<WgEditText,WgModTextPtr>		WgEditTextPtr;
-typedef	WgIWeakPtr<WgEditText,WgModTextWeakPtr>		WgEditTextWeakPtr;
+typedef	WgIStrongPtr<WgEditText,WgLegacyModTextPtr>		WgEditTextPtr;
+typedef	WgIWeakPtr<WgEditText,WgLegacyModTextWeakPtr>		WgEditTextWeakPtr;
 
 /**
  * @brief Interface to a text field with editable text.
@@ -44,10 +44,10 @@ typedef	WgIWeakPtr<WgEditText,WgModTextWeakPtr>		WgEditTextWeakPtr;
  * 
  */
  
-class WgEditText : public WgModText
+class WgEditText : public WgLegacyModText
 {
 public:
-	WgEditText( WgLegacyTextField * pField ) : WgModText(pField) {};
+	WgEditText( WgLegacyTextField * pField ) : WgLegacyModText(pField) {};
 
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;

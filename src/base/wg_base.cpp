@@ -28,6 +28,7 @@
 #include <wg_texttool.h>
 #include <wg_memstack.h>
 #include <wg_hook.h>
+#include <wg_standardpresenter.h>
 
 #ifdef WG_USE_FREETYPE
 #	include <ft2build.h>
@@ -50,6 +51,9 @@ void WgBase::Init()
 	s_pData->pPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
 	s_pData->pMemStack = new WgMemStack( 4096 );
 
+	s_pData->pDefaultPresenter = WgStandardPresenter::Create();
+	s_pData->pDefaultStyle = WgTextStyle::Create();
+
 	s_pData->doubleClickTimeTreshold 		= 250;
 	s_pData->doubleClickDistanceTreshold 	= 2;
 
@@ -71,6 +75,7 @@ void WgBase::Init()
 
 int WgBase::Exit()
 {
+	
 	if( s_pData == 0 )
 		return -1;					// Base already exited or not intialized.
 
@@ -88,6 +93,8 @@ int WgBase::Exit()
 	if( s_pData->bFreeTypeInitialized )
 		FT_Done_FreeType( s_pData->freeTypeLibrary );
 #endif
+	s_pData->pDefaultPresenter = 0;
+	s_pData->pDefaultStyle = 0;
 
 	delete s_pData->pPtrPool;
 	delete s_pData->pMemStack;

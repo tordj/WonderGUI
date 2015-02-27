@@ -23,8 +23,8 @@
 #ifndef WG_TEXT_DOT_H
 #define WG_TEXT_DOT_H
 
-#ifndef WG_LEGACYTEXTFIELD_DOT_H
-#	include <wg_legacytextfield.h>
+#ifndef WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 #ifndef WG_INTERFACE_DOT_H
@@ -47,8 +47,8 @@
 #	include <wg_font.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
+#ifndef WG_TEXTSTYLE_DOT_H
+#	include <wg_textstyle.h>
 #endif
 
 class WgColor;
@@ -74,7 +74,7 @@ typedef	WgIWeakPtr<WgText,WgInterfaceWeakPtr>	WgTextWeakPtr;
 class WgText : public WgInterface
 {
 public:
-	WgText( WgLegacyTextField * pField ) : m_pField(pField) {};
+	WgText( WgTextField * pField ) : m_pField(pField) {};
 
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;
@@ -82,42 +82,24 @@ public:
 	static WgTextPtr		Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
 	inline WgTextPtr		Ptr() { return WgTextPtr(_object(),this); }
 
-	inline void				SetProperties( const WgTextpropPtr& pProp ) { m_pField->SetProperties(pProp); }
-	inline void				ClearProperties() { m_pField->ClearProperties(); }
-	inline WgTextpropPtr	Properties() const { return m_pField->Properties(); }
+	inline void				SetStyle( const WgTextStylePtr& pStyle ) { m_pField->SetStyle(pStyle); }
+	inline void				ClearStyle() { m_pField->ClearStyle(); }
+	inline WgTextStylePtr	Style() const { return m_pField->Style(); }
 
-	inline void				SetSelectionProperties( const WgTextpropPtr& pProp ) { m_pField->SetSelectionProperties(pProp); }
-	inline void				ClearSelectionProperties() { m_pField->ClearSelectionProperties(); }
-	inline WgTextpropPtr	SelectionProperties() const { return m_pField->SelectionProperties(); }
+	inline void					SetPresenter( const WgTextPresenterPtr& pPresenter ) { m_pField->SetPresenter(pPresenter); }
+	inline void					ClearPresenter() { m_pField->ClearPresenter(); }
+	inline WgTextPresenterPtr	Presenter() const { return m_pField->Presenter(); }
 
-	inline void				SetLinkProperties( const WgTextpropPtr& pProp ) { m_pField->SetLinkProperties(pProp); }
-	inline void				ClearLinkProperties() { m_pField->ClearLinkProperties(); }
-	inline WgTextpropPtr	LinkProperties() const { return m_pField->LinkProperties(); }
-
-	inline void				SetAlignment( WgOrigo alignment ) { m_pField->SetAlignment(alignment); }
-	inline WgOrigo			Alignment() const { return m_pField->Alignment(); }
-
-	inline void				SetTintMode( WgTintMode mode ) { m_pField->SetTintMode(mode); }
-	inline WgTintMode		TintMode() const { return m_pField->TintMode(); }
-
-	inline void				SetLineSpacing( float adjustment ) { m_pField->SetLineSpacing(adjustment); }
-	inline float			LineSpacing() const { return m_pField->LineSpacing(); }
-
-	inline void				SetWrap(bool bWrap) { m_pField->SetWrap(bWrap); }
-	inline bool				Wrap() const { return m_pField->Wrap(); }
-
-	inline void				SetAutoEllipsis(bool bAutoEllipsis) { m_pField->SetAutoEllipsis(bAutoEllipsis); }
-	inline bool				AutoEllipsis() const { return m_pField->AutoEllipsis(); }
+	inline 	WgString			Get() const { return m_pField->GetString(); }
 
 	inline WgState			State() const { return m_pField->State(); }
-	inline int				Lines() const { return m_pField->Lines(); }
 	inline int				Length() const { return m_pField->Length(); }
 	inline bool				IsEmpty() const { return m_pField->IsEmpty(); }
 
 protected:
 	WgObject *				_object() const;
 
-	WgLegacyTextField * 			m_pField;
+	WgTextField * 			m_pField;
 };
 
 

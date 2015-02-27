@@ -20,9 +20,7 @@
 
 =========================================================================*/
 
-#include	<math.h>
 #include	<wg_valuedisplay.h>
-#include	<wg_font.h>
 #include	<wg_gfxdevice.h>
 
 
@@ -31,10 +29,8 @@ const char WgValueDisplay::CLASSNAME[] = {"ValueDisplay"};
 
 //____ WgValueDisplay() _________________________________________________________________
 
-WgValueDisplay::WgValueDisplay() : m_text(this), text(&m_text)
+WgValueDisplay::WgValueDisplay() : m_field(this), value(&m_field)
 {
-	m_text.SetAlignment( WG_EAST );
-	m_text.SetWrap(false);
 }
 
 //____ ~WgValueDisplay() ___________________________________________________________
@@ -71,42 +67,16 @@ WgValueDisplayPtr WgValueDisplay::Cast( const WgObjectPtr& pObject )
 }
 
 
-//____ SetFormat() ____________________________________________________________
-
-void WgValueDisplay::SetFormat( const WgValueFormatPtr& pFormat )
-{
-	m_pFormat = pFormat;
-	_requestRender();
-}
-
 //____ PreferredSize() __________________________________________________________
 
 WgSize WgValueDisplay::PreferredSize() const
 {
-	WgSize textSize(m_text.Width(),m_text.Height());
+	WgSize size = m_field.PreferredSize();
 
 	if( m_pSkin )
-		return m_pSkin->SizeForContent(textSize);
+		return m_pSkin->SizeForContent(size);
 	else
-		return textSize;
-}
-
-
-//____ _valueModified() ________________________________________________________
-
-void WgValueDisplay::_valueModified()
-{
-	// NOTE: We have decided to not post any event on _valueModified since it
-	// can only be done through the API.
-
-	_regenText();
-	_requestRender();
-}
-
-//____ _rangeModified() ________________________________________________________
-
-void WgValueDisplay::_rangeModified()
-{
+		return size;
 }
 
 
@@ -114,15 +84,8 @@ void WgValueDisplay::_rangeModified()
 
 void WgValueDisplay::_onRefresh( void )
 {
-	_regenText();
+	m_field.OnRefresh();
 	WgWidget::_onRefresh();
-}
-
-//____ _regenText() ____________________________________________________________
-
-void WgValueDisplay::_regenText()
-{
-		m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pFormat );
 }
 
 //____ _onRender() _____________________________________________________________
@@ -130,7 +93,7 @@ void WgValueDisplay::_regenText()
 void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
-	pDevice->PrintText( _clip, &m_text, _canvas );
+	m_field.OnRender(pDevice, _canvas, _clip);
 }
 
 //____ _onCloneContent() _______________________________________________________
@@ -138,11 +101,6 @@ void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgValueDisplay * pOrg = (WgValueDisplay *) _pOrg;
-
-	Wg_Interface_ValueHolder::_onCloneContent( pOrg );
-
-	m_pFormat		= pOrg->m_pFormat;
-	m_text.clone(&pOrg->m_text);
 }
 
 //____ _onStateChanged() ______________________________________________________
@@ -150,8 +108,7 @@ void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 void WgValueDisplay::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
-	m_text.setState(m_state);
-	_requestRender();				//TODO: Check for text-related difference before call.
+	m_field.SetState(m_state);
 }
 
 //____ _onSkinChanged() _______________________________________________________
@@ -159,7 +116,7 @@ void WgValueDisplay::_onStateChanged( WgState oldState )
 void WgValueDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	m_text.SetColorSkin(pNewSkin);
+//	m_text.SetColorSkin(pNewSkin);
 }
 
 //____ _onFieldDirty() _________________________________________________________
@@ -176,3 +133,13 @@ void WgValueDisplay::_onFieldResize( WgField * pField )
 	_requestResize();
 	_requestRender();
 }
+
+//____ _onValueModified() ______________________________________________________
+
+void WgValueDisplay::_onValueModified( WgModValueField * pField )
+{
+	_requestResize();
+	_requestRender();
+}
+
+

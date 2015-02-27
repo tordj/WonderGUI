@@ -97,6 +97,8 @@
       <File Name="../../src/widgets/panels/wg_stackpanel.h"/>
       <File Name="../../src/widgets/panels/wg_vectorpanel.cpp"/>
       <File Name="../../src/widgets/panels/wg_vectorpanel.h"/>
+      <File Name="../../src/widgets/wg_texteditor.cpp"/>
+      <File Name="../../src/widgets/wg_texteditor.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="lists">
       <File Name="../../src/widgets/lists/wg_list.cpp"/>
@@ -134,6 +136,8 @@
     <File Name="../../src/items/wg_textfield.h"/>
     <File Name="../../src/items/wg_valuefield.cpp"/>
     <File Name="../../src/items/wg_valuefield.h"/>
+    <File Name="../../src/items/wg_presentablefield.h"/>
+    <File Name="../../src/items/wg_presentablefield.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
     <File Name="../../src/interfaces/wg_columnheader.cpp"/>
@@ -150,18 +154,22 @@
     <File Name="../../src/interfaces/wg_iwidgets.h"/>
     <File Name="../../src/interfaces/wg_modspan.cpp"/>
     <File Name="../../src/interfaces/wg_modspan.h"/>
-    <File Name="../../src/interfaces/wg_modtext.cpp"/>
-    <File Name="../../src/interfaces/wg_modtext.h"/>
     <File Name="../../src/interfaces/wg_modvalue.cpp"/>
     <File Name="../../src/interfaces/wg_modvalue.h"/>
     <File Name="../../src/interfaces/wg_slidespan.cpp"/>
     <File Name="../../src/interfaces/wg_slidespan.h"/>
     <File Name="../../src/interfaces/wg_span.cpp"/>
     <File Name="../../src/interfaces/wg_span.h"/>
-    <File Name="../../src/interfaces/wg_text.cpp"/>
-    <File Name="../../src/interfaces/wg_text.h"/>
     <File Name="../../src/interfaces/wg_value.cpp"/>
     <File Name="../../src/interfaces/wg_value.h"/>
+    <File Name="../../src/interfaces/wg_legacytext.cpp"/>
+    <File Name="../../src/interfaces/wg_legacytext.h"/>
+    <File Name="../../src/interfaces/wg_text.cpp"/>
+    <File Name="../../src/interfaces/wg_text.h"/>
+    <File Name="../../src/interfaces/wg_legacymodtext.cpp"/>
+    <File Name="../../src/interfaces/wg_legacymodtext.h"/>
+    <File Name="../../src/interfaces/wg_modtext.cpp"/>
+    <File Name="../../src/interfaces/wg_modtext.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="skins">
     <File Name="../../src/skins/wg_blockskin.cpp"/>
@@ -293,9 +301,17 @@
   </VirtualDirectory>
   <VirtualDirectory Name="textpresenters">
     <File Name="../../src/textpresenters/wg_standardpresenter.cpp"/>
-    <File Name="../../src/textpresenters/wg_standardpresenter.h"/>
     <File Name="../../src/textpresenters/wg_textpresenter.cpp"/>
     <File Name="../../src/textpresenters/wg_textpresenter.h"/>
+    <File Name="../../src/textpresenters/wg_standardpresenter.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="valueformatters">
+    <File Name="../../src/valueformatters/wg_valueformatter.cpp"/>
+    <File Name="../../src/valueformatters/wg_valueformatter.h"/>
+    <File Name="../../src/valueformatters/wg_standardformatter.h"/>
+    <File Name="../../src/valueformatters/wg_standardformatter.cpp"/>
+    <File Name="../../src/valueformatters/wg_timeformatter.cpp"/>
+    <File Name="../../src/valueformatters/wg_timeformatter.h"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -317,6 +333,7 @@
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
         <IncludePath Value="../../src/textpresenters/"/>
+        <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
         <IncludePath Value="../../src/widgets/layers/"/>
@@ -367,6 +384,7 @@
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
         <IncludePath Value="../../src/textpresenters/"/>
+        <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
         <IncludePath Value="../../src/widgets/layers/"/>

@@ -194,7 +194,6 @@ inline WgGlyphPtr WgBitmapGlyphs::GetGlyph( Uint16 chr, int size )
 			return pGlyph;
 	}
 
-
 	return 0;
 }
 

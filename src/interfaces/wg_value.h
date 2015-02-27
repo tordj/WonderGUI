@@ -27,15 +27,23 @@
 #	include <wg_interface.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
+#ifndef WG_TEXTSTYLE_DOT_H
+#	include <wg_textstyle.h>
 #endif
+
+#ifndef WG_TEXTPRESENTER_DOT_H
+#	include <wg_textpresenter.h>
+#endif
+
 
 #ifndef WG_VALUEFORMAT_DOT_H
 #	include <wg_valueformat.h>
 #endif
 
-class WgValueField;
+#ifndef WG_VALUEFIELD_DOT_H
+#	include <wg_valuefield.h>
+#endif
+
 
 class WgValue;
 typedef	WgIStrongPtr<WgValue,WgInterfacePtr>	WgValuePtr;
@@ -61,32 +69,24 @@ public:
 	static WgValuePtr			Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
 	inline WgValuePtr			Ptr() { return WgValuePtr(_object(),this); }
 
+	inline void				SetFormatter( const WgValueFormatterPtr& pFormatter ) { m_pField->SetFormatter(pFormatter); }
+	inline void				ClearFormatter() { m_pField->ClearFormatter(); }
+	inline WgValueFormatterPtr	Formatter() const { return m_pField->Formatter(); }
 
-	virtual void				SetFormat( const WgValueFormatPtr& format ) = 0;
-	virtual WgValueFormatPtr	Format() const = 0;
+	inline void				SetStyle( const WgTextStylePtr& pStyle ) { m_pField->SetStyle(pStyle); }
+	inline void				ClearStyle() { m_pField->ClearStyle(); }
+	inline WgTextStylePtr	Style() const { return m_pField->Style(); }
 
-	virtual void				SetProperties( const WgTextpropPtr& pProp ) = 0;
-	virtual void				ClearProperties() = 0;
-	virtual WgTextpropPtr		Properties() const = 0;
+	inline void				SetPresenter( const WgTextPresenterPtr& pPresenter ) { m_pField->SetPresenter(pPresenter); }
+	inline void				ClearPresenter() { m_pField->ClearPresenter(); }
+	inline WgTextPresenterPtr	Presenter() const { return m_pField->Presenter(); }
 
-	virtual void				SetAlignment( WgOrigo alignment ) = 0;
-	virtual WgOrigo				Alignment() const = 0;
-
-	virtual void				SetTintMode( WgTintMode mode ) = 0;
-	virtual WgTintMode			TintMode() const = 0;
-
-	virtual void				SetAutoEllipsis(bool bAutoEllipsis) = 0;
-	virtual bool				AutoEllipsis() const = 0;
-
-	virtual WgState				State() const = 0;
-	virtual int					TextLength() const = 0;
+	inline WgState			State() const { return m_pField->State(); }
 protected:
 	WgObject * 			_object() const;
 
 
 	WgValueField *		m_pField;
-
-
 };
 
 

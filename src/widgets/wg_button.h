@@ -30,8 +30,8 @@
 #	include <wg_legacytextfield.h>
 #endif
 
-#ifndef WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
+#ifndef WG_LEGACYMODTEXT_DOT_H
+#	include <wg_legacymodtext.h>
 #endif
 
 #ifndef	WG_ICON_DOT_H
@@ -61,7 +61,7 @@ public:
 
 	//____ Interfaces ______________________________________
 
-	WgModText		label;
+	WgLegacyModText		label;
 	WgIcon			icon;
 
 	//____ Methods __________________________________________

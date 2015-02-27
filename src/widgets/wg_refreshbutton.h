@@ -26,8 +26,8 @@
 #	include <wg_button.h>
 #endif
 
-#ifndef	WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
+#ifndef	WG_LEGACYMODTEXT_DOT_H
+#	include <wg_legacymodtext.h>
 #endif
 
 class WgRefreshButton;
@@ -48,7 +48,7 @@ public:
 
 	//____ Interfaces ______________________________________
 
-	WgModText	refreshText;
+	WgLegacyModText	refreshText;
 
 	//____ Methods __________________________________________
 

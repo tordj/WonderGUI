@@ -72,12 +72,12 @@ void WgRulerLabels::SetDirection( WgDirection direction )
 
 //____ GetLabel() ________________________________________________________________
 
-WgModTextPtr	WgRulerLabels::GetLabel(int index)
+WgLegacyModTextPtr	WgRulerLabels::GetLabel(int index)
 {
 	if( index >= m_labels.Size() )
-		return WgModTextPtr();
+		return WgLegacyModTextPtr();
 
-	return WgModTextPtr(this, &m_labels.Get(index)->textInterface);
+	return WgLegacyModTextPtr(this, &m_labels.Get(index)->textInterface);
 }
 
 

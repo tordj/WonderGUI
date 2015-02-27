@@ -27,29 +27,16 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef WG_MODVALUE_DOT_H
+#	include <wg_modvalue.h>
 #endif
 
-#ifndef WG_VALUEFORMAT_DOT_H
-#	include <wg_valueformat.h>
-#endif
-
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
-
-#ifndef WG_INTERFACE_VALUEHOLDER_DOT_H
-#	include <wg_interface_valueholder.h>
-#endif
-
-class	WgFont;
 
 class WgValueDisplay;
 typedef	WgStrongPtr<WgValueDisplay,WgWidgetPtr>		WgValueDisplayPtr;
 typedef	WgWeakPtr<WgValueDisplay,WgWidgetWeakPtr>	WgValueDisplayWeakPtr;
 
-class WgValueDisplay : public WgWidget, protected WgLegacyTextHolder, public Wg_Interface_ValueHolder
+class WgValueDisplay : public WgWidget, protected WgModValueHolder
 {
 public:
 	static WgValueDisplayPtr	Create() { return WgValueDisplayPtr(new WgValueDisplay()); }
@@ -61,12 +48,9 @@ public:
 
 	//____ Interfaces _______________________________________
 
-	WgText		text;
+	WgModValue		value;
 
 	//____ Methods __________________________________________
-
-	void	SetFormat( const WgValueFormatPtr& pFormat );
-	WgValueFormatPtr	Format() const { return m_pFormat; }
 
 	WgSize	PreferredSize() const;
 
@@ -81,21 +65,13 @@ protected:
 	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 
-	void	_regenText();
-
-	WgWidget* _getWidget() { return this; }	// Needed for WgSilderTarget.
-
 private:
-	void	_valueModified();				///< Called when value has been modified.
-	void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
-
 	WgObject * _object() { return this; }
 	void	_onFieldDirty( WgField * pField );
 	void	_onFieldResize( WgField * pField );
+	void	_onValueModified( WgModValueField * pField );
 
-
-	WgValueFormatPtr	m_pFormat;
-	WgLegacyTextField			m_text;
+	WgModValueField		m_field;
 };
 
 

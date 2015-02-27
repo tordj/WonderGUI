@@ -59,6 +59,8 @@ struct WgTextAttr2
 		WgColor				bgColor;
 		WgTextDecoration	decoration;
 		WgTextLinkPtr		pLink;
+		
+		// TODO: Add flags for showing linespace, tab, CR, NBSP and both BREAK PERMITTED CHARACTERS.
 };
 
 
@@ -121,8 +123,8 @@ public:
 	inline int				CombSize( WgState state ) const;
 	inline WgTextDecoration CombDecoration( WgState state ) const;
 
-	void			ExportAttr( WgState state, WgTextAttr2 * pDest );
-	void			AddToAttr( WgState state, WgTextAttr2 * pDest );
+	void			ExportAttr( WgState state, WgTextAttr2 * pDest ) const;
+	void			AddToAttr( WgState state, WgTextAttr2 * pDest ) const;
 
 
 

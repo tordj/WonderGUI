@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef WG_MODTEXT_DOT_H
-#define WG_MODTEXT_DOT_H
+#ifndef WG_LEGACYMODTEXT_DOT_H
+#define WG_LEGACYMODTEXT_DOT_H
 
-#ifndef WG_TEXT_DOT_H
-#	include <wg_text.h>
+#ifndef WG_LEGACYTEXT_DOT_H
+#	include <wg_legacytext.h>
 #endif
 
 #ifndef WG_POINTERS_DOT_H
@@ -52,9 +52,9 @@ class WgCharSeq;
 class WgString;
 class WgCharBuffer;
 
-class WgModText;
-typedef	WgIStrongPtr<WgModText,WgTextPtr>	WgModTextPtr;
-typedef	WgIWeakPtr<WgModText,WgTextWeakPtr>	WgModTextWeakPtr;
+class WgLegacyModText;
+typedef	WgIStrongPtr<WgLegacyModText,WgLegacyTextPtr>	WgLegacyModTextPtr;
+typedef	WgIWeakPtr<WgLegacyModText,WgLegacyTextWeakPtr>	WgLegacyModTextWeakPtr;
 
 /**
  * @brief Interface to a text field with text that is modifiable through the api
@@ -64,16 +64,16 @@ typedef	WgIWeakPtr<WgModText,WgTextWeakPtr>	WgModTextWeakPtr;
  * 
 */
  
-class WgModText : public WgText
+class WgLegacyModText : public WgLegacyText
 {
 public:
-	WgModText( WgTextField * pField ) : WgText(pField) {};
+	WgLegacyModText( WgLegacyTextField * pField ) : WgLegacyText(pField) {};
 
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
-	static WgModTextPtr		Cast( const WgInterfacePtr& pInterface );
-	inline WgModTextPtr		Ptr() { return WgModTextPtr(_object(),this); }
+	static WgLegacyModTextPtr		Cast( const WgInterfacePtr& pInterface );
+	inline WgLegacyModTextPtr		Ptr() { return WgLegacyModTextPtr(_object(),this); }
 
 	inline void				Clear() { m_pField->Clear(); }
 
@@ -89,4 +89,4 @@ public:
 };
 
 
-#endif //WG_MODTEXT_DOT_H
+#endif //WG_LEGACYMODTEXT_DOT_H

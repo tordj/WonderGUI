@@ -24,7 +24,7 @@
 
 #include <wg_charseq.h>
 //#include <wg_texttool.h>
-//#include <wg_text.h>
+//#include <wg_legacytext.h>
 #include <wg_charbuffer.h>
 #include <wg_string.h>
 

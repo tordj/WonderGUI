@@ -22,66 +22,47 @@
 #ifndef	WG_VALUEFIELD_DOT_H
 #define WG_VALUEFIELD_DOT_H
 
-#ifndef WG_FIELD_DOT_H
-#	include <wg_field.h>
+#ifndef WG_PRESENTABLEFIELD_DOT_H
+#	include <wg_presentablefield.h>
 #endif
 
-#ifndef WG_CHARBUFFER_DOT_H
-#	include <wg_charbuffer.h>
-#endif
-
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
-
-#ifndef WG_VALUEFORMAT_DOT_H
-#	include <wg_valueformat.h>
+#ifndef WG_VALUEFORMATTER_DOT_H
+#	include <wg_valueformatter.h>
 #endif
 
 
 //____ WgValueHolder ___________________________________________________________
 
-class WgValueHolder : public WgFieldHolder
+class WgValueHolder : public WgPresentableHolder
 {
 public:
 };
 
 //____ WgValueField ____________________________________________________________
 
-class WgValueField : public WgField
+class WgValueField : public WgPresentableField
 {
 public:
 	WgValueField(WgValueHolder * pHolder);
-	~WgValueField();
 
-	void					SetFormat( const WgValueFormatPtr& pFormat );
-	inline WgValueFormatPtr	Format() const { return m_pFormat; }
+	void				SetFormatter( const WgValueFormatterPtr& pFormatter );
+	void				ClearFormatter();
+	inline WgValueFormatterPtr	Formatter() const { return m_pFormatter; }
 
-	void					SetProperties( const WgTextpropPtr& pProp );
-	void					ClearProperties();
-	inline WgTextpropPtr	Properties() const { return m_pProp; }
-
-	void					SetAlignment( WgOrigo alignment );
-	inline WgOrigo			Alignment() const { return m_alignment; }
-
-	void					SetAutoEllipsis(bool bAutoEllipsis);
-	inline bool				AutoEllipsis() const { return m_bAutoEllipsis; }
-
-	void					SetValue( Sint64 value );
+	virtual void		Clear();
+	virtual bool		Set( Sint64 value, int scale );
+	
+	void				OnRefresh();
+	inline Sint64		Value() const { return m_value; }
+	inline int			Scale() const { return m_scale; }
 
 protected:
-	void					_regenText();
-	void					_recalcSize();
-	inline WgSize			_preferredSize() const { return m_size; }
+	void				_regenText();
 
 	Sint64					m_value;
+	int						m_scale;
 	
-	WgValueFormatPtr		m_pFormat;
-	WgTextpropPtr			m_pProp;
-	WgOrigo					m_alignment;
-	bool					m_bAutoEllipsis;
-	WgCharBuffer			m_charBuffer;
-	WgSize					m_size;
+	WgValueFormatterPtr		m_pFormatter;
 };
 
 

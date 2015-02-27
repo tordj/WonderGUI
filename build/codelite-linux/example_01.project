@@ -58,6 +58,7 @@
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
         <IncludePath Value="../../src/textpresenters/"/>
+        <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
         <IncludePath Value="../../src/widgets/layers/"/>
@@ -115,6 +116,7 @@
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
         <IncludePath Value="../../src/textpresenters/"/>
+        <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
         <IncludePath Value="../../src/widgets/layers/"/>

@@ -78,6 +78,11 @@ int main ( int argc, char** argv )
 
 	WgBase::SetDefaultTextprop( pProp );
 
+	WgTextStylePtr pStyle = WgTextStyle::Create();
+	pStyle->SetFont(pFont);
+	pStyle->SetSize(8);
+	WgBase::SetDefaultStyle(pStyle);
+
 	// Init skins
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../../../resources/simple_button.bmp" );
@@ -139,6 +144,7 @@ int main ( int argc, char** argv )
 	pCheckbox->Icon()->Set( pCheckboxSkin );
 */
 
+/*
 	WgToggleGroupPtr pGroup = WgToggleGroup::Create();
 	
 
@@ -150,6 +156,24 @@ int main ( int argc, char** argv )
 		pFlexPanel->AddWidget( pCheckbox, WgCoord(10,20*i) );
 		pGroup->Add( pCheckbox );
 	}
+*/
+
+
+	WgTextDisplayPtr pText = WgTextDisplay::Create();
+	pText->text.Set( "THIS IS THE TEXT\nLINE TWO.\nAN EXTRA LONG LONG LONG LINE TO TEST THE CLIPPING AND RAND BEHAVIOURS." );
+	pFlexPanel->AddWidget( pText, WG_NORTHWEST, WG_EAST );
+	
+
+	WgStandardPresenterPtr pPresenter = WgStandardPresenter::Create();
+	pPresenter->SetAlignment( WG_CENTER );
+	pText->text.SetPresenter( pPresenter );
+
+
+	WgValueDisplayPtr pValue = WgValueDisplay::Create();
+	pValue->value.SetFormatter( WgTimeFormatter::Create("%2H:%2M:%2S"));
+	pValue->value.Set(3600+60+12);
+	pValue->value.SetPresenter( pPresenter );
+	pFlexPanel->AddWidget( pValue, WG_WEST, WG_SOUTHEAST );
 
 
 	//------------------------------------------------------
@@ -241,6 +265,7 @@ WgMouseButton translateMouseButton( Uint8 button )
 {
 	switch( button )
 	{
+		default:
 		case SDL_BUTTON_LEFT:
 			return WG_BUTTON_LEFT;
 		case SDL_BUTTON_MIDDLE:

@@ -47,8 +47,8 @@
 #	include <wg_icon.h>
 #endif
 
-#ifndef WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
+#ifndef WG_LEGACYMODTEXT_DOT_H
+#	include <wg_legacymodtext.h>
 #endif
 
 class WgColumnHeader;
@@ -70,7 +70,7 @@ public:
 
 	WgIcon				icon;
 	WgIcon				arrow;
-	WgModText			label;
+	WgLegacyModText			label;
 
 	//____ Methods _________________________________________
 

@@ -20,35 +20,60 @@
 
 =========================================================================*/
 
-#include <wg_edittext.h>
+#include <wg_standardformatter.h>
 
-const char WgEditText::CLASSNAME[] = {"EditText"};
+const char WgStandardFormatter::CLASSNAME[] = {"StandardFormatter"};
+
+//____ Constructor _____________________________________________________________
+
+WgStandardFormatter::WgStandardFormatter()
+{
+}
+
+WgStandardFormatter::WgStandardFormatter( const WgCharSeq& format )
+{
+}
+
+//____ Destructor ______________________________________________________________
+
+WgStandardFormatter::~WgStandardFormatter()
+{
+}
 
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgEditText::IsInstanceOf( const char * pClassName ) const
+bool WgStandardFormatter::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLegacyModText::IsInstanceOf(pClassName);
+	return WgValueFormatter::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgEditText::ClassName( void ) const
+const char * WgStandardFormatter::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgEditTextPtr WgEditText::Cast( const WgInterfacePtr& pInterface )
+WgStandardFormatterPtr WgStandardFormatter::Cast( const WgObjectPtr& pObject )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgEditTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgEditText*>(pInterface.RawPtr()) );
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgStandardFormatterPtr( static_cast<WgStandardFormatter*>(pObject.RawPtr()) );
 
 	return 0;
 }
 
+//____ Format() _______________________________________________________________
+
+WgString WgStandardFormatter::Format( Sint64 value, int scale ) const
+{	
+}
+
+WgString WgStandardFormatter::Format( double value ) const
+{
+}

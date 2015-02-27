@@ -58,22 +58,26 @@ public:
 	static WgModValuePtr		Cast( const WgInterfacePtr& pInterface );
 	inline WgModValuePtr		Ptr() { return WgModValuePtr(_object(),this); }
 
-	virtual void				Set( int value ) = 0;
-	virtual void				Set( Sint64 value ) = 0;
-	virtual void				Set( float value ) = 0;
-	virtual void				Set( double value ) = 0;
 
-	virtual Sint64				Value() const = 0;
-	
-	virtual void				SetFraction( float fraction ) = 0;	
-	virtual float				Fraction() const = 0;
+	inline void					Clear() { _field()->Clear(); }
+	inline bool					Set( Sint64 value, int scale = 1) { return _field()->Set(value,scale); }
 
-	virtual bool				SetRange( Sint64 min, Sint64 max ) = 0;
-	virtual Sint64				Min() const = 0;
-	virtual Sint64				Max() const = 0;
+
+/*	For the future...
+	inline void					Set( float value );
+	inline void					Set( double value );
+*/
+
+	inline Sint64				Value() const { return _field()->Value(); }
+	inline int					Scale() const { return _field()->Scale(); }
+
+	inline bool					SetRange( Sint64 min, Sint64 max ) { return _field()->SetRange(min,max); }
+	inline Sint64				Min() const { return _field()->Min(); }
+	inline Sint64				Max() const { return _field()->Max(); }
 
 private:
-	inline	WgModValueField * 	_field() { return static_cast<WgModValueField*>(m_pField); }
+	inline	WgModValueField * 		_field() { return static_cast<WgModValueField*>(m_pField); }
+	inline	const WgModValueField * _field() const { return static_cast<WgModValueField*>(m_pField); }
 };
 
 

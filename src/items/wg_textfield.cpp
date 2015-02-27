@@ -24,65 +24,16 @@
 
 //____ Constructor _____________________________________________________________
 
-WgTextField::WgTextField( WgTextHolder * pHolder ) : WgField( pHolder )
+WgTextField::WgTextField( WgTextHolder * pHolder ) : WgPresentableField( pHolder )
 {
-	_presenter()->InitTextField(this);
-}
-
-//____ Destructor ______________________________________________________________
-
-WgTextField::~WgTextField()
-{
-	_presenter()->ExitTextField(this);
-}
-
-
-//____ SetStyle() ______________________________________________________________
-
-void WgTextField::SetStyle( const WgTextStylePtr& pStyle )
-{
-	m_pStyle = pStyle;
-	_presenter()->OnStyleChange(this);
-}
-
-//____ ClearStyle() ____________________________________________________________
-
-void WgTextField::ClearStyle()
-{
-	m_pStyle = 0;
-	_presenter()->OnStyleChange(this);
-}
-
-//____ SetPresenter() __________________________________________________________
-
-void WgTextField::SetPresenter( const WgTextPresenterPtr& pPresenter )
-{
-	if( pPresenter == m_pPresenter )
-		return;
-		
-	_presenter()->ExitTextField(this);
-	m_pPresenter = pPresenter;
-	_presenter()->InitTextField(this);
-}
-
-//____ ClearPresenter() ________________________________________________________
-
-void WgTextField::ClearPresenter()
-{
-	if( !m_pPresenter )
-		return;
-		
-	_presenter()->ExitTextField(this);
-	m_pPresenter = 0;
-	_presenter()->InitTextField(this);
 }
 
 //____ Clear() _________________________________________________________________
 
 void WgTextField::Clear()
 {
-	int removed = m_text.Length();
-	m_text.Clear();
+	int removed = m_charBuffer.Length();
+	m_charBuffer.Clear();
 	_presenter()->OnTextModified(this, 0, removed, 0 );
 }
 
@@ -90,31 +41,31 @@ void WgTextField::Clear()
 
 void WgTextField::Set( const WgCharSeq& seq )
 {
-	int removed = m_text.Length();
-	m_text = seq;
-	_presenter()->OnTextModified(this, 0, removed, m_text.Length() );
+	int removed = m_charBuffer.Length();
+	m_charBuffer = seq;
+	_presenter()->OnTextModified(this, 0, removed, m_charBuffer.Length() );
 }
 
 void WgTextField::Set( const WgCharBuffer * buffer )
 {
-	int removed = m_text.Length();
-	m_text = * buffer;
-	_presenter()->OnTextModified(this, 0, removed, m_text.Length() );
+	int removed = m_charBuffer.Length();
+	m_charBuffer = * buffer;
+	_presenter()->OnTextModified(this, 0, removed, m_charBuffer.Length() );
 }
 
 void WgTextField::Set( const WgString& str )
 {
-	int removed = m_text.Length();
-	m_text = str;
-	_presenter()->OnTextModified(this, 0, removed, m_text.Length() );
+	int removed = m_charBuffer.Length();
+	m_charBuffer = str;
+	_presenter()->OnTextModified(this, 0, removed, m_charBuffer.Length() );
 }
 
 //____ Append() ________________________________________________________________
 
 int WgTextField::Append( const WgCharSeq& seq )
 {
-	int ofs = m_text.Length();
-	int len = m_text.PushBack(seq);
+	int ofs = m_charBuffer.Length();
+	int len = m_charBuffer.PushBack(seq);
 	_presenter()->OnTextModified(this, ofs, 0, len );
 }
 
@@ -122,7 +73,7 @@ int WgTextField::Append( const WgCharSeq& seq )
 
 int WgTextField::Insert( int ofs, const WgCharSeq& seq )
 {
-	m_text.Insert(ofs,seq);
+	m_charBuffer.Insert(ofs,seq);
 	_presenter()->OnTextModified(this, ofs, 0, seq.Length() );
 }
 
@@ -130,7 +81,7 @@ int WgTextField::Insert( int ofs, const WgCharSeq& seq )
 
 int WgTextField::Replace( int ofs, int nDelete, const WgCharSeq& seq )
 {
-	m_text.Replace(ofs,nDelete,seq);
+	m_charBuffer.Replace(ofs,nDelete,seq);
 	_presenter()->OnTextModified(this, ofs, nDelete, seq.Length() );
 }
 
@@ -138,99 +89,14 @@ int WgTextField::Replace( int ofs, int nDelete, const WgCharSeq& seq )
 
 int WgTextField::Delete( int ofs, int len )
 {
-	m_text.Delete(ofs,len);
+	m_charBuffer.Delete(ofs,len);
 	_presenter()->OnTextModified(this, ofs, len, 0 );	
 }
 
-//____ SetState() ______________________________________________________________
+//____ GetMarkedLink() _________________________________________________________
 
-void WgTextField::SetState( WgState state )
+WgTextLinkPtr WgTextField::GetMarkedLink() const
 {
-	if( state == m_state )
-		return;
-
-	WgState old = m_state;
-	m_state = state;
-	_presenter()->OnStateChange( this, state, old );
+	//TODO: Implement!
 }
 
-//____ PreferredSize() _________________________________________________________
-
-WgSize WgTextField::PreferredSize() const
-{
-	return _presenter()->PreferredSize(this);
-}
-
-//____ MatchingWidth() _________________________________________________________
-
-int WgTextField::MatchingWidth( int height ) const
-{
-	return _presenter()->MatchingWidth(this, height);
-}
-
-//____ MatchingHeight() ________________________________________________________
-
-int WgTextField::MatchingHeight( int width ) const
-{
-	return _presenter()->MatchingHeight(this, width);
-}
-
-//____ CoordToChar() ___________________________________________________________
-
-int WgTextField::CoordToChar( WgCoord pos ) const
-{
-	return _presenter()->CoordToChar(this,pos);
-}
-
-//____ CharToRect() ____________________________________________________________
-
-WgRect WgTextField::CharToRect( int charOfs ) const
-{
-	return _presenter()->CharToRect(this, charOfs);
-}
-
-//____ OnRefresh() _____________________________________________________________
-
-void WgTextField::OnRefresh()
-{
-	return _presenter()->OnRefresh(this);
-}
-
-//____ OnNewSize() _____________________________________________________________
-
-void WgTextField::OnNewSize( const WgSize& size )
-{
-	if( size == m_size )
-		return;
-
-	m_size = size;
-	_presenter()->OnFieldResize(this,size);
-}
-
-//____ OnEvent() _______________________________________________________________
-
-bool WgTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEventHandler, const WgRect& container )
-{
-	
-}
-
-//_____ OnRender() _____________________________________________________________
-
-void  WgTextField::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip )
-{
-	_presenter()->RenderTextField(this, pDevice, _canvas, _clip);
-}
-
-//____ Get() ___________________________________________________________________
-
-WgString WgTextField::Get() const
-{
-	return WgString(&m_text);
-}
-
-//____ RectForRange() __________________________________________________________
-
-WgRect  WgTextField::RectForRange( int ofs, int length ) const
-{
-	_presenter()->RectForRange(this, ofs, length);
-}

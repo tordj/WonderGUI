@@ -20,35 +20,34 @@
 
 =========================================================================*/
 
-#include <wg_edittext.h>
+#include <wg_valueformatter.h>
 
-const char WgEditText::CLASSNAME[] = {"EditText"};
+const char WgValueFormatter::CLASSNAME[] = {"ValueFormatter"};
 
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgEditText::IsInstanceOf( const char * pClassName ) const
+bool WgValueFormatter::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLegacyModText::IsInstanceOf(pClassName);
+	return WgObject::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgEditText::ClassName( void ) const
+const char * WgValueFormatter::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgEditTextPtr WgEditText::Cast( const WgInterfacePtr& pInterface )
+WgValueFormatterPtr WgValueFormatter::Cast( const WgObjectPtr& pObject )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgEditTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgEditText*>(pInterface.RawPtr()) );
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgValueFormatterPtr( static_cast<WgValueFormatter*>(pObject.RawPtr()) );
 
 	return 0;
 }
-

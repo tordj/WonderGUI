@@ -316,5 +316,16 @@
 #	include <wg_packlist.h>
 #endif
 
+#ifndef WG_TEXTPRESENTER_DOT_N
+#	include <wg_textpresenter.h>
+#endif
+
+#ifndef WG_STANDARDPRESENTER_DOT_H
+#	include <wg_standardpresenter.h>
+#endif
+
+#ifndef WG_TIMEFORMATTER_DOT_H
+#	include <wg_timeformatter.h>
+#endif
 
 #endif //WONDERGUI_DOT_H

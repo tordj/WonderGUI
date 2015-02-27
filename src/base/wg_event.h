@@ -63,18 +63,18 @@ class WgScrollbar;
 class WgMenu;
 class WgPopupLayer;
 class WgModalLayer;
-class WgText;
-class WgModText;
+class WgLegacyText;
+class WgLegacyModText;
 class WgEditText;
 
-typedef	WgIStrongPtr<WgText,WgInterfacePtr>	WgTextPtr;
-typedef	WgIWeakPtr<WgText,WgInterfaceWeakPtr> WgTextWeakPtr;
+typedef	WgIStrongPtr<WgLegacyText,WgInterfacePtr>	WgLegacyTextPtr;
+typedef	WgIWeakPtr<WgLegacyText,WgInterfaceWeakPtr> WgLegacyTextWeakPtr;
 
-typedef	WgIStrongPtr<WgModText,WgTextPtr>	WgModTextPtr;
-typedef	WgIWeakPtr<WgModText,WgTextWeakPtr>	WgModTextWeakPtr;
+typedef	WgIStrongPtr<WgLegacyModText,WgLegacyTextPtr>	WgLegacyModTextPtr;
+typedef	WgIWeakPtr<WgLegacyModText,WgLegacyTextWeakPtr>	WgLegacyModTextWeakPtr;
 
-typedef	WgIStrongPtr<WgEditText,WgModTextPtr>	WgEditTextPtr;
-typedef	WgIWeakPtr<WgEditText,WgModTextWeakPtr>	WgEditTextWeakPtr;
+typedef	WgIStrongPtr<WgEditText,WgLegacyModTextPtr>	WgEditTextPtr;
+typedef	WgIWeakPtr<WgEditText,WgLegacyModTextWeakPtr>	WgEditTextWeakPtr;
 
 
 typedef WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;

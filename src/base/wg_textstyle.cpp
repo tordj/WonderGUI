@@ -30,6 +30,10 @@ const char WgTextStyle::CLASSNAME[] = {"TextStyle"};
 
 WgTextStyle::WgTextStyle()
 {
+	m_pFirstChild = 0;
+	m_pNextSibling = 0;
+	m_pPrevSibling = 0;
+
 	_clearSet( &m_specAttr );
 	_clearSet( &m_combAttr );
 }
@@ -475,7 +479,7 @@ void WgTextStyle::ClearDecoration( WgState state )
 
 //____ ExportAttr() ____________________________________________________________
 
-void WgTextStyle::ExportAttr( WgState state, WgTextAttr2 * pDest )
+void WgTextStyle::ExportAttr( WgState state, WgTextAttr2 * pDest ) const
 {
 	int idx = WgUtil::_stateToIndex(state);
 
@@ -486,11 +490,17 @@ void WgTextStyle::ExportAttr( WgState state, WgTextAttr2 * pDest )
 	pDest->color		= m_combAttr.color[idx];
 	pDest->bgColor		= m_combAttr.bgColor[idx];
 	pDest->decoration	= m_combAttr.decoration[idx];
+	
+	if( pDest->fontStyle == WG_STYLE_INHERIT )
+		pDest->fontStyle = WG_STYLE_NORMAL;
+		
+	if( pDest->size == WG_FONTSIZE_INHERIT )
+		pDest->size = 12;								// Default to size 12.
 }
 
 //____ AddToAttr() _____________________________________________________________
 
-void WgTextStyle::AddToAttr( WgState state, WgTextAttr2 * pDest )
+void WgTextStyle::AddToAttr( WgState state, WgTextAttr2 * pDest ) const 
 {
 	int idx = WgUtil::_stateToIndex(state);
 
