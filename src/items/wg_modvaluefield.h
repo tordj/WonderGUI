@@ -55,7 +55,7 @@ public:
 	inline Sint64		Min() const { return m_minValue; }
 	inline Sint64		Max() const { return m_maxValue; }
 
-	void	OnValueModified() { static_cast<WgModValueHolder*>(m_pHolder)->_onValueModified(this); }
+	void				OnValueModified() { static_cast<WgModValueHolder*>(m_pHolder)->_onValueModified(this); }
 
 protected:
 	Sint64				m_minValue;

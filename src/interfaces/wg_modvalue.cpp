@@ -52,3 +52,41 @@ WgModValuePtr WgModValue::Cast( const WgInterfacePtr& pInterface )
 	return 0;
 }
 
+//____ Clear() _________________________________________________________________
+
+void WgModValue::Clear() 
+{ 
+	bool bModified = _field()->Value() != 0;
+	_field()->Clear();
+
+	if( bModified )
+		_field()->OnValueModified(); 
+}
+
+//____ Set() ___________________________________________________________________
+
+bool WgModValue::Set( Sint64 value, int scale ) 
+{ 
+	if( _field()->Set(value,scale) )
+	{
+		_field()->OnValueModified();
+		return true;
+	} 
+	else
+		return false;
+
+}
+
+//____ SetRange() ______________________________________________________________
+
+bool WgModValue::SetRange( Sint64 min, Sint64 max ) 
+{ 
+	Sint64 val = _field()->Value();
+	
+	bool retVal = _field()->SetRange(min,max); 
+	if( val != _field()->Value() )
+		_field()->OnValueModified();
+	
+	return retVal;
+}
+

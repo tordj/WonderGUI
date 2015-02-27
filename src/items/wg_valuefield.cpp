@@ -70,7 +70,7 @@ void WgValueField::Clear()
 
 bool WgValueField::Set( Sint64 value, int scale )
 {
-	if( m_value != value && m_scale != scale )
+	if( m_value != value || m_scale != scale )
 	{
 		if( scale <= 0 )
 			return false;
@@ -121,4 +121,6 @@ void WgValueField::_regenText()
 	if( m_pFormatter )
 		m_charBuffer = pFormatter->Format(m_value, m_scale);
 	_onDirty();
+	
+	//TODO: Conditional call to _onResize();
 }

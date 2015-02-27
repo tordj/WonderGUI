@@ -59,8 +59,8 @@ public:
 	inline WgModValuePtr		Ptr() { return WgModValuePtr(_object(),this); }
 
 
-	inline void					Clear() { _field()->Clear(); }
-	inline bool					Set( Sint64 value, int scale = 1) { return _field()->Set(value,scale); }
+	void						Clear();
+	bool						Set( Sint64 value, int scale = 1);
 
 
 /*	For the future...
@@ -71,7 +71,7 @@ public:
 	inline Sint64				Value() const { return _field()->Value(); }
 	inline int					Scale() const { return _field()->Scale(); }
 
-	inline bool					SetRange( Sint64 min, Sint64 max ) { return _field()->SetRange(min,max); }
+	bool						SetRange( Sint64 min, Sint64 max );
 	inline Sint64				Min() const { return _field()->Min(); }
 	inline Sint64				Max() const { return _field()->Max(); }
 

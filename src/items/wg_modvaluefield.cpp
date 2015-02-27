@@ -32,6 +32,8 @@ void WgModValueField::Clear()
 	m_maxValue = INT64_MAX;
 }
 
+//____ Set() ___________________________________________________________________
+
 bool WgModValueField::Set( Sint64 value, int scale )
 {
 	if( value > m_maxValue )
@@ -40,7 +42,9 @@ bool WgModValueField::Set( Sint64 value, int scale )
 		value = m_minValue;
 	return WgValueField::Set(value,scale);
 }
-	
+
+//____ SetRange() ______________________________________________________________
+
 bool WgModValueField::SetRange( Sint64 min, Sint64 max )
 {
 	if( min > max )
@@ -51,10 +55,8 @@ bool WgModValueField::SetRange( Sint64 min, Sint64 max )
 	
 	Sint64 val = m_value;
 	WG_LIMIT( val, min, max );
+	m_value = val;
 	if( val != m_value )
-	{
-		m_value = val;
-		OnValueModified();
-	}
+		WgValueField::Set(val, m_scale);
 	return true;
 }	

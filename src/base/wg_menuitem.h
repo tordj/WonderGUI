@@ -42,8 +42,6 @@
 #endif
 
 class WgChar;
-
-class WgLegacyTextField;
 class WgGfxAnim;
 
 class WgMenu;
