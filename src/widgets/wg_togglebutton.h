@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_LEGACYMODTEXT_DOT_H
-#	include <wg_legacymodtext.h>
+#ifndef WG_MODTEXT_DOT_H
+#	include <wg_modtext.h>
 #endif
 
 #ifndef WG_ICON_DOT_H
@@ -61,7 +61,7 @@ typedef	WgWeakPtr<WgToggleGroup,WgObjectWeakPtr>	WgToggleGroupWeakPtr;
  *
  **/
 
-class	WgToggleButton : public WgWidget, protected WgIconHolder, protected WgLegacyTextHolder
+class	WgToggleButton : public WgWidget, protected WgIconHolder, protected WgTextHolder
 {
 friend class WgToggleGroup;
 public:
@@ -84,7 +84,7 @@ public:
 
 	//____ Interfaces() ____________________________________
 
-	WgLegacyModText		label;
+	WgModText		label;
 	WgIcon			icon;
 
 
@@ -134,7 +134,7 @@ private:
 	bool			m_bReturnPressed;
 	bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 
-	WgLegacyTextField		m_label;
+	WgTextField		m_label;
 	WgIconField		m_icon;
 	WgToggleGroupPtr	m_pToggleGroup;
 

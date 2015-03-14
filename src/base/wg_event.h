@@ -63,6 +63,8 @@ class WgScrollbar;
 class WgMenu;
 class WgPopupLayer;
 class WgModalLayer;
+
+
 class WgLegacyText;
 class WgLegacyModText;
 class WgEditText;

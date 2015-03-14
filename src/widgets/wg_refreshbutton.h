@@ -26,8 +26,8 @@
 #	include <wg_button.h>
 #endif
 
-#ifndef	WG_LEGACYMODTEXT_DOT_H
-#	include <wg_legacymodtext.h>
+#ifndef	WG_MODTEXT_DOT_H
+#	include <wg_modtext.h>
 #endif
 
 class WgRefreshButton;
@@ -48,7 +48,7 @@ public:
 
 	//____ Interfaces ______________________________________
 
-	WgLegacyModText	refreshText;
+	WgModText	refreshText;
 
 	//____ Methods __________________________________________
 
@@ -104,7 +104,7 @@ protected:
 	WgGfxAnimPtr	m_pRefreshAnim;
 	AnimTarget		m_animTarget;
 	RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
-	WgLegacyTextField		m_refreshText;
+	WgTextField		m_refreshText;
 	bool			m_bRestartable;
 
 	bool			m_bRefreshing;

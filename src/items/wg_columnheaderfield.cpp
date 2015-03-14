@@ -27,8 +27,6 @@ WgColumnHeaderField::WgColumnHeaderField(WgColumnHeaderHolder * pHolder) : WgFie
 	m_height = 0;
 	m_width = 0;
 	m_bPressed = false;
-	label.SetWrap(false);			// Labels by default don't wrap.
-	label.SetAlignment( WG_WEST );
 }
 
 //____ SetSkin() ______________________________________________________

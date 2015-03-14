@@ -31,7 +31,6 @@
   <VirtualDirectory Name="widgets">
     <File Name="../../src/widgets/wg_animplayer.cpp"/>
     <File Name="../../src/widgets/wg_animplayer.h"/>
-    <File Name="../../src/widgets/wg_button.cpp"/>
     <File Name="../../src/widgets/wg_button.h"/>
     <File Name="../../src/widgets/wg_combobox.cpp"/>
     <File Name="../../src/widgets/wg_combobox.h"/>
@@ -138,6 +137,7 @@
     <File Name="../../src/items/wg_valuefield.h"/>
     <File Name="../../src/items/wg_presentablefield.h"/>
     <File Name="../../src/items/wg_presentablefield.cpp"/>
+    <File Name="../../src/widgets/wg_button.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
     <File Name="../../src/interfaces/wg_columnheader.cpp"/>

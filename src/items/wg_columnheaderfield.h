@@ -26,8 +26,8 @@
 #	include <wg_iconfield.h>
 #endif
 
-#ifndef WG_LEGACYTEXTFIELD_DOT_H
-#	include <wg_legacytextfield.h>
+#ifndef WG_TEXTFIELD_DOT_H
+#	include <wg_textfield.h>
 #endif
 
 
@@ -36,7 +36,7 @@ class WgColumnHeaderHolder : public WgFieldHolder
 };
 
 
-class WgColumnHeaderField : public WgField, protected WgIconHolder, protected WgLegacyTextHolder
+class WgColumnHeaderField : public WgField, protected WgIconHolder, protected WgTextHolder
 {
 public:
 	WgColumnHeaderField(WgColumnHeaderHolder * pHolder);
@@ -45,7 +45,7 @@ public:
 
 	WgIconField		icon;
 	WgIconField		arrow;
-	WgLegacyTextField		label;
+	WgTextField		label;
 
 	//____ Methods _____________________________________
 

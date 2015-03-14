@@ -55,7 +55,6 @@
 class	WgSurface;
 class	WgFont;
 class	WgGfxAnim;
-class	WgLegacyTextField;
 
 class WgMenu;
 typedef	WgStrongPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;

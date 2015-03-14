@@ -42,8 +42,6 @@ WgToggleButton::WgToggleButton() : m_label(this), m_icon(this), label(&m_label),
 	m_bReturnPressed	= false;
 	m_bFlipOnRelease	= false;
 
-	m_label.SetAutoEllipsis(IsAutoEllipsisDefault());
-
 	m_clickArea			= DEFAULT;
 }
 
@@ -110,8 +108,8 @@ WgSize WgToggleButton::PreferredSize() const
 	WgSize iconPreferredSize;
 	WgSize textPreferredSize;
 
-	if( m_label.Length() > 0 )
-		textPreferredSize = m_label.unwrappedSize();
+	if( !m_label.IsEmpty() )
+		textPreferredSize = m_label.PreferredSize();
 
 	if( !m_icon.IsEmpty() )
 	{
@@ -242,7 +240,7 @@ void WgToggleButton::_onStateChanged( WgState oldState )
 	
 	WgWidget::_onStateChanged(oldState);
 
-	m_label.setState( m_state );
+	m_label.SetState( m_state );
 
 	if( !m_icon.IsEmpty() && !m_icon.Skin()->IsStateIdentical(m_state, oldState) )
 		_requestRender();		//TODO: Just request render on icon?
@@ -263,7 +261,6 @@ void WgToggleButton::_onStateChanged( WgState oldState )
 void WgToggleButton::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	m_label.SetColorSkin(pNewSkin);
 }
 
 
@@ -288,10 +285,10 @@ void WgToggleButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 	// Print text
 
- 	if( m_label.Lines()!= 0 )
+ 	if( !m_label.IsEmpty() )
 	{
 		WgRect	textRect = m_icon.GetTextRect( contentRect, iconRect );
-		pDevice->PrintText( _clip, &m_label, textRect );
+		m_label.OnRender( pDevice, textRect, _clip );
 	}
 }
 
@@ -312,7 +309,7 @@ void WgToggleButton::_onNewSize( const WgSize& size )
 	if( m_pSkin )
 		contentRect = m_pSkin->ContentRect(contentRect, m_state );
 
-	m_label.setLineWidth( m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect )).w );
+	m_label.OnNewSize( m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect )) );
 }
 
 
@@ -325,7 +322,6 @@ void WgToggleButton::_onCloneContent( const WgWidget * _pOrg )
 	m_bFlipOnRelease	= pOrg->m_bFlipOnRelease;
 	m_clickArea			= pOrg->m_clickArea;
 
-	m_label.clone( &pOrg->m_label );
 	m_icon.OnCloneContent( &pOrg->m_icon );
 }
 
@@ -339,7 +335,7 @@ bool WgToggleButton::_markTestTextArea( int _x, int _y )
 
 	contentRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
 
-	if( m_label.CoordToOfs( WgCoord(_x,_y), contentRect ) != -1 )
+	if( m_label.CoordToChar( WgCoord(_x,_y) - contentRect.Pos() ) != -1 )
 		return true;
 
 	return false;

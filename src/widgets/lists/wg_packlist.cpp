@@ -1570,7 +1570,7 @@ void WgPackList::_refreshHeader()
 {
 	WgSize wantedIconSize = m_header.icon.PreferredSize();
 	WgSize wantedArrowSize = m_header.arrow.PreferredSize();
-	WgSize wantedTextSize = m_header.label.unwrappedSize();
+	WgSize wantedTextSize = m_header.label.PreferredSize();
 
 	WgSize wantedSize;
 

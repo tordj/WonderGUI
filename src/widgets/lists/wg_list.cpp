@@ -23,7 +23,7 @@
 #include <wg_list.h>
 #include <wg_eventhandler.h>
 #include <wg_iconfield.h>
-#include <wg_legacytextfield.h>
+#include <wg_textfield.h>
 #include <wg_gfxdevice.h>
 
 
@@ -536,7 +536,7 @@ int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostEvent
 //____ _renderHeader() ________________________________________________________
 
 void WgList::_renderHeader( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip, 
-									const WgSkinPtr& pSkin, WgLegacyTextField * pText, WgIconField * pLabelIcon, 
+									const WgSkinPtr& pSkin, WgTextField * pText, WgIconField * pLabelIcon, 
 									WgIconField * pSortIcon, WgState state, bool bShowSortIcon, bool bInvertedSort )
 {
 	WgRect canvas( _canvas );
@@ -564,5 +564,5 @@ void WgList::_renderHeader( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 		pLabelIcon->Skin()->Render( pDevice, iconRect, state, _clip );
 
 	if( !pText->IsEmpty() )
-		pDevice->PrintText( _clip, pText, labelRect );
+		pText->OnRender( pDevice, labelRect, _clip );
 }

@@ -35,11 +35,6 @@ const char WgButton::CLASSNAME[] = {"Button"};
 
 WgButton::WgButton() : m_text(this), m_icon(this), label(&m_text), icon(&m_icon)
 {
-	m_text.SetAlignment( WG_CENTER );
-	m_text.setLineWidth(Size().w);					// We start with no textborders...
-	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
- 	m_state				= WG_STATE_NORMAL;
-
 	m_bDownOutside	 = false;
 	m_bPressed 		 = false;
 	m_bReturnPressed = false;
@@ -88,14 +83,14 @@ int WgButton::MatchingHeight( int width ) const
 	if( m_pSkin )
 		height = m_pSkin->PreferredSize().h;
 
-	if( m_text.Length() != 0 )
+	if( !m_text.IsEmpty() )
 	{
 		WgSize padding;
 
 		if( m_pSkin )
 			padding = m_pSkin->ContentPadding();
 
-		int heightForText = m_text.heightForWidth(width-padding.w) + padding.h;
+		int heightForText = m_text.MatchingHeight(width-padding.w) + padding.h;
 		if( heightForText > height )
 			height = heightForText;
 	}
@@ -112,8 +107,8 @@ WgSize WgButton::PreferredSize() const
 {
 	WgSize preferred;
 
-	if( m_text.Length() != 0 )
-		preferred = m_text.unwrappedSize();
+	if( !m_text.IsEmpty() )
+		preferred = m_text.PreferredSize();
 	
 	if( m_pSkin )
 		preferred = m_pSkin->SizeForContent(preferred);
@@ -132,10 +127,7 @@ void WgButton::_onStateChanged( WgState oldState )
 	if(m_icon.Skin() && !m_icon.Skin()->IsStateIdentical(m_state,oldState))
 			_requestRender();
 
-	m_text.setState(m_state);
-
-	//TODO: Request render if text properties have changed.
-
+	m_text.SetState(m_state);
 }
 
 //____ _onSkinChanged() _______________________________________________________
@@ -143,7 +135,6 @@ void WgButton::_onStateChanged( WgState oldState )
 void WgButton::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	m_text.SetColorSkin(pNewSkin);
 }
 
 
@@ -158,7 +149,7 @@ void WgButton::_onNewSize( const WgSize& size )
 
 	WgRect textRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
 
-	m_text.setLineWidth(textRect.w);
+	m_text.OnNewSize( textRect );
 }
 
 
@@ -186,7 +177,7 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 	// Print text
 
  	if( !m_text.IsEmpty() )
-		pDevice->PrintText( WgRect(textRect,_clip), &m_text, textRect );
+		m_text.OnRender( pDevice, textRect, _clip );
 }
 
 //____ _onEvent() ______________________________________________________________
@@ -279,6 +270,7 @@ void WgButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 void WgButton::_onRefresh( void )
 {
 	WgWidget::_onRefresh();
+	m_text.OnRefresh();
 
 	//TODO: Handling of icon and text.
 }
@@ -319,7 +311,9 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 
 	m_icon.OnCloneContent( &pOrg->m_icon );
 
-	m_text.clone(&pOrg->m_text);
+	//TODO: Support cloning for text items.
+//	m_text.clone(&pOrg->m_text);
+	
 	m_bDownOutside	= pOrg->m_bDownOutside;
 }
 

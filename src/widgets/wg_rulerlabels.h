@@ -9,12 +9,8 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_LEGACYMODTEXT_DOT_H
-#	include <wg_legacymodtext.h>
-#endif
-
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
+#ifndef WG_MODTEXT_DOT_H
+#	include <wg_modtext.h>
 #endif
 
 class WgRulerLabels;
@@ -23,7 +19,7 @@ typedef	WgWeakPtr<WgRulerLabels,WgWidgetWeakPtr>	WgRulerLabelsWeakPtr;
 
 //____ WgRulerLabels ____________________________________________________________
 
-class WgRulerLabels : public WgWidget, protected WgLegacyTextHolder
+class WgRulerLabels : public WgWidget, protected WgTextHolder
 {
 public:
 	static WgRulerLabelsPtr	Create() { return WgRulerLabelsPtr(new WgRulerLabels()); }
@@ -35,10 +31,10 @@ public:
 	
 	//____ Methods __________________________________________
 	
-	void			AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProp, float offset, WgOrigo origo );
+	void			AddLabel( const WgCharSeq& text, const WgTextStylePtr& pStyle, float offset );
  	WgSize			PreferredSize() const;
 	void			SetDirection( WgDirection direction );
-	WgLegacyModTextPtr	GetLabel(int index);
+	WgModTextPtr	GetLabel(int index);
 
 
 protected:
@@ -59,10 +55,10 @@ protected:
 	class Label : public WgLink
 	{
 	public:
-		Label(WgLegacyTextHolder*pHolder) : textField(pHolder), textInterface(&textField) {}
+		Label(WgTextHolder*pHolder) : textField(pHolder), textInterface(&textField) {}
 		LINK_METHODS(Label);
-		WgLegacyModText	textInterface;
-		WgLegacyTextField	textField;
+		WgModText	textInterface;
+		WgTextField	textField;
 		float		offset;
 	};
 	

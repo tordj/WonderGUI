@@ -20,14 +20,13 @@
 
 =========================================================================*/
 
-
-
 #include <wg_refreshbutton.h>
 #include <wg_gfxdevice.h>
 #include <wg_gfxanim.h>
 #include <wg_charseq.h>
 #include <wg_util.h>
 #include <wg_key.h>
+#include <wg_event.h>
 
 const char WgRefreshButton::CLASSNAME[] = {"RefreshButton"};
 
@@ -178,9 +177,8 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 {
 	Uint32 w = size.w;
 
-	if( m_pSkin )
-		w -= m_pSkin->ContentPadding().w;
-	m_refreshText.setLineWidth(w);
+	WgSize contentSize = m_pSkin ? size - m_pSkin->ContentPadding() : size;
+	m_refreshText.OnNewSize(contentSize);
 
 	WgButton::_onNewSize( size );
 }
@@ -324,7 +322,7 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 	// Print text
 
-	WgLegacyTextField * pText;
+	WgTextField * pText;
 
 	if( m_bRefreshing )
 		pText = &m_refreshText;
@@ -333,13 +331,10 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
  	if( !pText->IsEmpty() )
 	{
-		pText->setState(m_state);
-
-		if( m_pSkin )
-			pText->SetColorSkin( m_pSkin );
+		pText->SetState(m_state);		//TODO: Should be done when state actually is set.
 
 		WgRect clip(textRect,_clip);
-		pDevice->PrintText( clip, pText, textRect );
+		pText->OnRender(pDevice, textRect, clip );
 	}
 }
 
@@ -356,7 +351,6 @@ void WgRefreshButton::_onCloneContent( const WgWidget * _pOrg )
 	m_pRefreshAnim		= pOrg->m_pRefreshAnim;
 	m_animTarget		= pOrg->m_animTarget;
 	m_refreshMode		= pOrg->m_refreshMode;
-	m_refreshText.clone(&pOrg->m_refreshText);
 	m_bRestartable		= pOrg->m_bRestartable;
 
 	m_bRefreshing		= pOrg->m_bRefreshing;
