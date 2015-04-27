@@ -40,7 +40,7 @@
 #endif
 
 class WgPresentableField;
-struct WgEditableFieldState;
+struct WgEditState;
 
 class WgGfxDevice;
 class WgCharBuffer;
@@ -66,8 +66,7 @@ public:
 
 	virtual int		CoordToCaretPos( WgPresentableField * pField, WgCoord pos ) = 0;
 
-	virtual void 	RenderField( WgPresentableField * pText, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip ) = 0;
-	virtual void 	RenderEditableField( WgPresentableField * pText, WgEditableFieldState * pEditState, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip ) = 0;
+	virtual void 	RenderField( WgPresentableField * pText, WgGfxDevice * pDevice, WgEditState * pEditState, const WgRect& canvas, const WgRect& clip ) = 0;
 
 	virtual void	OnTextModified( WgPresentableField * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
 	virtual void	OnFieldResize( WgPresentableField * pText, WgSize newSize ) = 0;
@@ -75,7 +74,7 @@ public:
 	virtual void	OnStyleChange( WgPresentableField * pText ) = 0;
 	virtual void	OnRefresh( WgPresentableField * pText ) = 0;
 
-	virtual int		MoveCaret( WgPresentableField * pText, WgEditableFieldState * pEditState, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
+	virtual int		MoveCaret( WgPresentableField * pText, WgEditState * pEditState, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
 
 	virtual WgSize	PreferredSize( const WgPresentableField * pText ) const = 0;
 	virtual int		MatchingWidth( const WgPresentableField * pText, int height ) const = 0;

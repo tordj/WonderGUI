@@ -53,16 +53,16 @@ class WgTextField : public WgPresentableField
 public:
 	WgTextField( WgTextHolder * pHolder );
 
-	void				Clear();
+	virtual void		Clear();
 
-	void				Set( const WgCharSeq& seq );
-	void				Set( const WgCharBuffer * buffer );
-	void				Set( const WgString& str );
+	virtual void		Set( const WgCharSeq& seq );
+	virtual void		Set( const WgCharBuffer * buffer );
+	virtual void		Set( const WgString& str );
 
-	int					Append( const WgCharSeq& seq );
-	int					Insert( int ofs, const WgCharSeq& seq );
-	int					Replace( int ofs, int nDelete, const WgCharSeq& seq );
-	int					Delete( int ofs, int len );
+	virtual int			Append( const WgCharSeq& seq );
+	virtual int			Insert( int ofs, const WgCharSeq& seq );
+	virtual int			Replace( int ofs, int nDelete, const WgCharSeq& seq );
+	virtual int			Delete( int ofs, int len );
 
 
 	inline int			Length() const { return m_charBuffer.Length(); }

@@ -116,7 +116,7 @@ int WgStandardPresenter::CoordToCaretPos( WgPresentableField * pField, WgCoord p
 {
 }
 
-void WgStandardPresenter::RenderField( WgPresentableField * pField, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip )
+void WgStandardPresenter::RenderField( WgPresentableField * pField, WgGfxDevice * pDevice, WgEditState * pEditState, const WgRect& canvas, const WgRect& clip )
 {
 	void * pBlock = _fieldDataBlock(pField);
 	BlockHeader * pHeader = _header(pBlock);
@@ -176,9 +176,6 @@ void WgStandardPresenter::RenderField( WgPresentableField * pField, WgGfxDevice 
 	
 }
 
-void WgStandardPresenter::RenderEditableField( WgPresentableField * pField, WgEditableFieldState * pEditState, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip )
-{
-}
 
 void WgStandardPresenter::OnTextModified( WgPresentableField * pField, int ofs, int charsRemoved, int charsAdded )
 {
@@ -213,7 +210,7 @@ void WgStandardPresenter::OnRefresh( WgPresentableField * pField )
 	_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
 }
 
-int WgStandardPresenter::MoveCaret( WgPresentableField * pField, WgEditableFieldState * pEditState, int verticalSteps, int horizontalSteps, WgModifierKeys modif )
+int WgStandardPresenter::MoveCaret( WgPresentableField * pField, WgEditState * pEditState, int verticalSteps, int horizontalSteps, WgModifierKeys modif )
 {
 }
 

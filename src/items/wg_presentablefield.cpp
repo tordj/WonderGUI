@@ -145,7 +145,7 @@ void WgPresentableField::OnNewSize( const WgSize& size )
 
 void  WgPresentableField::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip )
 {
-	_presenter()->RenderField(this, pDevice, _canvas, _clip);
+	_presenter()->RenderField(this, pDevice, 0, _canvas, _clip);
 }
 
 //____ RectForRange() __________________________________________________________

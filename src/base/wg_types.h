@@ -75,19 +75,19 @@ template<typename T> inline void WgSwap(T &a, T &b) { T c = a; a = b; b = c; }
 
 enum WgStateEnum
 {
-	WG_STATE_NORMAL						= 0,
-	WG_STATE_SELECTED					= 1,
-	WG_STATE_FOCUSED					= 2,
+	WG_STATE_NORMAL						= 0,			///< Element is neither hovered, pressed, selected or focused.
+	WG_STATE_SELECTED					= 1,			///< Element is in a selected state, like a selected checkbox or item in a list. 
+	WG_STATE_FOCUSED					= 2,			///< Element has keyboard focus
 	WG_STATE_FOCUSED_SELECTED			= 2+1,
-	WG_STATE_HOVERED					= 4,
+	WG_STATE_HOVERED					= 4,			///< Mouse pointer is hovering over element.
 	WG_STATE_HOVERED_SELECTED			= 4+1,
 	WG_STATE_HOVERED_FOCUSED			= 4+2,
 	WG_STATE_HOVERED_FOCUSED_SELECTED	= 4+2+1,
-	WG_STATE_PRESSED					= 8+4,
+	WG_STATE_PRESSED					= 8+4,			///< Mouse button (usually left one) is pressed on element.
 	WG_STATE_PRESSED_SELECTED			= 8+4+1,
 	WG_STATE_PRESSED_FOCUSED			= 8+4+2,
 	WG_STATE_PRESSED_FOCUSED_SELECTED	= 8+4+2+1,
-	WG_STATE_DISABLED					= 16,
+	WG_STATE_DISABLED					= 16,			///< Element is disabled and can't be focused or pressed.
 	WG_STATE_DISABLED_SELECTED			= 16+1,
 };
 

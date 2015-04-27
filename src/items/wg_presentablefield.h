@@ -63,7 +63,7 @@ public:
 	void				ClearPresenter();
 	WgTextPresenterPtr	Presenter() const { return m_pPresenter; }
 
-	void				SetState( WgState state );
+	virtual void		SetState( WgState state );
 	inline WgState		State() const { return m_state; }
 
 	WgSize				PreferredSize() const;	
@@ -105,12 +105,12 @@ protected:
 
 };
 
-struct WgEditableFieldState
+struct WgEditState
 {
-	bool bCursor;		// Set if cursor should be displayed.
-	int selectBegin;	// Selection is between selectBegin and cursorOfs.
-	int cursorOfs;		// End of selection and cursor offset (if displaying)
-	int wantedOfs;		// Wanted offset in pixels when skipping between lines.		
+	bool 			bCaret;			// Set if cursor should be displayed.
+	int 			selectOfs;		// Selection is between selectOfs and caretOfs.
+	int				caretOfs;		// End of selection and caret offset (if displaying)
+	int				wantedOfs;		// Carets wanted offset in pixels when skipping between lines. -1 = none set.		
 };
 
 

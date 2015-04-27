@@ -138,6 +138,8 @@
     <File Name="../../src/items/wg_presentablefield.h"/>
     <File Name="../../src/items/wg_presentablefield.cpp"/>
     <File Name="../../src/widgets/wg_button.cpp"/>
+    <File Name="../../src/items/wg_edittextfield.cpp"/>
+    <File Name="../../src/items/wg_edittextfield.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
     <File Name="../../src/interfaces/wg_columnheader.cpp"/>
@@ -279,7 +281,6 @@
     <File Name="../../src/base/wg_textpropmanager.cpp"/>
     <File Name="../../src/base/wg_textpropmanager.h"/>
     <File Name="../../src/base/wg_textstyle.cpp"/>
-    <File Name="../../src/base/wg_textstyle.h"/>
     <File Name="../../src/base/wg_texttool.cpp"/>
     <File Name="../../src/base/wg_texttool.h"/>
     <File Name="../../src/base/wg_togglegroup.cpp"/>
@@ -304,6 +305,7 @@
     <File Name="../../src/textpresenters/wg_textpresenter.cpp"/>
     <File Name="../../src/textpresenters/wg_textpresenter.h"/>
     <File Name="../../src/textpresenters/wg_standardpresenter.h"/>
+    <File Name="../../src/base/wg_textstyle.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="valueformatters">
     <File Name="../../src/valueformatters/wg_valueformatter.cpp"/>
