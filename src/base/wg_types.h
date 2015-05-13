@@ -279,32 +279,32 @@ enum WgBlendMode //: Uint8
 	WG_BLENDMODE_INVERT				///< Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
 };
 
-//____ WgFontStyle ____________________________________________________________
+//____ WgFontAlt ____________________________________________________________
 
-enum WgFontStyle
+enum WgFontAlt
 {
 	// Needs to stay in sync with WgExtChar::WG_BEGIN_NORMAL and following enums!
 
-	WG_STYLE_NORMAL		= 0,
-	WG_STYLE_BOLD		= 1,
-	WG_STYLE_BOLD_ITALIC= 2,
-	WG_STYLE_ITALIC		= 3,
-	WG_STYLE_SUPERSCRIPT= 4,
-	WG_STYLE_SUBSCRIPT	= 5,
-	WG_STYLE_MONOSPACE	= 6,
-	WG_STYLE_HEADING_1	= 7,
-	WG_STYLE_HEADING_2	= 8,
-	WG_STYLE_HEADING_3	= 9,
-	WG_STYLE_HEADING_4	= 10,
-	WG_STYLE_HEADING_5	= 11,
+	WG_FONT_NORMAL		= 0,
+	WG_FONT_BOLD		= 1,
+	WG_FONT_BOLD_ITALIC= 2,
+	WG_FONT_ITALIC		= 3,
+	WG_FONT_SUPERSCRIPT= 4,
+	WG_FONT_SUBSCRIPT	= 5,
+	WG_FONT_MONOSPACE	= 6,
+	WG_FONT_HEADING_1	= 7,
+	WG_FONT_HEADING_2	= 8,
+	WG_FONT_HEADING_3	= 9,
+	WG_FONT_HEADING_4	= 10,
+	WG_FONT_HEADING_5	= 11,
 
-	WG_STYLE_USER_1		= 12,
-	WG_STYLE_USER_2		= 13,
-	WG_STYLE_USER_3		= 14,
-	WG_STYLE_USER_4		= 15,
-	WG_STYLE_USER_5		= 16,
+	WG_FONT_USER_1		= 12,
+	WG_FONT_USER_2		= 13,
+	WG_FONT_USER_3		= 14,
+	WG_FONT_USER_4		= 15,
+	WG_FONT_USER_5		= 16,
 
-	WG_STYLE_INHERIT	= 99,
+	WG_FONT_INHERIT	= 99,
 };
 
 #define WG_NB_FONTSTYLES	17

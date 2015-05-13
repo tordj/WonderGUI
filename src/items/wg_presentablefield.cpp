@@ -145,7 +145,7 @@ void WgPresentableField::OnNewSize( const WgSize& size )
 
 void  WgPresentableField::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip )
 {
-	_presenter()->RenderField(this, pDevice, 0, _canvas, _clip);
+	_presenter()->RenderField(this, pDevice, _canvas, _clip);
 }
 
 //____ RectForRange() __________________________________________________________
@@ -167,4 +167,18 @@ WgString WgPresentableField::Tooltip() const
 WgString WgPresentableField::GetString() const
 {
 	return WgString(&m_charBuffer);
+}
+
+//____ SelectionBegin() ________________________________________________________
+
+int WgPresentableField::SelectionBegin() const
+{
+	return 0;
+}
+
+//____ SelectionEnd() __________________________________________________________
+
+int WgPresentableField::SelectionEnd() const
+{
+	return 0;
 }

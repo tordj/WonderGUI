@@ -60,6 +60,15 @@ int main ( int argc, char** argv )
 
 	WgRootPanelPtr pRoot = WgRootPanel::Create( pGfxDevice );
 
+	// 
+	
+	WgEventLogger	eventLogger( std::cout );
+	eventLogger.IgnoreAllEvents();
+	eventLogger.LogMouseEvents();
+	
+	pRoot->EventHandler()->AddCallback( &eventLogger );
+
+
 	// Init font
 	
 	SDL_Surface * pFontSurf = IMG_Load( "../../../resources/anuvverbubbla_8x8.png" );
@@ -109,20 +118,21 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	WgFlexPanelPtr pFlexPanel = WgFlexPanel::Create();
+	pFlexPanel->SetSkin( WgColorSkin::Create(WgColor::burlywood));
 	pRoot->SetWidget(pFlexPanel);
 
-	WgFillerPtr pBackground = WgFiller::Create();
+
+/*	WgFillerPtr pBackground = WgFiller::Create();
 	pBackground->SetSkin( WgColorSkin::Create(WgColor::aqua) );
 	pFlexPanel->AddWidget(pBackground, WG_NORTHWEST, WgCoord(), WG_SOUTHEAST, WgCoord());
-
-/*
-	WgButtonPtr pButton = WgButton::Create();
-	pButton->SetSkin( pSimpleButtonSkin );
-	pButton->Label()->Set( "BUTTON" );
-	pFlexPanel->AddWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
-
-	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(), pButton, myButtonClickCallback );
 */
+
+	WgImagePtr pImage = WgImage::Create();
+	pImage->SetSkin( pSimpleButtonSkin );
+	pFlexPanel->AddWidget( pImage, WgRect(0,0,80,33), WG_CENTER );
+
+//	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(), pButton, myButtonClickCallback );
+
 
 /*
 	WgSizeCapsulePtr pCapsule = WgSizeCapsule::Create();
@@ -158,7 +168,7 @@ int main ( int argc, char** argv )
 	}
 */
 
-
+/*
 	WgTextDisplayPtr pText = WgTextDisplay::Create();
 	pText->text.Set( "THIS IS THE TEXT\nLINE TWO.\nAN EXTRA LONG LONG LONG LINE TO TEST THE CLIPPING AND RAND BEHAVIOURS." );
 	pFlexPanel->AddWidget( pText, WG_NORTHWEST, WG_EAST );
@@ -174,7 +184,7 @@ int main ( int argc, char** argv )
 	pValue->value.Set(3600+60+12);
 	pValue->value.SetPresenter( pPresenter );
 	pFlexPanel->AddWidget( pValue, WG_WEST, WG_SOUTHEAST );
-
+*/
 
 	//------------------------------------------------------
 	// Program Main Loop

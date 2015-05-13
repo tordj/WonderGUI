@@ -710,6 +710,9 @@ void WgEventHandler::_processEventQueue()
 			WgWidget * pWidget = pEvent->Widget();
 			while( pWidget )
 			{
+				if( pEvent->Type() == WG_EVENT_MOUSE_PRESS )
+					int x = 0;
+				
 				if( pEvent->Type() == WG_EVENT_TICK )
 					m_pNextEventReceiver = 0;
 				else
@@ -1130,9 +1133,9 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 	if( button == 0 || pWidgetTarget == m_latestPressWidgets[button].RawPtr() )
 		pNowMarked = pWidgetTarget;
 
-	// Post POINTER_EXIT events for widgets no longer marked,
-	// Post POINTER_ENTER events for new marked widgets
-	// and POINTER_MOVE events for those already marked
+	// Post Leave events for widgets no longer marked,
+	// Post Enter events for new marked widgets
+	// and Move events for those already marked
 
 	if( pNowMarked != m_pMarkedWidget.RawPtr() )
 	{

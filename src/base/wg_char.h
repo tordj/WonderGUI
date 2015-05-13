@@ -222,7 +222,7 @@ public:
 							/// @return Font style specified for the given state.
 
 
-	inline WgFontStyle		Style( WgState state = WG_STATE_NORMAL ) const { return GetPropRef().Style(state); }
+	inline WgFontAlt		Style( WgState state = WG_STATE_NORMAL ) const { return GetPropRef().Style(state); }
 
 							/// Checks if the character terminates the current line.
 							/// @return True if the glyph portion of the character contains End-Of-Line (\\n) or End-of-Text (null).

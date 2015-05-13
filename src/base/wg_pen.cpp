@@ -54,7 +54,7 @@ void WgPen::_init()
 
 	m_size = 0;
 	m_wantedSize = 0;
-	m_style = WG_STYLE_NORMAL;
+	m_style = WG_FONT_NORMAL;
 
 	m_pGlyph = &m_dummyGlyph;
 	m_pPrevGlyph = &m_dummyGlyph;
@@ -132,7 +132,7 @@ void WgPen::SetFont( const WgFontPtr& pFont )
 
 //____ SetStyle() _____________________________________________________________
 
-void WgPen::SetStyle( WgFontStyle style )
+void WgPen::SetStyle( WgFontAlt style )
 {
 	m_style = style;
 	_onAttrChanged();

@@ -105,13 +105,13 @@ public:
 
 	void			SetColor( WgColor col );
 	void			SetBgColor( WgColor col );
-	void			SetStyle( WgFontStyle style );
+	void			SetStyle( WgFontAlt style );
 	void			SetSize( int size );
 	void			SetUnderlined();
 
 	void			SetColor( WgColor col, WgState state );
 	void			SetBgColor( WgColor col, WgState state );
-	void			SetStyle( WgFontStyle style, WgState state );
+	void			SetStyle( WgFontAlt style, WgState state );
 	void			SetSize( int size, WgState state );
 	void			SetUnderlined( WgState state );
 
@@ -144,7 +144,7 @@ public:
 	inline const WgColor&	Color( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_color; }
 	inline bool				IsBgColored( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bBgColor; }
 	inline const WgColor&	BgColor( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bgColor; }
-	inline WgFontStyle		Style( WgState state = WG_STATE_NORMAL ) const { return (WgFontStyle) m_stateProp[WgUtil::_stateToIndex(state)].m_style; }
+	inline WgFontAlt		Style( WgState state = WG_STATE_NORMAL ) const { return (WgFontAlt) m_stateProp[WgUtil::_stateToIndex(state)].m_style; }
 	inline int				Size( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_size; }
 	bool					CharVisibility( Uint16 specialCharacter ) const;
 	inline int				CharVisibilityFlags() const { return m_visibilityFlags; }
@@ -179,7 +179,7 @@ private:
 
 	struct WgStateProp
 	{
-		Uint16			m_style:5;		///< WgFontStyle for this state, WG_STYLE_NORMAL is same as none and overriden if set higher in hierarchy.
+		Uint16			m_style:5;		///< WgFontAlt for this state, WG_FONT_NORMAL is same as none and overriden if set higher in hierarchy.
 		Uint16			m_size:11;		///< Size in pixels of font. 0 = none specified, use sized specified higher up in hierarchy.
 		bool			m_bUnderlined;	///< Hierarchally cumulative, anyone in hierarchy set gives underlined.
 		bool			m_bColored;		///< Set if color of this struct should be used.
@@ -232,16 +232,16 @@ private:
 class WgTextAttr
 {
 public:
-	WgTextAttr() : pFont(0), size(0), style(WG_STYLE_NORMAL), color(WgColor::white), bgColor(WgColor::transparent),
+	WgTextAttr() : pFont(0), size(0), style(WG_FONT_NORMAL), color(WgColor::white), bgColor(WgColor::transparent),
 				   bUnderlined(false), breakLevel(3), visibilityFlags(0) {}
 
-	inline void	Clear() {	pFont = 0; size = 0; style = WG_STYLE_NORMAL; color = WgColor::white;
+	inline void	Clear() {	pFont = 0; size = 0; style = WG_FONT_NORMAL; color = WgColor::white;
 							bgColor = WgColor::transparent; bUnderlined = false; breakLevel = 3;
 							visibilityFlags = 0; pLink = 0; }
 
 	WgFontPtr		pFont;
 	int				size;
-	WgFontStyle		style;
+	WgFontAlt		style;
 	WgColor			color;
 	WgColor			bgColor;
 	bool			bUnderlined;

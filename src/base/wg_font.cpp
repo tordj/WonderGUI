@@ -38,14 +38,14 @@ WgFont::WgFont()
 WgFont::WgFont( const WgVectorGlyphsPtr& pNormal )
 {
 	_init();
-	SetVectorGlyphs( pNormal, WG_STYLE_NORMAL );
+	SetVectorGlyphs( pNormal, WG_FONT_NORMAL );
 }
 #endif
 
 WgFont::WgFont( const WgBitmapGlyphsPtr& pNormal, int size )
 {
 	_init();
-	SetBitmapGlyphs( pNormal, WG_STYLE_NORMAL, size );
+	SetBitmapGlyphs( pNormal, WG_FONT_NORMAL, size );
 }
 
 //____ _init() _________________________________________________________________
@@ -112,7 +112,7 @@ WgFontPtr WgFont::Cast( const WgObjectPtr& pObject )
 
 //____ GetGlyphset() _______________________________________________________________
 
-WgGlyphsetPtr WgFont::GetGlyphset( WgFontStyle style, int size ) const
+WgGlyphsetPtr WgFont::GetGlyphset( WgFontAlt style, int size ) const
 {
 	// Find the right glyphset to the following priorities:
 	//
@@ -152,7 +152,7 @@ const WgUnderline * WgFont::GetUnderline( int size )
 	// Create an underline specification from the '_' character as default.
 	// It should be possible to specify something different in the spec file later on...
 
-	WgGlyphPtr pUnder = GetGlyph('_', WG_STYLE_NORMAL, size);
+	WgGlyphPtr pUnder = GetGlyph('_', WG_FONT_NORMAL, size);
 
 	const WgGlyphBitmap * pSrc = pUnder->GetBitmap();
 
@@ -178,7 +178,7 @@ const WgUnderline * WgFont::GetUnderline( int size )
 
 //____ GetGlyph() _____________________________________________________________
 
-WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
+WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontAlt style, int size ) const
 {
 	WgGlyphPtr p;
 
@@ -276,7 +276,7 @@ WgGlyphPtr WgFont::GetGlyph( Uint32 chr, WgFontStyle style, int size ) const
 
 //____ IsGlyphProvided() ______________________________________________________
 
-WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, int size ) const
+WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontAlt style, int size ) const
 {
 	// Find the right glyph to the following priorities:
 
@@ -342,7 +342,7 @@ WgFont::GlyphProvided WgFont::IsGlyphProvided( Uint32 chr, WgFontStyle style, in
 #ifdef WG_USE_FREETYPE
 //____ SetVectorGlyphs() ______________________________________________________
 
-bool WgFont::SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontStyle style )
+bool WgFont::SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontAlt style )
 {
 	if( m_aVectorGlyphs[style] == 0 )
 		m_aVectorGlyphs[style] = new WgVectorGlyphsPtr[WG_MAX_FONTSIZE+1];
@@ -353,7 +353,7 @@ bool WgFont::SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontStyle style
 	return true;
 }
 
-bool WgFont::SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontStyle style, int size )
+bool WgFont::SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontAlt style, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return false;
@@ -448,7 +448,7 @@ int WgFont::ReplaceBitmapGlyphs( const WgBitmapGlyphsPtr& pOld, const WgBitmapGl
 
 //____ SetBitmapGlyphs() ______________________________________________________
 
-bool WgFont::SetBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyph, WgFontStyle style, int size )
+bool WgFont::SetBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyph, WgFontAlt style, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return false;
@@ -480,7 +480,7 @@ bool WgFont::SetDefaultBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyphs, int size 
 
 //____ GetBitmapGlyphs() ______________________________________________________
 
-WgBitmapGlyphsPtr WgFont::GetBitmapGlyphs( WgFontStyle style, int size )
+WgBitmapGlyphsPtr WgFont::GetBitmapGlyphs( WgFontAlt style, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return 0;

@@ -2602,7 +2602,7 @@ WgColor WgLegacyTextField::GetCharBgColor( int charOfs ) const
 	return attr.bgColor;
 }
 
-WgFontStyle WgLegacyTextField::GetCharStyle( int charOfs ) const
+WgFontAlt WgLegacyTextField::GetCharStyle( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;

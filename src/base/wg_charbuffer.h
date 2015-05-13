@@ -195,10 +195,10 @@ public:
 	inline void			SetColor( const WgColor color, WgState state );
 	void				SetColor( const WgColor color, int ofs, int len, WgState state );
 
-	inline void			SetStyle( WgFontStyle style );
-	void				SetStyle( WgFontStyle style, int ofs, int len );
-	inline void			SetStyle( WgFontStyle style, WgState state );
-	void				SetStyle( WgFontStyle style, int ofs, int len, WgState state );
+	inline void			SetStyle( WgFontAlt style );
+	void				SetStyle( WgFontAlt style, int ofs, int len );
+	inline void			SetStyle( WgFontAlt style, WgState state );
+	void				SetStyle( WgFontAlt style, int ofs, int len, WgState state );
 
 	inline void			SetUnderlined();
 	void				SetUnderlined( int ofs, int len );
@@ -543,12 +543,12 @@ void WgCharBuffer::SetColor( const WgColor color )
 /// This method specifies the style in which the character is rendered when displayed in the specified mode
 /// or all modes.
 
-void WgCharBuffer::SetStyle( WgFontStyle style, WgState state )
+void WgCharBuffer::SetStyle( WgFontAlt style, WgState state )
 {
 	SetStyle( style, 0, INT_MAX, state );
 }
 
-void WgCharBuffer::SetStyle( WgFontStyle style )
+void WgCharBuffer::SetStyle( WgFontAlt style )
 {
 	SetStyle( style, 0, INT_MAX );
 }

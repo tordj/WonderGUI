@@ -232,7 +232,7 @@ public:
 	bool				IsCharUnderlined(	int charOfs ) const;
 	WgColor				GetCharColor(		int charOfs ) const;
 	WgColor				GetCharBgColor(		int charOfs ) const;
-	WgFontStyle			GetCharStyle(		int charOfs ) const;
+	WgFontAlt			GetCharStyle(		int charOfs ) const;
 	int					GetCharSize(		int charOfs ) const;
 	WgFontPtr			GetCharFont(		int charOfs ) const;
 //	WgGlyphset *		GetCharGlyphset(	int charOfs ) const;

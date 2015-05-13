@@ -115,6 +115,7 @@
       <File Name="../../src/widgets/layers/wg_popuplayer.cpp"/>
       <File Name="../../src/widgets/layers/wg_popuplayer.h"/>
     </VirtualDirectory>
+    <File Name="../../src/widgets/wg_button.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="items">
     <File Name="../../src/items/wg_columnheaderfield.cpp"/>
@@ -137,7 +138,6 @@
     <File Name="../../src/items/wg_valuefield.h"/>
     <File Name="../../src/items/wg_presentablefield.h"/>
     <File Name="../../src/items/wg_presentablefield.cpp"/>
-    <File Name="../../src/widgets/wg_button.cpp"/>
     <File Name="../../src/items/wg_edittextfield.cpp"/>
     <File Name="../../src/items/wg_edittextfield.h"/>
   </VirtualDirectory>
@@ -184,6 +184,7 @@
     <File Name="../../src/skins/wg_extendedskin.h"/>
     <File Name="../../src/skins/wg_skin.cpp"/>
     <File Name="../../src/skins/wg_skin.h"/>
+    <File Name="../../src/textpresenters/wg_textpresenter.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="sizebrokers">
     <File Name="../../src/sizebrokers/wg_scalepreferred_sizebroker.cpp"/>
@@ -302,7 +303,6 @@
   </VirtualDirectory>
   <VirtualDirectory Name="textpresenters">
     <File Name="../../src/textpresenters/wg_standardpresenter.cpp"/>
-    <File Name="../../src/textpresenters/wg_textpresenter.cpp"/>
     <File Name="../../src/textpresenters/wg_textpresenter.h"/>
     <File Name="../../src/textpresenters/wg_standardpresenter.h"/>
     <File Name="../../src/base/wg_textstyle.h"/>

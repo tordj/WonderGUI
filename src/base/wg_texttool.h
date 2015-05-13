@@ -194,12 +194,12 @@ public:
 
 	static void			SetColor( const WgColor col, WgChar * pChar, Uint32 nb );
 	static void			SetSize( int size, WgChar * pChar, Uint32 nb );
-	static void			SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb );
+	static void			SetStyle( WgFontAlt style, WgChar * pChar, Uint32 nb );
 	static void			SetUnderlined( WgChar * pChar, Uint32 nb );
 
 	static void			SetColor( const WgColor col, WgChar * pChar, Uint32 nb, WgState state );
 	static void			SetSize( int size, WgChar * pChar, Uint32 nb, WgState state );
-	static void			SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb, WgState state );
+	static void			SetStyle( WgFontAlt style, WgChar * pChar, Uint32 nb, WgState state );
 	static void			SetUnderlined( WgChar * pChar, Uint32 nb, WgState state );
 
 
@@ -311,10 +311,10 @@ private:
 	class PropStyleModifier : public PropModifier
 	{
 	public:
-		PropStyleModifier( WgFontStyle style ) { m_style = style; }
+		PropStyleModifier( WgFontAlt style ) { m_style = style; }
 		void Modify( WgTextprop& prop ) const { prop.SetStyle(m_style); }
 	private:
-		WgFontStyle m_style;
+		WgFontAlt m_style;
 	};
 
 	class PropUnderlinedModifier : public PropModifier
@@ -396,10 +396,10 @@ private:
 	class PropStateStyleModifier : public PropModifier
 	{
 	public:
-		PropStateStyleModifier( WgFontStyle style, WgState state ) { m_style = style; m_state = state; }
+		PropStateStyleModifier( WgFontAlt style, WgState state ) { m_style = style; m_state = state; }
 		void Modify( WgTextprop& prop ) const { prop.SetStyle(m_style,m_state); }
 	private:
-		WgFontStyle m_style;
+		WgFontAlt m_style;
 		WgState	m_state;
 	};
 

@@ -40,7 +40,6 @@
 #endif
 
 class WgPresentableField;
-struct WgEditState;
 
 class WgGfxDevice;
 class WgCharBuffer;
@@ -62,11 +61,8 @@ public:
 	virtual void	RemoveField( WgPresentableField * pField ) = 0;
 
 	virtual int		CoordToChar( const WgPresentableField * pField, WgCoord pos ) = 0;
-	virtual WgRect	CharToRect( const WgPresentableField * pField, int charOfs ) = 0;
 
-	virtual int		CoordToCaretPos( WgPresentableField * pField, WgCoord pos ) = 0;
-
-	virtual void 	RenderField( WgPresentableField * pText, WgGfxDevice * pDevice, WgEditState * pEditState, const WgRect& canvas, const WgRect& clip ) = 0;
+	virtual void 	RenderField( WgPresentableField * pText, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip ) = 0;
 
 	virtual void	OnTextModified( WgPresentableField * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
 	virtual void	OnFieldResize( WgPresentableField * pText, WgSize newSize ) = 0;
@@ -74,7 +70,6 @@ public:
 	virtual void	OnStyleChange( WgPresentableField * pText ) = 0;
 	virtual void	OnRefresh( WgPresentableField * pText ) = 0;
 
-	virtual int		MoveCaret( WgPresentableField * pText, WgEditState * pEditState, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
 
 	virtual WgSize	PreferredSize( const WgPresentableField * pText ) const = 0;
 	virtual int		MatchingWidth( const WgPresentableField * pText, int height ) const = 0;
@@ -83,6 +78,11 @@ public:
 	virtual WgRect	RectForRange( const WgPresentableField * pText, int ofs, int length ) const = 0;
 
 	virtual WgString Tooltip( const WgPresentableField * pText ) const;
+
+	virtual int		CoordToCaretPos( WgPresentableField * pField, WgCoord pos ) = 0;
+	virtual int		MoveCaret( WgPresentableField * pText, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
+	virtual WgRect	CharToRect( const WgPresentableField * pField, int charOfs ) = 0;
+
 
 protected:
 	WgTextPresenter() {}

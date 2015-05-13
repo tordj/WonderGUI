@@ -81,16 +81,16 @@ public:
 
 
 
-	WgGlyphsetPtr		GetGlyphset( WgFontStyle style, int size ) const;
-	WgGlyphPtr			GetGlyph( Uint32 chr, WgFontStyle style, int size ) const;
-	GlyphProvided		IsGlyphProvided( Uint32 chr, WgFontStyle style, int size ) const;
+	WgGlyphsetPtr		GetGlyphset( WgFontAlt style, int size ) const;
+	WgGlyphPtr			GetGlyph( Uint32 chr, WgFontAlt style, int size ) const;
+	GlyphProvided		IsGlyphProvided( Uint32 chr, WgFontAlt style, int size ) const;
 
 #ifdef	WG_USE_FREETYPE
-	bool				SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs, WgFontStyle style  );
-	bool				SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs, WgFontStyle style, int size );
+	bool				SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs, WgFontAlt style  );
+	bool				SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs, WgFontAlt style, int size );
 	bool				SetDefaultVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs );
 
-	inline WgVectorGlyphsPtr	GetVectorGlyphs( WgFontStyle style, int size  ) const { if( size <= WG_MAX_FONTSIZE && m_aVectorGlyphs[style] != 0 ) return m_aVectorGlyphs[style][size]; else return 0; }
+	inline WgVectorGlyphsPtr	GetVectorGlyphs( WgFontAlt style, int size  ) const { if( size <= WG_MAX_FONTSIZE && m_aVectorGlyphs[style] != 0 ) return m_aVectorGlyphs[style][size]; else return 0; }
 	inline WgVectorGlyphsPtr	GetDefaultVectorGlyphs( ) const { return m_pDefaultVectorGlyphs; }
 
 	int					ReplaceVectorGlyphs( const WgVectorGlyphsPtr& pOld, const WgVectorGlyphsPtr& pNew );
@@ -99,10 +99,10 @@ public:
 	int					ReplaceBitmapGlyphs( const WgBitmapGlyphsPtr& pOld, const WgBitmapGlyphsPtr& pNew );
 
 
-	bool				SetBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyph, WgFontStyle style, int size );
+	bool				SetBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyph, WgFontAlt style, int size );
 	bool				SetDefaultBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyphs, int size = 0 );
 
-	WgBitmapGlyphsPtr			GetBitmapGlyphs( WgFontStyle style, int size );
+	WgBitmapGlyphsPtr			GetBitmapGlyphs( WgFontAlt style, int size );
 	inline WgBitmapGlyphsPtr	GetDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return 0; }
 
 	const WgUnderline *	GetUnderline( int size );

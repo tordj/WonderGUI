@@ -55,35 +55,38 @@ public:
 	WgPresentableField( WgPresentableHolder * pHolder );
 	virtual ~WgPresentableField();
 
-	void				SetStyle( const WgTextStylePtr& pStyle );
-	void				ClearStyle();
+	virtual void		SetStyle( const WgTextStylePtr& pStyle );
+	virtual void		ClearStyle();
 	WgTextStylePtr		Style() const { return m_pStyle; }
 
-	void				SetPresenter( const WgTextPresenterPtr& pPresenter );
-	void				ClearPresenter();
+	virtual void		SetPresenter( const WgTextPresenterPtr& pPresenter );
+	virtual void		ClearPresenter();
 	WgTextPresenterPtr	Presenter() const { return m_pPresenter; }
 
 	virtual void		SetState( WgState state );
 	inline WgState		State() const { return m_state; }
 
-	WgSize				PreferredSize() const;	
-	int					MatchingWidth( int height ) const;
-	int					MatchingHeight( int width ) const;
+	virtual WgSize		PreferredSize() const;	
+	virtual int			MatchingWidth( int height ) const;
+	virtual int			MatchingHeight( int width ) const;
 	inline WgSize		Size() const { return m_size; }
 
-	int					CoordToChar( WgCoord pos ) const;
-	WgRect				CharToRect( int charOfs ) const;
+	virtual int			CoordToChar( WgCoord pos ) const;
+	virtual WgRect		CharToRect( int charOfs ) const;
 
-	void				OnRefresh();
+	virtual void		OnRefresh();
 
-	WgString			Tooltip() const;
+	virtual WgString	Tooltip() const;
 
-	void				OnNewSize( const WgSize& size );	
-	void				OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip );
+	virtual void		OnNewSize( const WgSize& size );	
+	virtual void		OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip );
 
-	WgRect				RectForRange( int ofs, int length ) const;
+	virtual WgRect		RectForRange( int ofs, int length ) const;
 	
-	WgString			GetString() const;
+	virtual WgString	GetString() const;
+	
+	virtual int			SelectionBegin() const;
+	virtual int			SelectionEnd() const;
 	
 protected:
 

@@ -54,7 +54,6 @@ struct WgTextAttr2
 {
 		WgFontPtr			pFont;
 		int					size;
-		WgFontStyle			fontStyle;
 		WgColor				color;
 		WgColor				bgColor;
 		WgTextDecoration	decoration;
@@ -63,6 +62,9 @@ struct WgTextAttr2
 		// TODO: Add flags for showing linespace, tab, CR, NBSP and both BREAK PERMITTED CHARACTERS.
 };
 
+
+//TODO: Add support for subscript and superscript font-modifiers.
+//TODO: Add support for extra spacing between characters.
 
 class WgTextStyle : public WgObject
 {
@@ -82,13 +84,11 @@ public:
 
 	void			SetColor( WgColor color );
 	void			SetBgColor( WgColor color );
-	void			SetFontStyle( WgFontStyle style );
 	void			SetSize( int size );
 	void			SetDecoration( WgTextDecoration decoration );
 
 	void			SetColor( WgColor color, WgState state );
 	void			SetBgColor( WgColor color, WgState state );
-	void			SetFontStyle( WgFontStyle style, WgState state );
 	void			SetSize( int size, WgState state );
 	void			SetDecoration( WgTextDecoration decoration, WgState state );
 
@@ -97,13 +97,11 @@ public:
 
 	void			ClearColor();
 	void			ClearBgColor();
-	void			ClearFontStyle();
 	void			ClearSize();
 	void			ClearDecoration();
 
 	void			ClearColor( WgState state );
 	void			ClearBgColor( WgState state );
-	void			ClearFontStyle( WgState state );
 	void			ClearSize( WgState state );
 	void			ClearDecoration( WgState state );
 
@@ -111,7 +109,6 @@ public:
 	inline WgTextLinkPtr	Link() const;
 	inline WgColor			Color( WgState state ) const;
 	inline 	WgColor			BgColor( WgState state ) const;
-	inline WgFontStyle		FontStyle( WgState state ) const;
 	inline int				Size( WgState state ) const;
 	inline WgTextDecoration Decoration( WgState state ) const;
 
@@ -119,7 +116,6 @@ public:
 	inline WgTextLinkPtr	CombLink() const;
 	inline WgColor			CombColor( WgState state ) const;
 	inline WgColor			CombBgColor( WgState state ) const;
-	inline WgFontStyle		CombFontStyle( WgState state ) const;
 	inline int				CombSize( WgState state ) const;
 	inline WgTextDecoration CombDecoration( WgState state ) const;
 
@@ -136,7 +132,6 @@ protected:
 	{
 		WgFontPtr			pFont;
 		int					size[WG_NB_STATES];
-		WgFontStyle			fontStyle[WG_NB_STATES];
 		WgColor				color[WG_NB_STATES];
 		WgColor				bgColor[WG_NB_STATES];
 		WgTextDecoration	decoration[WG_NB_STATES];
@@ -185,12 +180,6 @@ inline 	WgColor WgTextStyle::BgColor( WgState state ) const
 }
 
 //______________________________________________________________________________
-inline WgFontStyle WgTextStyle::FontStyle( WgState state ) const
-{
-	return m_specAttr.fontStyle[WgUtil::_stateToIndex(state)];
-}
-
-//______________________________________________________________________________
 inline int WgTextStyle::Size( WgState state ) const
 {
 	return m_specAttr.size[WgUtil::_stateToIndex(state)];
@@ -228,12 +217,6 @@ inline WgColor WgTextStyle::CombBgColor( WgState state ) const
 }
 
 //______________________________________________________________________________
-inline WgFontStyle WgTextStyle::CombFontStyle( WgState state ) const
-{
-	return m_combAttr.fontStyle[WgUtil::_stateToIndex(state)];
-}
-
-//______________________________________________________________________________
 inline int WgTextStyle::CombSize( WgState state ) const
 {
 	return m_combAttr.size[WgUtil::_stateToIndex(state)];
@@ -246,8 +229,4 @@ inline WgTextDecoration WgTextStyle::CombDecoration( WgState state ) const
 }
 
 
-
-
 #endif //WG_TEXTSTYLE_DOT_H
-
-

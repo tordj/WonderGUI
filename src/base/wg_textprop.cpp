@@ -81,7 +81,7 @@ void WgTextprop::ClearAll()
 		m_stateProp[i].m_bBgColor	= false;
 		m_stateProp[i].m_bgColor.argb = 0xFFFFFFFF;
 
-		m_stateProp[i].m_style = WG_STYLE_NORMAL;
+		m_stateProp[i].m_style = WG_FONT_NORMAL;
 		m_stateProp[i].m_size = 0;
 		m_stateProp[i].m_bUnderlined = false;
 	}
@@ -130,7 +130,7 @@ void WgTextprop::SetBgColor( WgColor col, WgState state )
 
 //____ SetStyle() _____________________________________________________________
 
-void WgTextprop::SetStyle( WgFontStyle style )
+void WgTextprop::SetStyle( WgFontAlt style )
 {
 	assert( style<WG_NB_FONTSTYLES );
 
@@ -138,7 +138,7 @@ void WgTextprop::SetStyle( WgFontStyle style )
 		m_stateProp[i].m_style = style;
 }
 
-void WgTextprop::SetStyle( WgFontStyle style, WgState state )
+void WgTextprop::SetStyle( WgFontAlt style, WgState state )
 {
 	assert( style<WG_NB_FONTSTYLES );
 
@@ -221,13 +221,13 @@ void WgTextprop::ClearBgColor( WgState state )
 void WgTextprop::ClearStyle()
 {
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
-		m_stateProp[i].m_style = WG_STYLE_NORMAL;
+		m_stateProp[i].m_style = WG_FONT_NORMAL;
 }
 
 void WgTextprop::ClearStyle( WgState state )
 {
 	int i = _stateToIndex(state);
-	m_stateProp[i].m_style = WG_STYLE_NORMAL;
+	m_stateProp[i].m_style = WG_FONT_NORMAL;
 }
 
 

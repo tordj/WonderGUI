@@ -659,7 +659,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 	Uint32		nUnderlinedRecursions = 0;
 
 	WgChar *	pBeginStyle = 0;
-	WgFontStyle	styleStack[16];
+	WgFontAlt	styleStack[16];
 	Uint32		nStyleRecursions = 0;
 
 	WgChar *	pBeginColor = 0;
@@ -830,32 +830,32 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 				default:					// Either setting a font style or this is an invalid command
 				{
 					bool bOk = true;
-					WgFontStyle style;
+					WgFontAlt style;
 
 					// Determine style or that this is an invalid command
 
 					switch( cmd )
 					{
 						case 'd':
-							style = WG_STYLE_NORMAL;
+							style = WG_FONT_NORMAL;
 							break;
 						case 'b':
-							style = WG_STYLE_BOLD;
+							style = WG_FONT_BOLD;
 							break;
 						case 'i':
-							style = WG_STYLE_ITALIC;
+							style = WG_FONT_ITALIC;
 							break;
 						case 'I':
-							style = WG_STYLE_BOLD_ITALIC;
+							style = WG_FONT_BOLD_ITALIC;
 							break;
 						case 'S':
-							style = WG_STYLE_SUPERSCRIPT;
+							style = WG_FONT_SUPERSCRIPT;
 							break;
 						case 's':
-							style = WG_STYLE_SUBSCRIPT;
+							style = WG_FONT_SUBSCRIPT;
 							break;
 						case 'm':
-							style = WG_STYLE_MONOSPACE;
+							style = WG_FONT_MONOSPACE;
 							break;
 						case 'h':
 						{
@@ -864,7 +864,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 								bOk = false;
 							else
 							{
-								style = (WgFontStyle) (WG_STYLE_HEADING_1 + c - '1');
+								style = (WgFontAlt) (WG_FONT_HEADING_1 + c - '1');
 								if((Uint32)style >= WG_NB_FONTSTYLES)
 									bOk = false;
 							}
@@ -877,7 +877,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 								bOk = false;
 							else
 							{
-								style = (WgFontStyle) (WG_STYLE_USER_1 + c - '1');
+								style = (WgFontAlt) (WG_FONT_USER_1 + c - '1');
 								if((Uint32)style >= WG_NB_FONTSTYLES)
 									bOk = false;
 							}
@@ -955,7 +955,7 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 	Uint32		nUnderlinedRecursions = 0;
 
 	WgChar *	pBeginStyle = 0;
-	WgFontStyle	styleStack[16];
+	WgFontAlt	styleStack[16];
 	Uint32		nStyleRecursions = 0;
 
 	WgChar *	pBeginColor = 0;
@@ -1116,32 +1116,32 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 				default:					// Either setting a font style or this is an invalid command
 				{
 					bool bOk = true;
-					WgFontStyle style;
+					WgFontAlt style;
 
 					// Determine style or that this is an invalid command
 
 					switch( cmd )
 					{
 						case 'd':
-							style = WG_STYLE_NORMAL;
+							style = WG_FONT_NORMAL;
 							break;
 						case 'b':
-							style = WG_STYLE_BOLD;
+							style = WG_FONT_BOLD;
 							break;
 						case 'i':
-							style = WG_STYLE_ITALIC;
+							style = WG_FONT_ITALIC;
 							break;
 						case 'I':
-							style = WG_STYLE_BOLD_ITALIC;
+							style = WG_FONT_BOLD_ITALIC;
 							break;
 						case 'S':
-							style = WG_STYLE_SUPERSCRIPT;
+							style = WG_FONT_SUPERSCRIPT;
 							break;
 						case 's':
-							style = WG_STYLE_SUBSCRIPT;
+							style = WG_FONT_SUBSCRIPT;
 							break;
 						case 'm':
-							style = WG_STYLE_MONOSPACE;
+							style = WG_FONT_MONOSPACE;
 							break;
 						case 'h':
 						{
@@ -1149,7 +1149,7 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 							if( c < '1' || c > '5' )
 								bOk = false;
 							else
-								style = (WgFontStyle) (WG_STYLE_HEADING_1 + c - '1');
+								style = (WgFontAlt) (WG_FONT_HEADING_1 + c - '1');
 							break;
 						}
 						case 'u':
@@ -1158,7 +1158,7 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 							if( c < '1' || c > '5' )
 								bOk = false;
 							else
-								style = (WgFontStyle) (WG_STYLE_USER_1 + c - '1');
+								style = (WgFontAlt) (WG_FONT_USER_1 + c - '1');
 							break;
 						}
 						default:
@@ -2664,12 +2664,12 @@ void WgTextTool::ClearColor( WgChar * pChar, Uint32 nb, WgState state )
 
 //____ SetStyle() _____________________________________________________________
 
-void WgTextTool::SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb )
+void WgTextTool::SetStyle( WgFontAlt style, WgChar * pChar, Uint32 nb )
 {
 	ModifyProperties( PropStyleModifier(style), pChar, nb );
 }
 
-void WgTextTool::SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb, WgState state )
+void WgTextTool::SetStyle( WgFontAlt style, WgChar * pChar, Uint32 nb, WgState state )
 {
 	ModifyProperties( PropStateStyleModifier(style,state), pChar, nb );
 }
@@ -2678,12 +2678,12 @@ void WgTextTool::SetStyle( WgFontStyle style, WgChar * pChar, Uint32 nb, WgState
 
 void WgTextTool::ClearStyle( WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropStyleModifier(WG_STYLE_NORMAL), pChar, nb );
+	ModifyProperties( PropStyleModifier(WG_FONT_NORMAL), pChar, nb );
 }
 
 void WgTextTool::ClearStyle( WgChar * pChar, Uint32 nb, WgState state )
 {
-	ModifyProperties( PropStateStyleModifier(WG_STYLE_NORMAL,state), pChar, nb );
+	ModifyProperties( PropStateStyleModifier(WG_FONT_NORMAL,state), pChar, nb );
 }
 
 
@@ -2850,7 +2850,7 @@ void WgTextTool::AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp
 	if( pProp->Size(state) != 0 )
 		attr.size = pProp->Size(state);
 
-	if( pProp->Style(state) != WG_STYLE_NORMAL )
+	if( pProp->Style(state) != WG_FONT_NORMAL )
 		attr.style = pProp->Style(state);
 
 	if( pProp->IsColored(state) )
@@ -3097,42 +3097,42 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 
 		switch( pNewProp->Style() )
 		{
-			case WG_STYLE_NORMAL:
+			case WG_FONT_NORMAL:
 				m_temp[i++] = 'd';
 				break;
-			case WG_STYLE_BOLD:
+			case WG_FONT_BOLD:
 				m_temp[i++] = 'b';
 				break;
-			case WG_STYLE_BOLD_ITALIC:
+			case WG_FONT_BOLD_ITALIC:
 				m_temp[i++] = 'i';
 				break;
-			case WG_STYLE_ITALIC:
+			case WG_FONT_ITALIC:
 				m_temp[i++] = 'I';
 				break;
-			case WG_STYLE_SUPERSCRIPT:
+			case WG_FONT_SUPERSCRIPT:
 				m_temp[i++] = 'S';
 				break;
-			case WG_STYLE_SUBSCRIPT:
+			case WG_FONT_SUBSCRIPT:
 				m_temp[i++] = 's';
 				break;
-			case WG_STYLE_MONOSPACE:
+			case WG_FONT_MONOSPACE:
 				m_temp[i++] = 'm';
 				break;
-			case WG_STYLE_HEADING_1:
-			case WG_STYLE_HEADING_2:
-			case WG_STYLE_HEADING_3:
-			case WG_STYLE_HEADING_4:
-			case WG_STYLE_HEADING_5:
+			case WG_FONT_HEADING_1:
+			case WG_FONT_HEADING_2:
+			case WG_FONT_HEADING_3:
+			case WG_FONT_HEADING_4:
+			case WG_FONT_HEADING_5:
 				m_temp[i++] = 'h';
-				m_temp[i++] = '1' + (pNewProp->Style() - WG_STYLE_HEADING_1);
+				m_temp[i++] = '1' + (pNewProp->Style() - WG_FONT_HEADING_1);
 				break;
-			case WG_STYLE_USER_1:
-			case WG_STYLE_USER_2:
-			case WG_STYLE_USER_3:
-			case WG_STYLE_USER_4:
-			case WG_STYLE_USER_5:
+			case WG_FONT_USER_1:
+			case WG_FONT_USER_2:
+			case WG_FONT_USER_3:
+			case WG_FONT_USER_4:
+			case WG_FONT_USER_5:
 				m_temp[i++] = 'u';
-				m_temp[i++] = '1' + (pNewProp->Style() - WG_STYLE_USER_1);
+				m_temp[i++] = '1' + (pNewProp->Style() - WG_FONT_USER_1);
 				break;
 		}
 
@@ -3173,7 +3173,7 @@ Uint32 WgTextTool::TextpropEncoder::EndString()
 {
 	Uint32 i = 0;
 
-	if( m_pActiveProp->Style() != WG_STYLE_NORMAL )
+	if( m_pActiveProp->Style() != WG_FONT_NORMAL )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '#';

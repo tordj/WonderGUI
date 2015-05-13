@@ -143,7 +143,7 @@ void WgEditTextField::SetState( WgState state )
 
 void WgEditTextField::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip )
 {
-	_presenter()->RenderField(this, pDevice, &m_editState, _canvas, _clip);
+	_presenter()->RenderField(this, pDevice, _canvas, _clip);
 }
 
 //____ _cursorToEnd() __________________________________________________________

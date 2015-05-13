@@ -218,34 +218,6 @@ void WgTextStyle::SetBgColor( WgColor color, WgState state )
 	}
 }
 
-//____ SetFontStyle() ______________________________________________________________
-
-void WgTextStyle::SetFontStyle( WgFontStyle style )
-{
-	if( style == WG_STYLE_INHERIT )
-		ClearFontStyle();
-	else
-	{
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
-		{
-			m_specAttr.fontStyle[i] = style;
-			m_combAttr.fontStyle[i] = style;
-		}
-	}
-}
-
-void WgTextStyle::SetFontStyle( WgFontStyle style, WgState state )
-{
-	if( style == WG_STYLE_INHERIT )
-		ClearFontStyle(state);
-	else
-	{
-		int idx = WgUtil::_stateToIndex(state);
-		m_specAttr.fontStyle[idx] = style;
-		m_combAttr.fontStyle[idx] = style;
-	}
-}
-
 //____ SetSize() _______________________________________________________________
 
 void WgTextStyle::SetSize( int size )
@@ -386,37 +358,6 @@ void WgTextStyle::ClearBgColor( WgState state )
 	m_combAttr.bgColor[idx] = m_pParent ? m_pParent->m_combAttr.bgColor[idx] : WgColor::none;
 }
 
-
-//____ ClearFontStyle() ____________________________________________________________
-
-void WgTextStyle::ClearFontStyle()
-{
-	if( m_pParent )
-	{
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
-		{
-			m_specAttr.fontStyle[i] = WG_STYLE_INHERIT;
-			m_combAttr.fontStyle[i] = m_pParent->m_combAttr.fontStyle[i];
-		}
-	}
-	else
-	{
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
-		{
-			m_specAttr.fontStyle[i] = WG_STYLE_INHERIT;
-			m_combAttr.fontStyle[i] = WG_STYLE_INHERIT;
-		}
-	}
-}
-
-void WgTextStyle::ClearFontStyle( WgState state )
-{
-	int idx = WgUtil::_stateToIndex(state);
-
-	m_specAttr.fontStyle[idx] = WG_STYLE_INHERIT;
-	m_combAttr.fontStyle[idx] = m_pParent ? m_pParent->m_combAttr.fontStyle[idx] : WG_STYLE_INHERIT;
-}
-
 //____ ClearSize() ____________________________________________________________
 
 void WgTextStyle::ClearSize()
@@ -486,14 +427,10 @@ void WgTextStyle::ExportAttr( WgState state, WgTextAttr2 * pDest ) const
 	pDest->pFont 		= m_combAttr.pFont;
 	pDest->pLink 		= m_combAttr.pLink;
 	pDest->size 		= m_combAttr.size[idx];
-	pDest->fontStyle 	= m_combAttr.fontStyle[idx];
 	pDest->color		= m_combAttr.color[idx];
 	pDest->bgColor		= m_combAttr.bgColor[idx];
 	pDest->decoration	= m_combAttr.decoration[idx];
-	
-	if( pDest->fontStyle == WG_STYLE_INHERIT )
-		pDest->fontStyle = WG_STYLE_NORMAL;
-		
+			
 	if( pDest->size == WG_FONTSIZE_INHERIT )
 		pDest->size = 12;								// Default to size 12.
 }
@@ -510,8 +447,6 @@ void WgTextStyle::AddToAttr( WgState state, WgTextAttr2 * pDest ) const
 		pDest->pLink = m_combAttr.pLink;
 	if( m_combAttr.size[idx] != WG_FONTSIZE_INHERIT )
 		pDest->size	= m_combAttr.size[idx];
-	if( m_combAttr.fontStyle[idx] != WG_STYLE_INHERIT )
-		pDest->fontStyle = m_combAttr.fontStyle[idx];
 	if( m_combAttr.color[idx] != WgColor::none )
 		pDest->color = m_combAttr.color[idx];
 	if( m_combAttr.bgColor[idx] != WgColor::none )
@@ -536,7 +471,6 @@ bool WgTextStyle::_refreshComb()
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
 			newComb.size[i] = m_specAttr.size[i] != WG_FONTSIZE_INHERIT ? m_specAttr.size[i] : m_pParent->m_combAttr.size[i];
-			newComb.fontStyle[i] = m_specAttr.fontStyle[i] != WG_STYLE_INHERIT ? m_specAttr.fontStyle[i] : m_pParent->m_combAttr.fontStyle[i];
 			newComb.color[i] = m_specAttr.color[i] != WgColor::none ? m_specAttr.color[i] : m_pParent->m_combAttr.color[i];
 			newComb.bgColor[i] = m_specAttr.bgColor[i] != WgColor::none ? m_specAttr.bgColor[i] : m_pParent->m_combAttr.bgColor[i];
 			newComb.decoration[i] = m_specAttr.decoration[i] != WG_DECORATION_INHERIT ? m_specAttr.decoration[i] : m_pParent->m_combAttr.decoration[i];
@@ -567,7 +501,6 @@ void WgTextStyle::_clearSet( WgTextStyle::AttrSet * pSet )
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
 		pSet->size[i] 		= WG_FONTSIZE_INHERIT;
-		pSet->fontStyle[i] 	= WG_STYLE_INHERIT;
 		pSet->color[i] 		= WgColor::none;
 		pSet->bgColor[i] 	= WgColor::none;
 		pSet->decoration[i] = WG_DECORATION_INHERIT;
@@ -584,7 +517,6 @@ bool WgTextStyle::_compareSets( WgTextStyle::AttrSet * p1, WgTextStyle::AttrSet 
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
 		if( p1->size[i] 		!= p2->size[i] ||
-			p1->fontStyle[i]	!= p2->fontStyle[i] ||
 			p1->color[i] 		!= p2->color[i] ||
 			p1->bgColor[i] 		!= p2->bgColor[i] ||
 			p1->decoration[i] 	!= p2->decoration[i] )

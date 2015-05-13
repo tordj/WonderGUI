@@ -1194,12 +1194,12 @@ void WgCharBuffer::SetColor( const WgColor color, int ofs, int len )
 /// displayed in the specified mode or all modes.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetStyle( WgFontStyle style, int ofs, int len, WgState state )
+void WgCharBuffer::SetStyle( WgFontAlt style, int ofs, int len, WgState state )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropStateStyleModifier(style,state) );
 }
 
-void WgCharBuffer::SetStyle( WgFontStyle style, int ofs, int len )
+void WgCharBuffer::SetStyle( WgFontAlt style, int ofs, int len )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropStyleModifier(style) );
 }
@@ -1307,12 +1307,12 @@ void WgCharBuffer::ClearColor( int ofs, int len )
 
 void WgCharBuffer::ClearStyle( int ofs, int len, WgState state )
 {
-	_modifyProperties( ofs, len, WgTextTool::PropStateStyleModifier(WG_STYLE_NORMAL,state) );
+	_modifyProperties( ofs, len, WgTextTool::PropStateStyleModifier(WG_FONT_NORMAL,state) );
 }
 
 void WgCharBuffer::ClearStyle( int ofs, int len )
 {
-	_modifyProperties( ofs, len, WgTextTool::PropStyleModifier(WG_STYLE_NORMAL) );
+	_modifyProperties( ofs, len, WgTextTool::PropStyleModifier(WG_FONT_NORMAL) );
 }
 
 //___ ClearFont() ______________________________________________________________

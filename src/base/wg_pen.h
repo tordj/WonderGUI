@@ -65,7 +65,7 @@ public:
 	bool					SetAttributes( const WgTextAttr& attr );
 	bool					SetSize( int size );
 	void					SetFont( const WgFontPtr& pFont );
-	void					SetStyle( WgFontStyle style );
+	void					SetStyle( WgFontAlt style );
 	void					SetColor( WgColor color );
 //	void					SetCharVisibility( int visibilityFlags );		// We need something better here...
 
@@ -102,7 +102,7 @@ public:
 
 	inline WgFontPtr		GetFont() const { return m_pFont; }
 	inline int				GetSize() const { return m_size; }
-	inline WgFontStyle		GetStyle() const { return m_style; }
+	inline WgFontAlt		GetStyle() const { return m_style; }
 	inline WgColor			GetColor() const { return m_color; }
 	inline WgGlyphsetPtr	GetGlyphset() const { return m_pGlyphs; }
 
@@ -140,7 +140,7 @@ private:
 	WgFontPtr		m_pFont;		// Pointer back to the font.
 	int				m_wantedSize;	// Size we requested.
 	int				m_size;			// Fontsize we got a glyphset for, which might be smaller than what we requested.
-	WgFontStyle		m_style;		// Style of glyphset we requested.
+	WgFontAlt		m_style;		// Style of glyphset we requested.
 	WgColor			m_color;		// Color this pen draws in.
 
 	bool			m_bShowSpace;	// Set if space control character should be shown (usually a dot in the middle of the cell).

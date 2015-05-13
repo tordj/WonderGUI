@@ -116,7 +116,7 @@ int WgStandardPresenter::CoordToCaretPos( WgPresentableField * pField, WgCoord p
 {
 }
 
-void WgStandardPresenter::RenderField( WgPresentableField * pField, WgGfxDevice * pDevice, WgEditState * pEditState, const WgRect& canvas, const WgRect& clip )
+void WgStandardPresenter::RenderField( WgPresentableField * pField, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip )
 {
 	void * pBlock = _fieldDataBlock(pField);
 	BlockHeader * pHeader = _header(pBlock);
@@ -131,7 +131,7 @@ void WgStandardPresenter::RenderField( WgPresentableField * pField, WgGfxDevice 
 
 	WgTextAttr2		attr = baseAttr;
 	WgFontPtr pFont = attr.pFont;
-	WgGlyphsetPtr pGlyphSet = pFont->GetGlyphset(attr.fontStyle, attr.size);
+	WgGlyphsetPtr pGlyphSet = pFont->GetGlyphset( WG_FONT_NORMAL, attr.size);
 	
 	for( int i = 0 ; i < pHeader->nbLines ; i++ )
 	{
@@ -210,7 +210,7 @@ void WgStandardPresenter::OnRefresh( WgPresentableField * pField )
 	_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
 }
 
-int WgStandardPresenter::MoveCaret( WgPresentableField * pField, WgEditState * pEditState, int verticalSteps, int horizontalSteps, WgModifierKeys modif )
+int WgStandardPresenter::MoveCaret( WgPresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif )
 {
 }
 
@@ -296,7 +296,7 @@ void WgStandardPresenter::_updateLineInfo( BlockHeader * pHeader, LineInfo * pLi
 
 	WgTextAttr2		attr = baseAttr;
 	WgFontPtr pFont = attr.pFont;
-	WgGlyphsetPtr pGlyphSet = pFont->GetGlyphset(attr.fontStyle, attr.size);
+	WgGlyphsetPtr pGlyphSet = pFont->GetGlyphset(WG_FONT_NORMAL, attr.size);
 
 	
 	
