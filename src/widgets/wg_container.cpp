@@ -317,7 +317,7 @@ void WgContainer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler
 	switch( _pEvent->Type() )
 	{
 		case WG_EVENT_MOUSE_ENTER:
-			m_pHoveredChild = _pEvent->Widget();
+			m_pHoveredChild = _pEvent->TargetRawPtr();
 			if( !m_state.IsHovered() )
 			{
 				WgState oldState = m_state;
@@ -329,7 +329,7 @@ void WgContainer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler
 			}
 			break;
 		case WG_EVENT_MOUSE_LEAVE:
-			if( _pEvent->Widget() == m_pHoveredChild && m_state.IsHovered() )
+			if( _pEvent->TargetRawPtr() == m_pHoveredChild && m_state.IsHovered() )
 			{
 				WgState oldState = m_state;
 				m_state.SetHovered(false);

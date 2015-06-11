@@ -117,7 +117,7 @@ int WgLineEditor::InsertTextAtCursor( const WgCharSeq& str )
 
 	int retVal = m_text.putText( str );
 
-	_queueEvent( new WgTextEditEvent(this,&text,false) );
+	_queueEvent( new WgTextEditEvent(text.Ptr(),false) );
 
 	_adjustViewOfs();
 
@@ -138,7 +138,7 @@ bool WgLineEditor::InsertCharAtCursor( Uint16 c )
 	if( !m_text.putChar( c ) )
 		return false;
 
-	_queueEvent( new WgTextEditEvent(this,&text,false) );
+	_queueEvent( new WgTextEditEvent(text.Ptr(),false) );
 
 	_adjustViewOfs();
 	return true;
@@ -320,7 +320,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 			if( m_text.putChar( ch ) )
 			{
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
+					pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
 
 				_adjustViewOfs();
 			}
@@ -387,7 +387,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 					m_text.delPrevChar();
 
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
+					pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
 				break;
 			}
 
@@ -401,7 +401,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 					m_text.delNextChar();
 
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(this,&text,false) );
+					pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
 				break;
 			}
 
@@ -594,7 +594,7 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 		if( _isEditable() || m_viewOfs != 0 )
 		{
 			_stopReceiveTicks();
-			_queueEvent( new WgTextEditEvent(this, &text,true) );
+			_queueEvent( new WgTextEditEvent(text.Ptr(),true) );
 
 			m_viewOfs = 0;
 			_requestRender();

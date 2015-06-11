@@ -47,5 +47,8 @@ WgInterfacePtr	WgInterface::Ptr()
 	return WgInterfacePtr(_object(),this);
 }
 
-
+WgObjectPtr WgInterface::Holder() 
+{ 
+	return WgObjectPtr( _object() ); 
+}
 

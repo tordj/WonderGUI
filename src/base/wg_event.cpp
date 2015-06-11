@@ -60,9 +60,9 @@ WgEventPtr WgEvent::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-WgWidget * WgEvent::Widget() const
+WgWidget * WgEvent::TargetRawPtr() const
 {
-	return m_pWidget.RawPtr();
+	return m_pTarget.RawPtr();
 }
 
 
@@ -250,8 +250,8 @@ WgMouseEnterEvent::WgMouseEnterEvent( const WgCoord& pos )
 WgMouseEnterEvent::WgMouseEnterEvent( WgWidget * pWidget )
 {
 	m_type = WG_EVENT_MOUSE_ENTER;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget 		= pWidget;
 }
 
 bool WgMouseEnterEvent::IsInstanceOf( const char * pClassName ) const
@@ -288,8 +288,8 @@ WgMouseLeaveEvent::WgMouseLeaveEvent()
 WgMouseLeaveEvent::WgMouseLeaveEvent( WgWidget * pWidget )
 {
 	m_type = WG_EVENT_MOUSE_LEAVE;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget 		= pWidget;
 }
 
 bool WgMouseLeaveEvent::IsInstanceOf( const char * pClassName ) const
@@ -328,8 +328,8 @@ WgMouseMoveEvent::WgMouseMoveEvent( const WgCoord& pos )
 WgMouseMoveEvent::WgMouseMoveEvent( WgWidget * pWidget )
 {
 	m_type = WG_EVENT_MOUSE_MOVE;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget 		= pWidget;
 }
 
 bool WgMouseMoveEvent::IsInstanceOf( const char * pClassName ) const
@@ -366,8 +366,8 @@ WgMousePressEvent::WgMousePressEvent( WgMouseButton button ) : WgMouseButtonEven
 WgMousePressEvent::WgMousePressEvent( WgMouseButton button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
 {
 	m_type			= WG_EVENT_MOUSE_PRESS;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget 		= pWidget;
 }
 
 bool WgMousePressEvent::IsInstanceOf( const char * pClassName ) const
@@ -403,8 +403,8 @@ WgMouseRepeatEvent::WgMouseRepeatEvent( WgMouseButton button ) : WgMouseButtonEv
 WgMouseRepeatEvent::WgMouseRepeatEvent( WgMouseButton button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
 {
 	m_type			= WG_EVENT_MOUSE_REPEAT;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget 		= pWidget;
 }
 
 bool WgMouseRepeatEvent::IsInstanceOf( const char * pClassName ) const
@@ -444,8 +444,8 @@ WgMouseReleaseEvent::WgMouseReleaseEvent( WgMouseButton button ) : WgMouseButton
 WgMouseReleaseEvent::WgMouseReleaseEvent( WgMouseButton button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside ) : WgMouseButtonEvent(button)
 {
 	m_type			= WG_EVENT_MOUSE_RELEASE;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget 		= pWidget;
 
 	m_bPressInside = bPressInside;
 	m_bReleaseInside = bReleaseInside;
@@ -496,8 +496,8 @@ WgMouseClickEvent::WgMouseClickEvent( WgMouseButton button ) : WgMouseButtonEven
 WgMouseClickEvent::WgMouseClickEvent( WgMouseButton button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
 {
 	m_type = WG_EVENT_MOUSE_CLICK;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget 		= pWidget;
 }
 
 bool WgMouseClickEvent::IsInstanceOf( const char * pClassName ) const
@@ -533,8 +533,8 @@ WgMouseDoubleClickEvent::WgMouseDoubleClickEvent( WgMouseButton button ) : WgMou
 WgMouseDoubleClickEvent::WgMouseDoubleClickEvent( WgMouseButton button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
 {
 	m_type = WG_EVENT_MOUSE_DOUBLE_CLICK;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget		= pWidget;
 }
 
 bool WgMouseDoubleClickEvent::IsInstanceOf( const char * pClassName ) const
@@ -570,8 +570,8 @@ WgKeyPressEvent::WgKeyPressEvent( int native_keycode ) : WgKeyEvent(native_keyco
 WgKeyPressEvent::WgKeyPressEvent( int native_keycode, WgWidget * pWidget ) : WgKeyEvent(native_keycode)
 {
 	m_type 			= WG_EVENT_KEY_PRESS;
-	m_bIsForWidget	= true;
-	m_pWidget		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget		= pWidget;
 }
 
 bool WgKeyPressEvent::IsInstanceOf( const char * pClassName ) const
@@ -607,8 +607,8 @@ WgKeyRepeatEvent::WgKeyRepeatEvent( int native_keycode ) : WgKeyEvent(native_key
 WgKeyRepeatEvent::WgKeyRepeatEvent( int native_keycode, WgWidget * pWidget ) : WgKeyEvent(native_keycode)
 {
 	m_type 			= WG_EVENT_KEY_REPEAT;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget 		= pWidget;
 }
 
 bool WgKeyRepeatEvent::IsInstanceOf( const char * pClassName ) const
@@ -644,8 +644,8 @@ WgKeyReleaseEvent::WgKeyReleaseEvent( int native_keycode ) : WgKeyEvent(native_k
 WgKeyReleaseEvent::WgKeyReleaseEvent( int native_keycode, WgWidget * pWidget ) : WgKeyEvent(native_keycode)
 {
 	m_type 			= WG_EVENT_KEY_RELEASE;
-	m_bIsForWidget	= true;
-	m_pWidget		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget		= pWidget;
 }
 
 bool WgKeyReleaseEvent::IsInstanceOf( const char * pClassName ) const
@@ -683,8 +683,8 @@ WgCharacterEvent::WgCharacterEvent( unsigned short character, WgWidget * pWidget
 {
 	m_type			= WG_EVENT_CHARACTER;
 	m_char			= character;
-	m_bIsForWidget	= true;
-	m_pWidget		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget		= pWidget;
 }
 
 unsigned short WgCharacterEvent::Char() const
@@ -730,8 +730,8 @@ WgWheelRollEvent::WgWheelRollEvent( int wheel, int distance, WgWidget * pWidget 
 	m_type			= WG_EVENT_WHEEL_ROLL;
 	m_wheel			= wheel;
 	m_distance		= distance;
-	m_bIsForWidget	= true;
-	m_pWidget		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget		= pWidget;
 }
 
 int WgWheelRollEvent::Wheel() const
@@ -779,8 +779,8 @@ WgTickEvent::WgTickEvent( int ms, WgWidget * pWidget )
 {
 	m_type 			= WG_EVENT_TICK;
 	m_millisec 		= ms;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_bHasTarget	= true;
+	m_pTarget 		= pWidget;
 }
 	
 int WgTickEvent::Millisec() const
@@ -849,11 +849,10 @@ WgPointerChangeEventPtr WgPointerChangeEvent::Cast( const WgObjectPtr& pObject )
 
 const char WgSelectEvent::CLASSNAME[] = {"SelectEvent"};
 
-WgSelectEvent::WgSelectEvent( WgWidget * pWidget )
+WgSelectEvent::WgSelectEvent( WgObject * pSource )
 {
 	m_type 			= WG_EVENT_SELECT;
-	m_pWidget 		= pWidget;
-	m_bIsForWidget	= true;
+	m_pSource 		= pSource;
 }
 
 bool WgSelectEvent::IsInstanceOf( const char * pClassName ) const
@@ -881,11 +880,10 @@ WgSelectEventPtr WgSelectEvent::Cast( const WgObjectPtr& pObject )
 
 const char WgToggleEvent::CLASSNAME[] = {"ToggleEvent"};
 
-WgToggleEvent::WgToggleEvent( WgWidget * pWidget, bool bSet )
+WgToggleEvent::WgToggleEvent( WgObject * pSource, bool bSet )
 {
 	m_type = WG_EVENT_TOGGLE;
-	m_pWidget = pWidget;
-	m_bIsForWidget	= true;
+	m_pSource = pSource;
 	m_bSet = bSet;
 }
 
@@ -919,11 +917,10 @@ WgToggleEventPtr WgToggleEvent::Cast( const WgObjectPtr& pObject )
 
 const char WgValueUpdateEvent::CLASSNAME[] = {"ValueUpdateEvent"};
 
-WgValueUpdateEvent::WgValueUpdateEvent( WgWidget * pWidget, int64_t value, double fraction, bool bFinal )
+WgValueUpdateEvent::WgValueUpdateEvent( WgObject * pSource, int64_t value, double fraction, bool bFinal )
 {
 	m_type = WG_EVENT_VALUE_UPDATE;
-	m_pWidget = pWidget;
-	m_bIsForWidget	= true;
+	m_pSource = pSource;
 	m_value = value;
 	m_fraction = fraction;
 	m_bFinal = bFinal;
@@ -969,11 +966,10 @@ WgValueUpdateEventPtr WgValueUpdateEvent::Cast( const WgObjectPtr& pObject )
 
 const char WgRangeUpdateEvent::CLASSNAME[] = {"RangeUpdateEvent"};
 
-WgRangeUpdateEvent::WgRangeUpdateEvent( WgWidget * pWidget, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal )
+WgRangeUpdateEvent::WgRangeUpdateEvent( WgObject * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal )
 {
 	m_type = WG_EVENT_RANGE_UPDATE;
-	m_pWidget = pWidget;
-	m_bIsForWidget	= true;
+	m_pSource 	= pSource;
 	m_ofs		= intOfs;
 	m_length	= intLength;
 	m_fracOfs	= fracOfs;
@@ -1037,12 +1033,11 @@ WgEditTextPtr WgTextEditEvent::Text() const
 	return m_pText;
 }
 
-WgTextEditEvent::WgTextEditEvent( WgWidget * pWidget, WgEditText * pText, bool bFinal )
+WgTextEditEvent::WgTextEditEvent( const WgEditTextPtr& pText, bool bFinal )
 {
 	m_type 		= WG_EVENT_TEXT_EDIT;
-	m_pWidget 	= pWidget;
-	m_bIsForWidget	= true;
-	m_pText 	= WgEditTextPtr(pWidget, pText);
+	m_pSource 	= pText->Holder();
+	m_pText 	= pText;
 	m_bFinal	= bFinal;
 }
 
@@ -1076,10 +1071,9 @@ WgTextEditEventPtr WgTextEditEvent::Cast( const WgObjectPtr& pObject )
 
 const char WgItemEvent::CLASSNAME[] = {"ItemEvent"};
 
-WgItemEvent::WgItemEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject ) : m_item(itemId,pItemObject)
+WgItemEvent::WgItemEvent( WgObject * pSource, int itemId, const WgObjectPtr& pItemObject ) : m_item(itemId,pItemObject)
 {
-	m_pWidget 	= pWidget;
-	m_bIsForWidget	= true;
+	m_pSource 	= pSource;
 }
 
 bool WgItemEvent::IsInstanceOf( const char * pClassName ) const
@@ -1117,10 +1111,9 @@ WgObjectPtr WgItemEvent::ItemObject() const
 
 const char WgItemToggleEvent::CLASSNAME[] = {"ItemToggleEvent"};
 
-WgItemToggleEvent::WgItemToggleEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject, bool bSet ) : WgItemEvent(pWidget,itemId,pItemObject)
+WgItemToggleEvent::WgItemToggleEvent( WgObject * pSource, int itemId, const WgObjectPtr& pItemObject, bool bSet ) : WgItemEvent(pSource,itemId,pItemObject)
 {
 	m_type = WG_EVENT_ITEM_TOGGLE;
-	m_bIsForWidget	= true;
 	m_bSet = bSet;
 }
 
@@ -1154,10 +1147,9 @@ bool WgItemToggleEvent::IsSet() const
 
 const char WgItemMousePressEvent::CLASSNAME[] = {"ItemMousePressEvent"};
 
-WgItemMousePressEvent::WgItemMousePressEvent( WgWidget * pWidget, int itemId, const WgObjectPtr& pItemObject, WgMouseButton button ) : WgItemEvent(pWidget,itemId,pItemObject)
+WgItemMousePressEvent::WgItemMousePressEvent( WgObject * pSource, int itemId, const WgObjectPtr& pItemObject, WgMouseButton button ) : WgItemEvent(pSource,itemId,pItemObject)
 {
 	m_type = WG_EVENT_ITEM_MOUSE_PRESS;
-	m_bIsForWidget	= true;
 	m_button = button;
 }
 
@@ -1191,10 +1183,9 @@ WgMouseButton WgItemMousePressEvent::Button() const
 
 const char WgItemListEvent::CLASSNAME[] = {"ItemListEvent"};
 
-WgItemListEvent::WgItemListEvent( WgWidget * pWidget, int nbItems, WgItemInfo * pItems )
+WgItemListEvent::WgItemListEvent( WgObject * pSource, int nbItems, WgItemInfo * pItems )
 {
-	m_pWidget 	= pWidget;
-	m_bIsForWidget	= true;
+	m_pSource 	= pSource;
 	m_nbItems	= nbItems;
 	m_pItems	= pItems;
 }
@@ -1239,7 +1230,7 @@ const WgItemInfo * WgItemListEvent::Items() const
 
 const char WgItemsSelectEvent::CLASSNAME[] = {"ItemsSelectEvent"};
 
-WgItemsSelectEvent::WgItemsSelectEvent( WgWidget * pWidget, int nbItems, WgItemInfo * pItems ) : WgItemListEvent(pWidget,nbItems,pItems)
+WgItemsSelectEvent::WgItemsSelectEvent( WgObject * pSource, int nbItems, WgItemInfo * pItems ) : WgItemListEvent(pSource,nbItems,pItems)
 {
 	m_type = WG_EVENT_ITEMS_SELECT;
 }
@@ -1269,7 +1260,7 @@ WgItemsSelectEventPtr WgItemsSelectEvent::Cast( const WgObjectPtr& pObject )
 
 const char WgItemsUnselectEvent::CLASSNAME[] = {"ItemsUnselectEvent"};
 
-WgItemsUnselectEvent::WgItemsUnselectEvent( WgWidget * pWidget, int nbItems, WgItemInfo * pItems ) : WgItemListEvent(pWidget,nbItems,pItems)
+WgItemsUnselectEvent::WgItemsUnselectEvent( WgObject * pSource, int nbItems, WgItemInfo * pItems ) : WgItemListEvent(pSource,nbItems,pItems)
 {
 	m_type = WG_EVENT_ITEMS_UNSELECT;
 }
@@ -1301,10 +1292,10 @@ const char WgPopupClosedEvent::CLASSNAME[] = {"PopupClosedEvent"};
 
 WgPopupClosedEvent::WgPopupClosedEvent( WgWidget * pPopup, const WgWidgetWeakPtr& pCaller )
 {
-	m_type		= WG_EVENT_POPUP_CLOSED;
-	m_pWidget	= pCaller;
-	m_bIsForWidget	= true;
-	m_pPopup		= pPopup;
+	m_type			= WG_EVENT_POPUP_CLOSED;
+	m_pTarget		= pCaller;
+	m_bHasTarget	= true;
+	m_pSource		= pPopup;
 }
 
 bool WgPopupClosedEvent::IsInstanceOf( const char * pClassName ) const
@@ -1328,25 +1319,14 @@ WgPopupClosedEventPtr WgPopupClosedEvent::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-WgWidget * WgPopupClosedEvent::Popup() const
-{
-	return m_pPopup.RawPtr();
-}
-
-WgWidget * WgPopupClosedEvent::Caller() const
-{
-	return m_pWidget.RawPtr();
-}
-
 //____ WgModalMoveOutsideEvent ___________________________________________________
 
 const char WgModalMoveOutsideEvent::CLASSNAME[] = {"ModalMoveOutsideEvent"};
 
-WgModalMoveOutsideEvent::WgModalMoveOutsideEvent( WgWidget * pWidget )
+WgModalMoveOutsideEvent::WgModalMoveOutsideEvent( WgWidget * pSource )
 {
 	m_type = WG_EVENT_MODAL_MOVE_OUTSIDE;
-	m_bIsForWidget	= true;
-	m_pWidget		= pWidget;
+	m_pSource		= pSource;
 }
 
 bool WgModalMoveOutsideEvent::IsInstanceOf( const char * pClassName ) const
@@ -1375,11 +1355,10 @@ WgModalMoveOutsideEventPtr WgModalMoveOutsideEvent::Cast( const WgObjectPtr& pOb
 
 const char WgModalBlockedPressEvent::CLASSNAME[] = {"ModalBlockedPressEvent"};
 
-WgModalBlockedPressEvent::WgModalBlockedPressEvent( WgMouseButton button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
+WgModalBlockedPressEvent::WgModalBlockedPressEvent( WgMouseButton button, WgWidget * pSource ) : WgMouseButtonEvent(button)
 {
 	m_type			= WG_EVENT_MODAL_BLOCKED_PRESS;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_pSource 		= pSource;
 }
 
 bool WgModalBlockedPressEvent::IsInstanceOf( const char * pClassName ) const
@@ -1407,11 +1386,10 @@ WgModalBlockedPressEventPtr WgModalBlockedPressEvent::Cast( const WgObjectPtr& p
 
 const char WgModalBlockedReleaseEvent::CLASSNAME[] = {"ModalBlockedReleaseEvent"};
 
-WgModalBlockedReleaseEvent::WgModalBlockedReleaseEvent( WgMouseButton button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
+WgModalBlockedReleaseEvent::WgModalBlockedReleaseEvent( WgMouseButton button, WgWidget * pSource ) : WgMouseButtonEvent(button)
 {
 	m_type			= WG_EVENT_MODAL_BLOCKED_RELEASE;
-	m_bIsForWidget	= true;
-	m_pWidget 		= pWidget;
+	m_pSource 		= pSource;
 }
 
 bool WgModalBlockedReleaseEvent::IsInstanceOf( const char * pClassName ) const
@@ -1439,11 +1417,6 @@ WgModalBlockedReleaseEventPtr WgModalBlockedReleaseEvent::Cast( const WgObjectPt
 
 const char WgLinkEvent::CLASSNAME[] = {"LinkEvent"};
 
-std::string WgLinkEvent::Link() const
-{
-	return m_link;
-}
-
 bool WgLinkEvent::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
@@ -1469,12 +1442,10 @@ WgLinkEventPtr WgLinkEvent::Cast( const WgObjectPtr& pObject )
 
 const char WgLinkSelectEvent::CLASSNAME[] = {"LinkSelectEvent"};
 
-WgLinkSelectEvent::WgLinkSelectEvent( WgWidget * pWidget, std::string link )
+WgLinkSelectEvent::WgLinkSelectEvent( const WgTextLinkPtr& pLink )
 {
 	m_type			= WG_EVENT_LINK_SELECT;
-	m_pWidget		= pWidget;
-	m_bIsForWidget	= true;
-	m_link			= link;
+	m_pSource		= pLink;
 }
 
 bool WgLinkSelectEvent::IsInstanceOf( const char * pClassName ) const
@@ -1502,12 +1473,10 @@ WgLinkSelectEventPtr WgLinkSelectEvent::Cast( const WgObjectPtr& pObject )
 
 const char WgLinkMouseEnterEvent::CLASSNAME[] = {"LinkMouseEnterEvent"};
 
-WgLinkMouseEnterEvent::WgLinkMouseEnterEvent( WgWidget * pWidget, std::string link )
+WgLinkMouseEnterEvent::WgLinkMouseEnterEvent( const WgTextLinkPtr& pLink )
 {
 	m_type			= WG_EVENT_LINK_MOUSE_ENTER;
-	m_pWidget		= pWidget;
-	m_bIsForWidget	= true;
-	m_link			= link;
+	m_pSource		= pLink;
 }
 
 bool WgLinkMouseEnterEvent::IsInstanceOf( const char * pClassName ) const
@@ -1535,12 +1504,10 @@ WgLinkMouseEnterEventPtr WgLinkMouseEnterEvent::Cast( const WgObjectPtr& pObject
 
 const char WgLinkMouseLeaveEvent::CLASSNAME[] = {"LinkMouseLeaveEvent"};
 
-WgLinkMouseLeaveEvent::WgLinkMouseLeaveEvent( WgWidget * pWidget, std::string link )
+WgLinkMouseLeaveEvent::WgLinkMouseLeaveEvent( const WgTextLinkPtr& pLink )
 {
 	m_type			= WG_EVENT_LINK_MOUSE_LEAVE;
-	m_pWidget		= pWidget;
-	m_bIsForWidget	= true;
-	m_link			= link;
+	m_pSource		= pLink;
 }
 
 bool WgLinkMouseLeaveEvent::IsInstanceOf( const char * pClassName ) const
@@ -1598,12 +1565,10 @@ WgLinkMouseButtonEventPtr WgLinkMouseButtonEvent::Cast( const WgObjectPtr& pObje
 
 const char WgLinkMousePressEvent::CLASSNAME[] = {"LinkMousePressEvent"};
 
-WgLinkMousePressEvent::WgLinkMousePressEvent( WgWidget * pWidget, std::string link, WgMouseButton button )
+WgLinkMousePressEvent::WgLinkMousePressEvent( const WgTextLinkPtr& pLink, WgMouseButton button )
 {
 	m_type			= WG_EVENT_LINK_MOUSE_PRESS;
-	m_pWidget		= pWidget;
-	m_bIsForWidget	= true;
-	m_link			= link;
+	m_pSource		= pLink;
 	m_button		= button;
 }
 
@@ -1632,12 +1597,10 @@ WgLinkMousePressEventPtr WgLinkMousePressEvent::Cast( const WgObjectPtr& pObject
 
 const char WgLinkMouseRepeatEvent::CLASSNAME[] = {"LinkMouseRepeatEvent"};
 
-WgLinkMouseRepeatEvent::WgLinkMouseRepeatEvent( WgWidget * pWidget, std::string link, WgMouseButton button )
+WgLinkMouseRepeatEvent::WgLinkMouseRepeatEvent( const WgTextLinkPtr& pLink, WgMouseButton button )
 {
 	m_type			= WG_EVENT_LINK_MOUSE_REPEAT;
-	m_pWidget		= pWidget;
-	m_bIsForWidget	= true;
-	m_link			= link;
+	m_pSource		= pLink;
 	m_button		= button;
 }
 
@@ -1666,12 +1629,10 @@ WgLinkMouseRepeatEventPtr WgLinkMouseRepeatEvent::Cast( const WgObjectPtr& pObje
 
 const char WgLinkMouseReleaseEvent::CLASSNAME[] = {"LinkMouseReleaseEvent"};
 
-WgLinkMouseReleaseEvent::WgLinkMouseReleaseEvent( WgWidget * pWidget, std::string link, WgMouseButton button )
+WgLinkMouseReleaseEvent::WgLinkMouseReleaseEvent( const WgTextLinkPtr& pLink, WgMouseButton button )
 {
 	m_type			= WG_EVENT_LINK_MOUSE_RELEASE;
-	m_pWidget		= pWidget;
-	m_bIsForWidget	= true;
-	m_link			= link;
+	m_pSource		= pLink;
 	m_button		= button;
 }
 
@@ -1700,12 +1661,10 @@ WgLinkMouseReleaseEventPtr WgLinkMouseReleaseEvent::Cast( const WgObjectPtr& pOb
 
 const char WgLinkMouseClickEvent::CLASSNAME[] = {"LinkMouseClickEvent"};
 
-WgLinkMouseClickEvent::WgLinkMouseClickEvent( WgWidget * pWidget, std::string link, WgMouseButton button )
+WgLinkMouseClickEvent::WgLinkMouseClickEvent( const WgTextLinkPtr& pLink, WgMouseButton button )
 {
 	m_type			= WG_EVENT_LINK_MOUSE_CLICK;
-	m_pWidget		= pWidget;
-	m_bIsForWidget	= true;
-	m_link			= link;
+	m_pSource		= pLink;
 	m_button		= button;
 }
 
@@ -1734,12 +1693,10 @@ WgLinkMouseClickEventPtr WgLinkMouseClickEvent::Cast( const WgObjectPtr& pObject
 
 const char WgLinkMouseDoubleClickEvent::CLASSNAME[] = {"LinkMouseDoubleClickEvent"};
 
-WgLinkMouseDoubleClickEvent::WgLinkMouseDoubleClickEvent( WgWidget * pWidget, std::string link, WgMouseButton button )
+WgLinkMouseDoubleClickEvent::WgLinkMouseDoubleClickEvent( const WgTextLinkPtr& pLink, WgMouseButton button )
 {
 	m_type			= WG_EVENT_LINK_MOUSE_DOUBLE_CLICK;
-	m_pWidget		= pWidget;
-	m_bIsForWidget	= true;
-	m_link			= link;
+	m_pSource		= pLink;
 	m_button		= button;
 }
 
@@ -1810,9 +1767,9 @@ WgMouseDragEvent::WgMouseDragEvent( WgMouseButton button, const WgCoord& startPo
 
 WgMouseDragEvent::WgMouseDragEvent( WgMouseButton button, WgWidget * pWidget, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : WgMouseButtonEvent(button)
 {
-	m_type = WG_EVENT_MOUSE_DRAG;
-	m_bIsForWidget		= true;
-	m_pWidget 			= pWidget;
+	m_type 			= WG_EVENT_MOUSE_DRAG;
+	m_bHasTarget	= true;
+	m_pTarget		= pWidget;
 
 	m_startPos = startPos;
 	m_prevPos = prevPos;

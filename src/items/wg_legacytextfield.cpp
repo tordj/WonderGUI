@@ -2295,7 +2295,7 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 			WgTextLinkPtr pLink = CoordToLink( pointerOfs, container );
 			if( m_pMarkedLink && pLink != m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgLinkMouseLeaveEvent(pEvent->Widget(), m_pMarkedLink->Link()) );
+				pEventHandler->QueueEvent( new WgLinkMouseLeaveEvent( m_pMarkedLink ));
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2304,7 +2304,7 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 			{
 				if( pLink != m_pMarkedLink )
 				{
-					pEventHandler->QueueEvent( new WgLinkMouseEnterEvent(pEvent->Widget(), pLink->Link() ));
+					pEventHandler->QueueEvent( new WgLinkMouseEnterEvent( pLink ));
 
 					m_pMarkedLink = pLink;
 					m_markedLinkState = WG_STATE_HOVERED;
@@ -2319,7 +2319,7 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgLinkMouseLeaveEvent(pEvent->Widget(), m_pMarkedLink->Link()));
+				pEventHandler->QueueEvent( new WgLinkMouseLeaveEvent( m_pMarkedLink ));
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2330,7 +2330,7 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgLinkMousePressEvent(pEvent->Widget(), m_pMarkedLink->Link(), WgMouseButtonEvent::Cast(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgLinkMousePressEvent( m_pMarkedLink, WgMouseButtonEvent::Cast(pEvent)->Button() ));
 				m_markedLinkState = WG_STATE_PRESSED;
 				bRefresh = true;
 			}
@@ -2341,7 +2341,7 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgLinkMouseRepeatEvent(pEvent->Widget(), m_pMarkedLink->Link(), WgMouseButtonEvent::Cast(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgLinkMouseRepeatEvent( m_pMarkedLink, WgMouseButtonEvent::Cast(pEvent)->Button() ));
 			}
 			break;
 		}
@@ -2350,12 +2350,12 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgLinkMouseReleaseEvent(pEvent->Widget(), m_pMarkedLink->Link(), WgMouseButtonEvent::Cast(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgLinkMouseReleaseEvent( m_pMarkedLink, WgMouseButtonEvent::Cast(pEvent)->Button() ));
 
 				if( m_markedLinkState == WG_STATE_PRESSED )
 				{
-					pEventHandler->QueueEvent( new WgLinkMouseClickEvent(pEvent->Widget(), m_pMarkedLink->Link(), WgMouseButtonEvent::Cast(pEvent)->Button() ));
-					pEventHandler->QueueEvent( new WgLinkSelectEvent(pEvent->Widget(), m_pMarkedLink->Link() ));				
+					pEventHandler->QueueEvent( new WgLinkMouseClickEvent( m_pMarkedLink, WgMouseButtonEvent::Cast(pEvent)->Button() ));
+					pEventHandler->QueueEvent( new WgLinkSelectEvent( m_pMarkedLink ));				
 				}
 				m_markedLinkState = WG_STATE_HOVERED;
 				bRefresh = true;
@@ -2365,7 +2365,7 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 
 		case WG_EVENT_MOUSE_DOUBLE_CLICK:
 			if( m_pMarkedLink )
-				pEventHandler->QueueEvent( new WgLinkMouseDoubleClickEvent(pEvent->Widget(), m_pMarkedLink->Link(), WgMouseButtonEvent::Cast(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgLinkMouseDoubleClickEvent( m_pMarkedLink, WgMouseButtonEvent::Cast(pEvent)->Button() ));
 			break;
 
 		default:

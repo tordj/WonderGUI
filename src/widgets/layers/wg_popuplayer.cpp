@@ -518,11 +518,11 @@ void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandle
 
 	// Try to find an opener
 
-	WgWidget * pOrigin = _pEvent->Widget();
-	if( pOrigin && pOrigin != this )
+	WgWidget * pTarget = _pEvent->TargetRawPtr();
+	if( pTarget && pTarget != this )
 	{
 		WgPopupHook * pHook = m_popupHooks.First();
-		while( pHook && pHook->_widget() != pOrigin )
+		while( pHook && pHook->_widget() != pTarget )
 			pHook = pHook->_next();
 			
 		if( pHook && pHook->m_pOpener )

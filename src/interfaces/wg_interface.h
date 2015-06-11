@@ -26,6 +26,7 @@ class WgInterfacePtr;
 class WgInterfaceWeakPtr;
 
 class WgObject;
+class WgObjectPtr;
 
 
 /**
@@ -57,8 +58,9 @@ public:
 	virtual bool			IsInstanceOf( const char * pClassName ) const;
 	virtual const char *	ClassName( void ) const;
 	static const char		CLASSNAME[];
-	static WgInterfacePtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	static WgInterfacePtr	Cast( const WgInterfacePtr& pInterface );			// Provided just for completeness sake.
 	WgInterfacePtr			Ptr();												///< @brief Get a pointer to this interface.
+	WgObjectPtr				Holder();											///< @breif Get a pointer to the object providing this interface.
 
 protected:
 	virtual WgObject * 		_object() const = 0;

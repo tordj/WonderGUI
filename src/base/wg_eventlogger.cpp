@@ -183,7 +183,8 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 		return;
 
 	string	timestamp;
-	string	widget;
+	string	source;
+	string	target;
 	string	modkeys;
 	string	pointerPos;
 
@@ -338,13 +339,6 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 			break;
 		}
 
-		case WG_EVENT_POPUP_CLOSED:
-		{
-			WgPopupClosedEventPtr pEvent = WgPopupClosedEvent::Cast(_pEvent);
-			sprintf( params, "popup=%d", pEvent->Popup() );
-			break;
-		}
-
 		case WG_EVENT_MODAL_MOVE_OUTSIDE:
 			break;
 		case WG_EVENT_MODAL_BLOCKED_PRESS:
@@ -358,11 +352,12 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 			break;
 	};
 
-	widget = _formatWidget( _pEvent );
+	source = _formatSource( _pEvent );
+	target = _formatTarget( _pEvent );
 	modkeys = _formatModkeys( _pEvent );
 	pointerPos = _formatPointerPos( _pEvent );
 
-	m_out << timestamp << " - " << _pEvent->ClassName() << " - " << widget << pointerPos << modkeys << params;
+	m_out << timestamp << " - " << _pEvent->ClassName() << " - " << source << target << pointerPos << modkeys << params;
 	m_out << std::endl;
 }
 
@@ -381,29 +376,54 @@ string WgEventLogger::_formatTimestamp( int64_t ms ) const
 	return string( temp );
 }
 
-//____ _formatWidget() __________________________________________________________
+//____ _formatSource() __________________________________________________________
 
-string WgEventLogger::_formatWidget( const WgEventPtr& _pEvent ) const
+string WgEventLogger::_formatSource( const WgEventPtr& _pEvent ) const
 {
 	std::string	out;
 
-	if( _pEvent->IsFromWidget() )
+	if( _pEvent->SourceRawPtr() )
 	{
 		char	temp[64];
-		WgWidget * pWidget = _pEvent->Widget();
+		WgObject * pObject = _pEvent->SourceRawPtr();
 
 		static const char def_type[] = "deleted";
 		const char * pType = def_type;
 
-		if( pWidget )
-			pType = pWidget->ClassName();
+		if( pObject )
+			pType = pObject->ClassName();
 
-		sprintf( temp, " widget=%p (%s)", pWidget, pType );
+		sprintf( temp, " source=%p (%s)", pObject, pType );
 		out = temp;
 	}
 
 	return out;
 }
+
+//____ _formatTarget() __________________________________________________________
+
+string WgEventLogger::_formatTarget( const WgEventPtr& _pEvent ) const
+{
+	std::string	out;
+
+	if( _pEvent->TargetSet() )
+	{
+		char	temp[64];
+		WgWidget * pTarget = _pEvent->TargetRawPtr();
+
+		static const char def_type[] = "deleted";
+		const char * pType = def_type;
+
+		if( pTarget )
+			pType = pTarget->ClassName();
+
+		sprintf( temp, " target=%p (%s)", pTarget, pType );
+		out = temp;
+	}
+
+	return out;
+}
+
 
 //____ _formatModkeys() __________________________________________________________
 

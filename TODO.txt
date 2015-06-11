@@ -1,3 +1,17 @@
+
+Event System
+============
+
+- MouseEnter/MouseLeave events should understand hierarchy.
+- Mouse events should have EventHandler as sender?
+- Callbacks and filters on both Source and Target, how?
+- Global callbacks for each receiving target?
+- Mouse info only on mouse events?
+- Remove the double mouse events (global local)?
+
+- Filters be part of the Event-class?
+
+
 ﻿
 
 

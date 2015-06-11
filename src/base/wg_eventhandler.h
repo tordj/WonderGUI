@@ -105,11 +105,11 @@ public:
 	WgCallbackHandle	AddCallback( void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam );
 	WgCallbackHandle	AddCallback( WgEventListener * pListener );
 
-	WgCallbackHandle	AddCallback( const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent) );
-	WgCallbackHandle	AddCallback( const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, int param ), int param );
-	WgCallbackHandle	AddCallback( const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, void * pParam), void * pParam );
-	WgCallbackHandle	AddCallback( const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam );
-	WgCallbackHandle	AddCallback( const WgWidgetPtr& pWidget, WgEventListener * pListener );
+	WgCallbackHandle	AddCallback( const WgWidgetPtr& pReceiver, void(*fp)( const WgEventPtr& pEvent) );
+	WgCallbackHandle	AddCallback( const WgWidgetPtr& pReceiver, void(*fp)( const WgEventPtr& pEvent, int param ), int param );
+	WgCallbackHandle	AddCallback( const WgWidgetPtr& pReceiver, void(*fp)( const WgEventPtr& pEvent, void * pParam), void * pParam );
+	WgCallbackHandle	AddCallback( const WgWidgetPtr& pReceiver, void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam );
+	WgCallbackHandle	AddCallback( const WgWidgetPtr& pReceiver, WgEventListener * pListener );
 
 	WgCallbackHandle	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEventPtr& pEvent) );
 	WgCallbackHandle	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEventPtr& pEvent, int param ), int param );
@@ -117,11 +117,11 @@ public:
 	WgCallbackHandle	AddCallback( const WgEventFilter& filter, void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam );
 	WgCallbackHandle	AddCallback( const WgEventFilter& filter, WgEventListener * pListener );
 
-	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent) );
-	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, int param ), int param );
-	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, void * pParam), void * pParam );
-	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam );
-	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pWidget, WgEventListener * pListener );
+	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pReceiver, void(*fp)( const WgEventPtr& pEvent) );
+	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pReceiver, void(*fp)( const WgEventPtr& pEvent, int param ), int param );
+	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pReceiver, void(*fp)( const WgEventPtr& pEvent, void * pParam), void * pParam );
+	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pReceiver, void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam );
+	WgCallbackHandle	AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pReceiver, WgEventListener * pListener );
 
 
 	bool	DeleteCallback( WgCallbackHandle handle );
@@ -154,7 +154,7 @@ private:
 	void	_finalizeEvent( const WgEventPtr& pEvent );
 	void	_processGeneralEvent( const WgEventPtr& pEvent );
 	void	_processGlobalEventCallbacks( const WgEventPtr& pEvent );
-	void	_processWidgetEventCallbacks( const WgEventPtr& pEvent, WgWidget * pWidget );
+	void	_processReceiverCallbacks( const WgEventPtr& pEvent, WgWidget * pReceiver );
 
 	void	_processTick( WgTickEvent * pEvent );
 
@@ -182,14 +182,16 @@ private:
 	void	_processCharacter( WgCharacterEvent * pEvent );
 
 	bool	_isWidgetInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list );
+	int		_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list );
 
 	WgCallbackHandle	_addCallback( Callback * pCallback );
 	WgCallbackHandle	_addCallback( const WgWidgetPtr& pWidget, Callback * pCallback );
 	int		_deleteCallbacksTo( const void * pReceiver );
 	int		_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain );
 
-	void 	_updateMarkedWidget(bool bPostMouseMoveEvents);
-	void	_addTickReceiver( WgWidget * pWidget );
+	void 		_updateMarkedWidget(bool bPostMouseMoveEvents);
+	WgWidget *	_updateEnteredWidgets( WgWidget * pMarkedWidget );
+	void		_addTickReceiver( WgWidget * pWidget );
 
 	void	_setWidgetFocused( WgWidget * pWidget, bool bFocused );
 
@@ -202,7 +204,7 @@ private:
 	bool									m_bIsProcessing;		// Set when we are inside ProcessEvents().
 	std::deque<WgEventPtr>::iterator		m_insertPos;			// Position where we insert events being queued when processing.
 	WgEventPtr								m_pEventProcessing;		// Current event being processed.
-	WgWidgetPtr								m_pNextEventReceiver;	// Next widget to receive the event, from bubbling or forwarding.
+	WgWidgetPtr								m_pNextTarget;			// Next widget to receive the event, from bubbling or forwarding.
 
 	int64_t			m_time;
 	WgCoord			m_pointerPos;
@@ -213,7 +215,10 @@ private:
 
 	// Current mouse state
 
-	WgWidgetWeakPtr				m_pMarkedWidget;		// Widget the pointer currently is "inside". Empty if outside a modal widget.
+	WgWidgetWeakPtr					m_pMarkedWidget;	// Widget the pointer currently is "inside". Empty if outside a modal widget.
+
+	std::vector<WgWidgetWeakPtr>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
+
 
 	// Current button states
 
@@ -337,7 +342,7 @@ private:
 
 	WgChain<Callback>						m_globalCallbacks;	// Callbacks called for every event.
 
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >	m_widgetCallbacks;	// Callbacks for Widget-specific events.
+	std::map<WgWidgetWeakPtr,WgChain<Callback> >	m_receiverCallbacks;	// Callbacks for receiver-specific events.
 
 
 };

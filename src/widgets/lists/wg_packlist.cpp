@@ -746,7 +746,7 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 		case WG_EVENT_MOUSE_LEAVE:
 		{
 			WgMouseLeaveEventPtr pEvent = WgMouseLeaveEvent::Cast(_pEvent);
-			if( pEvent->Widget() == this && m_header.m_state.IsHovered() )
+			if( pEvent->Target() == this && m_header.m_state.IsHovered() )
 			{
 				m_header.m_state.SetPressed(false);
 				m_header.m_state.SetHovered(false);
