@@ -182,7 +182,7 @@ void WgBoxSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState st
 	int i = _stateToIndex(state);
 	if( m_frame.Width() + m_frame.Height() == 0 )
 	{
-		pDevice->Fill( _canvas, m_color[i] );
+		pDevice->Fill( _clip, m_color[i] );
 	}
 	else
 	{

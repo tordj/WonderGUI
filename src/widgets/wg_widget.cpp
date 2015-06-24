@@ -414,7 +414,7 @@ void WgWidget::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
 	{
 		WgRect clip( _window, *pRect );
-		if( clip.w > 0 || clip.h > 0 )
+		if( clip.w > 0 && clip.h > 0 )
 			_onRender( pDevice, _canvas, _window, clip );
 	}
 }
