@@ -27,6 +27,7 @@
 #include <wg_util.h>
 #include <wg_scrollbartarget.h>
 #include <wg_eventhandler.h>
+#include <wg_base.h>
 
 using namespace WgUtil;
 
@@ -791,12 +792,13 @@ void WgScrollbar::_unhoverReqRender()
 
 //____ _onEvent() ______________________________________________________________
 
-void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 {
 	int		handlePos, handleLen;
 	_viewToPosLen( &handlePos, &handleLen );
 
-	WgCoord pos = pEvent->PointerPos();
+	WgEventHandlerPtr	pHandler = WgBase::MsgRouter();
+	WgCoord pos = pEvent->PointerGlobalPos() - GlobalPos();
 
 	int		pointerOfs;
 	int		length;
@@ -1021,7 +1023,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 				int pxlPos, pxlLen;
 				_viewToPosLen( &pxlPos, &pxlLen );
 				pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
-				pHandler->SwallowEvent(pEvent);
+				pEvent->Swallow();
 			}
 		}
 		
@@ -1033,7 +1035,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler 
 	// Swallow all button 1 events.
 
 	if( pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
-			pHandler->SwallowEvent(pEvent);
+			pEvent->Swallow();
 
 }
 

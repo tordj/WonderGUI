@@ -39,8 +39,8 @@
 #	include <wg_skin.h>
 #endif
 
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
+#ifndef WG_EVENTLISTENER_DOT_H
+#	include <wg_eventlistener.h>
 #endif
 
 class WgGfxDevice;
@@ -53,15 +53,15 @@ class WgEventHandler;
 class WgPatches;
 
 class WgWidget;
-typedef	WgStrongPtr<WgWidget,WgObjectPtr>		WgWidgetPtr;
-typedef	WgWeakPtr<WgWidget,WgObjectWeakPtr>		WgWidgetWeakPtr;
+typedef	WgStrongPtr<WgWidget,WgEventListenerPtr>	WgWidgetPtr;
+typedef	WgWeakPtr<WgWidget,WgEventListenerWeakPtr>	WgWidgetWeakPtr;
 
 class WgContainer;
-typedef	WgStrongPtr<WgContainer,WgWidgetPtr>	WgContainerPtr;
-typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>	WgContainerWeakPtr;
+typedef	WgStrongPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
+typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 class WgEvent;
-typedef	WgStrongPtr<WgEvent,WgObjectPtr>		WgEventPtr;
+typedef	WgStrongPtr<WgEvent,WgObjectPtr>			WgEventPtr;
 typedef	WgWeakPtr<WgEvent,WgObjectWeakPtr>			WgEventWeakPtr;
 
 
@@ -71,9 +71,8 @@ typedef	WgWeakPtr<WgEvent,WgObjectWeakPtr>			WgEventWeakPtr;
  * WgWidget is the base class for all widgets, providing common functionality.
  */
 
-class WgWidget : public WgObject
+class WgWidget : public WgEventListener
 {
-friend class WgInput;
 friend class WgEventHandler;
 
 friend class WgHook;
@@ -85,7 +84,6 @@ friend class WgStackHook;
 friend class WgRootPanel;
 friend class WgFlexPanel;
 friend class WgModalLayer;
-friend class WgTablePanel;
 friend class WgScrollPanel;
 friend class WgList;
 friend class WgPackList;
@@ -98,7 +96,6 @@ friend class WgVectorPanel;
 friend class WgPackPanel;
 friend class WgShaderCapsule;
 friend class WgPopupLayer;
-friend class WgRadioButton;
 
 friend class WgTableRow;
 
@@ -143,6 +140,9 @@ public:
 
 	WgWidgetPtr		NewOfMyType() const { return WgWidgetPtr(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
 
+	void 				OnEvent( const WgEventPtr& pEvent );
+
+
 	// Convenient calls to hook
 
 	inline WgCoord		Pos() const;
@@ -186,7 +186,6 @@ protected:
 	virtual WgBlendMode	_getBlendMode() const;
 
 	WgEventHandler* _eventHandler() const;
-	void			_queueEvent( const WgEventPtr& pEvent );
 
 	virtual WgWidget* _newOfMyType() const = 0;
 
@@ -217,7 +216,7 @@ protected:
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	virtual void	_onStateChanged( WgState oldState );
 
-	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
+	virtual void	_onEvent( const WgEventPtr& pEvent );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 
 	virtual WgSize	_windowPadding() const;	// Padding of window before we get to (scrollable) content.

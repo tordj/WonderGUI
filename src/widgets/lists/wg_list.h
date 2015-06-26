@@ -105,7 +105,7 @@ protected:
 	WgList();
 	virtual ~WgList();
 
-	virtual void	_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
+	virtual void	_onEvent( const WgEventPtr& pEvent );
 
 	virtual bool	_selectEntry( WgListHook * pHook, bool bSelected, bool bPostEvent );
 	virtual int		_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelected, bool bPostEvent );

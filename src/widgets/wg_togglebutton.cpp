@@ -141,7 +141,7 @@ void WgToggleButton::_setToggleGroup( WgToggleGroup * pGroup )
 
 //____ _onEvent() _____________________________________________________________
 
-void WgToggleButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+void WgToggleButton::_onEvent( const WgEventPtr& _pEvent )
 {
 	WgState oldState = m_state;
 
@@ -151,20 +151,20 @@ void WgToggleButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHand
 			if( WgKeyEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = true;
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 
 		case WG_EVENT_KEY_REPEAT:
 			if( WgKeyEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			break;
 
 		case WG_EVENT_KEY_RELEASE:
 			if( WgKeyEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = false;
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 	
@@ -178,14 +178,14 @@ void WgToggleButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHand
 			if( WgMousePressEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = true;
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		case WG_EVENT_MOUSE_RELEASE:
 			if( WgMouseReleaseEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = false;
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		case WG_EVENT_MOUSE_CLICK:
@@ -193,7 +193,7 @@ void WgToggleButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHand
 		case WG_EVENT_MOUSE_REPEAT:
 		case WG_EVENT_MOUSE_DRAG:
 			if( WgMouseButtonEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			break;
 
 		case WG_EVENT_FOCUS_GAINED:

@@ -186,8 +186,10 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 
 //____ _onEvent() _____________________________________________________________
 
-void WgRefreshButton::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+void WgRefreshButton::_onEvent( const WgEventPtr& pEvent )
 {
+	WgButton::_onEvent( pEvent );
+
 	switch( pEvent->Type() )
 	{
 		case WG_EVENT_TICK:
@@ -244,8 +246,6 @@ void WgRefreshButton::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHand
 		default:
 			break;
 	}
-
-	WgButton::_onEvent( pEvent, pHandler );
 }
 
 

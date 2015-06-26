@@ -28,6 +28,7 @@
 #include <wg_util.h>
 #include <wg_eventhandler.h>
 #include <wg_popuplayer.h>
+#include <wg_base.h>
 
 const char WgCombobox::CLASSNAME[] = {"Combobox"};
 
@@ -216,13 +217,13 @@ void WgCombobox::_closeMenu()
 
 		WgEventHandler * pEH = _eventHandler();
 		if( pEH )
-			pEH->DeleteCallback( m_cbHandler );
+			pEH->RemoveCallback( m_cbHandler );
 	}
 }
 
 //____ _onEvent() _____________________________________________________________
 
-void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+void WgCombobox::_onEvent( const WgEventPtr& _pEvent )
 {
 	WgState oldState = m_state;
 
@@ -254,7 +255,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 
 		case WG_EVENT_MOUSE_POSITION:
 		{
-			WgCoord pos = WgMousePositionEvent::Cast(_pEvent)->PointerPos();
+			WgCoord pos = WgMousePositionEvent::Cast(_pEvent)->PointerGlobalPos() - GlobalPos();
 			WgRect inputRect = m_pSkin ? m_pSkin->ContentRect(Size(),m_state): WgRect( 0,0, Size() );
 
 			if( _isSelectable() && inputRect.Contains( pos ) )
@@ -273,7 +274,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 		case WG_EVENT_MOUSE_PRESS:
 		{
 			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
-			WgCoord pos = pEvent->PointerPos();
+			WgCoord pos = pEvent->PointerGlobalPos() - GlobalPos();
 
 			if( pEvent->Button() == WG_BUTTON_LEFT )
 			{
@@ -328,13 +329,13 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 						if( pLayer )
 						{
 							pLayer->OpenPopup( m_pMenu, this, m_pHook->GlobalGeo() - pLayer->GlobalPos(), WG_SOUTHWEST );
-							m_cbHandler = pHandler->AddCallback( WgEventFilter::ItemsSelect(), m_pMenu, cbEntrySelected, this );
+//TODO: Fix					m_cbHandler = WgBase::MsgRouter()->AddListener( WgEventFilter::ItemsSelect(), m_pMenu, cbEntrySelected, this );
 						}
 					}
 
 					m_state.SetPressed(true);
 				}
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		}
@@ -351,13 +352,13 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 						m_text.setSelectionMode(true);
 					}
 
-					int x = pEvent->PointerPos().x + m_viewOfs;
+					int x = pEvent->PointerGlobalPos().x - GlobalPos().x + m_viewOfs;
 					int leftBorder = m_pSkin ? m_pSkin->ContentRect( Size(), m_state ).x : 0;
 
 					m_text.CursorGotoCoord( WgCoord(x, 0), WgRect(leftBorder,0,1000000,1000000) );
 					_adjustViewOfs();
 				}
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		}
@@ -377,7 +378,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 							m_text.SelectAll();
 					}
 				}
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		}
@@ -418,7 +419,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 
 				m_pMenu->SelectItem( pItem );
 				_entrySelected( pItem->GetId() );
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		}
@@ -437,7 +438,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 				if( m_maxCharacters == 0 || m_maxCharacters > m_text.Length() )
 					m_text.putChar( pEvent->Char() );
 
-				pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
+				WgBase::MsgRouter()->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
 				_adjustViewOfs();
 			}
 			break;
@@ -450,9 +451,9 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 				switch( pEvent->TranslatedKeyCode() )
 				{
 					case WG_KEY_SHIFT:
-						if(!pHandler->IsMouseButtonPressed(1))
+						if(!WgBase::MsgRouter()->IsMouseButtonPressed(1))
 							m_text.setSelectionMode(false);
-						pHandler->SwallowEvent(_pEvent);
+						_pEvent->Swallow();
 					break;
 				}
 			}
@@ -479,7 +480,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 							m_text.gotoPrevWord();
 						else
 							m_text.goLeft();
-						pHandler->SwallowEvent(_pEvent);
+						_pEvent->Swallow();
 						break;
 					case WG_KEY_RIGHT:
 						if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
@@ -489,7 +490,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 								m_text.gotoNextWord();
 						else
 							m_text.goRight();
-						pHandler->SwallowEvent(_pEvent);
+						_pEvent->Swallow();
 						break;
 
 					case WG_KEY_BACKSPACE:
@@ -500,8 +501,8 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 						else
 							m_text.delPrevChar();
 						
-						pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(), false) ); //TODO: Should only emit if text really has changed
-						pHandler->SwallowEvent(_pEvent);
+						WgBase::MsgRouter()->QueueEvent( new WgTextEditEvent(text.Ptr(), false) ); //TODO: Should only emit if text really has changed
+						_pEvent->Swallow();
 						break;
 
 					case WG_KEY_DELETE:
@@ -511,8 +512,8 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 							m_text.delNextWord();
 						else
 							m_text.delNextChar();
-						pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(), false) );		//TODO: Should only emit if text really has changed
-						pHandler->SwallowEvent(_pEvent);
+						WgBase::MsgRouter()->QueueEvent( new WgTextEditEvent(text.Ptr(), false) );		//TODO: Should only emit if text really has changed
+						_pEvent->Swallow();
 						break;
 
 					case WG_KEY_HOME:
@@ -534,7 +535,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 							m_text.GoBOL();
 							break;
 						}
-						pHandler->SwallowEvent(_pEvent);
+						_pEvent->Swallow();
 						break;
 
 					case WG_KEY_END:
@@ -557,7 +558,7 @@ void WgCombobox::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 							break;
 						}
 
-						pHandler->SwallowEvent(_pEvent);
+						_pEvent->Swallow();
 						break;
 				}
 				_adjustViewOfs();

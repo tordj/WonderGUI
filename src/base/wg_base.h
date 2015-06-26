@@ -60,7 +60,9 @@
 #	include <wg_textpresenter.h>
 #endif
 
-
+#ifndef WG_EVENTHANDLER_DOT_H
+#	include <wg_eventhandler.h>
+#endif
 
 
 #ifdef WG_USE_FREETYPE
@@ -148,7 +150,8 @@ public:
 	static char *	MemStackAlloc( int bytes );
 	static void		MemStackRelease( int bytes );
 
-
+	static WgEventHandlerPtr	MsgRouter() { return s_pData->pMsgRouter; }
+ 
 	//____
 
 	static WgWeakPtrHub *	AllocWeakPtrHub();
@@ -161,6 +164,8 @@ private:
 
 	struct Data
 	{
+		WgEventHandlerPtr	pMsgRouter;
+		
 		WgTextpropPtr		pDefaultTextprop;
 		WgTextpropPtr		pDefaultSelectionProp;
 		WgTextpropPtr		pDefaultLinkProp;

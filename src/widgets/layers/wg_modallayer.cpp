@@ -24,6 +24,7 @@
 #include <wg_util.h>
 #include <wg_patches.h>
 #include <wg_eventhandler.h>
+#include <wg_base.h>
 
 const char WgModalLayer::CLASSNAME[] = {"ModalLayer"};
 const char WgModalHook::CLASSNAME[] = {"ModalHook"};
@@ -544,31 +545,31 @@ void WgModalLayer::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgModalLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+void WgModalLayer::_onEvent( const WgEventPtr& _pEvent )
 {
-	WgLayer::_onEvent(_pEvent,pHandler);
+	WgLayer::_onEvent(_pEvent);
 
-	if( !m_modalHooks.IsEmpty() && _findWidget( _pEvent->PointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
+	if( !m_modalHooks.IsEmpty() && _findWidget( _pEvent->PointerGlobalPos(), WG_SEARCH_ACTION_TARGET ) == this )
 	{
 		switch( _pEvent->Type() )
 		{
 			case WG_EVENT_MOUSE_PRESS:
 			{
 				WgMouseButtonEventPtr pEvent = WgMouseButtonEvent::Cast(_pEvent);
-				pHandler->QueueEvent( new WgModalBlockedPressEvent( pEvent->Button(), this) );
+				WgBase::MsgRouter()->QueueEvent( new WgModalBlockedPressEvent( pEvent->Button(), this) );
 			}
 			break;
 
 			case WG_EVENT_MOUSE_RELEASE:
 			{
 				WgMouseButtonEventPtr pEvent = WgMouseButtonEvent::Cast(_pEvent);
-				pHandler->QueueEvent( new WgModalBlockedPressEvent( pEvent->Button(), this) );
+				WgBase::MsgRouter()->QueueEvent( new WgModalBlockedPressEvent( pEvent->Button(), this) );
 			}
 			break;
 
 			case WG_EVENT_MOUSE_MOVE:
 			{
-				pHandler->QueueEvent( new WgModalMoveOutsideEvent(this) );
+				WgBase::MsgRouter()->QueueEvent( new WgModalMoveOutsideEvent(this) );
 			}
 			break;
 		}

@@ -133,7 +133,7 @@ private:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
-	void			_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler );
+	void			_onEvent( const WgEventPtr& pEvent );
 
 	void			_onRequestRender( const WgRect& rect, const WgPopupHook * pHook );	// rect is in our coordinate system.
 

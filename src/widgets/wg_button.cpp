@@ -182,9 +182,10 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 
 //____ _onEvent() ______________________________________________________________
 
-void WgButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+void WgButton::_onEvent( const WgEventPtr& _pEvent )
 {
 	WgState oldState = m_state;
+	WgEventHandlerPtr	pHandler = WgBase::MsgRouter();
 
 	switch( _pEvent->Type() )
 	{
@@ -192,13 +193,13 @@ void WgButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			if( WgKeyPressEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = true;
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 
 		case WG_EVENT_KEY_REPEAT:
 			if( WgKeyRepeatEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			break;
 
 		case WG_EVENT_KEY_RELEASE:
@@ -206,7 +207,7 @@ void WgButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			{
 				m_bReturnPressed = false;
 				pHandler->QueueEvent( new WgSelectEvent(this) );
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 	
@@ -220,28 +221,28 @@ void WgButton::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 			if( WgMousePressEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = true;
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		case WG_EVENT_MOUSE_RELEASE:
 			if( WgMouseReleaseEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = false;
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		case WG_EVENT_MOUSE_CLICK:
 			if( WgMouseClickEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
 			{
 				pHandler->QueueEvent( new WgSelectEvent(this) );
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		case WG_EVENT_MOUSE_DOUBLE_CLICK:
 		case WG_EVENT_MOUSE_REPEAT:
 		case WG_EVENT_MOUSE_DRAG:
 			if( WgMouseButtonEvent::Cast(_pEvent)->Button() ==WG_BUTTON_LEFT )
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			break;
 
 		case WG_EVENT_FOCUS_GAINED:

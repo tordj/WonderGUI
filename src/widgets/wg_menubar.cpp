@@ -307,16 +307,16 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 
 //____ _onEvent() _____________________________________________________________
 
-void WgMenubar::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+void WgMenubar::_onEvent( const WgEventPtr& pEvent )
 {
-	WgWidget::_onEvent(pEvent,pHandler);
+	WgWidget::_onEvent(pEvent);
 
 	switch( pEvent->Type() )
 	{
 		case WG_EVENT_MOUSE_MOVE:
 		case WG_EVENT_MOUSE_PRESS:
 		{
-			WgCoord pos = pEvent->PointerPos();
+			WgCoord pos = pEvent->PointerGlobalPos() - GlobalPos();
 
 			Uint32 item = _getItemAtAbsPos( pos.x, pos.y );
 

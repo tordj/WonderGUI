@@ -27,6 +27,8 @@
 #include 	<wg_gfxdevice.h>
 #include 	<wg_pen.h>
 #include 	<wg_eventhandler.h>
+#include	<wg_base.h>
+
 
 const char WgLineEditor::CLASSNAME[] = {"LineEditor"};
 
@@ -117,7 +119,7 @@ int WgLineEditor::InsertTextAtCursor( const WgCharSeq& str )
 
 	int retVal = m_text.putText( str );
 
-	_queueEvent( new WgTextEditEvent(text.Ptr(),false) );
+	WgBase::MsgRouter()->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
 
 	_adjustViewOfs();
 
@@ -138,7 +140,7 @@ bool WgLineEditor::InsertCharAtCursor( Uint16 c )
 	if( !m_text.putChar( c ) )
 		return false;
 
-	_queueEvent( new WgTextEditEvent(text.Ptr(),false) );
+	WgBase::MsgRouter()->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
 
 	_adjustViewOfs();
 	return true;
@@ -232,10 +234,11 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 //____ _onEvent() ______________________________________________________________
 
-void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 {
-	WgWidget::_onEvent(pEvent,pHandler);
+	WgWidget::_onEvent(pEvent);
 
+	WgEventHandlerPtr	pHandler = WgBase::MsgRouter();
 	WgEventType event = pEvent->Type();
 
 	if( event == WG_EVENT_TICK )
@@ -260,7 +263,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 				m_text.setSelectionMode(true);
 			}
 
-			WgCoord ofs = pEvent->PointerPos();
+			WgCoord ofs = pEvent->PointerGlobalPos() - GlobalPos();
 			int x = ofs.x + m_viewOfs;
 			int y = 0;
 
@@ -460,14 +463,14 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 	if( pEvent->IsMouseButtonEvent() )
 	{
 		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
-			pHandler->SwallowEvent(pEvent);
+			pEvent->Swallow();
 	}
 	else if( pEvent->IsKeyEvent() )
 	{
 		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
 		if( WgKeyEvent::Cast(pEvent)->IsMovementKey() == true ||
 			key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE )
-				pHandler->SwallowEvent(pEvent);
+				pEvent->Swallow();
 		
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
@@ -594,7 +597,7 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 		if( _isEditable() || m_viewOfs != 0 )
 		{
 			_stopReceiveTicks();
-			_queueEvent( new WgTextEditEvent(text.Ptr(),true) );
+			WgBase::MsgRouter()->QueueEvent( new WgTextEditEvent(text.Ptr(),true) );
 
 			m_viewOfs = 0;
 			_requestRender();

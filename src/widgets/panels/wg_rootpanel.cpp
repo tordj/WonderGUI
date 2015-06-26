@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_rootpanel.h>
+#include <wg_base.h>
 #include <new>
 
 
@@ -38,7 +39,6 @@ WgRootPanel::WgRootPanel()
 	m_bVisible = true;
 	m_bHasGeo = false;
 	m_geo = WgRect(0,0,0,0);
-	m_pEventHandler = new WgEventHandler(this);
 	m_hook.m_pRoot = this;
 
 }
@@ -50,7 +50,6 @@ WgRootPanel::WgRootPanel( const WgGfxDevicePtr& pGfxDevice )
 	m_bHasGeo = false;
 	m_geo = pGfxDevice->CanvasSize();
 	m_pGfxDevice = pGfxDevice;
-	m_pEventHandler = new WgEventHandler(this);
 	m_hook.m_pRoot = this;
 }
 
@@ -287,14 +286,14 @@ WgWidget * WgRootPanel::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 bool WgRootPanel::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting )
 {
-	return m_pEventHandler->SetKeyboardFocus(pWidgetRequesting);
+	return WgBase::MsgRouter()->SetKeyboardFocus(pWidgetRequesting);
 }
 
 //____ _focusReleased() ________________________________________________________
 
 bool WgRootPanel::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing )
 {
-	return m_pEventHandler->SetKeyboardFocus(0);
+	return WgBase::MsgRouter()->SetKeyboardFocus(0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

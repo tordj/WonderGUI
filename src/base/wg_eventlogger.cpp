@@ -27,6 +27,8 @@
 
 using std::string;
 
+const char WgEventLogger::CLASSNAME[] = {"EventLogger"};
+
 //____ Constructor ____________________________________________________________
 
 WgEventLogger::WgEventLogger( std::ostream& stream ) : m_out(stream)
@@ -40,6 +42,34 @@ WgEventLogger::WgEventLogger( std::ostream& stream ) : m_out(stream)
 WgEventLogger::~WgEventLogger()
 {
 }
+
+//____ IsInstanceOf() _________________________________________________________
+
+bool WgEventLogger::IsInstanceOf( const char * pClassName ) const
+{
+	if( pClassName==CLASSNAME )
+		return true;
+
+	return WgEventListener::IsInstanceOf(pClassName);
+}
+
+//____ ClassName() ____________________________________________________________
+
+const char * WgEventLogger::ClassName( void ) const
+{
+	return CLASSNAME;
+}
+
+//____ Cast() _________________________________________________________________
+
+WgEventLoggerPtr WgEventLogger::Cast( const WgObjectPtr& pObject )
+{
+	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
+		return WgEventLoggerPtr( static_cast<WgEventLogger*>(pObject.RawPtr()) );
+
+	return 0;
+}
+
 
 //____ IgnoreEvent ____________________________________________________________
 
@@ -184,7 +214,7 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 
 	string	timestamp;
 	string	source;
-	string	target;
+	string	copyTo;
 	string	modkeys;
 	string	pointerPos;
 
@@ -353,11 +383,11 @@ void WgEventLogger::OnEvent( const WgEventPtr& _pEvent )
 	};
 
 	source = _formatSource( _pEvent );
-	target = _formatTarget( _pEvent );
+	copyTo = _formatCopyTo( _pEvent );
 	modkeys = _formatModkeys( _pEvent );
 	pointerPos = _formatPointerPos( _pEvent );
 
-	m_out << timestamp << " - " << _pEvent->ClassName() << " - " << source << target << pointerPos << modkeys << params;
+	m_out << timestamp << " - " << _pEvent->ClassName() << " - " << source << copyTo << pointerPos << modkeys << params;
 	m_out << std::endl;
 }
 
@@ -400,24 +430,20 @@ string WgEventLogger::_formatSource( const WgEventPtr& _pEvent ) const
 	return out;
 }
 
-//____ _formatTarget() __________________________________________________________
+//____ _formatCopyTo() __________________________________________________________
 
-string WgEventLogger::_formatTarget( const WgEventPtr& _pEvent ) const
+string WgEventLogger::_formatCopyTo( const WgEventPtr& _pEvent ) const
 {
 	std::string	out;
 
-	if( _pEvent->TargetSet() )
+	if( _pEvent->HasCopyTo() )
 	{
 		char	temp[64];
-		WgWidget * pTarget = _pEvent->TargetRawPtr();
+		WgEventListener * pCopyTo = _pEvent->GetCopyTo().RawPtr();
 
-		static const char def_type[] = "deleted";
-		const char * pType = def_type;
+		const char * pType = pCopyTo->ClassName();
 
-		if( pTarget )
-			pType = pTarget->ClassName();
-
-		sprintf( temp, " target=%p (%s)", pTarget, pType );
+		sprintf( temp, " copyTo=%p (%s)", pCopyTo, pType );
 		out = temp;
 	}
 
@@ -447,16 +473,12 @@ string WgEventLogger::_formatModkeys( const WgEventPtr& _pEvent ) const
 
 string WgEventLogger::_formatPointerPos( const WgEventPtr& _pEvent ) const
 {
-	WgCoord localPos = _pEvent->PointerPos();
 	WgCoord globalPos = _pEvent->PointerGlobalPos();
 
 
 	char	temp[64];
 
-	if( globalPos == localPos )
-		sprintf( temp, " pointer=%d,%d", localPos.x, localPos.y );
-	else
-		sprintf( temp, " pointer=%d,%d (%d,%d)", localPos.x, localPos.y, globalPos.x, globalPos.y );
+	sprintf( temp, " pointer=%d,%d", globalPos.x, globalPos.y );
 
 	return string(temp);
 }

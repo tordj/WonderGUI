@@ -31,6 +31,7 @@
 #include <wg_key.h>
 #include <wg_event.h>
 #include <wg_eventhandler.h>
+#include <wg_base.h>
 
 const char WgValueEditor::CLASSNAME[] = {"ValueEditor"};
 
@@ -158,7 +159,7 @@ WgSize WgValueEditor::PreferredSize() const
 
 void WgValueEditor::_valueModified()
 {
-	_queueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(),false) );
+	WgBase::MsgRouter()->QueueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(),false) );
 
 	m_pUseFormat->setFormat( m_pFormat );
 
@@ -176,7 +177,7 @@ void WgValueEditor::_valueModified()
 
 void WgValueEditor::_rangeModified()
 {
-		_queueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(), false) );
+		WgBase::MsgRouter()->QueueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(), false) );
 }
 
 //____ _onRefresh() ____________________________________________________________
@@ -327,10 +328,10 @@ bool WgValueEditor::_parseValueFromInput( int64_t * wpResult )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgValueEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 {
-	WgWidget::_onEvent(pEvent,pHandler);
-
+	WgWidget::_onEvent(pEvent);
+	WgEventHandlerPtr	pHandler = WgBase::MsgRouter();
 	WgEventType event = pEvent->Type();
 
 	if( event == WG_EVENT_TICK )
@@ -350,7 +351,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 	if( pEvent->IsMouseButtonEvent() )
 		mousebutton = WgMouseButtonEvent::Cast(pEvent)->Button();
 
-	WgCoord ofs = pEvent->PointerPos();
+	WgCoord ofs = pEvent->PointerGlobalPos() - GlobalPos();
 
 	if( event == WG_EVENT_MOUSE_PRESS && mousebutton == 1 )
 	{
@@ -438,7 +439,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 				if( bModified )
 				{
 					_updateScrollbar( FractionalValue(), 0.f );
-					_queueEvent( new WgValueUpdateEvent(this, m_value, FractionalValue(), false) );
+					WgBase::MsgRouter()->QueueEvent( new WgValueUpdateEvent(this, m_value, FractionalValue(), false) );
 
 					m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.RawPtr() );
 					m_text.GoEOL();
@@ -687,14 +688,14 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandle
 	if( pEvent->IsMouseButtonEvent() )
 	{
 		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
-			pHandler->SwallowEvent(pEvent);
+			pEvent->Swallow();
 	}
 	else if( pEvent->IsKeyEvent() )
 	{
 		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
 		if( WgKeyEvent::Cast(pEvent)->IsMovementKey() == true ||
 			key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE )
-			pHandler->SwallowEvent(pEvent);
+			pEvent->Swallow();
 		
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
@@ -802,7 +803,7 @@ void WgValueEditor::_onStateChanged( WgState oldState )
 	if( !m_state.IsFocused() && oldState.IsFocused() )
 	{
 		_stopReceiveTicks();
-		_queueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(), true) );
+		WgBase::MsgRouter()->QueueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(), true) );
 
 		m_text.hideCursor();
 		m_pUseFormat->setFormat(m_pFormat);

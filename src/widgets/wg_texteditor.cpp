@@ -25,6 +25,7 @@
 #include <wg_font.h>
 #include <wg_gfxdevice.h>
 #include <wg_eventhandler.h>
+#include <wg_base.h>
 
 const char WgTextEditor::CLASSNAME[] = {"TextEditor"};
 
@@ -188,9 +189,9 @@ void WgTextEditor::_onStateChanged( WgState oldState )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgTextEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+void WgTextEditor::_onEvent( const WgEventPtr& pEvent )
 {
-	WgWidget::_onEvent(pEvent,pHandler);
+	WgWidget::_onEvent(pEvent);
 
 	int type 				= pEvent->Type();
 	WgModifierKeys modKeys 	= pEvent->ModKeys();
@@ -215,7 +216,7 @@ void WgTextEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 			m_text.setSelectionMode(true);
 		}
 
-		m_text.CursorGotoCoord( pEvent->PointerPos(), Geo() );
+		m_text.CursorGotoCoord( pEvent->PointerGlobalPos(), GlobalGeo() );
 
 		if(IsSelectable() && type == WG_EVENT_MOUSE_PRESS && !(modKeys & WG_MODKEY_SHIFT))
 		{
@@ -260,7 +261,7 @@ void WgTextEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 		switch( WgKeyEvent::Cast(pEvent)->TranslatedKeyCode() )
 		{
 			case WG_KEY_SHIFT:
-				if(!pHandler->IsMouseButtonPressed(1))
+				if(!WgBase::MsgRouter()->IsMouseButtonPressed(1))
 					m_text.setSelectionMode(false);
 			break;
 		}
@@ -358,19 +359,19 @@ void WgTextEditor::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler
 	if( pEvent->IsMouseButtonEvent() && IsSelectable() )
 	{
 		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
-			pHandler->SwallowEvent(pEvent);
+			pEvent->Swallow();
 	}
 	else if( pEvent->IsKeyEvent() && IsEditable() )
 	{
 		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
 		if( WgKeyEvent::Cast(pEvent)->IsMovementKey() == true ||
 			key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE || key == WG_KEY_RETURN || (key == WG_KEY_TAB && m_bTabLock) )
-				pHandler->SwallowEvent(pEvent);
+				pEvent->Swallow();
 		
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
 	else if( type == WG_EVENT_CHARACTER )
-		pHandler->SwallowEvent(pEvent);
+		pEvent->Swallow();
 }
 
 

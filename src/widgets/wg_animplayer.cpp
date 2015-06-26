@@ -20,6 +20,7 @@
 
 =========================================================================*/
 
+#include <wg_base.h>
 #include <wg_animplayer.h>
 
 #include <wg_surface.h>
@@ -246,16 +247,16 @@ void WgAnimPlayer::_playPosUpdated()
 		m_pAnimFrame = pAnimFrame;
 		_requestRender();
 
-		_queueEvent( new WgValueUpdateEvent(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1)),true));
+		WgBase::MsgRouter()->QueueEvent( new WgValueUpdateEvent(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1)),true));
 	}
 }
 
 
 //____ _onEvent() ______________________________________________________________
 
-void WgAnimPlayer::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+void WgAnimPlayer::_onEvent( const WgEventPtr& pEvent )
 {
-	WgWidget::_onEvent( pEvent, pHandler );
+	WgWidget::_onEvent( pEvent );
 
 	switch( pEvent->Type() )
 	{

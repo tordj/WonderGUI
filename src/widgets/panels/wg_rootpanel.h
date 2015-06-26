@@ -77,8 +77,6 @@ public:
 	bool					SetGfxDevice( const WgGfxDevicePtr& pDevice );
 	inline WgGfxDevicePtr 	GfxDevice() const { return m_pGfxDevice; }
 
-	inline WgEventHandlerPtr EventHandler() const { return m_pEventHandler; }
-
 	bool					SetGeo( const WgRect& geo );
 	WgRect					Geo() const;
 
@@ -157,7 +155,6 @@ protected:
 	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
 	WgGfxDevicePtr		m_pGfxDevice;
-	WgEventHandlerPtr	m_pEventHandler;
 	Hook				m_hook;
 	WgRect				m_geo;
 	bool				m_bHasGeo;

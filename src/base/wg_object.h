@@ -67,10 +67,14 @@ protected:
 	WgObject() : m_refCount(0), m_pWeakPtrHub(0) {}
 	virtual ~WgObject() { if( m_pWeakPtrHub ) m_pWeakPtrHub->pObj = 0; }
 
-	virtual void _destroy();			// Pointers should call destroy instead of destructor.
+	inline void _incRefCount() { m_refCount++; }
+	inline void _decRefCount() { m_refCount--; if( m_refCount == 0 ) _destroy(); }
 
-	int				m_refCount;
 	WgWeakPtrHub *	m_pWeakPtrHub;
+
+private:
+	virtual void 	_destroy();			// Pointers should call destroy instead of destructor.
+	int				m_refCount;
 };
 
 

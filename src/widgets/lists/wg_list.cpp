@@ -187,9 +187,9 @@ void WgList::SetLassoSkin( const WgSkinPtr& pSkin )
 
 //____ _onEvent() _____________________________________________________________
 
-void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+void WgList::_onEvent( const WgEventPtr& _pEvent )
 {
-	WgContainer::_onEvent(_pEvent, pHandler);
+	WgContainer::_onEvent(_pEvent);
 
 	WgState oldState = m_state;
 
@@ -305,7 +305,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 					m_pFocusedEntry = 0;
 				}
 
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		}
@@ -316,17 +316,17 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 				_requestRender(dirtyRect);
 
 				m_lassoBegin = m_lassoEnd;
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		case WG_EVENT_MOUSE_CLICK:
 			if( m_selectMode != WG_SELECT_NONE && WgMouseClickEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			break;
 		case WG_EVENT_MOUSE_DOUBLE_CLICK:
 		case WG_EVENT_MOUSE_REPEAT:
 			if( m_selectMode != WG_SELECT_NONE && WgMouseButtonEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			break;
 		case WG_EVENT_MOUSE_DRAG:
 		{
@@ -345,7 +345,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
 				dirtyRect.GrowToContain( ofs );
 				_requestRender( dirtyRect );
 				m_lassoEnd = ofs;
-				pHandler->SwallowEvent(_pEvent);
+				_pEvent->Swallow();
 			}
 			break;
 		}

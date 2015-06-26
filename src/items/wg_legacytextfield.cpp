@@ -2290,6 +2290,7 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 		case WG_EVENT_MOUSE_ENTER:
 		case WG_EVENT_MOUSE_MOVE:
 		{
+/*
 			WgCoord pointerOfs = pEvent->PointerPos();
 			
 			WgTextLinkPtr pLink = CoordToLink( pointerOfs, container );
@@ -2312,6 +2313,7 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 				}
 			}
 			break;
+*/
 		}
 
 

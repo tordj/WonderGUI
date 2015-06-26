@@ -25,11 +25,12 @@
 #include <wg_base.h>
 
 
+class FreeWeakPtrHub;
 WgObjectPtr::WgObjectPtr( const WgObjectWeakPtr& r )
 {
 	m_pObj = r.RawPtr();
 	if( m_pObj )
-		m_pObj->m_refCount++;
+		m_pObj->_incRefCount();
 }
 
 

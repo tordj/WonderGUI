@@ -163,9 +163,9 @@ void WgTextDisplay::_onStateChanged( WgState oldState )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgTextDisplay::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+void WgTextDisplay::_onEvent( const WgEventPtr& pEvent )
 {
-	WgWidget::_onEvent(pEvent,pHandler);
+	WgWidget::_onEvent(pEvent);
 /*
 	WgRect canvas = Geo();
 	if( m_pSkin )

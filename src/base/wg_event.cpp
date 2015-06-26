@@ -60,10 +60,38 @@ WgEventPtr WgEvent::Cast( const WgObjectPtr& pObject )
 	return 0;
 }
 
-WgWidget * WgEvent::TargetRawPtr() const
+void WgEvent::SetCopyTo( const WgEventListenerPtr& pListener )
 {
-	return m_pTarget.RawPtr();
+	m_pCopyTo = pListener;
 }
+
+void WgEvent::SetRepost( const WgObjectPtr& pSource, const WgEventListenerPtr& pCopyTo )
+{
+	m_pRepostSource = pSource;	
+	m_pRepostCopyTo = pCopyTo;
+}
+
+void WgEvent::Swallow()
+{
+	m_pRepostSource = 0;
+	m_pRepostCopyTo = 0;
+}
+
+bool WgEvent::DoRepost()
+{
+	if( m_pRepostSource )
+	{
+		m_pSource = m_pRepostSource;
+		m_pCopyTo = m_pRepostCopyTo;
+		
+		m_pRepostSource = 0;
+		m_pRepostCopyTo = 0;
+		
+		return true;
+	}
+	return false;
+}
+
 
 
 bool WgEvent::IsMouseEvent() const
@@ -243,15 +271,14 @@ WgMouseEnterEvent::WgMouseEnterEvent( const WgCoord& pos )
 {
 	m_type = WG_EVENT_MOUSE_ENTER;
 
-	m_pointerLocalPos = pos;
 	m_pointerScreenPos = pos;
 }
 
 WgMouseEnterEvent::WgMouseEnterEvent( WgWidget * pWidget )
 {
 	m_type = WG_EVENT_MOUSE_ENTER;
-	m_bHasTarget	= true;
-	m_pTarget 		= pWidget;
+	m_pSource	= pWidget;
+	m_pCopyTo 	= pWidget;
 }
 
 bool WgMouseEnterEvent::IsInstanceOf( const char * pClassName ) const
@@ -288,8 +315,8 @@ WgMouseLeaveEvent::WgMouseLeaveEvent()
 WgMouseLeaveEvent::WgMouseLeaveEvent( WgWidget * pWidget )
 {
 	m_type = WG_EVENT_MOUSE_LEAVE;
-	m_bHasTarget	= true;
-	m_pTarget 		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo 		= pWidget;
 }
 
 bool WgMouseLeaveEvent::IsInstanceOf( const char * pClassName ) const
@@ -321,15 +348,14 @@ WgMouseMoveEvent::WgMouseMoveEvent( const WgCoord& pos )
 {
 	m_type = WG_EVENT_MOUSE_MOVE;
 
-	m_pointerLocalPos = pos;
 	m_pointerScreenPos = pos;
 }
 
 WgMouseMoveEvent::WgMouseMoveEvent( WgWidget * pWidget )
 {
 	m_type = WG_EVENT_MOUSE_MOVE;
-	m_bHasTarget	= true;
-	m_pTarget 		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo 		= pWidget;
 }
 
 bool WgMouseMoveEvent::IsInstanceOf( const char * pClassName ) const
@@ -366,8 +392,8 @@ WgMousePressEvent::WgMousePressEvent( WgMouseButton button ) : WgMouseButtonEven
 WgMousePressEvent::WgMousePressEvent( WgMouseButton button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
 {
 	m_type			= WG_EVENT_MOUSE_PRESS;
-	m_bHasTarget	= true;
-	m_pTarget 		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo 		= pWidget;
 }
 
 bool WgMousePressEvent::IsInstanceOf( const char * pClassName ) const
@@ -403,8 +429,8 @@ WgMouseRepeatEvent::WgMouseRepeatEvent( WgMouseButton button ) : WgMouseButtonEv
 WgMouseRepeatEvent::WgMouseRepeatEvent( WgMouseButton button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
 {
 	m_type			= WG_EVENT_MOUSE_REPEAT;
-	m_bHasTarget	= true;
-	m_pTarget 		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo 		= pWidget;
 }
 
 bool WgMouseRepeatEvent::IsInstanceOf( const char * pClassName ) const
@@ -444,8 +470,8 @@ WgMouseReleaseEvent::WgMouseReleaseEvent( WgMouseButton button ) : WgMouseButton
 WgMouseReleaseEvent::WgMouseReleaseEvent( WgMouseButton button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside ) : WgMouseButtonEvent(button)
 {
 	m_type			= WG_EVENT_MOUSE_RELEASE;
-	m_bHasTarget	= true;
-	m_pTarget 		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo 		= pWidget;
 
 	m_bPressInside = bPressInside;
 	m_bReleaseInside = bReleaseInside;
@@ -496,8 +522,8 @@ WgMouseClickEvent::WgMouseClickEvent( WgMouseButton button ) : WgMouseButtonEven
 WgMouseClickEvent::WgMouseClickEvent( WgMouseButton button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
 {
 	m_type = WG_EVENT_MOUSE_CLICK;
-	m_bHasTarget	= true;
-	m_pTarget 		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo 		= pWidget;
 }
 
 bool WgMouseClickEvent::IsInstanceOf( const char * pClassName ) const
@@ -533,8 +559,8 @@ WgMouseDoubleClickEvent::WgMouseDoubleClickEvent( WgMouseButton button ) : WgMou
 WgMouseDoubleClickEvent::WgMouseDoubleClickEvent( WgMouseButton button, WgWidget * pWidget ) : WgMouseButtonEvent(button)
 {
 	m_type = WG_EVENT_MOUSE_DOUBLE_CLICK;
-	m_bHasTarget	= true;
-	m_pTarget		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo		= pWidget;
 }
 
 bool WgMouseDoubleClickEvent::IsInstanceOf( const char * pClassName ) const
@@ -570,8 +596,8 @@ WgKeyPressEvent::WgKeyPressEvent( int native_keycode ) : WgKeyEvent(native_keyco
 WgKeyPressEvent::WgKeyPressEvent( int native_keycode, WgWidget * pWidget ) : WgKeyEvent(native_keycode)
 {
 	m_type 			= WG_EVENT_KEY_PRESS;
-	m_bHasTarget	= true;
-	m_pTarget		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo		= pWidget;
 }
 
 bool WgKeyPressEvent::IsInstanceOf( const char * pClassName ) const
@@ -607,8 +633,8 @@ WgKeyRepeatEvent::WgKeyRepeatEvent( int native_keycode ) : WgKeyEvent(native_key
 WgKeyRepeatEvent::WgKeyRepeatEvent( int native_keycode, WgWidget * pWidget ) : WgKeyEvent(native_keycode)
 {
 	m_type 			= WG_EVENT_KEY_REPEAT;
-	m_bHasTarget	= true;
-	m_pTarget 		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo 		= pWidget;
 }
 
 bool WgKeyRepeatEvent::IsInstanceOf( const char * pClassName ) const
@@ -644,8 +670,8 @@ WgKeyReleaseEvent::WgKeyReleaseEvent( int native_keycode ) : WgKeyEvent(native_k
 WgKeyReleaseEvent::WgKeyReleaseEvent( int native_keycode, WgWidget * pWidget ) : WgKeyEvent(native_keycode)
 {
 	m_type 			= WG_EVENT_KEY_RELEASE;
-	m_bHasTarget	= true;
-	m_pTarget		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo		= pWidget;
 }
 
 bool WgKeyReleaseEvent::IsInstanceOf( const char * pClassName ) const
@@ -683,8 +709,8 @@ WgCharacterEvent::WgCharacterEvent( unsigned short character, WgWidget * pWidget
 {
 	m_type			= WG_EVENT_CHARACTER;
 	m_char			= character;
-	m_bHasTarget	= true;
-	m_pTarget		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo		= pWidget;
 }
 
 unsigned short WgCharacterEvent::Char() const
@@ -730,8 +756,8 @@ WgWheelRollEvent::WgWheelRollEvent( int wheel, int distance, WgWidget * pWidget 
 	m_type			= WG_EVENT_WHEEL_ROLL;
 	m_wheel			= wheel;
 	m_distance		= distance;
-	m_bHasTarget	= true;
-	m_pTarget		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo		= pWidget;
 }
 
 int WgWheelRollEvent::Wheel() const
@@ -779,8 +805,7 @@ WgTickEvent::WgTickEvent( int ms, WgWidget * pWidget )
 {
 	m_type 			= WG_EVENT_TICK;
 	m_millisec 		= ms;
-	m_bHasTarget	= true;
-	m_pTarget 		= pWidget;
+	m_pCopyTo 		= pWidget;
 }
 	
 int WgTickEvent::Millisec() const
@@ -1293,8 +1318,7 @@ const char WgPopupClosedEvent::CLASSNAME[] = {"PopupClosedEvent"};
 WgPopupClosedEvent::WgPopupClosedEvent( WgWidget * pPopup, const WgWidgetWeakPtr& pCaller )
 {
 	m_type			= WG_EVENT_POPUP_CLOSED;
-	m_pTarget		= pCaller;
-	m_bHasTarget	= true;
+	m_pCopyTo		= pCaller.RawPtr();
 	m_pSource		= pPopup;
 }
 
@@ -1768,8 +1792,8 @@ WgMouseDragEvent::WgMouseDragEvent( WgMouseButton button, const WgCoord& startPo
 WgMouseDragEvent::WgMouseDragEvent( WgMouseButton button, WgWidget * pWidget, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos ) : WgMouseButtonEvent(button)
 {
 	m_type 			= WG_EVENT_MOUSE_DRAG;
-	m_bHasTarget	= true;
-	m_pTarget		= pWidget;
+	m_pSource		= pWidget;
+	m_pCopyTo	= pWidget;
 
 	m_startPos = startPos;
 	m_prevPos = prevPos;

@@ -140,8 +140,6 @@ WgPackList::WgPackList() : m_header(this), header(&m_header)
 	m_contentPreferredLength = 0;
 	m_contentPreferredBreadth = 0;
 	m_nbPreferredBreadthEntries = 0;
-
-	m_pHoveredChild = 0;
 }
 
 //____ Destructor _____________________________________________________________
@@ -722,7 +720,7 @@ void WgPackList::_onRefreshList()
 
 //____ _onEvent() _____________________________________________________________
 
-void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+void WgPackList::_onEvent( const WgEventPtr& _pEvent )
 {
 	WgState oldState = m_state;
 
@@ -733,26 +731,27 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 			WgMouseMoveEventPtr pEvent = WgMouseMoveEvent::Cast(_pEvent);
 			WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
 			WgRect headerGeo = _headerGeo();
-			bool bHeaderHovered = headerGeo.Contains(ofs) && (!pHandler->IsAnyMouseButtonPressed() || (pHandler->IsMouseButtonPressed(WG_BUTTON_LEFT) && m_header.m_bPressed));
+			bool bHeaderHovered = headerGeo.Contains(ofs) && (!WgBase::MsgRouter()->IsAnyMouseButtonPressed() || 
+															 (WgBase::MsgRouter()->IsMouseButtonPressed(WG_BUTTON_LEFT) && m_header.m_bPressed));
 			if( bHeaderHovered != m_header.m_state.IsHovered() )
 			{
 				m_header.m_state.SetHovered(bHeaderHovered);
 				_requestRender( headerGeo );
 			}
-			WgList::_onEvent( _pEvent, pHandler );
+			WgList::_onEvent( _pEvent );
 			break;
 		}
 
 		case WG_EVENT_MOUSE_LEAVE:
 		{
 			WgMouseLeaveEventPtr pEvent = WgMouseLeaveEvent::Cast(_pEvent);
-			if( pEvent->Target() == this && m_header.m_state.IsHovered() )
+			if( pEvent->Source() == this && m_header.m_state.IsHovered() )
 			{
 				m_header.m_state.SetPressed(false);
 				m_header.m_state.SetHovered(false);
 				_requestRender( _headerGeo() );
 			}
-			WgList::_onEvent( _pEvent, pHandler );
+			WgList::_onEvent( _pEvent );
 			break;
 		}
 
@@ -766,10 +765,10 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 				m_header.m_bPressed = true;
 				m_header.m_state.SetPressed(true);
 				_requestRender( headerGeo );
-				pHandler->SwallowEvent( pEvent );
+				pEvent->Swallow();
 			}
 			else
-				WgList::_onEvent( _pEvent, pHandler );
+				WgList::_onEvent( _pEvent );
 			break;
 		}
 
@@ -787,10 +786,10 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 					m_header.m_state.SetPressed(bHeaderHovered);
 					_requestRender( headerGeo );
 				}
-				pHandler->SwallowEvent(pEvent);
+				pEvent->Swallow();
 			}
 			else
-				WgList::_onEvent( _pEvent, pHandler );
+				WgList::_onEvent( _pEvent );
 			break;
 		}
 
@@ -813,10 +812,10 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 						m_sortOrder = WG_SORT_ASCENDING;
 					_sortEntries();
 				}
-				pHandler->SwallowEvent(pEvent);
+				pEvent->Swallow();
 			}
 			else
-				WgList::_onEvent( _pEvent, pHandler );
+				WgList::_onEvent( _pEvent );
 			break;
 		}
 		case WG_EVENT_KEY_PRESS:
@@ -830,8 +829,8 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 				(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
 				keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
 				(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
-					pHandler->SwallowEvent(_pEvent);
-			WgList::_onEvent( _pEvent, pHandler );
+					_pEvent->Swallow();
+			WgList::_onEvent( _pEvent );
 			break;
 		}
 
@@ -847,13 +846,13 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler 
 				(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
 				keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
 				(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
-					pHandler->SwallowEvent(_pEvent);
-			WgList::_onEvent( _pEvent, pHandler );
+					_pEvent->Swallow();
+			WgList::_onEvent( _pEvent );
 			break;
 		}
 	
 		default:
-			WgList::_onEvent(_pEvent, pHandler);
+			WgList::_onEvent(_pEvent);
 			return;
 	}
 

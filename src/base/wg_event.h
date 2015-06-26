@@ -79,7 +79,7 @@ typedef	WgIStrongPtr<WgEditText,WgLegacyModTextPtr>	WgEditTextPtr;
 typedef	WgIWeakPtr<WgEditText,WgLegacyModTextWeakPtr>	WgEditTextWeakPtr;
 
 
-typedef WgWeakPtr<WgWidget,WgObjectWeakPtr> WgWidgetWeakPtr;
+typedef WgWeakPtr<WgWidget,WgEventListenerWeakPtr> WgWidgetWeakPtr;
 
 class WgEvent;
 typedef	WgStrongPtr<WgEvent,WgObjectPtr>		WgEventPtr;
@@ -293,30 +293,37 @@ class WgEvent : public WgObject
 
 		WgEventType			Type() const { return m_type; }
 		int64_t				Timestamp() const { return m_timestamp; }
-		bool				TargetSet() const { return m_bHasTarget; }
-		WgWidget *			TargetRawPtr() const;									// Inlining this would demand include of wg_widget.h.
-		WgWidgetWeakPtr		Target() const { return m_pTarget; }
+		bool				HasSource() const { return m_pSource; } 
 		WgObject *			SourceRawPtr() const { return m_pSource.RawPtr(); }
 		WgObjectWeakPtr		Source() const { return m_pSource; } 
 		WgModifierKeys		ModKeys() const { return m_modKeys; }
-		WgCoord				PointerPos() const { return m_pointerLocalPos; }
 		WgCoord				PointerGlobalPos() const { return m_pointerScreenPos; }
 			
 		bool				IsMouseEvent() const;
 		bool				IsMouseButtonEvent() const;
 		bool				IsKeyEvent() const;
 
+		bool				HasCopyTo() { return m_pCopyTo; }
+		WgEventListenerPtr	GetCopyTo() { return m_pCopyTo; }
+		bool				HasRepost() { return m_pRepostSource; }
+
+		void				SetCopyTo( const WgEventListenerPtr& pListener );
+		void				SetRepost( const WgObjectPtr& pSource, const WgEventListenerPtr& pCopyTo );
+		void				Swallow();
+		bool				DoRepost();
+
 	protected:
-		WgEvent() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0), m_bHasTarget(false) {}
+		WgEvent() : m_type(WG_EVENT_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0) {}
 		virtual ~WgEvent() {}
 		
 		WgEventType			m_type;				// Type of event
-		WgModifierKeys		m_modKeys;			// Modifier keys pressed when event posted.
 		int64_t				m_timestamp;		// Timestamp of posting this event.
-		WgObjectWeakPtr		m_pSource;			// The object posting this event, if any.
-		bool				m_bHasTarget;		// Set if this event had a target set at creation (even if it later has been destroyed).
-		WgWidgetWeakPtr		m_pTarget;			// Top widget to receive this event, if any.
-		WgCoord				m_pointerLocalPos;	// Widget-relative position of pointer. Same as m_pointerScreenPos if Widget not set.
+		WgObjectPtr			m_pSource;			// The object posting this event, if any.
+		WgEventListenerPtr	m_pCopyTo;			// Listener to copy this event to, if any.
+		WgObjectPtr			m_pRepostSource;	// Object to repost this event from, if any.
+		WgEventListenerPtr	m_pRepostCopyTo;	// Listener to copy this event to when reposting, if any.
+
+		WgModifierKeys		m_modKeys;			// Modifier keys pressed when event posted.
 		WgCoord				m_pointerScreenPos;	// Screen position of pointer.
 };
 

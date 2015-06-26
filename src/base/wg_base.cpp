@@ -23,6 +23,7 @@
 
 
 #include <wg_base.h>
+#include <wg_eventhandler.h>
 
 #include <wg_textpropmanager.h>
 #include <wg_texttool.h>
@@ -46,6 +47,8 @@ void WgBase::Init()
 	assert( s_pData == 0 );
 	assert( sizeof( WgWeakPtrHub ) == sizeof( WgHookPtrHub ) );			// Need to be same as we are sharing object stack!
 	s_pData = new Data;
+
+	s_pData->pMsgRouter = WgEventHandler::Create();
 
 	s_pData->pDefaultCursor = 0;
 	s_pData->pPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );

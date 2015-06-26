@@ -1103,9 +1103,9 @@ void WgScrollPanel::_onNewSize( const WgSize& size )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgScrollPanel::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+void WgScrollPanel::_onEvent( const WgEventPtr& _pEvent )
 {
-	WgPanel::_onEvent(_pEvent,pHandler);
+	WgPanel::_onEvent(_pEvent);
 
 	switch( _pEvent->Type() )
 	{
@@ -1123,7 +1123,7 @@ void WgScrollPanel::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandl
 					_wheelRollX( pEvent->Distance() );
 			}
 
-			pHandler->SwallowEvent(_pEvent);
+			_pEvent->Swallow();
 		}
 		break;
 

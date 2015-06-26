@@ -27,12 +27,19 @@
 #include <wg_eventhandler.h>
 
 
+class WgEventLogger;
+typedef	WgStrongPtr<WgEventLogger,WgEventListenerPtr>		WgEventLoggerPtr;
+typedef	WgWeakPtr<WgEventLogger,WgEventListenerWeakPtr>		WgEventLoggerWeakPtr;
+
 class WgEventLogger : public WgEventListener
 {
 public:
+	static WgEventLoggerPtr		Create( std::ostream& stream ) { return WgEventLoggerPtr( new WgEventLogger(stream)); }
 
-	WgEventLogger( std::ostream& stream );
-	~WgEventLogger();
+	bool						IsInstanceOf( const char * pClassName ) const;
+	const char *				ClassName( void ) const;
+	static const char			CLASSNAME[];
+	static WgEventLoggerPtr		Cast( const WgObjectPtr& pObject );
 
 	void OnEvent( const WgEventPtr& _pEvent );
 
@@ -60,9 +67,13 @@ public:
 	bool IsEventLogged( WgEventType event ) { return m_eventFilter[event]; }
 
 private:
+	WgEventLogger( std::ostream& stream );
+	~WgEventLogger();
+
+
 	std::string	_formatTimestamp( int64_t ms ) const;
 	std::string _formatSource( const WgEventPtr& _pEvent ) const;
-	std::string _formatTarget( const WgEventPtr& _pEvent ) const;
+	std::string _formatCopyTo( const WgEventPtr& _pEvent ) const;
 	std::string _formatModkeys( const WgEventPtr& _pEvent ) const;
 	std::string _formatPointerPos( const WgEventPtr& _pEvent ) const;
 	std::string _formatPointerStyle( const WgPointerChangeEventPtr& _pEvent ) const;

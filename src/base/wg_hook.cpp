@@ -35,9 +35,7 @@ WgHook::~WgHook()
 	if( m_pWidget )
 	{
 		m_pWidget->m_pHook = 0;
-		m_pWidget->m_refCount--;
-		if( m_pWidget->m_refCount == 0 )
-			delete m_pWidget;
+		m_pWidget->_decRefCount();
 	}
 
 	if( m_pPtrHub )
@@ -87,21 +85,20 @@ void WgHook::_setWidget( WgWidget * pWidget )
 {
 	assert( pWidget == 0 || pWidget->_parent() == 0 );
 
+	if( pWidget )
+	{
+		pWidget->m_pHook = this;
+		pWidget->_incRefCount();
+	}
+
 	if( m_pWidget )
 	{
 		m_pWidget->m_pHook = 0;
-		m_pWidget->m_refCount--;
-		if( m_pWidget->m_refCount == 0 && m_pWidget != pWidget )
-			delete m_pWidget;
+		m_pWidget->_decRefCount();
 	}
 
 	m_pWidget = pWidget;
 
-	if( pWidget )
-	{
-		pWidget->m_pHook = this;
-		m_pWidget->m_refCount++;
-	}
 }
 
 //____ _relinkWidget() __________________________________________________________
@@ -156,15 +153,4 @@ bool WgHook::_isVisible() const
 	return true;
 }
 
-
-//____ EventHandler() __________________________________________________________
-
-WgEventHandlerPtr WgHook::EventHandler() const
-{
-	WgRootPanelPtr pRoot = Root();		//TODO: Optimize?
-	if( pRoot )
-		return pRoot->EventHandler();
-
-	return 0;
-}
 

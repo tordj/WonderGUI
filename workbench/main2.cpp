@@ -15,6 +15,8 @@ void 			updateWindowRects( const WgRootPanelPtr& pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const WgEventPtr& pEvent );
 void * 			loadFile( const char * pPath );
 
+void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler );
+
 
 bool	bQuit = false;
 
@@ -59,14 +61,15 @@ int main ( int argc, char** argv )
 	WgSoftGfxDevicePtr pGfxDevice = WgSoftGfxDevice::Create( pCanvas );
 
 	WgRootPanelPtr pRoot = WgRootPanel::Create( pGfxDevice );
+	WgBase::MsgRouter()->SetRoot(pRoot);
 
 	// 
 	
-	WgEventLogger	eventLogger( std::cout );
-	eventLogger.IgnoreAllEvents();
-	eventLogger.LogMouseEvents();
+	WgEventLoggerPtr pLogger = WgEventLogger::Create( std::cout );
+	pLogger->IgnoreAllEvents();
+	pLogger->LogMouseEvents();
 	
-	pRoot->EventHandler()->AddCallback( &eventLogger );
+	WgBase::MsgRouter()->AddListener( pLogger );
 
 
 	// Init font
@@ -131,7 +134,24 @@ int main ( int argc, char** argv )
 	pImage->SetSkin( pSimpleButtonSkin );
 	pFlexPanel->AddWidget( pImage, WgRect(0,0,80,33), WG_CENTER );
 
+
 //	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(), pButton, myButtonClickCallback );
+
+
+	// Test transparency issue
+	
+	{
+		WgFlexPanelPtr pExtraFlex = WgFlexPanel::Create();
+		pExtraFlex->SetSkin( WgColorSkin::Create( WgColor(0,0,0,128)));
+
+		WgTextDisplayPtr pText = WgTextDisplay::Create();
+		pText->text.Set( "THIS IS SOME TEST TEXT" );
+		
+		pExtraFlex->AddWidget( pText, WgRect( 10,10,100,100) );
+
+		addResizablePanel( pFlexPanel, pExtraFlex, WgBase::MsgRouter() );
+	}
+
 
 
 /*
@@ -192,7 +212,7 @@ int main ( int argc, char** argv )
 
 	while( !bQuit ) 
 	{
-		translateEvents( pRoot->EventHandler() );
+		translateEvents( WgBase::MsgRouter() );
 
 		SDL_LockSurface(pWinSurf);
 		pRoot->Render();
@@ -348,4 +368,70 @@ void * loadFile( const char * pPath )
 
 	return pMem;
 
+}
+
+WgCoord dragStartPos;
+
+//____ cbInitDrag() ___________________________________________________________
+
+void cbInitDrag( const WgEventPtr& _pEvent, const WgObjectPtr& pObject )
+{
+	WgWidgetPtr pWidget = WgWidget::Cast(pObject);
+
+	WgFlexHookPtr pHook = WgFlexHook::Cast(pWidget->Hook());
+
+
+	dragStartPos = pHook->FloatOfs();
+	printf( "DRAG START!\n" );
+}
+
+//____ cbDragWidget() __________________________________________________________
+
+void cbDragWidget( const WgEventPtr& _pEvent, const WgObjectPtr& pObject )
+{
+	WgWidgetPtr pWidget = WgWidget::Cast(pObject);
+	
+	if( _pEvent->Type() != WG_EVENT_MOUSE_DRAG || !pWidget->Parent() )
+		return;
+
+	const WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
+
+
+
+	WgCoord	dragDistance = pEvent->DraggedTotal();
+
+	WgCoord	ofs = dragStartPos + dragDistance;
+
+//	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
+	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
+
+	WgFlexHookPtr pHook = WgFlexHook::Cast(pWidget->Hook());
+	pHook->SetOfs(dragStartPos+dragDistance);
+}
+
+
+//____ cbResizeWidget() _________________________________________________________
+/*
+void cbResize( const WgEventPtr _pEvent, WgObjectPtr _pFlexHook )
+{
+	WgFlexHook * pHook = static_cast<WgFlexHook*>(_pFlexHook);
+	const WgEvent::MouseButtonDrag* pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
+
+	WgCoord dragged = pEvent->DraggedNow();
+
+	pHook->SetSize( pHook->Size() + WgSize(dragged.x,dragged.y) );
+}
+*/
+
+
+
+//____ addResizablePanel() _________________________________________________
+
+void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler )
+{
+	WgHook * pHook = pParent->AddWidget( pChild );
+//	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 3), cbResize, pHook );
+
+	pEventHandler->AddListener( WgEventFilter::MousePress(WG_BUTTON_LEFT), pChild, WgEventCatcher::Create(cbInitDrag, pChild) );
+	pEventHandler->AddListener( WgEventFilter::MouseDrag(WG_BUTTON_LEFT), pChild, WgEventCatcher::Create(cbDragWidget, pChild) );
 }

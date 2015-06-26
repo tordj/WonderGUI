@@ -776,11 +776,13 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 
 //____ _onEvent() _____________________________________________________________
 
-void WgMenu::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
+void WgMenu::_onEvent( const WgEventPtr& pEvent )
 {
+	WgPanel::_onEvent(pEvent);
+	
 	// TODO: Not handle or swallow key-events if some modifier keys are pressed.
 
-	WgCoord mousePos = pEvent->PointerPos();
+	WgCoord mousePos = pEvent->PointerGlobalPos() - GlobalPos();
 
 	switch( pEvent->Type() )
 	{
@@ -1050,17 +1052,17 @@ void WgMenu::_onEvent( const WgEventPtr& pEvent, WgEventHandler * pHandler )
 	// Forward event depending on rules.
 
 	if( pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
-		pHandler->SwallowEvent(pEvent);
+		pEvent->Swallow();
 	else if( pEvent->IsKeyEvent() )
 	{
 		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
 		if( key == WG_KEY_RIGHT || key == WG_KEY_RETURN || key == WG_KEY_UP || key == WG_KEY_DOWN &&
 			key == WG_KEY_HOME || key == WG_KEY_END || key == WG_KEY_PAGE_UP || key == WG_KEY_PAGE_DOWN &&
 			key == WG_KEY_ESCAPE || key == WG_KEY_LEFT )
-			pHandler->SwallowEvent(pEvent);
+			pEvent->Swallow();
 	}
 	else if( pEvent->Type() == WG_EVENT_CHARACTER || pEvent->Type() == WG_EVENT_WHEEL_ROLL )
-		pHandler->SwallowEvent(pEvent);
+		pEvent->Swallow();
 }
 
 //____ _onStateChanged() ______________________________________________________
@@ -1092,7 +1094,7 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 			pInfo->id = pItem->GetId();
 											//TODO: Add index (and in the future pObject).
 
-			_queueEvent( new WgItemsSelectEvent(this,1,pInfo));
+			WgBase::MsgRouter()->QueueEvent( new WgItemsSelectEvent(this,1,pInfo));
 			_itemSelected();
 		}
 		break;
@@ -1103,12 +1105,12 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 			if( pCheckBox->IsChecked() )
 			{
 				pCheckBox->Uncheck();
-				_queueEvent( new WgItemToggleEvent(this,pItem->GetId(),WgObjectPtr(),true));
+				WgBase::MsgRouter()->QueueEvent( new WgItemToggleEvent(this,pItem->GetId(),WgObjectPtr(),true));
 			}
 			else
 			{
 				pCheckBox->Check();
-				_queueEvent( new WgItemToggleEvent(this,pItem->GetId(),WgObjectPtr(),false));
+				WgBase::MsgRouter()->QueueEvent( new WgItemToggleEvent(this,pItem->GetId(),WgObjectPtr(),false));
 			}
 
 			_itemSelected();
@@ -1116,10 +1118,10 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 		break;
 		case RADIOBUTTON:
 			if( m_pSelectedItem )
-				_queueEvent( new WgItemToggleEvent(this,m_pSelectedItem->GetId(),WgObjectPtr(),false));
+				WgBase::MsgRouter()->QueueEvent( new WgItemToggleEvent(this,m_pSelectedItem->GetId(),WgObjectPtr(),false));
 			m_pSelectedItem = pItem;
 			((WgMenuRadioButton*)pItem)->Select();
-			_queueEvent( new WgItemToggleEvent(this,pItem->GetId(),WgObjectPtr(),true));
+			WgBase::MsgRouter()->QueueEvent( new WgItemToggleEvent(this,pItem->GetId(),WgObjectPtr(),true));
 			_itemSelected();
 		break;
 

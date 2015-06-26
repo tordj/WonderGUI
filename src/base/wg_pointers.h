@@ -45,14 +45,14 @@ public:
 	{
 		m_pObj = p;
 		if( p )
-			p->m_refCount++;
+			p->_incRefCount();
 	}
 
 	WgObjectPtr(const WgObjectPtr& r)
 	{
 		m_pObj = r.m_pObj;
 		if( m_pObj )
-			m_pObj->m_refCount++;
+			m_pObj->_incRefCount();
 	}
 
 	WgObjectPtr( const WgObjectWeakPtr& r );
@@ -60,11 +60,7 @@ public:
 	~WgObjectPtr()
 	{
 		if( m_pObj )
-		{
-			m_pObj->m_refCount--;
-			if( m_pObj->m_refCount == 0 )
-				delete m_pObj;
-		}
+			m_pObj->_decRefCount();
 	}
 
 
@@ -90,15 +86,11 @@ protected:
 		if( m_pObj != r.m_pObj )
 		{
 			if( m_pObj )
-			{
-				m_pObj->m_refCount--;
-				if( m_pObj->m_refCount == 0 )
-					m_pObj->_destroy();
-			}
+				m_pObj->_decRefCount();
 
 			m_pObj = r.m_pObj;
 			if( m_pObj )
-				m_pObj->m_refCount++;
+				m_pObj->_incRefCount();
 		}
 	}
 
@@ -234,7 +226,7 @@ public:
 		m_pInterface = pInterface;
 		m_pObj = pObj;
 		if( pObj )
-			pObj->m_refCount++;
+			pObj->_incRefCount();
 	}
 
 	WgInterfacePtr(const WgInterfacePtr& r)
@@ -242,17 +234,13 @@ public:
 		m_pInterface = r.m_pInterface;
 		m_pObj = r.m_pObj;
 		if( m_pObj )
-			m_pObj->m_refCount++;
+			m_pObj->_incRefCount();
 	}
 
 	~WgInterfacePtr()
 	{
 		if( m_pObj )
-		{
-			m_pObj->m_refCount--;
-			if( m_pObj->m_refCount == 0 )
-				delete m_pObj;
-		}
+			m_pObj->_decRefCount();
 	}
 
 
@@ -280,15 +268,11 @@ protected:
 		if( m_pObj != r.m_pObj )
 		{
 			if( m_pObj )
-			{
-				m_pObj->m_refCount--;
-				if( m_pObj->m_refCount == 0 )
-					m_pObj->_destroy();
-			}
+				m_pObj->_decRefCount();
 
 			m_pObj = r.m_pObj;
 			if( m_pObj )
-				m_pObj->m_refCount++;
+				m_pObj->_incRefCount();
 		}
 	}
 

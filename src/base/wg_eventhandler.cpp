@@ -33,9 +33,9 @@ const char WgEventHandler::CLASSNAME[] = {"EventHandler"};
 
 //____ Constructor ____________________________________________________________
 
-WgEventHandler::WgEventHandler( WgRootPanel * pRoot )
+WgEventHandler::WgEventHandler()
 {
-	m_pRoot					= pRoot;
+	m_pRoot					= 0;
 	m_time					= 0;
 	m_modKeys				= WG_MODKEY_NONE;
 	m_pointerStyle			= WG_POINTER_DEFAULT;
@@ -84,6 +84,12 @@ WgEventHandlerPtr WgEventHandler::Cast( const WgObjectPtr& pObject )
 		return WgEventHandlerPtr( static_cast<WgEventHandler*>(pObject.RawPtr()) );
 
 	return 0;
+}
+
+
+void WgEventHandler::SetRoot( const WgRootPanelPtr& pRoot )
+{
+	m_pRoot = pRoot.RawPtr();
 }
 
 
@@ -214,158 +220,45 @@ bool WgEventHandler::IsKeyPressed( int native_keycode ) const
 
 
 
-//____ AddCallback() __________________________________________________________
+//____ AddListener() __________________________________________________________
 
-WgCallbackHandle WgEventHandler::AddCallback( void(*fp)(const WgEventPtr& pEvent) )
+
+WgCallbackHandle WgEventHandler::AddListener( const WgEventListenerPtr& pListener )
 {
-	Callback * p = new NoParamCallback( WgEventFilter(), fp );
+	Callback * p = new Callback( WgEventFilter(), pListener.RawPtr() );
 	return _addCallback( p );
 }
 
-WgCallbackHandle WgEventHandler::AddCallback( void(*fp)(const WgEventPtr& pEvent, int param), int param )
+WgCallbackHandle WgEventHandler::AddListener( const WgObjectPtr& pReceiver, const WgEventListenerPtr& pListener )
 {
-	Callback * p = new IntParamCallback( WgEventFilter(), fp, param );
+	Callback * p = new Callback( WgEventFilter(), pListener.RawPtr() );
+	return _addCallback( pReceiver, p );
+}
+
+WgCallbackHandle WgEventHandler::AddListener( const WgEventFilter& filter, const WgEventListenerPtr& pListener )
+{
+	Callback * p = new Callback( filter, pListener.RawPtr() );
 	return _addCallback( p );
 }
 
-WgCallbackHandle WgEventHandler::AddCallback( void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
+WgCallbackHandle WgEventHandler::AddListener( const WgEventFilter& filter, const WgObjectPtr& pReceiver, const WgEventListenerPtr& pListener )
 {
-	Callback * p = new VoidPtrParamCallback( WgEventFilter(), fp, pParam );
-	return _addCallback( p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
-{
-	Callback * p = new ObjectParamCallback( WgEventFilter(), fp, pParam.RawPtr() );
-	return _addCallback( p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( WgEventListener * pListener )
-{
-	Callback * p = new ListenerCallback( WgEventFilter(), pListener );
-	return _addCallback( p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgWidgetPtr& pReceiver, void(*fp)(const WgEventPtr& pEvent) )
-{
-	Callback * p = new NoParamCallback( WgEventFilter(), fp );
+	Callback * p = new Callback( filter, pListener.RawPtr() );
 	return _addCallback( pReceiver, p );
 }
 
-WgCallbackHandle WgEventHandler::AddCallback( const WgWidgetPtr& pReceiver, void(*fp)(const WgEventPtr& pEvent, int param), int param )
+//____ RemoveCallbacksTo() _______________________________________________________
+
+int WgEventHandler::RemoveCallbacksTo( const WgEventListenerPtr& pListener )
 {
-	Callback * p = new IntParamCallback( WgEventFilter(), fp, param );
-	return _addCallback( pReceiver, p );
+	return _deleteCallbacksTo(pListener.RawPtr());
 }
 
-WgCallbackHandle WgEventHandler::AddCallback( const WgWidgetPtr& pReceiver, void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
+//____ RemoveCallbacksFrom() _______________________________________________________
+
+int WgEventHandler::RemoveCallbacksFrom( const WgObjectPtr& pSource )
 {
-	Callback * p = new VoidPtrParamCallback( WgEventFilter(), fp, pParam );
-	return _addCallback( pReceiver, p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgWidgetPtr& pReceiver, void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
-{
-	Callback * p = new ObjectParamCallback( WgEventFilter(), fp, pParam.RawPtr() );
-	return _addCallback( pReceiver, p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgWidgetPtr& pReceiver, WgEventListener * pListener )
-{
-	Callback * p = new ListenerCallback( WgEventFilter(), pListener );
-	return _addCallback( pReceiver, p );
-}
-
-
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent) )
-{
-	Callback * p = new NoParamCallback( filter, fp );
-	return _addCallback( p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, int param), int param )
-{
-	Callback * p = new IntParamCallback( filter, fp, param );
-	return _addCallback( p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
-{
-	Callback * p = new VoidPtrParamCallback( filter, fp, pParam );
-	return _addCallback( p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
-{
-	Callback * p = new ObjectParamCallback( filter, fp, pParam );
-	return _addCallback( p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, WgEventListener * pListener )
-{
-	Callback * p = new ListenerCallback( filter, pListener );
-	return _addCallback( p );
-}
-
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pReceiver, void(*fp)(const WgEventPtr& pEvent) )
-{
-	Callback * p = new NoParamCallback( filter, fp );
-	return _addCallback( pReceiver, p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pReceiver, void(*fp)(const WgEventPtr& pEvent, int param), int param )
-{
-	Callback * p = new IntParamCallback( filter, fp, param );
-	return _addCallback( pReceiver, p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pReceiver, void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
-{
-	Callback * p = new VoidPtrParamCallback( filter, fp, pParam );
-	return _addCallback( pReceiver, p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pReceiver, void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
-{
-	Callback * p = new ObjectParamCallback( filter, fp, pParam );
-	return _addCallback( pReceiver, p );
-}
-
-WgCallbackHandle WgEventHandler::AddCallback( const WgEventFilter& filter, const WgWidgetPtr& pReceiver, WgEventListener * pListener )
-{
-	Callback * p = new ListenerCallback( filter, pListener );
-	return _addCallback( pReceiver, p );
-}
-
-//____ DeleteCallbacksTo() _______________________________________________________
-
-int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEventPtr& pEvent) )
-{
-	return _deleteCallbacksTo( reinterpret_cast<void*>(fp) );
-}
-
-int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEventPtr& pEvent, void * pParam) )
-{
-	return _deleteCallbacksTo( reinterpret_cast<void*>(fp) );
-}
-
-int WgEventHandler::DeleteCallbacksTo( const WgEventListener * pListener )
-{
-	return _deleteCallbacksTo(pListener);
-}
-
-int WgEventHandler::DeleteCallbacksTo( void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam) )
-{
-	return _deleteCallbacksTo( reinterpret_cast<void*>(fp) );
-}
-
-//____ DeleteCallbacksOn() _______________________________________________________
-
-int WgEventHandler::DeleteCallbacksOn( const WgWidgetPtr& pWidget )
-{
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.find(WgWidgetWeakPtr(pWidget.RawPtr()) );
+	std::map<WgObjectWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.find(WgObjectWeakPtr(pSource.RawPtr()) );
 
 	if( it == m_receiverCallbacks.end() )
 		return 0;
@@ -375,61 +268,10 @@ int WgEventHandler::DeleteCallbacksOn( const WgWidgetPtr& pWidget )
 	return nDeleted;
 }
 
-int WgEventHandler::DeleteCallbacksOn( WgEventType type )
-{
-	// Delete global callbacks on this event type
 
-	int nDeleted = _deleteCallbacksOnType( type, &m_globalCallbacks );
+//____ RemoveCallback() ______________________________________________________
 
-	// Delete Widget-specific callbacks on this event type
-
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.begin();
-	while( it != m_receiverCallbacks.end() )
-	{
-		nDeleted += _deleteCallbacksOnType( type, &it->second );
-
-		if( it->second.Size() == 0 )
-			m_receiverCallbacks.erase(it++);
-		else
-			++it;
-	}
-	return nDeleted;
-}
-
-
-int WgEventHandler::DeleteCallbacksOn( const WgWidgetPtr& pWidget, WgEventType type )
-{
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.find( WgWidgetWeakPtr(pWidget.RawPtr()) );
-
-	if( it == m_receiverCallbacks.end() )
-		return 0;
-
-	int nDeleted = 0;
-	Callback * p = it->second.First();
-	while( p )
-	{
-		if( p->Filter().EventType() == type )
-		{
-			Callback * pNext = p->Next();
-			delete p;
-			nDeleted++;
-			p = pNext;
-		}
-		else
-			p = p->Next();
-	}
-
-	if( it->second.Size() == 0 )
-		m_receiverCallbacks.erase(it);
-
-	return nDeleted;
-}
-
-
-
-//____ DeleteCallback() ______________________________________________________
-
-bool WgEventHandler::DeleteCallback( WgCallbackHandle handle )
+bool WgEventHandler::RemoveCallback( WgCallbackHandle handle )
 {
 	Callback * p = m_globalCallbacks.First();
 	while( p )
@@ -440,7 +282,7 @@ bool WgEventHandler::DeleteCallback( WgCallbackHandle handle )
 			p = p->Next();
 	}
 
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator	it;
+	std::map<WgObjectWeakPtr,WgChain<Callback> >::iterator	it;
 	for( it = m_receiverCallbacks.begin() ; it != m_receiverCallbacks.end() ; ++it )
 	{
 		Callback * p = it->second.First();
@@ -456,18 +298,18 @@ bool WgEventHandler::DeleteCallback( WgCallbackHandle handle )
 	return false;
 }
 
-//____ DeleteAllCallbacks() ___________________________________________________
+//____ ClearCallbacks() _______________________________________________________
 
-int WgEventHandler::DeleteAllCallbacks()
+int WgEventHandler::ClearCallbacks()
 {
 	m_globalCallbacks.Clear();
 	m_receiverCallbacks.clear();
 	return false;
 }
 
-//____ DeleteDeadCallbacks() __________________________________________________
+//____ GarbageCollectCallbacks() __________________________________________________
 
-int WgEventHandler::DeleteDeadCallbacks()
+int WgEventHandler::GarbageCollectCallbacks()
 {
 	int nDeleted = 0;
 
@@ -490,7 +332,7 @@ int WgEventHandler::DeleteDeadCallbacks()
 	// Delete any dead Widget-specific callbacks.
 	// These can be dead by either sender or receiver having been deleted.
 
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.begin();
+	std::map<WgObjectWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.begin();
 
 	while( it != m_receiverCallbacks.end() )
 	{
@@ -531,12 +373,12 @@ WgCallbackHandle WgEventHandler::_addCallback( Callback * pCallback )
 	return pCallback->m_handle;
 }
 
-WgCallbackHandle WgEventHandler::_addCallback( const WgWidgetPtr& pWidget, Callback * pCallback )
+WgCallbackHandle WgEventHandler::_addCallback( const WgObjectPtr& pSource, Callback * pCallback )
 {
-	if( !pWidget )
+	if( !pSource )
 		return 0;
 
-	WgChain<Callback>& chain = m_receiverCallbacks[pWidget.RawPtr()];
+	WgChain<Callback>& chain = m_receiverCallbacks[pSource.RawPtr()];
 	chain.PushBack(pCallback);
 	pCallback->m_handle = m_handleCounter++;
 	return pCallback->m_handle;
@@ -545,7 +387,7 @@ WgCallbackHandle WgEventHandler::_addCallback( const WgWidgetPtr& pWidget, Callb
 
 //____ _deleteCallbacksTo() __________________________________________________
 
-int WgEventHandler::_deleteCallbacksTo( const void * pReceiver )
+int WgEventHandler::_deleteCallbacksTo( WgEventListener * pListener )
 {
 	int nDeleted = 0;
 
@@ -554,7 +396,7 @@ int WgEventHandler::_deleteCallbacksTo( const void * pReceiver )
 	Callback * p = m_globalCallbacks.First();
 	while( p )
 	{
-		if( p->Receiver() != pReceiver )
+		if( p->Listener() != pListener )
 			p = p->Next();
 		else
 		{
@@ -565,16 +407,16 @@ int WgEventHandler::_deleteCallbacksTo( const void * pReceiver )
 		}
 	}
 
-	// Delete any Widget-specific callbacks for this receiver.
+	// Delete any source-specific callbacks for this listener.
 
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.begin();
+	std::map<WgObjectWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.begin();
 
 	while( it != m_receiverCallbacks.end() )
 	{
 		Callback * p = it->second.First();
 		while( p )
 		{
-			if( p->Receiver() != pReceiver )
+			if( p->Listener() != pListener )
 				p = p->Next();
 			else
 			{
@@ -666,28 +508,6 @@ void WgEventHandler::ProcessEvents()
 	m_bIsProcessing = false;
 }
 
-//____ SwallowEvent() _________________________________________________________
-
-bool WgEventHandler::SwallowEvent( const WgEventPtr& pEvent )
-{
-	if( pEvent != m_pEventProcessing )
-		return false;
-
-	m_pNextTarget = 0;
-	return true;
-}
-
-//____ ForwardEvent() _________________________________________________________
-
-bool WgEventHandler::ForwardEvent( const WgEventPtr& pEvent, const WgWidgetPtr& pWidget )
-{
-	if( pEvent != m_pEventProcessing )
-		return false;
-
-	m_pNextTarget = pWidget;
-	return true;
-}
-
 
 //____ _processEventQueue() ___________________________________________________
 
@@ -696,39 +516,28 @@ void WgEventHandler::_processEventQueue()
 	while( !m_eventQueue.empty() )
 	{
 		WgEventPtr& pEvent = m_eventQueue.front();
-		m_pEventProcessing = pEvent;
-		m_pNextTarget = 0;
-
 		m_insertPos = m_eventQueue.begin()+1;	// Insert position set to right after current event.
 
 		_finalizeEvent( pEvent );
 
-		if( pEvent->TargetSet() )
+		do
 		{
-			_processGlobalEventCallbacks( pEvent );
+			if( pEvent->HasCopyTo()  )
+				pEvent->m_pCopyTo->OnEvent( pEvent );
+			
+			if( pEvent->HasSource() )
+				_processSourceCallbacks( pEvent );
+			else
+				_processGeneralEvent( pEvent );
 
-			WgWidget * pTarget = pEvent->TargetRawPtr();
-			while( pTarget )
-			{
-				if( pEvent->Type() == WG_EVENT_TICK )
-					m_pNextTarget = 0;
-				else
-					m_pNextTarget = pTarget->Parent();
-
-				pTarget->_onEvent( pEvent, this );
-				_processReceiverCallbacks( pEvent, pTarget );
-				pTarget = m_pNextTarget.RawPtr();
-			}
+			_processGlobalEventCallbacks( pEvent );			
 		}
-		else
-		{
-			_processGeneralEvent( pEvent );
-			_processGlobalEventCallbacks( pEvent );
-		}
+		while( pEvent->DoRepost() );
 
 		m_eventQueue.pop_front();
-		m_insertPos = m_eventQueue.begin();		// Insert position set right to start.
 	}
+
+	m_insertPos = m_eventQueue.begin();		// Insert position set right to start.
 }
 
 //____ _postTickEvents() ______________________________________________________
@@ -773,18 +582,20 @@ void WgEventHandler::_processGlobalEventCallbacks( const WgEventPtr& pEvent )
 }
 
 
-//____ _processReceiverCallbacks() ________________________________________________
+//____ _processSourceCallbacks() ________________________________________________
 
-void WgEventHandler::_processReceiverCallbacks( const WgEventPtr& pEvent, WgWidget * pReceiver )
+void WgEventHandler::_processSourceCallbacks( const WgEventPtr& pEvent )
 {
 	Callback * pCallback = 0;
 	WgChain<Callback> * pChain = 0;
 
-	if( pReceiver )
-	{
-		std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it;
+	WgObject * pSource = pEvent->SourceRawPtr();
 
-		it = m_receiverCallbacks.find(WgWidgetWeakPtr(pReceiver));
+	if( pSource )
+	{
+		std::map<WgObjectWeakPtr,WgChain<Callback> >::iterator it;
+
+		it = m_receiverCallbacks.find(WgObjectWeakPtr(pSource));
 		if( it != m_receiverCallbacks.end() )
 			pChain = &(it->second);
 	}
@@ -814,13 +625,9 @@ void WgEventHandler::_finalizeEvent( const WgEventPtr& pEvent )
 	// Only global POINTER_ENTER & POINTER_MOVE events have these members
 	// set, the rest needs to have them filled in.
 
-	if( pEvent->TargetSet() || (pEvent->Type() != WG_EVENT_MOUSE_MOVE && pEvent->Type() != WG_EVENT_MOUSE_ENTER) )
+	if( pEvent->HasCopyTo() || (pEvent->Type() != WG_EVENT_MOUSE_MOVE && pEvent->Type() != WG_EVENT_MOUSE_ENTER) )
 	{
 		pEvent->m_pointerScreenPos = m_pointerPos;
-		pEvent->m_pointerLocalPos = m_pointerPos;
-
-		if( pEvent->TargetRawPtr() )
-			pEvent->m_pointerLocalPos -= pEvent->TargetRawPtr()->GlobalPos();
 	}
 
 	// Event specific finalizations
@@ -1038,7 +845,7 @@ void WgEventHandler::_processMouseEnter( WgMouseEnterEvent * pEvent )
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
-			QueueEvent( new WgMouseDragEvent( (WgMouseButton)i, m_pLatestPressEvents[i]->PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
+			QueueEvent( new WgMouseDragEvent((WgMouseButton)i, m_pLatestPressEvents[i]->PointerGlobalPos(), m_pointerPos, pEvent->PointerGlobalPos() ) );
 	}
 
 	// Post event for finalizing position once button drag is taken care of.
@@ -1047,7 +854,7 @@ void WgEventHandler::_processMouseEnter( WgMouseEnterEvent * pEvent )
 
 	// Update pointer position
 
-	m_pointerPos = pEvent->PointerPos();
+	m_pointerPos = pEvent->PointerGlobalPos();
 }
 
 //____ _processMouseLeave() ___________________________________________________
@@ -1074,7 +881,7 @@ void WgEventHandler::_processMouseMove( WgMouseMoveEvent * pEvent )
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
-			QueueEvent( new WgMouseDragEvent( (WgMouseButton) i, m_pLatestPressEvents[i]->PointerPos(), m_pointerPos, pEvent->PointerPos() ) );
+			QueueEvent( new WgMouseDragEvent( (WgMouseButton) i, m_pLatestPressEvents[i]->PointerGlobalPos(), m_pointerPos, pEvent->PointerGlobalPos() ) );
 	}
 
 	// Post event for finalizing move once button drag is taken care of.
@@ -1083,7 +890,7 @@ void WgEventHandler::_processMouseMove( WgMouseMoveEvent * pEvent )
 
 	// Update pointer position
 
-	m_pointerPos = pEvent->PointerPos();
+	m_pointerPos = pEvent->PointerGlobalPos();
 }
 
 //____ _processMousePosition() _________________________________________________
@@ -1380,7 +1187,7 @@ void WgEventHandler::_processMouseButtonPress( WgMousePressEvent * pEvent )
 
 	if( m_pLatestPressEvents[button] && m_pLatestPressEvents[button]->Timestamp() + doubleClickTimeTreshold > pEvent->Timestamp() )
 	{
-		WgCoord distance = pEvent->PointerPos() - m_pLatestPressEvents[button]->PointerPos();
+		WgCoord distance = pEvent->PointerGlobalPos() - m_pLatestPressEvents[button]->PointerGlobalPos();
 
 		if( distance.x <= doubleClickDistanceTreshold &&
 			distance.x >= -doubleClickDistanceTreshold &&
@@ -1427,7 +1234,7 @@ void WgEventHandler::_processMouseButtonRelease( WgMouseReleaseEvent * pEvent )
 	WgWidget * pWidget = m_latestPressWidgets[button].RawPtr();
 	if( pWidget )
 	{
-		bool bIsInside = pWidget->GlobalGeo().Contains(pEvent->PointerPos());
+		bool bIsInside = pWidget->GlobalGeo().Contains(pEvent->PointerGlobalPos());
 		QueueEvent( new WgMouseReleaseEvent( button, pWidget, true, bIsInside ) );
 	}
 
@@ -1438,7 +1245,7 @@ void WgEventHandler::_processMouseButtonRelease( WgMouseReleaseEvent * pEvent )
 	{
 		if( pWidget != m_latestPressWidgets[button].RawPtr() )
 		{
-			bool bIsInside = pWidget->GlobalGeo().Contains(pEvent->PointerPos());
+			bool bIsInside = pWidget->GlobalGeo().Contains(pEvent->PointerGlobalPos());
 			QueueEvent( new WgMouseReleaseEvent( button, pWidget, false, bIsInside ) );
 		}
 	}
@@ -1522,120 +1329,33 @@ int WgEventHandler::_widgetPosInList( const WgWidget * pWidget, const std::vecto
 	return -1;
 }
 
-WgEventHandler::ObjectParamCallback::ObjectParamCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
-{
-	m_filter = filter;
-	m_pFunction = fp;
-	m_pObject = pParam;
-}
 
-void WgEventHandler::ObjectParamCallback::ProcessEvent( const WgEventPtr& pEvent )
-{
-	WgObject * p = m_pObject.RawPtr();
-	if( p && m_filter.FilterEvent(pEvent) )
-		m_pFunction(pEvent,p);
-}
-
-bool WgEventHandler::ObjectParamCallback::IsAlive() const
-{
-	return m_pObject?true:false;
-}
-
-void * WgEventHandler::ObjectParamCallback::Receiver() const
-{
-	return m_pObject.RawPtr();
-}
-
-
-WgEventHandler::NoParamCallback::NoParamCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent) )
-{
-	m_filter = filter;
-	m_pFunction = fp;
-}
-
-void WgEventHandler::NoParamCallback::ProcessEvent( const WgEventPtr& pEvent )
-{
-	if( m_pFunction && m_filter.FilterEvent(pEvent) )
-		m_pFunction(pEvent);
-}
-
-bool WgEventHandler::NoParamCallback::IsAlive() const
-{
-	return true;
-}
-
-void * WgEventHandler::NoParamCallback::Receiver() const
-{
-	return reinterpret_cast<void*>(m_pFunction);
-}
-
-WgEventHandler::IntParamCallback::IntParamCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, int param), int param )
-{
-	m_filter = filter;
-	m_pFunction = fp;
-	m_param 	= param;
-}
-
-void WgEventHandler::IntParamCallback::ProcessEvent( const WgEventPtr& pEvent )
-{
-	if( m_pFunction && m_filter.FilterEvent(pEvent) )
-		m_pFunction(pEvent,m_param);
-}
-
-bool WgEventHandler::IntParamCallback::IsAlive() const
-{
-	return true;
-}
-
-void * WgEventHandler::IntParamCallback::Receiver() const
-{
-	return reinterpret_cast<void*>(m_pFunction);
-}
-
-
-WgEventHandler::VoidPtrParamCallback::VoidPtrParamCallback( const WgEventFilter& filter, void(*fp)(const WgEventPtr& pEvent, void * pParam), void * pParam )
-{
-	m_filter = filter;
-	m_pFunction = fp;
-	m_pParam 	= pParam;
-}
-
-void WgEventHandler::VoidPtrParamCallback::ProcessEvent( const WgEventPtr& pEvent )
-{
-	if( m_pFunction && m_filter.FilterEvent(pEvent) )
-		m_pFunction(pEvent,m_pParam);
-}
-
-bool WgEventHandler::VoidPtrParamCallback::IsAlive() const
-{
-	return true;
-}
-
-void * WgEventHandler::VoidPtrParamCallback::Receiver() const
-{
-	return reinterpret_cast<void*>(m_pFunction);
-}
-
-
-WgEventHandler::ListenerCallback::ListenerCallback( const WgEventFilter& filter, WgEventListener * pListener )
+WgEventHandler::Callback::Callback( const WgEventFilter& filter, WgEventListener * pListener )
 {
 	m_filter = filter;
 	m_pListener = pListener;
+	pListener->_onRouteAdded();
 }
 
-void WgEventHandler::ListenerCallback::ProcessEvent( const WgEventPtr& pEvent )
+WgEventHandler::Callback::~Callback()
+{
+	if( m_pListener )
+		m_pListener->_onRouteRemoved();
+}
+
+void WgEventHandler::Callback::ProcessEvent( const WgEventPtr& pEvent )
 {
 	if( m_filter.FilterEvent(pEvent) )
 		m_pListener->OnEvent( pEvent );
 }
 
-bool WgEventHandler::ListenerCallback::IsAlive() const
+bool WgEventHandler::Callback::IsAlive() const
 {
 	return true;
 }
 
-void * WgEventHandler::ListenerCallback::Receiver() const
+WgEventListener * WgEventHandler::Callback::Listener() const
 {
-	return m_pListener;
+	return m_pListener.RawPtr();
 }
 

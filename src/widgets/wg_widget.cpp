@@ -25,6 +25,7 @@
 
 #	include <wg_rootpanel.h>
 #	include <wg_eventhandler.h>
+#include <wg_base.h>
 
 const char WgWidget::CLASSNAME[] = {"Widget"};
 
@@ -50,7 +51,7 @@ bool WgWidget::IsInstanceOf( const char * pClassName ) const
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgEventListener::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
@@ -184,8 +185,8 @@ void WgWidget::_onNewHook( WgHook * pHook )
 
 void WgWidget::_onNewRoot( WgRootPanel * pRoot )
 {
-	if( m_bReceiveTick && pRoot )
-		pRoot->EventHandler()->_addTickReceiver(this);
+//	if( m_bReceiveTick && pRoot )
+//		WgBase::MsgRouter()->_addTickReceiver(this);
 }
 
 //____ _startReceiveTicks() ___________________________________________________
@@ -198,9 +199,7 @@ void WgWidget::_startReceiveTicks()
 
 		if( m_pHook )
 		{
-			WgRootPanel * pRoot = m_pHook->_root();
-			if( pRoot )
-				pRoot->EventHandler()->_addTickReceiver(this);
+			WgBase::MsgRouter()->_addTickReceiver(this);
 		}
 	}
 }
@@ -262,13 +261,7 @@ WgCoord WgWidget::ToLocal( const WgCoord& coord ) const
 
 WgEventHandler * WgWidget::_eventHandler() const
 {
-	if( m_pHook )
-	{
-		WgRootPanel * pRoot = m_pHook->_root();
-		if( pRoot )
-			return pRoot->EventHandler().RawPtr();
-	}
-	return 0;
+	return WgBase::MsgRouter().RawPtr();
 }
 
 //____ MatchingHeight() _______________________________________________________
@@ -359,6 +352,38 @@ WgSize WgWidget::MinSize() const
 		return WgSize(0,0);
 }
 
+//____ OnEvent() _______________________________________________________________
+
+void WgWidget::OnEvent( const WgEventPtr& pEvent )
+{
+	// SetRepost before _onEvent() so that subclasses can swallow the respost.
+	
+	switch( pEvent->Type() )
+	{
+		case WG_EVENT_MOUSE_MOVE:
+		case WG_EVENT_MOUSE_POSITION:
+		case WG_EVENT_MOUSE_PRESS:
+		case WG_EVENT_MOUSE_REPEAT:
+		case WG_EVENT_MOUSE_DRAG:
+		case WG_EVENT_MOUSE_RELEASE:
+		case WG_EVENT_MOUSE_CLICK:
+		case WG_EVENT_MOUSE_DOUBLE_CLICK:
+		case WG_EVENT_KEY_PRESS:
+		case WG_EVENT_KEY_REPEAT:
+		case WG_EVENT_KEY_RELEASE:
+		case WG_EVENT_WHEEL_ROLL:
+		{
+			WgWidgetPtr pParent = Parent();
+			if( pParent )
+				pEvent->SetRepost(pParent,pParent);
+			break;
+		}
+		default:
+			break;
+	}
+	_onEvent( pEvent );
+}
+
 //____ MaxSize() ______________________________________________________________
 /**
  * @brief Get the widgets recommended maximum size.
@@ -390,22 +415,6 @@ WgBlendMode WgWidget::_getBlendMode() const
 	else
 		return WG_BLENDMODE_BLEND;		// We always start out with WG_BLENDMODE_BLEND.
 }
-
-//____ _queueEvent() __________________________________________________________
-
-void WgWidget::_queueEvent( const WgEventPtr& pEvent )
-{
-	if( m_pHook )
-	{
-		WgRootPanel * pRoot = m_pHook->_root();
-		if( pRoot )
-		{
-			pRoot->EventHandler()->QueueEvent(pEvent);
-			return;
-		}
-	}
-}
-
 
 //____ _renderPatches() ________________________________________________________
 
@@ -496,7 +505,7 @@ void WgWidget::_onStateChanged( WgState oldState )
 
 //____ _onEvent() _____________________________________________________________
 
-void WgWidget::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+void WgWidget::_onEvent( const WgEventPtr& _pEvent )
 {
 	WgState oldState = m_state;
 

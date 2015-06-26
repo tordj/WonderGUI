@@ -510,19 +510,19 @@ void WgPopupLayer::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onEvent() ______________________________________________________________
 
-void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandler )
+void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent )
 {
-	WgLayer::_onEvent(_pEvent,pHandler);
+	WgLayer::_onEvent(_pEvent);
 
 	WgWidget * pOpener = 0;
 
 	// Try to find an opener
 
-	WgWidget * pTarget = _pEvent->TargetRawPtr();
-	if( pTarget && pTarget != this )
+	WgObject * pSource = _pEvent->SourceRawPtr();
+	if( pSource && pSource != this )
 	{
 		WgPopupHook * pHook = m_popupHooks.First();
-		while( pHook && pHook->_widget() != pTarget )
+		while( pHook && pHook->_widget() != pSource )
 			pHook = pHook->_next();
 			
 		if( pHook && pHook->m_pOpener )
@@ -533,7 +533,7 @@ void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandle
 
 	if( pOpener )
 	{
-		pHandler->ForwardEvent( _pEvent, pOpener );
+		_pEvent->SetRepost( _pEvent->Source().RawPtr(), pOpener );
 		return;
 	}	
 
@@ -563,12 +563,12 @@ void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandle
 		{
 			WgMouseButtonEventPtr pEvent = WgMouseButtonEvent::Cast(_pEvent);
 
-			WgCoord ofs = pEvent->PointerPos();
+			WgCoord ofs = pEvent->PointerGlobalPos() - GlobalPos();
 			WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
 			if( p == this )
 			{
 				CloseAllPopups();
-				pHandler->SwallowEvent( _pEvent );
+				_pEvent->Swallow();
 				return;
 			}
 		}
@@ -584,7 +584,7 @@ void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent, WgEventHandler * pHandle
 				if( !m_popupHooks.IsEmpty() )
 				{
 					ClosePopup( m_popupHooks.Last()->_widget() );
-					pHandler->SwallowEvent( _pEvent );
+					_pEvent->Swallow();
 					return;
 				}
 			}
