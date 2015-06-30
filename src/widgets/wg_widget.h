@@ -181,8 +181,6 @@ protected:
 	void			_onNewHook( WgHook * pHook );
 
 	void			_onNewRoot( WgRootPanel * pRoot );
-	void			_startReceiveTicks();
-	void			_stopReceiveTicks();
 	virtual WgBlendMode	_getBlendMode() const;
 
 
@@ -233,7 +231,6 @@ protected:
 
 	bool			m_bOpaque;
 	bool			m_bTabLock;		// If set, the widget prevents focus shifting away from it with tab.
-	bool			m_bReceiveTick;	// Set if Widget should reveive periodic Tick() messages.
 
 	WgState			m_state;
 private:

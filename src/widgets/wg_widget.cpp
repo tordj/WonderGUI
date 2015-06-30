@@ -34,7 +34,7 @@ const char WgWidget::CLASSNAME[] = {"Widget"};
 
 WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WG_POINTER_DEFAULT),
 					m_markOpacity( 1 ), m_bOpaque(false),
-					m_bTabLock(false), m_bReceiveTick(false), m_bPressed(false)
+					m_bTabLock(false), m_bPressed(false)
 {
 }
 
@@ -185,28 +185,6 @@ void WgWidget::_onNewHook( WgHook * pHook )
 
 void WgWidget::_onNewRoot( WgRootPanel * pRoot )
 {
-}
-
-//____ _startReceiveTicks() ___________________________________________________
-
-void WgWidget::_startReceiveTicks()
-{
-	if( !m_bReceiveTick )
-	{
-		m_bReceiveTick = true;
-		WgBase::MsgRouter()->AddTickReceiver(this);
-	}
-}
-
-//____ _stopReceiveTicks() ____________________________________________________
-
-void WgWidget::_stopReceiveTicks()
-{
-	if( m_bReceiveTick )
-	{
-		m_bReceiveTick = false;
-		WgBase::MsgRouter()->RemoveTickReceiver(this);
-	}
 }
 
 //____ ToGlobal() ____________________________________________________________

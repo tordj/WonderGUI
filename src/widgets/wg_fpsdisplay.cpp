@@ -48,14 +48,15 @@ WgFpsDisplay::WgFpsDisplay( void ) : m_labelsText(this), m_valuesText(this), lab
 	m_labelsText.Set( "Now:/nMin:/nAvg:/nMax:/n" );
 	m_valuesText.SetAlignment( WG_NORTHEAST );
 
-	_startReceiveTicks();
+	m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
 }
 
 //____ ~WgFpsDisplay() __________________________________________________________
 
 WgFpsDisplay::~WgFpsDisplay( void )
 {
-	_stopReceiveTicks();
+	if( m_tickRouteId )
+		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
 	if( m_pTickBuffer )
 	{
 		delete [] m_pTickBuffer;
@@ -222,10 +223,13 @@ void WgFpsDisplay::_onStateChanged( WgState oldState )
 	_requestRender();							//TODO: Check if there has been changes to text appearance.
 
 	if( m_state.IsEnabled() && !oldState.IsEnabled() )
-		_startReceiveTicks();
+		m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
 
 	if( !m_state.IsEnabled() && oldState.IsEnabled() )
-		_stopReceiveTicks();
+	{
+		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+		m_tickRouteId = 0;
+	}
 }
 
 //____ _onSkinChanged() _______________________________________________________

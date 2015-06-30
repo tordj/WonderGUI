@@ -100,6 +100,7 @@ private:
 	bool				m_bHasFocus;
 	int					m_maxLines;
 	bool				m_bResetCursorOnFocus;
+	WgRouteId			m_tickRouteId;
 };
 
 

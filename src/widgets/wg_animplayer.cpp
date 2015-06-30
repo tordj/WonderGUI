@@ -43,12 +43,15 @@ WgAnimPlayer::WgAnimPlayer()
 
 	m_bPlaying		= false;
 	m_speed			= 1.f;
+	m_tickRouteId	= 0;
 }
 
 //____ ~WgAnimPlayer() _______________________________________________________
 
 WgAnimPlayer::~WgAnimPlayer()
 {
+	if( m_tickRouteId )
+		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );		
 }
 
 //____ IsInstanceOf() _________________________________________________________
@@ -205,7 +208,7 @@ bool WgAnimPlayer::Play()
 		return false;
 
 	m_bPlaying = true;
-	_startReceiveTicks();
+	m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
 	return true;
 }
 
@@ -214,7 +217,8 @@ bool WgAnimPlayer::Play()
 bool WgAnimPlayer::Stop()
 {
 	m_bPlaying = false;
-	_stopReceiveTicks();
+	WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+	m_tickRouteId = 0;
 	return true;
 }
 
@@ -325,10 +329,12 @@ void WgAnimPlayer::_onStateChanged( WgState oldState )
 	if( oldState.IsEnabled() != m_state.IsEnabled() && m_bPlaying )
 	{
 		if( m_state.IsEnabled() )
-			_startReceiveTicks();
+			m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
 		else
-			_stopReceiveTicks();
-
+		{	
+			WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+			m_tickRouteId = 0;
+		}
 		_requestRender();
 	}
 }

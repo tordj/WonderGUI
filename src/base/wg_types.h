@@ -127,6 +127,10 @@ private:
 	int		m_state;
 };
 
+
+typedef unsigned int	WgRouteId;
+
+
 //____ WgTxtAttr ______________________________________________________________
 
 // Bitmask for various text attributes.

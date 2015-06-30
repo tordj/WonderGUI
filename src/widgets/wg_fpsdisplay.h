@@ -31,6 +31,7 @@
 #	include	<wg_legacymodtext.h>
 #endif
 
+
 class WgFont;
 
 class WgFpsDisplay;
@@ -79,7 +80,7 @@ private:
 	WgLegacyTextField	m_valuesText;
 	int *		m_pTickBuffer;
 	int			m_tickBufferOfs;
-
+	WgRouteId	m_tickRouteId;
 };
 
 

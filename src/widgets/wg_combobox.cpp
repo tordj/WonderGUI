@@ -52,6 +52,9 @@ WgCombobox::WgCombobox( void ) : m_text(this), text(&m_text)
 	m_textFormat = "%1";
 	m_viewOfs		= 0;
 	m_maxCharacters = 0;
+	
+	m_routeId = 0;
+	m_tickRouteId = 0;
 }
 
 //____ Destructor _____________________________________________________________
@@ -579,7 +582,7 @@ void WgCombobox::_onStateChanged( WgState oldState )
 	{
 		if( _isEditable() )
 		{
-			_startReceiveTicks();
+			m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
 			m_text.showCursor();
 			if( m_bResetCursorOnFocus )
 			{
@@ -595,7 +598,7 @@ void WgCombobox::_onStateChanged( WgState oldState )
 	{
 		if( _isEditable() )
 		{
-			_stopReceiveTicks();
+			WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
 			m_text.hideCursor();
 			m_text.ClearSelection();
 			m_bResetCursorOnFocus = true;

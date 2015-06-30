@@ -220,16 +220,18 @@ bool WgMsgRouter::IsKeyPressed( int native_keycode ) const
 
 //____ BroadcastTo() ___________________________________________________________
 
-void  WgMsgRouter::BroadcastTo( const WgReceiverPtr& pReceiver )
+bool  WgMsgRouter::BroadcastTo( const WgReceiverPtr& pReceiver )
 {
 	Route * p = new Route( WgMsgFilter(), pReceiver.RawPtr() );
 	m_broadcasts.PushBack( p );
+	return true;
 }
 
-void  WgMsgRouter::BroadcastTo( const WgMsgFilter& filter, const WgReceiverPtr& pReceiver )
+bool  WgMsgRouter::BroadcastTo( const WgMsgFilter& filter, const WgReceiverPtr& pReceiver )
 {
 	Route * p = new Route( filter, pReceiver.RawPtr() );
 	m_broadcasts.PushBack( p );
+	return true;
 }
 
 //____ EndBroadcast() __________________________________________________________
@@ -240,13 +242,15 @@ bool  WgMsgRouter::EndBroadcast( const WgReceiverPtr& _pReceiver )
 	Route * p = m_broadcasts.First();
 	while( p )
 	{
-		Route * pNext = p->Next();
-
 		if( p->Receiver() == pReceiver )
+		{
 			delete p;
-
-		p = pNext;
+			return true;
+		}
+		
+		p = p->Next();
 	}	
+	return false;
 }
 
 
@@ -264,32 +268,64 @@ WgRouteId WgMsgRouter::AddRoute( const WgMsgFilter& filter, const WgObjectPtr& p
 	return _addRoute( pSource, p );
 }
 
+WgRouteId WgMsgRouter::AddRoute( WgMsgType msgType, const WgReceiverPtr& pReceiver )
+{
+	Route * p = new Route( WgMsgFilter(), pReceiver.RawPtr() );
+	return _addRoute( msgType, p );	
+}
+
+WgRouteId WgMsgRouter::AddRoute( const WgMsgFilter& filter, WgMsgType msgType, const WgReceiverPtr& pReceiver )
+{
+	Route * p = new Route( filter, pReceiver.RawPtr() );
+	return _addRoute( msgType, p );	
+}
+
+
+
 //____ DeleteRoutesTo() _______________________________________________________
 
 int WgMsgRouter::DeleteRoutesTo( const WgReceiverPtr& _pReceiver )
 {
-
 	WgReceiver * pReceiver = _pReceiver.RawPtr();
 	int nDeleted = 0;
 
-	std::map<WgObjectWeakPtr,WgChain<Route> >::iterator it = m_routes.begin();
+	// Delete from source routes
 
-	while( it != m_routes.end() )
+	for( auto it = m_sourceRoutes.begin() ; it != m_sourceRoutes.end() ; it++ )
 	{
 		Route * p = it->second.First();
 		while( p )
 		{
-			if( p->Receiver() != pReceiver )
-				p = p->Next();
-			else
+			if( p->Receiver() == pReceiver )
 			{
 				Route * pNext = p->Next();
-				delete p;					// Receiver is dead, delete callback.
+				delete p;					// Receiver is dead, delete route.
 				nDeleted++;
 				p = pNext;
 			}
+			else
+				p = p->Next();
+
 		}
-		++it;
+	}
+
+	// Delete from type routes
+
+	for( auto it = m_typeRoutes.begin() ; it != m_typeRoutes.end() ; it++ )
+	{
+		Route * p = it->second.First();
+		while( p )
+		{
+			if( p->Receiver() == pReceiver )
+			{
+				Route * pNext = p->Next();
+				delete p;					// Receiver is dead, delete route.
+				nDeleted++;
+				p = pNext;
+			}
+			else
+				p = p->Next();
+		}
 	}
 
 	return nDeleted;
@@ -299,40 +335,58 @@ int WgMsgRouter::DeleteRoutesTo( const WgReceiverPtr& _pReceiver )
 
 int WgMsgRouter::DeleteRoutesFrom( const WgObjectPtr& pSource )
 {
-	std::map<WgObjectWeakPtr,WgChain<Route> >::iterator it = m_routes.find(WgObjectWeakPtr(pSource.RawPtr()) );
+	auto it = m_sourceRoutes.find(WgObjectWeakPtr(pSource.RawPtr()) );
 
-	if( it == m_routes.end() )
+	if( it == m_sourceRoutes.end() )
 		return 0;
 
 	int nDeleted = it->second.Size();
-	m_routes.erase(it);
+	m_sourceRoutes.erase(it);
+	return nDeleted;
+}
+
+int WgMsgRouter::DeleteRoutesFrom( WgMsgType msgType )
+{
+	auto it = m_typeRoutes.find(msgType);
+
+	if( it == m_typeRoutes.end() )
+		return 0;
+
+	int nDeleted = it->second.Size();
+	m_typeRoutes.erase(it);
 	return nDeleted;
 }
 
 
 //____ DeleteRoute() ______________________________________________________
 
-bool WgMsgRouter::DeleteRoute( WgRouteId handle )
+bool WgMsgRouter::DeleteRoute( WgRouteId id )
 {
-	Route * p = m_broadcasts.First();
-	while( p )
-	{
-		if( p->m_handle == handle )
-			delete p;
-			return true;
-			p = p->Next();
-	}
-
-	std::map<WgObjectWeakPtr,WgChain<Route> >::iterator	it;
-	for( it = m_routes.begin() ; it != m_routes.end() ; ++it )
+	for( auto it = m_typeRoutes.begin() ; it != m_typeRoutes.end() ; ++it )
 	{
 		Route * p = it->second.First();
 		while( p )
 		{
-			if( p->m_handle == handle )
+			if( p->m_handle == id )
+			{
 				delete p;
 				return true;
-				p = p->Next();
+			}
+			p = p->Next();
+		}
+	}
+
+	for( auto it = m_sourceRoutes.begin() ; it != m_sourceRoutes.end() ; ++it )
+	{
+		Route * p = it->second.First();
+		while( p )
+		{
+			if( p->m_handle == id )
+			{
+				delete p;
+				return true;
+			}
+			p = p->Next();
 		}
 	}
 
@@ -343,8 +397,8 @@ bool WgMsgRouter::DeleteRoute( WgRouteId handle )
 
 int WgMsgRouter::ClearRoutes()
 {
-	m_broadcasts.Clear();
-	m_routes.clear();
+	m_sourceRoutes.clear();
+	m_typeRoutes.clear();
 	return false;
 }
 
@@ -370,34 +424,55 @@ int WgMsgRouter::GarbageCollectRoutes()
 		}
 	}
 
-	// Delete any dead Widget-specific callbacks.
-	// These can be dead by either sender or receiver having been deleted.
+	// Delete any dead source routes.
+	// These can be dead by either source or receiver having been deleted.
 
-	std::map<WgObjectWeakPtr,WgChain<Route> >::iterator it = m_routes.begin();
-
-	while( it != m_routes.end() )
 	{
-		if( !it->first )
+		auto it = m_sourceRoutes.begin();
+
+		while( it != m_sourceRoutes.end() )
 		{
-			nDeleted += it->second.Size();
-			m_routes.erase(it++);		// Sender is dead, delete whole branch of callbacks.
-		}
-		else
-		{
-			Route * p = it->second.First();
-			while( p )
+			if( !it->first )
 			{
-				if( p->IsAlive() )
-					p = p->Next();
-				else
-				{
-					Route * pNext = p->Next();
-					delete p;					// Receiver is dead, delete callback.
-					nDeleted++;
-					p = pNext;
-				}
+				nDeleted += it->second.Size();
+				it = m_sourceRoutes.erase(it);		// Sender is dead, delete whole branch of callbacks.
 			}
-			++it;
+			else
+			{
+				Route * p = it->second.First();
+				while( p )
+				{
+					if( p->IsAlive() )
+						p = p->Next();
+					else
+					{
+						Route * pNext = p->Next();
+						delete p;					// Receiver is dead, delete callback.
+						nDeleted++;
+						p = pNext;
+					}
+				}
+				++it;
+			}
+		}
+	}
+	// Delete any dead type routes.
+	// These can be dead by receiver having been deleted.
+
+	for( auto it = m_typeRoutes.begin(); it != m_typeRoutes.end() ; it++ )
+	{
+		Route * p = it->second.First();
+		while( p )
+		{
+			if( p->IsAlive() )
+				p = p->Next();
+			else
+			{
+				Route * pNext = p->Next();
+				delete p;					// Receiver is dead, delete callback.
+				nDeleted++;
+				p = pNext;
+			}
 		}
 	}
 
@@ -411,11 +486,25 @@ WgRouteId WgMsgRouter::_addRoute( const WgObjectPtr& pSource, Route * pRoute )
 	if( !pSource )
 		return 0;
 
-	WgChain<Route>& chain = m_routes[pSource.RawPtr()];
+	WgChain<Route>& chain = m_sourceRoutes[pSource.RawPtr()];
 	chain.PushBack(pRoute);
 	pRoute->m_handle = m_routeCounter++;
 	return pRoute->m_handle;
 }
+
+//____ _addRoute() _________________________________________________________
+
+WgRouteId WgMsgRouter::_addRoute( WgMsgType type, Route * pRoute )
+{
+	if( type == WG_MSG_DUMMY || type >= WG_MSG_MAX )
+		return 0;
+
+	WgChain<Route>& chain = m_typeRoutes[type];
+	chain.PushBack(pRoute);
+	pRoute->m_handle = m_routeCounter++;
+	return pRoute->m_handle;
+}
+
 
 //____ Post() ___________________________________________________________
 
@@ -446,8 +535,6 @@ bool WgMsgRouter::Post( const WgMsgPtr& pMsg )
 
 void WgMsgRouter::Dispatch()
 {
-	int64_t	time = m_time;
-
 	m_bIsProcessing = true;
 
 	// First thing: we make sure that we know what Widgets pointer is inside, in case that has changed.
@@ -456,14 +543,6 @@ void WgMsgRouter::Dispatch()
 	_updateMarkedWidget(false);
 
 	// Process all the events in the queue
-
-	_dispatchQueued();
-
-	// Post tick events now we know how much time has passed
-
-	_postTickMsgs( (int) (m_time-time) );
-
-	// Process Widget-specific tick events (and any events they might trigger)
 
 	_dispatchQueued();
 
@@ -488,10 +567,11 @@ void WgMsgRouter::_dispatchQueued()
 				pMsg->m_pCopyTo->OnMsg( pMsg );
 			
 			if( pMsg->HasSource() )
-				_dispatchToRoutes( pMsg );
+				_dispatchToSourceRoutes( pMsg );
 			else
 				_processGeneralMsg( pMsg );
 
+			_dispatchToTypeRoutes( pMsg );
 			_broadcast( pMsg );			
 		}
 		while( pMsg->DoRepost() );
@@ -500,52 +580,6 @@ void WgMsgRouter::_dispatchQueued()
 	}
 
 	m_insertPos = m_msgQueue.begin();		// Insert position set right to start.
-}
-
-//____ _postTickMsgs() ______________________________________________________
-
-void WgMsgRouter::_postTickMsgs( int ticks )
-{
-	std::vector<WgReceiverWeakPtr>::iterator it = m_vTickReceivers.begin();
-
-	while( it != m_vTickReceivers.end() )
-	{
-		WgReceiver * pReceiver = (*it).RawPtr();
-
-		if( pReceiver )
-		{
-			Post( new WgTickMsg( ticks, pReceiver ) );
-			++it;
-		}
-		else
-			it = m_vTickReceivers.erase(it);
-	}
-}
-
-//____ AddTickReceiver() _____________________________________________________
-
-void WgMsgRouter::AddTickReceiver( const WgReceiverPtr& pReceiver )
-{
-	if( pReceiver && !_isReceiverInList( pReceiver.RawPtr(), m_vTickReceivers ) )
-		m_vTickReceivers.push_back( WgReceiverWeakPtr(pReceiver.RawPtr()) );
-}
-
-//____ RemoveTickReceiver() __________________________________________________
-
-bool WgMsgRouter::RemoveTickReceiver( const WgReceiverPtr& pReceiver )
-{
-	std::vector<WgReceiverWeakPtr>::iterator	it = m_vTickReceivers.begin();
-	
-	while( it != m_vTickReceivers.end() )
-	{
-		if( * it == pReceiver )
-		{
-			m_vTickReceivers.erase(it);
-			return true;
-		}
-		it++;
-	}	
-	return false;
 }
 
 
@@ -563,33 +597,41 @@ void WgMsgRouter::_broadcast( const WgMsgPtr& pMsg )
 }
 
 
-//____ _dispatchToRoutes() ________________________________________________
+//____ _dispatchToTypeRoutes() __________________________________________________
 
-void WgMsgRouter::_dispatchToRoutes( const WgMsgPtr& pMsg )
+void WgMsgRouter::_dispatchToTypeRoutes( const WgMsgPtr& pMsg )
 {
-	Route * pRoute = 0;
-	WgChain<Route> * pChain = 0;
+	auto it = m_typeRoutes.find(pMsg->Type());
+	if( it != m_typeRoutes.end() )
+	{
+		Route * pRoute = it->second.First();
 
+		while( pRoute )
+		{
+			pRoute->Dispatch( pMsg );
+			pRoute = pRoute->Next();
+		}
+	}	
+}
+
+//____ _dispatchToSourceRoutes() ________________________________________________
+
+void WgMsgRouter::_dispatchToSourceRoutes( const WgMsgPtr& pMsg )
+{
 	WgObject * pSource = pMsg->SourceRawPtr();
 
 	if( pSource )
 	{
-		std::map<WgObjectWeakPtr,WgChain<Route> >::iterator it;
-
-		it = m_routes.find(WgObjectWeakPtr(pSource));
-		if( it != m_routes.end() )
-			pChain = &(it->second);
-	}
-
-	if( !pChain )
-		return;
-
-	pRoute = pChain->First();
-
-	while( pRoute )
-	{
-		pRoute->Dispatch( pMsg );
-		pRoute = pRoute->Next();
+		auto it = m_sourceRoutes.find(WgObjectWeakPtr(pSource));
+		if( it != m_sourceRoutes.end() )
+		{
+			Route * pRoute = it->second.First();
+			while( pRoute )
+			{
+				pRoute->Dispatch( pMsg );
+				pRoute = pRoute->Next();
+			}
+		}
 	}
 }
 
@@ -1286,17 +1328,6 @@ void WgMsgRouter::_processMouseButtonDoubleClick( WgMouseDoubleClickMsg * pMsg )
 	WgWidget * pWidget = m_latestPressWidgets[button].RawPtr();
 	if( pWidget && pWidget ==  m_previousPressWidgets[button].RawPtr() )
 		Post( new WgMouseDoubleClickMsg(button, pWidget) );
-}
-
-//____ _isReceiverInList() ________________________________________________________
-
-bool WgMsgRouter::_isReceiverInList( const WgReceiver * pWidget, const std::vector<WgReceiverWeakPtr>& list )
-{
-	for( size_t i = 0 ; i < list.size() ; i++ )
-		if( list[i].RawPtr() == pWidget )
-			return true;
-
-	return false;
 }
 
 //____ _widgetPosInList() ________________________________________________________

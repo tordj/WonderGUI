@@ -30,6 +30,7 @@
 #include	<wg_base.h>
 
 
+
 const char WgLineEditor::CLASSNAME[] = {"LineEditor"};
 
 //____ Constructor ____________________________________________________________
@@ -44,12 +45,15 @@ WgLineEditor::WgLineEditor() : m_text(this), text(&m_text)
 	m_viewOfs		= 0;
 	m_pointerStyle	= WG_POINTER_IBEAM;
 	m_bResetCursorOnFocus = true;
+	m_tickRouteId = 0;
 }
 
 //____ Destructor _____________________________________________________________
 
 WgLineEditor::~WgLineEditor()
 {
+	if( m_tickRouteId )
+		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
 }
 
 //____ IsInstanceOf() _________________________________________________________
@@ -578,7 +582,7 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 	{
 		if( _isEditable() )
 		{
-			_startReceiveTicks();
+			m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
 			if( m_bResetCursorOnFocus )
 				m_text.GoEOL();
 			_requestRender(); // render with cursor on
@@ -596,7 +600,8 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 
 		if( _isEditable() || m_viewOfs != 0 )
 		{
-			_stopReceiveTicks();
+			WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+			m_tickRouteId = 0;
 			WgBase::MsgRouter()->Post( new WgTextEditMsg(text.Ptr(),true) );
 
 			m_viewOfs = 0;

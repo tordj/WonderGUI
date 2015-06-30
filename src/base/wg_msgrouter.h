@@ -49,8 +49,6 @@ class WgMsgRouter;
 typedef	WgStrongPtr<WgMsgRouter,WgObjectPtr>		WgMsgRouterPtr;
 typedef	WgWeakPtr<WgMsgRouter,WgObjectWeakPtr>	WgMsgRouterWeakPtr;
 
-typedef unsigned int	WgRouteId;
-
 class WgMsgRouter : public WgObject
 {
 friend class WgWidget;
@@ -90,21 +88,22 @@ public:
 
 	//----
 
-	void	BroadcastTo( const WgReceiverPtr& pReceiver );
-	void	BroadcastTo( const WgMsgFilter& filter, const WgReceiverPtr& pReceiver );
+	bool	BroadcastTo( const WgReceiverPtr& pReceiver );
+	bool	BroadcastTo( const WgMsgFilter& filter, const WgReceiverPtr& pReceiver );
 	bool	EndBroadcast( const WgReceiverPtr& pReceiver );
 	
 	WgRouteId	AddRoute( const WgObjectPtr& pSource, const WgReceiverPtr& pReceiver );
 	WgRouteId	AddRoute( const WgMsgFilter& filter, const WgObjectPtr& pSource, const WgReceiverPtr& pReceiver );
 
-	void	AddTickReceiver( const WgReceiverPtr& pReceiver );
-	bool	RemoveTickReceiver( const WgReceiverPtr& pReceiver );
+	WgRouteId	AddRoute( WgMsgType type, const WgReceiverPtr& pReceiver );
+	WgRouteId	AddRoute( const WgMsgFilter& filter, WgMsgType type, const WgReceiverPtr& pReceiver );
 
 
 
 	bool	DeleteRoute( WgRouteId handle );
 	int		DeleteRoutesTo( const WgReceiverPtr& pReceiver );
 	int		DeleteRoutesFrom( const WgObjectPtr& pSource );
+	int		DeleteRoutesFrom( WgMsgType type );
 
 	int		ClearRoutes();
 	int		GarbageCollectRoutes();
@@ -117,14 +116,14 @@ private:
 
 	class	Route;
 
-	void 	_postTickMsgs( int ticks );
 	void 	_dispatchQueued();
 
 
 	void	_finalizeMsg( const WgMsgPtr& pMsg );
 	void	_processGeneralMsg( const WgMsgPtr& pMsg );
 	void	_broadcast( const WgMsgPtr& pMsg );
-	void	_dispatchToRoutes( const WgMsgPtr& pMsg );
+	void	_dispatchToSourceRoutes( const WgMsgPtr& pMsg );
+	void	_dispatchToTypeRoutes( const WgMsgPtr& pMsg );
 
 	void	_processTick( WgTickMsg * pMsg );
 
@@ -151,10 +150,10 @@ private:
 
 	void	_processCharacter( WgCharacterMsg * pMsg );
 
-	bool	_isReceiverInList( const WgReceiver * pWidget, const std::vector<WgReceiverWeakPtr>& list );
 	int		_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list );
 
 	WgRouteId	_addRoute( const WgObjectPtr& pSource, Route * pRoute );
+	WgRouteId	_addRoute( WgMsgType type, Route * pRoute );
 
 	void 		_updateMarkedWidget(bool bPostMouseMoveMsgs);
 	WgWidget *	_updateEnteredWidgets( WgWidget * pMarkedWidget );
@@ -166,9 +165,9 @@ private:
 
 	WgRootPanelWeakPtr	m_pRoot;
 
-	std::deque<WgMsgPtr>					m_msgQueue;
-	bool									m_bIsProcessing;		// Set when we are inside Dispatch().
-	std::deque<WgMsgPtr>::iterator			m_insertPos;			// Position where we insert messages being queued when processing.
+	std::deque<WgMsgPtr>			m_msgQueue;
+	bool							m_bIsProcessing;		// Set when we are inside Dispatch().
+	std::deque<WgMsgPtr>::iterator	m_insertPos;			// Position where we insert messages being queued when processing.
 
 	int64_t			m_time;
 	WgCoord			m_pointerPos;
@@ -232,13 +231,11 @@ private:
 	};
 
 
-	WgRouteId		m_routeCounter;					// Increment by one for each new callbackHandle, gives unique IDs.
+	WgRouteId				m_routeCounter;					// Increment by one for each new callbackHandle, gives unique IDs.
+	WgChain<Route>			m_broadcasts;
 
-	WgChain<Route>					m_broadcasts;
-	std::vector<WgReceiverWeakPtr>	m_vTickReceivers;		// Receivers that have requested periodic tick-events (i.e. on every processMsgs() ).
-
-	std::map<WgObjectWeakPtr,WgChain<Route> >	m_routes;
-
+	std::map<WgObjectWeakPtr,WgChain<Route> >	m_sourceRoutes;
+	std::map<WgMsgType,WgChain<Route> >			m_typeRoutes;
 };
 
 

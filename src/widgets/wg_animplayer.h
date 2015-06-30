@@ -89,6 +89,7 @@ private:
 
 	WgGfxAnimPtr	m_pAnim;
 	WgGfxFrame *	m_pAnimFrame;			// Frame currently used by animation.
+	WgRouteId		m_tickRouteId;
 
 	bool			m_bPlaying;
 	double			m_playPos;

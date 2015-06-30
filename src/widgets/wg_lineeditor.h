@@ -96,6 +96,7 @@ private:
 	void	_adjustViewOfs();
 
 	WgLegacyTextField			m_text;
+	WgRouteId			m_tickRouteId;
 
 	bool				m_bResetCursorOnFocus;
 	bool				m_bPasswordMode;

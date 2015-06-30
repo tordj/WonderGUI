@@ -54,12 +54,16 @@ WgValueEditor::WgValueEditor() : m_text(this), text(&m_text)
 
 	m_pFormat = WgValueFormat::Create();
 	m_pUseFormat = WgValueFormat::Create();
+
+	m_tickRouteId = 0;
 }
 
 //____ ~WgValueEditor() ___________________________________________________________
 
 WgValueEditor::~WgValueEditor()
 {
+	if( m_tickRouteId )
+		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
 }
 
 //____ IsInstanceOf() _________________________________________________________
@@ -782,7 +786,7 @@ void WgValueEditor::_onStateChanged( WgState oldState )
 
 	if( m_state.IsFocused() && !oldState.IsFocused() )
 	{
-		_startReceiveTicks();
+		m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
 		m_text.showCursor();
 		m_text.GoEOL();
 		m_pUseFormat = m_pFormat;
@@ -802,7 +806,9 @@ void WgValueEditor::_onStateChanged( WgState oldState )
 
 	if( !m_state.IsFocused() && oldState.IsFocused() )
 	{
-		_stopReceiveTicks();
+		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+		m_tickRouteId = 0;
+
 		WgBase::MsgRouter()->Post( new WgValueUpdateMsg(this,m_value,FractionalValue(), true) );
 
 		m_text.hideCursor();

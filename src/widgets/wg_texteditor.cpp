@@ -41,6 +41,7 @@ WgTextEditor::WgTextEditor() : m_text(this), text(&m_text)
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 	m_text.SetEditMode( WG_TEXT_STATIC );
 	m_bResetCursorOnFocus = true;
+	m_tickRouteId = 0;
 }
 
 
@@ -48,6 +49,8 @@ WgTextEditor::WgTextEditor() : m_text(this), text(&m_text)
 
 WgTextEditor::~WgTextEditor()
 {
+	if( m_tickRouteId )
+		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
 }
 
 
@@ -172,7 +175,7 @@ void WgTextEditor::_onStateChanged( WgState oldState )
 		if( m_state.IsFocused() && !oldState.IsFocused() )
 		{
 			m_text.showCursor();
-			_startReceiveTicks();
+			m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
 			if(	m_bResetCursorOnFocus )
 				m_text.GoEOT();
 			_requestRender();
@@ -180,7 +183,8 @@ void WgTextEditor::_onStateChanged( WgState oldState )
 		if( !m_state.IsFocused() && oldState.IsFocused() )
 		{
 			m_text.hideCursor();
-			_stopReceiveTicks();
+			WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+			m_tickRouteId = 0;
 			_requestRender();
 		}
 	}

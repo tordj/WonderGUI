@@ -44,12 +44,15 @@ WgRefreshButton::WgRefreshButton() : m_refreshText(this), refreshText(&m_refresh
 	m_animTimer			= 0;
 	m_refreshProgress	= 0.f;
 	m_bStopping			= false;
+	m_tickRouteId		= 0;
 }
 
 //____ Destructor _____________________________________________________________
 
 WgRefreshButton::~WgRefreshButton()
 {
+	if( m_tickRouteId )
+		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
 }
 
 //____ IsInstanceOf() _________________________________________________________
@@ -121,7 +124,7 @@ void WgRefreshButton::StartRefresh()
 		m_refreshProgress = 0.f;
 		m_animTimer = 0;
 		m_pRefreshAnim->SetPlayMode( WG_FORWARD_LOOPING );		//UGLY! Should change once the animation system has been updated.
-		_startReceiveTicks();
+		m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
 		_requestRender();
 	}
 }
@@ -146,7 +149,8 @@ void WgRefreshButton::StopRefreshNow()
 {
 	m_refreshProgress = 1.f;
 	m_bRefreshing = false;
-	_stopReceiveTicks();
+	WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+	m_tickRouteId = 0;
 	_requestRender();
 }
 
@@ -215,7 +219,8 @@ void WgRefreshButton::_onMsg( const WgMsgPtr& pMsg )
 					{
 						m_bRefreshing = false;
 						m_bStopping = false;
-						_stopReceiveTicks();
+						WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+						m_tickRouteId = 0;
 						_requestRender();
 					}
 				}

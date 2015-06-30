@@ -31,10 +31,6 @@
 #	include <wg_menu.h>
 #endif
 
-#ifndef WG_MSGROUTER_DOT_H
-#	include <wg_msgrouter.h>
-#endif
-
 #ifndef WG_EDITTEXT_DOT_H
 #	include <wg_edittext.h>
 #endif
@@ -131,6 +127,7 @@ private:
 	int				m_maxCharacters;
 	int				m_viewOfs;
 
+	WgRouteId	m_tickRouteId;
 	WgRouteId	m_routeId;
 };
 

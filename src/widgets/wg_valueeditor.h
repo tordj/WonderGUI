@@ -110,6 +110,7 @@ private:
 	bool				m_bSelectAllOnRelease;
 	int					m_maxInputChars;
 	WgCoord				m_viewOfs;
+	WgRouteId			m_tickRouteId;
 };
 
 
