@@ -26,7 +26,7 @@
 #include	<wg_font.h>
 #include 	<wg_gfxdevice.h>
 #include 	<wg_pen.h>
-#include 	<wg_eventhandler.h>
+#include 	<wg_msgrouter.h>
 #include	<wg_base.h>
 
 
@@ -119,7 +119,7 @@ int WgLineEditor::InsertTextAtCursor( const WgCharSeq& str )
 
 	int retVal = m_text.putText( str );
 
-	WgBase::MsgRouter()->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
+	WgBase::MsgRouter()->Post( new WgTextEditMsg(text.Ptr(),false) );
 
 	_adjustViewOfs();
 
@@ -140,7 +140,7 @@ bool WgLineEditor::InsertCharAtCursor( Uint16 c )
 	if( !m_text.putChar( c ) )
 		return false;
 
-	WgBase::MsgRouter()->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
+	WgBase::MsgRouter()->Post( new WgTextEditMsg(text.Ptr(),false) );
 
 	_adjustViewOfs();
 	return true;
@@ -232,38 +232,38 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 		delete pText;
 }
 
-//____ _onEvent() ______________________________________________________________
+//____ _onMsg() ______________________________________________________________
 
-void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
+void WgLineEditor::_onMsg( const WgMsgPtr& pMsg )
 {
-	WgWidget::_onEvent(pEvent);
+	WgWidget::_onMsg(pMsg);
 
-	WgEventHandlerPtr	pHandler = WgBase::MsgRouter();
-	WgEventType event = pEvent->Type();
+	WgMsgRouterPtr	pHandler = WgBase::MsgRouter();
+	WgMsgType event = pMsg->Type();
 
-	if( event == WG_EVENT_TICK )
+	if( event == WG_MSG_TICK )
 	{
 		if( _isSelectable() && m_state.IsFocused() )
 		{
-			m_text.incTime( WgTickEvent::Cast(pEvent)->Millisec() );
+			m_text.incTime( WgTickMsg::Cast(pMsg)->Millisec() );
 			_requestRender();					//TODO: Should only render the cursor and selection!
 		}
 		return;
 	}
 
-	if( (event == WG_EVENT_MOUSE_PRESS || event == WG_EVENT_MOUSE_DRAG) && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
+	if( (event == WG_MSG_MOUSE_PRESS || event == WG_MSG_MOUSE_DRAG) && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
 	{
 		if( !m_state.IsFocused() )
 			GrabFocus();
 
 		if( m_state.IsFocused() )
 		{
-			if( _isSelectable() && (pEvent->ModKeys() & WG_MODKEY_SHIFT) )
+			if( _isSelectable() && (pMsg->ModKeys() & WG_MODKEY_SHIFT) )
 			{
 				m_text.setSelectionMode(true);
 			}
 
-			WgCoord ofs = pEvent->PointerGlobalPos() - GlobalPos();
+			WgCoord ofs = pMsg->PointerPos() - GlobalPos();
 			int x = ofs.x + m_viewOfs;
 			int y = 0;
 
@@ -294,7 +294,7 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 				m_text.CursorGotoCoord( WgCoord(x, 0), WgRect(0,0,1000000,1000000) );
 			}
 
-			if(_isSelectable() && event == WG_EVENT_MOUSE_PRESS && !(pEvent->ModKeys() & WG_MODKEY_SHIFT))
+			if(_isSelectable() && event == WG_MSG_MOUSE_PRESS && !(pMsg->ModKeys() & WG_MODKEY_SHIFT))
 			{
 				m_text.ClearSelection();
 				m_text.setSelectionMode(true);
@@ -303,15 +303,15 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 		_adjustViewOfs();
 	}
 
-	if( event == WG_EVENT_MOUSE_RELEASE )
+	if( event == WG_MSG_MOUSE_RELEASE )
 	{
-		if( m_state.IsFocused() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
+		if( m_state.IsFocused() && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
 			m_text.setSelectionMode(false);
 	}		
 
-	if( event == WG_EVENT_CHARACTER )
+	if( event == WG_MSG_CHARACTER )
 	{
-		int ch = WgCharacterEvent::Cast(pEvent)->Char();
+		int ch = WgCharacterMsg::Cast(pMsg)->Char();
 
 		if( _isEditable() && m_state.IsFocused() && ch >= 32 && ch != 127)
 		{
@@ -323,16 +323,16 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 			if( m_text.putChar( ch ) )
 			{
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
+					pHandler->Post( new WgTextEditMsg(text.Ptr(),false) );
 
 				_adjustViewOfs();
 			}
 		}
 	}
 
-	if( event == WG_EVENT_KEY_RELEASE && m_state.IsFocused() )
+	if( event == WG_MSG_KEY_RELEASE && m_state.IsFocused() )
 	{
-		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
+		int key = WgKeyMsg::Cast(pMsg)->TranslatedKeyCode();
 		switch( key )
 		{
 			case WG_KEY_SHIFT:
@@ -342,16 +342,16 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 		}
 	}
 
-	if( (event == WG_EVENT_KEY_PRESS || event == WG_EVENT_KEY_REPEAT) && _isEditable() && m_state.IsFocused() )
+	if( (event == WG_MSG_KEY_PRESS || event == WG_MSG_KEY_REPEAT) && _isEditable() && m_state.IsFocused() )
 	{
-		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
+		int key = WgKeyMsg::Cast(pMsg)->TranslatedKeyCode();
 		switch( key )
 		{
 			case WG_KEY_LEFT:
-				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+				if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
 
-				if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+				if( pMsg->ModKeys() & WG_MODKEY_CTRL )
 				{
 					if( m_bPasswordMode )
 						m_text.GoBOL();
@@ -364,10 +364,10 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 				}
 				break;
 			case WG_KEY_RIGHT:
-				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+				if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
 
-				if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+				if( pMsg->ModKeys() & WG_MODKEY_CTRL )
 				{
 					if( m_bPasswordMode )
 						m_text.GoEOL();
@@ -384,13 +384,13 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 			{
 				if(m_text.hasSelection())
 					m_text.delSelection();
-				else if( (pEvent->ModKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
+				else if( (pMsg->ModKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
 					m_text.delPrevWord();
 				else
 					m_text.delPrevChar();
 
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
+					pHandler->Post( new WgTextEditMsg(text.Ptr(),false) );
 				break;
 			}
 
@@ -398,13 +398,13 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 			{
 				if(m_text.hasSelection())
 					m_text.delSelection();
-				else if( (pEvent->ModKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
+				else if( (pMsg->ModKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
 					m_text.delNextWord();
 				else
 					m_text.delNextChar();
 
 				if( pHandler )
-					pHandler->QueueEvent( new WgTextEditEvent(text.Ptr(),false) );
+					pHandler->Post( new WgTextEditMsg(text.Ptr(),false) );
 				break;
 			}
 
@@ -414,14 +414,14 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 				 *	I am not sure if this is the proper way to this, but in my opinion, the default
 				 *	"actions" has to be separated from any modifier key action combination
 				 */
-				switch( pEvent->ModKeys() )
+				switch( pMsg->ModKeys() )
 				{
 
 				case WG_MODKEY_CTRL:
 					break;
 
 				default: // no modifier key was pressed
-					if(pEvent->ModKeys() & WG_MODKEY_SHIFT )
+					if(pMsg->ModKeys() & WG_MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 
 					m_text.GoBOL();
@@ -436,14 +436,14 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 			 	 *	I am not sure if this is the proper way to this, but in my opinion, the default
 		 		 *	"actions" has to be separated from any modifier key action combination
 				 */
-				switch( pEvent->ModKeys() )
+				switch( pMsg->ModKeys() )
 				{
 
 				case WG_MODKEY_CTRL:
 					break;
 
 				default: // no modifier key was pressed
-					if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+					if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 
 					m_text.GoEOL();
@@ -458,19 +458,19 @@ void WgLineEditor::_onEvent( const WgEventPtr& pEvent )
 		_adjustViewOfs();
 	}
 
-	// Forward event depending on rules.
+	// Swallow message depending on rules.
 
-	if( pEvent->IsMouseButtonEvent() )
+	if( pMsg->IsMouseButtonMsg() )
 	{
-		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
-			pEvent->Swallow();
+		if( WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
+			pMsg->Swallow();
 	}
-	else if( pEvent->IsKeyEvent() )
+	else if( pMsg->IsKeyMsg() )
 	{
-		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
-		if( WgKeyEvent::Cast(pEvent)->IsMovementKey() == true ||
+		int key = WgKeyMsg::Cast(pMsg)->TranslatedKeyCode();
+		if( WgKeyMsg::Cast(pMsg)->IsMovementKey() == true ||
 			key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE )
-				pEvent->Swallow();
+				pMsg->Swallow();
 		
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
@@ -597,7 +597,7 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 		if( _isEditable() || m_viewOfs != 0 )
 		{
 			_stopReceiveTicks();
-			WgBase::MsgRouter()->QueueEvent( new WgTextEditEvent(text.Ptr(),true) );
+			WgBase::MsgRouter()->Post( new WgTextEditMsg(text.Ptr(),true) );
 
 			m_viewOfs = 0;
 			_requestRender();

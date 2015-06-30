@@ -26,8 +26,8 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_key.h>
-#include <wg_event.h>
-#include <wg_eventhandler.h>
+#include <wg_msg.h>
+#include <wg_msgrouter.h>
 
 const char WgButton::CLASSNAME[] = {"Button"};
 
@@ -180,75 +180,75 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 		m_text.OnRender( pDevice, textRect, _clip );
 }
 
-//____ _onEvent() ______________________________________________________________
+//____ _onMsg() ______________________________________________________________
 
-void WgButton::_onEvent( const WgEventPtr& _pEvent )
+void WgButton::_onMsg( const WgMsgPtr& _pMsg )
 {
 	WgState oldState = m_state;
-	WgEventHandlerPtr	pHandler = WgBase::MsgRouter();
+	WgMsgRouterPtr	pHandler = WgBase::MsgRouter();
 
-	switch( _pEvent->Type() )
+	switch( _pMsg->Type() )
 	{
-		case WG_EVENT_KEY_PRESS:
-			if( WgKeyPressEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+		case WG_MSG_KEY_PRESS:
+			if( WgKeyPressMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = true;
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 			}
 			break;
 
-		case WG_EVENT_KEY_REPEAT:
-			if( WgKeyRepeatEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
-				_pEvent->Swallow();
+		case WG_MSG_KEY_REPEAT:
+			if( WgKeyRepeatMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
+				_pMsg->Swallow();
 			break;
 
-		case WG_EVENT_KEY_RELEASE:
-			if( WgKeyReleaseEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+		case WG_MSG_KEY_RELEASE:
+			if( WgKeyReleaseMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = false;
-				pHandler->QueueEvent( new WgSelectEvent(this) );
-				_pEvent->Swallow();
+				pHandler->Post( new WgSelectMsg(this) );
+				_pMsg->Swallow();
 			}
 			break;
 	
-		case WG_EVENT_MOUSE_ENTER:
+		case WG_MSG_MOUSE_ENTER:
 			m_state.SetHovered(true);
 			break;
-		case WG_EVENT_MOUSE_LEAVE:
+		case WG_MSG_MOUSE_LEAVE:
 			m_state.SetHovered(false);
 			break;
-		case WG_EVENT_MOUSE_PRESS:
-			if( WgMousePressEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+		case WG_MSG_MOUSE_PRESS:
+			if( WgMousePressMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = true;
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 			}
 			break;
-		case WG_EVENT_MOUSE_RELEASE:
-			if( WgMouseReleaseEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+		case WG_MSG_MOUSE_RELEASE:
+			if( WgMouseReleaseMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = false;
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 			}
 			break;
-		case WG_EVENT_MOUSE_CLICK:
-			if( WgMouseClickEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+		case WG_MSG_MOUSE_CLICK:
+			if( WgMouseClickMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
 			{
-				pHandler->QueueEvent( new WgSelectEvent(this) );
-				_pEvent->Swallow();
+				pHandler->Post( new WgSelectMsg(this) );
+				_pMsg->Swallow();
 			}
 			break;
-		case WG_EVENT_MOUSE_DOUBLE_CLICK:
-		case WG_EVENT_MOUSE_REPEAT:
-		case WG_EVENT_MOUSE_DRAG:
-			if( WgMouseButtonEvent::Cast(_pEvent)->Button() ==WG_BUTTON_LEFT )
-				_pEvent->Swallow();
+		case WG_MSG_MOUSE_DOUBLE_CLICK:
+		case WG_MSG_MOUSE_REPEAT:
+		case WG_MSG_MOUSE_DRAG:
+			if( WgMouseButtonMsg::Cast(_pMsg)->Button() ==WG_BUTTON_LEFT )
+				_pMsg->Swallow();
 			break;
 
-		case WG_EVENT_FOCUS_GAINED:
+		case WG_MSG_FOCUS_GAINED:
 			m_state.SetFocused(true);
 			break;
-		case WG_EVENT_FOCUS_LOST:
+		case WG_MSG_FOCUS_LOST:
 			m_state.SetFocused(false);
 			m_bReturnPressed = false;
 			m_bPressed = false;
@@ -289,7 +289,7 @@ void WgButton::_onRefresh( void )
  * pointer leaves the widget but go back to the pressed state if mouse pointer re-enters the
  * widgets without the mouse button having been released.
  *
- * The effect is only cosmetic, the way that events are fired is not affected.
+ * The effect is only cosmetic, the way that messages are posted is not affected.
  *
  * The default setting is false.
  *

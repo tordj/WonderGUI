@@ -34,8 +34,8 @@
 #	include <wg_patches.h>
 #endif
 
-#ifndef WG_EVENTHANDLER_DOT_H
-#	include <wg_eventhandler.h>
+#ifndef WG_MSGROUTER_DOT_H
+#	include <wg_msgrouter.h>
 #endif
 
 #ifndef WG_GFXDEVICE_DOT_H

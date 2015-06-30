@@ -39,14 +39,14 @@
 class WgRectLink;
 class WgRootPanel;
 
-class WgEventListener;
-typedef WgStrongPtr<WgEventListener,WgObjectPtr>	WgEventListenerPtr;
-typedef WgWeakPtr<WgEventListener,WgObjectWeakPtr>	WgEventListenerWeakPtr;
+class WgReceiver;
+typedef WgStrongPtr<WgReceiver,WgObjectPtr>	WgReceiverPtr;
+typedef WgWeakPtr<WgReceiver,WgObjectWeakPtr>	WgReceiverWeakPtr;
 
 
 class WgWidget;
-typedef WgStrongPtr<WgWidget,WgEventListenerPtr>	WgWidgetPtr;
-typedef WgWeakPtr<WgWidget,WgEventListenerWeakPtr>	WgWidgetWeakPtr;
+typedef WgStrongPtr<WgWidget,WgReceiverPtr>	WgWidgetPtr;
+typedef WgWeakPtr<WgWidget,WgReceiverWeakPtr>	WgWidgetWeakPtr;
 
 class WgContainer;
 typedef	WgStrongPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
@@ -56,9 +56,9 @@ class WgRootPanel;
 typedef	WgStrongPtr<WgRootPanel,WgObjectPtr>		WgRootPanelPtr;
 typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>		WgRootPanelWeakPtr;
 
-class WgEventHandler;
-typedef	WgStrongPtr<WgEventHandler,WgObjectPtr>		WgEventHandlerPtr;
-typedef	WgWeakPtr<WgEventHandler,WgObjectWeakPtr>	WgEventHandlerWeakPtr;
+class WgMsgRouter;
+typedef	WgStrongPtr<WgMsgRouter,WgObjectPtr>		WgMsgRouterPtr;
+typedef	WgWeakPtr<WgMsgRouter,WgObjectWeakPtr>	WgMsgRouterWeakPtr;
 
 class WgIWidgets;
 typedef	WgIStrongPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsPtr;
@@ -94,7 +94,7 @@ public:
 	WgContainerPtr 		Parent() const;
 
 	WgRootPanelPtr		Root() const;
-	WgEventHandlerPtr	EventHandler() const;
+	WgMsgRouterPtr	MsgRouter() const;
 
 protected:
 

@@ -23,7 +23,7 @@
 #include <wg_modallayer.h>
 #include <wg_util.h>
 #include <wg_patches.h>
-#include <wg_eventhandler.h>
+#include <wg_msgrouter.h>
 #include <wg_base.h>
 
 const char WgModalLayer::CLASSNAME[] = {"ModalLayer"};
@@ -439,12 +439,12 @@ WgWidget *  WgModalLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 void WgModalLayer::_updateKeyboardFocus()
 {
-	// Get event handler, verify that we have a root
+	// Get message handler, verify that we have a root
 
 	if( !Hook() )
 		return;
 
-	WgEventHandler * pHandler = Hook()->EventHandler().RawPtr();
+	WgMsgRouter * pHandler = Hook()->MsgRouter().RawPtr();
 	if( !pHandler )
 		return;
 
@@ -543,33 +543,33 @@ void WgModalLayer::_onCloneContent( const WgWidget * _pOrg )
 {
 }
 
-//____ _onEvent() ______________________________________________________________
+//____ _onMsg() ______________________________________________________________
 
-void WgModalLayer::_onEvent( const WgEventPtr& _pEvent )
+void WgModalLayer::_onMsg( const WgMsgPtr& _pMsg )
 {
-	WgLayer::_onEvent(_pEvent);
+	WgLayer::_onMsg(_pMsg);
 
-	if( !m_modalHooks.IsEmpty() && _findWidget( _pEvent->PointerGlobalPos(), WG_SEARCH_ACTION_TARGET ) == this )
+	if( !m_modalHooks.IsEmpty() && _findWidget( _pMsg->PointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
 	{
-		switch( _pEvent->Type() )
+		switch( _pMsg->Type() )
 		{
-			case WG_EVENT_MOUSE_PRESS:
+			case WG_MSG_MOUSE_PRESS:
 			{
-				WgMouseButtonEventPtr pEvent = WgMouseButtonEvent::Cast(_pEvent);
-				WgBase::MsgRouter()->QueueEvent( new WgModalBlockedPressEvent( pEvent->Button(), this) );
+				WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::Cast(_pMsg);
+				WgBase::MsgRouter()->Post( new WgModalBlockedPressMsg( pMsg->Button(), this) );
 			}
 			break;
 
-			case WG_EVENT_MOUSE_RELEASE:
+			case WG_MSG_MOUSE_RELEASE:
 			{
-				WgMouseButtonEventPtr pEvent = WgMouseButtonEvent::Cast(_pEvent);
-				WgBase::MsgRouter()->QueueEvent( new WgModalBlockedPressEvent( pEvent->Button(), this) );
+				WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::Cast(_pMsg);
+				WgBase::MsgRouter()->Post( new WgModalBlockedPressMsg( pMsg->Button(), this) );
 			}
 			break;
 
-			case WG_EVENT_MOUSE_MOVE:
+			case WG_MSG_MOUSE_MOVE:
 			{
-				WgBase::MsgRouter()->QueueEvent( new WgModalMoveOutsideEvent(this) );
+				WgBase::MsgRouter()->Post( new WgModalMoveOutsideMsg(this) );
 			}
 			break;
 		}

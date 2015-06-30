@@ -22,7 +22,7 @@
 
 #include <wg_packlist.h>
 #include <wg_patches.h>
-#include <wg_eventhandler.h>
+#include <wg_msgrouter.h>
 #include <wg_base.h>
 
 const char WgPackList::CLASSNAME[] = {"PackList"};
@@ -718,18 +718,18 @@ void WgPackList::_onRefreshList()
 	_requestResize();						// This should preferably be done first once we have changed the method.
 }
 
-//____ _onEvent() _____________________________________________________________
+//____ _onMsg() _____________________________________________________________
 
-void WgPackList::_onEvent( const WgEventPtr& _pEvent )
+void WgPackList::_onMsg( const WgMsgPtr& _pMsg )
 {
 	WgState oldState = m_state;
 
-	switch( _pEvent->Type() )
+	switch( _pMsg->Type() )
 	{
-		case WG_EVENT_MOUSE_MOVE:
+		case WG_MSG_MOUSE_MOVE:
 		{
-			WgMouseMoveEventPtr pEvent = WgMouseMoveEvent::Cast(_pEvent);
-			WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
+			WgMouseMoveMsgPtr pMsg = WgMouseMoveMsg::Cast(_pMsg);
+			WgCoord ofs = ToLocal(pMsg->PointerPos());
 			WgRect headerGeo = _headerGeo();
 			bool bHeaderHovered = headerGeo.Contains(ofs) && (!WgBase::MsgRouter()->IsAnyMouseButtonPressed() || 
 															 (WgBase::MsgRouter()->IsMouseButtonPressed(WG_BUTTON_LEFT) && m_header.m_bPressed));
@@ -738,46 +738,46 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent )
 				m_header.m_state.SetHovered(bHeaderHovered);
 				_requestRender( headerGeo );
 			}
-			WgList::_onEvent( _pEvent );
+			WgList::_onMsg( _pMsg );
 			break;
 		}
 
-		case WG_EVENT_MOUSE_LEAVE:
+		case WG_MSG_MOUSE_LEAVE:
 		{
-			WgMouseLeaveEventPtr pEvent = WgMouseLeaveEvent::Cast(_pEvent);
-			if( pEvent->Source() == this && m_header.m_state.IsHovered() )
+			WgMouseLeaveMsgPtr pMsg = WgMouseLeaveMsg::Cast(_pMsg);
+			if( pMsg->Source() == this && m_header.m_state.IsHovered() )
 			{
 				m_header.m_state.SetPressed(false);
 				m_header.m_state.SetHovered(false);
 				_requestRender( _headerGeo() );
 			}
-			WgList::_onEvent( _pEvent );
+			WgList::_onMsg( _pMsg );
 			break;
 		}
 
-		case WG_EVENT_MOUSE_PRESS:
+		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
-			WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
+			WgMousePressMsgPtr pMsg = WgMousePressMsg::Cast(_pMsg);
+			WgCoord ofs = ToLocal(pMsg->PointerPos());
 			WgRect headerGeo = _headerGeo();
-			if(pEvent->Button() == WG_BUTTON_LEFT && headerGeo.Contains(ofs))
+			if(pMsg->Button() == WG_BUTTON_LEFT && headerGeo.Contains(ofs))
 			{
 				m_header.m_bPressed = true;
 				m_header.m_state.SetPressed(true);
 				_requestRender( headerGeo );
-				pEvent->Swallow();
+				pMsg->Swallow();
 			}
 			else
-				WgList::_onEvent( _pEvent );
+				WgList::_onMsg( _pMsg );
 			break;
 		}
 
-		case WG_EVENT_MOUSE_DRAG:
+		case WG_MSG_MOUSE_DRAG:
 		{
-			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
+			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::Cast(_pMsg);
 			if( m_header.m_bPressed )
 			{
-				WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
+				WgCoord ofs = ToLocal(pMsg->PointerPos());
 				WgRect headerGeo = _headerGeo();
 				bool bHeaderHovered = headerGeo.Contains(ofs);
 				if( bHeaderHovered != m_header.m_state.IsHovered() )
@@ -786,24 +786,24 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent )
 					m_header.m_state.SetPressed(bHeaderHovered);
 					_requestRender( headerGeo );
 				}
-				pEvent->Swallow();
+				pMsg->Swallow();
 			}
 			else
-				WgList::_onEvent( _pEvent );
+				WgList::_onMsg( _pMsg );
 			break;
 		}
 
-		case WG_EVENT_MOUSE_RELEASE:
+		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseEventPtr pEvent = WgMouseReleaseEvent::Cast(_pEvent);
-			if(pEvent->Button() == WG_BUTTON_LEFT && m_header.m_bPressed )
+			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::Cast(_pMsg);
+			if(pMsg->Button() == WG_BUTTON_LEFT && m_header.m_bPressed )
 			{
 				m_header.m_bPressed = false;
 				m_header.m_state.SetPressed(false);
 				WgRect headerGeo = _headerGeo();
 				_requestRender( headerGeo );
 
-				WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
+				WgCoord ofs = ToLocal(pMsg->PointerPos());
 				if( headerGeo.Contains(ofs) )
 				{
 					if( m_sortOrder == WG_SORT_ASCENDING )
@@ -812,47 +812,47 @@ void WgPackList::_onEvent( const WgEventPtr& _pEvent )
 						m_sortOrder = WG_SORT_ASCENDING;
 					_sortEntries();
 				}
-				pEvent->Swallow();
+				pMsg->Swallow();
 			}
 			else
-				WgList::_onEvent( _pEvent );
+				WgList::_onMsg( _pMsg );
 			break;
 		}
-		case WG_EVENT_KEY_PRESS:
+		case WG_MSG_KEY_PRESS:
 		{
 			if( m_selectMode == WG_SELECT_NONE )
 				break;
 
-			int				keyCode = WgKeyPressEvent::Cast(_pEvent)->TranslatedKeyCode();
-			WgModifierKeys	modKeys = WgKeyPressEvent::Cast(_pEvent)->ModKeys();
+			int				keyCode = WgKeyPressMsg::Cast(_pMsg)->TranslatedKeyCode();
+			WgModifierKeys	modKeys = WgKeyPressMsg::Cast(_pMsg)->ModKeys();
 			if( (m_bHorizontal && (keyCode == WG_KEY_LEFT || keyCode == WG_KEY_RIGHT)) || 
 				(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
 				keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
 				(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
-					_pEvent->Swallow();
-			WgList::_onEvent( _pEvent );
+					_pMsg->Swallow();
+			WgList::_onMsg( _pMsg );
 			break;
 		}
 
-		case WG_EVENT_KEY_REPEAT:
-		case WG_EVENT_KEY_RELEASE:
+		case WG_MSG_KEY_REPEAT:
+		case WG_MSG_KEY_RELEASE:
 		{
 			if( m_selectMode == WG_SELECT_NONE )
 				break;
 
-			int				keyCode = WgKeyEvent::Cast(_pEvent)->TranslatedKeyCode();
-			WgModifierKeys	modKeys = WgKeyEvent::Cast(_pEvent)->ModKeys();
+			int				keyCode = WgKeyMsg::Cast(_pMsg)->TranslatedKeyCode();
+			WgModifierKeys	modKeys = WgKeyMsg::Cast(_pMsg)->ModKeys();
 			if( (m_bHorizontal && (keyCode == WG_KEY_LEFT || keyCode == WG_KEY_RIGHT)) || 
 				(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
 				keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
 				(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
-					_pEvent->Swallow();
-			WgList::_onEvent( _pEvent );
+					_pMsg->Swallow();
+			WgList::_onMsg( _pMsg );
 			break;
 		}
 	
 		default:
-			WgList::_onEvent(_pEvent);
+			WgList::_onMsg(_pMsg);
 			return;
 	}
 

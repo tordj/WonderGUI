@@ -79,16 +79,16 @@
 #	include <wg_resdb.h>
 #endif
 
-#ifndef WG_EVENTCATCHER_DOT_H
-#	include <wg_eventcatcher.h>
+#ifndef WG_MSGFUNC_DOT_H
+#	include <wg_msgfunc.h>
 #endif
 
-#ifndef WG_EVENTHANDLER_DOT_H
-#	include <wg_eventhandler.h>
+#ifndef WG_MSGROUTER_DOT_H
+#	include <wg_msgrouter.h>
 #endif
 
-#ifndef WG_EVENTLOGGER_DOT_H
-#	include <wg_eventlogger.h>
+#ifndef WG_MSGLOGGER_DOT_H
+#	include <wg_msglogger.h>
 #endif
 
 #ifndef WG_FONT_DOT_H

@@ -43,7 +43,7 @@ typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
 class WgContainer : public WgWidget
 {
-	friend class WgEventHandler;
+	friend class WgMsgRouter;
 
 	friend class WgHook;
 	friend class WgFlexHook;

@@ -39,8 +39,8 @@
 #	include <wg_skin.h>
 #endif
 
-#ifndef WG_EVENTLISTENER_DOT_H
-#	include <wg_eventlistener.h>
+#ifndef WG_RECEIVER_DOT_H
+#	include <wg_receiver.h>
 #endif
 
 class WgGfxDevice;
@@ -49,20 +49,20 @@ class WgPanel;
 class WgList;
 class WgCapsule;
 class WgLayer;
-class WgEventHandler;
+class WgMsgRouter;
 class WgPatches;
 
 class WgWidget;
-typedef	WgStrongPtr<WgWidget,WgEventListenerPtr>	WgWidgetPtr;
-typedef	WgWeakPtr<WgWidget,WgEventListenerWeakPtr>	WgWidgetWeakPtr;
+typedef	WgStrongPtr<WgWidget,WgReceiverPtr>	WgWidgetPtr;
+typedef	WgWeakPtr<WgWidget,WgReceiverWeakPtr>	WgWidgetWeakPtr;
 
 class WgContainer;
 typedef	WgStrongPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
 typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
 
-class WgEvent;
-typedef	WgStrongPtr<WgEvent,WgObjectPtr>			WgEventPtr;
-typedef	WgWeakPtr<WgEvent,WgObjectWeakPtr>			WgEventWeakPtr;
+class WgMsg;
+typedef	WgStrongPtr<WgMsg,WgObjectPtr>			WgMsgPtr;
+typedef	WgWeakPtr<WgMsg,WgObjectWeakPtr>			WgMsgWeakPtr;
 
 
 /**
@@ -71,9 +71,9 @@ typedef	WgWeakPtr<WgEvent,WgObjectWeakPtr>			WgEventWeakPtr;
  * WgWidget is the base class for all widgets, providing common functionality.
  */
 
-class WgWidget : public WgEventListener
+class WgWidget : public WgReceiver
 {
-friend class WgEventHandler;
+friend class WgMsgRouter;
 
 friend class WgHook;
 friend class WgFlexHook;
@@ -140,7 +140,7 @@ public:
 
 	WgWidgetPtr		NewOfMyType() const { return WgWidgetPtr(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
 
-	void 				OnEvent( const WgEventPtr& pEvent );
+	void 				OnMsg( const WgMsgPtr& pMsg );
 
 
 	// Convenient calls to hook
@@ -185,7 +185,6 @@ protected:
 	void			_stopReceiveTicks();
 	virtual WgBlendMode	_getBlendMode() const;
 
-	WgEventHandler* _eventHandler() const;
 
 	virtual WgWidget* _newOfMyType() const = 0;
 
@@ -216,7 +215,7 @@ protected:
 	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 	virtual void	_onStateChanged( WgState oldState );
 
-	virtual void	_onEvent( const WgEventPtr& pEvent );
+	virtual void	_onMsg( const WgMsgPtr& pMsg );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 
 	virtual WgSize	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
@@ -234,7 +233,7 @@ protected:
 
 	bool			m_bOpaque;
 	bool			m_bTabLock;		// If set, the widget prevents focus shifting away from it with tab.
-	bool			m_bReceiveTick;	// Set if Widget should reveive periodic Tick() events.
+	bool			m_bReceiveTick;	// Set if Widget should reveive periodic Tick() messages.
 
 	WgState			m_state;
 private:

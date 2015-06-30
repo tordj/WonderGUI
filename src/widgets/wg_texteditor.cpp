@@ -24,7 +24,7 @@
 #include <wg_key.h>
 #include <wg_font.h>
 #include <wg_gfxdevice.h>
-#include <wg_eventhandler.h>
+#include <wg_msgrouter.h>
 #include <wg_base.h>
 
 const char WgTextEditor::CLASSNAME[] = {"TextEditor"};
@@ -187,20 +187,20 @@ void WgTextEditor::_onStateChanged( WgState oldState )
 }
 
 
-//____ _onEvent() ______________________________________________________________
+//____ _onMsg() ______________________________________________________________
 
-void WgTextEditor::_onEvent( const WgEventPtr& pEvent )
+void WgTextEditor::_onMsg( const WgMsgPtr& pMsg )
 {
-	WgWidget::_onEvent(pEvent);
+	WgWidget::_onMsg(pMsg);
 
-	int type 				= pEvent->Type();
-	WgModifierKeys modKeys 	= pEvent->ModKeys();
+	int type 				= pMsg->Type();
+	WgModifierKeys modKeys 	= pMsg->ModKeys();
 
-	if( type == WG_EVENT_TICK )
+	if( type == WG_MSG_TICK )
 	{
 		if( IsSelectable() && m_state.IsFocused() )
 		{
-			m_text.incTime( WgTickEvent::Cast(pEvent)->Millisec() );
+			m_text.incTime( WgTickMsg::Cast(pMsg)->Millisec() );
 			_requestRender();					//TODO: Should only render the cursor and selection!
 		}
 		return;
@@ -208,7 +208,7 @@ void WgTextEditor::_onEvent( const WgEventPtr& pEvent )
 
 
 
-	if( m_state.IsFocused() && (type == WG_EVENT_MOUSE_PRESS || type == WG_EVENT_MOUSE_DRAG) && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
+	if( m_state.IsFocused() && (type == WG_MSG_MOUSE_PRESS || type == WG_MSG_MOUSE_DRAG) && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
 	{
 
 		if( IsSelectable() && (modKeys & WG_MODKEY_SHIFT) )
@@ -216,30 +216,30 @@ void WgTextEditor::_onEvent( const WgEventPtr& pEvent )
 			m_text.setSelectionMode(true);
 		}
 
-		m_text.CursorGotoCoord( pEvent->PointerGlobalPos(), GlobalGeo() );
+		m_text.CursorGotoCoord( pMsg->PointerPos(), GlobalGeo() );
 
-		if(IsSelectable() && type == WG_EVENT_MOUSE_PRESS && !(modKeys & WG_MODKEY_SHIFT))
+		if(IsSelectable() && type == WG_MSG_MOUSE_PRESS && !(modKeys & WG_MODKEY_SHIFT))
 		{
 			m_text.ClearSelection();
 			m_text.setSelectionMode(true);
 		}
 	}
-	else if( type == WG_EVENT_MOUSE_RELEASE  )
+	else if( type == WG_MSG_MOUSE_RELEASE  )
 	{
-		if(m_state.IsFocused() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT)
+		if(m_state.IsFocused() && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT)
 			m_text.setSelectionMode(false);
 	}
-	else if( !m_state.IsFocused() && IsEditable() && type == WG_EVENT_MOUSE_PRESS && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
+	else if( !m_state.IsFocused() && IsEditable() && type == WG_MSG_MOUSE_PRESS && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
 	{
 		GrabFocus();
 	}
 
 
-	if( type == WG_EVENT_CHARACTER )
+	if( type == WG_MSG_CHARACTER )
 	{
 		if( IsEditable() )
 		{
-			int  chr = WgCharacterEvent::Cast(pEvent)->Char();
+			int  chr = WgCharacterMsg::Cast(pMsg)->Char();
 
 			if( chr >= 32 && chr != 127)
 			{
@@ -256,9 +256,9 @@ void WgTextEditor::_onEvent( const WgEventPtr& pEvent )
 		}
 	}
 
-	if( type == WG_EVENT_KEY_RELEASE )
+	if( type == WG_MSG_KEY_RELEASE )
 	{
-		switch( WgKeyEvent::Cast(pEvent)->TranslatedKeyCode() )
+		switch( WgKeyMsg::Cast(pMsg)->TranslatedKeyCode() )
 		{
 			case WG_KEY_SHIFT:
 				if(!WgBase::MsgRouter()->IsMouseButtonPressed(1))
@@ -267,9 +267,9 @@ void WgTextEditor::_onEvent( const WgEventPtr& pEvent )
 		}
 	}
 
-	if( (type == WG_EVENT_KEY_PRESS || type == WG_EVENT_KEY_REPEAT) && IsEditable() )
+	if( (type == WG_MSG_KEY_PRESS || type == WG_MSG_KEY_REPEAT) && IsEditable() )
 	{
-		switch( WgKeyEvent::Cast(pEvent)->TranslatedKeyCode() )
+		switch( WgKeyMsg::Cast(pMsg)->TranslatedKeyCode() )
 		{
 			case WG_KEY_LEFT:
 				if( modKeys & WG_MODKEY_SHIFT )
@@ -354,24 +354,24 @@ void WgTextEditor::_onEvent( const WgEventPtr& pEvent )
 		RequestRender();
 */
 
-	// Swallow event depending on rules.
+	// Swallow message depending on rules.
 
-	if( pEvent->IsMouseButtonEvent() && IsSelectable() )
+	if( pMsg->IsMouseButtonMsg() && IsSelectable() )
 	{
-		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
-			pEvent->Swallow();
+		if( WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
+			pMsg->Swallow();
 	}
-	else if( pEvent->IsKeyEvent() && IsEditable() )
+	else if( pMsg->IsKeyMsg() && IsEditable() )
 	{
-		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
-		if( WgKeyEvent::Cast(pEvent)->IsMovementKey() == true ||
+		int key = WgKeyMsg::Cast(pMsg)->TranslatedKeyCode();
+		if( WgKeyMsg::Cast(pMsg)->IsMovementKey() == true ||
 			key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE || key == WG_KEY_RETURN || (key == WG_KEY_TAB && m_bTabLock) )
-				pEvent->Swallow();
+				pMsg->Swallow();
 		
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
-	else if( type == WG_EVENT_CHARACTER )
-		pEvent->Swallow();
+	else if( type == WG_MSG_CHARACTER )
+		pMsg->Swallow();
 }
 
 

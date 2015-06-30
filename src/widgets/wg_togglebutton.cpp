@@ -26,7 +26,7 @@
 #include <wg_font.h>
 #include <wg_util.h>
 #include <wg_rootpanel.h>
-#include <wg_eventhandler.h>
+#include <wg_msgrouter.h>
 #include <wg_togglegroup.h>
 #include <assert.h>
 
@@ -139,67 +139,67 @@ void WgToggleButton::_setToggleGroup( WgToggleGroup * pGroup )
 }
 
 
-//____ _onEvent() _____________________________________________________________
+//____ _onMsg() _____________________________________________________________
 
-void WgToggleButton::_onEvent( const WgEventPtr& _pEvent )
+void WgToggleButton::_onMsg( const WgMsgPtr& _pMsg )
 {
 	WgState oldState = m_state;
 
-	switch( _pEvent->Type() )
+	switch( _pMsg->Type() )
 	{
-		case WG_EVENT_KEY_PRESS:
-			if( WgKeyEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+		case WG_MSG_KEY_PRESS:
+			if( WgKeyMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = true;
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 			}
 			break;
 
-		case WG_EVENT_KEY_REPEAT:
-			if( WgKeyEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
-				_pEvent->Swallow();
+		case WG_MSG_KEY_REPEAT:
+			if( WgKeyMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
+				_pMsg->Swallow();
 			break;
 
-		case WG_EVENT_KEY_RELEASE:
-			if( WgKeyEvent::Cast(_pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
+		case WG_MSG_KEY_RELEASE:
+			if( WgKeyMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = false;
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 			}
 			break;
 	
-		case WG_EVENT_MOUSE_ENTER:
+		case WG_MSG_MOUSE_ENTER:
 			m_state.SetHovered(true);
 			break;
-		case WG_EVENT_MOUSE_LEAVE:
+		case WG_MSG_MOUSE_LEAVE:
 			m_state.SetHovered(false);
 			break;
-		case WG_EVENT_MOUSE_PRESS:
-			if( WgMousePressEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+		case WG_MSG_MOUSE_PRESS:
+			if( WgMousePressMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = true;
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 			}
 			break;
-		case WG_EVENT_MOUSE_RELEASE:
-			if( WgMouseReleaseEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+		case WG_MSG_MOUSE_RELEASE:
+			if( WgMouseReleaseMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = false;
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 			}
 			break;
-		case WG_EVENT_MOUSE_CLICK:
-		case WG_EVENT_MOUSE_DOUBLE_CLICK:
-		case WG_EVENT_MOUSE_REPEAT:
-		case WG_EVENT_MOUSE_DRAG:
-			if( WgMouseButtonEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
-				_pEvent->Swallow();
+		case WG_MSG_MOUSE_CLICK:
+		case WG_MSG_MOUSE_DOUBLE_CLICK:
+		case WG_MSG_MOUSE_REPEAT:
+		case WG_MSG_MOUSE_DRAG:
+			if( WgMouseButtonMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
+				_pMsg->Swallow();
 			break;
 
-		case WG_EVENT_FOCUS_GAINED:
+		case WG_MSG_FOCUS_GAINED:
 			m_state.SetFocused(true);
 			break;
-		case WG_EVENT_FOCUS_LOST:
+		case WG_MSG_FOCUS_LOST:
 			m_state.SetFocused(false);
 			m_bReturnPressed = false;
 			m_bPressed = false;
@@ -247,9 +247,7 @@ void WgToggleButton::_onStateChanged( WgState oldState )
 
 	if( m_state.IsSelected() != oldState.IsSelected() )
 	{
-		WgEventHandler * pHandler = _eventHandler();
-		if( pHandler )
-			pHandler->QueueEvent( new WgToggleEvent(this, m_state.IsSelected() ) );
+		WgBase::MsgRouter()->Post( new WgToggleMsg(this, m_state.IsSelected() ) );
 
 		if( m_pToggleGroup && m_state.IsSelected() )
 			m_pToggleGroup->_select(this);

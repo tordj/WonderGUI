@@ -143,7 +143,7 @@ protected:
 
 	//TODO: Should handle disable/enable (close open menu?) and cloning.
 
-	void	_onEvent( const WgEventPtr& pEvent );
+	void	_onMsg( const WgMsgPtr& pMsg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 	void	_onRefresh();

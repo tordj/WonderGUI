@@ -27,7 +27,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 
-#include <wg_eventhandler.h>
+#include <wg_msgrouter.h>
 #include <math.h>
 
 const char WgAnimPlayer::CLASSNAME[] = {"AnimPlayer"};
@@ -247,25 +247,25 @@ void WgAnimPlayer::_playPosUpdated()
 		m_pAnimFrame = pAnimFrame;
 		_requestRender();
 
-		WgBase::MsgRouter()->QueueEvent( new WgValueUpdateEvent(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1)),true));
+		WgBase::MsgRouter()->Post( new WgValueUpdateMsg(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1)),true));
 	}
 }
 
 
-//____ _onEvent() ______________________________________________________________
+//____ _onMsg() ______________________________________________________________
 
-void WgAnimPlayer::_onEvent( const WgEventPtr& pEvent )
+void WgAnimPlayer::_onMsg( const WgMsgPtr& pMsg )
 {
-	WgWidget::_onEvent( pEvent );
+	WgWidget::_onMsg( pMsg );
 
-	switch( pEvent->Type() )
+	switch( pMsg->Type() )
 	{
-		case WG_EVENT_TICK:
+		case WG_MSG_TICK:
 		{
 			if( !m_pAnim || !m_state.IsEnabled() )
 				return;
 
-			m_playPos += WgTickEvent::Cast(pEvent)->Millisec() * m_speed;
+			m_playPos += WgTickMsg::Cast(pMsg)->Millisec() * m_speed;
 			_playPosUpdated();
 
 		}

@@ -221,14 +221,6 @@
     <File Name="../../src/base/wg_codepages.h"/>
     <File Name="../../src/base/wg_color.cpp"/>
     <File Name="../../src/base/wg_color.h"/>
-    <File Name="../../src/base/wg_event.cpp"/>
-    <File Name="../../src/base/wg_event.h"/>
-    <File Name="../../src/base/wg_eventfilter.cpp"/>
-    <File Name="../../src/base/wg_eventfilter.h"/>
-    <File Name="../../src/base/wg_eventhandler.cpp"/>
-    <File Name="../../src/base/wg_eventhandler.h"/>
-    <File Name="../../src/base/wg_eventlogger.cpp"/>
-    <File Name="../../src/base/wg_eventlogger.h"/>
     <File Name="../../src/base/wg_finalizer.cpp"/>
     <File Name="../../src/base/wg_finalizer.h"/>
     <File Name="../../src/base/wg_font.cpp"/>
@@ -296,10 +288,18 @@
     <File Name="../../src/base/wg_sizescaler.cpp"/>
     <File Name="../../src/base/wg_sizescaler.h"/>
     <File Name="../../src/widgets/capsules/wg_sizecapsule.h"/>
-    <File Name="../../src/base/wg_eventlistener.h"/>
-    <File Name="../../src/base/wg_eventlistener.cpp"/>
-    <File Name="../../src/base/wg_eventcatcher.h"/>
-    <File Name="../../src/base/wg_eventcatcher.cpp"/>
+    <File Name="../../src/base/wg_msgfunc.cpp"/>
+    <File Name="../../src/base/wg_msgfunc.h"/>
+    <File Name="../../src/base/wg_msgrouter.cpp"/>
+    <File Name="../../src/base/wg_msgrouter.h"/>
+    <File Name="../../src/base/wg_msglogger.cpp"/>
+    <File Name="../../src/base/wg_msglogger.h"/>
+    <File Name="../../src/base/wg_msgfilter.cpp"/>
+    <File Name="../../src/base/wg_msgfilter.h"/>
+    <File Name="../../src/base/wg_receiver.cpp"/>
+    <File Name="../../src/base/wg_receiver.h"/>
+    <File Name="../../src/base/wg_msg.cpp"/>
+    <File Name="../../src/base/wg_msg.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>

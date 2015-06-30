@@ -39,10 +39,10 @@
 #include <wg_softsurface.h>
 #include <wg_softgfxdevice.h>
 
-void 			translateEvents( WgEventHandlerPtr pEventHandler );
+void 			translateEvents( WgMsgRouterPtr pMsgRouter );
 WgMouseButton 	translateMouseButton( Uint8 button );
 void 			updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow );
-void 			myButtonClickCallback( const WgEventPtr& pEvent );
+void 			myButtonClickCallback( const WgMsgPtr& pMsg );
 
 bool			bQuit = false;	// Set to false by myButtonClickCallback() or translateEvents().
 
@@ -135,7 +135,7 @@ int main ( int argc, char** argv )
 
 	// Finally we add a callback to the click-event of the button.
 
-	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(), myButtonClickCallback );
+	pRoot->MsgRouter()->AddCallback( WgMsgFilter::Select(), myButtonClickCallback );
 	
 
 	//------------------------------------------------------
@@ -147,7 +147,7 @@ int main ( int argc, char** argv )
 		// Loop through SDL events, translate them to WonderGUI events
 		// and process them.
 		
-		translateEvents( pRoot->EventHandler() );
+		translateEvents( pRoot->MsgRouter() );
 
 		// Let WonderGUI render any updated/dirty regions of the screen.
 
@@ -175,11 +175,11 @@ int main ( int argc, char** argv )
 
 //____ translateEvents() ___________________________________________________________
 
-void translateEvents( WgEventHandlerPtr pEventHandler )
+void translateEvents( WgMsgRouterPtr pMsgRouter )
 {
-	// WonderGUI needs Tick-events to keep track of time passed for things such
+	// WonderGUI needs Tick-messages to keep track of time passed for things such
 	// key-repeat, double-click detection, animations etc.  So we create one
-	// and put it on the event queue.
+	// and post it.
 	
 	static unsigned int oldTicks = 0;
 	
@@ -192,7 +192,7 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 		tickDiff = (int) (ticks - oldTicks);		
 	oldTicks = ticks;
 
-	pEventHandler->QueueEvent( WgTickEvent::Create(tickDiff) );
+	pMsgRouter->Post( WgTickMsg::Create(tickDiff) );
 
 	// Process all the SDL events in a loop
 
@@ -206,15 +206,15 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pEventHandler->QueueEvent( WgMouseMoveEvent::Create( WgCoord(e.motion.x,e.motion.y)) );
+				pMsgRouter->Post( WgMouseMoveMsg::Create( WgCoord(e.motion.x,e.motion.y)) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
-				pEventHandler->QueueEvent( WgMousePressEvent::Create( translateMouseButton(e.button.button)));
+				pMsgRouter->Post( WgMousePressMsg::Create( translateMouseButton(e.button.button)));
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				pEventHandler->QueueEvent( WgMouseReleaseEvent::Create( translateMouseButton(e.button.button)));
+				pMsgRouter->Post( WgMouseReleaseMsg::Create( translateMouseButton(e.button.button)));
 				break;
 				
 			default:
@@ -222,7 +222,7 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 		}
 	}
 	
-	pEventHandler->ProcessEvents();	
+	pMsgRouter->Dispatch();	
 }
 
 //____ translateMouseButton() __________________________________________________
@@ -276,7 +276,7 @@ void updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow )
 
 //____ myButtonClickCallback() _________________________________________________
 
-void myButtonClickCallback( const WgEventPtr& pEvent )
+void myButtonClickCallback( const WgMsgPtr& pMsg )
 {
 	bQuit = true;
 }

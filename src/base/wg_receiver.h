@@ -20,37 +20,37 @@
 
 =========================================================================*/
 
-#ifndef	WG_EVENTLISTENER_DOT_H
-#define	WG_EVENTLISTENER_DOT_H
+#ifndef	WG_RECEIVER_DOT_H
+#define	WG_RECEIVER_DOT_H
 
 #ifndef WG_POINTERS_DOT_H
 #	include <wg_pointers.h>
 #endif
 
-class WgEvent;
-typedef	WgStrongPtr<WgEvent,WgObjectPtr>			WgEventPtr;
+class WgMsg;
+typedef	WgStrongPtr<WgMsg,WgObjectPtr>			WgMsgPtr;
 
-class WgEventListener;
-typedef	WgStrongPtr<WgEventListener,WgObjectPtr>		WgEventListenerPtr;
-typedef	WgWeakPtr<WgEventListener,WgObjectWeakPtr>		WgEventListenerWeakPtr;
+class WgReceiver;
+typedef	WgStrongPtr<WgReceiver,WgObjectPtr>		WgReceiverPtr;
+typedef	WgWeakPtr<WgReceiver,WgObjectWeakPtr>		WgReceiverWeakPtr;
 
-class WgEventListener : public WgObject
+class WgReceiver : public WgObject
 {
-	friend class WgEventHandler;
+	friend class WgMsgRouter;
 public:
 	bool						IsInstanceOf( const char * pClassName ) const;
 	const char *				ClassName( void ) const;
 	static const char			CLASSNAME[];
-	static WgEventListenerPtr	Cast( const WgObjectPtr& pObject );
+	static WgReceiverPtr	Cast( const WgObjectPtr& pObject );
 
-	virtual void OnEvent( const WgEventPtr& pEvent ) = 0;
+	virtual void OnMsg( const WgMsgPtr& pMsg ) = 0;
 
 protected:
-	WgEventListener() {};
+	WgReceiver() {};
 	
 	virtual void	_onRouteAdded();
 	virtual void	_onRouteRemoved();
 };
 
 
-#endif //WG_EVENTLISTENER_DOT_H
+#endif //WG_RECEIVER_DOT_H

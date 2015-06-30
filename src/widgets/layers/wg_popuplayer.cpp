@@ -23,8 +23,9 @@
 #include <wg_popuplayer.h>
 #include <wg_util.h>
 #include <wg_patches.h>
-#include <wg_eventhandler.h>
+#include <wg_msgrouter.h>
 #include <wg_panel.h>
+#include <wg_base.h>
 
 const char WgPopupLayer::CLASSNAME[] = {"PopupLayer"};
 const char WgPopupHook::CLASSNAME[] = {"PopupHook"};
@@ -367,7 +368,7 @@ bool WgPopupLayer::ClosePopup( const WgWidgetPtr& pWidget )
 	if( !pWidget || pWidget->Parent() != this || pWidget == m_baseHook.Widget() )
 		return false;
 
-	WgEventHandler * pEH = _eventHandler();
+	WgMsgRouter * pEH = WgBase::MsgRouter().RawPtr();
 
 	WgPopupHook * pHook = (WgPopupHook *) pWidget->_hook();
 
@@ -377,7 +378,7 @@ bool WgPopupLayer::ClosePopup( const WgWidgetPtr& pWidget )
 		pHook = pHook->_next();
 
 		if( pEH )
-			pEH->QueueEvent( new WgPopupClosedEvent( p->_widget(), p->m_pOpener ) );
+			pEH->Post( new WgPopupClosedMsg( p->_widget(), p->m_pOpener ) );
 
 		p->_requestRender();
 		delete p;
@@ -508,17 +509,17 @@ void WgPopupLayer::_onCloneContent( const WgWidget * _pOrg )
 {
 }
 
-//____ _onEvent() ______________________________________________________________
+//____ _onMsg() ______________________________________________________________
 
-void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent )
+void WgPopupLayer::_onMsg( const WgMsgPtr& _pMsg )
 {
-	WgLayer::_onEvent(_pEvent);
+	WgLayer::_onMsg(_pMsg);
 
 	WgWidget * pOpener = 0;
 
 	// Try to find an opener
 
-	WgObject * pSource = _pEvent->SourceRawPtr();
+	WgObject * pSource = _pMsg->SourceRawPtr();
 	if( pSource && pSource != this )
 	{
 		WgPopupHook * pHook = m_popupHooks.First();
@@ -529,24 +530,24 @@ void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent )
 			pOpener = pHook->m_pOpener.RawPtr();
 	}
 	
-	// First we try to forward event to opener (if any)
+	// First we try to repost message to opener (if any)
 
 	if( pOpener )
 	{
-		_pEvent->SetRepost( _pEvent->Source().RawPtr(), pOpener );
+		_pMsg->SetRepost( _pMsg->Source().RawPtr(), pOpener );
 		return;
 	}	
 
-	// Secondly we take care of event ourselves if it is addressed to one of our menus or us.
+	// Secondly we take care of message ourselves if it is addressed to one of our menus or us.
 
-	switch( _pEvent->Type() )
+	switch( _pMsg->Type() )
 	{
 /*
-		case WG_EVENT_MOUSE_POSITION:
+		case WG_MSG_MOUSE_POSITION:
 
 			if( !m_popupHooks.IsEmpty() )							// Process only if we have at least one open menu.
 			{
-				WgCoord ofs = _pEvent->PointerPos();
+				WgCoord ofs = _pMsg->PointerPos();
 				WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
 				if( p != this )
 				{
@@ -558,33 +559,33 @@ void WgPopupLayer::_onEvent( const WgEventPtr& _pEvent )
 			}
 		break;
 */		
-		case WG_EVENT_MOUSE_RELEASE:
-		case WG_EVENT_MOUSE_PRESS:
+		case WG_MSG_MOUSE_RELEASE:
+		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMouseButtonEventPtr pEvent = WgMouseButtonEvent::Cast(_pEvent);
+			WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::Cast(_pMsg);
 
-			WgCoord ofs = pEvent->PointerGlobalPos() - GlobalPos();
+			WgCoord ofs = pMsg->PointerPos() - GlobalPos();
 			WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
 			if( p == this )
 			{
 				CloseAllPopups();
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 				return;
 			}
 		}
 		break;
 
-		case WG_EVENT_KEY_PRESS:
-		case WG_EVENT_KEY_REPEAT:
+		case WG_MSG_KEY_PRESS:
+		case WG_MSG_KEY_REPEAT:
 		{
-			WgKeyEventPtr pEvent = WgKeyEvent::Cast(_pEvent);
+			WgKeyMsgPtr pMsg = WgKeyMsg::Cast(_pMsg);
 
-			if( pEvent->TranslatedKeyCode() == WG_KEY_ESCAPE )
+			if( pMsg->TranslatedKeyCode() == WG_KEY_ESCAPE )
 			{
 				if( !m_popupHooks.IsEmpty() )
 				{
 					ClosePopup( m_popupHooks.Last()->_widget() );
-					_pEvent->Swallow();
+					_pMsg->Swallow();
 					return;
 				}
 			}
@@ -603,7 +604,7 @@ void WgPopupLayer::_stealKeyboardFocus()
 	if( !Hook() )
 		return;
 
-	WgEventHandlerPtr pHandler = Hook()->EventHandler();
+	WgMsgRouterPtr pHandler = Hook()->MsgRouter();
 	if( !pHandler )
 		return;
 
@@ -633,7 +634,7 @@ void WgPopupLayer::_restoreKeyboardFocus()
 	if( !Hook() )
 		return;
 
-	WgEventHandlerPtr pHandler = Hook()->EventHandler();
+	WgMsgRouterPtr pHandler = Hook()->MsgRouter();
 	if( !pHandler )
 		return;
 

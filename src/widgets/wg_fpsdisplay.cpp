@@ -48,13 +48,14 @@ WgFpsDisplay::WgFpsDisplay( void ) : m_labelsText(this), m_valuesText(this), lab
 	m_labelsText.Set( "Now:/nMin:/nAvg:/nMax:/n" );
 	m_valuesText.SetAlignment( WG_NORTHEAST );
 
-	m_bReceiveTick = true;
+	_startReceiveTicks();
 }
 
 //____ ~WgFpsDisplay() __________________________________________________________
 
 WgFpsDisplay::~WgFpsDisplay( void )
 {
+	_stopReceiveTicks();
 	if( m_pTickBuffer )
 	{
 		delete [] m_pTickBuffer;
@@ -139,21 +140,21 @@ void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 }
 
 
-//____ _onEvent() _____________________________________________________________
+//____ _onMsg() _____________________________________________________________
 
-void WgFpsDisplay::_onEvent( const WgEventPtr& pEvent )
+void WgFpsDisplay::_onMsg( const WgMsgPtr& pMsg )
 {
-	WgWidget::_onEvent(pEvent);
+	WgWidget::_onMsg(pMsg);
 
-	switch( pEvent->Type() )
+	switch( pMsg->Type() )
 	{
-		case WG_EVENT_TICK:
+		case WG_MSG_TICK:
 		{
 			// Update tick buffer
 
 			m_tickBufferOfs = (++m_tickBufferOfs) % TICK_BUFFER;
 
-			int msDiff = WgTickEvent::Cast(pEvent)->Millisec();
+			int msDiff = WgTickMsg::Cast(pMsg)->Millisec();
 			if( msDiff > 0 )
 				m_pTickBuffer[m_tickBufferOfs] = msDiff;
 			else

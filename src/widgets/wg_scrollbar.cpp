@@ -26,7 +26,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_scrollbartarget.h>
-#include <wg_eventhandler.h>
+#include <wg_msgrouter.h>
 #include <wg_base.h>
 
 using namespace WgUtil;
@@ -790,15 +790,15 @@ void WgScrollbar::_unhoverReqRender()
 	_requestRender();
 }
 
-//____ _onEvent() ______________________________________________________________
+//____ _onMsg() ______________________________________________________________
 
-void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
+void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 {
 	int		handlePos, handleLen;
 	_viewToPosLen( &handlePos, &handleLen );
 
-	WgEventHandlerPtr	pHandler = WgBase::MsgRouter();
-	WgCoord pos = pEvent->PointerGlobalPos() - GlobalPos();
+	WgMsgRouterPtr	pHandler = WgBase::MsgRouter();
+	WgCoord pos = pMsg->PointerPos() - GlobalPos();
 
 	int		pointerOfs;
 	int		length;
@@ -823,11 +823,11 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 	length -= m_headerLen + m_footerLen;
 	pointerOfs -= m_headerLen;
 
-	switch( pEvent->Type() )
+	switch( pMsg->Type() )
 	{
-		case WG_EVENT_MOUSE_RELEASE:
+		case WG_MSG_MOUSE_RELEASE:
 		{
-			if( WgMouseButtonEvent::Cast(pEvent)->Button() != WG_BUTTON_LEFT )
+			if( WgMouseButtonMsg::Cast(pMsg)->Button() != WG_BUTTON_LEFT )
 				return;
 
 			// Just put them all to NORMAL and request render.
@@ -837,7 +837,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 			break;
 		}
 
-		case WG_EVENT_MOUSE_LEAVE:
+		case WG_MSG_MOUSE_LEAVE:
 		{
 			// Turn any MARKED/SELECTED button/bg back to NORMAL.
 			// Turn handle back to NORMAL only if MARKED (selected handle should remain selected).
@@ -850,8 +850,8 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 			break;
 		}
 
-		case WG_EVENT_MOUSE_ENTER:
-		case WG_EVENT_MOUSE_MOVE:
+		case WG_MSG_MOUSE_ENTER:
+		case WG_MSG_MOUSE_MOVE:
 		{
 			if( m_states[C_HANDLE].IsPressed() )
 				return;
@@ -876,9 +876,9 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 			break;
 		}
 
-		case WG_EVENT_MOUSE_PRESS:
+		case WG_MSG_MOUSE_PRESS:
 		{
-			if( WgMouseButtonEvent::Cast(pEvent)->Button() != WG_BUTTON_LEFT )
+			if( WgMouseButtonMsg::Cast(pMsg)->Button() != WG_BUTTON_LEFT )
 				return;
 
 			Component c = _findMarkedComponent(pos);
@@ -907,7 +907,7 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 
 					int pxlPos, pxlLen;
 					_viewToPosLen( &pxlPos, &pxlLen );
-					pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+					pHandler->Post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 
 					break;
 				case GOTO_POS:
@@ -936,13 +936,13 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 
 			int pxlPos, pxlLen;
 			_viewToPosLen( &pxlPos, &pxlLen );
-			pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+			pHandler->Post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 			break;
 		}
 
-		case WG_EVENT_MOUSE_REPEAT:
+		case WG_MSG_MOUSE_REPEAT:
 		{
-			if( WgMouseButtonEvent::Cast(pEvent)->Button() != WG_BUTTON_LEFT )
+			if( WgMouseButtonMsg::Cast(pMsg)->Button() != WG_BUTTON_LEFT )
 				return;
 
 			if( m_states[C_HANDLE].IsPressed() )
@@ -976,13 +976,13 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 
 			int pxlPos, pxlLen;
 			_viewToPosLen( &pxlPos, &pxlLen );
-			pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+			pHandler->Post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 			break;
 		}
 
-		case WG_EVENT_MOUSE_DRAG:
+		case WG_MSG_MOUSE_DRAG:
 		{
-			if( WgMouseButtonEvent::Cast(pEvent)->Button() != WG_BUTTON_LEFT )
+			if( WgMouseButtonMsg::Cast(pMsg)->Button() != WG_BUTTON_LEFT )
 				return;
 
 			if( m_states[C_HANDLE].IsPressed() )
@@ -1003,16 +1003,16 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 
 					int pxlPos, pxlLen;
 					_viewToPosLen( &pxlPos, &pxlLen );
-					pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+					pHandler->Post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 					_requestRender();
 				}
 			}
 			break;
 		}
 		
-		case WG_EVENT_WHEEL_ROLL:
+		case WG_MSG_WHEEL_ROLL:
 		{
-			WgWheelRollEventPtr p = WgWheelRollEvent::Cast(pEvent);
+			WgWheelRollMsgPtr p = WgWheelRollMsg::Cast(pMsg);
 
 			if( p->Wheel() == 1 )
 			{
@@ -1022,8 +1022,8 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 				
 				int pxlPos, pxlLen;
 				_viewToPosLen( &pxlPos, &pxlLen );
-				pHandler->QueueEvent( new WgRangeUpdateEvent(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
-				pEvent->Swallow();
+				pHandler->Post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+				pMsg->Swallow();
 			}
 		}
 		
@@ -1032,10 +1032,10 @@ void WgScrollbar::_onEvent( const WgEventPtr& pEvent )
 
 	}
 
-	// Swallow all button 1 events.
+	// Swallow all button 1 messages.
 
-	if( pEvent->IsMouseButtonEvent() && WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
-			pEvent->Swallow();
+	if( pMsg->IsMouseButtonMsg() && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
+			pMsg->Swallow();
 
 }
 

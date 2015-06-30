@@ -24,7 +24,7 @@
 #include <wg_types.h>
 
 #	include <wg_rootpanel.h>
-#	include <wg_eventhandler.h>
+#	include <wg_msgrouter.h>
 #include <wg_base.h>
 
 const char WgWidget::CLASSNAME[] = {"Widget"};
@@ -51,7 +51,7 @@ bool WgWidget::IsInstanceOf( const char * pClassName ) const
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgEventListener::IsInstanceOf(pClassName);
+	return WgReceiver::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
@@ -185,8 +185,6 @@ void WgWidget::_onNewHook( WgHook * pHook )
 
 void WgWidget::_onNewRoot( WgRootPanel * pRoot )
 {
-//	if( m_bReceiveTick && pRoot )
-//		WgBase::MsgRouter()->_addTickReceiver(this);
 }
 
 //____ _startReceiveTicks() ___________________________________________________
@@ -196,11 +194,7 @@ void WgWidget::_startReceiveTicks()
 	if( !m_bReceiveTick )
 	{
 		m_bReceiveTick = true;
-
-		if( m_pHook )
-		{
-			WgBase::MsgRouter()->_addTickReceiver(this);
-		}
+		WgBase::MsgRouter()->AddTickReceiver(this);
 	}
 }
 
@@ -208,7 +202,11 @@ void WgWidget::_startReceiveTicks()
 
 void WgWidget::_stopReceiveTicks()
 {
-	m_bReceiveTick = false;
+	if( m_bReceiveTick )
+	{
+		m_bReceiveTick = false;
+		WgBase::MsgRouter()->RemoveTickReceiver(this);
+	}
 }
 
 //____ ToGlobal() ____________________________________________________________
@@ -255,13 +253,6 @@ WgCoord WgWidget::ToLocal( const WgCoord& coord ) const
 {
 	WgCoord c = GlobalPos();
 	return WgCoord( coord.x - c.x, coord.y - c.y );
-}
-
-//____ _eventHandler() __________________________________________________________
-
-WgEventHandler * WgWidget::_eventHandler() const
-{
-	return WgBase::MsgRouter().RawPtr();
 }
 
 //____ MatchingHeight() _______________________________________________________
@@ -352,36 +343,36 @@ WgSize WgWidget::MinSize() const
 		return WgSize(0,0);
 }
 
-//____ OnEvent() _______________________________________________________________
+//____ OnMsg() _______________________________________________________________
 
-void WgWidget::OnEvent( const WgEventPtr& pEvent )
+void WgWidget::OnMsg( const WgMsgPtr& pMsg )
 {
-	// SetRepost before _onEvent() so that subclasses can swallow the respost.
+	// SetRepost before _onMsg() so that subclasses can swallow the respost.
 	
-	switch( pEvent->Type() )
+	switch( pMsg->Type() )
 	{
-		case WG_EVENT_MOUSE_MOVE:
-		case WG_EVENT_MOUSE_POSITION:
-		case WG_EVENT_MOUSE_PRESS:
-		case WG_EVENT_MOUSE_REPEAT:
-		case WG_EVENT_MOUSE_DRAG:
-		case WG_EVENT_MOUSE_RELEASE:
-		case WG_EVENT_MOUSE_CLICK:
-		case WG_EVENT_MOUSE_DOUBLE_CLICK:
-		case WG_EVENT_KEY_PRESS:
-		case WG_EVENT_KEY_REPEAT:
-		case WG_EVENT_KEY_RELEASE:
-		case WG_EVENT_WHEEL_ROLL:
+		case WG_MSG_MOUSE_MOVE:
+		case WG_MSG_MOUSE_POSITION:
+		case WG_MSG_MOUSE_PRESS:
+		case WG_MSG_MOUSE_REPEAT:
+		case WG_MSG_MOUSE_DRAG:
+		case WG_MSG_MOUSE_RELEASE:
+		case WG_MSG_MOUSE_CLICK:
+		case WG_MSG_MOUSE_DOUBLE_CLICK:
+		case WG_MSG_KEY_PRESS:
+		case WG_MSG_KEY_REPEAT:
+		case WG_MSG_KEY_RELEASE:
+		case WG_MSG_WHEEL_ROLL:
 		{
 			WgWidgetPtr pParent = Parent();
 			if( pParent )
-				pEvent->SetRepost(pParent,pParent);
+				pMsg->SetRepost(pParent,pParent);
 			break;
 		}
 		default:
 			break;
 	}
-	_onEvent( pEvent );
+	_onMsg( pMsg );
 }
 
 //____ MaxSize() ______________________________________________________________
@@ -503,27 +494,27 @@ void WgWidget::_onStateChanged( WgState oldState )
 	}
 }
 
-//____ _onEvent() _____________________________________________________________
+//____ _onMsg() _____________________________________________________________
 
-void WgWidget::_onEvent( const WgEventPtr& _pEvent )
+void WgWidget::_onMsg( const WgMsgPtr& _pMsg )
 {
 	WgState oldState = m_state;
 
-	switch( _pEvent->Type() )
+	switch( _pMsg->Type() )
 	{
-		case WG_EVENT_MOUSE_ENTER:
+		case WG_MSG_MOUSE_ENTER:
 			if( m_bPressed )
 				m_state.SetPressed(true);
 			else
 				m_state.SetHovered(true);
 			break;
-		case WG_EVENT_MOUSE_LEAVE:
+		case WG_MSG_MOUSE_LEAVE:
 			m_state.SetHovered(false);			// Also clears any pressed flag.
 			break;
-		case WG_EVENT_MOUSE_PRESS:
+		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
-			if( pEvent->Button() == WG_BUTTON_LEFT )
+			WgMousePressMsgPtr pMsg = WgMousePressMsg::Cast(_pMsg);
+			if( pMsg->Button() == WG_BUTTON_LEFT )
 			{
 				if( m_state.IsHovered() )
 					m_state.SetPressed(true);
@@ -532,10 +523,10 @@ void WgWidget::_onEvent( const WgEventPtr& _pEvent )
 			}
 			break;
 		}
-		case WG_EVENT_MOUSE_RELEASE:
+		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseEventPtr pEvent = WgMouseReleaseEvent::Cast(_pEvent);
-			if( pEvent->Button() == WG_BUTTON_LEFT )
+			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::Cast(_pMsg);
+			if( pMsg->Button() == WG_BUTTON_LEFT )
 			{
 				if( m_state.IsHovered() )
 					m_state.SetPressed(false);
@@ -544,10 +535,10 @@ void WgWidget::_onEvent( const WgEventPtr& _pEvent )
 			}
 			break;
 		}
-		case WG_EVENT_FOCUS_GAINED:
+		case WG_MSG_FOCUS_GAINED:
 			m_state.SetFocused(true);
 			break;
-		case WG_EVENT_FOCUS_LOST:
+		case WG_MSG_FOCUS_LOST:
 			m_state.SetFocused(false);
 			break;
 	}

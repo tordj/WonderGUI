@@ -55,11 +55,11 @@
 #	include <wg_valueformat.h>
 #endif
 
-#ifndef WG_EVENT_DOT_H
-#	include <wg_event.h>
+#ifndef WG_MSG_DOT_H
+#	include <wg_msg.h>
 #endif
 
-class WgEventHandler;
+class WgMsgRouter;
 class WgLegacyTextField;
 
 //____ WgLegacyTextHolder ___________________________________________________________
@@ -366,7 +366,7 @@ public:
 
 	WgCoord			FocusWindowOnRange( const WgSize& canvas, const WgRect& window, WgRange range ) const;
 
-	bool 			OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEventHandler, const WgRect& container );
+	bool 			OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, const WgRect& container );
 //	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
 
 	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }

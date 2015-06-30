@@ -82,7 +82,7 @@ protected:
 	virtual ~WgButton();
 	virtual WgWidget* _newOfMyType() const { return new WgButton(); };
 
-	virtual void	_onEvent( const WgEventPtr& pEvent );
+	virtual void	_onMsg( const WgMsgPtr& pMsg );
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onRefresh();
 	virtual void	_onCloneContent( const WgWidget * _pOrg );

@@ -24,7 +24,7 @@
 #include <wg_key.h>
 #include <wg_font.h>
 #include <wg_gfxdevice.h>
-#include <wg_eventhandler.h>
+#include <wg_msgrouter.h>
 
 const char WgTextDisplay::CLASSNAME[] = {"TextDisplay"};
 
@@ -161,17 +161,17 @@ void WgTextDisplay::_onStateChanged( WgState oldState )
 }
 
 
-//____ _onEvent() ______________________________________________________________
+//____ _onMsg() ______________________________________________________________
 
-void WgTextDisplay::_onEvent( const WgEventPtr& pEvent )
+void WgTextDisplay::_onMsg( const WgMsgPtr& pMsg )
 {
-	WgWidget::_onEvent(pEvent);
+	WgWidget::_onMsg(pMsg);
 /*
 	WgRect canvas = Geo();
 	if( m_pSkin )
 		canvas = m_pSkin->ContentRect(canvas, m_state);
 
-	m_text.OnEvent( pEvent, pHandler, canvas );
+	m_text.OnMsg( pMsg, pHandler, canvas );
 */
 }
 

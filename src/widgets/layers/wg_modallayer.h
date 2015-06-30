@@ -153,7 +153,7 @@ private:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
-	void			_onEvent( const WgEventPtr& pEvent );
+	void			_onMsg( const WgMsgPtr& pMsg );
 
 	WgChain<WgModalHook>	m_modalHooks;		// First modal widget lies at the bottom.
 

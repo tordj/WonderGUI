@@ -142,7 +142,7 @@ protected:
 	void			_onRefresh();
 	void			_onRefreshList();
 
-	void			_onEvent( const WgEventPtr& pEvent );
+	void			_onMsg( const WgMsgPtr& pMsg );
 	void			_onStateChanged( WgState oldState );
 
 	void			_onRequestRender( WgPackListHook * pHook );

@@ -29,8 +29,8 @@
 #include <wg_font.h>
 #include <wg_caretinstance.h>
 #include <wg_key.h>
-#include <wg_event.h>
-#include <wg_eventhandler.h>
+#include <wg_msg.h>
+#include <wg_msgrouter.h>
 #include <wg_base.h>
 
 const char WgValueEditor::CLASSNAME[] = {"ValueEditor"};
@@ -159,7 +159,7 @@ WgSize WgValueEditor::PreferredSize() const
 
 void WgValueEditor::_valueModified()
 {
-	WgBase::MsgRouter()->QueueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(),false) );
+	WgBase::MsgRouter()->Post( new WgValueUpdateMsg(this,m_value,FractionalValue(),false) );
 
 	m_pUseFormat->setFormat( m_pFormat );
 
@@ -177,7 +177,7 @@ void WgValueEditor::_valueModified()
 
 void WgValueEditor::_rangeModified()
 {
-		WgBase::MsgRouter()->QueueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(), false) );
+		WgBase::MsgRouter()->Post( new WgValueUpdateMsg(this,m_value,FractionalValue(), false) );
 }
 
 //____ _onRefresh() ____________________________________________________________
@@ -326,19 +326,19 @@ bool WgValueEditor::_parseValueFromInput( int64_t * wpResult )
 	return bModified;
 }
 
-//____ _onEvent() ______________________________________________________________
+//____ _onMsg() ______________________________________________________________
 
-void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
+void WgValueEditor::_onMsg( const WgMsgPtr& pMsg )
 {
-	WgWidget::_onEvent(pEvent);
-	WgEventHandlerPtr	pHandler = WgBase::MsgRouter();
-	WgEventType event = pEvent->Type();
+	WgWidget::_onMsg(pMsg);
+	WgMsgRouterPtr	pHandler = WgBase::MsgRouter();
+	WgMsgType type = pMsg->Type();
 
-	if( event == WG_EVENT_TICK )
+	if( type == WG_MSG_TICK )
 	{
 		if( m_text.GetCursor() )
 		{
-			m_text.GetCursor()->incTime( WgTickEvent::Cast(pEvent)->Millisec() );
+			m_text.GetCursor()->incTime( WgTickMsg::Cast(pMsg)->Millisec() );
 			_requestRender();					//TODO: Should only render the cursor (and only when updated)!
 		}
 		return;
@@ -348,12 +348,12 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 	bool	bTextChanged = false;
 	int		mousebutton = 0;
 
-	if( pEvent->IsMouseButtonEvent() )
-		mousebutton = WgMouseButtonEvent::Cast(pEvent)->Button();
+	if( pMsg->IsMouseButtonMsg() )
+		mousebutton = WgMouseButtonMsg::Cast(pMsg)->Button();
 
-	WgCoord ofs = pEvent->PointerGlobalPos() - GlobalPos();
+	WgCoord ofs = pMsg->PointerPos() - GlobalPos();
 
-	if( event == WG_EVENT_MOUSE_PRESS && mousebutton == 1 )
+	if( type == WG_MSG_MOUSE_PRESS && mousebutton == 1 )
 	{
 		if( !m_state.IsFocused() )
 		{
@@ -363,7 +363,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 		else
 			m_bSelectAllOnRelease = false;
 
-		if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+		if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
 		{
 			m_text.setSelectionMode(true);
 			m_text.CursorGotoCoord( ofs, WgRect(0,0,Size()) );
@@ -381,7 +381,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 		m_buttonDownOfs = ofs.x;
 	}
 
-	if( event == WG_EVENT_MOUSE_DRAG && mousebutton == 1 )
+	if( type == WG_MSG_MOUSE_DRAG && mousebutton == 1 )
 	{
 		if( m_state.IsFocused() && ofs.x != m_buttonDownOfs )
 		{
@@ -392,7 +392,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 		}
 	}
 
-	if( event == WG_EVENT_MOUSE_RELEASE )
+	if( type == WG_MSG_MOUSE_RELEASE )
 	{
 		if( m_state.IsFocused() && mousebutton == 1 )
 		{
@@ -404,16 +404,16 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 	}
 
 
-	if( event == WG_EVENT_MOUSE_DOUBLE_CLICK && mousebutton == 1 )
+	if( type == WG_MSG_MOUSE_DOUBLE_CLICK && mousebutton == 1 )
 	{
 		_selectAll();
 		m_text.setSelectionMode(true);
 	}
 
 
-	if( event == WG_EVENT_KEY_PRESS || event == WG_EVENT_KEY_REPEAT )
+	if( type == WG_MSG_KEY_PRESS || type == WG_MSG_KEY_REPEAT )
 	{
-		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
+		int key = WgKeyMsg::Cast(pMsg)->TranslatedKeyCode();
 		switch( key )
 		{
 			case WG_KEY_RETURN:
@@ -439,7 +439,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 				if( bModified )
 				{
 					_updateScrollbar( FractionalValue(), 0.f );
-					WgBase::MsgRouter()->QueueEvent( new WgValueUpdateEvent(this, m_value, FractionalValue(), false) );
+					WgBase::MsgRouter()->Post( new WgValueUpdateMsg(this, m_value, FractionalValue(), false) );
 
 					m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.RawPtr() );
 					m_text.GoEOL();
@@ -454,24 +454,24 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 			break;
 
 			case WG_KEY_LEFT:
-				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+				if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
 				else
 					m_text.setSelectionMode(false);
 
-				if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+				if( pMsg->ModKeys() & WG_MODKEY_CTRL )
 					m_text.gotoPrevWord();
 				else
 					m_text.goLeft();
 				_limitCursor();
 				break;
 			case WG_KEY_RIGHT:
-				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+				if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
 				else
 					m_text.setSelectionMode(false);
 
-				if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+				if( pMsg->ModKeys() & WG_MODKEY_CTRL )
 					m_text.gotoNextWord();
 				else
 					m_text.goRight();
@@ -484,7 +484,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 					m_text.delSelection();
 					bTextChanged = true;
 				}
-				else if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+				else if( pMsg->ModKeys() & WG_MODKEY_CTRL )
 				{
 					int ofs1 = m_text.column();
 					m_text.gotoPrevWord();
@@ -515,7 +515,7 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 					m_text.delSelection();
 					bTextChanged = true;
 				}
-				else if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+				else if( pMsg->ModKeys() & WG_MODKEY_CTRL )
 				{
 					int ofs1 = m_text.column();
 					m_text.gotoNextWord();
@@ -547,14 +547,14 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 				 *	I am not sure if this is the proper way to this, but in my opinion, the default
 				 *	"actions" has to be separated from any modifier key action combination
 				 */
-				switch( pEvent->ModKeys() )
+				switch( pMsg->ModKeys() )
 				{
 
 				case WG_MODKEY_CTRL:
 					break;
 
 				default: // no modifier key was pressed
-					if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+					if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 
 					m_text.GoBOL();
@@ -570,14 +570,14 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 			 	 *	I am not sure if this is the proper way to this, but in my opinion, the default
 		 		 *	"actions" has to be separated from any modifier key action combination
 				 */
-				switch( pEvent->ModKeys() )
+				switch( pMsg->ModKeys() )
 				{
 
 				case WG_MODKEY_CTRL:
 					break;
 
 				default: // no modifier key was pressed
-					if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
+					if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 
 					m_text.GoEOL();
@@ -594,9 +594,9 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 		}
 	}
 
-	if( event == WG_EVENT_CHARACTER )
+	if( type == WG_MSG_CHARACTER )
 	{
-		int character = WgCharacterEvent::Cast(pEvent)->Char();
+		int character = WgCharacterMsg::Cast(pMsg)->Char();
 
 		// Period is only allowed if it isn't displayed yet and value has decimals.
 		// It's not allowed before a minus sign.
@@ -677,25 +677,25 @@ void WgValueEditor::_onEvent( const WgEventPtr& pEvent )
 			m_value = value;
 
 			if( pHandler )
-				pHandler->QueueEvent( new WgValueUpdateEvent(this,value,FractionalValue(),false) );
+				pHandler->Post( new WgValueUpdateMsg(this,value,FractionalValue(),false) );
 
 			_updateScrollbar( FractionalValue(), 0.f );
 		}
 	}
 	
-	// Swallow event depending on rules.
+	// Swallow message depending on rules.
 
-	if( pEvent->IsMouseButtonEvent() )
+	if( pMsg->IsMouseButtonMsg() )
 	{
-		if( WgMouseButtonEvent::Cast(pEvent)->Button() == WG_BUTTON_LEFT )
-			pEvent->Swallow();
+		if( WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
+			pMsg->Swallow();
 	}
-	else if( pEvent->IsKeyEvent() )
+	else if( pMsg->IsKeyMsg() )
 	{
-		int key = WgKeyEvent::Cast(pEvent)->TranslatedKeyCode();
-		if( WgKeyEvent::Cast(pEvent)->IsMovementKey() == true ||
+		int key = WgKeyMsg::Cast(pMsg)->TranslatedKeyCode();
+		if( WgKeyMsg::Cast(pMsg)->IsMovementKey() == true ||
 			key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE )
-			pEvent->Swallow();
+			pMsg->Swallow();
 		
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
@@ -803,7 +803,7 @@ void WgValueEditor::_onStateChanged( WgState oldState )
 	if( !m_state.IsFocused() && oldState.IsFocused() )
 	{
 		_stopReceiveTicks();
-		WgBase::MsgRouter()->QueueEvent( new WgValueUpdateEvent(this,m_value,FractionalValue(), true) );
+		WgBase::MsgRouter()->Post( new WgValueUpdateMsg(this,m_value,FractionalValue(), true) );
 
 		m_text.hideCursor();
 		m_pUseFormat->setFormat(m_pFormat);

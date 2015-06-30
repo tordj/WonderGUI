@@ -68,7 +68,7 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onNewSize( const WgSize& size );
 	void	_onRefresh();
-	void	_onEvent( const WgEventPtr& pEvent );
+	void	_onMsg( const WgMsgPtr& pMsg );
 	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
 

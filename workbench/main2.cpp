@@ -9,13 +9,13 @@
 #include <wg_softsurface.h>
 #include <wg_softgfxdevice.h>
 
-void 			translateEvents( WgEventHandlerPtr pEventHandler );
+void 			translateEvents( WgMsgRouterPtr pMsgRouter );
 WgMouseButton 	translateMouseButton( Uint8 button );
 void 			updateWindowRects( const WgRootPanelPtr& pRoot, SDL_Window * pWindow );
-void 			myButtonClickCallback( const WgEventPtr& pEvent );
+void 			myButtonClickCallback( const WgMsgPtr& pMsg );
 void * 			loadFile( const char * pPath );
 
-void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler );
+void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgMsgRouterPtr& pMsgRouter );
 
 
 bool	bQuit = false;
@@ -65,11 +65,11 @@ int main ( int argc, char** argv )
 
 	// 
 	
-	WgEventLoggerPtr pLogger = WgEventLogger::Create( std::cout );
-	pLogger->IgnoreAllEvents();
-	pLogger->LogMouseEvents();
+	WgMsgLoggerPtr pLogger = WgMsgLogger::Create( std::cout );
+	pLogger->IgnoreAllMsgs();
+	pLogger->LogMouseMsgs();
 	
-	WgBase::MsgRouter()->AddListener( pLogger );
+	WgBase::MsgRouter()->BroadcastTo( pLogger );
 
 
 	// Init font
@@ -135,7 +135,7 @@ int main ( int argc, char** argv )
 	pFlexPanel->AddWidget( pImage, WgRect(0,0,80,33), WG_CENTER );
 
 
-//	pRoot->EventHandler()->AddCallback( WgEventFilter::Select(), pButton, myButtonClickCallback );
+//	pRoot->MsgRouter()->AddCallback( WgMsgFilter::Select(), pButton, myButtonClickCallback );
 
 
 	// Test transparency issue
@@ -237,7 +237,7 @@ int main ( int argc, char** argv )
 
 //____ translateEvents() ___________________________________________________________
 
-void translateEvents( WgEventHandlerPtr pEventHandler )
+void translateEvents( WgMsgRouterPtr pMsgRouter )
 {
 	// WonderGUI needs Tick-events to keep track of time passed for things such
 	// key-repeat, double-click detection, animations etc.  So we create one
@@ -254,7 +254,7 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 		tickDiff = (int) (ticks - oldTicks);		
 	oldTicks = ticks;
 
-	pEventHandler->QueueEvent( WgTickEvent::Create(tickDiff) );
+	pMsgRouter->Post( WgTickMsg::Create(tickDiff) );
 
 	// Process all the SDL events in a loop
 
@@ -268,15 +268,15 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pEventHandler->QueueEvent( WgMouseMoveEvent::Create( WgCoord(e.motion.x,e.motion.y)) );
+				pMsgRouter->Post( WgMouseMoveMsg::Create( WgCoord(e.motion.x,e.motion.y)) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
-				pEventHandler->QueueEvent( WgMousePressEvent::Create( translateMouseButton(e.button.button)));
+				pMsgRouter->Post( WgMousePressMsg::Create( translateMouseButton(e.button.button)));
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				pEventHandler->QueueEvent( WgMouseReleaseEvent::Create( translateMouseButton(e.button.button)));
+				pMsgRouter->Post( WgMouseReleaseMsg::Create( translateMouseButton(e.button.button)));
 				break;
 				
 			default:
@@ -284,7 +284,7 @@ void translateEvents( WgEventHandlerPtr pEventHandler )
 		}
 	}
 	
-	pEventHandler->ProcessEvents();	
+	pMsgRouter->Dispatch();	
 }
 
 //____ translateMouseButton() __________________________________________________
@@ -337,7 +337,7 @@ void updateWindowRects( const WgRootPanelPtr& pRoot, SDL_Window * pWindow )
 
 //____ myButtonClickCallback() _________________________________________________
 
-void myButtonClickCallback( const WgEventPtr& pEvent )
+void myButtonClickCallback( const WgMsgPtr& pMsg )
 {
 	bQuit = true;
 }
@@ -374,7 +374,7 @@ WgCoord dragStartPos;
 
 //____ cbInitDrag() ___________________________________________________________
 
-void cbInitDrag( const WgEventPtr& _pEvent, const WgObjectPtr& pObject )
+void cbInitDrag( const WgMsgPtr& _pMsg, const WgObjectPtr& pObject )
 {
 	WgWidgetPtr pWidget = WgWidget::Cast(pObject);
 
@@ -387,18 +387,18 @@ void cbInitDrag( const WgEventPtr& _pEvent, const WgObjectPtr& pObject )
 
 //____ cbDragWidget() __________________________________________________________
 
-void cbDragWidget( const WgEventPtr& _pEvent, const WgObjectPtr& pObject )
+void cbDragWidget( const WgMsgPtr& _pMsg, const WgObjectPtr& pObject )
 {
 	WgWidgetPtr pWidget = WgWidget::Cast(pObject);
 	
-	if( _pEvent->Type() != WG_EVENT_MOUSE_DRAG || !pWidget->Parent() )
+	if( _pMsg->Type() != WG_MSG_MOUSE_DRAG || !pWidget->Parent() )
 		return;
 
-	const WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
+	const WgMouseDragMsgPtr pMsg = WgMouseDragMsg::Cast(_pMsg);
 
 
 
-	WgCoord	dragDistance = pEvent->DraggedTotal();
+	WgCoord	dragDistance = pMsg->DraggedTotal();
 
 	WgCoord	ofs = dragStartPos + dragDistance;
 
@@ -412,12 +412,12 @@ void cbDragWidget( const WgEventPtr& _pEvent, const WgObjectPtr& pObject )
 
 //____ cbResizeWidget() _________________________________________________________
 /*
-void cbResize( const WgEventPtr _pEvent, WgObjectPtr _pFlexHook )
+void cbResize( const WgMsgPtr _pMsg, WgObjectPtr _pFlexHook )
 {
 	WgFlexHook * pHook = static_cast<WgFlexHook*>(_pFlexHook);
-	const WgEvent::MouseButtonDrag* pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
+	const WgMsg::MouseButtonDrag* pMsg = static_cast<const WgMsg::MouseButtonDrag*>(_pMsg);
 
-	WgCoord dragged = pEvent->DraggedNow();
+	WgCoord dragged = pMsg->DraggedNow();
 
 	pHook->SetSize( pHook->Size() + WgSize(dragged.x,dragged.y) );
 }
@@ -427,11 +427,11 @@ void cbResize( const WgEventPtr _pEvent, WgObjectPtr _pFlexHook )
 
 //____ addResizablePanel() _________________________________________________
 
-void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler )
+void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgMsgRouterPtr& pMsgRouter )
 {
 	WgHook * pHook = pParent->AddWidget( pChild );
-//	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pChild, 3), cbResize, pHook );
+//	pMsgRouter->AddCallback( WgMsgFilter::MouseButtonDrag(pChild, 3), cbResize, pHook );
 
-	pEventHandler->AddListener( WgEventFilter::MousePress(WG_BUTTON_LEFT), pChild, WgEventCatcher::Create(cbInitDrag, pChild) );
-	pEventHandler->AddListener( WgEventFilter::MouseDrag(WG_BUTTON_LEFT), pChild, WgEventCatcher::Create(cbDragWidget, pChild) );
+	pMsgRouter->AddRoute( WgMsgFilter::MousePress(WG_BUTTON_LEFT), pChild, WgMsgFunc::Create(cbInitDrag, pChild) );
+	pMsgRouter->AddRoute( WgMsgFilter::MouseDrag(WG_BUTTON_LEFT), pChild, WgMsgFunc::Create(cbDragWidget, pChild) );
 }

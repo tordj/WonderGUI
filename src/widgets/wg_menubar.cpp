@@ -29,8 +29,8 @@
 #include	<wg_char.h>
 #include	<wg_pen.h>
 #include	<wg_base.h>
-#include	<wg_event.h>
-#include	<wg_eventhandler.h>
+#include	<wg_msg.h>
+#include	<wg_msgrouter.h>
 #include	<wg_surface.h>
 #include	<wg_gfxdevice.h>
 #include	<wg_texttool.h>
@@ -305,18 +305,18 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 	}
 }
 
-//____ _onEvent() _____________________________________________________________
+//____ _onMsg() _____________________________________________________________
 
-void WgMenubar::_onEvent( const WgEventPtr& pEvent )
+void WgMenubar::_onMsg( const WgMsgPtr& pMsg )
 {
-	WgWidget::_onEvent(pEvent);
+	WgWidget::_onMsg(pMsg);
 
-	switch( pEvent->Type() )
+	switch( pMsg->Type() )
 	{
-		case WG_EVENT_MOUSE_MOVE:
-		case WG_EVENT_MOUSE_PRESS:
+		case WG_MSG_MOUSE_MOVE:
+		case WG_MSG_MOUSE_PRESS:
 		{
-			WgCoord pos = pEvent->PointerGlobalPos() - GlobalPos();
+			WgCoord pos = pMsg->PointerPos() - GlobalPos();
 
 			Uint32 item = _getItemAtAbsPos( pos.x, pos.y );
 
@@ -345,14 +345,14 @@ void WgMenubar::_onEvent( const WgEventPtr& pEvent )
 
 			//TODO: A click on an already open entry should close the menu.
 
-			if( item && pEvent->Type()== WG_EVENT_MOUSE_PRESS )
+			if( item && pMsg->Type()== WG_MSG_MOUSE_PRESS )
 			{
 				_openMenu( item );
 			}
 
 		}
 
-		case WG_EVENT_MOUSE_LEAVE:
+		case WG_MSG_MOUSE_LEAVE:
 			m_markedItem = 0;
 			_requestRender();
 		break;

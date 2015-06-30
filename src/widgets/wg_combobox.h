@@ -31,8 +31,8 @@
 #	include <wg_menu.h>
 #endif
 
-#ifndef WG_EVENTHANDLER_DOT_H
-#	include <wg_eventhandler.h>
+#ifndef WG_MSGROUTER_DOT_H
+#	include <wg_msgrouter.h>
 #endif
 
 #ifndef WG_EDITTEXT_DOT_H
@@ -100,7 +100,7 @@ protected:
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onRefresh();
-	void	_onEvent( const WgEventPtr& pEvent );
+	void	_onMsg( const WgMsgPtr& pMsg );
 	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 	void	_onStateChanged( WgState oldState );
 	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
@@ -117,7 +117,7 @@ private:
 	void	_closeMenu();
 
 	void	_entrySelected(int itemId);
-	static void cbEntrySelected( const WgEventPtr& pEvent, const WgObjectPtr& pWdg) { WgCombobox::Cast(pWdg)->_entrySelected(WgItemsSelectEvent::Cast(pEvent)->Items()->id); }
+	static void cbEntrySelected( const WgMsgPtr& pMsg, const WgObjectPtr& pWdg) { WgCombobox::Cast(pWdg)->_entrySelected(WgItemsSelectMsg::Cast(pMsg)->Items()->id); }
 
 	WgString		m_textFormat;
 	WgString		m_placeholderText;		// Text displayed when field is empty and has no cursor.
@@ -131,7 +131,7 @@ private:
 	int				m_maxCharacters;
 	int				m_viewOfs;
 
-	WgCallbackHandle	m_cbHandler;
+	WgRouteId	m_routeId;
 };
 
 #endif // WG_COMBOBOX_DOT_H

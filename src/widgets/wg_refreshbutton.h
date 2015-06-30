@@ -92,7 +92,7 @@ protected:
 	virtual ~WgRefreshButton();
 	virtual WgWidget* _newOfMyType() const { return new WgRefreshButton(); };
 
-	void			_onEvent( const WgEventPtr& pEvent );
+	void			_onMsg( const WgMsgPtr& pMsg );
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onCloneContent( const WgWidget * _pOrg );
 	virtual void 	_onNewSize( const WgSize& size );

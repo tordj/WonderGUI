@@ -19,15 +19,15 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_eventlistener.h>
+#include <wg_receiver.h>
 
-const char WgEventListener::CLASSNAME[] = {"EventListener"};
+const char WgReceiver::CLASSNAME[] = {"Receiver"};
 
 
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgEventListener::IsInstanceOf( const char * pClassName ) const
+bool WgReceiver::IsInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
@@ -37,29 +37,29 @@ bool WgEventListener::IsInstanceOf( const char * pClassName ) const
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgEventListener::ClassName( void ) const
+const char * WgReceiver::ClassName( void ) const
 {
 	return CLASSNAME;
 }
 
 //____ Cast() _________________________________________________________________
 
-WgEventListenerPtr WgEventListener::Cast( const WgObjectPtr& pObject )
+WgReceiverPtr WgReceiver::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgEventListenerPtr( static_cast<WgEventListener*>(pObject.RawPtr()) );
+		return WgReceiverPtr( static_cast<WgReceiver*>(pObject.RawPtr()) );
 
 	return 0;
 }
 
 //____ _onRouteAdded() _________________________________________________________
 
-void  WgEventListener::_onRouteAdded()
+void  WgReceiver::_onRouteAdded()
 {	
 }
 
 //____ _onRouteRemoved() _______________________________________________________
 
-void  WgEventListener::_onRouteRemoved()
+void  WgReceiver::_onRouteRemoved()
 {
 }

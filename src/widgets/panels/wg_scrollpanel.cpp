@@ -24,8 +24,8 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_patches.h>
-#include <wg_event.h>
-#include <wg_eventhandler.h>
+#include <wg_msg.h>
+#include <wg_msgrouter.h>
 
 
 const char WgScrollPanel::CLASSNAME[] = {"ScrollPanel"};
@@ -1101,29 +1101,29 @@ void WgScrollPanel::_onNewSize( const WgSize& size )
 	_updateElementGeo( size );
 }
 
-//____ _onEvent() ______________________________________________________________
+//____ _onMsg() ______________________________________________________________
 
-void WgScrollPanel::_onEvent( const WgEventPtr& _pEvent )
+void WgScrollPanel::_onMsg( const WgMsgPtr& _pMsg )
 {
-	WgPanel::_onEvent(_pEvent);
+	WgPanel::_onMsg(_pMsg);
 
-	switch( _pEvent->Type() )
+	switch( _pMsg->Type() )
 	{
-		case WG_EVENT_WHEEL_ROLL:
+		case WG_MSG_WHEEL_ROLL:
 		{			
-			WgWheelRollEventPtr pEvent = WgWheelRollEvent::Cast(_pEvent);
+			WgWheelRollMsgPtr pMsg = WgWheelRollMsg::Cast(_pMsg);
 
-			if( m_elements[WINDOW].m_windowGeo.Contains( ToLocal(pEvent->PointerGlobalPos())) )
+			if( m_elements[WINDOW].m_windowGeo.Contains( ToLocal(pMsg->PointerPos())) )
 			{
-				int wheel = pEvent->Wheel();
+				int wheel = pMsg->Wheel();
 
 				if( wheel == m_wheelForScrollY )
-					_wheelRollY( pEvent->Distance() );
+					_wheelRollY( pMsg->Distance() );
 				else if( wheel == m_wheelForScrollX )
-					_wheelRollX( pEvent->Distance() );
+					_wheelRollX( pMsg->Distance() );
 			}
 
-			_pEvent->Swallow();
+			_pMsg->Swallow();
 		}
 		break;
 

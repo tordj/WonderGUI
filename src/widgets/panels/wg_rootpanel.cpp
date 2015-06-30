@@ -25,7 +25,7 @@
 #include <new>
 
 
-#include <wg_eventhandler.h>
+#include <wg_msgrouter.h>
 
 const char WgRootPanel::CLASSNAME[] = {"RootPanel"};
 

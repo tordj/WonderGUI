@@ -21,19 +21,19 @@
 =========================================================================*/
 
 #include <assert.h>
-#include <wg_event.h>
-#include <wg_eventfilter.h>
-#include <wg_eventhandler.h>
+#include <wg_msg.h>
+#include <wg_msgfilter.h>
+#include <wg_msgrouter.h>
 #include <wg_base.h>
 #include <wg_rootpanel.h>
 #include <wg_panel.h>
 
-const char WgEventHandler::CLASSNAME[] = {"EventHandler"};
+const char WgMsgRouter::CLASSNAME[] = {"MsgRouter"};
 
 
 //____ Constructor ____________________________________________________________
 
-WgEventHandler::WgEventHandler()
+WgMsgRouter::WgMsgRouter()
 {
 	m_pRoot					= 0;
 	m_time					= 0;
@@ -46,22 +46,22 @@ WgEventHandler::WgEventHandler()
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		m_bButtonPressed[i] = 0;
-		m_pLatestPressEvents[i] = 0;
-		m_pLatestReleaseEvents[i] = 0;
+		m_pLatestPressMsgs[i] = 0;
+		m_pLatestReleaseMsgs[i] = 0;
 	}
 
-	m_handleCounter = 1;				// We start on 1
+	m_routeCounter = 1;				// We start on 1
 }
 
 //____ Destructor _____________________________________________________________
 
-WgEventHandler::~WgEventHandler()
+WgMsgRouter::~WgMsgRouter()
 {
 }
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgEventHandler::IsInstanceOf( const char * pClassName ) const
+bool WgMsgRouter::IsInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
@@ -71,23 +71,23 @@ bool WgEventHandler::IsInstanceOf( const char * pClassName ) const
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgEventHandler::ClassName( void ) const
+const char * WgMsgRouter::ClassName( void ) const
 { 
 	return CLASSNAME; 
 }
 
 //____ Cast() _________________________________________________________________
 
-WgEventHandlerPtr WgEventHandler::Cast( const WgObjectPtr& pObject )
+WgMsgRouterPtr WgMsgRouter::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgEventHandlerPtr( static_cast<WgEventHandler*>(pObject.RawPtr()) );
+		return WgMsgRouterPtr( static_cast<WgMsgRouter*>(pObject.RawPtr()) );
 
 	return 0;
 }
 
 
-void WgEventHandler::SetRoot( const WgRootPanelPtr& pRoot )
+void WgMsgRouter::SetRoot( const WgRootPanelPtr& pRoot )
 {
 	m_pRoot = pRoot.RawPtr();
 }
@@ -95,7 +95,7 @@ void WgEventHandler::SetRoot( const WgRootPanelPtr& pRoot )
 
 //____ SetFocusGroup() ________________________________________________________
 
-bool WgEventHandler::SetFocusGroup( const WgPanelPtr& pFocusGroup )
+bool WgMsgRouter::SetFocusGroup( const WgPanelPtr& pFocusGroup )
 {
 	// Sanity checks
 
@@ -136,7 +136,7 @@ bool WgEventHandler::SetFocusGroup( const WgPanelPtr& pFocusGroup )
 
 //____ SetKeyboardFocus() _____________________________________________________
 
-bool WgEventHandler::SetKeyboardFocus( const WgWidgetPtr& pFocus )
+bool WgMsgRouter::SetKeyboardFocus( const WgWidgetPtr& pFocus )
 {
 	// Return if Widget is not child of our root.
 
@@ -187,7 +187,7 @@ bool WgEventHandler::SetKeyboardFocus( const WgWidgetPtr& pFocus )
 
 //____ IsMouseButtonPressed() _________________________________________________________
 
-bool WgEventHandler::IsMouseButtonPressed( int button ) const
+bool WgMsgRouter::IsMouseButtonPressed( int button ) const
 {
 	if( button >= 1 && button <= WG_MAX_BUTTONS )
 		return m_bButtonPressed[button];
@@ -197,7 +197,7 @@ bool WgEventHandler::IsMouseButtonPressed( int button ) const
 
 //____ IsAnyMouseButtonPressed() ________________________________________________________
 
-bool WgEventHandler::IsAnyMouseButtonPressed() const
+bool WgMsgRouter::IsAnyMouseButtonPressed() const
 {
 	for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
 		if( m_bButtonPressed[i] )
@@ -209,71 +209,112 @@ bool WgEventHandler::IsAnyMouseButtonPressed() const
 
 //____ IsKeyPressed() ____________________________________________________________
 
-bool WgEventHandler::IsKeyPressed( int native_keycode ) const
+bool WgMsgRouter::IsKeyPressed( int native_keycode ) const
 {
 	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
-		if( native_keycode == m_keysDown[i]->pEvent->NativeKeyCode() )
+		if( native_keycode == m_keysDown[i]->pMsg->NativeKeyCode() )
 			return true;
 
 	return false;
 }
 
+//____ BroadcastTo() ___________________________________________________________
 
-
-//____ AddListener() __________________________________________________________
-
-
-WgCallbackHandle WgEventHandler::AddListener( const WgEventListenerPtr& pListener )
+void  WgMsgRouter::BroadcastTo( const WgReceiverPtr& pReceiver )
 {
-	Callback * p = new Callback( WgEventFilter(), pListener.RawPtr() );
-	return _addCallback( p );
+	Route * p = new Route( WgMsgFilter(), pReceiver.RawPtr() );
+	m_broadcasts.PushBack( p );
 }
 
-WgCallbackHandle WgEventHandler::AddListener( const WgObjectPtr& pReceiver, const WgEventListenerPtr& pListener )
+void  WgMsgRouter::BroadcastTo( const WgMsgFilter& filter, const WgReceiverPtr& pReceiver )
 {
-	Callback * p = new Callback( WgEventFilter(), pListener.RawPtr() );
-	return _addCallback( pReceiver, p );
+	Route * p = new Route( filter, pReceiver.RawPtr() );
+	m_broadcasts.PushBack( p );
 }
 
-WgCallbackHandle WgEventHandler::AddListener( const WgEventFilter& filter, const WgEventListenerPtr& pListener )
+//____ EndBroadcast() __________________________________________________________
+
+bool  WgMsgRouter::EndBroadcast( const WgReceiverPtr& _pReceiver )
 {
-	Callback * p = new Callback( filter, pListener.RawPtr() );
-	return _addCallback( p );
+	WgReceiver * pReceiver = _pReceiver.RawPtr();
+	Route * p = m_broadcasts.First();
+	while( p )
+	{
+		Route * pNext = p->Next();
+
+		if( p->Receiver() == pReceiver )
+			delete p;
+
+		p = pNext;
+	}	
 }
 
-WgCallbackHandle WgEventHandler::AddListener( const WgEventFilter& filter, const WgObjectPtr& pReceiver, const WgEventListenerPtr& pListener )
+
+//____ AddRoute() __________________________________________________________
+
+WgRouteId WgMsgRouter::AddRoute( const WgObjectPtr& pSource, const WgReceiverPtr& pReceiver )
 {
-	Callback * p = new Callback( filter, pListener.RawPtr() );
-	return _addCallback( pReceiver, p );
+	Route * p = new Route( WgMsgFilter(), pReceiver.RawPtr() );
+	return _addRoute( pSource, p );
 }
 
-//____ RemoveCallbacksTo() _______________________________________________________
-
-int WgEventHandler::RemoveCallbacksTo( const WgEventListenerPtr& pListener )
+WgRouteId WgMsgRouter::AddRoute( const WgMsgFilter& filter, const WgObjectPtr& pSource, const WgReceiverPtr& pReceiver )
 {
-	return _deleteCallbacksTo(pListener.RawPtr());
+	Route * p = new Route( filter, pReceiver.RawPtr() );
+	return _addRoute( pSource, p );
 }
 
-//____ RemoveCallbacksFrom() _______________________________________________________
+//____ DeleteRoutesTo() _______________________________________________________
 
-int WgEventHandler::RemoveCallbacksFrom( const WgObjectPtr& pSource )
+int WgMsgRouter::DeleteRoutesTo( const WgReceiverPtr& _pReceiver )
 {
-	std::map<WgObjectWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.find(WgObjectWeakPtr(pSource.RawPtr()) );
 
-	if( it == m_receiverCallbacks.end() )
+	WgReceiver * pReceiver = _pReceiver.RawPtr();
+	int nDeleted = 0;
+
+	std::map<WgObjectWeakPtr,WgChain<Route> >::iterator it = m_routes.begin();
+
+	while( it != m_routes.end() )
+	{
+		Route * p = it->second.First();
+		while( p )
+		{
+			if( p->Receiver() != pReceiver )
+				p = p->Next();
+			else
+			{
+				Route * pNext = p->Next();
+				delete p;					// Receiver is dead, delete callback.
+				nDeleted++;
+				p = pNext;
+			}
+		}
+		++it;
+	}
+
+	return nDeleted;
+}
+
+//____ DeleteRoutesFrom() _______________________________________________________
+
+int WgMsgRouter::DeleteRoutesFrom( const WgObjectPtr& pSource )
+{
+	std::map<WgObjectWeakPtr,WgChain<Route> >::iterator it = m_routes.find(WgObjectWeakPtr(pSource.RawPtr()) );
+
+	if( it == m_routes.end() )
 		return 0;
 
 	int nDeleted = it->second.Size();
-	m_receiverCallbacks.erase(it);
+	m_routes.erase(it);
 	return nDeleted;
 }
 
 
-//____ RemoveCallback() ______________________________________________________
+//____ DeleteRoute() ______________________________________________________
 
-bool WgEventHandler::RemoveCallback( WgCallbackHandle handle )
+bool WgMsgRouter::DeleteRoute( WgRouteId handle )
 {
-	Callback * p = m_globalCallbacks.First();
+	Route * p = m_broadcasts.First();
 	while( p )
 	{
 		if( p->m_handle == handle )
@@ -282,10 +323,10 @@ bool WgEventHandler::RemoveCallback( WgCallbackHandle handle )
 			p = p->Next();
 	}
 
-	std::map<WgObjectWeakPtr,WgChain<Callback> >::iterator	it;
-	for( it = m_receiverCallbacks.begin() ; it != m_receiverCallbacks.end() ; ++it )
+	std::map<WgObjectWeakPtr,WgChain<Route> >::iterator	it;
+	for( it = m_routes.begin() ; it != m_routes.end() ; ++it )
 	{
-		Callback * p = it->second.First();
+		Route * p = it->second.First();
 		while( p )
 		{
 			if( p->m_handle == handle )
@@ -298,31 +339,31 @@ bool WgEventHandler::RemoveCallback( WgCallbackHandle handle )
 	return false;
 }
 
-//____ ClearCallbacks() _______________________________________________________
+//____ ClearRoutes() _______________________________________________________
 
-int WgEventHandler::ClearCallbacks()
+int WgMsgRouter::ClearRoutes()
 {
-	m_globalCallbacks.Clear();
-	m_receiverCallbacks.clear();
+	m_broadcasts.Clear();
+	m_routes.clear();
 	return false;
 }
 
-//____ GarbageCollectCallbacks() __________________________________________________
+//____ GarbageCollectRoutes() __________________________________________________
 
-int WgEventHandler::GarbageCollectCallbacks()
+int WgMsgRouter::GarbageCollectRoutes()
 {
 	int nDeleted = 0;
 
 	// Delete any dead global callbacks
 
-	Callback * p = m_globalCallbacks.First();
+	Route * p = m_broadcasts.First();
 	while( p )
 	{
 		if( p->IsAlive() )
 			p = p->Next();
 		else
 		{
-			Callback * pNext = p->Next();
+			Route * pNext = p->Next();
 			delete p;
 			nDeleted++;
 			p = pNext;
@@ -332,25 +373,25 @@ int WgEventHandler::GarbageCollectCallbacks()
 	// Delete any dead Widget-specific callbacks.
 	// These can be dead by either sender or receiver having been deleted.
 
-	std::map<WgObjectWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.begin();
+	std::map<WgObjectWeakPtr,WgChain<Route> >::iterator it = m_routes.begin();
 
-	while( it != m_receiverCallbacks.end() )
+	while( it != m_routes.end() )
 	{
 		if( !it->first )
 		{
 			nDeleted += it->second.Size();
-			m_receiverCallbacks.erase(it++);		// Sender is dead, delete whole branch of callbacks.
+			m_routes.erase(it++);		// Sender is dead, delete whole branch of callbacks.
 		}
 		else
 		{
-			Callback * p = it->second.First();
+			Route * p = it->second.First();
 			while( p )
 			{
 				if( p->IsAlive() )
 					p = p->Next();
 				else
 				{
-					Callback * pNext = p->Next();
+					Route * pNext = p->Next();
 					delete p;					// Receiver is dead, delete callback.
 					nDeleted++;
 					p = pNext;
@@ -363,126 +404,47 @@ int WgEventHandler::GarbageCollectCallbacks()
 	return nDeleted;
 }
 
+//____ _addRoute() _________________________________________________________
 
-//____ _addCallback() _________________________________________________________
-
-WgCallbackHandle WgEventHandler::_addCallback( Callback * pCallback )
-{
-	m_globalCallbacks.PushBack( pCallback );
-	pCallback->m_handle = m_handleCounter++;
-	return pCallback->m_handle;
-}
-
-WgCallbackHandle WgEventHandler::_addCallback( const WgObjectPtr& pSource, Callback * pCallback )
+WgRouteId WgMsgRouter::_addRoute( const WgObjectPtr& pSource, Route * pRoute )
 {
 	if( !pSource )
 		return 0;
 
-	WgChain<Callback>& chain = m_receiverCallbacks[pSource.RawPtr()];
-	chain.PushBack(pCallback);
-	pCallback->m_handle = m_handleCounter++;
-	return pCallback->m_handle;
+	WgChain<Route>& chain = m_routes[pSource.RawPtr()];
+	chain.PushBack(pRoute);
+	pRoute->m_handle = m_routeCounter++;
+	return pRoute->m_handle;
 }
 
+//____ Post() ___________________________________________________________
 
-//____ _deleteCallbacksTo() __________________________________________________
-
-int WgEventHandler::_deleteCallbacksTo( WgEventListener * pListener )
-{
-	int nDeleted = 0;
-
-	// Delete any global callbacks for this receiver.
-
-	Callback * p = m_globalCallbacks.First();
-	while( p )
-	{
-		if( p->Listener() != pListener )
-			p = p->Next();
-		else
-		{
-			Callback * pNext = p->Next();
-			delete p;
-			nDeleted++;
-			p = pNext;
-		}
-	}
-
-	// Delete any source-specific callbacks for this listener.
-
-	std::map<WgObjectWeakPtr,WgChain<Callback> >::iterator it = m_receiverCallbacks.begin();
-
-	while( it != m_receiverCallbacks.end() )
-	{
-		Callback * p = it->second.First();
-		while( p )
-		{
-			if( p->Listener() != pListener )
-				p = p->Next();
-			else
-			{
-				Callback * pNext = p->Next();
-				delete p;					// Receiver is dead, delete callback.
-				nDeleted++;
-				p = pNext;
-			}
-		}
-		++it;
-	}
-
-	return nDeleted;
-}
-
-//____ _deleteCallbacksOnType() _______________________________________________
-
-int WgEventHandler::_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain )
-{
-	int nDeleted = 0;
-	Callback * p = pChain->First();
-
-	while( p )
-	{
-
-		if( p->Filter().EventType() == type )
-		{
-			Callback * pNext = p->Next();
-			delete p;
-			nDeleted++;
-			p = pNext;
-		}
-		else
-			p = p->Next();
-	}
-	return nDeleted;
-}
-
-//____ QueueEvent() ___________________________________________________________
-
-bool WgEventHandler::QueueEvent( const WgEventPtr& pEvent )
+bool WgMsgRouter::Post( const WgMsgPtr& pMsg )
 {
 	if( m_bIsProcessing )
 	{
-		// Events that are posted as a direct result of another event being processed
+		// Msgs that are posted as a direct result of another event being processed
 		// are inserted before the next event in the queue.
 		// If two or more events are posted by the same event being processed,
 		// they need to be queued in the order of posting.
 
-		m_insertPos = m_eventQueue.insert( m_insertPos, pEvent );
+		m_insertPos = m_msgQueue.insert( m_insertPos, pMsg );
 		m_insertPos++;
 	}
 	else
 	{
-		// Events being posted outside processing loop are simply added to the
+		// Msgs being posted outside processing loop are simply added to the
 		// queue.
 
-		m_eventQueue.push_back( pEvent );
+		m_msgQueue.push_back( pMsg );
 	}
 
 	return true;
 }
 
-//____ ProcessEvents() ________________________________________________________
+//____ Dispatch() ________________________________________________________
 
-void WgEventHandler::ProcessEvents()
+void WgMsgRouter::Dispatch()
 {
 	int64_t	time = m_time;
 
@@ -490,158 +452,177 @@ void WgEventHandler::ProcessEvents()
 
 	// First thing: we make sure that we know what Widgets pointer is inside, in case that has changed.
 
-	m_insertPos = m_eventQueue.begin();	// Insert any POINTER_ENTER/EXIT right at beginning.
+	m_insertPos = m_msgQueue.begin();	// Insert any POINTER_ENTER/EXIT right at beginning.
 	_updateMarkedWidget(false);
 
 	// Process all the events in the queue
 
-	_processEventQueue();
+	_dispatchQueued();
 
-	// Post Widget-specific tick events now we know how much time has passed
+	// Post tick events now we know how much time has passed
 
-	_postTickEvents( (int) (m_time-time) );
+	_postTickMsgs( (int) (m_time-time) );
 
 	// Process Widget-specific tick events (and any events they might trigger)
 
-	_processEventQueue();
+	_dispatchQueued();
 
 	m_bIsProcessing = false;
 }
 
 
-//____ _processEventQueue() ___________________________________________________
+//____ _dispatchQueued() ___________________________________________________
 
-void WgEventHandler::_processEventQueue()
+void WgMsgRouter::_dispatchQueued()
 {
-	while( !m_eventQueue.empty() )
+	while( !m_msgQueue.empty() )
 	{
-		WgEventPtr& pEvent = m_eventQueue.front();
-		m_insertPos = m_eventQueue.begin()+1;	// Insert position set to right after current event.
+		WgMsgPtr& pMsg = m_msgQueue.front();
+		m_insertPos = m_msgQueue.begin()+1;	// Insert position set to right after current event.
 
-		_finalizeEvent( pEvent );
+		_finalizeMsg( pMsg );
 
 		do
 		{
-			if( pEvent->HasCopyTo()  )
-				pEvent->m_pCopyTo->OnEvent( pEvent );
+			if( pMsg->HasCopyTo()  )
+				pMsg->m_pCopyTo->OnMsg( pMsg );
 			
-			if( pEvent->HasSource() )
-				_processSourceCallbacks( pEvent );
+			if( pMsg->HasSource() )
+				_dispatchToRoutes( pMsg );
 			else
-				_processGeneralEvent( pEvent );
+				_processGeneralMsg( pMsg );
 
-			_processGlobalEventCallbacks( pEvent );			
+			_broadcast( pMsg );			
 		}
-		while( pEvent->DoRepost() );
+		while( pMsg->DoRepost() );
 
-		m_eventQueue.pop_front();
+		m_msgQueue.pop_front();
 	}
 
-	m_insertPos = m_eventQueue.begin();		// Insert position set right to start.
+	m_insertPos = m_msgQueue.begin();		// Insert position set right to start.
 }
 
-//____ _postTickEvents() ______________________________________________________
+//____ _postTickMsgs() ______________________________________________________
 
-void WgEventHandler::_postTickEvents( int ticks )
+void WgMsgRouter::_postTickMsgs( int ticks )
 {
-	std::vector<WgWidgetWeakPtr>::iterator it = m_vTickWidgets.begin();
+	std::vector<WgReceiverWeakPtr>::iterator it = m_vTickReceivers.begin();
 
-	while( it != m_vTickWidgets.end() )
+	while( it != m_vTickReceivers.end() )
 	{
-		WgWidget * pWidget = (*it).RawPtr();
+		WgReceiver * pReceiver = (*it).RawPtr();
 
-		if( pWidget && pWidget->Hook() && pWidget->Hook()->Root() == m_pRoot && pWidget->m_bReceiveTick )
+		if( pReceiver )
 		{
-			QueueEvent( new WgTickEvent( ticks, pWidget ) );
+			Post( new WgTickMsg( ticks, pReceiver ) );
 			++it;
 		}
 		else
-			it = m_vTickWidgets.erase(it);
+			it = m_vTickReceivers.erase(it);
 	}
 }
 
-//____ _addTickReceiver() _____________________________________________________
+//____ AddTickReceiver() _____________________________________________________
 
-void WgEventHandler::_addTickReceiver( WgWidget * pWidget )
+void WgMsgRouter::AddTickReceiver( const WgReceiverPtr& pReceiver )
 {
-	if( pWidget && !_isWidgetInList( pWidget, m_vTickWidgets ) )
-		m_vTickWidgets.push_back( WgWidgetWeakPtr(pWidget) );
+	if( pReceiver && !_isReceiverInList( pReceiver.RawPtr(), m_vTickReceivers ) )
+		m_vTickReceivers.push_back( WgReceiverWeakPtr(pReceiver.RawPtr()) );
 }
 
-//____ _processGlobalEventCallbacks() ________________________________________________
+//____ RemoveTickReceiver() __________________________________________________
 
-void WgEventHandler::_processGlobalEventCallbacks( const WgEventPtr& pEvent )
+bool WgMsgRouter::RemoveTickReceiver( const WgReceiverPtr& pReceiver )
 {
-	Callback * pCallback = m_globalCallbacks.First();
-
-	while( pCallback )
+	std::vector<WgReceiverWeakPtr>::iterator	it = m_vTickReceivers.begin();
+	
+	while( it != m_vTickReceivers.end() )
 	{
-		pCallback->ProcessEvent( pEvent );
-		pCallback = pCallback->Next();
+		if( * it == pReceiver )
+		{
+			m_vTickReceivers.erase(it);
+			return true;
+		}
+		it++;
+	}	
+	return false;
+}
+
+
+//____ _broadcast() ________________________________________________
+
+void WgMsgRouter::_broadcast( const WgMsgPtr& pMsg )
+{
+	Route * pRoute = m_broadcasts.First();
+
+	while( pRoute )
+	{
+		pRoute->Dispatch( pMsg );
+		pRoute = pRoute->Next();
 	}
 }
 
 
-//____ _processSourceCallbacks() ________________________________________________
+//____ _dispatchToRoutes() ________________________________________________
 
-void WgEventHandler::_processSourceCallbacks( const WgEventPtr& pEvent )
+void WgMsgRouter::_dispatchToRoutes( const WgMsgPtr& pMsg )
 {
-	Callback * pCallback = 0;
-	WgChain<Callback> * pChain = 0;
+	Route * pRoute = 0;
+	WgChain<Route> * pChain = 0;
 
-	WgObject * pSource = pEvent->SourceRawPtr();
+	WgObject * pSource = pMsg->SourceRawPtr();
 
 	if( pSource )
 	{
-		std::map<WgObjectWeakPtr,WgChain<Callback> >::iterator it;
+		std::map<WgObjectWeakPtr,WgChain<Route> >::iterator it;
 
-		it = m_receiverCallbacks.find(WgObjectWeakPtr(pSource));
-		if( it != m_receiverCallbacks.end() )
+		it = m_routes.find(WgObjectWeakPtr(pSource));
+		if( it != m_routes.end() )
 			pChain = &(it->second);
 	}
 
 	if( !pChain )
 		return;
 
-	pCallback = pChain->First();
+	pRoute = pChain->First();
 
-	while( pCallback )
+	while( pRoute )
 	{
-		pCallback->ProcessEvent( pEvent );
-		pCallback = pCallback->Next();
+		pRoute->Dispatch( pMsg );
+		pRoute = pRoute->Next();
 	}
 }
 
 
-//____ _finalizeEvent() ________________________________________________________
+//____ _finalizeMsg() ________________________________________________________
 
-void WgEventHandler::_finalizeEvent( const WgEventPtr& pEvent )
+void WgMsgRouter::_finalizeMsg( const WgMsgPtr& pMsg )
 {
 	// Fill in missing information in the event-class.
 
-	pEvent->m_timestamp	= m_time;
-	pEvent->m_modKeys	= m_modKeys;
+	pMsg->m_timestamp	= m_time;
+	pMsg->m_modKeys	= m_modKeys;
 
 	// Only global POINTER_ENTER & POINTER_MOVE events have these members
 	// set, the rest needs to have them filled in.
 
-	if( pEvent->HasCopyTo() || (pEvent->Type() != WG_EVENT_MOUSE_MOVE && pEvent->Type() != WG_EVENT_MOUSE_ENTER) )
+	if( pMsg->HasCopyTo() || (pMsg->Type() != WG_MSG_MOUSE_MOVE && pMsg->Type() != WG_MSG_MOUSE_ENTER) )
 	{
-		pEvent->m_pointerScreenPos = m_pointerPos;
+		pMsg->m_pointerPos = m_pointerPos;
 	}
 
-	// Event specific finalizations
+	// Msg specific finalizations
 
-	switch( pEvent->Type() )
+	switch( pMsg->Type() )
 	{
 
 		// Key events need translation of keycodes.
 
-		case WG_EVENT_KEY_PRESS:
-		case WG_EVENT_KEY_RELEASE:
-		case WG_EVENT_KEY_REPEAT:
+		case WG_MSG_KEY_PRESS:
+		case WG_MSG_KEY_RELEASE:
+		case WG_MSG_KEY_REPEAT:
 		{
-			WgKeyEvent* p = static_cast<WgKeyEvent*>(pEvent.RawPtr());
+			WgKeyMsg* p = static_cast<WgKeyMsg*>(pMsg.RawPtr());
 			p->m_translatedKeyCode = WgBase::TranslateKey(p->m_nativeKeyCode);
 		}
 		break;
@@ -655,90 +636,90 @@ void WgEventHandler::_finalizeEvent( const WgEventPtr& pEvent )
 
 }
 
-//____ _processGeneralEvent() _________________________________________________
+//____ _processGeneralMsg() _________________________________________________
 
-void WgEventHandler::_processGeneralEvent( const WgEventPtr& _pEvent )
+void WgMsgRouter::_processGeneralMsg( const WgMsgPtr& _pMsg )
 {
-	WgEvent * pEvent = _pEvent.RawPtr();
+	WgMsg * pMsg = _pMsg.RawPtr();
 
-	switch( pEvent->Type() )
+	switch( pMsg->Type() )
 	{
-		case WG_EVENT_FOCUS_GAINED:
-			_processFocusGained( (WgFocusGainedEvent*) pEvent );
+		case WG_MSG_FOCUS_GAINED:
+			_processFocusGained( (WgFocusGainedMsg*) pMsg );
 			break;
 
-		case WG_EVENT_FOCUS_LOST:
-			_processFocusLost( (WgFocusLostEvent*) pEvent );
+		case WG_MSG_FOCUS_LOST:
+			_processFocusLost( (WgFocusLostMsg*) pMsg );
 			break;
 
-		case WG_EVENT_MOUSE_ENTER:
-			_processMouseEnter( (WgMouseEnterEvent*) pEvent );
+		case WG_MSG_MOUSE_ENTER:
+			_processMouseEnter( (WgMouseEnterMsg*) pMsg );
 			break;
 
-		case WG_EVENT_MOUSE_MOVE:
-			_processMouseMove( (WgMouseMoveEvent*) pEvent );
+		case WG_MSG_MOUSE_MOVE:
+			_processMouseMove( (WgMouseMoveMsg*) pMsg );
 			break;
 
-		case WG_EVENT_MOUSE_POSITION:
-			_processMousePosition( (WgMousePositionEvent*) pEvent );
+		case WG_MSG_MOUSE_POSITION:
+			_processMousePosition( (WgMousePositionMsg*) pMsg );
 			break;
 
-		case WG_EVENT_MOUSE_LEAVE:
-			_processMouseLeave( (WgMouseLeaveEvent*) pEvent );
+		case WG_MSG_MOUSE_LEAVE:
+			_processMouseLeave( (WgMouseLeaveMsg*) pMsg );
 			break;
 
-		case WG_EVENT_MOUSE_PRESS:
-			_processMouseButtonPress( (WgMousePressEvent*) pEvent );
+		case WG_MSG_MOUSE_PRESS:
+			_processMouseButtonPress( (WgMousePressMsg*) pMsg );
 			break;
 
-		case WG_EVENT_MOUSE_REPEAT:
-			_processMouseButtonRepeat( (WgMouseRepeatEvent*) pEvent );
+		case WG_MSG_MOUSE_REPEAT:
+			_processMouseButtonRepeat( (WgMouseRepeatMsg*) pMsg );
 			break;
 
-		case WG_EVENT_MOUSE_DRAG:
-			_processMouseButtonDrag( (WgMouseDragEvent*) pEvent );
+		case WG_MSG_MOUSE_DRAG:
+			_processMouseButtonDrag( (WgMouseDragMsg*) pMsg );
 			break;
 
-		case WG_EVENT_MOUSE_RELEASE:
-			_processMouseButtonRelease( (WgMouseReleaseEvent*) pEvent );
+		case WG_MSG_MOUSE_RELEASE:
+			_processMouseButtonRelease( (WgMouseReleaseMsg*) pMsg );
 			break;
 
-		case WG_EVENT_MOUSE_CLICK:
-			_processMouseButtonClick( (WgMouseClickEvent*) pEvent );
+		case WG_MSG_MOUSE_CLICK:
+			_processMouseButtonClick( (WgMouseClickMsg*) pMsg );
 			break;
 
-		case WG_EVENT_MOUSE_DOUBLE_CLICK:
-			_processMouseButtonDoubleClick( (WgMouseDoubleClickEvent*) pEvent );
+		case WG_MSG_MOUSE_DOUBLE_CLICK:
+			_processMouseButtonDoubleClick( (WgMouseDoubleClickMsg*) pMsg );
 			break;
 
-		case WG_EVENT_KEY_PRESS:
-			_processKeyPress( (WgKeyPressEvent*) pEvent );
+		case WG_MSG_KEY_PRESS:
+			_processKeyPress( (WgKeyPressMsg*) pMsg );
 			break;
 
-		case WG_EVENT_KEY_REPEAT:
-			_processKeyRepeat( (WgKeyRepeatEvent*) pEvent );
+		case WG_MSG_KEY_REPEAT:
+			_processKeyRepeat( (WgKeyRepeatMsg*) pMsg );
 			break;
 
-		case WG_EVENT_KEY_RELEASE:
-			_processKeyRelease( (WgKeyReleaseEvent*) pEvent );
+		case WG_MSG_KEY_RELEASE:
+			_processKeyRelease( (WgKeyReleaseMsg*) pMsg );
 			break;
 
-		case WG_EVENT_CHARACTER:
-			_processCharacter( (WgCharacterEvent*) pEvent );
+		case WG_MSG_CHARACTER:
+			_processCharacter( (WgCharacterMsg*) pMsg );
 			break;
 
-		case WG_EVENT_WHEEL_ROLL:
-			_processMouseWheelRoll( (WgWheelRollEvent*) pEvent );
+		case WG_MSG_WHEEL_ROLL:
+			_processMouseWheelRoll( (WgWheelRollMsg*) pMsg );
 			break;
 
-		case WG_EVENT_TICK:
-			_processTick( (WgTickEvent*) pEvent );
+		case WG_MSG_TICK:
+			_processTick( (WgTickMsg*) pMsg );
 			break;
 
-		case WG_EVENT_DUMMY:
+		case WG_MSG_DUMMY:
 			break;
 
-		case WG_EVENT_MAX:
+		case WG_MSG_MAX:
 			assert(false);								// NOT ALLOWED!
 			break;
 	}
@@ -746,7 +727,7 @@ void WgEventHandler::_processGeneralEvent( const WgEventPtr& _pEvent )
 
 //____ _processTick() ______________________________________________________
 
-void WgEventHandler::_processTick( WgTickEvent * pEvent )
+void WgMsgRouter::_processTick( WgTickMsg * pMsg )
 {
 	// Check if we need to post BUTTON_REPEAT
 
@@ -757,26 +738,26 @@ void WgEventHandler::_processTick( WgTickEvent * pEvent )
 			int buttonDelay = WgBase::MouseButtonRepeatDelay();
 			int buttonRate = WgBase::MouseButtonRepeatRate();
 
-			int msSinceRepeatStart = (int) (m_time - m_pLatestPressEvents[button]->Timestamp() - buttonDelay );
+			int msSinceRepeatStart = (int) (m_time - m_pLatestPressMsgs[button]->Timestamp() - buttonDelay );
 
 			// First BUTTON_REPEAT event posted separately.
 
-			if( msSinceRepeatStart < 0 && msSinceRepeatStart + pEvent->Millisec() >= 0 )
-				QueueEvent( new WgMouseRepeatEvent((WgMouseButton)button) );
+			if( msSinceRepeatStart < 0 && msSinceRepeatStart + pMsg->Millisec() >= 0 )
+				Post( new WgMouseRepeatMsg((WgMouseButton)button) );
 
 			// Calculate ms since last BUTTON_REPEAT event
 
 			int msToProcess;
 			if( msSinceRepeatStart < 0 )
-				msToProcess = msSinceRepeatStart + pEvent->Millisec();
+				msToProcess = msSinceRepeatStart + pMsg->Millisec();
 			else
-				msToProcess = (msSinceRepeatStart % buttonRate) + pEvent->Millisec();
+				msToProcess = (msSinceRepeatStart % buttonRate) + pMsg->Millisec();
 
 			// Post the amount of BUTTON_REPEAT that should be posted.
 
 			while( msToProcess >= buttonRate )
 			{
-				QueueEvent( new WgMouseRepeatEvent((WgMouseButton)button) );
+				Post( new WgMouseRepeatMsg((WgMouseButton)button) );
 				msToProcess -= buttonRate;
 			}
 		}
@@ -790,7 +771,7 @@ void WgEventHandler::_processTick( WgTickEvent * pEvent )
 	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 	{
 		KeyDownInfo * pInfo = m_keysDown[i];
-		int timePassed = (int) (pEvent->Timestamp() - pInfo->pEvent->Timestamp());
+		int timePassed = (int) (pMsg->Timestamp() - pInfo->pMsg->Timestamp());
 
 		int fraction = timePassed - keyDelay;
 
@@ -799,11 +780,11 @@ void WgEventHandler::_processTick( WgTickEvent * pEvent )
 		else
 			fraction %= keyRate;
 
-		fraction += pEvent->Millisec();
+		fraction += pMsg->Millisec();
 
 		while( fraction >= keyRate )
 		{
-			QueueEvent( new WgKeyRepeatEvent( pInfo->pEvent->NativeKeyCode() ) );
+			Post( new WgKeyRepeatMsg( pInfo->pMsg->NativeKeyCode() ) );
 			fraction -= keyRate;
 		}
 	}
@@ -811,13 +792,13 @@ void WgEventHandler::_processTick( WgTickEvent * pEvent )
 
 	// Increase time counter
 
-	m_time += pEvent->Millisec();
+	m_time += pMsg->Millisec();
 }
 
 
 //____ _processFocusGained() __________________________________________________
 
-void WgEventHandler::_processFocusGained( WgFocusGainedEvent * pEvent )
+void WgMsgRouter::_processFocusGained( WgFocusGainedMsg * pMsg )
 {
 	if( !m_bWindowFocus && m_keyFocusWidget )
 		_setWidgetFocused( m_keyFocusWidget.RawPtr(), true );
@@ -827,7 +808,7 @@ void WgEventHandler::_processFocusGained( WgFocusGainedEvent * pEvent )
 
 //____ _processFocusLost() ____________________________________________________
 
-void WgEventHandler::_processFocusLost( WgFocusLostEvent * pEvent )
+void WgMsgRouter::_processFocusLost( WgFocusLostMsg * pMsg )
 {
 	if( m_bWindowFocus && m_keyFocusWidget )
 		_setWidgetFocused( m_keyFocusWidget.RawPtr(), false );
@@ -838,35 +819,35 @@ void WgEventHandler::_processFocusLost( WgFocusLostEvent * pEvent )
 
 //____ _processMouseEnter() __________________________________________________
 
-void WgEventHandler::_processMouseEnter( WgMouseEnterEvent * pEvent )
+void WgMsgRouter::_processMouseEnter( WgMouseEnterMsg * pMsg )
 {
 	// Post events for button drag
 
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
-			QueueEvent( new WgMouseDragEvent((WgMouseButton)i, m_pLatestPressEvents[i]->PointerGlobalPos(), m_pointerPos, pEvent->PointerGlobalPos() ) );
+			Post( new WgMouseDragMsg((WgMouseButton)i, m_pLatestPressMsgs[i]->PointerPos(), m_pointerPos, pMsg->PointerPos() ) );
 	}
 
 	// Post event for finalizing position once button drag is taken care of.
 
-	QueueEvent( new WgMousePositionEvent() );
+	Post( new WgMousePositionMsg() );
 
 	// Update pointer position
 
-	m_pointerPos = pEvent->PointerGlobalPos();
+	m_pointerPos = pMsg->PointerPos();
 }
 
 //____ _processMouseLeave() ___________________________________________________
 
-void WgEventHandler::_processMouseLeave( WgMouseLeaveEvent * pEvent )
+void WgMsgRouter::_processMouseLeave( WgMouseLeaveMsg * pMsg )
 {
 	// Post POINTER_EXIT event to marked widget
 
 	WgWidget * pWidget = m_pMarkedWidget.RawPtr();
 
 	if( pWidget )
-		QueueEvent( new WgMouseLeaveEvent( pWidget ) );
+		Post( new WgMouseLeaveMsg( pWidget ) );
 
 	m_pMarkedWidget = 0;
 }
@@ -874,28 +855,28 @@ void WgEventHandler::_processMouseLeave( WgMouseLeaveEvent * pEvent )
 
 //____ _processMouseMove() ___________________________________________________
 
-void WgEventHandler::_processMouseMove( WgMouseMoveEvent * pEvent )
+void WgMsgRouter::_processMouseMove( WgMouseMoveMsg * pMsg )
 {
 	// Post events for button drag
 
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
-			QueueEvent( new WgMouseDragEvent( (WgMouseButton) i, m_pLatestPressEvents[i]->PointerGlobalPos(), m_pointerPos, pEvent->PointerGlobalPos() ) );
+			Post( new WgMouseDragMsg( (WgMouseButton) i, m_pLatestPressMsgs[i]->PointerPos(), m_pointerPos, pMsg->PointerPos() ) );
 	}
 
 	// Post event for finalizing move once button drag is taken care of.
 
-	QueueEvent( new WgMousePositionEvent() );
+	Post( new WgMousePositionMsg() );
 
 	// Update pointer position
 
-	m_pointerPos = pEvent->PointerGlobalPos();
+	m_pointerPos = pMsg->PointerPos();
 }
 
 //____ _processMousePosition() _________________________________________________
 
-void WgEventHandler::_processMousePosition( WgMousePositionEvent * pEvent )
+void WgMsgRouter::_processMousePosition( WgMousePositionMsg * pMsg )
 {
 	_updateMarkedWidget(true);
 
@@ -903,7 +884,7 @@ void WgEventHandler::_processMousePosition( WgMousePositionEvent * pEvent )
 
 //____ _setWidgetFocused() ____________________________________________________
 
-void WgEventHandler::_setWidgetFocused( WgWidget * pWidget, bool bFocused )
+void WgMsgRouter::_setWidgetFocused( WgWidget * pWidget, bool bFocused )
 {
 		WgState oldState = pWidget->m_state;
 		pWidget->m_state.SetFocused(bFocused);
@@ -915,7 +896,7 @@ void WgEventHandler::_setWidgetFocused( WgWidget * pWidget, bool bFocused )
 
 //____ _updateMarkedWidget() _______________________________________________
 
-void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
+void WgMsgRouter::_updateMarkedWidget(bool bPostMouseMoveMsgs)
 {
 	WgWidgetPtr pNowMarked = 0;
 
@@ -927,7 +908,7 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 	int button = 0;								// Button that has been pressed for longest, 0 = no button pressed
 	for( int i = 1 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
-		if( m_bButtonPressed[i] && (button == 0 || m_pLatestPressEvents[i]->Timestamp() < m_pLatestPressEvents[button]->Timestamp()) )
+		if( m_bButtonPressed[i] && (button == 0 || m_pLatestPressMsgs[i]->Timestamp() < m_pLatestPressMsgs[button]->Timestamp()) )
 			button = i;
 	}
 
@@ -943,8 +924,8 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 
 	WgWidget * pFirstAlreadyMarked = _updateEnteredWidgets( pNowMarked.RawPtr() );
 	
-	if( bPostMouseMoveEvents && pFirstAlreadyMarked )
-		QueueEvent( new WgMouseMoveEvent( pFirstAlreadyMarked ) );
+	if( bPostMouseMoveMsgs && pFirstAlreadyMarked )
+		Post( new WgMouseMoveMsg( pFirstAlreadyMarked ) );
 
 	// Copy content of pNowMarked to m_pMarkedWidget
 
@@ -963,14 +944,14 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 
 	if( newStyle != m_pointerStyle )
 	{
-		QueueEvent( new WgPointerChangeEvent( newStyle ) );
+		Post( new WgPointerChangeMsg( newStyle ) );
 		m_pointerStyle = newStyle;
 	}	
 }
 
 //____ _updateEnteredWidgets() _________________________________________________
 
-WgWidget * WgEventHandler::_updateEnteredWidgets( WgWidget * pMarkedWidget )
+WgWidget * WgMsgRouter::_updateEnteredWidgets( WgWidget * pMarkedWidget )
 {
 	
 	// Loop through our new widgets and check if they already
@@ -988,14 +969,14 @@ WgWidget * WgEventHandler::_updateEnteredWidgets( WgWidget * pMarkedWidget )
 			m_vEnteredWidgets[ofs] = 0;			
 		}
 		else
-			QueueEvent( new WgMouseEnterEvent( pWidget ) );		
+			Post( new WgMouseEnterMsg( pWidget ) );		
 	}
 
 	// Send MouseLeave to those that were left.
 
 	for( size_t i = 0 ; i < m_vEnteredWidgets.size() ; i++ )
 		if(m_vEnteredWidgets[i] )
-			QueueEvent( new WgMouseLeaveEvent( m_vEnteredWidgets[i].RawPtr()) );
+			Post( new WgMouseLeaveMsg( m_vEnteredWidgets[i].RawPtr()) );
 	
 	// Replace the old list with a new one.
 	
@@ -1011,17 +992,17 @@ WgWidget * WgEventHandler::_updateEnteredWidgets( WgWidget * pMarkedWidget )
 
 //____ _processKeyPress() ______________________________________________________
 
-void WgEventHandler::_processKeyPress( WgKeyPressEvent * pEvent )
+void WgMsgRouter::_processKeyPress( WgKeyPressMsg * pMsg )
 {
 	// Fill in the info-structure.
 
 	KeyDownInfo * pInfo = new KeyDownInfo();
-	pInfo->pEvent = pEvent;
+	pInfo->pMsg = pMsg;
 
 	// Post KEY_PRESS events for widgets and remember which ones we have posted it for
 
 	WgWidget * pWidget = m_keyFocusWidget.RawPtr();
-	QueueEvent( new WgKeyPressEvent( pEvent->NativeKeyCode(), pWidget ) );
+	Post( new WgKeyPressMsg( pMsg->NativeKeyCode(), pWidget ) );
 	pInfo->pWidget = pWidget;
 
 	// Push the info-structure onto m_keysDown.
@@ -1030,7 +1011,7 @@ void WgEventHandler::_processKeyPress( WgKeyPressEvent * pEvent )
 
 	// Update modkeys
 
-	switch( pEvent->TranslatedKeyCode() )
+	switch( pMsg->TranslatedKeyCode() )
 	{
 		case WG_KEY_SHIFT:
 			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SHIFT);
@@ -1051,7 +1032,7 @@ void WgEventHandler::_processKeyPress( WgKeyPressEvent * pEvent )
 
 //____ _processKeyRepeat() ____________________________________________________
 
-void WgEventHandler::_processKeyRepeat( WgKeyRepeatEvent * pEvent )
+void WgMsgRouter::_processKeyRepeat( WgKeyRepeatMsg * pMsg )
 {
 	// Find right KeyDownInfo structure
 
@@ -1059,7 +1040,7 @@ void WgEventHandler::_processKeyRepeat( WgKeyRepeatEvent * pEvent )
 
 	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 	{
-		if( pEvent->NativeKeyCode() == m_keysDown[i]->pEvent->NativeKeyCode() )
+		if( pMsg->NativeKeyCode() == m_keysDown[i]->pMsg->NativeKeyCode() )
 		{
 			pInfo = m_keysDown[i];
 			break;
@@ -1073,12 +1054,12 @@ void WgEventHandler::_processKeyRepeat( WgKeyRepeatEvent * pEvent )
 	// Post KEY_REPEAT event for widget
 
 		if( pInfo->pWidget )
-			QueueEvent( new WgKeyRepeatEvent( pEvent->NativeKeyCode(), pInfo->pWidget.RawPtr() ));
+			Post( new WgKeyRepeatMsg( pMsg->NativeKeyCode(), pInfo->pWidget.RawPtr() ));
 }
 
 //____ _processKeyRelease() ___________________________________________________
 
-void WgEventHandler::_processKeyRelease( WgKeyReleaseEvent * pEvent )
+void WgMsgRouter::_processKeyRelease( WgKeyReleaseMsg * pMsg )
 {
 	// Find right KeyDownInfo structure and remove it from m_keysDown.
 
@@ -1087,7 +1068,7 @@ void WgEventHandler::_processKeyRelease( WgKeyReleaseEvent * pEvent )
 	std::vector<KeyDownInfo*>::iterator it = m_keysDown.begin();
 	while( it != m_keysDown.end() )
 	{
-		if( pEvent->NativeKeyCode() == (*it)->pEvent->NativeKeyCode() )
+		if( pMsg->NativeKeyCode() == (*it)->pMsg->NativeKeyCode() )
 		{
 			pInfo = *it;
 			m_keysDown.erase(it);
@@ -1103,7 +1084,7 @@ void WgEventHandler::_processKeyRelease( WgKeyReleaseEvent * pEvent )
 	// Post KEY_RELEASE event for widget
 
 	if( pInfo->pWidget )
-		QueueEvent( new WgKeyReleaseEvent( pEvent->NativeKeyCode(), pInfo->pWidget.RawPtr() ));
+		Post( new WgKeyReleaseMsg( pMsg->NativeKeyCode(), pInfo->pWidget.RawPtr() ));
 
 	// Delete the KeyPress-message and KeyDownInfo-structure
 
@@ -1111,7 +1092,7 @@ void WgEventHandler::_processKeyRelease( WgKeyReleaseEvent * pEvent )
 
 	// Update modkeys
 
-	switch( pEvent->TranslatedKeyCode() )
+	switch( pMsg->TranslatedKeyCode() )
 	{
 		case WG_KEY_SHIFT:
 			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SHIFT);
@@ -1132,33 +1113,33 @@ void WgEventHandler::_processKeyRelease( WgKeyReleaseEvent * pEvent )
 
 //____ _processCharacter() ____________________________________________________
 
-void WgEventHandler::_processCharacter( WgCharacterEvent * pEvent )
+void WgMsgRouter::_processCharacter( WgCharacterMsg * pMsg )
 {
 	WgWidget * pWidget = m_keyFocusWidget.RawPtr();
 
 	if( pWidget )
-		QueueEvent( new WgCharacterEvent( pEvent->Char(), pWidget ) );
+		Post( new WgCharacterMsg( pMsg->Char(), pWidget ) );
 }
 
 //____ _processMouseWheelRoll() ____________________________________________________
 
-void WgEventHandler::_processMouseWheelRoll( WgWheelRollEvent * pEvent )
+void WgMsgRouter::_processMouseWheelRoll( WgWheelRollMsg * pMsg )
 {
 	_updateMarkedWidget(false);
 
 	WgWidget * pWidget = m_pMarkedWidget.RawPtr();
 
 	if( pWidget )
-		QueueEvent( new WgWheelRollEvent( pEvent->Wheel(), pEvent->Distance(), pWidget ) );
+		Post( new WgWheelRollMsg( pMsg->Wheel(), pMsg->Distance(), pWidget ) );
 }
 
 //____ _processMouseButtonPress() ___________________________________________________
 
-void WgEventHandler::_processMouseButtonPress( WgMousePressEvent * pEvent )
+void WgMsgRouter::_processMouseButtonPress( WgMousePressMsg * pMsg )
 {
 	_updateMarkedWidget(false);
 
-	WgMouseButton button = pEvent->Button();
+	WgMouseButton button = pMsg->Button();
 
 	// Update m_previousPressWidgets
 
@@ -1175,7 +1156,7 @@ void WgEventHandler::_processMouseButtonPress( WgMousePressEvent * pEvent )
 	pWidget = m_pMarkedWidget.RawPtr();
 	if( pWidget )
 	{
-		QueueEvent( new WgMousePressEvent( button, pWidget ) );
+		Post( new WgMousePressMsg( button, pWidget ) );
 		m_latestPressWidgets[button] = pWidget;
 	}
 
@@ -1185,20 +1166,20 @@ void WgEventHandler::_processMouseButtonPress( WgMousePressEvent * pEvent )
 	int doubleClickDistanceTreshold = WgBase::DoubleClickDistanceTreshold();
 
 
-	if( m_pLatestPressEvents[button] && m_pLatestPressEvents[button]->Timestamp() + doubleClickTimeTreshold > pEvent->Timestamp() )
+	if( m_pLatestPressMsgs[button] && m_pLatestPressMsgs[button]->Timestamp() + doubleClickTimeTreshold > pMsg->Timestamp() )
 	{
-		WgCoord distance = pEvent->PointerGlobalPos() - m_pLatestPressEvents[button]->PointerGlobalPos();
+		WgCoord distance = pMsg->PointerPos() - m_pLatestPressMsgs[button]->PointerPos();
 
 		if( distance.x <= doubleClickDistanceTreshold &&
 			distance.x >= -doubleClickDistanceTreshold &&
 			distance.y <= doubleClickDistanceTreshold &&
 			distance.y >= -doubleClickDistanceTreshold )
-			QueueEvent( new WgMouseDoubleClickEvent(button) );
+			Post( new WgMouseDoubleClickMsg(button) );
 	}
 
 	// Save info for the future
 
-	m_pLatestPressEvents[button] = pEvent;
+	m_pLatestPressMsgs[button] = pMsg;
 
 	m_bButtonPressed[button] = true;
 }
@@ -1206,36 +1187,36 @@ void WgEventHandler::_processMouseButtonPress( WgMousePressEvent * pEvent )
 
 //____ _processMouseButtonRepeat() __________________________________________________
 
-void WgEventHandler::_processMouseButtonRepeat( WgMouseRepeatEvent * pEvent )
+void WgMsgRouter::_processMouseButtonRepeat( WgMouseRepeatMsg * pMsg )
 {
 	_updateMarkedWidget(false);
 
-	WgMouseButton button = pEvent->Button();
+	WgMouseButton button = pMsg->Button();
 
 	// Post BUTTON_REPEAT event for widget that received the press if we are still inside.
 
 	WgWidget * pWidget = m_latestPressWidgets[button].RawPtr();
 	if( pWidget && pWidget == m_pMarkedWidget.RawPtr() )
-		QueueEvent( new WgMouseRepeatEvent(button, pWidget) );
+		Post( new WgMouseRepeatMsg(button, pWidget) );
 }
 
 
 
 //____ _processMouseButtonRelease() _________________________________________________
 
-void WgEventHandler::_processMouseButtonRelease( WgMouseReleaseEvent * pEvent )
+void WgMsgRouter::_processMouseButtonRelease( WgMouseReleaseMsg * pMsg )
 {
 	_updateMarkedWidget(false);
 
-	WgMouseButton button = pEvent->Button();
+	WgMouseButton button = pMsg->Button();
 
 	// Post BUTTON_RELEASE events for widget that was pressed
 
 	WgWidget * pWidget = m_latestPressWidgets[button].RawPtr();
 	if( pWidget )
 	{
-		bool bIsInside = pWidget->GlobalGeo().Contains(pEvent->PointerGlobalPos());
-		QueueEvent( new WgMouseReleaseEvent( button, pWidget, true, bIsInside ) );
+		bool bIsInside = pWidget->GlobalGeo().Contains(pMsg->PointerPos());
+		Post( new WgMouseReleaseMsg( button, pWidget, true, bIsInside ) );
 	}
 
 	// Post BUTTON_RELEASE events for marked widget that was NOT pressed
@@ -1245,8 +1226,8 @@ void WgEventHandler::_processMouseButtonRelease( WgMouseReleaseEvent * pEvent )
 	{
 		if( pWidget != m_latestPressWidgets[button].RawPtr() )
 		{
-			bool bIsInside = pWidget->GlobalGeo().Contains(pEvent->PointerGlobalPos());
-			QueueEvent( new WgMouseReleaseEvent( button, pWidget, false, bIsInside ) );
+			bool bIsInside = pWidget->GlobalGeo().Contains(pMsg->PointerPos());
+			Post( new WgMouseReleaseMsg( button, pWidget, false, bIsInside ) );
 		}
 	}
 
@@ -1254,19 +1235,19 @@ void WgEventHandler::_processMouseButtonRelease( WgMouseReleaseEvent * pEvent )
 	// on this level.
 
 	if( m_bButtonPressed[button] )
-		QueueEvent( new WgMouseClickEvent( button ) );
+		Post( new WgMouseClickMsg( button ) );
 
 	// Save info for the future
 
-	m_pLatestReleaseEvents[button] = pEvent;
+	m_pLatestReleaseMsgs[button] = pMsg;
 	m_bButtonPressed[button] = false;
 }
 
 //____ _processMouseButtonDrag() ____________________________________________________
 
-void WgEventHandler::_processMouseButtonDrag( WgMouseDragEvent * pEvent )
+void WgMsgRouter::_processMouseButtonDrag( WgMouseDragMsg * pMsg )
 {
-	WgMouseButton button = pEvent->Button();
+	WgMouseButton button = pMsg->Button();
 
 	// Post POINTER_DRAG event for pressed widget
 
@@ -1275,41 +1256,41 @@ void WgEventHandler::_processMouseButtonDrag( WgMouseDragEvent * pEvent )
 	if( pWidget )
 	{
 		WgCoord	ofs = pWidget->GlobalPos();
-		QueueEvent( new WgMouseDragEvent( button, pWidget, pEvent->StartPos() - ofs, pEvent->PrevPos() - ofs, pEvent->CurrPos() - ofs ) );
+		Post( new WgMouseDragMsg( button, pWidget, pMsg->StartPos() - ofs, pMsg->PrevPos() - ofs, pMsg->CurrPos() - ofs ) );
 	}
 
 }
 
 //____ _processMouseButtonClick() _________________________________________________
 
-void WgEventHandler::_processMouseButtonClick( WgMouseClickEvent * pEvent )
+void WgMsgRouter::_processMouseButtonClick( WgMouseClickMsg * pMsg )
 {
-	WgMouseButton button = pEvent->Button();
+	WgMouseButton button = pMsg->Button();
 
 	// Post BUTTON_CLICK events for widget that received the press if we
 	// still are inside.
 
 	WgWidget * pWidget = m_latestPressWidgets[button].RawPtr();
 	if( pWidget && pWidget == m_pMarkedWidget.RawPtr() )
-		QueueEvent( new WgMouseClickEvent(button, pWidget) );
+		Post( new WgMouseClickMsg(button, pWidget) );
 }
 
 //____ _processMouseButtonDoubleClick() _________________________________________________
 
-void WgEventHandler::_processMouseButtonDoubleClick( WgMouseDoubleClickEvent * pEvent )
+void WgMsgRouter::_processMouseButtonDoubleClick( WgMouseDoubleClickMsg * pMsg )
 {
-	WgMouseButton button = pEvent->Button();
+	WgMouseButton button = pMsg->Button();
 
 	// Post BUTTON_DOUBLE_CLICK event if gizom received both this and previous press.
 
 	WgWidget * pWidget = m_latestPressWidgets[button].RawPtr();
 	if( pWidget && pWidget ==  m_previousPressWidgets[button].RawPtr() )
-		QueueEvent( new WgMouseDoubleClickEvent(button, pWidget) );
+		Post( new WgMouseDoubleClickMsg(button, pWidget) );
 }
 
-//____ _isWidgetInList() ________________________________________________________
+//____ _isReceiverInList() ________________________________________________________
 
-bool WgEventHandler::_isWidgetInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list )
+bool WgMsgRouter::_isReceiverInList( const WgReceiver * pWidget, const std::vector<WgReceiverWeakPtr>& list )
 {
 	for( size_t i = 0 ; i < list.size() ; i++ )
 		if( list[i].RawPtr() == pWidget )
@@ -1320,7 +1301,7 @@ bool WgEventHandler::_isWidgetInList( const WgWidget * pWidget, const std::vecto
 
 //____ _widgetPosInList() ________________________________________________________
 
-int WgEventHandler::_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list )
+int WgMsgRouter::_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list )
 {
 	for( size_t i = 0 ; i < list.size() ; i++ )
 		if( list[i].RawPtr() == pWidget )
@@ -1330,32 +1311,32 @@ int WgEventHandler::_widgetPosInList( const WgWidget * pWidget, const std::vecto
 }
 
 
-WgEventHandler::Callback::Callback( const WgEventFilter& filter, WgEventListener * pListener )
+WgMsgRouter::Route::Route( const WgMsgFilter& filter, WgReceiver * pReceiver )
 {
 	m_filter = filter;
-	m_pListener = pListener;
-	pListener->_onRouteAdded();
+	m_pReceiver = pReceiver;
+	pReceiver->_onRouteAdded();
 }
 
-WgEventHandler::Callback::~Callback()
+WgMsgRouter::Route::~Route()
 {
-	if( m_pListener )
-		m_pListener->_onRouteRemoved();
+	if( m_pReceiver )
+		m_pReceiver->_onRouteRemoved();
 }
 
-void WgEventHandler::Callback::ProcessEvent( const WgEventPtr& pEvent )
+void WgMsgRouter::Route::Dispatch( const WgMsgPtr& pMsg )
 {
-	if( m_filter.FilterEvent(pEvent) )
-		m_pListener->OnEvent( pEvent );
+	if( m_filter.FilterMsg(pMsg) )
+		m_pReceiver->OnMsg( pMsg );
 }
 
-bool WgEventHandler::Callback::IsAlive() const
+bool WgMsgRouter::Route::IsAlive() const
 {
 	return true;
 }
 
-WgEventListener * WgEventHandler::Callback::Listener() const
+WgReceiver * WgMsgRouter::Route::Receiver() const
 {
-	return m_pListener.RawPtr();
+	return m_pReceiver.RawPtr();
 }
 

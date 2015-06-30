@@ -60,8 +60,8 @@
 #	include <wg_textpresenter.h>
 #endif
 
-#ifndef WG_EVENTHANDLER_DOT_H
-#	include <wg_eventhandler.h>
+#ifndef WG_MSGROUTER_DOT_H
+#	include <wg_msgrouter.h>
 #endif
 
 
@@ -150,7 +150,7 @@ public:
 	static char *	MemStackAlloc( int bytes );
 	static void		MemStackRelease( int bytes );
 
-	static WgEventHandlerPtr	MsgRouter() { return s_pData->pMsgRouter; }
+	static WgMsgRouterPtr	MsgRouter() { return s_pData->pMsgRouter; }
  
 	//____
 
@@ -164,7 +164,7 @@ private:
 
 	struct Data
 	{
-		WgEventHandlerPtr	pMsgRouter;
+		WgMsgRouterPtr	pMsgRouter;
 		
 		WgTextpropPtr		pDefaultTextprop;
 		WgTextpropPtr		pDefaultSelectionProp;

@@ -39,8 +39,8 @@
 #include <wg_base.h>
 #include <wg_textlink.h>
 #include <wg_string.h>
-#include <wg_event.h>
-#include <wg_eventhandler.h>
+#include <wg_msg.h>
+#include <wg_msgrouter.h>
 #include <wg_widget.h>
 #include <wg_util.h>
 
@@ -2279,24 +2279,24 @@ int WgLegacyTextField::LineColToOffset(int line, int col) const
 }
 
 
-//____ OnEvent() _____________________________________________________________
+//____ OnMsg() _____________________________________________________________
 
-bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEventHandler, const WgRect& container )
+bool WgLegacyTextField::OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, const WgRect& container )
 {
 	bool bRefresh = false;
 
-	switch( pEvent->Type() )
+	switch( pMsg->Type() )
 	{
-		case WG_EVENT_MOUSE_ENTER:
-		case WG_EVENT_MOUSE_MOVE:
+		case WG_MSG_MOUSE_ENTER:
+		case WG_MSG_MOUSE_MOVE:
 		{
 /*
-			WgCoord pointerOfs = pEvent->PointerPos();
+			WgCoord pointerOfs = pMsg->PointerPos();
 			
 			WgTextLinkPtr pLink = CoordToLink( pointerOfs, container );
 			if( m_pMarkedLink && pLink != m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgLinkMouseLeaveEvent( m_pMarkedLink ));
+				pMsgRouter->Post( new WgLinkMouseLeaveMsg( m_pMarkedLink ));
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2305,7 +2305,7 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 			{
 				if( pLink != m_pMarkedLink )
 				{
-					pEventHandler->QueueEvent( new WgLinkMouseEnterEvent( pLink ));
+					pMsgRouter->Post( new WgLinkMouseEnterMsg( pLink ));
 
 					m_pMarkedLink = pLink;
 					m_markedLinkState = WG_STATE_HOVERED;
@@ -2317,47 +2317,47 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 		}
 
 
-		case WG_EVENT_MOUSE_LEAVE:
+		case WG_MSG_MOUSE_LEAVE:
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgLinkMouseLeaveEvent( m_pMarkedLink ));
+				pMsgRouter->Post( new WgLinkMouseLeaveMsg( m_pMarkedLink ));
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
 			break;
 		}
 
-		case WG_EVENT_MOUSE_PRESS:
+		case WG_MSG_MOUSE_PRESS:
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgLinkMousePressEvent( m_pMarkedLink, WgMouseButtonEvent::Cast(pEvent)->Button() ));
+				pMsgRouter->Post( new WgLinkMousePressMsg( m_pMarkedLink, WgMouseButtonMsg::Cast(pMsg)->Button() ));
 				m_markedLinkState = WG_STATE_PRESSED;
 				bRefresh = true;
 			}
 			break;
 		}
 
-		case WG_EVENT_MOUSE_REPEAT:
+		case WG_MSG_MOUSE_REPEAT:
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgLinkMouseRepeatEvent( m_pMarkedLink, WgMouseButtonEvent::Cast(pEvent)->Button() ));
+				pMsgRouter->Post( new WgLinkMouseRepeatMsg( m_pMarkedLink, WgMouseButtonMsg::Cast(pMsg)->Button() ));
 			}
 			break;
 		}
 
-		case WG_EVENT_MOUSE_RELEASE:
+		case WG_MSG_MOUSE_RELEASE:
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgLinkMouseReleaseEvent( m_pMarkedLink, WgMouseButtonEvent::Cast(pEvent)->Button() ));
+				pMsgRouter->Post( new WgLinkMouseReleaseMsg( m_pMarkedLink, WgMouseButtonMsg::Cast(pMsg)->Button() ));
 
 				if( m_markedLinkState == WG_STATE_PRESSED )
 				{
-					pEventHandler->QueueEvent( new WgLinkMouseClickEvent( m_pMarkedLink, WgMouseButtonEvent::Cast(pEvent)->Button() ));
-					pEventHandler->QueueEvent( new WgLinkSelectEvent( m_pMarkedLink ));				
+					pMsgRouter->Post( new WgLinkMouseClickMsg( m_pMarkedLink, WgMouseButtonMsg::Cast(pMsg)->Button() ));
+					pMsgRouter->Post( new WgLinkSelectMsg( m_pMarkedLink ));				
 				}
 				m_markedLinkState = WG_STATE_HOVERED;
 				bRefresh = true;
@@ -2365,9 +2365,9 @@ bool WgLegacyTextField::OnEvent( const WgEventPtr& pEvent, WgEventHandler * pEve
 			break;
 		}
 
-		case WG_EVENT_MOUSE_DOUBLE_CLICK:
+		case WG_MSG_MOUSE_DOUBLE_CLICK:
 			if( m_pMarkedLink )
-				pEventHandler->QueueEvent( new WgLinkMouseDoubleClickEvent( m_pMarkedLink, WgMouseButtonEvent::Cast(pEvent)->Button() ));
+				pMsgRouter->Post( new WgLinkMouseDoubleClickMsg( m_pMarkedLink, WgMouseButtonMsg::Cast(pMsg)->Button() ));
 			break;
 
 		default:

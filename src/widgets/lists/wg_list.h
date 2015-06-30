@@ -105,12 +105,12 @@ protected:
 	WgList();
 	virtual ~WgList();
 
-	virtual void	_onEvent( const WgEventPtr& pEvent );
+	virtual void	_onMsg( const WgMsgPtr& pMsg );
 
-	virtual bool	_selectEntry( WgListHook * pHook, bool bSelected, bool bPostEvent );
-	virtual int		_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelected, bool bPostEvent );
-	virtual int		_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostEvent );
-	virtual void	_clearSelected( bool bPostEvent );
+	virtual bool	_selectEntry( WgListHook * pHook, bool bSelected, bool bPostMsg );
+	virtual int		_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelected, bool bPostMsg );
+	virtual int		_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostMsg );
+	virtual void	_clearSelected( bool bPostMsg );
 	virtual void	_onWidgetAppeared( WgListHook * pInserted ) = 0;
 	virtual void	_onWidgetDisappeared( WgListHook * pToBeRemoved ) = 0;		// Call BEFORE widget is removed from m_hooks.
 	virtual WgListHook * _findEntry( const WgCoord& ofs ) = 0;

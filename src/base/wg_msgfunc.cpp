@@ -20,34 +20,34 @@
 
 =========================================================================*/
 
-#include <wg_eventcatcher.h>
+#include <wg_msgfunc.h>
 
-const char WgEventCatcher::CLASSNAME[] = {"EventCatcher"};
+const char WgMsgFunc::CLASSNAME[] = {"MsgFunc"};
 
 
 //____ Constructors ____________________________________________________________
 
-WgEventCatcher::WgEventCatcher( void(*fp)( const WgEventPtr& pEvent) )
+WgMsgFunc::WgMsgFunc( void(*fp)( const WgMsgPtr& pMsg) )
 {
 	m_callbackType = 0;
 	m_pCallback = (void*) fp;	
 }
 
-WgEventCatcher::WgEventCatcher( void(*fp)( const WgEventPtr& pEvent, int param), int param )
+WgMsgFunc::WgMsgFunc( void(*fp)( const WgMsgPtr& pMsg, int param), int param )
 {
 	m_callbackType = 1;
 	m_pCallback = (void*) fp;
 	m_param = param;
 }
 
-WgEventCatcher::WgEventCatcher( void(*fp)( const WgEventPtr& pEvent, void * pParam), void * pParam )
+WgMsgFunc::WgMsgFunc( void(*fp)( const WgMsgPtr& pMsg, void * pParam), void * pParam )
 {
 	m_callbackType = 2;
 	m_pCallback = (void*) fp;
 	m_pParam = pParam;
 }
 
-WgEventCatcher::WgEventCatcher( void(*fp)( const WgEventPtr& pEvent, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
+WgMsgFunc::WgMsgFunc( void(*fp)( const WgMsgPtr& pMsg, const WgObjectPtr& pParam), const WgObjectPtr& pParam )
 {
 	m_callbackType = 3;
 	m_pCallback = (void*) fp;
@@ -58,48 +58,48 @@ WgEventCatcher::WgEventCatcher( void(*fp)( const WgEventPtr& pEvent, const WgObj
 
 //____ IsInstanceOf() _________________________________________________________
 
-bool WgEventCatcher::IsInstanceOf( const char * pClassName ) const
+bool WgMsgFunc::IsInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgEventListener::IsInstanceOf(pClassName);
+	return WgReceiver::IsInstanceOf(pClassName);
 }
 
 //____ ClassName() ____________________________________________________________
 
-const char * WgEventCatcher::ClassName( void ) const
+const char * WgMsgFunc::ClassName( void ) const
 {
 	return CLASSNAME;
 }
 
 //____ Cast() _________________________________________________________________
 
-WgEventCatcherPtr WgEventCatcher::Cast( const WgObjectPtr& pObject )
+WgMsgFuncPtr WgMsgFunc::Cast( const WgObjectPtr& pObject )
 {
 	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgEventCatcherPtr( static_cast<WgEventCatcher*>(pObject.RawPtr()) );
+		return WgMsgFuncPtr( static_cast<WgMsgFunc*>(pObject.RawPtr()) );
 
 	return 0;
 }
 
-//____ OnEvent() _______________________________________________________________
+//____ OnMsg() _______________________________________________________________
 
-void WgEventCatcher::OnEvent( const WgEventPtr& pEvent )
+void WgMsgFunc::OnMsg( const WgMsgPtr& pMsg )
 {
 	switch( m_callbackType )
 	{
 		case 0:
-			((void(*)( const WgEventPtr&))m_pCallback)(pEvent);
+			((void(*)( const WgMsgPtr&))m_pCallback)(pMsg);
 			break;
 		case 1:
-			((void(*)( const WgEventPtr&, int ))m_pCallback)(pEvent,m_param);
+			((void(*)( const WgMsgPtr&, int ))m_pCallback)(pMsg,m_param);
 			break;
 		case 2:
-			((void(*)( const WgEventPtr&, void* ))m_pCallback)(pEvent,m_pParam);
+			((void(*)( const WgMsgPtr&, void* ))m_pCallback)(pMsg,m_pParam);
 			break;
 		case 3:
-			((void(*)( const WgEventPtr&, const WgObjectPtr& ))m_pCallback)(pEvent,m_pParamObj);
+			((void(*)( const WgMsgPtr&, const WgObjectPtr& ))m_pCallback)(pMsg,m_pParamObj);
 			break;
 		default:
 			break;
@@ -108,14 +108,14 @@ void WgEventCatcher::OnEvent( const WgEventPtr& pEvent )
 
 //____ _onRouteAdded() _________________________________________________________
 
-void  WgEventCatcher::_onRouteAdded()
+void  WgMsgFunc::_onRouteAdded()
 {	
 	_incRefCount();
 }
 
 //____ _onRouteRemoved() _______________________________________________________
 
-void  WgEventCatcher::_onRouteRemoved()
+void  WgMsgFunc::_onRouteRemoved()
 {
 	_decRefCount();
 }

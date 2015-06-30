@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_list.h>
-#include <wg_eventhandler.h>
+#include <wg_msgrouter.h>
 #include <wg_iconfield.h>
 #include <wg_textfield.h>
 #include <wg_gfxdevice.h>
@@ -185,19 +185,19 @@ void WgList::SetLassoSkin( const WgSkinPtr& pSkin )
 	m_pLassoSkin = pSkin;
 }
 
-//____ _onEvent() _____________________________________________________________
+//____ _onMsg() _____________________________________________________________
 
-void WgList::_onEvent( const WgEventPtr& _pEvent )
+void WgList::_onMsg( const WgMsgPtr& _pMsg )
 {
-	WgContainer::_onEvent(_pEvent);
+	WgContainer::_onMsg(_pMsg);
 
 	WgState oldState = m_state;
 
-	switch( _pEvent->Type() )
+	switch( _pMsg->Type() )
 	{
-		case WG_EVENT_MOUSE_ENTER:
+		case WG_MSG_MOUSE_ENTER:
 		{	
-			WgListHook * pEntry = _findEntry(ToLocal(_pEvent->PointerGlobalPos()));
+			WgListHook * pEntry = _findEntry(ToLocal(_pMsg->PointerPos()));
 			if( pEntry && pEntry != m_pHoveredEntry.RawPtr() )
 			{
 				WgRect geo;
@@ -213,9 +213,9 @@ void WgList::_onEvent( const WgEventPtr& _pEvent )
 			}
 			break;
 		}
-		case WG_EVENT_MOUSE_LEAVE:
+		case WG_MSG_MOUSE_LEAVE:
 		{
-			WgListHook * pEntry = _findEntry(ToLocal(_pEvent->PointerGlobalPos()));
+			WgListHook * pEntry = _findEntry(ToLocal(_pMsg->PointerPos()));
 			if( m_pHoveredEntry && !pEntry )
 			{
 				WgRect geo;
@@ -225,12 +225,12 @@ void WgList::_onEvent( const WgEventPtr& _pEvent )
 			}
 			break;
 		}
-		case WG_EVENT_MOUSE_PRESS:
+		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMousePressEventPtr pEvent = WgMousePressEvent::Cast(_pEvent);
-			if( m_selectMode != WG_SELECT_NONE && pEvent->Button() == WG_BUTTON_LEFT )
+			WgMousePressMsgPtr pMsg = WgMousePressMsg::Cast(_pMsg);
+			if( m_selectMode != WG_SELECT_NONE && pMsg->Button() == WG_BUTTON_LEFT )
 			{
-				WgCoord ofs = ToLocal(pEvent->PointerGlobalPos());
+				WgCoord ofs = ToLocal(pMsg->PointerPos());
 				if( !_listWindow().Contains(ofs) )
 					break;								// Click on header or somewhere else outside the real list.
 				
@@ -260,7 +260,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent )
 							m_pFocusedEntry = pEntry;
 							break;
 						case WG_SELECT_MULTI:
-							if( pEvent->ModKeys() & WG_MODKEY_SHIFT && m_pFocusedEntry )
+							if( pMsg->ModKeys() & WG_MODKEY_SHIFT && m_pFocusedEntry )
 							{
 								// Select range from focused to clicked entry.
 
@@ -271,7 +271,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent )
 
 								// Unselect the rest if not CTRL-click.
 
-								if( !(pEvent->ModKeys() & WG_MODKEY_CTRL) )
+								if( !(pMsg->ModKeys() & WG_MODKEY_CTRL) )
 								{
 									WgListHook * pFirst = static_cast<WgListHook*>(_firstHook());
 									WgListHook * pLast = static_cast<WgListHook*>(_lastHook());
@@ -283,7 +283,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent )
 							}
 							else
 							{
-								if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+								if( pMsg->ModKeys() & WG_MODKEY_CTRL )
 								{
 									// CTRL-click: We just flip the entry.
 									_selectEntry( pEntry, !pEntry->IsSelected(), true );
@@ -305,35 +305,35 @@ void WgList::_onEvent( const WgEventPtr& _pEvent )
 					m_pFocusedEntry = 0;
 				}
 
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 			}
 			break;
 		}
-		case WG_EVENT_MOUSE_RELEASE:
-			if( m_selectMode != WG_SELECT_NONE && WgMouseReleaseEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
+		case WG_MSG_MOUSE_RELEASE:
+			if( m_selectMode != WG_SELECT_NONE && WgMouseReleaseMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
 			{
 				WgRect dirtyRect( m_lassoBegin, m_lassoEnd );
 				_requestRender(dirtyRect);
 
 				m_lassoBegin = m_lassoEnd;
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 			}
 			break;
-		case WG_EVENT_MOUSE_CLICK:
-			if( m_selectMode != WG_SELECT_NONE && WgMouseClickEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
-				_pEvent->Swallow();
+		case WG_MSG_MOUSE_CLICK:
+			if( m_selectMode != WG_SELECT_NONE && WgMouseClickMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
+				_pMsg->Swallow();
 			break;
-		case WG_EVENT_MOUSE_DOUBLE_CLICK:
-		case WG_EVENT_MOUSE_REPEAT:
-			if( m_selectMode != WG_SELECT_NONE && WgMouseButtonEvent::Cast(_pEvent)->Button() == WG_BUTTON_LEFT )
-				_pEvent->Swallow();
+		case WG_MSG_MOUSE_DOUBLE_CLICK:
+		case WG_MSG_MOUSE_REPEAT:
+			if( m_selectMode != WG_SELECT_NONE && WgMouseButtonMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
+				_pMsg->Swallow();
 			break;
-		case WG_EVENT_MOUSE_DRAG:
+		case WG_MSG_MOUSE_DRAG:
 		{
-			WgMouseDragEventPtr pEvent = WgMouseDragEvent::Cast(_pEvent);
-			if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pEvent->Button() == WG_BUTTON_LEFT )
+			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::Cast(_pMsg);
+			if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pMsg->Button() == WG_BUTTON_LEFT )
 			{
-				WgCoord ofs = _listArea().Limit(ToLocal(pEvent->PointerGlobalPos()));
+				WgCoord ofs = _listArea().Limit(ToLocal(pMsg->PointerPos()));
 				ofs = _listWindow().Limit(ofs);
 
 				WgRect oldLasso( m_lassoBegin, m_lassoEnd );
@@ -345,7 +345,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent )
 				dirtyRect.GrowToContain( ofs );
 				_requestRender( dirtyRect );
 				m_lassoEnd = ofs;
-				_pEvent->Swallow();
+				_pMsg->Swallow();
 			}
 			break;
 		}
@@ -357,7 +357,7 @@ void WgList::_onEvent( const WgEventPtr& _pEvent )
 
 //____ _selectEntry() _________________________________________________________
 
-bool WgList::_selectEntry( WgListHook * pHook, bool bSelected, bool bPostEvent )
+bool WgList::_selectEntry( WgListHook * pHook, bool bSelected, bool bPostMsg )
 {
 	WgState	oldState = pHook->m_pWidget->State();
 
@@ -367,18 +367,18 @@ bool WgList::_selectEntry( WgListHook * pHook, bool bSelected, bool bPostEvent )
 		pHook->m_pWidget->m_state.SetSelected(bSelected);
 		pHook->m_pWidget->_onStateChanged( oldState );
 
-		if( bPostEvent )
+		if( bPostMsg )
 		{
 			WgItemInfo * pItemInfo	= new WgItemInfo[1];
 			pItemInfo->pObject	= pHook->_widget();
 			pItemInfo->id		= pHook->_widget()->Id();
 
-			WgEvent * pEvent;
+			WgMsg * pMsg;
 			if( bSelected )
-				pEvent = new WgItemsSelectEvent(this, 1, pItemInfo);
+				pMsg = new WgItemsSelectMsg(this, 1, pItemInfo);
 			else
-				pEvent = new WgItemsUnselectEvent(this, 1, pItemInfo);
-			_eventHandler()->QueueEvent( pEvent );
+				pMsg = new WgItemsUnselectMsg(this, 1, pItemInfo);
+			WgBase::MsgRouter()->Post( pMsg );
 		}
 	}
 
@@ -387,14 +387,14 @@ bool WgList::_selectEntry( WgListHook * pHook, bool bSelected, bool bPostEvent )
 
 //____ _clearSelected() _______________________________________________________
 
-void WgList::_clearSelected( bool bPostEvent )
+void WgList::_clearSelected( bool bPostMsg )
 {
-	_selectRange( static_cast<WgListHook*>(_firstHook()), static_cast<WgListHook*>(_lastHook()), false, bPostEvent );
+	_selectRange( static_cast<WgListHook*>(_firstHook()), static_cast<WgListHook*>(_lastHook()), false, bPostMsg );
 }
 
 //____ _selectRange() _________________________________________________________
 
-int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelected, bool bPostEvent )
+int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelected, bool bPostMsg )
 {
 	int	nModified = 0;
 	WgListHook * pEnd = static_cast<WgListHook*>(pLast->_nextHook());
@@ -407,10 +407,10 @@ int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelecte
 	_getEntryGeo( geoLast, pLast );
 	_requestRender( WgRect::Union(geoFirst,geoLast) );
 
-	// Reserve ItemInfo array of right size if we are going to post event
+	// Reserve ItemInfo array of right size if we are going to post message
 
 	WgItemInfo * pItemInfo = 0;
-	if( bPostEvent )
+	if( bPostMsg )
 	{
 		int size = 0;
 		for( WgListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
@@ -433,7 +433,7 @@ int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelecte
 			pHook->m_pWidget->m_state.SetSelected(bSelected);
 			pHook->m_pWidget->_onStateChanged( oldState );
 
-			if( bPostEvent )
+			if( bPostMsg )
 			{
 				pItemInfo[nModified].pObject	= pHook->_widget();
 				pItemInfo[nModified].id			= pHook->_widget()->Id();
@@ -443,16 +443,16 @@ int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelecte
 		}
 	}
 
-	// Post event
+	// Post message
 
-	if( bPostEvent )
+	if( bPostMsg )
 	{
-		WgEvent * pEvent;
+		WgMsg * pMsg;
 		if( bSelected )
-			pEvent = new WgItemsSelectEvent(this, 1, pItemInfo);
+			pMsg = new WgItemsSelectMsg(this, 1, pItemInfo);
 		else
-			pEvent = new WgItemsUnselectEvent(this, 1, pItemInfo);
-		_eventHandler()->QueueEvent( pEvent );
+			pMsg = new WgItemsUnselectMsg(this, 1, pItemInfo);
+		WgBase::MsgRouter()->Post( pMsg );
 	}
 
 	return nModified;
@@ -460,7 +460,7 @@ int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelecte
 
 //____ _flipRange() _________________________________________________________
 
-int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostEvent )
+int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostMsg )
 {
 	int nSelected = 0;
 	int nDeselected = 0;
@@ -474,11 +474,11 @@ int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostEvent
 	_getEntryGeo( geoLast, pLast );
 	_requestRender( WgRect::Union(geoFirst,geoLast) );
 
-	// Reserve ItemInfo array of right size if we are going to post event
+	// Reserve ItemInfo array of right size if we are going to post message
 
 	WgItemInfo * pSelectedItemsInfo = 0;
 	WgItemInfo * pDeselectedItemsInfo = 0;
-	if( bPostEvent )
+	if( bPostMsg )
 	{
 		int nToSelect = 0;
 		int nToDeselect = 0;
@@ -506,7 +506,7 @@ int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostEvent
 		pHook->m_pWidget->m_state.SetSelected(!oldState.IsSelected());
 		pHook->m_pWidget->_onStateChanged( oldState );
 
-		if( bPostEvent )
+		if( bPostMsg )
 		{
 			WgItemInfo * p;
 			if( oldState.IsSelected() )
@@ -519,15 +519,15 @@ int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostEvent
 		}
 	}
 
-	// Post event
+	// Post message
 
-	if( bPostEvent )
+	if( bPostMsg )
 	{
 		if( nSelected > 0 )
-			_eventHandler()->QueueEvent( new WgItemsSelectEvent(this, 1, pSelectedItemsInfo) );
+			WgBase::MsgRouter()->Post( new WgItemsSelectMsg(this, 1, pSelectedItemsInfo) );
 
 		if( nDeselected > 0 )
-			_eventHandler()->QueueEvent( new WgItemsUnselectEvent(this, 1, pDeselectedItemsInfo) );
+			WgBase::MsgRouter()->Post( new WgItemsUnselectMsg(this, 1, pDeselectedItemsInfo) );
 	}
 
 	return nSelected + nDeselected;
