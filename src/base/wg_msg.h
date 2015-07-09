@@ -335,6 +335,7 @@ class WgMsg : public WgObject
 
 class WgMouseButtonMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;
@@ -358,6 +359,7 @@ protected:
 
 class WgKeyMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;
@@ -380,6 +382,7 @@ protected:
 
 class WgFocusGainedMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgFocusGainedMsgPtr	Create() { return new WgFocusGainedMsg(); }
@@ -396,6 +399,7 @@ protected:
 
 class WgFocusLostMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgFocusLostMsgPtr	Create() { return new WgFocusLostMsg(); }
@@ -412,6 +416,7 @@ protected:
 
 class WgMouseEnterMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgMouseEnterMsgPtr			Create( const WgCoord& pos ) { return new WgMouseEnterMsg(pos); }
@@ -429,6 +434,7 @@ protected:
 
 class WgMouseLeaveMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgMouseLeaveMsgPtr			Create() { return new WgMouseLeaveMsg(); }
@@ -446,6 +452,7 @@ protected:
 
 class WgMouseMoveMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgMouseMoveMsgPtr			Create( const WgCoord& pos ) { return new WgMouseMoveMsg(pos); }
@@ -463,6 +470,7 @@ protected:
 
 class WgMousePressMsg : public WgMouseButtonMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgMousePressMsgPtr			Create( WgMouseButton button ) { return new WgMousePressMsg(button); }
@@ -480,6 +488,7 @@ protected:
 
 class WgMouseReleaseMsg : public WgMouseButtonMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgMouseReleaseMsgPtr		Create( WgMouseButton button ) { return new WgMouseReleaseMsg(button); }
@@ -504,6 +513,7 @@ protected:
 
 class WgKeyPressMsg : public WgKeyMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgKeyPressMsgPtr			Create( int native_keycode ) { return new WgKeyPressMsg(native_keycode); }
@@ -521,6 +531,7 @@ protected:
 
 class WgKeyReleaseMsg : public WgKeyMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgKeyReleaseMsgPtr			Create( int native_keycode ) { return new WgKeyReleaseMsg(native_keycode); }
@@ -538,6 +549,7 @@ protected:
 
 class WgCharacterMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgCharacterMsgPtr			Create( unsigned short character ) { return new WgCharacterMsg(character); }
@@ -559,6 +571,7 @@ protected:
 
 class WgWheelRollMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgWheelRollMsgPtr			Create( int wheel, int distance ) { return new WgWheelRollMsg(wheel,distance); }
@@ -582,6 +595,7 @@ protected:
 
 class WgTickMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	static WgTickMsgPtr				Create( int ms ) { return new WgTickMsg(ms); }
@@ -603,6 +617,7 @@ protected:
 
 class WgPointerChangeMsg : public WgMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;
@@ -1019,6 +1034,7 @@ protected:
 
 class WgMouseDragMsg : public WgMouseButtonMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 protected:
 	WgMouseDragMsg( WgMouseButton button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos );
@@ -1042,6 +1058,7 @@ protected:
 
 class WgMouseRepeatMsg : public WgMouseButtonMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 protected:
 	WgMouseRepeatMsg( WgMouseButton button, WgWidget * pWidget );
@@ -1055,6 +1072,7 @@ public:
 
 class WgMouseClickMsg : public WgMouseButtonMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 protected:
 	WgMouseClickMsg( WgMouseButton button );
@@ -1068,6 +1086,7 @@ public:
 
 class WgMouseDoubleClickMsg : public WgMouseButtonMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;
@@ -1082,6 +1101,7 @@ protected:
 
 class WgKeyRepeatMsg : public WgKeyMsg
 {
+	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
 	bool				IsInstanceOf( const char * pClassName ) const;

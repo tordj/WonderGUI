@@ -74,6 +74,7 @@ typedef	WgWeakPtr<WgMsg,WgObjectWeakPtr>			WgMsgWeakPtr;
 class WgWidget : public WgReceiver
 {
 friend class WgMsgRouter;
+friend class WgInputHandler;
 
 friend class WgHook;
 friend class WgFlexHook;

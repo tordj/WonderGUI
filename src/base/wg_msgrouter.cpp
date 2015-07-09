@@ -274,6 +274,12 @@ WgRouteId WgMsgRouter::AddRoute( WgMsgType msgType, const WgReceiverPtr& pReceiv
 	return _addRoute( msgType, p );	
 }
 
+WgRouteId WgMsgRouter::AddRoute( WgMsgType msgType, WgReceiver * pReceiver )
+{
+	Route * p = new Route( WgMsgFilter(), pReceiver );
+	return _addRoute( msgType, p );	
+}
+
 WgRouteId WgMsgRouter::AddRoute( const WgMsgFilter& filter, WgMsgType msgType, const WgReceiverPtr& pReceiver )
 {
 	Route * p = new Route( filter, pReceiver.RawPtr() );
@@ -537,12 +543,7 @@ void WgMsgRouter::Dispatch()
 {
 	m_bIsProcessing = true;
 
-	// First thing: we make sure that we know what Widgets pointer is inside, in case that has changed.
-
 	m_insertPos = m_msgQueue.begin();	// Insert any POINTER_ENTER/EXIT right at beginning.
-	_updateMarkedWidget(false);
-
-	// Process all the events in the queue
 
 	_dispatchQueued();
 
@@ -568,8 +569,6 @@ void WgMsgRouter::_dispatchQueued()
 			
 			if( pMsg->HasSource() )
 				_dispatchToSourceRoutes( pMsg );
-			else
-				_processGeneralMsg( pMsg );
 
 			_dispatchToTypeRoutes( pMsg );
 			_broadcast( pMsg );			

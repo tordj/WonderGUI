@@ -199,6 +199,9 @@
 #	include <wg_iwidgets.h>
 #endif
 
+#ifndef WG_INPUTHANDLER_DOT_H
+#	include <wg_inputhandler.h>
+#endif
 
 #ifndef WG_ANIMPLAYER_DOT_H
 #	include <wg_animplayer.h>

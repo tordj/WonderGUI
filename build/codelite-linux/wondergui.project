@@ -300,6 +300,8 @@
     <File Name="../../src/base/wg_receiver.h"/>
     <File Name="../../src/base/wg_msg.cpp"/>
     <File Name="../../src/base/wg_msg.h"/>
+    <File Name="../../src/base/wg_inputhandler.h"/>
+    <File Name="../../src/base/wg_inputhandler.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>

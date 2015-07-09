@@ -9,7 +9,7 @@
 #include <wg_softsurface.h>
 #include <wg_softgfxdevice.h>
 
-void 			translateEvents( WgMsgRouterPtr pMsgRouter );
+void 			translateEvents( const WgInputHandlerPtr& pInput, const WgRootPanelPtr& pRoot );
 WgMouseButton 	translateMouseButton( Uint8 button );
 void 			updateWindowRects( const WgRootPanelPtr& pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const WgMsgPtr& pMsg );
@@ -25,6 +25,8 @@ void freeSDLSurfCallback( void * pSDLSurf )
 {
 	SDL_FreeSurface( (SDL_Surface*) pSDLSurf );
 }
+
+WgInputHandler * pDebug;
 
 //____ main() _________________________________________________________________
 
@@ -49,6 +51,9 @@ int main ( int argc, char** argv )
 
 	WgBase::Init();
 
+	WgInputHandlerPtr pInput = WgInputHandler::Create();
+	pDebug = pInput.RawPtr();
+	
 	WgPixelType type = WG_PIXEL_UNKNOWN;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
@@ -212,7 +217,7 @@ int main ( int argc, char** argv )
 
 	while( !bQuit ) 
 	{
-		translateEvents( WgBase::MsgRouter() );
+		translateEvents( pInput, pRoot );
 
 		SDL_LockSurface(pWinSurf);
 		pRoot->Render();
@@ -237,7 +242,7 @@ int main ( int argc, char** argv )
 
 //____ translateEvents() ___________________________________________________________
 
-void translateEvents( WgMsgRouterPtr pMsgRouter )
+void translateEvents( const WgInputHandlerPtr& pInput, const WgRootPanelPtr& pRoot )
 {
 	// WonderGUI needs Tick-events to keep track of time passed for things such
 	// key-repeat, double-click detection, animations etc.  So we create one
@@ -254,7 +259,7 @@ void translateEvents( WgMsgRouterPtr pMsgRouter )
 		tickDiff = (int) (ticks - oldTicks);		
 	oldTicks = ticks;
 
-	pMsgRouter->Post( WgTickMsg::Create(tickDiff) );
+	WgBase::MsgRouter()->Post( WgTickMsg::Create(tickDiff) );
 
 	// Process all the SDL events in a loop
 
@@ -268,15 +273,15 @@ void translateEvents( WgMsgRouterPtr pMsgRouter )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pMsgRouter->Post( WgMouseMoveMsg::Create( WgCoord(e.motion.x,e.motion.y)) );
+				pInput->SetPointer( pRoot, WgCoord(e.motion.x,e.motion.y) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
-				pMsgRouter->Post( WgMousePressMsg::Create( translateMouseButton(e.button.button)));
+				pInput->SetButton( translateMouseButton(e.button.button), true );
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				pMsgRouter->Post( WgMouseReleaseMsg::Create( translateMouseButton(e.button.button)));
+				pInput->SetButton( translateMouseButton(e.button.button), false );
 				break;
 				
 			default:
@@ -284,7 +289,7 @@ void translateEvents( WgMsgRouterPtr pMsgRouter )
 		}
 	}
 	
-	pMsgRouter->Dispatch();	
+	WgBase::MsgRouter()->Dispatch();	
 }
 
 //____ translateMouseButton() __________________________________________________

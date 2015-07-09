@@ -88,7 +88,7 @@ public:
 	bool					RemoveWidget();
 	bool					Clear();
 
-	WgWidgetPtr				FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
+	WgWidgetPtr				FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs-m_geo.Pos(),mode)); }
 
 	inline int				NbDirtyRects() const { return m_dirtyPatches.Size(); }
 	inline const WgRect*	FirstDirtyRect() const { return m_dirtyPatches.IsEmpty() ? 0 : m_dirtyPatches.Begin(); }

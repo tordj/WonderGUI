@@ -184,7 +184,8 @@ public:
 template<class T,class P> class WgWeakPtr : public P
 {
 public:
-	WgWeakPtr(T* p=0) : P( p ) {};
+	WgWeakPtr() {}
+	WgWeakPtr(T* p) : P( p ) {};
 	WgWeakPtr(const WgWeakPtr<T,P>& r) : P( r.RawPtr() ) {};
 //	WgWeakPtr(const WgStrongPtr<T,P>& r) : P( r.RawPtr() ) {};
 	~WgWeakPtr() {};

@@ -98,6 +98,7 @@ public:
 	WgRouteId	AddRoute( WgMsgType type, const WgReceiverPtr& pReceiver );
 	WgRouteId	AddRoute( const WgMsgFilter& filter, WgMsgType type, const WgReceiverPtr& pReceiver );
 
+	WgRouteId	AddRoute( WgMsgType type, WgReceiver * pReceiver );		// For calls from constructors.
 
 
 	bool	DeleteRoute( WgRouteId handle );
