@@ -14,7 +14,7 @@
       <Project Name="gfxdevice_software" ConfigName="Debug"/>
       <Project Name="example_01" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
+    <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="wondergui" ConfigName="Release"/>
       <Project Name="workbench" ConfigName="Release"/>
       <Project Name="gfxdevice_software" ConfigName="Release"/>
